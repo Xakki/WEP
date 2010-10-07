@@ -1,0 +1,1 @@
+[05-Aug-2009 09:00:42] PHP Fatal error:  Cannot access private property Ckfinder_Connector_Utils_XmlNode::$_attributes in /home6/xakkiorg/public_html/wep/ckfinder/core/connector/php/php5/CommandHandler/Init.php on line 83

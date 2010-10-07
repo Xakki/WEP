@@ -1,0 +1,4 @@
+User-Agent: *
+Allow: /*.html$ # разрешает html файлы 
+Disallow: /*.php$  # запрещает все '*.php' на данном сайте
+Host: unidoski.ru

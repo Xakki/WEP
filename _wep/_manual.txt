@@ -1,0 +1,131 @@
+
+WebEngineOnPHP (WEP)
+Особенности:
+- мультиязыковая платформа
+- мультишаблонная 
+- 
+
+
+В БД существут табл message_ru со всеми основными сообщениями. Поле id -varchar(15) - код сообщения на латинском
+
+-= Переменные =-
+	Переменные переданные через .htaccess должный начинаться с префикса "ht_"
+		ht_page - индекс страницы
+
+
+-= Папки =-
+	admin  -  движок сайта!
+		class  - пользовательские классы, фаилы с расширением .cl
+		page -  обработчики страниц, фаилы с расширением .pg ! WEP определяет список фаилов в этом каталоге и вадает на выбор для ввода в БД!
+		system - системные классы, фаилы с расширением .cl / подключается один раз и от него наследуются остальные классы
+		design  -  фаилы для отображения хтмл
+			default
+				script
+				style
+				xsl
+				template
+			
+
+--------------------------------------------------------------------------------------
+
+$this->mf_istree = false; // древовидная структура?
+$this->mf_ordctrl = false; // поле ordind для сортировки
+$this->mf_actctrl = false; // поле active
+$this->mf_use_charid = false;//if true - id varchar
+$this->_setnamefields=true;//добавлять поле name
+$this->mf_idwidth = 63; // длина поля ID
+$this->mf_timestamp = false; // создать поле  типа timestamp
+$this->mf_createrid = true;//польз владелец
+$this->mf_indexing = false; // индексация
+$this->owner_unique = false; // поле owner_id не уникально
+$this->mf_add = true;// добавить в модуле
+$this->mf_del = true;// удалять в модуле
+$this->showinowner = true;// показывать под родителем
+$this->text_ext = ".mti";// расширение для memo фиаилов
+
+
+************************* $this->fields_form
+$this->form[<key>] = array(
+type='info'-
+type='hidden'-
+type='password'- стандартный ввод пароля с подтверждением
+type='password2'- ввод пароля для админа с генерацией пароля
+type='password_new'- Новый тип вввода, с функцией отображения вводимых символов
+type='int'- (если нет ['mask']['toint'] то приводит значение в целое)
+type='text'- обычный текст
+type='textarea'-
+type='fckedit'-
+type='checkbox'-checkbox
+type='submit'-
+type='captha'-
+type='attach'- фаил
+	"att_type" => "image"
+	'candelete'=>1 - удалять?
+type='list' - список
+	'active'=>1 - отображать список активных эелементов
+	multiple=1 - мульти селект
+	'begin'=>начальны элемент массива с которого будет начинаться отображаться, не обязателен
+	'listname'= ключ '_enum' массива, 
+		'list'-тек. список модуля, _list()
+		'select' - _select()
+		'parentlist'-список многоуровневого списка($this->id исключ из списка),
+		'ownerlist'- список родителя
+	or
+	'class'=>'class name',
+	'include'- если надо подключить модуль, не обяз, если имя класса=class
+	?'join' - если в этом дочернем узеле надо жостко связать с родителем ( не обяз)
+	?'leftjoin' - не жосткая связь(не обяз), длявывода доп инфы
+	?['mask']['field'] - 'tx.name,tx.id' , поля которые будут отображатся именем, обязателен если есть join или leftjoin?, но можне и без них
+
+'type' => 'ckedit'
+	'fckedit'=>array(
+		'toolbar'=>'Page', {}, default=Full
+		'CKFinder'=>1
+		'height'=>250
+		'removePlugins' => 'about,basicstyles,blockquote,button,clipboard,colorbutton,contextmenu,elementspath,enterkey,entities,filebrowser,find,flash,font,format,forms,horizontalrule,htmldataprocessor,image,indent,justify,keystrokes,link,list,maximize,newpage,pagebreak,pastefromword,pastetext,popup,preview,print,removeformat,resize,save,scayt,smiley,showblocks,sourcearea,stylescombo,table,tabletools,specialchar,tab,templates,toolbar,undo,wysiwygarea,wsc'
+		'extraPlugins' => {uicolor  - цвета}
+	)
+
+
+?'href' - ссылка на название
+
+'eval' - запись при добавлении и обновлении
+or 'evala' - запись при добавлении
+or 'evalu' - запись при обновлении
+	-без ; в конце
+
+?['mask']['fview']=>1 - не отображать столбец в списке
+?['mask']['fview']=>2 - не отображать в форме
+'disable'=>1 - не показывать ващ
+"editable" => "0" - не редактируемый - по умолчанию редактир
+?'onetd'=>'Наименование / Текст' - позволяет отображать не сколько столбцов в одном столбце, пример (/control/moder_bannnew.html)
+	...."type" => "text", "caption" => "www",...'onetd'=>'Наименование / Текст');//первый onetd , задает название столбца
+	...."type" => "list"... "caption" => "Фирма",'onetd'=>'none');//'onetd'=>'none' - соединяется с предыдущим столбцом
+	... "caption" => "HTML код"...'onetd'=>'close');//'onetd'=>'close' - обязательно закрывать столбец
+'usercheck'=>1 - проверка пользователя на заданный уровень (в примере - 1) для отображения формы и в списке
+'mask'=>array(
+	"name"=>"www" {phone,phone2,www,} - название фильтра маски из sql.class.php
+	'patterns'=>'регулярное выражение для проверки знач',
+	'striptags'=>'('all'-удаляет все теги,''- не удаляет теги, Иначе толко разрешенные теги',
+	'replace'=>'рег выр для замены'(м.б. массивом)
+	'replaceto'=> см выше, если не установленно то по умолчанию пустая строка
+	'entities'=> htmlspecialchars для поля
+	'checkwww'=> проверка на существ. если "name"=>"www"
+	'toint' приводит type='int' в целое
+	'max'=>100,
+	'min'=>2  //0 -не обязательное поле
+)
+***********************************************
+
+---установка занчения по умолчанию при установке и переустановке модуля
+$this->def_records[] = array('id'=>$this->_CFG['wep']['login'],'name'=>'Главный','reg_date'=>time(),'owner_id'=>1);
+
+************************************************
+
+$this->sortfields['dateon'] = 'Дата вкл.'; //показать способы сортировки
+
+************************************************
+
+$this->ordfield = 'dateoff DESC';// сортировка по умолчанию
+
+************************************************

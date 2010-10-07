@@ -1,0 +1,10 @@
+<?
+	if(strpos($_SERVER['HTTP_HOST'],'.l'))
+		$PGLIST->config['counter'] = '';
+	$DATA = array('menu'=>$PGLIST->getMap(1));
+	$_tpl['onload'] .= 'liveInet(\'counter\');';
+	return '<div id="counter"></div>
+		<div class="w3c"><a href="http://validator.w3.org/check?uri=referer"><img src="/_design/_img/valid-xhtml10-blue.png" alt="Valid XHTML 1.0 Transitional" style="width:88px;height:31px;"/></a></div>
+		<div class="copyright">'.$PGLIST->config['copyright'].$HTML->transformPHP($DATA,'menu').'</div>';
+	//<form method="get" action="http://unidoski.ru/ysearch.html"><div class="yandexbox"><input name="text"/><input type="hidden" name="searchid" value="128795"/><input type="image" src="http://site.yandex.ru/i/yandex_search.png" value="Найти" style="padding-left: 5px; vertical-align: bottom;"/></div></form>
+?>
