@@ -14,9 +14,11 @@
 	function session_go($force=0) {
 		global $_CFG;
 		if(!$_SERVER['robot'] and (isset($_COOKIE[$_CFG['session_name']]) or $force) and !defined('SID')) {
-			if($_CFG['wep']['sessiontype']==1 and !$SESSION_GOGO) {
-				require_once($_CFG['_PATH']['core'].'/session.php');
-				$SESSION_GOGO = new session_gogo();
+			if($_CFG['wep']['sessiontype']==1) {
+				if(!$SESSION_GOGO) {
+					require_once($_CFG['_PATH']['core'].'/session.php');
+					$SESSION_GOGO = new session_gogo();
+				}
 			}else {
 				session_start();
 			}

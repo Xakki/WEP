@@ -20,7 +20,7 @@
 		$ref= $_SERVER['HTTP_REFERER'];
 
 	if(isset($_REQUEST['exit']) && $_REQUEST['exit']=="ok") {
-		unset($_SESSION['user']);unset($_SESSION['modulprm']);
+		$_SESSION = array();
 		setcookie('remember', '', (time()-1000));
 		$mess=$_CFG['_MESS']['exitok'];
 		$ref='/index.html';

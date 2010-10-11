@@ -10,10 +10,14 @@
 		<meta name="description" content="CMS"/>
 		<link rel="SHORTCUT ICON" href="{$_tpl['design']}img/icons.gif"/>
 		<style type="text/css">
-			html, body {text-align:center;vertical-align:middle;height:100%;}
+			html, body {text-align:center;vertical-align:middle;height:100%;margin:0;}
 			.cform {
-				width:200px;height:160px;
-				margin:200px auto 0;}
+				height:160px;
+				margin:auto;
+				position:relative;
+				top:-80px;
+				width:200px;
+			}
 			.cform form div {
 				font-size:11px;text-align:left;
 			}
@@ -38,7 +42,7 @@
 		</style>
 	</head>
 	<body onload="">{$_tpl['logs']}
-	<div style="height:100%;">
+	<div style="position:relative;top:40%;">
 		<div class="cform">
 			<form action="login.php" method="post">
 				<input type="hidden" name="ref" value="{$_tpl['ref']}"/>

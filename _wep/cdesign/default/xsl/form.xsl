@@ -45,8 +45,8 @@
 						</td>
 						<td class="td2" style="position:relative;">
 							<div class="ajaxlist">
-								<span style="{@lablestyle}"><xsl:value-of disable-output-escaping="yes" select="@valuedef"/></span>
-								<input type="text" name=".{@name}" value="{@valuetxt}" onfocus="show_hide_lable(this,'{@name}',1)" onblur="show_hide_lable(this,'{@name}',0)" onkeyup="ajaxlist(this,'{@name}')" class="{@csscheck}"/>
+								<span style="{@labelstyle}"><xsl:value-of disable-output-escaping="yes" select="@valuedef"/></span>
+								<input type="text" name=".{@name}" value="{@valuetxt}" onfocus="show_hide_label(this,'{@name}',1)" onblur="show_hide_label(this,'{@name}',0)" onkeyup="ajaxlist(this,'{@name}')" class="{@csscheck}"/>
 								<div id="ajaxlist_{@name}" style="display:none;">не найдено</div>
 								<input type="hidden" name="{@name}" value="{value}"/>
 							</div>
@@ -221,7 +221,7 @@
 				  </tr>	
 				</xsl:when>
 
-				<xsl:when test="@type='captha'">
+				<xsl:when test="@type='captcha'">
 				  <tr id="tr_{@name}">
 					<td class="td1">
 						<xsl:value-of disable-output-escaping="yes" select="caption"/>
@@ -229,7 +229,7 @@
 					</td>
 					<td class="td2" style="white-space: nowrap;">
 						<div class="left"><input type="text" name="{@name}" maxlength="5" size="10" class="secret"/></div>
-						<div class="secret"><img src="{@src}" class="i_secret" id='captha' alt="CARTHA"/></div>
+						<div class="secret"><img src="{@src}" class="i_secret" id='captcha' alt="CARTHA"/></div>
 					</td>
 				  </tr>				
 				</xsl:when>

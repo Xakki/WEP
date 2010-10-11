@@ -200,7 +200,7 @@
 				  </tr>	
 				</xsl:when>
 
-				<xsl:when test="@type='captha'">
+				<xsl:when test="@type='captcha'">
 				  <tr id="tr_{@name}">
 					<td class="td1">
 						<xsl:value-of disable-output-escaping="yes" select="caption"/>
@@ -208,7 +208,7 @@
 					</td>
 					<td class="td2" style="white-space: nowrap;">
 						<div class="left"><input type="text" name="{@name}" maxlength="5" size="10" class="secret"/></div>
-						<div class="secret"><img src="{@src}" class="i_secret" id='captha' alt="CARTHA"/></div>
+						<div class="secret"><img src="{@src}" class="i_secret" id='captcha' alt="CARTHA"/></div>
 					</td>
 				  </tr>				
 				</xsl:when>

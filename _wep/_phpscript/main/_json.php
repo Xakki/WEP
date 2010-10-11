@@ -1,5 +1,5 @@
 <?
-	if(!$_CFG['_PATH']['wep']) die('ERROR');
+	if(!$_CFG['_PATH']['path'] or !$_CFG['_PATH']['wep']) die('ERROR');
 
 	$GLOBALS['_RESULT']	= array();
 
@@ -12,13 +12,13 @@
 
 	if($_GET['_view']=='ajaxlist' and $_GET['_srlz']=stripslashes($_GET['_srlz']) and $_GET['_hsh']==md5($_GET['_srlz'].$_CFG['wep']['md5'])) {
 		$listname = unserialize($_GET['_srlz']);
-		if($listname['class'])
+		if(isset($listname['class']) and $listname['class'])
 			$listname['tablename'] = $_CFG['sql']['dbpref'].$listname['class'];
 		
 
-		if(!$listname['tx.id']) 
+		if(!isset($listname['tx.id'])) 
 			$listname['tx.id'] = 'tx.id';
-		if(!$listname['tx.name']) 
+		if(!isset($listname['tx.name'])) 
 			$listname['tx.name'] = 'tx.name';
 
 		$clause = 'SELECT '.$listname['tx.id'].' as id,'.$listname['tx.name'].' as name';
@@ -37,7 +37,7 @@
 		else
 			$clause .= ' ORDER BY name';
 
-		if ($listname['limit'])
+		if (isset($listname['limit']))
 			$clause .= ' LIMIT '.$listname['limit'];
 		else
 			$clause .= ' LIMIT 25';

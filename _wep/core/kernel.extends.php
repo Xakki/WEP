@@ -848,12 +848,12 @@ _message($msg,$type=0)
 			//end foreach
 		}
 
-		if(!isset($_SESSION['user']['id']) or isset($param['capthaOn']))
-			$this->fields_form['captha'] = array(
-				'type'=>'captha',
+		if(!isset($_SESSION['user']['id']) or isset($param['captchaOn']))
+			$this->fields_form['captcha'] = array(
+				'type'=>'captcha',
 				'caption'=>$this->getMess('_captcha'),
-				'captha'=>$_SESSION['captha'],
-				'src'=>$this->_CFG['_HREF']['capcha'].'?'.rand(0,9999),
+				'captcha'=>$this->getCaptcha(),
+				'src'=>$this->_CFG['_HREF']['captcha'].'?'.rand(0,9999),
 				'mask'=>array('min'=>1));
 
 		$mess=array();
@@ -1221,9 +1221,9 @@ $Ajax=0 - не скриптовая
 					$this->form['f_'.$k]['value'] = $_FILTR[$k];
 				}
 				if($r['type']=='ajaxlist') {
-					if(!$this->form['f_'.$k]['lable'])
-						$this->form['f_'.$k]['lable'] = 'Введите текст';
-					$this->form['f_'.$k]['lablestyle'] = ($_FILTR[$k]?'display: none;':'');
+					if(!$this->form['f_'.$k]['label'])
+						$this->form['f_'.$k]['label'] = 'Введите текст';
+					$this->form['f_'.$k]['labelstyle'] = ($_FILTR[$k]?'display: none;':'');
 					$this->form['f_'.$k]['csscheck'] = ($_FILTR[$k]?'accept':'reject');
 				}
 				elseif($r['type']!='radio' and $r['type']!='checkbox' and $r['type']!='list' and $r['type']!='int' and $r['type']!='file' and $r['type']!='ajaxlist')
@@ -1612,6 +1612,30 @@ $Ajax=0 - не скриптовая
 				$text = str_replace('###'.($k+1).'###', $r, $text);
 		return $text;
 	}
+
+	function setCaptcha() {
+		global $_CFG;
+		$_SESSION['captcha'] = rand(10000,99999);
+		if($_CFG['wep']['sessiontype']==1) {
+			$hash_key = file_get_contents($_CFG['_PATH']['HASH_KEY']);
+			$hash_key = md5($hash_key);
+			$crypttext = trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $hash_key, $_SESSION['captcha'], MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))));
+			setcookie('chash',$crypttext);
+			setcookie('pkey',base64_encode($_CFG['PATH']['HASH_KEY']));
+			
+		}
+	}
+
+	function getCaptcha() {
+		global $_CFG;
+		if(isset($_COOKIE['chash']) and $_COOKIE['chash']) {
+			$hash_key = file_get_contents($_CFG['_PATH']['HASH_KEY']);
+			$hash_key = md5($hash_key);
+			$data = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $hash_key, base64_decode($_COOKIE['chash']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));
+			return $data;
+		}
+		return $_SESSION['captcha'];
+	}
 }
 //// Kernel END
 
@@ -1626,5 +1650,4 @@ $Ajax=0 - не скриптовая
 			$date = date($format,$time);
 		return $date;
 	}
-
 ?>

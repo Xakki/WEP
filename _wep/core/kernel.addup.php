@@ -487,10 +487,12 @@
 			if($key=='_*features*_') continue;
 			if(!isset($value['type'])) return array('mess'=>array(array('name'=>'error', 'value'=>$_this->_CFG['_MESS']['errdata'].' : '.$key)));
 			if(isset($arr_nochek[$value['type']])) continue;
-			/*if($value['readonly'] or $value['mask']['fview']==2 or (isset($value['mask']['usercheck']) and !_prmUserCheck($value['mask']['usercheck']))) {
-				unset($data[$key]);
+
+			/*Поля которые недоступны пользователю не проверяем, дефолтные значения прописываются в kPreFields()*/
+			if($value['readonly'] or $value['mask']['fview']==2 or (isset($value['mask']['usercheck']) and !_prmUserCheck($value['mask']['usercheck']))) {
+				//unset($data[$key]);
 				continue;
-			}*/
+			}
 			//if(!$data[$k] and isset($_this->fields[$k]['default'])) $data[$k]=$_this->fields[$k]['default'];
 
 
@@ -600,8 +602,9 @@
 					}
 					elseif($value['type']=='int' and !$value['mask']['toint']) 
 						$value['value'] = $data[$key]= (int)$data[$key];
-					elseif($value['type']=='captha' && $data[$key]!=$value['captha'])
+					elseif($value['type']=='captcha' && $data[$key]!=$value['captcha']) {
 						$error[] = 31;
+					}
 					elseif($value['type']=='password')
 					{
 						if($data[$key]!=$data['re_'.$key])

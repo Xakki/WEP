@@ -67,8 +67,8 @@ function tpl_form(&$data) {
 			elseif($r['type']=='ajaxlist') {
 				$serl = serialize($r['listname']);
 				$html .= '<div class="form-value ajaxlist">
-					<span style="'.$r['lablestyle'].'">'.$r['lable'].'</span>
-					<input type="text" name="'.$k.'_2" value="'.$r['value_2'].'" onfocus="show_hide_lable(this,\''.$k.'\',1)" onblur="show_hide_lable(this,\''.$k.'\',0)" onkeyup="ajaxlist(this,\''.$k.'\')" class="'.$r['csscheck'].'" autocomplete="off"/>
+					<span style="'.$r['labelstyle'].'">'.$r['label'].'</span>
+					<input type="text" name="'.$k.'_2" value="'.$r['value_2'].'" onfocus="show_hide_label(this,\''.$k.'\',1)" onblur="show_hide_label(this,\''.$k.'\',0)" onkeyup="ajaxlist(this,\''.$k.'\')" class="'.$r['csscheck'].'" autocomplete="off"/>
 					<div id="ajaxlist_'.$k.'" style="display:none;">не найдено</div>
 
 					<input type="hidden" name="'.$k.'" value="'.$r['value'].'"/>
@@ -100,10 +100,10 @@ function tpl_form(&$data) {
 				}
 				$html .= '</div>';
 			}
-			elseif($r['type']=='captha') {
+			elseif($r['type']=='captcha') {
 				$html .= '<div class="form-value">
 						<div class="left"><input type="text" name="'.$k.'" maxlength="5" size="10" class="secret" autocomplete="off"/></div>
-						<div class="secret"><img src="'.$r['src'].'" class="i_secret" id="captha" alt="CARTHA"/></div>
+						<div class="secret"><img src="'.$r['src'].'" class="i_secret" id="captcha" alt="CARTHA"/></div>
 					</div>';
 			}
 			elseif($r['type']=='file') {

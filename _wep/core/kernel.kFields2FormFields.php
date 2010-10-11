@@ -37,8 +37,8 @@
 						$r['comment'] = $this->_CFG['_MESS']['_file_size'].$this->attaches[$k]['maxsize'].'Kb';
 				}
 				elseif($r['type']=='ajaxlist') {
-					if(!$r['lable'])
-						$r['lable'] = 'Введите текст';
+					if(!$r['label'])
+						$r['label'] = 'Введите текст';
 					if($r['mask']['min'] and $r['value']<$r['mask']['min'])
 						$r['value_2'] = '';
 
@@ -47,7 +47,7 @@
 						$r['value_2'] = $md[$r['value']];
 					}
 
-					$r['lablestyle'] = ($r['value_2']?'display: none;':'');
+					$r['labelstyle'] = ($r['value_2']?'display: none;':'');
 					$r['csscheck'] = ($r['value_2']?'accept':'reject');
 				}
 				elseif($r['type']=='list') {

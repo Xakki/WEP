@@ -60,7 +60,7 @@ class mail_class extends kernel_class {
 		global $_MESS;
 		if(_prmUserCheck()) $mailFrom=$_SESSION['user']['email'];
 		else  $mailFrom='';
-		$param=array('capthaOn'=>1);
+		$param=array('captchaOn'=>1);
 		$this->fields_form["info"]= array("type"=>"info",'caption'=>'Отправка письма '.$name);
 		$this->fields_form["from"]= array("type"=>"text",'caption'=>'Обратный email адрес', 'min' => '1','mask'=>array('name'=>'email'),'value'=>$mailFrom);
 		$this->fields_form["subject"]= array("type"=>"text",'caption'=>'Тема письма', 'min' => '1');
@@ -85,7 +85,7 @@ class mail_class extends kernel_class {
 
 		$this->form['sbmt']['value']='Отправить письмо';
 
-		$_SESSION['captha'] = rand(10000,99999);
+		$this->setCaptcha();
 		return Array('<messages>'.$mess.$arr['mess'].'</messages>'.($flag==1?'':$this->kFields2Form()),$flag);
 	}
 }

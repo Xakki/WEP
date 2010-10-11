@@ -102,8 +102,8 @@
 				</div>
 				<div class="cll2" style="position:relative;">
 					<div class="ajaxlist">
-						<span style="{@lablestyle}"><xsl:value-of disable-output-escaping="yes" select="@valuedef"/></span>
-						<input type="text" name="f_{@name}_2" value="{@value_2}" onfocus="show_hide_lable(this,'{@name}',1)" onblur="show_hide_lable(this,'{@name}',0)" onkeyup="ajaxlist(this,'{@name}')" class="{@csscheck}" style="width:180px;"/>
+						<span style="{@labelstyle}"><xsl:value-of disable-output-escaping="yes" select="@valuedef"/></span>
+						<input type="text" name="f_{@name}_2" value="{@value_2}" onfocus="show_hide_label(this,'{@name}',1)" onblur="show_hide_label(this,'{@name}',0)" onkeyup="ajaxlist(this,'{@name}')" class="{@csscheck}" style="width:180px;"/>
 						<div id="ajaxlist_{@name}" style="display:none;">не найдено</div>
 						<input type="hidden" name="f_{@name}" value="{value}"/>
 					</div>

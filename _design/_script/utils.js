@@ -127,9 +127,9 @@ function textareaChange(obj,max)
 	GetId(obj.name+'t2').value = obj.value.length;
 }
 
-function reloadCaptha(id)
+function reloadcaptcha(id)
 {
-	$('#'+id).attr('src',"/_capcha.php?"+ Math.random());
+	$('#'+id).attr('src',"/_captcha.php?"+ Math.random());
 }
 
 function checkPass(name) {
@@ -178,11 +178,11 @@ function show_params(selector) {
 }
 var timerid4=0;
 var timerid5=0;
-function show_hide_lable(obj,view,flag) {
+function show_hide_label(obj,view,flag) {
 	clearTimeout(timerid5);
 	//$('#tr_city .td1').append(flag+'-');
 	if(ajaxComplite==0 || timerid4) {
-		setTimeout(function(){show_hide_lable(obj,view,flag);},950);
+		setTimeout(function(){show_hide_label(obj,view,flag);},950);
 	}else {
 		setTimeout(function(){
 			//$('#tr_type .td1').append(flag+'.');
@@ -247,7 +247,7 @@ function getJsonData(value,view) {
 				if(result && result.data && count(result.data)>0) {
 					var c = 0;var temp = 0;
 					for(k in result.data) {
-						txt += '<lable name="'+k+'">'+result.data[k]+'</lable>';
+						txt += '<label id="ajaxlabel'+k+'">'+result.data[k]+'</label>';
 						if(result.data[k]==value){
 							temp = k;
 							c++;								
@@ -255,20 +255,22 @@ function getJsonData(value,view) {
 					}
 					if(c==1){
 						$('#ajaxlist_'+view+' + input').val(temp);
-						$('#ajaxlist_'+view+' lable[name="'+temp+'"]').addClass('selectlable');
+						$('#ajaxlist_'+view+' #ajaxlabel'+temp).addClass('selectlabel');
 						$('#ajaxlist_'+view).prev('input').attr('class','accept');
 					}
 				}else
 					txt = 'не найдено';
+
 				$('#ajaxlist_'+view).html(txt).show();
 				$('#ajaxlist_'+view).attr('val',value);
-				$('#ajaxlist_'+view+' lable').click(function(){
-					var key = $(this).attr('name');
+				$('#ajaxlist_'+view+' label').click(function(){
+					var key = $(this).attr('id');
+					key = key.substring(9,15);
 					$('#ajaxlist_'+view+' + input').val(key);
 					$('#ajaxlist_'+view).prev('input').val($(this).text());
 					$('#ajaxlist_'+view).prev('input').attr('class','accept');
-					$('#ajaxlist_'+view+' lable').attr('class','');
-					$('#ajaxlist_'+view+' lable[name="'+key+'"]').attr('class','selectl');
+					$('#ajaxlist_'+view+' label').attr('class','');
+					$('#ajaxlist_'+view+' #ajaxlabel'+key).attr('class','selectl');
 				});
 				ajaxComplite = 1;
 			}

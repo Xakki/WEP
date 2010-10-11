@@ -3,7 +3,6 @@
 начальные установки
 */
 	$MODUL=NULL;
-	error_reporting(E_ALL);
 	if(!isset($_CFG['_PATH']['core'])) die('Can not find config file!');
 	$_mctime_start = getmicrotime();// -- PAGE LOAD TIME
 	$_time_start = time();
@@ -27,12 +26,12 @@
 /*
 Запуск сесии
 */
-	if(isset($_GET['_showallinfo']) and !$_SERVER['robot']) {
+	if(isset($_GET['_showallinfo']) and !$_SERVER['robot'] and !isset($_COOKIE['_showallinfo'])) {
 		setcookie('_showallinfo',$_GET['_showallinfo'], (time()+86400), '/', $_SERVER['HTTP_HOST2']);
 		$_COOKIE['_showallinfo']=$_GET['_showallinfo'];
 	}
 
-	if(!$_SERVER['robot'] and (isset($_GET['_showerror']) or strpos($_SERVER['HTTP_HOST'],'.l') or strpos($_SERVER['HTTP_HOST'],'.i')) ) {
+	if(!$_SERVER['robot'] and (isset($_GET['_showerror']) or strpos($_SERVER['HTTP_HOST'],'.l') or strpos($_SERVER['HTTP_HOST'],'.i')) and !$_COOKIE['_showerror']) {
 		setcookie('_showerror',1, (time()+86400), '/', $_SERVER['HTTP_HOST2']);
 		$_COOKIE['_showerror']=1;
 	}
@@ -478,10 +477,11 @@
 					$entry = _substr($entry, 0, $pos);
 					if($entry!='') {
 						if(_prmModul($entry,array(1,2))) {
-							if(!isset($_SESSION['modulprm'][$entry]['name']))
+							_modulprm();
+							if(!isset($_CFG['modulprm'][$entry]['name']))
 								$data[$entry] = $entry;
 							else
-								$data[$entry] = $_SESSION['modulprm'][$entry]['name'];
+								$data[$entry] = $_CFG['modulprm'][$entry]['name'];
 						}
 					}
 				}
@@ -511,10 +511,11 @@
 				$k = _substr($entry, 0, $pos);
 				if($k!='') {
 					if(_prmModul($k,array(1,2))) {
-						if(!isset($_SESSION['modulprm'][$k]['name']))
+						_modulprm();
+						if(!isset($_CFG['modulprm'][$k]['name']))
 							$template['modulslist']['item'][$k] = $k;
 						else
-							$template['modulslist']['item'][$k] = $_SESSION['modulprm'][$k]['name'];
+							$template['modulslist']['item'][$k] = $_CFG['modulprm'][$k]['name'];
 					}
 				}
 			}
@@ -572,8 +573,9 @@
 */
 	function getTableNameOfClass($name) {
 		global $_CFG;
-		if($_SESSION['modulprm'][$name]['tablename'])
-			return $_SESSION['modulprm'][$name]['tablename'];
+		_modulprm();
+		if($_CFG['modulprm'][$name]['tablename'])
+			return $_CFG['modulprm'][$name]['tablename'];
 		else
 			return $_CFG['sql']['dbpref'].$name;
 	}
@@ -582,22 +584,25 @@
 Проверка доступа пол-ля к модулю
 */
 	function _prmModul($mn,$param=array()) {
-		//if(!fCheckAuth()) { // для анонима
-			if(!isset($_SESSION['modulprm'])) {
-				global $SQL;
-				$MODULs = new  modulprm_class($SQL);
-				$_SESSION['modulprm'] = $MODULs->userPrm();
-			}
-		//}
-		if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0) return true;// or !isset($_SESSION['modulprm'])
+		if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0) return true;
 		elseif($_SESSION['user']['level']>=5) return false;
 		else{
-			if(isset($_SESSION['modulprm'][$mn]['access'][0])) return false;
+			global $_CFG;
+			_modulprm();
+			if(isset($_CFG['modulprm'][$mn]['access'][0])) return false;
 			if(count($param))
 				foreach($param as $k=>$r)
-					if(isset($_SESSION['modulprm'][$mn]['access'][$r])) return true;
+					if(isset($_CFG['modulprm'][$mn]['access'][$r])) return true;
 		} 
 		return false;
+	}
+
+	function _modulprm() {
+		global $_CFG;
+		if(!isset($_CFG['modulprm'])) {
+			if(_new_class('modulprm',$MODULs))
+				$_CFG['modulprm'] = $MODULs->userPrm();
+		}
 	}
 /*
 Проверка доступа пол-ля по уровню привелегии

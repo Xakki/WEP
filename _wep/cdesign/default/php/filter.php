@@ -72,8 +72,8 @@
 				<div class="f_caption">'.$r['caption'].'</div>
 				<div class="f_value" style="position:relative;">
 					<div class="ajaxlist">
-						<span style="'.$r['lablestyle'].'">'.$r['lable'].'</span>
-						<input type="text" name="'.$k.'_2" value="'.$r['value_2'].'" onfocus="show_hide_lable(this,\''.$k.'\',1)" onblur="show_hide_lable(this,\''.$k.'\',0)" onkeyup="ajaxlist(this,\''.$k.'\')" class="'.$r['csscheck'].'" style="width:180px;" autocomplete="off"/>
+						<span style="'.$r['labelstyle'].'">'.$r['label'].'</span>
+						<input type="text" name="'.$k.'_2" value="'.$r['value_2'].'" onfocus="show_hide_label(this,\''.$k.'\',1)" onblur="show_hide_label(this,\''.$k.'\',0)" onkeyup="ajaxlist(this,\''.$k.'\')" class="'.$r['csscheck'].'" style="width:180px;" autocomplete="off"/>
 						<div id="ajaxlist_'.$k.'" style="display:none;">не найдено</div>
 						<input type="hidden" name="'.$k.'" value="'.$r['value'].'"/>
 					</div>

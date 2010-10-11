@@ -59,7 +59,7 @@
 			} 
 			else 
 				$mess = $this->kPreFields($arr['vars'],$param);
-			$_SESSION['captha'] = rand(10000,99999);
+			$this->setCaptcha();
 		}
 
 		if($formflag and (!isset($param['ajax']) or $flag==0)) // показывать форму , также если это АЯКС и 

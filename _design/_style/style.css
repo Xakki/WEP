@@ -125,15 +125,15 @@
 		background:none repeat scroll 0 0 #AAAAAA;
 		padding:10px 5px 5px;
 	}
-	.ajaxlist div lable {
+	.ajaxlist div label {
 		display:block;
 		cursor:pointer;
 		text-decoration:underline;
 	}
-	.ajaxlist div lable:hover {
+	.ajaxlist div label:hover {
 		text-decoration:none;
 	}
-	.ajaxlist div lable .selectl {
+	.ajaxlist div label .selectl {
 		font-weight:bold;		
 	}
 

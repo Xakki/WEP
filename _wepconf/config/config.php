@@ -2,7 +2,7 @@
 
 	//date_default_timezone_set('Asia/Yekaterinburg');
 	date_default_timezone_set('Europe/Moscow');
-	//	error_reporting(E_ALL ^ E_NOTICE);
+	error_reporting(E_ALL ^ E_NOTICE);
 
 /*Полные пути по файловым системам для ядра*/
 	if(!isset($_CFG['_PATH']['wepconf'])) //если  путь не был задан
@@ -26,6 +26,7 @@
 	$_CFG['_PATH']['cron'] = $_CFG['_PATH']['wepconf'].'/cron/'; // кроны
 	$_CFG['_PATH']['temp'] = $_CFG['_PATH']['wepconf'].'/temp/'; // путь к папке для хранения временных фаилов
 	$_CFG['_PATH']['log'] = $_CFG['_PATH']['wepconf'].'/log/'; 
+	$_CFG['_PATH']['HASH_KEY'] = $_CFG['_PATH']['config'].'hash.key';
 
 /*пути для фаилов дизайна страниц*/
 	$_CFG['_PATH']['design'] = $_CFG['_PATH']['path'].'_design/'; // дизайн сайта
@@ -36,8 +37,10 @@
 	$_CFG['PATH']['content'] = '_content/';
 	$_CFG['PATH']['userfile'] = '_content/_userfile/'; // файлы пользователя
 	$_CFG['PATH']['wepname'] = basename($_CFG['_PATH']['wep']); // базовое имя админки
+	$_CFG['PATH']['wepconfname'] = basename($_CFG['_PATH']['wepconf']); // базовое имя пользовательских фаилов
 	$_CFG['PATH']['cdesign'] = $_CFG['PATH']['wepname'].'/cdesign/'; // дизайн админки
 	$_CFG['PATH']['WSWG'] = '_wysiwyg/';
+	$_CFG['PATH']['HASH_KEY'] = $_CFG['PATH']['wepconfname'].'/config/hash.key';
 
 /*http пути*/
 	$_CFG['_HREF']['BH'] = 'http://'.$_SERVER['HTTP_HOST'].'/'; // www-путь сайта
@@ -45,7 +48,7 @@
 	$_SERVER['HTTP_HOST2'] = $_CFG['_HREF']['arrayHOST'][1].'.'.$_CFG['_HREF']['arrayHOST'][0];
 	$_CFG['_HREF']['JS'] = $_CFG['_HREF']['BH'].$_CFG['PATH']['wepname'].'/js.php';
 	$_CFG['_HREF']['siteJS'] = $_CFG['_HREF']['BH'].'_js.php';
-	$_CFG['_HREF']['capcha'] = $_CFG['_HREF']['BH'].'_capcha.php';
+	$_CFG['_HREF']['captcha'] = $_CFG['_HREF']['BH'].'_captcha.php';
 	$_CFG['_HREF']['WSWG'] = $_CFG['_HREF']['BH'].$_CFG['PATH']['WSWG'];
 	$_CFG['_HREF']['_style'] = $_CFG['_HREF']['BH'].'_design/_style/'; // дизайн стили
 	$_CFG['_HREF']['_script'] = $_CFG['_HREF']['BH'].'_design/_script/'; // дизайн стили

@@ -84,14 +84,12 @@ class session_gogo {
 
 	function write($sid, $sess_data) {
 		$data = $this->_unserialize($sess_data);
-		if(isset($data['user']['id']) and $data['user']['id']) {
-			$sess_data = mysql_escape_string($sess_data);
-			$lastPage = mysql_escape_string($_SERVER['REQUEST_URI']);
-			$result = $this->SQL->execSQL('INSERT INTO '.$this->tablename.' 
+		$sess_data = mysql_escape_string($sess_data);
+		$lastPage = mysql_escape_string($_SERVER['REQUEST_URI']);
+		$result = $this->SQL->execSQL('INSERT INTO '.$this->tablename.' 
 (`sid`,`created`,`modified`,`expired`,`data`,`users_id`,`ip`,`useragent`,`lastpage`) values
 ("'.$sid.'","'.$this->_time.'","'.$this->_time.'","'.$this->expired.'","'.$sess_data.'","'.$data['user']['id'].'","'.mysql_escape_string($_SERVER["REMOTE_ADDR"]).'","'.mysql_escape_string(substr($_SERVER['HTTP_USER_AGENT'],0,255)).'","'.$lastPage.'") 
-ON DUPLICATE KEY UPDATE `modified` = "'.$this->_time.'", `data` = "'.$sess_data.'", `visits` = (`visits` + 1), `lastpage`= "'.$lastPage.'"');
-		}
+ON DUPLICATE KEY UPDATE `modified` = "'.$this->_time.'", `users_id`="'.$data['user']['id'].'" ,`data` = "'.$sess_data.'", `visits` = (`visits` + 1), `lastpage`= "'.$lastPage.'"');
 		return(true);
 	}
 

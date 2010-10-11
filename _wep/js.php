@@ -7,8 +7,19 @@
 	require($_CFG['_PATH']['phpscript'].'/jquery_getjson.php');
 
 /*Запуск сессии*/
-	if(!$_SERVER['robot'] and isset($_COOKIE[$_CFG['session_name']])) {
-		require_once($_CFG['_PATH']['core'].'html.php');
+	/*if($_REQUEST['_view']=='pagenum'){
+		$_GET['_modul'] = preg_replace($_CFG['_repl']['name'],'',$_GET['_modul']);
+		$_REQUEST['mop'] = (int)$_REQUEST['mop'];
+		if(!isset($_COOKIE[$_GET['_modul'].'_mop']) or $_COOKIE[$_GET['_modul'].'_mop']!=$_REQUEST['mop'])
+			setcookie($_GET['_modul'].'_mop',$_REQUEST['mop']);
+		print_r('<pre>');print_r($_COOKIE);
+		$_tpl['onload'] .= 'window.location.reload();';
+	}
+	else*/
+	if( isset($_COOKIE[$_CFG['session_name']]) 
+		and require_once($_CFG['_PATH']['core'].'html.php') 
+		and $_SERVER['robot']) {
+
 		require_once($_CFG['_PATH']['core'].'sql.php');
 		$SQL = new sql();
 
@@ -20,14 +31,7 @@
 			$_tpl['onload']='fLog(\'<div style="color:red;">'.date('H:i:s').' : Параметры заданны неверно!</div>\',1);fSwin1();';
 		}
 		else{
-			if($_REQUEST['_view']=='pagenum'){
-				$_GET['_modul'] = preg_replace($_CFG['_repl']['name'],'',$_GET['_modul']);
-				$_REQUEST['mop'] = (int)$_REQUEST['mop'];
-				if(!isset($_COOKIE[$_GET['_modul'].'_mop']) or $_COOKIE[$_GET['_modul'].'_mop']!=$_REQUEST['mop'])
-					setcookie($_GET['_modul'].'_mop',$_REQUEST['mop']);
-				$_tpl['onload'] .= 'window.location.reload();';
-			}
-			elseif(!_new_class($_GET['_modul'],$MODUL))
+			if(!_new_class($_GET['_modul'],$MODUL))
 				$_tpl['onload']='fLog(\'<div style="color:red;">'.date('H:i:s').' : Модуль '.$_GET['_modul'].' не установлен</div>\',1);fSwin1();';
 			else {
 				if($_COOKIE['cdesign'])
