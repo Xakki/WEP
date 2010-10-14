@@ -2,8 +2,9 @@
 	global $MAIL, $BOARD, $PGLIST;
 	if(isset($_GET['feedback'])) {
 		if(!$MAIL) $MAIL = new mail_class($SQL);
-		$xml=$MAIL->mailForm('службе поддержки',$UGROUP->config["mailto"]);
-		$html = $HTML->transform('<formblock>'.$xml[0].'</formblock>','formcreat');
+		$DATA = array();
+		list($DATA['formcreat'],$flag) = $MAIL->mailForm('службе поддержки',$UGROUP->config["mailto"]);print_r('<pre>');print_r($DATA);
+		$html = $HTML->transformPHP($DATA,'formcreat');
 	}
 	elseif((int)$_GET['id']) {
 
@@ -16,11 +17,11 @@
 			return '<h2>Обявления либо не существует, либо отсутствует EMAIL</h2>';
 		$name='владельцу <a href="/board.html?board='.$BOARD->id.'">объявления №'.$BOARD->id.'</a>';
 
-		$xml=$MAIL->mailForm($name,$BOARD->data[$BOARD->id]['email']);
-		$html = $HTML->transform('<formblock><messages><ok><![CDATA[<b style="color:black;">Текст объявления:</b> '.$BOARD->data[$BOARD->id]['text'].']]></ok></messages>'.$xml[0].'</formblock>','formcreat');
-
-	}/// else
-	///	$html=$PGLIST->display_page();
+		$DATA = array();
+		list($DATA['formcreat'],$flag) = $MAIL->mailForm($name,$BOARD->data[$BOARD->id]['email']);
+		$DATA['formcreat']['messages'][0] = array('name'=>'alert','value'=>'<b style="color:black;">Текст объявления:</b> '.$BOARD->data[$BOARD->id]['text']);
+		$html = $HTML->transformPHP($DATA,'formcreat');
+	}
 
 	return $html;
 

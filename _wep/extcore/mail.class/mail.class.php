@@ -58,35 +58,48 @@ class mail_class extends kernel_class {
 
 	function mailForm($name,$mailTo) {
 		global $_MESS;
-		if(_prmUserCheck()) $mailFrom=$_SESSION['user']['email'];
+		$flag=0;// 1 - успешно, 0 - норм, -1  - ошибка
+		$formflag = 1;// 0 - показывает форму, 1 - не показывать форму
+		$arr = array('mess'=>array(),'vars'=>array());
+		$mess = array();
+
+		$param=array('capthaOn'=>1);
+		$data = array();
+
+		if(_prmUserCheck()) $mailFrom = $_SESSION['user']['email'];
 		else  $mailFrom='';
+
 		$param=array('captchaOn'=>1);
+
 		$this->fields_form["info"]= array("type"=>"info",'caption'=>'Отправка письма '.$name);
 		$this->fields_form["from"]= array("type"=>"text",'caption'=>'Обратный email адрес', 'min' => '1','mask'=>array('name'=>'email'),'value'=>$mailFrom);
 		$this->fields_form["subject"]= array("type"=>"text",'caption'=>'Тема письма', 'min' => '1');
 		$this->fields_form["text"]= array("type"=>"textarea",'caption'=>'Текcт письма', 'min' => '1');
 
-		$flag=0;// 0 - показывает форму, 1 - ок, 2 - еррор
-		$arr = array('mess'=>'','vars'=>'');
-		$mess='';
 		if(count($_POST) and $_POST['sbmt']) {
 			$this->kPreFields($_POST,$param);
-			$arr = $this->fFormCheck($_POST);
-			$flag=2;
-			if($arr['mess']==''){
+			$arr = $this->fFormCheck($_POST,$param,$this->fields_form);
+			$flag=-1;
+			if(!count($arr['mess'])){
 				$arr['vars']['mailTo']=$mailTo;
 				if($this->Send($arr['vars'])) {
 					$flag=1;
-					$arr['mess']  = $_MESS['mailok'];
+					$arr['mess'][] = array('name'=>'ok', 'value'=>$this->getMess('mailok'));
 				} else
-					$arr['mess']  = $_MESS['mailerr'];
+					$arr['mess'][] = array('name'=>'error', 'value'=>$this->getMess('mailerr'));
 			}
-		} else $mess = $this->kPreFields($_POST,$param);
+		} else
+				$mess = $this->kPreFields($arr['vars'],$param);
+		$_SESSION['captha'] = rand(10000,99999);
 
 		$this->form['sbmt']['value']='Отправить письмо';
+		if($formflag and (!isset($param['ajax']) or $flag==0)) // показывать форму , также если это АЯКС и 
+			$formflag = $this->kFields2Form($data,$param);
 
 		$this->setCaptcha();
-		return Array('<messages>'.$mess.$arr['mess'].'</messages>'.($flag==1?'':$this->kFields2Form()),$flag);
+
+		return Array(Array('messages'=>array_merge($mess,$arr['mess']), 'form'=>($formflag?$this->form:array())), $flag);
+
 	}
 }
 

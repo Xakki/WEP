@@ -50,3 +50,5 @@ bzr+ssh://xakki@81.30.55.206/home/xakki/bzr/unidoski
 
 sftp://xakki@192.168.1.101/unidoski/
 
+bzr branch bzr+ssh://xakki@81.30.55.206/home/ildar/bzr/core_wep
+
