@@ -661,6 +661,14 @@
 		return $result;
 	}
 
+	function  userExit() {
+		$_SESSION = array();
+		setcookie('remember', '', (time()-5000),'/', $_SERVER['HTTP_HOST2']);
+		setcookie('wepID', '', (time()-5000),'/', $_SERVER['HTTP_HOST2']);
+		//_showerror
+		//print_r(session_get_cookie_params());
+	}
+
 	function fDisplLogs($type=0){
 		global $_CFG;
 		//0 - все

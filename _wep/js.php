@@ -16,17 +16,15 @@
 		$_tpl['onload'] .= 'window.location.reload();';
 	}
 	else*/
-	if( isset($_COOKIE[$_CFG['session_name']]) 
-		and require_once($_CFG['_PATH']['core'].'html.php') 
-		and $_SERVER['robot']) {
-
+	if(isset($_COOKIE[$_CFG['session_name']]) and !$_SERVER['robot']) {
+		require_once($_CFG['_PATH']['core'].'html.php');
 		require_once($_CFG['_PATH']['core'].'sql.php');
 		$SQL = new sql();
 
 		session_go(1);
 
 		if($_CFG['wep']['access'] and (!isset($_SESSION['user']) or $_SESSION['user']['level']>=5))
-			$_tpl['onload']='window.location="login.php?mess=Доступ только авторизованным пользователям"';
+			$_tpl['onload']='window.location="login.php?mess=Недостаточно прав доступа."';
 		elseif(!$_GET['_modul'] or !$_SESSION['user']['wep']) {
 			$_tpl['onload']='fLog(\'<div style="color:red;">'.date('H:i:s').' : Параметры заданны неверно!</div>\',1);fSwin1();';
 		}
@@ -247,8 +245,14 @@
 				}
 			}
 		}
-	}else
+	}elseif($_SERVER['robot']) {
+		userExit();
+		$_tpl['onload']='window.location="login.php?mess=Вы определились как поисковый робот. Доступ только авторизованным пользователям."';
+	}
+	else {
+		userExit();
 		$_tpl['onload']='window.location="login.php?mess=Доступ только авторизованным пользователям"';
+	}
 
 	$GLOBALS['_RESULT'] = array("html" => $html,"html2" => $html2,'eval'=>$_tpl['onload']);
 

@@ -63,7 +63,7 @@
 		}
 
 		if($formflag and (!isset($param['ajax']) or $flag==0)) // показывать форму , также если это АЯКС и 
-			$formflag = $this->kFields2Form($this->data[$this->id],$param);
+			$formflag = $this->kFields2Form($param);
 
 		return Array(Array('messages'=>array_merge($mess,$arr['mess']), 'form'=>($formflag?$this->form:array())), $flag);
 ?>

@@ -359,7 +359,7 @@ class users_class extends kernel_class {
 		} else $mess = $this->kPreFields($_POST,$param);
 
 		$this->setCaptcha();
-		$formflag = $this->kFields2Form($_POST,$param);
+		$formflag = $this->kFields2Form($param);
 		$this->form['sbmt']['value']='Я согласен с правилами и хочу зарегестрироваться';
 		$this->form['rulesinfo'] = array('type'=>'info','caption'=>'<a href="/terms.html" target="_blank">Правила пользования сайтом</a>','css'=>'rulelink');
 

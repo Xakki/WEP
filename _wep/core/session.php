@@ -83,18 +83,22 @@ class session_gogo {
 	}
 
 	function write($sid, $sess_data) {
-		$data = $this->_unserialize($sess_data);
-		$sess_data = mysql_escape_string($sess_data);
-		$lastPage = mysql_escape_string($_SERVER['REQUEST_URI']);
-		$result = $this->SQL->execSQL('INSERT INTO '.$this->tablename.' 
+		if($sess_data) {
+			$data = $this->_unserialize($sess_data);
+			$sess_data = mysql_escape_string($sess_data);
+			$lastPage = mysql_escape_string($_SERVER['REQUEST_URI']);
+			$result = $this->SQL->execSQL('INSERT INTO '.$this->tablename.' 
 (`sid`,`created`,`modified`,`expired`,`data`,`users_id`,`ip`,`useragent`,`lastpage`) values
 ("'.$sid.'","'.$this->_time.'","'.$this->_time.'","'.$this->expired.'","'.$sess_data.'","'.$data['user']['id'].'","'.mysql_escape_string($_SERVER["REMOTE_ADDR"]).'","'.mysql_escape_string(substr($_SERVER['HTTP_USER_AGENT'],0,255)).'","'.$lastPage.'") 
 ON DUPLICATE KEY UPDATE `modified` = "'.$this->_time.'", `users_id`="'.$data['user']['id'].'" ,`data` = "'.$sess_data.'", `visits` = (`visits` + 1), `lastpage`= "'.$lastPage.'"');
+		}
+		else
+			$this->destroy($sid);
 		return(true);
 	}
 
 	function destroy($sid) {
-		$result = $this->SQL->execSQL('DELETE FROM '.$this->tablename.' WHERE `sid`  = '.$sid);
+		$result = $this->SQL->execSQL('DELETE FROM '.$this->tablename.' WHERE `sid`  = "'.mysql_escape_string($sid).'"');
 		return(true); 
 	}
 

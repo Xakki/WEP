@@ -94,7 +94,7 @@ class mail_class extends kernel_class {
 
 		$this->form['sbmt']['value']='Отправить письмо';
 		if($formflag and (!isset($param['ajax']) or $flag==0)) // показывать форму , также если это АЯКС и 
-			$formflag = $this->kFields2Form($data,$param);
+			$formflag = $this->kFields2Form($param);
 
 		$this->setCaptcha();
 

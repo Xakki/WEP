@@ -11,17 +11,17 @@
 	$variant = "";
 	$ref= 'index.php';
 	if(isset($_REQUEST['ref']) and $_REQUEST['ref']!='') {
-		if(substr($_REQUEST['ref'],-2)=='==')
+		if(substr($_REQUEST['ref'],0,1)!='/')
 			$ref = base64_decode($_REQUEST['ref']);
-		elseif(!strstr($_REQUEST['ref'],'login.php'))
+		
+		if(!strstr($_REQUEST['ref'],'login.php'))
 			$ref = $_REQUEST['ref'];
 	}
 	elseif($_SERVER['HTTP_REFERER']!='' and !strstr($_SERVER['HTTP_REFERER'],'login.php'))
 		$ref= $_SERVER['HTTP_REFERER'];
 
 	if(isset($_REQUEST['exit']) && $_REQUEST['exit']=="ok") {
-		$_SESSION = array();
-		setcookie('remember', '', (time()-1000));
+		userExit();
 		$mess=$_CFG['_MESS']['exitok'];
 		$ref='/index.html';
 	}

@@ -865,7 +865,7 @@ _message($msg,$type=0)
 
 	/**************************CLIENT---FUNCTION*************************/
 
-	public function kFields2Form(&$data,&$param)
+	public function kFields2Form(&$param)
 	{
 		/*
 		$this->form['уник название'] = array(
@@ -891,7 +891,7 @@ _message($msg,$type=0)
 		
 		$this->kFields2FormFields($this->fields_form);
  
-		if(!$this->id or $this->_prmModulEdit($data,$param))
+		if(!$this->id or $this->_prmModulEdit($this->data[$this->id],$param))
 			$this->form['sbmt'] = array(
 				'type'=>'submit',
 				'value'=>$this->getMess('_submit'));
@@ -1642,7 +1642,18 @@ $Ajax=0 - не скриптовая
 	function _usabilityDate($time,$format='Y-m-d H:i') {
 		global $_CFG;
 		$date = getdate($time);
-		if($_CFG['getdate']['year']==$date['year'] and $_CFG['getdate']['yday']==$date['yday'] )
+		$de = $_CFG['time']-$time;
+		if($de<3600) {
+			if($de<240) {
+				if($de<60)
+					$date = 'Минуту назад';
+				else
+					$date = ceil($de/60).' минуты назад';
+			}
+			else
+				$date = ceil($de/60).' минут назад';
+		}
+		elseif($_CFG['getdate']['year']==$date['year'] and $_CFG['getdate']['yday']==$date['yday'] )
 			$date = 'Сегодня '.date('H:i',$time);
 		elseif($_CFG['getdate']['year']==$date['year'] and $_CFG['getdate']['yday']-$date['yday']==1)
 			$date = 'Вчера '.date('H:i',$time);

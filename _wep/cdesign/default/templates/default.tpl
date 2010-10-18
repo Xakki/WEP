@@ -6,7 +6,7 @@
 		<meta http-equiv="Pragma" content="no-cache"/>
 		<meta name="keywords" content="WEP"/> 
 		<meta name="description" content="CMS"/>
-		<link rel="SHORTCUT ICON" href="{$_tpl['design']}img/icons.gif"/>
+		<link rel="SHORTCUT ICON" href="{$_tpl['design']}img/favicon.ico"/>
 		<script type="text/javascript" src="/_design/_script/jquery.js"></script>
 		<script type="text/javascript" src="/_design/_script/jquery.form.js"></script>
 		<script type="text/javascript" src="/_design/_script/jquery.fancybox.js"></script><link rel="stylesheet" href="/_design/_style/jquery.fancybox.css" type="text/css"/>
