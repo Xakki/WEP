@@ -22,19 +22,24 @@ class modulprm_class extends kernel_class {
 	{
 		parent::_create();
 		
-		$this->fields["name"] = array("type" => "VARCHAR", "width" => 32,"attr" => "NOT NULL");
-		$this->fields["tablename"] = array("type" => "VARCHAR", "width" => 100,"attr" => "NOT NULL");
+		$this->fields['name'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL');
+		$this->fields['tablename'] = array('type' => 'varchar', 'width' => 100,'attr' => 'NOT NULL');
+		$this->fields['ver'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL');
+		//$this->fields['comment'] = array('type' => 'text', 'attr' => 'NOT NULL');
 
-		$this->fields_form["name"] = array("type" => "text", "caption" => "Название");
-		$this->fields_form["tablename"] = array("type" => "text","readonly" => 0, "caption" => "Таблица");
-		$this->fields_form["active"] = array("type" => "checkbox", "caption" => "Активность");
-		$this->create_child("modulgrp");
+		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название');
+		$this->fields_form['tablename'] = array('type' => 'text','readonly' => 1, 'caption' => 'Таблица');
+		$this->fields_form['ver'] = array('type' => 'text','readonly' => 1, 'caption' => 'Версия');
+		//$this->fields_form['comment'] = array('type' => 'textarea','readonly' => 1, 'caption' => 'Описание');
+		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Активность');
+		$this->create_child('modulgrp');
 	}
 
 	public function _checkmodstruct() {
 		parent::_checkmodstruct();
 		//$q_query=array();
 		$this->moduldir = array();
+		$this->def_update_records = array();
 		$result = $this->SQL->execSQL('SELECT * FROM '.$this->tablename);
 			if ($result->err) $this->_message($result->err);
 		$this->data = array();
@@ -53,7 +58,8 @@ class modulprm_class extends kernel_class {
 					}else $class_ = &$this;
 					if(!isset($this->data[$entry]))
 						$this->def_records[] = array('id'=>$entry,'name'=>$class_->caption,'parent_id'=>'','tablename'=>$class_->tablename);
-					
+					elseif($class_->ver!=$this->data[$entry]['ver'] or $this->_cl==$entry)
+						$this->def_update_records[$entry] = array('parent_id'=>'','tablename'=>$class_->tablename);
 				}
 			}
 		}
@@ -68,15 +74,20 @@ class modulprm_class extends kernel_class {
 					if(_new_class($entry,$class_)) {
 						if(!isset($this->data[$entry]) and $class_->showinowner) 
 							$this->def_records[] = array('id'=>$entry,'name'=>$class_->caption.' ['.$entry.']','parent_id'=>'','tablename'=>$class_->tablename);
+						elseif($class_->ver!=$this->data[$entry]['ver'])
+							$this->def_update_records[$entry] = array('parent_id'=>'','tablename'=>$class_->tablename);
 						$this->_constr_childs($class_);
 					}
 				}
 			}
 		}
-		//if(count($q_query)) foreach($q_query as $row) $this->SQL->execSQL($row);
 
 		if(count($this->def_records)) {$this->_insertDefault();$this->def_records=array();}
 		$dir->close();
+print_r($this->def_update_records);
+		foreach($this->def_update_records as $k=>$r) {
+			$this->SQL->execSQL('UPDATE `'.$this->tablename.'` SET `parent_id`="'.$r['parent_id'].'",`tablename`="'.$r['tablename'].'" WHERE id="'.$k.'"');
+		}
 		return 0;
 	}
 
@@ -86,8 +97,8 @@ class modulprm_class extends kernel_class {
 				$this->moduldir[$k] = $class_->_cl;
 				if(!isset($this->data[$k]) and $r->showinowner) 
 					$this->def_records[] = array('id'=>$k,'name'=>$r->caption.' ['.$k.']','parent_id'=>$class_->_cl,'tablename'=>$r->tablename);
-				/*elseif($this->data[$entry]['name']!=$class_->caption.' ['.$entry.']')
-					$q_query[] = 'UPDATE '.$this->tablename.'SET name="'.$class_->caption.' ['.$entry.']'.'" WHERE id="'.$entry.'";';*/
+				elseif($r->ver!=$this->data[$k]['ver'])
+					$this->def_update_records[$k] = array('parent_id'=>$class_->_cl,'tablename'=>$r->tablename);
 				$this->_constr_childs($r);
 			}
 		}
@@ -104,6 +115,7 @@ class modulprm_class extends kernel_class {
 				$this->data[$row['id']]['name'] = $row['mname'];
 			else
 				$this->data[$row['id']]['name'] = $row['name'];
+			$this->data[$row['id']]['ver'] = $row['ver'];
 		}
 		return $this->data;
 	}

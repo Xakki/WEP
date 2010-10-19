@@ -209,17 +209,6 @@ _fldformer($key, $param)
 
 		$this->attprm = array('type' => 'varchar(4)', 'attr' => 'NOT NULL DEFAULT \'\'');
 
-		if($this->_CFG['_F']['adminpage']) {
-			$result = $this->SQL->execSQL('select table_comment from information_schema.`tables` where table_name="'.$this->tablename.'" and table_schema="'.$this->_CFG['sql']['database'].'"');
-			if($row = $result->fetch_array()) {
-				$this->table_comment = $row['table_comment'];
-				if($this->table_comment!=$this->ver) {
-					global $_tpl;
-					$_tpl['onload'] .= 'showHelp(\'.weptools.wepchecktable\',\'Версия таблицы не соответствует версии модуля. Обновите здесь поля таблицы.\',4000);$(\'.weptools.wepchecktable\').addClass(\'weptools_sel\');';
-				}
-			}
-		}else
-			$this->table_comment = $this->ver;
 		return 0;  
 	}
 
@@ -700,7 +689,7 @@ _message($msg,$type=0)
 					foreach($this->childs as $k=>&$r)
 						$r->_checkmodstruct();
 				}
-				$mess[] = array('name'=>'ok', 'value'=>$this->getMess('_recheck_ok'));
+				$mess[] = array('name'=>'ok', 'value'=>$this->getMess('_recheck_ok').'  <a href="">Обновите страницу.</a>');
 				if(count($this->attaches)) {
 					include_once($_CFG['_PATH']['core'].'kernel.tools.php');
 					if(!_reattaches($this))

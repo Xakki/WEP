@@ -79,6 +79,9 @@
 
 					$_tpl['onload'] .= "$('.fancyimg').fancybox();";
 				}
+				if($MODUL->ver!=$_CFG['modulprm'][$MODUL->_cl]['ver'])
+					$_tpl['onload'] .= 'showHelp(\'.weptools.wepchecktable\',\'Версия модуля '.$MODUL->caption.'['.$MODUL->_cl.'] ('.$MODUL->ver.') отличается от версии ('.$_CFG['modulprm'][$MODUL->_cl]['ver'].') сконфигурированного для этого сайта. Обновите здесь поля таблицы.\',4000);$(\'.weptools.wepchecktable\').addClass(\'weptools_sel\');';
+
 			}
 			else
 				$html ='<div style="color:red;">'.date('H:i:s').' : Доступ к модулю '.$_GET['_modul'].' запрещён администратором</div>';

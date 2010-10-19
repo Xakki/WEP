@@ -16,15 +16,14 @@
 		$_tpl['onload'] .= 'window.location.reload();';
 	}
 	else*/
+
 	if($_SERVER['robot']) {
-		exit('Вы определились как поисковый робот. Доступ только авторизованным пользователям. Если это ощибка, обратитесь к администратору сайта.');
-		//userExit();
-		//$_tpl['onload']='window.location="login.php?mess=Вы определились как поисковый робот. Доступ только авторизованным пользователям."';
+		$GLOBALS['_RESULT']['html'] = $_CFG['_MESS']['deniedrobot'];
+		exit($_CFG['_MESS']['deniedrobot']);
 	}
-	elseif(isset($_COOKIE[$_CFG['session_name']])) {
-		exit('Доступ только авторизованным пользователям');
-		//userExit();
-		//$_tpl['onload']='window.location="login.php?mess=Доступ только авторизованным пользователям"';
+	elseif(!isset($_COOKIE[$_CFG['session_name']])) {
+		$GLOBALS['_RESULT']['html'] = $_CFG['_MESS']['denieda'];
+		exit($_CFG['_MESS']['denieda']);
 	}
 
 	require_once($_CFG['_PATH']['core'].'html.php');
@@ -34,15 +33,18 @@
 	$result = userAuth(); // запскает сессию и проверяет авторизацию
 	if(!$result[1]) {
 		//header('Location: login.php?ref='.base64_encode($_SERVER['REQUEST_URI']));
-		exit('Вы не авторизованы , либо доступ закрыт.');
+		$GLOBALS['_RESULT']['html'] = 'Вы не авторизованы , либо доступ закрыт.';
+		exit($GLOBALS['_RESULT']['html']);
 	}
 
 	if($_CFG['wep']['access'] and (!isset($_SESSION['user']) or $_SESSION['user']['level']>=5)) {
-		exit('Недостаточно прав доступа. Обратитесь к администратору, если вы хотите получить доступ.');
+		$GLOBALS['_RESULT']['html'] = $_CFG['_MESS']['denied'];
+		exit($_CFG['_MESS']['denied']);
 		//$_tpl['onload']='window.location="login.php?mess=Недостаточно прав доступа."';
 	}
 	elseif(!$_GET['_modul'] or !$_SESSION['user']['wep']) {
-		exit('Ошиюка запроса. Параметры заданны неверно!');
+		$GLOBALS['_RESULT']['html'] = $_CFG['_MESS']['errdata'];
+		exit($_CFG['_MESS']['errdata']);
 		//$_tpl['onload']='fLog(\'<div style="color:red;">'.date('H:i:s').' : Параметры заданны неверно!</div>\',1);fSwin1();';
 	}
 
@@ -50,8 +52,8 @@
 		exit(' Модуль '.$_GET['_modul'].' не установлен');
 		//$_tpl['onload']='fLog(\'<div style="color:red;">'.date('H:i:s').' : Модуль '.$_GET['_modul'].' не установлен</div>\',1);fSwin1();';
 
-	if(_prmModul($_GET['_modul'],array(1,2)))  // Проверка доступа к модулю
-		exit();
+	if(!_prmModul($_GET['_modul'],array(1,2)))  // Проверка доступа к модулю
+		exit('Доступ к модулю '.$_GET['_modul'].' запрещён администратором');
 		//$_tpl['onload']='fLog(\'<div style="color:red;">'.date('H:i:s').' : Доступ к модулю '.$_GET['_modul'].' запрещён администратором</div>\',1);fSwin1();';
 
 

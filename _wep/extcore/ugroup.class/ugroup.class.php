@@ -295,6 +295,7 @@ class users_class extends kernel_class {
 		$_SESSION['user']['owner_id'] = $this->data[0][$this->owner_name];
 		$_SESSION['FckEditorUserFilesUrl'] = $this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['userfile'].$_SESSION['user']['id'].'/';
 		$_SESSION['FckEditorUserFilesPath'] = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['userfile'].$_SESSION['user']['id'].'/';
+		global $_CFG;
 		if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0)
 			setcookie('_showerror',1, $_CFG['session_expire'],'/','.'.$_SERVER['HTTP_HOST2']);
 		return array($this->_CFG['_MESS']['authok'],1);
