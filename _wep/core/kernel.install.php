@@ -34,7 +34,8 @@
 		if($result->err) return $this->_message($result->err);
 		$this->_message('Table `'.$this->tablename.'` installed.',3);
 
-		$this->SQL->execSQL('UPDATE `'.$_CFG['sql']['dbpref'].'modulprm` SET `ver`="'.$this->ver.'" WHERE `id`="'.$this->_cl.'"');
+		if(isset($this->_cl))
+			$this->SQL->execSQL('UPDATE `'.$_CFG['sql']['dbpref'].'modulprm` SET `ver`="'.$this->ver.'" WHERE `id`="'.$this->_cl.'"');
 
 		if(count($this->def_records)) $this->_insertDefault();
 

@@ -12,8 +12,8 @@
 		if(substr($_REQUEST['ref'],0,1)!='/')
 			$ref = base64_decode($_REQUEST['ref']);
 		
-		if(!strstr($_REQUEST['ref'],'login.php'))
-			$ref = $_REQUEST['ref'];
+		if(strstr($ref,'login.php'))
+			$ref = 'index.php';
 	}
 	elseif($_SERVER['HTTP_REFERER']!='' and !strstr($_SERVER['HTTP_REFERER'],'login.php'))
 		$ref= $_SERVER['HTTP_REFERER'];

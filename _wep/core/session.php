@@ -74,11 +74,11 @@ class session_gogo {
 		/*$result = $this->SQL->execSQL('select table_comment from information_schema.`tables` where table_name="'.$this->tablename.'" and table_schema="'.$this->_CFG['sql']['database'].'"');
 		if($row = $result->fetch_array())
 				$this->table_comment = $row['table_comment'];*/
-		$this->table_comment = $this->ver;
+		//$this->table_comment = $this->ver;
 
-		if($result->err or count($this->data)!=count($this->fields) or $this->table_comment!=$this->ver) {
-			$this->_checkmodstruct();
-		}
+		//if($result->err or count($this->data)!=count($this->fields) or $this->table_comment!=$this->ver) {
+		//	$this->_checkmodstruct();
+		//}
 		return $this->data['data'];
 	}
 

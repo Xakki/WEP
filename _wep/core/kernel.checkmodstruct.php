@@ -77,8 +77,8 @@
 				$this->SQL->execSQL($rr);
 			$this->SQL->execSQL('OPTIMIZE TABLE `'.$this->tablename.'`');
 		}
-		
-		$this->SQL->execSQL('UPDATE `'.$_CFG['sql']['dbpref'].'modulprm` SET `ver`="'.$this->ver.'" WHERE `id`="'.$this->_cl.'"');
+		if(isset($this->_cl))
+			$this->SQL->execSQL('UPDATE `'.$_CFG['sql']['dbpref'].'modulprm` SET `ver`="'.$this->ver.'" WHERE `id`="'.$this->_cl.'"');
 
 		return 0;
 
