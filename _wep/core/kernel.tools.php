@@ -60,7 +60,7 @@
 
 	function _save_config(&$_this)
 	{
-		if (file_exists($_this->_file_cfg)) unlink($_this->_file_cfg);
+		//if (file_exists($_this->_file_cfg)) unlink($_this->_file_cfg);
 		$h = fopen($_this->_file_cfg, 'w');
 			foreach($_this->config as $key=>$value) 
 			{

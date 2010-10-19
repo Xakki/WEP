@@ -198,7 +198,8 @@ class pg_class extends kernel_class {
 				$_tpl['description'] = $this->pageinfo['description'];
 			}
 		}
-		$_tpl['title'] .= ' - '.$this->config['sitename'];//$_SERVER['SERVER_NAME']
+		if($this->config['sitename'])
+			$_tpl['title'] .= ' - '.$this->config['sitename'];//$_SERVER['SERVER_NAME']
 
 
 	}
@@ -284,44 +285,44 @@ class pg_class extends kernel_class {
 
 	function display_page(&$_tpl) {
 		global $SQL, $PGLIST, $HTML, $_CFG, $_tpl;
-		$flag = 0;
+		$flagPG = 0;
 
 		$cls = 'SELECT * FROM '.$this->_CFG['sql']['dbpref'].'pg_content WHERE active=1 and (owner_id="'.$this->id.'"';
 		//if($this->id!='404') // откл повторные глобалные контенты, если это 400 и 500 страница
 			$cls .= ' or (owner_id IN ("'.(implode('","',$this->selected)).'") and global=1)';
 		$cls .= ' ) ORDER BY ordind';
-		$result = $this->SQL->execSQL($cls);
-		if(!$result->err)
-			while ($row = $result->fetch_array()){
+		$resultPG = $this->SQL->execSQL($cls);
+		if(!$resultPG->err)
+			while ($rowPG = $resultPG->fetch_array()){
 				$html = '';
-				if($row['pagetype']=='') {
-					$text = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['content'].'pg/'.$row['id'].$this->text_ext;
+				if($rowPG['pagetype']=='') {
+					$text = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['content'].'pg/'.$rowPG['id'].$this->text_ext;
 					if (file_exists($text)) {
-						$flag = 1;
-						$_tpl[$row['marker']] .= file_get_contents($text);
+						$flagPG = 1;
+						$_tpl[$rowPG['marker']] .= file_get_contents($text);
 					}
 				} else {
-					$FUNCPARAM = $row['funcparam'];
-					if(file_exists($this->_CFG['_PATH']['ptext'].$row['pagetype'].".inc.php"))
-						$flag = include($this->_CFG['_PATH']['ptext'].$row['pagetype'].".inc.php");
-					elseif(file_exists($this->_CFG['_PATH']['ctext'].$row['pagetype'].".inc.php"))
-						$flag = include($this->_CFG['_PATH']['ctext'].$row['pagetype'].".inc.php");
+					$FUNCPARAM = $rowPG['funcparam'];
+					if(file_exists($this->_CFG['_PATH']['ptext'].$rowPG['pagetype'].".inc.php"))
+						$flagPG = include($this->_CFG['_PATH']['ptext'].$rowPG['pagetype'].".inc.php");
+					elseif(file_exists($this->_CFG['_PATH']['ctext'].$rowPG['pagetype'].".inc.php"))
+						$flagPG = include($this->_CFG['_PATH']['ctext'].$rowPG['pagetype'].".inc.php");
 					else {
-						trigger_error('Display block '.$row['pagetype'].' not exists', E_USER_WARNING);
+						trigger_error('Display block '.$rowPG['pagetype'].' not exists', E_USER_WARNING);
 						continue;
 					}
-					if($_SESSION['_showallinfo']) $_tpl[$row['marker']] .= '<!--content'.$row['id'].' begin-->'; // для отладчика
-					if($flag===false) //если INCa вернула значение flase , то завершаем отображение страницы и выдаем в итоге 404
+					if($_SESSION['_showallinfo']) $_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' begin-->'; // для отладчика
+					if($flagPG===false) //если INCa вернула значение flase , то завершаем отображение страницы и выдаем в итоге 404
 						return 0;
-					elseif($flag!==true) // если не булевое значение то выводим содержимое
-						$_tpl[$row['marker']] .= $flag;
-					$flag = 1;
+					elseif($flagPG!==true) // если не булевое значение то выводим содержимое
+						$_tpl[$rowPG['marker']] .= $flagPG;
+					$flagPG = 1;
 					if($_SESSION['_showallinfo'])
-						$_tpl[$row['marker']] .= '<!--content'.$row['id'].' end-->';
+						$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' end-->';
 				}
 			}
 
-		return $flag;
+		return $flagPG;
 	}
 
 	/*function getMap
