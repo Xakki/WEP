@@ -9,9 +9,8 @@
 	$variant = "";
 	$ref= 'index.php';
 	if(isset($_REQUEST['ref']) and $_REQUEST['ref']!='') {
-		if(substr($_REQUEST['ref'],0,1)!='/')
+		if(substr($_REQUEST['ref'],0,1)!='/' and !strstr($_REQUEST['ref'],'.'))
 			$ref = base64_decode($_REQUEST['ref']);
-		
 		if(strstr($ref,'login.php'))
 			$ref = 'index.php';
 	}
