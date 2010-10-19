@@ -26,7 +26,7 @@
 /*
 Запуск сесии
 */
-	if(isset($_GET['_showallinfo']) and !$_SERVER['robot'] and !isset($_COOKIE['_showallinfo'])) {
+	if(isset($_GET['_showallinfo']) and !$_SERVER['robot']) {// and !isset($_COOKIE['_showallinfo'])
 		setcookie('_showallinfo',$_GET['_showallinfo'],$_CFG['session_expire'],'/', '.'.$_SERVER['HTTP_HOST2']);
 		$_COOKIE['_showallinfo']=$_GET['_showallinfo'];
 	}
