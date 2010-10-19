@@ -1,7 +1,5 @@
 <?
-	unset($_SESSION['user']);
-	unset($_SESSION['modulprm']);
-	setcookie('remember', '', (time()-1000));
+	userExit();
 	$DATA = array(
 		array('value'=>$_CFG['_MESS']['exitok'], 'name'=>'ok')
 	);

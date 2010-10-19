@@ -193,7 +193,7 @@ _fldformer($key, $param)
 		if(isset($_GET[$this->_cl.'_mop'])) {
 			$this->messages_on_page=(int)$_GET[$this->_cl.'_mop'];
 			if($_COOKIE[$this->_cl.'_mop']!=$this->messages_on_page)
-				setcookie($this->_cl.'_mop',$this->messages_on_page, (time()+$this->_CFG['remember_expire']));
+				setcookie($this->_cl.'_mop',$this->messages_on_page, $this->_CFG['remember_expire'],'/', '.'.$_SERVER['HTTP_HOST2']);
 		}
 		elseif(isset($_COOKIE[$this->_cl.'_mop']))
 			$this->messages_on_page=(int)$_COOKIE[$this->_cl.'_mop'];
@@ -1620,8 +1620,8 @@ $Ajax=0 - не скриптовая
 			$hash_key = file_get_contents($_CFG['_PATH']['HASH_KEY']);
 			$hash_key = md5($hash_key);
 			$crypttext = trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $hash_key, $_SESSION['captcha'], MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))));
-			setcookie('chash',$crypttext);
-			setcookie('pkey',base64_encode($_CFG['PATH']['HASH_KEY']));
+			setcookie('chash',$crypttext,(time()+1800),'/', '.'.$_SERVER['HTTP_HOST2']);
+			setcookie('pkey',base64_encode($_CFG['PATH']['HASH_KEY']),(time()+1800),'/', '.'.$_SERVER['HTTP_HOST2']);
 			
 		}
 	}

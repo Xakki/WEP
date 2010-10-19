@@ -16,8 +16,7 @@
 	$DATA  = array();
 
 	if($_GET['_view']=='exit') {
-		unset($_SESSION['user']);
-		setcookie('remeber', '0', (time()-1000));
+		userExit();
 		$_tpl['onload'] = 'window.location.href=window.location.href;';
 	}
 	elseif($_GET['_view']=='login') {

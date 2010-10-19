@@ -5,9 +5,7 @@
 	require_once($_CFG['_PATH']['core'].'/sql.php');
 	$SQL = new sql();
 
-	session_go(1);
-
-	$result = userAuth();
+	$result = userAuth(); // запскает сессию и проверяет авторизацию
 	if(!$result[1]) {
 		header('Location: login.php?ref='.base64_encode($_SERVER['REQUEST_URI']));
 		exit();

@@ -244,7 +244,7 @@ class users_class extends kernel_class {
 					else
 					{
 						if($_POST['remember']=='1'){
-							setcookie('remember', md5($this->data[0]['pass']).'_'.$this->data[0]['id'], (time()+(86400*$this->owner->config['rememberday'])), '/', $_SERVER['HTTP_HOST2']);
+							setcookie('remember', md5($this->data[0]['pass']).'_'.$this->data[0]['id'], (time()+(86400*$this->owner->config['rememberday'])),'/', '.'.$_SERVER['HTTP_HOST2']);
 						}
 						return $this->setUserSession();
 					}
@@ -280,7 +280,7 @@ class users_class extends kernel_class {
 						return array("Доступ закрыт.",0);
 					else
 					{
-						setcookie('remember', md5($this->data[0]['pass']).'_'.$this->data[0]['id'], (time()+(86400*$this->owner->config['rememberday'])), '/', $_SERVER['HTTP_HOST2']);
+						setcookie('remember', md5($this->data[0]['pass']).'_'.$this->data[0]['id'], (time()+(86400*$this->owner->config['rememberday'])),'/', '.'.$_SERVER['HTTP_HOST2']);
 						return $this->setUserSession();
 					}
 				}
@@ -293,14 +293,9 @@ class users_class extends kernel_class {
 	function setUserSession() {
 		$_SESSION['user'] = $this->data[0];
 		$_SESSION['user']['owner_id'] = $this->data[0][$this->owner_name];
-		$MODULs = new  modulprm_class($this->SQL);
-		$_SESSION['modulprm'] = $MODULs->userPrm($this->data[0][$this->owner_name]);
 		$_SESSION['FckEditorUserFilesUrl'] = $this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['userfile'].$_SESSION['user']['id'].'/';
 		$_SESSION['FckEditorUserFilesPath'] = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['userfile'].$_SESSION['user']['id'].'/';
-		if(_prmUserCheck(2)) {
-			setcookie('_showerror',1);
-			$_COOKIE['_showerror']=1;
-		}
+
 		return array($this->_CFG['_MESS']['authok'],1);
 	}
 

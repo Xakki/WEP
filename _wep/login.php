@@ -5,8 +5,6 @@
 	require_once($_CFG['_PATH']['core'].'sql.php');
 	$SQL = new sql();
 
-	session_go(1);
-
 	$delay =4;
 	$variant = "";
 	$ref= 'index.php';
@@ -32,7 +30,7 @@
 			die();
 		}
 	}
-	elseif($result = userAuth() and $result[1]) {
+	elseif(isset($_COOKIE['remember']) and $result = userAuth() and $result[1]) {
 		@header("Location: ".$ref);
 		die();
 	}

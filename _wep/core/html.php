@@ -27,12 +27,12 @@
 Запуск сесии
 */
 	if(isset($_GET['_showallinfo']) and !$_SERVER['robot'] and !isset($_COOKIE['_showallinfo'])) {
-		setcookie('_showallinfo',$_GET['_showallinfo'], (time()+86400), '/', $_SERVER['HTTP_HOST2']);
+		setcookie('_showallinfo',$_GET['_showallinfo'],$_CFG['session_expire'],'/', '.'.$_SERVER['HTTP_HOST2']);
 		$_COOKIE['_showallinfo']=$_GET['_showallinfo'];
 	}
 
 	if(!$_SERVER['robot'] and (isset($_GET['_showerror']) or strpos($_SERVER['HTTP_HOST'],'.l') or strpos($_SERVER['HTTP_HOST'],'.i')) and !$_COOKIE['_showerror']) {
-		setcookie('_showerror',1, (time()+86400), '/', $_SERVER['HTTP_HOST2']);
+		setcookie('_showerror',1,$_CFG['session_expire'],'/', '.'.$_SERVER['HTTP_HOST2']);
 		$_COOKIE['_showerror']=1;
 	}
 
@@ -470,6 +470,7 @@
 		$template = array();
 		$template['sysconf']['user'] = $_SESSION['user'];
 		if($_SESSION['user']['level']<=1) {
+			_modulprm();
 			$data = array();
 			$dir = dir($_CFG['_PATH']['extcore']);
 			while (false !== ($entry = $dir->read())) {
@@ -477,7 +478,6 @@
 					$entry = _substr($entry, 0, $pos);
 					if($entry!='') {
 						if(_prmModul($entry,array(1,2))) {
-							_modulprm();
 							if(!isset($_CFG['modulprm'][$entry]['name']))
 								$data[$entry] = $entry;
 							else
@@ -584,14 +584,16 @@
 Проверка доступа пол-ля к модулю
 */
 	function _prmModul($mn,$param=array()) {
-		if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0) return true;
-		elseif($_SESSION['user']['level']>=5) return false;
+		if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0 and $mn=='modulprm') return true; // разрешить , если админ и модуль привелегий
+		if($_SESSION['user']['level']>=5) return false;
 		else{
 			global $_CFG;
 			_modulprm();
+			if(!isset($_CFG['modulprm'][$mn])) return false; // отказ, если модуль отключен
+			if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0) return true; // разрешить , если админ
 			if(isset($_CFG['modulprm'][$mn]['access'][0])) return false;
 			if(count($param))
-				foreach($param as $k=>$r)
+				foreach($param as $r)
 					if(isset($_CFG['modulprm'][$mn]['access'][$r])) return true;
 		} 
 		return false;
@@ -599,6 +601,7 @@
 
 	function _modulprm() {
 		global $_CFG;
+		//print_r('<pre>');print_r($_CFG['modulprm']);
 		if(!isset($_CFG['modulprm'])) {
 			if(_new_class('modulprm',$MODULs))
 				$_CFG['modulprm'] = $MODULs->userPrm();
@@ -649,24 +652,28 @@
 					$_SESSION['FckEditorUserFilesUrl'] = $_CFG['_HREF']['BH'].$_CFG['PATH']['userfile'];
 					$_SESSION['FckEditorUserFilesPath'] = $_CFG['_PATH']['path'].$_CFG['PATH']['userfile'];
 					if($_POST['remember']=='1')
-						setcookie('remember', md5($_CFG['wep']['password']).'_'.$_CFG['wep']['login'], (time()+$_CFG['remember_expire']));
+						setcookie('remember', md5($_CFG['wep']['password']).'_'.$_CFG['wep']['login'], $_CFG['remember_expire'],'/','.'.$_SERVER['HTTP_HOST2']);
 					$result = array($_CFG['_MESS']['authok'],1);
-					setcookie('_showerror',1);
-					$_COOKIE['_showerror']=1;
+					setcookie('_showerror',1, $_CFG['session_expire'],'/','.'.$_SERVER['HTTP_HOST2']);
+					//$_COOKIE['_showerror']=1;
 				}
 			}
 		}
-		elseif($_SESSION['user']['id'])
+		elseif(isset($_SESSION['user']['id']))
 			$result = array($_CFG['_MESS']['authok'],1);
 		return $result;
 	}
 
 	function  userExit() {
-		$_SESSION = array();
-		setcookie('remember', '', (time()-5000),'/', $_SERVER['HTTP_HOST2']);
-		setcookie('wepID', '', (time()-5000),'/', $_SERVER['HTTP_HOST2']);
+		session_go();
+		if(isset($_SESSION))
+			$_SESSION = array();
+		if(isset($_COOKIE['remember']))
+			setcookie('remember', '', (time()-5000),'/','.'.$_SERVER['HTTP_HOST2']);
+		if(isset($_COOKIE['wepID']))
+			setcookie('wepID', '', (time()-5000),'/','.'.$_SERVER['HTTP_HOST2']);
 		//_showerror
-		//print_r(session_get_cookie_params());
+		//
 	}
 
 	function fDisplLogs($type=0){
