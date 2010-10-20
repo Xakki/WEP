@@ -84,7 +84,6 @@ class modulprm_class extends kernel_class {
 
 		if(count($this->def_records)) {$this->_insertDefault();$this->def_records=array();}
 		$dir->close();
-print_r($this->def_update_records);
 		foreach($this->def_update_records as $k=>$r) {
 			$this->SQL->execSQL('UPDATE `'.$this->tablename.'` SET `parent_id`="'.$r['parent_id'].'",`tablename`="'.$r['tablename'].'" WHERE id="'.$k.'"');
 		}
