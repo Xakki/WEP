@@ -95,6 +95,6 @@
 <option onclick="window.location=\'index.php?_showallinfo=2\'" '.($_SESSION['_showallinfo']==2?'selected="selected"':'').'>Показать SQL запросы</option>
 <option onclick="window.location=\'index.php?_showallinfo=3\'" '.($_SESSION['_showallinfo']==3?'selected="selected"':'').'>Показать все логи</option>
 </select></span>';
-	$_tpl['styles'] .='<link rel="stylesheet" href="/_design/_style/style.css" type="text/css"/>';
+	$_tpl['styles'] .='<link rel="stylesheet" href="'.$_CFG['_HREF']['_style'].'style.css" type="text/css"/>';
 
 ?>

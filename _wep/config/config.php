@@ -54,27 +54,47 @@
 	$port = '';
 	if($_SERVER['SERVER_PORT']!=80)
 		$port = ':'.$_SERVER['SERVER_PORT'];
+	$PHP_SELF = explode('/',$_SERVER['PHP_SELF']);
+	if(!$PHP_SELF[0]) array_shift($PHP_SELF);
+	array_pop($PHP_SELF);
 
-	$_CFG['_HREF']['BH'] = 'http://'.$_SERVER['HTTP_HOST'].$port.'/'; // www-путь сайта
-	$_CFG['_HREF']['arrayHOST'] = array_reverse(explode('.',$_SERVER['HTTP_HOST']));
-	$_SERVER['HTTP_HOST2'] = $_CFG['_HREF']['arrayHOST'][1].'.'.$_CFG['_HREF']['arrayHOST'][0].$port;
+	$addpath = '';
+	$k=0;
+	while(isset($PHP_SELF[$k]) and $PHP_SELF[$k]!=$_CFG['PATH']['wepname']) {
+		$addpath .= $PHP_SELF[$k].'/';
+		$k++;
+	}
+
+//print_r('<pre>');print_r($PHP_SELF);print_r($_SERVER);
+
+	$_CFG['_HREF']['BH'] = 'http://'.$_SERVER['HTTP_HOST'].$port.'/'.$addpath; // www-путь сайта
 	$_CFG['_HREF']['JS'] = $_CFG['_HREF']['BH'].$_CFG['PATH']['wepname'].'/js.php';
 	$_CFG['_HREF']['siteJS'] = $_CFG['_HREF']['BH'].'_js.php';
 	$_CFG['_HREF']['captcha'] = $_CFG['_HREF']['BH'].'_captcha.php';
 	$_CFG['_HREF']['WSWG'] = $_CFG['_HREF']['BH'].$_CFG['PATH']['WSWG'];
-	$_CFG['_HREF']['_style'] = $_CFG['_HREF']['BH'].'_design/_style/'; // дизайн стили
-	$_CFG['_HREF']['_script'] = $_CFG['_HREF']['BH'].'_design/_script/'; // дизайн стили
+	$_CFG['_HREF']['_style'] = '_design/_style/'; // дизайн стили
+	$_CFG['_HREF']['_script'] = '_design/_script/'; // дизайн стили
 
 	$_CFG['time'] = time();
 	$_CFG['getdate'] = getdate();
 	$_CFG['remember_expire'] = $_CFG['time']+1728000; // 20дней ,по умолчанию
-	$_CFG['session_expire'] = $_CFG['time']+86400; // 1 день ,по умолчанию
 	$_CFG['logs']['sql'] = array(); // - массив SQL запросов
-	$_CFG['session_name'] = 'wepID';
+	
+	$_CFG['_HREF']['arrayHOST'] = array_reverse(explode('.',$_SERVER['HTTP_HOST']));
+	$_CFG['session']['domain'] = '';
+	if(count($_CFG['_HREF']['arrayHOST'])<2 or (int)$_CFG['_HREF']['arrayHOST'][0]>0) //учитываем localhost и ИПИ
+		$_SERVER['HTTP_HOST2'] = $_SERVER['HTTP_HOST'].$port;
+	else {
+		$_SERVER['HTTP_HOST2'] = $_CFG['_HREF']['arrayHOST'][1].'.'.$_CFG['_HREF']['arrayHOST'][0].$port;
+		$_CFG['session']['domain'] = '.'.$_SERVER['HTTP_HOST2'];
+	}
+	$_CFG['session']['name'] = 'wepID';
+	$_CFG['session']['expire'] = $_CFG['time']+86400;// 1 день ,по умолчанию
+	$_CFG['session']['path'] = '/';
+	$_CFG['session']['secure'] = 0;
 
-	session_set_cookie_params($_CFG['session_expire'],'/', '.'.$_SERVER['HTTP_HOST2']);
-	session_name($_CFG['session_name']);
-	//session_start();
+	session_name($_CFG['session']['name']);
+	session_set_cookie_params($_CFG['session']['expire'],$_CFG['session']['path'], $_CFG['session']['domain'],$_CFG['session']['secure']);
 
 	if(strstr($_SERVER['PHP_SELF'],'/'.$_CFG['PATH']['wepname'].'/'))
 		$_CFG['_F']['adminpage'] = true;
@@ -168,5 +188,45 @@ $_CFG['site'] = array( // для сайта
 	if(file_exists($_CFG['_PATH']['locallang'].$_CFG['wep']['locallang'].'.php'))
 		include_once($_CFG['_PATH']['ulocallang'].$_CFG['wep']['locallang'].'.php');
 
+	register_shutdown_function ('shutdown_function'); // Запускается первым при завершении скрипта
 
+/*
+Функция завершения работы скрипта
+*/
+	function shutdown_function() {
+		//ob_end_flush();
+		//print_r('shutdown_function');
+		if(defined('SID'))
+			session_write_close();
+	}
+/*SESSION*/
+
+	function session_go($force=0) {
+		global $_CFG;
+		if(!$_SERVER['robot'] and (isset($_COOKIE[$_CFG['session']['name']]) or $force) and !defined('SID')) {
+			if($_CFG['wep']['sessiontype']==1) {
+				if(!$SESSION_GOGO) {
+					require_once($_CFG['_PATH']['core'].'/session.php');
+					$SESSION_GOGO = new session_gogo();
+				}
+			}else {
+				session_start();
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	function _setcookie($name,$value='',$expire='',$path='',$domain='',$secure='') {
+		global $_CFG;
+		if($expire=='')
+			$expire = $_CFG['session']['expire'];
+		if($path=='')
+			$path = $_CFG['session']['path'];
+		if($domain=='')
+			$domain = $_CFG['session']['domain'];
+		if($secure=='')
+			$secure = $_CFG['session']['secure'];
+		setcookie($name,$value,$expire,$path,$domain,$secure);
+	}
 ?>

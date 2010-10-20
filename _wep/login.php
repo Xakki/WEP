@@ -7,12 +7,14 @@
 
 	$delay =4;
 	$variant = "";
-	$ref= 'index.php';
+	$ref= $_CFG['_HREF']['BH'].'index.php';
 	if(isset($_REQUEST['ref']) and $_REQUEST['ref']!='') {
 		if(substr($_REQUEST['ref'],0,1)!='/' and !strstr($_REQUEST['ref'],'.'))
 			$ref = base64_decode($_REQUEST['ref']);
+		else
+			$ref = $_REQUEST['ref'];
 		if(strstr($ref,'login.php'))
-			$ref = 'index.php';
+			$ref = $_CFG['_HREF']['BH'].'/'.$_CFG['PATH']['wepname'].'index.php';
 	}
 	elseif($_SERVER['HTTP_REFERER']!='' and !strstr($_SERVER['HTTP_REFERER'],'login.php'))
 		$ref= $_SERVER['HTTP_REFERER'];
@@ -20,7 +22,7 @@
 	if(isset($_REQUEST['exit']) && $_REQUEST['exit']=="ok") {
 		userExit();
 		$mess=$_CFG['_MESS']['exitok'];
-		$ref='/index.html';
+		$ref = $_CFG['_HREF']['BH'].'index.html';
 	}
 	elseif(count($_POST) and isset($_POST['login'])) {
 		$result = userAuth($_POST['login'],$_POST['pass']);

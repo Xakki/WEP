@@ -11,7 +11,7 @@ include_once($this->_PATHd.'php/messages.php');
 			foreach($data['topmenu'] as $r) {
 				$temp_topmenu .= '<div class="botton"><span';
 				if($r['type']=='tools')
-					$temp_topmenu .= ' onclick="return ShowTools(\'tools_block\',\''.$_CFG['_HREF']['JS'].$r['href'].'\')"';
+					$temp_topmenu .= ' onclick="return ShowTools(\'tools_block\',\''.$r['href'].'\')"';
 				else
 					$temp_topmenu .= ' onclick="return load_href(\''.$r['href'].'\')"';
 				if($r['sel'])
@@ -47,11 +47,11 @@ include_once($this->_PATHd.'php/messages.php');
 				}
 				$html .= '<th>';
 				if($r['href']!='') {
-					$html .= '<a class="'.($r['sel']==1?'bottonimg_sel':'bottonimg').' imgup" title="[SORT]" href="?'.$data['req'].'sort='.$r['href'].'" onclick="return load_href(this)"></a>';
+					$html .= '<a class="'.($r['sel']==1?'bottonimg_sel':'bottonimg').' imgup" title="[SORT]" href="'.$_CFG['PATH']['wepname'].'/index.php?'.$data['req'].'sort='.$r['href'].'" onclick="return load_href(this)"></a>';
 				}
 				$html .= $r['value'];
 				if($r['href']!='') {
-					$html .= '<a class="'.($r['sel']==2?'bottonimg_sel':'bottonimg').' imgdown" title="[SORT]" href="?'.$data['req'].'dsort='.$r['href'].'" onclick="return load_href(this)"></a>';
+					$html .= '<a class="'.($r['sel']==2?'bottonimg_sel':'bottonimg').' imgdown" title="[SORT]" href="'.$_CFG['PATH']['wepname'].'/index.php?'.$data['req'].'dsort='.$r['href'].'" onclick="return load_href(this)"></a>';
 				}
 				$html .= '</th>';
 			}
@@ -75,7 +75,7 @@ include_once($this->_PATHd.'php/messages.php');
 					if($tdflag)
 						$html .= '<b>'.$data['thitem'][$ktd]['value'].'</b>: ';
 					if($tditem['type']=='img') {
-						$html .= '<a rel="fancy" title="рисунок" class="fancyimg" href="/'.$tditem['value'].'"><img src="/'.$tditem['value'].'" alt="" width="50"/></a>&#160;';
+						$html .= '<a rel="fancy" title="рисунок" class="fancyimg" href="'.$tditem['value'].'"><img src="'.$tditem['value'].'" alt="" width="50"/></a>&#160;';
 					}
 					elseif($tditem['type']=='swf') {
 						if($tditem['value']!='')
@@ -101,15 +101,15 @@ include_once($this->_PATHd.'php/messages.php');
 			$html .= '<td class="ic" style="vertical-align:top;white-space:nowrap;">';
 
 			if($r['act'])
-				$html .= '<a class="bottonimg img'.$r['active'].'" href="?'.$data['req'].$data['cl'].'_id='.$r['id'].'&amp;_type='.($r['active']==1?'dis':'act').'" onclick="return load_href(this)" title="['.$_CFG['_ACT_TITLE'][$r['active']].']"></a>';
+				$html .= '<a class="bottonimg img'.$r['active'].'" href="'.$_CFG['PATH']['wepname'].'/index.php?'.$data['req'].$data['cl'].'_id='.$r['id'].'&amp;_type='.($r['active']==1?'dis':'act').'" onclick="return load_href(this)" title="['.$_CFG['_ACT_TITLE'][$r['active']].']"></a>';
 			if($r['edit'])
-				$html .= '<a class="bottonimg imgedit" href="?'.$data['req'].$data['cl'].'_id='.$r['id'].'&amp;_type=edit" onclick="return load_href(this)" title="['.$_CFG['_EDIT_TITLE'].']"></a>';
+				$html .= '<a class="bottonimg imgedit" href="'.$_CFG['PATH']['wepname'].'/index.php?'.$data['req'].$data['cl'].'_id='.$r['id'].'&amp;_type=edit" onclick="return load_href(this)" title="['.$_CFG['_EDIT_TITLE'].']"></a>';
 			if($r['del'])
-				$html .= '<a class="bottonimg imgdel" href="?'.$data['req'].$data['cl'].'_id='.$r['id'].'&amp;_type=del" onclick="return hrefConfirm(this,\'del\')" title="['.$_CFG['_DEL_TITLE'].']"></a>';
+				$html .= '<a class="bottonimg imgdel" href="'.$_CFG['PATH']['wepname'].'/index.php?'.$data['req'].$data['cl'].'_id='.$r['id'].'&amp;_type=del" onclick="return hrefConfirm(this,\'del\')" title="['.$_CFG['_DEL_TITLE'].']"></a>';
 			if(isset($r['istree']))
-				$html .= '<br/><a href="?'.$data['req'].$data['cl'].'_id='.$r['id'].'" onclick="return load_href(this)">'.$r['istree']['value'].' ('.$r['istree']['cnt'].')</a>';
+				$html .= '<br/><a href="'.$_CFG['PATH']['wepname'].'/index.php?'.$data['req'].$data['cl'].'_id='.$r['id'].'" onclick="return load_href(this)">'.$r['istree']['value'].' ('.$r['istree']['cnt'].')</a>';
 			if(isset($r['child'])) foreach($r['child'] as $ck=>$cn)
-				$html .= '<br/><a href="?'.$data['req'].$data['cl'].'_id='.$r['id'].'&amp;'.$data['cl'].'_ch='.$ck.'" onclick="return load_href(this)">'.$cn['value'].' ('.$cn['cnt'].')</a>';
+				$html .= '<br/><a href="'.$_CFG['PATH']['wepname'].'/index.php?'.$data['req'].$data['cl'].'_id='.$r['id'].'&amp;'.$data['cl'].'_ch='.$ck.'" onclick="return load_href(this)">'.$cn['value'].' ('.$cn['cnt'].')</a>';
 
 
 			$html .= '</td></tr>';
@@ -136,6 +136,7 @@ include_once($this->_PATHd.'php/messages.php');
 			$html .= '&#160;</div><div class="ppagenum"></div>';
 		}
 		$html .= '<select class="mopselect" onchange="setCookie(\''.$data['modul'].'_mop\',this.value,20);window.location.reload();">';
+		//,\''.$_CFG['session']['path'].'\',\''.$_CFG['session']['domain'].'\',\''.$_CFG['session']['secure'].'\'
 		//JSHR(0,\''.$_CFG['_HREF']['JS'].'?_view=pagenum&amp;_modul='.$data['modul'].'&amp;mop=\'+this.value)
 		if(count($data['mop'])) {
 			foreach($data['mop'] as $k=>$r) {

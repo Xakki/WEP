@@ -212,7 +212,7 @@
 		
 		if($this->_prmModulAdd($this->_cl))
 			$xml['topmenu'][] = array(
-				'href'=>'?'.$this->_clp.'_type=add'.(($this->id)?'&amp;'.$this->_cl.'_id='.$this->id:''),
+				'href'=>$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp.'_type=add'.(($this->id)?'&amp;'.$this->_cl.'_id='.$this->id:''),
 				'caption'=>'Добавить '.$this->caption,
 				'sel'=>0,
 				'type'=>''
@@ -223,7 +223,7 @@
 			foreach($this->owner->childs as $ck=>$cn) {
 				if(count($cn->fields_form) and $ck!=$cl and $cn->_prmModulShow($ck))
 					$xml['topmenu'][] = array(
-						'href'=>'?'.$this->_clp.$cl.'_id='.$this->owner->id.'&amp;'.$cl.'_ch='.$ck,
+						'href'=>$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp.$cl.'_id='.$this->owner->id.'&amp;'.$cl.'_ch='.$ck,
 						'caption'=>$cn->caption.'('.$row[$ck.'_cnt'].')',
 						'sel'=>0,
 						'type'=>'child'
@@ -233,7 +233,7 @@
 			foreach($this->childs as $ck=>$cn) {
 				if(count($cn->fields_form) and $ck!=$cl and $cn->_prmModulShow($ck))
 					$xml['topmenu'][] = array(
-						'href'=>'?'.$this->_clp.$cl.'_id='.$this->id.'&amp;'.$cl.'_ch='.$ck,
+						'href'=>$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp.$cl.'_id='.$this->id.'&amp;'.$cl.'_ch='.$ck,
 						'caption'=>$cn->caption.'('.$row[$ck.'_cnt'].')',
 						'sel'=>0,
 						'type'=>'child'
@@ -242,7 +242,7 @@
 
 		if(_prmModul($this->_cl,array(14)))
 			$xml['topmenu'][] = array(
-				'href'=>'?_modul='.$this->_cl.'&amp;_type=checkmodul',
+				'href'=>$this->_CFG['_HREF']['JS'].'?_modul='.$this->_cl.'&amp;_type=checkmodul',
 				'caption'=>'Обновить поля таблицы',
 				'sel'=>0,
 				'type'=>'tools',
@@ -251,7 +251,7 @@
 
 		if(isset($this->config_form) and count($this->config_form) and _prmModul($this->_cl,array(13)))
 			$xml['topmenu'][] = array(
-				'href'=>'?_modul='.$this->_cl.'&amp;_type=config',
+				'href'=>$this->_CFG['_HREF']['JS'].'?_modul='.$this->_cl.'&amp;_type=config',
 				'caption'=>'Настроика модуля',
 				'sel'=>0,
 				'type'=>'tools',
@@ -259,7 +259,7 @@
 			);
 		if($this->mf_indexing and _prmModul($this->_cl,array(12)))
 			$xml['topmenu'][] = array(
-				'href'=>'?_modul='.$this->_cl.'&amp;_type=reindex',
+				'href'=>$this->_CFG['_HREF']['JS'].'?_modul='.$this->_cl.'&amp;_type=reindex',
 				'caption'=>'Переиндексация',
 				'sel'=>0,
 				'type'=>'tools',
@@ -267,7 +267,7 @@
 			);
 		if($filter_clause[1]) {
 			$xml['topmenu'][] = array(
-				'href'=>'?_modul='.$this->_cl.'&amp;_type=formfilter',
+				'href'=>$this->_CFG['_HREF']['JS'].'?_modul='.$this->_cl.'&amp;_type=formfilter',
 				'caption'=>'Фильтр',
 				'sel'=>0,
 				'type'=>'tools',
@@ -281,7 +281,7 @@
 		//$xml .= '<item type="" class="tools_gact" href="?'.$this->_clp.'_type=deleted">Корзина</item>';
 		if($this->mf_statistic) {
 			$xml['topmenu'][] = array(
-				'href'=>'?_modul='.$this->_cl.'&amp;_type=stats'.($this->owner->id?'&amp;_oid='.$this->owner->id:''),
+				'href'=>$this->_CFG['_HREF']['JS'].'?_modul='.$this->_cl.'&amp;_type=stats'.($this->owner->id?'&amp;_oid='.$this->owner->id:''),
 				'caption'=>'Статистика',
 				'sel'=>0,
 				'type'=>'tools',

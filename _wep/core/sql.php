@@ -1,32 +1,4 @@
 <?
-	register_shutdown_function ('shutdown_function'); // Запускается первым при завершении скрипта
-
-/*
-Функция завершения работы скрипта
-*/
-	function shutdown_function() {
-		//ob_end_flush();
-		//print_r('shutdown_function');
-		session_write_close();
-	}
-/*SESSION*/
-
-	function session_go($force=0) {
-		global $_CFG;
-		if(!$_SERVER['robot'] and (isset($_COOKIE[$_CFG['session_name']]) or $force) and !defined('SID')) {
-			if($_CFG['wep']['sessiontype']==1) {
-				if(!$SESSION_GOGO) {
-					require_once($_CFG['_PATH']['core'].'/session.php');
-					$SESSION_GOGO = new session_gogo();
-				}
-			}else {
-				session_start();
-			}
-			return true;
-		}
-		return false;
-	}
-
 /*SQL*/
 
 	class sql

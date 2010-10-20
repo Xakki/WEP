@@ -1,17 +1,18 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru">
 	<head>
-		<title>WebEngineOnPHP - {$_SERVER['SERVER_NAME']}</title> 
+		<title>WebEngineOnPHP - {$_SERVER['SERVER_NAME']}</title>
+		<base href="{$_CFG['_HREF']['BH']}">
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 		<meta http-equiv="Pragma" content="no-cache"/>
 		<meta name="keywords" content="WEP"/> 
 		<meta name="description" content="CMS"/>
 		<link rel="SHORTCUT ICON" href="{$_tpl['design']}img/favicon.ico"/>
-		<script type="text/javascript" src="/_design/_script/jquery.js"></script>
-		<script type="text/javascript" src="/_design/_script/jquery.form.js"></script>
-		<script type="text/javascript" src="/_design/_script/jquery.fancybox.js"></script><link rel="stylesheet" href="/_design/_style/jquery.fancybox.css" type="text/css"/>
-		<script type="text/javascript" src="/_design/_script/utils.js"></script>
-		<script type="text/javascript" src="/_design/_script/md5.js"></script>
+		<script type="text/javascript" src="_design/_script/jquery.js"></script>
+		<script type="text/javascript" src="_design/_script/jquery.form.js"></script>
+		<script type="text/javascript" src="_design/_script/jquery.fancybox.js"></script><link rel="stylesheet" href="_design/_style/jquery.fancybox.css" type="text/css"/>
+		<script type="text/javascript" src="_design/_script/utils.js"></script>
+		<script type="text/javascript" src="_design/_script/md5.js"></script>
 		{$_tpl['script']}
 		{$_tpl['styles']}
 	</head>

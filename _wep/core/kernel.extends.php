@@ -193,7 +193,7 @@ _fldformer($key, $param)
 		if(isset($_GET[$this->_cl.'_mop'])) {
 			$this->messages_on_page=(int)$_GET[$this->_cl.'_mop'];
 			if($_COOKIE[$this->_cl.'_mop']!=$this->messages_on_page)
-				setcookie($this->_cl.'_mop',$this->messages_on_page, $this->_CFG['remember_expire'],'/', '.'.$_SERVER['HTTP_HOST2']);
+				_setcookie($this->_cl.'_mop',$this->messages_on_page, $this->_CFG['remember_expire']);
 		}
 		elseif(isset($_COOKIE[$this->_cl.'_mop']))
 			$this->messages_on_page=(int)$_COOKIE[$this->_cl.'_mop'];
@@ -1102,7 +1102,7 @@ $Ajax=0 - не скриптовая
 				$this->_list('id');
 				if(!count($first_data)) $first_data = $this->data;
 				$this->tree_data += $this->data;
-				$path2['?'.$this->_clp.$this->_cl.'_id='.$this->data[$parent_id]['id'].'&amp;'] =$this->caption.': '.$this->data[$parent_id][$this->_listname];
+				$path2[$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp.$this->_cl.'_id='.$this->data[$parent_id]['id'].'&amp;'] =$this->caption.': '.$this->data[$parent_id][$this->_listname];
 				if($param['first_id'] and $parent_id==$param['first_id'])
 					break;
 				$parent_id = $this->data[$parent_id]['parent_id'];
@@ -1118,20 +1118,20 @@ $Ajax=0 - не скриптовая
 		
 		if($this->owner->id) {
 			if($this->owner->mf_istree) array_pop($HTML->path);
-			$HTML->path['?'.$this->_clp] =$this->caption.':'.$this->owner->data[$this->owner->id][$this->owner->_listname];
+			$HTML->path[$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp] =$this->caption.':'.$this->owner->data[$this->owner->id][$this->owner->_listname];
 		}
 		else
-			$HTML->path['?'.$this->_clp] =$this->caption;
+			$HTML->path[$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp] =$this->caption;
 		if(count($path2)) 
 			$HTML->path = array_merge($HTML->path,$path2);
 
 		if($this->id and isset($_GET[$cl.'_ch']) and isset($this->childs[$_GET[$cl.'_ch']])) {
 			if(count($this->data)) {
-				//$HTML->path['?'.$this->_clp] =$this->caption.': '.$this->data[$this->id][$this->_listname];
+				//$HTML->path[$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp] =$this->caption.': '.$this->data[$this->id][$this->_listname];
 				list($xml,$flag) = $this->childs[$_GET[$cl.'_ch']]->super_inc($param,$ftype);
 				//	$tmp = $this->childs[$_GET[$cl.'_ch']]->_clp;
-				//if(!isset($HTML->path['?'.$tmp]))
-				//	$HTML->path['?'.$tmp] =$this->childs[$_GET[$cl.'_ch']]->caption;
+				//if(!isset($HTML->path[$this->_CFG['PATH']['wepname'].'/index.php?'.$tmp]))
+				//	$HTML->path[$this->_CFG['PATH']['wepname'].'/index.php?'.$tmp] =$this->childs[$_GET[$cl.'_ch']]->caption;
 			}
 		}else {
 			if($ftype=='add') {
@@ -1141,12 +1141,12 @@ $Ajax=0 - не скриптовая
 				if($flag==1)
 					$this->id=$this->parent_id;
 				//else
-					$HTML->path['?'.$this->_clp.'_type=add'.(($this->parent_id)?'&amp;'.$this->_cl.'_id='.$this->parent_id:'')] ='Добавить';
+					$HTML->path[$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp.'_type=add'.(($this->parent_id)?'&amp;'.$this->_cl.'_id='.$this->parent_id:'')] ='Добавить';
 			}
 			elseif($ftype=='edit' && $this->id) {
 				if($this->mf_istree) 
 					array_pop($HTML->path);
-				$HTML->path['?'.$this->_clp.$this->_cl.'_id='.$this->id.'&amp;_type=edit'] ='Редактировать:<b>'.preg_replace($this->_CFG['_repl']['name'],'',$this->data[$this->id][$this->_listname]).'</b>';
+				$HTML->path[$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp.$this->_cl.'_id='.$this->id.'&amp;_type=edit'] ='Редактировать:<b>'.preg_replace($this->_CFG['_repl']['name'],'',$this->data[$this->id][$this->_listname]).'</b>';
 				list($xml['formcreat'],$flag) = $this->_UpdItemModul($param);
 				if($flag==1){
 					$this->id=$this->parent_id;
@@ -1527,14 +1527,14 @@ $Ajax=0 - не скриптовая
 		}
 		if(!$flag && $this->_CFG['site']['msp']=='paginator') {
 			global $_tpl;
-			$_tpl['script'] .='<script type="text/javascript" src="/_design/_script/jquery.paginator.js"></script>'."\n";
-			$_tpl['styles'] .='<link rel="stylesheet" href="/_design/_style/paginator.css" type="text/css"/>'."\n";
+			$_tpl['script'] .='<script type="text/javascript" src="'.$this->_CFG['_HREF']['_script'].'jquery.paginator.js"></script>'."\n";
+			$_tpl['styles'] .='<link rel="stylesheet" href="'.$this->_CFG['_HREF']['_style'].'paginator.css" type="text/css"/>'."\n";
 			$_tpl['onload'] .='pagenum('.$DATA['cntpage'].','.($this->reversePageN?'true':'false').');';
 		}
 		elseif($flag && $this->_CFG['wep']['msp']=='paginator') {
 			global $_tpl;
-			$_tpl['script'] .='<script type="text/javascript" src="/_design/_script/jquery.paginator.js"></script>'."\n";
-			$_tpl['styles'] .='<link rel="stylesheet" href="/_design/_style/paginator.css" type="text/css"/>'."\n";
+			$_tpl['script'] .='<script type="text/javascript" src="'.$this->_CFG['_HREF']['_script'].'jquery.paginator.js"></script>'."\n";
+			$_tpl['styles'] .='<link rel="stylesheet" href="'.$this->_CFG['_HREF']['_style'].'paginator.css" type="text/css"/>'."\n";
 			$_tpl['onload'] .='pagenum_default('.$DATA['cntpage'].','.$this->_pn.',\''.$this->_cl.'\','.($this->reversePageN?'true':'false').');';
 		}
 		//if($this->reversePageN)
@@ -1609,8 +1609,8 @@ $Ajax=0 - не скриптовая
 			$hash_key = file_get_contents($_CFG['_PATH']['HASH_KEY']);
 			$hash_key = md5($hash_key);
 			$crypttext = trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $hash_key, $_SESSION['captcha'], MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))));
-			setcookie('chash',$crypttext,(time()+1800),'/', '.'.$_SERVER['HTTP_HOST2']);
-			setcookie('pkey',base64_encode($_CFG['PATH']['HASH_KEY']),(time()+1800),'/', '.'.$_SERVER['HTTP_HOST2']);
+			_setcookie('chash',$crypttext,(time()+1800));
+			_setcookie('pkey',base64_encode($_CFG['PATH']['HASH_KEY']),(time()+1800));
 			
 		}
 	}

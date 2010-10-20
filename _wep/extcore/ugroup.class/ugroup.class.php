@@ -244,7 +244,7 @@ class users_class extends kernel_class {
 					else
 					{
 						if($_POST['remember']=='1'){
-							setcookie('remember', md5($this->data[0]['pass']).'_'.$this->data[0]['id'], (time()+(86400*$this->owner->config['rememberday'])),'/', '.'.$_SERVER['HTTP_HOST2']);
+							_setcookie('remember', md5($this->data[0]['pass']).'_'.$this->data[0]['id'], (time()+(86400*$this->owner->config['rememberday'])));
 						}
 						return $this->setUserSession();
 					}
@@ -280,7 +280,7 @@ class users_class extends kernel_class {
 						return array("Доступ закрыт.",0);
 					else
 					{
-						setcookie('remember', md5($this->data[0]['pass']).'_'.$this->data[0]['id'], (time()+(86400*$this->owner->config['rememberday'])),'/', '.'.$_SERVER['HTTP_HOST2']);
+						_setcookie('remember', md5($this->data[0]['pass']).'_'.$this->data[0]['id'], (time()+(86400*$this->owner->config['rememberday'])));
 						return $this->setUserSession();
 					}
 				}
@@ -297,7 +297,7 @@ class users_class extends kernel_class {
 		$_SESSION['FckEditorUserFilesPath'] = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['userfile'].$_SESSION['user']['id'].'/';
 		global $_CFG;
 		if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0)
-			setcookie('_showerror',1, $_CFG['session_expire'],'/','.'.$_SERVER['HTTP_HOST2']);
+			_setcookie('_showerror',1);
 		return array($this->_CFG['_MESS']['authok'],1);
 	}
 

@@ -27,12 +27,12 @@
 Запуск сесии
 */
 	if(isset($_GET['_showallinfo']) and !$_SERVER['robot']) {// and !isset($_COOKIE['_showallinfo'])
-		setcookie('_showallinfo',$_GET['_showallinfo'],$_CFG['session_expire'],'/', '.'.$_SERVER['HTTP_HOST2']);
+		_setcookie('_showallinfo',$_GET['_showallinfo']);
 		$_COOKIE['_showallinfo']=$_GET['_showallinfo'];
 	}
 
 	if(!$_SERVER['robot'] and (isset($_GET['_showerror']) or strpos($_SERVER['HTTP_HOST'],'.l') or strpos($_SERVER['HTTP_HOST'],'.i')) and !$_COOKIE['_showerror']) {
-		setcookie('_showerror',1,$_CFG['session_expire'],'/', '.'.$_SERVER['HTTP_HOST2']);
+		_setcookie('_showerror',1);
 		$_COOKIE['_showerror']=1;
 	}
 
@@ -70,10 +70,10 @@
 
 			if($flag){
 				headerssent();
-				$_tpl['design']='/'.$_PATHd.$_design.'/';
-				$_tpl['title']=$_tpl['time']='';
-				$_tpl['styles'] ='<link rel="stylesheet" href="'.$_tpl['design'].'style/style.css" type="text/css"/>';
-				$_tpl['script'] ='<script type="text/javascript" src="'.$_tpl['design'].'script/script.js"></script>';
+				$_tpl['design'] = $_PATHd.$_design.'/';
+				$_tpl['title'] = $_tpl['time']='';
+				$_tpl['styles'] = '<link rel="stylesheet" href="'.$_tpl['design'].'style/style.css" type="text/css"/>';
+				$_tpl['script'] = '<script type="text/javascript" src="'.$_tpl['design'].'script/script.js"></script>';
 			}
 		}
 
@@ -652,9 +652,9 @@
 					$_SESSION['FckEditorUserFilesUrl'] = $_CFG['_HREF']['BH'].$_CFG['PATH']['userfile'];
 					$_SESSION['FckEditorUserFilesPath'] = $_CFG['_PATH']['path'].$_CFG['PATH']['userfile'];
 					if($_POST['remember']=='1')
-						setcookie('remember', md5($_CFG['wep']['password']).'_'.$_CFG['wep']['login'], $_CFG['remember_expire'],'/','.'.$_SERVER['HTTP_HOST2']);
+						_setcookie('remember', md5($_CFG['wep']['password']).'_'.$_CFG['wep']['login'], $_CFG['remember_expire']);
 					$result = array($_CFG['_MESS']['authok'],1);
-					setcookie('_showerror',1, $_CFG['session_expire'],'/','.'.$_SERVER['HTTP_HOST2']);
+					_setcookie('_showerror',1);
 					//$_COOKIE['_showerror']=1;
 				}
 			}
@@ -669,9 +669,9 @@
 		if(isset($_SESSION))
 			$_SESSION = array();
 		if(isset($_COOKIE['remember']))
-			setcookie('remember', '', (time()-5000),'/','.'.$_SERVER['HTTP_HOST2']);
+			_setcookie('remember', '', (time()-5000));
 		if(isset($_COOKIE['wepID']))
-			setcookie('wepID', '', (time()-5000),'/','.'.$_SERVER['HTTP_HOST2']);
+			_setcookie('wepID', '', (time()-5000));
 		//_showerror
 		//
 	}

@@ -11,7 +11,7 @@
 		$_GET['_modul'] = preg_replace($_CFG['_repl']['name'],'',$_GET['_modul']);
 		$_REQUEST['mop'] = (int)$_REQUEST['mop'];
 		if(!isset($_COOKIE[$_GET['_modul'].'_mop']) or $_COOKIE[$_GET['_modul'].'_mop']!=$_REQUEST['mop'])
-			setcookie($_GET['_modul'].'_mop',$_REQUEST['mop']);
+			_setcookie($_GET['_modul'].'_mop',$_REQUEST['mop']);
 		print_r('<pre>');print_r($_COOKIE);
 		$_tpl['onload'] .= 'window.location.reload();';
 	}
@@ -21,7 +21,7 @@
 		$GLOBALS['_RESULT']['html'] = $_CFG['_MESS']['deniedrobot'];
 		exit($_CFG['_MESS']['deniedrobot']);
 	}
-	elseif(!isset($_COOKIE[$_CFG['session_name']])) {
+	elseif(!isset($_COOKIE[$_CFG['session']['name']])) {
 		$GLOBALS['_RESULT']['html'] = $_CFG['_MESS']['denieda'];
 		exit($_CFG['_MESS']['denieda']);
 	}

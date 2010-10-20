@@ -3,7 +3,8 @@
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru">
 	<head>
-		<title>WebEngineOnPHP - {$_SERVER['SERVER_NAME']}</title> 
+		<title>WebEngineOnPHP - {$_SERVER['SERVER_NAME']}</title>
+		<base href="{$_CFG['_HREF']['BH']}">
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 		<meta http-equiv="Pragma" content="no-cache"/>
 		<meta name="keywords" content="WEP"/> 
@@ -44,14 +45,14 @@
 	<body onload="">{$_tpl['logs']}
 	<div style="position:relative;top:40%;">
 		<div class="cform">
-			<form action="login.php" method="post">
+			<form action="" method="post">
 				<input type="hidden" name="ref" value="{$_tpl['ref']}"/>
 				<div>Логин:</div><input type="text" name="login" tabindex="1"/>
 				<div>Пароль:</div><input type="password" name="pass" tabindex="2"/>
 				<div>Запомнить?<input type="checkbox" style="border:medium none; width:30px;" tabindex="3" name="remember" value="1"/></div>
 				<input class="submit" type="submit" name="enter" value="Войти" tabindex="3"/>
 			</form>
-			<a href="/remind.html">Забыли пароль?</a>
+			<a href="remind.html">Забыли пароль?</a>
 			
 		</div>
 		{$_tpl['mess']}

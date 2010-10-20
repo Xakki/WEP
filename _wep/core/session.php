@@ -37,7 +37,7 @@ class session_gogo {
 		$this->uip = $_SERVER['REMOTE_ADDR']; 
 		$this->_time = time();
 		//$this->expired = get_cfg_var('session.gc_maxlifetime');
-		$this->expired = $this->_CFG['session_expire'];
+		$this->expired = $_CFG['session']['expire'];
 		session_set_save_handler(array(&$this,"open"), array(&$this,"close"), array(&$this,"read"), array(&$this,"write"), array(&$this,"destroy"), array(&$this,"gc"));
 		session_start();
 	}
