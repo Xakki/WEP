@@ -44,10 +44,20 @@
 	$_CFG['PATH']['WSWG'] = '_wysiwyg/';
 	$_CFG['PATH']['HASH_KEY'] = $_CFG['PATH']['wepconfname'].'/config/hash.key';
 
+//Настройка для Nginx
+	if(isset($_SERVER['HTTP_X_REAL_IP']))
+		$_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_REAL_IP'];
+	if(isset($_SERVER['HTTP_X_REAL_PORT']))
+		$_SERVER['SERVER_PORT'] = $_SERVER['HTTP_X_REAL_PORT'];
+
 /*http пути*/
-	$_CFG['_HREF']['BH'] = 'http://'.$_SERVER['HTTP_HOST'].'/'; // www-путь сайта
+	$port = '';
+	if($_SERVER['SERVER_PORT']!=80)
+		$port = ':'.$_SERVER['SERVER_PORT'];
+
+	$_CFG['_HREF']['BH'] = 'http://'.$_SERVER['HTTP_HOST'].$port.'/'; // www-путь сайта
 	$_CFG['_HREF']['arrayHOST'] = array_reverse(explode('.',$_SERVER['HTTP_HOST']));
-	$_SERVER['HTTP_HOST2'] = $_CFG['_HREF']['arrayHOST'][1].'.'.$_CFG['_HREF']['arrayHOST'][0];
+	$_SERVER['HTTP_HOST2'] = $_CFG['_HREF']['arrayHOST'][1].'.'.$_CFG['_HREF']['arrayHOST'][0].$port;
 	$_CFG['_HREF']['JS'] = $_CFG['_HREF']['BH'].$_CFG['PATH']['wepname'].'/js.php';
 	$_CFG['_HREF']['siteJS'] = $_CFG['_HREF']['BH'].'_js.php';
 	$_CFG['_HREF']['captcha'] = $_CFG['_HREF']['BH'].'_captcha.php';
