@@ -14,10 +14,14 @@ abstract class kernel_class{
 		if(!$this->SQL)
 			trigger_error("SQL class missing.", E_USER_WARNING);
 		$this->owner = &$owner;//link to owner class
-		if($SQL->_iFlag)
-			$this->_autoCheckMod = true;
-		else
-			$this->_autoCheckMod = false;
+		if(!isset($this->_autoCheckMod)) {
+			if($SQL->_iFlag)
+				$this->_autoCheckMod = true;
+			else
+				$this->_autoCheckMod = false;
+		}
+
+		$this->_set_features(); // настройки модуля
 
 		$this->_create_conf(); // загрузки формы конфига
 
@@ -25,11 +29,11 @@ abstract class kernel_class{
 			$this->configParse();
 		}
 		
-		$this->_create();// variable initalization 
+		$this->_create();// предустановки модуля
 
 		if($this->_autoCheckMod){ // вкл режим автосоздания полей и проверки модуля
 			$this->_checkmodstruct();
-		}	
+		}
 	}
 
 	function __destruct(){
@@ -58,31 +62,33 @@ _fldformer($key, $param)
 		$this->mf_ordctrl = false; // поле ordind для сортировки
 		$this->mf_actctrl = false; // поле active
 		$this->mf_use_charid = false;//if true - id varchar
-		$this->mf_idwidth = 63; // длина поля ID
+			$this->mf_idwidth = 63; // длина поля ID
+		$this->_setnamefields=true;//добавлять поле name
 		$this->mf_timestamp = false; // создать поле  типа timestamp
+		$this->mf_timecr = false; // создать поле хранящще время создания поля
+		$this->mf_timeup = false; // создать поле хранящще время обновления поля
+		$this->mf_timeoff = false; // создать поле хранящще время отключения поля (active=0)
 		$this->mf_createrid = true;//польз владелец
+		$this->mf_ipcreate = false;//IP адрес пользователя с котрого была добавлена запись	
 		$this->mf_indexing = false; // индексация
 		$this->mf_add = true;// добавить в модуле
 		$this->mf_del = true;// удалять в модуле
-		$this->_setnamefields=true;//добавлять поле name
 		$this->owner_unique = false; // поле owner_id не уникально
 		$this->showinowner = true;// показывать под родителем
-		$this->text_ext = '.txt';// расширение для memo фиаилов
-		$this->reversePageN = false;
 		$this->mf_mop = true;// выключить постраничное отображение
-		$this->messages_on_page = 20;//число эл-ов на странице
-		$this->numlist=20;//максим число страниц при котором отображ все номера страниц
-		$this->_pn = 1; // номер текущей страницы
-		$this->mf_statistic = false; // статистика по дате добавления
+			$this->reversePageN = false; // обратный отчет для постраничного отображения
+			$this->messages_on_page = 20;//число эл-ов на странице
+			$this->numlist=20;//максим число страниц при котором отображ все номера страниц
+		$this->mf_statistic = false; // показывать  статистику по дате добавления
+		$this->cf_childs = false; // true - включить управление подмодулями в настройках модуля
 		$this->ver = '0.1';
-		return 0;
-	}
 
-	protected function _create() {
+		$this->text_ext = '.txt';// расширение для memo фиаилов
+
 		$this->_cl = str_replace('_class','',get_class($this));
 		$this->owner_name = 'owner_id';
 		$this->nick = $this->_cl;
-		$this->tablename = '';
+		$this->tablename = $this->_CFG['sql']['dbpref'].$this->_cl;
 		$this->caption = $this->_cl;
 		$this->version = 'unknown';
 		$this->_listfields = array('name');
@@ -98,98 +104,65 @@ _fldformer($key, $param)
 		$this->services =
 		$this->index_fields = array();
 		$this->ordfield = '';
+		return 0;
+	}
 
-		// add form properties
-		$this->addform_items = array();
-		$this->addform_title = 'Add item';
-
-		// update form properties
-		$this->editform_items = array();
-		$this->editform_title = 'Update item';
-
-		// list form properties
-		//$this->listform_items = array();
-		$this->listform_title = 'List of item';
-		$this->listform_itemcap = 'item name';
-
-		if ($this->_set_features()) 
-			return 1;
+	protected function _create() {
 
 		$this->_listnameSQL = ($this->_setnamefields?'name':'id'); // для SQL запроса при выводе списка
 		$this->_listname = ($this->_setnamefields?'name':'id');// ', `_listnameSQL` as `_listname`'
+
+		// construct fields
+		if ($this->mf_use_charid) 
+			$this->fields['id'] = array('type' => 'varchar', 'width' => $this->mf_idwidth, 'attr' => 'NOT NULL');
+		else
+			$this->fields['id'] = array('type' => 'int unsigned', 'attr' => 'NOT NULL AUTO_INCREMENT');
 		
-		if(!$this->tablename)
-			$this->tablename = $this->_CFG['sql']['dbpref'].$this->_cl;
+		if($this->_setnamefields) 
+			$this->fields['name'] = array('type' => 'varchar', 'width' => $this->mf_idwidth, 'attr' => 'NOT NULL');
 
-		$this->_enum['active'] = array(
-			0=>'Неактивное, новое', 
-			1=>'Активное', 
-			2=>'Неактивное, выключено пользователем', 
-			3=>'Неактивное, отредактировано пользователем', 
-			4=>'Удалено пользователем', 
-			5=>'Неактивное, включено пользователем', 
-			6=>'Неактивное, некорректное');
+		if ($this->owner) 
+		{
+			$this->fields[$this->owner_name] = $this->owner->fields['id'];
+			$this->fields[$this->owner_name]['attr'] = '';
+		}
 
-		$this->_enum['yesno'] = array(
-			0=>'НЕТ', 
-			1=>'ДА');
+		if($this->mf_createrid){
+			$this->fields['creater_id'] = array('type' => 'varchar', 'width' => $this->mf_idwidth, 'attr' => 'NOT NULL');
+		}
 
-		$this->_enum['yesno2'] = array(
-			0=>'НЕТ', 
-			1=>'ЕСТЬ');
+		if ($this->mf_istree) 
+		{
+			$this->fields['parent_id'] = $this->fields['id'];
+			$this->fields['parent_id']['attr'] = 'NOT NULL DEFAULT ';
+			if($this->mf_use_charid) $this->fields['parent_id']['attr'] .='""';
+			else $this->fields['parent_id']['attr'] .='0';
+		}
 
-		$this->_enum['_MOP'] = array(
-			5=>5, 
-			10=>10, 
-			20=>20,
-			30=>30,
-			50=>50,
-			100=>100,
-			150=>150,
-			200=>200);
+		if ($this->mf_actctrl) 
+			$this->fields['active'] = array('type' => 'bool', 'attr' => 'NOT NULL DEFAULT 1','default'=>1);
 
-		// construct obligatory fields
-			if ($this->mf_use_charid) 
-				$this->fields['id'] = array('type' => 'varchar', 'width' => $this->mf_idwidth, 'attr' => 'NOT NULL');
-			else
-				$this->fields['id'] = array('type' => 'int unsigned', 'attr' => 'NOT NULL AUTO_INCREMENT');
-			
-			if($this->_setnamefields) 
-				$this->fields['name'] = array('type' => 'varchar', 'width' => $this->mf_idwidth, 'attr' => 'NOT NULL');
+		if($this->mf_timestamp) 
+			$this->fields['_timestamp'] = array('type'=>'timestamp');
+		if($this->mf_timecr)
+			$this->fields['mf_timecr'] = array('type'=>'int unsigned', 'width'=>11, 'attr' => 'NOT NULL DEFAULT 0');
+		if($this->mf_timeup) 
+			$this->fields['mf_timeup'] = array('type'=>'int unsigned', 'width'=>11, 'attr' => 'NOT NULL DEFAULT 0');
+		if($this->mf_timeoff) 
+			$this->fields['mf_timeoff'] = array('type'=>'int unsigned', 'width'=>11, 'attr' => 'NOT NULL DEFAULT 0');
+		if($this->mf_ipcreate) 
+			$this->fields['mf_ipcreate'] = array('type'=>'bigint', 'width'=>20, 'attr' => 'NOT NULL DEFAULT 0');
 
-			if ($this->owner) 
-			{
-				$this->fields[$this->owner_name] = $this->owner->fields['id'];
-				$this->fields[$this->owner_name]['attr'] = '';
-			}
+		/*if ($this->mf_typectrl)
+			$this->fields['typedata'] = array('type' => 'tinyint unsigned', 'attr' => 'NOT NULL');
+		*/
+		if ($this->mf_ordctrl) //Содание полей для сортировки
+		{
+			$this->fields['ordind'] = array('type' => 'int','width'=>'10', 'attr' => 'NOT NULL');
+			$this->ordfield = 'ordind';
+		}
 
-			if($this->mf_createrid){
-				$this->fields['creater_id'] = array('type' => 'varchar', 'width' => $this->mf_idwidth, 'attr' => 'NOT NULL');
-			}
-
-			if ($this->mf_istree) 
-			{
-				$this->fields['parent_id'] = $this->fields['id'];
-				$this->fields['parent_id']['attr'] = 'NOT NULL DEFAULT ';
-				if($this->mf_use_charid) $this->fields['parent_id']['attr'] .='""';
-				else $this->fields['parent_id']['attr'] .='0';
-			}
-
-			if ($this->mf_actctrl) 
-				$this->fields['active'] = array('type' => 'bool', 'attr' => 'NOT NULL DEFAULT 1','default'=>1);
-
-			if ($this->mf_timestamp) 
-				$this->fields['_timestamp'] = array('type' => 'timestamp');
-
-			/*if ($this->mf_typectrl)
-				$this->fields['typedata'] = array('type' => 'tinyint unsigned', 'attr' => 'NOT NULL');
-			*/
-			if ($this->mf_ordctrl) //Содание полей для сортировки
-			{
-				$this->fields['ordind'] = array('type' => 'int','width'=>'10', 'attr' => 'NOT NULL');
-				$this->ordfield = 'ordind';
-			}
-
+		//pagenum
 		if(isset($_GET[$this->_cl.'_mop'])) {
 			$this->messages_on_page=(int)$_GET[$this->_cl.'_mop'];
 			if($_COOKIE[$this->_cl.'_mop']!=$this->messages_on_page)
@@ -197,7 +170,7 @@ _fldformer($key, $param)
 		}
 		elseif(isset($_COOKIE[$this->_cl.'_mop']))
 			$this->messages_on_page=(int)$_COOKIE[$this->_cl.'_mop'];
-
+		// номер текущей страницы
 		if(isset($_REQUEST[$this->_cl.'_pn']) && (int)$_REQUEST[$this->_cl.'_pn'])
 			$this->_pn = (int)$_REQUEST[$this->_cl.'_pn'];
 		elseif(isset($_REQUEST['_pn']) && (int)$_REQUEST['_pn'])
@@ -209,11 +182,24 @@ _fldformer($key, $param)
 
 		$this->attprm = array('type' => 'varchar(4)', 'attr' => 'NOT NULL DEFAULT \'\'');
 
+		if($this->cf_childs and $this->config['childs']) {
+			foreach($this->config['childs'] as $r) {
+				if(file_exists($this->_CFG['_PATH']['ext'].$this->_cl.'.class/'.$r.'.childs.php'))
+					include_once($this->_CFG['_PATH']['ext'].$this->_cl.'.class/'.$r.'.childs.php');
+				elseif(file_exists($this->_CFG['_PATH']['extcore'].$this->_cl.'.class/'.$r.'.childs.php'))
+					include_once($this->_CFG['_PATH']['extcore'].$this->_cl.'.class/'.$r.'.childs.php');
+				$this->create_child($r);
+			}
+		}
+
 		return 0;  
 	}
 
 	protected function _create_conf() { // Здесь можно установить стандартные настройки модулей
-
+		if($this->cf_childs) {
+			$this->config['childs'] = '';
+			$this->config_form['childs'] = array('type' => 'list', 'multiple'=>1, 'listname'=>'child.class', 'caption' => 'Подмодули');
+		}
 	}
 
 	protected function configParse() {
@@ -957,6 +943,27 @@ _message($msg,$type=0)
 		if(isset($this->_enum[$templistname])) {
 			$data = &$this->_enum[$templistname];
 		}
+		elseif(isset($this->_CFG['enum'][$templistname])) {
+			$data = &$this->_CFG['enum'][$templistname];
+		}
+		elseif($templistname == 'child.class') {
+			$dir = array();
+			if(file_exists($this->_CFG['_PATH']['ext'].$this->_cl.'.class'))
+				$dir[''] = $this->_CFG['_PATH']['ext'].$this->_cl.'.class';
+			if(file_exists($this->_CFG['_PATH']['extcore'].$this->_cl.'.class'))
+				$dir['Ядро - '] = $this->_CFG['_PATH']['extcore'].$this->_cl.'.class';
+			$data = array(''=>' --- ');
+			foreach($dir as $k=>$r) {
+				$odir = dir($r);
+				while (false !== ($entry = $odir->read())) {
+					if (substr($entry,-11)=='.childs.php') {
+						$entry = substr($entry,0,-11);
+						$data[$entry] = $k.$entry;
+					}
+				}
+				$odir->close();
+			}
+		}
 		elseif($templistname == 'list') {
 			$data = $this->_dump();
 		}
@@ -1015,7 +1022,7 @@ _message($msg,$type=0)
 				$clause['where'] = ' WHERE '.$clause['where'];
 
 			if($listname['leftjoin'] or $listname['join'])
-				$clause['from'] = 'FROM `'.$this->tablename.'` t1 '.($listname['leftjoin']?'LEFT':'').' JOIN `'.$listname['tablename'].'` tx ON '.$listname['leftjoin'];
+				$clause['from'] = ' FROM `'.$this->tablename.'` t1 '.($listname['leftjoin']?'LEFT':'').' JOIN `'.$listname['tablename'].'` tx ON '.$listname['leftjoin'];
 			else 
 				$clause['from'] = ' FROM `'.$listname['tablename'].'` tx ';
 			if ($listname['ordfield'])
@@ -1053,8 +1060,8 @@ _message($msg,$type=0)
 		else
 			return $this->_message('List '.current($listname).' not found');
 
-		if (!isset($this->_enum[$templistname])) 
-			$this->_enum[$templistname]=$data;
+		if (!isset($this->_CFG['enum'][$templistname]))
+			$this->_CFG['enum'][$templistname]=$data;
 		return $data;
 	}
 
@@ -1102,7 +1109,7 @@ $Ajax=0 - не скриптовая
 				$this->_list('id');
 				if(!count($first_data)) $first_data = $this->data;
 				$this->tree_data += $this->data;
-				$path2[$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp.$this->_cl.'_id='.$this->data[$parent_id]['id'].'&amp;'] =$this->caption.': '.$this->data[$parent_id][$this->_listname];
+				$path2['/'.$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp.$this->_cl.'_id='.$this->data[$parent_id]['id'].'&amp;'] =$this->caption.': '.$this->data[$parent_id][$this->_listname];
 				if($param['first_id'] and $parent_id==$param['first_id'])
 					break;
 				$parent_id = $this->data[$parent_id]['parent_id'];
@@ -1118,20 +1125,20 @@ $Ajax=0 - не скриптовая
 		
 		if($this->owner->id) {
 			if($this->owner->mf_istree) array_pop($HTML->path);
-			$HTML->path[$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp] =$this->caption.':'.$this->owner->data[$this->owner->id][$this->owner->_listname];
+			$HTML->path['/'.$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp] =$this->caption.':'.$this->owner->data[$this->owner->id][$this->owner->_listname];
 		}
 		else
-			$HTML->path[$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp] =$this->caption;
+			$HTML->path['/'.$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp] =$this->caption;
 		if(count($path2)) 
 			$HTML->path = array_merge($HTML->path,$path2);
 
 		if($this->id and isset($_GET[$cl.'_ch']) and isset($this->childs[$_GET[$cl.'_ch']])) {
 			if(count($this->data)) {
-				//$HTML->path[$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp] =$this->caption.': '.$this->data[$this->id][$this->_listname];
+				//$HTML->path['/'.$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp] =$this->caption.': '.$this->data[$this->id][$this->_listname];
 				list($xml,$flag) = $this->childs[$_GET[$cl.'_ch']]->super_inc($param,$ftype);
 				//	$tmp = $this->childs[$_GET[$cl.'_ch']]->_clp;
 				//if(!isset($HTML->path[$this->_CFG['PATH']['wepname'].'/index.php?'.$tmp]))
-				//	$HTML->path[$this->_CFG['PATH']['wepname'].'/index.php?'.$tmp] =$this->childs[$_GET[$cl.'_ch']]->caption;
+				//	$HTML->path['/'.$this->_CFG['PATH']['wepname'].'/index.php?'.$tmp] =$this->childs[$_GET[$cl.'_ch']]->caption;
 			}
 		}else {
 			if($ftype=='add') {
@@ -1141,12 +1148,12 @@ $Ajax=0 - не скриптовая
 				if($flag==1)
 					$this->id=$this->parent_id;
 				//else
-					$HTML->path[$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp.'_type=add'.(($this->parent_id)?'&amp;'.$this->_cl.'_id='.$this->parent_id:'')] ='Добавить';
+					$HTML->path['/'.$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp.'_type=add'.(($this->parent_id)?'&amp;'.$this->_cl.'_id='.$this->parent_id:'')] ='Добавить';
 			}
 			elseif($ftype=='edit' && $this->id) {
 				if($this->mf_istree) 
 					array_pop($HTML->path);
-				$HTML->path[$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp.$this->_cl.'_id='.$this->id.'&amp;_type=edit'] ='Редактировать:<b>'.preg_replace($this->_CFG['_repl']['name'],'',$this->data[$this->id][$this->_listname]).'</b>';
+				$HTML->path['/'.$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp.$this->_cl.'_id='.$this->id.'&amp;_type=edit'] ='Редактировать:<b>'.preg_replace($this->_CFG['_repl']['name'],'',$this->data[$this->id][$this->_listname]).'</b>';
 				list($xml['formcreat'],$flag) = $this->_UpdItemModul($param);
 				if($flag==1){
 					$this->id=$this->parent_id;
@@ -1442,7 +1449,7 @@ $Ajax=0 - не скриптовая
 			$this->_pn=$DATA['cntpage'];
 		}
 
-		foreach($this->_enum['_MOP'] as $k=>$r)
+		foreach($this->_CFG['enum']['_MOP'] as $k=>$r)
 			$DATA['mop'][$k] = array('value'=>$r,'sel'=>0);
 		$DATA['mop'][$this->messages_on_page]['sel'] = 1;
 

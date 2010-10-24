@@ -4,6 +4,42 @@
 	date_default_timezone_set('Europe/Moscow');
 	error_reporting(E_ALL ^ E_NOTICE);
 
+$_CFG['sql'] = array( // SQL
+	'host'=>'localhost',
+	'login'=>'default',
+	'password'=>'defaultpass',
+	'database'=>'defaultbd',
+	'setnames'=>'utf8',
+	'dbpref'=>'',
+	'log'=>0);
+
+$_CFG['info'] = array( //информация
+	'version'=>'2.2',
+	'email'=>'info@default.ru',
+	'icq'=>'0000',
+	'onShape'=>0);
+
+$_CFG['wep'] = array( // для админки
+	'charset'=>'utf-8',
+	'access'=>1, // 1 - вкл доступ по модулю пользователей, 0 - вкл доступ по дефолтному паролю
+	'locallang'=>'default',
+	'login'=>'root',
+	'password'=>'default',
+	'prm_table'=>'_',
+	'design'=>'default',
+	'msp'=>'paginator',
+	'md5'=>'d3dEegf6EH',
+	'def_filesize'=>200,
+	'sessiontype'=>1 //0 - стандартная сессия, 1 - БД сессия, 2 - ещё какаянибудь
+);
+
+$_CFG['site'] = array( // для сайта
+	'msp'=>'paginator' // постраничнка
+);
+
+  /****************/
+ /*$_CFG['_PATH']*/
+/****************/
 /*Полные пути по файловым системам для ядра*/
 	if(!isset($_CFG['_PATH']['wepconf'])) //если  путь не был задан
 		$_CFG['_PATH']['wepconf'] = dirname(dirname(__FILE__)); // файл-путь к конфигам
@@ -35,6 +71,9 @@
 	$_CFG['_PATH']['_style'] = $_CFG['_PATH']['path'].'_design/_style/'; // дизайн стили
 	$_CFG['_PATH']['_script'] = $_CFG['_PATH']['path'].'_design/_script/'; // дизайн стили
 
+  /****************/
+ /*$_CFG['PATH']*/
+/****************/
 // относительные пути
 	$_CFG['PATH']['content'] = '_content/';
 	$_CFG['PATH']['userfile'] = '_content/_userfile/'; // файлы пользователя
@@ -65,8 +104,9 @@
 		$k++;
 	}
 
-//print_r('<pre>');print_r($PHP_SELF);print_r($_SERVER);
-
+  /****************/
+ /*$_CFG['_HREF']*/
+/****************/
 	$_CFG['_HREF']['BH'] = 'http://'.$_SERVER['HTTP_HOST'].$port.'/'.$addpath; // www-путь сайта
 	$_CFG['_HREF']['JS'] = $_CFG['_HREF']['BH'].$_CFG['PATH']['wepname'].'/js.php';
 	$_CFG['_HREF']['siteJS'] = $_CFG['_HREF']['BH'].'_js.php';
@@ -74,13 +114,11 @@
 	$_CFG['_HREF']['WSWG'] = $_CFG['_HREF']['BH'].$_CFG['PATH']['WSWG'];
 	$_CFG['_HREF']['_style'] = '_design/_style/'; // дизайн стили
 	$_CFG['_HREF']['_script'] = '_design/_script/'; // дизайн стили
-
-	$_CFG['time'] = time();
-	$_CFG['getdate'] = getdate();
-	$_CFG['remember_expire'] = $_CFG['time']+1728000; // 20дней ,по умолчанию
-	$_CFG['logs']['sql'] = array(); // - массив SQL запросов
-	
 	$_CFG['_HREF']['arrayHOST'] = array_reverse(explode('.',$_SERVER['HTTP_HOST']));
+  
+  /******************/
+ /*$_CFG['session']*/
+/******************/
 	$_CFG['session']['domain'] = '';
 	if(count($_CFG['_HREF']['arrayHOST'])<2 or (int)$_CFG['_HREF']['arrayHOST'][0]>0) //учитываем localhost и ИПИ
 		$_SERVER['HTTP_HOST2'] = $_SERVER['HTTP_HOST'].$port;
@@ -96,12 +134,20 @@
 	session_name($_CFG['session']['name']);
 	session_set_cookie_params($_CFG['session']['expire'],$_CFG['session']['path'], $_CFG['session']['domain'],$_CFG['session']['secure']);
 
+
 	if(strstr($_SERVER['PHP_SELF'],'/'.$_CFG['PATH']['wepname'].'/'))
 		$_CFG['_F']['adminpage'] = true;
 	else
 		$_CFG['_F']['adminpage'] = false;
 
-//Маски
+	$_CFG['time'] = time();
+	$_CFG['getdate'] = getdate();
+	$_CFG['remember_expire'] = $_CFG['time']+1728000; // 20дней ,по умолчанию
+	$_CFG['logs']['sql'] = array(); // - массив SQL запросов
+  
+  /******************/
+ /*$_CFG['_MASK']***/
+/******************/
 	$_CFG['_MASK'] = array(
 'all'=>"/^.*$/",
 'login'=>"/^[0-9A-Za-z]+$/",
@@ -150,40 +196,41 @@ $_CFG['form'] = array(
 	'imgFormat' => array('gif'=>1,'jpg'=>1,'jpeg'=>1,'png'=>1),
 	'flashFormat' => array('swf'=>1)
 );
+  
+  /******************/
+ /*$_CFG['enum']***/
+/******************/
 
-$_CFG['sql'] = array( // SQL
-	'host'=>'localhost',
-	'login'=>'default',
-	'password'=>'defaultpass',
-	'database'=>'defaultbd',
-	'setnames'=>'utf8',
-	'dbpref'=>'',
-	'log'=>0);
+		$_CFG['enum']['active'] = array(
+			0=>'Неактивное, новое', 
+			1=>'Активное', 
+			2=>'Неактивное, выключено пользователем', 
+			3=>'Неактивное, отредактировано пользователем', 
+			4=>'Удалено пользователем', 
+			5=>'Неактивное, включено пользователем', 
+			6=>'Неактивное, некорректное');
 
-$_CFG['info'] = array( //информация
-	'version'=>'2.2',
-	'email'=>'info@default.ru',
-	'icq'=>'0000',
-	'onShape'=>0);
+		$_CFG['enum']['yesno'] = array(
+			0=>'НЕТ', 
+			1=>'ДА');
 
-$_CFG['wep'] = array( // для админки
-	'charset'=>'utf-8',
-	'access'=>1, // 1 - вкл доступ по модулю пользователей, 0 - вкл доступ по дефолтному паролю
-	'locallang'=>'default',
-	'login'=>'root',
-	'password'=>'default',
-	'prm_table'=>'_',
-	'design'=>'default',
-	'msp'=>'paginator',
-	'md5'=>'d3dEegf6EH',
-	'def_filesize'=>200,
-	'sessiontype'=>1 //0 - стандартная сессия, 1 - БД сессия, 2 - ещё какаянибудь
-);
+		$_CFG['enum']['yesno2'] = array(
+			0=>'НЕТ', 
+			1=>'ЕСТЬ');
 
-$_CFG['site'] = array( // для сайта
-	'msp'=>'paginator' // постраничнка
-	);
+		$_CFG['enum']['_MOP'] = array(
+			5=>5, 
+			10=>10, 
+			20=>20,
+			30=>30,
+			50=>50,
+			100=>100,
+			150=>150,
+			200=>200);
 
+  /***********************/
+ /***INCLUDE USER CONF***/
+/***********************/
 	include_once($_CFG['_PATH']['locallang'].$_CFG['wep']['locallang'].'.php');
 	if(file_exists($_CFG['_PATH']['locallang'].$_CFG['wep']['locallang'].'.php'))
 		include_once($_CFG['_PATH']['ulocallang'].$_CFG['wep']['locallang'].'.php');

@@ -173,7 +173,7 @@
 						elseif($r['type']=='date' and $this->fields[$k]['type']=='int')
 							$tditem['value'] .= date('Y-m-d H:i',$row[$k]);
 						elseif($r['type']=='checkbox')
-							$tditem['value'] .= $this->_enum['yesno'][$row[$k]];
+							$tditem['value'] .= $this->_CFG['enum']['yesno'][$row[$k]];
 						elseif($r['type']=='list' and !is_array($r['listname'])) {
 							$tempdata = $this->_getlist($r['listname']);
 							if($r['multiple']) 

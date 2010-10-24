@@ -141,14 +141,16 @@ class users_class extends kernel_class {
 		$this->fields["email"] =  array("type" => "VARCHAR", "width" => 32, "attr" => "NOT NULL");
 		$this->fields["www"] =  array("type" => "VARCHAR", "width" => 32, "attr" => "NOT NULL");
 		//$this->fields["description"] =  array("type" => "VARCHAR", "width" => 254, "attr" => "NOT NULL");
-
 		// service field
 		$this->fields["reg_date"] = array("type" => "int", "attr" => "NOT NULL");
 		$this->fields["reg_ip"] = array("type" => "VARCHAR", "width" => 128,"attr" => "NOT NULL DEFAULT '127.0.0.1'");
 		$this->fields["reg_hash"] = array("type" => "VARCHAR", "width" => 128);
 		$this->fields["up_date"] = array("type" => "TIMESTAMP", "attr" => "NOT NULL");
+		$this->fields["bill_rub"] = array("type" => "int", "width" => 11, "attr" => "NOT NULL DEFAULT 0");
 
-		// ----
+
+
+		// FORM FIELDS
 		if($this->mf_use_charid){
 			$this->fields_form['id'] =	array('type' => 'text', 'caption' => 'Логин','mask'=>array('name'=>'login','min' => '4','sort'=>1),'comment'=>'Логин должен состоять только из латинских букв и цифр.');
 			if(_prmUserCheck())  // Запрет поля на редактирование
@@ -179,6 +181,11 @@ class users_class extends kernel_class {
 
 		//$this->fields_form['description'] =  array('type' => 'textarea', 'caption' => 'Дополнительная информация','mask'=>array('max' => 2048));
 
+		$this->fields_form['bill_rub'] =	array(
+			'type' => 'text',
+			'readonly' => 1, 
+			'caption' => 'Счет(коопеки)',
+			'mask'=>array('sort'=>1));
 		$this->fields_form['reg_ip'] =	array(
 			'type' => 'text',
 			'readonly' => 1, 

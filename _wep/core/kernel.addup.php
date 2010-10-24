@@ -19,6 +19,10 @@
 			$_this->fld_data['parent_id'] = $_this->parent_id;
 		// add owner_id field
 		if (!$_this->fld_data[$_this->owner_name] and $_this->owner) $_this->fld_data[$_this->owner_name] = $_this->owner->id;
+		if ($_this->mf_timecr) 
+			$_this->fld_data['mf_timecr'] = $_this->_CFG['time'];
+		if ($_this->mf_timeup) 
+			$_this->fld_data['mf_timeup'] = $_this->_CFG['time'];
 
 		if (!isset($_this->fld_data) && !count($_this->fld_data))
 			return $_this->_message('Empty data for add in `'.$_this->caption.'`',1);
@@ -155,6 +159,12 @@
 			if ($_this->fld_data['parent_id']==$_this->id)
 				return $_this->_message('Child `'.$_this->caption.'` can`t be owner to self ');
 		}
+		if($_this->mf_timeup) 
+			$_this->fld_data['mf_timeup'] = $_this->_CFG['time'];
+		if($_this->mf_timeoff and !isset($_this->fld_data['mf_timeoff']) and isset($_this->fld_data['active']) and !$_this->fld_data['active'] and $_this->data[$_this->id]['active']) 
+			$_this->fld_data['mf_timeoff'] = $_this->_CFG['time'];
+		if($_this->mf_ipcreate) 
+			$_this->fld_data['mf_ipcreate'] = 'inet_aton(\''.$_SERVER['REMOTE_ADDR'].'\')';
 		//if ($_this->_select()) return 1;
 		// rename attaches & memos
 		if (!is_array($_this->id) and isset($_this->fld_data['id']) && $_this->fld_data['id'] != $_this->id) {

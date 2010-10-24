@@ -50,9 +50,13 @@
 		$_this->form = array();
 		$_this->form['_*features*_'] = array('name'=>'config','action'=>str_replace('&','&amp;',$_SERVER['REQUEST_URI']));
 		$_this->form['_info'] = array('type'=>'info','css'=>'caption','caption'=>$_this->_CFG['_MESS']['_config']);
-		foreach($_this->config_form as $k=>$r)
-			$_this->config_form[$k]['value']= stripslashes($_this->config[$k]);
-		$_this->form = $_this->form+$_this->config_form;
+		foreach($_this->config_form as $k=>$r) {
+			if(!is_array($_this->config[$k]))
+				$_this->config_form[$k]['value']= stripslashes($_this->config[$k]);
+			else
+				$_this->config_form[$k]['value']= $_this->config[$k];
+		}
+		$_this->form = array_merge($_this->form,$_this->config_form);
 		$_this->form['sbmt'] = array(
 			'type'=>'submit',
 			'value'=>$_this->_CFG['_MESS']['_submit']);
@@ -64,9 +68,13 @@
 		$h = fopen($_this->_file_cfg, 'w');
 			foreach($_this->config as $key=>$value) 
 			{
-				$value = str_replace("\x0A", ' ', $value);
-				$value = str_replace("\x0D", '', $value);
-				$value = stripslashes($value);
+				if(!is_array($value)) {
+					$value = str_replace("\x0A", ' ', $value);
+					$value = str_replace("\x0D", '', $value);
+					$value = stripslashes($value);
+				} else {
+					$value = implode('|',$value);
+				}
 				fwrite($h, $key.'='.$value."\n");
 			}
 		fclose($h);
