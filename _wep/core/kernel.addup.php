@@ -614,8 +614,6 @@
 						$value['value'] = $data[$key]= (int)$data[$key];
 					elseif($value['type']=='captcha' && $data[$key]!=$value['captcha']) {
 						$error[] = 31;
-						if($_COOKIE['_showallinfo'])
-							print_r($data[$key].' - '.$value['captcha']);
 					}
 					elseif($value['type']=='password')
 					{

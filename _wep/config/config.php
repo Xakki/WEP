@@ -275,5 +275,7 @@ $_CFG['form'] = array(
 		if($secure=='')
 			$secure = $_CFG['session']['secure'];
 		setcookie($name,$value,$expire,$path,$domain,$secure);
+		if($_GET['_showallinfo'])
+			print_r($name.'-'.$value.'-'.$expire.'-'.$path.'-'.$domain.'-'.$secure);
 	}
 ?>
