@@ -4,6 +4,11 @@
 	date_default_timezone_set('Europe/Moscow');
 	error_reporting(E_ALL ^ E_NOTICE);
 
+$_CFG['time'] = time();
+$_CFG['getdate'] = getdate();
+$_CFG['remember_expire'] = $_CFG['time']+1728000; // 20дней ,по умолчанию
+$_CFG['logs']['sql'] = array(); // - массив SQL запросов
+
 $_CFG['sql'] = array( // SQL
 	'host'=>'localhost',
 	'login'=>'default',
@@ -139,11 +144,6 @@ $_CFG['site'] = array( // для сайта
 		$_CFG['_F']['adminpage'] = true;
 	else
 		$_CFG['_F']['adminpage'] = false;
-
-	$_CFG['time'] = time();
-	$_CFG['getdate'] = getdate();
-	$_CFG['remember_expire'] = $_CFG['time']+1728000; // 20дней ,по умолчанию
-	$_CFG['logs']['sql'] = array(); // - массив SQL запросов
   
   /******************/
  /*$_CFG['_MASK']***/
@@ -275,7 +275,5 @@ $_CFG['form'] = array(
 		if($secure=='')
 			$secure = $_CFG['session']['secure'];
 		setcookie($name,$value,$expire,$path,$domain,$secure);
-		if($_GET['_showallinfo'])
-			print_r($name.'-'.$value.'-'.$expire.'-'.$path.'-'.$domain.'-'.$secure);
 	}
 ?>
