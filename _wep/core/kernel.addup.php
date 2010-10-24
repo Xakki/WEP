@@ -639,7 +639,7 @@
 								$error[] = 33;
 						}
 						elseif(!isset($temp[$data[$key]])) {
-							print_r('<pre>');print_r($temp);print_r($_this->SQL->query);print_r($value);
+							//print_r('<pre>');print_r($temp);print_r($_this->SQL->query);print_r($value);
 							$error[] = 33;
 						}
 					}
