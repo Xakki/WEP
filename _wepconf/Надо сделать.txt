@@ -38,17 +38,9 @@ PG class
 - - TOOLS в подмодулях
 
 - голосов в коммментах
-- надеюсь админка не покоцалась после того как я сделал $this->_list('id') в kernel.displayXML.php 
 
-
-bzr push --no-strict --use-existing-dir bzr+ssh://xakki@81.30.55.206/home/xakki/bzr/unidoski
-
-bzr push bzr+ssh://xakki@81.30.55.206/home/xakki/bzr/unidoski
-bzr merge bzr+ssh://xakki@81.30.55.206/home/xakki/bzr/unidoski
-
-bzr+ssh://xakki@81.30.55.206/home/xakki/bzr/unidoski
-
-sftp://xakki@192.168.1.101/unidoski/
-
+bzr push --no-strict --use-existing-dir bzr+ssh://xakki@81.30.55.206/home/xakki/bzr/core_wep
+bzr push bzr+ssh://xakki@81.30.55.206/home/xakki/bzr/core_wep
+bzr merge bzr+ssh://xakki@81.30.55.206/home/xakki/bzr/core_wep
 bzr branch bzr+ssh://xakki@81.30.55.206/home/ildar/bzr/core_wep
 

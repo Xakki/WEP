@@ -150,8 +150,8 @@ class pg_class extends kernel_class {
 		$flag_content = $this->can_show();
 		//PAGE****************
 		if ($flag_content==2) {
-			$this->id = "500";
-			//header("HTTP/1.0 404 Not Found");
+			$this->id = "401";
+			header("HTTP/1.0 401");
 			if(!$this->can_show())
 			{
 				$this->display_page($_tpl);
@@ -185,7 +185,7 @@ class pg_class extends kernel_class {
 			{
 				$HTML->_templates = "default";
 				$_tpl['text'] = "Страница не найдена!";
-				$_tpl['title'] = "Страница не найдена!";
+				$_tpl['title'] = "404 Страница не найдена!";
 				$_tpl['keywords'] = "";
 				$_tpl['description'] = "";
 			}

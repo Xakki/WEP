@@ -665,13 +665,14 @@
 	}
 
 	function  userExit() {
+		global $_CFG;
 		session_go();
 		if(isset($_SESSION))
 			$_SESSION = array();
 		if(isset($_COOKIE['remember']))
 			_setcookie('remember', '', (time()-5000));
-		if(isset($_COOKIE['wepID']))
-			_setcookie('wepID', '', (time()-5000));
+		if(isset($_COOKIE[$_CFG['session']['name']]))
+			_setcookie($_CFG['session']['name'], '', (time()-5000));
 		//_showerror
 		//
 	}
