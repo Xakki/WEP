@@ -116,7 +116,7 @@ _fldformer($key, $param)
 		if ($this->mf_use_charid) 
 			$this->fields['id'] = array('type' => 'varchar', 'width' => $this->mf_idwidth, 'attr' => 'NOT NULL');
 		else
-			$this->fields['id'] = array('type' => 'int unsigned', 'attr' => 'NOT NULL AUTO_INCREMENT');
+			$this->fields['id'] = array('type' => 'int', 'attr' => 'unsigned NOT NULL AUTO_INCREMENT');
 		
 		if($this->_setnamefields) 
 			$this->fields['name'] = array('type' => 'varchar', 'width' => $this->mf_idwidth, 'attr' => 'NOT NULL');
@@ -145,16 +145,16 @@ _fldformer($key, $param)
 		if($this->mf_timestamp) 
 			$this->fields['_timestamp'] = array('type'=>'timestamp');
 		if($this->mf_timecr)
-			$this->fields['mf_timecr'] = array('type'=>'int unsigned', 'width'=>11, 'attr' => 'NOT NULL DEFAULT 0');
+			$this->fields['mf_timecr'] = array('type'=>'int', 'width'=>11, 'attr' => 'unsigned NOT NULL');
 		if($this->mf_timeup) 
-			$this->fields['mf_timeup'] = array('type'=>'int unsigned', 'width'=>11, 'attr' => 'NOT NULL DEFAULT 0');
+			$this->fields['mf_timeup'] = array('type'=>'int', 'width'=>11, 'attr' => 'unsigned NOT NULL');
 		if($this->mf_timeoff) 
-			$this->fields['mf_timeoff'] = array('type'=>'int unsigned', 'width'=>11, 'attr' => 'NOT NULL DEFAULT 0');
+			$this->fields['mf_timeoff'] = array('type'=>'int', 'width'=>11, 'attr' => 'unsigned NOT NULL');
 		if($this->mf_ipcreate) 
-			$this->fields['mf_ipcreate'] = array('type'=>'bigint', 'width'=>20, 'attr' => 'NOT NULL DEFAULT 0');
+			$this->fields['mf_ipcreate'] = array('type'=>'bigint', 'width'=>20, 'attr' => 'unsigned NOT NULL');
 
 		/*if ($this->mf_typectrl)
-			$this->fields['typedata'] = array('type' => 'tinyint unsigned', 'attr' => 'NOT NULL');
+			$this->fields['typedata'] = array('type' => 'tinyint', 'attr' => 'unsigned NOT NULL');
 		*/
 		if ($this->mf_ordctrl) //Содание полей для сортировки
 		{
@@ -675,7 +675,7 @@ _message($msg,$type=0)
 					foreach($this->childs as $k=>&$r)
 						$r->_checkmodstruct();
 				}
-				$mess[] = array('name'=>'ok', 'value'=>$this->getMess('_recheck_ok').'  <a href="">Обновите страницу.</a>');
+				$mess[] = array('name'=>'ok', 'value'=>$this->getMess('_recheck_ok').'  <a href="" onclick="window.location.reload();return false;">Обновите страницу.</a>');
 				if(count($this->attaches)) {
 					include_once($_CFG['_PATH']['core'].'kernel.tools.php');
 					if(!_reattaches($this))

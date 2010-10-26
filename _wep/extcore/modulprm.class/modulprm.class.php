@@ -38,6 +38,7 @@ class modulprm_class extends kernel_class {
 	public function _checkmodstruct() {
 		parent::_checkmodstruct();
 		//$q_query=array();
+		$this->SQL->_iFlag = true;
 		$this->moduldir = array();
 		$this->def_update_records = array();
 		$result = $this->SQL->execSQL('SELECT * FROM '.$this->tablename);
@@ -53,6 +54,7 @@ class modulprm_class extends kernel_class {
 				if($entry!='' and _modulExists($entry)) {
 					$this->moduldir[$entry] = '';
 					if($this->_cl!=$entry) {
+						$class_ = NULL;
 						if(_new_class($entry,$class_))
 							$this->_constr_childs($class_);
 					}else $class_ = &$this;
@@ -71,6 +73,7 @@ class modulprm_class extends kernel_class {
 				$entry = substr($entry, 0, $pos);
 				if($entry!='' and _modulExists($entry)) { 
 					$this->moduldir[$entry] = '';
+					$class_ = NULL;
 					if(_new_class($entry,$class_)) {
 						if(!isset($this->data[$entry]) and $class_->showinowner) 
 							$this->def_records[] = array('id'=>$entry,'name'=>$class_->caption.' ['.$entry.']','parent_id'=>'','tablename'=>$class_->tablename);
