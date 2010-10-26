@@ -14,9 +14,6 @@
 
 $_CFG['sql'] = array( // SQL
 	'host'=>'localhost',
-	//'login'=>'xakkiorg_unid',
-	//'password'=>'graber402',
-	//'database'=>'xakkiorg_unidoski',
 	'login'=>'core_wep',
 	'password'=>'sF45DfpFddt3',
 	'database'=>'core_wep',
@@ -24,19 +21,12 @@ $_CFG['sql'] = array( // SQL
 	'dbpref'=>'',
 	'log'=>0);
 
-$_CFG['info'] = array( //информация
-	'version'=>'2.2',
-	'email'=>'info@xakki.ru',
-	'icq'=>'222392984',
-	'onShape'=>0);
-
 $_CFG['wep'] = array( // для админки
 	'charset'=>'utf-8',
 	'access'=>1, // 1 - вкл доступ по модулю пользователей, 0 - вкл доступ по дефолтному паролю
 	'locallang'=>'default',
 	'login'=>'root',
 	'password'=>'core_wep',
-	'prm_table'=>'_',
 	'design'=>'default',
 	'msp'=>'paginator',
 	'md5'=>'dfHH2Lss',

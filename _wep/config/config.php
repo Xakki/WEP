@@ -9,6 +9,11 @@ $_CFG['getdate'] = getdate();
 $_CFG['remember_expire'] = $_CFG['time']+1728000; // 20дней ,по умолчанию
 $_CFG['logs']['sql'] = array(); // - массив SQL запросов
 
+$_CFG['info'] = array( //информация
+	'version'=>'2.2',
+	'email'=>'info@xakki.ru',
+	'icq'=>'222392984');
+
 $_CFG['sql'] = array( // SQL
 	'host'=>'localhost',
 	'login'=>'default',
@@ -18,19 +23,12 @@ $_CFG['sql'] = array( // SQL
 	'dbpref'=>'',
 	'log'=>0);
 
-$_CFG['info'] = array( //информация
-	'version'=>'2.2',
-	'email'=>'info@default.ru',
-	'icq'=>'0000',
-	'onShape'=>0);
-
 $_CFG['wep'] = array( // для админки
 	'charset'=>'utf-8',
 	'access'=>1, // 1 - вкл доступ по модулю пользователей, 0 - вкл доступ по дефолтному паролю
 	'locallang'=>'default',
 	'login'=>'root',
 	'password'=>'default',
-	'prm_table'=>'_',
 	'design'=>'default',
 	'msp'=>'paginator',
 	'md5'=>'d3dEegf6EH',
