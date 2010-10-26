@@ -51,7 +51,7 @@
 								if($flag==1) {
 									end($HTML->path);prev($HTML->path);
 									$_SESSION['mess']=$DATA['formcreat']['messages'];
-									header('Location: '.str_replace("&amp;", "&", key($HTML->path)));
+									header('Location: '.$_CFG['_HREF']['BH'].str_replace("&amp;", "&", key($HTML->path)));
 									die();
 								}
 								else {
@@ -64,7 +64,7 @@
 							}elseif($flag!=3) {
 								end($HTML->path);
 								$_SESSION['mess']=$DATA['superlist']['messages'];
-								header('Location: '.str_replace("&amp;", "&", key($HTML->path)));
+								header('Location: '.$_CFG['_HREF']['BH'].str_replace("&amp;", "&", key($HTML->path)));
 								die();
 							}else {
 								if(!$_SESSION['mess']) 
@@ -90,10 +90,10 @@
 	$_tpl['modulsforms'] = $html;
 	if(_prmUserCheck(2)) 
 		$_tpl['debug'] = '<span class="seldebug"><select>
-<option onclick="window.location=\'index.php?_showallinfo=0\'" '.(!$_SESSION['_showallinfo']?'selected="selected"':'').'>Скрыть инфу</option>
-<option onclick="window.location=\'index.php?_showallinfo=1\'" '.($_SESSION['_showallinfo']==1?'selected="selected"':'').'>Показать инфу</option>
-<option onclick="window.location=\'index.php?_showallinfo=2\'" '.($_SESSION['_showallinfo']==2?'selected="selected"':'').'>Показать SQL запросы</option>
-<option onclick="window.location=\'index.php?_showallinfo=3\'" '.($_SESSION['_showallinfo']==3?'selected="selected"':'').'>Показать все логи</option>
+<option onclick="window.location=\''.$_CFG['PATH']['wepname'].'/index.php?_showallinfo=0\'" '.(!$_COOKIE['_showallinfo']?'selected="selected"':'').'>Скрыть инфу</option>
+<option onclick="window.location=\''.$_CFG['PATH']['wepname'].'/index.php?_showallinfo=1\'" '.($_COOKIE['_showallinfo']==1?'selected="selected"':'').'>Показать инфу</option>
+<option onclick="window.location=\''.$_CFG['PATH']['wepname'].'/index.php?_showallinfo=2\'" '.($_COOKIE['_showallinfo']==2?'selected="selected"':'').'>Показать SQL запросы</option>
+<option onclick="window.location=\''.$_CFG['PATH']['wepname'].'/index.php?_showallinfo=3\'" '.($_COOKIE['_showallinfo']==3?'selected="selected"':'').'>Показать все логи</option>
 </select></span>';
 	$_tpl['styles'] .='<link rel="stylesheet" href="'.$_CFG['_HREF']['_style'].'style.css" type="text/css"/>';
 
