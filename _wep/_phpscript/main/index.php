@@ -7,13 +7,13 @@
 	$SQL = new sql();
 	
 	session_go();
-
+/*
 	if(!isset($_SESSION['user']) and isset($_COOKIE['remeber'])) {
-		$UGROUP = new ugroup_class($SQL);
+		_new_class('ugroup',$UGROUP);
 		$USERS = &$UGROUP->childs['users'];
 		$USERS->cookieAuthorization();
 	}
-
+*/
 	$_tpl['logs']=$_tpl['onload']=$_tpl['city']=$_tpl['blockadd']=$_tpl['param']=$_tpl['blockadd']='';
 	$rid = 0;
 

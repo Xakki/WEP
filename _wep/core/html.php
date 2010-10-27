@@ -671,8 +671,10 @@
 				}
 			}
 		}
-		elseif(isset($_SESSION['user']['id']))
+		elseif(isset($_SESSION['user']['id'])) {
+			_new_class('ugroup',$UGROUP);
 			$result = array($_CFG['_MESS']['authok'],1);
+		}
 		return $result;
 	}
 

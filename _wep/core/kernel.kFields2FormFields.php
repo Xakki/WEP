@@ -101,16 +101,17 @@
 
 					global $_tpl;
 					$_tpl['script'] .='<script type="text/javascript" src="'.$this->_CFG['_HREF']['WSWG'].'ckeditor/ckeditor.js"></script>';
-					$_tpl['onload'] .= 'function cke_'.$k.'() { if(typeof CKEDITOR.instances.'.$k.' == \'object\'){CKEDITOR.instances.'.$k.'.destroy(true);} editor_'.$k.' = CKEDITOR.replace( \''.$k.'\',{';
+					$fckscript = 'function cke_'.$k.'() { if(typeof CKEDITOR.instances.'.$k.' == \'object\'){CKEDITOR.instances.'.$k.'.destroy(true);} editor_'.$k.' = CKEDITOR.replace( \''.$k.'\',{';
 					foreach($ckedit as $kc=>$rc)
-						$_tpl['onload'] .= $kc.' : '.$rc.',';
-					$_tpl['onload'] .= 'language : \'ru\'});';
+						$fckscript .= $kc.' : '.$rc.',';
+					$fckscript .= 'language : \'ru\'});';
 
 					if($ckedit['CKFinder']) {
-						$_tpl['onload'] .='function ckf_'.$k.'() { CKFinder.SetupCKEditor(editor_'.$k.',\'/'.$this->_CFG['PATH']['WSWG'].'ckfinder/\');} if(!CKFinder) $.include(\''.$this->_CFG['_HREF']['WSWG'].'ckfinder/ckfinder.js\',ckf_'.$k.'()); else ckf_'.$k.'();';
+						$fckscript .='function ckf_'.$k.'() { CKFinder.SetupCKEditor(editor_'.$k.',\'/'.$this->_CFG['PATH']['WSWG'].'ckfinder/\');} if(!CKFinder) $.include(\''.$this->_CFG['_HREF']['WSWG'].'ckfinder/ckfinder.js\',ckf_'.$k.'()); else ckf_'.$k.'();';
 						$_tpl['script'] .='<script src="'.$this->_CFG['_HREF']['WSWG'].'ckfinder/ckfinder.js" type="text/javascript"></script>';
 					}
-					$_tpl['onload'] .= '} if(!window.CKEDITOR) $.include(\''.$this->_CFG['_HREF']['WSWG'].'ckeditor/ckeditor.js\',cke_'.$k.'); else cke_'.$k.'();';
+					$_tpl['script'] .= '<script type="text/javascript">'.$fckscript.'}</script>';
+					$_tpl['onload'] .= ' if(!window.CKEDITOR) $.include(\''.$this->_CFG['_HREF']['WSWG'].'ckeditor/ckeditor.js\',cke_'.$k.'); else cke_'.$k.'();';
 				}
 				elseif($r['type']=='date' and !$r['readonly']) {
 			
