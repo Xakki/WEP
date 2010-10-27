@@ -30,7 +30,7 @@ class pg_class extends kernel_class {
 		$this->mf_actctrl = true;
 		$this->caption = 'Страницы';
 		$this->selected = array();
-		$this->ver = '0.1';
+		$this->ver = '0.1.1';
 		return 0;
 	}
 
@@ -48,7 +48,7 @@ class pg_class extends kernel_class {
 		$this->fields['script'] = array('type' => 'varchar', 'width'=> 254, 'attr' => 'NOT NULL','default'=>'script');
 		$this->fields['ugroup'] =array('type' => 'varchar', 'width'=>254, 'attr' => 'NOT NULL DEFAULT "|0|"');
 		$this->fields['attr'] = array('type' => 'varchar', 'width'=>254, 'attr' => 'NOT NULL DEFAULT ""');
-		$this->fields['onmenu'] = array('type' => 'tinyint', 'width'=>5, 'attr' => 'NOT NULL DEFAULT 0');
+		$this->fields['onmenu'] = array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL DEFAULT 0');
 		$this->fields['onpath'] = array('type' => 'tinyint', 'width'=>1, 'attr' => 'NOT NULL DEFAULT 1');
 
 		# fields
