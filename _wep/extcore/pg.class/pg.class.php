@@ -62,7 +62,7 @@ class pg_class extends kernel_class {
 		$this->fields_form['script'] = array('type' => 'list', 'multiple'=>1, 'listname'=>'script', 'caption' => 'SCRIPT', 'mask' =>array('onetd'=>'close'));
 		$this->fields_form['keywords'] = array('type' => 'text', 'caption' => 'META-keywords','mask'=>array('fview'=>1));
 		$this->fields_form['description'] = array('type' => 'text', 'caption' => 'META-description','mask'=>array('fview'=>1));
-		$this->fields_form['onmenu'] = array('type' => 'list', 'listname'=>'menu', 'caption' => 'Меню', 'mask'=>array('onetd'=>'Опции'));
+		$this->fields_form['onmenu'] = array('type' => 'list', 'listname'=>'menu', 'multiple'=>1, 'caption' => 'Меню', 'mask'=>array('onetd'=>'Опции'));
 		$this->fields_form['onpath'] = array('type' => 'checkbox', 'caption'=>'Путь', 'comment' => 'Отображать в хлебных крошках');
 		$this->fields_form['attr'] = array('type' => 'text', 'caption' => 'Атрибуты для ссылки в меню', 'comment'=>'Например: `target="_blank" onclick=""` итп', 'mask' =>array('name'=>'text', 'fview'=>1));
 		if($this->_CFG['wep']['access'])
@@ -70,11 +70,6 @@ class pg_class extends kernel_class {
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
 		$this->fields_form['ordind'] = array('type' => 'int', 'caption' => 'ORD');
 
-		$this->_enum['menu'] = array(
-			0=>'',
-			1=>'Меню №1',
-			2=>'Меню №2',
-			3=>'Меню №3');
 		# list
 		//$this->listform_items['id'] = 'ID';
 		//'type' => 'list', 'listname'=>'design',-+-
@@ -335,14 +330,16 @@ class pg_class extends kernel_class {
 		if(!isset($this->dataCashTree))
 			$this->sqlCashPG();
 		$DATA = array();
-		if($flag) 
+		if($flag>1) //только начальный уровень
+			$temp = &$this->dataCashTree[$start];
+		elseif($flag) //выводит все в общем массиве
 			$temp = &$this->dataCash;
-		else
+		else //выводит всё в виде структуры дерева
 			$temp = &$this->dataCashTree[$start];
 		if(count($temp))
 			foreach ($temp as $key=>$row)
 			{
-				if(!$row['prm'] or ($onmenu!='' and $row['onmenu']!=$onmenu))
+				if(!$row['prm'] or ($onmenu!='' and !isset($row['onmenu'][$onmenu])))
 					continue;
 
 				$href = $this->getHref($key,$row);
@@ -370,8 +367,9 @@ class pg_class extends kernel_class {
 			$result = $this->SQL->execSQL($cls.' ORDER BY ordind');
 			if(!$result->err){
 				while($row = $result->fetch_array()) {
+					$row['onmenu'] = array_flip(explode('|',trim($row['onmenu'],'|')));
 					$this->dataCash[$row['id']] = $row;
-					$this->dataCashTree[$row['parent_id']][$row['id']] = $row;
+					$this->dataCashTree[$row['parent_id']][$row['id']] = &$this->dataCash[$row['id']];
 				}
 			}
 		}

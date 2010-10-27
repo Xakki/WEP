@@ -62,21 +62,6 @@ class content_class extends kernel_class {
 			$dir->close();
 			return $data;
 		}
-		elseif ($listname == "marker") {
-			$ftpl = current($this->owner->data);
-			$ftpl = $this->_CFG['_PATH']['design'].$this->_CFG['wep']['design'].'/templates/'.$ftpl['template'].'.tpl';
-			//print_r($ftpl);
-			//$ftpl = file_get_contents($ftpl);
-			$data = array(
-				'text'=>'text',
-				'head'=>'head',
-				'blockadd'=>'blockadd',
-				'param'=>'param',
-				'path'=>'path',
-				'logs'=>'logs',
-				'foot'=>'foot'
-			);
-		}
 		else return parent::_getlist($listname,$fields_form);
 		return $data;
 	}

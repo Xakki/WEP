@@ -226,6 +226,20 @@ $_CFG['form'] = array(
 			150=>150,
 			200=>200);
 
+		$_CFG['enum']['menu'] = array(
+			0=>'',
+			1=>'Меню №1',
+			2=>'Меню №2',
+			3=>'Меню №3');
+
+		$_CFG['enum']['marker'] = array(
+			'text'=>'text',
+			'head'=>'head',
+			'blockadd'=>'blockadd',
+			'param'=>'param',
+			'path'=>'path',
+			'logs'=>'logs',
+			'foot'=>'foot');
   /***********************/
  /***INCLUDE USER CONF***/
 /***********************/
