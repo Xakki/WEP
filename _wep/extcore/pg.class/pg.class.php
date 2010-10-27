@@ -78,7 +78,7 @@ class pg_class extends kernel_class {
 
 		$this->def_records[] = array('id'=>'index','name'=>'Главная страница','active'=>1,'template'=>'default');
 		$this->def_records[] = array('id'=>'404','parent_id'=>'index','name'=>'Страницы нету','active'=>1,'template'=>'default');
-		$this->def_records[] = array('id'=>'500','parent_id'=>'index','name'=>'Недостаточно прав для доступа к странице','active'=>1,'template'=>'default');
+		$this->def_records[] = array('id'=>'401','parent_id'=>'index','name'=>'Недостаточно прав для доступа к странице','active'=>1,'template'=>'default');
 
 		if($this->_CFG['_F']['adminpage']) {
 			include_once($this->_CFG['_PATH']['extcore'].'pg.class/childs.class.php');
@@ -288,7 +288,7 @@ class pg_class extends kernel_class {
 		$cls .= ' ) ORDER BY ordind';
 		$resultPG = $this->SQL->execSQL($cls);
 		if(!$resultPG->err)
-			while ($rowPG = $resultPG->fetch_array()){
+			while ($rowPG = $resultPG->fetch_array()) {
 				$html = '';
 				if($rowPG['pagetype']=='') {
 					$text = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['content'].'pg/'.$rowPG['id'].$this->text_ext;
@@ -303,7 +303,7 @@ class pg_class extends kernel_class {
 					elseif(file_exists($this->_CFG['_PATH']['ctext'].$rowPG['pagetype'].".inc.php"))
 						$flagPG = include($this->_CFG['_PATH']['ctext'].$rowPG['pagetype'].".inc.php");
 					else {
-						trigger_error('Display block '.$rowPG['pagetype'].' not exists', E_USER_WARNING);
+						trigger_error('Обрботчик страниц "'.$rowPG['pagetype'].'" не найден!', E_USER_WARNING);
 						continue;
 					}
 					if($_SESSION['_showallinfo']) $_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' begin-->'; // для отладчика
@@ -365,7 +365,7 @@ class pg_class extends kernel_class {
 				$cls .= ',if((ugroup="" or ugroup="|0|" or ugroup="|anonim|"),1,0) as prm'; 
 			$cls .= ' FROM '.$this->tablename.' WHERE active=1';
 			$result = $this->SQL->execSQL($cls.' ORDER BY ordind');
-			if(!$result->err){
+			if(!$result->err) {
 				while($row = $result->fetch_array()) {
 					$row['onmenu'] = array_flip(explode('|',trim($row['onmenu'],'|')));
 					$this->dataCash[$row['id']] = $row;

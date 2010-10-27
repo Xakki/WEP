@@ -106,11 +106,19 @@
 			/*PHP шаблонизатор*/
 			if(!$marker) $marker = $transform;
 			if(!isset($data[$marker])) { 
-				trigger_error("Marker $marker not exists in data", E_USER_WARNING);
+				trigger_error('В входных данных шаблона не найдены исходные данные "$data['.$marker.']"', E_USER_WARNING);
 				return '';
 			}
 			$transformpath = $this->_PATHd.'php/'.$transform.'.php';
+			if(!file_exists($transformpath)){
+				trigger_error('Отсутствует файл шаблона "'.$transformpath.'"', E_USER_WARNING);
+				return '';
+			}
 			include_once($transformpath);
+			if(!function_exists('tpl_'.$transform)) {
+				trigger_error('Функция "tpl_'.$transform.'" в шаблоне "'.$transformpath.'" не найдена', E_USER_WARNING);
+				return '';
+			}
 			eval('$html =  tpl_'.$transform.'($data['.$marker.']);');
 			return $html;
 		}
@@ -230,7 +238,11 @@
 		$_gerr=6;
 		if($prior[$errno]<4) {// and error_reporting()!=0
 			$debug = debugPrint(2);
-			$GLOBALS['_ERR'] .='<div style="color:'.$errorcolor[$errno].';">'.$errortype[$errno].' '.$errstr.' , in line '.$errline.' of file <i>'.$errfile.'</i><br/>'.$debug.'</div>'."\n";
+			//$GLOBALS['_ERR'] .='<div style="color:'.$errorcolor[$errno].';">'.$errortype[$errno].' '.$errstr.' , in line '.$errline.' of file <i>'.$errfile.'</i><br/>'.$debug.'</div>'."\n";
+			$GLOBALS['_ERR'] .='<div class="spoiler-wrap">
+<div onclick="clickSpoilers(this)" class="spoiler-head folded clickable" style="color:'.$errorcolor[$errno].';">'.$errortype[$errno].' '.$errstr.' , in line '.$errline.' of file <i>'.$errfile.'</i> </div>
+<div style="display: none;" class="spoiler-body"><div style="background-color: rgb(225, 225, 225); padding: 2px; font-style: italic; font-size: 10px; border: 1px solid gray;">'.$debug.'</div></div></div>'."\n";
+			
 			if($prior[$errno]<$_gerr) $_gerr=$prior[$errno];
 			if($prior[$errno]==0) {
 				$GLOBALS['_ERR'] .="Aborting...<br />\n";
