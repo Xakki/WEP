@@ -241,7 +241,7 @@
 			//$GLOBALS['_ERR'] .='<div style="color:'.$errorcolor[$errno].';">'.$errortype[$errno].' '.$errstr.' , in line '.$errline.' of file <i>'.$errfile.'</i><br/>'.$debug.'</div>'."\n";
 			$GLOBALS['_ERR'] .='<div class="spoiler-wrap">
 <div onclick="clickSpoilers(this)" class="spoiler-head folded clickable" style="color:'.$errorcolor[$errno].';">'.$errortype[$errno].' '.$errstr.' , in line '.$errline.' of file <i>'.$errfile.'</i> </div>
-<div style="display: none;" class="spoiler-body"><div style="background-color: rgb(225, 225, 225); padding: 2px; font-style: italic; font-size: 10px; border: 1px solid gray;">'.$debug.'</div></div></div>'."\n";
+<div class="spoiler-body" style="background-color: rgb(225, 225, 225);">'.$debug.'</div></div>'."\n";
 			
 			if($prior[$errno]<$_gerr) $_gerr=$prior[$errno];
 			if($prior[$errno]==0) {
@@ -326,7 +326,7 @@
 		$cnt = count($traceArr);
 		$i=0;
 		foreach ($traceArr as $arr) {
-			$s .= '<div style="font-size:10px;color:#000;margin:0 0 0 '.(10*$i).'px;border:solid 1px #333;"><span style="font-size:11px;color:black;border-bottom:solid 1px #333;">';
+			$s .= '<div style="font-size:10px;color:#000;margin:0 0 0 '.(10*$i).'px;border-left:solid 1px #333;border-bottom:solid 1px #233;"><span style="font-size:11px;color:black;">';
 			if(isset($arr['line']) and $arr['file'])
 				$s .= ' #line '.$arr['line'].' #file: <a href="file:/'.$arr['file'].'" style="color:blue;">'.$arr['file'].'</a>';
 			if(isset($arr['class']))

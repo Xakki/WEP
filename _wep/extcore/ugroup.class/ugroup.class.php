@@ -146,7 +146,7 @@ class users_class extends kernel_class {
 		$this->fields["reg_ip"] = array("type" => "VARCHAR", "width" => 128,"attr" => "NOT NULL DEFAULT '127.0.0.1'");
 		$this->fields["reg_hash"] = array("type" => "VARCHAR", "width" => 128);
 		$this->fields["up_date"] = array("type" => "TIMESTAMP", "attr" => "NOT NULL");
-		$this->fields["bill_rub"] = array("type" => "int", "width" => 11, "attr" => "NOT NULL DEFAULT 0");
+		$this->fields["balance"] = array("type" => "int", "width" => 11, "attr" => "NOT NULL DEFAULT 0");
 
 
 
@@ -181,10 +181,10 @@ class users_class extends kernel_class {
 
 		//$this->fields_form['description'] =  array('type' => 'textarea', 'caption' => 'Дополнительная информация','mask'=>array('max' => 2048));
 
-		$this->fields_form['bill_rub'] =	array(
+		$this->fields_form['balance'] =	array(
 			'type' => 'text',
 			'readonly' => 1, 
-			'caption' => 'Счет(коопеки)',
+			'caption' => 'Счет(в коопейках)',
 			'mask'=>array('sort'=>1));
 		$this->fields_form['reg_ip'] =	array(
 			'type' => 'text',
@@ -193,12 +193,12 @@ class users_class extends kernel_class {
 			'mask'=>array('evala'=>'$_SERVER["REMOTE_ADDR"]','usercheck'=>1));
 		$this->fields_form['reg_date'] =	array('type' => 'date','readonly' => 1, 'caption' => 'Дата регистрации','mask'=>array('evala'=>'time()','sort'=>1));
 		$this->fields_form['reg_hash'] = array('type' => 'hidden',  'caption' => 'Хэш','mask'=>array('eval'=>1,'fview'=>1,'usercheck'=>1));
-		$this->fields_form['cntdec'] = array(
+		/*$this->fields_form['cntdec'] = array(
 			'type' => 'list', 
 			'listname'=>array('class'=>'board','field'=>'count(tx.id) as cntdec', 'leftjoin'=>'t1.id=tx.creater_id'), 
 			'readonly'=>1,
 			'caption' => 'Объявл.',
-			'mask' =>array('usercheck'=>1,'sort'=>''));
+			'mask' =>array('usercheck'=>1,'sort'=>''));*/
 		$this->fields_form['owner_id'] = array('type' => 'list', 'listname'=>'ownerlist', 'caption' => 'Группа', 'mask' =>array('usercheck'=>1,'fview'=>1));
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Пользователь активен', 'mask' =>array('usercheck'=>1));
 

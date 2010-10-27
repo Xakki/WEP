@@ -83,7 +83,7 @@
 			{
 				if($_CFG['sql']['log']) 
 					fwrite($db->logFile,'ERORR: '.$this->err.' ('.$sql.')\n');
-				trigger_error($this->err.=" ({$sql});<br/> ", E_USER_WARNING);
+				trigger_error($this->err.=" ({$sql});", E_USER_WARNING);
 				$this->errno = mysql_errno();
 				//$db->fError($this->err);
 			}

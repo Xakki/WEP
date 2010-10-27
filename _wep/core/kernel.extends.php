@@ -406,7 +406,7 @@ _message($msg,$type=0)
 	// out: 0 - success,
 	//      otherwise errorcode
 
-	protected function _delete() {
+	public function _delete() {
 		include_once($_CFG['_PATH']['core'].'kernel.addup.php');
 		return _delete($this);
 	}
@@ -517,8 +517,8 @@ _message($msg,$type=0)
 	
 	public function _message($msg,$type=0) 
 	{
-		$ar_type = array('error' , 'warning' , 'modify' , 'notify','ok');
-		if($type<3 or $_SESSION['_showallinfo']>1) $this->_CFG['logs']['mess'][] = array($msg,$ar_type[$type]);
+		//$ar_type = array('error' , 'warning' , 'modify' , 'notify','ok');
+		//if($type<3 or $_SESSION['_showallinfo']>1) $this->_CFG['logs']['mess'][] = array($msg,$ar_type[$type]);
 		if(!$type) return 1;
 		else return 0;
 	}
