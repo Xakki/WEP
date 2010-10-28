@@ -141,10 +141,11 @@
 					for($i=1;$i<=31;$i++)
 						$r['value']['day']['item'][$i] = array('id'=>$i, 'name'=>$i, 'sel'=>($temp[2]==$i?1:0));
 
-					$r['value']['hour'] = array('name'=>$this->_CFG['_MESS']['hour_name']);// Час
-					for($i=1;$i<=24;$i++)
-						$r['value']['hour']['item'][$i] = array('id'=>$i, 'name'=>$i, 'sel'=>($temp[3]==$i?1:0));
-					
+					if(isset($r['mask']['date_hour'])) {
+						$r['value']['hour'] = array('name'=>$this->_CFG['_MESS']['hour_name']);// Час
+						for($i=1;$i<=24;$i++)
+							$r['value']['hour']['item'][$i] = array('id'=>$i, 'name'=>$i, 'sel'=>($temp[3]==$i?1:0));
+					}
 					if(isset($r['mask']['date_min'])) {
 						$r['value']['min'] = array('name'=>$this->_CFG['_MESS']['min_name']);// Minute
 						for($i=1;$i<=60;$i++)
