@@ -165,34 +165,35 @@ class pg_class extends kernel_class {
 	function display() {
 		global $_tpl,$HTML;
 		$flag_content = $this->can_show();
+		$HTML->_templates = $this->pageinfo['template'];
+		$_tpl['title'] = $this->get_caption();
+		$_tpl['keywords'] = $this->pageinfo['keywords'];
+		$_tpl['description'] = $this->pageinfo['description'];
 		//PAGE****************
 		if ($flag_content==2) {
 			$this->id = "401";
 			header("HTTP/1.0 401");
 			if(!$this->can_show())
 			{
-				$this->display_page($_tpl);
 				$HTML->_templates = "default";
 				$_tpl['text'] = 'У вас не достаточно прав для доступа к странице.';
 				$_tpl['title'] = "Нет доступа";
 				$_tpl['keywords'] = "";
 				$_tpl['description'] = "";
+				$this->display_page($_tpl);
 			}
 			else
 			{
-				$this->display_page($_tpl);
 				$HTML->_templates = $this->pageinfo['template'];
 				$_tpl['title'] = $this->get_caption();
 				$_tpl['keywords'] = $this->pageinfo['keywords'];
 				$_tpl['description'] = $this->pageinfo['description'];
+				$this->display_page($_tpl);
 			}
 		}
 		elseif ($flag_content and $this->display_page($_tpl))
 		{
-			$HTML->_templates = $this->pageinfo['template'];
-			$_tpl['title'] = $this->get_caption();
-			$_tpl['keywords'] = $this->pageinfo['keywords'];
-			$_tpl['description'] = $this->pageinfo['description'];
+			//всякое
 		}
 		else
 		{
@@ -208,11 +209,12 @@ class pg_class extends kernel_class {
 			}
 			else
 			{
-				$this->display_page($_tpl);
 				$HTML->_templates = $this->pageinfo['template'];
 				$_tpl['title'] = $this->get_caption();
 				$_tpl['keywords'] = $this->pageinfo['keywords'];
 				$_tpl['description'] = $this->pageinfo['description'];
+				$this->display_page($_tpl);
+
 			}
 		}
 		if($this->config['sitename'])
@@ -317,7 +319,17 @@ class pg_class extends kernel_class {
 		$resultPG = $this->SQL->execSQL($cls);
 		if(!$resultPG->err)
 			while ($rowPG = $resultPG->fetch_array()) {
+				if($_SESSION['_showallinfo']) 
+					$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' begin-->'; // для отладчика
 				$html = '';
+				if($rowPG['ugroup']) {
+					$rowPG['ugroup'] = trim($rowPG['ugroup'],'|');
+					$rowPG['ugroup'] = array_flip($rowPG['ugroup']);
+					if(!isset($rowPG['ugroup'][$_SESSION['user']['owner_id']])) {
+						$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' ACCESS DENIED-->';
+						continue;
+					}
+				}
 				if($rowPG['pagetype']=='') {
 					$text = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['content'].'pg/'.$rowPG['id'].$this->text_ext;
 					if (file_exists($text)) {
@@ -334,15 +346,15 @@ class pg_class extends kernel_class {
 						trigger_error('Обрботчик страниц "'.$rowPG['pagetype'].'" не найден!', E_USER_WARNING);
 						continue;
 					}
-					if($_SESSION['_showallinfo']) $_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' begin-->'; // для отладчика
+					
 					if($flagPG===false) //если INCa вернула значение flase , то завершаем отображение страницы и выдаем в итоге 404
 						return 0;
 					elseif($flagPG!==true) // если не булевое значение то выводим содержимое
 						$_tpl[$rowPG['marker']] .= $flagPG;
 					$flagPG = 1;
-					if($_SESSION['_showallinfo'])
-						$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' end-->';
 				}
+				if($_SESSION['_showallinfo'])
+						$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' end-->';
 			}
 
 		return $flagPG;

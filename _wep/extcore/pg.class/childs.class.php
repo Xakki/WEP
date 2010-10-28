@@ -20,6 +20,7 @@ class content_class extends kernel_class {
 		$this->fields['global'] = array('type' => 'bool', 'attr' => 'NOT NULL DEFAULT 0');
 		$this->fields['pagetype'] = array('type' => 'varchar', 'width'=>'15', 'attr' => 'NOT NULL');
 		$this->fields['funcparam'] = array('type' => 'varchar', 'width'=>'255', 'attr' => 'NOT NULL');
+		$this->fields['ugroup'] =array('type' => 'varchar', 'width'=>254, 'attr' => 'NOT NULL DEFAULT "|0|"');
 
 		# memo
 		$this->memos['pg'] = array('max' => 50000);
@@ -31,6 +32,8 @@ class content_class extends kernel_class {
 		$this->fields_form['pagetype'] = array('type' => 'list', 'listname'=>'pagetype', 'caption' => 'INC', 'mask' =>array());
 		$this->fields_form['funcparam'] = array('type' => 'text', 'caption' => 'Доп. параметры', 'mask' =>array('name'=>'all'), 'comment'=>'Значения разделять символом &');
 		$this->fields_form['pg'] = array('type' => 'ckedit', 'caption' => 'Text','mask'=>array('fview'=>1, 'width' => 50000), 'paramedit'=>array('CKFinder'=>1,'extraPlugins'=>"'cntlen'"));
+		if($this->_CFG['wep']['access'])
+			$this->fields_form['ugroup'] = array('type' => 'list','multiple'=>1,'listname'=>'ugroup', 'caption' => 'Доступ пользователю','default'=>'0');
 		$this->fields_form['ordind'] = array('type' => 'text', 'caption' => 'ORD');
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
 
@@ -62,7 +65,9 @@ class content_class extends kernel_class {
 			$dir->close();
 			return $data;
 		}
-		else return parent::_getlist($listname,$fields_form);
+		else {
+			return $this->owner->_getlist($listname,$fields_form);
+		}
 		return $data;
 	}
 
