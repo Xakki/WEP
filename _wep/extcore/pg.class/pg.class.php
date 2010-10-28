@@ -323,12 +323,19 @@ class pg_class extends kernel_class {
 					$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' begin-->'; // для отладчика
 				$html = '';
 				if($rowPG['ugroup']) {
-					$rowPG['ugroup'] = trim($rowPG['ugroup'],'|');
+					$rowPG['ugroup'] = explode('|',trim($rowPG['ugroup'],'|'));
 					$rowPG['ugroup'] = array_flip($rowPG['ugroup']);
-					if(!isset($rowPG['ugroup'][$_SESSION['user']['owner_id']])) {
-						$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' ACCESS DENIED-->';
-						continue;
+					if(!isset($rowPG['ugroup'][0])) {
+						if(isset($_SESSION['user']['id']) and !isset($rowPG['ugroup']['user']) and !isset($rowPG['ugroup'][$_SESSION['user']['owner_id']])) {
+							$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' ACCESS DENIED-->';
+							continue;
+						}
+						elseif(!isset($rowPG['ugroup']['anonim'])) {
+							$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' ACCESS DENIED-->';
+							continue;
+						}
 					}
+
 				}
 				if($rowPG['pagetype']=='') {
 					$text = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['content'].'pg/'.$rowPG['id'].$this->text_ext;
