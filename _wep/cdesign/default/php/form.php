@@ -42,10 +42,10 @@ function tpl_form(&$data) {
 					$html .= '<font color="red">Нет элементов для отображения</font>';
 				else {
 					foreach($r['item'] as $row) {
-						$html .= $r['title'].'<br/><input type="'.$r['type'].'" name="'.$k.'" value="'.$row['value'].'" class="radio"';
+						$html .= $row['name'].'<input type="'.$r['type'].'" name="'.$k.'" value="'.$row['value'].'" class="radio"';
 						if($row['value']==$r['value'])
 							$html .= ' checked="checked"';
-						$html .= '/>';
+						$html .= '/> &#160;&#160;';
 					}
 				}
 				$html .= '</div>';
@@ -157,10 +157,16 @@ function tpl_form(&$data) {
 				$html .= '<div class="form-value"><input type="password" name="'.$k.'" '.($attr['id']?'':'value="'.$r['value'].'"').' class="password"/>
 						<div class="passnewdesc" onclick="password_new()">Отобразить символы/скрыть</div></div>';
 			}
+			elseif($r['type']=='password_change') {
+				$html .= '<div class="form-value">
+					<input type="password" name="'.$k.'_old" value=""/><div class="dscr">Введите старый пароль</div>
+					<input type="password" name="'.$k.'" '.($attr['id']?'':'value="'.$r['value'].'"').' class="password"/>
+					<div class="passnewdesc" onclick="password_new()">Отобразить символы/скрыть</div></div>';
+			}	
 			elseif($r['type']=='password2' and !$r['readonly']) {
 				$html .= '<div class="form-value"><input type="text" id="'.$k.'" name="'.$k.'" value="'.$r['value'].'" style="width:55%;float:left;background:#E1E1A1;" readonly="readonly"/>
 							<div style="width:40%;float:right;">
-								<img src="/_wep/cdesign/default/img/aprm.gif" style="width:18px;cursor:pointer;" onclick="if(confirm("Вы действительно хотите изменить пароль?")) GetId("'.$k.'").value = hex_md5("'.$r['md5'].'"+GetId("a_'.$k.'").value);" alt="Сгенерировать пароль в формате MD5"/>
+								<img src="_wep/cdesign/default/img/aprm.gif" style="width:18px;cursor:pointer;" onclick="if(confirm("Вы действительно хотите изменить пароль?")) GetId("'.$k.'").value = hex_md5("'.$r['md5'].'"+GetId("a_'.$k.'").value);" alt="Сгенерировать пароль в формате MD5" title="Сгенерировать пароль в формате MD5"/>
 								<input type="text" id="a_'.$k.'" name="a_'.$k.'" value="" style="width:80%;vertical-align:top;"/>
 							</div></div>';
 			}
