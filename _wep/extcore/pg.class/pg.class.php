@@ -100,6 +100,16 @@ class pg_class extends kernel_class {
 			return $data;
 		}
 		elseif ($listname == "styles") {
+
+			$dir = dir($this->_CFG['_PATH']['design'].$this->_CFG['wep']['design'].'/style');
+			while (false !== ($entry = $dir->read())) {
+				if (strstr($entry,'.css')) {
+					$entry = substr($entry, 0, strpos($entry, '.css'));
+					$data['../'.$this->_CFG['wep']['design'].'/style/'.$entry] = $this->_CFG['wep']['design'].' - '.$entry;
+				}
+			}
+			$dir->close();
+
 			$dir = dir($this->_CFG['_PATH']['_style']);
 			while (false !== ($entry = $dir->read())) {
 				if (strstr($entry,'.css')) {
@@ -108,9 +118,20 @@ class pg_class extends kernel_class {
 				}
 			}
 			$dir->close();
+
 			return $data;
 		}
 		elseif ($listname == "script") {
+
+			$dir = dir($this->_CFG['_PATH']['design'].$this->_CFG['wep']['design'].'/script');
+			while (false !== ($entry = $dir->read())) {
+				if (strstr($entry,'.js')) {
+					$entry = substr($entry, 0, strpos($entry, '.js'));
+					$data['../'.$this->_CFG['wep']['design'].'/script/'.$entry] = $this->_CFG['wep']['design'].' - '.$entry;
+				}
+			}
+			$dir->close();
+			
 			$dir = dir($this->_CFG['_PATH']['_script']);
 			while (false !== ($entry = $dir->read())) {
 				if (strstr($entry,'.js')) {
@@ -119,6 +140,7 @@ class pg_class extends kernel_class {
 				}
 			}
 			$dir->close();
+
 			return $data;
 		}
 		elseif ($listname == "templates") {
@@ -222,8 +244,14 @@ class pg_class extends kernel_class {
 			if($row['keywords']) $this->pageinfo['keywords'] = $this->dataCash[$this->id]['keywords'].', '.$this->pageinfo['keywords'];
 			$this->pageinfo['description'] = $this->config['description'];
 			if($row['description']) $this->pageinfo['description'] = $this->dataCash[$this->id]['description'].', '.$this->pageinfo['description'];
-			$this->pageinfo['script'] = explode('|',$this->dataCash[$this->id]['script']);
-			$this->pageinfo['styles'] = explode('|',$this->dataCash[$this->id]['styles']);
+			$this->pageinfo['script'] = explode('|',trim($this->dataCash[$this->id]['script'],'|'));
+			if(count($this->pageinfo['script'])) {
+				$this->pageinfo['script'] = array_combine($this->pageinfo['script'],$this->pageinfo['script']);
+			}
+			$this->pageinfo['styles'] = explode('|',trim($this->dataCash[$this->id]['styles'],'|'));
+			if(count($this->pageinfo['styles'])) {
+				$this->pageinfo['styles'] = array_combine($this->pageinfo['styles'],$this->pageinfo['styles']);
+			}
 			$this->get_pageinfo();//$this->pageinfo['path']
 			return 1;
 		}

@@ -36,8 +36,8 @@
 // SCRIPT*****************
 		$tempscript =$_tpl['script'];$_tpl['script']='';
 		if(is_array($PGLIST->pageinfo['script'])){
-			sort($PGLIST->pageinfo['script']);
-			reset($PGLIST->pageinfo['script']);
+			//sort($PGLIST->pageinfo['script']);
+			//reset($PGLIST->pageinfo['script']);
 			foreach($PGLIST->pageinfo['script'] as $r)
 				if($r){
 					$_tpl['script'] .='<script type="text/javascript" src="'.$_CFG['_HREF']['_script'].$r.'.js"></script>'."\n";
