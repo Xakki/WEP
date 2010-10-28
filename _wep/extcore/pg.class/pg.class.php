@@ -165,11 +165,16 @@ class pg_class extends kernel_class {
 	function display() {
 		global $_tpl,$HTML;
 		$flag_content = $this->can_show();
-		$HTML->_templates = $this->pageinfo['template'];
-		$_tpl['title'] = $this->get_caption();
-		$_tpl['keywords'] = $this->pageinfo['keywords'];
-		$_tpl['description'] = $this->pageinfo['description'];
+
 		//PAGE****************
+		if ($flag_content==1) {
+			$HTML->_templates = $this->pageinfo['template'];
+			$_tpl['title'] = $this->get_caption();
+			$_tpl['keywords'] = $this->pageinfo['keywords'];
+			$_tpl['description'] = $this->pageinfo['description'];
+			$flag_content = $this->display_page($_tpl);
+		}
+
 		if ($flag_content==2) {
 			$this->id = "401";
 			header("HTTP/1.0 401");
@@ -191,11 +196,7 @@ class pg_class extends kernel_class {
 				$this->display_page($_tpl);
 			}
 		}
-		elseif ($flag_content and $this->display_page($_tpl))
-		{
-			//всякое
-		}
-		else
+		elseif(!$flag_content)
 		{
 			$this->id = "404";
 			header("HTTP/1.0 404 Not Found");
@@ -233,7 +234,7 @@ class pg_class extends kernel_class {
 			else
 				$row = $this->dataCash[$this->id];
 		}*/
-		if(isset($this->dataCash[$this->id]) and !$this->dataCash[$this->id]['prm']) {
+		if(isset($this->dataCash[$this->id]) and !$this->pagePrmCheck($rowPG['ugroup'])) {
 			$this->pageinfo = $this->dataCash[$this->id];
 			return 2;
 		}
@@ -281,14 +282,15 @@ class pg_class extends kernel_class {
 
 	function get_caption() {
 		$path = '';
-		foreach($this->pageinfo['path'] as $row)
-		{
-			if(is_array($row)) $name = $row['name'];
-			else $name = $row;
+		if($this->pageinfo['path'] and is_array($this->pageinfo['path']))
+			foreach($this->pageinfo['path'] as $row)
+			{
+				if(is_array($row)) $name = $row['name'];
+				else $name = $row;
 
-			if($path=='') $path = $name;
-			elseif($name!='') $path = $name.' - '.$path;
-		}
+				if($path=='') $path = $name;
+				elseif($name!='') $path = $name.' - '.$path;
+			}
 		return $path;
 	}
 
@@ -323,19 +325,8 @@ class pg_class extends kernel_class {
 					$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' begin-->'; // для отладчика
 				$html = '';
 				if($rowPG['ugroup']) {
-					$rowPG['ugroup'] = explode('|',trim($rowPG['ugroup'],'|'));
-					$rowPG['ugroup'] = array_flip($rowPG['ugroup']);
-					if(!isset($rowPG['ugroup'][0])) {
-						if(isset($_SESSION['user']['id']) and !isset($rowPG['ugroup']['user']) and !isset($rowPG['ugroup'][$_SESSION['user']['owner_id']])) {
-							$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' ACCESS DENIED-->';
-							continue;
-						}
-						elseif(!isset($rowPG['ugroup']['anonim'])) {
-							$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' ACCESS DENIED-->';
-							continue;
-						}
-					}
-
+					if(!$this->pagePrmCheck($rowPG['ugroup']))
+						continue;
 				}
 				if($rowPG['pagetype']=='') {
 					$text = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['content'].'pg/'.$rowPG['id'].$this->text_ext;
@@ -386,7 +377,11 @@ class pg_class extends kernel_class {
 		if(count($temp))
 			foreach ($temp as $key=>$row)
 			{
-				if(!$row['prm'] or ($onmenu!='' and !isset($row['onmenu'][$onmenu])))
+				if($row['ugroup']) {
+					if(!$this->pagePrmCheck($row['ugroup']))
+						continue;
+				}
+				if($onmenu!='' and !isset($row['onmenu'][$onmenu]))
 					continue;
 
 				$href = $this->getHref($key,$row);
@@ -406,10 +401,10 @@ class pg_class extends kernel_class {
 	function sqlCashPG() {
 		if(!isset($this->dataCash)) {
 			$cls = 'SELECT *';
-			if(isset($_SESSION['user']['id']))
+			/*if(isset($_SESSION['user']['id']))
 				$cls .= ',if((ugroup="" or ugroup="|0|" or ugroup="|user|" or ugroup LIKE "%|'.$_SESSION['user']['owner_id'].'|%"),1,0) as prm';
 			else
-				$cls .= ',if((ugroup="" or ugroup="|0|" or ugroup="|anonim|"),1,0) as prm'; 
+				$cls .= ',if((ugroup="" or ugroup="|0|" or ugroup="|anonim|"),1,0) as prm'; */
 			$cls .= ' FROM '.$this->tablename.' WHERE active=1';
 			$result = $this->SQL->execSQL($cls.' ORDER BY ordind');
 			if(!$result->err) {
@@ -432,6 +427,27 @@ class pg_class extends kernel_class {
 		else $href = $key.'.html';
 		return $href;
 	}
+
+	function pagePrmCheck($ugroup='') {
+		if($ugroup) {
+			$ugroup = explode('|',trim($ugroup,'|'));
+			$ugroup = array_flip($ugroup);
+			if(!isset($ugroup[0]) and count($ugroup)) {
+				if(isset($_SESSION['user']['id'])) {
+					if(!isset($ugroup['user']) and !isset($ugroup[$_SESSION['user']['owner_id']])) {
+						$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' ACCESS DENIED-->';
+						return false;
+					}
+				}
+				elseif(!isset($ugroup['anonim'])) {
+					$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' ACCESS DENIED-->';
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+//////////
 }
 
 ?>
