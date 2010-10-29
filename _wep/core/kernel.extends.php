@@ -1392,9 +1392,12 @@ $Ajax=0 - не скриптовая
 
 /* TREE CREATOR*/
 	public function _forlist(&$data,$id,$select='') { 
+		/*
+		array('name'=>'NAME','id'=>1 [, 'sel'=>0, 'checked'=>0])
+		*/
 		//$select - array(значение=>1)
 		$s = array();
-		if (count($data[$id]) and is_array($data[$id]))
+		if (isset($data[$id]) and is_array($data[$id]) and count($data[$id]))
 			foreach ($data[$id] as $key => $value)
 			{
 				if($select!='' and is_array($select))
@@ -1408,16 +1411,19 @@ $Ajax=0 - не скриптовая
 					$sel = 1;
 				else
 					$sel = 0;
-				$s[$key] = array('id'=>$key,'sel'=>$sel);
+				$s[$key] = array('#id#'=>$key,'#sel#'=>$sel);
 				if(is_array($value)){
 					foreach($value as $k=>$r)
-						if($k!='name' and $k!='id')
+						if($k!='#name#' and $k!='#id#')
 							$s[$key][$k] = $r;
-					$s[$key]['name'] = $value['name'];//_substr($value['name'],0,60).(_strlen($value['name'])>60?'...':'')
+					if(!isset($value['#name#']))
+						$s[$key]['#name#'] = $key;
+					else
+						$s[$key]['#name#'] = $value['#name#'];//_substr($value['name'],0,60).(_strlen($value['name'])>60?'...':'')
 				}else
-					$s[$key]['name'] = $value;
+					$s[$key]['#name#'] = $value;
 				if ($key!=$id and count($data[$key]) and is_array($data[$key]))
-					$s[$key]['item'] = $this->_forlist($data,$key, $select);
+					$s[$key]['#item#'] = $this->_forlist($data,$key, $select);
 			}
 
 		return $s;

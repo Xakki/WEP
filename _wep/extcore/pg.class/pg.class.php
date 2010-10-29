@@ -45,7 +45,7 @@ class pg_class extends kernel_class {
 		$this->fields['design'] = array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL');
 		$this->fields['template'] = array('type' => 'varchar', 'width'=>20, 'attr' => 'NOT NULL','default'=>'default');
 		$this->fields['styles'] = array('type' => 'varchar', 'width'=> 254, 'attr' => 'NOT NULL','default'=>'');
-		$this->fields['script'] = array('type' => 'varchar', 'width'=> 254, 'attr' => 'NOT NULL','default'=>'');
+		$this->fields['script'] = array('type' => 'text', 'attr' => 'NOT NULL','default'=>'');
 		$this->fields['ugroup'] =array('type' => 'varchar', 'width'=>254, 'attr' => 'NOT NULL DEFAULT "|0|"');
 		$this->fields['attr'] = array('type' => 'varchar', 'width'=>254, 'attr' => 'NOT NULL DEFAULT ""');
 		$this->fields['onmenu'] = array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL DEFAULT 0');
@@ -127,20 +127,31 @@ class pg_class extends kernel_class {
 			while (false !== ($entry = $dir->read())) {
 				if (strstr($entry,'.js')) {
 					$entry = substr($entry, 0, strpos($entry, '.js'));
-					$data['../'.$this->_CFG['wep']['design'].'/script/'.$entry] = $this->_CFG['wep']['design'].' - '.$entry;
+					$data['']['../'.$this->_CFG['wep']['design'].'/script/'.$entry] = $this->_CFG['wep']['design'].' - '.$entry;
 				}
 			}
 			$dir->close();
-			
+			$afterSubDir = array();
 			$dir = dir($this->_CFG['_PATH']['_script']);
 			while (false !== ($entry = $dir->read())) {
 				if (strstr($entry,'.js')) {
 					$entry = substr($entry, 0, strpos($entry, '.js'));
-					$data[$entry] = $entry;
+					$data[''][$entry] = $entry;
+				}elseif(substr($entry,0,7)=='script.'){
+					$afterSubDir[$entry] = array('#name#'=> $entry, '#checked#'=>0);
+					$dir2 = dir($this->_CFG['_PATH']['_script'].'/'.$entry);
+					while (false !== ($entry2 = $dir2->read())) {
+						if (strstr($entry2,'.js')) {
+							$entry2 = substr($entry2, 0, strpos($entry2, '.js'));
+							$data[$entry][$entry.'/'.$entry2] = $entry2;
+						}
+					}
+					$dir2->close();
 				}
 			}
 			$dir->close();
-
+			if(count($afterSubDir))
+				$data[''] = $data['']+$afterSubDir;
 			return $data;
 		}
 		elseif ($listname == "templates") {

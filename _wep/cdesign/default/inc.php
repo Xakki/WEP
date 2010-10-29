@@ -110,8 +110,11 @@
 
 
 	if($_CFG['globalformoption']['multiple']) {
+		$_tpl['onload'] .= '$.localise(\'ui-multiselect\', {language: \'ru\', path: \'_design/_script/script.localisation/\'});';
 		$_tpl['onload'] .= '$(\'select[multiple=multiple]\').multiselect();';
 	}
+
+	$_tpl['script']['jquery.localisation-min.js'] = '<script type="text/javascript" src="_design/_script/script.localisation/jquery.localisation-min.js"></script>';
 
 	if($_tpl['styles'] and is_array($_tpl['styles']) and count($_tpl['styles']))
 			$_tpl['styles'] = implode("\n",$_tpl['styles']);

@@ -198,13 +198,13 @@ function selectitem($data,$flag='') {
 	$html = '';
 	if(is_array($data) and count($data))
 		foreach($data as $r) {
-			//_substr($r['name'],0,60).(_strlen($r['name'])>60?'...':'')
-			if(count($r['item']) and isset($r['checked']) and $r['checked']==0)
-				$html .= '<optgroup label="'.$flag.$r['name'].'"></optgroup>';
+			//_substr($r['#name#'],0,60).(_strlen($r['#name#'])>60?'...':'')
+			if(count($r['#item#']) and isset($r['#checked#']) and $r['#checked#']==0)
+				$html .= '<optgroup label="'.$flag.$r['#name#'].'"></optgroup>';
 			else
-				$html .= '<option value="'.$r['id'].'" '.($r['sel']?'selected="selected"':'').'>'.$flag.'&#160;'.$r['name'].'</option>';
-			if(count($r['item']))
-				$html .= selectitem($r['item'],$flag.'&#160;--');
+				$html .= '<option value="'.$r['#id#'].'" '.($r['#sel#']?'selected="selected"':'').'>'.$flag.'&#160;'.$r['#name#'].'</option>';
+			if(count($r['#item#']))
+				$html .= selectitem($r['#item#'],$flag.'&#160;--');
 		}
 	return $html;
 }

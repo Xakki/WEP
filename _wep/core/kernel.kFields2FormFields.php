@@ -57,20 +57,19 @@
 							$val = array_flip($r['value']);
 						else
 							$val = $r['value'];
-						if(is_array($md) and is_array(current($md))) {
-							if(isset($r['mask']['begin']))
-								$key = $r['mask']['begin'];//стартовый ID массива
-							else
-								$key = key($md);
+						if(is_array($md) and count($md)) {
+							if(is_array(current($md))) {
+								if(isset($r['mask']['begin']))
+									$key = $r['mask']['begin'];//стартовый ID массива
+								else
+									$key = key($md);
+							} else{
+								$md = array($md);
+								$key = 0;
+							}
 							$r['valuelist'] = $this->_forlist($md,$key,$val);
 						}
-						elseif(is_array($md) and count($md))
-							foreach($md as $km=>$rm) {
-								$r['valuelist'][$km] = array('id'=>$km, 'name'=> $rm, 'sel'=>0);
-								if((!is_array($val) and (string)$km==(string)$val) or (is_array($val) and isset($val[$km])))
-									$r['valuelist'][$km]['sel'] = 1;
-								//$xml .= '<item'.$param.'><name><![CDATA['._substr($rm,0,60).(_strlen($rm)>60?'...':'').']]></name></item>';
-							}
+
 					}
 					else{
 						$md = $this->_getlist($r['listname'],$r['value']);
