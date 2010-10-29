@@ -100,7 +100,7 @@
 					$ckedit['shiftEnterMode'] = 'CKEDITOR.ENTER_P';
 
 					global $_tpl;
-					$_tpl['script'] .='<script type="text/javascript" src="'.$this->_CFG['_HREF']['WSWG'].'ckeditor/ckeditor.js"></script>';
+					$_tpl['script']['ckeditor.js'] .='<script type="text/javascript" src="'.$this->_CFG['_HREF']['WSWG'].'ckeditor/ckeditor.js"></script>';
 					$fckscript = 'function cke_'.$k.'() { if(typeof CKEDITOR.instances.'.$k.' == \'object\'){CKEDITOR.instances.'.$k.'.destroy(true);} editor_'.$k.' = CKEDITOR.replace( \''.$k.'\',{';
 					foreach($ckedit as $kc=>$rc)
 						$fckscript .= $kc.' : '.$rc.',';
@@ -108,9 +108,9 @@
 
 					if($ckedit['CKFinder']) {
 						$fckscript .='function ckf_'.$k.'() { CKFinder.SetupCKEditor(editor_'.$k.',\'/'.$this->_CFG['PATH']['WSWG'].'ckfinder/\');} if(!CKFinder) $.include(\''.$this->_CFG['_HREF']['WSWG'].'ckfinder/ckfinder.js\',ckf_'.$k.'()); else ckf_'.$k.'();';
-						$_tpl['script'] .='<script src="'.$this->_CFG['_HREF']['WSWG'].'ckfinder/ckfinder.js" type="text/javascript"></script>';
+						$_tpl['script']['ckfinder.js'] .='<script src="'.$this->_CFG['_HREF']['WSWG'].'ckfinder/ckfinder.js" type="text/javascript"></script>';
 					}
-					$_tpl['script'] .= '<script type="text/javascript">'.$fckscript.'}</script>';
+					$_tpl['script'][] .= '<script type="text/javascript">'.$fckscript.'}</script>';
 					$_tpl['onload'] .= ' if(!window.CKEDITOR) $.include(\''.$this->_CFG['_HREF']['WSWG'].'ckeditor/ckeditor.js\',cke_'.$k.'); else cke_'.$k.'();';
 				}
 				elseif($r['type']=='date' and !$r['readonly']) {

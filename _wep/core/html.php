@@ -67,26 +67,22 @@
 			$this->_templates='default';
 			$this->_PATHd = $_SERVER['_DR_'].'/'.$_PATHd.$_design.'/';
 			$this->flag = $flag;
-
-			if($flag){
-				headerssent();
-				$_tpl['design'] = $_PATHd.$_design.'/';
-				$_tpl['title'] = $_tpl['time']='';
-				$_tpl['styles'] = '<link rel="stylesheet" href="'.$_tpl['design'].'style/style.css" type="text/css"/>';
-				$_tpl['script'] = '<script type="text/javascript" src="'.$_tpl['design'].'script/script.js"></script>';
-			}
+			$_tpl['design'] = $_PATHd.$_design.'/';
+			$_tpl['title'] = $_tpl['time']='';
+			$_tpl['script'] = $_tpl['styles'] = array();
 		}
 
 		function __destruct() {
 			global $_tpl,$_html;
-			//$GLOBALS['__post'] = var_export($_POST,true);
-			//unset($_SERVER['message']);
-			//$GLOBALS['__server'] = var_export($_SERVER,true);
 			if($this->flag and file_exists(($this->_PATHd.'templates/'.$this->_templates.'.tpl'))){
 				$_html = implode("", file($this->_PATHd.'templates/'.$this->_templates.'.tpl'));
 				$_html = str_replace('"', '\"', $_html);
+			}elseif($this->flag)
+				$_html = 'ERROR: Mising templates file '.$this->_templates.'.tpl';
+
+			if($this->flag){
+				headerssent();
 			}
-			//print_r('  --- D_HTML');
 		}
 
 		function _itype($val) {

@@ -1534,14 +1534,14 @@ $Ajax=0 - не скриптовая
 		}
 		if(!$flag && $this->_CFG['site']['msp']=='paginator') {
 			global $_tpl;
-			$_tpl['script'] .='<script type="text/javascript" src="'.$this->_CFG['_HREF']['_script'].'jquery.paginator.js"></script>'."\n";
-			$_tpl['styles'] .='<link rel="stylesheet" href="'.$this->_CFG['_HREF']['_style'].'paginator.css" type="text/css"/>'."\n";
+			$_tpl['script']['jquery.paginator.js'] ='<script type="text/javascript" src="'.$this->_CFG['_HREF']['_script'].'jquery.paginator.js"></script>'."\n";
+			$_tpl['styles']['paginator.css'] ='<link rel="stylesheet" href="'.$this->_CFG['_HREF']['_style'].'paginator.css" type="text/css"/>'."\n";
 			$_tpl['onload'] .='pagenum('.$DATA['cntpage'].','.($this->reversePageN?'true':'false').');';
 		}
 		elseif($flag && $this->_CFG['wep']['msp']=='paginator') {
 			global $_tpl;
-			$_tpl['script'] .='<script type="text/javascript" src="'.$this->_CFG['_HREF']['_script'].'jquery.paginator.js"></script>'."\n";
-			$_tpl['styles'] .='<link rel="stylesheet" href="'.$this->_CFG['_HREF']['_style'].'paginator.css" type="text/css"/>'."\n";
+			$_tpl['script']['jquery.paginator.js'] .='<script type="text/javascript" src="'.$this->_CFG['_HREF']['_script'].'jquery.paginator.js"></script>'."\n";
+			$_tpl['styles']['paginator.css'] ='<link rel="stylesheet" href="'.$this->_CFG['_HREF']['_style'].'paginator.css" type="text/css"/>'."\n";
 			$_tpl['onload'] .='pagenum_default('.$DATA['cntpage'].','.$this->_pn.',\''.$this->_cl.'\','.($this->reversePageN?'true':'false').');';
 		}
 		//if($this->reversePageN)

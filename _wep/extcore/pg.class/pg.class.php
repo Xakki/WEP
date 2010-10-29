@@ -44,8 +44,8 @@ class pg_class extends kernel_class {
 		$this->fields['description'] = array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL');
 		$this->fields['design'] = array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL');
 		$this->fields['template'] = array('type' => 'varchar', 'width'=>20, 'attr' => 'NOT NULL','default'=>'default');
-		$this->fields['styles'] = array('type' => 'varchar', 'width'=> 254, 'attr' => 'NOT NULL','default'=>'style');
-		$this->fields['script'] = array('type' => 'varchar', 'width'=> 254, 'attr' => 'NOT NULL','default'=>'script');
+		$this->fields['styles'] = array('type' => 'varchar', 'width'=> 254, 'attr' => 'NOT NULL','default'=>'');
+		$this->fields['script'] = array('type' => 'varchar', 'width'=> 254, 'attr' => 'NOT NULL','default'=>'');
 		$this->fields['ugroup'] =array('type' => 'varchar', 'width'=>254, 'attr' => 'NOT NULL DEFAULT "|0|"');
 		$this->fields['attr'] = array('type' => 'varchar', 'width'=>254, 'attr' => 'NOT NULL DEFAULT ""');
 		$this->fields['onmenu'] = array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL DEFAULT 0');
@@ -181,7 +181,7 @@ class pg_class extends kernel_class {
 			if(!$this->can_show())
 			{
 				$HTML->_templates = "default";
-				$_tpl['text'] = 'У вас не достаточно прав для доступа к странице.';
+				$_tpl['text'] = 'У вас не достаточно прав для доступа к странице. Необходима авторизация.';
 				$_tpl['title'] = "Нет доступа";
 				$_tpl['keywords'] = "";
 				$_tpl['description'] = "";
@@ -234,7 +234,7 @@ class pg_class extends kernel_class {
 			else
 				$row = $this->dataCash[$this->id];
 		}*/
-		if(isset($this->dataCash[$this->id]) and !$this->pagePrmCheck($rowPG['ugroup'])) {
+		if(isset($this->dataCash[$this->id]) and !$this->pagePrmCheck($this->dataCash[$this->id]['ugroup'])) {
 			$this->pageinfo = $this->dataCash[$this->id];
 			return 2;
 		}
@@ -328,6 +328,21 @@ class pg_class extends kernel_class {
 					if(!$this->pagePrmCheck($rowPG['ugroup']))
 						continue;
 				}
+				if($rowPG['script']) {
+					$rowPG['script'] = explode('|',trim($rowPG['script'],'|'));
+					if(count($rowPG['script'])) {
+						foreach($rowPG['script'] as $r)
+							$this->pageinfo['script'][$r] = $r;
+					}
+				}
+				if($rowPG['styles']) {
+					$rowPG['styles'] = explode('|',trim($rowPG['styles'],'|'));
+					if(count($rowPG['styles'])) {
+						foreach($rowPG['styles'] as $r)
+							$this->pageinfo['styles'][$r] = $r;
+					}
+				}
+
 				if($rowPG['pagetype']=='') {
 					$text = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['content'].'pg/'.$rowPG['id'].$this->text_ext;
 					if (file_exists($text)) {

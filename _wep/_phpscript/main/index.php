@@ -45,7 +45,8 @@
 					//if($r=='jquery.form') $_tpl['onload'] .="JSFR('form');";//for ajax form
 				}
 		}
-		$_tpl['script'] .=$tempscript;
+		if($tempscript and is_array($tempscript) and count($tempscript))
+			$_tpl['script'] .= implode("\n",$tempscript);
 /*
 		if(!isset($_SESSION['showIEwarning'])) $_SESSION['showIEwarning']=0;
 		if($HTML->_fTestIE('MSIE 6') and $_SESSION['showIEwarning']<3) {
@@ -56,8 +57,11 @@
 // SCRIPT*****************
 //STYLE*******************
 		//$_tpl['styles'] .='<link rel="stylesheet" href="/_design/_style/style.css" type="text/css"/>';
+		$tempscript =$_tpl['styles'];$_tpl['styles']='';
 		if(is_array($PGLIST->pageinfo['styles']))
 			foreach($PGLIST->pageinfo['styles'] as $r)
 				if($r!='')// and $r!='style'
 					$_tpl['styles'] .='<link rel="stylesheet" href="'.$_CFG['_HREF']['_style'].$r.'.css" type="text/css"/>'."\n";
+		if($tempscript and is_array($tempscript) and count($tempscript))
+			$_tpl['styles'] .= implode("\n",$tempscript);
 ?>

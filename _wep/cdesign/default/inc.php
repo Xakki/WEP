@@ -95,6 +95,27 @@
 <option onclick="window.location=\''.$_CFG['PATH']['wepname'].'/index.php?_showallinfo=2\'" '.($_COOKIE['_showallinfo']==2?'selected="selected"':'').'>Показать SQL запросы</option>
 <option onclick="window.location=\''.$_CFG['PATH']['wepname'].'/index.php?_showallinfo=3\'" '.($_COOKIE['_showallinfo']==3?'selected="selected"':'').'>Показать все логи</option>
 </select></span>';
-	$_tpl['styles'] .='<link rel="stylesheet" href="'.$_CFG['_HREF']['_style'].'style.css" type="text/css"/>';
+	$_tpl['styles'][$_CFG['_HREF']['_style'].'style.css'] ='<link rel="stylesheet" href="'.$_CFG['_HREF']['_style'].'style.css" type="text/css"/>';
+
+	$_tpl['script']['md5.js'] = '<script type="text/javascript" src="_design/_script/md5.js"></script>';
+	$_tpl['script']['jquery.ui.widget.min.js'] = '<script type="text/javascript" src="_design/_script/script.jquery.ui/jquery.ui.widget.min.js"></script>';
+	$_tpl['styles']['jquery-ui-redmond.css'] = '<link type="text/css" href="_design/_style/jquery-ui-redmond.css" rel="stylesheet">';
+	
+	$_tpl['script']['jquery.ui.mouse.min.js'] = '<script type="text/javascript" src="_design/_script/script.jquery.ui/jquery.ui.mouse.min.js"></script>';
+	$_tpl['script']['jquery.ui.sortable.min.js'] = '<script type="text/javascript" src="_design/_script/script.jquery.ui/jquery.ui.sortable.min.js"></script>';
+	$_tpl['script']['jquery.ui.draggable.min.js'] = '<script type="text/javascript" src="_design/_script/script.jquery.ui/jquery.ui.draggable.min.js"></script>';
+
+	$_tpl['script']['jquery.ui.multiselect.js'] = '<script type="text/javascript" src="_design/_script/script.jquery.ui/jquery.ui.multiselect.js"></script>';
+	$_tpl['styles']['jquery.ui.multiselect.js'] = '<link type="text/css" href="_design/_style/jquery-ui.multiselect.css" rel="stylesheet">';
+
+
+	if($_CFG['globalformoption']['multiple']) {
+		$_tpl['onload'] .= '$(\'select[multiple=multiple]\').multiselect();';
+	}
+
+	if($_tpl['styles'] and is_array($_tpl['styles']) and count($_tpl['styles']))
+			$_tpl['styles'] = implode("\n",$_tpl['styles']);
+	if($_tpl['script'] and is_array($_tpl['script']) and count($_tpl['script']))
+			$_tpl['script'] = implode("\n",$_tpl['script']);
 
 ?>

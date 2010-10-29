@@ -86,6 +86,7 @@ function tpl_form(&$data) {
 					$html .= '<select multiple="multiple" size="10" name="'.$k.'[]" class="small" onchange="'.$r['onchange'].'"';
 					if($r['readonly']) $html .= ' readonly="readonly"';
 					$html .= '>'.selectitem($r['valuelist']).'</select>';
+					$_CFG['globalformoption']['multiple'] = 1;
 				}else {
 					$html .= '<select name="'.$k.'" onchange="'.$r['onchange'].'"';
 					if($r['readonly']) $html .= ' readonly="readonly"';
