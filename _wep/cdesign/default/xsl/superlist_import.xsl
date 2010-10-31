@@ -20,10 +20,10 @@
 			<div class="botton">
 			<xsl:choose>
 				<xsl:when test="@type='tools'">
-					<a href="{@href}" OnClick="return ShowTools('tools_block',this)" class="{@class}" title="{.}"><xsl:value-of select="."/></a>
+					<a href="{@href}" onclick="return ShowTools('tools_block',this)" class="{@class}" title="{.}"><xsl:value-of select="."/></a>
 				</xsl:when>	
 				<xsl:otherwise>
-					<a href="{@href}" OnClick="return load_href(this)" class="{@class}">
+					<a href="{@href}" onclick="return load_href(this)" class="{@class}">
 						<xsl:if test="@sel=1"><xsl:attribute name="style">border:2px solid red;</xsl:attribute></xsl:if>
 						<xsl:value-of select="."/></a>
 				</xsl:otherwise>
@@ -42,11 +42,11 @@
 			<xsl:choose>
 				<xsl:when test="@href!=''">
 					<xsl:if test="@sel>0"><xsl:attribute name="style">border: 1px solid red;</xsl:attribute></xsl:if>
-					<a class="bottonimg imgup" title="[SORT]" href="?{../../data/req}sort={@href}" OnClick="return load_href(this)">
+					<a class="bottonimg imgup" title="[SORT]" href="?{../../data/req}sort={@href}" onclick="return load_href(this)">
 						<xsl:if test="@sel=1"><xsl:attribute name="class">bottonimg_sel imgup</xsl:attribute></xsl:if>
 					</a>
 					<xsl:value-of select="."/>
-					<a class="bottonimg imgdown" title="[SORT]" href="?{../../data/req}dsort={@href}" OnClick="return load_href(this)">
+					<a class="bottonimg imgdown" title="[SORT]" href="?{../../data/req}dsort={@href}" onclick="return load_href(this)">
 						<xsl:if test="@sel=2"><xsl:attribute name="class">bottonimg_sel imgdown</xsl:attribute></xsl:if>
 					</a>
 				</xsl:when>
@@ -103,39 +103,39 @@
 
 			<td class="ic" style="vertical-align:top;white-space:nowrap;">
 				 <xsl:if test="active/@type!='bool'">
-					<xsl:if test="active='7'"><a class="bottonimg img7" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" OnClick="return load_href(this)" title="[Истек срок размещения]"></a></xsl:if>
-					<xsl:if test="active='6'"><a class="bottonimg img6" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" OnClick="return load_href(this)" title="[Откл]"></a> <xsl:if test="denied_reason!=''"> (по причине: <xsl:value-of select="denied_reason" />)</xsl:if></xsl:if>
-					<xsl:if test="active='5'"><a class="bottonimg img5" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" OnClick="return load_href(this)" title="[Активировать пользователем]"></a></xsl:if>
-					<xsl:if test="active='4'"><a class="bottonimg img4" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" OnClick="return load_href(this)" title="[Удалено пользователем]"></a></xsl:if>
-					<xsl:if test="active='3'"><a class="bottonimg img3" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" OnClick="return load_href(this)" title="[Редакт. пользователем]"></a></xsl:if>
-					<xsl:if test="active='2'"><a class="bottonimg img2" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" OnClick="return load_href(this)" title="[Дезактивировано пользователем]"></a></xsl:if>
-					<xsl:if test="active='1'"><a class="bottonimg img1" href="?{../req}{../cl}_id={id}&amp;_type=dis#{id}" OnClick="return load_href(this)" title="[Вкл]"></a></xsl:if>
-					<xsl:if test="active='0'"><a class="bottonimg img0" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" OnClick="return load_href(this)" title="[Новоё]"></a></xsl:if>
+					<xsl:if test="active='7'"><a class="bottonimg img7" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" onclick="return load_href(this)" title="[Истек срок размещения]"></a></xsl:if>
+					<xsl:if test="active='6'"><a class="bottonimg img6" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" onclick="return load_href(this)" title="[Откл]"></a> <xsl:if test="denied_reason!=''"> (по причине: <xsl:value-of select="denied_reason" />)</xsl:if></xsl:if>
+					<xsl:if test="active='5'"><a class="bottonimg img5" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" onclick="return load_href(this)" title="[Активировать пользователем]"></a></xsl:if>
+					<xsl:if test="active='4'"><a class="bottonimg img4" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" onclick="return load_href(this)" title="[Удалено пользователем]"></a></xsl:if>
+					<xsl:if test="active='3'"><a class="bottonimg img3" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" onclick="return load_href(this)" title="[Редакт. пользователем]"></a></xsl:if>
+					<xsl:if test="active='2'"><a class="bottonimg img2" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" onclick="return load_href(this)" title="[Дезактивировано пользователем]"></a></xsl:if>
+					<xsl:if test="active='1'"><a class="bottonimg img1" href="?{../req}{../cl}_id={id}&amp;_type=dis#{id}" onclick="return load_href(this)" title="[Вкл]"></a></xsl:if>
+					<xsl:if test="active='0'"><a class="bottonimg img0" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" onclick="return load_href(this)" title="[Новоё]"></a></xsl:if>
 				 </xsl:if>
 				 <xsl:if test="active/@type='bool'">
 					<xsl:if test="active='1'">
-						<a class="bottonimg img1" href="?{../req}{../cl}_id={id}&amp;_type=dis#{id}" OnClick="return load_href(this)" title="[Вкл]">
-							<xsl:if test="@act=0"><xsl:attribute name="OnClick">return false</xsl:attribute></xsl:if>
+						<a class="bottonimg img1" href="?{../req}{../cl}_id={id}&amp;_type=dis#{id}" onclick="return load_href(this)" title="[Вкл]">
+							<xsl:if test="@act=0"><xsl:attribute name="onclick">return false</xsl:attribute></xsl:if>
 						</a></xsl:if>
 					<xsl:if test="active!='1'">
-						<a class="bottonimg img0" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" OnClick="return load_href(this)" title="[Новоё]">
-							<xsl:if test="@act=0"><xsl:attribute name="OnClick">return false</xsl:attribute></xsl:if>
+						<a class="bottonimg img0" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" onclick="return load_href(this)" title="[Новоё]">
+							<xsl:if test="@act=0"><xsl:attribute name="onclick">return false</xsl:attribute></xsl:if>
 						</a></xsl:if>
 				 </xsl:if>
 
 				<xsl:if test="@edit='1'">
-					<a class="bottonimg imgedit" href="?{../req}{../cl}_id={id}&amp;_type=edit#{id}" OnClick="return load_href(this)" title="[редактировать]"></a>
+					<a class="bottonimg imgedit" href="?{../req}{../cl}_id={id}&amp;_type=edit#{id}" onclick="return load_href(this)" title="[редактировать]"></a>
 				</xsl:if>
 
 				<xsl:if test="@del='1'">
-					<a class="bottonimg imgdel" href="?{../req}{../cl}_id={id}&amp;_type=del" onClick="return hrefConfirm(this,'del')" title="[удалить]"></a>
+					<a class="bottonimg imgdel" href="?{../req}{../cl}_id={id}&amp;_type=del" onclick="return hrefConfirm(this,'del')" title="[удалить]"></a>
 				</xsl:if>
 
 				<xsl:if test="count(istree)>0">
-					<br/><a href="?{../req}{../cl}_id={id}" OnClick="return load_href(this)"><xsl:value-of select="istree"/> (<xsl:value-of select="istree/@cnt"/>)</a>
+					<br/><a href="?{../req}{../cl}_id={id}" onclick="return load_href(this)"><xsl:value-of select="istree"/> (<xsl:value-of select="istree/@cnt"/>)</a>
 				</xsl:if>
 				<xsl:for-each select="child">
-					<br/><a href="?{../../req}{../../cl}_id={../id}&amp;{../../cl}_ch={@name}" OnClick="return load_href(this)"><xsl:value-of select="."/> (<xsl:value-of select="@cnt"/>)</a>
+					<br/><a href="?{../../req}{../../cl}_id={../id}&amp;{../../cl}_ch={@name}" onclick="return load_href(this)"><xsl:value-of select="."/> (<xsl:value-of select="@cnt"/>)</a>
 				</xsl:for-each>
 			</td>
 			  <!--<td class="ic">
@@ -168,7 +168,7 @@
 					<b>[<xsl:value-of select="."/>]</b>
 				</xsl:when>
 				<xsl:otherwise>
-					<a href="{@href}" OnClick="return load_href(this)"><xsl:value-of select="."/></a>
+					<a href="{@href}" onclick="return load_href(this)"><xsl:value-of select="."/></a>
 				</xsl:otherwise>
 				</xsl:choose>
 			 </xsl:for-each>

@@ -51,12 +51,12 @@
 				$html .= '</div></div>';
 			}
 			elseif($r['type']=='list') {
-				if(isset($r['valuelist'][0]) and $r['valuelist'][0]['name']==' --- ')
+				if(isset($r['valuelist'][0]) and $r['valuelist'][0]['#name#']==' --- ')
 					unset($r['valuelist'][0]);
-				if(isset($r['valuelist']['']) and $r['valuelist']['']['name']==' --- ')
-					$r['valuelist']['']['name'] = 'Все';
+				if(isset($r['valuelist']['']) and $r['valuelist']['']['#name#']==' --- ')
+					$r['valuelist']['']['#name#'] = 'Все';
 				else
-					$r['valuelist'] = array_merge(array(0=>array('name'=>'Все','id'=>'')),$r['valuelist']);
+					$r['valuelist'] = array(0=>array('#name#'=>'Все','#id#'=>''))+$r['valuelist'];
 				$html .= '<div class="f_item">
 				<div class="f_caption">'.$r['caption'].'</div>
 				<div class="f_value">
@@ -118,14 +118,14 @@
 function selectitem2($data,$flag='') {
 	$html = '';
 	if(is_array($data) and count($data))
-		foreach($data as $r) {
+		foreach($data as $k=>$r) {
 			//_substr($r['name'],0,60).(_strlen($r['name'])>60?'...':'')
-			if(count($r['item']) and $r['checked']==0)
-				$html .= '<optgroup label="'.$flag.$r['name'].'"></optgroup>';
+			if(count($r['#item#']) and $r['#checked#']==0)
+				$html .= '<optgroup label="'.$flag.$r['#name#'].'"></optgroup>';
 			else
-				$html .= '<option value="'.$r['id'].'" '.($r['sel']?'selected="selected"':'').'>'.$flag.'&#160;'.$r['name'].'</option>';
-			if(count($r['item']))
-				$html .= selectitem2($r['item'],$flag.'&#160;--');
+				$html .= '<option value="'.$k.'" '.($r['#sel#']?'selected="selected"':'').'>'.$flag.'&#160;'.$r['#name#'].'</option>';
+			if(count($r['#item#']))
+				$html .= selectitem2($r['#item#'],$flag.'&#160;--');
 		}
 	return $html;
 }

@@ -271,7 +271,7 @@
 	.divform .dateselect select{width:auto;}
 
 	.divform select{border:1px solid #A6A6A6;height:1.5em;width:100%;}
-	.divform select.small {border:1px solid #A6A6A6;height:9em;}
+	.divform select.small {border:1px solid #A6A6A6;height:13em;}
 	.divform optgroup {margin:0;padding:0;}
 	.divform option {margin:0 12px 0 0;padding:0;}
 

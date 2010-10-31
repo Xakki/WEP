@@ -51,7 +51,7 @@
 		if($field['type']=='ajaxlist') {
 			if($field['listname']['where']) $field['listname']['where'] .= ' and '.$_GET['tx.name'].' LIKE "%'.mysql_real_escape_string($_GET['_value']).'%"';
 			$field['listname']['ordfield'] .= ' LIMIT 25';
-			$md= $MODUL->_getlist($field['listname']);
+			$md= $MODUL->_getCashedList($field['listname']);
 			unset($md[0]);print_r($md);
 			foreach ($md as $k=>$r) {
 				$GLOBALS['_RESULT']['data'][$k] = $r;

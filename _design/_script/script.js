@@ -64,26 +64,6 @@ function WindowEvent(evt)
 }
 
 
-/***************DEL****************/
-   
-function addFileInput(obj,cnt) {
-	var temp =$(obj.previousSibling).clone();
-	if($("input[name="+temp.attr('name')+"]").length>=cnt) {
-		return 1;
-	}
-	temp.attr({'value':''});
-	$(obj).before('<img src="/img/del.png" alt="DEL" style="cursor:pointer;" onClick="delFileInput(this)"/><br/>');
-	$(obj).before(temp);
-	return 1;
-}
-
-function delFileInput(obj) {
-	$(obj.previousSibling.previousSibling).remove();
-	$(obj.previousSibling).remove();
-	$(obj).remove();
-	return 1;
-}
-
 /************** аналог ф в ѕ’ѕ ***************/
 function is_array(a) {
   return a && typeof a == 'object' && a.constructor == Array;

@@ -86,7 +86,7 @@ class pg_class extends kernel_class {
 		}
 	}
 
-	function _getlist($listname,$fields_form=array()) {
+	function _getlist($listname,$value=0) {
 		$data = array();
 		if ($listname == "ugroup") {
 			$data['user'] = ' - Авторизованные -';
@@ -170,7 +170,7 @@ class pg_class extends kernel_class {
 			$data['new'] = 'new';
 			return $data;
 		}
-		else return parent::_getlist($listname,$fields_form);
+		else return parent::_getlist($listname,$value);
 	}
 
 	function display() {

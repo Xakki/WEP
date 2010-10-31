@@ -1,3 +1,9 @@
+
+bzr push --no-strict --use-existing-dir bzr+ssh://xakki@81.30.55.206/home/xakki/bzr/core_wep
+bzr push bzr+ssh://xakki@81.30.55.206/home/xakki/bzr/core_wep
+bzr merge bzr+ssh://xakki@81.30.55.206/home/xakki/bzr/core_wep
+bzr branch bzr+ssh://xakki@81.30.55.206/home/ildar/bzr/core_wep
+
 ////////////
 PG class
 Контент страницы
@@ -20,6 +26,13 @@ PG class
 +- вывод функций на страницах
 +- постраничка в обратном порядке (опц)
 
+Текущие задания
+- установка модулей
+- смена типов полей SQL
+
+
+Будущие задания
+
 - - дефолтные записи в БД (мемо записи)
 - - Системные расширения (тест)
 - - - - сессия при авторизации
@@ -33,14 +46,15 @@ PG class
 -- OPEN ID (по соц сетям и поисковикам в первую очередь)
 -- Установщик
 --- При установке модуля , проверка целостности и совместимость версии
-
-- select (рубрики) с постоянным выбором (когда все загружено)
+- -  select (рубрики) с постоянным выбором (когда все загружено)
 - - TOOLS в подмодулях
+- - голосов в коммментах
 
-- голосов в коммментах
 
-bzr push --no-strict --use-existing-dir bzr+ssh://xakki@81.30.55.206/home/xakki/bzr/core_wep
-bzr push bzr+ssh://xakki@81.30.55.206/home/xakki/bzr/core_wep
-bzr merge bzr+ssh://xakki@81.30.55.206/home/xakki/bzr/core_wep
-bzr branch bzr+ssh://xakki@81.30.55.206/home/ildar/bzr/core_wep
+
+
+
+
+
+
 

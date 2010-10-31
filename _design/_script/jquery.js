@@ -164,3 +164,79 @@ e):f.css(e)}};c.fn.extend({position:function(){if(!this[0])return null;var a=thi
 c.css(a,"position")==="static";)a=a.offsetParent;return a})}});c.each(["Left","Top"],function(a,b){var d="scroll"+b;c.fn[d]=function(e){var f=this[0],h;if(!f)return null;if(e!==A)return this.each(function(){if(h=ea(this))h.scrollTo(!a?e:c(h).scrollLeft(),a?e:c(h).scrollTop());else this[d]=e});else return(h=ea(f))?"pageXOffset"in h?h[a?"pageYOffset":"pageXOffset"]:c.support.boxModel&&h.document.documentElement[d]||h.document.body[d]:f[d]}});c.each(["Height","Width"],function(a,b){var d=b.toLowerCase();
 c.fn["inner"+b]=function(){return this[0]?parseFloat(c.css(this[0],d,"padding")):null};c.fn["outer"+b]=function(e){return this[0]?parseFloat(c.css(this[0],d,e?"margin":"border")):null};c.fn[d]=function(e){var f=this[0];if(!f)return e==null?null:this;if(c.isFunction(e))return this.each(function(h){var k=c(this);k[d](e.call(this,h,k[d]()))});return c.isWindow(f)?f.document.compatMode==="CSS1Compat"&&f.document.documentElement["client"+b]||f.document.body["client"+b]:f.nodeType===9?Math.max(f.documentElement["client"+
 b],f.body["scroll"+b],f.documentElement["scroll"+b],f.body["offset"+b],f.documentElement["offset"+b]):e===A?parseFloat(c.css(f,d)):this.css(d,typeof e==="string"?e:e+"px")}})})(window);
+
+/**
+ * $.include - script inclusion jQuery plugin
+ * Based on idea from http://www.gnucitizen.org/projects/jquery-include/
+ * @author Tobiasz Cudnik
+ * @link http://meta20.net/.include_script_inclusion_jQuery_plugin
+ * @license MIT
+ */
+// overload jquery's onDomReady
+if ( jQuery.browser.mozilla || jQuery.browser.opera ) {
+	document.removeEventListener( "DOMContentLoaded", jQuery.ready, false );
+	document.addEventListener( "DOMContentLoaded", function(){ jQuery.ready(); }, false );
+}
+jQuery.event.remove( window, "load", jQuery.ready );
+jQuery.event.add( window, "load", function(){ jQuery.ready(); } );
+jQuery.extend({
+	includeStates: {},
+	include: function(url, callback, dependency){
+		if ( typeof callback != 'function' && ! dependency ) {
+			dependency = callback;
+			callback = null;
+		}
+		url = url.replace('\n', '');
+		jQuery.includeStates[url] = false;
+		var script = document.createElement('script');
+		script.type = 'text/javascript';
+		script.onload = function () {
+			jQuery.includeStates[url] = true;
+			if ( callback )
+				callback.call(script);
+		};
+		script.onreadystatechange = function () {
+			if ( this.readyState != "complete" && this.readyState != "loaded" ) return;
+			jQuery.includeStates[url] = true;
+			if ( callback )
+				callback.call(script);
+		};
+		script.src = url;
+		if ( dependency ) {
+			if ( dependency.constructor != Array )
+				dependency = [dependency];
+			setTimeout(function(){
+				var valid = true;
+				$.each(dependency, function(k, v){
+					if (! v() ) {
+						valid = false;
+						return false;
+					}
+				})
+				if ( valid )
+					document.getElementsByTagName('head')[0].appendChild(script);
+				else
+					setTimeout(arguments.callee, 10);
+			}, 10);
+		}
+		else
+			document.getElementsByTagName('head')[0].appendChild(script);
+		return function(){
+			return jQuery.includeStates[url];
+		}
+	},
+	readyOld: jQuery.ready,
+	ready: function () {
+		if (jQuery.isReady) return;
+		imReady = true;
+		$.each(jQuery.includeStates, function(url, state) {
+			if (! state)
+				return imReady = false;
+		});
+		if (imReady) {
+			jQuery.readyOld.apply(jQuery, arguments);
+		} else {
+			setTimeout(arguments.callee, 10);
+		}
+	}
+});

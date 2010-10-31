@@ -49,6 +49,7 @@ function JSFR(n) {
 			function(a,f,o) {
 				//var formElement = f[0];
 				o.dataType = 'json';
+				preSubmitAJAX (f);
 			},
 		/*notsuccess: 
 			function(d,statusText) {
@@ -70,13 +71,6 @@ function JSFR(n) {
 	});
 }
 
-
-function CKSubmit() {
-	nm = $(this).attr('name');
-	eval("if(typeof CKEDITOR.instances."+nm+" == 'object') {CKEDITOR.instances."+nm+".updateElement();}");
-	return true;
-}
-
 function preSubmitAJAX (obj) {
 	if(typeof CKEDITOR !== 'undefined') {
 		clearTimeout(timerid2);
@@ -90,6 +84,12 @@ function preSubmitAJAX (obj) {
 		}
 		jQuery.each($(obj).find("textarea"),CKSubmit);
 	}
+	return true;
+}
+
+function CKSubmit() {
+	nm = $(this).attr('name');
+	eval("if(typeof CKEDITOR.instances."+nm+" == 'object') {CKEDITOR.instances."+nm+".updateElement();}");
 	return true;
 }
 
@@ -132,6 +132,7 @@ function reloadcaptcha(id)
 	$('#'+id).attr('src',"/_captcha.php?"+ Math.random());
 }
 
+/*PASS FORM*/
 function checkPass(name) {
 	$("form input[type=submit]").attr({'disabled':'disabled'});
 	val_1=$("form input[name="+name+"]").val();
@@ -162,20 +163,7 @@ function password_new() {
 	$('input[type='+type1+'].password').remove();
 }
 
-function show_params(selector) {
-	if($(selector).is(':hidden')) {
-		$(selector).show().css({'background-color':'#EDEDED','width':'60%','margin':'0 auto'});
-		$('#tr_showparam').hide();
-		$('#tr_hideparam').show();
-	}
-	else {
-		$(selector).hide();
-
-		$('#tr_showparam').show();
-		$('#tr_hideparam').hide();
-	}
-
-}
+/*AXAX LIST*/
 var timerid4=0;
 var timerid5=0;
 function show_hide_label(obj,view,flag) {
@@ -214,7 +202,7 @@ function ajaxlist(obj,view) {
 	if(obj.value.length>1) {
 		clearTimeout(timerid4);
 		if(ajaxComplite==1)
-			timerid4 = setTimeout(function(){getJsonData(obj.value,view);},900);
+			timerid4 = setTimeout(function(){getAjaxListData(obj.value,view);},900);
 		else
 			timerid4 = setTimeout(function(){ajaxlist(obj,view);},1000);
 	}else {
@@ -225,7 +213,7 @@ function ajaxlist(obj,view) {
 }
 //$('#tr_city .td1').append('+')
 
-function getJsonData(value,view) {
+function getAjaxListData(value,view) {
 	timerid4 = 0;
 	if($('#ajaxlist_'+view).attr('val')==value) {
 		$('#ajaxlist_'+view).show();
@@ -278,22 +266,6 @@ function getJsonData(value,view) {
 	}
 }
 
-/************************/
-
-function count (o) {
-	cnt=0;
-	if(typeof o=='object'){
-		for(var key in o)
-			cnt++;
-	}
-	return cnt;
-}
-
-function GetId(id)
-{
-	return document.getElementById(id);
-}
-
 function showi(obj,id,show,hide) {
 //функция для отображения елемента id и смены рисунка на объекте obj
 	if(GetId(id).style.display=='block') {
@@ -312,70 +284,7 @@ function showi(obj,id,show,hide) {
 	}
 }
 
-/*
-_mask =  new Object();
-function checkKey(ev,filter) {
-var keys = keys_return(ev);
-if (in_array(keys,_mask[filter])) 
-	return true;
-return false;
-}
-*/
-var timerid3;
-function boardrubric(obj,id) {
-	clearTimeout(timerid3);
-	timerid3 = setTimeout(function(){boardrubricExe(obj,id);},400);
-	return true;
-}
-
-function boardrubricExe(obj,id) {
-	var objAfter;
-	if(!obj) return 0;
-	if(typeof obj!='object') {
-		obj=$('select[name='+obj+']');
-		objAfter = 'tr_'+obj;
-	}else
-		objAfter = $(obj).parent().parent();
-	if(!id) id='';
-	$('.addparam').remove();
-	JSHR(objAfter,'/_js.php?_modul=board&_view=boardlist&_id='+id+'&_rid='+$(obj).val(),'',0,'after');
-	return true;
-}
-
-function rclaim(nm) {
-	var val=$('select[name='+nm+']').val();
-	if(val==1 || val==3 || val==5)
-		$('.addparam span.form-requere').css('display','none');
-	else{
-		$('.addparam span.form-requere').css('display','');
-	}
-}
-	
-function CreateElem(name, attrs, style, text)
-{
-	var e = document.createElement(name);
-	if (attrs) {
-		for (key in attrs) {
-			if (key == 'class') {
-				e.className = attrs[key];
-			} else if (key == 'id') {
-				e.id = attrs[key];
-			} else {
-				e.setAttribute(key, attrs[key]);
-			}
-		}
-	}
-	if (style) {
-		for (key in style) {
-			e.style[key] = style[key];
-		}
-	}
-	if (text) {
-		e.appendChild(document.createTextNode(text));
-	}
-	return e;
-}
-
+/*SPOILER*/
 function clickSpoilers(obj) {
 	$(obj).toggleClass('unfolded');
 	$(obj).next('div.spoiler-body').slideToggle('fast');
@@ -397,6 +306,7 @@ function initSpoilers(context){
 	;
 }
 
+/*Bacground*/
 function showBG(body,show,k) {
 	if(!body) body='body';
 	if(!show){
@@ -456,68 +366,6 @@ function fMessPos(body,obj) {
 	$(body+obj).css("top",hh+"%").css("left",ww+"%").css("width",Wblock+'px');
 }
 
-function getBrowserInfo() {
-	var t,v = undefined;
-	if (window.opera) t = 'Opera';
-	else if (document.all) {
-		t = 'IE';
-		var nv = navigator.appVersion;
-		var s = nv.indexOf('MSIE')+5;
-		v = nv.substring(s,s+1);
-	}
-	else if (navigator.appName) t = 'Netscape';
-	return {type:t,version:v};
-}
-
-	
-function dump(arr, level) {/*аналог ф в ПХП print_r*/
-    var dumped_text = "";
-    if(!level) level = 0;
-
-    var level_padding = "    ";
-
-    if(typeof(arr) == 'object') {
-        for(var item in arr) {
-            var value = arr[item];
- 
-            if(typeof(value) == 'object') {
-                dumped_text += level_padding + "’" + item + "’ …\n";
-                if(level>0) dumped_text += dump(value,level-1);
-            }
-            else {
-                dumped_text += level_padding + "’" + item + "’ => \"" + value + "\"\n";
-            }
-        }
-    }
-    else {
-        dumped_text = "===>"+arr+"<===("+typeof(arr)+")";
-    }
-    return dumped_text;
-}
-
-function getToText(obj) {
-	var valu='';
-	var txt='';
-	for(var i=0; i<obj.elements.length; i++) {
-		if(obj.elements[i].type!='submit') {
-			if(obj.elements[i].type!='checkbox' || obj.elements[i].checked)
-				valu += obj.elements[i].name+'='+obj.elements[i].value+'&';
-			if(obj.elements[i].name=='rubric')
-				txt=obj.elements[i].options[obj.elements[i].selectedIndex].text;
-			if(obj.elements[i].name=='type')
-				txt += '; '+obj.elements[i].options[obj.elements[i].selectedIndex].text
-			if(obj.elements[i].name=='cost')
-				txt += '; от '+obj.elements[i].value+' руб.';
-			if(obj.elements[i].name=='cost_2')
-				txt += '; до '+obj.elements[i].value+' руб.';
-		}
-	}
-	$('#tr_param > div input').val(valu);
-	$('#tr_param > div > a').text(txt);
-	fShowload(0);
-	return false;
-}
-
 function gSlide (id,_min,_max,val0, val1,stp) {
 		if(!_max && val1) _max = val1*3;
 		else if(!_max) _max = 100;
@@ -540,49 +388,12 @@ function gSlide (id,_min,_max,val0, val1,stp) {
 		$('#'+id+' div input').eq(1).bind('change',function (){$('#slide'+id).slider( 'values' , 1 , this.value)});
 }
 
-function setCookie(name, value, expiredays, path, domain, secure) {
-   if (expiredays) {
-      var exdate=new Date();
-      exdate.setDate(exdate.getDate()+expiredays);
-      var expires = exdate.toGMTString();
-   }
-   document.cookie = name + "=" + escape(value) +
-   ((expiredays) ? "; expires=" + expires : "") +
-   ((path) ? "; path=" + path : "") +
-   ((domain) ? "; domain=" + domain : "") +
-   ((secure) ? "; secure" : "");
-}
-
-function getCookie(name) {
-   var cookie = " " + document.cookie;
-   var search = " " + name + "=";
-   var setStr = null;
-   var offset = 0;
-   var end = 0;
-   if (cookie.length > 0) {
-      offset = cookie.indexOf(search);
-      if (offset != -1) {
-         offset += search.length;
-         end = cookie.indexOf(";", offset)
-         if (end == -1) {
-            end = cookie.length;
-         }
-         setStr = unescape(cookie.substring(offset, end));
-      }
-   }
-   return setStr;
-}
-
-function shownextfoto(crnt,nxt){
-	$('#tr_'+nxt).show();
-	$(crnt).remove();
-}
-
 var MESS = {
 	'del':'Вы действительно хотите провести операцию удаления?',
 	'delprof':'Вы действительно хотите удалить свой профиль?',
 };
 
+/*Показ тултип*/
 function showHelp(obj,mess,time,nomiga) {
 	if(!obj || !mess || $(obj).next().attr('class')=='helpmess') return false;
 	var pos = $(obj).position();
@@ -642,3 +453,92 @@ function ShowTools(id,hrf) {
 
 	return false;
 }
+
+/************************/
+/*simple script*/
+
+function count(o) {
+	cnt=0;
+	if(typeof o=='object'){
+		for(var key in o)
+			cnt++;
+	}
+	return cnt;
+}
+
+function GetId(id)
+{
+	return document.getElementById(id);
+}
+function setCookie(name, value, expiredays, path, domain, secure) {
+   if (expiredays) {
+      var exdate=new Date();
+      exdate.setDate(exdate.getDate()+expiredays);
+      var expires = exdate.toGMTString();
+   }
+   document.cookie = name + "=" + escape(value) +
+   ((expiredays) ? "; expires=" + expires : "") +
+   ((path) ? "; path=" + path : "") +
+   ((domain) ? "; domain=" + domain : "") +
+   ((secure) ? "; secure" : "");
+}
+
+function getCookie(name) {
+   var cookie = " " + document.cookie;
+   var search = " " + name + "=";
+   var setStr = null;
+   var offset = 0;
+   var end = 0;
+   if (cookie.length > 0) {
+      offset = cookie.indexOf(search);
+      if (offset != -1) {
+         offset += search.length;
+         end = cookie.indexOf(";", offset)
+         if (end == -1) {
+            end = cookie.length;
+         }
+         setStr = unescape(cookie.substring(offset, end));
+      }
+   }
+   return setStr;
+}
+	
+function dump(arr, level) {/*аналог ф в ПХП print_r*/
+    var dumped_text = "";
+    if(!level) level = 0;
+
+    var level_padding = "    ";
+
+    if(typeof(arr) == 'object') {
+        for(var item in arr) {
+            var value = arr[item];
+ 
+            if(typeof(value) == 'object') {
+                dumped_text += level_padding + "’" + item + "’ …\n";
+                if(level>0) dumped_text += dump(value,level-1);
+            }
+            else {
+                dumped_text += level_padding + "’" + item + "’ => \"" + value + "\"\n";
+            }
+        }
+    }
+    else {
+        dumped_text = "===>"+arr+"<===("+typeof(arr)+")";
+    }
+    return dumped_text;
+}
+
+function getBrowserInfo() {
+	var t,v = undefined;
+	if (window.opera) t = 'Opera';
+	else if (document.all) {
+		t = 'IE';
+		var nv = navigator.appVersion;
+		var s = nv.indexOf('MSIE')+5;
+		v = nv.substring(s,s+1);
+	}
+	else if (navigator.appName) t = 'Netscape';
+	return {type:t,version:v};
+}
+
+/************************/

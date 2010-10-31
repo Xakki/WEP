@@ -170,6 +170,8 @@ _fldformer($key, $param)
 		}
 		elseif(isset($_COOKIE[$this->_cl.'_mop']))
 			$this->messages_on_page=(int)$_COOKIE[$this->_cl.'_mop'];
+		if(!$this->messages_on_page)
+			$this->messages_on_page = 20;
 		// номер текущей страницы
 		if(isset($_REQUEST[$this->_cl.'_pn']) && (int)$_REQUEST[$this->_cl.'_pn'])
 			$this->_pn = (int)$_REQUEST[$this->_cl.'_pn'];
@@ -887,6 +889,7 @@ _message($msg,$type=0)
 	function kData2xml($DATA,$f='') {
 		$XML = '';
 		if($f) {
+			$f = str_replace('#','',$f);
 			$attr = '';
 			$value = '';
 			if(is_array($DATA)) {
@@ -903,7 +906,7 @@ _message($msg,$type=0)
 								elseif($m=='name')
 									$value .= '<name><![CDATA['.$d.']]></name>';
 								else
-									$attr .= ' '.$m.'="'.$d.'"';
+									$attr .= ' '.str_replace('#','',$m).'="'.$d.'"';
 							}
 						}
 						else
@@ -922,7 +925,7 @@ _message($msg,$type=0)
 						elseif($k=='name')
 							$value .= '<name><![CDATA['.$r.']]></name>';
 						else
-							$attr .= ' '.$k.'="'.$r.'"';
+							$attr .= ' '.str_replace('#','',$k).'="'.$r.'"';
 					}
 					$XML = '<'.$f.$attr.'>'.$value.'</'.$f.'>';
 				}
@@ -932,21 +935,67 @@ _message($msg,$type=0)
 		return $XML;
 	}
 
+	public function _checkList(&$listname, $value) {
+		$templistname = $listname;
+		if(is_array($listname))
+			$templistname = implode(',',$listname);
+		if(!isset($this->_CFG['enum'][$templistname])) {
+			$this->_CFG['enum'][$templistname] = $this->_getCashedList(&$listname, $value);
+		}
+
+		if(!isset($this->_CFG['enum_check'][$templistname])) {
+			$this->_CFG['enum_check'][$templistname] = array();
+			$temp = current($this->_CFG['enum'][$templistname]);
+			if(is_array($temp) and !isset($temp['#name#'])) {
+				foreach($this->_CFG['enum'][$templistname] as $row) {
+					$this->_CFG['enum_check'][$templistname] = $this->_CFG['enum_check'][$templistname]+$row;
+				}
+			}else
+				$this->_CFG['enum_check'][$templistname] = &$this->_CFG['enum'][$templistname];
+		}
+		$temp = &$this->_CFG['enum_check'][$templistname];
+
+		if(is_array($value)) {
+			$return_value = array();
+			foreach($value as $r) {
+				if(isset($temp[$r]))
+					$return_value[] = $temp[$r];
+			}
+			if(count($return_value)==count($value))
+				return $return_value;
+		}
+		elseif(isset($temp[$value])) {
+			return $temp[$value];
+		}
+		return false;
+	}
+
+	public function _getCashedList(&$listname, $value=0) {
+		$data = array();
+		$templistname = $listname;
+		if(is_array($listname))
+			$templistname = implode(',',$listname);
+
+		if(isset($this->_enum[$templistname])) {
+			$this->_CFG['enum'][$templistname] = $this->_enum[$templistname];
+		}
+		elseif(!isset($this->_CFG['enum'][$templistname])) {
+			$this->_CFG['enum'][$templistname] = $this->_getlist($listname, $value);
+		}
+		return $this->_CFG['enum'][$templistname];
+	}
+
 	public function _getlist(&$listname, $value=0) /*LIST SELECTOR*/
 	{
+		/*Выдает 1 уровневый массив, либо 2х уровневый для структуры типа дерева*/
+		/*Конечный уровень может быть с елемнтами массива #name# итп, этот уровень в счет не входит*/
 		$data = array();
 		$templistname = $listname;
 		if(is_array($listname))
 			$templistname = implode(',',$listname);
 
 
-		if(isset($this->_enum[$templistname])) {
-			$data = &$this->_enum[$templistname];
-		}
-		elseif(isset($this->_CFG['enum'][$templistname])) {
-			$data = &$this->_CFG['enum'][$templistname];
-		}
-		elseif($templistname == 'child.class') {
+		if($templistname == 'child.class') {
 			$dir = array();
 			if(file_exists($this->_CFG['_PATH']['ext'].$this->_cl.'.class'))
 				$dir[''] = $this->_CFG['_PATH']['ext'].$this->_cl.'.class';
@@ -1014,8 +1063,12 @@ _message($msg,$type=0)
 			$clause['where'] = '';
 			if(isset($listname['where']) and is_array($listname['where']))
 				$listname['where'] = implode(' and ',$listname['where']);
-			if($value)
+			/*Выбранные элементы*/ /*помоему это лишнее - надо проверить*/
+			if($value and is_array($value))
+				$clause['where'] = $listname['tx.id'].' IN ("'.implode('", "',$value).'")';
+			elseif($value)
 				$clause['where'] = $listname['tx.id'].'="'.$value.'"';
+
 			if($listname['where'])
 				$clause['where'] .= ($clause['where']!=''?' AND ':'').$listname['where'];
 			if($clause['where'])
@@ -1040,7 +1093,7 @@ _message($msg,$type=0)
 						else 
 							$data[0][0] = $this->getMess('_listroot');
 						while ($row = $result->fetch_array()){
-							$data[$row['parent_id']][$row['id']] = $row;
+							$data[$row['parent_id']][$row['id']] = array('#name#'=>$row['name'], '#checked#'=>$row['checked']);
 						}
 					}
 					else{
@@ -1060,8 +1113,6 @@ _message($msg,$type=0)
 		else
 			return $this->_message('List '.current($listname).' not found');
 
-		if (!isset($this->_CFG['enum'][$templistname]))
-			$this->_CFG['enum'][$templistname]=$data;
 		return $data;
 	}
 
@@ -1560,8 +1611,10 @@ $Ajax=0 - не скриптовая
 		if(count($data)) {
 			foreach($data as $k=>$r){
 				$output[$k]=$r;
-				if($k==$afterkey)
-					$output = array_merge($output,$insert_data);
+				if($k==$afterkey) {
+					//$output = array_merge($output,$insert_data);
+					$output = $output+$insert_data;
+				}
 			}
 			return $output;
 		}

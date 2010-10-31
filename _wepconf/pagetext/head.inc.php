@@ -5,7 +5,7 @@
 	if(!_prmUserCheck()) {
 		$_tpl['logs'] .= '<div id="loginblock" style="display:none;position:absolute;z-index:30;top:50%;left:50%;">
 			<div class="layerblock">
-				<div class="blockclose" onClick="$(\'#loginblock\').hide();showBG(0);"></div>
+				<div class="blockclose" onclick="$(\'#loginblock\').hide();showBG(0);"></div>
 				<div class="blockhead">Авторизация</div><div class="hrb" style="width:200px;">&#160;</div>
 				<div class="cform"><form action="'.$_CFG['_HREF']['siteJS'].'?_view=login" method="post" onsubmit="return JSFRWin(this)">
 					<div>Логин:</div><input type="text" name="login" tabindex="1"/>

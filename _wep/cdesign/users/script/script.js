@@ -137,7 +137,7 @@ function serialize( mixed_value ) {
 			return 1;
 		}
 		temp.attr({'value':''});
-		$(obj).before('<img src="/admin/design/default/img/del.png" alt="DEL" style="cursor:pointer;" onClick="delFileInput(this)"/><br/>');
+		$(obj).before('<img src="/admin/design/default/img/del.png" alt="DEL" style="cursor:pointer;" onclick="delFileInput(this)"/><br/>');
 		$(obj).before(temp);
 		return 1;
 	}

@@ -30,8 +30,7 @@ a:hover{text-decoration:none;}
 	.exit {width:44px;padding:0px 5px 0 5px;position:absolute;z-index:5;left:0;}
 	.uname {float:left;font-weight:bold;padding:0 20px 0 60px;white-space:nowrap}
 	.modullist {float:left;cursor:pointer;padding:0 15px 0 15px;white-space:nowrap}
-	.selected a {color:#90EE90; font-weight: bold;}
-	.modullist a:hover {color:#90EE90; font-weight: bold;}
+	.modullist a:hover, .selected a {color:#90EE90;}
 
 #modulslist {
 	background:#63A6CC;
@@ -260,6 +259,7 @@ div.menu_new fieldset legend {
 .superlist td.b{padding:0;text-align:center;border-top:1px solid #E0E0E0;border-bottom:1px solid #E0E0E0;}
 .superlist .clear {border-right:0;}
 .superlist .clear1 {border-right:0;padding-right:0;}
+.superlist tr td b {white-space:nowrap;}
 .dis td {color:#A1A1A1;}
 
 /* Постраничный просмотр */

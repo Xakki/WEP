@@ -43,22 +43,47 @@
 						$r['value_2'] = '';
 
 					if(!$r['value_2'] and $r['value']) {
-						$md = $this->_getlist($r['listname'],$r['value']);
+						$md = $this->_getCashedList($r['listname'],$r['value']);
 						$r['value_2'] = $md[$r['value']];
 					}
 
 					$r['labelstyle'] = ($r['value_2']?'display: none;':'');
 					$r['csscheck'] = ($r['value_2']?'accept':'reject');
 				}
+				elseif($r['type']=='list' and $r['multiple'] and !$r['readonly']) {
+					$this->_checkList($r['listname'],0);
+					$templistname = $r['listname'];
+					if(is_array($r['listname']))
+						$templistname = implode(',',$r['listname']);
+					$arrlist = &$this->_CFG['enum_check'][$templistname];
+
+					if(is_array($r['value']))
+						$val = array_combine($r['value'],$r['value']);
+					else
+						$val = array($r['value']=>$r['value']);
+					$temparr= array();
+					foreach($val as $kk) {
+						if(isset($arrlist[$kk])) {
+							$temparr[$kk] = $arrlist[$kk];
+							unset($this->_CFG['enum_check'][$templistname][$kk]);
+						}
+					}
+					$md = $temparr+$this->_CFG['enum_check'][$templistname];
+					if(is_array($md) and count($md)) {
+						$md = array($md);
+						$r['valuelist'] = $this->_forlist($md,0,$val);
+					}
+				}
 				elseif($r['type']=='list') {
 					if(!$r['readonly']){
-						$md= $this->_getlist($r['listname']);
+						$md= $this->_getCashedList($r['listname']);
 						if(is_array($r['value']))
-							$val = array_flip($r['value']);
+							$val = array_combine($r['value'],$r['value']);
 						else
-							$val = $r['value'];
+							$val = array($r['value']=>$r['value']);
 						if(is_array($md) and count($md)) {
-							if(is_array(current($md))) {
+							$temp = current($md);
+							if(is_array($temp) and !isset($temp['#name#'])) {
 								if(isset($r['mask']['begin']))
 									$key = $r['mask']['begin'];//стартовый ID массива
 								else
@@ -68,11 +93,11 @@
 								$key = 0;
 							}
 							$r['valuelist'] = $this->_forlist($md,$key,$val);
+							//if($k=='rubric') {print_r('<pre>');print_r($r['valuelist']);}
 						}
-
 					}
 					else{
-						$md = $this->_getlist($r['listname'],$r['value']);
+						$md = $this->_getCashedList($r['listname'],$r['value']);
 						$r['value'] = $md[$r['value']];
 					}
 				}

@@ -53,11 +53,14 @@ class modulprm_class extends kernel_class {
 				$entry = substr($entry, 0, $pos);
 				if($entry!='' and _modulExists($entry)) {
 					$this->moduldir[$entry] = '';
+					$class_ = NULL;
 					if($this->_cl!=$entry) {
-						$class_ = NULL;
 						if(_new_class($entry,$class_))
 							$this->_constr_childs($class_);
-					}else $class_ = &$this;
+					}else {
+						$class_ = &$this;
+						$this->_constr_childs($class_);
+					}
 					if(!isset($this->data[$entry]))
 						$this->def_records[] = array('id'=>$entry,'name'=>$class_->caption,'parent_id'=>'','tablename'=>$class_->tablename);
 					elseif($class_->ver!=$this->data[$entry]['ver'] or $this->_cl==$entry)

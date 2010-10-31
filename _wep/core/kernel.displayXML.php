@@ -116,6 +116,8 @@
 								$cls[1] .= ' t1.'.$k.'='.$sid.' ';
 						}
 						$t++;
+					}elseif(($r['type']=='list' or $r['type']=='ajaxlist') and !is_array($r['listname'])) {
+						$this->_checkList($r['listname'],0);
 					}
 
 					$act=0;
@@ -175,15 +177,23 @@
 						elseif($r['type']=='checkbox')
 							$tditem['value'] .= $this->_CFG['enum']['yesno'][$row[$k]];
 						elseif($r['type']=='list' and !is_array($r['listname'])) {
-							$tempdata = $this->_getlist($r['listname']);
 							if($r['multiple']) 
-								$row[$k]= array_unique(explode('|',$row[$k]));
-							else 
+								$row[$k]= explode('|',trim($row[$k],'|'));
+							else
 								$row[$k] = array($row[$k]);
 							$temp=array();
-							foreach($row[$k] as $ek=>$er) {
-								if($tempdata[$er]!='')
-									$temp[] = $tempdata[$er];
+
+							foreach($row[$k] as $er) {
+								if(isset($this->_CFG['enum_check'][$r['listname']][$er])) {
+									$templist = $this->_CFG['enum_check'][$r['listname']][$er];
+									if(!is_array($templist)) {
+										$temp[] = $templist;
+									} elseif(isset($templist['#name#'])) {
+										$temp[] = $templist['#name#'];
+									} else
+										$temp[] = '#unknown_data#';
+								}elseif($er)
+									$temp[] = '<span style="color:gray;">'.$er.'</span>';
 							}
 							$tditem['value'] .= implode(', ',$temp);
 						}

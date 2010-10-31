@@ -275,7 +275,6 @@
 		if (_delete_fields($_this)) return 1;
 
 		if ($_this->mf_indexing) $_this->deindexing();
-		//$_this->flogs($logname,'Удаление из ['.$_this->tablename.'] прошло успешно. id=['.$_this->id.']');
 		return $_this->_message('Delete data from `'.$_this->caption.'` successful.',2);
 	}
 
@@ -620,28 +619,10 @@
 						if($data[$key]!=$data['re_'.$key])
 							$error[] = 32;
 					}
-					elseif(($value['type']=='list' or $value['type']=='ajaxlist') and !is_array($data[$key]))
+					elseif(($value['type']=='list' or $value['type']=='ajaxlist'))
 					{
-						$temp = $_this->_getlist($value['listname'],$data[$key]);
-						$tsel = current($temp);
-						if(is_array($tsel) and !isset($tsel['name']) and !isset($temp[$data[$key]])){
-							//если это многомерный массив и в ней нет поля name и нет совпадений на первом уровне
-							$tflag=0;//временный флаг 
-							foreach($temp as $trow){
-								if(isset($trow[$data[$key]])){
-									$tflag=1;//еслм найдено совпадение то завершаем цикл
-									break;
-								}else{
-									//можно выполнить ещё один уровень
-								}
-							}
-							if(!$tflag)//если совпадения не найдены то значит ошибка
-								$error[] = 33;
-						}
-						elseif(!isset($temp[$data[$key]])) {
-							//print_r('<pre>');print_r($temp);print_r($_this->SQL->query);print_r($value);
+						if($_this->_checkList($value['listname'],$data[$key])===false)
 							$error[] = 33;
-						}
 					}
 
 					/*CHECK MASK*/

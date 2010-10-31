@@ -45,7 +45,7 @@ class content_class extends kernel_class {
 		$this->owner->_listnameSQL = 'template, name';
 	}
 
-	function _getlist($listname,$fields_form=array()) {
+	function _getlist($listname,$value=0) {
 		global $_CFG;
 		$data = array();
 		if ($listname == "pagetype") {
@@ -70,7 +70,7 @@ class content_class extends kernel_class {
 			return $data;
 		}
 		else {
-			return $this->owner->_getlist($listname,$fields_form);
+			return $this->owner->_getlist($listname,$value);
 		}
 		return $data;
 	}

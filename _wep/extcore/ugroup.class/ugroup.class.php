@@ -86,7 +86,7 @@ class ugroup_class extends kernel_class
 		//$this->create_child("weppages");
 	}
 
-	function _getlist($listname) {
+	function _getlist($listname,$value=0) {
 		$data = array();
 		if ($listname == "glist") {
 			$result = $this->SQL->execSQL("SELECT id, name FROM ".$this->tablename);
@@ -105,7 +105,7 @@ class ugroup_class extends kernel_class
 			$dir->close();
 			return $data;
 		}
-		else return parent::_getlist($listname);
+		else return parent::_getlist($listname,$value);
 	}
 	function _UpdItemModul($param) {
 		$ret = parent::_UpdItemModul($param);

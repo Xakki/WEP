@@ -592,18 +592,17 @@
 Проверка доступа пол-ля к модулю
 */
 	function _prmModul($mn,$param=array()) {
-		if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0 and $mn=='modulprm') return true; // разрешить , если админ и модуль привелегий
-		if($_SESSION['user']['level']>=5) return false;
-		else{
-			global $_CFG;
-			_modulprm();
-			if(!isset($_CFG['modulprm'][$mn])) return false; // отказ, если модуль отключен
-			if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0) return true; // разрешить , если админ
+		global $_CFG;
+		_modulprm();
+		if(!isset($_CFG['modulprm'][$mn])) return false; // отказ, если модуль отключен
+		if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0) return true; // админу можно всё
+		if($_SESSION['user']['level']>=5) return false; //этим всё запрещено
+		else {
 			if(isset($_CFG['modulprm'][$mn]['access'][0])) return false;
 			if(count($param))
 				foreach($param as $r)
 					if(isset($_CFG['modulprm'][$mn]['access'][$r])) return true;
-		} 
+		}
 		return false;
 	}
 
