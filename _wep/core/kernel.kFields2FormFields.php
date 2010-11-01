@@ -152,7 +152,11 @@
 
 					$r['value']['year'] = array('name'=>$this->_CFG['_MESS']['year_name']);// ГОД
 					$temp[0] = (int)$temp[0]; 
-					for($i=($temp[0]-2);$i<($temp[0]+3);$i++)
+					
+					//значения по умолчанию
+					if(!$r['range_back']['year']) $r['range_back']['year'] = 2;
+					if(!$r['range_up']['year']) $r['range_up']['year'] = 3;
+					for($i=($temp[0]-($r['range_back']['year']));$i<($temp[0]+($r['range_up']['year']));$i++)
 						$r['value']['year']['item'][$i] = array('id'=>$i, 'name'=>$i, 'sel'=>($temp[0]==$i?1:0));
 
 					$r['value']['month'] = array('name'=>$this->_CFG['_MESS']['month_name']);// Месяц

@@ -42,10 +42,10 @@ function tpl_form(&$data) {
 					$html .= '<font color="red">Нет элементов для отображения</font>';
 				else {
 					foreach($r['item'] as $row) {
-						$html .= $row['name'].'<input type="'.$r['type'].'" name="'.$k.'" value="'.$row['value'].'" class="radio"';
+						$html .= '<input type="'.$r['type'].'" name="'.$k.'" value="'.$row['value'].'" class="radio"';
 						if($row['value']==$r['value'])
 							$html .= ' checked="checked"';
-						$html .= '/> &#160;&#160;';
+						$html .= '/>'.$row['name'].' &#160;&#160;';
 					}
 				}
 				$html .= '</div>';
