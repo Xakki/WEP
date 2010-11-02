@@ -7,7 +7,7 @@ abstract class kernel_class{
 		print('Привет, вы пытались обратиться к $name');
 	} */
 
-    function __construct(&$SQL, $owner=NULL, $alias = '') {
+    function __construct(&$SQL, $owner=NULL) {
 		global $_CFG;
 		$this->_CFG = &$_CFG;//Config
 		$this->SQL = $SQL;//link to sql class
@@ -43,7 +43,7 @@ abstract class kernel_class{
 /*-----------CMS---FUNCTION------------
 _set_features()
 _create()
-create_child($class_name, $alias='')
+create_child($class_name)
 _checkmodstruct() 
 
 _install() 
@@ -212,10 +212,14 @@ _fldformer($key, $param)
 		}
 	}
 
-	protected function create_child($class_name, $alias='')
+	protected function create_child($class_name)
 	{
-		$cl = $class_name.'_class';
-		$this->childs[$class_name] = new $cl($this->SQL, $this, $alias);
+		$this->childs[$class_name] = NULL;
+		if(!_new_class($class_name,$this->childs[$class_name],$this)) {
+			$this->_errorMess('Не подключен дочерний класс '.$class_name.'.');
+		}
+		//$cl = $class_name.'_class';
+		//$this->childs[$class_name] = new $cl($this->SQL, $this);
 	}
 
 	protected function _checkmodstruct() 
@@ -516,6 +520,13 @@ _message($msg,$type=0)
 
 
 /************************* EVENTS *************************/	
+		
+	public function _errorMess($msg) 
+	{
+		trigger_error($msg, E_USER_WARNING);
+		return 0;
+	}
+	
 	
 	public function _message($msg,$type=0) 
 	{

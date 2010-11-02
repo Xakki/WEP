@@ -541,39 +541,52 @@
 	function __autoload($class_name){ //автозагрузка модулей
 		global $_CFG;
 		require_once($_CFG['_PATH']['core'].'kernel.extends.php');
-		$class_name = str_replace('_','.',$class_name);
-		if(file_exists($_CFG['_PATH']['ext'].$class_name.'/'.$class_name.'.php'))
-			require_once($_CFG['_PATH']['ext'].$class_name.'/'.$class_name.'.php');
-		elseif(file_exists($_CFG['_PATH']['extcore'].$class_name.'/'.$class_name.'.php'))
-			require_once($_CFG['_PATH']['extcore'].$class_name.'/'.$class_name.'.php');
+		if($file = _modulExists($class_name))
+			require_once($file);
+		else
+			throw new Exception('Невозможно подключить класс "'.$class_name.'"');
 	}
 /*
 Инициализация модулей
 */
-	function _new_class($name,&$MODUL) {
+	function _new_class($name,&$MODUL,&$OWNER = NULL) {
 		global $SQL;
 		$MODUL=NULL;
 		if(!$SQL)  {
 			trigger_error("SQL class missing.", E_USER_WARNING);
 			return false;
 		}
-		if(_modulExists($name)) {
-			$clsn = $name."_class";
-			eval('$MODUL = new '.$clsn.'($SQL);');
-			return true;
+		$clsn = $name."_class";
+		try {
+			if(class_exists($clsn)) {
+					eval('$MODUL = new '.$clsn.'($SQL,$OWNER);');
+					return true;
+			}
+		} catch (Exception $e) {
+			trigger_error($e->getMessage(), E_USER_WARNING);
 		}
 		return false;
 	}
 /*
 Проверка существ модуля
 */
-	function _modulExists($modul) {
+	function _modulExists($class_name) {
 		global $_CFG;
-		if(file_exists($_CFG['_PATH']['extcore'].$modul.'.class/'.$modul.'.class.php'))
-			return true;
-		elseif(file_exists($_CFG['_PATH']['ext'].$modul.'.class/'.$modul.'.class.php'))
-			return true;
-		else return false;
+		$file = false;
+		$classparam = explode('_',$class_name);
+		$clpath = $classparam[0].'.class';
+		if(!$classparam[1]) $classparam[1] = 'class';
+		$clname = $classparam[0].'.'.$classparam[1];	
+		if(file_exists($_CFG['_PATH']['ext'].$clpath.'/'.$clname.'.php'))
+			$file = $_CFG['_PATH']['ext'].$clpath.'/'.$clname.'.php';
+		elseif(file_exists($_CFG['_PATH']['ext'].$classparam[0].'.extend'.'/'.$clname.'.php'))
+			$file = $_CFG['_PATH']['ext'].$classparam[0].'.extend'.'/'.$clname.'.php';
+		elseif(file_exists($_CFG['_PATH']['extcore'].$clpath.'/'.$clname.'.php'))
+			$file = $_CFG['_PATH']['extcore'].$clpath.'/'.$clname.'.php';
+		elseif(file_exists($_CFG['_PATH']['extcore'].$classparam[0].'.extend'.'/'.$clname.'.php'))
+			$file = $_CFG['_PATH']['extcore'].$classparam[0].'.extend'.'/'.$clname.'.php';
+		
+		return $file;
 	}
 /*
 Вывод названия таблицы у класса , без его подключения,
