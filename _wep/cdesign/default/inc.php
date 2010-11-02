@@ -99,14 +99,14 @@
 
 	$_tpl['script']['md5.js'] = '<script type="text/javascript" src="_design/_script/md5.js"></script>';
 	$_tpl['script']['jquery.ui.widget.min.js'] = '<script type="text/javascript" src="_design/_script/script.jquery.ui/jquery.ui.widget.min.js"></script>';
-	$_tpl['styles']['jquery-ui-redmond.css'] = '<link type="text/css" href="_design/_style/jquery-ui-redmond.css" rel="stylesheet">';
+	$_tpl['styles']['jquery-ui-redmond.css'] = '<link type="text/css" href="_design/_style/jquery-ui-redmond.css" rel="stylesheet"/>';
 	
 	$_tpl['script']['jquery.ui.mouse.min.js'] = '<script type="text/javascript" src="_design/_script/script.jquery.ui/jquery.ui.mouse.min.js"></script>';
 	$_tpl['script']['jquery.ui.sortable.min.js'] = '<script type="text/javascript" src="_design/_script/script.jquery.ui/jquery.ui.sortable.min.js"></script>';
 	$_tpl['script']['jquery.ui.draggable.min.js'] = '<script type="text/javascript" src="_design/_script/script.jquery.ui/jquery.ui.draggable.min.js"></script>';
 
 	$_tpl['script']['jquery.ui.multiselect.js'] = '<script type="text/javascript" src="_design/_script/script.jquery.ui/jquery.ui.multiselect.js"></script>';
-	$_tpl['styles']['jquery.ui.multiselect.js'] = '<link type="text/css" href="_design/_style/jquery-ui.multiselect.css" rel="stylesheet">';
+	$_tpl['styles']['jquery.ui.multiselect.js'] = '<link type="text/css" href="_design/_style/jquery-ui.multiselect.css" rel="stylesheet"/>';
 
 
 	if($_CFG['globalformoption']['multiple']) {

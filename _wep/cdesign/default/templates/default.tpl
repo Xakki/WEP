@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru">
 	<head>
 		<title>WebEngineOnPHP - {$_SERVER['SERVER_NAME']}</title>
-		<base href="{$_CFG['_HREF']['BH']}">
+		<base href="{$_CFG['_HREF']['BH']}"/>
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 		<meta http-equiv="Pragma" content="no-cache"/>
 		<meta name="keywords" content="WEP"/> 
@@ -16,7 +16,7 @@
 		<script type="text/javascript" src="_design/_script/utils.js"></script>
 		<script type="text/javascript" src="{$_tpl['design']}script/script.js"></script>
 		{$_tpl['script']}
-		<link type="text/css" href="{$_tpl['design']}style/style.css" rel="stylesheet">
+		<link type="text/css" href="{$_tpl['design']}style/style.css" rel="stylesheet"/>
 		{$_tpl['styles']}
 	</head>
 	<body onload="{$_tpl['onload']}">

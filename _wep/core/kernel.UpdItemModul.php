@@ -33,8 +33,10 @@
 						}
 					}
 				}
-				else
+				else {
+					$flag=0;
 					$mess = $this->kPreFields($this->data[$this->id],$param);
+				}
 			} else {
 				$arr['mess'][] = array('name'=>'error', 'value'=>$this->getMess('nodata'));
 				$flag=1;

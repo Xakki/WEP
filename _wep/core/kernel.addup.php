@@ -564,7 +564,53 @@
 			}
 			elseif($value['type']=='date') {
 				if(is_array($data[$key]))
-					$value['value'] = $data[$key] = mktime($data[$key][3], 0, 0, $data[$key][1], $data[$key][2],$data[$key][0]);
+				{
+					if($value['format']) {
+						$format = explode('-', $value['format']);
+					}
+					else{
+						$format = explode('-', 'Y-m-d-H-i-s');
+					}
+					$final_array_date = array_combine($format, $data[$key]);
+					
+					for($i=0; $i<6; $i++)
+					{
+						// час
+						if($format == 'H' || $format == 'h')
+						{
+
+						}
+						// минуты
+						if($format == 'i')
+						{
+
+						}
+						// секунды
+						if($format == 's')
+						{
+			
+						}
+						
+						// месяц
+						if($format == 'm' || $format == 'n')
+						{
+					
+						}
+						// день
+						if($format == 'd' || $format == 'j')
+						{
+				
+						}
+						//год
+						if($format == 'Y' || $format == 'y')
+						{
+							
+						}
+
+					}
+					//$value['value'] = $data[$key] = mktime($data[$key][3], 0, 0, $data[$key][1], $data[$key][2],$data[$key][0]);
+					$value['value'] = $data[$key] = mktime(0, 0, 0, $final_array_date['m'], $final_array_date['d'],$final_array_date['Y']);
+				}
 				if($value['type']=='timestamp'){
 					$value['value'] = $data[$key] = date('Y-m-d H:i:s',$data[$key]);
 				}

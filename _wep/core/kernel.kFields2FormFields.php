@@ -138,7 +138,14 @@
 					$_tpl['onload'] .= ' if(!window.CKEDITOR) $.include(\''.$this->_CFG['_HREF']['WSWG'].'ckeditor/ckeditor.js\',cke_'.$k.'); else cke_'.$k.'();';
 				}
 				elseif($r['type']=='date' and !$r['readonly']) {
-			
+					// форомат даты
+					if($r['format']) {
+						$format = explode('-', $r['format']);
+					}
+					else{
+						$format = explode('-', 'Y-m-d-H-i-s');
+					}
+					// Тип поля
 					if($this->fields[$k]['type']=='int' and $r['value']){
 						$temp = explode('-',date('Y-m-d-H-i-s',$r['value']));
 					}
@@ -148,38 +155,61 @@
 					else{
 						$temp = array(date('Y'),date('m'),date('d'),date('H'));
 					}
+					
 					$r['value']= array();
+					foreach($format as $item_date)
+					{
+						// год
+						if($item_date == 'Y' || $item_date == 'y')
+						{
+							$r['value']['year'] = array('name'=>$this->_CFG['_MESS']['year_name'], 'css'=>'year');// ГОД
+							$temp[0] = (int)$temp[0]; 
 
-					$r['value']['year'] = array('name'=>$this->_CFG['_MESS']['year_name']);// ГОД
-					$temp[0] = (int)$temp[0]; 
-					
-					//значения по умолчанию
-					if(!$r['range_back']['year']) $r['range_back']['year'] = 2;
-					if(!$r['range_up']['year']) $r['range_up']['year'] = 3;
-					for($i=($temp[0]-($r['range_back']['year']));$i<($temp[0]+($r['range_up']['year']));$i++)
-						$r['value']['year']['item'][$i] = array('id'=>$i, 'name'=>$i, 'sel'=>($temp[0]==$i?1:0));
-
-					$r['value']['month'] = array('name'=>$this->_CFG['_MESS']['month_name']);// Месяц
-					foreach($this->_CFG['_MESS']['month'] as $kr=>$td) {
-						$kr = (int)$kr;
-						$r['value']['month']['item'][$kr] = array('id'=>$kr, 'name'=>$td, 'sel'=>($temp[1]==$kr?1:0));
+							//значения по умолчанию
+							if(!$r['range_back']['year']) $r['range_back']['year'] = 2;
+							if(!$r['range_up']['year']) $r['range_up']['year'] = 3;
+							for($i=((int)date('Y')-($r['range_back']['year']));$i<((int)date('Y')+($r['range_up']['year']));$i++)
+								$r['value']['year']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[0]==$i?1:0));							
+						}
+						// месяц
+						if($item_date == 'm' || $item_date == 'n' || $item_date == 'M' || $item_date == 'F')
+						{
+							$r['value']['month'] = array('name'=>$this->_CFG['_MESS']['month_name'], 'css'=>'month');// Месяц
+							foreach($this->_CFG['_MESS']['month'] as $kr=>$td) {
+								$kr = (int)$kr;
+								$r['value']['month']['item'][$kr] = array('#id#'=>$kr, '#name#'=>$td, '#sel#'=>($temp[1]==$kr?1:0));
+							}						
+						}
+						// день
+						if($item_date == 'd' || $item_date == 'j')
+						{
+							$r['value']['day'] = array('name'=>$this->_CFG['_MESS']['day_name'], 'css'=>'day');// День
+							for($i=1;$i<=31;$i++)
+								$r['value']['day']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[2]==$i?1:0));						
+						}
+						// час
+						if($item_date == 'G' || $item_date == 'g' || $item_date == 'H' || $item_date == 'h')
+						{
+							$r['value']['hour'] = array('name'=>$this->_CFG['_MESS']['hour_name'], 'css'=>'hour');// Час
+							for($i=1;$i<=24;$i++)
+								$r['value']['hour']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[3]==$i?1:0));
+						}
+						// минуты
+						if($item_date == 'i')
+						{
+							$r['value']['minute'] = array('name'=>$this->_CFG['_MESS']['minute_name'], 'css'=>'minute');// Minute
+							for($i=1;$i<=60;$i++)
+								$r['value']['minute']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[4]==$i?1:0));
+						}
+						// секунды
+						if($item_date == 's')
+						{
+							$r['value']['sec'] = array('name'=>$this->_CFG['_MESS']['sec_name'], 'css'=>'sec');
+							for($i=1;$i<=60;$i++)
+								$r['value']['sec']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[5]==$i?1:0));					
+						}
 					}
 
-					$r['value']['day'] = array('name'=>$this->_CFG['_MESS']['day_name']);// День
-					for($i=1;$i<=31;$i++)
-						$r['value']['day']['item'][$i] = array('id'=>$i, 'name'=>$i, 'sel'=>($temp[2]==$i?1:0));
-
-					if(isset($r['mask']['date_hour'])) {
-						$r['value']['hour'] = array('name'=>$this->_CFG['_MESS']['hour_name']);// Час
-						for($i=1;$i<=24;$i++)
-							$r['value']['hour']['item'][$i] = array('id'=>$i, 'name'=>$i, 'sel'=>($temp[3]==$i?1:0));
-					}
-					if(isset($r['mask']['date_min'])) {
-						$r['value']['min'] = array('name'=>$this->_CFG['_MESS']['min_name']);// Minute
-						for($i=1;$i<=60;$i++)
-							$r['value']['min']['item'][$i] = array('id'=>$i, 'name'=>$i, 'sel'=>($temp[4]==$i?1:0));
-					}
-					
 				}
 				elseif($r['type']=='date') {
 					if($this->fields[$k]['type']=='int'){

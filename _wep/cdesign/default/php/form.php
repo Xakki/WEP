@@ -80,16 +80,13 @@ function tpl_form(&$data) {
 				$html .= '<div class="form-value">';
 				if($r['size']>1) {
 					$html .= '<select size="'.$r['size'].'" name="'.$k.'" class="small" onchange="'.$r['onchange'].'"';
-					if($r['readonly']) $html .= ' readonly="readonly"';
 					$html .= '>'.selectitem($r['valuelist']).'</select>';
 				}elseif($r['multiple']) {
 					$html .= '<select multiple="multiple" size="10" name="'.$k.'[]" class="small" onchange="'.$r['onchange'].'"';
-					if($r['readonly']) $html .= ' readonly="readonly"';
 					$html .= '>'.selectitem($r['valuelist']).'</select>';
 					$_CFG['globalformoption']['multiple'] = 1;
 				}else {
 					$html .= '<select name="'.$k.'" onchange="'.$r['onchange'].'"';
-					if($r['readonly']) $html .= ' readonly="readonly"';
 					$html .= '>'.selectitem($r['valuelist']).'</select>';
 				}
 				$html .= '</div>';
@@ -97,7 +94,7 @@ function tpl_form(&$data) {
 			elseif($r['type']=='date' and !$r['readonly']) {
 				$html .= '<div class="form-value">';
 				foreach($r['value'] as $row) {
-					$html .= '<div class="dateselect">'.$row['name'].'<br/><select name="'.$k.'[]">'.selectitem($row['item']).'</select></div>';
+					$html .= '<div class="dateselect '.$row['css'].'"><span class="name">'.$row['name'].'</span><select name="'.$k.'[]">'.selectitem($row['item']).'</select></div>';
 				}
 				$html .= '</div>';
 			}
@@ -167,7 +164,7 @@ function tpl_form(&$data) {
 			elseif($r['type']=='password2' and !$r['readonly']) {
 				$html .= '<div class="form-value"><input type="text" id="'.$k.'" name="'.$k.'" value="'.$r['value'].'" style="width:55%;float:left;background:#E1E1A1;" readonly="readonly"/>
 							<div style="width:40%;float:right;">
-								<img src="_wep/cdesign/default/img/aprm.gif" style="width:18px;cursor:pointer;" onclick="if(confirm("Вы действительно хотите изменить пароль?")) GetId("'.$k.'").value = hex_md5("'.$r['md5'].'"+GetId("a_'.$k.'").value);" alt="Сгенерировать пароль в формате MD5" title="Сгенерировать пароль в формате MD5"/>
+								<img src="_wep/cdesign/default/img/aprm.gif" style="width:18px;cursor:pointer;" onclick="if(confirm(\'Вы действительно хотите изменить пароль?\')) GetId(\''.$k.'\').value = hex_md5(\''.$r['md5'].'\'+GetId(\'a_'.$k.'\').value);" alt="Сгенерировать пароль в формате MD5" title="Сгенерировать пароль в формате MD5"/>
 								<input type="text" id="a_'.$k.'" name="a_'.$k.'" value="" style="width:80%;vertical-align:top;"/>
 							</div></div>';
 			}
