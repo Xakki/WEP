@@ -174,6 +174,7 @@ class pg_class extends kernel_class {
 	}
 
 	function display() {
+		$this->current_path = '';
 		global $_tpl,$HTML;
 		$flag_content = $this->can_show();
 
@@ -274,6 +275,7 @@ class pg_class extends kernel_class {
 	}
 
 	function get_pageinfo() {
+		$this->current_path = $this->getHref($this->pageinfo['id'],$this->pageinfo);
 		$parent_id = $this->pageinfo['parent_id'];
 		$this->pageinfo['path'] = array($this->pageinfo['id'] => $this->pageinfo);
 		$this->selected[$this->pageinfo['id']] = $this->pageinfo['id'];

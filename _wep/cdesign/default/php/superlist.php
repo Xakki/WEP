@@ -5,6 +5,8 @@ include_once($this->_PATHd.'php/messages.php');
 		global $_CFG;
 //print_r('<pre>');print_r($data);exit();
 		$html = tpl_path($data['path']);// PATH
+		end($data['path']);
+		$firstpath = key($data['path']);
 
 		if(count($data['topmenu'])) { //MENU
 			$temp_topmenu = '<div class="menu_new">';
@@ -26,7 +28,7 @@ include_once($this->_PATHd.'php/messages.php');
 		$html .= '<div id="tools_block" style="display:none;"></div>';
 		$html .= tpl_messages($data['messages']);// messages
 
-		$html .= tpl_data($data['data']);// messages
+		$html .= tpl_data($data['data'],$firstpath);// messages
 
 		$html .= $temp_topmenu; //MENU
 		$html .= $temp_pagenum; //pagenum
@@ -34,7 +36,7 @@ include_once($this->_PATHd.'php/messages.php');
 		return $html;
 	}
 
-	function tpl_data(&$data) {
+	function tpl_data(&$data,$firstpath='') {
 		if(!$data or !count($data)) return '';
 		global $_CFG;
 		$html .= '<table class="superlist"><tbody><tr><th>№</th>';
@@ -47,11 +49,11 @@ include_once($this->_PATHd.'php/messages.php');
 				}
 				$html .= '<th>';
 				if($r['href']!='') {
-					$html .= '<a class="'.($r['sel']==1?'bottonimg_sel':'bottonimg').' imgup" title="[SORT]" href="'.$_CFG['PATH']['wepname'].'/index.php?'.$data['req'].'sort='.$r['href'].'" onclick="return load_href(this)"></a>';
+					$html .= '<a class="'.($r['sel']==1?'bottonimg_sel':'bottonimg').' imgup" title="[SORT]" href="'.$firstpath.'sort='.$r['href'].'" onclick="return load_href(this)"></a>';
 				}
 				$html .= $r['value'];
 				if($r['href']!='') {
-					$html .= '<a class="'.($r['sel']==2?'bottonimg_sel':'bottonimg').' imgdown" title="[SORT]" href="'.$_CFG['PATH']['wepname'].'/index.php?'.$data['req'].'dsort='.$r['href'].'" onclick="return load_href(this)"></a>';
+					$html .= '<a class="'.($r['sel']==2?'bottonimg_sel':'bottonimg').' imgdown" title="[SORT]" href="'.$firstpath.'dsort='.$r['href'].'" onclick="return load_href(this)"></a>';
 				}
 				$html .= '</th>';
 			}
@@ -101,15 +103,15 @@ include_once($this->_PATHd.'php/messages.php');
 			$html .= '<td class="ic" style="vertical-align:top;white-space:nowrap;">';
 
 			if($r['act'])
-				$html .= '<a class="bottonimg img'.$r['active'].'" href="'.$_CFG['PATH']['wepname'].'/index.php?'.$data['req'].$data['cl'].'_id='.$r['id'].'&amp;_type='.($r['active']==1?'dis':'act').'" onclick="return load_href(this)" title="['.$_CFG['_ACT_TITLE'][$r['active']].']"></a>';
+				$html .= '<a class="bottonimg img'.$r['active'].'" href="'.$firstpath.$data['cl'].'_id='.$r['id'].'&amp;_type='.($r['active']==1?'dis':'act').'" onclick="return load_href(this)" title="['.$_CFG['_ACT_TITLE'][$r['active']].']"></a>';
 			if($r['edit'])
-				$html .= '<a class="bottonimg imgedit" href="'.$_CFG['PATH']['wepname'].'/index.php?'.$data['req'].$data['cl'].'_id='.$r['id'].'&amp;_type=edit" onclick="return load_href(this)" title="['.$_CFG['_EDIT_TITLE'].']"></a>';
+				$html .= '<a class="bottonimg imgedit" href="'.$firstpath.$data['cl'].'_id='.$r['id'].'&amp;_type=edit" onclick="return load_href(this)" title="['.$_CFG['_EDIT_TITLE'].']"></a>';
 			if($r['del'])
-				$html .= '<a class="bottonimg imgdel" href="'.$_CFG['PATH']['wepname'].'/index.php?'.$data['req'].$data['cl'].'_id='.$r['id'].'&amp;_type=del" onclick="return hrefConfirm(this,\'del\')" title="['.$_CFG['_DEL_TITLE'].']"></a>';
+				$html .= '<a class="bottonimg imgdel" href="'.$firstpath.$data['cl'].'_id='.$r['id'].'&amp;_type=del" onclick="return hrefConfirm(this,\'del\')" title="['.$_CFG['_DEL_TITLE'].']"></a>';
 			if(isset($r['istree']))
-				$html .= '<br/><a href="'.$_CFG['PATH']['wepname'].'/index.php?'.$data['req'].$data['cl'].'_id='.$r['id'].'" onclick="return load_href(this)">'.$r['istree']['value'].' ('.$r['istree']['cnt'].')</a>';
+				$html .= '<br/><a href="'.$firstpath.$data['cl'].'_id='.$r['id'].'" onclick="return load_href(this)">'.$r['istree']['value'].' ('.$r['istree']['cnt'].')</a>';
 			if(isset($r['child'])) foreach($r['child'] as $ck=>$cn)
-				$html .= '<br/><a href="'.$_CFG['PATH']['wepname'].'/index.php?'.$data['req'].$data['cl'].'_id='.$r['id'].'&amp;'.$data['cl'].'_ch='.$ck.'" onclick="return load_href(this)">'.$cn['value'].' ('.$cn['cnt'].')</a>';
+				$html .= '<br/><a href="'.$firstpath.$data['cl'].'_id='.$r['id'].'&amp;'.$data['cl'].'_ch='.$ck.'" onclick="return load_href(this)">'.$cn['value'].' ('.$cn['cnt'].')</a>';
 
 
 			$html .= '</td></tr>';

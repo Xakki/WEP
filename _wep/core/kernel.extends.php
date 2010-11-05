@@ -951,7 +951,7 @@ _message($msg,$type=0)
 		if(is_array($listname))
 			$templistname = implode(',',$listname);
 		if(!isset($this->_CFG['enum'][$templistname])) {
-			$this->_CFG['enum'][$templistname] = $this->_getCashedList(&$listname, $value);
+			$this->_CFG['enum'][$templistname] = $this->_getCashedList($listname, $value);
 		}
 
 		if(!isset($this->_CFG['enum_check'][$templistname])) {
@@ -1147,7 +1147,7 @@ $Ajax=0 - не скриптовая
 		$xml= $messages = array();
 
 		if($this->owner and $this->owner->id)
-			$this->_clp =$this->owner->_clp.$this->owner->_cl.'_id='.$this->owner->id.'&amp;'.$this->owner->_cl.'_ch='.$this->_cl.'&amp;';
+			$this->_clp = $this->owner->_clp.$this->owner->_cl.'_id='.$this->owner->id.'&amp;'.$this->owner->_cl.'_ch='.$this->_cl.'&amp;';
 		else $this->_clp = '';
 		if($this->_clp=='')
 			$this->_clp = $param['fhref'];
@@ -1161,6 +1161,11 @@ $Ajax=0 - не скриптовая
 				$this->id=str_replace($rep,'',$_GET[$cl.'_id']);
 		}
 
+		if(isset($param['firstpath']))
+		  $firstpath = $param['firstpath'].$this->_clp;
+		else
+		  $firstpath = $this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp;
+
 		if($this->id and $this->mf_istree) {
 			$agr = ', '.$this->_listnameSQL.' as name';
 			$this->tree_data = $first_data = $path2=array();
@@ -1171,7 +1176,7 @@ $Ajax=0 - не скриптовая
 				$this->_list('id');
 				if(!count($first_data)) $first_data = $this->data;
 				$this->tree_data += $this->data;
-				$path2[$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp.$this->_cl.'_id='.$this->data[$parent_id]['id'].'&amp;'] =$this->caption.': '.$this->data[$parent_id][$this->_listname];
+				$path2[$firstpath.$this->_cl.'_id='.$this->data[$parent_id]['id'].'&amp;'] =$this->caption.': '.$this->data[$parent_id][$this->_listname];
 				if($param['first_id'] and $parent_id==$param['first_id'])
 					break;
 				$parent_id = $this->data[$parent_id]['parent_id'];
@@ -1187,16 +1192,16 @@ $Ajax=0 - не скриптовая
 		
 		if($this->owner->id) {
 			if($this->owner->mf_istree) array_pop($HTML->path);
-			$HTML->path[$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp] =$this->caption.':'.$this->owner->data[$this->owner->id][$this->owner->_listname];
+			$HTML->path[$firstpath] =$this->caption.':'.$this->owner->data[$this->owner->id][$this->owner->_listname];
 		}
 		else
-			$HTML->path[$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp] =$this->caption;
+			$HTML->path[$firstpath] =$this->caption;
 		if(count($path2)) 
 			$HTML->path = array_merge($HTML->path,$path2);
 
 		if($this->id and isset($_GET[$cl.'_ch']) and isset($this->childs[$_GET[$cl.'_ch']])) {
 			if(count($this->data)) {
-				//$HTML->path[$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp] =$this->caption.': '.$this->data[$this->id][$this->_listname];
+				//$HTML->path[$firstpath] =$this->caption.': '.$this->data[$this->id][$this->_listname];
 				list($xml,$flag) = $this->childs[$_GET[$cl.'_ch']]->super_inc($param,$ftype);
 				//	$tmp = $this->childs[$_GET[$cl.'_ch']]->_clp;
 				//if(!isset($HTML->path[$this->_CFG['PATH']['wepname'].'/index.php?'.$tmp]))
@@ -1210,12 +1215,12 @@ $Ajax=0 - не скриптовая
 				if($flag==1)
 					$this->id=$this->parent_id;
 				//else
-					$HTML->path[$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp.'_type=add'.(($this->parent_id)?'&amp;'.$this->_cl.'_id='.$this->parent_id:'')] ='Добавить';
+					$HTML->path[$firstpath.'_type=add'.(($this->parent_id)?'&amp;'.$this->_cl.'_id='.$this->parent_id:'')] ='Добавить';
 			}
 			elseif($ftype=='edit' && $this->id) {
 				if($this->mf_istree) 
 					array_pop($HTML->path);
-				$HTML->path[$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp.$this->_cl.'_id='.$this->id.'&amp;_type=edit'] ='Редактировать:<b>'.preg_replace($this->_CFG['_repl']['name'],'',$this->data[$this->id][$this->_listname]).'</b>';
+				$HTML->path[$firstpath.$this->_cl.'_id='.$this->id.'&amp;_type=edit'] ='Редактировать:<b>'.preg_replace($this->_CFG['_repl']['name'],'',$this->data[$this->id][$this->_listname]).'</b>';
 				list($xml['formcreat'],$flag) = $this->_UpdItemModul($param);
 				if($flag==1){
 					$this->id=$this->parent_id;

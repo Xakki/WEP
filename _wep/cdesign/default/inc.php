@@ -61,12 +61,12 @@
 									$html = $HTML->transformPHP($DATA,'formcreat');
 									//$_tpl['onload'] .= 'var tmp = $(\'#form_'.$_GET['_modul'].'\').attr(\'action\');$(\'#form_'.$_GET['_modul'].'\').attr(\'action\',tmp.replace(\'index.php\',\'js.php\'));JSFR(\'#form_'.$_GET['_modul'].'\');';
 								}
-							}elseif($flag!=3) {
+							} elseif($flag!=3) {
 								end($HTML->path);
 								$_SESSION['mess']=$DATA['superlist']['messages'];
 								header('Location: '.$_CFG['_HREF']['BH'].str_replace("&amp;", "&", key($HTML->path)));
 								die();
-							}else {
+							} else {
 								if(!$_SESSION['mess']) 
 									$_SESSION['mess']= array();
 								$DATA['superlist']['messages'] += $_SESSION['mess'];

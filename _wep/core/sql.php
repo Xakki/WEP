@@ -54,7 +54,7 @@
 		}
 
 		function execSQL($sql,$unbuffered=0) {
-			return new query(&$this, $sql, $unbuffered);
+			return new query($this, $sql, $unbuffered);
 		}
 		function fError($err){
 			$this->sql_err[] = $err;
@@ -69,7 +69,7 @@
 		var $affected;
 		var $err;
 
-		function __construct($db, $sql, $unbuffered) {
+		function __construct(&$db, $sql, $unbuffered) {
 			global $_CFG,$_tpl;
 			if($unbuffered) {// Тут можно задавать запросы, разделённые точкой запятой
 				$this->handle = mysql_unbuffered_query($sql, $db->hlink);

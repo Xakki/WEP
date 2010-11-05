@@ -13,7 +13,7 @@
 
 			if(_prmModul($FUNCPARAM[0],array(1,2))) {
 
-					$param = array();//'fhref'=>'_view=list&amp;_modul='.$FUNCPARAM[0].'&amp;'
+					$param = array('firstpath'=>$this->current_path.'?');//'fhref'=>'_view=list&amp;_modul='.$FUNCPARAM[0].'&amp;'
 							
 							list($DATA,$flag) = $MODUL->super_inc($param,$_GET['_type']);
 
