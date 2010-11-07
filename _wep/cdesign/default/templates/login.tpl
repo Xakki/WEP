@@ -12,35 +12,8 @@
 		<link rel="SHORTCUT ICON" href="{$_tpl['design']}img/favicon.ico"/>
 		<style type="text/css">
 			html, body {text-align:center;vertical-align:middle;height:100%;margin:0;}
-			.cform {
-				height:160px;
-				margin:auto;
-				position:relative;
-				top:-80px;
-				width:200px;
-			}
-			.cform form div {
-				font-size:11px;text-align:left;
-			}
-			.cform input {
-				border:2px #63A6CC solid;
-				width:100%;
-				margin:0 0 5px 0;padding:1px 0;
-				text-align:center;
-			}
-			.cform .submit {
-				margin:7px 0 0 0px;
-			}
-			.messhead {
-				font-size:19px;
-				color:#228B22;
-				font-weight:bold;
-			}
-			.messelem {font-weight:bold;font-size:15px;text-align:center;color:gray;}
-			.messelem a {
-				font-size:14px;
-			}
 		</style>
+		<link rel="stylesheet" href="/_design/_style/login.css" type="text/css">
 	</head>
 	<body onload="">{$_tpl['logs']}
 	<div style="position:relative;top:40%;">

@@ -1,0 +1,206 @@
+
+/*form*/
+	/*AJAX MESS */
+	.addparam {
+		width: 60%;
+		display:block;
+		margin:0 auto;
+		background-color:#EDEDED;
+	}
+	.divform #loadform {
+		width: 60%;
+		display:block;
+		margin:0 auto;
+		background-color:#EDEDED;
+	}
+	#loadform #ajaxbg {
+		position: absolute;
+	}
+	#loadform #ajaxload {
+		position:relative;
+		left:0;
+		top:0;
+		padding:5px 0;
+	}
+	#loadform .div-tr {
+	}
+
+/*form*/
+
+	.divform {
+		border:none;
+		width:550px;
+		background:transparent;
+		margin:0 auto;
+		display:table;
+	}
+	.divform .div-tr {
+		padding:3px 10px;
+		clear:both;
+		text-align: left;
+	}
+	.divform .caption div{
+		text-align:center;font-size:1.2em;font-weight:bold;
+	}
+
+	.divform .form-caption {
+		text-align:left;
+		display:inline;
+	}
+	.divform .caption_error {
+		font-size:0.8em;
+		color:red;
+		display:inline;
+		padding:0 0 0 5px;
+	}
+	.divform .form-caption .form-requere {
+		color:#F00;cursor:pointer;}
+
+	.divform .form-value {
+	}
+	.divform .checkbox-value{
+		float:left;
+		margin:0 10px 0 5px;
+		padding:0 0 0;
+	}
+	.divform .form-submit {
+		text-align:center;
+		padding:5px 0;
+	}
+	.divform .infoinput{
+		background:transparent url(../default/img/bluebg.gif) repeat scroll 0 100%;
+		font-size:0.9em;
+		font-weight:bold;
+		text-align:center;
+		padding:3px 0 4px;
+		border:1px solid gray;-moz-border-radius:4px;-webkit-border-radius:4px;border-radius:4px;
+	}
+	.divform .dscr {
+		/*clear:both;*/
+		font-size:0.8em;
+		color:#363636;}
+	
+	/*INPUT*/
+	.divform input{
+		width:100%;
+		height:1.3em;
+		border:1px solid #A6A6A6;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
+	}
+	.divform input[type='checkbox'] {
+		border:medium none;width:17px;
+		margin:0;}
+	.divform input[type='file'] {
+		height:1.6em;
+		text-align:center;
+		width:auto;}
+	.divform .divinputfile {
+		position:relative;
+		}
+	.divform .fileinfo {
+		font-size:0.8em;
+		color:gray;
+		margin-left:5px;
+		}
+	.divform input.sbmt {width:auto;height:1.8em;}
+
+	.divform .shownextfoto {
+		background:transparent url(../_img/redmond/ui-icons_2e83ff_256x240.png) no-repeat scroll -32px -129px;
+		color:green;
+		height:15px;
+		padding:0 0 0 15px;
+		white-space:nowrap;
+		width:1px;
+		cursor:pointer;
+	}
+	.divform .passnewdesc {
+		font-size:11px;
+		color:#101796;
+		border-bottom:1px dashed #CCCCCC;
+		display:inline;
+		cursor:pointer;
+	}
+	.divform .passnewdesc:hover {border-bottom:1px dashed transparent;}
+
+	/*Date*/
+	.divform .dateselect {margin:0 20px 0 0;float:left;font-size:0.7em;}
+	.divform .dateselect select{width:auto;}
+
+	.divform select{border:1px solid #A6A6A6;height:1.5em;width:100%;}
+	.divform select.small {border:1px solid #A6A6A6;height:8em;}
+	.divform select.multiple {border:1px solid #A6A6A6;height:13em;}
+	.divform optgroup {margin:0;padding:0;}
+	.divform option {margin:0 12px 0 0;padding:0;}
+
+
+	.divform div.no{font-size:11px;color:#000;padding:0;}
+	.divform div.left{float:left;}
+	.divform div.left1{float:left;padding-top:4px;}
+	.divform div.clear{clear:both;}
+	.divform textarea{
+		width:100%;
+		height:100px;
+		border:1px solid #A6A6A6;-moz-border-radius:4px;-webkit-border-radius:4px;border-radius:4px;
+	}
+	.divform input.radio{width:20px;border:0;}
+	.divform input.secret{
+		width:100px;
+		font-size:2em;
+		height:35px;
+		margin:3px 0 0;
+		width:100px;
+	}
+	.divform div.secret{padding:3px 0 0 5px;float:left;}
+	.divform input.ronly{
+		background:none repeat scroll 0 0 #E6E6E6;
+		color:#666666;}
+	.divform .textcount {width:30px;border:0px;background:transparent none repeat scroll 0 0;}
+	.divform .attach {
+		border:1px solid #A6A6A6;
+		margin:5px 5px 5px 0;}
+	.divform .wep_thumb {/*Эскиз рисунка в форме*/
+		float:left;
+		margin:0 10px 0 0;
+	}
+	.divform .wep_thumb_comment {/*Коммент эскиза рисунка в форме*/
+		font-size:0.7em;color:gray;
+	}
+	.divform .del {
+		width:20px;vertical-align:middle;}
+
+	/*MESSAGE*/
+	.messages {
+		font-size:0.9em;
+		text-align:center;
+		background:#F6F6F6;
+		padding:5px 20px;margin:3px 0 0;
+		white-space:normal;
+		border:1px solid #A6A6A6;-moz-border-radius:4px;-webkit-border-radius:4px;border-radius:4px;
+	}
+
+	.messages .error, .error {
+		font-weight: bold;
+		margin: 0 0 3px 0;
+		color:red;
+	}
+	.messages .ok, .ok {
+		margin: 0 0 3px 0;
+		color:green;
+	}
+	.messages .alert, .alert {
+		margin: 0 0 3px 0;
+		color:blue;
+	}
+	.err {
+		font-weight: bold;
+		margin: 0 0 3px 0;
+		color:red;
+	}
+
+	/*Значок в форме ввода*/
+	input.accept{
+		background:transparent url(../default/img/x16.png) no-repeat scroll 100% 2px;
+	}
+	input.reject{
+		background:transparent url(../default/img/x16.png) no-repeat scroll 100% -30px;
+	}
+/*FORM*/

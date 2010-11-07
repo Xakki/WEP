@@ -123,9 +123,9 @@ function selectitem2($data,$flag='') {
 			if(count($r['#item#']) and $r['#checked#']==0)
 				$html .= '<optgroup label="'.$flag.$r['#name#'].'"></optgroup>';
 			else
-				$html .= '<option value="'.$k.'" '.($r['#sel#']?'selected="selected"':'').'>'.$flag.'&#160;'.$r['#name#'].'</option>';
+				$html .= '<option value="'.$k.'" '.($r['#sel#']?'selected="selected"':'').'>'.$flag.$r['#name#'].'</option>';
 			if(count($r['#item#']))
-				$html .= selectitem2($r['#item#'],$flag.'&#160;--');
+				$html .= selectitem2($r['#item#'],$flag);//.'&#160;--'
 		}
 	return $html;
 }

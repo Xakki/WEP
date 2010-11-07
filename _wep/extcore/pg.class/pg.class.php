@@ -58,8 +58,8 @@ class pg_class extends kernel_class {
 		$this->fields_form['href'] = array('type' => 'text', 'caption' => 'HREF', 'mask' =>array('onetd'=>'Содержимое'));
 		$this->fields_form['design'] = array('type' => 'list', 'listname'=>'mdesign', 'caption' => 'Дизайн', 'mask' =>array('onetd'=>'Дизайн'));
 		$this->fields_form['template'] = array('type' => 'list', 'listname'=>'templates', 'caption' => 'Шаблон', 'mask' =>array('onetd'=>'none'));
-		$this->fields_form['styles'] = array('type' => 'list', 'multiple'=>1, 'listname'=>'styles', 'caption' => 'CSS', 'mask' =>array('onetd'=>'none'));
-		$this->fields_form['script'] = array('type' => 'list', 'multiple'=>1, 'listname'=>'script', 'caption' => 'SCRIPT', 'mask' =>array('onetd'=>'close'));
+		$this->fields_form['styles'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'styles', 'caption' => 'CSS', 'mask' =>array('onetd'=>'none'));
+		$this->fields_form['script'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'script', 'caption' => 'SCRIPT', 'mask' =>array('onetd'=>'close'));
 		$this->fields_form['keywords'] = array('type' => 'text', 'caption' => 'META-keywords','mask'=>array('fview'=>1));
 		$this->fields_form['description'] = array('type' => 'text', 'caption' => 'META-description','mask'=>array('fview'=>1));
 		$this->fields_form['onmenu'] = array('type' => 'list', 'listname'=>'menu', 'multiple'=>1, 'caption' => 'Меню', 'mask'=>array('onetd'=>'Опции'));
@@ -184,7 +184,7 @@ class pg_class extends kernel_class {
 			$_tpl['title'] = $this->get_caption();
 			$_tpl['keywords'] = $this->pageinfo['keywords'];
 			$_tpl['description'] = $this->pageinfo['description'];
-			$flag_content = $this->display_page($_tpl);
+			$flag_content = $this->display_page();
 		}
 
 		if ($flag_content==2) {
@@ -197,7 +197,7 @@ class pg_class extends kernel_class {
 				$_tpl['title'] = "Нет доступа";
 				$_tpl['keywords'] = "";
 				$_tpl['description'] = "";
-				$this->display_page($_tpl);
+				$this->display_page();
 			}
 			else
 			{
@@ -205,7 +205,7 @@ class pg_class extends kernel_class {
 				$_tpl['title'] = $this->get_caption();
 				$_tpl['keywords'] = $this->pageinfo['keywords'];
 				$_tpl['description'] = $this->pageinfo['description'];
-				$this->display_page($_tpl);
+				$this->display_page();
 			}
 		}
 		elseif(!$flag_content)
@@ -226,7 +226,7 @@ class pg_class extends kernel_class {
 				$_tpl['title'] = $this->get_caption();
 				$_tpl['keywords'] = $this->pageinfo['keywords'];
 				$_tpl['description'] = $this->pageinfo['description'];
-				$this->display_page($_tpl);
+				$this->display_page();
 
 			}
 		}
@@ -323,7 +323,7 @@ class pg_class extends kernel_class {
 	}
 
 
-	function display_page(&$_tpl) {
+	function display_page() {
 		global $SQL, $PGLIST, $HTML, $_CFG, $_tpl;
 		$flagPG = 0;
 

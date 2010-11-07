@@ -32,7 +32,7 @@ function tpl_form(&$data) {
 
 			if($r['type']=='textarea') {
 				if(!$r['mask']['max']) $r['mask']['max'] = 5000;
-				$html .= '<div class="form-value"><textarea name="'.$k.'" onkeyup="textareaChange(this,\''.$r['mask']['max'].'\')" rows="10" cols="10"';
+				$html .= '<div class="form-value"><textarea name="'.$k.'" onkeyup="textareaChange(this,\''.$r['mask']['max'].'\')" rows="5" cols="50"';
 				if($r['readonly']) $html .= ' readonly="readonly"';
 				$html .= '>'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
 			}
@@ -81,10 +81,13 @@ function tpl_form(&$data) {
 				if($r['size']>1) {
 					$html .= '<select size="'.$r['size'].'" name="'.$k.'" class="small" onchange="'.$r['onchange'].'"';
 					$html .= '>'.selectitem($r['valuelist']).'</select>';
+				}elseif($r['multiple']==2) {
+					$html .= '<select multiple="multiple" size="10" name="'.$k.'[]" class="multiple" onchange="'.$r['onchange'].'"';
+					$html .= '>'.selectitem($r['valuelist']).'</select>';
+					$_CFG['globalformoption']['multiple'] = 1;
 				}elseif($r['multiple']) {
 					$html .= '<select multiple="multiple" size="10" name="'.$k.'[]" class="small" onchange="'.$r['onchange'].'"';
 					$html .= '>'.selectitem($r['valuelist']).'</select>';
-					$_CFG['globalformoption']['multiple'] = 1;
 				}else {
 					$html .= '<select name="'.$k.'" onchange="'.$r['onchange'].'"';
 					$html .= '>'.selectitem($r['valuelist']).'</select>';
@@ -199,9 +202,9 @@ function selectitem($data,$flag='') {
 			if(count($r['#item#']) and isset($r['#checked#']) and $r['#checked#']==0)
 				$html .= '<optgroup label="'.$flag.$r['#name#'].'"></optgroup>';
 			else
-				$html .= '<option value="'.$r['#id#'].'" '.($r['#sel#']?'selected="selected"':'').'>'.$flag.'&#160;'.$r['#name#'].'</option>';
+				$html .= '<option value="'.$r['#id#'].'" '.($r['#sel#']?'selected="selected"':'').'>'.$flag.$r['#name#'].'</option>';
 			if(count($r['#item#']))
-				$html .= selectitem($r['#item#'],$flag.'&#160;--');
+				$html .= selectitem($r['#item#'],$flag);//.'&#160;--'
 		}
 	return $html;
 }

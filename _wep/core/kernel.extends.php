@@ -951,15 +951,26 @@ _message($msg,$type=0)
 		if(is_array($listname))
 			$templistname = implode(',',$listname);
 		if(!isset($this->_CFG['enum'][$templistname])) {
-			$this->_CFG['enum'][$templistname] = $this->_getCashedList($listname, $value);
+			$this->_getCashedList($listname, $value);
+			//$this->_CFG['enum'][$templistname]
 		}
 
 		if(!isset($this->_CFG['enum_check'][$templistname])) {
 			$this->_CFG['enum_check'][$templistname] = array();
 			$temp = current($this->_CFG['enum'][$templistname]);
 			if(is_array($temp) and !isset($temp['#name#'])) {
-				foreach($this->_CFG['enum'][$templistname] as $row) {
+				foreach($this->_CFG['enum'][$templistname] as $krow => $row) {
+					if(isset($this->_CFG['enum_check'][$templistname][$krow])) {
+						if(is_array($this->_CFG['enum_check'][$templistname][$krow]))
+							$adname = $this->_CFG['enum_check'][$templistname][$krow]['#name#'];
+						else
+							$adname = $this->_CFG['enum_check'][$templistname][$krow];
+						foreach($row as $kk=>$rr)
+							$row[$kk] = $adname.' - '.$rr;
+						unset($this->_CFG['enum_check'][$templistname][$krow]);
+					}
 					$this->_CFG['enum_check'][$templistname] = $this->_CFG['enum_check'][$templistname]+$row;
+					
 				}
 			}else
 				$this->_CFG['enum_check'][$templistname] = &$this->_CFG['enum'][$templistname];

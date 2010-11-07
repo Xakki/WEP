@@ -96,6 +96,7 @@
 <option onclick="window.location=\''.$_CFG['PATH']['wepname'].'/index.php?_showallinfo=3\'" '.($_COOKIE['_showallinfo']==3?'selected="selected"':'').'>Показать все логи</option>
 </select></span>';
 	$_tpl['styles'][$_CFG['_HREF']['_style'].'style.css'] ='<link rel="stylesheet" href="'.$_CFG['_HREF']['_style'].'style.css" type="text/css"/>';
+	$_tpl['styles'][$_CFG['_HREF']['_style'].'form.css'] ='<link rel="stylesheet" href="'.$_CFG['_HREF']['_style'].'form.css" type="text/css"/>';
 
 	$_tpl['script']['md5.js'] = '<script type="text/javascript" src="_design/_script/md5.js"></script>';
 	$_tpl['script']['jquery.ui.widget.min.js'] = '<script type="text/javascript" src="_design/_script/script.jquery.ui/jquery.ui.widget.min.js"></script>';
@@ -111,7 +112,7 @@
 
 	if($_CFG['globalformoption']['multiple']) {
 		$_tpl['onload'] .= '$.localise(\'ui-multiselect\', {language: \'ru\', path: \'_design/_script/script.localisation/\'});';
-		$_tpl['onload'] .= '$(\'select[multiple=multiple]\').multiselect();';
+		$_tpl['onload'] .= '$(\'select.multiple\').multiselect();';
 	}
 
 	$_tpl['script']['jquery.localisation-min.js'] = '<script type="text/javascript" src="_design/_script/script.localisation/jquery.localisation-min.js"></script>';
