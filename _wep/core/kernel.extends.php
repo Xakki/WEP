@@ -200,8 +200,10 @@ _fldformer($key, $param)
 	protected function _create_conf() { // Здесь можно установить стандартные настройки модулей
 		if($this->cf_childs) {
 			$this->config['childs'] = '';
-			$this->config_form['childs'] = array('type' => 'list', 'multiple'=>1, 'listname'=>'child.class', 'caption' => 'Подмодули');
+			$this->config_form['childs'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'child.class', 'caption' => 'Подмодули');
 		}
+		$this->config['scriptInclude'] = '';
+		$this->config_form['scriptInclude'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'script', 'caption' => 'Script модуля');
 	}
 
 	protected function configParse() {
@@ -819,7 +821,7 @@ _message($msg,$type=0)
 				else
 					$r['value'] = '';
 			}
-			elseif($r['multiple']==1 and $r['type']=='list') {
+			elseif($r['multiple']>0 and $r['type']=='list') {
 				if(!is_array($data[$k])){
 					if(_strlen($data[$k])>2)
 						$data[$k] = _substr(_substr($data[$k],0,-1),1);
@@ -954,6 +956,8 @@ _message($msg,$type=0)
 			$this->_getCashedList($listname, $value);
 			//$this->_CFG['enum'][$templistname]
 		}
+		if(!$this->_CFG['enum'][$templistname])
+			return false;
 
 		if(!isset($this->_CFG['enum_check'][$templistname])) {
 			$this->_CFG['enum_check'][$templistname] = array();
@@ -1130,10 +1134,11 @@ _message($msg,$type=0)
 				else 
 					return $this->_message($result->err);
 		}
-		elseif(!is_array($listname))
-			return $this->_message('List data `'.$listname.'` not found');
+		elseif(!is_array($listname)) {
+			return $this->_errorMess('List data `'.$listname.'` not found');
+		}
 		else
-			return $this->_message('List '.current($listname).' not found');
+			return $this->_errorMess('List '.current($listname).' not found');
 
 		return $data;
 	}
@@ -1618,14 +1623,14 @@ $Ajax=0 - не скриптовая
 		}
 		if(!$flag && $this->_CFG['site']['msp']=='paginator') {
 			global $_tpl;
-			$_tpl['script']['jquery.paginator.js'] ='<script type="text/javascript" src="'.$this->_CFG['_HREF']['_script'].'jquery.paginator.js"></script>'."\n";
-			$_tpl['styles']['paginator.css'] ='<link rel="stylesheet" href="'.$this->_CFG['_HREF']['_style'].'paginator.css" type="text/css"/>'."\n";
+			$_tpl['script']['jquery.paginator'] = 1;
+			$_tpl['styles']['paginator'] = 1;
 			$_tpl['onload'] .='pagenum('.$DATA['cntpage'].','.($this->reversePageN?'true':'false').');';
 		}
 		elseif($flag && $this->_CFG['wep']['msp']=='paginator') {
 			global $_tpl;
-			$_tpl['script']['jquery.paginator.js'] .='<script type="text/javascript" src="'.$this->_CFG['_HREF']['_script'].'jquery.paginator.js"></script>'."\n";
-			$_tpl['styles']['paginator.css'] ='<link rel="stylesheet" href="'.$this->_CFG['_HREF']['_style'].'paginator.css" type="text/css"/>'."\n";
+			$_tpl['script']['jquery.paginator'] .= 1;
+			$_tpl['styles']['paginator'] = 1;
 			$_tpl['onload'] .='pagenum_default('.$DATA['cntpage'].','.$this->_pn.',\''.$this->_cl.'\','.($this->reversePageN?'true':'false').');';
 		}
 		//if($this->reversePageN)

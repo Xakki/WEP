@@ -57,24 +57,24 @@
 						$templistname = implode(',',$r['listname']);
 					$arrlist = &$this->_CFG['enum_check'][$templistname];
 
-					if(is_array($r['value']))
-						$val = array_combine($r['value'],$r['value']);
-					else
-						$val = array($r['value']=>$r['value']);
-					$temparr= array();
-					foreach($val as $kk) {
-						if(isset($arrlist[$kk])) {
-							$temparr[$kk] = $arrlist[$kk];
-							unset($this->_CFG['enum_check'][$templistname][$kk]);
+					if($arrlist and is_array($arrlist)) {
+						if(is_array($r['value']))
+							$val = array_combine($r['value'],$r['value']);
+						else
+							$val = array($r['value']=>$r['value']);
+						$temparr= array();
+						foreach($val as $kk) {
+							if(isset($arrlist[$kk])) {
+								$temparr[$kk] = $arrlist[$kk];
+								unset($this->_CFG['enum_check'][$templistname][$kk]);
+							}
+						}
+						$md = $temparr+$this->_CFG['enum_check'][$templistname];
+						if(is_array($md) and count($md)) {
+							$md = array($md);
+							$r['valuelist'] = $this->_forlist($md,0,$val);
 						}
 					}
-					$md = $temparr+$this->_CFG['enum_check'][$templistname];
-					if(is_array($md) and count($md)) {
-						$md = array($md);
-						$r['valuelist'] = $this->_forlist($md,0,$val);
-					}
-					//if($k=='script')
-					//	print_r($md);
 				}
 				elseif($r['type']=='list' and $r['multiple'] and !$r['readonly']) {
 					$md = $this->_getCashedList($r['listname'],0);
@@ -144,7 +144,7 @@
 					$ckedit['shiftEnterMode'] = 'CKEDITOR.ENTER_P';
 
 					global $_tpl;
-					$_tpl['script']['ckeditor.js'] .='<script type="text/javascript" src="'.$this->_CFG['_HREF']['WSWG'].'ckeditor/ckeditor.js"></script>';
+					$_tpl['script']['ckeditor.js'] ='<script type="text/javascript" src="'.$this->_CFG['_HREF']['WSWG'].'ckeditor/ckeditor.js"></script>';
 					$fckscript = 'function cke_'.$k.'() { if(typeof CKEDITOR.instances.'.$k.' == \'object\'){CKEDITOR.instances.'.$k.'.destroy(true);} editor_'.$k.' = CKEDITOR.replace( \''.$k.'\',{';
 					foreach($ckedit as $kc=>$rc)
 						$fckscript .= $kc.' : '.$rc.',';
@@ -154,7 +154,7 @@
 						$fckscript .='function ckf_'.$k.'() { CKFinder.SetupCKEditor(editor_'.$k.',\'/'.$this->_CFG['PATH']['WSWG'].'ckfinder/\');} if(!CKFinder) $.include(\''.$this->_CFG['_HREF']['WSWG'].'ckfinder/ckfinder.js\',ckf_'.$k.'()); else ckf_'.$k.'();';
 						$_tpl['script']['ckfinder.js'] .='<script src="'.$this->_CFG['_HREF']['WSWG'].'ckfinder/ckfinder.js" type="text/javascript"></script>';
 					}
-					$_tpl['script'][] .= '<script type="text/javascript">'.$fckscript.'}</script>';
+					$_tpl['script']['ckfinder.js'] = '<script type="text/javascript">'.$fckscript.'}</script>';
 					$_tpl['onload'] .= ' if(!window.CKEDITOR) $.include(\''.$this->_CFG['_HREF']['WSWG'].'ckeditor/ckeditor.js\',cke_'.$k.'); else cke_'.$k.'();';
 				}
 				elseif($r['type']=='date' and !$r['readonly']) {

@@ -1,81 +1,93 @@
+/****************/
 
+function ShowTools(id,hrf) {
+	/*Панель инструментов модуля(фильтр, статистика, обновление таблицы итп)*/
+	$('#'+id).hide();
 
-function insertAfter(parent, node, referenceNode) {
-      parent.insertBefore(node, referenceNode.nextSibling);
+	if(typeof hrf=='object')
+		_last_load = $(hrf).attr('href');
+	JSHR(id,hrf);
+	$('#'+id).fadeIn();
+
+	return false;
 }
 
-function textareaChange(obj,max){/* Утилита для подсчёта кол сиволов в форме, автоматически создаёт необходимые поля*/
-	if(!GetId(obj.name+'t2')){
-		val = document.createElement('span');
-		val.className = "dscr";
-		val.innerHTML = 'Cимволов:<input type="text" id="'+obj.name+'t2" maxlength="4" readonly="false" class="textcount" style="text-align:right;"/>/<input type="text" id="'+obj.name+'t1" maxlength="4" readonly="false" class="textcount" value="'+max+'"/>';
-		insertAfter(obj.parentNode,val,obj);
-	}
-	if(obj.value.length>max) obj.value=obj.value.substr(0,max);
-		GetId(obj.name+'t2').value = obj.value.length;
-}
+function JSHR(id,_href,param,body,insertType) {
+	clearTimeout(timerid2);timerid2 = 0;
+	timerid = setTimeout(function(){fShowload(1,'',body);},400);
+	$.ajax({
+		type: "GET",
+		url: _href,
+		data: param,
+		dataType: "json",
+		beforeSend: function(XMLHttpRequest) {
+			return true;
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+			alert(textStatus);
+		},
+		dataFilter: function(data, type) {
+			return data;
+		},
+		success: function(data, textStatus, XMLHttpRequest) {
+			clearTimeout(timerid);
+			timerid2 = setTimeout(function(){fShowload(0);},200);
 
-function IsComplete(elem)
-{
-	if (elem.readyState)
-	{
-		return elem.readyState == "complete";
-	}
-	else
-	{
-		return elem.complete;
-	}
-}
-
-function KeyCode(evt)
-{
-	if (evt.keyCode)
-	{
-		return evt.keyCode;
-	}
-	return evt.which;
-}
-
-function OffsetX(evt)
-{
-	if (evt.offsetX)
-	{
-		return evt.offsetX;
-	}
-	return evt.layerX;
-}
-
-function OffsetY(evt)
-{
-	if (evt.offsetY)
-	{
-		return evt.offsetY;
-	}
-	return evt.layerY;
-}
-
-function WindowEvent(evt)
-{
-	if (evt == null)
-	{
-		return window.event;
-	}
-	return evt;
-}
-
-
-/************** аналог ф в ПХП ***************/
-function is_array(a) {
-  return a && typeof a == 'object' && a.constructor == Array;
-}
-
-function in_array(what, where) {/*аналог ф в ПХП*/
-	var a=false;
-	for(var i=0; i<where.length; i++) {
-		if(what == where[i]) {
-			a=true;
-			break;
+			if(id!=0 && data.html != '') {
+				if(typeof id=='object'){
+					if(insertType=='after')
+						$(id).after(data.html);
+					else if(insertType=='before')
+						$(id).before(data.html);
+					else
+						id.innerHTML = data.html;
+				}
+				else {
+					if(insertType=='after')
+						$('#'+id).after(data.html);
+					else if(insertType=='before')
+						$('#'+id).before(data.html);
+					else
+						$('#'+id).html(data.html);
+				}
+			}
+			if(data.text != undefined && data.text!='') fLog(fSpoiler(data.text,'AJAX text result'),1);
+			if(data.eval != undefined && data.eval!='') eval(data.eval);
 		}
-	}
-	return a;
+	});
+	return false;
+}
+
+function JSFRWin(obj,htmlobj) {
+	clearTimeout(timerid);
+	timerid = setTimeout(function(){fShowload(1);},200);
+	$.ajax({
+		type: "POST",
+		url: $(obj).attr('action'),
+		data: $(obj).serialize()+'&sbmt=1',
+		dataType: "json",
+		beforeSend: function(XMLHttpRequest) {
+			return true;
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+			alert(textStatus);
+		},
+		dataFilter: function(data, type) {
+		 
+			return data;
+		},
+		success: function(result) {
+			clearTimeout(timerid);
+			timerid = setTimeout(function(){fShowload(0);},200);
+			if(result.html!= undefined && result.html!='') {
+				if(htmlobj)
+					$(htmlobj).html(result.html);
+				else
+					$('#'+_win2).html(result.html);
+			}
+			if(result.eval!= undefined && result.eval!='') eval(result.eval);
+			if(result.text!= undefined && result.text!='') fLog(fSpoiler(result.text,'AJAX text result'),1);
+		}
+	});
+	return false;
 }

@@ -225,6 +225,51 @@ jQuery.extend({
 			return jQuery.includeStates[url];
 		}
 	},
+	includeCSS: function(url, callback, dependency){
+		if ( typeof callback != 'function' && ! dependency ) {
+			dependency = callback;
+			callback = null;
+		}
+		url = url.replace('\n', '');
+		jQuery.includeStates[url] = false;
+		var script = document.createElement('link');
+		script.type = 'text/css';
+		script.rel = 'stylesheet';
+		script.onload = function () {
+			jQuery.includeStates[url] = true;
+			if ( callback )
+				callback.call(script);
+		};
+		script.onreadystatechange = function () {
+			if ( this.readyState != "complete" && this.readyState != "loaded" ) return;
+			jQuery.includeStates[url] = true;
+			if ( callback )
+				callback.call(script);
+		};
+		script.href = url;
+		if ( dependency ) {
+			if ( dependency.constructor != Array )
+				dependency = [dependency];
+			setTimeout(function(){
+				var valid = true;
+				$.each(dependency, function(k, v){
+					if (! v() ) {
+						valid = false;
+						return false;
+					}
+				})
+				if ( valid )
+					document.getElementsByTagName('head')[0].appendChild(script);
+				else
+					setTimeout(arguments.callee, 10);
+			}, 10);
+		}
+		else
+			document.getElementsByTagName('head')[0].appendChild(script);
+		return function(){
+			return jQuery.includeStates[url];
+		}
+	},
 	readyOld: jQuery.ready,
 	ready: function () {
 		if (jQuery.isReady) return;

@@ -283,7 +283,7 @@
 
 		if($_html!='') {
 			if($_tpl['logs']!='' and $_CFG['_F']['adminpage']) 
-				$_tpl['onload'] .='if($(\'#debug_view\').html()!=\'\') fShowDebug(\'debug_view\');';
+				$_tpl['onload'] .='if($(\'#debug_view\').html()!=\'\') fShowHide(\'debug_view\');';
 			eval('$_html = "'.$_html.'";');
 			$page = $_html;
 		}else

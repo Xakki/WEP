@@ -61,7 +61,8 @@
 			} 
 			else 
 				$mess = $this->kPreFields($arr['vars'],$param);
-			$this->setCaptcha();
+			if(isset($this->fields_form['captcha']))
+				$this->setCaptcha();
 		}
 
 		if($formflag and (!isset($param['ajax']) or $flag==0)) // показывать форму , также если это АЯКС и 

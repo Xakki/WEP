@@ -77,6 +77,7 @@ include_once($this->_PATHd.'php/messages.php');
 					if($tdflag)
 						$html .= '<b>'.$data['thitem'][$ktd]['value'].'</b>: ';
 					if($tditem['type']=='img') {
+						$_CFG['fileIncludeOption']['fancybox'] = 1;
 						$html .= '<a rel="fancy" title="рисунок" class="fancyimg" href="'.$tditem['value'].'"><img src="'.$tditem['value'].'" alt="" width="50"/></a>&#160;';
 					}
 					elseif($tditem['type']=='swf') {

@@ -179,7 +179,7 @@ class modulgrp_class extends kernel_class {
 
 		$this->fields_form["name"] = array("type" => "text","readonly" => 1, "caption" => "Группа");
 		$this->fields_form["mname"] = array("type" => "text", "caption" => "Название модуля");
-		$this->fields_form["access"] = array("type" => "list",'multiple'=>1,"listname"=>"access", "caption" => "Права доступа");
+		$this->fields_form["access"] = array("type" => "list",'multiple'=>2,"listname"=>"access", "caption" => "Права доступа");
 
 	}
 

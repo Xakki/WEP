@@ -62,11 +62,11 @@ class pg_class extends kernel_class {
 		$this->fields_form['script'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'script', 'caption' => 'SCRIPT', 'mask' =>array('onetd'=>'close'));
 		$this->fields_form['keywords'] = array('type' => 'text', 'caption' => 'META-keywords','mask'=>array('fview'=>1));
 		$this->fields_form['description'] = array('type' => 'text', 'caption' => 'META-description','mask'=>array('fview'=>1));
-		$this->fields_form['onmenu'] = array('type' => 'list', 'listname'=>'menu', 'multiple'=>1, 'caption' => 'Меню', 'mask'=>array('onetd'=>'Опции'));
+		$this->fields_form['onmenu'] = array('type' => 'list', 'listname'=>'menu', 'multiple'=>2, 'caption' => 'Меню', 'mask'=>array('onetd'=>'Опции'));
 		$this->fields_form['onpath'] = array('type' => 'checkbox', 'caption'=>'Путь', 'comment' => 'Отображать в хлебных крошках');
 		$this->fields_form['attr'] = array('type' => 'text', 'caption' => 'Атрибуты для ссылки в меню', 'comment'=>'Например: `target="_blank" onclick=""` итп', 'mask' =>array('name'=>'text', 'fview'=>1));
 		if($this->_CFG['wep']['access'])
-			$this->fields_form['ugroup'] = array('type' => 'list','multiple'=>1,'listname'=>'ugroup', 'caption' => 'Доступ пользователю','default'=>'0');
+			$this->fields_form['ugroup'] = array('type' => 'list','multiple'=>2,'listname'=>'ugroup', 'caption' => 'Доступ пользователю','default'=>'0');
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
 		$this->fields_form['ordind'] = array('type' => 'int', 'caption' => 'ORD');
 
@@ -261,11 +261,17 @@ class pg_class extends kernel_class {
 			if($row['description']) $this->pageinfo['description'] = $this->dataCash[$this->id]['description'].', '.$this->pageinfo['description'];
 			$this->pageinfo['script'] = explode('|',trim($this->dataCash[$this->id]['script'],'|'));
 			if(count($this->pageinfo['script'])) {
-				$this->pageinfo['script'] = array_combine($this->pageinfo['script'],$this->pageinfo['script']);
+				$temp = $this->pageinfo['script'];$this->pageinfo['script'] = array();
+				foreach($temp as $r)
+					if($r)
+						$this->pageinfo['script'][$r] = 1;
 			}
 			$this->pageinfo['styles'] = explode('|',trim($this->dataCash[$this->id]['styles'],'|'));
 			if(count($this->pageinfo['styles'])) {
-				$this->pageinfo['styles'] = array_combine($this->pageinfo['styles'],$this->pageinfo['styles']);
+				$temp = $this->pageinfo['styles'];$this->pageinfo['styles'] = array();
+				foreach($temp as $r)
+					if($r)
+						$this->pageinfo['styles'][$r] = 1;
 			}
 			$this->get_pageinfo();//$this->pageinfo['path']
 			return 1;
@@ -345,14 +351,16 @@ class pg_class extends kernel_class {
 					$rowPG['script'] = explode('|',trim($rowPG['script'],'|'));
 					if(count($rowPG['script'])) {
 						foreach($rowPG['script'] as $r)
-							$this->pageinfo['script'][$r] = $r;
+							if($r)
+								$this->pageinfo['script'][$r] = 1;
 					}
 				}
 				if($rowPG['styles']) {
 					$rowPG['styles'] = explode('|',trim($rowPG['styles'],'|'));
 					if(count($rowPG['styles'])) {
 						foreach($rowPG['styles'] as $r)
-							$this->pageinfo['styles'][$r] = $r;
+							if($r)
+								$this->pageinfo['styles'][$r] = 1;
 					}
 				}
 

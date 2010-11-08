@@ -4,6 +4,7 @@ function tpl_form(&$data) {
 	$attr = $data['_*features*_'];
 	unset($data['_*features*_']);
 	$html = '';
+	$_CFG['fileIncludeOption']['form'] = 1;
 	foreach($data as $k=>$r) {
 		if($r['type']!='hidden')
 			$html .= '<div id="tr_'.$k.'" style="'.$r['style'].'" class="div-tr'.($r['css']?' '.$r['css']:'').'">';
@@ -84,7 +85,7 @@ function tpl_form(&$data) {
 				}elseif($r['multiple']==2) {
 					$html .= '<select multiple="multiple" size="10" name="'.$k.'[]" class="multiple" onchange="'.$r['onchange'].'"';
 					$html .= '>'.selectitem($r['valuelist']).'</select>';
-					$_CFG['globalformoption']['multiple'] = 1;
+					$_CFG['fileIncludeOption']['multiple'] = 2;
 				}elseif($r['multiple']) {
 					$html .= '<select multiple="multiple" size="10" name="'.$k.'[]" class="small" onchange="'.$r['onchange'].'"';
 					$html .= '>'.selectitem($r['valuelist']).'</select>';
@@ -133,6 +134,7 @@ function tpl_form(&$data) {
 						</div>';
 					}
 					$html .= '<div class="clear"></div>';
+					$_CFG['fileIncludeOption']['fancybox'] = 1;
 				}
 				elseif(!is_array($r['value']) and $r['value']!='' and $r['att_type']=='swf')
 					$html .= '<object type="application/x-shockwave-flash" data="/'.$r['value'].'" height="50" width="200"><param name="movie" value="/'.$r['value'].'" /><param name="allowScriptAccess" value="sameDomain" /><param name="quality" value="high" /><param name="scale" value="exactfit" /><param name="bgcolor" value="#ffffff" /><param name="wmode" value="transparent" /></object>';
@@ -167,9 +169,10 @@ function tpl_form(&$data) {
 			elseif($r['type']=='password2' and !$r['readonly']) {
 				$html .= '<div class="form-value"><input type="text" id="'.$k.'" name="'.$k.'" value="'.$r['value'].'" style="width:55%;float:left;background:#E1E1A1;" readonly="readonly"/>
 							<div style="width:40%;float:right;">
-								<img src="_wep/cdesign/default/img/aprm.gif" style="width:18px;cursor:pointer;" onclick="if(confirm(\'Вы действительно хотите изменить пароль?\')) GetId(\''.$k.'\').value = hex_md5(\''.$r['md5'].'\'+GetId(\'a_'.$k.'\').value);" alt="Сгенерировать пароль в формате MD5" title="Сгенерировать пароль в формате MD5"/>
+								<img src="_wep/cdesign/default/img/aprm.gif" style="width:18px;cursor:pointer;" onclick="if(confirm(\'Вы действительно хотите изменить пароль?\')) $(\'#'.$k.'\').val(hex_md5(\''.$r['md5'].'\'+$(\'#a_'.$k.'\').val()));" alt="Сгенерировать пароль в формате MD5" title="Сгенерировать пароль в формате MD5"/>
 								<input type="text" id="a_'.$k.'" name="a_'.$k.'" value="" style="width:80%;vertical-align:top;"/>
 							</div></div>';
+				$_CFG['fileIncludeOption']['md5'] = 1;
 			}
 			elseif($r['type']=='html') {
 				$html .= '<div class="form-value">'.$r['value'].'</div>';

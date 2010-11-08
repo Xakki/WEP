@@ -8,7 +8,9 @@ include_once($this->_cDesignPath.'/php/messages.php');
 		$html .= tpl_messages($data['messages']);// messages
 		if(isset($data) and count($data)) {
 			$attr = $data['form']['_*features*_'];
-			$html .= '<form id="form_tools_'.$attr['name'].'" method="post" enctype="multipart/form-data" action="'.$attr['action'].'" onsubmit="return preSubmitAJAX(this);'.($attr['id']?'" id="'.$attr['name'].'_'.$attr['id']:'').'">';
+			$html .= '<form id="form_tools_'.$attr['name'].'" method="post" enctype="multipart/form-data" action="'.$attr['action'].'"">';
+			//'.($attr['id']?' id="'.$attr['name'].'_'.$attr['id']:'').'
+			// onsubmit="return preSubmitAJAX(this);"
 			$html .= tpl_form($data['form']).'</form>';
 		}
 		$html .= '</div>';

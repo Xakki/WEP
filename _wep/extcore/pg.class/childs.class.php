@@ -35,9 +35,9 @@ class content_class extends kernel_class {
 		$this->fields_form['funcparam'] = array('type' => 'text', 'caption' => 'Доп. параметры', 'mask' =>array('name'=>'all'), 'comment'=>'Значения разделять символом &');
 		$this->fields_form['pg'] = array('type' => 'ckedit', 'caption' => 'Text','mask'=>array('fview'=>1, 'width' => 50000), 'paramedit'=>array('CKFinder'=>1,'extraPlugins'=>"'cntlen'"));
 		if($this->_CFG['wep']['access'])
-			$this->fields_form['ugroup'] = array('type' => 'list','multiple'=>1,'listname'=>'ugroup', 'caption' => 'Доступ пользователю','default'=>'0');
-		$this->fields_form['styles'] = array('type' => 'list', 'multiple'=>1, 'listname'=>'styles', 'caption' => 'CSS', 'mask' =>array('onetd'=>'Дизайн'));
-		$this->fields_form['script'] = array('type' => 'list', 'multiple'=>1, 'listname'=>'script', 'caption' => 'SCRIPT','mask' =>array('onetd'=>'close'));
+			$this->fields_form['ugroup'] = array('type' => 'list','multiple'=>2,'listname'=>'ugroup', 'caption' => 'Доступ пользователю','default'=>'0');
+		$this->fields_form['styles'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'styles', 'caption' => 'CSS', 'mask' =>array('onetd'=>'Дизайн'));
+		$this->fields_form['script'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'script', 'caption' => 'SCRIPT','mask' =>array('onetd'=>'close'));
 		$this->fields_form['ordind'] = array('type' => 'text', 'caption' => 'ORD');
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
 

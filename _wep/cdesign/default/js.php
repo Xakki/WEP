@@ -41,22 +41,22 @@
 	elseif($_GET['_type']=='reinstall'){
 		$DATA['formtools'] = $MODUL->confirmReinstall();
 		$html = $HTML->transformPHP($DATA,'formtools');
-		$_tpl['onload'] .= '_win2=\'tools_block\';JSFR("#form_tools_reinstal");';
+		$_tpl['onload'] .= '_win2=\'tools_block\';$(\'#form_tools_reinstal\').bind(\'submit\',function(e){return JSFRWin(\'#form_tools_reinstal\');});';
 	}
 	elseif($_GET['_type']=='config'){
 		$DATA['formtools'] = $MODUL->confirmConfigmodul();
 		$html = $HTML->transformPHP($DATA,'formtools');
-		$_tpl['onload'] .= '_win2=\'tools_block\';JSFR("#form_tools_config");';
+		$_tpl['onload'] .= '_win2=\'tools_block\';$(\'#form_tools_config\').bind(\'submit\',function(e){return JSFRWin(\'#form_tools_config\');});';
 	}
 	elseif($_GET['_type']=='reindex'){
 		$DATA['formtools'] = $MODUL->confirmReindex();
 		$html = $HTML->transformPHP($DATA,'formtools');
-		$_tpl['onload'] .= '_win2=\'tools_block\';JSFR(\'#form_tools_reindex\');';
+		$_tpl['onload'] .= '_win2=\'tools_block\';$(\'#form_tools_reindex\').bind(\'submit\',function(e){return JSFRWin(\'#form_tools_reindex\');});';
 	}
 	elseif($_GET['_type']=='checkmodul'){
 		$DATA['formtools'] = $MODUL->confirmCheckmodul();
 		$html = $HTML->transformPHP($DATA,'formtools');
-		$_tpl['onload'] .= '_win2=\'tools_block\';JSFR(\'#form_tools_checkmodul\');';
+		$_tpl['onload'] .= '_win2=\'tools_block\';$(\'#form_tools_checkmodul\').bind(\'submit\',function(e){return JSFRWin(\'#form_tools_checkmodul\');});';
 	}
 	elseif($_GET['_type']=='stats'){
 		$htmleval = $MODUL->statisticModule((int)$_GET['_oid']);
@@ -80,7 +80,7 @@
 			else
 				$_tpl['onload'] .= 'JSHR(_win1,"'.$_CFG['_HREF']['JS'].'",{_type:"modulstree",_modul:"'.$_GET['_modul'].'"});';
 		}elseif($xml[1]==-1){
-			$_tpl['onload'] .= 'clearTimeout(timerid2);fShowload(1,result.html2);'.$_tpl['onload'];//$_tpl['onload'] = 'GetId("messages").innerHTML=result.html2;'.$_tpl['onload'];
+			$_tpl['onload'] .= 'clearTimeout(timerid2);fShowload(1,result.html2);'.$_tpl['onload'];//$_tpl['onload'] = '$("#messages").html(result.html2);'.$_tpl['onload'];
 			$html2="<div class='blockhead'>Внимание. Некоректно заполнены поля.</div><div class='hrb'>&#160;</div>".$html;$html='';
 		}else
 			$_tpl['onload'] .= 'JSFR("form");';
@@ -121,7 +121,7 @@
 	elseif($_REQUEST['_type']=='formfilter') {
 		$DATA['filter'] = $MODUL->filtrForm();
 		$html = '<span class="bottonimg imgdel" style="float: right;" onclick="$(this).parent().hide();">EXIT</span>'.$HTML->transformPHP($DATA,'filter');
-		$_tpl['onload'] .= 'JSFR(\'#form_filter\');';
+		$_tpl['onload'] .= '$(\'#form_filter\').bind(\'submit\',function(e){return JSFRWin(\'#form_tools_checkmodul\');});';
 	}
 	/**
 		* очистка фильтра
@@ -171,5 +171,10 @@
 	else
 		$_tpl['onload']='fLog(\'<div style="color:red;">'.date('H:i:s').' : Параметры заданны неверно!</div>\',1);';
 
+
+	include($_CFG['_PATH']['core'].'/includesrc.php');
+	fileInclude($_CFG['fileIncludeOption']);
+	arraySrcToFunc();
+	
 
 ?>

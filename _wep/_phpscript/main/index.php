@@ -33,35 +33,42 @@
 
 //if($_SESSION['_showallinfo']) print_r('main = '.(getmicrotime()-$main2time).'<hr/>'); // для отладки
 
-// SCRIPT*****************
-		$tempscript =$_tpl['script'];$_tpl['script']='';
-		if(is_array($PGLIST->pageinfo['script'])){
-			//sort($PGLIST->pageinfo['script']);
-			//reset($PGLIST->pageinfo['script']);
-			foreach($PGLIST->pageinfo['script'] as $r)
-				if($r){
-					$_tpl['script'] .='<script type="text/javascript" src="'.$_CFG['_HREF']['_script'].$r.'.js"></script>'."\n";
-					if($r=='jquery.fancybox') $_tpl['onload'] .="$('.imagebox a').fancybox();";
-					//if($r=='jquery.form') $_tpl['onload'] .="JSFR('form');";//for ajax form
-				}
-		}
-		if($tempscript and is_array($tempscript) and count($tempscript))
-			$_tpl['script'] .= implode("\n",$tempscript);
-/*
-		if(!isset($_SESSION['showIEwarning'])) $_SESSION['showIEwarning']=0;
-		if($HTML->_fTestIE('MSIE 6') and $_SESSION['showIEwarning']<3) {
-			$_SESSION['showIEwarning']++;
-			//$_tpl['script'] .='<!--[if IE 6]><script type="text/javascript"></script><![endif]-->';
-		}
-*/
-// SCRIPT*****************
 //STYLE*******************
-		//$_tpl['styles'] .='<link rel="stylesheet" href="/_design/_style/style.css" type="text/css"/>';
-		$tempscript =$_tpl['styles'];$_tpl['styles']='';
-		if(is_array($PGLIST->pageinfo['styles']))
-			foreach($PGLIST->pageinfo['styles'] as $r)
-				if($r!='')// and $r!='style'
-					$_tpl['styles'] .='<link rel="stylesheet" href="'.$_CFG['_HREF']['_style'].$r.'.css" type="text/css"/>'."\n";
-		if($tempscript and is_array($tempscript) and count($tempscript))
-			$_tpl['styles'] .= implode("\n",$tempscript);
+	$_tpl['styles'] = $PGLIST->pageinfo['styles'] + $_tpl['styles'];
+	if($_tpl['styles'] and is_array($_tpl['styles']) and count($_tpl['styles'])) {
+		$temp = '';
+		foreach($_tpl['styles'] as $kk=>$rr) {
+			if($rr==1 and $kk)
+				$temp .= '<link type="text/css" href="'.$_CFG['_HREF']['_style'].$kk.'.css" rel="stylesheet"/>'."\n";
+			elseif($rr)
+				$temp .= $rr."\n";
+		}
+		$_tpl['styles'] = $temp;
+	}
+
+// SCRIPT*****************
+
+	$_tpl['script'] = $PGLIST->pageinfo['script'] + $_tpl['script'];
+	if($_tpl['script'] and is_array($_tpl['script']) and count($_tpl['script'])) {
+		$temp = '';
+		foreach($_tpl['script'] as $kk=>$rr) {
+			if($kk=='jquery.fancybox')
+				$_tpl['onload'] .= "$('.imagebox a').fancybox();";
+			//if($kk=='jquery.form')
+			//	$_tpl['onload'] .="JSFR('form');";//for ajax form
+			if($rr==1 and $kk)
+				$temp .= '<script type="text/javascript" src="'.$_CFG['_HREF']['_script'].$kk.'.js"></script>'."\n";
+			elseif($rr)
+				$temp .= $rr."\n";
+		}
+		$_tpl['script'] = $temp;
+	}
+
+/*
+	if(!isset($_SESSION['showIEwarning'])) $_SESSION['showIEwarning']=0;
+	if($HTML->_fTestIE('MSIE 6') and $_SESSION['showIEwarning']<3) {
+		$_SESSION['showIEwarning']++;
+		//$_tpl['script'] .='<!--[if IE 6]><script type="text/javascript"></script><![endif]-->';
+	}
+*/
 ?>

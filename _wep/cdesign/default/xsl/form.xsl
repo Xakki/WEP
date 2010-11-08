@@ -175,7 +175,7 @@
 								</xsl:apply-templates>
 							</select>
 					  </xsl:when>
-					  <xsl:when test="@multiple='1'">
+					  <xsl:when test="@multiple>0">
 							<select multiple="multiple" size="10" name="{@name}[]" class="small" onchange="{@onchange}">
 								<xsl:if test="@readonly='1'"><xsl:attribute name="readonly">readonly</xsl:attribute></xsl:if>
 								<xsl:apply-templates select="value/item"/>

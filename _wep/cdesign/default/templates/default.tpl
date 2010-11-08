@@ -9,11 +9,6 @@
 		<meta name="description" content="CMS"/>
 		<link rel="SHORTCUT ICON" href="{$_tpl['design']}img/favicon.ico"/>
 		<script type="text/javascript" src="_design/_script/jquery.js"></script>
-		<script type="text/javascript" src="_design/_script/script.jquery.ui/jquery.ui.core.min.js"></script>
-		<script type="text/javascript" src="_design/_script/jquery.form.js"></script>
-		<script type="text/javascript" src="_design/_script/jquery.fancybox.js"></script>
-		<link rel="stylesheet" href="_design/_style/jquery.fancybox.css" type="text/css"/>
-		<script type="text/javascript" src="_design/_script/utils.js"></script>
 		<script type="text/javascript" src="{$_tpl['design']}script/script.js"></script>
 		{$_tpl['script']}
 		<link type="text/css" href="{$_tpl['design']}style/style.css" rel="stylesheet"/>
@@ -33,6 +28,6 @@
 		</div>
 		<div id="debug_view" style="display:none;">{$_tpl['logs']}</div>
 		
-		<div class="debug_view_img">{$_tpl['debug']}<img src="{$_tpl['design']}img/debug_view.png" onclick="fShowDebug('debug_view');" alt="DEBUG"/></div>
+		<div class="debug_view_img">{$_tpl['debug']}<img src="{$_tpl['design']}img/debug_view.png" onclick="fShowHide('debug_view');" alt="DEBUG"/></div>
 	</body>
 </html>

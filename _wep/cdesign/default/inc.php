@@ -77,7 +77,6 @@
 
 //} $tt[$j] = getmicrotime()-$tt[$j]; $summ += $tt[$j]; } print_r('Среднее время = "'.($summ/5).'" ');print_r($tt);
 
-					$_tpl['onload'] .= "$('.fancyimg').fancybox();";
 				}
 				if($MODUL->ver!=$_CFG['modulprm'][$MODUL->_cl]['ver'])
 					$_tpl['onload'] .= 'showHelp(\'.weptools.wepchecktable\',\'Версия модуля '.$MODUL->caption.'['.$MODUL->_cl.'] ('.$MODUL->ver.') отличается от версии ('.$_CFG['modulprm'][$MODUL->_cl]['ver'].') сконфигурированного для этого сайта. Обновите здесь поля таблицы.\',4000);$(\'.weptools.wepchecktable\').addClass(\'weptools_sel\');';
@@ -95,31 +94,18 @@
 <option onclick="window.location=\''.$_CFG['PATH']['wepname'].'/index.php?_showallinfo=2\'" '.($_COOKIE['_showallinfo']==2?'selected="selected"':'').'>Показать SQL запросы</option>
 <option onclick="window.location=\''.$_CFG['PATH']['wepname'].'/index.php?_showallinfo=3\'" '.($_COOKIE['_showallinfo']==3?'selected="selected"':'').'>Показать все логи</option>
 </select></span>';
-	$_tpl['styles'][$_CFG['_HREF']['_style'].'style.css'] ='<link rel="stylesheet" href="'.$_CFG['_HREF']['_style'].'style.css" type="text/css"/>';
-	$_tpl['styles'][$_CFG['_HREF']['_style'].'form.css'] ='<link rel="stylesheet" href="'.$_CFG['_HREF']['_style'].'form.css" type="text/css"/>';
 
-	$_tpl['script']['md5.js'] = '<script type="text/javascript" src="_design/_script/md5.js"></script>';
-	$_tpl['script']['jquery.ui.widget.min.js'] = '<script type="text/javascript" src="_design/_script/script.jquery.ui/jquery.ui.widget.min.js"></script>';
-	$_tpl['styles']['jquery-ui-redmond.css'] = '<link type="text/css" href="_design/_style/jquery-ui-redmond.css" rel="stylesheet"/>';
-	
-	$_tpl['script']['jquery.ui.mouse.min.js'] = '<script type="text/javascript" src="_design/_script/script.jquery.ui/jquery.ui.mouse.min.js"></script>';
-	$_tpl['script']['jquery.ui.sortable.min.js'] = '<script type="text/javascript" src="_design/_script/script.jquery.ui/jquery.ui.sortable.min.js"></script>';
-	$_tpl['script']['jquery.ui.draggable.min.js'] = '<script type="text/javascript" src="_design/_script/script.jquery.ui/jquery.ui.draggable.min.js"></script>';
+	$_tpl['styles']['style'] = 1;
 
-	$_tpl['script']['jquery.ui.multiselect.js'] = '<script type="text/javascript" src="_design/_script/script.jquery.ui/jquery.ui.multiselect.js"></script>';
-	$_tpl['styles']['jquery.ui.multiselect.js'] = '<link type="text/css" href="_design/_style/jquery-ui.multiselect.css" rel="stylesheet"/>';
+	unset($_tpl['script']['jquery']);
+	$_tpl['script']['jquery.form'] = 1;
+	$_tpl['script']['utils'] = 1;
+	$_tpl['script']['script'] = 1;
+	//$_tpl['script']['script.localisation/jquery.localisation-min'] = 1;
+	include($_CFG['_PATH']['core'].'/includesrc.php');
+	fileInclude($_CFG['fileIncludeOption']);
+	arraySrcToStr();
 
 
-	if($_CFG['globalformoption']['multiple']) {
-		$_tpl['onload'] .= '$.localise(\'ui-multiselect\', {language: \'ru\', path: \'_design/_script/script.localisation/\'});';
-		$_tpl['onload'] .= '$(\'select.multiple\').multiselect();';
-	}
-
-	$_tpl['script']['jquery.localisation-min.js'] = '<script type="text/javascript" src="_design/_script/script.localisation/jquery.localisation-min.js"></script>';
-
-	if($_tpl['styles'] and is_array($_tpl['styles']) and count($_tpl['styles']))
-			$_tpl['styles'] = implode("\n",$_tpl['styles']);
-	if($_tpl['script'] and is_array($_tpl['script']) and count($_tpl['script']))
-			$_tpl['script'] = implode("\n",$_tpl['script']);
-
+//$_CFG['fileIncludeOption']['fancybox']
 ?>
