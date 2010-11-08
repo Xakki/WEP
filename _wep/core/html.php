@@ -255,7 +255,7 @@
 		$_gerr=6;
 		$htmlerr = '';
 		$htmlinfo = '';
-		headerssent();
+		//headerssent();
 
 		$temp = fDisplLogs(); // сообщения ядра
 
