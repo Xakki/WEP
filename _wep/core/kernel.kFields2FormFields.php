@@ -152,9 +152,9 @@
 
 					if($ckedit['CKFinder']) {
 						$fckscript .='function ckf_'.$k.'() { CKFinder.SetupCKEditor(editor_'.$k.',\'/'.$this->_CFG['PATH']['WSWG'].'ckfinder/\');} if(!CKFinder) $.include(\''.$this->_CFG['_HREF']['WSWG'].'ckfinder/ckfinder.js\',ckf_'.$k.'()); else ckf_'.$k.'();';
-						$_tpl['script']['ckfinder.js'] .='<script src="'.$this->_CFG['_HREF']['WSWG'].'ckfinder/ckfinder.js" type="text/javascript"></script>';
+						$_tpl['script']['ckeditor.js'] .='<script src="'.$this->_CFG['_HREF']['WSWG'].'ckfinder/ckfinder.js" type="text/javascript"></script>';
 					}
-					$_tpl['script']['ckfinder.js'] = '<script type="text/javascript">'.$fckscript.'}</script>';
+					$_tpl['script']['ckeditor.js'] .= '<script type="text/javascript">'.$fckscript.'}</script>';
 					$_tpl['onload'] .= ' if(!window.CKEDITOR) $.include(\''.$this->_CFG['_HREF']['WSWG'].'ckeditor/ckeditor.js\',cke_'.$k.'); else cke_'.$k.'();';
 				}
 				elseif($r['type']=='date' and !$r['readonly']) {

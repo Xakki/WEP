@@ -17,6 +17,7 @@ class content_class extends kernel_class {
 
 		# fields
 		$this->fields['marker'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'min' => '1');
+		$this->fields['href'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
 		$this->fields['global'] = array('type' => 'bool', 'attr' => 'NOT NULL DEFAULT 0');
 		$this->fields['pagetype'] = array('type' => 'varchar', 'width'=>'15', 'attr' => 'NOT NULL DEFAULT ""');
 		$this->fields['funcparam'] = array('type' => 'varchar', 'width'=>'255', 'attr' => 'NOT NULL DEFAULT ""');
@@ -29,6 +30,7 @@ class content_class extends kernel_class {
 
 		# fields
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Подзаголовок');
+		$this->fields_form['href'] = array('type' => 'text', 'caption' => 'Redirect', 'mask' =>array());
 		$this->fields_form['marker'] = array('type' => 'list', 'listname'=>'marker', 'caption' => 'Маркер','mask'=>array());
 		$this->fields_form['global'] = array('type' => 'checkbox', 'caption' => 'Глобально?', 'mask' =>array());
 		$this->fields_form['pagetype'] = array('type' => 'list', 'listname'=>'pagetype', 'caption' => 'INC', 'mask' =>array());

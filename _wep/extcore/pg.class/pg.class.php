@@ -55,7 +55,7 @@ class pg_class extends kernel_class {
 		$this->fields_form['id'] = array('type' => 'text', 'caption' => 'ID','mask'=>array('sort'=>1,'min'=>1));
 		$this->fields_form['parent_id'] = array('type' => 'list', 'listname'=>'parentlist', 'caption' => 'Родительская страница','mask'=>array('fview'=>1));
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Name','mask'=>array('sort'=>1,'min'=>1));
-		$this->fields_form['href'] = array('type' => 'text', 'caption' => 'HREF', 'mask' =>array('onetd'=>'Содержимое'));
+		$this->fields_form['href'] = array('type' => 'text', 'caption' => 'Redirect', 'mask' =>array('onetd'=>'Содержимое'));
 		$this->fields_form['design'] = array('type' => 'list', 'listname'=>'mdesign', 'caption' => 'Дизайн', 'mask' =>array('onetd'=>'Дизайн'));
 		$this->fields_form['template'] = array('type' => 'list', 'listname'=>'templates', 'caption' => 'Шаблон', 'mask' =>array('onetd'=>'none'));
 		$this->fields_form['styles'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'styles', 'caption' => 'CSS', 'mask' =>array('onetd'=>'none'));
@@ -347,6 +347,8 @@ class pg_class extends kernel_class {
 					if(!$this->pagePrmCheck($rowPG['ugroup']))
 						continue;
 				}
+				if ($rowPG['href']){
+					header('Location: '.$rowPG['href']);die();}
 				if($rowPG['script']) {
 					$rowPG['script'] = explode('|',trim($rowPG['script'],'|'));
 					if(count($rowPG['script'])) {
@@ -388,7 +390,7 @@ class pg_class extends kernel_class {
 					$flagPG = 1;
 				}
 				if($_SESSION['_showallinfo'])
-						$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' end-->';
+					$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' end-->';
 			}
 
 		return $flagPG;
