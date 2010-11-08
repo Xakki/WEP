@@ -881,7 +881,7 @@ _message($msg,$type=0)
 		
 		$this->kFields2FormFields($this->fields_form);
  
-		if(!$this->id or $this->_prmModulEdit($this->data[$this->id],$param))
+		if(!$this->id or (isset($this->data[$this->id]) and $this->_prmModulEdit($this->data[$this->id],$param)))
 			$this->form['sbmt'] = array(
 				'type'=>'submit',
 				'value'=>$this->getMess('_submit'));
@@ -956,26 +956,29 @@ _message($msg,$type=0)
 			$this->_getCashedList($listname, $value);
 			//$this->_CFG['enum'][$templistname]
 		}
-		if(!$this->_CFG['enum'][$templistname])
+		if(!$this->_CFG['enum'][$templistname] and $value)
 			return false;
 
 		if(!isset($this->_CFG['enum_check'][$templistname])) {
-			$this->_CFG['enum_check'][$templistname] = array();
+			$temp2 = array();
 			$temp = current($this->_CFG['enum'][$templistname]);
 			if(is_array($temp) and !isset($temp['#name#'])) {
 				foreach($this->_CFG['enum'][$templistname] as $krow => $row) {
-					if(isset($this->_CFG['enum_check'][$templistname][$krow])) {
-						if(is_array($this->_CFG['enum_check'][$templistname][$krow]))
-							$adname = $this->_CFG['enum_check'][$templistname][$krow]['#name#'];
+					if(isset($temp2[$krow])) {
+						if(is_array($temp2[$krow]))
+							$adname = $temp2[$krow]['#name#'];
 						else
-							$adname = $this->_CFG['enum_check'][$templistname][$krow];
+							$adname = $temp2[$krow];
 						foreach($row as $kk=>$rr)
 							$row[$kk] = $adname.' - '.$rr;
-						unset($this->_CFG['enum_check'][$templistname][$krow]);
+						if(is_array($temp2[$krow]) and isset($temp2[$krow]['#checked#']))
+							unset($temp2[$krow]);
+
 					}
-					$this->_CFG['enum_check'][$templistname] = $this->_CFG['enum_check'][$templistname]+$row;
+					$temp2 += $row;
 					
 				}
+				$this->_CFG['enum_check'][$templistname] = $temp2;
 			}else
 				$this->_CFG['enum_check'][$templistname] = &$this->_CFG['enum'][$templistname];
 		}

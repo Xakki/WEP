@@ -38,12 +38,14 @@
 		if (isset($_this->att_data) && count($_this->att_data)) {
 			if (_add_attaches($_this)) {
 				$_this->_delete();
+				$_this->id = NULL;
 				return 1;
 			}
 		}
 		if (isset($_this->mmo_data) && count($_this->mmo_data)) {
 			if (_add_memos($_this)) {
 				$_this->_delete();
+				$_this->id = NULL;
 				return 1;
 			}
 		}
