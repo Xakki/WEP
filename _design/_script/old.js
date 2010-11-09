@@ -1,6 +1,6 @@
 
 function showi(obj,id,show,hide) {
-//ÙÛÌÍˆËˇ ‰Îˇ ÓÚÓ·‡ÊÂÌËˇ ÂÎÂÏÂÌÚ‡ id Ë ÒÏÂÌ˚ ËÒÛÌÍ‡ Ì‡ Ó·˙ÂÍÚÂ obj
+//—Ñ—É–Ω–∫—Ü–∏—è –¥–ª—è –æ—Ç–æ–±—Ä–∞–∂–µ–Ω–∏—è –µ–ª–µ–º–µ–Ω—Ç–∞ id –∏ —Å–º–µ–Ω—ã —Ä–∏—Å—É–Ω–∫–∞ –Ω–∞ –æ–±—ä–µ–∫—Ç–µ obj
 	if(GetId(id).style.display=='block') {
 		if(obj.src) 
 			obj.src = hide;
@@ -32,7 +32,7 @@ function GetId(id)
 	return document.getElementById(id);
 }
 	
-function dump(arr, level) {/*‡Ì‡ÎÓ„ Ù ‚ œ’œ print_r*/
+function dump(arr, level) {/*–∞–Ω–∞–ª–æ–≥ —Ñ –≤ –ü–•–ü print_r*/
     var dumped_text = "";
     if(!level) level = 0;
 
@@ -43,11 +43,11 @@ function dump(arr, level) {/*‡Ì‡ÎÓ„ Ù ‚ œ’œ print_r*/
             var value = arr[item];
  
             if(typeof(value) == 'object') {
-                dumped_text += level_padding + "í" + item + "í Ö\n";
+                dumped_text += level_padding + "‚Äô" + item + "‚Äô ‚Ä¶\n";
                 if(level>0) dumped_text += dump(value,level-1);
             }
             else {
-                dumped_text += level_padding + "í" + item + "í => \"" + value + "\"\n";
+                dumped_text += level_padding + "‚Äô" + item + "‚Äô => \"" + value + "\"\n";
             }
         }
     }
@@ -86,12 +86,12 @@ function WindowEvent(evt)
 }
 
 
-/*‡Ì‡ÎÓ„ Ù ‚ œ’œ */
+/*–∞–Ω–∞–ª–æ–≥ —Ñ –≤ –ü–•–ü */
 function is_array(a) {
   return a && typeof a == 'object' && a.constructor == Array;
 }
 
-function in_array(what, where) {/*‡Ì‡ÎÓ„ Ù ‚ œ’œ*/
+function in_array(what, where) {/*–∞–Ω–∞–ª–æ–≥ —Ñ –≤ –ü–•–ü*/
 	var a=false;
 	for(var i=0; i<where.length; i++) {
 		if(what == where[i]) {

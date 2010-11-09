@@ -54,10 +54,10 @@ function keys_return(ev) {
 		{keys=window.event.keyCode;}
 	if(keys==8 || keys==46 || keys==13 || keys==39 || keys==37) keys=0;
 	return keys;
-	/*39 37 стрелки
-	46 делете
-	8 удал
-	13 интер*/
+	/*39 37 СЃС‚СЂРµР»РєРё
+	46 РґРµР»РµС‚Рµ
+	8 СѓРґР°Р»
+	13 РёРЅС‚РµСЂ*/
 }
 
 
@@ -68,11 +68,11 @@ function checkInt(ev) {
 	return true;
 }
 
-function textareaChange(obj,max){/* Утилита для подсчёта кол сиволов в форме, автоматически создаёт необходимые поля*/
+function textareaChange(obj,max){/* РЈС‚РёР»РёС‚Р° РґР»СЏ РїРѕРґСЃС‡С‘С‚Р° РєРѕР» СЃРёРІРѕР»РѕРІ РІ С„РѕСЂРјРµ, Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё СЃРѕР·РґР°С‘С‚ РЅРµРѕР±С…РѕРґРёРјС‹Рµ РїРѕР»СЏ*/
 	if(!$('#'+obj.name+'t2').size()){
 		val = document.createElement('span');
 		val.className = "dscr";
-		val.innerHTML = 'Cимволов:<input type="text" id="'+obj.name+'t2" maxlength="4" readonly="false" class="textcount" style="text-align:right;"/>/<input type="text" id="'+obj.name+'t1" maxlength="4" readonly="false" class="textcount" value="'+max+'"/>';
+		val.innerHTML = 'CРёРјРІРѕР»РѕРІ:<input type="text" id="'+obj.name+'t2" maxlength="4" readonly="false" class="textcount" style="text-align:right;"/>/<input type="text" id="'+obj.name+'t1" maxlength="4" readonly="false" class="textcount" value="'+max+'"/>';
 		$(val).appendTo(obj.parentNode);
 	}
 	if(obj.value.length>max)
@@ -201,7 +201,7 @@ function getAjaxListData(value,view) {
 						$('#ajaxlist_'+view).prev('input').attr('class','accept');
 					}
 				}else
-					txt = 'не найдено';
+					txt = 'РЅРµ РЅР°Р№РґРµРЅРѕ';
 
 				$('#ajaxlist_'+view).html(txt).show();
 				$('#ajaxlist_'+view).attr('val',value);
