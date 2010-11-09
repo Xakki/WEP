@@ -65,7 +65,7 @@
 			$this->_design = $_design;
 			$this->_cDesignPath = $_CFG['_PATH']['cdesign'].$this->_design;
 			$this->_templates='default';
-			$this->_PATHd = $_SERVER['_DR_'].'/'.$_PATHd.$_design.'/';
+			$this->_PATHd = $_SERVER['_DR_'].$_PATHd.$_design.'/';
 			$this->flag = $flag;
 			$_tpl['design'] = $_PATHd.$_design.'/';
 			$_tpl['title'] = $_tpl['time']='';
