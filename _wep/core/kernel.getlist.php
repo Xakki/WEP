@@ -1,0 +1,190 @@
+<?
+	function _getlist($_this,&$listname, $value=0) /*LIST SELECTOR*/
+	{
+		/*Выдает 1 уровневый массив, либо 2х уровневый для структуры типа дерева*/
+		/*Конечный уровень может быть с елемнтами массива #name# итп, этот уровень в счет не входит*/
+		$data = array();
+		$templistname = $listname;
+		if(is_array($listname))
+			$templistname = implode(',',$listname);
+
+
+		if($templistname == 'child.class') {
+			$dir = array();
+			if(file_exists($_this->_CFG['_PATH']['ext'].$_this->_cl.'.class'))
+				$dir[''] = $_this->_CFG['_PATH']['ext'].$_this->_cl.'.class';
+			if(file_exists($_this->_CFG['_PATH']['extcore'].$_this->_cl.'.class'))
+				$dir['Ядро - '] = $_this->_CFG['_PATH']['extcore'].$_this->_cl.'.class';
+			$data = array(''=>' --- ');
+			foreach($dir as $k=>$r) {
+				$odir = dir($r);
+				while (false !== ($entry = $odir->read())) {
+					if (substr($entry,-11)=='.childs.php') {
+						$entry = substr($entry,0,-11);
+						$data[$entry] = $k.$entry;
+					}
+				}
+				$odir->close();
+			}
+		}
+		elseif ($listname == "style") {
+
+			$dir = dir($_this->_CFG['_PATH']['design'].$_this->_CFG['wep']['design'].'/style');
+			while (false !== ($entry = $dir->read())) {
+				if (strstr($entry,'.css')) {
+					$entry = substr($entry, 0, strpos($entry, '.css'));
+					$data['../'.$_this->_CFG['wep']['design'].'/style/'.$entry] = $_this->_CFG['wep']['design'].' - '.$entry;
+				}
+			}
+			$dir->close();
+
+			$dir = dir($_this->_CFG['_PATH']['_style']);
+			while (false !== ($entry = $dir->read())) {
+				if (strstr($entry,'.css')) {
+					$entry = substr($entry, 0, strpos($entry, '.css'));
+					$data[$entry] = $entry;
+				}
+			}
+			$dir->close();
+
+			return $data;
+		}
+		elseif ($listname == "script") {
+
+			$dir = dir($_this->_CFG['_PATH']['design'].$_this->_CFG['wep']['design'].'/script');
+			while (false !== ($entry = $dir->read())) {
+				if (strstr($entry,'.js')) {
+					$entry = substr($entry, 0, strpos($entry, '.js'));
+					$data['']['../'.$_this->_CFG['wep']['design'].'/script/'.$entry] = $_this->_CFG['wep']['design'].' - '.$entry;
+				}
+			}
+			$dir->close();
+			$afterSubDir = array();
+			$dir = dir($_this->_CFG['_PATH']['_script']);
+			while (false !== ($entry = $dir->read())) {
+				if (strstr($entry,'.js')) {
+					$entry = substr($entry, 0, strpos($entry, '.js'));
+					$data[''][$entry] = $entry;
+				}elseif(substr($entry,0,7)=='script.'){
+					$afterSubDir[$entry] = array('#name#'=> $entry, '#checked#'=>0);
+					$dir2 = dir($_this->_CFG['_PATH']['_script'].'/'.$entry);
+					while (false !== ($entry2 = $dir2->read())) {
+						if (strstr($entry2,'.js')) {
+							$entry2 = substr($entry2, 0, strpos($entry2, '.js'));
+							$data[$entry][$entry.'/'.$entry2] = $entry2;
+						}
+					}
+					$dir2->close();
+				}
+			}
+			$dir->close();
+			if(count($afterSubDir))
+				$data[''] = $data['']+$afterSubDir;
+			return $data;
+		}
+		elseif($templistname == 'list') {
+			$data = $_this->_dump();
+		}
+		elseif ($templistname == 'ownerlist') {
+			$data = $_this->owner->_dump();
+		}
+		elseif ($templistname == 'select') {
+			$_this->_select();
+			$data = &$_this->data;
+		}
+		elseif ($templistname == 'parentlist' and $_this->mf_istree) {
+
+			$data = array();
+			if($_this->mf_use_charid)
+				$data[''][''] = $_this->getMess('_listroot');
+			else
+				$data[0][0] = $_this->getMess('_listroot');
+
+			$q = 'SELECT `id`, `name`, `parent_id` FROM `'.$_this->tablename.'`';
+			if($_this->id) $q .=' WHERE `id`!="'.$_this->id.'"';
+			$result = $_this->SQL->execSQL($q);
+			if($result->err) return $_this->_message($result->err);
+			while (list($id, $name,$pid) = $result->fetch_array(MYSQL_NUM)) {
+				$data[$pid][$id] = $name;
+			}
+		}
+		elseif(is_array($listname) and (isset($listname['class']) or isset($listname['tablename'])))  {
+			
+			if (isset($listname['include']))
+				require_once($_this->_CFG['_PATH']['ext'].$listname['include'].'.class.php');
+
+
+			if(isset($listname['class'])) {
+				$listname['tablename'] = getTableNameOfClass($listname['class']);
+			}
+
+			if(!$listname['tx.id']) 
+				$listname['tx.id'] = 'tx.id';
+			if(!$listname['tx.name']) 
+				$listname['tx.name'] = 'tx.name';
+
+			$clause['field'] = 'SELECT '.$listname['tx.id'].' as id,'.$listname['tx.name'].' as name';
+			if($listname['is_tree'])
+				$clause['field'] .= ', tx.parent_id as parent_id';
+			if($listname['is_checked'])
+				$clause['field'] .= ', tx.checked as checked';
+			
+			$clause['where'] = '';
+			if(isset($listname['where']) and is_array($listname['where']))
+				$listname['where'] = implode(' and ',$listname['where']);
+			/*Выбранные элементы*/ /*помоему это лишнее - надо проверить*/
+			if($value and is_array($value))
+				$clause['where'] = $listname['tx.id'].' IN ("'.implode('", "',$value).'")';
+			elseif($value)
+				$clause['where'] = $listname['tx.id'].'="'.$value.'"';
+
+			if($listname['where'])
+				$clause['where'] .= ($clause['where']!=''?' AND ':'').$listname['where'];
+			if($clause['where'])
+				$clause['where'] = ' WHERE '.$clause['where'];
+
+			if($listname['leftjoin'] or $listname['join'])
+				$clause['from'] = ' FROM `'.$_this->tablename.'` t1 '.($listname['leftjoin']?'LEFT':'').' JOIN `'.$listname['tablename'].'` tx ON '.$listname['leftjoin'];
+			else 
+				$clause['from'] = ' FROM `'.$listname['tablename'].'` tx ';
+			if ($listname['ordfield'])
+				$clause['where'] .= ' ORDER BY '.$listname['ordfield'];
+			
+			$result = $_this->SQL->execSQL($clause['field'].$clause['from'].$clause['where']);
+				if(!$result->err) {
+					if($value) {
+						if ($row = $result->fetch_array())
+							$data[$row['id']] = $row['name'];
+					}
+					elseif($listname['is_tree']) {
+						if($MODUL->mf_use_charid)//is_int($row['parent_id'])
+							$data[''][''] = $_this->getMess('_listroot');
+						else 
+							$data[0][0] = $_this->getMess('_listroot');
+						while ($row = $result->fetch_array()){
+							$data[$row['parent_id']][$row['id']] = array('#name#'=>$row['name'], '#checked#'=>$row['checked']);
+						}
+					}
+					else{
+						if($MODUL->mf_use_charid)//is_int($row['id'])
+							$data[''] = ' --- ';
+						else 
+							$data[0] = ' --- ';
+						while ($row = $result->fetch_array())
+								$data[$row['id']] = $row['name'];
+					}
+				}
+				else 
+					return $_this->_message($result->err);
+		}
+		elseif(!is_array($listname)) {
+			return $_this->_errorMess('List data `'.$listname.'` not found');
+		}
+		else
+			return $_this->_errorMess('List '.current($listname).' not found');
+
+		return $data;
+	}
+
+
+?>

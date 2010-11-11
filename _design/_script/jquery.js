@@ -165,6 +165,8 @@ c.css(a,"position")==="static";)a=a.offsetParent;return a})}});c.each(["Left","T
 c.fn["inner"+b]=function(){return this[0]?parseFloat(c.css(this[0],d,"padding")):null};c.fn["outer"+b]=function(e){return this[0]?parseFloat(c.css(this[0],d,e?"margin":"border")):null};c.fn[d]=function(e){var f=this[0];if(!f)return e==null?null:this;if(c.isFunction(e))return this.each(function(h){var k=c(this);k[d](e.call(this,h,k[d]()))});return c.isWindow(f)?f.document.compatMode==="CSS1Compat"&&f.document.documentElement["client"+b]||f.document.body["client"+b]:f.nodeType===9?Math.max(f.documentElement["client"+
 b],f.body["scroll"+b],f.documentElement["scroll"+b],f.body["offset"+b],f.documentElement["offset"+b]):e===A?parseFloat(c.css(f,d)):this.css(d,typeof e==="string"?e:e+"px")}})})(window);
 
+
+/*Проверять загружен ли или нет*/
 /**
  * $.include - script inclusion jQuery plugin
  * Based on idea from http://www.gnucitizen.org/projects/jquery-include/
@@ -208,7 +210,7 @@ jQuery.extend({
 			setTimeout(function(){
 				var valid = true;
 				$.each(dependency, function(k, v){
-					if (! v() ) {
+					if (!v ) {//if (!v() ) {
 						valid = false;
 						return false;
 					}
@@ -253,7 +255,7 @@ jQuery.extend({
 			setTimeout(function(){
 				var valid = true;
 				$.each(dependency, function(k, v){
-					if (! v() ) {
+					if (!v ) {//if (!v() ) {
 						valid = false;
 						return false;
 					}

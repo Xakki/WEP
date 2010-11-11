@@ -46,9 +46,11 @@
 			$temp = '';
 			foreach($_tpl['styles'] as $kk=>$rr) {
 				if($rr==1 and $kk)
-					$temp .= '<link type="text/css" href="'.$_CFG['_HREF']['_style'].$kk.'.css" rel="stylesheet"/>'."\n";
-				elseif($rr)
-					$temp .= $rr."\n";
+					$temp .= '<link type="text/css" href="'.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_style'].$kk.'.css" rel="stylesheet"/>'."\n";
+				elseif(is_array($rr))
+					$temp .= '<link type="text/css" href="'.implode('" rel="stylesheet"/>'."\n".'<link type="text/css" href="',$rr).'" rel="stylesheet"/>'."\n";
+				else
+					$temp .= '<style type="text/css">'.$rr.'</style>'."\n";
 			}
 			$_tpl['styles'] = $temp;
 		}
@@ -56,10 +58,15 @@
 		if($_tpl['script'] and is_array($_tpl['script']) and count($_tpl['script'])) {
 			$temp = '';
 			foreach($_tpl['script'] as $kk=>$rr) {
-				if($rr==1 and $kk)
-					$temp .= '<script type="text/javascript" src="'.$_CFG['_HREF']['_script'].$kk.'.js"></script>'."\n";
-				elseif($rr)
-					$temp .= $rr."\n";
+				if($rr==1 and $kk) {
+					$temp .= '<script type="text/javascript" src="'.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].$kk.'.js"></script>'."\n";
+					if($kk=='jquery.fancybox')
+						$_tpl['onload'] .= "$('.imagebox a').fancybox();";
+				}
+				elseif(is_array($rr))
+					$temp .= '<script type="text/javascript" src="'.implode('"></script>'."\n".'<script type="text/javascript src="',$rr).'"></script>'."\n";
+				else
+					$temp .= '<script type="text/javascript">'.$rr.'</script>'."\n";
 			}
 			$_tpl['script'] = $temp;
 		}
@@ -71,20 +78,33 @@
 		if($_tpl['styles'] and is_array($_tpl['styles']) and count($_tpl['styles'])) {
 			foreach($_tpl['styles'] as $kk=>$rr) {
 				if($rr==1 and $kk)
-					$temp .= '$.includeCSS(\''.$_CFG['_HREF']['_style'].$kk.'.css\');';
-				elseif($rr)
-					$temp .= 'alert($kk);';
+					$temp .= '$.includeCSS(\''.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_style'].$kk.'.css\');';
+				elseif(is_array($rr))
+					$temp .= '$.includeCSS(\''.implode('\'); $.includeCSS(\'',$rr).'\'); ';
+				else
+					$temp .= 'alert(\'CSS not find '.$kk.'\');';
 			}
 		}
-		$temp .= '';
+		$temp .= 'var chekcnt=0;';
+		$temp2 = '';
+		$tcnt = 0;
 		if($_tpl['script'] and is_array($_tpl['script']) and count($_tpl['script'])) {
 			foreach($_tpl['script'] as $kk=>$rr) {
-				if($rr==1 and $kk)
-					$temp .= '$.include(\''.$_CFG['_HREF']['_script'].$kk.'.js\');';
-				elseif($rr)
-					$temp .= 'alert($kk);';
+				if($rr==1 and $kk) {
+					$temp .= '$.include(\''.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].$kk.'.js\',chekcnt++);';
+					$tcnt++;
+				}
+				elseif(is_array($rr)) {
+					$temp .= '$.include(\''.implode('\',chekcnt++); $.include(\'',$rr).'\',chekcnt++); ';//
+					$tcnt++;
+				}
+				else
+					$temp2 .= $rr;
 			}
 		}
-		$_tpl['onload'] = $temp.$_tpl['onload'].'fShowload(0);';
+		$temp2 .= $_tpl['onload'];
+		$_tpl['onload'] = $temp;
+		$_tpl['onload'] .= 'function fchekcnt() {if(chekcnt=='.$tcnt.') {'.$temp2.'fShowload(0);} else setTimeout(fchekcnt,200);} setTimeout(fchekcnt,200);';
+		//$_tpl['onload'] .= $temp2;
 	}
 ?>

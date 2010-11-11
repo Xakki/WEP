@@ -58,7 +58,7 @@ class pg_class extends kernel_class {
 		$this->fields_form['href'] = array('type' => 'text', 'caption' => 'Redirect', 'mask' =>array('onetd'=>'Содержимое'));
 		$this->fields_form['design'] = array('type' => 'list', 'listname'=>'mdesign', 'caption' => 'Дизайн', 'mask' =>array('onetd'=>'Дизайн'));
 		$this->fields_form['template'] = array('type' => 'list', 'listname'=>'templates', 'caption' => 'Шаблон', 'mask' =>array('onetd'=>'none'));
-		$this->fields_form['styles'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'styles', 'caption' => 'CSS', 'mask' =>array('onetd'=>'none'));
+		$this->fields_form['styles'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'style', 'caption' => 'CSS', 'mask' =>array('onetd'=>'none'));
 		$this->fields_form['script'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'script', 'caption' => 'SCRIPT', 'mask' =>array('onetd'=>'close'));
 		$this->fields_form['keywords'] = array('type' => 'text', 'caption' => 'META-keywords','mask'=>array('fview'=>1));
 		$this->fields_form['description'] = array('type' => 'text', 'caption' => 'META-description','mask'=>array('fview'=>1));
@@ -97,61 +97,6 @@ class pg_class extends kernel_class {
 				while ($row = $result->fetch_array())
 					$data[$row['id']] = $row['name'];
 			}
-			return $data;
-		}
-		elseif ($listname == "styles") {
-
-			$dir = dir($this->_CFG['_PATH']['design'].$this->_CFG['wep']['design'].'/style');
-			while (false !== ($entry = $dir->read())) {
-				if (strstr($entry,'.css')) {
-					$entry = substr($entry, 0, strpos($entry, '.css'));
-					$data['../'.$this->_CFG['wep']['design'].'/style/'.$entry] = $this->_CFG['wep']['design'].' - '.$entry;
-				}
-			}
-			$dir->close();
-
-			$dir = dir($this->_CFG['_PATH']['_style']);
-			while (false !== ($entry = $dir->read())) {
-				if (strstr($entry,'.css')) {
-					$entry = substr($entry, 0, strpos($entry, '.css'));
-					$data[$entry] = $entry;
-				}
-			}
-			$dir->close();
-
-			return $data;
-		}
-		elseif ($listname == "script") {
-
-			$dir = dir($this->_CFG['_PATH']['design'].$this->_CFG['wep']['design'].'/script');
-			while (false !== ($entry = $dir->read())) {
-				if (strstr($entry,'.js')) {
-					$entry = substr($entry, 0, strpos($entry, '.js'));
-					$data['']['../'.$this->_CFG['wep']['design'].'/script/'.$entry] = $this->_CFG['wep']['design'].' - '.$entry;
-				}
-			}
-			$dir->close();
-			$afterSubDir = array();
-			$dir = dir($this->_CFG['_PATH']['_script']);
-			while (false !== ($entry = $dir->read())) {
-				if (strstr($entry,'.js')) {
-					$entry = substr($entry, 0, strpos($entry, '.js'));
-					$data[''][$entry] = $entry;
-				}elseif(substr($entry,0,7)=='script.'){
-					$afterSubDir[$entry] = array('#name#'=> $entry, '#checked#'=>0);
-					$dir2 = dir($this->_CFG['_PATH']['_script'].'/'.$entry);
-					while (false !== ($entry2 = $dir2->read())) {
-						if (strstr($entry2,'.js')) {
-							$entry2 = substr($entry2, 0, strpos($entry2, '.js'));
-							$data[$entry][$entry.'/'.$entry2] = $entry2;
-						}
-					}
-					$dir2->close();
-				}
-			}
-			$dir->close();
-			if(count($afterSubDir))
-				$data[''] = $data['']+$afterSubDir;
 			return $data;
 		}
 		elseif ($listname == "templates") {

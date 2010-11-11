@@ -15,6 +15,7 @@ class ugroup_extend extends kernel_class
 		$this->config["noreggroup"] = 4;
 		$this->config["reggroup"] = 4;
 		$this->config["rememberday"] = 20;
+		$this->config["payon"] = 0;
 
 		$this->config_form["mailto"] = array("type" => "text", 'mask' =>array('min'=>1,"name"=>'email'), "caption" => "Адрес службы поддержки");
 		$this->config_form["mailrobot"] = array("type" => "text", 'mask' =>array('min'=>1,"name"=>'email'), "caption" => "Адрес Робота");
@@ -43,12 +44,14 @@ class ugroup_extend extends kernel_class
 		$this->config_form["noreggroup"] = array("type" => "list", "listname"=>"list", "caption" => "Не подтвердившие регистрацию");
 		$this->config_form["reggroup"] = array("type" => "list", "listname"=>"list", "caption" => "Регистрировать по умолчинию");
 		$this->config_form["rememberday"] = array("type" => "int", 'mask' =>array('min'=>1), "caption" => 'Дней запоминания авторизации');
+		$this->config_form["payon"] = array("type" => "checkbox", "caption" => "Включить платежную систему?");
 	}
 
 	function _set_features() {
 		if (parent::_set_features()) return 1;
 		$this->mf_actctrl = true;
 		$this->caption = "Группы";
+		$this->ver = '0.2';
 		return 0;
 	}
 
@@ -84,6 +87,16 @@ class ugroup_extend extends kernel_class
 
 		$this->create_child("users");
 	}
+	
+	function _checkmodstruct() {
+		if($this->_CFG['modulprm'][$this->_cl]['ver'] == '0.1') {
+			$result = $this->SQL->execSQL('UPDATE users SET reg_ip = INET_ATON(reg_ip)');
+			$result = $this->SQL->execSQL('alter table `users` drop column `mf_ipcreate`, drop column `mf_timeup`, drop column `mf_timecr`, change `reg_date` `mf_timecr` int(11) NOT NULL, change `reg_ip` `mf_ipcreate` bigint(20) NOT NULL, change `up_date` `mf_timeup` varchar(254) NOT NULL');
+			$result = $this->SQL->execSQL('UPDATE users SET mf_timeup = UNIX_TIMESTAMP(mf_timeup)');
+			$result = $this->SQL->execSQL('alter table `users` change `mf_timeup` `mf_timeup` int(12) NOT NULL');
+		}
+		parent::_checkmodstruct();
+	}
 
 	function _getlist($listname,$value=0) {
 		$data = array();
@@ -106,6 +119,7 @@ class ugroup_extend extends kernel_class
 		}
 		else return parent::_getlist($listname,$value);
 	}
+
 	function _UpdItemModul($param) {
 		$ret = parent::_UpdItemModul($param);
 		//if($ret[1] and $_SESSION['user'] and $_SESSION['user']['owner_id']==$this->id)
@@ -122,6 +136,9 @@ class users_extend extends kernel_class {
 		if (parent::_set_features()) return 1;
 		$this->mf_actctrl = true;
 		$this->mf_use_charid = true;
+		$this->mf_timecr = true; // создать поле хранящее время создания поля
+		$this->mf_timeup = true; // создать поле хранящее время обновления поля
+		$this->mf_ipcreate = true;//IP адрес пользователя с котрого была добавлена запись
 		$this->caption = "Пользователи";
 		return 0;
 	}
@@ -142,12 +159,8 @@ class users_extend extends kernel_class {
 		$this->fields["www"] =  array("type" => "VARCHAR", "width" => 32, "attr" => "NOT NULL");
 		//$this->fields["description"] =  array("type" => "VARCHAR", "width" => 254, "attr" => "NOT NULL");
 		// service field
-		$this->fields["reg_date"] = array("type" => "int", "attr" => "NOT NULL");
-		$this->fields["reg_ip"] = array("type" => "VARCHAR", "width" => 128,"attr" => "NOT NULL DEFAULT '127.0.0.1'");
 		$this->fields["reg_hash"] = array("type" => "VARCHAR", "width" => 128);
-		$this->fields["up_date"] = array("type" => "TIMESTAMP", "attr" => "NOT NULL");
 		$this->fields["balance"] = array("type" => "int", "width" => 11, "attr" => "NOT NULL DEFAULT 0");
-
 
 
 		// FORM FIELDS
@@ -181,17 +194,12 @@ class users_extend extends kernel_class {
 
 		//$this->fields_form['description'] =  array('type' => 'textarea', 'caption' => 'Дополнительная информация','mask'=>array('max' => 2048));
 
-		$this->fields_form['balance'] =	array(
-			'type' => 'text',
-			'readonly' => 1, 
-			'caption' => 'Счет(в коопейках)',
-			'mask'=>array('sort'=>1));
-		$this->fields_form['reg_ip'] =	array(
+		$this->fields_form['mf_ipcreate'] =	array(
 			'type' => 'text',
 			'readonly' => 1, 
 			'caption' => 'IP-пользователя',
-			'mask'=>array('evala'=>'$_SERVER["REMOTE_ADDR"]','usercheck'=>1));
-		$this->fields_form['reg_date'] =	array('type' => 'date','readonly' => 1, 'caption' => 'Дата регистрации','mask'=>array('evala'=>'time()','sort'=>1));
+			'mask'=>array('usercheck'=>1));
+		$this->fields_form['mf_timecr'] =	array('type' => 'date','readonly' => 1, 'caption' => 'Дата регистрации','mask'=>array('sort'=>1));
 		$this->fields_form['reg_hash'] = array('type' => 'hidden',  'caption' => 'Хэш','mask'=>array('eval'=>1,'fview'=>1,'usercheck'=>1));
 		/*$this->fields_form['cntdec'] = array(
 			'type' => 'list', 
@@ -199,6 +207,12 @@ class users_extend extends kernel_class {
 			'readonly'=>1,
 			'caption' => 'Объявл.',
 			'mask' =>array('usercheck'=>1,'sort'=>''));*/
+		if($this->config["payon"])
+			$this->fields_form['balance'] =	array(
+				'type' => 'text',
+				'readonly' => 1, 
+				'caption' => 'Счет(руб)',
+				'mask'=>array('sort'=>1));
 		$this->fields_form['owner_id'] = array('type' => 'list', 'listname'=>'ownerlist', 'caption' => 'Группа', 'mask' =>array('usercheck'=>1,'fview'=>1));
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Пользователь активен', 'mask' =>array('usercheck'=>1));
 
@@ -207,7 +221,7 @@ class users_extend extends kernel_class {
 			'name'=>'Главный',
 			'pass'=>md5($this->_CFG['wep']['md5'].$this->_CFG['wep']['password']), 
 			'active'=>1,
-			'reg_date'=>time(),
+			'mf_timecr'=>time(),
 			'owner_id'=>1,
 			'reg_hash'=>1);
 		//$this->cookieAuthorization();

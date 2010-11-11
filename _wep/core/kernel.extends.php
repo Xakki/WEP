@@ -81,6 +81,8 @@ _fldformer($key, $param)
 			$this->numlist=20;//максим число страниц при котором отображ все номера страниц
 		$this->mf_statistic = false; // показывать  статистику по дате добавления
 		$this->cf_childs = false; // true - включить управление подмодулями в настройках модуля
+		$this->includeJStoFORM = false; // подключать ли скрипты для формы через настройки
+		$this->includeCSStoFORM = false; // подключать ли стили для формы через настройки
 		$this->ver = '0.1';
 
 		$this->text_ext = '.txt';// расширение для memo фиаилов
@@ -90,7 +92,7 @@ _fldformer($key, $param)
 		$this->nick = $this->_cl;
 		$this->tablename = $this->_CFG['sql']['dbpref'].$this->_cl;
 		$this->caption = $this->_cl;
-		$this->version = 'unknown';
+		$this->version = 'WEP 2.0';
 		$this->_listfields = array('name');
 		$this->_unique =
 		$this->_enum =
@@ -202,8 +204,14 @@ _fldformer($key, $param)
 			$this->config['childs'] = '';
 			$this->config_form['childs'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'child.class', 'caption' => 'Подмодули');
 		}
-		$this->config['scriptInclude'] = '';
-		$this->config_form['scriptInclude'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'script', 'caption' => 'Script модуля');
+		if($this->includeJStoFORM) {
+			$this->config['scriptIncludeToForm'] = '';
+			$this->config_form['scriptIncludeToForm'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'script', 'caption' => 'Script модуля');
+		}
+		if($this->includeCSStoFORM) {
+			$this->config['cssIncludeToForm'] = '';
+			$this->config_form['cssIncludeToForm'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'style', 'caption' => 'CSS модуля');
+		}
 	}
 
 	protected function configParse() {
@@ -960,6 +968,7 @@ _message($msg,$type=0)
 			return false;
 
 		if(!isset($this->_CFG['enum_check'][$templistname])) {
+			if(!is_array($this->_CFG['enum'][$templistname])) return false;
 			$temp2 = array();
 			$temp = current($this->_CFG['enum'][$templistname]);
 			if(is_array($temp) and !isset($temp['#name#'])) {
@@ -1014,136 +1023,9 @@ _message($msg,$type=0)
 		return $this->_CFG['enum'][$templistname];
 	}
 
-	public function _getlist(&$listname, $value=0) /*LIST SELECTOR*/
-	{
-		/*Выдает 1 уровневый массив, либо 2х уровневый для структуры типа дерева*/
-		/*Конечный уровень может быть с елемнтами массива #name# итп, этот уровень в счет не входит*/
-		$data = array();
-		$templistname = $listname;
-		if(is_array($listname))
-			$templistname = implode(',',$listname);
-
-
-		if($templistname == 'child.class') {
-			$dir = array();
-			if(file_exists($this->_CFG['_PATH']['ext'].$this->_cl.'.class'))
-				$dir[''] = $this->_CFG['_PATH']['ext'].$this->_cl.'.class';
-			if(file_exists($this->_CFG['_PATH']['extcore'].$this->_cl.'.class'))
-				$dir['Ядро - '] = $this->_CFG['_PATH']['extcore'].$this->_cl.'.class';
-			$data = array(''=>' --- ');
-			foreach($dir as $k=>$r) {
-				$odir = dir($r);
-				while (false !== ($entry = $odir->read())) {
-					if (substr($entry,-11)=='.childs.php') {
-						$entry = substr($entry,0,-11);
-						$data[$entry] = $k.$entry;
-					}
-				}
-				$odir->close();
-			}
-		}
-		elseif($templistname == 'list') {
-			$data = $this->_dump();
-		}
-		elseif ($templistname == 'ownerlist') {
-			$data = $this->owner->_dump();
-		}
-		elseif ($templistname == 'select') {
-			$this->_select();
-			$data = &$this->data;
-		}
-		elseif ($templistname == 'parentlist' and $this->mf_istree) {
-
-			$data = array();
-			if($this->mf_use_charid)
-				$data[''][''] = $this->getMess('_listroot');
-			else
-				$data[0][0] = $this->getMess('_listroot');
-
-			$q = 'SELECT `id`, `name`, `parent_id` FROM `'.$this->tablename.'`';
-			if($this->id) $q .=' WHERE `id`!="'.$this->id.'"';
-			$result = $this->SQL->execSQL($q);
-			if($result->err) return $this->_message($result->err);
-			while (list($id, $name,$pid) = $result->fetch_array(MYSQL_NUM)) {
-				$data[$pid][$id] = $name;
-			}
-		}
-		elseif(is_array($listname) and (isset($listname['class']) or isset($listname['tablename'])))  {
-			
-			if (isset($listname['include']))
-				require_once($this->_CFG['_PATH']['ext'].$listname['include'].'.class.php');
-
-
-			if(isset($listname['class'])) {
-				$listname['tablename'] = getTableNameOfClass($listname['class']);
-			}
-
-			if(!$listname['tx.id']) 
-				$listname['tx.id'] = 'tx.id';
-			if(!$listname['tx.name']) 
-				$listname['tx.name'] = 'tx.name';
-
-			$clause['field'] = 'SELECT '.$listname['tx.id'].' as id,'.$listname['tx.name'].' as name';
-			if($listname['is_tree'])
-				$clause['field'] .= ', tx.parent_id as parent_id';
-			if($listname['is_checked'])
-				$clause['field'] .= ', tx.checked as checked';
-			
-			$clause['where'] = '';
-			if(isset($listname['where']) and is_array($listname['where']))
-				$listname['where'] = implode(' and ',$listname['where']);
-			/*Выбранные элементы*/ /*помоему это лишнее - надо проверить*/
-			if($value and is_array($value))
-				$clause['where'] = $listname['tx.id'].' IN ("'.implode('", "',$value).'")';
-			elseif($value)
-				$clause['where'] = $listname['tx.id'].'="'.$value.'"';
-
-			if($listname['where'])
-				$clause['where'] .= ($clause['where']!=''?' AND ':'').$listname['where'];
-			if($clause['where'])
-				$clause['where'] = ' WHERE '.$clause['where'];
-
-			if($listname['leftjoin'] or $listname['join'])
-				$clause['from'] = ' FROM `'.$this->tablename.'` t1 '.($listname['leftjoin']?'LEFT':'').' JOIN `'.$listname['tablename'].'` tx ON '.$listname['leftjoin'];
-			else 
-				$clause['from'] = ' FROM `'.$listname['tablename'].'` tx ';
-			if ($listname['ordfield'])
-				$clause['where'] .= ' ORDER BY '.$listname['ordfield'];
-			
-			$result = $this->SQL->execSQL($clause['field'].$clause['from'].$clause['where']);
-				if(!$result->err) {
-					if($value) {
-						if ($row = $result->fetch_array())
-							$data[$row['id']] = $row['name'];
-					}
-					elseif($listname['is_tree']) {
-						if($MODUL->mf_use_charid)//is_int($row['parent_id'])
-							$data[''][''] = $this->getMess('_listroot');
-						else 
-							$data[0][0] = $this->getMess('_listroot');
-						while ($row = $result->fetch_array()){
-							$data[$row['parent_id']][$row['id']] = array('#name#'=>$row['name'], '#checked#'=>$row['checked']);
-						}
-					}
-					else{
-						if($MODUL->mf_use_charid)//is_int($row['id'])
-							$data[''] = ' --- ';
-						else 
-							$data[0] = ' --- ';
-						while ($row = $result->fetch_array())
-								$data[$row['id']] = $row['name'];
-					}
-				}
-				else 
-					return $this->_message($result->err);
-		}
-		elseif(!is_array($listname)) {
-			return $this->_errorMess('List data `'.$listname.'` not found');
-		}
-		else
-			return $this->_errorMess('List '.current($listname).' not found');
-
-		return $data;
+	public function _getlist(&$listname, $value=0) {/*LIST SELECTOR*/
+		include_once($_CFG['_PATH']['core'].'kernel.getlist.php');
+		return _getlist($this,$listname,$value);
 	}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
