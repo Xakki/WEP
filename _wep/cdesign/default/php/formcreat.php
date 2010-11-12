@@ -3,7 +3,7 @@ include_once($this->_cDesignPath.'/php/path.php');
 include_once($this->_cDesignPath.'/php/form.php');
 include_once($this->_cDesignPath.'/php/messages.php');
 	function tpl_formcreat(&$data) {
-		$html = tpl_path($data['path']);// PATH
+		$html = tpl_path($data['path'],1);// PATH
 		$html .= '<div class="divform'.($data['css']?' '.$data['css']:'').'"';
 		if($data['style'])
 			$html .= ' style="'.$data['style'].'"';

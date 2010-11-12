@@ -42,7 +42,7 @@
 
 	function arraySrcToStr() {
 		global $_tpl,$_CFG;
-		if($_tpl['styles'] and is_array($_tpl['styles']) and count($_tpl['styles'])) {
+		if(isset($_tpl['styles']) and is_array($_tpl['styles'])) {
 			$temp = '';
 			foreach($_tpl['styles'] as $kk=>$rr) {
 				if($rr==1 and $kk)
@@ -55,7 +55,7 @@
 			$_tpl['styles'] = $temp;
 		}
 
-		if($_tpl['script'] and is_array($_tpl['script']) and count($_tpl['script'])) {
+		if(isset($_tpl['script']) and is_array($_tpl['script'])) {
 			$temp = '';
 			foreach($_tpl['script'] as $kk=>$rr) {
 				if($rr==1 and $kk) {

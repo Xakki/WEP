@@ -1,4 +1,6 @@
 <?
+error_reporting(-1);
+
 	$_CFG['_PATH']['wepconf'] = dirname(dirname($_SERVER['SCRIPT_FILENAME'])).'/_wepconf';
 	require_once($_CFG['_PATH']['wepconf'].'/config/config.php');
 	require_once($_CFG['_PATH']['core'].'/html.php');

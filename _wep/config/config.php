@@ -83,7 +83,7 @@ $_CFG['site'] = array( // для сайта
 	$_CFG['PATH']['wepname'] = basename($_CFG['_PATH']['wep']); // базовое имя админки
 	$_CFG['PATH']['wepconfname'] = basename($_CFG['_PATH']['wepconf']); // базовое имя пользовательских фаилов
 	$_CFG['PATH']['cdesign'] = $_CFG['PATH']['wepname'].'/cdesign/'; // дизайн админки
-	$_CFG['PATH']['WSWG'] = '_wysiwyg/';
+	if(!isset($_CFG['PATH']['WSWG'])) $_CFG['PATH']['WSWG'] = '_wysiwyg/';
 	$_CFG['PATH']['HASH_KEY'] = $_CFG['PATH']['wepconfname'].'/config/hash.key';
 
 //Настройка для Nginx

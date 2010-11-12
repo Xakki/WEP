@@ -16,7 +16,7 @@
 			if($this->_prmModulShow($this->_cl)) $this->clause .= ' AND creater_id=\''.$_SESSION['user']['id'].'\'';
 			$this->_list('id');
 			if(count($this->data)==1) {
-				if(count($_POST) and $_POST['sbmt']) {
+				if(count($_POST) and ($_POST['sbmt'] or $_POST['sbmt_save'])) {
 					if(!$this->_prmModulEdit($this->data[$this->id],$param)) {
 						$arr['mess'][] = array('name'=>'error', 'value'=>$this->getMess('denied_up'));
 						$formflag=0;
@@ -47,7 +47,7 @@
 				$formflag=0;
 				$flag=-1;
 			}
-			elseif(count($_POST) and $_POST['sbmt']) {
+			elseif(count($_POST) and ($_POST['sbmt'] or $_POST['sbmt_save'])) {
 				$this->kPreFields($_POST,$param);
 				$arr = $this->fFormCheck($_POST,$param,$this->fields_form);
 				$flag=-1;
@@ -58,14 +58,21 @@
 					} else
 						$arr['mess'][] = array('name'=>'error', 'value'=>$this->getMess('add_err'));
 				}
-			} 
+			}
 			else 
 				$mess = $this->kPreFields($arr['vars'],$param);
 			if(isset($this->fields_form['captcha']))
 				$this->setCaptcha();
 		}
-
-		if($formflag and (!isset($param['ajax']) or $flag==0)) // показывать форму , также если это АЯКС и 
+		if($flag==0)
+                    $formflag = 1;
+                elseif($_POST['sbmt'] and $flag==1)
+                    $formflag = 0;
+		elseif($_POST['sbmt_save'])
+                    $formflag = 1;
+                elseif(isset($param['ajax']))
+                    $formflag = 0;
+		if($formflag) // показывать форму
 			$formflag = $this->kFields2Form($param);
 
 		return Array(Array('messages'=>array_merge($mess,$arr['mess']), 'form'=>($formflag?$this->form:array())), $flag);

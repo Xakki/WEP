@@ -889,10 +889,14 @@ _message($msg,$type=0)
 		
 		$this->kFields2FormFields($this->fields_form);
  
-		if(!$this->id or (isset($this->data[$this->id]) and $this->_prmModulEdit($this->data[$this->id],$param)))
-			$this->form['sbmt'] = array(
+		if(!$this->id or (isset($this->data[$this->id]) and $this->_prmModulEdit($this->data[$this->id],$param))) {
+		    $this->form['sbmt'] = array(
 				'type'=>'submit',
-				'value'=>$this->getMess('_submit'));
+				'value_save'=>(isset($param['sbmtsave'])?$this->getMess('_save'):''),
+				'value_close'=>(isset($param['close'])?$this->getMess('_close'):''),
+				'value'=>$this->getMess('_saveclose')
+		    );
+		}
 
 		return true;
 	}
@@ -1417,6 +1421,7 @@ $Ajax=0 - не скриптовая
 		//$thisPage - по умол тек путь к странице
 		//$this->messages_on_page - число эл-ов на странице
 		//$this->_pn - № текущей страницы
+		//$flag  - опция для paginator, 0 - если номер страницы перед list_2.html , 1 - после ?_pn=1
 		$DATA = array('cnt'=>$countfield,'cntpage'=>ceil($countfield/$this->messages_on_page),'modul'=>$this->_cl);
 		$numlist=$this->numlist;
 		if(($this->messages_on_page*($this->_pn-1))>$countfield) {
@@ -1514,7 +1519,7 @@ $Ajax=0 - не скриптовая
 		}
 		elseif($flag && $this->_CFG['wep']['msp']=='paginator') {
 			global $_tpl;
-			$_tpl['script']['jquery.paginator'] .= 1;
+			$_tpl['script']['jquery.paginator'] = 1;
 			$_tpl['styles']['paginator'] = 1;
 			$_tpl['onload'] .='pagenum_default('.$DATA['cntpage'].','.$this->_pn.',\''.$this->_cl.'\','.($this->reversePageN?'true':'false').');';
 		}

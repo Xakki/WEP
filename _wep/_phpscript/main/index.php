@@ -37,7 +37,6 @@
 	$_tpl['script'] = $PGLIST->pageinfo['script'] + $_tpl['script'];
 	include($_CFG['_PATH']['core'].'/includesrc.php');
 	arraySrcToStr();
-
 /*
 	if(!isset($_SESSION['showIEwarning'])) $_SESSION['showIEwarning']=0;
 	if($HTML->_fTestIE('MSIE 6') and $_SESSION['showIEwarning']<3) {

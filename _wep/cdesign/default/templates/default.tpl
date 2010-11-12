@@ -26,7 +26,7 @@
 			<div class="infc">{$_tpl['contact']}</div>
 			<div id="inftime">{$_tpl['time']}</div>
 		</div>
-		<div id="debug_view" style="display:none;">{$_tpl['logs']}</div>
+		<div id="debug_view" style="">{$_tpl['logs']}</div>
 		
 		<div class="debug_view_img">{$_tpl['debug']}<img src="{$_tpl['design']}img/debug_view.png" onclick="fShowHide('debug_view');" alt="DEBUG"/></div>
 	</body>

@@ -41,14 +41,19 @@
 					else $html = 'Модуль успешно переиндексирован!';
 				}
 				elseif($_GET['_view']=='list') {
-					$param = array('fhref'=>'_view=list&amp;_modul='.$_GET['_modul'].'&amp;');
+					$param = array('fhref'=>'_view=list&amp;_modul='.$_GET['_modul'].'&amp;','sbmtsave'=>1,'close'=>1);
 
 //$tt = array();$summ = 0;for($j = 1; $j <= 5; $j++) { $tt[$j] = getmicrotime(); for($i = 1; $i <= 20; $i++) {
 							
 							list($DATA,$flag) = $MODUL->super_inc($param,$_GET['_type']);
 
 							if($_GET['_type']=="add" or $_GET['_type']=="edit") {
-								if($flag==1) {
+								if(isset($DATA['formcreat']) and isset($DATA['formcreat']['form']) and count($DATA['formcreat']['form'])) {
+									$DATA['formcreat']['path'] = $HTML->path;
+									$html = $HTML->transformPHP($DATA,'formcreat');
+									//$_tpl['onload'] .= 'var tmp = $(\'#form_'.$_GET['_modul'].'\').attr(\'action\');$(\'#form_'.$_GET['_modul'].'\').attr(\'action\',tmp.replace(\'index.php\',\'js.php\'));JSFR(\'#form_'.$_GET['_modul'].'\');';
+								}
+								elseif($flag==1){
 									end($HTML->path);prev($HTML->path);
 									$_SESSION['mess']=$DATA['formcreat']['messages'];
 									header('Location: '.$_CFG['_HREF']['BH'].str_replace("&amp;", "&", key($HTML->path)));

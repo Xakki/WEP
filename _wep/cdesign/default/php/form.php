@@ -10,10 +10,21 @@ function tpl_form(&$data) {
 			$html .= '<div id="tr_'.$k.'" style="'.$r['style'].'" class="div-tr'.($r['css']?' '.$r['css']:'').'">';
 
 		if($r['type']=='submit') {
-			$html .= '<div class="form-submit"><input type="'.$r['type'].'" name="'.$k.'" value="'.$r['value'].'"  class="sbmt" onclick="';
+			$html .= '<div class="form-submit">';
+			if($r['value_save']) {
+				$html .= '<input type="'.$r['type'].'" name="'.$k.'_save" value="'.$r['value_save'].'" class="sbmt"/>';
+			}	
+			$html .= '<input type="'.$r['type'].'" name="'.$k.'" value="'.$r['value'].'"  class="sbmt" onclick="';
 			if($r['confirm'])
 				$html .= 'if(!confirm(\''.$r['confirm'].'\')) return false;'.($r['onclick']?' else ':'');
-			$html .= $r['onclick'].'"/></div>';
+			$html .= $r['onclick'].'"/>';
+
+			if($r['value_close']) {
+				global $HTML;
+				end($HTML->path);prev($HTML->path);
+				$html .= '<input type="'.$r['type'].'" name="'.$k.'_close" value="'.$r['value_close'].'" class="sbmt" onclick="window.location.href=\''.key($HTML->path).'\';return false;"/>';
+			}
+			$html .= '</div>';
 		}
 		elseif($r['type']=='infoinput') {
 			$html .= '<div class="infoinput"><input type="hidden" name="'.$k.'" value="'.$r['value'].'"/>'.$r['caption'].'</div>';

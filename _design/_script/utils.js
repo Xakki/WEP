@@ -41,7 +41,7 @@ function fMessPos(body,obj) {
 
 /*Показ тултип*/
 function showHelp(obj,mess,time,nomiga) {
-	if(!obj || !mess || $(obj).next().attr('class')=='helpmess') return false;
+	if(!obj || !mess || !$(obj).size() || $(obj).next().attr('class')=='helpmess') return false;
 	var pos = $(obj).position();
 	pos.top = parseInt(pos.top);
 	pos.left = parseInt(pos.left);
