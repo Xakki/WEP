@@ -38,6 +38,8 @@ class board_class extends kernel_class {
 		$this->caption = 'Объявления';
 		$this->mf_statistic = array('Y'=>'count(id)','X'=>'FROM_UNIXTIME(datea,"%Y-%m")','Yname'=>'Кол','Xname'=>'Дата');//-%d
 		//$this->reversePageN = true;
+		$this->includeJStoFORM = true;
+		$this->includeCSStoFORM = true;
 		$this->locallang['default']['add'] = 'Объявление добавлено.';
 		return 0;
 	}
