@@ -37,7 +37,7 @@ include_once($this->_PATHd.'php/messages.php');
 	}
 
 	function tpl_data(&$data,$firstpath='') {
-		if(!$data or !count($data)) return '';
+		if(!$data or !count($data)or !count($data['thitem'])) return '';
 		global $_CFG;
 		$html .= '<table class="superlist"><tbody><tr><th>№</th>';
 		$tdflag = 0;
@@ -60,6 +60,7 @@ include_once($this->_PATHd.'php/messages.php');
 			if($r['onetd']=='close') $tdflag = 0;
 		}
 		$html .= '<th>&#160;</th></tr>';
+        if(count($data['item']))
 		foreach($data['item'] as $k=>$r) {
 			$html .= '<tr';
 			if($r['css']) $html .= ' class="'.$r['css'].'"';
