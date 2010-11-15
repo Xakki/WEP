@@ -148,18 +148,18 @@ class users_extend extends kernel_class {
 		parent::_create();
 		$this->_unique['email']='email';
 
-		$this->fields["id"] = array("type" => "VARCHAR", "width" => 32, "attr" => "NOT NULL");
-		$this->fields["name"] = array("type" => "VARCHAR", "width" => 32,"attr" => "NOT NULL");
-		//$this->fields["sname"] = array("type" => "VARCHAR", "width" => 32,"attr" => "NOT NULL");
-		//$this->fields["tname"] = array("type" => "VARCHAR", "width" => 32,"attr" => "NOT NULL");
-		$this->fields["pass"] = array("type" => "VARCHAR", "width" => 32, "attr" => "NOT NULL");
-		//$this->fields["address"] = array("type" => "VARCHAR", "width" => 127,"attr" => "NOT NULL");
-		$this->fields["phone"] = array("type" => "VARCHAR", "width" => 127,"attr" => "NOT NULL");
-		$this->fields["email"] =  array("type" => "VARCHAR", "width" => 32, "attr" => "NOT NULL");
-		$this->fields["www"] =  array("type" => "VARCHAR", "width" => 32, "attr" => "NOT NULL");
-		//$this->fields["description"] =  array("type" => "VARCHAR", "width" => 254, "attr" => "NOT NULL");
+		$this->fields["id"] = array("type" => "varchar", "width" => 32, "attr" => "NOT NULL");
+		$this->fields["name"] = array("type" => "varchar", "width" => 32,"attr" => "NOT NULL");
+		//$this->fields["sname"] = array("type" => "varchar", "width" => 32,"attr" => "NOT NULL");
+		//$this->fields["tname"] = array("type" => "varchar", "width" => 32,"attr" => "NOT NULL");
+		$this->fields["pass"] = array("type" => "varchar", "width" => 32, "attr" => "NOT NULL");
+		//$this->fields["address"] = array("type" => "varchar", "width" => 127,"attr" => "NOT NULL");
+		$this->fields["phone"] = array("type" => "varchar", "width" => 127,"attr" => "NOT NULL");
+		$this->fields["email"] =  array("type" => "varchar", "width" => 32, "attr" => "NOT NULL");
+		$this->fields["www"] =  array("type" => "varchar", "width" => 32, "attr" => "NOT NULL");
+		//$this->fields["description"] =  array("type" => "varchar", "width" => 254, "attr" => "NOT NULL");
 		// service field
-		$this->fields["reg_hash"] = array("type" => "VARCHAR", "width" => 128);
+		$this->fields["reg_hash"] = array("type" => "varchar", "width" => 128);
 		$this->fields["balance"] = array("type" => "int", "width" => 11, "attr" => "NOT NULL DEFAULT 0");
 
 

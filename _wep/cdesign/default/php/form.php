@@ -113,6 +113,10 @@ function tpl_form(&$data) {
 				}
 				$html .= '</div>';
 			}
+			elseif($r['type']=='datepicker' and !$r['readonly']) {
+				$r['value'] = explode(' ', $r['value']);
+				$html .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.$r['value'][0].'" /></div>';
+			}
 			elseif($r['type']=='captcha') {
 				$html .= '<div class="form-value">
 						<div class="left"><input type="text" name="'.$k.'" maxlength="5" size="10" class="secret" autocomplete="off"/></div>

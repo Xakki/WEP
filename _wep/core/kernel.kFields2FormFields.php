@@ -175,7 +175,7 @@
 					else{
 						$temp = array(date('Y'),date('m'),date('d'),date('H'));
 					}
-					
+				//	print_r($r['value']);
 					$r['value']= array();
 					foreach($format as $item_date)
 					{
