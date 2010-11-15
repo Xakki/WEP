@@ -83,7 +83,7 @@ _fldformer($key, $param)
 		$this->cf_childs = false; // true - включить управление подмодулями в настройках модуля
 		$this->includeJStoFORM = false; // подключать ли скрипты для формы через настройки
 		$this->includeCSStoFORM = false; // подключать ли стили для формы через настройки
-		$this->ver = '0.1';
+		$this->ver = '0.1.1';
 
 		$this->text_ext = '.txt';// расширение для memo фиаилов
 

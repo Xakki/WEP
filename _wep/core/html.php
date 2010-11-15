@@ -475,7 +475,8 @@
 /*OLD ADMIN*/
 	function fXmlSysconf(){
 		global $_CFG;
-		$template = array();
+        $template = array();
+		$template['sysconf']['modul'] = $_GET['_modul'];
 		$template['sysconf']['user'] = $_SESSION['user'];
 		if($_SESSION['user']['level']<=1) {
 			_modulprm();
@@ -501,15 +502,16 @@
 					$template['sysconf']['item'][$k] = $r;
 		}
 		/*weppages*/
-		if(isset($_SESSION['user']) and count($_SESSION['user']['weppages'])) {
+		/*if(isset($_SESSION['user']) and count($_SESSION['user']['weppages'])) {
 			foreach($_SESSION['user']['weppages'] as $k=>$r0)
 				$template['sysconf']['item'][$k] = $r;
-		}
+		}*/
 		return $template;
 	}
 
 	function fXmlModulslist() {
 		global $_CFG;
+        $template = array();
 		$template['modulslist']['modul'] = $_GET['_modul'];
 		$template['modulslist']['user'] = $_SESSION['user'];
 

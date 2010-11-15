@@ -159,7 +159,7 @@
 				}
 				elseif($r['type']=='date' and !$r['readonly']) {
 					// форомат даты
-					if($r['format']) {
+					if(isset($r['format']) and $r['format']) {
 						$format = explode('-', $r['format']);
 					}
 					else{
@@ -175,58 +175,63 @@
 					else{
 						$temp = array(date('Y'),date('m'),date('d'),date('H'));
 					}
-				//	print_r($r['value']);
-					$r['value']= array();
-					foreach($format as $item_date)
-					{
-						// год
-						if($item_date == 'Y' || $item_date == 'y')
+					if($r['mask']['view']=='datepicker') {
+						// вроде ничего делать тут не надо
+					} 
+					else {
+						//	print_r($r['value']);
+						$r['value']= array();
+						foreach($format as $item_date)
 						{
-							$r['value']['year'] = array('name'=>$this->_CFG['_MESS']['year_name'], 'css'=>'year');// ГОД
-							$temp[0] = (int)$temp[0]; 
+							// год
+							if($item_date == 'Y' || $item_date == 'y')
+							{
+								$r['value']['year'] = array('name'=>$this->_CFG['_MESS']['year_name'], 'css'=>'year');// ГОД
+								$temp[0] = (int)$temp[0]; 
 
-							//значения по умолчанию
-							if(!$r['range_back']['year']) $r['range_back']['year'] = 2;
-							if(!$r['range_up']['year']) $r['range_up']['year'] = 3;
-							for($i=((int)date('Y')-($r['range_back']['year']));$i<((int)date('Y')+($r['range_up']['year']));$i++)
-								$r['value']['year']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[0]==$i?1:0));							
-						}
-						// месяц
-						if($item_date == 'm' || $item_date == 'n' || $item_date == 'M' || $item_date == 'F')
-						{
-							$r['value']['month'] = array('name'=>$this->_CFG['_MESS']['month_name'], 'css'=>'month');// Месяц
-							foreach($this->_CFG['_MESS']['month'] as $kr=>$td) {
-								$kr = (int)$kr;
-								$r['value']['month']['item'][$kr] = array('#id#'=>$kr, '#name#'=>$td, '#sel#'=>($temp[1]==$kr?1:0));
-							}						
-						}
-						// день
-						if($item_date == 'd' || $item_date == 'j')
-						{
-							$r['value']['day'] = array('name'=>$this->_CFG['_MESS']['day_name'], 'css'=>'day');// День
-							for($i=1;$i<=31;$i++)
-								$r['value']['day']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[2]==$i?1:0));						
-						}
-						// час
-						if($item_date == 'G' || $item_date == 'g' || $item_date == 'H' || $item_date == 'h')
-						{
-							$r['value']['hour'] = array('name'=>$this->_CFG['_MESS']['hour_name'], 'css'=>'hour');// Час
-							for($i=1;$i<=24;$i++)
-								$r['value']['hour']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[3]==$i?1:0));
-						}
-						// минуты
-						if($item_date == 'i')
-						{
-							$r['value']['minute'] = array('name'=>$this->_CFG['_MESS']['minute_name'], 'css'=>'minute');// Minute
-							for($i=1;$i<=60;$i++)
-								$r['value']['minute']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[4]==$i?1:0));
-						}
-						// секунды
-						if($item_date == 's')
-						{
-							$r['value']['sec'] = array('name'=>$this->_CFG['_MESS']['sec_name'], 'css'=>'sec');
-							for($i=1;$i<=60;$i++)
-								$r['value']['sec']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[5]==$i?1:0));					
+								//значения по умолчанию
+								if(!$r['range_back']['year']) $r['range_back']['year'] = 2;
+								if(!$r['range_up']['year']) $r['range_up']['year'] = 3;
+								for($i=((int)date('Y')-($r['range_back']['year']));$i<((int)date('Y')+($r['range_up']['year']));$i++)
+									$r['value']['year']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[0]==$i?1:0));							
+							}
+							// месяц
+							if($item_date == 'm' || $item_date == 'n' || $item_date == 'M' || $item_date == 'F')
+							{
+								$r['value']['month'] = array('name'=>$this->_CFG['_MESS']['month_name'], 'css'=>'month');// Месяц
+								foreach($this->_CFG['_MESS']['month'] as $kr=>$td) {
+									$kr = (int)$kr;
+									$r['value']['month']['item'][$kr] = array('#id#'=>$kr, '#name#'=>$td, '#sel#'=>($temp[1]==$kr?1:0));
+								}						
+							}
+							// день
+							if($item_date == 'd' || $item_date == 'j')
+							{
+								$r['value']['day'] = array('name'=>$this->_CFG['_MESS']['day_name'], 'css'=>'day');// День
+								for($i=1;$i<=31;$i++)
+									$r['value']['day']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[2]==$i?1:0));						
+							}
+							// час
+							if($item_date == 'G' || $item_date == 'g' || $item_date == 'H' || $item_date == 'h')
+							{
+								$r['value']['hour'] = array('name'=>$this->_CFG['_MESS']['hour_name'], 'css'=>'hour');// Час
+								for($i=1;$i<=24;$i++)
+									$r['value']['hour']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[3]==$i?1:0));
+							}
+							// минуты
+							if($item_date == 'i')
+							{
+								$r['value']['minute'] = array('name'=>$this->_CFG['_MESS']['minute_name'], 'css'=>'minute');// Minute
+								for($i=1;$i<=60;$i++)
+									$r['value']['minute']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[4]==$i?1:0));
+							}
+							// секунды
+							if($item_date == 's')
+							{
+								$r['value']['sec'] = array('name'=>$this->_CFG['_MESS']['sec_name'], 'css'=>'sec');
+								for($i=1;$i<=60;$i++)
+									$r['value']['sec']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[5]==$i?1:0));					
+							}
 						}
 					}
 

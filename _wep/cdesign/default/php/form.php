@@ -108,14 +108,15 @@ function tpl_form(&$data) {
 			}
 			elseif($r['type']=='date' and !$r['readonly']) {
 				$html .= '<div class="form-value">';
-				foreach($r['value'] as $row) {
-					$html .= '<div class="dateselect '.$row['css'].'"><span class="name">'.$row['name'].'</span><select name="'.$k.'[]">'.selectitem($row['item']).'</select></div>';
+				if(is_array($r['value']) and count($r['value'])) {
+					foreach($r['value'] as $row) {
+						$html .= '<div class="dateselect '.$row['css'].'"><span class="name">'.$row['name'].'</span><select name="'.$k.'[]">'.selectitem($row['item']).'</select></div>';
+					}
+				}
+				else {
+					$html .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.$r['value'].'" class="dateinput"/></div>';
 				}
 				$html .= '</div>';
-			}
-			elseif($r['type']=='datepicker' and !$r['readonly']) {
-				$r['value'] = explode(' ', $r['value']);
-				$html .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.$r['value'][0].'" /></div>';
 			}
 			elseif($r['type']=='captcha') {
 				$html .= '<div class="form-value">

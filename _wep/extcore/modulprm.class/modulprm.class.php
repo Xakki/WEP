@@ -25,14 +25,20 @@ class modulprm_class extends kernel_class {
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL');
 		$this->fields['tablename'] = array('type' => 'varchar', 'width' => 100,'attr' => 'NOT NULL');
 		$this->fields['ver'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL');
-		//$this->fields['comment'] = array('type' => 'text', 'attr' => 'NOT NULL');
+		$this->fields['typemodul'] = array('type' => 'tinyint', 'width' => 2, 'attr' => 'NOT NULL');
 
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название');
 		$this->fields_form['tablename'] = array('type' => 'text','readonly' => 1, 'caption' => 'Таблица');
 		$this->fields_form['ver'] = array('type' => 'text','readonly' => 1, 'caption' => 'Версия');
-		//$this->fields_form['comment'] = array('type' => 'textarea','readonly' => 1, 'caption' => 'Описание');
+		$this->fields_form['typemodul'] = array('type' => 'list', 'listname'=>'typemodul', 'readonly' => 1, 'caption' => 'Описание');
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Активность');
 		$this->create_child('modulgrp');
+
+		$this->_enum['typemodul'] = array(
+			0=>'Системный модуль',
+			1=>'Расширенный системный модуль',
+			2=>'Модуль',
+			5=>'Дочерние модули');
 	}
 
 	public function _checkmodstruct() {
@@ -62,9 +68,9 @@ class modulprm_class extends kernel_class {
 						$this->_constr_childs($class_);
 					}
 					if(!isset($this->data[$entry]))
-						$this->def_records[] = array('id'=>$entry,'name'=>$class_->caption,'parent_id'=>'','tablename'=>$class_->tablename);
+						$this->def_records[] = array('id'=>$entry,'name'=>$class_->caption,'parent_id'=>'','tablename'=>$class_->tablename, 'typemodul'=>0);
 					elseif($class_->ver!=$this->data[$entry]['ver'] or $this->_cl==$entry)
-						$this->def_update_records[$entry] = array('parent_id'=>'','tablename'=>$class_->tablename);
+						$this->def_update_records[$entry] = array('parent_id'=>'','tablename'=>$class_->tablename, 'typemodul'=>0);
 				}
 			}
 		}
@@ -79,9 +85,9 @@ class modulprm_class extends kernel_class {
 					$class_ = NULL;
 					if(_new_class($entry,$class_)) {
 						if(!isset($this->data[$entry]) and $class_->showinowner) 
-							$this->def_records[] = array('id'=>$entry,'name'=>$class_->caption.' ['.$entry.']','parent_id'=>'','tablename'=>$class_->tablename);
+							$this->def_records[] = array('id'=>$entry,'name'=>$class_->caption.' ['.$entry.']','parent_id'=>'','tablename'=>$class_->tablename, 'typemodul'=>2);
 						elseif($class_->ver!=$this->data[$entry]['ver'])
-							$this->def_update_records[$entry] = array('parent_id'=>'','tablename'=>$class_->tablename);
+							$this->def_update_records[$entry] = array('parent_id'=>'','tablename'=>$class_->tablename, 'typemodul'=>2);
 						$this->_constr_childs($class_);
 					}
 				}
@@ -101,9 +107,9 @@ class modulprm_class extends kernel_class {
 			foreach($class_->childs as $k=>&$r) {
 				$this->moduldir[$k] = $class_->_cl;
 				if(!isset($this->data[$k]) and $r->showinowner) 
-					$this->def_records[] = array('id'=>$k,'name'=>$r->caption.' ['.$k.']','parent_id'=>$class_->_cl,'tablename'=>$r->tablename);
+					$this->def_records[] = array('id'=>$k,'name'=>$r->caption.' ['.$k.']','parent_id'=>$class_->_cl,'tablename'=>$r->tablename, 'typemodul'=>5);
 				elseif($r->ver!=$this->data[$k]['ver'])
-					$this->def_update_records[$k] = array('parent_id'=>$class_->_cl,'tablename'=>$r->tablename);
+					$this->def_update_records[$k] = array('parent_id'=>$class_->_cl,'tablename'=>$r->tablename, 'typemodul'=>5);
 				$this->_constr_childs($r);
 			}
 		}

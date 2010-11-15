@@ -564,9 +564,7 @@
 			elseif($value['type']=='checkbox') {
 				$value['value'] = $data[$key] = ((int)$data[$key] == 1 ? 1 : 0);
 			}
-			elseif($value['type']=='date') {
-				if(is_array($data[$key]))
-				{
+			elseif($value['type']=='date' and is_array($data[$key])) {
 					if($value['format']) {
 						$format = explode('-', $value['format']);
 					}
@@ -575,50 +573,7 @@
 					}
 					$final_array_date = array_combine($format, $data[$key]);
 					
-					$date_str = array();
-					// час
-					if($final_array_date['H']) {
-						$date_str[0] = $final_array_date['H'];
-					}
-					else{
-						$date_str[0] = '0';
-					}
-					// минуты
-					if($final_array_date['i']){
-						$date_str[1] = $final_array_date['i'];
-					}
-					else{
-						$date_str[1] = '0';
-					}
-					// секунды
-					if($final_array_date['s']){
-						$date_str[2] = $final_array_date['s'];
-					}
-					else{
-						$date_str[2] = '0';
-					}
-					
-					// месяц
-					if($final_array_date['m']){
-						$date_str[3] = $final_array_date['m'];
-					}
-					else{
-						$date_str[3] = '0';
-					}
-					// день
-					if($final_array_date['d']){
-						$date_str[4] = $final_array_date['d'];
-					}
-					else{
-						$date_str[4] = '0';
-					}
-					//год
-					if($final_array_date['Y']){
-						$date_str[5] = $final_array_date['Y'];
-					}
-					else{
-						$date_str[5] = '0';
-					}
+					$date_str = _parseDate($final_array_date);
 					
 					if($_this->fields[$key]['type'] == 'int') {
 						$value['value'] = $data[$key] =  mktime($date_str[0], $date_str[1], $date_str[2], $date_str[3], $date_str[4], $date_str[5]);
@@ -626,67 +581,26 @@
 					if($_this->fields[$key]['type'] == 'timestamp') {
 						$value['value'] = $data[$key] =  date("Y-m-d H:i:s", mktime($date_str[0], $date_str[1], $date_str[2], $date_str[3], $date_str[4], $date_str[5]));
 					}
-
-				}
 			}
-			elseif($value['type']=='datepicker') {
-				if($_this->fields[$key]['type'] == 'timestamp') {
-						if($value['format']) {
-							$format = explode('.', $value['format']);
-						}
-						else{
-							$format = explode('-', 'Y-m-d-H-i-s');
-						}
-						$date = explode('.', $data[$key]);
-						$final_array_date = array_combine($format, $date);
-						
-						$date_str = array();
-						// час
-						if($final_array_date['H']) {
-							$date_str[0] = $final_array_date['H'];
-						}
-						else{
-							$date_str[0] = '0';
-						}
-						// минуты
-						if($final_array_date['i']){
-							$date_str[1] = $final_array_date['i'];
-						}
-						else{
-							$date_str[1] = '0';
-						}
-						// секунды
-						if($final_array_date['s']){
-							$date_str[2] = $final_array_date['s'];
-						}
-						else{
-							$date_str[2] = '0';
-						}
-						
-						// месяц
-						if($final_array_date['m']){
-							$date_str[3] = $final_array_date['m'];
-						}
-						else{
-							$date_str[3] = '0';
-						}
-						// день
-						if($final_array_date['d']){
-							$date_str[4] = $final_array_date['d'];
-						}
-						else{
-							$date_str[4] = '0';
-						}
-						//год
-						if($final_array_date['Y']){
-							$date_str[5] = $final_array_date['Y'];
-						}
-						else{
-							$date_str[5] = '0';
-						}
+			elseif($value['type']=='date') {
+					if($value['format']) {
+						$format = explode('.', $value['format']);
+					}
+					else{
+						$format = explode('-', 'Y-m-d-H-i-s');
+					}
+					$date = explode('.', $data[$key]);
+					$final_array_date = array_combine($format, $date);
 					
-						$value['value'] = $data[$key] = date("Y-m-d H:i:s", mktime($date_str[0], $date_str[1], $date_str[2], $date_str[3], $date_str[4], $date_str[5]));
-				}
+					$date_str = _parseDate($final_array_date);
+
+					if($_this->fields[$key]['type'] == 'int') {
+						$value['value'] = $data[$key] =  mktime($date_str[0], $date_str[1], $date_str[2], $date_str[3], $date_str[4], $date_str[5]);
+					}
+
+					if($_this->fields[$key]['type'] == 'timestamp') {
+						$value['value'] = $data[$key] =  date("Y-m-d H:i:s", mktime($date_str[0], $date_str[1], $date_str[2], $date_str[3], $date_str[4], $date_str[5]));
+					}
 			}
 			//*********** МАССИВЫ
 			elseif(is_array($data[$key]) and count($data[$key])) {
@@ -887,5 +801,52 @@
 		return $phone_2;
 	}
 
+	function _parseDate($arrdate) {
+		$date_str = array();
+		// час
+		if($arrdate['H']) {
+			$date_str[0] = $arrdate['H'];
+		}
+		else{
+			$date_str[0] = '0';
+		}
+		// минуты
+		if($arrdate['i']){
+			$date_str[1] = $arrdate['i'];
+		}
+		else{
+			$date_str[1] = '0';
+		}
+		// секунды
+		if($arrdate['s']){
+			$date_str[2] = $arrdate['s'];
+		}
+		else{
+			$date_str[2] = '0';
+		}
+		
+		// месяц
+		if($arrdate['m']){
+			$date_str[3] = $arrdate['m'];
+		}
+		else{
+			$date_str[3] = '0';
+		}
+		// день
+		if($arrdate['d']){
+			$date_str[4] = $arrdate['d'];
+		}
+		else{
+			$date_str[4] = '0';
+		}
+		//год
+		if($arrdate['Y']){
+			$date_str[5] = $arrdate['Y'];
+		}
+		else{
+			$date_str[5] = '0';
+		}
+		return $date_str;
+	}
 
 ?>
