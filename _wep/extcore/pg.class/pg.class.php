@@ -175,8 +175,10 @@ class pg_class extends kernel_class {
 
 			}
 		}
-		if($this->config['sitename'])
-			$_tpl['title'] .= ' - '.$this->config['sitename'];//$_SERVER['SERVER_NAME']
+		if($this->config['sitename']) {
+			if($_tpl['title']) $_tpl['title'] .= ' - ';
+			$_tpl['title'] .= $this->config['sitename'];//$_SERVER['SERVER_NAME']
+		}
 
 
 	}
@@ -249,11 +251,13 @@ class pg_class extends kernel_class {
 		if($this->pageinfo['path'] and is_array($this->pageinfo['path']))
 			foreach($this->pageinfo['path'] as $row)
 			{
-				if(is_array($row)) $name = $row['name'];
-				else $name = $row;
+				if(!is_array($row) or !isset($row['onpath']) or $row['onpath']) {
+					if(is_array($row)) $name = $row['name'];
+					else $name = $row;
 
-				if($path=='') $path = $name;
-				elseif($name!='') $path = $name.' - '.$path;
+					if($path=='') $path = $name;
+					elseif($name!='') $path = $name.' - '.$path;
+				}
 			}
 		return $path;
 	}
@@ -265,7 +269,7 @@ class pg_class extends kernel_class {
 		{
 			if(!is_array($row) or !isset($row['onpath']) or $row['onpath']) {
 				if(is_array($row)) $name = $row['name'];
-					else $name = $row;
+				else $name = $row;
 				$xml.= '<item><href>'.$this->getHref($key,$row).'</href><name><![CDATA['.$name.']]></name></item>';
 			}
 		}
