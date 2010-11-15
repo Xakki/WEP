@@ -110,6 +110,11 @@ $_CFG['site'] = array( // для сайта
   /****************/
  /*$_CFG['_HREF']*/
 /****************/
+	if(strpos($_SERVER['HTTP_HOST'],'xn--') !== false) {
+		require_once($_CFG['_PATH']['phpscript'].'/idna_convert.class.php');
+		$IDN = new idna_convert();
+		$_SERVER['HTTP_HOST'] = $IDN->decode($_SERVER['HTTP_HOST']);
+	}
 	$_CFG['_HREF']['BH'] = 'http://'.$_SERVER['HTTP_HOST'].$port.'/'.$addpath; // www-путь сайта
 	$_CFG['_HREF']['JS'] = $_CFG['_HREF']['BH'].$_CFG['PATH']['wepname'].'/js.php';
 	$_CFG['_HREF']['siteJS'] = $_CFG['_HREF']['BH'].'_js.php';
