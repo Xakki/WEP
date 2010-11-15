@@ -3,6 +3,8 @@
 	//date_default_timezone_set('Asia/Yekaterinburg');
 	date_default_timezone_set('Europe/Moscow');
 	error_reporting(E_ALL ^ E_NOTICE);
+	//универсальный для русского языка
+	setlocale (LC_CTYPE, 'ru_RU.UTF-8');
 
 $_CFG['time'] = time();
 $_CFG['getdate'] = getdate();
