@@ -36,7 +36,7 @@ function fMessPos(body,obj) {
 	var Wblock= $(body+obj+' :first-child').attr("offsetWidth");
 	var ww=Math.round(50*((W-Wblock)/W));
 	if(ww<4) ww=4;
-	$(body+obj).css("top",hh+"%").css("left",ww+"%").css("width",Wblock+'px');
+	$(body+obj).css("top",hh+"%").css("left",ww+"%").css("height",Hblock+'px');//.css("width",Wblock+'px')
 }
 
 /*Показ тултип*/

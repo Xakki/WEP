@@ -4,7 +4,7 @@
 	date_default_timezone_set('Europe/Moscow');
 	error_reporting(E_ALL ^ E_NOTICE);
 	//универсальный для русского языка
-	setlocale (LC_CTYPE, 'ru_RU.UTF-8');
+	setlocale(LC_CTYPE, 'ru_RU.UTF-8');
 
 $_CFG['time'] = time();
 $_CFG['getdate'] = getdate();
@@ -39,8 +39,10 @@ $_CFG['wep'] = array( // для админки
 );
 
 $_CFG['site'] = array( // для сайта
-	'msp'=>'paginator' // постраничнка
-);
+	'msp'=>'paginator', // постраничнка
+	'rf' => 0 // для рускояз доменов
+	);
+
 
   /****************/
  /*$_CFG['_PATH']*/
@@ -116,6 +118,7 @@ $_CFG['site'] = array( // для сайта
 		require_once($_CFG['_PATH']['phpscript'].'/idna_convert.class.php');
 		$IDN = new idna_convert();
 		$_SERVER['HTTP_HOST'] = $IDN->decode($_SERVER['HTTP_HOST']);
+		$_CFG['site']['rf']=1;
 	}
 	$_CFG['_HREF']['BH'] = 'http://'.$_SERVER['HTTP_HOST'].$port.'/'.$addpath; // www-путь сайта
 	$_CFG['_HREF']['JS'] = $_CFG['_HREF']['BH'].$_CFG['PATH']['wepname'].'/js.php';
