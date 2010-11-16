@@ -35,6 +35,7 @@
 		_setcookie('_showerror',1);
 		$_COOKIE['_showerror']=1;
 	}
+	//else _setcookie('_showerror', '', (time()-5000));
 
 	if (!defined('PHP_VERSION_ID')) {
 		$version = explode('.', PHP_VERSION);
