@@ -64,14 +64,16 @@
 			if(isset($this->fields_form['captcha']))
 				$this->setCaptcha();
 		}
-		if($flag==0)
-                    $formflag = 1;
-                elseif($_POST['sbmt'] and $flag==1)
-                    $formflag = 0;
+		if(isset($param['formflag']))
+			$formflag = $param['formflag'];
+		elseif($flag==0)
+			$formflag = 1;
+		elseif($_POST['sbmt'] and $flag==1)
+			$formflag = 0;
 		elseif($_POST['sbmt_save'])
-                    $formflag = 1;
-                elseif(isset($param['ajax']))
-                    $formflag = 0;
+			$formflag = 1;
+		elseif(isset($param['ajax']))
+			$formflag = 0;
 		if($formflag) // показывать форму
 			$formflag = $this->kFields2Form($param);
 

@@ -171,6 +171,7 @@
 					//Допускается цифры, тире, пробел, запятые и скобки
 				}
 			}
+			$r['fields_type'] = $this->fields[$k]['type'];
 			$this->form[$k] = $r;
 		}
 		return true;

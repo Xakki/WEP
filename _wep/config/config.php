@@ -137,9 +137,11 @@ $_CFG['site'] = array( // для сайта
 		$_SERVER['HTTP_HOST2'] = $_SERVER['HTTP_HOST'].$port;
 	else {
 		$_SERVER['HTTP_HOST2'] = $_CFG['_HREF']['arrayHOST'][1].'.'.$_CFG['_HREF']['arrayHOST'][0].$port;
-		$_CFG['session']['domain'] = '.'.$_SERVER['HTTP_HOST2'];
+		
 		if($_CFG['site']['rf'])
-			$_CFG['session']['domain'] = $IDN->encode($_CFG['session']['domain']);
+			$_CFG['session']['domain'] = '.'.$IDN->encode($_SERVER['HTTP_HOST2']);
+		else
+			$_CFG['session']['domain'] = '.'.$_SERVER['HTTP_HOST2'];
 	}
 	$_CFG['session']['name'] = 'wepID';
 	$_CFG['session']['expire'] = $_CFG['time']+86400;// 1 день ,по умолчанию

@@ -202,18 +202,16 @@ class pg_class extends kernel_class {
 			if ($row['href']){
 				header('Location: '.$row['href']);die();}
 			$this->pageinfo = $this->dataCash[$this->id];
-			$this->pageinfo['keywords'] = $this->config['keywords'];
-			if($row['keywords']) $this->pageinfo['keywords'] = $this->dataCash[$this->id]['keywords'].', '.$this->pageinfo['keywords'];
-			$this->pageinfo['description'] = $this->config['description'];
-			if($row['description']) $this->pageinfo['description'] = $this->dataCash[$this->id]['description'].', '.$this->pageinfo['description'];
-			$this->pageinfo['script'] = explode('|',trim($this->dataCash[$this->id]['script'],'|'));
+			$this->pageinfo['keywords'] = $this->config['keywords'].', '.$this->pageinfo['keywords'];
+			$this->pageinfo['description'] = $this->config['description'].', '.$this->pageinfo['description'];
+			$this->pageinfo['script'] = explode('|',trim($this->pageinfo['script'],'|'));
 			if(count($this->pageinfo['script'])) {
 				$temp = $this->pageinfo['script'];$this->pageinfo['script'] = array();
 				foreach($temp as $r)
 					if($r)
 						$this->pageinfo['script'][$r] = 1;
 			}
-			$this->pageinfo['styles'] = explode('|',trim($this->dataCash[$this->id]['styles'],'|'));
+			$this->pageinfo['styles'] = explode('|',trim($this->pageinfo['styles'],'|'));
 			if(count($this->pageinfo['styles'])) {
 				$temp = $this->pageinfo['styles'];$this->pageinfo['styles'] = array();
 				foreach($temp as $r)

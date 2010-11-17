@@ -1,6 +1,6 @@
 <?
 function tpl_form(&$data) {
-	global $_CFG, $UGROUP;
+	global $_CFG;
 	$attr = $data['_*features*_'];
 	unset($data['_*features*_']);
 	$html = '';
@@ -126,10 +126,10 @@ function tpl_form(&$data) {
 				}
 				if($r['mask']['view']=='input') {
 					// Тип поля
-					if($UGROUP->childs['users']->fields[$k]['type']  =='int' and $r['value']){
+					if($r['fields_type']  =='int' and $r['value']){
 						$temp = date($r['mask']['format'],$r['value']);echo 'sgrtbertg';
 					}
-					elseif($UGROUP->childs['users']->fields[$k]['type'] =='timestamp' and $r['value']){
+					elseif($r['fields_type'] =='timestamp' and $r['value']){
 						$fs = explode(' ', $r['value']);
 						$f = explode('-', $fs[0]);
 						$s = explode(':', $fs[1]);
@@ -141,10 +141,10 @@ function tpl_form(&$data) {
 				else {
 				
 					// Тип поля
-					if($UGROUP->childs['users']->fields[$k] =='int' and $r['value']){
+					if($r['fields_type'] =='int' and $r['value']){
 						$temp = explode('-',date('Y-m-d-H-i-s',$r['value']));
 					}
-					elseif($UGROUP->childs['users']->fields[$k] =='timestamp' and $r['value']){
+					elseif($r['fields_type'] =='timestamp' and $r['value']){
 						$temp = sscanf($r['value'], "%d-%d-%d %d:%d:%d");//2007-09-11 10:16:15
 					}
 					else{
