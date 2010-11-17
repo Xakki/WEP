@@ -564,41 +564,19 @@
 			elseif($value['type']=='checkbox') {
 				$value['value'] = $data[$key] = ((int)$data[$key] == 1 ? 1 : 0);
 			}
-			elseif($value['type']=='date' and is_array($data[$key])) {
-					if($value['mask']['format']) {
-						if($value['mask']['separate'])
-							$format = explode($value['mask']['separate'], $value['format']);
-						else
-							$format = explode('-', $value['format']);
-					}
-					else{
-						$format = explode('-', 'Y-m-d-H-i-s');
-					}
-					$final_array_date = array_combine($format, $data[$key]);
-					
-					$date_str = _parseDate($final_array_date);
-					
-					if($_this->fields[$key]['type'] == 'int') {
-						$value['value'] = $data[$key] =  mktime($date_str[0], $date_str[1], $date_str[2], $date_str[3], $date_str[4], $date_str[5]);
-					}					
-					if($_this->fields[$key]['type'] == 'timestamp') {
-						$value['value'] = $data[$key] =  date("Y-m-d H:i:s", mktime($date_str[0], $date_str[1], $date_str[2], $date_str[3], $date_str[4], $date_str[5]));
-					}
-			}
 			elseif($value['type']=='date') {
-					if($value['mask']['format']) {
-						if($value['mask']['separate'])
-							$format = explode($value['mask']['separate'], $value['mask']['format']);
-						else
-							$format = explode('-', $value['mask']['format']);
+					if(!isset($value['mask']['separate']))
+						$value['mask']['separate'] = '-';
+					if(!isset($value['mask']['format']))
+						$value['mask']['format'] = 'Y-m-d-H-i-s';
+					$format = explode($value['mask']['separate'], $value['mask']['format']);
+					if(!is_array($data[$key])) {
+						$data[$key] = explode($value['mask']['separate'], $data[$key]);
 					}
-					else{
-						$format = explode('-', 'Y-m-d-H-i-s');
+					if(count($data[$key])==count($format)) {
+						$final_array_date = array_combine($format, $data[$key]);
+						$date_str = _parseDate($final_array_date);
 					}
-					$date = explode($value['mask']['separate'], $data[$key]);
-					
-					$final_array_date = array_combine($format, $date);
-					$date_str = _parseDate($final_array_date);
 					if($_this->fields[$key]['type'] == 'int') {
 						$value['value'] = $data[$key] =  mktime($date_str[0], $date_str[1], $date_str[2], $date_str[3], $date_str[4], $date_str[5]);
 					}
