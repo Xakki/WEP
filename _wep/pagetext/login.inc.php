@@ -8,7 +8,7 @@
 		$ref= '/index.php';
 
 $mess = $form = '';
-
+/*
 	require_once $_CFG['_PATH']['extcore']."ugroup.class/openid.php";
 
 	if(isset($_GET['openid_identifier']))
@@ -33,7 +33,8 @@ $mess = $form = '';
 		else
 			$mess = '<div class="err">'.$mess.'</div>';
 	}
-	elseif(count($_POST) and isset($_POST['login']))
+	else*/
+	if(count($_POST) and isset($_POST['login']))
 	{
 		$result = userAuth($_POST['login'],$_POST['pass']);
 		if($result[1]) {
@@ -55,7 +56,12 @@ $mess = $form = '';
 					<input class="submit" type="submit" name="enter" value="Войти" tabindex="3"/>
 				</form>
 				<a href="/remind.html">Забыли пароль?</a>
-			<hr/><hr/><hr/>
+			
+			 <div style="clear:both;"></div>
+		 </div>';
+	}
+/*
+<hr/><hr/><hr/>
 			 <div id="verify-form">
 				<form method="get" action="">
 				  Ваш OpenID:
@@ -64,10 +70,7 @@ $mess = $form = '';
 				  <input type="submit" value="Войти" />
 				</form>
 			 </div>
-			 <div style="clear:both;"></div>
-		 </div>';
-	}
-
+*/
 	$html = '<div style="height:100%;">
 		'.$form.'
 		<div class="messhead">'.$result[0].$mess.'</div>

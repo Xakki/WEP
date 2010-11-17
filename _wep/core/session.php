@@ -12,7 +12,8 @@ class session_gogo {
 		}
 		$this->fields['id'] = array('type' => 'int', 'width' =>11, 'attr' => 'unsigned NOT NULL auto_increment');
 		$this->fields['sid'] = array('type' => 'varchar', 'width' =>128, 'attr' => 'default NULL');
-		$this->fields['domain'] = array('type' => 'varchar', 'width' =>64, 'attr' => 'default NULL');
+		$this->fields['host'] = array('type' => 'varchar', 'width' =>255, 'attr' => 'default NULL');
+		$this->fields['host2'] = array('type' => 'varchar', 'width' =>255, 'attr' => 'default NULL');
 		$this->fields['created'] = array('type' => 'int', 'width' =>11, 'attr' => 'unsigned default "0"');
 		$this->fields['expired'] = array('type' => 'int', 'width' =>11, 'attr' => 'unsigned default "0"');
 		$this->fields['modified'] = array('type' => 'int', 'width' =>11, 'attr' => 'unsigned default "0"');
@@ -33,7 +34,6 @@ class session_gogo {
 		$this->deadvisits  = 2; // мин число визитов
 		$this->deadsession = 1800; //мин сек в течении которго если пользователь не зашел >= $this->deadvisits, то удаляются
 		$this->tablename = $_CFG['sql']['dbpref'].$tablename;
-		$this->domain = 0;
 		$this->uip = $_SERVER['REMOTE_ADDR']; 
 		$this->_time = time();
 		//$this->expired = get_cfg_var('session.gc_maxlifetime');
@@ -87,10 +87,11 @@ class session_gogo {
 			$data = $this->_unserialize($sess_data);
 			$sess_data = mysql_escape_string($sess_data);
 			$lastPage = mysql_escape_string($_SERVER['REQUEST_URI']);
+			$host = mysql_escape_string($_SERVER['HTTP_HOST']);
 			$result = $this->SQL->execSQL('INSERT INTO '.$this->tablename.' 
-(`sid`,`created`,`modified`,`expired`,`data`,`users_id`,`ip`,`useragent`,`lastpage`) values
-("'.$sid.'","'.$this->_time.'","'.$this->_time.'","'.$this->expired.'","'.$sess_data.'","'.$data['user']['id'].'","'.mysql_escape_string($_SERVER["REMOTE_ADDR"]).'","'.mysql_escape_string(substr($_SERVER['HTTP_USER_AGENT'],0,255)).'","'.$lastPage.'") 
-ON DUPLICATE KEY UPDATE `modified` = "'.$this->_time.'", `users_id`="'.$data['user']['id'].'" ,`data` = "'.$sess_data.'", `visits` = (`visits` + 1), `lastpage`= "'.$lastPage.'"');
+(`sid`,`created`,`modified`,`expired`,`data`,`users_id`,`ip`,`useragent`,`lastpage`,`host`,`host2`) values
+("'.$sid.'","'.$this->_time.'","'.$this->_time.'","'.$this->expired.'","'.$sess_data.'","'.$data['user']['id'].'","'.mysql_escape_string($_SERVER["REMOTE_ADDR"]).'","'.mysql_escape_string(substr($_SERVER['HTTP_USER_AGENT'],0,255)).'","'.$lastPage.'","'.$host.'","'.mysql_escape_string($_SERVER['HTTP_HOST2']).'") 
+ON DUPLICATE KEY UPDATE `modified` = "'.$this->_time.'", `users_id`="'.$data['user']['id'].'" ,`data` = "'.$sess_data.'", `visits` = (`visits` + 1), `lastpage`= "'.$lastPage.'", `host`="'.$host.'"');
 		}
 		else
 			$this->destroy($sid);
