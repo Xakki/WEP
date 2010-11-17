@@ -1,11 +1,14 @@
 <?
 function tpl_form(&$data) {
-	global $_CFG;
+	global $_CFG, $UGROUP;
 	$attr = $data['_*features*_'];
 	unset($data['_*features*_']);
 	$html = '';
 	$_CFG['fileIncludeOption']['form'] = 1;
+
 	foreach($data as $k=>$r) {
+	//print_r($r);
+	//print_r($r);
 		if($r['type']!='hidden')
 			$html .= '<div id="tr_'.$k.'" style="'.$r['style'].'" class="div-tr'.($r['css']?' '.$r['css']:'').'">';
 
@@ -107,15 +110,104 @@ function tpl_form(&$data) {
 				$html .= '</div>';
 			}
 			elseif($r['type']=='date' and !$r['readonly']) {
+	
 				$html .= '<div class="form-value">';
-				if(is_array($r['value']) and count($r['value'])) {
+				// формат даты
+				if(isset($r['mask']['format']) and $r['mask']['format']) {
+					if($r['mask']['separate']) {
+						$format = explode($r['mask']['separate'], $r['mask']['format']);
+					}
+					else {
+						$format = explode('-', $r['mask']['format']);
+					}
+				}
+				else{
+					$format = explode('-', 'Y-m-d-H-i-s');
+				}
+				if($r['mask']['view']=='input') {
+					// Тип поля
+					if($UGROUP->childs['users']->fields[$k]['type']  =='int' and $r['value']){
+						$temp = date($r['mask']['format'],$r['value']);echo 'sgrtbertg';
+					}
+					elseif($UGROUP->childs['users']->fields[$k]['type'] =='timestamp' and $r['value']){
+						$fs = explode(' ', $r['value']);
+						$f = explode('-', $fs[0]);
+						$s = explode(':', $fs[1]);
+						$temp = mktime($s[0], $s[1], $s[2], $f[1], $f[2], $f[0]);
+						$temp = date($r['mask']['format'],$temp);
+					}
+					$html .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.$temp.'" class="dateinput"/></div>';
+				} 
+				else {
+				
+					// Тип поля
+					if($UGROUP->childs['users']->fields[$k] =='int' and $r['value']){
+						$temp = explode('-',date('Y-m-d-H-i-s',$r['value']));
+					}
+					elseif($UGROUP->childs['users']->fields[$k] =='timestamp' and $r['value']){
+						$temp = sscanf($r['value'], "%d-%d-%d %d:%d:%d");//2007-09-11 10:16:15
+					}
+					else{
+						$temp = array(date('Y'),date('m'),date('d'),date('H'));
+					}
+					$r['value']= array();
+					foreach($format as $item_date)
+					{
+						// год
+						if($item_date == 'Y' || $item_date == 'y')
+						{
+							$r['value']['year'] = array('name'=>$_CFG['_MESS']['year_name'], 'css'=>'year');// ГОД
+							$temp[0] = (int)$temp[0]; 
+
+							//значения по умолчанию
+							if(!$r['range_back']['year']) $r['range_back']['year'] = 2;
+							if(!$r['range_up']['year']) $r['range_up']['year'] = 3;
+							for($i=((int)date('Y')-($r['range_back']['year']));$i<((int)date('Y')+($r['range_up']['year']));$i++)
+								$r['value']['year']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[0]==$i?1:0));							
+						}
+						// месяц
+						if($item_date == 'm' || $item_date == 'n' || $item_date == 'M' || $item_date == 'F')
+						{
+							$r['value']['month'] = array('name'=>$_CFG['_MESS']['month_name'], 'css'=>'month');// Месяц
+							foreach($_CFG['_MESS']['month'] as $kr=>$td) {
+								$kr = (int)$kr;
+								$r['value']['month']['item'][$kr] = array('#id#'=>$kr, '#name#'=>$td, '#sel#'=>($temp[1]==$kr?1:0));
+							}						
+						}
+						// день
+						if($item_date == 'd' || $item_date == 'j')
+						{
+							$r['value']['day'] = array('name'=>$_CFG['_MESS']['day_name'], 'css'=>'day');// День
+							for($i=1;$i<=31;$i++)
+								$r['value']['day']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[2]==$i?1:0));						
+						}
+						// час
+						if($item_date == 'G' || $item_date == 'g' || $item_date == 'H' || $item_date == 'h')
+						{
+							$r['value']['hour'] = array('name'=>$_CFG['_MESS']['hour_name'], 'css'=>'hour');// Час
+							for($i=1;$i<=24;$i++)
+								$r['value']['hour']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[3]==$i?1:0));
+						}
+						// минуты
+						if($item_date == 'i')
+						{
+							$r['value']['minute'] = array('name'=>$_CFG['_MESS']['minute_name'], 'css'=>'minute');// Minute
+							for($i=1;$i<=60;$i++)
+								$r['value']['minute']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[4]==$i?1:0));
+						}
+						// секунды
+						if($item_date == 's')
+						{
+							$r['value']['sec'] = array('name'=>$_CFG['_MESS']['sec_name'], 'css'=>'sec');
+							for($i=1;$i<=60;$i++)
+								$r['value']['sec']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[5]==$i?1:0));					
+						}
+					}
+
 					foreach($r['value'] as $row) {
 						$html .= '<div class="dateselect '.$row['css'].'"><span class="name">'.$row['name'].'</span><select name="'.$k.'[]">'.selectitem($row['item']).'</select></div>';
 					}
-				}
-				else {
-					$html .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.$r['value'].'" class="dateinput"/></div>';
-				}
+				}		
 				$html .= '</div>';
 			}
 			elseif($r['type']=='captcha') {

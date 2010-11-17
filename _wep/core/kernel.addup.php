@@ -565,8 +565,11 @@
 				$value['value'] = $data[$key] = ((int)$data[$key] == 1 ? 1 : 0);
 			}
 			elseif($value['type']=='date' and is_array($data[$key])) {
-					if($value['format']) {
-						$format = explode('-', $value['format']);
+					if($value['mask']['format']) {
+						if($value['mask']['separate'])
+							$format = explode($value['mask']['separate'], $value['format']);
+						else
+							$format = explode('-', $value['format']);
 					}
 					else{
 						$format = explode('-', 'Y-m-d-H-i-s');
@@ -583,17 +586,19 @@
 					}
 			}
 			elseif($value['type']=='date') {
-					if($value['format']) {
-						$format = explode('.', $value['format']);
+					if($value['mask']['format']) {
+						if($value['mask']['separate'])
+							$format = explode($value['mask']['separate'], $value['mask']['format']);
+						else
+							$format = explode('-', $value['mask']['format']);
 					}
 					else{
 						$format = explode('-', 'Y-m-d-H-i-s');
 					}
-					$date = explode('.', $data[$key]);
-					$final_array_date = array_combine($format, $date);
+					$date = explode($value['mask']['separate'], $data[$key]);
 					
+					$final_array_date = array_combine($format, $date);
 					$date_str = _parseDate($final_array_date);
-
 					if($_this->fields[$key]['type'] == 'int') {
 						$value['value'] = $data[$key] =  mktime($date_str[0], $date_str[1], $date_str[2], $date_str[3], $date_str[4], $date_str[5]);
 					}
