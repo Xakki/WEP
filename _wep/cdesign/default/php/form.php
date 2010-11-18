@@ -112,6 +112,14 @@ function tpl_form(&$data) {
 			elseif($r['type']=='date' and !$r['readonly']) {
 	
 				$html .= '<div class="form-value">';
+				
+				global $_tpl;
+				if($r['mask']['time'])
+					$_tpl['script']['dp_'.$k] = 'function dp_'.$k.'() { $("input[name='.$k.']").datetimepicker('.$r['mask']['params'].')}';
+				else
+					$_tpl['script']['dp_'.$k] = 'function dp_'.$k.'() { $("input[name='.$k.']").datepicker('.$r['mask']['params'].')}';
+				$_tpl['onload'] .= ' dp_'.$k.'(); ';
+
 				// формат даты
 				if(isset($r['mask']['format']) and $r['mask']['format']) {
 					if($r['mask']['separate']) {
@@ -127,15 +135,20 @@ function tpl_form(&$data) {
 				if($r['mask']['view']=='input') {
 					// Тип поля
 					if($r['fields_type']  =='int' and $r['value']){
-						$temp = date($r['mask']['format'],$r['value']);echo 'sgrtbertg';
+						$temp = date($r['mask']['format'],$r['value']);
 					}
 					elseif($r['fields_type'] =='timestamp' and $r['value']){
 						$fs = explode(' ', $r['value']);
 						$f = explode('-', $fs[0]);
 						$s = explode(':', $fs[1]);
 						$temp = mktime($s[0], $s[1], $s[2], $f[1], $f[2], $f[0]);
+						
+						if($r['mask']['time'])
+							$r['mask']['format'] = $r['mask']['format'].' '.$r['mask']['time'];
+						
 						$temp = date($r['mask']['format'],$temp);
 					}
+					
 					$html .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.$temp.'" class="dateinput"/></div>';
 				} 
 				else {
