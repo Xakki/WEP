@@ -23,8 +23,12 @@ $_CFG['sql'] = array( // SQL
 	'database'=>'defaultbd',
 	'setnames'=>'utf8',
 	'dbpref'=>'',
-	'log'=>0);
-
+	'log'=>0
+);
+$_CFG['memcache'] = array(
+	'host'=>'127.0.0.1',
+	'port'=>11211,
+);
 $_CFG['wep'] = array( // для админки
 	'charset'=>'utf-8',
 	'access'=>1, // 1 - вкл доступ по модулю пользователей, 0 - вкл доступ по дефолтному паролю
@@ -41,8 +45,7 @@ $_CFG['wep'] = array( // для админки
 $_CFG['site'] = array( // для сайта
 	'msp'=>'paginator', // постраничнка
 	'rf' => 0 // для рускояз доменов
-	);
-
+);
 
   /****************/
  /*$_CFG['_PATH']*/

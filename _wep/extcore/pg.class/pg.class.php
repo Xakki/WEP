@@ -11,8 +11,9 @@ class pg_class extends kernel_class {
 		$this->config['keywords'] = 'Keys...';
 		$this->config['description'] = 'Desc...';
 		$this->config['design'] = 'default';
-		//$this->config['menu'] = '';
-
+		$this->config['memcache'] = 0;
+		$this->config['memcachezip'] = 0;
+//print_r('<pre>');print_r($_SERVER);
 		$this->config_form['sitename'] = array('type' => 'text', 'caption' => 'Название сайта','mask'=>array('max'=>1000));
 		$this->config_form['address'] = array('type' => 'textarea', 'caption' => 'Адрес и контакты','mask'=>array('max'=>1000));
 		$this->config_form['copyright'] = array('type' => 'textarea', 'caption' => 'Копирайт','mask'=>array('max'=>1000));
@@ -20,6 +21,8 @@ class pg_class extends kernel_class {
 		$this->config_form['keywords'] = array('type' => 'textarea', 'caption' => 'Ключевые слова по умолчанию','mask'=>array('max'=>1000));
 		$this->config_form['description'] = array('type' => 'textarea', 'caption' => 'Описание страницы по умолчанию','mask'=>array('max'=>1000));
 		$this->config_form['design'] = array('type' => 'list', 'listname'=>'mdesign', 'caption' => 'Дизаин по умолчанию');
+		$this->config_form['memcache'] = array('type' => 'int', 'caption' => 'Memcache time', 'comment'=>'0 - откл кеширование, 1> - кеширование в сек.');
+		$this->config_form['memcachezip'] = array('type' => 'checkbox', 'caption' => 'Memcache сжатие');
 	}
 
 	function _set_features() {
@@ -142,10 +145,10 @@ class pg_class extends kernel_class {
 				$_tpl['title'] = "Нет доступа";
 				$_tpl['keywords'] = "";
 				$_tpl['description'] = "";
-				$this->display_page();
 			}
 			else
 			{
+				$_tpl = array('script'=>array(),'styles'=>array());
 				$HTML->_templates = $this->pageinfo['template'];
 				$_tpl['title'] = $this->get_caption();
 				$_tpl['keywords'] = $this->pageinfo['keywords'];
@@ -167,6 +170,7 @@ class pg_class extends kernel_class {
 			}
 			else
 			{
+				$_tpl = array('script'=>array(),'styles'=>array());
 				$HTML->_templates = $this->pageinfo['template'];
 				$_tpl['title'] = $this->get_caption();
 				$_tpl['keywords'] = $this->pageinfo['keywords'];
@@ -320,19 +324,47 @@ class pg_class extends kernel_class {
 						$_tpl[$rowPG['marker']] .= file_get_contents($text);
 					}
 				} else {
-					$FUNCPARAM = $rowPG['funcparam'];
-					if(file_exists($this->_CFG['_PATH']['ptext'].$rowPG['pagetype'].".inc.php"))
-						$flagPG = include($this->_CFG['_PATH']['ptext'].$rowPG['pagetype'].".inc.php");
-					elseif(file_exists($this->_CFG['_PATH']['ctext'].$rowPG['pagetype'].".inc.php"))
-						$flagPG = include($this->_CFG['_PATH']['ctext'].$rowPG['pagetype'].".inc.php");
-					else {
-						trigger_error('Обрботчик страниц "'.$rowPG['pagetype'].'" не найден!', E_USER_WARNING);
-						continue;
+					$flagMC = false;
+					if(!$rowPG['memcache'] and $this->config['memcache'])
+						$rowPG['memcache'] = $this->config['memcache'];
+					if($rowPG['memcache']) {
+						$hashkeyPG = $_SERVER['HTTP_HOST'].$_SERVER['HTTP_HOST'];
+						global $MEMCACHE;
+
+						if(!$MEMCACHE) {
+							$mc_load = false;
+							if(!extension_loaded('memcache')) {
+								$prefix = (PHP_SHLIB_SUFFIX === 'dll') ? 'php_' : '';
+								if(dl($prefix . 'memcache.' . PHP_SHLIB_SUFFIX))
+									$mc_load = true;
+							}else
+								$mc_load = true;
+							if($mc_load) {
+								$MEMCACHE = new Memcache;
+								$MEMCACHE->connect($_CFG['memcache']['host'],$_CFG['memcache']['port']);
+								$this->config['memcachezip'] = ($this->config['memcachezip']?true:false);
+							}
+						}
+						if($MEMCACHE)
+							$flagPG = $flagMC = $MEMCACHE->get($hashkeyPG);
 					}
+					if(!$flagMC) {
+						$FUNCPARAM = $rowPG['funcparam'];
+						if(file_exists($this->_CFG['_PATH']['ptext'].$rowPG['pagetype'].'.inc.php'))
+							$flagPG = include($this->_CFG['_PATH']['ptext'].$rowPG['pagetype'].'.inc.php');
+						elseif(file_exists($this->_CFG['_PATH']['ctext'].$rowPG['pagetype'].'.inc.php'))
+							$flagPG = include($this->_CFG['_PATH']['ctext'].$rowPG['pagetype'].'.inc.php');
+						else {
+							trigger_error('Обрботчик страниц "'.$rowPG['pagetype'].'" не найден!', E_USER_WARNING);
+							continue;
+						}
+						if($rowPG['memcache'] and $MEMCACHE)
+							$MEMCACHE->set($hashkeyPG,$flagPG , $this->config['memcachezip'], $rowPG['memcache']);
+					}
+					if($rowPG['memcache'] and $MEMCACHE)
+						$memcache_obj->close();
 					
-					if($flagPG===false) //если INCa вернула значение flase , то завершаем отображение страницы и выдаем в итоге 404
-						return 0;
-					elseif($flagPG!==true) // если не булевое значение то выводим содержимое
+					if(is_string($flagPG)) // если не булевое значение то выводим содержимое
 						$_tpl[$rowPG['marker']] .= $flagPG;
 					$flagPG = 1;
 				}

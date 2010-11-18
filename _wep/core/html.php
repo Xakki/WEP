@@ -42,7 +42,6 @@
 		define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
 	}
 
-
 /*
 Модуль предстваления
 Собираетв едином шаблоне мелкие блоки
@@ -59,7 +58,7 @@
 		function __construct($_PATHd='design/',$_design='default',$flag=true) {
 			global $_tpl, $_time_start, $_CFG;
 
-			if (extension_loaded('xsl')){
+			if(extension_loaded('xsl')) {
 				include_once($_CFG['_PATH']['phpscript'].'/_php4xslt.php');
 				$this->_xslt = xslt_create();
 			}

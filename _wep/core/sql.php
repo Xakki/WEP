@@ -1,8 +1,7 @@
 <?
 /*SQL*/
 
-	class sql
-	{
+	class sql {
 		var $hlink;
 		var $sql_query;
 		var $sql_err;
@@ -18,14 +17,13 @@
 			$this->sql_connect();
 		}
 
-		function __destruct()
-		{
+		function __destruct() {
 			global $_CFG;
 			$this->sql_close();
 			if($_CFG['sql']['log']) fclose($this->logFile);
 		}
 
-		function sql_connect()	{
+		function sql_connect() {
 			global $_CFG;
 			$this->hlink = mysql_connect($_CFG['sql']['host'], $_CFG['sql']['login'], $_CFG['sql']['password']);
 			if($this->hlink) {
@@ -43,8 +41,7 @@
 			}
 		}
 
-		function sql_close()
-		{
+		function sql_close() {
 			if($this->hlink)
 				mysql_close($this->hlink);
 		}
@@ -56,7 +53,7 @@
 		function execSQL($sql,$unbuffered=0) {
 			return new query($this, $sql, $unbuffered);
 		}
-		function fError($err){
+		function fError($err) {
 			$this->sql_err[] = $err;
 		}
 

@@ -6,8 +6,8 @@ class ugroup_extend extends kernel_class
 	protected function _create_conf() {/*CONFIG*/
 		parent::_create_conf();
 
-		$this->config["mailto"] = 'info@unidoski.ru';
-		$this->config["mailrobot"] = 'robot@unidoski.ru';
+		$this->config["mailto"] = 'info@xakki.ru';
+		$this->config["mailrobot"] = 'robot@xakki.ru';
 		$this->config["mailconfirm"] = '';
 		$this->config["mailremind"] = '';
 		$this->config["mailbottom"] = '';
@@ -70,8 +70,6 @@ class ugroup_extend extends kernel_class
 		$this->fields["wep"] = array("type" => "bool", "attr" => "NOT NULL default 0");
 		$this->fields["level"] = array("type" => "tinyint", "width" =>2, "attr" => "NOT NULL default 1");
 		$this->fields["filesize"] = array("type" => "int", "width" =>5, "attr" => "NOT NULL DEFAULT 0");
-		$this->fields["paramboard"] = array("type" => "int", "width" =>3, "attr" => "NOT NULL DEFAULT 5");
-		$this->fields["paramsubsc"] = array("type" => "int", "width" =>3, "attr" => "NOT NULL DEFAULT 1");
 		$this->fields["design"] = array("type" => "varchar", "width" =>128, "attr" => "NOT NULL");
 
 		$this->fields_form["name"] = array("type" => "text", 'mask' =>array('min'=>1), "caption" => "Название группы");
@@ -79,8 +77,6 @@ class ugroup_extend extends kernel_class
 		$this->fields_form["level"] = array("type" => "list", "listname"=>"level", "caption" => "Доступ в CMS");
 		$this->fields_form['design'] = array('type' => 'list', 'listname'=>'mdesign', 'caption' => 'Дизаин личного кабинета');
 		$this->fields_form["filesize"] = array("type" => "int", "caption" => "Доступный размер диска", "comment" => "Значение в мегабайтах, 0 - запрет",'mask'=>array("max"=>1000));
-		$this->fields_form["paramboard"] = array("type" => "int", "caption" => "Объявления", "comment" => "Разрешённое число объявлений в день");
-		$this->fields_form["paramsubsc"] = array("type" => "int", "caption" => "Подписки", "comment" => "Разрешённое число подписок на объявления");
 		$this->fields_form["active"] = array("type" => "checkbox", "caption" => "Активность");
 
 		$this->def_records[] = array('name'=>'Администраторы','level'=>0,'filesize'=>'100','active'=>1,'id'=>1,'wep'=>1);
@@ -89,12 +85,7 @@ class ugroup_extend extends kernel_class
 	}
 	
 	function _checkmodstruct() {
-		if($this->_CFG['modulprm'][$this->_cl]['ver'] == '0.1') {
-			$result = $this->SQL->execSQL('UPDATE users SET reg_ip = INET_ATON(reg_ip)');
-			$result = $this->SQL->execSQL('alter table `users` drop column `mf_ipcreate`, drop column `mf_timeup`, drop column `mf_timecr`, change `reg_date` `mf_timecr` int(11) NOT NULL, change `reg_ip` `mf_ipcreate` bigint(20) NOT NULL, change `up_date` `mf_timeup` varchar(254) NOT NULL');
-			$result = $this->SQL->execSQL('UPDATE users SET mf_timeup = UNIX_TIMESTAMP(mf_timeup)');
-			$result = $this->SQL->execSQL('alter table `users` change `mf_timeup` `mf_timeup` int(12) NOT NULL');
-		}
+		include('ugroup.checkmodstruct.php');
 		parent::_checkmodstruct();
 	}
 
@@ -166,7 +157,7 @@ class users_extend extends kernel_class {
 		// FORM FIELDS
 		if($this->mf_use_charid){
 			$this->fields_form['id'] =	array('type' => 'text', 'caption' => 'Логин','mask'=>array('name'=>'login','min' => '4','sort'=>1),'comment'=>'Логин должен состоять только из латинских букв и цифр.');
-			if(_prmUserCheck())  // Запрет поля на редактирование
+			if(!_prmUserCheck(1))  // Запрет поля на редактирование
 				$this->fields_form['id']['readonly']=true;
 		}
 		

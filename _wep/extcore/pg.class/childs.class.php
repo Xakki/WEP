@@ -24,6 +24,7 @@ class content_class extends kernel_class {
 		$this->fields['ugroup'] =array('type' => 'varchar', 'width'=>254, 'attr' => 'NOT NULL DEFAULT ""');
 		$this->fields['styles'] = array('type' => 'varchar', 'width'=> 254, 'attr' => 'NOT NULL DEFAULT ""');
 		$this->fields['script'] = array('type' => 'varchar', 'width'=> 254, 'attr' => 'NOT NULL DEFAULT ""');
+		$this->fields['memcache'] = array('type' => 'int', 'width'=> 11,'attr' => 'NOT NULL DEFAULT "0"');
 
 		# memo
 		$this->memos['pg'] = array('max' => 50000);
@@ -42,6 +43,7 @@ class content_class extends kernel_class {
 		$this->fields_form['script'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'script', 'caption' => 'SCRIPT','mask' =>array('onetd'=>'close'));
 		$this->fields_form['ordind'] = array('type' => 'text', 'caption' => 'ORD');
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
+		$this->fields_form['memcache'] = array('type' => 'int', 'caption' => 'Memcache time','comment'=>'0 - откл кеширование,1> - кеширование в сек.');
 
 		$this->def_records[] = array('owner_id'=>'404','pg'=>'Недостаточно прав для доступа к странице','marker'=>'text','active'=>1);
 		$this->owner->_listnameSQL = 'template, name';
