@@ -37,8 +37,9 @@
 			$climit= $pcnt.', '.$this->messages_on_page;
 
 			$cls =array(array('t1.*'),'',array());
-			$arrno = array('active'=>1,'parent_id'=>1,$this->owner_name=>1);
-
+			$arrno = array('active'=>1,'parent_id'=>1);
+			if($this->owner and $this->owner->id)
+				$arrno[$this->owner_name] = 1;
 			$xml['data']['pcnt'] = $pcnt;
 
 			$t=2;
@@ -87,34 +88,35 @@
 					$arrno[$k]=1; 
 				elseif(!isset($arrno[$k])) {
 					if(($r['type']=='list' or $r['type']=='ajaxlist') and is_array($r['listname']) and (isset($r['listname']['class']) or isset($r['listname']['tablename']))) {
-						//if (isset($r['listname']['include']))
-						//	require_once($this->_CFG['_PATH']['ext'].$r['listname']['include'].'.class.php');
+						$lsn = $r['listname'];
+						if(!$lsn['idField']) 
+							$lsn['idField'] = 't'.$t.'.id';
+						else 
+							$lsn['idField'] = str_replace('tx.','t'.$t.'.',$lsn['idField']);
+						if(!$lsn['nameField']) 
+							$lsn['nameField'] = 't'.$t.'.name';
+						else 
+							$lsn['nameField'] = str_replace('tx.','t'.$t.'.',$lsn['nameField']);
+						//if (isset($lsn['include']))
+						//	require_once($this->_CFG['_PATH']['ext'].$lsn['include'].'.class.php');
 						if($r['multiple']==1)
-							$cls[0][] = 'group_concat('.str_replace('tx.','t'.$t.'.',($r['listname']['field']?$r['listname']['field']:'tx.id')).' SEPARATOR " | ") as '.$k;
-						elseif(isset($r['listname']['field']) and $r['listname']['field']!='')
-							$cls[0][] = str_replace('tx.','t'.$t.'.',$r['listname']['field']);
+							$cls[0][] = 'group_concat('.$lsn['nameField'].' SEPARATOR " | ") as name_'.$k;
 						else
-							$cls[0][] = 't'.$t.'.name as '.$k;
-						//$cls[0][] = 't1.'.$k.' as selected_'.$k;
-						if(!isset($r['listname']['join'])) 
+							$cls[0][] = $lsn['nameField'].' as name_'.$k;
+
+						if(!isset($lsn['join'])) 
 							$cls[1] .= ' LEFT';
 
-						$cls[1] .= ' JOIN `'.getTableNameOfClass((isset($r['listname']['class'])?$r['listname']['class']:$r['listname']['tablename'])).'` t'.$t.' ON ';
+						$cls[1] .= ' JOIN `'.getTableNameOfClass((isset($lsn['class'])?$lsn['class']:$lsn['tablename'])).'` t'.$t.' ON ';
 
-						if(isset($r['listname']['join']) and $r['listname']['join']!='')
-							$cls[1] .= ' '.str_replace('tx.','t'.$t.'.',$r['listname']['join']).' ';
-						elseif(isset($r['listname']['leftjoin']) and $r['listname']['leftjoin']!='')
-							$cls[1] .= ' '.str_replace('tx.','t'.$t.'.',$r['listname']['leftjoin']).' ';
-						else{
-							if(isset($r['listname']['field'])) 
-								$sid = str_replace('tx.','t'.$t.'.',$r['listname']['field']);
-							else 
-								$sid='t'.$t.'.id';
-							if($r['multiple']==1)
-								$cls[1] .= ' t1.'.$k.' LIKE concat("%|",'.$sid.',"|%") ';
-							else
-								$cls[1] .= ' t1.'.$k.'='.$sid.' ';
-						}
+						if($r['multiple']==1)
+							$cls[1] .= ' t1.'.$k.' LIKE concat("%|",'.$lsn['idField'].',"|%") ';
+						else
+							$cls[1] .= ' t1.'.$k.'='.$lsn['idField'].' ';
+						if(isset($lsn['join']) and $lsn['join']!='')
+							$cls[1] .= ' and '.str_replace('tx.','t'.$t.'.',$lsn['join']).' ';
+						elseif(isset($lsn['leftjoin']) and $lsn['leftjoin']!='')
+							$cls[1] .= ' and '.str_replace('tx.','t'.$t.'.',$lsn['leftjoin']).' ';
 						$t++;
 					}elseif(($r['type']=='list' or $r['type']=='ajaxlist') and !is_array($r['listname'])) {
 						$this->_checkList($r['listname'],0);
@@ -144,7 +146,7 @@
 			//if(!$this->mf_istree)
 				$this->clause .= ' LIMIT '.$climit;
 			$this->_list('id');
-
+//print_r($this->SQL->query);
 			/** Обработка запроса*/
 			foreach($this->data as $key=>$row) {
 				$xml['data']['item'][$key] = array('id'=>$row['id']);
@@ -174,9 +176,17 @@
 							$tditem['value'] .= _substr(strip_tags(htmlspecialchars_decode(file_get_contents($row[$k]))),0,400);
 						elseif($r['type']=='date' and $this->fields[$k]['type']=='int')
 							$tditem['value'] .= date('Y-m-d H:i',$row[$k]);
+						elseif($k=='mf_ipcreate')
+							$tditem['value'] .= long2ip($row[$k]);
 						elseif($r['type']=='checkbox')
 							$tditem['value'] .= $this->_CFG['enum']['yesno'][$row[$k]];
-						elseif($r['type']=='list' and !is_array($r['listname'])) {
+						elseif($r['type']=='list' and is_array($r['listname']) and isset($row['name_'.$k])) {
+							if($r['multiple']) 
+								$tditem['value']= str_replace('|',', ',trim($row['name_'.$k],'|'));
+							else
+								$tditem['value'] = $row['name_'.$k];
+						}
+						elseif($r['type']=='list') {// and !is_array($r['listname'])
 							if($r['multiple']) 
 								$row[$k]= explode('|',trim($row[$k],'|'));
 							else

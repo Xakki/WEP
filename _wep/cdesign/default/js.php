@@ -41,22 +41,22 @@
 	elseif($_GET['_type']=='reinstall'){
 		$DATA['formtools'] = $MODUL->confirmReinstall();
 		$html = $HTML->transformPHP($DATA,'formtools');
-		$_tpl['onload'] .= '_win2=\'tools_block\';$(\'#form_tools_reinstal\').bind(\'submit\',function(e){return JSFRWin(\'#form_tools_reinstal\');});';
+		$_tpl['onload'] .= '$(\'#form_tools_reinstal\').bind(\'submit\',function(e){return JSFRWin(\'#form_tools_reinstal\',\'#tools_block\');});';
 	}
 	elseif($_GET['_type']=='config'){
 		$DATA['formtools'] = $MODUL->confirmConfigmodul();
 		$html = $HTML->transformPHP($DATA,'formtools');
-		$_tpl['onload'] .= '_win2=\'tools_block\';$(\'#form_tools_config\').bind(\'submit\',function(e){return JSFRWin(\'#form_tools_config\');});';
+		$_tpl['onload'] .= '$(\'#form_tools_config\').bind(\'submit\',function(e){return JSFRWin(\'#form_tools_config\',\'#tools_block\');});';
 	}
 	elseif($_GET['_type']=='reindex'){
 		$DATA['formtools'] = $MODUL->confirmReindex();
 		$html = $HTML->transformPHP($DATA,'formtools');
-		$_tpl['onload'] .= '_win2=\'tools_block\';$(\'#form_tools_reindex\').bind(\'submit\',function(e){return JSFRWin(\'#form_tools_reindex\');});';
+		$_tpl['onload'] .= '$(\'#form_tools_reindex\').bind(\'submit\',function(e){return JSFRWin(\'#form_tools_reindex\',\'#tools_block\');});';
 	}
 	elseif($_GET['_type']=='checkmodul'){
 		$DATA['formtools'] = $MODUL->confirmCheckmodul();
 		$html = $HTML->transformPHP($DATA,'formtools');
-		$_tpl['onload'] .= '_win2=\'tools_block\';$(\'#form_tools_checkmodul\').bind(\'submit\',function(e){return JSFRWin(\'#form_tools_checkmodul\');});';
+		$_tpl['onload'] .= '$(\'#form_tools_checkmodul\').bind(\'submit\',function(e){return JSFRWin(\'#form_tools_checkmodul\',\'#tools_block\');});';
 	}
 	elseif($_GET['_type']=='stats'){
 		$htmleval = $MODUL->statisticModule((int)$_GET['_oid']);
@@ -121,52 +121,22 @@
 	elseif($_REQUEST['_type']=='formfilter') {
 		$DATA['filter'] = $MODUL->filtrForm();
 		$html = '<span class="bottonimg imgdel" style="float: right;" onclick="$(this).parent().hide();">EXIT</span>'.$HTML->transformPHP($DATA,'filter');
-		$_tpl['onload'] .= '$(\'#form_filter\').bind(\'submit\',function(e){return JSFRWin(\'#form_tools_checkmodul\');});';
+		$_tpl['onload'] .= '$(\'#form_filter\').bind(\'submit\',function(e){return JSFRWin(\'#form_filter\');});';
 	}
 	/**
 		* очистка фильтра
 	**/
 	elseif($_REQUEST['_type']=='filter' && isset($_REQUEST['f_clear_sbmt'])){
-		$show_footer = 0;
 		unset($_SESSION['filter'][$_GET['_modul']]);
-	
-		$_tpl['onload'] .= 'window.location.href = window.location.href;';
+		$_tpl['onload'] .= 'window.location.href = \''.$_SERVER['HTTP_REFERER'].'\';';
 	}
 	
 	/**
 		* задаются параметры фильтра
 	**/
-	elseif($_REQUEST['_type']=='filter'){
-		$show_footer = 0;
-
-		foreach($MODUL->fields_form as $k=>$row)
-		{
-			if(isset($_REQUEST['f_'.$k]) && $_REQUEST['f_'.$k]!='' && isset($MODUL->fields_form[$k]['mask']['filter']))
-			{
-				$is_int = 0 ;
-				if (!is_array($_REQUEST['f_'.$k])) {
-					$_SESSION['filter'][$_GET['_modul']][$k] = mysql_real_escape_string($_REQUEST['f_'.$k]);
-					if(isset($_REQUEST['f_'.$k.'_2']))
-						$_SESSION['filter'][$_GET['_modul']][$k.'_2'] = mysql_real_escape_string($_REQUEST['f_'.$k.'_2']);
-				} else {
-					$_SESSION['filter'][$_GET['_modul']][$k] = array();
-					if($is_int)
-						foreach($_REQUEST['f_'.$k] as $row)
-							$_SESSION['filter'][$_GET['_modul']][$k][] = (int)$row;
-					else
-						foreach($_REQUEST['f_'.$k] as $row)
-							$_SESSION['filter'][$_GET['_modul']][$k][] = mysql_real_escape_string($row);
-				}
-				if($_REQUEST['exc_'.$k]) 
-					$_SESSION['filter'][$_GET['_modul']]['exc_'.$k] = 1;
-				else
-					unset($_SESSION['filter'][$_GET['_modul']]['exc_'.$k]);
-			}else
-				unset($_SESSION['filter'][$_GET['_modul']][$k]);
-			
-		 }
-
-			$_tpl['onload'] .= 'window.location.href = window.location.href;';
+	elseif($_REQUEST['_type']=='filter') {
+		$MODUL->setFilter();
+		$_tpl['onload'] .= 'window.location.href = \''.$_SERVER['HTTP_REFERER'].'\';';
 	}
 	else
 		$_tpl['onload']='fLog(\'<div style="color:red;">'.date('H:i:s').' : Параметры заданны неверно!</div>\',1);';

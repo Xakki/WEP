@@ -118,12 +118,12 @@
 				$listname['tablename'] = getTableNameOfClass($listname['class']);
 			}
 
-			if(!$listname['tx.id']) 
-				$listname['tx.id'] = 'tx.id';
-			if(!$listname['tx.name']) 
-				$listname['tx.name'] = 'tx.name';
+			if(!$listname['idField']) 
+				$listname['idField'] = 'tx.id';
+			if(!$listname['nameField']) 
+				$listname['nameField'] = 'tx.name';
 
-			$clause['field'] = 'SELECT '.$listname['tx.id'].' as id,'.$listname['tx.name'].' as name';
+			$clause['field'] = 'SELECT '.$listname['idField'].' as id,'.$listname['nameField'].' as name';
 			if($listname['is_tree'])
 				$clause['field'] .= ', tx.parent_id as parent_id';
 			if($listname['is_checked'])
@@ -134,9 +134,9 @@
 				$listname['where'] = implode(' and ',$listname['where']);
 			/*Выбранные элементы*/ /*помоему это лишнее - надо проверить*/
 			if($value and is_array($value))
-				$clause['where'] = $listname['tx.id'].' IN ("'.implode('", "',$value).'")';
+				$clause['where'] = $listname['idField'].' IN ("'.implode('", "',$value).'")';
 			elseif($value)
-				$clause['where'] = $listname['tx.id'].'="'.$value.'"';
+				$clause['where'] = $listname['idField'].'="'.$value.'"';
 
 			if($listname['where'])
 				$clause['where'] .= ($clause['where']!=''?' AND ':'').$listname['where'];
@@ -144,7 +144,7 @@
 				$clause['where'] = ' WHERE '.$clause['where'];
 
 			if($listname['leftjoin'] or $listname['join'])
-				$clause['from'] = ' FROM `'.$_this->tablename.'` t1 '.($listname['leftjoin']?'LEFT':'').' JOIN `'.$listname['tablename'].'` tx ON '.$listname['leftjoin'];
+				$clause['from'] = ' FROM `'.$_this->tablename.'` t1 '.($listname['leftjoin']?'LEFT':'').' JOIN `'.$listname['tablename'].'` tx ON '.$listname['leftjoin'].$listname['join'];
 			else 
 				$clause['from'] = ' FROM `'.$listname['tablename'].'` tx ';
 			if ($listname['ordfield'])
@@ -157,7 +157,7 @@
 							$data[$row['id']] = $row['name'];
 					}
 					elseif($listname['is_tree']) {
-						if($MODUL->mf_use_charid)//is_int($row['parent_id'])
+						if($MODUL->mf_use_charid)//is_int($row['parent_id']) *********** както решить трабл
 							$data[''][''] = $_this->getMess('_listroot');
 						else 
 							$data[0][0] = $_this->getMess('_listroot');
@@ -166,10 +166,7 @@
 						}
 					}
 					else{
-						if($MODUL->mf_use_charid)//is_int($row['id'])
-							$data[''] = ' --- ';
-						else 
-							$data[0] = ' --- ';
+						$data[''] = ' --- ';
 						while ($row = $result->fetch_array())
 								$data[$row['id']] = $row['name'];
 					}

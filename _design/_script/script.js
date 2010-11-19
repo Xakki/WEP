@@ -34,22 +34,14 @@ function JSHR(id,_href,param,body,insertType) {
 			timerid2 = setTimeout(function(){fShowload(0);},200);
 
 			if(id!=0 && data.html != '') {
-				if(typeof id=='object'){
-					if(insertType=='after')
-						$(id).after(data.html);
-					else if(insertType=='before')
-						$(id).before(data.html);
-					else
-						id.innerHTML = data.html;
-				}
-				else {
-					if(insertType=='after')
-						$('#'+id).after(data.html);
-					else if(insertType=='before')
-						$('#'+id).before(data.html);
-					else
-						$('#'+id).html(data.html);
-				}
+				if(typeof id!='object')
+					id = '#'+id;
+				if(insertType=='after')
+					$(id).after(data.html);
+				else if(insertType=='before')
+					$(id).before(data.html);
+				else
+					$(id).html(data.html);
 			}
 			if(data.text != undefined && data.text!='') fLog(fSpoiler(data.text,'AJAX text result'),1);
 			if(data.eval != undefined && data.eval!='') eval(data.eval);
@@ -83,7 +75,7 @@ function JSFRWin(obj,htmlobj) {
 				if(htmlobj)
 					$(htmlobj).html(result.html);
 				else
-					$('#'+_win2).html(result.html);
+					fShowload(1,result.html);
 			}
 			if(result.eval!= undefined && result.eval!='') eval(result.eval);
 			if(result.text!= undefined && result.text!='') fLog(fSpoiler(result.text,'AJAX text result'),1);

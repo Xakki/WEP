@@ -1209,12 +1209,45 @@ $Ajax=0 - не скриптовая
 				'value'=>'Отфильтровать');			
 			
 			$this->form['f_clear_sbmt'] = array(
-				'type'=>'submit',
-				'value'=>'Очистить');
+				'type'=>'info',
+				'caption'=>'<a href="'.$_SERVER['HTTP_REFERER'].'" onclick="JSHR(\'form_filter\',\''.$this->form['_*features*_']['action'].'\',{ f_clear_sbmt:1});return false;">Очистить</a>');
 			$this->kFields2FormFields($this->form);
 			return $this->form;
 		}
 		return false;
+	}
+
+	function setFilter($flag=0) {
+		if(isset($_REQUEST['f_clear_sbmt'])) {
+			unset($_SESSION['filter'][$this->_cl]);
+		} else {
+			foreach($this->fields_form as $k=>$row)
+			{
+				if(isset($_REQUEST['f_'.$k]) && $_REQUEST['f_'.$k]!='' && isset($this->fields_form[$k]['mask']['filter']))
+				{
+					$is_int = 0 ;
+					if (!is_array($_REQUEST['f_'.$k])) {
+						$_SESSION['filter'][$this->_cl][$k] = mysql_real_escape_string($_REQUEST['f_'.$k]);
+						if(isset($_REQUEST['f_'.$k.'_2']))
+							$_SESSION['filter'][$this->_cl][$k.'_2'] = mysql_real_escape_string($_REQUEST['f_'.$k.'_2']);
+					} else {
+						$_SESSION['filter'][$this->_cl][$k] = array();
+						if($is_int)
+							foreach($_REQUEST['f_'.$k] as $row)
+								$_SESSION['filter'][$this->_cl][$k][] = (int)$row;
+						else
+							foreach($_REQUEST['f_'.$k] as $row)
+								$_SESSION['filter'][$this->_cl][$k][] = mysql_real_escape_string($row);
+					}
+					if($_REQUEST['exc_'.$k]) 
+						$_SESSION['filter'][$this->_cl]['exc_'.$k] = 1;
+					else
+						unset($_SESSION['filter'][$this->_cl]['exc_'.$k]);
+				} else if(!$flag)
+					unset($_SESSION['filter'][$this->_cl][$k]);
+				
+			 }
+		}
 	}
 /* вспомогательные функции*/
 	/**
@@ -1234,11 +1267,16 @@ $Ajax=0 - не скриптовая
 						$cl[$k] = 't1.'.$k.' '.($tempex?'NOT':'').'IN ("'.implode('","',$_FILTR[$k]).'")';
 					else
 					{
-						if(strpos($this->fields_form[$k]['type'], 'int') !== false) {
+						if($this->fields_form[$k]['type'] == 'int') {
 							if($tempex)
 								$cl[$k] = '(t1.'.$k.'<'.$_FILTR[$k].' or t1.'.$k.'>'.$_FILTR[$k.'_2'].')';
 							else
 								$cl[$k] = '(t1.'.$k.'>'.$_FILTR[$k].' and t1.'.$k.'<'.$_FILTR[$k.'_2'].')';
+						}
+						elseif($this->fields_form[$k]['type'] == 'list') {
+							if($_FILTR[$k]) {
+								$cl[$k] = 't1.'.$k.'="'.$_FILTR[$k].'"';
+							}
 						}
 						elseif($_FILTR[$k]=='!0')
 							$cl[$k] = 't1.'.$k.'!=""';
