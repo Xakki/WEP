@@ -564,27 +564,6 @@
 			elseif($value['type']=='checkbox') {
 				$value['value'] = $data[$key] = ((int)$data[$key] == 1 ? 1 : 0);
 			}
-			elseif($value['type']=='date' and is_array($data[$key])) {
-					if($value['mask']['format']) {
-						if($value['mask']['separate'])
-							$format = explode($value['mask']['separate'], $value['mask']['format']);
-						else
-							$format = explode('-', $value['mask']['format']);
-					}
-					else{
-						$format = explode('-', 'Y-m-d-H-i-s');
-					}
-					$final_array_date = array_combine($format, $data[$key]);
-					
-					$date_str = _parseDate($final_array_date);
-					
-					if($_this->fields[$key]['type'] == 'int') {
-						$value['value'] = $data[$key] =  mktime($date_str[0], $date_str[1], $date_str[2], $date_str[3], $date_str[4], $date_str[5]);
-					}					
-					if($_this->fields[$key]['type'] == 'timestamp') {
-						$value['value'] = $data[$key] =  date("Y-m-d H:i:s", mktime($date_str[0], $date_str[1], $date_str[2], $date_str[3], $date_str[4], $date_str[5]));
-					}
-			}
 			elseif($value['type']=='date') {
 					// формат для даты
 					if($value['mask']['format']) {
@@ -598,56 +577,52 @@
 					}
 					
 					// формат для времени
-					$format_time = array();					
 					if($value['mask']['time']) {
-						if($value['mask']['separate']) {
+						if($value['mask']['separate']) 
 							$format_time = explode($value['mask']['separate_time'], $value['mask']['time']);
-						}
-						else {
+						else 
 							$format_time = explode(':', $value['mask']['time']);
-						}
 					}
 					else {
-						$format_time = explode(':', 'H:i:s');
+						$format_time = explode('-', 'H-i-s');
 					}
 					
-					// соединяем массивы и делим данные сначала по пробелу, потом по разделительным знакам, если нет времени, то добавляем значение по умолчанию
-					$temp = explode(' ', $data[$key]);
-					if($temp[0]) {
-						if($value['mask']['separate']) {
-							$date = explode($value['mask']['separate'], $temp[0]);
-						} 
-						else {
-							$date = explode('-', $temp[0]);
-						}
-					}
-					if($temp[1]) {
-						if($value['mask']['separate_time']) {
-							$time = explode($value['mask']['separate_time'], $temp[1]);
-						} 
-						else {
-							$time = explode(':', $temp[1]);
-						}
+					if(is_array($data[$key])) {
+						$date = $data[$key];
 					}
 					else {
-						$time = array(0, 0, 0); 
+						// соединяем массивы и делим данные сначала по пробелу, потом по разделительным знакам, если нет времени, то добавляем значение по умолчанию
+						$temp = explode(' ', $data[$key]);
+						if($temp[0]) {
+							if($value['mask']['separate']) 
+								$date = explode($value['mask']['separate'], $temp[0]); 
+							else 
+								$date = explode('-', $temp[0]);
+						}
+						if($temp[1]) {
+							if($value['mask']['separate_time']) 
+								$time = explode($value['mask']['separate_time'], $temp[1]);
+							else 
+								$time = explode(':', $temp[1]);
+						}
+						else {
+							$time = array(0, 0, 0); 
+						}
+						$date = array_merge($date, $time);
 					}
 					
 					$format = array_merge($format, $format_time);
-					$date = array_merge($date, $time);
-					
-					$final_array_date = array_combine($format, $date);
-					
+					if(count($format) == count($date)) $final_array_date = array_combine($format, $date);
 					$date_str = _parseDate($final_array_date);
 					
 					if($_this->fields[$key]['type'] == 'int') {
 						$value['value'] = $data[$key] =  mktime($date_str[0], $date_str[1], $date_str[2], $date_str[3], $date_str[4], $date_str[5]);
-					}
-
+					}					
 					if($_this->fields[$key]['type'] == 'timestamp') {
 						$value['value'] = $data[$key] =  date("Y-m-d H:i:s", mktime($date_str[0], $date_str[1], $date_str[2], $date_str[3], $date_str[4], $date_str[5]));
 					}
 			}
+
 			//*********** МАССИВЫ
 			elseif(is_array($data[$key]) and count($data[$key])) {
 /*Доработать*/
