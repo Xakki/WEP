@@ -14,9 +14,9 @@ class mail_class extends kernel_class {
 	function _create() {
 		parent::_create();
 
-		$this->config['sitename'] = 'New company';
-
-		$this->config_form['sitename'] = array('type' => 'text', 'caption' => 'Название сайта','mask'=>array('max'=>1000));
+		$this->fields_form["from"]= array("type"=>"text",'caption'=>'Обратный email адрес','mask'=>array('name'=>'email', 'min' => '4'));
+		$this->fields_form["subject"]= array("type"=>"text",'caption'=>'Тема письма', 'mask'=>array('min' => '5'));
+		$this->fields_form["text"]= array("type"=>"textarea",'caption'=>'Текcт письма', 'mask'=>array('min' => '5'));
 
 	}
 
@@ -56,7 +56,7 @@ class mail_class extends kernel_class {
 		return mail($data['mailTo'], $subject, $mess,$header);
 	}
 
-	function mailForm($name,$mailTo) {
+	function mailForm($mailTo,$templateSubj='',$templateText='') {
 		global $_MESS;
 		$flag=0;// 1 - успешно, 0 - норм, -1  - ошибка
 		$formflag = 1;// 0 - показывает форму, 1 - не показывать форму
@@ -66,22 +66,20 @@ class mail_class extends kernel_class {
 		$param=array('capthaOn'=>1);
 		$data = array();
 
-		if(_prmUserCheck()) $mailFrom = $_SESSION['user']['email'];
+		if(_prmUserCheck()) {
+			$this->fields_form["from"]['default'] = $_SESSION['user']['email'];
+		}
 		else  $mailFrom='';
-
-		$param=array('captchaOn'=>1);
-
-		$this->fields_form["info"]= array("type"=>"info",'caption'=>'Отправка письма '.$name);
-		$this->fields_form["from"]= array("type"=>"text",'caption'=>'Обратный email адрес', 'min' => '1','mask'=>array('name'=>'email'),'value'=>$mailFrom);
-		$this->fields_form["subject"]= array("type"=>"text",'caption'=>'Тема письма', 'min' => '1');
-		$this->fields_form["text"]= array("type"=>"textarea",'caption'=>'Текcт письма', 'min' => '1');
-
 		if(count($_POST) and $_POST['sbmt']) {
 			$this->kPreFields($_POST,$param);
 			$arr = $this->fFormCheck($_POST,$param,$this->fields_form);
 			$flag=-1;
-			if(!count($arr['mess'])){
+			if(!count($arr['mess'])) {
 				$arr['vars']['mailTo']=$mailTo;
+				if($templateSubj)
+					$arr['vars']['subject'] = str_replace('###TEXT###',$arr['vars']['subject'],$templateSubj);
+				if($templateText)
+					$arr['vars']['text'] = str_replace('###TEXT###',$arr['vars']['text'],$templateText);
 				if($this->Send($arr['vars'])) {
 					$flag=1;
 					$arr['mess'][] = array('name'=>'ok', 'value'=>$this->getMess('mailok'));
@@ -93,12 +91,14 @@ class mail_class extends kernel_class {
 		$_SESSION['captha'] = rand(10000,99999);
 
 		$this->form['sbmt']['value']='Отправить письмо';
-		if($formflag and (!isset($param['ajax']) or $flag==0)) // показывать форму , также если это АЯКС и 
+		if($flag==1)
+			$formflag = 0;
+		if($formflag) // показывать форму , также если это АЯКС и 
 			$formflag = $this->kFields2Form($param);
 
 		$this->setCaptcha();
 
-		return Array(Array('messages'=>array_merge($mess,$arr['mess']), 'form'=>($formflag?$this->form:array())), $flag);
+		return Array(Array('messages'=>($mess+$arr['mess']), 'form'=>($formflag?$this->form:array())), $flag);
 
 	}
 }
