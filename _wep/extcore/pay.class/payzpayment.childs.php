@@ -1,10 +1,10 @@
 <?
 
-class paywebmoney_class extends kernel_class {
+class payzpayment_class extends kernel_class {
 	
 	function _set_features() {
 		if (parent::_set_features()) return 1;
-		$this->caption = 'Платежи WebMoney';
+		$this->caption = 'Платежи Z-payment';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';
 		$this->mf_timecr = true; // создать поле хранящще время создания поля
 		$this->mf_timeup = true; // создать поле хранящще время обновления поля
@@ -28,9 +28,9 @@ class paywebmoney_class extends kernel_class {
 		$this->fields_form['mf_ipcreate'] = array('type' => 'text','readonly'=>1, 'caption' => 'Дата', 'mask'=>array('fview'=>2));
 		
 		$this->pay_systems = array(
-			'webmoneyR' => array(
-				'caption' => 'webmoneyR',
-				'icon' => 'wmr.gif',
+			'qiwi' => array(
+				'caption' => 'Турминалы оплаты QIWI',
+				'icon' => 'qiwi.gif',
 			),
 		);
 	}
@@ -40,13 +40,13 @@ class paywebmoney_class extends kernel_class {
 		
 //		$_tpl['onload'] = 'document.getElementById(\'pay\').submit();';
 		
-		$html = 'Пополнение баланса через платежную систему WebMoney с R кошелька<br/>После оплаты, на Ваш счет поступит '.$_POST['payment_amount'].' руб.';
-		$html .= '<form id="pay" method="POST" action="https://merchant.webmoney.ru/lmi/payment.asp">'."\n";
-		$html .= '<input type="hidden" name="LMI_PAYMENT_AMOUNT" value="'.$_POST['payment_amount'].'">';
-		$html .= '<input type="hidden" name="LMI_PAYMENT_DESC_BASE64" value="'.base64_encode('Пополнение пользовательского счета partner.ru').'">'."\n";
-		$html .= '<input type="hidden" name="LMI_PAYEE_PURSE" value="R159322342129">'."\n";
-		$html .= '<input type="hidden" name="LMI_MODE" value="1">'."\n";
-		$html .= '<input type="hidden" name="LMI_SIM_MODE" value="0">'."\n";
+		$html = 'Пополнение баланса через платежную систему Z-payment<br/>После оплаты, на Ваш счет поступит '.$_POST['payment_amount'].' руб.';
+		$html .= '<form id="pay" method="POST" action="https://z-payment.ru/merchant.php">'."\n";
+		$html .= '<input name="LMI_PAYMENT_AMOUNT" type="hidden" value="'.$_POST['payment_amount'].'" size="10" maxlength="10">';
+		$html .= '<input name="CLIENT_MAIL" type="hidden" value="">';
+		$html .= '<input name="LMI_PAYMENT_DESC" type="hidden" value="Описание покупки">';
+		$html .= '<input name="LMI_PAYEE_PURSE" type="hidden" value="">';
+
 		$html .= '<input type="submit" value="Перейти к оплате">';
 		
 		return $html;
