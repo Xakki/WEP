@@ -17,7 +17,8 @@ class mail_class extends kernel_class {
 		$this->fields_form["from"]= array("type"=>"text",'caption'=>'Обратный email адрес','mask'=>array('name'=>'email', 'min' => '4'));
 		$this->fields_form["subject"]= array("type"=>"text",'caption'=>'Тема письма', 'mask'=>array('min' => '5'));
 		$this->fields_form["text"]= array("type"=>"textarea",'caption'=>'Текcт письма', 'mask'=>array('min' => '5'));
-
+		
+		$this->locallang['default']['_saveclose'] = 'Отправить письмо';
 	}
 
 	function Send($data) {
@@ -90,7 +91,6 @@ class mail_class extends kernel_class {
 				$mess = $this->kPreFields($arr['vars'],$param);
 		$_SESSION['captha'] = rand(10000,99999);
 
-		$this->form['sbmt']['value']='Отправить письмо';
 		if($flag==1)
 			$formflag = 0;
 		if($formflag) // показывать форму , также если это АЯКС и 
