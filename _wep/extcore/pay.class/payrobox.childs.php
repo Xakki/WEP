@@ -28,14 +28,7 @@ class payrobox_class extends kernel_class {
 		$this->fields_form['mf_ipcreate'] = array('type' => 'text','readonly'=>1, 'caption' => 'Дата', 'mask'=>array('fview'=>2));
 		
 		$this->pay_systems = array(
-			'webmoneyZ' => array(
-				'caption' => 'webmoneyZ',
-				'icon' => 'wmz.gif',
-			),
-			'webmoneyU' => array(
-				'caption' => 'webmoneyU',
-				'icon' => 'wmu.gif',
-			),
+			
 		);
 
 	}

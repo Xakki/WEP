@@ -17,6 +17,8 @@ class pay_class extends kernel_class {
 	protected function _create_conf() {/*CONFIG*/
 		parent::_create_conf();
 		$this->config_form['childs']['caption'] = 'Подключенные модули платежных систем';
+		
+		$this->config['desc'] = 'Пополнение партнерского счёта partner.ru';
 	}
 
 	protected function _create() {
