@@ -108,15 +108,15 @@
 							$cls[1] .= ' LEFT';
 
 						$cls[1] .= ' JOIN `'.getTableNameOfClass((isset($lsn['class'])?$lsn['class']:$lsn['tablename'])).'` t'.$t.' ON ';
-
-						if($r['multiple']==1)
+						
+						if(isset($lsn['join']) and $lsn['join']!='')
+							$cls[1] .= ' '.str_replace('tx.','t'.$t.'.',$lsn['join']).' ';
+						elseif(isset($lsn['leftjoin']) and $lsn['leftjoin']!='')
+							$cls[1] .= ' '.str_replace('tx.','t'.$t.'.',$lsn['leftjoin']).' ';
+						elseif($r['multiple']==1)
 							$cls[1] .= ' t1.'.$k.' LIKE concat("%|",'.$lsn['idField'].',"|%") ';
 						else
 							$cls[1] .= ' t1.'.$k.'='.$lsn['idField'].' ';
-						if(isset($lsn['join']) and $lsn['join']!='')
-							$cls[1] .= ' and '.str_replace('tx.','t'.$t.'.',$lsn['join']).' ';
-						elseif(isset($lsn['leftjoin']) and $lsn['leftjoin']!='')
-							$cls[1] .= ' and '.str_replace('tx.','t'.$t.'.',$lsn['leftjoin']).' ';
 						$t++;
 					}elseif(($r['type']=='list' or $r['type']=='ajaxlist') and !is_array($r['listname'])) {
 						$this->_checkList($r['listname'],0);
@@ -180,7 +180,7 @@
 							$tditem['value'] .= long2ip($row[$k]);
 						elseif($r['type']=='checkbox')
 							$tditem['value'] .= $this->_CFG['enum']['yesno'][$row[$k]];
-						elseif($r['type']=='list' and is_array($r['listname']) and isset($row['name_'.$k])) {
+						elseif($r['type']=='list' and is_array($r['listname'])) {//isset($row['name_'.$k])
 							if($r['multiple']) 
 								$tditem['value']= str_replace('|',', ',trim($row['name_'.$k],'|'));
 							else

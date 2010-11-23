@@ -45,10 +45,12 @@
 		if(isset($_tpl['styles']) and is_array($_tpl['styles'])) {
 			$temp = '';
 			foreach($_tpl['styles'] as $kk=>$rr) {
-				if($rr==1 and $kk)
-					$temp .= '<link type="text/css" href="'.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_style'].$kk.'.css" rel="stylesheet"/>'."\n";
+				if($rr[0]=='<')
+					$temp .= $rr."\n";
 				elseif(is_array($rr))
 					$temp .= '<link type="text/css" href="'.implode('" rel="stylesheet"/>'."\n".'<link type="text/css" href="',$rr).'" rel="stylesheet"/>'."\n";
+				elseif($rr==1 and $kk)
+					$temp .= '<link type="text/css" href="'.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_style'].$kk.'.css" rel="stylesheet"/>'."\n";
 				else
 					$temp .= '<style type="text/css">'.$rr.'</style>'."\n";
 			}
@@ -58,13 +60,13 @@
 		if(isset($_tpl['script']) and is_array($_tpl['script'])) {
 			$temp = '';
 			foreach($_tpl['script'] as $kk=>$rr) {
-				if($rr==1 and $kk) {
+				if(is_array($rr))
+					$temp .= '<script type="text/javascript" src="'.implode('"></script>'."\n".'<script type="text/javascript src="',$rr).'"></script>'."\n";
+				elseif($rr==1 and $kk) {
 					$temp .= '<script type="text/javascript" src="'.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].$kk.'.js"></script>'."\n";
 					if($kk=='jquery.fancybox')
 						$_tpl['onload'] .= "$('.imagebox a').fancybox();";
 				}
-				elseif(is_array($rr))
-					$temp .= '<script type="text/javascript" src="'.implode('"></script>'."\n".'<script type="text/javascript src="',$rr).'"></script>'."\n";
 				else
 					$temp .= '<script type="text/javascript">'.$rr.'</script>'."\n";
 			}
@@ -77,10 +79,10 @@
 		$temp = 'clearTimeout(timerid);fShowload(1);';
 		if($_tpl['styles'] and is_array($_tpl['styles']) and count($_tpl['styles'])) {
 			foreach($_tpl['styles'] as $kk=>$rr) {
-				if($rr==1 and $kk)
-					$temp .= '$.includeCSS(\''.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_style'].$kk.'.css\');';
-				elseif(is_array($rr))
+				if(is_array($rr))
 					$temp .= '$.includeCSS(\''.implode('\'); $.includeCSS(\'',$rr).'\'); ';
+				elseif($rr==1 and $kk)
+					$temp .= '$.includeCSS(\''.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_style'].$kk.'.css\');';
 				else
 					$temp .= 'alert(\'CSS not find '.$kk.'\');';
 			}
@@ -90,12 +92,12 @@
 		$tcnt = 0;
 		if($_tpl['script'] and is_array($_tpl['script']) and count($_tpl['script'])) {
 			foreach($_tpl['script'] as $kk=>$rr) {
-				if($rr==1 and $kk) {
-					$temp .= '$.include(\''.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].$kk.'.js\',chekcnt++);';
+				if(is_array($rr)) {
+					$temp .= '$.include(\''.implode('\',chekcnt++); $.include(\'',$rr).'\',chekcnt++); ';//
 					$tcnt++;
 				}
-				elseif(is_array($rr)) {
-					$temp .= '$.include(\''.implode('\',chekcnt++); $.include(\'',$rr).'\',chekcnt++); ';//
+				elseif($rr==1 and $kk) {
+					$temp .= '$.include(\''.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].$kk.'.js\',chekcnt++);';
 					$tcnt++;
 				}
 				else

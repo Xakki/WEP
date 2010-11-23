@@ -6,33 +6,34 @@ class comments_class extends kernel_class {
 		
 		$this->config['treelevel'] = 3;
 		$this->config['vote'] = 0;
-		$this->config['spamtime'] = 24;
-		$this->config['defmax'] = 9;
-		$this->config['defumax'] = 9;
+		$this->config['spamtime'] = 2;
+		$this->config['defmax'] = 3;
+		$this->config['defumax'] = 15;
 
 		$this->config_form['treelevel'] = array('type' => 'int', 'caption' => 'Макс уровень деревьев','comment'=>'0 - откл ответы на комменты, 1 - только 1 уровень ответов, итд');
 		$this->config_form['vote'] = array('type' => 'checkbox', 'caption' => 'Голосование');
 		$this->config_form['spamtime'] = array('type' => 'int', 'caption' => 'Часов для спама','comment'=>'Время в течении которого пользователь может подать максимальное число комментов');
-		$this->config_form['defmax'] = array('type' => 'int', 'caption' => 'Макс. объяв. не пользов.','comment'=>'Максимум комментов за промежуток времени не авторизованному пользователю');
-		$this->config_form['defumax'] = array('type' => 'int', 'caption' => 'Макс. объяв. пользов.','comment'=>'Максимум комментов за промежуток времени авторизованному пользователю по умолчанию если не укзана у группы пользователя');
+		$this->config_form['defmax'] = array('type' => 'int', 'caption' => 'Макс. коммент. не пользов.','comment'=>'Максимум комментов за промежуток времени не авторизованному пользователю');
+		$this->config_form['defumax'] = array('type' => 'int', 'caption' => 'Макс. коммент. пользов.','comment'=>'Максимум комментов за промежуток времени авторизованному пользователю по умолчанию если не укзана у группы пользователя');
 	}
 
 	function _set_features()
 	{
 		if (parent::_set_features()) return 1;
 		$this->mf_actctrl = true;
-		if($this->config['treelevel']>0)
-			$this->mf_istree = true;
 		$this->messages_on_page = 200;
 		$this->locallang['default']['denied_add'] = 'Оставлять комментарий могут только зарегистрированные пользователи!';
 		$this->locallang['default']['add'] = 'Комментарий добавлен.';
 		$this->locallang['default']['add_name'] = 'Добавить комментарий';
+		$this->locallang['default']['_saveclose'] = 'Написать комментарий';
 		return 0;
 	}
 
 	function _create()
 	{
-		parent::_create();
+		if($this->config['treelevel']>0)
+			$this->mf_istree = true;
+		parent::_create();//$this->config доступен после этой функции
 
 		$this->tablename = 'comments';
 		$this->caption = 'Комментарии';
@@ -61,7 +62,6 @@ class comments_class extends kernel_class {
 			$this->fields_form['parent_id'] = array('type' => 'hidden');
 		if($this->owner)
 			$this->fields_form['owner_id'] = array('type' => 'hidden');
-
 	}
 
 	public function _UpdItemModul($param) {
@@ -95,9 +95,9 @@ class comments_class extends kernel_class {
 		$result = $this->SQL->execSQL($cls);
 		if(!$result->err and $row = $result->fetch_array()) {
 			if($row['cnt']>=$pb) {
-				$mess[] = array('name'=>'error', 'value'=>'Внимание! Вы привысили лимит, допускается отправка не более '.$pb.' в период '.$this->config['spamtime'].' часа. Можете запланировать время выпуска объявления на более поздний срок в дополнительных опциях - "Дата публикации"');
+				$mess[] = array('name'=>'error', 'value'=>'Внимание! Вы привысили лимит , допускается комментировать не более '.$pb.' раз в период '.$this->config['spamtime'].' часа.');
 				if(!isset($_SESSION['user']['id']))
-					$mess[] = array('name'=>'alert', 'value'=>'Зарегестрированные пользователи могут отправлять '.$this->config['defumax'].' и более объявлений в день. Подробности <a href="/inform.html">тут</a>.');
+					$mess[] = array('name'=>'alert', 'value'=>'Зарегестрированные пользователи могут отправлять '.$this->config['defumax'].' и более комментариев в '.$this->config['spamtime'].' часа. Подробности <a href="/inform.html">тут</a>.');
 				return $mess;
 			}
 		}
