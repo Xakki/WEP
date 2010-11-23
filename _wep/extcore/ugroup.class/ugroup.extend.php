@@ -157,7 +157,7 @@ class users_extend extends kernel_class {
 		// FORM FIELDS
 		if($this->mf_use_charid){
 			$this->fields_form['id'] =	array('type' => 'text', 'caption' => 'Логин','mask'=>array('name'=>'login','min' => '4','sort'=>1),'comment'=>'Логин должен состоять только из латинских букв и цифр.');
-			if(!_prmUserCheck(1))  // Запрет поля на редактирование
+			if(_prmUserCheck(1))  // Запрет поля на редактирование
 				$this->fields_form['id']['readonly']=true;
 		}
 		
@@ -323,7 +323,7 @@ class users_extend extends kernel_class {
 		$this->fields_form['_info']= array("type"=>"info",'caption'=>'Регистрация пользователя','css'=>'caption');
 		if(count($_POST) and $_POST['sbmt']) {
 			$this->kPreFields($_POST,$param);
-			$arr = $this->fFormCheck($_POST);
+			$arr = $this->fFormCheck($_POST,$param,$this->fields_form);
 			if(!count($arr['mess'])){
 
 				$this->listfields = array("LOWER(t1.id) as id");
@@ -354,7 +354,7 @@ class users_extend extends kernel_class {
 						$MAIL->reply = 0;
 						if($MAIL->Send($datamail)) {
 							$flag=1;
-							$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['regok']);
+							$arr['mess'][] = array('name'=>'ok', 'value'=>$this->_CFG['_MESS']['regok']);
 						}else {
 							$this->_delete();
 							$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['mailerr']);

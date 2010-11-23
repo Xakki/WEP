@@ -83,17 +83,16 @@ _fldformer($key, $param)
 		$this->cf_childs = false; // true - включить управление подмодулями в настройках модуля
 		$this->includeJStoFORM = false; // подключать ли скрипты для формы через настройки
 		$this->includeCSStoFORM = false; // подключать ли стили для формы через настройки
-		$this->ver = '0.1.1';
+		$this->version = 'WEP 2.0'; // версия ядра
+		$this->ver = '0.1.1'; // версия модуля
 
 		$this->text_ext = '.txt';// расширение для memo фиаилов
 
-		$this->_cl = str_replace('_class','',get_class($this));
-		$this->owner_name = 'owner_id';
-		$this->nick = $this->_cl;
-		$this->tablename = $this->_CFG['sql']['dbpref'].$this->_cl;
-		$this->caption = $this->_cl;
-		$this->version = 'WEP 2.0';
-		$this->_listfields = array('name');
+		$this->_cl = str_replace('_class','',get_class($this)); //- символическое id модуля
+		$this->owner_name = 'owner_id'; // название поля для родительской связи в БД
+		$this->tablename = $this->_CFG['sql']['dbpref'].$this->_cl; // название таблицы
+		$this->caption = $this->_cl; // заголовок модуля
+		$this->_listfields = array('name'); //select по умолч
 		$this->_unique =
 		$this->_enum =
 		$this->update_records =
@@ -121,7 +120,7 @@ _fldformer($key, $param)
 			$this->fields['id'] = array('type' => 'int', 'attr' => 'unsigned NOT NULL AUTO_INCREMENT');
 		
 		if($this->_setnamefields) 
-			$this->fields['name'] = array('type' => 'varchar', 'width' => $this->mf_idwidth, 'attr' => 'NOT NULL');
+			$this->fields['name'] = array('type' => 'varchar', 'width' => '255', 'attr' => 'NOT NULL');
 
 		if ($this->owner) 
 		{
