@@ -10,7 +10,6 @@ class ugroup_extend extends kernel_class
 		$this->config["mailrobot"] = 'robot@xakki.ru';
 		$this->config["mailconfirm"] = '';
 		$this->config["mailremind"] = '';
-		$this->config["mailbottom"] = '';
 		$this->config["reg"] = 1;
 		$this->config["noreggroup"] = 4;
 		$this->config["reggroup"] = 4;
@@ -29,13 +28,6 @@ class ugroup_extend extends kernel_class
 		$this->config_form['mailremind'] = array(
 			'type' => 'ckedit',
 			'caption' => 'Текст письма востановления пароля', 
-			'paramedit'=>array(
-				'height'=>350,
-				'fullPage'=>'true',
-				'toolbarStartupExpanded'=>'false'));
-		$this->config_form['mailbottom'] = array(
-			'type' => 'ckedit',
-			'caption' => 'Текст прикрепляемый в конце письма', 
 			'paramedit'=>array(
 				'height'=>350,
 				'fullPage'=>'true',
@@ -349,8 +341,8 @@ class users_extend extends kernel_class {
 						$datamail['mailTo']=$arr['vars']['email'];
 						$datamail['subject']='Подтвердите регистрацию на '.strtoupper($_SERVER['HTTP_HOST']);
 						$href = '?confirm='.$arr['vars']['id'].'&amp;hash='.$arr['vars']['reg_hash'];
-						$this->owner->config["mailbottom"] = str_replace('%YEAR%',date('Y'),$this->owner->config["mailbottom"]);
-						$datamail['text']=str_replace(array('%pass%','%login%','%href%','%mailbottom%'),array($pass,$arr['vars']['id'],$href,$this->owner->config["mailbottom"]),$this->owner->config["mailconfirm"]);
+						
+						$datamail['text']=str_replace(array('%pass%','%login%','%href%'),array($pass,$arr['vars']['id'],$href),$this->owner->config["mailconfirm"]);
 						$MAIL->reply = 0;
 						if($MAIL->Send($datamail)) {
 							$flag=1;
@@ -465,8 +457,8 @@ class users_extend extends kernel_class {
 					$datamail['subject']='Востановление пароля на '.strtoupper($_SERVER['HTTP_HOST']);
 					$href = '?id='.$datau['id'].'&t='.$time.'&hash='.$hash;
 					$datamail['text']=str_replace(
-							array('%email%','%login%','%href%','%time%','%mailbottom%'),
-							array($datau['email'],$datau['id'],$href,date('Y-m-d H:i:s',($time+3600*24*2)),$this->owner->config["mailbottom"]),
+							array('%email%','%login%','%href%','%time%'),
+							array($datau['email'],$datau['id'],$href,date('Y-m-d H:i:s',($time+3600*24*2))),
 							$this->owner->config["mailremind"]);
 					$MAIL->reply = 0;
 					if($MAIL->Send($datamail)) {

@@ -756,7 +756,7 @@ _message($msg,$type=0)
 			elseif(isset($data[$k]) and isset($this->attaches[$k]))
 				$this->att_data[$k]= $data[$k];
 			elseif(isset($data[$k]) and isset($this->fields[$k])) {
-				$this->fld_data[$k]= $data[$k];
+				$this->fld_data[$k]= (is_string($data[$k])?mysql_real_escape_string($data[$k]):$data[$k]);
 			}
 		}
 		return $this->_update();
@@ -769,10 +769,9 @@ _message($msg,$type=0)
 			elseif(isset($data[$k]) and isset($this->attaches[$k]))
 				$this->att_data[$k]= $data[$k];
 			elseif(isset($data[$k]) and isset($this->fields[$k])) {
-				$this->fld_data[$k]= $data[$k];
+				$this->fld_data[$k]= (is_string($data[$k])?mysql_real_escape_string($data[$k]):$data[$k]);
 			}
 		}
-		if($this->mf_createrid and !$this->fld_data['creater_id']) $this->fld_data['creater_id']= $_SESSION['user']['id'];
 		return $this->_add();
 	}
 

@@ -11,6 +11,31 @@ class mail_class extends kernel_class {
 		return 0;
 	}
 
+	protected function _create_conf() {/*CONFIG*/
+		parent::_create_conf();
+
+		$this->config["mailrobot"] = 'robot@xakki.ru';
+		$this->config["mailtemplate"] = '<html><head><title>%SUBJECT%</title><meta content="text/html;charset=utf-8" http-equiv="Content-Type" /></head><body>%TEXT% %MAILBOTTOM%</body></html>';
+		$this->config["mailbottom"] = '';
+
+		$this->config_form["mailrobot"] = array("type" => "text", 'mask' =>array('min'=>1,"name"=>'email'), "caption" => "Адрес Робота");
+		$this->config_form['mailtemplate'] = array(
+			'type' => 'ckedit',
+			'caption' => 'Шаблон по умолчанию', 
+			'comment' => '%SUBJECT%, %TEXT%, %MAILBOTTOM%',
+			'paramedit'=>array(
+				'height'=>350,
+				'fullPage'=>'true',
+				'toolbarStartupExpanded'=>'false'));
+		$this->config_form['mailbottom'] = array(
+			'type' => 'ckedit',
+			'caption' => 'Текст прикрепляемый в конце письма', 
+			'paramedit'=>array(
+				'height'=>350,
+				'fullPage'=>'true',
+				'toolbarStartupExpanded'=>'false'));
+	}
+
 	function _create() {
 		parent::_create();
 
@@ -24,7 +49,7 @@ class mail_class extends kernel_class {
 	function Send($data) {
 		$this->uid = strtoupper(md5(uniqid(time())));
 		$subject = '=?utf-8?B?'. base64_encode(substr(htmlspecialchars(trim($data['subject'])), 0, 1000)).'?=';
-		$text = substr(trim($data['text']), 0, 1000000);
+		$text = substr(trim($data['text']), 0, 1000000).$this->config["mailbottom"] = str_replace('%YEAR%',date('Y'),$this->config["mailbottom"]);;
 		if($data['from']=='')
 			$data['from']='robot@unidoski.ru';
 		 //if(strlen(ini_get('safe_mode'))< 1){
@@ -57,7 +82,7 @@ class mail_class extends kernel_class {
 		return mail($data['mailTo'], $subject, $mess,$header);
 	}
 
-	function mailForm($mailTo,$templateSubj='',$templateText='') {
+	function mailForm($mailTo) {
 		global $_MESS;
 		$flag=0;// 1 - успешно, 0 - норм, -1  - ошибка
 		$formflag = 1;// 0 - показывает форму, 1 - не показывать форму
@@ -77,10 +102,7 @@ class mail_class extends kernel_class {
 			$flag=-1;
 			if(!count($arr['mess'])) {
 				$arr['vars']['mailTo']=$mailTo;
-				if($templateSubj)
-					$arr['vars']['subject'] = str_replace('###TEXT###',$arr['vars']['subject'],$templateSubj);
-				if($templateText)
-					$arr['vars']['text'] = str_replace('###TEXT###',$arr['vars']['text'],$templateText);
+				$arr['vars']['text'] = str_replace(array('%SUBJECT%','%TEXT%','%MAILBOTTOM%'),array($arr['vars']['subject'],$arr['vars']['text'],$this->config["mailbottom"]),$this->config["mailtemplate"]);print_r('<pre>');print_r($arr['vars']);
 				if($this->Send($arr['vars'])) {
 					$flag=1;
 					$arr['mess'][] = array('name'=>'ok', 'value'=>$this->getMess('mailok'));

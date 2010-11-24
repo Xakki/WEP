@@ -39,8 +39,10 @@ include_once($this->_PATHd.'php/messages.php');
 	function tpl_data(&$data,$firstpath='') {
 		if(!$data or !count($data)or !count($data['thitem'])) return '';
 		global $_CFG;
-		$html .= '<table class="superlist"><tbody><tr><th>№</th>';
+		$html .= '<table class="superlist"><tbody><tr>';
 		$tdflag = 0;
+		if(!isset($data['thitem']['id']))
+			$html .= '<th>№</th>';
 		foreach($data['thitem'] as $r) {
 			if(!$tdflag) {
 				if(isset($r['onetd'])){ 
@@ -66,7 +68,8 @@ include_once($this->_PATHd.'php/messages.php');
 			if($r['css']) $html .= ' class="'.$r['css'].'"';
 			elseif($r['style']) $html .= ' style="'.$r['style'].'"';
 			$html .= '>';
-			$html .= '<td valign="top" id="items_'.$r['id'].'"><a id="elem'.$r['id'].'">'.$r['id'].'</a></td>';
+			if(!isset($data['thitem']['id']))
+				$html .= '<td valign="top" id="items_'.$r['id'].'"><a id="elem'.$r['id'].'">'.$r['id'].'</a></td>';
 			$tdflag = 0;
 			foreach($r['tditem'] as $ktd=>$tditem) {
 				if(!$tdflag) {

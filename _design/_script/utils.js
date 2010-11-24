@@ -154,6 +154,11 @@ function fShowHide (id,f) {
 	else
 		$('#'+id).animate({ opacity: "show" }, "slow");
 }
+
+function ulToggle(obj,css) {
+	$(obj).toggleClass(css);
+	$(obj).next('ul').slideToggle('fast');
+}
 /************************/
 /*simple script*/
 

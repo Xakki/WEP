@@ -23,6 +23,10 @@
 			$_this->fld_data['mf_timecr'] = $_this->_CFG['time'];
 		if ($_this->mf_timeup) 
 			$_this->fld_data['mf_timeup'] = $_this->_CFG['time'];
+		if($_this->mf_ipcreate) 
+			$_this->fld_data['mf_ipcreate'] = ip2long($_SERVER['REMOTE_ADDR']);
+		if($this->mf_createrid and !$this->fld_data['creater_id'])
+			$this->fld_data['creater_id']= $_SESSION['user']['id'];
 
 		if (!isset($_this->fld_data) && !count($_this->fld_data))
 			return $_this->_message('Empty data for add in `'.$_this->caption.'`',1);

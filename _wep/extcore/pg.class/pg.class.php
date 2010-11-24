@@ -52,6 +52,7 @@ class pg_class extends kernel_class {
 		$this->fields['ugroup'] =array('type' => 'varchar', 'width'=>254, 'attr' => 'NOT NULL DEFAULT "|0|"');
 		$this->fields['attr'] = array('type' => 'varchar', 'width'=>254, 'attr' => 'NOT NULL DEFAULT ""');
 		$this->fields['onmenu'] = array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL DEFAULT 0');
+		$this->fields['onmap'] = array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL DEFAULT 1');
 		$this->fields['onpath'] = array('type' => 'tinyint', 'width'=>1, 'attr' => 'NOT NULL DEFAULT 1');
 
 		# fields
@@ -66,7 +67,8 @@ class pg_class extends kernel_class {
 		$this->fields_form['keywords'] = array('type' => 'text', 'caption' => 'META-keywords','mask'=>array('fview'=>1));
 		$this->fields_form['description'] = array('type' => 'text', 'caption' => 'META-description','mask'=>array('fview'=>1));
 		$this->fields_form['onmenu'] = array('type' => 'list', 'listname'=>'menu', 'multiple'=>2, 'caption' => 'Меню', 'mask'=>array('onetd'=>'Опции'));
-		$this->fields_form['onpath'] = array('type' => 'checkbox', 'caption'=>'Путь', 'comment' => 'Отображать в хлебных крошках');
+		$this->fields_form['onmap'] = array('type' => 'checkbox', 'caption'=>'Карта', 'comment' => 'Отображать в карте сайта','default'=>1);
+		$this->fields_form['onpath'] = array('type' => 'checkbox', 'caption'=>'Путь', 'comment' => 'Отображать в хлебных крошках','default'=>1);
 		$this->fields_form['attr'] = array('type' => 'text', 'caption' => 'Атрибуты для ссылки в меню', 'comment'=>'Например: `target="_blank" onclick=""` итп', 'mask' =>array('name'=>'text', 'fview'=>1));
 		if($this->_CFG['wep']['access'])
 			$this->fields_form['ugroup'] = array('type' => 'list','multiple'=>2,'listname'=>'ugroup', 'caption' => 'Доступ пользователю','default'=>'0');
@@ -376,6 +378,7 @@ class pg_class extends kernel_class {
 	}
 
 	/*function getMap
+			$onmenu=-1 - вывод по onmap
 			$onmenu='',
 			$flag=0, - 0 выводит всю структуру дерева , 1 только первый уровень
 			$start=''
@@ -398,7 +401,10 @@ class pg_class extends kernel_class {
 					if(!$this->pagePrmCheck($row['ugroup']))
 						continue;
 				}
-				if($onmenu!='' and !isset($row['onmenu'][$onmenu]))
+				if($onmenu==-1) {
+					if(!$row['onmap']) continue;
+				}
+				elseif($onmenu!='' and !isset($row['onmenu'][$onmenu]))
 					continue;
 
 				$href = $this->getHref($key,$row);
@@ -411,6 +417,9 @@ class pg_class extends kernel_class {
 				$DATA[$key] = array('name'=>$row['name'], 'href'=>$href, 'attr'=>$row['attr'], 'sel'=>$sel);
 				if(!$flag and isset($this->dataCashTree[$key]))
 					$DATA[$key]['items'] = $this->getMap($onmenu,$flag,$key);
+
+				if($onmenu==-1 and file_exists($this->_CFG['_PATH']['ptext'].$row['pagetype'].'.map.php'))
+					$DATA[$key]['items'] = include($this->_CFG['_PATH']['ptext'].$row['pagetype'].'.map.php');
 			}
 		return $DATA;
 	}
