@@ -70,10 +70,11 @@ function JSFRWin(obj,htmlobj) {
 		},
 		success: function(result) {
 			clearTimeout(timerid);
-			timerid = setTimeout(function(){fShowload(0);},200);
 			if(result.html!= undefined && result.html!='') {
-				if(htmlobj)
+				if(htmlobj) {
+					timerid = setTimeout(function(){fShowload(0);},200);
 					$(htmlobj).html(result.html);
+				}
 				else
 					fShowload(1,result.html);
 			}

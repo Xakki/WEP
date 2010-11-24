@@ -209,7 +209,8 @@ $_CFG['_imgwater']=$_CFG['_PATH']['path'].'_design/_img/watermark.png'; //вод
 
 $_CFG['form'] = array(
 	'imgFormat' => array('gif'=>1,'jpg'=>1,'jpeg'=>1,'png'=>1),
-	'flashFormat' => array('swf'=>1)
+	'flashFormat' => array('swf'=>1),
+	'dateFormat' => 'd-m-Y-H-i-s'
 );
   
   /***********************/
