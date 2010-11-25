@@ -1242,7 +1242,7 @@ $Ajax=0 - не скриптовая
 					$this->form['f_'.$k]['labelstyle'] = ($_FILTR[$k]?'display: none;':'');
 					$this->form['f_'.$k]['csscheck'] = ($_FILTR[$k]?'accept':'reject');
 				}
-				elseif($r['type']!='radio' and $r['type']!='checkbox' and $r['type']!='list' and $r['type']!='int' and $r['type']!='file' and $r['type']!='ajaxlist')
+				elseif($r['type']!='radio' and $r['type']!='checkbox' and $r['type']!='list' and $r['type']!='int' and $r['type']!='file' and $r['type']!='ajaxlist' and $r['type']!='date')
 					$this->form['f_'.$k]['type'] = 'text';
 				if(isset($_FILTR['exc_'.$k]))
 					$this->form['f_'.$k]['exc'] = 1;
