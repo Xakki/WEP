@@ -41,18 +41,8 @@ class paywebmoney_class extends kernel_class {
 			'WMR' => array(
 				'caption' => 'webmoney R',
 				'icon' => 'wmr.gif',
-				'currency' => 'рублей',
 			),
-			'WMZ' => array(
-				'caption' => 'webmoney Z',
-				'icon' => 'wmz.gif',
-				'currency' => 'долларов',
-			),
-			'WMU' => array(
-				'caption' => 'webmoney U',
-				'icon' => 'wmu.gif',
-				'currency' => 'гривен',
-			),
+			
 		);
 	}
 	
@@ -66,14 +56,12 @@ class paywebmoney_class extends kernel_class {
 			
 			$lmi_payee_purse = $this->config[$_POST['payment_system']];
 			$caption = $this->pay_systems[$_POST['payment_system']]['caption'];
-			$currency = $this->pay_systems[$_POST['payment_system']]['currency'];
 			$desc = $this->owner->config['desc'];
 			
-			$html = 'Пополнение баланса через платежную систему '.$caption.' кошелька<br/>После оплаты, на Ваш счет поступит '.$_POST['payment_amount'].' '.$currency.'.';
+			$html = 'Пополнение баланса через платежную систему '.$caption.' кошелька<br/>После оплаты, на Ваш счет поступит '.$_POST['payment_amount'].' рублей.';
 			$html .= '<form id="pay" method="POST" action="https://merchant.webmoney.ru/lmi/payment.asp">'."\n";
 			$html .= '<input type="hidden" name="LMI_PAYMENT_AMOUNT" value="'.$_POST['payment_amount'].'">';
 			$html .= '<input type="hidden" name="LMI_PAYMENT_DESC_BASE64" value="'.base64_encode($desc).'">'."\n";
-//			$html .= '<input type="hidden" name="LMI_PAYEE_PURSE" value="R159322342129">'."\n";
 			$html .=  '<input type="hidden" name="LMI_PAYEE_PURSE" value="'.$lmi_payee_purse.'">'."\n";
 			$html .= '<input type="hidden" name="LMI_MODE" value="1">'."\n";
 			$html .= '<input type="hidden" name="LMI_SIM_MODE" value="0">'."\n";

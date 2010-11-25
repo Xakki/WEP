@@ -1,4 +1,53 @@
 <?
+
+class modul_child extends ArrayObject {
+	
+	function __construct($obj) {
+		$this->modul_obj = &$obj;
+	}
+
+	function getIterator() {
+		$iterator = parent::getIterator();	  
+
+		while($iterator->valid()) {
+			$key = $iterator->key();
+			
+			if(file_exists($this->modul_obj->_CFG['_PATH']['ext'].$this->modul_obj->_cl.'.class/'.$key.'.childs.php'))
+				include_once($this->modul_obj->_CFG['_PATH']['ext'].$this->modul_obj->_cl.'.class/'.$key.'.childs.php');
+			elseif(file_exists($this->modul_obj->_CFG['_PATH']['extcore'].$this->modul_obj->_cl.'.class/'.$key.'.childs.php'))
+				include_once($this->modul_obj->_CFG['_PATH']['extcore'].$this->modul_obj->_cl.'.class/'.$key.'.childs.php');
+
+			if ($iterator->current() === true) {
+				_new_class($key, $this->modul_obj->childs[$key], $this->modul_obj);
+			}
+		
+			$iterator->next();
+		}				 		
+
+		return $iterator;
+	}
+	
+	function offsetGet($index) {
+		$value = parent::offsetGet($index);
+		
+		if (isset($this->modul_obj->childs[$index]) && $value === true) {
+			
+			if(file_exists($this->modul_obj->_CFG['_PATH']['ext'].$this->modul_obj->_cl.'.class/'.$index.'.childs.php'))
+				include_once($this->modul_obj->_CFG['_PATH']['ext'].$this->modul_obj->_cl.'.class/'.$index.'.childs.php');
+			elseif(file_exists($this->modul_obj->_CFG['_PATH']['extcore'].$this->modul_obj->_cl.'.class/'.$index.'.childs.php'))
+				include_once($this->modul_obj->_CFG['_PATH']['extcore'].$this->modul_obj->_cl.'.class/'.$index.'.childs.php');
+			
+			_new_class($index, $modul_child,  $this->modul_obj);
+	
+			$this->modul_obj->childs[$index]	= $modul_child;
+			return $this->modul_obj->childs[$index];
+		}		
+
+		return $value;	
+	}
+}
+
+
 /*VERSION=2.2a*/
 /*COMMENT=Ядро, дополняющая модули*/
 abstract class kernel_class{
@@ -9,6 +58,7 @@ abstract class kernel_class{
 
     function __construct(&$SQL, $owner=NULL) {
 		global $_CFG;
+
 		$this->_CFG = &$_CFG;//Config
 		$this->SQL = $SQL;//link to sql class
 		if(!$this->SQL)
@@ -101,9 +151,9 @@ _fldformer($key, $param)
 		$this->fields_form =
 		$this->attaches =
 		$this->memos =
-		$this->childs =
 		$this->services =
 		$this->index_fields = array();
+		$this->childs = new modul_child(&$this);
 		$this->ordfield = '';
 		return 0;
 	}
@@ -187,10 +237,10 @@ _fldformer($key, $param)
 
 		if($this->cf_childs and $this->config['childs']) {
 			foreach($this->config['childs'] as $r) {
-				if(file_exists($this->_CFG['_PATH']['ext'].$this->_cl.'.class/'.$r.'.childs.php'))
-					include_once($this->_CFG['_PATH']['ext'].$this->_cl.'.class/'.$r.'.childs.php');
-				elseif(file_exists($this->_CFG['_PATH']['extcore'].$this->_cl.'.class/'.$r.'.childs.php'))
-					include_once($this->_CFG['_PATH']['extcore'].$this->_cl.'.class/'.$r.'.childs.php');
+//				if(file_exists($this->_CFG['_PATH']['ext'].$this->_cl.'.class/'.$r.'.childs.php'))
+//					include_once($this->_CFG['_PATH']['ext'].$this->_cl.'.class/'.$r.'.childs.php');
+//				elseif(file_exists($this->_CFG['_PATH']['extcore'].$this->_cl.'.class/'.$r.'.childs.php'))
+//					include_once($this->_CFG['_PATH']['extcore'].$this->_cl.'.class/'.$r.'.childs.php');
 				$this->create_child($r);
 			}
 		}
@@ -223,14 +273,14 @@ _fldformer($key, $param)
 
 	protected function create_child($class_name)
 	{
-		$this->childs[$class_name] = NULL;
-		if(!_new_class($class_name,$this->childs[$class_name],$this)) {
-			$this->_errorMess('Не подключен дочерний класс '.$class_name.'.');
-		}
-		//$cl = $class_name.'_class';
-		//$this->childs[$class_name] = new $cl($this->SQL, $this);
+		$this->childs[$class_name] = true;
+//		if(!_new_class($class_name,$this->childs[$class_name],$this)) {
+//			$this->_errorMess('Не подключен дочерний класс '.$class_name.'.');
+//		}
+//		$cl = $class_name.'_class';
+//		$this->childs[$class_name] = new $cl($this->SQL, $this);
 	}
-
+	
 	protected function _checkmodstruct() 
 	{
 		return include($_CFG['_PATH']['core'].'kernel.checkmodstruct.php');
