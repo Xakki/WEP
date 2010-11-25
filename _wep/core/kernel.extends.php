@@ -12,12 +12,12 @@ class modul_child extends ArrayObject {
 		while($iterator->valid()) {
 			$key = $iterator->key();
 			
-			if(file_exists($this->modul_obj->_CFG['_PATH']['ext'].$this->modul_obj->_cl.'.class/'.$key.'.childs.php'))
-				include_once($this->modul_obj->_CFG['_PATH']['ext'].$this->modul_obj->_cl.'.class/'.$key.'.childs.php');
-			elseif(file_exists($this->modul_obj->_CFG['_PATH']['extcore'].$this->modul_obj->_cl.'.class/'.$key.'.childs.php'))
-				include_once($this->modul_obj->_CFG['_PATH']['extcore'].$this->modul_obj->_cl.'.class/'.$key.'.childs.php');
-
 			if ($iterator->current() === true) {
+				if(file_exists($this->modul_obj->_CFG['_PATH']['ext'].$this->modul_obj->_cl.'.class/'.$key.'.childs.php'))
+					include_once($this->modul_obj->_CFG['_PATH']['ext'].$this->modul_obj->_cl.'.class/'.$key.'.childs.php');
+				elseif(file_exists($this->modul_obj->_CFG['_PATH']['extcore'].$this->modul_obj->_cl.'.class/'.$key.'.childs.php'))
+					include_once($this->modul_obj->_CFG['_PATH']['extcore'].$this->modul_obj->_cl.'.class/'.$key.'.childs.php');
+					
 				_new_class($key, $this->modul_obj->childs[$key], $this->modul_obj);
 			}
 		
