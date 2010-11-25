@@ -13,7 +13,7 @@ class pg_class extends kernel_class {
 		$this->config['design'] = 'default';
 		$this->config['memcache'] = 0;
 		$this->config['memcachezip'] = 0;
-//print_r('<pre>');print_r($_SERVER);
+
 		$this->config_form['sitename'] = array('type' => 'text', 'caption' => 'Название сайта','mask'=>array('max'=>1000));
 		$this->config_form['address'] = array('type' => 'textarea', 'caption' => 'Адрес и контакты','mask'=>array('max'=>1000));
 		$this->config_form['copyright'] = array('type' => 'textarea', 'caption' => 'Копирайт','mask'=>array('max'=>1000));
@@ -53,6 +53,7 @@ class pg_class extends kernel_class {
 		$this->fields['attr'] = array('type' => 'varchar', 'width'=>254, 'attr' => 'NOT NULL DEFAULT ""');
 		$this->fields['onmenu'] = array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL DEFAULT 0');
 		$this->fields['onmap'] = array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL DEFAULT 1');
+		$this->fields['pagemap'] = array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL DEFAULT ""');
 		$this->fields['onpath'] = array('type' => 'tinyint', 'width'=>1, 'attr' => 'NOT NULL DEFAULT 1');
 
 		# fields
@@ -68,12 +69,13 @@ class pg_class extends kernel_class {
 		$this->fields_form['description'] = array('type' => 'text', 'caption' => 'META-description','mask'=>array('fview'=>1));
 		$this->fields_form['onmenu'] = array('type' => 'list', 'listname'=>'menu', 'multiple'=>2, 'caption' => 'Меню', 'mask'=>array('onetd'=>'Опции'));
 		$this->fields_form['onmap'] = array('type' => 'checkbox', 'caption'=>'Карта', 'comment' => 'Отображать в карте сайта','default'=>1);
-		$this->fields_form['onpath'] = array('type' => 'checkbox', 'caption'=>'Путь', 'comment' => 'Отображать в хлебных крошках','default'=>1);
+		$this->fields_form['pagemap'] = array('type' => 'list', 'listname'=>'pagemap', 'caption' => 'MAP', 'mask' =>array('fview'=>1));
+		$this->fields_form['onpath'] = array('type' => 'checkbox', 'caption'=>'Путь', 'comment' => 'Отображать в хлебных крошках','default'=>1,'mask'=>array('onetd'=>'close'));
 		$this->fields_form['attr'] = array('type' => 'text', 'caption' => 'Атрибуты для ссылки в меню', 'comment'=>'Например: `target="_blank" onclick=""` итп', 'mask' =>array('name'=>'text', 'fview'=>1));
 		if($this->_CFG['wep']['access'])
-			$this->fields_form['ugroup'] = array('type' => 'list','multiple'=>2,'listname'=>'ugroup', 'caption' => 'Доступ пользователю','default'=>'0');
+			$this->fields_form['ugroup'] = array('type' => 'list','multiple'=>2,'listname'=>'ugroup', 'caption' => 'Доступ пользователю','default'=>'0','mask'=>array('sort'=>'1'));
+		$this->fields_form['ordind'] = array('type' => 'int', 'caption' => 'ORD','mask'=>array('sort'=>'1'));
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
-		$this->fields_form['ordind'] = array('type' => 'int', 'caption' => 'ORD');
 
 		# list
 		//$this->listform_items['id'] = 'ID';
@@ -85,10 +87,17 @@ class pg_class extends kernel_class {
 		$this->def_records[] = array('id'=>'404','parent_id'=>'index','name'=>'Страницы нету','active'=>1,'template'=>'default');
 		$this->def_records[] = array('id'=>'401','parent_id'=>'index','name'=>'Недостаточно прав для доступа к странице','active'=>1,'template'=>'default');
 
-		if($this->_CFG['_F']['adminpage']) {
-			include_once($this->_CFG['_PATH']['extcore'].'pg.class/childs.class.php');
+		//if($this->_CFG['_F']['adminpage']) {
+			include_once($this->_CFG['_PATH']['extcore'].'pg.class/content.childs.php');
 			$this->create_child("content");
-		}
+		//}
+
+		$this->enum = array(
+			0=>array('path'=>$this->_CFG['_PATH']['ctext'],'name'=>'WEP - '),
+			1=>array('path'=>$this->_CFG['_PATH']['extcore'],'name'=>'WEPext - '),
+			2=>array('path'=>$this->_CFG['_PATH']['ptext'],'name'=>'CONF - '),
+			3=>array('path'=>$this->_CFG['_PATH']['ext'],'name'=>'EXT - ')
+		);
 	}
 
 	function _getlist($listname,$value=0) {
@@ -104,7 +113,7 @@ class pg_class extends kernel_class {
 			}
 			return $data;
 		}
-		elseif ($listname == "templates") {
+		elseif($listname == "templates") {
 			$dir = dir($this->_CFG['_PATH']['design'].$this->_CFG['wep']['design'].'/templates');
 			while (false !== ($entry = $dir->read())) {
 				if (strstr($entry,'.tpl')) {
@@ -115,10 +124,13 @@ class pg_class extends kernel_class {
 			$dir->close();
 			return $data;
 		}
-		elseif ($listname == "mdesign") {
+		elseif($listname == "mdesign") {
 			$data['default'] = 'default';
 			$data['new'] = 'new';
 			return $data;
+		}
+		elseif($listname == "pagemap") {
+			return $this->childs['content']->getInc('.map.php');
 		}
 		else return parent::_getlist($listname,$value);
 	}
@@ -352,7 +364,10 @@ class pg_class extends kernel_class {
 					}
 					if(!$flagMC) {
 						$FUNCPARAM = $rowPG['funcparam'];
-						if(file_exists($this->_CFG['_PATH']['ptext'].$rowPG['pagetype'].'.inc.php'))
+						$typePG = explode(':',$rowPG['pagetype']);
+						if(count($typePG)==2 and file_exists($this->enum[$typePG[0]]['path'].$typePG[1].'.inc.php'))
+							$flagPG = include($this->enum[$typePG[0]]['path'].$typePG[1].'.inc.php');
+						elseif(file_exists($this->_CFG['_PATH']['ptext'].$rowPG['pagetype'].'.inc.php'))
 							$flagPG = include($this->_CFG['_PATH']['ptext'].$rowPG['pagetype'].'.inc.php');
 						elseif(file_exists($this->_CFG['_PATH']['ctext'].$rowPG['pagetype'].'.inc.php'))
 							$flagPG = include($this->_CFG['_PATH']['ctext'].$rowPG['pagetype'].'.inc.php');
@@ -378,50 +393,59 @@ class pg_class extends kernel_class {
 	}
 
 	/*function getMap
-			$onmenu=-1 - вывод по onmap
-			$onmenu='',
-			$flag=0, - 0 выводит всю структуру дерева , 1 только первый уровень
-			$start=''
+			$onmenuPG=-1 - вывод по onmap
+			$onmenuPG='',
+			$flagPG=0, - 0 выводит всю структуру дерева , 1 только первый уровень
+			$startPG=''
 	*/
 
-	function getMap($onmenu='',$flag=0,$start='') {
+	function getMap($onmenuPG='',$flagPG=0,$startPG='') {
 		if(!isset($this->dataCashTree))
 			$this->sqlCashPG();
-		$DATA = array();
-		if($flag>1) //только начальный уровень
-			$temp = &$this->dataCashTree[$start];
-		elseif($flag) //выводит все в общем массиве
-			$temp = &$this->dataCash;
+		$DATA_PG = array();
+		if($flagPG>1) //только начальный уровень
+			$tempPG = &$this->dataCashTree[$startPG];
+		elseif($flagPG) //выводит все в общем массиве
+			$tempPG = &$this->dataCash;
 		else //выводит всё в виде структуры дерева
-			$temp = &$this->dataCashTree[$start];
-		if(count($temp))
-			foreach ($temp as $key=>$row)
+			$tempPG = &$this->dataCashTree[$startPG];
+		if(count($tempPG))
+			foreach ($tempPG as $keyPG=>$rowPG)
 			{
-				if($row['ugroup']) {
-					if(!$this->pagePrmCheck($row['ugroup']))
+				if($rowPG['ugroup']) {
+					if(!$this->pagePrmCheck($rowPG['ugroup']))
 						continue;
 				}
-				if($onmenu==-1) {
-					if(!$row['onmap']) continue;
+				if($onmenuPG==-1) {
+					if(!$rowPG['onmap']) continue;
 				}
-				elseif($onmenu!='' and !isset($row['onmenu'][$onmenu]))
+				elseif($onmenuPG!='' and !isset($rowPG['onmenu'][$onmenuPG]))
 					continue;
 
-				$href = $this->getHref($key,$row);
+				$href = $this->getHref($keyPG,$rowPG);
 
-				if (is_array($this->selected) and isset($this->selected[$key]))
-					$sel = 1;
+				if (is_array($this->selected) and isset($this->selected[$keyPG]))
+					$selPG = 1;
 				else
-					$sel = 0;
+					$selPG = 0;
 
-				$DATA[$key] = array('name'=>$row['name'], 'href'=>$href, 'attr'=>$row['attr'], 'sel'=>$sel);
-				if(!$flag and isset($this->dataCashTree[$key]))
-					$DATA[$key]['items'] = $this->getMap($onmenu,$flag,$key);
+				$DATA_PG[$keyPG] = array('name'=>$rowPG['name'], 'href'=>$href, 'attr'=>$rowPG['attr'], 'sel'=>$selPG);
+				if(!$flagPG and isset($this->dataCashTree[$keyPG]))
+					$DATA_PG[$keyPG]['#item#'] = $this->getMap($onmenuPG,$flagPG,$keyPG);
 
-				if($onmenu==-1 and file_exists($this->_CFG['_PATH']['ptext'].$row['pagetype'].'.map.php'))
-					$DATA[$key]['items'] = include($this->_CFG['_PATH']['ptext'].$row['pagetype'].'.map.php');
+				if($onmenuPG==-1) {
+					$mapPG = explode(':',$rowPG['pagemap']);
+					if(count($mapPG)==2 and file_exists($this->enum[$mapPG[0]]['path'].$mapPG[1].'.map.php')) {
+						$tempinc = include($this->enum[$mapPG[0]]['path'].$mapPG[1].'.map.php');
+						if(isset($DATA_PG[$keyPG]['#item#']) and is_array($DATA_PG[$keyPG]['items']))
+							$DATA_PG[$keyPG]['#item#'] += $tempinc;
+						else
+							$DATA_PG[$keyPG]['#item#'] = $tempinc;
+							
+					}
+				}
 			}
-		return $DATA;
+		return $DATA_PG;
 	}
 
 	function sqlCashPG() {
@@ -473,6 +497,22 @@ class pg_class extends kernel_class {
 		}
 		return true;
 	}
+
+	function creatSiteMaps() {
+		$xml = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+		foreach($data as $k=>$r) {
+			$xml .= '
+		<url>
+			<loc>http://www.example.com/</loc>
+			<lastmod>2005-01-01</lastmod>
+			<changefreq>monthly</changefreq>
+			<priority>0.8</priority>
+		</url>';
+		}
+		$xml .= '</urlset>';
+		return $xml;
+	}
+
 //////////
 }
 

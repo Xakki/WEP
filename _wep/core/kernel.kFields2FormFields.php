@@ -50,7 +50,7 @@
 					$r['labelstyle'] = ($r['value_2']?'display: none;':'');
 					$r['csscheck'] = ($r['value_2']?'accept':'reject');
 				}
-				elseif($r['type']=='list' and $r['multiple']==2 and !$r['readonly']) {
+				elseif($r['type']=='list' and $r['multiple']==2 and !$r['readonly'] and isset($this->fields[$k])) {
 					$this->_checkList($r['listname'],0);
 					$templistname = $r['listname'];
 					if(is_array($r['listname']))
@@ -95,7 +95,7 @@
 					$r['valuelist'] = $this->_forlist($md ,$key,$val);
 				}
 				elseif($r['type']=='list') {
-					if(!$r['readonly']){
+					if(!$r['readonly']) {
 						$md= $this->_getCashedList($r['listname']);
 						if(is_array($r['value']))
 							$val = array_combine($r['value'],$r['value']);
@@ -113,10 +113,11 @@
 								$key = 0;
 							}
 							$r['valuelist'] = $this->_forlist($md,$key,$val);
-							//if($k=='rubric') {print_r('<pre>');print_r($r['valuelist']);}
 						}
 					}
 					else{
+						if(isset($r['listname']['idThis']))
+							$r['value'] = $fields[$r['listname']['idThis']]['value'];
 						$md = $this->_getCashedList($r['listname'],$r['value']);
 						$r['value'] = $md[$r['value']];
 					}

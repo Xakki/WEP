@@ -102,7 +102,7 @@ class mail_class extends kernel_class {
 			$flag=-1;
 			if(!count($arr['mess'])) {
 				$arr['vars']['mailTo']=$mailTo;
-				$arr['vars']['text'] = str_replace(array('%SUBJECT%','%TEXT%','%MAILBOTTOM%'),array($arr['vars']['subject'],$arr['vars']['text'],$this->config["mailbottom"]),$this->config["mailtemplate"]);print_r('<pre>');print_r($arr['vars']);
+				$arr['vars']['text'] = str_replace(array('%SUBJECT%','%TEXT%','%MAILBOTTOM%'),array($arr['vars']['subject'],$arr['vars']['text'],$this->config["mailbottom"]),$this->config["mailtemplate"]);
 				if($this->Send($arr['vars'])) {
 					$flag=1;
 					$arr['mess'][] = array('name'=>'ok', 'value'=>$this->getMess('mailok'));

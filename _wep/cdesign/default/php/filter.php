@@ -53,12 +53,16 @@
 				$html .= '</div></div>';
 			}
 			elseif($r['type']=='list') {
-				if(isset($r['valuelist'][0]) and $r['valuelist'][0]['#name#']==' --- ')
-					unset($r['valuelist'][0]);
-				if(isset($r['valuelist']['']) and $r['valuelist']['']['#name#']==' --- ')
-					$r['valuelist']['']['#name#'] = 'Все';
-				else
-					$r['valuelist'] = array(0=>array('#name#'=>'Все','#id#'=>''))+$r['valuelist'];
+				if(!isset($r['valuelist']) or !is_array($r['valuelist']))
+					$r['valuelist'] = array(''=>array('#name#'=>'error','#id#'=>''));
+				else {
+					if(isset($r['valuelist'][0]) and $r['valuelist'][0]['#name#']==' --- ')
+						unset($r['valuelist'][0]);
+					if(isset($r['valuelist']['']) and $r['valuelist']['']['#name#']==' --- ')
+						$r['valuelist']['']['#name#'] = 'Все';
+					else
+						$r['valuelist'] = array(0=>array('#name#'=>'Все','#id#'=>''))+$r['valuelist'];
+				}
 				$html .= '<div class="f_item">
 				<div class="f_caption">'.$r['caption'].'</div>
 				<div class="f_value">

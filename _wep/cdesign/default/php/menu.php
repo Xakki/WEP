@@ -9,8 +9,8 @@
 				if($r['sel'])
 					$r['name'] = '<span>'.$r['name'].'</span>';
 				$html .= '<a href="'.$r['href'].'" '.$r['attr'].'>'.$r['name'].'</a>';
-				if(count($r['items'])) {
-					$html .= tpl_menu($r['items']);
+				if(count($r['#item#'])) {
+					$html .= tpl_menu($r['#item#']);
 				}
 			}
 			//$html .= '</div>';

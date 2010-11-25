@@ -8,7 +8,7 @@
 		else 
 			$this->clause =' t1';
 		$this->_list();
-		//print_r($this->SQL->query);
+		//print($this->SQL->query);
 		$countfield = $this->data[0]['cnt'];
 		
 		$cl = $this->_cl;
@@ -89,11 +89,7 @@
 				elseif(!isset($arrno[$k])) {
 					if(($r['type']=='list' or $r['type']=='ajaxlist') and is_array($r['listname']) and (isset($r['listname']['class']) or isset($r['listname']['tablename']))) {
 						$lsn = $r['listname'];
-						if(!$lsn['idField']) 
-							$lsn['idField'] = 't'.$t.'.id';
-						else 
-							$lsn['idField'] = str_replace('tx.','t'.$t.'.',$lsn['idField']);
-						if(!$lsn['nameField']) 
+						if(!$lsn['nameField'])
 							$lsn['nameField'] = 't'.$t.'.name';
 						else 
 							$lsn['nameField'] = str_replace('tx.','t'.$t.'.',$lsn['nameField']);
@@ -108,15 +104,21 @@
 							$cls[1] .= ' LEFT';
 
 						$cls[1] .= ' JOIN `'.getTableNameOfClass((isset($lsn['class'])?$lsn['class']:$lsn['tablename'])).'` t'.$t.' ON ';
-						
-						if(isset($lsn['join']) and $lsn['join']!='')
-							$cls[1] .= ' '.str_replace('tx.','t'.$t.'.',$lsn['join']).' ';
-						elseif(isset($lsn['leftjoin']) and $lsn['leftjoin']!='')
-							$cls[1] .= ' '.str_replace('tx.','t'.$t.'.',$lsn['leftjoin']).' ';
+
+						if(!$lsn['idField']) 
+							$lsn['idField'] = 't'.$t.'.id';
+						else 
+							$lsn['idField'] = str_replace('tx.','t'.$t.'.',$lsn['idField']);
+
+						if(isset($lsn['join']) or isset($lsn['leftJoin'])) {
+							if(!isset($lsn['idThis'])) 
+								$lsn['idThis'] = $k;
+							$cls[1] .= ' '.$lsn['idField'].'=t1.'.$lsn['idThis'].' '.$lsn['leftJoin'].$lsn['join'];
+						}
 						elseif($r['multiple']==1)
-							$cls[1] .= ' t1.'.$k.' LIKE concat("%|",'.$lsn['idField'].',"|%") ';
+							$cls[1] .= 't1.'.$k.' LIKE concat("%|",'.$lsn['idField'].',"|%") ';
 						else
-							$cls[1] .= ' t1.'.$k.'='.$lsn['idField'].' ';
+							$cls[1] .= 't1.'.$k.'='.$lsn['idField'].' ';
 						$t++;
 					}elseif(($r['type']=='list' or $r['type']=='ajaxlist') and !is_array($r['listname'])) {
 						$this->_checkList($r['listname'],0);
@@ -146,7 +148,7 @@
 			//if(!$this->mf_istree)
 				$this->clause .= ' LIMIT '.$climit;
 			$this->_list('id');
-//print_r($this->SQL->query);
+//print($this->SQL->query);
 			/** Обработка запроса*/
 			foreach($this->data as $key=>$row) {
 				$xml['data']['item'][$key] = array('id'=>$row['id']);

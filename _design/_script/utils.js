@@ -157,7 +157,7 @@ function fShowHide (id,f) {
 
 function ulToggle(obj,css) {
 	$(obj).toggleClass(css);
-	$(obj).next('ul').slideToggle('fast');
+	$(obj).parent().find('>ul').slideToggle('fast');
 }
 /************************/
 /*simple script*/

@@ -15,8 +15,8 @@
 				if(isset($r['hidechild']))
 					$html .= '<span class="foldedul clickable" onclick="ulToggle(this,\'unfoldedul\')"></span>';
 				$html .= '<a href="'.$r['href'].'">'.$r['name'].'</a>';
-				if(count($r['items'])) {
-					$html .= tpl_pgmap($r['items'],(isset($r['hidechild'])?' sdsd':''));
+				if(count($r['#item#'])) {
+					$html .= tpl_pgmap($r['#item#'],(isset($r['hidechild'])?' sdsd':''));
 				}
 				$html .= '</li>';
 			}

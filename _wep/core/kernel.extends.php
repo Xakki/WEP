@@ -2,8 +2,8 @@
 
 class modul_child extends ArrayObject {
 	
-	function __construct($obj) {
-		$this->modul_obj = &$obj;
+	function __construct(&$obj) {
+		$this->modul_obj = $obj;
 	}
 
 	function getIterator() {
@@ -153,7 +153,7 @@ _fldformer($key, $param)
 		$this->memos =
 		$this->services =
 		$this->index_fields = array();
-		$this->childs = new modul_child(&$this);
+		$this->childs = new modul_child($this);
 		$this->ordfield = '';
 		return 0;
 	}

@@ -45,5 +45,4 @@
 	$HTML->_templates = 'login';
 	$_tpl['ref'] = $ref;
 	$_tpl['mess'] = '<div class="messhead">'.$result[0].'</div>';
-	//print_r('<pre>');print_r($_tpl);print_r('</pre>');
 ?>

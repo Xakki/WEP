@@ -43,7 +43,6 @@ class session_gogo {
 	}
 
 	function __destruct() {
-		//print_r('  -- D_SESSION');
 	}
 
 	function open($save_path, $session_name) {

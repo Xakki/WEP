@@ -318,7 +318,6 @@
 		$s = '<div>';
 		$traceArr = debug_backtrace();
 		$traceArr = array_slice($traceArr,$slice); 
-		//return '<pre>'.print_r($traceArr,true).'</pre>';
 		$cnt = count($traceArr);
 		$i=0;
 		foreach ($traceArr as $arr) {
@@ -623,7 +622,7 @@
 
 	function _modulprm() {
 		global $_CFG;
-		//print_r('<pre>');print_r($_CFG['modulprm']);
+		//print('<pre>');print_r($_CFG['modulprm']);
 		if(!isset($_CFG['modulprm'])) {
 			if(_new_class('modulprm',$MODULs))
 				$_CFG['modulprm'] = $MODULs->userPrm();

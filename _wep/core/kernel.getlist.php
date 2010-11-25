@@ -123,7 +123,19 @@
 			if(!$listname['nameField']) 
 				$listname['nameField'] = 'tx.name';
 
-			$clause['field'] = 'SELECT '.$listname['idField'].' as id,'.$listname['nameField'].' as name';
+			if(isset($listname['leftJoin'])) {
+				$clause['from'] = ' FROM `'.$_this->tablename.'` t1 LEFT JOIN `'.$listname['tablename'].'` tx ON '.$listname['idField'].'=t1.'.$listname['idThis'];
+				$clause['field'] = 'SELECT t1.'.$listname['idThis'].' as id,'.$listname['nameField'].' as name';
+			}
+			elseif(isset($listname['join'])) {
+				$clause['from'] = ' FROM `'.$_this->tablename.'` t1 JOIN `'.$listname['tablename'].'` tx ON '.$listname['idField'].'=t1.'.$listname['idThis'];
+				$clause['field'] = 'SELECT t1.'.$listname['idThis'].' as id,'.$listname['nameField'].' as name';
+			}
+			else {
+				$clause['from'] = ' FROM `'.$listname['tablename'].'` tx ';
+				$clause['field'] = 'SELECT '.$listname['idField'].' as id,'.$listname['nameField'].' as name';
+			}
+	
 			if($listname['is_tree'])
 				$clause['field'] .= ', tx.parent_id as parent_id';
 			if($listname['is_checked'])
@@ -143,13 +155,11 @@
 			if($clause['where'])
 				$clause['where'] = ' WHERE '.$clause['where'];
 
-			if($listname['leftjoin'] or $listname['join'])
-				$clause['from'] = ' FROM `'.$_this->tablename.'` t1 '.($listname['leftjoin']?'LEFT':'').' JOIN `'.$listname['tablename'].'` tx ON '.$listname['leftjoin'].$listname['join'];
-			else 
-				$clause['from'] = ' FROM `'.$listname['tablename'].'` tx ';
+			if(isset($listname['leftJoin']))
+				$clause['where'] .= ' GROUP BY t1.'.$listname['idThis'];
 			if ($listname['ordfield'])
 				$clause['where'] .= ' ORDER BY '.$listname['ordfield'];
-			
+
 			$result = $_this->SQL->execSQL($clause['field'].$clause['from'].$clause['where']);
 				if(!$result->err) {
 					if($value) {

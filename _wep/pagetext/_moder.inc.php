@@ -42,7 +42,6 @@
 								$_SESSION['mess'] = array();
 							}
 
-//} $tt[$j] = getmicrotime()-$tt[$j]; $summ += $tt[$j]; } print_r('Среднее время = "'.($summ/5).'" ');print_r($tt);
 			}
 			else
 				$html ='<div style="color:red;">'.date('H:i:s').' : Доступ к модулю '.$FUNCPARAM[0].' запрещён администратором</div>';

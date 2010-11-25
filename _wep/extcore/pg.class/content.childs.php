@@ -19,8 +19,8 @@ class content_class extends kernel_class {
 		$this->fields['marker'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'min' => '1');
 		$this->fields['href'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
 		$this->fields['global'] = array('type' => 'bool', 'attr' => 'NOT NULL DEFAULT 0');
-		$this->fields['pagetype'] = array('type' => 'varchar', 'width'=>'15', 'attr' => 'NOT NULL DEFAULT ""');
-		$this->fields['funcparam'] = array('type' => 'varchar', 'width'=>'255', 'attr' => 'NOT NULL DEFAULT ""');
+		$this->fields['pagetype'] = array('type' => 'varchar', 'width'=>255, 'attr' => 'NOT NULL DEFAULT ""');
+		$this->fields['funcparam'] = array('type' => 'varchar', 'width'=>255, 'attr' => 'NOT NULL DEFAULT ""');
 		$this->fields['ugroup'] =array('type' => 'varchar', 'width'=>254, 'attr' => 'NOT NULL DEFAULT ""');
 		$this->fields['styles'] = array('type' => 'varchar', 'width'=> 254, 'attr' => 'NOT NULL DEFAULT ""');
 		$this->fields['script'] = array('type' => 'varchar', 'width'=> 254, 'attr' => 'NOT NULL DEFAULT ""');
@@ -53,25 +53,7 @@ class content_class extends kernel_class {
 		global $_CFG;
 		$data = array();
 		if ($listname == "pagetype") {
-			$dir = dir($this->_CFG['_PATH']['ctext']);
-			$data[''] = ' - Текст - ';
-			while (false !== ($entry = $dir->read())) {
-				if ($entry[0]!='.' && $entry[0]!='..' && strstr($entry,'.inc.php')) {
-					$entry = substr($entry, 0, strpos($entry, '.inc.php')); 
-					$data[$entry] = 'WEP - '.$entry;
-				}
-			}
-			$dir->close();
-
-			$dir = dir($this->_CFG['_PATH']['ptext']);
-			while (false !== ($entry = $dir->read())) {
-				if ($entry[0]!='.' && $entry[0]!='..' && strstr($entry,'.inc.php')) {
-					$entry = substr($entry, 0, strpos($entry, '.inc.php')); 
-					$data[$entry] = $entry;
-				}
-			}
-			$dir->close();
-			return $data;
+			return $this->getInc();
 		}
 		else {
 			return $this->owner->_getlist($listname,$value);
@@ -79,6 +61,62 @@ class content_class extends kernel_class {
 		return $data;
 	}
 
+	function getInc($pref='.inc.php') {
+		$data = array();
+		$dir = dir($this->_CFG['_PATH']['ctext']);
+		$data[''] = ' - Текст - ';
+		while (false !== ($entry = $dir->read())) {
+			if ($entry[0]!='.' && $entry[0]!='..' && strstr($entry,$pref)) {
+				$entry = substr($entry, 0, strpos($entry, $pref)); 
+				$data['0:'.$entry] = $this->owner->enum[0]['name'].$entry;
+			}
+		}
+		$dir->close();
+
+		$dir = dir($this->_CFG['_PATH']['extcore']);
+		while (false !== ($entry = $dir->read())) {
+			if ($entry[0]!='.' && $entry[0]!='..') {
+				if(is_dir($this->_CFG['_PATH']['extcore'].$entry)) {
+					$dir2 = dir($this->_CFG['_PATH']['extcore'].$entry);
+					while (false !== ($entry2 = $dir2->read())) {
+						if ($entry2[0]!='.' && $entry2[0]!='..' && strstr($entry2,$pref)) {
+							$entry2 = substr($entry2, 0, strpos($entry2, $pref)); 
+							$data['1:'.$entry.'/'.$entry2] = $this->owner->enum[1]['name'].$entry.'/'.$entry2;
+						}
+					}
+					$dir2->close();
+				}
+			}
+		}
+		$dir->close();
+
+		$dir = dir($this->_CFG['_PATH']['ptext']);
+		while (false !== ($entry = $dir->read())) {
+			if ($entry[0]!='.' && $entry[0]!='..' && strstr($entry,$pref)) {
+				$entry = substr($entry, 0, strpos($entry, $pref)); 
+				$data['2:'.$entry] = $this->owner->enum[2]['name'].$entry;
+			}
+		}
+		$dir->close();
+
+		$dir = dir($this->_CFG['_PATH']['ext']);
+		while (false !== ($entry = $dir->read())) {
+			if ($entry[0]!='.' && $entry[0]!='..') {
+				if(is_dir($this->_CFG['_PATH']['ext'].$entry)) {
+					$dir2 = dir($this->_CFG['_PATH']['ext'].$entry);
+					while (false !== ($entry2 = $dir2->read())) {
+						if ($entry2[0]!='.' && $entry2[0]!='..' && strstr($entry2,$pref)) {
+							$entry2 = substr($entry2, 0, strpos($entry2, $pref)); 
+							$data['3:'.$entry.'/'.$entry2] = $this->owner->enum[3]['name'].$entry.'/'.$entry2;
+						}
+					}
+					$dir2->close();
+				}
+			}
+		}
+		$dir->close();
+		return $data;
+	}
 
 }
 ?>

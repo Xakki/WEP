@@ -16,17 +16,17 @@
 			$listname['tablename'] = $_CFG['sql']['dbpref'].$listname['class'];
 		
 
-		if(!isset($listname['tx.id'])) 
-			$listname['tx.id'] = 'tx.id';
-		if(!isset($listname['tx.name'])) 
-			$listname['tx.name'] = 'tx.name';
+		if(!isset($listname['idField'])) 
+			$listname['idField'] = 'tx.id';
+		if(!isset($listname['nameField'])) 
+			$listname['nameField'] = 'tx.name';
 
-		$clause = 'SELECT '.$listname['tx.id'].' as id,'.$listname['tx.name'].' as name';
+		$clause = 'SELECT '.$listname['idField'].' as id,'.$listname['nameField'].' as name';
 		$clause .= ' FROM `'.$listname['tablename'].'` tx ';
 		if(isset($listname['join'])) {
 			$clause .= $listname['join'];
 		}
-		$clause .= ' WHERE '.$listname['tx.name'].' LIKE "%'.mysql_real_escape_string($_GET['_value']).'%" ';
+		$clause .= ' WHERE '.$listname['nameField'].' LIKE "%'.mysql_real_escape_string($_GET['_value']).'%" ';
 		if(isset($listname['where']) and is_array($listname['where']))
 			$clause .= ' and '.implode(' and ',$listname['where']);
 		elseif(isset($listname['where']) and $listname['where']!='')
@@ -49,7 +49,7 @@
 			print_r('NO VALID DATA');
 		/*
 		if($field['type']=='ajaxlist') {
-			if($field['listname']['where']) $field['listname']['where'] .= ' and '.$_GET['tx.name'].' LIKE "%'.mysql_real_escape_string($_GET['_value']).'%"';
+			if($field['listname']['where']) $field['listname']['where'] .= ' and '.$_GET['nameField'].' LIKE "%'.mysql_real_escape_string($_GET['_value']).'%"';
 			$field['listname']['ordfield'] .= ' LIMIT 25';
 			$md= $MODUL->_getCashedList($field['listname']);
 			unset($md[0]);print_r($md);
