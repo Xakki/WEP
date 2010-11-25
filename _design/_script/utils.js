@@ -94,7 +94,7 @@ function fShowload (show,txt,body,objid) {
 		if($(body+obj).size()==0)
 			$(body).append("<div id='"+objid+"'>&#160;</div>");
 		if(!txt || txt==''){
-			txt = "<div class='layerloader'><img src='/_design/_img/load.gif' alt=' '/><br/>Подождите. Идёт загрузка</div>";
+			txt = "<div class='layerloader'><img src='_design/_img/load.gif' alt=' '/><br/>Подождите. Идёт загрузка</div>";
 			$('.layerblock').hide();
 		}
 		else {
