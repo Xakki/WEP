@@ -372,7 +372,7 @@ class pg_class extends kernel_class {
 						elseif(file_exists($this->_CFG['_PATH']['ctext'].$rowPG['pagetype'].'.inc.php'))
 							$flagPG = include($this->_CFG['_PATH']['ctext'].$rowPG['pagetype'].'.inc.php');
 						else {
-							trigger_error('Обрботчик страниц "'.$rowPG['pagetype'].'" не найден!', E_USER_WARNING);
+							trigger_error('Обрботчик страниц "'.$this->enum[$typePG[0]]['path'].$typePG[1].'.inc.php" не найден!', E_USER_WARNING);
 							continue;
 						}
 						if($rowPG['memcache'] and $MEMCACHE)
