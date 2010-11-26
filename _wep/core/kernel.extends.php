@@ -1323,9 +1323,9 @@ $Ajax=0 - не скриптовая
 						}
 						elseif($this->fields_form[$k]['type'] == 'date') {
 							if($tempex)
-								$cl[$k] = '(t1.'.$k.'<UNIX_TIMESTAMP('.$_FILTR[$k].') or t1.'.$k.'>UNIX_TIMESTAMP('.$_FILTR[$k.'_2'].'))';
+								$cl[$k] = '(t1.'.$k.'<UNIX_TIMESTAMP("'.$_FILTR[$k].'") or t1.'.$k.'>UNIX_TIMESTAMP("'.$_FILTR[$k.'_2'].'"))';
 							else
-								$cl[$k] = '(t1.'.$k.'>UNIX_TIMESTAMP('.$_FILTR[$k].') and t1.'.$k.'<UNIX_TIMESTAMP('.$_FILTR[$k.'_2'].'))';
+								$cl[$k] = '(t1.'.$k.'>UNIX_TIMESTAMP("'.$_FILTR[$k].'") and t1.'.$k.'<UNIX_TIMESTAMP("'.$_FILTR[$k.'_2'].'"))';
 						}
 						elseif($this->fields_form[$k]['type'] == 'list') {
 							if($_FILTR[$k]) {
