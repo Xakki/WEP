@@ -77,7 +77,7 @@ class ugroup_extend extends kernel_class
 	}
 	
 	function _checkmodstruct() {
-		include('ugroup.checkmodstruct.php');
+		//include('ugroup.checkmodstruct.php');
 		parent::_checkmodstruct();
 	}
 

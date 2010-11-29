@@ -535,18 +535,6 @@
 	}
 /*---------------OLD ADMIN*/
 
-
-/*
-Автозагрузка модулей
-*/
-	function __autoload($class_name){ //автозагрузка модулей
-		global $_CFG;
-		require_once($_CFG['_PATH']['core'].'kernel.extends.php');
-		if($file = _modulExists($class_name))
-			require_once($file);
-		else
-			throw new Exception('Невозможно подключить класс "'.$class_name.'"');
-	}
 /*
 Инициализация модулей
 */
@@ -559,31 +547,57 @@
 		}
 		$clsn = $name."_class";
 		try {
-			if(class_exists($clsn)) {
-					eval('$MODUL = new '.$clsn.'($SQL,$OWNER);');
-					return true;
-			}
-		} catch (Exception $e) {
+			require_once($_CFG['_PATH']['core'].'kernel.extends.php');
+				if($OWNER and $OWNER->_cl) {
+					global $OWN_CL;
+					$TEMPO = &$OWNER;
+					while($TEMPO->owner and $TEMPO->owner->_cl)
+						$TEMPO = &$TEMPO->owner;
+					$OWN_CL = $TEMPO->_cl;
+				}
+			eval('$MODUL = new '.$clsn.'($SQL,$OWNER);');
+			$OWN_CL = NULL;
+			if($MODUL)
+				return true;
+		}
+		catch (Exception $e) {
 			trigger_error($e->getMessage(), E_USER_WARNING);
 		}
 		return false;
 	}
 /*
+Автозагрузка модулей
+*/
+	function __autoload($class_name){ //автозагрузка модулей
+		global $_CFG;
+		require_once($_CFG['_PATH']['core'].'kernel.extends.php');
+		if($file = _modulExists($class_name))
+			require_once($file);
+		else
+			throw new Exception('Невозможно подключить класс "'.$class_name.'"');
+	}
+
+/*
 Проверка существ модуля
 */
 	function _modulExists($class_name) {
-		global $_CFG;
+		global $_CFG,$OWN_CL;
 		$file = false;
 		$classparam = explode('_',$class_name);
-		$clpath = $classparam[0].'.class';
+		if($OWN_CL)
+			$clpath = $OWN_CL.'.class';
+		else
+			$clpath = $classparam[0].'.class';
 		if(!$classparam[1]) $classparam[1] = 'class';
-		$clname = $classparam[0].'.'.$classparam[1];	
+		$clname = $classparam[0].'.'.$classparam[1];
+
 		if(file_exists($_CFG['_PATH']['ext'].$clpath.'/'.$clname.'.php'))
 			$file = $_CFG['_PATH']['ext'].$clpath.'/'.$clname.'.php';
-		elseif(file_exists($_CFG['_PATH']['ext'].$classparam[0].'.extend'.'/'.$clname.'.php'))
-			$file = $_CFG['_PATH']['ext'].$classparam[0].'.extend'.'/'.$clname.'.php';
 		elseif(file_exists($_CFG['_PATH']['extcore'].$clpath.'/'.$clname.'.php'))
 			$file = $_CFG['_PATH']['extcore'].$clpath.'/'.$clname.'.php';
+
+		elseif(file_exists($_CFG['_PATH']['ext'].$classparam[0].'.extend'.'/'.$clname.'.php'))
+			$file = $_CFG['_PATH']['ext'].$classparam[0].'.extend'.'/'.$clname.'.php';
 		elseif(file_exists($_CFG['_PATH']['extcore'].$classparam[0].'.extend'.'/'.$clname.'.php'))
 			$file = $_CFG['_PATH']['extcore'].$classparam[0].'.extend'.'/'.$clname.'.php';
 		
@@ -595,7 +609,7 @@
 */
 	function getTableNameOfClass($name) {
 		global $_CFG;
-		_modulprm();
+		if(!isset($_CFG['modulprm'])) _modulprm();
 		if($_CFG['modulprm'][$name]['tablename'])
 			return $_CFG['modulprm'][$name]['tablename'];
 		else
@@ -607,7 +621,7 @@
 */
 	function _prmModul($mn,$param=array()) {
 		global $_CFG;
-		_modulprm();
+		if(!isset($_CFG['modulprm'])) _modulprm();
 		if(!isset($_CFG['modulprm'][$mn])) return false; // отказ, если модуль отключен
 		if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0) return true; // админу можно всё
 		if($_SESSION['user']['level']>=5) return false; //этим всё запрещено

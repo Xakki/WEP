@@ -1,8 +1,7 @@
 <?
 		$xml = array();
 		$this->listfields = array('count(t1.id) as cnt');
-		$filter_clause = $this->_filter_clause();
-		$clause = $this->_moder_clause($filter_clause[0],$param);
+		$clause = $this->_moder_clause($param);
 		if(count($clause))
 			$this->clause =' t1 WHERE '.(implode(' and ',$clause)); 
 		else 
@@ -73,7 +72,7 @@
 
 			if($this->ordfield!='') $order='t1.'.$this->ordfield;
 			else $order='t1.id';
-			foreach($this->fields_form as $k=>$r){
+			foreach($this->fields_form as $k=>$r) {
 				if(isset($r['mask']['usercheck']) and !_prmUserCheck($r['mask']['usercheck']))
 					{$arrno[$k]=1; continue;}
 	
@@ -226,90 +225,7 @@
 			}
 		}else
 			$xml['messages'][] = array('value'=>'Пусто','name'=>'alert');
-		global $_tpl;
-		if(count($filter_clause[0]) and isset($_SESSION['filter'][$this->_cl]) and count($_SESSION['filter'][$this->_cl]))
-			$_tpl['onload'] .= 'showHelp(\'.weptools.wepfilter\',\'Внимание! Включен фильтр.\',4000);$(\'.weptools.wepfilter\').addClass(\'weptools_sel\');';
-			//$xml .= '<messages><alert>Внимание! Включен фильтр.</alert></messages>';
-		
-		
-		if($this->_prmModulAdd($this->_cl))
-			$xml['topmenu'][] = array(
-				'href'=>$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp.'_type=add'.(($this->id)?'&amp;'.$this->_cl.'_id='.$this->id:''),
-				'caption'=>'Добавить '.$this->caption,
-				'sel'=>0,
-				'type'=>''
-			);
 
-
-		if(count($this->owner->childs))
-			foreach($this->owner->childs as $ck=>$cn) {
-				if(count($cn->fields_form) and $ck!=$cl and $cn->_prmModulShow($ck))
-					$xml['topmenu'][] = array(
-						'href'=>$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp.$cl.'_id='.$this->owner->id.'&amp;'.$cl.'_ch='.$ck,
-						'caption'=>$cn->caption.'('.$row[$ck.'_cnt'].')',
-						'sel'=>0,
-						'type'=>'child'
-					);
-			}
-		if($this->mf_istree and count($this->childs) and $this->id)
-			foreach($this->childs as $ck=>$cn) {
-				if(count($cn->fields_form) and $ck!=$cl and $cn->_prmModulShow($ck))
-					$xml['topmenu'][] = array(
-						'href'=>$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp.$cl.'_id='.$this->id.'&amp;'.$cl.'_ch='.$ck,
-						'caption'=>$cn->caption.'('.$row[$ck.'_cnt'].')',
-						'sel'=>0,
-						'type'=>'child'
-					);
-			}
-
-		if(_prmModul($this->_cl,array(14)))
-			$xml['topmenu'][] = array(
-				'href'=>$this->_CFG['_HREF']['JS'].'?_modul='.$this->_cl.'&amp;_type=checkmodul',
-				'caption'=>'Обновить поля таблицы',
-				'sel'=>0,
-				'type'=>'tools',
-				'css'=>'weptools wepchecktable',
-			);
-
-		if(isset($this->config_form) and count($this->config_form) and _prmModul($this->_cl,array(13)))
-			$xml['topmenu'][] = array(
-				'href'=>$this->_CFG['_HREF']['JS'].'?_modul='.$this->_cl.'&amp;_type=config',
-				'caption'=>'Настроика модуля',
-				'sel'=>0,
-				'type'=>'tools',
-				'css'=>'weptools wepconfig',
-			);
-		if($this->mf_indexing and _prmModul($this->_cl,array(12)))
-			$xml['topmenu'][] = array(
-				'href'=>$this->_CFG['_HREF']['JS'].'?_modul='.$this->_cl.'&amp;_type=reindex',
-				'caption'=>'Переиндексация',
-				'sel'=>0,
-				'type'=>'tools',
-				'css'=>'weptools wepreindex',
-			);
-		if($filter_clause[1]) {
-			$xml['topmenu'][] = array(
-				'href'=>$this->_CFG['_HREF']['JS'].'?_modul='.$this->_cl.'&amp;_type=formfilter',
-				'caption'=>'Фильтр',
-				'sel'=>0,
-				'type'=>'tools',
-				'css'=>'weptools wepfilter',
-			);
-		}
-		/*if(_prmModul($this->_cl,array(11)))
-			$xml .= '<item type="tools" class="weptools wepreinstall" href="?_view=tools&amp;_modul='.$this->_cl.'&amp;_type=reinstall" sel="0">Переустановка модуля</item>';*/		
-		/*if(_prmUserCheck(0))
-			$xml .= '<item type="tools" class="weptools wepgroupmod" href="?_view=formgroupaction&amp;_modul='.$this->_cl.'&amp;_type=formgroupaction" sel="0">Групповые операции</item>';*/
-		//$xml .= '<item type="" class="tools_gact" href="?'.$this->_clp.'_type=deleted">Корзина</item>';
-		if($this->mf_statistic) {
-			$xml['topmenu'][] = array(
-				'href'=>$this->_CFG['_HREF']['JS'].'?_modul='.$this->_cl.'&amp;_type=stats'.($this->owner->id?'&amp;_oid='.$this->owner->id:''),
-				'caption'=>'Статистика',
-				'sel'=>0,
-				'type'=>'tools',
-				'css'=>'weptools wepstats',
-			);
-		}
 
 		return  $xml;
 

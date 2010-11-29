@@ -12,10 +12,13 @@ include_once($this->_PATHd.'php/messages.php');
 			$temp_topmenu = '<div class="menu_new">';
 			foreach($data['topmenu'] as $r) {
 				$temp_topmenu .= '<div class="botton"><span';
-				if($r['type']=='tools')
-					$temp_topmenu .= ' onclick="return ShowTools(\'tools_block\',\''.$r['href'].'\')"';
-				else
-					$temp_topmenu .= ' onclick="return load_href(\''.$r['href'].'\')"';
+				if($r['type']=='tools' or $r['type']=='static') {
+					$r['css'] = 'weptools '.$r['css'];
+					$temp_topmenu .= ' onclick="return ShowTools(\'tools_block\',\''.$_CFG['_HREF']['JS'].'?'.$r['href'].'\')"';
+				}
+				else {
+					$temp_topmenu .= ' onclick="return load_href(\''.$_CFG['PATH']['wepname'].'/index.php?'.$r['href'].'\')"';
+				}
 				if($r['sel'])
 					$temp_topmenu .= ' style="border:2px solid red;"';
 				$temp_topmenu .= ' class="'.$r['css'].'" title="'.$r['caption'].'">'.$r['caption'].'</span></div>';

@@ -7,7 +7,7 @@
 		
 		unset($data['_*features*_']);
 		
-		$html .= '<form id="form_'.$attr['name'].'" method="'.$attr['method'].'" action="'.$attr['action'].'" onsubmit="'.$attr['onsubmit'].'"><div class="filter">';
+		$html .= '<form id="form_tools_'.$attr['name'].'" method="'.$attr['method'].'" action="'.$attr['action'].'" onsubmit="'.$attr['onsubmit'].'"><div class="filter">';
 		foreach($data as $k=>$r) {
 			if($r['type']=='submit') {
 				$html .= '<div class="f_submit"><input type="'.$r['type'].'" name="'.$k.'" value="'.$r['value'].'"/></div>';

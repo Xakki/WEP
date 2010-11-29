@@ -48,7 +48,7 @@
 
 	function _xmlFormConf(&$_this) {
 		$_this->form = array();
-		$_this->form['_*features*_'] = array('name'=>'config','action'=>str_replace('&','&amp;',$_SERVER['REQUEST_URI']));
+		$_this->form['_*features*_'] = array('name'=>'Configmodul','action'=>str_replace('&','&amp;',$_SERVER['REQUEST_URI']));
 		$_this->form['_info'] = array('type'=>'info','css'=>'caption','caption'=>$_this->_CFG['_MESS']['_config']);
 		foreach($_this->config_form as $k=>$r) {
 			if(!is_array($_this->config[$k]))
@@ -82,8 +82,10 @@
 	}
 
 
-	function _statisticModule(&$_this,$oid) {
+	function _staticStatsmodul(&$_this,$oid='') {
 		$clause = array();
+		if(!$oid and isset($_GET['_oid']))
+			$oid = (int)$_GET['_oid'];
 		if($oid)
 			$clause[] = 't1.'.$_this->owner_name.'='.$oid;
 		$filtr = $_this->_filter_clause();
@@ -155,7 +157,10 @@ $html .= '
 @import "'.$_this->_CFG['_HREF']['_script'].'jquery.jqplot.0.9.7/jquery.jqplot.min.css";
 </style>
 ';
-		return array($html,$eval);
+		$html = '<span class="bottonimg imgdel" style="float: right;" onclick="$(this).parent().hide();">EXIT</span>'.$html;
+		global $_tpl;
+		$_tpl['onload'] .= $eval;
+		return $html;
 	}
 
 	function _reattaches(&$_this)

@@ -13,6 +13,7 @@ class pg_class extends kernel_class {
 		$this->config['design'] = 'default';
 		$this->config['memcache'] = 0;
 		$this->config['memcachezip'] = 0;
+		$this->config['sitemap'] = 0;
 
 		$this->config_form['sitename'] = array('type' => 'text', 'caption' => 'Название сайта','mask'=>array('max'=>1000));
 		$this->config_form['address'] = array('type' => 'textarea', 'caption' => 'Адрес и контакты','mask'=>array('max'=>1000));
@@ -23,6 +24,7 @@ class pg_class extends kernel_class {
 		$this->config_form['design'] = array('type' => 'list', 'listname'=>'mdesign', 'caption' => 'Дизаин по умолчанию');
 		$this->config_form['memcache'] = array('type' => 'int', 'caption' => 'Memcache time', 'comment'=>'0 - откл кеширование, 1> - кеширование в сек.');
 		$this->config_form['memcachezip'] = array('type' => 'checkbox', 'caption' => 'Memcache сжатие');
+		$this->config_form['sitemap'] = array('type' => 'checkbox', 'caption' => 'SiteMap XML' ,'comment'=>'создавать в корне сайта xml фаил карты сайта для поисковиков');
 	}
 
 	function _set_features() {
@@ -88,11 +90,11 @@ class pg_class extends kernel_class {
 		$this->def_records[] = array('id'=>'401','parent_id'=>'index','name'=>'Недостаточно прав для доступа к странице','active'=>1,'template'=>'default');
 
 		//if($this->_CFG['_F']['adminpage']) {
-			include_once($this->_CFG['_PATH']['extcore'].'pg.class/content.childs.php');
+			//include_once($this->_CFG['_PATH']['extcore'].'pg.class/content.childs.php');
 			$this->create_child("content");
 		//}
 
-		$this->enum = array(
+		$this->enum['inc'] = array(
 			0=>array('path'=>$this->_CFG['_PATH']['ctext'],'name'=>'WEP - '),
 			1=>array('path'=>$this->_CFG['_PATH']['extcore'],'name'=>'WEPext - '),
 			2=>array('path'=>$this->_CFG['_PATH']['ptext'],'name'=>'CONF - '),
@@ -135,11 +137,21 @@ class pg_class extends kernel_class {
 		else return parent::_getlist($listname,$value);
 	}
 
+
+	function allChangeData($type='',$data='') {
+		parent::allChangeData($type,$data);
+		/*if($this->config['sitemap']) {
+			$xml = $this->creatSiteMaps();
+			file_put_contents($this->_CFG['_PATH']['path'].'sitemap.xml',$xml);
+		}*/
+		return 0;
+	}
+
 	function display() {
 		$this->current_path = '';
 		global $_tpl,$HTML;
 		$flag_content = $this->can_show();
-
+//$this->childs['content']->getInc('.map.php');
 		//PAGE****************
 		if ($flag_content==1) {
 			$HTML->_templates = $this->pageinfo['template'];
@@ -365,14 +377,14 @@ class pg_class extends kernel_class {
 					if(!$flagMC) {
 						$FUNCPARAM = $rowPG['funcparam'];
 						$typePG = explode(':',$rowPG['pagetype']);
-						if(count($typePG)==2 and file_exists($this->enum[$typePG[0]]['path'].$typePG[1].'.inc.php'))
-							$flagPG = include($this->enum[$typePG[0]]['path'].$typePG[1].'.inc.php');
+						if(count($typePG)==2 and file_exists($this->enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php'))
+							$flagPG = include($this->enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php');
 						elseif(file_exists($this->_CFG['_PATH']['ptext'].$rowPG['pagetype'].'.inc.php'))
 							$flagPG = include($this->_CFG['_PATH']['ptext'].$rowPG['pagetype'].'.inc.php');
 						elseif(file_exists($this->_CFG['_PATH']['ctext'].$rowPG['pagetype'].'.inc.php'))
 							$flagPG = include($this->_CFG['_PATH']['ctext'].$rowPG['pagetype'].'.inc.php');
 						else {
-							trigger_error('Обрботчик страниц "'.$this->enum[$typePG[0]]['path'].$typePG[1].'.inc.php" не найден!', E_USER_WARNING);
+							trigger_error('Обрботчик страниц "'.$this->enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php" не найден!', E_USER_WARNING);
 							continue;
 						}
 						if($rowPG['memcache'] and $MEMCACHE)
@@ -422,7 +434,7 @@ class pg_class extends kernel_class {
 				elseif($onmenuPG!='' and !isset($rowPG['onmenu'][$onmenuPG]))
 					continue;
 
-				$href = $this->getHref($keyPG,$rowPG);
+				$href = $this->_CFG['_HREF']['BH'].$this->getHref($keyPG,$rowPG);
 
 				if (is_array($this->selected) and isset($this->selected[$keyPG]))
 					$selPG = 1;
@@ -435,8 +447,8 @@ class pg_class extends kernel_class {
 
 				if($onmenuPG==-1) {
 					$mapPG = explode(':',$rowPG['pagemap']);
-					if(count($mapPG)==2 and file_exists($this->enum[$mapPG[0]]['path'].$mapPG[1].'.map.php')) {
-						$tempinc = include($this->enum[$mapPG[0]]['path'].$mapPG[1].'.map.php');
+					if(count($mapPG)==2 and file_exists($this->enum['inc'][$mapPG[0]]['path'].$mapPG[1].'.map.php')) {
+						$tempinc = include($this->enum['inc'][$mapPG[0]]['path'].$mapPG[1].'.map.php');
 						if(isset($DATA_PG[$keyPG]['#item#']) and is_array($DATA_PG[$keyPG]['items']))
 							$DATA_PG[$keyPG]['#item#'] += $tempinc;
 						else
@@ -499,17 +511,23 @@ class pg_class extends kernel_class {
 	}
 
 	function creatSiteMaps() {
+		$data = $this->getMap(-1);
 		$xml = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+		$xml .= $this->reverseDataMap($data);
+		$xml .= '</urlset>';
+		return $xml;
+	}
+
+	function reverseDataMap(&$data) {
 		foreach($data as $k=>$r) {
 			$xml .= '
 		<url>
-			<loc>http://www.example.com/</loc>
-			<lastmod>2005-01-01</lastmod>
-			<changefreq>monthly</changefreq>
-			<priority>0.8</priority>
+			<loc>'.$r['href'].'</loc>
+			<changefreq>daily</changefreq>
 		</url>';
+			if(isset($r['#item#']) and count($r['#item#']))
+				$xml .= $this->reverseDataMap($r['#item#']);
 		}
-		$xml .= '</urlset>';
 		return $xml;
 	}
 

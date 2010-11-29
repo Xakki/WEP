@@ -13,11 +13,6 @@ class modul_child extends ArrayObject {
 			$key = $iterator->key();
 			
 			if ($iterator->current() === true) {
-				if(file_exists($this->modul_obj->_CFG['_PATH']['ext'].$this->modul_obj->_cl.'.class/'.$key.'.childs.php'))
-					include_once($this->modul_obj->_CFG['_PATH']['ext'].$this->modul_obj->_cl.'.class/'.$key.'.childs.php');
-				elseif(file_exists($this->modul_obj->_CFG['_PATH']['extcore'].$this->modul_obj->_cl.'.class/'.$key.'.childs.php'))
-					include_once($this->modul_obj->_CFG['_PATH']['extcore'].$this->modul_obj->_cl.'.class/'.$key.'.childs.php');
-					
 				_new_class($key, $this->modul_obj->childs[$key], $this->modul_obj);
 			}
 		
@@ -31,14 +26,7 @@ class modul_child extends ArrayObject {
 		$value = parent::offsetGet($index);
 		
 		if (isset($this->modul_obj->childs[$index]) && $value === true) {
-			
-			if(file_exists($this->modul_obj->_CFG['_PATH']['ext'].$this->modul_obj->_cl.'.class/'.$index.'.childs.php'))
-				include_once($this->modul_obj->_CFG['_PATH']['ext'].$this->modul_obj->_cl.'.class/'.$index.'.childs.php');
-			elseif(file_exists($this->modul_obj->_CFG['_PATH']['extcore'].$this->modul_obj->_cl.'.class/'.$index.'.childs.php'))
-				include_once($this->modul_obj->_CFG['_PATH']['extcore'].$this->modul_obj->_cl.'.class/'.$index.'.childs.php');
-			
 			_new_class($index, $modul_child,  $this->modul_obj);
-	
 			$this->modul_obj->childs[$index]	= $modul_child;
 			return $this->modul_obj->childs[$index];
 		}		
@@ -473,7 +461,9 @@ _message($msg,$type=0)
 
 	public function _delete() {
 		include_once($_CFG['_PATH']['core'].'kernel.addup.php');
-		return _delete($this);
+		$result = _delete($this);
+		if(!$result) $this->allChangeData('delete');
+		return $result;
 	}
 
 	public function _get_file($row,$key) {
@@ -678,7 +668,7 @@ _message($msg,$type=0)
 
 // MODUL configuration
 
-	public function confirmReinstall(){
+	public function toolsReinstall(){
 		$this->form = $mess = array();
 		if(!_prmModul($this->_cl,array(11)))
 			$mess[] = array('name'=>'error', 'value'=>$this->getMess('denied'));
@@ -687,7 +677,7 @@ _message($msg,$type=0)
 			_reinstall($this);
 			$mess[] = array('name'=>'ok', 'value'=>$this->getMess('_reinstall_ok'));
 		}else{
-			$this->form['_*features*_'] = array('name'=>'reinstal','action'=>str_replace('&','&amp;',$_SERVER['REQUEST_URI']));
+			$this->form['_*features*_'] = array('name'=>'Reinstall','action'=>str_replace('&','&amp;',$_SERVER['REQUEST_URI']));
 			$this->form['_info'] = array(
 				'type'=>'info',
 				'caption'=>$this->_CFG['_MESS']['_reinstall_info']);
@@ -700,7 +690,7 @@ _message($msg,$type=0)
 	}
 
 
-	public function confirmConfigmodul(){
+	public function toolsConfigmodul(){
 		$this->form = array();
 		$arr = array('mess'=>'','vars'=>'');
 		if(!_prmModul($this->_cl,array(13)))
@@ -730,13 +720,13 @@ _message($msg,$type=0)
 		self::kFields2FormFields($this->form);
 		return Array('form'=>$this->form, 'messages'=>$arr['mess']);
 	}
-	public function statisticModule($oid) 
+	public function staticStatsmodul($oid='') 
 	{
 		include_once($_CFG['_PATH']['core'].'kernel.tools.php');
-		return _statisticModule($this,$oid);
+		return _staticStatsmodul($this,$oid);
 	}
 
-	public function confirmCheckmodul()
+	public function toolsCheckmodul()
 	{
 		$this->form = $mess = array();
 		if(!_prmModul($this->_cl,array(14)))
@@ -759,7 +749,7 @@ _message($msg,$type=0)
 			else
 				$mess[] = array('name'=>'error', 'value'=>$this->getMess('_recheck_err'));
 		}else{
-			$this->form['_*features*_'] = array('name'=>'checkmodul','action'=>str_replace('&','&amp;',$_SERVER['REQUEST_URI']));
+			$this->form['_*features*_'] = array('name'=>'Checkmodul','action'=>str_replace('&','&amp;',$_SERVER['REQUEST_URI']));
 			$this->form['_info'] = array(
 				'type'=>'info',
 				'caption'=>$this->getMess('_recheck'));
@@ -771,7 +761,7 @@ _message($msg,$type=0)
 		return Array('form'=>$this->form, 'messages'=>$mess);
 	}
 /*
-	public function confirmReindex(){
+	public function toolsReindex(){
 		$this->form = $mess = array();
 		if(!_prmModul($this->_cl,array(12)))
 			$mess[] = array('name'=>'error', 'value'=>$this->getMess('denied'));
@@ -809,7 +799,9 @@ _message($msg,$type=0)
 				$this->fld_data[$k]= (is_string($data[$k])?mysql_real_escape_string($data[$k]):$data[$k]);
 			}
 		}
-		return $this->_update();
+		$result = $this->_update();
+		if(!$result) $this->allChangeData('save',$data);
+		return $result;
 	}
 	
 	public function _add_item($data){
@@ -822,7 +814,9 @@ _message($msg,$type=0)
 				$this->fld_data[$k]= (is_string($data[$k])?mysql_real_escape_string($data[$k]):$data[$k]);
 			}
 		}
-		return $this->_add();
+		$result = $this->_add();
+		if(!$result) $this->allChangeData('add',$data);
+		return $result;
 	}
 
 	//update modul item
@@ -1117,7 +1111,7 @@ $Ajax=0 - не скриптовая
 		if(isset($param['firstpath']))
 		  $firstpath = $param['firstpath'].$this->_clp;
 		else
-		  $firstpath = $this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp;
+		  $firstpath = '/'.$this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp;
 
 		if($this->id and $this->mf_istree) {
 			$agr = ', '.$this->_listnameSQL.' as name';
@@ -1161,6 +1155,88 @@ $Ajax=0 - не скриптовая
 				//	$HTML->path[$this->_CFG['PATH']['wepname'].'/index.php?'.$tmp] =$this->childs[$_GET[$cl.'_ch']]->caption;
 			}
 		}else {
+			$filter_clause = $this->_filter_clause();
+			$param['clause'] = $filter_clause[0];
+
+			$xml['topmenu'] = array();
+			if($this->_prmModulAdd($this->_cl))
+				$xml['topmenu']['add'] = array(
+					'href'=>$this->_clp.'_type=add'.(($this->id)?'&amp;'.$this->_cl.'_id='.$this->id:''),
+					'caption'=>'Добавить '.$this->caption,
+					'sel'=>0,
+					'type'=>''
+				);
+
+
+			if(count($this->owner->childs))
+				foreach($this->owner->childs as $ck=>$cn) {
+					if(count($cn->fields_form) and $ck!=$cl and $cn->_prmModulShow($ck))
+						$xml['topmenu'][] = array(
+							'href'=>$this->_clp.$cl.'_id='.$this->owner->id.'&amp;'.$cl.'_ch='.$ck,
+							'caption'=>$cn->caption.'('.$row[$ck.'_cnt'].')',
+							'sel'=>0,
+							'type'=>'child'
+						);
+				}
+			if($this->mf_istree and count($this->childs) and $this->id)
+				foreach($this->childs as $ck=>$cn) {
+					if(count($cn->fields_form) and $ck!=$cl and $cn->_prmModulShow($ck))
+						$xml['topmenu']['child'.$ck] = array(
+							'href'=>$this->_clp.$cl.'_id='.$this->id.'&amp;'.$cl.'_ch='.$ck,
+							'caption'=>$cn->caption.'('.$row[$ck.'_cnt'].')',
+							'sel'=>0,
+							'type'=>'child'
+						);
+				}
+
+			if(_prmModul($this->_cl,array(14)))
+				$xml['topmenu']['Checkmodul'] = array(
+					'href'=>$this->_clp.'_type=tools&amp;_func=Checkmodul',
+					'caption'=>'Обновить поля таблицы',
+					'sel'=>0,
+					'type'=>'tools',
+					'css'=>'wepchecktable',
+				);
+
+			if(isset($this->config_form) and count($this->config_form) and _prmModul($this->_cl,array(13)))
+				$xml['topmenu']['Configmodul'] = array(
+					'href'=>$this->_clp.'_type=tools&amp;_func=Configmodul',
+					'caption'=>'Настроика модуля',
+					'sel'=>0,
+					'type'=>'tools',
+					'css'=>'wepconfig',
+				);
+			if($this->mf_indexing and _prmModul($this->_cl,array(12)))
+				$xml['topmenu']['Reindex'] = array(
+					'href'=>$this->_clp.'_type=tools&amp;_func=Reindex',
+					'caption'=>'Переиндексация',
+					'sel'=>0,
+					'type'=>'tools',
+					'css'=>'wepreindex',
+				);
+			if($filter_clause[1]) {
+				$xml['topmenu']['Formfilter'] = array(
+					'href'=>$this->_clp.'_type=tools&amp;_func=Formfilter',
+					'caption'=>'Фильтр',
+					'sel'=>0,
+					'type'=>'tools',
+					'css'=>'wepfilter',
+				);
+				if(count($filter_clause[0]) and isset($_SESSION['filter'][$this->_cl]) and count($_SESSION['filter'][$this->_cl])) {
+					global $_tpl;
+					$_tpl['onload'] .= 'showHelp(\'.weptools.wepfilter\',\'Внимание! Включен фильтр.\',4000);$(\'.weptools.wepfilter\').addClass(\'weptools_sel\');';
+				}
+			}
+			if($this->mf_statistic) {
+				$xml['topmenu']['Statsmodul'] = array(
+					'href'=>$this->_clp.'_type=static&amp;_func=Statsmodul'.($this->owner->id?'&amp;_oid='.$this->owner->id:''),
+					'caption'=>'Статистика',
+					'sel'=>0,
+					'type'=>'static',
+					'css'=>'wepstats',
+				);
+			}
+
 			if($ftype=='add') {
 				$this->parent_id = $this->id;
 				unset($this->id);
@@ -1206,9 +1282,31 @@ $Ajax=0 - не скриптовая
 					$this->id=$this->tree_data[$this->id]['parent_id'];
 				else
 					unset($this->id);
-			} else {
+			}
+			elseif($ftype=='tools') {
+				$xml['formtools'] = array();
+				if(!isset($xml['topmenu'][$_REQUEST['_func']]))
+					$xml['formtools']['messages'] = array(array('value'=>'Опция инструмента не найдена.','name'=>'error'));
+				elseif(!method_exists($this,'tools'.$_REQUEST['_func']))
+					$xml['formtools']['messages'] = array(array('value'=>'Функция инструмента не найдена.','name'=>'error'));
+				else
+					eval('$xml[\'formtools\'] = $this->tools'.$_REQUEST['_func'].'();');
+
+			}
+			elseif($ftype=='static') {
+				$xml['static'] = array();
+				if(!isset($xml['topmenu'][$_REQUEST['_func']]))
+					$xml['messages'] = array(array('value'=>'Опция статики не найдена.','name'=>'error'));
+				elseif(!method_exists($this,'static'.$_REQUEST['_func']))
+					$xml['messages'] = array(array('value'=>'Функция статики не найдена.','name'=>'error'));
+				else {
+					eval('$xml[\'static\'] = $this->static'.$_REQUEST['_func'].'();');
+				}
+			}
+			else {
 				$flag=3;
 				$xml['superlist'] = $this->_displayXML($param);
+				$xml['superlist']['topmenu'] = &$xml['topmenu'];
 			}
 
 		}
@@ -1225,7 +1323,28 @@ $Ajax=0 - не скриптовая
 		return include($_CFG['_PATH']['core'].'kernel.displayXML.php');
 	}
 
-	public function filtrForm () {
+	public function toolsFormfilter() {
+		$this->form = array();
+		/**
+			* очистка фильтра
+		**/
+		if(isset($_REQUEST['f_clear_sbmt'])) {
+			unset($_SESSION['filter'][$this->_cl]);
+			$_tpl['onload'] .= 'window.location.href = \''.$_SERVER['HTTP_REFERER'].'\';';
+		}
+		/**
+			* задаются параметры фильтра
+		**/
+		elseif(isset($_REQUEST['f_fltr_sbmt'])) {
+			$this->setFilter();
+			$_tpl['onload'] .= 'window.location.href = \''.$_SERVER['HTTP_REFERER'].'\';';
+		}
+		else
+			$this->Formfilter();
+		return Array('filter'=>$this->form, 'messages'=>array());
+	}
+
+	function Formfilter() {
 		$_FILTR = $_SESSION['filter'][$this->_cl];
 		$this->form = array();
 		foreach($this->fields_form as $k=>$r) {
@@ -1251,18 +1370,17 @@ $Ajax=0 - не скриптовая
 		//фильтр	
 		if(count($this->form)) 
 		{
-			$this->form['_*features*_'] = array('name'=>'filter','action'=>$this->_CFG['_HREF']['JS'].'?_modul='.$this->_cl.'&amp;_type=filter', 'method'=>'post');
+			$this->form['_*features*_'] = array('name'=>'Formfilter','action'=>'', 'method'=>'post');
 			$this->form['f_fltr_sbmt'] = array(
 				'type'=>'submit',
 				'value'=>'Отфильтровать');			
 			
 			$this->form['f_clear_sbmt'] = array(
 				'type'=>'info',
-				'caption'=>'<a href="'.$_SERVER['HTTP_REFERER'].'" onclick="JSHR(\'form_filter\',\''.$this->form['_*features*_']['action'].'\',{ f_clear_sbmt:1});return false;">Очистить</a>');
+				'caption'=>'<a href="'.$_SERVER['HTTP_REFERER'].'" onclick="JSHR(\'form_tools_Formfilter\',\''.$this->form['_*features*_']['action'].'\',{ f_clear_sbmt:1});return false;">Очистить</a>');
 			$this->kFields2FormFields($this->form);
-			return $this->form;
 		}
-		return false;
+		return $this->form;
 	}
 
 	function setFilter($flag=0) {
@@ -1346,26 +1464,28 @@ $Ajax=0 - не скриптовая
 		return array($cl,$flag_filter);
 	}
 
-	function _moder_clause ($cl=array(),$param) {
-		if($this->_prmModulShow($this->_cl)) $cl['t1.creater_id'] = 't1.creater_id="'.$_SESSION['user']['id'].'"';
-		if($this->owner and $this->owner->id) $cl['t1.'.$this->owner_name] = 't1.'.$this->owner_name.'="'.$this->owner->id.'"';
-		if($this->mf_istree){
-			if($this->id) $cl['t1.parent_id'] = 't1.parent_id="'.$this->id.'"';
-			elseif($param['first_id']) $cl['t1.parent_id'] = 't1.id="'.$param['first_id'].'"';
-			elseif($param['first_pid']) $cl['t1.parent_id'] = 't1.parent_id="'.$param['first_id'].'"';
-			elseif($this->mf_use_charid) $cl['t1.parent_id'] = 't1.parent_id=""';
-			else  $cl['t1.parent_id'] = 't1.parent_id=0';
+	function _moder_clause (&$param) {
+		if(!isset($param['clause']) or !is_array($param['clause']))
+			$param['clause'] = array();
+		if($this->_prmModulShow($this->_cl)) $param['clause']['t1.creater_id'] = 't1.creater_id="'.$_SESSION['user']['id'].'"';
+		if($this->owner and $this->owner->id) $param['clause']['t1.'.$this->owner_name] = 't1.'.$this->owner_name.'="'.$this->owner->id.'"';
+		if($this->mf_istree) {
+			if($this->id) $param['clause']['t1.parent_id'] = 't1.parent_id="'.$this->id.'"';
+			elseif($param['first_id']) $param['clause']['t1.parent_id'] = 't1.id="'.$param['first_id'].'"';
+			elseif($param['first_pid']) $param['clause']['t1.parent_id'] = 't1.parent_id="'.$param['first_id'].'"';
+			elseif($this->mf_use_charid) $param['clause']['t1.parent_id'] = 't1.parent_id=""';
+			else  $param['clause']['t1.parent_id'] = 't1.parent_id=0';
 			if($this->owner and $this->owner->id and ($this->id or $param['first_pid']))
-				unset($cl['t1.'.$this->owner_name]);
+				unset($param['clause']['t1.'.$this->owner_name]);
 		}
 		//if(isset($this->fields['region_id']) and isset($_SESSION['city']))///////////////**********************
-		//	$cl['t1.region_id'] ='t1.region_id='.$_SESSION['city'];
+		//	$param['clause']['t1.region_id'] ='t1.region_id='.$_SESSION['city'];
 
 		if($_GET['_type']=='deleted' and $this->itemform_items['active']['listname']=='active')
-			$cl['t1.active'] ='t1.active=4';
+			$param['clause']['t1.active'] ='t1.active=4';
 		elseif($this->itemform_items['active']['listname']=='active')
-			$cl['t1.active'] ='t1.active!=4';
-		return $cl;
+			$param['clause']['t1.active'] ='t1.active!=4';
+		return $param['clause'];
 	}
 
 	private function _tr_attribute(&$row,&$param) {
@@ -1423,6 +1543,7 @@ $Ajax=0 - не скриптовая
 		}
 		else
 			$xml[] = array('value'=>$this->getMess('denied'),'name'=>'error');
+		if(!$flag[1]) $this->allChangeData('act',$act);
 		return array($xml,$flag);
 	}
 
@@ -1452,6 +1573,10 @@ $Ajax=0 - не скриптовая
 		else
 			$xml[] = array('value'=>$this->getMess('denied'),'name'=>'error');
 		return array($xml,$flag);
+	}
+
+	function allChangeData($type='',$data='') {
+		return 0;
 	}
 
 /* TREE CREATOR*/

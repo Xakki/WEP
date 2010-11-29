@@ -28,19 +28,7 @@
 
 			if(_prmModul($_GET['_modul'],array(1,2))) {
 
-				if($_GET['_view']=='reinstall') {
-					$xml = $MODUL->confirmReinstall();
-					$html = $HTML->transform($xml[0],'formcreat');
-				}
-				elseif($_GET['_view']=='config') {
-					$xml = $MODUL->_configModul();
-					$html = $HTML->transform($xml[0],'formcreat');
-				}
-				elseif($_GET['_view']=='reindex') {
-					if($MODUL->_reindex()) $html = "Ошибка";
-					else $html = 'Модуль успешно переиндексирован!';
-				}
-				elseif($_GET['_view']=='list') {
+				if($_GET['_view']=='list') {
 					$param = array('fhref'=>'_view=list&amp;_modul='.$_GET['_modul'].'&amp;','sbmtsave'=>1,'close'=>1);
 //$tt = array();$summ = 0;for($j = 1; $j <= 5; $j++) { $tt[$j] = getmicrotime(); for($i = 1; $i <= 20; $i++) {
 							$MODUL->setFilter(1);
