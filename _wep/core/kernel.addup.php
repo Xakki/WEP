@@ -120,7 +120,7 @@
 							_waterMark($_this,$newname,$newname2, $imod['w'], $imod['h']);
 					}
 			}
-			$prop[] = $key.' = \''.$ext.'\'';
+			$prop[] = '`'.$key.'` = \''.$ext.'\'';
 		}
 		if (count($prop)) {
 			$result=$_this->SQL->execSQL('UPDATE `'.$_this->tablename.'` SET '.implode(',', $prop).' WHERE id = \''.$_this->id.'\'');
@@ -194,9 +194,9 @@
 		$data = array();
 		foreach($_this->fld_data as $key => $value) {
 			if(is_array($value))
-				$data[$key] = $key.' = \'|'.implode('|',$value).'|\'';
+				$data[$key] = '`'.$key.'` = \'|'.implode('|',$value).'|\'';
 			else
-				$data[$key] = $key.' = \''.$value.'\'';
+				$data[$key] = '`'.$key.'` = \''.$value.'\'';
 		}
 		$result = $_this->SQL->execSQL('UPDATE `'.$_this->tablename.'` SET '.implode(',', $data).' WHERE id IN ('.$_this->_id_as_string().')');
 		if($result->err) return $_this->_message($result->err);

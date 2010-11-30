@@ -19,10 +19,10 @@
 
 //INCLUDE*****************
 	$PGLIST = new pg_class($SQL);
-		if (!isset($_GET['page'])) $_GET['page'] = "index";
-		$PGLIST->id = $_GET['page'];
-		if(isset($_GET['path'])) $_GET['path']=explode('/',$_GET['path']);
-		else $_GET['path']=array();
+		if (!isset($_GET['page'])) 
+			$_GET['page'] = "index";
+		$_GET['page'] = explode('/',$_GET['page']);
+		$PGLIST->id = $_GET['page'][(count($_GET['page'])-1)];
 
 
 	$HTML = new html('_design/',$PGLIST->config['design']);//отправляет header и печатает страничку

@@ -131,12 +131,14 @@ $_CFG['site'] = array( // для сайта
 	$_CFG['_HREF']['_style'] = '_design/_style/'; // дизайн стили
 	$_CFG['_HREF']['_script'] = '_design/_script/'; // дизайн стили
 	$_CFG['_HREF']['arrayHOST'] = array_reverse(explode('.',$_SERVER['HTTP_HOST']));
-  
+
   /******************/
  /*$_CFG['session']*/
 /******************/
 	$_CFG['session']['domain'] = '';
-	if(count($_CFG['_HREF']['arrayHOST'])<2 or (int)$_CFG['_HREF']['arrayHOST'][0]>0) //учитываем localhost и ИПИ
+	$hostcnt = count($_CFG['_HREF']['arrayHOST']);
+	// никто не будет использовать домен 4го уровня, а значит это IP
+	if($hostcnt<=2 or $hostcnt>=4) //учитываем localhost и ИПИ
 		$_SERVER['HTTP_HOST2'] = $_SERVER['HTTP_HOST'].$port;
 	else {
 		$_SERVER['HTTP_HOST2'] = $_CFG['_HREF']['arrayHOST'][1].'.'.$_CFG['_HREF']['arrayHOST'][0].$port;
@@ -146,6 +148,7 @@ $_CFG['site'] = array( // для сайта
 		else
 			$_CFG['session']['domain'] = '.'.$_SERVER['HTTP_HOST2'];
 	}
+
 	$_CFG['session']['name'] = 'wepID';
 	$_CFG['session']['expire'] = $_CFG['time']+86400;// 1 день ,по умолчанию
 	$_CFG['session']['path'] = '/';
