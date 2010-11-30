@@ -31,7 +31,7 @@
 		$_COOKIE['_showallinfo']=$_GET['_showallinfo'];
 	}
 
-	if(!$_SERVER['robot'] and (isset($_GET['_showerror']) or strpos($_SERVER['HTTP_HOST'],'.l') or strpos($_SERVER['HTTP_HOST'],'.i')) and !$_COOKIE['_showerror']) {
+	if(!$_SERVER['robot'] and (isset($_GET['_showerror']) or strpos($_SERVER['HTTP_HOST'],'.l') or strpos($_SERVER['HTTP_HOST'],'.i') or $_CFG['_F']['adminpage']) and !$_COOKIE['_showerror']) {
 		_setcookie('_showerror',1);
 		$_COOKIE['_showerror']=1;
 	}
@@ -695,7 +695,8 @@
 			}
 		}
 		elseif(isset($_SESSION['user']['id'])) {
-			_new_class('ugroup',$UGROUP);
+			if(!$UGROUP)
+				_new_class('ugroup',$UGROUP);
 			$result = array($_CFG['_MESS']['authok'],1);
 		}
 		return $result;

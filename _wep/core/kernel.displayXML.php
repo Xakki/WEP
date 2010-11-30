@@ -102,7 +102,7 @@
 						if(!isset($lsn['join'])) 
 							$cls[1] .= ' LEFT';
 
-						$cls[1] .= ' JOIN `'.getTableNameOfClass((isset($lsn['class'])?$lsn['class']:$lsn['tablename'])).'` t'.$t.' ON ';
+						$cls[1] .= ' JOIN `'.($lsn['class']?getTableNameOfClass($lsn['class']):$lsn['tablename']).'` t'.$t.' ON ';
 
 						if(!$lsn['idField']) 
 							$lsn['idField'] = 't'.$t.'.id';
