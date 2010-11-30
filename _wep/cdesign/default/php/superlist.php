@@ -48,7 +48,7 @@ include_once($this->_PATHd.'php/messages.php');
 			$html .= '<th>№</th>';
 		foreach($data['thitem'] as $r) {
 			if(!$tdflag) {
-				if(isset($r['onetd'])){ 
+				if(isset($r['onetd'])){
 					$tdflag = 1;
 					$r['value'] = $r['onetd'];
 				}
@@ -128,7 +128,7 @@ include_once($this->_PATHd.'php/messages.php');
 		return $html;
 	}
 
-	
+
 	function tpl_pagenum(&$data) {
 		global $_CFG;
 		if(!$data or !count($data)) return '';

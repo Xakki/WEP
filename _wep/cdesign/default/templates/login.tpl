@@ -13,7 +13,7 @@
 		<style type="text/css">
 			html, body {text-align:center;vertical-align:middle;height:100%;margin:0;}
 		</style>
-		<link rel="stylesheet" href="/_design/_style/login.css" type="text/css">
+		<link rel="stylesheet" href="{$_CFG['_HREF']['BH']}_design/_style/login.css" type="text/css">
 	</head>
 	<body onload="">{$_tpl['logs']}
 	<div style="position:relative;top:40%;">

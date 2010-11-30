@@ -1109,7 +1109,7 @@ $Ajax=0 - не скриптовая
 		}
 
 		if(isset($param['firstpath']))
-		  $firstpath = $param['firstpath'].$this->_clp;
+		  $firstpath = $_CFG['_HREF']['BH'].$param['firstpath'].$this->_clp;
 		else
 		  $firstpath = $this->_CFG['PATH']['wepname'].'/index.php?'.$this->_clp;
 
