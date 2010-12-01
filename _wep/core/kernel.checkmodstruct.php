@@ -72,7 +72,12 @@
 				{
 					$table_properties[$i] = '`'.$fldname.'`';
 
-					if (!isset($this->fields[$fldname]['width'])) {
+					if (isset($this->fields[$fldname]['width'])) {
+						if (isset($types_width[strtoupper($this->fields[$fldname]['type'])]) && $types_width[strtoupper($this->fields[$fldname]['type'])] === false) {
+							unset($this->fields[$fldname]['width']);
+						}
+					}
+					else {
 						$ltmp_pos = strpos($type, '(');
 						$rtmp_pos = strpos($type, ')');
 
