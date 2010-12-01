@@ -508,36 +508,7 @@
 				//unset($data[$key]);
 				continue;
 			}
-			//if(!$data[$k] and isset($_this->fields[$k]['default'])) $data[$k]=$_this->fields[$k]['default'];
 
-
-			/*if(isset($_FILES[$key]['name']) and $value['multi']>1) {
-				$tmp = count($error);
-				//if(isset($data[$key.'_del']) and (int)$data[$key.'_del']==1){
-					//$_FILES[$key]['name'] = ':delete:';
-					//$_FILES[$key]['tmp_name'] = ':delete:';
-				//}else{
-					//if((int)$value['mask']['min'] and ((!count($_FILES[$key]['name']) and $value['value']['name']=='') or $_FILES[$key]['name'] == ':delete:'))
-					//	$error[] = 1;
-					foreach($_FILES[$key]['name'] as $fk=>$fn) {
-						if(!isset($value['mime'][$_FILES[$key]['type'][$fk]]))
-							$error[]=39;
-						if(isset($value['maxsize']) and $_FILES[$key]['size'][$fk]>($value['maxsize']*1024))
-							$error[]=29;
-						if($tmp == count($error)){
-							$temp = $_this->_CFG['_PATH']['temp'].basename($_FILES[$key]['name'][$fk]);
-							if(file_exists($temp)) unlink($temp);
-							if (move_uploaded_file($_FILES[$key]['tmp_name'][$fk], $temp)){
-								$_FILES[$key]['tmp_name'][$fk]= $temp;
-								$_this->fields_form[$key]['value'] = $data[$key] = $_FILES[$key];
-							}else
-								$error[]=40;
-						}
-					}
-				//}
-
-			}
-			else*/
 			//*********** Файлы
 			if(isset($_FILES[$key]['name'])) {
 				$tmp = count($error);
@@ -569,62 +540,7 @@
 				$value['value'] = $data[$key] = ((int)$data[$key] == 1 ? 1 : 0);
 			}
 			elseif($value['type']=='date') {
-					// формат для даты
-					if($value['mask']['format']) {
-						if($value['mask']['separate'])
-							$format = explode($value['mask']['separate'], $value['mask']['format']);
-						else
-							$format = explode('-', $value['mask']['format']);
-					}
-					else{
-						$format = explode('-', 'Y-m-d');
-					}
-					
-					// формат для времени
-					if($value['mask']['time']) {
-						if($value['mask']['separate']) 
-							$format_time = explode($value['mask']['separate_time'], $value['mask']['time']);
-						else 
-							$format_time = explode(':', $value['mask']['time']);
-					}
-					else {
-						$format_time = explode('-', 'H-i-s');
-					}
-					
-					if(is_array($data[$key])) {
-						$date = $data[$key];
-					}
-					else {
-						// соединяем массивы и делим данные сначала по пробелу, потом по разделительным знакам, если нет времени, то добавляем значение по умолчанию
-						$temp = explode(' ', $data[$key]);
-						if($temp[0]) {
-							if($value['mask']['separate']) 
-								$date = explode($value['mask']['separate'], $temp[0]); 
-							else 
-								$date = explode('-', $temp[0]);
-						}
-						if($temp[1]) {
-							if($value['mask']['separate_time']) 
-								$time = explode($value['mask']['separate_time'], $temp[1]);
-							else 
-								$time = explode(':', $temp[1]);
-						}
-						else {
-							$time = array(0, 0, 0); 
-						}
-						$date = array_merge($date, $time);
-					}
-					
-					$format = array_merge($format, $format_time);
-					if(count($format) == count($date)) $final_array_date = array_combine($format, $date);
-					$date_str = _parseDate($final_array_date);
-					
-					if($_this->fields[$key]['type'] == 'int') {
-						$value['value'] = $data[$key] =  mktime($date_str[0], $date_str[1], $date_str[2], $date_str[3], $date_str[4], $date_str[5]);
-					}					
-					if($_this->fields[$key]['type'] == 'timestamp') {
-						$value['value'] = $data[$key] =  date("Y-m-d H:i:s", mktime($date_str[0], $date_str[1], $date_str[2], $date_str[3], $date_str[4], $date_str[5]));
-					}
+				$value['value'] = $data[$key] = _get_fdate($value, $data[$key], $_this->fields[$key]['type']);
 			}
 
 			//*********** МАССИВЫ
@@ -824,54 +740,6 @@
 		}
 		$phone_2 = implode(', ',$phone_2);
 		return $phone_2;
-	}
-
-	function _parseDate($arrdate) {
-		$date_str = array();
-		// час
-		if($arrdate['H']) {
-			$date_str[0] = $arrdate['H'];
-		}
-		else{
-			$date_str[0] = '0';
-		}
-		// минуты
-		if($arrdate['i']){
-			$date_str[1] = $arrdate['i'];
-		}
-		else{
-			$date_str[1] = '0';
-		}
-		// секунды
-		if($arrdate['s']){
-			$date_str[2] = $arrdate['s'];
-		}
-		else{
-			$date_str[2] = '0';
-		}
-		
-		// месяц
-		if($arrdate['m']){
-			$date_str[3] = $arrdate['m'];
-		}
-		else{
-			$date_str[3] = '0';
-		}
-		// день
-		if($arrdate['d']){
-			$date_str[4] = $arrdate['d'];
-		}
-		else{
-			$date_str[4] = '0';
-		}
-		//год
-		if($arrdate['Y']){
-			$date_str[5] = $arrdate['Y'];
-		}
-		else{
-			$date_str[5] = '0';
-		}
-		return $date_str;
 	}
 
 ?>

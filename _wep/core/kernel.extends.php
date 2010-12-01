@@ -173,13 +173,14 @@ _fldformer($key, $param)
 		if ($this->mf_istree) 
 		{
 			$this->fields['parent_id'] = $this->fields['id'];
-			$this->fields['parent_id']['attr'] = 'NOT NULL DEFAULT ';
-			if($this->mf_use_charid) $this->fields['parent_id']['attr'] .='""';
-			else $this->fields['parent_id']['attr'] .='0';
+			$this->fields['parent_id']['attr'] = 'NOT NULL';
+			
+			if($this->mf_use_charid) $this->fields['parent_id']['default'] ='';
+			else $this->fields['parent_id']['default'] ='0';
 		}
 
 		if ($this->mf_actctrl) 
-			$this->fields['active'] = array('type' => 'bool', 'attr' => 'NOT NULL DEFAULT 1','default'=>1);
+			$this->fields['active'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => 1);
 
 		if($this->mf_timestamp) 
 			$this->fields['_timestamp'] = array('type'=>'timestamp');
@@ -301,8 +302,8 @@ _fldformer($key, $param)
 
 			if (isset($param['width']) && $param['width']!='') 
 				$m.= '('.$param['width'].')'; 
-
-		$m.=' '.(isset($param['attr'])?$param['attr']:'').(isset($param['default'])?' DEFAULT \''.$param['default'].'\'':'');
+				
+		$m.=(isset($param['attr'])?' '.$param['attr']:'').(isset($param['default'])?' DEFAULT \''.$param['default'].'\'':'');
 		return $m;
 	}
 
@@ -731,13 +732,45 @@ _message($msg,$type=0)
 		$this->form = $mess = array();
 		if(!_prmModul($this->_cl,array(14)))
 			$mess[] = array('name'=>'error', 'value'=>$this->getMess('denied'));
-		elseif(count($_POST) and $_POST['sbmt']){
-			if(!$this->_checkmodstruct()) {
-				if(count($this->childs)) {
-					foreach($this->childs as $k=>&$r)
-						$r->_checkmodstruct();
+		elseif(count($_POST) and isset($_POST['sbmt'])){
+			if (isset($_POST['list_query'])) {
+				$err = false;
+				foreach ($_POST['list_query'] as $query) {
+					$result = $this->SQL->execSQL(stripslashes($query));
+					if ($result->err != '') {
+						$err = true;
+						$mess[] = array('name' => 'error', 'value' => $this->getMess('_recheck_err').'  <a href="" onclick="window.location.reload();return false;">Обновите страницу.</a>');
+						break;
+					}					
 				}
-				$mess[] = array('name'=>'ok', 'value'=>$this->getMess('_recheck_ok').'  <a href="" onclick="window.location.reload();return false;">Обновите страницу.</a>');
+				if ($err == false)
+					$mess[] = array('name'=>'ok', 'value'=>$this->getMess('_recheck_ok').'  <a href="" onclick="window.location.reload();return false;">Обновите страницу.</a>');
+			}
+			else {
+				$mess[] = array('name' => 'ok', 'value' => $this->getMess('_recheck_select_nothing'));
+			}
+		}else{
+
+			$check_result = $this->_checkmodstruct();
+	
+			if (isset($check_result['err'])) {
+				$mess[] = $check_result['err'];
+			}
+			elseif (!empty($check_result['list_query'])) {
+				if(count($this->childs)) {
+					foreach($this->childs as $k=>&$r) {
+						$ch_check_result = $r->_checkmodstruct();
+
+						if (isset($ch_check_result['err'])) {
+							$mess[] = $ch_check_result['err'];
+							break;
+						}
+						else {
+							if (!empty($ch_check_result['list_query']))
+								$check_result['list_query'] = array_merge($check_result['list_query'], $ch_check_result['list_query']);
+						}
+					}
+				}
 				if(count($this->attaches)) {
 					include_once($_CFG['_PATH']['core'].'kernel.tools.php');
 					if(!_reattaches($this))
@@ -746,16 +779,32 @@ _message($msg,$type=0)
 						$mess[] = array('name'=>'error', 'value'=>$this->getMess('_file_err'));
 				}
 			}
-			else
-				$mess[] = array('name'=>'error', 'value'=>$this->getMess('_recheck_err'));
-		}else{
-			$this->form['_*features*_'] = array('name'=>'Checkmodul','action'=>str_replace('&','&amp;',$_SERVER['REQUEST_URI']));
-			$this->form['_info'] = array(
-				'type'=>'info',
-				'caption'=>$this->getMess('_recheck'));
-			$this->form['sbmt'] = array(
-				'type'=>'submit',
-				'value'=>$this->getMess('_submit'));
+			
+			if (!empty($check_result['list_query'])) {
+			
+				$this->form['_*features*_'] = array('name'=>'Checkmodul','action'=>str_replace('&','&amp;',$_SERVER['REQUEST_URI']));
+				
+				$this->form['_info'] = array(
+					'type'=>'info',
+					'caption'=>$this->getMess('_recheck'));		
+			
+				$this->form['list_query[]']['type'] = 'checkbox';
+				foreach ($check_result['list_query'] as $query) {
+					$query = htmlspecialchars($query);
+					$this->form['list_query[]']['item'][] = array(
+						'value' => $query,
+						'title' => $query,
+					);
+				}
+						
+				$this->form['sbmt'] = array(
+					'type'=>'submit',
+					'value'=>$this->getMess('_submit')
+				);
+
+			} else {
+				$mess[] = array('name' => 'ok', 'value' => $this->getMess('_recheck_have_nothing'));
+			}
 		}
 
 		return Array('form'=>$this->form, 'messages'=>$mess);
@@ -1393,9 +1442,19 @@ $Ajax=0 - не скриптовая
 				{
 					$is_int = 0 ;
 					if (!is_array($_REQUEST['f_'.$k])) {
+
+						if ($row['type'] == 'date') {
+							
+							$_REQUEST['f_'.$k] = _get_fdate($row, $_REQUEST['f_'.$k], $this->fields[$k]['type']);
+							if(isset($_REQUEST['f_'.$k.'_2']))
+								$_REQUEST['f_'.$k.'_2'] = _get_fdate($row, $_REQUEST['f_'.$k.'_2'], $this->fields[$k]['type']);
+
+						}
+						
 						$_SESSION['filter'][$this->_cl][$k] = mysql_real_escape_string($_REQUEST['f_'.$k]);
 						if(isset($_REQUEST['f_'.$k.'_2']))
 							$_SESSION['filter'][$this->_cl][$k.'_2'] = mysql_real_escape_string($_REQUEST['f_'.$k.'_2']);
+						
 					} else {
 						$_SESSION['filter'][$this->_cl][$k] = array();
 						if($is_int)
@@ -1441,9 +1500,9 @@ $Ajax=0 - не скриптовая
 						}
 						elseif($this->fields_form[$k]['type'] == 'date') {
 							if($tempex)
-								$cl[$k] = '(t1.'.$k.'<UNIX_TIMESTAMP("'.$_FILTR[$k].'") or t1.'.$k.'>UNIX_TIMESTAMP("'.$_FILTR[$k.'_2'].'"))';
+								$cl[$k] = '(t1.'.$k.'<"'.$_FILTR[$k].'" or t1.'.$k.'>"'.$_FILTR[$k.'_2'].'")';
 							else
-								$cl[$k] = '(t1.'.$k.'>UNIX_TIMESTAMP("'.$_FILTR[$k].'") and t1.'.$k.'<UNIX_TIMESTAMP("'.$_FILTR[$k.'_2'].'"))';
+								$cl[$k] = '(t1.'.$k.'>"'.$_FILTR[$k].'" and t1.'.$k.'<"'.$_FILTR[$k.'_2'].'")';
 						}
 						elseif($this->fields_form[$k]['type'] == 'list') {
 							if($_FILTR[$k]) {
@@ -1854,5 +1913,120 @@ $Ajax=0 - не скриптовая
 		else
 			$date = date($format,$time);
 		return $date;
+	}
+
+	function _parseDate($arrdate) {
+		$date_str = array();
+		// час
+		if($arrdate['H']) {
+			$date_str[0] = $arrdate['H'];
+		}
+		else{
+			$date_str[0] = '0';
+		}
+		// минуты
+		if($arrdate['i']){
+			$date_str[1] = $arrdate['i'];
+		}
+		else{
+			$date_str[1] = '0';
+		}
+		// секунды
+		if($arrdate['s']){
+			$date_str[2] = $arrdate['s'];
+		}
+		else{
+			$date_str[2] = '0';
+		}
+		
+		// месяц
+		if($arrdate['m']){
+			$date_str[3] = $arrdate['m'];
+		}
+		else{
+			$date_str[3] = '0';
+		}
+		// день
+		if($arrdate['d']){
+			$date_str[4] = $arrdate['d'];
+		}
+		else{
+			$date_str[4] = '0';
+		}
+		//год
+		if($arrdate['Y']){
+			$date_str[5] = $arrdate['Y'];
+		}
+		else{
+			$date_str[5] = '0';
+		}
+		return $date_str;
+	}
+
+	//возвращает форматированную дату в зависимости от типа поля в fields_form
+	function _get_fdate($field_form, $inp_date, $field_type) {
+		// формат для даты
+		if($field_form['mask']['format']) {
+			if($field_form['mask']['separate'])
+				$format = explode($field_form['mask']['separate'], $field_form['mask']['format']);
+			else
+				$format = explode('-', $field_form['mask']['format']);
+		}
+		else{
+			$format = explode('-', 'Y-m-d');
+		}
+		
+		// формат для времени
+		if($field_form['mask']['time']) {
+			if($field_form['mask']['separate']) 
+				$format_time = explode($field_form['mask']['separate_time'], $field_form['mask']['time']);
+			else 
+				$format_time = explode(':', $field_form['mask']['time']);
+		}
+		else {
+			$format_time = explode('-', 'H-i-s');
+		}
+		
+
+		if(is_array($inp_date)) {
+			$date = $inp_date;
+		}
+		else {
+			// соединяем массивы и делим данные сначала по пробелу, потом по разделительным знакам, если нет времени, то добавляем значение по умолчанию
+			$temp = explode(' ', $inp_date);
+			if($temp[0]) {
+				if($field_form['mask']['separate']) 
+					$date = explode($field_form['mask']['separate'], $temp[0]); 
+				else 
+					$date = explode('-', $temp[0]);
+			}
+			if($temp[1]) {
+				if($field_form['mask']['separate_time']) 
+					$time = explode($field_form['mask']['separate_time'], $temp[1]);
+				else 
+					$time = explode(':', $temp[1]);
+			}
+			else {
+				$time = array(0, 0, 0); 
+			}
+			$date = array_merge($date, $time);
+		}
+
+		$format = array_merge($format, $format_time);
+		if(count($format) == count($date)) $final_array_date = array_combine($format, $date);
+		$date_str = _parseDate($final_array_date);
+
+		if($field_type == 'int') {
+			$result =  mktime($date_str[0], $date_str[1], $date_str[2], $date_str[3], $date_str[4], $date_str[5]);
+		}					
+		elseif($field_type == 'timestamp') {
+			$result =  date("Y-m-d H:i:s", mktime($date_str[0], $date_str[1], $date_str[2], $date_str[3], $date_str[4], $date_str[5]));
+		}	
+		else {
+			trigger_error('Тип поля '.$k.' неверен для даты', E_USER_WARNING );
+			$result = false;
+		}
+
+		return $result;
 	}
 ?>

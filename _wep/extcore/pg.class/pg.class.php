@@ -51,12 +51,12 @@ class pg_class extends kernel_class {
 		$this->fields['template'] = array('type' => 'varchar', 'width'=>20, 'attr' => 'NOT NULL','default'=>'default');
 		$this->fields['styles'] = array('type' => 'varchar', 'width'=> 254, 'attr' => 'NOT NULL','default'=>'');
 		$this->fields['script'] = array('type' => 'text', 'attr' => 'NOT NULL','default'=>'');
-		$this->fields['ugroup'] =array('type' => 'varchar', 'width'=>254, 'attr' => 'NOT NULL DEFAULT "|0|"');
-		$this->fields['attr'] = array('type' => 'varchar', 'width'=>254, 'attr' => 'NOT NULL DEFAULT ""');
-		$this->fields['onmenu'] = array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL DEFAULT 0');
-		$this->fields['onmap'] = array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL DEFAULT 1');
-		$this->fields['pagemap'] = array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL DEFAULT ""');
-		$this->fields['onpath'] = array('type' => 'tinyint', 'width'=>1, 'attr' => 'NOT NULL DEFAULT 1');
+		$this->fields['ugroup'] =array('type' => 'varchar', 'width'=>254, 'attr' => 'NOT NULL', 'default' => '|0|');
+		$this->fields['attr'] = array('type' => 'varchar', 'width'=>254, 'attr' => 'NOT NULL', 'default' => '');
+		$this->fields['onmenu'] = array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL', 'default' => 0);
+		$this->fields['onmap'] = array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL', 'default' => 1);
+		$this->fields['pagemap'] = array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL', 'default' => '');
+		$this->fields['onpath'] = array('type' => 'tinyint', 'width'=>1, 'attr' => 'NOT NULL', 'default' => 1);
 
 		# fields
 		$this->fields_form['id'] = array('type' => 'text', 'caption' => 'ID','mask'=>array('sort'=>1,'min'=>1));
