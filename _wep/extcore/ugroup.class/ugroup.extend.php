@@ -59,9 +59,9 @@ class ugroup_extend extends kernel_class
 			5=>'нет доступа');
 
 		$this->fields["name"] = array("type" => "varchar", "width" =>128, "attr" => "NOT NULL");
-		$this->fields["wep"] = array("type" => "bool", "attr" => "NOT NULL default 0");
-		$this->fields["level"] = array("type" => "tinyint", "width" =>2, "attr" => "NOT NULL default 1");
-		$this->fields["filesize"] = array("type" => "int", "width" =>5, "attr" => "NOT NULL DEFAULT 0");
+		$this->fields["wep"] = array("type" => "bool", "attr" => "NOT NULL", 'default' => 0);
+		$this->fields["level"] = array("type" => "tinyint", "width" =>2, "attr" => "NOT NULL",  'default' => 1);
+		$this->fields["filesize"] = array("type" => "int", "width" =>5, "attr" => "NOT NULL", 'default' => 0);
 		$this->fields["design"] = array("type" => "varchar", "width" =>128, "attr" => "NOT NULL");
 
 		$this->fields_form["name"] = array("type" => "text", 'mask' =>array('min'=>1), "caption" => "Название группы");

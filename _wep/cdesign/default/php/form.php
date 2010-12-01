@@ -74,7 +74,7 @@ function tpl_form(&$data) {
 						$html .= $r['title'].'<br/><input type="'.$r['type'].'" name="'.$k.'" value="'.$row['value'].'" class="radio"';
 						if($row['sel'])
 							$html .= ' checked="checked"';
-						$html .= '/>';
+						$html .= '/>'.$row['title'];
 					}
 				}
 				$html .= '</div>';

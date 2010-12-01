@@ -51,9 +51,12 @@ class modulprm_class extends kernel_class {
 	}
 
 	public function _checkmodstruct() {
-		parent::_checkmodstruct();
+		$check_result = parent::_checkmodstruct();
+		if (isset($check_result['err']))
+			return array('err' => $check_result['err']);
+			
 		//$q_query=array();
-		$this->SQL->_iFlag = true;
+//		$this->SQL->_iFlag = true;
 		$this->moduldir = array();
 		$this->def_update_records = array();
 		$result = $this->SQL->execSQL('SELECT * FROM '.$this->tablename);
@@ -71,8 +74,14 @@ class modulprm_class extends kernel_class {
 					$this->moduldir[$entry] = '';
 					$class_ = NULL;
 					if($this->_cl!=$entry) {
-						if(_new_class($entry,$class_))
-							$this->_constr_childs($class_,$pathm);
+						if(_new_class($entry,$class_)) {
+							$this->_constr_childs($class_);
+							$temp_check_result = $class_->_checkmodstruct();
+							if (isset($temp_check_result['err']))
+								return array($temp_check_result['err']);
+							elseif (!empty($temp_check_result['list_query']))
+								$check_result['list_query'] = array_merge($check_result['list_query'], $temp_check_result['list_query']);
+						}
 					}else {
 						$class_ = &$this;
 						$this->_constr_childs($class_,$pathm);
@@ -99,7 +108,12 @@ class modulprm_class extends kernel_class {
 							$this->def_records[] = array('id'=>$entry,'name'=>$class_->caption.' ['.$entry.']','parent_id'=>'','tablename'=>$class_->tablename, 'typemodul'=>2,'path'=>$pathm);
 						else//if($class_->ver!=$this->data[$entry]['ver'])
 							$this->def_update_records[$entry] = array('parent_id'=>'','tablename'=>$class_->tablename, 'typemodul'=>2,'path'=>$pathm);
-						$this->_constr_childs($class_,$pathm);
+						$this->_constr_childs($class_);
+						$temp_check_result = $class_->_checkmodstruct();
+						if (isset($temp_check_result['err']))
+							return array($temp_check_result['err']);
+						elseif (!empty($temp_check_result['list_query']))
+							$check_result['list_query'] = array_merge($check_result['list_query'], $temp_check_result['list_query']);
 					}
 				}
 			}
@@ -107,10 +121,19 @@ class modulprm_class extends kernel_class {
 
 		if(count($this->def_records)) {$this->_insertDefault();$this->def_records=array();}
 		$dir->close();
+		$list_query = array();
 		foreach($this->def_update_records as $k=>$r) {
 			$this->SQL->execSQL('UPDATE `'.$this->tablename.'` SET `parent_id`="'.$r['parent_id'].'",`tablename`="'.$r['tablename'].'",`typemodul`="'.$r['typemodul'].'",`path`="'.$r['path'].'" WHERE id="'.$k.'"');
+			$list_query[] = 'UPDATE `'.$this->tablename.'` SET `parent_id`="'.$r['parent_id'].'",`tablename`="'.$r['tablename'].'",`typemodul`="'.$r['typemodul'].'",`path`="'.$r['path'].'" WHERE id="'.$k.'"';
 		}
-		return 0;
+		
+		if (!empty($list_query))
+			$check_result['list_query'] = array_merge($check_result['list_query'], $list_query);
+
+//		return 0;
+		return $check_result;
+
+		
 	}
 
 	function _constr_childs(&$class_,$pathm='') {
@@ -203,10 +226,13 @@ class modulgrp_class extends kernel_class {
 
 	function _checkmodstruct() {
 		global $UGROUP;
-		parent::_checkmodstruct();
+		$check_result = parent::_checkmodstruct();
+		if (isset($check_result['err']))
+			return array('err' => $check_result['err']);
+			
 		if(!$UGROUP)
 			if(!_new_class('ugroup',$UGROUP))
-				return 1;
+				return array('err' => $this->getMess('_recheck_err'));
 				
 		$q_query =$data=$data_owner=array();
 		$result = $this->SQL->execSQL('SELECT * FROM '.$this->tablename);
@@ -241,9 +267,14 @@ class modulgrp_class extends kernel_class {
 			}
 		}
 		
-		if(count($q_query)) foreach($q_query as $row) $this->SQL->execSQL($row);
+//		if(count($q_query)) foreach($q_query as $row) $this->SQL->execSQL($row);
 		if(count($this->def_records)) {$this->_insertDefault();$this->def_records=array();}
-		return 0;
+	
+		if (!empty($check_result['list']))
+			$q_query = array_merge($check_result['list'], $q_query);
+	
+		return array('list_query' => $q_query);
+//		return 0;
 	}
 
 	function _UpdItemModul($param) {
