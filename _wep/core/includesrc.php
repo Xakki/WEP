@@ -68,7 +68,7 @@
 						$_tpl['onload'] .= "$('.imagebox a').fancybox();";
 				}
 				else
-					$temp .= '<script type="text/javascript">'.$rr.'</script>'."\n";
+					$temp .= "<script type=\"text/javascript\">//<!--\n".$rr."\n//--></script>\n";
 			}
 			$_tpl['script'] = $temp;
 		}
