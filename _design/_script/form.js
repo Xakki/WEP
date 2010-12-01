@@ -10,6 +10,7 @@ function JSFR(n) {
 			function(a,f,o) {
 				//var formElement = f[0];
 				o.dataType = 'json';
+				alert('beforeSubmit');
 				//preSubmitAJAX (f);
 			},
 		/*notsuccess: 
@@ -20,10 +21,10 @@ function JSFR(n) {
 			},*/
 		success: 
 			function(result) {
-				//alert(dump(result));
+				alert(result);
 				clearTimeout(timerid);
 				timerid2 = setTimeout(function(){fShowload(0);},200);
-				if(result.html!= undefined && result.html!='') $('#'+_win2).html(result.html);
+				if(result.html!= undefined && result.html!='') $('#ajaxload').html(result.html);
 				if(result.eval!= undefined && result.eval!='') eval(result.eval);
 				if(result.text!= undefined && result.text!='') fLog(fSpoiler(result.text,'AJAX text result'),1);
 
