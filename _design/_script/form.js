@@ -80,8 +80,7 @@ function textareaChange(obj,max){/* Утилита для подсчёта ко�
 	$('#'+obj.name+'t2').val(obj.value.length);
 }
 
-
-function reloadcaptcha(id)
+function reloadCaptcha(id)
 {
 	$('#'+id).attr('src',"/_captcha.php?"+ Math.random());
 }
