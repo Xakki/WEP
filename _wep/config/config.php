@@ -138,8 +138,10 @@ $_CFG['site'] = array( // для сайта
 	$_CFG['session']['domain'] = '';
 	$hostcnt = count($_CFG['_HREF']['arrayHOST']);
 	// никто не будет использовать домен 4го уровня, а значит это IP
-	if($hostcnt<=2 or $hostcnt>=4) //учитываем localhost и ИПИ
+	if($hostcnt<=2 or $hostcnt>=4) { //учитываем localhost и ИПИ
 		$_SERVER['HTTP_HOST2'] = $_SERVER['HTTP_HOST'].$port;
+		$_CFG['session']['domain'] = '.'.$_SERVER['HTTP_HOST2'];
+	}
 	else {
 		$_SERVER['HTTP_HOST2'] = $_CFG['_HREF']['arrayHOST'][1].'.'.$_CFG['_HREF']['arrayHOST'][0].$port;
 		
@@ -156,7 +158,7 @@ $_CFG['site'] = array( // для сайта
 
 	session_name($_CFG['session']['name']);
 	session_set_cookie_params($_CFG['session']['expire'],$_CFG['session']['path'], $_CFG['session']['domain'],$_CFG['session']['secure']);
-
+	ini_set('session.cookie_domain', $_CFG['session']['domain']);
 
 	if(strstr($_SERVER['PHP_SELF'],'/'.$_CFG['PATH']['wepname'].'/'))
 		$_CFG['_F']['adminpage'] = true;

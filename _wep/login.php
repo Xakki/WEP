@@ -19,17 +19,18 @@
 	elseif($_SERVER['HTTP_REFERER']!='' and !strstr($_SERVER['HTTP_REFERER'],'login.php'))
 		$ref= $_SERVER['HTTP_REFERER'];
 
-	if(isset($_REQUEST['exit']) && $_REQUEST['exit']=="ok") {
-		userExit();
-		$mess=$_CFG['_MESS']['exitok'];
-		$ref = $_CFG['_HREF']['BH'].'index.html';
-	}
-	elseif(count($_POST) and isset($_POST['login'])) {
+
+	if(count($_POST) and isset($_POST['login'])) {
 		$result = userAuth($_POST['login'],$_POST['pass']);
 		if($result[1]) {
 			@header("Location: ".$ref);
 			die();
 		}
+	}
+	elseif(isset($_REQUEST['exit']) && $_REQUEST['exit']=="ok") {
+		userExit();
+		$mess=$_CFG['_MESS']['exitok'];
+		$ref = $_CFG['_HREF']['BH'].'index.html';
 	}
 	elseif(isset($_COOKIE['remember']) and $result = userAuth() and $result[1]) {
 		@header("Location: ".$ref);

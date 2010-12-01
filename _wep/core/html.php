@@ -27,11 +27,14 @@
 Запуск сесии
 */
 	if(isset($_GET['_showallinfo']) and !$_SERVER['robot']) {// and !isset($_COOKIE['_showallinfo'])
-		_setcookie('_showallinfo',$_GET['_showallinfo']);
+		if($_GET['_showallinfo'])
+			_setcookie('_showallinfo',$_GET['_showallinfo']);
+		else
+			_setcookie('_showallinfo',$_GET['_showallinfo'],(time()-5000));
 		$_COOKIE['_showallinfo']=$_GET['_showallinfo'];
 	}
 
-	if(!$_SERVER['robot'] and (isset($_GET['_showerror']) or strpos($_SERVER['HTTP_HOST'],'.l') or strpos($_SERVER['HTTP_HOST'],'.i') or $_CFG['_F']['adminpage']) and !$_COOKIE['_showerror']) {
+	if(!$_SERVER['robot'] and (isset($_GET['_showerror']) or $_CFG['_HREF']['arrayHOST'][0]=='i' or $_CFG['_F']['adminpage']) and !isset($_COOKIE['_showerror'])) {
 		_setcookie('_showerror',1);
 		$_COOKIE['_showerror']=1;
 	}
