@@ -50,7 +50,7 @@ class pg_class extends kernel_class {
 		$this->fields['design'] = array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL');
 		$this->fields['template'] = array('type' => 'varchar', 'width'=>20, 'attr' => 'NOT NULL','default'=>'default');
 		$this->fields['styles'] = array('type' => 'varchar', 'width'=> 254, 'attr' => 'NOT NULL','default'=>'');
-		$this->fields['script'] = array('type' => 'text', 'attr' => 'NOT NULL','default'=>'');
+		$this->fields['script'] = array('type' => 'text', 'attr' => 'NOT NULL');
 		$this->fields['ugroup'] =array('type' => 'varchar', 'width'=>254, 'attr' => 'NOT NULL', 'default' => '|0|');
 		$this->fields['attr'] = array('type' => 'varchar', 'width'=>254, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['onmenu'] = array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL', 'default' => 0);

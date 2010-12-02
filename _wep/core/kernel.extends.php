@@ -729,85 +729,8 @@ _message($msg,$type=0)
 
 	public function toolsCheckmodul()
 	{
-		$this->form = $mess = array();
-		if(!_prmModul($this->_cl,array(14)))
-			$mess[] = array('name'=>'error', 'value'=>$this->getMess('denied'));
-		elseif(count($_POST) and isset($_POST['sbmt'])){
-			if (isset($_POST['list_query'])) {
-				$err = false;
-				foreach ($_POST['list_query'] as $query) {
-					$result = $this->SQL->execSQL(stripslashes($query));
-					if ($result->err != '') {
-						$err = true;
-						$mess[] = array('name' => 'error', 'value' => $this->getMess('_recheck_err').'  <a href="" onclick="window.location.reload();return false;">Обновите страницу.</a>');
-						break;
-					}					
-				}
-				if ($err == false)
-					$mess[] = array('name'=>'ok', 'value'=>$this->getMess('_recheck_ok').'  <a href="" onclick="window.location.reload();return false;">Обновите страницу.</a>');
-			}
-			else {
-				$mess[] = array('name' => 'ok', 'value' => $this->getMess('_recheck_select_nothing'));
-			}
-		}else{
-
-			$check_result = $this->_checkmodstruct();
-	
-			if (isset($check_result['err'])) {
-				$mess[] = $check_result['err'];
-			}
-			elseif (!empty($check_result['list_query'])) {
-				if(count($this->childs)) {
-					foreach($this->childs as $k=>&$r) {
-						$ch_check_result = $r->_checkmodstruct();
-
-						if (isset($ch_check_result['err'])) {
-							$mess[] = $ch_check_result['err'];
-							break;
-						}
-						else {
-							if (!empty($ch_check_result['list_query']))
-								$check_result['list_query'] = array_merge($check_result['list_query'], $ch_check_result['list_query']);
-						}
-					}
-				}
-				if(count($this->attaches)) {
-					include_once($_CFG['_PATH']['core'].'kernel.tools.php');
-					if(!_reattaches($this))
-						$mess[] = array('name'=>'ok', 'value'=>$this->getMess('_file_ok'));
-					else
-						$mess[] = array('name'=>'error', 'value'=>$this->getMess('_file_err'));
-				}
-			}
-			
-			if (!empty($check_result['list_query'])) {
-			
-				$this->form['_*features*_'] = array('name'=>'Checkmodul','action'=>str_replace('&','&amp;',$_SERVER['REQUEST_URI']));
-				
-				$this->form['_info'] = array(
-					'type'=>'info',
-					'caption'=>$this->getMess('_recheck'));		
-			
-				$this->form['list_query[]']['type'] = 'checkbox';
-				foreach ($check_result['list_query'] as $query) {
-					$query = htmlspecialchars($query);
-					$this->form['list_query[]']['item'][] = array(
-						'value' => $query,
-						'title' => $query,
-					);
-				}
-						
-				$this->form['sbmt'] = array(
-					'type'=>'submit',
-					'value'=>$this->getMess('_submit')
-				);
-
-			} else {
-				$mess[] = array('name' => 'ok', 'value' => $this->getMess('_recheck_have_nothing'));
-			}
-		}
-
-		return Array('form'=>$this->form, 'messages'=>$mess);
+		include_once($_CFG['_PATH']['core'].'kernel.tools.php');
+		return _toolsCheckmodul($this);
 	}
 /*
 	public function toolsReindex(){

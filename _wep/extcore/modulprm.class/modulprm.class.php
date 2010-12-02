@@ -123,8 +123,8 @@ class modulprm_class extends kernel_class {
 		$dir->close();
 		$list_query = array();
 		foreach($this->def_update_records as $k=>$r) {
-			$this->SQL->execSQL('UPDATE `'.$this->tablename.'` SET `parent_id`="'.$r['parent_id'].'",`tablename`="'.$r['tablename'].'",`typemodul`="'.$r['typemodul'].'",`path`="'.$r['path'].'" WHERE id="'.$k.'"');
-			$list_query[] = 'UPDATE `'.$this->tablename.'` SET `parent_id`="'.$r['parent_id'].'",`tablename`="'.$r['tablename'].'",`typemodul`="'.$r['typemodul'].'",`path`="'.$r['path'].'" WHERE id="'.$k.'"';
+//			$this->SQL->execSQL('UPDATE `'.$this->tablename.'` SET `parent_id`="'.$r['parent_id'].'",`tablename`="'.$r['tablename'].'",`typemodul`="'.$r['typemodul'].'",`path`="'.$r['path'].'" WHERE id="'.$k.'"');
+			$list_query[][0] = 'UPDATE `'.$this->tablename.'` SET `parent_id`="'.$r['parent_id'].'",`tablename`="'.$r['tablename'].'",`typemodul`="'.$r['typemodul'].'",`path`="'.$r['path'].'" WHERE id="'.$k.'"';
 		}
 		
 		if (!empty($list_query))
@@ -260,9 +260,9 @@ class modulgrp_class extends kernel_class {
 			if(isset($data[$kd])) {
 				foreach($data[$kd] as $k=>$r){
 					if(!isset($grpdata[$k])){
-						$q_query[] = 'DELETE FROM '.$this->tablename.' WHERE id='.$r['id'].';';
+						$q_query[][0] = 'DELETE FROM '.$this->tablename.' WHERE id='.$r['id'].';';
 					}elseif($grpdata[$k]['name']!=$r['name'])
-						$q_query[] = 'UPDATE '.$this->tablename.' SET name="'.$grpdata[$k]['name'].'" WHERE id="'.$r['id'].'" ; ';
+						$q_query[][0] = 'UPDATE '.$this->tablename.' SET name="'.$grpdata[$k]['name'].'" WHERE id="'.$r['id'].'" ; ';
 				}
 			}
 		}

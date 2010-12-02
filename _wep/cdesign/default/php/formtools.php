@@ -20,8 +20,7 @@ include_once($this->_cDesignPath.'/php/messages.php');
 			$data['filter']['_*features*_']['action'] = str_replace('&','&amp;',$_SERVER['REQUEST_URI']);
 			$html .= tpl_filter($data['filter']);
 		}
-		else
-			$html .= ' --- ';
+
 		$html .= '</div>';
 		return $html;
 	}

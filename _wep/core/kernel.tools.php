@@ -201,4 +201,98 @@ $html .= '
 		}
 		return 0;
 	}
+	
+	function _toolsCheckmodul($_this)
+	{
+		$_this->form = $mess = array();
+		if(!_prmModul($_this->_cl,array(14)))
+			$mess[] = array('name'=>'error', 'value'=>$_this->getMess('denied'));
+		elseif(count($_POST) and isset($_POST['sbmt'])){
+			if (isset($_POST['list_query'])) {
+				$err = false;
+				foreach ($_POST['list_query'] as $query) {
+					$result = $_this->SQL->execSQL(stripslashes($query));
+					if ($result->err != '') {
+						$err = true;
+						$mess[] = array('name' => 'error', 'value' => $_this->getMess('_recheck_err').'  <a href="" onclick="window.location.reload();return false;">Обновите страницу.</a>');
+						break;
+					}					
+				}
+				if ($err == false)
+					$mess[] = array('name'=>'ok', 'value'=>$_this->getMess('_recheck_ok').'  <a href="" onclick="window.location.reload();return false;">Обновите страницу.</a>');
+			}
+			else {
+				$mess[] = array('name' => 'ok', 'value' => $_this->getMess('_recheck_select_nothing'));
+			}
+		}else{
+
+			$check_result = $_this->_checkmodstruct();
+	
+			if (isset($check_result['err'])) {
+				$mess[] = $check_result['err'];
+			}
+			elseif (!empty($check_result['list_query'])) {
+				if(count($_this->childs)) {
+					foreach($_this->childs as $k=>&$r) {
+						$ch_check_result = $r->_checkmodstruct();
+
+						if (isset($ch_check_result['err'])) {
+							$mess[] = $ch_check_result['err'];
+							break;
+						}
+						else {
+							if (!empty($ch_check_result['list_query']))
+								$check_result['list_query'] = array_merge($check_result['list_query'], $ch_check_result['list_query']);
+						}
+					}
+				}
+				if(count($_this->attaches)) {
+					include_once($_CFG['_PATH']['core'].'kernel.tools.php');
+					if(!_reattaches($_this))
+						$mess[] = array('name'=>'ok', 'value'=>$_this->getMess('_file_ok'));
+					else
+						$mess[] = array('name'=>'error', 'value'=>$_this->getMess('_file_err'));
+				}
+			}
+			
+			if (!empty($check_result['list_query'])) {
+				
+				$_this->form['_*features*_'] = array('name'=>'Checkmodul','action'=>str_replace('&','&amp;',$_SERVER['REQUEST_URI']));
+				
+				$_this->form['_info'] = array(
+					'type'=>'info',
+					'caption'=>$_this->getMess('_recheck'),
+				);		
+				
+				$_this->form['invert'] = array(
+					'type' => 'info',
+					'caption' => '<a href="#" onclick="return invert_select(\'form_tools_Checkmodul\');">Инвертировать выделение</a>',
+				);
+
+			
+				$_this->form['list_query[]']['type'] = 'checkbox';
+				foreach ($check_result['list_query'] as $query) {
+					$query[0] = htmlspecialchars($query[0]);
+					if (isset($query[1]))
+						$desc = htmlspecialchars($query[0].' ('.$query[1].')');
+					else
+						$desc = $query[0];
+					$_this->form['list_query[]']['item'][] = array(
+						'value' => $query[0],
+						'title' => $desc,
+					);
+				}
+						
+				$_this->form['sbmt'] = array(
+					'type'=>'submit',
+					'value'=>$_this->getMess('_submit')
+				);
+
+			} else {
+				$mess[] = array('name' => 'ok', 'value' => $_this->getMess('_recheck_have_nothing'));
+			}
+		}
+
+		return Array('form'=>$_this->form, 'messages'=>$mess);
+	}
 ?>

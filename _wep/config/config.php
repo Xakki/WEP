@@ -266,4 +266,80 @@ $_CFG['form'] = array(
 			$secure = $_CFG['session']['secure'];
 		setcookie($name,$value,$expire,$path,$domain,$secure);
 	}
+	
+
+//ERRORS
+$_CFG['_error'] = array(
+	0 => array(
+		'type' => '[@]',
+		'color' => 'black',
+		'prior' => 6
+	),
+	E_ERROR => array(
+		'type' => '<b>[Fatal Error]</b>',
+		'color' => 'red',
+		'prior' => 0
+	),
+	E_WARNING => array(
+		'type' => '<b>[Warning]</b>',
+		'color' => 'yellow',
+		'prior' => 1
+	),
+	E_PARSE => array(
+		'type' => '<b>[Parse Error]</b>',
+		'color' => 'red',
+		'prior' => 0
+	),
+	E_NOTICE => array(
+		'type' => '[Notice]',
+		'color' => 'black',
+		'prior' => 5
+	),
+	E_CORE_ERROR => array(
+		'type' => '<b>[Fatal Core Error]</b>',
+		'color' => 'red',
+		'prior' => 0
+	),			
+	E_CORE_WARNING => array(
+		'type' => '<b>[Core Warning]</b>',
+		'color' => 'yellow',
+		'prior' => 1
+	),			
+	E_COMPILE_ERROR => array(
+		'type' => '<b>[Compilation Error]</b>',
+		'color' => 'red',
+		'prior' => 0
+	),
+	E_COMPILE_WARNING => array(
+		'type' => '<b>[Compilation Warning]</b>',
+		'color' => 'yellow',
+		'prior' => 1
+	),			
+	E_USER_ERROR => array(
+		'type' => '<b>[Triggered Error]</b>',
+		'color' => 'red',
+		'prior' => 0
+	),			
+	E_USER_WARNING => array(
+		'type' => '<b>[Triggered Warning]</b>',
+		'color' => 'yellow',
+		'prior' => 2
+	),			
+	E_USER_NOTICE => array(
+		'type' => '[Triggered Notice]',
+		'color' => 'black',
+		'prior' => 3
+	),			
+	E_STRICT => array(
+		'type' => '[Deprecation Notice]',
+		'color' => 'pink',
+		'prior' => 4
+	),			
+	E_RECOVERABLE_ERROR => array(
+		'type' => '<b>[Catchable Fatal Error]</b>',
+		'color' => 'red',
+		'prior' => 0
+	),
+);
+
 ?>

@@ -29,6 +29,8 @@ class bug_class extends kernel_class {
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'min' => '1');
 		$this->fields['href'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
 		$this->fields['text'] = array('type' => 'text', 'attr' => 'NOT NULL');
+		$this->fields['page_id'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL');
+		$this->fields['status'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL');
 
 		# fields
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Name','mask'=>array('sort'=>1,'filter'=>1));
@@ -36,6 +38,10 @@ class bug_class extends kernel_class {
 		$this->fields_form['href'] = array('type' => 'textarea', 'caption' => 'Текст ошибки', 'mask' =>array('fview'=>1));
 
 		$this->ordfield = 'mf_timecr DESC';
+	}
+	
+	function bug_handler($text, $status) {
+		
 	}
 
 }

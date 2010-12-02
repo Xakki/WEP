@@ -185,65 +185,16 @@
 */
 	function _myErrorHandler($errno, $errstr, $errfile, $errline, $errcontext)//,$cont
 	{
-		$errortype = array (
-				0					=> '[@]',
-				E_ERROR			=> '<b>[Fatal Error]</b>',
-				E_WARNING		=> '<b>[Warning]</b>',
-				E_PARSE			=> '<b>[Parse Error]</b>',
-				E_NOTICE			=> '[Notice]',
-				E_CORE_ERROR		=> '<b>[Fatal Core Error]</b>',
-				E_CORE_WARNING		=> '<b>[Core Warning]</b>',
-				E_COMPILE_ERROR	=> '<b>[Compilation Error]</b>',
-				E_COMPILE_WARNING	=> '<b>[Compilation Warning]</b>',
-				E_USER_ERROR		=> '<b>[Triggered Error]</b>',
-				E_USER_WARNING		=> '<b>[Triggered Warning</b>',
-				E_USER_NOTICE		=> '[Triggered Notice]',
-				E_STRICT				=> '[Deprecation Notice]',
-				E_RECOVERABLE_ERROR	=> '<b>[Catchable Fatal Error]</b>'
-		);
-		$errorcolor = array (
-				0					=> 'black',
-				E_ERROR			=> 'red',
-				E_WARNING		=> 'yellow',
-				E_PARSE			=> 'red',
-				E_NOTICE			=> 'black',
-				E_CORE_ERROR		=> 'red',
-				E_CORE_WARNING		=> 'yellow',
-				E_COMPILE_ERROR	=> 'red',
-				E_COMPILE_WARNING	=> 'yellow',
-				E_USER_ERROR		=> 'red',
-				E_USER_WARNING		=> 'yellow',
-				E_USER_NOTICE		=> 'black',
-				E_STRICT				=> 'pink',
-				E_RECOVERABLE_ERROR	=> 'red'
-		);
-
-		$prior = array (
-				0					=> 6,
-				E_ERROR			=> 0,
-				E_WARNING		=> 1,
-				E_PARSE			=> 0,
-				E_NOTICE			=> 5,
-				E_CORE_ERROR		=> 0,
-				E_CORE_WARNING		=> 1,
-				E_COMPILE_ERROR	=> 0,
-				E_COMPILE_WARNING	=> 1,
-				E_USER_ERROR		=> 0,
-				E_USER_WARNING		=> 2,
-				E_USER_NOTICE		=> 3,
-				E_STRICT				=> 4,
-				E_RECOVERABLE_ERROR	=> 0
-		);
-		$_gerr=6;
-		if($prior[$errno]<4) {// and error_reporting()!=0
+		global $_CFG;
+		
+		if($_CFG['_error'][$errno]['prior']<4) {// and error_reporting()!=0
 			$debug = debugPrint(2);
 			//$GLOBALS['_ERR'] .='<div style="color:'.$errorcolor[$errno].';">'.$errortype[$errno].' '.$errstr.' , in line '.$errline.' of file <i>'.$errfile.'</i><br/>'.$debug.'</div>'."\n";
 			$GLOBALS['_ERR'] .='<div class="spoiler-wrap">
-<div onclick="clickSpoilers(this)" class="spoiler-head folded clickable" style="color:'.$errorcolor[$errno].';">'.$errortype[$errno].' '.$errstr.' , in line '.$errline.' of file <i>'.$errfile.'</i> </div>
+<div onclick="clickSpoilers(this)" class="spoiler-head folded clickable" style="color:'.$_CFG['_error'][$errno]['color'].';">'.$_CFG['_error'][$errno]['type'].' '.$errstr.' , in line '.$errline.' of file <i>'.$errfile.'</i> </div>
 <div class="spoiler-body" style="background-color: rgb(225, 225, 225);">'.$debug.'</div></div>'."\n";
 			
-			if($prior[$errno]<$_gerr) $_gerr=$prior[$errno];
-			if($prior[$errno]==0) {
+			if($_CFG['_error'][$errno]['prior']==0) {
 				$GLOBALS['_ERR'] .="Aborting...<br />\n";
 				die();
 			}
