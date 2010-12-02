@@ -249,12 +249,15 @@ class users_extend extends kernel_class {
 				{
 				print_r($this->data[0]);
 					unset($_SESSION['user']);
-					if(!$this->data[0]["active"])
-						return array($this->_CFG['_MESS']['auth_banuser'],0);
+					if(_strlen($this->data[0]["reg_hash"])>5)
+						return array($this->_CFG['_MESS']['authnoconf'],0);
+					elseif($this->data[0]["reg_hash"]=='0' && !$this->data[0]['activ'])
+						return array($this->_CFG['_MESS']['auth_notcheck'],0);
 					elseif(!$this->data[0]["gact"])
 						return array($_CFG['_MESS']['auth_bangroup'],0);
-					elseif(_strlen($this->data[0]["reg_hash"])>5)
-						return array($this->_CFG['_MESS']['authnoconf'],0);
+					elseif(!$this->data[0]["active"])
+						return array($this->_CFG['_MESS']['auth_banuser'],0);
+						
 					elseif($this->data[0]["level"]>=5)
 						return array($this->_CFG['_MESS']['denied'],0);
 					else
