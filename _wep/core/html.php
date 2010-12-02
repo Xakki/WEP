@@ -665,7 +665,7 @@
 		session_go(1);
 		$result = array('',0);
 		if(!isset($_SESSION['user']) or $login) {
-			$SQL->_iFlag = 1; // проверка табл
+			//$SQL->_iFlag = 1; // проверка табл
 			if($_CFG['wep']['access'] and _new_class('ugroup',$UGROUP)) {
 				if($login) {
 					$result = $UGROUP->childs['users']->authorization($login,$pass);

@@ -53,6 +53,7 @@ function JSHR(id,_href,param,body,insertType) {
 function JSFRWin(obj,htmlobj) {
 	clearTimeout(timerid);
 	timerid = setTimeout(function(){fShowload(1);},200);
+	preSubmitAJAX(obj);
 	$.ajax({
 		type: "POST",
 		url: $(obj).attr('action'),
