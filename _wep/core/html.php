@@ -429,6 +429,12 @@
 			return substr($s, $offset, $len);
 	}
 
+	function _strtolower($txt) {
+		if(function_exists('mb_strtolower'))
+			return mb_strtolower($txt);
+		else
+			return strtolower($txt);
+	}
 /*
 Функция SpiderDetect - принимает $_SERVER['HTTP_USER_AGENT'] и возвращает имя кравлера поисковой системы или false.
 */
