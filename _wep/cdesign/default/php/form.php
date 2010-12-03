@@ -149,7 +149,7 @@ function tpl_form(&$data) {
 						$temp = date($r['mask']['format'],$temp);
 					}
 					
-					$html .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.$temp.'" class="dateinput"/></div>';
+					$html .= '<input type="text" name="'.$k.'" value="'.$temp.'" class="dateinput"/>';
 				} 
 				else {
 				

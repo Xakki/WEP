@@ -15,6 +15,8 @@ class ugroup_extend extends kernel_class
 		$this->config["reggroup"] = 4;
 		$this->config["rememberday"] = 20;
 		$this->config["payon"] = 0;
+		$this->config["premoderation"] = 0;
+		$this->config["modergroup"] = 4;
 
 		$this->config_form["mailto"] = array("type" => "text", 'mask' =>array('min'=>1,"name"=>'email'), "caption" => "Адрес службы поддержки");
 		$this->config_form["mailrobot"] = array("type" => "text", 'mask' =>array('min'=>1,"name"=>'email'), "caption" => "Адрес Робота");
@@ -33,10 +35,12 @@ class ugroup_extend extends kernel_class
 				'fullPage'=>'true',
 				'toolbarStartupExpanded'=>'false'));
 		$this->config_form["reg"] = array("type" => "checkbox", "caption" => "Включить регистрацию?");
-		$this->config_form["noreggroup"] = array("type" => "list", "listname"=>"list", "caption" => "Не подтвердившие регистрацию");
-		$this->config_form["reggroup"] = array("type" => "list", "listname"=>"list", "caption" => "Регистрировать по умолчинию");
+		$this->config_form["noreggroup"] = array("type" => "list", "listname"=>"list", "caption" => "Неподтвердившие регистрацию");
+		$this->config_form["reggroup"] = array("type" => "list", "listname"=>"list", "caption" => "Регистрировать по умолчанию");
 		$this->config_form["rememberday"] = array("type" => "int", 'mask' =>array('min'=>1), "caption" => 'Дней запоминания авторизации');
 		$this->config_form["payon"] = array("type" => "checkbox", "caption" => "Включить платежную систему?");
+		$this->config_form["premoderation"] = array("type" => "checkbox", "caption" => "Использовать премодерацию?");
+		$this->config_form["modergroup"] = array("type" => "list", "listname"=>"list", "caption" => "Непрошедшие проверку");
 	}
 
 	function _set_features() {
@@ -207,6 +211,13 @@ class users_extend extends kernel_class {
 			'mf_timecr'=>time(),
 			'owner_id'=>1,
 			'reg_hash'=>1);
+		
+		if($this->config["premoderation"])
+			$this->def_records[0]['active'] = 0;
+			
+		print_r($this->config);
+		echo '<br>';
+		print_r($this->def_records[0]['active']);
 		//$this->cookieAuthorization();
 	}
 
@@ -236,13 +247,17 @@ class users_extend extends kernel_class {
 				$this->_list();
 				if(count($this->data))
 				{
+				print_r($this->data[0]);
 					unset($_SESSION['user']);
-					if(!$this->data[0]["active"])
-						return array($this->_CFG['_MESS']['auth_banuser'],0);
+					if(_strlen($this->data[0]["reg_hash"])>5)
+						return array($this->_CFG['_MESS']['authnoconf'],0);
+					elseif($this->data[0]["reg_hash"]=='0' && !$this->data[0]['activ'])
+						return array($this->_CFG['_MESS']['auth_notcheck'],0);
 					elseif(!$this->data[0]["gact"])
 						return array($_CFG['_MESS']['auth_bangroup'],0);
-					elseif(_strlen($this->data[0]["reg_hash"])>5)
-						return array($this->_CFG['_MESS']['authnoconf'],0);
+					elseif(!$this->data[0]["active"])
+						return array($this->_CFG['_MESS']['auth_banuser'],0);
+						
 					elseif($this->data[0]["level"]>=5)
 						return array($this->_CFG['_MESS']['denied'],0);
 					else
@@ -361,8 +376,8 @@ class users_extend extends kernel_class {
 
 		$this->setCaptcha();
 		$formflag = $this->kFields2Form($param);
-		$this->form['sbmt']['value']='Я согласен с правилами и хочу зарегестрироваться';
-		$this->form['rulesinfo'] = array('type'=>'info','caption'=>'<a href="/terms.html" target="_blank">Правила пользования сайтом</a>','css'=>'rulelink');
+		$this->form['sbmt']['value']='Я согласен с правилами и хочу зарегистрироваться';
+		$this->form['rulesinfo'] = array('type'=>'info','caption'=>'<a href="'.$this->_CFG['_HREF']['BH'].'terms.html" target="_blank">Правила пользования сайтом</a>','css'=>'rulelink');
 
 		return Array(Array('messages'=>($mess+$arr['mess']), 'form'=>(!$flag?$this->form:array()), 'class'=>'regform'), $flag);
 	}

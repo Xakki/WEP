@@ -16,7 +16,7 @@ class mail_class extends kernel_class {
 
 		$this->config["mailrobot"] = 'robot@xakki.ru';
 		$this->config["mailtemplate"] = '<html><head><title>%SUBJECT%</title><meta content="text/html;charset=utf-8" http-equiv="Content-Type" /></head><body>%TEXT% %MAILBOTTOM%</body></html>';
-		$this->config["mailbottom"] = '';
+		$this->config["mailbottom"] = '© 2010 «XAKKI»';
 
 		$this->config_form["mailrobot"] = array("type" => "text", 'mask' =>array('min'=>1,"name"=>'email'), "caption" => "Адрес Робота");
 		$this->config_form['mailtemplate'] = array(
@@ -47,9 +47,11 @@ class mail_class extends kernel_class {
 	}
 
 	function Send($data) {
+		$data['subject'] = substr(htmlspecialchars(trim($data['subject'])), 0, 1000);
 		$this->uid = strtoupper(md5(uniqid(time())));
-		$subject = '=?utf-8?B?'. base64_encode(substr(htmlspecialchars(trim($data['subject'])), 0, 1000)).'?=';
-		$text = substr(trim($data['text']), 0, 1000000).$this->config["mailbottom"] = str_replace('%YEAR%',date('Y'),$this->config["mailbottom"]);;
+		$subject = '=?utf-8?B?'. base64_encode($data['subject']).'?=';
+		$text = str_replace(array('%SUBJECT%','%TEXT%','%MAILBOTTOM%'),array($data['subject'],trim($data['text']),$this->config["mailbottom"]),$this->config["mailtemplate"]);
+		//$text = substr(trim($data['text']), 0, 1000000).$this->config["mailbottom"] = str_replace('%YEAR%',date('Y'),$this->config["mailbottom"]);
 		if($data['from']=='')
 			$data['from']='robot@unidoski.ru';
 		 //if(strlen(ini_get('safe_mode'))< 1){
@@ -102,7 +104,6 @@ class mail_class extends kernel_class {
 			$flag=-1;
 			if(!count($arr['mess'])) {
 				$arr['vars']['mailTo']=$mailTo;
-				$arr['vars']['text'] = str_replace(array('%SUBJECT%','%TEXT%','%MAILBOTTOM%'),array($arr['vars']['subject'],$arr['vars']['text'],$this->config["mailbottom"]),$this->config["mailtemplate"]);
 				if($this->Send($arr['vars'])) {
 					$flag=1;
 					$arr['mess'][] = array('name'=>'ok', 'value'=>$this->getMess('mailok'));

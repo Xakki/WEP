@@ -97,7 +97,7 @@ class comments_class extends kernel_class {
 			if($row['cnt']>=$pb) {
 				$mess[] = array('name'=>'error', 'value'=>'Внимание! Вы привысили лимит , допускается комментировать не более '.$pb.' раз в период '.$this->config['spamtime'].' часа.');
 				if(!isset($_SESSION['user']['id']))
-					$mess[] = array('name'=>'alert', 'value'=>'Зарегестрированные пользователи могут отправлять '.$this->config['defumax'].' и более комментариев в '.$this->config['spamtime'].' часа. Подробности <a href="/inform.html">тут</a>.');
+					$mess[] = array('name'=>'alert', 'value'=>'Зарегистрированные пользователи могут отправлять '.$this->config['defumax'].' и более комментариев в '.$this->config['spamtime'].' часа. Подробности <a href="/inform.html">тут</a>.');
 				return $mess;
 			}
 		}

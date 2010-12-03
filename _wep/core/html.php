@@ -387,6 +387,12 @@
 			return substr($s, $offset, $len);
 	}
 
+	function _strtolower($txt) {
+		if(function_exists('mb_strtolower'))
+			return mb_strtolower($txt);
+		else
+			return strtolower($txt);
+	}
 /*
 Функция SpiderDetect - принимает $_SERVER['HTTP_USER_AGENT'] и возвращает имя кравлера поисковой системы или false.
 */
@@ -635,7 +641,7 @@
 		session_go(1);
 		$result = array('',0);
 		if(!isset($_SESSION['user']) or $login) {
-			$SQL->_iFlag = 1; // проверка табл
+			//$SQL->_iFlag = 1; // проверка табл
 			if($_CFG['wep']['access'] and _new_class('ugroup',$UGROUP)) {
 				if($login) {
 					$result = $UGROUP->childs['users']->authorization($login,$pass);
