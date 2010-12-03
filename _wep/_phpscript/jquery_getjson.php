@@ -19,9 +19,11 @@
 		function _obHandler($buf) {
 			global $GLOBALS;
 			if($buf) $GLOBALS['_RESULT']['text'] = $buf;
-			$GLOBALS['_RESULT'] = $this->allreplace($GLOBALS['_RESULT']);
-			if(function_exists('json_encode'))
+			
+			if(version_compare(phpversion(),'5.3.0','>')) {
+				$GLOBALS['_RESULT'] = $this->allreplace($GLOBALS['_RESULT']);
 				return json_encode($GLOBALS['_RESULT'],JSON_HEX_TAG);//JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_AMP
+			}
 			else
 				return $this->jsonencode($GLOBALS['_RESULT']);
 		}
@@ -79,12 +81,12 @@
 			$result = array();
 			if ($with_keys) {
 				foreach ($value as $key => $v) {
-					 $result[] = json_encode((string)$key) . ':' . json_encode($v);    
+					 $result[] = $this->jsonencode((string)$key) . ':' . $this->jsonencode($v);    
 				}
 				return '{' . implode(',', $result) . '}';                
 			} else {
 				foreach ($value as $key => $v) {
-					 $result[] = json_encode($v);    
+					 $result[] = $this->jsonencode($v);    
 				}
 				return '[' . implode(',', $result) . ']';
 			}
