@@ -229,10 +229,8 @@ class users_extend extends kernel_class {
 	}
 
 	function authorization($login,$pass) {
-		if(isset($_POST['login']) && isset($_POST['pass']) && $_POST['login']!='' && $_POST['pass']!='')
+		if($login!='' && $pass!='')
 		{
-			$login = $_POST['login'];
-			$pass = $_POST['pass'];
 			if ($this->mf_use_charid and !preg_match('/^[0-9A-Za-z]+$/', $login))
 				 return array('Поле `Логин` введено не корректно. Допустим ввод только латинских букв и цифр.',0);
 			elseif (!$this->mf_use_charid and !preg_match('/^[0-9A-Za-z\.\-\@]+$/', $login))
@@ -244,7 +242,6 @@ class users_extend extends kernel_class {
 				$this->_list();
 				if(count($this->data))
 				{
-				print_r($this->data[0]);
 					unset($_SESSION['user']);
 					if(_strlen($this->data[0]["reg_hash"])>5)
 						return array($this->_CFG['_MESS']['authnoconf'],0);

@@ -43,7 +43,7 @@ class pg_class extends kernel_class {
 		parent::_create();
 
 		# fields
-		$this->fields['name'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'min' => '1');
+		$this->fields['name'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
 		$this->fields['href'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
 		$this->fields['keywords'] = array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL');
 		$this->fields['description'] = array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL');

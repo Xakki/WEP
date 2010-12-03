@@ -34,19 +34,24 @@ $mess = $form = '';
 			$mess = '<div class="err">'.$mess.'</div>';
 	}
 	else*/
-	if(count($_POST) and isset($_POST['login']))
-	{
+
+	if(count($_POST) and isset($_POST['login'])) {
 		$result = userAuth($_POST['login'],$_POST['pass']);
 		if($result[1]) {
-			header("Location: ".$ref);
-			exit();
+			@header("Location: ".$ref);
+			die();
 		}
 	}
-	elseif($result = userAuth() and $result[1]) {
-		header("Location: ".$ref);
-		exit();
+	elseif(isset($_REQUEST['exit']) && $_REQUEST['exit']=="ok") {
+		userExit();
+		$mess=$_CFG['_MESS']['exitok'];
+		$ref = $_CFG['_HREF']['BH'];
 	}
-	else {
+	elseif(isset($_COOKIE['remember']) and $result = userAuth() and $result[1]) {
+		@header("Location: ".$ref);
+		die();
+	}
+
 		$form = '<div class="cform">
 			<form action="" method="post">
 					<input type="hidden" name="ref" value="'.$ref.'"/>
@@ -59,7 +64,7 @@ $mess = $form = '';
 			
 			 <div style="clear:both;"></div>
 		 </div>';
-	}
+
 /*
 <hr/><hr/><hr/>
 			 <div id="verify-form">
@@ -71,9 +76,10 @@ $mess = $form = '';
 				</form>
 			 </div>
 */
+	if($result[0]) $result[0] = '<div style="color:red;">'.$result[0].'</div>';
 	$html = '<div style="height:100%;">
+		<div class="messhead" style="text-align: center;">'.$result[0].$mess.'</div>
 		'.$form.'
-		<div class="messhead">'.$result[0].$mess.'</div>
 	</div>';
 	return $html;
 ?>

@@ -243,8 +243,8 @@
 		}
 
 		if($_html!='') {
-			if($_tpl['logs']!='' and $_CFG['_F']['adminpage']) 
-				$_tpl['onload'] .='if($(\'#debug_view\').html()!=\'\') fShowHide(\'debug_view\');';
+			if($_tpl['logs']=='') 
+				$_tpl['onload'] .='fShowHide(\'debug_view\');';
 			eval('$_html = "'.$_html.'";');
 			$page = $_html;
 		}else
@@ -353,46 +353,34 @@
 /*
 Используем эту ф вместо стандартной, для совместимости с UTF-8
 */
+	if(function_exists('mb_internal_encoding'))
+		mb_internal_encoding($_CFG['wep']['charset']);
+
 	function _strlen($val) {
-		global $_CFG;
-		//mb_internal_encoding("UTF-8");
-		//return mb_strlen($val);
-		//if(mb_internal_encoding()) return mb_strlen($val);
-		if($_CFG['sql']['setnames']=='utf8') return preg_match_all('/./u', $val, $tmp);
+		if(function_exists('mb_strlen'))
+			return mb_strlen($val);
 		else return strlen($val);
 	}
-
-/*
-Используем эту ф вместо стандартной, для совместимости с UTF-8
-*/
-	function _substr($s, $offset, $len = 'all')
+	function _substr($s, $offset, $len = 0)
 	{
-		if($len==0 and $len != 'all') return '';
-		global $_CFG;
-		if($_CFG['sql']['setnames']=='utf8') {
-			if ($offset<0) $offset = _strlen($s) + $offset;
-			if ($len!='all')
-			{
-			  if ($len<0) $len = _strlen($s) - $offset + $len;
-			  $xlen = _strlen($s) - $offset;
-			  $len = ($len>$xlen) ? $xlen : $len;
-			  preg_match('/^.{' . $offset . '}(.{0,'.$len.'})/us', $s, $tmp);
-			}
-			else
-			{
-			  preg_match('/^.{' . $offset . '}(.*)/us', $s, $tmp);
-			}
-			return (isset($tmp[1])) ? $tmp[1] : false;
-		}else
+		if(function_exists('mb_substr'))
+			return mb_substr($s, $offset, $len);
+		else
 			return substr($s, $offset, $len);
 	}
-
 	function _strtolower($txt) {
 		if(function_exists('mb_strtolower'))
 			return mb_strtolower($txt);
 		else
 			return strtolower($txt);
 	}
+	function _mb_strpos($haystack,$needle, $offset=0) {
+		if(function_exists('mb_strpos'))
+			return mb_strpos($haystack,$needle, $offset);
+		else
+			return strpos($haystack,$needle, $offset);
+	}
+
 /*
 Функция SpiderDetect - принимает $_SERVER['HTTP_USER_AGENT'] и возвращает имя кравлера поисковой системы или false.
 */
@@ -436,71 +424,6 @@
 
 		 return '';
 	}
-
-
-/*OLD ADMIN*/
-	function fXmlSysconf(){
-		global $_CFG;
-        $template = array();
-		$template['sysconf']['modul'] = $_GET['_modul'];
-		$template['sysconf']['user'] = $_SESSION['user'];
-		if($_SESSION['user']['level']<=1) {
-			_modulprm();
-			$data = array();
-			$dir = dir($_CFG['_PATH']['extcore']);
-			while (false !== ($entry = $dir->read())) {
-				if ($entry!='.' && $entry!='..' && $pos=strpos($entry, '.class')) {
-					$entry = _substr($entry, 0, $pos);
-					if($entry!='') {
-						if(_prmModul($entry,array(1,2))) {
-							if(!isset($_CFG['modulprm'][$entry]['name']))
-								$data[$entry] = $entry;
-							else
-								$data[$entry] = $_CFG['modulprm'][$entry]['name'];
-						}
-					}
-				}
-			}
-			asort($data);
-			$dir->close();
-			foreach($data as $k=>$r)
-				if(_prmModul($k,array(1,2)))
-					$template['sysconf']['item'][$k] = $r;
-		}
-		/*weppages*/
-		/*if(isset($_SESSION['user']) and count($_SESSION['user']['weppages'])) {
-			foreach($_SESSION['user']['weppages'] as $k=>$r0)
-				$template['sysconf']['item'][$k] = $r;
-		}*/
-		return $template;
-	}
-
-	function fXmlModulslist() {
-		global $_CFG;
-        $template = array();
-		$template['modulslist']['modul'] = $_GET['_modul'];
-		$template['modulslist']['user'] = $_SESSION['user'];
-
-		$dir = dir($_CFG['_PATH']['ext']);
-		while (false !== ($entry = $dir->read())) {
-			if ($entry!='.' && $entry!='..' && $pos=strpos($entry, '.class')) {
-				$k = _substr($entry, 0, $pos);
-				if($k!='') {
-					if(_prmModul($k,array(1,2))) {
-						_modulprm();
-						if(!isset($_CFG['modulprm'][$k]['name']))
-							$template['modulslist']['item'][$k] = $k;
-						else
-							$template['modulslist']['item'][$k] = $_CFG['modulprm'][$k]['name'];
-					}
-				}
-			}
-		}
-		$dir->close();
-
-		return $template;
-	}
-/*---------------OLD ADMIN*/
 
 /*
 Инициализация модулей
@@ -588,7 +511,7 @@
 */
 	function getTableNameOfClass($name) {
 		global $_CFG;
-		if(!isset($_CFG['modulprm'])) _modulprm();
+		if(!isset($_CFG['modulprm'])) _prmModulLoad();
 		if($_CFG['modulprm'][$name]['tablename'])
 			return $_CFG['modulprm'][$name]['tablename'];
 		else
@@ -600,7 +523,7 @@
 */
 	function _prmModul($mn,$param=array()) {
 		global $_CFG;
-		if(!isset($_CFG['modulprm'])) _modulprm();
+		if(!isset($_CFG['modulprm'])) _prmModulLoad();
 		if(!isset($_CFG['modulprm'][$mn])) return false; // отказ, если модуль отключен
 		if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0) return true; // админу можно всё
 		if($_SESSION['user']['level']>=5) return false; //этим всё запрещено
@@ -613,7 +536,7 @@
 		return false;
 	}
 
-	function _modulprm() {
+	function _prmModulLoad() { // подгрука данных прав доступа
 		global $_CFG;
 		//print('<pre>');print_r($_CFG['modulprm']);
 		if(!isset($_CFG['modulprm'])) {
@@ -640,13 +563,12 @@
 		global $_CFG,$SQL,$UGROUP;
 		session_go(1);
 		$result = array('',0);
-		if(!isset($_SESSION['user']) or $login) {
+		if(!isset($_SESSION['user']['id']) or $login) {
 			//$SQL->_iFlag = 1; // проверка табл
 			if($_CFG['wep']['access'] and _new_class('ugroup',$UGROUP)) {
-				if($login) {
+				if(isset($_POST['login']) or $login)
 					$result = $UGROUP->childs['users']->authorization($login,$pass);
-				}
-				if(!$result[1] and !$login)
+				else
 					$result = $UGROUP->childs['users']->cookieAuthorization();
 			}
 			elseif($_CFG['wep']['login'] and $_CFG['wep']['password']) {
@@ -673,7 +595,7 @@
 				}
 			}
 		}
-		elseif(isset($_SESSION['user']['id'])) {
+		else {
 			if(!$UGROUP)
 				_new_class('ugroup',$UGROUP);
 			$result = array($_CFG['_MESS']['authok'],1);

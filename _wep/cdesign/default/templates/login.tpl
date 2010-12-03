@@ -17,6 +17,7 @@
 	</head>
 	<body onload="">{$_tpl['logs']}
 	<div style="position:relative;top:40%;">
+		{$_tpl['mess']}
 		<div class="cform">
 			<form action="" method="post">
 				<input type="hidden" name="ref" value="{$_tpl['ref']}"/>
@@ -28,7 +29,6 @@
 			<a href="remind.html">Забыли пароль?</a>
 			
 		</div>
-		{$_tpl['mess']}
 	</div>
 	{$_tpl['footer']}
 		

@@ -10,7 +10,6 @@ function JSFR(n) {
 			function(a,f,o) {
 				//var formElement = f[0];
 				o.dataType = 'json';
-				alert('beforeSubmit');
 				//preSubmitAJAX (f);
 			},
 		/*notsuccess: 
@@ -21,7 +20,6 @@ function JSFR(n) {
 			},*/
 		success: 
 			function(result) {
-				alert(result);
 				clearTimeout(timerid);
 				timerid2 = setTimeout(function(){fShowload(0);},200);
 				if(result.html!= undefined && result.html!='') $('#ajaxload').html(result.html);
