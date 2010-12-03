@@ -215,9 +215,6 @@ class users_extend extends kernel_class {
 		if($this->config["premoderation"])
 			$this->def_records[0]['active'] = 0;
 			
-		print_r($this->config);
-		echo '<br>';
-		print_r($this->def_records[0]['active']);
 		//$this->cookieAuthorization();
 	}
 
