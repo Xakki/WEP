@@ -189,6 +189,13 @@
 		
 		if($_CFG['_error'][$errno]['prior']<4) {// and error_reporting()!=0
 			$debug = debugPrint(2);
+		
+			if ($_CFG['bug_hunter']['enable'] && (($_CFG['_F']['adminpage'] && $_CFG['wep']['bug_logging']) || (!$_CFG['_F']['adminpage'] && $_CFG['site']['bug_logging']))) {
+				if (_new_class('bug', $MODUL)) {
+					$MODUL->add_bug($errno, $errstr, $errfile, $errline, $debug);				
+				}
+			}
+		
 			//$GLOBALS['_ERR'] .='<div style="color:'.$errorcolor[$errno].';">'.$errortype[$errno].' '.$errstr.' , in line '.$errline.' of file <i>'.$errfile.'</i><br/>'.$debug.'</div>'."\n";
 			$GLOBALS['_ERR'] .='<div class="spoiler-wrap">
 <div onclick="clickSpoilers(this)" class="spoiler-head folded clickable" style="color:'.$_CFG['_error'][$errno]['color'].';">'.$_CFG['_error'][$errno]['type'].' '.$errstr.' , in line '.$errline.' of file <i>'.$errfile.'</i> </div>
@@ -493,31 +500,43 @@
 Инициализация модулей
 */
 	function _new_class($name,&$MODUL,&$OWNER = NULL) {
-		global $SQL;
-		$MODUL=NULL;
-		if(!$SQL)  {
-			trigger_error("SQL class missing.", E_USER_WARNING);
+		global $SQL, $_CFG, $_SINGLETON;
+		
+		if (isset($_SINGLETON[$name])) {
+			$MODUL = $_SINGLETON[$name];
+			return true;
+		}
+		else {				
+			$MODUL=NULL;
+			if(!$SQL)  {
+				trigger_error("SQL class missing.", E_USER_WARNING);
+				return false;
+			}
+			$clsn = $name."_class";
+			try {
+				require_once($_CFG['_PATH']['core'].'kernel.extends.php');
+					if($OWNER and $OWNER->_cl) {
+						global $OWN_CL;
+						$TEMPO = &$OWNER;
+						while($TEMPO->owner and $TEMPO->owner->_cl)
+							$TEMPO = &$TEMPO->owner;
+						$OWN_CL = $TEMPO->_cl;
+					}
+
+				eval('$MODUL = new '.$clsn.'($SQL,$OWNER);');
+				
+				if (isset($_CFG['singleton'][$name]))
+					$_SINGLETON[$name] = &$MODUL;
+				
+				$OWN_CL = NULL;
+				if($MODUL)
+					return true;
+			}
+			catch (Exception $e) {
+				trigger_error($e->getMessage(), E_USER_WARNING);
+			}
 			return false;
 		}
-		$clsn = $name."_class";
-		try {
-			require_once($_CFG['_PATH']['core'].'kernel.extends.php');
-				if($OWNER and $OWNER->_cl) {
-					global $OWN_CL;
-					$TEMPO = &$OWNER;
-					while($TEMPO->owner and $TEMPO->owner->_cl)
-						$TEMPO = &$TEMPO->owner;
-					$OWN_CL = $TEMPO->_cl;
-				}
-			eval('$MODUL = new '.$clsn.'($SQL,$OWNER);');
-			$OWN_CL = NULL;
-			if($MODUL)
-				return true;
-		}
-		catch (Exception $e) {
-			trigger_error($e->getMessage(), E_USER_WARNING);
-		}
-		return false;
 	}
 /*
 Автозагрузка модулей

@@ -121,6 +121,7 @@ _fldformer($key, $param)
 		$this->cf_childs = false; // true - включить управление подмодулями в настройках модуля
 		$this->includeJStoFORM = false; // подключать ли скрипты для формы через настройки
 		$this->includeCSStoFORM = false; // подключать ли стили для формы через настройки
+		$this->singleton = false; // класс-одиночка
 		$this->version = 'WEP 2.0'; // версия ядра
 		$this->ver = '0.1.1'; // версия модуля
 
@@ -233,7 +234,10 @@ _fldformer($key, $param)
 				$this->create_child($r);
 			}
 		}
-
+		
+		if ($this->singleton == true)
+			$this->_CFG['singleton'][$this->_cl] = true;
+		
 		return 0;  
 	}
 
