@@ -274,7 +274,7 @@ _fldformer($key, $param)
 //		$this->childs[$class_name] = new $cl($this->SQL, $this);
 	}
 	
-	protected function _checkmodstruct() 
+	public function _checkmodstruct() 
 	{
 		return include($_CFG['_PATH']['core'].'kernel.checkmodstruct.php');
 	}

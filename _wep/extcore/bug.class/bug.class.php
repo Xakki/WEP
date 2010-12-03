@@ -29,7 +29,7 @@ class bug_class extends kernel_class {
 
 		# fields
 		$this->fields['name'] = array('type' => 'text', 'attr' => 'NOT NULL', 'min' => '1');	
-		$this->fields['num'] = array('type' => 'int', 'attr' => 'NOT NULL');
+		$this->fields['err_type'] = array('type' => 'int', 'attr' => 'NOT NULL');
 		$this->fields['file'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['line'] = array('type' => 'int', 'attr' => 'NOT NULL');
 		$this->fields['debug'] = array('type' => 'text', 'attr' => 'NOT NULL');
@@ -42,7 +42,11 @@ class bug_class extends kernel_class {
 		# fields
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Текст ошибки','mask'=>array('sort'=>1,'filter'=>1));
 		$this->fields_form['href'] = array('type' => 'text', 'caption' => 'Страница', 'mask' =>array('sort'=>1,'filter'=>1));
-
+		$this->fields_form['err_type'] = array('type' => 'list', 'caption' => 'Тип ошибки', 'listname'=>'err_type', 'mask' => array());
+		
+		foreach ($this->_CFG['_error'] as $k=>$r) {
+			$this->_enum['err_type'][$k] = $r['type'];
+		}
 		
 		$this->bugs = array();
 		
@@ -61,7 +65,7 @@ class bug_class extends kernel_class {
 			list($cnt) = $result->fetch_array(MYSQL_NUM);
 			if ($cnt == 0) {
 				$this->fld_data = array(
-					'num' => $errno,
+					'err_type' => $errno,
 					'name' => mysql_real_escape_string($errstr),
 					'file' => mysql_real_escape_string($errfile), 
 					'line' => mysql_real_escape_string($errline),
