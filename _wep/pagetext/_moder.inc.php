@@ -12,35 +12,34 @@
 			if($_GET['_id']!='') $MODUL->id = $_GET['_id'];
 
 			if(_prmModul($FUNCPARAM[0],array(1,2))) {
+				$MODUL->_clp = '_view=list&_modul='.$MODUL->_cl.'&';
+				$param = array('firstpath'=>$this->current_path.'?');
+				list($DATA,$flag) = $MODUL->super_inc($param,$_GET['_type']);
 
-					$param = array('firstpath'=>$this->current_path.'?');//'fhref'=>'_view=list&amp;_modul='.$FUNCPARAM[0].'&amp;'
-							
-							list($DATA,$flag) = $MODUL->super_inc($param,$_GET['_type']);
-
-							if($_GET['_type']=="add" or $_GET['_type']=="edit") {
-								if($flag==1) {
-									end($HTML->path);prev($HTML->path);
-									$_SESSION['mess']=$DATA['formcreat']['messages'];
-									header('Location: '.str_replace("&amp;", "&", key($HTML->path)));
-									die();
-								}
-								else {
-									$DATA['formcreat']['path'] = $HTML->path;
-									$html = $HTML->transformPHP($DATA,'formcreat');
-								}
-							}elseif($flag!=3) {
-								end($HTML->path);
-								$_SESSION['mess']=$DATA['superlist']['messages'];
-								header('Location: '.str_replace("&amp;", "&", key($HTML->path)));
-								die();
-							}else {
-								if(!$_SESSION['mess']) 
-									$_SESSION['mess']= array();
-								$DATA['superlist']['messages'] += $_SESSION['mess'];
-								$DATA['superlist']['path'] = $HTML->path;
-								$html = $HTML->transformPHP($DATA,'superlist');
-								$_SESSION['mess'] = array();
-							}
+				if($_GET['_type']=="add" or $_GET['_type']=="edit") {
+					if($flag==1) {
+						end($HTML->path);prev($HTML->path);
+						$_SESSION['mess']=$DATA['formcreat']['messages'];
+						header('Location: '.str_replace("&amp;", "&", key($HTML->path)));
+						die();
+					}
+					else {
+						$DATA['formcreat']['path'] = $HTML->path;
+						$html = $HTML->transformPHP($DATA,'formcreat');
+					}
+				}elseif($flag!=3) {
+					end($HTML->path);
+					$_SESSION['mess']=$DATA['superlist']['messages'];
+					header('Location: '.str_replace("&amp;", "&", key($HTML->path)));
+					die();
+				}else {
+					if(!$_SESSION['mess']) 
+						$_SESSION['mess']= array();
+					$DATA['superlist']['messages'] += $_SESSION['mess'];
+					$DATA['superlist']['path'] = $HTML->path;
+					$html = $HTML->transformPHP($DATA,'superlist');
+					$_SESSION['mess'] = array();
+				}
 
 			}
 			else

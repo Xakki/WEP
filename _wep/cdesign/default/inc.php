@@ -29,7 +29,8 @@
 			if(_prmModul($_GET['_modul'],array(1,2))) {
 
 				if($_GET['_view']=='list') {
-					$param = array('fhref'=>'_view=list&amp;_modul='.$_GET['_modul'].'&amp;','sbmtsave'=>1,'close'=>1);
+					$MODUL->_clp = '_view=list&amp;_modul='.$MODUL->_cl.'&amp;';
+					$param = array('sbmtsave'=>1,'close'=>1);
 //$tt = array();$summ = 0;for($j = 1; $j <= 5; $j++) { $tt[$j] = getmicrotime(); for($i = 1; $i <= 20; $i++) {
 							$MODUL->setFilter(1);
 							list($DATA,$flag) = $MODUL->super_inc($param,$_GET['_type']);

@@ -19,7 +19,7 @@ function fLog(txt,flag) {
 	if($('#debug_view').size())
 		$('#debug_view').html(txt+$('#debug_view').html());
 	else
-		$(".maintext .block").prepend("<div id='debug_view' style='border:1px solid blue	;'>"+txt+"</div>");
+		$(".maintext .block").prepend("<div id='debug_view' style='border:1px solid blue;'>"+txt+"</div>");
 	if(flag==1) fShowHide('debug_view',1);
 }
 
@@ -197,3 +197,137 @@ function getCookie(name) {
 
 
 /************************/
+/****************/
+
+function ShowTools(id,hrf) {
+	/*Панель инструментов модуля(фильтр, статистика, обновление таблицы итп)*/
+	$('#'+id).hide();
+
+	if(typeof hrf=='object')
+		_last_load = $(hrf).attr('href');
+	JSHR(id,hrf);
+	$('#'+id).fadeIn();
+
+	return false;
+}
+
+function JSHR(id,_href,param,body,insertType) {
+	clearTimeout(timerid2);timerid2 = 0;
+	timerid = setTimeout(function(){fShowload(1,'',body);},400);
+	$.ajax({
+		type: "GET",
+		url: _href,
+		data: param,
+		dataType: "json",
+		beforeSend: function(XMLHttpRequest) {
+			return true;
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+			alert(textStatus);
+		},
+		dataFilter: function(data, type) {
+			return data;
+		},
+		success: function(data, textStatus, XMLHttpRequest) {
+			clearTimeout(timerid);
+			timerid2 = setTimeout(function(){fShowload(0);},200);
+
+			if(id!=0 && data.html != '') {
+				if(typeof id!='object')
+					id = '#'+id;
+				if(insertType=='after')
+					$(id).after(data.html);
+				else if(insertType=='before')
+					$(id).before(data.html);
+				else
+					$(id).html(data.html);
+			}
+			if(data.text != undefined && data.text!='') fLog(fSpoiler(data.text,'AJAX text result'),1);
+			if(data.eval != undefined && data.eval!='') eval(data.eval);
+		}
+	});
+	return false;
+}
+
+function JSFRWin(obj,htmlobj) {
+	clearTimeout(timerid);
+	timerid = setTimeout(function(){fShowload(1);},200);
+	preSubmitAJAX(obj);
+	$.ajax({
+		type: "POST",
+		url: $(obj).attr('action'),
+		data: $(obj).serialize()+'&sbmt=1',
+		dataType: "json",
+		beforeSend: function(XMLHttpRequest) {
+			return true;
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+			alert(textStatus);
+		},
+		dataFilter: function(data, type) {
+		 
+			return data;
+		},
+		success: function(result) {
+			clearTimeout(timerid);
+			if(result.html!= undefined && result.html!='') {
+				if(htmlobj) {
+					timerid = setTimeout(function(){fShowload(0);},200);
+					$(htmlobj).html(result.html);
+				}
+				else
+					fShowload(1,result.html);
+			}
+			if(result.eval!= undefined && result.eval!='') eval(result.eval);
+			if(result.text!= undefined && result.text!='') fLog(fSpoiler(result.text,'AJAX text result'),1);
+		}
+	});
+	return false;
+}
+
+
+var lochref = window.location.href;
+var i = lochref.indexOf('#', 0);
+if(i >= 0) {
+	lochref = lochref.substring(0, i);
+}
+var tmp;
+
+function pagenum_super(total,pageCur,cl,order) {
+	if(!order) order = false;
+	if($('.ppagenum').size()>0 && total>20) {
+		$.includeCSS('/_design/_style/paginator.css');
+		pg = 1;
+		reg = new RegExp('\&*'+cl+'_pn=([0-9]*)', 'i');
+		tmp = reg.exec(lochref);
+		if(tmp)
+			pg =  tmp[2];
+		else if(!tmp && order)
+			pg = total;
+		
+		loc = lochref.replace(reg, '');
+		var param = '';
+		if(/\?/.exec(loc)) {
+			if(loc.substr(-1,1)!='&' && loc.substr(-1,1)!='?')
+				param += '&';
+		}
+		else
+			param += '?';
+		param += cl+'_pn=';
+		//alert(dump(loc));
+		$.include('/_design/_script/jquery.paginator.js',function(){
+			$('.pagenum').css('display','none');
+			$('.ppagenum').css('display','block').paginator({pagesTotal:total, 
+				pagesSpan:8, 
+				returnOrder:order,
+				pageCurrent:pageCur, 
+				baseUrl: function (page){
+					if((!order && page!=1) || (order && page!=total))
+						loc += param+page;
+					window.location.href = loc;
+				},
+			});
+		});
+		//returnOrder: true
+	}
+}

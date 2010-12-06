@@ -123,7 +123,7 @@ $_CFG['singleton'] = array();
 		$_CFG['site']['rf']=1;
 	}
 	$_CFG['_HREF']['BH'] = 'http://'.$_SERVER['HTTP_HOST'].$port.'/'.$addpath; // www-путь сайта
-	$_CFG['_HREF']['JS'] = $_CFG['_HREF']['BH'].$_CFG['PATH']['wepname'].'/js.php';
+	$_CFG['_HREF']['wepJS'] = $_CFG['_HREF']['BH'].$_CFG['PATH']['wepname'].'/js.php';
 	$_CFG['_HREF']['siteJS'] = $_CFG['_HREF']['BH'].'_js.php';
 	$_CFG['_HREF']['captcha'] = $_CFG['_HREF']['BH'].'_captcha.php';
 	$_CFG['_HREF']['WSWG'] = $_CFG['_HREF']['BH'].$_CFG['PATH']['WSWG'];
@@ -292,6 +292,10 @@ $_CFG['_error'] = array(
 	}
 
 
+ /***INCLUDE LANG***/
+	include_once($_CFG['_PATH']['locallang'].$_CFG['wep']['locallang'].'.php');
+	if(file_exists($_CFG['_PATH']['locallang'].$_CFG['wep']['locallang'].'.php'))
+		include_once($_CFG['_PATH']['ulocallang'].$_CFG['wep']['locallang'].'.php');
 
 
   /***********************/
@@ -302,19 +306,12 @@ include($_CFG['_PATH']['wepconf'].'/config/config.php');
 
  /***SET SESSION***/
 	date_default_timezone_set($_CFG['timezone']);
-
-	$_CFG['time'] = time();
-	$_CFG['getdate'] = getdate();
-	$_CFG['remember_expire'] = $_CFG['session']['expire']= $_CFG['time']+1728000; // 20дней ,по умолчанию
+		$_CFG['time'] = time();
+		$_CFG['getdate'] = getdate();
+		$_CFG['remember_expire'] = $_CFG['session']['expire']= $_CFG['time']+1728000; // 20дней ,по умолчанию
 	session_name($_CFG['session']['name']);
 	session_set_cookie_params($_CFG['session']['expire'],$_CFG['session']['path'], $_CFG['session']['domain'],$_CFG['session']['secure']);
 	ini_set('session.cookie_domain', $_CFG['session']['domain']);
-
- /***INCLUDE LANG***/
-	include_once($_CFG['_PATH']['locallang'].$_CFG['wep']['locallang'].'.php');
-	if(file_exists($_CFG['_PATH']['locallang'].$_CFG['wep']['locallang'].'.php'))
-		include_once($_CFG['_PATH']['ulocallang'].$_CFG['wep']['locallang'].'.php');
-
 	register_shutdown_function ('shutdown_function'); // Запускается первым при завершении скрипта
 
 /*

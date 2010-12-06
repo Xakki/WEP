@@ -2,7 +2,8 @@
 
 	$DATA = array();
 	if($_GET['_view']=='list'){
-		$param = array('fhref'=>'_view=list&amp;_modul='.$_GET['_modul'].'&amp;','ajax'=>1);
+		$MODUL->_clp = '_view=list&amp;_modul='.$MODUL->_cl.'&amp;';
+		$param = array('ajax'=>1);
 		list($DATA,$flag) = $MODUL->super_inc($param,$_GET['_type']);
 		$mess = '';
 			if(isset($DATA['formcreat']) and count($DATA['formcreat'])) {

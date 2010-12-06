@@ -90,45 +90,6 @@
 		height: expression(document.body.scrollHeight > document.body.offsetHeight ? document.body.scrollHeight : document.body.offsetHeight + 'px');
 	}
 
-	.ajaxlist {
-		position: relative;
-		border-radius:3px;-moz-border-radius:3px;-webkit-border-radius:3px;
-		background-color:white;
-	}
-	.ajaxlist input{
-		background:none repeat scroll 0 0 transparent;
-		position:relative;
-		z-index:1;
-	}
-	.ajaxlist span {
-		left:5px;
-		top:0;
-		position:absolute;
-		z-index:0;
-		color:#AAA;
-	}
-	.ajaxlist div {
-		left:0;
-		top:20px;
-		position:absolute;
-		z-index:10;
-		color:#000;
-		border:1px solid gray;
-		background:none repeat scroll 0 0 #AAAAAA;
-		padding:10px 5px 5px;
-	}
-	.ajaxlist div label {
-		display:block;
-		cursor:pointer;
-		text-decoration:underline;
-	}
-	.ajaxlist div label:hover {
-		text-decoration:none;
-	}
-	.ajaxlist div label .selectl {
-		font-weight:bold;		
-	}
-
 
 /*SPOILER*/
 	.spoiler-wrap {

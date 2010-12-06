@@ -196,11 +196,59 @@
 		color:red;
 	}
 
+
+/*FORM*/
+
+	.ajaxlist {
+		position: relative;
+		border-radius:3px;-moz-border-radius:3px;-webkit-border-radius:3px;
+		background-color:white;
+	}
+	.ajaxlist input{
+		background:none repeat scroll 0 0 transparent;
+		position:relative;
+		z-index:1;
+	}
+	.ajaxlist span {
+		left:5px;
+		top:0;
+		position:absolute;
+		z-index:0;
+		color:#AAA;
+	}
+	.ajaxlist div {
+		left:0;
+		top:20px;
+		position:absolute;
+		z-index:10;
+		color:#000;
+		border:1px solid gray;
+		border-radius:0 0 4px 4px;-moz-border-radius:0 0 4px 4px;-webkit-border-radius:0 0 4px 4px;
+		background:none repeat scroll 0 0 #A1B1C1;
+		padding:5px 0;
+		width: 100%;
+		overflow-y: scroll;
+		max-height:300px;
+	}
+	.ajaxlist div label {
+		display:block;
+		cursor:pointer;
+		text-decoration:none;
+		padding: 1px 10px;
+		color:#000;
+		background:none repeat scroll 0 0 #A1B1C1;
+	}
+	.ajaxlist div label:hover {
+		color:#FFF;
+		background:none repeat scroll 0 0 #111111;
+	}
 	/*Значок в форме ввода*/
-	input.accept{
+	.ajaxlist input.accept{
 		background:transparent url(../default/img/x16.png) no-repeat scroll 100% 2px;
 	}
-	input.reject{
+	.ajaxlist input.reject{
 		background:transparent url(../default/img/x16.png) no-repeat scroll 100% -30px;
 	}
-/*FORM*/
+	.ajaxlist input.load, select.load{
+		background:transparent url(../_img/loader16.gif) no-repeat scroll 100% 2px;
+	}

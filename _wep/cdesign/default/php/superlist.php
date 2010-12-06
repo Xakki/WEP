@@ -14,7 +14,7 @@ include_once($this->_PATHd.'php/messages.php');
 				$temp_topmenu .= '<div class="botton"><span';
 				if($r['type']=='tools' or $r['type']=='static') {
 					$r['css'] = 'weptools '.$r['css'];
-					$temp_topmenu .= ' onclick="return ShowTools(\'tools_block\',\''.$_CFG['_HREF']['JS'].'?'.$r['href'].'\')"';
+					$temp_topmenu .= ' onclick="return ShowTools(\'tools_block\',\''.$_CFG['_HREF']['wepJS'].'?'.$r['href'].'\')"';
 				}
 				else {
 					$temp_topmenu .= ' onclick="return load_href(\''.$_CFG['PATH']['wepname'].'/index.php?'.$r['href'].'\')"';
@@ -130,10 +130,11 @@ include_once($this->_PATHd.'php/messages.php');
 
 
 	function tpl_pagenum(&$data) {
-		global $_CFG;
+		global $_CFG,$_tpl;
 		if(!$data or !count($data)) return '';
 		$html = '<div class="pagenumcnt">'.$data['cnt'].'&#160;:&#160;&#160;</div>';
 		if(count($data['link'])) {
+			$_tpl['onload'] .='pagenum_super('.$data['cntpage'].','.$data['_pn'].',\''.$data['modul'].'\','.($data['reverse']?'true':'false').');';
 			$html .= '<div class="pagenum">';
 			foreach($data['link'] as $k=>$r) {
 				if($r['href']=='')

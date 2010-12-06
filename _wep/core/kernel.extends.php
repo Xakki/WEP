@@ -143,7 +143,7 @@ _fldformer($key, $param)
 		$this->services =
 		$this->index_fields = array();
 		$this->childs = new modul_child($this);
-		$this->ordfield = '';
+		$this->ordfield = $this->_clp = '';
 		return 0;
 	}
 
@@ -1067,9 +1067,7 @@ $Ajax=0 - не скриптовая
 
 		if($this->owner and $this->owner->id)
 			$this->_clp = $this->owner->_clp.$this->owner->_cl.'_id='.$this->owner->id.'&amp;'.$this->owner->_cl.'_ch='.$this->_cl.'&amp;';
-		else $this->_clp = '';
-		if($this->_clp=='')
-			$this->_clp = $param['fhref'];
+
 		if($this->_pn>1)
 			$this->_clp .= $cl.'_pn='.$this->_pn.'&amp;';
 		
@@ -1621,7 +1619,7 @@ $Ajax=0 - не скриптовая
 		//$this->messages_on_page - число эл-ов на странице
 		//$this->_pn - № текущей страницы
 		//$flag  - опция для paginator, 0 - если номер страницы перед list_2.html , 1 - после ?_pn=1
-		$DATA = array('cnt'=>$countfield,'cntpage'=>ceil($countfield/$this->messages_on_page),'modul'=>$this->_cl);
+		$DATA = array('cnt'=>$countfield,'cntpage'=>ceil($countfield/$this->messages_on_page),'modul'=>$this->_cl,'reverse'=>$this->reversePageN);
 		$numlist=$this->numlist;
 		if(($this->messages_on_page*($this->_pn-1))>$countfield) {
 			$this->_pn=$DATA['cntpage'];
@@ -1707,23 +1705,11 @@ $Ajax=0 - не скриптовая
 					$DATA['link'][] = array('value'=>$DATA['cntpage'],'href'=>str_replace($replPage,$inPage.$DATA['cntpage'],$thisPage));
 				}
 			}
+			$DATA['_pn'] = $this->_pn;
 		//////////////////
 
 		}
-		if(!$flag && $this->_CFG['site']['msp']=='paginator') {
-			global $_tpl;
-			$_tpl['script']['jquery.paginator'] = 1;
-			$_tpl['styles']['paginator'] = 1;
-			$_tpl['onload'] .='pagenum('.$DATA['cntpage'].','.($this->reversePageN?'true':'false').');';
-		}
-		elseif($flag && $this->_CFG['wep']['msp']=='paginator') {
-			global $_tpl;
-			$_tpl['script']['jquery.paginator'] = 1;
-			$_tpl['styles']['paginator'] = 1;
-			$_tpl['onload'] .='pagenum_default('.$DATA['cntpage'].','.$this->_pn.',\''.$this->_cl.'\','.($this->reversePageN?'true':'false').');';
-		}
-		//if($this->reversePageN)
-		//	$this->_pn = $temp_pn;
+
 		return $DATA;
 	}
 

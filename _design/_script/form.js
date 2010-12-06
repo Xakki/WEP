@@ -171,7 +171,7 @@ function getAjaxListData(value,view) {
 		$('#ajaxlist_'+view).show();
 	}
 	else{
-		$('#ajaxlist_'+view).prev('input').attr('class','reject');
+		$('#ajaxlist_'+view).prev('input').attr('class','load');
 		ajaxComplite = 0;
 		$.ajax({
 			type: "GET",
@@ -183,6 +183,7 @@ function getAjaxListData(value,view) {
 				alert('error: '+textStatus);
 			},
 			success: function(result, textStatus, XMLHttpRequest) {
+				$('#ajaxlist_'+view).prev('input').attr('class','reject');
 				var txt = '';
 				if(result && result.data && $(result.data).size()>0) {
 					var c = 0;var temp = 0;
