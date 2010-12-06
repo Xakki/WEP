@@ -35,20 +35,17 @@ $_CFG['wep'] = array( // для админки
 	'md5'=>'d3dEegf6EH',
 	'def_filesize'=>200,
 	'sessiontype'=>1, //0 - стандартная сессия, 1 - БД сессия, 2 - ещё какаянибудь
-	'bug_logging' => 1,
+	'bug_hunter' => 1,
 );
 
 $_CFG['site'] = array( // для сайта
 	'msp'=>'paginator', // постраничнка
 	'rf' => 0, // для рускояз доменов
-	'bug_logging' => 1, // логирование ошибок
-);
-
-$_CFG['bug_hunter'] = array(
-	'enable' => false,
+	'bug_hunter' => 1, // логирование ошибок
 );
 
 $_CFG['singleton'] = array();
+
   /****************/
  /*$_CFG['_PATH']*/
 /****************/
@@ -138,6 +135,9 @@ $_CFG['singleton'] = array();
 		$_CFG['_F']['adminpage'] = true;
 	else
 		$_CFG['_F']['adminpage'] = false;
+		
+		
+	$_CFG['singleton'] = array();
   
   /******************/
  /*$_CFG['_MASK']***/

@@ -235,9 +235,6 @@ _fldformer($key, $param)
 			}
 		}
 		
-		if ($this->singleton == true)
-			$this->_CFG['singleton'][$this->_cl] = true;
-		
 		return 0;  
 	}
 
