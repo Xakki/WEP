@@ -12,7 +12,9 @@
 		}
 	else 
 		$ref= $_CFG['_HREF']['BH'];
-//qwert
+
+//qwertsd
+
 $mess = $form = '';
 /*
 	require_once $_CFG['_PATH']['extcore']."ugroup.class/openid.php";
