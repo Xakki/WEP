@@ -45,8 +45,8 @@
 			if (is_int($value)) {
 				return (string)$value;   
 			} elseif (is_string($value)) {
-			  $value = str_replace(array('\\', '/', '"', "\r", "\n", "\b", "\f", "\t"), 
-										  array('\\\\', '\/', '\"', '\r', '\n', '\b', '\f', '\t'), $value);
+			  $value = str_replace(array('\\', '/', '"', "\r", "\n", "\b", "\f", "\t",'/\"\"/','<','>'), 
+										  array('\\\\', '\/', '\"', '', '', '', '', '','""',"\\u003C","\\u003E"), $value);
 			  $convmap = array(0x80, 0xFFFF, 0, 0xFFFF);
 			  $result = "";
 			  for ($i = mb_strlen($value) - 1; $i >= 0; $i--) {
