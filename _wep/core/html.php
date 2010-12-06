@@ -190,7 +190,7 @@
 		if($_CFG['_error'][$errno]['prior']<4) {// and error_reporting()!=0
 			$debug = debugPrint(2);
 		
-			if ($_CFG['bug_hunter']['enable'] && (($_CFG['_F']['adminpage'] && $_CFG['wep']['bug_logging']) || (!$_CFG['_F']['adminpage'] && $_CFG['site']['bug_logging']))) {
+			if (($_CFG['_F']['adminpage'] && $_CFG['wep']['bug_hunter']) || (!$_CFG['_F']['adminpage'] && $_CFG['site']['bug_hunter'])) {
 				if (_new_class('bug', $MODUL)) {
 					$MODUL->add_bug($errno, $errstr, $errfile, $errline, $debug);				
 				}
