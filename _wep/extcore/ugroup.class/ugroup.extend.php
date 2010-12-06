@@ -266,7 +266,7 @@ class users_extend extends kernel_class {
 					return array($this->_CFG['_MESS']['autherr'],0);
 			}
 		}
-		else
+		else 
 			return array("Поля `Логин` и `Пароль` - обязательные! Необходимо ввести свой `Логин` и `Пароль` чтобы авторизоваться.",0);
 	}
 

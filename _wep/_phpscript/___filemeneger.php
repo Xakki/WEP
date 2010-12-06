@@ -743,8 +743,9 @@ function doAction() { // This function handles all actions (upload, rename, dele
 			if (isset($_COOKIE[session_name()])) {
 			   setcookie(session_name(), '', time()-42000, '/');
 			}
-			session_destroy();
-			redirect();
+		//	session_destroy();
+		//	redirect();
+		exit('а вот я тут');
 		}
 	}
 }

@@ -163,7 +163,7 @@ $_CFG['bug_hunter'] = array(
 	$_CFG['session']['secure'] = 0;
 
 	session_name($_CFG['session']['name']);
-	session_set_cookie_params($_CFG['session']['expire'],$_CFG['session']['path'], $_CFG['session']['domain'],$_CFG['session']['secure']);
+	session_set_cookie_params($_CFG['session']['expire']);
 	ini_set('session.cookie_domain', $_CFG['session']['domain']);
 
 	if(strstr($_SERVER['PHP_SELF'],'/'.$_CFG['PATH']['wepname'].'/'))
@@ -252,7 +252,7 @@ $_CFG['form'] = array(
 					require_once($_CFG['_PATH']['core'].'/session.php');
 					$SESSION_GOGO = new session_gogo();
 				}
-			}else {
+			} else {
 				session_start();
 			}
 			return true;
@@ -270,6 +270,7 @@ $_CFG['form'] = array(
 			$domain = $_CFG['session']['domain'];
 		if($secure=='')
 			$secure = $_CFG['session']['secure'];
+			//print_r($name.' - '.$value);
 		setcookie($name,$value,$expire,$path,$domain,$secure);
 	}
 	
