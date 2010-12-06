@@ -1,10 +1,10 @@
 <?
-	if(!$_CFG['_PATH']['path'] or !$_CFG['_PATH']['wep']) die('ERROR');
+	if(!$_CFG['_PATH']['wep']) die('ERROR');
 
 	$GLOBALS['_RESULT']	= array();
 
 
-	require_once($_CFG['_PATH']['path'].'/_wep/config/config.php');
+	require_once($_CFG['_PATH']['wep'].'/config/config.php');
 	require_once($_CFG['_PATH']['phpscript'].'/jquery_getjson.php');
 	//require_once($_CFG['_PATH']['core'].'/html.php');	/**отправляет header и печатает страничку*/
 	require_once($_CFG['_PATH']['core']."/sql.php");
