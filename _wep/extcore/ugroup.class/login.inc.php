@@ -12,8 +12,6 @@
 		}
 	else 
 		$ref= $_CFG['_HREF']['BH'];
-		
-//qwertsdsafdgfsaf gsad
 
 $mess = $form = '';
 /*
