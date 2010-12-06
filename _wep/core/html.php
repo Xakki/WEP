@@ -361,12 +361,19 @@
 			return mb_strlen($val);
 		else return strlen($val);
 	}
-	function _substr($s, $offset, $len = 0)
+	function _substr($s, $offset, $len = NULL)
 	{
-		if(function_exists('mb_substr'))
-			return mb_substr($s, $offset, $len);
-		else
-			return substr($s, $offset, $len);
+		if($len != NULL) {
+			if(function_exists('mb_substr'))
+				return mb_substr($s, $offset, $len);
+			else
+				return substr($s, $offset, $len);
+		}else {
+			if(function_exists('mb_substr'))
+				return mb_substr($s, $offset);
+			else
+				return substr($s, $offset);
+		}
 	}
 	function _strtolower($txt) {
 		if(function_exists('mb_strtolower'))
