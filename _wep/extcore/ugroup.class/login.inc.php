@@ -13,6 +13,8 @@
 	else 
 		$ref= $_CFG['_HREF']['BH'];
 
+//qwertsddccdsdedewddfdsfdsfsdfsdf
+
 $mess = $form = '';
 /*
 	require_once $_CFG['_PATH']['extcore']."ugroup.class/openid.php";
