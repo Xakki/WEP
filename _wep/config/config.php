@@ -146,7 +146,7 @@ $_CFG['bug_hunter'] = array(
 	// никто не будет использовать домен 4го уровня, а значит это IP
 	if($hostcnt<=2 or $hostcnt>=4) { //учитываем localhost и ИПИ
 		$_SERVER['HTTP_HOST2'] = $_SERVER['HTTP_HOST'].$port;
-		$_CFG['session']['domain'] = '.'.$_SERVER['HTTP_HOST2'];
+		$_CFG['session']['domain'] = $_SERVER['HTTP_HOST2'];
 	}
 	else {
 		$_SERVER['HTTP_HOST2'] = $_CFG['_HREF']['arrayHOST'][1].'.'.$_CFG['_HREF']['arrayHOST'][0].$port;
