@@ -1,8 +1,8 @@
 <?
 error_reporting(-1);
 
-	$_CFG['_PATH']['wepconf'] = dirname(dirname($_SERVER['SCRIPT_FILENAME'])).'/_wepconf';
-	require_once($_CFG['_PATH']['wepconf'].'/config/config.php');
+	$_CFG['_PATH']['wep'] = dirname($_SERVER['SCRIPT_FILENAME']);
+	require_once($_CFG['_PATH']['wep'].'/config/config.php');
 	require_once($_CFG['_PATH']['core'].'/html.php');
 	require_once($_CFG['_PATH']['core'].'/sql.php');
 	$SQL = new sql();

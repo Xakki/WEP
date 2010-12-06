@@ -211,11 +211,7 @@ class users_extend extends kernel_class {
 			'mf_timecr'=>time(),
 			'owner_id'=>1,
 			'reg_hash'=>1);
-		
-		if($this->config["premoderation"])
-			$this->def_records[0]['active'] = 0;
-			
-		//$this->cookieAuthorization();
+
 	}
 
 	function _UpdItemModul($param) {

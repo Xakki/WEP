@@ -1,16 +1,11 @@
 <?
 
-	//date_default_timezone_set('Asia/Yekaterinburg');
-	date_default_timezone_set('Europe/Moscow');
 	error_reporting(E_ALL ^ E_NOTICE);
 	//универсальный для русского языка
 	setlocale(LC_CTYPE, 'ru_RU.UTF-8');
 
-$_CFG['time'] = time();
-$_CFG['getdate'] = getdate();
-$_CFG['remember_expire'] = $_CFG['time']+1728000; // 20дней ,по умолчанию
 $_CFG['logs']['sql'] = array(); // - массив SQL запросов
-
+$_CFG['timezone'] = 'Europe/Moscow';
 $_CFG['info'] = array( //информация
 	'version'=>'2.2',
 	'email'=>'info@xakki.ru',
@@ -50,19 +45,20 @@ $_CFG['site'] = array( // для сайта
 );
 
 $_CFG['bug_hunter'] = array(
-	'enable' => true,
+	'enable' => false,
 );
 
+$_CFG['singleton'] = array();
   /****************/
  /*$_CFG['_PATH']*/
 /****************/
 /*Полные пути по файловым системам для ядра*/
-	if(!isset($_CFG['_PATH']['wepconf'])) //если  путь не был задан
-		$_CFG['_PATH']['wepconf'] = dirname(dirname(__FILE__)); // файл-путь к конфигам
-	if(!isset($_CFG['_PATH']['path']))
-		$_CFG['_PATH']['path'] = dirname($_CFG['_PATH']['wepconf']);
 	if(!isset($_CFG['_PATH']['wep'])) //если  путь не был задан
-		$_CFG['_PATH']['wep'] = $_CFG['_PATH']['path'].'_wep'; // файл-путь  Корень админки
+		$_CFG['_PATH']['wep'] = dirname(dirname(__FILE__)); // файл-путь к ядру, Корень админки
+	if(!isset($_CFG['_PATH']['path']))
+		$_CFG['_PATH']['path'] = dirname($_CFG['_PATH']['wep']); // корень сайта
+	if(!isset($_CFG['_PATH']['wepconf'])) //если  путь не был задан
+		$_CFG['_PATH']['wepconf'] = $_CFG['_PATH']['path'].'/_wepconf'; // файл-путь  к конфигу 
 	
 	$_SERVER['_DR_'] = $_CFG['_PATH']['path'] = $_CFG['_PATH']['path'].'/'; // корень сайта, основной путь к проекту
 	$_CFG['_PATH']['extcore'] = $_CFG['_PATH']['wep'].'/extcore/'; // путь к системным модулям
@@ -138,34 +134,6 @@ $_CFG['bug_hunter'] = array(
 	$_CFG['_HREF']['_script'] = '_design/_script/'; // дизайн стили
 	$_CFG['_HREF']['arrayHOST'] = array_reverse(explode('.',$_SERVER['HTTP_HOST']));
 
-  /******************/
- /*$_CFG['session']*/
-/******************/
-	$_CFG['session']['domain'] = '';
-	$hostcnt = count($_CFG['_HREF']['arrayHOST']);
-	// никто не будет использовать домен 4го уровня, а значит это IP
-	if($hostcnt<=2 or $hostcnt>=4) { //учитываем localhost и ИПИ
-		$_SERVER['HTTP_HOST2'] = $_SERVER['HTTP_HOST'].$port;
-		$_CFG['session']['domain'] = $_SERVER['HTTP_HOST2'];
-	}
-	else {
-		$_SERVER['HTTP_HOST2'] = $_CFG['_HREF']['arrayHOST'][1].'.'.$_CFG['_HREF']['arrayHOST'][0].$port;
-		
-		if($_CFG['site']['rf'])
-			$_CFG['session']['domain'] = '.'.$IDN->encode($_SERVER['HTTP_HOST2']);
-		else
-			$_CFG['session']['domain'] = '.'.$_SERVER['HTTP_HOST2'];
-	}
-
-	$_CFG['session']['name'] = 'wepID';
-	$_CFG['session']['expire'] = $_CFG['time']+86400;// 1 день ,по умолчанию
-	$_CFG['session']['path'] = '/';
-	$_CFG['session']['secure'] = 0;
-
-	session_name($_CFG['session']['name']);
-	session_set_cookie_params($_CFG['session']['expire']);
-	ini_set('session.cookie_domain', $_CFG['session']['domain']);
-
 	if(strstr($_SERVER['PHP_SELF'],'/'.$_CFG['PATH']['wepname'].'/'))
 		$_CFG['_F']['adminpage'] = true;
 	else
@@ -223,56 +191,7 @@ $_CFG['form'] = array(
 	'flashFormat' => array('swf'=>1),
 	'dateFormat' => 'd-m-Y-H-i-s'
 );
-  
-  /***********************/
- /***INCLUDE USER CONF***/
-/***********************/
-	include_once($_CFG['_PATH']['locallang'].$_CFG['wep']['locallang'].'.php');
-	if(file_exists($_CFG['_PATH']['locallang'].$_CFG['wep']['locallang'].'.php'))
-		include_once($_CFG['_PATH']['ulocallang'].$_CFG['wep']['locallang'].'.php');
 
-	register_shutdown_function ('shutdown_function'); // Запускается первым при завершении скрипта
-
-/*
-Функция завершения работы скрипта
-*/
-	function shutdown_function() {
-		//ob_end_flush();
-		//print_r('shutdown_function');
-		if(defined('SID'))
-			session_write_close();
-	}
-/*SESSION*/
-
-	function session_go($force=0) {
-		global $_CFG;
-		if(!$_SERVER['robot'] and (isset($_COOKIE[$_CFG['session']['name']]) or $force) and !defined('SID')) {
-			if($_CFG['wep']['sessiontype']==1) {
-				if(!$SESSION_GOGO) {
-					require_once($_CFG['_PATH']['core'].'/session.php');
-					$SESSION_GOGO = new session_gogo();
-				}
-			} else {
-				session_start();
-			}
-			return true;
-		}
-		return false;
-	}
-	
-	function _setcookie($name,$value='',$expire='',$path='',$domain='',$secure='') {
-		global $_CFG;
-		if($expire=='')
-			$expire = $_CFG['session']['expire'];
-		if($path=='')
-			$path = $_CFG['session']['path'];
-		if($domain=='')
-			$domain = $_CFG['session']['domain'];
-		if($secure=='')
-			$secure = $_CFG['session']['secure'];
-			//print_r($name.' - '.$value);
-		setcookie($name,$value,$expire,$path,$domain,$secure);
-	}
 	
 
 //ERRORS
@@ -348,5 +267,98 @@ $_CFG['_error'] = array(
 		'prior' => 0
 	),
 );
+  
+  /******************/
+ /*$_CFG['session']*/
+/******************/
+
+	$_CFG['session']['name'] = 'wepID';
+	$_CFG['session']['path'] = '/';
+	$_CFG['session']['secure'] = 0;
+	$_CFG['session']['domain'] = '';
+	$_CFG['session']['multidomain'] = true;
+	$hostcnt = count($_CFG['_HREF']['arrayHOST']);
+	// никто не будет использовать домен 4го уровня, а значит это IP
+	if($hostcnt<=2 or $hostcnt>=4) { //учитываем localhost и ИПИ
+		$_SERVER['HTTP_HOST2'] = $_SERVER['HTTP_HOST'].$port;
+		$_CFG['session']['domain'] = $_SERVER['HTTP_HOST2'];
+	}
+	else {
+		$_SERVER['HTTP_HOST2'] = $_CFG['_HREF']['arrayHOST'][1].'.'.$_CFG['_HREF']['arrayHOST'][0].$port;
+		
+		if($_CFG['site']['rf'])
+			$_CFG['session']['domain'] = '.'.$IDN->encode($_SERVER['HTTP_HOST2']);
+		else
+			$_CFG['session']['domain'] = '.'.$_SERVER['HTTP_HOST2'];
+		if($_CFG['session']['multidomain'])
+			$_CFG['session']['domain'] = '.'.$_CFG['session']['domain'];
+	}
+
+
+
+
+  /***********************/
+ /***INCLUDE USER CONF***/
+/***********************/
+
+include($_CFG['_PATH']['wepconf'].'/config/config.php');
+
+ /***SET SESSION***/
+	date_default_timezone_set($_CFG['timezone']);
+
+	$_CFG['time'] = time();
+	$_CFG['getdate'] = getdate();
+	$_CFG['remember_expire'] = $_CFG['session']['expire']= $_CFG['time']+1728000; // 20дней ,по умолчанию
+	session_name($_CFG['session']['name']);
+	session_set_cookie_params($_CFG['session']['expire'],$_CFG['session']['path'], $_CFG['session']['domain'],$_CFG['session']['secure']);
+	ini_set('session.cookie_domain', $_CFG['session']['domain']);
+
+ /***INCLUDE LANG***/
+	include_once($_CFG['_PATH']['locallang'].$_CFG['wep']['locallang'].'.php');
+	if(file_exists($_CFG['_PATH']['locallang'].$_CFG['wep']['locallang'].'.php'))
+		include_once($_CFG['_PATH']['ulocallang'].$_CFG['wep']['locallang'].'.php');
+
+	register_shutdown_function ('shutdown_function'); // Запускается первым при завершении скрипта
+
+/*
+Функция завершения работы скрипта
+*/
+	function shutdown_function() {
+		//ob_end_flush();
+		//print_r('shutdown_function');
+		if(defined('SID'))
+			session_write_close();
+	}
+/*SESSION*/
+
+	function session_go($force=0) {
+		global $_CFG;
+		if(!$_SERVER['robot'] and (isset($_COOKIE[$_CFG['session']['name']]) or $force) and !defined('SID')) {
+			if($_CFG['wep']['sessiontype']==1) {
+				if(!$SESSION_GOGO) {
+					require_once($_CFG['_PATH']['core'].'/session.php');
+					$SESSION_GOGO = new session_gogo();
+				}
+			} else {
+				session_start();
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	function _setcookie($name,$value='',$expire='',$path='',$domain='',$secure='') {
+		global $_CFG;
+		if($expire=='')
+			$expire = $_CFG['session']['expire'];
+		if($path=='')
+			$path = $_CFG['session']['path'];
+		if($domain=='')
+			$domain = $_CFG['session']['domain'];
+		if($secure=='')
+			$secure = $_CFG['session']['secure'];
+			//print_r($name.' - '.$value);
+		setcookie($name,$value,$expire,$path,$domain,$secure);
+	}
 
 ?>

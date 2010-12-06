@@ -1,7 +1,7 @@
 <?
-	if(!$_CFG['_PATH']['path']) die('ERROR');
+	if(!$_CFG['_PATH']['wep']) die('ERROR');
 
-	require_once($_CFG['_PATH']['path'].'/_wepconf/config/config.php');
+	require_once($_CFG['_PATH']['wep'].'/config/config.php');
 	require_once($_CFG['_PATH']['core'].'/html.php');	/**отправляет header и печатает страничку*/
 	require_once($_CFG['_PATH']['core'].'/sql.php');
 	$SQL = new sql();

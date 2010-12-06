@@ -4,7 +4,7 @@ class bug_class extends kernel_class {
 	protected function _create_conf() {
 		parent::_create_conf();
 
-		$this->config['act'] = 1;
+		$this->config['act'] = 0;
 
 		$this->config_form['act'] = array('type' => 'checkbox', 'caption' => 'Включить логирование ошибок');
 	}

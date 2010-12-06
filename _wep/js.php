@@ -2,8 +2,8 @@
 	$GLOBALS['_RESULT']	= $DATA = array();
 	$_tpl['onload']=$html=$html2='';
 
-	$_CFG['_PATH']['wepconf'] = dirname(dirname($_SERVER['SCRIPT_FILENAME'])).'/_wepconf';
-	require_once($_CFG['_PATH']['wepconf'].'/config/config.php');
+	$_CFG['_PATH']['wep'] = dirname($_SERVER['SCRIPT_FILENAME']);
+	require_once($_CFG['_PATH']['wep'].'/config/config.php');
 	require($_CFG['_PATH']['phpscript'].'/jquery_getjson.php');
 
 
