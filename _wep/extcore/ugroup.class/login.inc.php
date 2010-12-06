@@ -13,7 +13,7 @@
 	else 
 		$ref= $_CFG['_HREF']['BH'];
 
-//qwertsd
+//qwertsddccds
 
 $mess = $form = '';
 /*
