@@ -429,10 +429,10 @@
 Инициализация модулей
 */
 	function _new_class($name,&$MODUL,&$OWNER = NULL) {
-		global $SQL, $_CFG, $_SINGLETON;
+		global $SQL, $_CFG;
 		
-		if (isset($_SINGLETON[$name])) {
-			$MODUL = $_SINGLETON[$name];
+		if (isset($_CFG['singleton'][$name])) {
+			$MODUL = $_CFG['singleton'][$name];
 			return true;
 		}
 		else {				
@@ -454,8 +454,8 @@
 
 				eval('$MODUL = new '.$clsn.'($SQL,$OWNER);');
 				
-				if (isset($_CFG['singleton'][$name]))
-					$_SINGLETON[$name] = &$MODUL;
+				if ($MODUL->singleton == true)
+					$_CFG['singleton'][$name] = &$MODUL;
 				
 				$OWN_CL = NULL;
 				if($MODUL)

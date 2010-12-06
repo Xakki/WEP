@@ -47,6 +47,8 @@ class ugroup_extend extends kernel_class
 		if (parent::_set_features()) return 1;
 		$this->mf_actctrl = true;
 		$this->caption = "Группы";
+		$this->singleton = true;
+		
 		$this->ver = '0.2';
 		return 0;
 	}
