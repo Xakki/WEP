@@ -50,7 +50,7 @@
 					$r['labelstyle'] = ($r['value_2']?'display: none;':'');
 					$r['csscheck'] = ($r['value_2']?'accept':'reject');
 				}
-				elseif($r['type']=='list' and $r['multiple']==2 and !$r['readonly'] and isset($this->fields[$k])) {
+				elseif($r['type']=='list' and $r['multiple']==2 and !$r['readonly']) {// and isset($this->fields[$k])
 					$this->_checkList($r['listname'],0);
 					$templistname = $r['listname'];
 					if(is_array($r['listname']))

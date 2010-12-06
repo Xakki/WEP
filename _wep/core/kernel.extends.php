@@ -846,8 +846,7 @@ _message($msg,$type=0)
 			}
 			elseif($r['multiple']>0 and $r['type']=='list') {
 				if(!is_array($data[$k])){
-					if(_strlen($data[$k])>2)
-						$data[$k] = _substr(_substr($data[$k],0,-1),1);
+					$data[$k] = trim($data[$k],'|');
 					$r['value']= explode('|',$data[$k]);
 				}else
 					$r['value']= $data[$k];

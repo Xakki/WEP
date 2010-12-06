@@ -135,9 +135,6 @@ $_CFG['singleton'] = array();
 		$_CFG['_F']['adminpage'] = true;
 	else
 		$_CFG['_F']['adminpage'] = false;
-		
-		
-	$_CFG['singleton'] = array();
   
   /******************/
  /*$_CFG['_MASK']***/
