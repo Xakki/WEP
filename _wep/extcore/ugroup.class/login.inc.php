@@ -2,10 +2,16 @@
 	$result = array();
 	if(isset($_REQUEST['ref']) and $_REQUEST['ref']!='' and !strstr($_REQUEST['ref'],'login')) 
 		$ref= $_REQUEST['ref'];
-	elseif($_SERVER['HTTP_REFERER']!='' and !strstr($_SERVER['HTTP_REFERER'],'login'))
-		$ref= $_SERVER['HTTP_REFERER'];
+	elseif($_SERVER['HTTP_REFERER']!='' and strpos($_SERVER['HTTP_REFERER'], '.html')) {
+		$pos = strripos($_SERVER['HTTP_REFERER'], '/');
+		$rest = substr($_SERVER['HTTP_REFERER'], ($pos+1), 5);
+		if(!strpos($this->dataCash[$rest]['ugroup'], 'anonim'))
+			$ref= $_SERVER['HTTP_REFERER'];
+		else 
+			$ref= $_CFG['_HREF']['BH'];		
+		}
 	else 
-		$ref= '/index.php';
+		$ref= $_CFG['_HREF']['BH'];
 
 $mess = $form = '';
 /*
@@ -60,7 +66,7 @@ $mess = $form = '';
 					<div>Запомнить?<input type="checkbox" style="border:medium none; width:30px;" tabindex="3" name="remember" value="1"/></div>
 					<input class="submit" type="submit" name="enter" value="Войти" tabindex="3"/>
 				</form>
-				<a href="/remind.html">Забыли пароль?</a>
+				<a href="'.$_CFG['_HREF']['BH'].'/remind.html">Забыли пароль?</a>
 			
 			 <div style="clear:both;"></div>
 		 </div>';
