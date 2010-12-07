@@ -71,10 +71,10 @@ function tpl_form(&$data) {
 					$html .= '<input type="'.$r['type'].'" name="'.$k.'" value="1" '.($r['value']?'checked="checked"':'').'/>';
 				else {
 					foreach($r['item'] as $row) {
-						$html .= $r['title'].'<br/><input type="'.$r['type'].'" name="'.$k.'" value="'.$row['value'].'" class="radio"';
+						$html .= $r['title'].'<input type="'.$r['type'].'" name="'.$k.'" value="'.$row['value'].'" class="radio"';
 						if($row['sel'])
 							$html .= ' checked="checked"';
-						$html .= '/>'.$row['title'];
+						$html .= '/><div class="title">'.$row['title'].'</div>';
 					}
 				}
 				$html .= '</div>';

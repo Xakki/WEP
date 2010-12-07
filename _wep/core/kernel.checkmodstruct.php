@@ -1,10 +1,69 @@
 <?
+		// синонимы для типов полей
+		$alias_types = array(
+			'TINYINT(1)' => 'BOOL',
+		);
+		
+		// типы полей, число - это значение, которое запишется в базу по умолчанию, если не указывать ширину явно
+		// false - означает, что для данного типа поля в mysql ширина не указывается
+		$types_width = array(
+			'TINYBLOB' => false,
+			'TINYTEXT' => false,
+			'BLOB' => false,
+			'TEXT' => false,
+			'MEDIUMBLOB' => false,
+			'MEDIUMTEXT' => false,
+			'LONGBLOB' => false,
+			'LONGTEXT' => false,
+			'DATE' => false,
+			'DATETIME' => false,
+			'TIMESTAMP' => false,
+			'TIME' => false,
+			'FLOAT' => false,
+			'DOUBLE' => false,
+			'PRECISION' => false,
+			'REAL' => false,
+
+			
+			'INT' => 11,
+			'INTEGER ' => 11,
+			'VARCHAR' => 255,
+		);
+		
+		// типы полей, в которых нет атрибута default
+		$types_without_default = array(
+			'TINYTEXT' => true,
+			'TEXT' => true,
+			'MEDIUMTEXT' => true,
+			'LONGTEXT' => true,
+		);
+		
+		
 		$result = $this->SQL->execSQL('SHOW TABLES LIKE \''.$this->tablename.'\'');// checking table exist
 		if ($result->err) exit('error');
 		if (!$result->num_rows()) return $this->_install();
-
-		$result = $this->SQL->execSQL('SHOW COLUMNS FROM `'.$this->tablename.'`');
+		
 		$query = array();
+		
+		if(isset($this->fields))
+			foreach($this->fields as $key => $param) {				
+				if (stristr($param['attr'], 'default')) {
+					$query[$key][2] = 'Ненужный пар-р default в ключе attr в классе '.get_class($this).' в поле '.$key;
+				}
+				
+				if (
+					isset($param['default']) && 
+					isset($types_without_default[strtoupper($param['type'])]) && 
+					$types_without_default[strtoupper($param['type'])] === true
+					) 
+				{
+//					$mess[] = 'Ненужный пар-р default в классе '.get_class($this).' в поле '.$fldname.' (Для типов полей '.$this->fields[$fldname]['type'].' указывать default необязательно.';
+					$query[$key][2] = 'Ненужный пар-р default в классе '.get_class($this).' в поле '.$key.' (Для типов полей '.$param['type'].' указывать default необязательно.';
+					unset($this->fields[$key]['default']);
+				}
+			}
+
+		$result = $this->SQL->execSQL('SHOW COLUMNS FROM `'.$this->tablename.'`');		
 		while (list($fldname, $fldtype, $null, $key, $default, $extra) = $result->fetch_array(MYSQL_NUM)) 
 		{
 			$fldtype = strtoupper($fldtype);
@@ -14,49 +73,7 @@
 			
 			if (isset($this->fields[$fldname])) {
 				$this->fields[$fldname]['inst'] = '1';
-				
-				// синонимы для типов полей
-				$alias_types = array(
-					'TINYINT(1)' => 'BOOL',
-				);
-				
-				// типы полей, число - это значение, которое запишется в базу по умолчанию, если не указывать ширину явно
-				// false - означает, что для данного типа поля в mysql ширина не указывается
-				$types_width = array(
-					'TINYBLOB' => false,
-					'TINYTEXT' => false,
-					'BLOB' => false,
-					'TEXT' => false,
-					'MEDIUMBLOB' => false,
-					'MEDIUMTEXT' => false,
-					'LONGBLOB' => false,
-					'LONGTEXT' => false,
-					'DATE' => false,
-					'DATETIME' => false,
-					'TIMESTAMP' => false,
-					'TIME' => false,
-					'FLOAT' => false,
-					'DOUBLE' => false,
-					'PRECISION' => false,
-					'REAL' => false,
-
-					
-					'INT' => 11,
-					'INTEGER ' => 11,
-					'VARCHAR' => 255,
-				);
-				
-				// типы полей, в которых нет атрибута default
-				$types_without_default = array(
-					'TINYTEXT' => true,
-					'TEXT' => true,
-					'MEDIUMTEXT' => true,
-					'LONGTEXT' => true,
-				);
-				
-				if (stristr($this->fields[$fldname]['attr'], 'default'))
-					trigger_error('В массиве fields (класс '.get_class($this).' поле '.$fldname.' ) в ключе attr ненужный параметр default');
-					
+							
 				$tmp_type = strtoupper($this->fields[$fldname]['type']);
 				if (isset($this->fields[$fldname]['width'])) 
 				{
@@ -72,18 +89,7 @@
 						$this->fields[$fldname]['width'] = $types_width[$tmp_type];
 					}
 				}
-				
-				if (
-					isset($this->fields[$fldname]['default']) && 
-					isset($types_without_default[strtoupper($this->fields[$fldname]['type'])]) && 
-					$types_without_default[strtoupper($this->fields[$fldname]['type'])] === true
-					) 
-				{
-					trigger_error('В классе '.get_class($this).', для поля '.$fldname.' указан атрибут default. (Для типов полей '.$this->fields[$fldname]['type'].' указывать default необязательно.', E_USER_NOTICE);
-					unset($this->fields[$fldname]['default']);
-				}
-				
-				
+							
 				$types = array();
 				$types[] = $fldtype;
 				if (isset($alias_types[$fldtype]))
@@ -91,14 +97,17 @@
 				
 				
 				$table_properties = array();
+				$table_properties_up_case = array();
 				$i = 0;
 				foreach ($types as $type)
 				{
 					$table_properties[$i] = '`'.$fldname.'` '.$type;
 		
 					if ($type != 'TIMESTAMP') {
-						if ($null == 'YES')
-							$table_properties[$i] .= ' NULL';
+						if ($null == 'YES') {
+							if (strstr(strtoupper($this->fields[$fldname]['attr']), 'NULL'))
+								$table_properties[$i] .= ' NULL';
+						}
 						else
 							$table_properties[$i] .= ' NOT NULL';
 						if ($default !== NULL)
@@ -106,16 +115,16 @@
 						if ($extra != '')
 							$table_properties[$i] .= ' '.$extra;
 					}
-					$table_properties[$i] = strtoupper($table_properties[$i]);
+					$table_properties_up_case[$i] = trim(strtoupper($table_properties[$i]));
 					$i++;
 				}
 				
 
-				if (!in_array(strtoupper($this->_fldformer($fldname, $this->fields[$fldname])), $table_properties)) {
-					$query[] = array(
-						'ALTER TABLE `'.$this->tablename.'` CHANGE `'.$fldname.'` '.$this->_fldformer($fldname, $this->fields[$fldname]),
-						$table_properties[0],
-					);
+				if (!in_array(trim(strtoupper($this->_fldformer($fldname, $this->fields[$fldname]))), $table_properties_up_case)) {
+					$query[$fldname][0] = 'ALTER TABLE `'.$this->tablename.'` CHANGE `'.$fldname.'` '.$this->_fldformer($fldname, $this->fields[$fldname]);
+					$query[$fldname][1] = $table_properties[0];
+					
+					
 //					$query[] = 'ALTER TABLE `'.$this->tablename.'` CHANGE `'.$fldname.'` '.$this->_fldformer($fldname, $this->fields[$fldname]).' ('.$table_properties[0].')';
 				}
 				
@@ -130,21 +139,22 @@
 				$this->attaches[$fldname]['inst'] = '1';
 			elseif (isset($this->memos[$fldname]))
 				$this->memos[$fldname]['inst'] = '1';
-			else $query[][0] = 'ALTER TABLE `'.$this->tablename.'` DROP `'.$fldname.'`';
+			else $query[$fldname][0] = 'ALTER TABLE `'.$this->tablename.'` DROP `'.$fldname.'`';
 
 		}
 
 		if(isset($this->fields))
-			foreach($this->fields as $key => $param)
+			foreach($this->fields as $key => $param) {				
 				if (!isset($param['inst'])) {
-					$query[][0] = 'ALTER TABLE `'.$this->tablename.'` ADD '.$this->_fldformer($key, $param);
+					$query[$key][0] = 'ALTER TABLE `'.$this->tablename.'` ADD '.$this->_fldformer($key, $param);
 				}
+			}
 
 		if(isset($this->attaches))
 			foreach($this->attaches as $key => $param) 
 			{
 				if (!isset($param['inst'])) 
-					$query[][0] = 'ADD '.$this->_fldformer($key, $this->attprm);
+					$query[$key][0] = 'ADD '.$this->_fldformer($key, $this->attprm);
 				if ($this->_checkdir($this->getPathForAtt($key))) 
 					return array('err' => '_checkdir error');
 			}	
@@ -158,7 +168,7 @@
 			}
 		
 		if(isset($this->fields['id']) and !isset($this->fields['id']['inst']))
-			$query[][0] = 'ALTER TABLE `'.$this->tablename.'` ADD PRIMARY KEY(id)';
+			$query['id::pri'][0] = 'ALTER TABLE `'.$this->tablename.'` ADD PRIMARY KEY(id)';
 
 //		if (count($query))
 //		{
@@ -174,21 +184,21 @@
 		if(count($this->index_fields))
 			foreach($this->index_fields as $k=>$r)
 				if (!isset($indexlist[$k])){
-					$query[][0] = 'CREATE INDEX `'.$r.'` ON `'.$this->tablename.'` (`'.$k.'`)';
+					$query[$k.'::ind'][0] = 'CREATE INDEX `'.$r.'` ON `'.$this->tablename.'` (`'.$k.'`)';
 					$indexlist[$k] = $k;
 				}
 
 		if ($this->owner && !isset($indexlist[$this->owner_name])) 
-			$query[][0] = 'CREATE INDEX '.$this->owner_name.' ON `'.$this->tablename.'` ('.$this->owner_name.')';
+			$query[$k.'::ind'][0] = 'CREATE INDEX '.$this->owner_name.' ON `'.$this->tablename.'` ('.$this->owner_name.')';
 
 		if ($this->mf_istree && !isset($indexlist['parent_id']))
-			$query[][0] = 'CREATE INDEX `parent_id` ON `'.$this->tablename.'` (parent_id)';
+			$query[$k.'::ind'][0] = 'CREATE INDEX `parent_id` ON `'.$this->tablename.'` (parent_id)';
 
 		if ($this->mf_actctrl && !isset($indexlist['active']))
-			$query[][0] = 'CREATE INDEX `active` ON `'.$this->tablename.'` (active)';
+			$query[$k.'::ind'][0] = 'CREATE INDEX `active` ON `'.$this->tablename.'` (active)';
 
 		if ($this->mf_ordctrl && !isset($indexlist['ordind']))
-			$query[][0] = 'CREATE INDEX `ordind` ON `'.$this->tablename.'` (ordind)';
+			$query[$k.'::ind'][0] = 'CREATE INDEX `ordind` ON `'.$this->tablename.'` (ordind)';
 		
 //		if (count($query)) {
 //			foreach($query as $rr)
@@ -197,8 +207,6 @@
 //		}
 //		if(isset($this->_cl))
 //			$this->SQL->execSQL('UPDATE `'.$this->_CFG['sql']['dbpref'].'modulprm` SET `ver`="'.$this->ver.'" WHERE `id`="'.$this->_cl.'"');
-
-
 
 		return array('list_query' => $query);
 //		return 0;
