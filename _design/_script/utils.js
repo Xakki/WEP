@@ -23,20 +23,19 @@ function fLog(txt,flag) {
 	if(flag==1) fShowHide('debug_view',1);
 }
 
-
 function fMessPos(body,obj) {
 	if(!body) body='body';
 	if(!obj) obj=' #ajaxload';
-	$(body+obj).css("width",'');
+	$(body+'>'+obj).css("width",'');
 	var H=document.documentElement.clientHeight;
-	var Hblock= $(body+obj+' :first-child').attr("offsetHeight");
+	var Hblock= $(body+'>'+obj+' :first-child').attr("offsetHeight");
 	var hh=Math.round(50*((H-Hblock)/H));
 	if(hh<4) hh=4;
 	var W=document.documentElement.clientWidth;
-	var Wblock= $(body+obj+' :first-child').attr("offsetWidth");
+	var Wblock= $(body+'>'+obj+' :first-child').attr("offsetWidth");
 	var ww=Math.round(50*((W-Wblock)/W));
 	if(ww<4) ww=4;
-	$(body+obj).css("top",hh+"%").css("left",ww+"%").css("height",H+'px');//.css("width",Wblock+'px')
+	$(body+'>'+obj).css("top",hh+"%").css("left",ww+"%").css("height",H+'px');//.css("width",Wblock+'px')
 }
 
 /*Показ тултип*/
@@ -84,14 +83,15 @@ function fShowload (show,txt,body,objid) {
 	if(!objid) objid = 'ajaxload';
 	obj = ' #'+objid;
 	if(!show){
-		$(body+obj).css('display','none');
+		$(body+'>'+obj).css('display','none');
 		showBG(body);
-		if (_Browser.type == 'IE' && 7 > _Browser.version && _Browser.version >= 4)
-			$('select').css('display','block');
+		if (_Browser.type == 'IE' && 8 > _Browser.version)
+			$('select').toggleClass('hideselectforie7',false);
 	}else{
-		if (_Browser.type == 'IE' && 7 > _Browser.version && _Browser.version >= 4)
-			$('select').css('display','none');
-		if($(body+obj).size()==0)
+		if (_Browser.type == 'IE' && 8 > _Browser.version)
+			$('select').toggleClass('hideselectforie7',true);
+
+		if($(body+'>'+obj).size()==0)
 			$(body).append("<div id='"+objid+"'>&#160;</div>");
 		if(!txt || txt==''){
 			txt = "<div class='layerloader'><img src='_design/_img/load.gif' alt=' '/><br/>Подождите. Идёт загрузка</div>";
@@ -103,8 +103,9 @@ function fShowload (show,txt,body,objid) {
 				txt = '<div class="layerblock"><div class="blockclose" onClick="fShowload(0)"></div>'+txt+'</div>';
 		}		
 		showBG(body,1);
-		$(body+obj).html(txt);
-		$(body+obj).show();
+		if(txt && txt!='') 
+			$(body+' > '+obj).html(txt);
+		$(body+' > '+obj).show();
 		if(body=='body')
 			fMessPos(body,obj);
 	}
@@ -113,13 +114,13 @@ function fShowload (show,txt,body,objid) {
 function showBG(body,show,k) {
 	if(!body) body='body';
 	if(!show){
-		$(body+' #ajaxbg').hide();
+		$(body+' > #ajaxbg').hide();
 	}
 	else {
 		if(!k) k= 0.5;
-		if($(body+' #ajaxbg').size()==0)
+		if($(body+' > #ajaxbg').size()==0)
 			$(body).append("<div id='ajaxbg'>&#160;</div>");
-		$(body+' #ajaxbg').css('opacity', k).show();
+		$(body+' > #ajaxbg').css('opacity', k).show();
 	}
 }
 
@@ -213,7 +214,7 @@ function ShowTools(id,hrf) {
 
 function JSHR(id,_href,param,body,insertType) {
 	clearTimeout(timerid2);timerid2 = 0;
-	timerid = setTimeout(function(){fShowload(1,'',body);},400);
+	timerid = setTimeout(function(){fShowload(1,'',body);},100);
 	$.ajax({
 		type: "GET",
 		url: _href,
@@ -230,7 +231,6 @@ function JSHR(id,_href,param,body,insertType) {
 		},
 		success: function(data, textStatus, XMLHttpRequest) {
 			clearTimeout(timerid);
-			timerid2 = setTimeout(function(){fShowload(0);},200);
 
 			if(id!=0 && data.html != '') {
 				if(typeof id!='object')
@@ -241,12 +241,17 @@ function JSHR(id,_href,param,body,insertType) {
 					$(id).before(data.html);
 				else
 					$(id).html(data.html);
+				timerid2 = setTimeout(function(){fShowload(0,'',body);},200);
 			}
+			else if(data.html!='') fShowload(1,data.html,body);
+			else timerid2 = setTimeout(function(){fShowload(0,'',body);},200);
+
 			if(data.text != undefined && data.text!='') fLog(fSpoiler(data.text,'AJAX text result'),1);
 			if(data.eval != undefined && data.eval!='') eval(data.eval);
 		}
 	});
 	return false;
+
 }
 
 function JSFRWin(obj,htmlobj) {

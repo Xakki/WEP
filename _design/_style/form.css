@@ -1,28 +1,24 @@
 
 /*form*/
 	/*AJAX MESS */
-	.addparam {
+	div.divform .addparam {
 		width: 60%;
 		display:block;
 		margin:0 auto;
 		background-color:#EDEDED;
 	}
-	.divform #loadform {
-		width: 60%;
-		display:block;
-		margin:0 auto;
-		background-color:#EDEDED;
-	}
-	#loadform #ajaxbg {
+	div.divform #ajaxbg {
 		position: absolute;
+		border:1px solid gray;-moz-border-radius:4px;-webkit-border-radius:4px;border-radius:4px;
 	}
-	#loadform #ajaxload {
+	div.divform #ajaxload {
 		position:relative;
 		left:0;
 		top:0;
 		padding:5px 0;
 	}
-	#loadform .div-tr {
+	div.divform .div-tr {
+		position:relative;
 	}
 
 /*form*/
@@ -128,8 +124,13 @@
 	.divform select{border:1px solid #A6A6A6;height:1.5em;width:100%;}
 	.divform select.small {border:1px solid #A6A6A6;height:8em;}
 	.divform select.multiple {border:1px solid #A6A6A6;height:13em;}
-	.divform optgroup {margin:0;padding:0;}
-	.divform option {margin:0 12px 0 0;padding:0;}
+	.divform select optgroup {margin:0;padding:0;}
+	.divform select option {margin:0 12px 0 0;padding:0;}
+
+	.divform select.hideselectforie7 {
+		position:relative;
+		top:-10000px;
+	}
 
 
 	.divform div.no{font-size:11px;color:#000;padding:0;}
@@ -227,7 +228,7 @@
 		background:none repeat scroll 0 0 #A1B1C1;
 		padding:5px 0;
 		width: 100%;
-		overflow-y: scroll;
+		overflow: auto;
 		max-height:300px;
 	}
 	.ajaxlist div label {

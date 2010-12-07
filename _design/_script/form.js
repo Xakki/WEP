@@ -118,31 +118,46 @@ function password_new() {
 /*AXAX LIST*/
 var timerid4=0;
 var timerid5=0;
-function show_hide_label(obj,view,flag) {
+var timerbagIE=0;// таймер для слоя списка
+var ajaxlistover = 0; // флаг активности слоя списка
+
+function chFocusList(f) {// это баг решает проблему когда мышкой передвигаешь скрул, то срабатывает onblur формы списка (в Хроме - тык на скрол не вызывает события фокуса для этого элемента,в FF только нормально)
+	if(f)
+		timerbagIE = setTimeout(function(){ajaxlistover=0;},500);
+	else {
+		clearTimeout(timerbagIE);
+		ajaxlistover = 1;
+	}
+}
+
+function show_hide_label(obj,view,flag) { // функция на событие активности формы
 	clearTimeout(timerid5);
-	//$('#tr_city .td1').append(flag+'-');
+	//$('#tr_city .form-caption').append(flag+'-');
 	if(ajaxComplite==0 || timerid4) {
-		setTimeout(function(){show_hide_label(obj,view,flag);},950);
+		setTimeout(function(){show_hide_label(obj,view,flag);},400);
 	}else {
 		setTimeout(function(){
-			//$('#tr_type .td1').append(flag+'.');
-			if(flag){
+			if(ajaxlistover) {
+				setTimeout(function(){show_hide_label(obj,view,flag);},400);
+			}
+			else if(flag) {
 				$(obj).prev().hide();
 				ajaxlist(obj,view);
 			}
-			else{
+			else {
 				$('#ajaxlist_'+view).hide();
-				timerid5 = setTimeout(function(){ajaxlistClear(obj,view);},800);
+				if (_Browser.type == 'IE' && 8 > _Browser.version)
+					$('select').toggleClass('hideselectforie7',false);
+				timerid5 = setTimeout(function(){ajaxlistClear(obj,view);},400);
 				if(!obj.value){
 					$(obj).prev().show();
 				}
-				
 			}
 		},200);
 	}
 
 }
-function ajaxlistClear(obj,view) {
+function ajaxlistClear(obj,view) { // функ очистки формы если не верное значение выбранно
 	if($('#ajaxlist_'+view+' + input').val()=='') {
 		$(obj).val('');
 		$(obj).prev().show();
@@ -150,7 +165,7 @@ function ajaxlistClear(obj,view) {
 	}
 }
 
-function ajaxlist(obj,view) {
+function ajaxlist(obj,view) { // функция контроля подгрузки слоя списка
 	if(obj.value.length>1) {
 		clearTimeout(timerid4);
 		if(ajaxComplite==1)
@@ -165,7 +180,7 @@ function ajaxlist(obj,view) {
 }
 //$('#tr_city .td1').append('+')
 
-function getAjaxListData(value,view) {
+function getAjaxListData(value,view) { // загрузка списка
 	timerid4 = 0;
 	if($('#ajaxlist_'+view).attr('val')==value) {
 		$('#ajaxlist_'+view).show();
@@ -184,6 +199,10 @@ function getAjaxListData(value,view) {
 			},
 			success: function(result, textStatus, XMLHttpRequest) {
 				$('#ajaxlist_'+view).prev('input').attr('class','reject');
+				if (_Browser.type == 'IE' && 8 > _Browser.version) {
+					$('select').toggleClass('hideselectforie7',true);
+					$('#tr_'+view).css('z-index','10');
+				}
 				var txt = '';
 				if(result && result.data && $(result.data).size()>0) {
 					var c = 0;var temp = 0;
@@ -205,17 +224,26 @@ function getAjaxListData(value,view) {
 				$('#ajaxlist_'+view).html(txt).show();
 				$('#ajaxlist_'+view).attr('val',value);
 				$('#ajaxlist_'+view+' label').click(function(){
-					var key = $(this).attr('id');
-					key = key.substring(9,15);
-					$('#ajaxlist_'+view+' + input').val(key);
-					$('#ajaxlist_'+view).prev('input').val($(this).text());
-					$('#ajaxlist_'+view).prev('input').attr('class','accept');
-					$('#ajaxlist_'+view+' label').attr('class','');
-					$('#ajaxlist_'+view+' #ajaxlabel'+key).attr('class','selectl');
+					ajaxlist_click(view,this)
 				});
 				ajaxComplite = 1;
 			}
 		});
+	}
+}
+
+function ajaxlist_click(view,ths) { // событие на клик на элементе списка
+	var key = $(ths).attr('id');
+	key = key.substring(9,15);
+	$('#ajaxlist_'+view+' + input').val(key);
+	$('#ajaxlist_'+view).prev('input').val($(ths).text());
+	$('#ajaxlist_'+view).prev('input').attr('class','accept');
+	$('#ajaxlist_'+view+' label').attr('class','');
+	$('#ajaxlist_'+view+' #ajaxlabel'+key).attr('class','selectl');
+	if(ajaxlistover) { // решаем проблему с переключением фокуса
+		$('#ajaxlist_'+view).hide();
+		if (_Browser.type == 'IE' && 8 > _Browser.version)
+			$('select').toggleClass('hideselectforie7',false);
 	}
 }
 
