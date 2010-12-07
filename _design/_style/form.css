@@ -63,6 +63,13 @@
 		margin:0 10px 0 5px;
 		padding:0 0 0;
 	}
+		.divform .checkbox-value input {
+			float:left;
+		}
+		.divform .checkbox-value .title {
+			margin-left:20px; 
+			margin-bottom:15px;
+		}
 	.divform .form-submit {
 		text-align:center;
 		padding:5px 0;
