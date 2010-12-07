@@ -23,7 +23,8 @@
 			$_GET['page'] = "index";
 		$_GET['page'] = explode('/',$_GET['page']);
 		$PGLIST->id = $_GET['page'][(count($_GET['page'])-1)];
-
+		if(!$PGLIST->id) 
+			$PGLIST->id = "index";
 
 	$HTML = new html('_design/',$PGLIST->config['design']);//отправляет header и печатает страничку
 
