@@ -154,7 +154,7 @@
 			foreach($this->attaches as $key => $param) 
 			{
 				if (!isset($param['inst'])) 
-					$query[$key][0] = 'ADD '.$this->_fldformer($key, $this->attprm);
+					$query[$key][0] = 'ALTER TABLE `'.$this->tablename.'` ADD '.$this->_fldformer($key, $this->attprm);
 				if ($this->_checkdir($this->getPathForAtt($key))) 
 					return array('err' => '_checkdir error');
 			}	
