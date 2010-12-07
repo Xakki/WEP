@@ -3,7 +3,7 @@
 	if(!$MAIL) $MAIL = new mail_class($SQL);
 
 	$DATA = array();
-	list($DATA['formcreat'],$flag) = $MAIL->mailForm($UGROUP->config["mailto"]);
+	list($DATA['formcreat'],$flag) = $MAIL->mailForm($MAIL->config["mailsupport"]);
 	if($DATA['formcreat']['form']['_info'])
 		$DATA['formcreat']['form']['_info']['caption'] = 'Отправка письма службе поддержки';
 

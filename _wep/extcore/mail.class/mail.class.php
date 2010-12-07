@@ -14,10 +14,12 @@ class mail_class extends kernel_class {
 	protected function _create_conf() {/*CONFIG*/
 		parent::_create_conf();
 
-		$this->config["mailrobot"] = 'robot@xakki.ru';
+		$this->config["mailsupport"] = 'xakki@ya.ru';
+		$this->config["mailrobot"] = 'robot@unidoski.ru';
 		$this->config["mailtemplate"] = '<html><head><title>%SUBJECT%</title><meta content="text/html;charset=utf-8" http-equiv="Content-Type" /></head><body>%TEXT% %MAILBOTTOM%</body></html>';
 		$this->config["mailbottom"] = '© 2010 «XAKKI»';
 
+		$this->config_form["mailsupport"] = array("type" => "text", 'mask' =>array('min'=>1,"name"=>'email'), "caption" => "Адрес супорта");
 		$this->config_form["mailrobot"] = array("type" => "text", 'mask' =>array('min'=>1,"name"=>'email'), "caption" => "Адрес Робота");
 		$this->config_form['mailtemplate'] = array(
 			'type' => 'ckedit',
