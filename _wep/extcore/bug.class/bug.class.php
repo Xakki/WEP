@@ -16,6 +16,7 @@ class bug_class extends kernel_class {
 		$this->mf_ipcreate = true;
 		$this->mf_add = false;
 		$this->mf_del = false;
+		$this->mf_actctrl = true;
 		$this->mf_statistic = false;
 		$this->mf_actctrl = true; // поле active
 		
@@ -42,15 +43,24 @@ class bug_class extends kernel_class {
 		
 
 		# fields
-		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Текст ошибки','mask'=>array('sort'=>1,'filter'=>1));
-		$this->fields_form['href'] = array('type' => 'text', 'caption' => 'Страница', 'mask' =>array('sort'=>1,'filter'=>1));
-		$this->fields_form['err_type'] = array('type' => 'list', 'caption' => 'Тип ошибки', 'listname'=>'err_type', 'mask' => array());
+		$this->fields_form['name'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Ошибка', 'mask'=>array('filter'=>1, 'onetd'=>'Ошибка'));
+		$this->fields_form['href'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Страница', 'mask' =>array('filter'=>1));
+		$this->fields_form['file'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Фаил', 'mask'=>array('filter'=>1));
+		$this->fields_form['line'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Строка', 'mask'=>array('filter'=>1, 'onetd'=>'close'));
+		$this->fields_form['debug'] = array('type' => 'textarea', 'readonly'=>1, 'caption' => 'Текст ошибки', 'mask'=>array('fview'=>1,'filter'=>1));
+		$this->fields_form['page_id'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'PAGE_ID','mask'=>array('sort'=>1,'filter'=>1));
+		$this->fields_form['mf_timecr'] = array('type' => 'date', 'readonly'=>1, 'caption' => 'Дата', 'mask' =>array('sort'=>1,'filter'=>1));
+		$this->fields_form['mf_ipcreate'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'IP','mask'=>array('sort'=>1,'filter'=>1));
+		$this->fields_form['creater_id'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'User','mask'=>array('sort'=>1,'filter'=>1));
+		$this->fields_form['cnt'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Повторы', 'mask'=>array('sort'=>1));
 		
 		foreach ($this->_CFG['_error'] as $k=>$r) {
 			$this->_enum['err_type'][$k] = $r['type'];
 		}
 		
 		$this->bugs = array();
+
+		$this->_unique['name'] = 'name';
 		
 		$this->ordfield = 'mf_timecr DESC';
 	}

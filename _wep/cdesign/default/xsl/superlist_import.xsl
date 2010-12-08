@@ -176,7 +176,7 @@
 		  </div>
 		  <div class="ppagenum"></div>
 		</xsl:if>
-		<select class="mopselect" onchange="JSHR(0,'js.php?_view=pagenum&amp;_modul={@modul}&amp;mop='+this.value)">
+		<select class="mopselect" onchange="JSWin({'href':'js.php?_view=pagenum&amp;_modul={@modul}&amp;mop='+this.value})">
 			<xsl:for-each select="mop">
 				<option value="{.}">
 					<xsl:if test="@sel=1"><xsl:attribute name="selected">selected</xsl:attribute></xsl:if>

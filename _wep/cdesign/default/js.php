@@ -24,7 +24,7 @@
 			}
 			elseif(isset($DATA['formtools']) and count($DATA['formtools'])) {
 				$html = $HTML->transformPHP($DATA,'formtools');
-				$_tpl['onload'] .= '$(\'#form_tools_'.$_REQUEST['_func'].'\').bind(\'submit\',function(e){return JSFRWin(\'#form_tools_'.$_REQUEST['_func'].'\',\'#tools_block\');});';
+				$_tpl['onload'] .= '$(\'#form_tools_'.$_REQUEST['_func'].'\').bind(\'submit\',function(e){ return JSWin({\'type\':this,\'insertObj\':\'tools_block\'}); });';
 			}
 			elseif($flag!=3) {
 				end($HTML->path);

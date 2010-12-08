@@ -1,7 +1,7 @@
 <?
 	global $RUBRIC,$CITY;
 	$html = '<div class="blockhead">'.$CITY->name.'<br/>
-	<a class="selectcity" href="city.html" onclick="return JSHRWin(\''.$_CFG['_HREF']['siteJS'].'?_view=city\')">сменить город</a></div>';
+	<a class="selectcity" href="city.html" onclick="return JSWin({\'href\':\''.$_CFG['_HREF']['siteJS'].'?_view=city\'})">сменить город</a></div>';
 	if(!$RUBRIC) $RUBRIC = new rubric_class($SQL);
 	$rid = (int)$_GET['rubric'];
 	$RUBRIC->simpleRubricCache();

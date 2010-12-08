@@ -1300,14 +1300,16 @@ $Ajax=0 - не скриптовая
 		**/
 		if(isset($_REQUEST['f_clear_sbmt'])) {
 			unset($_SESSION['filter'][$this->_cl]);
-			$_tpl['onload'] .= 'window.location.href = \''.$_SERVER['HTTP_REFERER'].'\';';
+			$GLOBALS['_RESULT']['eval'] = 'window.location.href = \''.$_SERVER['HTTP_REFERER'].'\';';
+			exit();
 		}
 		/**
 			* задаются параметры фильтра
 		**/
-		elseif(isset($_REQUEST['f_fltr_sbmt'])) {
+		elseif(isset($_REQUEST['sbmt'])) {
 			$this->setFilter();
-			$_tpl['onload'] .= 'window.location.href = \''.$_SERVER['HTTP_REFERER'].'\';';
+			$GLOBALS['_RESULT']['eval'] = 'window.location.href = \''.$_SERVER['HTTP_REFERER'].'\';';
+			exit();
 		}
 		else
 			$this->Formfilter();
@@ -1319,6 +1321,7 @@ $Ajax=0 - не скриптовая
 		$this->form = array();
 		foreach($this->fields_form as $k=>$r) {
 			if($r['mask']['filter']==1) {
+				unset($r['default']);
 				$this->form['f_'.$k] = $r;
 				if(isset($_FILTR[$k])) {
 					if(isset($_FILTR[$k.'_2'])) 
@@ -1341,15 +1344,15 @@ $Ajax=0 - не скриптовая
 		if(count($this->form)) 
 		{
 			$this->form['_*features*_'] = array('name'=>'Formfilter','action'=>'', 'method'=>'post');
-			$this->form['f_fltr_sbmt'] = array(
+			$this->form['sbmt'] = array(
 				'type'=>'submit',
 				'value'=>'Отфильтровать');			
+
+			$this->kFields2FormFields($this->form);
 			
 			$this->form['f_clear_sbmt'] = array(
 				'type'=>'info',
-				'caption'=>'<a href="'.$_SERVER['HTTP_REFERER'].'" onclick="JSHR(\'form_tools_Formfilter\',\''.$this->form['_*features*_']['action'].'\',{ f_clear_sbmt:1});return false;">Очистить</a>');
-			$this->kFields2FormFields($this->form);
-		}
+				'caption'=>'<a href="'.$_SERVER['HTTP_REFERER'].'" onclick="JSWin({\'insertObj\':\'form_tools_Formfilter\',\'href\':$(\'#form_tools_Formfilter\').attr(\'action\'),\'data\':{ f_clear_sbmt:1}});return false;">Очистить</a>');		}
 		return $this->form;
 	}
 

@@ -331,7 +331,7 @@ form table.form {
 		border:1px solid gray;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
 	}
 	div.filter .f_int {
-		padding:18px 0 0;
+		padding:18px 0 2px;
 	}
 	div.filter .f_int input[type='text'] {
 		width:4.5em;
@@ -342,7 +342,7 @@ form table.form {
 	}
 	div.filter div.f_item {
 		float:left;
-		padding:3px 5px;
+		padding:0px 5px;
 	}
 	div.filter div.f_item div.f_caption {
 		font-size:0.9em;
@@ -351,12 +351,12 @@ form table.form {
 	}
 
 	div.filter div.f_item div.f_value {
-		height:22px;
+		height:20px;
 	}
 
 	div.filter div.f_submit{
 		float:left;
-		padding:21px 10px 5px;
+		padding:19px 10px 2px;
 		text-align:center;
 	}
 	div.filter div.f_submit input {

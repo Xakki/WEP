@@ -19,7 +19,7 @@
 				$html .= '<div class="infoinput"><input type="hidden" name="'.$k.'" value="'.$r['value'].'"/>'.$r['caption'].'</div>';
 			}
 			elseif($r['type']=='info') {
-				$html .= '<div>'.$r['caption'].'</div>';
+				$html .= '<div class="f_submit">'.$r['caption'].'</div>';
 			}
 			/*elseif($r['type']=='radio') {
 				$html .= '<div id="row_f_'.$k.'" style="'.$r['style'].'" class="cont2"><div class="cll1">'.$r['caption'].'</div><div class="cll2_2">';
@@ -61,7 +61,7 @@
 					if(isset($r['valuelist']['']) and $r['valuelist']['']['#name#']==' --- ')
 						$r['valuelist']['']['#name#'] = 'Все';
 					else
-						$r['valuelist'] = array(0=>array('#name#'=>'Все','#id#'=>''))+$r['valuelist'];
+						$r['valuelist'] = array(''=>array('#name#'=>'Все','#id#'=>''))+$r['valuelist'];
 				}
 				$html .= '<div class="f_item">
 				<div class="f_caption">'.$r['caption'].'</div>

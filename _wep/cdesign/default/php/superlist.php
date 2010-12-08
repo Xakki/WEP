@@ -148,7 +148,7 @@ include_once($this->_PATHd.'php/messages.php');
 		}
 		$html .= '<select class="mopselect" onchange="setCookie(\''.$data['modul'].'_mop\',this.value,20);window.location.reload();">';
 		//,\''.$_CFG['session']['path'].'\',\''.$_CFG['session']['domain'].'\',\''.$_CFG['session']['secure'].'\'
-		//JSHR(0,\''.$_CFG['_HREF']['JS'].'?_view=pagenum&amp;_modul='.$data['modul'].'&amp;mop=\'+this.value)
+		//JSWin({\'href\':\''.$_CFG['_HREF']['JS'].'?_view=pagenum&amp;_modul='.$data['modul'].'&amp;mop=\'+this.value})
 		if(count($data['mop'])) {
 			foreach($data['mop'] as $k=>$r) {
 				$html .=  '<option value="'.$k.'"'.($r['sel']?' selected="selected"':'').'>'.$r['value'].'</option>';

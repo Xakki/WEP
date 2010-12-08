@@ -8,7 +8,7 @@ include_once($this->_cDesignPath.'/php/messages.php');
 		$_tpl['styles']['form'] = 1;
 
 		$html = tpl_path($data['path']);// PATH
-		$html .= '<span class="bottonimg imgdel" style="float: right;" onclick="$(this).parent().hide();">EXIT</span><div align="center" class="divform">';
+		$html .= '<span class="bottonimg imgdel" style="float: right;" onclick="$(this).parent().hide();">EXIT</span><div align="center" class="divform" style="width:auto;min-width: 500px;">';
 		$html .= tpl_messages($data['messages']);// messages
 		if(isset($data['form']) and count($data['form'])) {
 			$attr = $data['form']['_*features*_'];

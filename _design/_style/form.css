@@ -223,6 +223,7 @@
 		position:absolute;
 		z-index:0;
 		color:#AAA;
+		white-space: nowrap;
 	}
 	.ajaxlist div {
 		left:0;

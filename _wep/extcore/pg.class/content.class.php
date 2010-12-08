@@ -19,12 +19,12 @@ class content_class extends kernel_class {
 		$this->fields['marker'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'min' => '1');
 		$this->fields['href'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
 		$this->fields['global'] = array('type' => 'bool', 'attr' => 'NOT NULL DEFAULT 0');
-		$this->fields['pagetype'] = array('type' => 'varchar', 'width'=>255, 'attr' => 'NOT NULL DEFAULT ""');
-		$this->fields['funcparam'] = array('type' => 'varchar', 'width'=>255, 'attr' => 'NOT NULL DEFAULT ""');
-		$this->fields['ugroup'] =array('type' => 'varchar', 'width'=>254, 'attr' => 'NOT NULL DEFAULT ""');
-		$this->fields['styles'] = array('type' => 'varchar', 'width'=> 254, 'attr' => 'NOT NULL DEFAULT ""');
-		$this->fields['script'] = array('type' => 'varchar', 'width'=> 254, 'attr' => 'NOT NULL DEFAULT ""');
-		$this->fields['memcache'] = array('type' => 'int', 'width'=> 11,'attr' => 'NOT NULL DEFAULT "0"');
+		$this->fields['pagetype'] = array('type' => 'varchar', 'width'=>255, 'attr' => 'NOT NULL');
+		$this->fields['funcparam'] = array('type' => 'varchar', 'width'=>255, 'attr' => 'NOT NULL');
+		$this->fields['ugroup'] =array('type' => 'varchar', 'width'=>254, 'attr' => 'NOT NULL','default'=>'|0|');
+		$this->fields['styles'] = array('type' => 'varchar', 'width'=> 254, 'attr' => 'NOT NULL','default'=>'');
+		$this->fields['script'] = array('type' => 'varchar', 'width'=> 254, 'attr' => 'NOT NULL','default'=>'');
+		$this->fields['memcache'] = array('type' => 'int', 'width'=> 11,'attr' => 'NOT NULL');
 
 		# memo
 		$this->memos['pg'] = array('max' => 50000);

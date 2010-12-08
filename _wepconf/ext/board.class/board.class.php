@@ -295,7 +295,7 @@ class board_class extends kernel_class {
 			'type' => 'infoinput',
 			'value'=>$valcity, 
 			'mask' =>array('min'=>1), 
-			'caption' => 'Ваш город <a class="selectcity" href="/city.html" onclick="return JSHRWin(0,\''.$this->_CFG['_HREF']['siteJS'].'?_view=addcity\',\'\')">'.(!$namecity?'Выбирите город':$namecity).'</a>');*/
+			'caption' => 'Ваш город <a class="selectcity" href="/city.html" onclick="return JSHRWin({\'href\':\''.$this->_CFG['_HREF']['siteJS'].'?_view=addcity\'})">'.(!$namecity?'Выбирите город':$namecity).'</a>');*/
 		$mess = parent::kPreFields($data,$param);
 		if(!isset($this->RUBRIC->tablename))
 			$this->RUBRIC = new rubric_class($this->SQL);
@@ -1097,7 +1097,7 @@ WHERE t1.owner_id IN ('.implode(',',$FLI).') and t1.active=1 GROUP BY t1.id ORDE
 				'type'=>'list',
 				'listname'=>'rubrics',
 				'caption'=>'Рубрика',
-				'onchange'=>'JSHRWin(0,\''.$this->_CFG['_HREF']['siteJS'].'?_view2=subscribeparam\',{\'rubric\':this.value})');
+				'onchange'=>'JSHRWin({\'href\':\''.$this->_CFG['_HREF']['siteJS'].'?_view2=subscribeparam\',\'data\':{\'rubric\':this.value}})');
 			if(isset($filter['rubric']))
 				$this->filter_form['rubric']['value']=$filter['rubric'];
 		}

@@ -206,20 +206,32 @@ function ShowTools(id,hrf) {
 
 	if(typeof hrf=='object')
 		_last_load = $(hrf).attr('href');
-	JSHR(id,hrf);
+	JSWin({'href':hrf,'insertObj':id});
 	$('#'+id).fadeIn();
 
 	return false;
 }
 
-function JSHR(id,_href,param,body,insertType) {
+function JSWin(param) {
+	if(typeof param['type']=='object') {
+		param['href'] = $(param['type']).attr('action');
+		param['data'] = $(param['type']).serialize()+'&sbmt=1';
+		param['type'] = 'POST';
+	}
+	else if(!param['type']) param['type'] = 'GET';
+	if(!param['href'])		param['href'] = '';
+	if(!param['data']) 		param['data'] = '';
+	if(!param['dataType'])	param['dataType'] = 'json';
+	if(!param['insertObj'])	param['insertObj'] = 0;
+	if(!param['insertType'])	param['insertType'] = 0;
+	if(!param['body'])		param['body'] = 'body';
 	clearTimeout(timerid2);timerid2 = 0;
-	timerid = setTimeout(function(){fShowload(1,'',body);},100);
+	timerid = setTimeout(function(){fShowload(1,'',param['body']);},100);
 	$.ajax({
-		type: "GET",
-		url: _href,
-		data: param,
-		dataType: "json",
+		type: param['type'],
+		url: param['href'],
+		data: param['data'],
+		dataType: param['dataType'],
 		beforeSend: function(XMLHttpRequest) {
 			return true;
 		},
@@ -229,62 +241,25 @@ function JSHR(id,_href,param,body,insertType) {
 		dataFilter: function(data, type) {
 			return data;
 		},
-		success: function(data, textStatus, XMLHttpRequest) {
+		success: function(result, textStatus, XMLHttpRequest) {
 			clearTimeout(timerid);
 
-			if(id!=0 && data.html != '') {
-				if(typeof id!='object')
-					id = '#'+id;
-				if(insertType=='after')
-					$(id).after(data.html);
-				else if(insertType=='before')
-					$(id).before(data.html);
+			if(param['insertObj'] && result.html != '') {
+				if(typeof param['insertObj']!='object')
+					param['insertObj'] = '#'+param['insertObj'];
+				if(param['insertType']=='after')
+					$(param['insertObj']).after(result.html);
+				else if(param['insertType']=='before')
+					$(param['insertObj']).before(result.html);
 				else
-					$(id).html(data.html);
-				timerid2 = setTimeout(function(){fShowload(0,'',body);},200);
+					$(param['insertObj']).html(result.html);
+				timerid2 = setTimeout(function(){fShowload(0,'',param['body']);},200);
 			}
-			else if(data.html!='') fShowload(1,data.html,body);
-			else timerid2 = setTimeout(function(){fShowload(0,'',body);},200);
+			else if(result.html!='') fShowload(1,result.html,param['body']);
+			else timerid2 = setTimeout(function(){fShowload(0,'',param['body']);},200);
 
-			if(data.text != undefined && data.text!='') fLog(fSpoiler(data.text,'AJAX text result'),1);
-			if(data.eval != undefined && data.eval!='') eval(data.eval);
-		}
-	});
-	return false;
-
-}
-
-function JSFRWin(obj,htmlobj) {
-	clearTimeout(timerid);
-	timerid = setTimeout(function(){fShowload(1);},200);
-	preSubmitAJAX(obj);
-	$.ajax({
-		type: "POST",
-		url: $(obj).attr('action'),
-		data: $(obj).serialize()+'&sbmt=1',
-		dataType: "json",
-		beforeSend: function(XMLHttpRequest) {
-			return true;
-		},
-		error: function(XMLHttpRequest, textStatus, errorThrown) {
-			alert(textStatus);
-		},
-		dataFilter: function(data, type) {
-		 
-			return data;
-		},
-		success: function(result) {
-			clearTimeout(timerid);
-			if(result.html!= undefined && result.html!='') {
-				if(htmlobj) {
-					timerid = setTimeout(function(){fShowload(0);},200);
-					$(htmlobj).html(result.html);
-				}
-				else
-					fShowload(1,result.html);
-			}
-			if(result.eval!= undefined && result.eval!='') eval(result.eval);
-			if(result.text!= undefined && result.text!='') fLog(fSpoiler(result.text,'AJAX text result'),1);
+			if(result.text != undefined && result.text!='') fLog(fSpoiler(result.text,'AJAX text result'),1);
+			if(result.eval != undefined && result.eval!='') eval(result.eval);
 		}
 	});
 	return false;
@@ -335,4 +310,29 @@ function pagenum_super(total,pageCur,cl,order) {
 		});
 		//returnOrder: true
 	}
+}
+
+function dump(arr, level) {/*аналог ф в ПХП print_r*/
+    var dumped_text = "";
+    if(!level) level = 0;
+
+    var level_padding = "    ";
+
+    if(typeof(arr) == 'object') {
+        for(var item in arr) {
+            var value = arr[item];
+ 
+            if(typeof(value) == 'object') {
+                dumped_text += level_padding + "’" + item + "’ …\n";
+                if(level>0) dumped_text += dump(value,level-1);
+            }
+            else {
+                dumped_text += level_padding + "’" + item + "’ => \"" + value + "\"\n";
+            }
+        }
+    }
+    else {
+        dumped_text = "===>"+arr+"<===("+typeof(arr)+")";
+    }
+    return dumped_text;
 }
