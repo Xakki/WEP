@@ -451,8 +451,10 @@
 			$clsn = $name."_class";
 			try {
 				require_once($_CFG['_PATH']['core'].'kernel.extends.php');
-					if($OWNER and $OWNER->_cl) {
-						global $OWN_CL;
+					global $OWN_CL;
+					
+					$OWN_CL = NULL;
+					if($OWNER and $OWNER->_cl) {						
 						$TEMPO = &$OWNER;
 						while($TEMPO->owner and $TEMPO->owner->_cl)
 							$TEMPO = &$TEMPO->owner;
