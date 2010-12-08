@@ -349,7 +349,7 @@ $html .= '
 										$desc = $query[0];
 									
 									if (isset($query[2]))
-										$desc .= '<br/>'.$query[2];
+										$desc .= '<br/><span style="color:red">'.$query[2].'</span>';
 									
 									$_this->form['list_query']['item'][] = array(
 										'value' => $table.'::'.$field,
@@ -357,7 +357,7 @@ $html .= '
 									);
 								}
 								elseif (isset($query[2])) {
-									$mess[] = array('name' => 'ok', 'value' => $query[2]);
+									$mess[] = array('name' => 'error', 'value' => $query[2]);
 								}
 							}
 						}
