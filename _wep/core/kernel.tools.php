@@ -244,6 +244,10 @@ $html .= '
 				foreach($_this->childs as $k=>&$r) {
 					$check_result[$r->tablename] = $r->_checkmodstruct();
 
+					if(count($_this->attaches)) {
+						$reattach[$r->tablename] = true;
+					}
+					
 					if (isset($check_result[$r->tablename]['err'])) {
 						$mess[] = array('name' => 'error', 'value' => $check_result[$r->tablename]['err']);
 						$check_err = true;
