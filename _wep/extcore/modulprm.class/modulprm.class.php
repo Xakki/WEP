@@ -196,7 +196,7 @@ class modulgrp_class extends kernel_class {
 		parent::_create();
 		$this->caption = "Привелегии";
 
-		$this->_unique['ou'] = array('owner_id','ugroup_id');
+		$this->unique_fields['ou'] = array('owner_id','ugroup_id');
 		
 		$this->_enum['access'] = array(
 			0=>'нет',

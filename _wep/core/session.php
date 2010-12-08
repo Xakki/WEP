@@ -26,7 +26,7 @@ class session_gogo {
 
 		$this->index_fields['sid'] = 'sid';
 		$this->index_fields['users_id'] = 'users_id';
-		$this->_unique['sid'] = 'sid';
+		$this->unique_fields['sid'] = 'sid';
 
 		$this->SQL = &$SQL;
 		$this->_CFG = &$_CFG;

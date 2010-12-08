@@ -132,7 +132,7 @@ _fldformer($key, $param)
 		$this->tablename = $this->_CFG['sql']['dbpref'].$this->_cl; // название таблицы
 		$this->caption = $this->_cl; // заголовок модуля
 		$this->_listfields = array('name'); //select по умолч
-		$this->_unique =
+		$this->unique_fields =
 		$this->_enum =
 		$this->update_records =
 		$this->def_records =

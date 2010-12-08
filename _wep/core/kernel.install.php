@@ -22,8 +22,8 @@
 		if ($this->mf_actctrl) 
 			$fld[] = 'KEY(active)';
 
-		if(isset($this->_unique) and count($this->_unique)){
-			foreach($this->_unique as $k=>$r) {
+		if(isset($this->unique_fields) and count($this->unique_fields)){
+			foreach($this->unique_fields as $k=>$r) {
 				if(is_array($r)) $r = implode(',',$r);
 				$fld[] = 'UNIQUE KEY '.$k.' ('.$r.')';
 			}

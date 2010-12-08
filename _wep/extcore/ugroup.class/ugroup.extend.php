@@ -130,7 +130,7 @@ class users_extend extends kernel_class {
 	function _create()
 	{
 		parent::_create();
-		$this->_unique['email']='email';
+		$this->unique_fields['email']='email';
 
 		$this->fields["id"] = array("type" => "varchar", "width" => 32, "attr" => "NOT NULL");
 		$this->fields["name"] = array("type" => "varchar", "width" => 32,"attr" => "NOT NULL");

@@ -40,7 +40,6 @@
 			'LONGTEXT' => true,
 		);
 		
-		
 		$result = $this->SQL->execSQL('SHOW TABLES LIKE \''.$this->tablename.'\'');// checking table exist
 		if ($result->err) exit('error');
 		if (!$result->num_rows()) return $this->_install();
@@ -203,6 +202,13 @@
 
 		if ($this->mf_ordctrl && !isset($indexlist['ordind']))
 			$query[$k.'::ind'][0] = 'CREATE INDEX `ordind` ON `'.$this->tablename.'` (ordind)';
+			
+		if(isset($this->unique_fields) and count($this->unique_fields)){
+			foreach($this->unique_fields as $k=>$r) {
+				if(is_array($r)) $r = implode(',',$r);
+				$query[$k.'::uniq'][0] = 'UNIQUE KEY '.$k.' ('.$r.')';
+			}
+		}
 		
 //		if (count($query)) {
 //			foreach($query as $rr)
