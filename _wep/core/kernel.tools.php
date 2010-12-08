@@ -232,7 +232,7 @@ $html .= '
 			
 			$reattach = array();
 			
-			$check_result[$_this->tablename] = $_this->_checkmodstruct();
+			$check_result = $_this->_checkmodstruct();
 	
 			if (isset($check_result[$_this->tablename]['err'])) {
 				$mess[] = array('name' => 'error', 'value' => $check_result[$_this->tablename]['err']);
@@ -240,9 +240,10 @@ $html .= '
 			}			
 //			elseif (!empty($check_result['list_query'])) {
 
+			$tmp_check_result = array();
 			if(count($_this->childs)) {
 				foreach($_this->childs as $k=>&$r) {
-					$check_result[$r->tablename] = $r->_checkmodstruct();
+					$tmp_check_result = $r->_checkmodstruct();
 
 					if(count($_this->attaches)) {
 						$reattach[$r->tablename] = true;
@@ -260,7 +261,8 @@ $html .= '
 				$reattach[$_this->tablename] = true;
 			}
 
-
+			$check_result = array_merge($check_result, $tmp_check_result);		
+			
 			$is_query = false;
 			foreach ($check_result as $k=>$r) {
 				if (isset($r['list_query']) && !empty($r['list_query'])) {
@@ -270,8 +272,6 @@ $html .= '
 					}
 				}
 			}
-			
-			
 			
 			if (!empty($reattach) || ($check_err == false && $is_query)) {
 				
@@ -337,6 +337,7 @@ $html .= '
 					);
 
 					$_this->form['list_query']['type'] = 'checkbox';
+
 					foreach ($check_result as $table=>$list_query) {
 						foreach ($list_query as $fields) {
 							foreach ($fields as $field => $query) {

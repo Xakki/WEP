@@ -81,11 +81,6 @@ class ugroup_extend extends kernel_class
 
 		$this->create_child("users");
 	}
-	
-	function _checkmodstruct() {
-		//include('ugroup.checkmodstruct.php');
-		parent::_checkmodstruct();
-	}
 
 	function _getlist($listname,$value=0) {
 		$data = array();

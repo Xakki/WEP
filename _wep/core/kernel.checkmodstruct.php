@@ -1,4 +1,6 @@
 <?
+		$out = array();
+		
 		// синонимы для типов полей
 		$alias_types = array(
 			'TINYINT(1)' => 'BOOL',
@@ -95,7 +97,6 @@
 				if (isset($alias_types[$fldtype]))
 					$types[] = $alias_types[$fldtype];
 				
-				
 				$table_properties = array();
 				$table_properties_up_case = array();
 				$i = 0;
@@ -115,12 +116,11 @@
 						if ($extra != '')
 							$table_properties[$i] .= ' '.$extra;
 					}
-					$table_properties_up_case[$i] = trim(strtoupper($table_properties[$i]));
+					$table_properties_up_case[$i] = str_replace(array('"',"'"), array('',''),trim(strtoupper($table_properties[$i])));
 					$i++;
 				}
-				
-
-				if (!in_array(trim(strtoupper($this->_fldformer($fldname, $this->fields[$fldname]))), $table_properties_up_case)) {
+							
+				if (!in_array(str_replace(array('"',"'"), array('',''),trim(strtoupper($this->_fldformer($fldname, $this->fields[$fldname])))), $table_properties_up_case)) {
 					$query[$fldname][0] = 'ALTER TABLE `'.$this->tablename.'` CHANGE `'.$fldname.'` '.$this->_fldformer($fldname, $this->fields[$fldname]);
 					$query[$fldname][1] = $table_properties[0];
 					
@@ -155,16 +155,20 @@
 			{
 				if (!isset($param['inst'])) 
 					$query[$key][0] = 'ALTER TABLE `'.$this->tablename.'` ADD '.$this->_fldformer($key, $this->attprm);
-				if ($this->_checkdir($this->getPathForAtt($key))) 
-					return array('err' => '_checkdir error');
+				if ($this->_checkdir($this->getPathForAtt($key))) { 
+					$out[$this->tablename]['err'] = $this->getMess('_checkdir error');
+					return $out;
+				}
 			}	
 
 		if(isset($this->memos))
 			foreach($this->memos as $key => $param) 
 			{
 			//	if (!$param['inst']) $query[] = 'ADD '.$this->_fldformer($key, $this->mmoprm);
-				if ($this->_checkdir($this->getPathForMemo($key))) 
-					return array('err' => $this->getMess('_recheck_err'));
+				if ($this->_checkdir($this->getPathForMemo($key))) {
+					$out[$this->tablename]['err'] = $this->getMess('_recheck_err');
+					return $out;
+				}
 			}
 		
 		if(isset($this->fields['id']) and !isset($this->fields['id']['inst']))
@@ -208,7 +212,9 @@
 //		if(isset($this->_cl))
 //			$this->SQL->execSQL('UPDATE `'.$this->_CFG['sql']['dbpref'].'modulprm` SET `ver`="'.$this->ver.'" WHERE `id`="'.$this->_cl.'"');
 
-		return array('list_query' => $query);
+		$out[$this->tablename]['list_query'] = $query;
+
+		return $out;
 //		return 0;
 
 
