@@ -1918,7 +1918,9 @@ $Ajax=0 - не скриптовая
 			else {
 				$time = array(0, 0, 0); 
 			}
-			$date = array_merge($date, $time);
+			
+			if(is_array($date) && is_array($time))
+				$date = array_merge($date, $time);
 		}
 
 		$format = array_merge($format, $format_time);

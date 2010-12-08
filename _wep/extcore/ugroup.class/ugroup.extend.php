@@ -314,6 +314,9 @@ class users_extend extends kernel_class {
 
 	function regForm(){
 		global $_MESS,$_tpl;
+		// добавлены настройки на форму регистрации
+		$this->fields_form['id']['readonly']=false;
+		unset($this->fields_form['sett1']);
 		if(!$this->owner->config["reg"]) return array(array('messages'=>array(array('name'=>'error', 'value'=>$this->_CFG['_MESS']['deniedreg']))),1);
 		if(_prmUserCheck()) return array(array('messages'=>array(array('name'=>'error', 'value'=>$this->_CFG['_MESS']['deniedu']))),1);
 		$flag=0;// 0 - показывает форму, 1 - нет
@@ -365,7 +368,7 @@ class users_extend extends kernel_class {
 				}
 			}
 		} else $mess = $this->kPreFields($_POST,$param);
-
+		
 		$this->setCaptcha();
 		$formflag = $this->kFields2Form($param);
 		$this->form['sbmt']['value']='Я согласен с правилами и хочу зарегистрироваться';
@@ -376,6 +379,7 @@ class users_extend extends kernel_class {
 
 	function regConfirm() {
 		global $_MESS;
+		
 		$_GET['hash'] = preg_replace("/[^0-9a-f]+/","",$_GET['hash']);
 		if(!$this->owner->config["reg"])
 			$mess[] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['deniedreg']);
@@ -390,8 +394,15 @@ class users_extend extends kernel_class {
 			elseif(count($this->data) and $this->data[0]['reg_hash']==$_GET['hash']){
 				$this->id = $this->data[0]['id'];
 				$this->fld_data['reg_hash']= 1;
-				$this->fld_data['active']= 1;
-				$this->fld_data['owner_id']= $this->owner->config["reggroup"];
+				if($this->owner->config['premoderation']) {
+					$this->fld_data['active']= 0;
+					$this->fld_data['owner_id']= $this->owner->config["modergroup"];
+				}
+				else {
+					$this->fld_data['active']= 1;
+					$this->fld_data['owner_id']= $this->owner->config["reggroup"];
+				}
+				
 				if(!$this->_update())
 					$mess[] = array('name'=>'ok', 'value'=>$this->_CFG['_MESS']['confok']);
 				else
