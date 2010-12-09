@@ -245,7 +245,7 @@ $html .= '
 				foreach($_this->childs as $k=>&$r) {
 					$tmp_check_result = $r->_checkmodstruct();
 
-					if(count($_this->attaches)) {
+					if(count($r->attaches)) {
 						$reattach[$r->tablename] = true;
 					}
 					
