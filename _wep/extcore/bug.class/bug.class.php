@@ -65,7 +65,12 @@ class bug_class extends kernel_class {
 		
 		$this->ordfield = 'active DESC, mf_timecr DESC';
 		
-		observer::register_observer($this, 'insert2bd', 'shutdown_function');
+		$params = array(
+			'obj' => $this,
+			'func' => 'insert2bd',
+		);
+		
+		observer::register_observer($params, 'shutdown_function');
 	}
 	
 	function insert2bd()
