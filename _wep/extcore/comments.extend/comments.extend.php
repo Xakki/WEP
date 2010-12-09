@@ -22,6 +22,7 @@ class comments_class extends kernel_class {
 		if (parent::_set_features()) return 1;
 		$this->mf_actctrl = true;
 		$this->mf_ipcreate = true;
+		$this->mf_timecr = true;
 		$this->messages_on_page = 200;
 		$this->locallang['default']['denied_add'] = 'Оставлять комментарий могут только зарегистрированные пользователи!';
 		$this->locallang['default']['add'] = 'Комментарий добавлен.';

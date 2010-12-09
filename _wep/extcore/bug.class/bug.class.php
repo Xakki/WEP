@@ -40,8 +40,7 @@ class bug_class extends kernel_class {
 		$this->fields['page_id'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
 		$this->fields['hash'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
 		$this->fields['cnt'] = array('type' => 'int', 'attr' => 'NOT NULL');
-		$this->fields['dsfsdf'] = array('type' => 'int', 'attr' => 'NOT NULL');
-		
+
 		$this->unique_fields['hash'] = 'hash';		
 
 		# fields
