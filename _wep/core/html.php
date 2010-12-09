@@ -547,10 +547,9 @@
 
 	function _prmModulLoad() { // подгрука данных прав доступа
 		global $_CFG;
-		//print('<pre>');print_r($_CFG['modulprm']);
 		if(!isset($_CFG['modulprm'])) {
 			if(_new_class('modulprm',$MODULs))
-				$_CFG['modulprm'] = $MODULs->userPrm();
+				$_CFG['modulprm'] = $MODULs->userPrm($_SESSION['user']['owner_id']);
 		}
 	}
 /*

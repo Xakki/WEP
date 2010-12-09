@@ -7,8 +7,6 @@ function tpl_form(&$data) {
 	$_CFG['fileIncludeOption']['form'] = 1;
 
 	foreach($data as $k=>$r) {
-	//print_r($r);
-	//print_r($r);
 		if($r['type']!='hidden')
 			$html .= '<div id="tr_'.$k.'" style="'.$r['style'].'" class="div-tr'.($r['css']?' '.$r['css']:'').'">';
 
@@ -259,7 +257,7 @@ function tpl_form(&$data) {
 				}
 				elseif(!is_array($r['value']) and $r['value']!='' and $r['att_type']=='swf')
 					$html .= '<object type="application/x-shockwave-flash" data="/'.$r['value'].'" height="50" width="200"><param name="movie" value="/'.$r['value'].'" /><param name="allowScriptAccess" value="sameDomain" /><param name="quality" value="high" /><param name="scale" value="exactfit" /><param name="bgcolor" value="#ffffff" /><param name="wmode" value="transparent" /></object>';
-				elseif(!is_array($r['value']) and $r['value']!=''){//print_r('<pre>');print_r($r);print_r('</pre>');
+				elseif(!is_array($r['value']) and $r['value']!=''){
 					$html .= '<span style="color:green"><a href="/'.$r['value'].'" target="_blank"> загружен(a)</a></span><br/>';
 				}
 

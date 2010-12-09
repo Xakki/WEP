@@ -48,7 +48,6 @@
 									die();
 								}
 								else {
-									//print_r('<pre>');print_r($DATA);exit();
 									//$DATA['formcreat']['messages'] = $_SESSION['mess'];
 									$DATA['formcreat']['path'] = $HTML->path;
 									$html = $HTML->transformPHP($DATA,'formcreat');
@@ -82,7 +81,7 @@
 								$_SESSION['mess'] = array();
 							}
 
-//} $tt[$j] = getmicrotime()-$tt[$j]; $summ += $tt[$j]; } print_r('Среднее время = "'.($summ/5).'" ');print_r($tt);
+//} $tt[$j] = getmicrotime()-$tt[$j]; $summ += $tt[$j]; } echo 'Среднее время = "'.($summ/5).'" ';echo $tt;
 
 				}
 				if($MODUL->ver!=$_CFG['modulprm'][$MODUL->_cl]['ver'])

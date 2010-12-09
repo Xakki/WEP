@@ -1,7 +1,6 @@
 <?
 	function tpl_pgmap(&$data,$attr='') {
 		$html = '';
-		//print_r('<pre>');print_r($data);print_r('</pre>');exit();
 		if(isset($data) and count($data)) {
 			$html .= '<ul class="pgmap'.$attr.'">';
 			foreach($data as $k=>$r) {

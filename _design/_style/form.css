@@ -252,12 +252,12 @@
 		background:none repeat scroll 0 0 #111111;
 	}
 	/*Значок в форме ввода*/
-	.ajaxlist input.accept{
+	form input.accept{
 		background:transparent url(../default/img/x16.png) no-repeat scroll 100% 2px;
 	}
-	.ajaxlist input.reject{
+	form input.reject{
 		background:transparent url(../default/img/x16.png) no-repeat scroll 100% -30px;
 	}
-	.ajaxlist input.load, select.load{
+	form input.load, select.load{
 		background:transparent url(../_img/loader16.gif) no-repeat scroll 100% 2px;
 	}

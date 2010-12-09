@@ -1,7 +1,6 @@
 <?
 	function tpl_menu(&$data) {
 		$html = '';
-		//print_r('<pre>');print_r($data);print_r('</pre>');exit();
 		if(isset($data) and count($data)) {
 			//$html .= '<div class="menu">';
 			//$last = count($data);

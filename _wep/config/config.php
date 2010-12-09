@@ -319,7 +319,6 @@ include($_CFG['_PATH']['wepconf'].'/config/config.php');
 */
 	function shutdown_function() {
 		//ob_end_flush();
-		//print_r('shutdown_function');
 		if(defined('SID'))
 			session_write_close();
 	}
@@ -351,7 +350,6 @@ include($_CFG['_PATH']['wepconf'].'/config/config.php');
 			$domain = $_CFG['session']['domain'];
 		if($secure=='')
 			$secure = $_CFG['session']['secure'];
-			//print_r($name.' - '.$value);
 		setcookie($name,$value,$expire,$path,$domain,$secure);
 	}
 
