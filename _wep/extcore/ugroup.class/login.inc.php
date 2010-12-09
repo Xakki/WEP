@@ -1,6 +1,6 @@
 <?
 	$result = array();
-	if(isset($_REQUEST['ref']) and $_REQUEST['ref']!='' and !strstr($_REQUEST['ref'],'login')) 
+	if(isset($_REQUEST['ref']) and $_REQUEST['ref']!='' and !strstr($_REQUEST['ref'],'login') and !strstr($_REQUEST['ref'],'remind')) 
 		$ref= $_REQUEST['ref'];
 	elseif($_SERVER['HTTP_REFERER']!='' and strpos($_SERVER['HTTP_REFERER'], '.html')) {
 		$pos = strripos($_SERVER['HTTP_REFERER'], '/');
@@ -66,7 +66,7 @@ $mess = $form = '';
 					<div>Запомнить?<input type="checkbox" style="border:medium none; width:30px;" tabindex="3" name="remember" value="1"/></div>
 					<input class="submit" type="submit" name="enter" value="Войти" tabindex="3"/>
 				</form>
-				<a href="'.$_CFG['_HREF']['BH'].'/remind.html">Забыли пароль?</a>
+				<a href="'.$_CFG['_HREF']['BH'].'remind.html">Забыли пароль?</a>
 			
 			 <div style="clear:both;"></div>
 		 </div>';
