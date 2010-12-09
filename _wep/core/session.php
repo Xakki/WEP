@@ -40,6 +40,12 @@ class session_gogo {
 		$this->expired = $_CFG['session']['expire'];
 		session_set_save_handler(array(&$this,"open"), array(&$this,"close"), array(&$this,"read"), array(&$this,"write"), array(&$this,"destroy"), array(&$this,"gc"));
 		session_start();
+		
+		$params = array(
+			'func' => 'session_write_close',
+		);
+		
+		observer::register_observer($params, 'shutdown_function');
 	}
 
 	function __destruct() {
