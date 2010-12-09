@@ -347,7 +347,7 @@ class users_extend extends kernel_class {
 						$datamail['subject']='Подтвердите регистрацию на '.strtoupper($_SERVER['HTTP_HOST']);
 						$href = '?confirm='.$arr['vars']['id'].'&amp;hash='.$arr['vars']['reg_hash'];
 						
-						$datamail['text']=str_replace(array('%pass%','%login%','%href%'),array($pass,$arr['vars']['id'],$href),$this->owner->config["mailconfirm"]);
+						$datamail['text']=str_replace(array('%pass%','%login%','%href%','%host%'),array($pass,$arr['vars']['id'],$href,$_SERVER['HTTP_HOST']),$this->owner->config["mailconfirm"]);
 						$MAIL->reply = 0;
 						if($MAIL->Send($datamail)) {
 							$flag=1;
