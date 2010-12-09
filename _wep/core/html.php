@@ -549,7 +549,7 @@
 		global $_CFG;
 		if(!isset($_CFG['modulprm'])) {
 			if(_new_class('modulprm',$MODULs))
-				$_CFG['modulprm'] = $MODULs->userPrm($_SESSION['user']['owner_id']);
+				$_CFG['modulprm'] = $MODULs->userPrm((int)$_SESSION['user']['owner_id']);
 		}
 	}
 /*

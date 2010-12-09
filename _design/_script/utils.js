@@ -214,8 +214,9 @@ function ShowTools(id,hrf) {
 
 function JSWin(param) {
 	if(typeof param['type']=='object') {
+		preSubmitAJAX(param['type']);
 		param['href'] = $(param['type']).attr('action');
-		param['data'] = $(param['type']).serialize()+'&sbmt=1';
+		param['data'] = $(param['type']).serialize()+'&sbmt=1';alert(param['data']);return false;
 		param['type'] = 'POST';
 	}
 	else if(!param['type']) param['type'] = 'GET';
