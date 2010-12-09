@@ -41,6 +41,7 @@ class bug_class extends kernel_class {
 		$this->fields['hash'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
 		$this->fields['cnt'] = array('type' => 'int', 'attr' => 'NOT NULL');
 		
+		$this->unique_fields['hash'] = 'hash';		
 
 		# fields
 		$this->fields_form['name'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Ошибка', 'mask'=>array('filter'=>1, 'onetd'=>'Ошибка'));
@@ -63,6 +64,34 @@ class bug_class extends kernel_class {
 		$this->_unique['name'] = 'name';
 		
 		$this->ordfield = 'active DESC, mf_timecr DESC';
+		
+		observer::register_observer($this, 'insert2bd', 'shutdown_function');
+	}
+	
+	function insert2bd()
+	{
+		if (!empty($this->bugs)) {
+			if (isset($_SESSION['user']['id']))
+				$creater_id = $_SESSION['user']['id'];
+			else
+				$creater_id = '';
+				
+			if (isset($_SERVER['REMOTE_ADDR']))
+				$mf_ipcreate = ip2long($_SERVER['REMOTE_ADDR']);
+			else
+				$mf_ipcreate =	0;
+			
+			foreach ($this->bugs as $r) {
+				$r['creater_id'] = $creater_id;
+				$r['mf_ipcreate'] = $mf_ipcreate;
+				$query_val[] = '("'.implode('","',$r).'")';
+			}
+			
+			$result = $this->SQL->execSQL('INSERT INTO `'.$this->tablename.'` 
+			(err_type,name,file,line,debug,href,page_id,hash,mf_timecr,cnt,creater_id,mf_ipcreate) 
+			VALUES '.implode(',', $query_val).'
+			ON DUPLICATE KEY UPDATE cnt = cnt+1, active=1');
+		}
 	}
 	
 	function add_bug($errno, $errstr, $errfile, $errline, $debug) {
@@ -70,30 +99,21 @@ class bug_class extends kernel_class {
 		
 		$hash = md5($errno.$errstr.$errfile.$errline.$_SERVER['REQUEST_URI']);
 		
-		if (!isset($this->bugs[$hash])) {
-			$this->bugs[$hash] = true;
-
-			$result = $this->SQL->execSQL('SELECT count(id) FROM `'.$this->tablename.'` WHERE hash="'.$hash.'"');
-			list($cnt) = $result->fetch_array(MYSQL_NUM);
-			if ($cnt == 0) {
-				$this->fld_data = array(
-					'err_type' => $errno,
-					'name' => mysql_real_escape_string($errstr),
-					'file' => mysql_real_escape_string($errfile), 
-					'line' => mysql_real_escape_string($errline),
-					'debug' => mysql_real_escape_string($debug),
-					'href' => mysql_real_escape_string($_SERVER['REQUEST_URI']),
-					'page_id' => $PGLIST->id,
-					'hash' => $hash,
-					'cnt' => 1,
-				);
-				$this->_add();
-			}
-			else {
-				$result = $this->SQL->execSQL('UPDATE `'.$this->tablename.'` SET cnt=cnt+1 WHERE hash="'.$hash.'"');
-			}
+		if (!isset($this->bugs[$hash])) {		
+						
+			$this->bugs[$hash] = array(
+				'err_type' => $errno,
+				'name' => mysql_real_escape_string($errstr),
+				'file' => mysql_real_escape_string($errfile), 
+				'line' => mysql_real_escape_string($errline),
+				'debug' => mysql_real_escape_string($debug),
+				'href' => mysql_real_escape_string($_SERVER['REQUEST_URI']),
+				'page_id' => $PGLIST->id,
+				'hash' => $hash,
+				'mf_timecr' => time(),
+				'cnt' => 1,
+			);
 		}
-		
 	}
 
 }

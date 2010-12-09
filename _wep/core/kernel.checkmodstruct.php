@@ -205,8 +205,10 @@
 			
 		if(isset($this->unique_fields) and count($this->unique_fields)){
 			foreach($this->unique_fields as $k=>$r) {
-				if(is_array($r)) $r = implode(',',$r);
-				$query[$k.'::uniq'][0] = 'UNIQUE KEY '.$k.' ('.$r.')';
+				if (!isset($indexlist[$k])) {
+					if(is_array($r)) $r = implode(',',$r);
+					$query[$k.'::uniq'][0] = 'ALTER TABLE `'.$this->tablename.'` ADD UNIQUE KEY '.$k.' ('.$r.')';
+				}
 			}
 		}
 		

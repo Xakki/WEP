@@ -313,10 +313,15 @@ include($_CFG['_PATH']['wepconf'].'/config/config.php');
 	session_set_cookie_params($_CFG['session']['expire'],$_CFG['session']['path'], $_CFG['session']['domain'],$_CFG['session']['secure']);
 	ini_set('session.cookie_domain', $_CFG['session']['domain']);
 	register_shutdown_function ('shutdown_function'); // Запускается первым при завершении скрипта
+
+	include $_CFG['_PATH']['core'].'observer.php';
+
 /*
 Функция завершения работы скрипта
 */
 	function shutdown_function() {
+		observer::register_publisher('shutdown_function');
+		
 		//ob_end_flush();
 		if(defined('SID'))
 			session_write_close();
