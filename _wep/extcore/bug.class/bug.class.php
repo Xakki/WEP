@@ -62,7 +62,7 @@ class bug_class extends kernel_class {
 
 		$this->_unique['name'] = 'name';
 		
-		$this->ordfield = 'mf_timecr DESC';
+		$this->ordfield = 'active DESC, mf_timecr DESC';
 	}
 	
 	function add_bug($errno, $errstr, $errfile, $errline, $debug) {
