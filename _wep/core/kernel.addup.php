@@ -103,6 +103,8 @@
 				return $_this->_message('Error copy file '.$value['name']);
 
 			if (isset($_this->attaches[$key]['thumb'])) {
+				if(!exif_imagetype($newname)) // опред тип файла
+					return $_this->_message('File '.$newname.' is not image');
 				$prefix = $pathimg.'/';
 				if (count($_this->attaches[$key]['thumb']))
 					foreach($_this->attaches[$key]['thumb'] as $imod) {
@@ -382,7 +384,8 @@
 		}
 
 		$thumb = imagecreatetruecolor($WidthX, $HeightY);//созд пустой рисунок
-		$imtype = exif_imagetype($InFile);// опред тип файла
+		if(!$imtype = exif_imagetype($InFile))// опред тип файла
+			return $_this->_message('File '.$InFile.' is not image');
 		if($imtype>3) return 0;
 		$source = _imagecreatefrom($_this,$InFile,$imtype);//открываем рисунок
 		imagecopyresized($thumb, $source, 0, 0, 0, 0, $WidthX, $HeightY, $width_orig, $height_orig);//меняем размер
@@ -397,7 +400,8 @@
 		list($width_orig, $height_orig) = getimagesize($InFile);// опред размер
 		// Resample
 		$thumb = imagecreatetruecolor($WidthX, $HeightY);//созд пустой рисунок
-		$imtype = exif_imagetype($InFile);// опред тип файла
+		if(!$imtype = exif_imagetype($InFile)) // опред тип файла
+			return $_this->_message('File '.$InFile.' is not image');
 		if($imtype>3) return 0;
 		$source = _imagecreatefrom($_this,$InFile,$imtype);//открываем рисунок
 		imagecopyresampled($thumb, $source, 0, 0, $width_orig/2-$WidthX/2, $height_orig/2-$HeightY/2, $WidthX, $HeightY, $WidthX, $HeightY);
@@ -422,11 +426,13 @@
 		if(!($thumb = @imagecreatetruecolor($WidthX, $HeightY)))
 			return $_this->_message('Cannot Initialize new GD image stream on line '.__LINE__.' in kernel');
 		/*Определяем тип рисунка*/
-		$imtype = exif_imagetype($InFile);// опред тип файла
+		if(!$imtype = exif_imagetype($InFile))// опред тип файла
+			return $_this->_message('File '.$InFile.' is not image');
 		/*Обработка только jpeg, gif, png*/
 		if($imtype>3) return 0;
 		/*Открываем исходный рисунок*/
-		$source = _imagecreatefrom($_this,$InFile,$imtype);//открываем рисунок
+		if(!$source = _imagecreatefrom($_this,$InFile,$imtype))//открываем рисунок
+			return $_this->_message('File '.$InFile.' is not image');
 		if(!imagecopyresampled($thumb, $source, 0, 0, 0, 0, $WidthX, $HeightY, $width_orig, $height_orig))
 			return $_this->_message('Error imagecopyresampled on line '.__LINE__.' in kernel');
 		if(!($thumb2 = @imagecreatetruecolor($trueX, $trueY)))

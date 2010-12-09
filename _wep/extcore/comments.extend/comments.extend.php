@@ -21,6 +21,7 @@ class comments_class extends kernel_class {
 	{
 		if (parent::_set_features()) return 1;
 		$this->mf_actctrl = true;
+		$this->mf_ipcreate = true;
 		$this->messages_on_page = 200;
 		$this->locallang['default']['denied_add'] = 'Оставлять комментарий могут только зарегистрированные пользователи!';
 		$this->locallang['default']['add'] = 'Комментарий добавлен.';
@@ -39,9 +40,7 @@ class comments_class extends kernel_class {
 		$this->caption = 'Комментарии';
 
 		$this->fields['text'] = array('type' => 'text', 'attr' => 'NOT NULL', 'min' => '1');
-		$this->fields['date'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL DEFAULT 0');
-		$this->fields['ip'] = array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL DEFAULT ""');
-		$this->fields['vote'] = array('type' => 'int', 'width' => 9, 'attr' => 'NOT NULL DEFAULT 0');
+		$this->fields['vote'] = array('type' => 'int', 'width' => 9, 'attr' => 'NOT NULL', 'default'=>0);
 
 		if(_prmUserCheck())
 			$this->fields_form['name'] = array('type' => 'hidden','disabled'=>1, 'caption' => 'Имя', 'default'=>$_SESSION['user']['name'], 'mask'=>array('eval'=>'$_SESSION["user"]["name"]'));
@@ -56,8 +55,8 @@ class comments_class extends kernel_class {
 		$this->fields_form['text'] = array('type' => 'textarea', 'caption' => 'Текст','mask' =>array('min'=>5, 'max'=>3000));
 		if($this->config['vote'])
 			$this->fields_form['vote'] = array('type' => 'int', 'caption' => 'Рейтинг','readonly'=>1);
-		$this->fields_form['date'] =	array('type' => 'date', 'caption' => 'Дата добавления','readonly'=>1, 'mask'=>array('evala'=>'time()'));
-		$this->fields_form['ip'] =	array('type' => 'text', 'caption' => 'IP-пользователя','readonly'=>1,'mask' =>array('usercheck'=>1,'evala'=>'$_SERVER["REMOTE_ADDR"]'));
+		$this->fields_form['mf_timecr'] =	array('type' => 'date', 'caption' => 'Дата добавления','readonly'=>1, 'mask'=>array());
+		$this->fields_form['mf_ipcreate'] =	array('type' => 'text', 'caption' => 'IP-пользователя','readonly'=>1,'mask' =>array('usercheck'=>1));
 		if($this->mf_istree)
 			$this->fields_form['parent_id'] = array('type' => 'hidden');
 		if($this->owner)
@@ -83,15 +82,12 @@ class comments_class extends kernel_class {
 		else
 			$pb= (int)$_SESSION['user']['paramcomment'];
 
-		if($_POST['date'])
-			$time = ((int)$_POST['date']+time());
-		else
-			$time = time();
-		$cls ='SELECT count(id) as cnt FROM '.$this->tablename.' WHERE date>='.($time-(3600*$this->config['spamtime'])).' and date<'.$time;
+		$time = time();
+		$cls ='SELECT count(id) as cnt FROM '.$this->tablename.' WHERE mf_timecr>='.($time-(3600*$this->config['spamtime'])).' and mf_timecr<'.$time;
 		if(_prmUserCheck())
 			$cls .= ' and creater_id="'.$_SESSION['user']['id'].'"';
 		else
-			$cls .= ' and ip="'.$_SERVER["REMOTE_ADDR"].'"';
+			$cls .= ' and mf_ipcreate=INET_ATON("'.$_SERVER["REMOTE_ADDR"].'")';
 		$result = $this->SQL->execSQL($cls);
 		if(!$result->err and $row = $result->fetch_array()) {
 			if($row['cnt']>=$pb) {

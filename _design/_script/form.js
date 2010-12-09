@@ -33,17 +33,10 @@ function JSFR(n) {
 
 function preSubmitAJAX (obj) {
 	if(typeof CKEDITOR !== 'undefined') {
-		jQuery.each($(obj).find("textarea"),CKSubmit);
+		jQuery.each($(obj).find("textarea"),function(){nm=$(this).attr('name');if(nm) eval("if(typeof CKEDITOR.instances."+nm+" == 'object') {CKEDITOR.instances."+nm+".updateElement();}");});
 	}
 	return true;
 }
-
-function CKSubmit() {
-	nm = $(this).attr('name');
-	eval("if(typeof CKEDITOR.instances."+nm+" == 'object') {CKEDITOR.instances."+nm+".updateElement();}");
-	return true;
-}
-
 
 function keys_return(ev) {
 	var keys=0;

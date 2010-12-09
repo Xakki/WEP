@@ -214,9 +214,11 @@ function ShowTools(id,hrf) {
 
 function JSWin(param) {
 	if(typeof param['type']=='object') {
-		preSubmitAJAX(param['type']);
+		if(typeof CKEDITOR !== 'undefined') {
+			jQuery.each($(param['type']).find("textarea"),function(){nm=$(this).attr('name');if(nm) eval("if(typeof CKEDITOR.instances."+nm+" == 'object') {CKEDITOR.instances."+nm+".updateElement();}");});
+		}
 		param['href'] = $(param['type']).attr('action');
-		param['data'] = $(param['type']).serialize()+'&sbmt=1';alert(param['data']);return false;
+		param['data'] = $(param['type']).serialize()+'&sbmt=1';
 		param['type'] = 'POST';
 	}
 	else if(!param['type']) param['type'] = 'GET';

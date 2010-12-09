@@ -179,12 +179,35 @@ $html .= '
 				{
 					$pathimg = $_this->_CFG['_PATH']['path'].$_this->getPathForAtt($key);
 					foreach(array_unique($value['mime']) as $k=>$ext) {
-						if(file_exists($pathimg.'/'.$row['id'].'.'.$ext)) {
+						$newname = $pathimg.'/'.$row['id'].'.'.$ext;
+						if(file_exists($newname)) {
+							if(isset($value['thumb']) and count($value['thumb'])) { // проверка на наличие модифицированных изображений
+								if(!exif_imagetype($newname)) // опред тип файла
+									break;
+								foreach($value['thumb'] as $imod) {
+									if(!$imod['pref']) $imod['pref'] = '';// по умолчинию без префикса
+									if($imod['path'])
+										$newname2 = $_this->_CFG['_PATH']['path'].$imod['path'].'/'.$imod['pref'].$row['id'].'.'.$ext;
+									else
+										$newname2 = $pathimg.'/'.$imod['pref'].$row['id'].'.'.$ext;
+									if($newname!=$newname2 and !file_exists($newname2)) {
+										include_once($_CFG['_PATH']['core'].'kernel.addup.php');
+										if ($imod['type']=='crop')
+											_cropImage($_this,$newname, $newname2, $imod['w'], $imod['h']);
+										elseif ($imod['type']=='resize')
+											_resizeImage($_this,$newname, $newname2, $imod['w'], $imod['h']);
+										elseif ($imod['type']=='resizecrop')
+											_resizecropImage($_this,$newname, $newname2, $imod['w'], $imod['h']);
+										elseif ($imod['type']=='water')
+											_waterMark($_this,$newname,$newname2, $imod['w'], $imod['h']);
+									}
+								}
+							}
 							$data[$key][$ext][]=$row['id'];
 							break;
 						}
 					}
-				}	
+				}
 			}
 			foreach($_this->attaches as $key=>$value) {
 				$result=$_this->SQL->execSQL('UPDATE '.$_this->tablename.' SET '.$key.'=\'\' ');
