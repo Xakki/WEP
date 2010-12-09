@@ -159,7 +159,7 @@ class modulprm_class extends kernel_class {
 		$this->data = array();
 		while ($row = $result->fetch_array()){
 			$this->data[$row['id']]['active'] = $row['active'];
-			$this->data[$row['id']]['access'] = array_flip(explode('|',substr(substr($row['access'],0,-1),1)));
+			$this->data[$row['id']]['access'] = array_flip(explode('|',trim($row['access'],'|')));
 			if($row['mname'])
 				$this->data[$row['id']]['name'] = $row['mname'];
 			else

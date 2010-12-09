@@ -3,7 +3,6 @@ include_once($this->_PATHd.'php/path.php');
 include_once($this->_PATHd.'php/messages.php');
 	function tpl_superlist(&$data) {
 		global $_CFG;
-//print_r('<pre>');print_r($data);exit();
 		$html = tpl_path($data['path']);// PATH
 		end($data['path']);
 		$firstpath = key($data['path']);

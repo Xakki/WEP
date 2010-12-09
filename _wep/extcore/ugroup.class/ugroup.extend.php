@@ -209,6 +209,8 @@ class users_extend extends kernel_class {
 			'owner_id'=>1,
 			'reg_hash'=>1);
 
+		$this->ordfield = 'mf_timecr DESC';
+
 	}
 
 	function _UpdItemModul($param) {
@@ -345,7 +347,7 @@ class users_extend extends kernel_class {
 						$datamail['from']=$this->owner->config["mailrobot"];
 						$datamail['mailTo']=$arr['vars']['email'];
 						$datamail['subject']='Подтвердите регистрацию на '.strtoupper($_SERVER['HTTP_HOST']);
-						$href = '?confirm='.$arr['vars']['id'].'&amp;hash='.$arr['vars']['reg_hash'];
+						$href = '?confirm='.$arr['vars']['id'].'&hash='.$arr['vars']['reg_hash'];
 						
 						$datamail['text']=str_replace(array('%pass%','%login%','%href%','%host%'),array($pass,$arr['vars']['id'],$href,$_SERVER['HTTP_HOST']),$this->owner->config["mailconfirm"]);
 						$MAIL->reply = 0;
@@ -441,7 +443,7 @@ class users_extend extends kernel_class {
 			else{
 				$html = '<div class="error">Не верные входные данные.<br/> Возможно вы уже воспользовались данной ссылкой.</div>';
 			}
-			$html = '<div class="messages">'.$html.'</div>';
+			if($html) $html = '<div class="messages">'.$html.'</div>';
 			if(!$form) {
 				$html .= '<div class="messages"><div class="ok">Введите новый пароль для пользователя '.($HTML->_itype($datau['id'])=='string'?$datau['id']:'').' с email '.$datau['email'].'. Пароль должен состоять из букв руского и английского алфавита, цифр и тире, и не менее 6ти символов.</div></div>
 				<br/>
@@ -460,7 +462,7 @@ class users_extend extends kernel_class {
 				$this->clause = "t1 where t1.email = '".$_POST['mail']."'";
 				$this->_list();
 				$datau=$this->data[0];
-				if(count($this->data)==1 and $datau['active']==1){
+				if(count($this->data)==1 and $datau['active']==1) {
 					$form=0;
 					$time=time();
 					$hash =md5($datau['pass'].$time.$datau['email']).'h';
@@ -470,8 +472,8 @@ class users_extend extends kernel_class {
 					$datamail['subject']='Востановление пароля на '.strtoupper($_SERVER['HTTP_HOST']);
 					$href = '?id='.$datau['id'].'&t='.$time.'&hash='.$hash;
 					$datamail['text']=str_replace(
-							array('%email%','%login%','%href%','%time%'),
-							array($datau['email'],$datau['id'],$href,date('Y-m-d H:i:s',($time+3600*24*2))),
+							array('%email%','%login%','%href%','%time%','%host%'),
+							array($datau['email'],$datau['id'],$href,date('Y-m-d H:i:s',($time+3600*24*2)),$_SERVER['HTTP_HOST']),
 							$this->owner->config["mailremind"]);
 					$MAIL->reply = 0;
 					if($MAIL->Send($datamail)) {

@@ -28,11 +28,11 @@
 
 	$HTML = new html('_design/',$PGLIST->config['design']);//отправляет header и печатает страничку
 
-//if($_SESSION['_showallinfo']) {print_r('main1 = '.(getmicrotime()-$main1time).'<hr/>');$main2time = getmicrotime();}
+//if($_SESSION['_showallinfo']) {print('main1 = '.(getmicrotime()-$main1time).'<hr/>');$main2time = getmicrotime();}
 
 	$PGLIST->display();
 
-//if($_SESSION['_showallinfo']) print_r('main = '.(getmicrotime()-$main2time).'<hr/>'); // для отладки
+//if($_SESSION['_showallinfo']) print('main = '.(getmicrotime()-$main2time).'<hr/>'); // для отладки
 
 	$_tpl['styles'] = $PGLIST->pageinfo['styles'] + $_tpl['styles'];
 	$_tpl['script'] = $PGLIST->pageinfo['script'] + $_tpl['script'];

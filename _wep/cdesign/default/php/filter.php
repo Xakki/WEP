@@ -2,7 +2,6 @@
 	function tpl_filter(&$data) {
 		global $_CFG;
 		$html = '';
-		//print_r('<pre>');print_r($data);print_r('</pre>');
 		$attr = $data['_*features*_'];
 		
 		unset($data['_*features*_']);

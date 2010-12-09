@@ -79,7 +79,7 @@
 
 
 /*SUPER PUPER*/
-	.path {padding:1 0 3 20;text-align:left;}
+	.path {padding:0 0 13px 0px;text-align:left;}
 	.path div {color:#111;}
 	.path img {vertical-align:middle;height:18px;}
  /*MENU*/
@@ -322,4 +322,32 @@ form table.form {
 	background-color:#FFF;
 	margin:10px auto;
 	width:770px;
+}
+/*MESSAGE*/
+.messages {
+	font-size:0.9em;
+	text-align:center;
+	background:#F6F6F6;
+	padding:5px 20px;margin:3px 0 0;
+	white-space:normal;
+	border:1px solid #A6A6A6;-moz-border-radius:4px;-webkit-border-radius:4px;border-radius:4px;
+}
+
+.messages .error, .error {
+	font-weight: bold;
+	margin: 0 0 3px 0;
+	color:red;
+}
+.messages .ok, .ok {
+	margin: 0 0 3px 0;
+	color:green;
+}
+.messages .alert, .alert {
+	margin: 0 0 3px 0;
+	color:blue;
+}
+.err {
+	font-weight: bold;
+	margin: 0 0 3px 0;
+	color:red;
 }

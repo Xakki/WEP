@@ -52,6 +52,7 @@ class mail_class extends kernel_class {
 		$data['subject'] = substr(htmlspecialchars(trim($data['subject'])), 0, 1000);
 		$this->uid = strtoupper(md5(uniqid(time())));
 		$subject = '=?utf-8?B?'. base64_encode($data['subject']).'?=';
+		$this->config["mailbottom"] = str_replace(array('%host%','%year%'),array($_SERVER['HTTP_HOST'],date('Y')),$this->config["mailbottom"]);
 		$text = str_replace(array('%SUBJECT%','%TEXT%','%MAILBOTTOM%'),array($data['subject'],trim($data['text']),$this->config["mailbottom"]),$this->config["mailtemplate"]);
 		//$text = substr(trim($data['text']), 0, 1000000).$this->config["mailbottom"] = str_replace('%YEAR%',date('Y'),$this->config["mailbottom"]);
 		if($data['from']=='')

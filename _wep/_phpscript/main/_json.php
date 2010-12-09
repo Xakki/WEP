@@ -46,19 +46,19 @@
 			while($row = $result->fetch_array())
 				$GLOBALS['_RESULT']['data'][$row['id']] = $row['name'];
 		}else
-			print_r('NO VALID DATA');
+			print('NO VALID DATA');
 		/*
 		if($field['type']=='ajaxlist') {
 			if($field['listname']['where']) $field['listname']['where'] .= ' and '.$_GET['nameField'].' LIKE "%'.mysql_real_escape_string($_GET['_value']).'%"';
 			$field['listname']['ordfield'] .= ' LIMIT 25';
 			$md= $MODUL->_getCashedList($field['listname']);
-			unset($md[0]);print_r($md);
+			unset($md[0]);
 			foreach ($md as $k=>$r) {
 				$GLOBALS['_RESULT']['data'][$k] = $r;
 			}
 		}*/
 	}
 	else {
-		print_r('NO VALID DATA');
+		print('NO VALID DATA');
 	}
 ?>
