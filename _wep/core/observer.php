@@ -5,6 +5,11 @@ class observer
 	static private $publishers = array();
 	static private $observers = array();
 	
+	
+	/* ***********************
+	 * Регистрирует вещателя события
+	 * принимает пар-р name - название события 
+	 * ***********************/
 	static function register_publisher($name) {
 		if (!isset(self::$publishers[$name])) {
 			self::$publishers[$name] = true;
@@ -30,7 +35,11 @@ class observer
 	}	
 	
 	/* ************
-	 * 
+	 * регистрирует наблюдателя
+	 * принимает массив params со следующими аргументами
+	 * 	obj - объект
+	 * 	func - функция
+	 * 	args - аргументы
 	 * ************/
 	static function register_observer($params, $publisher) {
 		if (!isset($params['func']) || !isset($publisher)) {

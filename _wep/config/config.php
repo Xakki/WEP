@@ -321,10 +321,6 @@ include($_CFG['_PATH']['wepconf'].'/config/config.php');
 */
 	function shutdown_function() {
 		observer::register_publisher('shutdown_function');
-		
-		//ob_end_flush();
-		if(defined('SID'))
-			session_write_close();
 	}
 /*SESSION*/
 
