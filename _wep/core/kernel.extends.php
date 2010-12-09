@@ -1876,7 +1876,7 @@ $Ajax=0 - не скриптовая
 	}
 
 	//возвращает форматированную дату в зависимости от типа поля в fields_form
-	function _get_fdate($field_form, $inp_date, $field_type) {
+	function _get_fdate($field_form, $inp_date, $field_type) {	
 		// формат для даты
 		if($field_form['mask']['format']) {
 			if($field_form['mask']['separate'])
