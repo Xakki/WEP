@@ -1,9 +1,10 @@
 <?
-include_once($this->_PATHd.'php/path.php');
-include_once($this->_PATHd.'php/messages.php');
 	function tpl_superlist(&$data) {
-		global $_CFG;
-		$html = tpl_path($data['path']);// PATH
+		global $_CFG, $HTML;
+		if(isset($data['path']) and count($data['path'])) {
+			include_once($HTML->_PATHd.'php/path.php');
+			$html = tpl_path($data['path']);// PATH
+		}
 		end($data['path']);
 		$firstpath = key($data['path']);
 
@@ -28,7 +29,10 @@ include_once($this->_PATHd.'php/messages.php');
 
 		$html .= $temp_pagenum =  tpl_pagenum($data['pagenum']);// pagenum
 		$html .= '<div id="tools_block" style="display:none;"></div>';
-		$html .= tpl_messages($data['messages']);// messages
+		if(isset($data['messages']) and count($data['messages'])) {
+			include_once($HTML->_PATHd.'php/messages.php');
+			$html .= tpl_messages($data['messages']);// messages
+		}
 
 		$html .= tpl_data($data['data'],$firstpath);// messages
 

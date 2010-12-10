@@ -80,6 +80,10 @@ class ugroup_extend extends kernel_class
 		$this->def_records[] = array('name'=>'Администраторы','level'=>0,'filesize'=>'100','active'=>1,'id'=>1,'wep'=>1);
 
 		$this->create_child("users");
+		if($this->_CFG['_F']['adminpage']) {
+			//include_once($this->_CFG['_PATH']['ext'].'board.class/childs.include.php');
+			$this->create_child('modulgrp');
+		}
 	}
 
 	function _getlist($listname,$value=0) {

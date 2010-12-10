@@ -273,22 +273,21 @@ $_CFG['_error'] = array(
 	$_CFG['session']['path'] = '/';
 	$_CFG['session']['secure'] = 0;
 	$_CFG['session']['domain'] = '';
-	$_CFG['session']['multidomain'] = true;
+	$_CFG['session']['multidomain'] = 0;
 	$hostcnt = count($_CFG['_HREF']['arrayHOST']);
 	// никто не будет использовать домен 4го уровня, а значит это IP
-	if($hostcnt<=2 or $hostcnt>=4) { //учитываем localhost и ИПИ
+	if($hostcnt<2 or ($hostcnt==4)) { //учитываем localhost и ИПИ
 		$_SERVER['HTTP_HOST2'] = $_SERVER['HTTP_HOST'].$port;
-		$_CFG['session']['domain'] = '';//$_SERVER['HTTP_HOST2'];
+		//$_CFG['session']['domain'] = '';//$_SERVER['HTTP_HOST2'];
 	}
 	else {
 		$_SERVER['HTTP_HOST2'] = $_CFG['_HREF']['arrayHOST'][1].'.'.$_CFG['_HREF']['arrayHOST'][0].$port;
 		
 		if($_CFG['site']['rf'])
-			$_CFG['session']['domain'] = '.'.$IDN->encode($_SERVER['HTTP_HOST2']);
+			$_CFG['session']['domain'] = $IDN->encode($_SERVER['HTTP_HOST2']);
 		else
-			$_CFG['session']['domain'] = '.'.$_SERVER['HTTP_HOST2'];
-		if($_CFG['session']['multidomain'])
-			$_CFG['session']['domain'] = '.'.$_CFG['session']['domain'];
+			$_CFG['session']['domain'] = $_SERVER['HTTP_HOST2'];
+
 	}
 
 
@@ -309,6 +308,8 @@ include($_CFG['_PATH']['wepconf'].'/config/config.php');
 		$_CFG['time'] = time();
 		$_CFG['getdate'] = getdate();
 		$_CFG['remember_expire'] = $_CFG['session']['expire']= $_CFG['time']+1728000; // 20дней ,по умолчанию
+		if($_CFG['session']['multidomain'])
+			$_CFG['session']['domain'] = '.'.$_CFG['session']['domain'];
 	session_name($_CFG['session']['name']);
 	session_set_cookie_params($_CFG['session']['expire'],$_CFG['session']['path'], $_CFG['session']['domain'],$_CFG['session']['secure']);
 	ini_set('session.cookie_domain', $_CFG['session']['domain']);

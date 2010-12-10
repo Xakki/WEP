@@ -61,10 +61,6 @@
 		function __construct($_PATHd='design/',$_design='default',$flag=true) {
 			global $_tpl, $_time_start, $_CFG;
 
-			if(extension_loaded('xsl')) {
-				include_once($_CFG['_PATH']['phpscript'].'/_php4xslt.php');
-				$this->_xslt = xslt_create();
-			}
 			$this->_design = $_design;
 			$this->_cDesignPath = $_CFG['_PATH']['cdesign'].$this->_design;
 			$this->_templates='default';
@@ -138,6 +134,11 @@
 			$xsl = str_replace(array('\x09'), array(''),file_get_contents($transform));
 			$xml = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE fragment [<!ENTITY nbsp "&#160;">]> '.$xml;
 			if (extension_loaded('xsl')) {
+				if(!$this->_xslt) {
+					global $_CFG;
+					include_once($_CFG['_PATH']['phpscript'].'/_php4xslt.php');
+					$this->_xslt = xslt_create();
+				}
 				$arguments = array('/_xml' => $xml,'/_xsl' => $xsl);
 				$result=xslt_process($this->_xslt, 'arg:/_xml', 'arg:/_xsl', NULL, $arguments);
 				if (!$result)
