@@ -22,13 +22,9 @@ class mail_class extends kernel_class {
 		$this->config_form["mailsupport"] = array("type" => "text", 'mask' =>array('min'=>1,"name"=>'email'), "caption" => "Адрес супорта");
 		$this->config_form["mailrobot"] = array("type" => "text", 'mask' =>array('min'=>1,"name"=>'email'), "caption" => "Адрес Робота");
 		$this->config_form['mailtemplate'] = array(
-			'type' => 'ckedit',
+			'type' => 'textarea',
 			'caption' => 'Шаблон по умолчанию', 
-			'comment' => '%SUBJECT%, %TEXT%, %MAILBOTTOM%',
-			'paramedit'=>array(
-				'height'=>350,
-				'fullPage'=>'true',
-				'toolbarStartupExpanded'=>'false'));
+			'comment' => '%SUBJECT%, %TEXT%, %MAILBOTTOM%');
 		$this->config_form['mailbottom'] = array(
 			'type' => 'ckedit',
 			'caption' => 'Текст прикрепляемый в конце письма', 
@@ -115,7 +111,8 @@ class mail_class extends kernel_class {
 			}
 		} else
 				$mess = $this->kPreFields($arr['vars'],$param);
-		$_SESSION['captha'] = rand(10000,99999);
+		if(isset($this->fields_form['captcha']))
+			$this->setCaptcha();
 
 		if($flag==1)
 			$formflag = 0;
