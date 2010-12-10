@@ -106,7 +106,6 @@
 	unset($_tpl['script']['jquery']);
 	$_tpl['script']['jquery.form'] = 1;
 	$_tpl['script']['utils'] = 1;
-	$_tpl['script']['script'] = 1;
 	//$_tpl['script']['script.localisation/jquery.localisation-min'] = 1;
 	include($_CFG['_PATH']['core'].'/includesrc.php');
 	fileInclude($_CFG['fileIncludeOption']);

@@ -5,7 +5,7 @@ class bug_class extends kernel_class {
 		parent::_create_conf();
 
 		$this->config['act'] = 0;
-		$this->config['catchable_err'] = implode('|',array_keys($this->_CFG['_error']));
+		$this->config['catchable_err'] = array_keys($this->_CFG['_error']);
 		
 		$this->config_form['act'] = array('type' => 'checkbox', 'caption' => 'Включить логирование ошибок');
 		$this->config_form['catchable_err'] = array('type' => 'list', 'listname'=>'catchable_err', 'multiple' => 2, 'caption' => 'Виды отлавливаемых ошибок');
@@ -72,12 +72,12 @@ class bug_class extends kernel_class {
 		
 		$this->ordfield = 'active DESC, mf_timecr DESC';
 		
+		$this->catchable_err = array_flip($this->config['catchable_err']);
+		
 		$params = array(
 			'obj' => $this,
 			'func' => 'insert2bd',
 		);
-		
-		$this->catchable_err = array_flip(explode('|', $this->config['catchable_err']));
 		
 		observer::register_observer($params, 'shutdown_function');
 	}
