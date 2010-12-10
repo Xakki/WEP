@@ -100,7 +100,7 @@
 				$html .= '<div class="f_item" id="tr_'.$k.'">
 				<div class="f_int">
 					Период с <input type="text" name="'.$k.'" id="'.$k.'" value="'.$r['value'].'" maxlength="'.$r['max'].'"/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;по 
-					<input type="text" name="'.$k.'_2" id="'.$k.'_2" value="'.$r['value_2'].'"  maxlength="'.$r['max'].'" style="text-align:right;"/>
+					<input type="text" name="'.$k.'_2" id="'.$k.'_2" value="'.$r['value_2'].'"  maxlength="'.$r['max'].'"/>
 				</div>
 				
 			  </div>';
