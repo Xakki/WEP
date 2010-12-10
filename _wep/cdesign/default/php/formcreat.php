@@ -2,8 +2,8 @@
 	function tpl_formcreat(&$data) {
 		global $HTML;
 		if(isset($data['path']) and count($data['path'])) {
-			$html = tpl_path($data['path'],1);// PATH
 			include_once($HTML->_cDesignPath.'/php/path.php');
+			$html = tpl_path($data['path'],1);// PATH
 		}
 		$html .= '<div class="divform'.($data['css']?' '.$data['css']:'').'"';
 		if($data['style'])
