@@ -264,6 +264,7 @@ $html .= '
 //			elseif (!empty($check_result['list_query'])) {
 
 			$tmp_check_result = array();
+			
 			if(count($_this->childs)) {
 				foreach($_this->childs as $k=>&$r) {
 					$tmp_check_result = $r->_checkmodstruct();

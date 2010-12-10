@@ -5,8 +5,15 @@ class bug_class extends kernel_class {
 		parent::_create_conf();
 
 		$this->config['act'] = 0;
-
+		$this->config['catchable_err'] = implode('|',array_keys($this->_CFG['_error']));
+		
 		$this->config_form['act'] = array('type' => 'checkbox', 'caption' => 'Включить логирование ошибок');
+		$this->config_form['catchable_err'] = array('type' => 'list', 'listname'=>'catchable_err', 'multiple' => 2, 'caption' => 'Виды отлавливаемых ошибок');
+		
+		$this->_enum['catchable_err'] = array();
+		foreach ($this->_CFG['_error'] as $k=>$r) {
+			$this->_enum['catchable_err'][$k] = $r['type'];
+		}
 	}
 
 	function _set_features() {
@@ -41,7 +48,7 @@ class bug_class extends kernel_class {
 		$this->fields['hash'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
 		$this->fields['cnt'] = array('type' => 'int', 'attr' => 'NOT NULL');
 
-		$this->unique_fields['hash'] = 'hash';		
+		$this->unique_fields['hash'] = 'hash';
 
 		# fields
 		$this->fields_form['name'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Ошибка', 'mask'=>array('filter'=>1, 'onetd'=>'Ошибка'));
@@ -54,7 +61,7 @@ class bug_class extends kernel_class {
 		$this->fields_form['mf_ipcreate'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'IP','mask'=>array('sort'=>1,'filter'=>1));
 		$this->fields_form['creater_id'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'User','mask'=>array('sort'=>1,'filter'=>1));
 		$this->fields_form['cnt'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Повторы', 'mask'=>array('sort'=>1));
-		
+	
 		foreach ($this->_CFG['_error'] as $k=>$r) {
 			$this->_enum['err_type'][$k] = $r['type'];
 		}
@@ -69,6 +76,8 @@ class bug_class extends kernel_class {
 			'obj' => $this,
 			'func' => 'insert2bd',
 		);
+		
+		$this->catchable_err = array_flip(explode('|', $this->config['catchable_err']));
 		
 		observer::register_observer($params, 'shutdown_function');
 	}
@@ -104,7 +113,7 @@ class bug_class extends kernel_class {
 		
 		$hash = md5($errno.$errstr.$errfile.$errline.$_SERVER['REQUEST_URI']);
 		
-		if (!isset($this->bugs[$hash])) {		
+		if (!isset($this->bugs[$hash]) && isset($this->catchable_err[$errno])) {		
 						
 			$this->bugs[$hash] = array(
 				'err_type' => $errno,

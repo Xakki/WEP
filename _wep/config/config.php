@@ -199,17 +199,17 @@ $_CFG['_error'] = array(
 		'prior' => 6
 	),
 	E_ERROR => array(
-		'type' => '<b>[Fatal Error]</b>',
+		'type' => '[Fatal Error]',
 		'color' => 'red',
 		'prior' => 0
 	),
 	E_WARNING => array(
-		'type' => '<b>[Warning]</b>',
+		'type' => '[Warning]',
 		'color' => 'yellow',
 		'prior' => 1
 	),
 	E_PARSE => array(
-		'type' => '<b>[Parse Error]</b>',
+		'type' => '[Parse Error]',
 		'color' => 'red',
 		'prior' => 0
 	),
@@ -219,32 +219,32 @@ $_CFG['_error'] = array(
 		'prior' => 5
 	),
 	E_CORE_ERROR => array(
-		'type' => '<b>[Fatal Core Error]</b>',
+		'type' => '[Fatal Core Error]',
 		'color' => 'red',
 		'prior' => 0
 	),			
 	E_CORE_WARNING => array(
-		'type' => '<b>[Core Warning]</b>',
+		'type' => '[Core Warning]',
 		'color' => 'yellow',
 		'prior' => 1
 	),			
 	E_COMPILE_ERROR => array(
-		'type' => '<b>[Compilation Error]</b>',
+		'type' => '[Compilation Error]',
 		'color' => 'red',
 		'prior' => 0
 	),
 	E_COMPILE_WARNING => array(
-		'type' => '<b>[Compilation Warning]</b>',
+		'type' => '[Compilation Warning]',
 		'color' => 'yellow',
 		'prior' => 1
 	),			
 	E_USER_ERROR => array(
-		'type' => '<b>[Triggered Error]</b>',
+		'type' => '[Triggered Error]',
 		'color' => 'red',
 		'prior' => 0
 	),			
 	E_USER_WARNING => array(
-		'type' => '<b>[Triggered Warning]</b>',
+		'type' => '[Triggered Warning]',
 		'color' => 'yellow',
 		'prior' => 2
 	),			
@@ -259,7 +259,7 @@ $_CFG['_error'] = array(
 		'prior' => 4
 	),			
 	E_RECOVERABLE_ERROR => array(
-		'type' => '<b>[Catchable Fatal Error]</b>',
+		'type' => '[Catchable Fatal Error]',
 		'color' => 'red',
 		'prior' => 0
 	),
@@ -320,7 +320,7 @@ include($_CFG['_PATH']['wepconf'].'/config/config.php');
 Функция завершения работы скрипта
 */
 	function shutdown_function() {
-		observer::register_publisher('shutdown_function');
+		observer::notify_observers('shutdown_function');
 	}
 /*SESSION*/
 

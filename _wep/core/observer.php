@@ -2,63 +2,66 @@
 
 class observer
 {
-	static private $publishers = array();
-	static private $observers = array();
+	static private $events = array();    // массив с уже совешенными событиями
+	static private $observers = array(); // массив с функциями-наблюдателями
 	
 	
 	/* ***********************
-	 * Регистрирует вещателя события
-	 * принимает пар-р name - название события 
+	 * Сообщает наблюдателям о том, что произошло событие $event
+	 * при этом выполняются те фукции, которые зарегестрированы на получение этого события
+	 * 
+	 * В массив self::$publishers заносится информация о том, что произошло это событие, и если в дальнейшем
+	 * какая-нибудь функция подпишется на это событие, то она сразу же выполнится
 	 * ***********************/
-	static function register_publisher($name) {
-		if (!isset(self::$publishers[$name])) {
-			self::$publishers[$name] = true;
+	static function notify_observers($event) {
+		if (!isset(self::$events[$event])) {
+			self::$events[$event] = true;
 		}
 		
-		if (isset(self::$observers[$name])) {
-			foreach (self::$observers[$name] as $r) {
-				if (isset($r['args'])) {
+		if (isset(self::$observers[$event])) {
+			foreach (self::$observers[$event] as $r) {
+				if (isset($r['args']) && !empty($r['args'])) {
 					$str_args = '$r[\'args\']['.implode('], $r[\'args\'][', array_keys($r['args'])).']';
 				}
 				else {
 					$str_args = '';
 				}
 				
-				if ($r['obj'] == NULL) {
-					eval($r['func'].'('.$str_args.');');
+				if (isset($r['obj'])) {
+					eval('$r["obj"]->'.$r['func'].'('.$str_args.');');					
 				}
 				else {
-					eval('$r["obj"]->'.$r['func'].'('.$str_args.');');
+					eval($r['func'].'('.$str_args.');');
 				}
 			}
 		}
 	}	
 	
-	/* ************
-	 * регистрирует наблюдателя
-	 * принимает массив params со следующими аргументами
-	 * 	obj - объект
-	 * 	func - функция
-	 * 	args - аргументы
-	 * ************/
-	static function register_observer($params, $publisher) {
-		if (!isset($params['func']) || !isset($publisher)) {
-			trigger_error('В функцию register_observer не переданы все необходимые параметры');
+	/* ************************************************************************************
+	 * Регистрирует функцию-наблюдателя на получение события $event
+	 * При этом функция выполнится, когда произойдет событие $event,
+	 * или если на данный момент событие уже произошло, то функция выполнится сразу же
+	 * 
+	 * В массиве params находятся данные о вызываемой функции
+	 * 	- $params['obj'] - объект, в котором находится функция (если функция глобальная, то данного элемента быть не должно)
+	 * 	- $params['func'] - строка - название функции
+	 * 	- $params['args'] - одномерный массив, содержащий передаваемые в функию аргументы, ключи могут быть любые, значения - аргументы ф-ии
+	 * 		если функция не принимает аргументов, то этот элемент должен отсутствовать или в нём должен быть пустой массив
+	 * ************************************************************************************/
+	static function register_observer($params, $event) {
+		if (!isset($params['func']) || !isset($event)) {
+			trigger_error('В функцию register_observer не переданы все необходимые параметры', E_USER_WARNING);
 			return false;
 		}
 		if (isset($params['args']) && !is_array($params['args'])) {
-			trigger_error('В функции register_observer переданный пар-р params[args] должен быть массивом');
+			trigger_error('В функции register_observer переданный пар-р params[args] должен быть массивом', E_USER_WARNING);
 			return false;
 		}
 		
-		if (!isset(self::$observers[$publisher])) {
-			self::$observers[$publisher] = array();
-		}
+		self::$observers[$event][] = $params;
 		
-		self::$observers[$publisher][] = $params;
-		
-		if (isset(self::$publishers[$publisher])) {
-			if (isset($params['args'])) {
+		if (isset(self::$events[$event])) {
+			if (isset($params['args']) && !empty($params['args'])) {
 				$str_args = '$params[\'args\']['.implode('], $params[\'args\'][', array_keys($params['args'])).']';
 			}
 			else {

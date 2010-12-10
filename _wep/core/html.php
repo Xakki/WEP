@@ -196,9 +196,14 @@
 				}
 			}
 		
+			if ($_CFG['_error'][$errno]['prior'] < 3)
+				$errtype = '<b>'.$_CFG['_error'][$errno]['type'].'</b>';
+			else
+				$errtype = $_CFG['_error'][$errno]['type'];
+			
 			//$GLOBALS['_ERR'] .='<div style="color:'.$errorcolor[$errno].';">'.$errortype[$errno].' '.$errstr.' , in line '.$errline.' of file <i>'.$errfile.'</i><br/>'.$debug.'</div>'."\n";
 			$GLOBALS['_ERR'] .='<div class="spoiler-wrap">
-<div onclick="clickSpoilers(this)" class="spoiler-head folded clickable" style="color:'.$_CFG['_error'][$errno]['color'].';">'.$_CFG['_error'][$errno]['type'].' '.$errstr.' , in line '.$errline.' of file <i>'.$errfile.'</i> </div>
+<div onclick="clickSpoilers(this)" class="spoiler-head folded clickable" style="color:'.$_CFG['_error'][$errno]['color'].';">'.$errtype.' '.$errstr.' , in line '.$errline.' of file <i>'.$errfile.'</i> </div>
 <div class="spoiler-body" style="background-color: rgb(225, 225, 225);">'.$debug.'</div></div>'."\n";
 			
 			if($_CFG['_error'][$errno]['prior']==0) {

@@ -79,6 +79,13 @@ class modulprm_class extends kernel_class {
 							$this->_constr_childs($class_);
 							$temp_check_result = $class_->_checkmodstruct();
 							
+							if (!empty($class_->childs))
+							{
+								foreach ($class_->childs as $k=>$r) {
+									$temp_check_result = array_merge($temp_check_result, $r->_checkmodstruct());
+								}
+							}
+							
 							if (isset($temp_check_result['err']))
 								return array($temp_check_result['err']);
 							elseif (!empty($temp_check_result))
@@ -112,6 +119,13 @@ class modulprm_class extends kernel_class {
 							$this->def_update_records[$entry] = array('parent_id'=>'','tablename'=>$class_->tablename, 'typemodul'=>2,'path'=>$pathm);
 						$this->_constr_childs($class_);
 						$temp_check_result = $class_->_checkmodstruct();
+						
+						if (!empty($class_->childs))
+						{
+							foreach ($class_->childs as $k=>$r) {
+								$temp_check_result = array_merge($temp_check_result, $r->_checkmodstruct());
+							}
+						}
 						
 						if (isset($temp_check_result['err']))
 							return array($temp_check_result['err']);
