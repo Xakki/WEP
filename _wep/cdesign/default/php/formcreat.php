@@ -1,18 +1,22 @@
 <?
-include_once($this->_cDesignPath.'/php/path.php');
-include_once($this->_cDesignPath.'/php/form.php');
-include_once($this->_cDesignPath.'/php/messages.php');
 	function tpl_formcreat(&$data) {
-		$html = tpl_path($data['path'],1);// PATH
+		global $HTML;
+		if(isset($data['path']) and count($data['path'])) {
+			$html = tpl_path($data['path'],1);// PATH
+			include_once($HTML->_cDesignPath.'/php/path.php');
+		}
 		$html .= '<div class="divform'.($data['css']?' '.$data['css']:'').'"';
 		if($data['style'])
 			$html .= ' style="'.$data['style'].'"';
 		$html .= '>';
-		$html .= tpl_messages($data['messages']);// messages
+		if(isset($data['messages']) and count($data['messages'])) {
+			include_once($HTML->_cDesignPath.'/php/messages.php');
+			$html .= tpl_messages($data['messages']);// messages
+		}
 		if(isset($data['form']) and count($data['form'])) {
+			include_once($HTML->_cDesignPath.'/php/form.php');
 			$attr = $data['form']['_*features*_'];
-			$html .= '
-<form id="form_'.$attr['name'].'" method="'.$attr['method'].'" enctype="multipart/form-data" action="'.$attr['action'].'" '.($attr['onsubmit']?'onsubmit="'.$attr['onsubmit'].'"':'').'>';
+			$html .= '<form id="form_'.$attr['name'].'" method="'.$attr['method'].'" enctype="multipart/form-data" action="'.$attr['action'].'" '.($attr['onsubmit']?'onsubmit="'.$attr['onsubmit'].'"':'').'>';
 			$html .= tpl_form($data['form']).'</form>';
 		}
 		$html .= '</div>';
