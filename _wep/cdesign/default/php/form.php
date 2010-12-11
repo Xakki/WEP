@@ -82,7 +82,7 @@ function tpl_form(&$data) {
 				$html .= '<div class="form-value ajaxlist">
 					<span style="'.$r['labelstyle'].'">'.$r['label'].'</span>
 					<input type="text" name="'.$k.'_2" value="'.$r['value_2'].'" onfocus="show_hide_label(this,\''.$k.'\',1)" onblur="show_hide_label(this,\''.$k.'\',0)" onkeyup="ajaxlist(this,\''.$k.'\')" class="'.$r['csscheck'].'" autocomplete="off"/>
-					<div id="ajaxlist_'.$k.'" style="display:none;" onfocus="alert(1);" onblur="chFocusList(1)">не найдено</div>
+					<div id="ajaxlist_'.$k.'" style="display:none;" onfocus="chFocusList(0)" onblur="chFocusList(1)">не найдено</div>
 
 					<input type="hidden" name="'.$k.'" value="'.$r['value'].'"/>
 				</div>
