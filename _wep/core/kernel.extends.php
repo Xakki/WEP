@@ -1322,6 +1322,8 @@ $Ajax=0 - не скриптовая
 		foreach($this->fields_form as $k=>$r) {
 			if($r['mask']['filter']==1) {
 				unset($r['default']);
+				if ($r['type'] == 'list' && is_array($r['listname']) && !isset($r['listname']['idThis']))
+					$r['listname']['idThis'] = $k;		
 				$this->form['f_'.$k] = $r;
 				if(isset($_FILTR[$k])) {
 					if(isset($_FILTR[$k.'_2'])) 
@@ -1338,6 +1340,8 @@ $Ajax=0 - не скриптовая
 					$this->form['f_'.$k]['type'] = 'text';
 				if(isset($_FILTR['exc_'.$k]))
 					$this->form['f_'.$k]['exc'] = 1;
+					
+							
 			}
 		}
 		//фильтр	

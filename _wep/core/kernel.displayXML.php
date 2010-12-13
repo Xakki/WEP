@@ -112,7 +112,7 @@
 						if(isset($lsn['join']) or isset($lsn['leftJoin'])) {
 							if(!isset($lsn['idThis'])) 
 								$lsn['idThis'] = $k;
-							$cls[1] .= ' '.$lsn['idField'].'=t1.'.$lsn['idThis'].' '.$lsn['leftJoin'].$lsn['join'];
+							$cls[1] .= ' '.$lsn['idField'].'=t1.'.$lsn['idThis'].' '.str_replace('tx.','t'.$t.'.',($lsn['leftJoin'].$lsn['join']));
 						}
 						elseif($r['multiple']==1)
 							$cls[1] .= 't1.'.$k.' LIKE concat("%|",'.$lsn['idField'].',"|%") ';
