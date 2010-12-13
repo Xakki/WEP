@@ -2,10 +2,10 @@
 class banner_class extends kernel_class {
 
 	function _set_features() {
-		if (parent::_set_features()) return 1;
+		if (!parent::_set_features()) return false;
 		$this->mf_ordctrl = true;
 		$this->mf_actctrl = true;
-		return 0;
+		return true;
 	}
 
 	function _create() {

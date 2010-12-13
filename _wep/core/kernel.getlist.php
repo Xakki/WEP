@@ -125,7 +125,7 @@
 				$clause['field'] = 'SELECT t1.'.$listname['idThis'].' as id,'.$listname['nameField'].' as name';
 			}
 			elseif(isset($listname['join'])) {
-				$clause['from'] = ' FROM `'.$_this->tablename.'` t1 JOIN `'.$listname['tablename'].'` tx ON '.$listname['idField'].'=t1.'.$listname['idThis'];
+				$clause['from'] = ' FROM `'.$_this->tablename.'` t1 JOIN `'.$listname['tablename'].'` tx ON '.$listname['idField'].'=t1.'.$listname['idThis'].' '.$listname['join'];				
 				$clause['field'] = 'SELECT t1.'.$listname['idThis'].' as id,'.$listname['nameField'].' as name';
 			}
 			else {
@@ -158,6 +158,7 @@
 				$clause['where'] .= ' ORDER BY '.$listname['ordfield'];
 
 			$result = $_this->SQL->execSQL($clause['field'].$clause['from'].$clause['where']);
+//	print($_this->SQL->query);
 				if(!$result->err) {
 					if($value) {
 						if ($row = $result->fetch_array())

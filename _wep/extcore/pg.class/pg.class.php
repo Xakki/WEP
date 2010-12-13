@@ -28,7 +28,7 @@ class pg_class extends kernel_class {
 	}
 
 	function _set_features() {
-		if (parent::_set_features()) return 1;
+		if (!parent::_set_features()) return false;
 		$this->mf_use_charid = true;
 		$this->mf_istree = true;
 		$this->mf_ordctrl = true;
@@ -36,7 +36,7 @@ class pg_class extends kernel_class {
 		$this->caption = 'Страницы';
 		$this->selected = array();
 		$this->ver = '0.1.1';
-		return 0;
+		return true;
 	}
 
 	function _create() {
@@ -143,9 +143,11 @@ class pg_class extends kernel_class {
 		if($this->config['sitemap']) {
 			$xml = $this->creatSiteMaps();
 			file_put_contents($this->_CFG['_PATH']['path'].'sitemap.xml',$xml);
+
 		}
 		return true;
 	}*/
+
 
 	function display() {
 		$this->current_path = '';
@@ -270,7 +272,7 @@ class pg_class extends kernel_class {
 		}
 		$this->main_category = $id;
 		$this->pageinfo['path'] = array_reverse($this->pageinfo['path']);
-		return 0;
+		return true;
 	}
 
 
@@ -478,7 +480,7 @@ class pg_class extends kernel_class {
 			}else {
 				header('Location: '.$this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['wepname'].'/login.php?install');die();}
 		}
-		return 0;
+		return true;
 	}
 
 	function getHref($key,$row) {

@@ -33,7 +33,7 @@ class board_class extends kernel_class {
 	}
 
 	protected function _set_features() {
-		if (parent::_set_features()) return 1;
+		if (!parent::_set_features()) return false;
 		$this->mf_actctrl = true;
 		$this->caption = 'Объявления';
 		$this->mf_statistic = array('Y'=>'count(id)','X'=>'FROM_UNIXTIME(datea,"%Y-%m")','Yname'=>'Кол','Xname'=>'Дата');//-%d
@@ -41,7 +41,7 @@ class board_class extends kernel_class {
 		$this->includeJStoFORM = true;
 		$this->includeCSStoFORM = true;
 		$this->locallang['default']['add'] = 'Объявление добавлено.';
-		return 0;
+		return true;
 	}
 
 	protected function _create() {
@@ -1044,7 +1044,7 @@ WHERE t1.owner_id IN ('.implode(',',$FLI).') and t1.active=1 GROUP BY t1.id ORDE
 				}
 			else exit($result->err);
 		}
-		return 0;
+		return true;
 	}
 
 	function boardFindForm($rid,$flag=1) {

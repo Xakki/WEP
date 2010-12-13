@@ -2,11 +2,11 @@
 
 class paramb_class extends kernel_class {
 	function _set_features() {
-		if (parent::_set_features()) return 1;
+		if (!parent::_set_features()) return false;
 		$this->showinowner=false;// не показывать
 		$this->mf_createrid = false;
 		$this->owner_unique = true; // уникальная запис для одного объявления
-		return 0;
+		return true;
 	}
 	function _create() {
 		parent::_create();
@@ -49,11 +49,11 @@ class paramb_class extends kernel_class {
 
 class boardvote_class extends kernel_class {
 	function _set_features() {
-		if (parent::_set_features()) return 1;
+		if (!parent::_set_features()) return false;
 		$this->showinowner=false;// не показывать
 		//$this->mf_createrid = false;
 		$this->_setnamefields=false;
-		return 0;
+		return true;
 	}
 	function _create() {
 		parent::_create();

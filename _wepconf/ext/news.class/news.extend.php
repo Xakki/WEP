@@ -5,7 +5,7 @@ class extendnews_class extends kernel_class {
 	var $messages_on_page = 20;
 	var $type_pref='';
 	function _set_features() {
-		if (parent::_set_features()) return 1;
+		if (!parent::_set_features()) return false;
 		$this->mf_actctrl = true;
 		//$this->mf_indexing = true;
 		$this->ordfield = 'ndate DESC';
@@ -15,7 +15,7 @@ class extendnews_class extends kernel_class {
 		$this->editform_title = 'Изменить новость';
 		$this->listform_title = 'Список новостей';
 		$this->listform_itemcap = 'заголовок';
-		return 0;
+		return true;
 	}
 
 	function _create() {

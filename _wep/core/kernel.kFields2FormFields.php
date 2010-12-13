@@ -96,6 +96,9 @@
 				}
 				elseif($r['type']=='list') {
 					if(!$r['readonly']) {
+						if (!isset($r['listname']['idThis'])) 
+							$r['listname']['idThis'] = $k;
+													
 						$md= $this->_getCashedList($r['listname']);
 						if(is_array($r['value']))
 							$val = array_combine($r['value'],$r['value']);

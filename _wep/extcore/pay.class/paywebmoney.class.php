@@ -3,7 +3,7 @@
 class paywebmoney_class extends kernel_class {
 	
 	function _set_features() {
-		if (parent::_set_features()) return 1;
+		if (!parent::_set_features()) return false;
 		$this->caption = 'Платежи WebMoney';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';
 		$this->mf_timecr = true; // создать поле хранящще время создания поля
@@ -12,7 +12,7 @@ class paywebmoney_class extends kernel_class {
 		$this->mf_ipcreate = true;//IP адрес пользователя с котрого была добавлена запись
 		$this->cf_childs = true;
 		$this->ver = '0.1';
-		return 0;
+		return true;
 	}
 	
 	protected function _create_conf() {

@@ -2,12 +2,12 @@
 class rubric_class extends kernel_class {
 
 	function _set_features() {
-		if (parent::_set_features()) return 1;
+		if (!parent::_set_features()) return false;
 		$this->mf_istree = true;
 		$this->mf_ordctrl = true;
 		$this->mf_actctrl = true;
 		$this->caption = 'Рубрики';
-		return 0;
+		return true;
 	}
 
 	function _create() {
@@ -42,11 +42,11 @@ class rubric_class extends kernel_class {
 				if($row['parent_id'])
 					$this->data3[ $this->data2[$row['parent_id']]['parent_id'] ] [$row['parent_id']]['cnt'] += (int)$row['cnt'];
 		}
-		return 0;	
+		return true;	
 	}
 
 	function simpleRubricCache() {
-		if(isset($this->data2) and count($this->data2)) return 0;
+		if(isset($this->data2) and count($this->data2)) return true;
 		$this->data2=$this->data=array();
 		$clause = 'SELECT t1.* FROM '.$this->tablename.' t1 WHERE t1.active=1 ORDER BY t1.parent_id,t1.ordind';
 		$result = $this->SQL->execSQL($clause);
@@ -55,7 +55,7 @@ class rubric_class extends kernel_class {
 				$this->data2[$row['id']] = $row;
 				$this->data[$row['parent_id']][$row['id']] = $row['name'];
 		}
-		return 0;	
+		return true;	
 	}
 
 	function MainRubricDisplay() {
@@ -82,11 +82,11 @@ class rubric_class extends kernel_class {
 class param_class extends kernel_class {
 
 	function _set_features() {
-		if (parent::_set_features()) return 1;
+		if (!parent::_set_features()) return false;
 		$this->mf_ordctrl = true;
 		$this->mf_actctrl = true;
 		$this->caption = 'Параметры';
-		return 0;
+		return true;
 	}
 
 	function getTypeForm($type) {
@@ -182,11 +182,11 @@ class param_class extends kernel_class {
 
 class countb_class extends kernel_class {
 	function _set_features() {
-		if (parent::_set_features()) return 1;
+		if (!parent::_set_features()) return false;
 		$this->showinowner=false;// не показывать
 		$this->mf_createrid = false;
 		$this->_setnamefields = false;
-		return 0;
+		return true;
 	}
 
 	function _create() {

@@ -44,13 +44,13 @@ class ugroup_extend extends kernel_class
 	}
 
 	function _set_features() {
-		if (parent::_set_features()) return 1;
+		if (!parent::_set_features()) return false;
 		$this->mf_actctrl = true;
 		$this->caption = "Группы";
 		$this->singleton = true;
 		
 		$this->ver = '0.2';
-		return 0;
+		return true;
 	}
 
 	function _create() {
@@ -121,14 +121,14 @@ class users_extend extends kernel_class {
 
 	function _set_features()
 	{
-		if (parent::_set_features()) return 1;
+		if (!parent::_set_features()) return false;
 		$this->mf_actctrl = true;
 		$this->mf_use_charid = true;
 		$this->mf_timecr = true; // создать поле хранящее время создания поля
 		$this->mf_timeup = true; // создать поле хранящее время обновления поля
 		$this->mf_ipcreate = true;//IP адрес пользователя с котрого была добавлена запись
 		$this->caption = "Пользователи";
-		return 0;
+		return true;
 	}
 
 	function _create()
