@@ -118,7 +118,8 @@ _fldformer($key, $param)
 			$this->messages_on_page = 20;//число эл-ов на странице
 			$this->numlist=20;//максим число страниц при котором отображ все номера страниц
 		$this->mf_statistic = false; // показывать  статистику по дате добавления
-		$this->cf_childs = false; // true - включить управление подмодулями в настройках модуля
+		$this->cf_childs = false; // true - включить управление подключение подмодулей в настройках модуля
+		$this->cf_reinstall = false;
 		$this->includeJStoFORM = false; // подключать ли скрипты для формы через настройки
 		$this->includeCSStoFORM = false; // подключать ли стили для формы через настройки
 		$this->singleton = false; // класс-одиночка
@@ -1164,6 +1165,14 @@ $Ajax=0 - не скриптовая
 					'sel'=>0,
 					'type'=>'tools',
 					'css'=>'wepreindex',
+				);
+			if($this->cf_reinstall and _prmModul($this->_cl,array(11)))
+				$xml['topmenu']['Reinstall'] = array(
+					'href'=>$this->_clp.'_type=tools&amp;_func=Reinstall',
+					'caption'=>'Переустановка',
+					'sel'=>0,
+					'type'=>'tools',
+					'css'=>'wepreinstall',
 				);
 			if($filter_clause[1]) {
 				$xml['topmenu']['Formfilter'] = array(

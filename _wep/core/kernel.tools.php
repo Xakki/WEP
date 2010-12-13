@@ -28,10 +28,10 @@
 
 	function _reinstall(&$_this)
 	{
-		$_this->_droped();
+		_droped($_this);
 		if (count($_this->childs)) 
 			foreach($_this->childs as $child) 
-				$child->_droped();
+				_droped($_this);
 		$_this->_install();
 		if (count($_this->childs)) 
 			foreach($_this->childs as $child) 
