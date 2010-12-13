@@ -564,7 +564,7 @@ _get_file($row, $key)
 		if($type<3)
 			trigger_error($msg, $ar_type[$type]);
 		elseif($_SESSION['_showallinfo']>1) 
-			$this->_CFG['logs']['mess'][] = array($msg,$ar_type[$type]);\
+			$this->_CFG['logs']['mess'][] = array($msg,$ar_type[$type]);
 		if($type<2)
 			return false;
 		return true;

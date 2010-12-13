@@ -6,7 +6,7 @@
 	$SQL = new sql();
 	if(isset($_GET['install'])) {
 		// if(!isset pg table)
-		$SQL->_iFlag = 1;
+		//$SQL->_iFlag = 1;
 	}
 
 	$delay =4;
@@ -26,7 +26,7 @@
 	if(count($_POST) and isset($_POST['login'])) {
 		$result = userAuth($_POST['login'],$_POST['pass']);
 		if($result[1]) {
-			//@header("Location: ".$ref);
+			@header("Location: ".$ref);
 			die($ref);
 		}
 	}

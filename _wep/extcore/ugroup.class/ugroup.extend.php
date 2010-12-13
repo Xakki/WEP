@@ -108,12 +108,12 @@ class ugroup_extend extends kernel_class
 		else return parent::_getlist($listname,$value);
 	}
 
-	function _UpdItemModul($param) {
+	/*function _UpdItemModul($param) {
 		$ret = parent::_UpdItemModul($param);
 		//if($ret[1] and $_SESSION['user'] and $_SESSION['user']['owner_id']==$this->id)
 		//	session_unset();
 		return $ret;
-	}
+	}*/
 }
 
 
@@ -238,7 +238,7 @@ class users_extend extends kernel_class {
 			{
 				$this->listfields = array('t2.*,t2.active as gact,t2.name as gname,t1.*');
 				$this->clause = "t1 Join {$this->owner->tablename} t2 on t1.".$this->owner_name."=t2.id where t1.".($this->mf_use_charid?'id':'email')." = '".$login."' and t1.pass ='".md5($this->_CFG['wep']['md5'].$pass)."'";
-				if($this->_list()) {
+				if(!$this->_list()) {
 					header('Location: '.$this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['wepname'].'/login.php?install');die();}
 				if(count($this->data))
 				{
@@ -350,7 +350,7 @@ class users_extend extends kernel_class {
 					$pass=$arr['vars']['pass'];
 					$arr['vars']['pass']=md5($this->_CFG['wep']['md5'].$arr['vars']['pass']);
 					$_SESSION['user']['id'] = $arr['vars']['id'];
-					if(!$this->_add_item($arr['vars'])) {
+					if($this->_add_item($arr['vars'])) {
 						$MAIL = new mail_class($this->SQL);
 						$datamail['from']=$this->owner->config["mailrobot"];
 						$datamail['mailTo']=$arr['vars']['email'];
@@ -408,7 +408,7 @@ class users_extend extends kernel_class {
 					$this->fld_data['owner_id']= $this->owner->config["reggroup"];
 				}
 				
-				if(!$this->_update())
+				if($this->_update())
 					$mess[] = array('name'=>'ok', 'value'=>$this->_CFG['_MESS']['confok']);
 				else
 					$mess[] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['conferr']);
