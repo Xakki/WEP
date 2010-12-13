@@ -19,7 +19,7 @@ class comments_class extends kernel_class {
 
 	function _set_features()
 	{
-		if (parent::_set_features()) return 1;
+		if (!parent::_set_features()) return false;
 		$this->mf_actctrl = true;
 		$this->mf_ipcreate = true;
 		$this->mf_timecr = true;
@@ -28,7 +28,8 @@ class comments_class extends kernel_class {
 		$this->locallang['default']['add'] = 'Комментарий добавлен.';
 		$this->locallang['default']['add_name'] = 'Добавить комментарий';
 		$this->locallang['default']['_saveclose'] = 'Написать комментарий';
-		return 0;
+		
+		return true;
 	}
 
 	function _create()

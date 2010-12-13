@@ -5,7 +5,7 @@ class modulprm_class extends kernel_class {
 
 	function _set_features()
 	{
-		if (parent::_set_features()) return 1;
+		if (!parent::_set_features()) return false;
 		$this->mf_ordctrl = true;
 		$this->mf_actctrl = true;
 		$this->mf_use_charid = true;
@@ -15,7 +15,7 @@ class modulprm_class extends kernel_class {
 		$this->mf_del = false;
 		$this->mf_createrid = false;
 		$this->caption = "Модули";
-		return 0;
+		return true;
 	}
 
 	function _create()
@@ -164,7 +164,7 @@ class modulprm_class extends kernel_class {
 				$this->_constr_childs($r,$pathm);
 			}
 		}
-		return 0;
+		return true;
 	}
 
 	function userPrm($ugroup_id=0) {
@@ -197,12 +197,12 @@ class modulgrp_class extends kernel_class {
 
 	function _set_features()
 	{
-		if (parent::_set_features()) return 1;
+		if (!parent::_set_features()) return false;
 		$this->mf_timestamp = true;
 		$this->mf_add = false;
 		$this->mf_del = false;
 		$this->mf_createrid = false;
-		return 0;
+		return true;
 	}
 
 	function _create()

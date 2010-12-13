@@ -2,13 +2,13 @@
 class mail_class extends kernel_class {
 
 	function _set_features() {
-		if (parent::_set_features()) return 1;
+		if (!parent::_set_features()) return false;
 		$this->reply=1;
 		$this->contenttype= 'text/html';
 		$this->uid='';		
 		$this->attaches = array();
 		$this->caption = 'Почта';
-		return 0;
+		return true;
 	}
 
 	protected function _create_conf() {/*CONFIG*/

@@ -2,7 +2,7 @@
 class pay_class extends kernel_class {
 
 	function _set_features() {
-		if (parent::_set_features()) return 1;
+		if (!parent::_set_features()) return false;
 		$this->caption = 'Платежи';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';
 		$this->_setnamefields=false;
@@ -14,7 +14,7 @@ class pay_class extends kernel_class {
 		$this->cf_childs = true;
 		
 		$this->ver = '0.1';
-		return 0;
+		return true;
 	}
 
 	protected function _create_conf() {/*CONFIG*/

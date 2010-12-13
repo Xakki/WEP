@@ -3,8 +3,8 @@
 class ugroup_class extends ugroup_extend
 {
 	function _set_features() {
-		if (parent::_set_features()) return 1;
-		return 0;
+		if (!parent::_set_features()) return false;
+		return true;
 	}
 
 	function _create() {
@@ -17,8 +17,8 @@ class ugroup_class extends ugroup_extend
 class users_class extends users_extend
 {
 	function _set_features() {
-		if (parent::_set_features()) return 1;
-		return 0;
+		if (!parent::_set_features()) return false;
+		return true;
 	}
 
 	function _create() {
@@ -29,11 +29,11 @@ class users_class extends users_extend
 class weppages_class extends kernel_class {
 
 	function _set_features() {
-		if (parent::_set_features()) return 1;
+		if (!parent::_set_features()) return false;
 		$this->mf_ordctrl = true;
 		$this->mf_actctrl = true;
 		$this->caption = 'Страницы в WEP';
-		return 0;
+		return true;
 	}
 
 	function _create() {
