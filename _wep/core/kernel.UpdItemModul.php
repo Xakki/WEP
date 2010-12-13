@@ -25,7 +25,7 @@
 						$mess = $this->kPreFields($_POST,$param);
 						$arr = $this->fFormCheck($_POST,$param,$this->fields_form);
 						if(!count($arr['mess'])) {
-							if(!$rm = $this->_save_item($arr['vars'])) {
+							if($rm = $this->_save_item($arr['vars'])) {
 								$flag=1;
 								$arr['mess'][] = array('name'=>'ok', 'value'=>$this->getMess('update'));
 							} else
@@ -52,7 +52,7 @@
 				$arr = $this->fFormCheck($_POST,$param,$this->fields_form);
 				$flag=-1;
 				if(!count($arr['mess'])){
-					if(!$rm = $this->_add_item($arr['vars'])) {
+					if($rm = $this->_add_item($arr['vars'])) {
 						$flag=1;
 						$arr['mess'][] = array('name'=>'ok', 'value'=>$this->getMess('add'));
 					} else

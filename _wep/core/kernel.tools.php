@@ -4,22 +4,22 @@
 	{
 		if (!file_exists($_this->_CFG['_PATH']['path'].$dir)) 
 		{
-			if (!mkdir($_this->_CFG['_PATH']['path'].$dir, 0755)) return $_this->_message('Cannot create directory <b>$dir</b>');
+			if (!mkdir($_this->_CFG['_PATH']['path'].$dir, 0755)) return $_this->_message('Cannot create directory <b>'.$dir.'</b>',1);
 		}
 		else
 		{			
 			$f = fopen($_this->_CFG['_PATH']['path'].$dir.'/t_e_s_t', 'w');
 			if (!$f) 
-				return $_this->_message('Cannot create file in directory <b>'.$dir.'</b>');
+				return $_this->_message('Cannot create file in directory <b>'.$dir.'</b>',1);
 
 			$err = fwrite($f, 'zzz')==-1;
 			fclose($f);
 			unlink($_this->_CFG['_PATH']['path'].$dir.'/t_e_s_t');
 
 			if ($err) 
-				return $_this->_message('Cannot write/read file in directory <b>'.$dir.'</b>');
+				return $_this->_message('Cannot write/read file in directory <b>'.$dir.'</b>',1);
 		}
-		return 0;
+		return true;
 	}
 
 
@@ -36,14 +36,14 @@
 		if (count($_this->childs)) 
 			foreach($_this->childs as $child) 
 				$child->_install();
-		return 0;
+		return true;
 	}
 
 	function _droped(&$_this){
 		$result = $_this->SQL->execSQL('DROP TABLE `'.$_this->tablename.'`');
-		if ($result->err) return $_this->_message($result->err);
+		if ($result->err) return false;
 		$_this->_message('Table `'.$_this->tablename.'` droped.',3);
-		return 0;
+		return true;
 	}
 
 	function _xmlFormConf(&$_this) {
@@ -78,7 +78,7 @@
 				fwrite($h, $key.'='.$value."\n");
 			}
 		fclose($h);
-		return 0;
+		return true;
 	}
 
 
@@ -169,7 +169,7 @@ $html .= '
 			$data= array();
 			// select record ids to delete
 			$result=$_this->SQL->execSQL('select id FROM '.$_this->tablename);
-			if($result->err) return $_this->_message($result->err);
+			if($result->err) return false;
 			// create list
 
 			while ($row = $result->fetch_array())
@@ -211,18 +211,18 @@ $html .= '
 			}
 			foreach($_this->attaches as $key=>$value) {
 				$result=$_this->SQL->execSQL('UPDATE '.$_this->tablename.' SET '.$key.'=\'\' ');
-				if($result->err) return $_this->_message($result->err);
+				if($result->err) return false;
 			}
 			foreach($data as $key1=>$row1) {
 
 				foreach($row1 as $key2=>$row2)
 				{
 					$result=$_this->SQL->execSQL('UPDATE '.$_this->tablename.' SET '.$key1.'=\''.$key2.'\' WHERE id IN ('.implode(',',$row2).')');
-					if($result->err) return $_this->_message($result->err);
+					if($result->err) return false;
 				}
 			}
 		}
-		return 0;
+		return true;
 	}
 	
 	function _toolsCheckmodul($_this)
@@ -312,7 +312,7 @@ $html .= '
 									unset($matches[0]);
 									if (isset($check_result[$table]['list_query'][implode('::',$matches)][0])) {
 										$result = $_this->SQL->execSQL($check_result[$table]['list_query'][implode('::',$matches)][0]);
-										if ($result->err != '') {
+										if ($result->err) {
 											$err = true;
 											break;
 										}					
@@ -329,7 +329,7 @@ $html .= '
 						
 						if (isset($_POST['reattach'][$_this->tablename])) {
 							include_once($_CFG['_PATH']['core'].'kernel.tools.php');
-							if(!_reattaches($_this))
+							if(_reattaches($_this))
 								$mess[] = array('name'=>'ok', 'value'=>$_this->getMess('_file_ok'));
 							else
 								$mess[] = array('name'=>'error', 'value'=>$_this->getMess('_file_err'));

@@ -41,8 +41,12 @@
 		);
 		
 		$result = $this->SQL->execSQL('SHOW TABLES LIKE \''.$this->tablename.'\'');// checking table exist
-		if ($result->err) exit('error');
-		if (!$result->num_rows()) return $this->_install();
+		if ($result->err) exit($this->getMess('_big_err'));
+		if (!$result->num_rows()) {
+			if($this->_install())
+				return array($this->tablename => array('err'=>$this->getMess('_install_err')));
+			return array();
+		}
 		
 		$query = array();
 		
@@ -223,7 +227,7 @@
 		$out[$this->tablename]['list_query'] = $query;
 
 		return $out;
-//		return 0;
+//		return true;
 
 
 ?>

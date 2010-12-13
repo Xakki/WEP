@@ -138,14 +138,14 @@ class pg_class extends kernel_class {
 	}
 
 
-	function allChangeData($type='',$data='') {
-		parent::allChangeData($type,$data);
-		/*if($this->config['sitemap']) {
+	/*function allChangeData($type='') {
+		parent::allChangeData($type);
+		if($this->config['sitemap']) {
 			$xml = $this->creatSiteMaps();
 			file_put_contents($this->_CFG['_PATH']['path'].'sitemap.xml',$xml);
-		}*/
-		return 0;
-	}
+		}
+		return true;
+	}*/
 
 	function display() {
 		$this->current_path = '';
@@ -475,7 +475,8 @@ class pg_class extends kernel_class {
 					$this->dataCash[$row['id']] = $row;
 					$this->dataCashTree[$row['parent_id']][$row['id']] = &$this->dataCash[$row['id']];
 				}
-			}
+			}else {
+				header('Location: '.$this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['wepname'].'/login.php?install');die();}
 		}
 		return 0;
 	}

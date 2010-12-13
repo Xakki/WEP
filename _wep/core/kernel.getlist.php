@@ -46,8 +46,6 @@
 				}
 			}
 			$dir->close();
-
-			return $data;
 		}
 		elseif ($listname == "script") {
 
@@ -80,7 +78,6 @@
 			$dir->close();
 			if(count($afterSubDir))
 				$data[''] = $data['']+$afterSubDir;
-			return $data;
 		}
 		elseif($templistname == 'list') {
 			$data = $_this->_dump();
@@ -103,10 +100,10 @@
 			$q = 'SELECT `id`, `name`, `parent_id` FROM `'.$_this->tablename.'`';
 			if($_this->id) $q .=' WHERE `id`!="'.$_this->id.'"';
 			$result = $_this->SQL->execSQL($q);
-			if($result->err) return $_this->_message($result->err);
-			while (list($id, $name,$pid) = $result->fetch_array(MYSQL_NUM)) {
-				$data[$pid][$id] = $name;
-			}
+			if(!$result->err)
+				while (list($id, $name,$pid) = $result->fetch_array(MYSQL_NUM)) {
+					$data[$pid][$id] = $name;
+				}
 		}
 		elseif(is_array($listname) and (isset($listname['class']) or isset($listname['tablename'])))  {
 			
@@ -181,14 +178,13 @@
 								$data[$row['id']] = $row['name'];
 					}
 				}
-				else 
-					return $_this->_message($result->err);
 		}
 		elseif(!is_array($listname)) {
-			return $_this->_errorMess('List data `'.$listname.'` not found');
+			$_this->_message('List data `'.$listname.'` not found',1);
 		}
-		else
-			return $_this->_errorMess('List '.current($listname).' not found');
+		else {
+			$_this->_message('List '.current($listname).' not found',1);
+		}
 
 		return $data;
 	}

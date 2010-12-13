@@ -57,7 +57,7 @@ class session_gogo {
 		$this->add_query = '';//' AND `domain` = "'.$this->_domain.'"';
 		$result = $this->SQL->execSQL('SHOW TABLES LIKE \''.$this->tablename.'\'');// checking table exist
 		if ($result->err) echo('Session error');
-		if (!$result->num_rows()) $this->_install();
+		//if (!$result->num_rows()) $this->_install();
 		return(true);
 	}
 	
@@ -112,7 +112,7 @@ ON DUPLICATE KEY UPDATE `modified` = "'.$this->_time.'", `users_id`="'.$data['us
 		$result = $this->SQL->execSQL('DELETE FROM '.$this->tablename.' WHERE `modified` + `expired` < '.$this->_time.' OR (`created` + '.$this->deadsession.' < '.$this->_time.' AND `visits` < '.$this->deadvisits.')');
 		return(true); 
 	}
-
+/*
 	function _checkmodstruct() {
 		return include($this->_CFG['_PATH']['core'].'kernel.checkmodstruct.php');
 		//return $result->err;
@@ -120,7 +120,7 @@ ON DUPLICATE KEY UPDATE `modified` = "'.$this->_time.'", `users_id`="'.$data['us
 
 	function _install() {
 		return include($this->_CFG['_PATH']['core'].'kernel.install.php');
-	}
+	}*/
 
 	function _unserialize($serialized_string) {
 		$variables = array(  );
@@ -131,24 +131,7 @@ ON DUPLICATE KEY UPDATE `modified` = "'.$this->_time.'", `users_id`="'.$data['us
 		return( $variables );
 	}
 
-	function _fldformer($key, $param) 
-	{
-		$m = '`'.$key.'` '.$param['type'];
 
-			if (isset($param['width']) && $param['width']!='') 
-				$m.= '('.$param['width'].')'; 
-
-		$m.=' '.(isset($param['attr'])?$param['attr']:'').(isset($param['default'])?' DEFAULT \''.$param['default'].'\'':'');
-		return $m;
-	}
-	
-	function _message($msg,$type=0) 
-	{
-		$ar_type = array('error' , 'warning' , 'modify' , 'notify','ok');
-		if($type<3 or $_SESSION['_showallinfo']>1) $this->_CFG['logs']['mess'][] = array($msg,$ar_type[$type]);
-		if(!$type) return 1;
-		else return 0;
-	}
 }
 
 ?>

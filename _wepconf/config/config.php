@@ -1,21 +1,9 @@
 <?
 
-	//date_default_timezone_set('Asia/Yekaterinburg');
-	//date_default_timezone_set('Europe/Moscow');
-
-/*Полные пути по файловым системам для ядра*/
-	$_CFG['_PATH']['wepconf'] = dirname(dirname(__FILE__)); // файл-путь к конфигам
-	if(!isset($_CFG['_PATH']['path']))
-		$_CFG['_PATH']['path'] = dirname($_CFG['_PATH']['wepconf']);
-	if(!isset($_CFG['_PATH']['wep'])) //если  путь не был задан
-		$_CFG['_PATH']['wep'] = $_CFG['_PATH']['path'].'/_wep'; // файл-путь  Корень админки
-
-	include($_CFG['_PATH']['wep'].'/config/config.php');
-
 $_CFG['sql'] = array( // SQL
-	'host'=>'localhost',
+	'host'=>'127.0.0.1',
 	'login'=>'core_wep',
-	'password'=>'sF45DfpFddt3',
+	'password'=>'D56FdpnD4th',
 	'database'=>'core_wep',
 	'setnames'=>'utf8',
 	'dbpref'=>'',
@@ -26,17 +14,21 @@ $_CFG['wep'] = array( // для админки
 	'access'=>1, // 1 - вкл доступ по модулю пользователей, 0 - вкл доступ по дефолтному паролю
 	'locallang'=>'default',
 	'login'=>'root',
-	'password'=>'core_wep',
+	'password'=>'coreadmin',
+	'prm_table'=>'_',
 	'design'=>'default',
 	'msp'=>'paginator',
-	'md5'=>'dfHH2Lss',
-	'def_filesize'=>200,
-	'sessiontype'=>1 //0 - стандартная сессия, 1 - БД сессия, 2 - ещё какаянибудь
+	'md5'=>'dSS2ffs',
+	'def_filesize'=>100,
+	'sessiontype'=>1, //0 - стандартная сессия, 1 - БД сессия, 2 - ещё какаянибудь
+	'bug_hunter' => 1
 );
 
 $_CFG['site'] = array( // для сайта
-	'msp'=>'paginator' // постраничнка
-	);
+	'msp'=> 'paginator', // постраничнка
+	//'rf' => $_CFG['site']['rf'], // для рускояз доменов
+	'bug_hunter' => 1
+);
 
-
+$_CFG['session']['multidomain'] = 1;
 ?>

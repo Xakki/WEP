@@ -144,7 +144,7 @@ _fldformer($key, $param)
 		$this->index_fields = array();
 		$this->childs = new modul_child($this);
 		$this->ordfield = $this->_clp = '';
-		return 0;
+		return true;
 	}
 
 	protected function _create() {
@@ -235,7 +235,7 @@ _fldformer($key, $param)
 			}
 		}
 		
-		return 0;  
+		return true;  
 	}
 
 	protected function _create_conf() { // Здесь можно установить стандартные настройки модулей
@@ -251,24 +251,25 @@ _fldformer($key, $param)
 			$this->config['cssIncludeToForm'] = '';
 			$this->config_form['cssIncludeToForm'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'style', 'caption' => 'CSS модуля');
 		}
+		return true;
 	}
 
 	protected function configParse() {
 		if (isset($this->config_form)) { // загрузка конфига из фаила для модуля
 			$this->_file_cfg = $this->_CFG['_PATH']['config'].get_class($this).'.cfg';
 			if (file_exists($this->_file_cfg)) {
-				$this->config = array_merge($this->config,_fParseIni($this->_file_cfg));}
+				$this->config = array_merge($this->config,_fParseIni($this->_file_cfg));
+			}
 		}
+		return true;
 	}
 
 	protected function create_child($class_name)
 	{
 		$this->childs[$class_name] = true;
-//		if(!_new_class($class_name,$this->childs[$class_name],$this)) {
-//			$this->_errorMess('Не подключен дочерний класс '.$class_name.'.');
-//		}
-//		$cl = $class_name.'_class';
-//		$this->childs[$class_name] = new $cl($this->SQL, $this);
+		if($this->_autoCheckMod)
+			$this->childs[$class_name]->tablename;
+		return true;
 	}
 	
 	public function _checkmodstruct() 
@@ -285,10 +286,10 @@ _fldformer($key, $param)
 		foreach($this->def_records as $row)
 		{
 			$result = $this->SQL->execSQL('INSERT INTO `'.$this->tablename.'` ('.implode(',',array_keys($row)).') values (\''.implode("','",$row).'\')');
-			if ($result->err) return $this->_message($result->err);
-			$this->_message('Insert default records into table '.$this->tablename.'.',2);
+			if ($result->err) return false;
 		}
-		return 0;
+		$this->_message('Insert default records into table '.$this->tablename.'.',3);
+		return true;
 	}
 
 	public function _checkdir($dir)
@@ -315,21 +316,20 @@ _select_fields($active)
 _select_attaches()
 _select_memos()
 _get_file($row, $key) 
-_message($msg,$type=0)
 
 ---------------------------------------*/
 
 	public function _dump($where='') 
 	{
 		$name = 'name';
+		$data = array();
 		if (!isset($this->fields['name'])) 
 			$name = 'id as '.$name;
 		if($where!='') $where =' WHERE '.$where;
 		$result = $this->SQL->execSQL('SELECT id, '.$name.' FROM `'.$this->tablename.'`'.$where);
-		if ($result->err) return $this->_message($result->err);
-		$data = array();
-		while (list($key, $value) = $result->fetch_array(MYSQL_NUM))
-			$data[$key] = $value;
+		if(!$result->err)
+			while (list($key, $value) = $result->fetch_array(MYSQL_NUM))
+				$data[$key] = $value;
 		return $data;
 	}
 
@@ -348,7 +348,7 @@ _message($msg,$type=0)
 		$from = ' FROM `'.$this->tablename.'` ';
 
 		$result = $this->SQL->execSQL($query.$from.$this->clause);
-		if ($result->err) return $this->_message($result->err);
+		if($result->err) return false;
 		$this->data = array();
 		if($ord!='' and $ord2!=''){
 			while ($row = $result->fetch_array())
@@ -363,10 +363,10 @@ _message($msg,$type=0)
 				$this->data[] = $row;
 		}
 
-		if ($this->_select_attaches()) return 1;
-		if ($this->_select_memos()) return 1;
+		if (!$this->_select_attaches()) return false;
+		if (!$this->_select_memos()) return false;
 		unset($result);
-		return $this->_message('Select from `'.$this->caption.'` successful.',3);
+		return $this->_message('Select from `'.$this->caption.'` successful.');
 	}
 
 	public function _select() {/*------- SELECT ---------*/
@@ -376,11 +376,11 @@ _message($msg,$type=0)
 	//			otherwise errorcode
 		$this->data = array();
 
-		if ($this->_select_fields()) return 1;
-		if ($this->_select_attaches()) return 1;
-		if ($this->_select_memos()) return 1;
+		if (!$this->_select_fields()) return false;
+		if (!$this->_select_attaches()) return false;
+		if (!$this->_select_memos()) return false;
 
-		return $this->_message('Select from '.$this->caption.' successful!',3);
+		return $this->_message('Select from '.$this->caption.' successful!');
 	}
 
 	private function _select_fields() { 
@@ -390,81 +390,66 @@ _message($msg,$type=0)
 		if($this->id) $sql_query .= ' WHERE id IN ('.$this->_id_as_string().')';
 		if ($this->ordfield) $sql_query .= ' ORDER BY '.$this->ordfield;
 		$result = $this->SQL->execSQL($sql_query);
-		if ($result->err) return $this->_message($result->err);
+		if ($result->err) return false;
 		while ($row = $result->fetch_array())
 			$this->data[$row['id']] = $row;
-		return 0;
+		return true;
 	}
 
 	private function _select_attaches() {
-		if (!count($this->attaches) or !count($this->data)) return 0;
-		else{
+		if (count($this->attaches) and count($this->data)) {
 			foreach($this->data as $ri => &$row) {
-				if (!isset($row['id'])) return 0;
+				if (!isset($row['id'])) return false;
 				$merg = array_intersect_key($this->attaches,$row);
-				if(!count($merg)) return 0;
+				if(!count($merg)) return false;
 				foreach($merg as $key => $value) {
 					$row['_ext_'.$key] = $row[$key];
 					$row[$key] = $this->_get_file($row,$key);
 				}
 			}
 		}
-		return 0;
+		return true;
 	}
 
 	private function _select_memos() {
-		if (!count($this->memos)) return 0;
-		foreach($this->data as $ri => &$row) {
-			foreach($this->memos as $key => $value) {
-				if (isset($row['id']))
-				{
-					$f = $this->_CFG['_PATH']['path'].$this->getPathForMemo($key).'/'.$row['id'].$this->text_ext;
-					if (file_exists($f))
-						$row[$key] = $f;
+		if (count($this->memos))
+			foreach($this->data as $ri => &$row) {
+				foreach($this->memos as $key => $value) {
+					if (isset($row['id']))
+					{
+						$f = $this->_CFG['_PATH']['path'].$this->getPathForMemo($key).'/'.$row['id'].$this->text_ext;
+						if (file_exists($f))
+							$row[$key] = $f;
+					}
 				}
 			}
-		}
-		return 0;
+		return true;
 	}
 
 /*------------- ADD ADD ADD ADD ADD ------------------*/
 
-	// in:  id			opt
-	//		fld_data:assoc array <fieldname>=><value> 	req
-	//		att_data:assoc array <fieldname>=>array 	req
-	//		mmo_data:assoc array <fieldname>=>text	req
-	// out: 0 - success,
-	//      otherwise errorcode
-
 	protected function _add() {
 		include_once($_CFG['_PATH']['core'].'kernel.addup.php');
-		return _add($this);
+		$result = _add($this);
+		if($result) $this->allChangeData('add');
+		return $result;
 	}
 
 /*------------- UPDATE UPDATE UPDATE -----------------*/
 
-	// in:  id											req
-	//		fld_data:assoc array <fieldname>=><value> 	req
-	//		att_data:assoc array <fieldname>=>array 	req
-	//		mmo_data:assoc array <fieldname>=>text		req
-	// out: 0 - success,
-	//      otherwise errorcode
-
 	protected function _update() {
 		include_once($_CFG['_PATH']['core'].'kernel.addup.php');
-		return _update($this);
+		$result = _update($this);
+		if($result) $this->allChangeData('save');
+		return $result;
 	}
 
 /*------------- DELETE DELETE DELETE -----------------*/
 
-	// in:  id											req
-	// out: 0 - success,
-	//      otherwise errorcode
-
 	public function _delete() {
 		include_once($_CFG['_PATH']['core'].'kernel.addup.php');
 		$result = _delete($this);
-		if(!$result) $this->allChangeData('delete');
+		if($result) $this->allChangeData('delete');
 		return $result;
 	}
 
@@ -519,23 +504,23 @@ _message($msg,$type=0)
 	public function _get_new_ord() {
 		$query = 'SELECT max(ordind) + 1 FROM `'.$this->tablename.'`';
 		$result=$this->SQL->execSQL($query);
-		if($result->err) return $this->_message($result->err);
+		if($result->err) return false;
 		list($this->ordind) = $result->fetch_array(MYSQL_NUM);
 		if(!$this->ordind) $this->ordind=0;
-		return 0;
+		return true;
 	}
 
 
 /*------------- ORDER ORDER ORDER ORDER ----------------*/
 
 	public function _sorting($arr) {
-		if(!$this->mf_ordctrl) return $this->_message('Sorting denied!');
+		if(!$this->mf_ordctrl) return $this->_message('Sorting denied!',1);
 		foreach($arr as $r) {
 			$id = str_replace($this->_cl.'_','',$r['id']);
 			$id2 = str_replace($this->_cl.'_','',$r['id2']);
 			$data=array();
 			$qr = 'select id,ordind from `'.$this->tablename.'`';
-			$result=$this->SQL->execSQL($qr);if($result->err) return $this->_message($result->err);
+			$result=$this->SQL->execSQL($qr);if($result->err) return false;
 			while ($row = $result->fetch_array()) {
 				$data[$row['id']]=(int)$row['ordind'];
 			}
@@ -546,7 +531,7 @@ _message($msg,$type=0)
 				$ex=1;
 			if($ex!=1) {
 				$qr = 'UPDATE `'.$this->tablename.'` SET `ordind` = -2147483647 WHERE id=\''.$id.'\'';
-				$result=$this->SQL->execSQL($qr);if($result->err) return $this->_message($result->err);
+				$result=$this->SQL->execSQL($qr);if($result->err) return false;
 
 				if($r['t']=='next' and $data[$id2]<$data[$id]) {
 					$ord= $data[$id2];
@@ -559,34 +544,45 @@ _message($msg,$type=0)
 						$ord= $data[$id2];
 					$qr = 'UPDATE `'.$this->tablename.'` SET `ordind` =(ordind-1) WHERE '.$data[$id].'<=`ordind` and `ordind`<='.$ord.' order by `ordind`';
 				}
-				$result=$this->SQL->execSQL($qr);if($result->err) return $this->_message($result->err);
+				$result=$this->SQL->execSQL($qr);
+				if($result->err) return false;
 
 				$qr = 'UPDATE `'.$this->tablename.'` SET `ordind` = '.$ord.' WHERE `id`=\''.$id.'\'';
-				$result=$this->SQL->execSQL($qr);if($result->err) return $this->_message($result->err);
+				$result=$this->SQL->execSQL($qr);if($result->err) return false;
 			}
 		}
 
-		return $this->_message('Sorting the module `'.$this->caption.'` successful.',2);
+		return $this->_message('Sorting the module `'.$this->caption.'` successful.',3);
 	}
 
 
 /************************* EVENTS *************************/	
-		
-	public function _errorMess($msg) 
-	{
-		trigger_error($msg, E_USER_WARNING);
-		return 0;
-	}
 	
-	
-	public function _message($msg,$type=0) 
+	public function _message($msg,$type=5)
 	{
-		//$ar_type = array('error' , 'warning' , 'modify' , 'notify','ok');
-		//if($type<3 or $_SESSION['_showallinfo']>1) $this->_CFG['logs']['mess'][] = array($msg,$ar_type[$type]);
-		if(!$type) return 1;
-		else return 0;
+		$ar_type = array(0=>E_USER_ERROR , 1=>E_USER_WARNING , 2=>E_USER_NOTICE, 3=>'modify' , 4=>'notify', 5=>'ok');
+		if($type<3)
+			trigger_error($msg, $ar_type[$type]);
+		elseif($_SESSION['_showallinfo']>1) 
+			$this->_CFG['logs']['mess'][] = array($msg,$ar_type[$type]);\
+		if($type<2)
+			return false;
+		return true;
 	}
 
+	function getMess($name,$wrap=array(),$obj=NULL) {
+		//global $_CFG;
+		if(isset($this->locallang['default'][$name]))
+			$text = $this->locallang['default'][$name];
+		elseif(isset($this->_CFG['_MESS'][$name]))
+			$text = $this->_CFG['_MESS'][$name];
+		else
+			$text = 'Внимание. Нейзвестный тип `сообщения`!';
+		if(count($wrap))
+			foreach($wrap as $k=>$r)
+				$text = str_replace('###'.($k+1).'###', $r, $text);
+		return $text;
+	}
 /**************************ADMIN-PANEL---FUNCTION*************************/
 
 	public function fXmlModuls($modul){
@@ -600,17 +596,6 @@ _message($msg,$type=0)
 	}
 
 // *** PERMISSION ***//
-
-	public function _moder_prm(&$data,&$param) {
-		if(count($param['prm'])) {
-			foreach($param['prm'] as $k=>$r){
-				foreach($data as $row) 
-					if($row[$k]!=$r) return false;
-			}
-		}
-		return true;
-	}
-
 
 	public function _prmModulAdd($mn){
 		if(!$this->mf_add) return false;
@@ -758,7 +743,7 @@ _message($msg,$type=0)
 
 	private function _reindex()
 	{
-		return 0;
+		return true;
 	}
 */
 
@@ -772,9 +757,7 @@ _message($msg,$type=0)
 				$this->fld_data[$k]= (is_string($data[$k])?mysql_real_escape_string($data[$k]):$data[$k]);
 			}
 		}
-		$result = $this->_update();
-		if(!$result) $this->allChangeData('save',$data);
-		return $result;
+		return $this->_update();
 	}
 	
 	public function _add_item($data){
@@ -787,9 +770,7 @@ _message($msg,$type=0)
 				$this->fld_data[$k]= (is_string($data[$k])?mysql_real_escape_string($data[$k]):$data[$k]);
 			}
 		}
-		$result = $this->_add();
-		if(!$result) $this->allChangeData('add',$data);
-		return $result;
+		return $this->_add();
 	}
 
 	//update modul item
@@ -1526,7 +1507,6 @@ $Ajax=0 - не скриптовая
 		}
 		else
 			$xml[] = array('value'=>$this->getMess('denied'),'name'=>'error');
-		if(!$flag[1]) $this->allChangeData('act',$act);
 		return array($xml,$flag);
 	}
 
@@ -1559,7 +1539,7 @@ $Ajax=0 - не скриптовая
 	}
 
 	function allChangeData($type='',$data='') {
-		return 0;
+		return true;
 	}
 
 /* TREE CREATOR*/
@@ -1731,17 +1711,6 @@ $Ajax=0 - не скриптовая
 		return $insert_data;
 	}
 
-	public function countThisCreate() {
-		$cnt = 0;
-		$cls = 'SELECT count(id) as cnt FROM `'.$this->tablename.'`';
-		if($this->mf_createrid)
-			$cls .= ' WHERE creater_id="'.$_SESSION['user']['id'].'"';
-		$result = $this->SQL->execSQL($cls);
-		if(!$result->err and $row = $result->fetch_array())
-			$cnt = $row['cnt'];
-		return $cnt;
-	}
-
 	public function getPathForAtt($key) {
 		if($this->attaches[$key]['path'])
 			$pathimg = $this->attaches[$key]['path'];
@@ -1762,20 +1731,6 @@ $Ajax=0 - не скриптовая
 	{
 		$z = pow(10, $y);
 		return  $z * round($x / $z);
-	}
-
-	function getMess($name,$wrap=array(),$obj=NULL) {
-		//global $_CFG;
-		if(isset($this->locallang['default'][$name]))
-			$text = $this->locallang['default'][$name];
-		elseif(isset($this->_CFG['_MESS'][$name]))
-			$text = $this->_CFG['_MESS'][$name];
-		else
-			$text = 'Внимание. Нейзвестный тип `сообщения`!';
-		if(count($wrap))
-			foreach($wrap as $k=>$r)
-				$text = str_replace('###'.($k+1).'###', $r, $text);
-		return $text;
 	}
 
 	function setCaptcha() {
@@ -1936,10 +1891,8 @@ $Ajax=0 - не скриптовая
 		elseif($field_type == 'timestamp') {
 			$result =  date("Y-m-d H:i:s", mktime($date_str[0], $date_str[1], $date_str[2], $date_str[3], $date_str[4], $date_str[5]));
 		}	
-		else {
-			trigger_error('Тип поля '.$k.' неверен для даты', E_USER_WARNING );
-			$result = false;
-		}
+		else
+			return $this->_message('Тип поля '.$k.' неверен для даты',1);
 
 		return $result;
 	}

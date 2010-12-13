@@ -579,6 +579,7 @@
 		$result = array('',0);
 		if(!isset($_SESSION['user']['id']) or $login) {
 			//$SQL->_iFlag = 1; // проверка табл
+			if($SQL->_iFlag) _new_class('modulprm',$MODULtemp);
 			if($_CFG['wep']['access'] and _new_class('ugroup',$UGROUP)) {
 				if(isset($_POST['login']) or $login)
 					$result = $UGROUP->childs['users']->authorization($login,$pass);

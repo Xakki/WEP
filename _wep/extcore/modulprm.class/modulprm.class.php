@@ -52,7 +52,7 @@ class modulprm_class extends kernel_class {
 
 	public function _checkmodstruct() {
 		$check_result = parent::_checkmodstruct();
-
+/*		if(!is_array($check_result) and $check_result) return array('err'=>'Cant create tabel');
 		if (isset($check_result[$this->tablename]['err']))
 			return array('err' => $check_result[$this->tablename]['err']);
 
@@ -60,8 +60,7 @@ class modulprm_class extends kernel_class {
 		$this->SQL->_iFlag = true;
 		$this->moduldir = array();
 		$this->def_update_records = array();
-		$result = $this->SQL->execSQL('SELECT * FROM '.$this->tablename);
-			if ($result->err) $this->_message($result->err);
+		$result = $this->SQL->execSQL('SELECT * FROM '.$this->tablename);if ($result->err) return 1;
 		$this->data = array();
 		while ($row = $result->fetch_array()){
 			$this->data[$row['id']] = $row;
@@ -147,10 +146,8 @@ class modulprm_class extends kernel_class {
 		
 
 		
-//		return 0;
+//		return 0;*/
 		return $check_result;
-
-		
 	}
 
 	function _constr_childs(&$class_,$pathm='') {
@@ -258,7 +255,7 @@ class modulgrp_class extends kernel_class {
 				$data[$row['owner_id']][$row['ugroup_id']] = $row;
 
 		$result = $this->SQL->execSQL('SELECT * FROM '.$UGROUP->tablename.' WHERE level>0');
-		if ($result->err) return $this->_message($result->err);
+		if ($result->err) return false;
 		$grpdata[0] = array('name'=>'Аноним');
 		while ($row = $result->fetch_array())
 			$grpdata[$row['id']] = $row;

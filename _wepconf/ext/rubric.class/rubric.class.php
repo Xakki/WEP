@@ -20,7 +20,7 @@ class rubric_class extends kernel_class {
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название рубрики');
 		$this->fields_form['parent_id'] = array('type' => 'list', 'listname'=>'parentlist', 'caption' => 'Родительская рубрика','mask' =>array('fview'=>1));
 		$this->fields_form["imgpos"] = array("type" => "int", "caption" => "Позиция пиктограмки");
-		$this->fields_form['checked'] = array('type' => 'checkbox', 'caption' => 'Разрешить для подачи объявления');
+		$this->fields_form['checked'] = array('type' => 'checkbox', 'caption' => 'Разрешить выделение');
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Активность');
 
 		$this->create_child('param');

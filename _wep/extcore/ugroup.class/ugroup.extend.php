@@ -90,9 +90,9 @@ class ugroup_extend extends kernel_class
 		$data = array();
 		if ($listname == "glist") {
 			$result = $this->SQL->execSQL("SELECT id, name FROM ".$this->tablename);
-			if ($result->err) return $this->_message($result->err);
-			while ($row = $result->fetch_array())
-				$data[$row['id']] = $row['name'];
+			if(!$result->err)
+				while ($row = $result->fetch_array())
+					$data[$row['id']] = $row['name'];
 			return $data;
 		}
 		elseif ($listname == "mdesign") {
@@ -238,7 +238,8 @@ class users_extend extends kernel_class {
 			{
 				$this->listfields = array('t2.*,t2.active as gact,t2.name as gname,t1.*');
 				$this->clause = "t1 Join {$this->owner->tablename} t2 on t1.".$this->owner_name."=t2.id where t1.".($this->mf_use_charid?'id':'email')." = '".$login."' and t1.pass ='".md5($this->_CFG['wep']['md5'].$pass)."'";
-				$this->_list();
+				if($this->_list()) {
+					header('Location: '.$this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['wepname'].'/login.php?install');die();}
 				if(count($this->data))
 				{
 					unset($_SESSION['user']);
@@ -258,7 +259,9 @@ class users_extend extends kernel_class {
 						if($_POST['remember']=='1'){
 							_setcookie('remember', md5($this->data[0]['pass']).'_'.$this->data[0]['id'], (time()+(86400*$this->owner->config['rememberday'])));
 						}
-						return $this->setUserSession();
+						$this->setUserSession();
+						_prmModulLoad();
+						return array($this->_CFG['_MESS']['authok'],1);
 					}
 				}
 				else
@@ -293,7 +296,9 @@ class users_extend extends kernel_class {
 					else
 					{
 						_setcookie('remember', md5($this->data[0]['pass']).'_'.$this->data[0]['id'], (time()+(86400*$this->owner->config['rememberday'])));
-						return $this->setUserSession();
+						$this->setUserSession();
+						_prmModulLoad();
+						return array($this->_CFG['_MESS']['authok'],1);
 					}
 				}
 			}
@@ -307,10 +312,9 @@ class users_extend extends kernel_class {
 		$_SESSION['user']['owner_id'] = $this->data[0][$this->owner_name];
 		$_SESSION['FckEditorUserFilesUrl'] = $this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['userfile'].$_SESSION['user']['id'].'/';
 		$_SESSION['FckEditorUserFilesPath'] = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['userfile'].$_SESSION['user']['id'].'/';
-		global $_CFG;
 		if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0)
 			_setcookie('_showerror',1);
-		return array($this->_CFG['_MESS']['authok'],1);
+		return 0;
 	}
 
 	function regForm(){

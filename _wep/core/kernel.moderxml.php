@@ -45,7 +45,7 @@
 		if($_this->mf_mop) {
 			$result = $_this->SQL->execSQL('SELECT count(`id`) as cnt '.$sql_query);
 			if ($result->err) 
-				return $_this->_message($result->err);
+				return false;
 			elseif ($row0 = $result->fetch_array())
 				$count = $row0['cnt'];
 		}
@@ -68,7 +68,7 @@
 				$count=0;
 			
 			$result = $_this->SQL->execSQL($agr.$sql_query);
-			if ($result->err) return $_this->_message($result->err);
+			if ($result->err) return false;
 			while ($row = $result->fetch_array()) {
 				if(!$_this->mf_mop) $count++;
 				$param=' id=\''.$row['id'].'\'';

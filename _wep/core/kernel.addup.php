@@ -11,7 +11,7 @@
 	function _add(&$_this) {
 		// add ordind field
 		if ($_this->mf_ordctrl and !isset($_this->fld_data['ordind'])) {
-			if ($_this->_get_new_ord()) return 1;
+			if (!$_this->_get_new_ord()) return false;
 			$_this->fld_data['ordind'] = $_this->ordind;
 		}
 		// add parent_id field
@@ -29,8 +29,8 @@
 			$_this->fld_data['creater_id']= $_SESSION['user']['id'];
 
 		if (!isset($_this->fld_data) && !count($_this->fld_data))
-			return $_this->_message('Empty data for add in `'.$_this->caption.'`',1);
-		if (_add_fields($_this)) return 1;
+			return $_this->_message($_this->getMess('add_empty'),1);
+		if (!_add_fields($_this)) return false;
 
 		// get last id if not used nick
 		if (!$_this->mf_use_charid && !isset($_this->fld_data['id']))
@@ -40,25 +40,25 @@
 		else $_this->id = NULL;
 
 		if (isset($_this->att_data) && count($_this->att_data)) {
-			if (_add_attaches($_this)) {
+			if (!_add_attaches($_this)) {
 				$_this->_delete();
 				$_this->id = NULL;
-				return 1;
+				return false;
 			}
 		}
 		if (isset($_this->mmo_data) && count($_this->mmo_data)) {
-			if (_add_memos($_this)) {
+			if (!_add_memos($_this)) {
 				$_this->_delete();
 				$_this->id = NULL;
-				return 1;
+				return false;
 			}
 		}
 		if (isset($_this->mf_indexing) && $_this->mf_indexing) $_this->indexing();
-		return $_this->_message('Add data into `'.$_this->caption.'` successful!',2);
+		return $_this->_message($_this->getMess('add'),3);
 	}
 
 	function _add_fields(&$_this) {
-		if (!count($_this->fld_data)) return 0;
+		if (!count($_this->fld_data)) return false;
 		// inserting
 		$data = array();
 		foreach($_this->fld_data as $key => $value) {
@@ -68,21 +68,18 @@
 				$data[$key] = $value;
 		}
 		$result=$_this->SQL->execSQL('INSERT INTO `'.$_this->tablename.'` (`'.implode('`,`', array_keys($data)).'`) VALUES (\''.implode('\',\'', $data).'\')');
-		if($result->err) return $_this->_message($result->err);
-		return 0;
+		if($result->err) return false;
+		return true;
 	}
 
 	function _add_attaches(&$_this) {
-		if (!count($_this->attaches) or !count($_this->att_data)) return 0;
+		if (!count($_this->attaches) or !count($_this->att_data)) return false;
 		$result=$_this->SQL->execSQL('SELECT id, '.implode(',', array_keys($_this->attaches)).' FROM `'.$_this->tablename.'` WHERE id IN ('.$_this->_id_as_string().')');
-		if($result->err) return $_this->_message($result->err);
+		if($result->err) return false;
 		$row = $result->fetch_array();
 		$prop = array();
 		foreach($_this->att_data as $key => $value) 
 		{
-			if(!isset($row[$key]))
-				return $_this->_message('Misisng field `'.$key.'`. Recheck modul `'.$_this->caption.'`.');
-
 			if ($value['tmp_name'] == 'none' or $value['tmp_name'] == '') continue;
 			$pathimg = $_this->_CFG['_PATH']['path'].$_this->getPathForAtt($key);
 			// delete old
@@ -100,11 +97,11 @@
 			}
 
 			if (!rename($value['tmp_name'], $newname))
-				return $_this->_message('Error copy file '.$value['name']);
+				return $_this->_message('Error copy file '.$value['name'],1);
 
 			if (isset($_this->attaches[$key]['thumb'])) {
 				if(!exif_imagetype($newname)) // опред тип файла
-					return $_this->_message('File '.$newname.' is not image');
+					return $_this->_message('File '.$newname.' is not image',1);
 				$prefix = $pathimg.'/';
 				if (count($_this->attaches[$key]['thumb']))
 					foreach($_this->attaches[$key]['thumb'] as $imod) {
@@ -126,14 +123,14 @@
 		}
 		if (count($prop)) {
 			$result=$_this->SQL->execSQL('UPDATE `'.$_this->tablename.'` SET '.implode(',', $prop).' WHERE id = \''.$_this->id.'\'');
-			if($result->err) return $_this->_message($result->err);
+			if($result->err) return false;
 			unset($prop);
 		}
-		return 0;
+		return true;
 	}
 
 	function _add_memos(&$_this) {
-		if (!count($_this->memos) or !count($_this->mmo_data)) return 0;
+		if (!count($_this->memos) or !count($_this->mmo_data)) return true;
 		foreach($_this->mmo_data as $key => $value)
 		{
 			$pathimg = $_this->_CFG['_PATH']['path'].$_this->getPathForMemo($key);
@@ -141,15 +138,15 @@
 			$name = $pathimg.'/'.$_this->id.$_this->text_ext;
 			$f = fopen($name, 'w');
 				if (!$f)
-					return $_this->_message('Can`t create file '.$name);
+					return $_this->_message('Can`t create file '.$name,1);
 				if (fwrite($f, $value) == -1)
-					return $_this->_message('Can`t write data into file '.$name);
+					return $_this->_message('Can`t write data into file '.$name,1);
 				if (!fclose($f))
-					return $_this->_message('Can`t close file '. $name);
+					return $_this->_message('Can`t close file '. $name,1);
 			chmod($name, 0644);
-			$_this->_message('File '.$name.' writed.',2);
+			$_this->_message('File '.$name.' writed.',3);
 		}
-		return 0;
+		return true;
 	}
 
 
@@ -165,9 +162,9 @@
 	function _update(&$_this) {
 		if ($_this->mf_istree and !is_array($_this->id)) {
 			if ($_this->fld_data['parent_id']==$_this->id)
-				return $_this->_message('Child `'.$_this->caption.'` can`t be owner to self ');
+				return $_this->_message('Child `'.$_this->caption.'` can`t be owner to self ',1);
 		}
-		if($_this->mf_timeup) 
+		if($_this->mf_timeup)
 			$_this->fld_data['mf_timeup'] = $_this->_CFG['time'];
 		if($_this->mf_timeoff and !isset($_this->fld_data['mf_timeoff']) and isset($_this->fld_data['active']) and !$_this->fld_data['active'] and $_this->data[$_this->id]['active']) 
 			$_this->fld_data['mf_timeoff'] = $_this->_CFG['time'];
@@ -176,22 +173,22 @@
 		//if ($_this->_select()) return 1;
 		// rename attaches & memos
 		if (!is_array($_this->id) and isset($_this->fld_data['id']) && $_this->fld_data['id'] != $_this->id) {
-			if (_rename_parent_childs($_this)) return 1;
-			if (_rename_childs($_this)) return 1;
-			if (_rename_attaches($_this)) return 1;
-			if (_rename_memos($_this)) return 1;
+			if (!_rename_parent_childs($_this)) return false;
+			if (!_rename_childs($_this)) return false;
+			if (!_rename_attaches($_this)) return false;
+			if (!_rename_memos($_this)) return false;
 		}
-		if (_update_fields($_this)) return 1;
+		if (!_update_fields($_this)) return false;
 		if (isset($_this->fld_data['id'])) $_this->id = $_this->fld_data['id'];
-		if (_update_attaches($_this)) return 1;
-		if (_update_memos($_this)) return 1;
+		if (!_update_attaches($_this)) return false;
+		if (!_update_memos($_this)) return false;
 		if (isset($_this->mf_indexing) && $_this->mf_indexing) $_this->indexing();
-		return $_this->_message('Chenge data in `'.$_this->tablename.'` successful!',2);
+		return $_this->_message('Chenge data in `'.$_this->tablename.'` successful!',3);
 	}
 
 
 	function _update_fields(&$_this) {
-		if (!count($_this->fld_data)) return 0;
+		if (!count($_this->fld_data)) return true;
 		// preparing
 		$data = array();
 		foreach($_this->fld_data as $key => $value) {
@@ -201,33 +198,35 @@
 				$data[$key] = '`'.$key.'` = \''.$value.'\'';
 		}
 		$result = $_this->SQL->execSQL('UPDATE `'.$_this->tablename.'` SET '.implode(',', $data).' WHERE id IN ('.$_this->_id_as_string().')');
-		if($result->err) return $_this->_message($result->err);
-		if(isset($_this->fld_data[$_this->owner_name]) and !is_array($_this->id)) $_this->owner_id = $_this->fld_data[$_this->owner_name];
-		if(isset($_this->fld_data['parent_id']) and !is_array($_this->id)) $_this->parent_id = $_this->fld_data['parent_id'];
-		return 0;
+		if($result->err) return false;
+		if(isset($_this->fld_data[$_this->owner_name]) and !is_array($_this->id))
+			$_this->owner_id = $_this->fld_data[$_this->owner_name];
+		if(isset($_this->fld_data['parent_id']) and !is_array($_this->id))
+			$_this->parent_id = $_this->fld_data['parent_id'];
+		return true;
 	}
 
 	function _rename_childs(&$_this) {
-		if(!count($_this->childs)) return 0;
+		if(!count($_this->childs)) return true;
 		foreach($_this->childs as $ch => $child) {
 			$result=$_this->SQL->execSQL('UPDATE `'.$_this->childs[$ch]->tablename.'` SET '.$_this->childs[$ch]->owner_name.' = \''.$_this->fld_data['id'].'\' WHERE '.$_this->childs[$ch]->owner_name.' =\''.$_this->id.'\'');
-			if($result->err) return $_this->_message($result->err);
+			if($result->err) return false;
 		}
-		return 0;
+		return true;
 	}
 
 	function _rename_parent_childs(&$_this) {
-		if(!$_this->mf_istree) return 0;
+		if(!$_this->mf_istree) return true;
 		$result=$_this->SQL->execSQL('UPDATE `'.$_this->tablename.'` SET `parent_id` = \''.$_this->fld_data['id'].'\' WHERE parent_id =\''.$_this->id.'\'');
-		if($result->err) return $_this->_message($result->err);
-		return 0;
+		if($result->err) return false;
+		return true;
 	}
 
 	function _rename_attaches(&$_this) {
-		if(!count($_this->attaches)) return 0;
+		if(!count($_this->attaches)) return true;
 		$pathimg = $_this->_CFG['_PATH']['path'].$_this->getPathForAtt($key);
 		$result=$_this->SQL->execSQL('SELECT `id`, `'.implode('`,`', array_keys($_this->attaches)).'` FROM `'.$_this->tablename.'` WHERE `id` IN ('.$_this->_id_as_string().')');
-		if($result->err) return $_this->_message($result->err);
+		if($result->err) return false;
 		$row = $result->fetch_array();
 		if ($row) {
 			foreach($_this->attaches as $key => $value) {
@@ -236,7 +235,7 @@
 					rename($f,$pathimg.'/'. $_this->fld_data['id'].'.'. $value['exts'][$row[$key]]);
 			}
 		}
-		return 0;
+		return true;
 	}
 
 	function _update_attaches(&$_this) {
@@ -244,13 +243,13 @@
 	}
 
 	function _rename_memos(&$_this) {
-		if(!count($_this->memos)) return 0;
+		if(!count($_this->memos)) return true;
 		$pathimg = $_this->_CFG['_PATH']['path'].$_this->getPathForMemo($key);
 		foreach($_this->memos as $key => $value) {
 			$f = $pathimg.'/'.$_this->id.$_this->text_ext;
 			if (file_exists($f)) rename($f, $pathimg.'/'.$_this->fld_data['id'].$_this->text_ext);
 		}
-		return 0;
+		return true;
 	}
 
 	function _update_memos(&$_this) {
@@ -266,43 +265,43 @@
 
 	function _delete(&$_this) {
 		if (!is_array($_this->id)) $_this->id = array($_this->id);
-		if (!count($_this->id)) return 0;
+		if (!count($_this->id)) return true;
 		// delete childs of owner
 		if (count($_this->childs)) foreach($_this->childs as &$child){
 			$child->id = $_this->id;
-			if (_delete_ownered($child)) return 1;
+			if (!_delete_ownered($child)) return false;
 		}
 		// delete childs of tree
 		if ($_this->mf_istree) {
 			$id = $_this->id;
-			if (_delete_parented($_this)) return 1;
+			if (!_delete_parented($_this)) return false;
 			$_this->id = $id;
 		}
-		if (_delete_attaches($_this)) return 1;
-		if (_delete_memos($_this)) return 1;
-		if (_delete_fields($_this)) return 1;
+		if (!_delete_attaches($_this)) return false;
+		if (!_delete_memos($_this)) return false;
+		if (!_delete_fields($_this)) return false;
 
 		if ($_this->mf_indexing) $_this->deindexing();
-		return $_this->_message('Delete data from `'.$_this->caption.'` successful.',2);
+		return $_this->_message('Delete data from `'.$_this->caption.'` successful.',3);
 	}
 
 	function _delete_ownered(&$_this) {
 		// select record ids to delete
 		$result=$_this->SQL->execSQL('SELECT id FROM `'.$_this->tablename.'` WHERE `'.$_this->owner_name.'` IN ('.$_this->_id_as_string().')');
-		if($result->err) return $_this->_message($result->err);
+		if($result->err) return false;
 		// create list
 		$_this->id = array();
 		while (list($id) = $result->fetch_array(MYSQL_NUM)) 
 			$_this->id[] = $id;
 		// if list not empty
 		if (count($_this->id)) $_this->_delete();
-		return 0;
+		return true;
 	}
 
 	function _delete_parented(&$_this) {
 		// select record ids to delete
 		$result=$_this->SQL->execSQL('SELECT id FROM `'.$_this->tablename.'` WHERE `parent_id` IN ('.$_this->_id_as_string().')');
-		if($result->err) return $_this->_message($result->err);
+		if($result->err) return false;
 
 		// create list
 		$_this->id = array();
@@ -310,45 +309,45 @@
 
 		// if list not empty
 		if (count($_this->id)) $_this->_delete();
-		return 0;
+		return true;
 	}
 
 	function _delete_fields(&$_this) {
 		// delete records
 		$result=$_this->SQL->execSQL('DELETE FROM `'.$_this->tablename.'` WHERE `id` IN ('.$_this->_id_as_string().')');
-		if($result->err) return $_this->_message($result->err);
-		return 0;
+		if($result->err) return false;
+		return true;
 	}
 
 	function _delete_attaches(&$_this) {
-		if (!count($_this->attaches)) return 0;
+		if (!count($_this->attaches)) return true;
 		$pathimg = $_this->_CFG['_PATH']['path'].$_this->getPathForAtt($key);
 		$result=$_this->SQL->execSQL('SELECT `id`, `'.implode('`,`', array_keys($_this->attaches)).'` FROM `'. $_this->tablename.'` WHERE `id` IN ('.$_this->_id_as_string().')');
-		if($result->err) return $_this->_message($result->err);
+		if($result->err) return false;
 
 		while ($row = $result->fetch_array()) {
 			foreach($_this->attaches as $key => $value) {
 			
 				$f = $pathimg.'/'. $row['id']. '.'. $row[$key];
 				if (file_exists($f)) {
-					if (!unlink($f)) return $_this->_message('Cannot delete file `'.$f.'`');
+					if (!unlink($f)) return $_this->_message('Cannot delete file `'.$f.'`',1);
 				}
 			}
 		}
-		return 0;
+		return true;
 	}
 
 	function _delete_memos(&$_this) {
-		if (!count($_this->memos)) return 0;
+		if (!count($_this->memos)) return true;
 		$pathimg = $_this->getPathForMemo($key);
 		foreach($_this->id as $id) {
 			foreach($_this->memos as $key => $value) {
 				$f = $pathimg.'/'.$id.$_this->text_ext;
 				if (file_exists($f))
-					if (!unlink($f)) return $_this->_error('Cannot delete memo `'.$f.'`');
+					if (!unlink($f)) return $_this->_error('Cannot delete memo `'.$f.'`',1);
 			}
 		}
-		return 0;
+		return true;
 	}
 
 /************************* IMAGE *****************************/
@@ -360,8 +359,8 @@
 		elseif($pos==1)  $pos ='eastnorth';
 		else  $pos ='northeast';
 		shell_exec('composite -gravity '.$pos.' -dissolve 30 $logo '.$ConvertFile.' '.$OutFile); 
-		if(!file_exists($OutFile)) return $_this->_message('Cant composite file on '.__LINE__.' in kernel');
-		return 0;
+		if(!file_exists($OutFile)) return $_this->_message('Cant composite file on '.__LINE__.' in kernel',1);
+		return true;
 	}
 
 	function _resizeImage(&$_this,$InFile, $OutFile, $WidthX, $HeightY)
@@ -374,7 +373,7 @@
 				copy($InFile,$OutFile);
 				chmod($OutFile, 0755);
 			}
-			return 0;
+			return true;
 		}
 		elseif($width_orig/$WidthX < $height_orig/$HeightY) {
 			$WidthX = round($HeightY*$width_orig/$height_orig);
@@ -385,13 +384,13 @@
 
 		$thumb = imagecreatetruecolor($WidthX, $HeightY);//созд пустой рисунок
 		if(!$imtype = exif_imagetype($InFile))// опред тип файла
-			return $_this->_message('File '.$InFile.' is not image');
-		if($imtype>3) return 0;
+			return $_this->_message('File '.$InFile.' is not image',1);
+		if($imtype>3) return true;
 		$source = _imagecreatefrom($_this,$InFile,$imtype);//открываем рисунок
 		imagecopyresized($thumb, $source, 0, 0, 0, 0, $WidthX, $HeightY, $width_orig, $height_orig);//меняем размер
 		_image_to_file($thumb, $OutFile,$_this->_CFG['_imgquality'],$imtype);//сохраняем в фаил
-		if(!file_exists($OutFile)) return $_this->_message('Cant create file on '.__LINE__.' in kernel');
-		return 0;
+		if(!file_exists($OutFile)) return $_this->_message('Cant create file',1);
+		return true;
 	}
 
 	function _cropImage(&$_this,$InFile, $OutFile, $WidthX, $HeightY)
@@ -401,13 +400,13 @@
 		// Resample
 		$thumb = imagecreatetruecolor($WidthX, $HeightY);//созд пустой рисунок
 		if(!$imtype = exif_imagetype($InFile)) // опред тип файла
-			return $_this->_message('File '.$InFile.' is not image');
-		if($imtype>3) return 0;
+			return $_this->_message('File is not image',1);
+		if($imtype>3) return true;
 		$source = _imagecreatefrom($_this,$InFile,$imtype);//открываем рисунок
 		imagecopyresampled($thumb, $source, 0, 0, $width_orig/2-$WidthX/2, $height_orig/2-$HeightY/2, $WidthX, $HeightY, $WidthX, $HeightY);
 		_image_to_file($thumb, $OutFile,$_this->_CFG['_imgquality'],$imtype);//сохраняем в фаил
-		if(!file_exists($OutFile)) return $_this->_message('Cant create file on '.__LINE__.' in kernel');
-		return 0;
+		if(!file_exists($OutFile)) return $_this->_message('Cant create img file ',1);
+		return true;
 	}
 
 	function _resizecropImage(&$_this,$InFile, $OutFile, $WidthX, $HeightY)
@@ -424,24 +423,24 @@
 		}
 		/*Создаем пустое изображение на вывод*/
 		if(!($thumb = @imagecreatetruecolor($WidthX, $HeightY)))
-			return $_this->_message('Cannot Initialize new GD image stream on line '.__LINE__.' in kernel');
+			return $_this->_message('Cannot Initialize new GD image stream',1);
 		/*Определяем тип рисунка*/
 		if(!$imtype = exif_imagetype($InFile))// опред тип файла
-			return $_this->_message('File '.$InFile.' is not image');
+			return $_this->_message('File is not image',1);
 		/*Обработка только jpeg, gif, png*/
-		if($imtype>3) return 0;
+		if($imtype>3) return true;
 		/*Открываем исходный рисунок*/
 		if(!$source = _imagecreatefrom($_this,$InFile,$imtype))//открываем рисунок
-			return $_this->_message('File '.$InFile.' is not image');
+			return $_this->_message('File '.$InFile.' is not image',1);
 		if(!imagecopyresampled($thumb, $source, 0, 0, 0, 0, $WidthX, $HeightY, $width_orig, $height_orig))
-			return $_this->_message('Error imagecopyresampled on line '.__LINE__.' in kernel');
+			return $_this->_message('Error imagecopyresampled',1);
 		if(!($thumb2 = @imagecreatetruecolor($trueX, $trueY)))
-			return $_this->_message('Cannot Initialize new GD image stream on line '.__LINE__.' in kernel');
+			return $_this->_message('Cannot Initialize new GD image stream',1);
 		if(!imagecopyresampled($thumb2, $thumb, 0, 0, $WidthX/2-$trueX/2, $HeightY/2-$trueY/2, $trueX, $trueY, $trueX, $trueY)) 
-			return $_this->_message('Error imagecopyresampled on line '.__LINE__.' in kernel');
+			return $_this->_message('Error imagecopyresampled',1);
 		_image_to_file($thumb2, $OutFile,$_this->_CFG['_imgquality'],$imtype);//сохраняем в фаил
-		if(!file_exists($OutFile)) return $_this->_message('Cant create file on '.__LINE__.' in kernel');
-		return 0;
+		if(!file_exists($OutFile)) return $_this->_message('Cant create file',1);
+		return true;
 	}
 
 	function _imagecreatefrom(&$_this,$im_file,$imtype)
@@ -467,15 +466,15 @@
 		*/
 		if($imtype==1) {
 			if(!($image=@imagecreatefromgif($im_file)))
-				$_this->_message('Can not create a new image from file on line '.__LINE__.' in kernel');
+				$_this->_message('Can not create a new image from file',1);
 		}
 		elseif($imtype==2) {
 			if(!($image=imagecreatefromjpeg($im_file)))
-				$_this->_message('Can not create a new image from file on line '.__LINE__.' in kernel');
+				$_this->_message('Can not create a new image from file',1);
 		}
 		elseif($imtype==3) {
 			if(!($image=imagecreatefrompng($im_file)))
-				$_this->_message('Can not create a new image from file on line '.__LINE__.' in kernel');
+				$_this->_message('Can not create a new image from file',1);
 		}
 		else return false;
 		return $image;

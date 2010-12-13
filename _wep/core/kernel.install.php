@@ -31,14 +31,14 @@
 
 		// to execute query
 		$result = $this->SQL->execSQL('CREATE TABLE `'.$this->tablename.'` ('.implode(',',$fld).') ENGINE=MyISAM DEFAULT CHARSET='.$this->_CFG['sql']['setnames'].' COMMENT = "'.$this->ver.'"');
-		if($result->err) return $this->_message($result->err);
+		if($result->err) return false;
 		$this->_message('Table `'.$this->tablename.'` installed.',3);
 
-		if(isset($this->_cl))
-			$this->SQL->execSQL('UPDATE `'.$this->_CFG['sql']['dbpref'].'modulprm` SET `ver`="'.$this->ver.'" WHERE `id`="'.$this->_cl.'"');
+	//	if(isset($this->_cl))
+		//	$this->SQL->execSQL('UPDATE `'.$this->_CFG['sql']['dbpref'].'modulprm` SET `ver`="'.$this->ver.'" WHERE `id`="'.$this->_cl.'"');
 
 		if(count($this->def_records)) $this->_insertDefault();
 
-		return 0;
+		return true;
 
 ?>
