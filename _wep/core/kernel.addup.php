@@ -73,7 +73,7 @@
 	}
 
 	function _add_attaches(&$_this) {
-		if (!count($_this->attaches) or !count($_this->att_data)) return false;
+		if (!count($_this->attaches) or !count($_this->att_data)) return true;
 		$result=$_this->SQL->execSQL('SELECT id, '.implode(',', array_keys($_this->attaches)).' FROM `'.$_this->tablename.'` WHERE id IN ('.$_this->_id_as_string().')');
 		if($result->err) return false;
 		$row = $result->fetch_array();
@@ -168,8 +168,8 @@
 			$_this->fld_data['mf_timeup'] = $_this->_CFG['time'];
 		if($_this->mf_timeoff and !isset($_this->fld_data['mf_timeoff']) and isset($_this->fld_data['active']) and !$_this->fld_data['active'] and $_this->data[$_this->id]['active']) 
 			$_this->fld_data['mf_timeoff'] = $_this->_CFG['time'];
-		if($_this->mf_ipcreate) 
-			$_this->fld_data['mf_ipcreate'] = ip2long($_SERVER['REMOTE_ADDR']);
+		//if($_this->mf_ipcreate) 
+		//	$_this->fld_data['mf_ipcreate'] = ip2long($_SERVER['REMOTE_ADDR']);
 		//if ($_this->_select()) return 1;
 		// rename attaches & memos
 		if (!is_array($_this->id) and isset($_this->fld_data['id']) && $_this->fld_data['id'] != $_this->id) {

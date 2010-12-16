@@ -72,15 +72,23 @@
 		}
 
 		function __destruct() {
-			global $_tpl,$_html;
+			global $_tpl,$_html,$_CFG;
 			if($this->flag and file_exists(($this->_PATHd.'templates/'.$this->_templates.'.tpl'))){
 				$_html = implode("", file($this->_PATHd.'templates/'.$this->_templates.'.tpl'));
 				$_html = str_replace('"', '\"', $_html);
+				include_once($_CFG['_PATH']['core'].'/includesrc.php');
+				fileInclude($_CFG['fileIncludeOption']);
+				arraySrcToStr();
 			}elseif($this->flag)
 				$_html = 'ERROR: Mising templates file '.$this->_templates.'.tpl';
 
-			if($this->flag){
+			if($this->flag) {
 				headerssent();
+			} else {
+				/*include_once($_CFG['_PATH']['core'].'/includesrc.php');
+				fileInclude($_CFG['fileIncludeOption']);
+				arraySrcToFunc();
+				$GLOBALS['_RESULT']['eval'] = $_tpl['onload'];*/
 			}
 		}
 

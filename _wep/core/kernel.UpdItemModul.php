@@ -28,8 +28,9 @@
 							if($rm = $this->_save_item($arr['vars'])) {
 								$flag=1;
 								$arr['mess'][] = array('name'=>'ok', 'value'=>$this->getMess('update'));
-							} else
+							} else {
 								$arr['mess'][] = array('name'=>'error', 'value'=>$this->getMess('update_err'));
+							}
 						}
 					}
 				}

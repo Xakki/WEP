@@ -93,9 +93,9 @@ $_CFG['singleton'] = array();
 	$_CFG['PATH']['HASH_KEY'] = $_CFG['PATH']['wepconfname'].'/config/hash.key';
 
 //Настройка для Nginx
-	if(isset($_SERVER['HTTP_X_REAL_IP']))
+	if(isset($_SERVER['HTTP_X_REAL_IP']) and $_SERVER['HTTP_X_REAL_IP'])
 		$_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_REAL_IP'];
-	if(isset($_SERVER['HTTP_X_REAL_PORT']))
+	if(isset($_SERVER['HTTP_X_REAL_PORT']) and $_SERVER['HTTP_X_REAL_PORT'])
 		$_SERVER['SERVER_PORT'] = $_SERVER['HTTP_X_REAL_PORT'];
 
 /*http пути*/

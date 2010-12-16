@@ -28,19 +28,15 @@ class ugroup_extend extends kernel_class
 				'fullPage'=>'true',
 				'toolbarStartupExpanded'=>'false'));
 		$this->config_form['mailremind'] = array(
-			'type' => 'ckedit',
-			'caption' => 'Текст письма востановления пароля', 
-			'paramedit'=>array(
-				'height'=>350,
-				'fullPage'=>'true',
-				'toolbarStartupExpanded'=>'false'));
+			'type' => 'textarea',
+			'caption' => 'Текст письма востановления пароля');
 		$this->config_form["reg"] = array("type" => "checkbox", "caption" => "Включить регистрацию?");
-		$this->config_form["noreggroup"] = array("type" => "list", "listname"=>"list", "caption" => "Неподтвердившие регистрацию");
-		$this->config_form["reggroup"] = array("type" => "list", "listname"=>"list", "caption" => "Регистрировать по умолчанию");
-		$this->config_form["rememberday"] = array("type" => "int", 'mask' =>array('min'=>1), "caption" => 'Дней запоминания авторизации');
 		$this->config_form["payon"] = array("type" => "checkbox", "caption" => "Включить платежную систему?");
 		$this->config_form["premoderation"] = array("type" => "checkbox", "caption" => "Использовать премодерацию?");
+		$this->config_form["noreggroup"] = array("type" => "list", "listname"=>"list", "caption" => "Неподтвердившие регистрацию");
+		$this->config_form["reggroup"] = array("type" => "list", "listname"=>"list", "caption" => "Регистрировать по умолчанию");
 		$this->config_form["modergroup"] = array("type" => "list", "listname"=>"list", "caption" => "Непрошедшие проверку");
+		$this->config_form["rememberday"] = array("type" => "int", 'mask' =>array('min'=>1), "caption" => 'Дней запоминания авторизации');
 	}
 
 	function _set_features() {
