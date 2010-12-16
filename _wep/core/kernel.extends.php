@@ -1046,6 +1046,8 @@ $Ajax=0 - не скриптовая
 		$cl = $this->_cl;
 		$flag=1;
 		$xml= $messages = array();
+		
+		if(!$param['phptemplate']) $param['phptemplate'] = 'superlist';
 
 		if($this->owner and $this->owner->id)
 			$this->_clp = $this->owner->_clp.$this->owner->_cl.'_id='.$this->owner->id.'&amp;'.$this->owner->_cl.'_ch='.$this->_cl.'&amp;';
@@ -1281,15 +1283,15 @@ $Ajax=0 - не скриптовая
 			}
 			else {
 				$flag=3;
-				$xml['superlist'] = $this->_displayXML($param);
-				$xml['superlist']['topmenu'] = &$xml['topmenu'];
+				$xml[$param['phptemplate']] = $this->_displayXML($param);
+				$xml[$param['phptemplate']]['topmenu'] = &$xml['topmenu'];
 			}
 
 		}
-		if(!$xml['superlist']['messages'])
-			$xml['superlist']['messages'] = array();
+		if(!$xml[$param['phptemplate']]['messages'])
+			$xml[$param['phptemplate']]['messages'] = array();
 		if(count($messages))
-			$xml['superlist']['messages'] += $messages;
+			$xml[$param['phptemplate']]['messages'] += $messages;
 
 		return array($xml,$flag);
 

@@ -247,7 +247,6 @@ class users_extend extends kernel_class {
 						return array($_CFG['_MESS']['auth_bangroup'],0);
 					elseif(!$this->data[0]["active"])
 						return array($this->_CFG['_MESS']['auth_banuser'],0);
-						
 					elseif($this->data[0]["level"]>=5)
 						return array($this->_CFG['_MESS']['denied'],0);
 					else
@@ -317,6 +316,7 @@ class users_extend extends kernel_class {
 		global $_MESS,$_tpl;
 		// добавлены настройки на форму регистрации
 		$this->fields_form['id']['readonly']=false;
+		//$this->fields_form['info'] = array('type' => 'checkbox', 'caption' => 'Пользователь активен');
 		unset($this->fields_form['sett1']);
 		if(!$this->owner->config["reg"]) return array(array('messages'=>array(array('name'=>'error', 'value'=>$this->_CFG['_MESS']['deniedreg']))),1);
 		if(_prmUserCheck()) return array(array('messages'=>array(array('name'=>'error', 'value'=>$this->_CFG['_MESS']['deniedu']))),1);

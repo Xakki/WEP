@@ -177,6 +177,7 @@ class modulprm_class extends kernel_class {
 				$this->data[$row['id']]['name'] = $row['name'];
 			$this->data[$row['id']]['ver'] = $row['ver'];
 		}
+	//	print_r($this->data);exit();
 		return $this->data;
 	}
 
