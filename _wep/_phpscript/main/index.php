@@ -36,7 +36,7 @@
 
 	$_tpl['styles'] = $PGLIST->pageinfo['styles'] + $_tpl['styles'];
 	$_tpl['script'] = $PGLIST->pageinfo['script'] + $_tpl['script'];
-
+$_CFG['fileIncludeOption'] = array(); // чтобы автоматом не подключались стили и скрптыв
 /*
 	if(!isset($_SESSION['showIEwarning'])) $_SESSION['showIEwarning']=0;
 	if($HTML->_fTestIE('MSIE 6') and $_SESSION['showIEwarning']<3) {

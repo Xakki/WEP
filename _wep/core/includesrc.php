@@ -1,6 +1,7 @@
 <?
 
 	function fileInclude($gfi) {
+		if(!count($gfi)) return true;
 		global $_tpl,$_CFG;
 		if($gfi['multiple']==2) {
 			$_tpl['styles']['jquery-ui-redmond'] = 1;
@@ -38,12 +39,13 @@
 			$_tpl['styles']['jquery.fancybox'] = 1;
 			$_tpl['onload'] .= "$('.fancyimg').fancybox();";
 		}
+		return true;
 	}
 
 	function arraySrcToStr() {
 		global $_tpl,$_CFG;
+		$temp = '';
 		if(isset($_tpl['styles']) and is_array($_tpl['styles'])) {
-			$temp = '';
 			foreach($_tpl['styles'] as $kk=>$rr) {
 				if($rr[0]=='<')
 					$temp .= $rr."\n";
@@ -54,11 +56,11 @@
 				else
 					$temp .= '<style type="text/css">'.$rr.'</style>'."\n";
 			}
-			$_tpl['styles'] = $temp;
 		}
+		$_tpl['styles'] = $temp;
 
+		$temp = '';
 		if(isset($_tpl['script']) and is_array($_tpl['script'])) {
-			$temp = '';
 			foreach($_tpl['script'] as $kk=>$rr) {
 				if(is_array($rr))
 					$temp .= '<script type="text/javascript" src="'.implode('"></script>'."\n".'<script type="text/javascript src="',$rr).'"></script>'."\n";
@@ -70,8 +72,8 @@
 				else
 					$temp .= "<script type=\"text/javascript\">//<!--\n".$rr."\n//--></script>\n";
 			}
-			$_tpl['script'] = $temp;
 		}
+		$_tpl['script'] = $temp;
 	}
 
 	function arraySrcToFunc() {

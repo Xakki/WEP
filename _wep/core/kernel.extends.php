@@ -1503,7 +1503,7 @@ $Ajax=0 - не скриптовая
 					$this->fld_data['active'] = 2;
 			}
 
-			if (!$this->_update())
+			if ($this->_update())
 			{
 				if($this->fld_data['active']==5)
 					$xml[] = array('value'=>$this->getMess('act5'),'name'=>'ok');
@@ -1533,13 +1533,13 @@ $Ajax=0 - не скриптовая
 		{
 			if(isset($this->fields['active']) and $this->fields['active']['type']!='bool'){
 				$this->fld_data['active'] = 4;
-				if(!$this->_update()){
+				if($this->_update()){
 					$xml[] = array('value'=>$this->getMess('deleted'),'name'=>'ok');
 					$flag=0;
 				}else
 					$xml[] = array('value'=>$this->getMess('del_err'),'name'=>'error');
 			}else{
-				if(!$this->_delete()){
+				if($this->_delete()){
 					$xml[] = array('value'=>$this->getMess('deleted'),'name'=>'ok');
 					$flag=0;
 				}else
