@@ -496,10 +496,12 @@
 	function __autoload($class_name){ //автозагрузка модулей
 		global $_CFG;
 		require_once($_CFG['_PATH']['core'].'kernel.extends.php');
-		if($file = _modulExists($class_name))
-			require_once($file);
-		else
-			throw new Exception('Невозможно подключить класс "'.$class_name.'"');
+		if($class_name!='kernel_class') {
+			if($file = _modulExists($class_name))
+				require_once($file);
+			else
+				throw new Exception('Невозможно подключить класс "'.$class_name.'"');
+		}
 	}
 
 /*
