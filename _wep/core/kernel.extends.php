@@ -120,8 +120,8 @@ _fldformer($key, $param)
 		$this->mf_statistic = false; // показывать  статистику по дате добавления
 		$this->cf_childs = false; // true - включить управление подключение подмодулей в настройках модуля
 		$this->cf_reinstall = false;
-		$this->includeJStoFORM = false; // подключать ли скрипты для формы через настройки
-		$this->includeCSStoFORM = false; // подключать ли стили для формы через настройки
+		$this->includeJStoWEP = false; // подключать ли скрипты для формы через настройки
+		$this->includeCSStoWEP = false; // подключать ли стили для формы через настройки
 		$this->singleton = false; // класс-одиночка
 		$this->version = 'WEP 2.0'; // версия ядра
 		$this->ver = '0.1.1'; // версия модуля
@@ -244,13 +244,13 @@ _fldformer($key, $param)
 			$this->config['childs'] = '';
 			$this->config_form['childs'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'child.class', 'caption' => 'Подмодули');
 		}
-		if($this->includeJStoFORM) {
-			$this->config['scriptIncludeToForm'] = '';
-			$this->config_form['scriptIncludeToForm'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'script', 'caption' => 'Script модуля');
+		if($this->includeJStoWEP) {
+			$this->config['jsIncludeToWEP'] = '';
+			$this->config_form['jsIncludeToWEP'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'script', 'caption' => 'Script модуля');
 		}
-		if($this->includeCSStoFORM) {
-			$this->config['cssIncludeToForm'] = '';
-			$this->config_form['cssIncludeToForm'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'style', 'caption' => 'CSS модуля');
+		if($this->includeCSStoWEP) {
+			$this->config['cssIncludeToWEP'] = '';
+			$this->config_form['cssIncludeToWEP'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'style', 'caption' => 'CSS модуля');
 		}
 		return true;
 	}
@@ -1107,6 +1107,23 @@ $Ajax=0 - не скриптовая
 				//	$HTML->path[$this->_CFG['PATH']['wepname'].'/index.php?'.$tmp] =$this->childs[$_GET[$cl.'_ch']]->caption;
 			}
 		}else {
+			global $_tpl;
+			if($this->includeCSStoWEP and $this->config['cssIncludeToWEP']) {
+				if(!is_array($this->config['cssIncludeToWEP']))
+					$this->config['cssIncludeToWEP'] = explode('|',$this->config['cssIncludeToWEP']);
+				if(count($this->config['cssIncludeToWEP'])) {
+					foreach($this->config['cssIncludeToWEP'] as $sr)
+						$_tpl['styles'][$sr] = 1;
+				}
+			}
+			if($this->includeJStoWEP and $this->config['jsIncludeToWEP']) {
+				if(!is_array($this->config['jsIncludeToWEP']))
+					$this->config['jsIncludeToWEP'] = explode('|',$this->config['jsIncludeToWEP']);
+				if(count($this->config['jsIncludeToWEP'])) {
+					foreach($this->config['jsIncludeToWEP'] as $sr)
+						$_tpl['script'][$sr] = 1;
+				}
+			}
 			$filter_clause = $this->_filter_clause();
 			$param['clause'] = $filter_clause[0];
 
@@ -1183,7 +1200,6 @@ $Ajax=0 - не скриптовая
 					'css'=>'wepfilter',
 				);
 				if(count($filter_clause[0]) and isset($_SESSION['filter'][$this->_cl]) and count($_SESSION['filter'][$this->_cl])) {
-					global $_tpl;
 					$_tpl['onload'] .= 'showHelp(\'.weptools.wepfilter\',\'Внимание! Включен фильтр.\',4000);$(\'.weptools.wepfilter\').addClass(\'weptools_sel\');';
 				}
 			}

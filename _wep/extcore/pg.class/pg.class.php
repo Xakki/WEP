@@ -94,7 +94,7 @@ class pg_class extends kernel_class {
 			$this->create_child("content");
 		//}
 
-		$this->enum['inc'] = array(
+		$this->_enum['inc'] = array(
 			0=>array('path'=>$this->_CFG['_PATH']['ctext'],'name'=>'WEP - '),
 			1=>array('path'=>$this->_CFG['_PATH']['extcore'],'name'=>'WEPext - '),
 			2=>array('path'=>$this->_CFG['_PATH']['ptext'],'name'=>'CONF - '),
@@ -379,14 +379,14 @@ class pg_class extends kernel_class {
 					if(!$flagMC) {
 						$FUNCPARAM = $rowPG['funcparam'];
 						$typePG = explode(':',$rowPG['pagetype']);
-						if(count($typePG)==2 and file_exists($this->enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php'))
-							$flagPG = include($this->enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php');
+						if(count($typePG)==2 and file_exists($this->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php'))
+							$flagPG = include($this->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php');
 						elseif(file_exists($this->_CFG['_PATH']['ptext'].$rowPG['pagetype'].'.inc.php'))
 							$flagPG = include($this->_CFG['_PATH']['ptext'].$rowPG['pagetype'].'.inc.php');
 						elseif(file_exists($this->_CFG['_PATH']['ctext'].$rowPG['pagetype'].'.inc.php'))
 							$flagPG = include($this->_CFG['_PATH']['ctext'].$rowPG['pagetype'].'.inc.php');
 						else {
-							trigger_error('Обрботчик страниц "'.$this->enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php" не найден!', E_USER_WARNING);
+							trigger_error('Обрботчик страниц "'.$this->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php" не найден!', E_USER_WARNING);
 							continue;
 						}
 						if($rowPG['memcache'] and $MEMCACHE)
@@ -449,8 +449,8 @@ class pg_class extends kernel_class {
 
 				if($onmenuPG==-1) {
 					$mapPG = explode(':',$rowPG['pagemap']);
-					if(count($mapPG)==2 and file_exists($this->enum['inc'][$mapPG[0]]['path'].$mapPG[1].'.map.php')) {
-						$tempinc = include($this->enum['inc'][$mapPG[0]]['path'].$mapPG[1].'.map.php');
+					if(count($mapPG)==2 and file_exists($this->_enum['inc'][$mapPG[0]]['path'].$mapPG[1].'.map.php')) {
+						$tempinc = include($this->_enum['inc'][$mapPG[0]]['path'].$mapPG[1].'.map.php');
 						if(isset($DATA_PG[$keyPG]['#item#']) and is_array($DATA_PG[$keyPG]['items']))
 							$DATA_PG[$keyPG]['#item#'] += $tempinc;
 						else

@@ -86,7 +86,7 @@
 				elseif($rr==1 and $kk)
 					$temp .= '$.includeCSS(\''.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_style'].$kk.'.css\');';
 				else
-					$temp .= 'alert(\'CSS not find '.$kk.'\');';
+					$temp .= 'alert(\'CSS not found '.$kk.'\');';
 			}
 		}
 		$temp .= 'var chekcnt=0;';

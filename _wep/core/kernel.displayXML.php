@@ -86,7 +86,7 @@
 				if($r['mask']['fview']==1 or $r['mask']['disable'] or $r['type']=='hidden' or $r['type']=='info')
 					$arrno[$k]=1; 
 				elseif(!isset($arrno[$k])) {
-					if(($r['type']=='list' or $r['type']=='ajaxlist') and is_array($r['listname']) and (isset($r['listname']['class']) or isset($r['listname']['tablename']))) {
+					if(isset($r['listname']) and is_array($r['listname']) and (isset($r['listname']['class']) or isset($r['listname']['tablename']))) {
 						$lsn = $r['listname'];
 						if(!$lsn['nameField'])
 							$lsn['nameField'] = 't'.$t.'.name';
@@ -119,7 +119,7 @@
 						else
 							$cls[1] .= 't1.'.$k.'='.$lsn['idField'].' ';
 						$t++;
-					}elseif(($r['type']=='list' or $r['type']=='ajaxlist') and !is_array($r['listname'])) {
+					}elseif(isset($r['listname']) and !is_array($r['listname'])) {
 						$this->_checkList($r['listname'],0);
 					}
 
@@ -181,13 +181,13 @@
 							$tditem['value'] .= long2ip($row[$k]);
 						elseif($r['type']=='checkbox')
 							$tditem['value'] .= $this->_CFG['enum']['yesno'][$row[$k]];
-						elseif($r['type']=='list' and is_array($r['listname'])) {//isset($row['name_'.$k])
+						elseif(isset($r['listname']) and is_array($r['listname'])) {//isset($row['name_'.$k])
 							if($r['multiple']) 
 								$tditem['value']= str_replace('|',', ',trim($row['name_'.$k],'|'));
 							else
 								$tditem['value'] = $row['name_'.$k];
 						}
-						elseif($r['type']=='list') {// and !is_array($r['listname'])
+						elseif(isset($r['listname']) and $r['listname']) {// and !is_array($r['listname'])
 							if($r['multiple']) 
 								$row[$k]= explode('|',trim($row[$k],'|'));
 							else

@@ -64,20 +64,7 @@
 									$DATA['formcreat']['path'] = $HTML->path;
 									$html = $HTML->transformPHP($DATA,'formcreat');
 									//$_tpl['onload'] .= 'var tmp = $(\'#form_'.$_GET['_modul'].'\').attr(\'action\');$(\'#form_'.$_GET['_modul'].'\').attr(\'action\',tmp.replace(\'index.php\',\'js.php\'));JSFR(\'#form_'.$_GET['_modul'].'\');';
-									if($MODUL->includeJStoFORM) {
-										if(!is_array($MODUL->config['scriptIncludeToForm']))
-											$MODUL->config['scriptIncludeToForm'] = explode('|',$MODUL->config['scriptIncludeToForm']);
-										if(count($MODUL->config['scriptIncludeToForm']))
-											foreach($MODUL->config['scriptIncludeToForm'] as $sr)
-												$_tpl['script'][$sr] = 1;
-									}
-									if($MODUL->includeCSStoFORM) {
-										if(!is_array($MODUL->config['cssIncludeToForm']))
-											$MODUL->config['cssIncludeToForm'] = explode('|',$MODUL->config['cssIncludeToForm']);
-										if(count($MODUL->config['cssIncludeToForm']))
-											foreach($MODUL->config['cssIncludeToForm'] as $sr)
-												$_tpl['styles'][$sr] = 1;
-									}
+
 								}
 							} elseif($flag!=3) {
 								end($HTML->path);

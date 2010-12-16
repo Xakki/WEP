@@ -51,25 +51,25 @@ function tpl_form(&$data) {
 			}
 			elseif($r['type']=='radio') {
 				$html .= '<div class="form-value">';
-				if(!count($r['item']))
+				if(!count($r['valuelist']))
 					$html .= '<font color="red">Нет элементов для отображения</font>';
 				else {
-					foreach($r['item'] as $row) {
-						$html .= '<input type="'.$r['type'].'" name="'.$k.'" value="'.$row['value'].'" class="radio"';
-						if($row['value']==$r['value'])
+					foreach($r['valuelist'] as $row) {
+						$html .= '<input type="'.$r['type'].'" name="'.$k.'" value="'.$row['#name#'].'" class="radio"';
+						if($row['#sel#'])
 							$html .= ' checked="checked"';
-						$html .= '/>'.$row['name'].' &#160;&#160;';
+						$html .= '/>'.$row['#name#'].' &#160;&#160;';
 					}
 				}
 				$html .= '</div>';
 			}
 			elseif($r['type']=='checkbox') {
 				$html .= '<div class="form-value checkbox-value">';
-				if(!count($r['item']))
+				if(!count($r['valuelist']))
 					$html .= '<input type="'.$r['type'].'" name="'.$k.'" value="1" '.($r['value']?'checked="checked"':'').'/>';
 				else {
-					foreach($r['item'] as $row) {
-						$html .= '<input type="'.$r['type'].'" name="'.$k.'[]" value="'.$row['value'].'" class="radio"';
+					foreach($r['valuelist'] as $row) {
+						$html .= '<input type="'.$r['type'].'" name="'.$k.'[]" value="'.$row['#name#'].'" class="radio"';
 						if($row['sel'])
 							$html .= ' checked="checked"';
 						$html .= '/><div class="title">'.$row['#name#'].'</div>';

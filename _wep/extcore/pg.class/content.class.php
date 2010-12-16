@@ -68,7 +68,7 @@ class content_class extends kernel_class {
 		while (false !== ($entry = $dir->read())) {
 			if ($entry[0]!='.' && $entry[0]!='..' && strstr($entry,$pref)) {
 				$entry = substr($entry, 0, strpos($entry, $pref)); 
-				$data['0:'.$entry] = $this->owner->enum['inc'][0]['name'].$entry;
+				$data['0:'.$entry] = $this->owner->_enum['inc'][0]['name'].$entry;
 			}
 		}
 		$dir->close();
@@ -81,7 +81,7 @@ class content_class extends kernel_class {
 					while (false !== ($entry2 = $dir2->read())) {
 						if ($entry2[0]!='.' && $entry2[0]!='..' && strstr($entry2,$pref)) {
 							$entry2 = substr($entry2, 0, strpos($entry2, $pref)); 
-							$data['1:'.$entry.'/'.$entry2] = $this->owner->enum['inc'][1]['name'].$entry.'/'.$entry2;
+							$data['1:'.$entry.'/'.$entry2] = $this->owner->_enum['inc'][1]['name'].$entry.'/'.$entry2;
 						}
 					}
 					$dir2->close();
@@ -94,7 +94,7 @@ class content_class extends kernel_class {
 		while (false !== ($entry = $dir->read())) {
 			if ($entry[0]!='.' && $entry[0]!='..' && strstr($entry,$pref)) {
 				$entry = substr($entry, 0, strpos($entry, $pref)); 
-				$data['2:'.$entry] = $this->owner->enum['inc'][2]['name'].$entry;
+				$data['2:'.$entry] = $this->owner->_enum['inc'][2]['name'].$entry;
 			}
 		}
 		$dir->close();
@@ -107,7 +107,7 @@ class content_class extends kernel_class {
 					while (false !== ($entry2 = $dir2->read())) {
 						if ($entry2[0]!='.' && $entry2[0]!='..' && strstr($entry2,$pref)) {
 							$entry2 = substr($entry2, 0, strpos($entry2, $pref)); 
-							$data['3:'.$entry.'/'.$entry2] = $this->owner->enum['inc'][3]['name'].$entry.'/'.$entry2;
+							$data['3:'.$entry.'/'.$entry2] = $this->owner->_enum['inc'][3]['name'].$entry.'/'.$entry2;
 						}
 					}
 					$dir2->close();

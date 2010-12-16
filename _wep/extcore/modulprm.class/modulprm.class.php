@@ -42,7 +42,7 @@ class modulprm_class extends kernel_class {
 			2=>'Модуль',
 			5=>'Дочерние модули');
 
-		$this->enum['modulinc'] = array(
+		$this->_enum['modulinc'] = array(
 			1=>array('path'=>$this->_CFG['_PATH']['extcore'],'name'=>'WEPext - '),
 			3=>array('path'=>$this->_CFG['_PATH']['ext'],'name'=>'EXT - ')
 		);
