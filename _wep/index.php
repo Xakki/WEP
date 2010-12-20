@@ -27,64 +27,47 @@ error_reporting(-1);
 /*ADMIN*/
 	function fXmlSysconf(){
 		global $_CFG;
-        $template = array();
-		$template['sysconf']['modul'] = $_GET['_modul'];
-		$template['sysconf']['user'] = $_SESSION['user'];
+      $data = array();
+		$data['sysconf']['modul'] = $_GET['_modul'];
+		$data['sysconf']['user'] = $_SESSION['user'];
+		$data['sysconf']['item'] = array();
 		if($_SESSION['user']['level']<=1) {
 			_prmModulLoad();
-			$data = array();
-			$dir = dir($_CFG['_PATH']['extcore']);
-			while (false !== ($entry = $dir->read())) {
-				if ($entry!='.' && $entry!='..' && $pos=strpos($entry, '.class')) {
-					$entry = _substr($entry, 0, $pos);
-					if($entry!='') {
-						if(_prmModul($entry,array(1,2))) {
-							if(!isset($_CFG['modulprm'][$entry]['name']))
-								$data[$entry] = $entry;
-							else
-								$data[$entry] = $_CFG['modulprm'][$entry]['name'];
-						}
-					}
+			foreach($_CFG['modulprm'] as $k=>$r) {
+				if($r['typemodul']<=1 and _prmModul($k,array(1,2))) {
+					if(!$r['name'])
+						$r['name'] = $k;
+					if(!$r['active'])
+						$r['name'] = '<span style="color:gray;">'.$r['name'].'</span>';
+					$data['sysconf']['item'][$k] = $r['name'];
 				}
 			}
-			asort($data);
-			$dir->close();
-			foreach($data as $k=>$r)
-				if(_prmModul($k,array(1,2)))
-					$template['sysconf']['item'][$k] = $r;
 		}
 		/*weppages*/
 		/*if(isset($_SESSION['user']) and count($_SESSION['user']['weppages'])) {
 			foreach($_SESSION['user']['weppages'] as $k=>$r0)
 				$template['sysconf']['item'][$k] = $r;
 		}*/
-		return $template;
+		return $data;
 	}
 
 	function fXmlModulslist() {
 		global $_CFG;
-        $template = array();
-		$template['modulslist']['modul'] = $_GET['_modul'];
-		$template['modulslist']['user'] = $_SESSION['user'];
-
-		$dir = dir($_CFG['_PATH']['ext']);
-		while (false !== ($entry = $dir->read())) {
-			if ($entry!='.' && $entry!='..' && $pos=strpos($entry, '.class')) {
-				$k = _substr($entry, 0, $pos);
-				if($k!='') {
-					if(_prmModul($k,array(1,2))) {
-						_prmModulLoad();
-						if(!isset($_CFG['modulprm'][$k]['name']))
-							$template['modulslist']['item'][$k] = $k;
-						else
-							$template['modulslist']['item'][$k] = $_CFG['modulprm'][$k]['name'];
-					}
-				}
+      $data = array();
+		$data['modulslist']['modul'] = $_GET['_modul'];
+		$data['modulslist']['user'] = $_SESSION['user'];
+		_prmModulLoad();
+		foreach($_CFG['modulprm'] as $k=>$r) {
+			if($r['typemodul']==2 and _prmModul($k,array(1,2))) {
+				if(!$r['name'])
+					$r['name'] = $k;
+				if(!$r['active'])
+					$r['name'] = '<span style="color:gray;">'.$r['name'].'</span>';
+				$data['modulslist']['item'][$k] = $r['name'];
 			}
 		}
-		$dir->close();
 
-		return $template;
+		return $data;
 	}
 /*---------------ADMIN*/
 

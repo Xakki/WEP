@@ -103,6 +103,7 @@
 				$table_properties = array();
 				$table_properties_up_case = array();
 				$i = 0;
+				//print($fldname.'-'.$fldtype.'-'.$null.'-'.$key.'-'.$default.'-'.$extra);
 				foreach ($types as $type)
 				{
 					$table_properties[$i] = '`'.$fldname.'` '.$type;
@@ -112,22 +113,24 @@
 							if (strstr(strtoupper($this->fields[$fldname]['attr']), 'NULL'))
 								$table_properties[$i] .= ' NULL';
 						}
-						else
+						else {
 							$table_properties[$i] .= ' NOT NULL';
-						if ($default !== NULL)
+							//if(!isset($this->fields[$fldname]['default']) and $tmp_type=='VARCHAR')
+							//	$this->fields[$fldname]['default'] = '';
+						}
+						if ($default !== NULL) {
 							$table_properties[$i] .= ' DEFAULT \''.$default.'\'';
+						}
 						if ($extra != '')
 							$table_properties[$i] .= ' '.$extra;
 					}
 					$table_properties_up_case[$i] = str_replace(array('"',"'"), array('',''),trim(strtoupper($table_properties[$i])));
 					$i++;
 				}
-							
-				if (!in_array(str_replace(array('"',"'"), array('',''),trim(strtoupper($this->_fldformer($fldname, $this->fields[$fldname])))), $table_properties_up_case)) {
-					$query[$fldname][0] = 'ALTER TABLE `'.$this->tablename.'` CHANGE `'.$fldname.'` '.$this->_fldformer($fldname, $this->fields[$fldname]);
+				$temp_fldformer = trim($this->_fldformer($fldname, $this->fields[$fldname]));
+				if (!in_array(str_replace(array('"',"'"), array('',''),strtoupper($temp_fldformer)), $table_properties_up_case)) {
+					$query[$fldname][0] = 'ALTER TABLE `'.$this->tablename.'` CHANGE `'.$fldname.'` '.$temp_fldformer;
 					$query[$fldname][1] = $table_properties[0];
-					
-					
 //					$query[] = 'ALTER TABLE `'.$this->tablename.'` CHANGE `'.$fldname.'` '.$this->_fldformer($fldname, $this->fields[$fldname]).' ('.$table_properties[0].')';
 				}
 				

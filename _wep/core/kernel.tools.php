@@ -260,7 +260,7 @@ $html .= '
 			if (isset($check_result[$_this->tablename]['err'])) {
 				$mess[] = array('name' => 'error', 'value' => $check_result[$_this->tablename]['err']);
 				$check_err = true;
-			}			
+			}
 //			elseif (!empty($check_result['list_query'])) {
 
 			$tmp_check_result = array();
@@ -273,19 +273,18 @@ $html .= '
 						$reattach[$r->tablename] = true;
 					}
 					
-					if (isset($check_result[$r->tablename]['err'])) {
-						$mess[] = array('name' => 'error', 'value' => $check_result[$r->tablename]['err']);
+					if (isset($tmp_check_result[$r->tablename]['err'])) {
+						$mess[] = array('name' => 'error', 'value' => $tmp_check_result[$r->tablename]['err']);
 						$check_err = true;
 						break;
 					}
+					$check_result = array_merge($check_result, $tmp_check_result);
 				}
 			}
 			
 			if(count($_this->attaches)) {
 				$reattach[$_this->tablename] = true;
-			}
-
-			$check_result = array_merge($check_result, $tmp_check_result);		
+			}		
 			
 			$is_query = false;
 			foreach ($check_result as $k=>$r) {
@@ -360,7 +359,6 @@ $html .= '
 						'caption' => '<a href="#" onclick="return invert_select(\'form_tools_Checkmodul\');">Инвертировать выделение</a>',
 					);
 
-					$_this->form['list_query']['type'] = 'checkbox';
 
 					foreach ($check_result as $table=>$list_query) {
 						foreach ($list_query as $fields) {
@@ -375,8 +373,8 @@ $html .= '
 									if (isset($query[2]))
 										$desc .= '<br/><span style="color:red">'.$query[2].'</span>';
 									
-									$_this->form['list_query']['item'][] = array(
-										'value' => $table.'::'.$field,
+									$_this->form['list_query']['valuelist'][] = array(
+										'#id#' => $table.'::'.$field,
 										'#name#' => $desc,
 									);
 								}
@@ -386,7 +384,9 @@ $html .= '
 							}
 						}
 					}
-					
+					if(isset($_this->form['list_query']))
+						$_this->form['list_query']['type'] = 'checkbox';
+				
 					if (!empty($reattach)) {
 						foreach ($reattach as $k=>$v) {
 							$_this->form['reattach['.$k.']']['type'] = 'checkbox';

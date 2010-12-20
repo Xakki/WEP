@@ -74,13 +74,21 @@ class ugroup_extend extends kernel_class
 		$this->fields_form["active"] = array("type" => "checkbox", "caption" => "Активность");
 
 		$this->def_records[] = array('name'=>'Администраторы','level'=>0,'filesize'=>'100','active'=>1,'id'=>1,'wep'=>1);
+		$this->def_records[] = array('name'=>'Анонимы','level'=>5,'filesize'=>'0','active'=>1,'id'=>0,'wep'=>0);
 
 		$this->create_child("users");
 		if($this->_CFG['_F']['adminpage']) {
-			//include_once($this->_CFG['_PATH']['ext'].'board.class/childs.include.php');
+			include_once($this->_CFG['_PATH']['extcore'].'modulprm.class/modulprm.class.php');
 			$this->create_child('modulgrp');
+			$this->childs['modulgrp']->owner_name = 'ugroup_id';
+			unset($this->childs['modulgrp']->fields_form['ugroup_id']);
+			$this->childs['modulgrp']->fields_form['owner_id'] = array('type' => 'list','readonly' => 1, 'listname'=>array('tablename'=>$this->_CFG['sql']['dbpref'].'modulprm'), 'caption' => 'Модуль');
 		}
 	}
+
+	/*function super_inc($param=array(),$ftype='') {
+		return parent::
+	}*/
 
 	function _getlist($listname,$value=0) {
 		$data = array();

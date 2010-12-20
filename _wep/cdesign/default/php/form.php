@@ -49,13 +49,13 @@ function tpl_form(&$data) {
 				if($r['readonly']) $html .= ' readonly="readonly"';
 				$html .= '>'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
 			}
-			elseif($r['type']=='radio') {
+			elseif($r['type']=='radio') {//print_r('<pre>');print_r($r);
 				$html .= '<div class="form-value">';
 				if(!count($r['valuelist']))
 					$html .= '<font color="red">Нет элементов для отображения</font>';
 				else {
 					foreach($r['valuelist'] as $row) {
-						$html .= '<input type="'.$r['type'].'" name="'.$k.'" value="'.$row['#name#'].'" class="radio"';
+						$html .= '<input type="'.$r['type'].'" name="'.$k.'" value="'.$row['#id#'].'" class="radio"';
 						if($row['#sel#'])
 							$html .= ' checked="checked"';
 						$html .= '/>'.$row['#name#'].' &#160;&#160;';
@@ -69,8 +69,8 @@ function tpl_form(&$data) {
 					$html .= '<input type="'.$r['type'].'" name="'.$k.'" value="1" '.($r['value']?'checked="checked"':'').'/>';
 				else {
 					foreach($r['valuelist'] as $row) {
-						$html .= '<input type="'.$r['type'].'" name="'.$k.'[]" value="'.$row['#name#'].'" class="radio"';
-						if($row['sel'])
+						$html .= '<input type="'.$r['type'].'" name="'.$k.'[]" value="'.$row['#id#'].'" class="radio"';
+						if($row['#sel#'])
 							$html .= ' checked="checked"';
 						$html .= '/><div class="title">'.$row['#name#'].'</div>';
 					}

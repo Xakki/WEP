@@ -34,7 +34,6 @@ class modulprm_class extends kernel_class {
 		$this->fields_form['ver'] = array('type' => 'text','readonly' => 1, 'caption' => 'Версия');
 		$this->fields_form['typemodul'] = array('type' => 'list', 'listname'=>'typemodul', 'readonly' => 1, 'caption' => 'Описание');
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Активность');
-		$this->create_child('modulgrp');
 
 		$this->_enum['typemodul'] = array(
 			0=>'Системный модуль',
@@ -48,9 +47,11 @@ class modulprm_class extends kernel_class {
 		);
 
 		$this->ordfield = 'typemodul,name';
+
+		$this->create_child('modulgrp');
 	}
 
-	public function _checkmodstruct() {
+	public function temp_checkmodstruct() {
 		$check_result = parent::_checkmodstruct();
 /*		if(!is_array($check_result) and $check_result) return array('err'=>'Cant create tabel');
 		if (isset($check_result[$this->tablename]['err']))
@@ -165,7 +166,7 @@ class modulprm_class extends kernel_class {
 	}
 
 	function userPrm($ugroup_id=0) {
-		$result = $this->SQL->execSQL('SELECT t1.*,t2.access, t2.mname FROM '.$this->tablename.' t1 LEFT Join '.$this->childs['modulgrp']->tablename.' t2 on t2.owner_id=t1.id and t2.ugroup_id='.$ugroup_id.' where t1.active=1 ORDER BY ordind');
+		$result = $this->SQL->execSQL('SELECT t1.*,t2.access, t2.mname FROM '.$this->tablename.' t1 LEFT Join '.$this->childs['modulgrp']->tablename.' t2 on t2.owner_id=t1.id and t2.ugroup_id='.$ugroup_id.' where t1.active=1 ORDER BY '.$this->ordfield);
 		if ($result->err) $this->_message($result->err);
 		$this->data = array();
 		while ($row = $result->fetch_array()){
@@ -176,6 +177,9 @@ class modulprm_class extends kernel_class {
 			else
 				$this->data[$row['id']]['name'] = $row['name'];
 			$this->data[$row['id']]['ver'] = $row['ver'];
+			$this->data[$row['id']]['typemodul'] = $row['typemodul'];
+			$this->data[$row['id']]['path'] = $row['path'];
+			$this->data[$row['id']]['tablename'] = $row['tablename'];
 		}
 	//	print_r($this->data);exit();
 		return $this->data;
@@ -225,24 +229,27 @@ class modulgrp_class extends kernel_class {
 			11=>'Переустановка модуля',
 			12=>'Переиндексация модуля',
 			13=>'Настроика модуля',
-			14=>'Проверка структуры модуля'
+			14=>'Проверка структуры модуля',
+			15=>'Глобальные настройки сервера'
 		);
 
-		$this->fields["name"] = array("type" => "varchar", "width" => 32,"attr" => "NOT NULL");
-		$this->fields["mname"] = array("type" => "varchar", "width" => 64,"attr" => "NOT NULL");
-		$this->fields["ugroup_id"] = array("type" => "int", "width" => 11,"attr" => "NOT NULL");
-		$this->fields["access"] = array("type" => "varchar", "width" => 128,"attr" => "NOT NULL");
+		//$this->fields['name'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL');
+		$this->fields['mname'] = array('type' => 'varchar', 'width' => 64,'attr' => 'NOT NULL');
+		$this->fields['ugroup_id'] = array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL');
+		$this->fields['access'] = array('type' => 'varchar', 'width' => 128,'attr' => 'NOT NULL');
 
-		$this->fields_form["name"] = array("type" => "text","readonly" => 1, "caption" => "Группа");
-		$this->fields_form["mname"] = array("type" => "text", "caption" => "Название модуля");
-		$this->fields_form["access"] = array("type" => "list",'multiple'=>2,"listname"=>"access", "caption" => "Права доступа");
+		//$this->fields_form['name'] = array('type' => 'text','readonly' => 1, 'caption' => 'Группа');
+		$this->fields_form['owner_id'] = array('type' => 'hidden','readonly' => 1);
+		$this->fields_form['ugroup_id'] = array('type' => 'list','readonly' => 1, 'listname'=>array('class'=>'ugroup'), 'caption' => 'Группа');
+		$this->fields_form['mname'] = array('type' => 'text', 'caption' => 'СпецНазвание модуля');
+		$this->fields_form['access'] = array('type' => 'list','multiple'=>2,'listname'=>'access', 'caption' => 'Права доступа');
 
 	}
 
 	function _checkmodstruct() {
-		global $UGROUP;
+//		global $UGROUP;
 		$check_result = parent::_checkmodstruct();
-		if (isset($check_result['err']))
+/*		if (isset($check_result['err']))
 			return array('err' => $check_result['err']);
 			
 		if(!$UGROUP)
@@ -289,7 +296,7 @@ class modulgrp_class extends kernel_class {
 			$q_query = array_merge($check_result['list'], $q_query);
 	
 		return array('list_query' => $q_query);
-//		return 0;
+*/		return $check_result;
 	}
 
 	function _UpdItemModul($param) {

@@ -123,7 +123,7 @@ _fldformer($key, $param)
 		$this->includeJStoWEP = false; // подключать ли скрипты для формы через настройки
 		$this->includeCSStoWEP = false; // подключать ли стили для формы через настройки
 		$this->singleton = false; // класс-одиночка
-		$this->version = 'WEP 2.0'; // версия ядра
+		$this->version = 'WEP 2.1.1'; // версия ядра
 		$this->ver = '0.1.1'; // версия модуля
 
 		$this->text_ext = '.txt';// расширение для memo фиаилов
@@ -833,7 +833,7 @@ _get_file($row, $key)
 				}else
 					$r['value']= $data[$k];
 			}
-			elseif(isset($data[$k]) and $data[$k])
+			elseif(isset($data[$k])) //  and $data[$k]
 				$r['value'] = $data[$k];
 			
 			if(isset($this->data[$this->id]['_ext_'.$k]))
