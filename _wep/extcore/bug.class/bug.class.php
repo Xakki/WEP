@@ -21,8 +21,8 @@ class bug_class extends kernel_class {
 //		$this->mf_use_charid = true;
 		$this->mf_timecr = true;
 		$this->mf_ipcreate = true;
-		$this->mf_add = false;
-		$this->mf_del = false;
+		$this->prm_add = false;
+		$this->prm_del = false;
 		$this->mf_actctrl = true;
 		$this->mf_statistic = false;
 		$this->mf_actctrl = true; // поле active

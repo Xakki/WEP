@@ -109,8 +109,9 @@ _fldformer($key, $param)
 		$this->mf_createrid = true;//польз владелец
 		$this->mf_ipcreate = false;//IP адрес пользователя с котрого была добавлена запись	
 		$this->mf_indexing = false; // индексация
-		$this->mf_add = true;// добавить в модуле
-		$this->mf_del = true;// удалять в модуле
+		$this->prm_add = true;// добавить в модуле
+		$this->prm_del = true;// удалять в модуле
+		$this->prm_edit = true;// удалять в модуле
 		$this->owner_unique = false; // поле owner_id не уникально
 		$this->showinowner = true;// показывать под родителем
 		$this->mf_mop = true;// выключить постраничное отображение
@@ -599,12 +600,13 @@ _get_file($row, $key)
 // *** PERMISSION ***//
 
 	public function _prmModulAdd($mn){
-		if(!$this->mf_add) return false;
+		if(!$this->prm_add) return false;
 		if(_prmModul($mn,array(9))) return true;
 		return false;
 	}
 
 	public function _prmModulEdit(&$data,&$param){
+		if(!$this->prm_edit) return false;
 		if(count($param['prm'])) {
 			foreach($param['prm'] as $k=>$r){
 				foreach($data as $row) 
@@ -617,7 +619,7 @@ _get_file($row, $key)
 	}
 
 	public function _prmModulDel($dataList,$param=array()){//$dataList нельзя по ссылке
-		if(!$this->mf_del) return false;
+		if(!$this->prm_del) return false;
 		if(_prmModul($this->_cl,array(5))) return true;
 		if($this->mf_createrid and _prmModul($this->_cl,array(6))) {
 			foreach($dataList as $k=>$r)

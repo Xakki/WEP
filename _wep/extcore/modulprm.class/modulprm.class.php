@@ -11,8 +11,8 @@ class modulprm_class extends kernel_class {
 		$this->mf_use_charid = true;
 		$this->mf_istree = true;
 		$this->mf_timestamp = true;
-		$this->mf_add = false;
-		$this->mf_del = false;
+		$this->prm_add = false;
+		$this->prm_del = false;
 		$this->mf_createrid = false;
 		$this->caption = "Модули";
 		return true;
@@ -201,8 +201,8 @@ class modulgrp_class extends kernel_class {
 	{
 		if (!parent::_set_features()) return false;
 		$this->mf_timestamp = true;
-		$this->mf_add = false;
-		$this->mf_del = false;
+		$this->prm_add = false;
+		$this->prm_del = false;
 		$this->mf_createrid = false;
 		return true;
 	}
