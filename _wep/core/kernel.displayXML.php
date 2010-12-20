@@ -175,8 +175,29 @@
 
 						if(isset($this->memos[$k]))
 							$tditem['value'] .= _substr(strip_tags(htmlspecialchars_decode(file_get_contents($row[$k]))),0,400);
-						elseif($r['type']=='date' and $this->fields[$k]['type']=='int')
-							$tditem['value'] .= date('Y-m-d H:i',$row[$k]);
+						elseif($r['type']=='date') {
+							//$tditem['value'] .= date('Y-m-d H:i',$row[$k]);
+							
+							
+							// Тип поля
+							if($this->fields[$k]['type']=='int'  and $row[$k]){
+								$temp = date($r['mask']['format'],$row[$k]);
+							}
+							elseif($this->fields[$k]['type']=='timestamp' and $row[$k]){
+								$fs = explode(' ', $row[$k]);
+								$f = explode('-', $fs[0]);
+								$s = explode(':', $fs[1]);
+								$temp = mktime($s[0], $s[1], $s[2], $f[1], $f[2], $f[0]);
+								
+								if($r['mask']['time'])
+									$r['mask']['format'] = $r['mask']['format'].' '.$r['mask']['time'];
+								
+								$temp = date($r['mask']['format'],$temp);
+							}
+							
+							$tditem['value'] .= $temp;
+							
+						}
 						elseif($k=='mf_ipcreate')
 							$tditem['value'] .= long2ip($row[$k]);
 						elseif($r['type']=='checkbox')
