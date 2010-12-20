@@ -19,7 +19,9 @@
 
 				if($_GET['_type']=="add" or $_GET['_type']=="edit") {
 					if($flag==1) {
-						end($HTML->path);prev($HTML->path);
+					//	end($HTML->path);prev($HTML->path);
+						$countfield = $DATA[$FUNCPARAM[1]]['pagenum']['cnt'];	
+						$DATA[$FUNCPARAM[1]]['pagenum'] = $MODUL->fPageNav($countfield, $_SERVER['REQUEST_URI'],1);
 						$_SESSION['mess']=$DATA['formcreat']['messages'];
 						header('Location: '.str_replace("&amp;", "&", key($HTML->path)));
 						die();
@@ -29,7 +31,7 @@
 						$html = $HTML->transformPHP($DATA,'formcreat');
 					}
 				}elseif($flag!=3) {
-					end($HTML->path);
+					//end($HTML->path);
 					$_SESSION['mess']=$DATA[$FUNCPARAM[1]]['messages'];
 					header('Location: '.str_replace("&amp;", "&", key($HTML->path)));
 					die();
@@ -37,9 +39,9 @@
 					if(!$_SESSION['mess']) 
 						$_SESSION['mess']= array();
 					$DATA[$FUNCPARAM[1]]['messages'] += $_SESSION['mess'];
-					$DATA[$FUNCPARAM[1]]['path'] = $HTML->path;
-							$countfield = $DATA[$FUNCPARAM[1]]['pagenum']['cnt'];	
-	$DATA[$FUNCPARAM[1]]['pagenum'] = $MODUL->fPageNav($countfield, $_SERVER['REQUEST_URI'],1);
+				//	$DATA[$FUNCPARAM[1]]['path'] = $HTML->path;
+					$countfield = $DATA[$FUNCPARAM[1]]['pagenum']['cnt'];	
+					$DATA[$FUNCPARAM[1]]['pagenum'] = $MODUL->fPageNav($countfield, $_SERVER['REQUEST_URI'],1);
 					$html = $HTML->transformPHP($DATA,$FUNCPARAM[1]);
 					$_SESSION['mess'] = array();
 				}

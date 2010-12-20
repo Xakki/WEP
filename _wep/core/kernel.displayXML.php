@@ -176,8 +176,8 @@
 						if(isset($this->memos[$k]))
 							$tditem['value'] .= _substr(strip_tags(htmlspecialchars_decode(file_get_contents($row[$k]))),0,400);
 						elseif($r['type']=='date') {
-							//$tditem['value'] .= date('Y-m-d H:i',$row[$k]);
-							
+							if(!isset($r['mask']['format']))
+								$r['mask']['format'] = 'Y-m-d H:i';							
 							
 							// Тип поля
 							if($this->fields[$k]['type']=='int'  and $row[$k]){
