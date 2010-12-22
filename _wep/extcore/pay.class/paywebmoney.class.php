@@ -46,32 +46,57 @@ class paywebmoney_class extends kernel_class {
 		);
 	}
 	
-	function _pay() {
-		global $_tpl;
+	
+	// возвращает массив с формой, которая отправит пользователя на сайт платежной системы
+	function get_pay_form($system, $amount, $inv_id) {
 		
-//		$_tpl['onload'] = 'document.getElementById(\'pay\').submit();';
-
+		$desc = $this->owner->config['desc'];
+		$lmi_payee_purse = $this->config[$_POST['payment_system']];
+		$caption = $this->pay_systems[$_POST['payment_system']]['caption'];
 		
-		if (isset($_POST['payment_system']) && isset($this->pay_systems[$_POST['payment_system']])) {
-			
-			$lmi_payee_purse = $this->config[$_POST['payment_system']];
-			$caption = $this->pay_systems[$_POST['payment_system']]['caption'];
-			$desc = $this->owner->config['desc'];
-			
-			$html = 'Пополнение баланса через платежную систему '.$caption.' кошелька<br/>После оплаты, на Ваш счет поступит '.$_POST['payment_amount'].' рублей.';
-			$html .= '<form id="pay" method="POST" action="https://merchant.webmoney.ru/lmi/payment.asp">'."\n";
-			$html .= '<input type="hidden" name="LMI_PAYMENT_AMOUNT" value="'.$_POST['payment_amount'].'">';
-			$html .= '<input type="hidden" name="LMI_PAYMENT_DESC_BASE64" value="'.base64_encode($desc).'">'."\n";
-			$html .=  '<input type="hidden" name="LMI_PAYEE_PURSE" value="'.$lmi_payee_purse.'">'."\n";
-			$html .= '<input type="hidden" name="LMI_MODE" value="1">'."\n";
-			$html .= '<input type="hidden" name="LMI_SIM_MODE" value="0">'."\n";
-			$html .= '<input type="submit" value="Перейти к оплате">';
-		} else {
-			$html = 'Не переданы неодходимые параметры';
-		}
+		$crc = md5($this->config['mrh_login'].':'.$amount.':'.$inv_id.':'.$this->config['mrh_pass1']);
 		
-		return $html;
-	}	
+		$data['text_before'] = 'Пополнение баланса через систему '.$caption.'<br/>После оплаты, на Ваш счет поступит '.$amount.' рублей.';
+		$data['text_after'] = '';
+		
+		$data['formcreat']['form'] = array(
+			'_*features*_' => array(
+				'method' => 'post',
+				'name' => 'pay',
+				'action' => 'https://merchant.webmoney.ru/lmi/payment.asp',
+			),
+			'LMI_PAYMENT_AMOUNT' => array(
+				'value' => $amount,
+				'type' => 'hidden',
+			),
+			'LMI_PAYMENT_DESC_BASE64' => array(
+				'value' => base64_encode($desc),
+				'type' => 'hidden',				
+			),
+			'LMI_PAYEE_PURSE' => array(
+				'value' => $lmi_payee_purse,
+				'type' => 'hidden',
+			),
+			'LMI_MODE' => array(
+				'value' => 1,
+				'type' => 'hidden',
+			),
+			'LMI_SIM_MODE' => array(
+				'value' => 0,
+				'type' => 'hidden',
+			),
+			'submit' => array(
+				'value' => 'Перейти к оплате',
+				'type' => 'submit',
+			),
+		);
+		
+		return $data;
+	}
+	
+	function add_payment($amount, $status) {
+		return $this->owner->add_payment($amount, $status, $this->_cl);
+	}
 	
 	
 }
