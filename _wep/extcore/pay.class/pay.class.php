@@ -92,7 +92,7 @@ class pay_class extends kernel_class {
 					'pay_modul' => $pay_modul,
 					'status' => 0,
 				);
-				if ($this->_add_item($data) == 0) {
+				if ($this->_add_item($data)) {
 					return $this->SQL->sql_id();
 				} else {
 					return false;
@@ -103,7 +103,7 @@ class pay_class extends kernel_class {
 				$data = array(
 					'status' => 1,
 				);
-				if ($this->_save_item($data) == 0) {
+				if ($this->_save_item($data)) {
 					return $this->id;
 				} else {
 					return false;

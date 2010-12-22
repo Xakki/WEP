@@ -16,7 +16,14 @@
 		if(isset($data['form']) and count($data['form'])) {
 			include_once($HTML->_cDesignPath.'/php/form.php');
 			$attr = $data['form']['_*features*_'];
-			$html .= '<form id="form_'.$attr['name'].'" method="'.$attr['method'].'" enctype="multipart/form-data" action="'.$attr['action'].'" '.($attr['onsubmit']?'onsubmit="'.$attr['onsubmit'].'"':'').'>';
+			if (isset($attr['enctype']))
+				if ($attr['enctype'] == '')
+					$enctype = '';
+				else
+					$enctype = ' enctype="'.$attr['enctype'].'"';
+			else
+				$enctype = ' enctype="multipart/form-data"';
+			$html .= '<form id="form_'.$attr['name'].'" method="'.$attr['method'].'"'.$enctype.' action="'.$attr['action'].'" '.($attr['onsubmit']?'onsubmit="'.$attr['onsubmit'].'"':'').'>';
 			$html .= tpl_form($data['form']).'</form>';
 		}
 		$html .= '</div>';
