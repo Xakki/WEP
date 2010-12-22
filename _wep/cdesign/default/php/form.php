@@ -8,8 +8,7 @@ function tpl_form(&$data) {
 
 	foreach($data as $k=>$r) {
 		if($r['type']!='hidden')
-			$html .= '<div id="tr_'.$k.'" style="'.$r['style'].'" class="div-tr'.($r['css']?' '.$r['css']:'').'">';
-
+			$html .= '<div id="tr_'.$k.'" style="'.$r['style'].'" class="div-tr'.($r['css']?' '.$r['css']:'').($r['readonly']?' readonly':'').'">';
 		if($r['type']=='submit') {
 			$html .= '<div class="form-submit">';
 			if($r['value_save']) {

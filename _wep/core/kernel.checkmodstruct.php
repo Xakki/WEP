@@ -128,7 +128,7 @@
 					$i++;
 				}
 				$temp_fldformer = trim($this->_fldformer($fldname, $this->fields[$fldname]));
-				if (!in_array(str_replace(array('"',"'"), array('',''),strtoupper($temp_fldformer)), $table_properties_up_case)) {
+				if (isset($this->fields[$fldname]['type']) and !in_array(str_replace(array('"',"'"), array('',''),strtoupper($temp_fldformer)), $table_properties_up_case)) {
 					$query[$fldname][0] = 'ALTER TABLE `'.$this->tablename.'` CHANGE `'.$fldname.'` '.$temp_fldformer;
 					$query[$fldname][1] = $table_properties[0];
 //					$query[] = 'ALTER TABLE `'.$this->tablename.'` CHANGE `'.$fldname.'` '.$this->_fldformer($fldname, $this->fields[$fldname]).' ('.$table_properties[0].')';

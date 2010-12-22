@@ -77,12 +77,13 @@ class ugroup_extend extends kernel_class
 		$this->def_records[] = array('name'=>'Анонимы','level'=>5,'filesize'=>'0','active'=>1,'id'=>0,'wep'=>0);
 
 		$this->create_child("users");
-		if($this->_CFG['_F']['adminpage']) {
+		if($this->_CFG['_F']['adminpage']) { // для админки , чтобы удобно можно было задавать права доступа
 			include_once($this->_CFG['_PATH']['extcore'].'modulprm.class/modulprm.class.php');
 			$this->create_child('modulgrp');
-			$this->childs['modulgrp']->owner_name = 'ugroup_id';
-			unset($this->childs['modulgrp']->fields_form['ugroup_id']);
-			$this->childs['modulgrp']->fields_form['owner_id'] = array('type' => 'list','readonly' => 1, 'listname'=>array('tablename'=>$this->_CFG['sql']['dbpref'].'modulprm'), 'caption' => 'Модуль');
+			$this->childs['modulgrp']->owner_name = 'ugroup_id';//теперь родитель в этом поле привязан
+			unset($this->childs['modulgrp']->fields_form['ugroup_id']);//отклю список групп
+			$this->childs['modulgrp']->fields_form['owner_id'] = array('type' => 'list','readonly' => 1, 'listname'=>array('tablename'=>$this->_CFG['sql']['dbpref'].'modulprm'), 'caption' => 'Модуль');//и включаем модули
+			$this->childs['modulgrp']->fields['owner_id'] = array(); // чтобы  не ругался модчекструкт, тк это поле может задаваться по умолчанию от родителя
 		}
 	}
 

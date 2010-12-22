@@ -165,8 +165,10 @@ _fldformer($key, $param)
 
 		if ($this->owner) 
 		{
-			$this->fields[$this->owner_name] = $this->owner->fields['id'];
-			$this->fields[$this->owner_name]['attr'] = '';
+			if ($this->owner->mf_use_charid) 
+				$this->fields[$this->owner_name] = array('type' => 'varchar', 'width' => $this->owner->mf_idwidth, 'attr' => 'NOT NULL');
+			else
+				$this->fields[$this->owner_name] = array('type' => 'int', 'attr' => 'unsigned NOT NULL');
 		}
 
 		if($this->mf_createrid){
