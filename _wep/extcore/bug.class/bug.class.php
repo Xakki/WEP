@@ -60,7 +60,7 @@ class bug_class extends kernel_class {
 		$this->fields_form['page_id'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'PAGE_ID','mask'=>array('sort'=>1,'filter'=>1));
 		$this->fields_form['mf_timecr'] = array('type' => 'date', 'readonly'=>1, 'caption' => 'Дата', 'mask' =>array('sort'=>1,'filter'=>1));
 		$this->fields_form['mf_ipcreate'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'IP','mask'=>array('sort'=>1,'filter'=>1));
-		$this->fields_form['creater_id'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'User','mask'=>array('sort'=>1,'filter'=>1));
+		$this->fields_form[$this->mf_createrid] = array('type' => 'text', 'readonly'=>1, 'caption' => 'User','mask'=>array('sort'=>1,'filter'=>1));
 		$this->fields_form['cnt'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Повторы', 'mask'=>array('sort'=>1));
 	
 		foreach ($this->_CFG['_error'] as $k=>$r) {
@@ -97,13 +97,13 @@ class bug_class extends kernel_class {
 				$mf_ipcreate =	0;
 			
 			foreach ($this->bugs as $r) {
-				$r['creater_id'] = $creater_id;
+				$r[$this->mf_createrid] = $creater_id;
 				$r['mf_ipcreate'] = $mf_ipcreate;
 				$query_val[] = '("'.implode('","',$r).'")';
 			}
 			
 			$result = $this->SQL->execSQL('INSERT INTO `'.$this->tablename.'` 
-			(err_type,name,file,line,debug,href,page_id,hash,mf_timecr,cnt,creater_id,mf_ipcreate) 
+			(err_type,name,file,line,debug,href,page_id,hash,mf_timecr,cnt,'.$this->mf_createrid.',mf_ipcreate) 
 			VALUES '.implode(',', $query_val).'
 			ON DUPLICATE KEY UPDATE cnt = cnt+1, active=1');
 		}

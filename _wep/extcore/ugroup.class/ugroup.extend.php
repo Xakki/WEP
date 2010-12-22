@@ -349,7 +349,7 @@ class users_extend extends kernel_class {
 					$arr['vars']['active']=0;
 					if(!$arr['vars']['name'])
 						$arr['vars']['name'] = $arr['vars']['id'];
-					$arr['vars']['creater_id']=$arr['vars']['id'];
+					$arr['vars'][$this->mf_createrid]=$arr['vars']['id'];
 					$arr['vars']['reg_hash']=md5(time().$arr['vars']['id']);
 					$pass=$arr['vars']['pass'];
 					$arr['vars']['pass']=md5($this->_CFG['wep']['md5'].$arr['vars']['pass']);

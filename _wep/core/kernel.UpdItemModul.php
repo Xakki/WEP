@@ -13,8 +13,9 @@
 			$flag=-1;
 			$this->listfields = array('*');
 			$this->clause = ' WHERE id IN ('.$this->_id_as_string().')';
-			if($this->_prmModulShow($this->_cl)) $this->clause .= ' AND creater_id=\''.$_SESSION['user']['id'].'\'';
+			if($this->_prmModulShow($this->_cl)) $this->clause .= ' AND '.$this->mf_createrid.'=\''.$_SESSION['user']['id'].'\'';
 			$this->_list('id');
+			//print($this->SQL->query);
 			if(count($this->data)==1) {
 				if(count($_POST) and ($_POST['sbmt'] or $_POST['sbmt_save'])) {
 					if(!$this->_prmModulEdit($this->data[$this->id],$param)) {

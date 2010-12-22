@@ -40,7 +40,7 @@
 		elseif ($_this->mf_istree)
 			$sql_query .= ' AND `parent_id`=\''.$owner.'\'';
 		if($_this->_prmModulShow($modul))
-			$sql_query .= ' AND `creater_id`=\''.$_SESSION['user']['id'].'\'';
+			$sql_query .= ' AND `'.$this->mf_createrid.'`=\''.$_SESSION['user']['id'].'\'';
 
 		if($_this->mf_mop) {
 			$result = $_this->SQL->execSQL('SELECT count(`id`) as cnt '.$sql_query);

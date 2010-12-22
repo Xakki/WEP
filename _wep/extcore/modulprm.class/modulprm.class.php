@@ -12,7 +12,7 @@ class modulprm_class extends kernel_class {
 		$this->mf_istree = true;
 		$this->mf_timestamp = true;
 		$this->prm_add = false;
-		$this->prm_del = false;
+		//$this->prm_del = false;
 		$this->mf_createrid = false;
 		$this->caption = "Модули";
 		return true;

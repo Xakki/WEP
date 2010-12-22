@@ -106,7 +106,7 @@ _fldformer($key, $param)
 		$this->mf_timecr = false; // создать поле хранящще время создания поля
 		$this->mf_timeup = false; // создать поле хранящще время обновления поля
 		$this->mf_timeoff = false; // создать поле хранящще время отключения поля (active=0)
-		$this->mf_createrid = true;//польз владелец
+		$this->mf_createrid = 'creater_id';//польз владелец
 		$this->mf_ipcreate = false;//IP адрес пользователя с котрого была добавлена запись	
 		$this->mf_indexing = false; // индексация
 		$this->prm_add = true;// добавить в модуле
@@ -170,7 +170,7 @@ _fldformer($key, $param)
 		}
 
 		if($this->mf_createrid){
-			$this->fields['creater_id'] = array('type' => 'varchar', 'width' => $this->mf_idwidth, 'attr' => 'NOT NULL');
+			$this->fields[$this->mf_createrid] = array('type' => 'varchar', 'width' => $this->mf_idwidth, 'attr' => 'NOT NULL');
 		}
 
 		if ($this->mf_istree) 
@@ -614,7 +614,7 @@ _get_file($row, $key)
 			}
 		}
 		if(_prmModul($this->_cl,array(3))) return true;
-		if($this->mf_createrid and _prmModul($this->_cl,array(4)) and $data['creater_id']==$_SESSION['user']['id']) return true;
+		if($this->mf_createrid and _prmModul($this->_cl,array(4)) and $data[$this->mf_createrid]==$_SESSION['user']['id']) return true;
 		return false;
 	}
 
@@ -623,7 +623,7 @@ _get_file($row, $key)
 		if(_prmModul($this->_cl,array(5))) return true;
 		if($this->mf_createrid and _prmModul($this->_cl,array(6))) {
 			foreach($dataList as $k=>$r)
-				if($r['creater_id']!=$_SESSION['user']['id']) return false;
+				if($r[$this->mf_createrid]!=$_SESSION['user']['id']) return false;
 			return true;
 		}
 		return false;
@@ -634,7 +634,7 @@ _get_file($row, $key)
 		if(_prmModul($this->_cl,array(7))) return true;
 		if($this->mf_createrid and _prmModul($this->_cl,array(8))) {
 			foreach($dataList as $k=>$r)
-				if($r['creater_id']!=$_SESSION['user']['id']) return false;
+				if($r[$this->mf_createrid]!=$_SESSION['user']['id']) return false;
 			return true;
 		}
 		return false;
@@ -890,7 +890,7 @@ _get_file($row, $key)
 		if(!$this->id or (isset($this->data[$this->id]) and $this->_prmModulEdit($this->data[$this->id],$param))) {
 		    $this->form['sbmt'] = array(
 				'type'=>'submit',
-				'value_save'=>(isset($param['sbmtsave'])?$this->getMess('_save'):''),
+				'value_save'=>((isset($param['sbmtsave']) and $this->id)?$this->getMess('_save'):''),
 				'value_close'=>(isset($param['close'])?$this->getMess('_close'):''),
 				'value'=>$this->getMess('_saveclose')
 		    );
@@ -1464,7 +1464,8 @@ $Ajax=0 - не скриптовая
 	function _moder_clause (&$param) {
 		if(!isset($param['clause']) or !is_array($param['clause']))
 			$param['clause'] = array();
-		if($this->_prmModulShow($this->_cl)) $param['clause']['t1.creater_id'] = 't1.creater_id="'.$_SESSION['user']['id'].'"';
+		if($this->mf_createrid and $this->_prmModulShow($this->_cl))
+			$param['clause']['t1.'.$this->mf_createrid] = 't1.'.$this->mf_createrid.'="'.$_SESSION['user']['id'].'"';
 		if($this->owner and $this->owner->id) $param['clause']['t1.'.$this->owner_name] = 't1.'.$this->owner_name.'="'.$this->owner->id.'"';
 		if($this->mf_istree) {
 			if($this->id) $param['clause']['t1.parent_id'] = 't1.parent_id="'.$this->id.'"';
