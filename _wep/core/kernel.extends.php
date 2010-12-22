@@ -1137,7 +1137,8 @@ $Ajax=0 - не скриптовая
 					'href'=>$this->_clp.'_type=add'.(($this->id)?'&amp;'.$this->_cl.'_id='.$this->id:''),
 					'caption'=>'Добавить '.$this->caption,
 					'sel'=>0,
-					'type'=>''
+					'type'=>'',
+					'css'=>'add'
 				);
 
 
