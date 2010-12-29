@@ -20,8 +20,7 @@ error_reporting(-1);
 		$_design = $_SESSION['user']['design'];
 	else 
 		$_design = $_CFG['wep']['design'];
-
-	$_design = 'default';
+		
 	$HTML = new html($_CFG['PATH']['cdesign'],$_design);
 
 /*ADMIN*/
