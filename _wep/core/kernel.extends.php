@@ -123,7 +123,7 @@ _fldformer($key, $param)
 		$this->cf_reinstall = false;
 		$this->includeJStoWEP = false; // подключать ли скрипты для формы через настройки
 		$this->includeCSStoWEP = false; // подключать ли стили для формы через настройки
-		$this->singleton = false; // класс-одиночка
+		$this->singleton = true; // класс-одиночка
 		$this->version = 'WEP 2.1.1'; // версия ядра
 		$this->ver = '0.1.1'; // версия модуля
 
