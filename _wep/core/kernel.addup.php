@@ -18,7 +18,8 @@
 		if ($_this->mf_istree and $_this->parent_id and !$_this->fld_data['parent_id'])
 			$_this->fld_data['parent_id'] = $_this->parent_id;
 		// add owner_id field
-		if (!$_this->fld_data[$_this->owner_name] and $_this->owner) $_this->fld_data[$_this->owner_name] = $_this->owner->id;
+		if (!$_this->fld_data[$_this->owner_name] and $_this->owner)
+			$_this->fld_data[$_this->owner_name] = $_this->owner->id;
 		if ($_this->mf_timecr) 
 			$_this->fld_data['mf_timecr'] = $_this->_CFG['time'];
 		if ($_this->mf_timeup) 
@@ -30,6 +31,7 @@
 
 		if (!isset($_this->fld_data) && !count($_this->fld_data))
 			return $_this->_message($_this->getMess('add_empty'),1);
+
 		if (!_add_fields($_this)) return false;
 
 		// get last id if not used nick

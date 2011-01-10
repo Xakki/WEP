@@ -131,8 +131,12 @@
 	.divform select{border:1px solid #A6A6A6;height:1.5em;width:100%;}
 	.divform select.small {border:1px solid #A6A6A6;height:8em;}
 	.divform select.multiple {border:1px solid #A6A6A6;height:13em;}
-	.divform select optgroup {margin:0;padding:0;}
-	.divform select option {margin:0 12px 0 0;padding:0;}
+	.divform select optgroup {}
+	.divform select option {}
+	.divform select .selpad0 {padding:0;}
+	.divform select .selpad1 {padding:0 0 0 10px;}
+	.divform select .selpad2 {padding:0 0 0 20px;}
+	.divform select .selpad3 {padding:0 0 0 30px;}
 
 	.divform select.hideselectforie7 {
 		position:relative;

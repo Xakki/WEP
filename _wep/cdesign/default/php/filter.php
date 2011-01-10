@@ -29,25 +29,61 @@
 				$html .= '</div></div>';
 			}*/
 			elseif($r['type']=='checkbox') {
-				$html .= '<div class="f_item"><div class="f_caption">'.$r['caption'].'</div><div class="f_value">';
-				if($r['param']=='checkbox') {
-					$html .= '<input type="checkbox" name="'.$k.'" value="1" '.($r['value']==1?'checked="checked"':'').'/>';
-				}
-				elseif(is_array($r['value'])) {
-					$html .= '<table border="0" cellpadding="0" cellspacing="1">';
-					foreach($r['value'] as $row) {
-						$html .= '<tr>
-									<td>'.$row['title'].'</td>
-									<td><input type="'.$r['type'].'" name="'.$k.'" value="'.$row['value'].'" class="radio" '.($row['sel']?'checked="checked"':'').'/></td>
-								</tr>';
+				$html .= '<div class="f_item"><div class="f_caption">'.$r['caption'].'</div>';
+				if($r['multiple']) {
+					//print_r('<pre>');print_r($r['valuelist']);
+					if(!isset($r['valuelist']) or !is_array($r['valuelist']))
+						$r['valuelist'] = array(''=>array('#name#'=>'error','#id#'=>''));
+					else {
+						unset($r['valuelist']['']);
+						unset($r['valuelist'][0]);
 					}
-					$html .= '</table>';
-				} else {
-					$html .= '<select name="'.$k.'">
-							<option value="">Все</option>
-							<option value="0" '.($r['value']=='0'?'selected="selected"':'').'>Выкл(0)</option>
-							<option value="1" '.($r['value']=='1'?'selected="selected"':'').'>Вкл(1)</option>
-						</select>';
+					if(!is_array($r['value']))
+						$r['value'] = array($r['value']=>true);
+					else
+						$r['value'] = array_combine($r['value'],$r['value']);
+					$html .= '<div class="f_value multiplebox">';
+					$html .= '<div><input type="checkbox" name="null" value="" ';
+					if(isset($r['value'][0]) or isset($r['value']['']))
+						$html .= 'checked="checked"';
+					$html .= '/>Все</div>';
+					foreach($r['valuelist'] as $rk=>$rr) {
+						$html .= '<div><input type="checkbox" name="'.$k.'[]" value="'.$rk.'" '.(isset($r['value'][$rk])?'checked="checked"':'').'/>'.$rr['#name#'].'</div>';
+					}
+				}
+				else {
+					$html .= '<div class="f_value checkbox">';
+					if($r['param']=='checkbox') {
+						$html .= '<input type="checkbox" name="'.$k.'" value="1" '.($r['value']==1?'checked="checked"':'').'/>';
+					}
+					elseif(is_array($r['value'])) {
+						$html .= '<table border="0" cellpadding="0" cellspacing="1">';
+						foreach($r['value'] as $row) {
+							$html .= '<tr>
+										<td>'.$row['title'].'</td>
+										<td><input type="'.$r['type'].'" name="'.$k.'" value="'.$row['value'].'" class="radio" '.($row['sel']?'checked="checked"':'').'/></td>
+									</tr>';
+						}
+						$html .= '</table>';
+					} else {
+						$html .= '<select name="'.$k.'">
+								<option value="">Все</option>
+								<option value="0" '.($r['value']=='0'?'selected="selected"':'').'>Выкл(0)</option>
+								<option value="1" '.($r['value']=='1'?'selected="selected"':'').'>Вкл(1)</option>
+							</select>';
+					}
+				}
+				$html .= '</div></div>';
+			}
+			elseif($r['type']=='linklist') {
+				//print_r('<pre>');print_r($r['valuelist']);
+				$html .= '<div class="f_item linklist"><div class="f_caption">'.$r['caption'].'</div><div class="f_value">';
+				foreach($r['valuelist'] as $rk=>$rr) {
+					$html .= '<div><a href="'.$rr['#href#'].'">'.$rr['#name#'].'</a></div>';
+					if(isset($rr['#item#']) and is_array($rr['#item#'])) {
+						foreach($rr['#item#'] as $rrk=>$rrr)
+							$html .= '<div>&#160;&#160;<a href="'.$rrr['#href#'].'">'.$rrr['#name#'].'</a></div>';
+					}
 				}
 				$html .= '</div></div>';
 			}
@@ -89,9 +125,9 @@
 			}
 			elseif($r['type']=='int') {
 				$html .= '<div class="f_item" id="tr_'.$k.'">
-				<div class="f_int">
-					<input type="text" name="'.$k.'" id="'.$k.'" value="'.$r['value'].'" onkeydown="return checkInt(event)" maxlength="'.$r['max'].'"/> '.$r['caption'].'
-					<input type="text" name="'.$k.'_2" id="'.$k.'_2" value="'.$r['value_2'].'" onkeydown="return checkInt(event)" maxlength="'.$r['max'].'" style="text-align:right;"/>
+				<div class="f_caption">'.$r['caption'].'</div>
+				<div class="f_value f_int">
+					<input type="text" name="'.$k.'" id="'.$k.'" value="'.$r['value'].'" onkeydown="return checkInt(event)" maxlength="'.$r['max'].'"/> - <input type="text" name="'.$k.'_2" id="'.$k.'_2" value="'.$r['value_2'].'" onkeydown="return checkInt(event)" maxlength="'.$r['max'].'"/>
 				</div>
 				
 			  </div>';//<div class="f_exc"><input type="checkbox" name="exc_'.$k.'" value="exc" '.($r['exc']==1?'checked="checked"':'').'/></div>
@@ -129,17 +165,17 @@
 		return $html;
 	}
 
-function selectitem2($data,$flag='') {
+function selectitem2($data,$flag=0) {
 	$html = '';
 	if(is_array($data) and count($data))
 		foreach($data as $k=>$r) {
 			//_substr($r['name'],0,60).(_strlen($r['name'])>60?'...':'')
 			if(count($r['#item#']) and $r['#checked#']==0)
-				$html .= '<optgroup label="'.$flag.$r['#name#'].'"></optgroup>';
+				$html .= '<optgroup label="'.$r['#name#'].'" class="selpad'.$flag.'"></optgroup>';
 			else
-				$html .= '<option value="'.$k.'" '.($r['#sel#']?'selected="selected"':'').'>'.$flag.$r['#name#'].'</option>';
+				$html .= '<option value="'.$k.'" '.($r['#sel#']?'selected="selected"':'').' class="selpad'.$flag.'">'.$r['#name#'].'</option>';
 			if(count($r['#item#']))
-				$html .= selectitem2($r['#item#'],$flag);//.'&#160;--'
+				$html .= selectitem2($r['#item#'],($flag+1));//.'&#160;--'
 		}
 	return $html;
 }
