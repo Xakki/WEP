@@ -55,6 +55,7 @@ class pg_class extends kernel_class {
 		$this->fields['attr'] = array('type' => 'varchar', 'width'=>254, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['onmenu'] = array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL', 'default' => 0);
 		$this->fields['onmap'] = array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL', 'default' => 1);
+		$this->fields['onmapinc'] = array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL', 'default' => 1);
 		$this->fields['pagemap'] = array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['onpath'] = array('type' => 'tinyint', 'width'=>1, 'attr' => 'NOT NULL', 'default' => 1);
 
@@ -71,6 +72,7 @@ class pg_class extends kernel_class {
 		$this->fields_form['description'] = array('type' => 'text', 'caption' => 'META-description','mask'=>array('fview'=>1));
 		$this->fields_form['onmenu'] = array('type' => 'list', 'listname'=>'menu', 'multiple'=>2, 'caption' => 'Меню', 'mask'=>array('onetd'=>'Опции'));
 		$this->fields_form['onmap'] = array('type' => 'checkbox', 'caption'=>'Карта', 'comment' => 'Отображать в карте сайта','default'=>1);
+		$this->fields_form['onmapinc'] = array('type' => 'checkbox', 'caption'=>'Карта-php', 'comment' => 'Отображать карту сгенерированную php','default'=>1);
 		$this->fields_form['pagemap'] = array('type' => 'list', 'listname'=>'pagemap', 'caption' => 'MAP', 'mask' =>array('fview'=>1));
 		$this->fields_form['onpath'] = array('type' => 'checkbox', 'caption'=>'Путь', 'comment' => 'Отображать в хлебных крошках','default'=>1,'mask'=>array('onetd'=>'close'));
 		$this->fields_form['attr'] = array('type' => 'text', 'caption' => 'Атрибуты для ссылки в меню', 'comment'=>'Например: `target="_blank" onclick=""` итп', 'mask' =>array('name'=>'all', 'fview'=>1));
@@ -447,7 +449,7 @@ class pg_class extends kernel_class {
 				if(!$flagPG and isset($this->dataCashTree[$keyPG]))
 					$DATA_PG[$keyPG]['#item#'] = $this->getMap($onmenuPG,$flagPG,$keyPG);
 
-				if($onmenuPG==-1) {
+				if($onmenuPG==-1 and $rowPG['onmapinc']) {
 					$mapPG = explode(':',$rowPG['pagemap']);
 					if(count($mapPG)==2 and file_exists($this->_enum['inc'][$mapPG[0]]['path'].$mapPG[1].'.map.php')) {
 						$tempinc = include($this->_enum['inc'][$mapPG[0]]['path'].$mapPG[1].'.map.php');

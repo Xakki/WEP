@@ -91,13 +91,18 @@
 		}
 	}
 	$_tpl['modulsforms'] = $html;
-	if(_prmUserCheck(2)) 
+	if(_prmUserCheck(2)) {
 		$_tpl['debug'] = '<span class="seldebug"><select>
 <option onclick="window.location=\''.$_CFG['PATH']['wepname'].'/index.php?_showallinfo=0\'" '.(!$_COOKIE['_showallinfo']?'selected="selected"':'').'>Скрыть инфу</option>
 <option onclick="window.location=\''.$_CFG['PATH']['wepname'].'/index.php?_showallinfo=1\'" '.($_COOKIE['_showallinfo']==1?'selected="selected"':'').'>Показать инфу</option>
 <option onclick="window.location=\''.$_CFG['PATH']['wepname'].'/index.php?_showallinfo=2\'" '.($_COOKIE['_showallinfo']==2?'selected="selected"':'').'>Показать SQL запросы</option>
 <option onclick="window.location=\''.$_CFG['PATH']['wepname'].'/index.php?_showallinfo=3\'" '.($_COOKIE['_showallinfo']==3?'selected="selected"':'').'>Показать все логи</option>
 </select></span>';
+		$_tpl['debug'] .= '<span class="seldebug"><select>
+<option onclick="setCookie(\'cdesign\',\'default\')" '.($_design=='default'?'selected="selected"':'').'>Default</option>
+<option onclick="setCookie(\'cdesign\',\'extjs\')" '.($_design=='extjs'?'selected="selected"':'').'>ExtJS</option>
+</select></span>';
+	}
 
 	$_tpl['styles']['style'] = 1;
 
