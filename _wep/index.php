@@ -70,8 +70,21 @@ error_reporting(-1);
 	}
 /*---------------ADMIN*/
 
-	if($_SESSION['user']['wep'])
+	if($_SESSION['user']['wep']) {
 		include($_CFG['_PATH']['cdesign'].$_design.'/inc.php');
+		if(_prmUserCheck(2)) {
+			$_tpl['debug'] = '<span class="seldebug"><select>
+	<option onclick="window.location=\''.$_CFG['PATH']['wepname'].'/index.php?_showallinfo=0\'" '.(!$_COOKIE['_showallinfo']?'selected="selected"':'').'>Скрыть инфу</option>
+	<option onclick="window.location=\''.$_CFG['PATH']['wepname'].'/index.php?_showallinfo=1\'" '.($_COOKIE['_showallinfo']==1?'selected="selected"':'').'>Показать инфу</option>
+	<option onclick="window.location=\''.$_CFG['PATH']['wepname'].'/index.php?_showallinfo=2\'" '.($_COOKIE['_showallinfo']==2?'selected="selected"':'').'>Показать SQL запросы</option>
+	<option onclick="window.location=\''.$_CFG['PATH']['wepname'].'/index.php?_showallinfo=3\'" '.($_COOKIE['_showallinfo']==3?'selected="selected"':'').'>Показать все логи</option>
+	</select></span>';
+			$_tpl['debug'] .= '<span class="seldebug"><select>
+	<option onclick="setCookie(\'cdesign\',\'default\');window.location=\''.$_CFG['PATH']['wepname'].'/index.php\';" '.($_design=='default'?'selected="selected"':'').'>Default</option>
+	<option onclick="setCookie(\'cdesign\',\'extjs\');window.location=\''.$_CFG['PATH']['wepname'].'/index.php\';" '.($_design=='extjs'?'selected="selected"':'').'>ExtJS</option>
+	</select></span>';
+		}
+	}
 	else {
 		$_tpl['mess'] = $_CFG['_MESS']['denied'];
 		$HTML->_templates = "login";
