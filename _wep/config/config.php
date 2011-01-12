@@ -353,5 +353,10 @@ include($_CFG['_PATH']['wepconf'].'/config/config.php');
 			$secure = $_CFG['session']['secure'];
 		setcookie($name,$value,$expire,$path,$domain,$secure);
 	}
-
+/*
+точное время в милисекундах
+*/
+	function getmicrotime(){
+		list($usec, $sec) = explode(" ",microtime()); return ((float)$usec + (float)$sec);
+	}
 ?>

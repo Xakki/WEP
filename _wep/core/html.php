@@ -324,12 +324,6 @@
 		$s .= '</div>';
 		return $s;
 	}
-/*
-точное время в милисекундах
-*/
-	function getmicrotime(){
-		list($usec, $sec) = explode(" ",microtime()); return ((float)$usec + (float)$sec);
-	}
 
 	function _fCheckVariables($data) {
 		foreach($data as $k=>$v)

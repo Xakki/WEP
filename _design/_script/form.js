@@ -165,7 +165,7 @@ function ajaxlist(obj,view) { // функция контроля подгруз�
 			timerid4 = setTimeout(function(){getAjaxListData(obj.value,view);},900);
 		else
 			timerid4 = setTimeout(function(){ajaxlist(obj,view);},1000);
-	}else {
+	} else {
 		clearTimeout(timerid4);timerid4=0;
 		$('#ajaxlist_'+view+' + input').val('');
 		$('#ajaxlist_'+view).prev('input').attr('class','reject');
@@ -217,7 +217,10 @@ function getAjaxListData(value,view) { // загрузка списка
 				$('#ajaxlist_'+view).html(txt).show();
 				$('#ajaxlist_'+view).attr('val',value);
 				$('#ajaxlist_'+view+' label').click(function(){
-					ajaxlist_click(view,this)
+					ajaxlist_click(view,this);
+					if($('#ajaxlist_'+view+' + input').attr('onchange')) {
+						$('#ajaxlist_'+view+' + input').change();
+					}
 				});
 				ajaxComplite = 1;
 			}
