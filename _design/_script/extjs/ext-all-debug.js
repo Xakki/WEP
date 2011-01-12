@@ -49070,6 +49070,7 @@ Ext.grid.ColumnModel = Ext.extend(Ext.util.Observable, {
 
     
     getColumnWidth : function(col) {
+
         var width = this.config[col].width;
         if(typeof width != 'number'){
             width = this.defaultWidth;

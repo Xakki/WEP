@@ -27,6 +27,15 @@
 			if($_GET['_id']!='') $MODUL->id = $_GET['_id'];
 
 			if(_prmModul($_GET['_modul'],array(1,2))) {
+				
+				
+				if (isset($_GET['node']))
+				{
+					if (!strstr($_GET['node'], 'xnode-'))
+					{
+						$_GET[$_GET['_modul'].'_id'] = $_GET['node'];
+					}
+				}
 
 				if($_GET['_view']=='list' || $_GET['_view'] == 'listcol') {
 					$MODUL->_clp = '_view=list&amp;_modul='.$MODUL->_cl.'&amp;';

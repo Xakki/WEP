@@ -1,37 +1,3 @@
-
-function load_href(hrf) {
-	if(typeof hrf=='object')
-		window.location.href = $(hrf).attr('href');
-	else
-		window.location.href = hrf;
-	return false;
-}
-
-var MESS = {
-	'del':'Вы действительно хотите провести операцию удаления?',
-	'delprof':'Вы действительно хотите удалить свой профиль?',
-};
-function hrefConfirm(obj,mess)
-{
-	if(MESS[mess])
-		mess = MESS[mess];
-
-	if(confirm(mess)) {
-		return true;
-	}
-	return false;
-}
-
-function invert_select(form_id)
-{
-	$('#'+form_id+' input[type=checkbox]').each(function() {
-		this.checked = !this.checked;
-	});
-	return false;
-}
-
-// новое
-
 $(document).ready(function() {
 	// вешаем обработчик кликов на все ссылки
 	$('a').click(wep.click_handler);
@@ -190,12 +156,167 @@ Ext.apply(wep, {
 		// добавляем в modulsforms дерево элементов
 		if (wep.GET['_view'] == 'list')
 		{
-			wep.get_tree(wep.GET['_modul'], 'modulsforms');
+//			wep.get_tree(wep.GET['_modul'], 'modulsforms');
+			
+//			wep.get_list(wep.GET['_modul'], 'modulsforms');
+	
+			wep.get_panel(wep.GET['_modul'], 'modulsforms');	
 		}
 			
 		return false;
 	},
+	
+	panel: Ext.extend(Ext.Panel, {
+		itemId: 'modul_panel',
+		renderTo: 'modulsforms',
+		layout: 'fit',
+		initComponent:function(config) {		
+			
+			var modul = wep.GET['_modul'];
+			var id_cont = 'modulsforms';
+			
+			var cm = new Ext.grid.ColumnModel({
+				// specify any defaults for each column
+				defaults: {
+					sortable: true // columns are not sortable by default           
+				},
+				columns: this.columns
+			});
+			
+			// create the Data Store
+			var store = new Ext.data.Store({
+				// destroy the store if the grid is destroyed
+				autoDestroy: true,
 
+				// load remote data using HTTP
+				url: '_wep/index.php?_view=list&_modul=' + modul,
+
+				reader: new Ext.data.JsonReader({
+					fields: this.fields
+				}),
+
+				sortInfo: {field:'id', direction:'ASC'}
+			});
+			
+			
+			
+			
+			// manually trigger the data store load
+			store.load({
+				// store loading is asynchronous, use a load listener or callback to handle results
+				callback: function(){
+					Ext.Msg.show({
+						title: 'Store Load Callback',
+						msg: 'store was loaded, data available for processing',
+						modal: false,
+						icon: Ext.Msg.INFO,
+						buttons: Ext.Msg.OK
+					});				
+				}					
+			});
+			
+
+
+			var grid = new Ext.grid.EditorGridPanel({
+				store: store,
+				cm: cm,
+				width: 600,
+				height: 300,
+				autoExpandColumn: 'id', // column with this id will be expanded
+				title: 'Edit Plants?',
+
+			});
+		
+		rrr = this;
+			
+			grid.ddsdsds = 4;
+			grid.getSelectionModel().on('selectionchange', function(sel, node) {
+				if (node) {
+
+					sel.grid.ownerCt.add({
+						region:'center',
+						margins:'5 5 5 0',
+						cls:'empty',
+						bodyStyle:'background:#f1f1f1',
+						html:'<br/><br/>&lt;empty center panel&gt;'
+					});
+					sel.grid.ownerCt.doLayout();
+				}
+			});
+			
+			Ext.apply(this, {
+				region: 'east',
+				split: true,
+//				width: 250, // give east and west regions a width
+//				minSize: 250,
+//				maxSize: 400,
+				layout: 'anchor',
+				items: [
+					{				
+						title: 'Модуль ' + modul,
+					},
+					grid 
+				]
+			});
+					
+			Ext.apply(this, config);
+			wep.panel.superclass.initComponent.call(this);		
+			
+			
+		},
+		
+		
+	}),
+	
+	get_panel: function(modul, id_cont) {
+
+		//Очищаем элемент, в котором хотим нарисовать дерево
+		Ext.get(id_cont).update('');
+
+		jsfiles = [
+			wep.path['extjs'] + 'ux/CheckColumn.js'
+		];
+
+		wep.include_js(jsfiles, function() {
+	
+			Ext.Ajax.request({
+				url: '_wep/index.php?_view=listcol&_modul=' + modul,
+				success: function(result, textStatus) {
+					
+					var fm = Ext.form;
+
+					data = Ext.util.JSON.decode(result.responseText);	
+
+					var columns = data['columns'];
+					var fields = data['fields'];
+					var grid = this.grid;
+
+					Ext.each(columns, function(value, index)
+					{
+						if (columns[index].editor != undefined && Ext.isString(columns[index].editor))
+						{
+							eval('columns[index].editor = ' + columns[index].editor + ';');
+						}
+					});
+					
+					var panel = new wep.panel({
+						items: [{				
+							title: 'Модуль ' + modul,
+						}],
+						columns: columns,
+						fields: fields,
+						grid: grid,
+						obj: this					
+					});
+				},
+				failure: function() {
+					Ext.Msg.alert('Ошибка', 'Произошла ошибка');
+				}
+			});
+		});
+
+	},
+		
 	// получает дерево элементов из модуля modul
 	// и помещает их в элемент с id	= id_cont
 	get_tree: function(modul, id_cont) 
@@ -234,27 +355,21 @@ Ext.apply(wep, {
 						renderTo: Ext.getDom(id_cont),
 						enableDD: true,
 						columns: data,
-						requestMethod: 'get',
+						requestMethod: 'GET',
 						dataUrl: '_wep/index.php?_view=list&_modul=' + modul
 					});	 
+					
+					tree.getSelectionModel().on('selectionchange', function(sel, node) {
+						if (node) {
+							alert(node.id);
+						}
+					});
 				},
 				failure: function(result, textStatus) {
 					Ext.Msg.alert('Ошибка', 'Произошла ошибка');
 				}
 			});
 						
-/*
-			var tree = new Ext.ux.tree.TreeGrid({
-				title: 'Модуль ' + modul,
-//				width: 500,
-				width: 1000,
-				height: 300,
-				renderTo: Ext.getDom(id_cont),
-				enableDD: true,
-				columns: data,
-				dataUrl: '_wep/index.php?_view=list&_modul=' + modul
-			});	 
-*/			
 		});
 		
 	},
