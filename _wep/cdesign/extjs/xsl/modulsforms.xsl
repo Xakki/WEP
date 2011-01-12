@@ -11,9 +11,7 @@
 			</xsl:when>
 
 			<xsl:otherwise>
-				<div style="position:absolute;top:50%;left:50%;"><div style="width:200px;height:100px;position:absolute;top:-50px;left:-100px;">
-					<img src="img/login.gif" width='250' alt="LOGO"/>
-				</div></div>
+
 			</xsl:otherwise>
 		</xsl:choose>
 

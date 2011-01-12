@@ -19,20 +19,33 @@
 		{$_tpl['styles']}
 	</head>
 	<body onload="{$_tpl['onload']}">
-		<div id='wepmain'>
-			<div id="sysconf">{$_tpl['sysconf']}</div>
-			<div id="modulslist">{$_tpl['modulslist']}</div>
-			<div id="modulsforms">{$_tpl['modulsforms']}</div>
-			<div id="modulsforms2"></div>
-			<div class='spacer'></div>
+		<div class="leftblock">
+			<a class="logo" title="Главная" href="_wep"></a>
+			<div class="name_block"><span class="triangle_dowm"></span>WEB</div>
+			<div class="block">
+			{$_tpl['sysconf']}
+			</div>
+			<div class="name_block"><span class="triangle_dowm"></span>Модули</div>
+			<div class="block">
+			{$_tpl['modulslist']}
+			</div>
 		</div>
-		<div id="cmsinfo">
-			<div class="infname"><a href="http://xakki.ru">WebEngineOnPHP</a></div>
-			<div class="infc">{$_tpl['contact']}</div>
-			<div id="inftime">{$_tpl['time']}</div>
+		<div class="maintext">
+			<div class="block">
+				<div class="toolbar">{$_tpl['uname']}</div>	
+				<div class="path">Путь</div>
+				<div class="content" id="modulsforms">{$_tpl['modulsforms']}</div>
+			</div>
+		</div>
+		<div class="clear"></div>
+		<div class="footer">
+			<div class="block">
+			{$_tpl['contact']}
+			<div class="clear"></div>
+			{$_tpl['time']}
+			</div>
 		</div>
 		<div id="debug_view" style="">{$_tpl['logs']}</div>
-		
 		<div class="debug_view_img">{$_tpl['debug']}<img src="{$_tpl['design']}img/debug_view.png" onclick="fShowHide('debug_view');" alt="DEBUG"/></div>
 	</body>
 </html>
