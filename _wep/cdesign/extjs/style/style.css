@@ -50,7 +50,7 @@ a:hover {
 		width:171px;
 		height:52px;
 		border:0px;
-		background-image:url(../../../../../partner/_wep/cdesign/extjs/img/logo.png);
+		background-image:url(../img/logo.png);
 		background-repeat:no-repeat;
 		margin:10px 0 30px 10px;
 		}
@@ -122,7 +122,7 @@ a:hover {
 
 /*path*/
 	.path {
-		background-image:url(../../../../../partner/_wep/cdesign/extjs/img/path.gif);
+		background-image:url("../img/path.gif");
 		background-repeat:repeat-x;
 		height:18px;
 		color:#FFFFFF;
