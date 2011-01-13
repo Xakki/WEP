@@ -6,7 +6,7 @@
 		
 		unset($data['_*features*_']);
 		
-		$html .= '<form id="form_tools_'.$attr['name'].'" method="'.$attr['method'].'" action="'.$attr['action'].'" onsubmit="'.$attr['onsubmit'].'"><div class="filter">';
+		$html .= '<form id="form_tools_'.$attr['name'].'" method="'.$attr['method'].'" action="'.$attr['action'].'" onsubmit="'.$attr['onsubmit'].'"><div class="filter"><!--BEGIN_FILTER-->';
 		foreach($data as $k=>$r) {
 			if($r['type']=='submit') {
 				$html .= '<div class="f_submit"><input type="'.$r['type'].'" name="'.$k.'" value="'.$r['value'].'"/></div>';
@@ -38,14 +38,19 @@
 						unset($r['valuelist']['']);
 						unset($r['valuelist'][0]);
 					}
-					if(!is_array($r['value']))
-						$r['value'] = array($r['value']=>true);
+					if(!is_array($r['value'])) {
+						if($r['value'])
+							$r['value'] = array($r['value']=>$r['value']);
+						else
+							$r['value'] = array();
+					}
 					else
 						$r['value'] = array_combine($r['value'],$r['value']);
 					$html .= '<div class="f_value multiplebox">';
 					$html .= '<div><input type="checkbox" name="null" value="" ';
-					if(isset($r['value'][0]) or isset($r['value']['']))
+					if(isset($r['value'][0]) or isset($r['value']['']) or !count($r['value'])) {
 						$html .= 'checked="checked"';
+					}
 					$html .= '/>Все</div>';
 					foreach($r['valuelist'] as $rk=>$rr) {
 						$html .= '<div><input type="checkbox" name="'.$k.'[]" value="'.$rk.'" '.(isset($r['value'][$rk])?'checked="checked"':'').'/>'.$rr['#name#'].'</div>';
@@ -161,7 +166,7 @@
 				</div>';//<div class="f_exc"><input type="checkbox" name="exc_'.$k.'" value="exc"></input></div>
 			}
 		}
-		$html .= '</div><div class="clk"></div></form>';
+		$html .= '<!--END_FILTER--></div><div class="clk"></div></form>';
 		return $html;
 	}
 

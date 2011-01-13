@@ -90,12 +90,12 @@ class session_gogo {
 	function write($sid, $sess_data) {
 		if($sess_data) {
 			$data = $this->_unserialize($sess_data);
-			$sess_data = mysql_escape_string($sess_data);
-			$lastPage = mysql_escape_string($_SERVER['REQUEST_URI']);
-			$host = mysql_escape_string($_SERVER['HTTP_HOST']);
+			$sess_data = mysql_real_escape_string($sess_data);
+			$lastPage = substr(mysql_real_escape_string($_SERVER['REQUEST_URI']),0,250);
+			$host = mysql_real_escape_string($_SERVER['HTTP_HOST']);
 			$result = $this->SQL->execSQL('INSERT INTO '.$this->tablename.' 
 (`sid`,`created`,`modified`,`expired`,`data`,`users_id`,`ip`,`useragent`,`lastpage`,`host`,`host2`) values
-("'.$sid.'","'.$this->_time.'","'.$this->_time.'","'.$this->expired.'","'.$sess_data.'","'.$data['user']['id'].'","'.mysql_escape_string($_SERVER["REMOTE_ADDR"]).'","'.mysql_escape_string(substr($_SERVER['HTTP_USER_AGENT'],0,255)).'","'.$lastPage.'","'.$host.'","'.mysql_escape_string($_SERVER['HTTP_HOST2']).'") 
+("'.$sid.'","'.$this->_time.'","'.$this->_time.'","'.$this->expired.'","'.$sess_data.'","'.$data['user']['id'].'","'.mysql_real_escape_string($_SERVER["REMOTE_ADDR"]).'","'.mysql_real_escape_string(substr($_SERVER['HTTP_USER_AGENT'],0,250)).'","'.$lastPage.'","'.$host.'","'.mysql_real_escape_string($_SERVER['HTTP_HOST2']).'") 
 ON DUPLICATE KEY UPDATE `modified` = "'.$this->_time.'", `users_id`="'.$data['user']['id'].'" ,`data` = "'.$sess_data.'", `visits` = (`visits` + 1), `lastpage`= "'.$lastPage.'", `host`="'.$host.'"');
 		}
 		else
@@ -104,7 +104,7 @@ ON DUPLICATE KEY UPDATE `modified` = "'.$this->_time.'", `users_id`="'.$data['us
 	}
 
 	function destroy($sid) {
-		$result = $this->SQL->execSQL('DELETE FROM '.$this->tablename.' WHERE `sid`  = "'.mysql_escape_string($sid).'"');
+		$result = $this->SQL->execSQL('DELETE FROM '.$this->tablename.' WHERE `sid`  = "'.mysql_real_escape_string($sid).'"');
 		return(true); 
 	}
 
