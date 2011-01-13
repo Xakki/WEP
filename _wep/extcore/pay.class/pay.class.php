@@ -12,7 +12,7 @@ class pay_class extends kernel_class {
 		$this->mf_ipcreate = true;//IP адрес пользователя с котрого была добавлена запись		
 		$this->mf_timestamp = true; // создать поле  типа timestamp
 		$this->cf_childs = true;
-		
+		$this->icon = '12';
 		$this->ver = '0.1';
 		return true;
 	}
