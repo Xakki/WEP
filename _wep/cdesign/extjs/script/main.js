@@ -220,11 +220,11 @@ Ext.apply(wep, {
 			var grid = new Ext.grid.EditorGridPanel({
 				store: store,
 				cm: cm,
-				width: 600,
-				height: 300,
+			//	width: '100%',
+			//	height: '50%',
 				autoExpandColumn: 'id', // column with this id will be expanded
-				title: 'Edit Plants?',
-
+				title: 'Страницы',
+				hideParent: false
 			});
 		
 		rrr = this;
@@ -269,7 +269,6 @@ Ext.apply(wep, {
 	}),
 	
 	get_panel: function(modul, id_cont) {
-
 		//Очищаем элемент, в котором хотим нарисовать дерево
 		Ext.get(id_cont).update('');
 
