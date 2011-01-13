@@ -13,9 +13,10 @@
 		<script type="text/javascript" src="_design/_script/extjs/ext-all-debug.js"></script>
 		<script type="text/javascript" src="{$_tpl['design']}script/main.js"></script>
 		{$_tpl['script']}
+		<link type="text/css" href="_design/_script/extjs/resources/css/ext-all.css" rel="stylesheet"/>
 		<link type="text/css" href="{$_tpl['design']}style/style.css" rel="stylesheet"/>
 
-		<link type="text/css" href="_design/_script/extjs/resources/css/ext-all.css" rel="stylesheet"/>
+		
 		{$_tpl['styles']}
 	</head>
 	<body onload="{$_tpl['onload']}">

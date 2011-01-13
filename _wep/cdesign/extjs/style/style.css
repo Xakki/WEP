@@ -169,3 +169,12 @@ a:hover {
 #debug_view h1 {font-size:12px;text-align:center;font-weight:bold;margin:0;max-height:300px;min-height:40px;overflow:auto;}
 .debug_view_img {position:absolute;right:5px;top:55px;z-index:7;cursor:pointer;}
 .debug_view_img select { font-size:11px;}
+
+
+/*extjs*/
+.x-panel-header {
+    border-color: #999999;
+}
+.x-panel-body {
+    border-color:#CCCCCC;
+}
