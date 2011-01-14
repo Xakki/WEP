@@ -241,7 +241,7 @@
 		
 		if((isset($_COOKIE['_showallinfo']) and $_COOKIE['_showallinfo']) or $_CFG['_F']['adminpage']) {
 			$included_files = get_included_files();
-				$htmlinfo .='<div style="background-color:#6E9EEE;padding:2px;font-weight:bold;font-size:12px;border:solid 1px gray;">time='.substr((getmicrotime()-$_mctime_start),0,6).' | memory='.(int)(memory_get_usage()/1024).'Kb | maxmemory='.(int)(memory_get_peak_usage()/1024).'Kb | query='.count($_CFG['logs']['sql']).' | file include='.count($included_files).'</div>';
+				$htmlinfo .='<div class="info_time">time='.substr((getmicrotime()-$_mctime_start),0,6).' | memory='.(int)(memory_get_usage()/1024).'Kb | maxmemory='.(int)(memory_get_peak_usage()/1024).'Kb | query='.count($_CFG['logs']['sql']).' | file include='.count($included_files).'</div>';
 			if($_COOKIE['_showallinfo']>1)
 				$htmlerr .='<div style="background-color:#E1E1E1;padding:2px;font-style:italic;font-size:10px;border:solid 1px gray;">SQL QUERY<br/>'.implode(';<br/>',$_CFG['logs']['sql']).'</div>';
 			if($_COOKIE['_showallinfo']>2) {

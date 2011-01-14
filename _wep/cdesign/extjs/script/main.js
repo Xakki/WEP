@@ -224,7 +224,10 @@ Ext.apply(wep, {
 			//	height: '50%',
 				autoExpandColumn: 'id', // column with this id will be expanded
 				title: 'Страницы',
-				hideParent: false
+				autoHeight : true,
+				enableColumnResize: true,
+				minColumnWidth : 50,
+				enableHdMenu : false
 			});
 		
 		rrr = this;

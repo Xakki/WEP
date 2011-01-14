@@ -13,7 +13,8 @@
 		<script type="text/javascript" src="_design/_script/extjs/ext-all-debug.js"></script>
 		<script type="text/javascript" src="{$_tpl['design']}script/main.js"></script>
 		{$_tpl['script']}
-		<link type="text/css" href="_design/_script/extjs/resources/css/ext-all.css" rel="stylesheet"/>
+		<link type="text/css" href="_design/_script/extjs/resources/css/ext-all-notheme.css" rel="stylesheet"/>
+		<link type="text/css" href="_design/_script/extjs/resources/css/xtheme-gray.css" rel="stylesheet"/>
 		<link type="text/css" href="{$_tpl['design']}style/style.css" rel="stylesheet"/>
 
 		
@@ -22,6 +23,7 @@
 	<body onload="{$_tpl['onload']}">
 		<div class="leftblock">
 			<a class="logo" title="Главная" href="_wep"></a>
+			<div style="overflow:auto; height:80%; padding-bottom:30px;">
 			<div class="name_block"><span class="triangle_dowm"></span>WEB</div>
 			<div class="block">
 			{$_tpl['sysconf']}
@@ -30,6 +32,15 @@
 			<div class="block">
 			{$_tpl['modulslist']}
 			</div>
+			<div class="name_block"><span class="triangle_dowm"></span>Модули</div>
+			<div class="block">
+			{$_tpl['modulslist']}
+			</div>
+			<div class="name_block"><span class="triangle_dowm"></span>Модули</div>
+			<div class="block">
+			{$_tpl['modulslist']}
+			</div>
+			</div>
 		</div>
 		<div class="maintext">
 			<div class="block">
@@ -37,8 +48,8 @@
 				<div class="path">Путь</div>
 				<div class="content" id="modulsforms">{$_tpl['modulsforms']}</div>
 			</div>
+			<div style="clear:both"></div>
 		</div>
-		<div class="clear"></div>
 		<div class="footer">
 			<div class="block">
 			{$_tpl['contact']}

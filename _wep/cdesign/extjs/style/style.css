@@ -35,15 +35,15 @@ a:hover {
 
 /*blocks*/
 .leftblock{
-	display:block;
-	float:left;
-	height:100%;
-	padding: 0px 0 50px 7px;
-	position:relative;
-	width:195px;
-	background-color:#E4E4E4;
-	color:#494E53;
-	border-right:5px solid #A8CF46;
+    background-color: #E4E4E4;
+    border-right: 5px solid #A8CF46;
+    color: #494E53;
+    overflow: hidden;
+    float: left;
+    height: 100%;
+    padding: 0 0 0 7px;
+    position: absolute;
+    width: 195px;
 	}
 	.leftblock .logo {
 		display:block;
@@ -56,19 +56,20 @@ a:hover {
 		}
 
 .maintext{
-	display:block;
-	margin:0px 0 -61px 207px;
-	padding:0px 0px 50px 0;
-	vertical-align:top;
-	min-height:60%;
-	left: 0;
-	top:0;
+
+	margin:0px 0 0px 207px;
+
 }
 
 .footer{
-	text-align:left;
-	vertical-align:top;
-	background-color:#6E6D6D;
+    background-color: #6E6D6D;
+    bottom: 0;
+    color: #FFFFFF;
+    font-size: 11px;
+    height: 15px;
+    padding: 7px 0;
+    position: fixed;
+    width: 100%;
 }
 
 
@@ -104,31 +105,32 @@ a:hover {
 /*toolbar*/
 	.toolbar {
 		background-color:#6E6D6D;
-		height:50px;
+		height:26px;
 		border-bottom:3px solid #A8CF46;
 		}
 		.toolbar .uname {
-			position:absolute;
-			right:80px;
-			top:16px;
-			color:#FFFFFF;
-			font-size:12px;
+			color: #FFFFFF;
+			font-size: 11px;
+			position: absolute;
+			right: 70px;
+			top: 5px;
 			}
 		.toolbar .exit {
-			float:right;
-			display:block;
-			margin-top:6px;
+			display: block;
+			float: right;
+			margin-top: 2px;
 			}
 
 /*path*/
 	.path {
-		background-image:url("../img/path.gif");
-		background-repeat:repeat-x;
-		height:18px;
-		color:#FFFFFF;
-		padding:10px;
-		font-size:14px;
-	}
+		background-image: url("../img/path.gif");
+		background-position: 0 -4px;
+		background-repeat: repeat-x;
+		color: #FFFFFF;
+		font-size: 12px;
+		height: 17px;
+		padding: 3px 10px;
+		}
 	.path a {
 		text-decoration:underline;
 		color:#FFFFFF;
@@ -145,17 +147,15 @@ a:hover {
 		padding:0;
 		position:relative;
 	}
+	.maintext .content {
+		height:100%;
+		overflow:inherit;
+	}
 	
 /*footer*/
-.footer {
-	color:#FFFFFF;
-	font-size:12px;
-	padding:10px;
-	}
 	.footer .ctd1, .footer .ctd2 {
 		float:left;
-		margin-right:5px;
-		margin-bottom:5px;
+		margin-left:5px;
 		}
 	.footer .ctd2 {
 		margin-right:10px;
@@ -167,10 +167,26 @@ a:hover {
 
 #debug_view {position:absolute;right:5px;top:36px;z-index:6;border:1px solid yellow;width:320px;background:#D7E8FF;padding:0;font-size:10px;overflow:auto;white-space:pre;}
 #debug_view h1 {font-size:12px;text-align:center;font-weight:bold;margin:0;max-height:300px;min-height:40px;overflow:auto;}
-.debug_view_img {position:absolute;right:5px;top:55px;z-index:7;cursor:pointer;}
-.debug_view_img select { font-size:11px;}
-
-
+.debug_view_img {
+  	cursor: pointer;
+    position: absolute;
+    right: 214px;
+    top: -3px;
+    z-index: 1;
+	}
+.debug_view_img select { font-size:11px; width:65px; margin-right:3px;}
+.debug_view_img img { position:relative; top:5px;}
+.info_time {
+    border: 1px solid gray;
+    float: right;
+    font-size: 11px;
+    font-weight: bold;
+    margin-right: 5px;
+    padding: 2px;
+    position: relative;
+    top: -17px;
+	}
+	
 /*extjs*/
 .x-panel-header {
     border-color: #999999;
