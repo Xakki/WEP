@@ -109,7 +109,7 @@
 	
 
 	unset($_tpl['script']['jquery']);
-	$_tpl['script']['jquery.form'] = 1;
+//	$_tpl['script']['jquery.form'] = 1;
 	$_tpl['script']['utils'] = 1;
 	
 	// extjs script

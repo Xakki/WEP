@@ -18,11 +18,12 @@ function tpl_superlist(&$data)
 				$cols[$i] = array(
 					'header' => $r['value'],
 					'dataIndex' => $k,
-					'width' => 200,
 					'editor' => 'new fm.TextField({allowBlank: false})',
 				);
 				if ($k == 'id')
+				{
 					$cols[$i]['id'] = 'id';
+				}
 				
 				$fields[$i] = array(
 					'name' => $k,
@@ -35,14 +36,57 @@ function tpl_superlist(&$data)
 				
 		}	
 		$cols[] = array(
-			'xtype' => 'checkcolumn',
 			'header' => 'Вкл/Откл',
+			'xtype' => 'checkcolumn',
 			'dataIndex' => 'act',
 			'width' => 55,			
 //			'editor' => array(
 //				'xtype' => 'checkbox'
 //			),
 		);
+		
+
+		$cols[] = array(
+			'header' => 'Редактировать',
+			'xtype' => 'actioncolumn',
+			'width' => 50,
+			'items' => array(
+				array(
+					'icon' => '_wep/cdesign/extjs/img/icon-tab-folder.png', // '/tpl/master-default/img/icon-tab-folder.gif'
+					'tooltip' => 'LIST',
+				)
+			),			
+			'handler' => 'function() {
+				showForm(obj);
+			}',		
+		);
+
+		$cols[] = array(
+			'header' => 'Удалить',
+			'xtype' => 'actioncolumn',
+			'width' => 50,
+			'items' => array(
+				array(
+					'icon' => '_wep/cdesign/extjs/img/icon-tab-folder.png', // '/tpl/master-default/img/icon-tab-folder.gif'
+					'tooltip' => 'LIST',
+				)
+			),			
+			'handler' => 'function() {
+				var SelectionModel = obj.getSelectionModel();
+				var msg = "Вы действительно хотите удалить данную запись?";
+				if (SelectionModel.selection.record.data.name != undefined)
+				{
+					msg += " (" + SelectionModel.selection.record.data.id + ")";
+				}
+				else if (SelectionModel.selection.record.data.name != undefined)
+				{
+					msg += " (" + SelectionModel.selection.record.data.name + ")";
+				}
+				Ext.Msg.confirm("Удаление записи",  msg, onDelete, obj);	
+			}',		
+		);
+		
+		
 		$fields[] = array(
 			'name' => 'act',
 			'type' => 'bool'
