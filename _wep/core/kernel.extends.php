@@ -1661,6 +1661,7 @@ $Ajax=0 - не скриптовая
 			}
 
 			if($this->reversePageN) {// обратная нумирация
+				$DATA['cntpage'] = floor($countfield/$this->messages_on_page);
 				$temp_pn = $this->_pn;
 				$this->_pn = $DATA['cntpage']-$this->_pn+1;
 				if(strpos($thisPage,'.html')) {

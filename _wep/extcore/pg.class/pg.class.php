@@ -159,10 +159,10 @@ class pg_class extends kernel_class {
 		//PAGE****************
 		if ($flag_content==1) {
 			$HTML->_templates = $this->pageinfo['template'];
+			$flag_content = $this->display_page();
 			$_tpl['title'] = $this->get_caption();
 			$_tpl['keywords'] = $this->pageinfo['keywords'];
 			$_tpl['description'] = $this->pageinfo['description'];
-			$flag_content = $this->display_page();
 		}
 
 		if ($flag_content==2) {

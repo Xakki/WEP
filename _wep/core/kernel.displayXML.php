@@ -18,19 +18,24 @@
 				$xml['data']['req'] =$this->_clp;
 						
 			/*** PAGE NUM  REVERSE ***/
-			if($this->reversePageN and $this->_pn == 0) $this->_pn = 1;
-			elseif($this->reversePageN)
-				$this->_pn = ceil($countfield/$this->messages_on_page)-$this->_pn+1;
+			if($this->reversePageN) {
+				if($this->_pn == 0) 
+					$this->_pn = 1;
+				else
+					$this->_pn = floor($countfield/$this->messages_on_page)-$this->_pn+1;
+			}
 			/***/
 
 			$xml['pagenum'] = $this->fPageNav($countfield,$_SERVER['SCRIPT_NAME'].'?'.$this->_clp.(($this->id)?$this->_cl.'_id='.$this->id.'&amp;':''),1);
-			if($this->reversePageN and $this->_pn==ceil($countfield/$this->messages_on_page)) {
-				$pcnt = 0;
-				$this->messages_on_page = $countfield-$this->messages_on_page*($this->_pn-1); // правдивый
-				//$this->messages_on_page = $this->messages_on_page*$this->_pn-$countfield; // полная запись
+			if($this->reversePageN) {
+				if($this->_pn==floor($countfield/$this->messages_on_page)) {
+					$pcnt = 0;
+					$this->messages_on_page = $countfield-$this->messages_on_page*($this->_pn-1); // правдивый
+					//$this->messages_on_page = $this->messages_on_page*$this->_pn-$countfield; // полная запись
+				}
+				else
+					$pcnt = $countfield-$this->messages_on_page*$this->_pn; // начало отсчета
 			}
-			elseif($this->reversePageN)
-				$pcnt = $countfield-$this->messages_on_page*$this->_pn; // начало отсчета
 			else
 				$pcnt = $this->messages_on_page*($this->_pn-1); // начало отсчета
 			$climit= $pcnt.', '.$this->messages_on_page;

@@ -36,7 +36,8 @@
 						$r['valuelist'] = array(''=>array('#name#'=>'error','#id#'=>''));
 					else {
 						unset($r['valuelist']['']);
-						unset($r['valuelist'][0]);
+						if(isset($r['valuelist'][0]) and $r['valuelist'][0]['#name#']==' --- ')
+							unset($r['valuelist'][0]);
 					}
 					if(!is_array($r['value'])) {
 						if($r['value'])
@@ -48,7 +49,7 @@
 						$r['value'] = array_combine($r['value'],$r['value']);
 					$html .= '<div class="f_value multiplebox">';
 					$html .= '<div><input type="checkbox" name="null" value="" ';
-					if(isset($r['value'][0]) or isset($r['value']['']) or !count($r['value'])) {
+					if(isset($r['value']['']) or !count($r['value'])) {
 						$html .= 'checked="checked"';
 					}
 					$html .= '/>Все</div>';
