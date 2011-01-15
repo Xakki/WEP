@@ -27,9 +27,9 @@
 			/***/
 
 			$xml['pagenum'] = $this->fPageNav($countfield,$_SERVER['SCRIPT_NAME'].'?'.$this->_clp.(($this->id)?$this->_cl.'_id='.$this->id.'&amp;':''),1);
+			$pcnt = 0;
 			if($this->reversePageN) {
 				if($this->_pn==floor($countfield/$this->messages_on_page)) {
-					$pcnt = 0;
 					$this->messages_on_page = $countfield-$this->messages_on_page*($this->_pn-1); // правдивый
 					//$this->messages_on_page = $this->messages_on_page*$this->_pn-$countfield; // полная запись
 				}
@@ -38,6 +38,8 @@
 			}
 			else
 				$pcnt = $this->messages_on_page*($this->_pn-1); // начало отсчета
+			if($pcnt<0)
+					$pcnt = 0;
 			$climit= $pcnt.', '.$this->messages_on_page;
 
 			$cls =array(array('t1.*'),'',array());
