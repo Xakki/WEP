@@ -620,7 +620,7 @@
 				_new_class('ugroup',$UGROUP);
 			$result = array($_CFG['_MESS']['authok'],1);
 		}
-		if($result[1]) userExit();
+		if(!$result[1]) userExit();
 		return $result;
 	}
 
