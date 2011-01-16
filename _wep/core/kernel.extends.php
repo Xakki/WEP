@@ -881,7 +881,7 @@ _get_file($row, $key)
 		*/
 		if(!is_array($this->fields_form) or !count($this->fields_form)) return false;
 		$this->form = array();
-		$this->form['_*features*_'] = array('type'=>'info', 'name'=>$this->_cl, 'method'=>'post', 'id'=>$this->id,'action'=>str_replace('&','&amp;',$_SERVER['REQUEST_URI']));
+		$this->form['_*features*_'] = array('type'=>'info', 'name'=>$this->_cl, 'method'=>'post', 'id'=>$this->id,'action'=>$_SERVER['REQUEST_URI']);
 		$this->form['_info'] = array('type'=>'info','css'=>'caption');
 		if($this->id)
 			$this->form['_info']['caption'] = $this->getMess('update_name',array($this->caption));
@@ -1774,11 +1774,11 @@ $Ajax=0 - не скриптовая
 
 	function setCaptcha() {
 		global $_CFG;
-		$_SESSION['captcha'] = rand(10000,99999);
+		$data = rand(10000,99999);//$_SESSION['captcha']
 		if($_CFG['wep']['sessiontype']==1) {
 			$hash_key = file_get_contents($_CFG['_PATH']['HASH_KEY']);
 			$hash_key = md5($hash_key);
-			$crypttext = trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $hash_key, $_SESSION['captcha'], MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))));
+			$crypttext = trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $hash_key, $data, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))));
 			_setcookie('chash',$crypttext,(time()+1800));
 			_setcookie('pkey',base64_encode($_CFG['PATH']['HASH_KEY']),(time()+1800));
 			
@@ -1793,7 +1793,7 @@ $Ajax=0 - не скриптовая
 			$data = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $hash_key, base64_decode($_COOKIE['chash']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));
 			return $data;
 		}
-		return $_SESSION['captcha'];
+		return rand(145,357);
 	}
 }
 //// Kernel END

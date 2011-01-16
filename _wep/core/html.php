@@ -620,14 +620,16 @@
 				_new_class('ugroup',$UGROUP);
 			$result = array($_CFG['_MESS']['authok'],1);
 		}
+		if($result[1]) userExit();
 		return $result;
 	}
 
 	function  userExit() {
 		global $_CFG;
 		session_go();
-		if(isset($_SESSION))
-			$_SESSION = array();
+		session_destroy();
+		//if(isset($_SESSION))
+		//	$_SESSION = array();
 		if(isset($_COOKIE['remember']))
 			_setcookie('remember', '', (time()-5000));
 		if(isset($_COOKIE[$_CFG['session']['name']]))
