@@ -197,8 +197,6 @@ Ext.apply(wep, {
 	
 	panel: Ext.extend(Ext.Panel, {}),
 
-//	tree: Ext.extend(Ext.ux.tree.TreeGrid, {}),
-
 	grid: Ext.extend(Ext.grid.EditorGridPanel, {
 		initComponent: function(config) {	
 			
@@ -294,13 +292,20 @@ Ext.apply(wep, {
 							child_grid.destroy();
 						}
 
+						var url = 'http://partner.i/_wep/index.php?_view=list&_modul=' + wep.modul.cn + '&' + wep.modul.cn + '_id=' + id;
+
+						if (child.cl != wep.modul.cn)
+						{
+							url += '&' + wep.modul.cn + '_ch=' + child.cl;
+						}
+
 						var child_grid = new wep.grid({
 							id: child_grid_id,
 							columns: columns,
 							fields: fields,
 							title: 'Подмодуль ' + child.title,
 							hideParent: false,
-							url: 'http://partner.i/_wep/index.php?_view=list&_modul=' + child.cl + '&' + child.cl + '_id=' + id
+							url: url
 						});
 
 						var panel = Ext.getCmp('main_panel');
