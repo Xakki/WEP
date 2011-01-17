@@ -48,7 +48,11 @@
 							if($_GET['_type']=="add" or $_GET['_type']=="edit") {
 								if(isset($DATA['formcreat']) and isset($DATA['formcreat']['form']) and count($DATA['formcreat']['form'])) {
 									$DATA['formcreat']['path'] = $HTML->path;
-									$html = $HTML->transformPHP($DATA,'formcreat');
+									
+									$HTML->flag = false;									
+									$json = $HTML->transformPHP($DATA,'formcreat');									
+									echo $json;
+									
 									//$_tpl['onload'] .= 'var tmp = $(\'#form_'.$_GET['_modul'].'\').attr(\'action\');$(\'#form_'.$_GET['_modul'].'\').attr(\'action\',tmp.replace(\'index.php\',\'js.php\'));JSFR(\'#form_'.$_GET['_modul'].'\');';
 								}
 								elseif($flag==1){
