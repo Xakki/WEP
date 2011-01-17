@@ -416,7 +416,6 @@ Ext.apply(wep, {
 				border: true,
 				store: store,
 				cm: cm,
-				title: 'Модуль ' + wep.modul.title,
 				autoHeight : true,
 				enableColumnResize: true,
 				minColumnWidth : 50,
