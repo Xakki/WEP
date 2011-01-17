@@ -23,7 +23,7 @@
 		}
 		if($gfi['multiple']==2) {
 			//$_tpl['onload'] .= '$.localise(\'ui-multiselect\', {language: \'ru\', path: \''.$_CFG['_HREF']['_script'].'script.localisation/\'});';
-			$_tpl['onload'] .= '$(\'select.multiple\').multiselect();';
+			$_tpl['onload'] .= 'jQuery(\'select.multiple\').multiselect();';
 			$_tpl['styles']['jquery-ui.multiselect'] = 1;
 			$_tpl['script']['script.jquery.ui/jquery.ui.multiselect'] = 1;
 		}
@@ -37,7 +37,7 @@
 		if($gfi['fancybox']) {
 			$_tpl['script']['jquery.fancybox'] = 1;
 			$_tpl['styles']['jquery.fancybox'] = 1;
-			$_tpl['onload'] .= "$('.fancyimg').fancybox();";
+			$_tpl['onload'] .= "jQuery('.fancyimg').fancybox();";
 		}
 		return true;
 	}
@@ -67,7 +67,10 @@
 				elseif($rr==1 and $kk) {
 					$temp .= '<script type="text/javascript" src="'.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].$kk.'.js"></script>'."\n";
 					if($kk=='jquery.fancybox')
-						$_tpl['onload'] .= "$('.imagebox a').fancybox();";
+						$_tpl['onload'] .= 'jQuery(\'.imagebox a\').fancybox();';
+					elseif(strpos($kk,'script.qrtip.jquery')!== false) {
+						$_tpl['onload'] .= 'jQuery(\'a\').qr();';
+					}
 				}
 				else
 					$temp .= "<script type=\"text/javascript\">//<!--\n".$rr."\n//--></script>\n";

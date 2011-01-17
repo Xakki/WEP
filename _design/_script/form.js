@@ -5,7 +5,7 @@ var ajaxComplite = 1;
 /*********** FORMa ********/
 
 function JSFR(n) {
-	$(n).ajaxForm({
+	jQuery(n).ajaxForm({
 		beforeSubmit: 
 			function(a,f,o) {
 				//var formElement = f[0];
@@ -22,7 +22,7 @@ function JSFR(n) {
 			function(result) {
 				clearTimeout(timerid);
 				timerid2 = setTimeout(function(){fShowload(0);},200);
-				if(result.html!= undefined && result.html!='') $('#ajaxload').html(result.html);
+				if(result.html!= undefined && result.html!='') jQuery('#ajaxload').html(result.html);
 				if(result.eval!= undefined && result.eval!='') eval(result.eval);
 				if(result.text!= undefined && result.text!='') fLog(fSpoiler(result.text,'AJAX text result'),1);
 
@@ -33,7 +33,7 @@ function JSFR(n) {
 
 function preSubmitAJAX (obj) {
 	if(typeof CKEDITOR !== 'undefined') {
-		jQuery.each($(obj).find("textarea"),function(){nm=$(this).attr('name');if(nm) eval("if(typeof CKEDITOR.instances."+nm+" == 'object') {CKEDITOR.instances."+nm+".updateElement();}");});
+		jQuery.each(jQuery(obj).find("textarea"),function(){nm=jQuery(this).attr('name');if(nm) eval("if(typeof CKEDITOR.instances."+nm+" == 'object') {CKEDITOR.instances."+nm+".updateElement();}");});
 	}
 	return true;
 }
@@ -61,38 +61,38 @@ function checkInt(ev) {
 }
 
 function textareaChange(obj,max){/* Утилита для подсчёта кол сиволов в форме, автоматически создаёт необходимые поля*/
-	if(!$('#'+obj.name+'t2').size()){
+	if(!jQuery('#'+obj.name+'t2').size()){
 		val = document.createElement('span');
 		val.className = "dscr";
 		val.innerHTML = 'Cимволов:<input type="text" id="'+obj.name+'t2" maxlength="4" readonly="false" class="textcount" style="text-align:right;"/>/<input type="text" id="'+obj.name+'t1" maxlength="4" readonly="false" class="textcount" value="'+max+'"/>';
-		$(val).appendTo(obj.parentNode);
+		jQuery(val).appendTo(obj.parentNode);
 	}
 	if(obj.value.length>max)
 		obj.value=obj.value.substr(0,max);
-	$('#'+obj.name+'t2').val(obj.value.length);
+	jQuery('#'+obj.name+'t2').val(obj.value.length);
 }
 
 function reloadCaptcha(id)
 {
-	$('#'+id).attr('src',"/_captcha.php?"+ Math.random());
+	jQuery('#'+id).attr('src',"/_captcha.php?"+ Math.random());
 }
 
 /*PASS FORM*/
 function checkPass(name) {
-	$("form input[type=submit]").attr({'disabled':'disabled'});
-	val_1=$("form input[name="+name+"]").val();
-	val_2=$("form input[name=re_"+name+"]").val();
+	jQuery("form input[type=submit]").attr({'disabled':'disabled'});
+	val_1=jQuery("form input[name="+name+"]").val();
+	val_2=jQuery("form input[name=re_"+name+"]").val();
 	if(val_1.length>=6) {
-		$("form input[name="+name+"]").attr({'class':'accept'});
+		jQuery("form input[name="+name+"]").attr({'class':'accept'});
 		if(val_1!=val_2)
-			$("form input[name=re_"+name+"]").attr({'class':'reject'});
+			jQuery("form input[name=re_"+name+"]").attr({'class':'reject'});
 		else{
-			$("form input[name=re_"+name+"]").attr({'class':'accept'});
-			$("form input[type=submit]").attr({'disabled':''});
+			jQuery("form input[name=re_"+name+"]").attr({'class':'accept'});
+			jQuery("form input[type=submit]").attr({'disabled':''});
 		}
 	}else {
-		$("form input[name="+name+"]").attr({'class':'reject'});
-		$("form input[name=re_"+name+"]").attr({'class':'reject'});
+		jQuery("form input[name="+name+"]").attr({'class':'reject'});
+		jQuery("form input[name=re_"+name+"]").attr({'class':'reject'});
 	}
 	return true;
 }
@@ -100,12 +100,12 @@ function checkPass(name) {
 function password_new() {
 	var type1 = 'password';
 	var type2 = 'text';
-	if(!$('input[type=password].password').length){
+	if(!jQuery('input[type=password].password').length){
 		type1 = 'text';
 		type2 = 'password';
 	}
-	$('.password').after("<input type='"+type2+"' value='"+$('input[type='+type1+'].password').attr('value')+"' name='"+$('input[type='+type1+'].password').attr('name')+"' class='password'/>");
-	$('input[type='+type1+'].password').remove();
+	jQuery('.password').after("<input type='"+type2+"' value='"+jQuery('input[type='+type1+'].password').attr('value')+"' name='"+jQuery('input[type='+type1+'].password').attr('name')+"' class='password'/>");
+	jQuery('input[type='+type1+'].password').remove();
 }
 
 /*AXAX LIST*/
@@ -125,7 +125,7 @@ function chFocusList(f) {// это баг решает проблему когд
 
 function show_hide_label(obj,view,flag) { // функция на событие активности формы
 	clearTimeout(timerid5);
-	//$('#tr_city .form-caption').append(flag+'-');
+	//jQuery('#tr_city .form-caption').append(flag+'-');
 	if(ajaxComplite==0 || timerid4) {
 		setTimeout(function(){show_hide_label(obj,view,flag);},400);
 	}else {
@@ -134,16 +134,16 @@ function show_hide_label(obj,view,flag) { // функция на событие 
 				setTimeout(function(){show_hide_label(obj,view,flag);},400);
 			}
 			else if(flag) {
-				$(obj).prev().hide();
+				jQuery(obj).prev().hide();
 				ajaxlist(obj,view);
 			}
 			else {
-				$('#ajaxlist_'+view).hide();
+				jQuery('#ajaxlist_'+view).hide();
 				if (_Browser.type == 'IE' && 8 > _Browser.version)
-					$('select').toggleClass('hideselectforie7',false);
+					jQuery('select').toggleClass('hideselectforie7',false);
 				timerid5 = setTimeout(function(){ajaxlistClear(obj,view);},400);
 				if(!obj.value){
-					$(obj).prev().show();
+					jQuery(obj).prev().show();
 				}
 			}
 		},200);
@@ -151,9 +151,9 @@ function show_hide_label(obj,view,flag) { // функция на событие 
 
 }
 function ajaxlistClear(obj,view) { // функ очистки формы если не верное значение выбранно
-	if($('#ajaxlist_'+view+' + input').val()=='') {
-		$(obj).val('');
-		$(obj).prev().show();
+	if(jQuery('#ajaxlist_'+view+' + input').val()=='') {
+		jQuery(obj).val('');
+		jQuery(obj).prev().show();
 		clearTimeout(timerid4);timerid4=0;
 	}
 }
@@ -167,37 +167,37 @@ function ajaxlist(obj,view) { // функция контроля подгруз�
 			timerid4 = setTimeout(function(){ajaxlist(obj,view);},1000);
 	} else {
 		clearTimeout(timerid4);timerid4=0;
-		$('#ajaxlist_'+view+' + input').val('');
-		$('#ajaxlist_'+view).prev('input').attr('class','reject');
+		jQuery('#ajaxlist_'+view+' + input').val('');
+		jQuery('#ajaxlist_'+view).prev('input').attr('class','reject');
 	}
 }
-//$('#tr_city .td1').append('+')
+//jQuery('#tr_city .td1').append('+')
 
 function getAjaxListData(value,view) { // загрузка списка
 	timerid4 = 0;
-	if($('#ajaxlist_'+view).attr('val')==value) {
-		$('#ajaxlist_'+view).show();
+	if(jQuery('#ajaxlist_'+view).attr('val')==value) {
+		jQuery('#ajaxlist_'+view).show();
 	}
 	else{
-		$('#ajaxlist_'+view).prev('input').attr('class','load');
+		jQuery('#ajaxlist_'+view).prev('input').attr('class','load');
 		ajaxComplite = 0;
 		$.ajax({
 			type: "GET",
 			url: '/_json.php',
-			data: {'_view':'ajaxlist', '_srlz':$('input[name="srlz_'+view+'"]').val(),'_value':value, '_hsh':$('input[name="hsh_'+view+'"]').val()},
+			data: {'_view':'ajaxlist', '_srlz':jQuery('input[name="srlz_'+view+'"]').val(),'_value':value, '_hsh':jQuery('input[name="hsh_'+view+'"]').val()},
 			dataType: "json",
 			cache:true,
 			error: function(XMLHttpRequest, textStatus, errorThrown) {
 				alert('error: '+textStatus);
 			},
 			success: function(result, textStatus, XMLHttpRequest) {
-				$('#ajaxlist_'+view).prev('input').attr('class','reject');
+				jQuery('#ajaxlist_'+view).prev('input').attr('class','reject');
 				if (_Browser.type == 'IE' && 8 > _Browser.version) {
-					$('select').toggleClass('hideselectforie7',true);
-					$('#tr_'+view).css('z-index','10');
+					jQuery('select').toggleClass('hideselectforie7',true);
+					jQuery('#tr_'+view).css('z-index','10');
 				}
 				var txt = '';
-				if(result && result.data && $(result.data).size()>0) {
+				if(result && result.data && jQuery(result.data).size()>0) {
 					var c = 0;var temp = 0;
 					for(k in result.data) {
 						txt += '<label id="ajaxlabel'+k+'">'+result.data[k]+'</label>';
@@ -207,19 +207,19 @@ function getAjaxListData(value,view) { // загрузка списка
 						}
 					}
 					if(c==1){
-						$('#ajaxlist_'+view+' + input').val(temp);
-						$('#ajaxlist_'+view+' #ajaxlabel'+temp).addClass('selectlabel');
-						$('#ajaxlist_'+view).prev('input').attr('class','accept');
+						jQuery('#ajaxlist_'+view+' + input').val(temp);
+						jQuery('#ajaxlist_'+view+' #ajaxlabel'+temp).addClass('selectlabel');
+						jQuery('#ajaxlist_'+view).prev('input').attr('class','accept');
 					}
 				}else
 					txt = 'не найдено';
 
-				$('#ajaxlist_'+view).html(txt).show();
-				$('#ajaxlist_'+view).attr('val',value);
-				$('#ajaxlist_'+view+' label').click(function(){
+				jQuery('#ajaxlist_'+view).html(txt).show();
+				jQuery('#ajaxlist_'+view).attr('val',value);
+				jQuery('#ajaxlist_'+view+' label').click(function(){
 					ajaxlist_click(view,this);
-					if($('#ajaxlist_'+view+' + input').attr('onchange')) {
-						$('#ajaxlist_'+view+' + input').change();
+					if(jQuery('#ajaxlist_'+view+' + input').attr('onchange')) {
+						jQuery('#ajaxlist_'+view+' + input').change();
 					}
 				});
 				ajaxComplite = 1;
@@ -229,26 +229,26 @@ function getAjaxListData(value,view) { // загрузка списка
 }
 
 function ajaxlist_click(view,ths) { // событие на клик на элементе списка
-	var key = $(ths).attr('id');
+	var key = jQuery(ths).attr('id');
 	key = key.substring(9,15);
-	$('#ajaxlist_'+view+' + input').val(key);
-	$('#ajaxlist_'+view).prev('input').val($(ths).text());
-	$('#ajaxlist_'+view).prev('input').attr('class','accept');
-	$('#ajaxlist_'+view+' label').attr('class','');
-	$('#ajaxlist_'+view+' #ajaxlabel'+key).attr('class','selectl');
+	jQuery('#ajaxlist_'+view+' + input').val(key);
+	jQuery('#ajaxlist_'+view).prev('input').val(jQuery(ths).text());
+	jQuery('#ajaxlist_'+view).prev('input').attr('class','accept');
+	jQuery('#ajaxlist_'+view+' label').attr('class','');
+	jQuery('#ajaxlist_'+view+' #ajaxlabel'+key).attr('class','selectl');
 	if(ajaxlistover) { // решаем проблему с переключением фокуса
-		$('#ajaxlist_'+view).hide();
+		jQuery('#ajaxlist_'+view).hide();
 		if (_Browser.type == 'IE' && 8 > _Browser.version)
-			$('select').toggleClass('hideselectforie7',false);
+			jQuery('select').toggleClass('hideselectforie7',false);
 	}
 }
 
 function input_file(obj) {
 	var myRe=/.+\.([A-Za-z]{3,4})/i;
-	var myArray = myRe.exec($(obj).val());
-	$(obj).parent().find('span.fileinfo').html(myArray[1]);
+	var myArray = myRe.exec(jQuery(obj).val());
+	jQuery(obj).parent().find('span.fileinfo').html(myArray[1]);
 }
 
 function putEMF(id,txt) {
-	$('#tr_'+id+' .form-caption').after('<div class="caption_error">['+txt+']</div>');
+	jQuery('#tr_'+id+' .form-caption').after('<div class="caption_error">['+txt+']</div>');
 }

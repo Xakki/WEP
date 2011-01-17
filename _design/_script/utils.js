@@ -16,63 +16,63 @@ function getBrowserInfo() {
 }
 
 function fLog(txt,flag) {
-	if($('#debug_view').size())
-		$('#debug_view').html(txt+$('#debug_view').html());
+	if(jQuery('#debug_view').size())
+		jQuery('#debug_view').html(txt+jQuery('#debug_view').html());
 	else
-		$(".maintext .block").prepend("<div id='debug_view' style='border:1px solid blue;'>"+txt+"</div>");
+		jQuery(".maintext .block").prepend("<div id='debug_view' style='border:1px solid blue;'>"+txt+"</div>");
 	if(flag==1) fShowHide('debug_view',1);
 }
 
 function fMessPos(body,obj) {
 	if(!body) body='body';
 	if(!obj) obj=' #ajaxload';
-	$(body+'>'+obj).css("width",'');
+	jQuery(body+'>'+obj).css("width",'');
 	var H=document.documentElement.clientHeight;
-	var Hblock= $(body+'>'+obj+' :first-child').attr("offsetHeight");
+	var Hblock= jQuery(body+'>'+obj+' :first-child').attr("offsetHeight");
 	var hh=Math.round(50*((H-Hblock)/H));
 	if(hh<4) hh=4;
 	var W=document.documentElement.clientWidth;
-	var Wblock= $(body+'>'+obj+' :first-child').attr("offsetWidth");
+	var Wblock= jQuery(body+'>'+obj+' :first-child').attr("offsetWidth");
 	var ww=Math.round(50*((W-Wblock)/W));
 	if(ww<4) ww=4;
-	$(body+'>'+obj).css("top",hh+"%").css("left",ww+"%").css("height",H+'px');//.css("width",Wblock+'px')
+	jQuery(body+'>'+obj).css("top",hh+"%").css("left",ww+"%").css("height",H+'px');//.css("width",Wblock+'px')
 }
 
 /*Показ тултип*/
 function showHelp(obj,mess,time,nomiga) {
-	if(!obj || !mess || !$(obj).size() || $(obj).next().attr('class')=='helpmess') return false;
-	var pos = $(obj).position();
+	if(!obj || !mess || !jQuery(obj).size() || jQuery(obj).next().attr('class')=='helpmess') return false;
+	var pos = jQuery(obj).position();
 	pos.top = parseInt(pos.top);
 	pos.left = parseInt(pos.left);
 	if(!time) time = 5000;
-	$(obj).after('<div class="helpmess">'+mess+'<div class="trgl trgl_d"> </div></div>');
-	var slct = $(obj).next();
-	var H = $(slct).height();
+	jQuery(obj).after('<div class="helpmess">'+mess+'<div class="trgl trgl_d"> </div></div>');
+	var slct = jQuery(obj).next();
+	var H = jQuery(slct).height();
 	H = pos.top-17-H;
 	if(H<5) {
-		H = pos.top+10+$(obj).height();
-		$(slct).find('.trgl').attr('class','trgl trgl_u');
+		H = pos.top+10+jQuery(obj).height();
+		jQuery(slct).find('.trgl').attr('class','trgl trgl_u');
 	}
-	$(slct).css({'top':H,'left':pos.left,'opacity':0.8});
+	jQuery(slct).css({'top':H,'left':pos.left,'opacity':0.8});
 	//if(!nomiga)
 	//	miga(slct,0.8);
-	setTimeout(function(){$(slct).stop().fadeOut(1000,function(){$(slct).remove()});},time);
+	setTimeout(function(){jQuery(slct).stop().fadeOut(1000,function(){jQuery(slct).remove()});},time);
 	//if(time>5000)
-		$(slct).click(function(){
-			$(slct).stop().fadeOut(1000,function(){$(slct).remove()});
+		jQuery(slct).click(function(){
+			jQuery(slct).stop().fadeOut(1000,function(){jQuery(slct).remove()});
 		});
 }
 
 function miga(obj,opc1,opc2){
-	if($(obj).size()==0)
+	if(jQuery(obj).size()==0)
 		return false;
-	var opc = $(obj).css('opacity');
+	var opc = jQuery(obj).css('opacity');
 	if(!opc2) opc2 = 0.4;
 	if(opc==opc2)
 		opc = (opc1?opc1:1);
 	else
 		opc=opc2;
-	$(obj).animate({'opacity': opc},1000,function(){miga(obj,opc1,opc2);});
+	jQuery(obj).animate({'opacity': opc},1000,function(){miga(obj,opc1,opc2);});
 	return false;
 }
 
@@ -83,29 +83,29 @@ function fShowload (show,txt,body,objid) {
 	if(!objid) objid = 'ajaxload';
 	obj = ' #'+objid;
 	if(!show){
-		$(body+'>'+obj).css('display','none');
+		jQuery(body+'>'+obj).css('display','none');
 		showBG(body);
 		if (_Browser.type == 'IE' && 8 > _Browser.version)
-			$('select').toggleClass('hideselectforie7',false);
+			jQuery('select').toggleClass('hideselectforie7',false);
 	}else{
 		if (_Browser.type == 'IE' && 8 > _Browser.version)
-			$('select').toggleClass('hideselectforie7',true);
+			jQuery('select').toggleClass('hideselectforie7',true);
 
-		if($(body+'>'+obj).size()==0)
-			$(body).append("<div id='"+objid+"'>&#160;</div>");
+		if(jQuery(body+'>'+obj).size()==0)
+			jQuery(body).append("<div id='"+objid+"'>&#160;</div>");
 		if(!txt || txt==''){
 			txt = "<div class='layerloader'><img src='_design/_img/load.gif' alt=' '/><br/>Подождите. Идёт загрузка</div>";
-			$('.layerblock').hide();
+			jQuery('.layerblock').hide();
 		}
 		else {
-			$('.layerloader').hide();
+			jQuery('.layerloader').hide();
 			if(objid == 'ajaxload') 
 				txt = '<div class="layerblock"><div class="blockclose" onClick="fShowload(0)"></div>'+txt+'</div>';
 		}		
 		showBG(body,1);
 		if(txt && txt!='') 
-			$(body+' > '+obj).html(txt);
-		$(body+' > '+obj).show();
+			jQuery(body+' > '+obj).html(txt);
+		jQuery(body+' > '+obj).show();
 		if(body=='body')
 			fMessPos(body,obj);
 	}
@@ -114,21 +114,21 @@ function fShowload (show,txt,body,objid) {
 function showBG(body,show,k) {
 	if(!body) body='body';
 	if(!show){
-		$(body+' > #ajaxbg').hide();
+		jQuery(body+' > #ajaxbg').hide();
 	}
 	else {
 		if(!k) k= 0.5;
-		if($(body+' > #ajaxbg').size()==0)
-			$(body).append("<div id='ajaxbg'>&#160;</div>");
-		$(body+' > #ajaxbg').css('opacity', k).show();
+		if(jQuery(body+' > #ajaxbg').size()==0)
+			jQuery(body).append("<div id='ajaxbg'>&#160;</div>");
+		jQuery(body+' > #ajaxbg').css('opacity', k).show();
 	}
 }
 
 
 /*SPOILER*/
 function clickSpoilers(obj) {
-	$(obj).toggleClass('unfolded');
-	$(obj).next('div.spoiler-body').slideToggle('fast');
+	jQuery(obj).toggleClass('unfolded');
+	jQuery(obj).next('div.spoiler-body').slideToggle('fast');
 }
 
 function fSpoiler (txt,nm) {
@@ -139,10 +139,10 @@ function fSpoiler (txt,nm) {
 
 function initSpoilers(context){
 	var context = context || 'body';
-	$('div.spoiler-head', $(context))
+	jQuery('div.spoiler-head', jQuery(context))
 		.click(function(){
-			$(this).toggleClass('unfolded');
-			$(this).next('div.spoiler-body').slideToggle('fast');
+			jQuery(this).toggleClass('unfolded');
+			jQuery(this).next('div.spoiler-body').slideToggle('fast');
 		})
 	;
 }
@@ -150,15 +150,15 @@ function initSpoilers(context){
 /*END SPOILER*/
 
 function fShowHide (id,f) {
-	if($('#'+id).css('display')!='none' && !f)
-		$('#'+id).animate({ opacity: "hide" }, "slow");
+	if(jQuery('#'+id).css('display')!='none' && !f)
+		jQuery('#'+id).animate({ opacity: "hide" }, "slow");
 	else
-		$('#'+id).animate({ opacity: "show" }, "slow");
+		jQuery('#'+id).animate({ opacity: "show" }, "slow");
 }
 
 function ulToggle(obj,css) {
-	$(obj).toggleClass(css);
-	$(obj).parent().find('>ul').slideToggle('fast');
+	jQuery(obj).toggleClass(css);
+	jQuery(obj).parent().find('>ul').slideToggle('fast');
 }
 /************************/
 /*simple script*/
@@ -202,12 +202,12 @@ function getCookie(name) {
 
 function ShowTools(id,hrf) {
 	/*Панель инструментов модуля(фильтр, статистика, обновление таблицы итп)*/
-	$('#'+id).hide();
+	jQuery('#'+id).hide();
 
 	if(typeof hrf=='object')
-		_last_load = $(hrf).attr('href');
+		_last_load = jQuery(hrf).attr('href');
 	JSWin({'href':hrf,'insertObj':id});
-	$('#'+id).fadeIn();
+	jQuery('#'+id).fadeIn();
 
 	return false;
 }
@@ -215,10 +215,10 @@ function ShowTools(id,hrf) {
 function JSWin(param) {
 	if(typeof param['type']=='object') {
 		if(typeof CKEDITOR !== 'undefined') {
-			jQuery.each($(param['type']).find("textarea"),function(){nm=$(this).attr('name');if(nm) eval("if(typeof CKEDITOR.instances."+nm+" == 'object') {CKEDITOR.instances."+nm+".updateElement();}");});
+			jQuery.each(jQuery(param['type']).find("textarea"),function(){nm=jQuery(this).attr('name');if(nm) eval("if(typeof CKEDITOR.instances."+nm+" == 'object') {CKEDITOR.instances."+nm+".updateElement();}");});
 		}
-		param['href'] = $(param['type']).attr('action');
-		param['data'] = $(param['type']).serialize()+'&sbmt=1';
+		param['href'] = jQuery(param['type']).attr('action');
+		param['data'] = jQuery(param['type']).serialize()+'&sbmt=1';
 		param['type'] = 'POST';
 	}
 	else if(!param['type']) param['type'] = 'GET';
@@ -251,11 +251,11 @@ function JSWin(param) {
 				if(typeof param['insertObj']!='object')
 					param['insertObj'] = '#'+param['insertObj'];
 				if(param['insertType']=='after')
-					$(param['insertObj']).after(result.html);
+					jQuery(param['insertObj']).after(result.html);
 				else if(param['insertType']=='before')
-					$(param['insertObj']).before(result.html);
+					jQuery(param['insertObj']).before(result.html);
 				else
-					$(param['insertObj']).html(result.html);
+					jQuery(param['insertObj']).html(result.html);
 				timerid2 = setTimeout(function(){fShowload(0,'',param['body']);},200);
 			}
 			else if(result.html!='') fShowload(1,result.html,param['body']);
@@ -278,7 +278,7 @@ var tmp;
 
 function pagenum_super(total,pageCur,cl,order) {
 	if(!order) order = false;
-	if($('.ppagenum').size()>0 && total>20) {
+	if(jQuery('.ppagenum').size()>0 && total>20) {
 		$.includeCSS('/_design/_style/paginator.css');
 		pg = 1;
 		reg = new RegExp('\&*'+cl+'_pn=([0-9]*)', 'i');
@@ -299,8 +299,8 @@ function pagenum_super(total,pageCur,cl,order) {
 		param += cl+'_pn=';
 		//alert(dump(loc));
 		$.include('/_design/_script/jquery.paginator.js',function(){
-			$('.pagenum').css('display','none');
-			$('.ppagenum').css('display','block').paginator({pagesTotal:total, 
+			jQuery('.pagenum').css('display','none');
+			jQuery('.ppagenum').css('display','block').paginator({pagesTotal:total, 
 				pagesSpan:8, 
 				returnOrder:order,
 				pageCurrent:pageCur, 
