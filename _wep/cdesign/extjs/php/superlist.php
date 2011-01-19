@@ -6,7 +6,9 @@ function tpl_superlist(&$data)
 	{
 		$type_info = array(
 			'default' => array(
-				'editor' => 'new fm.TextField({allowBlank: false})',
+				'editor' => array(
+					'eval' => 'new fm.TextField({allowBlank: false})',
+				),
 				'type' => 'string',
 			),
 		);
@@ -41,6 +43,7 @@ function tpl_superlist(&$data)
 
 						$children[] = array(
 							'header' => $r['value'],
+							'cl' => $k,
 							'xtype' => 'actioncolumn',
 							'width' => 50,
 							'items' => array(
@@ -49,13 +52,17 @@ function tpl_superlist(&$data)
 									'tooltip' => 'LIST',
 								)
 							),
-							'handler' => 'function() {
-								showChildren(obj, \''.$child.'\');
-							}',
+							'handler' => array(
+								'eval' => 'function() {
+									showChildren(obj, \''.$child.'\');
+								}',
+							),
 						);
-					}
+
+ 					} 
 				}
 				
+	/*
 				if (isset($tmp_arr['istree']))
 				{
 					$child = json_encode(array(
@@ -73,11 +80,16 @@ function tpl_superlist(&$data)
 								'tooltip' => 'LIST',
 							)
 						),
-						'handler' => 'function() {
-							showChildren(obj, \''.$child.'\');
-						}',
+						'handler' => array(
+							'eval' => 'function() {
+								showChildren(obj, \''.$child.'\');
+							}',
+						),
 					);
+
 				}
+	 * 
+	 */
 				
 			}
 
@@ -100,6 +112,7 @@ function tpl_superlist(&$data)
 						'header' => $r['value'],
 						'dataIndex' => $k,
 						'editor' => $field_info[$k]['editor'],
+						'width' => 100,
 					);
 					if ($k == 'id')
 					{
@@ -116,17 +129,21 @@ function tpl_superlist(&$data)
 				if($r['onetd']=='close') $tdflag = 0;
 
 			}
+
+
 			$cols[] = array(
+				'editor' => array(
+					'eval' => 'new fm.TextField({allowBlank: false})',
+				),
 				'header' => 'Вкл/Откл',
-				'xtype' => 'checkcolumn',
+				'xtype' => 'booleancolumn',
+//				'xtype' => 'checkcolumn',
 				'dataIndex' => 'act',
-				'width' => 55,
-	//			'editor' => array(
-	//				'xtype' => 'checkbox'
-	//			),
+				'width' => 100,
 			);
 
 
+/*
 			$cols[] = array(
 				'header' => 'Редактировать',
 				'xtype' => 'actioncolumn',
@@ -137,9 +154,11 @@ function tpl_superlist(&$data)
 						'tooltip' => 'LIST',
 					)
 				),
-				'handler' => 'function() {
-					showForm(obj);
-				}',
+				'handler' => array(
+					'eval' => 'function() {
+						showForm(obj);
+					}',
+				),
 			);
 
 			$cols[] = array(
@@ -152,23 +171,25 @@ function tpl_superlist(&$data)
 						'tooltip' => 'LIST',
 					)
 				),
-				'handler' => 'function() {
-					var SelectionModel = obj.getSelectionModel();
-					var msg = "Вы действительно хотите удалить данную запись?";
-					if (SelectionModel.selection.record.data.name != undefined)
-					{
-						msg += " (" + SelectionModel.selection.record.data.id + ")";
-					}
-					else if (SelectionModel.selection.record.data.name != undefined)
-					{
-						msg += " (" + SelectionModel.selection.record.data.name + ")";
-					}
-					Ext.Msg.confirm("Удаление записи",  msg, onDelete, obj);
-				}',
+				'handler' => array(
+					'eval' => 'function() {
+						var SelectionModel = obj.getSelectionModel();
+						var msg = "Вы действительно хотите удалить данную запись?";
+						if (SelectionModel.selection.record.data.name != undefined)
+						{
+							msg += " (" + SelectionModel.selection.record.data.id + ")";
+						}
+						else if (SelectionModel.selection.record.data.name != undefined)
+						{
+							msg += " (" + SelectionModel.selection.record.data.name + ")";
+						}
+						Ext.Msg.confirm("Удаление записи",  msg, onDelete, obj);
+					}',
+				),
 			);
 			
 			$cols = array_merge($cols, $children);
-
+*/
 
 			$fields[] = array(
 				'name' => 'act',
@@ -176,7 +197,7 @@ function tpl_superlist(&$data)
 			);
 		}
 
-		return json_encode(array('columns' => $cols, 'fields' => $fields)); 
+		return json_encode(array('columns' => $cols, 'fields' => $fields, 'children' =>$children));
 	}
 
 
@@ -200,6 +221,7 @@ function tpl_superlist(&$data)
 			}
 			
 			$output[$i]['act'] = true;
+			$output[$i]['checked'] = true;
 			if ($r['istree']['cnt'] == 0)
 			{
 				$output[$i]['leaf'] = true;

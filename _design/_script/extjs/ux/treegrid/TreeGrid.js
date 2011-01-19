@@ -34,19 +34,31 @@ Ext.ux.tree.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
         if(!l){
             l = new Ext.ux.tree.TreeGridLoader({
                 dataUrl: this.dataUrl,
-                requestMethod: this.requestMethod,
-                store: this.store
+                requestMethod: this.requestMethod
             });
         }else if(Ext.isObject(l) && !l.load){
             l = new Ext.ux.tree.TreeGridLoader(l);
         }
         this.loader = l;
+
+		this.tbar = this.buildTopToolbar();
      
                             
-        Ext.ux.tree.TreeGrid.superclass.initComponent.call(this);                    
-        
+        Ext.ux.tree.TreeGrid.superclass.initComponent.call(this);
+
+
+		this.getSelectionModel().on('selectionchange', function(sel, node) {
+			if (node) {
+				var tbar = this.getTopToolbar();
+				tbar.items.items[1].enable();
+				tbar.items.items[2].enable();
+			}
+		},
+		this);
+
+   
         this.initColumns();
-        
+  
         if(this.enableSort) {
             this.treeGridSorter = new Ext.ux.tree.TreeGridSorter(this, this.enableSort);
         }
@@ -86,7 +98,257 @@ Ext.ux.tree.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
                 '<colgroup><tpl for="columns"><col style="width: {width}px"/></tpl></colgroup>'
             );
         }
+		
     },
+
+	buildTopToolbar : function() {
+        var tools = [{
+            //text: 'Add',
+            iconCls: 'silk-icon-add',
+            handler: function() {
+				this.showForm('add');
+			},
+            scope: this
+        }, {
+            //text: 'Add',
+            iconCls: 'silk-icon-edit',
+            handler: function() {
+				this.showForm('edit');
+			},
+            scope: this,
+			disabled: true
+        }, {
+            //text: 'Add',
+            iconCls: 'silk-icon-delete',
+            handler: this.onDelete,
+            scope: this,
+			disabled: true
+        }];
+
+		if (!Ext.isEmpty(this.children)) {
+			tools.push('Подмодули - ');
+			Ext.each(this.children, function(value, index) {
+				tools.push({
+					text:value.header,
+					handler: function() {
+						this.showChild(value);
+					},
+					scope: this
+				});
+			},
+			this)
+		}
+
+		return tools;
+	},
+
+	showChild : function(child) {
+		
+		var index = this.getSelectionModel().getSelectedNode();
+		if (!index) {
+			return false;
+		}
+
+		var id = index.id;
+
+		Ext.Ajax.request({
+			url: '_wep/index.php?_view=listcol&_modul=' + wep.modul.cn,
+			success: function(result, textStatus) {
+
+				var data = Ext.util.JSON.decode(result.responseText);
+
+				var columns = data['columns'];
+				var fields = data['fields'];
+				var children = data['children'];
+
+				// удаляем предыдущую форму, если она есть
+				var edit_form = Ext.getCmp('edit_form');
+				if (Ext.isObject(edit_form))
+				{
+					Ext.get(wep.edit_form_cont).update('');
+					edit_form.destroy();
+				}
+
+				var child_tree_id = 'child_' + child.cl + '_tree';
+				var child_tree = Ext.getCmp(child_tree_id);
+				if (Ext.isObject(child_tree))
+				{
+					child_tree.destroy();
+				}
+
+				var url = 'http://partner.i/_wep/index.php?_view=list&_modul=' + wep.modul.cn + '&' + wep.modul.cn + '_id=' + id;
+
+				if (child.cl != wep.modul.cn)
+				{
+					url += '&' + wep.modul.cn + '_ch=' + child.cl;
+				}
+
+				/*
+				var child_grid = new wep.grid({
+					id: child_grid_id,
+					columns: columns,
+					fields: fields,
+					title: 'Подмодуль ' + child.header,
+					hideParent: false,
+					url: url
+				});
+				*/
+
+			   Ext.getCmp('main_tree').hide();
+
+			   var child_tree = new Ext.ux.tree.TreeGrid({
+					id: child_tree_id,
+					title: 'Подмодуль ' + child.header,
+					width: 1000,
+					height: 300,
+					enableDD: true,
+					renderTo: wep.main_cont,
+					columns: columns,
+					children: children,
+					requestMethod: 'GET',
+					dataUrl: url
+				});
+
+
+
+			},
+			failure: function() {
+				Ext.Msg.alert('Ошибка', 'Произошла ошибка');
+			}
+		});
+
+	},
+
+	onAdd : function(btn, ev) {
+		alert(btn);
+	},
+
+	onEdit : function(btn, ev) {
+		alert('ред');
+	},
+
+	onDelete : function(btn, ev) {
+
+		var index = this.getSelectionModel().getSelectedNode();
+		if (!index) {
+			return false;
+		}
+
+		var msg = "Вы действительно хотите удалить данную запись?";
+		if (index.attributes.name != undefined)
+		{
+			msg += " (" + index.attributes.name + ")";
+		}
+		else if (index.attributes.id != undefined)
+		{
+			msg += " (" + index.attributes.id + ")";
+		}
+		
+		Ext.Msg.confirm("Удаление записи",  msg, function(btn) {
+			if (btn == 'yes')
+			{
+				Ext.Ajax.request({
+					url: '_wep/index.php?_view=list&_modul=' + wep.modul.cn + '&' + wep.modul.cn + '_id=' + index.id + '&_type=del',
+					success: function(result, textStatus) {
+						index.remove();
+						Ext.Msg.alert('Сообщение', 'Удаление произошло успешно');
+					}
+				});
+			}
+		}, this);
+
+		return true;
+	},
+
+	showForm : function(action)
+	{
+		if (action == 'add')
+		{
+			var url = '_wep/index.php?_view=list&_modul=' + wep.modul.cn + '&_type=add';
+			var title = 'Добавление новой записи';
+		}
+		else
+		{
+			var index = this.getSelectionModel().getSelectedNode();
+			if (!index) {
+				return false;
+			}
+			var url = '_wep/index.php?_view=list&_modul=' + wep.modul.cn + '&' + wep.modul.cn + '_id=' + index.id + '&_type=edit'
+			var title = 'Редактирование - ';
+			if (index.attributes.name)
+			{
+				title += index.attributes.name;
+			}
+			else
+			{
+				title += index.id;
+			}
+
+		}
+
+		Ext.Ajax.request({
+			url: url,
+			success: function(result, textStatus) {
+
+				var data = Ext.util.JSON.decode(result.responseText);
+
+				var items = data;
+
+				Ext.each(items, function(value, index) {
+					Ext.iterate(value, function(prop, val) {
+						if (!Ext.isEmpty(val))
+						{
+							if (Ext.isDefined(val.eval))
+							{
+								eval("value[prop] = " + val.eval + ";");
+							}
+						}
+					});
+
+				});
+
+				// удаляем предыдущую форму, если она есть
+				var edit_form = Ext.getCmp('edit_form');
+				if (Ext.isObject(edit_form))
+				{
+					Ext.get(wep.edit_form_cont).update('');
+					edit_form.destroy();
+				}
+
+				var form = new wep.form({
+					id: 'edit_form',
+					title: title,
+					renderTo: wep.edit_form_cont,
+					url:'save-form.php',
+					buttons: [{
+						text: 'Save'
+					},{
+						text: 'Cancel'
+					}],
+
+
+					items: [{
+//						columnWidth: 0.4,
+						xtype: 'fieldset',
+						labelWidth: 200,
+						title:'Редактирование',
+						defaults: {width: 500, border:false},    // Default config options for child items
+//						defaultType: 'textfieldf',
+						autoHeight: true,
+						bodyStyle: Ext.isIE ? 'padding:0 0 5px 15px;' : 'padding:10px 15px;',
+						border: false,
+						style: {
+							"margin-left": "10px", // when you add custom margin in IE 6...
+							"margin-right": Ext.isIE6 ? (Ext.isStrict ? "-10px" : "-13px") : "0"  // you have to adjust for it somewhere else
+						},
+						items: items
+					}]
+				});
+			}
+		});
+
+		return true;
+	},
 
     initColumns : function() {
         var cs = this.columns,

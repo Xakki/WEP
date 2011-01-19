@@ -86,15 +86,15 @@
 				if($tditem['value']!='') {
 					if($tdflag)
 						$html .= '<b>'.$data['thitem'][$ktd]['value'].'</b>: ';
-					if($tditem['type']=='img') {
+					if($tditem['fileType']=='img') {
 						$_CFG['fileIncludeOption']['fancybox'] = 1;
 						$html .= '<a rel="fancy" title="рисунок" class="fancyimg" href="'.$tditem['value'].'"><img src="'.$tditem['value'].'" alt="" width="50"/></a>&#160;';
 					}
-					elseif($tditem['type']=='swf') {
+					elseif($tditem['fileType']=='swf') {
 						if($tditem['value']!='')
 							$html .= $tditem['value'].'&#160;<object type="application/x-shockwave-flash" data="/'.$tditem['value'].'" height="60" width="200"><param name="movie" value="/'.$tditem['value'].'" /><param name="allowScriptAccess" value="sameDomain" /><param name="quality" value="high" /><param name="scale" value="exactfit" /><param name="bgcolor" value="#ffffff" /><param name="wmode" value="transparent" /></object>';
 					}
-					elseif($tditem['type']=='file') {
+					elseif($tditem['fileType']=='file') {
 						if($tditem['value']!='')
 							$html .= '<a href="'.$tditem['value'].'" target="_blank">Фаил</a>&#160;';
 					}

@@ -1,17 +1,6 @@
 <?
 
 function tpl_formcreat(&$data) {
-	$type_info = array(
-		'default' => array(
-			'xtype' => '',
-			'value' => 'value'
-		),
-		'checkbox' => array(
-			'xtype' => 'checkbox',
-			'value' => 'checked'
-		)
-
-	);
 
 	$fields = array();
 
@@ -21,78 +10,121 @@ function tpl_formcreat(&$data) {
 		unset($data['form']['_info']);
 		unset($data['form']['sbmt']);
 		
-		$i = 0;
 		foreach ($data['form'] as $k=>$r)
 		{
-			$fields[$i] = array(
+			$input_data = array(
 				'name' => $k,
-				'fieldLabel' => $r['caption'],
-//				'value' => $r['value']
+				'caption' => $r['caption'],
+				'type' => $r['type'],
+				'value' => $r['value']
 			);
+			if (isset($r['valuelist']))
+			{
+				$input_data['valuelist'] = $r['valuelist'];
+			}
+			if (isset($r['multiple']))
+			{
+				$input_data['multiple'] = $r['multiple'];
+			}
 
-			if (isset($type_info[$r['type']]))
-			{
-				if ($type_info[$r['type']] != '')
-					$fields[$i]['xtype'] = $type_info[$r['type']]['xtype'];
-				$fields[$i][ $type_info[$r['type']]['value'] ] = $r['value'];
-			}
-			else
-			{
-				$fields[$i]['xtype'] = $type_info['default']['xtype'];
-				$fields[$i][ $type_info['default']['value'] ] = $r['value'];
-			}
-			
-			$i++;
+			$fields[] = get_js_field($input_data);
 		}
 	}
+
 	
 	return json_encode($fields);
-	
-/*
-	$data = array(
-		array(
-			'fieldLabel' => 'Name',
-			'name' => 'company'
+ 
+}
+
+/***************************************************
+ * возвращает extjs поле контейнера Ext.forms
+ * принимает массив со следующими ключами:
+ * - name
+ * - caption
+ * - type
+ * - value
+ * - valuelist
+ * - multiple
+ * ***************************************/
+function get_js_field($data)
+{
+	$type_info = array(
+		'default' => array(
+			'xtype' => 'textfield',
+			'value' => 'value'
 		),
-		array(
-			'fieldLabel' => 'Price',
-			'name' => 'price'
+		'checkbox' => array(
+			'xtype' => 'checkbox',
+			'value' => 'checked'
 		),
-		array(
-			'fieldLabel' => '% Change',
-			'name' => 'pctChange'
+		'list' => array(
+			'xtype' => 'combo',
+			'mode' => 'local',
+			'emptyText' => '',
+			'value' => 'value',
 		),
-		array(
-			'xtype' => 'datefield',
-			'fieldLabel' => 'Last Updated',
-			'name' => 'lastChange'
+		'multiple1' => array(
+			'xtype' => 'multiselect',
+			'mode' => 'local',
+			'emptyText' => '',
+			'value' => 'value',
+			'delimiter' => '|',
 		),
-		array(
-			'xtype' => 'radiogroup',
-			'columns' => 'auto',
-			'fieldLabel' => 'Rating',
-			'name' => 'rating',
-			'items' => array(
+		'multiple2' => array(
+			'xtype' => 'itemselector',
+			'mode' => 'local',
+			'emptyText' => '',
+			'value' => 'value',
+			'delimiter' => '|',
+			'multiselects' => array(
 				array(
-					'inputValue' => '0',
-					'boxLabel' => 'A',
+					'width' => 250,
+					'height' => 200,
 				),
 				array(
-					'inputValue' => '1',
-					'boxLabel' => 'B',
-				),
-				array(
-					'inputValue' => '2',
-					'boxLabel' => 'C',
-				),
+					'width' => 250,
+					'height' => 200,
+				)
 			),
 		),
+
 	);
 
-*/
+	$field = array(
+		'name' => $data['name'],
+		'fieldLabel' => $data['caption'],
+	);
 
-	
-	 
+	if (isset($type_info[$data['type']]))
+		$type = $data['type'];
+	else
+		$type = 'default';
+
+	if ($type == 'list' && isset($data['multiple']))
+	{
+		if ($data['multiple'] == 2)
+			$type = 'multiple1';
+		elseif ($data['multiple'] == 1)
+			$type = 'multiple1';
+	}
+
+	if (isset($data['valuelist']))
+	{
+		foreach ($data['valuelist'] as $k=>$r)
+		{
+			$field['store'][] = array($r['#id#'], $r['#name#']);
+		}
+	}
+
+
+
+	$field[ $type_info[$type]['value'] ] = $data['value'];
+	unset($type_info[$type]['value']);
+
+	$field = array_merge($field, $type_info[$type]);
+
+	return $field;
+
 }
 
 

@@ -19,15 +19,45 @@ Ext.apply(wep, {
 	
 	main_cont: 'modulsforms', // id главного контейнера
 	edit_form_cont: 'editform', // id контейнера с формой
+	breadcrumbs_id: 'breadcrumbs',
 	
 	// пути
 	path: {
 		extjs: '_design/_script/extjs/',
 		cscript: '_wep/cdesign/extjs/script/'
 	},
-	
-	included_components: {},
 
+	breadcrumbs: {
+		path: [],
+
+		add: function(obj, num) {
+			if (Ext.isDefined(num))	{
+				num--;
+				if (wep.breadcrumbs.path.length > num) {
+//					for(var i=wep.breadcrumbs.path.length-1; i>=num; i--) {
+	//					wep.breadcrumbs.path[i].obj.destroy();
+//						Ext.getCmp(wep.breadcrumbs.path[i].component_id).destroy();
+//					}
+
+					wep.breadcrumbs.path = wep.breadcrumbs.path.slice(0,num);
+				}
+			}
+			wep.breadcrumbs.path.push(obj);
+
+			wep.breadcrumbs.render();
+		},
+		
+		render: function() {
+			var html = '';
+			Ext.each(wep.breadcrumbs.path, function(value, index) {
+				html += value.title + ' :: ';
+			});
+
+			Ext.get(wep.breadcrumbs_id).update(html);
+		}
+
+	},
+	
 	// динамически подключенные файлы
 	included_files: {},	
 
@@ -115,6 +145,9 @@ Ext.apply(wep, {
 			jsfiles = [
 				wep.path['extjs'] + 'ux/CheckColumn.js',
 
+				wep.path['extjs'] + 'ux/MultiSelect.js',
+				wep.path['extjs'] + 'ux/ItemSelector.js',
+
 				//
 				wep.path['extjs'] + 'ux/treegrid/TreeGridSorter.js',
 				wep.path['extjs'] + 'ux/treegrid/TreeGridColumnResizer.js',
@@ -122,7 +155,8 @@ Ext.apply(wep, {
 				wep.path['extjs'] + 'ux/treegrid/TreeGridLoader.js',
 				wep.path['extjs'] + 'ux/treegrid/TreeGridColumns.js',
 
-				wep.path['extjs'] + 'ux/treegrid/TreeGrid.js',
+				wep.path['extjs'] + 'ux/treegrid/TreeGrid.js'
+				
 			];
 
 			wep.include_js(jsfiles, function() {
@@ -134,14 +168,16 @@ Ext.apply(wep, {
 						var data = Ext.util.JSON.decode(result.responseText);
 
 						var columns = data['columns'];
-						var fields = data['fields'];					
+						var fields = data['fields'];
+						var children = data['children'];
 						
+	/*
 						var panel = new wep.panel({
 							id: 'main_panel',
 							layout: 'accordion',
 							renderTo: wep.main_cont
 						});
-
+*/
 						// удаляем предыдущую форму, если она есть
 						var edit_form = Ext.getCmp('edit_form');
 						if (Ext.isObject(edit_form))
@@ -150,6 +186,7 @@ Ext.apply(wep, {
 							edit_form.destroy();
 						}
 						
+						/*
 						var grid = new wep.grid({
 							id: "modul_grid",
 							columns: columns,
@@ -158,32 +195,52 @@ Ext.apply(wep, {
 							hideParent: false,
 							url: '_wep/index.php?_view=list&_modul=' + wep.modul.cn
 						});
-						
+						*/
 
-						/*
+						// удаляем предыдущую форму, если она есть
+						var main_tree_id = 'main_tree';
+//						var tree = Ext.getCmp(main_tree_id);
+//						if (Ext.isObject(tree))
+//						{
+							Ext.get(wep.main_cont).update('');
+//							tree.destroy();
+//						}
+
 						var tree = new Ext.ux.tree.TreeGrid({
+							id: main_tree_id,
 							title: 'Модуль ' + wep.modul.title,
-							//						width: 500,
 							width: 1000,
 							height: 300,
 							enableDD: true,
+							renderTo: wep.main_cont,
 							columns: columns,
+							children: children,
 							requestMethod: 'GET',
-							dataUrl: '_wep/index.php?_view=list&_modul=' + wep.modul.cn
-						});
-
-						tree.getSelectionModel().on('selectionchange', function(sel, node) {
-							if (node) {
-								alert(node.id);
+							dataUrl: '_wep/index.php?_view=list&_modul=' + wep.modul.cn,
+							onDestroy: function() {
+								alert('уничтожают ' + this.title);
+								Ext.each(this.children, function(value, index) {
+									var child = Ext.getCmp('child_' + value.cl + '_tree');
+									if (Ext.isObject(child))
+									{
+										child.destroy();
+									}
+								},
+								this)
 							}
 						});
-						*/
 
+						wep.breadcrumbs.add({title: wep.modul.title, component_id:main_tree_id, obj: tree}, 2);
+//console.log(wep.breadcrumbs.path);
 						
-						panel.add(grid);
-						panel.doLayout();
-						
-						
+
+//						console.log(tree.columns);
+
+
+//						panel.add(tree);
+
+//						panel.doLayout();
+							
 					},
 					failure: function() {
 						Ext.Msg.alert('Ошибка', 'Произошла ошибка');
@@ -197,6 +254,7 @@ Ext.apply(wep, {
 	
 	panel: Ext.extend(Ext.Panel, {}),
 
+/*
 	grid: Ext.extend(Ext.grid.EditorGridPanel, {
 		initComponent: function(config) {	
 			
@@ -217,14 +275,15 @@ Ext.apply(wep, {
 			{	
 				var obj = this;
 				
-				if (Ext.isString(columns[index].editor))
-				{
-					eval('columns[index].editor = ' + columns[index].editor + ';');
-				}
-				else if (Ext.isString(columns[index].handler))
-				{
-					eval('columns[index].handler = ' + columns[index].handler + ';');
-				}
+				Ext.iterate(value, function(prop, val) {
+					if (!Ext.isEmpty(val))
+					{
+						if (Ext.isDefined(val.eval))
+						{
+							eval("value[prop] = " + val.eval + ";");
+						}
+					}
+				});
 			},
 			this);
 
@@ -263,10 +322,6 @@ Ext.apply(wep, {
 				var child = Ext.util.JSON.decode(child);
 
 				var id = SelectionModel.selection.record.data.id;
-				
-				alert(SelectionModel.selection.record.data.id + " " + child.cl + " " + child.title);
-
-//				http://partner.i/_wep/index.php?_view=list&_modul=pg&pg_id=401
 
 				Ext.Ajax.request({
 					url: '_wep/index.php?_view=listcol&_modul=' + wep.modul.cn,
@@ -307,12 +362,12 @@ Ext.apply(wep, {
 							hideParent: false,
 							url: url
 						});
-
+						
 						var panel = Ext.getCmp('main_panel');
 
 						panel.add(child_grid);
-						panel.doLayout();
 
+						panel.doLayout();
 
 					},
 					failure: function() {
@@ -324,9 +379,6 @@ Ext.apply(wep, {
 
 			function showForm(grid)
 			{
-				//Очищаем элемент, в котором хотим нарисовать форму
-	//			Ext.get(wep.edit_form_cont).update('');
-				
 				var SelectionModel = grid.getSelectionModel();	
 		
 		
@@ -334,47 +386,22 @@ Ext.apply(wep, {
 					url: '_wep/index.php?_view=list&_modul=' + wep.modul.cn + '&' + wep.modul.cn + '_id=' + SelectionModel.selection.record.data.id + '&_type=edit',
 					success: function(result, textStatus) {
 						
-						data = Ext.util.JSON.decode(result.responseText);	
+						var data = Ext.util.JSON.decode(result.responseText);
 						
 						var items = data;
-		
-						/////////
-						// удалить
 
-						// example of custom renderer function
-						function italic(value){
-							return '<i>' + value + '</i>';
-						}
+						Ext.each(items, function(value, index) {
+							Ext.iterate(value, function(prop, val) {
+								if (!Ext.isEmpty(val))
+								{
+									if (Ext.isDefined(val.eval))
+									{
+										eval("value[prop] = " + val.eval + ";");
+									}
+								}
+							});
 
-						// example of custom renderer function
-						function change(val){
-							if(val > 0){
-								return '<span style="color:green;">' + val + '</span>';
-							}else if(val < 0){
-								return '<span style="color:red;">' + val + '</span>';
-							}
-							return val;
-						}
-						// example of custom renderer function
-						function pctChange(val){
-							if(val > 0){
-								return '<span style="color:green;">' + val + '%</span>';
-							}else if(val < 0){
-								return '<span style="color:red;">' + val + '%</span>';
-							}
-							return val;
-						}
-
-						// render rating as "A", "B" or "C" depending upon numeric value.
-						function rating(v) {
-							if (v == 0) return "A"
-							if (v == 1) return "B"
-							if (v == 2) return "C"
-						}
-						
-						// удалить			
-						////////
-				
+						});
 
 						// удаляем предыдущую форму, если она есть
 						var edit_form = Ext.getCmp('edit_form');
@@ -395,7 +422,7 @@ Ext.apply(wep, {
 								labelWidth: 200,
 								title:'Редактирование',
 								defaults: {width: 500, border:false},    // Default config options for child items
-								defaultType: 'textfield',
+		//						defaultType: 'textfieldf',
 								autoHeight: true,
 								bodyStyle: Ext.isIE ? 'padding:0 0 5px 15px;' : 'padding:10px 15px;',
 								border: false,
@@ -406,9 +433,6 @@ Ext.apply(wep, {
 								items: items
 							}]
 						});
-
-	
-
 					}
 				});
 			}
@@ -441,6 +465,7 @@ Ext.apply(wep, {
 			this);		
 		}
 	}),
+*/
 
 	form: Ext.extend(Ext.FormPanel, {
 		frame: true,

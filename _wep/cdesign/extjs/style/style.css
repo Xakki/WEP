@@ -190,7 +190,17 @@ a:hover {
 /*extjs*/
 .x-panel-header {
     border-color: #999999;
-}
+	}
 .x-panel-body {
     border-color:#CCCCCC;
-}
+	}
+
+.silk-icon-add {
+	background: url('../img/icon-tab-folder.png');
+	}
+.silk-icon-edit {
+	background: url('../img/icon-tab-folder.png');
+	}
+.silk-icon-delete {
+	background: url('../img/icon-tab-folder.png');
+	}

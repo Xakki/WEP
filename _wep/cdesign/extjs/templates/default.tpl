@@ -45,7 +45,7 @@
 		<div class="maintext">
 			<div class="block">
 				<div class="toolbar">{$_tpl['uname']}</div>	
-				<div class="path">Путь</div>
+				<div class="path" id="breadcrumbs"></div>
 				<div id="editform"></div>
 				<div class="content" id="modulsforms">{$_tpl['modulsforms']}</div>
 			</div>

@@ -163,13 +163,14 @@
 					$xml['data']['item'][$key]['active'] = $row['active'];
 				foreach($this->fields_form as $k=>$r) {
 					if(isset($arrno[$k])) continue;
-					$type='text';
-					if($r['type']=='file') {
-						if(isset($this->_CFG['form']['flashFormat'][$row['_ext_'.$k]])) $type='swf';
-						elseif(isset($this->_CFG['form']['imgFormat'][$row['_ext_'.$k]])) $type='img';
-						else $type='file';
-					}
 					$tditem = array('name'=>$k,'type'=>$type);
+					//$type='text';
+					if($r['type']=='file') {
+						if(isset($this->_CFG['form']['flashFormat'][$row['_ext_'.$k]])) $tditem['fileType']='swf';
+						elseif(isset($this->_CFG['form']['imgFormat'][$row['_ext_'.$k]])) $tditem['fileType']='img';
+						else $tditem['fileType']='file';
+					}
+
 					if(isset($r['mask']['href']))
 						$tditem['href'] = str_replace('{id}',$row['id'],$r['mask']['href']);
 					elseif($r['type']=='attach')
