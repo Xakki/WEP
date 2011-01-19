@@ -162,19 +162,19 @@ Ext.ux.tree.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
 				var children = data['children'];
 
 				// удаляем предыдущую форму, если она есть
-				var edit_form = Ext.getCmp('edit_form');
-				if (Ext.isObject(edit_form))
-				{
-					Ext.get(wep.edit_form_cont).update('');
-					edit_form.destroy();
-				}
+//				var edit_form = Ext.getCmp('edit_form');
+//				if (Ext.isObject(edit_form))
+//				{
+//					Ext.get(wep.edit_form_cont).update('');
+//					edit_form.destroy();
+//				}
 
 				var child_tree_id = 'child_' + child.cl + '_tree';
-				var child_tree = Ext.getCmp(child_tree_id);
-				if (Ext.isObject(child_tree))
-				{
-					child_tree.destroy();
-				}
+//				var child_tree = Ext.getCmp(child_tree_id);
+//				if (Ext.isObject(child_tree))
+//				{
+//					child_tree.destroy();
+//				}
 
 				var url = 'http://partner.i/_wep/index.php?_view=list&_modul=' + wep.modul.cn + '&' + wep.modul.cn + '_id=' + id;
 
@@ -196,6 +196,8 @@ Ext.ux.tree.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
 
 			   Ext.getCmp('main_tree').hide();
 
+			   wep.breadcrumbs.add({title: child.header, component_id: child_tree_id});
+
 			   var child_tree = new Ext.ux.tree.TreeGrid({
 					id: child_tree_id,
 					title: 'Подмодуль ' + child.header,
@@ -206,7 +208,10 @@ Ext.ux.tree.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
 					columns: columns,
 					children: children,
 					requestMethod: 'GET',
-					dataUrl: url
+					dataUrl: url,
+					onDestroy: function() {
+						alert('Уничтожается ' + this.title);
+					}
 				});
 
 
@@ -308,15 +313,18 @@ Ext.ux.tree.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
 				});
 
 				// удаляем предыдущую форму, если она есть
-				var edit_form = Ext.getCmp('edit_form');
-				if (Ext.isObject(edit_form))
-				{
-					Ext.get(wep.edit_form_cont).update('');
-					edit_form.destroy();
-				}
+				var edit_form_id = 'edit_form';
+//				var edit_form = Ext.getCmp(edit_form_id);
+//				if (Ext.isObject(edit_form))
+//				{
+//					Ext.get(wep.edit_form_cont).update('');
+//					edit_form.destroy();
+//				}
+
+				wep.breadcrumbs.add({title: title, component_id: edit_form_id, dom_id: wep.edit_form_cont});
 
 				var form = new wep.form({
-					id: 'edit_form',
+					id: edit_form_id,
 					title: title,
 					renderTo: wep.edit_form_cont,
 					url:'save-form.php',
@@ -342,7 +350,11 @@ Ext.ux.tree.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
 							"margin-right": Ext.isIE6 ? (Ext.isStrict ? "-10px" : "-13px") : "0"  // you have to adjust for it somewhere else
 						},
 						items: items
-					}]
+					}],
+
+					onDestroy: function() {
+						alert(title + ' уничтожается');
+					}
 				});
 			}
 		});

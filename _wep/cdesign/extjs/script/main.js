@@ -30,18 +30,58 @@ Ext.apply(wep, {
 	breadcrumbs: {
 		path: [],
 
-		add: function(obj, num) {
-			if (Ext.isDefined(num))	{
-				num--;
-				if (wep.breadcrumbs.path.length > num) {
-//					for(var i=wep.breadcrumbs.path.length-1; i>=num; i--) {
-	//					wep.breadcrumbs.path[i].obj.destroy();
-//						Ext.getCmp(wep.breadcrumbs.path[i].component_id).destroy();
-//					}
+		goTo: function(num) {
+			if (wep.breadcrumbs.path.length > num) {
+				for(var i=wep.breadcrumbs.path.length-1; i>num; i--) {
+					if (Ext.isDefined(wep.breadcrumbs.path[i].dom_id)) {
+						Ext.get(wep.breadcrumbs.path[i].dom_id).update('');
+					}
+					if (Ext.isDefined(wep.breadcrumbs.path[i].component_id)) {
+						Ext.getCmp(wep.breadcrumbs.path[i].component_id).destroy();
+					}
+				}
+				wep.breadcrumbs.path = wep.breadcrumbs.path.slice(0,num+1);
+			}
+			wep.breadcrumbs.render();
+		},
 
+		edit: function(obj, num) {
+			if (Ext.isDefined(wep.breadcrumbs.path[num])) {
+				Ext.apply(wep.breadcrumbs.path[num], obj);
+				wep.breadcrumbs.render();
+			}
+
+		},
+
+		add: function(obj, num) {
+			if (Ext.isDefined(obj.dom_id)) {
+				Ext.get(obj.dom_id).update('');
+			}
+
+			if (Ext.isDefined(num))	{
+				if (wep.breadcrumbs.path.length > num) {
+					for(var i=wep.breadcrumbs.path.length-1; i>=num; i--) {
+						if (Ext.isDefined(wep.breadcrumbs.path[i].component_id)) {
+							Ext.getCmp(wep.breadcrumbs.path[i].component_id).destroy();
+						}
+					}
 					wep.breadcrumbs.path = wep.breadcrumbs.path.slice(0,num);
 				}
 			}
+
+			if (Ext.isDefined(obj.component_id)) {
+				Ext.each(wep.breadcrumbs.path, function(value, index) {
+					if (obj.component_id === value.component_id) {
+						for(var i=wep.breadcrumbs.path.length-1; i>=index; i--) {
+							if (Ext.isDefined(wep.breadcrumbs.path[i].component_id)) {
+								Ext.getCmp(wep.breadcrumbs.path[i].component_id).destroy();
+							}
+						}
+						wep.breadcrumbs.path = wep.breadcrumbs.path.slice(0,index);
+					}
+				});
+			}
+
 			wep.breadcrumbs.path.push(obj);
 
 			wep.breadcrumbs.render();
@@ -50,7 +90,12 @@ Ext.apply(wep, {
 		render: function() {
 			var html = '';
 			Ext.each(wep.breadcrumbs.path, function(value, index) {
-				html += value.title + ' :: ';
+				if (index == wep.breadcrumbs.path.length-1) {
+					html += '<span>' + value.title + '</span>';
+				}
+				else {
+					html += '<span style="cursor:pointer" onclick="wep.breadcrumbs.goTo(' + index + ')">' + value.title + '</span> :: ';
+				}
 			});
 
 			Ext.get(wep.breadcrumbs_id).update(html);
@@ -140,7 +185,7 @@ Ext.apply(wep, {
 			}
 			
 			//Очищаем элемент, в котором хотим нарисовать дерево
-			Ext.get(wep.main_cont).update('');
+//			Ext.get(wep.main_cont).update('');
 			
 			jsfiles = [
 				wep.path['extjs'] + 'ux/CheckColumn.js',
@@ -179,12 +224,12 @@ Ext.apply(wep, {
 						});
 */
 						// удаляем предыдущую форму, если она есть
-						var edit_form = Ext.getCmp('edit_form');
-						if (Ext.isObject(edit_form))
-						{
+//						var edit_form = Ext.getCmp('edit_form');
+//						if (Ext.isObject(edit_form))
+//						{
 							Ext.get(wep.edit_form_cont).update('');
-							edit_form.destroy();
-						}
+//							edit_form.destroy();
+//						}
 						
 						/*
 						var grid = new wep.grid({
@@ -197,15 +242,11 @@ Ext.apply(wep, {
 						});
 						*/
 
-						// удаляем предыдущую форму, если она есть
-						var main_tree_id = 'main_tree';
-//						var tree = Ext.getCmp(main_tree_id);
-//						if (Ext.isObject(tree))
-//						{
-							Ext.get(wep.main_cont).update('');
-//							tree.destroy();
-//						}
 
+						var main_tree_id = 'main_tree';
+												
+						wep.breadcrumbs.add({title: wep.modul.title, component_id:main_tree_id, dom_id: wep.main_cont});
+						
 						var tree = new Ext.ux.tree.TreeGrid({
 							id: main_tree_id,
 							title: 'Модуль ' + wep.modul.title,
@@ -218,19 +259,19 @@ Ext.apply(wep, {
 							requestMethod: 'GET',
 							dataUrl: '_wep/index.php?_view=list&_modul=' + wep.modul.cn,
 							onDestroy: function() {
-								alert('уничтожают ' + this.title);
-								Ext.each(this.children, function(value, index) {
-									var child = Ext.getCmp('child_' + value.cl + '_tree');
-									if (Ext.isObject(child))
-									{
-										child.destroy();
-									}
-								},
-								this)
+								alert(this.title + ' уничтожается');
+			//					Ext.each(this.children, function(value, index) {
+			//						var child = Ext.getCmp('child_' + value.cl + '_tree');
+			//						if (Ext.isObject(child))
+			//						{
+			//							child.destroy();
+			//						}
+			//					},
+			//					this)
 							}
 						});
 
-						wep.breadcrumbs.add({title: wep.modul.title, component_id:main_tree_id, obj: tree}, 2);
+						
 //console.log(wep.breadcrumbs.path);
 						
 
