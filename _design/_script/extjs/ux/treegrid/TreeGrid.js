@@ -194,9 +194,18 @@ Ext.ux.tree.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
 				});
 				*/
 
-			   Ext.getCmp('main_tree').hide();
+			   
 
-			   wep.breadcrumbs.add({title: child.header, component_id: child_tree_id});
+			   wep.breadcrumbs.add({
+				   title: child.header,
+				   component_id: child_tree_id,
+				   onAdd: function() {
+					   Ext.getCmp('main_tree').hide();
+				   },
+				   onDelete: function() {
+					   Ext.getCmp('main_tree').show();
+				   }
+		       });
 
 			   var child_tree = new Ext.ux.tree.TreeGrid({
 					id: child_tree_id,

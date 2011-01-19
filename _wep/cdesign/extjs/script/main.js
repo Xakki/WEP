@@ -30,6 +30,7 @@ Ext.apply(wep, {
 	breadcrumbs: {
 		path: [],
 
+		// переходит на крошку номер num, впередистоящие будут уничтожены
 		goTo: function(num) {
 			if (wep.breadcrumbs.path.length > num) {
 				for(var i=wep.breadcrumbs.path.length-1; i>num; i--) {
@@ -39,12 +40,16 @@ Ext.apply(wep, {
 					if (Ext.isDefined(wep.breadcrumbs.path[i].component_id)) {
 						Ext.getCmp(wep.breadcrumbs.path[i].component_id).destroy();
 					}
+					if (Ext.isDefined(wep.breadcrumbs.path[i].onDelete)) {
+						wep.breadcrumbs.path[i].onDelete.call(wep.breadcrumbs.path[i].scope || window);
+					}
 				}
 				wep.breadcrumbs.path = wep.breadcrumbs.path.slice(0,num+1);
 			}
 			wep.breadcrumbs.render();
 		},
 
+		// добавляет к свойствам крошки номер num все св-ва из объекта obj
 		edit: function(obj, num) {
 			if (Ext.isDefined(wep.breadcrumbs.path[num])) {
 				Ext.apply(wep.breadcrumbs.path[num], obj);
@@ -53,6 +58,13 @@ Ext.apply(wep, {
 
 		},
 
+		/* *********************************************
+		 * добавляет крошку
+		 * obj - объект со след св-вами
+		 * title
+		 * component_id - id extjs компонента, если передан, то при уничтожении крошки он тоже будет удаляться
+		 * dom_id - если передан, то при уничтожении крошки html элемент с id=dom_id будет очищаться
+		 * ******************************************************/
 		add: function(obj, num) {
 			if (Ext.isDefined(obj.dom_id)) {
 				Ext.get(obj.dom_id).update('');
@@ -60,11 +72,16 @@ Ext.apply(wep, {
 
 			if (Ext.isDefined(num))	{
 				if (wep.breadcrumbs.path.length > num) {
-					for(var i=wep.breadcrumbs.path.length-1; i>=num; i--) {
+					for (var i=wep.breadcrumbs.path.length-1; i>=num; i--) {
 						if (Ext.isDefined(wep.breadcrumbs.path[i].component_id)) {
 							Ext.getCmp(wep.breadcrumbs.path[i].component_id).destroy();
 						}
+
+						if (Ext.isDefined(wep.breadcrumbs.path[i].onDelete)) {
+							wep.breadcrumbs.path[i].onDelete.call(wep.breadcrumbs.path[i].scope || window);
+						}
 					}
+					
 					wep.breadcrumbs.path = wep.breadcrumbs.path.slice(0,num);
 				}
 			}
@@ -72,9 +89,13 @@ Ext.apply(wep, {
 			if (Ext.isDefined(obj.component_id)) {
 				Ext.each(wep.breadcrumbs.path, function(value, index) {
 					if (obj.component_id === value.component_id) {
-						for(var i=wep.breadcrumbs.path.length-1; i>=index; i--) {
+						for (var i=wep.breadcrumbs.path.length-1; i>=index; i--) {
 							if (Ext.isDefined(wep.breadcrumbs.path[i].component_id)) {
 								Ext.getCmp(wep.breadcrumbs.path[i].component_id).destroy();
+							}
+
+							if (Ext.isDefined(wep.breadcrumbs.path[i].onDelete)) {
+								wep.breadcrumbs.path[i].onDelete.call(wep.breadcrumbs.path[i].scope || window);
 							}
 						}
 						wep.breadcrumbs.path = wep.breadcrumbs.path.slice(0,index);
@@ -84,9 +105,14 @@ Ext.apply(wep, {
 
 			wep.breadcrumbs.path.push(obj);
 
+			if (Ext.isDefined(obj.onAdd)) {
+				obj.onAdd.call(obj.scope || window);
+			}
+
 			wep.breadcrumbs.render();
 		},
 		
+		// перерисовка крошек
 		render: function() {
 			var html = '';
 			Ext.each(wep.breadcrumbs.path, function(value, index) {
