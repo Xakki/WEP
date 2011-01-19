@@ -41,10 +41,10 @@
 		);
 		
 		$result = $this->SQL->execSQL('SHOW TABLES LIKE \''.$this->tablename.'\'');// checking table exist
-		if ($result->err) exit($this->getMess('_big_err'));
+		if ($result->err) return array($this->tablename => array(array('err'=>$this->getMess('_big_err'))));
 		if (!$result->num_rows()) {
 			if($this->_install())
-				return array($this->tablename => array('err'=>$this->getMess('_install_err')));
+				return array($this->tablename => array(array('err'=>$this->getMess('_install_err'))));
 			return array();
 		}
 		
@@ -161,8 +161,8 @@
 			{
 				if (!isset($param['inst'])) 
 					$query[$key][0] = 'ALTER TABLE `'.$this->tablename.'` ADD '.$this->_fldformer($key, $this->attprm);
-				if ($this->_checkdir($this->getPathForAtt($key))) { 
-					$out[$this->tablename]['err'] = $this->getMess('_checkdir error');
+				if (!$this->_checkdir($this->getPathForAtt($key))) { 
+					$out[$this->tablename][$key]['err'] = $this->getMess('_checkdir_error',array($this->getPathForAtt($key)));
 					return $out;
 				}
 			}	
@@ -171,8 +171,8 @@
 			foreach($this->memos as $key => $param) 
 			{
 			//	if (!$param['inst']) $query[] = 'ADD '.$this->_fldformer($key, $this->mmoprm);
-				if ($this->_checkdir($this->getPathForMemo($key))) {
-					$out[$this->tablename]['err'] = $this->getMess('_recheck_err');
+				if (!$this->_checkdir($this->getPathForMemo($key))) {
+					$out[$this->tablename][$key]['err'] = $this->getMess('_recheck_err');
 					return $out;
 				}
 			}

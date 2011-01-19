@@ -105,10 +105,11 @@ ON DUPLICATE KEY UPDATE `modified` = "'.$this->_time.'", `users_id`="'.$data['us
 
 	function destroy($sid) {
 		$result = $this->SQL->execSQL('DELETE FROM '.$this->tablename.' WHERE `sid`  = "'.mysql_real_escape_string($sid).'"');
+		$this->gc();
 		return(true); 
 	}
 
-	function gc($maxlifetime) {
+	function gc($maxlifetime=0) {
 		$result = $this->SQL->execSQL('DELETE FROM '.$this->tablename.' WHERE `modified` + `expired` < '.$this->_time.' OR (`created` + '.$this->deadsession.' < '.$this->_time.' AND `visits` < '.$this->deadvisits.')');
 		return(true); 
 	}

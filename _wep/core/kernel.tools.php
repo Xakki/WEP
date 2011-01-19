@@ -359,14 +359,16 @@ $html .= '
 						'caption' => '<a href="#" onclick="return invert_select(\'form_tools_Checkmodul\');">Инвертировать выделение</a>',
 					);
 
-
 					foreach ($check_result as $table=>$list_query) {
-						foreach ($list_query as $fields) {
+						foreach ($list_query as $kk=>$fields) {
 							foreach ($fields as $field => $query) {
 		//						$query[0] = htmlspecialchars($query[0]);
-								if (isset($query[0])) {
+								if(!is_array($query)) {
+									$mess[] = array('name' => 'error', 'value' => 'Поле `'.$kk.'` - '.$query);
+								}
+								elseif (isset($query[0])) {
 									if (isset($query[1]))
-										$desc = 'Было: '.$query[1].'<br/>Будет: '.htmlspecialchars($query[0]);
+										$desc = 'Было: '.$query[1].'<br/>Будет: '.htmlspecialchars($query[0],ENT_QUOTES,$_this->_CFG['wep']['charset']);
 									else
 										$desc = $query[0];
 									

@@ -163,8 +163,7 @@
 					$xml['data']['item'][$key]['active'] = $row['active'];
 				foreach($this->fields_form as $k=>$r) {
 					if(isset($arrno[$k])) continue;
-					$tditem = array('name'=>$k,'type'=>$type);
-					//$type='text';
+					$tditem = array('name'=>$k,'type'=>$r['type']);
 					if($r['type']=='file') {
 						if(isset($this->_CFG['form']['flashFormat'][$row['_ext_'.$k]])) $tditem['fileType']='swf';
 						elseif(isset($this->_CFG['form']['imgFormat'][$row['_ext_'.$k]])) $tditem['fileType']='img';

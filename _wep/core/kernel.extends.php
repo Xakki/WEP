@@ -159,10 +159,10 @@ _fldformer($key, $param)
 		if ($this->mf_use_charid) 
 			$this->fields['id'] = array('type' => 'varchar', 'width' => $this->mf_idwidth, 'attr' => 'NOT NULL');
 		else
-			$this->fields['id'] = array('type' => 'int', 'attr' => 'unsigned NOT NULL AUTO_INCREMENT');
+			$this->fields['id'] = array('type' => 'int', 'attr' => 'UNSIGNED NOT NULL AUTO_INCREMENT');
 		
 		if($this->_setnamefields) 
-			$this->fields['name'] = array('type' => 'varchar', 'width' => '255', 'attr' => 'NOT NULL');
+			$this->fields['name'] = array('type' => 'varchar', 'width' => '255', 'attr' => 'NOT NULL','default'=>'');
 
 		if ($this->owner) 
 		{
@@ -582,7 +582,7 @@ _get_file($row, $key)
 		elseif(isset($this->_CFG['_MESS'][$name]))
 			$text = $this->_CFG['_MESS'][$name];
 		else
-			$text = 'Внимание. Нейзвестный тип `сообщения`!';
+			$text = 'Внимание. Нейзвестный тип сообщения `'.$name.'`!';
 		if(count($wrap))
 			foreach($wrap as $k=>$r)
 				$text = str_replace('###'.($k+1).'###', $r, $text);

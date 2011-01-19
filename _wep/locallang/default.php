@@ -121,6 +121,7 @@
 	$_CFG['_MESS']['_recheck'] = 'Обновление полей БД и Обновление связи БД с фаилами на сервере!';
 	$_CFG['_MESS']['_recheck_ok'] = 'Поля таблицы обновлены!';
 	$_CFG['_MESS']['_recheck_err'] = 'Ошибка обновления полей.';
+	$_CFG['_MESS']['_checkdir_error'] = 'Ошибка создания папки `###1###`';
 	$_CFG['_MESS']['_recheck_select_nothing'] = 'Не выбран ни один запрос';
 	$_CFG['_MESS']['_recheck_have_nothing'] = 'Обновление не требуется';
 	$_CFG['_MESS']['_recheck_make_list_err'] = 'Ошибка создания списка запросов';
