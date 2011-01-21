@@ -19,7 +19,7 @@ Ext.apply(wep, {
 	
 	main_cont: 'modulsforms', // id главного контейнера
 	edit_form_cont: 'editform', // id контейнера с формой
-	breadcrumbs_id: 'breadcrumbs',
+	breadcrumbs_cont: 'breadcrumbs', // id контейнера с хлебными крошками
 	
 	// пути
 	path: {
@@ -64,6 +64,8 @@ Ext.apply(wep, {
 		 * title
 		 * component_id - id extjs компонента, если передан, то при уничтожении крошки он тоже будет удаляться
 		 * dom_id - если передан, то при уничтожении крошки html элемент с id=dom_id будет очищаться
+		 * onAdd
+		 * OnDelete
 		 * ******************************************************/
 		add: function(obj, num) {
 			if (Ext.isDefined(obj.dom_id)) {
@@ -124,7 +126,7 @@ Ext.apply(wep, {
 				}
 			});
 
-			Ext.get(wep.breadcrumbs_id).update(html);
+			Ext.get(wep.breadcrumbs_cont).update(html);
 		}
 
 	},
@@ -253,7 +255,7 @@ Ext.apply(wep, {
 //						var edit_form = Ext.getCmp('edit_form');
 //						if (Ext.isObject(edit_form))
 //						{
-							Ext.get(wep.edit_form_cont).update('');
+//							Ext.get(wep.edit_form_cont).update('');
 //							edit_form.destroy();
 //						}
 						
@@ -319,7 +321,7 @@ Ext.apply(wep, {
 		currentnode.stopEvent(); // чтобы не переходило по ссылке
 	},
 	
-	panel: Ext.extend(Ext.Panel, {}),
+//	panel: Ext.extend(Ext.Panel, {}),
 
 /*
 	grid: Ext.extend(Ext.grid.EditorGridPanel, {
@@ -541,64 +543,6 @@ Ext.apply(wep, {
 		layout: 'column'    // Specifies that the items will now be arranged in columns
 	}),
 	
-	// Не задействовано!
-	// получает дерево элементов из модуля modul
-	// и помещает их в элемент с id	= id_cont
-	get_tree: function(modul, id_cont) 
-	{
-		//Очищаем элемент, в котором хотим нарисовать дерево
-		Ext.get(id_cont).update('');
-
-		// css
-		wep.include_css('treegrid', wep.path['extjs'] + 'ux/treegrid/treegrid.css');
-		
-		// js
-		var jsfiles = [
-			wep.path['extjs'] + 'ux/treegrid/TreeGridSorter.js',
-			wep.path['extjs'] + 'ux/treegrid/TreeGridColumnResizer.js',
-			wep.path['extjs'] + 'ux/treegrid/TreeGridNodeUI.js',
-			wep.path['extjs'] + 'ux/treegrid/TreeGridLoader.js',
-			wep.path['extjs'] + 'ux/treegrid/TreeGridColumns.js',
-			
-			wep.path['extjs'] + 'ux/treegrid/TreeGrid.js',
-		];
-
-		wep.include_js(jsfiles, function()
-		{
-			Ext.QuickTips.init();
-
-
-			Ext.Ajax.request({
-				url: '_wep/index.php?_view=listcol&_modul=' + modul.cn,
-				success: function(result, textStatus) {
-					data = Ext.util.JSON.decode(result.responseText);					
-					var tree = new Ext.ux.tree.TreeGrid({
-						title: 'Модуль ' + modul.title,
-//						width: 500,
-						width: 1000,
-						height: 300,
-						renderTo: Ext.getDom(id_cont),
-						enableDD: true,
-						columns: data,
-						requestMethod: 'GET',
-						dataUrl: '_wep/index.php?_view=list&_modul=' + modul.cn
-					});	 
-					
-					tree.getSelectionModel().on('selectionchange', function(sel, node) {
-						if (node) {
-							alert(node.id);
-						}
-					});
-				},
-				failure: function(result, textStatus) {
-					Ext.Msg.alert('Ошибка', 'Произошла ошибка');
-				}
-			});
-						
-		});
-		
-	},
-
 	// меняет стиль ссылок при нажатии на них
 	change_menu_item_style: function(obj)
 	{
