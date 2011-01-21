@@ -104,7 +104,7 @@
 						if($r['multiple']==1)
 							$cls[0][] = 'group_concat('.$lsn['nameField'].' SEPARATOR " | ") as name_'.$k;
 						else
-							$cls[0][] = $lsn['nameField'].' as name_'.$k;
+							$cls[0][] = 't'.$t.'.'.$lsn['nameField'].' as name_'.$k;
 
 						if(!isset($lsn['join'])) 
 							$cls[1] .= ' LEFT';
