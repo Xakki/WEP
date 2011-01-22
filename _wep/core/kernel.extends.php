@@ -197,7 +197,7 @@ _fldformer($key, $param)
 		if($this->mf_timeoff) 
 			$this->fields['mf_timeoff'] = array('type'=>'int', 'width'=>11, 'attr' => 'unsigned NOT NULL');
 		if($this->mf_ipcreate) 
-			$this->fields['mf_ipcreate'] = array('type'=>'bigint', 'width'=>20, 'attr' => 'unsigned NOT NULL');
+			$this->fields['mf_ipcreate'] = array('type'=>'bigint', 'width'=>20, 'attr' => 'NOT NULL');
 
 		/*if ($this->mf_typectrl)
 			$this->fields['typedata'] = array('type' => 'tinyint', 'attr' => 'unsigned NOT NULL');

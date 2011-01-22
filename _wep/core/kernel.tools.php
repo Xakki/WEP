@@ -231,182 +231,100 @@ $html .= '
 		$_this->form = $mess = array();
 		if(!_prmModul($_this->_cl,array(14)))
 			$mess[] = array('name'=>'error', 'value'=>$_this->getMess('denied'));
-/*		elseif(isset($_POST['sbmt'])){
-			if (isset($_POST['list_query'])) {
-				$err = false;
-				foreach ($_POST['list_query'] as $query) {
-					$result = $_this->SQL->execSQL(stripslashes($query));
-					if ($result->err != '') {
-						$err = true;
-						$mess[] = array('name' => 'error', 'value' => $_this->getMess('_recheck_err').'  <a href="" onclick="window.location.reload();return false;">Обновите страницу.</a>');
-						break;
-					}					
-				}
-				if ($err == false)
-					$mess[] = array('name'=>'ok', 'value'=>$_this->getMess('_recheck_ok').'  <a href="" onclick="window.location.reload();return false;">Обновите страницу.</a>');
-
-				$check_result = 
-			}
-			else {
-				$mess[] = array('name' => 'ok', 'value' => $_this->getMess('_recheck_select_nothing'));
-			}
-		}*/
-		else{
-			
-			$reattach = array();
-			
+		else {
 			$check_result = $_this->_checkmodstruct();
-	
-			if (isset($check_result[$_this->tablename]['err'])) {
-				$mess[] = array('name' => 'error', 'value' => $check_result[$_this->tablename]['err']);
-				$check_err = true;
-			}
-//			elseif (!empty($check_result['list_query'])) {
 
-			$tmp_check_result = array();
-			
-			if(count($_this->childs)) {
-				foreach($_this->childs as $k=>&$r) {
-					$tmp_check_result = $r->_checkmodstruct();
-
-					if(count($r->attaches)) {
-						$reattach[$r->tablename] = true;
-					}
-					
-					if (isset($tmp_check_result[$r->tablename]['err'])) {
-						$mess[] = array('name' => 'error', 'value' => $tmp_check_result[$r->tablename]['err']);
-						$check_err = true;
-						break;
-					}
-					$check_result = array_merge($check_result, $tmp_check_result);
-				}
-			}
-			
-			if(count($_this->attaches)) {
-				$reattach[$_this->tablename] = true;
-			}		
-			
-			$is_query = false;
-			foreach ($check_result as $k=>$r) {
-				if (isset($r['list_query']) && !empty($r['list_query'])) {
-					foreach ($r['list_query'] as $field => $query) {
-						if (isset($query[0]))
-							$is_query = true;
-					}
-				}
-			}
-			
-			if (!empty($reattach) || ($check_err == false && $is_query)) {
-				
-				if (isset($_POST['sbmt'])) {
-					if (isset($_POST['list_query']) || isset($_POST['reattach'][$_this->tablename])) {
-						
-						if (isset($_POST['list_query']) && is_array($_POST['list_query']) && !empty($_POST['list_query'])) {
-						
-							$err = false;
-							foreach ($_POST['list_query'] as $r) {
-								$matches = explode('::', $r);
-								if (count($matches) == 2 || count($matches) == 3) {
-									$table = $matches[0];
-									unset($matches[0]);
-									if (isset($check_result[$table]['list_query'][implode('::',$matches)][0])) {
-										$result = $_this->SQL->execSQL($check_result[$table]['list_query'][implode('::',$matches)][0]);
-										if ($result->err) {
-											$err = true;
-											break;
-										}					
-									}
-									else {
-										$err = true;
-									}
-								}
-								else {
-									$mess[] = array('name' => 'error', 'value' => $_this->getMess('_recheck_err').'  <a href="" onclick="window.location.reload();return false;">Обновите страницу.</a>');
-								}
-							}
-						}
-						
-						if (isset($_POST['reattach'][$_this->tablename])) {
-							include_once($_CFG['_PATH']['core'].'kernel.tools.php');
-							if(_reattaches($_this))
+			if (isset($_POST['sbmt'])) {
+				if(count($_POST['list_query']))
+				foreach($_POST['list_query'] as $k=>$r) {
+					$temp = explode('::',$r);
+					if(isset($check_result[$temp[0]][$temp[1]])) {
+						$trow = &$check_result[$temp[0]][$temp[1]];
+						if($temp[1]=='reattach') {
+							if(is_object($trow) and _reattaches($trow))
 								$mess[] = array('name'=>'ok', 'value'=>$_this->getMess('_file_ok'));
 							else
 								$mess[] = array('name'=>'error', 'value'=>$_this->getMess('_file_err'));
+						}elseif(isset($temp[2]) and $temp[2]=='index') {
+							$result = $_this->SQL->execSQL($trow['index']);
+							if ($result->err) {
+								$mess[] = array('name' => 'error', 'value' => 'Error query('.$trow['index'].')');
+							}
+						}else {
+							$result = $_this->SQL->execSQL($trow['newquery']);
+							if ($result->err) {
+								$mess[] = array('name' => 'error', 'value' => 'Error query('.$trow['newquery'].')');
+							}
 						}
-						
-						
-						if ($err == true)
-							$mess[] = array('name' => 'error', 'value' => $_this->getMess('_recheck_err').'  <a href="" onclick="window.location.reload();return false;">Обновите страницу.</a>');
-						else
-							$mess[] = array('name'=>'ok', 'value'=>$_this->getMess('_recheck_ok').'  <a href="" onclick="window.location.reload();return false;">Обновите страницу.</a>');
-
 					}
-					else {
-						$mess[] = array('name' => 'ok', 'value' => $_this->getMess('_recheck_select_nothing'));
-					}
-				}
-				else {
-				
-					$_this->form['_*features*_'] = array('name'=>'Checkmodul','action'=>str_replace('&','&amp;',$_SERVER['REQUEST_URI']));
-					
+					else
+						$mess[] = array('name' => 'error', 'value' => 'Error request('.$r.')');
+				} else
+					$mess[] = array('name' => 'ok', 'value' => $_this->getMess('_recheck_have_nothing'));
+				if(!count($mess))
+					$mess[] = array('name' => 'ok', 'value' => $_this->getMess('_recheck_ok').'  <a href="" onclick="window.location.reload();return false;">Обновите страницу.</a>');
+			} 
+			else {
+				$_this->form['_*features*_'] = array('name'=>'Checkmodul','action'=>str_replace('&','&amp;',$_SERVER['REQUEST_URI']));
+				if(count($check_result)) {
 					$_this->form['_info'] = array(
 						'type'=>'info',
 						'caption'=>$_this->getMess('_recheck'),
 					);		
-					
 					$_this->form['invert'] = array(
 						'type' => 'info',
 						'caption' => '<a href="#" onclick="return invert_select(\'form_tools_Checkmodul\');">Инвертировать выделение</a>',
 					);
+					$_this->form['list_query'] = array(
+						'type' => 'checkbox',
+						'valuelist'=>array()
+					);
+					foreach ($check_result as $table=>$row) {
+						if(is_array($row) and count($row)) {
+							if(isset($row['reattach'])) {
+								$_this->form['list_query']['valuelist'][] = array(
+									'#id#' => $table.'::reattach',
+									'#name#' => '<b>'.$table.'</b> - Обновить файлы',
+								);
+								unset($row['reattach']);
+							}
+							foreach ($row as $kk=>$rr) {
+								/*if(isset($rr['err'])) {
+									$mess[] = array('name' => 'error', 'value' => implode('. ',$rr['err']));
+								}*/
 
-					foreach ($check_result as $table=>$list_query) {
-						foreach ($list_query as $kk=>$fields) {
-							foreach ($fields as $field => $query) {
-		//						$query[0] = htmlspecialchars($query[0]);
-								if(!is_array($query)) {
-									$mess[] = array('name' => 'error', 'value' => 'Поле `'.$kk.'` - '.$query);
-								}
-								elseif (isset($query[0])) {
-									if (isset($query[1]))
-										$desc = 'Было: '.$query[1].'<br/>Будет: '.htmlspecialchars($query[0],ENT_QUOTES,$_this->_CFG['wep']['charset']);
-									else
-										$desc = $query[0];
-									
-									if (isset($query[2]))
-										$desc .= '<br/><span style="color:red">'.$query[2].'</span>';
-									
+								if(isset($rr['newquery']) and isset($rr['oldquery']))
+									$desc = 'Было: '.htmlspecialchars($rr['oldquery'],ENT_QUOTES,$_this->_CFG['wep']['charset']).'<br/>Будет: '.htmlspecialchars($rr['newquery'],ENT_QUOTES,$_this->_CFG['wep']['charset']);
+								elseif(isset($rr['newquery']))
+									$desc = $rr['newquery'];
+								else
+									$desc = '';
+								if(isset($rr['err']))
+									$desc .= '<br/><span style="color:red">'.implode('. ',$rr['err']).'</span>';
+								if($desc)
 									$_this->form['list_query']['valuelist'][] = array(
-										'#id#' => $table.'::'.$field,
-										'#name#' => $desc,
+										'#id#' => $table.'::'.$kk,
+										'#name#' => '<b>'.$table.'</b>::<i>'.$kk.'</i> - '.$desc,
 									);
-								}
-								elseif (isset($query[2])) {
-									$mess[] = array('name' => 'error', 'value' => $query[2]);
-								}
+								if(isset($rr['index']))
+									$_this->form['list_query']['valuelist'][] = array(
+										'#id#' => $table.'::'.$kk.'::index',
+										'#name#' => '<b>'.$table.'</b>::<i>'.$kk.'</i> - '.$rr['index'],
+									);
 							}
 						}
+						else
+							$mess[] = array('name' => 'error', 'value' => 'Error data ('.$table.' - '.print_r($row,true).')');
 					}
-					if(isset($_this->form['list_query']))
-						$_this->form['list_query']['type'] = 'checkbox';
-				
-					if (!empty($reattach)) {
-						foreach ($reattach as $k=>$v) {
-							$_this->form['reattach['.$k.']']['type'] = 'checkbox';
-							$_this->form['reattach['.$k.']']['caption'] = 'Обновить файлы модуля '.$k;
-						}
-					}
-							
+
 					$_this->form['sbmt'] = array(
 						'type'=>'submit',
 						'value'=>$_this->getMess('_submit')
 					);
-				}
-				
-			} else {
-				$mess[] = array('name' => 'ok', 'value' => $_this->getMess('_recheck_have_nothing'));
+				} else 
+					$mess[] = array('name' => 'ok', 'value' => $_this->getMess('_recheck_select_nothing'));
 			}
 		}
-
 		return Array('form'=>$_this->form, 'messages'=>$mess);
 	}
 ?>

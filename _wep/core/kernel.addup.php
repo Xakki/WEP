@@ -24,8 +24,11 @@
 			$_this->fld_data['mf_timecr'] = $_this->_CFG['time'];
 		if ($_this->mf_timeup) 
 			$_this->fld_data['mf_timeup'] = $_this->_CFG['time'];
-		if($_this->mf_ipcreate) 
+		if($_this->mf_ipcreate) {
 			$_this->fld_data['mf_ipcreate'] = ip2long($_SERVER['REMOTE_ADDR']);
+			if(!(int)$_this->fld_data['mf_ipcreate'])
+				trigger_error('ERROR REMOTE_ADDR `'.$_SERVER['REMOTE_ADDR'].'`. '.print_r($_POST,true), E_USER_WARNING);
+		}
 		if($_this->mf_createrid and !$_this->fld_data[$_this->mf_createrid])
 			$_this->fld_data[$_this->mf_createrid]= $_SESSION['user']['id'];
 
@@ -60,14 +63,23 @@
 	}
 
 	function _add_fields(&$_this) {
+		$int_type = array(
+			'int'=>1,
+			'tinyint'=>1,
+			'longint'=>1,
+			'shortint'=>1,
+		);
 		if (!count($_this->fld_data)) return false;
 		// inserting
 		$data = array();
 		foreach($_this->fld_data as $key => $value) {
 			if(is_array($value))
-				$data[$key] = '|'.implode('|',$value).'|';
-			else
-				$data[$key] = $value;
+				 $value = '|'.implode('|',$value).'|';
+			if($_this->fields[$key]['type']=='bool')
+				 $value = ((int)$value == 1 ? 1 : 0);
+			elseif(isset($int_type[$_this->fields[$key]['type']]))
+				 $value =  (int)$value;
+			$data[$key] = $value;
 		}
 		$result=$_this->SQL->execSQL('INSERT INTO `'.$_this->tablename.'` (`'.implode('`,`', array_keys($data)).'`) VALUES (\''.implode('\',\'', $data).'\')');
 		if($result->err) return false;
@@ -549,7 +561,6 @@
 			elseif($value['type']=='date') {
 				$value['value'] = $data[$key] = _get_fdate($value, $data[$key], $_this->fields[$key]['type']);
 			}
-
 			//*********** МАССИВЫ
 			elseif(is_array($data[$key]) and count($data[$key])) {
 /*Доработать*/
@@ -562,9 +573,10 @@
 						$error[] = 25;
 				}
 			}else{
-				$value['value'] = $data[$key] = trim($data[$key]);				
+				$value['value'] = trim($data[$key]);				
 			//********** ОСТАЛЬНЫЕ
-				if($data[$key]!='') {
+				if($value['value']!='') {
+					$data[$key] = $value['value'];
 					if($value['mask']['entities']==1) 
 						$value['value'] = $data[$key]= htmlspecialchars($data[$key],ENT_QUOTES,$_this->_CFG['wep']['charset']);
 					if(isset($value['mask']['replace'])) {
@@ -580,9 +592,6 @@
 						else
 							$value['value'] = $data[$key]=strip_tags($data[$key],$value['mask']['striptags']);
 					}
-				}
-
-				if($data[$key]!='') {
 					//$value['value']
 					//$data[$key]
 

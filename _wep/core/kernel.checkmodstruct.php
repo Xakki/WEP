@@ -1,5 +1,4 @@
 <?
-		$out = array();
 		
 		// синонимы для типов полей
 		$alias_types = array(
@@ -43,17 +42,18 @@
 		$result = $this->SQL->execSQL('SHOW TABLES LIKE \''.$this->tablename.'\'');// checking table exist
 		if ($result->err) return array($this->tablename => array(array('err'=>$this->getMess('_big_err'))));
 		if (!$result->num_rows()) {
-			if($this->_install())
+			return array($this->tablename => array(array('err'=>'Модуль не установлен')));
+			/*if(!$this->_install())
 				return array($this->tablename => array(array('err'=>$this->getMess('_install_err'))));
-			return array();
+			return array();*/
 		}
 		
-		$query = array();
+		$out = array();
 		
 		if(isset($this->fields))
 			foreach($this->fields as $key => $param) {				
 				if (stristr($param['attr'], 'default')) {
-					$query[$key][2] = 'Ненужный пар-р default в ключе attr в классе '.get_class($this).' в поле '.$key;
+					$out[$key]['err'][] = 'Ненужный пар-р default в ключе attr';
 				}
 				
 				if (
@@ -62,8 +62,7 @@
 					$types_without_default[strtoupper($param['type'])] === true
 					) 
 				{
-//					$mess[] = 'Ненужный пар-р default в классе '.get_class($this).' в поле '.$fldname.' (Для типов полей '.$this->fields[$fldname]['type'].' указывать default необязательно.';
-					$query[$key][2] = 'Ненужный пар-р default в классе '.get_class($this).' в поле '.$key.' (Для типов полей '.$param['type'].' указывать default необязательно.';
+					$out[$key]['err'][] = 'Ненужный пар-р `default` (Для типов полей '.$param['type'].' указывать `default` необязательно.';
 					unset($this->fields[$key]['default']);
 				}
 			}
@@ -84,8 +83,7 @@
 				{
 					if (isset($types_width[$tmp_type]) && $types_width[$tmp_type] === false)
 					{
-//						trigger_error('В классе '.get_class($this).', для поля '.$fldname.' указана ширина. (Для типов полей '.$this->fields[$fldname]['type'].' указывать ширину необязательно.', E_USER_NOTICE);
-						unset($this->fields[$fldname]['width']);
+						unset($this->fields[$fldname]['width']); // чистим от ненужного парметра
 					}
 				}
 				else
@@ -103,7 +101,6 @@
 				$table_properties = array();
 				$table_properties_up_case = array();
 				$i = 0;
-				//print($fldname.'-'.$fldtype.'-'.$null.'-'.$key.'-'.$default.'-'.$extra);
 				foreach ($types as $type)
 				{
 					$table_properties[$i] = '`'.$fldname.'` '.$type;
@@ -129,14 +126,14 @@
 				}
 				$temp_fldformer = trim($this->_fldformer($fldname, $this->fields[$fldname]));
 				if (isset($this->fields[$fldname]['type']) and !in_array(str_replace(array('"',"'"), array('',''),strtoupper($temp_fldformer)), $table_properties_up_case)) {
-					$query[$fldname][0] = 'ALTER TABLE `'.$this->tablename.'` CHANGE `'.$fldname.'` '.$temp_fldformer;
-					$query[$fldname][1] = $table_properties[0];
-//					$query[] = 'ALTER TABLE `'.$this->tablename.'` CHANGE `'.$fldname.'` '.$this->_fldformer($fldname, $this->fields[$fldname]).' ('.$table_properties[0].')';
+					$out[$fldname]['newquery'] = 'ALTER TABLE `'.$this->tablename.'` CHANGE `'.$fldname.'` '.$temp_fldformer;
+					$out[$fldname]['oldquery'] = $table_properties[0];
+//					$out[] = 'ALTER TABLE `'.$this->tablename.'` CHANGE `'.$fldname.'` '.$this->_fldformer($fldname, $this->fields[$fldname]).' ('.$table_properties[0].')';
 				}
 				
 //				if (isset($this->fields[$fldname]['width'])) {
 //					if ($this->fields[$fldname]['type'].'('.$this->fields[$fldname]['width'].')' != $type) {
-//						$query[] = 'ALTER TABLE `'.$this->tablename.'` CHANGE `'.$fldname.'` `'.$fldname.'` '.$this->fields[$fldname]['type'].'('.$this->fields[$fldname]['width'].') NOT NULL';
+//						$out[] = 'ALTER TABLE `'.$this->tablename.'` CHANGE `'.$fldname.'` `'.$fldname.'` '.$this->fields[$fldname]['type'].'('.$this->fields[$fldname]['width'].') NOT NULL';
 //					}
 //				}
 				
@@ -145,14 +142,14 @@
 				$this->attaches[$fldname]['inst'] = '1';
 			elseif (isset($this->memos[$fldname]))
 				$this->memos[$fldname]['inst'] = '1';
-			else $query[$fldname][0] = 'ALTER TABLE `'.$this->tablename.'` DROP `'.$fldname.'`';
+			else $out[$fldname]['newquery'] = 'ALTER TABLE `'.$this->tablename.'` DROP `'.$fldname.'`';
 
 		}
 
 		if(isset($this->fields))
-			foreach($this->fields as $key => $param) {				
+			foreach($this->fields as $key => $param) {		
 				if (!isset($param['inst'])) {
-					$query[$key][0] = 'ALTER TABLE `'.$this->tablename.'` ADD '.$this->_fldformer($key, $param);
+					$out[$key]['newquery'] = 'ALTER TABLE `'.$this->tablename.'` ADD '.$this->_fldformer($key, $param);
 				}
 			}
 
@@ -160,75 +157,76 @@
 			foreach($this->attaches as $key => $param) 
 			{
 				if (!isset($param['inst'])) 
-					$query[$key][0] = 'ALTER TABLE `'.$this->tablename.'` ADD '.$this->_fldformer($key, $this->attprm);
+					$out[$key]['newquery'] = 'ALTER TABLE `'.$this->tablename.'` ADD '.$this->_fldformer($key, $this->attprm);
 				if (!$this->_checkdir($this->getPathForAtt($key))) { 
-					$out[$this->tablename][$key]['err'] = $this->getMess('_checkdir_error',array($this->getPathForAtt($key)));
-					return $out;
+					$out[$key]['err'][] = $this->getMess('_checkdir_error',array($this->getPathForAtt($key)));
 				}
+				$out['reattach'] = &$this;
 			}	
 
 		if(isset($this->memos))
 			foreach($this->memos as $key => $param) 
 			{
-			//	if (!$param['inst']) $query[] = 'ADD '.$this->_fldformer($key, $this->mmoprm);
+			//	if (!$param['inst']) $out[] = 'ADD '.$this->_fldformer($key, $this->mmoprm);
 				if (!$this->_checkdir($this->getPathForMemo($key))) {
-					$out[$this->tablename][$key]['err'] = $this->getMess('_recheck_err');
-					return $out;
+					$out[$key]['err'][] = $this->getMess('_recheck_err');
 				}
 			}
-		
-		if(isset($this->fields['id']) and !isset($this->fields['id']['inst']))
-			$query['id::pri'][0] = 'ALTER TABLE `'.$this->tablename.'` ADD PRIMARY KEY(id)';
 
-//		if (count($query))
-//		{
-//			$this->SQL->execSQL('ALTER TABLE `'.$this->tablename.'` '. implode(',', $query));
-//		}
 	
-		$indexlist = array();
+		$indexlist = $indexlistR = $uniqlist = $primary = array();
 		$result = $this->SQL->execSQL('SHOW INDEX FROM `'.$this->tablename.'`');
-		while ($data = $result->fetch_array(MYSQL_NUM)) 
-			$indexlist[$data[2]]=$data[2];
-
-//		$query = array();
+		while ($data = $result->fetch_array(MYSQL_NUM)) {
+			$indexlist[$data[4]]=$data[2];
+			if(!$data[1]) {//!NON_unique
+				$uniqlist[$data[4]]=$data[2];
+				$uniqlistR[$data[2]]=$data[4];
+			}
+			if($data[2]=='PRIMARY') //только 1 примарикей
+				$primary[$data[4]]=$data[2];
+		}
 		if(count($this->index_fields))
 			foreach($this->index_fields as $k=>$r)
 				if (!isset($indexlist[$k])){
-					$query[$k.'::ind'][0] = 'CREATE INDEX `'.$r.'` ON `'.$this->tablename.'` (`'.$k.'`)';
-					$indexlist[$k] = $k;
+					$out[$k]['index'] = 'CREATE INDEX `'.$r.'` ON `'.$this->tablename.'` (`'.$k.'`)';
+					$indexlist[$k] = $r;
 				}
-
 		if ($this->owner && !isset($indexlist[$this->owner_name])) 
-			$query[$k.'::ind'][0] = 'CREATE INDEX '.$this->owner_name.' ON `'.$this->tablename.'` ('.$this->owner_name.')';
-
+			$out[$this->owner_name]['index'] = 'CREATE INDEX '.$this->owner_name.' ON `'.$this->tablename.'` ('.$this->owner_name.')';
 		if ($this->mf_istree && !isset($indexlist['parent_id']))
-			$query[$k.'::ind'][0] = 'CREATE INDEX `parent_id` ON `'.$this->tablename.'` (parent_id)';
-
+			$out['parent_id']['index'] = 'CREATE INDEX `parent_id` ON `'.$this->tablename.'` (parent_id)';
 		if ($this->mf_actctrl && !isset($indexlist['active']))
-			$query[$k.'::ind'][0] = 'CREATE INDEX `active` ON `'.$this->tablename.'` (active)';
-
+			$out['active']['index'] = 'CREATE INDEX `active` ON `'.$this->tablename.'` (active)';
 		if ($this->mf_ordctrl && !isset($indexlist['ordind']))
-			$query[$k.'::ind'][0] = 'CREATE INDEX `ordind` ON `'.$this->tablename.'` (ordind)';
-			
+			$out['ordind']['index'] = 'CREATE INDEX `ordind` ON `'.$this->tablename.'` (ordind)';
+
+		if(isset($this->fields['id']) and !isset($this->fields['id']['inst']) and !isset($primary['id']))
+			$out['id']['index'] = 'ALTER TABLE `'.$this->tablename.'` ADD PRIMARY KEY(id)';
 		if(isset($this->unique_fields) and count($this->unique_fields)){
 			foreach($this->unique_fields as $k=>$r) {
-				if (!isset($indexlist[$k])) {
+				if (!isset($uniqlist[$k]) and !isset($uniqlistR[$k]) and !isset($primary[$k])) {
 					if(is_array($r)) $r = implode(',',$r);
-					$query[$k.'::uniq'][0] = 'ALTER TABLE `'.$this->tablename.'` ADD UNIQUE KEY '.$k.' ('.$r.')';
+					$out[$k]['index'] = 'ALTER TABLE `'.$this->tablename.'` ADD UNIQUE KEY '.$k.' ('.$r.')';
 				}
 			}
 		}
 		
-//		if (count($query)) {
-//			foreach($query as $rr)
+//		if (count($out)) {
+//			foreach($out as $rr)
 //				$this->SQL->execSQL($rr);
 //			$this->SQL->execSQL('OPTIMIZE TABLE `'.$this->tablename.'`');
 //		}
 //		if(isset($this->_cl))
 //			$this->SQL->execSQL('UPDATE `'.$this->_CFG['sql']['dbpref'].'modulprm` SET `ver`="'.$this->ver.'" WHERE `id`="'.$this->_cl.'"');
 
-		$out[$this->tablename]['list_query'] = $query;
-
+		if(count($out))
+			$out = array($this->tablename=>$out);
+		if(count($this->childs))
+			foreach($this->childs as $k=>&$r) {
+				$temp = $r->_checkmodstruct();
+				if($temp and count($temp))
+					$out = array_merge($out,$temp);
+			}
 		return $out;
 //		return true;
 
