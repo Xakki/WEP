@@ -25,7 +25,7 @@ class users_class extends users_extend
 		parent::_create();
 	}
 }
-
+/*
 class weppages_class extends kernel_class {
 
 	function _set_features() {
@@ -51,5 +51,5 @@ class weppages_class extends kernel_class {
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
 	}
 }
-
+*/
 ?>

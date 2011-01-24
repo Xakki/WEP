@@ -112,8 +112,8 @@ _fldformer($key, $param)
 		$this->prm_add = true;// добавить в модуле
 		$this->prm_del = true;// удалять в модуле
 		$this->prm_edit = true;// удалять в модуле
-		$this->owner_unique = false; // поле owner_id не уникально
 		$this->showinowner = true;// показывать под родителем
+		$this->owner_unique = false; // поле owner_id не уникально
 		$this->mf_mop = true;// выключить постраничное отображение
 			$this->reversePageN = false; // обратный отчет для постраничного отображения
 			$this->messages_on_page = 20;//число эл-ов на странице
@@ -156,11 +156,12 @@ _fldformer($key, $param)
 		$this->_listname = ($this->_setnamefields?'name':'id');// ', `_listnameSQL` as `_listname`'
 
 		// construct fields
-		if ($this->mf_use_charid) 
+		if ($this->mf_use_charid) {
 			$this->fields['id'] = array('type' => 'varchar', 'width' => $this->mf_idwidth, 'attr' => 'NOT NULL');
+		}
 		else
 			$this->fields['id'] = array('type' => 'int', 'attr' => 'UNSIGNED NOT NULL AUTO_INCREMENT');
-		
+
 		if($this->_setnamefields) 
 			$this->fields['name'] = array('type' => 'varchar', 'width' => '255', 'attr' => 'NOT NULL','default'=>'');
 
@@ -170,23 +171,29 @@ _fldformer($key, $param)
 				$this->fields[$this->owner_name] = array('type' => 'varchar', 'width' => $this->owner->mf_idwidth, 'attr' => 'NOT NULL');
 			else
 				$this->fields[$this->owner_name] = array('type' => 'int', 'attr' => 'unsigned NOT NULL');
+			if($this->owner_unique)
+				$this->unique_fields[$this->owner_name] = $this->owner_name;
+			$this->index_fields[$this->owner_name] = $this->owner_name;
 		}
 
 		if($this->mf_createrid){
 			$this->fields[$this->mf_createrid] = array('type' => 'varchar', 'width' => $this->mf_idwidth, 'attr' => 'NOT NULL');
+			$this->index_fields[$this->mf_createrid] = $this->mf_createrid;
 		}
 
 		if ($this->mf_istree) 
 		{
 			$this->fields['parent_id'] = $this->fields['id'];
-			$this->fields['parent_id']['attr'] = 'NOT NULL';
-			
+			$this->fields['parent_id']['attr'] = 'NOT NULL';			
 			if($this->mf_use_charid) $this->fields['parent_id']['default'] ='';
 			else $this->fields['parent_id']['default'] ='0';
+			$this->index_fields['parent_id'] = 'parent_id';
 		}
 
-		if ($this->mf_actctrl) 
+		if ($this->mf_actctrl) {
 			$this->fields['active'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => 1);
+			$this->index_fields['active'] = 'active';
+		}
 
 		if($this->mf_timestamp) 
 			$this->fields['_timestamp'] = array('type'=>'timestamp');
@@ -206,6 +213,7 @@ _fldformer($key, $param)
 		{
 			$this->fields['ordind'] = array('type' => 'int','width'=>'10', 'attr' => 'NOT NULL');
 			$this->ordfield = 'ordind';
+			$this->index_fields['ordind'] = 'ordind';
 		}
 
 		//pagenum

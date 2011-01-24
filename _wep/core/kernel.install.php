@@ -13,22 +13,20 @@
 */
 		$fld[] = 'PRIMARY KEY(id)';
 
-		if ($this->owner) 
-			$fld[] = ($this->owner_unique?'UNIQUE ':'').'KEY('.$this->owner_name.')';
-
-		if ($this->mf_istree) 
-			$fld[] = 'KEY(parent_id)';
-
-		if ($this->mf_actctrl) 
-			$fld[] = 'KEY(active)';
-
 		if(isset($this->unique_fields) and count($this->unique_fields)){
 			foreach($this->unique_fields as $k=>$r) {
 				if(is_array($r)) $r = implode(',',$r);
 				$fld[] = 'UNIQUE KEY '.$k.' ('.$r.')';
 			}
 		}
-
+		if(isset($this->index_fields) and count($this->index_fields)){
+			foreach($this->index_fields as $k=>$r) {
+				if(!isset($this->unique_fields[$k])) {
+					if(is_array($r)) $r = implode(',',$r);
+					$fld[] = 'KEY '.$k.' ('.$r.')';
+				}
+			}
+		}
 		// to execute query
 		$result = $this->SQL->execSQL('CREATE TABLE `'.$this->tablename.'` ('.implode(',',$fld).') ENGINE=MyISAM DEFAULT CHARSET='.$this->_CFG['sql']['setnames'].' COMMENT = "'.$this->ver.'"');
 		if($result->err) return false;

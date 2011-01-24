@@ -29,13 +29,7 @@
 	function _reinstall(&$_this)
 	{
 		_droped($_this);
-		if (count($_this->childs)) 
-			foreach($_this->childs as $child) 
-				_droped($_this);
 		$_this->_install();
-		if (count($_this->childs)) 
-			foreach($_this->childs as $child) 
-				$child->_install();
 		return true;
 	}
 
@@ -43,6 +37,9 @@
 		$result = $_this->SQL->execSQL('DROP TABLE `'.$_this->tablename.'`');
 		if ($result->err) return false;
 		$_this->_message('Table `'.$_this->tablename.'` droped.',3);
+		if (count($_this->childs)) 
+			foreach($_this->childs as $child) 
+				_droped($child);
 		return true;
 	}
 
@@ -242,23 +239,23 @@ $html .= '
 						$trow = &$check_result[$temp[0]][$temp[1]];
 						if($temp[1]=='reattach') {
 							if(is_object($trow) and _reattaches($trow))
-								$mess[] = array('name'=>'ok', 'value'=>$_this->getMess('_file_ok'));
+								$mess[] = array('name'=>'ok', 'value'=>'<b>'.$temp[0].'</b>::<i>'.$temp[1].'</i> - '.$_this->getMess('_file_ok'));
 							else
-								$mess[] = array('name'=>'error', 'value'=>$_this->getMess('_file_err'));
+								$mess[] = array('name'=>'error', 'value'=>'<b>'.$temp[0].'</b>::<i>'.$temp[1].'</i> - '.$_this->getMess('_file_err'));
 						}elseif(isset($temp[2]) and $temp[2]=='index') {
 							$result = $_this->SQL->execSQL($trow['index']);
 							if ($result->err) {
-								$mess[] = array('name' => 'error', 'value' => 'Error query('.$trow['index'].')');
+								$mess[] = array('name' => 'error', 'value' => 'Error index query('.$trow['index'].')');
 							}
-						}else {
+						}elseif($trow['newquery']) {
 							$result = $_this->SQL->execSQL($trow['newquery']);
 							if ($result->err) {
-								$mess[] = array('name' => 'error', 'value' => 'Error query('.$trow['newquery'].')');
+								$mess[] = array('name' => 'error', 'value' => 'Error new query('.$trow['newquery'].')');
 							}
 						}
 					}
-					else
-						$mess[] = array('name' => 'error', 'value' => 'Error request('.$r.')');
+					//else
+						//$mess[] = array('name' => 'error', 'value' => 'Error request('.$r.')');
 				} else
 					$mess[] = array('name' => 'ok', 'value' => $_this->getMess('_recheck_have_nothing'));
 				if(!count($mess))
@@ -284,29 +281,28 @@ $html .= '
 							if(isset($row['reattach'])) {
 								$_this->form['list_query']['valuelist'][] = array(
 									'#id#' => $table.'::reattach',
-									'#name#' => '<b>'.$table.'</b> - Обновить файлы',
+									'#name#' => '<b>'.$table.'</b> - <span style="color:blue;">Обновить файлы</span>',
 								);
 								unset($row['reattach']);
 							}
 							foreach ($row as $kk=>$rr) {
-								/*if(isset($rr['err'])) {
-									$mess[] = array('name' => 'error', 'value' => implode('. ',$rr['err']));
-								}*/
-
-								if(isset($rr['newquery']) and isset($rr['oldquery']))
+								if(is_array($rr) and isset($rr['err'])) {
+									$mess[] = array('name' => 'error', 'value' => '<b>'.$table.'</b>::<i>'.$kk.'</i> - '.implode('. ',$rr['err']));
+								}
+								if(!is_array($rr))
+									$desc = $rr;
+								elseif(isset($rr['newquery']) and isset($rr['oldquery']))
 									$desc = 'Было: '.htmlspecialchars($rr['oldquery'],ENT_QUOTES,$_this->_CFG['wep']['charset']).'<br/>Будет: '.htmlspecialchars($rr['newquery'],ENT_QUOTES,$_this->_CFG['wep']['charset']);
 								elseif(isset($rr['newquery']))
 									$desc = $rr['newquery'];
 								else
 									$desc = '';
-								if(isset($rr['err']))
-									$desc .= '<br/><span style="color:red">'.implode('. ',$rr['err']).'</span>';
 								if($desc)
 									$_this->form['list_query']['valuelist'][] = array(
 										'#id#' => $table.'::'.$kk,
 										'#name#' => '<b>'.$table.'</b>::<i>'.$kk.'</i> - '.$desc,
 									);
-								if(isset($rr['index']))
+								if(is_array($rr) and isset($rr['index']))
 									$_this->form['list_query']['valuelist'][] = array(
 										'#id#' => $table.'::'.$kk.'::index',
 										'#name#' => '<b>'.$table.'</b>::<i>'.$kk.'</i> - '.$rr['index'],

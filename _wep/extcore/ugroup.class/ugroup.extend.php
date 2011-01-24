@@ -82,7 +82,7 @@ class ugroup_extend extends kernel_class
 			$this->create_child('modulgrp');
 			$this->childs['modulgrp']->owner_name = 'ugroup_id';//теперь родитель в этом поле привязан
 			unset($this->childs['modulgrp']->fields_form['ugroup_id']);//отклю список групп
-			$this->childs['modulgrp']->fields_form['owner_id'] = array('type' => 'list','readonly' => 1, 'listname'=>array('tablename'=>$this->_CFG['sql']['dbpref'].'modulprm'), 'caption' => 'Модуль');//и включаем модули
+			$this->childs['modulgrp']->fields_form['owner_id'] = array('type' => 'list', 'readonly' => 1, 'listname'=>array('tablename'=>$this->_CFG['sql']['dbpref'].'modulprm'), 'caption' => 'Модуль');//и включаем модули
 			$this->childs['modulgrp']->fields['owner_id'] = array(); // чтобы  не ругался модчекструкт, тк это поле может задаваться по умолчанию от родителя
 		}
 	}
@@ -153,7 +153,7 @@ class users_extend extends kernel_class {
 		//$this->fields["description"] =  array("type" => "varchar", "width" => 254, "attr" => "NOT NULL");
 		// service field
 		$this->fields["reg_hash"] = array("type" => "varchar", "width" => 128);
-		$this->fields["balance"] = array("type" => "int", "width" => 11, "attr" => "NOT NULL DEFAULT 0");
+		$this->fields["balance"] = array("type" => "int", "width" => 11, "attr" => "NOT NULL", 'default'=>0);
 
 
 		// FORM FIELDS

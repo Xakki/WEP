@@ -51,17 +51,13 @@ class modulprm_class extends kernel_class {
 		$this->create_child('modulgrp');
 	}
 
-	public function temp_checkmodstruct() {
+	public function _checkmodstruct() {
 		$check_result = parent::_checkmodstruct();
-/*		if(!is_array($check_result) and $check_result) return array('err'=>'Cant create tabel');
-		if (isset($check_result[$this->tablename]['err']))
-			return array('err' => $check_result[$this->tablename]['err']);
+	
 
-		//$q_query=array();
-		$this->SQL->_iFlag = true;
 		$this->moduldir = array();
 		$this->def_update_records = array();
-		$result = $this->SQL->execSQL('SELECT * FROM '.$this->tablename);if ($result->err) return 1;
+		$result = $this->SQL->execSQL('SELECT * FROM '.$this->tablename);if ($result->err) return $check_result;
 		$this->data = array();
 		while ($row = $result->fetch_array()){
 			$this->data[$row['id']] = $row;
@@ -77,21 +73,9 @@ class modulprm_class extends kernel_class {
 					if($this->_cl!=$entry) {
 						if(_new_class($entry,$class_)) {
 							$this->_constr_childs($class_);
-							$temp_check_result = $class_->_checkmodstruct();
-							
-							if (!empty($class_->childs))
-							{
-								foreach ($class_->childs as $k=>$r) {
-									$temp_check_result = array_merge($temp_check_result, $r->_checkmodstruct());
-								}
-							}
-							
-							if (isset($temp_check_result['err']))
-								return array($temp_check_result['err']);
-							elseif (!empty($temp_check_result))
-								$check_result = array_merge($check_result, $temp_check_result);
+							$check_result = array_merge($check_result,$class_->_checkmodstruct());
 						}
-					}else {
+					} else {
 						$class_ = &$this;
 						$this->_constr_childs($class_,$pathm);
 					}
@@ -118,36 +102,28 @@ class modulprm_class extends kernel_class {
 						else//if($class_->ver!=$this->data[$entry]['ver'])
 							$this->def_update_records[$entry] = array('parent_id'=>'','tablename'=>$class_->tablename, 'typemodul'=>2,'path'=>$pathm);
 						$this->_constr_childs($class_);
-						$temp_check_result = $class_->_checkmodstruct();
-						
-						if (!empty($class_->childs))
-						{
-							foreach ($class_->childs as $k=>$r) {
-								$temp_check_result = array_merge($temp_check_result, $r->_checkmodstruct());
-							}
-						}
-						
-						if (isset($temp_check_result['err']))
-							return array($temp_check_result['err']);
-						elseif (!empty($temp_check_result))
-							$check_result = array_merge($check_result, $temp_check_result);
+						$check_result = array_merge($check_result,$class_->_checkmodstruct());						
 					}
 				}
 			}
 		}
 
-		if(count($this->def_records)) {$this->_insertDefault();$this->def_records=array();}
-		$dir->close();
-		$i = 0;
-		foreach($this->def_update_records as $k=>$r) {
-			$i++;
-//			$this->SQL->execSQL('UPDATE `'.$this->tablename.'` SET `parent_id`="'.$r['parent_id'].'",`tablename`="'.$r['tablename'].'",`typemodul`="'.$r['typemodul'].'",`path`="'.$r['path'].'" WHERE id="'.$k.'"');
-			$check_result[$this->tablename]['list_query']['#upd'.$i.'#'][0] = 'UPDATE `'.$this->tablename.'` SET `parent_id`="'.$r['parent_id'].'",`tablename`="'.$r['tablename'].'",`typemodul`="'.$r['typemodul'].'",`path`="'.$r['path'].'" WHERE id="'.$k.'"';
-		}
-		
 
-		
-//		return 0;*/
+		if (isset($_POST['sbmt'])) {
+			if(count($this->def_records)) {$this->_insertDefault();$this->def_records=array();}
+			$dir->close();
+			$i = 0;
+			foreach($this->def_update_records as $k=>$r) {
+				$i++;
+				$result = $this->SQL->execSQL('UPDATE `'.$this->tablename.'` SET `parent_id`="'.$r['parent_id'].'",`tablename`="'.$r['tablename'].'",`typemodul`="'.$r['typemodul'].'",`path`="'.$r['path'].'" WHERE id="'.$k.'"');
+			}
+			$this->def_update_records=array();
+		} else {
+			foreach($this->def_records as $k=>$r)
+				$check_result[$this->tablename][$k] = '<span style="color:#4949C9;">INSERT::'.print_r($r,true).'</span>';
+			foreach($this->def_update_records as $k=>$r)
+				$check_result[$this->tablename][$k] = '<span style="color:#4949C9;">UPDATE::'.print_r($r,true).'</span>';
+		}
 		return $check_result;
 	}
 
