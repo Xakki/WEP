@@ -260,7 +260,7 @@ $html .= '
 					$mess[] = array('name' => 'ok', 'value' => $_this->getMess('_recheck_have_nothing'));
 				if(!count($mess))
 					$mess[] = array('name' => 'ok', 'value' => $_this->getMess('_recheck_ok').'  <a href="" onclick="window.location.reload();return false;">Обновите страницу.</a>');
-			} 
+			}
 			else {
 				$_this->form['_*features*_'] = array('name'=>'Checkmodul','action'=>str_replace('&','&amp;',$_SERVER['REQUEST_URI']));
 				if(count($check_result)) {
@@ -287,7 +287,14 @@ $html .= '
 							}
 							foreach ($row as $kk=>$rr) {
 								if(is_array($rr) and isset($rr['err'])) {
-									$mess[] = array('name' => 'error', 'value' => '<b>'.$table.'</b>::<i>'.$kk.'</i> - '.implode('. ',$rr['err']));
+									if(is_array($rr['err']))
+										$rr['err'] = implode('. ',$rr['err']);
+									$mess[] = array('name' => 'error', 'value' => '<b>'.$table.'</b>::<i>'.$kk.'</i> - '.$rr['err']);
+								}
+								if(is_array($rr) and isset($rr['ok'])) {
+									if(is_array($rr['ok']))
+										$rr['ok'] = implode('. ',$rr['ok']);
+									$mess[] = array('name' => 'ok', 'value' => '<b>'.$table.'</b>::<i>'.$kk.'</i> - '.$rr['ok']);
 								}
 								if(!is_array($rr))
 									$desc = $rr;

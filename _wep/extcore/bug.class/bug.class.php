@@ -22,7 +22,7 @@ class bug_class extends kernel_class {
 		$this->mf_timecr = true;
 		$this->mf_ipcreate = true;
 		$this->prm_add = false;
-		$this->prm_del = false;
+		##$this->prm_del = false;
 		$this->mf_actctrl = true;
 		$this->mf_statistic = false;
 		$this->mf_actctrl = true; // поле active

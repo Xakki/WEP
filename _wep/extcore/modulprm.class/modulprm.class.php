@@ -55,13 +55,16 @@ class modulprm_class extends kernel_class {
 		$check_result = parent::_checkmodstruct();
 	
 
-		$this->moduldir = array();
+		$this->moduldir = array(); // для детей классов
 		$this->def_update_records = array();
+		$this->mquery = array();
 		$result = $this->SQL->execSQL('SELECT * FROM '.$this->tablename);if ($result->err) return $check_result;
 		$this->data = array();
-		while ($row = $result->fetch_array()){
-			$this->data[$row['id']] = $row;
-		}
+		if(!$result->err)
+			while ($row = $result->fetch_array()){
+				$this->data[$row['id']] = $row;
+			}
+		$this->fData = $this->data;
 		$dir = dir($this->_CFG['_PATH']['extcore']);
 		while (false !== ($entry = $dir->read())) {
 			if ($entry[0]!='.' && $entry[0]!='..' && $pos=strpos($entry, '.class')) {
@@ -79,10 +82,18 @@ class modulprm_class extends kernel_class {
 						$class_ = &$this;
 						$this->_constr_childs($class_,$pathm);
 					}
-					if(!isset($this->data[$entry]))
-						$this->def_records[] = array('id'=>$entry,'name'=>$class_->caption,'parent_id'=>'','tablename'=>$class_->tablename, 'typemodul'=>0,'path'=>$pathm);
-					else//if($class_->ver!=$this->data[$entry]['ver'] or $this->_cl==$entry)
-						$this->def_update_records[$entry] = array('parent_id'=>'','tablename'=>$class_->tablename, 'typemodul'=>0,'path'=>$pathm);
+					if(!isset($this->data[$entry]) and $class_->showinowner) {
+						$this->mquery[$entry] = array('id'=>$entry,'name'=>$class_->caption,'parent_id'=>'','tablename'=>$class_->tablename, 'typemodul'=>0,'path'=>$pathm);
+					}
+					elseif($class_->showinowner) {//if($class_->ver!=$this->data[$entry]['ver'] or $this->_cl==$entry)
+						$tmp = $this->data[$entry]; // временная переменная
+						if($tmp['parent_id']!='' or $tmp['tablename']!=$class_->tablename or $tmp['typemodul']!='0' or $tmp['path']!=$pathm) {
+							// смотрим какие данные нужно менять
+							$this->mquery[$entry] = array('id'=>$entry,'parent_id'=>'','tablename'=>$class_->tablename, 'typemodul'=>0,'path'=>$pathm);
+						} else
+							unset($this->mquery[$entry]);
+						unset($this->fData[$entry]); //удаляем, чтоьы потом можно было узнать какие модули отсутствуют
+					}
 				}
 			}
 		}
@@ -97,32 +108,51 @@ class modulprm_class extends kernel_class {
 					$class_ = NULL;
 					if(_new_class($entry,$class_)) {
 						$pathm = '3:'.$entry.'.class/'.$entry.'.class.php';
-						if(!isset($this->data[$entry]) and $class_->showinowner) 
-							$this->def_records[] = array('id'=>$entry,'name'=>$class_->caption.' ['.$entry.']','parent_id'=>'','tablename'=>$class_->tablename, 'typemodul'=>2,'path'=>$pathm);
-						else//if($class_->ver!=$this->data[$entry]['ver'])
-							$this->def_update_records[$entry] = array('parent_id'=>'','tablename'=>$class_->tablename, 'typemodul'=>2,'path'=>$pathm);
+						if(!isset($this->data[$entry]) and $class_->showinowner) {
+							$this->mquery[$entry] = array('id'=>$entry,'name'=>$class_->caption.' ['.$entry.']', 'parent_id'=>'', 'tablename'=>$class_->tablename, 'typemodul'=>2, 'path'=>$pathm, 'ver'=>$class_->ver);
+						}
+						elseif($class_->showinowner) { //if($class_->ver!=$this->data[$entry]['ver'])
+							$tmp = $this->data[$entry]; // временная переменная
+							if($tmp['parent_id']!='' or $tmp['tablename']!=$class_->tablename or $tmp['typemodul']!='2' or $tmp['path']!=$pathm or $tmp['ver']!=$class_->ver) {
+								// смотрим какие данные нужно менять
+								$this->mquery[$entry] = array('id'=>$entry, 'parent_id'=>'', 'tablename'=>$class_->tablename, 'typemodul'=>2, 'path'=>$pathm, 'ver'=>$class_->ver);
+							}else
+								unset($this->mquery[$entry]);
+							unset($this->fData[$entry]); //удаляем, чтоьы потом можно было узнать какие модули отсутствуют
+						} else {
+							unset($this->mquery[$entry]);
+						}
 						$this->_constr_childs($class_);
 						$check_result = array_merge($check_result,$class_->_checkmodstruct());						
 					}
 				}
 			}
 		}
-
+		$dir->close();
 
 		if (isset($_POST['sbmt'])) {
-			if(count($this->def_records)) {$this->_insertDefault();$this->def_records=array();}
-			$dir->close();
-			$i = 0;
-			foreach($this->def_update_records as $k=>$r) {
-				$i++;
-				$result = $this->SQL->execSQL('UPDATE `'.$this->tablename.'` SET `parent_id`="'.$r['parent_id'].'",`tablename`="'.$r['tablename'].'",`typemodul`="'.$r['typemodul'].'",`path`="'.$r['path'].'" WHERE id="'.$k.'"');
+			foreach($this->mquery as $k=>$r) {
+				if(!isset($this->data[$k]))
+					$q = 'INSERT INTO `'.$this->tablename.'` (`'.implode('`,`', array_keys($r)).'`) VALUES (\''.implode('\',\'', $r).'\')';
+				else {
+					$q = array();
+					foreach($r as $kk=>$rr) {
+						if($kk!='id')
+							$q[] = '`'.$kk.'`="'.$rr.'"';
+					}
+					$q = 'UPDATE `'.$this->tablename.'` SET '.implode(', ',$q).' WHERE id="'.$r['id'].'"';
+				}
+				$result = $this->SQL->execSQL($q);
 			}
 			$this->def_update_records=array();
+			if(count($this->fData)) {
+				$result = $this->SQL->execSQL('DELETE FROM `'.$this->tablename.'` WHERE `id` IN ("'.implode('","',array_keys($this->fData)).'")');
+			}
 		} else {
-			foreach($this->def_records as $k=>$r)
-				$check_result[$this->tablename][$k] = '<span style="color:#4949C9;">INSERT::'.print_r($r,true).'</span>';
-			foreach($this->def_update_records as $k=>$r)
-				$check_result[$this->tablename][$k] = '<span style="color:#4949C9;">UPDATE::'.print_r($r,true).'</span>';
+			if(count($this->fData))
+				$check_result[$this->tablename]['']['ok'] = '<span style="color:#4949C9;">Будет удалены записи из табл '.$this->tablename.' ('.implode(',',array_keys($this->fData)).')</span>';
+			foreach($this->mquery as $k=>$r)
+				$check_result[$this->tablename][$k]['ok'] = '<span style="color:#4949C9;">'.$r.'</span>';
 		}
 		return $check_result;
 	}
@@ -131,10 +161,18 @@ class modulprm_class extends kernel_class {
 		if(count($class_->childs)) {
 			foreach($class_->childs as $k=>&$r) {
 				$this->moduldir[$k] = $class_->_cl;
-				if(!isset($this->data[$k]) and $r->showinowner) 
-					$this->def_records[] = array('id'=>$k,'name'=>$r->caption.' ['.$k.']','parent_id'=>$class_->_cl,'tablename'=>$r->tablename, 'typemodul'=>5);
-				else//if($r->ver!=$this->data[$k]['ver'])
-					$this->def_update_records[$k] = array('parent_id'=>$class_->_cl,'tablename'=>$r->tablename, 'typemodul'=>5,'path'=>$pathm);
+				if(!isset($this->data[$k]) and $r->showinowner) {
+					$this->mquery[$k] = array('id'=>$k,'name'=>$r->caption.' ['.$k.']','parent_id'=>$class_->_cl,'tablename'=>$r->tablename, 'typemodul'=>5, 'ver'=>$r->ver);
+				}
+				elseif($r->showinowner) { //if($r->ver!=$this->data[$k]['ver'])
+					$tmp = $this->data[$k]; // временная переменная
+					if($tmp['parent_id']!=$class_->_cl or $tmp['tablename']!=$r->tablename or $tmp['typemodul']!='5' or $tmp['path']!=$pathm or $tmp['ver']!=$r->ver) {
+						// смотрим какие данные нужно менять
+						$this->mquery[$k] = array('id'=>$k, 'parent_id'=>$class_->_cl, 'tablename'=>$r->tablename, 'typemodul'=>5, 'ver'=>$r->ver);
+					} else 
+						unset($this->mquery[$k]);
+					unset($this->fData[$k]); //удаляем, чтоьы потом можно было узнать какие модули отсутствуют
+				}
 				$this->_constr_childs($r,$pathm);
 			}
 		}
@@ -223,8 +261,11 @@ class modulgrp_class extends kernel_class {
 	}
 
 	function _checkmodstruct() {
-//		global $UGROUP;
 		$check_result = parent::_checkmodstruct();
+
+
+
+//		global $UGROUP;
 /*		if (isset($check_result['err']))
 			return array('err' => $check_result['err']);
 			
@@ -272,7 +313,11 @@ class modulgrp_class extends kernel_class {
 			$q_query = array_merge($check_result['list'], $q_query);
 	
 		return array('list_query' => $q_query);
-*/		return $check_result;
+*/		
+		if (isset($_POST['sbmt'])) {
+		} else {
+		}
+		return $check_result;
 	}
 
 	function _UpdItemModul($param) {
