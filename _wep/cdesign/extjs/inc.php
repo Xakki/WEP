@@ -49,10 +49,42 @@
 								if(isset($DATA['formcreat']) and isset($DATA['formcreat']['form']) and count($DATA['formcreat']['form'])) {
 									$DATA['formcreat']['path'] = $HTML->path;
 									
-									$HTML->flag = false;									
-									$json = $HTML->transformPHP($DATA,'formcreat');									
+									$HTML->flag = false;
+
+									if (count($_POST) and ($_POST['sbmt'] or $_POST['sbmt_save'])) {
+
+
+										if (isset($DATA['formcreat']['messages']) && !empty($DATA['formcreat']['messages'])) {
+											$msg = '';
+											$success = true;
+											foreach ($DATA['formcreat']['messages'] as $r) {
+												$msg .= $r['value'] . '<br/>';
+											
+												if ($r['name'] == 'error') {
+													$success = false;
+												}
+											}
+
+											$result = array(
+												'success' => $success,
+												'msg' => $msg
+											);
+
+										}
+										else {
+											$result = array(
+												'success' => true
+											);
+										}
+										
+										$json = json_encode($result);
+									}
+									else {
+										$json = $HTML->transformPHP($DATA,'formcreat');
+									}
+																		
 									echo $json;
-									
+								
 									//$_tpl['onload'] .= 'var tmp = $(\'#form_'.$_GET['_modul'].'\').attr(\'action\');$(\'#form_'.$_GET['_modul'].'\').attr(\'action\',tmp.replace(\'index.php\',\'js.php\'));JSFR(\'#form_'.$_GET['_modul'].'\');';
 								}
 								elseif($flag==1){
@@ -68,10 +100,17 @@
 									//$_tpl['onload'] .= 'var tmp = $(\'#form_'.$_GET['_modul'].'\').attr(\'action\');$(\'#form_'.$_GET['_modul'].'\').attr(\'action\',tmp.replace(\'index.php\',\'js.php\'));JSFR(\'#form_'.$_GET['_modul'].'\');';
 								}
 							} elseif($flag!=3) {
-								end($HTML->path);
-								$_SESSION['mess']=$DATA['superlist']['messages'];
-								header('Location: '.$_CFG['_HREF']['BH'].str_replace("&amp;", "&", key($HTML->path)));
-								die();
+
+								$result = array(
+									'success' => true
+								);
+								$json = json_encode($result);
+								echo $json;
+								
+	//							end($HTML->path);
+	//							$_SESSION['mess']=$DATA['superlist']['messages'];
+	//							header('Location: '.$_CFG['_HREF']['BH'].str_replace("&amp;", "&", key($HTML->path)));
+	//							die();
 							} else {
 
 								$HTML->flag = false;

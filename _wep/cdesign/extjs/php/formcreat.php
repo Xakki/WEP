@@ -2,36 +2,27 @@
 
 function tpl_formcreat(&$data) {
 
+//	print_r($data);
+//	return '';
+
 	$fields = array();
+
 
 	if(isset($data['form']) and count($data['form']))
 	{
 		unset($data['form']['_*features*_']);
 		unset($data['form']['_info']);
-		unset($data['form']['sbmt']);
+//		unset($data['form']['sbmt']);
 		
 		foreach ($data['form'] as $k=>$r)
 		{
-			$input_data = array(
-				'name' => $k,
-				'caption' => $r['caption'],
-				'type' => $r['type'],
-				'value' => $r['value']
-			);
-			if (isset($r['valuelist']))
-			{
-				$input_data['valuelist'] = $r['valuelist'];
-			}
-			if (isset($r['multiple']))
-			{
-				$input_data['multiple'] = $r['multiple'];
-			}
-
+			$input_data = $r;
+			$input_data['name'] = $k;
+		
 			$fields[] = get_js_field($input_data);
 		}
 	}
 
-	
 	return json_encode($fields);
  
 }
@@ -51,30 +42,62 @@ function get_js_field($data)
 	$type_info = array(
 		'default' => array(
 			'xtype' => 'textfield',
-			'value' => 'value'
+			'value_attr' => 'value'
+		),
+		'text' => array(
+			'xtype' => 'textfield',
+			'value_attr' => 'value'
 		),
 		'checkbox' => array(
 			'xtype' => 'checkbox',
-			'value' => 'checked'
+			'value_attr' => 'checked',
+			'inputValue' => 1
 		),
 		'list' => array(
 			'xtype' => 'combo',
 			'mode' => 'local',
-			'emptyText' => '',
-			'value' => 'value',
+
+			'typeAhead' => true,
+			'triggerAction' => 'all',
+
+			'value_attr' => 'value',
+
+	/*		'store' => array(
+				'eval' => "new Ext.data.ArrayStore({
+					fields: ['myId','displayText'],
+					data: this.data_store
+				});"
+			),
+			'listeners' => array(
+				'eval' =>  "{
+					select: function(f,r,i){
+					//	alert(r.data.value);
+					},
+				}"
+			),
+			'valueField' => 'myId',
+			'displayField' => 'displayText'*/
 		),
 		'multiple1' => array(
 			'xtype' => 'multiselect',
 			'mode' => 'local',
 			'emptyText' => '',
-			'value' => 'value',
+			'value_attr' => 'value',
 			'delimiter' => '|',
+			'store' => array(
+				'eval' => "new Ext.data.ArrayStore({
+					fields: ['value', 'name'],
+					data: [[1, 'item1'], [2, 'item2']]
+				});"
+			),
+			'valueField' => 'value',
+			'displayField' => 'name'
 		),
 		'multiple2' => array(
 			'xtype' => 'itemselector',
 			'mode' => 'local',
 			'emptyText' => '',
-			'value' => 'value',
+			'value_attr' => 'value',
 			'delimiter' => '|',
 			'multiselects' => array(
 				array(
@@ -86,13 +109,22 @@ function get_js_field($data)
 					'height' => 200,
 				)
 			),
+	//		'data' => this.data_store,
+			'store' => array(
+				'eval' => "new Ext.data.ArrayStore({
+					fields: ['value', 'name'],
+					 data: [[1, 'item1'], [2, 'item2']]
+					
+				});"
+			),
+			'valueField' => 'value',
+			'displayField' => 'name'
+		),
+		'submit' => array(
+			'xtype' => 'hidden',
+			'value_attr' => 'value'
 		),
 
-	);
-
-	$field = array(
-		'name' => $data['name'],
-		'fieldLabel' => $data['caption'],
 	);
 
 	if (isset($type_info[$data['type']]))
@@ -108,20 +140,37 @@ function get_js_field($data)
 			$type = 'multiple1';
 	}
 
+	$field = $type_info[$type];
+	$field[$field['value_attr']] = $data['value'];
+
+	unset($field['value_attr']);
+
+	$field['name'] = $data['name'];
+
+	if ($field['xtype'] == 'combo') {
+		$field['hiddenName'] = $data['name'];
+	}
+	
+	$field['fieldLabel'] = $data['caption'];
+		
 	if (isset($data['valuelist']))
 	{
+		$field['store'] = array();
 		foreach ($data['valuelist'] as $k=>$r)
 		{
 			$field['store'][] = array($r['#id#'], $r['#name#']);
 		}
 	}
 
+	if (isset($data['mask']['min']))
+	{
+		$field['allowBlank'] = false;
+	}
 
-
-	$field[ $type_info[$type]['value'] ] = $data['value'];
-	unset($type_info[$type]['value']);
-
-	$field = array_merge($field, $type_info[$type]);
+	if ($data['mask']['width'] > 200 && $field['xtype'] == 'textfield')
+	{
+		$field['xtype'] = 'textarea';
+	}
 
 	return $field;
 
