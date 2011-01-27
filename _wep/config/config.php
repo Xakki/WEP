@@ -1,6 +1,6 @@
 <?
-
 	error_reporting(E_ALL ^ E_NOTICE);
+	ini_set('display_errors',-1);
 	//универсальный для русского языка
 	setlocale(LC_CTYPE, 'ru_RU.UTF-8');
 
