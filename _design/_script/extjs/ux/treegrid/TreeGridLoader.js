@@ -9,21 +9,10 @@
  * @extends Ext.tree.TreeLoader
  */
 Ext.ux.tree.TreeGridLoader = Ext.extend(Ext.tree.TreeLoader, {
-	createNode : function(attr) {
-		if (!attr.uiProvider) {
-			attr.uiProvider = Ext.ux.tree.TreeGridNodeUI;
-		}
-	
-		return Ext.tree.TreeLoader.prototype.createNode.call(this, attr);
-	},
-	
-	load : function(node, callback, scope) {
-		
-		return Ext.tree.TreeLoader.prototype.load.call(this, node, callback, scope);
-	},
-
-	handleResponse : function(response) {
-		
-		return Ext.tree.TreeLoader.prototype.handleResponse.call(this, response);
-	}
+    createNode : function(attr) {
+        if (!attr.uiProvider) {
+            attr.uiProvider = Ext.ux.tree.TreeGridNodeUI;
+        }
+        return Ext.tree.TreeLoader.prototype.createNode.call(this, attr);
+    }
 });
