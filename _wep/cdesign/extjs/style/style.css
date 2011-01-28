@@ -136,6 +136,14 @@ a:hover {
 		color:#FFFFFF;
 		font-size:14px;
 	}
+	.path span {
+		cursor: pointer;	
+	}
+	.path span.act {
+		cursor: default;
+		font-weight: bold;
+		text-decoration:none;
+	}
 
 /*maintext*/
 
@@ -196,11 +204,11 @@ a:hover {
 	}
 
 .silk-icon-add {
-	background: url('../img/icon-tab-folder.png');
+	background: url('../img/buttonh.png') 0 -0 !important;
 	}
 .silk-icon-edit {
-	background: url('../img/icon-tab-folder.png');
+	background: url('../img/buttonh.png') 0 -32px !important;
 	}
 .silk-icon-delete {
-	background: url('../img/icon-tab-folder.png');
+	background: url('../img/buttonh.png') 0 -16px !important;
 	}

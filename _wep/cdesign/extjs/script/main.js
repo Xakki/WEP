@@ -36,21 +36,32 @@ Ext.apply(wep, {
 				num = wep.breadcrumbs.path.length + num;
 			}
 			if (num >= 0 && wep.breadcrumbs.path.length > num) {
-				for(var i=wep.breadcrumbs.path.length-1; i>num; i--) {
-					if (Ext.isDefined(wep.breadcrumbs.path[i].dom_id)) {
-						Ext.get(wep.breadcrumbs.path[i].dom_id).update('');
-					}
-					if (Ext.isDefined(wep.breadcrumbs.path[i].component_id)) {
-						Ext.getCmp(wep.breadcrumbs.path[i].component_id).destroy();
-					}
-					if (Ext.isDefined(wep.breadcrumbs.path[i].onDelete)) {
-						wep.breadcrumbs.path[i].onDelete.call(wep.breadcrumbs.path[i].scope || window);
-					}
+				var bc = wep.breadcrumbs.path[wep.breadcrumbs.active_item];
+				if (wep.breadcrumbs.active_item != num && Ext.isObject(bc.onGoOut)) {
+					bc.onGoOut.handler.apply(bc.onGoOut.scope || window, bc.onGoOut.args);
 				}
-				wep.breadcrumbs.path = wep.breadcrumbs.path.slice(0,num+1);
+
+				bc = wep.breadcrumbs.path[num];
+				var delete_next = true;
+				if (Ext.isObject(bc.onGoTo)) {
+					delete_next = bc.onGoTo.handler.apply(bc.onGoTo.scope || window, bc.onGoTo.args);
+				}
+				if (delete_next !== false) {
+					for(var i=wep.breadcrumbs.path.length-1; i>num; i--) {
+						if (Ext.isDefined(wep.breadcrumbs.path[i].dom_id)) {
+							Ext.get(wep.breadcrumbs.path[i].dom_id).update('');
+						}
+						if (Ext.isDefined(wep.breadcrumbs.path[i].component_id)) {
+							Ext.getCmp(wep.breadcrumbs.path[i].component_id).destroy();
+						}
+						if (Ext.isObject(wep.breadcrumbs.path[i].onDelete)) {
+							wep.breadcrumbs.path[i].onDelete.handler.apply(wep.breadcrumbs.path[num].onDelete.scope || window, wep.breadcrumbs.path[num].onDelete.args);
+						}
+					}
+					wep.breadcrumbs.path = wep.breadcrumbs.path.slice(0,num+1);
+				}				
 			}
-
-
+			wep.breadcrumbs.active_item = num;
 			
 			wep.breadcrumbs.render();
 		},
@@ -85,8 +96,8 @@ Ext.apply(wep, {
 							Ext.getCmp(wep.breadcrumbs.path[i].component_id).destroy();
 						}
 
-						if (Ext.isDefined(wep.breadcrumbs.path[i].onDelete)) {
-							wep.breadcrumbs.path[i].onDelete.call(wep.breadcrumbs.path[i].scope || window);
+						if (Ext.isObject(wep.breadcrumbs.path[i].onDelete)) {
+							wep.breadcrumbs.path[i].onDelete.handler.apply(wep.breadcrumbs.path[num].onDelete.scope || window, wep.breadcrumbs.path[num].onDelete.args);
 						}
 					}
 					
@@ -102,8 +113,8 @@ Ext.apply(wep, {
 								Ext.getCmp(wep.breadcrumbs.path[i].component_id).destroy();
 							}
 
-							if (Ext.isDefined(wep.breadcrumbs.path[i].onDelete)) {
-								wep.breadcrumbs.path[i].onDelete.call(wep.breadcrumbs.path[i].scope || window);
+							if (Ext.isObject(wep.breadcrumbs.path[i].onDelete)) {
+								wep.breadcrumbs.path[i].onDelete.handler.apply(wep.breadcrumbs.path[num].onDelete.scope || window, wep.breadcrumbs.path[num].onDelete.args);
 							}
 						}
 						wep.breadcrumbs.path = wep.breadcrumbs.path.slice(0,index);
@@ -111,11 +122,21 @@ Ext.apply(wep, {
 				});
 			}
 
+			if (
+				Ext.isDefined(wep.breadcrumbs.path[wep.breadcrumbs.active_item]) &&
+				Ext.isObject(wep.breadcrumbs.path[wep.breadcrumbs.active_item].onGoOut)
+			) {
+				var bc = wep.breadcrumbs.path[wep.breadcrumbs.active_item];
+				bc.onGoOut.handler.apply(bc.onGoOut.scope || window, bc.onGoOut.args);
+			}
+
 			wep.breadcrumbs.path.push(obj);
 
-			if (Ext.isDefined(obj.onAdd)) {
-				obj.onAdd.call(obj.scope || window);
+			if (Ext.isObject(obj.onAdd)) {
+				obj.onAdd.handler.apply(obj.onAdd.scope || window, obj.onAdd.args);
 			}
+
+			wep.breadcrumbs.active_item = wep.breadcrumbs.path.length-1;
 
 			wep.breadcrumbs.render();
 		},
@@ -124,11 +145,14 @@ Ext.apply(wep, {
 		render: function() {
 			var html = '';
 			Ext.each(wep.breadcrumbs.path, function(value, index) {
-				if (index == wep.breadcrumbs.path.length-1) {
-					html += '<span>' + value.title + '</span>';
+				if (index == wep.breadcrumbs.active_item) {
+					html += '<span class="act">' + value.title + '</span>';
 				}
 				else {
-					html += '<span style="cursor:pointer" onclick="wep.breadcrumbs.goTo(' + index + ')">' + value.title + '</span> :: ';
+					html += '<span onclick="wep.breadcrumbs.goTo(' + index + ')">' + value.title + '</span>';
+				}
+				if (index != wep.breadcrumbs.path.length-1) {
+					html += ' :: ';
 				}
 			});
 
@@ -209,15 +233,14 @@ Ext.apply(wep, {
 				wep.GET[params[0]] = params[1];
 			}
 		}
-		
-		// добавляем в modulsforms дерево элементов
-		if (wep.GET['_view'] == 'list')
-		{
+
+
+		if (wep.GET['_view'] == 'list') {
 			wep.modul = {
 				title: this.innerHTML,
 				cn: wep.GET['_modul']
 			}
-			
+
 			jsfiles = [
 				wep.path['extjs'] + 'ux/CheckColumn.js',
 
@@ -231,56 +254,89 @@ Ext.apply(wep, {
 				wep.path['extjs'] + 'ux/treegrid/TreeGridLoader.js',
 				wep.path['extjs'] + 'ux/treegrid/TreeGridColumns.js',
 
-				wep.path['extjs'] + 'ux/treegrid/TreeGrid.js'
-				
+//				wep.path['extjs'] + 'ux/treegrid/TreeGrid.js'
+				wep.path['cscript'] + 'TreeGrid.js'
+
 			];
 
 			wep.include_js(jsfiles, function() {
-	
+
 				Ext.Ajax.request({
 					url: '_wep/index.php?_view=listcol&_modul=' + wep.modul.cn,
 					success: function(result, textStatus) {
-						
+
 						var data = Ext.util.JSON.decode(result.responseText);
 
 						var columns = data['columns'];
 						var fields = data['fields'];
 						var children = data['children'];
-						
-						var tree_id = wep.modul.cn + '_tree';
 
-						wep.breadcrumbs.add({title: wep.modul.title, component_id:tree_id, dom_id: wep.main_cont}, 0);
-						
-						var tree = new Ext.ux.tree.TreeGrid({
+						var tree_id = wep.modul.cn + '_tree';
+						var panel_id = wep.modul.cn + '_panel';
+
+//						wep.breadcrumbs.add({title: wep.modul.title, component_id:tree_id, dom_id: wep.main_cont}, 0);
+						var bc = {
+							title: wep.modul.title,
+							component_id:panel_id,
+							dom_id: wep.main_cont,
+							onGoTo: {
+								handler: function() {
+									Ext.getCmp(panel_id).expand();
+									return false;
+								}
+							},
+							onGoOut: {
+								handler: function() {
+									Ext.getCmp(panel_id).collapse();
+								}
+							}
+						}
+						wep.breadcrumbs.add(bc, 0);
+
+						var tree = new wep.TreeGrid({
 							id: tree_id,
 							modul: wep.modul.cn,
-							title: 'Модуль ' + wep.modul.title,
 							add_url: '&_modul=' + wep.modul.cn,
 							autoHeight: true,
 							autoWidth: true,
 //							enableDD: true,
-							renderTo: wep.main_cont,
+//							renderTo: wep.main_cont,
 							columns: columns,
 							children: children,
 							requestMethod: 'GET',
-							dataUrl: '_wep/index.php?_view=list&_modul=' + wep.modul.cn,
+							dataUrl: '_wep/index.php?_view=list&_modul=' + wep.modul.cn							
+						});
+
+						var panel = new wep.panel({
+							id: panel_id,
+							title: 'Модуль ' + wep.modul.title,
+							renderTo: wep.main_cont,
+							items: [
+								tree
+							],
 							onDestroy: function() {
 								alert(this.title + ' уничтожается');
 							}
 						});
-						
+
 					},
 					failure: function() {
 						Ext.Msg.alert('Ошибка', 'Произошла ошибка');
 					}
 				});
-			});			
+			});	
 		}
 			
 		currentnode.stopEvent(); // чтобы не переходило по ссылке
 	},
+
+	panel: Ext.extend(Ext.Panel, {
+		autoWidth: true,
+		autoHeight: true,
+		collapsible:true
+	}),
 	
-	form: Ext.extend(Ext.FormPanel, {
+	form_panel: Ext.extend(Ext.FormPanel, {
 		frame: true,
 		labelAlign: 'left',
 		bodyStyle:'padding:5px',
@@ -288,7 +344,7 @@ Ext.apply(wep, {
 		initComponent: function(config) {
 
 			Ext.apply(this, config);
-			wep.form.superclass.initComponent.call(this);
+			wep.form_panel.superclass.initComponent.call(this);
 
 			Ext.QuickTips.init();
 		}
