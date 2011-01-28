@@ -349,7 +349,7 @@
 				if (preg_match("/^(\\\"[^\\\"]*\\\"|[^=]*) *= *(\\\"[^\\\"]*\\\"|.*)$/", $line, $regs)) {
 					if ($regs[1][0] == "\"") $regs[1] = substr($regs[1], 1, -1);
 					if ($regs[2][0] == "\"") $regs[2] = substr($regs[2], 1, -1);
-					if (strpos($regs[2], "|")) $regs[2] = explode("|", $regs[2]);
+					//if (strpos($regs[2], "|")) $regs[2] = explode("|", $regs[2]); # этот разделитель портит все
 					eval($dest."[\$regs[1]]=\$regs[2];");
 				}
 			}
