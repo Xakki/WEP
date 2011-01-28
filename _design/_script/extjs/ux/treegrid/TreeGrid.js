@@ -65,7 +65,7 @@ Ext.ux.tree.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
             this.colResizer.init(this);
         }
         
-        var c = this.columns;
+//		var c = this.columns;
         if(!this.internalTpl){                                
             this.internalTpl = new Ext.XTemplate(
                 '<div class="x-grid3-header">',
@@ -156,7 +156,6 @@ Ext.ux.tree.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
 			add_url += '&' + tree.modul + '_id=' + tree.getSelectionModel().getSelectedNode().id +
 				'&' + tree.modul + '_ch=';
 
-			alert(tree.child_id);
 			tree = Ext.getCmp(tree.child_id);
 			if (Ext.isObject(tree)) {
 				add_url += tree.modul;
@@ -165,9 +164,6 @@ Ext.ux.tree.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
 				add_url += child.cl;
 			}
 		}		
-
-		alert(add_url);
-
 
 		Ext.Ajax.request({
 			url: '_wep/index.php?_view=listcol' + add_url,
@@ -196,12 +192,11 @@ Ext.ux.tree.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
 				var child_tree = new Ext.ux.tree.TreeGrid({
 					id: child_id,
 					title: 'Подмодуль ' + child.header,
-					child: child,
 					parent_id: index.id,
 					add_url : add_url,
 					modul: child.cl,
-					width: 1000,
-					height: 300,
+					autoHeight: true,
+					autoWidth: true,
 					enableDD: true,
 					renderTo: wep.main_cont,
 					columns: columns,
@@ -252,8 +247,6 @@ Ext.ux.tree.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
 
 		var url = '_wep/index.php?_view=list' + this.add_url + '&' +  this.modul + '_id=' + index.id + '&_type=del';
 
-		var obj = this;
-		
 		Ext.Msg.confirm("Удаление записи",  msg, function(btn) {
 			if (btn == 'yes')
 			{
@@ -261,8 +254,7 @@ Ext.ux.tree.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
 					url: url,
 					success: function(result, textStatus) {
 						index.remove();
-						obj.doLayout();
-						Ext.Msg.alert('Сообщение', 'Удаление произошло успешно');
+//						Ext.Msg.alert('Сообщение', 'Удаление произошло успешно');
 					}
 				});
 			}
@@ -299,6 +291,8 @@ Ext.ux.tree.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
 			}
 		}
 
+		var obj = this;
+
 		Ext.Ajax.request({
 			url: url,
 			success: function(result, textStatus) {
@@ -333,14 +327,44 @@ Ext.ux.tree.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
 						text: 'Save',
 						onClick: function() {
 							form.getForm().submit({
-								success: function(f,a){
-									Ext.Msg.alert('Success', a.result.msg);
+								success: function(f, a){
+									var row = {};
+									var form_values = f.getValues();
+
+									Ext.each(obj.columns, function(value, index) {
+										row[value.dataIndex] = form_values[value.dataIndex];
+									});
+									
+									if (action == 'add') {
+										if (Ext.isDefined(form_values.parent_id) && form_values.parent_id!='') {
+											var node = obj.getNodeById(form_values.parent_id);
+										}
+										else {
+											var node = obj.getRootNode();
+										}
+
+										row.leaf = true;
+										node.appendChild(row);
+									}
+									else {
+										var node = obj.getNodeById(index.id);
+										var parent_node = node.parentNode;
+										var leaf = node.attributes.leaf;
+
+										node.remove();
+										row.leaf = leaf;
+
+										parent_node.appendChild(row);
+									}
+
+									Ext.Msg.alert('Success', a.result.msg, function() {
+										wep.breadcrumbs.goTo(-2); // удаляем последнюю крошку
+									});
 								},
 								failure: function(f,a){
 									Ext.Msg.alert('Warning', a.result.msg);
 								}
 							});
-						//	this.submit();
 						}
 					}],
 
@@ -365,6 +389,28 @@ Ext.ux.tree.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
 						alert(title + ' уничтожается');
 					}
 				});
+
+				form.getForm().on('beforeaction', function(f, a) {
+					Ext.each(f.items.items, function(value, index) {
+						if (value.xtype == 'multiselect') {
+							var fname = value.name;
+							var fval = value.getValue();
+							fval = fval.split('|');
+
+							value.destroy();
+
+							if (fval != '') {
+								Ext.each(fval, function(value2, index2) {
+									form.add({"xtype":"hidden","value":value2,"name":fname});
+								});
+							}
+							
+							form.doLayout();
+						}
+					});
+					
+				});
+
 			}
 		});
 
@@ -467,7 +513,11 @@ Ext.ux.tree.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
             mouseover: this.handleHdOver,
             mouseout: this.handleHdOut
         });
-    },
+
+
+//console.log(this);
+		this.mun(this.getTreeEl(), 'dblclick', this.eventModel.delegateDblClick, this.eventModel);
+	},
     
     onResize : function(w, h) {
         Ext.ux.tree.TreeGrid.superclass.onResize.apply(this, arguments);
@@ -494,6 +544,8 @@ Ext.ux.tree.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
                 }, 10);
             }
         }
+
+		this.updateColumnWidths();
     },
 
     updateColumnWidths : function() {

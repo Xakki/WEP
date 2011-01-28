@@ -24,22 +24,14 @@
 		<div class="leftblock">
 			<a class="logo" title="Главная" href="_wep"></a>
 			<div style="overflow:auto; height:80%; padding-bottom:30px;">
-			<div class="name_block"><span class="triangle_dowm"></span>WEB</div>
-			<div class="block">
-			{$_tpl['sysconf']}
-			</div>
-			<div class="name_block"><span class="triangle_dowm"></span>Модули</div>
-			<div class="block">
-			{$_tpl['modulslist']}
-			</div>
-			<div class="name_block"><span class="triangle_dowm"></span>Модули</div>
-			<div class="block">
-			{$_tpl['modulslist']}
-			</div>
-			<div class="name_block"><span class="triangle_dowm"></span>Модули</div>
-			<div class="block">
-			{$_tpl['modulslist']}
-			</div>
+				<div class="name_block"><span class="triangle_dowm"></span>WEB</div>
+				<div class="block">
+				{$_tpl['sysconf']}
+				</div>
+				<div class="name_block"><span class="triangle_dowm"></span>Модули</div>
+				<div class="block">
+				{$_tpl['modulslist']}
+				</div>
 			</div>
 		</div>
 		<div class="maintext">

@@ -84,14 +84,6 @@ function get_js_field($data)
 			'emptyText' => '',
 			'value_attr' => 'value',
 			'delimiter' => '|',
-			'store' => array(
-				'eval' => "new Ext.data.ArrayStore({
-					fields: ['value', 'name'],
-					data: [[1, 'item1'], [2, 'item2']]
-				});"
-			),
-			'valueField' => 'value',
-			'displayField' => 'name'
 		),
 		'multiple2' => array(
 			'xtype' => 'itemselector',
@@ -138,6 +130,8 @@ function get_js_field($data)
 			$type = 'multiple1';
 		elseif ($data['multiple'] == 1)
 			$type = 'multiple1';
+
+		$data['name'] .= '[]';
 	}
 
 	$field = $type_info[$type];

@@ -32,7 +32,10 @@ Ext.apply(wep, {
 
 		// переходит на крошку номер num, впередистоящие будут уничтожены
 		goTo: function(num) {
-			if (wep.breadcrumbs.path.length > num) {
+			if (num < 0) {
+				num = wep.breadcrumbs.path.length + num;
+			}
+			if (num >= 0 && wep.breadcrumbs.path.length > num) {
 				for(var i=wep.breadcrumbs.path.length-1; i>num; i--) {
 					if (Ext.isDefined(wep.breadcrumbs.path[i].dom_id)) {
 						Ext.get(wep.breadcrumbs.path[i].dom_id).update('');
@@ -46,6 +49,9 @@ Ext.apply(wep, {
 				}
 				wep.breadcrumbs.path = wep.breadcrumbs.path.slice(0,num+1);
 			}
+
+
+			
 			wep.breadcrumbs.render();
 		},
 
@@ -250,9 +256,9 @@ Ext.apply(wep, {
 							modul: wep.modul.cn,
 							title: 'Модуль ' + wep.modul.title,
 							add_url: '&_modul=' + wep.modul.cn,
-							width: 1000,
-							height: 300,
-							enableDD: true,
+							autoHeight: true,
+							autoWidth: true,
+//							enableDD: true,
 							renderTo: wep.main_cont,
 							columns: columns,
 							children: children,
@@ -262,6 +268,7 @@ Ext.apply(wep, {
 								alert(this.title + ' уничтожается');
 							}
 						});
+						
 					},
 					failure: function() {
 						Ext.Msg.alert('Ошибка', 'Произошла ошибка');

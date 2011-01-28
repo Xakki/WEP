@@ -88,9 +88,28 @@
 									//$_tpl['onload'] .= 'var tmp = $(\'#form_'.$_GET['_modul'].'\').attr(\'action\');$(\'#form_'.$_GET['_modul'].'\').attr(\'action\',tmp.replace(\'index.php\',\'js.php\'));JSFR(\'#form_'.$_GET['_modul'].'\');';
 								}
 								elseif($flag==1){
-									end($HTML->path);prev($HTML->path);
-									$_SESSION['mess']=$DATA['formcreat']['messages'];
-									header('Location: '.$_CFG['_HREF']['BH'].str_replace("&amp;", "&", key($HTML->path)));
+
+									$HTML->flag = false;
+									$msg = '';
+									$success = true;
+									foreach ($DATA['formcreat']['messages'] as $r) {
+										$msg .= $r['value'] . '<br/>';
+
+										if ($r['name'] == 'error') {
+											$success = false;
+										}
+									}
+
+									$result = array(
+										'success' => $success,
+										'msg' => $msg
+									);
+									$json = json_encode($result);
+									echo $json;
+
+//									end($HTML->path);prev($HTML->path);
+//									$_SESSION['mess']=$DATA['formcreat']['messages'];
+//									header('Location: '.$_CFG['_HREF']['BH'].str_replace("&amp;", "&", key($HTML->path)));
 									die();
 								}
 								else {
@@ -100,6 +119,7 @@
 									//$_tpl['onload'] .= 'var tmp = $(\'#form_'.$_GET['_modul'].'\').attr(\'action\');$(\'#form_'.$_GET['_modul'].'\').attr(\'action\',tmp.replace(\'index.php\',\'js.php\'));JSFR(\'#form_'.$_GET['_modul'].'\');';
 								}
 							} elseif($flag!=3) {
+								$HTML->flag = false;
 
 								$result = array(
 									'success' => true
