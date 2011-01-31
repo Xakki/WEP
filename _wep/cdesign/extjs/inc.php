@@ -12,6 +12,13 @@
 	$DATA = fXmlModulslist(); $_tpl['modulslist']=$HTML->transformPHP($DATA,'modulslist');
 	$_tpl['uname']='<a href="'.$_CFG['PATH']['wepname'].'/login.php?exit=ok" class="exit"><img src="'.$_CFG['PATH']['wepname'].'/cdesign/extjs/img/close48.gif" class="exit" alt="CLOSE"/></a><div class="uname">'.$_SESSION['user']['name'].' ['.$_SESSION['user']['gname'].']</div>';
 
+	
+	
+	
+
+
+
+
 	if(!$_GET['_modul'] or !(isset($_GET['_view']) or isset($_GET['_type']))) {
 	//	$html = '<div style="position:absolute;top:50%;left:50%;"><div style="width:200px;height:100px;position:absolute;top:-50px;left:-100px;"><img src="'.$_tpl['design'].'img/login.gif" width="250" alt="LOGO"/></div></div>';
 	}
@@ -22,6 +29,24 @@
 			$html = '<div style="color:red;">'.date('H:i:s').' : Модуль '.$_GET['_modul'].' не установлен</div>';
 		}
 		else {
+
+			if (isset($_GET['_type']) && $_GET['_type'] == 'sort' && isset($_POST['dropindex']) && isset($_POST['nodeid'])) {
+				$dropindex = (int)$_POST['dropindex'];
+				$nodeid = mysql_real_escape_string($_POST['nodeid']);
+				$HTML->flag = false;
+
+				$result = $SQL->execSQL('UPDATE `'.$MODUL->tablename.'` SET ordind="'.$dropindex.'" WHERE id="'.$nodeid.'"');
+				if ($result->affected_rows() == 1) {
+					$json = array('result' => 'success');
+				}
+				else {
+					$json = array('result' => 'failure');
+				}				
+
+				echo json_encode($json);
+
+				return '';
+			}
 
 			if($_GET['_oid']!='') $MODUL->owner_id = $_GET['_oid'];
 			if($_GET['_pid']!='') $MODUL->parent_id = $_GET['_pid'];
@@ -35,6 +60,7 @@
 					if (!strstr($_GET['node'], 'xnode-'))
 					{
 						$_GET[$_GET['_modul'].'_id'] = $_GET['node'];
+						$MODUL->messages_on_page = 1000;
 					}
 				}
 

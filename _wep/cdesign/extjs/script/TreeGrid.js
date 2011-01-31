@@ -7,9 +7,44 @@ wep.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
 	sort_mode : false,
 
     columnResize : true,
-    enableSort : true,
+    enableSort : false,
     reserveScrollOffset : true,
     enableHdMenu : true,
+
+	dropConfig : {
+		dropAllowed : true,
+		onNodeOver : function(n, dd, e, data) {
+
+			return 'x-tree-drop-ok-append';
+
+			var pt = this.getDropPoint(e, n, dd);
+			var node = n.node;
+
+			if(!this.expandProcId && pt == "append" && node.hasChildNodes() && !n.node.isExpanded()) {
+				this.queueExpand(node);
+			} else if(pt != "append") {
+				this.cancelExpand();
+			}
+
+			var returnCls = this.dropNotAllowed;
+			if(this.isValidDropPoint(n, pt, dd, e, data)) {
+				if(pt) {
+					var el = n.ddel;
+					var cls;
+					returnCls = "x-tree-drop-ok-append";
+					cls = "x-tree-drag-append";
+					if(this.lastInsertClass != cls){
+						Ext.fly(el).replaceClass(this.lastInsertClass, cls);
+						this.lastInsertClass = cls;
+					}
+				}
+			}
+
+			return returnCls;
+		}
+	},
+
+	enableDD: false,
     
     columnsText : 'Columns',
 
@@ -26,6 +61,7 @@ wep.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
 
 		if (this.sort_mode == true) {
 			dataUrl += '&sort_mode=true';
+			this.enableDD = true;
 		}
 
 		if (this.sort_mode == false && this.pagenum.cntpage > 1) {
@@ -79,6 +115,33 @@ wep.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
             this.colResizer = new Ext.tree.ColumnResizer(this.columnResize);
             this.colResizer.init(this);
         }
+
+		this.on('beforemovenode', function(tree, node, oldParent, newParent, index) {
+			Ext.Ajax.request({
+				url: '_wep/index.php?_modul=' + this.modul + '&_type=sort',
+				params: {
+					nodeid: node.id,
+					newparentid: newParent.id,
+					oldparentid: oldParent.id,
+					dropindex: index
+				},
+				success: function() {
+//					console.log(node);
+//					node.attributes.ordind = index;
+//					node.render();
+
+					var parent_node = node.parentNode;
+					
+					node.remove();
+					row = node.attributes;
+					row.ordind = index;
+
+					parent_node.appendChild(row);
+				}
+			});
+			
+		},
+		this);
         
 //		var c = this.columns;
         if(!this.internalTpl){                                

@@ -298,7 +298,6 @@ Ext.apply(wep, {
 							autoHeight: true,
 							autoWidth: true,
 							pagenum: pagenum,
-							enableDD: true,
 							columns: columns,
 							children: children,
 							requestMethod: 'GET',
