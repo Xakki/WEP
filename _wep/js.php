@@ -1,4 +1,5 @@
 <?
+
 	$GLOBALS['_RESULT']	= $DATA = array();
 	$_tpl['onload']=$html=$html2='';
 
@@ -54,7 +55,7 @@
 		$_design = $_SESSION['user']['design'];
 	else 
 		$_design = $_CFG['wep']['design'];
-	$_design = 'default';
+
 	$HTML = new html($_CFG['PATH']['cdesign'],$_design,false);// упрощённый режим
 
 	if($_GET['_oid']!='') $MODUL->owner_id = $_GET['_oid'];

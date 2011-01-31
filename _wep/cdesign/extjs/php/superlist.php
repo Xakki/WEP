@@ -130,7 +130,7 @@ function tpl_superlist(&$data)
 
 			}
 
-
+/*
 			$cols[] = array(
 				'editor' => array(
 					'eval' => 'new fm.TextField({allowBlank: false})',
@@ -141,7 +141,7 @@ function tpl_superlist(&$data)
 				'dataIndex' => 'act',
 				'width' => 100,
 			);
-
+*/
 
 /*
 			$cols[] = array(

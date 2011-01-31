@@ -1,3 +1,12 @@
+function setCookie (name, value, expires, path, domain, secure) {
+	document.cookie = name + "=" + escape(value) +
+	((expires) ? "; expires=" + expires : "") +
+	((path) ? "; path=" + path : "") +
+	((domain) ? "; domain=" + domain : "") +
+	((secure) ? "; secure" : "");
+}
+
+
 Ext.onReady(function() {
 	// инициализируем объект wep
 	wep.init();
@@ -211,6 +220,10 @@ Ext.apply(wep, {
 	click_handler: function(currentnode, clickevent) {
 		wep.href = this.href;
 
+		if (this.href.indexOf('_wep/') == -1) {
+			return true;
+		}
+
 		// меняем стиль для ссылок
 		wep.change_menu_item_style(this);
 
@@ -325,6 +338,7 @@ Ext.apply(wep, {
 		}
 			
 		currentnode.stopEvent(); // чтобы не переходило по ссылке
+		return false;
 	},
 
 	panel: Ext.extend(Ext.Panel, {

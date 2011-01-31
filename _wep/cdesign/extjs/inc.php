@@ -13,11 +13,6 @@
 	$_tpl['uname']='<a href="'.$_CFG['PATH']['wepname'].'/login.php?exit=ok" class="exit"><img src="'.$_CFG['PATH']['wepname'].'/cdesign/extjs/img/close48.gif" class="exit" alt="CLOSE"/></a><div class="uname">'.$_SESSION['user']['name'].' ['.$_SESSION['user']['gname'].']</div>';
 
 	
-	
-	
-
-
-
 
 	if(!$_GET['_modul'] or !(isset($_GET['_view']) or isset($_GET['_type']))) {
 	//	$html = '<div style="position:absolute;top:50%;left:50%;"><div style="width:200px;height:100px;position:absolute;top:-50px;left:-100px;"><img src="'.$_tpl['design'].'img/login.gif" width="250" alt="LOGO"/></div></div>';
@@ -75,6 +70,34 @@
 							}
 
 							list($DATA,$flag) = $MODUL->super_inc($param,$_GET['_type']);
+
+							if ($_GET['_type'] == 'tools') {
+								$HTML->flag = false;
+								
+								if (isset($_POST['sbmt'])) {
+									if ($DATA['formtools']['messages'][0]['name'] == 'ok') {
+										$success = true;										
+									}
+									else {
+										$success = false;
+									}
+
+									$result = array(
+										'success' => $success,
+										'msg' => $DATA['formtools']['messages'][0]['value'],
+									);
+
+									$json = json_encode($result);
+								}
+								else {
+									$json = json_encode($DATA);
+								}
+
+								echo $json;
+
+								return '';
+							}
+
 
 							if($_GET['_type']=="add" or $_GET['_type']=="edit") {
 								if(isset($DATA['formcreat']) and isset($DATA['formcreat']['form']) and count($DATA['formcreat']['form'])) {
