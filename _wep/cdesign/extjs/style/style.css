@@ -216,3 +216,6 @@ a:hover {
 #editform {
 	margin-top: 20px;	
 	}
+.x-treegrid-text {
+	overflow: hidden;
+}
