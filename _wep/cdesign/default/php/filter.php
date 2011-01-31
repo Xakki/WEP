@@ -29,9 +29,9 @@
 				$html .= '</div></div>';
 			}*/
 			elseif($r['type']=='checkbox') {
-				$html .= '<div class="f_item"><div class="f_caption">'.$r['caption'].'</div>';
+				$html .= '<div class="f_item" id="tr_'.$k.'"> <div class="f_caption">'.$r['caption'].'</div>';
 				if($r['multiple']) {
-					//print_r('<pre>');print_r($r['valuelist']);
+					$html .= '<div class="f_value multiplebox">';
 					if(!isset($r['valuelist']) or !is_array($r['valuelist']))
 						$r['valuelist'] = array(''=>array('#name#'=>'error','#id#'=>''));
 					else {
@@ -47,43 +47,48 @@
 					}
 					else
 						$r['value'] = array_combine($r['value'],$r['value']);
-					$html .= '<div class="f_value multiplebox">';
-					$html .= '<div><input type="checkbox" name="null" value="" ';
+					$type = $r['type'];
+					if(count($r['valuelist'])==2)
+						$type = 'radio';
+					$html .= '<div><input type="'.$type.'" name="null" value="" ';
 					if(isset($r['value']['']) or !count($r['value'])) {
 						$html .= 'checked="checked"';
 					}
 					$html .= '/>Все</div>';
 					foreach($r['valuelist'] as $rk=>$rr) {
-						$html .= '<div><input type="checkbox" name="'.$k.'[]" value="'.$rk.'" '.(isset($r['value'][$rk])?'checked="checked"':'').'/>'.$rr['#name#'].'</div>';
+						$html .= '<div><input type="'.$type.'" name="'.$k.'[]" value="'.$rk.'" '.(isset($r['value'][$rk])?'checked="checked"':'').'/>'.$rr['#name#'].'</div>';
 					}
+					$html .= '</div>';
 				}
 				else {
-					$html .= '<div class="f_value checkbox">';
 					if($r['param']=='checkbox') {
+						$html .= '<div class="f_value checkbox">';
 						$html .= '<input type="checkbox" name="'.$k.'" value="1" '.($r['value']==1?'checked="checked"':'').'/>';
+						$html .= '</div>';
 					}
-					elseif(is_array($r['value'])) {
-						$html .= '<table border="0" cellpadding="0" cellspacing="1">';
-						foreach($r['value'] as $row) {
-							$html .= '<tr>
-										<td>'.$row['title'].'</td>
-										<td><input type="'.$r['type'].'" name="'.$k.'" value="'.$row['value'].'" class="radio" '.($row['sel']?'checked="checked"':'').'/></td>
-									</tr>';
+					elseif(is_array($r['valuelist'])) {
+						$html .= '<div class="f_value multiplebox">';
+						$html .= '<div><input type="radio" name="'.$k.'" value="" '.($r['value']==''?'checked="checked"':'').'/>Все</div>';
+						foreach($r['valuelist'] as $rk=>$rr) {
+							$html .= '<div><input type="radio" name="'.$k.'" value="'.$rk.'" '.($r['value']==$rk?'checked="checked"':'').'/>'.$rr['#name#'].'</div>';
 						}
-						$html .= '</table>';
-					} else {
-						$html .= '<select name="'.$k.'">
-								<option value="">Все</option>
-								<option value="0" '.($r['value']=='0'?'selected="selected"':'').'>Выкл(0)</option>
-								<option value="1" '.($r['value']=='1'?'selected="selected"':'').'>Вкл(1)</option>
-							</select>';
+						$html .= '</div>';
+					} 
+					else {
+						$html .= '<div class="f_value multiplebox">';
+						$html .= '
+							<div><input type="radio" name="'.$k.'" value="" class="radio" '.($r['value']==''?'checked="checked"':'').'/>Все</div>
+							<div><input type="radio" name="'.$k.'" value="0" class="radio" '.($r['value']=='0'?'checked="checked"':'').'/>Нет</div>
+							<div><input type="radio" name="'.$k.'" value="1" class="radio" '.($r['value']=='1'?'checked="checked"':'').'/>Да</div>
+							';
+						$html .= '</div>';
 					}
 				}
-				$html .= '</div></div>';
+				$html .= '</div>';
 			}
 			elseif($r['type']=='linklist') {
 				//print_r('<pre>');print_r($r['valuelist']);
-				$html .= '<div class="f_item linklist"><div class="f_caption">'.$r['caption'].'</div><div class="f_value">';
+				$html .= '<div class="f_item linklist" id="tr_'.$k.'"><div class="f_caption">'.$r['caption'].'</div><div class="f_value">';
 				foreach($r['valuelist'] as $rk=>$rr) {
 					$html .= '<div><a href="'.$rr['#href#'].'">'.$rr['#name#'].'</a></div>';
 					if(isset($rr['#item#']) and is_array($rr['#item#'])) {
@@ -104,7 +109,7 @@
 					else
 						$r['valuelist'] = array(''=>array('#name#'=>'Все','#id#'=>''))+$r['valuelist'];
 				}
-				$html .= '<div class="f_item">
+				$html .= '<div class="f_item" id="tr_'.$k.'">
 				<div class="f_caption">'.$r['caption'].'</div>
 				<div class="f_value">
 					<select name="'.$k.'" '.(($r['value']!=0 and $r['value']!=1)?'readonly="readonly"':'').' onchange="'.$r['onchange'].'">
@@ -115,7 +120,7 @@
 			}
 			elseif($r['type']=='ajaxlist') {
 				$serl = serialize($r['listname']);
-				$html .= '<div class="f_item">
+				$html .= '<div class="f_item" id="tr_'.$k.'">
 				<div class="f_caption">'.$r['caption'].'</div>
 				<div class="f_value" style="position:relative;">
 					<div class="ajaxlist">
@@ -148,7 +153,7 @@
 			  </div>';
 			}
 			elseif($r['type']=='file') {
-				$html .= '<div class="f_item">
+				$html .= '<div class="f_item" id="tr_'.$k.'">
 					<div class="f_caption">'.$r['caption'].'</div>
 					<div class="f_value">
 						<select name="'.$k.'">
@@ -160,7 +165,7 @@
 				</div>';
 			}
 			else {
-				$html .= '<div class="f_item">
+				$html .= '<div class="f_item" id="tr_'.$k.'">
 					<div class="f_caption">'.$r['caption'].'</div>
 					<div class="f_value"><input type="'.$r['type'].'" name="'.$k.'" id="'.$k.'" value="'.$r['value'].'" maxlength="'.$r['max'].'"/></div>
 					

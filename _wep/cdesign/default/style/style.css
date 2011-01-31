@@ -335,7 +335,7 @@ form table.form {
 		border:1px solid gray;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
 	}
 	div.filter .f_int {
-		padding:18px 0 2px;
+		padding:0;
 	}
 	div.filter .f_int input[type='text'] {
 		width:4.5em;
@@ -356,6 +356,9 @@ form table.form {
 
 	div.filter div.f_item div.f_value {
 		height:20px;
+	}
+	div.filter div.f_item div.f_value div{
+		display:inline;
 	}
 
 	div.filter div.f_submit{
