@@ -30,23 +30,25 @@ Ext.apply(wep, {
 	breadcrumbs: {
 		path: [],
 
-		// переходит на крошку номер num, впередистоящие будут уничтожены
-		goTo: function(num) {
+		// переходит на крошку номер num, если второй пар-р = true, то впередистоящие будут уничтожены
+		goTo: function(num, del_next) {
 			if (num < 0) {
 				num = wep.breadcrumbs.path.length + num;
 			}
 			if (num >= 0 && wep.breadcrumbs.path.length > num) {
 				var bc = wep.breadcrumbs.path[wep.breadcrumbs.active_item];
-				if (wep.breadcrumbs.active_item != num && Ext.isObject(bc.onGoOut)) {
+				if (wep.breadcrumbs.active_item != num && Ext.isObject(bc.onGoOut) && 
+					(!(wep.breadcrumbs.active_item > num && del_next == true))
+				) {
 					bc.onGoOut.handler.apply(bc.onGoOut.scope || window, bc.onGoOut.args);
 				}
 
 				bc = wep.breadcrumbs.path[num];
-				var delete_next = true;
+
 				if (Ext.isObject(bc.onGoTo)) {
-					delete_next = bc.onGoTo.handler.apply(bc.onGoTo.scope || window, bc.onGoTo.args);
+					bc.onGoTo.handler.apply(bc.onGoTo.scope || window, bc.onGoTo.args);
 				}
-				if (delete_next !== false) {
+				if (del_next == true) {
 					for(var i=wep.breadcrumbs.path.length-1; i>num; i--) {
 						if (Ext.isDefined(wep.breadcrumbs.path[i].dom_id)) {
 							Ext.get(wep.breadcrumbs.path[i].dom_id).update('');
@@ -62,7 +64,7 @@ Ext.apply(wep, {
 				}				
 			}
 			wep.breadcrumbs.active_item = num;
-			
+
 			wep.breadcrumbs.render();
 		},
 
@@ -247,14 +249,11 @@ Ext.apply(wep, {
 				wep.path['extjs'] + 'ux/MultiSelect.js',
 				wep.path['extjs'] + 'ux/ItemSelector.js',
 
-				//
 				wep.path['extjs'] + 'ux/treegrid/TreeGridSorter.js',
 				wep.path['extjs'] + 'ux/treegrid/TreeGridColumnResizer.js',
 				wep.path['extjs'] + 'ux/treegrid/TreeGridNodeUI.js',
 				wep.path['extjs'] + 'ux/treegrid/TreeGridLoader.js',
 				wep.path['extjs'] + 'ux/treegrid/TreeGridColumns.js',
-
-//				wep.path['extjs'] + 'ux/treegrid/TreeGrid.js'
 				wep.path['cscript'] + 'TreeGrid.js'
 
 			];
@@ -268,21 +267,20 @@ Ext.apply(wep, {
 						var data = Ext.util.JSON.decode(result.responseText);
 
 						var columns = data['columns'];
-						var fields = data['fields'];
+//						var fields = data['fields'];
 						var children = data['children'];
+						var pagenum = data['pagenum'];
 
 						var tree_id = wep.modul.cn + '_tree';
 						var panel_id = wep.modul.cn + '_panel';
 
-//						wep.breadcrumbs.add({title: wep.modul.title, component_id:tree_id, dom_id: wep.main_cont}, 0);
-						var bc = {
+						wep.breadcrumbs.add({
 							title: wep.modul.title,
 							component_id:panel_id,
 							dom_id: wep.main_cont,
 							onGoTo: {
 								handler: function() {
 									Ext.getCmp(panel_id).expand();
-									return false;
 								}
 							},
 							onGoOut: {
@@ -290,8 +288,8 @@ Ext.apply(wep, {
 									Ext.getCmp(panel_id).collapse();
 								}
 							}
-						}
-						wep.breadcrumbs.add(bc, 0);
+						},
+						0);
 
 						var tree = new wep.TreeGrid({
 							id: tree_id,
@@ -299,8 +297,8 @@ Ext.apply(wep, {
 							add_url: '&_modul=' + wep.modul.cn,
 							autoHeight: true,
 							autoWidth: true,
-//							enableDD: true,
-//							renderTo: wep.main_cont,
+							pagenum: pagenum,
+							enableDD: true,
 							columns: columns,
 							children: children,
 							requestMethod: 'GET',
@@ -315,7 +313,7 @@ Ext.apply(wep, {
 								tree
 							],
 							onDestroy: function() {
-								alert(this.title + ' уничтожается');
+//								alert(this.title + ' уничтожается');
 							}
 						});
 

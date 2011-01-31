@@ -212,3 +212,7 @@ a:hover {
 .silk-icon-delete {
 	background: url('../img/buttonh.png') 0 -16px !important;
 	}
+
+#editform {
+	margin-top: 20px;	
+	}

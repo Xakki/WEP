@@ -43,6 +43,11 @@
 					$param = array('sbmtsave'=>1,'close'=>1);
 //$tt = array();$summ = 0;for($j = 1; $j <= 5; $j++) { $tt[$j] = getmicrotime(); for($i = 1; $i <= 20; $i++) {
 							$MODUL->setFilter(1);
+
+							if (isset($_GET['sort_mode']) && $_GET['sort_mode'] == true) {
+								$MODUL->messages_on_page = 1000;
+							}
+
 							list($DATA,$flag) = $MODUL->super_inc($param,$_GET['_type']);
 
 							if($_GET['_type']=="add" or $_GET['_type']=="edit") {

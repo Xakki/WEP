@@ -197,7 +197,7 @@ function tpl_superlist(&$data)
 			);
 		}
 
-		return json_encode(array('columns' => $cols, 'fields' => $fields, 'children' =>$children));
+		return json_encode(array('columns' => $cols, 'fields' => $fields, 'children' =>$children, 'pagenum'=>$data['pagenum']));
 	}
 
 
