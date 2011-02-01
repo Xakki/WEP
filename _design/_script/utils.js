@@ -212,6 +212,17 @@ function ShowTools(id,hrf) {
 	return false;
 }
 
+function readyPlot(cap,Xname,Yname,stepY) {
+	plot1 = $.jqplot('statschart2', [line1], {
+		title:cap,
+		axes:{
+			xaxis:{label:Xname,renderer:$.jqplot.DateAxisRenderer},
+			yaxis:{label:Yname,min:0,tickInterval:stepY,tickOptions:{formatString:'%d'} }},
+		cursor:{zoom: true},
+		series:[{lineWidth:4, markerOptions:{style:'square'}}]
+	});
+}
+
 function JSWin(param) {
 	if(typeof param['type']=='object') {
 		if(typeof CKEDITOR !== 'undefined') {
@@ -298,7 +309,7 @@ function pagenum_super(total,pageCur,cl,order) {
 			param += '?';
 		param += cl+'_pn=';
 		//alert(dump(loc));
-		$.include('/_design/_script/jquery.paginator.js',function(){
+		$.include('/_design/_script/jquery.paginator.js',function(ob){
 			jQuery('.pagenum').css('display','none');
 			jQuery('.ppagenum').css('display','block').paginator({pagesTotal:total, 
 				pagesSpan:8, 
