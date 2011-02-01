@@ -143,16 +143,19 @@ class users_extend extends kernel_class {
 
 		$this->fields["id"] = array("type" => "varchar", "width" => 32, "attr" => "NOT NULL");
 		$this->fields["name"] = array("type" => "varchar", "width" => 32,"attr" => "NOT NULL");
-		//$this->fields["sname"] = array("type" => "varchar", "width" => 32,"attr" => "NOT NULL");
-		//$this->fields["tname"] = array("type" => "varchar", "width" => 32,"attr" => "NOT NULL");
+		$this->fields["fullname"] = array("type" => "varchar", "width" => 32,"attr" => "NOT NULL");
 		$this->fields["pass"] = array("type" => "varchar", "width" => 32, "attr" => "NOT NULL");
-		//$this->fields["address"] = array("type" => "varchar", "width" => 127,"attr" => "NOT NULL");
-		$this->fields["phone"] = array("type" => "varchar", "width" => 127,"attr" => "NOT NULL");
-		$this->fields["email"] =  array("type" => "varchar", "width" => 32, "attr" => "NOT NULL");
-		$this->fields["www"] =  array("type" => "varchar", "width" => 32, "attr" => "NOT NULL");
-		//$this->fields["description"] =  array("type" => "varchar", "width" => 254, "attr" => "NOT NULL");
+		$this->fields["address"] = array("type" => "varchar", "width" => 127,"attr" => "NOT NULL");
+		$this->fields["dob"] = array("type" => "int", "width" => 11, "attr" => "NOT NULL", 'default'=>0);
+		$this->fields["gender"] = array("type" => "tinyint", "width" => 2, "attr" => "NOT NULL", 'default'=>0);
+		$this->fields["phone"] = array("type" => "varchar", "width" => 127,"attr" => "NOT NULL", 'default'=>'');
+		$this->fields["email"] =  array("type" => "varchar", "width" => 32, "attr" => "NOT NULL", 'default'=>'');
+		$this->fields["www"] =  array("type" => "varchar", "width" => 32, "attr" => "NOT NULL", 'default'=>'');
+		$this->fields["loginza_token"] =  array("type" => "varchar", "width" => 254, "attr" => "NOT NULL", 'default'=>'');
+		$this->fields["loginza_provider"] =  array("type" => "varchar", "width" => 254, "attr" => "NOT NULL", 'default'=>'');
+		$this->fields["loginza_data"] =  array("type" => "text", "attr" => "NOT NULL", 'default'=>'');
 		// service field
-		$this->fields["reg_hash"] = array("type" => "varchar", "width" => 128);
+		$this->fields["reg_hash"] = array("type" => "varchar", "width" => 128, "attr" => "NOT NULL", 'default'=>'');
 		$this->fields["balance"] = array("type" => "int", "width" => 11, "attr" => "NOT NULL", 'default'=>0);
 
 
@@ -423,6 +426,8 @@ class users_extend extends kernel_class {
 		}
 
 		return Array(array('messages'=>$mess),$flag);
+	}
+	function loginzaReg($data) {
 	}
 
 	function remind() {
