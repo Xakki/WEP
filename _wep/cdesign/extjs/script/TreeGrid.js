@@ -26,6 +26,8 @@ wep.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
 				this.cancelExpand();
 			}
 
+
+
 			var returnCls = this.dropNotAllowed;
 			if(this.isValidDropPoint(n, pt, dd, e, data)) {
 				if(pt) {
@@ -56,75 +58,21 @@ wep.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
 		var dataUrl = this.dataUrl;
 
 		if (this.pagenum._pn != 1) {
-			dataUrl += '&_pn=' + this.pagenum._pn;
+			if (Ext.isDefined(this.parent_id)) {
+				dataUrl += '&' + this.modul + '_pn=' + this.pagenum._pn;
+			}
+			else {
+				dataUrl += '&_pn=' + this.pagenum._pn;
+			}
 		}
 
 		if (this.sort_mode == true) {
 			dataUrl += '&sort_mode=true';
 			this.enableDD = true;
 		}
-
-		var pnav = Ext.get('pnav');
-		pnav.update('');
-
-		var pnav_html = '';
-		if (this.sort_mode == false) {
-			
-			if (this.pagenum.cntpage > 1) {
-				for (var i=1; i<=this.pagenum.cntpage; i++) {
-					if (this.pagenum._pn == i) {
-						pnav_html += '<span class="cur">[' + i + ']</span>';
-					}
-					else {
-						pnav_html += '<span onclick="wep.TreeGrid.pnav.goTo(' + i + ', \'' + this.id + '\');">' + i + '</span>';
-					}
-				}
-				pnav.update(pnav_html);
-			}			
-
-			var data = [];
-
-			var value = 20;
-
-			Ext.iterate(this.pagenum.mop, function(prop, val) {
-				data.push([ prop, prop ]);
-				if (val.sel == 1)
-					value = val.value;
-			});
-
-			if (Ext.isDefined(this.pagenum.value)) {
-				value = this.pagenum.value;
-			}
-
-			var items_on_page_combobox = new Ext.form.ComboBox({
-				renderTo: 'pnav',
-				store: data,
-				value: value,
-				mode: 'local',
-				triggerAction: 'all',
-				relation: this,
-				listeners: {
-					select: function(combo, row, index) {
-						setCookie('pg_mop',row.json[0]);
-
-						this.relation.initialConfig.pagenum.cntpage = Math.ceil(this.relation.initialConfig.pagenum.cnt / row.json[0]);
-						this.relation.initialConfig.pagenum._pn = 1;
-						this.relation.initialConfig.pagenum.value = row.json[0];
-						var tree = new wep.TreeGrid(this.relation.initialConfig);
-
-						var panel = Ext.getCmp(this.relation.modul + '_panel');
-
-						this.relation.destroy();
-
-						panel.add(tree);
-						panel.doLayout();
-					}
-				}
-			})
-
-		}
-		this.pnav_html = pnav_html;
-
+		
+		this.pnav.get_links(this); // создаем объект this.pnav.links
+		this.pnav.get_combobox(this); // создаем объект this.pnav.combobox
 
         // initialize the loader
         var l = this.loader;
@@ -174,12 +122,54 @@ wep.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
 				},
 				success: function() {
 					var parent_node = node.parentNode;
-					
-					node.remove();
-					row = node.attributes;
-					row.ordind = index;
+								
+//					console.log(node);
+//					alert(index);
 
-					parent_node.appendChild(row);
+//					row = node.attributes;
+//					row.ordind = index;
+
+					var nodes = {};
+
+					Ext.each(parent_node.childNodes, function(value, index) {
+						nodes[value.id] = index;
+					});
+
+					var i;
+					parent_node.childNodes[nodes[node.id]].attributes.ordind = index;
+					if (index > nodes[node.id]) {
+						for (i=index; i>nodes[node.id]; i--) {
+							if (Ext.isDefined(parent_node.childNodes[i])) {
+								parent_node.childNodes[i].attributes.ordind--;
+							}
+						}
+					}
+					else if (index < nodes[node.id]) {
+						for (i=index; i<nodes[node.id]; i++) {
+							if (Ext.isDefined(parent_node.childNodes[i])) {
+								parent_node.childNodes[i].attributes.ordind++;
+							}
+						}
+					}
+
+					var row = [];
+					Ext.each(parent_node.childNodes, function(value, index) {
+						row.push(value.attributes);
+					});
+
+					parent_node.removeAll();
+
+					Ext.each(row, function(value, index) {
+						parent_node.appendChild(value);
+					});
+//					parent_node.appendChild(row);
+
+//					node.attributes.ordind = index;
+					tree.doLayout();
+
+//					node.remove();
+
+//					parent_node.appendChild(row);
 				}
 			});
 			
@@ -218,6 +208,95 @@ wep.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
         }
 		
     },
+
+	pnav : {
+		goTo : function(page, cmp_id) {
+
+				var cmp = Ext.getCmp(cmp_id);
+
+				var panel = cmp.ownerCt;
+
+		//		cmp.initialConfig.dataUrl += '&_pn=' + page;
+				cmp.initialConfig.pagenum._pn = page;
+
+				var tree = new wep.TreeGrid(cmp.initialConfig);
+
+//				cmp.destroy();
+
+				panel.removeAll(true);
+
+				panel.add(tree);
+				panel.add(tree.pnav.links);
+				panel.add(tree.pnav.combobox);
+
+				panel.doLayout();
+
+		},
+		get_links : function(obj) {
+			this.links = { html: '' };
+
+			if (obj.sort_mode == false) {
+				if (obj.pagenum.cntpage > 1) {
+					for (var i=1; i<=obj.pagenum.cntpage; i++) {
+						if (obj.pagenum._pn == i) {
+							this.links.html += '<span class="cur">[' + i + ']</span>';
+						}
+						else {
+							this.links.html += '<span onclick="Ext.getCmp(\'' + obj.id + '\').pnav.goTo(' + i + ', \'' + obj.id + '\');">' + i + '</span>';
+						}
+					}
+				}
+			}
+		},
+		get_combobox : function(obj) {
+			this.combobox = {};
+
+			if (obj.sort_mode == false) {
+				var data = [];
+
+				var value = 20;
+
+				Ext.iterate(obj.pagenum.mop, function(prop, val) {
+					data.push([ prop, prop ]);
+					if (val.sel == 1)
+						value = val.value;
+				});
+
+				if (Ext.isDefined(obj.pagenum.value)) {
+					value = obj.pagenum.value;
+				}
+
+				this.combobox = new Ext.form.ComboBox({
+					id: obj.modul + '_pnav_combobox',
+					store: data,
+					value: value,
+					mode: 'local',
+					triggerAction: 'all',
+					relation: obj,
+					listeners: {
+						select: function(combo, row, index) {
+							setCookie('pg_mop',row.json[0]);
+
+							combo.relation.initialConfig.pagenum.cntpage = Math.ceil(combo.relation.initialConfig.pagenum.cnt / row.json[0]);
+							combo.relation.initialConfig.pagenum._pn = 1;
+							combo.relation.initialConfig.pagenum.value = row.json[0];
+							var tree = new wep.TreeGrid(combo.relation.initialConfig);
+
+							var panel = combo.relation.ownerCt;
+
+							panel.removeAll();
+
+							panel.add(tree);
+							panel.add(tree.pnav.links);
+							panel.add(tree.pnav.combobox);
+
+							panel.doLayout();
+						}
+					}
+				});
+			}
+		}		
+	},
 
 	buildTopToolbar : function() {
         var tools = [{
@@ -265,11 +344,16 @@ wep.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
 				this.initialConfig.sort_mode = !this.sort_mode;
 
 				var tree = new wep.TreeGrid(this.initialConfig);
-				var panel = Ext.getCmp(this.modul + '_panel');
+				var panel = this.ownerCt;
 
 				this.destroy();
 
+				panel.removeAll();
+
 				panel.add(tree);
+				panel.add(tree.pnav.links);
+				panel.add(tree.pnav.combobox);
+
 				panel.doLayout();
 			},
 			scope: this
@@ -284,7 +368,7 @@ wep.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
 		tools.push({
 			text: 'Настройки',
 			handler: function() {
-
+				this.showTools('config');
 			},
 			scope: this
 		});
@@ -293,118 +377,111 @@ wep.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
 	},
 
 	showTools : function(tools) {
+		var url;
+		var form_title;
+		var panel_title;
+		var sbmt_btn_text;
+
 		if (tools == 'update_fields') {
-			var url = '_wep/index.php?_view=list&_modul=' + this.modul + '&_type=tools&_func=Checkmodul';
-			Ext.Ajax.request({
-				url: url,
-				success: function(result, textStatus) {
-					var data = Ext.util.JSON.decode(result.responseText);
-					
-					if (!Ext.isEmpty(data.formtools.messages)) {
-						Ext.each(data.formtools.messages, function(value, index) {
-							Ext.Msg.alert(value.name, value.value);
-						})
-					}
-
-					console.log(data);
-
-					
-					if (Ext.isDefined(data.formtools.form.list_query)) {
-
-						var items = [];
-
-						Ext.each(data.formtools.form.list_query.valuelist, function(value, index) {
-							items.push({
-								fieldLabel: value['#name#'],
-								xtype: 'checkbox',
-								inputValue: value['#id#'],
-								name: 'list_query[]'
-							});
-						});
-
-						items.push({
-							xtype: 'hidden',
-							name: 'sbmt',
-							value: 'Выполнить'
-						});
-
-						var panel_id = 'edit_form_panel';
-
-						wep.breadcrumbs.add({
-							title: 'Обновление полей',
-							component_id: panel_id,
-							dom_id: wep.edit_form_cont,
-							onGoTo: {
-								handler: function() {
-									Ext.getCmp(panel_id).expand();
-								}
-							},
-							onGoOut: {
-								handler: function() {
-									Ext.getCmp(panel_id).collapse();
-								}
-							}
-						});
-
-						// begin
-
-						var form = new wep.form_panel({
-							renderTo: wep.edit_form_cont,
-							url: url,
-							buttons: [{
-								text: 'Обновить',
-								onClick: function() {
-									form.getForm().submit({
-										success: function(f, a){
-						//					update_form(f, a);
-
-											Ext.Msg.alert('', a.result.msg, function() {
-												wep.breadcrumbs.goTo(-2, true); // удаляем последнюю крошку
-											});
-										},
-										failure: function(f,a){									
-											Ext.Msg.alert('', a.result.msg);
-										}
-									});
-								}
-							}],
-							
-							items: [{
-								//						columnWidth: 0.4,
-								xtype: 'fieldset',
-								labelWidth: 600,
-								title:'Обновление полей',
-								defaults: {width: 500, border:false},    // Default config options for child items
-								//						defaultType: 'textfield',
-								autoHeight: true,
-								bodyStyle: Ext.isIE ? 'padding:0 0 5px 15px;' : 'padding:10px 15px;',
-								border: false,
-								style: {
-									"margin-left": "10px", // when you add custom margin in IE 6...
-									"margin-right": Ext.isIE6 ? (Ext.isStrict ? "-10px" : "-13px") : "0"  // you have to adjust for it somewhere else
-								},
-								items: items
-							}]
-						});
-
-						var panel = new wep.panel({
-							id: panel_id,
-							title: data.formtools.form._info.caption,
-							renderTo: wep.edit_form_cont,
-							items: [
-								form
-							],
-							onDestroy: function() {
-		//						alert(this.title + ' уничтожается');
-							}
-						});
-
-						// end
-
-					}
-				}
-			});
+			url = '_wep/index.php?_view=list&_modul=' + this.modul + '&_type=tools&_func=Checkmodul';
+			form_title = 'Обновление полей';
+			panel_title = 'Обновление полей';
+			sbmt_btn_text = 'Обновить';
 		}
+		else if (tools == 'config') {
+			url = '_wep/index.php?_view=list&_modul=' + this.modul + '&_type=tools&_func=Configmodul';
+			form_title = 'Конфигурация';
+			panel_title = 'Конфигурация';
+			sbmt_btn_text = 'Сохранить';
+		}
+
+		Ext.Ajax.request({
+			url: url,
+			success: function(result, textStatus) {
+				var data = Ext.util.JSON.decode(result.responseText);
+
+				if (!Ext.isEmpty(data.formtools.messages)) {
+					Ext.each(data.formtools.messages, function(value, index) {
+						Ext.Msg.alert(value.name, value.value);
+					})
+				}
+
+				if (Ext.isDefined(data.js_fields)) {
+					var items = data.js_fields;
+
+					var panel_id = 'edit_form_panel';
+
+					wep.breadcrumbs.add({
+						title: 'Обновление полей',
+						component_id: panel_id,
+						dom_id: wep.edit_form_cont,
+						onGoTo: {
+							handler: function() {
+								Ext.getCmp(panel_id).expand();
+							}
+						},
+						onGoOut: {
+							handler: function() {
+								Ext.getCmp(panel_id).collapse();
+							}
+						}
+					});
+
+					// begin
+
+					var form = new wep.form_panel({
+						renderTo: wep.edit_form_cont,
+						url: url,
+						buttons: [{
+							text: sbmt_btn_text,
+							onClick: function() {
+								form.getForm().submit({
+									success: function(f, a){
+					//					update_form(f, a);
+
+										Ext.Msg.alert('', a.result.msg, function() {
+											wep.breadcrumbs.goTo(-2, true); // удаляем последнюю крошку
+										});
+									},
+									failure: function(f,a){
+										Ext.Msg.alert('', a.result.msg);
+									}
+								});
+							}
+						}],
+
+						items: [{
+							//						columnWidth: 0.4,
+							xtype: 'fieldset',
+							labelWidth: 400,
+							title: form_title,
+							defaults: {width: 500, border:false},    // Default config options for child items
+							//						defaultType: 'textfield',
+							autoHeight: true,
+							bodyStyle: Ext.isIE ? 'padding:0 0 5px 15px;' : 'padding:10px 15px;',
+							border: false,
+							style: {
+								"margin-left": "10px", // when you add custom margin in IE 6...
+								"margin-right": Ext.isIE6 ? (Ext.isStrict ? "-10px" : "-13px") : "0"  // you have to adjust for it somewhere else
+							},
+							items: items
+						}]
+					});
+
+					var panel = new wep.panel({
+						id: panel_id,
+						title: panel_title,
+						renderTo: wep.edit_form_cont,
+						items: [
+							form
+						],
+						onDestroy: function() {
+	//						alert(this.title + ' уничтожается');
+						}
+					});
+				}
+			}
+		});
 	},
 
 	onAdd : function(btn, ev) {
@@ -459,7 +536,7 @@ wep.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
 		if (!index) {
 			return false;
 		}
-		
+
 		var id = index.id;
 
 		var tree_id = this.child_id = child.cl + '_tree';
@@ -491,49 +568,65 @@ wep.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
 				var fields = data['fields'];
 				var children = data['children'];
 
-				var url = 'http://partner.i/_wep/index.php?_view=list' + add_url;
+				if (Ext.isEmpty(columns)) {
 
-				wep.breadcrumbs.add({
-					title: child.header,
-					component_id: panel_id,
-					onGoTo: {
-						handler: function() {
-							Ext.getCmp(panel_id).expand();
+					Ext.Msg.alert('', 'По данному запросу ничего не найдено');
+
+				}
+				else {
+
+					var pagenum = data['pagenum'];
+
+					var url = 'http://partner.i/_wep/index.php?_view=list' + add_url;
+
+					wep.breadcrumbs.add({
+						title: child.header,
+						component_id: panel_id,
+						onGoTo: {
+							handler: function() {
+								Ext.getCmp(panel_id).expand();
+							}
+						},
+						onGoOut: {
+							handler: function() {
+								Ext.getCmp(panel_id).collapse();
+							}
 						}
-					},
-					onGoOut: {
-						handler: function() {
-							Ext.getCmp(panel_id).collapse();
+					});
+
+					var child_tree = new wep.TreeGrid({
+						id: tree_id,
+						parent_id: index.id,
+						add_url : add_url,
+						modul: child.cl,
+						autoHeight: true,
+						autoWidth: true,
+						pagenum: pagenum,
+	//					renderTo: wep.main_cont,
+						columns: columns,
+						children: children,
+						requestMethod: 'GET',
+						dataUrl: url
+					});
+
+					var panel = new wep.panel({
+						id: panel_id,
+						title: 'Подмодуль ' + child.header,
+						renderTo: wep.main_cont,
+						items: [
+							child_tree,
+							child_tree.pnav.links,
+							child_tree.pnav.combobox
+						],
+						onDestroy: function() {
+	//						alert(this.title + ' уничтожается');
 						}
-					}
-				});
+					});
 
-				var child_tree = new wep.TreeGrid({
-					id: tree_id,
-					parent_id: index.id,
-					add_url : add_url,
-					modul: child.cl,
-					autoHeight: true,
-					autoWidth: true,
-					enableDD: true,
-//					renderTo: wep.main_cont,
-					columns: columns,
-					children: children,
-					requestMethod: 'GET',
-					dataUrl: url
-				});
 
-				var panel = new wep.panel({
-					id: panel_id,
-					title: 'Подмодуль ' + child.header,
-					renderTo: wep.main_cont,
-					items: [
-						child_tree
-					],
-					onDestroy: function() {
-//						alert(this.title + ' уничтожается');
-					}
-				});
+				}
+
+				
 			},
 			failure: function() {
 				Ext.Msg.alert('Ошибка', 'Произошла ошибка');
@@ -1090,28 +1183,6 @@ wep.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
         }
     }
 });
-
-
-wep.TreeGrid.pnav = {
-	goTo : function(page, cmp_id) {
-
-			var cmp = Ext.getCmp(cmp_id);
-
-			var panel = Ext.getCmp(cmp.modul + '_panel');
-
-	//		cmp.initialConfig.dataUrl += '&_pn=' + page;
-			cmp.initialConfig.pagenum._pn = page;
-
-			var tree = new wep.TreeGrid(cmp.initialConfig);
-
-			cmp.destroy();
-
-			panel.add(tree);
-			panel.doLayout();
-			
-	}
-};
-
 
 
 Ext.reg('treegrid', wep.TreeGrid);

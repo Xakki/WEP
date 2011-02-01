@@ -30,13 +30,41 @@
 				$nodeid = mysql_real_escape_string($_POST['nodeid']);
 				$HTML->flag = false;
 
-				$result = $SQL->execSQL('UPDATE `'.$MODUL->tablename.'` SET ordind="'.$dropindex.'" WHERE id="'.$nodeid.'"');
-				if ($result->affected_rows() == 1) {
-					$json = array('result' => 'success');
+				$msg = '';
+
+				$result = $SQL->execSQL('SELECT ordind FROM `'.$MODUL->tablename.'` WHERE id="'.$nodeid.'"');
+				if ($row = $result->fetch_array()) {
+					$dragindex = $row['ordind'];
+
+
+
+					if ($dragindex < $dropindex) {
+						$result2 = $SQL->execSQL('UPDATE `'.$MODUL->tablename.'` SET ordind=ordind+1 WHERE ordind>'.$dragindex.' AND ordind<'.$dropindex.' AND id!="'.$nodeid.'"');
+					}
+					elseif ($dragindex > $dropindex) {
+						$result2 = $SQL->execSQL('UPDATE `'.$MODUL->tablename.'` SET ordind=ordind+1 WHERE ordind<'.$dragindex.' AND ordind>'.$dropindex.' AND id!="'.$nodeid.'"');
+					}
+					else {
+						$json = array('result' => 'failure');
+						echo json_encode($json);
+						return '';
+					}
+
+					$result3 = $SQL->execSQL('UPDATE `'.$MODUL->tablename.'` SET ordind="'.$dropindex.'" WHERE id="'.$nodeid.'"');
+
+					if ($result->err == '') {
+						$json_res = 'success';
+					}
+					else {
+						$json_res = 'failure';
+					}
+
+					$json = array('result' => $json_res, 'msg' => $msg);
+
 				}
 				else {
-					$json = array('result' => 'failure');
-				}				
+					$json = array('result' => 'failure', 'msg' => 'Переданы неверные аргументы');
+				}
 
 				echo json_encode($json);
 
@@ -90,6 +118,43 @@
 									$json = json_encode($result);
 								}
 								else {
+
+									unset($DATA['formtools']['form']['_*features*_']);
+									unset($DATA['formtools']['form']['_info']);
+
+									if (!empty($DATA['formtools']['form'])) {
+
+										unset($DATA['formtools']['form']['_*features*_']);
+										unset($DATA['formtools']['form']['_info']);
+
+										$DATA['js_fields'] = array();
+										foreach ($DATA['formtools']['form'] as $k => $r) {
+											if (isset($r['valuelist']) && $r['type']=='checkbox') {
+												foreach ($r['valuelist'] as $r2) {
+													$field = array(
+														'name' => $k.'[]',
+														'caption' => $r2['#name#'],
+														'type' => $r['type'],
+														'value' => $r['value'],
+														'inputValue' => $r2['#id#'],
+													);
+													$DATA['js_fields'][] = get_js_field($field);
+												}
+											}
+											else {
+												$field = array(
+													'name' => $k,
+													'caption' => $r['caption'],
+													'type' => $r['type'],
+													'value' => $r['value'],
+													'valuelist' => $r['valuelist'],
+												);
+												$DATA['js_fields'][] = get_js_field($field);
+											}
+										}
+
+									}
+
 									$json = json_encode($DATA);
 								}
 

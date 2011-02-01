@@ -314,7 +314,7 @@ Ext.apply(wep, {
 							columns: columns,
 							children: children,
 							requestMethod: 'GET',
-							dataUrl: '_wep/index.php?_view=list&_modul=' + wep.modul.cn							
+							dataUrl: '_wep/index.php?_view=list&_modul=' + wep.modul.cn,
 						});
 
 						var panel = new wep.panel({
@@ -322,11 +322,10 @@ Ext.apply(wep, {
 							title: 'Модуль ' + wep.modul.title,
 							renderTo: wep.main_cont,
 							items: [
-								tree
-							],
-							onDestroy: function() {
-//								alert(this.title + ' уничтожается');
-							}
+								tree,
+								tree.pnav.links,
+								tree.pnav.combobox
+							]
 						});
 
 					},
