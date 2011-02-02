@@ -112,6 +112,10 @@ wep.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
         }
 
 		this.on('beforemovenode', function(tree, node, oldParent, newParent, index) {
+
+			Ext.Msg.alert('','Сортировка работает неправильно, поэтому временно заблокирована');
+			return false;
+
 			Ext.Ajax.request({
 				url: '_wep/index.php?_modul=' + this.modul + '&_type=sort',
 				params: {
