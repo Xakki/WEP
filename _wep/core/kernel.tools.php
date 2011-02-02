@@ -263,10 +263,7 @@ $html .= '
 						'type' => 'info',
 						'caption' => '<a href="#" onclick="return invert_select(\'form_tools_Checkmodul\');">Инвертировать выделение</a>',
 					);
-					$_this->form['list_query'] = array(
-						'type' => 'checkbox',
-						'valuelist'=>array()
-					);
+
 					foreach ($check_result as $table=>$row) {
 						if(is_array($row) and count($row)) {
 							if(isset($row['reattach'])) {
@@ -310,13 +307,16 @@ $html .= '
 						else
 							$mess[] = array('name' => 'error', 'value' => 'Error data ('.$table.' - '.print_r($row,true).')');
 					}
-
-					$_this->form['sbmt'] = array(
-						'type'=>'submit',
-						'value'=>$_this->getMess('_submit')
-					);
+					if(isset($_this->form['list_query'])) {
+						$_this->form['list_query']['type'] = 'checkbox';
+						$_this->form['sbmt'] = array(
+							'type'=>'submit',
+							'value'=>$_this->getMess('_submit')
+						);
+					} else 
+						unset($_this->form['invert']);
 				} else 
-					$mess[] = array('name' => 'ok', 'value' => $_this->getMess('_recheck_select_nothing'));
+					$mess[] = array('name' => 'ok', 'value' => $_this->getMess('_recheck_have_nothing'));
 			}
 		}
 		return Array('form'=>$_this->form, 'messages'=>$mess);

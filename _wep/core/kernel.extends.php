@@ -346,14 +346,37 @@ _get_file($row, $key)
 		return $data;
 	}
 
+	/*----------- _query ------------*/
+	public function  _query($list='',$cls='',$ord='',$ord2='') { // this func. dont use $this->data
+		$query = 'SELECT ';
+		if(is_array($list)) $query .= implode(', ', $list);
+		elseif($list) $query .= $list;
+		else $query .= '*';
+		$query .= ' FROM `'.$this->tablename.'` ';
+		if($cls) $query .= $cls;
+
+		$result = $this->SQL->execSQL($query);
+		if($result->err) return false;
+		$data = array();
+		if($ord!='' and $ord2!=''){
+			while ($row = $result->fetch_array())
+				$data[$row[$ord2]][$row[$ord]] = $row;
+		}
+		elseif($ord!=''){
+			while ($row = $result->fetch_array())
+				$data[$row[$ord]] = $row;
+		}
+		else{
+			while ($row = $result->fetch_array())
+				$data[] = $row;
+		}
+		if (!$this->_select_attaches($data)) return false;
+		if (!$this->_select_memos($data)) return false;
+		return $data;
+	}
+
+	/*----------- LIST------------*/
 	public function  _list($ord='',$ord2='') {
-/*--relative ----------- LIST LIST LIST ------------ relative --*/
-
-	// in:  ulflds											req
-	//		clause:string									req
-	// out: data:array of rows:assoc array
-	// return:	0 - success,otherwise errorcode
-
 		$query = 'SELECT ';
 		if (count($this->listfields)) $query .= implode(', ', $this->listfields);
 		else $query .= '*';
@@ -382,13 +405,9 @@ _get_file($row, $key)
 		return $this->_message('Select from `'.$this->caption.'` successful.');
 	}
 
-	public function _select() {/*------- SELECT ---------*/
-	// in:  id											req
-	// out: data:array of rows:assoc array
-	// return:	0 - success,
-	//			otherwise errorcode
+	/*------- SELECT ---------*/
+	public function _select() {
 		$this->data = array();
-
 		if (!$this->_select_fields()) return false;
 		if (!$this->_select_attaches()) return false;
 		if (!$this->_select_memos()) return false;
@@ -409,12 +428,14 @@ _get_file($row, $key)
 		return true;
 	}
 
-	private function _select_attaches() {
-		if (count($this->attaches) and count($this->data)) {
-			foreach($this->data as $ri => &$row) {
-				if (!isset($row['id'])) return false;
-				$merg = array_intersect_key($this->attaches,$row);
-				if(!count($merg)) return false;
+	private function _select_attaches($data='') {
+		if(!$data) $data = $this->data;
+		if (count($this->attaches) and count($data)) {
+			$temp = current($data);
+			if (!isset($temp['id'])) return true;
+			$merg = array_intersect_key($this->attaches,$temp);
+			if(!count($merg)) return true;
+			foreach($data as $ri => &$row) {
 				foreach($merg as $key => $value) {
 					$row['_ext_'.$key] = $row[$key];
 					$row[$key] = $this->_get_file($row,$key);
@@ -424,18 +445,21 @@ _get_file($row, $key)
 		return true;
 	}
 
-	private function _select_memos() {
-		if (count($this->memos))
-			foreach($this->data as $ri => &$row) {
-				foreach($this->memos as $key => $value) {
-					if (isset($row['id']))
-					{
+	private function _select_memos($data='') {
+		if(!$data) $data = $this->data;
+		if (count($this->memos) and count($data)) {
+			$temp = current($data);
+			if (!isset($temp['id'])) return true;
+			$merg = array_intersect_key($this->memos,$temp);
+			if(!count($merg)) return true;
+			foreach($data as $ri => &$row) {
+				foreach($merg as $key => $value) {
 						$f = $this->_CFG['_PATH']['path'].$this->getPathForMemo($key).'/'.$row['id'].$this->text_ext;
 						if (file_exists($f))
 							$row[$key] = $f;
-					}
 				}
 			}
+		}
 		return true;
 	}
 
@@ -510,7 +534,7 @@ _get_file($row, $key)
 			return '\''.implode('\',\'', $this->id).'\'';
 		}
 		else
-			return '\''.$this->id.'\'';
+			return '\''.mysql_real_escape_string($this->id).'\'';
 	}
 
 

@@ -9,6 +9,7 @@ class ugroup_extend extends kernel_class
 		$this->config["mailto"] = 'info@xakki.ru';
 		$this->config["mailrobot"] = 'robot@xakki.ru';
 		$this->config["mailconfirm"] = '';
+		$this->config["mailinfo"] = '';
 		$this->config["mailremind"] = '';
 		$this->config["reg"] = 1;
 		$this->config["noreggroup"] = 4;
@@ -20,8 +21,15 @@ class ugroup_extend extends kernel_class
 
 		$this->config_form["mailto"] = array("type" => "text", 'mask' =>array('min'=>1,"name"=>'email'), "caption" => "Адрес службы поддержки");
 		$this->config_form["mailrobot"] = array("type" => "text", 'mask' =>array('min'=>1,"name"=>'email'), "caption" => "Адрес Робота");
-		$this->config_form['mailconfirm'] = array(
+		$this->config_form['mailinfo'] = array(
 			'type' => 'ckedit', 
+			'caption' => 'Инфа о реге', 
+			'paramedit'=>array(
+				'height'=>350,
+				'fullPage'=>'true',
+				'toolbarStartupExpanded'=>'false'));
+		$this->config_form['mailconfirm'] = array(
+			'type' => 'textarea', 
 			'caption' => 'Текст письма для подтверждения', 
 			'paramedit'=>array(
 				'height'=>350,
@@ -143,9 +151,9 @@ class users_extend extends kernel_class {
 
 		$this->fields["id"] = array("type" => "varchar", "width" => 32, "attr" => "NOT NULL");
 		$this->fields["name"] = array("type" => "varchar", "width" => 32,"attr" => "NOT NULL");
-		$this->fields["fullname"] = array("type" => "varchar", "width" => 32,"attr" => "NOT NULL");
+		$this->fields["fullname"] = array("type" => "varchar", "width" => 32,"attr" => "NOT NULL", 'default'=>'');
 		$this->fields["pass"] = array("type" => "varchar", "width" => 32, "attr" => "NOT NULL");
-		$this->fields["address"] = array("type" => "varchar", "width" => 127,"attr" => "NOT NULL");
+		$this->fields["address"] = array("type" => "varchar", "width" => 127,"attr" => "NOT NULL", 'default'=>'');
 		$this->fields["dob"] = array("type" => "int", "width" => 11, "attr" => "NOT NULL", 'default'=>0);
 		$this->fields["gender"] = array("type" => "tinyint", "width" => 2, "attr" => "NOT NULL", 'default'=>0);
 		$this->fields["phone"] = array("type" => "varchar", "width" => 127,"attr" => "NOT NULL", 'default'=>'');
@@ -153,7 +161,7 @@ class users_extend extends kernel_class {
 		$this->fields["www"] =  array("type" => "varchar", "width" => 32, "attr" => "NOT NULL", 'default'=>'');
 		$this->fields["loginza_token"] =  array("type" => "varchar", "width" => 254, "attr" => "NOT NULL", 'default'=>'');
 		$this->fields["loginza_provider"] =  array("type" => "varchar", "width" => 254, "attr" => "NOT NULL", 'default'=>'');
-		$this->fields["loginza_data"] =  array("type" => "text", "attr" => "NOT NULL", 'default'=>'');
+		$this->fields["loginza_data"] =  array("type" => "text", "attr" => "NOT NULL");
 		// service field
 		$this->fields["reg_hash"] = array("type" => "varchar", "width" => 128, "attr" => "NOT NULL", 'default'=>'');
 		$this->fields["balance"] = array("type" => "int", "width" => 11, "attr" => "NOT NULL", 'default'=>0);
@@ -314,9 +322,10 @@ class users_extend extends kernel_class {
 		return array('',0);
 	}
 
-	function setUserSession() {
-		$_SESSION['user'] = $this->data[0];
-		$_SESSION['user']['owner_id'] = $this->data[0][$this->owner_name];
+	function setUserSession($data='') {
+		if($data==='') $data = current($this->data);
+		$_SESSION['user'] = $data;
+		$_SESSION['user']['owner_id'] = $data[$this->owner_name];
 		$_SESSION['FckEditorUserFilesUrl'] = $this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['userfile'].$_SESSION['user']['id'].'/';
 		$_SESSION['FckEditorUserFilesPath'] = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['userfile'].$_SESSION['user']['id'].'/';
 		if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0)
@@ -427,7 +436,98 @@ class users_extend extends kernel_class {
 
 		return Array(array('messages'=>$mess),$flag);
 	}
-	function loginzaReg($data) {
+	function loginzaReg() {
+		$mess = $dt = array();
+		$flag = false;
+		$authdata = file_get_contents('http://loginza.ru/api/authinfo?token='.$_POST['token']);
+		$dt['loginza_data'] = $authdata;
+		$authdata = json_decode($authdata,TRUE);
+		if($authdata['error_type']) {
+			$mess[] = array('name'=>'error', 'value'=>$authdata['error_type'].':'.$authdata['error_message']); 
+		} else {
+			$dt['loginza_token'] = $_POST['token'];
+			$dt['loginza_provider'] = $authdata['provider'];
+			$dt['id'] = md5($authdata['identity']);
+			if($authdata['provider']=='http://openid.yandex.ru/server/') {
+				$dt['name'] = substr(substr($authdata['identity'],24),0,-1);
+				$dt['email'] = substr(substr($authdata['identity'],24),0,-1).'@ya.ru';
+			}
+			elseif($authdata['provider']=='http://mail.ru/') {
+				$dt['name'] = $authdata['name']['first_name'];
+				$temp = substr(substr($authdata['identity'],18),0,-1);
+				$temp = explode('/',$temp);
+				$dt['email'] = $temp[1].'@'.$temp[0].'.ru';
+			}
+			/*elseif($authdata['provider']=='http://vkontakte.ru/') {
+				$dt['name'] = $authdata['name']['last_name'].' '.$authdata['name']['first_name'];
+				$dt['email'] = $authdata['email'];
+			}*/
+			elseif(isset($authdata['email'])) {
+				$dt['email'] = $authdata['email'];
+				if(is_array($authdata['name'])) {
+					if($authdata['name']['full_name'])
+						$dt['name'] = $authdata['name']['full_name'];
+					elseif($authdata['name']['first_name'])
+						$dt['name'] = $authdata['name']['first_name'];
+				}else 
+					$dt['name'] = $authdata['name'];
+			}
+		}
+
+//print_r('<pre>');print_r($authdata);print_r($dt);
+		if(!count($mess)) {
+			if(!$dt['email']) {
+				$mess[] = array('name'=>'error', 'value'=>'Данный провайдер не сообщил ваш Email, который необходим для авторизации на нашем сайте. Возможно в настройках провайдера вашего аккаунта есть опция позволяющая передавать Email. В любом случае вы можете воспользоваться стандартной регистрацие в нашем сайте , это не займет много времени.');
+			} else {
+				session_go(1);
+				if($data = $this->_query('t2.*,t2.active as gact,t2.name as gname,t1.*','t1 Join '.$this->owner->tablename.' t2 on t1.'.$this->owner_name.'=t2.id where t1.email=\''.mysql_real_escape_string($dt['email']).'\'') and count($data)) {
+					$data = current($data);
+					if($data['reg_hash']==2)
+						$flag = true;
+					else
+						$mess[] = array('name'=>'error', 'value'=>'Поскольку Вы('.$dt['email'].') зарегистрированы на нашем сайте стандартным способом, то для авторизайции также следуют воспользоваться стандартной формой авторизации.');
+				} else {
+					$data =  $dt;
+					if(!$data['name']) $data['name'] = $dt['email'];
+					$data['owner_id']=$this->owner->config['reggroup'];
+					$data['active']=1;
+					$data['reg_hash'] = 2; // отметка  о том что регестрируются через LOGINZA
+					$pass = substr($data['id'],10);
+					$data['pass']=md5($this->_CFG['wep']['md5'].$pass);
+					$_SESSION['user']['id'] = $data['id'];
+					$this->fld_data = $data;
+					$this->fld_data['loginza_data'] = '';
+					if($this->_add($data)) {
+						$data = current($this->_query('t2.*,t2.active as gact,t2.name as gname,t1.*','t1 Join '.$this->owner->tablename.' t2 on t1.'.$this->owner_name.'=t2.id where t1.email=\''.mysql_real_escape_string($dt['email']).'\''));
+						$flag = true;
+						/*
+						global $MAIL;
+						if(!$MAIL) _new_class('mail',$MAIL);
+						$datamail['from']=$this->owner->config["mailrobot"];
+						$datamail['mailTo']=$data['email'];
+						$datamail['subject']='Вы зарегестрированы на сайте '.strtoupper($_SERVER['HTTP_HOST']);
+						
+						$datamail['text']=str_replace(array('%pass%','%login%','%host%'),array($pass,$data['id'],$_SERVER['HTTP_HOST']),$this->owner->config["mailinfo"]);
+						$MAIL->reply = 0;
+						if(!$MAIL->Send($datamail)) {
+							$mess[] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['mailerr']);
+						}*/
+					} else
+						$mess[] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['regerr']);
+				}
+				if($flag) {
+					$mess[] = array('name'=>'ok', 'value'=>$this->_CFG['_MESS']['authok']);
+					$mess[] = array('name'=>'ok', 'value'=>'<a href="/add.html">Перейти на страницу добавления объявления</a>');
+					$this->setUserSession($data);
+//print_r($data);
+					_prmModulLoad();
+				} else
+					$mess[] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['autherr']);
+			}
+		} 
+		global $HTML;
+		$mess = array('messages'=>$mess);
+		return $HTML->transformPHP($mess,'messages');
 	}
 
 	function remind() {
