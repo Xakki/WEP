@@ -110,8 +110,8 @@
 			}
 		}
 		$temp2 .= $_tpl['onload'];
-		$_tpl['onload'] = $temp;
-		$_tpl['onload'] .= 'function fchekcnt() {if(chekcnt=='.$tcnt.') {'.$temp2.'fShowload(0);} else setTimeout(fchekcnt,200);} setTimeout(fchekcnt,200);';
+		$_tpl['onload'] = 'var dtt = new Date();'.$temp;
+		$_tpl['onload'] .= 'function fchekcnt() {if(chekcnt=='.$tcnt.') {'.$temp2.'fShowload(0);dtt2 = new Date();console.log((dtt2.getTime()-dtt.getTime())); } else setTimeout(fchekcnt,200);} setTimeout(fchekcnt,200);';
 		//$_tpl['onload'] .= $temp2;
 	}
 ?>

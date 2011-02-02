@@ -109,28 +109,19 @@
 			return array($result->err,'');
 
 		$stepY = $_this->okr($maxY,1)/10;
+		$f = 'readyPlot(\''.$_this->caption.'\',\''.$_this->mf_statistic['Xname'].'\',\''.$_this->mf_statistic['Yname'].'\','.$stepY.');';
 $eval = '
 line1 = ['.implode(',',$data).'];
 if(typeof $.jqplot == "undefined")
 	$.include(\''.$_this->_CFG['_HREF']['_script'].'jquery.jqplot.0.9.7/plugins/jqplot.ohlcRenderer.min.js\',
-		function(){readyPlot();},[
+		function(){'.$f.'},[
 		$.include(\''.$_this->_CFG['_HREF']['_script'].'jquery.jqplot.0.9.7/jquery.jqplot.min.js\'),
 		$.include(\''.$_this->_CFG['_HREF']['_script'].'jquery.jqplot.0.9.7/plugins/jqplot.cursor.min.js\'),
 		$.include(\''.$_this->_CFG['_HREF']['_script'].'jquery.jqplot.0.9.7/plugins/jqplot.dateAxisRenderer.min.js\'),
 		$.include(\''.$_this->_CFG['_HREF']['_script'].'jquery.jqplot.0.9.7/plugins/jqplot.highlighter.min.js\')
 	]);
-else {readyPlot();}
+else {'.$f.'}
 
-function readyPlot() {
-	plot1 = $.jqplot(\'statschart2\', [line1], {
-		title:\''.$_this->caption.'\',
-		axes:{
-			xaxis:{label:\''.$_this->mf_statistic['Xname'].'\',renderer:$.jqplot.DateAxisRenderer},
-			yaxis:{label:\''.$_this->mf_statistic['Yname'].'\',min:0,tickInterval:'.$stepY.',tickOptions:{formatString:\'%d\'} }},
-		cursor:{zoom: true},
-		series:[{lineWidth:4, markerOptions:{style:\'square\'}}]
-	});
-}
 ';
 /*
 	//$.include(\'/script/jquery.ui.all.js\',function(){readyUI();});
