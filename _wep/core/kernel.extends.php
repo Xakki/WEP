@@ -177,7 +177,7 @@ _fldformer($key, $param)
 		}
 
 		if($this->mf_createrid){
-			$this->fields[$this->mf_createrid] = array('type' => 'varchar', 'width' => $this->mf_idwidth, 'attr' => 'NOT NULL');
+			$this->fields[$this->mf_createrid] = array('type' => 'varchar', 'width' => $this->mf_idwidth, 'attr' => 'NOT NULL', 'default'=>'');
 			$this->index_fields[$this->mf_createrid] = $this->mf_createrid;
 		}
 
@@ -198,20 +198,20 @@ _fldformer($key, $param)
 		if($this->mf_timestamp) 
 			$this->fields['_timestamp'] = array('type'=>'timestamp');
 		if($this->mf_timecr)
-			$this->fields['mf_timecr'] = array('type'=>'int', 'width'=>11, 'attr' => 'unsigned NOT NULL');
+			$this->fields['mf_timecr'] = array('type'=>'int', 'width'=>11, 'attr' => 'unsigned NOT NULL', 'default'=>'0');
 		if($this->mf_timeup) 
-			$this->fields['mf_timeup'] = array('type'=>'int', 'width'=>11, 'attr' => 'unsigned NOT NULL');
+			$this->fields['mf_timeup'] = array('type'=>'int', 'width'=>11, 'attr' => 'unsigned NOT NULL', 'default'=>'0');
 		if($this->mf_timeoff) 
-			$this->fields['mf_timeoff'] = array('type'=>'int', 'width'=>11, 'attr' => 'unsigned NOT NULL');
+			$this->fields['mf_timeoff'] = array('type'=>'int', 'width'=>11, 'attr' => 'unsigned NOT NULL', 'default'=>'0');
 		if($this->mf_ipcreate) 
-			$this->fields['mf_ipcreate'] = array('type'=>'bigint', 'width'=>20, 'attr' => 'NOT NULL');
+			$this->fields['mf_ipcreate'] = array('type'=>'bigint', 'width'=>20, 'attr' => 'NOT NULL', 'default'=>'0');
 
 		/*if ($this->mf_typectrl)
 			$this->fields['typedata'] = array('type' => 'tinyint', 'attr' => 'unsigned NOT NULL');
 		*/
 		if ($this->mf_ordctrl) //Содание полей для сортировки
 		{
-			$this->fields['ordind'] = array('type' => 'int','width'=>'10', 'attr' => 'NOT NULL');
+			$this->fields['ordind'] = array('type' => 'int','width'=>'10', 'attr' => 'NOT NULL', 'default'=>'0');
 			$this->ordfield = 'ordind';
 			$this->index_fields['ordind'] = 'ordind';
 		}

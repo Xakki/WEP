@@ -1,4 +1,9 @@
 <?
+	//$FUNCPARAM = explode('&',$FUNCPARAM);
+/**HELP
+$FUNCPARAM : 1 - OPENid вкл, else - OPENid выкл
+HELP**/
+
 	$result = array();
 	if(isset($_REQUEST['ref']) and $_REQUEST['ref']!='' and !strstr($_REQUEST['ref'],'login') and !strstr($_REQUEST['ref'],'remind')) 
 		$ref= $_REQUEST['ref'];
@@ -15,7 +20,7 @@
 
 $mess = $form = '';
 
-	if($_POST['token']) {
+	if($FUNCPARAM && $_POST['token']) {
 		if(!$UGROUP)
 			_new_class('ugroup',$UGROUP);
 		$html =  $UGROUP->childs['users']->loginzaReg();
@@ -37,8 +42,7 @@ $mess = $form = '';
 		@header("Location: ".$ref);
 		die();
 	}
-
-		$form = '<div class="cform">
+	$form = '<div class="cform" style="">
 			<form action="" method="post">
 					<input type="hidden" name="ref" value="'.$ref.'"/>
 					<div>Логин:</div><input type="text" name="login" tabindex="1"/>
@@ -47,9 +51,13 @@ $mess = $form = '';
 					<input class="submit" type="submit" name="enter" value="Войти" tabindex="3"/>
 				</form>
 				<a href="'.$_CFG['_HREF']['BH'].'remind.html">Забыли пароль?</a>
-			
 			 <div style="clear:both;"></div>
 		 </div>';
+	if($FUNCPARAM) {
+		$_tpl['script']['loginza'] = array('http://loginza.ru/js/widget.js');
+		$form = '<div class="layerblock" style="width:620px;background:none;border:none;margin:20px auto 0;"><iframe src="http://loginza.ru/api/widget?overlay=loginza&token_url='.urlencode('http://'.$_SERVER['HTTP_HOST'].'/login.html').'&providers_set=yandex,google,rambler,mailruapi,myopenid,openid,loginza" style="width:359px;height:180px;float:left;" scrolling="no" frameborder="no" id="loginzaiframe"></iframe>'.$form.'</div>';
+	}
+
 
 	if($result[0]) $result[0] = '<div style="color:red;">'.$result[0].'</div>';
 	$html = '<div style="height:100%;">

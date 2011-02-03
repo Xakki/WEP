@@ -521,8 +521,7 @@ class users_extend extends kernel_class {
 					$this->setUserSession($data);
 //print_r($data);
 					_prmModulLoad();
-				} else
-					$mess[] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['autherr']);
+				}
 			}
 		} 
 		global $HTML;
