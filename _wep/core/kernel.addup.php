@@ -402,7 +402,7 @@
 		if($imtype>3) return true;
 		$source = _imagecreatefrom($_this,$InFile,$imtype);//открываем рисунок
 		imagecopyresized($thumb, $source, 0, 0, 0, 0, $WidthX, $HeightY, $width_orig, $height_orig);//меняем размер
-		_image_to_file($thumb, $OutFile,$_this->_CFG['_imgquality'],$imtype);//сохраняем в фаил
+		_image_to_file($thumb, $OutFile,$_this->_CFG['_imgquality'],$imtype);//сохраняем в файл
 		if(!file_exists($OutFile)) return $_this->_message('Cant create file',1);
 		return true;
 	}
@@ -418,7 +418,7 @@
 		if($imtype>3) return true;
 		$source = _imagecreatefrom($_this,$InFile,$imtype);//открываем рисунок
 		imagecopyresampled($thumb, $source, 0, 0, $width_orig/2-$WidthX/2, $height_orig/2-$HeightY/2, $WidthX, $HeightY, $WidthX, $HeightY);
-		_image_to_file($thumb, $OutFile,$_this->_CFG['_imgquality'],$imtype);//сохраняем в фаил
+		_image_to_file($thumb, $OutFile,$_this->_CFG['_imgquality'],$imtype);//сохраняем в файл
 		if(!file_exists($OutFile)) return $_this->_message('Cant create img file ',1);
 		return true;
 	}
@@ -452,7 +452,7 @@
 			return $_this->_message('Cannot Initialize new GD image stream',1);
 		if(!imagecopyresampled($thumb2, $thumb, 0, 0, $WidthX/2-$trueX/2, $HeightY/2-$trueY/2, $trueX, $trueY, $trueX, $trueY)) 
 			return $_this->_message('Error imagecopyresampled',1);
-		_image_to_file($thumb2, $OutFile,$_this->_CFG['_imgquality'],$imtype);//сохраняем в фаил
+		_image_to_file($thumb2, $OutFile,$_this->_CFG['_imgquality'],$imtype);//сохраняем в файл
 		if(!file_exists($OutFile)) return $_this->_message('Cant create file',1);
 		return true;
 	}

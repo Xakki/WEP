@@ -24,12 +24,14 @@ class modul_child extends ArrayObject {
 	
 	function offsetGet($index) {
 		$value = parent::offsetGet($index);
-		
 		if (isset($this->modul_obj->childs[$index]) && $value === true) {
 			_new_class($index, $modul_child,  $this->modul_obj);
 			$this->modul_obj->childs[$index]	= $modul_child;
 			return $this->modul_obj->childs[$index];
-		}		
+		}else
+		{
+			//если один и тот же клас исползуется в как ребенок в других классах, то $this->singleton = false; вам в помощь, иначе сюда будут выдаваться ссылки на класс созданный в первы раз для другого модуля
+		}
 
 		return $value;	
 	}
@@ -63,7 +65,7 @@ abstract class kernel_class{
 
 		$this->_create_conf(); // загрузки формы конфига
 
-		if (isset($this->config_form) and count($this->config_form)) { // загрузка конфига из фаила для модуля
+		if (isset($this->config_form) and count($this->config_form)) { // загрузка конфига из файла для модуля
 			$this->configParse();
 		}
 		
@@ -268,7 +270,7 @@ _fldformer($key, $param)
 	}
 
 	protected function configParse() {
-		if (isset($this->config_form)) { // загрузка конфига из фаила для модуля
+		if (isset($this->config_form)) { // загрузка конфига из файла для модуля
 			$this->_file_cfg = $this->_CFG['_PATH']['config'].get_class($this).'.cfg';
 			if (file_exists($this->_file_cfg)) {
 				$this->config = array_merge($this->config,_fParseIni($this->_file_cfg));
@@ -1127,7 +1129,6 @@ $Ajax=0 - не скриптовая
 		elseif($this->id) {
 			$this->_select();
 		}
-		
 		if($this->owner->id) {
 			if($this->owner->mf_istree) array_pop($HTML->path);
 			$HTML->path[$firstpath] =$this->caption.':'.$this->owner->data[$this->owner->id][$this->owner->_listname];

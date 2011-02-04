@@ -7,7 +7,7 @@
 		else 
 			$this->clause =' t1';
 		$this->_list();
-		//print($this->SQL->query);
+#		print($this->SQL->query);
 		$countfield = $this->data[0]['cnt'];
 		
 		$cl = $this->_cl;

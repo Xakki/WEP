@@ -86,7 +86,7 @@
 					</xsl:when>
 					<xsl:when test="@type='file'">
 						<xsl:if test=".!=''">
-							<a href="{.}" target="_blank">Фаил</a>&#160;
+							<a href="{.}" target="_blank">Файл</a>&#160;
 						</xsl:if>
 					</xsl:when>
 					<xsl:when test="@href!=''">
