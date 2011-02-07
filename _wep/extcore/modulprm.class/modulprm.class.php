@@ -122,7 +122,7 @@ class modulprm_class extends kernel_class {
 						} else {
 							unset($this->mquery[$entry]);
 						}
-						$this->_constr_childs($class_);
+						$this->_constr_childs($class_,$pathm);
 						$check_result = array_merge($check_result,$class_->_checkmodstruct());						
 					}
 				}
@@ -152,7 +152,7 @@ class modulprm_class extends kernel_class {
 			if(count($this->fData))
 				$check_result[$this->tablename]['']['ok'] = '<span style="color:#4949C9;">Будет удалены записи из табл '.$this->tablename.' ('.implode(',',array_keys($this->fData)).')</span>';
 			foreach($this->mquery as $k=>$r)
-				$check_result[$this->tablename][$k]['ok'] = '<span style="color:#4949C9;">'.$r.'</span>';
+				$check_result[$this->tablename][$k]['ok'] = '<span style="color:#4949C9;">'.print_r($r,true).'</span>';
 		}
 		return $check_result;
 	}
@@ -168,7 +168,7 @@ class modulprm_class extends kernel_class {
 					$tmp = $this->data[$k]; // временная переменная
 					if($tmp['parent_id']!=$class_->_cl or $tmp['tablename']!=$r->tablename or $tmp['typemodul']!='5' or $tmp['path']!=$pathm or $tmp['ver']!=$r->ver) {
 						// смотрим какие данные нужно менять
-						$this->mquery[$k] = array('id'=>$k, 'parent_id'=>$class_->_cl, 'tablename'=>$r->tablename, 'typemodul'=>5, 'ver'=>$r->ver);
+						$this->mquery[$k] = array('id'=>$k, 'parent_id'=>$class_->_cl, 'tablename'=>$r->tablename, 'typemodul'=>5, 'ver'=>$r->ver, 'path'=>$pathm);
 					} else 
 						unset($this->mquery[$k]);
 					unset($this->fData[$k]); //удаляем, чтоьы потом можно было узнать какие модули отсутствуют
@@ -218,6 +218,7 @@ class modulgrp_class extends kernel_class {
 		$this->prm_add = false;
 		$this->prm_del = false;
 		$this->mf_createrid = false;
+		$this->singleton = false;
 		return true;
 	}
 

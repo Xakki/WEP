@@ -27,7 +27,7 @@
 			$html .= $temp_topmenu;
 		}
 
-		$html .= $temp_pagenum =  tpl_pagenum($data['pagenum']);// pagenum
+		$html .= tpl_pagenum($data['pagenum']);// pagenum
 		$html .= '<div id="tools_block" style="display:none;"></div>';
 		if(isset($data['messages']) and count($data['messages'])) {
 			include_once($HTML->_PATHd.'php/messages.php');
@@ -37,7 +37,7 @@
 		$html .= tpl_data($data['data'],$firstpath);// messages
 
 		$html .= $temp_topmenu; //MENU
-		$html .= $temp_pagenum; //pagenum
+		//$html .= $temp_pagenum; //pagenum
 		$html .= '<div class="clk"></div>';
 		return $html;
 	}
@@ -96,7 +96,7 @@
 					}
 					elseif($tditem['fileType']=='file') {
 						if($tditem['value']!='')
-							$html .= '<a href="'.$tditem['value'].'" target="_blank">Фаил</a>&#160;';
+							$html .= '<a href="'.$tditem['value'].'" target="_blank">Файл</a>&#160;';
 					}
 					elseif($tditem['href']!='') {
 						$html .= '<a href="'.$tditem['href'].'" target="_blank">'.$tditem['value'].'</a>&#160;';

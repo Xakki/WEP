@@ -96,7 +96,7 @@
 					}
 					elseif($tditem['type']=='file') {
 						if($tditem['value']!='')
-							$html .= '<a href="'.$tditem['value'].'" target="_blank">Фаил</a>&#160;';
+							$html .= '<a href="'.$tditem['value'].'" target="_blank">Файл</a>&#160;';
 					}
 					elseif($tditem['href']!='') {
 						$html .= '<a href="'.$tditem['href'].'" target="_blank">'.$tditem['value'].'</a>&#160;';

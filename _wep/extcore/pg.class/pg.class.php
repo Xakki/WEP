@@ -24,7 +24,7 @@ class pg_class extends kernel_class {
 		$this->config_form['design'] = array('type' => 'list', 'listname'=>'mdesign', 'caption' => 'Дизаин по умолчанию');
 		$this->config_form['memcache'] = array('type' => 'int', 'caption' => 'Memcache time', 'comment'=>'0 - откл кеширование, 1> - кеширование в сек.');
 		$this->config_form['memcachezip'] = array('type' => 'checkbox', 'caption' => 'Memcache сжатие');
-		$this->config_form['sitemap'] = array('type' => 'checkbox', 'caption' => 'SiteMap XML' ,'comment'=>'создавать в корне сайта xml фаил карты сайта для поисковиков');
+		$this->config_form['sitemap'] = array('type' => 'checkbox', 'caption' => 'SiteMap XML' ,'comment'=>'создавать в корне сайта xml файл карты сайта для поисковиков');
 	}
 
 	function _set_features() {

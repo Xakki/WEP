@@ -65,17 +65,17 @@ $_CFG['singleton'] = array();
 	$_CFG['_PATH']['cdesign'] = $_CFG['_PATH']['wep'].'/cdesign/'; // дизайн админки
 	$_CFG['_PATH']['locallang'] = $_CFG['_PATH']['wep'].'/locallang/'; // язык
 
-/*пути для фаилов пользовательских модулей*/
+/*пути для файлов пользовательских модулей*/
 	$_CFG['_PATH']['ptext'] = $_CFG['_PATH']['wepconf'].'/pagetext/'; // путь к обработчикам блоков страниц
 	$_CFG['_PATH']['ext'] = $_CFG['_PATH']['wepconf'].'/ext/'; // путь к пользовательским модулям
 	$_CFG['_PATH']['config'] = $_CFG['_PATH']['wepconf'].'/config/'; // конфиги
 	$_CFG['_PATH']['ulocallang'] = $_CFG['_PATH']['wepconf'].'/locallang/'; // язык
 	$_CFG['_PATH']['cron'] = $_CFG['_PATH']['wepconf'].'/cron/'; // кроны
-	$_CFG['_PATH']['temp'] = $_CFG['_PATH']['wepconf'].'/temp/'; // путь к папке для хранения временных фаилов
+	$_CFG['_PATH']['temp'] = $_CFG['_PATH']['wepconf'].'/temp/'; // путь к папке для хранения временных файлов
 	$_CFG['_PATH']['log'] = $_CFG['_PATH']['wepconf'].'/log/'; 
 	$_CFG['_PATH']['HASH_KEY'] = $_CFG['_PATH']['config'].'hash.key';
 
-/*пути для фаилов дизайна страниц*/
+/*пути для файлов дизайна страниц*/
 	$_CFG['_PATH']['design'] = $_CFG['_PATH']['path'].'_design/'; // дизайн сайта
 	$_CFG['_PATH']['_style'] = $_CFG['_PATH']['path'].'_design/_style/'; // дизайн стили
 	$_CFG['_PATH']['_script'] = $_CFG['_PATH']['path'].'_design/_script/'; // дизайн стили
@@ -87,7 +87,7 @@ $_CFG['singleton'] = array();
 	$_CFG['PATH']['content'] = '_content/';
 	$_CFG['PATH']['userfile'] = '_content/_userfile/'; // файлы пользователя
 	$_CFG['PATH']['wepname'] = basename($_CFG['_PATH']['wep']); // базовое имя админки
-	$_CFG['PATH']['wepconfname'] = basename($_CFG['_PATH']['wepconf']); // базовое имя пользовательских фаилов
+	$_CFG['PATH']['wepconfname'] = basename($_CFG['_PATH']['wepconf']); // базовое имя пользовательских файлов
 	$_CFG['PATH']['cdesign'] = $_CFG['PATH']['wepname'].'/cdesign/'; // дизайн админки
 	if(!isset($_CFG['PATH']['WSWG'])) $_CFG['PATH']['WSWG'] = '_wysiwyg/';
 	$_CFG['PATH']['HASH_KEY'] = $_CFG['PATH']['wepconfname'].'/config/hash.key';

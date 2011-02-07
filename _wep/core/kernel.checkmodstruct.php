@@ -24,8 +24,6 @@
 			'DOUBLE' => false,
 			'PRECISION' => false,
 			'REAL' => false,
-
-			
 			'INT' => 11,
 			'INTEGER ' => 11,
 			'VARCHAR' => 255,
