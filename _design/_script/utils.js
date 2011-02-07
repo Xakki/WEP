@@ -206,7 +206,7 @@ function ShowTools(id,hrf) {
 
 	if(typeof hrf=='object')
 		_last_load = jQuery(hrf).attr('href');
-	JSWin({'href':hrf,'insertObj':id});
+	JSWin({'href':hrf,'insertObj':'#'+id});
 	jQuery('#'+id).fadeIn();
 
 	return false;
@@ -257,10 +257,7 @@ function JSWin(param) {
 		},
 		success: function(result, textStatus, XMLHttpRequest) {
 			clearTimeout(timerid);
-
 			if(param['insertObj'] && result.html != '') {
-				if(typeof param['insertObj']!='object')
-					param['insertObj'] = '#'+param['insertObj'];
 				if(param['insertType']=='after')
 					jQuery(param['insertObj']).after(result.html);
 				else if(param['insertType']=='before')
@@ -274,6 +271,9 @@ function JSWin(param) {
 
 			if(result.text != undefined && result.text!='') fLog(fSpoiler(result.text,'AJAX text result'),1);
 			if(result.eval != undefined && result.eval!='') eval(result.eval);
+			alert(typeof param['call']);
+			if(param['call'] && typeof param['call'] == 'function') 
+				param['call'].call(result);
 		}
 	});
 	return false;
