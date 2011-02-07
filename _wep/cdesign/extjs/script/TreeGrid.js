@@ -69,6 +69,7 @@ wep.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
 		if (this.sort_mode == true) {
 			dataUrl += '&sort_mode=true';
 			this.enableDD = true;
+			this.enableSort = false;
 		}
 		
 		this.pnav.get_links(this); // создаем объект this.pnav.links

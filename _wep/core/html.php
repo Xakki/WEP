@@ -703,22 +703,6 @@
 				'triggerAction' => 'all',
 
 				'value_attr' => 'value',
-
-		/*		'store' => array(
-					'eval' => "new Ext.data.ArrayStore({
-						fields: ['myId','displayText'],
-						data: this.data_store
-					});"
-				),
-				'listeners' => array(
-					'eval' =>  "{
-						select: function(f,r,i){
-						//	alert(r.data.value);
-						},
-					}"
-				),
-				'valueField' => 'myId',
-				'displayField' => 'displayText'*/
 			),
 			'multiple1' => array(
 				'xtype' => 'multiselect',
@@ -733,26 +717,23 @@
 				'emptyText' => '',
 				'value_attr' => 'value',
 				'delimiter' => '|',
-				'multiselects' => array(
-					array(
-						'width' => 250,
-						'height' => 200,
-					),
-					array(
-						'width' => 250,
-						'height' => 200,
-					)
-				),
-		//		'data' => this.data_store,
-				'store' => array(
-					'eval' => "new Ext.data.ArrayStore({
-						fields: ['value', 'name'],
-						 data: [[1, 'item1'], [2, 'item2']]
-
-					});"
-				),
-				'valueField' => 'value',
-				'displayField' => 'name'
+				'dataFields'        => array('code', 'desc'),
+				'fromData'          => array(array('1', 'One'), array('2', 'Two'), array('3', 'Three'), array('4', 'Four')),
+				'toData'            => array(array('6', 'Six')),
+				'msWidth'           => 100,
+				'msHeight'          => 200,
+				'valueField'        => 'code',
+				'displayField'      => 'desc'
+//				'multiselects' => array(
+//					array(
+//						'width' => 250,
+//						'height' => 200,
+//					),
+//					array(
+//						'width' => 250,
+//						'height' => 200,
+//					)
+//				),
 			),
 			'info' => array(
 				'xtype' => 'fieldset'

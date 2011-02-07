@@ -32,17 +32,15 @@
 
 				$msg = '';
 
-				$result = $SQL->execSQL('SELECT ordind FROM `'.$MODUL->tablename.'` WHERE id="'.$nodeid.'"');
+				$result = $SQL->execSQL('SELECT ordind, parent_id FROM `'.$MODUL->tablename.'` WHERE id="'.$nodeid.'"');
 				if ($row = $result->fetch_array()) {
 					$dragindex = $row['ordind'];
 
-
-
 					if ($dragindex < $dropindex) {
-						$result2 = $SQL->execSQL('UPDATE `'.$MODUL->tablename.'` SET ordind=ordind+1 WHERE ordind>'.$dragindex.' AND ordind<'.$dropindex.' AND id!="'.$nodeid.'"');
+						$result2 = $SQL->execSQL('UPDATE `'.$MODUL->tablename.'` SET ordind=ordind-1 WHERE parent_id="'.$row['parent_id'].'" AND ordind>'.$dragindex.' AND ordind<'.$dropindex.' AND id!="'.$nodeid.'"');
 					}
 					elseif ($dragindex > $dropindex) {
-						$result2 = $SQL->execSQL('UPDATE `'.$MODUL->tablename.'` SET ordind=ordind+1 WHERE ordind<'.$dragindex.' AND ordind>'.$dropindex.' AND id!="'.$nodeid.'"');
+						$result2 = $SQL->execSQL('UPDATE `'.$MODUL->tablename.'` SET ordind=ordind+1 WHERE parent_id="'.$row['parent_id'].'" AND ordind<'.$dragindex.' AND ordind>'.$dropindex.' AND id!="'.$nodeid.'"');
 					}
 					else {
 						$json = array('result' => 'failure');
