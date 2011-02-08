@@ -20,7 +20,7 @@ function JSFR(n) {
 			},*/
 		success: 
 			function(result) {
-				console.log(result);
+				//console.log(result);
 				clearTimeout(timerid);
 				timerid2 = setTimeout(function(){fShowload(0);},200);
 				if(result.html!= undefined && result.html!='') jQuery('#ajaxload').html(result.html);

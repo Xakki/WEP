@@ -489,7 +489,7 @@ class pg_class extends kernel_class {
 		if(is_array($row) and isset($row['href']) and $row['href']!='') {
 			$href = $row['href'];
 			if(strstr($href,'http://'))
-				$href ='/_redirect.php?url='.$href;
+				$href ='_redirect.php?url='.base64_encode($href);
 		}
 		else $href = $key.'.html';
 		return $href;
