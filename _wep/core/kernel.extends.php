@@ -273,7 +273,7 @@ _fldformer($key, $param)
 		if (isset($this->config_form)) { // загрузка конфига из файла для модуля
 			$this->_file_cfg = $this->_CFG['_PATH']['config'].get_class($this).'.cfg';
 			if (file_exists($this->_file_cfg)) {
-				$this->config = array_merge($this->config,_fParseIni($this->_file_cfg));
+				$this->config = array_merge($this->config,_fParseIni($this->_file_cfg,$this->config_form));
 			}
 		}
 		return true;
