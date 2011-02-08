@@ -3,7 +3,7 @@
 			if(($r['readonly'] and !$this->id) or $r['mask']['fview']==2 or (isset($r['mask']['usercheck']) and !_prmUserCheck($r['mask']['usercheck'])))
 				continue;
 			if($r['type']!='info') {
-				if(!$this->id and isset($r['default']) and !isset($_POST[$k])) {
+				if(!isset($r['value']) and isset($r['default']) and !isset($_POST[$k])) {// and !$this->id
 					$r['value']= $r['default'];
 					if(isset($r['default_2']))
 						$r['value_2']= $r['default_2'];

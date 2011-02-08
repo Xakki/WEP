@@ -1403,7 +1403,7 @@ $Ajax=0 - не скриптовая
 			
 			$this->form['f_clear_sbmt'] = array(
 				'type'=>'info',
-				'caption'=>'<a href="'.$_SERVER['HTTP_REFERER'].'" onclick="JSWin({\'insertObj\':\'form_tools_Formfilter\',\'href\':$(\'#form_tools_Formfilter\').attr(\'action\'),\'data\':{ f_clear_sbmt:1}});return false;">Очистить</a>');		}
+				'caption'=>'<a href="'.$_SERVER['HTTP_REFERER'].'" onclick="JSWin({\'insertObj\':\'#form_tools_Formfilter\',\'href\':$(\'#form_tools_Formfilter\').attr(\'action\'),\'data\':{ f_clear_sbmt:1}});return false;">Очистить</a>');		}
 		return $this->form;
 	}
 
