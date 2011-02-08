@@ -17,7 +17,7 @@
 					$temp_topmenu .= ' onclick="return ShowTools(\'tools_block\',\''.$_CFG['_HREF']['wepJS'].'?'.$r['href'].'\')"';
 				}
 				else {
-					$temp_topmenu .= ' onclick="return load_href(\''.$_CFG['PATH']['wepname'].'/index.php?'.$r['href'].'\')"';
+					$temp_topmenu .= ' onclick="return load_href(\''.$firstpath.$r['href'].'\')"';
 				}
 				if($r['sel'])
 					$temp_topmenu .= ' style="border:2px solid red;"';
