@@ -628,7 +628,8 @@
 	function  userExit() {
 		global $_CFG;
 		session_go();
-		session_destroy();
+		if(isset($_SESSION))
+			session_destroy();
 		//if(isset($_SESSION))
 		//	$_SESSION = array();
 		if(isset($_COOKIE['remember']))

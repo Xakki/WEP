@@ -220,7 +220,7 @@ Ext.apply(wep, {
 	click_handler: function(currentnode, clickevent) {
 		wep.href = this.href;
 
-		if (this.href.indexOf('_wep/') == -1) {
+		if (this.href.indexOf('_wep/') == -1 || this.href.indexOf('exit=ok') != -1) {
 			return true;
 		}
 
@@ -314,7 +314,7 @@ Ext.apply(wep, {
 							columns: columns,
 							children: children,
 							requestMethod: 'GET',
-							dataUrl: '_wep/index.php?_view=list&_modul=' + wep.modul.cn,
+							dataUrl: '_wep/index.php?_view=list&_modul=' + wep.modul.cn
 						});
 
 						var panel = new wep.panel({
