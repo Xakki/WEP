@@ -269,10 +269,9 @@ function JSWin(param) {
 			else if(result.html!='') fShowload(1,result.html,param['body']);
 			else timerid2 = setTimeout(function(){fShowload(0,'',param['body']);},200);
 
-			if(result.text != undefined && result.text!='') fLog(fSpoiler(result.text,'AJAX text result'),1);
-			if(result.eval != undefined && result.eval!='') eval(result.eval);
-			alert(typeof param['call']);
-			if(param['call'] && typeof param['call'] == 'function') 
+			if(typeof result.text != 'undefined' && result.text!='') fLog(fSpoiler(result.text,'AJAX text result'),1);
+			if(typeof result.eval != 'undefined' && result.eval!='') eval(result.eval);
+			if(typeof param['call'] != 'undefined' && typeof param['call'] == 'function') 
 				param['call'].call(result);
 		}
 	});
