@@ -13,6 +13,9 @@ class modul_child extends ArrayObject {
 			$key = $iterator->key();
 			
 			if ($iterator->current() === true) {
+				if (isset($this->modul_obj->child_path[$key])) {
+					require_once $this->modul_obj->child_path[$key];
+				}
 				_new_class($key, $this->modul_obj->childs[$key], $this->modul_obj);
 			}
 		
@@ -25,6 +28,9 @@ class modul_child extends ArrayObject {
 	function offsetGet($index) {
 		$value = parent::offsetGet($index);
 		if (isset($this->modul_obj->childs[$index]) && $value === true) {
+			if (isset($this->modul_obj->child_path[$index])) {
+				require_once $this->modul_obj->child_path[$index];
+			}
 			_new_class($index, $modul_child,  $this->modul_obj);
 			$this->modul_obj->childs[$index]	= $modul_child;
 			return $this->modul_obj->childs[$index];
@@ -242,9 +248,11 @@ _fldformer($key, $param)
 
 		if($this->cf_childs and $this->config['childs']) {
 			foreach($this->config['childs'] as $r) {
-//				if(file_exists($this->_CFG['_PATH']['ext'].$this->_cl.'.class/'.$r.'.childs.php'))
-//					include_once($this->_CFG['_PATH']['ext'].$this->_cl.'.class/'.$r.'.childs.php');
-//				elseif(file_exists($this->_CFG['_PATH']['extcore'].$this->_cl.'.class/'.$r.'.childs.php'))
+				if(file_exists($this->_CFG['_PATH']['ext'].$this->_cl.'.class/'.$r.'.childs.php'))
+					$this->child_path[$r] = $this->_CFG['_PATH']['ext'].$this->_cl.'.class/'.$r.'.childs.php';
+//						include_once($this->_CFG['_PATH']['ext'].$this->_cl.'.class/'.$r.'.childs.php');
+				elseif(file_exists($this->_CFG['_PATH']['extcore'].$this->_cl.'.class/'.$r.'.childs.php'))
+					$this->child_path[$r] = $this->_CFG['_PATH']['extcore'].$this->_cl.'.class/'.$r.'.childs.php';
 //					include_once($this->_CFG['_PATH']['extcore'].$this->_cl.'.class/'.$r.'.childs.php');
 				$this->create_child($r);
 			}
