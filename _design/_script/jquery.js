@@ -45,7 +45,7 @@ jQuery.extend({
 				jslist[href] = 1;
 				if(href==url) flag = 1;
 			});
-			if(flag == 1) {jslist[href]=2;return true;}
+			if(flag == 1) {jslist[url]=2;return true;}
 		} else {
 			if(jslist[url]) {jslist[url]++;return true;}
 			else jslist[url] = 1;
@@ -104,7 +104,7 @@ jQuery.extend({
 				csslist[href] = 1;
 				if(href==url) flag = 1;
 			});
-			if(flag == 1) {csslist[href]=2;return true;}
+			if(flag == 1) {csslist[url]=2;return true;}
 		} else {
 			if(csslist[url]) {csslist[url]++;return true;}
 			else csslist[url] = 1;

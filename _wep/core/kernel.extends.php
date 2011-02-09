@@ -455,15 +455,13 @@ _get_file($row, $key)
 		return true;
 	}
 
-	private function _select_memos($data='') {
-		if(!$data) $data = $this->data;
+	private function _select_memos(&$data='') {
+		if($data==='') $data = &$this->data;
 		if (count($this->memos) and count($data)) {
 			$temp = current($data);
 			if (!isset($temp['id'])) return true;
-			$merg = array_intersect_key($this->memos,$temp);
-			if(!count($merg)) return true;
 			foreach($data as $ri => &$row) {
-				foreach($merg as $key => $value) {
+				foreach($this->memos as $key => $value) {
 						$f = $this->_CFG['_PATH']['path'].$this->getPathForMemo($key).'/'.$row['id'].$this->text_ext;
 						if (file_exists($f))
 							$row[$key] = $f;
@@ -1178,7 +1176,7 @@ $Ajax=0 - не скриптовая
 			$xml['topmenu'] = array();
 			if($this->_prmModulAdd($this->_cl))
 				$xml['topmenu']['add'] = array(
-					'href'=>$this->_clp.'_type=add'.(($this->id)?'&amp;'.$this->_cl.'_id='.$this->id:''),
+					'href'=>'_type=add'.(($this->id)?'&amp;'.$this->_cl.'_id='.$this->id:''),
 					'caption'=>'Добавить '.$this->caption,
 					'sel'=>0,
 					'type'=>'',
