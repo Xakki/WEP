@@ -19,7 +19,7 @@
 	<div style="position:relative;top:40%;">
 		{$_tpl['mess']}
 		<div class="cform">
-			<form action="" method="post">
+			<form action="{$_CFG['_HREF']['BH']}{$_CFG['PATH']['wepname']}/login.php" method="post">
 				<input type="hidden" name="ref" value="{$_tpl['ref']}"/>
 				<div>Логин:</div><input type="text" name="login" tabindex="1"/>
 				<div>Пароль:</div><input type="password" name="pass" tabindex="2"/>
