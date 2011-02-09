@@ -25,7 +25,7 @@
 					}
 				}
 				$odir->close();
-			}print_r($dir);
+			}
 		}
 		elseif ($listname == "style") {
 
