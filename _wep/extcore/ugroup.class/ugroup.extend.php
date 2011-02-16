@@ -352,8 +352,8 @@ class users_extend extends kernel_class {
 		$mess = array();
 		$this->fields_form['_info']= array('type'=>'info','caption'=>'Регистрация пользователя','css'=>'caption');
 		if(count($_POST) and $_POST['sbmt']) {
-			if($this->fn_pass!='pass') $_POST[$this->fn_pass] = $_POST['pass'];
-			if($this->fn_pass!='login') $_POST[$this->fn_login] = $_POST['login'];
+			//if($this->fn_pass!='pass') $_POST[$this->fn_pass] = $_POST['pass'];
+			//if($this->fn_pass!='login') $_POST[$this->fn_login] = $_POST['login'];
 			$this->kPreFields($_POST,$param);
 			$arr = $this->fFormCheck($_POST,$param,$this->fields_form);
 			if(!count($arr['mess'])){
