@@ -40,10 +40,14 @@
 		$result = $this->SQL->execSQL('SHOW TABLES LIKE \''.$this->tablename.'\'');// checking table exist
 		if ($result->err) return array($this->tablename => array(array('err'=>$this->getMess('_big_err'))));
 		if (!$result->num_rows()) {
-			return array($this->tablename => array(array('err'=>'Модуль не установлен')));
-			/*if(!$this->_install())
-				return array($this->tablename => array(array('err'=>$this->getMess('_install_err'))));
-			return array();*/
+			if (isset($_POST['sbmt'])) {
+				if(!$this->_install())
+					return array($this->tablename => array(array('err'=>$this->getMess('_install_err'))));
+				else
+					return array($this->tablename => array(array('ok'=>$this->getMess('_install_ok'))));
+			}
+			else
+				return array($this->tablename => array(array('ok'=>$this->getMess('_install_info'))));
 		}
 		
 		$out = array();

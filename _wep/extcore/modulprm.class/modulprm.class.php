@@ -162,7 +162,7 @@ class modulprm_class extends kernel_class {
 			foreach($class_->childs as $k=>&$r) {
 				$this->moduldir[$k] = $class_->_cl;
 				if(!isset($this->data[$k]) and $r->showinowner) {
-					$this->mquery[$k] = array('id'=>$k,'name'=>$r->caption.' ['.$k.']','parent_id'=>$class_->_cl,'tablename'=>$r->tablename, 'typemodul'=>5, 'ver'=>$r->ver);
+					$this->mquery[$k] = array('id'=>$k,'name'=>$r->caption.' ['.$k.']','parent_id'=>$class_->_cl,'tablename'=>$r->tablename, 'typemodul'=>5, 'ver'=>$r->ver,'path'=>$pathm);
 				}
 				elseif($r->showinowner) { //if($r->ver!=$this->data[$k]['ver'])
 					$tmp = $this->data[$k]; // временная переменная

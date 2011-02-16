@@ -602,7 +602,7 @@
 				if($flag) {
 					$_SESSION['user']['name'] = $_CFG['wep']['name'];
 					$_SESSION['user']['gname'] = "GOD MODE";
-					$_SESSION['user']['id'] = $_CFG['wep']['login'];
+					$_SESSION['user']['id'] = 0;
 					$_SESSION['user']['level']= 0;
 					$_SESSION['user']['wep']= 1;
 					$_SESSION['user']['design'] = $_CFG['wep']['design'];

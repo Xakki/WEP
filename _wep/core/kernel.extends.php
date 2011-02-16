@@ -325,9 +325,13 @@ _fldformer($key, $param)
 	{
 		$m = '`'.$key.'` '.$param['type'];
 
-			if (isset($param['width']) && $param['width']!='') 
+			if (isset($param['width']) && is_array($param['width'])) {
+				if($param['type']=='enum')
+					$m.= '("'.implode('","',array_keys($param['width'])).'")'; 
+			}
+			elseif (isset($param['width']) && $param['width']!='') 
 				$m.= '('.$param['width'].')'; 
-				
+			
 		$m.=(isset($param['attr'])?' '.$param['attr']:'').(isset($param['default'])?' DEFAULT \''.$param['default'].'\'':'');
 		return $m;
 	}
