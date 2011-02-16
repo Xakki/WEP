@@ -380,7 +380,7 @@ class users_extend extends kernel_class {
 						$datamail['from']=$this->owner->config['mailrobot'];
 						$datamail['mailTo']=$arr['vars']['email'];
 						$datamail['subject']='Подтвердите регистрацию на '.strtoupper($_SERVER['HTTP_HOST']);
-						$href = '?confirm='.$arr['vars']['id'].'&hash='.$arr['vars']['reg_hash'];
+						$href = '?confirm='.$arr['vars'][$this->fn_login].'&hash='.$arr['vars']['reg_hash'];
 						
 						$datamail['text']=str_replace(array('%pass%','%login%','%href%','%host%'),array($pass,$arr['vars'][$this->fn_login],$href,$_SERVER['HTTP_HOST']),$this->owner->config['mailconfirm']);
 						$MAIL->reply = 0;
@@ -417,7 +417,7 @@ class users_extend extends kernel_class {
 			$mess[] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['errdata']);
 		else {
 			$this->listfields = array('t1.id,t1.reg_hash');
-			$this->clause = 't1 where t1.id = \''.preg_replace("/[^0-9a-z]+/",'',$_GET['confirm']).'\'';
+			$this->clause = 't1 where t1.`'.$this->fn_login.'` = \''.preg_replace("/[^0-9a-z]+/",'',$_GET['confirm']).'\'';
 			$this->_list();
 			if(count($this->data) and _strlen($this->data[0]['reg_hash'])<5)
 				$mess[] = array('name'=>'alert', 'value'=>$this->_CFG['_MESS']['confno']);

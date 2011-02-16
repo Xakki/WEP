@@ -53,7 +53,7 @@ class mail_class extends kernel_class {
 		//$text = substr(trim($data['text']), 0, 1000000).$this->config["mailbottom"] = str_replace('%YEAR%',date('Y'),$this->config["mailbottom"]);
 		if($data['from']=='')
 			$data['from']=$this->config["mailrobot"];
-		 //if(strlen(ini_get('safe_mode'))< 1){
+		//if(strlen(ini_get('safe_mode'))< 1){
 		@ini_set('sendmail_from', $data['from']);
 		@ini_set('sendmail_path', '/usr/sbin/sendmail -t -i -f '.$data['from']);
 		 //}
