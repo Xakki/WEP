@@ -277,12 +277,12 @@ $html .= '
 								if(is_array($rr) and isset($rr['err'])) {
 									if(is_array($rr['err']))
 										$rr['err'] = implode('. ',$rr['err']);
-									$mess[] = array('name' => 'error', 'value' => '<b>'.$table.'</b>::<i>'.$kk.'</i> - '.$rr['err']);
+									$mess[] = array('name' => 'error', 'value' => '<b>'.$table.'</b>'.(is_int($kk)?'':'::<i>'.$kk.'</i>').' - '.$rr['err']);
 								}
 								if(is_array($rr) and isset($rr['ok'])) {
 									if(is_array($rr['ok']))
 										$rr['ok'] = implode('. ',$rr['ok']);
-									$mess[] = array('name' => 'ok', 'value' => '<b>'.$table.'</b>::<i>'.$kk.'</i> - '.$rr['ok']);
+									$mess[] = array('name' => 'ok', 'value' => '<b>'.$table.'</b>'.(is_int($kk)?'':'::<i>'.$kk.'</i>').' - '.$rr['ok']);
 								}
 								if(!is_array($rr))
 									$desc = $rr;

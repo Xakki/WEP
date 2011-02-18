@@ -89,8 +89,8 @@
 			else
 			{
 				if($_CFG['sql']['log']) fwrite($db->logFile,$sql."\n");
-				if(strstr(strtolower($sql),'insert into'))
-					$this->id = $db->sql_id();
+				//if(strstr(strtolower($sql),'insert into'))
+				//	$this->id = $db->sql_id();
 				if(isset($_COOKIE['_showallinfo']) and $_COOKIE['_showallinfo']) {
 					$ttt = (getmicrotime()-$ttt);
 					if($ttt>0.5) $ttt = '<span style="color:#FF0000;">'.$ttt.'</span>';

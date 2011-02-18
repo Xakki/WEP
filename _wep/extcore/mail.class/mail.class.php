@@ -14,10 +14,10 @@ class mail_class extends kernel_class {
 	protected function _create_conf() {/*CONFIG*/
 		parent::_create_conf();
 
-		$this->config["mailsupport"] = 'xakki@ya.ru';
-		$this->config["mailrobot"] = 'robot@unidoski.ru';
+		$this->config["mailsupport"] = 'xakki@xakki.ru';
+		$this->config["mailrobot"] = 'robot@xakki.ru';
 		$this->config["mailtemplate"] = '<html><head><title>%SUBJECT%</title><meta content="text/html;charset=utf-8" http-equiv="Content-Type" /></head><body>%TEXT% %MAILBOTTOM%</body></html>';
-		$this->config["mailbottom"] = '© 2010 «XAKKI»';
+		$this->config["mailbottom"] = '© 2011 «XAKKI»';
 
 		$this->config_form["mailsupport"] = array("type" => "text", 'mask' =>array('min'=>1,"name"=>'email'), "caption" => "Адрес супорта");
 		$this->config_form["mailrobot"] = array("type" => "text", 'mask' =>array('min'=>1,"name"=>'email'), "caption" => "Адрес Робота");
@@ -52,19 +52,23 @@ class mail_class extends kernel_class {
 		$text = str_replace(array('%SUBJECT%','%TEXT%','%MAILBOTTOM%'),array($data['subject'],trim($data['text']),$this->config["mailbottom"]),$this->config["mailtemplate"]);
 		//$text = substr(trim($data['text']), 0, 1000000).$this->config["mailbottom"] = str_replace('%YEAR%',date('Y'),$this->config["mailbottom"]);
 		if($data['from']=='')
-			$data['from']='robot@unidoski.ru';
-		 //if(strlen(ini_get('safe_mode'))< 1){
-			 @ini_set('sendmail_from', $data['from']);
+			$data['from']=$this->config["mailrobot"];
+		//if(strlen(ini_get('safe_mode'))< 1){
+		@ini_set('sendmail_from', $data['from']);
+		@ini_set('sendmail_path', '/usr/sbin/sendmail -t -i -f '.$data['from']);
 		 //}
-		$header  = "From: {$data['from']}\r\n";
+		$header = "MIME-Version: 1.0\r\n";
+		$header .= "To: {$data['mailTo']}\r\n";
+		$header .= "From: {$data['from']}\r\n";
+		$header .= "Bcc: {$data['from']}\r\n"; 
 		if($this->reply) $header .= "Reply-To: {$data['from']}\r\n";
 		
 		if(isset($data['att'])) {
-			$header .= "MIME-Version: 1.0\r\n";
 			$header .= "Content-Type: multipart/alternative; boundary={$this->uid}\r\n";
 			$header .= "--{$this->uid}\r\n";
+		} else {
+			$header .= "Content-Type: ".$this->contenttype."; charset=\"utf-8\"\r\n";
 		}
-		$header .= "Content-Type: ".$this->contenttype."; charset=\"utf-8\"\r\n";
 		$header .= "Content-Transfer-Encoding: 8bit\r\n";
 		$mess = "$text\r\n";
 		if(isset($data['att']))
@@ -80,7 +84,7 @@ class mail_class extends kernel_class {
 			}
 		if(isset($data['att']))
 			$header .= "--{$this->uid}--\r\n";
-		return mail($data['mailTo'], $subject, $mess,$header);
+		return mail($data['mailTo'], $subject, $mess,$header,'-f'.$data['from']);
 	}
 
 	function mailForm($mailTo) {

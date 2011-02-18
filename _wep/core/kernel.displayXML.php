@@ -82,18 +82,13 @@
 			foreach($this->fields_form as $k=>$r) {
 				if(isset($r['mask']['usercheck']) and !_prmUserCheck($r['mask']['usercheck']))
 					{$arrno[$k]=1; continue;}
-	
-				if($this->_prmSortField($k)) {
-					if(isset($_GET['sort']) and $k==$_GET['sort']) 
-						$order = (is_string($r['mask']['sort'])?$r['mask']['sort']:'t1.').$k;
-					elseif(isset($_GET['dsort']) and $k==$_GET['dsort']) 
-						$order = (is_string($r['mask']['sort'])?$r['mask']['sort']:'t1.').$k.' DESC';
-				}
+				$tmpsort = false;
 
 				if($r['mask']['fview']==1 or $r['mask']['disable'] or $r['type']=='hidden' or $r['type']=='info')
 					$arrno[$k]=1; 
 				elseif(!isset($arrno[$k])) {
 					if(isset($r['listname']) and is_array($r['listname']) and (isset($r['listname']['class']) or isset($r['listname']['tablename']))) {
+						$tmpsort = true;
 						$lsn = $r['listname'];
 						if(!$lsn['nameField'])
 							$lsn['nameField'] = 't'.$t.'.name';
@@ -140,6 +135,18 @@
 					$xml['data']['thitem'][$k] = array('value'=>$r['caption'],'href'=>$temphref,'sel'=>$act);
 					if(isset($r['mask']['onetd']))
 						$xml['data']['thitem'][$k]['onetd'] = $r['mask']['onetd'];
+				}
+				if($this->_prmSortField($k)) {
+					if((isset($_GET['sort']) and $k==$_GET['sort']) or (isset($_GET['dsort']) and $k==$_GET['dsort'])) {
+						if($tmpsort)
+							$order = 'name_'.$k;
+						elseif(is_string($r['mask']['sort']))
+							$order = $r['mask']['sort'].$k;
+						else
+							$order = 't1.'.$k;
+						if(isset($_GET['dsort']) and $k==$_GET['dsort'])
+							$order .= ' DESC';
+					}
 				}
 			}
 
