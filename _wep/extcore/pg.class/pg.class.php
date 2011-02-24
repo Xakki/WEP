@@ -14,6 +14,7 @@ class pg_class extends kernel_class {
 		$this->config['memcache'] = 0;
 		$this->config['memcachezip'] = 0;
 		$this->config['sitemap'] = 0;
+		$this->config['IfDontHavePage'] = '';
 
 		$this->config_form['sitename'] = array('type' => 'text', 'caption' => 'Название сайта','mask'=>array('max'=>1000));
 		$this->config_form['address'] = array('type' => 'textarea', 'caption' => 'Адрес и контакты','mask'=>array('max'=>1000));
@@ -25,6 +26,7 @@ class pg_class extends kernel_class {
 		$this->config_form['memcache'] = array('type' => 'int', 'caption' => 'Memcache time', 'comment'=>'0 - откл кеширование, 1> - кеширование в сек.');
 		$this->config_form['memcachezip'] = array('type' => 'checkbox', 'caption' => 'Memcache сжатие');
 		$this->config_form['sitemap'] = array('type' => 'checkbox', 'caption' => 'SiteMap XML' ,'comment'=>'создавать в корне сайта xml файл карты сайта для поисковиков');
+		$this->config_form['IfDontHavePage'] = array('type' => 'list', 'listname'=>'pagetype', 'caption' => 'Если нет страницы в базе, то вызываем обрабочик');
 	}
 
 	function _set_features() {
@@ -135,6 +137,9 @@ class pg_class extends kernel_class {
 		}
 		elseif($listname == "pagemap") {
 			return $this->childs['content']->getInc('.map.php');
+		}
+		elseif($listname == "pagetype") {
+			return $this->childs['content']->getInc();
 		}
 		else return parent::_getlist($listname,$value);
 	}
@@ -255,8 +260,11 @@ class pg_class extends kernel_class {
 			$this->get_pageinfo();//$this->pageinfo['path']
 			return 1;
 		}
-		else
-			return 0;
+		/*elseif($this->config['IfDontHavePage']) {
+			exit($this->config['IfDontHavePage']);
+		}*/
+		
+		return 0;
 	}
 
 	function get_pageinfo() {

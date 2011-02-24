@@ -41,6 +41,8 @@ error_reporting(-1);
 					$data['sysconf']['item'][$k] = $r['name'];
 				}
 			}
+			if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0)
+				$data['sysconf']['item']['_tools'] = 'TOOLs';
 		}
 		/*weppages*/
 		/*if(isset($_SESSION['user']) and count($_SESSION['user']['weppages'])) {

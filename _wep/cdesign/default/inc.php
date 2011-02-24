@@ -17,7 +17,13 @@
 	else {
 		/*if(count($_GET)==2)
 			$SQL->_iFlag = TRUE;*/
-		if(!_new_class($_GET['_modul'],$MODUL)) {
+		if($_GET['_view']=='list' and $_GET['_modul']=='_tools') {
+			if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0)
+				$html = include($_CFG['_PATH']['phpscript'].'/tools.php');
+			else
+				$html = '<div style="color:red;">Доступ только ОДМИНУ</div>';
+		}
+		elseif(!_new_class($_GET['_modul'],$MODUL)) {
 			$html = '<div style="color:red;">'.date('H:i:s').' : Модуль '.$_GET['_modul'].' не установлен</div>';
 		}
 		else {
@@ -27,7 +33,6 @@
 			if($_GET['_id']!='') $MODUL->id = $_GET['_id'];
 
 			if(_prmModul($_GET['_modul'],array(1,2))) {
-
 				if($_GET['_view']=='list') {
 					$MODUL->_clp = '_view=list&amp;_modul='.$MODUL->_cl.'&amp;';
 					$param = array('sbmtsave'=>1,'close'=>1);
@@ -68,10 +73,9 @@
 							}
 
 //} $tt[$j] = getmicrotime()-$tt[$j]; $summ += $tt[$j]; } echo 'Среднее время = "'.($summ/5).'" ';echo $tt;
-
+					if($MODUL->ver!=$_CFG['modulprm'][$MODUL->_cl]['ver'])
+						$_tpl['onload'] .= 'showHelp(\'.weptools.wepchecktable\',\'Версия модуля '.$MODUL->caption.'['.$MODUL->_cl.'] ('.$MODUL->ver.') отличается от версии ('.$_CFG['modulprm'][$MODUL->_cl]['ver'].') сконфигурированного для этого сайта. Обновите здесь поля таблицы.\',4000);$(\'.weptools.wepchecktable\').addClass(\'weptools_sel\');';
 				}
-				if($MODUL->ver!=$_CFG['modulprm'][$MODUL->_cl]['ver'])
-					$_tpl['onload'] .= 'showHelp(\'.weptools.wepchecktable\',\'Версия модуля '.$MODUL->caption.'['.$MODUL->_cl.'] ('.$MODUL->ver.') отличается от версии ('.$_CFG['modulprm'][$MODUL->_cl]['ver'].') сконфигурированного для этого сайта. Обновите здесь поля таблицы.\',4000);$(\'.weptools.wepchecktable\').addClass(\'weptools_sel\');';
 
 			}
 			else

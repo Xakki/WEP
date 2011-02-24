@@ -1,84 +1,37 @@
 <?
-function ruslat ($string) # Задаём функцию перекодировки кириллицы в транслит.
+function ruslat ($st) # Задаём функцию перекодировки кириллицы в транслит.
 {
-$string = str_replace("ж","zh",$string);
-$string = str_replace("ё","yo",$string);
-$string = str_replace("й","i",$string);
-$string = str_replace("ю","yu",$string);
-$string = str_replace("ь","'",$string);
-$string = str_replace("ч","ch",$string);
-$string = str_replace("щ","sh",$string);
-$string = str_replace("ц","c",$string);
-$string = str_replace("у","u",$string);
-$string = str_replace("к","k",$string);
-$string = str_replace("е","e",$string);
-$string = str_replace("н","n",$string);
-$string = str_replace("г","g",$string);
-$string = str_replace("ш","sh",$string);
-$string = str_replace("з","z",$string);
-$string = str_replace("х","kh",$string);
-$string = str_replace("ъ","''",$string);
-$string = str_replace("ф","f",$string);
-$string = str_replace("ы","y",$string);
-$string = str_replace("в","v",$string);
-$string = str_replace("а","a",$string);
-$string = str_replace("п","p",$string);
-$string = str_replace("р","r",$string);
-$string = str_replace("о","o",$string);
-$string = str_replace("л","l",$string);
-$string = str_replace("д","d",$string);
-$string = str_replace("э","yе",$string);
-$string = str_replace("я","yа",$string);
-$string = str_replace("с","s",$string);
-$string = str_replace("м","m",$string);
-$string = str_replace("и","i",$string);
-$string = str_replace("т","t",$string);
-$string = str_replace("б","b",$string);
-$string = str_replace("Ё","yo",$string);
-$string = str_replace("Й","I",$string);
-$string = str_replace("Ю","YU",$string);
-$string = str_replace("Ч","CH",$string);
-$string = str_replace("Ь","'",$string);
-$string = str_replace("Щ","SH'",$string);
-$string = str_replace("Ц","C",$string);
-$string = str_replace("У","U",$string);
-$string = str_replace("К","K",$string);
-$string = str_replace("Е","E",$string);
-$string = str_replace("Н","N",$string);
-$string = str_replace("Г","G",$string);
-$string = str_replace("Ш","SH",$string);
-$string = str_replace("З","Z",$string);
-$string = str_replace("Х","Kh",$string);
-$string = str_replace("Ъ","''",$string);
-$string = str_replace("Ф","F",$string);
-$string = str_replace("Ы","Y",$string);
-$string = str_replace("В","V",$string);
-$string = str_replace("А","A",$string);
-$string = str_replace("П","P",$string);
-$string = str_replace("Р","R",$string);
-$string = str_replace("О","O",$string);
-$string = str_replace("Л","L",$string);
-$string = str_replace("Д","D",$string);
-$string = str_replace("Ж","Zh",$string);
-$string = str_replace("Э","Ye",$string);
-$string = str_replace("Я","Ya",$string);
-$string = str_replace("С","S",$string);
-$string = str_replace("М","M",$string);
-$string = str_replace("И","I",$string);
-$string = str_replace("Т","T",$string);
-$string = str_replace("Б","B",$string);
-return $string;
+	print_r('  *  '.$st);
+    // Затем - "многосимвольные".
+    $st=strtr($st,
+		array(
+			' '=>'_',
+			'а'=>'a','б'=>'b','в'=>'v','г'=>'g','д'=>'d','е'=>'e','ё'=>'e','з'=>'z','и'=>'i','й'=>'y','к'=>'k','л'=>'l','м'=>'m','н'=>'n','о'=>'o','п'=>'p','р'=>'r',
+			'с'=>'s','т'=>'t','у'=>'u','ф'=>'f','х'=>'h','ы'=>'i','э'=>'e',
+			'А'=>'A','Б'=>'B','В'=>'V','Г'=>'G','Д'=>'D','Е'=>'E','Ё'=>'E','З'=>'Z','И'=>'I','Й'=>'Y','К'=>'K','Л'=>'L','М'=>'M','Н'=>'N','О'=>'O','П'=>'P','Р'=>'R',
+			'С'=>'S','Т'=>'T','У'=>'U','Ф'=>'F','Х'=>'H','Ы'=>'I','Э'=>'E',
+			"ж"=>"zh", "ц"=>"ts", "ч"=>"ch", "ш"=>"sh",
+			"щ"=>"shch", "ю"=>"yu", "я"=>"ya",
+			"Ж"=>"ZH", "Ц"=>"TS", "Ч"=>"CH", "Ш"=>"SH",
+			"Щ"=>"SHCH", "Ю"=>"YU", "Я"=>"YA",
+			"ї"=>"i", "Ї"=>"Yi", "є"=>"ie", "Є"=>"Ye"
+			//,"Ь"=>"'","Ъ"=>"'","ь"=>"'","ъ"=>"'"
+			,"Ь"=>"","Ъ"=>"","ь"=>"","ъ"=>""
+			)
+	 );
+    // Возвращаем результат.
+    return $st;
 }
 
 function latrus ($string) # Теперь задаём функцию перекодировки транслита в кириллицу.
 {
-$string = str_replace("zh","ж",$string);
 $string = str_replace("Republic","Республика",$string);
 $string = str_replace("republic","республика",$string);
 $string = str_replace("Mariy-El","Маpий-Эл",$string);
 $string = str_replace("Saint Petersburg","Санкт-Питербург",$string);
 $string = str_replace("Taymyr","Таймыр",$string);
 $string = str_replace("City","Город",$string);
+$string = str_replace("zh","ж",$string);
 $string = str_replace("Kh","Х",$string);
 $string = str_replace("kh","х",$string);
 $string = str_replace("Zh","Ж",$string);
