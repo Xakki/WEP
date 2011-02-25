@@ -1,5 +1,5 @@
 <?
-class session_gogo {
+class session_gogo extends kernel_class {
 	function __construct($tablename='_session') {
 		global $_CFG,$SQL;
 		if(!$SQL) {
@@ -17,7 +17,7 @@ class session_gogo {
 		$this->fields['created'] = array('type' => 'int', 'width' =>11, 'attr' => 'unsigned default "0"');
 		$this->fields['expired'] = array('type' => 'int', 'width' =>11, 'attr' => 'unsigned default "0"');
 		$this->fields['modified'] = array('type' => 'int', 'width' =>11, 'attr' => 'unsigned default "0"');
-		$this->fields['data'] = array('type' => 'text', 'attr' => 'default ""');
+		$this->fields['data'] = array('type' => 'text', 'attr' => '');
 		$this->fields['users_id'] = array('type' => 'varchar', 'width' =>64, 'attr' => 'default ""');
 		$this->fields['ip'] = array('type' => 'varchar', 'width' =>32, 'attr' => 'default ""');
 		$this->fields['useragent'] = array('type' => 'varchar', 'width' =>255, 'attr' => 'default ""');
@@ -30,6 +30,7 @@ class session_gogo {
 
 		$this->SQL = &$SQL;
 		$this->_CFG = &$_CFG;
+
 		$this->ver = '0.1';
 		$this->deadvisits  = 2; // мин число визитов
 		$this->deadsession = 1800; //мин сек в течении которго если пользователь не зашел >= $this->deadvisits, то удаляются
@@ -38,6 +39,11 @@ class session_gogo {
 		$this->_time = time();
 		//$this->expired = get_cfg_var('session.gc_maxlifetime');
 		$this->expired = $_CFG['session']['expire'];
+
+		if($SQL->_iFlag){ // вкл режим автосоздания полей и проверки модуля
+			$this->_install();
+		}
+
 		session_set_save_handler(array(&$this,"open"), array(&$this,"close"), array(&$this,"read"), array(&$this,"write"), array(&$this,"destroy"), array(&$this,"gc"));
 		session_start();
 		
@@ -113,15 +119,6 @@ ON DUPLICATE KEY UPDATE `modified` = "'.$this->_time.'", `users_id`="'.$data['us
 		$result = $this->SQL->execSQL('DELETE FROM '.$this->tablename.' WHERE `modified` + `expired` < '.$this->_time.' OR (`created` + '.$this->deadsession.' < '.$this->_time.' AND `visits` < '.$this->deadvisits.')');
 		return(true); 
 	}
-/*
-	function _checkmodstruct() {
-		return include($this->_CFG['_PATH']['core'].'kernel.checkmodstruct.php');
-		//return $result->err;
-	}
-
-	function _install() {
-		return include($this->_CFG['_PATH']['core'].'kernel.install.php');
-	}*/
 
 	function _unserialize($serialized_string) {
 		$variables = array(  );

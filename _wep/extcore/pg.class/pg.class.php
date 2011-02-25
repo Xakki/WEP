@@ -260,9 +260,14 @@ class pg_class extends kernel_class {
 			$this->get_pageinfo();//$this->pageinfo['path']
 			return 1;
 		}
-		/*elseif($this->config['IfDontHavePage']) {
-			exit($this->config['IfDontHavePage']);
-		}*/
+		elseif($this->config['IfDontHavePage']) {
+			$IfDontHavePage = explode(':',$this->config['IfDontHavePage']);
+			if(file_exists($this->_enum['inc'][$IfDontHavePage[0]]['path'].$IfDontHavePage[1].'.inc.php')) {
+				include($this->_enum['inc'][$IfDontHavePage[0]]['path'].$IfDontHavePage[1].'.inc.php');
+				$this->config['IfDontHavePage'] = '';
+				return $this->can_show();
+			}
+		}
 		
 		return 0;
 	}

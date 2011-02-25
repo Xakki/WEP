@@ -36,25 +36,13 @@ function tools_sendReg() {
 	}
 }
 
-function tools_rubricLatName() {
-	global $SQL,$_CFG;
-	include($_CFG['_PATH']['phpscript'].'/translit.php');
-	$result = $SQL->execSQL('SELECT id,name FROM rubric');
-	$data = array();
-	if(!$result->err)  {
-		while ($row = $result->fetch_array()) {
-			$result2 = $SQL->execSQL('UPDATE rubric SET lname="'.ruslat($row['name']).'" WHERE id='.$row['id']);
-			if($result->err)
-				return 'Ошибка';
-		}
-	}else
-		return 'Ошибка';
-	return 'Транслит названия рубрик выполнен!';
-}
 $dataF = array(
-	'tools_sendReg'=>'tools_sendReg',
-	'tools_rubricLatName'=>'tools_rubricLatName'
+	'tools_sendReg'=>'tools_sendReg'
 );
+
+if(file_exists($_CFG['_PATH']['phpscript2'].'/tools.php'))
+	include($_CFG['_PATH']['phpscript2'].'/tools.php');
+
 $html = '<div>Выбирите функцию для запуска</div><hr><ul>';
 foreach($dataF as $kk=>$rr) {
 	if($_GET['tfunc']==$kk) {

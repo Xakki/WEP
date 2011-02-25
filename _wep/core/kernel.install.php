@@ -1,4 +1,10 @@
 <?
+		$result = $this->SQL->execSQL('SHOW TABLES LIKE \''.$this->tablename.'\'');// checking table exist
+		//if($result->err) return array($this->tablename => array(array('err'=>$this->getMess('_big_err'))));
+		if($result->num_rows()) {
+			return false;
+		}
+
 		// contruct of query
 		$fld = array();
 		if(count($this->fields))

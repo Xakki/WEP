@@ -66,6 +66,7 @@ $_CFG['singleton'] = array();
 	$_CFG['_PATH']['locallang'] = $_CFG['_PATH']['wep'].'/locallang/'; // язык
 
 /*пути для файлов пользовательских модулей*/
+	$_CFG['_PATH']['phpscript2'] = $_CFG['_PATH']['wepconf'].'/_phpscript';
 	$_CFG['_PATH']['ptext'] = $_CFG['_PATH']['wepconf'].'/pagetext/'; // путь к обработчикам блоков страниц
 	$_CFG['_PATH']['ext'] = $_CFG['_PATH']['wepconf'].'/ext/'; // путь к пользовательским модулям
 	$_CFG['_PATH']['config'] = $_CFG['_PATH']['wepconf'].'/config/'; // конфиги

@@ -72,7 +72,7 @@ class ugroup_extend extends kernel_class
 		$this->fields['wep'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => 0);
 		$this->fields['level'] = array('type' => 'tinyint', 'width' =>2, 'attr' => 'NOT NULL',  'default' => 1);
 		$this->fields['filesize'] = array('type' => 'int', 'width' =>5, 'attr' => 'NOT NULL', 'default' => 0);
-		$this->fields['design'] = array('type' => 'varchar', 'width' =>128, 'attr' => 'NOT NULL');
+		$this->fields['design'] = array('type' => 'varchar', 'width' =>128, 'attr' => 'NOT NULL', 'default' => '');
 		
 		$this->fields_form['name'] = array('type' => 'text', 'mask' =>array('min'=>1), 'caption' => 'Название группы');
 		$this->fields_form['wep'] = array('type' => 'checkbox', 'caption' => 'Разрешить вход в админку?');
@@ -167,7 +167,7 @@ class users_extend extends kernel_class {
 		$this->fields['www'] =  array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL', 'default'=>'');
 		$this->fields['loginza_token'] =  array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL', 'default'=>'');
 		$this->fields['loginza_provider'] =  array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL', 'default'=>'');
-		$this->fields['loginza_data'] =  array('type' => 'text', 'attr' => 'NOT NULL');
+		$this->fields['loginza_data'] =  array('type' => 'text', 'attr' => '');
 		// service field
 		$this->fields['reg_hash'] = array('type' => 'varchar', 'width' => 128, 'attr' => 'NOT NULL', 'default'=>'');
 		$this->fields['balance'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default'=>0);

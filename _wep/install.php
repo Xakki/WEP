@@ -5,7 +5,8 @@
 	require_once($_CFG['_PATH']['core'].'sql.php');
 	$SQL = new sql();
 	if(isset($_GET['install'])) {
-		$SQL->_iFlag = true;
+		// if(!isset pg table)
+		//$SQL->_iFlag = 1;
 	}
 
 	$delay =4;
@@ -47,7 +48,6 @@
 	$HTML = new html($_CFG['PATH']['cdesign'],$_design);
 	$HTML->_templates = 'login';
 	$_tpl['ref'] = $ref;
-	$_tpl['action'] = $_CFG['_HREF']['BH'].$_CFG['PATH']['wepname'].'/login.php'.(isset($_GET['install'])?'?install':'');
 	if($result[0]) $result[0] = '<div style="color:red;">'.$result[0].'</div>';
 	$_tpl['mess'] = '<div class="messhead">'.$result[0].'</div>';
 ?>

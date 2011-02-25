@@ -78,7 +78,7 @@ abstract class kernel_class{
 		$this->_create();// предустановки модуля
 
 		if($this->_autoCheckMod){ // вкл режим автосоздания полей и проверки модуля
-			$this->_checkmodstruct();
+			$this->_install();
 		}
 	}
 
