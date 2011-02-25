@@ -234,9 +234,9 @@
 
 		$temp = fDisplLogs(); // сообщения ядра
 
-		if(($GLOBALS['_ERR']!='' or $temp[1]) and $_COOKIE['_showerror'])
+		if(($GLOBALS['_ERR']!='' or $temp[1]) and ($_COOKIE['_showerror'] or $_CFG['site']['show_error']==2))
 			$htmlerr .='<div style="background: gray;padding:2px 2px 10px 10px;">'.$GLOBALS['_ERR'].$temp[0].'</div>';
-		elseif(($GLOBALS['_ERR']!='' or $temp[1]))
+		elseif(($GLOBALS['_ERR']!='' or $temp[1]) and $_CFG['site']['show_error']==1)
 			$htmlerr .='<div style="background: gray;padding:2px 2px 10px 10px;">На странице возникла ошибка! Приносим свои извинения за временные неудобства! Неполадки будут исправлены в ближайшее время.</div>';
 		
 		if((isset($_COOKIE['_showallinfo']) and $_COOKIE['_showallinfo']) or $_CFG['_F']['adminpage']) {
