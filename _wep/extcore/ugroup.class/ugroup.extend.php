@@ -3,7 +3,7 @@
 class ugroup_extend extends kernel_class
 {
 
-	protected function _create_conf() {/*CONFIG*/
+	function _create_conf() {/*CONFIG*/
 		parent::_create_conf();
 
 		$this->config['mailto'] = 'info@xakki.ru';

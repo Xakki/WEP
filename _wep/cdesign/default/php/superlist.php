@@ -112,17 +112,29 @@
 			}
 			if($tdflag) $html .= '</td>';
 			$html .= '<td class="ic" style="vertical-align:top;white-space:nowrap;">';
+			
+			$hrefpref = $firstpath.$data['cl'].'_id='.$r['id'];
 
+			if(isset($data['abtn']) and count($data['abtn'])) {
+				foreach($data['abtn'] as $rr) {
+					//$rr['css']
+					//$rr['style']
+					//$rr['title']
+					//$rr['onclick']
+					$rr['href'] = str_replace(array('%id%','%firstpath%'),array($r['id'],$hrefpref.'&amp;_type='),$rr['href']);
+					$html .= '<a class="bottonimg img'.$rr['css'].'" style="'.$rr['style'].'" href="'.$rr['href'].'" title="['.$rr['title'].']" onclick="'.$rr['onclick'].'"></a>';
+				}
+			}
 			if($r['act'])
-				$html .= '<a class="bottonimg img'.$r['active'].'" href="'.$firstpath.$data['cl'].'_id='.$r['id'].'&amp;_type='.($r['active']==1?'dis':'act').'" onclick="return load_href(this)" title="['.$_CFG['_ACT_TITLE'][$r['active']].']"></a>';
+				$html .= '<a class="bottonimg img'.$r['active'].'" href="'.$hrefpref.'&amp;_type='.($r['active']==1?'dis':'act').'" onclick="return load_href(this)" title="['.$_CFG['_ACT_TITLE'][$r['active']].']"></a>';
 			if($r['edit'])
-				$html .= '<a class="bottonimg imgedit" href="'.$firstpath.$data['cl'].'_id='.$r['id'].'&amp;_type=edit" onclick="return load_href(this)" title="['.$_CFG['_EDIT_TITLE'].']"></a>';
+				$html .= '<a class="bottonimg imgedit" href="'.$hrefpref.'&amp;_type=edit" onclick="return load_href(this)" title="['.$_CFG['_EDIT_TITLE'].']"></a>';
 			if($r['del'])
-				$html .= '<a class="bottonimg imgdel" href="'.$firstpath.$data['cl'].'_id='.$r['id'].'&amp;_type=del" onclick="return hrefConfirm(this,\'del\')" title="['.$_CFG['_DEL_TITLE'].']"></a>';
+				$html .= '<a class="bottonimg imgdel" href="'.$hrefpref.'&amp;_type=del" onclick="return hrefConfirm(this,\'del\')" title="['.$_CFG['_DEL_TITLE'].']"></a>';
 			if(isset($r['istree']))
-				$html .= '<br/><a href="'.$firstpath.$data['cl'].'_id='.$r['id'].'" onclick="return load_href(this)">'.$r['istree']['value'].' ('.$r['istree']['cnt'].')</a>';
+				$html .= '<br/><a href="'.$hrefpref.'" onclick="return load_href(this)">'.$r['istree']['value'].' ('.$r['istree']['cnt'].')</a>';
 			if(isset($r['child'])) foreach($r['child'] as $ck=>$cn)
-				$html .= '<br/><a href="'.$firstpath.$data['cl'].'_id='.$r['id'].'&amp;'.$data['cl'].'_ch='.$ck.'" onclick="return load_href(this)">'.$cn['value'].' ('.$cn['cnt'].')</a>';
+				$html .= '<br/><a href="'.$hrefpref.'&amp;'.$data['cl'].'_ch='.$ck.'" onclick="return load_href(this)">'.$cn['value'].' ('.$cn['cnt'].')</a>';
 
 
 			$html .= '</td></tr>';

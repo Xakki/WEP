@@ -208,6 +208,8 @@
 			foreach($this->unique_fields as $k=>$r) {
 				if (!isset($uniqlist[$k]) and !isset($uniqlistR[$k]) and !isset($primary[$k])) {
 					if(is_array($r)) $r = implode(',',$r);
+					//доделать * когда уже есть индекс, нужно его сначала удалить а потом уже добавлять уник
+					//типа ....drop key `rname`, add unique `rname` (`rname`)
 					$out[$k]['index'] = 'ALTER TABLE `'.$this->tablename.'` ADD UNIQUE KEY '.$k.' ('.$r.')';
 				}
 			}
