@@ -37,12 +37,15 @@
 				}
 				else {
 					$flag=0;
-					$mess = $this->kPreFields($this->data[$this->id],$param);
+					$tempdata = $this->data[$this->id];
+					$mess = $this->kPreFields($tempdata,$param);
 				}
 			} else {
 				$arr['mess'][] = array('name'=>'error', 'value'=>$this->getMess('nodata'));
 				$flag=1;
 			}
+			if(isset($this->fields_form['captcha']))
+				$this->setCaptcha();
 		} else { //ADD
 			if(!$this->_prmModulAdd($this->_cl)){
 				$arr['mess'][] = array('name'=>'error', 'value'=>$this->getMess('denied_add'));

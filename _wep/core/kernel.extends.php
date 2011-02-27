@@ -155,6 +155,7 @@ _fldformer($key, $param)
 		$this->index_fields = array();
 		$this->childs = new modul_child($this);
 		$this->ordfield = $this->_clp = '';
+		$this->data = array();
 		return true;
 	}
 
@@ -661,7 +662,7 @@ _get_file($row, $key)
 			}
 		}
 		if(_prmModul($this->_cl,array(3))) return true;
-		if($this->mf_createrid and _prmModul($this->_cl,array(4)) and $data[$this->mf_createrid]==$_SESSION['user']['id']) return true;
+		if($this->mf_createrid and isset($_SESSION['user']['id']) and $_SESSION['user']['id'] and _prmModul($this->_cl,array(4)) and $data[$this->mf_createrid]==$_SESSION['user']['id']) return true;
 		return false;
 	}
 
@@ -934,7 +935,7 @@ _get_file($row, $key)
 		
 		$this->kFields2FormFields($this->fields_form);
  
-		if(!$this->id or (isset($this->data[$this->id]) and $this->_prmModulEdit($this->data[$this->id],$param))) {
+		if(!$this->id or (is_array($this->data) and isset($this->data[$this->id]) and $this->_prmModulEdit($this->data[$this->id],$param))) {
 		    $this->form['sbmt'] = array(
 				'type'=>'submit',
 				'value_save'=>((isset($param['sbmtsave']) and $this->id)?$this->getMess('_save'):''),
