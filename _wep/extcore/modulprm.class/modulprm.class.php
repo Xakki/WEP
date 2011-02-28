@@ -25,7 +25,7 @@ class modulprm_class extends kernel_class {
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 64,'attr' => 'NOT NULL');
 		$this->fields['tablename'] = array('type' => 'varchar', 'width' => 128,'attr' => 'NOT NULL');
 		$this->fields['path'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL');
-		$this->fields['ver'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL');
+		$this->fields['ver'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL', 'default'=>'0.1');
 		$this->fields['typemodul'] = array('type' => 'tinyint', 'width' => 2, 'attr' => 'NOT NULL');
 
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название');
@@ -53,8 +53,6 @@ class modulprm_class extends kernel_class {
 
 	public function _checkmodstruct() {
 		$check_result = parent::_checkmodstruct();
-	
-
 		$this->moduldir = array(); // для детей классов
 		$this->def_update_records = array();
 		$this->mquery = array();
@@ -89,7 +87,7 @@ class modulprm_class extends kernel_class {
 						$tmp = $this->data[$entry]; // временная переменная
 						if($tmp['parent_id']!='' or $tmp['tablename']!=$class_->tablename or $tmp['typemodul']!='0' or $tmp['path']!=$pathm) {
 							// смотрим какие данные нужно менять
-							$this->mquery[$entry] = array('id'=>$entry,'parent_id'=>'','tablename'=>$class_->tablename, 'typemodul'=>0,'path'=>$pathm);
+							$this->mquery[$entry] = array('id'=>$entry,'parent_id'=>'','tablename'=>$class_->tablename, 'typemodul'=>0,'path'=>$pathm, 'ver'=>$class_->ver);
 						} else
 							unset($this->mquery[$entry]);
 						unset($this->fData[$entry]); //удаляем, чтоьы потом можно было узнать какие модули отсутствуют
@@ -143,10 +141,12 @@ class modulprm_class extends kernel_class {
 					$q = 'UPDATE `'.$this->tablename.'` SET '.implode(', ',$q).' WHERE id="'.$r['id'].'"';
 				}
 				$result = $this->SQL->execSQL($q);
+				if($result->err) exit($result->err);
 			}
 			$this->def_update_records=array();
 			if(count($this->fData)) {
 				$result = $this->SQL->execSQL('DELETE FROM `'.$this->tablename.'` WHERE `id` IN ("'.implode('","',array_keys($this->fData)).'")');
+				if($result->err) exit($result->err);
 			}
 		} else {
 			if(count($this->fData))
@@ -155,6 +155,14 @@ class modulprm_class extends kernel_class {
 				$check_result[$this->tablename][$k]['ok'] = '<span style="color:#4949C9;">'.print_r($r,true).'</span>';
 		}
 		return $check_result;
+	}
+
+	function _install() 
+	{
+		$ret = parent::_install();
+		$_POST['sbmt'] = 1;
+		$this->_checkmodstruct();
+		return $ret;
 	}
 
 	function _constr_childs(&$class_,$pathm='') {

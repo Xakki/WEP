@@ -91,7 +91,7 @@ $_CFG['singleton'] = array();
 	$_CFG['PATH']['wepname'] = basename($_CFG['_PATH']['wep']); // базовое имя админки
 	$_CFG['PATH']['wepconfname'] = basename($_CFG['_PATH']['wepconf']); // базовое имя пользовательских файлов
 	$_CFG['PATH']['cdesign'] = $_CFG['PATH']['wepname'].'/cdesign/'; // дизайн админки
-	if(!isset($_CFG['PATH']['WSWG'])) $_CFG['PATH']['WSWG'] = '_wysiwyg/';
+	$_CFG['PATH']['WSWG'] = '_wysiwyg/';
 	$_CFG['PATH']['HASH_KEY'] = $_CFG['PATH']['wepconfname'].'/config/hash.key';
 
 //Настройка для Nginx

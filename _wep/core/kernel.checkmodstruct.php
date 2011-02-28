@@ -213,15 +213,7 @@
 					$out[$k]['index'] = 'ALTER TABLE `'.$this->tablename.'` ADD UNIQUE KEY '.$k.' ('.$r.')';
 				}
 			}
-		}
-		
-//		if (count($out)) {
-//			foreach($out as $rr)
-//				$this->SQL->execSQL($rr);
-//			$this->SQL->execSQL('OPTIMIZE TABLE `'.$this->tablename.'`');
-//		}
-//		if(isset($this->_cl))
-//			$this->SQL->execSQL('UPDATE `'.$this->_CFG['sql']['dbpref'].'modulprm` SET `ver`="'.$this->ver.'" WHERE `id`="'.$this->_cl.'"');
+		}	
 
 		if(count($out))
 			$out = array($this->tablename=>$out);
@@ -231,6 +223,10 @@
 				if($temp and count($temp))
 					$out = array_merge($out,$temp);
 			}
+		if (isset($_POST['sbmt'])) {
+			$this->SQL->execSQL('OPTIMIZE TABLE `'.$this->tablename.'`');
+			$this->SQL->execSQL('UPDATE `'.$this->_CFG['sql']['dbpref'].'modulprm` SET `ver`="'.$this->ver.'" WHERE `id`="'.$this->_cl.'"');
+		}
 		return $out;
 //		return true;
 
