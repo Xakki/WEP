@@ -296,6 +296,7 @@
 		if (!_delete_fields($_this)) return false;
 
 		if ($_this->mf_indexing) $_this->deindexing();
+		$_this->id = 0;
 		return $_this->_message('Delete data from `'.$_this->caption.'` successful.',3);
 	}
 
