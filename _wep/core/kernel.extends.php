@@ -444,7 +444,8 @@ _get_file($row, $key)
 	}
 
 	private function _select_attaches($data='') {
-		if(!$data) $data = $this->data;
+		if(!$data) $data = &$this->data;
+
 		if (count($this->attaches) and count($data)) {
 			$temp = current($data);
 			if (!isset($temp['id'])) return true;
