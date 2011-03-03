@@ -616,7 +616,7 @@ class users_extend extends kernel_class {
 						Ссылка действительна в течении 2х суток с момента отправки данной формы.<br/></div>';
 					}else {
 						trigger_error('Напоминание пароля - '.$this->_CFG['_MESS']['mailerr'], E_USER_WARNING);
-						$html  = .$this->_CFG['_MESS']['mailerr'];
+						$html  = $this->_CFG['_MESS']['mailerr'];
 					}
 				}
 				elseif(count($this->data)==1) {
