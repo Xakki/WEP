@@ -935,7 +935,7 @@ _get_file($row, $key)
 		
 		$this->kFields2FormFields($this->fields_form);
  
-		if(!$this->id or (is_array($this->data) and isset($this->data[$this->id]) and $this->_prmModulEdit($this->data[$this->id],$param))) {
+		if(!$this->id or ($this->id and isset($this->data[$this->id]) and $this->_prmModulEdit($this->data[$this->id],$param))) {
 		    $this->form['sbmt'] = array(
 				'type'=>'submit',
 				'value_save'=>((isset($param['sbmtsave']) and $this->id)?$this->getMess('_save'):''),

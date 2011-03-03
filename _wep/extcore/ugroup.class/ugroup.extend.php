@@ -329,6 +329,7 @@ class users_extend extends kernel_class {
 	}
 
 	function setUserSession($data='') {
+		session_go(1);
 		if($data==='') $data = current($this->data);
 		$_SESSION['user'] = $data;
 		$_SESSION['user']['owner_id'] = $data[$this->owner_name];
@@ -409,6 +410,7 @@ class users_extend extends kernel_class {
 
 	function regConfirm() {
 		global $_MESS;
+		$flag = false;
 		
 		$_GET['hash'] = preg_replace("/[^0-9a-f]+/",'',$_GET['hash']);
 		if(!$this->owner->config['reg'])
@@ -433,8 +435,15 @@ class users_extend extends kernel_class {
 					$this->fld_data['owner_id']= $this->owner->config['reggroup'];
 				}
 				
-				if($this->_update())
+				if($this->_update()) {
 					$mess[] = array('name'=>'ok', 'value'=>$this->_CFG['_MESS']['confok']);
+					$this->listfields = array('t2.*,t2.active as gact,t2.name as gname,t1.*');
+					$this->clause = 't1 Join '.$this->owner->tablename.' t2 on t1.'.$this->owner_name.'=t2.id where t1.id = \''.$this->id.'\' ';
+					$this->_list();
+					$this->setUserSession();
+					_prmModulLoad();
+					$flag = true;
+				}
 				else
 					$mess[] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['conferr']);
 			}
