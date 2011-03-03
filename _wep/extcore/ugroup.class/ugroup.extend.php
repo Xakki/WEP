@@ -390,6 +390,7 @@ class users_extend extends kernel_class {
 							$arr['mess'][] = array('name'=>'ok', 'value'=>$this->_CFG['_MESS']['regok']);
 						}else {
 							$this->_delete();
+							trigger_error('Регистрация - '.$this->_CFG['_MESS']['mailerr'], E_USER_WARNING);
 							$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['mailerr']);
 							$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['regerr']);
 						}
@@ -614,7 +615,8 @@ class users_extend extends kernel_class {
 						$html = '<div class="ok">На ваш E-mail отправленно письмо с секретной ссылкой на форму для установки нового пароля.<br/>
 						Ссылка действительна в течении 2х суток с момента отправки данной формы.<br/></div>';
 					}else {
-						$html  = $_MESS['mailerr'];
+						trigger_error('Напоминание пароля - '.$this->_CFG['_MESS']['mailerr'], E_USER_WARNING);
+						$html  = .$this->_CFG['_MESS']['mailerr'];
 					}
 				}
 				elseif(count($this->data)==1) {

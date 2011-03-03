@@ -110,8 +110,10 @@ class mail_class extends kernel_class {
 				if($this->Send($arr['vars'])) {
 					$flag=1;
 					$arr['mess'][] = array('name'=>'ok', 'value'=>$this->getMess('mailok'));
-				} else
+				} else {
 					$arr['mess'][] = array('name'=>'error', 'value'=>$this->getMess('mailerr'));
+					trigger_error('Почта - '.$this->getMess('mailerr'), E_USER_WARNING);
+				}
 			}
 		} else
 				$mess = $this->kPreFields($arr['vars'],$param);
