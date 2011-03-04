@@ -169,7 +169,7 @@ _fldformer($key, $param)
 			$this->fields['id'] = array('type' => 'varchar', 'width' => $this->mf_idwidth, 'attr' => 'NOT NULL');
 		}
 		else
-			$this->fields['id'] = array('type' => 'int', 'attr' => 'UNSIGNED NOT NULL AUTO_INCREMENT');
+			$this->fields['id'] = array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL AUTO_INCREMENT');
 
 		if($this->_setnamefields) 
 			$this->fields['name'] = array('type' => 'varchar', 'width' => '255', 'attr' => 'NOT NULL','default'=>'');

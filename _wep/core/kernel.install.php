@@ -38,8 +38,8 @@
 		if($result->err) return false;
 		$this->_message('Table `'.$this->tablename.'` installed.',3);
 
-	//	if(isset($this->_cl))
-		//	$this->SQL->execSQL('UPDATE `'.$this->_CFG['sql']['dbpref'].'modulprm` SET `ver`="'.$this->ver.'" WHERE `id`="'.$this->_cl.'"');
+		if(isset($this->_cl))
+			$this->SQL->execSQL('UPDATE `'.$this->_CFG['sql']['dbpref'].'modulprm` SET `ver`="'.$this->ver.'" WHERE `id`="'.$this->_cl.'"');
 
 		if(count($this->def_records)) $this->_insertDefault();
 

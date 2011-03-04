@@ -49,5 +49,6 @@
 	$_tpl['ref'] = $ref;
 	$_tpl['action'] = $_CFG['_HREF']['BH'].$_CFG['PATH']['wepname'].'/login.php'.(isset($_GET['install'])?'?install':'');
 	if($result[0]) $result[0] = '<div style="color:red;">'.$result[0].'</div>';
+	elseif(isset($_GET['install'])) $result[0] = '<div style="color:red;">Установка недостающих данных</div>';
 	$_tpl['mess'] = '<div class="messhead">'.$result[0].'</div>';
 ?>
