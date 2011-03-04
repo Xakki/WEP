@@ -377,7 +377,7 @@ class users_extend extends kernel_class {
 					$arr['vars'][$this->fn_pass]=md5($this->_CFG['wep']['md5'].$arr['vars'][$this->fn_pass]);
 					//$_SESSION['user']['id'] = $arr['vars']['id'];
 					if($this->_add_item($arr['vars'])) {
-						$MAIL = new mail_class($this->SQL);
+						_new_class('mail',$MAIL);
 						$datamail['from']=$this->owner->config['mailrobot'];
 						$datamail['mailTo']=$arr['vars']['email'];
 						$datamail['subject']='Подтвердите регистрацию на '.strtoupper($_SERVER['HTTP_HOST']);
@@ -602,7 +602,7 @@ class users_extend extends kernel_class {
 					$form=0;
 					$time=time();
 					$hash =md5($datau[$this->fn_pass].$time.$datau['email']).'h';
-					$MAIL = new mail_class($this->SQL);
+					_new_class('mail',$MAIL);
 					$datamail['from']=$this->owner->config['mailrobot'];
 					$datamail['mailTo']=$datau['email'];
 					$datamail['subject']='Востановление пароля на '.strtoupper($_SERVER['HTTP_HOST']);
