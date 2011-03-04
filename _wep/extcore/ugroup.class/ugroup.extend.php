@@ -386,14 +386,15 @@ class users_extend extends kernel_class {
 						$datamail['text']=str_replace(array('%pass%','%login%','%href%','%host%'),array($pass,$arr['vars'][$this->fn_login],$href,$_SERVER['HTTP_HOST']),$this->owner->config['mailconfirm']);
 						$MAIL->reply = 0;
 						if($MAIL->Send($datamail)) {
-							$flag=1;
-							$arr['mess'][] = array('name'=>'ok', 'value'=>$this->_CFG['_MESS']['regok']);
+							// иногда сервер говорит что ошибка, а сам всеравно письма отсылает
 						}else {
-							$this->_delete();
 							trigger_error('Регистрация - '.$this->_CFG['_MESS']['mailerr'], E_USER_WARNING);
-							$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['mailerr']);
-							$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['regerr']);
+							//$this->_delete();
+							//$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['mailerr']);
+							//$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['regerr']);
 						}
+						$flag=1;
+						$arr['mess'][] = array('name'=>'ok', 'value'=>$this->_CFG['_MESS']['regok']);
 					} else
 						$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['regerr']);
 					unset($_SESSION['user']);
@@ -528,7 +529,7 @@ class users_extend extends kernel_class {
 						$datamail['text']=str_replace(array('%pass%','%login%','%host%'),array($pass,$data['id'],$_SERVER['HTTP_HOST']),$this->owner->config['mailinfo']);
 						$MAIL->reply = 0;
 						if(!$MAIL->Send($datamail)) {
-							$mess[] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['mailerr']);
+							//$mess[] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['mailerr']);
 						}*/
 					} else
 						$mess[] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['regerr']);
@@ -612,12 +613,12 @@ class users_extend extends kernel_class {
 							$this->owner->config['mailremind']);
 					$MAIL->reply = 0;
 					if($MAIL->Send($datamail)) {
-						$html = '<div class="ok">На ваш E-mail отправленно письмо с секретной ссылкой на форму для установки нового пароля.<br/>
-						Ссылка действительна в течении 2х суток с момента отправки данной формы.<br/></div>';
+						// иногда сервер говорит что ошибка, а сам всеравно письма отсылает
 					}else {
 						trigger_error('Напоминание пароля - '.$this->_CFG['_MESS']['mailerr'], E_USER_WARNING);
-						$html  = $this->_CFG['_MESS']['mailerr'];
+						//$html  = $this->_CFG['_MESS']['mailerr'];
 					}
+					$html = '<div class="ok">На ваш E-mail отправленно письмо с секретной ссылкой на форму для установки нового пароля.<br/> Ссылка действительна в течении 2х суток с момента отправки данной формы.<br/></div>';
 				}
 				elseif(count($this->data)==1) {
 					$html = '<div class="error">Ваш профиль отключен или не подтверждён. Обратитесь в <a href="/mail.html?feedback=1">службу поддержки сайта</a></div>';

@@ -108,12 +108,13 @@ class mail_class extends kernel_class {
 			if(!count($arr['mess'])) {
 				$arr['vars']['mailTo']=$mailTo;
 				if($this->Send($arr['vars'])) {
-					$flag=1;
-					$arr['mess'][] = array('name'=>'ok', 'value'=>$this->getMess('mailok'));
+					// иногда сервер говорит что ошибка, а сам всеравно письма отсылает
 				} else {
-					$arr['mess'][] = array('name'=>'error', 'value'=>$this->getMess('mailerr'));
+					//$arr['mess'][] = array('name'=>'error', 'value'=>$this->getMess('mailerr'));
 					trigger_error('Почта - '.$this->getMess('mailerr'), E_USER_WARNING);
 				}
+				$flag=1;
+				$arr['mess'][] = array('name'=>'ok', 'value'=>$this->getMess('mailok'));
 			}
 		} else
 				$mess = $this->kPreFields($arr['vars'],$param);
