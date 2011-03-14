@@ -98,7 +98,8 @@ class ugroup_extend extends kernel_class
 			unset($this->childs['modulgrp']->fields_form['ugroup_id']);//отклю список групп
 			$this->childs['modulgrp']->fields_form['owner_id'] = array('type' => 'list', 'readonly' => 1, 'listname'=>array('tablename'=>$this->_CFG['sql']['dbpref'].'modulprm'), 'caption' => 'Модуль');//и включаем модули
 			$this->childs['modulgrp']->fields['owner_id'] = array(); // чтобы  не ругался модчекструкт, тк это поле может задаваться по умолчанию от родителя
-		}	}	
+		}
+	}
 
 	/*function super_inc($param=array(),$ftype='') {
 		return parent::
@@ -267,8 +268,8 @@ class users_extend extends kernel_class {
 			{
 				$this->listfields = array('t2.*,t2.active as gact,t2.name as gname,t1.*');
 				$this->clause = 't1 Join '.$this->owner->tablename.' t2 on t1.'.$this->owner_name.'=t2.id where t1.'.$this->fn_login.' = \''.$login.'\' and t1.'.$this->fn_pass.' =\''.md5($this->_CFG['wep']['md5'].$pass).'\''; 
-				//if(!
-				$this->_list();//){header('Location: '.$this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['wepname'].'/login.php?install');die();}
+				if(!$this->_list())
+					{header('Location: '.$this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['wepname'].'/login.php?install');die();}
 				if(count($this->data))
 				{
 					unset($_SESSION['user']);

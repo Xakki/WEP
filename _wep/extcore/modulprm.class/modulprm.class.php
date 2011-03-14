@@ -91,7 +91,7 @@ class modulprm_class extends kernel_class {
 					}
 					elseif($class_->showinowner) {//if($class_->ver!=$this->data[$entry]['ver'] or $this->_cl==$entry)
 						$tmp = $this->data[$entry]; // временная переменная
-						if($tmp['parent_id']!='' or $tmp['tablename']!=$class_->tablename or $tmp['typemodul']!='0' or $tmp['path']!=$pathm) {
+						if($tmp['parent_id']!='' or $tmp['tablename']!=$class_->tablename or $tmp['typemodul']!='0' or $tmp['path']!=$pathm or $class_->ver!==$tmp['ver']) {
 							// смотрим какие данные нужно менять
 							$this->mQuery[$entry] = array('id'=>$entry,'parent_id'=>'','tablename'=>$class_->tablename, 'typemodul'=>0,'path'=>$pathm, 'ver'=>$class_->ver);
 						} else
@@ -117,7 +117,7 @@ class modulprm_class extends kernel_class {
 						}
 						elseif($class_->showinowner) { //if($class_->ver!=$this->data[$entry]['ver'])
 							$tmp = $this->data[$entry]; // временная переменная
-							if($tmp['parent_id']!='' or $tmp['tablename']!=$class_->tablename or $tmp['typemodul']!='2' or $tmp['path']!=$pathm or $tmp['ver']!=$class_->ver) {
+							if($tmp['parent_id']!='' or $tmp['tablename']!=$class_->tablename or $tmp['typemodul']!='2' or $tmp['path']!=$pathm or $tmp['ver']!==$class_->ver) {
 								// смотрим какие данные нужно менять
 								$this->mQuery[$entry] = array('id'=>$entry, 'parent_id'=>'', 'tablename'=>$class_->tablename, 'typemodul'=>2, 'path'=>$pathm, 'ver'=>$class_->ver);
 							}else
@@ -181,7 +181,7 @@ class modulprm_class extends kernel_class {
 				}
 				elseif($r->showinowner) { //if($r->ver!=$this->data[$k]['ver'])
 					$tmp = $this->data[$k]; // временная переменная
-					if($tmp['parent_id']!=$class_->_cl or $tmp['tablename']!=$r->tablename or $tmp['typemodul']!='5' or $tmp['path']!=$pathm or $tmp['ver']!=$r->ver) {
+					if($tmp['parent_id']!=$class_->_cl or $tmp['tablename']!=$r->tablename or $tmp['typemodul']!='5' or $tmp['path']!=$pathm or $tmp['ver']!==$r->ver) {
 						// смотрим какие данные нужно менять
 						$this->mQuery[$k] = array('id'=>$k, 'parent_id'=>$class_->_cl, 'tablename'=>$r->tablename, 'typemodul'=>5, 'ver'=>$r->ver, 'path'=>$pathm);
 					} else 

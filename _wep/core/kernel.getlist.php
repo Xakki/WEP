@@ -134,8 +134,12 @@
 				$clause['field'] = 'SELECT '.$listname['idField'].' as id,'.$listname['nameField'].' as name';
 			}
 	
-			if($listname['is_tree'])
-				$clause['field'] .= ', tx.parent_id as parent_id';
+			if($listname['is_tree']) {
+				if($listname['is_tree']===true)
+					$clause['field'] .= ', tx.parent_id as parent_id';
+				else
+					$clause['field'] .= ', '.$listname['is_tree'].' as parent_id';
+			}
 			if($listname['is_checked'])
 				$clause['field'] .= ', tx.checked as checked';
 			
