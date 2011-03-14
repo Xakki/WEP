@@ -223,7 +223,7 @@ $html .= '
 			$check_result = $_this->_checkmodstruct();
 
 			if (isset($_POST['sbmt'])) {
-				if(count($_POST['list_query']))
+				if(count($_POST['list_query'])) {
 				foreach($_POST['list_query'] as $k=>$r) {
 					$temp = explode('::',$r);
 					if(isset($check_result[$temp[0]][$temp[1]])) {
@@ -247,7 +247,8 @@ $html .= '
 					}
 					//else
 						//$mess[] = array('name' => 'error', 'value' => 'Error request('.$r.')');
-				} else
+				} 
+				}else
 					$mess[] = array('name' => 'ok', 'value' => $_this->getMess('_recheck_have_nothing'));
 				if(!count($mess))
 					$mess[] = array('name' => 'ok', 'value' => $_this->getMess('_recheck_ok').'  <a href="" onclick="window.location.reload();return false;">Обновите страницу.</a>');

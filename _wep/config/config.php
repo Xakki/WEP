@@ -18,7 +18,8 @@ $_CFG['sql'] = array( // SQL
 	'database'=>'defaultbd',
 	'setnames'=>'utf8',
 	'dbpref'=>'',
-	'log'=>0
+	'log'=>0,// логирование запросов в фаил
+	'longquery'=>1 // запись в баг запросы которые выполняются дольше указанного времени в сек
 );
 $_CFG['memcache'] = array(
 	'host'=>'127.0.0.1',

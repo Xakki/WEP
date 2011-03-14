@@ -1,5 +1,14 @@
+*.svn
+*.tmp
+error_log
+*/temp/*
+test*
+_wep
 _wysiwyg
-_wepconf/temp
-temp
+_content
+_img
+_script
+_style
+_ttf
 error.txt
 _design/_script/old

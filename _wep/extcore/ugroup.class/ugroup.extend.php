@@ -81,19 +81,24 @@ class ugroup_extend extends kernel_class
 		$this->fields_form['filesize'] = array('type' => 'int', 'caption' => 'Доступный размер диска', 'comment' => 'Значение в мегабайтах, 0 - запрет','mask'=>array('max'=>1000));
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Активность');
 
+	}
+
+	function _install() {
 		$this->def_records[] = array('name'=>'Администраторы','level'=>0,'filesize'=>'100','active'=>1,'id'=>1,'wep'=>1);
 		$this->def_records[] = array('name'=>'Анонимы','level'=>5,'filesize'=>'0','active'=>1,'id'=>0,'wep'=>0);
+		return parent::_install();
+	}
 
+	function _childs() {
 		$this->create_child('users');
-		if($this->_CFG['_F']['adminpage']) { // для админки , чтобы удобно можно было задавать права доступа
+		if($this->_CFG['_F']['adminpage'] and !$this->_autoCheckMod) { // для админки , чтобы удобно можно было задавать права доступа
 			include_once($this->_CFG['_PATH']['extcore'].'modulprm.class/modulprm.class.php');
 			$this->create_child('modulgrp');
 			$this->childs['modulgrp']->owner_name = 'ugroup_id';//теперь родитель в этом поле привязан
 			unset($this->childs['modulgrp']->fields_form['ugroup_id']);//отклю список групп
 			$this->childs['modulgrp']->fields_form['owner_id'] = array('type' => 'list', 'readonly' => 1, 'listname'=>array('tablename'=>$this->_CFG['sql']['dbpref'].'modulprm'), 'caption' => 'Модуль');//и включаем модули
 			$this->childs['modulgrp']->fields['owner_id'] = array(); // чтобы  не ругался модчекструкт, тк это поле может задаваться по умолчанию от родителя
-		}
-	}
+		}	}	
 
 	/*function super_inc($param=array(),$ftype='') {
 		return parent::
@@ -226,6 +231,10 @@ class users_extend extends kernel_class {
 		$this->fields_form['owner_id'] = array('type' => 'list', 'listname'=>'ownerlist', 'caption' => 'Группа', 'mask' =>array('usercheck'=>1,'fview'=>1));
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Пользователь активен', 'mask' =>array('usercheck'=>1));
 
+		$this->ordfield = 'mf_timecr DESC';
+	}
+
+	function _install() {
 		$this->def_records[] = array(
 			$this->fn_login => $this->_CFG['wep']['login'],
 			'name'=>'Главный',
@@ -234,9 +243,7 @@ class users_extend extends kernel_class {
 			'mf_timecr'=>time(),
 			'owner_id'=>1,
 			'reg_hash'=>1);
-
-		$this->ordfield = 'mf_timecr DESC';
-
+		return parent::_install($param);
 	}
 
 	function _UpdItemModul($param) {
@@ -259,9 +266,9 @@ class users_extend extends kernel_class {
 			else
 			{
 				$this->listfields = array('t2.*,t2.active as gact,t2.name as gname,t1.*');
-				$this->clause = 't1 Join '.$this->owner->tablename.' t2 on t1.'.$this->owner_name.'=t2.id where t1.'.$this->fn_login.' = \''.$login.'\' and t1.'.$this->fn_pass.' =\''.md5($this->_CFG['wep']['md5'].$pass).'\'';
-				if(!$this->_list()) {
-					header('Location: '.$this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['wepname'].'/login.php?install');die();}
+				$this->clause = 't1 Join '.$this->owner->tablename.' t2 on t1.'.$this->owner_name.'=t2.id where t1.'.$this->fn_login.' = \''.$login.'\' and t1.'.$this->fn_pass.' =\''.md5($this->_CFG['wep']['md5'].$pass).'\''; 
+				//if(!
+				$this->_list();//){header('Location: '.$this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['wepname'].'/login.php?install');die();}
 				if(count($this->data))
 				{
 					unset($_SESSION['user']);

@@ -37,11 +37,18 @@
 		$result = $this->SQL->execSQL('CREATE TABLE `'.$this->tablename.'` ('.implode(',',$fld).') ENGINE=MyISAM DEFAULT CHARSET='.$this->_CFG['sql']['setnames'].' COMMENT = "'.$this->ver.'"');
 		if($result->err) return false;
 		$this->_message('Table `'.$this->tablename.'` installed.',3);
+		if(count($this->def_records)) {
+			if(!$this->_insertDefault()) {
+				$this->SQL->execSQL('DROP TABLE `'.$_this->tablename.'`');
+				return false;
+			}
+		}
 
-		if(isset($this->_cl))
-			$this->SQL->execSQL('UPDATE `'.$this->_CFG['sql']['dbpref'].'modulprm` SET `ver`="'.$this->ver.'" WHERE `id`="'.$this->_cl.'"');
+		if(isset($this->_cl) and $this->_cl!='modulprm' and $this->_cl!='modulgrp') {
+			_new_class('modulprm',$MODULPRM,$this->null, true);
+			$this->SQL->execSQL('UPDATE `'.$MODULPRM->tablename.'` SET `ver`="'.$this->ver.'" WHERE `id`="'.$this->_cl.'"');
+		}
 
-		if(count($this->def_records)) $this->_insertDefault();
 
 		return true;
 

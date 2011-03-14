@@ -56,7 +56,7 @@ class bug_class extends kernel_class {
 		$this->fields_form['href'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Страница', 'mask' =>array('filter'=>1));
 		$this->fields_form['file'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Файл', 'mask'=>array('filter'=>1));
 		$this->fields_form['line'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Строка', 'mask'=>array('filter'=>1, 'onetd'=>'close'));
-		$this->fields_form['debug'] = array('type' => 'textarea', 'readonly'=>1, 'caption' => 'Текст ошибки', 'mask'=>array('fview'=>1,'filter'=>1));
+		$this->fields_form['debug'] = array('type' => 'ckedit', 'caption' => 'Текст ошибки','mask'=>array('fview'=>1,'filter'=>1));
 		$this->fields_form['page_id'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'PAGE_ID','mask'=>array('sort'=>1,'filter'=>1));
 		$this->fields_form['mf_timecr'] = array('type' => 'date', 'readonly'=>1, 'caption' => 'Дата', 'mask' =>array('sort'=>1,'filter'=>1));
 		$this->fields_form['mf_ipcreate'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'IP','mask'=>array('sort'=>1,'filter'=>1));

@@ -33,8 +33,8 @@
 			_setcookie('_showallinfo',$_GET['_showallinfo'],(time()-5000));
 		$_COOKIE['_showallinfo']=$_GET['_showallinfo'];
 	}
-
-	if(!$_SERVER['robot'] and (isset($_GET['_showerror']) or $_CFG['_HREF']['arrayHOST'][0]=='i' or $_CFG['_F']['adminpage']) and !isset($_COOKIE['_showerror'])) {
+// or $_CFG['_F']['adminpage']
+	if(!$_SERVER['robot'] and (isset($_GET['_showerror']) or $_CFG['_HREF']['arrayHOST'][0]=='i') and !isset($_COOKIE['_showerror'])) {
 		_setcookie('_showerror',1);
 		$_COOKIE['_showerror']=1;
 	}
@@ -194,13 +194,13 @@
 */
 	function _myErrorHandler($errno, $errstr, $errfile, $errline, $errcontext)//,$cont
 	{
-		global $_CFG;
+		global $_CFG,$SQL;
 		
 		if($_CFG['_error'][$errno]['prior']<4) {// and error_reporting()!=0
 			$debug = debugPrint(2);
 		
 			if (($_CFG['_F']['adminpage'] && $_CFG['wep']['bug_hunter']) || (!$_CFG['_F']['adminpage'] && $_CFG['site']['bug_hunter'])) {
-				if (_new_class('bug', $MODUL)) {
+				if ($SQL->hlink and _new_class('bug', $MODUL)) {
 					$MODUL->add_bug($errno, $errstr, $errfile, $errline, $debug);				
 				}
 			}
@@ -230,7 +230,7 @@
 		$_gerr=6;
 		$htmlerr = '';
 		$htmlinfo = '';
-		//headerssent();
+		headerssent();
 
 		$temp = fDisplLogs(); // сообщения ядра
 
@@ -445,7 +445,7 @@
 /*
 Инициализация модулей
 */
-	function _new_class($name,&$MODUL,&$OWNER = NULL) {
+	function _new_class($name,&$MODUL,&$OWNER = NULL,$_autoCheckMod=NULL) {
 		global $SQL, $_CFG;
 		
 		if (isset($_CFG['singleton'][$name])) {
@@ -471,10 +471,7 @@
 						$OWN_CL = $TEMPO->_cl;
 					}
 
-				eval('$MODUL = new '.$clsn.'($SQL,$OWNER);');
-				
-				if ($MODUL->singleton == true)
-					$_CFG['singleton'][$name] = &$MODUL;
+				eval('$MODUL = new '.$clsn.'($SQL,$OWNER,$_autoCheckMod);');
 				
 				$OWN_CL = NULL;
 				if($MODUL)

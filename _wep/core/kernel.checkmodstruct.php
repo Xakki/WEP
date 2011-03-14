@@ -170,7 +170,7 @@
 			foreach($this->memos as $key => $param) 
 			{
 			//	if (!$param['inst']) $out[] = 'ADD '.$this->_fldformer($key, $this->mmoprm);
-				if (!$this->_checkdir($this->getPathForMemo($key))) {
+				if (!$this->_checkdir($this->getPathForMemo($key))) {print_r('******8');
 					$out[$key]['err'][] = $this->getMess('_recheck_err');
 				}
 			}
@@ -225,7 +225,10 @@
 			}
 		if (isset($_POST['sbmt'])) {
 			$this->SQL->execSQL('OPTIMIZE TABLE `'.$this->tablename.'`');
-			$this->SQL->execSQL('UPDATE `'.$this->_CFG['sql']['dbpref'].'modulprm` SET `ver`="'.$this->ver.'" WHERE `id`="'.$this->_cl.'"');
+			if(isset($this->_cl) and $this->_cl!='modulprm' and $this->_cl!='modulgrp') {
+				_new_class('modulprm',$MODULPRM,$this->null, true);
+				$this->SQL->execSQL('UPDATE `'.$MODULPRM->tablename.'` SET `ver`="'.$this->ver.'" WHERE `id`="'.$this->_cl.'"');
+			}
 		}
 		return $out;
 //		return true;

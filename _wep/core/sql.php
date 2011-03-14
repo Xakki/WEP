@@ -36,7 +36,7 @@
 						die();
 				}
 			}else {
-				trigger_error('Can`t create database `'.$_CFG['sql']['database'].'`', E_USER_WARNING);
+				trigger_error('Can`t connect to database `'.$_CFG['sql']['database'].'`', E_USER_WARNING);
 				die();
 			}
 		}
@@ -68,7 +68,7 @@
 
 		function __construct(&$db, $sql, $unbuffered) {
 			global $_CFG,$_tpl;
-			if(isset($_COOKIE['_showallinfo']) and $_COOKIE['_showallinfo'])
+			//if((isset($_COOKIE['_showallinfo']) and $_COOKIE['_showallinfo']) or $_CFG['sql']['longquery']>0)
 				$ttt = getmicrotime();
 			if($unbuffered) {// Тут можно задавать запросы, разделённые точкой запятой
 				$this->handle = mysql_unbuffered_query($sql, $db->hlink);
@@ -88,11 +88,14 @@
 			}
 			else
 			{
+				$ttt = (getmicrotime()-$ttt);
 				if($_CFG['sql']['log']) fwrite($db->logFile,$sql."\n");
+				if($_CFG['sql']['longquery']>0 and $ttt>$_CFG['sql']['longquery'])
+					trigger_error('LONG QUERY ['.$ttt.' sec.] ('.$sql.')', E_USER_WARNING);
 				//if(strstr(strtolower($sql),'insert into'))
 				//	$this->id = $db->sql_id();
 				if(isset($_COOKIE['_showallinfo']) and $_COOKIE['_showallinfo']) {
-					$ttt = (getmicrotime()-$ttt);
+					
 					if($ttt>0.5) $ttt = '<span style="color:#FF0000;">'.$ttt.'</span>';
 					elseif($ttt>0.1) $ttt = '<span style="color:#FF6633;">'.$ttt.'</span>';
 					elseif($ttt>0.05) $ttt = '<span style="color:#006699;">'.$ttt.'</span>';

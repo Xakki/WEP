@@ -46,15 +46,15 @@ class pg_class extends kernel_class {
 
 		# fields
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
-		$this->fields['href'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
-		$this->fields['keywords'] = array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL');
-		$this->fields['description'] = array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL');
-		$this->fields['design'] = array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL');
+		$this->fields['href'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL','default'=>'');
+		$this->fields['keywords'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL','default'=>'');
+		$this->fields['description'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL','default'=>'');
+		$this->fields['design'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL','default'=>'default');
 		$this->fields['template'] = array('type' => 'varchar', 'width'=>20, 'attr' => 'NOT NULL','default'=>'default');
-		$this->fields['styles'] = array('type' => 'varchar', 'width'=> 254, 'attr' => 'NOT NULL','default'=>'');
-		$this->fields['script'] = array('type' => 'text', 'attr' => 'NOT NULL');
-		$this->fields['ugroup'] =array('type' => 'varchar', 'width'=>254, 'attr' => 'NOT NULL', 'default' => '|0|');
-		$this->fields['attr'] = array('type' => 'varchar', 'width'=>254, 'attr' => 'NOT NULL', 'default' => '');
+		$this->fields['styles'] = array('type' => 'varchar', 'width'=> 255, 'attr' => 'NOT NULL','default'=>'');
+		$this->fields['script'] = array('type' => 'varchar', 'width'=> 255, 'attr' => 'NOT NULL','default'=>'');
+		$this->fields['ugroup'] =array('type' => 'varchar', 'width'=>255, 'attr' => 'NOT NULL', 'default' => '|0|');
+		$this->fields['attr'] = array('type' => 'varchar', 'width'=>255, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['onmenu'] = array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL', 'default' => 0);
 		$this->fields['onmap'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => 1);
 		$this->fields['onmapinc'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => 1);
@@ -89,15 +89,6 @@ class pg_class extends kernel_class {
 
 		$this->_fields_key = array('ugroup'=>'ugroup');
 
-		$this->def_records[] = array('id'=>'index','name'=>'Главная страница','active'=>1,'template'=>'default');
-		$this->def_records[] = array('id'=>'404','parent_id'=>'index','name'=>'Страницы нету','active'=>1,'template'=>'default');
-		$this->def_records[] = array('id'=>'401','parent_id'=>'index','name'=>'Недостаточно прав для доступа к странице','active'=>1,'template'=>'default');
-
-		//if($this->_CFG['_F']['adminpage']) {
-			//include_once($this->_CFG['_PATH']['extcore'].'pg.class/content.childs.php');
-			$this->create_child("content");
-		//}
-
 		$this->_enum['inc'] = array(
 			0=>array('path'=>$this->_CFG['_PATH']['ctext'],'name'=>'WEP - '),
 			1=>array('path'=>$this->_CFG['_PATH']['extcore'],'name'=>'WEPext - '),
@@ -105,6 +96,20 @@ class pg_class extends kernel_class {
 			3=>array('path'=>$this->_CFG['_PATH']['ext'],'name'=>'EXT - ')
 		);
 	}
+
+	function _install() {
+		$this->def_records[] = array('id'=>'index','name'=>'Главная страница','active'=>1,'template'=>'default');
+		$this->def_records[] = array('id'=>'404','name'=>'Страницы нету','parent_id'=>'index','active'=>1,'template'=>'default');
+		$this->def_records[] = array('id'=>'401','name'=>'Недостаточно прав для доступа к странице','parent_id'=>'index','active'=>1,'template'=>'default');
+		return parent::_install();
+	}
+	
+	function _childs() {
+		//if($this->_CFG['_F']['adminpage']) {
+			//include_once($this->_CFG['_PATH']['extcore'].'pg.class/content.childs.php');
+			$this->create_child("content");
+		//}
+	}	
 
 	function _getlist($listname,$value=0) {
 		$data = array();

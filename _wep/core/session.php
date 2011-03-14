@@ -40,9 +40,9 @@ class session_gogo extends kernel_class {
 		//$this->expired = get_cfg_var('session.gc_maxlifetime');
 		$this->expired = $_CFG['session']['expire'];
 
-		if($SQL->_iFlag){ // вкл режим автосоздания полей и проверки модуля
-			$this->_install();
-		}
+		//if($SQL->_iFlag){ // вкл режим автосоздания полей и проверки модуля
+			//$this->_install();
+		//}
 
 		session_set_save_handler(array(&$this,"open"), array(&$this,"close"), array(&$this,"read"), array(&$this,"write"), array(&$this,"destroy"), array(&$this,"gc"));
 		session_start();
@@ -63,7 +63,7 @@ class session_gogo extends kernel_class {
 		$this->add_query = '';//' AND `domain` = "'.$this->_domain.'"';
 		$result = $this->SQL->execSQL('SHOW TABLES LIKE \''.$this->tablename.'\'');// checking table exist
 		if ($result->err) echo('Session error');
-		//if (!$result->num_rows()) $this->_install();
+		if (!$result->num_rows()) $this->_install();
 		return(true);
 	}
 	

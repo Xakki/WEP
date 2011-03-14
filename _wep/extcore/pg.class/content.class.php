@@ -17,14 +17,14 @@ class content_class extends kernel_class {
 
 		# fields
 		$this->fields['marker'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'min' => '1');
-		$this->fields['href'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
+		$this->fields['href'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL','default'=>'');
 		$this->fields['global'] = array('type' => 'bool', 'attr' => 'NOT NULL','default'=>'0');
-		$this->fields['pagetype'] = array('type' => 'varchar', 'width'=>255, 'attr' => 'NOT NULL');
-		$this->fields['funcparam'] = array('type' => 'varchar', 'width'=>255, 'attr' => 'NOT NULL');
+		$this->fields['pagetype'] = array('type' => 'varchar', 'width'=>255, 'attr' => 'NOT NULL','default'=>'');
+		$this->fields['funcparam'] = array('type' => 'varchar', 'width'=>255, 'attr' => 'NOT NULL','default'=>'');
 		$this->fields['ugroup'] =array('type' => 'varchar', 'width'=>254, 'attr' => 'NOT NULL','default'=>'|0|');
 		$this->fields['styles'] = array('type' => 'varchar', 'width'=> 254, 'attr' => 'NOT NULL','default'=>'');
 		$this->fields['script'] = array('type' => 'varchar', 'width'=> 254, 'attr' => 'NOT NULL','default'=>'');
-		$this->fields['memcache'] = array('type' => 'int', 'width'=> 11,'attr' => 'NOT NULL');
+		$this->fields['memcache'] = array('type' => 'int', 'width'=> 11,'attr' => 'NOT NULL','default'=>0);
 
 		# memo
 		$this->memos['pg'] = array('max' => 50000);
@@ -45,8 +45,12 @@ class content_class extends kernel_class {
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
 		$this->fields_form['memcache'] = array('type' => 'int', 'caption' => 'Memcache time','comment'=>'0 - откл кеширование,1> - кеширование в сек.');
 
-		$this->def_records[] = array('owner_id'=>'404','pg'=>'Недостаточно прав для доступа к странице','marker'=>'text','active'=>1);
 		$this->owner->_listnameSQL = 'template, name';
+	}
+
+	function _install() {
+		$this->def_records[] = array('owner_id'=>'404','pg'=>'Недостаточно прав для доступа к странице','marker'=>'text','active'=>1);
+		return parent::_install();
 	}
 
 	function _getlist($listname,$value=0) {

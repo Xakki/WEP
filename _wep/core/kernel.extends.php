@@ -52,7 +52,7 @@ abstract class kernel_class{
 		print('Привет, вы пытались обратиться к $name');
 	} */
 
-    function __construct(&$SQL, $owner=NULL) {
+    function __construct(&$SQL, $owner=NULL, $_autoCheckMod=NULL) {
 		global $_CFG;
 
 		$this->_CFG = &$_CFG;//Config
@@ -60,14 +60,19 @@ abstract class kernel_class{
 		if(!$this->SQL)
 			trigger_error("SQL class missing.", E_USER_WARNING);
 		$this->owner = &$owner;//link to owner class
-		if(!isset($this->_autoCheckMod)) {
-			if($SQL->_iFlag)
-				$this->_autoCheckMod = true;
-			else
-				$this->_autoCheckMod = false;
-		}
+		if($owner)
+			$this->_autoCheckMod = $owner->_autoCheckMod;
+		elseif(!is_null($_autoCheckMod))
+			$this->_autoCheckMod = $_autoCheckMod;
+		elseif(!isset($this->_autoCheckMod) and $SQL->_iFlag)
+			$this->_autoCheckMod = true;
+		else
+			$this->_autoCheckMod = false;
 
 		$this->_set_features(); // настройки модуля
+
+		if ($this->singleton == true)
+			$_CFG['singleton'][$this->_cl] = &$this;
 
 		$this->_create_conf(); // загрузки формы конфига
 
@@ -80,6 +85,7 @@ abstract class kernel_class{
 		if($this->_autoCheckMod){ // вкл режим автосоздания полей и проверки модуля
 			$this->_install();
 		}
+		$this->_childs();
 	}
 
 	function __destruct(){
@@ -156,6 +162,7 @@ _fldformer($key, $param)
 		$this->childs = new modul_child($this);
 		$this->ordfield = $this->_clp = '';
 		$this->data = array();
+		$this->null = NULL;
 		return true;
 	}
 
@@ -176,13 +183,12 @@ _fldformer($key, $param)
 
 		if ($this->owner) 
 		{
-			if ($this->owner->mf_use_charid) 
-				$this->fields[$this->owner_name] = array('type' => 'varchar', 'width' => $this->owner->mf_idwidth, 'attr' => 'NOT NULL');
-			else
-				$this->fields[$this->owner_name] = array('type' => 'int', 'attr' => 'unsigned NOT NULL');
+			$this->fields[$this->owner_name] = $this->owner->fields['id'];
+			$this->fields[$this->owner_name]['attr'] = 'NOT NULL';
 			if($this->owner_unique)
 				$this->unique_fields[$this->owner_name] = $this->owner_name;
-			$this->index_fields[$this->owner_name] = $this->owner_name;
+			else
+				$this->index_fields[$this->owner_name] = $this->owner_name;
 		}
 
 		if($this->mf_createrid){
@@ -246,7 +252,11 @@ _fldformer($key, $param)
 			$this->_pn = 1;
 
 		$this->attprm = array('type' => 'varchar(4)', 'attr' => 'NOT NULL DEFAULT \'\'');
+		
+		return true;  
+	}
 
+	function _childs() {
 		if($this->cf_childs and $this->config['childs']) {
 			foreach($this->config['childs'] as $r) {
 				if(file_exists($this->_CFG['_PATH']['ext'].$this->_cl.'.class/'.$r.'.childs.php'))
@@ -258,8 +268,6 @@ _fldformer($key, $param)
 				$this->create_child($r);
 			}
 		}
-		
-		return true;  
 	}
 
 	protected function _create_conf() { // Здесь можно установить стандартные настройки модулей
@@ -309,8 +317,8 @@ _fldformer($key, $param)
 	public function _insertDefault(){
 		foreach($this->def_records as $row)
 		{
-			$result = $this->SQL->execSQL('INSERT INTO `'.$this->tablename.'` ('.implode(',',array_keys($row)).') values (\''.implode("','",$row).'\')');
-			if ($result->err) return false;
+			if(!$this->_add_item($row)) 
+				return false;
 		}
 		$this->_message('Insert default records into table '.$this->tablename.'.',3);
 		return true;
@@ -614,7 +622,7 @@ _get_file($row, $key)
 		$ar_type = array(0=>E_USER_ERROR , 1=>E_USER_WARNING , 2=>E_USER_NOTICE, 3=>'modify' , 4=>'notify', 5=>'ok');
 		if($type<3)
 			trigger_error($msg, $ar_type[$type]);
-		elseif($_SESSION['_showallinfo']>1) 
+		elseif($_COOKIE['_showallinfo']>1) 
 			$this->_CFG['logs']['mess'][] = array($msg,$ar_type[$type]);
 		if($type<2)
 			return false;
