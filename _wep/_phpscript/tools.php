@@ -37,7 +37,7 @@ function tools_sendReg() {
 }
 
 $dataF = array(
-	'tools_sendReg'=>'tools_sendReg'
+	'phpinfo'=>'phpinfo'
 );
 
 if(file_exists($_CFG['_PATH']['phpscript2'].'/tools.php'))
@@ -54,5 +54,6 @@ foreach($dataF as $kk=>$rr) {
 		$html .= '<li><a href="'.$_CFG['PATH']['wepname'].'/index.php?_view=list&_modul=_tools&tfunc='.$kk.'">'.$rr.'</a></li>';
 }
 $html .= '</ul>';
+$HTML->_templates = 'nologs';
 return $html;
 ?>
