@@ -170,10 +170,10 @@
 							$data[$row['id']] = $row['name'];
 					}
 					elseif($listname['is_tree']) {
-						if($MODUL->mf_use_charid)//is_int($row['parent_id']) *********** както решить трабл
+						/*if($MODUL->mf_use_charid)//is_int($row['parent_id']) *********** както решить трабл
 							$data[''][''] = $_this->getMess('_listroot');
-						else 
-							$data[0][0] = $_this->getMess('_listroot');
+						else*/ 
+						$data[0][0] = $_this->getMess('_listroot');
 						while ($row = $result->fetch_array()){
 							$data[$row['parent_id']][$row['id']] = array('#name#'=>$row['name'], '#checked#'=>$row['checked']);
 						}

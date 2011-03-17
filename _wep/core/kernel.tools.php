@@ -35,7 +35,7 @@
 
 	function _droped(&$_this){
 		$result = $_this->SQL->execSQL('DROP TABLE `'.$_this->tablename.'`');
-		if ($result->err) return false;
+		//if ($result->err) return false;
 		$_this->_message('Table `'.$_this->tablename.'` droped.',3);
 		if (count($_this->childs)) 
 			foreach($_this->childs as $child) 

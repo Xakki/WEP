@@ -538,7 +538,7 @@ _get_file($row, $key)
 			$pathimg = $this->getPathForAtt($key).'/'.$pref.$id.'.'.$extValue;
 		return $pathimg;
 	}
-	protected function _prefixImage($path,$pref)
+	public function _prefixImage($path,$pref)
 	{
 		if(trim($path)!='')
 		{

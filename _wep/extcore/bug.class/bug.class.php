@@ -39,7 +39,7 @@ class bug_class extends kernel_class {
 		parent::_create();
 
 		# fields
-		$this->fields['name'] = array('type' => 'text', 'attr' => 'NOT NULL', 'min' => '1');	
+		$this->fields['name'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'min' => '1');	
 		$this->fields['err_type'] = array('type' => 'int', 'attr' => 'NOT NULL');
 		$this->fields['file'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['line'] = array('type' => 'int', 'attr' => 'NOT NULL');
@@ -69,7 +69,7 @@ class bug_class extends kernel_class {
 		
 		$this->bugs = array();
 
-		$this->_unique['name'] = 'name';
+		$this->unique_fields['name'] = 'name';
 		
 		$this->ordfield = 'active DESC, mf_timecr DESC';
 		

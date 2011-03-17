@@ -84,8 +84,9 @@ class ugroup_extend extends kernel_class
 	}
 
 	function _install() {
-		$this->def_records[] = array('name'=>'Администраторы','level'=>0,'filesize'=>'100','active'=>1,'id'=>1,'wep'=>1);
-		$this->def_records[] = array('name'=>'Анонимы','level'=>5,'filesize'=>'0','active'=>1,'id'=>0,'wep'=>0);
+		$this->def_records[1] = array('id'=>1,'name'=>'Администраторы','level'=>0,'filesize'=>'100','active'=>1,'wep'=>1);
+		$this->def_records[2] = array('id'=>2,'name'=>'Анонимы','level'=>5,'filesize'=>'0','active'=>1,'wep'=>0);
+		$this->def_records[3] = array('id'=>3,'name'=>'Пользователи','level'=>2,'filesize'=>'0','active'=>1,'wep'=>0);
 		return parent::_install();
 	}
 

@@ -67,7 +67,7 @@
 				elseif($rr==1 and $kk) {
 					$temp .= '<script type="text/javascript" src="'.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].$kk.'.js"></script>'."\n";
 					if($kk=='jquery.fancybox')
-						$_tpl['onload'] .= 'jQuery(\'div.imagebox a\').fancybox();jQuery(\'a.fancyimg\').fancybox();';
+						$_tpl['onload'] .= 'jQuery(\'a:has(img)\').fancybox();';//$_tpl['onload'] .= 'jQuery(\'div.imagebox a\').fancybox();jQuery(\'a.fancyimg\').fancybox();';
 					elseif(strpos($kk,'script.qrtip.jquery')!== false) {
 						$_tpl['onload'] .= 'jQuery(\'a\').qr();';
 					}

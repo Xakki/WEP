@@ -176,44 +176,78 @@
 			}
 
 	
-		$indexlist = $indexlistR = $uniqlist = $primary = array();
+		$indexlist = $uniqlistR = $uniqlist = array();
+		$primary = '';
 		$result = $this->SQL->execSQL('SHOW INDEX FROM `'.$this->tablename.'`');
 		while ($data = $result->fetch_array(MYSQL_NUM)) {
-			$indexlist[$data[4]]=$data[2];
-			if(!$data[1]) {//!NON_unique
-				$uniqlist[$data[4]]=$data[2];
-				$uniqlistR[$data[2]]=$data[4];
-			}
 			if($data[2]=='PRIMARY') //только 1 примарикей
-				$primary[$data[4]]=$data[2];
+				$primary=$data[4];
+			elseif(!$data[1]) //!NON_unique
+				$uniqlist[$data[2]][$data[4]]=$data[4];
+			else
+				$indexlist[$data[2]][$data[4]]=$data[4];
 		}
-		if(count($this->index_fields))
-			foreach($this->index_fields as $k=>$r)
-				if (!isset($indexlist[$k])){
-					$out[$k]['index'] = 'CREATE INDEX `'.$r.'` ON `'.$this->tablename.'` (`'.$k.'`)';
-					$indexlist[$k] = $r;
-				}
-		if ($this->owner && !isset($indexlist[$this->owner_name])) 
-			$out[$this->owner_name]['index'] = 'CREATE INDEX '.$this->owner_name.' ON `'.$this->tablename.'` ('.$this->owner_name.')';
-		if ($this->mf_istree && !isset($indexlist['parent_id']))
-			$out['parent_id']['index'] = 'CREATE INDEX `parent_id` ON `'.$this->tablename.'` (parent_id)';
-		if ($this->mf_actctrl && !isset($indexlist['active']))
-			$out['active']['index'] = 'CREATE INDEX `active` ON `'.$this->tablename.'` (active)';
-		if ($this->mf_ordctrl && !isset($indexlist['ordind']))
-			$out['ordind']['index'] = 'CREATE INDEX `ordind` ON `'.$this->tablename.'` (ordind)';
 
-		if(isset($this->fields['id']) and !isset($this->fields['id']['inst']) and !isset($primary['id']))
+		// CREATE PRIMARY KEY
+		if(isset($this->fields['id']) and !$primary) {
 			$out['id']['index'] = 'ALTER TABLE `'.$this->tablename.'` ADD PRIMARY KEY(id)';
+			$primary = 'id';
+		}
+		// CREATE UNIQ KEY
+		$uniqlistR = $uniqlist;
 		if(isset($this->unique_fields) and count($this->unique_fields)){
 			foreach($this->unique_fields as $k=>$r) {
-				if (!isset($uniqlist[$k]) and !isset($uniqlistR[$k]) and !isset($primary[$k])) {
-					if(is_array($r)) $r = implode(',',$r);
-					//доделать * когда уже есть индекс, нужно его сначала удалить а потом уже добавлять уник
-					//типа ....drop key `rname`, add unique `rname` (`rname`)
-					$out[$k]['index'] = 'ALTER TABLE `'.$this->tablename.'` ADD UNIQUE KEY '.$k.' ('.$r.')';
+				if(!is_array($r)) $r = array($r);
+				if (!isset($uniqlist[$k])) {// and !isset($uniqlistR[$k])
+					foreach($r as $kk=>$rr)
+						$uniqlistR[$k][$kk] = $rr;
+					$tmp = '';
+					if(isset($indexlist[$k]))
+						$tmp = 'drop key `'.$k.'`, ';
+					if(is_array($r)) $r = implode('`,`',$r);
+					$out[$k]['index'] = 'ALTER TABLE `'.$this->tablename.'` '.$tmp.' ADD UNIQUE KEY `'.$k.'` (`'.$r.'`)';
+
+				} else {
+					unset($uniqlist[$k]);
 				}
 			}
-		}	
+		}
+		if(count($uniqlist)) {
+			foreach($uniqlist as $k=>$r) {
+				$out[$k]['index'] = 'ALTER TABLE `'.$this->tablename.'` drop key '.$k.' ';
+				unset($uniqlistR[$k]);
+			}
+		}
+		//$uniqlistR - Действующие уник ключи в итоге
+
+		// CREATE INDEX KEY
+		if ($this->owner)
+			$this->index_fields[$this->owner_name] = $this->owner_name;
+		if ($this->mf_istree)
+			$this->index_fields['parent_id'] = 'parent_id';
+		if ($this->mf_actctrl)
+			$this->index_fields['active'] = 'active';
+		if ($this->mf_ordctrl)
+			$this->index_fields['ordind'] = 'ordind';
+		if(count($this->index_fields))
+			foreach($this->index_fields as $k=>$r) {
+				if (!isset($indexlist[$k]) and !isset($uniqlistR[$k])) {
+					if(isset($out[$k]['index']))
+						$out[$k]['index'] .= ', add index `'.$k.'` (`'.$r.'`)';
+					else
+						$out[$k]['index'] = 'ALTER TABLE `'.$this->tablename.'` add index `'.$k.'` (`'.$r.'`)';
+				} else {
+					unset($indexlist[$k]);
+				}
+			}
+		if(count($indexlist)) {
+			foreach($indexlist as $k=>$r) {
+				if(isset($out[$k]['index']))
+					$out[$k]['index'] = ', drop key '.$k.' ';
+				else
+					$out[$k]['index'] = 'ALTER TABLE `'.$this->tablename.'` drop key '.$k.' ';
+			}
+		}
 
 		if(count($out))
 			$out = array($this->tablename=>$out);
