@@ -335,7 +335,7 @@ class pg_class extends kernel_class {
 		$flagPG = 0;
 
 		$cls = 'SELECT * FROM '.$this->_CFG['sql']['dbpref'].'pg_content WHERE active=1 and (owner_id="'.$this->id.'"';
-		//if($this->id!='404') // откл повторные глобалные контенты, если это 400 и 500 страница
+		//if($this->id!='404') // откл повторные глобалные контенты, если это 400 и 401 страница
 			$cls .= ' or (owner_id IN ("'.(implode('","',$this->selected)).'") and global=1)';
 		$cls .= ' ) ORDER BY ordind';
 		$resultPG = $this->SQL->execSQL($cls);
