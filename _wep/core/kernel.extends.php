@@ -340,7 +340,7 @@ _fldformer($key, $param)
 			}
 			elseif (isset($param['width']) && $param['width']!='') 
 				$m.= '('.$param['width'].')'; 
-			
+		if($key=='rating') {print_r($m);print_r(' - ');print_r($param);}
 		$m.=(isset($param['attr'])?' '.$param['attr']:'').(isset($param['default'])?' DEFAULT \''.$param['default'].'\'':'');
 		return $m;
 	}
