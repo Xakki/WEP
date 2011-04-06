@@ -270,6 +270,7 @@ class users_extend extends kernel_class {
 				$this->listfields = array('t2.*,t2.active as gact,t2.name as gname,t1.*');
 				$this->clause = 't1 Join '.$this->owner->tablename.' t2 on t1.'.$this->owner_name.'=t2.id where t1.'.$this->fn_login.' = \''.$login.'\' and t1.'.$this->fn_pass.' =\''.md5($this->_CFG['wep']['md5'].$pass).'\''; 
 				if(!$this->_list())
+					//{die();}
 					{header('Location: '.$this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['wepname'].'/login.php?install');die();}
 				if(count($this->data))
 				{

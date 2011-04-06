@@ -1,5 +1,5 @@
 .svn
-.git
+.bzr
 *.tmp
 error_log
 */temp/*
