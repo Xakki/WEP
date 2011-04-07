@@ -1,4 +1,4 @@
-/* Swedish initialisation for the jQuery UI date picker plugin. */
+﻿/* Swedish initialisation for the jQuery UI date picker plugin. */
 /* Written by Anders Ekdahl ( anders@nomadiz.se). */
 jQuery(function($){
     $.datepicker.regional['sv'] = {

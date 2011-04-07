@@ -1,4 +1,4 @@
-/* Euskarako oinarria 'UI date picker' jquery-ko extentsioarentzat */
+﻿/* Euskarako oinarria 'UI date picker' jquery-ko extentsioarentzat */
 /* Karrikas-ek itzulia (karrikas@karrikas.com) */
 jQuery(function($){
 	$.datepicker.regional['eu'] = {

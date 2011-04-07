@@ -1,4 +1,4 @@
-/* Croatian i18n for the jQuery UI date picker plugin. */
+﻿/* Croatian i18n for the jQuery UI date picker plugin. */
 /* Written by Vjekoslav Nesek. */
 jQuery(function($){
 	$.datepicker.regional['hr'] = {

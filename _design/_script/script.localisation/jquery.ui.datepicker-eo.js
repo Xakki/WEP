@@ -1,4 +1,4 @@
-/* Esperanto initialisation for the jQuery UI date picker plugin. */
+﻿/* Esperanto initialisation for the jQuery UI date picker plugin. */
 /* Written by Olivier M. (olivierweb@ifrance.com). */
 jQuery(function($){
 	$.datepicker.regional['eo'] = {

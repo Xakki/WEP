@@ -76,6 +76,8 @@
 					$temp .= "<script type=\"text/javascript\">//<!--\n".$rr."\n//--></script>\n";
 			}
 		}
+		if(strpos($temp,'jquery.js')!==false)
+			$temp .= '<script type="text/javascript" src="'.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].'include.js"></script>';
 		$_tpl['script'] = $temp;
 	}
 

@@ -1,4 +1,4 @@
-/* Romanian initialisation for the jQuery UI date picker plugin.
+﻿/* Romanian initialisation for the jQuery UI date picker plugin.
  *
  * Written by Edmond L. (ll_edmond@walla.com)
  * and Ionut G. Stan (ionut.g.stan@gmail.com)
