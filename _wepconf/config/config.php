@@ -1,6 +1,6 @@
 <?
 
-$_CFG['sql']['host']='localhost';
+$_CFG['sql']['host']='127.0.0.1';
 $_CFG['sql']['login']='core_wep';
 $_CFG['sql']['password']='D56FdpnD4th';
 $_CFG['sql']['database']='core_wep';
