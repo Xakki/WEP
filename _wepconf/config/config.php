@@ -13,7 +13,7 @@ $_CFG['wep']['login'] = 'root';
 $_CFG['wep']['password']='coreadmin';
 $_CFG['wep']['md5']='dSS2ffs';
 $_CFG['wep']['def_filesize']=100;
-$_CFG['wep']['sessiontype']=1 //0 - стандартная сессия, 1 - БД сессия, 2 - ещё какаянибудь
+$_CFG['wep']['sessiontype']=1; //0 - стандартная сессия, 1 - БД сессия, 2 - ещё какаянибудь
 $_CFG['wep']['bug_hunter'] = 1;
 
 
