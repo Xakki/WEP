@@ -42,7 +42,7 @@
 					$pcnt = 0;
 			$climit= $pcnt.', '.$this->messages_on_page;
 
-			$cls =array(0=>array('t1.*'),1=>'',2=>array());
+			$cls =array(array('t1.*'),'',array());
 			$arrno = array('active'=>1,'parent_id'=>1);
 			if($this->owner and $this->owner->id)
 				$arrno[$this->owner_name] = 1;
@@ -51,7 +51,8 @@
 			$t=2;
 			if(count($this->childs)) foreach($this->childs as $ck=>$cn) {
 				$arrno[$ck.'_cnt'] = 1;
-				$cls[0][] = '(SELECT count(t'.$t.'.id) FROM `'.$cn->tablename.'` t'.$t.' WHERE t'.$t.'.'.$cn->owner_name.'=t1.id) as '.$ck.'_cnt';
+				$cls[0][] = 'count(DISTINCT t'.$t.'.id) as '.$ck.'_cnt';
+				$cls[1] .=' LEFT JOIN `'.$cn->tablename.'` t'.$t.' ON t'.$t.'.'.$cn->owner_name.'=t1.id';
 				/*$temp = $cn->_moder_clause(array(),$param);// сырая и недоработана
 				if(count($temp)) $cls[1] .= ' and '.str_replace('t1.','t'.$t.'.',implode(' and ',$temp));
 				//if($cn->_join_check==TRUE)
@@ -71,7 +72,8 @@
 			}
 			if($this->mf_istree) {
 				$arrno['istree_cnt']=1;
-				$cls[0][] = '(SELECT count(t'.$t.'.id) FROM `'.$this->tablename.'` t'.$t.' WHERE t'.$t.'.parent_id=t1.id) as istree_cnt';
+				$cls[0][] = 'count(DISTINCT t'.$t.'.id) as istree_cnt';
+				$cls[1] .=' LEFT JOIN `'.$this->tablename.'` t'.$t.' ON t'.$t.'.parent_id=t1.id';
 				$t++;
 			}
 
@@ -149,7 +151,7 @@
 			}
 
 			/** Сборка запроса на вывод*/
-			$cls[2] = $this->_moder_clause($cls[2],$param);
+			//$cls[2] = $this->_moder_clause($cls[2],$param);
 			$cls[2] = array_merge($cls[2], $clause);
 			if(count($cls[2])>0) $cls[1] .=' WHERE '.implode(' AND ',$cls[2]);
 
