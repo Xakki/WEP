@@ -14,15 +14,29 @@ class rubric_class extends kernel_class {
 		parent::_create();
 
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'min' => '1');
-		$this->fields['checked'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL DEFAULT 0');
+		$this->fields['lname'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'min' => '1');
+		$this->fields['rname'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'min' => '1');
+		$this->fields['checked'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL','default'=>'0');
 		$this->fields['imgpos'] = array('type' => 'int', 'width' => 3, 'attr' => 'NOT NULL', 'min' => '1');
 
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название рубрики');
+		$this->fields_form['rname'] = array('type' => 'text', 'caption' => 'Адресс рускими буквами');
+		$this->fields_form['lname'] = array('type' => 'text', 'caption' => 'Адресс латинскими буквами');
 		$this->fields_form['parent_id'] = array('type' => 'list', 'listname'=>'parentlist', 'caption' => 'Родительская рубрика','mask' =>array('fview'=>1));
 		$this->fields_form["imgpos"] = array("type" => "int", "caption" => "Позиция пиктограмки");
-		$this->fields_form['checked'] = array('type' => 'checkbox', 'caption' => 'Разрешить выделение');
+		$this->fields_form["ordind"] = array("type" => "int", "caption" => "Сортировка");
+		$this->fields_form['checked'] = array('type' => 'checkbox', 'caption' => 'Разрешить для подачи объявления');
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Активность');
 
+		$this->index_fields['name'] = 'name';
+		$this->unique_fields['rname'] = 'rname';
+		$this->unique_fields['lname'] = 'lname';
+		$this->index_fields['checked'] = 'checked';
+		$this->index_fields['imgpos'] = 'imgpos';
+
+	}
+
+	function _childs() {
 		$this->create_child('param');
 		$this->create_child("countb");
 	}
@@ -38,15 +52,15 @@ class rubric_class extends kernel_class {
 			while ($row = $result->fetch_array()){
 				$this->data2[$row['id']] = $row;
 				$this->data[$row['parent_id']][$row['id']] = $row['name'];
-				$this->data3[$row['parent_id']][$row['id']] = array('name'=>$row['name'],'imgpos'=>$row['imgpos'],'cnt'=>(int)$row['cnt']);
+				$this->data3[$row['parent_id']][$row['id']] = array('name'=>$row['name'],'imgpos'=>$row['imgpos'],'cnt'=>(int)$row['cnt'],'path'=>$row['lname']);
 				if($row['parent_id'])
-					$this->data3[ $this->data2[$row['parent_id']]['parent_id'] ] [$row['parent_id']]['cnt'] += (int)$row['cnt'];
+					$this->data3[$this->data2[$row['parent_id']]['parent_id'] ] [$row['parent_id']]['cnt'] += (int)$row['cnt'];
 		}
-		return true;	
+		return 0;	
 	}
 
 	function simpleRubricCache() {
-		if(isset($this->data2) and count($this->data2)) return true;
+		if(isset($this->data2) and count($this->data2)) return 0;
 		$this->data2=$this->data=array();
 		$clause = 'SELECT t1.* FROM '.$this->tablename.' t1 WHERE t1.active=1 ORDER BY t1.parent_id,t1.ordind';
 		$result = $this->SQL->execSQL($clause);
@@ -54,6 +68,7 @@ class rubric_class extends kernel_class {
 			while ($row = $result->fetch_array()){
 				$this->data2[$row['id']] = $row;
 				$this->data[$row['parent_id']][$row['id']] = $row['name'];
+				$this->data_path[$row['lname']] = $row['id'];
 		}
 		return true;	
 	}
@@ -70,7 +85,7 @@ class rubric_class extends kernel_class {
 		$temp = $id;
 		$tpath= array();
 		while(isset($this->data2[$temp])) {
-			$tpath[$PGLIST->id.'_'.$temp] = array('name'=>$this->data2[$temp]['name']);
+			$tpath[$this->data2[$temp]['lname'].'/'.$PGLIST->id] = array('name'=>$this->data2[$temp]['name']);
 			$temp=$this->data2[$temp]['parent_id'];
 		}
 		if(count($tpath))
@@ -105,6 +120,7 @@ class param_class extends kernel_class {
 		$this->_enum['typelist'] = array(
 			0=>'Простой список',
 			1=>'AJAX список',
+			2=>'CHECKBOX список',
 		);
 		$this->_enum['type'] = array(
 			0=>'CheckBox0',
@@ -137,17 +153,17 @@ class param_class extends kernel_class {
 
 		# fields
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
-		$this->fields["type"] = array("type" => "tinyint", "width" =>4, "attr" => 'NOT NULL default ""');
-		$this->fields["typelist"] = array("type" => "tinyint", "width" =>4, "attr" => 'NOT NULL default 0');
-		$this->fields["formlist"] = array("type" => "tinyint", "width" =>4, "attr" => 'NOT NULL default 0');
-		$this->fields['constrn'] = array("type" => "tinyint", "width" =>1, "attr" => 'NOT NULL default 0');
-		$this->fields['edi'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL default ""');
-		$this->fields['def'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL default ""');
-		$this->fields["min"] = array("type" => "int", "width" =>8, "attr" => 'NOT NULL default 0');
-		$this->fields["max"] = array("type" => "int", "width" =>8, "attr" => 'NOT NULL default 0');
-		$this->fields["step"] = array("type" => "int", "width" =>8, "attr" => 'NOT NULL default 1');
-		$this->fields['mask'] = array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL default ""');
-		$this->fields['comment'] = array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL default ""');
+		$this->fields["type"] = array("type" => "tinyint", "width" =>4, "attr" => 'NOT NULL', 'default'=>'0');
+		$this->fields["typelist"] = array("type" => "tinyint", "width" =>4, "attr" => 'NOT NULL', 'default'=>'0');
+		$this->fields["formlist"] = array("type" => "tinyint", "width" =>4, "attr" => 'NOT NULL', 'default'=>'0');
+		$this->fields['constrn'] = array("type" => "tinyint", "width" =>1, "attr" => 'NOT NULL', 'default'=>'0');
+		$this->fields['edi'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'default'=>'');
+		$this->fields['def'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'default'=>'');
+		$this->fields["min"] = array("type" => "int", "width" =>8, "attr" => 'NOT NULL', 'default'=>'0');
+		$this->fields["max"] = array("type" => "int", "width" =>8, "attr" => 'NOT NULL', 'default'=>'0');
+		$this->fields["step"] = array("type" => "int", "width" =>8, "attr" => 'NOT NULL', 'default'=>'1');
+		$this->fields['mask'] = array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL', 'default'=>'');
+		$this->fields['comment'] = array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL', 'default'=>'');
 
 		# attaches
 
@@ -196,7 +212,7 @@ class countb_class extends kernel_class {
 		$this->fields['owner_id'] = array('type' => 'int', 'width' => 7,'attr' => 'NOT NULL');
 		$this->fields['cnt'] = array('type' => 'int', 'width' => 7,'attr' => 'NOT NULL');
 
-		$this->_unique['oc'] = array('owner_id','city');
+		$this->unique_fields['oc'] = array('owner_id','city');
 	}
 
 }

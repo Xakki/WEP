@@ -106,6 +106,27 @@ function tpl_form(&$data) {
 				}
 				$html .= '</div>';
 			}
+			elseif($r['type']=='date' and $r['readonly']) {
+
+				if($r['fields_type'] =='int' and $r['value']){
+					if(isset($r['mask']['format']) and $r['mask']['format']) {
+						$temp = date($r['mask']['format'],$r['value']);
+					}
+					else{
+						$temp = date('Y-m-d H:i:s',$r['value']);
+					}
+				}
+				elseif($r['fields_type'] =='timestamp' and $r['value']){
+					$temp = sscanf($r['value'], "%d-%d-%d %d:%d:%d");//2007-09-11 10:16:15
+				}
+				else{
+					$temp = array(date('Y'),date('m'),date('d'),date('H'));
+				}
+
+				$html .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.$temp.'"';
+				$html .= ' readonly="readonly" class="ronly"';
+				$html .= '/></div>';
+			}
 			elseif($r['type']=='date' and !$r['readonly']) {
 	
 				$html .= '<div class="form-value">';
@@ -129,6 +150,7 @@ function tpl_form(&$data) {
 				else{
 					$format = explode('-', 'Y-m-d-H-i-s');
 				}
+
 				if($r['mask']['view']=='input') {
 					// Тип поля
 					if($r['fields_type']  =='int' and $r['value']){

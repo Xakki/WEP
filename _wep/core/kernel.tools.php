@@ -2,9 +2,13 @@
 
 	function _checkdir(&$_this,$dir)
 	{
-		if (!file_exists($_this->_CFG['_PATH']['path'].$dir)) 
+		$pdir = $_this->_CFG['_PATH']['path'].$dir;
+		if (!file_exists($pdir)) 
 		{
-			if (!mkdir($_this->_CFG['_PATH']['path'].$dir, 0755)) return $_this->_message('Cannot create directory <b>'.$dir.'</b>',1);
+			if(!file_exists(dirname($pdir))) {
+				_checkdir($_this,dirname($dir));
+			}
+			if (!mkdir($pdir, 0755)) return $_this->_message('Cannot create directory <b>'.$dir.'</b>',1);
 		}
 		else
 		{			
@@ -308,14 +312,15 @@ $html .= '
 						else
 							$mess[] = array('name' => 'error', 'value' => 'Error data ('.$table.' - '.print_r($row,true).')');
 					}
+
 					if(isset($_this->form['list_query'])) {
 						$_this->form['list_query']['type'] = 'checkbox';
-						$_this->form['sbmt'] = array(
-							'type'=>'submit',
-							'value'=>$_this->getMess('_submit')
-						);
 					} else 
 						unset($_this->form['invert']);
+					$_this->form['sbmt'] = array(
+						'type'=>'submit',
+						'value'=>$_this->getMess('_submit')
+					);
 				} else 
 					$mess[] = array('name' => 'ok', 'value' => $_this->getMess('_recheck_have_nothing'));
 			}

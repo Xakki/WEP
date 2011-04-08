@@ -248,8 +248,14 @@ class pg_class extends kernel_class {
 			if ($row['href']){
 				header('Location: '.$row['href']);die();}
 			$this->pageinfo = $this->dataCash[$this->id];
-			$this->pageinfo['keywords'] = $this->config['keywords'].', '.$this->pageinfo['keywords'];
-			$this->pageinfo['description'] = $this->config['description'].', '.$this->pageinfo['description'];
+			if($this->pageinfo['keywords'])
+				$this->pageinfo['keywords'] = $this->config['keywords'].', '.$this->pageinfo['keywords'];
+			else
+				$this->pageinfo['keywords'] = $this->config['keywords'];
+			if($this->pageinfo['description'])
+				$this->pageinfo['description'] = $this->config['description'].' '.$this->pageinfo['description'];
+			else
+				$this->pageinfo['description'] = $this->config['description'];
 			$this->pageinfo['script'] = explode('|',trim($this->pageinfo['script'],'|'));
 			if(count($this->pageinfo['script'])) {
 				$temp = $this->pageinfo['script'];$this->pageinfo['script'] = array();

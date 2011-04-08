@@ -1776,7 +1776,7 @@ $Ajax=0 - не скриптовая
 						if($i==$this->_pn)
 							$DATA['link'][] = array('value'=>$i,'href'=>'select_page');
 						else
-							$DATA['link'][] = array('value'=>$i,'href'=>preg_replace($pregreplPage,($i==1?'':$inPage.$i),$thisPage));
+							$DATA['link'][] = array('value'=>$i,'href'=>preg_replace($pregreplPage,($i==1?'':$inPage.$i.'\\1'),$thisPage));
 				if($this->_pn+$numlist<$DATA['cntpage']){
 					$DATA['link'][] = array('value'=>'...','href'=>'');
 					$DATA['link'][] = array('value'=>$DATA['cntpage'],'href'=>str_replace($replPage,$inPage.$DATA['cntpage'],$thisPage));
