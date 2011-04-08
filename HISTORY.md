@@ -27,4 +27,3 @@
 * OPEN ID (http://loginza.ru)
 * include JS and CSS - инклюдить только 1 раз на страницу, попробовать реализовать без Jquery
 
-* Начало
