@@ -1,4 +1,4 @@
-/* Faroese initialisation for the jQuery UI date picker plugin */
+﻿/* Faroese initialisation for the jQuery UI date picker plugin */
 /* Written by Sverri Mohr Olsen, sverrimo@gmail.com */
 jQuery(function($){
 	$.datepicker.regional['fo'] = {

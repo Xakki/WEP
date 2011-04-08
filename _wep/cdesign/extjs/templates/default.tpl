@@ -9,6 +9,7 @@
 		<meta name="description" content="CMS"/>
 		<link rel="SHORTCUT ICON" href="{$_tpl['design']}img/favicon.ico"/>
 		<script type="text/javascript" src="_design/_script/jquery.js"></script>
+		<script type="text/javascript" src="_design/_script/include.js"></script>
 		<script type="text/javascript" src="_design/_script/extjs/adapter/ext/ext-base.js"></script>
 		<script type="text/javascript" src="_design/_script/extjs/ext-all-debug.js"></script>
 		<script type="text/javascript" src="{$_tpl['design']}script/main.js"></script>

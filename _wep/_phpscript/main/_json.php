@@ -12,7 +12,7 @@
 
 	if($_GET['_view']=='ajaxlist' and $_GET['_srlz']=stripslashes($_GET['_srlz']) and $_GET['_hsh']==md5($_GET['_srlz'].$_CFG['wep']['md5'])) {
 		$listname = unserialize($_GET['_srlz']);
-		if(isset($listname['class']) and $listname['class'])
+		if(!isset($listname['tablename']) and isset($listname['class']) and $listname['class'])
 			$listname['tablename'] = $_CFG['sql']['dbpref'].$listname['class'];
 		
 

@@ -184,7 +184,10 @@ _fldformer($key, $param)
 		if ($this->owner) 
 		{
 			$this->fields[$this->owner_name] = $this->owner->fields['id'];
-			$this->fields[$this->owner_name]['attr'] = 'NOT NULL';
+			if(strpos($this->fields[$this->owner_name]['attr'],'UNSIGNED')!==false)
+				$this->fields[$this->owner_name]['attr'] = 'UNSIGNED NOT NULL';
+			else
+				$this->fields[$this->owner_name]['attr'] = 'NOT NULL';
 			if($this->owner_unique)
 				$this->unique_fields[$this->owner_name] = $this->owner_name;
 			else
@@ -340,7 +343,6 @@ _fldformer($key, $param)
 			}
 			elseif (isset($param['width']) && $param['width']!='') 
 				$m.= '('.$param['width'].')'; 
-			
 		$m.=(isset($param['attr'])?' '.$param['attr']:'').(isset($param['default'])?' DEFAULT \''.$param['default'].'\'':'');
 		return $m;
 	}

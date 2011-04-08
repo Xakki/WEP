@@ -1,4 +1,5 @@
-*.svn
+.svn
+.git
 *.tmp
 error_log
 */temp/*
@@ -6,5 +7,4 @@ test*
 _content
 error.txt
 _design/_script/old
-.gitignore
-.git
+nbproject

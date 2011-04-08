@@ -1,4 +1,4 @@
-/* Albanian initialisation for the jQuery UI date picker plugin. */
+﻿/* Albanian initialisation for the jQuery UI date picker plugin. */
 /* Written by Flakron Bytyqi (flakron@gmail.com). */
 jQuery(function($){
 	$.datepicker.regional['sq'] = {

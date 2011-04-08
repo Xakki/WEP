@@ -31,6 +31,7 @@ $.widget("ui.multiselect", {
   options: {
 		sortable: true,
 		searchable: true,
+		doubleClickable: true,
 		animated: 'fast',
 		show: 'slideDown',
 		hide: 'slideUp',
@@ -56,9 +57,9 @@ $.widget("ui.multiselect", {
 		var that = this;
 
 		// set dimensions
-		//this.container.width(this.element.width()+1);
-		//this.selectedContainer.width(Math.floor(this.element.width()*this.options.dividerLocation));
-		//this.availableContainer.width(Math.floor(this.element.width()*(1-this.options.dividerLocation)));
+		this.container.width(this.element.width()+1);
+		this.selectedContainer.width(Math.floor(this.element.width()*this.options.dividerLocation));
+		this.availableContainer.width(Math.floor(this.element.width()*(1-this.options.dividerLocation)));
 
 		// fix list height to match <option> depending on their individual header's heights
 		this.selectedList.height(Math.max(this.element.height()-this.selectedActions.height(),1));
@@ -118,7 +119,15 @@ $.widget("ui.multiselect", {
 		});
 		
 		this.container.find(".add-all").click(function() {
-			that._populateLists(that.element.find('option').attr('selected', 'selected'));
+			var options = that.element.find('option').not(":selected");
+			if (that.availableList.children('li:hidden').length > 1) {
+				that.availableList.children('li').each(function(i) {
+					if ($(this).is(":visible")) $(options[i-1]).attr('selected', 'selected'); 
+				});
+			} else {
+				options.attr('selected', 'selected');
+			}
+			that._populateLists(that.element.find('option'));
 			return false;
 		});
 	},
@@ -145,6 +154,7 @@ $.widget("ui.multiselect", {
 		
 		// update count
 		this._updateCount();
+		that._filter.apply(this.availableContainer.find('input.search'), [that.availableList]);
   },
 	_updateCount: function() {
 		this.selectedContainer.find('span.count').text(this.count+" "+$.ui.multiselect.locale.itemsCount);
@@ -158,7 +168,7 @@ $.widget("ui.multiselect", {
 	// clones an item with associated data
 	// didn't find a smarter away around this
 	_cloneWithData: function(clonee) {
-		var clone = clonee.clone();
+		var clone = clonee.clone(false,false);
 		clone.data('optionLink', clonee.data('optionLink'));
 		clone.data('idx', clonee.data('idx'));
 		return clone;
@@ -217,6 +227,7 @@ $.widget("ui.multiselect", {
 			this._registerAddEvents(item.find('a.action'));
 		}
 		
+		this._registerDoubleClickEvents(item);
 		this._registerHoverEvents(item);
 	},
 	// taken from John Resig's liveUpdate script
@@ -243,6 +254,12 @@ $.widget("ui.multiselect", {
 				$(rows[this]).show();
 			});
 		}
+	},
+	_registerDoubleClickEvents: function(elements) {
+		if (!this.options.doubleClickable) return;
+		elements.dblclick(function() {
+			elements.find('a.action').click();
+		});
 	},
 	_registerHoverEvents: function(elements) {
 		elements.removeClass('ui-state-hover');

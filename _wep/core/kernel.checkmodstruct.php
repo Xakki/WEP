@@ -20,7 +20,7 @@
 			'DATETIME' => false,
 			'TIMESTAMP' => false,
 			'TIME' => false,
-			'FLOAT' => false,
+			'FLOAT' => '8,2',
 			'DOUBLE' => false,
 			'PRECISION' => false,
 			'REAL' => false,
