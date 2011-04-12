@@ -4,6 +4,11 @@
 	//универсальный для русского языка
 	setlocale(LC_CTYPE, 'ru_RU.UTF-8');
 
+	if (isset($_POST) && count($_POST) && get_magic_quotes_gpc())
+	{
+		$_POST = array_map('stripslashes', $_POST);
+	}
+
 $_CFG['logs']['sql'] = array(); // - массив SQL запросов
 $_CFG['timezone'] = 'Europe/Moscow';
 $_CFG['info'] = array( //информация
