@@ -171,6 +171,11 @@ Ext.apply(wep, {
 		}
 
 	},
+
+	isEmptyObject: function (a) {
+		for (var b in a) return !1;
+		return !0
+	},
 	
 	// динамически подключенные файлы
 	included_files: {},	
@@ -279,54 +284,68 @@ Ext.apply(wep, {
 
 						var data = Ext.util.JSON.decode(result.responseText);
 
-						var columns = data['columns'];
-//						var fields = data['fields'];
-						var children = data['children'];
-						var pagenum = data['pagenum'];
+						if (Ext.isEmpty(data)) {
+							alert('Записей нет');
+						}
+						else {
 
-						var tree_id = wep.modul.cn + '_tree';
-						var panel_id = wep.modul.cn + '_panel';
+							var columns = data['columns'];
+	//						var fields = data['fields'];
+							var children = data['children'];
+							var pagenum = data['pagenum'];
+							var top_menu = data['top_menu'];
 
-						wep.breadcrumbs.add({
-							title: wep.modul.title,
-							component_id:panel_id,
-							dom_id: wep.main_cont,
-							onGoTo: {
-								handler: function() {
-									Ext.getCmp(panel_id).expand();
+							var tree_id = wep.modul.cn + '_tree';
+							var panel_id = wep.modul.cn + '_panel';
+
+							wep.breadcrumbs.add({
+								title: wep.modul.title,
+								component_id:panel_id,
+								dom_id: wep.main_cont,
+								onGoTo: {
+									handler: function() {
+										Ext.getCmp(panel_id).expand();
+									}
+								},
+								onGoOut: {
+									handler: function() {
+										Ext.getCmp(panel_id).collapse();
+									}
 								}
 							},
-							onGoOut: {
-								handler: function() {
-									Ext.getCmp(panel_id).collapse();
-								}
-							}
-						},
-						0);
+							0);
 
-						var tree = new wep.TreeGrid({
-							id: tree_id,
-							modul: wep.modul.cn,
-							add_url: '&_modul=' + wep.modul.cn,
-							autoHeight: true,
-							autoWidth: true,
-							pagenum: pagenum,
-							columns: columns,
-							children: children,
-							requestMethod: 'GET',
-							dataUrl: '_wep/index.php?_view=list&_modul=' + wep.modul.cn
-						});
 
-						var panel = new wep.panel({
-							id: panel_id,
-							title: 'Модуль ' + wep.modul.title,
-							renderTo: wep.main_cont,
-							items: [
-								tree,
-								tree.pnav.links,
-								tree.pnav.combobox
-							]
-						});
+							var tree = new wep.TreeGrid({
+								id: tree_id,
+								modul: wep.modul.cn,
+								add_url: '&_modul=' + wep.modul.cn,
+								autoHeight: true,
+								autoWidth: true,
+								edit_settings : false,
+								pagenum: pagenum,
+								top_menu: top_menu,
+								columns: columns,
+								children: children,
+								requestMethod: 'GET',
+								dataUrl: '_wep/index.php?_view=list&_modul=' + wep.modul.cn
+							});
+
+							var panel = new wep.panel({
+								id: panel_id,
+								title: 'Модуль ' + wep.modul.title,
+								renderTo: wep.main_cont,
+								items: [
+									tree,
+									tree.pnav.links,
+									tree.pnav.combobox
+								]
+							});
+
+						}
+
+
+						
 
 					},
 					failure: function() {

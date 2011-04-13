@@ -370,13 +370,17 @@ wep.TreeGrid = Ext.extend(Ext.tree.TreePanel, {
 			},
 			scope: this
 		});
-		tools.push({
-			text: 'Настройки',
-			handler: function() {
-				this.showTools('config');
-			},
-			scope: this
-		});
+
+		if (this.top_menu.Configmodul == true) {
+			tools.push({
+				text: 'Настройки',
+				handler: function() {
+					this.showTools('config');
+				},
+				scope: this
+			});
+		}
+		
 
 		return tools;
 	},
