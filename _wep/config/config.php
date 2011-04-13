@@ -3,11 +3,7 @@
 	ini_set('display_errors',-1);
 	//универсальный для русского языка
 	setlocale(LC_CTYPE, 'ru_RU.UTF-8');
-
-	if (isset($_POST) && count($_POST) && get_magic_quotes_gpc())
-	{
-		$_POST = array_map('stripslashes', $_POST);
-	}
+	
 
 $_CFG['logs']['sql'] = array(); // - массив SQL запросов
 $_CFG['timezone'] = 'Europe/Moscow';
@@ -196,6 +192,25 @@ $_CFG['form'] = array(
 	'flashFormat' => array('swf'=>1),
 	'dateFormat' => 'd-m-Y-H-i-s'
 );
+
+
+if (isset($_POST) && count($_POST) && get_magic_quotes_gpc())
+{
+	$_POST = stripSlashesOnArray($_POST);
+}
+
+
+function stripSlashesOnArray(array &$theArray)	{
+	foreach ($theArray as &$value) {
+		if (is_array($value)) {
+			self::stripSlashesOnArray($value);
+		} else {
+			$value = stripslashes($value);
+		}
+		unset($value);
+	}
+	reset($theArray);
+}
 
 	
 
