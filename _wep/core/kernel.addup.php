@@ -524,7 +524,7 @@
 			if(isset($arr_nochek[$value['type']])) continue;
 
 			/*Поля которые недоступны пользователю не проверяем, дефолтные значения прописываются в kPreFields()*/
-			if($value['readonly'] or $value['mask']['fview']==2 or (isset($value['mask']['usercheck']) and !_prmUserCheck($value['mask']['usercheck']))) {
+			if($value['readonly'] or $value['mask']['fview']==2 or (isset($value['mask']['usercheck']) and !static_main::_prmUserCheck($value['mask']['usercheck']))) {
 				//unset($data[$key]);
 				continue;
 			}
@@ -560,7 +560,7 @@
 				$value['value'] = $data[$key] = ((int)$data[$key] == 1 ? 1 : 0);
 			}
 			elseif($value['type']=='date') {
-				$value['value'] = $data[$key] = _get_fdate($value, $data[$key], $_this->fields[$key]['type']);
+				$value['value'] = $data[$key] = static_form::_get_fdate($value, $data[$key], $_this->fields[$key]['type']);
 			}
 			//*********** МАССИВЫ
 			elseif(is_array($data[$key]) and count($data[$key])) {

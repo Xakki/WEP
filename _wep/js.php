@@ -18,10 +18,8 @@
 	}
 
 	require_once($_CFG['_PATH']['core'].'html.php');
-	require_once($_CFG['_PATH']['core'].'sql.php');
-	$SQL = new sql();
 
-	$result = userAuth(); // запскает сессию и проверяет авторизацию
+	$result = static_main::userAuth(); // запскает сессию и проверяет авторизацию
 	if(!$result[1]) {
 		//header('Location: login.php?ref='.base64_encode($_SERVER['REQUEST_URI']));
 		$GLOBALS['_RESULT']['html'] = 'Вы не авторизованы , либо доступ закрыт.';
@@ -43,7 +41,7 @@
 		exit(' Модуль '.$_GET['_modul'].' не установлен');
 		//$_tpl['onload']='fLog(\'<div style="color:red;">'.date('H:i:s').' : Модуль '.$_GET['_modul'].' не установлен</div>\',1);fSwin1();';
 
-	if(!_prmModul($_GET['_modul'],array(1,2)))  // Проверка доступа к модулю
+	if(!static_main::_prmModul($_GET['_modul'],array(1,2)))  // Проверка доступа к модулю
 		exit('Доступ к модулю '.$_GET['_modul'].' запрещён администратором');
 		//$_tpl['onload']='fLog(\'<div style="color:red;">'.date('H:i:s').' : Доступ к модулю '.$_GET['_modul'].' запрещён администратором</div>\',1);fSwin1();';
 
@@ -71,7 +69,7 @@
 	//$log = fDisplLogs();
 	//$_tpl['onload'] .= (count($log)?'fLog(\''.$log[0].'\',\''.$log[1].'\');':'');
 	$_tpl['onload'] .= '$(\'#inftime\').html(\'
-	<div style="color:blue;">Обработка страницы '.(getmicrotime()-$_time_start).' c.</div>
+	<div style="color:blue;">Обработка страницы '.(getmicrotime()-$_CFG['time']).' c.</div>
 	<div style="color:green;">Пaмять '. intval(memory_get_usage()/1024).'/'. intval(memory_get_peak_usage()/1024).' кб</div>
 	<div style="color:yellow;">Кол-во SQL запросов "'.count($_CFG['logs']['sql']).'"</div>\');';
 

@@ -1,13 +1,10 @@
 <?
-error_reporting(-1);
 
 	$_CFG['_PATH']['wep'] = dirname($_SERVER['SCRIPT_FILENAME']);
 	require_once($_CFG['_PATH']['wep'].'/config/config.php');
 	require_once($_CFG['_PATH']['core'].'/html.php');
-	require_once($_CFG['_PATH']['core'].'/sql.php');
-	$SQL = new sql();
 
-	$result = userAuth(); // запскает сессию и проверяет авторизацию
+	$result = static_main::userAuth(); // запскает сессию и проверяет авторизацию
 
 	if(!$result[1]) {
 		header('Location: login.php?ref='.base64_encode($_SERVER['REQUEST_URI']));
@@ -31,9 +28,9 @@ error_reporting(-1);
 		$data['sysconf']['user'] = $_SESSION['user'];
 		$data['sysconf']['item'] = array();
 		if($_SESSION['user']['level']<=1) {
-			_prmModulLoad();
+			static_main::_prmModulLoad();
 			foreach($_CFG['modulprm'] as $k=>$r) {
-				if($r['typemodul']<=1 and _prmModul($k,array(1,2))) {
+				if($r['typemodul']<=1 and static_main::_prmModul($k,array(1,2))) {
 					if(!$r['name'])
 						$r['name'] = $k;
 					if(!$r['active'])
@@ -57,9 +54,9 @@ error_reporting(-1);
       $data = array();
 		$data['modulslist']['modul'] = $_GET['_modul'];
 		$data['modulslist']['user'] = $_SESSION['user'];
-		_prmModulLoad();
+		static_main::_prmModulLoad();
 		foreach($_CFG['modulprm'] as $k=>$r) {
-			if($r['typemodul']==2 and _prmModul($k,array(1,2))) {
+			if($r['typemodul']==2 and static_main::_prmModul($k,array(1,2))) {
 				if(!$r['name'])
 					$r['name'] = $k;
 				if(!$r['active'])
@@ -74,7 +71,7 @@ error_reporting(-1);
 
 	if($_SESSION['user']['wep']) {
 		include($_CFG['_PATH']['cdesign'].$_design.'/inc.php');
-		if(_prmUserCheck(2)) {
+		if(static_main::_prmUserCheck(2)) {
 			$_tpl['debug'] = '<span class="seldebug"><select>
 	<option onclick="window.location=\''.$_CFG['PATH']['wepname'].'/index.php?_showallinfo=0\'" '.(!$_COOKIE['_showallinfo']?'selected="selected"':'').'>Скрыть инфу</option>
 	<option onclick="window.location=\''.$_CFG['PATH']['wepname'].'/index.php?_showallinfo=1\'" '.($_COOKIE['_showallinfo']==1?'selected="selected"':'').'>Показать инфу</option>

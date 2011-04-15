@@ -92,17 +92,17 @@ function tpl_form(&$data) {
 				$html .= '<div class="form-value">';
 				if($r['size']>1) {
 					$html .= '<select size="'.$r['size'].'" name="'.$k.'" class="small" onchange="'.$r['onchange'].'"';
-					$html .= '>'.selectitem($r['valuelist']).'</select>';
+					$html .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
 				}elseif($r['multiple']==2) {
 					$html .= '<select multiple="multiple" size="10" name="'.$k.'[]" class="multiple" onchange="'.$r['onchange'].'"';
-					$html .= '>'.selectitem($r['valuelist']).'</select>';
+					$html .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
 					$_CFG['fileIncludeOption']['multiple'] = 2;
 				}elseif($r['multiple']) {
 					$html .= '<select multiple="multiple" size="10" name="'.$k.'[]" class="small" onchange="'.$r['onchange'].'"';
-					$html .= '>'.selectitem($r['valuelist']).'</select>';
+					$html .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
 				}else {
 					$html .= '<select name="'.$k.'" onchange="'.$r['onchange'].'"';
-					$html .= '>'.selectitem($r['valuelist']).'</select>';
+					$html .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
 				}
 				$html .= '</div>';
 			}
@@ -188,56 +188,56 @@ function tpl_form(&$data) {
 						// год
 						if($item_date == 'Y' || $item_date == 'y')
 						{
-							$r['value']['year'] = array('name'=>$_CFG['_MESS']['year_name'], 'css'=>'year');// ГОД
+							$r['value']['year'] = array('name'=>$_CFG['_MESS']['year_name'], 'css'=>'year','value'=>$temp[0]);// ГОД
 							$temp[0] = (int)$temp[0]; 
 
 							//значения по умолчанию
 							if(!$r['range_back']['year']) $r['range_back']['year'] = 2;
 							if(!$r['range_up']['year']) $r['range_up']['year'] = 3;
 							for($i=((int)date('Y')-($r['range_back']['year']));$i<((int)date('Y')+($r['range_up']['year']));$i++)
-								$r['value']['year']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[0]==$i?1:0));							
+								$r['value']['year']['item'][$i] = array('#id#'=>$i, '#name#'=>$i);							
 						}
 						// месяц
 						if($item_date == 'm' || $item_date == 'n' || $item_date == 'M' || $item_date == 'F')
 						{
-							$r['value']['month'] = array('name'=>$_CFG['_MESS']['month_name'], 'css'=>'month');// Месяц
+							$r['value']['month'] = array('name'=>$_CFG['_MESS']['month_name'], 'css'=>'month','value'=>$temp[1]);// Месяц
 							foreach($_CFG['_MESS']['month'] as $kr=>$td) {
 								$kr = (int)$kr;
-								$r['value']['month']['item'][$kr] = array('#id#'=>$kr, '#name#'=>$td, '#sel#'=>($temp[1]==$kr?1:0));
+								$r['value']['month']['item'][$kr] = array('#id#'=>$kr, '#name#'=>$td);
 							}						
 						}
 						// день
 						if($item_date == 'd' || $item_date == 'j')
 						{
-							$r['value']['day'] = array('name'=>$_CFG['_MESS']['day_name'], 'css'=>'day');// День
+							$r['value']['day'] = array('name'=>$_CFG['_MESS']['day_name'], 'css'=>'day','value'=>$temp[2]);// День
 							for($i=1;$i<=31;$i++)
-								$r['value']['day']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[2]==$i?1:0));						
+								$r['value']['day']['item'][$i] = array('#id#'=>$i, '#name#'=>$i);						
 						}
 						// час
 						if($item_date == 'G' || $item_date == 'g' || $item_date == 'H' || $item_date == 'h')
 						{
-							$r['value']['hour'] = array('name'=>$_CFG['_MESS']['hour_name'], 'css'=>'hour');// Час
+							$r['value']['hour'] = array('name'=>$_CFG['_MESS']['hour_name'], 'css'=>'hour','value'=>$temp[3]);// Час
 							for($i=1;$i<=24;$i++)
-								$r['value']['hour']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[3]==$i?1:0));
+								$r['value']['hour']['item'][$i] = array('#id#'=>$i, '#name#'=>$i);
 						}
 						// минуты
 						if($item_date == 'i')
 						{
-							$r['value']['minute'] = array('name'=>$_CFG['_MESS']['minute_name'], 'css'=>'minute');// Minute
+							$r['value']['minute'] = array('name'=>$_CFG['_MESS']['minute_name'], 'css'=>'minute','value'=>$temp[4]);// Minute
 							for($i=1;$i<=60;$i++)
-								$r['value']['minute']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[4]==$i?1:0));
+								$r['value']['minute']['item'][$i] = array('#id#'=>$i, '#name#'=>$i);
 						}
 						// секунды
 						if($item_date == 's')
 						{
-							$r['value']['sec'] = array('name'=>$_CFG['_MESS']['sec_name'], 'css'=>'sec');
+							$r['value']['sec'] = array('name'=>$_CFG['_MESS']['sec_name'], 'css'=>'sec','value'=>$temp[5]);
 							for($i=1;$i<=60;$i++)
-								$r['value']['sec']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[5]==$i?1:0));					
+								$r['value']['sec']['item'][$i] = array('#id#'=>$i, '#name#'=>$i);					
 						}
 					}
 
 					foreach($r['value'] as $row) {
-						$html .= '<div class="dateselect '.$row['css'].'"><span class="name">'.$row['name'].'</span><select name="'.$k.'[]">'.selectitem($row['item']).'</select></div>';
+						$html .= '<div class="dateselect '.$row['css'].'"><span class="name">'.$row['name'].'</span><select name="'.$k.'[]">'.selectitem($row['item'],$row['value']).'</select></div>';
 					}
 				}		
 				$html .= '</div>';
@@ -337,17 +337,28 @@ function tpl_form(&$data) {
 	return $html;
 }
 
-function selectitem($data,$flag=0) {
+function selectitem($data,$val='',$flag=0) {
 	$html = '';
+	if($val!=='') {
+		if(!is_array($val)) $val = array($val=>true);
+		else $val = array_keys($val);
+	}
 	if(is_array($data) and count($data))
 		foreach($data as $r) {
 			//_substr($r['#name#'],0,60).(_strlen($r['#name#'])>60?'...':'')
 			if(count($r['#item#']) and isset($r['#checked#']) and $r['#checked#']==0)
 				$html .= '<optgroup label="'.$r['#name#'].'" class="selpad'.$flag.'"></optgroup>';
-			else
-				$html .= '<option value="'.$r['#id#'].'" '.($r['#sel#']?'selected="selected"':'').' class="selpad'.$flag.'">'.$r['#name#'].'</option>';
+			else {
+				if($val==='' and $r['#sel#'])
+					$sel = 'selected="selected"';
+				elseif($val!=='' and isset($val[$r['#id#']]))
+					$sel = 'selected="selected"';
+				else
+					$sel = '';
+				$html .= '<option value="'.$r['#id#'].'" '.$sel.' class="selpad'.$flag.'">'.$r['#name#'].'</option>';
+			}
 			if(count($r['#item#']))
-				$html .= selectitem($r['#item#'],($flag+1));//.'&#160;--'
+				$html .= selectitem($r['#item#'],$val,($flag+1));//.'&#160;--'
 		}
 	return $html;
 }

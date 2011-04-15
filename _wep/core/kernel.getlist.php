@@ -113,7 +113,7 @@
 
 
 			if(isset($listname['class'])) {
-				$listname['tablename'] = getTableNameOfClass($listname['class']);
+				$listname['tablename'] = static_main::getTableNameOfClass($listname['class']);
 			}
 
 			if(!$listname['idField']) 

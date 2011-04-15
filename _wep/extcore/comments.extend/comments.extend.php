@@ -44,7 +44,7 @@ class comments_class extends kernel_class {
 		$this->fields['text'] = array('type' => 'text', 'attr' => 'NOT NULL', 'min' => '1');
 		$this->fields['vote'] = array('type' => 'int', 'width' => 9, 'attr' => 'NOT NULL', 'default'=>0);
 
-		if(_prmUserCheck())
+		if(static_main::_prmUserCheck())
 			$this->fields_form['name'] = array('type' => 'hidden','disabled'=>1, 'caption' => 'Имя', 'default'=>$_SESSION['user']['name'], 'mask'=>array('eval'=>'$_SESSION["user"]["name"]'));
 		else
 			$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Ваше имя', 'mask'=>array('min'=>3));
@@ -86,7 +86,7 @@ class comments_class extends kernel_class {
 
 		$time = time();
 		$cls ='SELECT count(id) as cnt FROM '.$this->tablename.' WHERE mf_timecr>='.($time-(3600*$this->config['spamtime'])).' and mf_timecr<'.$time;
-		if(_prmUserCheck())
+		if(static_main::_prmUserCheck())
 			$cls .= ' and '.$this->mf_createrid.'="'.$_SESSION['user']['id'].'"';
 		else
 			$cls .= ' and mf_ipcreate=INET_ATON("'.$_SERVER["REMOTE_ADDR"].'")';

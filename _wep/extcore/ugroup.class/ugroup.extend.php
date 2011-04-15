@@ -183,7 +183,7 @@ class users_extend extends kernel_class {
 		// FORM FIELDS
 		if($this->mf_use_charid){
 			$this->fields_form[$this->fn_login] =	array('type' => 'text', 'caption' => 'Логин','mask'=>array('name'=>'login','min' => '4','sort'=>1),'comment'=>'Логин должен состоять только из латинских букв и цифр.');
-			if(_prmUserCheck(1))  // Запрет поля на редактирование
+			if(static_main::_prmUserCheck(1))  // Запрет поля на редактирование
 				$this->fields_form[$this->fn_login]['readonly']=true;
 		}
 		
@@ -193,9 +193,9 @@ class users_extend extends kernel_class {
 		//$this->fields_form['tname'] = array('type' => 'text', 'caption' => 'Отчество','mask'=>array('name'=>'name'));
 		//$this->fields_form['address'] = array('type' => 'text', 'caption' => 'Адрес');
 
-		if(_prmUserCheck(1)) // Вывод поля генерации пароля если админ
+		if(static_main::_prmUserCheck(1)) // Вывод поля генерации пароля если админ
 			$this->fields_form[$this->fn_pass] = array('type' => 'password2', 'caption' => 'Пароль','md5'=>$this->_CFG['wep']['md5'], 'mask'=>array('min' => '6','fview'=>1));
-		elseif(!_prmUserCheck())
+		elseif(!static_main::_prmUserCheck())
 			$this->fields_form[$this->fn_pass] = array('type' => 'password_new', 'caption' => 'Пароль','mask'=>array('min' => '6','fview'=>1));
 
 		$this->fields_form['phone'] = array(
@@ -291,7 +291,7 @@ class users_extend extends kernel_class {
 							_setcookie('remember', md5($this->data[0][$this->fn_pass]).'_'.$this->data[0]['id'], (time()+(86400*$this->owner->config['rememberday'])));
 						}
 						$this->setUserSession();
-						_prmModulLoad();
+						static_main::_prmModulLoad();
 						return array($this->_CFG['_MESS']['authok'],1);
 					}
 				}
@@ -328,7 +328,7 @@ class users_extend extends kernel_class {
 					{
 						_setcookie('remember', md5($this->data[0][$this->fn_pass]).'_'.$this->data[0]['id'], (time()+(86400*$this->owner->config['rememberday'])));
 						$this->setUserSession();
-						_prmModulLoad();
+						static_main::_prmModulLoad();
 						return array($this->_CFG['_MESS']['authok'],1);
 					}
 				}
@@ -357,7 +357,7 @@ class users_extend extends kernel_class {
 		//$this->fields_form['info'] = array('type' => 'checkbox', 'caption' => 'Пользователь активен');
 		unset($this->fields_form['sett1']);
 		if(!$this->owner->config['reg']) return array(array('messages'=>array(array('name'=>'error', 'value'=>$this->_CFG['_MESS']['deniedreg']))),1);
-		if(_prmUserCheck()) return array(array('messages'=>array(array('name'=>'error', 'value'=>$this->_CFG['_MESS']['deniedu']))),1);
+		if(static_main::_prmUserCheck()) return array(array('messages'=>array(array('name'=>'error', 'value'=>$this->_CFG['_MESS']['deniedu']))),1);
 		$flag=0;// 0 - показывает форму, 1 - нет
 		$arr = array('mess'=>array(),'vars'=>array());
 		$mess = array();
@@ -412,7 +412,7 @@ class users_extend extends kernel_class {
 			}
 		} else $mess = $this->kPreFields($_POST,$param);
 		
-		$this->setCaptcha();
+		static_form::setCaptcha();
 		$formflag = $this->kFields2Form($param);
 		$this->form['sbmt']['value']='Я согласен с правилами и хочу зарегистрироваться';
 		$this->form['rulesinfo'] = array('type'=>'info','caption'=>'<a href="'.$this->_CFG['_HREF']['BH'].'terms.html" target="_blank">Правила пользования сайтом</a>','css'=>'rulelink');
@@ -453,7 +453,7 @@ class users_extend extends kernel_class {
 					$this->clause = 't1 Join '.$this->owner->tablename.' t2 on t1.'.$this->owner_name.'=t2.id where t1.id = \''.$this->id.'\' ';
 					$this->_list();
 					$this->setUserSession();
-					_prmModulLoad();
+					static_main::_prmModulLoad();
 					$flag = true;
 				}
 				else
@@ -549,7 +549,7 @@ class users_extend extends kernel_class {
 					$mess[] = array('name'=>'ok', 'value'=>'<a href="/add.html">Перейти на страницу добавления объявления</a>');
 					$this->setUserSession($data);
 //print_r($data);
-					_prmModulLoad();
+					static_main::_prmModulLoad();
 				}
 			}
 		} 

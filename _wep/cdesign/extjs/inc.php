@@ -73,7 +73,7 @@
 			if($_GET['_pid']!='') $MODUL->parent_id = $_GET['_pid'];
 			if($_GET['_id']!='') $MODUL->id = $_GET['_id'];
 
-			if(_prmModul($_GET['_modul'],array(1,2))) {
+			if(static_main::_prmModul($_GET['_modul'],array(1,2))) {
 				
 				
 				if (isset($_GET['node']))
@@ -300,4 +300,131 @@
 	//$_tpl['script']['script.localisation/jquery.localisation-min'] = 1;
 
 //$_CFG['fileIncludeOption']['fancybox']
+
+
+
+/* * *************************************************
+ * возвращает extjs поле контейнера Ext.forms
+ * принимает массив со следующими ключами:
+ * - name
+ * - caption
+ * - type
+ * - value
+ * - valuelist
+ * - multiple
+ * ************************************** */
+
+function get_js_field($data) {
+	$type_info = array(
+		'default' => array(
+			'xtype' => 'textfield',
+			'value_attr' => 'value'
+		),
+		'text' => array(
+			'xtype' => 'textfield',
+			'value_attr' => 'value'
+		),
+		'checkbox' => array(
+			'xtype' => 'checkbox',
+			'value_attr' => 'checked',
+		),
+		'list' => array(
+			'xtype' => 'combo',
+			'mode' => 'local',
+			'typeAhead' => true,
+			'triggerAction' => 'all',
+			'value_attr' => 'value',
+		),
+		'multiple1' => array(
+			'xtype' => 'multiselect',
+			'mode' => 'local',
+			'emptyText' => '',
+			'value_attr' => 'value',
+			'delimiter' => '|',
+		),
+		'multiple2' => array(
+			'xtype' => 'itemselector',
+			'mode' => 'local',
+			'emptyText' => '',
+			'value_attr' => 'value',
+			'delimiter' => '|',
+			'dataFields' => array('code', 'desc'),
+			'fromData' => array(array('1', 'One'), array('2', 'Two'), array('3', 'Three'), array('4', 'Four')),
+			'toData' => array(array('6', 'Six')),
+			'msWidth' => 100,
+			'msHeight' => 200,
+			'valueField' => 'code',
+			'displayField' => 'desc'
+//				'multiselects' => array(
+//					array(
+//						'width' => 250,
+//						'height' => 200,
+//					),
+//					array(
+//						'width' => 250,
+//						'height' => 200,
+//					)
+//				),
+		),
+		'info' => array(
+			'xtype' => 'fieldset'
+		),
+		'submit' => array(
+			'xtype' => 'hidden',
+			'value_attr' => 'value'
+		),
+	);
+
+	if (isset($type_info[$data['type']]))
+		$type = $data['type'];
+	else
+		$type = 'default';
+
+	if ($type == 'list' && isset($data['multiple'])) {
+		if ($data['multiple'] == 2)
+			$type = 'multiple1';
+		elseif ($data['multiple'] == 1)
+			$type = 'multiple1';
+
+		$data['name'] .= '[]';
+	}
+
+	$field = $type_info[$type];
+	$field[$field['value_attr']] = $data['value'];
+
+	unset($field['value_attr']);
+
+	$field['name'] = $data['name'];
+
+	if ($field['xtype'] == 'combo') {
+		$field['hiddenName'] = $data['name'];
+	}
+	if ($field['xtype'] == 'checkbox') {
+		if (isset($data['inputValue'])) {
+			$field['inputValue'] = $data['inputValue'];
+		} else {
+			$field['inputValue'] = 1;
+		}
+	}
+
+	$field['fieldLabel'] = $data['caption'];
+
+	if (isset($data['valuelist'])) {
+		$field['store'] = array();
+		foreach ($data['valuelist'] as $k => $r) {
+			$field['store'][] = array($r['#id#'], $r['#name#']);
+		}
+	}
+
+	if (isset($data['mask']['min'])) {
+		$field['allowBlank'] = false;
+	}
+
+	if ($data['mask']['width'] > 200 && $field['xtype'] == 'textfield') {
+		$field['xtype'] = 'textarea';
+	}
+
+	return $field;
+}
+
 ?>

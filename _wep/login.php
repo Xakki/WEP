@@ -2,12 +2,7 @@
 	$_CFG['_PATH']['wep'] = dirname($_SERVER['SCRIPT_FILENAME']);
 	require_once($_CFG['_PATH']['wep'].'/config/config.php');
 	require_once($_CFG['_PATH']['core'].'html.php');
-	require_once($_CFG['_PATH']['core'].'sql.php');
-	$SQL = new sql();
-	if(isset($_GET['install'])) {
-		$SQL->_iFlag = true;
-	}
-
+	
 	$delay =4;
 	$variant = "";
 	$ref= $_CFG['_HREF']['BH'].$_CFG['PATH']['wepname'];
@@ -23,18 +18,18 @@
 		$ref= $_SERVER['HTTP_REFERER'];
 
 	if(count($_POST) and isset($_POST['login'])) {
-		$result = userAuth($_POST['login'],$_POST['pass']);
+		$result = static_main::userAuth($_POST['login'],$_POST['pass']);
 		if($result[1]) {
 			@header("Location: ".$ref);
 			die($ref);
 		}
 	}
 	elseif(isset($_REQUEST['exit']) && $_REQUEST['exit']=="ok") {
-		userExit();
+		static_main::userExit();
 		$mess=$_CFG['_MESS']['exitok'];
 		$ref = $_CFG['_HREF']['BH'].'index.html';
 	}
-	elseif(isset($_COOKIE['remember']) and $result = userAuth() and $result[1]) {
+	elseif(isset($_COOKIE['remember']) and $result = static_main::userAuth() and $result[1]) {
 		@header("Location: ".$ref);
 		die($ref);
 	}
@@ -48,7 +43,7 @@
 	$HTML->_templates = 'login';
 	$_tpl['ref'] = $ref;
 	$_tpl['action'] = $_CFG['_HREF']['BH'].$_CFG['PATH']['wepname'].'/login.php'.(isset($_GET['install'])?'?install':'');
-	if($result[0]) $result[0] = '<div style="color:red;">'.$result[0].'</div>';
-	elseif(isset($_GET['install'])) $result[0] = '<div style="color:red;">Установка недостающих данных</div>';
+	if($result[0])
+		$result[0] = '<div style="color:red;">'.$result[0].'</div>';
 	$_tpl['mess'] = '<div class="messhead">'.$result[0].'</div>';
 ?>

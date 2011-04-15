@@ -6,6 +6,30 @@
 	require_once($_CFG['_PATH']['core'].'/sql.php');
 	$SQL = new sql();
 	
+	if(isset($_GET['_php']) and $_GET['_php']=='sitemap') {
+		$SQL = new sql();
+		$SITEMAP = TRUE;
+		$PGLIST = new pg_class($SQL);
+		echo $PGLIST->creatSiteMaps();
+		exit();
+	}
+	elseif(isset($_GET['_php']) and $_GET['_php']=='captcha') {
+		require_once($_CFG['_PATH']['wep'].'/_phpscript/main/_captcha.php');
+		exit();
+	}
+	elseif(isset($_GET['_php']) and $_GET['_php']=='json') {
+		require_once($_CFG['_PATH']['wep'].'/_phpscript/main/_json.php');
+		exit();
+	}
+	elseif(isset($_GET['_php']) and $_GET['_php']=='js') {
+		require_once($_CFG['_PATH']['wep'].'/_phpscript/main/_js.php');
+		exit();
+	}
+	elseif(isset($_GET['_php']) and $_GET['_php']=='redirect') {
+		require_once($_CFG['_PATH']['wep'].'/_phpscript/main/_redirect.php');
+		exit();
+	}
+
 	session_go();
 /*
 	if(!isset($_SESSION['user']) and isset($_COOKIE['remeber'])) {
