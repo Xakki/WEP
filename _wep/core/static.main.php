@@ -43,6 +43,32 @@ class static_main {
 			return $_CFG['sql']['dbpref'] . $name;
 	}
 
+
+	function includeModulFile($Mid,$Pid='') {
+		global $_CFG;
+		foreach ($_CFG['modulinc'] as $k => $r) {
+			$file = $r['path'].''.$Mid.'.class/'.$Mid.'.class.php';
+			//print_r($file.'<br> ');
+			if(file_exists($file)) {
+				include_once($file);
+				return $file;
+			}
+
+			if($Pid) {
+				$file = $r['path'].'/'.$Pid.'.class/'.$Mid.'.childs.php';
+				if(file_exists($file)) {
+					include_once($file);
+					return $file;
+				}
+				$file = $r['path'].'/'.$Pid.'.class/'.$Pid.'.class.php';
+				if(file_exists($file)) {
+					include_once($file);
+					return $file;
+				}
+			}
+		}
+		return '';
+	}
 	/*
 	  Проверка доступа пол-ля к модулю
 	 */
@@ -75,12 +101,12 @@ class static_main {
 			$_CFG['modulprm'] = $_CFG['modulprm_ext'] = array();
 			$ugroup_id = (isset($_SESSION['user']['owner_id']) ? (int) $_SESSION['user']['owner_id'] : 0);
 			if(!$SQL) $SQL = new sql($_CFG['sql']);
-			$result = $SQL->execSQL('SELECT t1.*,t2.access, t2.mname FROM `modulprm` t1 LEFT Join `modulgrp` t2 on t2.owner_id=t1.id and t2.ugroup_id=' . $ugroup_id . ' ORDER BY typemodul,name');
+			$result = $SQL->execSQL('SELECT t1.*,t2.access, t2.mname FROM `'.$_CFG['sql']['dbpref'].'modulprm` t1 LEFT Join `'.$_CFG['sql']['dbpref'].'modulgrp` t2 on t2.owner_id=t1.id and t2.ugroup_id=' . $ugroup_id . ' ORDER BY typemodul,name');
 			if ($result->err) return false;
 			$_CFG['modulprm'] = array();
 			while ($row = $result->fetch_array()) {
-				$_CFG['modulprm'][$row['id']]['active'] = $row['active'];
 				$_CFG['modulprm_ext'][$row['extend']] = $row['id'];
+				$_CFG['modulprm'][$row['id']]['active'] = $row['active'];
 				$_CFG['modulprm'][$row['id']]['access'] = array_flip(explode('|', trim($row['access'], '|')));
 				if ($row['mname'])
 					$_CFG['modulprm'][$row['id']]['name'] = $row['mname'];
@@ -104,7 +130,7 @@ class static_main {
 	 */
 	static function getPathModul($path) {
 		global $_CFG;
-		if(!$path) return '';
+		if(!$path) return '';		
 		$path = explode(':',$path);
 		return $_CFG['modulinc'][$path[0]]['path'].$path[1];
 	}

@@ -39,7 +39,7 @@ class pg_class extends kernel_extends {
 		$this->selected = array();
 		$this->ver = '0.1.1';
 		$this->pageinfo = 
-			$this->dataCash = array();
+			$this->dataCash = $this->dataCashTree = array();
 		return true;
 	}
 
@@ -229,7 +229,7 @@ class pg_class extends kernel_extends {
 	}
 
 	function can_show() {
-		if(!isset($this->dataCashTree))
+		if(empty($this->dataCashTree))
 			$this->sqlCashPG();
 		/*$row = 0;
 		if(isset($this->dataCash[$this->id])) {
@@ -441,7 +441,7 @@ class pg_class extends kernel_extends {
 	*/
 
 	function getMap($onmenuPG='',$flagPG=0,$startPG='') {
-		if(!isset($this->dataCashTree))
+		if(empty($this->dataCashTree))
 			$this->sqlCashPG();
 		$DATA_PG = array();
 		if($flagPG>1) //только начальный уровень
@@ -501,7 +501,7 @@ class pg_class extends kernel_extends {
 	}
 
 	function sqlCashPG() {
-		if(!isset($this->dataCash)) {
+		if(empty($this->dataCash)) {
 			$cls = 'SELECT *';
 			/*if(isset($_SESSION['user']['id']))
 				$cls .= ',if((ugroup="" or ugroup="|0|" or ugroup="|user|" or ugroup LIKE "%|'.$_SESSION['user']['owner_id'].'|%"),1,0) as prm';
@@ -513,7 +513,7 @@ class pg_class extends kernel_extends {
 				while($row = $result->fetch_array()) {
 					$row['onmenu'] = array_flip(explode('|',trim($row['onmenu'],'|')));
 					$this->dataCash[$row['id']] = $row;
-					$this->dataCashTree[$row['parent_id']][$row['id']] = &$this->dataCash[$row['id']];
+					$this->dataCashTree[$row['parent_id']][$row['id']] = $this->dataCash[$row['id']];
 				}
 			}else {
 				header('Location: '.$this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['wepname'].'/login.php?install');die();}

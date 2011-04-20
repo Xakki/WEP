@@ -1,6 +1,6 @@
 <?
 	global $UGROUP,$USERS,$_tpl;
-	if(!$UGROUP) _new_class('ugroup', $UGROUP)
+	if(!$UGROUP) _new_class('ugroup', $UGROUP);
 	if(!$USERS) $USERS = &$UGROUP->childs['users'];
 
 	if(isset($_GET['confirm'])){

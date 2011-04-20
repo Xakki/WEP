@@ -244,11 +244,13 @@ class static_tools {
 						if ($extra != '')
 							$table_properties[$i] .= ' ' . $extra;
 					}
-					$table_properties_up_case[$i] = str_replace(array('"', "'"), array('', ''), trim(mb_strtoupper($table_properties[$i])));
+					$table_properties_up_case[$i] = trim( str_replace(array('"', "'", chr(194).chr(160),"\xC2xA0","\n"), array('', '', ' ', ' ', ' '), mb_strtoupper($table_properties[$i],'UTF-8')) );
 					$i++;
 				}
-				$temp_fldformer = trim(self::_fldformer($fldname, $MODUL->fields[$fldname]));
-				if (isset($MODUL->fields[$fldname]['type']) and !in_array(str_replace(array('"', "'"), array('', ''), mb_strtoupper($temp_fldformer)), $table_properties_up_case)) {
+				$temp_fldformer = self::_fldformer($fldname, $MODUL->fields[$fldname]);
+				$temp = trim(str_replace(array('"', "'", chr(194).chr(160),"\xC2xA0","\n"), array('', '', ' ', ' ', ' '), mb_strtoupper($temp_fldformer,'UTF-8')));
+
+				if (isset($MODUL->fields[$fldname]['type']) and !in_array($temp, $table_properties_up_case)) {
 					$rDATA[$fldname]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` CHANGE `' . $fldname . '` ' . $temp_fldformer;
 					$rDATA[$fldname]['@oldquery'] = $table_properties[0];
 				}

@@ -126,11 +126,10 @@ final class modulprm_class extends kernel_extends {
 							'_parent' => '',
 							'_type' => $k
 						);
-						$resData = $this->checkClassStruct($entry . '_class', $r['path'] . $entry . '.class/' . $entry . '.class.php');
-						if ($resData['parent'] and $resData['parent'] != 'kernel_extends') {
+						$resData = $this->checkClassStruct($entry);
+						if ($resData['parent']) {
 							$DATA[$k . '_' . $entry]['comment'] .= '<div>Зависим от ' . $resData['parent'] . '</div>';
-							$resData['parent'] = explode('_', $resData['parent']);
-							$DATA[$k . '_' . $entry]['_parent'] = $resData['parent'][0];
+							$DATA[$k . '_' . $entry]['_parent'] = $resData['parent'];
 						}
 						// проверяем необходимые модули
 						if (isset($this->_CFG['require_modul'][$entry])) {
@@ -158,12 +157,12 @@ final class modulprm_class extends kernel_extends {
 				$MODUL = NULL;
 				if (isset($_POST[$k]) or isset($this->_CFG['require_modul'][$r['_entry']])) {
 					if (!isset($this->data[$r['_entry']])) {
-						if ($r['_parent'] !== '' and !isset($_POST['0_' . $r['_parent']]) and !isset($_POST['1_' . $r['_parent']])) {
+						if ($r['_parent'] !== '' and !isset($_POST['0_' . $r['_parent']]) and !isset($_POST['3_' . $r['_parent']]) ) {
 							$mess[] = array('name' => 'error', 'value' => 'Ошибка. Не подключен родительский модуль `' . $r['_parent'] . '` для `' . $r['_entry'] . '`. ');
 							$res = -1;
 							continue;
 						}
-						if (!_new_class($r['_entry'], $MODUL)) {
+						if (!_new_class($r['_entry'], $MODUL, $MODUL->null, true)) {
 							$mess[] = array('name' => 'error', 'value' => 'Ошибка запуска модуля `' . $r['_entry'] . '`');
 							$res = -1;
 							continue;
@@ -177,7 +176,7 @@ final class modulprm_class extends kernel_extends {
 					}
 				}
 				elseif (isset($this->data[$r['_entry']]) and !isset($r['disabled'])) {
-					if (!_new_class($r['_entry'], $MODUL, $this->null, false)) {
+					if (!_new_class($r['_entry'], $MODUL, $this->null, true)) {
 						$mess[] = array('name' => 'error', 'value' => 'Ошибка запуска модуля `' . $r['_entry'] . '`');
 						$res = -1;
 						continue;
@@ -221,16 +220,22 @@ final class modulprm_class extends kernel_extends {
 	 * @param string $file фаил модуля
 	 * @return array
 	 */
-	protected function checkClassStruct($name, $file='') {
+	protected function checkClassStruct($name) {
 		$data = array('parent' => '');
 		startCatchError();
 		try {
-			if ($file)
-				include_once ($file);
+			static_main::includeModulFile($name);
+			$name = $name.'_class';
 			$obj = new ReflectionClass($name);
 			$data['parent'] = $obj->getParentClass();
 			$data['parent'] = $data['parent']->name;
-			$MODUL = $obj->newInstanceArgs(array());
+			if($data['parent']=='kernel_extends')
+				$data['parent'] = '';
+			else {
+				$data['parent'] = explode('_',$data['parent']);$data['parent'] = $data['parent'][0];
+				//static_main::includeModulFile($data['parent']);//подключаем всякие extend
+			}
+			$MODUL = $obj->newInstance();
 		} catch  (Exception $e) {
 			trigger_error($e->getMessage(), E_USER_WARNING);
 		}
@@ -327,7 +332,8 @@ final class modulprm_class extends kernel_extends {
 		$rDATA = array();
 		$this->mDump();
 		foreach ($this->pdata[''] as $k => $r) {
-			$rDATA = array_merge($rDATA,static_tools::_checkmodstruct($k));
+			if($this->data[$k]['active'])
+				$rDATA = array_merge($rDATA,static_tools::_checkmodstruct($k));
 		}
 
 		return $rDATA;
@@ -338,7 +344,12 @@ final class modulprm_class extends kernel_extends {
 		$MESS = array();
 		$flag = false;
 		$parent = $Mid;
-		$type = $typemodul = $this->data[$parent]['typemodul'];
+		if(isset($this->data[$parent])) {
+			$type = $typemodul = $this->data[$parent]['typemodul'];
+		} else {
+			if($OWN) $parent = $OWN->_cl;
+			$type = $typemodul = 0;
+		}
 		while($this->data[$parent]['parent_id']) {
 			$parent = $this->data[$parent]['parent_id'];
 			$type = $this->data[$parent]['typemodul'];
@@ -352,8 +363,9 @@ final class modulprm_class extends kernel_extends {
 		$fpath = static_main::getPathModul($path);
 
 		try { // ловец снов
-			if(file_exists($fpath))
+			if(file_exists($fpath)) {
 				include_once($fpath);
+			}
 			else {
 				$path = $type.':'.$parent.'.class/'.$parent.'.class.php';
 				$fpath = static_main::getPathModul($path);
@@ -364,7 +376,8 @@ final class modulprm_class extends kernel_extends {
 			}
 			$this->fld_data = array();
 			if($fpath) {
-				if(_new_class($Mid, $MODUL,$OWN)) {
+				if(_new_class($Mid, $MODUL,$OWN, true)) {
+					if($OWN and $this->data[$Mid]['parent_id']!=$OWN->_cl)			$this->fld_data['parent_id'] = $OWN->_cl;
 					if($this->data[$Mid]['name']!=$MODUL->caption)			$this->fld_data['name'] = $MODUL->caption;
 					if($this->data[$Mid]['tablename']!=$MODUL->tablename) $this->fld_data['tablename'] = $MODUL->tablename;
 					if($this->data[$Mid]['path']!=$path)						$this->fld_data['path'] = $path;
@@ -377,10 +390,16 @@ final class modulprm_class extends kernel_extends {
 					if($extend=='kernel_extends') $extend = '';
 					else $extend = substr($extend,0,-6);
 					if($this->data[$Mid]['extend']!=$extend)					$this->fld_data['extend'] = $extend;
+
 					if(count($this->fld_data)) {
 						$MESS[] = array('name' => 'alert', 'value' => 'Данные модуля `'.$Mid.'`['.$path.'] будут обновленны.');
 						$this->id = $Mid;
-						$this->_update();
+						if(!isset($this->data[$Mid])) {
+							$this->fld_data['id'] = $Mid;
+							$this->_add();
+						}
+						else
+							$this->_update();
 					}
 					$flag = &$MODUL;
 				}else {
@@ -461,7 +480,7 @@ class modulgrp_class extends kernel_extends {
 		$this->fields_form['access'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'access', 'caption' => 'Права доступа');
 	}
 
-	function _checkmodstruct($flag=true) {
+	function _checkmodstruct_old($flag=true) {
 		if ($this->owner->_cl != 'modulprm')
 			return array();
 		if ($flag)

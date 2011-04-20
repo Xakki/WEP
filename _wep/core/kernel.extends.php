@@ -72,7 +72,6 @@ abstract class kernel_extends {
 
 	function  __get($name) {
 		global $_CFG;
-		echo ' - '.$name;
 		if($name=='SQL') {
 			if(!$this->grant_sql) {
 				global $SQL;
@@ -83,6 +82,7 @@ abstract class kernel_extends {
 				return new sql($this->cfg_sql);
 			}
 		}
+		echo ' - '.$name;
 		//print_r(debugPrint());
 		return NULL;
 	}

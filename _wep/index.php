@@ -30,7 +30,7 @@
 		if($_SESSION['user']['level']<=1) {
 			static_main::_prmModulLoad();
 			foreach($_CFG['modulprm'] as $k=>$r) {
-				if($r['typemodul']==0 and static_main::_prmModul($k,array(1,2))) {
+				if($r['active']==1 and $r['typemodul']==0 and static_main::_prmModul($k,array(1,2))) {
 					if(!$r['name'])
 						$r['name'] = $k;
 					if(!$r['active'])
@@ -56,7 +56,7 @@
 		$data['modulslist']['user'] = $_SESSION['user'];
 		static_main::_prmModulLoad();
 		foreach($_CFG['modulprm'] as $k=>$r) {
-			if($r['typemodul']==3 and static_main::_prmModul($k,array(1,2))) {
+			if($r['active']==1 and $r['typemodul']==3 and static_main::_prmModul($k,array(1,2))) {
 				if(!$r['name'])
 					$r['name'] = $k;
 				if(!$r['active'])

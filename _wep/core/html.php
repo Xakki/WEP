@@ -472,7 +472,7 @@ function _mb_strpos($haystack, $needle, $offset=0) {
 /**
  * Инициализация модулей
  */
-function _new_class($name, &$MODUL, &$OWNER = NULL) {
+function _new_class($name, &$MODUL, &$OWNER = NULL, $no_extend=false) {
 	global $_CFG;
 	if (isset($_CFG['singleton'][$name])) {
 		$MODUL = $_CFG['singleton'][$name];
@@ -480,8 +480,9 @@ function _new_class($name, &$MODUL, &$OWNER = NULL) {
 	} else {
 		
 		$MODUL = NULL;
-		/*if(isset($_CFG['modulprm_ext'][$name]))
-			$name = $_CFG['modulprm_ext'][$name];*/
+
+		if(isset($_CFG['modulprm_ext'][$name]) && !$_CFG['modulprm_ext'][$name]['active'] && !$no_extend)
+			$name = $_CFG['modulprm_ext'][$name];
 		$class_name = $name . "_class";
 		try {
 			$getparam = array_slice(func_get_args(), 2);
@@ -546,10 +547,9 @@ function _modulExists($class_name) {
 	$class_name = explode('_', $class_name);
 	$fileS = $_CFG['_PATH']['core'] . $class_name[0] . (isset($class_name[1])?'.' . $class_name[1]:'') . '.php';
 
-	if (!isset($_CFG['modulprm'])) {
-		$file = $fileS;
-		if (file_exists($file))
-			return $file;
+	if (!isset($_CFG['modulprm'][$class_name[0]])) {
+		if (file_exists($fileS))
+			return $fileS;
 	}
 
 	static_main::_prmModulLoad();
@@ -558,7 +558,8 @@ function _modulExists($class_name) {
 		$file = $_CFG['modulprm'][$class_name[0]]['path'];
 		if ($file and file_exists($file))
 			return $file;
-	}
+	}else
+		return static_main::includeModulFile($class_name[0]);
 
 	if (!$file and file_exists($fileS))
 		return $fileS;
