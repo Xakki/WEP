@@ -1,6 +1,6 @@
 <?
 		foreach($fields as $k=>$r) {
-			if(($r['readonly'] and !$this->id) or $r['mask']['fview']==2 or (isset($r['mask']['usercheck']) and !_prmUserCheck($r['mask']['usercheck'])))
+			if(($r['readonly'] and !$this->id) or $r['mask']['fview']==2 or (isset($r['mask']['usercheck']) and !static_main::_prmUserCheck($r['mask']['usercheck'])))
 				continue;
 			if($r['type']!='info') {
 				if(!isset($r['value']) and isset($r['default']) and !isset($_POST[$k])) {// and !$this->id

@@ -32,7 +32,7 @@
 			if($_GET['_pid']!='') $MODUL->parent_id = $_GET['_pid'];
 			if($_GET['_id']!='') $MODUL->id = $_GET['_id'];
 
-			if(_prmModul($_GET['_modul'],array(1,2))) {
+			if(static_main::_prmModul($_GET['_modul'],array(1,2))) {
 				if($_GET['_view']=='list') {
 					$MODUL->_clp = '_view=list&amp;_modul='.$MODUL->_cl.'&amp;';
 					$param = array('sbmtsave'=>1,'close'=>1);

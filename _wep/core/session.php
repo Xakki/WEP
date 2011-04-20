@@ -1,8 +1,8 @@
 <?
-class session_gogo extends kernel_class {
+class session_gogo extends kernel_extends {
 	function __construct($tablename='_session') {
-		global $_CFG,$SQL;
-		if(!$SQL) {
+		global $_CFG;
+		if(!$this->SQL) {
 			trigger_error('Ошибка запуска сессии. Нет связи с БД.',E_USER_WARNING);
 			return (true);
 		}
@@ -10,6 +10,10 @@ class session_gogo extends kernel_class {
 			trigger_error('Ошибка загрузки конфигураций.',E_USER_WARNING);
 			return (true);
 		}
+		$this->_CFG = $_CFG;
+
+		$this->_set_features();
+
 		$this->fields['id'] = array('type' => 'int', 'width' =>11, 'attr' => 'unsigned NOT NULL auto_increment');
 		$this->fields['sid'] = array('type' => 'varchar', 'width' =>128, 'attr' => 'default NULL');
 		$this->fields['host'] = array('type' => 'varchar', 'width' =>255, 'attr' => 'default NULL');
@@ -28,9 +32,6 @@ class session_gogo extends kernel_class {
 		$this->index_fields['users_id'] = 'users_id';
 		$this->unique_fields['sid'] = 'sid';
 
-		$this->SQL = &$SQL;
-		$this->_CFG = &$_CFG;
-
 		$this->ver = '0.1';
 		$this->deadvisits  = 2; // мин число визитов
 		$this->deadsession = 1800; //мин сек в течении которго если пользователь не зашел >= $this->deadvisits, то удаляются
@@ -39,10 +40,6 @@ class session_gogo extends kernel_class {
 		$this->_time = time();
 		//$this->expired = get_cfg_var('session.gc_maxlifetime');
 		$this->expired = $_CFG['session']['expire'];
-
-		//if($SQL->_iFlag){ // вкл режим автосоздания полей и проверки модуля
-			//$this->_install();
-		//}
 
 		session_set_save_handler(array(&$this,"open"), array(&$this,"close"), array(&$this,"read"), array(&$this,"write"), array(&$this,"destroy"), array(&$this,"gc"));
 		session_start();

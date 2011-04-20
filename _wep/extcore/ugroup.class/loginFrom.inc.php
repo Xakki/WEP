@@ -1,6 +1,6 @@
 <?
 	$html = '';
-	if(!_prmUserCheck()) {
+	if(!static_main::_prmUserCheck()) {
 		if($this->id!='login')
 		$_tpl['logs'] .= '<div id="loginblock" style="display:none;position:absolute;z-index:30;top:50%;left:50%;">
 			<div class="layerblock">

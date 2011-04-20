@@ -27,18 +27,18 @@ $mess = $form = '';
 		return $html;
 	}
 	elseif(count($_POST) and isset($_POST['login'])) {
-		$result = userAuth($_POST['login'],$_POST['pass']);
+		$result = static_main::userAuth($_POST['login'],$_POST['pass']);
 		if($result[1]) {
 			@header("Location: ".$ref);
 			die();
 		}
 	}
 	elseif(isset($_REQUEST['exit']) && $_REQUEST['exit']=="ok") {
-		userExit();
+		static_main::userExit();
 		$mess=$_CFG['_MESS']['exitok'];
 		$ref = $_CFG['_HREF']['BH'];
 	}
-	elseif(isset($_COOKIE['remember']) and $result = userAuth() and $result[1]) {
+	elseif(isset($_COOKIE['remember']) and $result = static_main::userAuth() and $result[1]) {
 		@header("Location: ".$ref);
 		die();
 	}

@@ -134,7 +134,7 @@ a:hover{text-decoration:none;}
 #debug_view {
 	position:absolute;right:5px;top:36px;z-index:6;
 	border:1px solid yellow;background:#D7E8FF;
-	width:320px;padding:0;font-size:10px;
+	width:320px;padding:0;font-size:10px;font-family: arial;
 	overflow:auto;}/*white-space:pre;*/
 #debug_view h1 {font-size:12px;text-align:center;font-weight:bold;margin:0;max-height:300px;min-height:40px;overflow:auto;}
 .debug_view_img {position:absolute;right:5px;top:4px;z-index:7;cursor:pointer;}

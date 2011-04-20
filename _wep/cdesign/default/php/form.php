@@ -3,108 +3,117 @@ function tpl_form(&$data) {
 	global $_CFG;
 	$attr = $data['_*features*_'];
 	unset($data['_*features*_']);
-	$html = '';
+	$texthtml = '';
 	$_CFG['fileIncludeOption']['form'] = 1;
 
 	foreach($data as $k=>$r) {
 		if($r['type']!='hidden')
-			$html .= '<div id="tr_'.$k.'" style="'.$r['style'].'" class="div-tr'.($r['css']?' '.$r['css']:'').($r['readonly']?' readonly':'').'">';
+			$texthtml .= '<div id="tr_'.$k.'" style="'.(isset($r['style'])?$r['style']:'').'" class="div-tr'.
+				((isset($r['css']) and $r['css'])?' '.$r['css']:'').
+				((isset($r['readonly']) and $r['readonly'])?' readonly':'').'">';
 		if($r['type']=='submit') {
-			$html .= '<div class="form-submit">';
-			if($r['value_save']) {
-				$html .= '<input type="'.$r['type'].'" name="'.$k.'_save" value="'.$r['value_save'].'" class="sbmt"/>';
+			$texthtml .= '<div class="form-submit">';
+			if(isset($r['value_save']) and $r['value_save']) {
+				$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'_save" value="'.$r['value_save'].'" class="sbmt"/>';
 			}	
-			$html .= '<input type="'.$r['type'].'" name="'.$k.'" value="'.$r['value'].'"  class="sbmt" onclick="';
-			if($r['confirm'])
-				$html .= 'if(!confirm(\''.$r['confirm'].'\')) return false;'.($r['onclick']?' else ':'');
-			$html .= $r['onclick'].'"/>';
+			$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'" value="'.$r['value'].'"  class="sbmt" onclick="';
+			if(isset($r['confirm']) and $r['confirm'])
+				$texthtml .= 'if(!confirm(\''.$r['confirm'].'\')) return false;'.($r['onclick']?' else ':'');
+			if(isset($r['onclick']))
+				$texthtml .= $r['onclick'];
+			$texthtml .= '"/>';
 
-			if($r['value_close']) {
+			if(isset($r['value_close']) and $r['value_close']) {
 				global $HTML;
 				end($HTML->path);prev($HTML->path);
-				$html .= '<input type="'.$r['type'].'" name="'.$k.'_close" value="'.$r['value_close'].'" class="sbmt" onclick="window.location.href=\''.key($HTML->path).'\';return false;"/>';
+				$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'_close" value="'.$r['value_close'].'" class="sbmt" onclick="window.location.href=\''.key($HTML->path).'\';return false;"/>';
 			}
-			$html .= '</div>';
+			$texthtml .= '</div>';
 		}
 		elseif($r['type']=='infoinput') {
-			$html .= '<div class="infoinput"><input type="hidden" name="'.$k.'" value="'.$r['value'].'"/>'.$r['caption'].'</div>';
+			$texthtml .= '<div class="infoinput"><input type="hidden" name="'.$k.'" value="'.$r['value'].'"/>'.$r['caption'].'</div>';
 		}
 		elseif($r['type']=='info') {
-			$html .= '<div>'.$r['caption'].'</div>';
+			$texthtml .= '<div>'.$r['caption'].'</div>';
 		}
 		elseif($r['type']=='hidden') {
-			$html .= '<input type="'.$r['type'].'" name="'.$k.'" value="'.$r['value'].'" id="'.($r['id']?$r['id']:$k).'"/>';
+			$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'" value="'.$r['value'].'" id="'.($r['id']?$r['id']:$k).'"/>';
 		}
 		else {
-			$html .= '<div class="form-caption">'.$r['caption'];
-			$html .= ($r['mask']['min']?'<span class="form-requere" onmouseover="showHelp(this,\'Данное поле обязательно для заполнения!\',2000,1)">*</span>':'').($r['mask']['min2']?'<span  class="form-requere" onmouseover="showHelp(this,\''.$r['mask']['min2'].'\',4000,1)">**</span>':'').'</div>';
-			
+			$texthtml .= '<div class="form-caption">'.$r['caption'];
+			$texthtml .= ((isset($r['mask']['min']) and $r['mask']['min'])?'<span class="form-requere" onmouseover="showHelp(this,\'Данное поле обязательно для заполнения!\',2000,1)">*</span>':'').
+				((isset($r['mask']['min2']) and $r['mask']['min2'])?'<span  class="form-requere" onmouseover="showHelp(this,\''.$r['mask']['min2'].'\',4000,1)">**</span>':'').'</div>';
+			$attr = '';
+			if(isset($r['readonly']) and $r['readonly'])
+				$attr .= ' readonly="readonly" class="ronly"';
+			if(isset($r['disabled']) and $r['disabled'])
+				$attr .= ' disabled="disabled" class="ronly"';
+
 			if(isset($r['error']) and count($r['error']))
-				$html .= '<div class="caption_error">['.implode(' ',$r['error']).']</div>';
+				$texthtml .= '<div class="caption_error">['.implode(' ',$r['error']).']</div>';
 
 			if($r['type']=='textarea') {
 				if(!$r['mask']['max']) $r['mask']['max'] = 5000;
-				$html .= '<div class="form-value"><textarea name="'.$k.'" onkeyup="textareaChange(this,\''.$r['mask']['max'].'\')" rows="5" cols="50"';
-				if($r['readonly']) $html .= ' readonly="readonly"';
-				$html .= '>'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
+				$texthtml .= '<div class="form-value"><textarea name="'.$k.'" onkeyup="textareaChange(this,\''.$r['mask']['max'].'\')" rows="5" cols="50" '.$attr.'>'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
 			}
 			elseif($r['type']=='radio') {//print_r('<pre>');print_r($r);
-				$html .= '<div class="form-value">';
+				$texthtml .= '<div class="form-value">';
 				if(!count($r['valuelist']))
-					$html .= '<font color="red">Нет элементов для отображения</font>';
+					$texthtml .= '<font color="red">Нет элементов для отображения</font>';
 				else {
 					foreach($r['valuelist'] as $row) {
-						$html .= '<input type="'.$r['type'].'" name="'.$k.'" value="'.$row['#id#'].'" class="radio"';
+						$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'" value="'.$row['#id#'].'" class="radio" '.$attr;
 						if($row['#sel#'])
-							$html .= ' checked="checked"';
-						$html .= '/>'.$row['#name#'].' &#160;&#160;';
+							$texthtml .= ' checked="checked"';
+						$texthtml .= '/>'.$row['#name#'].' &#160;&#160;';
 					}
 				}
-				$html .= '</div>';
+				$texthtml .= '</div>';
 			}
 			elseif($r['type']=='checkbox') {
-				$html .= '<div class="form-value checkbox-value">';
-				if(!count($r['valuelist']))
-					$html .= '<input type="'.$r['type'].'" name="'.$k.'" value="1" '.($r['value']?'checked="checked"':'').'/>';
+				$texthtml .= '<div class="form-value checkbox-value';
+				if(!isset($r['valuelist']) or !count($r['valuelist']))
+					$texthtml .= '"><input type="'.$r['type'].'" name="'.$k.'" value="1" '.($r['value']?'checked="checked"':'').' '.$attr.'/>';
 				else {
+					$texthtml .= ' checkbox-valuelist">';
 					foreach($r['valuelist'] as $row) {
-						$html .= '<input type="'.$r['type'].'" name="'.$k.'[]" value="'.$row['#id#'].'" class="radio"';
-						if($row['#sel#'])
-							$html .= ' checked="checked"';
-						$html .= '/><div class="title">'.$row['#name#'].'</div>';
+						$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'['.$row['#id#'].']" value="'.$row['#id#'].'" class="radio" '.$attr;
+						if(isset($row['#sel#']) and $row['#sel#'])
+							$texthtml .= ' checked="checked"';
+						$texthtml .= '/><div class="boxtitle">'.$row['#name#'].'</div>';
 					}
 				}
-				$html .= '</div>';
+				$texthtml .= '</div>';
 			}
 			elseif($r['type']=='ajaxlist') {
 				$serl = serialize($r['listname']);
-				$html .= '<div class="form-value ajaxlist">
+				$texthtml .= '<div class="form-value ajaxlist">
 					<span style="'.$r['labelstyle'].'">'.$r['label'].'</span>
 					<input type="text" name="'.$k.'_2" value="'.$r['value_2'].'" onfocus="show_hide_label(this,\''.$k.'\',1)" onblur="show_hide_label(this,\''.$k.'\',0)" onkeyup="ajaxlist(this,\''.$k.'\')" class="'.$r['csscheck'].'" autocomplete="off"/>
 					<div id="ajaxlist_'.$k.'" style="display:none;" onfocus="chFocusList(0)" onblur="chFocusList(1)">не найдено</div>
 
-					<input type="hidden" name="'.$k.'" value="'.$r['value'].'"/>
+					<input type="hidden" name="'.$k.'" value="'.$r['value'].' '.$attr.'"/>
 				</div>
 				<input type="hidden" name="hsh_'.$k.'" value="'.md5($serl.$_CFG['wep']['md5']).'"/>
 				<input type="hidden" name="srlz_'.$k.'" value="'.htmlspecialchars($serl,ENT_QUOTES,$_CFG['wep']['charset']).'"/>';
 			}
 			elseif($r['type']=='list' and !$r['readonly']) {
-				$html .= '<div class="form-value">';
+				$texthtml .= '<div class="form-value">';
 				if($r['size']>1) {
-					$html .= '<select size="'.$r['size'].'" name="'.$k.'" class="small" onchange="'.$r['onchange'].'"';
-					$html .= '>'.selectitem($r['valuelist']).'</select>';
+					$texthtml .= '<select size="'.$r['size'].'" name="'.$k.'" class="small" onchange="'.$r['onchange'].'" '.$attr;
+					$texthtml .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
 				}elseif($r['multiple']==2) {
-					$html .= '<select multiple="multiple" size="10" name="'.$k.'[]" class="multiple" onchange="'.$r['onchange'].'"';
-					$html .= '>'.selectitem($r['valuelist']).'</select>';
+					$texthtml .= '<select multiple="multiple" size="10" name="'.$k.'[]" class="multiple" onchange="'.$r['onchange'].'" '.$attr;
+					$texthtml .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
 					$_CFG['fileIncludeOption']['multiple'] = 2;
 				}elseif($r['multiple']) {
-					$html .= '<select multiple="multiple" size="10" name="'.$k.'[]" class="small" onchange="'.$r['onchange'].'"';
-					$html .= '>'.selectitem($r['valuelist']).'</select>';
+					$texthtml .= '<select multiple="multiple" size="10" name="'.$k.'[]" class="small" onchange="'.$r['onchange'].'" '.$attr;
+					$texthtml .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
 				}else {
-					$html .= '<select name="'.$k.'" onchange="'.$r['onchange'].'"';
-					$html .= '>'.selectitem($r['valuelist']).'</select>';
+					$texthtml .= '<select name="'.$k.'" onchange="'.$r['onchange'].'" '.$attr;
+					$texthtml .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
 				}
-				$html .= '</div>';
+				$texthtml .= '</div>';
 			}
 			elseif($r['type']=='date' and $r['readonly']) {
 
@@ -123,13 +132,11 @@ function tpl_form(&$data) {
 					$temp = array(date('Y'),date('m'),date('d'),date('H'));
 				}
 
-				$html .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.$temp.'"';
-				$html .= ' readonly="readonly" class="ronly"';
-				$html .= '/></div>';
+				$texthtml .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.$temp.'" '.$attr.'/></div>';
 			}
 			elseif($r['type']=='date' and !$r['readonly']) {
 	
-				$html .= '<div class="form-value">';
+				$texthtml .= '<div class="form-value">';
 				
 				global $_tpl;
 				if($r['mask']['time'])
@@ -168,7 +175,7 @@ function tpl_form(&$data) {
 						$temp = date($r['mask']['format'],$temp);
 					}
 					
-					$html .= '<input type="text" name="'.$k.'" value="'.$temp.'" class="dateinput"/>';
+					$texthtml .= '<input type="text" name="'.$k.'" value="'.$temp.'" class="dateinput"/>';
 				} 
 				else {
 				
@@ -188,77 +195,77 @@ function tpl_form(&$data) {
 						// год
 						if($item_date == 'Y' || $item_date == 'y')
 						{
-							$r['value']['year'] = array('name'=>$_CFG['_MESS']['year_name'], 'css'=>'year');// ГОД
+							$r['value']['year'] = array('name'=>$_CFG['_MESS']['year_name'], 'css'=>'year','value'=>$temp[0]);// ГОД
 							$temp[0] = (int)$temp[0]; 
 
 							//значения по умолчанию
 							if(!$r['range_back']['year']) $r['range_back']['year'] = 2;
 							if(!$r['range_up']['year']) $r['range_up']['year'] = 3;
 							for($i=((int)date('Y')-($r['range_back']['year']));$i<((int)date('Y')+($r['range_up']['year']));$i++)
-								$r['value']['year']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[0]==$i?1:0));							
+								$r['value']['year']['item'][$i] = array('#id#'=>$i, '#name#'=>$i);							
 						}
 						// месяц
 						if($item_date == 'm' || $item_date == 'n' || $item_date == 'M' || $item_date == 'F')
 						{
-							$r['value']['month'] = array('name'=>$_CFG['_MESS']['month_name'], 'css'=>'month');// Месяц
+							$r['value']['month'] = array('name'=>$_CFG['_MESS']['month_name'], 'css'=>'month','value'=>$temp[1]);// Месяц
 							foreach($_CFG['_MESS']['month'] as $kr=>$td) {
 								$kr = (int)$kr;
-								$r['value']['month']['item'][$kr] = array('#id#'=>$kr, '#name#'=>$td, '#sel#'=>($temp[1]==$kr?1:0));
+								$r['value']['month']['item'][$kr] = array('#id#'=>$kr, '#name#'=>$td);
 							}						
 						}
 						// день
 						if($item_date == 'd' || $item_date == 'j')
 						{
-							$r['value']['day'] = array('name'=>$_CFG['_MESS']['day_name'], 'css'=>'day');// День
+							$r['value']['day'] = array('name'=>$_CFG['_MESS']['day_name'], 'css'=>'day','value'=>$temp[2]);// День
 							for($i=1;$i<=31;$i++)
-								$r['value']['day']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[2]==$i?1:0));						
+								$r['value']['day']['item'][$i] = array('#id#'=>$i, '#name#'=>$i);						
 						}
 						// час
 						if($item_date == 'G' || $item_date == 'g' || $item_date == 'H' || $item_date == 'h')
 						{
-							$r['value']['hour'] = array('name'=>$_CFG['_MESS']['hour_name'], 'css'=>'hour');// Час
+							$r['value']['hour'] = array('name'=>$_CFG['_MESS']['hour_name'], 'css'=>'hour','value'=>$temp[3]);// Час
 							for($i=1;$i<=24;$i++)
-								$r['value']['hour']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[3]==$i?1:0));
+								$r['value']['hour']['item'][$i] = array('#id#'=>$i, '#name#'=>$i);
 						}
 						// минуты
 						if($item_date == 'i')
 						{
-							$r['value']['minute'] = array('name'=>$_CFG['_MESS']['minute_name'], 'css'=>'minute');// Minute
+							$r['value']['minute'] = array('name'=>$_CFG['_MESS']['minute_name'], 'css'=>'minute','value'=>$temp[4]);// Minute
 							for($i=1;$i<=60;$i++)
-								$r['value']['minute']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[4]==$i?1:0));
+								$r['value']['minute']['item'][$i] = array('#id#'=>$i, '#name#'=>$i);
 						}
 						// секунды
 						if($item_date == 's')
 						{
-							$r['value']['sec'] = array('name'=>$_CFG['_MESS']['sec_name'], 'css'=>'sec');
+							$r['value']['sec'] = array('name'=>$_CFG['_MESS']['sec_name'], 'css'=>'sec','value'=>$temp[5]);
 							for($i=1;$i<=60;$i++)
-								$r['value']['sec']['item'][$i] = array('#id#'=>$i, '#name#'=>$i, '#sel#'=>($temp[5]==$i?1:0));					
+								$r['value']['sec']['item'][$i] = array('#id#'=>$i, '#name#'=>$i);					
 						}
 					}
 
 					foreach($r['value'] as $row) {
-						$html .= '<div class="dateselect '.$row['css'].'"><span class="name">'.$row['name'].'</span><select name="'.$k.'[]">'.selectitem($row['item']).'</select></div>';
+						$texthtml .= '<div class="dateselect '.$row['css'].'"><span class="name">'.$row['name'].'</span><select name="'.$k.'[]" '.$attr.'>'.selectitem($row['item'],$row['value']).'</select></div>';
 					}
 				}		
-				$html .= '</div>';
+				$texthtml .= '</div>';
 			}
 			elseif($r['type']=='captcha') {
-				$html .= '<div class="form-value">
+				$texthtml .= '<div class="form-value">
 						<div class="left"><input type="text" name="'.$k.'" maxlength="5" size="10" class="secret" autocomplete="off"/></div>
 						<div class="secret"><img src="'.$r['src'].'" class="i_secret" id="captcha" alt="CARTHA"/></div>
 					</div>';
 			}
 			elseif($r['type']=='file') {
-				$html .= '<div class="form-value divinputfile">';
-				$html .= '<input type="file" name="'.$k.'" size="39" onchange="input_file(this)"/><span class="fileinfo"></span>';
+				$texthtml .= '<div class="form-value divinputfile">';
+				$texthtml .= '<input type="file" name="'.$k.'" size="39" onchange="input_file(this)" '.$attr.'/><span class="fileinfo"></span>';
 
 				if($r['del']==1 and $r['value']!='')
-					$html .= '<div style="color:red;float:right;white-space: nowrap;">Удалить?&#160;<input type="checkbox" name="'.$k.'_del" class="del" value="1" onclick="$(\'#tr_'.$k.' td.td2 input[name='.$k.'],#tr_'.$k.' td.td2 div.dscr\').slideToggle(\'normal\')"/></div>';
+					$texthtml .= '<div style="color:red;float:right;white-space: nowrap;">Удалить?&#160;<input type="checkbox" name="'.$k.'_del" class="del" value="1" onclick="$(\'#tr_'.$k.' td.td2 input[name='.$k.'],#tr_'.$k.' td.td2 div.dscr\').slideToggle(\'normal\')"/></div>';
 
 				if($r['caption']==1)
-					$html .= '';
+					$texthtml .= '';
 				elseif(!is_array($r['value']) and $r['value']!='' and $r['att_type']=='img') {
-					$html .= '<div class="clear"></div><div class="wep_thumb">
+					$texthtml .= '<div class="clear"></div><div class="wep_thumb">
 						<a rel="fancy" href="/'.$r['value'].'" target="_blank" class="fancyimg">
 							<img src="/'.$r['value'].'" alt="img" class="attach"'.($r['mask']['width']?' width="'.$r['mask']['width'].'"':'').($r['mask']['height']?' height="'.$r['mask']['height'].'"':'').'/>
 						</a>
@@ -266,48 +273,48 @@ function tpl_form(&$data) {
 					</div>';
 					if(isset($r['thumb']))
 						foreach($r['thumb'] as $thumb) {
-						$html .= '<div class="wep_thumb">
+						$texthtml .= '<div class="wep_thumb">
 							<a rel="fancy" href="/'.$thumb['value'].'?size='.$thumb['filesize'].'" target="_blank" class="fancyimg">
 								<img src="/'.$thumb['value'].'?size='.$thumb['filesize'].'" alt="img" class="attach"'.($thumb['w']?' width="'.$thumb['w'].'"':'').($thumb['h']?' height="'.$thumb['h'].'"':'').'/>
 							</a>
 							<div class="wep_thumb_comment">Эскиз размером '.$thumb['w'].'x'.$thumb['h'].'</div>
 						</div>';
 					}
-					$html .= '<div class="clear"></div>';
+					$texthtml .= '<div class="clear"></div>';
 					$_CFG['fileIncludeOption']['fancybox'] = 1;
 				}
 				elseif(!is_array($r['value']) and $r['value']!='' and $r['att_type']=='swf')
-					$html .= '<object type="application/x-shockwave-flash" data="/'.$r['value'].'" height="50" width="200"><param name="movie" value="/'.$r['value'].'" /><param name="allowScriptAccess" value="sameDomain" /><param name="quality" value="high" /><param name="scale" value="exactfit" /><param name="bgcolor" value="#ffffff" /><param name="wmode" value="transparent" /></object>';
+					$texthtml .= '<object type="application/x-shockwave-flash" data="/'.$r['value'].'" height="50" width="200"><param name="movie" value="/'.$r['value'].'" /><param name="allowScriptAccess" value="sameDomain" /><param name="quality" value="high" /><param name="scale" value="exactfit" /><param name="bgcolor" value="#ffffff" /><param name="wmode" value="transparent" /></object>';
 				elseif(!is_array($r['value']) and $r['value']!=''){
-					$html .= '<span style="color:green"><a href="/'.$r['value'].'" target="_blank"> загружен(a)</a></span><br/>';
+					$texthtml .= '<span style="color:green"><a href="/'.$r['value'].'" target="_blank"> загружен(a)</a></span><br/>';
 				}
 
-				$html .= '</div>';
+				$texthtml .= '</div>';
 			}
 			elseif($r['type']=='ckedit') {
-				$html .= '<div class="form-value ckedit-value"><textarea name="'.$k.'" rows="10" cols="80" maxlength="'.$r['mask']['max'].'">'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
+				$texthtml .= '<div class="form-value ckedit-value"><textarea name="'.$k.'" rows="10" cols="80" maxlength="'.$r['mask']['max'].'" '.$attr.'>'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
 			}
 			elseif($r['type']=='int' and !$r['readonly']) {
-				$html .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.$r['value'].'" onkeydown="return checkInt(event)" maxlength="'.$r['mask']['width'].'"/></div>';
+				$texthtml .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.$r['value'].'" onkeydown="return checkInt(event)" maxlength="'.$r['mask']['width'].'" '.$attr.'/></div>';
 			}
 			elseif($r['type']=='password') {
-				$html .= '<div class="form-value"><input type="password" name="'.$k.'" value="" onkeyup="checkPass("'.$k.'")"/>
+				$texthtml .= '<div class="form-value"><input type="password" name="'.$k.'" value="" onkeyup="checkPass("'.$k.'")" '.$attr.'/>
 					<div class="dscr">Введите пароль</div>
-					<input type="password" name="re_'.$k.'" value="" onkeyup="checkPass("'.$k.'")"/>
+					<input type="password" name="re_'.$k.'" value="" onkeyup="checkPass("'.$k.'")" '.$attr.'/>
 					<div class="dscr">Чтобы избежать ошибки повторите ввод пароля</div></div>';
 			}
 			elseif($r['type']=='password_new') {
-				$html .= '<div class="form-value"><input type="password" name="'.$k.'" '.($attr['id']?'':'value="'.$r['value'].'"').' class="password"/>
+				$texthtml .= '<div class="form-value"><input type="password" name="'.$k.'" '.($attr['id']?'':'value="'.$r['value'].'"').' class="password" '.$attr.'/>
 						<div class="passnewdesc" onclick="password_new()">Отобразить символы/скрыть</div></div>';
 			}
 			elseif($r['type']=='password_change') {
-				$html .= '<div class="form-value">
+				$texthtml .= '<div class="form-value">
 					<input type="password" name="'.$k.'_old" value=""/><div class="dscr">Введите старый пароль</div>
 					<input type="password" name="'.$k.'" '.($attr['id']?'':'value="'.$r['value'].'"').' class="password"/>
 					<div class="passnewdesc" onclick="password_new()">Отобразить символы/скрыть</div></div>';
 			}	
 			elseif($r['type']=='password2' and !$r['readonly']) {
-				$html .= '<div class="form-value"><input type="text" id="'.$k.'" name="'.$k.'" value="'.$r['value'].'" style="width:55%;float:left;background:#E1E1A1;" readonly="readonly"/>
+				$texthtml .= '<div class="form-value"><input type="text" id="'.$k.'" name="'.$k.'" value="'.$r['value'].'" style="width:55%;float:left;background:#E1E1A1;" readonly="readonly"/>
 							<div style="width:40%;float:right;">
 								<img src="_wep/cdesign/default/img/aprm.gif" style="width:18px;cursor:pointer;" onclick="if(confirm(\'Вы действительно хотите изменить пароль?\')) $(\'#'.$k.'\').val(hex_md5(\''.$r['md5'].'\'+$(\'#a_'.$k.'\').val()));" alt="Сгенерировать пароль в формате MD5" title="Сгенерировать пароль в формате MD5"/>
 								<input type="text" id="a_'.$k.'" name="a_'.$k.'" value="" style="width:80%;vertical-align:top;"/>
@@ -315,40 +322,47 @@ function tpl_form(&$data) {
 				$_CFG['fileIncludeOption']['md5'] = 1;
 			}
 			elseif($r['type']=='html') {
-				$html .= '<div class="form-value">'.$r['value'].'</div>';
+				$texthtml .= '<div class="form-value">'.$r['value'].'</div>';
 			}
 			else {
-				$html .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'"';
+				$texthtml .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'"';
 				if($r['mask']['max'])
-					$html .= ' maxlength="'.$r['mask']['max'].'"';
-				if($r['readonly'])
-					$html .= ' readonly="readonly" class="ronly"';
-				if($r['disabled'])
-					$html .= ' disabled="disabled" class="ronly"';
-				$html .= '/></div>';
+					$texthtml .= ' maxlength="'.$r['mask']['max'].'"';
+				$texthtml .= ' '.$attr.'/></div>';
 			}
 		}
 
-		if($r['comment']!='')
-			$html .= '<div class="dscr">'.$r['comment'].'</div>';
+		if(isset($r['comment']) and $r['comment']!='')
+			$texthtml .= '<div class="dscr">'.$r['comment'].'</div>';
 		if($r['type']!='hidden')
-			$html .= '</div>';
+			$texthtml .= '</div>';
 	}
-	return $html;
+	return $texthtml;
 }
 
-function selectitem($data,$flag=0) {
-	$html = '';
+function selectitem($data,$val='',$flag=0) {
+	$texthtml = '';
+	if($val!=='') {
+		if(!is_array($val)) $val = array($val=>true);
+		else $val = array_keys($val);
+	}
 	if(is_array($data) and count($data))
 		foreach($data as $r) {
 			//_substr($r['#name#'],0,60).(_strlen($r['#name#'])>60?'...':'')
-			if(count($r['#item#']) and isset($r['#checked#']) and $r['#checked#']==0)
-				$html .= '<optgroup label="'.$r['#name#'].'" class="selpad'.$flag.'"></optgroup>';
-			else
-				$html .= '<option value="'.$r['#id#'].'" '.($r['#sel#']?'selected="selected"':'').' class="selpad'.$flag.'">'.$r['#name#'].'</option>';
-			if(count($r['#item#']))
-				$html .= selectitem($r['#item#'],($flag+1));//.'&#160;--'
+			if(isset($r['#item#']) and count($r['#item#']) and isset($r['#checked#']) and $r['#checked#']==0)
+				$texthtml .= '<optgroup label="'.$r['#name#'].'" class="selpad'.$flag.'"></optgroup>';
+			else {
+				if($val==='' and $r['#sel#'])
+					$sel = 'selected="selected"';
+				elseif($val!=='' and isset($val[$r['#id#']]))
+					$sel = 'selected="selected"';
+				else
+					$sel = '';
+				$texthtml .= '<option value="'.$r['#id#'].'" '.$sel.' class="selpad'.$flag.'">'.$r['#name#'].'</option>';
+			}
+			if(isset($r['#item#']) and count($r['#item#']))
+				$texthtml .= selectitem($r['#item#'],$val,($flag+1));//.'&#160;--'
 		}
-	return $html;
+	return $texthtml;
 }
 ?>

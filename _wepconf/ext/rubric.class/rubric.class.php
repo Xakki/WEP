@@ -1,5 +1,5 @@
 <?
-class rubric_class extends kernel_class {
+class rubric_class extends kernel_extends {
 
 	function _set_features() {
 		if (!parent::_set_features()) return false;
@@ -94,7 +94,7 @@ class rubric_class extends kernel_class {
 
 }
 
-class param_class extends kernel_class {
+class param_class extends kernel_extends {
 
 	function _set_features() {
 		if (!parent::_set_features()) return false;
@@ -196,7 +196,7 @@ class param_class extends kernel_class {
 }
 
 
-class countb_class extends kernel_class {
+class countb_class extends kernel_extends {
 	function _set_features() {
 		if (!parent::_set_features()) return false;
 		$this->showinowner=false;// не показывать

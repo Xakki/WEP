@@ -16,14 +16,14 @@
 	$DATA  = array();
 
 	if($_GET['_view']=='exit') {
-		userExit();
+		static_main::userExit();
 		$_tpl['onload'] = 'window.location.href=window.location.href;';
 	}
 	elseif($_GET['_view']=='login') {
 		$res=array('',0);
 		if(count($_POST) and isset($_POST['login']))
 		{
-			$res = userAuth($_POST['login'],$_POST['pass']);// повесить обработчик xml
+			$res = static_main::userAuth($_POST['login'],$_POST['pass']);// повесить обработчик xml
 			if($res[1]) {
 				$_tpl['onload'] .= "alert('Поздравляем! Вы успешно авторизованы!');  window.location.href=window.location.href;";
 			}

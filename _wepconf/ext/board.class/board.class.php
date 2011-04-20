@@ -1,5 +1,5 @@
 <?
-class board_class extends kernel_class {
+class board_class extends kernel_extends {
 
 	var $RUBRIC;
 
@@ -81,7 +81,7 @@ class board_class extends kernel_class {
 		$this->index_fields['name'] = 'name';
 
 		$this->_listnameSQL ='SUBSTRING(text,1,30)';
-		if(_prmUserCheck(2))
+		if(static_main::_prmUserCheck(2))
 			$thumb = array('type'=>'resize', 'w'=>'1024', 'h'=>'768');
 		else
 			$thumb = array('type'=>'resize', 'w'=>'800', 'h'=>'600');
@@ -163,7 +163,7 @@ class board_class extends kernel_class {
 		$this->fields_form['phone'] = array('type' => 'text', 'caption' => 'Контактные телефоны', 'mask'=>array('min2'=>'Необходимо заполнить либо `телефон`, либо `E-mail`', 'name'=>'phone2','onetd'=>'none'));
 		$this->fields_form['email'] = array('type' => 'text', 'caption' => 'E-mail', 'mask'=>array('min2'=>'Необходимо заполнить либо `телефон`, либо `E-mail`','name'=>'email','onetd'=>'close','filter'=>1));
 		$this->fields_form["img_board"] = array("type"=>"file","caption"=>"Фотография №1",'del'=>1, 'mask'=>array('fview'=>1,'width'=>80,'height'=>100));
-		if(_prmUserCheck()) {
+		if(static_main::_prmUserCheck()) {
 			$this->fields_form['text']['mask']['max'] = 4500;
 			$this->fields_form["img_board6"] = $this->fields_form["img_board5"] = $this->fields_form["img_board4"] = $this->fields_form["img_board3"] = $this->fields_form["img_board2"] = $this->fields_form["img_board"];
 			$this->fields_form["img_board2"]["caption"] = "Фотография №2";
@@ -206,7 +206,7 @@ class board_class extends kernel_class {
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Отображать','default'=>1, 'mask' =>array('filter'=>1,'usercheck'=>2));
 
 
-		if(_prmUserCheck()) {
+		if(static_main::_prmUserCheck()) {
 			$this->_enum['period']=array(
 				7776000=>'90 дней',
 				5184000=>'60 дней',
@@ -271,7 +271,7 @@ class board_class extends kernel_class {
 		if(!isset($data['rubric']) and isset($_REQUEST['rubric']))
 			$data['rubric'] = (int)$_REQUEST['rubric'];
 
-		if(_prmUserCheck()) {
+		if(static_main::_prmUserCheck()) {
 			$this->fields_form['phone']['value']=$_SESSION['user']['phone'];
 			$this->fields_form['email']['value']=$_SESSION['user']['email'];
 			if(!$this->data[$this->id]['img_board2']) {
@@ -463,7 +463,7 @@ class board_class extends kernel_class {
 			}
 		}
 		$vars['path'] = $this->getTranslitePatchFromText($vars['text']);
-		if(!_prmUserCheck())
+		if(!static_main::_prmUserCheck())
 			$vars['creater_id'] = md5($vars['mf_timecr'].'solt3'.$vars['mf_ipcreate'].$vars['city'].$vars['email']);
 		if($ret = parent::_add_item($vars)) {
 			if($vars['active']==1 or !isset($vars['active']))
@@ -478,7 +478,7 @@ class board_class extends kernel_class {
 				if($result->err) return false;
 			}
 			$this->form=array();
-			if(!_prmUserCheck() and $vars['email']) {
+			if(!static_main::_prmUserCheck() and $vars['email']) {
 				_new_class('mail',$MAIL);
 				$datamail = array('from'=>'robot@unidoski.ru');
 				$datamail['mailTo']=$vars['email'];
@@ -538,7 +538,7 @@ class board_class extends kernel_class {
 			$time = time();
 		$cls ='SELECT id,city,rubric,text,mf_timecr FROM '.$this->tablename.' WHERE datea>='.($time-(3600*$this->config['spamtime'])).' and datea<'.$time;
 		
-		if(_prmUserCheck())
+		if(static_main::_prmUserCheck())
 			$cls .= ' and '.$this->mf_createrid.'="'.$_SESSION['user']['id'].'"';
 		else
 			$cls .= ' and mf_ipcreate=INET_ATON("'.$_SERVER["REMOTE_ADDR"].'")';
@@ -1099,7 +1099,7 @@ class board_class extends kernel_class {
 		$this->fGetParamBoard($clause);
 		///** Nomination **///
 		$clause = 'SELECT * FROM boardvote WHERE owner_id IN ('.implode(',',$id).')';
-		if(_prmUserCheck())
+		if(static_main::_prmUserCheck())
 			$clause .= ' and '.$this->mf_createrid.'="'.$_SESSION['user']['id'].'"';
 		else
 			$clause .= ' and mf_ipcreate=INET_ATON("'.$_SERVER["REMOTE_ADDR"].'")';

@@ -1,5 +1,5 @@
 <?
-	userExit();
+	static_main::userExit();
 	$DATA = array(
 		array('value'=>$_CFG['_MESS']['exitok'], 'name'=>'ok')
 	);

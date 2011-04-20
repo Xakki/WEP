@@ -1,6 +1,6 @@
 <?
 
-class paramb_class extends kernel_class {
+class paramb_class extends kernel_extends {
 	function _set_features() {
 		if (!parent::_set_features()) return false;
 		$this->showinowner=false;// не показывать
@@ -47,7 +47,7 @@ class paramb_class extends kernel_class {
 	}
 }
 
-class boardvote_class extends kernel_class {
+class boardvote_class extends kernel_extends {
 	function _set_features() {
 		if (!parent::_set_features()) return false;
 		$this->showinowner=false;// не показывать

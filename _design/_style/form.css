@@ -36,7 +36,9 @@
 		text-align: left;
 	}
 	.divform .caption div{
-		text-align:center;font-size:1.2em;font-weight:bold;
+		text-align:center;
+		font-size:1.2em;
+		font-weight:bold;
 	}
 
 	.divform .form-caption {
@@ -59,12 +61,14 @@
 		margin:0 10px 0 5px;
 		padding:0 0 0;
 	}
+	.divform .checkbox-valuelist{
+		float:none;
+	}
 		.divform .checkbox-value input {
 			float:left;
 		}
-		.divform .checkbox-value .title {
-			margin-left:20px; 
-			margin-bottom:15px;
+		.divform .checkbox-value .boxtitle {
+			margin-left:25px; 
 		}
 	.divform .form-submit {
 		text-align:center;

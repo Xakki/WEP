@@ -1,5 +1,5 @@
 <?
-class mail_class extends kernel_class {
+class mail_class extends kernel_extends {
 
 	function _set_features() {
 		if (!parent::_set_features()) return false;
@@ -97,7 +97,7 @@ class mail_class extends kernel_class {
 		$param=array('capthaOn'=>1);
 		$data = array();
 
-		if(_prmUserCheck()) {
+		if(static_main::_prmUserCheck()) {
 			$this->fields_form["from"]['default'] = $_SESSION['user']['email'];
 		}
 		else  $mailFrom='';
@@ -119,14 +119,14 @@ class mail_class extends kernel_class {
 		} else
 				$mess = $this->kPreFields($arr['vars'],$param);
 		if(isset($this->fields_form['captcha']))
-			$this->setCaptcha();
+			static_form::setCaptcha();
 
 		if($flag==1)
 			$formflag = 0;
 		if($formflag) // показывать форму , также если это АЯКС и 
 			$formflag = $this->kFields2Form($param);
 
-		$this->setCaptcha();
+		static_form::setCaptcha();
 
 		return Array(Array('messages'=>($mess+$arr['mess']), 'form'=>($formflag?$this->form:array())), $flag);
 

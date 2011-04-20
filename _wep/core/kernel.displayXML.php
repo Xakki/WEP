@@ -78,11 +78,15 @@
 			if($this->ordfield!='') $order='t1.'.$this->ordfield;
 			else $order='t1.id';
 			foreach($this->fields_form as $k=>$r) {
-				if(isset($r['mask']['usercheck']) and !_prmUserCheck($r['mask']['usercheck']))
+				if(isset($r['mask']['usercheck']) and !static_main::_prmUserCheck($r['mask']['usercheck']))
 					{$arrno[$k]=1; continue;}
 				$tmpsort = false;
 
-				if($r['mask']['fview']==1 or $r['mask']['disable'] or $r['type']=='hidden' or $r['type']=='info')
+				if( (isset($r['mask']['fview']) and $r['mask']['fview']==1) or 
+						(isset($r['mask']['disable']) and $r['mask']['disable']) or 
+						($r['type']=='hidden') or 
+						($r['type']=='info')
+					)
 					$arrno[$k]=1; 
 				elseif(!isset($arrno[$k])) {
 					if(isset($r['listname']) and is_array($r['listname']) and (isset($r['listname']['class']) or isset($r['listname']['tablename']))) {
@@ -102,7 +106,7 @@
 						if(!isset($lsn['join'])) 
 							$cls[1] .= ' LEFT';
 
-						$cls[1] .= ' JOIN `'.($lsn['class']?getTableNameOfClass($lsn['class']):$lsn['tablename']).'` t'.$t.' ON ';
+						$cls[1] .= ' JOIN `'.($lsn['class']?static_main::getTableNameOfClass($lsn['class']):$lsn['tablename']).'` t'.$t.' ON ';
 
 						if(!$lsn['idField']) 
 							$lsn['idField'] = 't'.$t.'.id';
@@ -125,8 +129,8 @@
 
 					$act=0;
 					if($this->_prmSortField($k)) {
-						if($_GET['sort']==$k) $act=1;
-						elseif($_GET['dsort']==$k) $act=2;
+						if(isset($_GET['sort']) and $_GET['sort']==$k) $act=1;
+						elseif(isset($_GET['dsort']) and $_GET['dsort']==$k) $act=2;
 						$temphref = $k.(($this->id)?'&amp;'.$this->_cl.'_id='.$this->id:'');
 					}
 					else $temphref = '';
@@ -239,12 +243,12 @@
 								}elseif($er)
 									$temp[] = '<span style="color:gray;">'.$er.'</span>';
 							}
-							$tditem['value'] .= implode(', ',$temp);
+							$tditem['value'] = implode(', ',$temp);
 						}
 						elseif(isset($r['mask']['substr']) and $r['mask']['substr']>0)
-							$tditem['value'] .= _substr(strip_tags(htmlspecialchars_decode($row[$k])),0,$r['mask']['substr']);
+							$tditem['value'] = _substr(strip_tags(htmlspecialchars_decode($row[$k])),0,$r['mask']['substr']);
 						else//if($r['type']!='file')
-							$tditem['value'] .= $row[$k];
+							$tditem['value'] = $row[$k];
 					}
 					$xml['data']['item'][$key]['tditem'][$k] = $tditem;
 				}
