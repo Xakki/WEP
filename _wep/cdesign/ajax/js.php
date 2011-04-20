@@ -61,7 +61,7 @@
 			$_tpl['onload'] .= 'JSFR("form");';
 	}
 	elseif($_GET['_type']=='sort'){
-		if($MODUL->mf_ordctrl and _prmModul($MODUL->_cl,array(10))) {
+		if($MODUL->mf_ordctrl and static_main::_prmModul($MODUL->_cl,array(10))) {
 			$_GET['_obj']=str_replace(array('\\\\\\"','\\\\"','\\"'),'"',$_GET['_obj']);
 			$pq = unserialize($_GET['_obj']);
 			if($MODUL->_sorting($pq)) 

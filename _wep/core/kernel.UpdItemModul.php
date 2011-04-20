@@ -45,7 +45,7 @@
 				$flag=1;
 			}
 			if(isset($this->fields_form['captcha']))
-				$this->setCaptcha();
+				static_form::setCaptcha();
 		} else { //ADD
 			if(!$this->_prmModulAdd($this->_cl)){
 				$arr['mess'][] = array('name'=>'error', 'value'=>$this->getMess('denied_add'));
@@ -67,7 +67,7 @@
 			else 
 				$mess = $this->kPreFields($arr['vars'],$param);
 			if(isset($this->fields_form['captcha']))
-				$this->setCaptcha();
+				static_form::setCaptcha();
 		}
 		if(isset($param['formflag']))
 			$formflag = $param['formflag'];

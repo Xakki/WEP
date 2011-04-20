@@ -10,34 +10,35 @@
 		/**Если тру - то проверка таблиц и папок*/
 		var $_iFlag;
 
-		function __construct() {
+		function __construct($CFG_SQL) {
 			global $_CFG;
+			$this->CFG_SQL = $CFG_SQL;
 			$this->_iFlag= false;
-			if((int)$_CFG['sql']['log']) $this->logFile = fopen($_CFG['_PATH']['wep'].'/log/_'.time().'.log', 'wb');
+			if((int)$this->CFG_SQL['log']) $this->logFile = fopen($_CFG['_PATH']['wep'].'/log/_'.time().'.log', 'wb');
 			$this->sql_connect();
 		}
 
 		function __destruct() {
 			global $_CFG;
 			$this->sql_close();
-			if($_CFG['sql']['log']) fclose($this->logFile);
+			if($this->CFG_SQL['log']) fclose($this->logFile);
 		}
 
 		function sql_connect() {
 			global $_CFG;
-			$this->hlink = mysql_connect($_CFG['sql']['host'], $_CFG['sql']['login'], $_CFG['sql']['password']);
+			$this->hlink = mysql_connect($this->CFG_SQL['host'], $this->CFG_SQL['login'], $this->CFG_SQL['password']);
 			if($this->hlink) {
-				mysql_query ('SET NAMES '.$_CFG['sql']['setnames']);
-				if(!mysql_select_db($_CFG['sql']['database'],$this->hlink)) {
-					if(mysql_query('create database `'.$_CFG['sql']['database'].'` character set '.$_CFG['sql']['setnames'].' collate '.$_CFG['sql']['setnames'].'_general_ci;'))
-						mysql_select_db($_CFG['sql']['database'],$this->hlink);
+				mysql_query ('SET NAMES '.$this->CFG_SQL['setnames']);
+				if(!mysql_select_db($this->CFG_SQL['database'],$this->hlink)) {
+					if(mysql_query('create database `'.$this->CFG_SQL['database'].'` character set '.$this->CFG_SQL['setnames'].' collate '.$this->CFG_SQL['setnames'].'_general_ci;'))
+						mysql_select_db($this->CFG_SQL['database'],$this->hlink);
 					else 
-						trigger_error('Can`t create database `'.$_CFG['sql']['database'].'`', E_USER_WARNING);
-						die();
+						trigger_error('Can`t create database `'.$this->CFG_SQL['database'].'`', E_USER_WARNING);
+						die('SQL config error');
 				}
 			}else {
-				trigger_error('Can`t connect to database `'.$_CFG['sql']['database'].'`', E_USER_WARNING);
-				die();
+				trigger_error('Can`t connect to database `'.$this->CFG_SQL['database'].'`', E_USER_WARNING);
+				die('SQL connect error');
 			}
 		}
 
@@ -68,7 +69,7 @@
 
 		function __construct(&$db, $sql, $unbuffered) {
 			global $_CFG,$_tpl;
-			//if((isset($_COOKIE['_showallinfo']) and $_COOKIE['_showallinfo']) or $_CFG['sql']['longquery']>0)
+			//if((isset($_COOKIE['_showallinfo']) and $_COOKIE['_showallinfo']) or $db->CFG_SQL['longquery']>0)
 				$ttt = getmicrotime();
 			if($unbuffered) {// Тут можно задавать запросы, разделённые точкой запятой
 				$this->handle = mysql_unbuffered_query($sql, $db->hlink);
@@ -80,7 +81,7 @@
 			$this->err=mysql_error($db->hlink);
 			if ($this->err!='')
 			{
-				if($_CFG['sql']['log']) 
+				if($db->CFG_SQL['log']) 
 					fwrite($db->logFile,'ERORR: '.$this->err.' ('.$sql.')\n');
 				trigger_error($this->err.=" ({$sql});", E_USER_WARNING);
 				$this->errno = mysql_errno();
@@ -89,8 +90,8 @@
 			else
 			{
 				$ttt = (getmicrotime()-$ttt);
-				if($_CFG['sql']['log']) fwrite($db->logFile,$sql."\n");
-				if($_CFG['sql']['longquery']>0 and $ttt>$_CFG['sql']['longquery'])
+				if($db->CFG_SQL['log']) fwrite($db->logFile,$sql."\n");
+				if($db->CFG_SQL['longquery']>0 and $ttt>$db->CFG_SQL['longquery'])
 					trigger_error('LONG QUERY ['.$ttt.' sec.] ('.$sql.')', E_USER_WARNING);
 				//if(strstr(strtolower($sql),'insert into'))
 				//	$this->id = $db->sql_id();

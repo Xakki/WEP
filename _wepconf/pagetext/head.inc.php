@@ -2,7 +2,7 @@
 	global $CITY;
 	$html ='<a class="sitename" href="/index.html">'.$PGLIST->config['sitename'].' - '.$CITY->name.'</a><div class="sitedesc">'.$PGLIST->config['description'].'</div>';
 
-	if(!_prmUserCheck()) {
+	if(!static_main::_prmUserCheck()) {
 		$_tpl['logs'] .= '<div id="loginblock" style="display:none;position:absolute;z-index:30;top:50%;left:50%;">
 			<div class="layerblock">
 				<div class="blockclose" onclick="$(\'#loginblock\').hide();showBG(0);"></div>

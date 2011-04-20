@@ -1,5 +1,5 @@
 <?
-class bug_class extends kernel_class {
+class bug_class extends kernel_extends {
 
 	protected function _create_conf() {
 		parent::_create_conf();

@@ -78,7 +78,7 @@
 			if($this->ordfield!='') $order='t1.'.$this->ordfield;
 			else $order='t1.id';
 			foreach($this->fields_form as $k=>$r) {
-				if(isset($r['mask']['usercheck']) and !_prmUserCheck($r['mask']['usercheck']))
+				if(isset($r['mask']['usercheck']) and !static_main::_prmUserCheck($r['mask']['usercheck']))
 					{$arrno[$k]=1; continue;}
 				$tmpsort = false;
 
@@ -102,7 +102,7 @@
 						if(!isset($lsn['join'])) 
 							$cls[1] .= ' LEFT';
 
-						$cls[1] .= ' JOIN `'.($lsn['class']?getTableNameOfClass($lsn['class']):$lsn['tablename']).'` t'.$t.' ON ';
+						$cls[1] .= ' JOIN `'.($lsn['class']?static_main::getTableNameOfClass($lsn['class']):$lsn['tablename']).'` t'.$t.' ON ';
 
 						if(!$lsn['idField']) 
 							$lsn['idField'] = 't'.$t.'.id';

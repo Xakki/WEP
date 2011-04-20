@@ -11,7 +11,7 @@
 			if($_GET['_pid']!='') $MODUL->parent_id = $_GET['_pid'];
 			if($_GET['_id']!='') $MODUL->id = $_GET['_id'];
 
-			if(_prmModul('comments',array(1,2))) {
+			if(static_main::_prmModul('comments',array(1,2))) {
 
 				$param = array();
 				

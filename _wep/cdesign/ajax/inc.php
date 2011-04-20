@@ -26,7 +26,7 @@
 			if($_GET['_pid']!='') $MODUL->parent_id = $_GET['_pid'];
 			if($_GET['_id']!='') $MODUL->id = $_GET['_id'];
 
-			if(_prmModul($_GET['_modul'],array(1,2))) {
+			if(static_main::_prmModul($_GET['_modul'],array(1,2))) {
 
 				if($_GET['_view']=='reinstall') {
 					$xml = $MODUL->confirmReinstall();
@@ -92,7 +92,7 @@
 		}
 	}
 	$_tpl['modulsforms'] = $html;
-	if(_prmUserCheck(2)) 
+	if(static_main::_prmUserCheck(2))
 		$_tpl['debug'] = '<span class="seldebug"><select>
 <option onclick="window.location=\''.$_CFG['PATH']['wepname'].'/index.php?_showallinfo=0\'" '.(!$_COOKIE['_showallinfo']?'selected="selected"':'').'>Скрыть инфу</option>
 <option onclick="window.location=\''.$_CFG['PATH']['wepname'].'/index.php?_showallinfo=1\'" '.($_COOKIE['_showallinfo']==1?'selected="selected"':'').'>Показать инфу</option>

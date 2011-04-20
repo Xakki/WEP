@@ -1,5 +1,5 @@
 <?
-class pg_class extends kernel_class {
+class pg_class extends kernel_extends {
 
 	protected function _create_conf() {
 		parent::_create_conf();
@@ -38,6 +38,8 @@ class pg_class extends kernel_class {
 		$this->caption = 'Страницы';
 		$this->selected = array();
 		$this->ver = '0.1.1';
+		$this->pageinfo = 
+			$this->dataCash = array();
 		return true;
 	}
 
@@ -106,13 +108,10 @@ class pg_class extends kernel_class {
 	}
 	
 	function _childs() {
-		//if($this->_CFG['_F']['adminpage']) {
-			//include_once($this->_CFG['_PATH']['extcore'].'pg.class/content.childs.php');
-			$this->create_child("content");
-		//}
+		$this->create_child("content");
 	}	
 
-	function _getlist($listname,$value=0) {
+	function _getlist(&$listname,$value=0) {
 		$data = array();
 		if ($listname == "ugroup") {
 			$data['user'] = ' - Авторизованные -';

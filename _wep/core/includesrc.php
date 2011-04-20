@@ -3,38 +3,40 @@
 	function fileInclude($gfi) {
 		if(!count($gfi)) return true;
 		global $_tpl,$_CFG;
-		if($gfi['multiple']==2) {
-			$_tpl['styles']['jquery-ui-redmond'] = 1;
+		if(isset($gfi['multiple'])) {
+			if($gfi['multiple']==2) {
+				$_tpl['styles']['jquery-ui-redmond'] = 1;
+			}
+			if($gfi['multiple']==2) {
+				$_tpl['script']['script.jquery.ui/jquery.ui.core.min'] = 1;
+			}
+			if($gfi['multiple']==2) {
+				$_tpl['script']['script.jquery.ui/jquery.ui.widget.min'] = 1;
+			}
+			if($gfi['multiple']==2) {
+				$_tpl['script']['script.jquery.ui/jquery.ui.mouse.min'] = 1;
+			}
+			if($gfi['multiple']==2) {
+				$_tpl['script']['script.jquery.ui/jquery.ui.sortable.min'] = 1;
+			}
+			if($gfi['multiple']==2) {
+				$_tpl['script']['script.jquery.ui/jquery.ui.draggable.min'] = 1;
+			}
+			if($gfi['multiple']==2) {
+				//$_tpl['onload'] .= '$.localise(\'ui-multiselect\', {language: \'ru\', path: \''.$_CFG['_HREF']['_script'].'script.localisation/\'});';
+				$_tpl['onload'] .= 'jQuery(\'select.multiple\').multiselect();';
+				$_tpl['styles']['jquery-ui.multiselect'] = 1;
+				$_tpl['script']['script.jquery.ui/jquery.ui.multiselect'] = 1;
+			}
 		}
-		if($gfi['multiple']==2) {
-			$_tpl['script']['script.jquery.ui/jquery.ui.core.min'] = 1;
-		}
-		if($gfi['multiple']==2) {
-			$_tpl['script']['script.jquery.ui/jquery.ui.widget.min'] = 1;
-		}
-		if($gfi['multiple']==2) {			
-			$_tpl['script']['script.jquery.ui/jquery.ui.mouse.min'] = 1;
-		}
-		if($gfi['multiple']==2) {
-			$_tpl['script']['script.jquery.ui/jquery.ui.sortable.min'] = 1;
-		}
-		if($gfi['multiple']==2) {
-			$_tpl['script']['script.jquery.ui/jquery.ui.draggable.min'] = 1;
-		}
-		if($gfi['multiple']==2) {
-			//$_tpl['onload'] .= '$.localise(\'ui-multiselect\', {language: \'ru\', path: \''.$_CFG['_HREF']['_script'].'script.localisation/\'});';
-			$_tpl['onload'] .= 'jQuery(\'select.multiple\').multiselect();';
-			$_tpl['styles']['jquery-ui.multiselect'] = 1;
-			$_tpl['script']['script.jquery.ui/jquery.ui.multiselect'] = 1;
-		}
-		if($gfi['form']) {
+		if(isset($gfi['form']) and $gfi['form']) {
 			$_tpl['script']['form'] = 1;
 			$_tpl['styles']['form'] = 1;
 		}
-		if($gfi['md5']) {
+		if(isset($gfi['md5']) and $gfi['md5']) {
 			$_tpl['script']['md5'] = 1;
 		}
-		if($gfi['fancybox']) {
+		if(isset($gfi['fancybox']) and $gfi['fancybox']) {
 			$_tpl['script']['jquery.fancybox'] = 1;
 			$_tpl['styles']['jquery.fancybox'] = 1;
 			$_tpl['onload'] .= "jQuery('.fancyimg').fancybox();";

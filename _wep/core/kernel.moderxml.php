@@ -1,11 +1,11 @@
 <?
 	function _fXmlModuls(&$_this,$modul){
 		$xml = '<moduls'._paramModul($_this,$modul).'><name>'.$_this->caption.'</name><msp>1</msp>';
-		if(_prmModul($_this->_cl,array(11)))
+		if(static_main::_prmModul($_this->_cl,array(11)))
 			$xml .= '<serv id=\'reinstall\'>'.$_this->_CFG['_MESS']['_reinstall'].'</serv>';
-		if(isset($_this->config_form) and count($_this->config_form) and _prmModul($_this->_cl,array(13)))
+		if(isset($_this->config_form) and count($_this->config_form) and static_main::_prmModul($_this->_cl,array(13)))
 			$xml .= '<serv id=\'config\'>'.$_this->_CFG['_MESS']['_config'].'</serv>';
-		if($_this->mf_indexing and _prmModul($_this->_cl,array(12)))
+		if($_this->mf_indexing and static_main::_prmModul($_this->_cl,array(12)))
 			$xml .= '<serv id=\'reindex\'>'.$_this->_CFG['_MESS']['_reindex'].'</serv>';
 
 		if($_this->mf_use_charid) $owner='';else $owner=0;
@@ -93,7 +93,7 @@
 		elseif ($_this->mf_istree and $_this->parent_id)
 			$param .= ' pid=\''.$_this->parent_id.'\'';
 
-		if($_this->mf_ordctrl and _prmModul($_this->_cl,array(10))) $param .= ' ord=\'1\'';//проверка на разрешение сортировки
+		if($_this->mf_ordctrl and static_main::_prmModul($_this->_cl,array(10))) $param .= ' ord=\'1\'';//проверка на разрешение сортировки
 		if($_this->_prmModulAdd($modul)) $param .= ' add=\'1\'';//проверка на разрешение добавления
 		if ($_this->mf_istree) $param .= ' child=\'1\'';
 		elseif(count($_this->childs)) {

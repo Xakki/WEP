@@ -1,6 +1,6 @@
 <?
 	global $MAIL;
-	if(!$MAIL) $MAIL = new mail_class($SQL);
+	if(!$MAIL) _new_class('mail', $MAIL)
 
 	$DATA = array();
 	list($DATA['formcreat'],$flag) = $MAIL->mailForm($MAIL->config["mailsupport"]);

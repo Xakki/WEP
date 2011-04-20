@@ -12,7 +12,7 @@
 			if($_GET['_pid']!='') $MODUL->parent_id = $_GET['_pid'];
 			if($_GET['_id']!='') $MODUL->id = $_GET['_id'];
 
-			if(_prmModul($FUNCPARAM[0],array(1,2))) {
+			if(static_main::_prmModul($FUNCPARAM[0],array(1,2))) {
 				$MODUL->_clp = '_view=list&_modul='.$MODUL->_cl.'&';
 				$param = array('firstpath'=>$this->current_path.'?','phptemplate'=>$FUNCPARAM[1]);
 				list($DATA,$flag) = $MODUL->super_inc($param,$_GET['_type']);
