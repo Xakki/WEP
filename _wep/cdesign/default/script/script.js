@@ -21,13 +21,3 @@ function hrefConfirm(obj,mess)
 	}
 	return false;
 }
-
-function invert_select(form_id)
-{
-	$('#'+form_id+' input[type=checkbox]').each(function() {
-		this.checked = !this.checked;
-	});
-	return false;
-}
-
-

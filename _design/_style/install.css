@@ -1,0 +1,100 @@
+			html, body {
+				height:100%;
+				width:100%;
+				margin:0;
+				padding:0;
+			}
+			.wepmain {
+				background-color:#eFeFFF;
+				width:800px;
+				margin:0 auto;
+				position: relative;
+			}
+			div.title {
+				font-size:1.4em;
+				font-weight:bold;
+				text-align:center;
+				padding:10px 0;}
+			.step {
+				font-size:1em;
+				padding:5px 0;
+			}
+				.step .stepitem {
+					background-color: #E1E1E1;
+					border: 1px solid black;
+					display: inline-block;
+					height: 42px;
+					margin: 0;
+					text-align:center;
+					font-weight:bold;
+					width:24.75%;
+					cursor: pointer;
+				}
+				.step .stepitem:hover {
+					background-color:gray;
+				}
+				.step .selstep {
+					background-color:#99C6F1;
+				}
+				.step .stepcomment {
+					font-size:0.85em;
+					text-align:center;
+				}
+
+				.showparam {
+					cursor:pointer;
+					border-bottom:1px dashed #101796;
+					font-size:1.2em;
+					color:#000;
+					display:inline;
+					padding:0;}
+				.showparam span.shbg{
+					display:inline-block;
+					height: 12px;
+					width: 19px;
+					background:transparent url(/_design/_img/buttonh.png)  no-repeat scroll 0 -98px;}
+				.showparam .sh1 {display:inline;}
+				.showparam .sh2 {display:none;}
+
+				.shhide span.shbg{
+					display:inline-block;
+					height:12px;
+					width:19px;
+					background:transparent url(/_design/_img/buttonh.png)  no-repeat scroll 0 -114px;}
+				.shhide .sh1 {display:none;}
+				.shhide .sh2 {display:inline;}
+
+				.showparam:hover {
+					border-bottom:1px dashed transparent;
+				}
+				.showparam:hover span.shbg {
+					background-image:url('/_design/_img/button.png');
+				}
+
+				.fblock {
+					background-color:#99C6F1;
+					width:70%;
+					margin:0 auto;
+				}
+			
+			.debug_view {}
+			.text {
+				height:auto;
+				margin:10px 0 15px 0;
+				}
+
+			.cmsinfo {
+				border-top:2px solid black;
+				height:35px;
+				width:100%;
+				background-color:#63A6CC;
+			}
+			.cmsinfo a {color:#FFF;}
+			.cmsinfo .infname {float:left;width:200px;font-weight:bold;font-size:20px;color:#333;padding:2px 0pt 0pt 10px;}
+			.cmsinfo .infc {float:right;font-weight:normal;font-size:10px;color:#FFF;text-align:left;width:160px;}
+			.cmsinfo .infc .ctd1 {width:55px;float:left;clear:left;text-align:right;padding:0 5px 0 0;}
+			.cmsinfo .infc .ctd2 {width:100px;float:right;clear:right;text-align:left;}
+			.cmsinfo #inftime {font-size:11px;position:absolute;left:210px;bottom:0;}
+			.cmsinfo #inftime div {float:left;padding:0 5px 5px;}
+
+

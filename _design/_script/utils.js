@@ -126,10 +126,6 @@ function showBG(body,show,k) {
 
 
 /*SPOILER*/
-function clickSpoilers(obj) {
-	jQuery(obj).toggleClass('unfolded');
-	jQuery(obj).next('div.spoiler-body').slideToggle('fast');
-}
 
 function fSpoiler (txt,nm) {
 	//initSpoilers();

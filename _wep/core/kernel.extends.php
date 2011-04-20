@@ -11,14 +11,9 @@ class modul_child extends ArrayObject {
 
 		while ($iterator->valid()) {
 			$key = $iterator->key();
-
 			if ($iterator->current() === true) {
-				if (isset($this->modul_obj->child_path[$key])) {
-					require_once $this->modul_obj->child_path[$key];
-				}
-				_new_class($key, $this->modul_obj->childs[$key], $this->modul_obj);
+				$this->modul_obj->childs[$key];
 			}
-
 			$iterator->next();
 		}
 
@@ -31,7 +26,9 @@ class modul_child extends ArrayObject {
 			if (isset($this->modul_obj->child_path[$index])) {
 				require_once $this->modul_obj->child_path[$index];
 			}
-			_new_class($index, $modul_child, $this->modul_obj);
+			$modul_child = NULL;
+			if(!_new_class($index, $modul_child, $this->modul_obj))
+				return false;
 			$this->modul_obj->childs[$index] = $modul_child;
 			return $this->modul_obj->childs[$index];
 		} else {
@@ -46,10 +43,7 @@ class modul_child extends ArrayObject {
 /* VERSION=2.2a */
 /* COMMENT=Ядро, дополняющая модули */
 
-abstract class kernel_class {
-	/* function __get($name) {
-	  print('Привет, вы пытались обратиться к $name');
-	  } */
+abstract class kernel_extends {
 
 	function __construct($owner=NULL) {
 		global $_CFG;
@@ -57,7 +51,6 @@ abstract class kernel_class {
 		$this->_CFG = &$_CFG; //Config
 		$this->owner = true;
 		$this->owner = $owner; //link to owner class
-		$_CFG['newa'] = 'sdsd';
 		$this->_set_features(); // настройки модуля
 
 		if ($this->singleton == true)
@@ -78,17 +71,20 @@ abstract class kernel_class {
 	}
 
 	function  __get($name) {
+		global $_CFG;
 		echo ' - '.$name;
 		if($name=='SQL') {
 			if(!$this->grant_sql) {
 				global $SQL;
 				if(!$SQL)
-					$SQL = new sql($this->_CFG['sql']);
+					$SQL = new sql($_CFG['sql']);
 				return $SQL;
 			} else {
 				return new sql($this->cfg_sql);
 			}
 		}
+		//print_r(debugPrint());
+		return NULL;
 	}
 
 	/* -----------CMS---FUNCTION------------
@@ -151,7 +147,13 @@ abstract class kernel_class {
 				$this->attaches =
 				$this->memos =
 				$this->services =
-				$this->index_fields = array();
+				$this->index_fields =
+				$this->config =
+				$this->config_form =
+				$this->locallang =
+				$this->enum  =
+				$this->child_path =
+				$this->Achilds = array();
 		$this->childs = new modul_child($this);
 		$this->ordfield = $this->_clp = '';
 		$this->data = array();
@@ -298,6 +300,7 @@ abstract class kernel_class {
 
 	protected function create_child($class_name) {
 		$this->childs[$class_name] = true;
+		$this->Achilds[$class_name] = true;
 		//if ($this->_autoCheckMod)
 		//	$this->childs[$class_name]->tablename;
 		return true;
@@ -468,8 +471,7 @@ abstract class kernel_class {
 	/* ------------- ADD ADD ADD ADD ADD ------------------ */
 
 	protected function _add() {
-		include_once($this->_CFG['_PATH']['core'] . 'kernel.addup.php');
-		$result = _add($this);
+		$result = static_form::_add($this);
 		if ($result)
 			$this->allChangeData('add');
 		return $result;
@@ -478,8 +480,7 @@ abstract class kernel_class {
 	/* ------------- UPDATE UPDATE UPDATE ----------------- */
 
 	protected function _update() {
-		include_once($this->_CFG['_PATH']['core'] . 'kernel.addup.php');
-		$result = _update($this);
+		$result = static_form::_update($this);
 		if ($result)
 			$this->allChangeData('save');
 		return $result;
@@ -488,8 +489,7 @@ abstract class kernel_class {
 	/* ------------- DELETE DELETE DELETE ----------------- */
 
 	public function _delete() {
-		include_once($this->_CFG['_PATH']['core'] . 'kernel.addup.php');
-		$result = _delete($this);
+		$result = static_form::_delete($this);
 		if ($result)
 			$this->allChangeData('delete');
 		return $result;
@@ -706,6 +706,10 @@ abstract class kernel_class {
 
 // --END PERMISSION -----//
 // MODUL configuration
+
+	public function _checkmodstruct() {
+		return static_tools::_checkmodstruct($this->_cl);
+	}
 
 	public function toolsReinstall() {
 		$this->form = $mess = array();
@@ -951,8 +955,7 @@ abstract class kernel_class {
 	}
 
 	public function fFormCheck(&$data, &$param, &$FORMS) {
-		include_once($this->_CFG['_PATH']['core'] . 'kernel.addup.php');
-		return _fFormCheck($this, $data, $param, $FORMS);
+		return static_form::_fFormCheck($this, $data, $param, $FORMS);
 	}
 
 	function kData2xml($DATA, $f='') {
@@ -1782,7 +1785,7 @@ abstract class kernel_class {
 	}
 
 	public function getPathForMemo($key) {
-		if ($this->memos[$key]['path'])
+		if (isset($this->memos[$key]['path']) and $this->memos[$key]['path'])
 			$pathimg = $this->memos[$key]['path'];
 		else
 			$pathimg = $this->_CFG['PATH']['content'] . $key;

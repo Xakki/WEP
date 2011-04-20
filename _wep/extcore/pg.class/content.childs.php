@@ -1,6 +1,6 @@
 <?
 
-class content_class extends kernel_class {
+class content_class extends kernel_extends {
 
 	function _set_features()
 	{
@@ -53,7 +53,7 @@ class content_class extends kernel_class {
 		return parent::_install();
 	}
 
-	function _getlist($listname,$value=0) {
+	function _getlist(&$listname,$value=0) {
 		global $_CFG;
 		$data = array();
 		if ($listname == "pagetype") {

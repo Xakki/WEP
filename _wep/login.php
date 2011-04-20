@@ -11,7 +11,7 @@
 			$ref = base64_decode($_REQUEST['ref']);
 		else
 			$ref = $_REQUEST['ref'];
-		if(strstr($ref,'login.php'))
+		if(strstr($ref,'login.php') or strstr($ref,'install.php'))
 			$ref = $_CFG['_HREF']['BH'].$_CFG['PATH']['wepname'];
 	}
 	elseif($_SERVER['HTTP_REFERER']!='' and !strstr($_SERVER['HTTP_REFERER'],'login.php'))

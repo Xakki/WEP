@@ -8,7 +8,6 @@ if (!isset($_CFG['_PATH']['core']))
 	die('Can not find config file!');
 $_mctime_start = getmicrotime(); // -- PAGE LOAD TIME
 
-$GLOBALS['_ERR'] = '';
 $_html = '';
 
 //if(count($_POST)) $_POST = _fCheckVariables($_POST);
@@ -67,9 +66,14 @@ class html {
 		$_tpl['design'] = $_PATHd . $_design . '/';
 		$_tpl['title'] = $_tpl['time'] = '';
 		$_tpl['script'] = $_tpl['styles'] = array();
+		$params = array(
+			'obj'=>&$this,
+			'func' => 'createTemplate',
+		);
+		observer::register_observer($params, 'shutdown_function');
 	}
 
-	function __destruct() {
+	function createTemplate() {
 		global $_tpl, $_html, $_CFG;
 		if ($this->flag and file_exists(($this->_PATHd . 'templates/' . $this->_templates . '.tpl'))) {
 			$_html = implode("", file($this->_PATHd . 'templates/' . $this->_templates . '.tpl'));
@@ -130,7 +134,7 @@ class html {
 			trigger_error('Функция "tpl_' . $transform . '" в шаблоне "' . $transformpath . '" не найдена', E_USER_WARNING);
 			return '';
 		}
-		eval('$html =  tpl_' . $transform . '($data[' . $marker . ']);');
+		eval('$html =  tpl_' . $transform . '($data["' . $marker . '"]);');
 		return $html;
 	}
 
@@ -159,8 +163,8 @@ class html {
 			$result = xslt_process($this->_xslt, 'arg:/_xml', 'arg:/_xsl', NULL, $arguments);
 			if (!$result) {
 				trigger_error('Error in Template `' . $transform . '` E[' . xslt_errno($this->_xslt) . ']:' . xslt_error($this->_xslt) . '<br/>
-					<div class="spoiler-wrap"><div class="spoiler-head folded clickable" onclick="clickSpoilers(this)">XML</div><div class="spoiler-body" style="display: none;"><pre><code>' . nl2br(htmlspecialchars($xml, ENT_QUOTES, 'UTF-8')) . '</code></pre></div></div>
-					<div class="spoiler-wrap"><div class="spoiler-head folded clickable" onclick="clickSpoilers(this)">XSL</div><div class="spoiler-body" style="display: none;"><pre><code>' . nl2br(htmlspecialchars($xsl, ENT_QUOTES, 'UTF-8')) . '</code></pre></div></div>', E_USER_WARNING);
+					<div class="spoiler-wrap"><div class="spoiler-head folded clickable" onclick="bugSpoilers(this)">XML</div><div class="spoiler-body" style="display: none;">' . nl2br(htmlspecialchars($xml, ENT_QUOTES, 'UTF-8')) . '</div></div>
+					<div class="spoiler-wrap"><div class="spoiler-head folded clickable" onclick="bugSpoilers(this)">XSL</div><div class="spoiler-body" style="display: none;">' . nl2br(htmlspecialchars($xsl, ENT_QUOTES, 'UTF-8')) . '</div></div>', E_USER_WARNING);
 				return '';
 			}
 		} else {
@@ -174,8 +178,8 @@ class html {
 			}
 			/*
 
-			  <div class="spoiler-wrap"><div class="spoiler-head folded clickable" onclick="clickSpoilers(this)"> Ошибки XML</div><div class="spoiler-body" style="display: none;"><pre>'.htmlentities($xml, ENT_QUOTES).'</pre></div></div>
-			  <div class="spoiler-wrap"><div class="spoiler-head folded clickable" onclick="clickSpoilers(this)"> Ошибки XSL</div><div class="spoiler-body" style="display: none;"><pre>'.htmlentities($xsl, ENT_QUOTES).'</pre></div></div> */
+			  <div class="spoiler-wrap"><div class="spoiler-head folded clickable" onclick="bugSpoilers(this)"> Ошибки XML</div><div class="spoiler-body" style="display: none;"><pre>'.htmlentities($xml, ENT_QUOTES).'</pre></div></div>
+			  <div class="spoiler-wrap"><div class="spoiler-head folded clickable" onclick="bugSpoilers(this)"> Ошибки XSL</div><div class="spoiler-body" style="display: none;"><pre>'.htmlentities($xsl, ENT_QUOTES).'</pre></div></div> */
 		}
 		$pos = strpos($result, 'xhtml1-strict.dtd');
 		if ($pos === false)
@@ -202,63 +206,115 @@ class html {
  */
 
 function _myErrorHandler($errno, $errstr, $errfile, $errline, $errcontext) {//,$cont
-	global $_CFG, $SQL;
+	global $_CFG;
+	if ($_CFG['wep']['catch_bug']) {
 
-	if ($_CFG['_error'][$errno]['prior'] < 4) {// and error_reporting()!=0
-		$debug = debugPrint(2);
+		// Debuger
+		if($_CFG['wep']['on_debug'] and $_CFG['_error'][$errno]['debug'])
+			$debug = '<div class="spoiler-body" style="background-color: rgb(225, 225, 225);">'.debugPrint(2).'</div>';
+		else
+			$debug = '';
 
-		if ($_CFG['site']['bug_hunter']) {
-			if ($SQL->hlink and _new_class('bug', $MODUL)) {
+		// write bug to DB
+		if ($_CFG['site']['bug_hunter'] and $_CFG['_error'][$errno]['prior'] < $_CFG['site']['bug_hunter']) {
+			if (_new_class('bug', $MODUL)) {
 				$MODUL->add_bug($errno, $errstr, $errfile, $errline, $debug);
 			}
 		}
 
-		if ($_CFG['_error'][$errno]['prior'] < 3)
+		//выделяем жирным шрифтом особо опасные ошибки
+		if ($_CFG['_error'][$errno]['prior'] <= 3) {
+			$type = 0;
 			$errtype = '<b>' . $_CFG['_error'][$errno]['type'] . '</b>';
-		else
+		}
+		else {
+			$type = 1;
 			$errtype = $_CFG['_error'][$errno]['type'];
+		}
 
-		//$GLOBALS['_ERR'] .='<div style="color:'.$errorcolor[$errno].';">'.$errortype[$errno].' '.$errstr.' , in line '.$errline.' of file <i>'.$errfile.'</i><br/>'.$debug.'</div>'."\n";
-		$GLOBALS['_ERR'] .='<div class="spoiler-wrap">
-<div onclick="clickSpoilers(this)" class="spoiler-head folded clickable" style="color:' . $_CFG['_error'][$errno]['color'] . ';">' . $errtype . ' ' . $errstr . ' , in line ' . $errline . ' of file <i>' . $errfile . '</i> </div>
-<div class="spoiler-body" style="background-color: rgb(225, 225, 225);">' . $debug . '</div></div>' . "\n";
+		if(!isset($GLOBALS['_ERR'][$_CFG['wep']['catch_bug']][$type])) $GLOBALS['_ERR'][$_CFG['wep']['catch_bug']][$type] = '';
 
-		if ($_CFG['_error'][$errno]['prior'] == 0) {
-			$GLOBALS['_ERR'] .="Aborting...<br />\n";
+		if($debug)
+			$GLOBALS['_ERR'][$_CFG['wep']['catch_bug']][$type] .='<div class="spoiler-wrap"><div onclick="bugSpoilers(this)" class="spoiler-head folded clickable" style="color:' . $_CFG['_error'][$errno]['color'] . ';">' . $errtype . ' ' . $errstr . ' , in line ' . $errline . ' of file <i>' . $errfile . '</i> </div>' . $debug . '</div>' . "\n";
+		else
+			$GLOBALS['_ERR'][$_CFG['wep']['catch_bug']][$type] .='<div style="color:' . $_CFG['_error'][$errno]['color'] . ';">' . $errtype . ' ' . $errstr . ' , in line ' . $errline . ' of file <i>' . $errfile . '</i> </div>' . "\n";
+		//остановка на фатальной ошибке
+		if ($_CFG['_error'][$errno]['prior'] == 0 and $_CFG['wep']['stop_fatal_error']) {
+			$GLOBALS['_ERR'][$_CFG['wep']['catch_bug']][$type] .="Aborting...<br />\n";
 			die();
 		}
 	}
 }
+function startCatchError($param=2) {
+	global $_CFG;
+	if($param<2) $param = 2;
+	$_CFG['_ctemp'.$param]['catch_bug'] = $_CFG['wep']['catch_bug'];
+	$_CFG['_ctemp'.$param]['bug_hunter'] = $_CFG['wep']['bug_hunter'];
+	$_CFG['_ctemp'.$param]['stop_fatal_error'] = $_CFG['wep']['stop_fatal_error'];
+	$_CFG['wep']['catch_bug'] = $param;
+	$_CFG['wep']['bug_hunter'] = 0;
+	$_CFG['wep']['stop_fatal_error'] = 0;
+	return true;
+}
 
+function getCatchError($param=2) {
+	global $_CFG;
+	if($param<2) $param = 2;
+	$_CFG['wep']['catch_bug'] = $_CFG['_ctemp'.$param]['catch_bug'];
+	$_CFG['wep']['bug_hunter'] = $_CFG['_ctemp'.$param]['bug_hunter'];
+	$_CFG['wep']['stop_fatal_error'] = $_CFG['_ctemp'.$param]['stop_fatal_error'];
+	if(isset($GLOBALS['_ERR'][$param])) {
+		$return = $GLOBALS['_ERR'][$param];
+		unset($GLOBALS['_ERR'][$param]);
+	} else
+		$return = array(0=>'',1=>'');
+	return $return;
+}
 /*
   Функция вывода на экран
  */
 
 function _obHandler($buffer) {
 	global $_tpl, $_html, $_mctime_start, $_CFG;
-	$_gerr = 6;
-	$htmlerr = '';
-	$htmlinfo = '';
+
 	//TODO : Нафига тут хендлер?
 	//headerssent();
 
 	$temp = fDisplLogs(); // сообщения ядра
-
-	if (($GLOBALS['_ERR'] != '' or $temp[1]) and ($_COOKIE['_showerror'] or $_CFG['site']['show_error'] == 2))
-		$htmlerr .='<div style="background: gray;padding:2px 2px 10px 10px;">' . $GLOBALS['_ERR'] . $temp[0] . '</div>';
-	elseif (($GLOBALS['_ERR'] != '' or $temp[1]) and $_CFG['site']['show_error'] == 1)
-		$htmlerr .='<div style="background: gray;padding:2px 2px 10px 10px;">На странице возникла ошибка! Приносим свои извинения за временные неудобства! Неполадки будут исправлены в ближайшее время.</div>';
+	$htmlinfo = '';
+	$notice = '';
+	$htmlerr = '';
+	foreach($GLOBALS['_ERR'] as $k=>$r) {
+		if(isset($r[0]))
+			$htmlerr .= $r[0];
+		if(isset($r[1])) //нотисы отдельно
+			$notice .= $r[1];
+	}
+	if (($htmlerr != '' or $notice != '' or $temp[1]) and ($_COOKIE['_showerror'] or $_CFG['site']['show_error'] == 2)) {
+		$htmlerr = '<div class="bugmain">' .$htmlerr ;
+		if($temp[1] and $temp[0])
+			$htmlerr .= $temp[0];
+		if($notice)
+			$htmlerr .= '<div class="spoiler-wrap"><div onclick="bugSpoilers(this)" class="spoiler-head folded clickable">NOTICE</div><div class="spoiler-body">'.$notice.'</div></div>' . "\n";
+		$htmlerr .= '</div> <script type="text/javascript" src="_design/_script/bug.js"></script>';
+	}
+	elseif (($htmlerr != '' or $temp[1]) and $_CFG['site']['show_error'] == 1)
+		$htmlerr ='<div class="bugmain">На странице возникла ошибка! Приносим свои извинения за временные неудобства! Неполадки будут исправлены в ближайшее время.</div>';
 
 	if ((isset($_COOKIE['_showallinfo']) and $_COOKIE['_showallinfo']) or $_CFG['_F']['adminpage']) {
 		$included_files = get_included_files();
 		$htmlinfo .='<div class="info_time">time=' . substr((getmicrotime() - $_mctime_start), 0, 6) . ' | memory=' . (int) (memory_get_usage() / 1024) . 'Kb | maxmemory=' . (int) (memory_get_peak_usage() / 1024) . 'Kb | query=' . count($_CFG['logs']['sql']) . ' | file include=' . count($included_files) . '</div>';
-		if ($_COOKIE['_showallinfo'] > 1)
-			$htmlerr .='<div style="background-color:#E1E1E1;padding:2px;font-style:italic;font-size:10px;border:solid 1px gray;">SQL QUERY<br/>' . implode(';<br/>', $_CFG['logs']['sql']) . '</div>';
+		if ($_COOKIE['_showallinfo'] > 1 and count($_CFG['logs']['sql'])>0)
+			$htmlerr .='<div class="spoiler-wrap"><div onclick="bugSpoilers(this)" class="spoiler-head folded clickable">SQL QUERY</div><div class="spoiler-body">' . implode(';<br/>', $_CFG['logs']['sql']) . '</div></div>';
 		if ($_COOKIE['_showallinfo'] > 2) {
-			$htmlerr .='<div style="background-color:#E1E1E1;padding:2px;font-style:italic;font-size:10px;border:solid 1px gray;">LOGS <br/>' . $temp[0] . '</div>';
-			$htmlerr .='<div style="background-color:#E1E1E1;padding:2px;font-style:italic;font-size:10px;border:solid 1px gray;">FILE INCLUDE <br/>' . implode(';<br/>', $included_files) . '</div>';
+			if(!$temp[1] and $temp[0])
+				$htmlerr .='<div class="spoiler-wrap"><div onclick="bugSpoilers(this)" class="spoiler-head folded clickable">LOGS</div><div class="spoiler-body">' . $temp[0] . '</div></div>';
+			$htmlerr .='<div class="spoiler-wrap"><div onclick="bugSpoilers(this)" class="spoiler-head folded clickable">FILE INCLUDE</div><div class="spoiler-body">' . implode(';<br/>', $included_files) . '</div></div>';
 		}
 	}
+	if($htmlerr)
+		$htmlerr .= '<link type="text/css" href="_design/_style/bug.css" rel="stylesheet"/>';
+	
 	if (!$_CFG['_F']['adminpage'])
 		$_tpl['logs'] .= $htmlinfo . $htmlerr . $buffer;
 	else {
@@ -285,7 +341,7 @@ function fDisplLogs($type=0) {
 	//3 - только 'error'
 	$text = '';
 	$flag = 0;
-	if (count($_CFG['logs']['mess'])) {
+	if (isset($_CFG['logs']['mess']) and count($_CFG['logs']['mess'])) {
 		foreach ($_CFG['logs']['mess'] as $r) {
 			$c = '';
 			if ($r[1] == 'error') {
@@ -418,24 +474,32 @@ function _mb_strpos($haystack, $needle, $offset=0) {
  */
 function _new_class($name, &$MODUL, &$OWNER = NULL) {
 	global $_CFG;
-
 	if (isset($_CFG['singleton'][$name])) {
 		$MODUL = $_CFG['singleton'][$name];
 		return true;
 	} else {
+		
 		$MODUL = NULL;
-		$clsn = $name . "_class";
+		/*if(isset($_CFG['modulprm_ext'][$name]))
+			$name = $_CFG['modulprm_ext'][$name];*/
+		$class_name = $name . "_class";
 		try {
 			$getparam = array_slice(func_get_args(), 2);
-			$obj = new ReflectionClass($clsn);
+			$obj = new ReflectionClass($class_name);
+			//$pClass = $obj->getParentClass();
 			$MODUL = $obj->newInstanceArgs($getparam);
+			/*extract($getparam,EXTR_PREFIX_ALL,'param');
+			if(count($getparam)) {
+				$p = '$param'.implode(',$param',array_keys($getparam)).'';
+			} else $p = '';
+			eval('$MODUL = new '.$class_name.'('.$p.');');*/
 			if ($MODUL)
 				return true;
-		} catch (Exception $e) {
+		} catch  (Exception $e) {
 			trigger_error($e->getMessage(), E_USER_WARNING);
 		}
-		return false;
 	}
+	return false;
 }
 
 /*
@@ -443,21 +507,29 @@ function _new_class($name, &$MODUL, &$OWNER = NULL) {
  */
 
 function __autoload($class_name) { //автозагрузка модулей
-	global $_CFG;
+	/*global $_CFG;
 	if($class_name=='sql') {
 		require_once($_CFG['_PATH']['core'] . 'sql.php');
 		return true;
 	}
-	require_once($_CFG['_PATH']['core'] . 'kernel.extends.php');
-	require_once($_CFG['_PATH']['core'] . 'static.main.php');
-	require_once($_CFG['_PATH']['extcore'] . 'modulprm.class/modulprm.class.php');
-	if ($class_name != 'kernel_class' and $class_name != 'modulprm_class' and $class_name != 'static_main') {
-		if ($file = _modulExists($class_name)) {
-			require_once($file);
-		}
-		else
-			throw new Exception('Невозможно подключить класс "' . $class_name . '"');
+	if($class_name=='kernel_extends') {
+		require_once($_CFG['_PATH']['core'] . 'kernel.extends.php');
+		return true;
 	}
+	if($class_name=='static_main') {
+		require_once($_CFG['_PATH']['core'] . 'static.main.php');
+		return true;
+	}
+	if($class_name=='modulprm_class') {
+		require_once($_CFG['_PATH']['extcore'] . 'modulprm.class/modulprm.class.php');
+		return true;
+	}*/
+	if ($file = _modulExists($class_name)) {
+		require_once($file);
+	}
+	else
+		//trigger_error('Can`t init `'.$class_name.'` modul ', E_USER_WARNING);
+		throw new Exception('Can`t init `'.$class_name.'` modul ');
 }
 
 /**
@@ -470,9 +542,9 @@ function __autoload($class_name) { //автозагрузка модулей
  */
 function _modulExists($class_name) {
 	global $_CFG;
-	$fileS = false;
+	$file = $fileS = false;
 	$class_name = explode('_', $class_name);
-	$fileS = $_CFG['_PATH']['core'] . $class_name[0] . '.' . $class_name[1] . '.php';
+	$fileS = $_CFG['_PATH']['core'] . $class_name[0] . (isset($class_name[1])?'.' . $class_name[1]:'') . '.php';
 
 	if (!isset($_CFG['modulprm'])) {
 		$file = $fileS;
@@ -482,7 +554,7 @@ function _modulExists($class_name) {
 
 	static_main::_prmModulLoad();
 
-	if (isset($_CFG['modulprm'][$class_name])) {
+	if (isset($_CFG['modulprm'][$class_name[0]])) {
 		$file = $_CFG['modulprm'][$class_name[0]]['path'];
 		if ($file and file_exists($file))
 			return $file;

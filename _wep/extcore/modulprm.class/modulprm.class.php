@@ -11,7 +11,7 @@
  * 	  _checkdir($dir)
  * 	  _fldformer($key, $param)
  */
-final class modulprm_class extends kernel_class {
+final class modulprm_class extends kernel_extends {
 
 	function _set_features() {
 		if (!parent::_set_features())
@@ -34,26 +34,22 @@ final class modulprm_class extends kernel_class {
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 64, 'attr' => 'NOT NULL');
 		$this->fields['tablename'] = array('type' => 'varchar', 'width' => 128, 'attr' => 'NOT NULL');
 		$this->fields['path'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
+		$this->fields['extend'] = array('type' => 'varchar', 'width' => 255);
 		$this->fields['ver'] = array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL', 'default' => '0.1');
 		$this->fields['typemodul'] = array('type' => 'tinyint', 'width' => 2, 'attr' => 'NOT NULL');
 
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название');
 		$this->fields_form['tablename'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Таблица');
 		$this->fields_form['path'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Путь');
+		$this->fields_form['extend'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Подменяемый модуль');
 		$this->fields_form['ver'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Версия');
 		$this->fields_form['typemodul'] = array('type' => 'list', 'listname' => 'typemodul', 'readonly' => 1, 'caption' => 'Описание');
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Активность');
 
 		$this->_enum['typemodul'] = array(
 			0 => 'Системный модуль',
-			1 => 'Расширенный системный модуль',
-			2 => 'Модуль',
+			3 => 'WEPconf Модуль',
 			5 => 'Дочерние модули');
-
-		$this->_enum['modulinc'] = array(
-			1 => array('path' => $this->_CFG['_PATH']['extcore'], 'name' => 'WEPext - '),
-			3 => array('path' => $this->_CFG['_PATH']['ext'], 'name' => 'EXT - ')
-		);
 
 		$this->ordfield = 'typemodul,name';
 	}
@@ -62,162 +58,12 @@ final class modulprm_class extends kernel_class {
 		$this->create_child('modulgrp');
 	}
 
-	public function _checkmodstruct($flag=true) {
-		$check_result = array();
-		if ($flag)
-			$check_result = parent::_checkmodstruct();
-		$this->moduldir = array(); // для детей классов
-		//$this->def_update_records = array();
-		$this->mQuery = array();
-		$result = $this->SQL->execSQL('SELECT * FROM ' . $this->tablename);
-		if ($result->err)
-			return $check_result;
-		$this->data = array();
-		if (!$result->err)
-			while ($row = $result->fetch_array()) {
-				$this->data[$row['id']] = $row;
-			}
-		$this->fData = $this->data;
-		$dir = dir($this->_CFG['_PATH']['extcore']);
-		while (false !== ($entry = $dir->read())) {
-			if ($entry != '.' && $entry != '..' && $pos = strpos($entry, '.class')) {
-				$entry = substr($entry, 0, $pos);
-				if ($entry != '' and _modulExists($entry)) {
-					$pathm = '1:' . $entry . '.class/' . $entry . '.class.php';
-					$this->moduldir[$entry] = '';
-					$class_ = NULL;
-					if ($this->_cl != $entry) {
-						if (_new_class($entry, $class_, $this->null, false)) {
-							$this->_constr_childs($class_);
-							if ($flag)
-								$check_result = array_merge($check_result, $class_->_checkmodstruct());
-						}
-					} else {
-						$class_ = &$this;
-						$this->_constr_childs($class_, $pathm);
-					}
-					if (!isset($this->data[$entry]) and $class_->showinowner) {
-						$this->mQuery[$entry] = array('id' => $entry, 'name' => $class_->caption, 'parent_id' => '', 'tablename' => $class_->tablename, 'typemodul' => 0, 'path' => $pathm);
-					} elseif ($class_->showinowner) {//if($class_->ver!=$this->data[$entry]['ver'] or $this->_cl==$entry)
-						$tmp = $this->data[$entry]; // временная переменная
-						if ($tmp['parent_id'] != '' or $tmp['tablename'] != $class_->tablename or $tmp['typemodul'] != '0' or $tmp['path'] != $pathm or $class_->ver !== $tmp['ver']) {
-							// смотрим какие данные нужно менять
-							$this->mQuery[$entry] = array('id' => $entry, 'parent_id' => '', 'tablename' => $class_->tablename, 'typemodul' => 0, 'path' => $pathm, 'ver' => $class_->ver);
-						} else
-							unset($this->mQuery[$entry]);
-						unset($this->fData[$entry]); //удаляем, чтоьы потом можно было узнать какие модули отсутствуют
-					}
-				}
-			}
-		}
-		$dir->close();
-
-		$dir = dir($this->_CFG['_PATH']['ext']);
-		while (false !== ($entry = $dir->read())) {
-			if ($entry[0] != '.' && $entry[0] != '..' && $pos = strpos($entry, '.class')) {
-				$entry = substr($entry, 0, $pos);
-				if ($entry != '' and _modulExists($entry)) {
-					$this->moduldir[$entry] = '';
-					$class_ = NULL;
-					if (_new_class($entry, $class_, $this->null, false)) {
-						$pathm = '3:' . $entry . '.class/' . $entry . '.class.php';
-						if (!isset($this->data[$entry]) and $class_->showinowner) {
-							$this->mQuery[$entry] = array('id' => $entry, 'name' => $class_->caption . ' [' . $entry . ']', 'parent_id' => '', 'tablename' => $class_->tablename, 'typemodul' => 2, 'path' => $pathm, 'ver' => $class_->ver);
-						} elseif ($class_->showinowner) { //if($class_->ver!=$this->data[$entry]['ver'])
-							$tmp = $this->data[$entry]; // временная переменная
-							if ($tmp['parent_id'] != '' or $tmp['tablename'] != $class_->tablename or $tmp['typemodul'] != '2' or $tmp['path'] != $pathm or $tmp['ver'] !== $class_->ver) {
-								// смотрим какие данные нужно менять
-								$this->mQuery[$entry] = array('id' => $entry, 'parent_id' => '', 'tablename' => $class_->tablename, 'typemodul' => 2, 'path' => $pathm, 'ver' => $class_->ver);
-							}else
-								unset($this->mQuery[$entry]);
-							unset($this->fData[$entry]); //удаляем, чтоьы потом можно было узнать какие модули отсутствуют
-						} else {
-							unset($this->mQuery[$entry]);
-						}
-						$this->_constr_childs($class_, $pathm);
-						if ($flag)
-							$check_result = array_merge($check_result, $class_->_checkmodstruct());
-					}
-				}
-			}
-		}
-		$dir->close();
-
-		foreach ($this->mQuery as $k => $r) {
-			if (!isset($this->data[$k]))
-				$q = 'INSERT INTO `' . $this->tablename . '` (`' . implode('`,`', array_keys($r)) . '`) VALUES (\'' . implode('\',\'', $r) . '\')';
-			else {
-				$q = array();
-				foreach ($r as $kk => $rr) {
-					if ($kk != 'id')
-						$q[] = '`' . $kk . '`="' . $rr . '"';
-				}
-				$q = 'UPDATE `' . $this->tablename . '` SET ' . implode(', ', $q) . ' WHERE id="' . $r['id'] . '"';
-			}
-			$check_result[$this->tablename]['Новая запись для ' . $k]['newquery'] = $q;
-		}
-		//$this->def_update_records=array();
-		if (count($this->fData)) {
-			$check_result[$this->tablename]['Удаляем запись']['newquery'] = 'DELETE FROM `' . $this->tablename . '` WHERE `id` IN ("' . implode('","', array_keys($this->fData)) . '")';
-		}
-		/*
-		  if (isset($_POST['sbmt'])) {
-		  foreach($this->mQuery as $k=>$r) {
-		  if(!isset($this->data[$k]))
-		  $q = 'INSERT INTO `'.$this->tablename.'` (`'.implode('`,`', array_keys($r)).'`) VALUES (\''.implode('\',\'', $r).'\')';
-		  else {
-		  $q = array();
-		  foreach($r as $kk=>$rr) {
-		  if($kk!='id')
-		  $q[] = '`'.$kk.'`="'.$rr.'"';
-		  }
-		  $q = 'UPDATE `'.$this->tablename.'` SET '.implode(', ',$q).' WHERE id="'.$r['id'].'"';
-		  }
-		  $result = $this->SQL->execSQL($q);
-		  if($result->err) exit($result->err);
-		  }
-		  //$this->def_update_records=array();
-		  if(count($this->fData)) {
-		  $result = $this->SQL->execSQL('DELETE FROM `'.$this->tablename.'` WHERE `id` IN ("'.implode('","',array_keys($this->fData)).'")');
-		  if($result->err) exit($result->err);
-		  }
-		  } else {
-		  if(count($this->fData))
-		  $check_result[$this->tablename]['']['ok'] = '<span style="color:#4949C9;">Будет удалены записи из табл '.$this->tablename.' ('.implode(',',array_keys($this->fData)).')</span>';
-		  foreach($this->mQuery as $k=>$r)
-		  $check_result[$this->tablename][$k]['ok'] = '<span style="color:#4949C9;">'.print_r($r,true).'</span>';
-		  } */
-		return $check_result;
-	}
-
-	//function _install() {
-	//	$ret = parent::_install();
-	//	//$_POST['sbmt'] = 1;
-	//	//$this->_checkmodstruct(false);
-	//	return $ret;
-	//}
-
-	function _constr_childs(&$class_, $pathm='') {
-		if (count($class_->childs)) {
-			foreach ($class_->childs as $k => &$r) {
-				$this->moduldir[$k] = $class_->_cl;
-				if (!isset($this->data[$k]) and $r->showinowner) {
-					$this->mQuery[$k] = array('id' => $k, 'name' => $r->caption . ' [' . $k . ']', 'parent_id' => $class_->_cl, 'tablename' => $r->tablename, 'typemodul' => 5, 'ver' => $r->ver, 'path' => $pathm);
-				} elseif ($r->showinowner) { //if($r->ver!=$this->data[$k]['ver'])
-					$tmp = $this->data[$k]; // временная переменная
-					if ($tmp['parent_id'] != $class_->_cl or $tmp['tablename'] != $r->tablename or $tmp['typemodul'] != '5' or $tmp['path'] != $pathm or $tmp['ver'] !== $r->ver) {
-						// смотрим какие данные нужно менять
-						$this->mQuery[$k] = array('id' => $k, 'parent_id' => $class_->_cl, 'tablename' => $r->tablename, 'typemodul' => 5, 'ver' => $r->ver, 'path' => $pathm);
-					} else
-						unset($this->mQuery[$k]);
-					unset($this->fData[$k]); //удаляем, чтоьы потом можно было узнать какие модули отсутствуют
-				}
-				$this->_constr_childs($r, $pathm);
-			}
-		}
-		return true;
-	}
-
+	/**
+	 * Дамп модулей установленных
+	 *
+	 * @param int $ugroup_id
+	 * @return array
+	 */
 	function userPrm($ugroup_id=0) {
 		$result = $this->SQL->execSQL('SELECT t1.*,t2.access, t2.mname FROM ' . $this->tablename . ' t1 LEFT Join ' . $this->childs['modulgrp']->tablename . ' t2 on t2.owner_id=t1.id and t2.ugroup_id=' . $ugroup_id . ' where t1.active=1 ORDER BY ' . $this->ordfield);
 		if ($result->err)
@@ -233,95 +79,122 @@ final class modulprm_class extends kernel_class {
 			$this->data[$row['id']]['ver'] = $row['ver'];
 			$this->data[$row['id']]['typemodul'] = $row['typemodul'];
 			$path = explode(':', $row['path']);
-			$this->data[$row['id']]['path'] = $this->_enum['modulinc'][$path[0]]['path'] . $path[1];
+			$this->data[$row['id']]['path'] = $this->_CFG['modulinc'][$path[0]]['path'] . $path[1];
 			$this->data[$row['id']]['tablename'] = $row['tablename'];
 		}
 		//	print_r($this->data);exit();
 		return $this->data;
 	}
 
-	function _UpdItemModul($param) {
-		$ret = parent::_UpdItemModul($param);
-		//if($ret[1]) {
-		//	session_unset();
-		//}
-		return $ret;
-	}
-
-	function instalModulForm() {
+	/**
+	 * Форма  установки модулей
+	 *
+	 * @return array
+	 */
+	public function instalModulForm() {
 		$html = '';
 		$mess = array();
-
 		$this->_select();
-//print_r('<pre>');print_r($this->data);
-		$dir = dir($this->_CFG['_PATH']['extcore']);
-		while (false !== ($entry = $dir->read())) {
-			if ($entry != '.' && $entry != '..' && $pos = strpos($entry, '.class')) {
-				$entry = substr($entry, 0, $pos);
-				if ($entry != '') {
-					if (isset($this->data[$entry]))
-						$val = true;
-					else
-						$val = false;
-					$DATA['extcore_' . $entry] = array(
-						'caption' => 'Модуль ядра <b>' . $entry . '</b>',
-						'comment' => '',
-						'type' => 'checkbox',
-						'value' => $val
-					);
-				}
-			}
-		}
-		$dir->close();
 
-		$dir = dir($this->_CFG['_PATH']['ext']);
-		while (false !== ($entry = $dir->read())) {
-			if ($entry[0] != '.' && $entry[0] != '..' && $pos = strpos($entry, '.class')) {
-				$entry = substr($entry, 0, $pos);
-				if ($entry != '') {
-					if (isset($DATA['extcore_' . $entry])) {
-						$mess[] = array('name' => 'error', 'value' => 'Ошибка. Модуль с таким названием `' . $entry . '` уже имеется в системных модулях');
-					} else {
-						if (isset($this->data[$entry]))
+//print_r('<pre>');print_r($this->data);
+		foreach ($this->_CFG['modulinc'] as $k => $r) {
+			$dir = dir($r['path']);
+			while (false !== ($entry = $dir->read())) {
+				if ($entry != '.' && $entry != '..' && $pos = strpos($entry, '.class')) {
+					$entry = substr($entry, 0, $pos);
+					if ($entry != '') {
+						if (isset($DATA[$k . '_' . $entry])) {
+							$mess[] = array('name' => 'error', 'value' => 'Ошибка. Модуль с таким названием `' . $entry . '` уже имеется в системных модулях');
+							continue;
+						}
+						if (count($_POST)) {
+							if (isset($_POST[$k . '_' . $entry]))
+								$val = true;
+							else
+								$val = false;
+						}
+						elseif (isset($this->data[$entry]))
 							$val = true;
 						else
 							$val = false;
-						$DATA['ext_' . $entry] = array(
-							'caption' => 'Модуль дополнительный <b>' . $entry . '</b>',
+						$DATA[$k . '_' . $entry] = array(
+							'caption' => $this->_enum['typemodul'][$k] . ' <b>' . $entry . '</b>',
 							'comment' => '',
 							'type' => 'checkbox',
 							'value' => $val,
-							'entry' => $entry
+							'_entry' => $entry,
+							'_parent' => '',
+							'_type' => $k
 						);
+						$resData = $this->checkClassStruct($entry . '_class', $r['path'] . $entry . '.class/' . $entry . '.class.php');
+						if ($resData['parent'] and $resData['parent'] != 'kernel_extends') {
+							$DATA[$k . '_' . $entry]['comment'] .= '<div>Зависим от ' . $resData['parent'] . '</div>';
+							$resData['parent'] = explode('_', $resData['parent']);
+							$DATA[$k . '_' . $entry]['_parent'] = $resData['parent'][0];
+						}
+						// проверяем необходимые модули
+						if (isset($this->_CFG['require_modul'][$entry])) {
+							$DATA[$k . '_' . $entry]['disabled'] = true;
+							$DATA[$k . '_' . $entry]['value'] = true;
+							$DATA[$k . '_' . $entry]['comment'] .= 'Жизненно необходимый модуль!';
+						}
+						// выводим текст ошибки
+						if (isset($resData['error'])) {
+							$DATA[$k . '_' . $entry]['disabled'] = true;
+							$DATA[$k . '_' . $entry]['value'] = false;
+							foreach ($resData['error'] as $mr)
+								$DATA[$k . '_' . $entry]['comment'] .= '<div class="err">' . $mr . '</div>';
+						}
 					}
 				}
 			}
+			$dir->close();
 		}
-		$dir->close();
 
 		$res = 0;
 		if (count($_POST) and isset($_POST['sbmtinstall'])) {
+			startCatchError();
 			foreach ($DATA as $k => $r) {
-				if (isset($_POST[$k])) {
-					if (!isset($this->data[$r['entry']])) {
-						if (_new_class($r['entry'], $MODUL, $this->null, false)) {
-							//Установка модуля
-							if (!_install($MODUL)) {
-								$mess[] = array('name' => 'error', 'value' => 'Ошибка установки модуля `' . $r['entry'] . '`');
-								$res = -1;
-							}
-						}
-					}
-				} elseif (isset($this->data[$r['entry']])) {
-					if (_new_class($r['entry'], $MODUL, $this->null, false)) {
-						//Удаление модуля
-						if (!_droped($MODUL)) {
-							$mess[] = array('name' => 'error', 'value' => 'Ошибка удаления модуля `' . $r['entry'] . '`');
+				$MODUL = NULL;
+				if (isset($_POST[$k]) or isset($this->_CFG['require_modul'][$r['_entry']])) {
+					if (!isset($this->data[$r['_entry']])) {
+						if ($r['_parent'] !== '' and !isset($_POST['0_' . $r['_parent']]) and !isset($_POST['1_' . $r['_parent']])) {
+							$mess[] = array('name' => 'error', 'value' => 'Ошибка. Не подключен родительский модуль `' . $r['_parent'] . '` для `' . $r['_entry'] . '`. ');
 							$res = -1;
+							continue;
 						}
+						if (!_new_class($r['_entry'], $MODUL)) {
+							$mess[] = array('name' => 'error', 'value' => 'Ошибка запуска модуля `' . $r['_entry'] . '`');
+							$res = -1;
+							continue;
+						}
+						//Установка модуля
+						if (!$this->Minstall($MODUL, $r['_type'])) {
+							$mess[] = array('name' => 'error', 'value' => 'Ошибка установки модуля `' . $r['_entry'] . '`');
+							$res = -1;
+						}else
+							$mess[] = array('name' => 'ok', 'value' => 'Модуль `' . $r['_entry'] . '` установлен.');
 					}
 				}
+				elseif (isset($this->data[$r['_entry']]) and !isset($r['disabled'])) {
+					if (!_new_class($r['_entry'], $MODUL, $this->null, false)) {
+						$mess[] = array('name' => 'error', 'value' => 'Ошибка запуска модуля `' . $r['_entry'] . '`');
+						$res = -1;
+						continue;
+					}
+					//Удаление модуля
+					if (!$this->Mdelete($MODUL)) {
+						$mess[] = array('name' => 'error', 'value' => 'Ошибка удаления модуля `' . $r['_entry'] . '`');
+						$res = -1;
+					} else
+						$mess[] = array('name' => 'ok', 'value' => 'Модуль `' . $r['_entry'] . '` удалён!');
+				}
 			}
+			if($err = getCatchError() and $err[0]) {
+				$mess[] = $err[0];
+				$res = -1;
+			}
+
 			if ($res === 0) {
 				$mess[] = array('name' => 'ok', 'value' => 'Процесс установки/удаления модулей прошло успешно.');
 				$res = 1;
@@ -339,28 +212,206 @@ final class modulprm_class extends kernel_class {
 		return array($res, $DATA);
 	}
 
-	function install($MODUL) {
-		static_tools::_installTable($MODUL);
-		if (isset($MODUL->_cl) and $MODUL->_cl != 'modulprm' and $MODUL->_cl != 'modulgrp') {
-			_new_class('modulprm', $MODULPRM, $MODUL->null, true);
-			$query = 'UPDATE `' . $MODULPRM->tablename . '` SET `ver`="' . $MODUL->ver . '" WHERE `id`="' . $MODUL->_cl . '"';
-			$MODUL->SQL->execSQL($query);
+
+	/**
+	 * Проверка и сбор информации о модуле
+	 *
+	 * @global array $_CFG
+	 * @param string $name id модуля
+	 * @param string $file фаил модуля
+	 * @return array
+	 */
+	protected function checkClassStruct($name, $file='') {
+		$data = array('parent' => '');
+		startCatchError();
+		try {
+			if ($file)
+				include_once ($file);
+			$obj = new ReflectionClass($name);
+			$data['parent'] = $obj->getParentClass();
+			$data['parent'] = $data['parent']->name;
+			$MODUL = $obj->newInstanceArgs(array());
+		} catch  (Exception $e) {
+			trigger_error($e->getMessage(), E_USER_WARNING);
 		}
-		$MODUL->_message($MODUL->getMess('_install_ok', array($MODUL->_cl)), 5);
+		if($err = getCatchError() and isset($err[0]) and $err[0]) {
+			$data['error'][] = $err[0];
+		}
+		return $data;
 	}
 
-	public function _insertDefault() {
-		foreach ($this->def_records as $row) {
-			if (!$this->_add_item($row))
-				return false;
+	/**
+	 * Установка модуля
+	 *
+	 * @param <type> $MODUL
+	 * @param <type> $type
+	 * @param <type> $file
+	 * @return <type>
+	 */
+	public function Minstall(&$MODUL, $type=0, $path='', $parent_cl='') {
+		$res = static_tools::_installTable($MODUL);
+		if ($res and isset($MODUL->_cl)) {
+			if($path==='') {
+				$path = $type.':'.$MODUL->_cl.'.class/';
+				$fpath = $path.$MODUL->_cl.'.class.php';
+			}
+			else {
+				if(file_exists(static_main::getPathModul($path.$MODUL->_cl.'.childs.php') ) )
+					$fpath = $path.$MODUL->_cl.'.childs.php';
+				else
+					$fpath = $path.$MODUL->_cl.'.class.php';
+			}
+			$query = array(
+				'id' => $MODUL->_cl,
+				'name' => $MODUL->caption,
+				'parent_id' => $parent_cl,
+				'tablename' => $MODUL->tablename,
+				'typemodul' => $type,
+				'path' =>$fpath,
+				'ver' => $MODUL->ver);
+			$query = 'INSERT INTO `' . $this->tablename . '` (`' . implode('`,`', array_keys($query)) . '`) VALUES (\'' . implode('\',\'', $query) . '\')';
+			$this->SQL->execSQL($query);
+			if (count($MODUL->childs))
+				foreach ($MODUL->childs as $child)
+					$this->Minstall($child, 5, $path, $MODUL->_cl);
 		}
-		$this->_message('Insert default records into table ' . $this->tablename . '.', 3);
+		return $res;
+	}
+
+	/**
+	 * Удаление модуля
+	 *
+	 * @param object $MODUL Текщий объект класса
+	 * @return bool Результат
+	 */
+	protected function Mdelete(&$MODUL) {
+		$res = true;
+		$result = $this->SQL->execSQL('DROP TABLE `' . $MODUL->tablename . '`');
+		if ($result->err) $res = false;
+		//static_main::_message('Table `' . $MODUL->tablename . '` droped.', 3);
+		$query = 'DELETE FROM `' . $this->tablename . '` WHERE id="' . $MODUL->_cl . '"';
+		$this->SQL->execSQL($query);
+		if (count($MODUL->childs))
+			foreach ($MODUL->childs as &$child)
+				$this->Mdelete($child);
+		return $res;
+	}
+
+	/**
+	 * Переустановка модуля
+	 *
+	 * @param object $MODUL Текщий объект класса
+	 * @return bool Результат
+	 */
+	protected function _reinstall(&$MODUL, $type, $file) {
+		$this->Mdelete($MODUL);
+		$this->Minstall($MODUL, $type, $file);
 		return true;
+	}
+
+	protected function mDump() {
+		if(!isset($this->pdata)) {
+			$this->data = $this->pdata = array();
+			$result = $this->SQL->execSQL('SELECT * FROM ' . $this->tablename);
+			if ($result->err)
+				return $check_result;
+			while ($row = $result->fetch_array()) {
+				$this->data[$row['id']] = $row;
+				$this->pdata[$row['parent_id']][$row['id']] = $row['id'];
+			}
+		}
+		return true;
+	}
+	//Обновление базы всех модулей
+	public function _checkmodstruct() {
+		$rDATA = array();
+		$this->mDump();
+		foreach ($this->pdata[''] as $k => $r) {
+			$rDATA = array_merge($rDATA,static_tools::_checkmodstruct($k));
+		}
+
+		return $rDATA;
+	}
+
+	function ForUpdateModulInfo($Mid,&$OWN = NULL) {
+		$this->mDump();
+		$MESS = array();
+		$flag = false;
+		$parent = $Mid;
+		$type = $typemodul = $this->data[$parent]['typemodul'];
+		while($this->data[$parent]['parent_id']) {
+			$parent = $this->data[$parent]['parent_id'];
+			$type = $this->data[$parent]['typemodul'];
+			$typemodul = 5;
+		}
+		if($parent != $Mid) {
+			$path = $type.':'.$parent.'.class/'.$Mid.'.childs.php';
+		}
+		else
+			$path = $type.':'.$parent.'.class/'.$Mid.'.class.php';
+		$fpath = static_main::getPathModul($path);
+
+		try { // ловец снов
+			if(file_exists($fpath))
+				include_once($fpath);
+			else {
+				$path = $type.':'.$parent.'.class/'.$parent.'.class.php';
+				$fpath = static_main::getPathModul($path);
+				if(file_exists($fpath))
+					include_once($fpath);
+				else
+					$fpath = '';
+			}
+			$this->fld_data = array();
+			if($fpath) {
+				if(_new_class($Mid, $MODUL,$OWN)) {
+					if($this->data[$Mid]['name']!=$MODUL->caption)			$this->fld_data['name'] = $MODUL->caption;
+					if($this->data[$Mid]['tablename']!=$MODUL->tablename) $this->fld_data['tablename'] = $MODUL->tablename;
+					if($this->data[$Mid]['path']!=$path)						$this->fld_data['path'] = $path;
+					if($this->data[$Mid]['ver']!=$MODUL->ver)					$this->fld_data['ver'] = $MODUL->ver;
+					if($this->data[$Mid]['typemodul']!=$typemodul)					$this->fld_data['typemodul'] = $typemodul;
+					//if($this->data[$Mid]['active']!=1)					$this->fld_data['active'] = 1;
+					$obj = new ReflectionClass($Mid.'_class');
+					$extend = $obj->getParentClass();
+					$extend = $extend->name;
+					if($extend=='kernel_extends') $extend = '';
+					else $extend = substr($extend,0,-6);
+					if($this->data[$Mid]['extend']!=$extend)					$this->fld_data['extend'] = $extend;
+					if(count($this->fld_data)) {
+						$MESS[] = array('name' => 'alert', 'value' => 'Данные модуля `'.$Mid.'`['.$path.'] будут обновленны.');
+						$this->id = $Mid;
+						$this->_update();
+					}
+					$flag = &$MODUL;
+				}else {
+					$MESS[] = array('name' => 'error', 'value' => 'Ошибка при инициализации модуля `'.$Mid.'`['.$path.']. Модуль будет отключен.');
+					$this->fld_data['active'] = 0;
+					$this->id = $Mid;
+					$this->_update();
+				}
+			} else {
+				$MESS[] = array('name' => 'error', 'value' => 'Фаилы модуля `'.$Mid.'`['.$path.'] отсутствуют и этот модуль будет удален из базы данных.');
+				$this->id = $Mid;
+				$this->_delete();
+			}
+		} catch  (Exception $e) {
+			trigger_error($e->getMessage(), E_USER_WARNING);
+			$MESS[] = array('name' => 'error', 'value' => 'Ошибка при инициализации модуля `'.$Mid.'`['.$path.']. Модуль будет отключен.');
+			$this->fld_data['active'] = 0;
+			$this->id = $Mid;
+			$this->_update();
+		}
+
+		/*if(count($MODUL->Achilds))
+			foreach($MODUL->Achilds as $k=>$r) {
+				$MESS = array_merge($MESS,$this->ForUpdateModulInfo($k,$MODUL));
+			}*/
+		return array($flag,$MESS);
 	}
 
 }
 
-class modulgrp_class extends kernel_class {
+class modulgrp_class extends kernel_extends {
 
 	function _set_features() {
 		if (!parent::_set_features())

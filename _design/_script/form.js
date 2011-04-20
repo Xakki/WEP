@@ -253,3 +253,12 @@ function input_file(obj) {
 function putEMF(id,txt) {
 	jQuery('#tr_'+id+' .form-caption').after('<div class="caption_error">['+txt+']</div>');
 }
+
+
+function invert_select(form_id)
+{
+	$('#'+form_id+' input[type=checkbox]').each(function() {
+		this.checked = !this.checked;
+	});
+	return false;
+}

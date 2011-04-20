@@ -48,16 +48,17 @@ class static_main {
 	 */
 
 	static function _prmModul($mn, $param=array()) {
+		if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] == 0)
+			return true; // админу можно всё
 		global $_CFG;
 		if (!isset($_CFG['modulprm']))
 			self::_prmModulLoad();
 		if (!isset($_CFG['modulprm'][$mn]))
 			return false; // отказ, если модуль отключен
- if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] == 0)
-			return true; // админу можно всё
- if ($_SESSION['user']['level'] >= 5)
+
+		if ($_SESSION['user']['level'] >= 5)
 			return false; //этим всё запрещено
- else {
+		else {
 			if (isset($_CFG['modulprm'][$mn]['access'][0]))
 				return false;
 			if (count($param))
@@ -69,13 +70,44 @@ class static_main {
 	}
 
 	static function _prmModulLoad() { // подгрука данных прав доступа
-		global $_CFG;
+		global $_CFG, $SQL;
 		if (!isset($_CFG['modulprm'])) {
-			if (_new_class('modulprm', $MODULs))
-				$_CFG['modulprm'] = $MODULs->userPrm((isset($_SESSION['user']['owner_id']) ? (int) $_SESSION['user']['owner_id'] : 0));
+			$_CFG['modulprm'] = $_CFG['modulprm_ext'] = array();
+			$ugroup_id = (isset($_SESSION['user']['owner_id']) ? (int) $_SESSION['user']['owner_id'] : 0);
+			if(!$SQL) $SQL = new sql($_CFG['sql']);
+			$result = $SQL->execSQL('SELECT t1.*,t2.access, t2.mname FROM `modulprm` t1 LEFT Join `modulgrp` t2 on t2.owner_id=t1.id and t2.ugroup_id=' . $ugroup_id . ' ORDER BY typemodul,name');
+			if ($result->err) return false;
+			$_CFG['modulprm'] = array();
+			while ($row = $result->fetch_array()) {
+				$_CFG['modulprm'][$row['id']]['active'] = $row['active'];
+				$_CFG['modulprm_ext'][$row['extend']] = $row['id'];
+				$_CFG['modulprm'][$row['id']]['access'] = array_flip(explode('|', trim($row['access'], '|')));
+				if ($row['mname'])
+					$_CFG['modulprm'][$row['id']]['name'] = $row['mname'];
+				else
+					$_CFG['modulprm'][$row['id']]['name'] = $row['name'];
+				$_CFG['modulprm'][$row['id']]['ver'] = $row['ver'];
+				$_CFG['modulprm'][$row['id']]['typemodul'] = $row['typemodul'];
+				$_CFG['modulprm'][$row['id']]['path'] = self::getPathModul($row['path']);
+				$_CFG['modulprm'][$row['id']]['tablename'] = $row['tablename'];
+			}
+			/*if (_new_class('modulprm', $MODULs))
+				$_CFG['modulprm'] = $MODULs->userPrm((isset($_SESSION['user']['owner_id']) ? (int) $_SESSION['user']['owner_id'] : 0));*/
 		}
+		return true;
 	}
 
+	/**
+	 * Получаем реальный путь из поля path
+	 * @param string $path
+	 * @return string
+	 */
+	static function getPathModul($path) {
+		global $_CFG;
+		if(!$path) return '';
+		$path = explode(':',$path);
+		return $_CFG['modulinc'][$path[0]]['path'].$path[1];
+	}
 	/*
 	  Проверка доступа пол-ля по уровню привелегии
 	 */
@@ -98,8 +130,6 @@ class static_main {
 		session_go(1);
 		$result = array('', 0);
 		if (!isset($_SESSION['user']['id']) or $login) {
-			//$SQL->_iFlag = 1; // проверка табл
-			//if($SQL->_iFlag) _new_class('modulprm',$MODULtemp);
 			if ($_CFG['wep']['access'] and _new_class('ugroup', $UGROUP)) {
 				if (isset($_POST['login']) or $login) {
 					$result = $UGROUP->childs['users']->authorization($login, $pass);
@@ -161,56 +191,11 @@ class static_main {
 		$ar_type = array(0 => E_USER_ERROR, 1 => E_USER_WARNING, 2 => E_USER_NOTICE, 3 => 'modify', 4 => 'notify', 5 => 'ok');
 		if ($type < 3)
 			trigger_error($msg, $ar_type[$type]);
-		elseif ($_COOKIE['_showallinfo'] > 1)
+		elseif (isset($_COOKIE['_showallinfo']) and $_COOKIE['_showallinfo'] > 1)
 			$_CFG['logs']['mess'][] = array($msg, $ar_type[$type]);
 		if ($type < 2)
 			return false;
 		return true;
-	}
-
-	/*
-	  Функция SpiderDetect - принимает $_SERVER['HTTP_USER_AGENT'] и возвращает имя кравлера поисковой системы или false.
-	 */
-
-	static function SpiderDetect($USER_AGENT='') {
-		if (!$USER_AGENT)
-			$USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
-		$engines = array(
-			array('Aport', 'Aport robot'),
-			array('Google', 'Google'),
-			array('msnbot', 'MSN'),
-			array('Rambler', 'Rambler'),
-			array('Yahoo', 'Yahoo'),
-			array('AbachoBOT', 'AbachoBOT'),
-			array('accoona', 'Accoona'),
-			array('AcoiRobot', 'AcoiRobot'),
-			array('ASPSeek', 'ASPSeek'),
-			array('CrocCrawler', 'CrocCrawler'),
-			array('Dumbot', 'Dumbot'),
-			array('FAST-WebCrawler', 'FAST-WebCrawler'),
-			array('GeonaBot', 'GeonaBot'),
-			array('Gigabot', 'Gigabot'),
-			array('Lycos', 'Lycos spider'),
-			array('MSRBOT', 'MSRBOT'),
-			array('Scooter', 'Altavista robot'),
-			array('AltaVista', 'Altavista robot'),
-			array('WebAlta', 'WebAlta'),
-			array('IDBot', 'ID-Search Bot'),
-			array('eStyle', 'eStyle Bot'),
-			array('Mail.Ru', 'Mail.Ru Bot'),
-			array('Scrubby', 'Scrubby robot'),
-			array('Yandex', 'Yandex'),
-			array('YaDirectBot', 'Yandex Direct'),
-			array('Bot', 'Bot')
-		);
-
-		foreach ($engines as $engine) {
-			if (stristr($USER_AGENT, $engine[0])) {
-				return $engine[1];
-			}
-		}
-
-		return '';
 	}
 
 }

@@ -1,15 +1,11 @@
 <?
 
-//error_reporting(E_ALL ^ E_NOTICE);
-error_reporting(-1);
-//ini_set('display_errors',-1);
-
 $_CFG['info'] = array(//информация о СМС
 	'version' => '2.2',
 	'email' => 'info@xakki.ru',
 	'icq' => '222392984');
 
-/* * MAIN_CFG* */
+/* MAIN_CFG */
 
 $_CFG['sql'] = array(// SQL
 	'host' => 'localhost',
@@ -38,7 +34,11 @@ $_CFG['wep'] = array(// для ядра и админки
 	'md5' => 'd3dEegf6EH',
 	'def_filesize' => 200,
 	'sessiontype' => 1, //0 - стандартная сессия, 1 - БД сессия, 2 - ещё какаянибудь
-	'bug_hunter' => 1,
+	'bug_hunter' => 4, //уровень отлова ошибок
+	'on_debug' => true,
+	'catch_bug' => true,
+	'stop_fatal_error' => true,
+	'error_reporting'=>'-1'
 );
 
 $_CFG['site'] = array(// для сайта
@@ -48,12 +48,17 @@ $_CFG['site'] = array(// для сайта
 	'show_error' => 1, //0- ничего не показывать обычным юзерам, 1 -паказывать только сообщение что произошла ошибка, 2 - паказать ошибку
 );
 
-/* * END_MAIN_CFG* */
+/* END_MAIN_CFG */
 
+$_CFG['require_modul'] = array(
+	'bug' => true,
+	'modulprm' => true,
+	'mail' => true
+);
 $_CFG['singleton'] = array();
 $_CFG['logs']['sql'] = array(); // - массив SQL запросов
 $_CFG['fileIncludeOption'] = array(); //автоподключение SCRIPT & STYLE
-
+$GLOBALS['_ERR'] = array(); //текс ошибок
 /* * PATH_CFG* */
 
 /* Полные пути по файловым системам для ядра */
@@ -205,73 +210,87 @@ $_CFG['_error'] = array(
 	0 => array(
 		'type' => '[@]',
 		'color' => 'black',
-		'prior' => 6
+		'prior' => 6,
+		'debug' => 0
 	),
 	E_ERROR => array(
 		'type' => '[Fatal Error]',
 		'color' => 'red',
-		'prior' => 0
-	),
-	E_WARNING => array(
-		'type' => '[Warning]',
-		'color' => 'yellow',
-		'prior' => 1
-	),
-	E_PARSE => array(
-		'type' => '[Parse Error]',
-		'color' => 'red',
-		'prior' => 0
-	),
-	E_NOTICE => array(
-		'type' => '[Notice]',
-		'color' => 'black',
-		'prior' => 5
+		'prior' => 0,
+		'debug' => 0
 	),
 	E_CORE_ERROR => array(
 		'type' => '[Fatal Core Error]',
 		'color' => 'red',
-		'prior' => 0
-	),
-	E_CORE_WARNING => array(
-		'type' => '[Core Warning]',
-		'color' => 'yellow',
-		'prior' => 1
+		'prior' => 0,
+		'debug' => 0
 	),
 	E_COMPILE_ERROR => array(
 		'type' => '[Compilation Error]',
 		'color' => 'red',
-		'prior' => 0
+		'prior' => 0,
+		'debug' => 0
+	),
+	E_PARSE => array(
+		'type' => '[Parse Error]',
+		'color' => 'red',
+		'prior' => 0,
+		'debug' => 0
+	),
+	E_CORE_WARNING => array(
+		'type' => '[Core Warning]',
+		'color' => 'yellow',
+		'prior' => 1,
+		'debug' => 1
 	),
 	E_COMPILE_WARNING => array(
 		'type' => '[Compilation Warning]',
 		'color' => 'yellow',
-		'prior' => 1
+		'prior' => 1,
+		'debug' => 0
 	),
-	E_USER_ERROR => array(
-		'type' => '[Triggered Error]',
-		'color' => 'red',
-		'prior' => 0
-	),
-	E_USER_WARNING => array(
-		'type' => '[Triggered Warning]',
+	E_WARNING => array(
+		'type' => '[Warning]',
 		'color' => 'yellow',
-		'prior' => 2
-	),
-	E_USER_NOTICE => array(
-		'type' => '[Triggered Notice]',
-		'color' => 'black',
-		'prior' => 3
-	),
-	E_STRICT => array(
-		'type' => '[Deprecation Notice]',
-		'color' => 'pink',
-		'prior' => 4
+		'prior' => 1,
+		'debug' => 1
 	),
 	E_RECOVERABLE_ERROR => array(
 		'type' => '[Catchable Fatal Error]',
 		'color' => 'red',
-		'prior' => 0
+		'prior' => 1,
+		'debug' => 1
 	),
+	E_USER_ERROR => array(
+		'type' => '[Triggered Error]',
+		'color' => 'red',
+		'prior' => 2,
+		'debug' => 1
+	),
+	E_USER_WARNING => array(
+		'type' => '[Triggered Warning]',
+		'color' => 'yellow',
+		'prior' => 3,
+		'debug' => 1
+	),
+	E_STRICT => array(
+		'type' => '[Deprecation Notice]',
+		'color' => 'brown',
+		'prior' => 4,
+		'debug' => 0
+	),
+	E_NOTICE => array(
+		'type' => '[Notice]',
+		'color' => 'black',
+		'prior' => 5,
+		'debug' => 0
+	),
+	E_USER_NOTICE => array(
+		'type' => '[Triggered Notice]',
+		'color' => 'black',
+		'prior' => 5,
+		'debug' => 0
+	)
 );
 
 /* * *************** */
@@ -298,22 +317,26 @@ if ($hostcnt < 2 or ($hostcnt == 4)) { //учитываем localhost и ИПИ
 }
 
 
-/* * *INCLUDE LANG** */
+/* INCLUDE LANG */
 include_once($_CFG['_PATH']['locallang'] . $_CFG['wep']['locallang'] . '.php');
 if (file_exists($_CFG['_PATH']['ulocallang'] . $_CFG['wep']['locallang'] . '.php'))
 	include_once($_CFG['_PATH']['ulocallang'] . $_CFG['wep']['locallang'] . '.php');
 
-
-/* * ******************** */
-/* * *INCLUDE USER CONF** */
-/* * ******************** */
-
+/* INCLUDE USER CONF */
 include($_CFG['_PATH']['wepconf'] . '/config/config.php');
 
-/* * *SET SESSION** */
+/* Acept config */
+
+//error_reporting(E_ALL ^ E_NOTICE);
+//ini_set('display_errors',-1);
+error_reporting($_CFG['wep']['error_reporting']);
+
 date_default_timezone_set($_CFG['wep']['timezone']);
 setlocale(LC_CTYPE, $_CFG['wep']['locale']);
-
+$_CFG['modulinc'] = array(
+	0 => array('path' => $_CFG['_PATH']['extcore'], 'name' => 'WEPext - '),
+	3 => array('path' => $_CFG['_PATH']['ext'], 'name' => 'EXT - ')
+);
 $_CFG['time'] = time();
 $_CFG['getdate'] = getdate();
 $_CFG['remember_expire'] = $_CFG['session']['expire'] = $_CFG['time'] + 1728000; // 20дней ,по умолчанию
@@ -335,9 +358,8 @@ function shutdown_function() {
 }
 
 /* SESSION */
-
 function session_go($force=0) {
-	global $_CFG;
+	global $_CFG,$SESSION_GOGO;
 	if (!$_SERVER['robot'] and (isset($_COOKIE[$_CFG['session']['name']]) or $force) and !defined('SID')) {
 		if ($_CFG['wep']['sessiontype'] == 1) {
 			if (!$SESSION_GOGO) {
@@ -374,4 +396,49 @@ function getmicrotime() {
 	return ((float) $usec + (float) $sec);
 }
 
+	/*
+	  Функция SpiderDetect - принимает $_SERVER['HTTP_USER_AGENT'] и возвращает имя кравлера поисковой системы или false.
+	 */
+
+function SpiderDetect($USER_AGENT='') {
+	if (!$USER_AGENT)
+		$USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
+	$engines = array(
+		array('Aport', 'Aport robot'),
+		array('Google', 'Google'),
+		array('msnbot', 'MSN'),
+		array('Rambler', 'Rambler'),
+		array('Yahoo', 'Yahoo'),
+		array('AbachoBOT', 'AbachoBOT'),
+		array('accoona', 'Accoona'),
+		array('AcoiRobot', 'AcoiRobot'),
+		array('ASPSeek', 'ASPSeek'),
+		array('CrocCrawler', 'CrocCrawler'),
+		array('Dumbot', 'Dumbot'),
+		array('FAST-WebCrawler', 'FAST-WebCrawler'),
+		array('GeonaBot', 'GeonaBot'),
+		array('Gigabot', 'Gigabot'),
+		array('Lycos', 'Lycos spider'),
+		array('MSRBOT', 'MSRBOT'),
+		array('Scooter', 'Altavista robot'),
+		array('AltaVista', 'Altavista robot'),
+		array('WebAlta', 'WebAlta'),
+		array('IDBot', 'ID-Search Bot'),
+		array('eStyle', 'eStyle Bot'),
+		array('Mail.Ru', 'Mail.Ru Bot'),
+		array('Scrubby', 'Scrubby robot'),
+		array('Yandex', 'Yandex'),
+		array('YaDirectBot', 'Yandex Direct'),
+		array('Bot', 'Bot')
+	);
+
+	foreach ($engines as $engine) {
+		if (stristr($USER_AGENT, $engine[0])) {
+			return $engine[1];
+		}
+	}
+
+	return '';
+}
+$_SERVER['robot'] = SpiderDetect();
 ?>

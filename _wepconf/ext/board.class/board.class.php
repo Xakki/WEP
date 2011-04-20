@@ -1,5 +1,5 @@
 <?
-class board_class extends kernel_class {
+class board_class extends kernel_extends {
 
 	var $RUBRIC;
 

@@ -1,6 +1,6 @@
 <?
 
-class news_class extends kernel_class {
+class news_class extends kernel_extends {
 
 	function _set_features() {
 		if (!parent::_set_features()) return false;
@@ -75,7 +75,7 @@ class news_class extends kernel_class {
 			global $PGLIST;
 			$PGLIST->pageinfo['path']['newsY'.(int)$_GET['year'].'.html'] = 'Год '.(int)$_GET['year'];	
 		}
-		$this->_list();print_r($this->clause);
+		$this->_list();
 		$countfield = $this->data[0]['cnt'];
 		if($countfield){
 			$DATA['pcnt'] = $pcnt;

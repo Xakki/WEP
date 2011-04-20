@@ -34,11 +34,11 @@
 						mysql_select_db($this->CFG_SQL['database'],$this->hlink);
 					else 
 						trigger_error('Can`t create database `'.$this->CFG_SQL['database'].'`', E_USER_WARNING);
-						die();
+						die('SQL config error');
 				}
 			}else {
 				trigger_error('Can`t connect to database `'.$this->CFG_SQL['database'].'`', E_USER_WARNING);
-				die();
+				die('SQL connect error');
 			}
 		}
 
