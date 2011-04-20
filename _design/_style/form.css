@@ -36,7 +36,9 @@
 		text-align: left;
 	}
 	.divform .caption div{
-		text-align:center;font-size:1.2em;font-weight:bold;
+		text-align:center;
+		font-size:1.2em;
+		font-weight:bold;
 	}
 
 	.divform .form-caption {

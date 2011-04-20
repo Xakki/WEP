@@ -1,12 +1,9 @@
 <?
-<<<<<<< HEAD
+
 	error_reporting(E_ALL ^ E_NOTICE);
 	ini_set('display_errors',-1);
 	//универсальный для русского языка
 	setlocale(LC_CTYPE, 'ru_RU.UTF-8');
-	
-=======
->>>>>>> e6a6937b8b560316715c5f579ab0704946d71b8d
 
 $_CFG['info'] = array(//информация о СМС
 	'version' => '2.2',

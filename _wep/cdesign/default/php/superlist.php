@@ -86,19 +86,19 @@
 				if($tditem['value']!='') {
 					if($tdflag)
 						$html .= '<b>'.$data['thitem'][$ktd]['value'].'</b>: ';
-					if($tditem['fileType']=='img') {
+					if(isset($tditem['fileType']) and $tditem['fileType']=='img') {
 						$_CFG['fileIncludeOption']['fancybox'] = 1;
 						$html .= '<a rel="fancy" title="рисунок" class="fancyimg" href="'.$tditem['value'].'"><img src="'.$tditem['value'].'" alt="" width="50"/></a>&#160;';
 					}
-					elseif($tditem['fileType']=='swf') {
+					elseif(isset($tditem['fileType']) and $tditem['fileType']=='swf') {
 						if($tditem['value']!='')
 							$html .= $tditem['value'].'&#160;<object type="application/x-shockwave-flash" data="/'.$tditem['value'].'" height="60" width="200"><param name="movie" value="/'.$tditem['value'].'" /><param name="allowScriptAccess" value="sameDomain" /><param name="quality" value="high" /><param name="scale" value="exactfit" /><param name="bgcolor" value="#ffffff" /><param name="wmode" value="transparent" /></object>';
 					}
-					elseif($tditem['fileType']=='file') {
+					elseif(isset($tditem['fileType']) and $tditem['fileType']=='file') {
 						if($tditem['value']!='')
 							$html .= '<a href="'.$tditem['value'].'" target="_blank">Файл</a>&#160;';
 					}
-					elseif($tditem['href']!='') {
+					elseif(isset($tditem['href']) and $tditem['href']!='') {
 						$html .= '<a href="'.$tditem['href'].'" target="_blank">'.$tditem['value'].'</a>&#160;';
 					}
 					else $html .= $tditem['value'];

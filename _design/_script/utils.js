@@ -130,7 +130,7 @@ function showBG(body,show,k) {
 function fSpoiler (txt,nm) {
 	//initSpoilers();
 	if(!nm) nm ='Скрытый текст';
-	return '<div class="spoiler-wrap"><div class="spoiler-head folded clickable" onClick="clickSpoilers(this)">+ '+nm+'</div><div class="spoiler-body" style="display: none;">'+txt+'</div></div>';
+	return '<div class="spoiler-wrap"><div class="spoiler-head folded clickable" onClick="bugSpoilers(this)">+ '+nm+'</div><div class="spoiler-body" style="display: none;">'+txt+'</div></div>';
 }
 
 function initSpoilers(context){

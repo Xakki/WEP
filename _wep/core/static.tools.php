@@ -629,7 +629,7 @@ class static_tools {
 					);
 					$MODUL->form['invert'] = array(
 						'type' => 'info',
-						'caption' => '<a href="#" onclick="return invert_select(\'form_Checkmodul\');">Инвертировать выделение</a>',
+						'caption' => '<a href="#" onclick="return invert_select(\'form\');">Инвертировать выделение</a>',
 					);
 
 					foreach ($check_result as $table => $row) {

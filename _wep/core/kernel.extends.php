@@ -99,6 +99,7 @@ abstract class kernel_extends {
 		//$this->mf_issimple = false;
 		//$this->mf_typectrl = false;
 		//$this->mf_struct_readonly = false;
+		$this->id = NULL;
 		$this->mf_istree = false; // древовидная структура?
 		$this->mf_ordctrl = false; // поле ordind для сортировки
 		$this->mf_actctrl = false; // поле active
@@ -142,6 +143,7 @@ abstract class kernel_extends {
 				$this->_enum =
 				$this->update_records =
 				$this->def_records =
+				$this->fld_data =
 				$this->fields =
 				$this->fields_form =
 				$this->attaches =
@@ -1461,7 +1463,7 @@ abstract class kernel_extends {
 		$flag_filter = 0;
 		$_FILTR = $_SESSION['filter'][$this->_cl];
 		foreach ($this->fields_form as $k => $r) {
-			if ($r['mask']['filter'] == 1) {
+			if (isset($r['mask']['filter']) and $r['mask']['filter'] == 1) {
 				if (isset($_FILTR[$k])) {
 					$tempex = 0;
 					if (isset($_FILTR['exc_' . $k]))
@@ -1523,9 +1525,9 @@ abstract class kernel_extends {
 		//if(isset($this->fields['region_id']) and isset($_SESSION['city']))///////////////**********************
 		//	$param['clause']['t1.region_id'] ='t1.region_id='.$_SESSION['city'];
 
-		if ($_GET['_type'] == 'deleted' and $this->itemform_items['active']['listname'] == 'active')
+		if ($_GET['_type'] == 'deleted' and $this->fields_form['active']['listname'] == 'active')
 			$param['clause']['t1.active'] = 't1.active=4';
-		elseif ($this->itemform_items['active']['listname'] == 'active')
+		elseif ($this->fields_form['active']['listname'] == 'active')
 			$param['clause']['t1.active'] = 't1.active!=4';
 		return $param['clause'];
 	}

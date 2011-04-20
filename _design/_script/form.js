@@ -255,9 +255,9 @@ function putEMF(id,txt) {
 }
 
 
-function invert_select(form_id)
+function invert_select(selector)
 {
-	$('#'+form_id+' input[type=checkbox]').each(function() {
+	$(selector+' input[type=checkbox]').each(function() {
 		this.checked = !this.checked;
 	});
 	return false;

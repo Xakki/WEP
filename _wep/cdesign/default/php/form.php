@@ -8,7 +8,9 @@ function tpl_form(&$data) {
 
 	foreach($data as $k=>$r) {
 		if($r['type']!='hidden')
-			$texthtml .= '<div id="tr_'.$k.'" style="'.(isset($r['style'])?$r['style']:'').'" class="div-tr'.(isset($r['css']) and $r['css']?' '.$r['css']:'').(isset($r['readonly']) and $r['readonly']?' readonly':'').'">';
+			$texthtml .= '<div id="tr_'.$k.'" style="'.(isset($r['style'])?$r['style']:'').'" class="div-tr'.
+				((isset($r['css']) and $r['css'])?' '.$r['css']:'').
+				((isset($r['readonly']) and $r['readonly'])?' readonly':'').'">';
 		if($r['type']=='submit') {
 			$texthtml .= '<div class="form-submit">';
 			if(isset($r['value_save']) and $r['value_save']) {
@@ -39,8 +41,8 @@ function tpl_form(&$data) {
 		}
 		else {
 			$texthtml .= '<div class="form-caption">'.$r['caption'];
-			$texthtml .= (isset($r['mask']['min']) and $r['mask']['min']?'<span class="form-requere" onmouseover="showHelp(this,\'Данное поле обязательно для заполнения!\',2000,1)">*</span>':'').
-				(isset($r['mask']['min2']) and $r['mask']['min2']?'<span  class="form-requere" onmouseover="showHelp(this,\''.$r['mask']['min2'].'\',4000,1)">**</span>':'').'</div>';
+			$texthtml .= ((isset($r['mask']['min']) and $r['mask']['min'])?'<span class="form-requere" onmouseover="showHelp(this,\'Данное поле обязательно для заполнения!\',2000,1)">*</span>':'').
+				((isset($r['mask']['min2']) and $r['mask']['min2'])?'<span  class="form-requere" onmouseover="showHelp(this,\''.$r['mask']['min2'].'\',4000,1)">**</span>':'').'</div>';
 			$attr = '';
 			if(isset($r['readonly']) and $r['readonly'])
 				$attr .= ' readonly="readonly" class="ronly"';
@@ -347,7 +349,7 @@ function selectitem($data,$val='',$flag=0) {
 	if(is_array($data) and count($data))
 		foreach($data as $r) {
 			//_substr($r['#name#'],0,60).(_strlen($r['#name#'])>60?'...':'')
-			if(count($r['#item#']) and isset($r['#checked#']) and $r['#checked#']==0)
+			if(isset($r['#item#']) and count($r['#item#']) and isset($r['#checked#']) and $r['#checked#']==0)
 				$texthtml .= '<optgroup label="'.$r['#name#'].'" class="selpad'.$flag.'"></optgroup>';
 			else {
 				if($val==='' and $r['#sel#'])
@@ -358,7 +360,7 @@ function selectitem($data,$val='',$flag=0) {
 					$sel = '';
 				$texthtml .= '<option value="'.$r['#id#'].'" '.$sel.' class="selpad'.$flag.'">'.$r['#name#'].'</option>';
 			}
-			if(count($r['#item#']))
+			if(isset($r['#item#']) and count($r['#item#']))
 				$texthtml .= selectitem($r['#item#'],$val,($flag+1));//.'&#160;--'
 		}
 	return $texthtml;

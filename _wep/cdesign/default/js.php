@@ -23,6 +23,8 @@
 				$html .= $DATA['static'];
 			}
 			elseif(isset($DATA['formtools']) and count($DATA['formtools'])) {
+				if(isset($DATA['formtools'][1]['form']))
+					$DATA['formtools'] = $DATA['formtools'][1];
 				$html = $HTML->transformPHP($DATA,'formtools');
 				$_tpl['onload'] .= '$(\'#form_tools_'.$_REQUEST['_func'].'\').bind(\'submit\',function(e){ return JSWin({\'type\':this,\'insertObj\':\'#tools_block\'}); });';
 			}
