@@ -196,14 +196,14 @@ $_CFG['form'] = array(
 
 if (isset($_POST) && count($_POST) && get_magic_quotes_gpc())
 {
-	$_POST = stripSlashesOnArray($_POST);
+	stripSlashesOnArray($_POST);
 }
 
 
 function stripSlashesOnArray(array &$theArray)	{
 	foreach ($theArray as &$value) {
 		if (is_array($value)) {
-			self::stripSlashesOnArray($value);
+			stripSlashesOnArray($value);
 		} else {
 			$value = stripslashes($value);
 		}
