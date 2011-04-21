@@ -244,9 +244,9 @@ class pg_class extends kernel_extends {
 		}
 		elseif(isset($this->dataCash[$this->id]))
 		{
-			if ($row['href']){
-				header('Location: '.$row['href']);die();}
 			$this->pageinfo = $this->dataCash[$this->id];
+			if ($this->pageinfo['href']){
+				header('Location: '.$this->pageinfo['href']);die();}			
 			if($this->pageinfo['keywords'])
 				$this->pageinfo['keywords'] = $this->config['keywords'].', '.$this->pageinfo['keywords'];
 			else
@@ -287,8 +287,10 @@ class pg_class extends kernel_extends {
 	function get_pageinfo() {
 		$this->current_path = $this->getHref($this->pageinfo['id'],$this->pageinfo);
 		$parent_id = $this->pageinfo['parent_id'];
+		$id = $this->pageinfo['id'];
 		$this->pageinfo['path'] = array($this->pageinfo['id'] => $this->pageinfo);
 		$this->selected[$this->pageinfo['id']] = $this->pageinfo['id'];
+		
 		while ($parent_id) {
 			if(isset($this->dataCash[$parent_id])) {
 				$id = $this->dataCash[$parent_id]['id'];
@@ -346,7 +348,13 @@ class pg_class extends kernel_extends {
 		$resultPG = $this->SQL->execSQL($cls);
 		if(!$resultPG->err)
 			while ($rowPG = $resultPG->fetch_array()) {
-				if($_SESSION['_showallinfo']) 
+
+				if (!isset($_tpl[$rowPG['marker']]))
+				{
+					$_tpl[$rowPG['marker']] = '';
+				}
+
+				if(isset($_SESSION['_showallinfo']) && $_SESSION['_showallinfo'])
 					$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' begin-->'; // для отладчика
 				$html = '';
 				if($rowPG['ugroup']) {
@@ -426,7 +434,7 @@ class pg_class extends kernel_extends {
 						$_tpl[$rowPG['marker']] .= $flagPG;
 					$flagPG = 1;
 				}
-				if($_SESSION['_showallinfo'])
+				if(isset($_SESSION['_showallinfo']) && $_SESSION['_showallinfo'])
 					$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' end-->';
 			}
 
