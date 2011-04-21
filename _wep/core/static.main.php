@@ -44,7 +44,7 @@ class static_main {
 	}
 
 
-	static function includeModulFile($Mid,&$OWN=NULL)) {
+	static function includeModulFile($Mid,&$OWN=NULL) {
 		global $_CFG;
 		$Pid = NULL;
 		$ret = array('type'=>0, 'path'=>'', 'file'=>false);
@@ -52,32 +52,31 @@ class static_main {
 			$ret['type'] = $k;
 			$ret['path'] = $Mid.'.class/'.$Mid.'.class.php';
 			$ret['file'] = $r['path'].$ret['path'];
-			//print_r($file.'<br> ');
+
 			if(file_exists($ret['file'])) {
 				$ret['path'] = $k.':'.$ret['path'];
 				//include_once($ret['file']);
 				return $ret;
 			}
-			while($iOWN) {
-				$Pid = $iOWN->_cl;
-				if($Pid) {
-					$ret['type'] = 5;
-					$ret['path'] = $Pid.'.class/'.$Mid.'.childs.php';
-					$ret['file'] = $r['path'].$ret['path'];
-					if(file_exists($ret['file'])) {
-						$ret['path'] = $k.':'.$ret['path'];
-						//include_once($ret['file']);
-						return $ret;
-					}
-					$ret['path'] = $Pid.'.class/'.$Pid.'.class.php';
-					$ret['file'] = $r['path'].$ret['path'];
-					if(file_exists($ret['file'])) {
-						$ret['path'] = $k.':'.$ret['path'];
-						//include_once($ret['file']);
-						return $ret;
-					}
+			$tempOWN = &$OWN;
+			while($tempOWN and $tempOWN->_cl) {
+				$Pid = $tempOWN->_cl;
+				$ret['type'] = 5;
+				$ret['path'] = $Pid.'.class/'.$Mid.'.childs.php';
+				$ret['file'] = $r['path'].$ret['path'];
+				if(file_exists($ret['file'])) {
+					$ret['path'] = $k.':'.$ret['path'];
+					//include_once($ret['file']);
+					return $ret;
 				}
-				$iOWN = $OWN->owner;
+				$ret['path'] = $Pid.'.class/'.$Pid.'.class.php';
+				$ret['file'] = $r['path'].$ret['path'];
+				if(file_exists($ret['file'])) {
+					$ret['path'] = $k.':'.$ret['path'];
+					//include_once($ret['file']);
+					return $ret;
+				}
+				$tempOWN = &$tempOWN->owner;
 			}
 
 		}
