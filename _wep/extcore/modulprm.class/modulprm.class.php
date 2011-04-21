@@ -82,7 +82,6 @@ final class modulprm_class extends kernel_extends {
 			$this->data[$row['id']]['path'] = $this->_CFG['modulinc'][$path[0]]['path'] . $path[1];
 			$this->data[$row['id']]['tablename'] = $row['tablename'];
 		}
-		//	print_r($this->data);exit();
 		return $this->data;
 	}
 

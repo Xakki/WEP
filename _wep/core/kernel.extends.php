@@ -714,6 +714,9 @@ abstract class kernel_extends {
 		return static_tools::_checkmodstruct($this->_cl);
 	}
 
+	function _install() {
+	}
+
 	public function toolsReinstall() {
 		$this->form = $mess = array();
 		if (!static_main::_prmModul($this->_cl, array(11)))

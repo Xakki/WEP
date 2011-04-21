@@ -30,7 +30,7 @@ class static_tools {
 		$result = $MODUL->SQL->execSQL('SHOW TABLES LIKE \'' . $MODUL->tablename . '\''); // checking table exist
 		//if($result->err) return array($MODUL->tablename => array(array('err'=>$MODUL->getMess('_big_err'))));
 		if (!$result->num_rows()) {
-
+			$MODUL->_install();
 			// contruct of query
 			$fld = array();
 			if (count($MODUL->fields))
@@ -91,7 +91,7 @@ class static_tools {
 				return false;
 			}
 		}
-		static_main::_message('Insert default records into table ' . $this->tablename . '.', 3);
+		static_main::_message('Insert default records into table ' . $MODUL->tablename . '.', 3);
 		return true;
 	}
 
@@ -579,7 +579,7 @@ class static_tools {
 		return true;
 	}
 
-	static function _toolsCheckmodul($MODUL) {
+	static function _toolsCheckmodul(&$MODUL) {
 		global $HTML;
 		$flag = 0;
 		$MODUL->form = $mess = array();
@@ -590,7 +590,6 @@ class static_tools {
 
 			if (isset($_POST['sbmt'])) {
 				$flag = 1;
-				//print_r('<pre>');print_r($_POST);exit();
 				foreach ($check_result as $table => $row) {
 					if (isset($row['@reattach']) and isset($_POST['query_'.$table]['reattach'])) {
 						if (is_object($row['@reattach']) and self::_reattaches($row['@reattach']))
