@@ -60,7 +60,7 @@ class session_gogo extends kernel_extends {
 		$this->add_query = '';//' AND `domain` = "'.$this->_domain.'"';
 		$result = $this->SQL->execSQL('SHOW TABLES LIKE \''.$this->tablename.'\'');// checking table exist
 		if ($result->err) echo('Session error');
-		if (!$result->num_rows()) $this->_install();
+		//if (!$result->num_rows()) $this->_install();
 		return(true);
 	}
 	

@@ -161,13 +161,15 @@ final class modulprm_class extends kernel_extends {
 							$res = -1;
 							continue;
 						}
-						if (!_new_class($r['_entry'], $MODUL, $MODUL->null, true)) {
+						/*if (!_new_class($r['_entry'], $MODUL, $MODUL->null, true)) {
 							$mess[] = array('name' => 'error', 'value' => 'Ошибка запуска модуля `' . $r['_entry'] . '`');
 							$res = -1;
 							continue;
-						}
+						}*/
 						//Установка модуля
-						if (!$this->Minstall($MODUL, $r['_type'])) {
+						list($flag,$mess2) = $this->Minstall($r['_entry']);
+						$mess = array_merge($mess,$mess2);
+						if (!$flag) {
 							$mess[] = array('name' => 'error', 'value' => 'Ошибка установки модуля `' . $r['_entry'] . '`');
 							$res = -1;
 						}else
@@ -251,34 +253,19 @@ final class modulprm_class extends kernel_extends {
 	 * @param <type> $file
 	 * @return <type>
 	 */
-	public function Minstall(&$MODUL, $type=0, $path='', $parent_cl='') {
-		$res = static_tools::_installTable($MODUL);
-		if ($res and isset($MODUL->_cl)) {
-			if($path==='') {
-				$path = $type.':'.$MODUL->_cl.'.class/';
-				$fpath = $path.$MODUL->_cl.'.class.php';
-			}
-			else {
-				if(file_exists(static_main::getPathModul($path.$MODUL->_cl.'.childs.php') ) )
-					$fpath = $path.$MODUL->_cl.'.childs.php';
-				else
-					$fpath = $path.$MODUL->_cl.'.class.php';
-			}
-			$query = array(
-				'id' => $MODUL->_cl,
-				'name' => $MODUL->caption,
-				'parent_id' => $parent_cl,
-				'tablename' => $MODUL->tablename,
-				'typemodul' => $type,
-				'path' =>$fpath,
-				'ver' => $MODUL->ver);
-			$query = 'INSERT INTO `' . $this->tablename . '` (`' . implode('`,`', array_keys($query)) . '`) VALUES (\'' . implode('\',\'', $query) . '\')';
-			$this->SQL->execSQL($query);
-			if (count($MODUL->childs))
-				foreach ($MODUL->childs as $child)
-					$this->Minstall($child, 5, $path, $MODUL->_cl);
+	public function Minstall($Mid, &$OWN=NULL) {
+		$flag = false;
+		$mess = array();
+		list($MODUL,$mess) = $this->ForUpdateModulInfo($Mid,$OWN);
+		if($MODUL) {
+			$flag = static_tools::_installTable($MODUL);
+			if ($flag and count($MODUL->Achilds))
+				foreach ($MODUL->Achilds as $k=>$r) {
+					list($flag,$mess2) = $this->Minstall($k, $MODUL);
+					$mess = array_merge($mess,$mess2);
+				}
 		}
-		return $res;
+		return array($flag,$mess);
 	}
 
 	/**
@@ -375,14 +362,20 @@ final class modulprm_class extends kernel_extends {
 						$this->fld_data['extend'] = $extend;
 
 					if(count($this->fld_data)) {
-						$MESS[] = array('name' => 'alert', 'value' => 'Данные модуля `'.$Mid.'`['.$path.'] будут обновленны.');
 						$this->id = $Mid;
 						if(!isset($this->data[$Mid])) {
 							$this->fld_data['id'] = $Mid;
-							$this->_add();
+							if($this->_add())
+								$MESS[] = array('name' => 'alert', 'value' => 'Данные для модуля `'.$Mid.'`['.$path.'] успешно записанны.');
+							else
+								$MESS[] = array('name' => 'error', 'value' => 'Ошибка записи данных для модуля `'.$Mid.'`['.$path.'].');
 						}
-						else
-							$this->_update();
+						else {
+							if($this->_update())
+								$MESS[] = array('name' => 'alert', 'value' => 'Данные для модуля `'.$Mid.'`['.$path.'] успешно обновленны.');
+							else
+								$MESS[] = array('name' => 'error', 'value' => 'Ошибка обновления данных для модуля `'.$Mid.'`['.$path.'].');
+						}
 					}
 					$flag = &$MODUL;
 				}else {

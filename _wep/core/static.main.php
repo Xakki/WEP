@@ -165,16 +165,16 @@ class static_main {
 	 */
 
 	static function userAuth($login='', $pass='') {
-		global $_CFG, $SQL, $UGROUP;
+		global $_CFG;
 		session_go(1);
 		$result = array('', 0);
 		if (!isset($_SESSION['user']['id']) or $login) {
 			if ($_CFG['wep']['access'] and _new_class('ugroup', $UGROUP)) {
 				if (isset($_POST['login']) or $login) {
-					$result = $UGROUP->childs['users']->authorization($login, $pass);
+					$result = $UGROUP->authorization($login, $pass);
 				}
 				else
-					$result = $UGROUP->childs['users']->cookieAuthorization();
+					$result = $UGROUP->cookieAuthorization();
 			}
 			elseif ($_CFG['wep']['login'] and $_CFG['wep']['password']) {
 				$flag = 0;
@@ -201,8 +201,8 @@ class static_main {
 			}
 		}
 		else {
-			if (!$UGROUP)
-				_new_class('ugroup', $UGROUP);
+			//if (!$UGROUP)
+			//	_new_class('ugroup', $UGROUP);
 			$result = array($_CFG['_MESS']['authok'], 1);
 		}
 		if (!$result[1])

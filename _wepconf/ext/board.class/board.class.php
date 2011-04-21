@@ -95,7 +95,7 @@ class board_class extends kernel_extends {
 
 		$this->fields['city'] = array('type' => 'int', 'width' => 8,'attr' => 'NOT NULL');
 		$this->fields['rubric'] = array('type' => 'int', 'width' => 8,'attr' => 'NOT NULL');
-		$this->fields['type'] = array('type' => 'int','attr' => 'NOT NULL','default'=>0);
+		$this->fields['type'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL','default'=>0);
 		$this->fields['text'] = array('type' => 'text', 'attr' => 'NOT NULL');
 		$this->fields['cost'] = array('type' => 'int', 'width' => 10,'attr' => 'NOT NULL','default'=>0);
 		$this->fields['phone'] = array('type' => 'varchar', 'width' => 64, 'attr' => 'NOT NULL');
@@ -321,7 +321,7 @@ class board_class extends kernel_extends {
 		if(!isset($this->RUBRIC->tablename))
 			$this->RUBRIC = new rubric_class($this->SQL);
 		if($data['rubric']) {
-			$this->fields_form = $this->insertInArray($this->fields_form,'rubric',$this->ParamFieldsForm($this->id,$data['rubric'],$data['type'])); // обработчик параметров рубрики
+			$this->fields_form = static_main::insertInArray($this->fields_form,'rubric',$this->ParamFieldsForm($this->id,$data['rubric'],$data['type'])); // обработчик параметров рубрики
 		}
 		return $mess;
 	}
@@ -1179,7 +1179,7 @@ class board_class extends kernel_extends {
 				$xml .= '<param name="Отметка на карте" id="" edi=""><![CDATA[<span onclick="boardOnMap(1)" style="font-size: 14px;" class="jshref">Посмотреть</span><input type="hidden" id="mapx" value="'.$r['mapx'].'" name="mapx"><input type="hidden" id="mapy" value="'.$r['mapy'].'" name="mapy">]]></param>';
 			}
 			$xml .= '</item>';
-			if($_SERVER['robot']=='' and !isset($_SESSION['statview'][$r['id']]) and $statview){
+			if($this->_CFG['robot']=='' and !isset($_SESSION['statview'][$r['id']]) and $statview){
 				$arr_stat[]=$r['id'];
 				$_SESSION['statview'][$r['id']]=1;
 			}
@@ -1352,7 +1352,7 @@ class board_class extends kernel_extends {
 		$this->filter_form['text'] = array('type' => 'text','caption' => 'Ключевое слово','mask' =>array('max'=>128),'value'=>$filter['text']);
 
 		if($rid) {
-			//$this->filter_form = $this->insertInArray($this->filter_form,'rubric',$this->ParamFieldsForm($filter,$rid,0,$temcls));
+			//$this->filter_form = static_main::insertInArray($this->filter_form,'rubric',$this->ParamFieldsForm($filter,$rid,0,$temcls));
 			$this->filter_form += $this->ParamFieldsForm($filter,$rid,0,$temcls);
 		}
 

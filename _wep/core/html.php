@@ -22,7 +22,7 @@ ob_start('_obHandler');
 /*
   Запуск сесии
  */
-if (isset($_GET['_showallinfo']) and !$_SERVER['robot']) {// and !isset($_COOKIE['_showallinfo'])
+if (isset($_GET['_showallinfo']) and !$_CFG['robot']) {// and !isset($_COOKIE['_showallinfo'])
 	if ($_GET['_showallinfo'])
 		_setcookie('_showallinfo', $_GET['_showallinfo']);
 	else
@@ -30,7 +30,7 @@ if (isset($_GET['_showallinfo']) and !$_SERVER['robot']) {// and !isset($_COOKIE
 	$_COOKIE['_showallinfo'] = $_GET['_showallinfo'];
 }
 // or $_CFG['_F']['adminpage']
-if (!$_SERVER['robot'] and (isset($_GET['_showerror']) or $_CFG['_HREF']['arrayHOST'][0] == 'i') and !isset($_COOKIE['_showerror'])) {
+if (!$_CFG['robot'] and (isset($_GET['_showerror']) or $_CFG['_HREF']['arrayHOST'][0] == 'i') and !isset($_COOKIE['_showerror'])) {
 	_setcookie('_showerror', 1);
 	$_COOKIE['_showerror'] = 1;
 }
@@ -481,8 +481,8 @@ function _new_class($name, &$MODUL, &$OWNER = NULL, $no_extend=false) {
 	} else {
 		
 		$MODUL = NULL;
-
-		if(isset($_CFG['modulprm_ext'][$name]) && !$_CFG['modulprm_ext'][$name]['active'] && !$no_extend)
+		static_main::_prmModulLoad();
+		if(isset($_CFG['modulprm_ext'][$name]) && !$_CFG['modulprm'][$name]['active'] && !$no_extend)
 			$name = $_CFG['modulprm_ext'][$name];
 		$class_name = $name . "_class";
 		try {
