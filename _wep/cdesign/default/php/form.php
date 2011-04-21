@@ -76,11 +76,23 @@ function tpl_form(&$data) {
 					$texthtml .= '"><input type="'.$r['type'].'" name="'.$k.'" value="1" '.($r['value']?'checked="checked"':'').' '.$attr.'/>';
 				else {
 					$texthtml .= ' checkbox-valuelist">';
-					foreach($r['valuelist'] as $row) {
-						$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'['.$row['#id#'].']" value="'.$row['#id#'].'" class="radio" '.$attr;
-						if(isset($row['#sel#']) and $row['#sel#'])
+					foreach($r['valuelist'] as $kv=>$rv) {
+						$sel = false;
+						if(is_array($rv) and isset($rv['#id#'])) {
+							$id = $rv['#id#'];
+							$name = $rv['#name#'];
+							if(isset($rv['#sel#']) and $rv['#sel#'])
+								$sel = true;
+						} else {
+							$id = $kv;
+							$name = $rv;
+							if(isset($r['value']) and $r['value']==$id)
+								$sel = true;
+						}
+						$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'['.$id.']" value="'.$id.'" class="radio" '.$attr;
+						if($sel)
 							$texthtml .= ' checked="checked"';
-						$texthtml .= '/><div class="boxtitle">'.$row['#name#'].'</div>';
+						$texthtml .= '/><div class="boxtitle">'.$name.'</div>';
 					}
 				}
 				$texthtml .= '</div>';

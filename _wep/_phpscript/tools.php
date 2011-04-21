@@ -3,7 +3,7 @@
 function tools_sendReg() {
 	return 'Функция отключена.';
 	global $SQL;
-	_new_class('ugroup', $UGROUP)
+	_new_class('ugroup', $UGROUP);
 	$data = array();
 	$result = $SQL->execSQL('SELECT * FROM users WHERE reg_hash!="1"');
 	if(!$result->err)  {
@@ -16,7 +16,7 @@ function tools_sendReg() {
 			$arr['vars']['pass']=md5($this->_CFG['wep']['md5'].$arr['vars']['pass']);
 			$_SESSION['user']['id'] = $arr['vars']['id'];
 			if(!$UGROUP->child['user']->_add_item($arr['vars'])) {
-				_new_class('mail', $MAIL)
+				_new_class('mail', $MAIL);
 				$datamail['from']=$UGROUP->config["mailrobot"];
 				$datamail['mailTo']=$arr['vars']['email'];
 				$datamail['subject']='Подтвердите регистрацию на '.strtoupper($_SERVER['HTTP_HOST']);

@@ -464,5 +464,5 @@ function SpiderDetect($USER_AGENT='') {
 
 	return '';
 }
-$_SERVER['robot'] = SpiderDetect();
+$_CFG['robot'] = SpiderDetect();
 ?>

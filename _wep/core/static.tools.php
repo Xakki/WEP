@@ -170,12 +170,12 @@ class static_tools {
 					return array($MODUL->_cl => $rDATA);
 				}
 				else {
-					$rDATA['Создание таблицы']['@mess'][] = array('name' => 'error', 'value' => $MODUL->getMess('_install_ok') );
+					$rDATA['Создание таблицы']['@mess'][] = array('name' => 'ok', 'value' => $MODUL->getMess('_install_ok') );
 					return array($MODUL->_cl => $rDATA);
 				}
 			}
 			else {
-				$rDATA['Создание таблицы']['@mess'][] = array('name' => 'error', 'value' => $MODUL->getMess('_install_info') );
+				$rDATA['Создание таблицы']['@mess'][] = array('name' => 'alert', 'value' => $MODUL->getMess('_install_info',array($MODUL->_cl.'['.$MODUL->tablename.']')) );
 				return array($MODUL->_cl => $rDATA);
 			}
 		}
@@ -314,11 +314,15 @@ class static_tools {
 					foreach ($r as $kk => $rr)
 						$uniqlistR[$k][$kk] = $rr;
 					$tmp = '';
-					if (isset($indexlist[$k]))
-						$tmp = 'drop key `' . $k . '`, ';
+					if (isset($indexlist[$k])){
+						$tmp = ' drop key `' . $k . '`, ';
+						unset($indexlist[$k]);
+					}
 					if (is_array($r))
 						$r = implode('`,`', $r);
-					$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '` ' . $tmp . ' ADD UNIQUE KEY `' . $k . '` (`' . $r . '`)';
+					if (!isset($rDATA[$k]['@index']))		$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
+					else		$rDATA[$k]['@index'] .= ', ';
+					$rDATA[$k]['@index'] .= ' ' . $tmp . ' ADD UNIQUE KEY `' . $k . '` (`' . $r . '`)';
 				} else {
 					unset($uniqlist[$k]);
 				}
@@ -326,7 +330,9 @@ class static_tools {
 		}
 		if (count($uniqlist)) {
 			foreach ($uniqlist as $k => $r) {
-				$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '` drop key ' . $k . ' ';
+				if (!isset($rDATA[$k]['@index']))		$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
+				else		$rDATA[$k]['@index'] .= ', ';
+				$rDATA[$k]['@index'] .= ' drop key ' . $k . ' ';
 				unset($uniqlistR[$k]);
 			}
 		}
@@ -343,20 +349,18 @@ class static_tools {
 		if (count($MODUL->index_fields))
 			foreach ($MODUL->index_fields as $k => $r) {
 				if (!isset($indexlist[$k]) and !isset($uniqlistR[$k])) {
-					if (isset($rDATA[$k]['index']))
-						$rDATA[$k]['@index'] .= ', add index `' . $k . '` (`' . $r . '`)';
-					else
-						$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '` add index `' . $k . '` (`' . $r . '`)';
+					if (!isset($rDATA[$k]['@index']))		$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
+					else		$rDATA[$k]['@index'] .= ', ';
+					$rDATA[$k]['@index'] .= ' add index `' . $k . '` (`' . $r . '`)';
 				} else {
 					unset($indexlist[$k]);
 				}
 			}
 		if (count($indexlist)) {
 			foreach ($indexlist as $k => $r) {
-				if (isset($rDATA[$k]['index']))
-					$rDATA[$k]['@index'] = ', drop key ' . $k . ' ';
-				else
-					$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '` drop key ' . $k . ' ';
+				if (!isset($rDATA[$k]['@index']))		$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
+				else		$rDATA[$k]['@index'] .= ', ';
+				$rDATA[$k]['@index'] .= ' drop key ' . $k . ' ';
 			}
 		}
 		$rDATA['Оптимизация']['@newquery'] = 'OPTIMIZE TABLE `' . $MODUL->tablename . '`';
@@ -470,7 +474,7 @@ class static_tools {
 		else
 			return array($result->err, '');
 
-		$stepY = $MODUL->okr($maxY, 1) / 10;
+		$stepY = static_main::okr($maxY, 1) / 10;
 		$f = 'readyPlot(\'' . $MODUL->caption . '\',\'' . $MODUL->mf_statistic['Xname'] . '\',\'' . $MODUL->mf_statistic['Yname'] . '\',' . $stepY . ');';
 		$eval = '
 	line1 = [' . implode(',', $data) . '];
@@ -588,7 +592,7 @@ class static_tools {
 				$flag = 1;
 				//print_r('<pre>');print_r($_POST);exit();
 				foreach ($check_result as $table => $row) {
-					if (isset($row['@reattach']) and isset($_POST['query_'.$table][$table.'::reattach'])) {
+					if (isset($row['@reattach']) and isset($_POST['query_'.$table]['reattach'])) {
 						if (is_object($row['@reattach']) and self::_reattaches($row['@reattach']))
 							$mess[] = array('name' => 'ok', 'value' => '<b>' . $table . '</b> - ' . $MODUL->getMess('_file_ok'));
 						else {
@@ -599,22 +603,22 @@ class static_tools {
 					}
 					foreach ($row as $kk => $rr) {
 						if(is_array($rr)) {
-							if(isset($rr['@newquery']) and isset($_POST['query_'.$table][$table.'::'.$kk])) {
+							if(isset($rr['@newquery']) and isset($_POST['query_'.$table][$kk.'@newquery'])) {
 								$result = $MODUL->SQL->execSQL($rr['@newquery']);
 								if ($result->err) {
 									$mess[] = array('name' => 'error', 'value' => 'Error new query(' . $rr['@newquery'] . ')');
 									$flag = -1;
 								}
 							}
-							if(isset($rr['@index']) and isset($_POST['query_'.$table][$table.'::reattach'])) {
-								$result = $MODUL->SQL->execSQL($rr['@index']);
-								if ($result->err) {
-									$mess[] = array('name' => 'error', 'value' => 'Error index query(' . $rr['@index'] . ')');
-									$flag = -1;
-								}
+							if(isset($rr['@index']) and isset($_POST['query_'.$table][$kk.'@index'])) {
+									$result = $MODUL->SQL->execSQL($rr['@index']);
+									if ($result->err) {
+										$mess[] = array('name' => 'error', 'value' => 'Error index query(' . $rr['@index']. ')');
+										$flag = -1;
+									}
 							}
 						}
-					}
+					}//end foreach
 				}
 				if (count($_POST)<=1)
 					$mess[] = array('name' => 'alert', 'value' => $MODUL->getMess('_recheck_have_nothing'));
@@ -638,10 +642,7 @@ class static_tools {
 						$valuelist = $message = array();
 						if (is_array($row) and count($row)) {
 							if (isset($row['@reattach'])) {
-								$valuelist[] = array(
-									'#id#' => $table . '::reattach',
-									'#name#' => '<span style="color:blue;">Обновить файлы</span>',
-								);
+								$valuelist['reattach'] = '<span style="color:blue;">Обновить файлы</span>';
 								unset($row['@reattach']);
 							}
 							foreach ($row as $kk => $rr) {
@@ -657,15 +658,10 @@ class static_tools {
 								else
 									$desc = '';
 								if ($desc)
-									$valuelist[$kk.'@newquery'] = array(
-										'#id#' => $table . '::' . $kk,
-										'#name#' => '<i>' . $kk . '</i> - ' . $desc,
-									);
+									$valuelist[$kk.'@newquery'] = '<i>' . $kk . '</i> - ' . $desc;
+
 								if (is_array($rr) and isset($rr['@index']))
-									$valuelist[$kk.'@index'] = array(
-										'#id#' => $table . '::' . $kk . '::index',
-										'#name#' => '<i>' . $kk . '</i> - ' . $rr['@index'],
-									);
+									$valuelist[$kk.'@index'] = '<i>' . $kk . '</i> - ' . $rr['@index'];
 							}
 							if (count($valuelist)) {
 								$message = array('messages'=>$message);
@@ -695,25 +691,6 @@ class static_tools {
 		return Array($flag,$DATA);
 	}
 
-	static function okr($x, $y) {
-		$z = pow(10, $y);
-		return $z * round($x / $z);
-	}
-	
-	static function insertInArray($data, $afterkey, $insert_data) {
-		$output = array();
-		if (count($data)) {
-			foreach ($data as $k => $r) {
-				$output[$k] = $r;
-				if ($k == $afterkey) {
-					//$output = array_merge($output,$insert_data);
-					$output = $output + $insert_data;
-				}
-			}
-			return $output;
-		}
-		return $insert_data;
-	}
 
 }
 

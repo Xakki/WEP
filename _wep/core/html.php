@@ -75,14 +75,15 @@ class html {
 
 	function createTemplate() {
 		global $_tpl, $_html, $_CFG;
-		if ($this->flag and file_exists(($this->_PATHd . 'templates/' . $this->_templates . '.tpl'))) {
-			$_html = implode("", file($this->_PATHd . 'templates/' . $this->_templates . '.tpl'));
+		$file = $this->_PATHd . 'templates/' . $this->_templates . '.tpl';
+		if ($this->flag and file_exists($file)) {
+			$_html = file_get_contents($file);
 			$_html = str_replace('"', '\"', $_html);
 			include_once($_CFG['_PATH']['core'] . '/includesrc.php');
 			fileInclude($_CFG['fileIncludeOption']);
 			arraySrcToStr();
 		} elseif ($this->flag)
-			$_html = 'ERROR: Mising templates file ' . $this->_templates . '.tpl';
+			$_html = 'ERROR: Mising templates file ' . $this->_templates .' - '.$file ;
 
 		if ($this->flag) {
 			headerssent();
@@ -545,8 +546,8 @@ function _modulExists($class_name) {
 	global $_CFG;
 	$file = $fileS = false;
 	$class_name = explode('_', $class_name);
-	$fileS = $_CFG['_PATH']['core'] . $class_name[0] . (isset($class_name[1])?'.' . $class_name[1]:'') . '.php';
 
+	$fileS = $_CFG['_PATH']['core'] . $class_name[0] . (isset($class_name[1])?'.' . $class_name[1]:'') . '.php';
 	if (!isset($_CFG['modulprm'][$class_name[0]])) {
 		if (file_exists($fileS))
 			return $fileS;
@@ -558,13 +559,10 @@ function _modulExists($class_name) {
 		$file = $_CFG['modulprm'][$class_name[0]]['path'];
 		if ($file and file_exists($file))
 			return $file;
-	}else
-		return static_main::includeModulFile($class_name[0]);
-
-	if (!$file and file_exists($fileS))
-		return $fileS;
-
-	return false;
+	}
+	
+	$ret = static_main::includeModulFile($class_name[0]);
+	return $ret['file'];
 }
 
 ?>

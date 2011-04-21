@@ -189,8 +189,9 @@ final class modulprm_class extends kernel_extends {
 						$mess[] = array('name' => 'ok', 'value' => 'Модуль `' . $r['_entry'] . '` удалён!');
 				}
 			}
-			if($err = getCatchError() and $err[0]) {
-				$mess[] = $err[0];
+			$err = getCatchError();
+			if($err[0]) {
+				$mess[] = array('name' => 'error', 'value' => $err[0]);
 				$res = -1;
 			}
 
@@ -224,7 +225,6 @@ final class modulprm_class extends kernel_extends {
 		$data = array('parent' => '');
 		startCatchError();
 		try {
-			static_main::includeModulFile($name);
 			$name = $name.'_class';
 			$obj = new ReflectionClass($name);
 			$data['parent'] = $obj->getParentClass();
@@ -233,7 +233,6 @@ final class modulprm_class extends kernel_extends {
 				$data['parent'] = '';
 			else {
 				$data['parent'] = explode('_',$data['parent']);$data['parent'] = $data['parent'][0];
-				//static_main::includeModulFile($data['parent']);//подключаем всякие extend
 			}
 			$MODUL = $obj->newInstance();
 		} catch  (Exception $e) {
@@ -340,56 +339,62 @@ final class modulprm_class extends kernel_extends {
 	}
 
 	function ForUpdateModulInfo($Mid,&$OWN = NULL) {
-		$this->mDump();
 		$MESS = array();
 		$flag = false;
-		$parent = $Mid;
-		if(isset($this->data[$parent])) {
-			$type = $typemodul = $this->data[$parent]['typemodul'];
-		} else {
-			if($OWN) $parent = $OWN->_cl;
-			$type = $typemodul = 0;
-		}
-		while($this->data[$parent]['parent_id']) {
-			$parent = $this->data[$parent]['parent_id'];
-			$type = $this->data[$parent]['typemodul'];
-			$typemodul = 5;
-		}
-		if($parent != $Mid) {
-			$path = $type.':'.$parent.'.class/'.$Mid.'.childs.php';
-		}
-		else
-			$path = $type.':'.$parent.'.class/'.$Mid.'.class.php';
-		$fpath = static_main::getPathModul($path);
-
 		try { // ловец снов
-			if(file_exists($fpath)) {
-				include_once($fpath);
-			}
-			else {
-				$path = $type.':'.$parent.'.class/'.$parent.'.class.php';
-				$fpath = static_main::getPathModul($path);
-				if(file_exists($fpath))
-					include_once($fpath);
+			$this->mDump();//дамп, выполниться один раз только
+			$parent = $fpath = '';
+			if($OWN) $parent = $OWN->_cl;
+			$ret = static_main::includeModulFile($Mid,$parent);
+			if($ret['file']) {
+				$fpath = $ret['file'];
+				$path = $ret['path'];
+				$typemodul= $ret['type'];
+			}/*elseif(isset($this->data[$Mid])) {
+				$parent = $Mid;
+				$type = $typemodul = $this->data[$parent]['typemodul'];
+				while($this->data[$parent]['parent_id']) {
+					$parent = $this->data[$parent]['parent_id'];
+					$type = $this->data[$parent]['typemodul'];
+					$typemodul = 5;
+				}
+				if($parent != $Mid) {
+					$path = $type.':'.$parent.'.class/'.$Mid.'.childs.php';
+				}
 				else
-					$fpath = '';
-			}
+					$path = $type.':'.$parent.'.class/'.$Mid.'.class.php';
+				$fpath = static_main::getPathModul($path);
+				if(!file_exists($fpath)) {
+					$path = $type.':'.$parent.'.class/'.$parent.'.class.php';
+					$fpath = static_main::getPathModul($path);
+					if(!file_exists($fpath))
+						$fpath = '';
+				}
+			}*/
 			$this->fld_data = array();
 			if($fpath) {
+				include_once($fpath);
 				if(_new_class($Mid, $MODUL,$OWN, true)) {
-					if($OWN and $this->data[$Mid]['parent_id']!=$OWN->_cl)			$this->fld_data['parent_id'] = $OWN->_cl;
-					if($this->data[$Mid]['name']!=$MODUL->caption)			$this->fld_data['name'] = $MODUL->caption;
-					if($this->data[$Mid]['tablename']!=$MODUL->tablename) $this->fld_data['tablename'] = $MODUL->tablename;
-					if($this->data[$Mid]['path']!=$path)						$this->fld_data['path'] = $path;
-					if($this->data[$Mid]['ver']!=$MODUL->ver)					$this->fld_data['ver'] = $MODUL->ver;
-					if($this->data[$Mid]['typemodul']!=$typemodul)					$this->fld_data['typemodul'] = $typemodul;
+					if($OWN and (!isset($this->data[$Mid]) or $this->data[$Mid]['parent_id']!=$OWN->_cl))
+						$this->fld_data['parent_id'] = $OWN->_cl;
+					if(!isset($this->data[$Mid]) or $this->data[$Mid]['name']!=$MODUL->caption)
+						$this->fld_data['name'] = $MODUL->caption;
+					if(!isset($this->data[$Mid]) or $this->data[$Mid]['tablename']!=$MODUL->tablename)
+						$this->fld_data['tablename'] = $MODUL->tablename;
+					if(!isset($this->data[$Mid]) or $this->data[$Mid]['path']!=$path)
+						$this->fld_data['path'] = $path;
+					if(!isset($this->data[$Mid]) or $this->data[$Mid]['ver']!=$MODUL->ver)
+						$this->fld_data['ver'] = $MODUL->ver;
+					if(!isset($this->data[$Mid]) or $this->data[$Mid]['typemodul']!=$typemodul)
+						$this->fld_data['typemodul'] = $typemodul;
 					//if($this->data[$Mid]['active']!=1)					$this->fld_data['active'] = 1;
 					$obj = new ReflectionClass($Mid.'_class');
 					$extend = $obj->getParentClass();
 					$extend = $extend->name;
 					if($extend=='kernel_extends') $extend = '';
 					else $extend = substr($extend,0,-6);
-					if($this->data[$Mid]['extend']!=$extend)					$this->fld_data['extend'] = $extend;
+					if(!isset($this->data[$Mid]) or $this->data[$Mid]['extend']!=$extend)
+						$this->fld_data['extend'] = $extend;
 
 					if(count($this->fld_data)) {
 						$MESS[] = array('name' => 'alert', 'value' => 'Данные модуля `'.$Mid.'`['.$path.'] будут обновленны.');

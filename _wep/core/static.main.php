@@ -44,30 +44,39 @@ class static_main {
 	}
 
 
-	function includeModulFile($Mid,$Pid='') {
+	static function includeModulFile($Mid,$Pid='') {
 		global $_CFG;
+		$ret = array('type'=>0, 'path'=>'', 'file'=>false);
 		foreach ($_CFG['modulinc'] as $k => $r) {
-			$file = $r['path'].''.$Mid.'.class/'.$Mid.'.class.php';
+			$ret['type'] = $k;
+			$ret['path'] = $Mid.'.class/'.$Mid.'.class.php';
+			$ret['file'] = $r['path'].$ret['path'];
 			//print_r($file.'<br> ');
-			if(file_exists($file)) {
-				include_once($file);
-				return $file;
+			if(file_exists($ret['file'])) {
+				$ret['path'] = $k.':'.$ret['path'];
+				//include_once($ret['file']);
+				return $ret;
 			}
 
 			if($Pid) {
-				$file = $r['path'].'/'.$Pid.'.class/'.$Mid.'.childs.php';
-				if(file_exists($file)) {
-					include_once($file);
-					return $file;
+				$ret['type'] = 5;
+				$ret['path'] = $Pid.'.class/'.$Mid.'.childs.php';
+				$ret['file'] = $r['path'].$ret['path'];
+				if(file_exists($ret['file'])) {
+					$ret['path'] = $k.':'.$ret['path'];
+					//include_once($ret['file']);
+					return $ret;
 				}
-				$file = $r['path'].'/'.$Pid.'.class/'.$Pid.'.class.php';
-				if(file_exists($file)) {
-					include_once($file);
-					return $file;
+				$ret['path'] = $Pid.'.class/'.$Pid.'.class.php';
+				$ret['file'] = $r['path'].$ret['path'];
+				if(file_exists($ret['file'])) {
+					$ret['path'] = $k.':'.$ret['path'];
+					//include_once($ret['file']);
+					return $ret;
 				}
 			}
 		}
-		return '';
+		return array('type'=>false, 'path'=>false, 'file'=>false);
 	}
 	/*
 	  Проверка доступа пол-ля к модулю
@@ -224,6 +233,25 @@ class static_main {
 		return true;
 	}
 
+	static function okr($x, $y) {
+		$z = pow(10, $y);
+		return $z * round($x / $z);
+	}
+	
+	static function insertInArray($data, $afterkey, $insert_data) {
+		$output = array();
+		if (count($data)) {
+			foreach ($data as $k => $r) {
+				$output[$k] = $r;
+				if ($k == $afterkey) {
+					//$output = array_merge($output,$insert_data);
+					$output = $output + $insert_data;
+				}
+			}
+			return $output;
+		}
+		return $insert_data;
+	}
 }
 
 ?>

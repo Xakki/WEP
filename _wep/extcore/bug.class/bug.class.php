@@ -40,14 +40,14 @@ class bug_class extends kernel_extends {
 
 		# fields
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'min' => '1');	
-		$this->fields['err_type'] = array('type' => 'int', 'attr' => 'NOT NULL');
+		$this->fields['err_type'] = array('type' => 'int', 'width' => 6, 'attr' => 'NOT NULL');
 		$this->fields['file'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
-		$this->fields['line'] = array('type' => 'int', 'attr' => 'NOT NULL');
+		$this->fields['line'] = array('type' => 'int', 'width' => 8, 'attr' => 'NOT NULL');
 		$this->fields['debug'] = array('type' => 'text', 'attr' => 'NOT NULL');
 		$this->fields['href'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['page_id'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
 		$this->fields['hash'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
-		$this->fields['cnt'] = array('type' => 'int', 'attr' => 'NOT NULL');
+		$this->fields['cnt'] = array('type' => 'int', 'width' => 8, 'attr' => 'NOT NULL');
 
 		$this->unique_fields['hash'] = 'hash';
 

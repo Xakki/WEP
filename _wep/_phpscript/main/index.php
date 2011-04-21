@@ -6,7 +6,7 @@
 	
 	if(isset($_GET['_php']) and $_GET['_php']=='sitemap') {
 		$SITEMAP = TRUE;
-		$PGLIST = new pg_class();
+		_new_class('pg',$PGLIST);
 		echo $PGLIST->creatSiteMaps();
 		exit();
 	}
@@ -39,7 +39,7 @@
 	$rid = 0;
 
 //INCLUDE*****************
-	$PGLIST = new pg_class();
+	_new_class('pg',$PGLIST);
 		if (!isset($_GET['page'])) 
 			$_GET['page'] = "index";
 		$_GET['page'] = explode('/',$_GET['page']);

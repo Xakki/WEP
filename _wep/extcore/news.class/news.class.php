@@ -22,7 +22,7 @@ class news_class extends kernel_extends {
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 127, 'attr' => 'NOT NULL', 'min'=>'1');
 		$this->fields['description'] = array('type' => 'text', 'width' => 500, 'attr' => 'NOT NULL', 'min' => '100');
 		$this->fields['text'] = array('type' => 'text', 'width' => 20000, 'min' => '1');
-		$this->fields['ndate'] = array('type' => 'int', 'attr' => 'NOT NULL');
+		$this->fields['ndate'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL');
 		$this->fields['category'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0);
 		$this->fields['href'] = array('type' => 'varchar', 'width' => 127, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['redirect'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => '1');
