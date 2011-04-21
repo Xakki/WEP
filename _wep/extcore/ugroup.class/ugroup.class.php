@@ -179,6 +179,8 @@ class users_class extends kernel_extends {
 		$this->fields['reg_hash'] = array('type' => 'varchar', 'width' => 128, 'attr' => 'NOT NULL', 'default'=>'');
 		$this->fields['balance'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default'=>0);
 
+		$this->fields['karma'] = array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL', 'default'=>0);
+
 
 		// FORM FIELDS
 		if($this->mf_use_charid){

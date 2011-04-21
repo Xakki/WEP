@@ -384,7 +384,7 @@ function shutdown_function() {
 /* SESSION */
 function session_go($force=0) {
 	global $_CFG,$SESSION_GOGO;
-	if (!$_SERVER['robot'] and (isset($_COOKIE[$_CFG['session']['name']]) or $force) and !defined('SID')) {
+	if ((!isset($_SERVER['robot']) || !$_SERVER['robot']) and (isset($_COOKIE[$_CFG['session']['name']]) or $force) and !defined('SID')) {
 		if ($_CFG['wep']['sessiontype'] == 1) {
 			if (!$SESSION_GOGO) {
 				require_once($_CFG['_PATH']['core'] . '/session.php');

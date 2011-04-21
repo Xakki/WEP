@@ -30,7 +30,7 @@ if (isset($_GET['_showallinfo']) and !$_SERVER['robot']) {// and !isset($_COOKIE
 	$_COOKIE['_showallinfo'] = $_GET['_showallinfo'];
 }
 // or $_CFG['_F']['adminpage']
-if (!$_SERVER['robot'] and (isset($_GET['_showerror']) or $_CFG['_HREF']['arrayHOST'][0] == 'i') and !isset($_COOKIE['_showerror'])) {
+if ((!isset($_SERVER['robot']) || !$_SERVER['robot']) and (isset($_GET['_showerror']) or $_CFG['_HREF']['arrayHOST'][0] == 'i') and !isset($_COOKIE['_showerror'])) {
 	_setcookie('_showerror', 1);
 	$_COOKIE['_showerror'] = 1;
 }
