@@ -19,6 +19,7 @@
 
 	if(count($_POST) and isset($_POST['login'])) {
 		$result = static_main::userAuth($_POST['login'],$_POST['pass']);
+print_r($result);
 		if($result[1]) {
 			@header("Location: ".$ref);
 			die($ref);
@@ -33,7 +34,7 @@
 		@header("Location: ".$ref);
 		die($ref);
 	}
-	if($_COOKIE['cdesign'])
+	if(isset($_COOKIE['cdesign']) and $_COOKIE['cdesign'])
 		$_design = $_COOKIE['cdesign'];
 	elseif($_SESSION['user']['design'])
 		$_design = $_SESSION['user']['design'];

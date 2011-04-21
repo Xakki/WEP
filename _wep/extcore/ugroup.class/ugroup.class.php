@@ -134,6 +134,12 @@ class ugroup_class extends kernel_extends
 		//	session_unset();
 		return $ret;
 	}*/
+	function authorization($login,$pass) {
+		return $this->childs['users']->authorization($login,$pass);
+	}
+	function cookieAuthorization() {
+		return $this->childs['users']->cookieAuthorization();
+	}
 }
 
 
@@ -239,7 +245,7 @@ class users_class extends kernel_extends {
 	}
 
 	function _install() {
-		$this->def_records[] = array(
+		$this->def_records[0] = array(
 			$this->fn_login => $this->_CFG['wep']['login'],
 			'name'=>'Главный',
 			$this->fn_pass => md5($this->_CFG['wep']['md5'].$this->_CFG['wep']['password']), 
@@ -272,8 +278,8 @@ class users_class extends kernel_extends {
 				$this->listfields = array('t2.*,t2.active as gact,t2.name as gname,t1.*');
 				$this->clause = 't1 Join '.$this->owner->tablename.' t2 on t1.'.$this->owner_name.'=t2.id where t1.'.$this->fn_login.' = \''.$login.'\' and t1.'.$this->fn_pass.' =\''.md5($this->_CFG['wep']['md5'].$pass).'\''; 
 				if(!$this->_list())
-					//{die();}
-					{header('Location: '.$this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['wepname'].'/login.php?install');die();}
+					return array('Ошибка подпрограммы.',0);
+					//{header('Location: '.$this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['wepname'].'/login.php?install');die();}
 				if(count($this->data))
 				{
 					unset($_SESSION['user']);
@@ -289,7 +295,7 @@ class users_class extends kernel_extends {
 						return array($this->_CFG['_MESS']['denied'],0);
 					else
 					{
-						if($_POST['remember']=='1'){
+						if(isset($_POST['remember']) and $_POST['remember']=='1'){
 							_setcookie('remember', md5($this->data[0][$this->fn_pass]).'_'.$this->data[0]['id'], (time()+(86400*$this->owner->config['rememberday'])));
 						}
 						$this->setUserSession();
@@ -342,6 +348,7 @@ class users_class extends kernel_extends {
 
 	function setUserSession($data='') {
 		session_go(1);
+		reset($this->data);
 		if($data==='') $data = current($this->data);
 		$_SESSION['user'] = $data;
 		$_SESSION['user']['owner_id'] = $data[$this->owner_name];

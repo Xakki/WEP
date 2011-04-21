@@ -8,7 +8,7 @@
 	require($_CFG['_PATH']['phpscript'].'/jquery_getjson.php');
 
 
-	if($_SERVER['robot']) {
+	if($_CFG['robot']) {
 		$GLOBALS['_RESULT']['html'] = $_CFG['_MESS']['deniedrobot'];
 		exit($_CFG['_MESS']['deniedrobot']);
 	}

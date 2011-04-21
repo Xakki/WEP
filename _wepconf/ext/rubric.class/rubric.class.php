@@ -7,6 +7,8 @@ class rubric_class extends kernel_extends {
 		$this->mf_ordctrl = true;
 		$this->mf_actctrl = true;
 		$this->caption = 'Рубрики';
+		$this->data_path = 
+			$this->data3 = array();
 		return true;
 	}
 
@@ -18,6 +20,7 @@ class rubric_class extends kernel_extends {
 		$this->fields['rname'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'min' => '1');
 		$this->fields['checked'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL','default'=>'0');
 		$this->fields['imgpos'] = array('type' => 'int', 'width' => 3, 'attr' => 'NOT NULL', 'min' => '1');
+		$this->fields['chtext'] = array('type' => 'text', 'attr' => 'NOT NULL', 'min' => '1', 'default'=>'');
 
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название рубрики');
 		$this->fields_form['rname'] = array('type' => 'text', 'caption' => 'Адресс рускими буквами');
@@ -25,6 +28,7 @@ class rubric_class extends kernel_extends {
 		$this->fields_form['parent_id'] = array('type' => 'list', 'listname'=>'parentlist', 'caption' => 'Родительская рубрика','mask' =>array('fview'=>1));
 		$this->fields_form["imgpos"] = array("type" => "int", "caption" => "Позиция пиктограмки");
 		$this->fields_form["ordind"] = array("type" => "int", "caption" => "Сортировка");
+		$this->fields_form["chtext"] = array("type" => "textarea", "caption" => "Текст",'mask' =>array('name'=>'all'));
 		$this->fields_form['checked'] = array('type' => 'checkbox', 'caption' => 'Разрешить для подачи объявления');
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Активность');
 
@@ -33,7 +37,9 @@ class rubric_class extends kernel_extends {
 		$this->unique_fields['lname'] = 'lname';
 		$this->index_fields['checked'] = 'checked';
 		$this->index_fields['imgpos'] = 'imgpos';
-
+		
+		$this->selFields = 't1.id,t1.name,t1.rname,t1.lname,t1.parent_id,t1.imgpos,t1.ordind,t1.checked,t1.active';
+		//id,name,rname,lname,parent_id,imgpos,ordind,checked,active
 	}
 
 	function _childs() {
@@ -46,7 +52,7 @@ class rubric_class extends kernel_extends {
 		global $CITY;
 		if(count($CITY->citylist))
 			$cls = ' and t2.city IN ('.implode(',',$CITY->citylist).') ';
-		$clause = 'SELECT t1.*,sum(t2.cnt) as cnt FROM '.$this->tablename.' t1 LEFT JOIN '.$this->childs['countb']->tablename.' t2 ON t1.id=t2.owner_id '.$cls.' WHERE t1.active=1 GROUP BY t1.id ORDER BY t1.parent_id,t1.ordind';
+		$clause = 'SELECT '.$this->selFields.',sum(t2.cnt) as cnt FROM '.$this->tablename.' t1 LEFT JOIN '.$this->childs['countb']->tablename.' t2 ON t1.id=t2.owner_id '.$cls.' WHERE t1.active=1 GROUP BY t1.id ORDER BY t1.parent_id,t1.ordind';
 		$result = $this->SQL->execSQL($clause);
 		if(!$result->err)
 			while ($row = $result->fetch_array()){
@@ -62,7 +68,7 @@ class rubric_class extends kernel_extends {
 	function simpleRubricCache() {
 		if(isset($this->data2) and count($this->data2)) return 0;
 		$this->data2=$this->data=array();
-		$clause = 'SELECT t1.* FROM '.$this->tablename.' t1 WHERE t1.active=1 ORDER BY t1.parent_id,t1.ordind';
+		$clause = 'SELECT '.$this->selFields.' FROM '.$this->tablename.' t1 WHERE t1.active=1 ORDER BY t1.parent_id,t1.ordind';
 		$result = $this->SQL->execSQL($clause);
 		if(!$result->err)
 			while ($row = $result->fetch_array()){
@@ -85,6 +91,7 @@ class rubric_class extends kernel_extends {
 		$temp = $id;
 		$tpath= array();
 		while(isset($this->data2[$temp])) {
+			$PGLIST->pageinfo['keywords'] .= ', '.$this->data2[$temp]['name'];
 			$tpath[$this->data2[$temp]['lname'].'/'.$PGLIST->id] = array('name'=>$this->data2[$temp]['name']);
 			$temp=$this->data2[$temp]['parent_id'];
 		}
