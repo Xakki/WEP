@@ -343,34 +343,13 @@ final class modulprm_class extends kernel_extends {
 		$flag = false;
 		try { // ловец снов
 			$this->mDump();//дамп, выполниться один раз только
-			$parent = $fpath = '';
-			if($OWN) $parent = $OWN->_cl;
-			$ret = static_main::includeModulFile($Mid,$parent);
+			$fpath = '';
+			$ret = static_main::includeModulFile($Mid,$OWN);
 			if($ret['file']) {
 				$fpath = $ret['file'];
 				$path = $ret['path'];
 				$typemodul= $ret['type'];
-			}/*elseif(isset($this->data[$Mid])) {
-				$parent = $Mid;
-				$type = $typemodul = $this->data[$parent]['typemodul'];
-				while($this->data[$parent]['parent_id']) {
-					$parent = $this->data[$parent]['parent_id'];
-					$type = $this->data[$parent]['typemodul'];
-					$typemodul = 5;
-				}
-				if($parent != $Mid) {
-					$path = $type.':'.$parent.'.class/'.$Mid.'.childs.php';
-				}
-				else
-					$path = $type.':'.$parent.'.class/'.$Mid.'.class.php';
-				$fpath = static_main::getPathModul($path);
-				if(!file_exists($fpath)) {
-					$path = $type.':'.$parent.'.class/'.$parent.'.class.php';
-					$fpath = static_main::getPathModul($path);
-					if(!file_exists($fpath))
-						$fpath = '';
-				}
-			}*/
+			}
 			$this->fld_data = array();
 			if($fpath) {
 				include_once($fpath);
