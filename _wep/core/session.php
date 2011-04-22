@@ -2,6 +2,7 @@
 class session_gogo extends kernel_extends {
 	function __construct($tablename='_session') {
 		global $_CFG;
+		$this->grant_sql = false;
 		if(!$this->SQL) {
 			trigger_error('Ошибка запуска сессии. Нет связи с БД.',E_USER_WARNING);
 			return (true);

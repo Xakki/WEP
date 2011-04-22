@@ -140,6 +140,12 @@ class ugroup_class extends kernel_extends
 	function cookieAuthorization() {
 		return $this->childs['users']->cookieAuthorization();
 	}
+	function regForm() {
+		return $this->childs['extusers']->regForm();
+	}
+	function regConfirm() {
+		return $this->childs['extusers']->regConfirm();
+	}
 }
 
 

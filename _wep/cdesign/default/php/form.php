@@ -110,6 +110,7 @@ function tpl_form(&$data) {
 				<input type="hidden" name="srlz_'.$k.'" value="'.htmlspecialchars($serl,ENT_QUOTES,$_CFG['wep']['charset']).'"/>';
 			}
 			elseif($r['type']=='list' and !$r['readonly']) {
+				//print_r('<pre>');print_r($r['value']);print_r($r['valuelist']);
 				$texthtml .= '<div class="form-value">';
 				if($r['size']>1) {
 					$texthtml .= '<select size="'.$r['size'].'" name="'.$k.'" class="small" onchange="'.$r['onchange'].'" '.$attr;
@@ -352,11 +353,12 @@ function tpl_form(&$data) {
 	return $texthtml;
 }
 
-function selectitem($data,$val='',$flag=0) {
+function selectitem($data,$val=NULL,$flag=0) {
 	$texthtml = '';
-	if($val!=='') {
-		if(!is_array($val)) $val = array($val=>true);
-		else $val = array_keys($val);
+	if(!is_null($val)) {
+		if(!is_array($val)) 
+			$val = array($val=>true);
+		//else $val = array_keys($val);
 	}
 	if(is_array($data) and count($data))
 		foreach($data as $r) {
@@ -364,9 +366,9 @@ function selectitem($data,$val='',$flag=0) {
 			if(isset($r['#item#']) and count($r['#item#']) and isset($r['#checked#']) and $r['#checked#']==0)
 				$texthtml .= '<optgroup label="'.$r['#name#'].'" class="selpad'.$flag.'"></optgroup>';
 			else {
-				if($val==='' and $r['#sel#'])
+				if(is_null($val) and $r['#sel#'])
 					$sel = 'selected="selected"';
-				elseif($val!=='' and isset($val[$r['#id#']]))
+				elseif(!is_null($val) and isset($val[$r['#id#']]))
 					$sel = 'selected="selected"';
 				else
 					$sel = '';

@@ -83,8 +83,8 @@ abstract class kernel_extends {
 			}
 		}
 		echo ' - '.$name;
-		//print_r(debugPrint());
-		return NULL;
+		print_r(debugPrint());
+		//return NULL;
 	}
 
 	/* -----------CMS---FUNCTION------------
@@ -837,7 +837,7 @@ abstract class kernel_extends {
 
 	public function kPreFields(&$data, &$param) {
 		foreach ($this->fields_form as $k => &$r) {
-			if ($r['readonly'] and $this->id) // если поле "только чтение" и редактируется , то значение берем из БД,
+			if (isset($r['readonly']) and $r['readonly'] and $this->id) // если поле "только чтение" и редактируется , то значение берем из БД,
 				$data[$k] = $this->data[$this->id][$k];
 
 			if (isset($r['mask']['eval']))
@@ -846,7 +846,7 @@ abstract class kernel_extends {
 				eval('$data[$k]=' . $r['mask']['evala'] . ';');
 			elseif (isset($r['mask']['evalu']) and $this->id)
 				eval('$data[$k]=' . $r['mask']['evalu'] . ';');
-			elseif ($r['mask']['fview'] == 2 or (isset($r['mask']['usercheck']) and !static_main::_prmUserCheck($r['mask']['usercheck']))) {
+			elseif ((isset($r['mask']['fview']) and $r['mask']['fview'] == 2) or (isset($r['mask']['usercheck']) and !static_main::_prmUserCheck($r['mask']['usercheck']))) {
 				$r['mask']['fview'] = 2;
 				unset($data[$k]);
 				continue;
@@ -886,7 +886,7 @@ abstract class kernel_extends {
 				else
 					$r['value'] = '';
 			}
-			elseif ($r['multiple'] > 0 and $r['type'] == 'list') {
+			elseif (isset($r['multiple']) and $r['multiple'] > 0 and $r['type'] == 'list') {
 				if (!is_array($data[$k])) {
 					$data[$k] = trim($data[$k], '|');
 					$r['value'] = explode('|', $data[$k]);
@@ -896,7 +896,7 @@ abstract class kernel_extends {
 			elseif (isset($data[$k])) //  and $data[$k]
 				$r['value'] = $data[$k];
 
-			if (isset($this->data[$this->id]['_ext_' . $k]))
+			if (isset($this->id) and isset($this->data[$this->id]['_ext_' . $k]))
 				$r['ext'] = $this->data[$this->id]['_ext_' . $k];
 
 			//end foreach
@@ -1274,7 +1274,7 @@ abstract class kernel_extends {
 
 			if ($ftype == 'add') {
 				$this->parent_id = $this->id;
-				unset($this->id);
+				$this->id=NULL;
 				list($xml['formcreat'], $flag) = $this->_UpdItemModul($param);
 				if ($flag == 1)
 					$this->id = $this->parent_id;
@@ -1299,7 +1299,7 @@ abstract class kernel_extends {
 				if ($this->mf_istree)
 					$this->id = $this->data[$this->id]['parent_id'];
 				else
-					unset($this->id);
+					$this->id = NULL;
 			}
 			elseif ($ftype == 'dis' && $this->id) {
 				if ($this->mf_istree)
@@ -1308,7 +1308,7 @@ abstract class kernel_extends {
 				if ($this->mf_istree)
 					$this->id = $this->tree_data[$this->id]['parent_id'];
 				else
-					unset($this->id);
+					$this->id=NULL;
 			}
 			elseif ($ftype == 'del' && $this->id) {
 				if ($this->mf_istree)
@@ -1317,7 +1317,7 @@ abstract class kernel_extends {
 				if ($this->mf_istree)
 					$this->id = $this->tree_data[$this->id]['parent_id'];
 				else
-					unset($this->id);
+					$this->id=NULL;
 			}
 			elseif ($ftype == 'tools') {
 				$xml['formtools'] = array();
@@ -1663,7 +1663,7 @@ abstract class kernel_extends {
 						$s[$key]['#name#'] = $value['#name#']; //_substr($value['name'],0,60).(_strlen($value['name'])>60?'...':'')
 				}else
 					$s[$key]['#name#'] = $value;
-				if ($key != $id and count($data[$key]) and is_array($data[$key]))
+				if ($key != $id and isset($data[$key]) and count($data[$key]) and is_array($data[$key]))
 					$s[$key]['#item#'] = $this->_forlist($data, $key, $select);
 			}
 

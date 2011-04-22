@@ -1,6 +1,8 @@
 <?
 		foreach($fields as $k=>$r) {
-			if(($r['readonly'] and !$this->id) or $r['mask']['fview']==2 or (isset($r['mask']['usercheck']) and !static_main::_prmUserCheck($r['mask']['usercheck'])))
+			if((isset($r['readonly']) and $r['readonly'] and !$this->id) or 
+				(isset($r['mask']['fview']) and $r['mask']['fview']==2) or 
+				(isset($r['mask']['usercheck']) and !static_main::_prmUserCheck($r['mask']['usercheck'])))
 				continue;
 			if($r['type']!='info') {
 				if(!isset($r['value']) and isset($r['default']) and !isset($_POST[$k])) {// and !$this->id
@@ -62,6 +64,7 @@
 							$val = array_combine($r['value'],$r['value']);
 						else
 							$val = array($r['value']=>$r['value']);
+						$r['value'] = $val;
 						$temparr= array();
 						foreach($val as $kk) {
 							if(isset($arrlist[$kk])) {

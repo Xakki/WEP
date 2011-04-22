@@ -1,10 +1,9 @@
 <?
-	global $UGROUP,$USERS,$_tpl;
-	if(!$UGROUP) _new_class('ugroup', $UGROUP);
-	if(!$USERS) $USERS = &$UGROUP->childs['users'];
+	global $_tpl;
+	_new_class('ugroup', $UGROUP);
 
 	if(isset($_GET['confirm'])){
-		list($DATA,$flag) = $USERS->regConfirm();
+		list($DATA,$flag) = $UGROUP->regConfirm();
 		$html = '<a href="/index.html">Обновите страницу</a>';
 		$_tpl['logs'] .= '<div id="ajaxload" style="display: block; top: 20%; left: 35%; height: 290px;">
 		<div class="layerblock">
@@ -19,7 +18,7 @@
 		<div id="ajaxbg" style="opacity: 0.5; display: block;">&nbsp;</div>';
 		$_tpl['onload'] .= 'fMessPos();';
 	}else {
-		list($DATA['formcreat'],$flag) = $USERS->regForm();
+		list($DATA['formcreat'],$flag) = $UGROUP->regForm();
 		$html = $HTML->transformPHP($DATA,'formcreat');
 	}
 	return $html;

@@ -15,6 +15,19 @@ class pg_class extends kernel_extends {
 		$this->config['memcachezip'] = 0;
 		$this->config['sitemap'] = 0;
 		$this->config['IfDontHavePage'] = '';
+		$this->config['menu'] = array(
+			0 => '',
+			1 => 'Меню №1',
+			2 => 'Меню №2',
+			3 => 'Меню №3');
+		$this->config['marker'] = array(
+			'text' => 'text',
+			'head' => 'head',
+			'blockadd' => 'blockadd',
+			'param' => 'param',
+			'path' => 'path',
+			'logs' => 'logs',
+			'foot' => 'foot');
 
 		$this->config_form['sitename'] = array('type' => 'text', 'caption' => 'Название сайта','mask'=>array('max'=>1000));
 		$this->config_form['address'] = array('type' => 'textarea', 'caption' => 'Адрес и контакты','mask'=>array('max'=>1000));
@@ -108,12 +121,12 @@ class pg_class extends kernel_extends {
 	}
 	
 	function _childs() {
-		$this->create_child("content");
+		$this->create_child('content');
 	}	
 
 	function _getlist(&$listname,$value=0) {
 		$data = array();
-		if ($listname == "ugroup") {
+		if ($listname == 'ugroup') {
 			$data['user'] = ' - Авторизованные -';
 			$data['anonim'] = ' - Не авторизованные -';
 			$data['0'] = ' - Все -';
@@ -124,7 +137,7 @@ class pg_class extends kernel_extends {
 			}
 			return $data;
 		}
-		elseif($listname == "templates") {
+		elseif($listname == 'templates') {
 			$dir = dir($this->_CFG['_PATH']['design'].$this->_CFG['wep']['design'].'/templates');
 			while (false !== ($entry = $dir->read())) {
 				if (strstr($entry,'.tpl')) {
@@ -135,16 +148,19 @@ class pg_class extends kernel_extends {
 			$dir->close();
 			return $data;
 		}
-		elseif($listname == "mdesign") {
+		elseif($listname == 'mdesign') {
 			$data['default'] = 'default';
 			$data['new'] = 'new';
 			return $data;
 		}
-		elseif($listname == "pagemap") {
+		elseif($listname == 'pagemap') {
 			return $this->childs['content']->getInc('.map.php');
 		}
-		elseif($listname == "pagetype") {
+		elseif($listname == 'pagetype') {
 			return $this->childs['content']->getInc();
+		}
+		elseif ($listname == 'menu') {
+			return $this->config['menu'];
 		}
 		else return parent::_getlist($listname,$value);
 	}
@@ -181,7 +197,7 @@ class pg_class extends kernel_extends {
 			header("HTTP/1.0 401");
 			if(!$this->can_show())
 			{
-				$HTML->_templates = "default";
+				$HTML->_templates = 'default';
 				$_tpl['text'] = 'У вас не достаточно прав для доступа к странице. Необходима авторизация.';
 				$_tpl['title'] = "Нет доступа";
 				$_tpl['keywords'] = "";
@@ -203,7 +219,7 @@ class pg_class extends kernel_extends {
 			header("HTTP/1.0 404 Not Found");
 			if (!$this->can_show())
 			{
-				$HTML->_templates = "default";
+				$HTML->_templates = 'default';
 				$_tpl['text'] = "Страница не найдена!";
 				$_tpl['title'] = "404 Страница не найдена!";
 				$_tpl['keywords'] = "";

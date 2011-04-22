@@ -7,7 +7,7 @@ class content_class extends kernel_extends {
 		if (!parent::_set_features()) return false;
 		$this->mf_ordctrl = true;
 		$this->mf_actctrl = true;
-		$this->caption = "Содержимое";
+		$this->caption = 'Содержимое';
 		$this->tablename = $this->_CFG['sql']['dbpref'].'pg_content';
 		return true;
 	}
@@ -56,8 +56,11 @@ class content_class extends kernel_extends {
 	function _getlist(&$listname,$value=0) {
 		global $_CFG;
 		$data = array();
-		if ($listname == "pagetype") {
+		if ($listname == 'pagetype') {
 			return $this->getInc();
+		}
+		elseif ($listname == 'marker') {
+			return $this->owner->config['marker'];
 		}
 		else {
 			return $this->owner->_getlist($listname,$value);
