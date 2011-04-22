@@ -19,7 +19,9 @@ class pg_class extends kernel_extends {
 			0 => '',
 			1 => 'Меню №1',
 			2 => 'Меню №2',
-			3 => 'Меню №3');
+			3 => 'Меню №3',
+			4 => 'Меню №4',
+		);
 		$this->config['marker'] = array(
 			'text' => 'text',
 			'head' => 'head',
@@ -378,8 +380,11 @@ class pg_class extends kernel_extends {
 					$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' begin-->'; // для отладчика
 				$html = '';
 				if($rowPG['ugroup']) {
-					if(!$this->pagePrmCheck($rowPG['ugroup']))
+					if(!$this->pagePrmCheck($rowPG['ugroup'])) {
+						$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' ACCESS DENIED-->';
 						continue;
+					}
+						
 				}
 				if ($rowPG['href']){
 					header('Location: '.$rowPG['href']);die();}
@@ -566,18 +571,18 @@ class pg_class extends kernel_extends {
 	}
 
 	function pagePrmCheck($ugroup='') {
+		global $_tpl;
+
 		if($ugroup) {
 			$ugroup = explode('|',trim($ugroup,'|'));
 			$ugroup = array_flip($ugroup);
 			if(!isset($ugroup[0]) and count($ugroup)) {
 				if(isset($_SESSION['user']['id'])) {
-					if(!isset($ugroup['user']) and !isset($ugroup[$_SESSION['user']['owner_id']])) {
-						$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' ACCESS DENIED-->';
+					if(!isset($ugroup['user']) and !isset($ugroup[$_SESSION['user']['owner_id']])) {						
 						return false;
 					}
 				}
 				elseif(!isset($ugroup['anonim'])) {
-					$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' ACCESS DENIED-->';
 					return false;
 				}
 			}
