@@ -128,6 +128,10 @@
 			return mysql_fetch_array($this->handle, $type);
 		}
 
+		function sql_result($row) {
+			return mysql_result($this->handle, $row);
+		}
+
 		function fetch_object() {
 			return mysql_fetch_object($this->handle);
 		}
