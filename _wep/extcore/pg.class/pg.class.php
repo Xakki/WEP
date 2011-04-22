@@ -49,6 +49,7 @@ class pg_class extends kernel_extends {
 
 		# fields
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
+		$this->fields['name_in_menu'] = array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['href'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL','default'=>'');
 		$this->fields['keywords'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL','default'=>'');
 		$this->fields['description'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL','default'=>'');
@@ -64,11 +65,13 @@ class pg_class extends kernel_extends {
 		$this->fields['pagemap'] = array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['pagemenu'] = array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['onpath'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => 1);
+		
 
 		# fields
 		$this->fields_form['id'] = array('type' => 'text', 'caption' => 'ID','mask'=>array('sort'=>1,'min'=>1));
 		$this->fields_form['parent_id'] = array('type' => 'list', 'listname'=>'parentlist', 'caption' => 'Родительская страница','mask'=>array('fview'=>1));
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Name','mask'=>array('sort'=>1,'min'=>1));
+		$this->fields_form['name_in_menu'] = array('type' => 'text', 'caption' => 'Название в меню', 'mask' =>array());
 		$this->fields_form['href'] = array('type' => 'text', 'caption' => 'Redirect', 'mask' =>array('onetd'=>'Содержимое'));
 		$this->fields_form['design'] = array('type' => 'list', 'listname'=>'mdesign', 'caption' => 'Дизайн', 'mask' =>array('onetd'=>'Дизайн'));
 		$this->fields_form['template'] = array('type' => 'list', 'listname'=>'templates', 'caption' => 'Шаблон', 'mask' =>array('onetd'=>'none'));
@@ -87,6 +90,7 @@ class pg_class extends kernel_extends {
 			$this->fields_form['ugroup'] = array('type' => 'list','multiple'=>2,'listname'=>'ugroup', 'caption' => 'Доступ пользователю','default'=>'0','mask'=>array('sort'=>'1'));
 		$this->fields_form['ordind'] = array('type' => 'int', 'caption' => 'ORD','mask'=>array('sort'=>'1'));
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
+		
 
 		# list
 		//$this->listform_items['id'] = 'ID';
@@ -478,7 +482,13 @@ class pg_class extends kernel_extends {
 				else
 					$selPG = 0;
 
-				$DATA_PG[$keyPG] = array('name'=>$rowPG['name'], 'href'=>$href, 'attr'=>$rowPG['attr'], 'sel'=>$selPG);
+				if ($rowPG['name_in_menu'] == '') {
+					$name = $rowPG['name'];
+				} else {
+					$name = $rowPG['name_in_menu'];
+				}
+
+				$DATA_PG[$keyPG] = array('name'=>$name, 'href'=>$href, 'attr'=>$rowPG['attr'], 'sel'=>$selPG);
 				if(!$flagPG and isset($this->dataCashTree[$keyPG]))
 					$DATA_PG[$keyPG]['#item#'] = $this->getMap($onmenuPG,$flagPG,$keyPG);
 
