@@ -21,15 +21,18 @@ class pg_class extends kernel_extends {
 			2 => 'Меню №2',
 			3 => 'Меню №3',
 			4 => 'Меню №4',
+			5 => 'Меню №5',
 		);
 		$this->config['marker'] = array(
 			'text' => 'text',
+			'right_column' => 'right_column',
 			'head' => 'head',
 			'blockadd' => 'blockadd',
 			'param' => 'param',
 			'path' => 'path',
 			'logs' => 'logs',
-			'foot' => 'foot');
+			'foot' => 'foot',
+			'center_sub_menu' => 'center_sub_menu');
 
 		$this->config_form['sitename'] = array('type' => 'text', 'caption' => 'Название сайта','mask'=>array('max'=>1000));
 		$this->config_form['address'] = array('type' => 'textarea', 'caption' => 'Адрес и контакты','mask'=>array('max'=>1000));
