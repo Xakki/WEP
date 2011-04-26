@@ -26,6 +26,7 @@ class pg_class extends kernel_extends {
 
 		$this->config['marker'] = array(
 			'text' => 'text',
+			'left_column' => 'left_column',
 			'right_column' => 'right_column',
 			'head' => 'head',
 			'blockadd' => 'blockadd',
