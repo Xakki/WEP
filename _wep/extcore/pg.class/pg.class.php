@@ -21,16 +21,20 @@ class pg_class extends kernel_extends {
 			2 => 'Меню №2',
 			3 => 'Меню №3',
 			4 => 'Меню №4',
+			5 => 'Меню №5',
 		);
 
 		$this->config['marker'] = array(
 			'text' => 'text',
+			'right_column' => 'right_column',
 			'head' => 'head',
 			'blockadd' => 'blockadd',
 			'param' => 'param',
 			'path' => 'path',
 			'logs' => 'logs',
-			'foot' => 'foot');
+			'foot' => 'foot',
+			'center_sub_menu' => 'center_sub_menu');
+
 		// TODO : Сделать форму управления массивами данных и хранить в формате json
 
 		$this->config_form['sitename'] = array('type' => 'text', 'caption' => 'Название сайта','mask'=>array('max'=>1000));
