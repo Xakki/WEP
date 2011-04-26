@@ -351,6 +351,9 @@ class users_class extends kernel_extends {
 			$this->fields_form[$this->fn_login]['readonly']=false;
 			$this->fields_form['_info']= array('type'=>'info','caption'=>$this->getMess('title_regme'),'css'=>'caption');
 			$DATA = $_POST;
+			$this->id = 0;
+			if(count($_POST) and $_POST['sbmt'])
+				unset($_SESSION['user']);
 		}
 
 		if(count($_POST) and $_POST['sbmt']) {
@@ -363,42 +366,48 @@ class users_class extends kernel_extends {
 				$this->listfields = array('LOWER(t1.'.$this->fn_login.') as lgn');
 				$this->clause = 't1 where t1.'.$this->fn_login.' = \''.$arr['vars'][$this->fn_login].'\' or t1.email = \''.$arr['vars']['email'].'\'';
 				$this->_list('lgn');
-				if($this->mf_use_charid and isset($this->data[strtolower($arr['vars'][$this->fn_login])])) 
+				if(isset($this->data[strtolower($arr['vars'][$this->fn_login])]) and (!$this->id or $DATA[$this->fn_login]!=$arr['vars'][$this->fn_login]))
 					$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['notlogin']);
-				elseif(count($this->data)) 
+				elseif(count($this->data) and (!$this->id or $arr['vars']['email']!=$DATA['email']))
 					$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['notemail']);
 				else {
-					$arr['vars']['owner_id']=$this->owner->config['noreggroup'];
-					$arr['vars']['active']=0;
-					if(!$arr['vars']['name'])
-						$arr['vars']['name'] = $arr['vars'][$this->fn_login];
-					$arr['vars'][$this->mf_createrid]=$arr['vars']['id'];
-					$arr['vars']['reg_hash']=md5(time().$arr['vars']['id']);
-					$pass=$arr['vars'][$this->fn_pass];
-					$arr['vars'][$this->fn_pass]=md5($this->_CFG['wep']['md5'].$arr['vars'][$this->fn_pass]);
-					//$_SESSION['user']['id'] = $arr['vars']['id'];
-					if($this->_add_item($arr['vars'])) {
-						_new_class('mail',$MAIL);
-						$datamail['from']=$this->owner->config['mailrobot'];
-						$datamail['mailTo']=$arr['vars']['email'];
-						$datamail['subject']='Подтвердите регистрацию на '.strtoupper($_SERVER['HTTP_HOST']);
-						$href = '?confirm='.$arr['vars'][$this->fn_login].'&hash='.$arr['vars']['reg_hash'];
-						
-						$datamail['text']=str_replace(array('%pass%','%login%','%href%','%host%'),array($pass,$arr['vars'][$this->fn_login],$href,$_SERVER['HTTP_HOST']),$this->owner->config['mailconfirm']);
-						$MAIL->reply = 0;
-						if($MAIL->Send($datamail)) {
-							// иногда сервер говорит что ошибка, а сам всеравно письма отсылает
-						}else {
-							trigger_error('Регистрация - '.$this->_CFG['_MESS']['mailerr'], E_USER_WARNING);
-							//$this->_delete();
-							//$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['mailerr']);
-							//$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['regerr']);
-						}
-						$flag=1;
-						$arr['mess'][] = array('name'=>'ok', 'value'=>$this->_CFG['_MESS']['regok']);
-					} else
-						$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['regerr']);
-					unset($_SESSION['user']);
+					if(!$this->id) { // регистрация
+						$arr['vars']['owner_id']=$this->owner->config['noreggroup'];
+						$arr['vars']['active']=0;
+						if(!$arr['vars']['name'])
+							$arr['vars']['name'] = $arr['vars'][$this->fn_login];
+						$arr['vars'][$this->mf_createrid]=$arr['vars']['id'];
+						$arr['vars']['reg_hash']=md5(time().$arr['vars']['id']);
+						$pass=$arr['vars'][$this->fn_pass];
+						$arr['vars'][$this->fn_pass]=md5($this->_CFG['wep']['md5'].$arr['vars'][$this->fn_pass]);
+						//$_SESSION['user']['id'] = $arr['vars']['id'];
+						if($this->_add_item($arr['vars'])) {
+							_new_class('mail',$MAIL);
+							$datamail['from']=$this->owner->config['mailrobot'];
+							$datamail['mailTo']=$arr['vars']['email'];
+							$datamail['subject']='Подтвердите регистрацию на '.strtoupper($_SERVER['HTTP_HOST']);
+							$href = '?confirm='.$arr['vars'][$this->fn_login].'&hash='.$arr['vars']['reg_hash'];
+							
+							$datamail['text']=str_replace(array('%pass%','%login%','%href%','%host%'),array($pass,$arr['vars'][$this->fn_login],$href,$_SERVER['HTTP_HOST']),$this->owner->config['mailconfirm']);
+							$MAIL->reply = 0;
+							if($MAIL->Send($datamail)) {
+								// иногда сервер говорит что ошибка, а сам всеравно письма отсылает
+							}else {
+								trigger_error('Регистрация - '.$this->_CFG['_MESS']['mailerr'], E_USER_WARNING);
+								//$this->_delete();
+								//$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['mailerr']);
+								//$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['regerr']);
+							}
+							$flag=1;
+							$arr['mess'][] = array('name'=>'ok', 'value'=>$this->_CFG['_MESS']['regok']);
+						} else
+							$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['regerr']);
+					}else { // профиль
+						if($this->_save_item($arr['vars']))
+							$arr['mess'][] = array('name'=>'ok', 'value'=>$this->_CFG['_MESS']['update']);
+						else
+							$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['update_err']);
+					}
 				}
 			}
 		} else $mess = $this->kPreFields($DATA,$param);

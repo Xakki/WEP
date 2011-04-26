@@ -8,7 +8,6 @@
  * 	  _install()
  * 	  _reinstall()
  * 	  _insertDefault()
- * 	  _checkdir($dir)
  * 	  _fldformer($key, $param)
  */
 final class modulprm_class extends kernel_extends {

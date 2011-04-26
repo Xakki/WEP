@@ -284,7 +284,7 @@ function tpl_form(&$data) {
 						</a>
 						<div class="wep_thumb_comment">Размер '.$r['img_size'][0].'x'.$r['img_size'][1].'</div>
 					</div>';
-					if(isset($r['thumb']))
+					if(isset($r['thumb']) and $r['mask']['thumb'])
 						foreach($r['thumb'] as $thumb) {
 						$texthtml .= '<div class="wep_thumb">
 							<a rel="fancy" href="/'.$thumb['value'].'?size='.$thumb['filesize'].'" target="_blank" class="fancyimg">

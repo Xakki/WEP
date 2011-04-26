@@ -546,6 +546,7 @@ class static_form {
 					if(isset($value['maxsize']) and $_FILES[$key]['size']>($value['maxsize']*1024))
 						$error[]=29;
 					if($tmp == count($error)){
+						static_tools::_checkdir($_this->_CFG['_PATH']['temp']);
 						$temp = $_this->_CFG['_PATH']['temp'].basename($_FILES[$key]['name']);
 						if(file_exists($temp)) unlink($temp);
 						if (move_uploaded_file($_FILES[$key]['tmp_name'], $temp)){

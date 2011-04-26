@@ -274,7 +274,7 @@ class static_tools {
 				foreach ($MODUL->attaches as $key => $param) {
 					if (!isset($param['inst']))
 						$rDATA[$key]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD ' . self::_fldformer($key, $MODUL->attprm);
-					if (!self::_checkdir($MODUL,$MODUL->getPathForAtt($key))) {
+					if (!self::_checkdir($MODUL->_CFG['_PATH']['path'].$MODUL->getPathForAtt($key))) {
 						$rDATA[$key]['@mess'][] = array('name' => 'error', 'value' => $MODUL->getMess('_checkdir_error', array($MODUL->getPathForAtt($key))) );
 					}
 					$rDATA['@reattach'] = &$MODUL;
@@ -282,7 +282,7 @@ class static_tools {
 
 			if (isset($MODUL->memos))
 				foreach ($MODUL->memos as $key => $param) {
-					if (!self::_checkdir($MODUL,$MODUL->getPathForMemo($key))) {
+					if (!self::_checkdir($MODUL->_CFG['_PATH']['path'].$MODUL->getPathForMemo($key))) {
 						$rDATA[$key]['@mess'][] = array('name' => 'error', 'value' => $MODUL->getMess('_recheck_err') );
 					}
 				}
@@ -386,23 +386,22 @@ class static_tools {
 	 * @param string $dir Проверяемая дирректория
 	 * @return bool Результат
 	 */
-	static function _checkdir(&$MODUL, $dir) {
-		$pdir = $MODUL->_CFG['_PATH']['path'] . $dir;
-		if (!file_exists($pdir)) {
-			if (!file_exists(dirname($pdir))) {
-				self::_checkdir($MODUL, dirname($dir));
+	static function _checkdir($dir) {
+		if (!file_exists($dir)) {
+			if (!file_exists(dirname($dir))) {
+				self::_checkdir(dirname($dir));
 			}
-			if (!mkdir($pdir, 0755))
+			if (!mkdir($dir, 0755))
 				return static_main::_message('Cannot create directory <b>' . $dir . '</b>', 1);
 		}
 		else {
-			$f = fopen($MODUL->_CFG['_PATH']['path'] . $dir . '/t_e_s_t', 'w');
+			$f = fopen($dir . '/t_e_s_t', 'w');
 			if (!$f)
 				return static_main::_message('Cannot create file in directory <b>' . $dir . '</b>', 1);
 
 			$err = fwrite($f, 'zzz') == -1;
 			fclose($f);
-			unlink($MODUL->_CFG['_PATH']['path'] . $dir . '/t_e_s_t');
+			unlink($dir . '/t_e_s_t');
 
 			if ($err)
 				return static_main::_message('Cannot write/read file in directory <b>' . $dir . '</b>', 1);

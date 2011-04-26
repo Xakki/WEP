@@ -186,10 +186,10 @@
 				}
 		}
 		elseif(!is_array($listname)) {
-			$_this->_message('List data `'.$listname.'` not found',1);
+			static_main::_message('List data `'.$listname.'` not found',1);
 		}
 		else {
-			$_this->_message('List '.current($listname).' not found',1);
+			static_main::_message('List '.current($listname).' not found',1);
 		}
 
 		return $data;
