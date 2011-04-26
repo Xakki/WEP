@@ -11,7 +11,7 @@
 		exit();
 	}
 
-	if($_COOKIE['cdesign'])
+	if(isset($_COOKIE['cdesign']) and $_COOKIE['cdesign'])
 		$_design = $_COOKIE['cdesign'];
 	elseif($_SESSION['user']['design'])
 		$_design = $_SESSION['user']['design'];

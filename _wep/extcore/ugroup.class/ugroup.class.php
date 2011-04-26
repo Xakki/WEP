@@ -15,7 +15,7 @@ class ugroup_class extends kernel_extends
 		$this->config['noreggroup'] = 4;
 		$this->config['reggroup'] = 4;
 		$this->config['rememberday'] = 20;
-		$this->config['payon'] = 0;
+		$this->config['payon'] = '';
 		$this->config['premoderation'] = 0;
 		$this->config['modergroup'] = 4;
 
@@ -39,7 +39,7 @@ class ugroup_class extends kernel_extends
 			'type' => 'textarea',
 			'caption' => 'Текст письма востановления пароля');
 		$this->config_form['reg'] = array('type' => 'checkbox', 'caption' => 'Включить регистрацию?');
-		$this->config_form['payon'] = array('type' => 'checkbox', 'caption' => 'Включить платежную систему?');
+		$this->config_form['payon'] = array('type' => 'text', 'caption' => 'Включить платежную систему? Введите название денежной единицы. [руб,евро итп]');
 		$this->config_form['premoderation'] = array('type' => 'checkbox', 'caption' => 'Использовать премодерацию?');
 		$this->config_form['noreggroup'] = array('type' => 'list', 'listname'=>'list', 'caption' => 'Неподтвердившие регистрацию');
 		$this->config_form['reggroup'] = array('type' => 'list', 'listname'=>'list', 'caption' => 'Регистрировать по умолчанию');
@@ -52,7 +52,6 @@ class ugroup_class extends kernel_extends
 		$this->mf_actctrl = true;
 		$this->caption = 'Группы';
 		$this->singleton = true;
-		
 		$this->ver = '0.2.1';
 		return true;
 	}
@@ -74,6 +73,7 @@ class ugroup_class extends kernel_extends
 		$this->fields['filesize'] = array('type' => 'int', 'width' =>5, 'attr' => 'NOT NULL', 'default' => 0);
 		$this->fields['design'] = array('type' => 'varchar', 'width' =>128, 'attr' => 'NOT NULL', 'default' => '');
 		
+		$this->fields_form = array();
 		$this->fields_form['name'] = array('type' => 'text', 'mask' =>array('min'=>1), 'caption' => 'Название группы');
 		$this->fields_form['wep'] = array('type' => 'checkbox', 'caption' => 'Разрешить вход в админку?');
 		$this->fields_form['level'] = array('type' => 'list', 'listname'=>'level', 'caption' => 'Доступ в CMS');
@@ -84,9 +84,9 @@ class ugroup_class extends kernel_extends
 	}
 
 	function _install() {
-		$this->def_records[1] = array('id'=>1,'name'=>'Администраторы','level'=>0,'filesize'=>'100','active'=>1,'wep'=>1);
-		$this->def_records[2] = array('id'=>2,'name'=>'Анонимы','level'=>5,'filesize'=>'0','active'=>1,'wep'=>0);
-		$this->def_records[3] = array('id'=>3,'name'=>'Пользователи','level'=>2,'filesize'=>'0','active'=>1,'wep'=>0);
+		$this->def_records[1] = array('id'=>1,'name'=>'Администраторы','level'=>0,'filesize'=>'100','active'=>1,'design'=>'default','wep'=>1);
+		$this->def_records[2] = array('id'=>2,'name'=>'Анонимы','level'=>5,'filesize'=>'0','active'=>1,'design'=>'default','wep'=>0);
+		$this->def_records[3] = array('id'=>3,'name'=>'Пользователи','level'=>2,'filesize'=>'0','active'=>1,'design'=>'default','wep'=>0);
 		return parent::_install();
 	}
 
@@ -101,10 +101,6 @@ class ugroup_class extends kernel_extends
 			*/
 		}
 	}
-
-	/*function super_inc($param=array(),$ftype='') {
-		return parent::
-	}*/
 
 	function _getlist(&$listname,$value=0) {
 		$data = array();
@@ -128,12 +124,6 @@ class ugroup_class extends kernel_extends
 		else return parent::_getlist($listname,$value);
 	}
 
-	/*function _UpdItemModul($param) {
-		$ret = parent::_UpdItemModul($param);
-		//if($ret[1] and $_SESSION['user'] and $_SESSION['user']['owner_id']==$this->id)
-		//	session_unset();
-		return $ret;
-	}*/
 	function authorization($login,$pass) {
 		return $this->childs['users']->authorization($login,$pass);
 	}
@@ -141,10 +131,16 @@ class ugroup_class extends kernel_extends
 		return $this->childs['users']->cookieAuthorization();
 	}
 	function regForm() {
-		return $this->childs['extusers']->regForm();
+		return $this->childs['users']->regForm();
 	}
 	function regConfirm() {
-		return $this->childs['extusers']->regConfirm();
+		return $this->childs['users']->regConfirm();
+	}
+	function loginzaReg() {
+		return $this->childs['users']->loginzaReg();
+	}
+	function remind() {
+		return $this->childs['users']->remind();
 	}
 }
 
@@ -165,6 +161,9 @@ class users_class extends kernel_extends {
 		$this->mf_timeup = true; // создать поле хранящее время обновления поля
 		$this->mf_ipcreate = true;//IP адрес пользователя с котрого была добавлена запись
 		$this->caption = 'Пользователи';
+		$this->locallang['default']['title_regme'] = 'Регистрация пользователя';
+		$this->locallang['default']['title_profile'] = 'Редактирование профиля';
+		$this->locallang['default']['_saveclose'] = 'Готово';
 		return true;
 	}
 
@@ -172,94 +171,62 @@ class users_class extends kernel_extends {
 	{
 		parent::_create();
 		$this->unique_fields['email']='email';
+		$this->ordfield = 'mf_timecr DESC';
 
 		if($this->fn_login!='email')
 			$this->fields[$this->fn_login] = array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL');
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL');
-		$this->fields['fullname'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL', 'default'=>'');
 		$this->fields[$this->fn_pass] = array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL');
-		$this->fields['address'] = array('type' => 'varchar', 'width' => 127,'attr' => 'NOT NULL', 'default'=>'');
-		$this->fields['dob'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default'=>0);
-		$this->fields['gender'] = array('type' => 'tinyint', 'width' => 2, 'attr' => 'NOT NULL', 'default'=>0);
-		$this->fields['phone'] = array('type' => 'varchar', 'width' => 127,'attr' => 'NOT NULL', 'default'=>'');
 		$this->fields['email'] =  array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL', 'default'=>'');
-		$this->fields['www'] =  array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL', 'default'=>'');
 		$this->fields['loginza_token'] =  array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL', 'default'=>'');
 		$this->fields['loginza_provider'] =  array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL', 'default'=>'');
 		$this->fields['loginza_data'] =  array('type' => 'text', 'attr' => '');
 		// service field
 		$this->fields['reg_hash'] = array('type' => 'varchar', 'width' => 128, 'attr' => 'NOT NULL', 'default'=>'');
-		$this->fields['balance'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default'=>0);
-
+		$this->fields['balance'] = array('type' => 'float ', 'width' => '11,2', 'attr' => 'NOT NULL', 'default'=>'0.00');
 		$this->fields['karma'] = array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL', 'default'=>0);
 
-
-		// FORM FIELDS
-		if($this->mf_use_charid){
-			$this->fields_form[$this->fn_login] =	array('type' => 'text', 'caption' => 'Логин','mask'=>array('name'=>'login','min' => '4','sort'=>1),'comment'=>'Логин должен состоять только из латинских букв и цифр.');
-			if(static_main::_prmUserCheck(1))  // Запрет поля на редактирование
-				$this->fields_form[$this->fn_login]['readonly']=true;
-		}
-		
-		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Имя','mask'=>array('name'=>'name','usercheck'=>1)); // Вывод поля при редактировании
-
-		//$this->fields_form['sname'] = array('type' => 'text', 'caption' => 'Фамилия','mask'=>array('name'=>'name'));
-		//$this->fields_form['tname'] = array('type' => 'text', 'caption' => 'Отчество','mask'=>array('name'=>'name'));
-		//$this->fields_form['address'] = array('type' => 'text', 'caption' => 'Адрес');
-
-		if(static_main::_prmUserCheck(1)) // Вывод поля генерации пароля если админ
-			$this->fields_form[$this->fn_pass] = array('type' => 'password2', 'caption' => 'Пароль','md5'=>$this->_CFG['wep']['md5'], 'mask'=>array('min' => '6','fview'=>1));
-		elseif(!static_main::_prmUserCheck())
-			$this->fields_form[$this->fn_pass] = array('type' => 'password_new', 'caption' => 'Пароль','mask'=>array('min' => '6','fview'=>1));
-
-		$this->fields_form['phone'] = array(
-			'type' => 'text', 
-			'caption' => 'Телефон',
-			'mask'=>array('usercheck'=>1,'name'=>'phone','onetd'=>'Контакт'));// Вывод поля при редактировании
-		$this->fields_form['www'] = array(
-			'type' => 'text', 
-			'caption' => 'WWW',
-			'mask'=>array('usercheck'=>1,'name'=>'www','onetd'=>'none'));// Вывод поля при редактировании
-
-		$this->fields_form['email'] = array('type' => 'text', 'caption' => 'E-mail','mask'=>array('name'=>'email','min' => '7','onetd'=>'close'));
-
-		//$this->fields_form['description'] =  array('type' => 'textarea', 'caption' => 'Дополнительная информация','mask'=>array('max' => 2048));
-
-		$this->fields_form['mf_ipcreate'] =	array(
-			'type' => 'text',
-			'readonly' => 1, 
-			'caption' => 'IP-пользователя',
-			'mask'=>array('usercheck'=>1));
-		$this->fields_form['mf_timecr'] =	array('type' => 'date','readonly' => 1, 'caption' => 'Дата регистрации','mask'=>array('sort'=>1));
-		$this->fields_form['reg_hash'] = array('type' => 'hidden',  'caption' => 'Хэш','mask'=>array('eval'=>1,'fview'=>1,'usercheck'=>1));
-		/*$this->fields_form['cntdec'] = array(
-			'type' => 'list', 
-			'listname'=>array('class'=>'board','field'=>'count(tx.id) as cntdec', 'leftjoin'=>'t1.id=tx.creater_id'), 
-			'readonly'=>1,
-			'caption' => 'Объявл.',
-			'mask' =>array('usercheck'=>1,'sort'=>''));*/
-		if($this->owner->config['payon'])
-			$this->fields_form['balance'] =	array(
-				'type' => 'text',
-				'readonly' => 1, 
-				'caption' => 'Счет(руб)',
-				'mask'=>array('sort'=>1));
-		$this->fields_form['owner_id'] = array('type' => 'list', 'listname'=>'ownerlist', 'caption' => 'Группа', 'mask' =>array('usercheck'=>1,'fview'=>1));
-		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Пользователь активен', 'mask' =>array('usercheck'=>1));
-
-		$this->ordfield = 'mf_timecr DESC';
 	}
+
+	function _childs() {
+		//$this->create_child('usercontact');
+	}	
 
 	function _install() {
 		$this->def_records[0] = array(
 			$this->fn_login => $this->_CFG['wep']['login'],
-			'name'=>'Главный',
+			'name'=>'Администратор',
 			$this->fn_pass => md5($this->_CFG['wep']['md5'].$this->_CFG['wep']['password']), 
 			'active'=>1,
 			'mf_timecr'=>time(),
 			'owner_id'=>1,
 			'reg_hash'=>1);
-		return parent::_install($param);
+		return parent::_install();
+	}
+
+	// FORM FIELDS
+	public function setFieldsForm() {
+		$this->fields_form = array();
+		$this->fields_form['owner_id'] = array('type' => 'list', 'listname'=>'ownerlist', 'caption' => 'Группа', 'mask' =>array('usercheck'=>1,'fview'=>1));
+		$this->fields_form[$this->fn_login] =	array('type' => 'text', 'caption' => 'Логин','mask'=>array('name'=>'login','min' => '4','sort'=>1),'comment'=>'Логин должен состоять только из латинских букв и цифр.');
+		if(static_main::_prmUserCheck() and !static_main::_prmUserCheck(1))  // Запрет поля на редактирование
+			$this->fields_form[$this->fn_login]['readonly']=true;
+		if(static_main::_prmUserCheck(1)) // Вывод поля генерации пароля если админ
+			$this->fields_form[$this->fn_pass] = array('type' => 'password2', 'caption' => 'Пароль','md5'=>$this->_CFG['wep']['md5'], 'mask'=>array('min' => '6','fview'=>1));
+		elseif(!static_main::_prmUserCheck()) //Доступ только не зарегенным
+			$this->fields_form[$this->fn_pass] = array('type' => 'password_new', 'caption' => 'Пароль','mask'=>array('min' => '6','fview'=>1));
+		$this->fields_form['email'] = array('type' => 'text', 'caption' => 'E-mail', 'readonly'=>true, 'mask'=>array('name'=>'email','min' => '7'));
+		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Имя','mask'=>array('name'=>'name','usercheck'=>1)); // Вывод поля при редактировании
+		$this->fields_form['mf_ipcreate'] =	array('type' => 'text','readonly' => true, 'caption' => 'IP-пользователя','mask'=>array('usercheck'=>1,'eval'=>'long2ip($val)'));
+		$this->fields_form['mf_timecr'] =	array('type' => 'date','readonly' => true, 'caption' => 'Дата регистрации','mask'=>array('sort'=>1));
+		$this->fields_form['reg_hash'] = array('type' => 'hidden',  'caption' => 'Хэш','mask'=>array('eval'=>1,'fview'=>1,'usercheck'=>1));
+		if($this->owner->config['payon'])
+			$this->fields_form['balance'] =	array(
+				'type' => 'text',
+				'readonly' => true, 
+				'caption' => 'Счет(руб)',
+				'mask'=>array('sort'=>1));
+		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Пользователь активен', 'mask' =>array('usercheck'=>1));
 	}
 
 	function _UpdItemModul($param) {
@@ -352,7 +319,7 @@ class users_class extends kernel_extends {
 		return array('',0);
 	}
 
-	function setUserSession($data='') {
+	protected function setUserSession($data='') {
 		session_go(1);
 		reset($this->data);
 		if($data==='') $data = current($this->data);
@@ -367,16 +334,25 @@ class users_class extends kernel_extends {
 
 	function regForm(){
 		global $_MESS,$_tpl;
-		// добавлены настройки на форму регистрации
-		$this->fields_form[$this->fn_login]['readonly']=false;
-		//$this->fields_form['info'] = array('type' => 'checkbox', 'caption' => 'Пользователь активен');
-		unset($this->fields_form['sett1']);
-		if(!$this->owner->config['reg']) return array(array('messages'=>array(array('name'=>'error', 'value'=>$this->_CFG['_MESS']['deniedreg']))),1);
-		if(static_main::_prmUserCheck()) return array(array('messages'=>array(array('name'=>'error', 'value'=>$this->_CFG['_MESS']['deniedu']))),1);
+
 		$flag=0;// 0 - показывает форму, 1 - нет
 		$arr = array('mess'=>array(),'vars'=>array());
-		$mess = array();
-		$this->fields_form['_info']= array('type'=>'info','caption'=>'Регистрация пользователя','css'=>'caption');
+		$mess = $DATA = array();
+		if(static_main::_prmUserCheck()) {
+			$this->fields_form['_info']= array('type'=>'info','caption'=>$this->getMess('title_profile'),'css'=>'caption');
+			$this->id = $_SESSION['user']['id'];
+			$this->_select();
+			$DATA = $this->data[$this->id];
+		}
+		else {
+		// добавлены настройки на форму регистрации
+			if(!$this->owner->config['reg']) 
+				return array(array('messages'=>array(array('name'=>'error', 'value'=>$this->_CFG['_MESS']['deniedreg']))),1);			
+			$this->fields_form[$this->fn_login]['readonly']=false;
+			$this->fields_form['_info']= array('type'=>'info','caption'=>$this->getMess('title_regme'),'css'=>'caption');
+			$DATA = $_POST;
+		}
+
 		if(count($_POST) and $_POST['sbmt']) {
 			//if($this->fn_pass!='pass') $_POST[$this->fn_pass] = $_POST['pass'];
 			//if($this->fn_pass!='login') $_POST[$this->fn_login] = $_POST['login'];
@@ -425,12 +401,10 @@ class users_class extends kernel_extends {
 					unset($_SESSION['user']);
 				}
 			}
-		} else $mess = $this->kPreFields($_POST,$param);
+		} else $mess = $this->kPreFields($DATA,$param);
 		
 		static_form::setCaptcha();
 		$formflag = $this->kFields2Form($param);
-		$this->form['sbmt']['value']='Я согласен с правилами и хочу зарегистрироваться';
-		$this->form['rulesinfo'] = array('type'=>'info','caption'=>'<a href="'.$this->_CFG['_HREF']['BH'].'terms.html" target="_blank">Правила пользования сайтом</a>','css'=>'rulelink');
 
 		return Array(Array('messages'=>($mess+$arr['mess']), 'form'=>(!$flag?$this->form:array()), 'class'=>'regform'), $flag);
 	}
@@ -480,6 +454,8 @@ class users_class extends kernel_extends {
 
 		return Array(array('messages'=>$mess),$flag);
 	}
+
+
 	function loginzaReg() {
 		$mess = $dt = array();
 		$flag = false;
@@ -670,33 +646,7 @@ class users_class extends kernel_extends {
 		}
 		return '<div align="center">'.$html.'</div>';
 	}
+
 }
 
-/*
-class weppages_class extends kernel_extends {
-
-	function _set_features() {
-		if (!parent::_set_features()) return false;
-		$this->mf_ordctrl = true;
-		$this->mf_actctrl = true;
-		$this->caption = 'Страницы в WEP';
-		return true;
-	}
-
-	function _create() {
-		parent::_create();
-
-		# fields
-		$this->fields['name'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'min' => '1');
-		$this->fields['href'] = array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL');
-		$this->fields['blank'] = array('type' => 'bool', 'attr' => 'NOT NULL DEFAULT 0');
-
-		# fields
-		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Name');
-		$this->fields_form['href'] = array('type' => 'text', 'caption' => 'HREF', 'mask' =>array('name'=>'all'));
-		$this->fields_form['blank'] = array('type' => 'checkbox', 'caption' => '_BLANK', 'mask' =>array());
-		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
-	}
-}
-*/
 ?>

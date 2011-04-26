@@ -76,9 +76,9 @@ function miga(obj,opc1,opc2){
 	return false;
 }
 
-
 /*Bacground*/
-function fShowload (show,txt,body,objid) {
+function fShowload (show,txt,body,objid,onclk) {
+	if(!onclk) onclk = 'fShowload(0)';
 	if(!body) body='body';
 	if(!objid) objid = 'ajaxload';
 	obj = ' #'+objid;
@@ -95,12 +95,12 @@ function fShowload (show,txt,body,objid) {
 			jQuery(body).append("<div id='"+objid+"'>&#160;</div>");
 		if(!txt || txt==''){
 			txt = "<div class='layerloader'><img src='_design/_img/load.gif' alt=' '/><br/>Подождите. Идёт загрузка</div>";
-			jQuery('.layerblock').hide();
+			jQuery('div.layerblock').hide();
 		}
 		else {
-			jQuery('.layerloader').hide();
+			jQuery('div.layerloader').hide();
 			if(objid == 'ajaxload') 
-				txt = '<div class="layerblock"><div class="blockclose" onClick="fShowload(0)"></div>'+txt+'</div>';
+				txt = '<div class="layerblock"><div class="blockclose" onClick="'+onclk+'"></div>'+txt+'</div>';
 		}		
 		showBG(body,1);
 		if(txt && txt!='') 

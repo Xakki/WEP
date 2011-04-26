@@ -5,11 +5,7 @@
 		$formflag = 1;// 0 - показывает форму, 1 - не показывать форму
 		$arr = array('mess'=>array(),'vars'=>array());
 		$mess = array();
-		if(!count($this->fields_form)) {
-			$arr['mess'][] = array('name'=>'error', 'value'=>$this->getMess('nodata'));
-			$flag=-1;
-		}
-		elseif(!empty($this->id) and $this->id) { //EDIT
+		if(!empty($this->id) and $this->id) { //EDIT
 			$flag=-1;
 			$this->listfields = array('*');
 			$this->clause = ' WHERE id IN ('.$this->_id_as_string().')';

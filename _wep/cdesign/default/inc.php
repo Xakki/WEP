@@ -28,9 +28,10 @@
 		}
 		else {
 
-			if($_GET['_oid']!='') $MODUL->owner_id = $_GET['_oid'];
-			if($_GET['_pid']!='') $MODUL->parent_id = $_GET['_pid'];
-			if($_GET['_id']!='') $MODUL->id = $_GET['_id'];
+			if(isset($_GET['_oid']) and $_GET['_oid']!='') $MODUL->owner_id = $_GET['_oid'];
+			if(isset($_GET['_pid']) and $_GET['_pid']!='') $MODUL->parent_id = $_GET['_pid'];
+			if(isset($_GET['_id']) and $_GET['_id']!='') $MODUL->id = $_GET['_id'];
+			if(!isset($_GET['_type'])) $_GET['_type'] = '';
 
 			if(static_main::_prmModul($_GET['_modul'],array(1,2))) {
 				if($_GET['_view']=='list') {

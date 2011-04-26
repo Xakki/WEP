@@ -188,7 +188,7 @@
 
 					/** Отображаем "значение" если НЕ мультистолбец или если "значение" TRUE*/
 					if(!isset($r['mask']['onetd']) or ($row[$k]!='0' and $row[$k]!='') or $r['type']=='list') {
-
+						if(!isset($tditem['value'])) $tditem['value'] = '';
 						if(isset($this->memos[$k]))
 							$tditem['value'] .= _substr(strip_tags(htmlspecialchars_decode(file_get_contents($row[$k]))),0,400);
 						elseif($r['type']=='date') {
@@ -225,7 +225,7 @@
 								$tditem['value'] = $row['name_'.$k];
 						}
 						elseif(isset($r['listname']) and $r['listname']) {// and !is_array($r['listname'])
-							if($r['multiple']) 
+							if(isset($r['multiple']) and $r['multiple']) 
 								$row[$k]= explode('|',trim($row[$k],'|'));
 							else
 								$row[$k] = array($row[$k]);

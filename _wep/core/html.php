@@ -324,8 +324,8 @@ function _obHandler($buffer) {
 	}
 
 	if ($_html != '') {
-		if ($_tpl['logs'] == '')
-			$_tpl['onload'] .='fShowHide(\'debug_view\');';
+		//if ($_tpl['logs'] == '')
+		//	$_tpl['onload'] .='fShowHide(\'debug_view\');';
 		eval('$_html = "' . $_html . '";');
 		$page = $_html;
 	}else

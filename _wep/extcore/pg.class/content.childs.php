@@ -29,6 +29,15 @@ class content_class extends kernel_extends {
 		# memo
 		$this->memos['pg'] = array('max' => 50000);
 
+		$this->owner->_listnameSQL = 'template, name';
+	}
+
+	function _install() {
+		$this->def_records[] = array('owner_id'=>'404','pg'=>'Недостаточно прав для доступа к странице','marker'=>'text','active'=>1);
+		return parent::_install();
+	}
+
+	public function setFieldsForm() {
 		# fields
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Подзаголовок');
 		$this->fields_form['href'] = array('type' => 'text', 'caption' => 'Redirect', 'mask' =>array());
@@ -44,13 +53,6 @@ class content_class extends kernel_extends {
 		$this->fields_form['ordind'] = array('type' => 'text', 'caption' => 'ORD');
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
 		$this->fields_form['memcache'] = array('type' => 'int', 'caption' => 'Memcache time','comment'=>'0 - откл кеширование,1> - кеширование в сек.');
-
-		$this->owner->_listnameSQL = 'template, name';
-	}
-
-	function _install() {
-		$this->def_records[] = array('owner_id'=>'404','pg'=>'Недостаточно прав для доступа к странице','marker'=>'text','active'=>1);
-		return parent::_install();
 	}
 
 	function _getlist(&$listname,$value=0) {

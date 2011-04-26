@@ -45,7 +45,7 @@
 	function tpl_data(&$data,$firstpath='') {
 		if(!$data or !count($data)or !count($data['thitem'])) return '';
 		global $_CFG;
-		$html .= '<table class="superlist"><tbody><tr>';
+		$html = '<table class="superlist"><tbody><tr>';
 		$tdflag = 0;
 		if(!isset($data['thitem']['id']))
 			$html .= '<th>№</th>';
@@ -56,23 +56,23 @@
 					$r['value'] = $r['onetd'];
 				}
 				$html .= '<th>';
-				if($r['href']!='') {
+				if(isset($r['href']) and $r['href']!='') {
 					$html .= '<a class="'.($r['sel']==1?'bottonimg_sel':'bottonimg').' imgup" title="[SORT]" href="'.$firstpath.'sort='.$r['href'].'" onclick="return load_href(this)"></a>';
 				}
 				$html .= $r['value'];
-				if($r['href']!='') {
+				if(isset($r['href']) and $r['href']!='') {
 					$html .= '<a class="'.($r['sel']==2?'bottonimg_sel':'bottonimg').' imgdown" title="[SORT]" href="'.$firstpath.'dsort='.$r['href'].'" onclick="return load_href(this)"></a>';
 				}
 				$html .= '</th>';
 			}
-			if($r['onetd']=='close') $tdflag = 0;
+			if(isset($r['onetd']) and $r['onetd']=='close') $tdflag = 0;
 		}
 		$html .= '<th>&#160;</th></tr>';
         if(count($data['item']))
 		foreach($data['item'] as $k=>$r) {
 			$html .= '<tr';
-			if($r['css']) $html .= ' class="'.$r['css'].'"';
-			elseif($r['style']) $html .= ' style="'.$r['style'].'"';
+			if(isset($r['css']) and $r['css']) $html .= ' class="'.$r['css'].'"';
+			if(isset($r['style']) and $r['style']) $html .= ' style="'.$r['style'].'"';
 			$html .= '>';
 			if(!isset($data['thitem']['id']))
 				$html .= '<td valign="top" id="items_'.$r['id'].'"><a id="elem'.$r['id'].'">'.$r['id'].'</a></td>';
@@ -83,7 +83,7 @@
 					if(isset($tditem['onetd'])) $tdflag = 1;
 				}
 
-				if($tditem['value']!='') {
+				if(isset($tditem['value']) and $tditem['value']!='') {
 					if($tdflag)
 						$html .= '<b>'.$data['thitem'][$ktd]['value'].'</b>: ';
 					if(isset($tditem['fileType']) and $tditem['fileType']=='img') {
@@ -107,7 +107,7 @@
 					$tdflag = 0;
 				if(!$tdflag)
 					$html .= '</td>';
-				elseif($tditem['value']!='')
+				elseif(isset($tditem['value']) and $tditem['value']!='')
 					$html .= '<br/>';
 			}
 			if($tdflag) $html .= '</td>';
@@ -148,7 +148,7 @@
 		global $_CFG,$_tpl;
 		if(!$data or !count($data)) return '';
 		$html = '<div class="pagenumcnt">'.$data['cnt'].'&#160;:&#160;&#160;</div>';
-		if(count($data['link'])) {
+		if(isset($data['link']) and count($data['link'])) {
 			$_tpl['onload'] .='pagenum_super('.$data['cntpage'].','.$data['_pn'].',\''.$data['modul'].'\','.($data['reverse']?'true':'false').');';
 			$html .= '<div class="pagenum">';
 			foreach($data['link'] as $k=>$r) {

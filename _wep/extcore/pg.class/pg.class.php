@@ -83,32 +83,6 @@ class pg_class extends kernel_extends {
 		$this->fields['pagemenu'] = array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['onpath'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => 1);
 		
-
-		# fields
-		$this->fields_form['id'] = array('type' => 'text', 'caption' => 'ID','mask'=>array('sort'=>1,'min'=>1));
-		$this->fields_form['parent_id'] = array('type' => 'list', 'listname'=>'parentlist', 'caption' => 'Родительская страница','mask'=>array('fview'=>1));
-		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Name','mask'=>array('sort'=>1,'min'=>1));
-		$this->fields_form['name_in_menu'] = array('type' => 'text', 'caption' => 'Название в меню', 'mask' =>array());
-		$this->fields_form['href'] = array('type' => 'text', 'caption' => 'Redirect', 'mask' =>array('onetd'=>'Содержимое'));
-		$this->fields_form['design'] = array('type' => 'list', 'listname'=>'mdesign', 'caption' => 'Дизайн', 'mask' =>array('onetd'=>'Дизайн'));
-		$this->fields_form['template'] = array('type' => 'list', 'listname'=>'templates', 'caption' => 'Шаблон', 'mask' =>array('onetd'=>'none'));
-		$this->fields_form['styles'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'style', 'caption' => 'CSS', 'mask'=>array('onetd'=>'none'));
-		$this->fields_form['script'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'script', 'caption' => 'SCRIPT', 'mask'=>array('onetd'=>'close'));
-		$this->fields_form['keywords'] = array('type' => 'text', 'caption' => 'META-keywords','mask'=>array('fview'=>1));
-		$this->fields_form['description'] = array('type' => 'text', 'caption' => 'META-description','mask'=>array('fview'=>1));
-		$this->fields_form['onmenu'] = array('type' => 'list', 'listname'=>'menu', 'multiple'=>2, 'caption' => 'Меню', 'mask'=>array('onetd'=>'Опции'));
-		$this->fields_form['onmap'] = array('type' => 'checkbox', 'caption'=>'Карта', 'comment' => 'Отображать эту страницу на карте сайта','default'=>1,'style'=>'background-color:#B3D142;');
-		//$this->fields_form['onmapinc'] = array('type' => 'checkbox', 'caption'=>'Карта-php', 'comment' => 'Отображать на карте сайта, карту сгенерированную php','default'=>1,'style'=>'background-color:e1e1e1;');
-		$this->fields_form['pagemap'] = array('type' => 'list', 'listname'=>'pagemap', 'caption' => 'Карта-php', 'comment' => 'Отображать на карте сайта, карту сгенерированную php', 'mask' =>array('fview'=>1),'style'=>'background-color:#B3D142;');
-		$this->fields_form['pagemenu'] = array('type' => 'list', 'listname'=>'pagemap', 'caption' => 'Меню-php', 'comment' => 'Отображать подменю, сгенерированную php', 'mask' =>array('fview'=>1),'style'=>'background-color:#B3D142;');
-		$this->fields_form['onpath'] = array('type' => 'checkbox', 'caption'=>'Путь', 'comment' => 'Отображать в хлебных крошках','default'=>1,'mask'=>array('onetd'=>'close'));
-		$this->fields_form['attr'] = array('type' => 'text', 'caption' => 'Атрибуты для ссылки в меню', 'comment'=>'Например: `target="_blank" onclick=""` итп', 'mask' =>array('name'=>'all', 'fview'=>1));
-		if($this->_CFG['wep']['access'])
-			$this->fields_form['ugroup'] = array('type' => 'list','multiple'=>2,'listname'=>'ugroup', 'caption' => 'Доступ пользователю','default'=>'0','mask'=>array('sort'=>'1'));
-		$this->fields_form['ordind'] = array('type' => 'int', 'caption' => 'ORD','mask'=>array('sort'=>'1'));
-		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
-		
-
 		# list
 		//$this->listform_items['id'] = 'ID';
 		//'type' => 'list', 'listname'=>'design',-+-
@@ -131,6 +105,32 @@ class pg_class extends kernel_extends {
 	function _childs() {
 		$this->create_child('content');
 	}	
+	public function setFieldsForm() {
+		# fields
+		$this->fields_form = array();
+		$this->fields_form['id'] = array('type' => 'text', 'caption' => 'ID','mask'=>array('sort'=>1,'min'=>1));
+		$this->fields_form['parent_id'] = array('type' => 'list', 'listname'=>'parentlist', 'caption' => 'Родительская страница','mask'=>array('fview'=>1));
+		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Name','mask'=>array('sort'=>1,'min'=>1));
+		$this->fields_form['name_in_menu'] = array('type' => 'text', 'caption' => 'Название в меню', 'mask' =>array());
+		$this->fields_form['href'] = array('type' => 'text', 'caption' => 'Redirect', 'mask' =>array('onetd'=>'Содержимое'));
+		$this->fields_form['design'] = array('type' => 'list', 'listname'=>'mdesign', 'caption' => 'Дизайн', 'mask' =>array('onetd'=>'Дизайн'));
+		$this->fields_form['template'] = array('type' => 'list', 'listname'=>'templates', 'caption' => 'Шаблон', 'mask' =>array('onetd'=>'none'));
+		$this->fields_form['styles'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'style', 'caption' => 'CSS', 'mask'=>array('onetd'=>'none'));
+		$this->fields_form['script'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'script', 'caption' => 'SCRIPT', 'mask'=>array('onetd'=>'close'));
+		$this->fields_form['keywords'] = array('type' => 'text', 'caption' => 'META-keywords','mask'=>array('fview'=>1));
+		$this->fields_form['description'] = array('type' => 'text', 'caption' => 'META-description','mask'=>array('fview'=>1));
+		$this->fields_form['onmenu'] = array('type' => 'list', 'listname'=>'menu', 'multiple'=>2, 'caption' => 'Меню', 'mask'=>array('onetd'=>'Опции'));
+		$this->fields_form['onmap'] = array('type' => 'checkbox', 'caption'=>'Карта', 'comment' => 'Отображать эту страницу на карте сайта','default'=>1,'style'=>'background-color:#B3D142;');
+		//$this->fields_form['onmapinc'] = array('type' => 'checkbox', 'caption'=>'Карта-php', 'comment' => 'Отображать на карте сайта, карту сгенерированную php','default'=>1,'style'=>'background-color:e1e1e1;');
+		$this->fields_form['pagemap'] = array('type' => 'list', 'listname'=>'pagemap', 'caption' => 'Карта-php', 'comment' => 'Отображать на карте сайта, карту сгенерированную php', 'mask' =>array('fview'=>1),'style'=>'background-color:#B3D142;');
+		$this->fields_form['pagemenu'] = array('type' => 'list', 'listname'=>'pagemap', 'caption' => 'Меню-php', 'comment' => 'Отображать подменю, сгенерированную php', 'mask' =>array('fview'=>1),'style'=>'background-color:#B3D142;');
+		$this->fields_form['onpath'] = array('type' => 'checkbox', 'caption'=>'Путь', 'comment' => 'Отображать в хлебных крошках','default'=>1,'mask'=>array('onetd'=>'close'));
+		$this->fields_form['attr'] = array('type' => 'text', 'caption' => 'Атрибуты для ссылки в меню', 'comment'=>'Например: `target="_blank" onclick=""` итп', 'mask' =>array('name'=>'all', 'fview'=>1));
+		if($this->_CFG['wep']['access'])
+			$this->fields_form['ugroup'] = array('type' => 'list','multiple'=>2,'listname'=>'ugroup', 'caption' => 'Доступ пользователю','default'=>'0','mask'=>array('sort'=>'1'));
+		$this->fields_form['ordind'] = array('type' => 'int', 'caption' => 'ORD','mask'=>array('sort'=>'1'));
+		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
+	}
 
 	function _getlist(&$listname,$value=0) {
 		$data = array();

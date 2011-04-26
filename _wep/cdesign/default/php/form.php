@@ -200,7 +200,7 @@ function tpl_form(&$data) {
 						$temp = sscanf($r['value'], "%d-%d-%d %d:%d:%d");//2007-09-11 10:16:15
 					}
 					else{
-						$temp = array(date('Y'),date('m'),date('d'),date('H'));
+						$temp = array(date('Y'),date('n'),date('d'),date('H'));
 					}
 					$r['value']= array();
 					foreach($format as $item_date)
@@ -212,9 +212,9 @@ function tpl_form(&$data) {
 							$temp[0] = (int)$temp[0]; 
 
 							//значения по умолчанию
-							if(!$r['range_back']['year']) $r['range_back']['year'] = 2;
-							if(!$r['range_up']['year']) $r['range_up']['year'] = 3;
-							for($i=((int)date('Y')-($r['range_back']['year']));$i<((int)date('Y')+($r['range_up']['year']));$i++)
+							if(!isset($r['range_back']['year'])) $r['range_back']['year'] = 2;
+							if(!isset($r['range_up']['year'])) $r['range_up']['year'] = 3;
+							for($i=((int)date('Y')-($r['range_back']['year']));$i<=((int)date('Y')+($r['range_up']['year']));$i++)
 								$r['value']['year']['item'][$i] = array('#id#'=>$i, '#name#'=>$i);							
 						}
 						// месяц

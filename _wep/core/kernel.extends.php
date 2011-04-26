@@ -61,7 +61,7 @@ abstract class kernel_extends {
 		if (isset($this->config_form) and count($this->config_form)) { // загрузка конфига из файла для модуля
 			$this->configParse();
 		}
-
+		$this->setFieldsForm();
 		$this->_create(); // предустановки модуля
 		$this->_childs();
 	}
@@ -81,6 +81,9 @@ abstract class kernel_extends {
 			} else {
 				return new sql($this->cfg_sql);
 			}
+		}elseif($name=='fields_form') {
+			$this->setFieldsForm();
+			return $this->fields_form;
 		}
 		echo ' - '.$name;
 		print_r(debugPrint());
@@ -145,7 +148,8 @@ abstract class kernel_extends {
 			$this->def_records =
 			$this->fld_data =
 			$this->fields =
-			$this->fields_form =
+			$this->form = 
+			$this->fields_form = 
 			$this->mess_form =
 			$this->attaches =
 			$this->memos =
@@ -649,7 +653,7 @@ abstract class kernel_extends {
 	public function _prmModulEdit(&$data, &$param) {
 		if (!$this->prm_edit)
 			return false;
-		if (count($param['prm'])) {
+		if (isset($param['prm']) and count($param['prm'])) {
 			foreach ($param['prm'] as $k => $r) {
 				foreach ($data as $row)
 					if ($row[$k] != $r)
@@ -839,17 +843,23 @@ abstract class kernel_extends {
 		foreach ($this->fields_form as $k => &$r) {
 			if (isset($r['readonly']) and $r['readonly'] and $this->id) // если поле "только чтение" и редактируется , то значение берем из БД,
 				$data[$k] = $this->data[$this->id][$k];
-
 			if (isset($r['mask']['eval']))
-				eval('$data[$k]=' . $r['mask']['eval'] . ';');
+				$eval = $r['mask']['eval'];
 			elseif (isset($r['mask']['evala']) and !$this->id)
-				eval('$data[$k]=' . $r['mask']['evala'] . ';');
+				$eval = $r['mask']['evala'];
 			elseif (isset($r['mask']['evalu']) and $this->id)
-				eval('$data[$k]=' . $r['mask']['evalu'] . ';');
+				$eval = $r['mask']['evalu'];
 			elseif ((isset($r['mask']['fview']) and $r['mask']['fview'] == 2) or (isset($r['mask']['usercheck']) and !static_main::_prmUserCheck($r['mask']['usercheck']))) {
 				$r['mask']['fview'] = 2;
 				unset($data[$k]);
 				continue;
+			}
+			if(isset($eval)) {
+				$val = $data[$k];
+				$eval = '$data[$k]='.$eval;
+ 				if(substr($r['mask']['eval'],-1)!=';') $eval .= ';';
+				eval($eval);
+				unset($eval);
 			}
 
 			if (isset($this->attaches[$k]))
@@ -902,7 +912,7 @@ abstract class kernel_extends {
 			//end foreach
 		}
 
-		if (!isset($_SESSION['user']['id']) or isset($param['captchaOn']))
+		if (count($this->fields_form) and !isset($_SESSION['user']['id']) or isset($param['captchaOn']))
 			$this->fields_form['captcha'] = array(
 				'type' => 'captcha',
 				'caption' => $this->getMess('_captcha'),
@@ -913,9 +923,16 @@ abstract class kernel_extends {
 		$mess = array();
 		if (isset($this->mess_form) and count($this->mess_form))
 			$mess = $this->mess_form;
+		if(!count($this->fields_form))
+			$mess[] = array('name'=>'error', 'value'=>$this->getMess('nodata'));
 		return $mess;
 	}
-
+	/**
+	* $view [form,list]
+	*/
+	public function setFieldsForm() {
+		///$this->fields_form = array();
+	}
 	/*	 * ************************CLIENT---FUNCTION************************ */
 
 	public function kFields2Form(&$param) {
@@ -1100,7 +1117,7 @@ abstract class kernel_extends {
 		$flag = 1;
 		$xml = $messages = array();
 
-		if (!$param['phptemplate'])
+		if (!isset($param['phptemplate']))
 			$param['phptemplate'] = 'superlist';
 
 		if ($this->owner and $this->owner->id)
@@ -1109,7 +1126,7 @@ abstract class kernel_extends {
 		if ($this->_pn > 1)
 			$this->_clp .= $cl . '_pn=' . $this->_pn . '&amp;';
 
-		if (!is_array($_GET[$cl . '_id'])) {
+		if (isset($_GET[$cl . '_id']) and !is_array($_GET[$cl . '_id'])) {
 			if (!$this->mf_use_charid)
 				$this->id = (int) $_GET[$cl . '_id'];
 			else
@@ -1133,27 +1150,27 @@ abstract class kernel_extends {
 					$first_data = $this->data;
 				$this->tree_data += $this->data;
 				$path2[$firstpath . $this->_cl . '_id=' . $this->data[$parent_id]['id'] . '&amp;'] = $this->caption . ': ' . $this->data[$parent_id][$this->_listname];
-				if ($param['first_id'] and $parent_id == $param['first_id'])
+				if (isset($param['first_id']) and $param['first_id'] and $parent_id == $param['first_id'])
 					break;
 				$parent_id = $this->data[$parent_id]['parent_id'];
 			}
 			$this->data = $first_data;
 
-			if ($param['first_id'] and !$parent_id)
+			if (isset($param['first_id']) and $param['first_id'] and !$parent_id)
 				$this->id = '';
 			$path2 = array_reverse($path2);
 		}
 		elseif ($this->id) {
 			$this->_select();
 		}
-		if ($this->owner->id) {
+		if ($this->owner and $this->owner->id) {
 			if ($this->owner->mf_istree)
 				array_pop($HTML->path);
 			$HTML->path[$firstpath] = $this->caption . ':' . $this->owner->data[$this->owner->id][$this->owner->_listname];
 		}
 		else
 			$HTML->path[$firstpath] = $this->caption;
-		if (count($path2))
+		if (isset($path2) and count($path2))
 			$HTML->path = array_merge($HTML->path, $path2);
 
 		if ($this->id and isset($_GET[$cl . '_ch']) and isset($this->childs[$_GET[$cl . '_ch']])) {
@@ -1196,7 +1213,7 @@ abstract class kernel_extends {
 				);
 
 
-			if (count($this->owner->childs))
+			if ($this->owner and count($this->owner->childs))
 				foreach ($this->owner->childs as $ck => $cn) {
 					if (count($cn->fields_form) and $ck != $cl and $cn->_prmModulShow($ck))
 						$xml['topmenu'][] = array(
@@ -1343,7 +1360,7 @@ abstract class kernel_extends {
 				$xml[$param['phptemplate']]['topmenu'] = &$xml['topmenu'];
 			}
 		}
-		if (!$xml[$param['phptemplate']]['messages'])
+		if (!isset($xml[$param['phptemplate']]['messages']))
 			$xml[$param['phptemplate']]['messages'] = array();
 		if (count($messages))
 			$xml[$param['phptemplate']]['messages'] += $messages;
@@ -1463,9 +1480,10 @@ abstract class kernel_extends {
 	 * ФИЛЬТР в запросе
 	 * */
 	function _filter_clause() {
-		$cl = array();
+		$cl = $_FILTR = array();
 		$flag_filter = 0;
-		$_FILTR = $_SESSION['filter'][$this->_cl];
+		if(isset($_SESSION['filter'][$this->_cl]))
+			$_FILTR = $_SESSION['filter'][$this->_cl];
 		foreach ($this->fields_form as $k => $r) {
 			if (isset($r['mask']['filter']) and $r['mask']['filter'] == 1) {
 				if (isset($_FILTR[$k])) {
@@ -1515,9 +1533,9 @@ abstract class kernel_extends {
 		if ($this->mf_istree) {
 			if ($this->id)
 				$param['clause']['t1.parent_id'] = 't1.parent_id="' . $this->id . '"';
-			elseif ($param['first_id'])
+			elseif (isset($param['first_id']))
 				$param['clause']['t1.parent_id'] = 't1.id="' . $param['first_id'] . '"';
-			elseif ($param['first_pid'])
+			elseif (isset($param['first_pid']))
 				$param['clause']['t1.parent_id'] = 't1.parent_id="' . $param['first_id'] . '"';
 			elseif ($this->mf_use_charid)
 				$param['clause']['t1.parent_id'] = 't1.parent_id=""';
@@ -1529,9 +1547,9 @@ abstract class kernel_extends {
 		//if(isset($this->fields['region_id']) and isset($_SESSION['city']))///////////////**********************
 		//	$param['clause']['t1.region_id'] ='t1.region_id='.$_SESSION['city'];
 
-		if ($_GET['_type'] == 'deleted' and $this->fields_form['active']['listname'] == 'active')
+		if (isset($_GET['_type']) and $_GET['_type'] == 'deleted' and $this->fields_form['active']['listname'] == 'active')
 			$param['clause']['t1.active'] = 't1.active=4';
-		elseif ($this->fields_form['active']['listname'] == 'active')
+		elseif (isset($this->fields_form['active']['listname']) and $this->fields_form['active']['listname'] == 'active')
 			$param['clause']['t1.active'] = 't1.active!=4';
 		return $param['clause'];
 	}

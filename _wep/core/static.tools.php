@@ -117,253 +117,255 @@ class static_tools {
 		}
 
 		list($MODUL,$rDATA['modulprm']['@mess']) = $MODULPRM->ForUpdateModulInfo($Mid,$OWN);
-		if (!$MODUL) {
+		if ($MODUL===false) {
 			$rDATA['Ошибка']['@mess'][] = array('name' => 'error', 'value' => 'Ошибка инициализации модуля `'.$Mid.'`');
 			return array($Mid => $rDATA);
 		}
-		// синонимы для типов полей
-		$alias_types = array(
-			'TINYINT(1)' => 'BOOL',
-		);
+		elseif($MODULPRM->data[$Mid]['active']) {
+			// синонимы для типов полей
+			$alias_types = array(
+				'TINYINT(1)' => 'BOOL',
+			);
 
-		// типы полей, число - это значение, которое запишется в базу по умолчанию, если не указывать ширину явно
-		// false - означает, что для данного типа поля в mysql ширина не указывается
-		$types_width = array(
-			'TINYBLOB' => false,
-			'TINYTEXT' => false,
-			'BLOB' => false,
-			'TEXT' => false,
-			'MEDIUMBLOB' => false,
-			'MEDIUMTEXT' => false,
-			'LONGBLOB' => false,
-			'LONGTEXT' => false,
-			'DATE' => false,
-			'DATETIME' => false,
-			'TIMESTAMP' => false,
-			'TIME' => false,
-			'FLOAT' => '8,2',
-			'DOUBLE' => false,
-			'PRECISION' => false,
-			'REAL' => false,
-			'INT' => 11,
-			'INTEGER ' => 11,
-			'VARCHAR' => 255,
-		);
+			// типы полей, число - это значение, которое запишется в базу по умолчанию, если не указывать ширину явно
+			// false - означает, что для данного типа поля в mysql ширина не указывается
+			$types_width = array(
+				'TINYBLOB' => false,
+				'TINYTEXT' => false,
+				'BLOB' => false,
+				'TEXT' => false,
+				'MEDIUMBLOB' => false,
+				'MEDIUMTEXT' => false,
+				'LONGBLOB' => false,
+				'LONGTEXT' => false,
+				'DATE' => false,
+				'DATETIME' => false,
+				'TIMESTAMP' => false,
+				'TIME' => false,
+				'FLOAT' => '8,2',
+				'DOUBLE' => false,
+				'PRECISION' => false,
+				'REAL' => false,
+				'INT' => 11,
+				'INTEGER ' => 11,
+				'VARCHAR' => 255,
+			);
 
-		// типы полей, в которых нет атрибута default
-		$types_without_default = array(
-			'TINYTEXT' => true,
-			'TEXT' => true,
-			'MEDIUMTEXT' => true,
-			'LONGTEXT' => true,
-		);
+			// типы полей, в которых нет атрибута default
+			$types_without_default = array(
+				'TINYTEXT' => true,
+				'TEXT' => true,
+				'MEDIUMTEXT' => true,
+				'LONGTEXT' => true,
+			);
 
-		$result = $MODUL->SQL->execSQL('SHOW TABLES LIKE \'' . $MODUL->tablename . '\''); // checking table exist
-		if ($result->err) {
-			$rDATA['Ошибка БД']['@mess'][] = array('name' => 'error', 'value' => $MODUL->getMess('_big_err'));
-			return array($MODUL->_cl => $rDATA);
-		}
-		if (!$result->num_rows()) {
-			if (isset($_POST['sbmt'])) {
-				if (!self::_installTable($MODUL)) {
-					$rDATA['Создание таблицы']['@mess'][] = array('name' => 'error', 'value' => $MODUL->getMess('_install_err') );
-					return array($MODUL->_cl => $rDATA);
-				}
-				else {
-					$rDATA['Создание таблицы']['@mess'][] = array('name' => 'ok', 'value' => $MODUL->getMess('_install_ok') );
-					return array($MODUL->_cl => $rDATA);
-				}
-			}
-			else {
-				$rDATA['Создание таблицы']['@mess'][] = array('name' => 'alert', 'value' => $MODUL->getMess('_install_info',array($MODUL->_cl.'['.$MODUL->tablename.']')) );
+			$result = $MODUL->SQL->execSQL('SHOW TABLES LIKE \'' . $MODUL->tablename . '\''); // checking table exist
+			if ($result->err) {
+				$rDATA['Ошибка БД']['@mess'][] = array('name' => 'error', 'value' => $MODUL->getMess('_big_err'));
 				return array($MODUL->_cl => $rDATA);
 			}
-		}
-
-		$out = array();
-
-		if (isset($MODUL->fields))
-			foreach ($MODUL->fields as $key => $param) {
-				if (isset($param['attr']) and stristr($param['attr'], 'default')) {
-					$rDATA[$key]['@mess'][] = array('name' => 'alert', 'value' => 'Пар-р default прописан в ключе attr. Для корректной работы необходимо прописать его в отдельном элементе с ключом `default`' );
+			if (!$result->num_rows()) {
+				if (isset($_POST['sbmt'])) {
+					if (!self::_installTable($MODUL)) {
+						$rDATA['Создание таблицы']['@mess'][] = array('name' => 'error', 'value' => $MODUL->getMess('_install_err') );
+						return array($MODUL->_cl => $rDATA);
+					}
+					else {
+						$rDATA['Создание таблицы']['@mess'][] = array('name' => 'ok', 'value' => $MODUL->getMess('_install_ok') );
+						return array($MODUL->_cl => $rDATA);
+					}
 				}
-				if (
-					isset($param['default']) &&
-					isset($types_without_default[mb_strtoupper($param['type'])]) &&
-					$types_without_default[mb_strtoupper($param['type'])] === true
-				) {
-					$rDATA[$key]['@mess'][] = array('name' => 'alert', 'value' => 'Параметр `default` для поля `'.$key.'` указывать не обязательно.');
-					unset($MODUL->fields[$key]['default']);
+				else {
+					$rDATA['Создание таблицы']['@mess'][] = array('name' => 'alert', 'value' => $MODUL->getMess('_install_info',array($MODUL->_cl.'['.$MODUL->tablename.']')) );
+					return array($MODUL->_cl => $rDATA);
 				}
 			}
 
-		$result = $MODUL->SQL->execSQL('SHOW COLUMNS FROM `' . $MODUL->tablename . '`');
-		while (list($fldname, $fldtype, $null, $key, $default, $extra) = $result->fetch_array(MYSQL_NUM)) {
-			$fldtype = mb_strtoupper($fldtype);
-			$null = mb_strtoupper($null);
-			$key = mb_strtoupper($key);
-			$extra = mb_strtoupper($extra);
+			$out = array();
 
-			if (isset($MODUL->fields[$fldname])) {
-				$MODUL->fields[$fldname]['inst'] = '1';
-				$tmp_type = mb_strtoupper($MODUL->fields[$fldname]['type']);
-				if (isset($MODUL->fields[$fldname]['width'])) {
-					if (isset($types_width[$tmp_type]) && $types_width[$tmp_type] === false) {
-						$rDATA[$fldname]['@mess'][] = array('name' => 'alert', 'value' => 'Параметр `width` для поля `'.$fldname.'` указывать не обязательно.');
-						unset($MODUL->fields[$fldname]['width']); // чистим от ненужного парметра
+			if (isset($MODUL->fields))
+				foreach ($MODUL->fields as $key => $param) {
+					if (isset($param['attr']) and stristr($param['attr'], 'default')) {
+						$rDATA[$key]['@mess'][] = array('name' => 'alert', 'value' => 'Пар-р default прописан в ключе attr. Для корректной работы необходимо прописать его в отдельном элементе с ключом `default`' );
 					}
-				} else {
-					if (isset($types_width[$tmp_type]) && $types_width[$tmp_type] !== false) {
-						$rDATA[$fldname]['@mess'][] = array('name' => 'alert', 'value' => 'Параметр `width` для поля `'.$fldname.'` необходим. По умолчанию будет установленно значение `'.$types_width[$tmp_type].'`');
-						$MODUL->fields[$fldname]['width'] = $types_width[$tmp_type];
+					if (
+						isset($param['default']) &&
+						isset($types_without_default[mb_strtoupper($param['type'])]) &&
+						$types_without_default[mb_strtoupper($param['type'])] === true
+					) {
+						$rDATA[$key]['@mess'][] = array('name' => 'alert', 'value' => 'Параметр `default` для поля `'.$key.'` указывать не обязательно.');
+						unset($MODUL->fields[$key]['default']);
 					}
 				}
 
-				$types = array();
-				$types[] = $fldtype;
-				if (isset($alias_types[$fldtype]))
-					$types[] = $alias_types[$fldtype];
+			$result = $MODUL->SQL->execSQL('SHOW COLUMNS FROM `' . $MODUL->tablename . '`');
+			while (list($fldname, $fldtype, $null, $key, $default, $extra) = $result->fetch_array(MYSQL_NUM)) {
+				$fldtype = mb_strtoupper($fldtype);
+				$null = mb_strtoupper($null);
+				$key = mb_strtoupper($key);
+				$extra = mb_strtoupper($extra);
 
-				$table_properties = array();
-				$table_properties_up_case = array();
-				$i = 0;
-				foreach ($types as $type) {
-					$table_properties[$i] = '`' . $fldname . '` ' . $type;
-
-					if ($type != 'TIMESTAMP') {
-						if ($null == 'YES') {
-							if (isset($MODUL->fields[$fldname]['attr']) and strstr(mb_strtoupper($MODUL->fields[$fldname]['attr']), 'NULL'))
-								$table_properties[$i] .= ' NULL';
+				if (isset($MODUL->fields[$fldname])) {
+					$MODUL->fields[$fldname]['inst'] = '1';
+					$tmp_type = mb_strtoupper($MODUL->fields[$fldname]['type']);
+					if (isset($MODUL->fields[$fldname]['width'])) {
+						if (isset($types_width[$tmp_type]) && $types_width[$tmp_type] === false) {
+							$rDATA[$fldname]['@mess'][] = array('name' => 'alert', 'value' => 'Параметр `width` для поля `'.$fldname.'` указывать не обязательно.');
+							unset($MODUL->fields[$fldname]['width']); // чистим от ненужного парметра
 						}
-						else {
-							$table_properties[$i] .= ' NOT NULL';
+					} else {
+						if (isset($types_width[$tmp_type]) && $types_width[$tmp_type] !== false) {
+							$rDATA[$fldname]['@mess'][] = array('name' => 'alert', 'value' => 'Параметр `width` для поля `'.$fldname.'` необходим. По умолчанию будет установленно значение `'.$types_width[$tmp_type].'`');
+							$MODUL->fields[$fldname]['width'] = $types_width[$tmp_type];
 						}
-						if ($default !== NULL) {
-							$table_properties[$i] .= ' DEFAULT \'' . addcslashes($default,'\'') . '\'';
-						}
-						if ($extra != '')
-							$table_properties[$i] .= ' ' . $extra;
 					}
-					$table_properties_up_case[$i] = trim( str_replace(array('"', "'", chr(194).chr(160),"\xC2xA0","\n"), array('', '', ' ', ' ', ' '), mb_strtoupper($table_properties[$i],'UTF-8')) );
-					$i++;
-				}
-				$temp_fldformer = self::_fldformer($fldname, $MODUL->fields[$fldname]);
-				$temp = trim(str_replace(array('"', "'", chr(194).chr(160),"\xC2xA0","\n"), array('', '', ' ', ' ', ' '), mb_strtoupper($temp_fldformer,'UTF-8')));
 
-				if (isset($MODUL->fields[$fldname]['type']) and !in_array($temp, $table_properties_up_case)) {
-					$rDATA[$fldname]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` CHANGE `' . $fldname . '` ' . $temp_fldformer;
-					$rDATA[$fldname]['@oldquery'] = $table_properties[0];
-				}
-			} elseif (isset($MODUL->attaches[$fldname]))
-				$MODUL->attaches[$fldname]['inst'] = '1';
-			elseif (isset($MODUL->memos[$fldname]))
-				$MODUL->memos[$fldname]['inst'] = '1';
-			else
-				$rDATA[$fldname]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` DROP `' . $fldname . '`';
-		}
+					$types = array();
+					$types[] = $fldtype;
+					if (isset($alias_types[$fldtype]))
+						$types[] = $alias_types[$fldtype];
 
-		if (isset($MODUL->fields))
-			foreach ($MODUL->fields as $key => $param) {
-				if (!isset($param['inst'])) {
-					$rDATA[$key]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD ' . self::_fldformer($key, $param);
-				}
+					$table_properties = array();
+					$table_properties_up_case = array();
+					$i = 0;
+					foreach ($types as $type) {
+						$table_properties[$i] = '`' . $fldname . '` ' . $type;
+
+						if ($type != 'TIMESTAMP') {
+							if ($null == 'YES') {
+								if (isset($MODUL->fields[$fldname]['attr']) and strstr(mb_strtoupper($MODUL->fields[$fldname]['attr']), 'NULL'))
+									$table_properties[$i] .= ' NULL';
+							}
+							else {
+								$table_properties[$i] .= ' NOT NULL';
+							}
+							if ($default !== NULL) {
+								$table_properties[$i] .= ' DEFAULT \'' . addcslashes($default,'\'') . '\'';
+							}
+							if ($extra != '')
+								$table_properties[$i] .= ' ' . $extra;
+						}
+						$table_properties_up_case[$i] = trim( str_replace(array('"', "'", chr(194).chr(160),"\xC2xA0","\n"), array('', '', ' ', ' ', ' '), mb_strtoupper($table_properties[$i],'UTF-8')) );
+						$i++;
+					}
+					$temp_fldformer = self::_fldformer($fldname, $MODUL->fields[$fldname]);
+					$temp = trim(str_replace(array('"', "'", chr(194).chr(160),"\xC2xA0","\n"), array('', '', ' ', ' ', ' '), mb_strtoupper($temp_fldformer,'UTF-8')));
+
+					if (isset($MODUL->fields[$fldname]['type']) and !in_array($temp, $table_properties_up_case)) {
+						$rDATA[$fldname]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` CHANGE `' . $fldname . '` ' . $temp_fldformer;
+						$rDATA[$fldname]['@oldquery'] = $table_properties[0];
+					}
+				} elseif (isset($MODUL->attaches[$fldname]))
+					$MODUL->attaches[$fldname]['inst'] = '1';
+				elseif (isset($MODUL->memos[$fldname]))
+					$MODUL->memos[$fldname]['inst'] = '1';
+				else
+					$rDATA[$fldname]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` DROP `' . $fldname . '`';
 			}
 
-		if (isset($MODUL->attaches))
-			foreach ($MODUL->attaches as $key => $param) {
-				if (!isset($param['inst']))
-					$rDATA[$key]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD ' . self::_fldformer($key, $MODUL->attprm);
-				if (!self::_checkdir($MODUL,$MODUL->getPathForAtt($key))) {
-					$rDATA[$key]['@mess'][] = array('name' => 'error', 'value' => $MODUL->getMess('_checkdir_error', array($MODUL->getPathForAtt($key))) );
+			if (isset($MODUL->fields))
+				foreach ($MODUL->fields as $key => $param) {
+					if (!isset($param['inst'])) {
+						$rDATA[$key]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD ' . self::_fldformer($key, $param);
+					}
 				}
-				$rDATA['@reattach'] = &$MODUL;
+
+			if (isset($MODUL->attaches))
+				foreach ($MODUL->attaches as $key => $param) {
+					if (!isset($param['inst']))
+						$rDATA[$key]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD ' . self::_fldformer($key, $MODUL->attprm);
+					if (!self::_checkdir($MODUL,$MODUL->getPathForAtt($key))) {
+						$rDATA[$key]['@mess'][] = array('name' => 'error', 'value' => $MODUL->getMess('_checkdir_error', array($MODUL->getPathForAtt($key))) );
+					}
+					$rDATA['@reattach'] = &$MODUL;
+				}
+
+			if (isset($MODUL->memos))
+				foreach ($MODUL->memos as $key => $param) {
+					if (!self::_checkdir($MODUL,$MODUL->getPathForMemo($key))) {
+						$rDATA[$key]['@mess'][] = array('name' => 'error', 'value' => $MODUL->getMess('_recheck_err') );
+					}
+				}
+
+
+			$indexlist = $uniqlistR = $uniqlist = array();
+			$primary = '';
+			$result = $MODUL->SQL->execSQL('SHOW INDEX FROM `' . $MODUL->tablename . '`');
+			while ($data = $result->fetch_array(MYSQL_NUM)) {
+				if ($data[2] == 'PRIMARY') //только 1 примарикей
+					$primary = $data[4];
+				elseif (!$data[1]) //!NON_unique
+					$uniqlist[$data[2]][$data[4]] = $data[4];
+				else
+					$indexlist[$data[2]][$data[4]] = $data[4];
 			}
 
-		if (isset($MODUL->memos))
-			foreach ($MODUL->memos as $key => $param) {
-				if (!self::_checkdir($MODUL,$MODUL->getPathForMemo($key))) {
-					$rDATA[$key]['@mess'][] = array('name' => 'error', 'value' => $MODUL->getMess('_recheck_err') );
+			// CREATE PRIMARY KEY
+			if (isset($MODUL->fields['id']) and !$primary) {
+				$rDATA['id']['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD PRIMARY KEY(id)';
+				$primary = 'id';
+			}
+			// CREATE UNIQ KEY
+			$uniqlistR = $uniqlist;
+			if (isset($MODUL->unique_fields) and count($MODUL->unique_fields)) {
+				foreach ($MODUL->unique_fields as $k => $r) {
+					if (!is_array($r))
+						$r = array($r);
+					if (!isset($uniqlist[$k])) {// and !isset($uniqlistR[$k])
+						foreach ($r as $kk => $rr)
+							$uniqlistR[$k][$kk] = $rr;
+						$tmp = '';
+						if (isset($indexlist[$k])){
+							$tmp = ' drop key `' . $k . '`, ';
+							unset($indexlist[$k]);
+						}
+						if (is_array($r))
+							$r = implode('`,`', $r);
+						if (!isset($rDATA[$k]['@index']))		$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
+						else		$rDATA[$k]['@index'] .= ', ';
+						$rDATA[$k]['@index'] .= ' ' . $tmp . ' ADD UNIQUE KEY `' . $k . '` (`' . $r . '`)';
+					} else {
+						unset($uniqlist[$k]);
+					}
 				}
 			}
-
-
-		$indexlist = $uniqlistR = $uniqlist = array();
-		$primary = '';
-		$result = $MODUL->SQL->execSQL('SHOW INDEX FROM `' . $MODUL->tablename . '`');
-		while ($data = $result->fetch_array(MYSQL_NUM)) {
-			if ($data[2] == 'PRIMARY') //только 1 примарикей
-				$primary = $data[4];
-			elseif (!$data[1]) //!NON_unique
-				$uniqlist[$data[2]][$data[4]] = $data[4];
-			else
-				$indexlist[$data[2]][$data[4]] = $data[4];
-		}
-
-		// CREATE PRIMARY KEY
-		if (isset($MODUL->fields['id']) and !$primary) {
-			$rDATA['id']['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD PRIMARY KEY(id)';
-			$primary = 'id';
-		}
-		// CREATE UNIQ KEY
-		$uniqlistR = $uniqlist;
-		if (isset($MODUL->unique_fields) and count($MODUL->unique_fields)) {
-			foreach ($MODUL->unique_fields as $k => $r) {
-				if (!is_array($r))
-					$r = array($r);
-				if (!isset($uniqlist[$k])) {// and !isset($uniqlistR[$k])
-					foreach ($r as $kk => $rr)
-						$uniqlistR[$k][$kk] = $rr;
-					$tmp = '';
-					if (isset($indexlist[$k])){
-						$tmp = ' drop key `' . $k . '`, ';
+			if (count($uniqlist)) {
+				foreach ($uniqlist as $k => $r) {
+					if (!isset($rDATA[$k]['@index']))		$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
+					else		$rDATA[$k]['@index'] .= ', ';
+					$rDATA[$k]['@index'] .= ' drop key ' . $k . ' ';
+					unset($uniqlistR[$k]);
+				}
+			}
+			//$uniqlistR - Действующие уник ключи в итоге
+			// CREATE INDEX KEY
+			if ($MODUL->owner)
+				$MODUL->index_fields[$MODUL->owner_name] = $MODUL->owner_name;
+			if ($MODUL->mf_istree)
+				$MODUL->index_fields['parent_id'] = 'parent_id';
+			if ($MODUL->mf_actctrl)
+				$MODUL->index_fields['active'] = 'active';
+			if ($MODUL->mf_ordctrl)
+				$MODUL->index_fields['ordind'] = 'ordind';
+			if (count($MODUL->index_fields))
+				foreach ($MODUL->index_fields as $k => $r) {
+					if (!isset($indexlist[$k]) and !isset($uniqlistR[$k])) {
+						if (!isset($rDATA[$k]['@index']))		$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
+						else		$rDATA[$k]['@index'] .= ', ';
+						$rDATA[$k]['@index'] .= ' add index `' . $k . '` (`' . $r . '`)';
+					} else {
 						unset($indexlist[$k]);
 					}
-					if (is_array($r))
-						$r = implode('`,`', $r);
+				}
+			if (count($indexlist)) {
+				foreach ($indexlist as $k => $r) {
 					if (!isset($rDATA[$k]['@index']))		$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
 					else		$rDATA[$k]['@index'] .= ', ';
-					$rDATA[$k]['@index'] .= ' ' . $tmp . ' ADD UNIQUE KEY `' . $k . '` (`' . $r . '`)';
-				} else {
-					unset($uniqlist[$k]);
+					$rDATA[$k]['@index'] .= ' drop key ' . $k . ' ';
 				}
 			}
+			$rDATA['Оптимизация']['@newquery'] = 'OPTIMIZE TABLE `' . $MODUL->tablename . '`';
 		}
-		if (count($uniqlist)) {
-			foreach ($uniqlist as $k => $r) {
-				if (!isset($rDATA[$k]['@index']))		$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
-				else		$rDATA[$k]['@index'] .= ', ';
-				$rDATA[$k]['@index'] .= ' drop key ' . $k . ' ';
-				unset($uniqlistR[$k]);
-			}
-		}
-		//$uniqlistR - Действующие уник ключи в итоге
-		// CREATE INDEX KEY
-		if ($MODUL->owner)
-			$MODUL->index_fields[$MODUL->owner_name] = $MODUL->owner_name;
-		if ($MODUL->mf_istree)
-			$MODUL->index_fields['parent_id'] = 'parent_id';
-		if ($MODUL->mf_actctrl)
-			$MODUL->index_fields['active'] = 'active';
-		if ($MODUL->mf_ordctrl)
-			$MODUL->index_fields['ordind'] = 'ordind';
-		if (count($MODUL->index_fields))
-			foreach ($MODUL->index_fields as $k => $r) {
-				if (!isset($indexlist[$k]) and !isset($uniqlistR[$k])) {
-					if (!isset($rDATA[$k]['@index']))		$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
-					else		$rDATA[$k]['@index'] .= ', ';
-					$rDATA[$k]['@index'] .= ' add index `' . $k . '` (`' . $r . '`)';
-				} else {
-					unset($indexlist[$k]);
-				}
-			}
-		if (count($indexlist)) {
-			foreach ($indexlist as $k => $r) {
-				if (!isset($rDATA[$k]['@index']))		$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
-				else		$rDATA[$k]['@index'] .= ', ';
-				$rDATA[$k]['@index'] .= ' drop key ' . $k . ' ';
-			}
-		}
-		$rDATA['Оптимизация']['@newquery'] = 'OPTIMIZE TABLE `' . $MODUL->tablename . '`';
 
 		if (count($rDATA))
 			$rDATA = array($MODUL->_cl => $rDATA);
