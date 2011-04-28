@@ -188,14 +188,6 @@ class pg_class extends kernel_extends {
 		}
 		return true;
 	}*/
-	function getFullPath() {
-		$path = $this->id;
-		$pid = $this->dataCash[$this->id]['parent_id'];
-		while($pid and $pid!='index') {
-			$path = $pid.'/'.$path;
-		}
-		return $path;
-	}
 
 	function display() {
 		$this->current_path = '';
@@ -602,7 +594,7 @@ class pg_class extends kernel_extends {
 				$href = $pid.'/'.$href;
 				$pid = $this->dataCash[$pid]['parent_id'];
 			}
-			if(!count($row)) $href .= '.html';
+			if(count($row)) $href .= '.html';
 		}
 		return $href;
 	}
