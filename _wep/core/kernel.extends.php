@@ -28,11 +28,11 @@ class modul_child extends ArrayObject {
 			}
 			$modul_child = NULL;
 			global $_CFG;
-			if(isset($_CFG['modulprm_ext'][$index]) && !$_CFG['modulprm'][$index]['active'])
+			if (isset($_CFG['modulprm_ext'][$index]) && !$_CFG['modulprm'][$index]['active'])
 				$clname = $_CFG['modulprm_ext'][$index];
 			else
 				$clname = $index;
-			if(!_new_class($clname, $modul_child, $this->modul_obj))
+			if (!_new_class($clname, $modul_child, $this->modul_obj))
 				return false;
 			$this->modul_obj->childs[$index] = $modul_child;
 			return $this->modul_obj->childs[$index];
@@ -75,22 +75,22 @@ abstract class kernel_extends {
 
 	}
 
-	function  __get($name) {
+	function __get($name) {
 		global $_CFG;
-		if($name=='SQL') {
-			if(!$this->grant_sql) {
+		if ($name == 'SQL') {
+			if (!$this->grant_sql) {
 				global $SQL;
-				if(!$SQL)
+				if (!$SQL)
 					$SQL = new sql($_CFG['sql']);
 				return $SQL;
 			} else {
 				return new sql($this->cfg_sql);
 			}
-		}elseif($name=='fields_form') {
+		} elseif ($name == 'fields_form') {
 			$this->setFieldsForm();
 			return $this->fields_form;
 		}
-		echo ' - '.$name;
+		echo ' - ' . $name;
 		print_r(debugPrint());
 		//return NULL;
 	}
@@ -148,24 +148,24 @@ abstract class kernel_extends {
 		$this->caption = $this->_cl; // заголовок модуля
 		$this->_listfields = array('name'); //select по умолч
 		$this->unique_fields =
-			$this->_enum =
-			$this->update_records =
-			$this->def_records =
-			$this->fld_data =
-			$this->fields =
-			$this->form = 
-			$this->fields_form = 
-			$this->mess_form =
-			$this->attaches = $this->att_data =
-			$this->memos = $this->mmo_data =
-			$this->services =
-			$this->index_fields =
-			$this->config =
-			$this->config_form =
-			$this->locallang =
-			$this->enum  =
-			$this->child_path =
-			$this->Achilds = array();
+				$this->_enum =
+				$this->update_records =
+				$this->def_records =
+				$this->fld_data =
+				$this->fields =
+				$this->form =
+				$this->fields_form =
+				$this->mess_form =
+				$this->attaches = $this->att_data =
+				$this->memos = $this->mmo_data =
+				$this->services =
+				$this->index_fields =
+				$this->config =
+				$this->config_form =
+				$this->locallang =
+				$this->enum =
+				$this->child_path =
+				$this->Achilds = array();
 		$this->childs = new modul_child($this);
 		$this->ordfield = $this->_clp = '';
 		$this->data = array();
@@ -318,16 +318,12 @@ abstract class kernel_extends {
 		return true;
 	}
 
-	/* -----------MODUL---FUNCTION------------
-	  _list($ord='')
-	  _select($active=0)
-	  _select_fields($active)
-	  _select_attaches()
-	  _select_memos()
-	  _get_file($row, $key)
-
-	  --------------------------------------- */
-
+	/**
+	 * Делает запрос к тек таблице с выводом всех данных
+	 *
+	 * @param string $where - для дополнительного условия
+	 * @return array
+	 */
 	public function _dump($where='') {
 		$name = 'name';
 		$data = array();
@@ -342,8 +338,15 @@ abstract class kernel_extends {
 		return $data;
 	}
 
-	/* ----------- _query ------------ */
-
+	/**
+	 * Функция аналогична _list(), только он принимает данные для запроса в виде параметров и возвращает рез-тат не использую $this->data
+	 *
+	 * @param string $list - выборка
+	 * @param string $cls - строка запроса
+	 * @param string $ord - позволяет группировать выходные данные по этому полю (1 уровень)
+	 * @param string $ord2 - позволяет группировать выходные данные по этому полю (2 уровень)
+	 * @return array
+	 */
 	public function _query($list='', $cls='', $ord='', $ord2='') { // this func. dont use $this->data
 		$query = 'SELECT ';
 		if (is_array($list))
@@ -377,8 +380,13 @@ abstract class kernel_extends {
 		return $data;
 	}
 
-	/* ----------- LIST------------ */
-
+	/**
+	 * Функция выполнения запроса к БД. Использует переменные класса $this->listfields и $this->clause и возвращает все в $this->data
+	 *
+	 * @param string $ord - поле для группировки масива, 1 уровень
+	 * @param string $ord2 - поле для группировки масива, 2 уровень
+	 * @return bool - true в случае успеха
+	 */
 	public function _list($ord='', $ord2='') {
 		$query = 'SELECT ';
 		if (count($this->listfields))
@@ -411,8 +419,12 @@ abstract class kernel_extends {
 		return static_main::_message('Select from `' . $this->caption . '` successful.');
 	}
 
-	/* ------- SELECT --------- */
-
+	/**
+	 * Запрос к БД , использует $this->id если он есть в качестве выборки
+	 * возвращает в массив $this->data
+	 *
+	 * @return bool - true если успех
+	 */
 	public function _select() {
 		$this->data = array();
 		if (!$this->_select_fields())
@@ -455,7 +467,7 @@ abstract class kernel_extends {
 			foreach ($data as $ri => &$row) {
 				foreach ($merg as $key => $value) {
 					$row['_ext_' . $key] = $row[$key];
-					$row[$key] = $this->_get_file($row['id'], $key,$row[$key]);
+					$row[$key] = $this->_get_file($row['id'], $key, $row[$key]);
 				}
 			}
 		}
@@ -480,8 +492,12 @@ abstract class kernel_extends {
 		return true;
 	}
 
-	/* ------------- ADD ADD ADD ADD ADD ------------------ */
-
+	/**
+	 * Функция добавления записей в бд
+	 * В случае успеха выполняет allChangeData('add')
+	 *
+	 * @return bool
+	 */
 	protected function _add() {
 		$result = static_form::_add($this);
 		if ($result)
@@ -489,8 +505,11 @@ abstract class kernel_extends {
 		return $result;
 	}
 
-	/* ------------- UPDATE UPDATE UPDATE ----------------- */
-
+	/**
+	 * Обновление/изменение данных
+	 *
+	 * @return bool
+	 */
 	protected function _update() {
 		$result = static_form::_update($this);
 		if ($result)
@@ -498,8 +517,11 @@ abstract class kernel_extends {
 		return $result;
 	}
 
-	/* ------------- DELETE DELETE DELETE ----------------- */
-
+	/**
+	 * Удаление данных
+	 *
+	 * @return bool
+	 */
 	public function _delete() {
 		$result = static_form::_delete($this);
 		if ($result)
@@ -507,12 +529,27 @@ abstract class kernel_extends {
 		return $result;
 	}
 
+	/**
+	 * Возвращает путь с дополненным параметром size
+	 *
+	 * @param string $file - относительный путь
+	 * @return string - относительный путь
+	 */
 	public function _getPathSize($file) {
-		if ($file and file_exists($this->_CFG['_PATH']['path'] .$file) and $size = @filesize($this->_CFG['_PATH']['path'] . $file))
+		if ($file and file_exists($this->_CFG['_PATH']['path'] . $file) and $size = @filesize($this->_CFG['_PATH']['path'] . $file))
 			return $file . '?size=' . $size;
 		return '';
 	}
 
+	/**
+	 * Формирует путь к фаилу
+	 *
+	 * @param <type> $id
+	 * @param <type> $key
+	 * @param <type> $extValue
+	 * @param <type> $modkey
+	 * @return string
+	 */
 	private function _get_file($id, $key, $extValue='', $modkey=-1) {
 		if (!$id)
 			$id = $this->id;
@@ -722,6 +759,7 @@ abstract class kernel_extends {
 	}
 
 	function _install() {
+
 	}
 
 	public function toolsReinstall() {
@@ -857,10 +895,11 @@ abstract class kernel_extends {
 				unset($data[$k]);
 				continue;
 			}
-			if(isset($eval)) {
+			if (isset($eval)) {
 				$val = $data[$k];
-				$eval = '$data[$k]='.$eval;
- 				if(substr($r['mask']['eval'],-1)!=';') $eval .= ';';
+				$eval = '$data[$k]=' . $eval;
+				if (substr($r['mask']['eval'], -1) != ';')
+					$eval .= ';';
 				eval($eval);
 				unset($eval);
 			}
@@ -926,16 +965,18 @@ abstract class kernel_extends {
 		$mess = array();
 		if (isset($this->mess_form) and count($this->mess_form))
 			$mess = $this->mess_form;
-		if(!count($this->fields_form))
-			$mess[] = array('name'=>'error', 'value'=>$this->getMess('nodata'));
+		if (!count($this->fields_form))
+			$mess[] = array('name' => 'error', 'value' => $this->getMess('nodata'));
 		return $mess;
 	}
+
 	/**
-	* $view [form,list]
-	*/
+	 * $view [form,list]
+	 */
 	public function setFieldsForm() {
 		///$this->fields_form = array();
 	}
+
 	/*	 * ************************CLIENT---FUNCTION************************ */
 
 	public function kFields2Form(&$param) {
@@ -963,7 +1004,7 @@ abstract class kernel_extends {
 			$this->form['_info']['caption'] = $this->getMess('add_name', array($this->caption));
 
 		$this->kFields2FormFields($this->fields_form);
-		if(!$this->id or (isset($this->data[$this->id]) and $this->_prmModulEdit($this->data[$this->id], $param))) {
+		if (!$this->id or (isset($this->data[$this->id]) and $this->_prmModulEdit($this->data[$this->id], $param))) {
 			$this->form['sbmt'] = array(
 				'type' => 'submit',
 				'value_save' => ((isset($param['sbmtsave']) and $this->id) ? $this->getMess('_save') : ''),
@@ -1292,7 +1333,7 @@ abstract class kernel_extends {
 
 			if ($ftype == 'add') {
 				$this->parent_id = $this->id;
-				$this->id=NULL;
+				$this->id = NULL;
 				list($xml['formcreat'], $flag) = $this->_UpdItemModul($param);
 				if ($flag == 1)
 					$this->id = $this->parent_id;
@@ -1326,7 +1367,7 @@ abstract class kernel_extends {
 				if ($this->mf_istree)
 					$this->id = $this->tree_data[$this->id]['parent_id'];
 				else
-					$this->id=NULL;
+					$this->id = NULL;
 			}
 			elseif ($ftype == 'del' && $this->id) {
 				if ($this->mf_istree)
@@ -1335,7 +1376,7 @@ abstract class kernel_extends {
 				if ($this->mf_istree)
 					$this->id = $this->tree_data[$this->id]['parent_id'];
 				else
-					$this->id=NULL;
+					$this->id = NULL;
 			}
 			elseif ($ftype == 'tools') {
 				$xml['formtools'] = array();
@@ -1483,7 +1524,7 @@ abstract class kernel_extends {
 	function _filter_clause() {
 		$cl = $_FILTR = array();
 		$flag_filter = 0;
-		if(isset($_SESSION['filter'][$this->_cl]))
+		if (isset($_SESSION['filter'][$this->_cl]))
 			$_FILTR = $_SESSION['filter'][$this->_cl];
 		foreach ($this->fields_form as $k => $r) {
 			if (isset($r['mask']['filter']) and $r['mask']['filter'] == 1) {

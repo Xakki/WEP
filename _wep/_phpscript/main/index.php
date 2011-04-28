@@ -38,14 +38,13 @@
 	$_tpl['logs']=$_tpl['onload']=$_tpl['city']=$_tpl['blockadd']=$_tpl['param']=$_tpl['blockadd']='';
 	$rid = 0;
 
+
 //INCLUDE*****************
 	_new_class('pg',$PGLIST);
 		if (!isset($_GET['page'])) 
 			$_GET['page'] = "index";
-		$_GET['page'] = explode('/',$_GET['page']);
-		$PGLIST->id = $_GET['page'][(count($_GET['page'])-1)];
-		if(!$PGLIST->id) 
-			$PGLIST->id = "index";
+		if(is_array($_GET['page'])) $_GET['page'] = implode('/',$_GET['page']);
+		$_GET['page'] = explode('/',trim($_GET['page'],'/'));
 
 	$HTML = new html('_design/',$PGLIST->config['design']);//отправляет header и печатает страничку
 

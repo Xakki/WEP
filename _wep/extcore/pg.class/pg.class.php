@@ -260,6 +260,21 @@ class pg_class extends kernel_extends {
 	function can_show() {
 		if(empty($this->dataCashTree))
 			$this->sqlCashPG();
+		if(isset($_GET['page']) and is_array($_GET['page']) and count($_GET['page']) and !$this->id) {
+			$this->id = 'index';
+			$this->pageParam = array();
+			//print_r('<pre>');print_r($this->dataCashTree);
+			foreach($_GET['page'] as $k=>$r) {
+				if(isset($this->dataCashTree[$this->id][$r]))
+					$this->id = $r;
+				else
+					$this->pageParam[$k] = $r;
+			}
+		}
+
+		if(!$this->id) {
+			$this->id = 'index';
+		}
 		/*$row = 0;
 		if(isset($this->dataCash[$this->id])) {
 			if ($parent!='' and $this->dataCash[$this->id]['parent_id']!=$parent)

@@ -67,7 +67,7 @@ class html {
 		$_tpl['title'] = $_tpl['time'] = '';
 		$_tpl['script'] = $_tpl['styles'] = array();
 		$params = array(
-			'obj'=>&$this,
+			'obj' => &$this,
 			'func' => 'createTemplate',
 		);
 		observer::register_observer($params, 'shutdown_function');
@@ -83,7 +83,7 @@ class html {
 			fileInclude($_CFG['fileIncludeOption']);
 			arraySrcToStr();
 		} elseif ($this->flag)
-			$_html = 'ERROR: Mising templates file ' . $this->_templates .' - '.$file ;
+			$_html = 'ERROR: Mising templates file ' . $this->_templates . ' - ' . $file;
 
 		if ($this->flag) {
 			headerssent();
@@ -211,8 +211,8 @@ function _myErrorHandler($errno, $errstr, $errfile, $errline, $errcontext) {//,$
 	if ($_CFG['wep']['catch_bug']) {
 
 		// Debuger
-		if($_CFG['wep']['on_debug'] and $_CFG['_error'][$errno]['debug'])
-			$debug = '<div class="spoiler-body" style="background-color: rgb(225, 225, 225);">'.debugPrint(2).'</div>';
+		if ($_CFG['wep']['on_debug'] and $_CFG['_error'][$errno]['debug'])
+			$debug = '<div class="spoiler-body" style="background-color: rgb(225, 225, 225);">' . debugPrint(2) . '</div>';
 		else
 			$debug = '';
 
@@ -227,15 +227,15 @@ function _myErrorHandler($errno, $errstr, $errfile, $errline, $errcontext) {//,$
 		if ($_CFG['_error'][$errno]['prior'] <= 3) {
 			$type = 0;
 			$errtype = '<b>' . $_CFG['_error'][$errno]['type'] . '</b>';
-		}
-		else {
+		} else {
 			$type = 1;
 			$errtype = $_CFG['_error'][$errno]['type'];
 		}
 
-		if(!isset($GLOBALS['_ERR'][$_CFG['wep']['catch_bug']][$type])) $GLOBALS['_ERR'][$_CFG['wep']['catch_bug']][$type] = '';
+		if (!isset($GLOBALS['_ERR'][$_CFG['wep']['catch_bug']][$type]))
+			$GLOBALS['_ERR'][$_CFG['wep']['catch_bug']][$type] = '';
 
-		if($debug)
+		if ($debug)
 			$GLOBALS['_ERR'][$_CFG['wep']['catch_bug']][$type] .='<div class="spoiler-wrap"><div onclick="bugSpoilers(this)" class="spoiler-head folded clickable" style="color:' . $_CFG['_error'][$errno]['color'] . ';">' . $errtype . ' ' . $errstr . ' , in line ' . $errline . ' of file <i>' . $errfile . '</i> </div>' . $debug . '</div>' . "\n";
 		else
 			$GLOBALS['_ERR'][$_CFG['wep']['catch_bug']][$type] .='<div style="color:' . $_CFG['_error'][$errno]['color'] . ';">' . $errtype . ' ' . $errstr . ' , in line ' . $errline . ' of file <i>' . $errfile . '</i> </div>' . "\n";
@@ -246,12 +246,14 @@ function _myErrorHandler($errno, $errstr, $errfile, $errline, $errcontext) {//,$
 		}
 	}
 }
+
 function startCatchError($param=2) {
 	global $_CFG;
-	if($param<2) $param = 2;
-	$_CFG['_ctemp'.$param]['catch_bug'] = $_CFG['wep']['catch_bug'];
-	$_CFG['_ctemp'.$param]['bug_hunter'] = $_CFG['wep']['bug_hunter'];
-	$_CFG['_ctemp'.$param]['stop_fatal_error'] = $_CFG['wep']['stop_fatal_error'];
+	if ($param < 2)
+		$param = 2;
+	$_CFG['_ctemp' . $param]['catch_bug'] = $_CFG['wep']['catch_bug'];
+	$_CFG['_ctemp' . $param]['bug_hunter'] = $_CFG['wep']['bug_hunter'];
+	$_CFG['_ctemp' . $param]['stop_fatal_error'] = $_CFG['wep']['stop_fatal_error'];
 	$_CFG['wep']['catch_bug'] = $param;
 	$_CFG['wep']['bug_hunter'] = 0;
 	$_CFG['wep']['stop_fatal_error'] = 0;
@@ -260,17 +262,19 @@ function startCatchError($param=2) {
 
 function getCatchError($param=2) {
 	global $_CFG;
-	if($param<2) $param = 2;
-	$_CFG['wep']['catch_bug'] = $_CFG['_ctemp'.$param]['catch_bug'];
-	$_CFG['wep']['bug_hunter'] = $_CFG['_ctemp'.$param]['bug_hunter'];
-	$_CFG['wep']['stop_fatal_error'] = $_CFG['_ctemp'.$param]['stop_fatal_error'];
-	if(isset($GLOBALS['_ERR'][$param])) {
+	if ($param < 2)
+		$param = 2;
+	$_CFG['wep']['catch_bug'] = $_CFG['_ctemp' . $param]['catch_bug'];
+	$_CFG['wep']['bug_hunter'] = $_CFG['_ctemp' . $param]['bug_hunter'];
+	$_CFG['wep']['stop_fatal_error'] = $_CFG['_ctemp' . $param]['stop_fatal_error'];
+	if (isset($GLOBALS['_ERR'][$param])) {
 		$return = $GLOBALS['_ERR'][$param];
 		unset($GLOBALS['_ERR'][$param]);
 	} else
-		$return = array(0=>'',1=>'');
+		$return = array(0 => '', 1 => '');
 	return $return;
 }
+
 /*
   Функция вывода на экран
  */
@@ -285,36 +289,36 @@ function _obHandler($buffer) {
 	$htmlinfo = '';
 	$notice = '';
 	$htmlerr = '';
-	foreach($GLOBALS['_ERR'] as $k=>$r) {
-		if(isset($r[0]))
+	foreach ($GLOBALS['_ERR'] as $k => $r) {
+		if (isset($r[0]))
 			$htmlerr .= $r[0];
-		if(isset($r[1])) //нотисы отдельно
+		if (isset($r[1])) //нотисы отдельно
 			$notice .= $r[1];
 	}
 	if (($htmlerr != '' or $notice != '' or $temp[1]) and ($_COOKIE['_showerror'] or $_CFG['site']['show_error'] == 2)) {
-		$htmlerr = '<div class="bugmain">' .$htmlerr ;
-		if($temp[1] and $temp[0])
+		$htmlerr = '<div class="bugmain">' . $htmlerr;
+		if ($temp[1] and $temp[0])
 			$htmlerr .= $temp[0];
-		if($notice)
-			$htmlerr .= '<div class="spoiler-wrap"><div onclick="bugSpoilers(this)" class="spoiler-head folded clickable">NOTICE</div><div class="spoiler-body">'.$notice.'</div></div>' . "\n";
+		if ($notice)
+			$htmlerr .= '<div class="spoiler-wrap"><div onclick="bugSpoilers(this)" class="spoiler-head folded clickable">NOTICE</div><div class="spoiler-body">' . $notice . '</div></div>' . "\n";
 	}
 	elseif (($htmlerr != '' or $temp[1]) and $_CFG['site']['show_error'] == 1)
-		$htmlerr ='<div class="bugmain">На странице возникла ошибка! Приносим свои извинения за временные неудобства! Неполадки будут исправлены в ближайшее время.</div>';
+		$htmlerr = '<div class="bugmain">На странице возникла ошибка! Приносим свои извинения за временные неудобства! Неполадки будут исправлены в ближайшее время.</div>';
 
 	if ((isset($_COOKIE['_showallinfo']) and $_COOKIE['_showallinfo']) or $_CFG['_F']['adminpage']) {
 		$included_files = get_included_files();
 		$htmlinfo .='<div class="info_time">time=' . substr((getmicrotime() - $_mctime_start), 0, 6) . ' | memory=' . (int) (memory_get_usage() / 1024) . 'Kb | maxmemory=' . (int) (memory_get_peak_usage() / 1024) . 'Kb | query=' . count($_CFG['logs']['sql']) . ' | file include=' . count($included_files) . '</div>';
-		if ($_COOKIE['_showallinfo'] > 1 and count($_CFG['logs']['sql'])>0)
+		if ($_COOKIE['_showallinfo'] > 1 and count($_CFG['logs']['sql']) > 0)
 			$htmlerr .='<div class="spoiler-wrap"><div onclick="bugSpoilers(this)" class="spoiler-head folded clickable">SQL QUERY</div><div class="spoiler-body">' . implode(';<br/>', $_CFG['logs']['sql']) . '</div></div>';
 		if ($_COOKIE['_showallinfo'] > 2) {
-			if(!$temp[1] and $temp[0])
+			if (!$temp[1] and $temp[0])
 				$htmlerr .='<div class="spoiler-wrap"><div onclick="bugSpoilers(this)" class="spoiler-head folded clickable">LOGS</div><div class="spoiler-body">' . $temp[0] . '</div></div>';
 			$htmlerr .='<div class="spoiler-wrap"><div onclick="bugSpoilers(this)" class="spoiler-head folded clickable">FILE INCLUDE</div><div class="spoiler-body">' . implode(';<br/>', $included_files) . '</div></div>';
 		}
 	}
-	if($htmlerr)
+	if ($htmlerr)
 		$htmlerr .= '<link type="text/css" href="_design/_style/bug.css" rel="stylesheet"/></div> <script type="text/javascript" src="_design/_script/bug.js"></script>';
-	
+
 	if (!$_CFG['_F']['adminpage'])
 		$_tpl['logs'] .= $htmlinfo . $htmlerr . $buffer;
 	else {
@@ -478,10 +482,10 @@ function _new_class($name, &$MODUL, &$OWNER = NULL) {
 		$MODUL = $_CFG['singleton'][$name];
 		return true;
 	} else {
-		
+
 		$MODUL = NULL;
 		static_main::_prmModulLoad();
-		if(isset($_CFG['modulprm_ext'][$name]) && !$_CFG['modulprm'][$name]['active'])
+		if (isset($_CFG['modulprm_ext'][$name]) && !$_CFG['modulprm'][$name]['active'])
 			$name = $_CFG['modulprm_ext'][$name];
 		$class_name = $name . "_class";
 		try {
@@ -489,14 +493,14 @@ function _new_class($name, &$MODUL, &$OWNER = NULL) {
 			$obj = new ReflectionClass($class_name);
 			//$pClass = $obj->getParentClass();
 			$MODUL = $obj->newInstanceArgs($getparam);
-			/*extract($getparam,EXTR_PREFIX_ALL,'param');
-			if(count($getparam)) {
-				$p = '$param'.implode(',$param',array_keys($getparam)).'';
-			} else $p = '';
-			eval('$MODUL = new '.$class_name.'('.$p.');');*/
+			/* extract($getparam,EXTR_PREFIX_ALL,'param');
+			  if(count($getparam)) {
+			  $p = '$param'.implode(',$param',array_keys($getparam)).'';
+			  } else $p = '';
+			  eval('$MODUL = new '.$class_name.'('.$p.');'); */
 			if ($MODUL)
 				return true;
-		} catch  (Exception $e) {
+		} catch (Exception $e) {
 			trigger_error($e->getMessage(), E_USER_WARNING);
 		}
 	}
@@ -508,29 +512,29 @@ function _new_class($name, &$MODUL, &$OWNER = NULL) {
  */
 
 function __autoload($class_name) { //автозагрузка модулей
-	/*global $_CFG;
-	if($class_name=='sql') {
-		require_once($_CFG['_PATH']['core'] . 'sql.php');
-		return true;
-	}
-	if($class_name=='kernel_extends') {
-		require_once($_CFG['_PATH']['core'] . 'kernel.extends.php');
-		return true;
-	}
-	if($class_name=='static_main') {
-		require_once($_CFG['_PATH']['core'] . 'static.main.php');
-		return true;
-	}
-	if($class_name=='modulprm_class') {
-		require_once($_CFG['_PATH']['extcore'] . 'modulprm.class/modulprm.class.php');
-		return true;
-	}*/
+	/* global $_CFG;
+	  if($class_name=='sql') {
+	  require_once($_CFG['_PATH']['core'] . 'sql.php');
+	  return true;
+	  }
+	  if($class_name=='kernel_extends') {
+	  require_once($_CFG['_PATH']['core'] . 'kernel.extends.php');
+	  return true;
+	  }
+	  if($class_name=='static_main') {
+	  require_once($_CFG['_PATH']['core'] . 'static.main.php');
+	  return true;
+	  }
+	  if($class_name=='modulprm_class') {
+	  require_once($_CFG['_PATH']['extcore'] . 'modulprm.class/modulprm.class.php');
+	  return true;
+	  } */
 	if ($file = _modulExists($class_name)) {
 		require_once($file);
 	}
 	else
-		//trigger_error('Can`t init `'.$class_name.'` modul ', E_USER_WARNING);
-		throw new Exception('Can`t init `'.$class_name.'` modul ');
+	//trigger_error('Can`t init `'.$class_name.'` modul ', E_USER_WARNING);
+		throw new Exception('Can`t init `' . $class_name . '` modul ');
 }
 
 /**
@@ -546,7 +550,7 @@ function _modulExists($class_name) {
 	$file = $fileS = false;
 	$class_name = explode('_', $class_name);
 
-	$fileS = $_CFG['_PATH']['core'] . $class_name[0] . (isset($class_name[1])?'.' . $class_name[1]:'') . '.php';
+	$fileS = $_CFG['_PATH']['core'] . $class_name[0] . (isset($class_name[1]) ? '.' . $class_name[1] : '') . '.php';
 	if (!isset($_CFG['modulprm'][$class_name[0]])) {
 		if (file_exists($fileS))
 			return $fileS;
@@ -559,7 +563,7 @@ function _modulExists($class_name) {
 		if ($file and file_exists($file))
 			return $file;
 	}
-	
+
 	$ret = static_main::includeModulFile($class_name[0]);
 	return $ret['file'];
 }
