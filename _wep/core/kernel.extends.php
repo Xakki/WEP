@@ -558,10 +558,10 @@ abstract class kernel_extends {
 		if (!$id or !$extValue or !$key)
 			return '';
 		$pref = '';
-		if ($this->attaches[$key]['thumb'][$modkey]['pref'])
+		if (isset($this->attaches[$key]['thumb'][$modkey]['pref']) && $this->attaches[$key]['thumb'][$modkey]['pref'])
 			$pref = $this->attaches[$key]['thumb'][$modkey]['pref'];
 
-		if ($this->attaches[$key]['thumb'][$modkey]['path'])
+		if (isset($this->attaches[$key]['thumb'][$modkey]['path']) && $this->attaches[$key]['thumb'][$modkey]['path'])
 			$pathimg = $this->attaches[$key]['thumb'][$modkey]['path'] . '/' . $pref . $id . '.' . $extValue;
 		elseif ($this->attaches[$key]['path'])
 			$pathimg = $this->attaches[$key]['path'] . '/' . $pref . $id . '.' . $extValue;

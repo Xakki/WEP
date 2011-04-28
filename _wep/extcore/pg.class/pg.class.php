@@ -22,6 +22,7 @@ class pg_class extends kernel_extends {
 			3 => 'Меню №3',
 			4 => 'Меню №4',
 			5 => 'Меню №5',
+			6 => 'Меню №6',
 		);
 
 		$this->config['marker'] = array(
@@ -33,8 +34,7 @@ class pg_class extends kernel_extends {
 			'param' => 'param',
 			'path' => 'path',
 			'logs' => 'logs',
-			'foot' => 'foot',
-			'center_sub_menu' => 'center_sub_menu');
+			'foot' => 'foot');
 
 		// TODO : Сделать форму управления массивами данных и хранить в формате json
 
