@@ -188,7 +188,14 @@ class pg_class extends kernel_extends {
 		}
 		return true;
 	}*/
-
+	function getFullPath() {
+		$path = $this->id;
+		$pid = $this->dataCash[$this->id]['parent_id'];
+		while($pid and $pid!='index') {
+			$path = $pid.'/'.$path;
+		}
+		return $path;
+	}
 
 	function display() {
 		$this->current_path = '';
@@ -263,7 +270,6 @@ class pg_class extends kernel_extends {
 		if(isset($_GET['page']) and is_array($_GET['page']) and count($_GET['page']) and !$this->id) {
 			$this->id = 'index';
 			$this->pageParam = array();
-			//print_r('<pre>');print_r($this->dataCashTree);
 			foreach($_GET['page'] as $k=>$r) {
 				if(isset($this->dataCashTree[$this->id][$r]))
 					$this->id = $r;
@@ -582,13 +588,22 @@ class pg_class extends kernel_extends {
 		return true;
 	}
 
-	function getHref($key,$row) {
+	function getHref($key='',$row=array()) {
 		if(is_array($row) and isset($row['href']) and $row['href']!='') {
 			$href = $row['href'];
 			if(strstr($href,'http://'))
 				$href ='_redirect.php?url='.base64_encode($href);
 		}
-		else $href = $key.'.html';
+		else {
+			if(!$key) $key = $this->id;
+			$href = $key;
+			$pid = $this->dataCash[$key]['parent_id'];
+			while($pid and $pid!='index') {
+				$href = $pid.'/'.$href;
+				$pid = $this->dataCash[$pid]['parent_id'];
+			}
+			if(!count($row)) $href .= '.html';
+		}
 		return $href;
 	}
 
