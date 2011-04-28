@@ -297,7 +297,6 @@ function _obHandler($buffer) {
 			$htmlerr .= $temp[0];
 		if($notice)
 			$htmlerr .= '<div class="spoiler-wrap"><div onclick="bugSpoilers(this)" class="spoiler-head folded clickable">NOTICE</div><div class="spoiler-body">'.$notice.'</div></div>' . "\n";
-		$htmlerr .= '</div> <script type="text/javascript" src="_design/_script/bug.js"></script>';
 	}
 	elseif (($htmlerr != '' or $temp[1]) and $_CFG['site']['show_error'] == 1)
 		$htmlerr ='<div class="bugmain">На странице возникла ошибка! Приносим свои извинения за временные неудобства! Неполадки будут исправлены в ближайшее время.</div>';
@@ -314,7 +313,7 @@ function _obHandler($buffer) {
 		}
 	}
 	if($htmlerr)
-		$htmlerr .= '<link type="text/css" href="_design/_style/bug.css" rel="stylesheet"/>';
+		$htmlerr .= '<link type="text/css" href="_design/_style/bug.css" rel="stylesheet"/></div> <script type="text/javascript" src="_design/_script/bug.js"></script>';
 	
 	if (!$_CFG['_F']['adminpage'])
 		$_tpl['logs'] .= $htmlinfo . $htmlerr . $buffer;
@@ -399,9 +398,9 @@ function debugPrint($slice=1) {
 		if (isset($arr['line']) and $arr['file'])
 			$s .= ' #line ' . $arr['line'] . ' #file: <a href="file:/' . $arr['file'] . '" style="color:blue;">' . $arr['file'] . '</a>';
 		if (isset($arr['class']))
-			$s .= ' #class <b>' . $arr['class'] . '</b>';
+			$s .= ' #class <b>' . $arr['class'] . '-></b>';
 		$s .= '</span>';
-		$s .= '<br/>';
+		//$s .= '<br/>';
 		$args = array();
 		if (isset($arr['args']))
 			foreach ($arr['args'] as $v) {
@@ -421,7 +420,7 @@ function debugPrint($slice=1) {
 					$args[] = $str;
 				}
 			}
-		$s .= $arr['function'] . '(' . implode('<br/>', $args) . ')';
+		$s .= $arr['function'] . '(' . implode(',', $args) . ')';
 		$s .= '</div>';
 		$i++;
 	}
@@ -473,7 +472,7 @@ function _mb_strpos($haystack, $needle, $offset=0) {
 /**
  * Инициализация модулей
  */
-function _new_class($name, &$MODUL, &$OWNER = NULL, $no_extend=false) {
+function _new_class($name, &$MODUL, &$OWNER = NULL) {
 	global $_CFG;
 	if (isset($_CFG['singleton'][$name])) {
 		$MODUL = $_CFG['singleton'][$name];
@@ -482,7 +481,7 @@ function _new_class($name, &$MODUL, &$OWNER = NULL, $no_extend=false) {
 		
 		$MODUL = NULL;
 		static_main::_prmModulLoad();
-		if(isset($_CFG['modulprm_ext'][$name]) && !$_CFG['modulprm'][$name]['active'] && !$no_extend)
+		if(isset($_CFG['modulprm_ext'][$name]) && !$_CFG['modulprm'][$name]['active'])
 			$name = $_CFG['modulprm_ext'][$name];
 		$class_name = $name . "_class";
 		try {

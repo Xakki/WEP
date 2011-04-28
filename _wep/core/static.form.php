@@ -60,6 +60,8 @@ class static_form {
 				return false;
 			}
 		}
+		if($_this->id)
+			$_this->_select();
 		if (isset($_this->mf_indexing) && $_this->mf_indexing) $_this->indexing();
 		return static_main::_message($_this->getMess('add'),3);
 	}
@@ -103,6 +105,13 @@ class static_form {
 			if (file_exists($oldname)) {
 				unlink($oldname);
 				static_main::_message('Old file '.$oldname.'deleted!',2);
+				if (count($_this->attaches[$key]['thumb']))
+					foreach($_this->attaches[$key]['thumb'] as $imod) {
+						$oldname =$pathimg.'/'. $imod['pref'].$_this->id. '.'.$row[$key];
+						if (file_exists($oldname))
+							unlink($oldname);
+					}
+
 			}
 			if ($value['tmp_name'] == ':delete:') continue;
 
@@ -195,9 +204,13 @@ class static_form {
 			if (!self::_rename_memos($_this)) return false;
 		}
 		if (!self::_update_fields($_this)) return false;
-		if (isset($_this->fld_data['id'])) $_this->id = $_this->fld_data['id'];
+		if (isset($_this->fld_data['id']))
+			$_this->id = $_this->fld_data['id'];
+
 		if (!self::_update_attaches($_this)) return false;
 		if (!self::_update_memos($_this)) return false;
+		if($_this->id)
+			$_this->_select();
 		if (isset($_this->mf_indexing) && $_this->mf_indexing) $_this->indexing();
 		return static_main::_message('Chenge data in `'.$_this->tablename.'` successful!',3);
 	}
@@ -298,7 +311,7 @@ class static_form {
 		if (!self::_delete_fields($_this)) return false;
 
 		if ($_this->mf_indexing) $_this->deindexing();
-		$_this->id = 0;
+		$_this->id = NULL;
 		return static_main::_message('Delete data from `'.$_this->caption.'` successful.',3);
 	}
 

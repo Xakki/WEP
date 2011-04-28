@@ -14,24 +14,25 @@
 					$r['value_2']= $_POST[$k.'_2'];
 
 				if($r['type']=='file') {
-					if(isset($r['ext']) and isset($this->_CFG['form']['imgFormat'][$r['ext']])) {
+					if(isset($r['ext']) and isset($this->_CFG['form']['imgFormat'][$r['ext']]) and $this->id) {
 						$r['att_type'] = 'img';
-						$r['img_size'] = getimagesize($this->_CFG['_PATH']['path'].$this->_get_file2(0,$k));
-						$r['value'] = $this->data[$this->id][$k];
+						$r['value'] = $this->_get_file($this->id,$k);
+						$r['img_size'] = getimagesize($this->_CFG['_PATH']['path'].$r['value']);
+						$r['value'] = $this->_getPathSize($r['value']);
 
 						if(count($this->attaches[$k]['thumb'])) {
 							foreach($this->attaches[$k]['thumb'] as $modkey=>$mr) {
 								if((!$mr['pref'] and !$mr['path']) or (!$mr['pref'] and $mr['path']==$this->attaches[$key]['path']))
 									{unset($r['thumb'][$modkey]);continue;}
-								$_file = $this->_get_file2(0,$k,'',$modkey);
+								$_file = $this->_get_file($this->id,$k,'',$modkey);
 								if(file_exists($this->_CFG['_PATH']['path'].$_file)) {
-									$mr['value'] = $_file;
+									$mr['value'] = $this->_getPathSize($_file);
 									$mr['filesize'] = filesize($this->_CFG['_PATH']['path'].$_file);
 									$r['thumb'][$modkey] = $mr;
 								}
 							}
 						}
-					}elseif(isset($r['ext']) and isset($this->_CFG['form']['flashFormat'][$r['ext']])) {
+					}elseif(isset($r['ext']) and isset($this->_CFG['form']['flashFormat'][$r['ext']]) and $this->id) {
 						$r['att_type'] = 'swf';
 					}
 					

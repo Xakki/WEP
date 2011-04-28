@@ -27,7 +27,12 @@ class modul_child extends ArrayObject {
 				require_once $this->modul_obj->child_path[$index];
 			}
 			$modul_child = NULL;
-			if(!_new_class($index, $modul_child, $this->modul_obj))
+			global $_CFG;
+			if(isset($_CFG['modulprm_ext'][$index]) && !$_CFG['modulprm'][$index]['active'])
+				$clname = $_CFG['modulprm_ext'][$index];
+			else
+				$clname = $index;
+			if(!_new_class($clname, $modul_child, $this->modul_obj))
 				return false;
 			$this->modul_obj->childs[$index] = $modul_child;
 			return $this->modul_obj->childs[$index];
@@ -61,9 +66,9 @@ abstract class kernel_extends {
 		if (isset($this->config_form) and count($this->config_form)) { // загрузка конфига из файла для модуля
 			$this->configParse();
 		}
-		$this->setFieldsForm();
 		$this->_create(); // предустановки модуля
 		$this->_childs();
+		$this->setFieldsForm();
 	}
 
 	function __destruct() {
@@ -224,7 +229,7 @@ abstract class kernel_extends {
 		}
 
 		if ($this->mf_createrid) {
-			$this->fields[$this->mf_createrid] = array('type' => 'varchar', 'width' => $this->mf_idwidth, 'attr' => 'NOT NULL', 'default' => '');
+			$this->fields[$this->mf_createrid] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0);
 			$this->index_fields[$this->mf_createrid] = $this->mf_createrid;
 		}
 
@@ -365,9 +370,9 @@ abstract class kernel_extends {
 			while ($row = $result->fetch_array())
 				$data[] = $row;
 		}
-		if (!$this->_select_attaches($data))
+		if (count($data) and !$this->_select_attaches($data))
 			return false;
-		if (!$this->_select_memos($data))
+		if (count($data) and !$this->_select_memos($data))
 			return false;
 		return $data;
 	}
@@ -416,7 +421,7 @@ abstract class kernel_extends {
 			return false;
 		if (!$this->_select_memos())
 			return false;
-
+		reset($this->data);
 		return static_main::_message('Select from ' . $this->caption . ' successful!');
 	}
 
@@ -436,7 +441,7 @@ abstract class kernel_extends {
 		return true;
 	}
 
-	private function _select_attaches($data='') {
+	private function _select_attaches(&$data=false) {
 		if (!$data)
 			$data = &$this->data;
 
@@ -450,7 +455,7 @@ abstract class kernel_extends {
 			foreach ($data as $ri => &$row) {
 				foreach ($merg as $key => $value) {
 					$row['_ext_' . $key] = $row[$key];
-					$row[$key] = $this->_get_file($row, $key);
+					$row[$key] = $this->_get_file($row['id'], $key,$row[$key]);
 				}
 			}
 		}
@@ -502,25 +507,22 @@ abstract class kernel_extends {
 		return $result;
 	}
 
-	public function _get_file($row, $key) {
-		if ($row[$key] != '') {
-			$f = $this->getPathForAtt($key) . '/' . $row['id'] . '.' . $row[$key];
-			if (file_exists($this->_CFG['_PATH']['path'] . $f) and $size = @filesize($this->_CFG['_PATH']['path'] . $f))
-				return $f . '?size=' . $size;
-		}
+	public function _getPathSize($file) {
+		if ($file and file_exists($this->_CFG['_PATH']['path'] .$file) and $size = @filesize($this->_CFG['_PATH']['path'] . $file))
+			return $file . '?size=' . $size;
 		return '';
 	}
 
-	private function _get_file2($id, $key, $extValue='', $modkey=-1) {
+	private function _get_file($id, $key, $extValue='', $modkey=-1) {
 		if (!$id)
 			$id = $this->id;
 		if (!$extValue and $this->data[$id])
 			$extValue = $this->data[$id]['_ext_' . $key];
+		if (!$id or !$extValue or !$key)
+			return '';
 		$pref = '';
 		if ($this->attaches[$key]['thumb'][$modkey]['pref'])
 			$pref = $this->attaches[$key]['thumb'][$modkey]['pref'];
-		if (!$id or !$extValue or !$key)
-			return '';
 
 		if ($this->attaches[$key]['thumb'][$modkey]['path'])
 			$pathimg = $this->attaches[$key]['thumb'][$modkey]['path'] . '/' . $pref . $id . '.' . $extValue;
@@ -528,6 +530,7 @@ abstract class kernel_extends {
 			$pathimg = $this->attaches[$key]['path'] . '/' . $pref . $id . '.' . $extValue;
 		else
 			$pathimg = $this->getPathForAtt($key) . '/' . $pref . $id . '.' . $extValue;
+
 		return $pathimg;
 	}
 
@@ -960,8 +963,7 @@ abstract class kernel_extends {
 			$this->form['_info']['caption'] = $this->getMess('add_name', array($this->caption));
 
 		$this->kFields2FormFields($this->fields_form);
-
-		if (!$this->id or ($this->id and isset($this->data[$this->id]) and $this->_prmModulEdit($this->data[$this->id], $param))) {
+		if(!$this->id or (isset($this->data[$this->id]) and $this->_prmModulEdit($this->data[$this->id], $param))) {
 			$this->form['sbmt'] = array(
 				'type' => 'submit',
 				'value_save' => ((isset($param['sbmtsave']) and $this->id) ? $this->getMess('_save') : ''),
@@ -969,7 +971,6 @@ abstract class kernel_extends {
 				'value' => $this->getMess('_saveclose')
 			);
 		}
-
 		return true;
 	}
 

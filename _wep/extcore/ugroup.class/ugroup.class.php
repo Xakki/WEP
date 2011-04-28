@@ -142,6 +142,20 @@ class ugroup_class extends kernel_extends
 	function remind() {
 		return $this->childs['users']->remind();
 	}
+
+	public function getUserData($id) {
+		if(!$id) {
+			trigger_error('Error get user data', E_USER_WARNING);
+			return array();
+		}
+		$this->listfields = array('t1.*,t1.id as gid,t1.active as gact,t1.name as gname,t2.*');
+		$this->clause = 't1 Join '.$this->childs['users']->tablename.' t2 on t2.'.$this->childs['users']->owner_name.'=t1.id where t2.id = '.(int)$id.''; 
+		if(!$this->_list()) {
+			trigger_error('Not found data for user id='.$id, E_USER_WARNING);
+			return array();
+		}
+		return $this->data[0];
+	}
 }
 
 
@@ -151,12 +165,9 @@ class users_class extends kernel_extends {
 	{
 		if (!parent::_set_features()) return false;
 		$this->mf_actctrl = true;
-		$this->fn_login = 'id';
+		$this->fn_login = 'login';//login or email
 		$this->fn_pass = 'pass';
-		if(!$this->fn_login or $this->fn_login=='id')
-			$this->mf_use_charid = true;
-		else
-			$this->mf_use_charid = false;
+		$this->mf_use_charid = false;
 		$this->mf_timecr = true; // создать поле хранящее время создания поля
 		$this->mf_timeup = true; // создать поле хранящее время обновления поля
 		$this->mf_ipcreate = true;//IP адрес пользователя с котрого была добавлена запись
@@ -175,17 +186,62 @@ class users_class extends kernel_extends {
 
 		if($this->fn_login!='email')
 			$this->fields[$this->fn_login] = array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL');
+		$this->fields['email'] =  array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL', 'default'=>'');
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL');
 		$this->fields[$this->fn_pass] = array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL');
-		$this->fields['email'] =  array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL', 'default'=>'');
+		// service field
 		$this->fields['loginza_token'] =  array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL', 'default'=>'');
 		$this->fields['loginza_provider'] =  array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL', 'default'=>'');
 		$this->fields['loginza_data'] =  array('type' => 'text', 'attr' => '');
-		// service field
 		$this->fields['reg_hash'] = array('type' => 'varchar', 'width' => 128, 'attr' => 'NOT NULL', 'default'=>'');
 		$this->fields['balance'] = array('type' => 'float ', 'width' => '11,2', 'attr' => 'NOT NULL', 'default'=>'0.00');
-		$this->fields['karma'] = array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL', 'default'=>0);
+		$this->fields['lastvisit'] =  array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL', 'default'=>0);
+	
+		$this->attaches['userpic'] = array('mime' => array('image/pjpeg'=>'jpg', 'image/jpeg'=>'jpg', 'image/gif'=>'gif', 'image/png'=>'png'), 'thumb'=>array(array('type'=>'resize', 'w'=>'800', 'h'=>'600','pref'=>'orign_'),array('type'=>'resizecrop', 'w'=>85, 'h'=>85)),'maxsize'=>1000,'path'=>'');
+		if(static_main::_prmUserCheck()) {
+			$params = array(
+				'obj'=>&$this,
+				'func' => 'updateLastVisit',
+			);
+			observer::register_observer($params, 'shutdown_function');
+		}
+	}
 
+	function updateLastVisit() {
+		if($_SESSION['user']['id'] and (time()-$_SESSION['user']['lastvisit'])>300) {
+			$this->SQL->execSQL('UPDATE `'.$this->tablename.'` SET lastvisit='.time().' WHERE id='.$_SESSION['user']['id'].'');
+		}
+	}
+
+	// FORM FIELDS
+	public function setFieldsForm() {
+		$this->fields_form = array();
+		$this->fields_form['owner_id'] = array('type' => 'list', 'listname'=>'ownerlist', 'caption' => 'Группа', 'mask' =>array('usercheck'=>1,'fview'=>1));
+		$this->fields_form[$this->fn_login] =	array('type' => 'text', 'caption' => 'Логин','mask'=>array('name'=>'login','min' => '4','sort'=>1),'comment'=>'Логин должен состоять только из латинских букв и цифр.');
+
+		if(static_main::_prmUserCheck(1)) // Вывод поля генерации пароля если админ
+			$this->fields_form[$this->fn_pass] = array('type' => 'password2', 'caption' => 'Пароль','md5'=>$this->_CFG['wep']['md5'], 'mask'=>array('min' => '6','fview'=>1));
+		elseif(!static_main::_prmUserCheck()) //Доступ только не зарегенным
+			$this->fields_form[$this->fn_pass] = array('type' => 'password_new', 'caption' => 'Пароль','mask'=>array('min' => '6','fview'=>1));
+		$this->fields_form['email'] = array('type' => 'text', 'caption' => 'E-mail', 'mask'=>array('name'=>'email','min' => '7'));
+		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Имя','mask'=>array('name'=>'name2')); // Вывод поля при редактировании
+		$this->fields_form['userpic'] = array('type'=>'file','caption'=>'Юзерпик','del'=>1, 'mask'=>array('fview'=>1,'width'=>85,'height'=>85,'thumb'=>0));
+		$this->fields_form['mf_ipcreate'] =	array('type' => 'text','readonly' => true, 'caption' => 'IP-пользователя','mask'=>array('usercheck'=>1,'eval'=>'long2ip($val)'));
+		$this->fields_form['mf_timecr'] =	array('type' => 'date','readonly' => true, 'caption' => 'Дата регистрации','mask'=>array('sort'=>1));
+		$this->fields_form['reg_hash'] = array('type' => 'hidden',  'caption' => 'Хэш','mask'=>array('eval'=>1,'fview'=>1,'usercheck'=>1));
+		if($this->owner->config['payon'])
+			$this->fields_form['balance'] =	array(
+				'type' => 'text',
+				'readonly' => true, 
+				'caption' => 'Счет(руб)',
+				'mask'=>array('sort'=>1));
+		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Пользователь активен', 'mask' =>array('usercheck'=>1));
+
+		if(static_main::_prmUserCheck() and !static_main::_prmUserCheck(1)) {  // Запрет поля на редактирование
+			$this->fields_form[$this->fn_login]['readonly']=true;
+			$this->fields_form[$this->fn_login]['email']=true;	
+		}
+			
 	}
 
 	function _childs() {
@@ -198,45 +254,11 @@ class users_class extends kernel_extends {
 			'name'=>'Администратор',
 			$this->fn_pass => md5($this->_CFG['wep']['md5'].$this->_CFG['wep']['password']), 
 			'active'=>1,
+			'email'=>$this->_CFG['info']['email'],
 			'mf_timecr'=>time(),
 			'owner_id'=>1,
 			'reg_hash'=>1);
 		return parent::_install();
-	}
-
-	// FORM FIELDS
-	public function setFieldsForm() {
-		$this->fields_form = array();
-		$this->fields_form['owner_id'] = array('type' => 'list', 'listname'=>'ownerlist', 'caption' => 'Группа', 'mask' =>array('usercheck'=>1,'fview'=>1));
-		$this->fields_form[$this->fn_login] =	array('type' => 'text', 'caption' => 'Логин','mask'=>array('name'=>'login','min' => '4','sort'=>1),'comment'=>'Логин должен состоять только из латинских букв и цифр.');
-		if(static_main::_prmUserCheck() and !static_main::_prmUserCheck(1))  // Запрет поля на редактирование
-			$this->fields_form[$this->fn_login]['readonly']=true;
-		if(static_main::_prmUserCheck(1)) // Вывод поля генерации пароля если админ
-			$this->fields_form[$this->fn_pass] = array('type' => 'password2', 'caption' => 'Пароль','md5'=>$this->_CFG['wep']['md5'], 'mask'=>array('min' => '6','fview'=>1));
-		elseif(!static_main::_prmUserCheck()) //Доступ только не зарегенным
-			$this->fields_form[$this->fn_pass] = array('type' => 'password_new', 'caption' => 'Пароль','mask'=>array('min' => '6','fview'=>1));
-		$this->fields_form['email'] = array('type' => 'text', 'caption' => 'E-mail', 'readonly'=>true, 'mask'=>array('name'=>'email','min' => '7'));
-		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Имя','mask'=>array('name'=>'name','usercheck'=>1)); // Вывод поля при редактировании
-		$this->fields_form['mf_ipcreate'] =	array('type' => 'text','readonly' => true, 'caption' => 'IP-пользователя','mask'=>array('usercheck'=>1,'eval'=>'long2ip($val)'));
-		$this->fields_form['mf_timecr'] =	array('type' => 'date','readonly' => true, 'caption' => 'Дата регистрации','mask'=>array('sort'=>1));
-		$this->fields_form['reg_hash'] = array('type' => 'hidden',  'caption' => 'Хэш','mask'=>array('eval'=>1,'fview'=>1,'usercheck'=>1));
-		if($this->owner->config['payon'])
-			$this->fields_form['balance'] =	array(
-				'type' => 'text',
-				'readonly' => true, 
-				'caption' => 'Счет(руб)',
-				'mask'=>array('sort'=>1));
-		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Пользователь активен', 'mask' =>array('usercheck'=>1));
-	}
-
-	function _UpdItemModul($param) {
-		$ret = parent::_UpdItemModul($param);
-		if($ret[1] and $_SESSION['user'] and $_SESSION['user']['id']==$this->id) {
-			$this->_select();
-			/** Обновление сессии пользователя если он сам обновил*/
-			$_SESSION['user'] = array_merge($_SESSION['user'],$this->data[$this->id]);
-		}
-		return $ret;
 	}
 
 	function authorization($login,$pass) {
@@ -248,7 +270,7 @@ class users_class extends kernel_extends {
 				 return array('Поле `Email` введено не корректно. Допустим ввод только латинских букв,цифр, точки, тире и @',0);
 			else
 			{
-				$this->listfields = array('t2.*,t2.active as gact,t2.name as gname,t1.*');
+				$this->listfields = array('t2.*,t2.id as gid,t2.active as gact,t2.name as gname,t1.*');
 				$this->clause = 't1 Join '.$this->owner->tablename.' t2 on t1.'.$this->owner_name.'=t2.id where t1.'.$this->fn_login.' = \''.$login.'\' and t1.'.$this->fn_pass.' =\''.md5($this->_CFG['wep']['md5'].$pass).'\''; 
 				if(!$this->_list())
 					return array('Ошибка подпрограммы.',0);
@@ -271,7 +293,7 @@ class users_class extends kernel_extends {
 						if(isset($_POST['remember']) and $_POST['remember']=='1'){
 							_setcookie('remember', md5($this->data[0][$this->fn_pass]).'_'.$this->data[0]['id'], (time()+(86400*$this->owner->config['rememberday'])));
 						}
-						$this->setUserSession();
+						$this->setUserSession($this->data[0]);
 						static_main::_prmModulLoad();
 						return array($this->_CFG['_MESS']['authok'],1);
 					}
@@ -286,12 +308,12 @@ class users_class extends kernel_extends {
 
 	
 	function cookieAuthorization() {
-		if(!isset($_SESSION['user']) and isset($_COOKIE['remember']))
+		if(!isset($_SESSION['user']['id']) and isset($_COOKIE['remember']))
 		{
 			if (preg_match("/^[0-9A-Za-z\_]+$/",$_COOKIE['remember']))
 			{
 				$pos = strpos($_COOKIE['remember'],'_');
-				$this->listfields = array('t2.*,t2.active as gact,t2.name as gname,t1.*');
+				$this->listfields = array('t2.*,t2.id as gid,t2.active as gact,t2.name as gname,t1.*');
 				$this->clause = 't1 Join '.$this->owner->tablename.' t2 on t1.'.$this->owner_name.'=t2.id where t1.id = \''.substr($_COOKIE['remember'],($pos+1)).'\' and md5(t1.'.$this->fn_pass.') =\''.substr($_COOKIE['remember'],0,$pos).'\'';
 				$this->_list();
 				if(count($this->data))
@@ -308,7 +330,7 @@ class users_class extends kernel_extends {
 					else
 					{
 						_setcookie('remember', md5($this->data[0][$this->fn_pass]).'_'.$this->data[0]['id'], (time()+(86400*$this->owner->config['rememberday'])));
-						$this->setUserSession();
+						$this->setUserSession($this->data[0]);
 						static_main::_prmModulLoad();
 						return array($this->_CFG['_MESS']['authok'],1);
 					}
@@ -317,19 +339,6 @@ class users_class extends kernel_extends {
 		}
 
 		return array('',0);
-	}
-
-	protected function setUserSession($data='') {
-		session_go(1);
-		reset($this->data);
-		if($data==='') $data = current($this->data);
-		$_SESSION['user'] = $data;
-		$_SESSION['user']['owner_id'] = $data[$this->owner_name];
-		$_SESSION['FckEditorUserFilesUrl'] = $this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['userfile'].$_SESSION['user']['id'].'/';
-		$_SESSION['FckEditorUserFilesPath'] = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['userfile'].$_SESSION['user']['id'].'/';
-		if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0)
-			_setcookie('_showerror',1);
-		return 0;
 	}
 
 	function regForm(){
@@ -362,13 +371,12 @@ class users_class extends kernel_extends {
 			$this->kPreFields($_POST,$param);
 			$arr = $this->fFormCheck($_POST,$param,$this->fields_form);
 			if(!count($arr['mess'])){
-
-				$this->listfields = array('LOWER(t1.'.$this->fn_login.') as lgn');
-				$this->clause = 't1 where t1.'.$this->fn_login.' = \''.$arr['vars'][$this->fn_login].'\' or t1.email = \''.$arr['vars']['email'].'\'';
-				$this->_list('lgn');
-				if(isset($this->data[strtolower($arr['vars'][$this->fn_login])]) and (!$this->id or $DATA[$this->fn_login]!=$arr['vars'][$this->fn_login]))
+				$clause = 't1 where (t1.'.$this->fn_login.' = \''.$arr['vars'][$this->fn_login].'\' or t1.email = \''.$arr['vars']['email'].'\')';
+				if($this->id) $clause .= ' and id!='.$this->id;
+				$datach = $this->_query('LOWER(t1.'.$this->fn_login.') as lgn',$clause);
+				if($datach[0]['lgn']==mb_strtolower($arr['vars'][$this->fn_login]))
 					$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['notlogin']);
-				elseif(count($this->data) and (!$this->id or $arr['vars']['email']!=$DATA['email']))
+				elseif(isset($datach[0]))
 					$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['notemail']);
 				else {
 					if(!$this->id) { // регистрация
@@ -376,12 +384,12 @@ class users_class extends kernel_extends {
 						$arr['vars']['active']=0;
 						if(!$arr['vars']['name'])
 							$arr['vars']['name'] = $arr['vars'][$this->fn_login];
-						$arr['vars'][$this->mf_createrid]=$arr['vars']['id'];
-						$arr['vars']['reg_hash']=md5(time().$arr['vars']['id']);
+						$arr['vars']['reg_hash']=md5(time().$arr['vars'][$this->fn_login]);
 						$pass=$arr['vars'][$this->fn_pass];
 						$arr['vars'][$this->fn_pass]=md5($this->_CFG['wep']['md5'].$arr['vars'][$this->fn_pass]);
-						//$_SESSION['user']['id'] = $arr['vars']['id'];
+						//$_SESSION['user'] = $arr['vars']['id'];
 						if($this->_add_item($arr['vars'])) {
+							$this->SQL->execSQL('UPDATE '.$this->tablename.' SET '.$this->mf_createrid.'="'.$this->id.'" where '.$this->fn_login.'="'.$arr['vars'][$this->fn_login].'"');
 							_new_class('mail',$MAIL);
 							$datamail['from']=$this->owner->config['mailrobot'];
 							$datamail['mailTo']=$arr['vars']['email'];
@@ -428,13 +436,11 @@ class users_class extends kernel_extends {
 		elseif(!isset($_GET['confirm']) or !isset($_GET['hash']) or _strlen($_GET['hash'])!=32)
 			$mess[] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['errdata']);
 		else {
-			$this->listfields = array('t1.id,t1.reg_hash');
-			$this->clause = 't1 where t1.`'.$this->fn_login.'` = \''.preg_replace("/[^0-9a-z]+/",'',$_GET['confirm']).'\'';
-			$this->_list();
-			if(count($this->data) and _strlen($this->data[0]['reg_hash'])<5)
+			$data = $this->_query('t1.id,t1.reg_hash','t1 where t1.`'.$this->fn_login.'` = \''.preg_replace("/[^0-9a-z]+/",'',$_GET['confirm']).'\'');
+			if(count($data) and _strlen($data[0]['reg_hash'])<5)
 				$mess[] = array('name'=>'alert', 'value'=>$this->_CFG['_MESS']['confno']);
-			elseif(count($this->data) and $this->data[0]['reg_hash']==$_GET['hash']){
-				$this->id = $this->data[0]['id'];
+			elseif(count($data) and $data[0]['reg_hash']==$_GET['hash']){
+				$this->id = $data[0]['id'];
 				$this->fld_data['reg_hash']= 1;
 				if($this->owner->config['premoderation']) {
 					$this->fld_data['active']= 0;
@@ -447,9 +453,6 @@ class users_class extends kernel_extends {
 				
 				if($this->_update()) {
 					$mess[] = array('name'=>'ok', 'value'=>$this->_CFG['_MESS']['confok']);
-					$this->listfields = array('t2.*,t2.active as gact,t2.name as gname,t1.*');
-					$this->clause = 't1 Join '.$this->owner->tablename.' t2 on t1.'.$this->owner_name.'=t2.id where t1.id = \''.$this->id.'\' ';
-					$this->_list();
 					$this->setUserSession();
 					static_main::_prmModulLoad();
 					$flag = true;
@@ -547,7 +550,7 @@ class users_class extends kernel_extends {
 				if($flag) {
 					$mess[] = array('name'=>'ok', 'value'=>$this->_CFG['_MESS']['authok']);
 					$mess[] = array('name'=>'ok', 'value'=>'<a href="/add.html">Перейти на страницу добавления объявления</a>');
-					$this->setUserSession($data);
+					$this->setUserSession();
 //print_r($data);
 					static_main::_prmModulLoad();
 				}
@@ -654,6 +657,19 @@ class users_class extends kernel_extends {
 			}
 		}
 		return '<div align="center">'.$html.'</div>';
+	}
+
+	protected function setUserSession($data=false) {
+		if(!$data) {
+			$data = $this->owner->getUserData();
+		}
+		session_go(1);
+		$_SESSION['user'] = $data;
+		$_SESSION['FckEditorUserFilesUrl'] = $this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['userfile'].$_SESSION['user']['id'].'/';
+		$_SESSION['FckEditorUserFilesPath'] = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['userfile'].$_SESSION['user']['id'].'/';
+		if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0)
+			_setcookie('_showerror',1);
+		return true;
 	}
 
 }

@@ -45,7 +45,7 @@ class comments_class extends kernel_extends {
 		$this->fields['vote'] = array('type' => 'int', 'width' => 9, 'attr' => 'NOT NULL', 'default'=>0);
 
 		if(static_main::_prmUserCheck())
-			$this->fields_form['name'] = array('type' => 'hidden','disabled'=>1, 'caption' => 'Имя', 'default'=>$_SESSION['user']['name'], 'mask'=>array('eval'=>'$_SESSION["user"]["name"]'));
+			$this->fields_form['name'] = array('type' => 'hidden','disabled'=>1, 'caption' => 'Имя', 'default'=>$this->_CFG['userData']['name'], 'mask'=>array('eval'=>'$this->_CFG["userData"]["name"]'));
 		else
 			$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Ваше имя', 'mask'=>array('min'=>3));
 		/*$this->fields_form[$this->mf_createrid] = array(
@@ -75,6 +75,7 @@ class comments_class extends kernel_extends {
 	}
 
 	private function antiSpam() {
+		global $_CFG;
 		$mess = array();
 		if($this->id) return $mess;
 		if(!isset($_SESSION['user']['id']))

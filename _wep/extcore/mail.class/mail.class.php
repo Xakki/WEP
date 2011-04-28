@@ -98,7 +98,7 @@ class mail_class extends kernel_extends {
 		$data = array();
 
 		if(static_main::_prmUserCheck()) {
-			$this->fields_form["from"]['default'] = $_SESSION['user']['email'];
+			$this->fields_form["from"]['default'] = $this->_CFG['userData']['email'];
 		}
 		else  $mailFrom='';
 		if(count($_POST) and $_POST['sbmt']) {

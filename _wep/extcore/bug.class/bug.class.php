@@ -89,7 +89,7 @@ class bug_class extends kernel_extends {
 			if (isset($_SESSION['user']['id']))
 				$creater_id = $_SESSION['user']['id'];
 			else
-				$creater_id = '';
+				$creater_id = 0;
 				
 			if (isset($_SERVER['REMOTE_ADDR']))
 				$mf_ipcreate = ip2long($_SERVER['REMOTE_ADDR']);

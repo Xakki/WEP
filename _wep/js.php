@@ -26,7 +26,7 @@
 		exit($GLOBALS['_RESULT']['html']);
 	}
 
-	if($_CFG['wep']['access'] and (!isset($_SESSION['user']) or $_SESSION['user']['level']>=5)) {
+	if($_CFG['wep']['access'] and (!isset($_SESSION['user']['id']) or $_SESSION['user']['level']>=5)) {
 		$GLOBALS['_RESULT']['html'] = $_CFG['_MESS']['denied'];
 		exit($_CFG['_MESS']['denied']);
 		//$_tpl['onload']='window.location="login.php?mess=Недостаточно прав доступа."';

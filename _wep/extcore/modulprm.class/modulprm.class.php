@@ -4,11 +4,6 @@
  *
  *
  *
- * 	  _checkmodstruct()
- * 	  _install()
- * 	  _reinstall()
- * 	  _insertDefault()
- * 	  _fldformer($key, $param)
  */
 final class modulprm_class extends kernel_extends {
 
@@ -56,6 +51,11 @@ final class modulprm_class extends kernel_extends {
 		$this->create_child('modulgrp');
 	}
 
+	/*function super_inc() {
+		unset($_CFG['modulprm_ext']); // чтобы не подменять обращения к модулям
+		return parent::super_inc();
+	}*/
+
 	/**
 	 * Дамп модулей установленных
 	 *
@@ -92,7 +92,7 @@ final class modulprm_class extends kernel_extends {
 		$html = '';
 		$mess = array();
 		$this->_select();
-
+		unset($_CFG['modulprm_ext']); // чтобы не подменять обращения к модулям
 //print_r('<pre>');print_r($this->data);
 		foreach ($this->_CFG['modulinc'] as $k => $r) {
 			$dir = dir($r['path']);
@@ -337,7 +337,8 @@ final class modulprm_class extends kernel_extends {
 			$this->fld_data = array();
 			if($fpath) {
 				include_once($fpath);
-				if(_new_class($Mid, $MODUL,$OWN, true)) {
+				unset($_CFG['modulprm_ext']);
+				if(_new_class($Mid, $MODUL,$OWN)) {
 					if($OWN and (!isset($this->data[$Mid]) or $this->data[$Mid]['parent_id']!=$OWN->_cl))
 						$this->fld_data['parent_id'] = $OWN->_cl;
 					if(!isset($this->data[$Mid]) or $this->data[$Mid]['name']!=$MODUL->caption)

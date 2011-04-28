@@ -29,7 +29,7 @@
 
 	session_go();
 /*
-	if(!isset($_SESSION['user']) and isset($_COOKIE['remeber'])) {
+	if(!isset($_SESSION['user']['id']) and isset($_COOKIE['remeber'])) {
 		_new_class('ugroup',$UGROUP);
 		$USERS = &$UGROUP->childs['users'];
 		$USERS->cookieAuthorization();

@@ -604,7 +604,7 @@ class board_class extends kernel_extends {
 	public function ParamFieldsForm($id,$rid,$tp=0,$listclause='') { // форма для редак-добавл объявы и поиска объявы
 		//$id - id объявы
 		//$rid - id рубрики
-		//$tp - тип обявления
+		//$tp - тип объявления
 		//listclause - подзапрос
 		global $_tpl;//в onLoad слайдер
 		$FLI = $FMCB = array();
