@@ -229,7 +229,7 @@ class users_class extends kernel_extends {
 		$this->fields_form['mf_ipcreate'] =	array('type' => 'text','readonly' => true, 'caption' => 'IP-пользователя','mask'=>array('usercheck'=>1,'eval'=>'long2ip($val)'));
 		$this->fields_form['mf_timecr'] =	array('type' => 'date','readonly' => true, 'caption' => 'Дата регистрации','mask'=>array('sort'=>1));
 		$this->fields_form['reg_hash'] = array('type' => 'hidden',  'caption' => 'Хэш','mask'=>array('eval'=>1,'fview'=>1,'usercheck'=>1));
-		if($this->owner->config['payon'])
+		if(isset($this->owner->config['payon']) && $this->owner->config['payon'])
 			$this->fields_form['balance'] =	array(
 				'type' => 'text',
 				'readonly' => true, 
