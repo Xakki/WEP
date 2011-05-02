@@ -1,5 +1,5 @@
 <?
-class comments_class extends kernel_extends {
+class comments_extends extends kernel_extends {
 
 	protected function _create_conf() {/*CONFIG*/
 		parent::_create_conf();
