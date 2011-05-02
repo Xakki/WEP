@@ -8,34 +8,32 @@ class modul_child extends ArrayObject {
 
 	function getIterator() {
 		$iterator = parent::getIterator();
-
 		while ($iterator->valid()) {
 			$key = $iterator->key();
 			if ($iterator->current() === true) {
-				$this->modul_obj->childs[$key];
+				$this->offsetSet($key, $this->offsetGet($key));
 			}
 			$iterator->next();
 		}
-
 		return $iterator;
 	}
 
 	function offsetGet($index) {
-		$value = parent::offsetGet($index);
-		if (isset($this->modul_obj->childs[$index]) && $value === true) {
-			if (isset($this->modul_obj->child_path[$index])) {
-				require_once $this->modul_obj->child_path[$index];
+		global $_CFG;
+		if (isset($_CFG['modulprm_ext'][$index]) && !$_CFG['modulprm'][$index]['active'])
+			$clname = $_CFG['modulprm_ext'][$index];
+		else
+			$clname = $index;
+		$value = parent::offsetGet($clname);
+		if ($this->offsetExists($clname) && $value === true) {
+			if (isset($this->modul_obj->child_path[$clname])) {
+				require_once $this->modul_obj->child_path[$clname];
 			}
 			$modul_child = NULL;
-			global $_CFG;
-			if (isset($_CFG['modulprm_ext'][$index]) && !$_CFG['modulprm'][$index]['active'])
-				$clname = $_CFG['modulprm_ext'][$index];
-			else
-				$clname = $index;
 			if (!_new_class($clname, $modul_child, $this->modul_obj))
 				return false;
-			$this->modul_obj->childs[$index] = $modul_child;
-			return $this->modul_obj->childs[$index];
+			//$this->modul_obj->childs[$index] = $modul_child;
+			return $modul_child;
 		} else {
 			//если один и тот же клас исползуется в как ребенок в других классах, то $this->singleton = false; вам в помощь, иначе сюда будут выдаваться ссылки на класс созданный в первы раз для другого модуля
 		}
