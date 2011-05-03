@@ -20,6 +20,7 @@ class comments_extends extends kernel_extends {
 	function _set_features()
 	{
 		if (!parent::_set_features()) return false;
+		$this->caption = 'Комментарии';
 		$this->mf_actctrl = true;
 		$this->mf_ipcreate = true;
 		$this->mf_timecr = true;
@@ -28,22 +29,17 @@ class comments_extends extends kernel_extends {
 		$this->locallang['default']['add'] = 'Комментарий добавлен.';
 		$this->locallang['default']['add_name'] = 'Добавить комментарий';
 		$this->locallang['default']['_saveclose'] = 'Написать комментарий';
-		
 		return true;
 	}
 
-	function _create()
-	{
+	function _create() {
 		if($this->config['treelevel']>0)
 			$this->mf_istree = true;
 		parent::_create();//$this->config доступен после этой функции
 
-		$this->tablename = 'comments';
-		$this->caption = 'Комментарии';
 
 		$this->fields['text'] = array('type' => 'text', 'attr' => 'NOT NULL', 'min' => '1');
 		$this->fields['vote'] = array('type' => 'int', 'width' => 9, 'attr' => 'NOT NULL', 'default'=>0);
-
 		if(static_main::_prmUserCheck())
 			$this->fields_form['name'] = array('type' => 'hidden','disabled'=>1, 'caption' => 'Имя', 'default'=>$this->_CFG['userData']['name'], 'mask'=>array('eval'=>'$this->_CFG["userData"]["name"]'));
 		else

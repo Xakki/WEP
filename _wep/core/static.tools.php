@@ -426,19 +426,11 @@ class static_tools {
 	}
 
 	static function _save_config(&$MODUL) {
-		//if (file_exists($MODUL->_file_cfg)) unlink($MODUL->_file_cfg);
-		$h = fopen($MODUL->_file_cfg, 'w');
-		foreach ($MODUL->config as $key => $value) {
-			if (!is_array($value)) {
-				$value = str_replace("\x0A", ' ', $value);
-				$value = str_replace("\x0D", '', $value);
-				$value = stripslashes($value);
-			} else {
-				$value = implode('|', $value);
-			}
-			fwrite($h, $key . '=' . $value . "\n");
+		$conf = $MODUL->config;
+		foreach($conf as $k=>&$r) {
+			$r = explode('|',$r);
 		}
-		fclose($h);
+		file_put_contents($MODUL->_file_cfg, var_export($conf, true) );
 		return true;
 	}
 

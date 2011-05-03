@@ -106,6 +106,7 @@ abstract class kernel_extends {
 		//$this->mf_typectrl = false;
 		//$this->mf_struct_readonly = false;
 		$this->id = NULL;
+		$this->_file_cfg = NULL;
 		$this->mf_istree = false; // древовидная структура?
 		$this->mf_ordctrl = false; // поле ordind для сортировки
 		$this->mf_actctrl = false; // поле active
@@ -192,9 +193,15 @@ abstract class kernel_extends {
 
 	protected function configParse() {
 		if (isset($this->config_form)) { // загрузка конфига из файла для модуля
-			$this->_file_cfg = $this->_CFG['_PATH']['config'] . get_class($this) . '.cfg';
+			if(is_null($this->_file_cfg))
+				$this->_file_cfg = $this->_CFG['_PATH']['config'] . get_class($this) . '.cfg';
 			if (file_exists($this->_file_cfg)) {
-				$this->config = array_merge($this->config, static_main::_fParseIni($this->_file_cfg, $this->config_form));
+				$cont = file_get_contents($this->_file_cfg);
+				if(substr($cont,0,5)=='array')
+					eval('$data='.$cont.';');
+				else
+					$data = static_main::_fParseIni($this->_file_cfg, $this->config_form);
+				$this->config = array_merge($this->config,$data);
 			}
 		}
 		return true;
@@ -790,6 +797,10 @@ abstract class kernel_extends {
 				'type' => 'info',
 				'caption' => $this->_CFG['_MESS']['_configno']);
 		} else {
+			foreach($this->config as $k=>&$r) {
+				if(is_array($r))
+					$r = implode('|',$r);
+			}
 			if (count($_POST)) {
 				$arr = $this->fFormCheck($_POST, $arr['vars'], $this->config_form);
 				$this->config = array();
