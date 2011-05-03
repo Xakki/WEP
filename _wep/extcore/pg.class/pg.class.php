@@ -365,17 +365,16 @@ class pg_class extends kernel_extends {
 
 
 	function get_path() {
-		$xml = '<path>';
+		$data = array();
 		foreach($this->pageinfo['path'] as $key=>$row)
 		{
 			if(!is_array($row) or !isset($row['onpath']) or $row['onpath']) {
 				if(is_array($row)) $name = $row['name'];
 				else $name = $row;
-				$xml.= '<item><href>'.$this->getHref($key,$row).'</href><name><![CDATA['.$name.']]></name></item>';
+				$data[] = array('href'=>$this->getHref($key,$row),'name'=>$name);
 			}
 		}
-		$xml .= '</path>';
-		return $xml;
+		return $data;
 	}
 
 

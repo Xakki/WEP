@@ -1,6 +1,7 @@
 <?
 /*PATH*/
-	$html = $HTML->transform($PGLIST->get_path(), "path");
+	$DATA = array('pathPage'=>$PGLIST->get_path());
+	$html = $HTML->transformPHP($DATA, "pathPage");
 /*	PATH */
 	return $html;
 ?>
