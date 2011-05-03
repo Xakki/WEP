@@ -425,12 +425,21 @@ class static_tools {
 			'value' => $MODUL->_CFG['_MESS']['_submit']);
 	}
 
-	static function _save_config(&$MODUL) {
-		$conf = $MODUL->config;
+	static function _save_config($conf,$file) {
 		foreach($conf as $k=>&$r) {
-			$r = explode('|',$r);
+			if(strpos($r,'|')!==false or strpos($r,'==')!==false) {
+				$temp = explode('|',$r);
+				$r = array();
+				foreach($temp as $t=>$d) {
+					$temp2 = explode('==',$d);
+					if(count($temp2)>1)
+						$r[trim($temp2[0])]=trim($temp2[1]);
+					else
+						$r[]=trim($d);
+				}
+			}
 		}
-		file_put_contents($MODUL->_file_cfg, var_export($conf, true) );
+		file_put_contents($file, var_export($conf, true) );
 		return true;
 	}
 

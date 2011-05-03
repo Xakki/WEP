@@ -798,21 +798,29 @@ abstract class kernel_extends {
 				'caption' => $this->_CFG['_MESS']['_configno']);
 		} else {
 			foreach($this->config as $k=>&$r) {
-				if(is_array($r))
-					$r = implode('|',$r);
+				if(is_array($r)) {
+					$temp = array();
+					foreach($r as $t=>$d) {
+						if(strpos($d,'==')===false)
+							$temp[] = trim($t).'=='.trim($d);
+						else
+							$temp[] = trim($d);
+					}
+					$r = implode('|',$temp);
+				}
 			}
 			if (count($_POST)) {
 				$arr = $this->fFormCheck($_POST, $arr['vars'], $this->config_form);
-				$this->config = array();
+				$config = array();
 				foreach ($this->config_form as $k => $r) {
 					if (isset($arr['vars'][$k])) {
 						$this->config_form[$k]['value'] = $arr['vars'][$k];
-						$this->config[$k] = $arr['vars'][$k];
+						$config[$k] = $arr['vars'][$k];
 					}
 				}
 				if (!count($arr['mess'])) {
 					$arr['mess'][] = array('name' => 'ok', 'value' => $this->getMess('update'));
-					static_tools::_save_config($this);
+					static_tools::_save_config($config,$this->_file_cfg);
 				}
 			}
 			static_tools::_xmlFormConf($this);

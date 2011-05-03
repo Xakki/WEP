@@ -36,12 +36,11 @@ class comments_extends extends kernel_extends {
 		if($this->config['treelevel']>0)
 			$this->mf_istree = true;
 		parent::_create();//$this->config доступен после этой функции
-
-
+	
 		$this->fields['text'] = array('type' => 'text', 'attr' => 'NOT NULL', 'min' => '1');
 		$this->fields['vote'] = array('type' => 'int', 'width' => 9, 'attr' => 'NOT NULL', 'default'=>0);
 		if(static_main::_prmUserCheck())
-			$this->fields_form['name'] = array('type' => 'hidden','disabled'=>1, 'caption' => 'Имя', 'default'=>$this->_CFG['userData']['name'], 'mask'=>array('eval'=>'$this->_CFG["userData"]["name"]'));
+			$this->fields_form['name'] = array('type' => 'hidden','disabled'=>1, 'caption' => 'Имя', 'default'=>$_SESSION['user']['name'], 'mask'=>array('eval'=>'$_SESSION["user"]["name"]'));
 		else
 			$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Ваше имя', 'mask'=>array('min'=>3));
 		/*$this->fields_form[$this->mf_createrid] = array(

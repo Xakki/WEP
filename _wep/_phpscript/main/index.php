@@ -2,30 +2,44 @@
 	if(!$_CFG['_PATH']['wep']) die('ERROR');
 
 	require_once($_CFG['_PATH']['wep'].'/config/config.php');
-	require_once($_CFG['_PATH']['core'].'/html.php');	/**отправляет header и печатает страничку*/
-	
-	if(isset($_GET['_php']) and $_GET['_php']=='sitemap') {
+
+	// эти html.php не подключаем, если что сами подключат
+	if(isset($_GET['_php']) and $_GET['_php']=='json') {
+		if(file_exists($_CFG['_PATH']['wepconf'].'/_phpscript/_json.php'))
+			require_once($_CFG['_PATH']['wepconf'].'/_phpscript/_json.php');
+		else
+			require_once($_CFG['_PATH']['wep'].'/_phpscript/main/_json.php');
+		exit();
+	}
+	elseif(isset($_GET['_php']) and $_GET['_php']=='js') {
+		if(file_exists($_CFG['_PATH']['wepconf'].'/_phpscript/_js.php'))
+			require_once($_CFG['_PATH']['wepconf'].'/_phpscript/_js.php');
+		else
+			require_once($_CFG['_PATH']['wep'].'/_phpscript/main/_js.php');
+		exit();
+	}
+	elseif(isset($_GET['_php']) and $_GET['_php']=='redirect') {
+		if(file_exists($_CFG['_PATH']['wepconf'].'/_phpscript/_redirect.php'))
+			require_once($_CFG['_PATH']['wepconf'].'/_phpscript/_redirect.php');
+		else
+			require_once($_CFG['_PATH']['wep'].'/_phpscript/main/_redirect.php');
+		exit();
+	}
+	elseif(isset($_GET['_php']) and $_GET['_php']=='captcha') {
+		if(file_exists($_CFG['_PATH']['wepconf'].'/_phpscript/_captcha.php'))
+			require_once($_CFG['_PATH']['wepconf'].'/_phpscript/_captcha.php');
+		else
+			require_once($_CFG['_PATH']['wep'].'/_phpscript/main/_captcha.php');
+		exit();
+	}
+	elseif(isset($_GET['_php']) and $_GET['_php']=='sitemap') {
 		$SITEMAP = TRUE;
 		_new_class('pg',$PGLIST);
 		echo $PGLIST->creatSiteMaps();
 		exit();
 	}
-	elseif(isset($_GET['_php']) and $_GET['_php']=='captcha') {
-		require_once($_CFG['_PATH']['wep'].'/_phpscript/main/_captcha.php');
-		exit();
-	}
-	elseif(isset($_GET['_php']) and $_GET['_php']=='json') {
-		require_once($_CFG['_PATH']['wep'].'/_phpscript/main/_json.php');
-		exit();
-	}
-	elseif(isset($_GET['_php']) and $_GET['_php']=='js') {
-		require_once($_CFG['_PATH']['wep'].'/_phpscript/main/_js.php');
-		exit();
-	}
-	elseif(isset($_GET['_php']) and $_GET['_php']=='redirect') {
-		require_once($_CFG['_PATH']['wep'].'/_phpscript/main/_redirect.php');
-		exit();
-	}
+
+	require_once($_CFG['_PATH']['core'].'/html.php');	/**отправляет header и печатает страничку*/
 
 	session_go();
 /*

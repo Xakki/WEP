@@ -6,7 +6,7 @@
 			include_once($HTML->_cDesignPath.'/php/path.php');
 			$texthtml = tpl_path($data['path'],1);// PATH
 		}
-		$texthtml .= '<div class="divform'.(isset($data['css']) and $data['css']?' '.$data['css']:'').'"';
+		$texthtml .= '<div class="divform'.((isset($data['css']) and $data['css'])?' '.$data['css']:'').'"';
 		if(isset($data['style']) and $data['style'])
 			$texthtml .= ' style="'.$data['style'].'"';
 		$texthtml .= '>';

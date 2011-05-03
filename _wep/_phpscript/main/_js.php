@@ -3,16 +3,11 @@
 
 	$GLOBALS['_RESULT']	= array();
 	$_tpl['onload']=$html=$html2='';
-
-	require_once($_CFG['_PATH']['wep'].'/config/config.php');
 	require_once($_CFG['_PATH']['phpscript'].'/jquery_getjson.php');
-	require_once($_CFG['_PATH']['core'].'/html.php');	/**отправляет header и печатает страничку*/
-	require_once($_CFG['_PATH']['core'].'/sql.php');
-	$SQL = new sql();
+	require_once($_CFG['_PATH']['core'].'/html.php');
 	
 	session_go();
 
-	//$HTML = new html('_design/',$_CFG['wep']['design'],false);// упрощённый режим
 	$DATA  = array();
 
 	if($_GET['_view']=='exit') {
