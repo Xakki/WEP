@@ -181,11 +181,11 @@ function selectitem2($data,$flag=0) {
 	if(is_array($data) and count($data))
 		foreach($data as $k=>$r) {
 			//_substr($r['name'],0,60).(_strlen($r['name'])>60?'...':'')
-			if(count($r['#item#']) and $r['#checked#']==0)
+			if(isset($r['#item#']) and count($r['#item#']) and (!isset($r['#checked#']) or $r['#checked#']==0))
 				$html .= '<optgroup label="'.$r['#name#'].'" class="selpad'.$flag.'"></optgroup>';
 			else
 				$html .= '<option value="'.$k.'" '.($r['#sel#']?'selected="selected"':'').' class="selpad'.$flag.'">'.$r['#name#'].'</option>';
-			if(count($r['#item#']))
+			if(isset($r['#item#']) and count($r['#item#']))
 				$html .= selectitem2($r['#item#'],($flag+1));//.'&#160;--'
 		}
 	return $html;

@@ -1,6 +1,8 @@
 <?
-		foreach($fields as $k=>$r) {
-			if((isset($r['readonly']) and $r['readonly'] and !$this->id) or 
+		foreach($fields as $k=>&$r) {
+			if(!isset($r['readonly']))
+				$r['readonly'] = false;
+			if(($r['readonly'] and !$this->id) or 
 				(isset($r['mask']['fview']) and $r['mask']['fview']==2) or 
 				(isset($r['mask']['usercheck']) and !static_main::_prmUserCheck($r['mask']['usercheck'])))
 				continue;
@@ -179,7 +181,8 @@
 					//Допускается цифры, тире, пробел, запятые и скобки
 				}
 			}
-			$r['fields_type'] = $this->fields[$k]['type'];
+			if(isset($this->fields[$k]))
+				$r['fields_type'] = $this->fields[$k]['type'];
 			$this->form[$k] = $r;
 		}
 		return true;

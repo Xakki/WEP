@@ -12,7 +12,7 @@
 				else
 					$r['attr'] .= ' style="width:'.$prs.'%;"';*/
 				$html .= '<a href="'.$r['href'].'" '.$r['attr'].'>'.$r['name'].'</a>';
-				if(count($r['#item#'])) {
+				if(isset($r['#item#']) and count($r['#item#'])) {
 					$html .= tpl_menu($r['#item#']);
 				}
 			}

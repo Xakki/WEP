@@ -40,19 +40,19 @@ RewriteRule ^sitemap.php index.php?_php=sitemap
 
 RewriteCond %{REQUEST_FILENAME} !-f 
 RewriteCond %{REQUEST_FILENAME} !-d 
-RewriteRule ^_captcha.php index.php?_php=captcha
+RewriteRule ^_captcha.php index.php?_php=captcha&%{QUERY_STRING}
 
 RewriteCond %{REQUEST_FILENAME} !-f 
 RewriteCond %{REQUEST_FILENAME} !-d 
-RewriteRule ^_json.php index.php?_php=json
+RewriteRule ^_json.php index.php?_php=json&%{QUERY_STRING}
 
 RewriteCond %{REQUEST_FILENAME} !-f 
 RewriteCond %{REQUEST_FILENAME} !-d 
-RewriteRule ^_js.php index.php?_php=js
+RewriteRule ^_js.php index.php?_php=js&%{QUERY_STRING}
 
 RewriteCond %{REQUEST_FILENAME} !-f 
 RewriteCond %{REQUEST_FILENAME} !-d 
-RewriteRule ^_redirect.php index.php?_php=redirect
+RewriteRule ^_redirect.php index.php?_php=redirect&%{QUERY_STRING}
 
 #### OTHER
 

@@ -155,7 +155,7 @@ class html {
 		$xsl = str_replace(array('\x09'), array(''), file_get_contents($transform));
 		$xml = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE fragment [<!ENTITY nbsp "&#160;">]> ' . $xml;
 		if (extension_loaded('xsl')) {
-			if (!$this->_xslt) {
+			if (!isset($this->_xslt)) {
 				global $_CFG;
 				include_once($_CFG['_PATH']['phpscript'] . '/_php4xslt.php');
 				$this->_xslt = xslt_create();

@@ -15,6 +15,7 @@ class pg_class extends kernel_extends {
 		$this->config['memcachezip'] = 0;
 		$this->config['sitemap'] = 0;
 		$this->config['IfDontHavePage'] = '';
+		$this->config['rootPage'] = 'index';
 		$this->config['menu'] = array(
 			0 => '',
 			1 => 'Меню №1',
@@ -49,6 +50,9 @@ class pg_class extends kernel_extends {
 		$this->config_form['memcachezip'] = array('type' => 'checkbox', 'caption' => 'Memcache сжатие');
 		$this->config_form['sitemap'] = array('type' => 'checkbox', 'caption' => 'SiteMap XML' ,'comment'=>'создавать в корне сайта xml файл карты сайта для поисковиков');
 		$this->config_form['IfDontHavePage'] = array('type' => 'list', 'listname'=>'pagetype', 'caption' => 'Если нет страницы в базе, то вызываем обрабочик');
+		$this->config_form['rootPage'] = array('type' => 'list', 'listname'=>'parentlist', 'caption' => 'Начальная страница сайта');
+		$this->config_form['menu'] = array('type' => 'textarea', 'caption' => 'Блоки меню');
+		$this->config_form['marker'] = array('type' => 'textarea', 'caption' => 'Маркеры');
 	}
 
 	function _set_features() {
@@ -259,20 +263,19 @@ class pg_class extends kernel_extends {
 	function can_show() {
 		if(empty($this->dataCashTree))
 			$this->sqlCashPG();
+		$fp = $this->config['rootPage'];
 		if(isset($_GET['page']) and is_array($_GET['page']) and count($_GET['page']) and !$this->id) {
-			$this->id = 'index';
 			$this->pageParam = array();
 			foreach($_GET['page'] as $k=>$r) {
-				if(isset($this->dataCashTree[$this->id][$r]))
-					$this->id = $r;
+				if(isset($this->dataCashTree[$fp][$r]))
+					$fp = $r;
 				else
 					$this->pageParam[$k] = $r;
 			}
 		}
+		if($fp!=$this->config['rootPage'])
+			$this->id = $fp;
 
-		if(!$this->id) {
-			$this->id = 'index';
-		}
 		/*$row = 0;
 		if(isset($this->dataCash[$this->id])) {
 			if ($parent!='' and $this->dataCash[$this->id]['parent_id']!=$parent)
@@ -280,11 +283,11 @@ class pg_class extends kernel_extends {
 			else
 				$row = $this->dataCash[$this->id];
 		}*/
-		if(isset($this->dataCash[$this->id]) and !$this->pagePrmCheck($this->dataCash[$this->id]['ugroup'])) {
+		if($this->id and isset($this->dataCash[$this->id]) and !$this->pagePrmCheck($this->dataCash[$this->id]['ugroup'])) {
 			$this->pageinfo = $this->dataCash[$this->id];
 			return 2;
 		}
-		elseif(isset($this->dataCash[$this->id]))
+		elseif($this->id and isset($this->dataCash[$this->id]))
 		{
 			$this->pageinfo = $this->dataCash[$this->id];
 			if ($this->pageinfo['href']){
@@ -321,8 +324,11 @@ class pg_class extends kernel_extends {
 				$this->config['IfDontHavePage'] = '';
 				return $this->can_show();
 			}
+		}elseif(!$this->id or $this->id != $this->config['rootPage']) {
+			$this->id = $this->config['rootPage'];
+			//print_r('<pre>*');print_r($this->id);exit('*');
+			return $this->can_show();
 		}
-		
 		return 0;
 	}
 
@@ -588,10 +594,12 @@ class pg_class extends kernel_extends {
 		else {
 			if(!$key) $key = $this->id;
 			$href = $key;
-			$pid = $this->dataCash[$key]['parent_id'];
-			while($pid and $pid!='index') {
-				$href = $pid.'/'.$href;
-				$pid = $this->dataCash[$pid]['parent_id'];
+			if(isset($this->dataCash[$key])) {
+				$pid = $this->dataCash[$key]['parent_id'];
+				while($pid and $pid!='index') {
+					$href = $pid.'/'.$href;
+					$pid = $this->dataCash[$pid]['parent_id'];
+				}
 			}
 			if(count($row)) $href .= '.html';
 		}
