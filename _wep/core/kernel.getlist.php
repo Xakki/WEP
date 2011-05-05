@@ -163,20 +163,21 @@
 				$clause['where'] .= ' ORDER BY '.$listname['ordfield'];
 
 			$result = $_this->SQL->execSQL($clause['field'].$clause['from'].$clause['where']);
-//	print($_this->SQL->query);
+//print($_this->SQL->query);
 				if(!$result->err) {
 					if($value) {
 						if ($row = $result->fetch_array())
 							$data[$row['id']] = $row['name'];
 					}
 					elseif($listname['is_tree']) {
-						/*if($MODUL->mf_use_charid)//is_int($row['parent_id']) *********** както решить трабл
-							$data[''][''] = $_this->getMess('_listroot');
-						else*/ 
-						$data[0][0] = $_this->getMess('_listroot');
 						while ($row = $result->fetch_array()){
+							if(!isset($row['checked'])) $row['checked'] = true;
 							$data[$row['parent_id']][$row['id']] = array('#name#'=>$row['name'], '#checked#'=>$row['checked']);
 						}
+						if(isset($data[0]))
+							$data[0] = array_merge(array(0=>$_this->getMess('_listroot')),$data[0]);
+						else
+							$data[''] = array_merge(array(''=>$_this->getMess('_listroot')),$data['']);
 					}
 					else{
 						$data[''] = ' --- ';

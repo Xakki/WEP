@@ -818,6 +818,7 @@ abstract class kernel_extends {
 						$config[$k] = $arr['vars'][$k];
 					}
 				}
+				$this->config = $config;
 				if (!count($arr['mess'])) {
 					$arr['mess'][] = array('name' => 'ok', 'value' => $this->getMess('update'));
 					static_tools::_save_config($config,$this->_file_cfg);
