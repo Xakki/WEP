@@ -3,10 +3,10 @@
 
 	$GLOBALS['_RESULT']	= array();
 
-
 	require_once($_CFG['_PATH']['wep'].'/config/config.php');
 	require_once($_CFG['_PATH']['phpscript'].'/jquery_getjson.php');
-	//require_once($_CFG['_PATH']['core'].'/html.php');	/**отправляет header и печатает страничку*/
+	require_once($_CFG['_PATH']['core'].'/sql.php');	/**отправляет header и печатает страничку*/
+	$SQL = new sql($_CFG['sql']);
 
 
 	if($_GET['_view']=='ajaxlist' and $_GET['_srlz']=stripslashes($_GET['_srlz']) and $_GET['_hsh']==md5($_GET['_srlz'].$_CFG['wep']['md5'])) {

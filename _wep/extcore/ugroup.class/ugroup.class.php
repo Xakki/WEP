@@ -74,6 +74,7 @@ class ugroup_class extends kernel_extends
 		$this->fields['design'] = array('type' => 'varchar', 'width' =>128, 'attr' => 'NOT NULL', 'default' => '');
 		
 		$this->fields_form = array();
+		$this->fields_form['id'] = array('type' => 'text', 'mask' =>array(), 'caption' => 'ID');
 		$this->fields_form['name'] = array('type' => 'text', 'mask' =>array('min'=>1), 'caption' => 'Название группы');
 		$this->fields_form['wep'] = array('type' => 'checkbox', 'caption' => 'Разрешить вход в админку?');
 		$this->fields_form['level'] = array('type' => 'list', 'listname'=>'level', 'caption' => 'Доступ в CMS');
@@ -84,9 +85,9 @@ class ugroup_class extends kernel_extends
 	}
 
 	function _install() {
+		$this->def_records[0] = array('id'=>0,'name'=>'Анонимы','level'=>5,'filesize'=>'0','active'=>1,'design'=>'default','wep'=>0);
 		$this->def_records[1] = array('id'=>1,'name'=>'Администраторы','level'=>0,'filesize'=>'100','active'=>1,'design'=>'default','wep'=>1);
-		$this->def_records[2] = array('id'=>2,'name'=>'Анонимы','level'=>5,'filesize'=>'0','active'=>1,'design'=>'default','wep'=>0);
-		$this->def_records[3] = array('id'=>3,'name'=>'Пользователи','level'=>2,'filesize'=>'0','active'=>1,'design'=>'default','wep'=>0);
+		$this->def_records[2] = array('id'=>2,'name'=>'Пользователи','level'=>2,'filesize'=>'0','active'=>1,'design'=>'default','wep'=>0);
 		return parent::_install();
 	}
 

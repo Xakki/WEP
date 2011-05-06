@@ -393,7 +393,7 @@ final class modulprm_class extends kernel_extends {
 						}
 						foreach($this->guserData as $gk=>$gr) {
 							if(isset($this->modulgrpData[$Mid][$gk])) {
-								$q = 'UPDATE `' . $this->childs['modulgrp']->tablename . '` SET `name`="' . $gr['name'] . '" WHERE id="' . $this->modulgrpData[$Mid][$gk]['id'] . '"';
+								$q = 'UPDATE `' . $this->childs['modulgrp']->tablename . '` SET `name`="' . $gr['name'] . '" WHERE id="' . $this->modulgrpData[$Mid][$gk]['id'] . '"';print_r($q);print_r(' ** ');
 								$result = $this->SQL->execSQL($q);
 								if ($result->err)
 									exit();
@@ -439,6 +439,7 @@ final class modulprm_class extends kernel_extends {
 				exit();
 			while ($row = $result->fetch_array())
 				$this->guserData[$row['id']] = $row;
+			$this->guserData[0] = array('name'=>'Аноним');
 		}
 		if(!isset($this->modulgrpData)) {
 			$this->modulgrpData = array();
@@ -495,9 +496,9 @@ class modulgrp_class extends kernel_extends {
 		$this->fields['ugroup_id'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL');
 		$this->fields['access'] = array('type' => 'varchar', 'width' => 128, 'attr' => 'NOT NULL', 'default' => '');
 
-		//$this->fields_form['name'] = array('type' => 'text','readonly' => 1, 'caption' => 'Группа');
+		$this->fields_form['name'] = array('type' => 'text','readonly' => 1, 'caption' => 'Группа');
 		$this->fields_form['owner_id'] = array('type' => 'hidden', 'readonly' => 1);
-		$this->fields_form['ugroup_id'] = array('type' => 'list', 'readonly' => 1, 'listname' => array('class' => 'ugroup'), 'caption' => 'Группа');
+		$this->fields_form['ugroup_id'] = array('type' => 'list', 'readonly' => 1, 'listname' => array('class' => 'ugroup'), 'caption' => 'Группа в БД');
 		$this->fields_form['mname'] = array('type' => 'text', 'caption' => 'СпецНазвание модуля');
 		$this->fields_form['access'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'access', 'caption' => 'Права доступа');
 	}

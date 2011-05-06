@@ -47,7 +47,7 @@
 					if($r['mask']['min'] and $r['value']<$r['mask']['min'])
 						$r['value_2'] = '';
 
-					if(!$r['value_2'] and $r['value']) {
+					if((!isset($r['value_2']) or !$r['value_2']) and $r['value']) {
 						$md = $this->_getCashedList($r['listname'],$r['value']);
 						$r['value_2'] = $md[$r['value']];
 					}
@@ -55,7 +55,7 @@
 					$r['labelstyle'] = ($r['value_2']?'display: none;':'');
 					$r['csscheck'] = ($r['value_2']?'accept':'reject');
 				}
-				elseif(isset($r['listname']) and $r['multiple']===2 and !$r['readonly']) {// and isset($this->fields[$k])
+				elseif(isset($r['listname']) and isset($r['multiple']) and $r['multiple']===2 and !$r['readonly']) {// and isset($this->fields[$k])
 					$this->_checkList($r['listname'],0);
 					$templistname = $r['listname'];
 					if(is_array($r['listname']))
@@ -82,7 +82,7 @@
 						}
 					}
 				}
-				elseif(isset($r['listname']) and $r['multiple'] and !$r['readonly']) {
+				elseif(isset($r['listname']) and isset($r['multiple']) and $r['multiple'] and !$r['readonly']) {
 					$md = $this->_getCashedList($r['listname'],0);
 					if(is_array($r['value']))
 						$val = array_combine($r['value'],$r['value']);
@@ -160,7 +160,7 @@
 						$fckscript .= $kc.' : '.$rc.',';
 					$fckscript .= 'language : \'ru\'});';
 
-					if($ckedit['CKFinder']) {
+					if(isset($ckedit['CKFinder']) and $ckedit['CKFinder']) {
 						$fckscript .='function ckf_'.$k.'() { CKFinder.SetupCKEditor(editor_'.$k.',\'/'.$this->_CFG['PATH']['WSWG'].'ckfinder/\');} if(!CKFinder) $.include(\''.$this->_CFG['_HREF']['WSWG'].'ckfinder/ckfinder.js\',ckf_'.$k.'()); else ckf_'.$k.'();';
 						$_tpl['script']['ckfinder.js'] = array($this->_CFG['_HREF']['WSWG'].'ckfinder/ckfinder.js');
 					}

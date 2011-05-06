@@ -88,7 +88,7 @@ class static_main {
 
 	static function _prmModul($mn, $param=array()) {
 		global $_CFG;
-		if (isset($_SESSION['user']['id']) and $_SESSION['user']['level'] == 0)
+		if (isset($_SESSION['user']['id']) and isset($_SESSION['user']['level']) and $_SESSION['user']['level'] == 0)
 			return true; // админу можно всё
 		if (!isset($_CFG['modulprm']))
 			self::_prmModulLoad();
@@ -111,7 +111,7 @@ class static_main {
 		global $_CFG, $SQL;
 		if (!isset($_CFG['modulprm'])) {
 			$_CFG['modulprm'] = $_CFG['modulprm_ext'] = array();
-			$ugroup_id = (isset($_SESSION['user']['id']) ? (int) $_SESSION['user']['gid'] : 2);
+			$ugroup_id = (isset($_SESSION['user']['gid']) ? (int) $_SESSION['user']['gid'] : 0);
 			if(!$SQL) $SQL = new sql($_CFG['sql']);
 			$result = $SQL->execSQL('SELECT t1.*,t2.access, t2.mname FROM `'.$_CFG['sql']['dbpref'].'modulprm` t1 LEFT Join `'.$_CFG['sql']['dbpref'].'modulgrp` t2 on t2.owner_id=t1.id and t2.ugroup_id=' . $ugroup_id . ' ORDER BY typemodul,name');
 			if ($result->err) return false;
@@ -153,7 +153,7 @@ class static_main {
 	static function _prmUserCheck($level=5) {
 		global $_CFG;
 		if (isset($_SESSION['user']['id']) and $_SESSION['user']['id']) {
-			if ($_SESSION['user']['level'] <= $level)
+			if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] <= $level)
 				return true;
 		}
 		return false;

@@ -707,7 +707,7 @@ abstract class kernel_extends {
 		}
 		if (static_main::_prmModul($this->_cl, array(3)))
 			return true;
-		if ($this->mf_createrid and isset($_SESSION['user']['id']) and $_SESSION['user']['id'] and static_main::_prmModul($this->_cl, array(4)) and $data[$this->mf_createrid] == $_SESSION['user']['id'])
+		if ($this->mf_createrid and isset($_SESSION['user']['id']) and static_main::_prmModul($this->_cl, array(4)) and $data[$this->mf_createrid] == $_SESSION['user']['id'])
 			return true;
 		return false;
 	}

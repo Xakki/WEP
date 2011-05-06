@@ -7,6 +7,7 @@ function tpl_form(&$data) {
 	$_CFG['fileIncludeOption']['form'] = 1;
 
 	foreach($data as $k=>$r) {
+		if(!isset($r['value'])) $r['value'] = '';
 		if($r['type']!='hidden')
 			$texthtml .= '<div id="tr_'.$k.'" style="'.(isset($r['style'])?$r['style']:'').'" class="div-tr'.
 				((isset($r['css']) and $r['css'])?' '.$r['css']:'').
@@ -112,10 +113,10 @@ function tpl_form(&$data) {
 			elseif($r['type']=='list' and !$r['readonly']) {
 				//print_r('<pre>');print_r($r['value']);print_r($r['valuelist']);
 				$texthtml .= '<div class="form-value">';
-				if($r['size']>1) {
+				if(isset($r['size']) and $r['size']>1) {
 					$texthtml .= '<select size="'.$r['size'].'" name="'.$k.'" class="small" onchange="'.$r['onchange'].'" '.$attr;
 					$texthtml .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
-				}elseif($r['multiple']==2) {
+				}elseif(isset($r['multiple']) and $r['multiple']==2) {
 					$texthtml .= '<select multiple="multiple" size="10" name="'.$k.'[]" class="multiple" onchange="'.$r['onchange'].'" '.$attr;
 					$texthtml .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
 					$_CFG['fileIncludeOption']['multiple'] = 2;
