@@ -198,12 +198,10 @@ function getCookie(name) {
 
 function ShowTools(id,hrf) {
 	/*Панель инструментов модуля(фильтр, статистика, обновление таблицы итп)*/
-	jQuery('#'+id).hide();
-
+	jQuery('#'+id).show();
 	if(typeof hrf=='object')
 		_last_load = jQuery(hrf).attr('href');
 	JSWin({'href':hrf,'insertObj':'#'+id});
-	jQuery('#'+id).fadeIn();
 
 	return false;
 }
@@ -219,7 +217,7 @@ function readyPlot(cap,Xname,Yname,stepY) {
 	});
 }
 
-function JSWin(param) {
+function JSWin(param,func) {
 	if(typeof param['type']=='object') {
 		if(typeof CKEDITOR !== 'undefined') {
 			jQuery.each(jQuery(param['type']).find("textarea"),function(){nm=jQuery(this).attr('name');if(nm) eval("if(typeof CKEDITOR.instances."+nm+" == 'object') {CKEDITOR.instances."+nm+".updateElement();}");});
@@ -266,9 +264,18 @@ function JSWin(param) {
 			else timerid2 = setTimeout(function(){fShowload(0,'',param['body']);},200);
 
 			if(typeof result.text != 'undefined' && result.text!='') fLog(fSpoiler(result.text,'AJAX text result'),1);
-			if(typeof result.eval != 'undefined' && result.eval!='') eval(result.eval);
+			//alert(result.eval);
+			if(typeof result.eval != 'undefined')  {
+				if(typeof result.eval == 'function')
+					result.eval.call();
+				else if(result.eval!='') 
+					eval(result.eval);
+			}
 			if(typeof param['call'] != 'undefined' && typeof param['call'] == 'function') 
 				param['call'].call(result);
+			if(func && typeof callback == 'function') {
+				func.call();
+			}
 		}
 	});
 	return false;

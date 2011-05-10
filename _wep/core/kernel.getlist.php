@@ -175,9 +175,9 @@
 							$data[$row['parent_id']][$row['id']] = array('#name#'=>$row['name'], '#checked#'=>$row['checked']);
 						}
 						if(isset($data[0]))
-							$data[0] = array_merge(array(0=>$_this->getMess('_listroot')),$data[0]);
+							$data[0] = array(0=>$_this->getMess('_listroot'))+$data[0];
 						else
-							$data[''] = array_merge(array(''=>$_this->getMess('_listroot')),$data['']);
+							$data[''] = array(''=>$_this->getMess('_listroot'))+$data[''];
 					}
 					else{
 						$data[''] = ' --- ';

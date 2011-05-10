@@ -482,7 +482,7 @@ class static_tools {
 	line1 = [' . implode(',', $data) . '];
 	if(typeof $.jqplot == "undefined")
 		$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'jquery.jqplot.0.9.7/plugins/jqplot.ohlcRenderer.min.js\',
-			static function(){' . $f . '},[
+			function(){' . $f . '},[
 			$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'jquery.jqplot.0.9.7/jquery.jqplot.min.js\'),
 			$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'jquery.jqplot.0.9.7/plugins/jqplot.cursor.min.js\'),
 			$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'jquery.jqplot.0.9.7/plugins/jqplot.dateAxisRenderer.min.js\'),

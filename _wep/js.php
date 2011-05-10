@@ -66,13 +66,6 @@
 		exit($_CFG['_MESS']['denied']);
 	}
 
-	//$log = fDisplLogs();
-	//$_tpl['onload'] .= (count($log)?'fLog(\''.$log[0].'\',\''.$log[1].'\');':'');
-	$_tpl['onload'] .= '$(\'#inftime\').html(\'
-	<div style="color:blue;">Обработка страницы '.(getmicrotime()-$_CFG['time']).' c.</div>
-	<div style="color:green;">Пaмять '. intval(memory_get_usage()/1024).'/'. intval(memory_get_peak_usage()/1024).' кб</div>
-	<div style="color:yellow;">Кол-во SQL запросов "'.count($_CFG['logs']['sql']).'"</div>\');';
-
 	$GLOBALS['_RESULT'] = array("html" => $html,"html2" => $html2,'eval'=>$_tpl['onload']);
 
 ?>

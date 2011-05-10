@@ -1341,7 +1341,7 @@ abstract class kernel_extends {
 			}
 			if ($this->mf_statistic) {
 				$xml['topmenu']['Statsmodul'] = array(
-					'href' => $this->_clp . '_type=static&amp;_func=Statsmodul' . ($this->owner->id ? '&amp;_oid=' . $this->owner->id : ''),
+					'href' => $this->_clp . '_type=static&amp;_func=Statsmodul' . (($this->owner and $this->owner->id)? '&amp;_oid=' . $this->owner->id : ''),
 					'caption' => 'Статистика',
 					'sel' => 0,
 					'type' => 'static',
@@ -1744,7 +1744,6 @@ abstract class kernel_extends {
 				if ($key != $id and isset($data[$key]) and count($data[$key]) and is_array($data[$key]))
 					$s[$key]['#item#'] = $this->_forlist($data, $key, $select);
 			}
-
 		return $s;
 	}
 

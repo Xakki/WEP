@@ -22,6 +22,7 @@ ob_start('_obHandler');
 /*
   Запуск сесии
  */
+if(!isset($_COOKIE['_showallinfo'])) $_COOKIE['_showallinfo'] = 0;
 if (isset($_GET['_showallinfo']) and !$_CFG['robot']) {// and !isset($_COOKIE['_showallinfo'])
 	if ($_GET['_showallinfo'])
 		_setcookie('_showallinfo', $_GET['_showallinfo']);

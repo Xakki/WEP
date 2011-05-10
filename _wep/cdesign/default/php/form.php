@@ -364,6 +364,34 @@ function selectitem($data,$val=NULL,$flag=0) {
 	if(is_array($data) and count($data))
 		foreach($data as $r) {
 			//_substr($r['#name#'],0,60).(_strlen($r['#name#'])>60?'...':'')
+			$r['#name#'] = str_repeat(" -", $flag).' '.$r['#name#'];
+			if(isset($r['#item#']) and count($r['#item#']) and isset($r['#checked#']) and $r['#checked#']==0)
+				$texthtml .= '<optgroup label="'.$r['#name#'].'"></optgroup>';
+			else {
+				if(is_null($val) and $r['#sel#'])
+					$sel = 'selected="selected"';
+				elseif(!is_null($val) and isset($val[$r['#id#']]))
+					$sel = 'selected="selected"';
+				else
+					$sel = '';
+				$texthtml .= '<option value="'.$r['#id#'].'" '.$sel.' class="selpad'.$flag.'">'.$r['#name#'].'</option>';
+			}
+			if(isset($r['#item#']) and count($r['#item#']))
+				$texthtml .= selectitem($r['#item#'],$val,($flag+1));//.'&#160;--'
+		}
+	return $texthtml;
+}
+
+function selectitem2($data,$val=NULL,$flag=0) {
+	$texthtml = '';
+	if(!is_null($val)) {
+		if(!is_array($val)) 
+			$val = array($val=>true);
+		//else $val = array_keys($val);
+	}
+	if(is_array($data) and count($data))
+		foreach($data as $r) {
+			//_substr($r['#name#'],0,60).(_strlen($r['#name#'])>60?'...':'')
 			if(isset($r['#item#']) and count($r['#item#']) and isset($r['#checked#']) and $r['#checked#']==0)
 				$texthtml .= '<optgroup label="'.$r['#name#'].'" class="selpad'.$flag.'"></optgroup>';
 			else {

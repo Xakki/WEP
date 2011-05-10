@@ -118,9 +118,9 @@
 			if(isset($data['abtn']) and count($data['abtn'])) {
 				foreach($data['abtn'] as $rr) {
 					//$rr['css']
-					//$rr['style']
 					//$rr['title']
-					//$rr['onclick']
+					if(!isset($rr['style'])) $rr['style']='';
+					if(!isset($rr['onclick'])) $rr['onclick']='';
 					$rr['href'] = str_replace(array('%id%','%firstpath%'),array($r['id'],$hrefpref.'&amp;_type='),$rr['href']);
 					$html .= '<a class="bottonimg img'.$rr['css'].'" style="'.$rr['style'].'" href="'.$rr['href'].'" title="['.$rr['title'].']" onclick="'.$rr['onclick'].'"></a>';
 				}

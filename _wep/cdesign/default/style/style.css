@@ -398,7 +398,7 @@ form table.form {
 	background-color:#FFF;
 	margin:10px auto;
 	min-width:770px;
-	display:table;
+	display:block;
 }
 /*debug*/
 span.seldebug {

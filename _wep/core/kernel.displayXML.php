@@ -92,13 +92,13 @@
 					if(isset($r['listname']) and is_array($r['listname']) and (isset($r['listname']['class']) or isset($r['listname']['tablename']))) {
 						$tmpsort = true;
 						$lsn = $r['listname'];
-						if(!$lsn['nameField'])
+						if(!isset($lsn['nameField']) or !$lsn['nameField'])
 							$lsn['nameField'] = 't'.$t.'.name';
 						else 
 							$lsn['nameField'] = str_replace('tx.','t'.$t.'.',$lsn['nameField']);
 						//if (isset($lsn['include']))
 						//	require_once($this->_CFG['_PATH']['ext'].$lsn['include'].'.class.php');
-						if($r['multiple']==1)
+						if(isset($r['multiple']) and $r['multiple']==1)
 							$cls[0][] = 'group_concat('.$lsn['nameField'].' SEPARATOR " | ") as name_'.$k;
 						else
 							$cls[0][] = $lsn['nameField'].' as name_'.$k;
@@ -106,9 +106,9 @@
 						if(!isset($lsn['join'])) 
 							$cls[1] .= ' LEFT';
 
-						$cls[1] .= ' JOIN `'.($lsn['class']?static_main::getTableNameOfClass($lsn['class']):$lsn['tablename']).'` t'.$t.' ON ';
+						$cls[1] .= ' JOIN `'.((isset($lsn['class']))?static_main::getTableNameOfClass($lsn['class']):$lsn['tablename']).'` t'.$t.' ON ';
 
-						if(!$lsn['idField']) 
+						if(!isset($lsn['idField']) or !$lsn['idField']) 
 							$lsn['idField'] = 't'.$t.'.id';
 						else 
 							$lsn['idField'] = str_replace('tx.','t'.$t.'.',$lsn['idField']);
@@ -118,7 +118,7 @@
 								$lsn['idThis'] = $k;
 							$cls[1] .= ' '.$lsn['idField'].'=t1.'.$lsn['idThis'].' '.str_replace('tx.','t'.$t.'.',($lsn['leftJoin'].$lsn['join']));
 						}
-						elseif($r['multiple']==1)
+						elseif(isset($r['multiple']) and $r['multiple']==1)
 							$cls[1] .= 't1.'.$k.' LIKE concat("%|",'.$lsn['idField'].',"|%") ';
 						else
 							$cls[1] .= 't1.'.$k.'='.$lsn['idField'].' ';
@@ -219,7 +219,7 @@
 						elseif($r['type']=='checkbox')
 							$tditem['value'] .= $this->_CFG['enum']['yesno'][$row[$k]];
 						elseif(isset($r['listname']) and is_array($r['listname'])) {//isset($row['name_'.$k])
-							if($r['multiple']) 
+							if(isset($r['multiple']) and $r['multiple']) 
 								$tditem['value']= str_replace('|',', ',trim($row['name_'.$k],'|'));
 							else
 								$tditem['value'] = $row['name_'.$k];
