@@ -128,8 +128,10 @@
 					else{
 						if(isset($r['listname']['idThis']))
 							$r['value'] = $fields[$r['listname']['idThis']]['value'];
-						$md = $this->_getCashedList($r['listname'],$r['value']);
-						$r['value'] = implode(',',$md);
+						if($r['value']) {
+							$md = $this->_getCashedList($r['listname'],$r['value']);
+							$r['value'] = implode(',',$md);
+						}
 					}
 				}
 				elseif($r['type']=='ckedit') {

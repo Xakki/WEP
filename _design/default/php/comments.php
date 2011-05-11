@@ -1,31 +1,37 @@
 <?
-include_once($this->_PATHd.'php/messages.php');
+
 	function tpl_comments(&$data) {
-		global $_CFG;
-//print_r('<pre>');print_r($data);exit();
+		global $_CFG, $HTML;
+
 		//$html .= $temp_pagenum =  tpl_pagenum($data['pagenum']);// pagenum
 		$html .= '<div class="clk"></div><div id="tools_block" style="display:none;"></div>';
-		if(isset($data['messages']))
+		if(isset($data['messages']) and count($data['messages'])) {
+			include_once($HTML->_PATHd.'php/messages.php');
 			$html .= tpl_messages($data['messages']);// messages
-		$html .= '<div class="commentlist"><h3>Комментарии</h3>';
-		$html .= tpl_commdata($data['data'],0,$data['vote']);// messages
+		}
+		$html .= '<div class="commentlist"><h3>'.($data['headname']?$data['headname']:'Отзывы').'</h3>';
+		$html .= tpl_commdata($data,0,$data['vote'],$data['treelevel']);// messages
 		$html .= '</div>';
 		//$html .= $temp_pagenum; //pagenum
 		$html .= '<div class="clk"></div>';
 		return $html;
 	}
 
-	function tpl_commdata(&$data,$pid, $vote=0) {
-		if(!isset($data[$pid]) or !count($data[$pid])) return '';
+	function tpl_commdata(&$data,$pid, $vote=0, $treelevel=0) {
+		if(!isset($data['data'][$pid]) or !count($data['data'][$pid])) return '';
 		global $_CFG;
 		$tdflag = 0;
 		$html = '';
-		foreach($data[$pid] as $k=>$r) {
-			$date = _usabilityDate($r['date']);
+		foreach($data['data'][$pid] as $k=>$r) {
+			$date = static_form::_usabilityDate($r['mf_timecr']);
 			$html .= '<div class="commitem" id="commitem'.$r['id'].'">
-			<p class="commitemhead"><span class="commdate">['.$date.']</span> <a id="elem'.$r['id'].'"></a> <i>'.$r['name'].'</i>';
+			<p class="commitemhead"><span class="commdate">['.$date.']</span> <a id="elem'.$r['id'].'"></a>';
+			if(isset($_SESSION['user']) and $r['creater_id']==$_SESSION['user'])
+				$html .= ' <b>'.$r['name'].'</b>';
+			else
+				$html .= ' <i>'.$r['name'].'</i>';
 			if($vote) $html .= '<span class="commvote">'.$r['vote'].'</span>';
-			$html .= '<a href="?commanswer='.$r['id'].'#form_comments" class="commanswer" onclick="return commanswer('.$r['id'].');">Ответить</a>';
+			if($treelevel>0) $html .= '<a href="?commanswer='.$r['id'].'#form_comments" class="commanswer" onclick="return commanswer('.$r['id'].','.$r['owner_id'].',\''.$data['modul'].'\');">Ответить</a>';
 			$html .= '</p>';
 
 			$html .= '<p class="commitemtext">'.$r['text'].'</p>';
@@ -40,8 +46,8 @@ include_once($this->_PATHd.'php/messages.php');
 			if(isset($r['child'])) foreach($r['child'] as $ck=>$cn)
 				$html .= '<br/><a href="?'.$data['req'].$data['cl'].'_id='.$r['id'].'&amp;'.$data['cl'].'_ch='.$ck.'" onclick="return load_href(this)">'.$cn.' ('.$cn['cnt'].')</a>';*/
 			$html .= '<div class="commchild">';
-			if(isset($data[$k]))
-				$html .= tpl_commdata($data,$k);
+			if(isset($data['data'][$k]))
+				$html .= tpl_commdata($data,$k, $vote, ($treelevel-1));
 			$html .= '</div>';
 			$html .= '<div class="commformanswer"></div>';
 			$html .= '</div>';
@@ -66,7 +72,7 @@ include_once($this->_PATHd.'php/messages.php');
 			}
 			$html .= '&#160;</div><div class="ppagenum"></div>';
 		}
-		$html .= '<select class="mopselect" onchange="JSHR(0,\''.$_CFG['_HREF']['JS'].'?_view=pagenum&amp;_modul='.$data['modul'].'&amp;mop=\'+this.value)">';
+		$html .= '<select class="mopselect" onchange="JSWin({\'href\':\''.$_CFG['_HREF']['JS'].'?_view=pagenum&amp;_modul='.$data['modul'].'&amp;mop=\'+this.value})">';
 		if(count($data['mop'])) {
 			foreach($data['mop'] as $k=>$r) {
 				$html .=  '<option value="'.$k.'"'.($r['sel']?' selected="selected"':'').'>'.$r.'</option>';

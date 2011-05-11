@@ -34,6 +34,8 @@
 							}
 						}
 					}
+					if(isset($this->fields_form['captcha']) and $flag!=-1)
+						static_form::setCaptcha();
 				}
 				else {
 					$flag=0;
@@ -44,8 +46,6 @@
 				$arr['mess'][] = array('name'=>'error', 'value'=>$this->getMess('nodata'));
 				$flag=1;
 			}
-			if(isset($this->fields_form['captcha']))
-				static_form::setCaptcha();
 		} else { //ADD
 			if(!$this->_prmModulAdd($this->_cl)){
 				$arr['mess'][] = array('name'=>'error', 'value'=>$this->getMess('denied_add'));
@@ -56,7 +56,7 @@
 				$this->kPreFields($_POST,$param);
 				$arr = $this->fFormCheck($_POST,$param,$this->fields_form);
 				$flag=-1;
-				if(!count($arr['mess'])){
+				if(!count($arr['mess'])) {
 					if($rm = $this->_add_item($arr['vars'])) {
 						$flag=1;
 						$arr['mess'][] = array('name'=>'ok', 'value'=>$this->getMess('add'));
@@ -66,7 +66,7 @@
 			}
 			else 
 				$mess = $this->kPreFields($arr['vars'],$param);
-			if(isset($this->fields_form['captcha']))
+			if(isset($this->fields_form['captcha']) and $flag!=-1)
 				static_form::setCaptcha();
 		}
 		if(isset($param['formflag']))

@@ -555,7 +555,7 @@ abstract class kernel_extends {
 	 * @param <type> $modkey
 	 * @return string
 	 */
-	private function _get_file($id, $key, $extValue='', $modkey=-1) {
+	public function _get_file($id, $key, $extValue='', $modkey=-1) {
 		if (!$id)
 			$id = $this->id;
 		if (!$extValue and $this->data[$id])
@@ -914,7 +914,10 @@ abstract class kernel_extends {
 				continue;
 			}
 			if (isset($eval)) {
-				$val = $data[$k];
+				if(isset($data[$k]))
+					$val = $data[$k];
+				else
+					$val = '';
 				$eval = '$data[$k]=' . $eval;
 				if (substr($r['mask']['eval'], -1) != ';')
 					$eval .= ';';
@@ -978,6 +981,7 @@ abstract class kernel_extends {
 				'caption' => $this->getMess('_captcha'),
 				'captcha' => static_form::getCaptcha(),
 				'src' => $this->_CFG['_HREF']['captcha'] . '?' . rand(0, 9999),
+				'value' => $data['captcha'],
 				'mask' => array('min' => 1));
 
 		$mess = array();

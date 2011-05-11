@@ -27,7 +27,7 @@ class comments_extends extends kernel_extends {
 		$this->messages_on_page = 200;
 		$this->locallang['default']['denied_add'] = 'Оставлять комментарий могут только зарегистрированные пользователи!';
 		$this->locallang['default']['add'] = 'Комментарий добавлен.';
-		$this->locallang['default']['add_name'] = 'Добавить комментарий';
+		$this->locallang['default']['add_name'] = '';
 		$this->locallang['default']['_saveclose'] = 'Написать комментарий';
 		return true;
 	}
@@ -39,10 +39,7 @@ class comments_extends extends kernel_extends {
 	
 		$this->fields['text'] = array('type' => 'text', 'attr' => 'NOT NULL', 'min' => '1');
 		$this->fields['vote'] = array('type' => 'int', 'width' => 9, 'attr' => 'NOT NULL', 'default'=>0);
-		if(static_main::_prmUserCheck())
-			$this->fields_form['name'] = array('type' => 'hidden','disabled'=>1, 'caption' => 'Имя', 'default'=>$_SESSION['user']['name'], 'mask'=>array('eval'=>'$_SESSION["user"]["name"]'));
-		else
-			$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Ваше имя', 'mask'=>array('min'=>3));
+		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Ваше имя', 'mask'=>array('min'=>3));
 		/*$this->fields_form[$this->mf_createrid] = array(
 			'type' => 'list', 
 			'listname'=>array('class'=>'users'),
@@ -75,7 +72,7 @@ class comments_extends extends kernel_extends {
 		if($this->id) return $mess;
 		if(!isset($_SESSION['user']['id']))
 			$pb= $this->config['defmax'];
-		elseif(!(int)$_SESSION['user']['paramcomment'])
+		elseif(!isset($_SESSION['user']['paramcomment']) or !(int)$_SESSION['user']['paramcomment'])
 			$pb= $this->config['defumax'];
 		else
 			$pb= (int)$_SESSION['user']['paramcomment'];
@@ -109,7 +106,17 @@ class comments_extends extends kernel_extends {
 		return $answerid;
 	}
 
-
+	public function kPreFields(&$data,&$param) {
+		$mess = parent::kPreFields($data,$param);
+		if(!isset($_COOKIE[$this->_cl . '_f_name']) or $_COOKIE[$this->_cl . '_f_name']!=$data['name']) {
+			_setcookie($this->_cl . '_f_name', $data['name'], $this->_CFG['remember_expire']);
+		}
+		if(static_main::_prmUserCheck())
+			$data['name'] = $_SESSION["user"]["name"];
+		elseif(!isset($data['name']))
+			$data['name'] = $_COOKIE[$this->_cl . '_f_name'];
+		return $mess;
+	}
 }
 
 

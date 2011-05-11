@@ -24,8 +24,10 @@
 					$enctype = ' enctype="'.$attr['enctype'].'"';
 			else
 				$enctype = ' enctype="multipart/form-data"';
-			$texthtml .= '<form id="form_'.$attr['name'].'" method="'.$attr['method'].'"'.$enctype.' action="'.$attr['action'].'" '.($attr['onsubmit']?'onsubmit="'.$attr['onsubmit'].'"':'').'>';
-			$texthtml .= tpl_form($data['form']).'</form>';
+			$texthtml .= '<form id="form_'.$attr['name'].'" method="'.$attr['method'].'"'.$enctype.' action="'.$attr['action'].'" ';
+			if(isset($attr['onsubmit']))
+				$texthtml .= 'onsubmit="'.$attr['onsubmit'].'"';
+			$texthtml .= '>' . tpl_form($data['form']).'</form>';
 		}
 		$texthtml .= '</div>';
 		return $texthtml;
