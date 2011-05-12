@@ -21,6 +21,7 @@ class comments_extends extends kernel_extends {
 	{
 		if (!parent::_set_features()) return false;
 		$this->caption = 'Комментарии';
+		$this->mf_createrid = 'creater_id';
 		$this->mf_actctrl = true;
 		$this->mf_ipcreate = true;
 		$this->mf_timecr = true;
@@ -107,14 +108,16 @@ class comments_extends extends kernel_extends {
 	}
 
 	public function kPreFields(&$data,&$param) {
-		$mess = parent::kPreFields($data,$param);
-		if(!isset($_COOKIE[$this->_cl . '_f_name']) or $_COOKIE[$this->_cl . '_f_name']!=$data['name']) {
+		if(isset($data['name']) and (!isset($_COOKIE[$this->_cl . '_f_name']) or $_COOKIE[$this->_cl . '_f_name']!=$data['name'])) {
 			_setcookie($this->_cl . '_f_name', $data['name'], $this->_CFG['remember_expire']);
 		}
-		if(static_main::_prmUserCheck())
-			$data['name'] = $_SESSION["user"]["name"];
-		elseif(!isset($data['name']))
+		if(static_main::_prmUserCheck()) {
+			$this->fields_form['name'] = array('type' => 'hidden','disabled'=>1, 'caption' => 'Имя', 'default'=>$_SESSION['user']['name'], 'mask'=>array('eval'=>'$_SESSION["user"]["name"]'));
+			//$data['name'] = $_SESSION['user']['name'];
+		}
+		elseif(!isset($data['name']) and isset($_COOKIE[$this->_cl . '_f_name']))
 			$data['name'] = $_COOKIE[$this->_cl . '_f_name'];
+		$mess = parent::kPreFields($data,$param);
 		return $mess;
 	}
 }

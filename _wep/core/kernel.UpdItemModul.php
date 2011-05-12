@@ -14,9 +14,7 @@
 				$this->_list('id');
 			}
 			//print($this->SQL->query);
-			if($this->_prmModulShow($this->_cl) and $this->mf_createrid and $this->data[$this->id][$this->mf_createrid]==$_SESSION['user']['id']) {
-			}
-			elseif(count($this->data)==1) {
+			if(count($this->data)==1) {
 				if(count($_POST) and ($_POST['sbmt'] or $_POST['sbmt_save'])) {
 					if(!$this->_prmModulEdit($this->data[$this->id],$param)) {
 						$arr['mess'][] = array('name'=>'error', 'value'=>$this->getMess('denied_up'));
@@ -34,14 +32,14 @@
 							}
 						}
 					}
-					if(isset($this->fields_form['captcha']) and $flag!=-1)
-						static_form::setCaptcha();
 				}
 				else {
 					$flag=0;
 					$tempdata = $this->data[$this->id];
 					$mess = $this->kPreFields($tempdata,$param);
 				}
+				if(isset($this->fields_form['captcha']))
+					static_form::setCaptcha();
 			} else {
 				$arr['mess'][] = array('name'=>'error', 'value'=>$this->getMess('nodata'));
 				$flag=1;
@@ -66,7 +64,7 @@
 			}
 			else 
 				$mess = $this->kPreFields($arr['vars'],$param);
-			if(isset($this->fields_form['captcha']) and $flag!=-1)
+			if(isset($this->fields_form['captcha']))
 				static_form::setCaptcha();
 		}
 		if(isset($param['formflag']))

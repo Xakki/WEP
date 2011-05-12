@@ -119,19 +119,19 @@ abstract class kernel_extends {
 		$this->mf_timeoff = false; // создать поле хранящще время отключения поля (active=0)
 		$this->mf_createrid = 'creater_id'; //польз владелец
 		$this->mf_ipcreate = false; //IP адрес пользователя с котрого была добавлена запись
-		$this->mf_indexing = false; // индексация
 		$this->prm_add = true; // добавить в модуле
 		$this->prm_del = true; // удалять в модуле
-		$this->prm_edit = true; // удалять в модуле
+		$this->prm_edit = true; // редактировать в модуле
 		$this->showinowner = true; // показывать под родителем
 		$this->owner_unique = false; // поле owner_id не уникально
 		$this->mf_mop = true; // выключить постраничное отображение
 		$this->reversePageN = false; // обратный отчет для постраничного отображения
 		$this->messages_on_page = 20; //число эл-ов на странице
 		$this->numlist = 20; //максим число страниц при котором отображ все номера страниц
-		$this->mf_statistic = false; // показывать  статистику по дате добавления
-		$this->cf_childs = false; // true - включить управление подключение подмодулей в настройках модуля
-		$this->cf_reinstall = false;
+		$this->mf_indexing = false; // TOOLS индексация
+		$this->mf_statistic = false; // TOOLS показывать  статистику по дате добавления
+		$this->cf_childs = false; // TOOLS true - включить управление подключение подмодулей в настройках модуля
+		$this->cf_reinstall = false;// TOOLS
 		$this->includeJStoWEP = false; // подключать ли скрипты для формы через настройки
 		$this->includeCSStoWEP = false; // подключать ли стили для формы через настройки
 		$this->singleton = true; // класс-одиночка
@@ -975,7 +975,7 @@ abstract class kernel_extends {
 			//end foreach
 		}
 
-		if (count($this->fields_form) and !isset($_SESSION['user']['id']) or isset($param['captchaOn']))
+		if (count($this->fields_form) and !isset($_SESSION['user']['id']) or isset($param['captchaOn'])) {
 			$this->fields_form['captcha'] = array(
 				'type' => 'captcha',
 				'caption' => $this->getMess('_captcha'),
@@ -983,6 +983,7 @@ abstract class kernel_extends {
 				'src' => $this->_CFG['_HREF']['captcha'] . '?' . rand(0, 9999),
 				'value' => $data['captcha'],
 				'mask' => array('min' => 1));
+		}
 
 		$mess = array();
 		if (isset($this->mess_form) and count($this->mess_form))
