@@ -270,7 +270,7 @@ class pg_class extends kernel_extends {
 				if(isset($this->dataCashTree[$fp][$r]))
 					$fp = $r;
 				else
-					$this->pageParam[$k] = $r;
+					$this->pageParam[] = $r;
 			}
 		}
 		if($fp!=$this->config['rootPage'])
