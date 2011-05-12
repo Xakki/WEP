@@ -20,7 +20,7 @@ class modul_child extends ArrayObject {
 
 	function offsetGet($index) {
 		global $_CFG;
-		if (isset($_CFG['modulprm_ext'][$index]))// && !$_CFG['modulprm'][$index]['active']
+		if (isset($_CFG['modulprm_ext'][$index]) && !$_CFG['modulprm'][$index]['active'])
 			$clname = $_CFG['modulprm_ext'][$index];
 		else
 			$clname = $index;
