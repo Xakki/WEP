@@ -3,13 +3,26 @@
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru">
 	<head>
-		<title>Технические работы</title>
+		<title>{$_CFG['site']['work_title']}</title>
 		<base href="{$_CFG['_HREF']['BH']}"/>
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 		<meta http-equiv="Pragma" content="no-cache"/>
-		<meta name="description" content="Технические работы"/>
+		<style>
+			html, body {
+				width:100%;height:100%;
+				margin:0;padding:0;
+				background:white url(http://xakki.ru/givemefoto.php) no-repeat 0 0 ;
+				font-family:Calibri,Arial;
+			}
+			.main {
+				margin:auto;
+				width: auto;
+				color:white;
+				font-size:18px;
+				text-align:center;
+			}
+			h2 {margin:0;color:white;text-align:center;}
+		</style>
 	</head>
-	<body>
-		Технические работы
-	</body>
+	<body onload="setTimeout('window.location.href=location.href',10000)"><div class="main">{$_CFG['site']['work_text']}</div></body>
 </html>

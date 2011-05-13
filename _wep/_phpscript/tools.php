@@ -1,17 +1,52 @@
 <?
 function tools_worktime() {
-	global $_CFG;
-	$file = $_CFG['_PATH']['wep'].'/_phpscript/main/index.php';
-	$FF = file($file);
-	print_r(strlen($FF[0]));
-	if(strlen($FF[0])>3) {
-		$FF[0] = '<?'."\n";
-		$result = '<h3 style="color:gray;">Режим "технические работы" - отключён</h3>';
-	} else {
-		$FF[0] = '<?if(!isset($_GET["_worktime"])) {echo(file_get_contents($_CFG[\'_PATH\'][\'wep\'].\'/_phpscript/main/work.html\'));exit();}'."\n";
-		$result = '<h3 style="color:green;">Режим "технические работы" - включён</h3>';
+	global $_CFG,$_tpl;
+	$result = '';
+	$_tpl['styles']['form']=1;
+	if(count($_POST)) {
+		if($_CFG['site']['worktime']) {
+			$NEWDATA['site']['worktime']=false;
+			$result = '<h3 style="color:gray;">Режим "технические работы" - отключён</h3>';
+		} else {
+			$NEWDATA['site']['worktime']=true;
+			$NEWDATA['site']['work_title']=$_POST['work_title'];
+			$NEWDATA['site']['work_text']=$_POST['work_text'];
+			$result = '<h3 style="color:green;">Режим "технические работы" - включён</h3>';
+		}
+		list($fl,$mess) = static_tools::saveUserCFG($NEWDATA);
+		if(!$fl)
+			$result = '<h3 style="color:red;">Ошибка</h3>';
 	}
-	file_put_contents($file,trim(implode('',$FF)," \n\t\r"));
+		if($_CFG['site']['worktime'] or (count($_POST) and $fl and !$_CFG['site']['worktime'])) {
+			$result = 'Отключить режим';
+		} else {
+			$result = 'Включить режим';
+		}
+		$DATA = array('_*features*_' => array('method' => 'POST', 'name' => 'step0'));
+		$DATA['work_title'] = array(
+			'caption' => 'Заголовок',
+			'comment' => '',
+			'type' => 'text',
+			'value' => $_CFG['site']['work_title'],
+			'css' => '',
+			'style' => ''
+		);
+		$DATA['work_text'] = array(
+			'caption' => 'Текст',
+			'comment' => '',
+			'type' => 'textarea',
+			'value' => $_CFG['site']['work_text'],
+			'css' => '',
+			'style' => ''
+		);
+		$DATA['sbmt'] = array(
+			'type' => 'submit',
+			'value' => $result);
+
+		$DATA['formcreat'] = array('form' => $DATA);
+		$DATA['formcreat']['messages'] = $mess;
+		global $HTML;
+		$result .= $HTML->transformPHP($DATA, 'formcreat');
 	return $result;
 }
 

@@ -2,6 +2,20 @@
 	if(!$_CFG['_PATH']['wep']) die('ERROR');
 	
 	require_once($_CFG['_PATH']['wep'].'/config/config.php');
+	if($_CFG['site']['worktime'] and !isset($_COOKIE['_showallinfo'])) {
+		if(!isset($_CFG["site"]["work_text"]) or !$_CFG["site"]["work_text"])
+			$_CFG["site"]["work_text"] = '<h1>Технический перерыв.</h1>';
+		if(!isset($_CFG["site"]["work_title"]) or !$_CFG["site"]["work_title"])
+			$_CFG["site"]["work_title"] = 'Ушёл на базу.';
+		if(file_exists($_CFG['_PATH']['phpscript2'].'/main/work.html'))
+			$html = file_get_contents($_CFG['_PATH']['phpscript2'].'/main/work.html');
+		else
+			$html = file_get_contents($_CFG['_PATH']['phpscript'].'/main/work.html');
+		$html = str_replace('"', '\"', $html);
+		eval('$html = "' .$html . '";');
+		echo $html;
+		exit();
+	}
 
 	// эти html.php не подключаем, если что сами подключат
 	if(isset($_GET['_php']) and $_GET['_php']=='json') {
@@ -42,13 +56,7 @@
 	require_once($_CFG['_PATH']['core'].'/html.php');	/**отправляет header и печатает страничку*/
 
 	session_go();
-/*
-	if(!isset($_SESSION['user']['id']) and isset($_COOKIE['remeber'])) {
-		_new_class('ugroup',$UGROUP);
-		$USERS = &$UGROUP->childs['users'];
-		$USERS->cookieAuthorization();
-	}
-*/
+
 	$_tpl['logs']=$_tpl['onload']=$_tpl['city']=$_tpl['blockadd']=$_tpl['param']=$_tpl['blockadd']='';
 	$rid = 0;
 

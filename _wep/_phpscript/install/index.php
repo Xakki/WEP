@@ -4,13 +4,13 @@ $_CFG['_PATH']['wep'] = dirname($_SERVER['SCRIPT_FILENAME']);
 require_once($_CFG['_PATH']['wep'] . '/config/config.php');
 require_once($_CFG['_PATH']['core'] . 'html.php');
 require_once($_CFG['_PATH']['core'] . 'sql.php');
-
-$_CFG['wep']['access'] = 0; // авторизация только по главному паролю
-$_CFG['wep']['sessiontype'] = 0; // запускаем сессию стандартно
-$_CFG['site']['bug_hunter'] = 0; // откл запись в баг
-$_CFG['sql']['log'] = 0;
-$_CFG['site']['show_error'] = 2;
-$_CFG['wep']['stop_fatal_error'] = false;
+$TEMP_CFG= array();
+$TEMP_CFG['wep']['access'] = $_CFG['wep']['access'] = 0; // авторизация только по главному паролю
+$TEMP_CFG['wep']['sessiontype'] = $_CFG['wep']['sessiontype'] = 0; // запускаем сессию стандартно
+$TEMP_CFG['site']['bug_hunter'] = $_CFG['site']['bug_hunter'] = 0; // откл запись в баг
+$TEMP_CFG['sql']['log'] = $_CFG['sql']['log'] = 0;
+$TEMP_CFG['site']['show_error'] = $_CFG['site']['show_error'] = 2;
+$TEMP_CFG['wep']['stop_fatal_error'] = $_CFG['wep']['stop_fatal_error'] = false;
 
 session_go(1);
 $HTML = new html($_CFG['PATH']['cdesign']);

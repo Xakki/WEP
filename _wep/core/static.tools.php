@@ -427,8 +427,8 @@ class static_tools {
 
 	static function _save_config($conf,$file) {
 		foreach($conf as $k=>&$r) {
-			if(strpos($r,'|')!==false or strpos($r,'==')!==false) {
-				$temp = explode('|',$r);
+			if(strpos($r,'||')!==false or strpos($r,'==')!==false) {
+				$temp = explode('||',$r);
 				$r = array();
 				foreach($temp as $t=>$d) {
 					$temp2 = explode('==',$d);
@@ -692,7 +692,94 @@ class static_tools {
 		return Array($flag,$DATA);
 	}
 
+	/**
+	 * Сбор переменных хранящихся в фаиле
+	 * @param <type> $file Фаил из которого будут браться данные о перменных
+	 * @param <type> $start Не обязательная, указывает строку после которой начинается сбор полезных строк
+	 * @param <type> $end не обязательная, указывает строку до которой будет сбор строк
+	 * @param <type> $mData не обязательно, дефолтное значение отслеживаемой переменной
+	 * @return <type> Возвращает массив полученных данных $_CFG
+	 */
+	static function getFdata($file, $start='', $end='', $mData = false) {
+		$fc = '';
+		if ($start == '' and $end == '') {
+			$fc = file_get_contents($file);
+		} else {
+			$fc = false;
+			$file = file($file);
+			foreach ($file as $k => $r) {
+				if ($fc === false and strpos($r, $start) !== false)
+					$fc = '';
+				elseif (strpos($r, $end) !== false)
+					break;
+				if ($fc !== false)
+					$fc .= $r . "\n";
+			}
+		}
+		$fc = trim($fc, "<?>\n");
+		if ($mData !== false) {
+			$_CFG = $mData;
+		}
 
+		if ($fc)
+			eval($fc);
+		else
+			print_r('NO CFG');
+
+		return $_CFG;
+	}
+
+	static function saveUserCFG($SetDataCFG, $tempCFG=array()) {
+		global $_CFG;
+		$mess = array();
+		$DEF_CFG = self::getFdata($_CFG['_PATH']['wep'] . '/config/config.php', '/* MAIN_CFG */', '/* END_MAIN_CFG */');// чистый конфиг ядра
+		$USER_CFG = self::getFdata($_CFG['_PATH']['wepconf'] . '/config/config.php', '', '', $DEF_CFG); // конечный конфиг
+		// Редактируемые конфиги
+		$edit_cfg = array(
+			'sql' => true,
+			'memcache' => true,
+			'wep' => true,
+			'site' => true,
+		);
+		$fl = false;
+		$putFile = array();
+		$SetDataCFG = self::MergeArrays($USER_CFG, $SetDataCFG);// объединяем конфиг записанный на пользователя и новые конфиги
+		foreach ($edit_cfg as $k => $r) {
+			foreach ($SetDataCFG[$k] as $kk => $rr) {
+				if (!isset($DEF_CFG[$k][$kk]) or $rr != $DEF_CFG[$k][$kk]) {
+					if(is_string($rr)) $rr = '\''.addcslashes($rr, '\'').'\'';
+					$putFile[$k . '_' . $kk] = '$_CFG[\'' . $k . '\'][\'' . $kk . '\'] = ' . $rr . ';';
+				}
+			}
+		}
+		if(count($tempCFG))
+			$SetDataCFG = self::MergeArrays($SetDataCFG, $tempCFG);
+		$SQL = new sql($SetDataCFG['sql']); //пробуем подключиться к БД
+
+		$putFile = "<?\n\t//create time " . date('Y-m-d H:i') . "\n\t".implode("\n\t", $putFile)."\n?>";
+//print_r('<pre>');print_r($putFile);
+		//Записать в конфиг все данные которые отличаются от данных по умолчанию
+		if (!file_put_contents($_CFG['_PATH']['wepconf'] . '/config/config.php', $putFile)) {
+			$mess[] = array('name' => 'error', 'value' => 'Ошибка записи настроек. Нет доступа к фаилу');
+		} else {
+			$fl = true;
+			$mess[] = array('name' => 'ok', 'value' => 'Подключение к БД успешно.');
+			$mess[] = array('name' => 'ok', 'value' => 'Конфигурация успешно сохранена.');
+		}
+		return array($fl,$mess);
+	}
+
+	static function MergeArrays($Arr1, $Arr2)
+	{
+	  foreach($Arr2 as $key => $Value)
+	  {
+		 if(array_key_exists($key, $Arr1) && is_array($Value))
+			$Arr1[$key] = self::MergeArrays($Arr1[$key], $Arr2[$key]);
+		 else
+			$Arr1[$key] = $Value;
+	  }
+	  return $Arr1;
+	}
 }
 
 ?>

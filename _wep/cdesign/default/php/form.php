@@ -393,7 +393,7 @@ function selectitem($data,$val=NULL,$flag=0) {
 	return $texthtml;
 }
 
-function selectitem2($data,$val=NULL,$flag=0) {
+function selectitem_old($data,$val=NULL,$flag=0) {
 	$texthtml = '';
 	if(!is_null($val)) {
 		if(!is_array($val)) 

@@ -807,7 +807,7 @@ abstract class kernel_extends {
 						else
 							$temp[] = trim($d);
 					}
-					$r = implode('|',$temp);
+					$r = implode('||',$temp);
 				}
 			}
 			if (count($_POST)) {
