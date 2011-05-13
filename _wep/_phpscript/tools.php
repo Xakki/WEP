@@ -1,4 +1,19 @@
 <?
+function tools_worktime() {
+	global $_CFG;
+	$file = $_CFG['_PATH']['wep'].'/_phpscript/main/index.php';
+	$FF = file($file);
+	print_r(strlen($FF[0]));
+	if(strlen($FF[0])>3) {
+		$FF[0] = '<?'."\n";
+		$result = '<h3 style="color:gray;">Режим "технические работы" - отключён</h3>';
+	} else {
+		$FF[0] = '<?if(!isset($_GET["_worktime"])) {echo(file_get_contents($_CFG[\'_PATH\'][\'wep\'].\'/_phpscript/main/work.html\'));exit();}'."\n";
+		$result = '<h3 style="color:green;">Режим "технические работы" - включён</h3>';
+	}
+	file_put_contents($file,trim(implode('',$FF)," \n\t\r"));
+	return $result;
+}
 
 function tools_sendReg() {
 	return 'Функция отключена.';
@@ -37,6 +52,7 @@ function tools_sendReg() {
 }
 
 $dataF = array(
+	'tools_worktime'=>'Режим "технические работы"',
 	'phpinfo'=>'phpinfo'
 );
 

@@ -1,8 +1,11 @@
 <?
 function tpl_form(&$data) {
 	global $_CFG;
-	$attr = $data['_*features*_'];
-	unset($data['_*features*_']);
+	$attr = array();
+	if(isset($data['_*features*_'])) {
+		$attr = $data['_*features*_'];
+		unset($data['_*features*_']);
+	}
 	$texthtml = '';
 	$_CFG['fileIncludeOption']['form'] = 1;
 
@@ -313,10 +316,12 @@ function tpl_form(&$data) {
 				$texthtml .= '</div>';
 			}
 			elseif($r['type']=='ckedit') {
-				$texthtml .= '<div class="form-value ckedit-value"><textarea name="'.$k.'" rows="10" cols="80" maxlength="'.$r['mask']['max'].'" '.$attribute.'>'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
+				if(isset($r['mask']['max'])) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
+				$texthtml .= '<div class="form-value ckedit-value"><textarea name="'.$k.'" rows="10" cols="80" '.$attribute.'>'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
 			}
 			elseif($r['type']=='int' and !$r['readonly']) {
-				$texthtml .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.$r['value'].'" onkeydown="return checkInt(event)" maxlength="'.$r['mask']['width'].'" '.$attribute.'/></div>';
+				if(isset($r['mask']['max'])) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
+				$texthtml .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.$r['value'].'" onkeydown="return checkInt(event)" '.$attribute.'/></div>';
 			}
 			elseif($r['type']=='password') {
 				$texthtml .= '<div class="form-value"><input type="password" name="'.$k.'" value="" onkeyup="checkPass("'.$k.'")" '.$attribute.'/>
@@ -346,10 +351,8 @@ function tpl_form(&$data) {
 				$texthtml .= '<div class="form-value">'.$r['value'].'</div>';
 			}
 			else {
-				$texthtml .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'"';
-				if($r['mask']['max'])
-					$texthtml .= ' maxlength="'.$r['mask']['max'].'"';
-				$texthtml .= ' '.$attribute.'/></div>';
+				if(isset($r['mask']['max'])) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
+				$texthtml .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'" '.$attribute.'/></div>';
 			}
 		}
 

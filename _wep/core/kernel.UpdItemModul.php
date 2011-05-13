@@ -7,10 +7,9 @@
 		$mess = array();
 		if(!empty($this->id) and $this->id) { //EDIT
 			$flag=-1;
-			if(!isset($this->data[$this->id])) {
+			if(!isset($this->data[$this->id]) or count($this->data[$this->id])<2) {
 				$this->listfields = array('*');
 				$this->clause = ' WHERE id IN ('.$this->_id_as_string().')';
-				 $this->clause .= ' AND '.$this->mf_createrid.'=\''.$_SESSION['user']['id'].'\'';
 				$this->_list('id');
 			}
 			//print($this->SQL->query);

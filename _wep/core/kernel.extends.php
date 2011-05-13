@@ -1358,7 +1358,7 @@ abstract class kernel_extends {
 				$this->parent_id = $this->id;
 				$this->id = NULL;
 				list($xml['formcreat'], $flag) = $this->_UpdItemModul($param);
-				if ($flag == 1)
+				if ($flag == 1 and isset($this->parent_id) and $this->parent_id)
 					$this->id = $this->parent_id;
 				//else
 				$HTML->path[$firstpath . '_type=add' . (($this->parent_id) ? '&amp;' . $this->_cl . '_id=' . $this->parent_id : '')] = 'Добавить';
@@ -1369,7 +1369,8 @@ abstract class kernel_extends {
 				$HTML->path[$firstpath . $this->_cl . '_id=' . $this->id . '&amp;_type=edit'] = 'Редактировать:<b>' . preg_replace($this->_CFG['_repl']['name'], '', $this->data[$this->id][$this->_listname]) . '</b>';
 				list($xml['formcreat'], $flag) = $this->_UpdItemModul($param);
 				if ($flag == 1) {
-					$this->id = $this->parent_id;
+					if(isset($this->parent_id) and $this->parent_id) 
+						$this->id = $this->parent_id;
 					if ($this->id)
 						$this->_clp .= $this->_cl . '_id=' . $this->id;
 				}
