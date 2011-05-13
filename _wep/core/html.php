@@ -308,7 +308,7 @@ function _obHandler($buffer) {
 
 	if ((isset($_COOKIE['_showallinfo']) and $_COOKIE['_showallinfo']) or $_CFG['_F']['adminpage']) {
 		$included_files = get_included_files();
-		$htmlinfo .='<div class="info_time">time=' . substr((getmicrotime() - $_mctime_start), 0, 6) . ' | memory=' . (int) (memory_get_usage() / 1024) . 'Kb | maxmemory=' . (int) (memory_get_peak_usage() / 1024) . 'Kb | query=' . count($_CFG['logs']['sql']) . ' | file include=' . count($included_files) . '</div>';
+		$htmlinfo .='time=' . substr((getmicrotime() - $_mctime_start), 0, 6) . ' | memory=' . (int) (memory_get_usage() / 1024) . 'Kb | maxmemory=' . (int) (memory_get_peak_usage() / 1024) . 'Kb | query=' . count($_CFG['logs']['sql']) . ' | file include=' . count($included_files);
 		if ($_COOKIE['_showallinfo'] > 1 and count($_CFG['logs']['sql']) > 0)
 			$htmlerr .='<div class="spoiler-wrap"><div onclick="bugSpoilers(this)" class="spoiler-head folded clickable">SQL QUERY</div><div class="spoiler-body">' . implode(';<br/>', $_CFG['logs']['sql']) . '</div></div>';
 		if ($_COOKIE['_showallinfo'] > 2) {

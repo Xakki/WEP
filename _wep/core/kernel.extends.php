@@ -168,6 +168,7 @@ abstract class kernel_extends {
 		$this->childs = new modul_child($this);
 		$this->ordfield = $this->_clp = '';
 		$this->data = array();
+		$this->parent_id = NULL;
 		$this->null = NULL;
 
 		$this->grant_sql = false;

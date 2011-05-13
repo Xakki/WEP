@@ -83,6 +83,7 @@
 	<option onclick="setCookie(\'cdesign\',\'extjs\');window.location=\''.$_CFG['PATH']['wepname'].'/index.php\';" '.($_design=='extjs'?'selected="selected"':'').'>ExtJS</option>
 	</select></span>';
 		}
+		$_tpl['time'] = 'PHP ver.' . phpversion().' | '.date('Y-m-d H:i:s').' | '.date_default_timezone_get().' | ';
 	}
 	else {
 		$_tpl['mess'] = $_CFG['_MESS']['denied'];

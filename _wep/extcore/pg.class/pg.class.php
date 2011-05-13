@@ -317,16 +317,17 @@ class pg_class extends kernel_extends {
 			$this->get_pageinfo();//$this->pageinfo['path']
 			return 1;
 		}
-		elseif($this->config['IfDontHavePage']) {
+		elseif($this->config['IfDontHavePage'] and !isset($this->IfDontHavePage)) {
 			$IfDontHavePage = explode(':',$this->config['IfDontHavePage']);
 			if(file_exists($this->_enum['inc'][$IfDontHavePage[0]]['path'].$IfDontHavePage[1].'.inc.php')) {
 				include($this->_enum['inc'][$IfDontHavePage[0]]['path'].$IfDontHavePage[1].'.inc.php');
 				$this->config['IfDontHavePage'] = '';
+				$this->IfDontHavePage = true;
 				return $this->can_show();
 			}
-		}elseif(!$this->id or $this->id != $this->config['rootPage']) {
+		}elseif((!$this->id or $this->id != $this->config['rootPage']) and !isset($this->IfrootPage)) {
 			$this->id = $this->config['rootPage'];
-			//print_r('<pre>*');print_r($this->id);exit('*');
+			$this->IfrootPage = true;
 			return $this->can_show();
 		}
 		return 0;
@@ -412,7 +413,10 @@ class pg_class extends kernel_extends {
 						
 				}
 				if ($rowPG['href']){
-					header('Location: '.$rowPG['href']);die();}
+					if(!isset($_COOKIE[$this->_cl . $rowPG['href']]))
+					_setcookie($this->_cl . '_mop', $this->messages_on_page, $this->_CFG['remember_expire']);
+					header('Location: '.$rowPG['href']);die();
+				}
 				if($rowPG['script']) {
 					$rowPG['script'] = explode('|',trim($rowPG['script'],'|'));
 					if(count($rowPG['script'])) {

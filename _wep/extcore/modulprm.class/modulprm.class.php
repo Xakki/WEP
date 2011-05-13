@@ -337,7 +337,7 @@ final class modulprm_class extends kernel_extends {
 			$this->fld_data = array();
 			if($fpath) {
 				include_once($fpath);
-				unset($_CFG['modulprm_ext']);
+				unset($this->_CFG['modulprm_ext']);
 				if(_new_class($Mid, $MODUL,$OWN)) {
 					if($OWN and (!isset($this->data[$Mid]) or $this->data[$Mid]['parent_id']!=$OWN->_cl))
 						$this->fld_data['parent_id'] = $OWN->_cl;
@@ -393,7 +393,7 @@ final class modulprm_class extends kernel_extends {
 						}
 						foreach($this->guserData as $gk=>$gr) {
 							if(isset($this->modulgrpData[$Mid][$gk])) {
-								$q = 'UPDATE `' . $this->childs['modulgrp']->tablename . '` SET `name`="' . $gr['name'] . '" WHERE id="' . $this->modulgrpData[$Mid][$gk]['id'] . '"';print_r($q);print_r(' ** ');
+								$q = 'UPDATE `' . $this->childs['modulgrp']->tablename . '` SET `name`="' . $gr['name'] . '" WHERE id="' . $this->modulgrpData[$Mid][$gk]['id'] . '"';//print_r($q);print_r(' ** ');
 								$result = $this->SQL->execSQL($q);
 								if ($result->err)
 									exit();
