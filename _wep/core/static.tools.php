@@ -427,11 +427,11 @@ class static_tools {
 
 	static function _save_config($conf,$file) {
 		foreach($conf as $k=>&$r) {
-			if(strpos($r,'||')!==false or strpos($r,'==')!==false) {
-				$temp = explode('||',$r);
+			if(strpos($r,':|')!==false) {
+				$temp = explode(':|',$r);
 				$r = array();
 				foreach($temp as $t=>$d) {
-					$temp2 = explode('==',$d);
+					$temp2 = explode(':=',$d);
 					if(count($temp2)>1)
 						$r[trim($temp2[0])]=trim($temp2[1]);
 					else
@@ -743,7 +743,7 @@ class static_tools {
 		);
 		$fl = false;
 		$putFile = array();
-		$SetDataCFG = self::MergeArrays($USER_CFG, $SetDataCFG);// объединяем конфиг записанный на пользователя и новые конфиги
+		$SetDataCFG = static_main::MergeArrays($USER_CFG, $SetDataCFG);// объединяем конфиг записанный на пользователя и новые конфиги
 		foreach ($edit_cfg as $k => $r) {
 			foreach ($SetDataCFG[$k] as $kk => $rr) {
 				if (!isset($DEF_CFG[$k][$kk]) or $rr != $DEF_CFG[$k][$kk]) {
@@ -753,7 +753,7 @@ class static_tools {
 			}
 		}
 		if(count($tempCFG))
-			$SetDataCFG = self::MergeArrays($SetDataCFG, $tempCFG);
+			$SetDataCFG = static_main::MergeArrays($SetDataCFG, $tempCFG);
 		$SQL = new sql($SetDataCFG['sql']); //пробуем подключиться к БД
 
 		$putFile = "<?\n\t//create time " . date('Y-m-d H:i') . "\n\t".implode("\n\t", $putFile)."\n?>";
@@ -769,17 +769,6 @@ class static_tools {
 		return array($fl,$mess);
 	}
 
-	static function MergeArrays($Arr1, $Arr2)
-	{
-	  foreach($Arr2 as $key => $Value)
-	  {
-		 if(array_key_exists($key, $Arr1) && is_array($Value))
-			$Arr1[$key] = self::MergeArrays($Arr1[$key], $Arr2[$key]);
-		 else
-			$Arr1[$key] = $Value;
-	  }
-	  return $Arr1;
-	}
 }
 
 ?>

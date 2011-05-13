@@ -802,12 +802,12 @@ abstract class kernel_extends {
 				if(is_array($r)) {
 					$temp = array();
 					foreach($r as $t=>$d) {
-						if(strpos($d,'==')===false)
-							$temp[] = trim($t).'=='.trim($d);
+						if(strpos($d,':=')===false)
+							$temp[] = trim($t).':='.trim($d);
 						else
 							$temp[] = trim($d);
 					}
-					$r = implode('||',$temp);
+					$r = implode(' :| ',$temp);
 				}
 			}
 			if (count($_POST)) {
