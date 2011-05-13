@@ -169,6 +169,8 @@
 					}
 					$_tpl['script']['ckeditor.ckf_'.$k] = $fckscript.'}';
 					$_tpl['onload'] .= ' if(!window.CKEDITOR) $.include(\''.$this->_CFG['_HREF']['WSWG'].'ckeditor/ckeditor.js\',cke_'.$k.'); else cke_'.$k.'();';
+				} elseif($k=='mf_ipcreate') {
+					$r['value'] = long2ip($r['value']);
 				}
 
 				if(isset($r['mask']['name']))

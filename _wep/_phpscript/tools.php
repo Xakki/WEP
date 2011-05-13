@@ -85,10 +85,17 @@ function tools_sendReg() {
 		}
 	}
 }
+function allinfos() {
+	$html = '<pre>$_SERVER = '.var_export($_SERVER, true).'<hr/>';
+	$html .= '$_COOKIES = '.var_export($_COOKIES, true).'<hr/>';
+	$html .= '$_SESSION = '.var_export($_SESSION, true).'<hr/>';
+	return $html.'</pre>';
+}
 
 $dataF = array(
 	'tools_worktime'=>'Режим "технические работы"',
-	'phpinfo'=>'phpinfo'
+	'phpinfo'=>'phpinfo'	,
+	'allinfos'=> 'Выввод глобальных переменных',
 );
 
 if(file_exists($_CFG['_PATH']['phpscript2'].'/tools.php'))
