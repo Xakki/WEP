@@ -7,7 +7,7 @@
 		$mess = array();
 		if(!empty($this->id) and $this->id) { //EDIT
 			$flag=-1;
-			if(!isset($this->data[$this->id]) or count($this->data[$this->id])<2) {
+			if(!isset($this->data[$this->id]) or count($this->data[$this->id])<count($this->fields)) {
 				$this->listfields = array('*');
 				$this->clause = ' WHERE id IN ('.$this->_id_as_string().')';
 				$this->_list('id');
