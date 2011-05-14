@@ -414,7 +414,7 @@ class pg_class extends kernel_extends {
 				if ($rowPG['href']){
 					$temp = $this->_cl .'_'.preg_replace($this->_CFG['_repl']['alphaint'], '', $rowPG['href']);
 					if(!isset($_COOKIE[$temp])) {
-						_setcookie($temp, 1, time()+1000);
+						_setcookie($temp, 1, time()+1);
 						header('Location: '.$rowPG['href']);
 						die();
 					}else {

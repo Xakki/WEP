@@ -275,13 +275,13 @@ function tpl_form(&$data) {
 			}
 			elseif($r['type']=='captcha') {
 				$texthtml .= '<div class="form-value">
-						<div class="left"><input type="text" name="'.$k.'" value="'.$r['value'].'" maxlength="5" size="10" class="secret" autocomplete="off"/></div>
+						<div class="form-value-left"><input type="text" name="'.$k.'" value="'.$r['value'].'" maxlength="5" size="10" class="secret" autocomplete="off"/></div>
 						<div class="secret"><img src="'.$r['src'].'" class="i_secret" id="captcha" alt="CARTHA"/></div>
 					</div>';
 			}
 			elseif($r['type']=='file') {
 				$texthtml .= '<div class="form-value divinputfile">';
-				$texthtml .= '<input type="file" name="'.$k.'" size="39" '.$attribute.'/><span class="fileinfo"></span>';
+				$texthtml .= '<input type="file" name="'.$k.'" '.$attribute.'/><span class="fileinfo"></span>';
 
 				if($r['del']==1 and $r['value']!='')
 					$texthtml .= '<div style="color:red;float:right;white-space: nowrap;">Удалить?&#160;<input type="checkbox" name="'.$k.'_del" class="del" value="1" onclick="$(\'#tr_'.$k.' td.td2 input[name='.$k.'],#tr_'.$k.' td.td2 div.dscr\').slideToggle(\'normal\')"/></div>';
