@@ -47,6 +47,13 @@
 		exit();
 	}
 	elseif(isset($_GET['_php']) and $_GET['_php']=='sitemap') {
+		setlocale(LC_ALL, 'ru_RU.UTF8');
+		header("Cache-Control: max-age=0, must-revalidate");
+		header("Last-Modified: " . gmdate("D, d M Y H:i:s", $_CFG['time']) . " GMT");
+		header("Expires: " . gmdate("D, d M Y H:i:s", $_CFG['time']) . " GMT");
+		header("Content-type:text/xml;charset=utf-8");
+		require_once($_CFG['_PATH']['core'].'/html.php');
+		$_COOKIE['_showerror'] = 0;
 		$SITEMAP = TRUE;
 		_new_class('pg',$PGLIST);
 		echo $PGLIST->creatSiteMaps();
