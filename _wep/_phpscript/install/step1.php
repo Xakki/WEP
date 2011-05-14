@@ -12,7 +12,7 @@ $edit_cfg = array(
 
 $mess = array();
 if (isset($_POST['sbmt'])) {
-	list($fl,$mess) = saveUserCFG($_POST,$TEMP_CFG);
+	list($fl,$mess) = static_tools::saveUserCFG($_POST,$TEMP_CFG);
 	//Записать в конфиг все данные которые отличаются от данных по умолчанию
 	if ($fl) {
 		$mess[] = array('name' => 'ok', 'value' => 'Пора перейти к <a href="'.$_CFG['PATH']['wepname'].'/install.php?step=' . ($_GET['step'] + 1) . '">следующему шагу №' . ($_GET['step'] + 1) . '</a>');
