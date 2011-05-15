@@ -231,16 +231,16 @@ function tpl_form(&$data) {
 						// месяц
 						if($item_date == 'm' || $item_date == 'n' || $item_date == 'M' || $item_date == 'F')
 						{
-							$r['value']['month'] = array('name'=>$_CFG['_MESS']['month_name'], 'css'=>'month','value'=>$temp[1]);// Месяц
+							$r['value']['month'] = array('name'=>$_CFG['_MESS']['month_name'], 'css'=>'month','value'=>(int)$temp[1]);// Месяц
 							foreach($_CFG['_MESS']['month'] as $kr=>$td) {
 								$kr = (int)$kr;
 								$r['value']['month']['item'][$kr] = array('#id#'=>$kr, '#name#'=>$td);
-							}						
+							}
 						}
 						// день
 						if($item_date == 'd' || $item_date == 'j')
 						{
-							$r['value']['day'] = array('name'=>$_CFG['_MESS']['day_name'], 'css'=>'day','value'=>$temp[2]);// День
+							$r['value']['day'] = array('name'=>$_CFG['_MESS']['day_name'], 'css'=>'day','value'=>(int)$temp[2]);// День
 							for($i=1;$i<=31;$i++)
 								$r['value']['day']['item'][$i] = array('#id#'=>$i, '#name#'=>$i);						
 						}
@@ -248,7 +248,7 @@ function tpl_form(&$data) {
 						if($item_date == 'G' || $item_date == 'g' || $item_date == 'H' || $item_date == 'h')
 						{
 							$r['value']['hour'] = array('name'=>$_CFG['_MESS']['hour_name'], 'css'=>'hour','value'=>$temp[3]);// Час
-							for($i=1;$i<=24;$i++)
+							for($i=0;$i<=23;$i++)
 								$r['value']['hour']['item'][$i] = array('#id#'=>$i, '#name#'=>$i);
 						}
 						// минуты
