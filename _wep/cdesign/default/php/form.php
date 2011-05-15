@@ -316,11 +316,11 @@ function tpl_form(&$data) {
 				$texthtml .= '</div>';
 			}
 			elseif($r['type']=='ckedit') {
-				if(isset($r['mask']['max'])) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
+				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
 				$texthtml .= '<div class="form-value ckedit-value"><textarea name="'.$k.'" rows="10" cols="80" '.$attribute.'>'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
 			}
 			elseif($r['type']=='int' and !$r['readonly']) {
-				if(isset($r['mask']['max'])) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
+				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
 				$texthtml .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.$r['value'].'" onkeydown="return checkInt(event)" '.$attribute.'/></div>';
 			}
 			elseif($r['type']=='password') {
@@ -351,7 +351,7 @@ function tpl_form(&$data) {
 				$texthtml .= '<div class="form-value">'.$r['value'].'</div>';
 			}
 			else {
-				if(isset($r['mask']['max'])) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
+				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
 				$texthtml .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'" '.$attribute.'/></div>';
 			}
 		}
