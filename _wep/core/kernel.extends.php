@@ -799,7 +799,7 @@ abstract class kernel_extends {
 				'caption' => $this->_CFG['_MESS']['_configno']);
 		} else {
 			foreach($this->config as $k=>&$r) {
-				if(is_array($r)) {
+				if(is_array($r) and !isset($this->config_form[$k]['multiple'])) {
 					$temp = array();
 					foreach($r as $t=>$d) {
 						if(strpos($d,':=')===false)

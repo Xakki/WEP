@@ -427,7 +427,7 @@ class static_tools {
 
 	static function _save_config($conf,$file) {
 		foreach($conf as $k=>&$r) {
-			if(strpos($r,':|')!==false) {
+			if(is_string($r) and strpos($r,':|')!==false) {
 				$temp = explode(':|',$r);
 				$r = array();
 				foreach($temp as $t=>$d) {
