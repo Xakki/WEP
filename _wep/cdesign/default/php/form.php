@@ -130,7 +130,7 @@ function tpl_form(&$data) {
 					$texthtml .= '<select multiple="multiple" size="10" name="'.$k.'[]" class="multiple" '.$attribute;
 					$texthtml .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
 					$_CFG['fileIncludeOption']['multiple'] = 2;
-				}elseif($r['multiple']) {
+				}elseif(isset($r['multiple']) and $r['multiple']) {
 					$texthtml .= '<select multiple="multiple" size="10" name="'.$k.'[]" class="small" '.$attribute;
 					$texthtml .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
 				}else {

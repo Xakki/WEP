@@ -869,26 +869,26 @@ abstract class kernel_extends {
 	 */
 
 	public function _save_item($data) {
-		foreach ($this->fields_form as $k => $r) {
-			if (isset($data[$k]) and isset($this->memos[$k]))
-				$this->mmo_data[$k] = $data[$k];
-			elseif (isset($data[$k]) and isset($this->attaches[$k]))
-				$this->att_data[$k] = $data[$k];
-			elseif (isset($data[$k]) and isset($this->fields[$k])) {
-				$this->fld_data[$k] = (is_string($data[$k]) ? mysql_real_escape_string($data[$k]) : $data[$k]);
+		foreach ($data as $k => $r) {
+			if (isset($this->memos[$k]))
+				$this->mmo_data[$k] = $r;
+			elseif (isset($this->attaches[$k]))
+				$this->att_data[$k] = $r;
+			elseif (isset($this->fields[$k])) {
+				$this->fld_data[$k] = (is_string($r) ? mysql_real_escape_string($r) : $r);
 			}
 		}
 		return $this->_update();
 	}
 
 	public function _add_item($data) {
-		foreach ($this->fields_form as $k => $r) {
-			if (isset($data[$k]) and isset($this->memos[$k]))
-				$this->mmo_data[$k] = $data[$k];
-			elseif (isset($data[$k]) and isset($this->attaches[$k]))
-				$this->att_data[$k] = $data[$k];
-			elseif (isset($data[$k]) and isset($this->fields[$k])) {
-				$this->fld_data[$k] = (is_string($data[$k]) ? mysql_real_escape_string($data[$k]) : $data[$k]);
+		foreach ($data as $k => $r) {
+			if (isset($this->memos[$k]))
+				$this->mmo_data[$k] = $r;
+			elseif (isset($this->attaches[$k]))
+				$this->att_data[$k] = $r;
+			elseif (isset($this->fields[$k])) {
+				$this->fld_data[$k] = (is_string($r) ? mysql_real_escape_string($r) : $r);
 			}
 		}
 		return $this->_add();

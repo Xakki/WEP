@@ -116,9 +116,9 @@
 				$listname['tablename'] = static_main::getTableNameOfClass($listname['class']);
 			}
 
-			if(!$listname['idField']) 
+			if(!isset($listname['idField'])) 
 				$listname['idField'] = 'tx.id';
-			if(!$listname['nameField']) 
+			if(!isset($listname['nameField'])) 
 				$listname['nameField'] = 'tx.name';
 
 			if(isset($listname['leftJoin'])) {
@@ -134,13 +134,13 @@
 				$clause['field'] = 'SELECT '.$listname['idField'].' as id,'.$listname['nameField'].' as name';
 			}
 	
-			if($listname['is_tree']) {
+			if(isset($listname['is_tree'])) {
 				if($listname['is_tree']===true)
 					$clause['field'] .= ', tx.parent_id as parent_id';
 				else
 					$clause['field'] .= ', '.$listname['is_tree'].' as parent_id';
 			}
-			if($listname['is_checked'])
+			if(isset($listname['is_checked']))
 				$clause['field'] .= ', tx.checked as checked';
 			
 			$clause['where'] = '';

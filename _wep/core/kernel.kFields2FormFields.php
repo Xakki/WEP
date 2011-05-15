@@ -38,7 +38,7 @@
 						$r['att_type'] = 'swf';
 					}
 					
-					if(!$r['comment'])
+					if(!isset($r['comment']))
 						$r['comment'] = $this->_CFG['_MESS']['_file_size'].$this->attaches[$k]['maxsize'].'Kb';
 				}
 				elseif($r['type']=='ajaxlist') {

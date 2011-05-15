@@ -212,7 +212,8 @@ function _myErrorHandler($errno, $errstr, $errfile, $errline, $errcontext) {//,$
 	if ($_CFG['wep']['catch_bug']) {
 
 		// Debuger
-		if ($_CFG['wep']['on_debug'] and $_CFG['_error'][$errno]['debug'])
+		// для вывода отладчика для всех типов ошибок , можно отключить это условие
+		if ($_CFG['wep']['on_debug'] and $_CFG['_error'][$errno]['debug']) 
 			$debug = '<div class="spoiler-body" style="background-color: rgb(225, 225, 225);">' . debugPrint(2) . '</div>';
 		else
 			$debug = '';

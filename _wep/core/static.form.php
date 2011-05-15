@@ -539,7 +539,9 @@ class static_form {
 			if(isset($arr_nochek[$value['type']])) continue;
 
 			/*Поля которые недоступны пользователю не проверяем, дефолтные значения прописываются в kPreFields()*/
-			if($value['readonly'] or $value['mask']['fview']==2 or (isset($value['mask']['usercheck']) and !static_main::_prmUserCheck($value['mask']['usercheck']))) {
+			if((isset($value['readonly']) and $value['readonly']) or 
+				(isset($value['mask']['fview']) and $value['mask']['fview']==2) or 
+				(isset($value['mask']['usercheck']) and !static_main::_prmUserCheck($value['mask']['usercheck']))) {
 				//unset($data[$key]);
 				continue;
 			}
@@ -551,7 +553,7 @@ class static_form {
 					$_FILES[$key]['name'] = ':delete:';
 					$_FILES[$key]['tmp_name'] = ':delete:';
 					$value['value'] = $data[$key] = $_FILES[$key];
-				}elseif((int)$value['mask']['min'] and ($_FILES[$key]['name']=='' or $_FILES[$key]['name'] == ':delete:'))
+				}elseif(isset($value['mask']['min']) and $value['mask']['min'] and ($_FILES[$key]['name']=='' or $_FILES[$key]['name'] == ':delete:'))
 						$error[] = 1;
 				elseif($_FILES[$key]['name']!='') {
 					if(!isset($value['mime'][$_FILES[$key]['type']]))
@@ -594,7 +596,7 @@ class static_form {
 			//********** ОСТАЛЬНЫЕ
 				if($value['value']!='') {
 					$data[$key] = $value['value'];
-					if($value['mask']['entities']==1) 
+					if(isset($value['mask']['entities']) and $value['mask']['entities']==1) 
 						$value['value'] = $data[$key]= htmlspecialchars($data[$key],ENT_QUOTES,$_this->_CFG['wep']['charset']);
 					if(isset($value['mask']['replace'])) {
 						if(!isset($value['mask']['replaceto']))
@@ -616,7 +618,7 @@ class static_form {
 					if($value['type']=='ckedit'){
 						$value['value'] = $data[$key] =stripslashes($data[$key]);
 					}
-					elseif($value['type']=='int' and !$value['mask']['toint']) 
+					elseif($value['type']=='int' and (!isset($value['mask']['toint']) or !$value['mask']['toint'])) 
 						$value['value'] = $data[$key]= (int)$data[$key];
 					elseif($value['type']=='captcha' && $data[$key]!=$value['captcha']) {
 						$error[] = 31;
@@ -633,7 +635,7 @@ class static_form {
 					}
 
 					/*CHECK MASK*/
-					if($value['mask']['name']=='phone' or $value['mask']['name']=='phone2')
+					if(isset($value['mask']['name']) and ($value['mask']['name']=='phone' or $value['mask']['name']=='phone2'))
 					{
 						if($data[$key]!='') {
 							$data[$key] = self::_phoneReplace($data[$key],$value['mask']['name']);
@@ -642,14 +644,14 @@ class static_form {
 						}
 						$value['value'] = $data[$key];
 					}
-					elseif($value['mask']['name']=='www')
+					elseif(isset($value['mask']['name']) and $value['mask']['name']=='www')
 					{
 						if(!preg_match($masks['www'],$data[$key]))
 							$error[] = 3;
 						elseif($value['mask']['checkwww'] and !fopen ('http://'.str_replace('http://','',$data[$key]), 'r')) 
 							$error[] = 4;
 					}
-					elseif(isset($masks[$value['mask']['name']]))
+					elseif(isset($value['mask']['name']) and isset($masks[$value['mask']['name']]))
 					{
 						if(!preg_match($masks[$value['mask']['name']],$data[$key]))
 							$error[] = 3;

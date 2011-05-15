@@ -94,7 +94,7 @@ class static_main {
 			self::_prmModulLoad();
 		if (!isset($_CFG['modulprm'][$mn]))
 			return false; // отказ, если модуль отключен
-		if ($_SESSION['user']['level'] >= 5)
+		if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] >= 5)
 			return false; //этим всё запрещено
 		else {
 			if (isset($_CFG['modulprm'][$mn]['access'][0]))
