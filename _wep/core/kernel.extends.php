@@ -920,7 +920,7 @@ abstract class kernel_extends {
 				else
 					$val = '';
 				$eval = '$data[$k]=' . $eval;
-				if (substr($r['mask']['eval'], -1) != ';')
+				if (substr($eval, -1) != ';')
 					$eval .= ';';
 				eval($eval);
 				unset($eval);
@@ -972,6 +972,9 @@ abstract class kernel_extends {
 
 			if (isset($this->id) and isset($this->data[$this->id]['_ext_' . $k]))
 				$r['ext'] = $this->data[$this->id]['_ext_' . $k];
+
+			if(!isset($r['comment']))
+				$r['comment'] = '';
 
 			//end foreach
 		}
