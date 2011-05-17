@@ -195,7 +195,7 @@ function tpl_form(&$data) {
 				$texthtml .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.$temp.'" '.$attribute.'/></div>';
 			}
 			elseif($r['type']=='date' and !$r['readonly']) {
-	echo '<pre>';print_r($r);
+//	echo '<pre>';print_r($r);
 				$texthtml .= '<div class="form-value">';
 
 				// формат для даты
