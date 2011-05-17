@@ -41,6 +41,20 @@
 			$_tpl['styles']['jquery.fancybox'] = 1;
 			$_tpl['onload'] .= "jQuery('.fancyimg').fancybox();";
 		}
+		if(isset($gfi['datepicker']) and $gfi['datepicker']) {
+			$_tpl['script']['script.jquery.ui/jquery.ui.core.min'] = 1;
+			$_tpl['styles']['jquery-ui-redmond'] = 1;
+			if($gfi['datepicker']==2) {
+				$_tpl['script']['script.jquery.ui/jquery.ui.widget.min'] = 1;
+				$_tpl['script']['script.jquery.ui/jquery.ui.mouse.min'] = 1;
+				$_tpl['script']['script.jquery.ui/jquery.ui.slider.min'] = 1;
+				$_tpl['script']['script.jquery.ui/jquery.ui.datepicker.min'] = 1;
+				$_tpl['script']['script.jquery.ui/jquery-ui-timepicker-addon'] = 1;
+				$_tpl['styles']['jquery-ui-timepicker-addon'] = 1;
+			}
+			else
+				$_tpl['script']['script.jquery.ui/jquery.ui.datepicker.min'] = 1;
+		}
 		return true;
 	}
 

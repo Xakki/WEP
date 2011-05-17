@@ -1145,7 +1145,7 @@ abstract class kernel_extends {
 		return false;
 	}
 
-	public function _getCashedList(&$listname, $value=0) {
+	public function _getCashedList(&$listname, $value=NULL) {
 		$data = array();
 		$templistname = $listname;
 		if (is_array($listname))

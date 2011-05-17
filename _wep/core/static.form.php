@@ -78,7 +78,7 @@ class static_form {
 		$data = array();
 		foreach($_this->fld_data as $key => $value) {
 			if(is_array($value))
-				 $value = '|'.implode('|',$value).'|';
+				 $value = preg_replace('/\|+/', '|', '|'.implode('|',$value).'|');
 			if($_this->fields[$key]['type']=='bool')
 				 $value = ((int)$value == 1 ? 1 : 0);
 			elseif(isset($int_type[$_this->fields[$key]['type']]))
@@ -221,11 +221,13 @@ class static_form {
 		// preparing
 		$data = array();
 		foreach($_this->fld_data as $key => $value) {
-			if(is_array($value))
-				$data[$key] = '`'.$key.'` = \'|'.implode('|',$value).'|\'';
+			if(is_array($value)) {
+				$data[$key] = '`'.$key.'` = \''.preg_replace('/\|+/', '|', '|'.implode('|',$value).'|').'\'';
+			}
 			else
 				$data[$key] = '`'.$key.'` = \''.$value.'\'';
 		}
+		
 		$result = $_this->SQL->execSQL('UPDATE `'.$_this->tablename.'` SET '.implode(',', $data).' WHERE id IN ('.$_this->_id_as_string().')');
 		if($result->err) return false;
 		if(isset($_this->fld_data[$_this->owner_name]) and !is_array($_this->id))
@@ -576,7 +578,7 @@ class static_form {
 				$value['value'] = $data[$key] = ((int)$data[$key] == 1 ? 1 : 0);
 			}
 			elseif($value['type']=='date') {
-				$value['value'] = $data[$key] = static_form::_get_fdate($value, $data[$key], $_this->fields[$key]['type']);
+				$value['value'] = $data[$key] = self::_get_fdate($value, $data[$key], $_this->fields[$key]['type']);
 			}
 			//*********** МАССИВЫ
 			elseif(is_array($data[$key]) and count($data[$key])) {
@@ -842,19 +844,19 @@ class static_form {
 
 //возвращает форматированную дату в зависимости от типа поля в fields_form
 	static function _get_fdate($field_form, $inp_date, $field_type) {
+		$result = NULL;
 		// формат для даты
 		if ($field_form['mask']['format']) {
-			if ($field_form['mask']['separate'])
-				$format = explode($field_form['mask']['separate'], $field_form['mask']['format']);
-			else
-				$format = explode('-', $field_form['mask']['format']);
+			preg_match_all('/[A-Za-z]/', $field_form['mask']['format'], $matches);
+			$format = $matches[0];
 		}
 		else {
-			$format = explode('-', 'Y-m-d');
+			$field_form['mask']['format'] = 'Y-m-d-H-i-s';
+			$format = explode('-', 'Y-m-d-H-i-s');
 		}
 
 		// формат для времени
-		if ($field_form['mask']['time']) {
+		/*if ($field_form['mask']['time']) {
 			if ($field_form['mask']['separate'])
 				$format_time = explode($field_form['mask']['separate_time'], $field_form['mask']['time']);
 			else
@@ -862,10 +864,10 @@ class static_form {
 		}
 		else {
 			$format_time = explode('-', 'H-i-s');
-		}
+		}*/
 
 
-		if (is_array($inp_date)) {
+		/*if (is_array($inp_date)) {
 			$date = $inp_date;
 		} else {
 			// соединяем массивы и делим данные сначала по пробелу, потом по разделительным знакам, если нет времени, то добавляем значение по умолчанию
@@ -888,9 +890,9 @@ class static_form {
 
 			if (is_array($date) && is_array($time))
 				$date = array_merge($date, $time);
-		}
+		}*/
 
-		$format = array_merge($format, $format_time);
+		/*$format = array_merge($format, $format_time);
 		if (count($format) == count($date))
 			$final_array_date = array_combine($format, $date);
 		$date_str = self::_parseDate($final_array_date);
@@ -901,8 +903,25 @@ class static_form {
 			$result = date("Y-m-d H:i:s", mktime($date_str[0], $date_str[1], $date_str[2], $date_str[3], $date_str[4], $date_str[5]));
 		}
 		else
-			return static_main::_message('Тип поля ' . $k . ' неверен для даты', 1);
-
+			return static_main::_message('Тип поля ' . $k . ' неверен для даты', 1);*/
+		if (!is_array($inp_date)) {
+			if ($field_type == 'int') {
+				$result = strtotime($inp_date);
+			} elseif ($field_type == 'timestamp') {
+				$result = date("Y-m-d H:i:s", strtotime($inp_date));
+			}
+		}else {
+			if (count($format) == count($inp_date)) {
+				$final_array_date = array_combine($format, $inp_date);
+				$date_str = self::_parseDate($final_array_date);
+				if ($field_type == 'int') {
+					$result = mktime($date_str[0], $date_str[1], $date_str[2], $date_str[3], $date_str[4], $date_str[5]);
+				} elseif ($field_type == 'timestamp') {
+					$result = date("Y-m-d H:i:s", mktime($date_str[0], $date_str[1], $date_str[2], $date_str[3], $date_str[4], $date_str[5]));
+				}
+			}
+		}
+		//return static_main::_message('Тип поля ' . $k . ' неверен для даты', 1);
 		return $result;
 	}
 

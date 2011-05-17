@@ -48,8 +48,15 @@
 						$r['value_2'] = '';
 
 					if((!isset($r['value_2']) or !$r['value_2']) and $r['value']) {
+						if(isset($r['multiple'])) {
+							$r['value'] = explode('|', trim($r['value'], '|'));
+						}
 						$md = $this->_getCashedList($r['listname'],$r['value']);
-						$r['value_2'] = $md[$r['value']];
+						if(isset($r['multiple'])) {
+							foreach($r['value'] as $kv=>$rv)
+								$r['value_2'][$kv] = (isset($md[$rv])?$md[$rv]:'');
+						}
+						else $r['value_2'] = $md[$r['value']];
 					}
 
 					$r['labelstyle'] = ($r['value_2']?'display: none;':'');
@@ -83,7 +90,7 @@
 					}
 				}
 				elseif(isset($r['listname']) and isset($r['multiple']) and $r['multiple'] and !$r['readonly']) {
-					$md = $this->_getCashedList($r['listname'],0);
+					$md = $this->_getCashedList($r['listname']);
 					if(is_array($r['value']))
 						$val = array_combine($r['value'],$r['value']);
 					else

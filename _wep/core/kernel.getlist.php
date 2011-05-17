@@ -147,9 +147,9 @@
 			if(isset($listname['where']) and is_array($listname['where']))
 				$listname['where'] = implode(' and ',$listname['where']);
 			/*Выбранные элементы*/ /*помоему это лишнее - надо проверить*/
-			if($value and is_array($value))
+			if(!is_null($value) and is_array($value))
 				$clause['where'] = $listname['idField'].' IN ("'.implode('", "',$value).'")';
-			elseif($value)
+			elseif(!is_null($value))
 				$clause['where'] = $listname['idField'].'="'.$value.'"';
 
 			if($listname['where'])
@@ -165,7 +165,11 @@
 			$result = $_this->SQL->execSQL($clause['field'].$clause['from'].$clause['where']);
 //print($_this->SQL->query);
 				if(!$result->err) {
-					if($value) {
+					if(!is_null($value) and is_array($value) and count($value)) {
+						while ($row = $result->fetch_array())
+							$data[$row['id']] = $row['name'];
+					}
+					elseif(!is_null($value)) {
 						if ($row = $result->fetch_array())
 							$data[$row['id']] = $row['name'];
 					}

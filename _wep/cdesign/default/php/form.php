@@ -108,11 +108,47 @@ function tpl_form(&$data) {
 				}
 				$texthtml .= '</div>';
 			}
+			elseif($r['type']=='ajaxlist' and isset($r['multiple'])) {
+				global $_tpl;				
+
+				if(!is_array($r['value']))
+					$r['value'] = explode('|', trim($r['value'], '|'));
+				if(!is_array($r['value_2']))
+					$r['value_2'] = array($r['value_2']);
+				$serl = serialize($r['listname']);
+				$max = (isset($r['mask']['max'])?$r['mask']['max']:5);
+				for($i=0;$i<$max;$i++) {
+					if(isset($r['value'][$i])) {
+						$value = $r['value'][$i];
+					}
+					else {
+						$value = '';
+						$_tpl['onload'] .= ' jQuery(\'#tr_'.$k.' div.ajaxlist\').eq('.$i.').hide(); ';
+					}
+					if(isset($r['value_2'][$i])) $value_2 = strip_tags ($r['value_2'][$i]);
+					// TODO : Придумать форматированный вывод 
+					else $value_2 = '';
+					$r['labelstyle'] = ($value_2?'display: none;':'');
+					$r['csscheck'] = ($value_2?'accept':'reject');
+					$texthtml .= '<div class="form-value ajaxlist">
+						<span style="'.$r['labelstyle'].'">'.$r['label'].'</span>
+						<input type="text" name="'.$k.'_2['.$i.']" value="'.$value_2.'" onfocus="show_hide_label(this,\''.$k.'\',1,\''.$i.'\')" onblur="show_hide_label(this,\''.$k.'\',0,\''.$i.'\')" onkeyup="ajaxlist(this,\''.$k.'\',\''.$i.'\')" class="'.$r['csscheck'].'" autocomplete="off"/>
+						<div id="ajaxlist_'.$k.'_'.$i.'_" style="display:none;" onfocus="chFocusList(0)" onblur="chFocusList(1)">не найдено</div>
+
+						<input type="hidden" name="'.$k.'['.$i.']" value="'.$value.'" '.$attribute.'/>
+					</div>';
+				}
+				$texthtml .= '<input type="hidden" name="hsh_'.$k.'" value="'.md5($serl.$_CFG['wep']['md5']).'"/>
+					<input type="hidden" name="srlz_'.$k.'" value="'.htmlspecialchars($serl,ENT_QUOTES,$_CFG['wep']['charset']).'"/>';
+				if(!isset($r['comment']))
+					$r['comment'] = '';
+				$r['comment'] .= '<div class="ajaxmultiple" onclick="jQuery(\'#tr_'.$k.' div.ajaxlist:hidden\').eq(0).show(); if (jQuery(\'#tr_'.$k.' div.ajaxlist:hidden\').size() == 0) jQuery(this).hide();">Добавить '.$r['caption'].'</div>';
+			}
 			elseif($r['type']=='ajaxlist') {
 				$serl = serialize($r['listname']);
 				$texthtml .= '<div class="form-value ajaxlist">
 					<span style="'.$r['labelstyle'].'">'.$r['label'].'</span>
-					<input type="text" name="'.$k.'_2" value="'.$r['value_2'].'" onfocus="show_hide_label(this,\''.$k.'\',1)" onblur="show_hide_label(this,\''.$k.'\',0)" onkeyup="ajaxlist(this,\''.$k.'\')" class="'.$r['csscheck'].'" autocomplete="off"/>
+					<input type="text" name="'.$k.'_2" value="'.strip_tags ($r['value_2']).'" onfocus="show_hide_label(this,\''.$k.'\',1)" onblur="show_hide_label(this,\''.$k.'\',0)" onkeyup="ajaxlist(this,\''.$k.'\')" class="'.$r['csscheck'].'" autocomplete="off"/>
 					<div id="ajaxlist_'.$k.'" style="display:none;" onfocus="chFocusList(0)" onblur="chFocusList(1)">не найдено</div>
 
 					<input type="hidden" name="'.$k.'" value="'.$r['value'].'" '.$attribute.'/>
@@ -159,30 +195,43 @@ function tpl_form(&$data) {
 				$texthtml .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.$temp.'" '.$attribute.'/></div>';
 			}
 			elseif($r['type']=='date' and !$r['readonly']) {
-	
+	echo '<pre>';print_r($r);
 				$texthtml .= '<div class="form-value">';
-				
-				global $_tpl;
-				if($r['mask']['time'])
-					$_tpl['script']['dp_'.$k] = 'function dp_'.$k.'() { $("input[name='.$k.']").datetimepicker('.$r['mask']['params'].')}';
-				else
-					$_tpl['script']['dp_'.$k] = 'function dp_'.$k.'() { $("input[name='.$k.']").datepicker('.$r['mask']['params'].')}';
-				$_tpl['onload'] .= ' dp_'.$k.'(); ';
 
-				// формат даты
-				if(isset($r['mask']['format']) and $r['mask']['format']) {
-					if($r['mask']['separate']) {
-						$format = explode($r['mask']['separate'], $r['mask']['format']);
-					}
-					else {
-						$format = explode('-', $r['mask']['format']);
-					}
+				// формат для даты
+				if ($r['mask']['format']) {
+					preg_match_all('/[A-Za-z]/', $r['mask']['format'], $matches);
+					$format = $matches[0];
 				}
-				else{
+				else {
+					$r['mask']['format'] = 'Y-m-d-H-i-s';
 					$format = explode('-', 'Y-m-d-H-i-s');
+					$r['mask']['params']['dateFormat']='yy-mm-dd';
+					$r['mask']['params']['timeFormat'] = ' hh:mm:ss';
 				}
 
 				if($r['mask']['view']=='input') {
+
+					global $_tpl;
+					$prop = array();
+					if(is_array($r['mask']['params'])) {
+						 foreach ($r['mask']['params'] as $kp => $vp) {
+							 $prop[] = $kp.':\''.$vp.'\'';
+						 }
+						 $prop = '{'.implode(',',$prop).'}';
+					}
+					else $prop = $r['mask']['params'];
+
+					if(isset($r['mask']['time'])) {
+						$_CFG['fileIncludeOption']['datepicker'] = 2;
+						$_tpl['script']['dp_'.$k] = 'function dp_'.$k.'() { $("input[name='.$k.']").datetimepicker('.$prop.')}';
+					}
+					else {
+						$_CFG['fileIncludeOption']['datepicker'] = 1;
+						$_tpl['script']['dp_'.$k] = 'function dp_'.$k.'() { $("input[name='.$k.']").datepicker('.$prop.')}';
+					}
+					$_tpl['onload'] .= ' dp_'.$k.'(); ';
+
 					// Тип поля
 					if($r['fields_type']  =='int' and $r['value']){
 						$temp = date($r['mask']['format'],$r['value']);
