@@ -227,7 +227,7 @@ class users_class extends kernel_extends {
 		$this->fields_form['email'] = array('type' => 'text', 'caption' => 'E-mail', 'mask'=>array('name'=>'email','min' => '7'));
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Имя','mask'=>array('name'=>'name2')); // Вывод поля при редактировании
 		$this->fields_form['userpic'] = array('type'=>'file','caption'=>'Юзерпик','del'=>1, 'mask'=>array('fview'=>1,'width'=>85,'height'=>85,'thumb'=>0));
-		$this->fields_form['mf_ipcreate'] =	array('type' => 'text','readonly' => true, 'caption' => 'IP-пользователя','mask'=>array('usercheck'=>1,'eval'=>'long2ip($val)'));
+		$this->fields_form['mf_ipcreate'] =	array('type' => 'text','readonly' => true, 'caption' => 'IP-пользователя','mask'=>array('usercheck'=>1));
 		$this->fields_form['mf_timecr'] =	array('type' => 'date','readonly' => true, 'caption' => 'Дата регистрации','mask'=>array('sort'=>1));
 		$this->fields_form['reg_hash'] = array('type' => 'hidden',  'caption' => 'Хэш','mask'=>array('eval'=>1,'fview'=>1,'usercheck'=>1));
 		if(isset($this->owner->config['payon']) && $this->owner->config['payon'])
@@ -437,10 +437,10 @@ class users_class extends kernel_extends {
 		elseif(!isset($_GET['confirm']) or !isset($_GET['hash']) or _strlen($_GET['hash'])!=32)
 			$mess[] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['errdata']);
 		else {
-			$data = $this->_query('t1.id,t1.reg_hash','t1 where t1.`'.$this->fn_login.'` = \''.preg_replace("/[^0-9a-z]+/",'',$_GET['confirm']).'\'');
+			$data = $this->_query('t1.id,t1.reg_hash','t1 where t1.`'.$this->fn_login.'` = \''.preg_replace("/[^0-9a-z@\.]+/",'',$_GET['confirm']).'\'');
 			if(count($data) and _strlen($data[0]['reg_hash'])<5)
 				$mess[] = array('name'=>'alert', 'value'=>$this->_CFG['_MESS']['confno']);
-			elseif(count($data) and $data[0]['reg_hash']==$_GET['hash']){
+			elseif(count($data) and $data[0]['reg_hash']==$_GET['hash']) {
 				$this->id = $data[0]['id'];
 				$this->fld_data['reg_hash']= 1;
 				if($this->owner->config['premoderation']) {
@@ -531,7 +531,6 @@ class users_class extends kernel_extends {
 					$this->fld_data = $data;
 					$this->fld_data['loginza_data'] = '';
 					if($this->_add($data)) {
-						$data = current($this->_query('t2.*,t2.active as gact,t2.name as gname,t1.*','t1 Join '.$this->owner->tablename.' t2 on t1.'.$this->owner_name.'=t2.id where t1.email=\''.mysql_real_escape_string($dt['email']).'\''));
 						$flag = true;
 						/*
 						global $MAIL;
@@ -662,7 +661,7 @@ class users_class extends kernel_extends {
 
 	protected function setUserSession($data=false) {
 		if(!$data) {
-			$data = $this->owner->getUserData();
+			$data = $this->owner->getUserData($this->id);
 		}
 		session_go(1);
 		$_SESSION['user'] = $data;

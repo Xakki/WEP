@@ -10,22 +10,20 @@
 		/**Если тру - то проверка таблиц и папок*/
 		var $_iFlag;
 
-		function __construct($CFG_SQL) {
+		function __construct($CFG_SQL,$new_link = false) {
 			global $_CFG;
 			$this->CFG_SQL = $CFG_SQL;
 			$this->_iFlag= false;
 			if((int)$this->CFG_SQL['log']) $this->logFile = fopen($_CFG['_PATH']['wep'].'/log/_'.time().'.log', 'wb');
-			$this->sql_connect();
+			$this->sql_connect($new_link);
 		}
 
 		function __destruct() {
-			global $_CFG;
 			$this->sql_close();
 			if($this->CFG_SQL['log']) fclose($this->logFile);
 		}
 
-		function sql_connect() {
-			global $_CFG;
+		function sql_connect($new_link) {
 			$this->hlink = mysql_connect($this->CFG_SQL['host'], $this->CFG_SQL['login'], $this->CFG_SQL['password']);
 			if($this->hlink) {
 				mysql_query ('SET NAMES '.$this->CFG_SQL['setnames']);
@@ -43,8 +41,8 @@
 		}
 
 		function sql_close() {
-			if($this->hlink)
-				mysql_close($this->hlink);
+			//if($this->hlink)
+			//	mysql_close($this->hlink);
 		}
 
 		function sql_id() {

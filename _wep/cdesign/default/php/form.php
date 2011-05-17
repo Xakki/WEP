@@ -166,7 +166,7 @@ function tpl_form(&$data) {
 					$texthtml .= '<select multiple="multiple" size="10" name="'.$k.'[]" class="multiple" '.$attribute;
 					$texthtml .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
 					$_CFG['fileIncludeOption']['multiple'] = 2;
-				}elseif($r['multiple']) {
+				}elseif(isset($r['multiple']) and $r['multiple']) {
 					$texthtml .= '<select multiple="multiple" size="10" name="'.$k.'[]" class="small" '.$attribute;
 					$texthtml .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
 				}else {
@@ -280,16 +280,16 @@ function tpl_form(&$data) {
 						// месяц
 						if($item_date == 'm' || $item_date == 'n' || $item_date == 'M' || $item_date == 'F')
 						{
-							$r['value']['month'] = array('name'=>$_CFG['_MESS']['month_name'], 'css'=>'month','value'=>$temp[1]);// Месяц
+							$r['value']['month'] = array('name'=>$_CFG['_MESS']['month_name'], 'css'=>'month','value'=>(int)$temp[1]);// Месяц
 							foreach($_CFG['_MESS']['month'] as $kr=>$td) {
 								$kr = (int)$kr;
 								$r['value']['month']['item'][$kr] = array('#id#'=>$kr, '#name#'=>$td);
-							}						
+							}
 						}
 						// день
 						if($item_date == 'd' || $item_date == 'j')
 						{
-							$r['value']['day'] = array('name'=>$_CFG['_MESS']['day_name'], 'css'=>'day','value'=>$temp[2]);// День
+							$r['value']['day'] = array('name'=>$_CFG['_MESS']['day_name'], 'css'=>'day','value'=>(int)$temp[2]);// День
 							for($i=1;$i<=31;$i++)
 								$r['value']['day']['item'][$i] = array('#id#'=>$i, '#name#'=>$i);						
 						}
@@ -297,7 +297,7 @@ function tpl_form(&$data) {
 						if($item_date == 'G' || $item_date == 'g' || $item_date == 'H' || $item_date == 'h')
 						{
 							$r['value']['hour'] = array('name'=>$_CFG['_MESS']['hour_name'], 'css'=>'hour','value'=>$temp[3]);// Час
-							for($i=1;$i<=24;$i++)
+							for($i=0;$i<=23;$i++)
 								$r['value']['hour']['item'][$i] = array('#id#'=>$i, '#name#'=>$i);
 						}
 						// минуты
@@ -324,13 +324,13 @@ function tpl_form(&$data) {
 			}
 			elseif($r['type']=='captcha') {
 				$texthtml .= '<div class="form-value">
-						<div class="left"><input type="text" name="'.$k.'" value="'.$r['value'].'" maxlength="5" size="10" class="secret" autocomplete="off"/></div>
+						<div class="form-value-left"><input type="text" name="'.$k.'" value="'.$r['value'].'" maxlength="5" size="10" class="secret" autocomplete="off"/></div>
 						<div class="secret"><img src="'.$r['src'].'" class="i_secret" id="captcha" alt="CARTHA"/></div>
 					</div>';
 			}
 			elseif($r['type']=='file') {
 				$texthtml .= '<div class="form-value divinputfile">';
-				$texthtml .= '<input type="file" name="'.$k.'" size="39" '.$attribute.'/><span class="fileinfo"></span>';
+				$texthtml .= '<input type="file" name="'.$k.'" '.$attribute.'/><span class="fileinfo"></span>';
 
 				if($r['del']==1 and $r['value']!='')
 					$texthtml .= '<div style="color:red;float:right;white-space: nowrap;">Удалить?&#160;<input type="checkbox" name="'.$k.'_del" class="del" value="1" onclick="$(\'#tr_'.$k.' td.td2 input[name='.$k.'],#tr_'.$k.' td.td2 div.dscr\').slideToggle(\'normal\')"/></div>';
@@ -365,11 +365,11 @@ function tpl_form(&$data) {
 				$texthtml .= '</div>';
 			}
 			elseif($r['type']=='ckedit') {
-				if(isset($r['mask']['max'])) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
+				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
 				$texthtml .= '<div class="form-value ckedit-value"><textarea name="'.$k.'" rows="10" cols="80" '.$attribute.'>'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
 			}
 			elseif($r['type']=='int' and !$r['readonly']) {
-				if(isset($r['mask']['max'])) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
+				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
 				$texthtml .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.$r['value'].'" onkeydown="return checkInt(event)" '.$attribute.'/></div>';
 			}
 			elseif($r['type']=='password') {
@@ -400,7 +400,7 @@ function tpl_form(&$data) {
 				$texthtml .= '<div class="form-value">'.$r['value'].'</div>';
 			}
 			else {
-				if(isset($r['mask']['max'])) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
+				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
 				$texthtml .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'" '.$attribute.'/></div>';
 			}
 		}
@@ -442,7 +442,7 @@ function selectitem($data,$val=NULL,$flag=0) {
 	return $texthtml;
 }
 
-function selectitem2($data,$val=NULL,$flag=0) {
+function selectitem_old($data,$val=NULL,$flag=0) {
 	$texthtml = '';
 	if(!is_null($val)) {
 		if(!is_array($val)) 

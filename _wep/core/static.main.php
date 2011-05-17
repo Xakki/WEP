@@ -94,7 +94,7 @@ class static_main {
 			self::_prmModulLoad();
 		if (!isset($_CFG['modulprm'][$mn]))
 			return false; // отказ, если модуль отключен
-		if ($_SESSION['user']['level'] >= 5)
+		if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] >= 5)
 			return false; //этим всё запрещено
 		else {
 			if (isset($_CFG['modulprm'][$mn]['access'][0]))
@@ -254,6 +254,18 @@ class static_main {
 			return $output;
 		}
 		return $insert_data;
+	}
+
+	static function MergeArrays($Arr1, $Arr2)
+	{
+	  foreach($Arr2 as $key => $Value)
+	  {
+		 if(array_key_exists($key, $Arr1) && is_array($Value))
+			$Arr1[$key] = self::MergeArrays($Arr1[$key], $Arr2[$key]);
+		 else
+			$Arr1[$key] = $Value;
+	  }
+	  return $Arr1;
 	}
 }
 

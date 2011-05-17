@@ -799,15 +799,15 @@ abstract class kernel_extends {
 				'caption' => $this->_CFG['_MESS']['_configno']);
 		} else {
 			foreach($this->config as $k=>&$r) {
-				if(is_array($r)) {
+				if(is_array($r) and !isset($this->config_form[$k]['multiple'])) {
 					$temp = array();
 					foreach($r as $t=>$d) {
-						if(strpos($d,'==')===false)
-							$temp[] = trim($t).'=='.trim($d);
+						if(strpos($d,':=')===false)
+							$temp[] = trim($t).':='.trim($d);
 						else
 							$temp[] = trim($d);
 					}
-					$r = implode('|',$temp);
+					$r = implode(' :| ',$temp);
 				}
 			}
 			if (count($_POST)) {
@@ -869,26 +869,26 @@ abstract class kernel_extends {
 	 */
 
 	public function _save_item($data) {
-		foreach ($this->fields_form as $k => $r) {
-			if (isset($data[$k]) and isset($this->memos[$k]))
-				$this->mmo_data[$k] = $data[$k];
-			elseif (isset($data[$k]) and isset($this->attaches[$k]))
-				$this->att_data[$k] = $data[$k];
-			elseif (isset($data[$k]) and isset($this->fields[$k])) {
-				$this->fld_data[$k] = (is_string($data[$k]) ? mysql_real_escape_string($data[$k]) : $data[$k]);
+		foreach ($data as $k => $r) {
+			if (isset($this->memos[$k]))
+				$this->mmo_data[$k] = $r;
+			elseif (isset($this->attaches[$k]))
+				$this->att_data[$k] = $r;
+			elseif (isset($this->fields[$k])) {
+				$this->fld_data[$k] = (is_string($r) ? mysql_real_escape_string($r) : $r);
 			}
 		}
 		return $this->_update();
 	}
 
 	public function _add_item($data) {
-		foreach ($this->fields_form as $k => $r) {
-			if (isset($data[$k]) and isset($this->memos[$k]))
-				$this->mmo_data[$k] = $data[$k];
-			elseif (isset($data[$k]) and isset($this->attaches[$k]))
-				$this->att_data[$k] = $data[$k];
-			elseif (isset($data[$k]) and isset($this->fields[$k])) {
-				$this->fld_data[$k] = (is_string($data[$k]) ? mysql_real_escape_string($data[$k]) : $data[$k]);
+		foreach ($data as $k => $r) {
+			if (isset($this->memos[$k]))
+				$this->mmo_data[$k] = $r;
+			elseif (isset($this->attaches[$k]))
+				$this->att_data[$k] = $r;
+			elseif (isset($this->fields[$k])) {
+				$this->fld_data[$k] = (is_string($r) ? mysql_real_escape_string($r) : $r);
 			}
 		}
 		return $this->_add();
@@ -920,7 +920,7 @@ abstract class kernel_extends {
 				else
 					$val = '';
 				$eval = '$data[$k]=' . $eval;
-				if (substr($r['mask']['eval'], -1) != ';')
+				if (substr($eval, -1) != ';')
 					$eval .= ';';
 				eval($eval);
 				unset($eval);
@@ -972,6 +972,9 @@ abstract class kernel_extends {
 
 			if (isset($this->id) and isset($this->data[$this->id]['_ext_' . $k]))
 				$r['ext'] = $this->data[$this->id]['_ext_' . $k];
+
+			if(!isset($r['comment']))
+				$r['comment'] = '';
 
 			//end foreach
 		}

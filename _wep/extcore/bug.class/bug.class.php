@@ -5,7 +5,7 @@ class bug_class extends kernel_extends {
 		parent::_create_conf();
 
 		$this->config['act'] = 0;
-		$this->config['catchable_err'] = array_keys($this->_CFG['_error']);
+		$this->config['catchable_err'] = 0;
 		
 		$this->config_form['act'] = array('type' => 'checkbox', 'caption' => 'Включить логирование ошибок');
 		$this->config_form['catchable_err'] = array('type' => 'list', 'listname'=>'catchable_err', 'multiple' => 2, 'caption' => 'Виды отлавливаемых ошибок');
@@ -64,7 +64,7 @@ class bug_class extends kernel_extends {
 		$this->fields_form['cnt'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Повторы', 'mask'=>array('sort'=>1));
 	
 		foreach ($this->_CFG['_error'] as $k=>$r) {
-			$this->_enum['err_type'][$k] = $r['type'];
+			$this->_enum['err_type'][(int)$k] = $r['type'];
 		}
 		
 		$this->bugs = array();
@@ -72,8 +72,12 @@ class bug_class extends kernel_extends {
 		$this->unique_fields['name'] = 'name';
 		
 		$this->ordfield = 'active DESC, mf_timecr DESC';
-		
-		$this->catchable_err = array_flip($this->config['catchable_err']);
+		if(!$this->config['act'])
+			$this->catchable_err = array();
+		elseif(is_array($this->config['catchable_err']) and count($this->config['catchable_err']))
+			$this->catchable_err = array_flip($this->config['catchable_err']);
+		else
+			$this->catchable_err = array_keys($this->_CFG['_error']);
 		
 		$params = array(
 			'obj' => $this,

@@ -9,77 +9,12 @@ $edit_cfg = array(
 	'site' => true,
 );
 
-/**
- * Сбор переменных хранящихся в фаиле
- * @param <type> $file Фаил из которого будут браться данные о перменных
- * @param <type> $start Не обязательная, указывает строку после которой начинается сбор полезных строк
- * @param <type> $end не обязательная, указывает строку до которой будет сбор строк
- * @param <type> $mData не обязательно, дефолтное значение отслеживаемой переменной
- * @return <type> Возвращает массив полученных данных $_CFG
- */
-function getFdata($file, $start='', $end='', $mData = false) {
-	$fc = '';
-	if ($start == '' and $end == '') {
-		$fc = file_get_contents($file);
-	} else {
-		$fc = false;
-		$file = file($file);
-		foreach ($file as $k => $r) {
-			if ($fc === false and strpos($r, $start) !== false)
-				$fc = '';
-			elseif (strpos($r, $end) !== false)
-				break;
-			if ($fc !== false)
-				$fc .= $r . "\n";
-		}
-	}
-	$fc = trim($fc, "<?>\n");
-	if ($mData !== false) {
-		$_CFG = $mData;
-	}
-
-	if ($fc)
-		eval($fc);
-	else
-		print_r('NO CFG');
-
-	return $_CFG;
-}
 
 $mess = array();
-$DEF_CFG = getFdata($_CFG['_PATH']['wep'] . '/config/config.php', '/* MAIN_CFG */', '/* END_MAIN_CFG */');
-$USER_CFG = getFdata($_CFG['_PATH']['wepconf'] . '/config/config.php', '', '', $DEF_CFG);
-
 if (isset($_POST['sbmt'])) {
-	$fl = false;
-	$NEW_USER_CFG = array();
-	foreach ($edit_cfg as $k => $r) {
-		foreach ($_CFG[$k] as $kk => $rr) {
-			if (isset($_POST[$k . '_' . $kk]) and (!isset($DEF_CFG[$k][$kk]) or $_POST[$k . '_' . $kk] != $DEF_CFG[$k][$kk])) {
-				$NEW_USER_CFG[$k . '_' . $kk] = '$_CFG["' . $k . '"]["' . $kk . '"] = \'' . addcslashes($_POST[$k . '_' . $kk], '\'') . '\';';
-				$USER_CFG[$k][$kk] = $_POST[$k . '_' . $kk];
-			}
-		}
-	}
-	$_CFG = array_merge($_CFG, $USER_CFG);
-	$_CFG['wep']['access'] = 0;
-	$_CFG['wep']['sessiontype'] = 0;
-	$_CFG['site']['bug_hunter'] = 0;
-	$_CFG['sql']['log'] = 0;
-	$_CFG['site']['show_error'] = 2;
-
-	$SQL = new sql($USER_CFG['sql']); //пробуемподключиться к БД
-
-	$putFile = "<?\n\t//create time " . date('Y-m-d H:i') . "\n\t";
-	$putFile .= implode("\n\t", $NEW_USER_CFG);
-	$putFile .= "\n?>";
-
+	list($fl,$mess) = static_tools::saveUserCFG($_POST,$TEMP_CFG);
 	//Записать в конфиг все данные которые отличаются от данных по умолчанию
-	if (!file_put_contents($_CFG['_PATH']['wepconf'] . '/config/config.php', $putFile)) {
-		$mess[] = array('name' => 'error', 'value' => 'Ошибка записи настроек. Нет доступа к фаилу');
-	} else {
-		$mess[] = array('name' => 'ok', 'value' => 'Подключение к БД успешно.');
-		$mess[] = array('name' => 'ok', 'value' => 'Конфигурация успешно сохранена.');
+	if ($fl) {
 		$mess[] = array('name' => 'ok', 'value' => 'Пора перейти к <a href="'.$_CFG['PATH']['wepname'].'/install.php?step=' . ($_GET['step'] + 1) . '">следующему шагу №' . ($_GET['step'] + 1) . '</a>');
 		$DATA['messages'] = $mess;
 		$_SESSION['step'] = 2;
@@ -88,6 +23,8 @@ if (isset($_POST['sbmt'])) {
 		//die('<a href="install.php?step=' . ($_GET['step'] + 1) . '">Следующий шаг</a>');
 	}
 } else {
+	$DEF_CFG = static_tools::getFdata($_CFG['_PATH']['wep'] . '/config/config.php', '/* MAIN_CFG */', '/* END_MAIN_CFG */');
+	$USER_CFG = static_tools::getFdata($_CFG['_PATH']['wepconf'] . '/config/config.php', '', '', $DEF_CFG);// Текущая полная конфигурация
 	$mess[] = array('name' => 'ok', 'value' => 'Будте осторожны при вводе этих настроек.');
 }
 
@@ -131,7 +68,7 @@ foreach ($USER_CFG['sql'] as $k => $r) {
 			break;
 	}
 
-	$DATA['sql_' . $k] = array(
+	$DATA['sql[' . $k.']'] = array(
 		'caption' => $cap,
 		'comment' => $comm,
 		'type' => $type,
@@ -163,7 +100,7 @@ foreach ($USER_CFG['memcache'] as $k => $r) {
 			break;
 	}
 
-	$DATA['memcache_' . $k] = array(
+	$DATA['memcache[' . $k.']'] = array(
 		'caption' => $cap,
 		'comment' => $comm,
 		'type' => $type,
@@ -264,7 +201,7 @@ foreach ($USER_CFG['wep'] as $k => $r) {
 			break;
 	}
 
-	$DATA['wep_' . $k] = array(
+	$DATA['wep[' . $k.']'] = array(
 		'caption' => $cap,
 		'comment' => $comm,
 		'type' => $type,
@@ -317,7 +254,7 @@ foreach ($USER_CFG['site'] as $k => $r) {
 			break;
 	}
 
-	$DATA['site_' . $k] = array(
+	$DATA['site[' . $k.']'] = array(
 		'caption' => $cap,
 		'comment' => $comm,
 		'type' => $type,

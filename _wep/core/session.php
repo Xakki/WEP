@@ -39,6 +39,7 @@ class session_gogo extends kernel_extends {
 		$this->tablename = $_CFG['sql']['dbpref'].$tablename;
 		$this->uip = $_SERVER['REMOTE_ADDR']; 
 		$this->_time = time();
+		$this->_hash = '';
 		//$this->expired = get_cfg_var('session.gc_maxlifetime');
 		$this->expired = $_CFG['session']['expire'];
 
@@ -78,7 +79,9 @@ class session_gogo extends kernel_extends {
 		if(!$result->err and $row = $result->fetch_array()) {
 			if(($row['modified']+$row['expired'])>$this->_time) {
 				$this->data = $row;
-			}
+				$this->_hash = md5($this->data['data']);
+			}else
+				$this->destroy($sid);
 		}
 		/*$result = $this->SQL->execSQL('select table_comment from information_schema.`tables` where table_name="'.$this->tablename.'" and table_schema="'.$this->_CFG['sql']['database'].'"');
 		if($row = $result->fetch_array())
@@ -93,14 +96,22 @@ class session_gogo extends kernel_extends {
 
 	function write($sid, $sess_data) {
 		if($sess_data) {
-			$data = $this->_unserialize($sess_data);
+			$userId = (isset($_SESSION['user']['id'])?$_SESSION['user']['id']:0);
+			$tempMD5 = md5($sess_data);
 			$sess_data = mysql_real_escape_string($sess_data);
 			$lastPage = substr(mysql_real_escape_string($_SERVER['REQUEST_URI']),0,250);
 			$host = mysql_real_escape_string($_SERVER['HTTP_HOST']);
-			$result = $this->SQL->execSQL('INSERT INTO '.$this->tablename.' 
+			if($this->_hash) {
+				$query = 'UPDATE '.$this->tablename.' SET `modified` = "'.$this->_time.'", `users_id`="'.$userId.'", `visits` = (`visits` + 1), `lastpage`= "'.$lastPage.'", `host`="'.$host.'"';
+				if($this->_hash != $tempMD5)
+					$query .= ' ,`data` = "'.$sess_data.'"';
+				$result = $this->SQL->execSQL($query.' WHERE `sid`="'.mysql_real_escape_string($sid).'"');
+			} else {
+				$result = $this->SQL->execSQL('INSERT INTO '.$this->tablename.' 
 (`sid`,`created`,`modified`,`expired`,`data`,`users_id`,`ip`,`useragent`,`lastpage`,`host`,`host2`) values
-("'.$sid.'","'.$this->_time.'","'.$this->_time.'","'.$this->expired.'","'.$sess_data.'","'.$data['user']['id'].'","'.mysql_real_escape_string($_SERVER["REMOTE_ADDR"]).'","'.mysql_real_escape_string(substr($_SERVER['HTTP_USER_AGENT'],0,250)).'","'.$lastPage.'","'.$host.'","'.mysql_real_escape_string($_SERVER['HTTP_HOST2']).'") 
-ON DUPLICATE KEY UPDATE `modified` = "'.$this->_time.'", `users_id`="'.$data['user']['id'].'" ,`data` = "'.$sess_data.'", `visits` = (`visits` + 1), `lastpage`= "'.$lastPage.'", `host`="'.$host.'"');
+("'.$sid.'","'.$this->_time.'","'.$this->_time.'","'.$this->expired.'","'.$sess_data.'","'.$userId.'","'.mysql_real_escape_string($_SERVER["REMOTE_ADDR"]).'","'.mysql_real_escape_string(substr($_SERVER['HTTP_USER_AGENT'],0,250)).'","'.$lastPage.'","'.$host.'","'.mysql_real_escape_string($_SERVER['HTTP_HOST2']).'")');
+			}
+			
 		}
 		else
 			$this->destroy($sid);
@@ -117,17 +128,6 @@ ON DUPLICATE KEY UPDATE `modified` = "'.$this->_time.'", `users_id`="'.$data['us
 		$result = $this->SQL->execSQL('DELETE FROM '.$this->tablename.' WHERE `modified` + `expired` < '.$this->_time.' OR (`created` + '.$this->deadsession.' < '.$this->_time.' AND `visits` < '.$this->deadvisits.')');
 		return(true); 
 	}
-
-	function _unserialize($serialized_string) {
-		$variables = array(  );
-		$a = preg_split( "/(\w+)\|/", $serialized_string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE );
-		for( $i = 0; $i < count( $a ); $i = $i+2 ) {
-			$variables[$a[$i]] = unserialize( $a[$i+1] );
-		}
-		return( $variables );
-	}
-
-
 }
 
 ?>

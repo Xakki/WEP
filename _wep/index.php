@@ -74,11 +74,11 @@
 	if($_SESSION['user']['wep']) {
 		include($_CFG['_PATH']['cdesign'].$_design.'/inc.php');
 		if(static_main::_prmUserCheck(2)) {
-			$_tpl['debug'] = '<span class="seldebug"><select>
-	<option onclick="window.location=\''.$_CFG['PATH']['wepname'].'/index.php?_showallinfo=0\'" '.(!$_COOKIE['_showallinfo']?'selected="selected"':'').'>Скрыть инфу</option>
-	<option onclick="window.location=\''.$_CFG['PATH']['wepname'].'/index.php?_showallinfo=1\'" '.($_COOKIE['_showallinfo']==1?'selected="selected"':'').'>Показать инфу</option>
-	<option onclick="window.location=\''.$_CFG['PATH']['wepname'].'/index.php?_showallinfo=2\'" '.($_COOKIE['_showallinfo']==2?'selected="selected"':'').'>Показать SQL запросы</option>
-	<option onclick="window.location=\''.$_CFG['PATH']['wepname'].'/index.php?_showallinfo=3\'" '.($_COOKIE['_showallinfo']==3?'selected="selected"':'').'>Показать все логи</option>
+			$_tpl['debug'] = '<span class="seldebug"><select onchange="window.location.href=\'/'.$_CFG['PATH']['wepname'].'/index.php?_showallinfo=\'+this.value;">
+	<option '.(!$_COOKIE['_showallinfo']?'selected="selected"':'').' value="0">Скрыть инфу</option>
+	<option '.($_COOKIE['_showallinfo']==1?'selected="selected"':'').' value="1">Показать инфу</option>
+	<option '.($_COOKIE['_showallinfo']==2?'selected="selected"':'').' value="2">Показать SQL запросы</option>
+	<option '.($_COOKIE['_showallinfo']==3?'selected="selected"':'').' value="3">Показать все логи</option>
 	</select></span>';
 			$_tpl['debug'] .= '<span class="seldebug"><select>
 	<option onclick="setCookie(\'cdesign\',\'default\');window.location=\''.$_CFG['PATH']['wepname'].'/index.php\';" '.($_design=='default'?'selected="selected"':'').'>Default</option>

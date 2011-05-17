@@ -149,7 +149,7 @@
 
 
 	.divform div.no{font-size:11px;color:#000;padding:0;}
-	.divform div.left{float:left;}
+	.divform div.form-value-left{float:left;}
 	.divform div.left1{float:left;padding-top:4px;}
 	.divform div.clear{clear:both;}
 	.divform textarea{

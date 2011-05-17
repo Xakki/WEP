@@ -275,7 +275,6 @@ class pg_class extends kernel_extends {
 		}
 		if($fp!=$this->config['rootPage'])
 			$this->id = $fp;
-
 		/*$row = 0;
 		if(isset($this->dataCash[$this->id])) {
 			if ($parent!='' and $this->dataCash[$this->id]['parent_id']!=$parent)
@@ -413,9 +412,14 @@ class pg_class extends kernel_extends {
 						
 				}
 				if ($rowPG['href']){
-					if(!isset($_COOKIE[$this->_cl . $rowPG['href']]))
-					_setcookie($this->_cl . '_mop', $this->messages_on_page, $this->_CFG['remember_expire']);
-					header('Location: '.$rowPG['href']);die();
+					$temp = $this->_cl .'_'.preg_replace($this->_CFG['_repl']['alphaint'], '', $rowPG['href']);
+					if(!isset($_COOKIE[$temp])) {
+						_setcookie($temp, 1, time()+1);
+						header('Location: '.$rowPG['href']);
+						die();
+					}else {
+						trigger_error('На этой странице '.$this->id.'['.$rowPG['id'].'] обнаружена циклическая переадресация.Веб-страница привела к избыточному количеству переадресаций.', E_USER_WARNING);
+					}
 				}
 				if($rowPG['script']) {
 					$rowPG['script'] = explode('|',trim($rowPG['script'],'|'));
