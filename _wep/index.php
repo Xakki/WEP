@@ -1,7 +1,5 @@
 <?
 
-	require 'fb.php';
-
 	$_CFG['_PATH']['wep'] = dirname($_SERVER['SCRIPT_FILENAME']);
 	require_once($_CFG['_PATH']['wep'].'/config/config.php');
 	require_once($_CFG['_PATH']['core'].'/html.php');
