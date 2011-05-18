@@ -139,3 +139,17 @@ jQuery.fn.rater = function(url, options)
 
 	return this; // strict warning: anonymous function does not always return a value. fix?
 }
+var r_alert = "alert(\'Вы уже проголосовали за этот отзыв.\')";
+function clickVote(obj,id,fl,modul) {
+	$.getJSON("/_js.php?_view=rating&_modul="+modul+"&mid="+id+"&rating="+fl,function(data){
+		if(data.eval!='') eval(data.eval);
+		if(data.html!='') $(obj).parent().find(".good-bad-rating-text").text(data.html);
+	});
+	if(fl=="up") {
+		$(obj).parent().find(".img-up1").attr({"class":"good-bad-rating-vote img-up3","onclick":r_alert});
+		$(obj).parent().find(".img-down1").attr({"class":"good-bad-rating-vote img-down4","onclick":r_alert});
+	}else{
+		$(obj).parent().find(".img-up1").attr({"class":"good-bad-rating-vote img-up4","onclick":r_alert});
+		$(obj).parent().find(".img-down1").attr({"class":"good-bad-rating-vote img-down3","onclick":r_alert});
+	}
+}	

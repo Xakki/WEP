@@ -21,6 +21,7 @@ border:0 none;
 }
 
 /* ======= STAR-RATER ======== */
+
 .star-rating,
 .star-rating a {
 	background: url('../_img/star.gif') left -1000px repeat-x;
@@ -30,8 +31,13 @@ border:0 none;
     display: inline-block;
     height: 12px;
     list-style: none outside none;
+	float: right;
+	position: relative;
+	margin-top:3px;
 	}
-
+ul.star-rating {
+	padding:0;
+}
 .star-rating a {
 	position:absolute;
 	text-indent:-1000em;
@@ -74,3 +80,29 @@ border:0 none;
 	height: 10px;
 }
 /* ======= /STAR-RATER ======== */
+
+
+/* ======= vote_good_bad ======== */
+
+		span.rplus {color:green;}
+		span.rminus {color:red;}
+		span.img-up1 {background-position:-13px 0px;}
+		span.img-down1 {background-position:0 0px;}
+		span.img-up1:hover{background-position:-13px -13px;}
+		span.img-down1:hover{background-position:0 -13px;}
+		span.img-up3{background-position:-13px -26px;}
+		span.img-down3{background-position:0 -26px;}
+		span.img-up4{background-position:-13px -39px;}
+		span.img-down4{background-position:0 -39px;}
+
+
+	.good-bad-rating {padding:0 0 0 20px; display:inline-block;}
+	.good-bad-rating-text {color:gray;padding:0 3px;}
+	.good-bad-rating-vote {
+		margin:0 3px;
+		font-size:0.1px; color:transparent;
+		display:inline-block; width:13px; height:13px;
+		background:url("../_img/vote.png") no-repeat scroll 0 0 transparent;
+		cursor:pointer;
+		float:left;
+	}
