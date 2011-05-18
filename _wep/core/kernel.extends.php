@@ -1303,7 +1303,7 @@ abstract class kernel_extends {
 						);
 				}
 
-			if (static_main::_prmModul($this->_cl, array(14)))
+			if (is_null($this->owner) and static_main::_prmModul($this->_cl, array(14)))
 				$xml['topmenu']['Checkmodul'] = array(
 					'href' => $this->_clp . '_type=tools&amp;_func=Checkmodul',
 					'caption' => 'Обновить поля таблицы',

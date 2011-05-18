@@ -18,6 +18,7 @@ class ugroup_class extends kernel_extends
 		$this->config['payon'] = '';
 		$this->config['premoderation'] = 0;
 		$this->config['modergroup'] = 4;
+		$this->config['karma'] = 0;
 
 		$this->config_form['mailto'] = array('type' => 'text', 'mask' =>array('min'=>1,'name'=>'email'), 'caption' => 'Адрес службы поддержки');
 		$this->config_form['mailrobot'] = array('type' => 'text', 'mask' =>array('min'=>1,'name'=>'email'), 'caption' => 'Адрес Робота');
@@ -45,6 +46,7 @@ class ugroup_class extends kernel_extends
 		$this->config_form['reggroup'] = array('type' => 'list', 'listname'=>'list', 'caption' => 'Регистрировать по умолчанию');
 		$this->config_form['modergroup'] = array('type' => 'list', 'listname'=>'list', 'caption' => 'Непрошедшие проверку');
 		$this->config_form['rememberday'] = array('type' => 'int', 'mask' =>array('min'=>1), 'caption' => 'Дней запоминания авторизации');
+		$this->config_form['karma'] = array('type' => 'checkbox', 'caption' => 'Включить систему рейтингов?');
 	}
 
 	function _set_features() {
@@ -157,6 +159,40 @@ class ugroup_class extends kernel_extends
 		}
 		return $this->data[0];
 	}
+	/**
+	* $curvalue - текущий рейтинг
+	* 
+	* 
+	*/
+	function displayRating($curvalue,$maxvalue,$ID,$modul='users') {
+		global $_tpl;
+		$content = '';
+		$vote = 0;
+		$_tpl['script']['jquery.rater']=1;
+		$_tpl['styles']['jquery.rater']=1;
+		$cssid = 'rating'.$modul;
+		if(!is_array($maxvalue) and $maxvalue>= 3) {
+			if(!$vote) {
+				$content .= '<span id="'.$cssid.'"> </span>';
+				$_tpl['script'][] = '$(document).ready(function(){
+							$(\'#'.$cssid.'\').rater(\'/_js.php?_type=rating&_modul='.$modul.'\',
+								{maxvalue:'.$maxvalue.', style: \'basic\', curvalue:'.$curvalue.', mid:'.$ID.', active: 1}
+							);});';
+			} else {
+				$content .= '<span id="'.$cssid.'"> </span>';
+				$_tpl['script'][] = '$(document).ready(function(){
+							$(\'#'.$cssid.'\').rater(\'/_js.php?_type=rating&_modul='.$modul.'\',
+								{maxvalue:'.$maxvalue.', style: \'basic\', curvalue:'.$curvalue.', mid:'.$ID.', active: 0}
+							);});';
+			}
+		}else {
+		}
+		return $content;
+	}
+
+	function setRating($modul,$ID,$val) {
+		return $val;
+	}
 }
 
 
@@ -197,7 +233,11 @@ class users_class extends kernel_extends {
 		$this->fields['reg_hash'] = array('type' => 'varchar', 'width' => 128, 'attr' => 'NOT NULL', 'default'=>'');
 		$this->fields['balance'] = array('type' => 'float ', 'width' => '11,2', 'attr' => 'NOT NULL', 'default'=>'0.00');
 		$this->fields['lastvisit'] =  array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL', 'default'=>0);
-	
+		if($this->config['karma']) {
+			$this->fields['karma'] = array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL', 'default'=>0);
+			$this->fields['karma_ratio'] = array('type' => 'float', 'width' => '8,2','attr' => 'NOT NULL', 'default'=>'0.00');
+		}
+
 		$this->attaches['userpic'] = array('mime' => array('image/pjpeg'=>'jpg', 'image/jpeg'=>'jpg', 'image/gif'=>'gif', 'image/png'=>'png'), 'thumb'=>array(array('type'=>'resize', 'w'=>'800', 'h'=>'600','pref'=>'orign_'),array('type'=>'resizecrop', 'w'=>85, 'h'=>85)),'maxsize'=>1000,'path'=>'');
 		if(static_main::_prmUserCheck()) {
 			$params = array(
@@ -226,6 +266,10 @@ class users_class extends kernel_extends {
 			$this->fields_form[$this->fn_pass] = array('type' => 'password_new', 'caption' => 'Пароль','mask'=>array('min' => '6','fview'=>1));
 		$this->fields_form['email'] = array('type' => 'text', 'caption' => 'E-mail', 'mask'=>array('name'=>'email','min' => '7'));
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Имя','mask'=>array('name'=>'name2')); // Вывод поля при редактировании
+		if($this->config['karma']) {
+			$this->fields_form['karma'] = array('type' => 'text', 'caption' => 'Карма', 'readonly'=>true,'mask'=>array('usercheck'=>1));
+			$this->fields_form['karma_ratio'] = array('type' => 'text', 'caption' => 'Коэф. значимости','readonly'=>true,'mask'=>array('usercheck'=>1));
+		}
 		$this->fields_form['userpic'] = array('type'=>'file','caption'=>'Юзерпик','del'=>1, 'mask'=>array('fview'=>1,'width'=>85,'height'=>85,'thumb'=>0));
 		$this->fields_form['mf_ipcreate'] =	array('type' => 'text','readonly' => true, 'caption' => 'IP-пользователя','mask'=>array('usercheck'=>1));
 		$this->fields_form['mf_timecr'] =	array('type' => 'date','readonly' => true, 'caption' => 'Дата регистрации','mask'=>array('sort'=>1));
