@@ -2,7 +2,7 @@
 	if(!$_CFG['_PATH']['wep']) die('ERROR');
 	
 	require_once($_CFG['_PATH']['wep'].'/config/config.php');
-	if($_CFG['site']['worktime'] and !isset($_COOKIE['_showallinfo'])) {
+	if($_CFG['site']['worktime'] and !isset($_COOKIE['_showallinfo']) and !isset($_GET['_showallinfo'])) {
 		if(!isset($_CFG["site"]["work_text"]) or !$_CFG["site"]["work_text"])
 			$_CFG["site"]["work_text"] = '<h1>Технический перерыв.</h1>';
 		if(!isset($_CFG["site"]["work_title"]) or !$_CFG["site"]["work_title"])
