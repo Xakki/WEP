@@ -2,8 +2,8 @@
 /*
  * CKFinder
  * ========
- * http://www.ckfinder.com
- * Copyright (C) 2007-2008 Frederico Caldeira Knabben (FredCK.com)
+ * http://ckfinder.com
+ * Copyright (C) 2007-2011, CKSource - Frederico Knabben. All rights reserved.
  *
  * The software, this file and its contents are subject to the CKFinder
  * License. Please read the license.txt file before using, installing, copying,

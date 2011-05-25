@@ -2,27 +2,28 @@
 /*
  * CKFinder
  * ========
- * http://www.ckfinder.com
- * Copyright (C) 2007-2008 Frederico Caldeira Knabben (FredCK.com)
+ * http://ckfinder.com
+ * Copyright (C) 2007-2011, CKSource - Frederico Knabben. All rights reserved.
  *
  * The software, this file and its contents are subject to the CKFinder
  * License. Please read the license.txt file before using, installing, copying,
  * modifying or distribute this file or part of its contents. The contents of
  * this file is part of the Source Code of CKFinder.
  */
+if (!defined('IN_CKFINDER')) exit;
 
 /**
  * @package CKFinder
  * @subpackage Utils
- * @copyright Frederico Caldeira Knabben
+ * @copyright CKSource - Frederico Knabben
  */
 
 /**
  * Simple class which provides some basic API for creating XML nodes and adding attributes
- * 
+ *
  * @package CKFinder
  * @subpackage Utils
- * @copyright Frederico Caldeira Knabben
+ * @copyright CKSource - Frederico Knabben
  */
 class Ckfinder_Connector_Utils_XmlNode
 {
@@ -70,8 +71,18 @@ class Ckfinder_Connector_Utils_XmlNode
         }
     }
 
+    function &getChild($name)
+    {
+        foreach ($this->_childNodes as $i => $node) {
+            if ($node->_name == $name) {
+                return $this->_childNodes[$i];
+            }
+        }
+        return null;
+    }
+
     /**
-     * Add attribute 
+     * Add attribute
      *
      * @param string $name
      * @param string $value
@@ -80,6 +91,41 @@ class Ckfinder_Connector_Utils_XmlNode
     function addAttribute($name, $value)
     {
         $this->_attributes[$name] = $value;
+    }
+
+    /**
+     * Get attribute value
+     *
+     * @param string $name
+     * @access public
+     */
+    function getAttribute($name)
+    {
+        return $this->_attributes[$name];
+    }
+
+    /**
+     * Set element value
+     *
+     * @param string $name
+     * @param string $value
+     * @access public
+     */
+    function setValue($value)
+    {
+        $this->_value = $value;
+    }
+
+    /**
+     * Get element value
+     *
+     * @param string $name
+     * @param string $value
+     * @access public
+     */
+    function getValue()
+    {
+        return $this->_value;
     }
 
     /**

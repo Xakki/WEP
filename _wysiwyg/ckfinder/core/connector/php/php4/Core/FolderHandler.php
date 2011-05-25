@@ -2,19 +2,20 @@
 /*
  * CKFinder
  * ========
- * http://www.ckfinder.com
- * Copyright (C) 2007-2008 Frederico Caldeira Knabben (FredCK.com)
+ * http://ckfinder.com
+ * Copyright (C) 2007-2011, CKSource - Frederico Knabben. All rights reserved.
  *
  * The software, this file and its contents are subject to the CKFinder
  * License. Please read the license.txt file before using, installing, copying,
  * modifying or distribute this file or part of its contents. The contents of
  * this file is part of the Source Code of CKFinder.
  */
+if (!defined('IN_CKFINDER')) exit;
 
 /**
  * @package CKFinder
  * @subpackage Core
- * @copyright Frederico Caldeira Knabben
+ * @copyright CKSource - Frederico Knabben
  */
 
 /**
@@ -25,7 +26,7 @@ require_once CKFINDER_CONNECTOR_LIB_DIR . "/Utils/FileSystem.php";
 /**
  * @package CKFinder
  * @subpackage Core
- * @copyright Frederico Caldeira Knabben
+ * @copyright CKSource - Frederico Knabben
  */
 class CKFinder_Connector_Core_FolderHandler
 {
@@ -55,7 +56,7 @@ class CKFinder_Connector_Core_FolderHandler
      *
      * @var string
      * @access private
-     */    
+     */
     var $_url;
     /**
      * Server path
@@ -76,7 +77,7 @@ class CKFinder_Connector_Core_FolderHandler
      *
      * @var int
      * @access private
-     */    
+     */
     var $_aclMask;
     /**
      * Folder info
@@ -226,9 +227,9 @@ class CKFinder_Connector_Core_FolderHandler
                 if(!CKFinder_Connector_Utils_FileSystem::createDirectoryRecursively($this->_thumbsServerPath)) {
                     /**
                      * @todo  Ckfinder_Connector_Utils_Xml::raiseError(); perhaps we should return error
-                     * 
-                     */                    
-                } 
+                     *
+                     */
+                }
             }
         }
 

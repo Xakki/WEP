@@ -2,27 +2,28 @@
 /*
 * CKFinder
 * ========
-* http://www.ckfinder.com
-* Copyright (C) 2007-2008 Frederico Caldeira Knabben (FredCK.com)
+* http://ckfinder.com
+* Copyright (C) 2007-2011, CKSource - Frederico Knabben. All rights reserved.
 *
 * The software, this file and its contents are subject to the CKFinder
 * License. Please read the license.txt file before using, installing, copying,
 * modifying or distribute this file or part of its contents. The contents of
 * this file is part of the Source Code of CKFinder.
 */
+if (!defined('IN_CKFINDER')) exit;
 
 /**
  * @package CKFinder
  * @subpackage CommandHandlers
- * @copyright Frederico Caldeira Knabben
+ * @copyright CKSource - Frederico Knabben
  */
 
 /**
  * Handle Thumbnail command (create thumbnail if doesn't exist)
- * 
+ *
  * @package CKFinder
  * @subpackage CommandHandlers
- * @copyright Frederico Caldeira Knabben
+ * @copyright CKSource - Frederico Knabben
  */
 class CKFinder_Connector_CommandHandler_Thumbnail extends CKFinder_Connector_CommandHandler_CommandHandlerBase
 {
@@ -41,8 +42,9 @@ class CKFinder_Connector_CommandHandler_Thumbnail extends CKFinder_Connector_Com
      */
     function sendResponse()
     {
-        if (!function_exists('ob_list_handlers') || !ob_list_handlers()) {
-            @ob_end_clean();
+        // Get rid of BOM markers
+        if (ob_get_level()) {
+            while (@ob_end_clean() && ob_get_level());
         }
         header("Content-Encoding: none");
 
@@ -132,7 +134,7 @@ class CKFinder_Connector_CommandHandler_Thumbnail extends CKFinder_Connector_Com
      * @param boolean $bmpSupported
      * @return boolean
      * @static
-     * @access public 
+     * @access public
      */
     function createThumb($sourceFile, $targetFile, $maxWidth, $maxHeight, $quality, $preserverAspectRatio, $bmpSupported = false)
     {
@@ -166,7 +168,7 @@ class CKFinder_Connector_CommandHandler_Thumbnail extends CKFinder_Connector_Com
             $oSize = CKFinder_Connector_CommandHandler_Thumbnail::GetAspectRatioSize($iFinalWidth, $iFinalHeight, $sourceImageWidth, $sourceImageHeight );
         }
         else {
-            $oSize = array($iFinalWidth, $iFinalHeight);
+            $oSize = array('Width' => $iFinalWidth, 'Height' => $iFinalHeight);
         }
 
         CKFinder_Connector_Utils_Misc::setMemoryForImage($sourceImageWidth, $sourceImageHeight, $sourceImageBits, $sourceImageChannels);
@@ -235,8 +237,16 @@ class CKFinder_Connector_CommandHandler_Thumbnail extends CKFinder_Connector_Com
 
 
         $oThumbImage = imagecreatetruecolor($oSize["Width"], $oSize["Height"]);
+
+        if (function_exists('imagesavealpha') && function_exists('imagecolorallocatealpha') && $sourceImageAttr['mime'] == 'image/png') {
+            $bg = imagecolorallocatealpha($oThumbImage, 255, 255, 255, 127); // (PHP 4 >= 4.3.2, PHP 5)
+            imagefill($oThumbImage, 0, 0 , $bg);
+            imagealphablending($oThumbImage, false);
+            imagesavealpha($oThumbImage, true);  // (PHP 4 >= 4.3.2, PHP 5)
+        }
+
         //imagecopyresampled($oThumbImage, $oImage, 0, 0, 0, 0, $oSize["Width"], $oSize["Height"], $sourceImageWidth, $sourceImageHeight);
-        CKFinder_Connector_Utils_Misc::fastImageCopyResampled($oThumbImage, $oImage, 0, 0, 0, 0, $oSize["Width"], $oSize["Height"], $sourceImageWidth, $sourceImageHeight, (int)max(floor($quality/20), 1));
+        CKFinder_Connector_Utils_Misc::fastImageCopyResampled($oThumbImage, $oImage, 0, 0, 0, 0, $oSize["Width"], $oSize["Height"], $sourceImageWidth, $sourceImageHeight, (int)max(floor($quality/20), 6));
 
         switch ($sourceImageAttr['mime'])
         {
@@ -286,7 +296,7 @@ class CKFinder_Connector_CommandHandler_Thumbnail extends CKFinder_Connector_Com
      * @param int $actualHeight
      * @return array
      * @static
-     * @access public 
+     * @access public
      */
     function getAspectRatioSize($maxWidth, $maxHeight, $actualWidth, $actualHeight)
     {

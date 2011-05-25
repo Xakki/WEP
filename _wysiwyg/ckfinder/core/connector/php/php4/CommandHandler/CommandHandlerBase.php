@@ -2,28 +2,29 @@
 /*
  * CKFinder
  * ========
- * http://www.ckfinder.com
- * Copyright (C) 2007-2008 Frederico Caldeira Knabben (FredCK.com)
+ * http://ckfinder.com
+ * Copyright (C) 2007-2011, CKSource - Frederico Knabben. All rights reserved.
  *
  * The software, this file and its contents are subject to the CKFinder
  * License. Please read the license.txt file before using, installing, copying,
  * modifying or distribute this file or part of its contents. The contents of
  * this file is part of the Source Code of CKFinder.
  */
+if (!defined('IN_CKFINDER')) exit;
 
 /**
  * @package CKFinder
  * @subpackage CommandHandlers
- * @copyright Frederico Caldeira Knabben
- */ 
+ * @copyright CKSource - Frederico Knabben
+ */
 
 /**
  * Base commands handler
- * 
+ *
  * @package CKFinder
  * @subpackage CommandHandlers
- * @copyright Frederico Caldeira Knabben
- * @abstract 
+ * @copyright CKSource - Frederico Knabben
+ * @abstract
  *
  */
 class CKFinder_Connector_CommandHandler_CommandHandlerBase
@@ -54,7 +55,7 @@ class CKFinder_Connector_CommandHandler_CommandHandlerBase
     {
         $this->_currentFolder =& CKFinder_Connector_Core_Factory::getInstance("Core_FolderHandler");
         $this->_connector =& CKFinder_Connector_Core_Factory::getInstance("Core_Connector");
-        $this->_errorHandler =& $this->_connector->getErrorHandler(); 
+        $this->_errorHandler =& $this->_connector->getErrorHandler();
     }
 
     /**
@@ -92,17 +93,17 @@ class CKFinder_Connector_CommandHandler_CommandHandlerBase
      */
     function checkRequest()
     {
-        if (preg_match(",(/\.)|[[:cntrl:]]|(//)|(\\\\)|([\:\*\?\"\<\>\|]),", $this->_currentFolder->getClientPath())) {
+        if (preg_match(CKFINDER_REGEX_INVALID_PATH, $this->_currentFolder->getClientPath())) {
             $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_INVALID_NAME);
         }
 
         $_resourceTypeConfig = $this->_currentFolder->getResourceTypeConfig();
-        
+
         if (is_null($_resourceTypeConfig)) {
             $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_INVALID_TYPE);
         }
 
-        
+
         $_clientPath = $this->_currentFolder->getClientPath();
         $_clientPathParts = explode("/", trim($_clientPath, "/"));
         if ($_clientPathParts) {
@@ -112,7 +113,7 @@ class CKFinder_Connector_CommandHandler_CommandHandlerBase
                 }
             }
         }
-                
+
         if (!is_dir($this->_currentFolder->getServerPath())) {
             if ($_clientPath == "/") {
                 if (!CKFinder_Connector_Utils_FileSystem::createDirectoryRecursively($this->_currentFolder->getServerPath())) {

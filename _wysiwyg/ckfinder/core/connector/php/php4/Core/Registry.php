@@ -2,27 +2,28 @@
 /*
  * CKFinder
  * ========
- * http://www.ckfinder.com
- * Copyright (C) 2007-2008 Frederico Caldeira Knabben (FredCK.com)
+ * http://ckfinder.com
+ * Copyright (C) 2007-2011, CKSource - Frederico Knabben. All rights reserved.
  *
  * The software, this file and its contents are subject to the CKFinder
  * License. Please read the license.txt file before using, installing, copying,
  * modifying or distribute this file or part of its contents. The contents of
  * this file is part of the Source Code of CKFinder.
  */
+if (!defined('IN_CKFINDER')) exit;
 
 /**
  * @package CKFinder
  * @subpackage Core
- * @copyright Frederico Caldeira Knabben
+ * @copyright CKSource - Frederico Knabben
  */
 
 /**
  * Registry for storing global variables values (not references)
- * 
+ *
  * @package CKFinder
  * @subpackage Core
- * @copyright Frederico Caldeira Knabben
+ * @copyright CKSource - Frederico Knabben
  */
 class CKFinder_Connector_Core_Registry
 {
@@ -33,7 +34,7 @@ class CKFinder_Connector_Core_Registry
      * @access private
      */
     var $_store = array();
-    
+
     /**
      * Chacke if value has been set
      *
@@ -41,11 +42,11 @@ class CKFinder_Connector_Core_Registry
      * @return boolean
      * @access private
      */
-    function isValid($key) 
+    function isValid($key)
     {
         return array_key_exists($key, $this->_store);
     }
-    
+
     /**
      * Set value
      *
@@ -53,11 +54,11 @@ class CKFinder_Connector_Core_Registry
      * @param mixed $obj
      * @access public
      */
-    function set($key, $obj) 
+    function set($key, $obj)
     {
         $this->_store[$key] = $obj;
     }
-    
+
     /**
      * Get value
      *

@@ -2,25 +2,26 @@
 /*
  * CKFinder
  * ========
- * http://www.ckfinder.com
- * Copyright (C) 2007-2008 Frederico Caldeira Knabben (FredCK.com)
+ * http://ckfinder.com
+ * Copyright (C) 2007-2011, CKSource - Frederico Knabben. All rights reserved.
  *
  * The software, this file and its contents are subject to the CKFinder
  * License. Please read the license.txt file before using, installing, copying,
  * modifying or distribute this file or part of its contents. The contents of
  * this file is part of the Source Code of CKFinder.
  */
+if (!defined('IN_CKFINDER')) exit;
 
 /**
  * @package CKFinder
  * @subpackage Utils
- * @copyright Frederico Caldeira Knabben
+ * @copyright CKSource - Frederico Knabben
  */
 
 /**
  * @package CKFinder
  * @subpackage Utils
- * @copyright Frederico Caldeira Knabben
+ * @copyright CKSource - Frederico Knabben
  */
 class CKFinder_Connector_Utils_Security
 {

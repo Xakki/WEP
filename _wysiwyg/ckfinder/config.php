@@ -1,10 +1,4 @@
 <?php
-	global $_CFG,$SQL;
-	$_CFG['_PATH']['path'] = dirname(dirname(dirname(dirname(dirname(dirname($_SERVER['SCRIPT_FILENAME']))))));
-	require_once($_CFG['_PATH']['path'].'/_wepconf/config/config.php');
-	require_once($_CFG['_PATH']['core'].'/sql.php');
-	$SQL = new sql();
-	session_go();
 /*
  * ### CKFinder : Configuration File - Basic Instructions
  *
@@ -19,23 +13,22 @@
  */
 
 /**
- * This function must check the user session to be sure that he/she is 
- * authorized to upload and access files in the File Browser. 
+ * This function must check the user session to be sure that he/she is
+ * authorized to upload and access files in the File Browser.
  *
  * @return boolean
  */
 function CheckAuthentication()
 {
-	//WARNING : DO NOT simply return "true". By doing so, you are allowing
-	//"anyone" to upload and list the files in your server. You must implement
-	//some kind of session validation here. Even something very simple as...
+	// WARNING : DO NOT simply return "true". By doing so, you are allowing
+	// "anyone" to upload and list the files in your server. You must implement
+	// some kind of session validation here. Even something very simple as...
 
 	// return isset($_SESSION['IsAuthorized']) && $_SESSION['IsAuthorized'];
 
-	//... where $_SESSION['IsAuthorized'] is set to "true" as soon as the
-	//user logs in your system.
-	if(isset($_SESSION['user']) and $_SESSION['user']['filesize']>0) 
-		return true;
+	// ... where $_SESSION['IsAuthorized'] is set to "true" as soon as the
+	// user logs in your system. To be able to use session variables don't
+	// forget to add session_start() at the top of this file.
 
 	return false;
 }
@@ -44,6 +37,13 @@ function CheckAuthentication()
 // fully functional, in demo mode.
 $config['LicenseName'] = '';
 $config['LicenseKey'] = '';
+
+/*
+ Uncomment lines below to enable PHP error reporting and displaying PHP errors.
+ Do not do this on a production server. Might be helpful when debugging why CKFinder does not work as expected.
+*/
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
 
 /*
 To make it easy to configure CKFinder, the $baseUrl and $baseDir can be used.
@@ -60,7 +60,7 @@ Examples:
 
 ATTENTION: The trailing slash is required.
 */
-$baseUrl = $_SESSION['FckEditorUserFilesUrl'];
+$baseUrl = '/ckfinder/userfiles/';
 
 /*
 $baseDir : the path to the local directory (in the server) which points to the
@@ -72,13 +72,15 @@ Examples:
 	$baseDir = '/home/login/public_html/ckfinder/files/';
 	$baseDir = 'C:/SiteDir/CKFinder/userfiles/';
 
-	// Or you may let CKFinder discover the path, based on $baseUrl:
+	// Or you may let CKFinder discover the path, based on $baseUrl.
+	// WARNING: resolveUrl() *will not work* if $baseUrl does not start with a slash ("/"),
+	// for example if $baseDir is set to  http://example.com/ckfinder/files/
 	$baseDir = resolveUrl($baseUrl);
 
 ATTENTION: The trailing slash is required.
 */
-//$baseDir = resolveUrl($baseUrl);
-$baseDir = $_SESSION['FckEditorUserFilesPath'];
+$baseDir = resolveUrl($baseUrl);
+
 /*
  * ### Advanced Settings
  */
@@ -104,8 +106,8 @@ gets scaled down proportionally. Set to 0 to disable this feature.
 $config['Images'] = Array(
 		'maxWidth' => 1600,
 		'maxHeight' => 1200,
-		'quality' => 80);		
-		
+		'quality' => 80);
+
 /*
 RoleSessionVar : the session variable name that CKFinder must use to retrieve
 the "role" of the current user. The "role", can be used in the "AccessControl"
@@ -115,7 +117,7 @@ To be able to use this feature, you must initialize the session data by
 uncommenting the following "session_start()" call.
 */
 $config['RoleSessionVar'] = 'CKFinder_UserRole';
-
+//session_start();
 
 /*
 AccessControl : used to restrict access or features to specific folders.
@@ -128,34 +130,6 @@ Subfolders inherit their default settings from their parents' definitions.
 	- The "resourceType" attribute accepts the special value '*', which
 	  means "all resource types".
 */
-//----------
-
-		function dir_size($dir) {
-			$totalsize=0;
-			if ($dirstream = @opendir($dir)) {
-				while (false !== ($filename = readdir($dirstream))) {
-					if ($filename!="." && $filename!="..")
-					{
-						if (is_file($dir."/".$filename))
-							$totalsize+=filesize($dir."/".$filename);
-						if (is_dir($dir."/".$filename))
-							$totalsize+=dir_size($dir."/".$filename);
-					}
-				}
-				closedir($dirstream);
-			}
-			
-			return $totalsize;
-		}
-		$MSize=$_SESSION['user']['filesize'];
-		if(@opendir($baseDir)) {
-			$dirsize = round(dir_size($baseDir)/(1024 * 1024));//в мегабайтах
-			$MSize = $_SESSION['user']['filesize']-$dirsize;
-		}
-		else
-			mkdir($baseDir, 0774);
-		$MSize .= 'M';
-//---------------
 
 $config['AccessControl'][] = Array(
 		'role' => '*',
@@ -182,6 +156,12 @@ $config['AccessControl'][] = Array(
 		'resourceType' => 'Images',
 		'folder' => '/Logos',
 
+		'folderView' => true,
+		'folderCreate' => true,
+		'folderRename' => true,
+		'folderDelete' => true,
+
+		'fileView' => true,
 		'fileUpload' => false,
 		'fileRename' => false,
 		'fileDelete' => false);
@@ -210,23 +190,23 @@ $config['ResourceType'][] = Array(
 		'name' => 'Files',				// Single quotes not allowed
 		'url' => $baseUrl . 'files',
 		'directory' => $baseDir . 'files',
-		'maxSize' => $MSize,
-		'allowedExtensions' => '7z,aiff,asf,avi,bmp,csv,doc,fla,flv,gif,gz,gzip,jpeg,jpg,mid,mov,mp3,mp4,mpc,mpeg,mpg,ods,odt,pdf,png,ppt,pxd,qt,ram,rar,rm,rmi,rmvb,rtf,sdc,sitd,swf,sxc,sxw,tar,tgz,tif,tiff,txt,vsd,wav,wma,wmv,xls,zip',
+		'maxSize' => 0,
+		'allowedExtensions' => '7z,aiff,asf,avi,bmp,csv,doc,docx,fla,flv,gif,gz,gzip,jpeg,jpg,mid,mov,mp3,mp4,mpc,mpeg,mpg,ods,odt,pdf,png,ppt,pptx,pxd,qt,ram,rar,rm,rmi,rmvb,rtf,sdc,sitd,swf,sxc,sxw,tar,tgz,tif,tiff,txt,vsd,wav,wma,wmv,xls,xlsx,zip',
 		'deniedExtensions' => '');
 
 $config['ResourceType'][] = Array(
 		'name' => 'Images',
 		'url' => $baseUrl . 'images',
 		'directory' => $baseDir . 'images',
-		'maxSize' => $MSize,
-		'allowedExtensions' => 'bmp,gif,jpeg,jpg,png',
+		'maxSize' => "16M",
+		'allowedExtensions' => 'bmp,gif,jpeg,jpg,png,avi,iso,mp3',
 		'deniedExtensions' => '');
 
 $config['ResourceType'][] = Array(
 		'name' => 'Flash',
 		'url' => $baseUrl . 'flash',
 		'directory' => $baseDir . 'flash',
-		'maxSize' => $MSize,
+		'maxSize' => 0,
 		'allowedExtensions' => 'swf,flv',
 		'deniedExtensions' => '');
 
@@ -271,12 +251,12 @@ if set to true, validate image size
 $config['SecureImageUploads'] = true;
 
 /*
-Indicates that the file size (maxSize) for images must be checked only 
-after scaling them. Otherwise, it is checked right after uploading. 
+Indicates that the file size (maxSize) for images must be checked only
+after scaling them. Otherwise, it is checked right after uploading.
 */
 $config['CheckSizeAfterScaling'] = true;
 
-/* 
+/*
 For security, HTML is allowed in the first Kb of data for files having the
 following extensions only.
 */
@@ -287,7 +267,7 @@ Folders to not display in CKFinder, no matter their location.
 No paths are accepted, only the folder name.
 The * and ? wildcards are accepted.
 */
-$config['HideFolders'] = Array(".svn", "CVS", ".bzr");
+$config['HideFolders'] = Array(".svn", "CVS");
 
 /*
 Files to not display in CKFinder, no matter their location.
@@ -295,7 +275,7 @@ No paths are accepted, only the file name, including extension.
 The * and ? wildcards are accepted.
 */
 $config['HideFiles'] = Array(".*");
- 
+
 /*
 After file is uploaded, sometimes it is required to change its permissions
 so that it was possible to access it at the later time.
@@ -310,3 +290,18 @@ See comments above.
 Used when creating folders that does not exist.
 */
 $config['ChmodFolders'] = 0755 ;
+
+/*
+Force ASCII names for files and folders.
+If enabled, characters with diactric marks, like å, ä, ö, ć, č, đ, š
+will be automatically converted to ASCII letters.
+*/
+$config['ForceAscii'] = false;
+
+
+include_once "plugins/imageresize/plugin.php";
+include_once "plugins/fileeditor/plugin.php";
+
+$config['plugin_imageresize']['smallThumb'] = '90x90';
+$config['plugin_imageresize']['mediumThumb'] = '120x120';
+$config['plugin_imageresize']['largeThumb'] = '180x180';
