@@ -60,7 +60,7 @@ class rubric_class extends kernel_extends {
 				$this->data[$row['parent_id']][$row['id']] = $row['name'];
 				$this->data3[$row['parent_id']][$row['id']] = array('name'=>$row['name'],'imgpos'=>$row['imgpos'],'cnt'=>(int)$row['cnt'],'path'=>$row['lname']);
 				if($row['parent_id'])
-					$this->data3[$this->data2[$row['parent_id']]['parent_id'] ] [$row['parent_id']]['cnt'] += (int)$row['cnt'];
+					$this->data3[$this->data2[$row['parent_id']]['parent_id'] ] [$row['parent_id']] ['cnt'] += (int)$row['cnt'];
 		}
 		return 0;	
 	}
@@ -80,6 +80,7 @@ class rubric_class extends kernel_extends {
 	}
 
 	function MainRubricDisplay() {
+		global $CITY;
 		if(!$this->data3) $this->RubricCache();
 		$xml='';
 		$xml = $this->kData2xml($this->_forlist($this->data3,0),'item');

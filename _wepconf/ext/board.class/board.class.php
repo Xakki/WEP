@@ -18,6 +18,9 @@ class board_class extends kernel_extends {
 		$this->config['nomination4'] = '';
 		$this->config['nomination5'] = '';
 		$this->config['mail'] = '';
+		$this->config['mailend'] = '';
+		$this->config['imageCnt'] = 6;
+		$this->config['imageCntForAnonim'] = 2;
 
 		$this->config_form['onDate'] = array('type' => 'checkbox', 'caption' => 'Показывать согласно периоду?');
 		$this->config_form['onComm'] = array('type' => 'list', 'listname'=>'onComm', 'caption' => 'Включить комментарии?');
@@ -37,6 +40,9 @@ class board_class extends kernel_extends {
 				'height'=>350,
 				'fullPage'=>'true',
 				'toolbarStartupExpanded'=>'false'));
+		$this->config_form['mailend'] = array('type' => 'textarea', 'caption' => 'Концовка для письма');
+		$this->config_form['imageCnt'] = array('type' => 'int', 'caption' => 'Число фотографий');
+		$this->config_form['imageCntForAnonim'] = array('type' => 'int', 'caption' => 'Число фотографий для анонимов');
 	}
 
 	protected function _set_features() {
@@ -81,17 +87,21 @@ class board_class extends kernel_extends {
 		$this->index_fields['name'] = 'name';
 
 		$this->_listnameSQL ='SUBSTRING(text,1,30)';
-		if(static_main::_prmUserCheck(2))
+
+		if(static_main::_prmUserCheck()) {
 			$thumb = array('type'=>'resize', 'w'=>'1024', 'h'=>'768');
-		else
+			$maxsize = 3000;
+		}
+		else {
 			$thumb = array('type'=>'resize', 'w'=>'800', 'h'=>'600');
+			$maxsize = 1000;
+		}
 			
-		$this->attaches['img_board'] = array('mime' => array('image/pjpeg'=>'jpg', 'image/jpeg'=>'jpg', 'image/gif'=>'gif', 'image/png'=>'png'), 'thumb'=>array($thumb,array('type'=>'resizecrop', 'w'=>'80', 'h'=>'100', 'pref'=>'s_', 'path'=>'')),'maxsize'=>3000,'path'=>'');
-		$this->attaches['img_board2']=$this->attaches['img_board'];
-		$this->attaches['img_board3']=$this->attaches['img_board'];
-		$this->attaches['img_board4']=$this->attaches['img_board'];
-		$this->attaches['img_board5']=$this->attaches['img_board'];
-		$this->attaches['img_board6']=$this->attaches['img_board'];
+		$this->attaches['img_board'] = array('mime' => array('image/pjpeg'=>'jpg', 'image/jpeg'=>'jpg', 'image/gif'=>'gif', 'image/png'=>'png'), 'thumb'=>array($thumb,array('type'=>'resizecrop', 'w'=>'80', 'h'=>'100', 'pref'=>'s_', 'path'=>'')),'maxsize'=>$maxsize,'path'=>'');
+		if($this->config['imageCnt']>0) {
+			for($i = 2; $i <= $this->config['imageCnt']; $i++) 
+				$this->attaches['img_board'.$i]=$this->attaches['img_board'];
+		}
 
 		$this->fields['city'] = array('type' => 'int', 'width' => 8,'attr' => 'NOT NULL');
 		$this->fields['rubric'] = array('type' => 'int', 'width' => 8,'attr' => 'NOT NULL');
@@ -109,17 +119,20 @@ class board_class extends kernel_extends {
 		$this->fields['mapx'] = array('type' => 'float','width' => '','attr' => 'NOT NULL','default'=>'0');
 		$this->fields['mapy'] = array('type' => 'float','width' => '','attr' => 'NOT NULL','default'=>'0');
 		$this->fields['path'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL','default'=>'');
+		$this->fields['hash'] = array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL','default'=>'');
+		$this->fields['debug_info'] = array('type' => 'text');
 
 		if(!isset($_SESSION['user']['id']))
 			$this->mess_form["info"]= array(
-				"type" => "alert", 
+				"name" => "alert", 
 				"value" => '<a href="/regme.html">Зарегестрируйтесь</a> или <a href="http://unidoski.ru/login.html" onclick="return showLoginForm(\'loginblock\')" class="ajaxlink">авторизируйтесь через OpenID провайдера</a>, и вы получите <a href="/inform.html" title="продлевать на больший срок свои объявления, добовлять до 4х фотографий, подписка на рассылки объявления и тд.">больше возможностей</a> для рамещения объявления.');
 		$this->fields_form['name'] = array('type' => 'hidden', 'caption' => 'Назв', 'readonly'=>true);
 		$this->fields_form['city'] = array(
 			'type' => 'ajaxlist',
 			'label'=>'Введите название города или региона',
 			'listname'=>array('tablename'=>'city','where'=>'tx.active=1','nameField'=>'IF(tx.region_name_ru!=\'\',concat(tx.name,", ",tx.region_name_ru),tx.name)','ordfield'=>'tx.center DESC, tx.parent_id, tx.region_name_ru, tx.name','limit'=>30), 
-			'caption' => 'Город', 
+			'caption' => 'Город',
+			'onchange'=>'boardexport(this.value)',
 			'mask' =>array('min'=>1,'onetd'=>'Рубрика','filter'=>1));
 
 		$this->fields_form[$this->mf_createrid] = array(
@@ -161,34 +174,40 @@ class board_class extends kernel_extends {
 				'plugins'=>"'button,contextmenu,enterkey,entities,justify,keystrokes,list,pastetext,popup,removeformat,toolbar,undo'"));
 		$this->fields_form['cost'] = array('type' => 'int', 'caption' => 'Цена (руб.)', 'mask'=>array('max'=>8,'onetd'=>'none','filter'=>1,'maxint'=>20000000));
 		$this->fields_form['phone'] = array('type' => 'text', 'caption' => 'Контактные телефоны', 'mask'=>array('min2'=>'Необходимо заполнить либо `телефон`, либо `E-mail`', 'name'=>'phone2','onetd'=>'none'));
-		$this->fields_form['email'] = array('type' => 'text', 'caption' => 'E-mail', 'mask'=>array('min2'=>'Необходимо заполнить либо `телефон`, либо `E-mail`','name'=>'email','onetd'=>'close','filter'=>1));
-		$this->fields_form["img_board"] = array("type"=>"file","caption"=>"Фотография №1",'del'=>1, 'mask'=>array('fview'=>1,'width'=>80,'height'=>100));
+		$this->fields_form['email'] = array('type' => 'text', 'caption' => 'E-mail', 'mask'=>array('min2'=>'Необходимо заполнить либо `телефон`, либо `E-mail`','name'=>'email','onetd'=>'close','filter'=>1), 'comment' => 'На ваше мыло будет выслана информация об управлении вашим объявлением');
+		
+		$this->fields_form['img_board'] = array('type'=>'file','caption'=>'Фотография №1','del'=>1, 'mask'=>array('fview'=>1,'width'=>80,'height'=>100), 'comment'=>$this->_CFG['_MESS']['_file_size'].$this->attaches['img_board']['maxsize'].'Kb');
+		if($this->config['imageCnt']>0) {
+			if(!static_main::_prmUserCheck()) {
+				$fcnt = $this->config['imageCntForAnonim'];
+				$this->fields_form['img_board']['comment'] = 'Размер фото не больше 1,5 МБ. Зарегестрированные могут публиковать до 6ти фотографий.';
+			}
+			else
+				$fcnt = $this->config['imageCnt'];
+			for($i = 2; $i <= $fcnt; $i++) {
+				$this->fields_form['img_board'.$i]=$this->fields_form['img_board'];
+				$this->fields_form['img_board'.$i]['caption'] = 'Фотография №'.$i;
+			}
+		}
+
 		if(static_main::_prmUserCheck()) {
 			$this->fields_form['text']['mask']['max'] = 4500;
-			$this->fields_form["img_board6"] = $this->fields_form["img_board5"] = $this->fields_form["img_board4"] = $this->fields_form["img_board3"] = $this->fields_form["img_board2"] = $this->fields_form["img_board"];
-			$this->fields_form["img_board2"]["caption"] = "Фотография №2";
-			$this->fields_form["img_board3"]["caption"] = "Фотография №3";
-			$this->fields_form["img_board4"]["caption"] = "Фотография №4";
-			$this->fields_form["img_board5"]["caption"] = "Фотография №5";
-			$this->fields_form["img_board6"]["caption"] = "Фотография №6";
 		}
 		else {
 			$this->fields_form['text']['comment'] = 'Текст не более 1600 символов. Зарегестрированные могут публиковать объявления с текстом до 4500 символов.';
-			$this->fields_form["img_board"]['comment'] = 'Размер фото не больше 1,5 МБ. Зарегестрированные могут публиковать до 6ти фотографий.';
 		}
 
-		$this->fields_form["img_board"]['mask']['filter'] = 1;
-		$this->fields_form["img_board"]['mask']['fview'] = 0;
+		$this->fields_form['img_board']['mask']['filter'] = 1;
+		$this->fields_form['img_board']['mask']['fview'] = 0;
 
-		$this->fields_form['showparam'] = array('type' => 'info', 'caption' => '<div class="showparam" onclick="show_params(\'.hideparams\')">Показать дополнительные параметры</div>','style'=>'display:none;');
-		$this->fields_form['hideparam'] = array('type' => 'info', 'caption' => '<div class="hideparam" onclick="show_params(\'.hideparams\')">Скрыть дополнительные параметры</div>','style'=>'display:none;');
+		$this->fields_form['boardparam'] = array('type' => 'info', 'caption' => '<div class="showparam" onclick="show_params(\'div.boardparam\',this)"> <span>Показать</span><span style="display:none;">Скрыть</span> дополнительные параметры</div>');
 
-		$this->fields_form['contact'] = array('type' => 'text', 'caption' => 'Дополнительные контакты', 'comment'=>'ICQ, WWW', 'css'=>'hideparams', 'mask'=>array('fview'=>1));
-		$this->fields_form['period'] = array('type' => 'list', 'listname'=>'period','caption' => 'Срок размещения', 'css'=>'hideparams', 'mask'=>array('fview'=>1),'xslprop'=>'block1');
-		$this->fields_form['datea'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата размещения', 'css'=>'hideparams', 'mask'=>array('sort'=>1));
-		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата создания', 'mask'=>array('fview'=>2));
+		$this->fields_form['contact'] = array('type' => 'text', 'caption' => 'Дополнительные контакты', 'comment'=>'ICQ, WWW', 'css'=>'boardparam formparam sdsd', 'mask'=>array('fview'=>1));
+		$this->fields_form['period'] = array('type' => 'list', 'listname'=>'period','caption' => 'Срок размещения', 'css'=>'boardparam formparam sdsd', 'mask'=>array('fview'=>1),'xslprop'=>'block1');
+		$this->fields_form['datea'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата размещения', 'css'=>'boardparam formparam sdsd', 'mask'=>array('sort'=>1));
+		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата создания', 'mask'=>array('fview'=>2,'sort'=>1));
 		if($this->config['onComm']=='1')
-			$this->fields_form['on_comm'] = array('type' => 'checkbox', 'caption' => 'Включить отзывы?', 'css'=>'hideparams', 'mask'=>array('fview'=>1,'usercheck'=>2));
+			$this->fields_form['on_comm'] = array('type' => 'checkbox', 'caption' => 'Включить отзывы?', 'css'=>'boardparam formparam sdsd', 'mask'=>array('fview'=>1,'usercheck'=>2));
 		$this->fields_form['mf_ipcreate'] = array('type' => 'text', 'caption' => 'IP','readonly'=>1, 'mask'=>array('usercheck'=>1,'filter'=>1,'sort'=>1));
 		$this->fields_form['statview'] = array('type' => 'int', 'caption' => 'Просмотры','readonly'=>1, 'mask' =>array('filter'=>1,'sort'=>1));
 		$this->fields_form['path'] = array('type' => 'hidden', 'caption' => 'Путь','readonly'=>1);
@@ -202,6 +221,12 @@ class board_class extends kernel_extends {
 			}
 			$i++;
 		}
+
+		$this->fields_form['debug_info'] = array(
+			'type' => 'textarea',
+			'caption' => 'Инфа для отладки',
+			'readonly'=>1,
+			'mask' =>array('usercheck'=>1,'evala'=>'\'HTTP_USER_AGENT = \'.$_SERVER[\'HTTP_USER_AGENT\']'));
 
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Отображать','default'=>1, 'mask' =>array('filter'=>1,'usercheck'=>2));
 
@@ -248,10 +273,7 @@ class board_class extends kernel_extends {
 			$this->create_child('boardvote');
 		}
 		if($this->config['onComm']) {
-			include_once($this->_CFG['_PATH']['extcore'].'comments.extend/comments.extend.php');
-			$this->create_child('comments');
-			$this->childs['comments']->tablename = $this->_CFG['sql']['dbpref'].'board_comments';
-			$this->childs['comments']->caption = 'Отзывы';
+			$this->create_child('boardcomments');
 		}
 	}
 
@@ -274,36 +296,39 @@ class board_class extends kernel_extends {
 		if(static_main::_prmUserCheck()) {
 			$this->fields_form['phone']['value']=$_SESSION['user']['phone'];
 			$this->fields_form['email']['value']=$_SESSION['user']['email'];
-			if(!$this->data[$this->id]['img_board2']) {
-				$this->fields_form["img_board2"]['style'] = 'display:none;';
-				$this->fields_form["img_board"]['comment'] .= ' <div class="shownextfoto" onclick="shownextfoto(this,\'img_board2\')">Ещё фото</div>';
+		}
+	
+		if($this->config['imageCnt']>0) {
+			if(!static_main::_prmUserCheck()) {
+				$fcnt = $this->config['imageCntForAnonim'];
 			}
-			if(!$this->data[$this->id]['img_board3']) {
-				$this->fields_form["img_board3"]['style'] = 'display:none;';
-				$this->fields_form["img_board2"]['comment'] .= ' <div class="shownextfoto" onclick="shownextfoto(this,\'img_board3\')">Ещё фото</div>';
-			}
-			if(!$this->data[$this->id]['img_board4']) {
-				$this->fields_form["img_board4"]['style'] = 'display:none;';
-				$this->fields_form["img_board3"]['comment'] .= ' <div class="shownextfoto" onclick="shownextfoto(this,\'img_board4\')">Ещё фото</div>';
-			}
-			if(!$this->data[$this->id]['img_board5']) {
-				$this->fields_form["img_board5"]['style'] = 'display:none;';
-				$this->fields_form["img_board4"]['comment'] .= ' <div class="shownextfoto" onclick="shownextfoto(this,\'img_board5\')">Ещё фото</div>';
-			}
-			if(!$this->data[$this->id]['img_board6']) {
-				$this->fields_form["img_board6"]['style'] = 'display:none;';
-				$this->fields_form["img_board5"]['comment'] .= ' <div class="shownextfoto" onclick="shownextfoto(this,\'img_board6\')">Ещё фото</div>';
+			else
+				$fcnt = $this->config['imageCnt'];
+			for($i = 2; $i <= $fcnt; $i++) {
+				$this->fields_form['img_board'.$i]['style'] = 'display:none;';
+				if($i==2)
+					$ni = '';
+				else
+					$ni = ($i-1);
+				if(!isset($this->fields_form['img_board'.$ni]['comment']))
+					$this->fields_form['img_board'.$ni]['comment'] = '';
+				$this->fields_form['img_board'.$ni]['comment'] .= ' <div class="shownextfoto" onclick="shownextfoto(this,\'img_board'.$i.'\')">Ещё фото</div>';
 			}
 		}
-
 		
 		if($this->id){
 			$this->fields_form['rubric']['onchange'] = 'boardrubric(\'rubric\','.$this->id.')';
+			if(static_main::_prmUserCheck(1)) {
+				unset($this->fields_form['datea']['readonly']);
+			}
 		}
 		else{
-			$this->fields_form['datea'] = array('type' => 'list', 'listname'=>'datea', 'caption' => 'Дата публикации','css'=>'hideparams','comment'=>$this->fields_form['datea']['comment']);
-			if(!$data['contact'] and !$data['datea']) // скрывает доп поля
-				$_tpl['onload'] .= 'show_params(\'.hideparams\');';
+			$this->fields_form['datea']['type'] = 'list';
+			$this->fields_form['datea']['listname'] = 'datea';
+			unset($this->fields_form['datea']['readonly']);
+			//= array('type' => 'list', 'listname'=>'datea', 'caption' => 'Дата публикации','css'=>'boardparam formparam sdsd','comment'=>$this->fields_form['datea']['comment']);
+			//if(!$data['contact'] and !$data['datea']) // скрывает доп поля
+			//	$_tpl['onload'] .= 'jQuery(\'#tr_boardparam div.showparam\').click();';
 			$this->fields_form['active']['type'] = 'hidden';
 
 		}
@@ -312,11 +337,33 @@ class board_class extends kernel_extends {
 
 		$this->fields_form['mapx'] = array('type' => 'hidden');
 		$this->fields_form['mapy'] = array('type' => 'hidden');
-		$this->fields_form['map'] = array('type' => 'info', 'caption' => '<span class="jshref" onclick="boardOnMap()">Установить метку на карте</span>', 'css'=>'hideparams','style'=>'text-align: center;');
+		$this->fields_form['map'] = array('type' => 'info', 'caption' => '<span class="jshref" onclick="boardOnMap()">Установить метку на карте</span>', 'css'=>'boardparam formparam sdsd','style'=>'text-align: center;');
 		//.ru ALOgRE0BAAAAv6zZcQIAjsjexB7rFg3HTA_g1j-coGlstYMAAAAAAAAAAAD2tWiNHDQrFWdJRx7iuVAiNWEmTA==
 		//.i AOCoRE0BAAAA88JZPQIANdFMmqSCC13UptUv7elqUYOoyxQAAAAAAAAAAADQ4SW-iwo9kv-xUCuu5MlHifOX8w==
 		//унидоски.рф AEBlTE0BAAAAI8CRMQIACx_AbSrbH-5VVjtyAEq4d1AmTZsAAAAAAAAAAABOmdN9uXx5VhMuwpOp8geXLZRLCg==
 		$_tpl['script']['api-maps'] = array('http://api-maps.yandex.ru/1.1/index.xml?loadByRequire=1&key=ALOgRE0BAAAAv6zZcQIAjsjexB7rFg3HTA_g1j-coGlstYMAAAAAAAAAAAD2tWiNHDQrFWdJRx7iuVAiNWEmTA==~AOCoRE0BAAAA88JZPQIANdFMmqSCC13UptUv7elqUYOoyxQAAAAAAAAAAADQ4SW-iwo9kv-xUCuu5MlHifOX8w==~AEBlTE0BAAAAI8CRMQIACx_AbSrbH-5VVjtyAEq4d1AmTZsAAAAAAAAAAABOmdN9uXx5VhMuwpOp8geXLZRLCg==');
+
+		if(!$this->id) {
+			$this->eDATA = array();
+			$this->fields_form['boardexport'] = array('type' => 'info', 'caption' => '<div class="showparam hideparam" onclick="show_params(\'div.boardexport\',this)"> <span>Показать</span><span style="display:none;">Скрыть</span> дополнительные публикации</div>');
+			if($CITY->id) {
+				// см. _phpscript/_js.php [34]
+				_new_class('exportboard',$EXPORTBOARD);
+				$this->eDATA = $EXPORTBOARD->_query('*','WHERE (region=0 or region='.$CITY->id.')'.(!isset($_COOKIE['_showallinfo'])?' and active=1':''));
+				if(count($this->eDATA)) {
+					foreach($this->eDATA as $ek=>$er) {
+						$this->fields_form['exportboard'.$er['id']] = array('type' => 'checkbox', 'caption' => $er['name'], 'comment'=>'Публикация на сайте '.$er['www'], 'css'=>'boardexport formparam', 'mask'=>array('fview'=>1));
+						if($er['ondef']) {
+							$this->fields_form['exportboard'.$er['id']]['value'] = 1;
+						}
+					}
+					//$_tpl['onload'] .= 'jQuery(\'#tr_boardexport div.showparam\').click();';
+				}
+			}
+			if(!count($this->eDATA))
+				$this->fields_form['boardexport']['style'] = 'display:none;';
+		}
+
 		$mess = parent::kPreFields($data,$param);
 		if(!isset($this->RUBRIC->tablename))
 			$this->RUBRIC = new rubric_class($this->SQL);
@@ -377,7 +424,7 @@ class board_class extends kernel_extends {
 		$PARAM = &$this->RUBRIC->childs['param'];
 
 		if(isset($PARAM->data) and is_array($PARAM->data) and count($PARAM->data)){
-			foreach($PARAM->data as $k=>$r){
+			foreach($PARAM->data as $k=>$r) {
 				if($vars['param_'.$k]) {
 					$val = $vars['param_'.$k];
 					$cls['name'.$r['type']]=$val;
@@ -408,11 +455,8 @@ class board_class extends kernel_extends {
 		$vars['path'] = $this->getTranslitePatchFromText($vars['text']);
 		if($ret = parent::_save_item($vars)) {
 			if(isset($vars['city'])) {
-				$ct[] = array($vars['city'],$vars['rubric'],$vars['active']);
 				foreach($this->data as $r)
-					$ct[] = array($r['city'],$r['rubric'],$r['active']);
-				foreach($ct as $r)
-					$this->updateCount2($r[0],$r[1],$r[2]);
+					$this->updateCount2($r['city'],$r['rubric'],$r['active']);					
 			}
 			if(isset($PARAM->data) and is_array($PARAM->data) and count($PARAM->data)) {
 				if(count($cls)) {
@@ -427,13 +471,14 @@ class board_class extends kernel_extends {
 		return $ret;
 	}
 
-	public function _add_item(&$vars) {
+	public function _add_item($vars) {
 		$vars['datea'] = ((int)$vars['datea']+time());
 		$vars['name'] = '';//$this->_enum['type'][$vars['type']].'/ '.$this->RUBRIC->data2[$vars['rubric']]['name'];
 		$PARAM = &$this->RUBRIC->childs['param'];
 		$cls=array();
 		$tmp = array();
-		if(isset($PARAM->data) and is_array($PARAM->data) and count($PARAM->data)){
+
+		if(isset($PARAM->data) and is_array($PARAM->data) and count($PARAM->data)) {
 			foreach($PARAM->data as $k=>$r){
 				if($vars['param_'.$k]) {
 					$val = $vars['param_'.$k];
@@ -462,12 +507,27 @@ class board_class extends kernel_extends {
 				}
 			}
 		}
+
 		$vars['path'] = $this->getTranslitePatchFromText($vars['text']);
-		if(!static_main::_prmUserCheck())
-			$vars['creater_id'] = md5($vars['mf_timecr'].'solt3'.$vars['mf_ipcreate'].$vars['city'].$vars['email']);
+		//if(!static_main::_prmUserCheck())
+		$vars['hash'] = md5($vars['mf_timecr'].'solt3'.$vars['mf_ipcreate'].$vars['city'].$vars['email']);
 		if($ret = parent::_add_item($vars)) {
+			$this->temp_AddText = '';
+			/////////////
+			if(!isset($this->RUBRIC->cacheData))
+				$this->RUBRIC->cacheData = $this->RUBRIC->_query('id,parent_id,name,lname','WHERE active=1','id');
+			if($vars['city']) { // EXPORT BOARD
+				_new_class('exportboard',$EXPORTBOARD);
+				$this->eDATA = $EXPORTBOARD->_query('*','WHERE (region=0 or region='.$vars['city'].')'.(!isset($_COOKIE['_showallinfo'])?' and active=1':''));
+				if(count($this->eDATA))
+					foreach($this->eDATA as $ek=>$exportValue) {
+						if(isset($vars['exportboard'.$exportValue['id']]) and $vars['exportboard'.$exportValue['id']]) {
+							include($this->_CFG['_PATH']['ext'].'/exportboard.class/phpexport/'.$exportValue['phpexport'].'.php');
+						}
+					}
+			}
 			if($vars['active']==1 or !isset($vars['active']))
-				$this->updateCount2($vars['city'],$vars['rubric'],1);
+				$this->updateCount($vars['city'],$vars['rubric'],1);
 			if(count($cls)) {
 				$query = 'INSERT into paramb (owner_id,'.implode(',',array_keys($cls)).') values ('.$this->id.',"'.implode('","',$cls).'")';
 				$result=$this->SQL->execSQL($query);
@@ -478,14 +538,14 @@ class board_class extends kernel_extends {
 				if($result->err) return false;
 			}
 			$this->form=array();
-			if(!static_main::_prmUserCheck() and $vars['email']) {
+			if($vars['email']) { //!static_main::_prmUserCheck() and 
 				_new_class('mail',$MAIL);
-				$datamail = array('from'=>'robot@unidoski.ru');
-				$datamail['mailTo']=$vars['email'];
-				$datamail['subject']=strtoupper($_SERVER['HTTP_HOST']).' - Ваше объявление №'.$this->id;
-				$datamail['text']=str_replace(
-						array('%href%','%host%'),
-						array('?id='.$this->id.'&hash='.$vars['creater_id'],$_SERVER['HTTP_HOST']),
+				$datamail = array('from'=>$MAIL->config['mailrobot']);
+				$datamail['mailTo'] = $vars['email'];
+				$datamail['subject'] = strtoupper($_SERVER['HTTP_HOST']).' - Ваше объявление №'.$this->id;
+				$datamail['text'] = str_replace(
+						array('%idhref%','%href%','%host%','%addtext%'),
+						array('http://'.$_SERVER['HTTP_HOST'].'/'.$this->RUBRIC->cacheData[$vars['rubric']]['lname'].'/'.$vars['path'].'_'.$this->id.'.html','?id='.$this->id.'&hash='.$vars['hash'],$_SERVER['HTTP_HOST'],$this->temp_AddText),
 						$this->config['mail']);
 				$MAIL->reply = 0;
 				if(!$MAIL->Send($datamail))
@@ -494,6 +554,7 @@ class board_class extends kernel_extends {
 		}
 		return $ret;
 	}
+
 	public function _Act($act,&$param) {
 		$ret = parent::_Act($act,$param);
 		if($ret[1]) {
@@ -532,7 +593,7 @@ class board_class extends kernel_extends {
 		else
 			$pb= (int)$_SESSION['user']['paramboard'];
 
-		if($_POST['datea'])
+		if(isset($_POST['datea']) and $_POST['datea'])
 			$time = ((int)$_POST['datea']+time());
 		else
 			$time = time();
@@ -634,7 +695,7 @@ class board_class extends kernel_extends {
 				$val='';
 
 				if($flagNew) {
-					$val = $id['param_'.$k];
+					$val = (isset($id['param_'.$k])?$id['param_'.$k]:'');
 				}
 				elseif($id) 
 					$val=$paramdata['name'.$r['type']];
@@ -684,7 +745,7 @@ class board_class extends kernel_extends {
 					}*/
 
 					if($form['param_'.$k]['value']=='')	$form['param_'.$k]['value']=$r['min'];
-					if($form['param_'.$k]['value_2']=='')	$form['param_'.$k]['value_2']=$r['max'];
+					if(!isset($form['param_'.$k]['value_2']) or $form['param_'.$k]['value_2']=='')	$form['param_'.$k]['value_2']=$r['max'];
 					/*if($flagNew) // для фильтра
 						$_tpl['onload'] .= "gSlide('tr_param_".$k."',".(int)$r['min'].",".(int)$r['max'].",".(int)$form['param_'.$k]['value'].",".(int)$form['param_'.$k]['value_2'].",".(int)$r['step'].");";*/	
 				}else
@@ -717,12 +778,6 @@ class board_class extends kernel_extends {
 						if($rrr) $form['param_'.$k.'_'.$rrr] = array();
 					}
 					$_tpl['onload'] .= 'mCBoxVis('.$k.');';
-				}
-				
-				if(!$r['max'] and $PARAM->_enum['typelen'][$r['type']]!=''){
-					$form['param_'.$k]['mask']['max']=$PARAM->_enum['typewidth'][$r['type']];
-					if($PARAM->_enum['typelist'][$r['type']]=='int')
-						$form['param_'.$k]['mask']['maxint']=$PARAM->_enum['typelen'][$r['type']];
 				}
 			}
 
@@ -901,7 +956,7 @@ class board_class extends kernel_extends {
 			if(isset($this->RUBRIC->data2[$rid]))
 				$rlist[$rid] = $this->RUBRIC->data2[$rid]['name'];
 			if(isset($this->RUBRIC->data[$rid])) {
-				foreach($this->RUBRIC->data[$rid] as $k=>$r){
+				foreach($this->RUBRIC->data[$rid] as $k=>$r) {
 					if(isset($this->RUBRIC->data[$k])){
 						$rlist = $this->RUBRIC->data[$k]+$rlist;
 					}else
@@ -1046,41 +1101,61 @@ class board_class extends kernel_extends {
 		return $xml;
 	}
 
-	public function fNewDisplay($limit){
+	public function fNewDisplay($limit) {
 		global $CITY;
 		$PARAM = &$this->RUBRIC->childs['param'];
-		$clause = 'SELECT t1.id,t1.path,t1.name,t1.rubric,t1.type,t1.text,t1.datea, t4.name as cityname,'.($this->_CFG['site']['rf']?'t4.domen_rf':'t4.domen').' as domen FROM '.$this->tablename.' t1 JOIN '.$CITY->tablename.' t4 ON t1.city=t4.id WHERE t1.active=1 and t1.datea<'.time().' ';
-
-		if(count($CITY->citylist)==1) {
+		$clause = 'SELECT t1.id,t1.path,t1.name,t1.rubric,t1.type,t1.text,t1.datea,t1.city FROM '.$this->tablename.' t1 WHERE t1.active=1 and t1.datea<'.time().' ';
+		if(isset($CITY->center) and $CITY->center) { // для центральных городов
+			$clause .= ' and t1.city IN ('.implode(',',$CITY->citylist).')';
+		}
+		elseif(!$CITY->parent_id and $CITY->id) {// для районов
 			$CITY->listfields = array('t1.id');
-			$CITY->clause = 't1 JOIN '.$CITY->tablename.' t2 ON (t1.id=t2.parent_id or t1.parent_id=t2.parent_id) WHERE t2.id="'.$CITY->id.'" and t1.active=1';
+			$CITY->clause = 't1 WHERE t1.parent_id="'.$CITY->id.'" and t1.active=1';
 			$CITY->_list('id');
 			$clause .= ' and t1.city IN ('.implode(',',array_merge($CITY->citylist,array_keys($CITY->data))).')';
 		}
-		elseif(count($CITY->citylist)>1) {
+		elseif(count($CITY->citylist)==1) { //для прочих городков выводим объявления только региона и самого города
+			/*$CITY->listfields = array('t1.id');
+			$CITY->clause = 't1 WHERE (t1.id="'.$CITY->parent_id.'") and t1.active=1';// or t1.parent_id="'.$CITY->parent_id.'"
+			$CITY->_list('id');*/
+			$clause .= ' and t1.city IN ('.implode(',',array_merge($CITY->citylist,array($CITY->parent_id))).')';
+		}
+		elseif(count($CITY->citylist)>1) {//так и не понял где и когда это выполняется
 			$clause .= ' and t1.city IN ('.implode(',',$CITY->citylist).')';
 		}
-
-		$clause .= ' GROUP BY t1.id ORDER BY t1.datea DESC LIMIT '.$limit;
+		$clause .= ' ORDER BY t1.datea DESC LIMIT '.$limit;
 		
 		$result = $this->SQL->execSQL($clause);
-
+		$DATA = array();
 		$xml='<main>';
-		if(!$result->err)
+		if(!$result->err) {
+			$cityList = array();
 			while ($r = $result->fetch_array()) {
+				$cityList[$r['city']] = $r['city'];
+				$DATA[$r['id']] = $r;
+			}
+			$result2 = $this->SQL->execSQL('SELECT t4.id,t4.name,'.($this->_CFG['site']['rf']?'t4.domen_rf':'t4.domen').' as domen FROM city t4 WHERE t4.id IN ('.implode(',',$cityList).')');
+			$cityList = array();
+			while ($r = $result2->fetch_array()) {
+				$cityList[$r['id']] = $r;
+			}
+			foreach($DATA as $r) {
 				$xml .='<item>
 					<id>'.$r['id'].'</id>
 					<path>'.$r['path'].'</path>
 					<name>'.$r['name'].'</name>
-					<domen>http://'.$r['domen'].'.'.$_SERVER['HTTP_HOST2'].'</domen>
+					<domen>http://'.$cityList[$r['city']]['domen'].'.'.$_SERVER['HTTP_HOST2'].'</domen>
 					<rname>'.$this->RUBRIC->data2[$r['rubric']]['name'].'</rname>
-					<tname>'.$r['cityname'].'/ '.$this->_enum['type'][$r['type']].'</tname>
+					<tname>'.$cityList[$r['city']]['name'].'/ '.$this->_enum['type'][$r['type']].'</tname>
 					<text><![CDATA['._substr(html_entity_decode(strip_tags($r['text']),ENT_QUOTES,'UTF-8'),0,200).'...]]></text>
 					<datea>'.date('Y-m-d',$r['datea']).'</datea>';
 				$xml .= '<rubpath>/'.$this->RUBRIC->data2[$r['rubric']]['lname'].'</rubpath>';
 				$xml .= '</item>';
 			}
+		}
 		$xml .='</main>';
+
+
 		return $xml;
 	}
 
@@ -1149,8 +1224,8 @@ class board_class extends kernel_extends {
 			$xml .= '<contact><![CDATA['.$r['contact'].']]></contact>';
 			$ik = '';
 			while(isset($r['img_board'.$ik])) {
-				if($r['img_board'.$ik]!='' and $file=$this->_get_file($r,'img_board'.$ik))
-				$xml .='<image s="'.$this->_prefixImage($file,'s_').'">'.$file.'</image>';
+				if($r['img_board'.$ik]!='' and $file=$this->_get_file($r['id'],'img_board'.$ik,$r['img_board'.$ik]))
+					$xml .='<image s="'.$this->_get_file($r['id'],'img_board'.$ik,$r['img_board'.$ik],1).'">'.$file.'</image>';
 				if(!$ik) $ik=1;
 				$ik++;
 			}
@@ -1179,9 +1254,9 @@ class board_class extends kernel_extends {
 				$xml .= '<param name="Отметка на карте" id="" edi=""><![CDATA[<span onclick="boardOnMap(1)" style="font-size: 14px;" class="jshref">Посмотреть</span><input type="hidden" id="mapx" value="'.$r['mapx'].'" name="mapx"><input type="hidden" id="mapy" value="'.$r['mapy'].'" name="mapy">]]></param>';
 			}
 			$xml .= '</item>';
-			if($this->_CFG['robot']=='' and !isset($_SESSION['statview'][$r['id']]) and $statview){
+			if($this->_CFG['robot']=='' and !isset($_COOKIE['statview_'.$r['id']]) and $statview){
 				$arr_stat[]=$r['id'];
-				$_SESSION['statview'][$r['id']]=1;
+				_setcookie('statview_'.$r['id'], 1, (time()+3600*24));
 			}
 		}
 		$xml .='</main>';
@@ -1201,8 +1276,8 @@ class board_class extends kernel_extends {
 		$this->data=$typeclass=$pData=$idList=$idFL=array();
 		$result = $this->SQL->execSQL($clause);
 		if(!$result->err)
-			while ($row = $result->fetch_array()){
-				if($row['param']!=''){
+			while ($row = $result->fetch_array()) {
+				if(isset($row['param']) and $row['param']!=''){
 					$row['param'] = explode('|',$row['param']);
 					foreach($row['param'] as $k=>$r) {
 						$r=$row['param'][$k] = explode(':',$r);// параметры поля
@@ -1399,10 +1474,10 @@ class board_class extends kernel_extends {
 				,"Ь"=>"","Ъ"=>"","ь"=>"","ъ"=>""
 				)
 		 ));
-		$var = preg_replace("/[^0-9A-Za-z_]+/",'',$var);
+		$var = preg_replace("/[^0-9A-Za-z_]+/u",'',$var);
 		$var = strtr($var,array('_____'=>'_','____'=>'_','___'=>'_','__'=>'_'));
 		$var = mb_substr($var,0,80,'UTF-8');
-		return trim($var,'_');
+		return trim($var,' _');
 
 	}
 }

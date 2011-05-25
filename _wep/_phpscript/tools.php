@@ -23,6 +23,7 @@ function tools_worktime() {
 			$result = 'Включить режим';
 		}
 		$DATA = array('_*features*_' => array('method' => 'POST', 'name' => 'step0'));
+		$DATA['info'] = array('type'=>'info', 'caption'=>'<div>По этой <a href="/index.html?_showallinfo=1">ссылке</a> вы можете видить страницы, в режиме "Технические работы".</div>');
 		$DATA['work_title'] = array(
 			'caption' => 'Заголовок',
 			'comment' => '',
@@ -92,9 +93,14 @@ function allinfos() {
 	return $html.'</pre>';
 }
 
+function getphpinfo() {
+	ob_start();
+	phpinfo();
+	return ob_get_flush();
+}
 $dataF = array(
 	'tools_worktime'=>'Режим "технические работы"',
-	'phpinfo'=>'phpinfo'	,
+	'getphpinfo'=>'PHPINFO()',
 	'allinfos'=> 'Выввод глобальных переменных',
 );
 

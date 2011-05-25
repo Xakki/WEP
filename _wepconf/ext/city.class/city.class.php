@@ -12,6 +12,11 @@ class city_class extends kernel_extends {
 			'from'=>array('_','','','',''),
 			'to'=>array(' ','\'','.',')','(')
 		);
+		$this->name = 'Вся Россия';
+		$this->id = $this->parent_id = 0;
+		$this->citylist = array();
+		$this->domen = $this->desc = '';
+		$this->detectcity = array();
 		return true;
 	}
 
@@ -44,7 +49,7 @@ class city_class extends kernel_extends {
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Показывать на сайте');
 		$this->fields_form['domen'] = array('type' => 'text', 'caption' => 'Domen');
 		$this->fields_form['domen_rf'] = array('type' => 'text', 'caption' => 'Domen РФ');
-		$this->fields_form['desc'] = array('type' => 'text', 'caption' => 'Описание');
+		$this->fields_form['desc'] = array('type' => 'text', 'caption' => 'Описание', 'mask' =>array('name'=>'all'));
 		$this->fields_form['center'] = array('type' => 'checkbox', 'caption' => 'Центр');
 
 		$this->index_fields['name']='name';
@@ -106,10 +111,8 @@ class city_class extends kernel_extends {
 		$this->domen = $this->desc = '';
 		$this->detectcity = array();
 
-		if(isset($this->_CFG['_HREF']['arrayHOST'][2])) {
-			$flag = $this->citySelect($this->_CFG['_HREF']['arrayHOST'][2]);
-		}elseif(isset($_REQUEST['cityid'])) {
-			$flag = $this->citySelect((int)$_REQUEST['cityid']);
+		if(isset($_POST['cityid'])) {
+			$flag = $this->citySelect((int)$_POST['cityid']);
 			header("HTTP/1.0 301");// перемещение на постоянную основу
 			if($flag)
 				$loc = 'Location: http://'.$this->domen.'.'.$_SERVER['HTTP_HOST2'].$_SERVER['REQUEST_URI'];
@@ -118,17 +121,30 @@ class city_class extends kernel_extends {
 			header($loc);
 			die($loc);
 		}
+		elseif(isset($this->_CFG['_HREF']['arrayHOST'][2])) {
+			$flag = $this->citySelect($this->_CFG['_HREF']['arrayHOST'][2]);
+		}/*elseif(count($PGLIST->pageParam)==2) {
+			print_r('<pre>');print_r($PGLIST->pageParam);
+			$flag = $this->citySelect($PGLIST->pageParam[0]);
+			header("HTTP/1.0 301");// перемещение на постоянную основу
+			if($flag)
+				$loc = 'Location: http://'.$this->domen.'.'.$_SERVER['HTTP_HOST2'].str_replace('/'.$PGLIST->pageParam[0],'',$_SERVER['REQUEST_URI']);
+			else
+				$loc = 'Location: http://'.$_SERVER['HTTP_HOST2'].$_SERVER['REQUEST_URI'];
+			//header($loc);
+			die($loc);
+		}*/
 
-		if($this->_CFG['robot']=='') { //если не робот and !$flag
+		if($this->_CFG['robot']=='' and !$this->id) { //если не робот and !$flag
 			$geoloc= array();
-			$result = $this->SQL->execSQL('SELECT city FROM ip_group_city where ip_start<=INET_ATON("'.$_SERVER['REMOTE_ADDR'].'") and city!=""  order by ip_start desc limit 1;');
+			$result = $this->SQL->execSQL('SELECT city,country_code FROM ip_group_city where ip_start<=INET_ATON("'.$_SERVER['REMOTE_ADDR'].'") and city!="" order by ip_start desc limit 1;');
 			if(!$result->err)
-				if ($geoloc = $result->fetch_array()) {
-					if($_CFG['site']['rf'])
+				if ($geoloc = $result->fetch_array() and $geoloc['country_code']=="RU") {
+					if($this->_CFG['site']['rf'])
 						$fdomen = 'domen_rf';
 					else
 						$fdomen = 'domen';
-					$clause = 'SELECT id,name,'.$fdomen.' FROM '.$this->tablename.' WHERE (city="'.$geoloc['city'].'" or (city2!="" and city2 LIKE "%|'.$geoloc['city'].'|%")) and active=1 ORDER BY name LIMIT 1';
+					$clause = 'SELECT id,name,'.$fdomen.' FROM '.$this->tablename.' WHERE  active=1 and (city="'.$geoloc['city'].'" or (city2!="" and city2 LIKE "%|'.$geoloc['city'].'|%")) ORDER BY name LIMIT 1';
 					$result = $this->SQL->execSQL($clause);
 					if(!$result->err)
 						if($row = $result->fetch_array()) {
