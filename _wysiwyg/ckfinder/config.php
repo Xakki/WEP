@@ -1,4 +1,10 @@
 <?php
+	global $_CFG,$SQL;
+	$_CFG['_PATH']['path'] = dirname(dirname(dirname(dirname(dirname(dirname($_SERVER['SCRIPT_FILENAME']))))));
+	$_CFG['_PATH']['wep'] = $_CFG['_PATH']['path'].'/_wep';
+	require_once($_CFG['_PATH']['wep'].'/config/config.php');
+	require_once($_CFG['_PATH']['core'].'/sql.php');
+	session_go();//print_r($_SESSION);exit('**');
 /*
  * ### CKFinder : Configuration File - Basic Instructions
  *
@@ -29,7 +35,8 @@ function CheckAuthentication()
 	// ... where $_SESSION['IsAuthorized'] is set to "true" as soon as the
 	// user logs in your system. To be able to use session variables don't
 	// forget to add session_start() at the top of this file.
-
+	if(isset($_SESSION['user']) and $_SESSION['user']['filesize']>0) 
+		return true;
 	return false;
 }
 
@@ -60,8 +67,8 @@ Examples:
 
 ATTENTION: The trailing slash is required.
 */
-$baseUrl = '/ckfinder/userfiles/';
-
+//$baseUrl = '/ckfinder/userfiles/';
+$baseUrl = $_SESSION['FckEditorUserFilesUrl'];
 /*
 $baseDir : the path to the local directory (in the server) which points to the
 above $baseUrl URL. This is the path used by CKFinder to handle the files in
@@ -79,8 +86,8 @@ Examples:
 
 ATTENTION: The trailing slash is required.
 */
-$baseDir = resolveUrl($baseUrl);
-
+//$baseDir = resolveUrl($baseUrl);
+$baseDir = $_SESSION['FckEditorUserFilesPath'];
 /*
  * ### Advanced Settings
  */
@@ -130,6 +137,35 @@ Subfolders inherit their default settings from their parents' definitions.
 	- The "resourceType" attribute accepts the special value '*', which
 	  means "all resource types".
 */
+
+//----------
+
+		function dir_size($dir) {
+			$totalsize=0;
+			if ($dirstream = @opendir($dir)) {
+				while (false !== ($filename = readdir($dirstream))) {
+					if ($filename!="." && $filename!="..")
+					{
+						if (is_file($dir."/".$filename))
+							$totalsize+=filesize($dir."/".$filename);
+						if (is_dir($dir."/".$filename))
+							$totalsize+=dir_size($dir."/".$filename);
+					}
+				}
+				closedir($dirstream);
+			}
+			
+			return $totalsize;
+		}
+		$MSize=$_SESSION['user']['filesize'];
+		if(file_exists($baseDir) and is_dir($baseDir)) {
+			$dirsize = round(dir_size($baseDir)/(1024 * 1024));//в мегабайтах
+			$MSize = $_SESSION['user']['filesize']-$dirsize;
+		}
+		else
+			mkdir($baseDir, 0774);
+		$MSize .= 'M';
+//---------------
 
 $config['AccessControl'][] = Array(
 		'role' => '*',
@@ -190,7 +226,7 @@ $config['ResourceType'][] = Array(
 		'name' => 'Files',				// Single quotes not allowed
 		'url' => $baseUrl . 'files',
 		'directory' => $baseDir . 'files',
-		'maxSize' => 0,
+		'maxSize' => $MSize,
 		'allowedExtensions' => '7z,aiff,asf,avi,bmp,csv,doc,docx,fla,flv,gif,gz,gzip,jpeg,jpg,mid,mov,mp3,mp4,mpc,mpeg,mpg,ods,odt,pdf,png,ppt,pptx,pxd,qt,ram,rar,rm,rmi,rmvb,rtf,sdc,sitd,swf,sxc,sxw,tar,tgz,tif,tiff,txt,vsd,wav,wma,wmv,xls,xlsx,zip',
 		'deniedExtensions' => '');
 
@@ -198,7 +234,7 @@ $config['ResourceType'][] = Array(
 		'name' => 'Images',
 		'url' => $baseUrl . 'images',
 		'directory' => $baseDir . 'images',
-		'maxSize' => "16M",
+		'maxSize' => $MSize,
 		'allowedExtensions' => 'bmp,gif,jpeg,jpg,png,avi,iso,mp3',
 		'deniedExtensions' => '');
 
@@ -206,7 +242,7 @@ $config['ResourceType'][] = Array(
 		'name' => 'Flash',
 		'url' => $baseUrl . 'flash',
 		'directory' => $baseDir . 'flash',
-		'maxSize' => 0,
+		'maxSize' => $MSize,
 		'allowedExtensions' => 'swf,flv',
 		'deniedExtensions' => '');
 
@@ -267,7 +303,7 @@ Folders to not display in CKFinder, no matter their location.
 No paths are accepted, only the folder name.
 The * and ? wildcards are accepted.
 */
-$config['HideFolders'] = Array(".svn", "CVS");
+$config['HideFolders'] = Array(".svn", "CVS", ".bzr", ".git");
 
 /*
 Files to not display in CKFinder, no matter their location.

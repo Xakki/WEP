@@ -618,7 +618,15 @@ class static_form {
 
 					/*CHECK TYPE*/
 					if($value['type']=='ckedit'){
-						$value['value'] = $data[$key] =stripslashes($data[$key]);
+						$data[$key] =stripslashes($data[$key]);
+						if(!isset($value['paramedit']['allowBody']) or !$value['paramedit']['allowBody']) {
+							$p1 = strpos($data[$key],'<body>');
+							if($p1!==false) {
+								$data[$key] = substr($data[$key],$p1+6);
+								$data[$key] = substr($data[$key],0,strpos($data[$key],'</body>'));
+							}
+						}
+						$value['value'] = $data[$key];
 					}
 					elseif($value['type']=='int' and (!isset($value['mask']['toint']) or !$value['mask']['toint'])) 
 						$value['value'] = $data[$key]= (int)$data[$key];

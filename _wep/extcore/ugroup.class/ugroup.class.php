@@ -26,19 +26,26 @@ class ugroup_class extends kernel_extends
 			'type' => 'ckedit', 
 			'caption' => 'Инфа о реге', 
 			'paramedit'=>array(
+				'CKFinder'=>1,
 				'height'=>350,
 				'fullPage'=>'true',
 				'toolbarStartupExpanded'=>'false'));
 		$this->config_form['mailconfirm'] = array(
-			'type' => 'textarea', 
+			'type' => 'ckedit', 
 			'caption' => 'Текст письма для подтверждения', 
 			'paramedit'=>array(
+				'CKFinder'=>1,
 				'height'=>350,
 				'fullPage'=>'true',
 				'toolbarStartupExpanded'=>'false'));
 		$this->config_form['mailremind'] = array(
-			'type' => 'textarea',
-			'caption' => 'Текст письма востановления пароля');
+			'type' => 'ckedit',
+			'caption' => 'Текст письма востановления пароля', 
+			'paramedit'=>array(
+				'CKFinder'=>1,
+				'height'=>350,
+				'fullPage'=>'true',
+				'toolbarStartupExpanded'=>'false'));
 		$this->config_form['reg'] = array('type' => 'checkbox', 'caption' => 'Включить регистрацию?');
 		$this->config_form['payon'] = array('type' => 'text', 'caption' => 'Включить платежную систему? Введите название денежной единицы. [руб,евро итп]');
 		$this->config_form['premoderation'] = array('type' => 'checkbox', 'caption' => 'Использовать премодерацию?');

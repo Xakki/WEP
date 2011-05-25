@@ -322,11 +322,13 @@ function _obHandler($buffer) {
 		$htmlerr .= '<link type="text/css" href="_design/_style/bug.css" rel="stylesheet"/></div> <script type="text/javascript" src="_design/_script/bug.js"></script>';
 
 	if (!$_CFG['_F']['adminpage'])
-		$_tpl['logs'] .= $htmlinfo . $htmlerr . $buffer;
+		$_tpl['logs'] .= $htmlinfo . $htmlerr;
 	else {
 		$_tpl['time'] .= $htmlinfo;
-		$_tpl['logs'] .= $htmlerr . $buffer;
+		$_tpl['logs'] .= $htmlerr;
 	}
+	//$_tpl['logs'] = htmlspecialchars($_tpl['logs'], ENT_QUOTES);
+	$_tpl['logs'] .= $buffer;
 
 	if ($_html != '') {
 		//if ($_tpl['logs'] == '')
@@ -335,7 +337,6 @@ function _obHandler($buffer) {
 		$page = $_html;
 	}else
 		$page = $_tpl['logs'];
-
 	return $page;
 }
 
