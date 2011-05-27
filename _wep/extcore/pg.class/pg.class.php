@@ -64,6 +64,7 @@ class pg_class extends kernel_extends {
 		$this->caption = 'Страницы';
 		$this->selected = array();
 		$this->ver = '0.1.1';
+		$this->RCVerCore = '2.2.9';
 		$this->pageinfo = 
 			$this->dataCash = $this->dataCashTree = array();
 		return true;

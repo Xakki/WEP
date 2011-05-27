@@ -86,8 +86,7 @@
 			$data = $_this->owner->_dump();
 		}
 		elseif ($templistname == 'select') {
-			$_this->_select();
-			$data = &$_this->data;
+			$data = $_this->_select();
 		}
 		elseif ($templistname == 'parentlist' and $_this->mf_istree) {
 
@@ -99,7 +98,7 @@
 
 			$q = 'SELECT `id`, `name`, `parent_id` FROM `'.$_this->tablename.'`';
 			if($_this->id) $q .=' WHERE `id`!="'.$_this->id.'"';
-			if($_this->mf_ordctrl) $q .= ' ORDER BY ordind';
+			if($_this->mf_ordctrl) $q .= ' ORDER BY '.$_this->mf_ordctrl;
 			$result = $_this->SQL->execSQL($q);
 			if(!$result->err)
 				while (list($id, $name,$pid) = $result->fetch_array(MYSQL_NUM)) {

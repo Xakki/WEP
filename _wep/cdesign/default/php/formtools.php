@@ -3,6 +3,7 @@
 
 	function tpl_formtools(&$data) {
 		global $HTML,$_tpl;
+		$html = '';
 		$_tpl['script']['form'] = 1;
 		$_tpl['styles']['form'] = 1;
 		if(isset($data['path']) and count($data['path'])) {

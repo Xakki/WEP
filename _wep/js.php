@@ -47,7 +47,7 @@
 
 
 
-	if($_COOKIE['cdesign'])
+	if(isset($_COOKIE['cdesign']) and $_COOKIE['cdesign'])
 		$_design = $_COOKIE['cdesign'];
 	elseif($_SESSION['user']['design'])
 		$_design = $_SESSION['user']['design'];
@@ -56,9 +56,9 @@
 
 	$HTML = new html($_CFG['PATH']['cdesign'],$_design,false);// упрощённый режим
 
-	if($_GET['_oid']!='') $MODUL->owner_id = $_GET['_oid'];
-	if($_GET['_pid']!='') $MODUL->parent_id = $_GET['_pid'];
-	if($_GET['_id']!='') $MODUL->id = $_GET['_id'];
+	if(isset($_GET['_oid']) and $_GET['_oid']!='') $MODUL->owner_id = $_GET['_oid'];
+	if(isset($_GET['_pid']) and $_GET['_pid']!='') $MODUL->parent_id = $_GET['_pid'];
+	if(isset($_GET['_id']) and $_GET['_id']!='') $MODUL->id = $_GET['_id'];
 
 	if($_SESSION['user']['wep'])
 		include($_CFG['_PATH']['cdesign'].$_design.'/js.php');

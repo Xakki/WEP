@@ -46,12 +46,14 @@ class ugroup_class extends kernel_extends
 		$this->config_form['reggroup'] = array('type' => 'list', 'listname'=>'list', 'caption' => 'Регистрировать по умолчанию');
 		$this->config_form['modergroup'] = array('type' => 'list', 'listname'=>'list', 'caption' => 'Непрошедшие проверку');
 		$this->config_form['rememberday'] = array('type' => 'int', 'mask' =>array('min'=>1), 'caption' => 'Дней запоминания авторизации');
-		$this->config_form['karma'] = array('type' => 'checkbox', 'caption' => 'Включить систему рейтингов?');
+		$this->config_form['karma'] = array('type' => 'checkbox', 'caption' => 'Включить систему рейтингов?','style'=>'background:green;');
 	}
 
-	function _set_features() {
+	protected function _set_features() {
 		if (!parent::_set_features()) return false;
 		$this->mf_actctrl = true;
+		$this->mf_istree = true;
+		$this->mf_treelevel = 1;
 		$this->caption = 'Группы';
 		$this->singleton = true;
 		$this->ver = '0.2.1';
@@ -69,27 +71,39 @@ class ugroup_class extends kernel_extends
 			2=>'Доступ к модулям',
 			5=>'нет доступа');
 
-		$this->fields['name'] = array('type' => 'varchar', 'width' =>128, 'attr' => 'NOT NULL');
+		$this->fields[$this->mf_namefields] = array('type' => 'varchar', 'width' =>128, 'attr' => 'NOT NULL');
 		$this->fields['wep'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => 0);
 		$this->fields['level'] = array('type' => 'tinyint', 'width' =>2, 'attr' => 'NOT NULL',  'default' => 1);
 		$this->fields['filesize'] = array('type' => 'int', 'width' =>5, 'attr' => 'NOT NULL', 'default' => 0);
 		$this->fields['design'] = array('type' => 'varchar', 'width' =>128, 'attr' => 'NOT NULL', 'default' => '');
-		
-		$this->fields_form = array();
-		$this->fields_form['id'] = array('type' => 'text', 'mask' =>array(), 'caption' => 'ID');
-		$this->fields_form['name'] = array('type' => 'text', 'mask' =>array('min'=>1), 'caption' => 'Название группы');
-		$this->fields_form['wep'] = array('type' => 'checkbox', 'caption' => 'Разрешить вход в админку?');
-		$this->fields_form['level'] = array('type' => 'list', 'listname'=>'level', 'caption' => 'Доступ в CMS');
-		$this->fields_form['design'] = array('type' => 'list', 'listname'=>'mdesign', 'caption' => 'Дизаин личного кабинета');
-		$this->fields_form['filesize'] = array('type' => 'int', 'caption' => 'Доступный размер диска', 'comment' => 'Значение в мегабайтах, 0 - запрет','mask'=>array('max'=>1000));
-		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Активность');
 
 	}
 
+	public function setFieldsForm() {
+		parent::setFieldsForm();
+		$this->fields_form['id'] = array('type' => 'text', 'mask' =>array(), 'caption' => 'ID');
+		$this->fields_form[$this->mf_namefields] = array('type' => 'text', 'mask' =>array('min'=>1), 'caption' => 'Название группы');
+		$this->fields_form['wep'] = array('type' => 'checkbox', 'caption' => 'Разрешить вход в админку?');
+		$this->fields_form['level'] = array('type' => 'list', 'listname'=>'level', 'caption' => 'Доступ в CMS', 'default'=>2);
+		$this->fields_form['design'] = array('type' => 'list', 'listname'=>'mdesign', 'caption' => 'Дизаин личного кабинета', 'default'=>'default');
+		$this->fields_form['filesize'] = array('type' => 'int', 'caption' => 'Доступный размер диска', 'comment' => 'Значение в мегабайтах, 0 - запрет','mask'=>array('max'=>1000));
+		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Активность');
+
+		if($this->config['karma']) {
+			$this->fields['minkarma'] = array('type' => 'int', 'width' =>8, 'attr' => 'NOT NULL', 'default' => 0);
+			$this->fields['maxkarma'] = array('type' => 'int', 'width' =>8, 'attr' => 'NOT NULL', 'default' => 0);
+			$this->fields['defkratio'] = array('type' => 'float', 'width' => '8,2','attr' => 'NOT NULL', 'default'=>'0.00');
+
+			$this->fields_form['minkarma'] = array('type' => 'text', 'caption' => 'Минимальная карма');
+			$this->fields_form['maxkarma'] = array('type' => 'text', 'caption' => 'Максимальная карма');
+			$this->fields_form['defkratio'] = array('type' => 'text', 'caption' => 'Коэфициент по умолчанию');
+		}
+	}
+
 	function _install() {
-		$this->def_records[0] = array('id'=>0,'name'=>'Анонимы','level'=>5,'filesize'=>'0','active'=>1,'design'=>'default','wep'=>0);
-		$this->def_records[1] = array('id'=>1,'name'=>'Администраторы','level'=>0,'filesize'=>'100','active'=>1,'design'=>'default','wep'=>1);
-		$this->def_records[2] = array('id'=>2,'name'=>'Пользователи','level'=>2,'filesize'=>'0','active'=>1,'design'=>'default','wep'=>0);
+		$this->def_records[0] = array('id'=>0,$this->mf_namefields=>'Анонимы','level'=>5,'filesize'=>'0','active'=>1,'design'=>'default','wep'=>0);
+		$this->def_records[1] = array('id'=>1,$this->mf_namefields=>'Администраторы','level'=>0,'filesize'=>'100','active'=>1,'design'=>'default','wep'=>1);
+		$this->def_records[2] = array('id'=>2,$this->mf_namefields=>'Пользователи','level'=>2,'filesize'=>'0','active'=>1,'design'=>'default','wep'=>0);
 		return parent::_install();
 	}
 
@@ -108,10 +122,10 @@ class ugroup_class extends kernel_extends
 	function _getlist(&$listname,$value=0) {
 		$data = array();
 		if ($listname == 'glist') {
-			$result = $this->SQL->execSQL('SELECT id, name FROM '.$this->tablename);
+			$result = $this->SQL->execSQL('SELECT id, '.$this->mf_namefields.' FROM '.$this->tablename);
 			if(!$result->err)
 				while ($row = $result->fetch_array())
-					$data[$row['id']] = $row['name'];
+					$data[$row['id']] = $row[$this->mf_namefields];
 			return $data;
 		}
 		elseif ($listname == 'mdesign') {
@@ -151,9 +165,10 @@ class ugroup_class extends kernel_extends
 			trigger_error('Error get user data', E_USER_WARNING);
 			return array();
 		}
-		$this->listfields = array('t1.*,t1.id as gid,t1.active as gact,t1.name as gname,t2.*');
-		$this->clause = 't1 Join '.$this->childs['users']->tablename.' t2 on t2.'.$this->childs['users']->owner_name.'=t1.id where t2.id = '.(int)$id.''; 
-		if(!$this->_list()) {
+		$listfields = array('t1.*,t1.id as gid,t1.active as gact,t1.name as gname,t2.*');
+		$clause = 't1 Join '.$this->childs['users']->tablename.' t2 on t2.'.$this->childs['users']->owner_name.'=t1.id where t2.id = '.(int)$id.''; 
+		$this->data = $this->_query($listfields,$clause);
+		if(!count($this->data)) {
 			trigger_error('Not found data for user id='.$id, E_USER_WARNING);
 			return array();
 		}
@@ -187,19 +202,19 @@ class ugroup_class extends kernel_extends
 			}
 		}else {
 				//$GLOBALS['TSFE']->additionalHeaderData['apit_shop/res/response.js'] = '<script src="typo3conf/ext/apit_shop/res/response.js" type="text/javascript"></script>';
-				$_SESSION['user']['karma_ratio'] = 2;
+				$_SESSION['user']['kratio'] = 2;
 				$up = '4"';
 				if(isset($vote) and $vote>0) // если уже проголосовал
 					$up = '3"';
 				elseif(isset($vote) and $vote<0) // если уже проголосовал
 					$up = '4"';
-				elseif($_SESSION['user']['karma_ratio']>0) //если коэф рейтинга выше нуля то разрешаем голосовать
+				elseif($_SESSION['user']['kratio']>0) //если коэф рейтинга выше нуля то разрешаем голосовать
 					$up = '1" onclick="clickVote(this,'.$ID.',\'up\',\''.$modul.'\')"';
 
 				$down = '4"';
 				if(isset($vote) and $vote<0) $down = '3"';
 				elseif(isset($vote) and $vote>0) $down = '4"';
-				elseif($_SESSION['user']['karma_ratio']>0) $down = '1" onclick="clickVote(this,'.$ID.',\'down\',\''.$modul.'\')"';
+				elseif($_SESSION['user']['kratio']>0) $down = '1" onclick="clickVote(this,'.$ID.',\'down\',\''.$modul.'\')"';
 				$this->config['echoIntRating'] = 0;
 				$content = '
 					<span class="good-bad-rating-vote img-down'.$down.'>down</span>
@@ -243,18 +258,18 @@ class users_class extends kernel_extends {
 		if($this->fn_login!='email')
 			$this->fields[$this->fn_login] = array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL');
 		$this->fields['email'] =  array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL', 'default'=>'');
-		$this->fields['name'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL');
+		$this->fields[$this->mf_namefields] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL');
 		$this->fields[$this->fn_pass] = array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL');
 		// service field
 		$this->fields['loginza_token'] =  array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL', 'default'=>'');
 		$this->fields['loginza_provider'] =  array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL', 'default'=>'');
 		$this->fields['loginza_data'] =  array('type' => 'text', 'attr' => '');
 		$this->fields['reg_hash'] = array('type' => 'varchar', 'width' => 128, 'attr' => 'NOT NULL', 'default'=>'');
-		$this->fields['balance'] = array('type' => 'float ', 'width' => '11,2', 'attr' => 'NOT NULL', 'default'=>'0.00');
+		$this->fields['balance'] = array('type' => 'float', 'width' => '11,2', 'attr' => 'NOT NULL', 'default'=>'0.00');
 		$this->fields['lastvisit'] =  array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL', 'default'=>0);
-		if($this->config['karma']) {
+		if($this->owner->config['karma']) {
 			$this->fields['karma'] = array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL', 'default'=>0);
-			$this->fields['karma_ratio'] = array('type' => 'float', 'width' => '8,2','attr' => 'NOT NULL', 'default'=>'0.00');
+			$this->fields['kratio'] = array('type' => 'float', 'width' => '8,2','attr' => 'NOT NULL', 'default'=>'0.00');
 		}
 
 		$this->attaches['userpic'] = array('mime' => array('image/pjpeg'=>'jpg', 'image/jpeg'=>'jpg', 'image/gif'=>'gif', 'image/png'=>'png'), 'thumb'=>array(array('type'=>'resize', 'w'=>'800', 'h'=>'600','pref'=>'orign_'),array('type'=>'resizecrop', 'w'=>85, 'h'=>85)),'maxsize'=>1000,'path'=>'');
@@ -275,6 +290,7 @@ class users_class extends kernel_extends {
 
 	// FORM FIELDS
 	public function setFieldsForm() {
+		parent::setFieldsForm();
 		$this->fields_form = array();
 		$this->fields_form['owner_id'] = array('type' => 'list', 'listname'=>'ownerlist', 'caption' => 'Группа', 'mask' =>array('usercheck'=>1,'fview'=>1));
 		$this->fields_form[$this->fn_login] =	array('type' => 'text', 'caption' => 'Логин','mask'=>array('name'=>'login','min' => '4','sort'=>1),'comment'=>'Логин должен состоять только из латинских букв и цифр.');
@@ -284,10 +300,10 @@ class users_class extends kernel_extends {
 		elseif(!static_main::_prmUserCheck()) //Доступ только не зарегенным
 			$this->fields_form[$this->fn_pass] = array('type' => 'password_new', 'caption' => 'Пароль','mask'=>array('min' => '6','fview'=>1));
 		$this->fields_form['email'] = array('type' => 'text', 'caption' => 'E-mail', 'mask'=>array('name'=>'email','min' => '7'));
-		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Имя','mask'=>array('name'=>'name2')); // Вывод поля при редактировании
-		if($this->config['karma']) {
+		$this->fields_form[$this->mf_namefields] = array('type' => 'text', 'caption' => 'Имя','mask'=>array('name'=>'name2')); // Вывод поля при редактировании
+		if($this->owner->config['karma']) {
 			$this->fields_form['karma'] = array('type' => 'text', 'caption' => 'Карма', 'readonly'=>true,'mask'=>array('usercheck'=>1));
-			$this->fields_form['karma_ratio'] = array('type' => 'text', 'caption' => 'Коэф. значимости','readonly'=>true,'mask'=>array('usercheck'=>1));
+			$this->fields_form['kratio'] = array('type' => 'text', 'caption' => 'Коэф. значимости','readonly'=>true,'mask'=>array('usercheck'=>1));
 		}
 		$this->fields_form['userpic'] = array('type'=>'file','caption'=>'Юзерпик','del'=>1, 'mask'=>array('fview'=>1,'width'=>85,'height'=>85,'thumb'=>0));
 		$this->fields_form['mf_ipcreate'] =	array('type' => 'text','readonly' => true, 'caption' => 'IP-пользователя','mask'=>array('usercheck'=>1));
@@ -315,7 +331,7 @@ class users_class extends kernel_extends {
 	function _install() {
 		$this->def_records[0] = array(
 			$this->fn_login => $this->_CFG['wep']['login'],
-			'name'=>'Администратор',
+			$this->mf_namefields=>'Администратор',
 			$this->fn_pass => md5($this->_CFG['wep']['md5'].$this->_CFG['wep']['password']), 
 			'active'=>1,
 			'email'=>$this->_CFG['info']['email'],
@@ -334,9 +350,10 @@ class users_class extends kernel_extends {
 				 return array('Поле `Email` введено не корректно. Допустим ввод только латинских букв,цифр, точки, тире и @',0);
 			else
 			{
-				$this->listfields = array('t2.*,t2.id as gid,t2.active as gact,t2.name as gname,t1.*');
-				$this->clause = 't1 Join '.$this->owner->tablename.' t2 on t1.'.$this->owner_name.'=t2.id where t1.'.$this->fn_login.' = \''.$login.'\' and t1.'.$this->fn_pass.' =\''.md5($this->_CFG['wep']['md5'].$pass).'\''; 
-				if(!$this->_list())
+				$listfields = array('t2.*,t2.id as gid,t2.active as gact,t2.name as gname,t1.*');
+				$clause = 't1 Join '.$this->owner->tablename.' t2 on t1.'.$this->owner_name.'=t2.id where t1.'.$this->fn_login.' = \''.$login.'\' and t1.'.$this->fn_pass.' =\''.md5($this->_CFG['wep']['md5'].$pass).'\'';
+				$this->data = $this->_query($listfields,$clause);
+				if(!count($this->data))
 					return array('Ошибка подпрограммы.',0);
 					//{header('Location: '.$this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['wepname'].'/login.php?install');die();}
 				if(count($this->data))
@@ -377,9 +394,9 @@ class users_class extends kernel_extends {
 			if (preg_match("/^[0-9A-Za-z\_]+$/",$_COOKIE['remember']))
 			{
 				$pos = strpos($_COOKIE['remember'],'_');
-				$this->listfields = array('t2.*,t2.id as gid,t2.active as gact,t2.name as gname,t1.*');
-				$this->clause = 't1 Join '.$this->owner->tablename.' t2 on t1.'.$this->owner_name.'=t2.id where t1.id = \''.substr($_COOKIE['remember'],($pos+1)).'\' and md5(t1.'.$this->fn_pass.') =\''.substr($_COOKIE['remember'],0,$pos).'\'';
-				$this->_list();
+				$listfields = array('t2.*,t2.id as gid,t2.active as gact,t2.name as gname,t1.*');
+				$clause = 't1 Join '.$this->owner->tablename.' t2 on t1.'.$this->owner_name.'=t2.id where t1.id = \''.substr($_COOKIE['remember'],($pos+1)).'\' and md5(t1.'.$this->fn_pass.') =\''.substr($_COOKIE['remember'],0,$pos).'\'';
+				$this->data = $this->_query($listfields,$clause);
 				if(count($this->data))
 				{
 					unset($_SESSION['user']);
@@ -414,7 +431,7 @@ class users_class extends kernel_extends {
 		if(static_main::_prmUserCheck()) {
 			$this->fields_form['_info']= array('type'=>'info','caption'=>$this->getMess('title_profile'),'css'=>'caption');
 			$this->id = $_SESSION['user']['id'];
-			$this->_select();
+			$this->data = $this->_select();
 			$DATA = $this->data[$this->id];
 		}
 		else {
@@ -446,8 +463,8 @@ class users_class extends kernel_extends {
 					if(!$this->id) { // регистрация
 						$arr['vars']['owner_id']=$this->owner->config['noreggroup'];
 						$arr['vars']['active']=0;
-						if(!$arr['vars']['name'])
-							$arr['vars']['name'] = $arr['vars'][$this->fn_login];
+						if(!$arr['vars'][$this->mf_namefields])
+							$arr['vars'][$this->mf_namefields] = $arr['vars'][$this->fn_login];
 						$arr['vars']['reg_hash']=md5(time().$arr['vars'][$this->fn_login]);
 						$pass=$arr['vars'][$this->fn_pass];
 						$arr['vars'][$this->fn_pass]=md5($this->_CFG['wep']['md5'].$arr['vars'][$this->fn_pass]);
@@ -545,28 +562,28 @@ class users_class extends kernel_extends {
 			$dt['loginza_provider'] = $authdata['provider'];
 			$dt[$this->fn_login] = md5($authdata['identity']);
 			if($authdata['provider']=='http://openid.yandex.ru/server/') {
-				$dt['name'] = substr(substr($authdata['identity'],24),0,-1);
+				$dt[$this->mf_namefields] = substr(substr($authdata['identity'],24),0,-1);
 				$dt['email'] = substr(substr($authdata['identity'],24),0,-1).'@ya.ru';
 			}
 			elseif($authdata['provider']=='http://mail.ru/') {
-				$dt['name'] = $authdata['name']['first_name'];
+				$dt[$this->mf_namefields] = $authdata['name']['first_name'];
 				$temp = substr(substr($authdata['identity'],18),0,-1);
 				$temp = explode('/',$temp);
 				$dt['email'] = $temp[1].'@'.$temp[0].'.ru';
 			}
 			/*elseif($authdata['provider']=='http://vkontakte.ru/') {
-				$dt['name'] = $authdata['name']['last_name'].' '.$authdata['name']['first_name'];
+				$dt[$this->mf_namefields] = $authdata['name']['last_name'].' '.$authdata['name']['first_name'];
 				$dt['email'] = $authdata['email'];
 			}*/
 			elseif(isset($authdata['email'])) {
 				$dt['email'] = $authdata['email'];
 				if(is_array($authdata['name'])) {
 					if($authdata['name']['full_name'])
-						$dt['name'] = $authdata['name']['full_name'];
+						$dt[$this->mf_namefields] = $authdata['name']['full_name'];
 					elseif($authdata['name']['first_name'])
-						$dt['name'] = $authdata['name']['first_name'];
+						$dt[$this->mf_namefields] = $authdata['name']['first_name'];
 				}else 
-					$dt['name'] = $authdata['name'];
+					$dt[$this->mf_namefields] = $authdata['name'];
 			}
 		}
 
@@ -584,7 +601,7 @@ class users_class extends kernel_extends {
 						$mess[] = array('name'=>'error', 'value'=>'Поскольку Вы('.$dt['email'].') зарегистрированы на нашем сайте стандартным способом, то для авторизайции также следуют воспользоваться стандартной формой авторизации.');
 				} else {
 					$data =  $dt;
-					if(!$data['name']) $data['name'] = $dt['email'];
+					if(!$data[$this->mf_namefields]) $data[$this->mf_namefields] = $dt['email'];
 					$data['owner_id']=$this->owner->config['reggroup'];
 					$data['active']=1;
 					$data['reg_hash'] = 2; // отметка  о том что регестрируются через LOGINZA
@@ -628,9 +645,9 @@ class users_class extends kernel_extends {
 		global $HTML;
 		$form=1;$html='';
 		if(count($_GET) and $_GET['id']!='' and $_GET['t']!='' and $_GET['hash']!='') {
-			$this->listfields = array('t1.*');
-			$this->clause = 't1 where t1.id = \''.$_GET['id'].'\'';
-			$this->_list();
+			$listfields = array('t1.*');
+			$clause = 't1 where t1.id = \''.$_GET['id'].'\'';
+			$this->data = $this->_query($listfields,$clause);
 			$datau=$this->data[0];
 			if(count($this->data)==1 and $datau['active']==1 and $_GET['hash']==(md5($datau[$this->fn_pass].$_GET['t'].$datau['email']).'h')) {
 				
@@ -670,9 +687,9 @@ class users_class extends kernel_extends {
 
 			if(count($_POST) and $_POST['mail']!='') {
 
-				$this->listfields = array('t1.*');
-				$this->clause = 't1 where t1.email = \''.$_POST['mail'].'\'';
-				$this->_list();
+				$listfields = array('t1.*');
+				$clause = 't1 where t1.email = \''.$_POST['mail'].'\'';
+				$this->data = $this->_query($listfields,$clause);
 				$datau=$this->data[0];
 				if(count($this->data)==1 and $datau['active']==1) {
 					$form=0;

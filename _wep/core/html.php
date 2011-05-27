@@ -65,7 +65,7 @@ class html {
 		$this->_PATHd = $_SERVER['_DR_'] . $_PATHd . $_design . '/';
 		$this->flag = $flag;
 		$_tpl['design'] = $_PATHd . $_design . '/';
-		$_tpl['title'] = $_tpl['time'] = '';
+		$_tpl['title'] = $_tpl['time'] = $_tpl['onload'] = $_tpl['logs'] = '';
 		$_tpl['script'] = $_tpl['styles'] = array();
 		$params = array(
 			'obj' => &$this,
@@ -487,8 +487,8 @@ function _new_class($name, &$MODUL, &$OWNER = NULL) {
 
 		$MODUL = NULL;
 		static_main::_prmModulLoad();
-		if (isset($_CFG['modulprm_ext'][$name]) && !$_CFG['modulprm'][$name]['active'])
-			$name = $_CFG['modulprm_ext'][$name];
+		if (isset($_CFG['modulprm_ext'][$name]) && isset($_CFG['modulprm'][$name]) && !$_CFG['modulprm'][$name]['active'])
+			$name = $_CFG['modulprm_ext'][$name][0];
 		$class_name = $name . "_class";
 		try {
 			$getparam = array_slice(func_get_args(), 2);

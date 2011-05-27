@@ -209,7 +209,7 @@ class countb_class extends kernel_extends {
 		if (!parent::_set_features()) return false;
 		$this->showinowner=false;// не показывать
 		$this->mf_createrid = false;
-		$this->_setnamefields = false;
+		$this->mf_namefields = false;
 		return true;
 	}
 

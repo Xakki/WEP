@@ -1,12 +1,12 @@
 <?
 		$xml = array();
-		$this->listfields = array('count(t1.id) as cnt');
-		$clause = $this->_moder_clause($param);
-		if(count($clause))
-			$this->clause =' t1 WHERE '.(implode(' and ',$clause)); 
+		$listfields = array('count(t1.id) as cnt');
+		$moder_clause = $this->_moder_clause($param);
+		if(is_array($moder_clause) and count($moder_clause))
+			$clause =' t1 WHERE '.(implode(' and ',$moder_clause)); 
 		else 
-			$this->clause =' t1';
-		$this->_list();
+			$clause =' t1';
+		$this->data = $this->_query($listfields,$clause);
 #		print($this->SQL->query);
 		$countfield = $this->data[0]['cnt'];
 		
@@ -43,7 +43,7 @@
 			$climit= $pcnt.', '.$this->messages_on_page;
 
 			$cls =array(0=>array('t1.*'),1=>'',2=>array());
-			$arrno = array('active'=>1,'parent_id'=>1);
+			$arrno = array($this->mf_actctrl=>1,$this->mf_istree=>1);
 			if($this->owner and $this->owner->id)
 				$arrno[$this->owner_name] = 1;
 			$xml['data']['pcnt'] = $pcnt;
@@ -154,22 +154,22 @@
 
 			/** Сборка запроса на вывод*/
 			$cls[2] = $this->_moder_clause($cls[2],$param);
-			$cls[2] = array_merge($cls[2], $clause);
+			$cls[2] = array_merge($cls[2], $moder_clause);
 			if(count($cls[2])>0) $cls[1] .=' WHERE '.implode(' AND ',$cls[2]);
 
-			$this->listfields = $cls[0];
-			$this->clause = 't1 '.$cls[1].' GROUP BY t1.id';
-			if($order!='') $this->clause .= ' ORDER BY '.$order;
+			$listfields = $cls[0];
+			$clause = 't1 '.$cls[1].' GROUP BY t1.id';
+			if($order!='') $clause .= ' ORDER BY '.$order;
 			//if(!$this->mf_istree)
-				$this->clause .= ' LIMIT '.$climit;
-			$this->_list('id');
+				$clause .= ' LIMIT '.$climit;
+			$this->data = $this->_query($listfields,$clause,'id');
 //print($this->SQL->query);
 			/** Обработка запроса*/
 			foreach($this->data as $key=>$row) {
 				$xml['data']['item'][$key] = array('id'=>$row['id']);
 				$xml['data']['item'][$key] += $this->_tr_attribute($row,$param);
 				if($xml['data']['item'][$key]['act'])
-					$xml['data']['item'][$key]['active'] = $row['active'];
+					$xml['data']['item'][$key][$this->mf_actctrl] = $row[$this->mf_actctrl];
 				foreach($this->fields_form as $k=>$r) {
 					if(isset($arrno[$k])) continue;
 					$tditem = array('name'=>$k,'type'=>$r['type']);
@@ -257,7 +257,7 @@
 						if(count($cn->fields_form))
 							$xml['data']['item'][$key]['child'][$ck] = array('value'=>$cn->caption, 'cnt'=>$row[$ck.'_cnt']);
 					}
-				if($this->mf_istree)
+				if($this->mf_istree and (!$this->mf_treelevel or !isset($this->tree_data) or (count($this->tree_data)<($this->mf_treelevel))))
 					$xml['data']['item'][$key]['istree'] = array('value'=>$this->caption, 'cnt'=>$row['istree_cnt']);
 			}
 		}else

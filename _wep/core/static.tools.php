@@ -121,7 +121,7 @@ class static_tools {
 			$rDATA['Ошибка']['@mess'][] = array('name' => 'error', 'value' => 'Ошибка инициализации модуля `'.$Mid.'`');
 			return array($Mid => $rDATA);
 		}
-		elseif($MODULPRM->data[$Mid]['active']) {
+		elseif($MODULPRM->data[$Mid][$MODULPRM->mf_actctrl]) {
 			// синонимы для типов полей
 			$alias_types = array(
 				'TINYINT(1)' => 'BOOL',
@@ -245,13 +245,13 @@ class static_tools {
 							if ($extra != '')
 								$table_properties[$i] .= ' ' . $extra;
 						}
-						$table_properties_up_case[$i] = trim( str_replace(array('"', "'", chr(194).chr(160),"\xC2xA0","\n"), array('', '', ' ', ' ', ' '), mb_strtoupper($table_properties[$i],'UTF-8')) );
+						$table_properties_up_case[trim( str_replace(array('"', "'", chr(194).chr(160),"\xC2xA0","\n"), array('', '', ' ', ' ', ' '), mb_strtoupper($table_properties[$i],'UTF-8')) )] = true;
 						$i++;
 					}
 					$temp_fldformer = self::_fldformer($fldname, $MODUL->fields[$fldname]);
 					$temp = trim(str_replace(array('"', "'", chr(194).chr(160),"\xC2xA0","\n"), array('', '', ' ', ' ', ' '), mb_strtoupper($temp_fldformer,'UTF-8')));
 
-					if (isset($MODUL->fields[$fldname]['type']) and !in_array($temp, $table_properties_up_case)) {
+					if (isset($MODUL->fields[$fldname]['type']) and !isset($table_properties_up_case[$temp])) {
 						$rDATA[$fldname]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` CHANGE `' . $fldname . '` ' . $temp_fldformer;
 						$rDATA[$fldname]['@oldquery'] = $table_properties[0];
 					}
@@ -342,11 +342,11 @@ class static_tools {
 			if ($MODUL->owner)
 				$MODUL->index_fields[$MODUL->owner_name] = $MODUL->owner_name;
 			if ($MODUL->mf_istree)
-				$MODUL->index_fields['parent_id'] = 'parent_id';
+				$MODUL->index_fields[$MODUL->mf_istree] = $MODUL->mf_istree;
 			if ($MODUL->mf_actctrl)
-				$MODUL->index_fields['active'] = 'active';
+				$MODUL->index_fields[$MODUL->mf_actctrl] = $MODUL->mf_actctrl;
 			if ($MODUL->mf_ordctrl)
-				$MODUL->index_fields['ordind'] = 'ordind';
+				$MODUL->index_fields[$MODUL->mf_ordctrl] = $MODUL->mf_ordctrl;
 			if (count($MODUL->index_fields))
 				foreach ($MODUL->index_fields as $k => $r) {
 					if (!isset($indexlist[$k]) and !isset($uniqlistR[$k])) {
@@ -768,7 +768,6 @@ class static_tools {
 		}
 		return array($fl,$mess);
 	}
-
 }
 
 ?>

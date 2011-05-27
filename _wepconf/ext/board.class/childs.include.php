@@ -53,7 +53,7 @@ class boardvote_class extends kernel_extends {
 		$this->showinowner=false;// не показывать
 		$this->mf_ipcreate = true;
 		$this->mf_timecr = true;
-		$this->_setnamefields=false;
+		$this->mf_namefields=false;
 		$this->caption = 'Голосование';
 		return true;
 	}

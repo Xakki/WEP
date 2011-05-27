@@ -40,6 +40,14 @@ class comments_extends extends kernel_extends {
 	
 		$this->fields['text'] = array('type' => 'text', 'attr' => 'NOT NULL', 'min' => '1');
 		$this->fields['vote'] = array('type' => 'int', 'width' => 9, 'attr' => 'NOT NULL', 'default'=>0);
+
+		$this->_setHook['__construct']['ugroup'] = array(
+			'_wep/extcore/comments.extend/comments.hook.php'=>'ugroup_hook__create',
+		);
+	}
+
+	public function setFieldsForm() {
+		parent::setFieldsForm();
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Ваше имя', 'mask'=>array('min'=>3));
 		/*$this->fields_form[$this->mf_createrid] = array(
 			'type' => 'list', 
@@ -56,6 +64,7 @@ class comments_extends extends kernel_extends {
 			$this->fields_form['parent_id'] = array('type' => 'hidden');
 		if($this->owner)
 			$this->fields_form['owner_id'] = array('type' => 'hidden');
+		return true;
 	}
 
 	public function _UpdItemModul($param) {

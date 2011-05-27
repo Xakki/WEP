@@ -5,7 +5,7 @@ class pay_class extends kernel_extends {
 		if (!parent::_set_features()) return false;
 		$this->caption = 'Платежи';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';
-		$this->_setnamefields=false;
+		$this->mf_namefields=false;
 		$this->mf_timecr = true; // создать поле хранящее время создания поля
 		$this->mf_timeup = true; // создать поле хранящее время обновления поля
 		$this->mf_timeoff = true; // создать поле хранящее время отключения поля (active=0)

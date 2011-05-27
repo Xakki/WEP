@@ -8,9 +8,9 @@
 		if(!empty($this->id) and $this->id) { //EDIT
 			$flag=-1;
 			if(!isset($this->data[$this->id]) or count($this->data[$this->id])<count($this->fields)) {
-				$this->listfields = array('*');
-				$this->clause = ' WHERE id IN ('.$this->_id_as_string().')';
-				$this->_list('id');
+				$listfields = array('*');
+				$clause = ' WHERE id IN ('.$this->_id_as_string().')';
+				$this->data = $this->_query($listfields,$clause,'id');
 			}
 			//print($this->SQL->query);
 			if(count($this->data)==1) {
@@ -44,7 +44,7 @@
 				$flag=1;
 			}
 		} else { //ADD
-			if(!$this->_prmModulAdd($this->_cl)){
+			if(!$this->_prmModulAdd()){
 				$arr['mess'][] = array('name'=>'error', 'value'=>$this->getMess('denied_add'));
 				$formflag=0;
 				$flag=-1;

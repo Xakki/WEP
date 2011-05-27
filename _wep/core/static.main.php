@@ -117,17 +117,22 @@ class static_main {
 			if ($result->err) return false;
 			$_CFG['modulprm'] = array();
 			while ($row = $result->fetch_array()) {
-				if($row['extend']) $_CFG['modulprm_ext'][$row['extend']] = $row['id'];
-				$_CFG['modulprm'][$row['id']]['active'] = $row['active'];
+				if($row['extend']) $_CFG['modulprm_ext'][$row['extend']][] = $row['id'];
 				$_CFG['modulprm'][$row['id']]['access'] = array_flip(explode('|', trim($row['access'], '|')));
 				if ($row['mname'])
 					$_CFG['modulprm'][$row['id']]['name'] = $row['mname'];
 				else
 					$_CFG['modulprm'][$row['id']]['name'] = $row['name'];
-				$_CFG['modulprm'][$row['id']]['ver'] = $row['ver'];
-				$_CFG['modulprm'][$row['id']]['typemodul'] = $row['typemodul'];
 				$_CFG['modulprm'][$row['id']]['path'] = self::getPathModul($row['path']);
+				$_CFG['modulprm'][$row['id']]['active'] = $row['active'];
+				$_CFG['modulprm'][$row['id']]['typemodul'] = $row['typemodul'];
 				$_CFG['modulprm'][$row['id']]['tablename'] = $row['tablename'];
+				$_CFG['modulprm'][$row['id']]['ver'] = $row['ver'];
+				$_CFG['modulprm'][$row['id']]['extend'] = $row['extend'];
+				if($row['hook']) {
+					eval('$hook = '.$row['hook'].';');
+					$_CFG['hook'] = self::MergeArrays($_CFG['hook'],$hook);
+				}
 			}
 			/*if (_new_class('modulprm', $MODULs))
 				$_CFG['modulprm'] = $MODULs->userPrm((isset($_SESSION['user']['owner_id']) ? (int) $_SESSION['user']['owner_id'] : 0));*/

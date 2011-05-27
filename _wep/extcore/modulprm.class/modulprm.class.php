@@ -32,11 +32,13 @@ final class modulprm_class extends kernel_extends {
 		$this->fields['extend'] = array('type' => 'varchar', 'width' => 255);
 		$this->fields['ver'] = array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL', 'default' => '0.1');
 		$this->fields['typemodul'] = array('type' => 'tinyint', 'width' => 2, 'attr' => 'NOT NULL');
+		$this->fields['hook'] = array('type' => 'varchar', 'width' => 255);
 
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название');
 		$this->fields_form['tablename'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Таблица');
 		$this->fields_form['path'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Путь');
 		$this->fields_form['extend'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Подменяемый модуль');
+		$this->fields_form['hook'] = array('type' => 'textarea', 'caption' => 'Перехватчики');
 		$this->fields_form['ver'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Версия');
 		$this->fields_form['typemodul'] = array('type' => 'list', 'listname' => 'typemodul', 'readonly' => 1, 'caption' => 'Описание');
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Активность');
@@ -50,11 +52,6 @@ final class modulprm_class extends kernel_extends {
 	function _childs() {
 		$this->create_child('modulgrp');
 	}
-
-	/*function super_inc() {
-		unset($_CFG['modulprm_ext']); // чтобы не подменять обращения к модулям
-		return parent::super_inc();
-	}*/
 
 	/**
 	 * Дамп модулей установленных
@@ -79,6 +76,7 @@ final class modulprm_class extends kernel_extends {
 			$path = explode(':', $row['path']);
 			$this->data[$row['id']]['path'] = $this->_CFG['modulinc'][$path[0]]['path'] . $path[1];
 			$this->data[$row['id']]['tablename'] = $row['tablename'];
+			$this->data[$row['id']]['hook'] = $row['hook'];
 		}
 		return $this->data;
 	}
@@ -91,8 +89,9 @@ final class modulprm_class extends kernel_extends {
 	public function instalModulForm() {
 		$html = '';
 		$mess = array();
-		$this->_select();
-		unset($_CFG['modulprm_ext']); // чтобы не подменять обращения к модулям
+		$this->mDump();
+		$temp = $this->_CFG['modulprm_ext'];
+		unset($this->_CFG['modulprm_ext']); // чтобы не подменять обращения к модулям
 //print_r('<pre>');print_r($this->data);
 		foreach ($this->_CFG['modulinc'] as $k => $r) {
 			$dir = dir($r['path']);
@@ -298,7 +297,7 @@ final class modulprm_class extends kernel_extends {
 	}
 
 	protected function mDump() {
-		if(!isset($this->pdata)) {
+		if(!isset($this->pdata) or !count($this->pdata) or !count($this->data)) {
 			$this->data = $this->pdata = array();
 			$result = $this->SQL->execSQL('SELECT * FROM ' . $this->tablename);
 			if ($result->err)
@@ -349,8 +348,18 @@ final class modulprm_class extends kernel_extends {
 						$this->fld_data['path'] = $path;
 					if(!isset($this->data[$Mid]) or $this->data[$Mid]['ver']!=$MODUL->ver)
 						$this->fld_data['ver'] = $MODUL->ver;
+					if($MODUL->RCVerCore) {
+						if(version_compare($MODUL->RCVerCore,self::versionCore)===-1)
+							$MESS[] = array('name' => 'error', 'value' => 'Модуль `'.$Mid.'` устарел. Текущая версия ядра `'.self::versionCore.'`? ');
+					}
 					if(!isset($this->data[$Mid]) or $this->data[$Mid]['typemodul']!=$typemodul)
 						$this->fld_data['typemodul'] = $typemodul;
+					$hook = '';
+					if(count($MODUL->_setHook)) {
+						$hook = str_replace(array("\t","\n","\r",' '),'',var_export($MODUL->_setHook,true));
+					}
+					if(!isset($this->data[$Mid]) or $this->data[$Mid]['hook']!=$hook)
+						$this->fld_data['hook'] = mysql_real_escape_string($hook);;
 					//if($this->data[$Mid]['active']!=1)					$this->fld_data['active'] = 1;
 					$obj = new ReflectionClass($Mid.'_class');
 					$extend = $obj->getParentClass();
@@ -364,7 +373,7 @@ final class modulprm_class extends kernel_extends {
 						$this->id = $Mid;
 						if(!isset($this->data[$Mid])) {
 							$this->fld_data['id'] = $Mid;
-							if($this->_add())
+							if($this->_add(false))
 								$MESS[] = array('name' => 'alert', 'value' => 'Данные для модуля `'.$Mid.'`['.$path.'] успешно записанны.');
 							else {
 								$MESS[] = array('name' => 'error', 'value' => 'Ошибка записи данных для модуля `'.$Mid.'`['.$path.'].');
@@ -372,7 +381,7 @@ final class modulprm_class extends kernel_extends {
 							}
 						}
 						else {
-							if($this->_update())
+							if($this->_update(false))
 								$MESS[] = array('name' => 'alert', 'value' => 'Данные для модуля `'.$Mid.'`['.$path.'] успешно обновленны.');
 							else {
 								$MESS[] = array('name' => 'error', 'value' => 'Ошибка обновления данных для модуля `'.$Mid.'`['.$path.'].');

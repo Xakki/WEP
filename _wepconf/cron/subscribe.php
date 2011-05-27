@@ -6,9 +6,9 @@
 $c=0;
 	$SUBSCRIBE = new subscribe_class($SQL);
 
-	$SUBSCRIBE->listfields = array('*');
-	$SUBSCRIBE->clause = 'WHERE active=1 and UNIX_TIMESTAMP()>(date+period-43200) LIMIT 100';
-	$SUBSCRIBE->_list('id');
+	$listfields = array('*');
+	$clause = 'WHERE active=1 and UNIX_TIMESTAMP()>(date+period-43200) LIMIT 100';
+	$SUBSCRIBE->_query($listfields,$clause,'id');
 	if(count($SUBSCRIBE->data)) {
 		$MAIL = new mail_class($SQL);
 		$RUBRIC = new rubric_class($SQL);

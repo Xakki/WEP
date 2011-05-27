@@ -10,15 +10,15 @@ class static_form {
 	// out: 0 - success,
 	//      otherwise errorcode
 
-	static function _add(&$_this) {
+	static function _add(&$_this,$flag_select=true) {
 		// add ordind field
-		if ($_this->mf_ordctrl and !isset($_this->fld_data['ordind'])) {
-			if (!$_this->_get_new_ord()) return false;
-			$_this->fld_data['ordind'] = $_this->ordind;
+		if ($_this->mf_ordctrl and !isset($_this->fld_data[$_this->mf_ordctrl])) {
+			if ($ordind = $_this->_get_new_ord())
+				$_this->fld_data[$_this->mf_ordctrl] = $ordind;
 		}
 		// add parent_id field
-		if ($_this->mf_istree and $_this->parent_id and !$_this->fld_data['parent_id'])
-			$_this->fld_data['parent_id'] = $_this->parent_id;
+		if ($_this->mf_istree and $_this->parent_id and !$_this->fld_data[$_this->mf_istree])
+			$_this->fld_data[$_this->mf_istree] = $_this->parent_id;
 		// add owner_id field
 		if (!$_this->fld_data[$_this->owner_name] and $_this->owner)
 			$_this->fld_data[$_this->owner_name] = $_this->owner->id;
@@ -60,8 +60,8 @@ class static_form {
 				return false;
 			}
 		}
-		if($_this->id)
-			$_this->_select();
+		if($_this->id and $flag_select)
+			$_this->data = $_this->_select();
 		if (isset($_this->mf_indexing) && $_this->mf_indexing) $_this->indexing();
 		return static_main::_message($_this->getMess('add'),3);
 	}
@@ -184,18 +184,17 @@ class static_form {
 	// out: 0 - success,
 	//      otherwise errorcode
 
-	static function _update(&$_this) {
+	static function _update(&$_this,$flag_select=true) {
 		if ($_this->mf_istree and !is_array($_this->id)) {
-			if ($_this->fld_data['parent_id']==$_this->id)
+			if ($_this->fld_data[$_this->mf_istree]==$_this->id)
 				return static_main::_message('Child `'.$_this->caption.'` can`t be owner to self ',1);
 		}
 		if($_this->mf_timeup)
 			$_this->fld_data['mf_timeup'] = $_this->_CFG['time'];
-		if($_this->mf_timeoff and !isset($_this->fld_data['mf_timeoff']) and isset($_this->fld_data['active']) and !$_this->fld_data['active'] and $_this->data[$_this->id]['active']) 
+		if($_this->mf_timeoff and !isset($_this->fld_data['mf_timeoff']) and isset($_this->fld_data[$_this->mf_actctrl]) and !$_this->fld_data[$_this->mf_actctrl] and $_this->data[$_this->id][$_this->mf_actctrl]) 
 			$_this->fld_data['mf_timeoff'] = $_this->_CFG['time'];
 		//if($_this->mf_ipcreate) 
 		//	$_this->fld_data['mf_ipcreate'] = ip2long($_SERVER['REMOTE_ADDR']);
-		//if ($_this->_select()) return 1;
 		// rename attaches & memos
 		if (!is_array($_this->id) and isset($_this->fld_data['id']) && $_this->fld_data['id'] != $_this->id) {
 			if (!self::_rename_parent_childs($_this)) return false;
@@ -209,8 +208,8 @@ class static_form {
 
 		if (!self::_update_attaches($_this)) return false;
 		if (!self::_update_memos($_this)) return false;
-		if($_this->id)
-			$_this->_select();
+		if($_this->id and $flag_select)
+			$_this->data = $_this->_select();
 		if (isset($_this->mf_indexing) && $_this->mf_indexing) $_this->indexing();
 		return static_main::_message('Chenge data in `'.$_this->tablename.'` successful!',3);
 	}
@@ -232,8 +231,8 @@ class static_form {
 		if($result->err) return false;
 		if(isset($_this->fld_data[$_this->owner_name]) and !is_array($_this->id))
 			$_this->owner_id = $_this->fld_data[$_this->owner_name];
-		if(isset($_this->fld_data['parent_id']) and !is_array($_this->id))
-			$_this->parent_id = $_this->fld_data['parent_id'];
+		if(isset($_this->fld_data[$_this->mf_istree]) and !is_array($_this->id))
+			$_this->parent_id = $_this->fld_data[$_this->mf_istree];
 		return true;
 	}
 

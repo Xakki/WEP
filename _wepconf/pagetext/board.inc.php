@@ -6,7 +6,7 @@
 	$BOARD->RUBRIC = &$RUBRIC;
 	
 	if(isset($_GET['id']) and isset($_GET['hash']) and $BOARD->id = (int)$_GET['id']) {
-		$BOARD->_select();
+		$BOARD->data = $BOARD->_select();
 		array_pop($this->pageinfo['path']);
 		array_pop($this->pageinfo['path']);
 		if(isset($_GET['hash']) and strlen($_GET['hash'])==32 and count($BOARD->data)==1 and $BOARD->data[$BOARD->id]['hash']==$_GET['hash']) {

@@ -1,6 +1,6 @@
 <?
 	function _fXmlModuls(&$_this,$modul){
-		$xml = '<moduls'._paramModul($_this,$modul).'><name>'.$_this->caption.'</name><msp>1</msp>';
+		$xml = '<moduls'._paramModul($_this).'><name>'.$_this->caption.'</name><msp>1</msp>';
 		if(static_main::_prmModul($_this->_cl,array(11)))
 			$xml .= '<serv id=\'reinstall\'>'.$_this->_CFG['_MESS']['_reinstall'].'</serv>';
 		if(isset($_this->config_form) and count($_this->config_form) and static_main::_prmModul($_this->_cl,array(13)))
@@ -52,8 +52,6 @@
 
 		if($count) {
 			if($_this->ordfield) $sql_query .= ' ORDER BY '.$_this->ordfield;
-			elseif($_this->mf_ordctrl) $sql_query .= ' ORDER BY ordind';
-
 			if($_this->mf_mop) {
 				$pcnt = $_this->messages_on_page*($_this->_pn-1);
 				if($pcnt>$count) {
@@ -72,7 +70,7 @@
 			while ($row = $result->fetch_array()) {
 				if(!$_this->mf_mop) $count++;
 				$param=' id=\''.$row['id'].'\'';
-				if($_this->mf_actctrl) $param .= ' act=\''.$row['active'].'\'';
+				if($_this->mf_actctrl) $param .= ' act=\''.$row[$_this->mf_actctrl].'\'';
 				if($_this->_prmModulDel(array($row))) $param .= ' del=\'1\'';//проверка на разрешение удал
 				$tempname = preg_replace($_this->_CFG['_repl']['name'],'',strip_tags($row['name']));
 				if($tempname=='') $tempname = '[Пусто]';
@@ -84,8 +82,9 @@
 		return $xml;
 	}
 
-	function _paramModul(&$_this,$modul){// **** PARAMETR ****//
-		$param =' modul=\''.$modul.'\'';
+	function _paramModul(&$_this){// **** PARAMETR ****//
+		$modul = $_this->_cl;
+		$param = ' modul=\''.$modul.'\'';
 		$param .= ' ownmodul="'.($_this->owner?$_this->owner->_cl:'').'"';
 
 		if ($_this->owner and $_this->owner->id)
@@ -94,7 +93,7 @@
 			$param .= ' pid=\''.$_this->parent_id.'\'';
 
 		if($_this->mf_ordctrl and static_main::_prmModul($_this->_cl,array(10))) $param .= ' ord=\'1\'';//проверка на разрешение сортировки
-		if($_this->_prmModulAdd($modul)) $param .= ' add=\'1\'';//проверка на разрешение добавления
+		if($_this->_prmModulAdd()) $param .= ' add=\'1\'';//проверка на разрешение добавления
 		if ($_this->mf_istree) $param .= ' child=\'1\'';
 		elseif(count($_this->childs)) {
 			foreach($_this->childs as $r)

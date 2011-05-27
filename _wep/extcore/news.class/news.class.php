@@ -59,23 +59,23 @@ class news_class extends kernel_extends {
 
 	function fNews()// func display NEWS on INDEX page
 	{
-		/*$this->listfields = array('id,text');
-		$this->clause ='WHERE description=""'; 
-		$this->_list();
+		/*$listfields = array('id,text');
+		$clause ='WHERE description=""'; 
+		$this->_query($listfields,$clause);
 		foreach($this->data as $r) {
 			$txt = mb_substr(strip_tags($r['text']),0,500,'UTF-8');
 			$this->SQL->execSQL('UPDATE test3_news SET description="'.mysql_real_escape_string($txt).'" WHERE id='.$r['id']);
 		}*/
  
 		$DATA = array();
-		$this->listfields = array('count(id) as cnt');
-		$this->clause = 'WHERE active=1';
+		$listfields = array('count(id) as cnt');
+		$clause = 'WHERE active=1';
 		if((int)$_GET['year']) {
-			$this->clause .= ' and FROM_UNIXTIME(ndate,"%Y")="'.(int)$_GET['year'].'"';
+			$clause .= ' and FROM_UNIXTIME(ndate,"%Y")="'.(int)$_GET['year'].'"';
 			global $PGLIST;
 			$PGLIST->pageinfo['path']['newsY'.(int)$_GET['year'].'.html'] = 'Год '.(int)$_GET['year'];	
 		}
-		$this->_list();
+		$this->data = $this->_query();
 		$countfield = $this->data[0]['cnt'];
 		if($countfield){
 			$DATA['pcnt'] = $pcnt;
@@ -103,35 +103,31 @@ class news_class extends kernel_extends {
 					$pcnt = 0;
 			$climit= $pcnt.', '.$this->messages_on_page;
 			/****/
-			$this->listfields = array('id,ndate,name,i_news,description');
-			$this->clause .= ' ORDER BY '.$this->ordfield.' LIMIT '.$climit;; 
-			$this->_list();
-			$DATA['item'] = $this->data;
+			$listfields = array('id,ndate,name,i_news,description');
+			$clause .= ' ORDER BY '.$this->ordfield.' LIMIT '.$climit;; 
+			$DATA['item'] = $this->_query($listfields,$clause);
 		}
 		return $DATA;
 	}
 	function fNewsItem($id)// func display NEWS on INDEX page
 	{
-		$this->listfields = array('id,ndate,name,i_news,text,href,redirect');
-		$this->clause = 'WHERE active=1 and id='.$id;
-		$this->_list();
-		return $this->data;
+		$listfields = array('id,ndate,name,i_news,text,href,redirect');
+		$clause = 'WHERE active=1 and id='.$id;
+		return $this->_query($listfields,$clause);
 	}
 
 	function fLastNews($limit=4)// func display NEWS on INDEX page
 	{
-		$this->listfields = array('*');
-		$this->clause = 'WHERE active=1 ORDER BY ndate DESC,id DESC LIMIT '.$limit;
-		$this->_list();
-		return $this->data;
+		$listfields = array('*');
+		$clause = 'WHERE active=1 ORDER BY ndate DESC,id DESC LIMIT '.$limit;
+		return $this->_query($listfields,$clause);
 	}
 
 	function fMenuNews($group='ndate')// func display NEWS on INDEX page
 	{
-		$this->listfields = array($group);
-		$this->clause = 'WHERE active=1 ORDER BY ndate DESC,id DESC GROUP BY '.$group;
-		$this->_list();
-		return $this->data;
+		$listfields = array($group);
+		$clause = 'WHERE active=1 ORDER BY ndate DESC,id DESC GROUP BY '.$group;
+		return $this->_query($listfields,$clause);
 	}
 
 }

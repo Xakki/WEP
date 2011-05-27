@@ -1,57 +1,22 @@
 <?
 
-class modul_child extends ArrayObject {
-
-	function __construct(&$obj) {
-		$this->modul_obj = $obj;
-	}
-
-	function getIterator() {
-		$iterator = parent::getIterator();
-		while ($iterator->valid()) {
-			$key = $iterator->key();
-			if ($iterator->current() === true) {
-				$this->offsetSet($key, $this->offsetGet($key));
-			}
-			$iterator->next();
-		}
-		return $iterator;
-	}
-
-	function offsetGet($index) {
-		global $_CFG;
-		if (isset($_CFG['modulprm_ext'][$index]) && !$_CFG['modulprm'][$index]['active'])
-			$clname = $_CFG['modulprm_ext'][$index];
-		else
-			$clname = $index;
-		$value = parent	::offsetGet($clname);
-		if ($this->offsetExists($clname) && $value === true) {
-			if (isset($this->modul_obj->child_path[$clname])) {
-				require_once $this->modul_obj->child_path[$clname];
-			}
-			$modul_child = NULL;
-			if (!_new_class($clname, $modul_child, $this->modul_obj))
-				return false;
-			//$this->modul_obj->childs[$index] = $modul_child;
-			return $modul_child;
-		} else {
-			//если один и тот же клас исползуется в как ребенок в других классах, то $this->singleton = false; вам в помощь, иначе сюда будут выдаваться ссылки на класс созданный в первы раз для другого модуля
-		}
-
-		return $value;
-	}
-
-}
-
-/* VERSION=2.2a */
+/* VERSION=2.2 */
 /* COMMENT=Ядро, дополняющая модули */
 
 abstract class kernel_extends {
-
+	/*
+	* версия ядра
+	*  нумерация отличает от других версией  
+	* 1 - структурной не совместимостью, различия в хранении данных и в исполняемых функциях, вызывающие критические ошибки в коде
+	* 2 - добавленн новый функционал, расширен и измененн меющиеся функции - 
+	* 3 - Номер ревизии , исправленны ошибки 
+	*/
+	const versionCore = '2.2.9';
 	function __construct($owner=NULL) {
 		global $_CFG;
-		$this->_CFG = true;
+		$this->_CFG = true; // баг ПХП
 		$this->_CFG = &$_CFG; //Config
+
 		$this->owner = true;
 		$this->owner = $owner; //link to owner class
 		$this->_set_features(); // настройки модуля
@@ -60,13 +25,14 @@ abstract class kernel_extends {
 			$_CFG['singleton'][$this->_cl] = &$this;
 
 		$this->_create_conf(); // загрузки формы конфига
-
 		if (isset($this->config_form) and count($this->config_form)) { // загрузка конфига из файла для модуля
 			$this->configParse();
 		}
 		$this->_create(); // предустановки модуля
 		$this->_childs();
 		$this->setFieldsForm();
+		if(isset($this->_CFG['hook']['__construct']))
+			$this->__do_hook('__construct',func_num_args());
 	}
 
 	function __destruct() {
@@ -93,6 +59,37 @@ abstract class kernel_extends {
 		//return NULL;
 	}
 
+	/*function __set_hook($f) {
+	}*/
+
+	function __do_hook($f, $arg = array()) {
+		if(!isset($this->_CFG['hook'][$f])) // проверка на всякий случай
+			return false;
+		///static_main::_prmModulLoad();
+		$modul = array($this->_cl);
+
+		if (isset($this->_CFG['modulprm'][$this->_cl]['extend']))
+			$modul[] = $this->_CFG['modulprm'][$this->_cl]['extend'];
+		
+		foreach($modul as $m) {
+			if(isset($this->_CFG['hook'][$f][$m])) {
+				foreach($this->_CFG['hook'][$f][$m] as $k=>$r) {
+					$file = NULL;
+					if(!function_exists($r)) {
+						$file = $this->_CFG['_PATH']['path'].$k;
+						if(file_exists($file)) {
+							include_once($file);
+						}
+					}
+					if($file === NULL or function_exists($r)) {
+						eval('return '.$r.'($this,$arg);');
+					}
+				}
+			}
+		}
+		return false;
+	}
+
 	/* -----------CMS---FUNCTION------------
 	  _set_features()
 	  _create()
@@ -107,17 +104,18 @@ abstract class kernel_extends {
 		//$this->mf_struct_readonly = false;
 		$this->id = NULL;
 		$this->_file_cfg = NULL;
-		$this->mf_istree = false; // древовидная структура?
-		$this->mf_ordctrl = false; // поле ordind для сортировки
-		$this->mf_actctrl = false; // поле active
 		$this->mf_use_charid = false; //if true - id varchar
 		$this->mf_idwidth = 63; // длина поля ID
-		$this->_setnamefields = true; //добавлять поле name
+		$this->mf_namefields = true; //добавлять поле name
+		$this->mf_createrid = true; //польз владелец
+		$this->mf_istree = false; // древовидная структура?
+		$this->mf_treelevel = 0; // разрешенное число уровней в дереве , 0 - безлимита, 1 - разрешить 1 подуровень
+		$this->mf_ordctrl = false; // поле ordind для сортировки
+		$this->mf_actctrl = false; // поле active
 		$this->mf_timestamp = false; // создать поле  типа timestamp
 		$this->mf_timecr = false; // создать поле хранящще время создания поля
 		$this->mf_timeup = false; // создать поле хранящще время обновления поля
 		$this->mf_timeoff = false; // создать поле хранящще время отключения поля (active=0)
-		$this->mf_createrid = 'creater_id'; //польз владелец
 		$this->mf_ipcreate = false; //IP адрес пользователя с котрого была добавлена запись
 		$this->prm_add = true; // добавить в модуле
 		$this->prm_del = true; // удалять в модуле
@@ -135,8 +133,8 @@ abstract class kernel_extends {
 		$this->includeJStoWEP = false; // подключать ли скрипты для формы через настройки
 		$this->includeCSStoWEP = false; // подключать ли стили для формы через настройки
 		$this->singleton = true; // класс-одиночка
-		$this->version = 'WEP 2.1.1'; // версия ядра
 		$this->ver = '0.1.1'; // версия модуля
+		$this->RCVerCore = '2.2.9';
 		$this->icon = 0; /* числа  означают отсуп для бэкграунда, а если будет задан текст то это сам рисунок */
 
 		$this->text_ext = '.txt'; // расширение для memo фиаилов
@@ -164,7 +162,8 @@ abstract class kernel_extends {
 				$this->locallang =
 				$this->enum =
 				$this->child_path =
-				$this->Achilds = array();
+				$this->Achilds = 
+				$this->_setHook = array();
 		$this->childs = new modul_child($this);
 		$this->ordfield = $this->_clp = '';
 		$this->data = array();
@@ -210,8 +209,19 @@ abstract class kernel_extends {
 
 	protected function _create() {
 
-		$this->_listnameSQL = ($this->_setnamefields ? 'name' : 'id'); // для SQL запроса при выводе списка
-		$this->_listname = ($this->_setnamefields ? 'name' : 'id'); // ', `_listnameSQL` as `_listname`'
+		if(is_bool($this->mf_namefields) and $this->mf_namefields)
+			$this->mf_namefields  = 'name';
+		if(is_bool($this->mf_createrid) and $this->mf_createrid)
+			$this->mf_createrid  = 'creater_id';
+		if(is_bool($this->mf_istree) and $this->mf_istree)
+			$this->mf_istree  = 'parent_id';
+		if(is_bool($this->mf_ordctrl) and $this->mf_ordctrl)
+			$this->mf_ordctrl  = 'ordind';
+		if(is_bool($this->mf_actctrl) and $this->mf_actctrl)
+			$this->mf_actctrl  = 'active';
+
+		$this->_listnameSQL = ($this->mf_namefields ? $this->mf_namefields : 'id'); // для SQL запроса при выводе списка
+		$this->_listname = ($this->mf_namefields ? $this->mf_namefields : 'id'); // ', `_listnameSQL` as `_listname`'
 		// construct fields
 		if ($this->mf_use_charid) {
 			$this->fields['id'] = array('type' => 'varchar', 'width' => $this->mf_idwidth, 'attr' => 'NOT NULL');
@@ -219,8 +229,8 @@ abstract class kernel_extends {
 		else
 			$this->fields['id'] = array('type' => 'int', 'width' => 11, 'attr' => 'UNSIGNED NOT NULL AUTO_INCREMENT');
 
-		if ($this->_setnamefields)
-			$this->fields['name'] = array('type' => 'varchar', 'width' => '255', 'attr' => 'NOT NULL', 'default' => '');
+		if ($this->mf_namefields)
+			$this->fields[$this->mf_namefields] = array('type' => 'varchar', 'width' => '255', 'attr' => 'NOT NULL', 'default' => '');
 
 		if ($this->owner) {
 			$this->fields[$this->owner_name] = $this->owner->fields['id'];
@@ -240,18 +250,18 @@ abstract class kernel_extends {
 		}
 
 		if ($this->mf_istree) {
-			$this->fields['parent_id'] = $this->fields['id'];
-			$this->fields['parent_id']['attr'] = 'NOT NULL';
+			$this->fields[$this->mf_istree] = $this->fields['id'];
+			$this->fields[$this->mf_istree]['attr'] = 'NOT NULL';
 			if ($this->mf_use_charid)
-				$this->fields['parent_id']['default'] = '';
+				$this->fields[$this->mf_istree]['default'] = '';
 			else
-				$this->fields['parent_id']['default'] = '0';
-			$this->index_fields['parent_id'] = 'parent_id';
+				$this->fields[$this->mf_istree]['default'] = '0';
+			$this->index_fields[$this->mf_istree] = $this->mf_istree;
 		}
 
 		if ($this->mf_actctrl) {
-			$this->fields['active'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => 1);
-			$this->index_fields['active'] = 'active';
+			$this->fields[$this->mf_actctrl] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => 1);
+			$this->index_fields[$this->mf_actctrl] = $this->mf_actctrl;
 		}
 
 		if ($this->mf_timestamp)
@@ -269,9 +279,9 @@ abstract class kernel_extends {
 		  $this->fields['typedata'] = array('type' => 'tinyint', 'attr' => 'unsigned NOT NULL');
 		 */
 		if ($this->mf_ordctrl) { //Содание полей для сортировки
-			$this->fields['ordind'] = array('type' => 'int', 'width' => '10', 'attr' => 'NOT NULL', 'default' => '0');
-			$this->ordfield = 'ordind';
-			$this->index_fields['ordind'] = 'ordind';
+			$this->fields[$this->mf_ordctrl] = array('type' => 'int', 'width' => '10', 'attr' => 'NOT NULL', 'default' => '0');
+			$this->ordfield = $this->mf_ordctrl;
+			$this->index_fields[$this->mf_ordctrl] = $this->mf_ordctrl;
 		}
 
 		//pagenum
@@ -333,8 +343,10 @@ abstract class kernel_extends {
 	public function _dump($where='') {
 		$name = 'name';
 		$data = array();
-		if (!isset($this->fields['name']))
+		if (!isset($this->fields[$this->mf_namefields]))
 			$name = 'id as ' . $name;
+		else
+			$name = '`'.$this->mf_namefields.'` as ' . $name;
 		if ($where != '')
 			$where = ' WHERE ' . $where;
 		$result = $this->SQL->execSQL('SELECT id, ' . $name . ' FROM `' . $this->tablename . '`' . $where);
@@ -345,7 +357,7 @@ abstract class kernel_extends {
 	}
 
 	/**
-	 * Функция аналогична _list(), только он принимает данные для запроса в виде параметров и возвращает рез-тат не использую $this->data
+	 * Функция аналогична _query(), только он принимает данные для запроса в виде параметров и возвращает рез-тат не использую $this->data
 	 *
 	 * @param string $list - выборка
 	 * @param string $cls - строка запроса
@@ -387,63 +399,24 @@ abstract class kernel_extends {
 	}
 
 	/**
-	 * Функция выполнения запроса к БД. Использует переменные класса $this->listfields и $this->clause и возвращает все в $this->data
-	 *
-	 * @param string $ord - поле для группировки масива, 1 уровень
-	 * @param string $ord2 - поле для группировки масива, 2 уровень
-	 * @return bool - true в случае успеха
-	 */
-	public function _list($ord='', $ord2='') {
-		$query = 'SELECT ';
-		if (count($this->listfields))
-			$query .= implode(', ', $this->listfields);
-		else
-			$query .= '*';
-
-		$from = ' FROM `' . $this->tablename . '` ';
-
-		$result = $this->SQL->execSQL($query . $from . $this->clause);
-		if ($result->err)
-			return false;
-		$this->data = array();
-		if ($ord != '' and $ord2 != '') {
-			while ($row = $result->fetch_array())
-				$this->data[$row[$ord2]][$row[$ord]] = $row;
-		} elseif ($ord != '') {
-			while ($row = $result->fetch_array())
-				$this->data[$row[$ord]] = $row;
-		} else {
-			while ($row = $result->fetch_array())
-				$this->data[] = $row;
-		}
-
-		if (!$this->_select_attaches())
-			return false;
-		if (!$this->_select_memos())
-			return false;
-		unset($result);
-		return static_main::_message('Select from `' . $this->caption . '` successful.');
-	}
-
-	/**
 	 * Запрос к БД , использует $this->id если он есть в качестве выборки
 	 * возвращает в массив $this->data
 	 *
 	 * @return bool - true если успех
 	 */
 	public function _select() {
-		$this->data = array();
-		if (!$this->_select_fields())
-			return false;
-		if (!$this->_select_attaches())
-			return false;
-		if (!$this->_select_memos())
-			return false;
-		reset($this->data);
-		return static_main::_message('Select from ' . $this->caption . ' successful!');
+		$data = array();
+		$data = $this->_select_fields();
+		if (count($data)) {
+			$this->_select_attaches($data);
+			$this->_select_memos($data);
+			reset($data);
+		}
+		return $data;
 	}
 
 	private function _select_fields() {
+		$data = array();
 		$agr = ', ' . $this->_listnameSQL . ' as name';
 		$pref = 'SELECT *' . $agr;
 		$sql_query = $pref . ' FROM `' . $this->tablename . '`';
@@ -453,16 +426,13 @@ abstract class kernel_extends {
 			$sql_query .= ' ORDER BY ' . $this->ordfield;
 		$result = $this->SQL->execSQL($sql_query);
 		if ($result->err)
-			return false;
+			return $data;
 		while ($row = $result->fetch_array())
-			$this->data[$row['id']] = $row;
-		return true;
+			$data[$row['id']] = $row;
+		return $data;
 	}
 
-	private function _select_attaches(&$data=false) {
-		if (!$data)
-			$data = &$this->data;
-
+	private function _select_attaches(&$data) {
 		if (count($this->attaches) and count($data)) {
 			$temp = current($data);
 			if (!isset($temp['id']))
@@ -481,8 +451,6 @@ abstract class kernel_extends {
 	}
 
 	private function _select_memos(&$data='') {
-		if ($data === '')
-			$data = &$this->data;
 		if (count($this->memos) and count($data)) {
 			$temp = current($data);
 			if (!isset($temp['id']))
@@ -504,8 +472,8 @@ abstract class kernel_extends {
 	 *
 	 * @return bool
 	 */
-	protected function _add() {
-		$result = static_form::_add($this);
+	protected function _add($flag_select=true) {
+		$result = static_form::_add($this,$flag_select);
 		if ($result)
 			$this->allChangeData('add');
 		return $result;
@@ -516,8 +484,8 @@ abstract class kernel_extends {
 	 *
 	 * @return bool
 	 */
-	protected function _update() {
-		$result = static_form::_update($this);
+	protected function _update($flag_select=true) {
+		$result = static_form::_update($this,$flag_select);
 		if ($result)
 			$this->allChangeData('save');
 		return $result;
@@ -597,14 +565,16 @@ abstract class kernel_extends {
 	}
 
 	public function _get_new_ord() {
-		$query = 'SELECT max(ordind) + 1 FROM `' . $this->tablename . '`';
+		$query = 'SELECT max('.$this->mf_ordctrl.') FROM `' . $this->tablename . '`';
+		if ($this->mf_istree and $this->parent_id and !$this->fld_data[$this->mf_istree])
+			$query .= ' WHERE '.$this->mf_istree.'='.$this->parent_id;
 		$result = $this->SQL->execSQL($query);
 		if ($result->err)
-			return false;
-		list($this->ordind) = $result->fetch_array(MYSQL_NUM);
-		if (!$this->ordind)
-			$this->ordind = 0;
-		return true;
+			return 0;
+		list($ordind) = $result->fetch_array(MYSQL_NUM);
+		if ($ordind = (int)$ordind)
+			$ordind ++;
+		return $ordind;
 	}
 
 	/* ------------- ORDER ORDER ORDER ORDER ---------------- */
@@ -616,12 +586,12 @@ abstract class kernel_extends {
 			$id = str_replace($this->_cl . '_', '', $r['id']);
 			$id2 = str_replace($this->_cl . '_', '', $r['id2']);
 			$data = array();
-			$qr = 'select id,ordind from `' . $this->tablename . '`';
+			$qr = 'select id,'.$this->mf_ordctrl.' from `' . $this->tablename . '`';
 			$result = $this->SQL->execSQL($qr);
 			if ($result->err)
 				return false;
 			while ($row = $result->fetch_array()) {
-				$data[$row['id']] = (int) $row['ordind'];
+				$data[$row['id']] = (int) $row[$this->mf_ordctrl];
 			}
 			$ex = 0;
 			if ($r['t'] == 'next' and ($data[$id2] - 1) == $data[$id])
@@ -629,26 +599,26 @@ abstract class kernel_extends {
 			elseif ($r['t'] == 'prev' and ($data[$id2] + 1) == $data[$id])
 				$ex = 1;
 			if ($ex != 1) {
-				$qr = 'UPDATE `' . $this->tablename . '` SET `ordind` = -2147483647 WHERE id=\'' . $id . '\'';
+				$qr = 'UPDATE `' . $this->tablename . '` SET `'.$this->mf_ordctrl.'` = -2147483647 WHERE id=\'' . $id . '\'';
 				$result = $this->SQL->execSQL($qr);
 				if ($result->err)
 					return false;
 
 				if ($r['t'] == 'next' and $data[$id2] < $data[$id]) {
 					$ord = $data[$id2];
-					$qr = 'UPDATE `' . $this->tablename . '` SET `ordind` = (ordind+1) WHERE ' . $data[$id2] . '<=ordind and ordind<=' . $data[$id] . ' order by `ordind` DESC';
+					$qr = 'UPDATE `' . $this->tablename . '` SET `'.$this->mf_ordctrl.'` = ('.$this->mf_ordctrl.'+1) WHERE ' . $data[$id2] . '<='.$this->mf_ordctrl.' and '.$this->mf_ordctrl.'<=' . $data[$id] . ' order by `'.$this->mf_ordctrl.'` DESC';
 				} else {
 					if ($r['t'] == 'next')
 						$ord = $data[$id2] - 1;
 					else
 						$ord= $data[$id2];
-					$qr = 'UPDATE `' . $this->tablename . '` SET `ordind` =(ordind-1) WHERE ' . $data[$id] . '<=`ordind` and `ordind`<=' . $ord . ' order by `ordind`';
+					$qr = 'UPDATE `' . $this->tablename . '` SET `'.$this->mf_ordctrl.'` =('.$this->mf_ordctrl.'-1) WHERE ' . $data[$id] . '<=`'.$this->mf_ordctrl.'` and `'.$this->mf_ordctrl.'`<=' . $ord . ' order by `'.$this->mf_ordctrl.'`';
 				}
 				$result = $this->SQL->execSQL($qr);
 				if ($result->err)
 					return false;
 
-				$qr = 'UPDATE `' . $this->tablename . '` SET `ordind` = ' . $ord . ' WHERE `id`=\'' . $id . '\'';
+				$qr = 'UPDATE `' . $this->tablename . '` SET `'.$this->mf_ordctrl.'` = ' . $ord . ' WHERE `id`=\'' . $id . '\'';
 				$result = $this->SQL->execSQL($qr);
 				if ($result->err)
 					return false;
@@ -688,10 +658,10 @@ abstract class kernel_extends {
 
 // *** PERMISSION ***//
 
-	public function _prmModulAdd($mn) {
+	public function _prmModulAdd() {
 		if (!$this->prm_add)
 			return false;
-		if (static_main::_prmModul($mn, array(9)))
+		if (static_main::_prmModul($this->_cl, array(9)))
 			return true;
 		return false;
 	}
@@ -702,9 +672,10 @@ abstract class kernel_extends {
 		if (isset($param['prm']) and count($param['prm'])) {
 			foreach ($param['prm'] as $k => $r) {
 				foreach ($data as $row)
-					if ($row[$k] != $r)
+					if (!isset($row[$k]) and $row[$k] != $r)
 						return false;
 			}
+			return true;
 		}
 		if (static_main::_prmModul($this->_cl, array(3)))
 			return true;
@@ -752,7 +723,7 @@ abstract class kernel_extends {
 	private function _prmSortField($key) {
 		if (isset($this->fields_form[$key]['mask']['sort']))
 			return true;
-		elseif ($key == 'name' or $key == 'ordfield' or $key == 'active')
+		elseif ($key == $this->mf_namefields or $key == 'ordfield' or $key == $this->mf_actctrl)
 			return true;
 		return false;
 	}
@@ -944,7 +915,7 @@ abstract class kernel_extends {
 					$this->owner->id = 0;
 				$r['value'] = $this->owner->id;
 			}
-			elseif ($k == 'parent_id' and !isset($data[$k])) {
+			elseif ($k == $this->mf_istree and !isset($data[$k])) {
 				if (isset($this->parent_id) and $this->parent_id)
 					$r['value'] = $this->parent_id;
 				elseif (!isset($this->parent_id) and $this->mf_use_charid)
@@ -994,6 +965,8 @@ abstract class kernel_extends {
 			$mess = $this->mess_form;
 		if (!count($this->fields_form))
 			$mess[] = array('name' => 'error', 'value' => $this->getMess('nodata'));
+		if(isset($this->_CFG['hook']['kPreFields']))
+			$this->__do_hook('kPreFields',func_num_args());
 		return $mess;
 	}
 
@@ -1002,6 +975,7 @@ abstract class kernel_extends {
 	 */
 	public function setFieldsForm() {
 		///$this->fields_form = array();
+		return true;
 	}
 
 	/*	 * ************************CLIENT---FUNCTION************************ */
@@ -1211,17 +1185,17 @@ abstract class kernel_extends {
 			$agr = ', ' . $this->_listnameSQL . ' as name';
 			$this->tree_data = $first_data = $path2 = array();
 			$parent_id = $this->id;
-			$this->listfields = array('id,parent_id' . $agr);
+			$listfields = array('id,parent_id' . $agr);
 			while ($parent_id) {
-				$this->clause = 'WHERE id="' . $parent_id . '"';
-				$this->_list('id');
+				$clause = 'WHERE id="' . $parent_id . '"';
+				$this->data = $this->_query($listfields,$clause,'id');
 				if (!count($first_data))
 					$first_data = $this->data;
 				$this->tree_data += $this->data;
 				$path2[$firstpath . $this->_cl . '_id=' . $this->data[$parent_id]['id'] . '&amp;'] = $this->caption . ': ' . $this->data[$parent_id][$this->_listname];
 				if (isset($param['first_id']) and $param['first_id'] and $parent_id == $param['first_id'])
 					break;
-				$parent_id = $this->data[$parent_id]['parent_id'];
+				$parent_id = $this->data[$parent_id][$this->mf_istree];
 			}
 			$this->data = $first_data;
 
@@ -1230,7 +1204,7 @@ abstract class kernel_extends {
 			$path2 = array_reverse($path2);
 		}
 		elseif ($this->id) {
-			$this->_select();
+			$this->data = $this->_select();
 		}
 		if ($this->owner and $this->owner->id) {
 			if ($this->owner->mf_istree)
@@ -1272,7 +1246,7 @@ abstract class kernel_extends {
 			$param['clause'] = $filter_clause[0];
 
 			$xml['topmenu'] = array();
-			if ($this->_prmModulAdd($this->_cl))
+			if ($this->_prmModulAdd())
 				$xml['topmenu']['add'] = array(
 					'href' => '_type=add' . (($this->id) ? '&amp;' . $this->_cl . '_id=' . $this->id : ''),
 					'caption' => 'Добавить ' . $this->caption,
@@ -1384,7 +1358,7 @@ abstract class kernel_extends {
 					array_pop($HTML->path);
 				list($messages, $flag) = $this->_Act(1, $param);
 				if ($this->mf_istree)
-					$this->id = $this->data[$this->id]['parent_id'];
+					$this->id = $this->data[$this->id][$this->mf_istree];
 				else
 					$this->id = NULL;
 			}
@@ -1393,7 +1367,7 @@ abstract class kernel_extends {
 					array_pop($HTML->path);
 				list($messages, $flag) = $this->_Act(0, $param);
 				if ($this->mf_istree)
-					$this->id = $this->tree_data[$this->id]['parent_id'];
+					$this->id = $this->tree_data[$this->id][$this->mf_istree];
 				else
 					$this->id = NULL;
 			}
@@ -1402,7 +1376,7 @@ abstract class kernel_extends {
 					array_pop($HTML->path);
 				list($messages, $flag) = $this->_Del($param);
 				if ($this->mf_istree)
-					$this->id = $this->tree_data[$this->id]['parent_id'];
+					$this->id = $this->tree_data[$this->id][$this->mf_istree];
 				else
 					$this->id = NULL;
 			}
@@ -1617,10 +1591,10 @@ abstract class kernel_extends {
 		//if(isset($this->fields['region_id']) and isset($_SESSION['city']))///////////////**********************
 		//	$param['clause']['t1.region_id'] ='t1.region_id='.$_SESSION['city'];
 
-		if (isset($_GET['_type']) and $_GET['_type'] == 'deleted' and $this->fields_form['active']['listname'] == 'active')
-			$param['clause']['t1.active'] = 't1.active=4';
-		elseif (isset($this->fields_form['active']['listname']) and $this->fields_form['active']['listname'] == 'active')
-			$param['clause']['t1.active'] = 't1.active!=4';
+		if (isset($_GET['_type']) and $_GET['_type'] == 'deleted' and $this->fields_form[$this->mf_actctrl]['listname'] == $this->mf_actctrl)
+			$param['clause']['t1.'.$this->mf_actctrl] = 't1.'.$this->mf_actctrl.'=4';
+		elseif (isset($this->fields_form[$this->mf_actctrl]['listname']) and $this->fields_form[$this->mf_actctrl]['listname'] == $this->mf_actctrl)
+			$param['clause']['t1.'.$this->mf_actctrl] = 't1.'.$this->mf_actctrl.'!=4';
 		return $param['clause'];
 	}
 
@@ -1649,29 +1623,29 @@ abstract class kernel_extends {
 		if ($param['mess'])
 			$xml = $param['mess'];
 		$param['act'] = $act;
-		$this->_select();
+		$this->data = $this->_select();
 		if ($this->_prmModulAct($this->data, $param)) {
 			$this->fld_data = array();
 			$act = (int) $act;
-			if ($this->fields['active']['type'] == 'bool')
-				$this->fld_data['active'] = $act;
+			if ($this->fields[$this->mf_actctrl]['type'] == 'bool')
+				$this->fld_data[$this->mf_actctrl] = $act;
 			else {
 				if (static_main::_prmModul($this->_cl, array(7))) {
 					if ($act == 0)
-						$this->fld_data['active'] = 6;
+						$this->fld_data[$this->mf_actctrl] = 6;
 					else
-						$this->fld_data['active'] = 1;
+						$this->fld_data[$this->mf_actctrl] = 1;
 				}
 				elseif ($act == 1)
-					$this->fld_data['active'] = 5;
+					$this->fld_data[$this->mf_actctrl] = 5;
 				else
-					$this->fld_data['active'] = 2;
+					$this->fld_data[$this->mf_actctrl] = 2;
 			}
 
 			if ($this->_update()) {
-				if ($this->fld_data['active'] == 5)
+				if ($this->fld_data[$this->mf_actctrl] == 5)
 					$xml[] = array('value' => $this->getMess('act5'), 'name' => 'ok');
-				if ($this->fld_data['active'] == 6)
+				if ($this->fld_data[$this->mf_actctrl] == 6)
 					$xml[] = array('value' => $this->getMess('act6'), 'name' => 'ok');
 				elseif ($act)
 					$xml[] = array('value' => $this->getMess('act1'), 'name' => 'ok');
@@ -1694,10 +1668,10 @@ abstract class kernel_extends {
 		$xml = array();
 		if ($param['mess'])
 			$xml = $param['mess'];
-		$this->_select();
+		$this->data = $this->_select();
 		if (count($this->data) and $this->_prmModulDel($this->data, $param)) {
-			if (isset($this->fields['active']) and $this->fields['active']['type'] != 'bool') {
-				$this->fld_data['active'] = 4;
+			if (isset($this->fields[$this->mf_actctrl]) and $this->fields[$this->mf_actctrl]['type'] != 'bool') {
+				$this->fld_data[$this->mf_actctrl] = 4;
 				if ($this->_update()) {
 					$xml[] = array('value' => $this->getMess('deleted'), 'name' => 'ok');
 					$flag = 0;
@@ -1888,4 +1862,49 @@ abstract class kernel_extends {
 }
 
 //// Kernel END
+
+
+class modul_child extends ArrayObject {
+
+	function __construct(&$obj) {
+		$this->modul_obj = $obj;
+	}
+
+	function getIterator() {
+		$iterator = parent::getIterator();
+		while ($iterator->valid()) {
+			$key = $iterator->key();
+			if ($iterator->current() === true) {
+				$this->offsetSet($key, $this->offsetGet($key));
+			}
+			$iterator->next();
+		}
+		return $iterator;
+	}
+
+	function offsetGet($index) {
+		global $_CFG;
+		if (isset($_CFG['modulprm_ext'][$index]) && isset($_CFG['modulprm'][$index]) && !$_CFG['modulprm'][$index][$this->mf_actctrl])
+			$clname = $_CFG['modulprm_ext'][$index][0];
+		else
+			$clname = $index;
+		$value = parent	::offsetGet($clname);
+		if ($this->offsetExists($clname) && $value === true) {
+			if (isset($this->modul_obj->child_path[$clname])) {
+				require_once $this->modul_obj->child_path[$clname];
+			}
+			$modul_child = NULL;
+			if (!_new_class($clname, $modul_child, $this->modul_obj))
+				return false;
+			//$this->modul_obj->childs[$index] = $modul_child;
+			return $modul_child;
+		} else {
+			//если один и тот же клас исползуется в как ребенок в других классах, то $this->singleton = false; вам в помощь, иначе сюда будут выдаваться ссылки на класс созданный в первы раз для другого модуля
+		}
+
+		return $value;
+	}
+
+}
+
 ?>

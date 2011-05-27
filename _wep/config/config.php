@@ -63,7 +63,8 @@ $_CFG['require_modul'] = array(
 	'modulprm' => true,
 	'mail' => true
 );
-$_CFG['singleton'] = array();
+$_CFG['singleton'] = array();// Массив объектов которые не клонируются
+$_CFG['hook'] = array();// События
 $_CFG['logs']['sql'] = array(); // - массив SQL запросов
 $_CFG['fileIncludeOption'] = array(); //автоподключение SCRIPT & STYLE
 $GLOBALS['_ERR'] = array(); //текс ошибок
