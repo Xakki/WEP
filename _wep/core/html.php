@@ -36,7 +36,8 @@ if (!$_CFG['robot'] and (isset($_GET['_showerror']) or $_CFG['_HREF']['arrayHOST
 	$_COOKIE['_showerror'] = 1;
 }
 //else _setcookie('_showerror', '', (time()-5000));
-
+if($_COOKIE['_showallinfo'])
+	include $_CFG['_PATH']['phpscript'] . '/fb.php';
 if (!defined('PHP_VERSION_ID')) {
 	$version = explode('.', PHP_VERSION);
 	define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
