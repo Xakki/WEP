@@ -7,13 +7,13 @@
 		<meta http-equiv="Pragma" content="no-cache"/>
 		<meta name="keywords" content="WEP"/> 
 		<meta name="description" content="CMS"/>
-		<link rel="SHORTCUT ICON" href="{$_tpl['design']}img/favicon.ico"/>
-		<script type="text/javascript" src="_design/_script/jquery.js"></script>
-		<script type="text/javascript" src="_design/_script/include.js"></script>
+		<!--<link rel="SHORTCUT ICON" href="{$_tpl['design']}img/favicon.ico"/>-->
+		{$_tpl['styles']}
+		<link type="text/css" href="{$_tpl['design']}style/style.css" rel="stylesheet"/>
+		<script type="text/javascript" src="/_design/_script/jquery.js"></script>
+		<script type="text/javascript" src="/_design/_script/include.js"></script>
 		<script type="text/javascript" src="{$_tpl['design']}script/script.js"></script>
 		{$_tpl['script']}
-		<link type="text/css" href="{$_tpl['design']}style/style.css" rel="stylesheet"/>
-		{$_tpl['styles']}
 	</head>
 	<body onload="{$_tpl['onload']}">
 		<div id='wepmain'>

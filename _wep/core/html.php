@@ -36,8 +36,7 @@ if (!$_CFG['robot'] and (isset($_GET['_showerror']) or $_CFG['_HREF']['arrayHOST
 	$_COOKIE['_showerror'] = 1;
 }
 //else _setcookie('_showerror', '', (time()-5000));
-if($_COOKIE['_showallinfo'])
-	include $_CFG['_PATH']['phpscript'] . '/fb.php';
+
 if (!defined('PHP_VERSION_ID')) {
 	$version = explode('.', PHP_VERSION);
 	define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
@@ -65,7 +64,7 @@ class html {
 		$this->_templates = 'default';
 		$this->_PATHd = $_SERVER['_DR_'] . $_PATHd . $_design . '/';
 		$this->flag = $flag;
-		$_tpl['design'] = $_PATHd . $_design . '/';
+		$_tpl['design'] =  $_CFG['_HREF']['BH'].$_PATHd . $_design . '/';
 		$_tpl['title'] = $_tpl['time'] = $_tpl['onload'] = $_tpl['logs'] = '';
 		$_tpl['script'] = $_tpl['styles'] = array();
 		$params = array(
@@ -155,7 +154,7 @@ class html {
 		}
 		//'design/default/xsl/',  'design/'.$this->_design.'/xsl/',
 		$xsl = str_replace(array('\x09'), array(''), file_get_contents($transform));
-		$xml = '<?xml version="1.0" encoding="UTF-8"<!DOCTYPE fragment [<!ENTITY nbsp "&#160;">]> ' . $xml;
+		$xml = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE fragment [<!ENTITY nbsp "&#160;">]> ' . $xml;
 		if (extension_loaded('xsl')) {
 			if (!isset($this->_xslt)) {
 				global $_CFG;

@@ -14,6 +14,7 @@ abstract class kernel_extends {
 	const versionCore = '2.2.9';
 	function __construct($owner=NULL) {
 		global $_CFG;
+		//FB::info($_CFG);
 		$this->_CFG = true; // баг ПХП
 		$this->_CFG = &$_CFG; //Config
 
