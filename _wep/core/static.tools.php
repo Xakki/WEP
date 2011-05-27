@@ -768,7 +768,6 @@ class static_tools {
 		$SQL = new sql($SetDataCFG['sql']); //пробуем подключиться к БД
 
 		$putFile = "<?\n\t//create time " . date('Y-m-d H:i') . "\n\t".implode("\n\t", $putFile)."\n";
-//print_r('<pre>');print_r($putFile);
 		//Записать в конфиг все данные которые отличаются от данных по умолчанию
 		if (!file_put_contents($_CFG['_PATH']['wepconf'] . '/config/config.php', $putFile)) {
 			$mess[] = array('name' => 'error', 'value' => 'Ошибка записи настроек. Нет доступа к фаилу');

@@ -92,7 +92,6 @@ final class modulprm_class extends kernel_extends {
 		$this->mDump();
 		$temp = $this->_CFG['modulprm_ext'];
 		unset($this->_CFG['modulprm_ext']); // чтобы не подменять обращения к модулям
-//print_r('<pre>');print_r($this->data);
 		foreach ($this->_CFG['modulinc'] as $k => $r) {
 			$dir = dir($r['path']);
 			while (false !== ($entry = $dir->read())) {

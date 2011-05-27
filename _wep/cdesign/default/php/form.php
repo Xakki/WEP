@@ -67,7 +67,7 @@ function tpl_form(&$data) {
 				if(!$r['mask']['max']) $r['mask']['max'] = 5000;
 				$texthtml .= '<div class="form-value"><textarea name="'.$k.'" onkeyup="textareaChange(this,\''.$r['mask']['max'].'\')" rows="5" cols="50" '.$attribute.'>'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
 			}
-			elseif($r['type']=='radio') {//print_r('<pre>');print_r($r);
+			elseif($r['type']=='radio') {
 				$texthtml .= '<div class="form-value">';
 				if(!count($r['valuelist']))
 					$texthtml .= '<font color="red">Нет элементов для отображения</font>';
@@ -157,7 +157,6 @@ function tpl_form(&$data) {
 				<input type="hidden" name="srlz_'.$k.'" value="'.htmlspecialchars($serl,ENT_QUOTES,$_CFG['wep']['charset']).'"/>';
 			}
 			elseif($r['type']=='list' and !$r['readonly']) {
-				//print_r('<pre>');print_r($r['value']);print_r($r['valuelist']);
 				$texthtml .= '<div class="form-value">';
 				if(isset($r['size']) and $r['size']>1) {
 					$texthtml .= '<select size="'.$r['size'].'" name="'.$k.'" class="small" '.$attribute;
@@ -195,7 +194,6 @@ function tpl_form(&$data) {
 				$texthtml .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.$temp.'" '.$attribute.'/></div>';
 			}
 			elseif($r['type']=='date' and !$r['readonly']) {
-//	echo '<pre>';print_r($r);
 				$texthtml .= '<div class="form-value">';
 
 				// формат для даты

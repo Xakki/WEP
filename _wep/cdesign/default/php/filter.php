@@ -87,7 +87,6 @@
 				$html .= '</div>';
 			}
 			elseif($r['type']=='linklist') {
-				//print_r('<pre>');print_r($r['valuelist']);
 				$html .= '<div class="f_item linklist" id="tr_'.$k.'"><div class="f_caption">'.$r['caption'].'</div><div class="f_value">';
 				foreach($r['valuelist'] as $rk=>$rr) {
 					$html .= '<div><a href="'.$rr['#href#'].'">'.$rr['#name#'].'</a></div>';

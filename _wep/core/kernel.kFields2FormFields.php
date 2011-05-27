@@ -128,7 +128,6 @@
 								$md = array($md);
 								$key = 0;
 							}
-							//print_r('<pre>');print_r($md);
 							$r['valuelist'] = $this->_forlist($md,$key,$val);
 						}
 					}
