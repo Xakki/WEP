@@ -18,4 +18,4 @@ class paysms_class extends kernel_extends {
 	}
 }
 
-?>
+

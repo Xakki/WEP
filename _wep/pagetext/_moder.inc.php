@@ -47,4 +47,3 @@
 				$html ='<div style="color:red;">'.date('H:i:s').' : Доступ к модулю '.$FUNCPARAM[0].' запрещён администратором</div>';
 		}
 	return $html;
-?>

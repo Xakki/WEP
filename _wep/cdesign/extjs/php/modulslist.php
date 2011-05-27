@@ -9,4 +9,4 @@
 		$html .= '<div class="clk"></div>';
 		return $html;
 	}
-?>
+

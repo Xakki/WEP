@@ -2,35 +2,36 @@
 /*
  * CKFinder
  * ========
- * http://www.ckfinder.com
- * Copyright (C) 2007-2008 Frederico Caldeira Knabben (FredCK.com)
+ * http://ckfinder.com
+ * Copyright (C) 2007-2011, CKSource - Frederico Knabben. All rights reserved.
  *
  * The software, this file and its contents are subject to the CKFinder
  * License. Please read the license.txt file before using, installing, copying,
  * modifying or distribute this file or part of its contents. The contents of
  * this file is part of the Source Code of CKFinder.
  */
+if (!defined('IN_CKFINDER')) exit;
 
 /**
  * @package CKFinder
  * @subpackage Core
- * @copyright Frederico Caldeira Knabben
+ * @copyright CKSource - Frederico Knabben
  */
 
 /**
  * Sigleton factory creating objects
- * 
+ *
  * @package CKFinder
  * @subpackage Core
- * @copyright Frederico Caldeira Knabben
+ * @copyright CKSource - Frederico Knabben
  */
 class CKFinder_Connector_Core_Factory
 {
     static $instances = array();
-    
+
     /**
      * Initiate factory
-     * @static 
+     * @static
      */
     static function initFactory()
     {
@@ -45,7 +46,7 @@ class CKFinder_Connector_Core_Factory
      * </code>
      *
      * @param string $className class name
-     * @static 
+     * @static
      * @access public
      * @return object
      */

@@ -2,8 +2,8 @@
 /*
  * CKFinder
  * ========
- * http://www.ckfinder.com
- * Copyright (C) 2007-2008 Frederico Caldeira Knabben (FredCK.com)
+ * http://ckfinder.com
+ * Copyright (C) 2007-2011, CKSource - Frederico Knabben. All rights reserved.
  *
  * The software, this file and its contents are subject to the CKFinder
  * License. Please read the license.txt file before using, installing, copying,
@@ -13,11 +13,22 @@
 
 /**
  * Main heart of CKFinder - Connector
- * 
+ *
  * @package CKFinder
  * @subpackage Connector
- * @copyright Frederico Caldeira Knabben
+ * @copyright CKSource - Frederico Knabben
  */
+
+/**
+ * Protect against sending warnings to the browser.
+ * Comment out this line during debugging.
+ */
+// error_reporting(0);
+
+/**
+ * Protect against sending content before all HTTP headers are sent (#186).
+ */
+ob_start();
 
 /**
  * define required constants
@@ -39,9 +50,12 @@ require_once CKFINDER_CONNECTOR_LIB_DIR . "/Core/Factory.php";
  * utils class
  */
 require_once CKFINDER_CONNECTOR_LIB_DIR . "/Utils/Misc.php";
-
 /**
- * Simple function required by config.php - discover the server side path 
+ * hooks class
+ */
+require_once CKFINDER_CONNECTOR_LIB_DIR . "/Core/Hooks.php";
+/**
+ * Simple function required by config.php - discover the server side path
  * to the directory relative to the "$baseUrl" attribute
  *
  * @package CKFinder
@@ -61,6 +75,9 @@ $utilsSecurity->getRidOfMagicQuotes();
  * $config must be initialised
  */
 $config = array();
+$config['Hooks'] = array();
+$config['Plugins'] = array();
+
 /**
  * read config file
  */
@@ -69,7 +86,7 @@ require_once CKFINDER_CONNECTOR_CONFIG_FILE_PATH;
 CKFinder_Connector_Core_Factory::initFactory();
 $connector =& CKFinder_Connector_Core_Factory::getInstance("Core_Connector");
 
-if(isset($_GET['command'])) {    
+if(isset($_GET['command'])) {
     $connector->executeCommand($_GET['command']);
 }
 else {

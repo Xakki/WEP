@@ -2,19 +2,20 @@
 /*
  * CKFinder
  * ========
- * http://www.ckfinder.com
- * Copyright (C) 2007-2008 Frederico Caldeira Knabben (FredCK.com)
+ * http://ckfinder.com
+ * Copyright (C) 2007-2011, CKSource - Frederico Knabben. All rights reserved.
  *
  * The software, this file and its contents are subject to the CKFinder
  * License. Please read the license.txt file before using, installing, copying,
  * modifying or distribute this file or part of its contents. The contents of
  * this file is part of the Source Code of CKFinder.
  */
+if (!defined('IN_CKFINDER')) exit;
 
 /**
  * @package CKFinder
  * @subpackage CommandHandlers
- * @copyright Frederico Caldeira Knabben
+ * @copyright CKSource - Frederico Knabben
  */
 
 /**
@@ -24,10 +25,10 @@ require_once CKFINDER_CONNECTOR_LIB_DIR . "/CommandHandler/XmlCommandHandlerBase
 
 /**
  * Handle GetFolders command
- * 
+ *
  * @package CKFinder
  * @subpackage CommandHandlers
- * @copyright Frederico Caldeira Knabben
+ * @copyright CKSource - Frederico Knabben
  */
 class CKFinder_Connector_CommandHandler_GetFolders extends CKFinder_Connector_CommandHandler_XmlCommandHandlerBase
 {
@@ -73,7 +74,7 @@ class CKFinder_Connector_CommandHandler_GetFolders extends CKFinder_Connector_Co
         } else {
             $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_ACCESS_DENIED);
         }
-        
+
         $resourceTypeInfo = $this->_currentFolder->getResourceTypeConfig();
 
         if (sizeof($files)>0) {

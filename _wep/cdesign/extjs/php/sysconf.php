@@ -8,4 +8,3 @@
 		$html .= '<div class="modullist"><a href="index.html" target="_blank">Главная страница</a></div><div class="clk"></div>';
 		return $html;
 	}
-?>

@@ -2,19 +2,20 @@
 /*
  * CKFinder
  * ========
- * http://www.ckfinder.com
- * Copyright (C) 2007-2008 Frederico Caldeira Knabben (FredCK.com)
+ * http://ckfinder.com
+ * Copyright (C) 2007-2011, CKSource - Frederico Knabben. All rights reserved.
  *
  * The software, this file and its contents are subject to the CKFinder
  * License. Please read the license.txt file before using, installing, copying,
  * modifying or distribute this file or part of its contents. The contents of
  * this file is part of the Source Code of CKFinder.
  */
+if (!defined('IN_CKFINDER')) exit;
 
 /**
  * @package CKFinder
  * @subpackage ErrorHandler
- * @copyright Frederico Caldeira Knabben
+ * @copyright CKSource - Frederico Knabben
  */
 
 /**
@@ -24,10 +25,10 @@ require_once CKFINDER_CONNECTOR_LIB_DIR . "/ErrorHandler/Base.php";
 
 /**
  * File upload error handler
- * 
+ *
  * @package CKFinder
  * @subpackage ErrorHandler
- * @copyright Frederico Caldeira Knabben
+ * @copyright CKSource - Frederico Knabben
  */
 class CKFinder_Connector_ErrorHandler_QuickUpload extends CKFinder_Connector_ErrorHandler_Base
 {
@@ -50,10 +51,11 @@ class CKFinder_Connector_ErrorHandler_QuickUpload extends CKFinder_Connector_Err
         header('Content-Type: text/html; charset=utf-8');
 
 		/**
-		 * echo <script> is not called before CKFinder_Connector_Utils_Misc::getErrorMessage  
+		 * echo <script> is not called before CKFinder_Connector_Utils_Misc::getErrorMessage
 		 * because PHP has problems with including files that contain BOM character.
 		 * Having BOM character after <script> tag causes a javascript error.
 		 */
+        echo "<script type=\"text/javascript\">";
         if (!empty($_GET['CKEditor'])) {
             $errorMessage = CKFinder_Connector_Utils_Misc::getErrorMessage($number, $sFileName);
 
@@ -63,11 +65,9 @@ class CKFinder_Connector_ErrorHandler_QuickUpload extends CKFinder_Connector_Err
             }
 
             $funcNum = preg_replace("/[^0-9]/", "", $_GET['CKEditorFuncNum']);
-	        echo "<script type=\"text/javascript\">";
             echo "window.parent.CKEDITOR.tools.callFunction($funcNum, '" . str_replace("'", "\\'", $sFileUrl . $sFileName) . "', '" .str_replace("'", "\\'", $errorMessage). "');";
         }
         else {
-        	echo "<script type=\"text/javascript\">";
             if (!$uploaded) {
                 echo "window.parent.OnUploadCompleted(" . $number . ", '', '', '') ;";
             } else {

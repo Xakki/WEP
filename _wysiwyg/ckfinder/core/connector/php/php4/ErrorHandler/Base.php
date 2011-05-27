@@ -2,27 +2,28 @@
 /*
  * CKFinder
  * ========
- * http://www.ckfinder.com
- * Copyright (C) 2007-2008 Frederico Caldeira Knabben (FredCK.com)
+ * http://ckfinder.com
+ * Copyright (C) 2007-2011, CKSource - Frederico Knabben. All rights reserved.
  *
  * The software, this file and its contents are subject to the CKFinder
  * License. Please read the license.txt file before using, installing, copying,
  * modifying or distribute this file or part of its contents. The contents of
  * this file is part of the Source Code of CKFinder.
  */
+if (!defined('IN_CKFINDER')) exit;
 
 /**
  * @package CKFinder
  * @subpackage ErrorHandler
- * @copyright Frederico Caldeira Knabben
+ * @copyright CKSource - Frederico Knabben
  */
 
 /**
  * Basic error handler
- * 
+ *
  * @package CKFinder
  * @subpackage ErrorHandler
- * @copyright Frederico Caldeira Knabben
+ * @copyright CKSource - Frederico Knabben
  */
 class CKFinder_Connector_ErrorHandler_Base
 {
@@ -76,10 +77,10 @@ class CKFinder_Connector_ErrorHandler_Base
         if ($this->_catchAllErrors || in_array($number, $this->_skipErrorsArray)) {
             return false;
         }
-        
+
         $_xml =& CKFinder_Connector_Core_Factory::getInstance("Core_Xml");
         $_xml->raiseError($number,$text);
 
         exit;
-    }    
+    }
 }

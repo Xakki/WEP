@@ -2,27 +2,28 @@
 /*
  * CKFinder
  * ========
- * http://www.ckfinder.com
- * Copyright (C) 2007-2008 Frederico Caldeira Knabben (FredCK.com)
+ * http://ckfinder.com
+ * Copyright (C) 2007-2011, CKSource - Frederico Knabben. All rights reserved.
  *
  * The software, this file and its contents are subject to the CKFinder
  * License. Please read the license.txt file before using, installing, copying,
  * modifying or distribute this file or part of its contents. The contents of
  * this file is part of the Source Code of CKFinder.
  */
+if (!defined('IN_CKFINDER')) exit;
 
 /**
  * @package CKFinder
  * @subpackage Config
- * @copyright Frederico Caldeira Knabben
+ * @copyright CKSource - Frederico Knabben
  */
 
 /**
  * This class keeps images configuration
- * 
+ *
  * @package CKFinder
  * @subpackage Config
- * @copyright Frederico Caldeira Knabben
+ * @copyright CKSource - Frederico Knabben
  */
 class CKFinder_Connector_Core_ImagesConfig
 {
@@ -69,7 +70,7 @@ class CKFinder_Connector_Core_ImagesConfig
             }
         }
     }
-        
+
     /**
      * Get maximum width of a thumbnail
      *
@@ -80,7 +81,7 @@ class CKFinder_Connector_Core_ImagesConfig
     {
     	return $this->_maxWidth;
     }
-    
+
     /**
      * Get maximum height of a thumbnail
      *
@@ -91,7 +92,7 @@ class CKFinder_Connector_Core_ImagesConfig
     {
     	return $this->_maxHeight;
     }
-    
+
     /**
      * Get quality of a thumbnail (1-100)
      *

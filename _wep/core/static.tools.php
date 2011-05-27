@@ -716,7 +716,7 @@ class static_tools {
 					$fc .= $r . "\n";
 			}
 		}
-		$fc = trim($fc, "<?>\n");
+		$fc = trim($fc, "<\n");
 		if ($mData !== false) {
 			$_CFG = $mData;
 		}
@@ -746,8 +746,19 @@ class static_tools {
 		$SetDataCFG = static_main::MergeArrays($USER_CFG, $SetDataCFG);// объединяем конфиг записанный на пользователя и новые конфиги
 		foreach ($edit_cfg as $k => $r) {
 			foreach ($SetDataCFG[$k] as $kk => $rr) {
-				if (!isset($DEF_CFG[$k][$kk]) or $rr != $DEF_CFG[$k][$kk]) {
-					if(is_string($rr)) $rr = '\''.addcslashes($rr, '\'').'\'';
+				$flag = false;
+				if(is_string($rr)) {
+					if($rr != $DEF_CFG[$k][$kk])
+						$flag = true;
+					$rr = '\''.addcslashes($rr, '\'').'\'';
+				}
+				elseif(is_array($rr)) {
+					if(!is_array($DEF_CFG[$k][$kk]) or count(array_diff($rr,$DEF_CFG[$k][$kk])))
+						$flag = true;
+					$rr = array_combine($rr,$rr);
+					$rr = var_export($rr,true);
+				}
+				if (!isset($DEF_CFG[$k][$kk]) or $flag) {
 					$putFile[$k . '_' . $kk] = '$_CFG[\'' . $k . '\'][\'' . $kk . '\'] = ' . $rr . ';';
 				}
 			}
@@ -756,7 +767,7 @@ class static_tools {
 			$SetDataCFG = static_main::MergeArrays($SetDataCFG, $tempCFG);
 		$SQL = new sql($SetDataCFG['sql']); //пробуем подключиться к БД
 
-		$putFile = "<?\n\t//create time " . date('Y-m-d H:i') . "\n\t".implode("\n\t", $putFile)."\n?>";
+		$putFile = "<?\n\t//create time " . date('Y-m-d H:i') . "\n\t".implode("\n\t", $putFile)."\n";
 //print_r('<pre>');print_r($putFile);
 		//Записать в конфиг все данные которые отличаются от данных по умолчанию
 		if (!file_put_contents($_CFG['_PATH']['wepconf'] . '/config/config.php', $putFile)) {
@@ -768,6 +779,5 @@ class static_tools {
 		}
 		return array($fl,$mess);
 	}
-}
 
-?>
+}

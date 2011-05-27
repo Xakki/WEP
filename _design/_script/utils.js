@@ -352,3 +352,15 @@ function dump(arr, level) {/*аналог ф в ПХП print_r*/
     }
     return dumped_text;
 }
+
+function show_fblock(obj,selector) {
+	if(jQuery(selector).is(':hidden')) {
+		jQuery(selector).show();
+		jQuery(obj).addClass('shhide');
+	}
+	else {
+		jQuery(selector).hide();
+		jQuery(obj).removeClass('shhide');
+	}
+
+}

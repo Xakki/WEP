@@ -142,5 +142,3 @@
 			return mysql_data_seek($this->handle, $row);
 		}
 	}
-
-?>

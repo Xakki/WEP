@@ -1907,4 +1907,3 @@ class modul_child extends ArrayObject {
 
 }
 
-?>

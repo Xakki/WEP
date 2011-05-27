@@ -1,10 +1,10 @@
 <?php
 	global $_CFG,$SQL;
 	$_CFG['_PATH']['path'] = dirname(dirname(dirname(dirname(dirname(dirname($_SERVER['SCRIPT_FILENAME']))))));
-	require_once($_CFG['_PATH']['path'].'/_wepconf/config/config.php');
+	$_CFG['_PATH']['wep'] = $_CFG['_PATH']['path'].'/_wep';
+	require_once($_CFG['_PATH']['wep'].'/config/config.php');
 	require_once($_CFG['_PATH']['core'].'/sql.php');
-	$SQL = new sql();
-	session_go();
+	session_go();//print_r($_SESSION);exit('**');
 /*
  * ### CKFinder : Configuration File - Basic Instructions
  *
@@ -19,24 +19,24 @@
  */
 
 /**
- * This function must check the user session to be sure that he/she is 
- * authorized to upload and access files in the File Browser. 
+ * This function must check the user session to be sure that he/she is
+ * authorized to upload and access files in the File Browser.
  *
  * @return boolean
  */
 function CheckAuthentication()
 {
-	//WARNING : DO NOT simply return "true". By doing so, you are allowing
-	//"anyone" to upload and list the files in your server. You must implement
-	//some kind of session validation here. Even something very simple as...
+	// WARNING : DO NOT simply return "true". By doing so, you are allowing
+	// "anyone" to upload and list the files in your server. You must implement
+	// some kind of session validation here. Even something very simple as...
 
 	// return isset($_SESSION['IsAuthorized']) && $_SESSION['IsAuthorized'];
 
-	//... where $_SESSION['IsAuthorized'] is set to "true" as soon as the
-	//user logs in your system.
+	// ... where $_SESSION['IsAuthorized'] is set to "true" as soon as the
+	// user logs in your system. To be able to use session variables don't
+	// forget to add session_start() at the top of this file.
 	if(isset($_SESSION['user']) and $_SESSION['user']['filesize']>0) 
 		return true;
-
 	return false;
 }
 
@@ -44,6 +44,13 @@ function CheckAuthentication()
 // fully functional, in demo mode.
 $config['LicenseName'] = '';
 $config['LicenseKey'] = '';
+
+/*
+ Uncomment lines below to enable PHP error reporting and displaying PHP errors.
+ Do not do this on a production server. Might be helpful when debugging why CKFinder does not work as expected.
+*/
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
 
 /*
 To make it easy to configure CKFinder, the $baseUrl and $baseDir can be used.
@@ -60,8 +67,8 @@ Examples:
 
 ATTENTION: The trailing slash is required.
 */
+//$baseUrl = '/ckfinder/userfiles/';
 $baseUrl = $_SESSION['FckEditorUserFilesUrl'];
-
 /*
 $baseDir : the path to the local directory (in the server) which points to the
 above $baseUrl URL. This is the path used by CKFinder to handle the files in
@@ -72,7 +79,9 @@ Examples:
 	$baseDir = '/home/login/public_html/ckfinder/files/';
 	$baseDir = 'C:/SiteDir/CKFinder/userfiles/';
 
-	// Or you may let CKFinder discover the path, based on $baseUrl:
+	// Or you may let CKFinder discover the path, based on $baseUrl.
+	// WARNING: resolveUrl() *will not work* if $baseUrl does not start with a slash ("/"),
+	// for example if $baseDir is set to  http://example.com/ckfinder/files/
 	$baseDir = resolveUrl($baseUrl);
 
 ATTENTION: The trailing slash is required.
@@ -104,8 +113,8 @@ gets scaled down proportionally. Set to 0 to disable this feature.
 $config['Images'] = Array(
 		'maxWidth' => 1600,
 		'maxHeight' => 1200,
-		'quality' => 80);		
-		
+		'quality' => 80);
+
 /*
 RoleSessionVar : the session variable name that CKFinder must use to retrieve
 the "role" of the current user. The "role", can be used in the "AccessControl"
@@ -115,7 +124,7 @@ To be able to use this feature, you must initialize the session data by
 uncommenting the following "session_start()" call.
 */
 $config['RoleSessionVar'] = 'CKFinder_UserRole';
-
+//session_start();
 
 /*
 AccessControl : used to restrict access or features to specific folders.
@@ -128,6 +137,7 @@ Subfolders inherit their default settings from their parents' definitions.
 	- The "resourceType" attribute accepts the special value '*', which
 	  means "all resource types".
 */
+
 //----------
 
 		function dir_size($dir) {
@@ -148,7 +158,7 @@ Subfolders inherit their default settings from their parents' definitions.
 			return $totalsize;
 		}
 		$MSize=$_SESSION['user']['filesize'];
-		if(@opendir($baseDir)) {
+		if(file_exists($baseDir) and is_dir($baseDir)) {
 			$dirsize = round(dir_size($baseDir)/(1024 * 1024));//в мегабайтах
 			$MSize = $_SESSION['user']['filesize']-$dirsize;
 		}
@@ -182,6 +192,12 @@ $config['AccessControl'][] = Array(
 		'resourceType' => 'Images',
 		'folder' => '/Logos',
 
+		'folderView' => true,
+		'folderCreate' => true,
+		'folderRename' => true,
+		'folderDelete' => true,
+
+		'fileView' => true,
 		'fileUpload' => false,
 		'fileRename' => false,
 		'fileDelete' => false);
@@ -211,7 +227,7 @@ $config['ResourceType'][] = Array(
 		'url' => $baseUrl . 'files',
 		'directory' => $baseDir . 'files',
 		'maxSize' => $MSize,
-		'allowedExtensions' => '7z,aiff,asf,avi,bmp,csv,doc,fla,flv,gif,gz,gzip,jpeg,jpg,mid,mov,mp3,mp4,mpc,mpeg,mpg,ods,odt,pdf,png,ppt,pxd,qt,ram,rar,rm,rmi,rmvb,rtf,sdc,sitd,swf,sxc,sxw,tar,tgz,tif,tiff,txt,vsd,wav,wma,wmv,xls,zip',
+		'allowedExtensions' => '7z,aiff,asf,avi,bmp,csv,doc,docx,fla,flv,gif,gz,gzip,jpeg,jpg,mid,mov,mp3,mp4,mpc,mpeg,mpg,ods,odt,pdf,png,ppt,pptx,pxd,qt,ram,rar,rm,rmi,rmvb,rtf,sdc,sitd,swf,sxc,sxw,tar,tgz,tif,tiff,txt,vsd,wav,wma,wmv,xls,xlsx,zip',
 		'deniedExtensions' => '');
 
 $config['ResourceType'][] = Array(
@@ -219,7 +235,7 @@ $config['ResourceType'][] = Array(
 		'url' => $baseUrl . 'images',
 		'directory' => $baseDir . 'images',
 		'maxSize' => $MSize,
-		'allowedExtensions' => 'bmp,gif,jpeg,jpg,png',
+		'allowedExtensions' => 'bmp,gif,jpeg,jpg,png,avi,iso,mp3',
 		'deniedExtensions' => '');
 
 $config['ResourceType'][] = Array(
@@ -271,12 +287,12 @@ if set to true, validate image size
 $config['SecureImageUploads'] = true;
 
 /*
-Indicates that the file size (maxSize) for images must be checked only 
-after scaling them. Otherwise, it is checked right after uploading. 
+Indicates that the file size (maxSize) for images must be checked only
+after scaling them. Otherwise, it is checked right after uploading.
 */
 $config['CheckSizeAfterScaling'] = true;
 
-/* 
+/*
 For security, HTML is allowed in the first Kb of data for files having the
 following extensions only.
 */
@@ -287,7 +303,7 @@ Folders to not display in CKFinder, no matter their location.
 No paths are accepted, only the folder name.
 The * and ? wildcards are accepted.
 */
-$config['HideFolders'] = Array(".svn", "CVS", ".bzr");
+$config['HideFolders'] = Array(".svn", "CVS", ".bzr", ".git");
 
 /*
 Files to not display in CKFinder, no matter their location.
@@ -295,7 +311,7 @@ No paths are accepted, only the file name, including extension.
 The * and ? wildcards are accepted.
 */
 $config['HideFiles'] = Array(".*");
- 
+
 /*
 After file is uploaded, sometimes it is required to change its permissions
 so that it was possible to access it at the later time.
@@ -310,3 +326,18 @@ See comments above.
 Used when creating folders that does not exist.
 */
 $config['ChmodFolders'] = 0755 ;
+
+/*
+Force ASCII names for files and folders.
+If enabled, characters with diactric marks, like å, ä, ö, ć, č, đ, š
+will be automatically converted to ASCII letters.
+*/
+$config['ForceAscii'] = false;
+
+
+include_once "plugins/imageresize/plugin.php";
+include_once "plugins/fileeditor/plugin.php";
+
+$config['plugin_imageresize']['smallThumb'] = '90x90';
+$config['plugin_imageresize']['mediumThumb'] = '120x120';
+$config['plugin_imageresize']['largeThumb'] = '180x180';

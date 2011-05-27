@@ -93,4 +93,4 @@
 	//$_tpl['script']['script.localisation/jquery.localisation-min'] = 1;
 
 //$_CFG['fileIncludeOption']['fancybox']
-?>
+

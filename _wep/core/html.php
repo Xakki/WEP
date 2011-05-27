@@ -36,7 +36,8 @@ if (!$_CFG['robot'] and (isset($_GET['_showerror']) or $_CFG['_HREF']['arrayHOST
 	$_COOKIE['_showerror'] = 1;
 }
 //else _setcookie('_showerror', '', (time()-5000));
-
+if($_COOKIE['_showallinfo'])
+	include $_CFG['_PATH']['phpscript'] . '/fb.php';
 if (!defined('PHP_VERSION_ID')) {
 	$version = explode('.', PHP_VERSION);
 	define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
@@ -154,7 +155,7 @@ class html {
 		}
 		//'design/default/xsl/',  'design/'.$this->_design.'/xsl/',
 		$xsl = str_replace(array('\x09'), array(''), file_get_contents($transform));
-		$xml = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE fragment [<!ENTITY nbsp "&#160;">]> ' . $xml;
+		$xml = '<?xml version="1.0" encoding="UTF-8"<!DOCTYPE fragment [<!ENTITY nbsp "&#160;">]> ' . $xml;
 		if (extension_loaded('xsl')) {
 			if (!isset($this->_xslt)) {
 				global $_CFG;
@@ -213,13 +214,13 @@ function _myErrorHandler($errno, $errstr, $errfile, $errline, $errcontext) {//,$
 
 		// Debuger
 		// для вывода отладчика для всех типов ошибок , можно отключить это условие
-		if ($_CFG['wep']['on_debug'] and $_CFG['_error'][$errno]['debug']) 
+		if (isset($_CFG['wep']['bug_hunter'][$errno]) and $_CFG['_error'][$errno]['debug'])
 			$debug = '<div class="spoiler-body" style="background-color: rgb(225, 225, 225);">' . debugPrint(2) . '</div>';
 		else
 			$debug = '';
 
 		// write bug to DB
-		if ($_CFG['site']['bug_hunter'] and $_CFG['_error'][$errno]['prior'] < $_CFG['site']['bug_hunter']) {
+		if (isset($_CFG['wep']['bug_hunter'][$errno])) {
 			if (_new_class('bug', $MODUL)) {
 				$MODUL->add_bug($errno, $errstr, $errfile, $errline, $debug);
 			}
@@ -257,7 +258,7 @@ function startCatchError($param=2) {
 	$_CFG['_ctemp' . $param]['bug_hunter'] = $_CFG['wep']['bug_hunter'];
 	$_CFG['_ctemp' . $param]['stop_fatal_error'] = $_CFG['wep']['stop_fatal_error'];
 	$_CFG['wep']['catch_bug'] = $param;
-	$_CFG['wep']['bug_hunter'] = 0;
+	$_CFG['wep']['bug_hunter'] = array();
 	$_CFG['wep']['stop_fatal_error'] = 0;
 	return true;
 }
@@ -322,11 +323,13 @@ function _obHandler($buffer) {
 		$htmlerr .= '<link type="text/css" href="_design/_style/bug.css" rel="stylesheet"/></div> <script type="text/javascript" src="_design/_script/bug.js"></script>';
 
 	if (!$_CFG['_F']['adminpage'])
-		$_tpl['logs'] .= $htmlinfo . $htmlerr . $buffer;
+		$_tpl['logs'] .= $htmlinfo . $htmlerr;
 	else {
 		$_tpl['time'] .= $htmlinfo;
-		$_tpl['logs'] .= $htmlerr . $buffer;
+		$_tpl['logs'] .= $htmlerr;
 	}
+	//$_tpl['logs'] = htmlspecialchars($_tpl['logs'], ENT_QUOTES);
+	$_tpl['logs'] .= $buffer;
 
 	if ($_html != '') {
 		//if ($_tpl['logs'] == '')
@@ -335,7 +338,6 @@ function _obHandler($buffer) {
 		$page = $_html;
 	}else
 		$page = $_tpl['logs'];
-
 	return $page;
 }
 
@@ -569,5 +571,3 @@ function _modulExists($class_name) {
 	$ret = static_main::includeModulFile($class_name[0]);
 	return $ret['file'];
 }
-
-?>

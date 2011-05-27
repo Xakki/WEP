@@ -59,4 +59,4 @@ class payzpayment_class extends kernel_extends {
 	
 }
 
-?>
+

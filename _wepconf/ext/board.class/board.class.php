@@ -1482,4 +1482,3 @@ class board_class extends kernel_extends {
 	}
 }
 
-?>

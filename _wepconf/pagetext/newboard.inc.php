@@ -6,4 +6,3 @@
 
 	$RUBRIC->simpleRubricCache();
 	return '<div class="blockhead">Новые объявления</div><div class="hrb"></div>'.$HTML->transform($BOARD->fNewDisplay(10),'boardnew');
-?>

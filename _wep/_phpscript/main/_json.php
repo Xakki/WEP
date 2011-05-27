@@ -60,4 +60,3 @@
 	else {
 		print('NO VALID DATA');
 	}
-?>

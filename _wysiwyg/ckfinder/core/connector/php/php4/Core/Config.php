@@ -2,19 +2,20 @@
 /*
  * CKFinder
  * ========
- * http://www.ckfinder.com
- * Copyright (C) 2007-2008 Frederico Caldeira Knabben (FredCK.com)
+ * http://ckfinder.com
+ * Copyright (C) 2007-2011, CKSource - Frederico Knabben. All rights reserved.
  *
  * The software, this file and its contents are subject to the CKFinder
  * License. Please read the license.txt file before using, installing, copying,
  * modifying or distribute this file or part of its contents. The contents of
  * this file is part of the Source Code of CKFinder.
  */
+if (!defined('IN_CKFINDER')) exit;
 
 /**
  * @package CKFinder
  * @subpackage Config
- * @copyright Frederico Caldeira Knabben
+ * @copyright CKSource - Frederico Knabben
  */
 
 /**
@@ -36,12 +37,12 @@ require_once CKFINDER_CONNECTOR_LIB_DIR . "/Core/ImagesConfig.php";
 
 /**
  * Main config parser
- * 
- * 
+ *
+ *
  * @package CKFinder
  * @subpackage Config
- * @copyright Frederico Caldeira Knabben
- * @global string $GLOBALS['config'] 
+ * @copyright CKSource - Frederico Knabben
+ * @global string $GLOBALS['config']
  */
 class CKFinder_Connector_Core_Config
 {
@@ -75,7 +76,7 @@ class CKFinder_Connector_Core_Config
     var $_roleSessionVar = "CKFinder_UserRole";
     /**
      * Access Control Configuration
-     * 
+     *
      * @var CKFinder_Connector_Core_AccessControlConfig
      * @access private
      */
@@ -170,7 +171,14 @@ class CKFinder_Connector_Core_Config
      * @access private
      */
     var $_hideFiles = array(".*");
-    
+    /**
+     * If set to true, force ASCII names
+     *
+     * @var boolean
+     * @access private
+     */
+    var $_forceAscii = false;
+
     function CKFinder_Connector_Core_Config()
     {
         $this->loadValues();
@@ -208,7 +216,7 @@ class CKFinder_Connector_Core_Config
     {
         return $this->_checkSizeAfterScaling;
     }
-    
+
     /**
 	 * Get "htmlExtensions" value
 	 *
@@ -221,6 +229,17 @@ class CKFinder_Connector_Core_Config
     }
 
     /**
+	 * Get "forceAscii" value
+	 *
+	 * @access public
+	 * @return array
+	 */
+    function forceAscii()
+    {
+        return $this->_forceAscii;
+    }
+
+    /**
 	 * Get regular expression to hide folders
 	 *
 	 * @access public
@@ -229,7 +248,7 @@ class CKFinder_Connector_Core_Config
     function getHideFoldersRegex()
     {
         static $folderRegex;
-        
+
         if (!isset($folderRegex)) {
             if (is_array($this->_hideFolders) && $this->_hideFolders) {
                 $folderRegex = join("|", $this->_hideFolders);
@@ -242,10 +261,10 @@ class CKFinder_Connector_Core_Config
                 $folderRegex = "";
             }
         }
-        
+
         return $folderRegex;
     }
-    
+
     /**
 	 * Get regular expression to hide files
 	 *
@@ -255,7 +274,7 @@ class CKFinder_Connector_Core_Config
     function getHideFilesRegex()
     {
         static $fileRegex;
-        
+
         if (!isset($fileRegex)) {
             if (is_array($this->_hideFiles) && $this->_hideFiles) {
                 $fileRegex = join("|", $this->_hideFiles);
@@ -268,7 +287,7 @@ class CKFinder_Connector_Core_Config
                 $fileRegex = "";
             }
         }
-        
+
         return $fileRegex;
     }
 
@@ -337,7 +356,7 @@ class CKFinder_Connector_Core_Config
     {
         return $this->_chmodFiles;
     }
-    
+
     /**
 	* Get chmod settings for created directories
 	*
@@ -348,7 +367,7 @@ class CKFinder_Connector_Core_Config
     {
         return $this->_chmodFolders;
     }
-    
+
     /**
 	 * Get role sesion variable name
 	 *
@@ -420,7 +439,7 @@ class CKFinder_Connector_Core_Config
 
         return $this->_imagesConfigCache;
     }
-    
+
     /**
      * Get access control config
      *
@@ -466,7 +485,10 @@ class CKFinder_Connector_Core_Config
         }
         if (isset($GLOBALS['config']['CheckSizeAfterScaling'])) {
             $this->_checkSizeAfterScaling = CKFinder_Connector_Utils_Misc::booleanValue($GLOBALS['config']['CheckSizeAfterScaling']);
-        }        
+        }
+        if (isset($GLOBALS['config']['ForceAscii'])) {
+            $this->_forceAscii = CKFinder_Connector_Utils_Misc::booleanValue($GLOBALS['config']['ForceAscii']);
+        }
         if (isset($GLOBALS['config']['HtmlExtensions'])) {
             $this->_htmlExtensions = (array)$GLOBALS['config']['HtmlExtensions'];
         }

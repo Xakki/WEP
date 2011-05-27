@@ -224,4 +224,3 @@ class countb_class extends kernel_extends {
 	}
 
 }
-?>

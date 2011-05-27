@@ -160,4 +160,3 @@
 		$html .= '</select>';
 		return $html;
 	}
-?>

@@ -1,8 +1,10 @@
 <?
-class session_gogo extends kernel_extends {
+class session_gogo {//extends kernel_extends {
 	function __construct($tablename='_session') {
 		global $_CFG;
+		$this->_CFG = $_CFG;
 		$this->grant_sql = false;
+		$this->SQL = new sql($_CFG['sql']);
 		if(!$this->SQL) {
 			trigger_error('Ошибка запуска сессии. Нет связи с БД.',E_USER_WARNING);
 			return (true);
@@ -11,9 +13,8 @@ class session_gogo extends kernel_extends {
 			trigger_error('Ошибка загрузки конфигураций.',E_USER_WARNING);
 			return (true);
 		}
-		$this->_CFG = $_CFG;
 
-		$this->_set_features();
+		//$this->_set_features();
 
 		$this->fields['id'] = array('type' => 'int', 'width' =>11, 'attr' => 'unsigned NOT NULL auto_increment');
 		$this->fields['sid'] = array('type' => 'varchar', 'width' =>128, 'attr' => 'default NULL');
@@ -60,6 +61,7 @@ class session_gogo extends kernel_extends {
 		$this->_save_path    = $save_path;
 		$this->_session_name = $session_name; 
 		$this->add_query = '';//' AND `domain` = "'.$this->_domain.'"';
+
 		$result = $this->SQL->execSQL('SHOW TABLES LIKE \''.$this->tablename.'\'');// checking table exist
 		if ($result->err) echo('Session error');
 		//if (!$result->num_rows()) $this->_install();
@@ -129,5 +131,3 @@ class session_gogo extends kernel_extends {
 		return(true); 
 	}
 }
-
-?>

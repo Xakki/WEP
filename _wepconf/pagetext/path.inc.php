@@ -14,4 +14,3 @@
 	$_tpl['styles']['RSS'] = '<link rel="alternate" href="'.$_CFG['_HREF']['BH'].$rsshref.'" type="application/rss+xml" title="uniRSS"/>'."\n";
 /*	PATH - RSS*/
 	return $html;
-?>

@@ -48,4 +48,3 @@
 				$html ='<div style="color:red;">'.date('H:i:s').' : Доступ к модулю `comments` запрещён администратором</div>';
 		}
 	return $html;
-?>

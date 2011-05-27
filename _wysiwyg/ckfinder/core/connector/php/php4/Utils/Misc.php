@@ -2,25 +2,26 @@
 /*
  * CKFinder
  * ========
- * http://www.ckfinder.com
- * Copyright (C) 2007-2008 Frederico Caldeira Knabben (FredCK.com)
+ * http://ckfinder.com
+ * Copyright (C) 2007-2011, CKSource - Frederico Knabben. All rights reserved.
  *
  * The software, this file and its contents are subject to the CKFinder
  * License. Please read the license.txt file before using, installing, copying,
  * modifying or distribute this file or part of its contents. The contents of
  * this file is part of the Source Code of CKFinder.
  */
+if (!defined('IN_CKFINDER')) exit;
 
 /**
  * @package CKFinder
  * @subpackage Utils
- * @copyright Frederico Caldeira Knabben
+ * @copyright CKSource - Frederico Knabben
  */
 
 /**
  * @package CKFinder
  * @subpackage Utils
- * @copyright Frederico Caldeira Knabben
+ * @copyright CKSource - Frederico Knabben
  */
 class CKFinder_Connector_Utils_Misc
 {
@@ -46,7 +47,7 @@ class CKFinder_Connector_Utils_Misc
     /**
      * Convert any value to boolean, strings like "false", "FalSE" and "off" are also considered as false
      *
-     * @static 
+     * @static
      * @access public
      * @param mixed $value
      * @return boolean
@@ -64,7 +65,7 @@ class CKFinder_Connector_Utils_Misc
      * @link http://pl.php.net/manual/en/function.imagecopyresampled.php
      * replacement to imagecopyresampled that will deliver results that are almost identical except MUCH faster (very typically 30 times faster)
      *
-     * @static 
+     * @static
      * @access public
      * @param string $dst_image
      * @param string $src_image
@@ -110,7 +111,7 @@ class CKFinder_Connector_Utils_Misc
      * @link http://pl.php.net/manual/pl/function.imagecreatefromjpeg.php
      * function posted by e dot a dot schultz at gmail dot com
      *
-     * @static 
+     * @static
      * @access public
      * @param string $filename
      * @return boolean
@@ -166,12 +167,12 @@ class CKFinder_Connector_Utils_Misc
      * convert shorthand php.ini notation into bytes, much like how the PHP source does it
      * @link http://pl.php.net/manual/en/function.ini-get.php
      *
-     * @static 
+     * @static
      * @access public
      * @param string $val
      * @return int
      */
-    function returnBytes($val) 
+    function returnBytes($val)
     {
         $val = trim($val);
         if (!$val) {
@@ -194,7 +195,7 @@ class CKFinder_Connector_Utils_Misc
     /**
     * Checks if a value exists in an array (case insensitive)
     *
-    * @static 
+    * @static
     * @access public
     * @param string $needle
     * @param array $haystack
@@ -215,21 +216,22 @@ class CKFinder_Connector_Utils_Misc
     /**
     * UTF-8 compatible version of basename()
     *
-    * @static 
+    * @static
     * @access public
     * @param string $file
     * @return string
     */
     function mbBasename($file)
     {
-        return end(explode('/', str_replace("\\", "/", $file)));
+        $explode = explode('/', str_replace("\\", "/", $file));
+        return end($explode);
     }
 
     /**
     * Source: http://pl.php.net/imagecreate
     * (optimized for speed and memory usage, but yet not very efficient)
     *
-    * @static 
+    * @static
     * @access public
     * @param string $filename
     * @return resource
@@ -238,7 +240,7 @@ class CKFinder_Connector_Utils_Misc
     {
         //20 seconds seems to be a reasonable value to not kill a server and process images up to 1680x1050
         @set_time_limit(20);
-        
+
         if (false === ($f1 = fopen($filename, "rb"))) {
             return false;
         }
@@ -277,7 +279,7 @@ class CKFinder_Connector_Utils_Misc
         if ($BMP['size_bitmap'] > 3 * 2048 * 1536) {
             return false;
         }
-        
+
         $IMG = fread($f1, $BMP['size_bitmap']);
         fclose($f1);
         $VIDE = chr(0);
@@ -363,5 +365,5 @@ class CKFinder_Connector_Utils_Misc
         }
 
         return $res;
-    }    
+    }
 }

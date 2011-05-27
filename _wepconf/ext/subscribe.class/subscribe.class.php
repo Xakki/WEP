@@ -118,4 +118,3 @@ class subscribe_class extends kernel_extends {
 }
 
 
-?>

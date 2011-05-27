@@ -3,17 +3,6 @@ class bug_class extends kernel_extends {
 
 	protected function _create_conf() {
 		parent::_create_conf();
-
-		$this->config['act'] = 0;
-		$this->config['catchable_err'] = 0;
-		
-		$this->config_form['act'] = array('type' => 'checkbox', 'caption' => 'Включить логирование ошибок');
-		$this->config_form['catchable_err'] = array('type' => 'list', 'listname'=>'catchable_err', 'multiple' => 2, 'caption' => 'Виды отлавливаемых ошибок');
-		
-		$this->_enum['catchable_err'] = array();
-		foreach ($this->_CFG['_error'] as $k=>$r) {
-			$this->_enum['catchable_err'][$k] = $r['type'];
-		}
 	}
 
 	function _set_features() {
@@ -56,7 +45,9 @@ class bug_class extends kernel_extends {
 		$this->fields_form['href'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Страница', 'mask' =>array('filter'=>1));
 		$this->fields_form['file'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Файл', 'mask'=>array('filter'=>1));
 		$this->fields_form['line'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Строка', 'mask'=>array('filter'=>1, 'onetd'=>'close'));
-		$this->fields_form['debug'] = array('type' => 'ckedit', 'caption' => 'Текст ошибки','mask'=>array('fview'=>1,'filter'=>1));
+		$this->fields_form['debug'] = array('type' => 'ckedit', 'caption' => 'Текст ошибки',
+			'mask'=>array('fview'=>1,'filter'=>1),
+			'paramedit'=>array('toolbarStartupExpanded'=>'false'));
 		$this->fields_form['page_id'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'PAGE_ID','mask'=>array('sort'=>1,'filter'=>1));
 		$this->fields_form['mf_timecr'] = array('type' => 'date', 'readonly'=>1, 'caption' => 'Дата', 'mask' =>array('sort'=>1,'filter'=>1));
 		$this->fields_form['mf_ipcreate'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'IP','mask'=>array('sort'=>1,'filter'=>1));
@@ -72,12 +63,6 @@ class bug_class extends kernel_extends {
 		$this->unique_fields['name'] = 'name';
 		
 		$this->ordfield = 'active DESC, mf_timecr DESC';
-		if(!$this->config['act'])
-			$this->catchable_err = array();
-		elseif(is_array($this->config['catchable_err']) and count($this->config['catchable_err']))
-			$this->catchable_err = array_flip($this->config['catchable_err']);
-		else
-			$this->catchable_err = array_keys($this->_CFG['_error']);
 		
 		$params = array(
 			'obj' => $this,
@@ -99,16 +84,17 @@ class bug_class extends kernel_extends {
 				$mf_ipcreate = ip2long($_SERVER['REMOTE_ADDR']);
 			else
 				$mf_ipcreate =	0;
-			
+			$keys = false;
 			foreach ($this->bugs as $r) {
 				$r[$this->mf_createrid] = $creater_id;
 				$r['mf_ipcreate'] = $mf_ipcreate;
+				$r['mf_timecr'] = $this->_CFG['time'];
 				$query_val[] = '("'.implode('","',$r).'")';
+				if(!$keys)
+					$keys = array_keys($r);
 			}
-			
 			$result = $this->SQL->execSQL('INSERT INTO `'.$this->tablename.'` 
-			(err_type,name,file,line,debug,href,page_id,hash,mf_timecr,cnt,'.$this->mf_createrid.',mf_ipcreate) 
-			VALUES '.implode(',', $query_val).'
+			('.implode(',', $keys).') VALUES '.implode(',', $query_val).'
 			ON DUPLICATE KEY UPDATE cnt = cnt+1, active=1');
 		}
 	}
@@ -118,7 +104,7 @@ class bug_class extends kernel_extends {
 		
 		$hash = md5($errno.$errstr.$errfile.$errline.$_SERVER['REQUEST_URI']);
 		
-		if (!isset($this->bugs[$hash]) && isset($this->catchable_err[$errno])) {		
+		if (!isset($this->bugs[$hash])) {		
 						
 			$this->bugs[$hash] = array(
 				'err_type' => $errno,
@@ -127,14 +113,16 @@ class bug_class extends kernel_extends {
 				'line' => mysql_real_escape_string($errline),
 				'debug' => mysql_real_escape_string($debug),
 				'href' => mysql_real_escape_string($_SERVER['REQUEST_URI']),
-				'page_id' => $PGLIST->id,
 				'hash' => $hash,
-				'mf_timecr' => time(),
 				'cnt' => 1,
+				'page_id'=>''
 			);
-		}
+			if($this->_CFG['_F']['adminpage'])
+				$this->bugs[$hash]['page_id'] = ' -Админка- ';
+			elseif(isset($PGLIST->id))
+				$this->bugs[$hash]['page_id'] = $PGLIST->id;
+		}else
+			$this->bugs[$hash]['cnt'] ++;
 	}
 
 }
-
-?>

@@ -2,19 +2,20 @@
 /*
  * CKFinder
  * ========
- * http://www.ckfinder.com
- * Copyright (C) 2007-2008 Frederico Caldeira Knabben (FredCK.com)
+ * http://ckfinder.com
+ * Copyright (C) 2007-2011, CKSource - Frederico Knabben. All rights reserved.
  *
  * The software, this file and its contents are subject to the CKFinder
  * License. Please read the license.txt file before using, installing, copying,
  * modifying or distribute this file or part of its contents. The contents of
  * this file is part of the Source Code of CKFinder.
  */
+if (!defined('IN_CKFINDER')) exit;
 
 /**
  * @package CKFinder
  * @subpackage CommandHandlers
- * @copyright Frederico Caldeira Knabben
+ * @copyright CKSource - Frederico Knabben
  */
 
 /**
@@ -24,10 +25,10 @@ require_once CKFINDER_CONNECTOR_LIB_DIR . "/CommandHandler/XmlCommandHandlerBase
 
 /**
  * Handle CreateFolder command
- * 
+ *
  * @package CKFinder
  * @subpackage CommandHandlers
- * @copyright Frederico Caldeira Knabben
+ * @copyright CKSource - Frederico Knabben
  */
 class CKFinder_Connector_CommandHandler_CreateFolder extends CKFinder_Connector_CommandHandler_XmlCommandHandlerBase
 {
@@ -46,6 +47,10 @@ class CKFinder_Connector_CommandHandler_CreateFolder extends CKFinder_Connector_
      */
     function buildXml()
     {
+        if (empty($_POST['CKFinderCommand']) || $_POST['CKFinderCommand'] != 'true') {
+            $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_INVALID_REQUEST);
+        }
+
         $_config =& CKFinder_Connector_Core_Factory::getInstance("Core_Config");
         if (!$this->_currentFolder->checkAcl(CKFINDER_CONNECTOR_ACL_FOLDER_CREATE)) {
             $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_UNAUTHORIZED);
@@ -54,6 +59,9 @@ class CKFinder_Connector_CommandHandler_CreateFolder extends CKFinder_Connector_
         $_resourceTypeConfig = $this->_currentFolder->getResourceTypeConfig();
         $sNewFolderName = isset($_GET["NewFolderName"]) ? $_GET["NewFolderName"] : "";
         $sNewFolderName = CKFinder_Connector_Utils_FileSystem::convertToFilesystemEncoding($sNewFolderName);
+        if ($_config->forceAscii()) {
+            $sNewFolderName = CKFinder_Connector_Utils_FileSystem::convertToAscii($sNewFolderName);
+        }
 
         if (!CKFinder_Connector_Utils_FileSystem::checkFileName($sNewFolderName) || $_resourceTypeConfig->checkIsHiddenFolder($sNewFolderName)) {
             $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_INVALID_NAME);
@@ -85,6 +93,6 @@ class CKFinder_Connector_CommandHandler_CreateFolder extends CKFinder_Connector_
             $oNewFolderNode = new Ckfinder_Connector_Utils_XmlNode("NewFolder");
             $this->_connectorNode->addChild($oNewFolderNode);
             $oNewFolderNode->addAttribute("name", CKFinder_Connector_Utils_FileSystem::convertToConnectorEncoding($sNewFolderName));
-        }    
+        }
     }
 }

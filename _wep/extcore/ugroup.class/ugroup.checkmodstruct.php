@@ -6,4 +6,3 @@
 		$result = $this->SQL->execSQL('alter table `users` change `mf_timeup` `mf_timeup` int(12) NOT NULL');
 	}
 
-?>

@@ -63,4 +63,4 @@
 	}
 	$_tpl['modulsforms'] = $html;
 
-?>
+

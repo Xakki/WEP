@@ -98,4 +98,3 @@ class xslt_arg_stream
 }
 
 stream_wrapper_register('arg','xslt_arg_stream');
-?>

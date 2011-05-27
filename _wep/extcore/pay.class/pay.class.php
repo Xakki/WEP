@@ -119,4 +119,4 @@ class pay_class extends kernel_extends {
 
 
 
-?>
+

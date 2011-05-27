@@ -1147,7 +1147,7 @@ if (checklogin()) {
 	$str .= makeLogin();
 }
 $str .= makeFooter();
-?>
+
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -1155,9 +1155,9 @@ $str .= makeFooter();
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>File Thingie <?php echo VERSION;?></title>
+	<title>File Thingie <?php echo VERSION;</title>
 	<link rel="author" href="http://www.solitude.dk/" title="Andreas Haugstrup Pedersen" />
-	<link rel="home" href="<?php echo getSelf();?>" title="Go to home directory" />
+	<link rel="home" href="<?php echo getSelf();" title="Go to home directory" />
 	<link rel="help" href="http://www.solitude.dk/filethingie/documentation.php" title="Online documentation" />
 <script type="text/javascript">
 /* START jQuery */
@@ -1165,7 +1165,7 @@ eval(function(p,a,c,k,e,d){e=function(c){return(c<a?"":e(parseInt(c/a)))+((c=c%a
 /* END jQuery */
 <?php
 if (AUTOUPDATES != "0") {
-?>
+
 /**
  * Cookie plugin
  *
@@ -1212,7 +1212,7 @@ jQuery.cookie = function(name, value, options) {
 /* END cookie plugin */
 <?php
 }
-?>
+
 </script>
 	<script type="text/javascript">
 	$(document).ready(function(){
@@ -1241,7 +1241,7 @@ jQuery.cookie = function(name, value, options) {
 			  } else {
 			    var list = '<li class=\"selected\">Rename</li><li>Move</li><li>Delete</li><li>Duplicate</li><li>chmod</li>';
 			  }
-				$(this).parent().parent().next("tr.filedetails").append("<td colspan=\"3\"><ul class=\"navigation\">"+list+"</ul><form method=\"post\" action=\"<?php echo getSelf();?>\"><div><label for='newvalue'>Rename to:</label><input type=\"text\" value=\""+$(this).parent().parent().find("td.name").text()+"\" size=\"18\" class='newvalue' name=\"newvalue\" /><input type=\"hidden\" value=\""+$(this).parent().parent().find("td.name").text()+"\" class='file' name=\"file\" /><input type=\"submit\" class='submit' value=\"Ok\" /><input type=\"hidden\" name=\"dir\" value=\"<?php echo $_REQUEST['dir'];?>\" /><input type=\"hidden\" name=\"act\" class=\"act\" value=\"rename\" /></div></form></td>").find("li").hover(function(){$(this).toggleClass('hover')}, function(){$(this).toggleClass('hover')}).click(showOption);
+				$(this).parent().parent().next("tr.filedetails").append("<td colspan=\"3\"><ul class=\"navigation\">"+list+"</ul><form method=\"post\" action=\"<?php echo getSelf();\"><div><label for='newvalue'>Rename to:</label><input type=\"text\" value=\""+$(this).parent().parent().find("td.name").text()+"\" size=\"18\" class='newvalue' name=\"newvalue\" /><input type=\"hidden\" value=\""+$(this).parent().parent().find("td.name").text()+"\" class='file' name=\"file\" /><input type=\"submit\" class='submit' value=\"Ok\" /><input type=\"hidden\" name=\"dir\" value=\"<?php echo $_REQUEST['dir'];\" /><input type=\"hidden\" name=\"act\" class=\"act\" value=\"rename\" /></div></form></td>").find("li").hover(function(){$(this).toggleClass('hover')}, function(){$(this).toggleClass('hover')}).click(showOption);
 				// Focus on new value field.
 				$(this).parent().parent().next("tr.filedetails").find("input.newvalue").get(0).focus();
 				$(this).parent().parent().next("tr.filedetails").find("input.newvalue").get(0).select();
@@ -1260,7 +1260,7 @@ jQuery.cookie = function(name, value, options) {
 		$("#dosearch").click(function(){
 			$("#searchresults").empty();
 			$("#searchresults").prepend("<h3>Results</h3>").append("<dl id='searchlist'><dt class='error'>Fetching results&hellip;</dt></dl>");
-			$.post("<?php echo getSelf();?>", {method:'ajax', q:$("#q").val(), type: $("#type").is(":checked"), dir:'<?php echo $_REQUEST['dir'];?>'}, function(data){
+			$.post("<?php echo getSelf();", {method:'ajax', q:$("#q").val(), type: $("#type").is(":checked"), dir:'<?php echo $_REQUEST['dir'];'}, function(data){
 				$("#searchlist").empty();
 				$("#searchlist").append(data);
 			})
@@ -1273,11 +1273,11 @@ jQuery.cookie = function(name, value, options) {
 <?php
 // Automatic version checking.
 if (AUTOUPDATES != "0" && !empty($_SESSION['ft_user'])) {
-?>
+
     // Check if cookie is set - if not make update check.
     if ($.cookie('ft_update') == null) {
       // Time for an update.
-			$.post("<?php echo getSelf();?>", {method:'ajax', act:'versioncheck'}, function(data){
+			$.post("<?php echo getSelf();", {method:'ajax', act:'versioncheck'}, function(data){
 				$('<div class="section" id="autoupdate"><h2>Checking for update</h2><div>'+data+'<button type="button" id="dismiss" class="info">Dismiss</button></div></div>').insertBefore('#status').slideDown().find('#dismiss').click(function() {
 				  $('#autoupdate').slideUp();
           // Set cookie.
@@ -1287,14 +1287,14 @@ if (AUTOUPDATES != "0" && !empty($_SESSION['ft_user'])) {
     }
 <?php
 }
-?>
+
 		// Manual version check.
 		$("#versioncheck").click(function(){
 			if ($("#versioninfo").css("display") == "block") {
 				$("#versioninfo").hide("slow");
 			} else {
 				$("#versioninfo").empty();
-				$.post("<?php echo getSelf();?>", {method:'ajax', act:'versioncheck'}, function(data){
+				$.post("<?php echo getSelf();", {method:'ajax', act:'versioncheck'}, function(data){
 					$("#versioninfo").empty().append(data).show("slow");
 				});
 			}
@@ -1303,7 +1303,7 @@ if (AUTOUPDATES != "0" && !empty($_SESSION['ft_user'])) {
 		// Save via ajax (opposed to save & exit)
 		$("#save").click(function(){
 			$("#savestatus").empty().append('<p class="ok">Saving file&hellip;</p>');
-			$.post("<?php echo getSelf();?>", {method:'ajax', act:'save', file: $('#file').val(), dir: $('#dir').val(), filecontent: $('#filecontent').val(), convertspaces: $('#convertspaces').val()}, function(data){
+			$.post("<?php echo getSelf();", {method:'ajax', act:'save', file: $('#file').val(), dir: $('#dir').val(), filecontent: $('#filecontent').val(), convertspaces: $('#convertspaces').val()}, function(data){
 				$("#savestatus").empty().append(data);
 			});
 		});
@@ -1405,7 +1405,7 @@ if (AUTOUPDATES != "0" && !empty($_SESSION['ft_user'])) {
 body {
 	font-family:Verdana, sans-serif;
 	font-size:12px;
-	color:<?php echo COLOURTEXT;?>;
+	color:<?php echo COLOURTEXT;;
 	background:#fff;
 }
 body, h1, h2, .navigation, #sidebar form #sidebar #files_list, #filelist .filedetails form, #filelist .filedetails ul, #logout {
@@ -1413,14 +1413,14 @@ body, h1, h2, .navigation, #sidebar form #sidebar #files_list, #filelist .filede
 	padding:0;
 }
 #filelist tr.rowhover, a:hover, h1, #sidebar h2, #filelist th, #filelist tfoot td, #filelist .details span.hide, #filelist .hover {
-	background:<?php echo COLOURONE;?>;
-	color:<?php echo COLOURONETEXT;?>;
+	background:<?php echo COLOURONE;;
+	color:<?php echo COLOURONETEXT;;
 }
 .error {color:red;}
-.ok {color:<?php echo COLOURONE;?>;}
+.ok {color:<?php echo COLOURONE;;}
 .hidden {display:none;}
 a {
-	color:<?php echo COLOURONE;?>;
+	color:<?php echo COLOURONE;;
 	text-decoration:none;
 }
 a:hover {
@@ -1434,7 +1434,7 @@ a:hover {
 	bottom:auto;
 }
 h1 a, #logout a {
-	color:<?php echo COLOURONETEXT;?>;
+	color:<?php echo COLOURONETEXT;;
 }
 h1 {
 	font-size:2em;
@@ -1455,7 +1455,7 @@ h2 {
 	font-size:10px;
 }
 #sidebar .section {
-	background:<?php echo COLOURTWO;?>;
+	background:<?php echo COLOURTWO;;
 	margin:0 0 2.5em 0;
 	padding-bottom:0.8em;
 	border:1px solid black;
@@ -1533,7 +1533,7 @@ dl#searchlist dd a {
 	color:#666;
 }
 dl#searchlist dd a:hover {
-	color:<?php echo COLOURONETEXT;?>;
+	color:<?php echo COLOURONETEXT;;
 }
 /* Status box and auto update box */
 #status p, #autoupdate p {
@@ -1547,11 +1547,11 @@ dl#searchlist dd a:hover {
 	font-size:14px;
 }
 #sidebar #status, #sidebar #autoupdate {
-	background-color:<?php echo COLOURHIGHLIGHT;?>;
+	background-color:<?php echo COLOURHIGHLIGHT;;
 }
 /* File list */
 #filelist td a {
-	color:<?php echo COLOURTEXT;?>;
+	color:<?php echo COLOURTEXT;;
 	display:block;
 	width:100%;
 	height:100%;
@@ -1562,7 +1562,7 @@ dl#searchlist dd a:hover {
 	text-decoration:none;
 }
 #filelist tr.rowhover a:hover {
-	color:<?php echo COLOURONETEXT;?>;
+	color:<?php echo COLOURONETEXT;;
 }
 #filelist {
 	border:1px solid black;
@@ -1601,19 +1601,19 @@ dl#searchlist dd a:hover {
 	background:#fff;
 }
 #filelist tr.odd {
-	background:<?php echo COLOURTWO;?>;
+	background:<?php echo COLOURTWO;;
 }
 #filelist tr.dir td.name {
 	font-weight:bold;
 }
 #filelist tr.highlight {
-	background:<?php echo COLOURHIGHLIGHT;?>;
+	background:<?php echo COLOURHIGHLIGHT;;
 	font-style:italic;
 	font-weight:bold;
 }
 #filelist tr.rowhover {
-	background:<?php echo COLOURONE;?>;
-	color:<?php echo COLOURONETEXT;?>;
+	background:<?php echo COLOURONE;;
+	color:<?php echo COLOURONETEXT;;
 }
 #filelist .details span.show, #filelist .details span.hide {
 	cursor:pointer;
@@ -1623,7 +1623,7 @@ dl#searchlist dd a:hover {
 	cursor:pointer;
 }
 #filelist .filedetails {
-	background:<?php echo COLOURHIGHLIGHT;?>;
+	background:<?php echo COLOURHIGHLIGHT;;
 	font-size:10px;
 	border-top:2px solid black;
 	border-bottom:2px solid black;
@@ -1680,19 +1680,19 @@ form#edit textarea {
 	padding-bottom:50px;
 }
 .seperator {
-	border-top:2px solid <?php echo COLOURONE;?>;
+	border-top:2px solid <?php echo COLOURONE;;
 }
 #versioninfo {
 	display:none;
 	margin:1em 2em;
 	padding:0.5em;
-	border:2px solid <?php echo COLOURONE;?>;
-	background:<?php echo COLOURHIGHLIGHT;?>;
+	border:2px solid <?php echo COLOURONE;;
+	background:<?php echo COLOURHIGHLIGHT;;
 	width:250px;
 }
 	</style>	
 </head>
 <body>
-	<?php echo $str;?>
+	<?php echo $str;
 </body>
 </html>

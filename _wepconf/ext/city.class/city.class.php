@@ -237,4 +237,4 @@ UPDATE city SET domen_rf=replace(replace(replace(replace(`name`," ","_"),"'","")
 UPDATE city SET domen_rf=replace(replace(lower(domen_rf),"_","-"),".","");
 */
 
-?>
+

@@ -2,27 +2,28 @@
 /*
  * CKFinder
  * ========
- * http://www.ckfinder.com
- * Copyright (C) 2007-2008 Frederico Caldeira Knabben (FredCK.com)
+ * http://ckfinder.com
+ * Copyright (C) 2007-2011, CKSource - Frederico Knabben. All rights reserved.
  *
  * The software, this file and its contents are subject to the CKFinder
  * License. Please read the license.txt file before using, installing, copying,
  * modifying or distribute this file or part of its contents. The contents of
  * this file is part of the Source Code of CKFinder.
  */
+if (!defined('IN_CKFINDER')) exit;
 
 /**
  * @package CKFinder
  * @subpackage CommandHandlers
- * @copyright Frederico Caldeira Knabben
+ * @copyright CKSource - Frederico Knabben
  */
 
 /**
  * Handle DownloadFile command
- * 
+ *
  * @package CKFinder
  * @subpackage CommandHandlers
- * @copyright Frederico Caldeira Knabben
+ * @copyright CKSource - Frederico Knabben
  */
 class CKFinder_Connector_CommandHandler_DownloadFile extends CKFinder_Connector_CommandHandler_CommandHandlerBase
 {
@@ -41,21 +42,21 @@ class CKFinder_Connector_CommandHandler_DownloadFile extends CKFinder_Connector_
      */
     function sendResponse()
     {
-        if (!function_exists('ob_list_handlers') || !ob_list_handlers()) {
+        if (!function_exists('ob_list_handlers') || ob_list_handlers()) {
             @ob_end_clean();
         }
         header("Content-Encoding: none");
-        
+
         $this->checkConnector();
         $this->checkRequest();
-        
+
         if (!$this->_currentFolder->checkAcl(CKFINDER_CONNECTOR_ACL_FILE_VIEW)) {
             $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_UNAUTHORIZED);
         }
-        
+
         $fileName = CKFinder_Connector_Utils_FileSystem::convertToFilesystemEncoding($_GET["FileName"]);
         $_resourceTypeInfo = $this->_currentFolder->getResourceTypeConfig();
-        
+
         if (!CKFinder_Connector_Utils_FileSystem::checkFileName($fileName)) {
             $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_INVALID_REQUEST);
         }
@@ -70,12 +71,17 @@ class CKFinder_Connector_CommandHandler_DownloadFile extends CKFinder_Connector_
         }
 
         $fileName = CKFinder_Connector_Utils_FileSystem::convertToConnectorEncoding($fileName);
-        
+
         header("Cache-Control: cache, must-revalidate");
         header("Pragma: public");
         header("Expires: 0");
-        header("Content-type: application/octet-stream; name=\"" . $fileName . "\"");
-        header("Content-Disposition: attachment; filename=\"" . str_replace("\"", "\\\"", $fileName). "\"");
+        if (!empty($_GET['format']) && $_GET['format'] == 'text') {
+            header("Content-Type: text/plain; charset=utf-8");
+        }
+        else {
+            header("Content-type: application/octet-stream; name=\"" . $fileName . "\"");
+            header("Content-Disposition: attachment; filename=\"" . str_replace("\"", "\\\"", $fileName). "\"");
+        }
         header("Content-Length: " . filesize($filePath));
         CKFinder_Connector_Utils_FileSystem::readfileChunked($filePath);
         exit;

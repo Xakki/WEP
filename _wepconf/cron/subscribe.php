@@ -50,4 +50,4 @@ $c=0;
 		$SQL->execSQL('update '.$SUBSCRIBE->tablename.' SET date='.time().' WHERE id IN ('.implode(',',array_keys($SUBSCRIBE->data)).')');
 	}
 	echo 'Отослано '.$c.' писем';
-?>
+

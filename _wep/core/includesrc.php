@@ -132,4 +132,3 @@
 		$_tpl['onload'] .= 'function fchekcnt() {if(chekcnt=='.$tcnt.') {'.$temp2.'fShowload(0);} else setTimeout(fchekcnt,200);} setTimeout(fchekcnt,200);';
 		//$_tpl['onload'] .= $temp2;
 	}
-?>
