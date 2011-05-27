@@ -46,4 +46,3 @@
 	if($result[0])
 		$result[0] = '<div style="color:red;">'.$result[0].'</div>';
 	$_tpl['mess'] = '<div class="messhead">'.$result[0].'</div>';
-?>

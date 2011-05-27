@@ -75,4 +75,3 @@ imagepng($im2);
 imagedestroy($im2);
 imagedestroy($im1);
 imagedestroy($im);
-?>

@@ -328,4 +328,3 @@ function charset_x_win($s)
   return $s;
 }
 
-?>

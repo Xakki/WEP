@@ -636,7 +636,7 @@ class pg_class extends kernel_extends {
 
 	function creatSiteMaps() {
 		$data = $this->getMap(-1);
-		$xml = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+		$xml = '<?xml version="1.0" encoding="UTF-8"<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 		$xml .= $this->reverseDataMap($data);
 		$xml .= '</urlset>';
 		return $xml;
@@ -658,4 +658,4 @@ class pg_class extends kernel_extends {
 //////////
 }
 
-?>
+

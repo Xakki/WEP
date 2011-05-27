@@ -9,4 +9,4 @@
 
 
 //SELECT t1.* FROM ip_group_city t1 LEFT JOIN city t2 ON t2.city=t1.city and t2.city!='' WHERE t1.country_code="RU" and isNull(t2.id) and t1.city!='' GROUP BY t1.city ORDER BY t1.region_name;
-?>
+

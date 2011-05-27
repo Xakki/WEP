@@ -67,4 +67,4 @@ $mess = $form = '';
 		'.$form.'
 	</div>';
 	return $html;
-?>
+

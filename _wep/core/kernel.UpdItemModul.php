@@ -80,4 +80,3 @@
 			$formflag = $this->kFields2Form($param);
 
 		return Array(Array('messages'=>array_merge($mess,$arr['mess']), 'form'=>($formflag?$this->form:array())), $flag);
-?>

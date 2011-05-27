@@ -1,7 +1,4 @@
 <?
-
-global $HTML;
-
 /**
  * Установка. Шаг №3
  *
@@ -10,9 +7,13 @@ global $HTML;
  * @version 0.1
  * @return Вывод HTML кода процесса установки шага №2
  */
+global $HTML;
 if($_SESSION['step']<$_GET['step'])
 	return 'Как ты попал сюда? Вернитесь на <a href="'.$_CFG['PATH']['wepname'].'/install.php?step=' . $_SESSION['step'] . '">Шаг №'.$_SESSION['step'].'</a>.';
-
+$var_const = array(
+	'mess'=>array(),
+	'sbmt'=>'Сохранить'
+);
 include_once $_CFG['_PATH']['extcore'] . '/modulprm.class/modulprm.class.php';
 if(_new_class('modulprm', $MODUL)) {
 	//Создание таблицы modulprm
@@ -35,6 +36,3 @@ if ($res == 1) {
 }
 
 return $html;
-
-
-?>

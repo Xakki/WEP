@@ -25,4 +25,3 @@
 		$html = $HTML->transform('<main>'.$CITY->cityDisplay().'</main>','citymain');
 		return $html;
 
-?>

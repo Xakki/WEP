@@ -89,4 +89,3 @@
 		$_tpl['mess'] = $_CFG['_MESS']['denied'];
 		$HTML->_templates = "login";
 	}
-?>

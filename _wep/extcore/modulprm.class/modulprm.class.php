@@ -504,4 +504,4 @@ class modulgrp_class extends kernel_extends {
 	}
 }
 
-?>
+

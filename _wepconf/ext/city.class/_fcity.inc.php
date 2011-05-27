@@ -12,4 +12,3 @@
 		$this->pageinfo['description'] = $this->pageinfo['description'].',город '.$CITY->name.','.$CITY->desc;
 	}
 	return true;
-?>

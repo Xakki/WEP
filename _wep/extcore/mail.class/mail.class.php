@@ -133,4 +133,4 @@ class mail_class extends kernel_extends {
 	}
 }
 
-?>
+

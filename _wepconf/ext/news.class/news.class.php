@@ -13,4 +13,4 @@ class news_class extends extendnews_class {
 	}
 }
 
-?>
+

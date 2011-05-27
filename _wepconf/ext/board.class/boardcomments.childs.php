@@ -15,4 +15,3 @@ class boardcomments_class extends comments_extends {
 
 }
 
-?>

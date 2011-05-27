@@ -136,4 +136,4 @@ class news_class extends kernel_extends {
 
 }
 
-?>
+

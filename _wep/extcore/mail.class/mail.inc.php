@@ -15,4 +15,3 @@
 		$html = $HTML->transformPHP($DATA,'formcreat');
 	return $html;
 
-?>

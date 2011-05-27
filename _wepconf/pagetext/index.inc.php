@@ -10,4 +10,3 @@
 	$html = $HTML->transform($RUBRIC->MainRubricDisplay(),'rubricmain');
 
 	return $html;
-?>

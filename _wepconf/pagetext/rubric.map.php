@@ -30,4 +30,3 @@
 		$DATA_PG[$keyPG]['hidechild'] =1;
 	return $datamap;
 
-?>

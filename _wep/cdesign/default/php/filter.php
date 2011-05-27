@@ -193,4 +193,4 @@ function selectitem2($data,$flag=0) {
 		}
 	return $html;
 }
-?>
+

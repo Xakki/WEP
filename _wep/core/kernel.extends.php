@@ -1888,4 +1888,3 @@ abstract class kernel_extends {
 }
 
 //// Kernel END
-?>

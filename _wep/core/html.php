@@ -154,7 +154,7 @@ class html {
 		}
 		//'design/default/xsl/',  'design/'.$this->_design.'/xsl/',
 		$xsl = str_replace(array('\x09'), array(''), file_get_contents($transform));
-		$xml = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE fragment [<!ENTITY nbsp "&#160;">]> ' . $xml;
+		$xml = '<?xml version="1.0" encoding="UTF-8"<!DOCTYPE fragment [<!ENTITY nbsp "&#160;">]> ' . $xml;
 		if (extension_loaded('xsl')) {
 			if (!isset($this->_xslt)) {
 				global $_CFG;
@@ -213,13 +213,13 @@ function _myErrorHandler($errno, $errstr, $errfile, $errline, $errcontext) {//,$
 
 		// Debuger
 		// для вывода отладчика для всех типов ошибок , можно отключить это условие
-		if ($_CFG['wep']['on_debug'] and $_CFG['_error'][$errno]['debug']) 
+		if (isset($_CFG['wep']['bug_hunter'][$errno]) and $_CFG['_error'][$errno]['debug'])
 			$debug = '<div class="spoiler-body" style="background-color: rgb(225, 225, 225);">' . debugPrint(2) . '</div>';
 		else
 			$debug = '';
 
 		// write bug to DB
-		if ($_CFG['site']['bug_hunter'] and $_CFG['_error'][$errno]['prior'] < $_CFG['site']['bug_hunter']) {
+		if (isset($_CFG['wep']['bug_hunter'][$errno])) {
 			if (_new_class('bug', $MODUL)) {
 				$MODUL->add_bug($errno, $errstr, $errfile, $errline, $debug);
 			}
@@ -257,7 +257,7 @@ function startCatchError($param=2) {
 	$_CFG['_ctemp' . $param]['bug_hunter'] = $_CFG['wep']['bug_hunter'];
 	$_CFG['_ctemp' . $param]['stop_fatal_error'] = $_CFG['wep']['stop_fatal_error'];
 	$_CFG['wep']['catch_bug'] = $param;
-	$_CFG['wep']['bug_hunter'] = 0;
+	$_CFG['wep']['bug_hunter'] = array();
 	$_CFG['wep']['stop_fatal_error'] = 0;
 	return true;
 }
@@ -570,5 +570,3 @@ function _modulExists($class_name) {
 	$ret = static_main::includeModulFile($class_name[0]);
 	return $ret['file'];
 }
-
-?>

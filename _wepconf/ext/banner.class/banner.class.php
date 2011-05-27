@@ -63,4 +63,4 @@ class banner_class extends kernel_extends {
 }
 
 
-?>
+

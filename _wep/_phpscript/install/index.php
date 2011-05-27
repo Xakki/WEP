@@ -7,7 +7,7 @@ require_once($_CFG['_PATH']['core'] . 'sql.php');
 $TEMP_CFG= array();
 $TEMP_CFG['wep']['access'] = $_CFG['wep']['access'] = 0; // авторизация только по главному паролю
 $TEMP_CFG['wep']['sessiontype'] = $_CFG['wep']['sessiontype'] = 0; // запускаем сессию стандартно
-$TEMP_CFG['site']['bug_hunter'] = $_CFG['site']['bug_hunter'] = 0; // откл запись в баг
+$TEMP_CFG['site']['bug_hunter'] = $_CFG['site']['bug_hunter'] = array(); // откл запись в баг
 $TEMP_CFG['sql']['log'] = $_CFG['sql']['log'] = 0;
 $TEMP_CFG['site']['show_error'] = $_CFG['site']['show_error'] = 2;
 $TEMP_CFG['wep']['stop_fatal_error'] = $_CFG['wep']['stop_fatal_error'] = false;
@@ -47,6 +47,10 @@ if ($flag) {
 
 	$file = $_CFG['_PATH']['phpscript'] . '/install/step' . $_GET['step'] . '.php';
 	if (file_exists($file)) {
+		$var_const = array(
+			'mess'=>array('name' => 'ok', 'value' => 'Пора перейти к <a href="'.$_CFG['PATH']['wepname'].'/install.php?step=' . ($_GET['step'] + 1) . '">следующему шагу №' . ($_GET['step'] + 1) . '</a>'),
+			'sbmt'=>'Сохранить и перейти на следующий шаг'
+		);
 		$_tpl['text'] = require($file);
 	} elseif($_SESSION['step']>3 and $_GET['step']==$_SESSION['step']) {
 		$_tpl['text'] = '<h2>Установка завершена</h2><br/>
@@ -79,4 +83,3 @@ if ($flag) {
 	$_tpl['text'] = '';
 	$_tpl['mess'] = '<div class="messhead">' . $mess . '</div>';
 }
-?>

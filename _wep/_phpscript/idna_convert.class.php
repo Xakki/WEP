@@ -1536,4 +1536,3 @@ class idna_convert
                     )
             );
 }
-?>

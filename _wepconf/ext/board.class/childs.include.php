@@ -68,4 +68,3 @@ class boardvote_class extends kernel_extends {
 	}
 }
 
-?>

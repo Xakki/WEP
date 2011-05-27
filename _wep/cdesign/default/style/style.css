@@ -436,3 +436,8 @@ span.seldebug select{
 	margin: 0 0 3px 0;
 	color:red;
 }
+
+.tools_item {
+	font-weight:bold;
+	color:blue;
+}

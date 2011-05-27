@@ -128,4 +128,4 @@ class content_class extends kernel_extends {
 	}
 
 }
-?>
+

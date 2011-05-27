@@ -67,5 +67,3 @@
 	}
 
 	$GLOBALS['_RESULT'] = array("html" => $html,"html2" => $html2,'eval'=>$_tpl['onload']);
-
-?>

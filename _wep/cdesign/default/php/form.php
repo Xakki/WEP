@@ -469,4 +469,4 @@ function selectitem_old($data,$val=NULL,$flag=0) {
 		}
 	return $texthtml;
 }
-?>
+

@@ -1,6 +1,37 @@
 <?
+function tools_step1() {
+	global $_CFG,$HTML,$_tpl;
+	$TEMP_CFG= array();
+	$_tpl['styles']['install']=1;
+	$file = $_CFG['_PATH']['phpscript'] . '/install/step1.php';
+	if(static_main::_prmUserCheck(1))
+		return require($file);
+	else
+		return $_CFG['_MESS']['denied'];
+}
+
+function tools_step2() {
+	global $_CFG,$HTML,$_tpl;
+	if(!static_main::_prmUserCheck(1))
+		return $_CFG['_MESS']['denied'];
+	$_tpl['styles']['install']=1;
+	$file = $_CFG['_PATH']['phpscript'] . '/install/step2.php';
+	return require($file);
+}
+
+function tools_step3() {
+	global $_CFG,$HTML,$_tpl;
+	if(!static_main::_prmUserCheck(1))
+		return $_CFG['_MESS']['denied'];
+	$_tpl['styles']['install']=1;
+	$file = $_CFG['_PATH']['phpscript'] . '/install/step3.php';
+	return require($file);
+}
+
 function tools_worktime() {
 	global $_CFG,$_tpl;
+	if(!static_main::_prmUserCheck(1))
+		return $_CFG['_MESS']['denied'];
 	$result = '';
 	$_tpl['styles']['form']=1;
 	if(count($_POST)) {
@@ -53,7 +84,9 @@ function tools_worktime() {
 
 function tools_sendReg() {
 	return 'Функция отключена.';
-	global $SQL;
+	global $SQL,$_CFG;
+	if(!static_main::_prmUserCheck(1))
+		return $_CFG['_MESS']['denied'];
 	_new_class('ugroup', $UGROUP);
 	$data = array();
 	$result = $SQL->execSQL('SELECT * FROM users WHERE reg_hash!="1"');
@@ -94,14 +127,19 @@ function allinfos() {
 }
 
 function getphpinfo() {
+	if(!static_main::_prmUserCheck(1))
+		return $_CFG['_MESS']['denied'];
 	ob_start();
 	phpinfo();
 	return ob_get_flush();
 }
 $dataF = array(
-	'tools_worktime'=>'Режим "технические работы"',
-	'getphpinfo'=>'PHPINFO()',
-	'allinfos'=> 'Выввод глобальных переменных',
+	'tools_step1'=>'<span class="tools_item">Настройки сайта</span>',
+	'tools_step2'=>'<span class="tools_item">Проверка структуры сайта</span>',
+	'tools_step3'=>'<span class="tools_item">Установка модулей и удаление, со всеми патрохами.</span>',
+	'tools_worktime'=>'<span class="tools_item">Режим "технические работы"</span>',
+	'getphpinfo'=>'<span class="tools_item">PHPINFO</span>',
+	'allinfos'=> '<span class="tools_item">Выввод глобальных переменных</span>',
 );
 
 if(file_exists($_CFG['_PATH']['phpscript2'].'/tools.php'))
@@ -120,4 +158,3 @@ foreach($dataF as $kk=>$rr) {
 $html .= '</ul>';
 $HTML->_templates = 'nologs';
 return $html;
-?>

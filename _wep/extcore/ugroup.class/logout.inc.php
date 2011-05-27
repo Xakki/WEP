@@ -5,4 +5,3 @@
 	);
 	$DATA = array('messages'=>$DATA);
 	return $HTML->transformPHP($DATA,'messages');
-?>

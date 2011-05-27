@@ -201,5 +201,3 @@
 			$this->form[$k] = $r;
 		}
 		return true;
-
-?>

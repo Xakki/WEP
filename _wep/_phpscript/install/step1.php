@@ -1,6 +1,9 @@
 <?
 $_SESSION['step'] = 1;
-
+$var_const = array(
+	'mess'=>array(),
+	'sbmt'=>'Сохранить'
+);
 //Подключение к БД и доп параметры
 $edit_cfg = array(
 	'sql' => true,
@@ -15,7 +18,7 @@ if (isset($_POST['sbmt'])) {
 	list($fl,$mess) = static_tools::saveUserCFG($_POST,$TEMP_CFG);
 	//Записать в конфиг все данные которые отличаются от данных по умолчанию
 	if ($fl) {
-		$mess[] = array('name' => 'ok', 'value' => 'Пора перейти к <a href="'.$_CFG['PATH']['wepname'].'/install.php?step=' . ($_GET['step'] + 1) . '">следующему шагу №' . ($_GET['step'] + 1) . '</a>');
+		$mess[] = $var_const['mess'];
 		$DATA['messages'] = $mess;
 		$_SESSION['step'] = 2;
 		return $html = $HTML->transformPHP($DATA, 'messages');
@@ -128,13 +131,13 @@ foreach ($USER_CFG['wep'] as $k => $r) {
 	switch ($k) {
 		case 'charset':
 			$cap = 'Кодировка сайта';
-			break;
+		break;
 		case 'locale':
 			$cap = 'Кодировка locale';
-			break;
+		break;
 		case 'timezone':
 			$cap = 'Временная зона';
-			break;
+		break;
 		case 'access':
 			$cap = 'Тип доступа в админку';
 			$type = 'list';
@@ -142,7 +145,7 @@ foreach ($USER_CFG['wep'] as $k => $r) {
 				array('#id#' => 0, '#name#' => 'Не используя БД, по паролю указанным ниже'),
 				array('#id#' => 1, '#name#' => 'Используя БД и привелегиий доступа')
 			);
-			break;
+		break;
 		case 'locallang':
 			$cap = 'Локализация';
 			$type = 'list';
@@ -154,14 +157,14 @@ foreach ($USER_CFG['wep'] as $k => $r) {
 					$valuelist[] = array('#id#' => $entry, '#name#' => $entry);
 				}
 			}
-			break;
+		break;
 		case 'login':
 			$cap = 'Босс-логин';
 			break;
 		case 'password':
 			$cap = 'Босс-пароль';
 			$type = 'password_new';
-			break;
+		break;
 		case 'design':
 			$cap = 'Дизайн админки';
 			$type = 'list';
@@ -172,7 +175,7 @@ foreach ($USER_CFG['wep'] as $k => $r) {
 					$valuelist[] = array('#id#' => $entry, '#name#' => $entry);
 				}
 			}
-			break;
+		break;
 		case 'msp':
 			$cap = 'Модуль вывода постраничной навигации';
 			$type = 'list';
@@ -180,13 +183,13 @@ foreach ($USER_CFG['wep'] as $k => $r) {
 				array('#id#' => '', '#name#' => 'Стандартное'),
 				array('#id#' => 'paginator', '#name#' => 'paginator')
 			);
-			break;
+		break;
 		case 'md5':
 			$cap = 'Соль для паролей';
-			break;
+		break;
 		case 'def_filesize':
 			$cap = 'Размер фаилового хранилища, Мб';
-			break;
+		break;
 		case 'sessiontype':
 			$cap = 'Тип хранени сессий пользователей';
 			$type = 'list';
@@ -194,11 +197,23 @@ foreach ($USER_CFG['wep'] as $k => $r) {
 				array('#id#' => 0, '#name#' => 'Стандартное'),
 				array('#id#' => 1, '#name#' => 'В базе данных')
 			);
-			break;
+		break;
 		case 'bug_hunter':
-			$cap = 'Включить отлов ошибок';
+			$cap = 'Ловец жуков';
+			$comm = 'Отлов ошибок';
+			$type = 'list';
+			foreach ($_CFG['_error'] as $ke=>$re) {
+				$valuelist[] = array('#id#' => $ke, '#name#' => $re['type']);
+			}
+		break;
+		case 'catch_bug':
+			$cap = 'Основной сборщик ошибок';
+			$comm = 'Системная - указывает на элемент в массиве $GLOBALS["_ERR"] в котором отлавливаются ошибки';
+		break;
+		case 'stop_fatal_error':
+			$cap = 'Останавливать скрипт на фатальной ошибке?';
 			$type = 'checkbox';
-			break;
+		break;
 	}
 
 	$DATA['wep[' . $k.']'] = array(
@@ -210,6 +225,9 @@ foreach ($USER_CFG['wep'] as $k => $r) {
 		'css' => 'fblock hwep',
 		'style' => 'display:none;'
 	);
+	if($k=='bug_hunter') {
+		$DATA['wep[' . $k.']']['multiple'] = 1;
+	}
 	$valuelist = array();
 }
 
@@ -225,7 +243,7 @@ $DATA['showparam3'] = array('type' => 'info', 'caption' => '
 foreach ($USER_CFG['site'] as $k => $r) {
 	$type = 'text';
 	$comm = '';
-	$cap = '';
+	$cap = $k;
 	switch ($k) {
 		case 'msp':
 			$cap = 'Модуль вывода постраничной навигации';
@@ -248,9 +266,14 @@ foreach ($USER_CFG['site'] as $k => $r) {
 			$cap = 'Рускоязычный домен';
 			$type = 'checkbox';
 			break;
-		case 'bug_hunter':
-			$cap = 'Включить отлов ошибок';
-			$type = 'checkbox';
+		case 'worktime':
+			$cap = 'Включить режим "Технический перерыв"';
+			break;
+		case 'work_title':
+			$cap = 'Заголовок для режима "Технический перерыв"';
+			break;
+		case 'work_text':
+			$cap = 'Текст для режима "Технический перерыв"';
 			break;
 	}
 
@@ -268,10 +291,9 @@ foreach ($USER_CFG['site'] as $k => $r) {
 
 $DATA['sbmt'] = array(
 	'type' => 'submit',
-	'value' => 'Сохранить и перейти на следующий шаг');
+	'value' => $var_const['sbmt']);
 
 $DATA['formcreat'] = array('form' => $DATA);
 $DATA['formcreat']['messages'] = $mess;
 $html = $HTML->transformPHP($DATA, 'formcreat');
 return $html;
-?>

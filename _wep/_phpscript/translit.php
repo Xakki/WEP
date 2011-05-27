@@ -103,4 +103,3 @@ $string = str_replace("B","Б",$string);
 return $string;
 }
 
-?>

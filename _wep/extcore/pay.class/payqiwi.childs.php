@@ -17,4 +17,4 @@ class payqiwi_class extends kernel_extends {
 	}
 }
 
-?>
+

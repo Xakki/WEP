@@ -4,4 +4,3 @@
 	$html = $HTML->transformPHP($DATA, "pathPage");
 /*	PATH */
 	return $html;
-?>

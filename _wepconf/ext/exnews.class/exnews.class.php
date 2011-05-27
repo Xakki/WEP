@@ -10,4 +10,4 @@ class exnews_class extends news_class {
 	}
 }
 
-?>
+

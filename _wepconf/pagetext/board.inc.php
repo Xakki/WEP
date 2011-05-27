@@ -146,4 +146,3 @@
 		$html = '<div class="divform">	<div class="messages"><div class="error">Ссылка не верна. Вероятно данное объявление было удалено с сайта пользователем.</div></div></div>';
 	}
 	return $html;
-?>

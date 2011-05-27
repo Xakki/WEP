@@ -131,5 +131,3 @@ class session_gogo {//extends kernel_extends {
 		return(true); 
 	}
 }
-
-?>

@@ -123,4 +123,4 @@ class comments_extends extends kernel_extends {
 }
 
 
-?>
+

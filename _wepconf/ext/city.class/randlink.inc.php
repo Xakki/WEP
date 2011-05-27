@@ -25,4 +25,3 @@
 		$html .= '</div>';
 	}
 	return $html;
-?>

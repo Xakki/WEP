@@ -37,4 +37,3 @@ print_r($file_array);
 }*/
 
 	echo "ok!";
-?>

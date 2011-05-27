@@ -6,4 +6,3 @@
 	$datacity = $CITY->cityMap();
 	return $datacity;
 
-?>

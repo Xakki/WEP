@@ -96,4 +96,3 @@ $_CFG['fileIncludeOption'] = array(); // чтобы автоматом не по
 		//$_tpl['script'] .='<!--[if IE 6]><script type="text/javascript"></script><![endif]-->';
 	}
 */
-?>
