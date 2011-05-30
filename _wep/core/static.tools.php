@@ -27,6 +27,8 @@ class static_tools {
 	 */
 	static function _installTable(&$MODUL) {
 		$check_result = array();
+		if (!$MODUL->tablename)
+			return true;
 		$result = $MODUL->SQL->execSQL('SHOW TABLES LIKE \'' . $MODUL->tablename . '\''); // checking table exist
 		//if($result->err) return array($MODUL->tablename => array(array('err'=>$MODUL->getMess('_big_err'))));
 		if (!$result->num_rows()) {
