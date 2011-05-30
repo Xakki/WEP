@@ -1,9 +1,10 @@
 <?
 $_SESSION['step'] = 1;
-$var_const = array(
-	'mess'=>array(),
-	'sbmt'=>'Сохранить'
-);
+if(!isset($var_const))
+	$var_const = array(
+		'mess'=>array(),
+		'sbmt'=>'Сохранить'
+	);
 //Подключение к БД и доп параметры
 $edit_cfg = array(
 	'sql' => true,

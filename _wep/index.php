@@ -78,9 +78,9 @@
 	<option '.($_COOKIE['_showallinfo']==2?'selected="selected"':'').' value="2">Показать SQL запросы</option>
 	<option '.($_COOKIE['_showallinfo']==3?'selected="selected"':'').' value="3">Показать все логи</option>
 	</select></span>';
-			$_tpl['debug'] .= '<span class="seldebug"><select>
-	<option onclick="setCookie(\'cdesign\',\'default\');window.location=\''.$_CFG['PATH']['wepname'].'/index.php\';" '.($_design=='default'?'selected="selected"':'').'>Default</option>
-	<option onclick="setCookie(\'cdesign\',\'extjs\');window.location=\''.$_CFG['PATH']['wepname'].'/index.php\';" '.($_design=='extjs'?'selected="selected"':'').'>ExtJS</option>
+			$_tpl['debug'] .= '<span class="seldebug"><select onchange="setCookie(\'cdesign\',this.value);window.location.href=\''.$_CFG['PATH']['wepname'].'/index.php\';">
+	<option '.($_design=='default'?'selected="selected"':'').' value="default">Default</option>
+	<option '.($_design=='extjs'?'selected="selected"':'').' value="extjs">ExtJS</option>
 	</select></span>';
 		}
 		$_tpl['time'] = 'PHP ver.' . phpversion().' | '.date('Y-m-d H:i:s').' | '.date_default_timezone_get().' | ';

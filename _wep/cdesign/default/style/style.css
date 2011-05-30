@@ -404,6 +404,8 @@ form table.form {
 /*debug*/
 span.seldebug {
 	vertical-align:top;
+	display: inline-block;
+	margin: 2px 3px 0 0;
 }
 span.seldebug select{
 	font-size:10px;

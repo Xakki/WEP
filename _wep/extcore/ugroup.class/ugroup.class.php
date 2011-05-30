@@ -311,6 +311,10 @@ class users_class extends kernel_extends {
 		if($this->owner->config['karma']) {
 			$this->fields_form['karma'] = array('type' => 'text', 'caption' => 'Карма', 'readonly'=>true,'mask'=>array('usercheck'=>1));
 			$this->fields_form['kratio'] = array('type' => 'text', 'caption' => 'Коэф. значимости','readonly'=>true,'mask'=>array('usercheck'=>1));
+			if(static_main::_prmUserCheck(1)) {
+				unset($this->fields_form['karma']['readonly']);
+				unset($this->fields_form['kratio']['readonly']);
+			}
 		}
 		$this->fields_form['userpic'] = array('type'=>'file','caption'=>'Юзерпик','del'=>1, 'mask'=>array('fview'=>1,'width'=>85,'height'=>85,'thumb'=>0));
 		$this->fields_form['mf_ipcreate'] =	array('type' => 'text','readonly' => true, 'caption' => 'IP-пользователя','mask'=>array('usercheck'=>1));
