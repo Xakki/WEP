@@ -104,6 +104,7 @@ class static_tools {
 	/**
 	 * Проверка структуры модуля
 	 *
+	 *
 	 * @param object $MODUL Текщий объект класса
 	 * @return array
 	 */
@@ -121,6 +122,10 @@ class static_tools {
 		list($MODUL,$rDATA['modulprm']['@mess']) = $MODULPRM->ForUpdateModulInfo($Mid,$OWN);
 		if ($MODUL===false) {
 			$rDATA['Ошибка']['@mess'][] = array('name' => 'error', 'value' => 'Ошибка инициализации модуля `'.$Mid.'`');
+			return array($Mid => $rDATA);
+		}
+		elseif(!$MODUL->tablename) {
+			$rDATA['Ахтунг']['@mess'][] = array('name' => 'alert', 'value' => 'Модуль `'.$MODUL->caption.'`['.$Mid.'] не использует базу данных.');
 			return array($Mid => $rDATA);
 		}
 		elseif($MODULPRM->data[$Mid][$MODULPRM->mf_actctrl]) {
