@@ -11,10 +11,11 @@
 global $HTML;
 if($_SESSION['step']<$_GET['step'])
 	return 'Как ты попал сюда? Вернитесь на <a href="'.$_CFG['PATH']['wepname'].'/install.php?step=' . $_SESSION['step'] . '">Шаг №'.$_SESSION['step'].'</a>.';
-$var_const = array(
-	'mess'=>array(),
-	'sbmt'=>'Сохранить'
-);
+if(!isset($var_const))
+	$var_const = array(
+		'mess'=>array(),
+		'sbmt'=>'Сохранить'
+	);
 include_once $_CFG['_PATH']['extcore'] . '/modulprm.class/modulprm.class.php';
 _new_class('modulprm', $MODUL);
 

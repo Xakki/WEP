@@ -716,10 +716,10 @@ class static_tools {
 					$fc .= $r . "\n";
 			}
 		}
-		$fc = trim($fc, "<\n");
 		if ($mData !== false) {
 			$_CFG = $mData;
 		}
+		$fc = trim($fc, "<?>\n");
 
 		if ($fc)
 			eval($fc);
