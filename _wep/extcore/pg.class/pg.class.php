@@ -80,7 +80,7 @@ class pg_class extends kernel_extends {
 		$this->fields['href'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL','default'=>'');
 		$this->fields['keywords'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL','default'=>'');
 		$this->fields['description'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL','default'=>'');
-		$this->fields['design'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL','default'=>'default');
+		$this->fields['design'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL','default'=>'');
 		$this->fields['template'] = array('type' => 'varchar', 'width'=>20, 'attr' => 'NOT NULL','default'=>'default');
 		$this->fields['styles'] = array('type' => 'varchar', 'width'=> 255, 'attr' => 'NOT NULL','default'=>'');
 		$this->fields['script'] = array('type' => 'varchar', 'width'=> 255, 'attr' => 'NOT NULL','default'=>'');
@@ -167,8 +167,9 @@ class pg_class extends kernel_extends {
 			return $data;
 		}
 		elseif($listname == 'mdesign') {
-			$data['default'] = 'default';
-			$data['new'] = 'new';
+			$data[''] = ' - По умолчанию -';
+			$data['default'] = 'Стандартный';
+			$data['new'] = 'Новый';
 			return $data;
 		}
 		elseif($listname == 'pagemap') {
@@ -201,6 +202,13 @@ class pg_class extends kernel_extends {
 		$flag_content = $this->can_show();
 //$this->childs['content']->getInc('.map.php');
 		//PAGE****************
+		if(!$HTML) {
+			if($this->pageinfo['design'])
+				$this->config['design'] = $this->pageinfo['design'];
+			elseif(!$this->config['design'])
+				$this->config['design'] = 'default';
+			$HTML = new html('_design/',$this->config['design']);//отправляет header и печатает страничку
+		}
 		if ($flag_content==1) {
 			$HTML->_templates = $this->pageinfo['template'];
 			$flag_content = $this->display_page();

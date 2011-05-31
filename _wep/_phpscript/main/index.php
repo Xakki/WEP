@@ -75,7 +75,6 @@
 		if(is_array($_GET['page'])) $_GET['page'] = implode('/',$_GET['page']);
 		$_GET['page'] = explode('/',trim($_GET['page'],'/'));
 
-	$HTML = new html('_design/',$PGLIST->config['design']);//отправляет header и печатает страничку
 
 //if($_SESSION['_showallinfo']) {print('main1 = '.(getmicrotime()-$main1time).'<hr/>');$main2time = getmicrotime();}
 
