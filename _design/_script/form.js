@@ -56,7 +56,7 @@ function keys_return(ev) {
 
 function checkInt(ev) {
 	var keys = keys_return(ev);
-	if ((keys<0x30 || keys>0x39) && (keys<96 || keys>105) && keys!=0) 
+	if (keys!=0 && (keys<0x30 || keys>0x39) && (keys<96 || keys>105) && keys!=189) 
 		return false;
 	return true;
 }

@@ -19,6 +19,7 @@ class ugroup_class extends kernel_extends
 		$this->config['premoderation'] = 0;
 		$this->config['modergroup'] = 4;
 		$this->config['karma'] = 0;
+		$this->config['userscontact'] = 0;
 
 		$this->config_form['mailto'] = array('type' => 'text', 'mask' =>array('min'=>1,'name'=>'email'), 'caption' => 'Адрес службы поддержки');
 		$this->config_form['mailrobot'] = array('type' => 'text', 'mask' =>array('min'=>1,'name'=>'email'), 'caption' => 'Адрес Робота');
@@ -54,6 +55,7 @@ class ugroup_class extends kernel_extends
 		$this->config_form['modergroup'] = array('type' => 'list', 'listname'=>'list', 'caption' => 'Непрошедшие проверку');
 		$this->config_form['rememberday'] = array('type' => 'int', 'mask' =>array('min'=>1), 'caption' => 'Дней запоминания авторизации');
 		$this->config_form['karma'] = array('type' => 'checkbox', 'caption' => 'Включить систему рейтингов?','style'=>'background:green;');
+		$this->config_form['userscontact'] = array('type' => 'checkbox', 'caption' => 'Использовать модуль контакты пользователя');
 	}
 
 	protected function _set_features() {
@@ -336,7 +338,8 @@ class users_class extends kernel_extends {
 	}
 
 	function _childs() {
-		//$this->create_child('usercontact');
+		if($this->owner->config['userscontact'])
+			$this->create_child('userscontact');
 	}	
 
 	function _install() {
@@ -765,3 +768,55 @@ class users_class extends kernel_extends {
 }
 
 
+class userscontact_class extends kernel_extends {
+
+	function _set_features()
+	{
+		if (!parent::_set_features()) return false;
+		$this->tablename = $this->_CFG['sql']['dbpref'] . 'userscontact';
+		$this->caption = 'Контакты пользователя';
+		$this->mf_namefields = false; 
+		return true;
+	}
+
+	function _create() {
+		parent::_create();
+		$this->fields['gender'] =  array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL', 'default'=>0);
+		$this->fields['birthday'] = array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL', 'default'=>0);
+		$this->fields['showbirthday'] =  array('type' => 'bool', 'attr' => 'NOT NULL', 'default'=>1);
+		$this->fields['aboutme'] = array('type' => 'text', 'attr' => 'NOT NULL');
+		$this->fields['www'] =  array('type' => 'varchar', 'width' => 64, 'attr' => 'NOT NULL', 'default'=>'');
+		$this->fields['icq'] = array('type' => 'bigint', 'width' => 13,'attr' => 'NOT NULL', 'default'=>0);
+		$this->fields['skype'] =  array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL', 'default'=>'');
+		$this->fields['gtalk'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL', 'default'=>'');
+		$this->fields['livejournal'] =  array('type' => 'varchar', 'width' => 64, 'attr' => 'NOT NULL', 'default'=>'');
+		$this->fields['vkontakte'] = array('type' => 'varchar', 'width' => 64,'attr' => 'NOT NULL', 'default'=>'');
+		$this->fields['facebook'] =  array('type' => 'varchar', 'width' => 64, 'attr' => 'NOT NULL', 'default'=>'');
+		$this->fields['overpage'] = array('type' => 'text', 'attr' => 'NOT NULL');
+
+		$this->_CFG['enum']['gender'] = array(
+			0=>' - ',
+			1=>'мужской',
+			2=>'женский');
+
+	}
+
+	function setFieldsForm() {
+		parent::setFieldsForm();
+
+		$this->fields_form['gender'] = array('type' => 'list', 'caption' => 'Пол', 'listname'=>'gender');
+	 	$this->fields_form['birthday'] = array('type' => 'date', 'caption' => 'Дата рождения:', 'range_up' => array('year' => -10), 'range_back' => array('year' => 65), 'mask'=>array('view'=>'input2', 'format'=>'d.m.Y', 'separate'=> '.', 'params'=>'{rangeSelect: false, yearRange: \'1950:2010\', firstDay: 1, dateFormat: \'dd.mm.yy\', changeYear: true, changeMonth: true }', 'min' => '3'));
+		$this->fields_form['showbirthday'] = array('type' => 'checkbox', 'caption' => 'Показывать возраст другим пользователям');
+		$this->fields_form['aboutme'] = array('type' => 'textarea', 'caption' => 'О вас','mask'=>array('name'=>'text','fview'=>1));
+		$this->fields_form['www'] = array('type' => 'text', 'caption' => 'WWW');
+		$this->fields_form['icq'] = array('type' => 'text', 'caption' => 'ICQ');
+		$this->fields_form['skype'] = array('type' => 'text', 'caption' => 'SKYPE');
+		$this->fields_form['gtalk'] = array('type' => 'text', 'caption' => 'GTALK');
+		$this->fields_form['livejournal'] = array('type' => 'text', 'caption' => 'LIVEJOURNAL');
+		$this->fields_form['vkontakte'] = array('type' => 'text', 'caption' => 'VKONTAKTE');
+		$this->fields_form['facebook'] = array('type' => 'text', 'caption' => 'FACEBOOK');
+		$this->fields_form['twitter'] = array('type' => 'text', 'caption' => 'TWITTER');
+		$this->fields_form['overpage'] = array('type' => 'text', 'caption' => 'Прочие страницы в соц.сетях');
+	}
+
+}
