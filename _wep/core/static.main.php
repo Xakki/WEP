@@ -43,45 +43,44 @@ class static_main {
 			return $_CFG['sql']['dbpref'] . $name;
 	}
 
-
-	static function includeModulFile($Mid,&$OWN=NULL) {
+	static function includeModulFile($Mid, &$OWN=NULL) {
 		global $_CFG;
 		$Pid = NULL;
-		$ret = array('type'=>0, 'path'=>'', 'file'=>false);
+		$ret = array('type' => 0, 'path' => '', 'file' => false);
 		foreach ($_CFG['modulinc'] as $k => $r) {
 			$ret['type'] = $k;
-			$ret['path'] = $Mid.'.class/'.$Mid.'.class.php';
-			$ret['file'] = $r['path'].$ret['path'];
+			$ret['path'] = $Mid . '.class/' . $Mid . '.class.php';
+			$ret['file'] = $r['path'] . $ret['path'];
 
-			if(file_exists($ret['file'])) {
-				$ret['path'] = $k.':'.$ret['path'];
+			if (file_exists($ret['file'])) {
+				$ret['path'] = $k . ':' . $ret['path'];
 				//include_once($ret['file']);
 				return $ret;
 			}
 			$tempOWN = &$OWN;
-			while($tempOWN and $tempOWN->_cl) {
+			while ($tempOWN and $tempOWN->_cl) {
 				$Pid = $tempOWN->_cl;
 				$ret['type'] = 5;
-				$ret['path'] = $Pid.'.class/'.$Mid.'.childs.php';
-				$ret['file'] = $r['path'].$ret['path'];
-				if(file_exists($ret['file'])) {
-					$ret['path'] = $k.':'.$ret['path'];
+				$ret['path'] = $Pid . '.class/' . $Mid . '.childs.php';
+				$ret['file'] = $r['path'] . $ret['path'];
+				if (file_exists($ret['file'])) {
+					$ret['path'] = $k . ':' . $ret['path'];
 					//include_once($ret['file']);
 					return $ret;
 				}
-				$ret['path'] = $Pid.'.class/'.$Pid.'.class.php';
-				$ret['file'] = $r['path'].$ret['path'];
-				if(file_exists($ret['file'])) {
-					$ret['path'] = $k.':'.$ret['path'];
+				$ret['path'] = $Pid . '.class/' . $Pid . '.class.php';
+				$ret['file'] = $r['path'] . $ret['path'];
+				if (file_exists($ret['file'])) {
+					$ret['path'] = $k . ':' . $ret['path'];
 					//include_once($ret['file']);
 					return $ret;
 				}
 				$tempOWN = &$tempOWN->owner;
 			}
-
 		}
-		return array('type'=>false, 'path'=>false, 'file'=>false);
+		return array('type' => false, 'path' => false, 'file' => false);
 	}
+
 	/*
 	  Проверка доступа пол-ля к модулю
 	 */
@@ -90,13 +89,13 @@ class static_main {
 		global $_CFG;
 		if (isset($_SESSION['user']['id']) and isset($_SESSION['user']['level']) and $_SESSION['user']['level'] == 0)
 			return true; // админу можно всё
-		if (!isset($_CFG['modulprm']))
+ if (!isset($_CFG['modulprm']))
 			self::_prmModulLoad();
 		if (!isset($_CFG['modulprm'][$mn]))
 			return false; // отказ, если модуль отключен
-		if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] >= 5)
+ if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] >= 5)
 			return false; //этим всё запрещено
-		else {
+ else {
 			if (isset($_CFG['modulprm'][$mn]['access'][0]))
 				return false;
 			if (count($param))
@@ -112,12 +111,15 @@ class static_main {
 		if (!isset($_CFG['modulprm'])) {
 			$_CFG['modulprm'] = $_CFG['modulprm_ext'] = array();
 			$ugroup_id = (isset($_SESSION['user']['gid']) ? (int) $_SESSION['user']['gid'] : 0);
-			if(!$SQL) $SQL = new sql($_CFG['sql']);
-			$result = $SQL->execSQL('SELECT t1.*,t2.access, t2.mname FROM `'.$_CFG['sql']['dbpref'].'modulprm` t1 LEFT Join `'.$_CFG['sql']['dbpref'].'modulgrp` t2 on t2.owner_id=t1.id and t2.ugroup_id=' . $ugroup_id . ' ORDER BY typemodul,name');
-			if ($result->err) return false;
+			if (!$SQL)
+				$SQL = new sql($_CFG['sql']);
+			$result = $SQL->execSQL('SELECT t1.*,t2.access, t2.mname FROM `' . $_CFG['sql']['dbpref'] . 'modulprm` t1 LEFT Join `' . $_CFG['sql']['dbpref'] . 'modulgrp` t2 on t2.owner_id=t1.id and t2.ugroup_id=' . $ugroup_id . ' ORDER BY typemodul,name');
+			if ($result->err)
+				return false;
 			$_CFG['modulprm'] = array();
 			while ($row = $result->fetch_array()) {
-				if($row['extend']) $_CFG['modulprm_ext'][$row['extend']][] = $row['id'];
+				if ($row['extend'])
+					$_CFG['modulprm_ext'][$row['extend']][] = $row['id'];
 				$_CFG['modulprm'][$row['id']]['access'] = array_flip(explode('|', trim($row['access'], '|')));
 				if ($row['mname'])
 					$_CFG['modulprm'][$row['id']]['name'] = $row['mname'];
@@ -129,13 +131,13 @@ class static_main {
 				$_CFG['modulprm'][$row['id']]['tablename'] = $row['tablename'];
 				$_CFG['modulprm'][$row['id']]['ver'] = $row['ver'];
 				$_CFG['modulprm'][$row['id']]['extend'] = $row['extend'];
-				if($row['hook']) {
-					eval('$hook = '.$row['hook'].';');
-					$_CFG['hook'] = self::MergeArrays($_CFG['hook'],$hook);
+				if ($row['hook']) {
+					eval('$hook = ' . $row['hook'] . ';');
+					$_CFG['hook'] = self::MergeArrays($_CFG['hook'], $hook);
 				}
 			}
-			/*if (_new_class('modulprm', $MODULs))
-				$_CFG['modulprm'] = $MODULs->userPrm((isset($_SESSION['user']['owner_id']) ? (int) $_SESSION['user']['owner_id'] : 0));*/
+			/* if (_new_class('modulprm', $MODULs))
+			  $_CFG['modulprm'] = $MODULs->userPrm((isset($_SESSION['user']['owner_id']) ? (int) $_SESSION['user']['owner_id'] : 0)); */
 		}
 		return true;
 	}
@@ -147,10 +149,12 @@ class static_main {
 	 */
 	static function getPathModul($path) {
 		global $_CFG;
-		if(!$path) return '';		
-		$path = explode(':',$path);
-		return $_CFG['modulinc'][$path[0]]['path'].$path[1];
+		if (!$path)
+			return '';
+		$path = explode(':', $path);
+		return $_CFG['modulinc'][$path[0]]['path'] . $path[1];
 	}
+
 	/*
 	  Проверка доступа пол-ля по уровню привелегии
 	 */
@@ -245,7 +249,7 @@ class static_main {
 		$z = pow(10, $y);
 		return $z * round($x / $z);
 	}
-	
+
 	static function insertInArray($data, $afterkey, $insert_data) {
 		$output = array();
 		if (count($data)) {
@@ -261,16 +265,15 @@ class static_main {
 		return $insert_data;
 	}
 
-	static function MergeArrays($Arr1, $Arr2)
-	{
-		foreach($Arr2 as $key => $Value)
-		{
-			if(array_key_exists($key, $Arr1) && is_array($Value) && is_array($Arr1[$key])) {
+	static function MergeArrays($Arr1, $Arr2) {
+		foreach ($Arr2 as $key => $Value) {
+			if (array_key_exists($key, $Arr1) && is_array($Value) && is_array($Arr1[$key])) {
 				$Arr1[$key] = self::MergeArrays($Arr1[$key], $Value);
 			}
 			else
-			$Arr1[$key] = $Value;
+				$Arr1[$key] = $Value;
 		}
 		return $Arr1;
 	}
+
 }

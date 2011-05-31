@@ -130,6 +130,8 @@ function showBG(body,show,k) {
 function fSpoiler (txt,nm) {
 	//initSpoilers();
 	if(!nm) nm ='Скрытый текст';
+	$.includeCSS('/_design/_style/bug.css');
+	$.include('/_design/_script/bug.js');
 	return '<div class="spoiler-wrap"><div class="spoiler-head folded clickable" onClick="bugSpoilers(this)">+ '+nm+'</div><div class="spoiler-body" style="display: none;">'+txt+'</div></div>';
 }
 

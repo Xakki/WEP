@@ -22,7 +22,8 @@ ob_start('_obHandler');
 /*
   Запуск сесии
  */
-if(!isset($_COOKIE['_showallinfo'])) $_COOKIE['_showallinfo'] = 0;
+if (!isset($_COOKIE['_showallinfo']))
+	$_COOKIE['_showallinfo'] = 0;
 if (isset($_GET['_showallinfo']) and !$_CFG['robot']) {// and !isset($_COOKIE['_showallinfo'])
 	if ($_GET['_showallinfo'])
 		_setcookie('_showallinfo', $_GET['_showallinfo']);
@@ -64,7 +65,7 @@ class html {
 		$this->_templates = 'default';
 		$this->_PATHd = $_SERVER['_DR_'] . $_PATHd . $_design . '/';
 		$this->flag = $flag;
-		$_tpl['design'] =  $_CFG['_HREF']['BH'].$_PATHd . $_design . '/';
+		$_tpl['design'] = $_CFG['_HREF']['BH'] . $_PATHd . $_design . '/';
 		$_tpl['title'] = $_tpl['time'] = $_tpl['onload'] = $_tpl['logs'] = '';
 		$_tpl['script'] = $_tpl['styles'] = array();
 		$params = array(

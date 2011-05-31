@@ -5,13 +5,14 @@
 
 abstract class kernel_extends {
 	/*
-	* версия ядра
-	*  нумерация отличает от других версией  
-	* 1 - структурной не совместимостью, различия в хранении данных и в исполняемых функциях, вызывающие критические ошибки в коде
-	* 2 - добавленн новый функционал, расширен и измененн меющиеся функции - 
-	* 3 - Номер ревизии , исправленны ошибки 
-	*/
+	 * версия ядра
+	 *  нумерация отличает от других версией
+	 * 1 - структурной не совместимостью, различия в хранении данных и в исполняемых функциях, вызывающие критические ошибки в коде
+	 * 2 - добавленн новый функционал, расширен и измененн меющиеся функции -
+	 * 3 - Номер ревизии , исправленны ошибки
+	 */
 	const versionCore = '2.2.9';
+
 	function __construct($owner=NULL) {
 		global $_CFG;
 		//FB::info($_CFG);
@@ -32,8 +33,8 @@ abstract class kernel_extends {
 		$this->_create(); // предустановки модуля
 		$this->_childs();
 		$this->setFieldsForm();
-		if(isset($this->_CFG['hook']['__construct']))
-			$this->__do_hook('__construct',func_num_args());
+		if (isset($this->_CFG['hook']['__construct']))
+			$this->__do_hook('__construct', func_num_args());
 	}
 
 	function __destruct() {
@@ -60,30 +61,30 @@ abstract class kernel_extends {
 		//return NULL;
 	}
 
-	/*function __set_hook($f) {
-	}*/
+	/* function __set_hook($f) {
+	  } */
 
 	function __do_hook($f, $arg = array()) {
-		if(!isset($this->_CFG['hook'][$f])) // проверка на всякий случай
+		if (!isset($this->_CFG['hook'][$f])) // проверка на всякий случай
 			return false;
 		///static_main::_prmModulLoad();
 		$modul = array($this->_cl);
 
 		if (isset($this->_CFG['modulprm'][$this->_cl]['extend']))
 			$modul[] = $this->_CFG['modulprm'][$this->_cl]['extend'];
-		
-		foreach($modul as $m) {
-			if(isset($this->_CFG['hook'][$f][$m])) {
-				foreach($this->_CFG['hook'][$f][$m] as $k=>$r) {
+
+		foreach ($modul as $m) {
+			if (isset($this->_CFG['hook'][$f][$m])) {
+				foreach ($this->_CFG['hook'][$f][$m] as $k => $r) {
 					$file = NULL;
-					if(!function_exists($r)) {
-						$file = $this->_CFG['_PATH']['path'].$k;
-						if(file_exists($file)) {
+					if (!function_exists($r)) {
+						$file = $this->_CFG['_PATH']['path'] . $k;
+						if (file_exists($file)) {
 							include_once($file);
 						}
 					}
-					if($file === NULL or function_exists($r)) {
-						eval('return '.$r.'($this,$arg);');
+					if ($file === NULL or function_exists($r)) {
+						eval('return ' . $r . '($this,$arg);');
 					}
 				}
 			}
@@ -130,7 +131,7 @@ abstract class kernel_extends {
 		$this->mf_indexing = false; // TOOLS индексация
 		$this->mf_statistic = false; // TOOLS показывать  статистику по дате добавления
 		$this->cf_childs = false; // TOOLS true - включить управление подключение подмодулей в настройках модуля
-		$this->cf_reinstall = false;// TOOLS
+		$this->cf_reinstall = false; // TOOLS
 		$this->includeJStoWEP = false; // подключать ли скрипты для формы через настройки
 		$this->includeCSStoWEP = false; // подключать ли стили для формы через настройки
 		$this->singleton = true; // класс-одиночка
@@ -163,7 +164,7 @@ abstract class kernel_extends {
 				$this->locallang =
 				$this->enum =
 				$this->child_path =
-				$this->Achilds = 
+				$this->Achilds =
 				$this->_setHook = array();
 		$this->childs = new modul_child($this);
 		$this->ordfield = $this->_clp = '';
@@ -194,15 +195,15 @@ abstract class kernel_extends {
 
 	protected function configParse() {
 		if (isset($this->config_form)) { // загрузка конфига из файла для модуля
-			if(is_null($this->_file_cfg))
+			if (is_null($this->_file_cfg))
 				$this->_file_cfg = $this->_CFG['_PATH']['config'] . get_class($this) . '.cfg';
 			if (file_exists($this->_file_cfg)) {
 				$cont = file_get_contents($this->_file_cfg);
-				if(substr($cont,0,5)=='array')
-					eval('$data='.$cont.';');
+				if (substr($cont, 0, 5) == 'array')
+					eval('$data=' . $cont . ';');
 				else
 					$data = static_main::_fParseIni($this->_file_cfg, $this->config_form);
-				$this->config = array_merge($this->config,$data);
+				$this->config = array_merge($this->config, $data);
 			}
 		}
 		return true;
@@ -210,16 +211,16 @@ abstract class kernel_extends {
 
 	protected function _create() {
 
-		if(is_bool($this->mf_namefields) and $this->mf_namefields)
-			$this->mf_namefields  = 'name';
-		if(is_bool($this->mf_createrid) and $this->mf_createrid)
-			$this->mf_createrid  = 'creater_id';
-		if(is_bool($this->mf_istree) and $this->mf_istree)
-			$this->mf_istree  = 'parent_id';
-		if(is_bool($this->mf_ordctrl) and $this->mf_ordctrl)
-			$this->mf_ordctrl  = 'ordind';
-		if(is_bool($this->mf_actctrl) and $this->mf_actctrl)
-			$this->mf_actctrl  = 'active';
+		if (is_bool($this->mf_namefields) and $this->mf_namefields)
+			$this->mf_namefields = 'name';
+		if (is_bool($this->mf_createrid) and $this->mf_createrid)
+			$this->mf_createrid = 'creater_id';
+		if (is_bool($this->mf_istree) and $this->mf_istree)
+			$this->mf_istree = 'parent_id';
+		if (is_bool($this->mf_ordctrl) and $this->mf_ordctrl)
+			$this->mf_ordctrl = 'ordind';
+		if (is_bool($this->mf_actctrl) and $this->mf_actctrl)
+			$this->mf_actctrl = 'active';
 
 		$this->_listnameSQL = ($this->mf_namefields ? $this->mf_namefields : 'id'); // для SQL запроса при выводе списка
 		$this->_listname = ($this->mf_namefields ? $this->mf_namefields : 'id'); // ', `_listnameSQL` as `_listname`'
@@ -347,7 +348,7 @@ abstract class kernel_extends {
 		if (!isset($this->fields[$this->mf_namefields]))
 			$name = 'id as ' . $name;
 		else
-			$name = '`'.$this->mf_namefields.'` as ' . $name;
+			$name = '`' . $this->mf_namefields . '` as ' . $name;
 		if ($where != '')
 			$where = ' WHERE ' . $where;
 		$result = $this->SQL->execSQL('SELECT id, ' . $name . ' FROM `' . $this->tablename . '`' . $where);
@@ -474,7 +475,7 @@ abstract class kernel_extends {
 	 * @return bool
 	 */
 	protected function _add($flag_select=true) {
-		$result = static_form::_add($this,$flag_select);
+		$result = static_form::_add($this, $flag_select);
 		if ($result)
 			$this->allChangeData('add');
 		return $result;
@@ -486,7 +487,7 @@ abstract class kernel_extends {
 	 * @return bool
 	 */
 	protected function _update($flag_select=true) {
-		$result = static_form::_update($this,$flag_select);
+		$result = static_form::_update($this, $flag_select);
 		if ($result)
 			$this->allChangeData('save');
 		return $result;
@@ -566,15 +567,15 @@ abstract class kernel_extends {
 	}
 
 	public function _get_new_ord() {
-		$query = 'SELECT max('.$this->mf_ordctrl.') FROM `' . $this->tablename . '`';
+		$query = 'SELECT max(' . $this->mf_ordctrl . ') FROM `' . $this->tablename . '`';
 		if ($this->mf_istree and $this->parent_id and !$this->fld_data[$this->mf_istree])
-			$query .= ' WHERE '.$this->mf_istree.'='.$this->parent_id;
+			$query .= ' WHERE ' . $this->mf_istree . '=' . $this->parent_id;
 		$result = $this->SQL->execSQL($query);
 		if ($result->err)
 			return 0;
 		list($ordind) = $result->fetch_array(MYSQL_NUM);
-		if ($ordind = (int)$ordind)
-			$ordind ++;
+		if ($ordind = (int) $ordind)
+			$ordind++;
 		return $ordind;
 	}
 
@@ -587,7 +588,7 @@ abstract class kernel_extends {
 			$id = str_replace($this->_cl . '_', '', $r['id']);
 			$id2 = str_replace($this->_cl . '_', '', $r['id2']);
 			$data = array();
-			$qr = 'select id,'.$this->mf_ordctrl.' from `' . $this->tablename . '`';
+			$qr = 'select id,' . $this->mf_ordctrl . ' from `' . $this->tablename . '`';
 			$result = $this->SQL->execSQL($qr);
 			if ($result->err)
 				return false;
@@ -600,26 +601,26 @@ abstract class kernel_extends {
 			elseif ($r['t'] == 'prev' and ($data[$id2] + 1) == $data[$id])
 				$ex = 1;
 			if ($ex != 1) {
-				$qr = 'UPDATE `' . $this->tablename . '` SET `'.$this->mf_ordctrl.'` = -2147483647 WHERE id=\'' . $id . '\'';
+				$qr = 'UPDATE `' . $this->tablename . '` SET `' . $this->mf_ordctrl . '` = -2147483647 WHERE id=\'' . $id . '\'';
 				$result = $this->SQL->execSQL($qr);
 				if ($result->err)
 					return false;
 
 				if ($r['t'] == 'next' and $data[$id2] < $data[$id]) {
 					$ord = $data[$id2];
-					$qr = 'UPDATE `' . $this->tablename . '` SET `'.$this->mf_ordctrl.'` = ('.$this->mf_ordctrl.'+1) WHERE ' . $data[$id2] . '<='.$this->mf_ordctrl.' and '.$this->mf_ordctrl.'<=' . $data[$id] . ' order by `'.$this->mf_ordctrl.'` DESC';
+					$qr = 'UPDATE `' . $this->tablename . '` SET `' . $this->mf_ordctrl . '` = (' . $this->mf_ordctrl . '+1) WHERE ' . $data[$id2] . '<=' . $this->mf_ordctrl . ' and ' . $this->mf_ordctrl . '<=' . $data[$id] . ' order by `' . $this->mf_ordctrl . '` DESC';
 				} else {
 					if ($r['t'] == 'next')
 						$ord = $data[$id2] - 1;
 					else
 						$ord= $data[$id2];
-					$qr = 'UPDATE `' . $this->tablename . '` SET `'.$this->mf_ordctrl.'` =('.$this->mf_ordctrl.'-1) WHERE ' . $data[$id] . '<=`'.$this->mf_ordctrl.'` and `'.$this->mf_ordctrl.'`<=' . $ord . ' order by `'.$this->mf_ordctrl.'`';
+					$qr = 'UPDATE `' . $this->tablename . '` SET `' . $this->mf_ordctrl . '` =(' . $this->mf_ordctrl . '-1) WHERE ' . $data[$id] . '<=`' . $this->mf_ordctrl . '` and `' . $this->mf_ordctrl . '`<=' . $ord . ' order by `' . $this->mf_ordctrl . '`';
 				}
 				$result = $this->SQL->execSQL($qr);
 				if ($result->err)
 					return false;
 
-				$qr = 'UPDATE `' . $this->tablename . '` SET `'.$this->mf_ordctrl.'` = ' . $ord . ' WHERE `id`=\'' . $id . '\'';
+				$qr = 'UPDATE `' . $this->tablename . '` SET `' . $this->mf_ordctrl . '` = ' . $ord . ' WHERE `id`=\'' . $id . '\'';
 				$result = $this->SQL->execSQL($qr);
 				if ($result->err)
 					return false;
@@ -770,16 +771,16 @@ abstract class kernel_extends {
 				'type' => 'info',
 				'caption' => $this->_CFG['_MESS']['_configno']);
 		} else {
-			foreach($this->config as $k=>&$r) {
-				if(is_array($r) and !isset($this->config_form[$k]['multiple'])) {
+			foreach ($this->config as $k => &$r) {
+				if (is_array($r) and !isset($this->config_form[$k]['multiple'])) {
 					$temp = array();
-					foreach($r as $t=>$d) {
-						if(strpos($d,':=')===false)
-							$temp[] = trim($t).':='.trim($d);
+					foreach ($r as $t => $d) {
+						if (strpos($d, ':=') === false)
+							$temp[] = trim($t) . ':=' . trim($d);
 						else
 							$temp[] = trim($d);
 					}
-					$r = implode(' :| ',$temp);
+					$r = implode(' :| ', $temp);
 				}
 			}
 			if (count($_POST)) {
@@ -794,7 +795,7 @@ abstract class kernel_extends {
 				$this->config = $config;
 				if (!count($arr['mess'])) {
 					$arr['mess'][] = array('name' => 'ok', 'value' => $this->getMess('update'));
-					static_tools::_save_config($config,$this->_file_cfg);
+					static_tools::_save_config($config, $this->_file_cfg);
 				}
 			}
 			static_tools::_xmlFormConf($this);
@@ -887,7 +888,7 @@ abstract class kernel_extends {
 				continue;
 			}
 			if (isset($eval)) {
-				if(isset($data[$k]))
+				if (isset($data[$k]))
 					$val = $data[$k];
 				else
 					$val = '';
@@ -945,7 +946,7 @@ abstract class kernel_extends {
 			if (isset($this->id) and isset($this->data[$this->id]['_ext_' . $k]))
 				$r['ext'] = $this->data[$this->id]['_ext_' . $k];
 
-			if(!isset($r['comment']))
+			if (!isset($r['comment']))
 				$r['comment'] = '';
 
 			//end foreach
@@ -966,8 +967,8 @@ abstract class kernel_extends {
 			$mess = $this->mess_form;
 		if (!count($this->fields_form))
 			$mess[] = array('name' => 'error', 'value' => $this->getMess('nodata'));
-		if(isset($this->_CFG['hook']['kPreFields']))
-			$this->__do_hook('kPreFields',func_num_args());
+		if (isset($this->_CFG['hook']['kPreFields']))
+			$this->__do_hook('kPreFields', func_num_args());
 		return $mess;
 	}
 
@@ -1189,7 +1190,7 @@ abstract class kernel_extends {
 			$listfields = array('id,parent_id' . $agr);
 			while ($parent_id) {
 				$clause = 'WHERE id="' . $parent_id . '"';
-				$this->data = $this->_query($listfields,$clause,'id');
+				$this->data = $this->_query($listfields, $clause, 'id');
 				if (!count($first_data))
 					$first_data = $this->data;
 				$this->tree_data += $this->data;
@@ -1325,7 +1326,7 @@ abstract class kernel_extends {
 			}
 			if ($this->mf_statistic) {
 				$xml['topmenu']['Statsmodul'] = array(
-					'href' => $this->_clp . '_type=static&amp;_func=Statsmodul' . (($this->owner and $this->owner->id)? '&amp;_oid=' . $this->owner->id : ''),
+					'href' => $this->_clp . '_type=static&amp;_func=Statsmodul' . (($this->owner and $this->owner->id) ? '&amp;_oid=' . $this->owner->id : ''),
 					'caption' => 'Статистика',
 					'sel' => 0,
 					'type' => 'static',
@@ -1348,7 +1349,7 @@ abstract class kernel_extends {
 				$HTML->path[$firstpath . $this->_cl . '_id=' . $this->id . '&amp;_type=edit'] = 'Редактировать:<b>' . preg_replace($this->_CFG['_repl']['name'], '', $this->data[$this->id][$this->_listname]) . '</b>';
 				list($xml['formcreat'], $flag) = $this->_UpdItemModul($param);
 				if ($flag == 1) {
-					if(isset($this->parent_id) and $this->parent_id) 
+					if (isset($this->parent_id) and $this->parent_id)
 						$this->id = $this->parent_id;
 					if ($this->id)
 						$this->_clp .= $this->_cl . '_id=' . $this->id;
@@ -1593,9 +1594,9 @@ abstract class kernel_extends {
 		//	$param['clause']['t1.region_id'] ='t1.region_id='.$_SESSION['city'];
 
 		if (isset($_GET['_type']) and $_GET['_type'] == 'deleted' and $this->fields_form[$this->mf_actctrl]['listname'] == $this->mf_actctrl)
-			$param['clause']['t1.'.$this->mf_actctrl] = 't1.'.$this->mf_actctrl.'=4';
+			$param['clause']['t1.' . $this->mf_actctrl] = 't1.' . $this->mf_actctrl . '=4';
 		elseif (isset($this->fields_form[$this->mf_actctrl]['listname']) and $this->fields_form[$this->mf_actctrl]['listname'] == $this->mf_actctrl)
-			$param['clause']['t1.'.$this->mf_actctrl] = 't1.'.$this->mf_actctrl.'!=4';
+			$param['clause']['t1.' . $this->mf_actctrl] = 't1.' . $this->mf_actctrl . '!=4';
 		return $param['clause'];
 	}
 
@@ -1889,7 +1890,7 @@ class modul_child extends ArrayObject {
 			$clname = $_CFG['modulprm_ext'][$index][0];
 		else
 			$clname = $index;
-		$value = parent	::offsetGet($clname);
+		$value = parent ::offsetGet($clname);
 		if ($this->offsetExists($clname) && $value === true) {
 			if (isset($this->modul_obj->child_path[$clname])) {
 				require_once $this->modul_obj->child_path[$clname];

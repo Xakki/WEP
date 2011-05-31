@@ -1,9 +1,9 @@
 <?
 
-	error_reporting(E_ALL ^ E_NOTICE);
-	ini_set('display_errors',-1);
-	//универсальный для русского языка
-	setlocale(LC_CTYPE, 'ru_RU.UTF-8');
+error_reporting(E_ALL ^ E_NOTICE);
+ini_set('display_errors', -1);
+//универсальный для русского языка
+setlocale(LC_CTYPE, 'ru_RU.UTF-8');
 
 $_CFG['info'] = array(//информация о СМС
 	'version' => '2.2',
@@ -42,16 +42,16 @@ $_CFG['wep'] = array(// для ядра и админки
 	'bug_hunter' => array(), // логирование ошибок
 	'catch_bug' => 1, // Системная - укзаывает на элемент в массиве $GLOBALS['_ERR'] в котором отлавливаются ошибки
 	'stop_fatal_error' => true,
-	'error_reporting'=>'-1' // заменить на multiselect 
+	'error_reporting' => '-1' // заменить на multiselect
 );
 
 $_CFG['site'] = array(// для сайта
 	'msp' => 'paginator', // постраничнка
 	'rf' => 0, // для рускояз доменов
 	'show_error' => 1, //0- ничего не показывать обычным юзерам, 1 -паказывать только сообщение что произошла ошибка, 2 - паказать ошибку
-	'worktime'=>false, // 1 - включает отображение страницы "Технический перерыв"
-	'work_title'=>'Технический перерыв',
-	'work_text'=>'Технический перерыв'
+	'worktime' => false, // 1 - включает отображение страницы "Технический перерыв"
+	'work_title' => 'Технический перерыв',
+	'work_text' => 'Технический перерыв'
 );
 
 /* END_MAIN_CFG */
@@ -61,8 +61,8 @@ $_CFG['require_modul'] = array(
 	'modulprm' => true,
 	'mail' => true
 );
-$_CFG['singleton'] = array();// Массив объектов которые не клонируются
-$_CFG['hook'] = array();// События
+$_CFG['singleton'] = array(); // Массив объектов которые не клонируются
+$_CFG['hook'] = array(); // События
 $_CFG['logs']['sql'] = array(); // - массив SQL запросов
 $_CFG['fileIncludeOption'] = array(); //автоподключение SCRIPT & STYLE
 $GLOBALS['_ERR'] = array(); //текс ошибок
@@ -175,20 +175,20 @@ $_CFG['_MASK'] = array(
 	'phone2' => '/^((([0-9]-[0-9]{3}-[0-9]{3})|([0-9]{2,3})|(\([0-9]{3}\)[0-9]{3})|(\([0-9]{4}\)[0-9]{2})|(\([0-9]{5}\)[0-9]{1}))-[0-9]{2}-[0-9]{2})((, )(([0-9]-[0-9]{3}-[0-9]{3})|([0-9]{2,3})|(\([0-9]{3}\)[0-9]{3})|(\([0-9]{4}\)[0-9]{2}))-[0-9]{2}-[0-9]{2}){0,3}$/',
 	'phone' => '/^((([0-9]-[0-9]{3}-[0-9]{3})|([0-9]{2,3})|(\([0-9]{3}\)[0-9]{3})|(\([0-9]{4}\)[0-9]{2}))-[0-9]{2}-[0-9]{2})$/',
 	'email' => array(
-		'eval'=>'mb_strtolower($value)',//$value = EVAL;
-		'match'=>'/[0-9a-zЁёа-я_\-\.]+@[0-9a-zЁёа-я_\.\-]+\.[a-z]{2,5}$/u',
-		'nomatch'=>'/[^0-9a-zЁёа-я_\-\.\@]/u',
-		//'comment'=>'',
+		'eval' => 'mb_strtolower($value)', //$value = EVAL;
+		'match' => '/[0-9a-zЁёа-я_\-\.]+@[0-9a-zЁёа-я_\.\-]+\.[a-z]{2,5}$/u',
+		'nomatch' => '/[^0-9a-zЁёа-я_\-\.\@]/u',
+	//'comment'=>'',
 	),
 	'www' => array(
-		'match'=>'/(http:\/\/)?([A-Za-zЁёА-Яа-я\.]+\.)?[0-9A-Za-zЁёА-Яа-я\-\_]+\.[A-Za-zЁёА-Яа-я]{2,5}$/u',
-		'nomatch'=>'/[^0-9A-Za-zЁёА-Яа-я:\/\.\-\_]/u',
-		//'comment'=>'',
+		'match' => '/(http:\/\/)?([A-Za-zЁёА-Яа-я\.]+\.)?[0-9A-Za-zЁёА-Яа-я\-\_]+\.[A-Za-zЁёА-Яа-я]{2,5}$/u',
+		'nomatch' => '/[^0-9A-Za-zЁёА-Яа-я:\/\.\-\_]/u',
+	//'comment'=>'',
 	),
 	'wwwq' => array(
-		'match'=>'/(http:\/\/)?([A-Za-zЁёА-Яа-я\.]+\.)?[0-9A-Za-zЁёА-Яа-я\-\_]+\.[A-Za-zЁёА-Яа-я]+[\/0-9A-Za-zЁёА-Яа-я\.\-\_\=\?\&]*$/u',
-		'nomatch'=>'/[^0-9A-Za-zЁёА-Яа-я:\/\.\-\_\=\?\&]/u',
-		//'comment'=>'',
+		'match' => '/(http:\/\/)?([A-Za-zЁёА-Яа-я\.]+\.)?[0-9A-Za-zЁёА-Яа-я\-\_]+\.[A-Za-zЁёА-Яа-я]+[\/0-9A-Za-zЁёА-Яа-я\.\-\_\=\?\&]*$/u',
+		'nomatch' => '/[^0-9A-Za-zЁёА-Яа-я:\/\.\-\_\=\?\&]/u',
+	//'comment'=>'',
 	),
 	'token' => '/{[^}]*}/',);
 
@@ -228,13 +228,11 @@ $_CFG['form'] = array(
 );
 
 
-if (isset($_POST) && count($_POST) && get_magic_quotes_gpc())
-{
+if (isset($_POST) && count($_POST) && get_magic_quotes_gpc()) {
 	stripSlashesOnArray($_POST);
 }
 
-
-function stripSlashesOnArray(array &$theArray)	{
+function stripSlashesOnArray(array &$theArray) {
 	foreach ($theArray as &$value) {
 		if (is_array($value)) {
 			stripSlashesOnArray($value);
@@ -245,8 +243,6 @@ function stripSlashesOnArray(array &$theArray)	{
 	}
 	reset($theArray);
 }
-
-	
 
 //ERRORS
 $_CFG['_error'] = array(
@@ -282,19 +278,19 @@ $_CFG['_error'] = array(
 	),
 	E_CORE_WARNING => array(
 		'type' => '[Core Warning]',
-		'color' => 'yellow',
+		'color' => '#D16800',
 		'prior' => 1,
 		'debug' => 1
 	),
 	E_COMPILE_WARNING => array(
 		'type' => '[Compilation Warning]',
-		'color' => 'yellow',
+		'color' => '#D16800',
 		'prior' => 1,
 		'debug' => 0
 	),
 	E_WARNING => array(
 		'type' => '[Warning]',
-		'color' => 'yellow',
+		'color' => '#D16800',
 		'prior' => 1,
 		'debug' => 1
 	),
@@ -312,7 +308,7 @@ $_CFG['_error'] = array(
 	),
 	E_USER_WARNING => array(
 		'type' => '[Triggered Warning]',
-		'color' => 'yellow',
+		'color' => '#D16800',
 		'prior' => 3,
 		'debug' => 1
 	),
@@ -401,8 +397,9 @@ function shutdown_function() {
 }
 
 /* SESSION */
+
 function session_go($force=0) {
-	global $_CFG,$SESSION_GOGO;
+	global $_CFG, $SESSION_GOGO;
 	if (!$_CFG['robot'] and (isset($_COOKIE[$_CFG['session']['name']]) or $force) and !defined('SID')) {
 		if ($_CFG['wep']['sessiontype'] == 1) {
 			if (!$SESSION_GOGO) {
@@ -439,9 +436,9 @@ function getmicrotime() {
 	return ((float) $usec + (float) $sec);
 }
 
-	/*
-	  Функция SpiderDetect - принимает $_SERVER['HTTP_USER_AGENT'] и возвращает имя кравлера поисковой системы или false.
-	 */
+/*
+  Функция SpiderDetect - принимает $_SERVER['HTTP_USER_AGENT'] и возвращает имя кравлера поисковой системы или false.
+ */
 
 function SpiderDetect($USER_AGENT='') {
 	if (!$USER_AGENT)
@@ -483,4 +480,5 @@ function SpiderDetect($USER_AGENT='') {
 
 	return '';
 }
+
 $_CFG['robot'] = SpiderDetect();
