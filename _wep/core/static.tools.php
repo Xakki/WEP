@@ -128,7 +128,7 @@ class static_tools {
 			$rDATA['Ахтунг']['@mess'][] = array('name' => 'alert', 'value' => 'Модуль `'.$MODUL->caption.'`['.$Mid.'] не использует базу данных.');
 			return array($Mid => $rDATA);
 		}
-		elseif($MODULPRM->data[$Mid][$MODULPRM->mf_actctrl]) {
+		elseif(!isset($MODULPRM->data[$Mid]) or $MODULPRM->data[$Mid][$MODULPRM->mf_actctrl]) {
 			// синонимы для типов полей
 			$alias_types = array(
 				'TINYINT(1)' => 'BOOL',

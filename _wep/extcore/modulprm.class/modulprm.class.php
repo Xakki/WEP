@@ -38,7 +38,7 @@ final class modulprm_class extends kernel_extends {
 		$this->fields_form['tablename'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Таблица');
 		$this->fields_form['path'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Путь');
 		$this->fields_form['extend'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Подменяемый модуль');
-		$this->fields_form['hook'] = array('type' => 'textarea', 'caption' => 'Перехватчики');
+		$this->fields_form['hook'] = array('type' => 'textarea', 'caption' => 'Перехватчики','mask'=>array('fview'=>1));
 		$this->fields_form['ver'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Версия');
 		$this->fields_form['typemodul'] = array('type' => 'list', 'listname' => 'typemodul', 'readonly' => 1, 'caption' => 'Описание');
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Активность');
@@ -381,7 +381,7 @@ final class modulprm_class extends kernel_extends {
 							if ($this->_add(false))
 								$MESS[] = array('name' => 'alert', 'value' => 'Данные для модуля `' . $Mid . '`[' . $path . '] успешно записанны.');
 							else {
-								$MESS[] = array('name' => 'error', 'value' => 'Ошибка записи данных для модуля `' . $Mid . '`[' . $path . '].');
+								$MESS[] = array('name' => 'error', 'value' => 'Ошибка записи данных для модуля `' . $Mid . '`[' . $path . '].'.print_r($this->fld_data,true));
 								$flag = false;
 							}
 						} else {
