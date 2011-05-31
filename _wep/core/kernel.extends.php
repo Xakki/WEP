@@ -154,6 +154,7 @@ abstract class kernel_extends {
 				$this->fields =
 				$this->form =
 				$this->fields_form =
+				$this->formSort = 
 				$this->mess_form =
 				$this->attaches = $this->att_data =
 				$this->memos = $this->mmo_data =

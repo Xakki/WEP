@@ -199,4 +199,17 @@
 				$r['fields_type'] = $this->fields[$k]['type'];
 			$this->form[$k] = $r;
 		}
+		if(count($this->formSort)) {
+			$temp = $this->form;
+			$this->form = array();
+			foreach($this->formSort as $rr) {
+				if($rr=='#over#') {
+					$diffForm = array_diff_key($temp,array_keys($this->formSort));
+					$this->form = array_merge($this->form,$diffForm);
+				}
+				elseif(isset($temp[$rr])) {
+					$this->form[$rr] = $temp[$rr];
+				}
+			}
+		}
 		return true;
