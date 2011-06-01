@@ -121,13 +121,18 @@ class html {
 
 	function transformPHP(&$data, $transform, $marker='') {
 		/* PHP шаблонизатор */
+		if(is_array($transform)) {
+			$transformPath = $transform[1];
+			$transform = $transform[0];
+		}else
+			$transformPath = $this->_PATHd . 'php/';
 		if (!$marker)
 			$marker = $transform;
 		if (!isset($data[$marker])) {
 			trigger_error('В входных данных шаблона не найдены исходные данные "$data[' . $marker . ']"', E_USER_WARNING);
 			return '';
 		}
-		$transformpath = $this->_PATHd . 'php/' . $transform . '.php';
+		$transformpath =  $transformPath. $transform . '.php';
 		if (!file_exists($transformpath)) {
 			trigger_error('Отсутствует файл шаблона "' . $transformpath . '"', E_USER_WARNING);
 			return '';

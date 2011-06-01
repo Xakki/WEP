@@ -5,8 +5,6 @@ class pg_class extends kernel_extends {
 		parent::_create_conf();
 
 		$this->config['sitename'] = 'MY SITE';
-		$this->config['address'] = '';
-		$this->config['copyright'] = '';
 		$this->config['counter'] = '';
 		$this->config['keywords'] = 'Keys...';
 		$this->config['description'] = 'Desc...';
@@ -40,8 +38,6 @@ class pg_class extends kernel_extends {
 		// TODO : Сделать форму управления массивами данных и хранить в формате json
 
 		$this->config_form['sitename'] = array('type' => 'text', 'caption' => 'Название сайта','mask'=>array('max'=>1000));
-		$this->config_form['address'] = array('type' => 'textarea', 'caption' => 'Адрес и контакты','mask'=>array('max'=>1000));
-		$this->config_form['copyright'] = array('type' => 'textarea', 'caption' => 'Копирайт','mask'=>array('max'=>1000));
 		$this->config_form['counter'] = array('type' => 'textarea', 'caption' => 'Счётчик','mask'=>array('max'=>1500));
 		$this->config_form['keywords'] = array('type' => 'textarea', 'caption' => 'Ключевые слова по умолчанию','mask'=>array('max'=>1000));
 		$this->config_form['description'] = array('type' => 'textarea', 'caption' => 'Описание страницы по умолчанию','mask'=>array('max'=>1000));
@@ -156,7 +152,11 @@ class pg_class extends kernel_extends {
 			return $data;
 		}
 		elseif($listname == 'templates') {
-			$dir = dir($this->_CFG['_PATH']['design'].$this->_CFG['wep']['design'].'/templates');
+			if($this->data[$this->id]['design']) {
+				$DD = $this->data[$this->id]['design'];
+			}else 
+				$DD = $this->_CFG['wep']['design'];
+			$dir = dir($this->_CFG['_PATH']['design'].$DD.'/templates');
 			while (false !== ($entry = $dir->read())) {
 				if (strstr($entry,'.tpl')) {
 					$entry = substr($entry, 0, strpos($entry, '.tpl'));

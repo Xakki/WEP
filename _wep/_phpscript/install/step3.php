@@ -29,7 +29,7 @@ if(_new_class('modulprm', $MODUL)) {
 
 if ($res == 1) {
 	$_SESSION['step'] = $_GET['step']+1;
-	$DATA['messages'][] = array('name' => 'ok', 'value' => 'Пора перейти к <a href="'.$_CFG['PATH']['wepname'].'/install.php?step=' . ($_GET['step'] + 1) . '">следующему шагу №' . ($_GET['step'] + 1) . '</a>');
+	$DATA['messages'][] = $var_const['mess'];
 	$html = $HTML->transformPHP($DATA, 'messages');
 } else {
 	$DATA = array('formcreat' => $DATA);
