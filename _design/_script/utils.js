@@ -24,18 +24,22 @@ function fLog(txt,flag) {
 }
 
 function fMessPos(body,obj) {
-	if(!body) body='body';
-	if(!obj) obj=' #ajaxload';
-	jQuery(body+'>'+obj).css("width",'');
+	if(body) body=body+'>';
+	else body = '';
+	if(!obj) obj='#ajaxload';
+	jQuery(body+obj).css('width','auto');
 	var H=document.documentElement.clientHeight;
-	var Hblock= jQuery(body+'>'+obj+' :first-child').attr("offsetHeight");
-	var hh=Math.round(50*((H-Hblock)/H));
-	if(hh<4) hh=4;
+	var FC = jQuery(body+obj+':first');
+	//alert(FC.text());
+	var Hblock= FC.outerHeight();
+	if(typeof Hblock == 'undefined') return;
+	var hh=Math.round((H-Hblock)/2);
+	if(hh<5) hh=5;
 	var W=document.documentElement.clientWidth;
-	var Wblock= jQuery(body+'>'+obj+' :first-child').attr("offsetWidth");
-	var ww=Math.round(50*((W-Wblock)/W));
-	if(ww<4) ww=4;
-	jQuery(body+'>'+obj).css("top",hh+"%").css("left",ww+"%").css("height",H+'px');//.css("width",Wblock+'px')
+	var Wblock= FC.outerWidth();
+	var ww=Math.round((W-Wblock)/2);
+	if(ww<5) ww=5;
+	jQuery(body+obj).css({'top':hh+'px','left':ww+'px','height':H+'px'});//.css("width",Wblock+'px')
 }
 
 /*Показ тултип*/

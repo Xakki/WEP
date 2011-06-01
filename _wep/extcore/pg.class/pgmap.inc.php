@@ -7,9 +7,7 @@
 	if(!isset($FUNCPARAM[3])) $FUNCPARAM[3] = 'pgmap'; // Шаблон
 	if(!isset($FUNCPARAM[4])) $FUNCPARAM[4] = ''; // CSS
 
-	$html ='<div class="'.$FUNCPARAM[4].'">';
 	$DATA = array('pgmap'=>$PGLIST->getMap($FUNCPARAM[0],$FUNCPARAM[1],$FUNCPARAM[2]));
 	$html .= $HTML->transformPHP($DATA,$FUNCPARAM[3],'pgmap');
-	$html .='</div>';
 
 	return $html;

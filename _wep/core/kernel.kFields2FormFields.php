@@ -6,7 +6,7 @@
 				(isset($r['mask']['fview']) and $r['mask']['fview']==2) or 
 				(isset($r['mask']['usercheck']) and !static_main::_prmUserCheck($r['mask']['usercheck'])))
 				continue;
-			if($r['type']!='info') {
+			if(isset($r['type']) and $r['type']!='info') {
 				if(!isset($r['value']) and isset($r['default']) and !isset($_POST[$k])) {// and !$this->id
 					$r['value']= $r['default'];
 					if(isset($r['default_2']))
@@ -91,7 +91,9 @@
 				}
 				elseif(isset($r['listname']) and isset($r['multiple']) and $r['multiple'] and !$r['readonly']) {
 					$md = $this->_getCashedList($r['listname']);
-					if(is_array($r['value']))
+					if(!isset($r['value']))
+						$val = array();
+					elseif(is_array($r['value']))
 						$val = array_combine($r['value'],$r['value']);
 					else
 						$val = array($r['value']=>$r['value']);

@@ -3,7 +3,8 @@
 
 	$GLOBALS['_RESULT']	= array();
 	$_tpl['onload']=$html=$html2='';
-	require_once($_CFG['_PATH']['phpscript'].'/jquery_getjson.php');
+	if(!isset($_GET['noajax']))
+		require_once($_CFG['_PATH']['phpscript'].'/jquery_getjson.php');
 	require_once($_CFG['_PATH']['core'].'/html.php');
 	
 	session_go();
