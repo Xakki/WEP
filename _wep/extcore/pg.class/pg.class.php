@@ -152,6 +152,7 @@ class pg_class extends kernel_extends {
 			return $data;
 		}
 		elseif($listname == 'templates') {
+			$data[''] = ' - По умолчанию -';
 			if($this->data[$this->id]['design']) {
 				$DD = $this->data[$this->id]['design'];
 			}else 
@@ -210,7 +211,7 @@ class pg_class extends kernel_extends {
 			$HTML = new html('_design/',$this->config['design']);//отправляет header и печатает страничку
 		}
 		if ($flag_content==1) {
-			$HTML->_templates = $this->pageinfo['template'];
+			
 			$flag_content = $this->display_page();
 			$_tpl['title'] = $this->get_caption();
 			$_tpl['keywords'] = $this->pageinfo['keywords'];
@@ -222,7 +223,6 @@ class pg_class extends kernel_extends {
 			header("HTTP/1.0 401");
 			if(!$this->can_show())
 			{
-				$HTML->_templates = 'default';
 				$_tpl['text'] = 'У вас не достаточно прав для доступа к странице. Необходима авторизация.';
 				$_tpl['title'] = "Нет доступа";
 				$_tpl['keywords'] = "";
@@ -231,7 +231,6 @@ class pg_class extends kernel_extends {
 			else
 			{
 				$_tpl=$temp_tpl;
-				$HTML->_templates = $this->pageinfo['template'];
 				$_tpl['title'] = $this->get_caption();
 				$_tpl['keywords'] = $this->pageinfo['keywords'];
 				$_tpl['description'] = $this->pageinfo['description'];
@@ -244,7 +243,6 @@ class pg_class extends kernel_extends {
 			header("HTTP/1.0 404 Not Found");
 			if (!$this->can_show())
 			{
-				$HTML->_templates = 'default';
 				$_tpl['text'] = "Страница не найдена!";
 				$_tpl['title'] = "404 Страница не найдена!";
 				$_tpl['keywords'] = "";
@@ -253,7 +251,6 @@ class pg_class extends kernel_extends {
 			else
 			{
 				$_tpl=$temp_tpl;
-				$HTML->_templates = $this->pageinfo['template'];
 				$_tpl['title'] = $this->get_caption();
 				$_tpl['keywords'] = $this->pageinfo['keywords'];
 				$_tpl['description'] = $this->pageinfo['description'];
@@ -266,7 +263,10 @@ class pg_class extends kernel_extends {
 			$_tpl['title'] .= $this->config['sitename'];//$_SERVER['SERVER_NAME']
 		}
 
-
+		if(!$this->pageinfo['template']) {
+			$this->pageinfo['template'] = 'default';
+		}
+		$HTML->_templates = $this->pageinfo['template'];
 	}
 
 	function can_show() {
