@@ -1,5 +1,4 @@
 <?
-	$FUNCPARAM = explode('&',$FUNCPARAM);
 	//$FUNCPARAM[0] - модуль
 	//$FUNCPARAM[1] - php template
 

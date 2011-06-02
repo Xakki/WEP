@@ -51,12 +51,17 @@ if ($flag) {
 			'mess'=>array('name' => 'ok', 'value' => 'Пора перейти к <a href="'.$_CFG['PATH']['wepname'].'/install.php?step=' . ($_GET['step'] + 1) . '">следующему шагу №' . ($_GET['step'] + 1) . '</a>'),
 			'sbmt'=>'Сохранить и перейти на следующий шаг'
 		);
-		$_tpl['text'] = require($file);
-	} elseif($_SESSION['step']>3 and $_GET['step']==$_SESSION['step']) {
+		if($_SESSION['step']<$_GET['step'])
+			$_tpl['text'] =  'Как ты попал сюда? Вернитесь на <a href="'.$_CFG['PATH']['wepname'].'/install.php?step=' . $_SESSION['step'] . '">Шаг №'.$_SESSION['step'].'</a>.';
+		else
+			$_tpl['text'] = require($file);
+	} 
+	elseif($_SESSION['step']>3 and $_GET['step']==$_SESSION['step']) {
 		$_tpl['text'] = '<h2>Установка завершена</h2><br/>
 			<a href="/index.html">Перейти на сайт</a><br/>
 			<a href="'.$_CFG['PATH']['wepname'].'/login.php">Перейти в админку</a>';
-	} else {
+	} 
+	else {
 		$_tpl['text'] = '<h2>Ошибка.</h2><br/>
 			<a href="'.$_CFG['PATH']['wepname'].'/install.php">Перейти на начало установки</a><br/>
 			<a href="'.$_CFG['PATH']['wepname'].'/login.php">Перейти в админку</a>';

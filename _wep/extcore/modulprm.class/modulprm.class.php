@@ -32,7 +32,7 @@ final class modulprm_class extends kernel_extends {
 		$this->fields['extend'] = array('type' => 'varchar', 'width' => 255);
 		$this->fields['ver'] = array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL', 'default' => '0.1');
 		$this->fields['typemodul'] = array('type' => 'tinyint', 'width' => 2, 'attr' => 'NOT NULL');
-		$this->fields['hook'] = array('type' => 'varchar', 'width' => 255);
+		$this->fields['hook'] = array('type' => 'text');
 
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название');
 		$this->fields_form['tablename'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Таблица');
@@ -341,6 +341,7 @@ final class modulprm_class extends kernel_extends {
 				include_once($fpath);
 				unset($this->_CFG['modulprm_ext']);
 				if (_new_class($Mid, $MODUL, $OWN)) {
+					$MODUL->_preInstall();
 					if ($OWN and (!isset($this->data[$Mid]) or $this->data[$Mid]['parent_id'] != $OWN->_cl))
 						$this->fld_data['parent_id'] = $OWN->_cl;
 					if (!isset($this->data[$Mid]) or $this->data[$Mid]['name'] != $MODUL->caption)
@@ -408,10 +409,12 @@ final class modulprm_class extends kernel_extends {
 						if (isset($this->guserData) and count($this->guserData))
 							foreach ($this->guserData as $gk => $gr) {
 								if (isset($this->modulgrpData[$Mid][$gk])) {
-									$q = 'UPDATE `' . $this->childs['modulgrp']->tablename . '` SET `name`="' . $gr['name'] . '" WHERE id="' . $this->modulgrpData[$Mid][$gk]['id'] . '"'; //print_r($q);print_r(' ** ');
-									$result = $this->SQL->execSQL($q);
-									if ($result->err)
-										exit();
+									if($this->modulgrpData[$Mid][$gk]['name']!=$gr['name']) {
+										$q = 'UPDATE `' . $this->childs['modulgrp']->tablename . '` SET `name`="' . $gr['name'] . '" WHERE id="' . $this->modulgrpData[$Mid][$gk]['id'] . '"'; //print_r($q);print_r(' ** ');
+										$result = $this->SQL->execSQL($q);
+										if ($result->err)
+											exit();
+									}
 								}
 								else {
 									$q = array('owner_id' => $Mid, 'ugroup_id' => $gk, 'name' => $gr['name']);

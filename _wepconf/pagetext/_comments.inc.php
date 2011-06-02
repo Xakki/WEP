@@ -1,5 +1,4 @@
 <?
-	$FUNCPARAM = explode('&',$FUNCPARAM);
 	//$FUNCPARAM[0] 
 
 		if(!_new_class('comments',$MODUL)) {

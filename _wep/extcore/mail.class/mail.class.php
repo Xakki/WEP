@@ -37,22 +37,31 @@ class mail_class extends kernel_extends {
 	function _create() {
 		parent::_create();
 
-		$this->fields_form["from"]= array("type"=>"text",'caption'=>'Обратный email адрес','mask'=>array('name'=>'email', 'min' => '4'));
-		$this->fields_form["subject"]= array("type"=>"text",'caption'=>'Тема письма', 'mask'=>array('min' => '5'));
-		$this->fields_form["text"]= array("type"=>"textarea",'caption'=>'Текcт письма', 'mask'=>array('min' => '5'));
+		$this->fields['from'] = array('type' => 'varchar', 'width' =>64, 'attr' => 'NOT NULL');
+		$this->fields['subject'] = array('type' => 'varchar', 'width' =>255, 'attr' => 'NOT NULL');
+		$this->fields['text'] = array('type' => 'text','attr' => 'NOT NULL');
+
+		$this->fields_form['from']= array('type'=>'text','caption'=>'Обратный email адрес','mask'=>array('name'=>'email', 'min' => '4'));
+		$this->fields_form['subject']= array('type'=>'text','caption'=>'Тема письма', 'mask'=>array('min' => '6'));
+		$this->fields_form['text']= array('type'=>'textarea','caption'=>'Текcт письма', 'mask'=>array('min' => '6'));
 		
 		$this->locallang['default']['_saveclose'] = 'Отправить письмо';
 	}
 
 	function Send($data) {
+		if(!$data['mailTo']) {
+			unset($data['mailTo']);
+			$this->fld_data = $data;
+			return $this->_add($data);
+		}
 		$data['subject'] = substr(htmlspecialchars(trim($data['subject'])), 0, 1000);
 		$this->uid = strtoupper(md5(uniqid(time())));
 		$subject = '=?utf-8?B?'. base64_encode($data['subject']).'?=';
-		$this->config["mailbottom"] = str_replace(array('%host%','%year%'),array($_SERVER['HTTP_HOST'],date('Y')),$this->config["mailbottom"]);
-		$text = str_replace(array('%SUBJECT%','%TEXT%','%MAILBOTTOM%'),array($data['subject'],trim($data['text']),$this->config["mailbottom"]),$this->config["mailtemplate"]);
-		//$text = substr(trim($data['text']), 0, 1000000).$this->config["mailbottom"] = str_replace('%YEAR%',date('Y'),$this->config["mailbottom"]);
+		$this->config['mailbottom'] = str_replace(array('%host%','%year%'),array($_SERVER['HTTP_HOST'],date('Y')),$this->config['mailbottom']);
+		$text = str_replace(array('%SUBJECT%','%TEXT%','%MAILBOTTOM%'),array($data['subject'],trim($data['text']),$this->config['mailbottom']),$this->config['mailtemplate']);
+		//$text = substr(trim($data['text']), 0, 1000000).$this->config['mailbottom'] = str_replace('%YEAR%',date('Y'),$this->config['mailbottom']);
 		if($data['from']=='')
-			$data['from']=$this->config["mailrobot"];
+			$data['from']=$this->config['mailrobot'];
 		//if(strlen(ini_get('safe_mode'))< 1){
 		@ini_set('sendmail_from', $data['from']);
 		@ini_set('sendmail_path', '/usr/sbin/sendmail -t -i -f '.$data['from']);

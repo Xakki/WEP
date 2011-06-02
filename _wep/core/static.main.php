@@ -276,4 +276,11 @@ class static_main {
 		return $Arr1;
 	}
 
+	static function relativePath($file) {
+		$file = str_replace(array('\\\\','\\'),'/',$file);
+		$cf = dirname(dirname(__DIR__));
+		$cf = str_replace(array('\\\\','\\'),'/',$cf);
+		$file = str_replace(array($_SERVER['_DR_'],$cf),'',$file);
+		return $file;
+	}
 }

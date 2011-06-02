@@ -1,5 +1,4 @@
 <?
-	$FUNCPARAM = explode('&',$FUNCPARAM);
 	//$FUNCPARAM[0] - модуль
 	//$FUNCPARAM[1] - включить AJAX
 	if(_new_class($FUNCPARAM[0],$MODUL)) {

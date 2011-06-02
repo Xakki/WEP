@@ -9,8 +9,6 @@
  * @return Вывод HTML кода процесса установки шага №2
  */
 global $HTML;
-if($_SESSION['step']<$_GET['step'])
-	return 'Как ты попал сюда? Вернитесь на <a href="'.$_CFG['PATH']['wepname'].'/install.php?step=' . $_SESSION['step'] . '">Шаг №'.$_SESSION['step'].'</a>.';
 if(!isset($var_const))
 	$var_const = array(
 		'mess'=>array(),

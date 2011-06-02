@@ -1,33 +1,29 @@
 <?
-$FUNCPARAM = explode('&',$FUNCPARAM);
-/**HELP
-$FUNCPARAM[0] : 1 - OPENid вкл, else - OPENid выкл
-$FUNCPARAM[1] - openid провайдеры [yandex,google,rambler,mailruapi,myopenid,openid,loginza]
-HELP**/
 
 	$result = array();
-	if(isset($_REQUEST['ref']) and $_REQUEST['ref']!='' and !strstr($_REQUEST['ref'],'login') and !strstr($_REQUEST['ref'],'remind')) 
+	if(isset($_REQUEST['ref']) and $_REQUEST['ref']!='') {
 		$ref= $_REQUEST['ref'];
-	elseif($_SERVER['HTTP_REFERER']!='' and strpos($_SERVER['HTTP_REFERER'], '.html')) {
-		$pos = strripos($_SERVER['HTTP_REFERER'], '/');
-		$rest = substr($_SERVER['HTTP_REFERER'], ($pos+1), 5);
+		$pos = strripos($ref, '/');
+		$rest = substr($ref, ($pos+1), 5);
 		if(!strpos($this->dataCash[$rest]['ugroup'], 'anonim'))
-			$ref= $_SERVER['HTTP_REFERER'];
+			$ref= $ref;
 		else 
-			$ref= $_CFG['_HREF']['BH'];		
-		}
-	else 
-		$ref= $_CFG['_HREF']['BH'];
-
-$mess = $form = '';
-
-	if($FUNCPARAM && $_POST['token']) {
-		if(!$UGROUP)
-			_new_class('ugroup',$UGROUP);
-		$html =  $UGROUP->childs['users']->loginzaReg();
-		return $html;
+			$ref= $_CFG['_HREF']['BH'];
 	}
-	elseif(count($_POST) and isset($_POST['login'])) {
+	elseif($_SERVER['HTTP_REFERER']!='' and strpos($_SERVER['HTTP_REFERER'], '.html')) {
+		$ref= $_SERVER['HTTP_REFERER'];
+		$pos = strripos($ref, '/');
+		$rest = substr($ref, ($pos+1), 5);
+		if(!strpos($this->dataCash[$rest]['ugroup'], 'anonim'))
+			$ref= $ref;
+		else 
+			$ref= $_CFG['_HREF']['BH'];
+	}
+	else 
+		$ref= $_CFG['_HREF']['BH'];	
+	$mess = $form = '';
+
+	if(count($_POST) and isset($_POST['login'])) {
 		$result = static_main::userAuth($_POST['login'],$_POST['pass']);
 		if($result[1]) {
 			@header("Location: ".$ref);
@@ -37,7 +33,6 @@ $mess = $form = '';
 	elseif(isset($_REQUEST['exit']) && $_REQUEST['exit']=="ok") {
 		static_main::userExit();
 		$mess=$_CFG['_MESS']['exitok'];
-		$ref = $_CFG['_HREF']['BH'];
 	}
 	elseif(isset($_COOKIE['remember']) and $result = static_main::userAuth() and $result[1]) {
 		@header("Location: ".$ref);
@@ -54,16 +49,10 @@ $mess = $form = '';
 				<a href="'.$_CFG['_HREF']['BH'].'remind.html">Забыли пароль?</a>
 			 <div style="clear:both;"></div>
 		 </div>';
-	if($FUNCPARAM[0]) {
-		if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = 'yandex,google,rambler,mailruapi,myopenid,openid,loginza';
-		$_tpl['script']['loginza'] = array('http://loginza.ru/js/widget.js');
-		$form = '<div class="layerblock" style="width:620px;background:none;border:none;margin:20px auto 0;"><iframe src="http://loginza.ru/api/widget?overlay=loginza&token_url='.urlencode('http://'.$_SERVER['HTTP_HOST'].'/login.html').'&providers_set='.$FUNCPARAM[1].'" style="width:359px;height:180px;float:left;" scrolling="no" frameborder="no" id="loginzaiframe"></iframe>'.$form.'</div>';
-	}
 
-
-	if($result[0]) $result[0] = '<div style="color:red;">'.$result[0].'</div>';
+	if(isset($result[0]) and $result[0]) $mess = '<div style="color:red;">'.$result[0].'</div>'.$mess;
 	$html = '<div style="height:100%;">
-		<div class="messhead" style="text-align: center;">'.$result[0].$mess.'</div>
+		<div class="messhead" style="text-align: center;">'.$mess.'</div>
 		'.$form.'
 	</div>';
 	return $html;

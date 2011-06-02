@@ -85,7 +85,8 @@ abstract class kernel_extends {
 					}
 					if ($file === NULL or function_exists($r)) {
 						eval('return ' . $r . '($this,$arg);');
-					}
+					}else
+						trigger_error('Для модуля `'.$this->_cl.'`, функция хука `'.$r.'` не определена', E_USER_WARNING);
 				}
 			}
 		}
@@ -179,6 +180,7 @@ abstract class kernel_extends {
 	}
 
 	protected function _create_conf() { // Здесь можно установить стандартные настройки модулей
+		global $_CFG;
 		if ($this->cf_childs) {
 			$this->config['childs'] = '';
 			$this->config_form['childs'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'child.class', 'caption' => 'Подмодули');
@@ -335,6 +337,9 @@ abstract class kernel_extends {
 		//if ($this->_autoCheckMod)
 		//	$this->childs[$class_name]->tablename;
 		return true;
+	}
+
+	function _preInstall() {
 	}
 
 	/**
@@ -1887,7 +1892,7 @@ class modul_child extends ArrayObject {
 
 	function offsetGet($index) {
 		global $_CFG;
-		if (isset($_CFG['modulprm_ext'][$index]) && isset($_CFG['modulprm'][$index]) && !$_CFG['modulprm'][$index][$this->mf_actctrl])
+		if (isset($_CFG['modulprm_ext'][$index]) && isset($_CFG['modulprm'][$index]) && !$_CFG['modulprm'][$index][$this->modul_obj->mf_actctrl])
 			$clname = $_CFG['modulprm_ext'][$index][0];
 		else
 			$clname = $index;

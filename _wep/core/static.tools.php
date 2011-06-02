@@ -19,6 +19,10 @@ class static_tools {
 		return $m;
 	}
 
+	static function _reinstall(&$MODUL) {
+		$MODUL->SQL->execSQL('DROP TABLE `' . $MODUL->tablename . '`');
+		self::_installTable($MODUL);
+	}
 
 	/**
 	 * Установка модуля

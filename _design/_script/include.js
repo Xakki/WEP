@@ -28,9 +28,17 @@ jQuery.extend({
 				jslist[href] = 1;
 				if(href==url) flag = 1;
 			});
-			if(flag == 1) {jslist[url]=2;return true;}
+			if(flag == 1) {
+				jslist[url]=2;
+				if ( callback ) callback.call(script);
+				return true;
+			}
 		} else {
-			if(jslist[url]) {jslist[url]++;return true;}
+			if(jslist[url]) {
+				jslist[url]++;
+				if ( callback ) callback.call(script);
+				return true;
+			}
 			else jslist[url] = 1;
 		}
 

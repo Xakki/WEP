@@ -153,7 +153,7 @@ class pg_class extends kernel_extends {
 		}
 		elseif($listname == 'templates') {
 			$data[''] = ' - По умолчанию -';
-			if($this->data[$this->id]['design']) {
+			if(isset($this->data[$this->id]) and $this->data[$this->id]['design']) {
 				$DD = $this->data[$this->id]['design'];
 			}else 
 				$DD = $this->_CFG['wep']['design'];
@@ -465,7 +465,7 @@ class pg_class extends kernel_extends {
 							$mc_load = false;
 							if(!extension_loaded('memcache')) {
 								$prefix = (PHP_SHLIB_SUFFIX === 'dll') ? 'php_' : '';
-								if(dl($prefix . 'memcache.' . PHP_SHLIB_SUFFIX))
+								if(function_exists('dl') and dl($prefix . 'memcache.' . PHP_SHLIB_SUFFIX))
 									$mc_load = true;
 							}else
 								$mc_load = true;
@@ -479,7 +479,8 @@ class pg_class extends kernel_extends {
 							$flagPG = $flagMC = $MEMCACHE->get($hashkeyPG);
 					}
 					if(!$flagMC) {
-						$FUNCPARAM = $rowPG['funcparam'];
+						if($rowPG['funcparam']) $FUNCPARAM = explode('&',$rowPG['funcparam']);
+						else $FUNCPARAM = array();
 						$typePG = explode(':',$rowPG['pagetype']);
 						if(count($typePG)==2 and file_exists($this->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php'))
 							$flagPG = include($this->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php');
