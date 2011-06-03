@@ -27,17 +27,31 @@
 				$odir->close();
 			}
 		}
-		elseif ($listname == "style") {
-
-			$dir = dir($_this->_CFG['_PATH']['design'].$_this->_CFG['wep']['design'].'/style');
+		elseif($listname == 'mdesign') {
+			$data[''] = ' - По умолчанию -';
+			$dir = dir($_this->_CFG['_PATH']['design']);
 			while (false !== ($entry = $dir->read())) {
-				if (strstr($entry,'.css')) {
-					$entry = substr($entry, 0, strpos($entry, '.css'));
-					$data['../'.$_this->_CFG['wep']['design'].'/style/'.$entry] = $_this->_CFG['wep']['design'].' - '.$entry;
+				if ($entry[0]!='.' && $entry[0]!='..' && $entry{0}!='_') {
+					$data[$entry] = $entry;
 				}
 			}
 			$dir->close();
-
+		}
+		elseif ($listname == 'style') {
+			$mdesign = 'mdesign';
+			$mdesign = $_this->_getlist($mdesign);
+			foreach($mdesign as $k=>$r) {
+				if($k) {
+					$dir = dir($_this->_CFG['_PATH']['design'].$k.'/style');
+					while (false !== ($entry = $dir->read())) {
+						if (strstr($entry,'.css')) {
+							$entry = substr($entry, 0, strpos($entry, '.css'));
+							$data['../'.$k.'/style/'.$entry] = strtoupper($r).' - '.$entry;
+						}
+					}
+					$dir->close();
+				}
+			}
 			$dir = dir($_this->_CFG['_PATH']['_style']);
 			while (false !== ($entry = $dir->read())) {
 				if (strstr($entry,'.css')) {
@@ -48,15 +62,20 @@
 			$dir->close();
 		}
 		elseif ($listname == "script") {
-
-			$dir = dir($_this->_CFG['_PATH']['design'].$_this->_CFG['wep']['design'].'/script');
-			while (false !== ($entry = $dir->read())) {
-				if (strstr($entry,'.js')) {
-					$entry = substr($entry, 0, strpos($entry, '.js'));
-					$data['']['../'.$_this->_CFG['wep']['design'].'/script/'.$entry] = $_this->_CFG['wep']['design'].' - '.$entry;
+			$mdesign = 'mdesign';
+			$mdesign = $_this->_getlist($mdesign);
+			foreach($mdesign as $k=>$r) {
+				if($k) {
+					$dir = dir($_this->_CFG['_PATH']['design'].$k.'/script');
+					while (false !== ($entry = $dir->read())) {
+						if (strstr($entry,'.js')) {
+							$entry = substr($entry, 0, strpos($entry, '.js'));
+							$data['']['../'.$k.'/script/'.$entry] = strtoupper($r).' - '.$entry;
+						}
+					}
+					$dir->close();
 				}
 			}
-			$dir->close();
 			$afterSubDir = array();
 			$dir = dir($_this->_CFG['_PATH']['_script']);
 			while (false !== ($entry = $dir->read())) {

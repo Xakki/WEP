@@ -167,12 +167,6 @@ class pg_class extends kernel_extends {
 			$dir->close();
 			return $data;
 		}
-		elseif($listname == 'mdesign') {
-			$data[''] = ' - По умолчанию -';
-			$data['default'] = 'Стандартный';
-			$data['new'] = 'Новый';
-			return $data;
-		}
 		elseif($listname == 'pagemap') {
 			return $this->childs['content']->getInc('.map.php');
 		}

@@ -8,6 +8,8 @@ HELP**/
 		_new_class('loginza',$LOGINZA);
 		$mess =  $LOGINZA->loginzaAuth();
 		$mess = array('messages'=>$mess);
+		global $_tpl;
+		$_tpl['onload'] .= 'fShowload(1,jQuery("div.messages").html(),0,0,"location.reload();");';
 		return $HTML->transformPHP($mess,'messages');
 	}
 	if(isset($_GET['regme'])) {
@@ -24,6 +26,8 @@ HELP**/
 			}
 			$mess = array('messages'=>$mess);
 			//unset($_SESSION['loginza']);
+			global $_tpl;
+			$_tpl['onload'] .= 'fShowload(1,jQuery("div.messages").html(),0,0,"location.reload();");';
 			return $HTML->transformPHP($mess,'messages');
 		}
 	}
