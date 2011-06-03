@@ -227,7 +227,7 @@ function readyPlot(cap,Xname,Yname,stepY) {
 	});
 }
 
-function JSWin(param,func) {
+function JSWin(param) {
 	if(typeof param['type']=='object') {
 		if(typeof CKEDITOR !== 'undefined') {
 			jQuery.each(jQuery(param['type']).find("textarea"),function(){nm=jQuery(this).attr('name');if(nm) eval("if(typeof CKEDITOR.instances."+nm+" == 'object') {CKEDITOR.instances."+nm+".updateElement();}");});
@@ -283,9 +283,6 @@ function JSWin(param,func) {
 			}
 			if(typeof param['call'] != 'undefined' && typeof param['call'] == 'function') 
 				param['call'].call(result);
-			if(func && typeof callback == 'function') {
-				func.call();
-			}
 		}
 	});
 	return false;
