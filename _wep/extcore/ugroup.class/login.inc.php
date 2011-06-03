@@ -1,5 +1,13 @@
 <?
 
+	if(isset($ShowFlexForm)) {
+		$form = array(
+			'tpl'=>array('type'=>'text','caption'=>'PHP Шаблон')
+		);
+		return $form;
+	}
+
+
 	$result = array();
 	if(isset($_REQUEST['ref']) and $_REQUEST['ref']!='') {
 		$ref= $_REQUEST['ref'];
@@ -38,22 +46,20 @@
 		@header("Location: ".$ref);
 		die();
 	}
-	$form = '<div class="cform" style="">
-			<form action="" method="post">
-					<input type="hidden" name="ref" value="'.$ref.'"/>
-					<div>Логин:</div><input type="text" name="login" tabindex="1"/>
-					<div>Пароль:</div><input type="password" name="pass" tabindex="2"/>
-					<div>Запомнить?<input type="checkbox" style="border:medium none; width:30px;" tabindex="3" name="remember" value="1"/></div>
-					<input class="submit" type="submit" name="enter" value="Войти" tabindex="4"/>
-				</form>
-				<a href="'.$_CFG['_HREF']['BH'].'remind.html">Забыли пароль?</a>
-			 <div style="clear:both;"></div>
-		 </div>';
+	$DATA = array(
+		'mess'=>$mess,
+		'result'=>$result,
+		'ref'=>$ref,
+	);
 
-	if(isset($result[0]) and $result[0]) $mess = '<div style="color:red;">'.$result[0].'</div>'.$mess;
-	$html = '<div style="height:100%;">
-		<div class="messhead" style="text-align: center;">'.$mess.'</div>
-		'.$form.'
-	</div>';
+	if(!isset($FUNCPARAM[0]) or !$FUNCPARAM[0]) {
+		$FUNCPARAM[0] = 'login';
+		$TRFM = array('login',__DIR__.'/templates/'); // Шаблон
+	} else 
+		$TRFM = $FUNCPARAM[0];
+
+	$DATA = array($FUNCPARAM[0]=>$DATA);
+	$html = $HTML->transformPHP($DATA,$TRFM);
+
 	return $html;
 

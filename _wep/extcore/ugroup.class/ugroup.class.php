@@ -355,9 +355,6 @@ class users_class extends kernel_extends {
 				$listfields = array('t2.*,t2.id as gid,t2.active as gact,t2.name as gname,t1.*');
 				$clause = 't1 Join '.$this->owner->tablename.' t2 on t1.'.$this->owner_name.'=t2.id where t1.'.$this->fn_login.' = \''.$login.'\' and t1.'.$this->fn_pass.' =\''.md5($this->_CFG['wep']['md5'].$pass).'\'';
 				$this->data = $this->_query($listfields,$clause);
-				if(!count($this->data))
-					return array('Ошибка подпрограммы.',0);
-					//{header('Location: '.$this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['wepname'].'/login.php?install');die();}
 				if(count($this->data))
 				{
 					unset($_SESSION['user']);
