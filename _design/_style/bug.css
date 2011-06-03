@@ -1,7 +1,7 @@
 
 /*SPOILER*/
 	.bugmain {
-		background: gray;
+		background: none repeat scroll 0 0 #E1E1E1;
 		font-family: arial;
 	}
 
@@ -18,7 +18,6 @@
 	}
 
 	.spoiler-wrap {
-		background:none repeat scroll 0 0 #838B99;
 		border-color:#C3CBD1;
 		border-style:solid;
 		border-width:1px 1px 1px 2px;

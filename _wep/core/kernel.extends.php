@@ -957,7 +957,19 @@ abstract class kernel_extends {
 
 			//end foreach
 		}
-
+		if(count($this->formSort)) {
+			$temp = $this->fields_form;
+			$this->fields_form = array();
+			foreach($this->formSort as $rr) {
+				if($rr=='#over#') {
+					$diffForm = array_diff_key($temp,array_keys($this->formSort));
+					$this->fields_form = array_merge($this->fields_form,$diffForm);
+				}
+				elseif(isset($temp[$rr])) {
+					$this->fields_form[$rr] = $temp[$rr];
+				}
+			}
+		}
 		if (count($this->fields_form) and !isset($_SESSION['user']['id']) or isset($param['captchaOn'])) {
 			$this->fields_form['captcha'] = array(
 				'type' => 'captcha',

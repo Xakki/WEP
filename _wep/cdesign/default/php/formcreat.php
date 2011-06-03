@@ -3,7 +3,7 @@
 		global $HTML;
 		$texthtml = '';
 		if(isset($data['path']) and count($data['path'])) {
-			include_once($HTML->_cDesignPath.'/php/path.php');
+			include_once('path.php');
 			$texthtml = tpl_path($data['path'],1);// PATH
 		}
 		$texthtml .= '<div class="divform'.((isset($data['css']) and $data['css'])?' '.$data['css']:'').'"';
@@ -11,11 +11,11 @@
 			$texthtml .= ' style="'.$data['style'].'"';
 		$texthtml .= '>';
 		if(isset($data['messages']) and count($data['messages'])) {
-			include_once($HTML->_cDesignPath.'/php/messages.php');
+			include_once('messages.php');
 			$texthtml .= tpl_messages($data['messages']);// messages
 		}
 		if(isset($data['form']) and count($data['form'])) {
-			include_once($HTML->_cDesignPath.'/php/form.php');
+			include_once('form.php');
 			$attr = $data['form']['_*features*_'];
 			if (isset($attr['enctype']))
 				if ($attr['enctype'] == '')

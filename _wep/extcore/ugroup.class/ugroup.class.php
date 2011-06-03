@@ -431,7 +431,6 @@ class users_class extends kernel_extends {
 		$arr = array('mess'=>array(),'vars'=>array());
 		$mess = $DATA = array();
 		if(static_main::_prmUserCheck()) {
-			$this->fields_form['_info']= array('type'=>'info','caption'=>$this->getMess('title_profile'),'css'=>'caption');
 			$this->id = $_SESSION['user']['id'];
 			$this->data = $this->_select();
 			$DATA = $this->data[$this->id];
@@ -441,7 +440,6 @@ class users_class extends kernel_extends {
 			if(!$this->owner->config['reg']) 
 				return array(array('messages'=>array(array('name'=>'error', 'value'=>$this->_CFG['_MESS']['deniedreg']))),1);			
 			$this->fields_form[$this->fn_login]['readonly']=false;
-			$this->fields_form['_info']= array('type'=>'info','caption'=>$this->getMess('title_regme'),'css'=>'caption');
 			$DATA = $_POST;
 			$this->id = 0;
 			if(count($_POST) and $_POST['sbmt'])
@@ -502,7 +500,11 @@ class users_class extends kernel_extends {
 				}
 			}
 		} else $mess = $this->kPreFields($DATA,$param);
-		
+		if(static_main::_prmUserCheck())
+			$this->fields_form['_info']= array('type'=>'info','caption'=>$this->getMess('title_profile'),'css'=>'caption');
+		else
+			$this->fields_form['_info']= array('type'=>'info','caption'=>$this->getMess('title_regme'),'css'=>'caption');
+
 		static_form::setCaptcha();
 		$formflag = $this->kFields2Form($param);
 

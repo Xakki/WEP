@@ -18,7 +18,7 @@ HELP**/
 	
 
 	if(isset($_POST['token']) and $_POST['token']) {
-		unset($_SESSION['loginza']);
+		if(isset($_SESSION['loginza'])) unset($_SESSION['loginza']);
 		_new_class('loginza',$LOGINZA);
 		list($flag,$mess) =  $LOGINZA->loginzaAuth($FUNCPARAM[0]);
 		if(!$flag and isset($_SESSION['loginza']) and count($_SESSION['loginza'])) {
@@ -28,8 +28,8 @@ HELP**/
 		}
 		$mess = array('messages'=>$mess);
 		global $_tpl;
-		$_tpl['onload'] .= 'fShowload(1,jQuery("div.messages").html(),0,0,"window.location.href=window.location.href;");';
-		return $HTML->transformPHP($mess,'messages');
+		$_tpl['onload'] .= 'fShowload(1,jQuery("#LoginzaMess").html(),0,0,"window.location.href=window.location.href;");';
+		return '<div id="LoginzaMess">'.$HTML->transformPHP($mess,'messages').'</div>';
 	}
 	elseif(isset($_GET['regme'])) {
 		session_go(1);
@@ -46,11 +46,11 @@ HELP**/
 			$mess = array('messages'=>$mess);
 			unset($_SESSION['loginza']);
 			global $_tpl;
-			$_tpl['onload'] .= 'fShowload(1,jQuery("div.messages").html(),0,0,"window.location.href=window.location.href;");';
-			return $HTML->transformPHP($mess,'messages');
+			$_tpl['onload'] .= 'fShowload(1,jQuery("#LoginzaMess").html(),0,0,"window.location.href=window.location.href;");';
+			return '<div id="LoginzaMess">'.$HTML->transformPHP($mess,'messages').'</div>';
 		}
 	}
-	unset($_SESSION['loginza']);
+	if(isset($_SESSION['loginza'])) unset($_SESSION['loginza']);
 	$_tpl['script']['loginza'] = array('http://loginza.ru/js/widget.js');
 	$DATA = array(
 	'src'=>'token_url='.urlencode($_CFG['_HREF']['BH'].$FUNCPARAM[2]).'&providers_set='.$FUNCPARAM[1].'',
