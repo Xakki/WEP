@@ -39,7 +39,11 @@ function fMessPos(body,obj) {
 	var Wblock= FC.outerWidth();
 	var ww=Math.round((W-Wblock)/2);
 	if(ww<5) ww=5;
-	jQuery(body+obj).css({'top':hh+'px','left':ww+'px','height':H+'px'});//.css("width",Wblock+'px')
+	jQuery(body+obj).css({'top':hh+'px','left':ww+'px'});
+	if(Hblock>H) 
+		jQuery(body+obj).css({'height':(H-20)+'px'});
+	if(Wblock>W) 
+		jQuery(body+obj).css({'width':(W-20)+'px'});
 }
 
 /*Показ тултип*/

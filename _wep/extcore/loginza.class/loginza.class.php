@@ -64,7 +64,10 @@ class loginza_class extends kernel_extends
 				$mess[] = array('name'=>'error', 'value'=>'Данный провайдер не сообщил ваш Email, который необходим для авторизации на нашем сайте. Возможно в настройках провайдера вашего аккаунта есть опция позволяющая передавать Email. В любом случае вы можете воспользоваться стандартной регистрацие в нашем сайте , это не займет много времени.');
 			} else {*/
 				session_go(1);
-				$data = $USERS->_query('t2.active as gact,t2.name as gname,t1.id,t1.active','t1 Join '.$USERS->owner->tablename.' t2 on t1.'.$USERS->owner_name.'=t2.id where t1.loginza_login=\''.mysql_real_escape_string($dt['loginza_login']).'\'');
+				$q = 't1 Join '.$USERS->owner->tablename.' t2 on t1.'.$USERS->owner_name.'=t2.id where t1.loginza_login=\''.mysql_real_escape_string($dt['loginza_login']).'\'';
+				if(isset($dt['email']) and $dt['email'])
+					$q .= ' or t1.email="'.mysql_real_escape_string($dt['email']).'"';
+				$data = $USERS->_query('t2.active as gact,t2.name as gname,t1.id,t1.active',$q);
 				//print_r($data);
 				//print_r('<pre>');print_r($regme);print_r($dt);exit();
 
@@ -82,9 +85,6 @@ class loginza_class extends kernel_extends
 				elseif(!$regme and !isset($_GET['regme'])) {
 					global $PGLIST;
 					$_SESSION['loginza'] = $dt;
-					$mess[] = array('name'=>'alert', 'value'=>'Авторизация через данного OpenID провайдера не возможна, поскольку вы не зарегистрированы на нашем сайте. Если вы уже регистрировались, то авторизация должна соответствовать методу регистрации.');
-					$mess[] = array('name'=>'ok', 'value'=>'Зарегистрировать Вас прямо сейчас?');
-					$mess[] = array('name'=>'ok', 'value'=>'<a href="/'.$PGLIST->getHref().'.html?regme=yes">ДА</a>  <a href="/'.$PGLIST->getHref().'.html">НЕТ</a>');
 				} 
 				else {
 					if(!$dt[$USERS->mf_namefields]) $dt[$USERS->mf_namefields] = $dt['email'];
@@ -96,7 +96,7 @@ class loginza_class extends kernel_extends
 					//static_main::_prmModulLoad();
 				}
 		} 
-		return $mess;
+		return array($flag,$mess);
 	}
 
 	function loginzaReg($data) {
