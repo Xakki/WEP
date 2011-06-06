@@ -63,7 +63,7 @@ class loginza_class extends kernel_extends
 			/*if(!$dt['email']) {
 				$mess[] = array('name'=>'error', 'value'=>'Данный провайдер не сообщил ваш Email, который необходим для авторизации на нашем сайте. Возможно в настройках провайдера вашего аккаунта есть опция позволяющая передавать Email. В любом случае вы можете воспользоваться стандартной регистрацие в нашем сайте , это не займет много времени.');
 			} else {*/
-				session_go(1);
+				
 				$q = 't1 Join '.$USERS->owner->tablename.' t2 on t1.'.$USERS->owner_name.'=t2.id where t1.loginza_login=\''.mysql_real_escape_string($dt['loginza_login']).'\'';
 				if(isset($dt['email']) and $dt['email'])
 					$q .= ' or t1.email="'.mysql_real_escape_string($dt['email']).'"';
@@ -90,11 +90,14 @@ class loginza_class extends kernel_extends
 					if(!$dt[$USERS->mf_namefields]) $dt[$USERS->mf_namefields] = $dt['email'];
 					list($flag,$mess) = $this->loginzaReg($dt);
 				}
+
 				if($flag) {
+					session_go(1);
 					$mess[] = array('name'=>'ok', 'value'=>$this->_CFG['_MESS']['authok']);
 					$USERS->setUserSession();
 					//static_main::_prmModulLoad();
 				}
+
 		} 
 		return array($flag,$mess);
 	}
