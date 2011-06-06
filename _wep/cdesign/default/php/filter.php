@@ -5,11 +5,19 @@
 		if(isset($data['_*features*_'])) {
 			$attr = $data['_*features*_'];
 			unset($data['_*features*_']);
-			$html .= '<form id="form_tools_'.$attr['name'].'" method="'.$attr['method'].'" action="'.$attr['action'].'" onsubmit="'.$attr['onsubmit'].'"><div class="filter">';
+			$html .= '<form id="form_tools_'.$attr['name'].'" method="'.$attr['method'].'" action="'.$attr['action'].'"';
+			if(isset($attr['onsubmit']))
+				$html .= ' onsubmit="'.$attr['onsubmit'].'"';
+			$html .= '><div class="filter">';
 		}
 		
 		$html .= '<!--BEGIN_FILTER-->';
 		foreach($data as $k=>$r) {
+			if(!isset($r['value']))
+				$r['value'] = '';
+			$attribute = '';
+			if(isset($r['max']) and $r['max'])
+				$attribute = ' maxlength="'.$r['max'].'"';
 			if($r['type']=='submit') {
 				$html .= '<div class="f_submit"><input type="'.$r['type'].'" name="'.$k.'" value="'.$r['value'].'"/></div>';
 			}
@@ -32,7 +40,7 @@
 			}*/
 			elseif($r['type']=='checkbox') {
 				$html .= '<div class="f_item" id="tr_'.$k.'"> <div class="f_caption">'.$r['caption'].'</div>';
-				if($r['multiple']) {
+				if(isset($r['multiple']) and $r['multiple']) {
 					$html .= '<div class="f_value multiplebox">';
 					if(!isset($r['valuelist']) or !is_array($r['valuelist']))
 						$r['valuelist'] = array(''=>array('#name#'=>'error','#id#'=>''));
@@ -136,9 +144,6 @@
 			  </div>	';
 			}
 			elseif($r['type']=='int') {
-				$attribute = '';
-				if(isset($r['max']) and $r['max'])
-					$attribute = ' maxlength="'.$r['max'].'"';
 				$html .= '<div class="f_item" id="tr_'.$k.'">
 				<div class="f_caption">'.$r['caption'].'</div>
 				<div class="f_value f_int">
@@ -148,8 +153,8 @@
 			elseif($r['type']=='date') {
 				$html .= '<div class="f_item" id="tr_'.$k.'">
 				<div class="f_int">
-					Период с <input type="text" name="'.$k.'" id="'.$k.'" value="'.$r['value'].'" maxlength="'.$r['max'].'"/> <span class="po">по</span> 
-					<input type="text" name="'.$k.'_2" id="'.$k.'_2" value="'.$r['value_2'].'"  maxlength="'.$r['max'].'"/>
+					Период с <input type="text" name="'.$k.'" id="'.$k.'" value="'.$r['value'].''.$attribute.'/> <span class="po">по</span> 
+					<input type="text" name="'.$k.'_2" id="'.$k.'_2" value="'.$r['value_2'].'"'.$attribute.'/>
 				</div>
 				
 			  </div>';
@@ -169,7 +174,7 @@
 			else {
 				$html .= '<div class="f_item" id="tr_'.$k.'">
 					<div class="f_caption">'.$r['caption'].'</div>
-					<div class="f_value"><input type="'.$r['type'].'" name="'.$k.'" id="'.$k.'" value="'.$r['value'].'" maxlength="'.$r['max'].'"/></div>
+					<div class="f_value"><input type="'.$r['type'].'" name="'.$k.'" id="'.$k.'" value="'.$r['value'].'"'.$attribute.'/></div>
 					
 				</div>';//<div class="f_exc"><input type="checkbox" name="exc_'.$k.'" value="exc"></input></div>
 			}

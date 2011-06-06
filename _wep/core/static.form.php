@@ -672,7 +672,7 @@ class static_form {
 
 						/*CHECK MASK*/
 						if(isset($form['mask']['name']) and ($form['mask']['name']=='phone' or $form['mask']['name']=='phone2')) {
-							$value = self::_phoneReplace($value,$nomatch);
+							$value = self::_phoneReplace($value,$form['mask']['name']);
 							if($value=='')
 								$error[$k.'mask'] = 3;
 						}

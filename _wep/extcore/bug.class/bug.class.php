@@ -112,7 +112,7 @@ class bug_class extends kernel_extends {
 				'file' => mysql_real_escape_string($errfile), 
 				'line' => mysql_real_escape_string($errline),
 				'debug' => mysql_real_escape_string($debug),
-				'href' => mysql_real_escape_string($_SERVER['REQUEST_URI']),
+				'href' => mysql_real_escape_string($_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']),
 				'hash' => $hash,
 				'cnt' => 1,
 				'page_id'=>''
