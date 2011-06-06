@@ -11,7 +11,7 @@ function tpl_login($data)
 					<div>Запомнить?<input type="checkbox" style="border:medium none; width:30px;" tabindex="3" name="remember" value="1"/></div>
 					<input class="submit" type="submit" name="enter" value="Войти" tabindex="4"/>
 				</form>
-				<a href="'.$_CFG['_HREF']['BH'].'remind.html">Забыли пароль?</a>
+				'.($data['remindpage']?'<a href="'.$data['remindpage'].'" style="font-size:0.8em;">Забыли пароль?</a>':'').'
 			 <div style="clear:both;"></div>
 		 </div>';
 	if(isset($data['result'][0]) and $data['result'][0])

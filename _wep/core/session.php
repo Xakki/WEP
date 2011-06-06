@@ -130,4 +130,13 @@ class session_gogo {//extends kernel_extends {
 		$result = $this->SQL->execSQL('DELETE FROM '.$this->tablename.' WHERE `modified` + `expired` < '.$this->_time.' OR (`created` + '.$this->deadsession.' < '.$this->_time.' AND `visits` < '.$this->deadvisits.')');
 		return(true); 
 	}
+
+	function delUser($id) {
+		$result = $this->SQL->execSQL('DELETE FROM '.$this->tablename.' WHERE `users_id`  = "'.$id.'"');
+	}
+
+	function updateUser($id) {
+		//$result = $this->SQL->execSQL('UPDATE '.$this->tablename.' set `data`="" WHERE `users_id`  = "'.$id.'"');
+		$result = $this->SQL->execSQL('DELETE FROM '.$this->tablename.' WHERE `users_id`  = "'.$id.'"');
+	}
 }

@@ -535,7 +535,7 @@ abstract class kernel_extends {
 	public function _get_file($id, $key, $extValue='', $modkey=-1) {
 		if (!$id)
 			$id = $this->id;
-		if (!$extValue and $this->data[$id])
+		if (!$extValue and isset($this->data[$id]))
 			$extValue = $this->data[$id]['_ext_' . $key];
 		if (!$id or !$extValue or !$key)
 			return '';

@@ -84,6 +84,7 @@ class loginza_class extends kernel_extends
 				}
 				elseif(!$regme and !isset($_GET['regme'])) {
 					global $PGLIST;
+					session_go(1);
 					$_SESSION['loginza'] = $dt;
 				} 
 				else {
@@ -111,10 +112,39 @@ class loginza_class extends kernel_extends
 		$data['reg_hash'] = 2; // отметка  о том что регестрируются через LOGINZA
 		$pass = substr($data['loginza_login'],10);
 		$data[$USERS->fn_pass]=md5($USERS->_CFG['wep']['md5'].$pass);
-		if($USERS->fn_login!='email')
-				$data[$USERS->fn_login] = substr($data['loginza_login'],4,6);
+		if($USERS->fn_login!='email') {
+			$temp = json_decode($data['loginza_data'],TRUE);
+			$identity = '';
+			if(isset($temp['nickname'])) {
+				$identity = preg_replace("/[^0-9A-Za-z]+/",'',$temp['nickname']);
+			}elseif($data['email']) {
+				$identity = explode('@',$data['email']);
+				$identity = preg_replace("/[^0-9A-Za-z]+/",'',$identity[0]);
+			}
+			else
+				$identity = preg_replace("/[^0-9A-Za-z]+/",'',$temp['identity']);
+			$dataquery = $USERS->_query('id','Where '.$USERS->fn_login.' LIKE "'.$identity.'%"',$USERS->fn_login);
+			if(count($dataquery)) {
+				$identityNew = $identity.date('Y');
+				if(isset($dataquery[$identityNew])) {
+					$fli = false;$cnt= 1;
+					while(!$fli) {
+						$identityNew = $identity.$cnt;
+						if(isset($dataquery[$identityNew]))
+							$cnt++;
+						else
+							$fli = true;
+					}
+				}
+				$identity = $identityNew;
+			}
+
+			$data[$USERS->fn_login] = $identity;
+		}
 		$USERS->fld_data = $data;
-		if($USERS->_add($data)) {
+		if($USERS->_add(true)) {
+			$USERS->fld_data = array($this->mf_createrid=>$USERS->id);
+			$USERS->_update();
 			$flag = true;
 			$datamail = array();
 			global $MAIL;

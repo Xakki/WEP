@@ -343,6 +343,26 @@ class users_class extends kernel_extends {
 		return parent::_install();
 	}
 
+	function _update($flag_select=true) {
+		$id = $this->id;
+		$res = parent::_update($flag_select);
+		if($res) {
+			global $SESSION_GOGO;
+			$SESSION_GOGO->updateUser($id);
+		}
+		return $res;
+	}
+
+	function _delete() {
+		$id = $this->id;
+		$res = parent::_delete();
+		if($res) {
+			global $SESSION_GOGO;
+			$SESSION_GOGO->delUser($id);
+		}
+		return $res;
+	}
+
 	function authorization($login,$pass) {
 		if($login!='' && $pass!='')
 		{

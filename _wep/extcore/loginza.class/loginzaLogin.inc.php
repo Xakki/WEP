@@ -8,14 +8,13 @@ $FUNCPARAM[4] - стиль
 HELP**/
 	if(!isset($FUNCPARAM[0]) or !$FUNCPARAM[0]) $FUNCPARAM[0] = 0;
 	if(!isset($FUNCPARAM[1]) or !$FUNCPARAM[1]) $FUNCPARAM[1] = 'yandex,google,rambler,mailruapi,myopenid,openid,loginza';
-	if(!isset($FUNCPARAM[2]) or !$FUNCPARAM[2]) $FUNCPARAM[2] = $PGLIST->getHref().'.html';
+	if(!isset($FUNCPARAM[2]) or !$FUNCPARAM[2]) $FUNCPARAM[2] = $this->getHref().'.html';
 	if(!isset($FUNCPARAM[3]) or !$FUNCPARAM[3]) {
 		$FUNCPARAM[3] = 'loginza'; // Шаблон
 		$TRFRM = array($FUNCPARAM[3],__DIR__.'/templates/');
 	} else
 		$TRFRM = $FUNCPARAM[3];
 	if(!isset($FUNCPARAM[4])) $FUNCPARAM[4] = '';
-	
 
 	if(isset($_POST['token']) and $_POST['token']) {
 		if(isset($_SESSION['loginza'])) unset($_SESSION['loginza']);
