@@ -348,7 +348,8 @@ class users_class extends kernel_extends {
 		$res = parent::_update($flag_select);
 		if($res) {
 			global $SESSION_GOGO;
-			$SESSION_GOGO->updateUser($id);
+			if($SESSION_GOGO)
+				$SESSION_GOGO->updateUser($id);
 		}
 		return $res;
 	}
@@ -358,7 +359,8 @@ class users_class extends kernel_extends {
 		$res = parent::_delete();
 		if($res) {
 			global $SESSION_GOGO;
-			$SESSION_GOGO->delUser($id);
+			if($SESSION_GOGO)
+				$SESSION_GOGO->delUser($id);
 		}
 		return $res;
 	}
