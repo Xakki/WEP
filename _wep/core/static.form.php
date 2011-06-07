@@ -168,7 +168,8 @@ class static_form {
 					return static_main::_message('Can`t write data into file '.$name,1);
 				if (!fclose($f))
 					return static_main::_message('Can`t close file '. $name,1);
-			chmod($name, 0644);
+			global $_CFG;
+			chmod($name, $_CFG['wep']['chmod']);
 			static_main::_message('File '.$name.' writed.',3);
 		}
 		return true;
@@ -396,13 +397,15 @@ class static_form {
 
 	static function _resizeImage(&$_this,$InFile, $OutFile, $WidthX, $HeightY)
 	{
-		chmod($InFile, 0755);
+		global $_CFG;
+		chmod($InFile, $_CFG['wep']['chmod']);
 		list($width_orig, $height_orig) = getimagesize($InFile);// опред размер
 
 		if($width_orig<$WidthX and $height_orig<$HeightY) {
 			if($InFile!=$OutFile) {
 				copy($InFile,$OutFile);
-				chmod($OutFile, 0755);
+				global $_CFG;
+				chmod($OutFile, $_CFG['wep']['chmod']);
 			}
 			return true;
 		}
@@ -426,7 +429,8 @@ class static_form {
 
 	static function _cropImage(&$_this,$InFile, $OutFile, $WidthX, $HeightY)
 	{
-		chmod($InFile, 0755);
+		global $_CFG;
+		chmod($InFile, $_CFG['wep']['chmod']);
 		list($width_orig, $height_orig) = getimagesize($InFile);// опред размер
 		// Resample
 		$thumb = imagecreatetruecolor($WidthX, $HeightY);//созд пустой рисунок
@@ -442,8 +446,9 @@ class static_form {
 
 	static function _resizecropImage(&$_this,$InFile, $OutFile, $WidthX, $HeightY)
 	{
+		global $_CFG;
 		$trueX=$WidthX;$trueY=$HeightY;
-		chmod($InFile, 0755);
+		chmod($InFile, $_CFG['wep']['chmod']);
 		list($width_orig, $height_orig) = getimagesize($InFile);
 
 		$ratio_orig = $width_orig/$height_orig;

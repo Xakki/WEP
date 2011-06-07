@@ -42,7 +42,8 @@ $_CFG['wep'] = array(// для ядра и админки
 	'bug_hunter' => array(), // логирование ошибок
 	'catch_bug' => 1, // Системная - укзаывает на элемент в массиве $GLOBALS['_ERR'] в котором отлавливаются ошибки
 	'stop_fatal_error' => true,
-	'error_reporting' => '-1' // заменить на multiselect
+	'error_reporting' => '-1', // заменить на multiselect
+	'chmod'=> 0774,
 );
 
 $_CFG['site'] = array(// для сайта
