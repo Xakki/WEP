@@ -551,9 +551,9 @@ class static_tools {
 								if (!exif_imagetype($newname)) // опред тип файла
 									break;
 								foreach ($value['thumb'] as $imod) {
-									if (!$imod['pref'])
+									if (!isset($imod['pref']) or !$imod['pref'])
 										$imod['pref'] = ''; // по умолчинию без префикса
- if ($imod['path'])
+									if (isset($imod['path']) and $imod['path'])
 										$newname2 = $MODUL->_CFG['_PATH']['path'] . $imod['path'] . '/' . $imod['pref'] . $row['id'] . '.' . $ext;
 									else
 										$newname2 = $pathimg . '/' . $imod['pref'] . $row['id'] . '.' . $ext;
