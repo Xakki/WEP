@@ -1,7 +1,8 @@
 <?
 	global $_tpl;
 	_new_class('ugroup', $UGROUP);
-
+	if(!isset($FUNCPARAM[0])) $FUNCPARAM[0] = 'formcreat'; // шаблон
+	$DATA = array();
 	if(isset($_GET['confirm'])){
 		list($DATA,$flag) = $UGROUP->regConfirm();
 		$html = '<a href="/index.html">Обновите страницу</a>';
@@ -17,9 +18,9 @@
 		</div>
 		<div id="ajaxbg" style="opacity: 0.5; display: block;">&nbsp;</div>';
 		$_tpl['onload'] .= 'fMessPos();';
-	}else {
-		list($DATA['formcreat'],$flag) = $UGROUP->regForm();
-		$html = $HTML->transformPHP($DATA,'formcreat');
+	} else {
+		list($DATA[$FUNCPARAM[0]],$flag) = $UGROUP->regForm();
+		$html = $HTML->transformPHP($DATA,$FUNCPARAM[0]);
 	}
 	return $html;
 	//<div style="width: 800px; height: 90%;">
