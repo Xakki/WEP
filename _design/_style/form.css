@@ -108,6 +108,7 @@
 		color:gray;
 		margin-left:5px;
 		}
+
 	.divform input.sbmt {width:auto;height:1.8em;margin:0 10px;}
 
 	.divform .shownextfoto {
@@ -180,8 +181,15 @@
 	.divform .wep_thumb_comment {/*Коммент эскиза рисунка в форме*/
 		font-size:0.7em;color:gray;
 	}
-	.divform .del {
-		width:20px;vertical-align:middle;}
+	.divform .filedelete {
+		color:red;
+		float:right;
+		white-space: nowrap;
+		}
+	.divform .filedelete input {
+		width:20px;
+		vertical-align:middle;
+		}
 
 	/*MESSAGE*/
 	.messages {
@@ -269,3 +277,40 @@
 	form input.load, select.load{
 		background:transparent url(../_img/loader16.gif) no-repeat scroll 100% 2px;
 	}
+
+	/*Всплывающая информация showHelp(obj,mess,time,nomiga)*/
+.helpmess {
+	position:absolute;
+	border:2px solid #555;-moz-border-radius:4px;-webkit-border-radius:4px;border-radius:4px;
+	border-width:2px !important;
+	background-color:#222;
+	z-index:10;
+	padding:2px 3px;
+	font-size:0.9em;
+	color:#FFF;
+}
+.trgl {
+	border:1px solid #555;
+	margin:0;
+	background:none repeat scroll 0 0 transparent;
+	position:absolute;
+	height:0;
+	width:0;
+	right:auto;
+}
+.trgl_d {
+	bottom:-14px;
+	left:5px;
+	border-left:0 none;
+	border-right:15px dotted transparent;
+	border-top-width:12px;
+	border-bottom-width:0;
+}
+.trgl_u {
+	top:-14px;
+	left:5px;
+	border-left:0 none;
+	border-right:15px dotted transparent;
+	border-top-width:0;
+	border-bottom-width:12px;
+}

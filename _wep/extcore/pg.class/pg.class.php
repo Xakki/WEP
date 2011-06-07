@@ -153,18 +153,23 @@ class pg_class extends kernel_extends {
 		}
 		elseif($listname == 'templates') {
 			$data[''] = ' - По умолчанию -';
-			if(isset($this->data[$this->id]) and $this->data[$this->id]['design']) {
-				$DD = $this->data[$this->id]['design'];
-			}else 
-				$DD = $this->_CFG['wep']['design'];
-			$dir = dir($this->_CFG['_PATH']['design'].$DD.'/templates');
-			while (false !== ($entry = $dir->read())) {
-				if (strstr($entry,'.tpl')) {
-					$entry = substr($entry, 0, strpos($entry, '.tpl'));
-					$data[$entry] = $entry;
+			$temp = 'mdesign';
+			$temp = $this->_getlist($temp);
+			foreach($temp as $kt=>$rt) {
+				if($kt) {
+					$dir = dir($this->_CFG['_PATH']['design'].$kt.'/templates');
+					while (false !== ($entry = $dir->read())) {
+						if (strstr($entry,'.tpl')) {
+							$entry = substr($entry, 0, strpos($entry, '.tpl'));
+							if(isset($data[$entry]))
+								$data[$entry] = $entry;
+							else
+								$data[$entry] = strtoupper($rt).' - '.$entry;
+						}
+					}
+					$dir->close();
 				}
 			}
-			$dir->close();
 			return $data;
 		}
 		elseif($listname == 'pagemap') {

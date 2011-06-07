@@ -19,6 +19,7 @@ class ugroup_class extends kernel_extends
 		$this->config['premoderation'] = 0;
 		$this->config['modergroup'] = 4;
 		$this->config['karma'] = 0;
+		$this->config['userpic'] = '';
 
 		$this->config_form['mailto'] = array('type' => 'text', 'mask' =>array('min'=>1,'name'=>'email'), 'caption' => 'Адрес службы поддержки');
 		$this->config_form['mailrobot'] = array('type' => 'text', 'mask' =>array('min'=>1,'name'=>'email'), 'caption' => 'Адрес Робота');
@@ -54,6 +55,7 @@ class ugroup_class extends kernel_extends
 		$this->config_form['modergroup'] = array('type' => 'list', 'listname'=>'list', 'caption' => 'Непрошедшие проверку');
 		$this->config_form['rememberday'] = array('type' => 'int', 'mask' =>array('min'=>1), 'caption' => 'Дней запоминания авторизации');
 		$this->config_form['karma'] = array('type' => 'checkbox', 'caption' => 'Включить систему рейтингов?','style'=>'background:green;');
+		$this->config_form['userpic'] = array('type' => 'text', 'mask' =>array(), 'caption' => 'Дефолтная фотка пользователя');
 	}
 
 	protected function _set_features() {
@@ -311,7 +313,7 @@ class users_class extends kernel_extends {
 				unset($this->fields_form['kratio']['readonly']);
 			}
 		}
-		$this->fields_form['userpic'] = array('type'=>'file','caption'=>'Юзерпик','del'=>1, 'mask'=>array('fview'=>1,'width'=>85,'height'=>85,'thumb'=>0));
+		$this->fields_form['userpic'] = array('type'=>'file','caption'=>'Юзерпик','del'=>1, 'mask'=>array('fview'=>1,'width'=>85,'height'=>85,'thumb'=>0), 'default'=>$this->owner->config['userpic']);
 		$this->fields_form['mf_ipcreate'] =	array('type' => 'text','readonly' => true, 'caption' => 'IP-пользователя','mask'=>array('usercheck'=>1));
 		$this->fields_form['mf_timecr'] =	array('type' => 'date','readonly' => true, 'caption' => 'Дата регистрации','mask'=>array('sort'=>1));
 		$this->fields_form['reg_hash'] = array('type' => 'hidden',  'caption' => 'Хэш','mask'=>array('eval'=>1,'fview'=>1,'usercheck'=>1));

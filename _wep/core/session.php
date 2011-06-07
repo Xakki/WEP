@@ -137,6 +137,6 @@ class session_gogo {//extends kernel_extends {
 
 	function updateUser($id) {
 		//$result = $this->SQL->execSQL('UPDATE '.$this->tablename.' set `data`="" WHERE `users_id`  = "'.$id.'"');
-		$result = $this->SQL->execSQL('DELETE FROM '.$this->tablename.' WHERE `users_id`  = "'.$id.'"');
+		//$result = $this->SQL->execSQL('DELETE FROM '.$this->tablename.' WHERE `users_id`  = "'.$id.'"');
 	}
 }

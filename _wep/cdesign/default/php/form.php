@@ -64,7 +64,8 @@ function tpl_form(&$data) {
 				$texthtml .= '<div class="caption_error">['.implode(' ',$r['error']).']</div>';
 
 			if($r['type']=='textarea') {
-				if(!$r['mask']['max']) $r['mask']['max'] = 5000;
+				if(!isset($r['mask']['max'])) $r['mask']['max'] = 5000;
+				$attribute .= ' maxlength="'.$r['mask']['max'].'"';
 				$texthtml .= '<div class="form-value"><textarea name="'.$k.'" onkeyup="textareaChange(this,\''.$r['mask']['max'].'\')" rows="5" cols="50" '.$attribute.'>'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
 			}
 			elseif($r['type']=='radio') {
@@ -327,38 +328,44 @@ function tpl_form(&$data) {
 					</div>';
 			}
 			elseif($r['type']=='file') {
-				$texthtml .= '<div class="form-value divinputfile">';
-				$texthtml .= '<input type="file" name="'.$k.'" '.$attribute.'/><span class="fileinfo"></span>';
-
-				if($r['del']==1 and $r['value']!='')
-					$texthtml .= '<div style="color:red;float:right;white-space: nowrap;">Удалить?&#160;<input type="checkbox" name="'.$k.'_del" class="del" value="1" onclick="$(\'#tr_'.$k.' td.td2 input[name='.$k.'],#tr_'.$k.' td.td2 div.dscr\').slideToggle(\'normal\')"/></div>';
+				
+				if(isset($r['default']) and $r['default']!='' and $r['value']=='') {
+					$r['value'] = $r['default'];
+					$r['att_type']='img';
+				}
 
 				if($r['caption']==1)
 					$texthtml .= '';
 				elseif(!is_array($r['value']) and $r['value']!='' and $r['att_type']=='img') {
-					$texthtml .= '<div class="clear"></div><div class="wep_thumb">
+					$texthtml .= '<div class="wep_thumb">
 						<a rel="fancy" href="/'.$r['value'].'" target="_blank" class="fancyimg">
 							<img src="/'.$r['value'].'" alt="img" class="attach"'.($r['mask']['width']?' width="'.$r['mask']['width'].'"':'').($r['mask']['height']?' height="'.$r['mask']['height'].'"':'').'/>
-						</a>
-						<div class="wep_thumb_comment">Размер '.$r['img_size'][0].'x'.$r['img_size'][1].'</div>
-					</div>';
+						</a>';
+					if(isset($r['img_size']))
+						$texthtml .= '<div class="wep_thumb_comment">Размер '.$r['img_size'][0].'x'.$r['img_size'][1].'</div>';
+					$texthtml .= '</div>';
 					if(isset($r['thumb']) and $r['mask']['thumb'])
 						foreach($r['thumb'] as $thumb) {
 						$texthtml .= '<div class="wep_thumb">
 							<a rel="fancy" href="/'.$thumb['value'].'?size='.$thumb['filesize'].'" target="_blank" class="fancyimg">
 								<img src="/'.$thumb['value'].'?size='.$thumb['filesize'].'" alt="img" class="attach"'.($thumb['w']?' width="'.$thumb['w'].'"':'').($thumb['h']?' height="'.$thumb['h'].'"':'').'/>
-							</a>
-							<div class="wep_thumb_comment">Эскиз размером '.$thumb['w'].'x'.$thumb['h'].'</div>
-						</div>';
+							</a>';
+						if($thumb['w']) $texthtml .= '<div class="wep_thumb_comment">Эскиз размером '.$thumb['w'].'x'.$thumb['h'].'</div>';
+						$texthtml .= '</div>';
 					}
-					$texthtml .= '<div class="clear"></div>';
 					$_CFG['fileIncludeOption']['fancybox'] = 1;
 				}
 				elseif(!is_array($r['value']) and $r['value']!='' and $r['att_type']=='swf')
 					$texthtml .= '<object type="application/x-shockwave-flash" data="/'.$r['value'].'" height="50" width="200"><param name="movie" value="/'.$r['value'].'" /><param name="allowScriptAccess" value="sameDomain" /><param name="quality" value="high" /><param name="scale" value="exactfit" /><param name="bgcolor" value="#ffffff" /><param name="wmode" value="transparent" /></object>';
 				elseif(!is_array($r['value']) and $r['value']!=''){
-					$texthtml .= '<span style="color:green"><a href="/'.$r['value'].'" target="_blank"> загружен(a)</a></span><br/>';
+					$texthtml .= '<span style="color:green"><a href="/'.$r['value'].'" target="_blank"> фаил загружен</a></span><br/>';
 				}
+
+				$texthtml .= '<div class="form-value divinputfile">';
+				$texthtml .= '<input type="file" name="'.$k.'" '.$attribute.'/><span class="fileinfo"></span>';
+
+				if($r['del']==1 and $r['value']!='')
+					$texthtml .= '<div class="filedelete"><lable for="'.$k.'_del">Удалить?&#160;</lable><input type="checkbox" name="'.$k.'_del" id="'.$k.'_del" value="1"/></div>';
 
 				$texthtml .= '</div>';
 			}
@@ -367,7 +374,7 @@ function tpl_form(&$data) {
 				$texthtml .= '<div class="form-value ckedit-value"><textarea id="id_'.$k.'" name="'.$k.'" rows="10" cols="80" '.$attribute.'>'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
 			}
 			elseif($r['type']=='int' and !$r['readonly']) {
-				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
+				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' max="'.$r['mask']['max'].'"';
 				$texthtml .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.$r['value'].'" onkeydown="return checkInt(event)" '.$attribute.'/></div>';
 			}
 			elseif($r['type']=='password') {
