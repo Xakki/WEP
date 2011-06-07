@@ -137,8 +137,9 @@
 						}
 					}
 					else{
-						if(isset($r['listname']['idThis']))
-							$r['value'] = $fields[$r['listname']['idThis']]['value'];
+						if(isset($r['listname']['idThis'])) {
+							$r['value'] = $this->data[$this->id][$r['listname']['idThis']];
+						}
 						if($r['value']) {
 							$md = $this->_getCashedList($r['listname'],$r['value']);
 							$r['value'] = implode(',',$md);

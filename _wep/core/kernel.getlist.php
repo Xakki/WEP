@@ -170,14 +170,14 @@
 			elseif(!is_null($value))
 				$clause['where'] = $listname['idField'].'="'.$value.'"';
 
-			if($listname['where'])
+			if(isset($listname['where']) and $listname['where'])
 				$clause['where'] .= ($clause['where']!=''?' AND ':'').$listname['where'];
 			if($clause['where'])
 				$clause['where'] = ' WHERE '.$clause['where'];
 
-			if(isset($listname['leftJoin']))
+			if(isset($listname['leftJoin']) and $listname['idThis'])
 				$clause['where'] .= ' GROUP BY t1.'.$listname['idThis'];
-			if ($listname['ordfield'])
+			if (isset($listname['ordfield']) and $listname['ordfield'])
 				$clause['where'] .= ' ORDER BY '.$listname['ordfield'];
 
 			$result = $_this->SQL->execSQL($clause['field'].$clause['from'].$clause['where']);
