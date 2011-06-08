@@ -127,6 +127,11 @@ foreach ($USER_CFG['wep'] as $k => $r) {
 		$type = 'checkbox';
 	else
 		$type = 'text';
+	if(is_array($r)) {
+		if(is_array(current($r)))
+			continue;
+		$type = 'list';
+	}
 	$comm = '';
 	$cap = $k;
 	switch ($k) {

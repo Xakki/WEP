@@ -44,6 +44,7 @@ $_CFG['wep'] = array(// для ядра и админки
 	'stop_fatal_error' => true,
 	'error_reporting' => '-1', // заменить на multiselect
 	'chmod'=> 0774,
+	'cron'=>array(),
 );
 
 $_CFG['site'] = array(// для сайта
@@ -487,3 +488,145 @@ function SpiderDetect($USER_AGENT='') {
 }
 
 $_CFG['robot'] = SpiderDetect();
+
+/*
+  Используем эту ф вместо стандартной, для совместимости с UTF-8
+ */
+if (function_exists('mb_internal_encoding'))
+	mb_internal_encoding($_CFG['wep']['charset']);
+
+function _strlen($val) {
+	if (function_exists('mb_strlen'))
+		return mb_strlen($val);
+	else
+		return strlen($val);
+}
+
+function _substr($s, $offset, $len = NULL) {
+	if ($len != NULL) {
+		if (function_exists('mb_substr'))
+			return mb_substr($s, $offset, $len);
+		else
+			return substr($s, $offset, $len);
+	}else {
+		if (function_exists('mb_substr'))
+			return mb_substr($s, $offset);
+		else
+			return substr($s, $offset);
+	}
+}
+
+function _strtolower($txt) {
+	if (function_exists('mb_strtolower'))
+		return mb_strtolower($txt);
+	else
+		return strtolower($txt);
+}
+
+function _mb_strpos($haystack, $needle, $offset=0) {
+	if (function_exists('mb_strpos'))
+		return mb_strpos($haystack, $needle, $offset);
+	else
+		return strpos($haystack, $needle, $offset);
+}
+
+/**
+ * Инициализация модулей
+ */
+function _new_class($name, &$MODUL, &$OWNER = NULL) {
+	global $_CFG;
+	if (isset($_CFG['singleton'][$name])) {
+		$MODUL = $_CFG['singleton'][$name];
+		return true;
+	} else {
+
+		$MODUL = NULL;
+		static_main::_prmModulLoad();
+		if (isset($_CFG['modulprm_ext'][$name]) && isset($_CFG['modulprm'][$name]) && !$_CFG['modulprm'][$name]['active'])
+			$name = $_CFG['modulprm_ext'][$name][0];
+		$class_name = $name . "_class";
+		try {
+			$getparam = array_slice(func_get_args(), 2);
+			$obj = new ReflectionClass($class_name);
+			//$pClass = $obj->getParentClass();
+			$MODUL = $obj->newInstanceArgs($getparam);
+			/* extract($getparam,EXTR_PREFIX_ALL,'param');
+			  if(count($getparam)) {
+			  $p = '$param'.implode(',$param',array_keys($getparam)).'';
+			  } else $p = '';
+			  eval('$MODUL = new '.$class_name.'('.$p.');'); */
+			if ($MODUL)
+				return true;
+		} catch (Exception $e) {
+			trigger_error($e->getMessage(), E_USER_WARNING);
+		}
+	}
+	return false;
+}
+
+/*
+  Автозагрузка модулей
+ */
+
+function __autoload($class_name) { //автозагрузка модулей
+	/* global $_CFG;
+	  if($class_name=='sql') {
+	  require_once($_CFG['_PATH']['core'] . 'sql.php');
+	  return true;
+	  }
+	  if($class_name=='kernel_extends') {
+	  require_once($_CFG['_PATH']['core'] . 'kernel.extends.php');
+	  return true;
+	  }
+	  if($class_name=='static_main') {
+	  require_once($_CFG['_PATH']['core'] . 'static.main.php');
+	  return true;
+	  }
+	  if($class_name=='modulprm_class') {
+	  require_once($_CFG['_PATH']['extcore'] . 'modulprm.class/modulprm.class.php');
+	  return true;
+	  } */
+	if ($file = _modulExists($class_name)) {
+		require_once($file);
+	}
+	else
+	//trigger_error('Can`t init `'.$class_name.'` modul ', E_USER_WARNING);
+		throw new Exception('Can`t init `' . $class_name . '` modul ');
+}
+
+/**
+ * Проверка существ модуля
+ *
+ * Осторожно! Тут хитрая-оптимизированная логика
+ * @global array $_CFG
+ * @param string $class_name
+ * @return string
+ */
+function _modulExists($class_name) {
+	global $_CFG;
+	$file = $fileS = false;
+	$class_name = explode('_', $class_name);
+
+	$fileS = $_CFG['_PATH']['core'] . $class_name[0] . (isset($class_name[1]) ? '.' . $class_name[1] : '') . '.php';
+	if (!isset($_CFG['modulprm'][$class_name[0]])) {
+		if (file_exists($fileS))
+			return $fileS;
+	}
+
+	static_main::_prmModulLoad();
+
+	if (isset($_CFG['modulprm'][$class_name[0]])) {
+		$file = $_CFG['modulprm'][$class_name[0]]['path'];
+		if ($file and file_exists($file))
+			return $file;
+	}
+
+	$ret = static_main::includeModulFile($class_name[0]);
+	return $ret['file'];
+}
+
+
+if (!defined('PHP_VERSION_ID')) {
+	$version = explode('.', PHP_VERSION);
+	define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
+}

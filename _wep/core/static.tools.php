@@ -754,37 +754,42 @@ class static_tools {
 		);
 		$fl = false;
 		$putFile = array();
-		$SetDataCFG = static_main::MergeArrays($USER_CFG, $SetDataCFG);// объединяем конфиг записанный на пользователя и новые конфиги
+		if(isset($SetDataCFG['sql'])) {
+			$SQL = new sql($SetDataCFG['sql']); //пробуем подключиться к БД
+		}
+		//$SetDataCFG = static_main::MergeArrays($USER_CFG,$SetDataCFG);
+		// объединяем конфиг записанный на пользователя и новые конфиги
+
 		foreach ($edit_cfg as $k => $r) {
-			foreach ($SetDataCFG[$k] as $kk => $rr) {
+			foreach ($DEF_CFG[$k] as $kk => $defr) {
+				if(isset($SetDataCFG[$k][$kk]))
+					$newr = $SetDataCFG[$k][$kk];
+				elseif(isset($USER_CFG[$k][$kk]))
+					$newr = $USER_CFG[$k][$kk];
 				$flag = false;
-				if(is_string($rr)) {
-					if($rr != $DEF_CFG[$k][$kk])
+				if(is_string($newr)) {
+					if($newr != $defr)
 						$flag = true;
-					$rr = '\''.addcslashes($rr, '\'').'\'';
+					$newr = '\''.addcslashes($newr, '\'').'\'';
 				}
-				elseif(is_array($rr)) {
-					if(!is_array($DEF_CFG[$k][$kk]) or count(array_diff($rr,$DEF_CFG[$k][$kk])))
+				elseif(is_array($newr)) {
+					if(!is_array($defr) or count(array_diff($newr,$defr)))
 						$flag = true;
-					$rr = array_combine($rr,$rr);
-					$rr = var_export($rr,true);
+					$newr = str_replace(array("\n","\t","\r",'   ','  '),array('','','',' ',' '),var_export($newr,true));
 				}
-				if (!isset($DEF_CFG[$k][$kk]) or $flag) {
-					$putFile[$k . '_' . $kk] = '$_CFG[\'' . $k . '\'][\'' . $kk . '\'] = ' . $rr . ';';
+				if ($flag) {
+					$putFile[$k . '_' . $kk] = '$_CFG[\'' . $k . '\'][\'' . $kk . '\'] = ' . $newr . ';';
 				}
 			}
 		}
-		if(count($tempCFG))
-			$SetDataCFG = static_main::MergeArrays($SetDataCFG, $tempCFG);
-		$SQL = new sql($SetDataCFG['sql']); //пробуем подключиться к БД
-
 		$putFile = "<?\n\t//create time " . date('Y-m-d H:i') . "\n\t".implode("\n\t", $putFile)."\n";
 		//Записать в конфиг все данные которые отличаются от данных по умолчанию
 		if (!file_put_contents($_CFG['_PATH']['wepconf'] . '/config/config.php', $putFile)) {
 			$mess[] = array('name' => 'error', 'value' => 'Ошибка записи настроек. Нет доступа к фаилу');
 		} else {
 			$fl = true;
-			$mess[] = array('name' => 'ok', 'value' => 'Подключение к БД успешно.');
+			if(isset($SetDataCFG['sql']))
+				$mess[] = array('name' => 'ok', 'value' => 'Подключение к БД успешно.');
 			$mess[] = array('name' => 'ok', 'value' => 'Конфигурация успешно сохранена.');
 		}
 		return array($fl,$mess);

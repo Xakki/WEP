@@ -28,6 +28,150 @@ function tools_step3() {
 	return require($file);
 }
 
+function tools_cron() {
+	global $_CFG,$_tpl;
+	if(!static_main::_prmUserCheck(1))
+		return $_CFG['_MESS']['denied'];
+	$result = '';
+	$FP = $_CFG['PATH']['wepname'].'/index.php?_view=list&_modul=_tools&tfunc=tools_cron&';
+	$_tpl['styles']['form']=1;
+	$DATA = array();
+	$DATA['path'] = array(
+		$FP=>'Задания'
+	);
+	$DATA['topmenu']['add'] = array(
+		'href' => '_type=add',
+		'caption' => 'Добавить задание',
+		'sel' => 0,
+		'type' => '',
+		'css' => 'add',
+	);
+	if ($_GET['_type'] == 'add' or ($_GET['_type'] == 'edit' and isset($_GET['_id']))) {
+
+		$FORM = array('_*features*_' => array('method' => 'POST', 'name' => 'cron'));
+
+		if (isset($_POST['sbmt'])) {
+			if(isset($_GET['_id']))
+				$p = (int)$_GET['_id'];
+			elseif(!isset($_CFG['wep']['cron']))
+				$p = 0;
+			else {
+				ksort($_CFG['wep']['cron']);
+				reset($_CFG['wep']['cron']);
+				$p = key($_CFG['wep']['cron'])+1;
+			}
+			$NEWDATA = array();
+			$NEWDATA['wep']['cron'] = $_CFG['wep']['cron'];
+			$NEWDATA['wep']['cron'][$p] = array(
+				'time'=>$_POST['time'],
+				'file'=>$_POST['file'],
+				'modul'=>$_POST['modul'],
+				'function'=>$_POST['function'],
+			);
+			list($fl,$mess) = static_tools::saveUserCFG($NEWDATA);
+			if(!$fl)
+				$FORM['info'] = array('type'=>'info', 'caption'=>'<h3 style="color:red;">Ошибка</h3>');
+			else {
+				$_SESSION['messtool'] = array('name'=>'ok','value'=>'Задание успешно добавлено.');
+				header('Location: /'.key($DATA['path']));
+				die();
+			}
+		}
+		$DATA['path'][$FP.'_type=add'] = 'Добавить';
+		if($_GET['_type'] == 'edit' and isset($_GET['_id']) and isset($_CFG['wep']['cron'][$_GET['_id']])) {
+			$VAL = $_CFG['wep']['cron'][$_GET['_id']];
+			$DATA['path'][$FP.'_type=add'] = 'Правка';
+		}
+		elseif(isset($_POST))
+			$VAL = $_POST;
+		else
+			$VAL = array();
+			
+		$FORM['time'] = array (
+			'caption' => 'Период запуска',
+			'comment' => 'сек.',
+			'type' => 'int',
+			'css' => '',
+			'style' => '',
+			'value'=>$VAL['time'],
+		);
+		$FORM['file'] = array (
+			'caption' => 'Фаил',
+			'comment' => '',
+			'type' => 'text',
+			'css' => '',
+			'style' => '',
+			'value'=>$VAL['file'],
+		);
+		$FORM['modul'] = array (
+			'caption' => 'Модуль',
+			'comment' => '',
+			'type' => 'text',
+			'css' => '',
+			'style' => '',
+			'value'=>$VAL['modul'],
+		);
+		$FORM['function'] = array (
+			'caption' => 'Функция',
+			'comment' => '',
+			'type' => 'text',
+			'css' => '',
+			'style' => '',
+			'value'=>$VAL['function'],
+		);
+		$FORM['sbmt'] = array(
+			'type' => 'submit',
+			'value' => 'Сохранить');
+
+		$FORM['formcreat'] = array('form' => $FORM);
+		//$FORM['formcreat']['messages'] = $mess;
+		global $HTML;
+		$result = $HTML->transformPHP($DATA, 'path');
+		$result .= $HTML->transformPHP($FORM, 'formcreat');
+	}elseif($_GET['_type'] == 'del' and isset($_GET['_id'])) {
+		$NEWDATA = array();
+		$NEWDATA['wep']['cron'] = $_CFG['wep']['cron'];
+		unset($NEWDATA['wep']['cron'][$_GET['_id']]);
+		list($fl,$mess) = static_tools::saveUserCFG($NEWDATA);
+		if(!$fl)
+			$_SESSION['messtool'] = array('name'=>'error','value'=>'Ошибка.');
+		else
+			$_SESSION['messtool'] = array('name'=>'ok','value'=>'Задание успешно Удалено.');
+		header('Location: /'.key($DATA['path']));
+		die();
+	}else {
+		$DATA['data'] = array(
+			'thitem'=>array(
+				'time'=>array('value'=>'Период'),
+				'file'=>array('value'=>'Фаил'),
+				'modul'=>array('value'=>'Модуль'),
+				'function'=>array('value'=>'Функция')
+			),
+		);
+		if(isset($_CFG['wep']['cron']) and count($_CFG['wep']['cron'])) {
+			foreach($_CFG['wep']['cron'] as $k=>$r) {
+				$DATA['data']['item'][$k]['tditem'] = array(
+					'time'=>array('value'=>$r['time']),
+					'file'=>array('value'=>$r['file']),
+					'modul'=>array('value'=>$r['modul']),
+					'function'=>array('value'=>$r['function']),
+				);
+				$DATA['data']['item'][$k]['edit'] = 1;
+				$DATA['data']['item'][$k]['del'] = 1;
+				$DATA['data']['item'][$k]['id'] = $k;
+			}
+		}
+		global $HTML;
+		if(isset($_SESSION['messtool'])) {
+			$DATA['messages'][] = $_SESSION['messtool'];
+			unset($_SESSION['messtool']);
+		}
+		$DATA['superlist'] = $DATA;
+		$result = $HTML->transformPHP($DATA, 'superlist');
+	}
+	return $result;
+}
+
 function tools_worktime() {
 	global $_CFG,$_tpl;
 	if(!static_main::_prmUserCheck(1))
@@ -137,6 +281,7 @@ $dataF = array(
 	'tools_step1'=>'<span class="tools_item">Настройки сайта</span>',
 	'tools_step2'=>'<span class="tools_item">Проверка структуры сайта</span>',
 	'tools_step3'=>'<span class="tools_item">Установка модулей и удаление, со всеми патрохами.</span>',
+	'tools_cron'=>'<span class="tools_item">Настройка Крона</span>',
 	'tools_worktime'=>'<span class="tools_item">Режим "технические работы"</span>',
 	'getphpinfo'=>'<span class="tools_item">PHPINFO</span>',
 	'allinfos'=> '<span class="tools_item">Выввод глобальных переменных</span>',
