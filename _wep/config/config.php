@@ -442,8 +442,12 @@ function getmicrotime() {
  */
 
 function SpiderDetect($USER_AGENT='') {
-	if (!$USER_AGENT)
+	if (!$USER_AGENT) {
+		if(!isset($_SERVER['HTTP_USER_AGENT'])) {
+			return '';
+		}
 		$USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
+	}
 	$engines = array(
 		array('Aport', 'Aport robot'),
 		array('Google', 'Google'),
