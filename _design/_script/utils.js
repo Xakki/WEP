@@ -371,3 +371,11 @@ function show_fblock(obj,selector) {
 	}
 
 }
+
+function ajaxLoadPage (href) {
+	param = {
+		'href':'_json.php?_view=loadpage&href='+href,
+		'type':'POST'
+	};
+	JSWin(param);
+}
