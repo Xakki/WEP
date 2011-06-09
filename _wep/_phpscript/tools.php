@@ -33,12 +33,20 @@ function tools_cron() {
 	if(!static_main::_prmUserCheck(1))
 		return $_CFG['_MESS']['denied'];
 	$result = '';
+
+	$ini_file = $_CFG['_PATH']['temp'].'cron.ini';
+	if(file_exists($ini_file)) 
+		$ini_arr = parse_ini_file($ini_file);
+	else
+		$ini_arr= array();
+
 	$FP = $_CFG['PATH']['wepname'].'/index.php?_view=list&_modul=_tools&tfunc=tools_cron&';
 	$_tpl['styles']['form']=1;
 	$DATA = array();
 	$DATA['path'] = array(
 		$FP=>'Задания'
 	);
+
 	$DATA['topmenu']['add'] = array(
 		'href' => '_type=add',
 		'caption' => 'Добавить задание',
@@ -145,7 +153,8 @@ function tools_cron() {
 				'time'=>array('value'=>'Период'),
 				'file'=>array('value'=>'Фаил'),
 				'modul'=>array('value'=>'Модуль'),
-				'function'=>array('value'=>'Функция')
+				'function'=>array('value'=>'Функция'),
+				'lasttime'=>array('value'=>'Время прошлого выполнения')
 			),
 		);
 		if(isset($_CFG['wep']['cron']) and count($_CFG['wep']['cron'])) {
@@ -155,6 +164,7 @@ function tools_cron() {
 					'file'=>array('value'=>$r['file']),
 					'modul'=>array('value'=>$r['modul']),
 					'function'=>array('value'=>$r['function']),
+					'lasttime'=>array('value'=>date('Y-m-d H:i:s',$ini_arr['last_time'.$k])),
 				);
 				$DATA['data']['item'][$k]['edit'] = 1;
 				$DATA['data']['item'][$k]['del'] = 1;
