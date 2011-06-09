@@ -198,3 +198,7 @@ $_CFG['enum']['yesno'] = array(
 $_CFG['enum']['yesno2'] = array(
 	0 => 'НЕТ',
 	1 => 'ЕСТЬ');
+
+$_CFG['enum']['wysiwyg'] = array(
+	0 => 'Textarea',
+	1 => 'CKEditor');

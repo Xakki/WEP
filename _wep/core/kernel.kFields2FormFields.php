@@ -185,7 +185,8 @@
 						$_tpl['script']['ckfinder.js'] = array($this->_CFG['_HREF']['WSWG'].'ckfinder/ckfinder.js');
 					}
 					$_tpl['script']['ckeditor.ckf_'.$k] = $fckscript.'}';
-					$_tpl['onload'] .= ' cke_'.$k.'();';
+					if(!isset($fields[$k.'_ckedit']['value']) or $fields[$k.'_ckedit']['value']=='1')
+						$_tpl['onload'] .= ' cke_'.$k.'();';
 //if(!window.CKEDITOR) $.include(\''.$this->_CFG['_HREF']['WSWG'].'ckeditor/ckeditor.js\',cke_'.$k.'); else 
 				} elseif($k=='mf_ipcreate') {
 					$r['value'] = long2ip($r['value']);

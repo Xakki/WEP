@@ -27,14 +27,15 @@ class content_class extends kernel_extends {
 		$this->fields['memcache'] = array('type' => 'int', 'width'=> 11,'attr' => 'NOT NULL','default'=>0);
 
 		# memo
-		$this->memos['pg'] = array('max' => 50000);
+		//$this->memos['pg'] = array('max' => 50000);
+		$this->fields['pg'] = array('type' => 'mediumtext', 'attr' => 'NOT NULL');
 
 		$this->owner->_listnameSQL = 'template, name';
 	}
 
-	function _install() {
+	function _preInstall() {
 		$this->def_records[] = array('owner_id'=>'404','pg'=>'Недостаточно прав для доступа к странице','marker'=>'text','active'=>1);
-		return parent::_install();
+		return parent::_preInstall();
 	}
 
 	public function setFieldsForm() {

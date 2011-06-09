@@ -19,10 +19,10 @@ class static_tools {
 		return $m;
 	}
 
-	static function _reinstall(&$MODUL) {
+	/*static function _reinstall(&$MODUL) {
 		$MODUL->SQL->execSQL('DROP TABLE `' . $MODUL->tablename . '`');
 		self::_installTable($MODUL);
-	}
+	}*/
 
 	/**
 	 * Установка модуля
@@ -36,7 +36,6 @@ class static_tools {
 		$result = $MODUL->SQL->execSQL('SHOW TABLES LIKE \'' . $MODUL->tablename . '\''); // checking table exist
 		//if($result->err) return array($MODUL->tablename => array(array('err'=>$MODUL->getMess('_big_err'))));
 		if (!$result->num_rows()) {
-			$MODUL->_install();
 			// contruct of query
 			$fld = array();
 			if (count($MODUL->fields))
@@ -193,6 +192,7 @@ class static_tools {
 			}
 
 			$out = array();
+			$MODUL->setSystemFields();
 
 			if (isset($MODUL->fields))
 				foreach ($MODUL->fields as $key => $param) {

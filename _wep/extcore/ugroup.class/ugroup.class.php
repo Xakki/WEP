@@ -109,11 +109,11 @@ class ugroup_class extends kernel_extends
 		}
 	}
 
-	function _install() {
+	function _preInstall() {
 		$this->def_records[0] = array('id'=>0,$this->mf_namefields=>'Анонимы','level'=>5,'filesize'=>'0','active'=>1,'design'=>'default','wep'=>0);
 		$this->def_records[1] = array('id'=>1,$this->mf_namefields=>'Администраторы','level'=>0,'filesize'=>'100','active'=>1,'design'=>'default','wep'=>1);
 		$this->def_records[2] = array('id'=>2,$this->mf_namefields=>'Пользователи','level'=>2,'filesize'=>'0','active'=>1,'design'=>'default','wep'=>0);
-		return parent::_install();
+		return parent::_preInstall();
 	}
 
 	function _childs() {
@@ -332,7 +332,7 @@ class users_class extends kernel_extends {
 			
 	}
 
-	function _install() {
+	function _preInstall() {
 		$this->def_records[0] = array(
 			$this->fn_login => $this->_CFG['wep']['login'],
 			$this->mf_namefields=>'Администратор',
@@ -342,7 +342,7 @@ class users_class extends kernel_extends {
 			'mf_timecr'=>time(),
 			'owner_id'=>1,
 			'reg_hash'=>1);
-		return parent::_install();
+		return parent::_preInstall();
 	}
 
 	function _update($flag_select=true) {

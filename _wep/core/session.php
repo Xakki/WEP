@@ -64,7 +64,7 @@ class session_gogo {//extends kernel_extends {
 
 		$result = $this->SQL->execSQL('SHOW TABLES LIKE \''.$this->tablename.'\'');// checking table exist
 		if ($result->err) echo('Session error');
-		//if (!$result->num_rows()) $this->_install();
+		//if (!$result->num_rows()) $this->_ddInstall();
 		return(true);
 	}
 	

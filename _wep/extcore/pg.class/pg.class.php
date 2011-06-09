@@ -101,11 +101,11 @@ class pg_class extends kernel_extends {
 		);
 	}
 
-	function _install() {
+	function _preInstall() {
 		$this->def_records[] = array('id'=>'index','name'=>'Главная страница','active'=>1,'template'=>'default');
 		$this->def_records[] = array('id'=>'404','name'=>'Страницы нету','parent_id'=>'index','active'=>1,'template'=>'default');
 		$this->def_records[] = array('id'=>'401','name'=>'Недостаточно прав для доступа к странице','parent_id'=>'index','active'=>1,'template'=>'default');
-		return parent::_install();
+		return parent::_preInstall();
 	}
 	
 	function _childs() {
@@ -446,11 +446,12 @@ class pg_class extends kernel_extends {
 				}
 
 				if($rowPG['pagetype']=='') {
-					$text = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['content'].'pg/'.$rowPG['id'].$this->text_ext;
+					/*$text = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['content'].'pg/'.$rowPG['id'].$this->text_ext;
 					if (file_exists($text)) {
 						$flagPG = 1;
 						$_tempMarker .= file_get_contents($text);
-					}
+					}*/
+					$_tempMarker .= $rowPG['pg'];
 				} else {
 					$flagMC = false;
 					if(!$rowPG['memcache'] and $this->config['memcache'])

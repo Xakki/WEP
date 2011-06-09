@@ -339,9 +339,6 @@ abstract class kernel_extends {
 		return true;
 	}
 
-	function _preInstall() {
-	}
-
 	/**
 	 * Делает запрос к тек таблице с выводом всех данных
 	 *
@@ -743,8 +740,20 @@ abstract class kernel_extends {
 		return static_tools::_checkmodstruct($this->_cl);
 	}
 
-	function _install() {
+	function _preInstall() {
+		$this->setSystemFields();
+	}
 
+	function setSystemFields() {
+		$temp = $this->fields_form;
+		$this->fields_form = array();
+		foreach($temp as $k=>$r) {
+			if($r['type']=='ckedit') {
+				$this->fields[$k.'_ckedit'] = array('type' => 'tinyint', 'width'=>3, 'attr' => 'NOT NULL','default'=>'1');
+				$this->fields_form[$k.'_ckedit'] = array('type' => 'list', 'listname'=>'wysiwyg', 'caption' => $r['caption'].' - Выбор редактора', 'mask' =>array(),'onchange'=>'SetWysiwyg(this)');
+			}
+			$this->fields_form[$k] = $r;
+		}
 	}
 
 	public function toolsReinstall() {
@@ -879,6 +888,7 @@ abstract class kernel_extends {
 	}
 
 	public function kPreFields(&$data, &$param) {
+		$this->setSystemFields();
 		foreach ($this->fields_form as $k => &$r) {
 			if (isset($r['readonly']) and $r['readonly'] and $this->id) // если поле "только чтение" и редактируется , то значение берем из БД,
 				$data[$k] = (isset($this->data[$this->id][$k])?$this->data[$this->id][$k]:'');
