@@ -57,6 +57,31 @@
 			}
 		}*/
 	}
+	elseif($_REQUEST['_view']=='loadpage') {
+		require_once($_CFG['_PATH']['core'].'/html.php');
+		$_COOKIE['_showallinfo'] = 0;
+		$_COOKIE['_showerror'] = 0;
+		$DATA  = array();
+		session_go();
+		_new_class('pg',$PGLIST);
+		$_tpl = array();
+		$PGLIST->id = $_REQUEST['pg'];
+		$PGLIST->display(false);
+		//$_tpl['logs'] = '';
+		//print_r('<pre>');print_r($_tpl);
+		//$GLOBALS['_RESULT']['html2'] = $_tpl;
+		foreach($_POST as $k=>$r) {
+			if(isset($_tpl[$k])) {
+				$GLOBALS['_RESULT'][$k] = $_tpl[$k];
+				if(is_array($r)) {
+					foreach($r as $vk=>$vr)
+						$GLOBALS['_RESULT']['eval'] .= 'jQuery(\''.$vr.'\').'.$vk.'(result.'.$k.');';
+				} else//replaceWith
+					$GLOBALS['_RESULT']['eval'] .= 'jQuery(\''.$r.'\').html(result.'.$k.');';
+			}
+		}
+		//print_r('<pre>');print_r($GLOBALS['_RESULT']);
+	}
 	else {
 		print('NO VALID DATA');
 	}

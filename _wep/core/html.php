@@ -334,7 +334,7 @@ function _obHandler($buffer) {
 		//	$_tpl['onload'] .='fShowHide(\'debug_view\');';
 		eval('$_html = "' . $_html . '";');
 		$page = $_html;
-	}else
+	} else
 		$page = $_tpl['logs'];
 	return $page;
 }

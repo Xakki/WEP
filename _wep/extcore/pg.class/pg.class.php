@@ -195,7 +195,7 @@ class pg_class extends kernel_extends {
 		return true;
 	}*/
 
-	function display() {
+	function display($templ=true) {
 		$this->current_path = '';
 		global $_tpl,$HTML;
 		$temp_tpl = $_tpl;
@@ -207,7 +207,7 @@ class pg_class extends kernel_extends {
 				$this->config['design'] = $this->pageinfo['design'];
 			elseif(!$this->config['design'])
 				$this->config['design'] = 'default';
-			$HTML = new html('_design/',$this->config['design']);//отправляет header и печатает страничку
+			$HTML = new html('_design/',$this->config['design'],$templ);//отправляет header и печатает страничку
 		}
 		if ($flag_content==1) {
 			
@@ -408,9 +408,8 @@ class pg_class extends kernel_extends {
 				{
 					$_tpl[$rowPG['marker']] = '';
 				}
+				$_tempMarker = '';
 
-				if(isset($_SESSION['_showallinfo']) && $_SESSION['_showallinfo'])
-					$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' begin-->'; // для отладчика
 				$html = '';
 				if($rowPG['ugroup']) {
 					if(!$this->pagePrmCheck($rowPG['ugroup'])) {
@@ -450,7 +449,7 @@ class pg_class extends kernel_extends {
 					$text = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['content'].'pg/'.$rowPG['id'].$this->text_ext;
 					if (file_exists($text)) {
 						$flagPG = 1;
-						$_tpl[$rowPG['marker']] .= file_get_contents($text);
+						$_tempMarker .= file_get_contents($text);
 					}
 				} else {
 					$flagMC = false;
@@ -498,11 +497,14 @@ class pg_class extends kernel_extends {
 						$memcache_obj->close();
 					
 					if(is_string($flagPG)) // если не булевое значение то выводим содержимое
-						$_tpl[$rowPG['marker']] .= $flagPG;
+						$_tempMarker .= $flagPG;
 					$flagPG = 1;
 				}
+				//$_tpl[$rowPG['marker']] .= '<div id="pg_'.$rowPG['id'].'">'.$_tempMarker.'</div>';
 				if(isset($_SESSION['_showallinfo']) && $_SESSION['_showallinfo'])
-					$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' end-->';
+					$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' begin-->'.$_tempMarker.'<!--content'.$rowPG['id'].' end-->';
+				else
+					$_tpl[$rowPG['marker']] .= $_tempMarker;
 			}
 
 		return $flagPG;
@@ -551,7 +553,7 @@ class pg_class extends kernel_extends {
 					$name = $rowPG['name_in_menu'];
 				}
 
-				$DATA_PG[$keyPG] = array('name'=>$name, 'href'=>$href, 'attr'=>$rowPG['attr'], 'sel'=>$selPG);
+				$DATA_PG[$keyPG] = array('name'=>$name, 'href'=>$href, 'attr'=>$rowPG['attr'], 'sel'=>$selPG, 'pgid'=>$keyPG);
 				if(!$flagPG and isset($this->dataCashTree[$keyPG]))
 					$DATA_PG[$keyPG]['#item#'] = $this->getMap($onmenuPG,$flagPG,$keyPG);
 

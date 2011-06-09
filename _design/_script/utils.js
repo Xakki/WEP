@@ -272,7 +272,6 @@ function JSWin(param) {
 			}
 			else if(result.html!='') fShowload(1,result.html,param['body']);
 			else timerid2 = setTimeout(function(){fShowload(0,'',param['body']);},200);
-
 			if(typeof result.text != 'undefined' && result.text!='') fLog(fSpoiler(result.text,'AJAX text result'),1);
 			//alert(result.eval);
 			if(typeof result.eval != 'undefined')  {
@@ -372,10 +371,14 @@ function show_fblock(obj,selector) {
 
 }
 
-function ajaxLoadPage (href) {
+function ajaxLoadPage (pg,marker,call) {
 	param = {
-		'href':'_json.php?_view=loadpage&href='+href,
-		'type':'POST'
+		'href':'_json.php?_view=loadpage&pg='+pg,
+		'type':'POST',
+		'data': marker,
 	};
+	if(call)
+		param['call'] = call;
 	JSWin(param);
+	return false;
 }
