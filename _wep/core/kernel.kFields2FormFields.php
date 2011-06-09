@@ -25,6 +25,8 @@
 
 							if(count($this->attaches[$k]['thumb'])) {
 								foreach($this->attaches[$k]['thumb'] as $modkey=>$mr) {
+									if(!isset($mr['pref'])) $mr['pref'] = '';
+									if(!isset($mr['path'])) $mr['path'] = '';
 									if((!$mr['pref'] and !$mr['path']) or (!$mr['pref'] and $mr['path']==$this->attaches[$key]['path']))
 										{unset($r['thumb'][$modkey]);continue;}
 									$_file = $this->_get_file($this->id,$k,'',$modkey);

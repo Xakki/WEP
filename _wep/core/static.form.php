@@ -106,9 +106,9 @@ class static_form {
 			if (file_exists($oldname)) {
 				chmod($oldname, $_this->_CFG['wep']['chmod']);
 				unlink($oldname);
-				static_main::_message('Old file '.$oldname.'deleted!',2);
 				if (count($_this->attaches[$key]['thumb']))
 					foreach($_this->attaches[$key]['thumb'] as $imod) {
+						if(!isset($imod['pref'])) $imod['pref'] = '';
 						$oldname =$pathimg.'/'. $imod['pref'].$_this->id. '.'.$row[$key];
 						if (file_exists($oldname))
 							unlink($oldname);
@@ -120,6 +120,7 @@ class static_form {
 			$ext = $_this->attaches[$key]['mime'][$value['type']];
 			$newname = $pathimg.'/'.$_this->id.'.'.$ext;
 			if (file_exists($newname)) {
+				chmod($newname, $_this->_CFG['wep']['chmod']);
 				unlink($newname);
 			}
 
@@ -132,10 +133,12 @@ class static_form {
 				$prefix = $pathimg.'/';
 				if (count($_this->attaches[$key]['thumb']))
 					foreach($_this->attaches[$key]['thumb'] as $imod) {
-						if(!$imod['pref']) $imod['pref'] = '';// по умолчинию без префикса
-						$newname2 = $prefix.$imod['pref'].$_this->id.'.'.$ext;
-						if($imod['path'])
+						if(!isset($imod['pref']) or !$imod['pref'])
+							$imod['pref'] = '';// по умолчинию без префикса
+						if(isset($imod['path']) and $imod['path'])
 							$newname2 = $_this->_CFG['_PATH']['path'].$imod['path'].'/'.$imod['pref'].$_this->id.'.'.$ext;
+						else
+							$newname2 = $prefix.$imod['pref'].$_this->id.'.'.$ext;
 						if ($imod['type']=='crop')
 							self::_cropImage($_this,$newname, $newname2, $imod['w'], $imod['h']);
 						elseif ($imod['type']=='resize')
@@ -717,7 +720,7 @@ class static_form {
 							$error[] = 23;
 
 				}
-				elseif((int)$form['mask']['min'])
+				elseif(isset($form['mask']['min']) and $form['mask']['min'])
 					$error[] = 1;
 			}
 
@@ -859,19 +862,19 @@ class static_form {
 	static function _parseDate($arrdate) {
 		$date_str = array();
 		// час
-		if ($arrdate['H']) {
+		if (isset($arrdate['H']) and $arrdate['H']) {
 			$date_str[0] = $arrdate['H'];
 		} else {
 			$date_str[0] = '0';
 		}
 		// минуты
-		if ($arrdate['i']) {
+		if (isset($arrdate['i']) and $arrdate['i']) {
 			$date_str[1] = $arrdate['i'];
 		} else {
 			$date_str[1] = '0';
 		}
 		// секунды
-		if ($arrdate['s']) {
+		if (isset($arrdate['s']) and $arrdate['s']) {
 			$date_str[2] = $arrdate['s'];
 		} else {
 			$date_str[2] = '0';
