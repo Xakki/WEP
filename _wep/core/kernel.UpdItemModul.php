@@ -26,6 +26,8 @@
 							if($rm = $this->_save_item($arr['vars'])) {
 								$flag=1;
 								$arr['mess'][] = array('name'=>'ok', 'value'=>$this->getMess('update'));
+								if($formflag)// кастыль
+									$mess = $this->kPreFields($this->data[$this->id],$param);
 							} else {
 								$arr['mess'][] = array('name'=>'error', 'value'=>$this->getMess('update_err'));
 							}

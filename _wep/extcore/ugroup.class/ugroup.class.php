@@ -455,6 +455,9 @@ class users_class extends kernel_extends {
 			$this->id = $_SESSION['user']['id'];
 			$this->data = $this->_select();
 			$DATA = $this->data[$this->id];
+			if(isset($this->fields_form[$this->fn_pass]) and count($_POST) and !$_POST[$this->fn_pass]) {
+				unset($this->fields_form[$this->fn_pass]);unset($_POST[$this->fn_pass]);
+			}
 		}
 		else {
 		// добавлены настройки на форму регистрации
@@ -513,11 +516,11 @@ class users_class extends kernel_extends {
 						} else
 							$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['regerr']);
 					}else { // профиль
-						if(isset($this->fields_form[$this->fn_pass]) and !$arr['vars'][$this->fn_pass]) {
-							unset($this->fields_form);unset($arr['vars'][$this->fn_pass]);
-						}
-						if($this->_save_item($arr['vars']))
+						if($this->_save_item($arr['vars'])) {
 							$arr['mess'][] = array('name'=>'ok', 'value'=>$this->_CFG['_MESS']['update']);
+							if($flag)// кастыль
+								$mess = $this->kPreFields($this->data[$this->id],$param);
+						}
 						else
 							$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['update_err']);
 					}

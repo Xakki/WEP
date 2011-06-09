@@ -541,7 +541,6 @@ class static_form {
 		$arr_err_name=array();
 		foreach($FORMS_FIELDS as $key=>&$form)
 		{
-			$value = $data[$key];
 			$error = array();
 			if($key=='_*features*_') continue;
 			if(!isset($form['type'])) return array('mess'=>array(array('name'=>'error', 'value'=>$_this->_CFG['_MESS']['errdata'].' : '.$key)));
@@ -555,6 +554,7 @@ class static_form {
 				continue;
 			}
 
+			$value = (isset($data[$key])?$data[$key]:'');
 			//*********** Файлы
 			if(isset($_FILES[$key]['name'])) {
 				$tmp = count($error);
@@ -580,7 +580,7 @@ class static_form {
 							$error[]=40;
 					}
 				}
-
+				$data[$key] = $value;
 			}
 			//*********** CHECKBOX
 			elseif($form['type']=='checkbox') {
@@ -721,7 +721,9 @@ class static_form {
 					$error[] = 1;
 			}
 
-			$form['value'] = $data[$key] = $value;
+			$form['value'] = $value;
+			if(isset($data[$key]))
+				$data[$key] = $value;
 
 ///////////////////
 

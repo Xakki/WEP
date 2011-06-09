@@ -225,6 +225,10 @@ class static_main {
 			session_destroy();
 		//if(isset($_SESSION))
 		//	$_SESSION = array();
+		if (isset($_COOKIE['_showallinfo']))
+			_setcookie('_showallinfo', '', (time() - 5000));
+		if (isset($_COOKIE['_showerror']))
+			_setcookie('_showerror', '', (time() - 5000));
 		if (isset($_COOKIE['remember']))
 			_setcookie('remember', '', (time() - 5000));
 		if (isset($_COOKIE[$_CFG['session']['name']]))

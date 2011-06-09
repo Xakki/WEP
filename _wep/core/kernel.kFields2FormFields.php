@@ -39,7 +39,8 @@
 							$r['value'] = '';
 					}elseif(isset($r['ext']) and isset($this->_CFG['form']['flashFormat'][$r['ext']]) and $this->id) {
 						$r['att_type'] = 'swf';
-					}
+					}else
+						$r['value'] = '';
 					
 					if(!isset($r['comment']))
 						$r['comment'] = $this->_CFG['_MESS']['_file_size'].$this->attaches[$k]['maxsize'].'Kb';
