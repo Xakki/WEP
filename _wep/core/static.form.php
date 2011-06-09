@@ -104,6 +104,7 @@ class static_form {
 			// delete old
 			$oldname =$pathimg.'/'. $_this->id. '.'.$row[$key];
 			if (file_exists($oldname)) {
+				chmod($oldname, $_this->_CFG['wep']['chmod']);
 				unlink($oldname);
 				static_main::_message('Old file '.$oldname.'deleted!',2);
 				if (count($_this->attaches[$key]['thumb']))

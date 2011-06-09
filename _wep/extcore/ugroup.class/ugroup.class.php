@@ -513,6 +513,9 @@ class users_class extends kernel_extends {
 						} else
 							$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['regerr']);
 					}else { // профиль
+						if(isset($this->fields_form[$this->fn_pass]) and !$arr['vars'][$this->fn_pass]) {
+							unset($this->fields_form);unset($arr['vars'][$this->fn_pass]);
+						}
 						if($this->_save_item($arr['vars']))
 							$arr['mess'][] = array('name'=>'ok', 'value'=>$this->_CFG['_MESS']['update']);
 						else
