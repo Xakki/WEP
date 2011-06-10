@@ -512,7 +512,7 @@ class users_class extends kernel_extends {
 							$MAIL->reply = 0;
 							if($MAIL->Send($datamail)) {
 								// иногда сервер говорит что ошибка, а сам всеравно письма отсылает
-							}else {
+							} else {
 								trigger_error('Регистрация - '.$this->_CFG['_MESS']['mailerr'], E_USER_WARNING);
 								//$this->_delete();
 								//$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['mailerr']);

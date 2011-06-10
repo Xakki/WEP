@@ -986,7 +986,7 @@ abstract class kernel_extends {
 				'caption' => $this->getMess('_captcha'),
 				'captcha' => static_form::getCaptcha(),
 				'src' => $this->_CFG['_HREF']['captcha'] . '?' . rand(0, 9999),
-				'value' => $data['captcha'],
+				'value' => (isset($data['captcha'])?$data['captcha']:''),
 				'mask' => array('min' => 1));
 		}
 

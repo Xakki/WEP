@@ -46,7 +46,7 @@ class static_form {
 			$_this->id = $_this->fld_data['id'];
 		else $_this->id = NULL;
 
-		umask($_this->_CFG['wep']['chmod']);
+		//umask($_this->_CFG['wep']['chmod']);
 		if (isset($_this->att_data) && count($_this->att_data)) {
 			if (!self::_add_attaches($_this)) {
 				$_this->_delete();
@@ -147,6 +147,7 @@ class static_form {
 							self::_resizecropImage($_this,$newname, $newname2, $imod['w'], $imod['h']);
 						elseif ($imod['type']=='water')
 							self::_waterMark($_this,$newname,$newname2, $imod['w'], $imod['h']);
+						chmod($newname, $_this->_CFG['wep']['chmod']);
 					}
 			}
 			$prop[] = '`'.$key.'` = \''.$ext.'\'';
@@ -211,7 +212,7 @@ class static_form {
 		if (!self::_update_fields($_this)) return false;
 		if (isset($_this->fld_data['id']))
 			$_this->id = $_this->fld_data['id'];
-		umask($_this->_CFG['wep']['chmod']);
+		//umask($_this->_CFG['wep']['chmod']);
 		if (!self::_update_attaches($_this)) return false;
 		if (!self::_update_memos($_this)) return false;
 		if($_this->id and $flag_select)
