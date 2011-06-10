@@ -476,7 +476,11 @@ class users_class extends kernel_extends {
 			$this->kPreFields($_POST,$param);
 			$arr = $this->fFormCheck($_POST,$param,$this->fields_form);
 			if(!count($arr['mess'])){
-				$clause = 't1 where (t1.'.$this->fn_login.' = \''.$arr['vars'][$this->fn_login].'\' or t1.email = \''.$arr['vars']['email'].'\')';
+				$clause = 't1 where (t1.'.$this->fn_login.' = \''.$arr['vars'][$this->fn_login].'\'';
+				if($this->fn_login!='email' and $arr['vars']['email']) {
+					$clause .= ' or t1.email = \''.$arr['vars']['email'].'\'';
+				}
+				$clause .= ' )';
 				if($this->id) $clause .= ' and id!='.$this->id;
 				$datach = $this->_query('LOWER(t1.'.$this->fn_login.') as lgn',$clause);
 				if(count($datach) and $datach[0]['lgn']==mb_strtolower($arr['vars'][$this->fn_login]))
