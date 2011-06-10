@@ -127,6 +127,7 @@ foreach ($USER_CFG['wep'] as $k => $r) {
 		$type = 'checkbox';
 	else
 		$type = 'text';
+	if($k=='cron') continue;
 	if(is_array($r)) {
 		if(is_array(current($r)))
 			continue;
