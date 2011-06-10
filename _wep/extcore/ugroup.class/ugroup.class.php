@@ -469,7 +469,7 @@ class users_class extends kernel_extends {
 			$this->fields_form[$this->fn_login]['readonly']=false;
 			$DATA = $_POST;
 			$this->id = 0;
-			if(count($_POST) and $_POST['sbmt'])
+			if(count($_POST) and $_POST['sbmt'] and isset($_SESSION['user']))
 				unset($_SESSION['user']);
 		}
 

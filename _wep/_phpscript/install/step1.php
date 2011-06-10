@@ -16,6 +16,7 @@ $edit_cfg = array(
 
 $mess = array();
 if (isset($_POST['sbmt'])) {
+	$_POST['wep']['bug_hunter'] = array_combine($_POST['wep']['bug_hunter'],$_POST['wep']['bug_hunter']);
 	list($fl,$mess) = static_tools::saveUserCFG($_POST,$TEMP_CFG);
 	//Записать в конфиг все данные которые отличаются от данных по умолчанию
 	if ($fl) {
