@@ -179,6 +179,8 @@ class ugroup_class extends kernel_extends
 			trigger_error('Not found data for user id='.$id, E_USER_WARNING);
 			return array();
 		}
+		$this->data[0]['FckEditorUserFilesUrl'] = $this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['userfile'].$id.'/';
+		$this->data[0]['FckEditorUserFilesPath'] = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['userfile'].$id.'/';
 		return $this->data[0];
 	}
 	/**
@@ -350,8 +352,9 @@ class users_class extends kernel_extends {
 		$res = parent::_update($flag_select);
 		if($res) {
 			global $SESSION_GOGO;
-			if($SESSION_GOGO)
-				$SESSION_GOGO->updateUser($id);
+			if($SESSION_GOGO) {
+				$SESSION_GOGO->updateUser($id,$this);
+			}
 		}
 		return $res;
 	}
@@ -687,8 +690,6 @@ class users_class extends kernel_extends {
 		}
 		session_go(1);
 		$_SESSION['user'] = $data;
-		$_SESSION['FckEditorUserFilesUrl'] = $this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['userfile'].$_SESSION['user']['id'].'/';
-		$_SESSION['FckEditorUserFilesPath'] = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['userfile'].$_SESSION['user']['id'].'/';
 		if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0)
 			_setcookie('_showerror',1);
 		return true;
