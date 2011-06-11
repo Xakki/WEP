@@ -153,8 +153,8 @@
 			elseif($r['type']=='date') {
 				$html .= '<div class="f_item" id="tr_'.$k.'">
 				<div class="f_int">
-					Период с <input type="text" name="'.$k.'" id="'.$k.'" value="'.$r['value'].''.$attribute.'"/> <span class="po">по</span>
-					<input type="text" name="'.$k.'_2" id="'.$k.'_2" value="'.$r['value_2'].'"'.$attribute.'/>
+					Период с <input type="text" name="'.$k.'" id="'.$k.'" value="'.$r['value'].'" '.$attribute.'/> <span class="po">по</span>
+					<input type="text" name="'.$k.'_2" id="'.$k.'_2" value="'.$r['value_2'].'" '.$attribute.'/>
 				</div>
 				
 			  </div>';
@@ -174,7 +174,7 @@
 			else {
 				$html .= '<div class="f_item" id="tr_'.$k.'">
 					<div class="f_caption">'.$r['caption'].'</div>
-					<div class="f_value"><input type="'.$r['type'].'" name="'.$k.'" id="'.$k.'" value="'.$r['value'].'"'.$attribute.'/></div>
+					<div class="f_value"><input type="'.$r['type'].'" name="'.$k.'" id="'.$k.'" value="'.$r['value'].'" '.$attribute.'/></div>
 					
 				</div>';//<div class="f_exc"><input type="checkbox" name="exc_'.$k.'" value="exc"></input></div>
 			}
