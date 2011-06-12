@@ -180,7 +180,7 @@ function tpl_form(&$data) {
 				$texthtml .= '</div>';
 			}
 			elseif($r['type']=='date' and $r['readonly']) {
-
+				$temp = '';
 				if($r['fields_type'] =='int' and $r['value']){
 					if(isset($r['mask']['format']) and $r['mask']['format']) {
 						$temp = date($r['mask']['format'],$r['value']);
@@ -200,6 +200,7 @@ function tpl_form(&$data) {
 			}
 			elseif($r['type']=='date' and !$r['readonly']) {
 				$texthtml .= '<div class="form-value">';
+				$temp = '';
 
 				// формат для даты
 				if ($r['mask']['format']) {
@@ -252,7 +253,7 @@ function tpl_form(&$data) {
 					}
 					
 					$texthtml .= '<input type="text" name="'.$k.'" value="'.$temp.'" class="dateinput"/>';
-				} 
+				}
 				else {
 				
 					// Тип поля

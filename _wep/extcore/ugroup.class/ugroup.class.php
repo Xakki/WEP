@@ -179,6 +179,8 @@ class ugroup_class extends kernel_extends
 			trigger_error('Not found data for user id='.$id, E_USER_WARNING);
 			return array();
 		}
+		$this->data[0]['FckEditorUserFilesUrl'] = $this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['userfile'].$id.'/';
+		$this->data[0]['FckEditorUserFilesPath'] = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['userfile'].$id.'/';
 		return $this->data[0];
 	}
 	/**
@@ -350,8 +352,9 @@ class users_class extends kernel_extends {
 		$res = parent::_update($flag_select);
 		if($res) {
 			global $SESSION_GOGO;
-			if($SESSION_GOGO)
-				$SESSION_GOGO->updateUser($id);
+			if($SESSION_GOGO) {
+				$SESSION_GOGO->updateUser($id,$this);
+			}
 		}
 		return $res;
 	}
@@ -466,7 +469,7 @@ class users_class extends kernel_extends {
 			$this->fields_form[$this->fn_login]['readonly']=false;
 			$DATA = $_POST;
 			$this->id = 0;
-			if(count($_POST) and $_POST['sbmt'])
+			if(count($_POST) and $_POST['sbmt'] and isset($_SESSION['user']))
 				unset($_SESSION['user']);
 		}
 
@@ -476,7 +479,11 @@ class users_class extends kernel_extends {
 			$this->kPreFields($_POST,$param);
 			$arr = $this->fFormCheck($_POST,$param,$this->fields_form);
 			if(!count($arr['mess'])){
-				$clause = 't1 where (t1.'.$this->fn_login.' = \''.$arr['vars'][$this->fn_login].'\' or t1.email = \''.$arr['vars']['email'].'\')';
+				$clause = 't1 where (t1.'.$this->fn_login.' = \''.$arr['vars'][$this->fn_login].'\'';
+				if($this->fn_login!='email' and $arr['vars']['email']) {
+					$clause .= ' or t1.email = \''.$arr['vars']['email'].'\'';
+				}
+				$clause .= ' )';
 				if($this->id) $clause .= ' and id!='.$this->id;
 				$datach = $this->_query('LOWER(t1.'.$this->fn_login.') as lgn',$clause);
 				if(count($datach) and $datach[0]['lgn']==mb_strtolower($arr['vars'][$this->fn_login]))
@@ -505,7 +512,7 @@ class users_class extends kernel_extends {
 							$MAIL->reply = 0;
 							if($MAIL->Send($datamail)) {
 								// иногда сервер говорит что ошибка, а сам всеравно письма отсылает
-							}else {
+							} else {
 								trigger_error('Регистрация - '.$this->_CFG['_MESS']['mailerr'], E_USER_WARNING);
 								//$this->_delete();
 								//$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['mailerr']);
@@ -683,8 +690,6 @@ class users_class extends kernel_extends {
 		}
 		session_go(1);
 		$_SESSION['user'] = $data;
-		$_SESSION['FckEditorUserFilesUrl'] = $this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['userfile'].$_SESSION['user']['id'].'/';
-		$_SESSION['FckEditorUserFilesPath'] = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['userfile'].$_SESSION['user']['id'].'/';
 		if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0)
 			_setcookie('_showerror',1);
 		return true;

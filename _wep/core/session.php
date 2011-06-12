@@ -82,6 +82,8 @@ class session_gogo {//extends kernel_extends {
 			if(($row['modified']+$row['expired'])>$this->_time) {
 				$this->data = $row;
 				$this->_hash = md5($this->data['data']);
+				$_SESSION = unserialize($this->data['data']);
+				$this->data['data'] = session_encode();
 			}else
 				$this->destroy($sid);
 		}
@@ -98,6 +100,7 @@ class session_gogo {//extends kernel_extends {
 
 	function write($sid, $sess_data) {
 		if($sess_data) {
+			$sess_data = serialize($_SESSION);
 			$userId = (isset($_SESSION['user']['id'])?$_SESSION['user']['id']:0);
 			$tempMD5 = md5($sess_data);
 			$sess_data = mysql_real_escape_string($sess_data);
@@ -135,8 +138,9 @@ class session_gogo {//extends kernel_extends {
 		$result = $this->SQL->execSQL('DELETE FROM '.$this->tablename.' WHERE `users_id`  = "'.$id.'"');
 	}
 
-	function updateUser($id) {
-		//$result = $this->SQL->execSQL('UPDATE '.$this->tablename.' set `data`="" WHERE `users_id`  = "'.$id.'"');
-		//$result = $this->SQL->execSQL('DELETE FROM '.$this->tablename.' WHERE `users_id`  = "'.$id.'"');
+	function updateUser($id,&$USERS) {
+		$data = array('user'=>$USERS->owner->getUserData($id));
+		$data = serialize($data);
+		$result = $this->SQL->execSQL('Update '.$this->tablename.' set `data`="'.mysql_real_escape_string($data).'" WHERE `users_id`  = "'.$id.'"');
 	}
 }
