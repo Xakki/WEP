@@ -6,6 +6,8 @@ function tpl_form(&$data) {
 		$attr = $data['_*features*_'];
 		unset($data['_*features*_']);
 	}
+	if(!isset($attr['id']))
+		$attr['id'] = 0;
 	$texthtml = '';
 	$_CFG['fileIncludeOption']['form'] = 1;
 
@@ -50,6 +52,8 @@ function tpl_form(&$data) {
 			$attribute = '';
 			if(isset($r['readonly']) and $r['readonly'])
 				$attribute .= ' readonly="readonly" class="ronly"';
+			else
+				$r['readonly'] = false;
 			if(isset($r['disabled']) and $r['disabled'])
 				$attribute .= ' disabled="disabled" class="ronly"';
 			if($r['type']=='file') {
