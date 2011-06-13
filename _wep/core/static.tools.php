@@ -6,19 +6,6 @@ class static_tools {
 
 	}
 
-	static function _fldformer($key, $param) {
-		$m = '`' . $key . '` ' . $param['type'];
-
-		if (isset($param['width']) && is_array($param['width'])) {
-			if ($param['type'] == 'enum')
-				$m.= '("' . implode('","', array_keys($param['width'])) . '")';
-		}
-		elseif (isset($param['width']) && $param['width'] != '')
-			$m.= '(' . $param['width'] . ')';
-		$m.= ( isset($param['attr']) ? ' ' . $param['attr'] : '') . (isset($param['default']) ? ' DEFAULT \'' . $param['default'] . '\'' : '');
-		return $m;
-	}
-
 	static function _reinstall(&$MODUL) {
 		$MODUL->SQL->execSQL('DROP TABLE `' . $MODUL->tablename . '`');
 		self::_installTable($MODUL);
@@ -30,395 +17,217 @@ class static_tools {
 	 * @return bool Результат
 	 */
 	static function _installTable(&$MODUL) {
-		$check_result = array();
-		if (!$MODUL->tablename)
+		if (!$MODUL->tablename) {
+			static_main::_message('notice','Для модуля '.$MODUL->caption.' таблица не требуется.',$MODUL->_cl);
 			return true;
+		}
 		$result = $MODUL->SQL->execSQL('SHOW TABLES LIKE \'' . $MODUL->tablename . '\''); // checking table exist
-		//if($result->err) return array($MODUL->tablename => array(array('err'=>$MODUL->getMess('_big_err'))));
+
 		if (!$result->num_rows()) {
 			// contruct of query
-			$fld = array();
-			if (count($MODUL->fields))
-				foreach ($MODUL->fields as $key => $param)
-					$fld[] = self::_fldformer($key, $param);
-			if (count($MODUL->attaches))
-				foreach ($MODUL->attaches as $key => $param)
-					$fld[] = self::_fldformer($key, $MODUL->attprm);
-
-			/* 			foreach($MODUL->memos as $key => $param)
-			  $fld[]= self::_fldformer($key, $MODUL->mmoprm);
-			 */
-			$fld[] = 'PRIMARY KEY(id)';
-
-			if (isset($MODUL->unique_fields) and count($MODUL->unique_fields)) {
-				foreach ($MODUL->unique_fields as $k => $r) {
-					if (is_array($r))
-						$r = implode(',', $r);
-					$fld[] = 'UNIQUE KEY ' . $k . ' (' . $r . ')';
-				}
-			}
-			if (isset($MODUL->index_fields) and count($MODUL->index_fields)) {
-				foreach ($MODUL->index_fields as $k => $r) {
-					if (!isset($MODUL->unique_fields[$k])) {
-						if (is_array($r))
-							$r = implode(',', $r);
-						$fld[] = 'KEY ' . $k . ' (' . $r . ')';
-					}
-				}
-			}
-			$query = 'CREATE TABLE `' . $MODUL->tablename . '` (' . implode(',', $fld) . ') ENGINE=MyISAM DEFAULT CHARSET=' . $MODUL->_CFG['sql']['setnames'] . ' COMMENT = "' . $MODUL->ver . '"';
-			// to execute query
-			$result = $MODUL->SQL->execSQL($query);
-			if ($result->err)
+			if(!self::_creatTable($MODUL)) {
+				static_main::_message('error','Для модуля `'.$MODUL->caption.'` не удалось создать таблицу.',$MODUL->_cl);
 				return false;
+			}
 			if (count($MODUL->def_records)) {
 				if (!self::_insertDefault($MODUL)) {
 					$MODUL->SQL->execSQL('DROP TABLE `' . $MODUL->tablename . '`');
-					static_main::_message($MODUL->getMess('_install_err', array($MODUL->_cl)), 4);
+					static_main::_message('error','Для модуля `'.$MODUL->caption.'` не удалось записать дефолтные данные, и поэтому таблица не будет создана.',$MODUL->_cl);
 					return false;
 				}
 			}
-			static_main::_message('Table `' . $MODUL->tablename . '` installed.', 3);
+			static_main::_message('ok','Для модуля `'.$MODUL->caption.'` успешно создана таблица.',$MODUL->_cl);
 		}
-
-		return true;
-	}
-
-
-	/**
-	 * Запись дефолтных данных
-	 * @return <type>
-	 */
-	static function _insertDefault(&$MODUL) {
-		foreach ($MODUL->def_records as $row) {
-			if (!$MODUL->_add_item($row)) {
-				static_main::_message('Error add default record into `'.$MODUL->_cl.'`', 4);
-				return false;
+		$flag = true;
+		if (count($MODUL->Achilds))
+			foreach ($MODUL->childs as &$child) {
+				$temp = self::_installTable($child);
+				if(!$temp) return false;
 			}
-		}
-		static_main::_message('Insert default records into table ' . $MODUL->tablename . '.', 3);
-		return true;
+		return $flag;
 	}
 
-	static function instalModulForm() {
-		//TODO: Перенести сюда из modulprm
-	}
-
-	/**
-	 * Проверка структуры модуля
-	 *
-	 *
-	 * @param object $MODUL Текщий объект класса
-	 * @return array
-	 */
-	static function _checkmodstruct($Mid,&$OWN = NULL) {
+	static function _checkTableRev(&$MODUL) {
 		$rDATA = array();
-			//'mess'=>array(),
-			//'oldquery'=>array(),
-			//'newquery'=>array()
-
-		if (!_new_class('modulprm', $MODULPRM)) {
-			$rDATA['Ошибка']['@mess'][] = array('name' => 'error', 'value' => 'Ошибка инициализации модуля `modulprm`');
-			return array($Mid => $rDATA);
-		}
-
-		list($MODUL,$rDATA['modulprm']['@mess']) = $MODULPRM->ForUpdateModulInfo($Mid,$OWN);
-		if ($MODUL===false) {
-			$rDATA['Ошибка']['@mess'][] = array('name' => 'error', 'value' => 'Ошибка инициализации модуля `'.$Mid.'`');
-			return array($Mid => $rDATA);
-		}
-		elseif(!$MODUL->tablename) {
-			$rDATA['Ахтунг']['@mess'][] = array('name' => 'alert', 'value' => 'Модуль `'.$MODUL->caption.'`['.$Mid.'] не использует базу данных.');
-			return array($Mid => $rDATA);
-		}
-		elseif(!isset($MODULPRM->data[$Mid]) or $MODULPRM->data[$Mid][$MODULPRM->mf_actctrl]) {
-			// синонимы для типов полей
-			$alias_types = array(
-				'TINYINT(1)' => 'BOOL',
-			);
-
-			// типы полей, число - это значение, которое запишется в базу по умолчанию, если не указывать ширину явно
-			// false - означает, что для данного типа поля в mysql ширина не указывается
-			$types_width = array(
-				'TINYBLOB' => false,
-				'TINYTEXT' => false,
-				'BLOB' => false,
-				'TEXT' => false,
-				'MEDIUMBLOB' => false,
-				'MEDIUMTEXT' => false,
-				'LONGBLOB' => false,
-				'LONGTEXT' => false,
-				'DATE' => false,
-				'DATETIME' => false,
-				'TIMESTAMP' => false,
-				'TIME' => false,
-				'FLOAT' => '8,2',
-				'DOUBLE' => false,
-				'PRECISION' => false,
-				'REAL' => false,
-				'INT' => 11,
-				'INTEGER ' => 11,
-				'VARCHAR' => 255,
-			);
-
-			// типы полей, в которых нет атрибута default
-			$types_without_default = array(
-				'TINYTEXT' => true,
-				'TEXT' => true,
-				'MEDIUMTEXT' => true,
-				'LONGTEXT' => true,
-			);
-
-			$result = $MODUL->SQL->execSQL('SHOW TABLES LIKE \'' . $MODUL->tablename . '\''); // checking table exist
-			if ($result->err) {
-				$rDATA['Ошибка БД']['@mess'][] = array('name' => 'error', 'value' => $MODUL->getMess('_big_err'));
-				return array($MODUL->_cl => $rDATA);
-			}
-			if (!$result->num_rows()) {
-				if (isset($_POST['sbmt'])) {
-					if (!self::_installTable($MODUL)) {
-						$rDATA['Создание таблицы']['@mess'][] = array('name' => 'error', 'value' => $MODUL->getMess('_install_err') );
-						return array($MODUL->_cl => $rDATA);
-					}
-					else {
-						$rDATA['Создание таблицы']['@mess'][] = array('name' => 'ok', 'value' => $MODUL->getMess('_install_ok') );
-						return array($MODUL->_cl => $rDATA);
-					}
-				}
-				else {
-					$rDATA['Создание таблицы']['@mess'][] = array('name' => 'alert', 'value' => $MODUL->getMess('_install_info',array($MODUL->_cl.'['.$MODUL->tablename.']')) );
-					return array($MODUL->_cl => $rDATA);
-				}
-			}
-
-			$out = array();
-			$MODUL->setSystemFields();
-
-			if (isset($MODUL->fields))
-				foreach ($MODUL->fields as $key => $param) {
-					if (isset($param['attr']) and stristr($param['attr'], 'default')) {
-						$rDATA[$key]['@mess'][] = array('name' => 'alert', 'value' => 'Пар-р default прописан в ключе attr. Для корректной работы необходимо прописать его в отдельном элементе с ключом `default`' );
-					}
-					if (
-						isset($param['default']) &&
-						isset($types_without_default[mb_strtoupper($param['type'])]) &&
-						$types_without_default[mb_strtoupper($param['type'])] === true
-					) {
-						$rDATA[$key]['@mess'][] = array('name' => 'alert', 'value' => 'Параметр `default` для поля `'.$key.'` указывать не обязательно.');
-						unset($MODUL->fields[$key]['default']);
-					}
-				}
-
-			$result = $MODUL->SQL->execSQL('SHOW COLUMNS FROM `' . $MODUL->tablename . '`');
-			while (list($fldname, $fldtype, $null, $key, $default, $extra) = $result->fetch_array(MYSQL_NUM)) {
-				$fldtype = mb_strtoupper($fldtype);
-				$null = mb_strtoupper($null);
-				$key = mb_strtoupper($key);
-				$extra = mb_strtoupper($extra);
-
-				if (isset($MODUL->fields[$fldname])) {
-					$MODUL->fields[$fldname]['inst'] = '1';
-					$tmp_type = mb_strtoupper($MODUL->fields[$fldname]['type']);
-					if (isset($MODUL->fields[$fldname]['width'])) {
-						if (isset($types_width[$tmp_type]) && $types_width[$tmp_type] === false) {
-							$rDATA[$fldname]['@mess'][] = array('name' => 'alert', 'value' => 'Параметр `width` для поля `'.$fldname.'` указывать не обязательно.');
-							unset($MODUL->fields[$fldname]['width']); // чистим от ненужного парметра
-						}
-					} else {
-						if (isset($types_width[$tmp_type]) && $types_width[$tmp_type] !== false) {
-							$rDATA[$fldname]['@mess'][] = array('name' => 'alert', 'value' => 'Параметр `width` для поля `'.$fldname.'` необходим. По умолчанию будет установленно значение `'.$types_width[$tmp_type].'`');
-							$MODUL->fields[$fldname]['width'] = $types_width[$tmp_type];
-						}
-					}
-
-					$types = array();
-					$types[] = $fldtype;
-					if (isset($alias_types[$fldtype]))
-						$types[] = $alias_types[$fldtype];
-
-					$table_properties = array();
-					$table_properties_up_case = array();
-					$i = 0;
-					foreach ($types as $type) {
-						$table_properties[$i] = '`' . $fldname . '` ' . $type;
-
-						if ($type != 'TIMESTAMP') {
-							if ($null == 'YES') {
-								if (isset($MODUL->fields[$fldname]['attr']) and strstr(mb_strtoupper($MODUL->fields[$fldname]['attr']), 'NULL'))
-									$table_properties[$i] .= ' NULL';
-							}
-							else {
-								$table_properties[$i] .= ' NOT NULL';
-							}
-							if ($default !== NULL) {
-								$table_properties[$i] .= ' DEFAULT \'' . addcslashes($default,'\'') . '\'';
-							}
-							if ($extra != '')
-								$table_properties[$i] .= ' ' . $extra;
-						}
-						$table_properties_up_case[trim( str_replace(array('"', "'", chr(194).chr(160),"\xC2xA0","\n"), array('', '', ' ', ' ', ' '), mb_strtoupper($table_properties[$i],'UTF-8')) )] = true;
-						$i++;
-					}
-					$temp_fldformer = self::_fldformer($fldname, $MODUL->fields[$fldname]);
-					$temp = trim(str_replace(array('"', "'", chr(194).chr(160),"\xC2xA0","\n"), array('', '', ' ', ' ', ' '), mb_strtoupper($temp_fldformer,'UTF-8')));
-
-					if (isset($MODUL->fields[$fldname]['type']) and !isset($table_properties_up_case[$temp])) {
-						$rDATA[$fldname]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` CHANGE `' . $fldname . '` ' . $temp_fldformer;
-						$rDATA[$fldname]['@oldquery'] = $table_properties[0];
-					}
-				} elseif (isset($MODUL->attaches[$fldname]))
-					$MODUL->attaches[$fldname]['inst'] = '1';
-				elseif (isset($MODUL->memos[$fldname]))
-					$MODUL->memos[$fldname]['inst'] = '1';
-				else
-					$rDATA[$fldname]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` DROP `' . $fldname . '`';
-			}
-
-			if (isset($MODUL->fields))
-				foreach ($MODUL->fields as $key => $param) {
-					if (!isset($param['inst'])) {
-						$rDATA[$key]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD ' . self::_fldformer($key, $param);
-					}
-				}
-
-			if (isset($MODUL->attaches))
-				foreach ($MODUL->attaches as $key => $param) {
-					if (!isset($param['inst']))
-						$rDATA[$key]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD ' . self::_fldformer($key, $MODUL->attprm);
-					if (!self::_checkdir($MODUL->_CFG['_PATH']['path'].$MODUL->getPathForAtt($key))) {
-						$rDATA[$key]['@mess'][] = array('name' => 'error', 'value' => $MODUL->getMess('_checkdir_error', array($MODUL->getPathForAtt($key))) );
-					}
-					$rDATA['@reattach'] = &$MODUL;
-				}
-
-			if (isset($MODUL->memos))
-				foreach ($MODUL->memos as $key => $param) {
-					if (!self::_checkdir($MODUL->_CFG['_PATH']['path'].$MODUL->getPathForMemo($key))) {
-						$rDATA[$key]['@mess'][] = array('name' => 'error', 'value' => $MODUL->getMess('_recheck_err') );
-					}
-				}
-
-
-			$indexlist = $uniqlistR = $uniqlist = array();
-			$primary = '';
-			$result = $MODUL->SQL->execSQL('SHOW INDEX FROM `' . $MODUL->tablename . '`');
-			while ($data = $result->fetch_array(MYSQL_NUM)) {
-				if ($data[2] == 'PRIMARY') //только 1 примарикей
-					$primary = $data[4];
-				elseif (!$data[1]) //!NON_unique
-					$uniqlist[$data[2]][$data[4]] = $data[4];
-				else
-					$indexlist[$data[2]][$data[4]] = $data[4];
-			}
-
-			// CREATE PRIMARY KEY
-			if (isset($MODUL->fields['id']) and !$primary) {
-				$rDATA['id']['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD PRIMARY KEY(id)';
-				$primary = 'id';
-			}
-			// CREATE UNIQ KEY
-			$uniqlistR = $uniqlist;
-			if (isset($MODUL->unique_fields) and count($MODUL->unique_fields)) {
-				foreach ($MODUL->unique_fields as $k => $r) {
-					if (!is_array($r))
-						$r = array($r);
-					if (!isset($uniqlist[$k])) {// and !isset($uniqlistR[$k])
-						foreach ($r as $kk => $rr)
-							$uniqlistR[$k][$kk] = $rr;
-						$tmp = '';
-						if (isset($indexlist[$k])){
-							$tmp = ' drop key `' . $k . '`, ';
-							unset($indexlist[$k]);
-						}
-						if (is_array($r))
-							$r = implode('`,`', $r);
-						if (!isset($rDATA[$k]['@index']))		$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
-						else		$rDATA[$k]['@index'] .= ', ';
-						$rDATA[$k]['@index'] .= ' ' . $tmp . ' ADD UNIQUE KEY `' . $k . '` (`' . $r . '`)';
-					} else {
-						unset($uniqlist[$k]);
-					}
-				}
-			}
-			if (count($uniqlist)) {
-				foreach ($uniqlist as $k => $r) {
-					if (!isset($rDATA[$k]['@index']))		$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
-					else		$rDATA[$k]['@index'] .= ', ';
-					$rDATA[$k]['@index'] .= ' drop key ' . $k . ' ';
-					unset($uniqlistR[$k]);
-				}
-			}
-			//$uniqlistR - Действующие уник ключи в итоге
-			// CREATE INDEX KEY
-			if ($MODUL->owner)
-				$MODUL->index_fields[$MODUL->owner_name] = $MODUL->owner_name;
-			if ($MODUL->mf_istree)
-				$MODUL->index_fields[$MODUL->mf_istree] = $MODUL->mf_istree;
-			if ($MODUL->mf_actctrl)
-				$MODUL->index_fields[$MODUL->mf_actctrl] = $MODUL->mf_actctrl;
-			if ($MODUL->mf_ordctrl)
-				$MODUL->index_fields[$MODUL->mf_ordctrl] = $MODUL->mf_ordctrl;
-			if (count($MODUL->index_fields))
-				foreach ($MODUL->index_fields as $k => $r) {
-					if (!isset($indexlist[$k]) and !isset($uniqlistR[$k])) {
-						if (!isset($rDATA[$k]['@index']))		$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
-						else		$rDATA[$k]['@index'] .= ', ';
-						$rDATA[$k]['@index'] .= ' add index `' . $k . '` (`' . $r . '`)';
-					} else {
-						unset($indexlist[$k]);
-					}
-				}
-			if (count($indexlist)) {
-				foreach ($indexlist as $k => $r) {
-					if (!isset($rDATA[$k]['@index']))		$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
-					else		$rDATA[$k]['@index'] .= ', ';
-					$rDATA[$k]['@index'] .= ' drop key ' . $k . ' ';
-				}
-			}
-			$rDATA['Оптимизация']['@newquery'] = 'OPTIMIZE TABLE `' . $MODUL->tablename . '`';
-		}
-
+		$rDATA = self::_checkTable($MODUL);
 		if (count($rDATA))
 			$rDATA = array($MODUL->_cl => $rDATA);
 		if (count($MODUL->Achilds))
-			foreach ($MODUL->Achilds as $k => $r) {
-				$temp = self::_checkmodstruct($k,$MODUL);
+			foreach ($MODUL->childs as $childs) {
+				$temp = self::_checkTableRev($childs);
 				if ($temp and count($temp))
 					$rDATA = array_merge($rDATA, $temp);
 			}
-
 		return $rDATA;
 	}
 
-	/**
-	 * Проверка существования директории и прав записи в него, и создание
-	 *
-	 * @param object $MODUL Текщий объект класса
-	 * @param string $dir Проверяемая дирректория
-	 * @return bool Результат
-	 */
-	static function _checkdir($dir) {
-		if (!file_exists($dir)) {
-			if (!file_exists(dirname($dir))) {
-				self::_checkdir(dirname($dir));
+	static function _checkTable(&$MODUL) {
+		$rDATA = array();
+		if (!$MODUL->tablename) {
+			$rDATA['Создание таблицы']['@mess'][] = array( 'notice', 'Модуль `'.$MODUL->caption.'`['.$MODUL->_cl.'] не использует базу данных.' );
+			return $rDATA;
+		}
+		$result = $MODUL->SQL->execSQL('SHOW TABLES LIKE \'' . $MODUL->tablename . '\''); // checking table exist
+		if ($result->err) {
+			$rDATA['Создание таблицы']['@mess'][] = array( 'error',$MODUL->getMess('_big_err') );
+			return $rDATA;
+		}
+		$MODUL->setSystemFields();// установка системных полей
+		$MODUL->_preInstall();
+		if (!$result->num_rows()) {
+			if (isset($_POST['sbmt'])) {
+				if (!self::_creatTable($MODUL)) {
+					$rDATA['Создание таблицы']['@mess'][] = array( 'error','Для модуля `'.$MODUL->caption.'` не удалось создать таблицу.' );
+				}
+				else {
+					if (count($MODUL->def_records) and !self::_insertDefault($MODUL)) {
+						self::deleteTable($MODUL);
+						$rDATA['Создание таблицы']['@mess'][] = array( 'error', 'Для модуля `'.$MODUL->caption.'` не удалось записать дефолтные данные, и поэтому таблица не будет создана.' );
+					} else
+						$rDATA['Создание таблицы']['@mess'][] = array( 'ok', 'Для модуля `'.$MODUL->caption.'` успешно создана таблица.' );
+				}
 			}
-			if (!mkdir($dir, 0755))
-				return static_main::_message('Cannot create directory <b>' . $dir . '</b>', 1);
+			else {
+				$rDATA['Создание таблицы']['@mess'][] = array( 'alert', $MODUL->getMess('_install_info',array($MODUL->_cl.'['.$MODUL->tablename.']')) );
+			}
+			return $rDATA;
 		}
-		else {
-			$f = fopen($dir . '/t_e_s_t', 'w');
-			if (!$f)
-				return static_main::_message('Cannot create file in directory <b>' . $dir . '</b>', 1);
 
-			$err = fwrite($f, 'zzz') == -1;
-			fclose($f);
-			unlink($dir . '/t_e_s_t');
+		$result = $MODUL->SQL->execSQL('SHOW COLUMNS FROM `' . $MODUL->tablename . '`');
+		while ($COLUMNS = $result->fetch_array()) {
+			$fldname = mb_strtolower($COLUMNS['Field']);
+			if (isset($MODUL->fields[$fldname])) {
+				$MODUL->fields[$fldname]['inst'] = '1';
 
-			if ($err)
-				return static_main::_message('Cannot write/read file in directory <b>' . $dir . '</b>', 1);
+				$currentFields = $MODUL->SQL->_fldformerSQL($COLUMNS);
+				$temp_currentFields = trim( str_replace(array('"', "'", chr(194).chr(160),"\xC2xA0","\n"), array('', '', ' ', ' ', ' '), mb_strtolower($currentFields)) );
+
+				list($newFields,$mess) = $MODUL->SQL->_fldformer($fldname, $MODUL->fields[$fldname]);
+				$temp_newFields = trim(str_replace(array('"', "'", chr(194).chr(160),"\xC2xA0","\n"), array('', '', ' ', ' ', ' '), mb_strtolower($newFields)));
+
+				if (isset($MODUL->fields[$fldname]['type']) and $temp_currentFields!=$temp_newFields) {
+					print_r($temp_currentFields);print_r('  *  ');print_r($temp_newFields);print_r('  ---------------   ');
+					$rDATA[$fldname]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` CHANGE `' . $fldname . '` ' . $newFields;
+					$rDATA[$fldname]['@oldquery'] = $currentFields;
+				}
+				if(count($mess)) {
+					if(!isset($rDATA[$fldname]['@mess']))
+						$rDATA[$fldname]['@mess'] = $mess;
+					else
+						$rDATA[$fldname]['@mess'] = array_merge($rDATA[$fldname]['@mess'],$mess);
+				}
+			} elseif (isset($MODUL->attaches[$fldname]))
+				$MODUL->attaches[$fldname]['inst'] = '1';
+			elseif (isset($MODUL->memos[$fldname]))
+				$MODUL->memos[$fldname]['inst'] = '1';
+			else
+				$rDATA[$fldname]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` DROP `' . $fldname . '`';
 		}
-		return true;
+
+		if (isset($MODUL->fields))
+			foreach ($MODUL->fields as $key => $param) {
+				if (!isset($param['inst'])) {
+					$rDATA[$key]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD ' . $MODUL->SQL->_fldformer($key, $param);
+				}
+			}
+
+		if (isset($MODUL->attaches))
+			foreach ($MODUL->attaches as $key => $param) {
+				if (!isset($param['inst']))
+					$rDATA[$key]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD ' . $MODUL->SQL->_fldformer($key, $MODUL->attprm);
+				if (!self::_checkdir($MODUL->_CFG['_PATH']['path'].$MODUL->getPathForAtt($key))) {
+					$rDATA[$key]['@mess'][] = array( 'error',$MODUL->getMess('_checkdir_error', array($MODUL->getPathForAtt($key))) );
+				}
+				$rDATA['@reattach'] = true;
+			}
+
+		if (isset($MODUL->memos))
+			foreach ($MODUL->memos as $key => $param) {
+				if (!self::_checkdir($MODUL->_CFG['_PATH']['path'].$MODUL->getPathForMemo($key))) {
+					$rDATA[$key]['@mess'][] = array( 'error',$MODUL->getMess('_recheck_err') );
+				}
+			}
+
+
+		$indexlist = $uniqlistR = $uniqlist = array();
+		$primary = '';
+		$result = $MODUL->SQL->execSQL('SHOW INDEX FROM `' . $MODUL->tablename . '`');
+		while ($data = $result->fetch_array(MYSQL_NUM)) {
+			if ($data[2] == 'PRIMARY') //только 1 примарикей
+				$primary = $data[4];
+			elseif (!$data[1]) //!NON_unique
+				$uniqlist[$data[2]][$data[4]] = $data[4];
+			else
+				$indexlist[$data[2]][$data[4]] = $data[4];
+		}
+
+		// CREATE PRIMARY KEY
+		if (isset($MODUL->fields['id']) and !$primary) {
+			$rDATA['id']['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD PRIMARY KEY(id)';
+			$primary = 'id';
+		}
+		// CREATE UNIQ KEY
+		$uniqlistR = $uniqlist;
+		if (isset($MODUL->unique_fields) and count($MODUL->unique_fields)) {
+			foreach ($MODUL->unique_fields as $k => $r) {
+				if (!is_array($r))
+					$r = array($r);
+				if (!isset($uniqlist[$k])) {// and !isset($uniqlistR[$k])
+					foreach ($r as $kk => $rr)
+						$uniqlistR[$k][$kk] = $rr;
+					$tmp = '';
+					if (isset($indexlist[$k])){
+						$tmp = ' drop key `' . $k . '`, ';
+						unset($indexlist[$k]);
+					}
+					if (is_array($r))
+						$r = implode('`,`', $r);
+					if (!isset($rDATA[$k]['@index']))		$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
+					else		$rDATA[$k]['@index'] .= ', ';
+					$rDATA[$k]['@index'] .= ' ' . $tmp . ' ADD UNIQUE KEY `' . $k . '` (`' . $r . '`)';
+				} else {
+					unset($uniqlist[$k]);
+				}
+			}
+		}
+		if (count($uniqlist)) {
+			foreach ($uniqlist as $k => $r) {
+				if (!isset($rDATA[$k]['@index']))		$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
+				else		$rDATA[$k]['@index'] .= ', ';
+				$rDATA[$k]['@index'] .= ' drop key ' . $k . ' ';
+				unset($uniqlistR[$k]);
+			}
+		}
+		//$uniqlistR - Действующие уник ключи в итоге
+		// CREATE INDEX KEY
+		if ($MODUL->owner)
+			$MODUL->index_fields[$MODUL->owner_name] = $MODUL->owner_name;
+		if ($MODUL->mf_istree)
+			$MODUL->index_fields[$MODUL->mf_istree] = $MODUL->mf_istree;
+		if ($MODUL->mf_actctrl)
+			$MODUL->index_fields[$MODUL->mf_actctrl] = $MODUL->mf_actctrl;
+		if ($MODUL->mf_ordctrl)
+			$MODUL->index_fields[$MODUL->mf_ordctrl] = $MODUL->mf_ordctrl;
+		if (count($MODUL->index_fields))
+			foreach ($MODUL->index_fields as $k => $r) {
+				if (!isset($indexlist[$k]) and !isset($uniqlistR[$k])) {
+					if (!isset($rDATA[$k]['@index']))		$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
+					else		$rDATA[$k]['@index'] .= ', ';
+					$rDATA[$k]['@index'] .= ' add index `' . $k . '` (`' . $r . '`)';
+				} else {
+					unset($indexlist[$k]);
+				}
+			}
+		if (count($indexlist)) {
+			foreach ($indexlist as $k => $r) {
+				if (!isset($rDATA[$k]['@index']))		$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
+				else		$rDATA[$k]['@index'] .= ', ';
+				$rDATA[$k]['@index'] .= ' drop key ' . $k . ' ';
+			}
+		}
+		return $rDATA;
 	}
+
 
 	static function _xmlFormConf(&$MODUL) {
 		$MODUL->form = array();
@@ -597,35 +406,36 @@ class static_tools {
 		$flag = 0;
 		$MODUL->form = $mess = array();
 		if (!static_main::_prmModul($MODUL->_cl, array(14)))
-			$mess[] = array('name' => 'error', 'value' => 'Access denied');
+			$mess[] = array( 'error','Access denied');
 		else {
 			$check_result = $MODUL->_checkmodstruct();
 
 			if (isset($_POST['sbmt'])) {
 				$flag = 1;
-				foreach ($check_result as $table => $row) {
-					if (isset($row['@reattach']) and isset($_POST['query_'.$table]['reattach'])) {
-						if (is_object($row['@reattach']) and self::_reattaches($row['@reattach']))
-							$mess[] = array('name' => 'ok', 'value' => '<b>' . $table . '</b> - ' . $MODUL->getMess('_file_ok'));
+				foreach ($check_result as $_cl => $row) {
+					if (isset($row['@reattach']) and isset($_POST['query_'.$_cl]['reattach'])) {
+						_new_class($_cl, $MODUL_R);
+						if (self::_reattaches($MODUL_R))
+							$mess[] = array( 'ok', '<b>' . $_cl . '</b> - ' . $MODUL->getMess('_file_ok'));
 						else {
-							$mess[] = array('name' => 'error', 'value' => '<b>' . $table . '</b> - ' . $MODUL->getMess('_file_err'));
+							$mess[] = array( 'error','<b>' . $_cl . '</b> - ' . $MODUL->getMess('_file_err'));
 							$flag = -1;
 						}
 						unset($row['@reattach']);
 					}
 					foreach ($row as $kk => $rr) {
 						if(is_array($rr)) {
-							if(isset($rr['@newquery']) and isset($_POST['query_'.$table][$kk.'@newquery'])) {
+							if(isset($rr['@newquery']) and isset($_POST['query_'.$_cl][$kk.'@newquery'])) {
 								$result = $MODUL->SQL->execSQL($rr['@newquery']);
 								if ($result->err) {
-									$mess[] = array('name' => 'error', 'value' => 'Error new query(' . $rr['@newquery'] . ')');
+									$mess[] = array( 'error','Error new query(' . $rr['@newquery'] . ')');
 									$flag = -1;
 								}
 							}
-							if(isset($rr['@index']) and isset($_POST['query_'.$table][$kk.'@index'])) {
+							if(isset($rr['@index']) and isset($_POST['query_'.$_cl][$kk.'@index'])) {
 									$result = $MODUL->SQL->execSQL($rr['@index']);
 									if ($result->err) {
-										$mess[] = array('name' => 'error', 'value' => 'Error index query(' . $rr['@index']. ')');
+										$mess[] = array( 'error','Error index query(' . $rr['@index']. ')');
 										$flag = -1;
 									}
 							}
@@ -633,9 +443,9 @@ class static_tools {
 					}//end foreach
 				}
 				if (count($_POST)<=1)
-					$mess[] = array('name' => 'alert', 'value' => $MODUL->getMess('_recheck_have_nothing'));
+					$mess[] = array( 'alert', $MODUL->getMess('_recheck_have_nothing'));
 				if ($flag)
-					$mess[] = array('name' => 'ok', 'value' => $MODUL->getMess('_recheck_ok'));
+					$mess[] = array( 'ok', $MODUL->getMess('_recheck_ok'));
 				//'  <a href="" onclick="window.location.reload();return false;">Обновите страницу.</a>'
 			}
 			else {
@@ -650,7 +460,7 @@ class static_tools {
 						'caption' => '<a href="#" onclick="return invert_select(\'form\');">Инвертировать выделение</a>',
 					);
 
-					foreach ($check_result as $table => $row) {
+					foreach ($check_result as $_cl => $row) {
 						$valuelist = $message = array();
 						if (is_array($row) and count($row)) {
 							if (isset($row['@reattach'])) {
@@ -677,8 +487,8 @@ class static_tools {
 							}
 							if (count($valuelist)) {
 								$message = array('messages'=>$message);
-								$MODUL->form['query_'.$table]  = array(
-									'caption'=>'Модуль '.$table,
+								$MODUL->form['query_'.$_cl]  = array(
+									'caption'=>'Модуль '.$_cl,
 									'type'=>'checkbox',
 									'valuelist'=>$valuelist,
 									'comment' => $HTML->transformPHP($message, 'messages'),
@@ -688,7 +498,7 @@ class static_tools {
 								$mess = array_merge($mess,$message);
 						}
 						else
-							$mess[] = array('name' => 'error', 'value' => 'Error data (' . $table . ' - ' . print_r($row, true) . ')');
+							$mess[] = array( 'error','Error data (' . $_cl . ' - ' . print_r($row, true) . ')');
 					}
 
 					$MODUL->form['sbmt'] = array(
@@ -696,11 +506,57 @@ class static_tools {
 						'value' => $MODUL->getMess('_submit')
 					);
 				} else
-					$mess[] = array('name' => 'ok', 'value' => $MODUL->getMess('_recheck_have_nothing'));
+					$mess[] = array( 'ok', $MODUL->getMess('_recheck_have_nothing'));
 			}
 		}
 		$DATA = array('form' => $MODUL->form, 'messages' => $mess);
 		return Array($flag,$DATA);
+	}
+	/**
+	 * Проверка структуры модуля
+	 *
+	 *
+	 * @param object $MODUL Текщий объект класса
+	 * @return array
+	 */
+	static function _checkmodstruct($Mid,&$OWN = NULL) {
+		$rDATA = array();
+			//'mess'=>array(),
+			//'oldquery'=>array(),
+			//'newquery'=>array()
+
+		if (!_new_class('modulprm', $MODULPRM)) {
+			$rDATA['Ошибка']['@mess'][] = array( 'error','Ошибка инициализации модуля `modulprm`');
+			return array($Mid => $rDATA);
+		}
+
+		list($MODUL,$rDATA['modulprm']['@mess']) = $MODULPRM->ForUpdateModulInfo($Mid,$OWN);
+		if ($MODUL===false) {
+			$rDATA['Ошибка']['@mess'][] = array( 'error','Ошибка инициализации модуля `'.$Mid.'`');
+			return array($Mid => $rDATA);
+		}
+		elseif(!$MODUL->tablename) {
+			$rDATA['Ахтунг']['@mess'][] = array( 'alert', 'Модуль `'.$MODUL->caption.'`['.$Mid.'] не использует базу данных.');
+			return array($Mid => $rDATA);
+		}
+		elseif(!isset($MODULPRM->data[$Mid]) or $MODULPRM->data[$Mid][$MODULPRM->mf_actctrl]) {
+			// синонимы для типов полей
+			$temp = self::_checkTable($MODUL);
+			if ($temp and count($temp))
+				$rDATA = array_merge($rDATA, $temp);
+			$rDATA['Оптимизация']['@newquery'] = 'OPTIMIZE TABLE `' . $MODUL->tablename . '`';
+		}
+
+		if (count($rDATA))
+			$rDATA = array($Mid => $rDATA);
+		if (count($MODUL->Achilds))
+			foreach ($MODUL->Achilds as $k => $r) {
+				$temp = self::_checkmodstruct($k,$MODUL);
+				if ($temp and count($temp))
+					$rDATA = array_merge($rDATA, $temp);
+			}
+
+		return $rDATA;
 	}
 
 	/**
@@ -785,14 +641,101 @@ class static_tools {
 		$putFile = "<?\n\t//create time " . date('Y-m-d H:i') . "\n\t".implode("\n\t", $putFile)."\n";
 		//Записать в конфиг все данные которые отличаются от данных по умолчанию
 		if (!file_put_contents($_CFG['_PATH']['wepconf'] . '/config/config.php', $putFile)) {
-			$mess[] = array('name' => 'error', 'value' => 'Ошибка записи настроек. Нет доступа к фаилу');
+			$mess[] = array( 'error','Ошибка записи настроек. Нет доступа к фаилу');
 		} else {
 			$fl = true;
 			if(isset($SetDataCFG['sql']))
-				$mess[] = array('name' => 'ok', 'value' => 'Подключение к БД успешно.');
-			$mess[] = array('name' => 'ok', 'value' => 'Конфигурация успешно сохранена.');
+				$mess[] = array( 'ok', 'Подключение к БД успешно.');
+			$mess[] = array( 'ok', 'Конфигурация успешно сохранена.');
 		}
 		return array($fl,$mess);
 	}
 
+	static function _creatTable(&$MODUL) {
+		$fld = array();
+		if (count($MODUL->fields))
+			foreach ($MODUL->fields as $key => $param)
+				list($fld[],$mess) = $MODUL->SQL->_fldformer($key, $param);
+		if (count($MODUL->attaches))
+			foreach ($MODUL->attaches as $key => $param)
+				list($fld[],$mess) = $MODUL->SQL->_fldformer($key, $MODUL->attprm);
+		/*foreach($MODUL->memos as $key => $param)
+		  $fld[]= $MODUL->SQL->_fldformer($key, $MODUL->mmoprm);
+		 */
+		$fld[] = 'PRIMARY KEY(id)';
+
+		if (isset($MODUL->unique_fields) and count($MODUL->unique_fields)) {
+			foreach ($MODUL->unique_fields as $k => $r) {
+				if (is_array($r))
+					$r = implode(',', $r);
+				$fld[] = 'UNIQUE KEY ' . $k . ' (' . $r . ')';
+			}
+		}
+		if (isset($MODUL->index_fields) and count($MODUL->index_fields)) {
+			foreach ($MODUL->index_fields as $k => $r) {
+				if (!isset($MODUL->unique_fields[$k])) {
+					if (is_array($r))
+						$r = implode(',', $r);
+					$fld[] = 'KEY ' . $k . ' (' . $r . ')';
+				}
+			}
+		}
+		$query = 'CREATE TABLE `' . $MODUL->tablename . '` (' . implode(',', $fld) . ') ENGINE=MyISAM DEFAULT CHARSET=' . $MODUL->_CFG['sql']['setnames'] . ' COMMENT = "' . $MODUL->ver . '"';
+		// to execute query
+		$result = $MODUL->SQL->execSQL($query);
+		if ($result->err) {
+			return false;
+		}
+		return true;
+	}
+
+	static function deleteTable(&$MODUL) {
+		return $MODUL->SQL->execSQL('DROP TABLE `' . $MODUL->tablename . '`');
+	}
+	/**
+	 * Запись дефолтных данных
+	 * @return <type>
+	 */
+	static function _insertDefault(&$MODUL) {
+		foreach ($MODUL->def_records as $row) {
+			if (!$MODUL->_add_item($row)) {
+				//return static_main::_message('error','Error add default record into `'.$MODUL->tablename.'`',$MODUL->_cl);
+				return false;
+			}
+		}
+		//return static_main::_message('ok','Insert default records into table ' . $MODUL->tablename . '.',$MODUL->_cl);
+		return true;
+	}
+
+	/**
+	 * Проверка существования директории и прав записи в него, и создание
+	 *
+	 * @param object $MODUL Текщий объект класса
+	 * @param string $dir Проверяемая дирректория
+	 * @return bool Результат
+	 */
+	static function _checkdir($dir) {
+		if (!file_exists($dir)) {
+			if (!file_exists(dirname($dir))) {
+				self::_checkdir(dirname($dir));
+			}
+			if (!mkdir($dir, 0755))
+				return static_main::_message('error','Cannot create directory <b>' . $dir . '</b>');
+		}
+		else {
+			$f = fopen($dir . '/t_e_s_t', 'w');
+			if (!$f)
+				return static_main::_message('error','Cannot create file in directory <b>' . $dir . '</b>');
+
+			$err = fwrite($f, 'zzz') == -1;
+			fclose($f);
+			unlink($dir . '/t_e_s_t');
+
+			if ($err)
+				return static_main::_message('error','Cannot write/read file in directory <b>' . $dir . '</b>');
+		}
+		return true;
+	}
+
+// END static class
 }

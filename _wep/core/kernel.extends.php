@@ -586,7 +586,7 @@ abstract class kernel_extends {
 
 	public function _sorting($arr) {
 		if (!$this->mf_ordctrl)
-			return static_main::_message('Sorting denied!', 1);
+			return static_main::_message('alert','Sorting denied!');
 		foreach ($arr as $r) {
 			$id = str_replace($this->_cl . '_', '', $r['id']);
 			$id2 = str_replace($this->_cl . '_', '', $r['id2']);
@@ -630,7 +630,7 @@ abstract class kernel_extends {
 			}
 		}
 
-		return static_main::_message('Sorting the module `' . $this->caption . '` successful.', 3);
+		return static_main::_message('notice','Sorting the module `' . $this->caption . '` successful.');
 	}
 
 	/*	 * *********************** EVENTS ************************ */
@@ -741,7 +741,6 @@ abstract class kernel_extends {
 	}
 
 	function _preInstall() {
-		$this->setSystemFields();
 	}
 
 	function setSystemFields() {

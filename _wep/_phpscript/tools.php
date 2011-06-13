@@ -290,7 +290,7 @@ function getphpinfo() {
 $dataF = array(
 	'tools_step1'=>'<span class="tools_item">Настройки сайта</span>',
 	'tools_step2'=>'<span class="tools_item">Проверка структуры сайта</span>',
-	'tools_step3'=>'<span class="tools_item">Установка модулей и удаление, со всеми патрохами.</span>',
+	'tools_step3'=>'<span class="tools_item">Установка модулей и удаление.</span>',
 	'tools_cron'=>'<span class="tools_item">Настройка Крона</span>',
 	'tools_worktime'=>'<span class="tools_item">Режим "технические работы"</span>',
 	'getphpinfo'=>'<span class="tools_item">PHPINFO</span>',

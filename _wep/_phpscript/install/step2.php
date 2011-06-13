@@ -14,9 +14,8 @@ if(!isset($var_const))
 		'mess'=>array(),
 		'sbmt'=>'Сохранить'
 	);
-include_once $_CFG['_PATH']['extcore'] . '/modulprm.class/modulprm.class.php';
+$_CFG['modulprm'] = array();
 _new_class('modulprm', $MODUL);
-
 //Форма установки модулей
 list($res, $DATA) = static_tools::_toolsCheckmodul($MODUL);
 if ($res == 1) {
