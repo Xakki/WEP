@@ -74,7 +74,7 @@ class bug_class extends kernel_extends {
 	
 	function insert2bd()
 	{
-		if (!empty($this->bugs)) {
+		if (!empty($this->bugs) and isset($this->_CFG['modulprm'][$this->_cl])) {
 			if (isset($_SESSION['user']['id']))
 				$creater_id = $_SESSION['user']['id'];
 			else

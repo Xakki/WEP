@@ -56,6 +56,97 @@
 			$this->sql_err[] = $err;
 		}
 
+		var $alias_types = array(
+				'tinyint(1)' => 'bool',
+			);
+			// типы полей, число - это значение, которое запишется в базу по умолчанию, если не указывать ширину явно
+			// false - означает, что для данного типа поля в mysql ширина не указывается
+		var $types_width = array(
+				'tinyblob' => false,
+				'tinytext' => false,
+				'blob' => false,
+				'text' => false,
+				'mediumblob' => false,
+				'mediumtext' => false,
+				'longblob' => false,
+				'longtext' => false,
+				'date' => false,
+				'datetime' => false,
+				'timestamp' => false,
+				'time' => false,
+				'float' => '8,2',
+				'double' => false,
+				'precision' => false,
+				'real' => false,
+				'int' => 11,
+				'varchar' => 255,
+			);
+			// типы полей, в которых нет атрибута default
+		var $types_without_default = array(
+				'tinytext' => true,
+				'text' => true,
+				'mediumtext' => true,
+				'longtext' => true,
+			);
+
+		function _fldformer($key, $param) {
+			$mess = array();
+			if (isset($param['attr']) and stristr($param['attr'], 'default')) {
+				$mess[] = array( 'alert', 'Пар-р default прописан в ключе attr. Для корректной работы необходимо прописать его в отдельном элементе с ключом `default`' );
+			}
+			if (isset($param['default']) &&	isset($this->types_without_default[$param['type']])) {
+				$mess[] = array( 'alert', 'Параметр `default` для поля `'.$key.'` указывать не обязательно.');
+				unset($param['default']);
+			}
+			if (isset($param['width']) and isset($this->types_width[$param['type']]) && $this->types_width[$param['type']] === false) {
+				$mess[] = array( 'alert', 'Параметр `width` для поля `'.$key.'` указывать не обязательно.');
+				unset($param['width']);
+			}
+			elseif(!isset($param['width']) and isset($this->types_width[$param['type']]) && $this->types_width[$param['type']] !== false) {
+				$mess[] = array( 'alert', 'Параметр `width` для поля `'.$key.'` необходим. По умолчанию будет установленно значение `'.$this->types_width[$param['type']].'`');
+				$param['width']=$this->types_width[$param['type']];
+			}
+
+			if(isset($this->alias_types[$param['type']]))
+				$param['type'] = $this->alias_types[$param['Type']];
+
+			$m = '`' . $key . '` ' . $param['type'];
+			if (isset($param['width']) && is_array($param['width'])) {
+				if ($param['type'] == 'enum')
+					$m.= '("' . implode('","', array_keys($param['width'])) . '")';
+			}
+			elseif (isset($param['width']) && $param['width'] != '')
+				$m.= '(' . $param['width'] . ')';
+			if( isset($param['attr']))
+				$m.=' ' . $param['attr'];
+			elseif(strpos($param['default'],'NULL')===false and $param['type']!='text')
+				$m.=' NOT NULL';
+			if(isset($param['default']))
+				$m.=' DEFAULT \'' . $param['default'] . '\'';
+			if(!isset($param['default']) and $param['type']=='timestamp')
+				$m.=' DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP';
+			return array($m,$mess);
+		}
+
+		function _fldformerSQL($COLUMNS) {
+			if(isset($this->alias_types[$COLUMNS['Type']]))
+				$COLUMNS['Type'] = $this->alias_types[$COLUMNS['Type']];
+			$temp = '`' . $COLUMNS['Field'] . '` ' . $COLUMNS['Type'];
+			if($COLUMNS['Null']=='NO')
+				$temp .= ' NOT NULL';
+			if($COLUMNS['Null']=='YES' and $COLUMNS['Type']!='text')
+				$temp .= ' DEFAULT NULL';
+			elseif(!is_null($COLUMNS['Default'])) {
+				if($COLUMNS['Type']=='timestamp')
+					$temp .= ' DEFAULT '.$COLUMNS['Default'];
+				else
+					$temp .= ' DEFAULT \''.$COLUMNS['Default'].'\'';
+			}
+			if($COLUMNS['Extra'])
+				$temp .= ' '.$COLUMNS['Extra'];
+			return $temp;
+		}
+
 	}
 
 	class query {

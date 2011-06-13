@@ -59,9 +59,11 @@ $_CFG['site'] = array(// для сайта
 /* END_MAIN_CFG */
 
 $_CFG['require_modul'] = array(
-	'bug' => true,
 	'modulprm' => true,
-	'mail' => true
+	'ugroup' => true,
+	'bug' => true,
+	'mail' => true,
+	'pg' => true,
 );
 $_CFG['singleton'] = array(); // Массив объектов которые не клонируются
 $_CFG['hook'] = array(); // События
@@ -546,17 +548,29 @@ function _new_class($name, &$MODUL, &$OWNER = NULL) {
 			$name = $_CFG['modulprm_ext'][$name][0];
 		$class_name = $name . "_class";
 		try {
-			$getparam = array_slice(func_get_args(), 2);
-			$obj = new ReflectionClass($class_name);
-			//$pClass = $obj->getParentClass();
-			$MODUL = $obj->newInstanceArgs($getparam);
-			/* extract($getparam,EXTR_PREFIX_ALL,'param');
-			  if(count($getparam)) {
-			  $p = '$param'.implode(',$param',array_keys($getparam)).'';
-			  } else $p = '';
-			  eval('$MODUL = new '.$class_name.'('.$p.');'); */
-			if ($MODUL)
-				return true;
+			if(!class_exists($class_name,false)) {
+				if ($file = _modulExists($class_name)) {
+					require_once($file);
+				}
+				else {
+					$ret = static_main::includeModulFile($name,$OWNER);
+					require_once($ret['file']);
+				}
+			}
+			if(class_exists($class_name,false)) {
+				$getparam = array_slice(func_get_args(), 2);
+				$obj = new ReflectionClass($class_name);
+				//$pClass = $obj->getParentClass();
+				$MODUL = $obj->newInstanceArgs($getparam);
+				/* extract($getparam,EXTR_PREFIX_ALL,'param');
+				  if(count($getparam)) {
+				  $p = '$param'.implode(',$param',array_keys($getparam)).'';
+				  } else $p = '';
+				  eval('$MODUL = new '.$class_name.'('.$p.');'); */
+				if ($MODUL)
+					return true;
+			}
+				throw new Exception('Can`t init `' . $class_name . '` modul ');
 		} catch (Exception $e) {
 			trigger_error($e->getMessage(), E_USER_WARNING);
 		}
@@ -569,29 +583,12 @@ function _new_class($name, &$MODUL, &$OWNER = NULL) {
  */
 
 function __autoload($class_name) { //автозагрузка модулей
-	/* global $_CFG;
-	  if($class_name=='sql') {
-	  require_once($_CFG['_PATH']['core'] . 'sql.php');
-	  return true;
-	  }
-	  if($class_name=='kernel_extends') {
-	  require_once($_CFG['_PATH']['core'] . 'kernel.extends.php');
-	  return true;
-	  }
-	  if($class_name=='static_main') {
-	  require_once($_CFG['_PATH']['core'] . 'static.main.php');
-	  return true;
-	  }
-	  if($class_name=='modulprm_class') {
-	  require_once($_CFG['_PATH']['extcore'] . 'modulprm.class/modulprm.class.php');
-	  return true;
-	  } */
 	if ($file = _modulExists($class_name)) {
 		require_once($file);
 	}
 	else
-	//trigger_error('Can`t init `'.$class_name.'` modul ', E_USER_WARNING);
-		throw new Exception('Can`t init `' . $class_name . '` modul ');
+		trigger_error('Can`t init `'.$class_name.'` modul ', E_USER_WARNING);
+		//throw new Exception('Can`t init `' . $class_name . '` modul ');
 }
 
 /**
@@ -604,13 +601,12 @@ function __autoload($class_name) { //автозагрузка модулей
  */
 function _modulExists($class_name) {
 	global $_CFG;
-	$file = $fileS = false;
 	$class_name = explode('_', $class_name);
 
-	$fileS = $_CFG['_PATH']['core'] . $class_name[0] . (isset($class_name[1]) ? '.' . $class_name[1] : '') . '.php';
+	$file = $_CFG['_PATH']['core'] . $class_name[0] . (isset($class_name[1]) ? '.' . $class_name[1] : '') . '.php';
 	if (!isset($_CFG['modulprm'][$class_name[0]])) {
-		if (file_exists($fileS))
-			return $fileS;
+		if (file_exists($file))
+			return $file;
 	}
 
 	static_main::_prmModulLoad();
@@ -620,9 +616,7 @@ function _modulExists($class_name) {
 		if ($file and file_exists($file))
 			return $file;
 	}
-
-	$ret = static_main::includeModulFile($class_name[0]);
-	return $ret['file'];
+	return false;
 }
 
 

@@ -99,7 +99,7 @@ final class modulprm_class extends kernel_extends {
 					$entry = substr($entry, 0, $pos);
 					if ($entry != '') {
 						if (isset($DATA[$k . '_' . $entry])) {
-							$mess[] = array('name' => 'error', 'value' => 'Ошибка. Модуль с таким названием `' . $entry . '` уже имеется в системных модулях');
+							$mess[] = array('error','Ошибка. Модуль с таким названием `' . $entry . '` уже имеется в системных модулях');
 							continue;
 						}
 						if (count($_POST)) {
@@ -113,7 +113,7 @@ final class modulprm_class extends kernel_extends {
 						else
 							$val = false;
 						$DATA[$k . '_' . $entry] = array(
-							'caption' => $this->_enum['typemodul'][$k] . ' <b>' . $entry . '</b>',
+							'caption' => $this->_enum['typemodul'][$k] . ' <b>' . $entry . '</b>'.(isset($this->data[$entry])?' <i>Включено</i>':''),
 							'comment' => '',
 							'type' => 'checkbox',
 							'value' => $val,
@@ -121,7 +121,12 @@ final class modulprm_class extends kernel_extends {
 							'_parent' => '',
 							'_type' => $k
 						);
-						$resData = $this->checkClassStruct($entry);
+						$ret = static_main::includeModulFile($entry);
+						if($ret['file']) require_once($ret['file']);
+						if(class_exists($entry. '_class',false)) {
+							$resData = $this->checkClassStruct($entry);
+						}else
+							$DATA[$k . '_' . $entry]['comment'] .= 'Не возможно подключить модуль. ';
 						if ($resData['parent']) {
 							$DATA[$k . '_' . $entry]['comment'] .= '<div>Зависим от ' . $resData['parent'] . '</div>';
 							$DATA[$k . '_' . $entry]['_parent'] = $resData['parent'];
@@ -157,13 +162,8 @@ final class modulprm_class extends kernel_extends {
 							$res = -1;
 							continue;
 						}
-						/* if (!_new_class($r['_entry'], $MODUL, $MODUL->null, true)) {
-						  $mess[] = array('name' => 'error', 'value' => 'Ошибка запуска модуля `' . $r['_entry'] . '`');
-						  $res = -1;
-						  continue;
-						  } */
 						//Установка модуля
-						list($flag, $mess2) = $this->Minstall($r['_entry']);
+						$rDATA = static_tools::_checkmodstruct($r['_entry']);
 						$mess = array_merge($mess, $mess2);
 						if (!$flag) {
 							$mess[] = array('name' => 'error', 'value' => 'Ошибка установки модуля `' . $r['_entry'] . '`');
@@ -249,20 +249,6 @@ final class modulprm_class extends kernel_extends {
 	 * @param <type> $file
 	 * @return <type>
 	 */
-	public function Minstall($Mid, &$OWN=NULL) {
-		$flag = false;
-		$mess = array();
-		list($MODUL, $mess) = $this->ForUpdateModulInfo($Mid, $OWN);
-		if ($MODUL) {
-			$flag = static_tools::_installTable($MODUL);
-			if ($flag and count($MODUL->Achilds))
-				foreach ($MODUL->Achilds as $k => $r) {
-					list($flag, $mess2) = $this->Minstall($k, $MODUL);
-					$mess = array_merge($mess, $mess2);
-				}
-		}
-		return array($flag, $mess);
-	}
 
 	/**
 	 * Удаление модуля
@@ -294,7 +280,7 @@ final class modulprm_class extends kernel_extends {
 	 */
 	protected function _reinstall(&$MODUL, $type, $file) {
 		$this->Mdelete($MODUL);
-		$this->Minstall($MODUL, $type, $file);
+		static_tools::_checkmodstruct($MODUL->_cl);
 		return true;
 	}
 
@@ -315,10 +301,26 @@ final class modulprm_class extends kernel_extends {
 	//Обновление базы всех модулей
 	public function _checkmodstruct() {
 		$rDATA = array();
-		$this->mDump();
-		foreach ($this->pdata[''] as $k => $r) {
-			$rDATA = array_merge($rDATA, static_tools::_checkmodstruct($k));
+		/*Установка и проверка главных модулей*/
+		$this->_CFG['modulprm'] = array();
+		if(!isset($_POST['sbmt'])) {
+			$_POST['sbmt'] = 1;
+			foreach($this->_CFG['require_modul'] as $k=>$r) {
+				_new_class($k, $MODUL);
+				$temp = static_tools::_checkTableRev($MODUL);
+				if(count($temp))
+					$rDATA = array_merge($rDATA, $temp);
+				//print_r('<pre>');print_r($rDATA);
+			}
+			unset($_POST['sbmt']);
+			unset($this->_CFG['modulprm']);
 		}
+
+		$this->mDump();
+		if(isset($this->pdata['']) and count($this->pdata['']))
+			foreach ($this->pdata[''] as $k => $r) {
+				$rDATA = array_merge($rDATA, static_tools::_checkmodstruct($k));
+			}
 
 		return $rDATA;
 	}
@@ -451,12 +453,13 @@ final class modulprm_class extends kernel_extends {
 		if (!isset($this->guserData)) {
 			$this->guserData = array();
 			_new_class('ugroup', $UGROUP);
-			$result = $this->SQL->execSQL('SELECT id,name FROM ' . $UGROUP->tablename . ' WHERE level>0'); //админов не учитываем
+			$result = $this->SQL->execSQL('SELECT id,name,level FROM ' . $UGROUP->tablename . ' WHERE level>0'); //админов не учитываем
 			if ($result->err)
 				exit();
-			while ($row = $result->fetch_array())
+			while ($row = $result->fetch_array()) {
+				if($row['level']==5) $row['id'] = 0;
 				$this->guserData[$row['id']] = $row;
-			$this->guserData[0] = array('name' => 'Аноним');
+			}
 		}
 		if (!isset($this->modulgrpData)) {
 			$this->modulgrpData = array();

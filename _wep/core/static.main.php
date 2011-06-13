@@ -114,8 +114,11 @@ class static_main {
 			if (!$SQL)
 				$SQL = new sql($_CFG['sql']);
 			$result = $SQL->execSQL('SELECT t1.*,t2.access, t2.mname FROM `' . $_CFG['sql']['dbpref'] . 'modulprm` t1 LEFT Join `' . $_CFG['sql']['dbpref'] . 'modulgrp` t2 on t2.owner_id=t1.id and t2.ugroup_id=' . $ugroup_id . ' ORDER BY typemodul,name');
-			if ($result->err)
+			if ($result->err) {
+				//$_POST['sbmt'] = 1;
+				//static_tools::_checkmodstruct('modulprm');
 				return false;
+			}
 			$_CFG['modulprm'] = array();
 			while ($row = $result->fetch_array()) {
 				if ($row['extend'])
@@ -237,16 +240,11 @@ class static_main {
 		//
 	}
 
-	static function _message($msg, $type=5) {
+	static function _message($type,$msg,$cl='') {
 		global $_CFG;
-		$ar_type = array(0 => E_USER_ERROR, 1 => E_USER_WARNING, 2 => E_USER_NOTICE, 3 => 'modify', 4 => 'notify', 5 => 'ok');
-		if ($type < 3)
-			trigger_error($msg, $ar_type[$type]);
-		elseif (isset($_COOKIE['_showallinfo']) and $_COOKIE['_showallinfo'] > 1)
-			$_CFG['logs']['mess'][] = array($msg, $ar_type[$type]);
-		if ($type < 2)
-			return false;
-		return true;
+		$ar_type = array('error'=>false, 'alert'=>true, 'notice'=>true, 'ok'=>true);
+		$_CFG['logs']['mess'][] = array($type,$msg,$cl);
+		return $ar_type[$type];
 	}
 
 	static function okr($x, $y) {
