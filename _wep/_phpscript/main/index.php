@@ -82,9 +82,9 @@
 
 //if($_SESSION['_showallinfo']) print('main = '.(getmicrotime()-$main2time).'<hr/>'); // для отладки
 	if(!is_array($PGLIST->pageinfo['styles'])) $PGLIST->pageinfo['styles'] = array();
-	if(!is_array($_tpl['styles'])) $_tpl['styles'] = array();
+	if(!isset($_tpl['styles']) or !is_array($_tpl['styles'])) $_tpl['styles'] = array();
 	if(!is_array($PGLIST->pageinfo['script'])) $PGLIST->pageinfo['script'] = array();
-	if(!is_array($_tpl['script'])) $_tpl['script'] = array();
+	if(!isset($_tpl['script']) or !is_array($_tpl['script'])) $_tpl['script'] = array();
 	$_tpl['styles'] = $PGLIST->pageinfo['styles'] + $_tpl['styles'];
 	$_tpl['script'] = $PGLIST->pageinfo['script'] + $_tpl['script'];
 $_CFG['fileIncludeOption'] = array(); // чтобы автоматом не подключались стили и скрптыв
