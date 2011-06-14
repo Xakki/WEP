@@ -212,7 +212,7 @@
 			static_main::_message('error','List data `'.$listname.'` not found');
 		}
 		else {
-			static_main::_message('error','List '.current($listname).' not found);
+			static_main::_message('error','List '.current($listname).' not found');
 		}
 
 		return $data;

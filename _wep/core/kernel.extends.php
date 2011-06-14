@@ -1437,6 +1437,7 @@ abstract class kernel_extends {
 			$xml[$param['phptemplate']]['messages'] = array();
 		if (count($messages))
 			$xml[$param['phptemplate']]['messages'] += $messages;
+		$xml[$param['phptemplate']]['_cl'] = $cl;
 
 		return array($xml, $flag);
 	}
@@ -1453,14 +1454,12 @@ abstract class kernel_extends {
 		if (isset($_REQUEST['f_clear_sbmt'])) {
 			unset($_SESSION['filter'][$this->_cl]);
 			$GLOBALS['_RESULT']['eval'] = 'window.location.href = \'' . $_SERVER['HTTP_REFERER'] . '\';';
-			exit();
 		}
 		/**
 		 * задаются параметры фильтра
 		 * */ elseif (isset($_REQUEST['sbmt'])) {
 			$this->setFilter();
 			$GLOBALS['_RESULT']['eval'] = 'window.location.href = \'' . $_SERVER['HTTP_REFERER'] . '\';';
-			exit();
 		}
 		else
 			$this->Formfilter();

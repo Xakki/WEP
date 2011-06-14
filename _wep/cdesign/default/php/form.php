@@ -1,6 +1,6 @@
 <?
 function tpl_form(&$data) {
-	global $_CFG;
+	global $_CFG, $_tpl;
 	$attr = array();
 	if(isset($data['_*features*_'])) {
 		$attr = $data['_*features*_'];
@@ -408,6 +408,25 @@ function tpl_form(&$data) {
 			}
 			elseif($r['type']=='html') {
 				$texthtml .= '<div class="form-value">'.$r['value'].'</div>';
+			}
+			elseif($r['type']=='color') {
+				$_tpl['styles']['colorpicker/css/colorpicker'] = true;
+	//			$_tpl['styles']['colorpicker/css/layout'] = true;
+
+				$_tpl['script']['colorpicker/js/colorpicker'] = true;
+				$_tpl['script']['colorpicker/js/eye'] = true;
+				$_tpl['script']['colorpicker/js/utils'] = true;
+				$_tpl['script']['colorpicker/js/layout'] = true;
+				$_tpl['onload'] .= ' jQuery(\'#tr_'.$k.' div.colorPicker input\').ColorPicker({
+					onSubmit: function(hsb, hex, rgb, el) {
+						$(el).val(\'#\'+hex);
+						$(el).ColorPickerHide();
+					},
+					onBeforeShow: function () {
+						$(this).ColorPickerSetColor(this.value.substring(1));
+					}
+				});';
+				$texthtml .= '<div class="form-value colorPicker"><input type="text" name="'.$k.'" value="'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'" '.$attribute.'/></div>';
 			}
 			else {
 				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
