@@ -13,15 +13,16 @@ if(!isset($var_const))
 		'mess'=>array(),
 		'sbmt'=>'Сохранить'
 	);
-include_once $_CFG['_PATH']['extcore'] . '/modulprm.class/modulprm.class.php';
-if(_new_class('modulprm', $MODUL)) {
-	//Создание таблицы modulprm
-	static_tools::_installTable($MODUL);
+
+//static_main::includeModulFile('modulprm');
+//static_main::includeModulFile('ugroup');
+
+if(_new_class('modulprm', $MODULPRM)) {
 	//Форма установки модулей
-	list($res, $DATA) = $MODUL->instalModulForm();
+	list($res, $DATA) = $MODULPRM->instalModulForm();
 } else  {
 	$res = 0;
-	$DATA['messages'][] = array('name' => 'ok', 'value' => 'Ошибка инициализации модуля `modulprm`');
+	$DATA['messages'][] = array('ok','Ошибка инициализации модуля `modulprm`');
 }
 
 

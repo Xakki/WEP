@@ -209,10 +209,10 @@
 				}
 		}
 		elseif(!is_array($listname)) {
-			static_main::_message('List data `'.$listname.'` not found',1);
+			static_main::_message('error','List data `'.$listname.'` not found');
 		}
 		else {
-			static_main::_message('List '.current($listname).' not found',1);
+			static_main::_message('error','List '.current($listname).' not found');
 		}
 
 		return $data;
