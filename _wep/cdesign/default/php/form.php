@@ -411,13 +411,21 @@ function tpl_form(&$data) {
 			}
 			elseif($r['type']=='color') {
 				$_tpl['styles']['colorpicker/css/colorpicker'] = true;
-				$_tpl['styles']['colorpicker/css/layout'] = true;
+	//			$_tpl['styles']['colorpicker/css/layout'] = true;
 
 				$_tpl['script']['colorpicker/js/colorpicker'] = true;
 				$_tpl['script']['colorpicker/js/eye'] = true;
 				$_tpl['script']['colorpicker/js/utils'] = true;
 				$_tpl['script']['colorpicker/js/layout'] = true;
-				$_tpl['onload'] .= ' jQuery(\'#tr_'.$k.' div.colorPicker\').ColorPicker()';
+				$_tpl['onload'] .= ' jQuery(\'#tr_'.$k.' div.colorPicker input\').ColorPicker({
+					onSubmit: function(hsb, hex, rgb, el) {
+						$(el).val(\'#\'+hex);
+						$(el).ColorPickerHide();
+					},
+					onBeforeShow: function () {
+						$(this).ColorPickerSetColor(this.value.substring(1));
+					}
+				});';
 				$texthtml .= '<div class="form-value colorPicker"><input type="text" name="'.$k.'" value="'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'" '.$attribute.'/></div>';
 			}
 			else {
