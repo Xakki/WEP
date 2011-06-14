@@ -383,8 +383,10 @@ $_CFG['modulinc'] = array(
 $_CFG['time'] = time();
 $_CFG['getdate'] = getdate();
 $_CFG['remember_expire'] = $_CFG['session']['expire'] = $_CFG['time'] + 1728000; // 20дней ,по умолчанию
-if ($_CFG['session']['multidomain'])
+if($_CFG['session']['multidomain'])
 	$_CFG['session']['domain'] = '.' . $_CFG['session']['domain'];
+if($_CFG['wep']['sessiontype']===1)
+	$_CFG['require_modul']['session'] = true;
 session_name($_CFG['session']['name']);
 session_set_cookie_params($_CFG['session']['expire'], $_CFG['session']['path'], $_CFG['session']['domain'], $_CFG['session']['secure']);
 ini_set('session.cookie_domain', $_CFG['session']['domain']);

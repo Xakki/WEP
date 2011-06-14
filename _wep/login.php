@@ -20,7 +20,7 @@
 	if(count($_POST) and isset($_POST['login'])) {
 		$result = static_main::userAuth($_POST['login'],$_POST['pass']);
 		if($result[1]) {
-			@header("Location: ".$ref);
+			//@header("Location: ".$ref);
 			die($ref);
 		}
 	}

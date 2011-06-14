@@ -36,7 +36,7 @@ class static_tools {
 					return false;
 				}
 			}
-			static_main::_message('ok','Для модуля `'.$MODUL->caption.'` успешно создана таблица.',$MODUL->_cl);
+			static_main::_message('notice','Для модуля `'.$MODUL->caption.'` успешно создана таблица.',$MODUL->_cl);
 		}
 		$flag = true;
 		if (count($MODUL->Achilds))
@@ -84,7 +84,7 @@ class static_tools {
 						self::deleteTable($MODUL);
 						$rDATA['Создание таблицы']['@mess'][] = array( 'error', 'Для модуля `'.$MODUL->caption.'` не удалось записать дефолтные данные, и поэтому таблица не будет создана.' );
 					} else
-						$rDATA['Создание таблицы']['@mess'][] = array( 'ok', 'Для модуля `'.$MODUL->caption.'` успешно создана таблица.' );
+						$rDATA['Создание таблицы']['@mess'][] = array( 'notice', 'Для модуля `'.$MODUL->caption.'` успешно создана таблица.' );
 				}
 			}
 			else {
@@ -106,7 +106,7 @@ class static_tools {
 				$temp_newFields = trim(str_replace(array('"', "'", chr(194).chr(160),"\xC2xA0","\n"), array('', '', ' ', ' ', ' '), mb_strtolower($newFields)));
 
 				if (isset($MODUL->fields[$fldname]['type']) and $temp_currentFields!=$temp_newFields) {
-					print_r($temp_currentFields);print_r('  *  ');print_r($temp_newFields);print_r('  ---------------   ');
+					//print_r($temp_currentFields);print_r('  *  ');print_r($temp_newFields);print_r('  ---------------   ');
 					$rDATA[$fldname]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` CHANGE `' . $fldname . '` ' . $newFields;
 					$rDATA[$fldname]['@oldquery'] = $currentFields;
 				}
@@ -225,6 +225,7 @@ class static_tools {
 				$rDATA[$k]['@index'] .= ' drop key ' . $k . ' ';
 			}
 		}
+		$rDATA['Оптимизация']['@newquery'] = 'OPTIMIZE TABLE `' . $MODUL->tablename . '`';
 		return $rDATA;
 	}
 
@@ -544,7 +545,6 @@ class static_tools {
 			$temp = self::_checkTable($MODUL);
 			if ($temp and count($temp))
 				$rDATA = array_merge($rDATA, $temp);
-			$rDATA['Оптимизация']['@newquery'] = 'OPTIMIZE TABLE `' . $MODUL->tablename . '`';
 		}
 
 		if (count($rDATA))
