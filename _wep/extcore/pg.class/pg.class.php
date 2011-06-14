@@ -600,7 +600,7 @@ class pg_class extends kernel_extends {
 					$this->dataCashTree[$row['parent_id']][$row['id']] = $this->dataCash[$row['id']];
 				}
 			}else {
-				header('Location: '.$this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['wepname'].'/login.php?install');die();}
+				header('Location: '.$this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['wepname'].'/install.php');die();}
 		}
 		return true;
 	}

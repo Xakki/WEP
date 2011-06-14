@@ -19,6 +19,8 @@ $_tpl['title'] = 'Установка WEP';
 
 $flag = false;
 $mess = '<div style="color:green;">Введите основной логин и пароль для запуска установки.</div>';
+if(!isset($_SESSION['step']))
+	$_SESSION['step'] = 1;
 
 if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] === 0) {
 	//проверяем если уже автоизовался
@@ -37,7 +39,7 @@ if ($flag) {
 	$stp = array(
 		1 => array('name' => 'Шаг первый', 'css' => '', 'comment' => 'Подключение к БД и настройка дополнительных параметров'),
 		2 => array('name' => 'Шаг второй', 'css' => '', 'comment' => 'Проверка структуры сайта'),
-		3 => array('name' => 'Шаг третий', 'css' => '', 'comment' => 'Установка модулей и удаление, со всеми патрохами.'),
+		3 => array('name' => 'Шаг третий', 'css' => '', 'comment' => 'Установка модулей и удаление.'),
 		999 => array('name' => 'Завершение', 'css' => '', 'comment' => '')
 	);
 	if (!isset($_GET['step']))

@@ -75,10 +75,10 @@ class ugroup_class extends kernel_extends
 		$this->_vf_list = 'concat(name,"[",level,"]")';// агрегатная ф мускл
 		
 		$this->_enum['level'] = array(
-			0=>'Полный доступ (абсолютный)',
-			1=>'Полный доступ (проверка привелегий)',
-			2=>'Доступ к модулям',
-			5=>'нет доступа');
+			0=>'Администраторы',
+			1=>'Модераторы',
+			2=>'Пользователи',
+			5=>'Анонимы');
 
 		$this->fields[$this->mf_namefields] = array('type' => 'varchar', 'width' =>128, 'attr' => 'NOT NULL');
 		$this->fields['wep'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => 0);
@@ -110,9 +110,9 @@ class ugroup_class extends kernel_extends
 	}
 
 	function _preInstall() {
-		$this->def_records[0] = array('id'=>0,$this->mf_namefields=>'Анонимы','level'=>5,'filesize'=>'0','active'=>1,'design'=>'default','wep'=>0);
 		$this->def_records[1] = array('id'=>1,$this->mf_namefields=>'Администраторы','level'=>0,'filesize'=>'100','active'=>1,'design'=>'default','wep'=>1);
 		$this->def_records[2] = array('id'=>2,$this->mf_namefields=>'Пользователи','level'=>2,'filesize'=>'0','active'=>1,'design'=>'default','wep'=>0);
+		$this->def_records[3] = array('id'=>3,$this->mf_namefields=>'Анонимы','level'=>5,'filesize'=>'0','active'=>1,'design'=>'default','wep'=>0);
 		return parent::_preInstall();
 	}
 
@@ -289,8 +289,8 @@ class users_class extends kernel_extends {
 	}
 
 	function updateLastVisit() {
-		if($_SESSION['user']['id'] and (time()-$_SESSION['user']['lastvisit'])>300) {
-			$this->SQL->execSQL('UPDATE `'.$this->tablename.'` SET lastvisit='.time().' WHERE id='.$_SESSION['user']['id'].'');
+		if(isset($_SESSION['user']['id']) and (time()-$_SESSION['user']['lastvisit'])>300) {
+			$this->SQL->execSQL('UPDATE `'.$this->tablename.'` SET lastvisit='.time().' WHERE id='.(int)$_SESSION['user']['id'].'');
 		}
 	}
 

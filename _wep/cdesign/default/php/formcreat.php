@@ -24,6 +24,8 @@
 					$enctype = ' enctype="'.$attr['enctype'].'"';
 			else
 				$enctype = ' enctype="multipart/form-data"';
+			if(!isset($attr['action']))
+				$attr['action'] = '';
 			$texthtml .= '<form id="form_'.$attr['name'].'" method="'.$attr['method'].'"'.$enctype.' action="'.$attr['action'].'" ';
 			if(isset($attr['onsubmit']))
 				$texthtml .= 'onsubmit="'.$attr['onsubmit'].'"';

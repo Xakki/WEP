@@ -99,7 +99,7 @@ final class modulprm_class extends kernel_extends {
 					$entry = substr($entry, 0, $pos);
 					if ($entry != '') {
 						if (isset($DATA[$k . '_' . $entry])) {
-							$mess[] = array('name' => 'error', 'value' => 'Ошибка. Модуль с таким названием `' . $entry . '` уже имеется в системных модулях');
+							$mess[] = array('error','Ошибка. Модуль с таким названием `' . $entry . '` уже имеется в системных модулях');
 							continue;
 						}
 						if (count($_POST)) {
@@ -114,14 +114,19 @@ final class modulprm_class extends kernel_extends {
 							$val = false;
 						$DATA[$k . '_' . $entry] = array(
 							'caption' => $this->_enum['typemodul'][$k] . ' <b>' . $entry . '</b>',
-							'comment' => '',
+							'comment' => (isset($this->data[$entry])?' <i>Включено.</i> ':''),
 							'type' => 'checkbox',
 							'value' => $val,
 							'_entry' => $entry,
 							'_parent' => '',
 							'_type' => $k
 						);
-						$resData = $this->checkClassStruct($entry);
+						$ret = static_main::includeModulFile($entry);
+						if($ret['file']) require_once($ret['file']);
+						if(class_exists($entry. '_class',false)) {
+							$resData = $this->checkClassStruct($entry);
+						}else
+							$DATA[$k . '_' . $entry]['comment'] .= 'Не возможно подключить модуль. ';
 						if ($resData['parent']) {
 							$DATA[$k . '_' . $entry]['comment'] .= '<div>Зависим от ' . $resData['parent'] . '</div>';
 							$DATA[$k . '_' . $entry]['_parent'] = $resData['parent'];
@@ -130,7 +135,7 @@ final class modulprm_class extends kernel_extends {
 						if (isset($this->_CFG['require_modul'][$entry])) {
 							$DATA[$k . '_' . $entry]['disabled'] = true;
 							$DATA[$k . '_' . $entry]['value'] = true;
-							$DATA[$k . '_' . $entry]['comment'] .= 'Жизненно необходимый модуль!';
+							$DATA[$k . '_' . $entry]['style'] = 'display:none;';
 						}
 						// выводим текст ошибки
 						if (isset($resData['error'])) {
@@ -146,59 +151,66 @@ final class modulprm_class extends kernel_extends {
 		}
 
 		$res = 0;
-		if (count($_POST) and isset($_POST['sbmtinstall'])) {
+		if (count($_POST) and isset($_POST['sbmt'])) {
 			startCatchError();
 			foreach ($DATA as $k => $r) {
 				$MODUL = NULL;
 				if (isset($_POST[$k]) or isset($this->_CFG['require_modul'][$r['_entry']])) {
 					if (!isset($this->data[$r['_entry']])) {
 						if ($r['_parent'] !== '' and !isset($_POST['0_' . $r['_parent']]) and !isset($_POST['3_' . $r['_parent']])) {
-							$mess[] = array('name' => 'error', 'value' => 'Ошибка. Не подключен родительский модуль `' . $r['_parent'] . '` для `' . $r['_entry'] . '`. ');
+							$mess[] = array('error', 'Ошибка. Не подключен родительский модуль `' . $r['_parent'] . '` для `' . $r['_entry'] . '`. ');
 							$res = -1;
 							continue;
 						}
-						/* if (!_new_class($r['_entry'], $MODUL, $MODUL->null, true)) {
-						  $mess[] = array('name' => 'error', 'value' => 'Ошибка запуска модуля `' . $r['_entry'] . '`');
-						  $res = -1;
-						  continue;
-						  } */
 						//Установка модуля
-						list($flag, $mess2) = $this->Minstall($r['_entry']);
-						$mess = array_merge($mess, $mess2);
+						$flag = true;
+						$rDATA = static_tools::_checkmodstruct($r['_entry']);
+						//print_r('<pre>');print_r($rDATA);
+						foreach($rDATA as $tr) {
+							foreach($tr as $tr2) {
+								if(isset($tr2['@mess'])) {
+									foreach($tr2['@mess'] as $tm) {
+										$mess[] = $tm;
+										if(isset($tm[0]) and $tm[0]=='error')
+											$flag = false;
+									}
+								}
+							}
+						}
 						if (!$flag) {
-							$mess[] = array('name' => 'error', 'value' => 'Ошибка установки модуля `' . $r['_entry'] . '`');
+							$mess[] = array('error','Ошибка установки модуля `' . $r['_entry'] . '`');
 							$res = -1;
 						}else
-							$mess[] = array('name' => 'ok', 'value' => 'Модуль `' . $r['_entry'] . '` установлен.');
+							$mess[] = array('ok', 'Модуль `' . $r['_entry'] . '` установлен.');
 					}
 				}
 				elseif (isset($this->data[$r['_entry']]) and !isset($r['disabled'])) {
 					if (!_new_class($r['_entry'], $MODUL, $this->null, true)) {
-						$mess[] = array('name' => 'error', 'value' => 'Ошибка запуска модуля `' . $r['_entry'] . '`');
+						$mess[] = array('error', 'Ошибка запуска модуля `' . $r['_entry'] . '`');
 						$res = -1;
 						continue;
 					}
 					//Удаление модуля
 					if (!$this->Mdelete($MODUL)) {
-						$mess[] = array('name' => 'error', 'value' => 'Ошибка удаления модуля `' . $r['_entry'] . '`');
+						$mess[] = array('error', 'Ошибка удаления модуля `' . $r['_entry'] . '`');
 						$res = -1;
 					} else
-						$mess[] = array('name' => 'ok', 'value' => 'Модуль `' . $r['_entry'] . '` удалён!');
+						$mess[] = array('ok', 'Модуль `' . $r['_entry'] . '` удалён!');
 				}
 			}
 			$err = getCatchError();
 			if ($err[0]) {
-				$mess[] = array('name' => 'error', 'value' => $err[0]);
+				$mess[] = array('error', $err[0]);
 				$res = -1;
 			}
 
 			if ($res === 0) {
-				$mess[] = array('name' => 'ok', 'value' => 'Процесс установки/удаления модулей прошло успешно.');
+				$mess[] = array('ok', 'Процесс установки/удаления модулей прошло успешно.');
 				$res = 1;
 			}
 		}
 		//TODO : Инфо Фаил модуля
-		$DATA['sbmtinstall'] = array(
+		$DATA['sbmt'] = array(
 			'type' => 'submit',
 			'value' => 'Сохранить');
 
@@ -249,20 +261,6 @@ final class modulprm_class extends kernel_extends {
 	 * @param <type> $file
 	 * @return <type>
 	 */
-	public function Minstall($Mid, &$OWN=NULL) {
-		$flag = false;
-		$mess = array();
-		list($MODUL, $mess) = $this->ForUpdateModulInfo($Mid, $OWN);
-		if ($MODUL) {
-			$flag = static_tools::_installTable($MODUL);
-			if ($flag and count($MODUL->Achilds))
-				foreach ($MODUL->Achilds as $k => $r) {
-					list($flag, $mess2) = $this->Minstall($k, $MODUL);
-					$mess = array_merge($mess, $mess2);
-				}
-		}
-		return array($flag, $mess);
-	}
 
 	/**
 	 * Удаление модуля
@@ -294,7 +292,7 @@ final class modulprm_class extends kernel_extends {
 	 */
 	protected function _reinstall(&$MODUL, $type, $file) {
 		$this->Mdelete($MODUL);
-		$this->Minstall($MODUL, $type, $file);
+		static_tools::_checkmodstruct($MODUL->_cl);
 		return true;
 	}
 
@@ -308,6 +306,10 @@ final class modulprm_class extends kernel_extends {
 				$this->data[$row['id']] = $row;
 				$this->pdata[$row['parent_id']][$row['id']] = $row['id'];
 			}
+			foreach($this->_CFG['require_modul'] as $k=>$r) {
+				if(!isset($this->pdata[''][$k]))
+					$this->pdata[''][$k] = $r;
+			}
 		}
 		return true;
 	}
@@ -315,10 +317,25 @@ final class modulprm_class extends kernel_extends {
 	//Обновление базы всех модулей
 	public function _checkmodstruct() {
 		$rDATA = array();
-		$this->mDump();
-		foreach ($this->pdata[''] as $k => $r) {
-			$rDATA = array_merge($rDATA, static_tools::_checkmodstruct($k));
+		/*Установка и проверка главных модулей*/
+		$this->_CFG['modulprm'] = array();
+		if(!isset($_POST['sbmt'])) {
+			$_POST['sbmt'] = 1;
+			foreach($this->_CFG['require_modul'] as $k=>$r) {
+				_new_class($k, $MODUL);
+				$temp = static_tools::_checkTableRev($MODUL);
+				if(count($temp))
+					$rDATA = array_merge($rDATA, $temp);
+			}
+			unset($_POST['sbmt']);
+			unset($this->_CFG['modulprm']);
 		}
+
+		$this->mDump();
+		if(isset($this->pdata['']) and count($this->pdata['']))
+			foreach ($this->pdata[''] as $k => $r) {
+				$rDATA = array_merge($rDATA, static_tools::_checkmodstruct($k));
+			}
 
 		return $rDATA;
 	}
@@ -341,7 +358,6 @@ final class modulprm_class extends kernel_extends {
 				include_once($fpath);
 				unset($this->_CFG['modulprm_ext']);
 				if (_new_class($Mid, $MODUL, $OWN)) {
-					$MODUL->_preInstall();
 					if ($OWN and (!isset($this->data[$Mid]) or $this->data[$Mid]['parent_id'] != $OWN->_cl))
 						$this->fld_data['parent_id'] = $OWN->_cl;
 					if (!isset($this->data[$Mid]) or $this->data[$Mid]['name'] != $MODUL->caption)
@@ -380,16 +396,16 @@ final class modulprm_class extends kernel_extends {
 						if (!isset($this->data[$Mid])) {
 							$this->fld_data['id'] = $Mid;
 							if ($this->_add(false))
-								$MESS[] = array('name' => 'alert', 'value' => 'Данные для модуля `' . $Mid . '`[' . $path . '] успешно записанны.');
+								$MESS[] = array('notice', 'Данные для модуля `' . $Mid . '`[' . $path . '] успешно записанны.');
 							else {
-								$MESS[] = array('name' => 'error', 'value' => 'Ошибка записи данных для модуля `' . $Mid . '`[' . $path . '].'.print_r($this->fld_data,true));
+								$MESS[] = array('error', 'Ошибка записи данных для модуля `' . $Mid . '`[' . $path . '].'.print_r($this->fld_data,true));
 								$flag = false;
 							}
 						} else {
 							if ($this->_update(false))
-								$MESS[] = array('name' => 'alert', 'value' => 'Данные для модуля `' . $Mid . '`[' . $path . '] успешно обновленны.');
+								$MESS[] = array('notice', 'Данные для модуля `' . $Mid . '`[' . $path . '] успешно обновленны.');
 							else {
-								$MESS[] = array('name' => 'error', 'value' => 'Ошибка обновления данных для модуля `' . $Mid . '`[' . $path . '].');
+								$MESS[] = array('error', 'Ошибка обновления данных для модуля `' . $Mid . '`[' . $path . '].');
 								$flag = false;
 							}
 						}
@@ -410,7 +426,7 @@ final class modulprm_class extends kernel_extends {
 							foreach ($this->guserData as $gk => $gr) {
 								if (isset($this->modulgrpData[$Mid][$gk])) {
 									if($this->modulgrpData[$Mid][$gk]['name']!=$gr['name']) {
-										$q = 'UPDATE `' . $this->childs['modulgrp']->tablename . '` SET `name`="' . $gr['name'] . '" WHERE id="' . $this->modulgrpData[$Mid][$gk]['id'] . '"'; //print_r($q);print_r(' ** ');
+										$q = 'UPDATE `' . $this->childs['modulgrp']->tablename . '` SET `name`="' . $gr['name'] . '" WHERE id="' . $this->modulgrpData[$Mid][$gk]['id'] . '"';
 										$result = $this->SQL->execSQL($q);
 										if ($result->err)
 											exit();
@@ -426,19 +442,19 @@ final class modulprm_class extends kernel_extends {
 							}
 					}
 				} else {
-					$MESS[] = array('name' => 'error', 'value' => 'Ошибка при инициализации модуля `' . $Mid . '`[' . $path . ']. Модуль будет отключен.');
+					$MESS[] = array('error', 'Ошибка при инициализации модуля `' . $Mid . '`[' . $path . ']. Модуль будет отключен.');
 					$this->fld_data['active'] = 0;
 					$this->id = $Mid;
 					$this->_update();
 				}
 			} else {
-				$MESS[] = array('name' => 'error', 'value' => 'Фаилы модуля `' . $Mid . '`[' . $path . '] отсутствуют и этот модуль будет удален из базы данных.');
+				$MESS[] = array('error', 'Фаилы модуля `' . $Mid . '`[' . $path . '] отсутствуют и этот модуль будет удален из базы данных.');
 				$this->id = $Mid;
 				$this->_delete();
 			}
 		} catch (Exception $e) {
 			trigger_error($e->getMessage(), E_USER_WARNING);
-			$MESS[] = array('name' => 'error', 'value' => 'Ошибка при инициализации модуля `' . $Mid . '`[' . $path . ']. Модуль будет отключен.');
+			$MESS[] = array('error', 'Ошибка при инициализации модуля `' . $Mid . '`[' . $path . ']. Модуль будет отключен.');
 			$this->fld_data['active'] = 0;
 			$this->id = $Mid;
 			$this->_update();
@@ -451,12 +467,13 @@ final class modulprm_class extends kernel_extends {
 		if (!isset($this->guserData)) {
 			$this->guserData = array();
 			_new_class('ugroup', $UGROUP);
-			$result = $this->SQL->execSQL('SELECT id,name FROM ' . $UGROUP->tablename . ' WHERE level>0'); //админов не учитываем
+			$result = $this->SQL->execSQL('SELECT id,name,level FROM ' . $UGROUP->tablename . ' WHERE level>0'); //админов не учитываем
 			if ($result->err)
 				exit();
-			while ($row = $result->fetch_array())
+			while ($row = $result->fetch_array()) {
+				if($row['level']==5) $row['id'] = 0;
 				$this->guserData[$row['id']] = $row;
-			$this->guserData[0] = array('name' => 'Аноним');
+			}
 		}
 		if (!isset($this->modulgrpData)) {
 			$this->modulgrpData = array();
