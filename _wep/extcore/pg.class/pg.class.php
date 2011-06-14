@@ -395,6 +395,8 @@ class pg_class extends kernel_extends {
 	function display_page() {
 		global $SQL, $PGLIST, $HTML, $_CFG, $_tpl;
 		$flagPG = 0;
+		$PGLIST = &$this;
+		$SQL = &$this->SQL;
 
 		$cls = 'SELECT * FROM '.$this->_CFG['sql']['dbpref'].'pg_content WHERE active=1 and (owner_id="'.$this->id.'"';
 		//if($this->id!='404') // откл повторные глобалные контенты, если это 400 и 401 страница
