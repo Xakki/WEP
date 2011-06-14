@@ -1,5 +1,5 @@
 <?
-class session_gogo {//extends kernel_extends {
+class session_gogo extends kernel_extends {
 	function __construct($tablename='_session') {
 		global $_CFG;
 		$this->_CFG = $_CFG;
