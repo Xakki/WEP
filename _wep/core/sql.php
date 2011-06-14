@@ -57,7 +57,7 @@
 		}
 
 		var $alias_types = array(
-				'tinyint(1)' => 'bool',
+				'bool'=>'tinyint(1)',
 			);
 			// типы полей, число - это значение, которое запишется в базу по умолчанию, если не указывать ширину явно
 			// false - означает, что для данного типа поля в mysql ширина не указывается
@@ -108,7 +108,7 @@
 			}
 
 			if(isset($this->alias_types[$param['type']]))
-				$param['type'] = $this->alias_types[$param['Type']];
+				$param['type'] = $this->alias_types[$param['type']];
 
 			$m = '`' . $key . '` ' . $param['type'];
 			if (isset($param['width']) && is_array($param['width'])) {
@@ -129,13 +129,11 @@
 		}
 
 		function _fldformerSQL($COLUMNS) {
-			if(isset($this->alias_types[$COLUMNS['Type']]))
-				$COLUMNS['Type'] = $this->alias_types[$COLUMNS['Type']];
 			$temp = '`' . $COLUMNS['Field'] . '` ' . $COLUMNS['Type'];
 			if($COLUMNS['Null']=='NO')
 				$temp .= ' NOT NULL';
-			if($COLUMNS['Null']=='YES' and $COLUMNS['Type']!='text')
-				$temp .= ' DEFAULT NULL';
+			if($COLUMNS['Null']=='YES' and $COLUMNS['Type']!='text' and $COLUMNS['Default']=='NULL')
+				$temp .= ' DEFAULT \'NULL\'';
 			elseif(!is_null($COLUMNS['Default'])) {
 				if($COLUMNS['Type']=='timestamp')
 					$temp .= ' DEFAULT '.$COLUMNS['Default'];

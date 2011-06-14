@@ -19,9 +19,9 @@
 		$_design = $_CFG['wep']['design'];
 		
 	$HTML = new html($_CFG['PATH']['cdesign'],$_design);
-
+	if(!isset($_GET['_modul'])) $_GET['_modul'] = '';
 /*ADMIN*/
-	function fXmlSysconf(){
+	function fXmlSysconf() {
 		global $_CFG;
       $data = array();
 		$data['sysconf']['modul'] = $_GET['_modul'];

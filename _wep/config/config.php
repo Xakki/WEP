@@ -409,8 +409,7 @@ function session_go($force=0) {
 	if (!$_CFG['robot'] and (isset($_COOKIE[$_CFG['session']['name']]) or $force) and !defined('SID')) {
 		if ($_CFG['wep']['sessiontype'] == 1) {
 			if (!$SESSION_GOGO) {
-				require_once($_CFG['_PATH']['core'] . '/session.php');
-				$SESSION_GOGO = new session_gogo();
+				_new_class('session', $SESSION_GOGO);
 			}
 		} else {
 			session_start();

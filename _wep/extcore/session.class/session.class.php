@@ -1,57 +1,56 @@
 <?
-class session_gogo extends kernel_extends {
-	function __construct($tablename='_session') {
-		global $_CFG;
-		$this->_CFG = $_CFG;
-		$this->grant_sql = false;
-		$this->SQL = new sql($_CFG['sql']);
-		if(!$this->SQL) {
-			trigger_error('Ошибка запуска сессии. Нет связи с БД.',E_USER_WARNING);
-			return (true);
-		}
-		if(!$_CFG) {
-			trigger_error('Ошибка загрузки конфигураций.',E_USER_WARNING);
-			return (true);
-		}
-
-		//$this->_set_features();
+class session_class extends kernel_extends {
+	function __construct($owner=NULL) {
+		parent::__construct($owner);
 
 		$this->fields['id'] = array('type' => 'int', 'width' =>11, 'attr' => 'unsigned NOT NULL auto_increment');
-		$this->fields['sid'] = array('type' => 'varchar', 'width' =>128, 'attr' => 'default NULL');
-		$this->fields['host'] = array('type' => 'varchar', 'width' =>255, 'attr' => 'default NULL');
-		$this->fields['host2'] = array('type' => 'varchar', 'width' =>255, 'attr' => 'default NULL');
-		$this->fields['created'] = array('type' => 'int', 'width' =>11, 'attr' => 'unsigned default "0"');
-		$this->fields['expired'] = array('type' => 'int', 'width' =>11, 'attr' => 'unsigned default "0"');
-		$this->fields['modified'] = array('type' => 'int', 'width' =>11, 'attr' => 'unsigned default "0"');
+		$this->fields['sid'] = array('type' => 'varchar', 'width' =>128, 'default' => 'NULL');
+		$this->fields['host'] = array('type' => 'varchar', 'width' =>255, 'default' => 'NULL');
+		$this->fields['host2'] = array('type' => 'varchar', 'width' =>255, 'default' => 'NULL');
+		$this->fields['created'] = array('type' => 'int', 'width' =>11, 'attr' => 'unsigned', 'default'=>'0');
+		$this->fields['expired'] = array('type' => 'int', 'width' =>11, 'attr' => 'unsigned', 'default'=>'0');
+		$this->fields['modified'] = array('type' => 'int', 'width' =>11, 'attr' => 'unsigned', 'default'=>'0');
 		$this->fields['data'] = array('type' => 'text', 'attr' => '');
-		$this->fields['users_id'] = array('type' => 'varchar', 'width' =>64, 'attr' => 'default ""');
-		$this->fields['ip'] = array('type' => 'varchar', 'width' =>32, 'attr' => 'default ""');
-		$this->fields['useragent'] = array('type' => 'varchar', 'width' =>255, 'attr' => 'default ""');
-		$this->fields['visits'] = array('type' => 'int', 'width' =>8, 'attr' => 'unsigned default "1"');
-		$this->fields['lastpage'] = array('type' => 'varchar', 'width' =>255, 'attr' => 'default ""');
+		$this->fields['users_id'] = array('type' => 'varchar', 'width' =>64, 'default' => '');
+		$this->fields['ip'] = array('type' => 'varchar', 'width' =>32, 'default' => '');
+		$this->fields['useragent'] = array('type' => 'varchar', 'width' =>255, 'default' => '');
+		$this->fields['visits'] = array('type' => 'int', 'width' =>8, 'attr' => 'unsigned', 'default'=>'1');
+		$this->fields['lastpage'] = array('type' => 'varchar', 'width' =>255, 'default' => '');
+
+		$this->fields_form['expired'] = array('type' => 'date', 'readonly' => 1,'caption' => 'Срок истекает');
+		$this->fields_form['modified'] = array('type' => 'date', 'readonly' => 1,'caption' => 'Время');
+		$this->fields_form['users_id'] = array('type' => 'list', 'listname'=>array('class'=>'users'), 'readonly' => 1, 'caption' => 'Пользователь');
+		$this->fields_form['ip'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'IP');
+		$this->fields_form['visits'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Число посещений');
+		$this->fields_form['lastpage'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Страница');
 
 		$this->index_fields['sid'] = 'sid';
 		$this->index_fields['users_id'] = 'users_id';
 		$this->unique_fields['sid'] = 'sid';
 
+		$this->mf_createrid = false;
+		$this->prm_add = false;
+		$this->prm_edit = false;
 		$this->ver = '0.1';
+		$this->caption = 'Сессии';
 		$this->deadvisits  = 2; // мин число визитов
 		$this->deadsession = 1800; //мин сек в течении которго если пользователь не зашел >= $this->deadvisits, то удаляются
-		$this->tablename = $_CFG['sql']['dbpref'].$tablename;
+		$this->tablename = $this->_CFG['sql']['dbpref'].'_session';
 		$this->uip = $_SERVER['REMOTE_ADDR']; 
 		$this->_time = time();
 		$this->_hash = '';
 		//$this->expired = get_cfg_var('session.gc_maxlifetime');
-		$this->expired = $_CFG['session']['expire'];
-
-		session_set_save_handler(array(&$this,"open"), array(&$this,"close"), array(&$this,"read"), array(&$this,"write"), array(&$this,"destroy"), array(&$this,"gc"));
-		session_start();
-		
-		$params = array(
-			'func' => 'session_write_close',
-		);
-		
-		observer::register_observer($params, 'shutdown_function');
+		$this->expired = $this->_CFG['session']['expire'];
+		if(!session_id()) {
+			session_set_save_handler(array(&$this,"open"), array(&$this,"close"), array(&$this,"read"), array(&$this,"write"), array(&$this,"destroy"), array(&$this,"gc"));
+			session_start();
+			
+			$params = array(
+				'func' => 'session_write_close',
+			);
+			
+			observer::register_observer($params, 'shutdown_function');
+		}
 	}
 
 	function __destruct() {
