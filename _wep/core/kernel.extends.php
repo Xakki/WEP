@@ -1803,7 +1803,7 @@ abstract class kernel_extends {
 				$DATA['cntpage'] = floor($countfield / $this->messages_on_page);
 				$temp_pn = $this->_pn;
 				$this->_pn = $DATA['cntpage'] - $this->_pn + 1;
-				if (strpos($thisPage, '.html')) {
+				if (!$flag and strpos($thisPage, '.html')) {print_r($thisPage);
 					$pregreplPage = '/(_p)[0-9]*/';
 					if (!preg_match($pregreplPage, $thisPage)) {
 						$thisPage = str_replace('.html', '_p' . $this->_pn . '.html', $thisPage);
@@ -1824,7 +1824,7 @@ abstract class kernel_extends {
 				}
 			} else {
 
-				if (strpos($thisPage, '.html')) {
+				if (!$flag and strpos($thisPage, '.html')) {
 					$replPage = '_p' . $this->_pn;
 					$pregreplPage = '/_p' . $this->_pn . '/';
 					$inPage = '_p';
@@ -1834,7 +1834,7 @@ abstract class kernel_extends {
 					$inPage = $this->_cl . '_pn=';
 				}
 				if (strpos($thisPage, $replPage) === false) {
-					if (strpos($thisPage, '.html')) {
+					if (!$flag and strpos($thisPage, '.html')) {
 						$pageSuf = _substr($thisPage, strpos($thisPage, '.html') + 5);
 						$thisPage = _substr($thisPage, 0, strpos($thisPage, '.html')) . '_p1.html' . $pageSuf;
 					} else {
