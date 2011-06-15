@@ -1192,7 +1192,7 @@ abstract class kernel_extends {
 		if (!isset($param['phptemplate']))
 			$param['phptemplate'] = 'superlist';
 
-		if ($this->owner and $this->owner->id)
+		if ($this->owner and $this->owner->id and !$this->_clp)
 			$this->_clp = $this->owner->_clp . $this->owner->_cl . '_id=' . $this->owner->id . '&amp;' . $this->owner->_cl . '_ch=' . $this->_cl . '&amp;';
 
 		if ($this->_pn > 1)
@@ -1619,8 +1619,8 @@ abstract class kernel_extends {
 		//if(isset($this->fields['region_id']) and isset($_SESSION['city']))///////////////**********************
 		//	$param['clause']['t1.region_id'] ='t1.region_id='.$_SESSION['city'];
 
-		if (isset($_GET['_type']) and $_GET['_type'] == 'deleted' and $this->fields_form[$this->mf_actctrl]['listname'] == $this->mf_actctrl)
-			$param['clause']['t1.' . $this->mf_actctrl] = 't1.' . $this->mf_actctrl . '=4';
+		//if (isset($_GET['_type']) and $_GET['_type'] == 'deleted' and $this->fields_form[$this->mf_actctrl]['listname'] == $this->mf_actctrl)
+		//	$param['clause']['t1.' . $this->mf_actctrl] = 't1.' . $this->mf_actctrl . '=4';
 		elseif (isset($this->fields_form[$this->mf_actctrl]['listname']) and $this->fields_form[$this->mf_actctrl]['listname'] == $this->mf_actctrl)
 			$param['clause']['t1.' . $this->mf_actctrl] = 't1.' . $this->mf_actctrl . '!=4';
 		return $param['clause'];

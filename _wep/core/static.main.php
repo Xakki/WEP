@@ -52,7 +52,7 @@ class static_main {
 			$ret['path'] = $Mid . '.class/' . $Mid . '.class.php';
 			$ret['file'] = $r['path'] . $ret['path'];
 
-			if (file_exists($ret['file'])) {
+			if (is_file($ret['file'])) {
 				$ret['path'] = $k . ':' . $ret['path'];
 				//include_once($ret['file']);
 				return $ret;
@@ -63,14 +63,14 @@ class static_main {
 				$ret['type'] = 5;
 				$ret['path'] = $Pid . '.class/' . $Mid . '.childs.php';
 				$ret['file'] = $r['path'] . $ret['path'];
-				if (file_exists($ret['file'])) {
+				if (is_file($ret['file'])) {
 					$ret['path'] = $k . ':' . $ret['path'];
 					//include_once($ret['file']);
 					return $ret;
 				}
 				$ret['path'] = $Pid . '.class/' . $Pid . '.class.php';
 				$ret['file'] = $r['path'] . $ret['path'];
-				if (file_exists($ret['file'])) {
+				if (is_file($ret['file'])) {
 					$ret['path'] = $k . ':' . $ret['path'];
 					//include_once($ret['file']);
 					return $ret;
@@ -199,6 +199,7 @@ class static_main {
 					$_SESSION['user']['gname'] = "GOD MODE";
 					$_SESSION['user']['level'] = 0;
 					$_SESSION['user']['wep'] = 1;
+					$_SESSION['user']['gid'] = 1;
 					$_SESSION['user']['design'] = $_CFG['wep']['design'];
 					$_SESSION['user']['filesize'] = $_CFG['wep']['def_filesize'];
 					$_SESSION['FckEditorUserFilesUrl'] = $_CFG['_HREF']['BH'] . $_CFG['PATH']['userfile'];

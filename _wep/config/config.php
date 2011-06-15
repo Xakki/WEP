@@ -409,7 +409,7 @@ function session_go($force=0) {
 	if (!$_CFG['robot'] and (isset($_COOKIE[$_CFG['session']['name']]) or $force) and !defined('SID')) {
 		if ($_CFG['wep']['sessiontype'] == 1) {
 			if (!$SESSION_GOGO) {
-				_new_class('session', $SESSION_GOGO);
+				$SESSION_GOGO = new session_class();
 			}
 		} else {
 			session_start();
@@ -549,14 +549,8 @@ function _new_class($name, &$MODUL, &$OWNER = NULL) {
 			$name = $_CFG['modulprm_ext'][$name][0];
 		$class_name = $name . "_class";
 		try {
-			if(!class_exists($class_name,false)) {
-				if ($file = _modulExists($class_name)) {
-					require_once($file);
-				}
-				else {
-					$ret = static_main::includeModulFile($name,$OWNER);
-					require_once($ret['file']);
-				}
+			if (!class_exists($class_name,false) and $file = _modulExists($class_name,$OWNER)) {
+				require_once($file);
 			}
 			if(class_exists($class_name,false)) {
 				$getparam = array_slice(func_get_args(), 2);
@@ -587,7 +581,7 @@ function __autoload($class_name) { //автозагрузка модулей
 	if ($file = _modulExists($class_name)) {
 		require_once($file);
 	}
-	else
+	if(!class_exists($class_name,false))
 		trigger_error('Can`t init `'.$class_name.'` modul ', E_USER_WARNING);
 		//throw new Exception('Can`t init `' . $class_name . '` modul ');
 }
@@ -600,24 +594,22 @@ function __autoload($class_name) { //автозагрузка модулей
  * @param string $class_name
  * @return string
  */
-function _modulExists($class_name) {
+function _modulExists($class_name,&$OWNER = NULL) {
 	global $_CFG;
 	$class_name = explode('_', $class_name);
-
-	$file = $_CFG['_PATH']['core'] . $class_name[0] . (isset($class_name[1]) ? '.' . $class_name[1] : '') . '.php';
-	if (!isset($_CFG['modulprm'][$class_name[0]])) {
-		if (file_exists($file))
-			return $file;
-	}
-
-	static_main::_prmModulLoad();
 
 	if (isset($_CFG['modulprm'][$class_name[0]])) {
 		$file = $_CFG['modulprm'][$class_name[0]]['path'];
 		if ($file and file_exists($file))
 			return $file;
 	}
-	return false;
+	
+	$file = $_CFG['_PATH']['core'] . $class_name[0] . (isset($class_name[1]) ? '.' . $class_name[1] : '') . '.php';
+	if (file_exists($file))
+		return $file;
+
+	$ret = static_main::includeModulFile($class_name[0],$OWNER);
+	return $ret['file'];
 }
 
 
