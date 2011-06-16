@@ -1803,7 +1803,7 @@ abstract class kernel_extends {
 				$DATA['cntpage'] = floor($countfield / $this->messages_on_page);
 				$temp_pn = $this->_pn;
 				$this->_pn = $DATA['cntpage'] - $this->_pn + 1;
-				if (!$flag and strpos($thisPage, '.html')) {print_r($thisPage);
+				if (!$flag and strpos($thisPage, '.html')) {
 					$pregreplPage = '/(_p)[0-9]*/';
 					if (!preg_match($pregreplPage, $thisPage)) {
 						$thisPage = str_replace('.html', '_p' . $this->_pn . '.html', $thisPage);
