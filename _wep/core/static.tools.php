@@ -102,7 +102,7 @@ class static_tools {
 				$currentFields = $MODUL->SQL->_fldformerSQL($COLUMNS);
 				$temp_currentFields = trim( str_replace(array('"', "'", chr(194).chr(160),"\xC2xA0","\n"), array('', '', ' ', ' ', ' '), mb_strtolower($currentFields)) );
 
-				list($newFields,$mess) = $MODUL->SQL->_fldformer($fldname, $MODUL->fields[$fldname]);
+				list($newFields,$rDATA[$fldname]['@mess']) = $MODUL->SQL->_fldformer($fldname, $MODUL->fields[$fldname]);
 				$temp_newFields = trim(str_replace(array('"', "'", chr(194).chr(160),"\xC2xA0","\n"), array('', '', ' ', ' ', ' '), mb_strtolower($newFields)));
 
 				if (isset($MODUL->fields[$fldname]['type']) and $temp_currentFields!=$temp_newFields) {
@@ -127,14 +127,17 @@ class static_tools {
 		if (isset($MODUL->fields))
 			foreach ($MODUL->fields as $key => $param) {
 				if (!isset($param['inst'])) {
-					$rDATA[$key]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD ' . $MODUL->SQL->_fldformer($key, $param);
+					list($temp,$rDATA[$key]['@mess']) = $MODUL->SQL->_fldformer($key, $param);
+					$rDATA[$key]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD ' .$temp ;
 				}
 			}
 
 		if (isset($MODUL->attaches))
 			foreach ($MODUL->attaches as $key => $param) {
-				if (!isset($param['inst']))
-					$rDATA[$key]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD ' . $MODUL->SQL->_fldformer($key, $MODUL->attprm);
+				if (!isset($param['inst'])) {
+					list($temp,$rDATA[$key]['@mess']) = $MODUL->SQL->_fldformer($key, $MODUL->attprm);
+					$rDATA[$key]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD ' .$temp ;
+				}
 				if (!self::_checkdir($MODUL->_CFG['_PATH']['path'].$MODUL->getPathForAtt($key))) {
 					$rDATA[$key]['@mess'][] = array( 'error',$MODUL->getMess('_checkdir_error', array($MODUL->getPathForAtt($key))) );
 				}
