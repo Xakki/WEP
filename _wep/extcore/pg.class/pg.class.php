@@ -564,7 +564,7 @@ class pg_class extends kernel_extends {
 					$mapPG = explode(':',$rowPG['pagemap']);
 					if(count($mapPG)==2 and file_exists($this->_enum['inc'][$mapPG[0]]['path'].$mapPG[1].'.map.php')) {
 						$tempinc = include($this->_enum['inc'][$mapPG[0]]['path'].$mapPG[1].'.map.php');
-						if(isset($DATA_PG[$keyPG]['#item#']) and is_array($DATA_PG[$keyPG]['items']))
+						if(isset($DATA_PG[$keyPG]['#item#']) and is_array($DATA_PG[$keyPG]['#item#']))
 							$DATA_PG[$keyPG]['#item#'] += $tempinc;
 						else
 							$DATA_PG[$keyPG]['#item#'] = $tempinc;
@@ -658,11 +658,12 @@ class pg_class extends kernel_extends {
 
 	function reverseDataMap(&$data) {
 		foreach($data as $k=>$r) {
-			$xml .= '
-		<url>
-			<loc>'.$r['href'].'</loc>
-			<changefreq>daily</changefreq>
-		</url>';
+			if(isset($r['href']) and $r['href'])
+				$xml .= '
+	<url>
+		<loc>'.$r['href'].'</loc>
+		<changefreq>daily</changefreq>
+	</url>';
 			if(isset($r['#item#']) and count($r['#item#']))
 				$xml .= $this->reverseDataMap($r['#item#']);
 		}
