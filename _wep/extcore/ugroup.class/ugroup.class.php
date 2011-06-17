@@ -179,8 +179,6 @@ class ugroup_class extends kernel_extends
 			trigger_error('Not found data for user id='.$id, E_USER_WARNING);
 			return array();
 		}
-		$this->data[0]['FckEditorUserFilesUrl'] = $this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['userfile'].$id.'/';
-		$this->data[0]['FckEditorUserFilesPath'] = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['userfile'].$id.'/';
 		return $this->data[0];
 	}
 	/**
@@ -688,7 +686,11 @@ class users_class extends kernel_extends {
 		if(!$data) {
 			$data = $this->owner->getUserData($this->id);
 		}
+		if(!count($data) and !$data['id']) return false;
 		session_go(1);
+		$data['FckEditorUserFilesUrl'] = $this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['userfile'].$data['id'].'/';
+		$data['FckEditorUserFilesPath'] = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['userfile'].$data['id'].'/';
+
 		$_SESSION['user'] = $data;
 		if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0)
 			_setcookie('_showerror',1);

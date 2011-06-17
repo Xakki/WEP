@@ -4,7 +4,7 @@
 	$_CFG['_PATH']['wep'] = $_CFG['_PATH']['path'].'/_wep';
 	require_once($_CFG['_PATH']['wep'].'/config/config.php');
 	require_once($_CFG['_PATH']['core'].'/sql.php');
-	session_go();//print_r($_SESSION);exit('**');
+	session_go();//print_r($_SESSION['user']);exit('**');
 /*
  * ### CKFinder : Configuration File - Basic Instructions
  *
@@ -68,7 +68,7 @@ Examples:
 ATTENTION: The trailing slash is required.
 */
 //$baseUrl = '/ckfinder/userfiles/';
-$baseUrl = $_SESSION['FckEditorUserFilesUrl'];
+$baseUrl = $_SESSION['user']['FckEditorUserFilesUrl'];
 /*
 $baseDir : the path to the local directory (in the server) which points to the
 above $baseUrl URL. This is the path used by CKFinder to handle the files in
@@ -87,7 +87,7 @@ Examples:
 ATTENTION: The trailing slash is required.
 */
 //$baseDir = resolveUrl($baseUrl);
-$baseDir = $_SESSION['FckEditorUserFilesPath'];
+$baseDir = $_SESSION['user']['FckEditorUserFilesPath'];
 /*
  * ### Advanced Settings
  */
@@ -163,7 +163,7 @@ Subfolders inherit their default settings from their parents' definitions.
 			$MSize = $_SESSION['user']['filesize']-$dirsize;
 		}
 		else
-			mkdir($baseDir, 0774);
+			static_tools::_checkdir($baseDir);
 		$MSize .= 'M';
 //---------------
 

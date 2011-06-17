@@ -110,12 +110,6 @@ class static_tools {
 					$rDATA[$fldname]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` CHANGE `' . $fldname . '` ' . $newFields;
 					$rDATA[$fldname]['@oldquery'] = $currentFields;
 				}
-				if(count($mess)) {
-					if(!isset($rDATA[$fldname]['@mess']))
-						$rDATA[$fldname]['@mess'] = $mess;
-					else
-						$rDATA[$fldname]['@mess'] = array_merge($rDATA[$fldname]['@mess'],$mess);
-				}
 			} elseif (isset($MODUL->attaches[$fldname]))
 				$MODUL->attaches[$fldname]['inst'] = '1';
 			elseif (isset($MODUL->memos[$fldname]))

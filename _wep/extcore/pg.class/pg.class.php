@@ -200,7 +200,6 @@ class pg_class extends kernel_extends {
 		global $_tpl,$HTML;
 		$temp_tpl = $_tpl;
 		$flag_content = $this->can_show();
-//$this->childs['content']->getInc('.map.php');
 		//PAGE****************
 		if(!$HTML) {
 			if($this->pageinfo['design'])
@@ -280,7 +279,7 @@ class pg_class extends kernel_extends {
 				else
 					$this->pageParam[] = $r;
 			}
-		}
+		}	
 		if($fp!=$this->config['rootPage'])
 			$this->id = $fp;
 		/*$row = 0;
@@ -545,7 +544,9 @@ class pg_class extends kernel_extends {
 
 				$href = $this->_CFG['_HREF']['BH'].$this->getHref($keyPG,$rowPG);
 
-				if (is_array($this->selected) and isset($this->selected[$keyPG]))
+				if($this->id==$keyPG)
+					$selPG = 2;
+				elseif (is_array($this->selected) and isset($this->selected[$keyPG]))
 					$selPG = 1;
 				else
 					$selPG = 0;

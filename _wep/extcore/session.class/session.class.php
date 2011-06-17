@@ -138,7 +138,7 @@ class session_class extends kernel_extends {
 	}
 
 	function updateUser($id,&$USERS) {
-		$data = array('user'=>$USERS->owner->getUserData($id));
+		$data = array('user'=>$USERS->setUserSession($id));
 		$data = serialize($data);
 		$result = $this->SQL->execSQL('Update '.$this->tablename.' set `data`="'.mysql_real_escape_string($data).'" WHERE `users_id`  = "'.$id.'"');
 	}

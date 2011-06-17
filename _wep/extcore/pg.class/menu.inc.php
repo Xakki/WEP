@@ -1,5 +1,5 @@
 <?
-	if($FUNCPARAM[0] == '') $FUNCPARAM[0] = 1;//- _enum['menu']
+	if(!isset($FUNCPARAM[0]) or $FUNCPARAM[0] == '') $FUNCPARAM[0] = 1;//- _enum['menu']
 	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = 1;//0 - выводит всё в виде структуры дерева , 1 - выводит все в общем массиве, 2 только начальный уровень от $FUNCPARAM[2]
 	if(!isset($FUNCPARAM[2])) $FUNCPARAM[2] = ''; // Показывать меню начиная с уровня ID page {id page, #1 - использовать id первого уровня адреса, #2 итп}
 	if(!isset($FUNCPARAM[3])) $FUNCPARAM[3] = 'menu'; // Шаблон
