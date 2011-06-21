@@ -270,7 +270,7 @@ function JSWin(param) {
 					jQuery(param['insertObj']).html(result.html);
 				timerid2 = setTimeout(function(){fShowload(0,'',param['body']);},200);
 			}
-			else if(result.html!='') fShowload(1,result.html,param['body']);
+			else if(result.html!='' && typeof result.html != 'undefined') fShowload(1,result.html,param['body']);
 			else timerid2 = setTimeout(function(){fShowload(0,'',param['body']);},200);
 			if(typeof result.text != 'undefined' && result.text!='') fLog(fSpoiler(result.text,'AJAX text result'),1);
 			//alert(result.eval);
@@ -375,7 +375,7 @@ function ajaxLoadPage (pg,marker,call) {
 	param = {
 		'href':'_json.php?_view=loadpage&pg='+pg,
 		'type':'POST',
-		'data': marker,
+		'data': marker
 	};
 	if(call)
 		param['call'] = call;
