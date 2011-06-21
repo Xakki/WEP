@@ -8,6 +8,7 @@ class mail_class extends kernel_extends {
 		$this->uid='';		
 		$this->attaches = array();
 		$this->caption = 'Почта';
+		$this->cf_reinstall = true;
 		return true;
 	}
 
