@@ -81,7 +81,7 @@ class bug_class extends kernel_extends {
 				$creater_id = 0;
 				
 			if (isset($_SERVER['REMOTE_ADDR']))
-				$mf_ipcreate = ip2long($_SERVER['REMOTE_ADDR']);
+				$mf_ipcreate = sprintf("%u",ip2long($_SERVER['REMOTE_ADDR']));
 			else
 				$mf_ipcreate =	0;
 			$keys = false;

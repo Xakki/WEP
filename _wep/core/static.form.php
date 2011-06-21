@@ -27,7 +27,8 @@ class static_form {
 		if ($_this->mf_timeup) 
 			$_this->fld_data['mf_timeup'] = $_this->_CFG['time'];
 		if($_this->mf_ipcreate) {
-			$_this->fld_data['mf_ipcreate'] = ip2long($_SERVER['REMOTE_ADDR']);
+			$_this->fld_data['mf_ipcreate'] = sprintf("%u",ip2long($_SERVER['REMOTE_ADDR']));
+			//$_this->fld_data['mf_ipcreate'] = 'inet_aton("'.$_SERVER['REMOTE_ADDR'].'")';
 			if(!(int)$_this->fld_data['mf_ipcreate'])
 				trigger_error('ERROR REMOTE_ADDR `'.$_SERVER['REMOTE_ADDR'].'`. '.print_r($_POST,true), E_USER_WARNING);
 		}
@@ -83,7 +84,7 @@ class static_form {
 			if($_this->fields[$key]['type']=='bool')
 				 $value = ((int)$value == 1 ? 1 : 0);
 			elseif(isset($int_type[$_this->fields[$key]['type']]))
-				 $value =  (int)$value;
+				 $value =  preg_replace('/[^0-9\-]/', '', $value);
 			$data[$key] = $value;
 		}
 		$result=$_this->SQL->execSQL('INSERT INTO `'.$_this->tablename.'` (`'.implode('`,`', array_keys($data)).'`) VALUES (\''.implode('\',\'', $data).'\')');
@@ -543,6 +544,7 @@ class static_form {
 		$arr_nochek = array('info'=>1,'sbmt'=>1,'alert'=>1);
 		$messages='';
 		$arr_err_name=array();
+		$textm = '';
 		foreach($FORMS_FIELDS as $key=>&$form)
 		{
 			$error = array();
@@ -683,9 +685,13 @@ class static_form {
 
 						/*CHECK MASK*/
 						if(isset($form['mask']['name']) and ($form['mask']['name']=='phone' or $form['mask']['name']=='phone2')) {
-							$value = self::_phoneReplace($value,$form['mask']['name']);
-							if($value=='')
-								$error[$k.'mask'] = 3;
+							if($value) {
+								$value = self::_phoneReplace($value);
+								if(!$value) {
+									$error[$k.'mask'] = 3;
+									$textm = 'Не корректный номер телефона.';
+								}
+							}
 						}
 						elseif($nomatch) {
 							if(isset($data[$key.'_rplf'])) {
@@ -760,7 +766,6 @@ class static_form {
 				elseif($row==29) //limit file size
 					$messages = $_this->getMess('_err_29',array($form['caption'],$_FILES[$key]['name'])).$form['maxsize'].'Kb';
 				elseif($row==3) {//wrong data
-					$textm = '';
 					if(isset($matches2) and count($matches2[0])) {
 						$textm = 'Обнаружены следующие недопустимые символы - ';
 						foreach($matches2[0] as $mk=>$mr) {
@@ -809,34 +814,28 @@ class static_form {
 		return array('mess'=>$messages,'vars'=>$data);
 	}
 
-	static function _phoneReplace($phone,$mask)
+	static function _phoneReplace($phone)
 	{
 		$phone_2 = array();
-		$phone_1 = preg_replace("/[^0-9,\(\)]+/",'',$phone);
+		$phone_1 = preg_replace("/[^0-9\,]+/",'',$phone);
 		$phone_1 = explode(',',$phone_1);
 		foreach($phone_1 as $k=>$p)
 		{
-			$temp = preg_replace(array(
-				"/^([0-9]{2,3})([0-9]{2})([0-9]{2})$/",
-				"/^(\([0-9]{3}\))([0-9]{3})([0-9]{2})([0-9]{2})$/",
-				"/^(\([0-9]{4}\))([0-9]{2})([0-9]{2})([0-9]{2})$/",
-				"/^(\([0-9]{5}\))([0-9]{1})([0-9]{2})([0-9]{2})$/",
-				"/^([0-9])\(([0-9]{3})\)([0-9]{3})([0-9]{2})([0-9]{2})$/",
-				"/^([0-9])([0-9]{3})([0-9]{3})([0-9]{2})([0-9]{2})$/"),
-								array(
-				"\\1-\\2-\\3",
-				"\\1\\2-\\3-\\4",
-				"\\1\\2-\\3-\\4",
-				"\\1\\2-\\3-\\4",
-				"\\1\\2\\3-\\4-\\5",
-				"\\1-\\2-\\3-\\4-\\5"),	$p);
-			global $_CFG;
-			if($temp!=$p || preg_match($_CFG['_MASK'][$mask],$p)) $phone_2[$k]=$temp;
+			$phone_2[] = preg_replace(array(
+				"/^([8])([0-9]{3})([0-9]{3})([0-9]{2})([0-9]{2})$/",
+				"/^([7])([0-9]{3})([0-9]{3})([0-9]{2})([0-9]{2})$/",
+				"/^([0-9]{3})([0-9]{3})([0-9]{2})([0-9]{2})$/",
+				//"/^.*$/",
+				),array(
+				'+7 \\2 \\3-\\4-\\5',
+				'+7 \\2 \\3-\\4-\\5',
+				'+7 \\1 \\2-\\3-\\4',
+				//'',
+				),	$p);
 		}
 		$phone_2 = implode(', ',$phone_2);
 		return $phone_2;
 	}
-
 	static function _usabilityDate($time, $format='Y-m-d H:i') {
 		global $_CFG;
 		$date = getdate($time);
