@@ -111,9 +111,13 @@ class static_main {
 		if (!isset($_CFG['modulprm'])) {
 			$_CFG['modulprm'] = $_CFG['modulprm_ext'] = array();
 			$ugroup_id = (isset($_SESSION['user']['gid']) ? (int) $_SESSION['user']['gid'] : 0);
+			if(isset($_SESSION['user']['parent_id']) and $_SESSION['user']['parent_id']) {
+				$ugroup_id = ' and t2.ugroup_id IN ('.$_SESSION['user']['parent_id'].','.$ugroup_id.')';
+			}else
+				$ugroup_id = ' and t2.ugroup_id='.$ugroup_id;
 			if (!$SQL)
 				$SQL = new sql($_CFG['sql']);
-			$result = $SQL->execSQL('SELECT t1.*,t2.access, t2.mname FROM `' . $_CFG['sql']['dbpref'] . 'modulprm` t1 LEFT Join `' . $_CFG['sql']['dbpref'] . 'modulgrp` t2 on t2.owner_id=t1.id and t2.ugroup_id=' . $ugroup_id . ' ORDER BY typemodul,name');
+			$result = $SQL->execSQL('SELECT t1.*,t2.access, t2.mname FROM `' . $_CFG['sql']['dbpref'] . 'modulprm` t1 LEFT Join `' . $_CFG['sql']['dbpref'] . 'modulgrp` t2 on t2.owner_id=t1.id' . $ugroup_id . ' ORDER BY typemodul,name');
 			if ($result->err) {
 				//$_POST['sbmt'] = 1;
 				//static_tools::_checkmodstruct('modulprm');
@@ -123,7 +127,8 @@ class static_main {
 			while ($row = $result->fetch_array()) {
 				if ($row['extend'])
 					$_CFG['modulprm_ext'][$row['extend']][] = $row['id'];
-				$_CFG['modulprm'][$row['id']]['access'] = array_flip(explode('|', trim($row['access'], '|')));
+				if(!isset($_CFG['modulprm'][$row['id']]['access']) or !$_CFG['modulprm'][$row['id']]['access'])
+					$_CFG['modulprm'][$row['id']]['access'] = array_flip(explode('|', trim($row['access'], '|')));
 				if ($row['mname'])
 					$_CFG['modulprm'][$row['id']]['name'] = $row['mname'];
 				else
