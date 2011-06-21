@@ -99,7 +99,7 @@ class static_form {
 		$prop = array();
 		foreach($_this->att_data as $key => $value) 
 		{
-			if ($value['tmp_name'] == 'none' or $value['tmp_name'] == '') continue;
+			if (!is_array($value) or $value['tmp_name'] == 'none' or $value['tmp_name'] == '') continue;
 			$pathimg = $_this->_CFG['_PATH']['path'].$_this->getPathForAtt($key);
 			// delete old
 			$oldname =$pathimg.'/'. $_this->id. '.'.$row[$key];

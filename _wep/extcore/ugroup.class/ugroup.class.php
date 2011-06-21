@@ -377,7 +377,7 @@ class users_class extends kernel_extends {
 				 return array('Поле `Email` введено не корректно. Допустим ввод только латинских букв,цифр, точки, тире и @',0);
 			else
 			{
-				$listfields = array('t2.*,t2.id as gid,t2.active as gact,t2.name as gname,t1.*');
+				$listfields = array('t2.id as gid, t2.active as gact, t2.name as gname, t2.level, t1.reg_hash,t1.active, t1.id, t1.'.$this->fn_pass);
 				$clause = 't1 Join '.$this->owner->tablename.' t2 on t1.'.$this->owner_name.'=t2.id where t1.'.$this->fn_login.' = \''.$login.'\' and t1.'.$this->fn_pass.' =\''.md5($this->_CFG['wep']['md5'].$pass).'\'';
 				$this->data = $this->_query($listfields,$clause);
 				if(count($this->data))
@@ -385,7 +385,7 @@ class users_class extends kernel_extends {
 					unset($_SESSION['user']);
 					if(_strlen($this->data[0]['reg_hash'])>5)
 						return array($this->_CFG['_MESS']['authnoconf'],0);
-					elseif($this->data[0]['reg_hash']=='0' && !$this->data[0]['activ'])
+					elseif($this->data[0]['reg_hash']=='0' && !$this->data[0]['active'])
 						return array($this->_CFG['_MESS']['auth_notcheck'],0);
 					elseif(!$this->data[0]['gact'])
 						return array($_CFG['_MESS']['auth_bangroup'],0);
@@ -398,7 +398,7 @@ class users_class extends kernel_extends {
 						if(isset($_POST['remember']) and $_POST['remember']=='1'){
 							_setcookie('remember', md5($this->data[0][$this->fn_pass]).'_'.$this->data[0]['id'], (time()+(86400*$this->owner->config['rememberday'])));
 						}
-						$this->setUserSession($this->data[0]);
+						$this->setUserSession($this->data[0]['id']);
 						static_main::_prmModulLoad();
 						return array($this->_CFG['_MESS']['authok'],1);
 					}
@@ -418,7 +418,7 @@ class users_class extends kernel_extends {
 			if (preg_match("/^[0-9A-Za-z\_]+$/",$_COOKIE['remember']))
 			{
 				$pos = strpos($_COOKIE['remember'],'_');
-				$listfields = array('t2.*,t2.id as gid,t2.active as gact,t2.name as gname,t1.*');
+				$listfields = array('t2.active as gact, t2.level, t1.active, t1.reg_hash, t1.id, t1.'.$this->fn_pass);
 				$clause = 't1 Join '.$this->owner->tablename.' t2 on t1.'.$this->owner_name.'=t2.id where t1.id = \''.substr($_COOKIE['remember'],($pos+1)).'\' and md5(t1.'.$this->fn_pass.') =\''.substr($_COOKIE['remember'],0,$pos).'\'';
 				$this->data = $this->_query($listfields,$clause);
 				if(count($this->data))
@@ -435,7 +435,7 @@ class users_class extends kernel_extends {
 					else
 					{
 						_setcookie('remember', md5($this->data[0][$this->fn_pass]).'_'.$this->data[0]['id'], (time()+(86400*$this->owner->config['rememberday'])));
-						$this->setUserSession($this->data[0]);
+						$this->setUserSession($this->data[0]['id']);
 						static_main::_prmModulLoad();
 						return array($this->_CFG['_MESS']['authok'],1);
 					}
@@ -446,7 +446,7 @@ class users_class extends kernel_extends {
 		return array('',0);
 	}
 
-	function regForm(){
+	function regForm() {
 		global $_MESS,$_tpl;
 
 		$flag=0;// 0 - показывает форму, 1 - нет
@@ -456,7 +456,7 @@ class users_class extends kernel_extends {
 			$this->id = $_SESSION['user']['id'];
 			$this->data = $this->_select();
 			$DATA = $this->data[$this->id];
-			if(isset($this->fields_form[$this->fn_pass]) and count($_POST) and !$_POST[$this->fn_pass]) {
+			if(isset($this->fields_form[$this->fn_pass]) and (!isset($_POST[$this->fn_pass]) or !$_POST[$this->fn_pass])) {
 				unset($this->fields_form[$this->fn_pass]);unset($_POST[$this->fn_pass]);
 			}
 		}
@@ -525,6 +525,7 @@ class users_class extends kernel_extends {
 							$arr['mess'][] = array('name'=>'ok', 'value'=>$this->_CFG['_MESS']['update']);
 							if($flag)// кастыль
 								$mess = $this->kPreFields($this->data[$this->id],$param);
+							$this->setUserSession($this->id);
 						}
 						else
 							$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['update_err']);
@@ -570,7 +571,7 @@ class users_class extends kernel_extends {
 				
 				if($this->_update()) {
 					$mess[] = array('name'=>'ok', 'value'=>$this->_CFG['_MESS']['confok']);
-					$this->setUserSession();
+					$this->setUserSession($this->id);
 					static_main::_prmModulLoad();
 					$flag = true;
 				}
@@ -682,15 +683,10 @@ class users_class extends kernel_extends {
 		return '<div align="center">'.$html.'</div>';
 	}
 
-	function setUserSession($data=false) {
-		if(!$data) {
-			$data = $this->owner->getUserData($this->id);
-		}
+	function setUserSession($id) {
+		$data = $this->owner->getUserData($id);
 		if(!count($data) and !$data['id']) return false;
 		session_go(1);
-		$data['FckEditorUserFilesUrl'] = $this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['userfile'].$data['id'].'/';
-		$data['FckEditorUserFilesPath'] = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['userfile'].$data['id'].'/';
-
 		$_SESSION['user'] = $data;
 		if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0)
 			_setcookie('_showerror',1);
