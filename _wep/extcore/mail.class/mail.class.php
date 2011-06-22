@@ -50,10 +50,9 @@ class mail_class extends kernel_extends {
 	}
 
 	function Send($data) {
+		$this->__do_hook('Send', $data);
 		if(!$data['mailTo']) {
-			unset($data['mailTo']);
-
-			$this->__do_hook('Send', $data);
+			unset($data['mailTo']);		
 
 			$this->fld_data = $data;
 			return $this->_add($data);
