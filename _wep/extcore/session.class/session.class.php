@@ -7,6 +7,7 @@ class session_class extends kernel_extends {
 		$this->prm_add = false;
 		$this->prm_edit = false;
 		$this->mf_namefields = false;
+		$this->cf_reinstall = true;
 		$this->ver = '0.1';
 		$this->caption = 'Сессии';
 		$this->deadvisits  = 2; // мин число визитов
