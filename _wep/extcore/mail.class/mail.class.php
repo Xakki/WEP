@@ -46,12 +46,15 @@ class mail_class extends kernel_extends {
 		$this->fields_form['subject']= array('type'=>'text','caption'=>'Тема письма', 'mask'=>array('min' => '6'));
 		$this->fields_form['text']= array('type'=>'textarea','caption'=>'Текcт письма', 'mask'=>array('min' => '6'));
 		
-		$this->locallang['default']['_saveclose'] = 'Отправить письмо';
+		$this->locallang['default']['_saveclose'] = 'Отправить письмо';		
 	}
 
 	function Send($data) {
 		if(!$data['mailTo']) {
 			unset($data['mailTo']);
+
+			$this->__do_hook('Send', $data);
+
 			$this->fld_data = $data;
 			return $this->_add($data);
 		}
@@ -93,7 +96,8 @@ class mail_class extends kernel_extends {
 				$header .= "$content\n";
 			}
 		if(isset($data['att']))
-			$header .= "--{$this->uid}--\r\n";
+			$header .= "--{$this->uid}--\r\n";	
+
 		return mail($data['mailTo'], $subject, $mess,$header,'-f'.$data['from']);
 	}
 
