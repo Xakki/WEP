@@ -711,6 +711,7 @@ class static_tools {
 	 * @return bool Результат
 	 */
 	static function _checkdir($dir) {
+		if(!$dir) return false;
 		if (!file_exists($dir)) {
 			if (!file_exists(dirname($dir))) {
 				self::_checkdir(dirname($dir));

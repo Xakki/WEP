@@ -68,7 +68,7 @@ Examples:
 ATTENTION: The trailing slash is required.
 */
 //$baseUrl = '/ckfinder/userfiles/';
-$baseUrl = $_SESSION['user']['FckEditorUserFilesUrl'];
+$baseUrl = (isset($_SESSION['user']['FckEditorUserFilesUrl'])?$_SESSION['user']['FckEditorUserFilesUrl']:'');
 /*
 $baseDir : the path to the local directory (in the server) which points to the
 above $baseUrl URL. This is the path used by CKFinder to handle the files in
@@ -87,7 +87,7 @@ Examples:
 ATTENTION: The trailing slash is required.
 */
 //$baseDir = resolveUrl($baseUrl);
-$baseDir = $_SESSION['user']['FckEditorUserFilesPath'];
+$baseDir = (isset($_SESSION['user']['FckEditorUserFilesPath'])?$_SESSION['user']['FckEditorUserFilesPath']:'');
 /*
  * ### Advanced Settings
  */
@@ -157,7 +157,7 @@ Subfolders inherit their default settings from their parents' definitions.
 			
 			return $totalsize;
 		}
-		$MSize=$_SESSION['user']['filesize'];
+		$MSize=(isset($_SESSION['user']['filesize'])?$_SESSION['user']['filesize']:'');
 		if(file_exists($baseDir) and is_dir($baseDir)) {
 			$dirsize = round(dir_size($baseDir)/(1024 * 1024));//в мегабайтах
 			$MSize = $_SESSION['user']['filesize']-$dirsize;
