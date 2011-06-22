@@ -1,36 +1,12 @@
 <?
 class session_class extends kernel_extends {
-	function __construct($owner=NULL) {
-		parent::__construct($owner);
-
-		$this->fields['id'] = array('type' => 'int', 'width' =>11, 'attr' => 'unsigned NOT NULL auto_increment');
-		$this->fields['sid'] = array('type' => 'varchar', 'width' =>128, 'default' => 'NULL');
-		$this->fields['host'] = array('type' => 'varchar', 'width' =>255, 'default' => 'NULL');
-		$this->fields['host2'] = array('type' => 'varchar', 'width' =>255, 'default' => 'NULL');
-		$this->fields['created'] = array('type' => 'int', 'width' =>11, 'attr' => 'unsigned', 'default'=>'0');
-		$this->fields['expired'] = array('type' => 'int', 'width' =>11, 'attr' => 'unsigned', 'default'=>'0');
-		$this->fields['modified'] = array('type' => 'int', 'width' =>11, 'attr' => 'unsigned', 'default'=>'0');
-		$this->fields['data'] = array('type' => 'text', 'attr' => '');
-		$this->fields['users_id'] = array('type' => 'varchar', 'width' =>64, 'default' => '');
-		$this->fields['ip'] = array('type' => 'varchar', 'width' =>32, 'default' => '');
-		$this->fields['useragent'] = array('type' => 'varchar', 'width' =>255, 'default' => '');
-		$this->fields['visits'] = array('type' => 'int', 'width' =>8, 'attr' => 'unsigned', 'default'=>'1');
-		$this->fields['lastpage'] = array('type' => 'varchar', 'width' =>255, 'default' => '');
-
-		$this->fields_form['expired'] = array('type' => 'date', 'readonly' => 1,'caption' => 'Срок истекает');
-		$this->fields_form['modified'] = array('type' => 'date', 'readonly' => 1,'caption' => 'Время');
-		$this->fields_form['users_id'] = array('type' => 'list', 'listname'=>array('class'=>'users'), 'readonly' => 1, 'caption' => 'Пользователь');
-		$this->fields_form['ip'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'IP');
-		$this->fields_form['visits'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Число посещений');
-		$this->fields_form['lastpage'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Страница');
-
-		$this->index_fields['sid'] = 'sid';
-		$this->index_fields['users_id'] = 'users_id';
-		$this->unique_fields['sid'] = 'sid';
-
-		$this->mf_createrid = false;
+	function _set_features() {
+		if (!parent::_set_features()) return false;
+		$this->mf_createrid = 'users_id';
+		$this->mf_ipcreate = true;
 		$this->prm_add = false;
 		$this->prm_edit = false;
+		$this->mf_namefields = false;
 		$this->ver = '0.1';
 		$this->caption = 'Сессии';
 		$this->deadvisits  = 2; // мин число визитов
@@ -41,6 +17,32 @@ class session_class extends kernel_extends {
 		$this->_hash = '';
 		//$this->expired = get_cfg_var('session.gc_maxlifetime');
 		$this->expired = $this->_CFG['session']['expire'];
+	}
+
+	function _create() {
+		parent::_create();
+		$this->fields['id'] = array('type' => 'int', 'width' =>11, 'attr' => 'unsigned NOT NULL auto_increment');
+		$this->fields['sid'] = array('type' => 'varchar', 'width' =>128, 'default' => 'NULL');
+		$this->fields['host'] = array('type' => 'varchar', 'width' =>255, 'default' => 'NULL');
+		$this->fields['host2'] = array('type' => 'varchar', 'width' =>255, 'default' => 'NULL');
+		$this->fields['created'] = array('type' => 'int', 'width' =>11, 'attr' => 'unsigned', 'default'=>'0');
+		$this->fields['expired'] = array('type' => 'int', 'width' =>11, 'attr' => 'unsigned', 'default'=>'0');
+		$this->fields['modified'] = array('type' => 'int', 'width' =>11, 'attr' => 'unsigned', 'default'=>'0');
+		$this->fields['data'] = array('type' => 'text', 'attr' => '');
+		$this->fields['useragent'] = array('type' => 'varchar', 'width' =>255, 'default' => '');
+		$this->fields['visits'] = array('type' => 'int', 'width' =>8, 'attr' => 'unsigned', 'default'=>'1');
+		$this->fields['lastpage'] = array('type' => 'varchar', 'width' =>255, 'default' => '');
+
+		$this->fields_form['expired'] = array('type' => 'date', 'readonly' => 1,'caption' => 'Срок истекает');
+		$this->fields_form['modified'] = array('type' => 'date', 'readonly' => 1,'caption' => 'Время');
+		$this->fields_form['users_id'] = array('type' => 'list', 'listname'=>array('class'=>'users'), 'readonly' => 1, 'caption' => 'Пользователь');
+		$this->fields_form['mf_ipcreate'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'IP');
+		$this->fields_form['visits'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Число посещений');
+		$this->fields_form['lastpage'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Страница');
+
+		$this->index_fields['sid'] = 'sid';
+		$this->unique_fields['sid'] = 'sid';
+
 		if(!session_id()) {
 			session_set_save_handler(array(&$this,"open"), array(&$this,"close"), array(&$this,"read"), array(&$this,"write"), array(&$this,"destroy"), array(&$this,"gc"));
 			session_start();
@@ -112,8 +114,8 @@ class session_class extends kernel_extends {
 				$result = $this->SQL->execSQL($query.' WHERE `sid`="'.mysql_real_escape_string($sid).'"');
 			} else {
 				$result = $this->SQL->execSQL('INSERT INTO '.$this->tablename.' 
-(`sid`,`created`,`modified`,`expired`,`data`,`users_id`,`ip`,`useragent`,`lastpage`,`host`,`host2`) values
-("'.$sid.'","'.$this->_time.'","'.$this->_time.'","'.$this->expired.'","'.$sess_data.'","'.$userId.'","'.mysql_real_escape_string($_SERVER["REMOTE_ADDR"]).'","'.mysql_real_escape_string(substr($_SERVER['HTTP_USER_AGENT'],0,250)).'","'.$lastPage.'","'.$host.'","'.mysql_real_escape_string($_SERVER['HTTP_HOST2']).'")');
+(`sid`,`created`,`modified`,`expired`,`data`,`users_id`,`mf_ipcreate`,`useragent`,`lastpage`,`host`,`host2`) values
+("'.$sid.'","'.$this->_time.'","'.$this->_time.'","'.$this->expired.'","'.$sess_data.'","'.$userId.'","'.sprintf("%u",ip2long($_SERVER['REMOTE_ADDR'])).'","'.mysql_real_escape_string(substr($_SERVER['HTTP_USER_AGENT'],0,250)).'","'.$lastPage.'","'.$host.'","'.sprintf("%u",ip2long($_SERVER['REMOTE_ADDR'])).'")');
 			}
 			
 		}

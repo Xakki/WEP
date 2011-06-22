@@ -14,7 +14,8 @@ if(!isset($var_const))
 		'mess'=>array(),
 		'sbmt'=>'Сохранить'
 	);
-$_CFG['modulprm'] = array();
+//$_CFG['modulprm'] = array();
+
 _new_class('modulprm', $MODUL);
 //Форма установки модулей
 list($res, $DATA) = static_tools::_toolsCheckmodul($MODUL);

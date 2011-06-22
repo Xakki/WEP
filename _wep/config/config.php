@@ -539,15 +539,15 @@ function _mb_strpos($haystack, $needle, $offset=0) {
  */
 function _new_class($name, &$MODUL, &$OWNER = NULL) {
 	global $_CFG;
+	$MODUL = NULL;
+	static_main::_prmModulLoad();
+	if (isset($_CFG['modulprm_ext'][$name]) && isset($_CFG['modulprm'][$name]) && !$_CFG['modulprm'][$name]['active'])
+		$name = $_CFG['modulprm_ext'][$name][0];
+
 	if (isset($_CFG['singleton'][$name])) {
 		$MODUL = $_CFG['singleton'][$name];
 		return true;
 	} else {
-
-		$MODUL = NULL;
-		static_main::_prmModulLoad();
-		if (isset($_CFG['modulprm_ext'][$name]) && isset($_CFG['modulprm'][$name]) && !$_CFG['modulprm'][$name]['active'])
-			$name = $_CFG['modulprm_ext'][$name][0];
 		$class_name = $name . "_class";
 		try {
 			if (!class_exists($class_name,false) and $file = _modulExists($class_name,$OWNER)) {

@@ -165,7 +165,6 @@ final class modulprm_class extends kernel_extends {
 						//Установка модуля
 						$flag = true;
 						$rDATA = static_tools::_checkmodstruct($r['_entry']);
-						//print_r('<pre>');print_r($rDATA);
 						foreach($rDATA as $tr) {
 							foreach($tr as $tr2) {
 								if(isset($tr2['@mess'])) {
@@ -318,7 +317,7 @@ final class modulprm_class extends kernel_extends {
 	public function _checkmodstruct() {
 		$rDATA = array();
 		/*Установка и проверка главных модулей*/
-		$this->_CFG['modulprm'] = array();
+		//$this->_CFG['modulprm'] = array();
 		if(!isset($_POST['sbmt'])) {
 			$_POST['sbmt'] = 1;
 			foreach($this->_CFG['require_modul'] as $k=>$r) {
@@ -357,7 +356,9 @@ final class modulprm_class extends kernel_extends {
 			if ($fpath) {
 				include_once($fpath);
 				unset($this->_CFG['modulprm_ext']);
+
 				if (_new_class($Mid, $MODUL, $OWN)) {
+
 					if ($OWN and (!isset($this->data[$Mid]) or $this->data[$Mid]['parent_id'] != $OWN->_cl))
 						$this->fld_data['parent_id'] = $OWN->_cl;
 					if (!isset($this->data[$Mid]))// or $this->data[$Mid]['name'] != $MODUL->caption
@@ -396,14 +397,14 @@ final class modulprm_class extends kernel_extends {
 						if (!isset($this->data[$Mid])) {
 							$this->fld_data['id'] = $Mid;
 							if ($this->_add(false))
-								$MESS[] = array('notice', 'Данные для модуля `' . $Mid . '`[' . $path . '] успешно записанны.');
+								$MESS[] = array('notice', 'Информация о модуле `' . $Mid . '`[' . $path . '] успешно записанна.');
 							else {
 								$MESS[] = array('error', 'Ошибка записи данных для модуля `' . $Mid . '`[' . $path . '].'.print_r($this->fld_data,true));
 								$flag = false;
 							}
 						} else {
 							if ($this->_update(false))
-								$MESS[] = array('notice', 'Данные для модуля `' . $Mid . '`[' . $path . '] успешно обновленны.');
+								$MESS[] = array('notice', 'Информация о модуле `' . $Mid . '`[' . $path . '] успешно обновленна.');
 							else {
 								$MESS[] = array('error', 'Ошибка обновления данных для модуля `' . $Mid . '`[' . $path . '].');
 								$flag = false;

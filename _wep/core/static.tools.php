@@ -106,7 +106,6 @@ class static_tools {
 				$temp_newFields = trim(str_replace(array('"', "'", chr(194).chr(160),"\xC2xA0","\n"), array('', '', ' ', ' ', ' '), mb_strtolower($newFields)));
 
 				if (isset($MODUL->fields[$fldname]['type']) and $temp_currentFields!=$temp_newFields) {
-					//print_r($temp_currentFields);print_r('  *  ');print_r($temp_newFields);print_r('  ---------------   ');
 					$rDATA[$fldname]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` CHANGE `' . $fldname . '` ' . $newFields;
 					$rDATA[$fldname]['@oldquery'] = $currentFields;
 				}

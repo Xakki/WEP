@@ -34,7 +34,7 @@ abstract class kernel_extends {
 		$this->_childs();
 		$this->setFieldsForm();
 		if (isset($this->_CFG['hook']['__construct']))
-			$this->__do_hook('__construct', func_num_args());
+			$this->__do_hook('__construct', func_get_args());
 	}
 
 	function __destruct() {

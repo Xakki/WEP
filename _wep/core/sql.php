@@ -94,6 +94,10 @@
 			if (isset($param['attr']) and stristr($param['attr'], 'default')) {
 				$mess[] = array( 'alert', 'Пар-р default прописан в ключе attr. Для корректной работы необходимо прописать его в отдельном элементе с ключом `default`' );
 			}
+			if ($param['type']=='text' && isset($param['attr']) && stripos($param['attr'],'NULL')!==false && stripos($param['attr'],'NOT NULL')===false) {
+				$mess[] = array( 'alert', 'Атрибут `NULL` для поля `'.$key.'` указывать не обязательно.');
+				unset($param['attr']);
+			}
 			if (isset($param['default']) &&	isset($this->types_without_default[$param['type']])) {
 				$mess[] = array( 'alert', 'Параметр `default` для поля `'.$key.'` указывать не обязательно.');
 				unset($param['default']);
