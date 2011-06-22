@@ -687,6 +687,8 @@ class users_class extends kernel_extends {
 		$data = $this->owner->getUserData($id);
 		if(!count($data) and !$data['id']) return false;
 		session_go(1);
+		$data['FckEditorUserFilesUrl'] = $this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['userfile'].$data['id'].'/';
+		$data['FckEditorUserFilesPath'] = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['userfile'].$data['id'].'/';
 		$_SESSION['user'] = $data;
 		if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0)
 			_setcookie('_showerror',1);
