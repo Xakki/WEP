@@ -123,7 +123,7 @@
 				$m.= '(' . $param['width'] . ')';
 			if( isset($param['attr']))
 				$m.=' ' . $param['attr'];
-			elseif(strpos($param['default'],'NULL')===false and $param['type']!='text')
+			elseif(isset($param['default']) and strpos($param['default'],'NULL')===false and $param['type']!='text')
 				$m.=' NOT NULL';
 			if(isset($param['default']))
 				$m.=' DEFAULT \'' . $param['default'] . '\'';

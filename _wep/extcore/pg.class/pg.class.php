@@ -101,11 +101,11 @@ class pg_class extends kernel_extends {
 		);
 	}
 
-	function _preInstall() {
+	function setSystemFields() {
 		$this->def_records[] = array('id'=>'index','name'=>'Главная страница','active'=>1,'template'=>'default');
 		$this->def_records[] = array('id'=>'404','name'=>'Страницы нету','parent_id'=>'index','active'=>1,'template'=>'default');
 		$this->def_records[] = array('id'=>'401','name'=>'Недостаточно прав для доступа к странице','parent_id'=>'index','active'=>1,'template'=>'default');
-		return parent::_preInstall();
+		return parent::setSystemFields();
 	}
 	
 	function _childs() {

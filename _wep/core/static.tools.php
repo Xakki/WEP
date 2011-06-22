@@ -73,7 +73,7 @@ class static_tools {
 			return $rDATA;
 		}
 		$MODUL->setSystemFields();// установка системных полей
-		$MODUL->_preInstall();
+//if($MODUL->_cl=='uniusers') {print_r('<pre>');print_r($MODUL->_CFG['hook']);}
 		if (!$result->num_rows()) {
 			if (isset($_POST['sbmt'])) {
 				if (!self::_creatTable($MODUL)) {

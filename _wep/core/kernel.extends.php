@@ -740,9 +740,6 @@ abstract class kernel_extends {
 		return static_tools::_checkmodstruct($this->_cl);
 	}
 
-	function _preInstall() {
-	}
-
 	function setSystemFields() {
 		$temp = $this->fields_form;
 		$this->fields_form = array();

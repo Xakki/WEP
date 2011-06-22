@@ -9,8 +9,8 @@ class loginza_class extends kernel_extends
 		return true;
 	}
 
-	function _preInstall() {
-		parent::_preInstall();
+	function setSystemFields() {
+		//parent::setSystemFields();
 		$this->_setHook['__construct']['users'] = array(
 			static_main::relativePath(__DIR__).'/hook.php' => '_CHLU',
 		);

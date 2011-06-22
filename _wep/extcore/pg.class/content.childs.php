@@ -33,9 +33,9 @@ class content_class extends kernel_extends {
 		$this->owner->_listnameSQL = 'template, name';
 	}
 
-	function _preInstall() {
+	function setSystemFields() {
 		$this->def_records[] = array('owner_id'=>'404','pg'=>'Недостаточно прав для доступа к странице','marker'=>'text','active'=>1);
-		return parent::_preInstall();
+		return parent::setSystemFields();
 	}
 
 	public function setFieldsForm() {

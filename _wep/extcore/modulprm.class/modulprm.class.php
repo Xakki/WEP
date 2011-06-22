@@ -358,7 +358,7 @@ final class modulprm_class extends kernel_extends {
 				unset($this->_CFG['modulprm_ext']);
 
 				if (_new_class($Mid, $MODUL, $OWN)) {
-
+					$MODUL->setSystemFields();// установка системных полей
 					if ($OWN and (!isset($this->data[$Mid]) or $this->data[$Mid]['parent_id'] != $OWN->_cl))
 						$this->fld_data['parent_id'] = $OWN->_cl;
 					if (!isset($this->data[$Mid]))// or $this->data[$Mid]['name'] != $MODUL->caption
