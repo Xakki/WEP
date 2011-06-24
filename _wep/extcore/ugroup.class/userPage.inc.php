@@ -6,12 +6,10 @@
 	}else
 		$FUNCPARAM[0] = $_SESSION['user']['id'];
 	$DATA = $UGROUP->childs['users']->UserInfo($FUNCPARAM[0]);
-	$gadgets = $UGROUP->childs['users']->getGadgets($_SESSION['user']['id']);
 	$DATA = array(
 		'userinfo'=>
 			array(
 				'data'=>$DATA,
-				'gadgets' => $gadgets,
 			)
 		);
 	$html = $HTML->transformPHP($DATA,'userinfo');
