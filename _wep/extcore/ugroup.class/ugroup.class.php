@@ -156,8 +156,8 @@ class ugroup_class extends kernel_extends
 	function cookieAuthorization() {
 		return $this->childs['users']->cookieAuthorization();
 	}
-	function regForm() {
-		return $this->childs['users']->regForm();
+	function regForm($param=array()) {
+		return $this->childs['users']->regForm($param);
 	}
 	function regConfirm() {
 		return $this->childs['users']->regConfirm();
@@ -446,10 +446,10 @@ class users_class extends kernel_extends {
 		return array('',0);
 	}
 
-	function regForm() {
+	function regForm($param=array()) {
 		global $_MESS,$_tpl;
-
-		$flag=0;// 0 - показывает форму, 1 - нет
+		$flag=0;// 1 - успешно, 0 - норм, -1  - ошибка
+		$formflag = 1;// 0 - показывает форму, 1 - не показывать форму
 		$arr = array('mess'=>array(),'vars'=>array());
 		$mess = $DATA = array();
 		if(static_main::_prmUserCheck()) {
@@ -472,6 +472,7 @@ class users_class extends kernel_extends {
 		}
 
 		if(count($_POST) and $_POST['sbmt']) {
+			$flag=-1;
 			//if($this->fn_pass!='pass') $_POST[$this->fn_pass] = $_POST['pass'];
 			//if($this->fn_pass!='login') $_POST[$this->fn_login] = $_POST['login'];
 			$this->kPreFields($_POST,$param);
@@ -523,25 +524,39 @@ class users_class extends kernel_extends {
 					}else { // профиль
 						if($this->_save_item($arr['vars'])) {
 							$arr['mess'][] = array('name'=>'ok', 'value'=>$this->_CFG['_MESS']['update']);
-							if($flag)// кастыль
+							if($formflag)// кастыль
 								$mess = $this->kPreFields($this->data[$this->id],$param);
 							$this->setUserSession($this->id);
+							$flag=1;
 						}
 						else
 							$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['update_err']);
 					}
 				}
 			}
-		} else $mess = $this->kPreFields($DATA,$param);
+		} else  {
+			$mess = $this->kPreFields($DATA,$param);
+		}
 		if(static_main::_prmUserCheck())
 			$this->fields_form['_info']= array('type'=>'info','caption'=>$this->getMess('title_profile'),'css'=>'caption');
 		else
 			$this->fields_form['_info']= array('type'=>'info','caption'=>$this->getMess('title_regme'),'css'=>'caption');
 
 		static_form::setCaptcha();
-		$formflag = $this->kFields2Form($param);
+		if(isset($param['formflag']))
+			$formflag = $param['formflag'];
+		elseif($flag==0)
+			$formflag = 1;
+		elseif($_POST['sbmt'] and $flag==1)
+			$formflag = 0;
+		elseif($_POST['sbmt_save'])
+			$formflag = 1;
+		elseif(isset($param['ajax']))
+			$formflag = 0;
+		if($formflag) // показывать форму
+			$formflag = $this->kFields2Form($param);
 
-		return Array(Array('messages'=>($mess+$arr['mess']), 'form'=>(!$flag?$this->form:array()), 'class'=>'regform'), $flag);
+		return Array(Array('messages'=>($mess+$arr['mess']), 'form'=>($formflag?$this->form:array()), 'class'=>'regform'), $flag);
 	}
 
 	function regConfirm() {

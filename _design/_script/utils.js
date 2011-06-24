@@ -19,7 +19,7 @@ function fLog(txt,flag) {
 	if(jQuery('#debug_view').size())
 		jQuery('#debug_view').html(txt+jQuery('#debug_view').html());
 	else
-		jQuery(".maintext .block").prepend("<div id='debug_view' style='border:1px solid blue;'>"+txt+"</div>");
+		jQuery("body").prepend("<div id='debug_view' style='border:1px solid blue;'>"+txt+"</div>");
 	if(flag==1) fShowHide('debug_view',1);
 }
 

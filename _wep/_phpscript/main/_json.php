@@ -72,12 +72,12 @@
 		//$GLOBALS['_RESULT']['html2'] = $_tpl;
 		foreach($_POST as $k=>$r) {
 			if(isset($_tpl[$k])) {
-				$GLOBALS['_RESULT'][$k] = $_tpl[$k];
+				$GLOBALS['_RESULT']['pg_'.$k] = $_tpl[$k];
 				if(is_array($r)) {
 					foreach($r as $vk=>$vr)
-						$GLOBALS['_RESULT']['eval'] .= 'jQuery(\''.$vr.'\').'.$vk.'(result.'.$k.');';
+						$GLOBALS['_RESULT']['eval'] .= 'jQuery(\''.$vr.'\').'.$vk.'(result.pg_'.$k.');';
 				} else//replaceWith
-					$GLOBALS['_RESULT']['eval'] .= 'jQuery(\''.$r.'\').html(result.'.$k.');';
+					$GLOBALS['_RESULT']['eval'] .= 'jQuery(\''.$r.'\').html(result.pg_'.$k.');';
 			}
 		}
 		//print_r('<pre>');print_r($GLOBALS['_RESULT']);
