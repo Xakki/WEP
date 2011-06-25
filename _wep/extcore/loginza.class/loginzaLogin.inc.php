@@ -39,7 +39,7 @@ HELP**/
 				$mess[] = array('name'=>'ok', 'value'=>$LOGINZA->_CFG['_MESS']['authok']);
 				_new_class('ugroup',$UGROUP);
 				$USERS = $UGROUP->childs['users'];
-				$USERS->setUserSession();
+				$USERS->setUserSession($USERS->id);
 				static_main::_prmModulLoad();
 			}
 			$mess = array('messages'=>$mess);

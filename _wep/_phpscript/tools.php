@@ -28,6 +28,13 @@ function tools_step3() {
 	return require($file);
 }
 
+function tools_docron() {
+	global $_CFG;
+	$ttw  = getmicrotime();
+	include($_CFG['_PATH']['phpscript'].'/cron.php');
+	return '--Крон выполнен, время обработки задач =  '.(getmicrotime()-$ttw).'mc -----';;
+}
+
 function tools_cron() {
 	global $_CFG,$_tpl;
 	if(!static_main::_prmUserCheck(1))
@@ -65,7 +72,7 @@ function tools_cron() {
 				$p = 0;
 			else {
 				ksort($_CFG['wep']['cron']);
-				reset($_CFG['wep']['cron']);
+				end($_CFG['wep']['cron']);
 				$p = key($_CFG['wep']['cron'])+1;
 			}
 			$NEWDATA = array();
@@ -75,11 +82,22 @@ function tools_cron() {
 				'file'=>$_POST['file'],
 				'modul'=>$_POST['modul'],
 				'function'=>$_POST['function'],
+				'active'=>($_POST['active']?1:0),
 			);
 			list($fl,$mess) = static_tools::saveUserCFG($NEWDATA);
 			if(!$fl)
 				$FORM['info'] = array('type'=>'info', 'caption'=>'<h3 style="color:red;">Ошибка</h3>');
 			else {
+				if($_POST['last_time']) {
+					$ini_arr['last_time'.$p] = mktime($_POST['last_time'][3],$_POST['last_time'][4],$_POST['last_time'][5],$_POST['last_time'][1],$_POST['last_time'][2],$_POST['last_time'][0]);
+					$conf = '';
+					foreach ($ini_arr as $k=>$v) {
+						$conf .= $k . " = " . $v . "\n";
+					}
+					umask(0777);
+					file_put_contents($ini_file, $conf);
+					chmod($ini_file, 0777);
+				}
 				$_SESSION['messtool'] = array('name'=>'ok','value'=>'Задание успешно добавлено.');
 				header('Location: /'.key($DATA['path']));
 				die();
@@ -88,6 +106,7 @@ function tools_cron() {
 		$DATA['path'][$FP.'_type=add'] = 'Добавить';
 		if($_GET['_type'] == 'edit' and isset($_GET['_id']) and isset($_CFG['wep']['cron'][$_GET['_id']])) {
 			$VAL = $_CFG['wep']['cron'][$_GET['_id']];
+			$VAL['last_time'] = $ini_arr['last_time'.$_GET['_id']];
 			$DATA['path'][$FP.'_type=add'] = 'Правка';
 		}
 		elseif(isset($_POST))
@@ -127,6 +146,23 @@ function tools_cron() {
 			'style' => '',
 			'value'=>$VAL['function'],
 		);
+		$FORM['active'] = array (
+			'caption' => 'Активность',
+			'comment' => '',
+			'type' => 'checkbox',
+			'css' => '',
+			'style' => '',
+			'value'=>$VAL['active'],
+		);
+		$FORM['last_time'] = array (
+			'caption' => 'Время запуска',
+			'comment' => '',
+			'type' => 'date',
+			'fields_type'=>'int',
+			'css' => '',
+			'style' => '',
+			'value'=>$VAL['last_time'],
+		);
 		$FORM['sbmt'] = array(
 			'type' => 'submit',
 			'value' => 'Сохранить');
@@ -136,7 +172,8 @@ function tools_cron() {
 		global $HTML;
 		$result = $HTML->transformPHP($DATA, 'path');
 		$result .= $HTML->transformPHP($FORM, 'formcreat');
-	}elseif($_GET['_type'] == 'del' and isset($_GET['_id'])) {
+	}
+	elseif($_GET['_type'] == 'del' and isset($_GET['_id'])) {
 		$NEWDATA = array();
 		$NEWDATA['wep']['cron'] = $_CFG['wep']['cron'];
 		unset($NEWDATA['wep']['cron'][$_GET['_id']]);
@@ -147,14 +184,29 @@ function tools_cron() {
 			$_SESSION['messtool'] = array('name'=>'ok','value'=>'Задание успешно Удалено.');
 		header('Location: /'.key($DATA['path']));
 		die();
-	}else {
+	} 
+	elseif(isset($_GET['_id']) and ($_GET['_type'] == 'act' or $_GET['_type'] == 'dis')) {
+		$act = ($_GET['_type'] == 'act'?1:0);
+		$NEWDATA = array();
+		$NEWDATA['wep']['cron'] = $_CFG['wep']['cron'];
+		$NEWDATA['wep']['cron'][$_GET['_id']]['active'] = $act;
+		list($fl,$mess) = static_tools::saveUserCFG($NEWDATA);
+		if(!$fl)
+			$_SESSION['messtool'] = array('name'=>'error','value'=>'Ошибка.');
+		else
+			$_SESSION['messtool'] = array('name'=>'ok','value'=>'Задание успешно '.($act?'включено':'отключено').'.');
+		header('Location: /'.key($DATA['path']));
+		die();
+	}
+	else {
 		$DATA['data'] = array(
 			'thitem'=>array(
 				'time'=>array('value'=>'Период'),
 				'file'=>array('value'=>'Фаил'),
 				'modul'=>array('value'=>'Модуль'),
 				'function'=>array('value'=>'Функция'),
-				'lasttime'=>array('value'=>'Время прошлого выполнения')
+				'lasttime'=>array('value'=>'Время прошлого выполнения'),
+				'do_time'=>array('value'=>'Время выполнения задачи в мс.')
 			),
 		);
 		if(isset($_CFG['wep']['cron']) and count($_CFG['wep']['cron'])) {
@@ -165,7 +217,10 @@ function tools_cron() {
 					'modul'=>array('value'=>$r['modul']),
 					'function'=>array('value'=>$r['function']),
 					'lasttime'=>array('value'=>date('Y-m-d H:i:s',$ini_arr['last_time'.$k])),
+					'do_time'=>array('value'=>$ini_arr['do_time'.$k]),
 				);
+				$DATA['data']['item'][$k]['active'] = (!isset($r['active'])?1:(int)$r['active']);
+				$DATA['data']['item'][$k]['act'] = 1;
 				$DATA['data']['item'][$k]['edit'] = 1;
 				$DATA['data']['item'][$k]['del'] = 1;
 				$DATA['data']['item'][$k]['id'] = $k;
@@ -292,6 +347,7 @@ $dataF = array(
 	'tools_step2'=>'<span class="tools_item">Проверка структуры сайта</span>',
 	'tools_step3'=>'<span class="tools_item">Установка модулей и удаление.</span>',
 	'tools_cron'=>'<span class="tools_item">Настройка Крона</span>',
+	'tools_docron'=>'<span class="tools_item">Выполнить Крон вручную</span>',
 	'tools_worktime'=>'<span class="tools_item">Режим "технические работы"</span>',
 	'getphpinfo'=>'<span class="tools_item">PHPINFO</span>',
 	'allinfos'=> '<span class="tools_item">Выввод глобальных переменных</span>',

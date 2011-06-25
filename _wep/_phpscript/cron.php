@@ -22,8 +22,9 @@
 		if (isset($ini_arr['last_time' . $i]) && ($ini_arr['last_time' . $i] + $r['time']) > $time) {
 			//$res .= 'Рано импортировать файл '. $ini_arr['file'.$i]. ', последний раз он импортировался '.date('d.m.Y H:i', $ini_arr['last_time'.$i]). ', сейчас ' . date('d.m.Y H:i', $time) . '. (Установленный интервал: '.$ini_arr['int' . $i].' минут, осталось ' . round((($ini_arr['last_time' . $i] + ($ini_arr['int' . $i] * 60) - $time) / 60), 1) . ' минут)' . "\n";
 		}
-		else {
+		elseif(!isset($r['active']) or $r['active']) {
 			$ini_arr['last_time' . $i] = $time;
+			$tt  = getmicrotime();
 			//'time' => '600', 'file' => '_wepconf/ext/exportboard.class/exportboard.cron.php', 'modul' => '', 'function' => ''
 			if($r['file']) {
 				$r['file'] = $_CFG['_PATH']['path'].$r['file'];
@@ -39,6 +40,7 @@
 			}elseif($r['function']) {
 				eval('$res .= '.$r['function'].';');
 			}
+			$ini_arr['do_time' . $i] = getmicrotime()-$tt;
 		}
 	}
 

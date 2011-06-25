@@ -95,7 +95,7 @@ class loginza_class extends kernel_extends
 				if($flag) {
 					session_go(1);
 					$mess[] = array('name'=>'ok', 'value'=>$this->_CFG['_MESS']['authok']);
-					$USERS->setUserSession();
+					$USERS->setUserSession($USERS->id);
 					//static_main::_prmModulLoad();
 				}
 
