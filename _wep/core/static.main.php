@@ -222,8 +222,8 @@ class static_main {
 			//	_new_class('ugroup', $UGROUP);
 			$result = array($_CFG['_MESS']['authok'], 1);
 		}
-		if (!$result[1])
-			self::userExit();
+		/*if (!$result[1] and isset($_POST['login'])) //вероятно не нужно удалять авторизацию если была не удачная попытка
+			self::userExit();*/
 		return $result;
 	}
 

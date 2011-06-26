@@ -31,7 +31,7 @@
 		exit($_CFG['_MESS']['denied']);
 		//$_tpl['onload']='window.location="login.php?mess=Недостаточно прав доступа."';
 	}
-	elseif(!$_GET['_modul'] or !$_SESSION['user']['wep']) {
+	elseif(!$_GET['_modul']) {// or !$_SESSION['user']['wep']
 		$GLOBALS['_RESULT']['html'] = $_CFG['_MESS']['errdata'];
 		exit($_CFG['_MESS']['errdata']);
 		//$_tpl['onload']='fLog(\'<div style="color:red;">'.date('H:i:s').' : Параметры заданны неверно!</div>\',1);fSwin1();';
@@ -60,10 +60,10 @@
 	if(isset($_GET['_pid']) and $_GET['_pid']!='') $MODUL->parent_id = $_GET['_pid'];
 	if(isset($_GET['_id']) and $_GET['_id']!='') $MODUL->id = $_GET['_id'];
 
-	if($_SESSION['user']['wep'])
+	//if($_SESSION['user']['wep'])
 		include($_CFG['_PATH']['cdesign'].$_design.'/js.php');
-	else {
+	/*else {
 		exit($_CFG['_MESS']['denied']);
-	}
+	}*/
 
 	$GLOBALS['_RESULT'] = array("html" => $html,"html2" => $html2,'eval'=>$_tpl['onload']);

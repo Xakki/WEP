@@ -4,9 +4,10 @@
 		if(isset($data['path']) and count($data['path'])) {
 			include_once($HTML->_PATHd.'php/path.php');
 			$html = tpl_path($data['path']);// PATH
-		}
-		end($data['path']);
-		$firstpath = key($data['path']);
+			end($data['path']);
+			$firstpath = key($data['path']);
+		} elseif($data['firstpath'])
+			$firstpath = $data['firstpath'];
 
 		if(count($data['topmenu'])) { //MENU
 			$temp_topmenu = '<div class="menu_new">';
