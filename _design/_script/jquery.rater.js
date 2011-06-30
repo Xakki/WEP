@@ -53,7 +53,7 @@ jQuery.fn.rater = function(url, options)
 	jQuery.extend(container, { averageRating: settings.curvalue, url: settings.url });
 
 	if(!settings.style || settings.style == null || settings.style == 'basic') {
-		var raterwidth = settings.maxvalue * 12;
+		var raterwidth = settings.maxvalue * 17;
 		if (settings.active == 1) {
 			tag_class = ' active';
 		}

@@ -195,13 +195,13 @@ class ugroup_class extends kernel_extends
 		$cssid = 'rating'.$modul;
 		if(!is_array($maxvalue) and $maxvalue>= 3) {
 			if(!$vote) {
-				$content .= '<span id="'.$cssid.'"> </span>';
+				$content .= '<div class="stars" id="'.$cssid.'"> </div>';
 				$_tpl['script'][] = '$(document).ready(function(){
 							$(\'#'.$cssid.'\').rater(\'/_js.php?_view=rating&_modul='.$modul.'\',
 								{maxvalue:'.$maxvalue.', style: \'basic\', curvalue:'.$curvalue.', mid:'.$ID.', active: 1}
 							);});';
 			} else {
-				$content .= '<span id="'.$cssid.'"> </span>';
+				$content .= '<div class="stars" id="'.$cssid.'"> </div>';
 				$_tpl['script'][] = '$(document).ready(function(){
 							$(\'#'.$cssid.'\').rater(\'/_js.php?_view=rating&_modul='.$modul.'\',
 								{maxvalue:'.$maxvalue.', style: \'basic\', curvalue:'.$curvalue.', mid:'.$ID.', active: 0}

@@ -9,7 +9,7 @@ body .b-rating_type_20_extra .b-rating__star-hover .b-rating__icon
 }
 
 .b-rating_type_model .b-rating__icon {
-	background:url('../_img/rating.gif') repeat scroll 0 0 transparent;
+	background:url('../_img/bg-star-new.png') repeat scroll 0 0 transparent;
 }
 
 .b-rating_type_20_extra .b-rating__icon {
@@ -21,17 +21,18 @@ border:0 none;
 }
 
 /* ======= STAR-RATER ======== */
-
+.stars {
+	height: 18px;
+}
 .star-rating,
 .star-rating a {
-	background: url('../_img/star.gif') left -1000px repeat-x;
+	background: url('../_img/bg-star-new.png') left -1000px repeat-x;
 }
 .star-rating{
-    background-position: left -3px;
+    background-position: left 0;
     display: inline-block;
-    height: 12px;
+    height: 18px;
     list-style: none outside none;
-	float: right;
 	position: relative;
 	margin-top:3px;
 	}
@@ -42,18 +43,18 @@ ul.star-rating {
 	position:absolute;
 	text-indent:-1000em;
 	display: inline-block;
-	height: 12px;
+	height: 18px;
 }
 .star-rating.active a:hover,
 .star-rating.active a:active,
 .star-rating.active a:focus {
-	background-position: left -38px;
+	background-position: left -18px;
 }
 .star-rating .current-rating {
 	position:absolute;
 	display: inline-block;
-	background: url('../_img/star.gif') left -38px repeat-x;
-	height:12px;
+	background: url('../_img/bg-star-new.png') left -18px repeat-x;
+	height:18px;
 }
 .star-rating.active:hover .current-rating {
 	display:none;
