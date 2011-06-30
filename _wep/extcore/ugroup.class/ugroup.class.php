@@ -229,11 +229,7 @@ class ugroup_class extends kernel_extends
 				$content .= '<span class="good-bad-rating-text'.($curvalue>0?' rplus':($curvalue<0?' rminus':'')).'">'.($this->config['echoIntRating']?(int)$curvalue:$curvalue).'</span>';
 		}
 		return $content;
-	}
-
-	function setRating($modul,$ID,$val) {
-		return $modul.' - '.$ID.' - '.$val;
-	}
+	}	
 }
 
 

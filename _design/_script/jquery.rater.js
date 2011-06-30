@@ -123,13 +123,46 @@ jQuery.fn.rater = function(url, options)
 				jQuery(this).parent().removeClass('active');
 				settings.active = 0;
 				var cur_rating = jQuery(this).parent().children('.current-rating');
-				jQuery.post(container.url, { "rating": raterValue, "mid": settings.mid }, function(response){
+
+//				JSWin({
+//					'href':'/_js.php',
+//					'data':'_view=rating&_modul=shopprod',
+//					'call':function(){
+//						response = this;
+//						cur_rating.addClass('active');
+//						cur_rating.css('width', parseFloat(response)*20 + '%');
+//					}
+//				});
+
+				jQuery.ajax({
+					url : container.url,
+					data : { "rating": raterValue, "mid": settings.mid },
+					type : 'post',
+					dataType : 'json',
+					success : function(data, status) {
+						cur_rating.addClass('active');
+						cur_rating.css('width', parseFloat(data.html)*20 + '%');
+
+						if (data.eval != '') {
+							eval(data.eval);
+						}
+
+						
+
+					}
+				})
+
+
+///				jQuery.post(container.url, { "rating": raterValue, "mid": settings.mid }, function(response){
 				//	container.children('.star-rating-result').html(response);					
-					cur_rating.addClass('active');
+///					cur_rating.addClass('active');
 		//			cur_rating.width(parseFloat(response)*10 + '%');
-					cur_rating.css('width', parseFloat(response)*20 + '%');
+///					cur_rating.css('width', parseFloat(response)*20 + '%');
 		//			cur_rating.get(0).style.width = parseFloat(response)*10 + '%';
-				});
+
+
+
+///				});
 			}
 			
 			return false;
@@ -152,4 +185,4 @@ function clickVote(obj,id,fl,modul) {
 		$(obj).parent().find(".img-up1").attr({"class":"good-bad-rating-vote img-up4","onclick":r_alert});
 		$(obj).parent().find(".img-down1").attr({"class":"good-bad-rating-vote img-down3","onclick":r_alert});
 	}
-}	
+}
