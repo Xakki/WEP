@@ -63,6 +63,7 @@ class pg_class extends kernel_extends {
 		$this->RCVerCore = '2.2.9';
 		$this->pageinfo = 
 			$this->dataCash = $this->dataCashTree = array();
+		$this->pageParam = array();
 		return true;
 	}
 
