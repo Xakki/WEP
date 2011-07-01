@@ -15,13 +15,25 @@ class mail_class extends kernel_extends {
 	protected function _create_conf() {/*CONFIG*/
 		parent::_create_conf();
 
-		$this->config["mailsupport"] = 'xakki@xakki.ru';
-		$this->config["mailrobot"] = 'robot@xakki.ru';
-		$this->config["mailtemplate"] = '<html><head><title>%SUBJECT%</title><meta content="text/html;charset=utf-8" http-equiv="Content-Type" /></head><body>%TEXT% %MAILBOTTOM%</body></html>';
-		$this->config["mailbottom"] = '© 2011 «XAKKI»';
+		$this->_enum['mailengine'] = array(
+			0=>'SendMail',
+			1=>'phpMailer',
+		);
+		$this->config['mailengine'] = 0;
+		$this->config['mailrobot'] = 'robot@xakki.ru';
+		$this->config['fromName'] = '';
+		$this->config['PHPMailer_Host'] = 'ssl://smtp.gmail.com:465';
+		$this->config['PHPMailer_Username'] = 'zao.apit@gmail.com';
+		$this->config['PHPMailer_Password'] = 'G6A9o806P8kp';
+		$this->config['mailtemplate'] = '<html><head><title>%SUBJECT%</title><meta content="text/html;charset=utf-8" http-equiv="Content-Type" /></head><body>%TEXT% %MAILBOTTOM%</body></html>';
+		$this->config['mailbottom'] = '<hr/>© 2011 «XAKKI»';
 
-		$this->config_form["mailsupport"] = array("type" => "text", 'mask' =>array('min'=>1,"name"=>'email'), "caption" => "Адрес супорта");
-		$this->config_form["mailrobot"] = array("type" => "text", 'mask' =>array('min'=>1,"name"=>'email'), "caption" => "Адрес Робота");
+		$this->config_form['mailengine'] = array('type' => 'list', 'listname'=>'mailengine', 'caption' => 'Обработчик почты');
+		$this->config_form['mailrobot'] = array('type' => 'text', 'mask' =>array('min'=>1,'name'=>'email'), 'caption' => 'Адрес Робота');
+		$this->config_form['fromName'] = array('type' => 'text', 'caption' => 'Имя отправителя (название сайта)');
+		$this->config_form['PHPMailer_Host'] = array('type' => 'text', 'caption' => 'PHPMailer_Host', 'mask' =>array('name'=>'all'),'style'=>'background:#30B120;');
+		$this->config_form['PHPMailer_Username'] = array('type' => 'text', 'caption' => 'PHPMailer_Username', 'mask' =>array('name'=>'all'),'style'=>'background:#30B120;');
+		$this->config_form['PHPMailer_Password'] = array('type' => 'text', 'caption' => 'PHPMailer_Password', 'mask' =>array('name'=>'all'),'style'=>'background:#30B120;');
 		$this->config_form['mailtemplate'] = array(
 			'type' => 'textarea',
 			'caption' => 'Шаблон по умолчанию', 
@@ -57,47 +69,12 @@ class mail_class extends kernel_extends {
 			$this->fld_data = $data;
 			return $this->_add($data);
 		}
-		$data['subject'] = substr(htmlspecialchars(trim($data['subject'])), 0, 1000);
-		$this->uid = strtoupper(md5(uniqid(time())));
-		$subject = '=?utf-8?B?'. base64_encode($data['subject']).'?=';
-		$this->config['mailbottom'] = str_replace(array('%host%','%year%'),array($_SERVER['HTTP_HOST'],date('Y')),$this->config['mailbottom']);
-		$text = str_replace(array('%SUBJECT%','%TEXT%','%MAILBOTTOM%'),array($data['subject'],trim($data['text']),$this->config['mailbottom']),$this->config['mailtemplate']);
-		//$text = substr(trim($data['text']), 0, 1000000).$this->config['mailbottom'] = str_replace('%YEAR%',date('Y'),$this->config['mailbottom']);
-		if($data['from']=='')
-			$data['from']=$this->config['mailrobot'];
-		//if(strlen(ini_get('safe_mode'))< 1){
-		@ini_set('sendmail_from', $data['from']);
-		@ini_set('sendmail_path', '/usr/sbin/sendmail -t -i -f '.$data['from']);
-		 //}
-		$header = "MIME-Version: 1.0\r\n";
-		$header .= "To: {$data['mailTo']}\r\n";
-		$header .= "From: {$data['from']}\r\n";
-		$header .= "Bcc: {$data['from']}\r\n"; 
-		if($this->reply) $header .= "Reply-To: {$data['from']}\r\n";
-		
-		if(isset($data['att'])) {
-			$header .= "Content-Type: multipart/alternative; boundary={$this->uid}\r\n";
-			$header .= "--{$this->uid}\r\n";
-		} else {
-			$header .= "Content-Type: ".$this->contenttype."; charset=\"utf-8\"\r\n";
+		if(method_exists($this, 'mailengine'.$this->config['mailengine']))
+			return call_user_func(array($this, 'mailengine'.$this->config['mailengine']),$data);
+		else {
+			trigger_error('Попытка вызвать не существующий метод `mailengine'.$this->config['mailengine'].'` в модуле Mail!', E_USER_ERROR);
+			return false;
 		}
-		$header .= "Content-Transfer-Encoding: 8bit\r\n";
-		$mess = "$text\r\n";
-		if(isset($data['att']))
-			foreach($data['att'] as $file) {
-				$name=basename($file);
-				$type="application/octet-stream";
-				$content=chunk_split(base64_encode(file_get_contents($file)),76,"\n");
-				$header .= "--{$this->uid}\n";
-				$header .= "Content-Type: $type; name=\"$name\"\n";
-				$header .= "Content-Transfer-Encoding: base64\n";
-				$header .= "Content-Disposition: attachment; filename=\"$name\"\n\n";
-				$header .= "$content\n";
-			}
-		if(isset($data['att']))
-			$header .= "--{$this->uid}--\r\n";	
-
-		return mail($data['mailTo'], $subject, $mess,$header,'-f'.$data['from']);
 	}
 
 	function mailForm($mailTo) {
@@ -144,6 +121,100 @@ class mail_class extends kernel_extends {
 		return Array(Array('messages'=>($mess+$arr['mess']), 'form'=>($formflag?$this->form:array())), $flag);
 
 	}
+
+	function mailengine0 ($data) {
+		$data['subject'] = substr(htmlspecialchars(trim($data['subject'])), 0, 1000);
+		$this->uid = strtoupper(md5(uniqid(time())));
+		$subject = '=?utf-8?B?'. base64_encode($data['subject']).'?=';
+		$this->config['mailbottom'] = str_replace(array('%host%','%year%'),array($_SERVER['HTTP_HOST'],date('Y')),$this->config['mailbottom']);
+		$text = str_replace(array('%SUBJECT%','%TEXT%','%MAILBOTTOM%'),array($data['subject'],trim($data['text']),$this->config['mailbottom']),$this->config['mailtemplate']);
+		//$text = substr(trim($data['text']), 0, 1000000).$this->config['mailbottom'] = str_replace('%YEAR%',date('Y'),$this->config['mailbottom']);
+		if($data['from']=='')
+			$data['from']=$this->config['mailrobot'];
+		//if(strlen(ini_get('safe_mode'))< 1){
+		@ini_set('sendmail_from', $data['from']);
+		@ini_set('sendmail_path', '/usr/sbin/sendmail -t -i -f '.$data['from']);
+		 //}
+		$header = "MIME-Version: 1.0\r\n";
+		$header .= "To: {$data['mailTo']}\r\n";
+		$header .= "From: {$data['from']}\r\n";
+		$header .= "Bcc: {$data['from']}\r\n"; 
+		if($this->reply) $header .= "Reply-To: {$data['from']}\r\n";
+		
+		if(isset($data['att'])) {
+			$header .= "Content-Type: multipart/alternative; boundary={$this->uid}\r\n";
+			$header .= "--{$this->uid}\r\n";
+		} else {
+			$header .= "Content-Type: ".$this->contenttype."; charset=\"utf-8\"\r\n";
+		}
+		$header .= "Content-Transfer-Encoding: 8bit\r\n";
+		$mess = "$text\r\n";
+		if(isset($data['att']))
+			foreach($data['att'] as $file) {
+				$name=basename($file);
+				$type="application/octet-stream";
+				$content=chunk_split(base64_encode(file_get_contents($file)),76,"\n");
+				$header .= "--{$this->uid}\n";
+				$header .= "Content-Type: $type; name=\"$name\"\n";
+				$header .= "Content-Transfer-Encoding: base64\n";
+				$header .= "Content-Disposition: attachment; filename=\"$name\"\n\n";
+				$header .= "$content\n";
+			}
+		if(isset($data['att']))
+			$header .= "--{$this->uid}--\r\n";	
+
+		return mail($data['mailTo'], $subject, $mess,$header,'-f'.$data['from']);
+	}
+
+	function mailengine1 ($data) {
+		include_once(__DIR__.'/phpMailer/class.phpmailer.php');
+		if($data['from']=='')
+			$data['from']=$this->config['mailrobot'];
+		$data['subject'] = substr(htmlspecialchars(trim($data['subject'])), 0, 1000);
+		
+		$PHPMailer = new PHPMailer();
+		$PHPMailer->IsSMTP();
+		$PHPMailer->SMTPAuth = true;
+		$PHPMailer->CharSet = "utf-8";
+		$PHPMailer->Host = $this->config['PHPMailer_Host'];
+		$PHPMailer->Username = $this->config['PHPMailer_Username'];
+		$PHPMailer->Password = $this->config['PHPMailer_Password'];
+		$PHPMailer->SetLanguage('ru');
+		$PHPMailer->From = $data['from'];
+		if($this->config['fromName'])
+			$PHPMailer->FromName =  $this->config['fromName'];//iconv('cp1251','koi8-r','www.apitcomp.ru');
+		else
+			$PHPMailer->FromName = $_SERVER['HTTP_HOST'];
+		$PHPMailer->Subject = $data['subject'];//iconv('cp1251','koi8-r','Новый заказ на кредит');
+		
+		if(is_array($data['mailTo']))
+			foreach ($data['mailTo'] as $email)
+			{
+				$email = trim($email);
+				$PHPMailer->AddAddress($email, "Subscriber");
+				//$PHPMailer->AddAddress($email, iconv('cp1251','koi8-r',"Subscriber"));
+			}
+		else
+			$PHPMailer->AddAddress($data['mailTo'], "Subscriber");
+
+		$this->config['mailbottom'] = str_replace(array('%host%','%year%'),array($_SERVER['HTTP_HOST'],date('Y')),$this->config['mailbottom']);
+		$PHPMailer->Body = $PHPMailer->AltBody = str_replace(array('%SUBJECT%','%TEXT%','%MAILBOTTOM%'), array($data['subject'],trim($data['text']),$this->config['mailbottom']), $this->config['mailtemplate']);
+		//$PHPMailer->Body    = iconv('cp1251','koi8-r//TRANSLIT',$html);
+		//$PHPMailer->AltBody = iconv('cp1251','koi8-r//TRANSLIT',$txt);
+		if(isset($data['att']))
+			foreach($data['att'] as $file) {
+				//$type="application/octet-stream";
+				$content=chunk_split(base64_encode(),76,"\n");
+				$PHPMailer->AddStringAttachment(file_get_contents($file),basename($file));
+			}
+		if(!$PHPMailer->Send())
+		{
+			trigger_error($PHPMailer->ErrorInfo, E_USER_WARNING);
+			return false;
+		}
+		return true;
+	}
+
 }
 
 

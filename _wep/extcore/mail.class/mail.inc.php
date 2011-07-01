@@ -1,9 +1,10 @@
 <?
 	global $MAIL;
 	if(!$MAIL) _new_class('mail', $MAIL)
-
+	if (!isset($FUNCPARAM[0]))
+		$FUNCPARAM[0] = '';
 	$DATA = array();
-	list($DATA['formcreat'],$flag) = $MAIL->mailForm($MAIL->config["mailsupport"]);
+	list($DATA['formcreat'],$flag) = $MAIL->mailForm($FUNCPARAM[0]);
 	if($DATA['formcreat']['form']['_info'])
 		$DATA['formcreat']['form']['_info']['caption'] = 'Отправка письма службе поддержки';
 

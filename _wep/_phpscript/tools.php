@@ -342,12 +342,47 @@ function getphpinfo() {
 	phpinfo();
 	return ob_get_flush();
 }
+
+
+function tools_sendMail() {
+	global $SQL,$_CFG;
+	_new_class('mail',$MAIL);
+	$html = '';
+	if(isset($_POST['text']) and isset($_POST['mailTo']))  {
+		$ttw  = getmicrotime();
+		$MAIL->reply = 0;
+		$datamail = array();
+		$datamail['from']=$_POST['from'];
+		$datamail['mailTo']=$_POST['mailTo'];
+		$datamail['subject']=$_POST['subject'];
+		$datamail['text'] = $_POST['text'];
+		if($MAIL->Send($datamail))
+			$html .= '<br/>Отправлено';
+		else
+			$html .= '<br/>Ошибка отправки письма!';
+		$html .= '---- '.(getmicrotime()-$ttw).'mc -----';
+	} else {
+		if(!isset($_POST['subject'])) $_POST['subject'] = 'Тут такая тема!';
+		if(!isset($_POST['text'])) $_POST['text'] = '***текст письма***';
+		if(!isset($_POST['mailTo'])) $_POST['mailTo'] = 'tome@xakki.ru';
+		if(!isset($_POST['from'])) $_POST['from'] = $MAIL->config['mailrobot'];
+		$html = '<form method="post">
+			<lable>Кому</lable> <input type="text" name="mailTo" value="'.$_POST['mailTo'].'"/><br/>
+			<lable>От кого</lable> <input type="text" name="from" value="'.$_POST['from'].'"/><br/>
+			<lable>Тема</lable> <input type="text" name="subject" value="'.$_POST['subject'].'"/><br/>
+			<lable>Текст</lable><br/><textarea name="text" rows="7" cols="50" >'.htmlspecialchars($_POST['text'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea><br/>
+			<br/><input type="submit" name="Пуск"/></form>';
+	}
+	return $html;
+}
+
 $dataF = array(
 	'tools_step1'=>'<span class="tools_item">Настройки сайта</span>',
 	'tools_step2'=>'<span class="tools_item">Проверка структуры сайта</span>',
 	'tools_step3'=>'<span class="tools_item">Установка модулей и удаление.</span>',
 	'tools_cron'=>'<span class="tools_item">Настройка Крона</span>',
 	'tools_docron'=>'<span class="tools_item">Выполнить Крон вручную</span>',
+	'tools_sendMail'=>'<span class="tools_item">Отправка почты</span>',
 	'tools_worktime'=>'<span class="tools_item">Режим "технические работы"</span>',
 	'getphpinfo'=>'<span class="tools_item">PHPINFO</span>',
 	'allinfos'=> '<span class="tools_item">Выввод глобальных переменных</span>',
