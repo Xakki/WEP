@@ -181,64 +181,7 @@ class ugroup_class extends kernel_extends
 		}
 		return $this->data[0];
 	}
-	/**
-	* $curvalue - текущий рейтинг
-	* 
-	* 
-	*/
-	function displayRating($curvalue,$ID,$maxvalue=2,$modul='users') {
-		global $_tpl;
-		$content = '';
-
-		if (isset($_COOKIE['vote'.$ID]))
-		{
-			$vote = (int)$_COOKIE['vote'];
-		}
-		else
-		{
-			$vote = 0;
-		}
-		$_tpl['script']['jquery.rater']=1;
-		$_tpl['styles']['jquery.rater']=1;
-		$cssid = 'rating'.$modul;
-		if(!is_array($maxvalue) and $maxvalue>= 3) {
-			
-			if(!$vote) {
-				$content .= '<div class="stars" id="'.$cssid.'"> </div>';
-				$_tpl['script'][] = '$(document).ready(function(){
-							$(\'#'.$cssid.'\').rater(\'/_js.php?_view=rating&_modul='.$modul.'\',
-								{maxvalue:'.$maxvalue.', style: \'basic\', curvalue:'.$curvalue.', mid:'.$ID.', active: 1}
-							);});';
-			} else {
-				$content .= '<div class="stars" id="'.$cssid.'"> </div>';
-				$_tpl['script'][] = '$(document).ready(function(){
-							$(\'#'.$cssid.'\').rater(\'/_js.php?_view=rating&_modul='.$modul.'\',
-								{maxvalue:'.$maxvalue.', style: \'basic\', curvalue:'.$curvalue.', mid:'.$ID.', active: 0}
-							);});';
-			}
-		}else {
-				//$GLOBALS['TSFE']->additionalHeaderData['apit_shop/res/response.js'] = '<script src="typo3conf/ext/apit_shop/res/response.js" type="text/javascript"></script>';
-				$_SESSION['user']['kratio'] = 2;
-				$up = '4"';
-				if(isset($vote) and $vote>0) // если уже проголосовал
-					$up = '3"';
-				elseif(isset($vote) and $vote<0) // если уже проголосовал
-					$up = '4"';
-				elseif($_SESSION['user']['kratio']>0) //если коэф рейтинга выше нуля то разрешаем голосовать
-					$up = '1" onclick="clickVote(this,'.$ID.',\'up\',\''.$modul.'\')"';
-
-				$down = '4"';
-				if(isset($vote) and $vote<0) $down = '3"';
-				elseif(isset($vote) and $vote>0) $down = '4"';
-				elseif($_SESSION['user']['kratio']>0) $down = '1" onclick="clickVote(this,'.$ID.',\'down\',\''.$modul.'\')"';
-				$this->config['echoIntRating'] = 0;
-				$content = '
-					<span class="good-bad-rating-vote img-down'.$down.'>down</span>
-					<span class="good-bad-rating-vote img-up'.$up.'>up</span>';
-				$content .= '<span class="good-bad-rating-text'.($curvalue>0?' rplus':($curvalue<0?' rminus':'')).'">'.($this->config['echoIntRating']?(int)$curvalue:$curvalue).'</span>';
-		}
-		return $content;
-	}	
+	
 }
 
 
