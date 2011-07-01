@@ -142,6 +142,7 @@ jQuery.fn.rater = function(url, options)
 					success : function(data, status) {
 						cur_rating.addClass('active');
 						cur_rating.css('width', parseFloat(data.html)*20 + '%');
+						setCookie('vote' + settings.mid, 1, 360);
 
 						if (data.eval != '') {
 							eval(data.eval);

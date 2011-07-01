@@ -189,11 +189,20 @@ class ugroup_class extends kernel_extends
 	function displayRating($curvalue,$ID,$maxvalue=2,$modul='users') {
 		global $_tpl;
 		$content = '';
-		$vote = 0;
+
+		if (isset($_COOKIE['vote'.$ID]))
+		{
+			$vote = (int)$_COOKIE['vote'];
+		}
+		else
+		{
+			$vote = 0;
+		}
 		$_tpl['script']['jquery.rater']=1;
 		$_tpl['styles']['jquery.rater']=1;
 		$cssid = 'rating'.$modul;
 		if(!is_array($maxvalue) and $maxvalue>= 3) {
+			
 			if(!$vote) {
 				$content .= '<div class="stars" id="'.$cssid.'"> </div>';
 				$_tpl['script'][] = '$(document).ready(function(){
