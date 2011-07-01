@@ -272,10 +272,10 @@ class pg_class extends kernel_extends {
 		if(empty($this->dataCashTree))
 			$this->sqlCashPG();
 		$fp = $this->config['rootPage'];
-		if(isset($_GET['page']) and is_array($_GET['page']) and count($_GET['page']) and !$this->id) {
+		if(isset($_GET['page']) and is_array($_GET['page']) and count($_GET['page'])) {
 			$this->pageParam = array();
 			foreach($_GET['page'] as $k=>$r) {
-				if(isset($this->dataCashTree[$fp][$r]))
+				if(isset($this->dataCashTree[$fp][$r]) and !$this->id)
 					$fp = $r;
 				else
 					$this->pageParam[] = $r;
