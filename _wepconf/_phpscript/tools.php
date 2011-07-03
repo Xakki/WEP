@@ -52,26 +52,9 @@ function tools_getName() {
 	return $data;
 }
 
-function tools_sendMail() {
-	global $SQL,$_CFG;
-	_new_class('mail',$MAIL);
-
-	$datamail = array('from'=>'robot@unidoski.ru');
-	$datamail['mailTo']='xakki@ya.ru';
-	$datamail['subject']='Тестовая отправка письма на '.strtoupper($_SERVER['HTTP_HOST']);
-	
-	$datamail['text'] = ' Куча всякого текста ивсяких <a href="http://xakki.ru">ссылок</a> <hr/><div>Трололо</div>';
-
-	if($MAIL->Send($datamail)) {
-		return 'Успешно отправлено на xakki@ya.ru';
-	}else
-		return 'Сервер сказал что ошибка отправки письма';
-}
-
 
 $dataF['tools_rubricLatName'] = 'Названия для рубрик транслитом';
 $dataF['tools_boardLatName'] = 'Пути для объявлений транслитом';
 $dataF['tools_getName'] = 'Показать названия городов';
-$dataF['tools_sendMail'] = 'Тестовая отправка почты';
 
 

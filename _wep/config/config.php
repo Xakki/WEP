@@ -541,8 +541,7 @@ function _new_class($name, &$MODUL, &$OWNER = NULL) {
 	global $_CFG;
 	$MODUL = NULL;
 	static_main::_prmModulLoad();
-	if (isset($_CFG['modulprm_ext'][$name]) && isset($_CFG['modulprm'][$name]) && !$_CFG['modulprm'][$name]['active'])
-		$name = $_CFG['modulprm_ext'][$name][0];
+	$name = _getExtMod($name);
 
 	if (isset($_CFG['singleton'][$name])) {
 		$MODUL = $_CFG['singleton'][$name];
@@ -574,6 +573,13 @@ function _new_class($name, &$MODUL, &$OWNER = NULL) {
 	return false;
 }
 
+function _getExtMod($name) {
+	global $_CFG;
+	//$this->mf_actctrl
+	if (isset($_CFG['modulprm_ext'][$name]) && isset($_CFG['modulprm'][$name]) && !$_CFG['modulprm'][$name]['active'])
+		$name = $_CFG['modulprm_ext'][$name][0];
+	return $name;
+}
 /*
   Автозагрузка модулей
  */

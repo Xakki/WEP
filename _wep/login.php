@@ -41,6 +41,7 @@
 		$_design = $_CFG['wep']['design'];
 	$HTML = new html($_CFG['PATH']['cdesign'],$_design);
 	$HTML->_templates = 'login';
+	$_tpl['login'] = 'Логин(Email)';
 	$_tpl['ref'] = $ref;
 	$_tpl['action'] = $_CFG['_HREF']['BH'].$_CFG['PATH']['wepname'].'/login.php'.(isset($_GET['install'])?'?install':'');
 	if($result[0])

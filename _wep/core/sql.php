@@ -114,7 +114,7 @@
 			if(isset($this->alias_types[$param['type']]))
 				$param['type'] = $this->alias_types[$param['type']];
 
-			$m = '`' . $key . '` ' . $param['type'];
+			$m = '`' . strtolower($key) . '` ' . $param['type'];
 			if (isset($param['width']) && is_array($param['width'])) {
 				if ($param['type'] == 'enum')
 					$m.= '("' . implode('","', array_keys($param['width'])) . '")';

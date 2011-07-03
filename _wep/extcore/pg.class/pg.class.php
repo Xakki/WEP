@@ -145,7 +145,7 @@ class pg_class extends kernel_extends {
 			$data['user'] = ' - Авторизованные -';
 			$data['anonim'] = ' - Не авторизованные -';
 			$data['0'] = ' - Все -';
-			$result = $this->SQL->execSQL('SELECT id, name FROM `'.$this->_CFG['sql']['dbpref'].'ugroup`');
+			$result = $this->SQL->execSQL('SELECT id, name FROM `'.static_main::getTableNameOfClass('ugroup').'`');
 			if(!$result->err) {
 				while ($row = $result->fetch_array())
 					$data[$row['id']] = $row['name'];

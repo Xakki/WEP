@@ -12,7 +12,7 @@ class static_form {
 
 	static function _add(&$_this,$flag_select=true) {
 		// add ordind field
-		if ($_this->mf_ordctrl and !isset($_this->fld_data[$_this->mf_ordctrl])) {
+		if ($_this->mf_ordctrl and $_this->fld_data[$_this->mf_ordctrl]==0) {
 			if ($ordind = $_this->_get_new_ord())
 				$_this->fld_data[$_this->mf_ordctrl] = $ordind;
 		}
@@ -555,7 +555,7 @@ class static_form {
 			/*Поля которые недоступны пользователю не проверяем, дефолтные значения прописываются в kPreFields()*/
 			if((isset($form['readonly']) and $form['readonly']) or 
 				(isset($form['mask']['fview']) and $form['mask']['fview']==2) or 
-				(isset($form['mask']['usercheck']) and !static_main::_prmUserCheck($form['mask']['usercheck']))) {
+				(isset($form['mask']['usercheck']) and !static_main::_prmGroupCheck($form['mask']['usercheck']))) {
 				//unset($value);
 				continue;
 			}

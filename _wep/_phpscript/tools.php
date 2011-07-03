@@ -393,7 +393,7 @@ if(file_exists($_CFG['_PATH']['phpscript2'].'/tools.php'))
 
 $html = '<div>Выбирите функцию для запуска</div><hr><ul>';
 foreach($dataF as $kk=>$rr) {
-	if($_GET['tfunc']==$kk) {
+	if(isset($_GET['tfunc']) and $_GET['tfunc']==$kk) {
 		$html .= '<li><a style="font-weight:bold;" href="'.$_CFG['PATH']['wepname'].'/index.php?_view=list&_modul=_tools&tfunc='.$kk.'">'.$rr.'</a>';
 		$html .= ' <fieldset><legend>Результат выполнения функции '.$kk.'()</legend>';
 		eval('$html .= '.$kk.'();');

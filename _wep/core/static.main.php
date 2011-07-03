@@ -37,6 +37,7 @@ class static_main {
 		global $_CFG;
 		if (!isset($_CFG['modulprm']))
 			self::_prmModulLoad();
+		$name = _getExtMod($name);
 		if ($_CFG['modulprm'][$name]['tablename'])
 			return $_CFG['modulprm'][$name]['tablename'];
 		else
@@ -172,6 +173,19 @@ class static_main {
 		if (isset($_SESSION['user']['id']) and $_SESSION['user']['id']) {
 			if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] <= $level)
 				return true;
+		}
+		return false;
+	}
+
+	static function _prmGroupCheck($id=1) {
+		global $_CFG;
+		if(!is_array($id))
+			$id = array($id);
+		foreach($id as $r) {
+			if (isset($_SESSION['user']['id']) and $_SESSION['user']['id']) {
+				if (isset($_SESSION['user']['gid']) and $_SESSION['user']['gid']==$r)
+					return true;
+			}
 		}
 		return false;
 	}

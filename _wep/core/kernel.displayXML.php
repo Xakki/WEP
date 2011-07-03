@@ -78,7 +78,7 @@
 			if($this->ordfield!='') $order='t1.'.$this->ordfield;
 			else $order='t1.id';
 			foreach($this->fields_form as $k=>$r) {
-				if(isset($r['mask']['usercheck']) and !static_main::_prmUserCheck($r['mask']['usercheck']))
+				if(isset($r['mask']['usercheck']) and !static_main::_prmGroupCheck($r['mask']['usercheck']))
 					{$arrno[$k]=1; continue;}
 				$tmpsort = false;
 

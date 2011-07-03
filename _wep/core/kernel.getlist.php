@@ -126,10 +126,6 @@
 		}
 		elseif(is_array($listname) and (isset($listname['class']) or isset($listname['tablename'])))  {
 			
-			if (isset($listname['include']))
-				require_once($_this->_CFG['_PATH']['ext'].$listname['include'].'.class.php');
-
-
 			if(isset($listname['class'])) {
 				$listname['tablename'] = static_main::getTableNameOfClass($listname['class']);
 			}
@@ -179,6 +175,8 @@
 				$clause['where'] .= ' GROUP BY t1.'.$listname['idThis'];
 			if (isset($listname['ordfield']) and $listname['ordfield'])
 				$clause['where'] .= ' ORDER BY '.$listname['ordfield'];
+
+print_r($clause['field'].$clause['from'].$clause['where']);
 
 			$result = $_this->SQL->execSQL($clause['field'].$clause['from'].$clause['where']);
 //print($_this->SQL->query);

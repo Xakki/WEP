@@ -4,7 +4,7 @@
 				$r['readonly'] = false;
 			if(($r['readonly'] and !$this->id) or 
 				(isset($r['mask']['fview']) and $r['mask']['fview']==2) or 
-				(isset($r['mask']['usercheck']) and !static_main::_prmUserCheck($r['mask']['usercheck'])))
+				(isset($r['mask']['usercheck']) and !static_main::_prmGroupCheck($r['mask']['usercheck'])))
 				continue;
 			if(isset($r['type']) and $r['type']!='info') {
 				if(!isset($r['value']) and isset($r['default']) and !isset($_POST[$k])) {// and !$this->id
@@ -68,8 +68,8 @@
 					$r['labelstyle'] = ($r['value_2']?'display: none;':'');
 					$r['csscheck'] = ($r['value_2']?'accept':'reject');
 				}
-				elseif(isset($r['listname']) and isset($r['multiple']) and $r['multiple']===2 and !$r['readonly']) {// and isset($this->fields[$k])
-					$this->_checkList($r['listname'],0);
+				/*elseif(isset($r['listname']) and isset($r['multiple']) and $r['multiple']===2 and !$r['readonly']) {// and isset($this->fields[$k])
+					$this->_checkList($r['listname'],$r['value']);
 					$templistname = $r['listname'];
 					if(is_array($r['listname']))
 						$templistname = implode(',',$r['listname']);
@@ -77,12 +77,11 @@
 
 					if($arrlist and is_array($arrlist)) {
 						if(is_array($r['value']))
-							$val = array_combine($r['value'],$r['value']);
+							$r['value'] = array_combine($r['value'],$r['value']);
 						else
-							$val = array($r['value']=>$r['value']);
-						$r['value'] = $val;
+							$r['value'] = array($r['value']=>$r['value']);
 						$temparr= array();
-						foreach($val as $kk) {
+						foreach($r['value'] as $kk) {
 							if(isset($arrlist[$kk])) {
 								$temparr[$kk] = $arrlist[$kk];
 								unset($this->_CFG['enum_check'][$templistname][$kk]);
@@ -91,10 +90,10 @@
 						$md = $temparr+$this->_CFG['enum_check'][$templistname];
 						if(is_array($md) and count($md)) {
 							$md = array($md);
-							$r['valuelist'] = $this->_forlist($md,0,$val);
+							$r['valuelist'] = $this->_forlist($md,0,$r['value']);
 						}
 					}
-				}
+				}*/
 				elseif(isset($r['listname']) and isset($r['multiple']) and $r['multiple'] and !$r['readonly']) {
 					$md = $this->_getCashedList($r['listname']);
 					if(!isset($r['value']))

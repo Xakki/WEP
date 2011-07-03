@@ -21,6 +21,30 @@
 	$HTML = new html($_CFG['PATH']['cdesign'],$_design);
 	if(!isset($_GET['_modul'])) $_GET['_modul'] = '';
 /*ADMIN*/
+	function fAdminMenu() {
+		global $_CFG;
+		$data = array();
+		$data['modul'] = $_GET['_modul'];
+		$data['user'] = $_SESSION['user'];
+		$data['item'] = array();
+		if($_SESSION['user']['level']<=1) {
+			static_main::_prmModulLoad();
+			foreach($_CFG['modulprm'] as $k=>$r) {
+				if(static_main::_prmModul($k,array(1,2)) and $r['active']==1) {
+					$data['item'][$k] = $r;
+				}
+			}
+			if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0)
+				$data['item']['_tools'] = 'TOOLs';
+		}
+		/*weppages*/
+		/*if(isset($_SESSION['user']) and count($_SESSION['user']['weppages'])) {
+			foreach($_SESSION['user']['weppages'] as $k=>$r0)
+				$template['sysconf']['item'][$k] = $r;
+		}*/
+		return $data;
+	}
+
 	function fXmlSysconf() {
 		global $_CFG;
       $data = array();

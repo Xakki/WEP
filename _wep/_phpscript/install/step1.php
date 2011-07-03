@@ -145,6 +145,14 @@ foreach ($USER_CFG['wep'] as $k => $r) {
 		break;
 		case 'timezone':
 			$cap = 'Временная зона';
+			$type = 'list';
+			$valuelist = array();
+			$timezone_identifiers = DateTimeZone::listIdentifiers();
+			$i=0;
+			while(isset($timezone_identifiers[$i])) {
+				$i++;
+				$valuelist[] = array('#id#' => $timezone_identifiers[$i], '#name#' => $timezone_identifiers[$i]);
+			}
 		break;
 		case 'access':
 			$cap = 'Тип доступа в админку';

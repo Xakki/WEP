@@ -1,9 +1,10 @@
 <!DOCTYPE html 
      PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru">
 	<head>
-		<title>{$_tpl['title']}</title> 
+		<title>{$_tpl['title']}</title>
+		<base href="{$_CFG['_HREF']['BH']}"/>
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 		<meta http-equiv="Pragma" content="no-cache"/>
 		<meta name="keywords" content="{$_tpl['keywords']}"/> 
@@ -13,40 +14,22 @@
 		{$_tpl['script']}
 	</head>
 	<body onload="{$_tpl['onload']}">
+		{$_tpl['logs']}
 		<div class="header">
-			<div class="block">
-				<div class="blocktext">{$_tpl['head']}</div>
-			</div>
+			{$_tpl['head']}
 		</div>
 		<div class="leftblock">
-			<div class="leftadd">
-				<div class="block">
-					<div class="blocktext">{$_tpl['blockadd']}</div>
-				</div>
-			</div>
-			<div class="leftparam">
-				<div class="block">
-					<div class="blocktext">{$_tpl['param']}</div>
-				</div>
-			</div>
+			{$_tpl['left_column']}
 		</div>
 		<div class="maintext">
-			<div class="block">
-				<div class="blocktext">
-					{$_tpl['path']}
-					<div class="hrb"></div>
-					{$_tpl['text']}
-					<div class="clear"></div>
-				</div>
-			</div>
+			{$_tpl['path']}
+			<div class="hrb"></div>
+			{$_tpl['text']}
 		</div>
-		<div class="clear"></div>
 		
 		<div class="footer">
-			<div class="block">
-				{$_tpl['foot']}
-			</div>
+			{$_tpl['foot']}
 		</div>
-		{$_tpl['logs']}<!--{$_tpl['time']}-->
+		<!--{$_tpl['time']}-->
 	</body>
 </html>

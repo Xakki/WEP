@@ -187,11 +187,10 @@ class ugroup_class extends kernel_extends
 
 class users_class extends kernel_extends {
 
-	function _set_features()
-	{
+	function _set_features() {
 		if (!parent::_set_features()) return false;
 		$this->mf_actctrl = true;
-		$this->fn_login = 'login';//login or email
+		$this->fn_login = 'email';//login or email
 		$this->fn_pass = 'pass';
 		$this->mf_use_charid = false;
 		$this->mf_timecr = true; // создать поле хранящее время создания поля
@@ -232,6 +231,18 @@ class users_class extends kernel_extends {
 			);
 			observer::register_observer($params, 'shutdown_function');
 		}
+	}
+
+	function setSystemFields() {
+		$this->def_records[1] = array(
+			$this->fn_login => $this->_CFG['wep']['login'],
+			$this->mf_namefields=>'Администратор',
+			$this->fn_pass => md5($this->_CFG['wep']['md5'].$this->_CFG['wep']['password']), 
+			'active'=>1,
+			'mf_timecr'=>time(),
+			'owner_id'=>1,
+			'reg_hash'=>1);
+		return parent::setSystemFields();
 	}
 
 	function updateLastVisit() {
@@ -280,18 +291,6 @@ class users_class extends kernel_extends {
 			
 	}
 
-	function _preInstall() {
-		$this->def_records[0] = array(
-			$this->fn_login => $this->_CFG['wep']['login'],
-			$this->mf_namefields=>'Администратор',
-			$this->fn_pass => md5($this->_CFG['wep']['md5'].$this->_CFG['wep']['password']), 
-			'active'=>1,
-			'email'=>$this->_CFG['info']['email'],
-			'mf_timecr'=>time(),
-			'owner_id'=>1,
-			'reg_hash'=>1);
-		return parent::_preInstall();
-	}
 
 	function _update($flag_select=true) {
 		$id = $this->id;

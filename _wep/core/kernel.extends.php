@@ -270,7 +270,7 @@ abstract class kernel_extends {
 		}
 
 		if ($this->mf_timestamp)
-			$this->fields['_timestamp'] = array('type' => 'timestamp');
+			$this->fields['_timestamp'] = array('type' => 'timestamp', 'attr' => 'NOT NULL');
 		if ($this->mf_timecr)
 			$this->fields['mf_timecr'] = array('type' => 'int', 'width' => 11, 'attr' => 'unsigned NOT NULL', 'default' => '0');
 		if ($this->mf_timeup)
@@ -570,7 +570,9 @@ abstract class kernel_extends {
 	}
 
 	public function _get_new_ord() {
-		$query = 'SELECT max(' . $this->mf_ordctrl . ') FROM `' . $this->tablename . '`';
+		$query = 'SELECT max(' . 
+			(($this->mf_use_charid and $this->mf_ordctrl)?$this->mf_ordctrl:'id')
+			. ') FROM `' . $this->tablename . '`';
 		if ($this->mf_istree and $this->parent_id and !$this->fld_data[$this->mf_istree])
 			$query .= ' WHERE ' . $this->mf_istree . '=' . $this->parent_id;
 		$result = $this->SQL->execSQL($query);
@@ -894,7 +896,7 @@ abstract class kernel_extends {
 				$eval = $r['mask']['evala'];
 			elseif (isset($r['mask']['evalu']) and $this->id)
 				$eval = $r['mask']['evalu'];
-			elseif ((isset($r['mask']['fview']) and $r['mask']['fview'] == 2) or (isset($r['mask']['usercheck']) and !static_main::_prmUserCheck($r['mask']['usercheck']))) {
+			elseif ((isset($r['mask']['fview']) and $r['mask']['fview'] == 2) or (isset($r['mask']['usercheck']) and !static_main::_prmGroupCheck($r['mask']['usercheck']))) {
 				$r['mask']['fview'] = 2;
 				unset($data[$k]);
 				continue;
@@ -1097,7 +1099,7 @@ abstract class kernel_extends {
 		return $XML;
 	}
 
-	public function _checkList(&$listname, $value) {
+	public function _checkList(&$listname, $value=NULL) {
 		$templistname = $listname;
 		if (is_array($listname))
 			$templistname = implode(',', $listname);
@@ -1909,10 +1911,11 @@ class modul_child extends ArrayObject {
 
 	function offsetGet($index) {
 		global $_CFG;
-		if (isset($_CFG['modulprm_ext'][$index]) && isset($_CFG['modulprm'][$index]) && !$_CFG['modulprm'][$index][$this->modul_obj->mf_actctrl])
+		/*if (isset($_CFG['modulprm_ext'][$index]) && isset($_CFG['modulprm'][$index]) && !$_CFG['modulprm'][$index][$this->modul_obj->mf_actctrl])
 			$clname = $_CFG['modulprm_ext'][$index][0];
 		else
-			$clname = $index;
+			$clname = $index;*/
+		$clname = _getExtMod($index);
 		$value = parent ::offsetGet($clname);
 		if ($this->offsetExists($clname) && $value === true) {
 			if (isset($this->modul_obj->child_path[$clname])) {

@@ -20,8 +20,8 @@ class news_class extends kernel_extends {
 	
 		# fields
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 127, 'attr' => 'NOT NULL', 'min'=>'1');
-		$this->fields['description'] = array('type' => 'text', 'width' => 500, 'attr' => 'NOT NULL', 'min' => '100');
-		$this->fields['text'] = array('type' => 'text', 'width' => 20000, 'min' => '1');
+		$this->fields['description'] = array('type' => 'text', 'attr' => 'NOT NULL', 'min' => '100');
+		$this->fields['text'] = array('type' => 'text', 'min' => '1');
 		$this->fields['ndate'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL');
 		$this->fields['category'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0);
 		$this->fields['href'] = array('type' => 'varchar', 'width' => 127, 'attr' => 'NOT NULL', 'default' => '');
@@ -33,11 +33,11 @@ class news_class extends kernel_extends {
 
 		# form
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Заголовок новости','comment'=>'Короткий: 3-4 слова(до '.$this->fields['name']['width'].' символов).');
-		$this->fields_form['description'] = array('type' => 'textarea', 'caption' => 'Краткий анонс');
+		$this->fields_form['description'] = array('type' => 'textarea', 'caption' => 'Краткий анонс','mask' =>array('max' => 500));
 		$this->fields_form['text'] = array(
 			'type' => 'ckedit', 
 			'caption' => 'Текст новости', 
-			'mask' =>array('fview'=>1,'name'=>'html','min'=>15,'substr'=>150),
+			'mask' =>array('fview'=>1,'name'=>'html','min'=>15,'max' => 20000,'substr'=>150),
 			'paramedit'=>array(
 				'toolbar'=>'Full',
 				'height'=>300,

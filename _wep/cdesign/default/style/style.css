@@ -22,27 +22,26 @@ a:hover{text-decoration:none;}
 	min-height:100%;
 	min-width:800px;}
 
-#sysconf {
-	background:#99C6F1;
-	border-top:4px solid black;
-	padding:2px 0;
-	font-size:0.9em;
-}
-	.exit {width:44px;padding:0px 5px 0 5px;position:absolute;z-index:5;left:0;}
-	.uname {float:left;font-weight:bold;padding:0 20px 0 60px;white-space:nowrap}
-	.modullist {float:left;cursor:pointer;padding:0 15px 0 15px;white-space:nowrap}
-	.modullist a:hover, .selected a {color:#90EE90;}
 
-#modulslist {
+
+#adminmenu {
 	background:#63A6CC;
 	border-top:4px solid black;
 	border-bottom:4px solid black;
-	padding:2px 0 2px 50px;
-	text-align: right;
+	padding:2px 0 2px 2px;
+	text-align: left;
 	position:relative;
 	z-index:4;
 	font-size:0.9em;
 }
+#adminmenu a {
+	padding:0 4px 0 4px;
+}
+.am_home {}
+.am_exit {}
+.am_user {}
+
+.modullist a:hover, .selected a {color:#90EE90;}
 
 #modulsforms {
 	padding:5px 10px;

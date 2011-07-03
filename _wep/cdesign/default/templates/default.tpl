@@ -17,8 +17,7 @@
 	</head>
 	<body onload="{$_tpl['onload']}">
 		<div id='wepmain'>
-			<div id="sysconf">{$_tpl['sysconf']}</div>
-			<div id="modulslist">{$_tpl['modulslist']}</div>
+			<div id="adminmenu">{$_tpl['adminmenu']}</div>
 			<div id="modulsforms">{$_tpl['modulsforms']}</div>
 			<div class='spacer'></div>
 		</div>

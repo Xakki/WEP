@@ -8,8 +8,7 @@
 		$_tpl['contact'] .= '<div class="ctd1">icq:</div><div class="ctd2">'.$_CFG['info']['icq'].'</div>';
 	if(isset($_CFG['info']['phone']) and $_CFG['info']['phone'])
 		$_tpl['contact'] .= '<div class="ctd1">телефон:</div><div class="ctd2">'.$_CFG['info']['phone'].'</div>';
-	$DATA = fXmlSysconf(); $_tpl['sysconf'] = $HTML->transformPHP($DATA,'sysconf');
-	$DATA = fXmlModulslist(); $_tpl['modulslist']=$HTML->transformPHP($DATA,'modulslist');
+	$DATA = array('adminmenu'=>fAdminMenu()); $_tpl['adminmenu'] = $HTML->transformPHP($DATA,'adminmenu');
 
 	if(!$_GET['_modul'] or !(isset($_GET['_view']) or isset($_GET['_type']))) {
 		$html = '<div style="position:absolute;top:50%;left:50%;"><div style="width:200px;height:100px;position:absolute;top:-50px;left:-100px;"><img src="'.$_tpl['design'].'img/login.gif" width="250" alt="LOGO"/></div></div>';

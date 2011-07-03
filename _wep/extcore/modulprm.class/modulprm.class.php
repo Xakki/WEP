@@ -123,10 +123,11 @@ final class modulprm_class extends kernel_extends {
 						);
 						$ret = static_main::includeModulFile($entry);
 						if($ret['file']) require_once($ret['file']);
+						$resData = array();
 						if(class_exists($entry. '_class',false)) {
 							$resData = $this->checkClassStruct($entry);
 						}else
-							$DATA[$k . '_' . $entry]['comment'] .= 'Не возможно подключить модуль. ';
+							$DATA[$k . '_' . $entry]['comment'] .= 'Не возможно подключить модуль. Класс `'.$entry.'_class` не найден.';
 						if ($resData['parent']) {
 							$DATA[$k . '_' . $entry]['comment'] .= '<div>Зависим от ' . $resData['parent'] . '</div>';
 							$DATA[$k . '_' . $entry]['_parent'] = $resData['parent'];
@@ -157,7 +158,7 @@ final class modulprm_class extends kernel_extends {
 				$MODUL = NULL;
 				if (isset($_POST[$k]) or isset($this->_CFG['require_modul'][$r['_entry']])) {
 					if (!isset($this->data[$r['_entry']])) {
-						if ($r['_parent'] !== '' and !isset($_POST['0_' . $r['_parent']]) and !isset($_POST['3_' . $r['_parent']])) {
+						if ($r['_parent'] !== '' and !isset($_POST['0_' . $r['_parent']]) and !isset($_POST['3_' . $r['_parent']]) and !isset($this->data[$r['_parent']])) {
 							$mess[] = array('error', 'Ошибка. Не подключен родительский модуль `' . $r['_parent'] . '` для `' . $r['_entry'] . '`. ');
 							$res = -1;
 							continue;
