@@ -4,14 +4,13 @@
 		$html = ''; 
 		$html .= '<a class="am_exit" href="'.$_CFG['PATH']['wepname'].'/login.php?exit=ok">Выход</a>';
 		$html .= '<a class="am_home" href="index.html" target="_blank">Главная страница</a>';
-		//$html .= '<div class="uname"></div>';
-		//print_r('<pre>');print_r($data['modul']);
 		$sys_r = '';
 		$sys_m = '';
 		$over_m = '';
 		$over = '';
 		if(is_array($data['item']) and count($data['item']))
 			foreach($data['item'] as $k=>&$r) {
+				if(!$r['tablename']) continue;
 				$sel = '';
 				if($r['sel'])
 					$sel = ' msel';
@@ -48,6 +47,5 @@
 		$m_u = $name = _getExtMod('users');
 		$html .= '<a class="am_user" href="'.$_CFG['PATH']['wepname'].'/index.php?_view=list&_modul='.$m_ug.'&'.$m_ug.'_id='.$data['user']['gid'].'&'.$m_ug.'_ch='.$m_u.'&'.$m_u.'_id='.$data['user']['id'].'&_type=edit">'.$data['user']['name'].' ['.$data['user']['gname'].']</a>';
 
-			//$html .= '<div class="modullist'.($data['modul']==$k?' selected':'').'"><a href="'.$_CFG['PATH']['wepname'].'/index.php?_view=list&amp;_modul='.$k.'">'.$r.'</a></div>';
 		return $html.'<div class="clk"></div>';
 	}

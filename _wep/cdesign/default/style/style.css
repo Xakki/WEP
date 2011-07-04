@@ -346,6 +346,7 @@ div.menu_new fieldset legend {
 	background:#D5E5B1;
 }
 .superlist td {padding:0;border-right:1px solid #e0e0e0;}
+.superlist tr:hover td {background: none repeat scroll 0 0 #95A5C1;}
 .superlist th {background:#d3d4d4 url() repeat-x; border-bottom:1px solid #ccc;border-right:1px solid #ccc;border-top:1px solid #e0e0e0;padding:0;white-space:nowrap;}
 .superlist td img {border:1px solid #ccc;}
 .superlist .ic{width:0;text-align:center;white-space:nowrap;font-size:13px;}
