@@ -151,7 +151,9 @@ foreach ($USER_CFG['wep'] as $k => $r) {
 			$i=0;
 			while(isset($timezone_identifiers[$i])) {
 				$i++;
-				$valuelist[] = array('#id#' => $timezone_identifiers[$i], '#name#' => $timezone_identifiers[$i]);
+				$CD = new dateTime($timezone_identifiers[$i]);
+				$ofset = $CD->getOffset()/3600;
+				$valuelist[] = array('#id#' => $timezone_identifiers[$i], '#name#' => $timezone_identifiers[$i].' [GMT '.$ofset.']');
 			}
 		break;
 		case 'access':

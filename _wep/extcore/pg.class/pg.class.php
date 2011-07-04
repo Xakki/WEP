@@ -210,7 +210,6 @@ class pg_class extends kernel_extends {
 			$HTML = new html('_design/',$this->config['design'],$templ);//отправляет header и печатает страничку
 		}
 		if ($flag_content==1) {
-			
 			$flag_content = $this->display_page();
 			$_tpl['title'] = $this->get_caption();
 			$_tpl['keywords'] = $this->pageinfo['keywords'];
@@ -280,9 +279,10 @@ class pg_class extends kernel_extends {
 				else
 					$this->pageParam[] = $r;
 			}
-		}	
-		if($fp!=$this->config['rootPage'])
+		}
+		if($fp!=$this->config['rootPage'] or !$this->id)
 			$this->id = $fp;
+
 		/*$row = 0;
 		if(isset($this->dataCash[$this->id])) {
 			if ($parent!='' and $this->dataCash[$this->id]['parent_id']!=$parent)
@@ -454,6 +454,7 @@ class pg_class extends kernel_extends {
 						$_tempMarker .= file_get_contents($text);
 					}*/
 					$_tempMarker .= $rowPG['pg'];
+					$flagPG = 1;
 				} else {
 					$flagMC = false;
 					if(!$rowPG['memcache'] and $this->config['memcache'])
@@ -509,7 +510,6 @@ class pg_class extends kernel_extends {
 				else
 					$_tpl[$rowPG['marker']] .= $_tempMarker;
 			}
-
 		return $flagPG;
 	}
 
