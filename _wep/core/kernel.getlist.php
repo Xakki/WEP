@@ -176,8 +176,6 @@
 			if (isset($listname['ordfield']) and $listname['ordfield'])
 				$clause['where'] .= ' ORDER BY '.$listname['ordfield'];
 
-print_r($clause['field'].$clause['from'].$clause['where']);
-
 			$result = $_this->SQL->execSQL($clause['field'].$clause['from'].$clause['where']);
 //print($_this->SQL->query);
 				if(!$result->err) {

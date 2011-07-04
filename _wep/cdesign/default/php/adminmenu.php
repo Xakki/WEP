@@ -1,10 +1,9 @@
 <?
 	function tpl_adminmenu(&$data) {
 		global $_CFG;
-		$html = '<ul>';
-		$html .= '<li><a href="'.$_CFG['PATH']['wepname'].'/login.php?exit=ok" class="am_exit">Выход</a></li>';
-		$html .= '<li><a href="index.html" target="_blank" class="am_home">Главная страница</a></li>';
-		$html .= '<li><a href="'.$_CFG['PATH']['wepname'].'/index.php?_view=list&amp;_modul=ugroup" class="am_user">'.$data['user']['name'].' ['.$data['user']['gname'].']</a></li>';
+		$html = ''; 
+		$html .= '<a class="am_exit" href="'.$_CFG['PATH']['wepname'].'/login.php?exit=ok">Выход</a>';
+		$html .= '<a class="am_home" href="index.html" target="_blank">Главная страница</a>';
 		//$html .= '<div class="uname"></div>';
 		//print_r('<pre>');print_r($data['modul']);
 		$sys_r = '';
@@ -13,30 +12,40 @@
 		$over = '';
 		if(is_array($data['item']) and count($data['item']))
 			foreach($data['item'] as $k=>&$r) {
-				if(!is_array($r)) {
-					$over .= '<li><a href="'.$_CFG['PATH']['wepname'].'/index.php?_view=list&amp;_modul='.$k.'">'.$r.'</a></li>';
+				$sel = '';
+				if($r['sel'])
+					$sel = ' msel';
+				if(isset($r['css'])) {
+					$over .= '<a class="'.$r['css'].$sel.'" href="'.$_CFG['PATH']['wepname'].'/index.php?_view=list&amp;_modul='.$k.'">'.$r['name'].'</a>';
 				}
 				elseif(isset($_CFG['require_modul'][$k]) and $_CFG['require_modul'][$k]) {
 					//$k = _getExtMod($k);
-					$sys_r .= '<li><a href="'.$_CFG['PATH']['wepname'].'/index.php?_view=list&amp;_modul='.$k.'">'.$r['name'].'</a></li>';
+					$sys_r .= '<li class="fly"><a class="main down'.$sel.'" href="'.$_CFG['PATH']['wepname'].'/index.php?_view=list&amp;_modul='.$k.'"><b>'.$r['name'].'</b></a></li>';
 				}elseif($r['typemodul']==0) {
-					$sys_m .= '<li><a href="'.$_CFG['PATH']['wepname'].'/index.php?_view=list&amp;_modul='.$k.'">'.$r['name'].'</a></li>';
+					$sys_m .= '<li class="fly"><a class="main down'.$sel.'" href="'.$_CFG['PATH']['wepname'].'/index.php?_view=list&amp;_modul='.$k.'"><b>'.$r['name'].'</b></a></li>';
 				}elseif($r['typemodul']==3) {
-					$over_m .= '<li><a href="'.$_CFG['PATH']['wepname'].'/index.php?_view=list&amp;_modul='.$k.'">'.$r['name'].'</a></li>';
+					$over_m .= '<li class="fly"><a class="main down'.$sel.'" href="'.$_CFG['PATH']['wepname'].'/index.php?_view=list&amp;_modul='.$k.'"><b>'.$r['name'].'</b></a></li>';
 				}
 			}
+		$html .= '<ul class="nav">';
 		if($sys_r) {
-			$html .= '<li>Главные модули<ul>'.$sys_r.'</ul></li>';
+			$html .= '<li class="drop"><a class="main"><b>Главные модули</b></a><ul>'.$sys_r.'</ul></li>';
 		}
 		if($sys_m) {
-			$html .= '<li>Вторичные модули<ul>'.$sys_m.'</ul></li>';
+			$html .= '<li class="drop"><a class="main"><b>Вторичные модули</b></a><ul>'.$sys_m.'</ul></li>';
 		}
 		if($over_m) {
-			$html .= '<li>Модули<ul>'.$over_m.'</ul></li>';
+			$html .= '<li class="drop"><a class="main"><b>Модули</b></a><ul>'.$over_m.'</ul></li>';
 		}
+		$html .= '</ul>';
+
 		if($over) {
 			$html .= $over;
 		}
+		$m_ug = $name = _getExtMod('ugroup');
+		$m_u = $name = _getExtMod('users');
+		$html .= '<a class="am_user" href="'.$_CFG['PATH']['wepname'].'/index.php?_view=list&_modul='.$m_ug.'&'.$m_ug.'_id='.$data['user']['gid'].'&'.$m_ug.'_ch='.$m_u.'&'.$m_u.'_id='.$data['user']['id'].'&_type=edit">'.$data['user']['name'].' ['.$data['user']['gname'].']</a>';
+
 			//$html .= '<div class="modullist'.($data['modul']==$k?' selected':'').'"><a href="'.$_CFG['PATH']['wepname'].'/index.php?_view=list&amp;_modul='.$k.'">'.$r.'</a></div>';
-		return $html.'</ul><div class="clk"></div>';
+		return $html.'<div class="clk"></div>';
 	}

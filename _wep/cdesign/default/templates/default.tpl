@@ -8,12 +8,19 @@
 		<meta name="keywords" content="WEP"/> 
 		<meta name="description" content="CMS"/>
 		<!--<link rel="SHORTCUT ICON" href="{$_tpl['design']}img/favicon.ico"/>-->
-		{$_tpl['styles']}
-		<link type="text/css" href="{$_tpl['design']}style/style.css" rel="stylesheet"/>
 		<script type="text/javascript" src="/_design/_script/jquery.js"></script>
 		<script type="text/javascript" src="/_design/_script/include.js"></script>
 		<script type="text/javascript" src="{$_tpl['design']}script/script.js"></script>
 		{$_tpl['script']}
+		{$_tpl['styles']}
+		<link type="text/css" href="{$_tpl['design']}style/style.css" rel="stylesheet"/>
+<!--[if lte IE 7]>
+<style type="text/css">
+	/* bug fixes for IE7 and lower - DO NOT CHANGE */
+	.nav .fly {width:99%;} /* make each flyout 99% of the prevous flyout */
+	a:active {} /* requires a blank style for :active to stop it being buggy */
+</style>
+<![endif]-->
 	</head>
 	<body onload="{$_tpl['onload']}">
 		<div id='wepmain'>

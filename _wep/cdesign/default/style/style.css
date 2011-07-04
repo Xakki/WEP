@@ -34,12 +34,100 @@ a:hover{text-decoration:none;}
 	z-index:4;
 	font-size:0.9em;
 }
-#adminmenu a {
+
+a.am_home {
+	background:transparent url(../img/home.png) no-repeat 0 0;
+	color:transparent;font-size:1px;
+	display:inline-block;
+	width:32px;height:32px;
+	vertical-align: top;
 	padding:0 4px 0 4px;
 }
-.am_home {}
-.am_exit {}
-.am_user {}
+a.am_exit {
+	background:transparent url(../img/close32.gif) no-repeat 0 0;
+	color:transparent;font-size:1px;
+	display:inline-block;
+	width:32px;height:32px;
+	vertical-align: top;
+	padding:0 4px 0 4px;
+}
+a.am_user {
+	vertical-align: top;
+	padding:0 4px 0 4px;
+}
+a.am_tools {
+	background:transparent url(../img/tools.png) no-repeat 0 0;
+	color:transparent;font-size:1px;
+	display:inline-block;
+	width:32px;height:32px;
+	vertical-align: top;
+	padding:0 4px 0 4px;
+}
+/* ----------------------------------------------------------------------------	*/
+/* default styling */
+.nav,
+.nav ul{list-style-type:none; margin:0; padding:0;}
+.nav a {text-decoration:none;}
+.nav {font-family: arial, sans-serif; font-size:12px; margin:2px auto;display:inline-block;}
+
+/* style the links */
+/* needs a background for IE6 - can be a color or a transparent gif */
+.nav a {background:url(ulmulti/trans.gif); filter: alpha(opacity=90); opacity:0.9;} 
+
+/* style the <b> element so that is does not affect the size of the link */
+.nav a b {background:#999; border:1px solid #000; border-color:#ddd #333 #333 #ddd; color:#fff; font-weight:normal; display:block; padding:5px 10px;}
+.nav a.msel b {color:red;}
+.nav a:hover b {background-color:#aaa; color:#800; cursor:pointer;}
+.nav .fly .main b {background:#999 url(ulmulti/arrow.gif) no-repeat 115px 9px;}
+.nav .down b {background:#999 url(ulmulti/arrow2.gif) no-repeat 113px 11px;}
+.nav .right ul b {text-align:right;}
+.nav .right ul .main b {background:#999 url(ulmulti/arrow3.gif) no-repeat 10px 9px; text-align:right;}
+
+/* HEIGHT */
+.nav ul ul {top:-24px;} /* position the top of the flyout sub menus */
+
+/* WIDTH change this WITH CARE to suit your requirements */
+
+/*set the link width here*/
+.nav .drop,
+.nav a {width:130px;}
+.nav ul li {max-width:130px;} /* fix for IE8 */
+
+/* set the left flyout position here */
+.nav ul ul {left:120px;}
+/* set the right flyout position here */
+.nav li.right ul ul {left:auto; right:120px;}
+
+/* make this WIDTH - 1px */ /* or WIDTH - 0.063em if using em sizing */
+.nav a {margin-right:-129px;}
+
+/* ----------------------------------------------------------------------------	*/
+
+/* DO NOT CHANGE ANYTHING BELOW */
+.nav li {float:left;} /* fixes IE related bugs, and allows for clearing */
+.nav ul {float:left; position:relative; z-index:20;} /* necessary for float drop and to stack the <ul>s */
+.nav ul li {clear:left;} /* must clear the floated list item inside sublist */
+.nav a {position:relative; display:block;} /* needs to have a position above the rest */
+.nav a.main {float:left; /* necessary for float drop */
+    margin-top:10000px;} /* bring the top level links back into view */
+.nav .drop,
+.nav .fly {margin-top:-10000px;} /* hide the sub links and their containers, opera has low upper limits */
+.nav ul {margin-bottom:-5000px;} /* avoid any interaction between the subs, can be any large size */
+
+/* The bit that does ALL the work to bring the sub menus into view */
+.nav a:hover,
+.nav a:focus,
+.nav a:active {margin-right:0; z-index:10; outline:0}
+
+.nav a:focus b,
+.nav a:active b {background:#aaa; color:#800;} /* for tabbing */
+
+/* OPERA fix */
+.nav ul:hover,
+.nav ul ul:hover {clear:left;} /* to stop intermittent sub link :hover problems */
+
+
+/************************/
 
 .modullist a:hover, .selected a {color:#90EE90;}
 
@@ -443,3 +531,4 @@ span.seldebug select{
 	font-weight:bold;
 	color:blue;
 }
+

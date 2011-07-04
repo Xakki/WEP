@@ -14,11 +14,17 @@
 		{$_tpl['script']}
 		<link type="text/css" href="{$_tpl['design']}style/style.css" rel="stylesheet"/>
 		{$_tpl['styles']}
+<!--[if lte IE 7]>
+<style type="text/css">
+	/* bug fixes for IE7 and lower - DO NOT CHANGE */
+	.nav .fly {width:99%;} /* make each flyout 99% of the prevous flyout */
+	a:active {} /* requires a blank style for :active to stop it being buggy */
+</style>
+<![endif]-->
 	</head>
 	<body onload="{$_tpl['onload']}">
 		<div id='wepmain'>
-			<div id="sysconf">{$_tpl['sysconf']}</div>
-			<div id="modulslist">{$_tpl['modulslist']}</div>
+			<div id="adminmenu">{$_tpl['adminmenu']}</div>
 			<div id="modulsforms">{$_tpl['modulsforms']} {$_tpl['logs']}</div>
 			<div class='spacer'></div>
 		</div>

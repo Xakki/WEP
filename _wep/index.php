@@ -21,7 +21,7 @@
 	$HTML = new html($_CFG['PATH']['cdesign'],$_design);
 	if(!isset($_GET['_modul'])) $_GET['_modul'] = '';
 /*ADMIN*/
-	function fAdminMenu() {
+	function fAdminMenu($_modul='') {
 		global $_CFG;
 		$data = array();
 		$data['modul'] = $_GET['_modul'];
@@ -32,10 +32,11 @@
 			foreach($_CFG['modulprm'] as $k=>$r) {
 				if(static_main::_prmModul($k,array(1,2)) and $r['active']==1) {
 					$data['item'][$k] = $r;
+					$data['item'][$k]['sel'] = ($_modul==$k?1:0);
 				}
 			}
 			if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0)
-				$data['item']['_tools'] = 'TOOLs';
+				$data['item']['_tools'] = array('name'=>'TOOLs','css'=>'am_tools','sel'=>($_modul=='_tools'?1:0));
 		}
 		/*weppages*/
 		/*if(isset($_SESSION['user']) and count($_SESSION['user']['weppages'])) {
