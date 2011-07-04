@@ -124,7 +124,7 @@ class static_form {
 				chmod($newname, $_this->_CFG['wep']['chmod']);
 				unlink($newname);
 			}
-
+			chmod($newname, $value['tmp_name']);
 			if (!rename($value['tmp_name'], $newname))
 				return static_main::_message('error','Error copy file '.$value['name']);
 
