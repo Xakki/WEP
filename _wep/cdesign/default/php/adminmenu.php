@@ -18,8 +18,10 @@
 				if(isset($r['css'])) {
 					$over .= '<a class="'.$r['css'].$sel.'" href="'.$_CFG['PATH']['wepname'].'/index.php?_view=list&amp;_modul='.$k.'">'.$r['name'].'</a>';
 				}
-				elseif(isset($_CFG['require_modul'][$k]) and $_CFG['require_modul'][$k]) {
-					//$k = _getExtMod($k);
+				elseif(
+					(isset($_CFG['require_modul'][$k]) and $_CFG['require_modul'][$k]) or
+					($r['extend'] and isset($_CFG['require_modul'][$r['extend']]) and $_CFG['require_modul'][$r['extend']])
+				) {
 					$sys_r .= '<li class="fly"><a class="main down'.$sel.'" href="'.$_CFG['PATH']['wepname'].'/index.php?_view=list&amp;_modul='.$k.'"><b>'.$r['name'].'</b></a></li>';
 				}elseif($r['typemodul']==0) {
 					$sys_m .= '<li class="fly"><a class="main down'.$sel.'" href="'.$_CFG['PATH']['wepname'].'/index.php?_view=list&amp;_modul='.$k.'"><b>'.$r['name'].'</b></a></li>';
