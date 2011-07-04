@@ -542,7 +542,7 @@ abstract class kernel_extends {
 
 		if (isset($this->attaches[$key]['thumb'][$modkey]['path']) && $this->attaches[$key]['thumb'][$modkey]['path'])
 			$pathimg = $this->attaches[$key]['thumb'][$modkey]['path'] . '/' . $pref . $id . '.' . $extValue;
-		elseif ($this->attaches[$key]['path'])
+		elseif (isset($this->attaches[$key]['path']) and $this->attaches[$key]['path'])
 			$pathimg = $this->attaches[$key]['path'] . '/' . $pref . $id . '.' . $extValue;
 		else
 			$pathimg = $this->getPathForAtt($key) . '/' . $pref . $id . '.' . $extValue;
@@ -1871,7 +1871,7 @@ abstract class kernel_extends {
 	}
 
 	public function getPathForAtt($key) {
-		if ($this->attaches[$key]['path'])
+		if (isset($this->attaches[$key]['path']) and $this->attaches[$key]['path'])
 			$pathimg = $this->attaches[$key]['path'];
 		else
 			$pathimg = $this->_CFG['PATH']['content'] . $key;

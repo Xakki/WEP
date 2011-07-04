@@ -283,19 +283,19 @@ $_CFG['_error'] = array(
 	),
 	E_CORE_WARNING => array(
 		'type' => '[Core Warning]',
-		'color' => '#D16800',
+		'color' => '#F18890',
 		'prior' => 1,
 		'debug' => 1
 	),
 	E_COMPILE_WARNING => array(
 		'type' => '[Compilation Warning]',
-		'color' => '#D16800',
+		'color' => '#F18890',
 		'prior' => 1,
 		'debug' => 0
 	),
 	E_WARNING => array(
 		'type' => '[Warning]',
-		'color' => '#D16800',
+		'color' => '#F18890',
 		'prior' => 1,
 		'debug' => 1
 	),
@@ -313,7 +313,7 @@ $_CFG['_error'] = array(
 	),
 	E_USER_WARNING => array(
 		'type' => '[Triggered Warning]',
-		'color' => '#D16800',
+		'color' => '#F18890',
 		'prior' => 3,
 		'debug' => 1
 	),

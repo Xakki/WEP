@@ -243,3 +243,7 @@ FB::log('Log message');
 FB::info('Info message');
 FB::warn('Warn message');
 FB::error('Error message');
+
+create database `wepbd` character set utf8 ;
+create user 'wepmysqluser'@'localhost' identified by 'defaultpass';
+grant all privileges on wepbd.* to 'wepmysqluser'@'localhost';
