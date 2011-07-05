@@ -127,34 +127,34 @@
 				$m.=' NOT NULL';
 			if(isset($param['default']))
 				$m.=' DEFAULT \'' . $param['default'] . '\'';
-			if(!isset($param['default']) and $param['type']=='timestamp')
+			if(!isset($param['default']) and $param['type']=='varchar' and !$param['attr'])
+				$m.=' DEFAULT NULL';
+			elseif(!isset($param['default']) and $param['type']=='timestamp')
 				$m.=' DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP';
 			return array($m,$mess);
 		}
 
-		function _fldformerSQL($COLUMNS) {
-			$temp = '`' . $COLUMNS['Field'] . '` ' . $COLUMNS['Type'];
-			if($COLUMNS['Null']=='NO')
-				$temp .= ' NOT NULL';
-			if($COLUMNS['Null']=='YES' and $COLUMNS['Type']!='text' and $COLUMNS['Default']=='NULL')
-				$temp .= ' DEFAULT \'NULL\'';
-			elseif(!is_null($COLUMNS['Default'])) {
-				if($COLUMNS['Type']=='timestamp')
-					$temp .= ' DEFAULT '.$COLUMNS['Default'];
-				else
-					$temp .= ' DEFAULT \''.$COLUMNS['Default'].'\'';
-			}
-			if($COLUMNS['Extra'])
-				$temp .= ' '.$COLUMNS['Extra'];
-			return $temp;
-		}
-
 		function _getSQLTableInfo($tablename) {
 			$data = array();
-			$result = $this->execSQL('SHOW COLUMNS FROM `' . $tablename . '`');
-			while ($COLUMNS = $result->fetch_array())		{
-				$fldname = mb_strtolower($COLUMNS['Field']);
+			$result = $this->execSQL('SHOW FULL FIELDS FROM `' . $tablename . '`');
+			while ($COLUMNS = $result->fetch_array()) {
+				$fldname = $COLUMNS['Field'];//mb_strtolower(
 				$data[$fldname] = $COLUMNS;
+			}
+			$result = $this->execSQL('SHOW CREATE TABLE `' . $tablename . '`');
+			if ($row = $result->fetch_array()) {
+				$creat_table = $row['Create Table'];
+				$creat_table = explode("\n",$creat_table);
+				array_shift($creat_table);
+				$info = array_pop($creat_table);
+				foreach($creat_table as $r) {
+					$r = trim($r," ,\t\r");
+					if(substr($r,0,1)=='`') {
+						$pos = strpos($r,'`',1);
+						$fldname = substr($r,1,($pos-1));
+						$data[$fldname]['create'] = $r;
+					}
+				}
 			}
 			return $data;
 		}

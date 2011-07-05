@@ -93,15 +93,14 @@ class static_tools {
 			return $rDATA;
 		}
 		
-exit('TODO');
 		$dataTable = $MODUL->SQL->_getSQLTableInfo($MODUL->tablename);
+//exit('TODO');
 
-		foreach($dataTable as $fn=>$fp)		{
-			$fldname = mb_strtolower($COLUMNS['Field']);
+		foreach($dataTable as $fldname=>$fp) {
 			if (isset($MODUL->fields[$fldname])) {
 				$MODUL->fields[$fldname]['inst'] = '1';
 
-				$currentFields = $MODUL->SQL->_fldformerSQL($COLUMNS);
+				$currentFields = $fp['create'];
 				$temp_currentFields = trim( str_replace(array('"', "'", chr(194).chr(160),"\xC2xA0","\n"), array('', '', ' ', ' ', ' '), mb_strtolower($currentFields)) );
 
 				list($newFields,$rDATA[$fldname]['@mess']) = $MODUL->SQL->_fldformer($fldname, $MODUL->fields[$fldname]);
@@ -149,7 +148,7 @@ exit('TODO');
 
 		$indexlist = $uniqlistR = $uniqlist = array();
 		$primary = '';
-		$result = $MODUL->SQL->execSQL('SHOW INDEX FROM `' . $MODUL->tablename . '`');
+		$result = $MODUL->SQL->execSQL('SHOW KEYS FROM `' . $MODUL->tablename . '`');
 		while ($data = $result->fetch_array(MYSQL_NUM)) {
 			if ($data[2] == 'PRIMARY') //только 1 примарикей
 				$primary = $data[4];
