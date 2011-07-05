@@ -83,7 +83,8 @@ class mail_class extends kernel_extends {
 			2 => 'При отправке на email произошли ошибки',
 		);
 
-		$this->locallang['default']['_saveclose'] = 'Отправить письмо';		
+		$this->locallang['default']['_saveclose'] = 'Отправить письмо';
+		$this->ordfield = 'mf_timecr DESC';
 	}
 
 	function Send($data) {
