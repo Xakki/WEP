@@ -53,28 +53,55 @@ class mail_class extends kernel_extends {
 		$this->fields['from'] = array('type' => 'varchar', 'width' =>64, 'attr' => 'NOT NULL');
 		$this->fields['subject'] = array('type' => 'varchar', 'width' =>255, 'attr' => 'NOT NULL');
 		$this->fields['text'] = array('type' => 'text','attr' => 'NOT NULL');
+		$this->fields['from_user'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
+		$this->fields['mail_to'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
+		$this->fields['status'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL');
 
 		$this->fields_form['from']= array('type'=>'text','caption'=>'Обратный email адрес','mask'=>array('name'=>'email', 'min' => '4'));
 		$this->fields_form['subject']= array('type'=>'text','caption'=>'Тема письма', 'mask'=>array('min' => '6'));
 		$this->fields_form['text']= array('type'=>'textarea','caption'=>'Текcт письма', 'mask'=>array('min' => '6'));
+		$this->fields_form['from_user'] = array('type' => 'int', 'caption' => 'От кого письмо', 'mask' => array());
+		$this->fields_form['mail_to'] = array('type' => 'text', 'caption' => 'email', 'mask' => array());
+		$this->fields_form['status'] = array('type' => 'list', 'listname'=>'status', 'caption' => 'Статус сообщения', 'mask' => array());
 		
+		$this->_enum['status'] = array(
+			0 => 'Не отправлялось на email',
+			1 => 'Отправлялось на email',
+			2 => 'При отправке на email произошли ошибки',
+		);
+
 		$this->locallang['default']['_saveclose'] = 'Отправить письмо';		
 	}
 
 	function Send($data) {
 		$this->__do_hook('Send', $data);
-		if(!$data['mailTo']) {
-			unset($data['mailTo']);		
+
+		if(!$data['mail_to']) {
+			unset($data['mail_to']);
+			$data['status'] = 0;
 
 			$this->fld_data = $data;
 			return $this->_add($data);
 		}
-		if(method_exists($this, 'mailengine'.$this->config['mailengine']))
-			return call_user_func(array($this, 'mailengine'.$this->config['mailengine']),$data);
+
+		if(method_exists($this, 'mailengine'.$this->config['mailengine'])) {
+			$send_result = call_user_func(array($this, 'mailengine'.$this->config['mailengine']),$data);
+		}
 		else {
 			trigger_error('Попытка вызвать не существующий метод `mailengine'.$this->config['mailengine'].'` в модуле Mail!', E_USER_ERROR);
-			return false;
+			$send_result = false;
 		}
+
+		if ($send_result) {
+			$data['status'] = 1;
+		}
+		else {
+			$data['status'] = 2;
+		}
+
+		$this->fld_data = $data;
+		return $this->_add($data);
+		
 	}
 
 	function mailForm($mailTo) {
