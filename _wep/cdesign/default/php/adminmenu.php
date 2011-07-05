@@ -10,13 +10,13 @@
 		$over = '';
 		if(is_array($data['item']) and count($data['item']))
 			foreach($data['item'] as $k=>&$r) {
-				if(!$r['tablename']) continue;
 				$sel = '';
 				if($r['sel'])
 					$sel = ' msel';
-				if(isset($r['css'])) {
+				if(isset($r['css']) and !isset($r['tablename'])) {
 					$over .= '<a class="'.$r['css'].$sel.'" href="'.$_CFG['PATH']['wepname'].'/index.php?_view=list&amp;_modul='.$k.'">'.$r['name'].'</a>';
 				}
+				elseif(!$r['tablename']) continue;
 				elseif(
 					(isset($_CFG['require_modul'][$k]) and $_CFG['require_modul'][$k]) or
 					($r['extend'] and isset($_CFG['require_modul'][$r['extend']]) and $_CFG['require_modul'][$r['extend']])

@@ -92,9 +92,11 @@ class static_tools {
 			}
 			return $rDATA;
 		}
+		
+exit('TODO');
+		$dataTable = $MODUL->SQL->_getSQLTableInfo($MODUL->tablename);
 
-		$result = $MODUL->SQL->execSQL('SHOW COLUMNS FROM `' . $MODUL->tablename . '`');
-		while ($COLUMNS = $result->fetch_array()) {
+		foreach($dataTable as $fn=>$fp)		{
 			$fldname = mb_strtolower($COLUMNS['Field']);
 			if (isset($MODUL->fields[$fldname])) {
 				$MODUL->fields[$fldname]['inst'] = '1';

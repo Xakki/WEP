@@ -149,6 +149,16 @@
 			return $temp;
 		}
 
+		function _getSQLTableInfo($tablename) {
+			$data = array();
+			$result = $this->execSQL('SHOW COLUMNS FROM `' . $tablename . '`');
+			while ($COLUMNS = $result->fetch_array())		{
+				$fldname = mb_strtolower($COLUMNS['Field']);
+				$data[$fldname] = $COLUMNS;
+			}
+			return $data;
+		}
+
 	}
 
 	class query {
