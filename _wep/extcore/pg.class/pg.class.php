@@ -271,6 +271,7 @@ class pg_class extends kernel_extends {
 		if(empty($this->dataCashTree))
 			$this->sqlCashPG();
 		$fp = $this->config['rootPage'];
+		//print_r('*1 ');
 		if(isset($_GET['page']) and is_array($_GET['page']) and count($_GET['page'])) {
 			$this->pageParam = array();
 			foreach($_GET['page'] as $k=>$r) {
@@ -280,7 +281,7 @@ class pg_class extends kernel_extends {
 					$this->pageParam[] = $r;
 			}
 		}
-		if($fp!=$this->config['rootPage'] or !$this->id)
+		if($fp!=$this->config['rootPage'] and !$this->id)
 			$this->id = $fp;
 
 		/*$row = 0;
@@ -292,10 +293,12 @@ class pg_class extends kernel_extends {
 		}*/
 		if($this->id and isset($this->dataCash[$this->id]) and !$this->pagePrmCheck($this->dataCash[$this->id]['ugroup'])) {
 			$this->pageinfo = $this->dataCash[$this->id];
+			//print_r('*2 ');
 			return 2;
 		}
 		elseif($this->id and isset($this->dataCash[$this->id]))
 		{
+			//print_r('*3 ');
 			$this->pageinfo = $this->dataCash[$this->id];
 			if ($this->pageinfo['href']){
 				header('Location: '.$this->pageinfo['href']);die();}			
@@ -325,6 +328,7 @@ class pg_class extends kernel_extends {
 			return 1;
 		}
 		elseif($this->config['IfDontHavePage'] and !isset($this->IfDontHavePage)) {
+			//print_r('*4 ');
 			$IfDontHavePage = explode(':',$this->config['IfDontHavePage']);
 			if(file_exists($this->_enum['inc'][$IfDontHavePage[0]]['path'].$IfDontHavePage[1].'.inc.php')) {
 				include($this->_enum['inc'][$IfDontHavePage[0]]['path'].$IfDontHavePage[1].'.inc.php');
@@ -333,6 +337,7 @@ class pg_class extends kernel_extends {
 				return $this->can_show();
 			}
 		}elseif((!$this->id or $this->id != $this->config['rootPage']) and !isset($this->IfrootPage)) {
+			//print_r('*5 ');
 			$this->id = $this->config['rootPage'];
 			$this->IfrootPage = true;
 			return $this->can_show();
