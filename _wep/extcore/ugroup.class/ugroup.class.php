@@ -6,7 +6,7 @@ class ugroup_class extends kernel_extends
 	function _create_conf() {/*CONFIG*/
 		parent::_create_conf();
 
-		$this->config['mailto'] = 'info@xakki.ru';
+		$this->config['mail_to'] = 'info@xakki.ru';
 		$this->config['mailrobot'] = 'robot@xakki.ru';
 		$this->config['mailinfo'] = '';
 		$this->config['mailconfirm'] = '';
@@ -21,7 +21,7 @@ class ugroup_class extends kernel_extends
 		$this->config['karma'] = 0;
 		$this->config['userpic'] = '';
 
-		$this->config_form['mailto'] = array('type' => 'text', 'mask' =>array('min'=>1,'name'=>'email'), 'caption' => 'Адрес службы поддержки');
+		$this->config_form['mail_to'] = array('type' => 'text', 'mask' =>array('min'=>1,'name'=>'email'), 'caption' => 'Адрес службы поддержки');
 		$this->config_form['mailrobot'] = array('type' => 'text', 'mask' =>array('min'=>1,'name'=>'email'), 'caption' => 'Адрес Робота');
 		$this->config_form['mailinfo'] = array(
 			'type' => 'ckedit', 
@@ -450,7 +450,7 @@ class users_class extends kernel_extends {
 							$this->SQL->execSQL('UPDATE '.$this->tablename.' SET '.$this->mf_createrid.'="'.$this->id.'" where '.$this->fn_login.'="'.$arr['vars'][$this->fn_login].'"');
 							_new_class('mail',$MAIL);
 							$datamail['from']=$this->owner->config['mailrobot'];
-							$datamail['mailTo']=$arr['vars']['email'];
+							$datamail['mail_to']=$arr['vars']['email'];
 							$datamail['subject']='Подтвердите регистрацию на '.strtoupper($_SERVER['HTTP_HOST']);
 							$href = '?confirm='.$arr['vars'][$this->fn_login].'&hash='.$arr['vars']['reg_hash'];
 							
@@ -603,7 +603,7 @@ class users_class extends kernel_extends {
 					$hash =md5($datau[$this->fn_pass].$time.$datau['email']).'h';
 					_new_class('mail',$MAIL);
 					$datamail['from']=$this->owner->config['mailrobot'];
-					$datamail['mailTo']=$datau['email'];
+					$datamail['mail_to']=$datau['email'];
 					$datamail['subject']='Востановление пароля на '.strtoupper($_SERVER['HTTP_HOST']);
 					$href = '?id='.$datau['id'].'&t='.$time.'&hash='.$hash;
 					$datamail['text']=str_replace(

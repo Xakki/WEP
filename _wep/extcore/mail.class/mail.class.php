@@ -104,7 +104,7 @@ class mail_class extends kernel_extends {
 		
 	}
 
-	function mailForm($mailTo) {
+	function mailForm($mail_to) {
 		global $_MESS;
 		$flag=0;// 1 - успешно, 0 - норм, -1  - ошибка
 		$formflag = 1;// 0 - показывает форму, 1 - не показывать форму
@@ -123,7 +123,7 @@ class mail_class extends kernel_extends {
 			$arr = $this->fFormCheck($_POST,$param,$this->fields_form);
 			$flag=-1;
 			if(!count($arr['mess'])) {
-				$arr['vars']['mailTo']=$mailTo;
+				$arr['vars']['mail_to']=$mail_to;
 				if($this->Send($arr['vars'])) {
 					// иногда сервер говорит что ошибка, а сам всеравно письма отсылает
 				} else {
@@ -163,7 +163,7 @@ class mail_class extends kernel_extends {
 		@ini_set('sendmail_path', '/usr/sbin/sendmail -t -i -f '.$data['from']);
 		 //}
 		$header = "MIME-Version: 1.0\r\n";
-		$header .= "To: {$data['mailTo']}\r\n";
+		$header .= "To: {$data['mail_to']}\r\n";
 		$header .= "From: {$data['from']}\r\n";
 		$header .= "Bcc: {$data['from']}\r\n"; 
 		if($this->reply) $header .= "Reply-To: {$data['from']}\r\n";
@@ -190,7 +190,7 @@ class mail_class extends kernel_extends {
 		if(isset($data['att']))
 			$header .= "--{$this->uid}--\r\n";	
 
-		return mail($data['mailTo'], $subject, $mess,$header,'-f'.$data['from']);
+		return mail($data['mail_to'], $subject, $mess,$header,'-f'.$data['from']);
 	}
 
 	function mailengine1 ($data) {
@@ -214,15 +214,15 @@ class mail_class extends kernel_extends {
 			$PHPMailer->FromName = $_SERVER['HTTP_HOST'];
 		$PHPMailer->Subject = $data['subject'];//iconv('cp1251','koi8-r','Новый заказ на кредит');
 		
-		if(is_array($data['mailTo']))
-			foreach ($data['mailTo'] as $email)
+		if(is_array($data['mail_to']))
+			foreach ($data['mail_to'] as $email)
 			{
 				$email = trim($email);
 				$PHPMailer->AddAddress($email, "Subscriber");
 				//$PHPMailer->AddAddress($email, iconv('cp1251','koi8-r',"Subscriber"));
 			}
 		else
-			$PHPMailer->AddAddress($data['mailTo'], "Subscriber");
+			$PHPMailer->AddAddress($data['mail_to'], "Subscriber");
 
 		$this->config['mailbottom'] = str_replace(array('%host%','%year%'),array($_SERVER['HTTP_HOST'],date('Y')),$this->config['mailbottom']);
 		$PHPMailer->Body = $PHPMailer->AltBody = str_replace(array('%SUBJECT%','%TEXT%','%MAILBOTTOM%'), array($data['subject'],trim($data['text']),$this->config['mailbottom']), $this->config['mailtemplate']);

@@ -151,7 +151,7 @@ class loginza_class extends kernel_extends
 			if(!$MAIL) _new_class('mail',$MAIL);
 			$datamail['creater_id']=$USERS->id;
 			$datamail['from']=$USERS->owner->config['mailrobot'];
-			$datamail['mailTo']=$data['email'];
+			$datamail['mail_to']=$data['email'];
 			$datamail['subject']='Вы зарегестрированы на сайте '.strtoupper($_SERVER['HTTP_HOST']);
 			$datamail['text']=str_replace(array('%pass%','%login%','%host%'),array($pass,$data[$USERS->fn_login],$_SERVER['HTTP_HOST']),$USERS->owner->config['mailinfo']);
 			$MAIL->reply = 0;

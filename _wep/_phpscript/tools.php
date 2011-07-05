@@ -311,7 +311,7 @@ function tools_sendReg() {
 			if(!$UGROUP->child['user']->_add_item($arr['vars'])) {
 				_new_class('mail', $MAIL);
 				$datamail['from']=$UGROUP->config["mailrobot"];
-				$datamail['mailTo']=$arr['vars']['email'];
+				$datamail['mail_to']=$arr['vars']['email'];
 				$datamail['subject']='Подтвердите регистрацию на '.strtoupper($_SERVER['HTTP_HOST']);
 				$href = '?confirm='.$arr['vars']['id'].'&amp;hash='.$arr['vars']['reg_hash'];
 				$datamail['text']=str_replace(array('%pass%','%login%','%href%'),array($pass,$arr['vars']['id'],$href),$this->owner->config["mailconfirm"]);
@@ -348,12 +348,12 @@ function tools_sendMail() {
 	global $SQL,$_CFG;
 	_new_class('mail',$MAIL);
 	$html = '';
-	if(isset($_POST['text']) and isset($_POST['mailTo']))  {
+	if(isset($_POST['text']) and isset($_POST['mail_to']))  {
 		$ttw  = getmicrotime();
 		$MAIL->reply = 0;
 		$datamail = array();
 		$datamail['from']=$_POST['from'];
-		$datamail['mailTo']=$_POST['mailTo'];
+		$datamail['mail_to']=$_POST['mail_to'];
 		$datamail['subject']=$_POST['subject'];
 		$datamail['text'] = $_POST['text'];
 		if($MAIL->Send($datamail))
@@ -364,10 +364,10 @@ function tools_sendMail() {
 	} else {
 		if(!isset($_POST['subject'])) $_POST['subject'] = 'Тут такая тема!';
 		if(!isset($_POST['text'])) $_POST['text'] = '***текст письма***';
-		if(!isset($_POST['mailTo'])) $_POST['mailTo'] = 'tome@xakki.ru';
+		if(!isset($_POST['mail_to'])) $_POST['mail_to'] = 'tome@xakki.ru';
 		if(!isset($_POST['from'])) $_POST['from'] = $MAIL->config['mailrobot'];
 		$html = '<form method="post">
-			<lable>Кому</lable> <input type="text" name="mailTo" value="'.$_POST['mailTo'].'"/><br/>
+			<lable>Кому</lable> <input type="text" name="mail_to" value="'.$_POST['mail_to'].'"/><br/>
 			<lable>От кого</lable> <input type="text" name="from" value="'.$_POST['from'].'"/><br/>
 			<lable>Тема</lable> <input type="text" name="subject" value="'.$_POST['subject'].'"/><br/>
 			<lable>Текст</lable><br/><textarea name="text" rows="7" cols="50" >'.htmlspecialchars($_POST['text'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea><br/>
