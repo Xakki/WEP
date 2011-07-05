@@ -24,8 +24,8 @@ class mail_class extends kernel_extends {
 		$this->config['mailrobot'] = 'robot@xakki.ru';
 		$this->config['fromName'] = '';
 		$this->config['PHPMailer_Host'] = 'ssl://smtp.gmail.com:465';
-		$this->config['PHPMailer_Username'] = 'zao.apit@gmail.com';
-		$this->config['PHPMailer_Password'] = 'G6A9o806P8kp';
+		$this->config['PHPMailer_Username'] = 'usermail@gmail.com';
+		$this->config['PHPMailer_Password'] = 'longpassword';
 		$this->config['mailtemplate'] = '<html><head><title>%SUBJECT%</title><meta content="text/html;charset=utf-8" http-equiv="Content-Type" /></head><body>%TEXT% %MAILBOTTOM%</body></html>';
 		$this->config['mailbottom'] = '<hr/>© 2011 «XAKKI»';
 
