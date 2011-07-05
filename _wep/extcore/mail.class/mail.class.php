@@ -9,6 +9,7 @@ class mail_class extends kernel_extends {
 		$this->attaches = array();
 		$this->caption = 'Почта';
 		$this->cf_reinstall = true;
+		$this->mf_timecr = true;
 		return true;
 	}
 
@@ -58,10 +59,14 @@ class mail_class extends kernel_extends {
 		$this->fields['status'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL');
 
 		$this->fields_form['from']= array('type'=>'text','caption'=>'Обратный email адрес','mask'=>array('name'=>'email', 'min' => '4'));
-		$this->fields_form['subject']= array('type'=>'text','caption'=>'Тема письма', 'mask'=>array('min' => '6'));
-		$this->fields_form['text']= array('type'=>'textarea','caption'=>'Текcт письма', 'mask'=>array('min' => '6'));
-		$this->fields_form['from_user'] = array('type' => 'int', 'caption' => 'От кого письмо', 'mask' => array());
+		$this->fields_form['subject']= array('type'=>'text','caption'=>'Тема письма', 'mask'=>array('min' => '4'));
+		$this->fields_form['text']= array('type'=>'textarea','caption'=>'Текcт письма', 'mask'=>array('fview'=>1,'min' => '4'));
+		$this->fields_form['from_user'] = array(
+			'type' => 'list', 
+			'listname'=>array('class'=>'users','nameField'=>'concat(tx.name," [",tx.id,"]")'),
+			'caption' => 'От кого письмо', 'mask' => array());
 		$this->fields_form['mail_to'] = array('type' => 'text', 'caption' => 'email', 'mask' => array());
+		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата создания', 'mask'=>array('fview'=>2,'sort'=>1));
 		$this->fields_form['status'] = array('type' => 'list', 'listname'=>'status', 'caption' => 'Статус сообщения', 'mask' => array());
 		
 		$this->_enum['status'] = array(
