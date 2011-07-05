@@ -60,7 +60,15 @@ class mail_class extends kernel_extends {
 
 		$this->fields_form['from']= array('type'=>'text','caption'=>'Обратный email адрес','mask'=>array('name'=>'email', 'min' => '4'));
 		$this->fields_form['subject']= array('type'=>'text','caption'=>'Тема письма', 'mask'=>array('min' => '4'));
-		$this->fields_form['text']= array('type'=>'textarea','caption'=>'Текcт письма', 'mask'=>array('fview'=>1,'min' => '4'));
+		$this->fields_form['text'] = array(
+			'type' => 'ckedit', 
+			'caption' => 'Текcт письма', 
+			'mask' =>array('name'=>'all','min'=>4,'fview'=>1),
+			'paramedit'=>array(
+				'height'=>250,
+				'toolbarStartupExpanded'=>'false',
+				'extraPlugins'=>"'cntlen'",
+				'plugins'=>"'button,contextmenu,enterkey,entities,justify,keystrokes,list,pastetext,popup,removeformat,toolbar,undo'"));
 		$this->fields_form['from_user'] = array(
 			'type' => 'list', 
 			'listname'=>array('class'=>'users','nameField'=>'concat(tx.name," [",tx.id,"]")'),

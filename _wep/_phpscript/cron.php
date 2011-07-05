@@ -33,11 +33,11 @@
 				}else
 					$res .= 'Can`t find file '.$r['file'].' . //';
 			}
-			if($r['function'] and $r['modul']) {
+			if(isset($r['function']) and $r['function'] and $r['modul']) {
 				_new_class($r['modul'],$MODUL);
 				eval('$res .= $MODUL->'.$r['function'].';');
 				//function_exists				
-			}elseif($r['function']) {
+			}elseif(isset($r['function']) and $r['function']) {
 				eval('$res .= '.$r['function'].';');
 			}
 			$ini_arr['do_time' . $i] = getmicrotime()-$tt;
