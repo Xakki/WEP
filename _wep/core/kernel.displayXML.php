@@ -165,100 +165,106 @@
 			$this->data = $this->_query($listfields,$clause,'id');
 //print($this->SQL->query);
 			/** Обработка запроса*/
-			foreach($this->data as $key=>$row) {
-				$xml['data']['item'][$key] = array('id'=>$row['id']);
-				$xml['data']['item'][$key] += $this->_tr_attribute($row,$param);
-				if($xml['data']['item'][$key]['act'])
-					$xml['data']['item'][$key][$this->mf_actctrl] = $row[$this->mf_actctrl];
-				foreach($this->fields_form as $k=>$r) {
-					if(isset($arrno[$k])) continue;
-					$tditem = array('name'=>$k,'type'=>$r['type']);
-					if($r['type']=='file') {
-						if(isset($this->_CFG['form']['flashFormat'][$row['_ext_'.$k]])) $tditem['fileType']='swf';
-						elseif(isset($this->_CFG['form']['imgFormat'][$row['_ext_'.$k]])) $tditem['fileType']='img';
-						else $tditem['fileType']='file';
-					}
+			if(count($this->data)) {
+				$temp = current($this->data);
+				if(isset($temp[$this->mf_ordctrl]))
+					$xml['data']['ord'] = $this->mf_ordctrl;
+				foreach($this->data as $key=>$row) {
+					$xml['data']['item'][$key] = array('id'=>$row['id']);
+					$xml['data']['item'][$key] += $this->_tr_attribute($row,$param);
+					//if($xml['data']['item'][$key]['act'])
+					if($this->mf_actctrl and isset($row[$this->mf_actctrl]))
+						$xml['data']['item'][$key]['active'] = $row[$this->mf_actctrl];
+					foreach($this->fields_form as $k=>$r) {
+						if(isset($arrno[$k])) continue;// исключаем поля которые будут отображаться спецефично
+						$tditem = array('name'=>$k,'type'=>$r['type']);
+						if($r['type']=='file') {
+							if(isset($this->_CFG['form']['flashFormat'][$row['_ext_'.$k]])) $tditem['fileType']='swf';
+							elseif(isset($this->_CFG['form']['imgFormat'][$row['_ext_'.$k]])) $tditem['fileType']='img';
+							else $tditem['fileType']='file';
+						}
 
-					if(isset($r['mask']['href']))
-						$tditem['href'] = str_replace('{id}',$row['id'],$r['mask']['href']);
-					elseif($r['type']=='attach')
-						$tditem['href'] = $row[$k];
-					if(isset($r['mask']['onetd']))
-						$tditem['onetd'] = $r['mask']['onetd'];
+						if(isset($r['mask']['href']))
+							$tditem['href'] = str_replace('{id}',$row['id'],$r['mask']['href']);
+						elseif($r['type']=='attach')
+							$tditem['href'] = $row[$k];
+						if(isset($r['mask']['onetd']))
+							$tditem['onetd'] = $r['mask']['onetd'];
 
-					/** Отображаем "значение" если НЕ мультистолбец или если "значение" TRUE*/
-					if(!isset($r['mask']['onetd']) or ($row[$k]!='0' and $row[$k]!='') or $r['type']=='list') {
-						if(!isset($tditem['value'])) $tditem['value'] = '';
-						if(isset($this->memos[$k]))
-							$tditem['value'] .= _substr(strip_tags(htmlspecialchars_decode(file_get_contents($row[$k]))),0,400);
-						elseif($r['type']=='date') {
-							$temp = '';
-							if(!isset($r['mask']['format']))
-								$r['mask']['format'] = 'Y-m-d H:i';							
-							// Тип поля
-							if($this->fields[$k]['type']=='int'  and $row[$k]){
-								$temp = date($r['mask']['format'],$row[$k]);
-							}
-							elseif($this->fields[$k]['type']=='timestamp' and $row[$k]){
-								$fs = explode(' ', $row[$k]);
-								$f = explode('-', $fs[0]);
-								$s = explode(':', $fs[1]);
-								$temp = mktime($s[0], $s[1], $s[2], $f[1], $f[2], $f[0]);
+						/** Отображаем "значение" если НЕ мультистолбец или если "значение" TRUE*/
+						if(!isset($r['mask']['onetd']) or ($row[$k]!='0' and $row[$k]!='') or $r['type']=='list') {
+							if(!isset($tditem['value'])) $tditem['value'] = '';
+							if(isset($this->memos[$k]))
+								$tditem['value'] .= _substr(strip_tags(htmlspecialchars_decode(file_get_contents($row[$k]))),0,400);
+							elseif($r['type']=='date') {
+								$temp = '';
+								if(!isset($r['mask']['format']))
+									$r['mask']['format'] = 'Y-m-d H:i';							
+								// Тип поля
+								if($this->fields[$k]['type']=='int'  and $row[$k]){
+									$temp = date($r['mask']['format'],$row[$k]);
+								}
+								elseif($this->fields[$k]['type']=='timestamp' and $row[$k]){
+									$fs = explode(' ', $row[$k]);
+									$f = explode('-', $fs[0]);
+									$s = explode(':', $fs[1]);
+									$temp = mktime($s[0], $s[1], $s[2], $f[1], $f[2], $f[0]);
+									
+									if($r['mask']['time'])
+										$r['mask']['format'] = $r['mask']['format'].' '.$r['mask']['time'];
+									
+									$temp = date($r['mask']['format'],$temp);
+								}
 								
-								if($r['mask']['time'])
-									$r['mask']['format'] = $r['mask']['format'].' '.$r['mask']['time'];
+								$tditem['value'] .= $temp;
 								
-								$temp = date($r['mask']['format'],$temp);
 							}
-							
-							$tditem['value'] .= $temp;
-							
-						}
-						elseif($k=='mf_ipcreate')
-							$tditem['value'] .= long2ip($row[$k]);
-						elseif($r['type']=='checkbox')
-							$tditem['value'] .= $this->_CFG['enum']['yesno'][$row[$k]];
-						elseif(isset($r['listname']) and is_array($r['listname'])) {//isset($row['name_'.$k])
-							if(isset($r['multiple']) and $r['multiple']) 
-								$tditem['value']= str_replace('|',', ',trim($row['name_'.$k],'|'));
-							else
-								$tditem['value'] = $row['name_'.$k];
-						}
-						elseif(isset($r['listname']) and $r['listname']) {// and !is_array($r['listname'])
-							if(isset($r['multiple']) and $r['multiple']) 
-								$row[$k]= explode('|',trim($row[$k],'|'));
-							else
-								$row[$k] = array($row[$k]);
-							$temp=array();
+							elseif($k=='mf_ipcreate')
+								$tditem['value'] .= long2ip($row[$k]);
+							elseif($r['type']=='checkbox')
+								$tditem['value'] .= $this->_CFG['enum']['yesno'][$row[$k]];
+							elseif(isset($r['listname']) and is_array($r['listname'])) {//isset($row['name_'.$k])
+								if(isset($r['multiple']) and $r['multiple']) 
+									$tditem['value']= str_replace('|',', ',trim($row['name_'.$k],'|'));
+								else
+									$tditem['value'] = $row['name_'.$k];
+							}
+							elseif(isset($r['listname']) and $r['listname']) {// and !is_array($r['listname'])
+								if(isset($r['multiple']) and $r['multiple']) 
+									$row[$k]= explode('|',trim($row[$k],'|'));
+								else
+									$row[$k] = array($row[$k]);
+								$temp=array();
 
-							foreach($row[$k] as $er) {
-								if(isset($this->_CFG['enum_check'][$r['listname']][$er])) {
-									$templist = $this->_CFG['enum_check'][$r['listname']][$er];
-									if(!is_array($templist)) {
-										$temp[] = $templist;
-									} elseif(isset($templist['#name#'])) {
-										$temp[] = $templist['#name#'];
-									} else
-										$temp[] = '#unknown_data#';
-								}elseif($er)
-									$temp[] = '<span style="color:gray;">'.$er.'</span>';
+								foreach($row[$k] as $er) {
+									if(isset($this->_CFG['enum_check'][$r['listname']][$er])) {
+										$templist = $this->_CFG['enum_check'][$r['listname']][$er];
+										if(!is_array($templist)) {
+											$temp[] = $templist;
+										} elseif(isset($templist['#name#'])) {
+											$temp[] = $templist['#name#'];
+										} else
+											$temp[] = '#unknown_data#';
+									}elseif($er)
+										$temp[] = '<span style="color:gray;">'.$er.'</span>';
+								}
+								$tditem['value'] = implode(', ',$temp);
 							}
-							$tditem['value'] = implode(', ',$temp);
+							elseif(isset($r['mask']['substr']) and $r['mask']['substr']>0)
+								$tditem['value'] = _substr(strip_tags(htmlspecialchars_decode($row[$k])),0,$r['mask']['substr']);
+							else//if($r['type']!='file')
+								$tditem['value'] = $row[$k];
 						}
-						elseif(isset($r['mask']['substr']) and $r['mask']['substr']>0)
-							$tditem['value'] = _substr(strip_tags(htmlspecialchars_decode($row[$k])),0,$r['mask']['substr']);
-						else//if($r['type']!='file')
-							$tditem['value'] = $row[$k];
+						$xml['data']['item'][$key]['tditem'][$k] = $tditem;
 					}
-					$xml['data']['item'][$key]['tditem'][$k] = $tditem;
+					if(count($this->childs))
+						foreach($this->childs as $ck=>$cn) {
+							if(count($cn->fields_form))
+								$xml['data']['item'][$key]['child'][$ck] = array('value'=>$cn->caption, 'cnt'=>$row[$ck.'_cnt']);
+						}
+					if($this->mf_istree and (!$this->mf_treelevel or !isset($this->tree_data) or (count($this->tree_data)<($this->mf_treelevel))))
+						$xml['data']['item'][$key]['istree'] = array('value'=>$this->caption, 'cnt'=>$row['istree_cnt']);
 				}
-				if(count($this->childs))
-					foreach($this->childs as $ck=>$cn) {
-						if(count($cn->fields_form))
-							$xml['data']['item'][$key]['child'][$ck] = array('value'=>$cn->caption, 'cnt'=>$row[$ck.'_cnt']);
-					}
-				if($this->mf_istree and (!$this->mf_treelevel or !isset($this->tree_data) or (count($this->tree_data)<($this->mf_treelevel))))
-					$xml['data']['item'][$key]['istree'] = array('value'=>$this->caption, 'cnt'=>$row['istree_cnt']);
 			}
 		}else
 			$xml['messages'][] = array('value'=>'Пусто','name'=>'alert');

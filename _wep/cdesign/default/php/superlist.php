@@ -70,6 +70,8 @@
 		}
 		$html .= '<th>&#160;</th></tr>';
         if(count($data['item']))
+
+		// Проходимся про каждой записи
 		foreach($data['item'] as $k=>$r) {
 			$html .= '<tr';
 			if(isset($r['css']) and $r['css']) $html .= ' class="'.$r['css'].'"';
@@ -78,13 +80,24 @@
 			if(!isset($data['thitem']['id']))
 				$html .= '<td valign="top" id="items_'.$r['id'].'"><a id="elem'.$r['id'].'">'.$r['id'].'</a></td>';
 			$tdflag = 0;
+
+			// Путь для опции(редактирования, удаления, откл и прочее) по каждой записи
+			$hrefpref = $firstpath.$data['cl'].'_id='.$r['id'];
+
+			//Проходимся по каждому полю
 			foreach($r['tditem'] as $ktd=>$tditem) {
+				/////
 				if(!$tdflag) {
 					$html .= '<td valign="top">';
 					if(isset($tditem['onetd'])) $tdflag = 1;
 				}
-
-				if(isset($tditem['value']) and $tditem['value']!='') {
+				/////
+				if(isset($data['ord']) and $ktd==$data['ord']) {
+					$html .= '<a class="bottonimg imgup" href="'.$hrefpref.'&_type=ordup" onclick="return load_href(this)" title="[-1]"></a>'
+						.$tditem['value']
+						.'<a class="bottonimg imgdown" href="'.$hrefpref.'&_type=orddown" onclick="return load_href(this)" title="[+1]"></a>';
+				}
+				elseif(isset($tditem['value']) and $tditem['value']!='') {
 					if($tdflag)
 						$html .= '<b>'.$data['thitem'][$ktd]['value'].'</b>: ';
 					if(isset($tditem['fileType']) and $tditem['fileType']=='img') {
@@ -104,17 +117,17 @@
 					}
 					else $html .= $tditem['value'];
 				}
+				/////
 				if(isset($tditem['onetd']) and $tditem['onetd']=='close')
 					$tdflag = 0;
 				if(!$tdflag)
 					$html .= '</td>';
 				elseif(isset($tditem['value']) and $tditem['value']!='')
 					$html .= '<br/>';
+				/////
 			}
 			if($tdflag) $html .= '</td>';
 			$html .= '<td class="ic" style="vertical-align:top;white-space:nowrap;">';
-			
-			$hrefpref = $firstpath.$data['cl'].'_id='.$r['id'];
 
 			if(isset($data['abtn']) and count($data['abtn'])) {
 				foreach($data['abtn'] as $rr) {
@@ -122,20 +135,24 @@
 					//$rr['title']
 					if(!isset($rr['style'])) $rr['style']='';
 					if(!isset($rr['onclick'])) $rr['onclick']='';
-					$rr['href'] = str_replace(array('%id%','%firstpath%'),array($r['id'],$hrefpref.'&amp;_type='),$rr['href']);
+					$rr['href'] = str_replace(array('%id%','%firstpath%'),array($r['id'],$hrefpref.'&_type='),$rr['href']);
 					$html .= '<a class="bottonimg img'.$rr['css'].'" style="'.$rr['style'].'" href="'.$rr['href'].'" title="['.$rr['title'].']" onclick="'.$rr['onclick'].'"></a>';
 				}
 			}
-			if($r['act'])
-				$html .= '<a class="bottonimg img'.$r['active'].'" href="'.$hrefpref.'&amp;_type='.($r['active']==1?'dis':'act').'" onclick="return load_href(this)" title="['.$_CFG['_ACT_TITLE'][$r['active']].']"></a>';
+			if(isset($r['active'])) {
+				if($r['act'])
+					$html .= '<a class="bottonimg img'.$r['active'].'" href="'.$hrefpref.'&_type='.($r['active']==1?'dis':'act').'" onclick="return load_href(this)" title="['.$_CFG['_ACT_TITLE'][$r['active']].']"></a>';
+				else
+					$html .= '<a class="bottonimg img'.$r['active'].'" title="Изменение данного своиства вам не доступна."></a>';
+			}
 			if($r['edit'])
-				$html .= '<a class="bottonimg imgedit" href="'.$hrefpref.'&amp;_type=edit" onclick="return load_href(this)" title="['.$_CFG['_EDIT_TITLE'].']"></a>';
+				$html .= '<a class="bottonimg imgedit" href="'.$hrefpref.'&_type=edit" onclick="return load_href(this)" title="['.$_CFG['_EDIT_TITLE'].']"></a>';
 			if($r['del'])
-				$html .= '<a class="bottonimg imgdel" href="'.$hrefpref.'&amp;_type=del" onclick="return hrefConfirm(this,\'del\')" title="['.$_CFG['_DEL_TITLE'].']"></a>';
+				$html .= '<a class="bottonimg imgdel" href="'.$hrefpref.'&_type=del" onclick="return hrefConfirm(this,\'del\')" title="['.$_CFG['_DEL_TITLE'].']"></a>';
 			if(isset($r['istree']))
 				$html .= '<br/><a href="'.$hrefpref.'" onclick="return load_href(this)">'.$r['istree']['value'].' ('.$r['istree']['cnt'].')</a>';
 			if(isset($r['child'])) foreach($r['child'] as $ck=>$cn)
-				$html .= '<br/><a href="'.$hrefpref.'&amp;'.$data['cl'].'_ch='.$ck.'" onclick="return load_href(this)">'.$cn['value'].' ('.$cn['cnt'].')</a>';
+				$html .= '<br/><a href="'.$hrefpref.'&'.$data['cl'].'_ch='.$ck.'" onclick="return load_href(this)">'.$cn['value'].' ('.$cn['cnt'].')</a>';
 
 
 			$html .= '</td></tr>';
@@ -164,7 +181,7 @@
 		}
 		$html .= '<select class="mopselect" onchange="setCookie(\''.$data['modul'].'_mop\',this.value,20);window.location.reload();">';
 		//,\''.$_CFG['session']['path'].'\',\''.$_CFG['session']['domain'].'\',\''.$_CFG['session']['secure'].'\'
-		//JSWin({\'href\':\''.$_CFG['_HREF']['JS'].'?_view=pagenum&amp;_modul='.$data['modul'].'&amp;mop=\'+this.value})
+		//JSWin({\'href\':\''.$_CFG['_HREF']['JS'].'?_view=pagenum&_modul='.$data['modul'].'&mop=\'+this.value})
 		if(count($data['mop'])) {
 			foreach($data['mop'] as $k=>$r) {
 				$html .=  '<option value="'.$k.'"'.($r['sel']?' selected="selected"':'').'>'.$r['value'].'</option>';

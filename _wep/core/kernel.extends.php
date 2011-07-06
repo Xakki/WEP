@@ -1399,6 +1399,24 @@ abstract class kernel_extends {
 				else
 					$this->id = NULL;
 			}
+			elseif ($ftype == 'ordup' && $this->id && $this->mf_ordctrl) {
+				if ($this->mf_istree)
+					array_pop($HTML->path);
+				list($messages, $flag) = $this->_ORD(-1, $param);
+				if ($this->mf_istree)
+					$this->id = $this->data[$this->id][$this->mf_istree];
+				else
+					$this->id = NULL;
+			}
+			elseif ($ftype == 'orddown' && $this->id && $this->mf_ordctrl) {
+				if ($this->mf_istree)
+					array_pop($HTML->path);
+				list($messages, $flag) = $this->_ORD(1, $param);
+				if ($this->mf_istree)
+					$this->id = $this->tree_data[$this->id][$this->mf_istree];
+				else
+					$this->id = NULL;
+			}
 			elseif ($ftype == 'del' && $this->id) {
 				if ($this->mf_istree)
 					array_pop($HTML->path);
@@ -1687,6 +1705,32 @@ abstract class kernel_extends {
 			$xml[] = array('value' => $this->getMess('denied'), 'name' => 'error');
 		return array($xml, $flag);
 	}
+
+	public function _ORD($ord, &$param) {
+		$flag = 1;
+		$xml = array();
+		if ($param['mess'])
+			$xml = $param['mess'];
+		$this->data = $this->_select();
+		if ($this->_prmModulEdit($this->data, $param)) {
+			$this->fld_data = array();
+			$this->fld_data[$this->mf_ordctrl] = $this->data[$this->id][$this->mf_ordctrl]+$ord;
+
+			if ($this->_update()) {
+				if ($ord<0)
+					$xml[] = array('value' => 'UP', 'name' => 'ok');
+				else
+					$xml[] = array('value' => 'DOWN', 'name' => 'ok');
+				$flag = 0;
+			}
+			else
+				$xml[] = array('value' => $this->getMess('update_err'), 'name' => 'error');
+		}
+		else
+			$xml[] = array('value' => $this->getMess('denied'), 'name' => 'error');
+		return array($xml, $flag);
+	}
+
 
 ////////////// -------DELETE---------------
 
