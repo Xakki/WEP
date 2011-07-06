@@ -69,10 +69,16 @@ class mail_class extends kernel_extends {
 				'toolbarStartupExpanded'=>'false',
 				'extraPlugins'=>"'cntlen'",
 				'plugins'=>"'button,contextmenu,enterkey,entities,justify,keystrokes,list,pastetext,popup,removeformat,toolbar,undo'"));
+		$this->fields_form[$this->mf_createrid] = array(
+			'type' => 'list',
+			'readonly'=>true,
+			'listname'=>array('class'=>'users','nameField'=>'concat(tx.name," [",tx.id,"]")'),
+			'caption' => 'От кого', 'mask' => array());
 		$this->fields_form['from_user'] = array(
 			'type' => 'list', 
+			'readonly'=>true,
 			'listname'=>array('class'=>'users','nameField'=>'concat(tx.name," [",tx.id,"]")'),
-			'caption' => 'От кого письмо', 'mask' => array());
+			'caption' => 'Кому', 'mask' => array());
 		$this->fields_form['mail_to'] = array('type' => 'text', 'caption' => 'email', 'mask' => array());
 		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата создания', 'mask'=>array('fview'=>2,'sort'=>1));
 		$this->fields_form['status'] = array('type' => 'list', 'listname'=>'status', 'caption' => 'Статус сообщения', 'mask' => array());
