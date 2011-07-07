@@ -761,7 +761,7 @@ abstract class kernel_extends {
 		foreach($temp as $k=>$r) {
 			if($r['type']=='ckedit') {
 				$this->fields[$k.'_ckedit'] = array('type' => 'tinyint', 'width'=>3, 'attr' => 'NOT NULL','default'=>'1');
-				$this->fields_form[$k.'_ckedit'] = array('type' => 'list', 'listname'=>'wysiwyg', 'caption' => $r['caption'].' - Выбор редактора', 'mask' =>array(),'onchange'=>'SetWysiwyg(this)');
+				$this->fields_form[$k.'_ckedit'] = array('type' => 'list', 'listname'=>'wysiwyg', 'caption' => $r['caption'].' - Выбор редактора', 'mask' =>array(),'onchange'=>'SetWysiwyg(this)','mask'=>array('usercheck'=>1));
 			}
 			$this->fields_form[$k] = $r;
 		}

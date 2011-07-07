@@ -73,15 +73,15 @@ class mail_class extends kernel_extends {
 			'type' => 'list',
 			'readonly'=>true,
 			'listname'=>array('class'=>'users','nameField'=>'concat(tx.name," [",tx.id,"]")'),
-			'caption' => 'От кого', 'mask' => array());
+			'caption' => 'От кого', 'mask' => array('usercheck'=>1));
 		$this->fields_form['from_user'] = array(
 			'type' => 'list', 
 			'readonly'=>true,
 			'listname'=>array('class'=>'users','nameField'=>'concat(tx.name," [",tx.id,"]")'),
-			'caption' => 'Кому', 'mask' => array());
-		$this->fields_form['mail_to'] = array('type' => 'text', 'caption' => 'email', 'mask' => array());
-		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата создания', 'mask'=>array('fview'=>2,'sort'=>1));
-		$this->fields_form['status'] = array('type' => 'list', 'listname'=>'status', 'caption' => 'Статус сообщения', 'mask' => array());
+			'caption' => 'Кому', 'mask' => array('usercheck'=>1));
+		$this->fields_form['mail_to'] = array('type' => 'text', 'caption' => 'email', 'mask' => array('usercheck'=>1));
+		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата создания', 'mask'=>array('usercheck'=>1,'fview'=>2,'sort'=>1));
+		$this->fields_form['status'] = array('type' => 'list', 'listname'=>'status', 'caption' => 'Статус сообщения', 'mask' => array('usercheck'=>1));
 		
 		$this->_enum['status'] = array(
 			0 => 'Не отправлялось на email',
