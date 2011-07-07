@@ -21,3 +21,17 @@ function hrefConfirm(obj,mess)
 	}
 	return false;
 }
+
+
+function contentIncParam(obj,path,funcparam) {
+	var pagetype = obj.options[obj.selectedIndex].value;
+	param = {
+		'href':path+'/js.php?_view=contentIncParam&_modul=pg',
+		'type':'POST',
+		'data': {'pagetype':pagetype,'funcparam':funcparam},
+		'call': function () {jQuery('form>div.addparam').remove();jQuery('#tr_pagetype').after(this.html2);}
+	};
+	//replaceWith
+	JSWin(param);
+	return false;
+}

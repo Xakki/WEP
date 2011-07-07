@@ -102,7 +102,10 @@
 			$data = $_this->_dump();
 		}
 		elseif ($templistname == 'ownerlist') {
-			$data = $_this->owner->_dump();
+			if($_this->owner)
+				$data = $_this->owner->_dump();
+			else
+				$data = array('Ошибка - список ownerlist не может быть создан, тк родитель не доступен');
 		}
 		elseif ($templistname == 'select') {
 			$data = $_this->_select();
@@ -123,6 +126,9 @@
 				while (list($id, $name,$pid) = $result->fetch_array(MYSQL_NUM)) {
 					$data[$pid][$id] = $name;
 				}
+		} 
+		elseif(is_array($listname) and isset($listname[0]) and isset($listname[1]) and $listname[0]=='owner' ) {
+			return $_this->owner->_getlist($listname[1],$value);
 		}
 		elseif(is_array($listname) and (isset($listname['class']) or isset($listname['tablename'])))  {
 			

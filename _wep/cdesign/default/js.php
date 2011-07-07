@@ -36,6 +36,20 @@
 				$html = $HTML->transformPHP($DATA,'superlist');
 			}
 	}
+	elseif($_GET['_view']=='contentIncParam') {
+		$CT = &$MODUL->childs['content'];
+		$CT->fields_form = array();
+		if($form = $CT->getContentIncParam($_POST['pagetype'],htmlspecialchars_decode($_POST['funcparam'])) and count($form)) {
+			if($CT->kFields2FormFields($form)) {
+				$data['form'] = &$CT->form;
+				$html2 = $HTML->transformPHP($data,'form');
+			}
+			$_tpl['onload'] .= 'jQuery(\'#tr_funcparam\').hide();';
+		}
+		else {
+			$_tpl['onload'] .= 'jQuery(\'#tr_funcparam\').show();';
+		}
+	}
 	else
 		$_tpl['onload']='fLog(\'<div style="color:red;">'.date('H:i:s').' : Параметры заданны неверно!</div>\',1);';
 

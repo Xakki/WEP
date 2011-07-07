@@ -72,16 +72,16 @@ a.am_tools {
 
 /* style the links */
 /* needs a background for IE6 - can be a color or a transparent gif */
-.nav a {background:url(ulmulti/trans.gif); filter: alpha(opacity=90); opacity:0.9;} 
+.nav a {filter: alpha(opacity=90); opacity:0.9;} 
 
 /* style the <b> element so that is does not affect the size of the link */
 .nav a b {background:#999; border:1px solid #000; border-color:#ddd #333 #333 #ddd; color:#fff; font-weight:normal; display:block; padding:5px 10px;}
 .nav a.msel b {color:red;}
 .nav a:hover b {background-color:#aaa; color:#800; cursor:pointer;}
-.nav .fly .main b {background:#999 url(ulmulti/arrow.gif) no-repeat 115px 9px;}
-.nav .down b {background:#999 url(ulmulti/arrow2.gif) no-repeat 113px 11px;}
+.nav .fly .main b {background:#999 url() no-repeat 115px 9px;}
+.nav .down b {background:#999 url() no-repeat 113px 11px;}
 .nav .right ul b {text-align:right;}
-.nav .right ul .main b {background:#999 url(ulmulti/arrow3.gif) no-repeat 10px 9px; text-align:right;}
+.nav .right ul .main b {background:#999 url() no-repeat 10px 9px; text-align:right;}
 
 /* HEIGHT */
 .nav ul ul {top:-24px;} /* position the top of the flyout sub menus */

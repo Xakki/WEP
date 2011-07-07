@@ -7,6 +7,10 @@
 		margin:0 auto;
 		background-color:#EDEDED;
 	}
+	div.addparam .form-value {
+		width: auto;
+	}
+
 	div.divform #ajaxbg {
 		position: absolute;
 		border:1px solid gray;-moz-border-radius:4px;-webkit-border-radius:4px;border-radius:4px;

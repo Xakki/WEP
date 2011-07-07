@@ -346,18 +346,31 @@ abstract class kernel_extends {
 	 * @return array
 	 */
 	public function _dump($where='') {
-		$name = 'name';
 		$data = array();
 		if (!isset($this->fields[$this->mf_namefields]))
-			$name = 'id as ' . $name;
+			$name = 'id as name';
 		else
-			$name = '`' . $this->mf_namefields . '` as ' . $name;
+			$name = '`' . $this->mf_namefields . '` as name';
+		if($this->mf_istree)
+			$name .= ', '.$this->mf_istree;
 		if ($where != '')
 			$where = ' WHERE ' . $where;
 		$result = $this->SQL->execSQL('SELECT id, ' . $name . ' FROM `' . $this->tablename . '`' . $where);
-		if (!$result->err)
-			while (list($key, $value) = $result->fetch_array(MYSQL_NUM))
-				$data[$key] = $value;
+		if (!$result->err) {
+			if($this->mf_istree) {
+				if($this->mf_use_charid)
+					$data[''][''] = $this->getMess('_listroot');
+				else
+					$data[0][0] = $this->getMess('_listroot');
+				while (list($id, $name,$pid) = $result->fetch_array(MYSQL_NUM)) {
+					$data[$pid][$id] = $name;
+				}
+			}
+			else {
+				while (list($key, $value) = $result->fetch_array(MYSQL_NUM))
+					$data[$key] = $value;
+			}
+		}
 		return $data;
 	}
 
@@ -1155,7 +1168,6 @@ abstract class kernel_extends {
 		$templistname = $listname;
 		if (is_array($listname))
 			$templistname = implode(',', $listname);
-
 		if (isset($this->_enum[$templistname])) {
 			$this->_CFG['enum'][$templistname] = $this->_enum[$templistname];
 		} elseif (!isset($this->_CFG['enum'][$templistname])) {
