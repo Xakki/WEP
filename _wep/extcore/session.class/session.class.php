@@ -45,6 +45,8 @@ class session_class extends kernel_extends {
 		$this->fields_form['host'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Host');
 		$this->fields_form['data'] = array('type' => 'textarea', 'readonly' => 1, 'caption' => 'Data','mask'=>array('fview'=>1));
 
+		$this->ordfield = 'modified DESC';
+
 		$this->index_fields['sid'] = 'sid';
 		$this->unique_fields['sid'] = 'sid';
 
