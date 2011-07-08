@@ -5,7 +5,7 @@ class session_class extends kernel_extends {
 		$this->mf_createrid = 'users_id';
 		$this->mf_ipcreate = true;
 		$this->prm_add = false;
-		$this->prm_edit = false;
+		//$this->prm_edit = false;
 		$this->mf_namefields = false;
 		$this->cf_reinstall = true;
 		$this->ver = '0.1';
@@ -34,12 +34,16 @@ class session_class extends kernel_extends {
 		$this->fields['visits'] = array('type' => 'int', 'width' =>8, 'attr' => 'unsigned', 'default'=>'1');
 		$this->fields['lastpage'] = array('type' => 'varchar', 'width' =>255, 'default' => '');
 
+		$this->fields_form['created'] = array('type' => 'date', 'readonly' => 1,'caption' => 'Начало сессии');
 		$this->fields_form['expired'] = array('type' => 'date', 'readonly' => 1,'caption' => 'Срок истекает');
-		$this->fields_form['modified'] = array('type' => 'date', 'readonly' => 1,'caption' => 'Время');
-		$this->fields_form['users_id'] = array('type' => 'list', 'listname'=>array('class'=>'users'), 'readonly' => 1, 'caption' => 'Пользователь');
+		$this->fields_form['modified'] = array('type' => 'date', 'readonly' => 1,'caption' => 'Время визита');
+		$this->fields_form['users_id'] = array('type' => 'list', 'listname'=>array('class'=>'users'), 'readonly' => 1, 'caption' => 'Юзер');
 		$this->fields_form['mf_ipcreate'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'IP');
-		$this->fields_form['visits'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Число посещений');
+		$this->fields_form['useragent'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'UserAgent');
+		$this->fields_form['visits'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Хиты');
 		$this->fields_form['lastpage'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Страница');
+		$this->fields_form['host'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Host');
+		$this->fields_form['data'] = array('type' => 'textarea', 'readonly' => 1, 'caption' => 'Data','mask'=>array('fview'=>1));
 
 		$this->index_fields['sid'] = 'sid';
 		$this->unique_fields['sid'] = 'sid';

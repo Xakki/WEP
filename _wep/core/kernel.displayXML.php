@@ -142,8 +142,8 @@
 					if((isset($_GET['sort']) and $k==$_GET['sort']) or (isset($_GET['dsort']) and $k==$_GET['dsort'])) {
 						if($tmpsort)
 							$order = 'name_'.$k;
-						elseif(is_string($r['mask']['sort']))
-							$order = $r['mask']['sort'].'8'.$k;
+						elseif(isset($r['mask']['sort']) and is_string($r['mask']['sort']))
+							$order = $r['mask']['sort'].$k;
 						else
 							$order = 't1.'.$k;
 						if(isset($_GET['dsort']) and $k==$_GET['dsort'])
