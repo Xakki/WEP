@@ -119,8 +119,8 @@ class mail_class extends kernel_extends {
 			$data['status'] = 2;
 		}
 
-		$this->fld_data = $data;
-		return $this->_add($data);
+		$this->_add_item($data);
+		return $send_result;
 		
 	}
 
