@@ -143,7 +143,7 @@
 						if($tmpsort)
 							$order = 'name_'.$k;
 						elseif(is_string($r['mask']['sort']))
-							$order = $r['mask']['sort'].$k;
+							$order = $r['mask']['sort'].'8'.$k;
 						else
 							$order = 't1.'.$k;
 						if(isset($_GET['dsort']) and $k==$_GET['dsort'])

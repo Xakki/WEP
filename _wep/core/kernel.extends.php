@@ -741,11 +741,12 @@ abstract class kernel_extends {
 	}
 
 	private function _prmSortField($key) {
-		if (isset($this->fields_form[$key]['mask']['sort']))
+		//включаем сортировку для всех полей
+		/*if (isset($this->fields_form[$key]['mask']['sort']))
 			return true;
-		elseif ($key == $this->mf_namefields or $key == 'ordfield' or $key == $this->mf_actctrl)
+		elseif ($key == $this->mf_namefields or $key == 'ordfield' or $key == $this->mf_actctrl)*/
 			return true;
-		return false;
+		//return false;
 	}
 
 // --END PERMISSION -----//

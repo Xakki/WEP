@@ -115,12 +115,12 @@ class pg_class extends kernel_extends {
 	public function setFieldsForm() {
 		# fields
 		$this->fields_form = array();
-		$this->fields_form['id'] = array('type' => 'text', 'caption' => 'ID','mask'=>array('sort'=>1,'min'=>1));
+		$this->fields_form['id'] = array('type' => 'text', 'caption' => 'ID','mask'=>array('min'=>1));
 		$this->fields_form['parent_id'] = array('type' => 'list', 'listname'=>'parentlist', 'caption' => 'Родительская страница','mask'=>array('fview'=>1));
-		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Name','mask'=>array('sort'=>1,'min'=>1));
+		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Name','mask'=>array('min'=>1));
 		$this->fields_form['name_in_menu'] = array('type' => 'text', 'caption' => 'Название в меню', 'mask' =>array());
 		$this->fields_form['href'] = array('type' => 'text', 'caption' => 'Redirect', 'mask' =>array('onetd'=>'Содержимое'));
-		$this->fields_form['design'] = array('type' => 'list', 'listname'=>'mdesign', 'caption' => 'Дизайн', 'mask' =>array('onetd'=>'Дизайн'));
+		$this->fields_form['design'] = array('type' => 'list', 'listname'=>'mdesign', 'caption' => 'Дизайн', 'mask' =>array());
 		$this->fields_form['template'] = array('type' => 'list', 'listname'=>'templates', 'caption' => 'Шаблон', 'mask' =>array('onetd'=>'none'));
 		$this->fields_form['styles'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'style', 'caption' => 'CSS', 'mask'=>array('onetd'=>'none'));
 		$this->fields_form['script'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'script', 'caption' => 'SCRIPT', 'mask'=>array('onetd'=>'close'));
@@ -134,8 +134,8 @@ class pg_class extends kernel_extends {
 		$this->fields_form['onpath'] = array('type' => 'checkbox', 'caption'=>'Путь', 'comment' => 'Отображать в хлебных крошках','default'=>1,'mask'=>array('onetd'=>'close'));
 		$this->fields_form['attr'] = array('type' => 'text', 'caption' => 'Атрибуты для ссылки в меню', 'comment'=>'Например: `target="_blank" onclick=""` итп', 'mask' =>array('name'=>'all', 'fview'=>1));
 		if($this->_CFG['wep']['access'])
-			$this->fields_form['ugroup'] = array('type' => 'list','multiple'=>2,'listname'=>'ugroup', 'caption' => 'Доступ пользователю','default'=>'0','mask'=>array('sort'=>'1'));
-		$this->fields_form['ordind'] = array('type' => 'int', 'caption' => 'ORD','mask'=>array('sort'=>'1'));
+			$this->fields_form['ugroup'] = array('type' => 'list','multiple'=>2,'listname'=>'ugroup', 'caption' => 'Доступ пользователю','default'=>'0','mask'=>array());
+		$this->fields_form['ordind'] = array('type' => 'int', 'caption' => 'ORD','mask'=>array());
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
 	}
 
