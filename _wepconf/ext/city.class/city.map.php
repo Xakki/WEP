@@ -1,8 +1,8 @@
 <?
-	global $CITY;
-	if(!$CITY) _new_class('city',$CITY);
-	if($CITY->id) 
-		$DATA_PG[$keyPG]['hidechild'] =1;
+	_new_class('city',$CITY);
 	$datacity = $CITY->cityMap();
+	/*if($CITY->id) 
+		$DATA_PG[$keyPG]['name'] = $CITY->name;*/
+
 	return $datacity;
 

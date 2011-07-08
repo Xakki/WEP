@@ -1,2 +1,3 @@
 <?
-include_once($this->_cDesignPath.'/php/messages.php');
+global $HTML;
+include_once($HTML->_cDesignPath.'/php/messages.php');

@@ -73,6 +73,7 @@ class board_class extends kernel_extends {
 			//5=>'Приму в дар',
 			//6=>'Обмен'
 		);
+		$this->filter_form = array();
 		return true;
 	}
 
@@ -173,10 +174,10 @@ class board_class extends kernel_extends {
 				'extraPlugins'=>"'cntlen'",
 				'plugins'=>"'button,contextmenu,enterkey,entities,justify,keystrokes,list,pastetext,popup,removeformat,toolbar,undo'"));
 		$this->fields_form['cost'] = array('type' => 'int', 'caption' => 'Цена (руб.)', 'mask'=>array('max'=>8,'onetd'=>'none','filter'=>1,'maxint'=>20000000));
-		$this->fields_form['phone'] = array('type' => 'text', 'caption' => 'Контактные телефоны', 'mask'=>array('min2'=>'Необходимо заполнить либо `телефон`, либо `E-mail`', 'name'=>'phone2','onetd'=>'none'));
-		$this->fields_form['email'] = array('type' => 'text', 'caption' => 'E-mail', 'mask'=>array('min2'=>'Необходимо заполнить либо `телефон`, либо `E-mail`','name'=>'email','onetd'=>'close','filter'=>1), 'comment' => 'На ваше мыло будет выслана информация об управлении вашим объявлением');
+		$this->fields_form['phone'] = array('type' => 'text', 'caption' => 'Контактные телефоны', 'mask'=>array('min2'=>'Необходимо заполнить либо `телефон`, либо `E-mail`', 'name'=>'phone3','onetd'=>'none'),'comment'=>'Обязательно указывайте код города. Можно ввести также несколько телефонов (не больше 3х) через запятую.');
+		$this->fields_form['email'] = array('type' => 'text', 'caption' => 'E-mail', 'mask'=>array('min2'=>'Необходимо заполнить либо `телефон`, либо `E-mail`','name'=>'email','onetd'=>'close','filter'=>1), 'comment' => 'На ваше мыло будет выслана информация об управлении вашим объявлением.');
 		
-		$this->fields_form['img_board'] = array('type'=>'file','caption'=>'Фотография №1','del'=>1, 'mask'=>array('fview'=>1,'width'=>80,'height'=>100), 'comment'=>$this->_CFG['_MESS']['_file_size'].$this->attaches['img_board']['maxsize'].'Kb');
+		$this->fields_form['img_board'] = array('type'=>'file','caption'=>'Фотография №1','del'=>1, 'mask'=>array('fview'=>1,'height'=>100), 'comment'=>$this->_CFG['_MESS']['_file_size'].$this->attaches['img_board']['maxsize'].'Kb');
 		if($this->config['imageCnt']>0) {
 			if(!static_main::_prmUserCheck()) {
 				$fcnt = $this->config['imageCntForAnonim'];
@@ -289,7 +290,8 @@ class board_class extends kernel_extends {
 	}
 
 	public function kPreFields(&$data,&$param) {
-		global $_tpl,$CITY;
+		global $_tpl;
+		_new_class('city',$CITY);
 		if(!isset($data['rubric']) and isset($_REQUEST['rubric']))
 			$data['rubric'] = (int)$_REQUEST['rubric'];
 
@@ -349,19 +351,12 @@ class board_class extends kernel_extends {
 			if($CITY->id) {
 				// см. _phpscript/_js.php [34]
 				_new_class('exportboard',$EXPORTBOARD);
-				$this->eDATA = $EXPORTBOARD->_query('*','WHERE (region=0 or region='.$CITY->id.')'.(!isset($_COOKIE['_showallinfo'])?' and active=1':''));
-				if(count($this->eDATA)) {
-					foreach($this->eDATA as $ek=>$er) {
-						$this->fields_form['exportboard'.$er['id']] = array('type' => 'checkbox', 'caption' => $er['name'], 'comment'=>'Публикация на сайте '.$er['www'], 'css'=>'boardexport formparam', 'mask'=>array('fview'=>1));
-						if($er['ondef']) {
-							$this->fields_form['exportboard'.$er['id']]['value'] = 1;
-						}
-					}
-					//$_tpl['onload'] .= 'jQuery(\'#tr_boardexport div.showparam\').click();';
-				}
+				list($this->eDATA,$form) = $EXPORTBOARD->getListBoard($CITY->id);
 			}
 			if(!count($this->eDATA))
 				$this->fields_form['boardexport']['style'] = 'display:none;';
+			else
+				$this->fields_form = array_merge($this->fields_form,$form);				
 		}
 
 		$mess = parent::kPreFields($data,$param);
@@ -370,6 +365,8 @@ class board_class extends kernel_extends {
 		if($data['rubric']) {
 			$this->fields_form = static_main::insertInArray($this->fields_form,'rubric',$this->ParamFieldsForm($this->id,$data['rubric'],$data['type'])); // обработчик параметров рубрики
 		}
+		if(!static_main::_prmUserCheck(1))
+			unset($this->fields_form['text_ckedit']);
 		return $mess;
 	}
 
@@ -403,8 +400,12 @@ class board_class extends kernel_extends {
 			if(!count($arr['mess']))
 				$arr['mess'][] = array('name'=>'error', 'value'=>'Поля формы заполненны не верно.');
 			if($param['ajax']) {
-				$_tpl['onload'] .= 'putEMF(\'phone\',\'Необходимо указать либо телефон...\');';
-				$_tpl['onload'] .= 'putEMF(\'email\',\'либо Email\');';
+				if(isset($_POST['phone']) and $_POST['phone']) {
+					$_tpl['onload'] .= 'putEMF(\'phone\',\'Телефонный номер должен состоять из 10(с кодом страны) или 9 цифр, несколько телефонов разделяйте запятой.\');';
+				} else {
+					$_tpl['onload'] .= 'putEMF(\'phone\',\'Необходимо указать либо телефон...\');';
+					$_tpl['onload'] .= 'putEMF(\'email\',\'либо Email\');';
+				}
 			}
 			else {
 				$this->fields_form['phone']['error'][] = 'Необходимо указать либо телефон...';
@@ -427,7 +428,7 @@ class board_class extends kernel_extends {
 			foreach($PARAM->data as $k=>$r) {
 				if($vars['param_'.$k]) {
 					$val = $vars['param_'.$k];
-					$cls['name'.$r['type']]=$val;
+					$cls['name'.$r['type']]=mysql_real_escape_string($val);
 					if($r['constrn']) {
 						if(isset($this->_enum['fli'.$r['formlist']])) {
 							if(isset($this->_enum['fli'.$r['formlist']][$val]))
@@ -454,10 +455,10 @@ class board_class extends kernel_extends {
 		}
 		$vars['path'] = $this->getTranslitePatchFromText($vars['text']);
 		if($ret = parent::_save_item($vars)) {
-			if(isset($vars['city'])) {
+			/*if(isset($vars['city'])) {
 				foreach($this->data as $r)
 					$this->updateCount2($r['city'],$r['rubric'],$r['active']);					
-			}
+			}*/
 			if(isset($PARAM->data) and is_array($PARAM->data) and count($PARAM->data)) {
 				if(count($cls)) {
 					$result=$this->SQL->execSQL('DELETE FROM paramb WHERE owner_id='.$this->id);
@@ -482,7 +483,7 @@ class board_class extends kernel_extends {
 			foreach($PARAM->data as $k=>$r){
 				if($vars['param_'.$k]) {
 					$val = $vars['param_'.$k];
-					$cls['name'.$r['type']]=$val;
+					$cls['name'.$r['type']]=mysql_real_escape_string($val);
 					if($r['constrn']) {
 						if(isset($this->_enum['fli'.$r['formlist']])) {
 							if(isset($this->_enum['fli'.$r['formlist']][$val]))
@@ -518,7 +519,7 @@ class board_class extends kernel_extends {
 				$this->RUBRIC->cacheData = $this->RUBRIC->_query('id,parent_id,name,lname','WHERE active=1','id');
 			if($vars['city']) { // EXPORT BOARD
 				_new_class('exportboard',$EXPORTBOARD);
-				$this->eDATA = $EXPORTBOARD->_query('*','WHERE (region=0 or region='.$vars['city'].')'.(!isset($_COOKIE['_showallinfo'])?' and active=1':''));
+				$this->eDATA = $EXPORTBOARD->getListData($vars['city']);
 				if(count($this->eDATA))
 					foreach($this->eDATA as $ek=>$exportValue) {
 						if(isset($vars['exportboard'.$exportValue['id']]) and $vars['exportboard'.$exportValue['id']]) {
@@ -541,7 +542,7 @@ class board_class extends kernel_extends {
 			if($vars['email']) { //!static_main::_prmUserCheck() and 
 				_new_class('mail',$MAIL);
 				$datamail = array('from'=>$MAIL->config['mailrobot']);
-				$datamail['mailTo'] = $vars['email'];
+				$datamail['mail_to'] = $vars['email'];
 				$datamail['subject'] = strtoupper($_SERVER['HTTP_HOST']).' - Ваше объявление №'.$this->id;
 				$datamail['text'] = str_replace(
 						array('%idhref%','%href%','%host%','%addtext%'),
@@ -597,12 +598,14 @@ class board_class extends kernel_extends {
 			$time = ((int)$_POST['datea']+time());
 		else
 			$time = time();
+
 		$cls ='SELECT id,city,rubric,text,mf_timecr FROM '.$this->tablename.' WHERE datea>='.($time-(3600*$this->config['spamtime'])).' and datea<'.$time;
 		
 		if(static_main::_prmUserCheck())
 			$cls .= ' and '.$this->mf_createrid.'="'.$_SESSION['user']['id'].'"';
 		else
 			$cls .= ' and mf_ipcreate=INET_ATON("'.$_SERVER["REMOTE_ADDR"].'")';
+
 		$result = $this->SQL->execSQL($cls.' order by datea DESC');
 		$data = array();
 		if(!$result->err) {
@@ -631,7 +634,8 @@ class board_class extends kernel_extends {
 	private function updateCount($city,$rub,$f) {
 		$city=(int)$city;$rub=(int)$rub;
 		$this->SQL->execSQL('UPDATE city SET cnt=cnt+'.$f.' WHERE id='.$city);
-		$this->SQL->execSQL('INSERT INTO countb (city,owner_id,cnt) VALUES ('.$city.','.$rub.',1) ON DUPLICATE KEY UPDATE cnt=cnt+('.$f.') ');
+		$this->SQL->execSQL('INSERT INTO countb (city,owner_id,cnt) VALUES ('.$city.','.$rub.','.($f<1?0:$f).') ON DUPLICATE KEY UPDATE cnt=cnt+('.$f.') ');
+		$this->SQL->execSQL('INSERT INTO countb (city,owner_id,cnt) VALUES (0,'.$rub.','.($f<1?0:$f).') ON DUPLICATE KEY UPDATE cnt=cnt+('.$f.') ');
 	}
 
 	function updateCount2($city,$rub,$f) {
@@ -648,18 +652,97 @@ class board_class extends kernel_extends {
 	}
 
 	/** Пользовательские функции*/
-
 	public function servUpdate() {
 		$this->SQL->execSQL('UPDATE city t1 SET t1.cnt=0');
-		$this->SQL->execSQL('UPDATE city t1 SET t1.cnt=(SELECT count(t2.id) FROM board t2 WHERE t2.city=t1.id '.(!$this->config['onDate']?'':'and t2.datea>UNIX_TIMESTAMP()-t2.period').' and t2.datea<UNIX_TIMESTAMP() and t2.active=1) WHERE t1.active=1');
 		$this->SQL->execSQL('truncate table `countb`');
-		$result = $this->SQL->execSQL('SELECT t1.city,t1.rubric FROM board t1 JOIN city t2 ON t1.city=t2.id JOIN rubric t3 ON t1.rubric=t3.id GROUP BY t1.city,t1.rubric');
-		while(!$result->err and $row = $result->fetch_array()){
-			$qq = 'INSERT INTO countb (city,owner_id,cnt) VALUES ('.$row['city'].','.$row['rubric'].',0) ON DUPLICATE KEY UPDATE cnt=cnt';
-			$this->SQL->execSQL($qq);
-			$qq ='UPDATE countb SET cnt=(SELECT count(id) FROM board WHERE city='.$row['city'].' and rubric='.$row['rubric'].' '.(!$this->config['onDate']?'':'and datea>UNIX_TIMESTAMP()-period').' and datea<UNIX_TIMESTAMP() and active=1) WHERE city='.$row['city'].' and owner_id='.$row['rubric'].';';
+
+		$DataCity = $DataPcity = array();
+		$resCity = $this->SQL->execSQL('SELECT id,parent_id FROM city WHERE active=1');
+		while($row = $resCity->fetch_array()) {
+			$DataCity[$row['id']] = $row['parent_id'];
+			$DataPcity[$row['parent_id']] [$row['id']] = true;
+		}
+
+		$tempCountb = array(); // countb
+		$tempCity = array(); //city
+
+		$result = $this->SQL->execSQL('SELECT t1.city,t1.rubric,count(t1.id) as cnt FROM board t1 WHERE t1.datea<UNIX_TIMESTAMP() and t1.active=1 '.(!$this->config['onDate']?'':'and t1.datea>UNIX_TIMESTAMP()-t1.period').' GROUP BY t1.city,t1.rubric');
+		while(!$result->err and $row = $result->fetch_array()) {
+			// ДЛя всей России по рубрикам
+			if(isset($tempCountb[0][$row['rubric']])) 
+				$tempCountb[0][$row['rubric']] += $row['cnt'];
+			else
+				$tempCountb[0][$row['rubric']] = $row['cnt'];
+			//для конкретного города по рубрикам
+			if(isset($tempCountb[$row['city']][$row['rubric']]))
+				$tempCountb[$row['city']][$row['rubric']] += $row['cnt'];
+			else
+				$tempCountb[$row['city']][$row['rubric']] = $row['cnt'];
+			// для всего города
+			if(isset($tempCity[$row['city']]))
+				$tempCity[$row['city']] += $row['cnt'];
+			else
+				$tempCity[$row['city']] = $row['cnt'];
+
+			if($DataCity[$row['city']]) {// если город, то району прибавляем тоже
+				$pcity = $DataCity[$row['city']];
+				if(isset($tempCountb[$pcity][$row['rubric']]))
+					$tempCountb[$pcity][$row['rubric']] += $row['cnt'];
+				else
+					$tempCountb[$pcity][$row['rubric']] = $row['cnt'];
+
+				if(isset($tempCity[$pcity]))
+					$tempCity[$pcity] += $row['cnt'];
+				else
+					$tempCity[$pcity] = $row['cnt'];
+			} 
+			elseif(isset($DataPcity[$row['city']])) {//если район, то всем его городам прибавляем его объявы
+				foreach($DataPcity[$row['city']] as $pc=>$pr) {
+					if(isset($tempCountb[$pc][$row['rubric']]))
+						$tempCountb[$pc][$row['rubric']] += $row['cnt'];
+					else
+						$tempCountb[$pc][$row['rubric']] = $row['cnt'];
+
+					if(isset($tempCity[$pc]))
+						$tempCity[$pc] += $row['cnt'];
+					else
+						$tempCity[$pc] = $row['cnt'];
+				}
+			}
+
+		}
+
+		foreach($tempCountb as $cit=>$row) {
+			$cls = array();
+			foreach($row as $rub=>$ct) {
+				$cls[] = '('.$cit.','.$rub.','.$ct.')';
+			}
+			$qq = 'INSERT INTO countb (city,owner_id,cnt) VALUES '.implode(',',$cls);
 			$this->SQL->execSQL($qq);
 		}
+		foreach($tempCity as $k=>$r) {
+			$qq = 'UPDATE city t1 SET t1.cnt =t1.cnt+'.$r.' WHERE t1.id='.$k;
+			$this->SQL->execSQL($qq);
+		}
+		return true;
+	}
+
+	function servClear() {
+		$result = $this->SQL->execSQL('UPDATE board t1 SET t1.active=0 WHERE '.(!$this->config['onDate']?'t1.datea<'.(time()-3600*24*365):'t1.datea<UNIX_TIMESTAMP()-t1.period'));
+		$id = array();
+		$result = $this->SQL->execSQL('SELECT t2.id FROM board t2 LEFT JOIN rubric t3 ON t2.rubric=t3.id WHERE isNull(t3.id) and t2.active=1 GROUP BY t2.id');
+		if(!$result->err) {
+			while($row = $result->fetch_array())
+				$id[] = $row['id'];
+		}
+		$result = $this->SQL->execSQL('SELECT t2.id FROM board t2 LEFT JOIN city t3 ON t2.city=t3.id WHERE isNull(t3.id) and t2.active=1 GROUP BY t2.id');
+		if(!$result->err) {
+			while($row = $result->fetch_array())
+				$id[] = $row['id'];
+		}
+		if(count($id))
+			$this->SQL->execSQL('UPDATE board t1 SET t1.active=0 WHERE t1.id IN ('.implode(',',$id).')');
+		$this->servUpdate();
 	}
 
 	public function ParamFieldsForm($id,$rid,$tp=0,$listclause='') { // форма для редак-добавл объявы и поиска объявы
@@ -685,9 +768,9 @@ class board_class extends kernel_extends {
 			}
 		}
 		$PARAM = &$this->RUBRIC->childs['param'];
-		$PARAM->listfields = array('*');
-		$PARAM->clause = 'WHERE owner_id="'.$rid.'" and active=1 order by ordind';
-		$PARAM->_list('id');
+		$listfields = array('*');
+		$cls = 'WHERE owner_id="'.$rid.'" and active=1 order by ordind';
+		$PARAM->data = $PARAM->_query($listfields,$cls,'id');
 		if(count($PARAM->data)) {
 			$form=array();
 			$pdata=array();
@@ -731,7 +814,7 @@ class board_class extends kernel_extends {
 						'minint'=>$r['min'],
 						'maxint'=>$r['max']);
 					if(is_array($id))
-						$form['param_'.$k]['value_2']=$id['param_'.$k.'_2'];
+						$form['param_'.$k]['value_2']= (isset($id['param_'.$k.'_2'])?$id['param_'.$k.'_2']:'');
 
 					/*if($listclause!='' and ($r['min']>0 or $r['max']==0)) {
 						$temcls = 'SELECT min(t2.name'.$k.') as min,max(t2.name'.$k.') as max FROM '.$this->tablename.' t1 
@@ -751,7 +834,8 @@ class board_class extends kernel_extends {
 				}else
 					$form['param_'.$k]['mask']=array('min'=>$r['min'],'max'=>$r['max']);
 
-				if($r['mask']!='') $form['param_'.$k]['mask']['patterns']=$r['mask'];
+				if($r['mask']) $form['param_'.$k]['mask']['patterns']=array('match'=>$r['mask']);
+				if($r['maskn']) $form['param_'.$k]['mask']['patterns']=array('nomatch'=>$r['maskn']);
 
 				if($r['comment']!='') $form['param_'.$k]['comment']=$r['comment'];
 				
@@ -796,7 +880,7 @@ class board_class extends kernel_extends {
 					}
 					if($flagNew) {
 						/*Ограничение числа вывода элементов checkbox*/
-						$out = '';
+						$out = array();
 						foreach($templ as $kk=>$rr) {
 							$tempr = array();
 							if(count($rr)>1) {
@@ -809,12 +893,12 @@ class board_class extends kernel_extends {
 							if(count($tempr)>12) {
 								$tempr = array_slice($tempr,0,10);
 								foreach($tempr as $rrr)
-									$out .= $rrr.':1,';
+									$out[] = $rrr.':1';
 								$_tpl['onload'] .= 'mCBoxShortHide('.$FMCB[$kk].');';
 							}
 						}
-						if($out)
-							$_tpl['script']['vfmcb'] = 'var vfmcb = {'.$out.'};';
+						if(count($out))
+							$_tpl['script']['vfmcb'] = 'var vfmcb = {'.implode(',',$out).'};';
 						/*Под элементы мульти чекбоксов*/
 
 						foreach($FMCB as $kk=>$rr) {
@@ -826,7 +910,7 @@ class board_class extends kernel_extends {
 										'type'=>'checkbox',
 										'multiple'=>1,
 										'type2'=>$PARAM->data[$rr]['type'],
-										'value'=>$id['param_'.$rr.'_'.$rrr],
+										'value'=>(isset($id['param_'.$rr.'_'.$rrr])?$id['param_'.$rr.'_'.$rrr]:''),
 										'css'=>'addparam',
 										'listname'=>'fli'.$PARAM->data[$rr]['formlist'],
 										'mask' => array('begin'=>$rrr),
@@ -864,9 +948,9 @@ class board_class extends kernel_extends {
 			$temp = current($PARAM->data);
 		}
 		if(!$temp or $temp['owner_id']!=$rid) { // для RSS и рассылки
-			$PARAM->listfields = array('*');
-			$PARAM->clause = 'WHERE owner_id="'.$rid.'" and active=1 order by ordind';
-			$PARAM->_list('id');
+			$listfields = array('*');
+			$cls = 'WHERE owner_id="'.$rid.'" and active=1 order by ordind';
+			$PARAM->data = $PARAM->_query($listfields,$cls,'id');
 		}
 		$clauseF=array();
 		$lcnt=4;
@@ -966,15 +1050,30 @@ class board_class extends kernel_extends {
 		}
 		if(count($rlist))
 			$clause['where'] .= ' and t1.rubric IN ('.implode(',',array_keys($rlist)).') ';
-		global $CITY;
-		if(isset($CITY->citylist) and count($CITY->citylist))
+
+		_new_class('city',$CITY);
+		/*if(isset($CITY->center) and $CITY->center) { // для центральных городов
 			$clause['where'] .= ' and t1.city IN ('.implode(',',$CITY->citylist).')';
+		}
+		else*/
+		if(!$CITY->parent_id and $CITY->id and !$CITY->center) {// для районов
+			$listfields = array('t1.id');
+			$cls = 't1 WHERE t1.parent_id="'.$CITY->id.'" and t1.active=1';
+			$CITY->data = $CITY->_query($listfields,$cls,'id');
+			$clause['where'] .= ' and t1.city IN ('.implode(',',array_merge($CITY->citylist,array_keys($CITY->data))).')';
+		}
+		//elseif(isset($CITY->citylist) and count($CITY->citylist)==1) { //для прочих городков выводим объявления только региона и самого города
+		//	$clause['where'] .= ' and t1.city IN ('.implode(',',array_merge($CITY->citylist,array($CITY->parent_id))).')';
+		//}
+		elseif(count($CITY->citylist)) {//так и не понял где и когда это выполняется
+			$clause['where'] .= ' and t1.city IN ('.implode(',',$CITY->citylist).')';
+		}
+
 		$cls_filtr = '';
 		if(count($clauseF)) {
 			$clause['where'] .= ' and '.implode(' and ',$clauseF);
 			$cls_filtr = $clause['ljoin'];
 		}
-
 		$result = $this->SQL->execSQL('SELECT count(DISTINCT t1.id) as cnt '.$clause['from'].$cls_filtr.$clause['where']);
 		if(!$result->err and $row = $result->fetch_array() and $row['cnt']>0) {
 			if(is_string($rss) and $rss=='cnt') return $row['cnt'];
@@ -988,7 +1087,8 @@ class board_class extends kernel_extends {
 						$this->_pn = floor($row['cnt']/$this->messages_on_page)-$this->_pn+1;
 				}
 				/***/
-				$pgData = $this->fPageNav($row['cnt']);
+				global $PGLIST;
+				$pgData = $this->fPageNav($row['cnt'],key($PGLIST->pageinfo['path']).'.html');
 				$xml .= $this->kData2xml($pgData,'pagenum');
 				if($row['cnt']>12) {
 					global $_tpl;
@@ -1021,11 +1121,20 @@ class board_class extends kernel_extends {
 			else
 				$clause['where'] .= ' LIMIT '.$limit;
 			$pData = $this->fGetParamBoard('SELECT t4.*, t1.* '.$clause_from.implode(' ',$clause));// retutn $this->data
-
+			if(static_main::_prmUserCheck() and static_main::_prmModul($this->_cl, array(3)))
+				$moder = 1;
+			else
+				$moder = 0;
 			foreach($this->data as $k=>$r) {
 				$rname=array();
 				$temp=$r['rubric'];
 				if(!$rss) {
+					if(!$r['path']) {
+						$r['path'] = $this->getTranslitePatchFromText($r['text']);
+						$vars = array('path'=>$r['path']);
+						$this->id = $r['id'];
+						parent::_save_item($vars);
+					}
 					while(isset($this->RUBRIC->data2[$temp]) and $rid!=$temp) {
 						$rname[] = $this->RUBRIC->data2[$temp]['name'];
 						$temp=$this->RUBRIC->data2[$temp]['parent_id'];
@@ -1041,6 +1150,7 @@ class board_class extends kernel_extends {
 					$tempval = rand(0,9);
 					$xml .='<type>'.$r['type'].'</type>
 						<name>'.$r['name'].'</name>
+						<moder>'.$moder.'</moder>
 						<path>'.$r['path'].'</path>
 						<tname>'.($r['cityname']?$r['cityname'].' / ':'').$this->_enum['type'][$r['type']].'</tname>
 						<text><![CDATA['.html_entity_decode(strip_tags($r['text']),2,'UTF-8').']]></text>
@@ -1068,7 +1178,7 @@ class board_class extends kernel_extends {
 						$i++;
 					}
 					$xml .= '</item>';
-				}else {
+				} else {
 					while(isset($this->RUBRIC->data2[$temp])) {
 						$rname[] = $this->RUBRIC->data2[$temp]['name'];
 						$temp=$this->RUBRIC->data2[$temp]['parent_id'];
@@ -1102,22 +1212,20 @@ class board_class extends kernel_extends {
 	}
 
 	public function fNewDisplay($limit) {
-		global $CITY;
+		_new_class('city',$CITY);
 		$PARAM = &$this->RUBRIC->childs['param'];
 		$clause = 'SELECT t1.id,t1.path,t1.name,t1.rubric,t1.type,t1.text,t1.datea,t1.city FROM '.$this->tablename.' t1 WHERE t1.active=1 and t1.datea<'.time().' ';
+
 		if(isset($CITY->center) and $CITY->center) { // для центральных городов
 			$clause .= ' and t1.city IN ('.implode(',',$CITY->citylist).')';
 		}
 		elseif(!$CITY->parent_id and $CITY->id) {// для районов
-			$CITY->listfields = array('t1.id');
-			$CITY->clause = 't1 WHERE t1.parent_id="'.$CITY->id.'" and t1.active=1';
-			$CITY->_list('id');
+			$listfields = array('t1.id');
+			$cls = 't1 WHERE t1.parent_id="'.$CITY->id.'" and t1.active=1';
+			$CITY->data = $CITY->_query($listfields,$cls,'id');
 			$clause .= ' and t1.city IN ('.implode(',',array_merge($CITY->citylist,array_keys($CITY->data))).')';
 		}
 		elseif(count($CITY->citylist)==1) { //для прочих городков выводим объявления только региона и самого города
-			/*$CITY->listfields = array('t1.id');
-			$CITY->clause = 't1 WHERE (t1.id="'.$CITY->parent_id.'") and t1.active=1';// or t1.parent_id="'.$CITY->parent_id.'"
-			$CITY->_list('id');*/
 			$clause .= ' and t1.city IN ('.implode(',',array_merge($CITY->citylist,array($CITY->parent_id))).')';
 		}
 		elseif(count($CITY->citylist)>1) {//так и не понял где и когда это выполняется
@@ -1134,23 +1242,33 @@ class board_class extends kernel_extends {
 				$cityList[$r['city']] = $r['city'];
 				$DATA[$r['id']] = $r;
 			}
-			$result2 = $this->SQL->execSQL('SELECT t4.id,t4.name,'.($this->_CFG['site']['rf']?'t4.domen_rf':'t4.domen').' as domen FROM city t4 WHERE t4.id IN ('.implode(',',$cityList).')');
-			$cityList = array();
-			while ($r = $result2->fetch_array()) {
-				$cityList[$r['id']] = $r;
-			}
-			foreach($DATA as $r) {
-				$xml .='<item>
-					<id>'.$r['id'].'</id>
-					<path>'.$r['path'].'</path>
-					<name>'.$r['name'].'</name>
-					<domen>http://'.$cityList[$r['city']]['domen'].'.'.$_SERVER['HTTP_HOST2'].'</domen>
-					<rname>'.$this->RUBRIC->data2[$r['rubric']]['name'].'</rname>
-					<tname>'.$cityList[$r['city']]['name'].'/ '.$this->_enum['type'][$r['type']].'</tname>
-					<text><![CDATA['._substr(html_entity_decode(strip_tags($r['text']),ENT_QUOTES,'UTF-8'),0,200).'...]]></text>
-					<datea>'.date('Y-m-d',$r['datea']).'</datea>';
-				$xml .= '<rubpath>/'.$this->RUBRIC->data2[$r['rubric']]['lname'].'</rubpath>';
-				$xml .= '</item>';
+			if(count($DATA)) {
+				$result2 = $this->SQL->execSQL('SELECT t4.id,t4.name,'.($this->_CFG['site']['rf']?'t4.domen_rf':'t4.domen').' as domen FROM city t4 WHERE t4.id IN ('.implode(',',$cityList).')');
+				if(!$result2->err){
+					$cityList = array();
+					while ($r = $result2->fetch_array()) {
+						$cityList[$r['id']] = $r;
+					}
+					foreach($DATA as $r) {
+						if(!$r['path']) {
+							$r['path'] = $this->getTranslitePatchFromText($r['text']);
+							$vars = array('path'=>$r['path']);
+							$this->id = $r['id'];
+							parent::_save_item($vars);
+						}
+						$xml .='<item>
+							<id>'.$r['id'].'</id>
+							<path>'.$r['path'].'</path>
+							<name>'.$r['name'].'</name>
+							<domen>http://'.$cityList[$r['city']]['domen'].'.'.$_SERVER['HTTP_HOST2'].'</domen>
+							<rname>'.$this->RUBRIC->data2[$r['rubric']]['name'].'</rname>
+							<tname>'.$cityList[$r['city']]['name'].'/ '.$this->_enum['type'][$r['type']].'</tname>
+							<text><![CDATA['._substr(html_entity_decode(strip_tags($r['text']),ENT_QUOTES,'UTF-8'),0,200).'...]]></text>
+							<datea>'.date('Y-m-d',$r['datea']).'</datea>';
+						$xml .= '<rubpath>/'.$this->RUBRIC->data2[$r['rubric']]['lname'].'</rubpath>';
+						$xml .= '</item>';
+					}
+				}
 			}
 		}
 		$xml .='</main>';
@@ -1189,15 +1307,20 @@ class board_class extends kernel_extends {
 	}
 	
 	function fXMLCreate ($statview=0) {
+		$arr_stat = array();
 		if(!$this->RUBRIC->data2) 
 			$this->RUBRIC->simpleRubricCache();
 		$xml='<main>';
+		if(static_main::_prmUserCheck() and static_main::_prmModul($this->_cl, array(3)))
+			$moder = 1;
+		else
+			$moder = 0;
 		foreach($this->data as $k=>&$r) {
 			$xml .='<item>';
 			$r['rubrics']=array();
 			$rname='';
 			$temp=$r['rubric'];
-			while(isset($this->RUBRIC->data2[$temp]) and $rid!=$temp) {
+			while(isset($this->RUBRIC->data2[$temp])) {
 				$r['rubrics'][] = array('id'=>$temp, 'name'=>$this->RUBRIC->data2[$temp]['name']); // board.inc for path
 				$rname ='<rname>'.$this->RUBRIC->data2[$temp]['name'].'</rname>'.$rname;
 				$temp=$this->RUBRIC->data2[$temp]['parent_id'];
@@ -1206,6 +1329,7 @@ class board_class extends kernel_extends {
 			//<rubric>'.$r['rubric'].'</rubric>
 			$xml .= $rname.'<name>'.$r['name'].'</name>
 				<id>'.$r['id'].'</id>
+				<moder>'.$moder.'</moder>
 				<path>'.$r['path'].'</path>
 				<type>'.$r['type'].'</type>
 				<tname>'.$this->_enum['type'][$r['type']].'</tname>
@@ -1236,8 +1360,8 @@ class board_class extends kernel_extends {
 			if(count($r['param']))
 				foreach($r['param'] as $pk=>$pr){
 					if($r['name'.$pr[2]]) {
-						if($pr[2]<10)
-							$r['name'.$pr[2]] = $this->_CFG['enum']['yesno2'][$r['name'.$pr[2]]];
+						//if($pr[2]<10)
+						//	$r['name'.$pr[2]] = $this->_CFG['enum']['yesno2'][$r['name'.$pr[2]]];
 						$xml .= '<param name="'.$pr[1].'" id="'.$pr[0].'" edi="'.$pr[4].'"><![CDATA['.$r['name'.$pr[2]].']]></param>';
 					}
 				}
@@ -1282,8 +1406,8 @@ class board_class extends kernel_extends {
 					foreach($row['param'] as $k=>$r) {
 						$r=$row['param'][$k] = explode(':',$r);// параметры поля
 						$r[2] = (int)$r[2];
-						if($r[2]<10) 
-							$row['name'.$pr[2]] = $this->_enum['yesno2'][$dta];
+						if($r[2]<10)
+							$row['name'.$r[2]] = $this->_CFG['enum']['yesno2'][$r[2]];
 						elseif($r[2]>=50 and $r[2]<60) {
 							//записываем массив для выборки из списка
 							$idFL[(int)$row['name'.$r[2]]][] = array($row['id'],'name'.$r[2]);
@@ -1311,7 +1435,7 @@ class board_class extends kernel_extends {
 			else return 0;
 		}
 		if(count($idCITY)) {
-			global $CITY;
+			_new_class('city',$CITY);
 			$clause = 'SELECT t1.id,t1.name,t2.id as regid,t2.name as regname, '.($this->_CFG['site']['rf']?'t1.domen_rf':'t1.domen').' as domen FROM '.$CITY->tablename.' t1 
 			left JOIN '.$CITY->tablename.' t2 ON t1.parent_id=t2.id
 			WHERE t1.id IN ('.implode(',',array_keys($idCITY)).')';
@@ -1341,7 +1465,7 @@ class board_class extends kernel_extends {
 
 		$this->filter_form=array();
 
-		/*global $CITY,
+		/*_new_class('city',$CITY);
 		if(!$CITY->id){
 			$this->filter_form['city']= array('type'=>'list','listname'=>array('class'=>'city'),'caption'=>'Город');
 			if(isset($filter['city'])) $this->filter_form['city']['value']=$filter['city'];
@@ -1423,12 +1547,13 @@ class board_class extends kernel_extends {
 		}
 		$this->filter_form['cost']['mask']['minint']=$minmax[0];
 		$this->filter_form['cost']['mask']['maxint']=$minmax[1];
-		$this->filter_form['foto'] = array('type' => 'checkbox','param'=>'checkbox','caption'=>'Только с фотографией','value'=>$filter['foto']);
-		$this->filter_form['text'] = array('type' => 'text','caption' => 'Ключевое слово','mask' =>array('max'=>128),'value'=>$filter['text']);
+		$this->filter_form['foto'] = array('type' => 'checkbox','param'=>'checkbox','caption'=>'Только с фотографией','value'=>(isset($filter['foto'])?$filter['foto']:0));
+		$this->filter_form['text'] = array('type' => 'text','caption' => 'Ключевое слово','mask' =>array('max'=>128),'value'=>(isset($filter['text'])?$filter['text']:''));
 
 		if($rid) {
 			//$this->filter_form = static_main::insertInArray($this->filter_form,'rubric',$this->ParamFieldsForm($filter,$rid,0,$temcls));
-			$this->filter_form += $this->ParamFieldsForm($filter,$rid,0,$temcls);
+			$temp = $this->ParamFieldsForm($filter,$rid,0,$temcls);
+			$this->filter_form += $temp;
 		}
 
 		$this->_enum['type'] = $this->_enum['type'];
@@ -1447,7 +1572,8 @@ class board_class extends kernel_extends {
 			$this->filter_form['sbmt'] = array('type'=>'submit','value'=>'задать параметры');
 		}
 		$this->kFields2FormFields($this->filter_form);
-		$_tpl['onload'] .= '$(\'#form_tools_paramselect div.multiplebox input\').live(\'click\',multiCheckBox); $(\'#form_tools_paramselect input\').live(\'change\',filterChange);';
+		if($flag)
+			$_tpl['onload'] .= '$(\'#form_tools_paramselect div.multiplebox input\').live(\'click\',multiCheckBox); $(\'#form_tools_paramselect input\').live(\'change\',filterChange);';
 		return $this->form;
 	}
 /*
@@ -1459,7 +1585,8 @@ class board_class extends kernel_extends {
 	}
 */
 	function getTranslitePatchFromText($var) {
-		$var=strip_tags(strtr($var,
+		$var = strip_tags(html_entity_decode($var));
+		$var = strtr($var,
 			array(
 				'<br />'=>'_',' '=>'_','-'=>'_',','=>'_','.'=>'_','+'=>'_',
 				'а'=>'a','б'=>'b','в'=>'v','г'=>'g','д'=>'d','е'=>'e','ё'=>'e','з'=>'z','и'=>'i','й'=>'y','к'=>'k','л'=>'l','м'=>'m','н'=>'n','о'=>'o','п'=>'p','р'=>'r',
@@ -1473,12 +1600,11 @@ class board_class extends kernel_extends {
 				"ї"=>"i", "Ї"=>"Yi", "є"=>"ie", "Є"=>"Ye"
 				,"Ь"=>"","Ъ"=>"","ь"=>"","ъ"=>""
 				)
-		 ));
-		$var = preg_replace("/[^0-9A-Za-z_]+/u",'',$var);
+		 );
+		$var = preg_replace("/[^0-9A-Za-z_]+/",'',$var);
 		$var = strtr($var,array('_____'=>'_','____'=>'_','___'=>'_','__'=>'_'));
 		$var = mb_substr($var,0,80,'UTF-8');
 		return trim($var,' _');
 
 	}
 }
-

@@ -272,7 +272,7 @@ foreach ($USER_CFG['site'] as $k => $r) {
 			);
 			break;
 		case 'show_error':
-			$cap = 'Тип хранени сессий пользователей';
+			$cap = 'Показ ошибок';
 			$type = 'list';
 			$valuelist = array(
 				array('#id#' => 0, '#name#' => 'ничего не показывать обычным юзерам'),
@@ -285,6 +285,7 @@ foreach ($USER_CFG['site'] as $k => $r) {
 			$type = 'checkbox';
 			break;
 		case 'worktime':
+			$type = 'checkbox';
 			$cap = 'Включить режим "Технический перерыв"';
 			break;
 		case 'work_title':

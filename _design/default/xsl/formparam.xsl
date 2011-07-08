@@ -21,7 +21,7 @@
 				  <div class="tdc">
 					<xsl:choose>
 						<xsl:when test="@confirm!=''">
-							<input type="{@type}" name="{@name}" value="{value}"  class="sbmt" onclick="if(!confirm('{@confirm}')) return false;"/>
+							<input type="{@type}" name="{@name}" value="{value}"  class="sbmt" onClick="if(!confirm('{@confirm}')) return false;"/>
 						</xsl:when>
 						<xsl:otherwise>
 							<input type="{@type}" name="{@name}" value="{value}"  class="sbmt"/>

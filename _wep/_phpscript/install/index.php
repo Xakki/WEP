@@ -88,5 +88,6 @@ if ($flag) {
 } else {
 	$HTML->_templates = 'login';
 	$_tpl['text'] = '';
+	$_tpl['login'] = 'Логин(Email)';
 	$_tpl['mess'] = '<div class="messhead">' . $mess . '</div>';
 }

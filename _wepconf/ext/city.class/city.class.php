@@ -17,6 +17,7 @@ class city_class extends kernel_extends {
 		$this->citylist = array();
 		$this->domen = $this->desc = '';
 		$this->detectcity = array();
+		$this->center = 0;
 		return true;
 	}
 
@@ -64,38 +65,46 @@ class city_class extends kernel_extends {
 //update city tt SET tt.region_name_ru=(SELECT t1.`name` FROM city3 t1 WHERE t1.id=tt.parent_id ) WHERE tt.parent_id != 0;
 	function cityDisplay() {
 		$xml=$regname='';
-		$reg = (int)$_GET['region'];
+		if(isset($_GET['region']))
+			$reg = (int)$_GET['region'];
+		else
+			$reg = 0;
 		$this->data=array();
-		if($reg) $clause = 'SELECT * FROM '.$this->tablename.' WHERE active=1 and (parent_id ='.$reg.' or id='.$reg.') ORDER BY name';
-		else $clause = 'SELECT t1.*,sum(t2.cnt) as ocnt FROM '.$this->tablename.' t1 LEFT JOIN '.$this->tablename.' t2 ON t1.id=t2.parent_id and t2.active=1 WHERE t1.active=1 and (t1.parent_id ='.$reg.' or t1.id='.$reg.') GROUP BY t1.id ORDER BY t1.name';
+		//if($reg)
+			$clause = 'SELECT * FROM '.$this->tablename.' WHERE active=1 and (parent_id ='.$reg.' or id='.$reg.') ORDER BY name';
+		//else 
+		//$clause = 'SELECT t1.*,sum(t2.cnt) as ocnt FROM '.$this->tablename.' t1 LEFT JOIN '.$this->tablename.' t2 ON t1.id=t2.parent_id and t2.active=1 WHERE t1.active=1 and (t1.parent_id ='.$reg.' or t1.id='.$reg.') GROUP BY t1.id ORDER BY t1.name';
 		$result = $this->SQL->execSQL($clause);
 		$cnt =0;
 		$city = '';
-		$centerlist = array();
+		$centerlist = '';
 		if(!$result->err)
 			while ($row = $result->fetch_array()){
-				//$this->data[$row['id']] = $row['name'];
-				if($this->_CFG['site']['rf']) {
+				if(!$reg)
+					$cnt +=$row['cnt'];
+
+				if($this->_CFG['site']['rf'])
 					$dom3 = $row['domen_rf'];
-				}else {
+				else
 					$dom3 = $row['domen'];
-				}
-				if(!$row['parent_id'] and $row['center'])
+
+				if(!$row['parent_id'] and $row['center']) {
 					$centerlist .= '<item id="'.$row['id'].'" city="'.$dom3.'" cnt="'.$row['cnt'].'">'.$row['name'].'</item>';
+				}
 				elseif($row['id']!=$reg) {
-					$row['ocnt'] = $row['ocnt']+$row['cnt'];
-					$xml .='<item id="'.$row['id'].'" city="'.$dom3.'" cnt="'.$row['ocnt'].'">'.$row['name'].'</item>';
-					$cnt +=$row['ocnt'];
+					$xml .='<item id="'.$row['id'].'" city="'.$dom3.'" cnt="'.$row['cnt'].'" center="'.$row['center'].'">'.$row['name'].'</item>';
 				}else {
 					$regname = $row['name'];
 					$city = $dom3;
+					if($reg)
+						$cnt +=$row['cnt'];
 				}
 
 		}
-		if(!$reg)
-			return '<all id="0" cnt="'.$cnt.'" city="" host="'.$_SERVER['HTTP_HOST2'].'">Россия</all><center>'.$centerlist.'</center><noscript>0</noscript>'.$xml;
-		else
+		if($reg)
 			return '<all id="'.$reg.'" cnt="'.$cnt.'" city="'.$city.'." host="'.$_SERVER['HTTP_HOST2'].'">'.$regname.'</all><noscript>1</noscript>'.$xml;
+		else
+			return '<all id="0" cnt="'.$cnt.'" city="" host="'.$_SERVER['HTTP_HOST2'].'">Россия</all><center>'.$centerlist.'</center><noscript>0</noscript>'.$xml;
 	}
 
 	function countBoardOfCity() {
@@ -124,7 +133,6 @@ class city_class extends kernel_extends {
 		elseif(isset($this->_CFG['_HREF']['arrayHOST'][2])) {
 			$flag = $this->citySelect($this->_CFG['_HREF']['arrayHOST'][2]);
 		}/*elseif(count($PGLIST->pageParam)==2) {
-			print_r('<pre>');print_r($PGLIST->pageParam);
 			$flag = $this->citySelect($PGLIST->pageParam[0]);
 			header("HTTP/1.0 301");// перемещение на постоянную основу
 			if($flag)
@@ -176,13 +184,13 @@ class city_class extends kernel_extends {
 				$cls = '(t1.id='.$city.' or t1.parent_id='.$city.')';
 			}
 			else
-				$cls = 't1.'.$fdomen.'="'.$city.'"';
+				$cls = 't1.'.$fdomen.'="'.mysql_real_escape_string($city).'"';
 			$clause = 'SELECT t1.center,t1.id,t1.parent_id,t1.name,t1.desc,lower(t1.city) as city,t1.region_name,t2.name as region,t1.'.$fdomen.' as domen FROM '.$this->tablename.' t1 LEFT JOIN  '.$this->tablename.' t2 ON t1.parent_id!=0 and t1.parent_id=t2.id WHERE t1.active=1 and '.$cls.' ORDER BY t1.name';
 			$result = $this->SQL->execSQL($clause);
 			if(!$result->err) {
 				
 				while ($row = $result->fetch_array()) {
-					$this->citylist[] = $row['id'];
+					$this->citylist[$row['id']] = $row['id'];
 					if((is_int($city) and $row['id']==$city) or (!is_int($city) and $row['domen']==$city)) {
 						$this->domen = $row['domen'];
 						if($row['region'] and $row['region']!='' and !$row['center'])
@@ -193,6 +201,8 @@ class city_class extends kernel_extends {
 						$this->parent_id = $row['parent_id'];
 						$this->desc = $row['desc'];
 						$flag = true;
+						if($row['parent_id'])
+							$this->citylist[$row['parent_id']] = $row['parent_id'];
 					}
 				}
 			}
@@ -202,9 +212,18 @@ class city_class extends kernel_extends {
 
 	function cityMap() {
 		global $SITEMAP;
+		if($SITEMAP)
+			$this->cityPosition();
 		$data=array();
-		$clause = 'SELECT name,'.($this->_CFG['site']['rf']?'domen_rf':'domen').' as domen, parent_id,id FROM '.$this->tablename.' WHERE active=1 ORDER BY parent_id,name';
-		$result = $this->SQL->execSQL($clause);
+
+		if($this->id)
+			return $data;
+
+		$clause = 'SELECT name,'.($this->_CFG['site']['rf']?'domen_rf':'domen').' as domen, parent_id,id FROM '.$this->tablename.' WHERE active=1';
+		/*if($this->id) {
+			$clause .= ' and parent_id='.$this->id;
+		}*/
+		$result = $this->SQL->execSQL($clause.' ORDER BY parent_id,name');
 		if(!$result->err)
 			while ($row = $result->fetch_array()) {
 				if(!$row['parent_id']) {
@@ -213,15 +232,14 @@ class city_class extends kernel_extends {
 						$data[$row['id']]['href'] = 'http://'.$_SERVER['HTTP_HOST'].'/'.$row['domen'].'/index.html';
 					else
 						$data[$row['id']]['href'] = 'http://'.$row['domen'].'.'.$_SERVER['HTTP_HOST2'];
-					if($this->id) $data[$row['id']]['hidechild'] = 1;
+					//if($this->id) $data[$row['id']]['hidechild'] = 1;
 				}
 				else {
 					if($SITEMAP)
 						$data[$row['parent_id']]['#item#'][$row['id']] = array('name'=>$row['name'], 'href'=>'http://'.$_SERVER['HTTP_HOST'].'/'.$row['domen'].'/index.html');
 					else
 						$data[$row['parent_id']]['#item#'][$row['id']] = array('name'=>$row['name'], 'href'=>'http://'.$row['domen'].'.'.$_SERVER['HTTP_HOST2']);
-					if($this->id) 
-						$data[$row['parent_id']]['hidechild'] =1;
+					//if($this->id) $data[$row['parent_id']]['hidechild'] =1;
 				}
 			}
 		return $data;

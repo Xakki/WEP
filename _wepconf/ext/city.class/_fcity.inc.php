@@ -1,7 +1,5 @@
 <?
-	global $CITY;
-
-	if(!$CITY) _new_class('city',$CITY);
+	_new_class('city',$CITY);
 	if(!$CITY->cityPosition())
 		return false;
 	else

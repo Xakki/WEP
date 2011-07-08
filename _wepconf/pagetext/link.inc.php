@@ -1,5 +1,5 @@
 <?
 	global $BANNER;
-	if(!$BANNER) $BANNER = new banner_class($SQL);
+	if(!$BANNER) _new_class('banner',$BANNER);
 	$html = $BANNER->gnezdo['top'];
 	return '=-'.$html.$BANNER->gnezdo['bottom'].'-=';

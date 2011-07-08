@@ -1,5 +1,4 @@
 <?
-	global $CITY;
 /*
 	if($_GET['go']=='1dsdsdsdsd') {
 		$dc= array();
@@ -20,8 +19,14 @@
 		return 'Успешно';
 	}
 */
+		_new_class('city',$CITY);
+		if(isset($this->pageParam[0]) and $CITY->citySelect($this->pageParam[0])) {
+			$loc = 'Location: http://'.$CITY->domen.'.'.$_SERVER['HTTP_HOST2'];
+			header("HTTP/1.0 301");
+			header($loc);
+			die($loc);
+		}
 		$html='';
-		if(!$CITY) _new_class('city',$CITY);
 		$html = $HTML->transform('<main>'.$CITY->cityDisplay().'</main>','citymain');
 		return $html;
 

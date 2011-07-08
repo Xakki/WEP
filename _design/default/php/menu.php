@@ -1,13 +1,20 @@
 <?
 	function tpl_menu(&$data) {
 		$html = '';
-		//print_r('<pre>');print_r($data);print_r('</pre>');exit();
 		if(isset($data) and count($data)) {
 			//$html .= '<div class="menu">';
 			//$last = count($data);
-			foreach($data as $k=>$r){
-				$html .= '<a class="pmenu" href="'.$r['href'].'" '.$r['attr'].($r['sel']?' class="sel-menu-item"':'').'>'.$r['name'].'</a>';
-				if(count($r['#item#'])) {
+			foreach($data as $k=>$r) {
+				if($r['sel'])
+					$html .= '<span>'.$r['name'].'</span>';
+				else
+					$html .= '<a href="'.$r['href'].'" '.$r['attr'].'>'.$r['name'].'</a>';
+				/*if(strpos($r['attr'],'style="'))
+					$r['attr'] = str_replace('style="','style="width:'.$prs.'%;',$r['attr']);
+				else
+					$r['attr'] .= ' style="width:'.$prs.'%;"';*/
+				
+				if(isset($r['#item#']) and count($r['#item#'])) {
 					$html .= tpl_menu($r['#item#']);
 				}
 			}

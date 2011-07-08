@@ -1,2 +1,3 @@
 <?
-include_once($this->_cDesignPath.'/php/path.php');
+global $HTML;
+include_once($HTML->_cDesignPath.'/php/path.php');

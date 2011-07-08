@@ -9,6 +9,7 @@
 
 	if(!count($RUBRIC->data2)) 
 		return '';
+	if(!isset($_GET['period'])) $_GET['period'] = '';
 
 	$html .= 'Номинации ';
 	if($_GET['period']=='lastyear' or $_GET['period']=='month')

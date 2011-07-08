@@ -16,19 +16,37 @@
 	<body onload="{$_tpl['onload']}">
 		{$_tpl['logs']}
 		<div class="header">
-			{$_tpl['head']}
+			<div class="block">
+				<div class="blocktext">
+					{$_tpl['head']}
+				</div>
+			</div>
 		</div>
 		<div class="leftblock">
-			{$_tpl['left_column']}
+			<div class="leftadd">{$_tpl['blockadd']}</div>
+			<div class="leftparam">
+				<div class="block">
+					<div class="blocktext">{$_tpl['param']}</div>
+				</div>
+			</div>
 		</div>
 		<div class="maintext">
-			{$_tpl['path']}
-			<div class="hrb"></div>
-			{$_tpl['text']}
+			<div class="block">
+				<div class="blocktext">
+					{$_tpl['path']}
+					<div class="hrb"></div>
+					{$_tpl['text']}
+					<div class="clear"></div>
+				</div>
+			</div>
 		</div>
+		<div class="clear"></div>
 		
 		<div class="footer">
-			{$_tpl['foot']}
+			<div class="block">
+				{$_tpl['foot']}
+				<div class="w3c">{$_tpl['counter']}</div>
+			</div>
 		</div>
 		<!--{$_tpl['time']}-->
 	</body>

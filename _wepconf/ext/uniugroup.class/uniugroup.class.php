@@ -34,27 +34,40 @@ class uniusers_class extends users_class
 {
 	function _set_features() {
 		if (!parent::_set_features()) return false;
+		$this->fn_login = 'login';//login or email
 		$this->tablename = $this->_CFG['sql']['dbpref'] . 'users';
 		return true;
 	}
 	function _create() {
 		parent::_create();
-		$fields_form = array();
-		$fields_form['cntdec'] = array(
-			'type' => 'list', 
-			'listname'=>array('class'=>'board','nameField'=>'count(tx.id)','idField'=>'tx.creater_id','idThis'=>'id','leftJoin'=>''), 
-			'readonly'=>1,
-			'caption' => 'Объявл.',
-			'mask' =>array('usercheck'=>1,'sort'=>''));
 		$this->fields['phone'] =  array('type' => 'varchar', 'width' => 127, 'attr' => 'NOT NULL', 'default'=>'');
 		$this->fields['www'] = array('type' => 'varchar', 'width' => 64,'attr' => 'NOT NULL', 'default'=>'');
 
-		$this->fields_form['phone'] = array('type' => 'text', 'caption' => 'phone', 'mask'=>array('name'=>'phone'));
-		$this->fields_form['www'] = array('type' => 'text', 'caption' => 'WWW', 'mask'=>array('name'=>'www'));
-
-		$this->fields_form = static_main::insertInArray($this->fields_form,'reg_hash',$fields_form);
 	}
 
+
+	public function setFieldsForm() {
+		parent::setFieldsForm();
+		$this->fields_form['phone'] = array('type' => 'text', 'caption' => 'phone', 'mask'=>array('name'=>'phone'));
+		$this->fields_form['www'] = array('type' => 'text', 'caption' => 'WWW', 'mask'=>array('name'=>'www'));
+		
+		if(!static_main::_prmUserCheck()) {
+			$this->formSort = array(
+				$this->fn_login,$this->fn_pass,'email',
+			);
+		} else {
+			$this->fields_form['cntdec'] = array(
+				'type' => 'list', 
+				'listname'=>array('class'=>'board','nameField'=>'count(tx.id)','idField'=>'tx.creater_id','idThis'=>'id','leftJoin'=>''), 
+				'readonly'=>1,
+				'caption' => 'Объявл.',
+				'mask' =>array('usercheck'=>1,'sort'=>''));
+			/*$this->formSort = array(
+				'userpic',$this->mf_namefields,$this->fn_login,'email','birthday','gender','myplace','showmygaget','aboutme','tumblr','twitter','facebook','lookatme','lastfm','lastfm','flickr','youtube','habrahabr','vkontakte','#over#'
+			);*/
+		}
+
+	}
 }
 
 

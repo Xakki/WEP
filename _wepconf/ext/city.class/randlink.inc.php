@@ -1,7 +1,7 @@
 <?
-	global $CITY;
+	_new_class('city',$CITY);
 	$html = '';
-	if($CITY->parent_id) {
+	if($CITY->parent_id==0 and $CITY->id) {
 		$html = '<div class="copyright">';
 		//if(!$CITY) _new_class('city',$CITY);
 		/*$resultc = $CITY->SQL->execSQL('SELECT MAX(id) AS maxid FROM '.$CITY->tablename);
@@ -11,8 +11,8 @@
 		for($i = 1; $i <= 10; $i++) 
 			$ls[] = rand(1,$max);*/
 	//and id in ('.implode(',',$ls).')
-		if($CITY->parent_id)
-			$cls = 'and parent_id='.$CITY->parent_id;
+		if($CITY->id)
+			$cls = 'and parent_id='.$CITY->id;
 		else
 			$cls = '';
 
@@ -20,7 +20,7 @@
 		$resultc = $CITY->SQL->execSQL($clause);
 		if(!$resultc->err)
 			while ($row = $resultc->fetch_array()) {
-				$html .= '<a href="http://'.$row['domen'].'.'.$_SERVER['HTTP_HOST2'].'">'.$row['name'].'</a>';
+				$html .= '<a href="'.$_CFG['_HREF']['BH'].'city/'.$row['domen'].'.html">'.$row['name'].'</a>';
 			}
 		$html .= '</div>';
 	}

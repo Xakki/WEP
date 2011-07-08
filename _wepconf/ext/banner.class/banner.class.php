@@ -31,7 +31,7 @@ class banner_class extends kernel_extends {
 		$this->fields_form['cell'] = array('type' => 'list', 'listname'=>'cell', 'caption' => 'Ячейка гнезда');
 		$this->fields_form['city'] = array(
 			'caption' => 'Город', 'type' => 'list', 
-			'listname'=>array('class'=>'city','where'=>'tx.active=1 and tx.parent_id=0','tx.name'=>'concat(tx.name,"*")'), 
+			'listname'=>array('class'=>'city','where'=>'tx.active=1 and tx.parent_id=0','nameField'=>'concat(tx.name,"*")'), 
 			'mask' =>array('filter'=>1));
 		$this->fields_form['page'] = array(
 			'caption' => 'Страницы','type' => 'list', 'multiple'=>1,
@@ -44,16 +44,8 @@ class banner_class extends kernel_extends {
 		$this->fields_form['click'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Стат. кликов');
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
 
-		$this->enum['cell'] = array(0,1,2,3,4,5,6);
+		$this->_enum['cell'] = array(0,1,2,3,4,5,6);
 	}
-
-    /*function __get($name) 
-    {//print_r('='.$name.'=');
-		if($name=='gnezdo') {
-			//print_r('out-');
-			return array('bottom'=>'внизу','top'=>'вверху');
-		}
-    }*/
 
 	/*function __destruct(){
 		//тут запись статистики
@@ -61,6 +53,5 @@ class banner_class extends kernel_extends {
 	}*/
 
 }
-
 
 

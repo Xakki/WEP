@@ -5,7 +5,7 @@
 <xsl:template match="main">
 <div class="wrapper">
 	<span class="char">.</span> . 
-	<div class="rubmain">
+	<span class="rubmain">
 	  <xsl:for-each select="item">
 		<div class="blockname" style="background-position:0 -{@imgpos}px;">
 			<xsl:value-of select="name"/>
@@ -14,19 +14,19 @@
 		  <xsl:for-each select="item">
 			<li>
 				<xsl:if test="@cnt>0">
-					<a href="list_{@id}.html"><xsl:value-of select="name"/></a> <a class="minicount">(<xsl:value-of select="@cnt"/>)</a>
+					<a href="/{@path}/list.html"><xsl:value-of select="name"/></a> <span class="minicount">(<xsl:value-of select="@cnt"/>)</span>
 				</xsl:if>
 				<xsl:if test="not(@cnt>0)">
-					<a href="list_{@id}.html"><xsl:value-of select="name"/></a>
+					<a href="/{@path}/list.html"><xsl:value-of select="name"/></a>
 				</xsl:if>
 			</li>
 		  </xsl:for-each>
 		</ul>
 		<xsl:if test="position()!=last() and position() mod ceiling((count(../item) div 3))=0">
-			<xsl:text disable-output-escaping="yes">&lt;/div&gt; . &lt;div class='rubmain'&gt;</xsl:text>
+			<xsl:text disable-output-escaping="yes">&lt;/span&gt; . &lt;span class='rubmain'&gt;</xsl:text>
 		</xsl:if>
 	  </xsl:for-each>
-	</div> . 
+	</span> . 
 	<span class="char">.</span>
 	<span class="eol">.</span>
 </div>

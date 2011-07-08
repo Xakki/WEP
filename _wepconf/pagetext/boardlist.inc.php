@@ -29,8 +29,9 @@
 			else
 				$req = strstr($_SERVER['REQUEST_URI'],'?');
 			$ppath = parse_url($_SERVER['REQUEST_URI']);
-			$html = $HTML->transform('<main>'.$BOARD->fListDisplay($rid,$_GET).' <req><![CDATA['.$req.']]></req><pg>'.$ppath['path'].'</pg></main>','boardlist');
-		}
+			end($PGLIST->pageinfo['path']);
+			$html = $HTML->transform('<main>'.$BOARD->fListDisplay($rid,$_GET).' <req><![CDATA['.$req.']]></req><pg>'.key($PGLIST->pageinfo['path']).'.html</pg></main>','boardlist');
+		}//'.$ppath['path'].'
 	} else {
 		$html = $HTML->transform($RUBRIC->MainRubricDisplay(),'rubricmain');
 	}

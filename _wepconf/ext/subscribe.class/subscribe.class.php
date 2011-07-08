@@ -51,8 +51,7 @@ class subscribe_class extends kernel_extends {
 	}
 
 	public function kPreFields(&$data,&$param) {
-		global $_tpl,$CITY;
-		
+		global $_tpl;
 		if(!$data['param'])
 			$data['param'] = htmlentities(substr(strstr($_SERVER['REQUEST_URI'],'?'),1));
 
@@ -101,9 +100,9 @@ class subscribe_class extends kernel_extends {
 
 	public function _UpdItemModul($param) {
 		$mess = array();
-		$this->listfields = array('count(id) as cnt');
-		$this->clause = 'WHERE '.$this->mf_createrid.'="'.$_SESSION['user']['id'].'"';
-		$this->_list();
+		$listfields = array('count(id) as cnt');
+		$clause = 'WHERE '.$this->mf_createrid.'="'.$_SESSION['user']['id'].'"';
+		$this->data = $this->_query($listfields,$clause);
 		if($this->data[0]['cnt']>=$_SESSION['user']['paramsubsc']) {
 			$mess[] = array('name'=>'alert', 'value'=>'Ваш лимит подписок ('.$_SESSION['user']['paramsubsc'].') - исчерпан. Вы можете отредактировать или удалить ваши существующие подписки, в панеле управления');
 			return $mess;

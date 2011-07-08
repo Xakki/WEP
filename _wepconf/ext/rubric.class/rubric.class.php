@@ -49,18 +49,36 @@ class rubric_class extends kernel_extends {
 
 	function RubricCache() {
 		$this->data2=$this->data=array();$cls='';
-		global $CITY;
+		_new_class('city',$CITY);
 		if(count($CITY->citylist))
-			$cls = ' and t2.city IN ('.implode(',',$CITY->citylist).') ';
+			$cls = ' and t2.city IN ('.$CITY->id.') ';
+		else
+			$cls = ' and t2.city=0';
 		$clause = 'SELECT '.$this->selFields.',sum(t2.cnt) as cnt FROM '.$this->tablename.' t1 LEFT JOIN '.$this->childs['countb']->tablename.' t2 ON t1.id=t2.owner_id '.$cls.' WHERE t1.active=1 GROUP BY t1.id ORDER BY t1.parent_id,t1.ordind';
 		$result = $this->SQL->execSQL($clause);
-		if(!$result->err)
+		if(!$result->err) {
+			$ar_last = array();
 			while ($row = $result->fetch_array()){
 				$this->data2[$row['id']] = $row;
 				$this->data[$row['parent_id']][$row['id']] = $row['name'];
-				$this->data3[$row['parent_id']][$row['id']] = array('name'=>$row['name'],'imgpos'=>$row['imgpos'],'cnt'=>(int)$row['cnt'],'path'=>$row['lname']);
-				if($row['parent_id'])
-					$this->data3[$this->data2[$row['parent_id']]['parent_id'] ] [$row['parent_id']] ['cnt'] += (int)$row['cnt'];
+				$this->data3[$row['parent_id']][$row['id']] ['name'] = $row['name'];
+				$this->data3[$row['parent_id']][$row['id']] ['imgpos'] = $row['imgpos'];
+				$this->data3[$row['parent_id']][$row['id']] ['cnt'] = $row['cnt'];
+				$this->data3[$row['parent_id']][$row['id']] ['path'] = $row['lname'];
+				if($row['parent_id']) {
+					if(isset($this->data2[$row['parent_id']])) {
+						$tempid = $this->data2[$row['parent_id']]['parent_id'];
+						$this->data3[$tempid] [$row['parent_id']] ['cnt'] += (int)$row['cnt'];
+					} else
+						$ar_last[] = $row;
+				}
+			}
+			if(count($ar_last)) {
+				foreach($ar_last as $row) {
+					$tempid = $this->data2[$row['parent_id']]['parent_id'];
+					$this->data3[$tempid] [$row['parent_id']] ['cnt'] += (int)$row['cnt'];
+				}
+			}
 		}
 		return 0;	
 	}
@@ -80,7 +98,7 @@ class rubric_class extends kernel_extends {
 	}
 
 	function MainRubricDisplay() {
-		global $CITY;
+		_new_class('city',$CITY);
 		if(!$this->data3) $this->RubricCache();
 		$xml='';
 		$xml = $this->kData2xml($this->_forlist($this->data3,0),'item');
@@ -171,6 +189,7 @@ class param_class extends kernel_extends {
 		$this->fields["max"] = array("type" => "int", "width" =>8, "attr" => 'NOT NULL', 'default'=>'0');
 		$this->fields["step"] = array("type" => "int", "width" =>8, "attr" => 'NOT NULL', 'default'=>'1');
 		$this->fields['mask'] = array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL', 'default'=>'');
+		$this->fields['maskn'] = array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL', 'default'=>'');
 		$this->fields['comment'] = array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL', 'default'=>'');
 
 		# attaches
@@ -188,7 +207,8 @@ class param_class extends kernel_extends {
 		$this->fields_form['min'] = array('type' => 'int', 'caption' => 'Минимум','comment'=>'Минимум символов или минимальное число, 0 - поле не обязательное');
 		$this->fields_form['max'] = array('type' => 'int', 'caption' => 'Максимум','comment'=>'Максимум символов или максимальное число, 0 - максимум соответствует типу');
 		$this->fields_form['step'] = array('type' => 'int', 'caption' => 'Шаг','comment'=>'Если "Тип параметра" целое число, нужен шаг для поиска по параметрам');
-		$this->fields_form['mask'] = array('type' => 'text', 'caption' => 'Маска', 'mask' =>array('name'=>'all'));
+		$this->fields_form['mask'] = array('type' => 'text', 'caption' => 'Маска(поиск точного соответствия)', 'mask' =>array('name'=>'all'), 'comment'=>'/^(http:\/\/)?([A-Za-zЁёА-Яа-я\.]+\.)?[0-9A-Za-zЁёА-Яа-я\-\_]+\.[A-Za-zЁёА-Яа-я]+[\/0-9A-Za-zЁёА-Яа-я\.\-\_\=\?\&]*$/u');
+		$this->fields_form['maskn'] = array('type' => 'text', 'caption' => 'Маска(поик не соответствия)', 'mask' =>array('name'=>'all'), 'comment'=>'/[^0-9A-Za-zЁёА-Яа-я:\/\.\-\_\=\?\&]/u');
 		$this->fields_form['comment'] = array('type' => 'text', 'caption' => 'Комменты', 'mask' =>array('name'=>'all'));
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Активность');
 	}
