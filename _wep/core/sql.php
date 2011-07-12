@@ -117,6 +117,8 @@
 			$m = '`' . strtolower($key) . '` ' . $param['type'];
 			if($param['type']=='timestamp')
 				$m.=' NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP';
+			elseif($param['type']=='timestamp') {
+			}
 			else
 			{
 				if (isset($param['width']) && is_array($param['width'])) {
@@ -131,7 +133,7 @@
 					$m.=' NOT NULL';
 				if(isset($param['default']))
 					$m.=' DEFAULT \'' . $param['default'] . '\'';
-				if(!isset($param['default']) and $param['type']=='varchar' and !$param['attr'])
+				if(!isset($param['default']) and $param['type']!='text' and !$param['attr'])
 					$m.=' DEFAULT NULL';
 			}
 			return array($m,$mess);
