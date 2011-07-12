@@ -270,7 +270,7 @@ abstract class kernel_extends {
 		}
 
 		if ($this->mf_timestamp)
-			$this->fields['_timestamp'] = array('type' => 'timestamp', 'attr' => 'NOT NULL');
+			$this->fields['mf_timestamp'] = array('type' => 'timestamp', 'attr' => 'NOT NULL');
 		if ($this->mf_timecr)
 			$this->fields['mf_timecr'] = array('type' => 'int', 'width' => 11, 'attr' => 'unsigned NOT NULL', 'default' => '0');
 		if ($this->mf_timeup)
