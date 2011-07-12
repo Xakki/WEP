@@ -254,7 +254,7 @@ function JSWin(param) {
 			return true;
 		},
 		error: function(XMLHttpRequest, textStatus, errorThrown) {
-			alert(textStatus);
+			alert('ajaxerror : '+textStatus);
 		},
 		dataFilter: function(data, type) {
 			return data;

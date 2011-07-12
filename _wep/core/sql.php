@@ -115,22 +115,25 @@
 				$param['type'] = $this->alias_types[$param['type']];
 
 			$m = '`' . strtolower($key) . '` ' . $param['type'];
-			if (isset($param['width']) && is_array($param['width'])) {
-				if ($param['type'] == 'enum')
-					$m.= '("' . implode('","', array_keys($param['width'])) . '")';
+			if($param['type']=='timestamp')
+				$m.=' NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP';
+			else
+			{
+				if (isset($param['width']) && is_array($param['width'])) {
+					if ($param['type'] == 'enum')
+						$m.= '("' . implode('","', array_keys($param['width'])) . '")';
+				}
+				elseif (isset($param['width']) && $param['width'] != '')
+					$m.= '(' . $param['width'] . ')';
+				if( isset($param['attr']))
+					$m.=' ' . $param['attr'];
+				elseif(isset($param['default']) and strpos($param['default'],'NULL')===false and $param['type']!='text')
+					$m.=' NOT NULL';
+				if(isset($param['default']))
+					$m.=' DEFAULT \'' . $param['default'] . '\'';
+				if(!isset($param['default']) and $param['type']=='varchar' and !$param['attr'])
+					$m.=' DEFAULT NULL';
 			}
-			elseif (isset($param['width']) && $param['width'] != '')
-				$m.= '(' . $param['width'] . ')';
-			if( isset($param['attr']))
-				$m.=' ' . $param['attr'];
-			elseif(isset($param['default']) and strpos($param['default'],'NULL')===false and $param['type']!='text')
-				$m.=' NOT NULL';
-			if(isset($param['default']))
-				$m.=' DEFAULT \'' . $param['default'] . '\'';
-			if(!isset($param['default']) and $param['type']=='varchar' and !$param['attr'])
-				$m.=' DEFAULT NULL';
-			elseif(!isset($param['default']) and $param['type']=='timestamp')
-				$m.=' DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP';
 			return array($m,$mess);
 		}
 
