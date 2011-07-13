@@ -20,12 +20,18 @@ class mail_class extends kernel_extends {
 			0=>'SendMail',
 			1=>'phpMailer',
 		);
+		$this->_enum['PHPMailer_Debug'] = array(
+			0=>'Отключить',
+			1=>'выжные ошибки',
+			2=>'все ошибки',
+		);
 		$this->config['mailengine'] = 0;
 		$this->config['mailrobot'] = 'robot@xakki.ru';
 		$this->config['fromName'] = '';
 		$this->config['PHPMailer_Host'] = 'ssl://smtp.gmail.com:465';
 		$this->config['PHPMailer_Username'] = 'usermail@gmail.com';
 		$this->config['PHPMailer_Password'] = 'longpassword';
+		$this->config['PHPMailer_Debug'] = 0;
 		$this->config['mailtemplate'] = '<html><head><title>%SUBJECT%</title><meta content="text/html;charset=utf-8" http-equiv="Content-Type" /></head><body>%TEXT% %MAILBOTTOM%</body></html>';
 		$this->config['mailbottom'] = '<hr/>© 2011 «XAKKI»';
 
@@ -35,6 +41,7 @@ class mail_class extends kernel_extends {
 		$this->config_form['PHPMailer_Host'] = array('type' => 'text', 'caption' => 'PHPMailer_Host', 'mask' =>array('name'=>'all'),'style'=>'background:#30B120;');
 		$this->config_form['PHPMailer_Username'] = array('type' => 'text', 'caption' => 'PHPMailer_Username', 'mask' =>array('name'=>'all'),'style'=>'background:#30B120;');
 		$this->config_form['PHPMailer_Password'] = array('type' => 'text', 'caption' => 'PHPMailer_Password', 'mask' =>array('name'=>'all'),'style'=>'background:#30B120;');
+		$this->config_form['PHPMailer_Debug'] = array('type' => 'list', 'listname'=>'PHPMailer_Debug', 'caption' => 'Дебаг','style'=>'background:#30B120;');
 		$this->config_form['mailtemplate'] = array(
 			'type' => 'textarea',
 			'caption' => 'Шаблон по умолчанию', 
@@ -226,6 +233,7 @@ class mail_class extends kernel_extends {
 		$PHPMailer->Host = $this->config['PHPMailer_Host'];
 		$PHPMailer->Username = $this->config['PHPMailer_Username'];
 		$PHPMailer->Password = $this->config['PHPMailer_Password'];
+		$PHPMailer->SMTPDebug = $this->config['PHPMailer_Debug'];
 		$PHPMailer->SetLanguage('ru');
 		$PHPMailer->From = $data['from'];
 		if($this->config['fromName'])
