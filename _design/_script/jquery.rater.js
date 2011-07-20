@@ -50,9 +50,10 @@ jQuery.fn.rater = function(url, options)
 	jQuery.extend(settings, {cancel: (settings.maxvalue > 1) ? true : false});
 	
 	var container = jQuery(this);
+
 	jQuery.extend(container, { averageRating: settings.curvalue, url: settings.url });
 
-	if(!settings.style || settings.style == null || settings.style == 'basic') {
+	/*if(!settings.style || settings.style == null || settings.style == 'basic') {
 		var raterwidth = settings.maxvalue * 17;
 		if (settings.active == 1) {
 			tag_class = ' active';
@@ -102,7 +103,7 @@ jQuery.fn.rater = function(url, options)
 	if(settings.maxvalue > 1) // add a container for the ajax result
 	{
 		container.append('<span class="star-rating-result"></span>'); 
-	}
+	}*/
 
 
 	var stars = jQuery(container).find('.star-rating').children('.star');

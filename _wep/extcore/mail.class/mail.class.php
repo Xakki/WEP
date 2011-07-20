@@ -235,7 +235,9 @@ class mail_class extends kernel_extends {
 		$PHPMailer->Password = $this->config['PHPMailer_Password'];
 		$PHPMailer->SMTPDebug = $this->config['PHPMailer_Debug'];
 		$PHPMailer->SetLanguage('ru');
-		$PHPMailer->From = $data['from'];
+		$PHPMailer->From = $this->config['mailrobot'];
+		$PHPMailer->ReplyTo = $data['from'];
+
 		if($this->config['fromName'])
 			$PHPMailer->FromName =  $this->config['fromName'];//iconv('cp1251','koi8-r','www.apitcomp.ru');
 		else
