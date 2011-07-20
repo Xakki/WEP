@@ -191,7 +191,7 @@ class static_tools {
 			foreach ($uniqlist as $k => $r) {
 				if (!isset($rDATA[$k]['@index']))		$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
 				else		$rDATA[$k]['@index'] .= ', ';
-				$rDATA[$k]['@index'] .= ' drop key ' . $k . ' ';
+				$rDATA[$k]['@index'] .= ' drop key `' . $k . '` ';
 				unset($uniqlistR[$k]);
 			}
 		}
@@ -219,7 +219,7 @@ class static_tools {
 			foreach ($indexlist as $k => $r) {
 				if (!isset($rDATA[$k]['@index']))		$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
 				else		$rDATA[$k]['@index'] .= ', ';
-				$rDATA[$k]['@index'] .= ' drop key ' . $k . ' ';
+				$rDATA[$k]['@index'] .= ' drop key `' . $k . '` ';
 			}
 		}
 		$rDATA['Оптимизация']['@newquery'] = 'OPTIMIZE TABLE `' . $MODUL->tablename . '`';
@@ -665,7 +665,7 @@ class static_tools {
 			foreach ($MODUL->unique_fields as $k => $r) {
 				if (is_array($r))
 					$r = implode(',', $r);
-				$fld[] = 'UNIQUE KEY ' . $k . ' (' . $r . ')';
+				$fld[] = 'UNIQUE KEY `' . $k . '` (`' . $r . '`)';
 			}
 		}
 		if (isset($MODUL->index_fields) and count($MODUL->index_fields)) {
@@ -673,7 +673,7 @@ class static_tools {
 				if (!isset($MODUL->unique_fields[$k])) {
 					if (is_array($r))
 						$r = implode(',', $r);
-					$fld[] = 'KEY ' . $k . ' (' . $r . ')';
+					$fld[] = 'KEY `' . $k . '` (`' . $r . '`)';
 				}
 			}
 		}
