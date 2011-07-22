@@ -8,8 +8,13 @@
 	require_once($_CFG['_PATH']['core'].'/sql.php');	/**отправляет header и печатает страничку*/
 	$SQL = new sql($_CFG['sql']);
 
-
-	if($_GET['_view']=='ajaxlist' and $_GET['_srlz']=stripslashes($_GET['_srlz']) and $_GET['_hsh']==md5($_GET['_srlz'].$_CFG['wep']['md5'])) {
+	if($_GET['_fn']) {
+		if(_new_class($_GET['_modul'],$MODUL) and isset($MODUL->_AllowAjaxFn[$_GET['_fn']])) {
+			eval('$GLOBALS[\'_RESULT\']=$MODUL->'.$_GET['_fn'].'();');
+		} else 
+			$GLOBALS['_RESULT']['text'] = 'Вызов функции не разрешён модулем.';
+	} 
+	elseif($_GET['_view']=='ajaxlist' and $_GET['_srlz']=stripslashes($_GET['_srlz']) and $_GET['_hsh']==md5($_GET['_srlz'].$_CFG['wep']['md5'])) {
 		$listname = unserialize($_GET['_srlz']);
 		if(!isset($listname['tablename']) and isset($listname['class']) and $listname['class'])
 			$listname['tablename'] = $_CFG['sql']['dbpref'].$listname['class'];

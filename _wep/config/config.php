@@ -148,6 +148,7 @@ if (strpos($_SERVER['HTTP_HOST'], 'xn--') !== false) {
 $_CFG['_HREF']['BH'] = 'http://' . $_SERVER['HTTP_HOST'] . $port . '/' . $addpath; // www-путь сайта
 $_CFG['_HREF']['wepJS'] = $_CFG['_HREF']['BH'] . $_CFG['PATH']['wepname'] . '/js.php';
 $_CFG['_HREF']['siteJS'] = $_CFG['_HREF']['BH'] . '_js.php';
+$_CFG['_HREF']['siteAJAX'] = $_CFG['_HREF']['BH'] . '_json.php';
 $_CFG['_HREF']['captcha'] = $_CFG['_HREF']['BH'] . '_captcha.php';
 $_CFG['_HREF']['WSWG'] = $_CFG['_HREF']['BH'] . $_CFG['PATH']['WSWG'];
 $_CFG['_HREF']['_style'] = '_design/_style/'; // дизайн стили
