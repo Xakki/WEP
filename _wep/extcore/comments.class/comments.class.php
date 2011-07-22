@@ -69,7 +69,6 @@ class comments_class extends kernel_extends {
 
 	public function addComm() {
 		$res = array('messages'=>'Need login!','status'=>-2);
-		session_go();
 		if(static_main::_prmModul($this->_cl,array(9))) {
 			if(isset($this->_CFG['modulprm'][$_POST['modul']])) {
 				global $HTML;
@@ -101,7 +100,7 @@ class comments_class extends kernel_extends {
 	function displayList($param=array()) {
 		$data = array();
 		_new_class('users',$USERS);
-		$result = $this->SQL->execSQL('SELECT t1.*,t2.name as uname,t2.userpic FROM ' . $this->tablename . ' t1 LEFT JOIN '.$USERS->tablename.' t2 ON t1.'.$this->mf_createrid.'=t2.id WHERE t1.active=1 and  t1.modul="' . $param['modul'].'" and t1.modul_id="' . $param['modul_id'].'"');
+		$result = $this->SQL->execSQL('SELECT t1.*,t2.name as uname,t2.userpic FROM ' . $this->tablename . ' t1 LEFT JOIN '.$USERS->tablename.' t2 ON t1.'.$this->mf_createrid.'=t2.id WHERE t1.active=1 and  t1.modul="' . $param['modul'].'" and t1.modul_id="' . $param['modul_id'].'" ORDER BY '.$this->mf_timecr);
 		if (!$result->err)
 			while ($row = $result->fetch_array()) {
 				$data[$row['parent_id']][$row['id']] = $row;
