@@ -473,7 +473,7 @@ final class modulprm_class extends kernel_extends {
 			if ($result->err)
 				exit();
 			while ($row = $result->fetch_array()) {
-				if($row['level']==5) $row['id'] = 0;
+				//if($row['level']==5) $row['id'] = 0;
 				$this->guserData[$row['id']] = $row;
 			}
 		}

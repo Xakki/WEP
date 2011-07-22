@@ -90,15 +90,17 @@ class static_main {
 		global $_CFG;
 		if (isset($_SESSION['user']['id']) and isset($_SESSION['user']['level']) and $_SESSION['user']['level'] == 0)
 			return true; // админу можно всё
- if (!isset($_CFG['modulprm']))
+		if (!isset($_CFG['modulprm']))
 			self::_prmModulLoad();
 		if (!isset($_CFG['modulprm'][$mn]))
 			return false; // отказ, если модуль отключен
- if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] >= 5)
+		if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] >= 5)
 			return false; //этим всё запрещено
- else {
+		else {
 			if (isset($_CFG['modulprm'][$mn]['access'][0]))
 				return false;
+/*			if(isset($_CFG['modulprm'][$mn]['access']['']) and count($_CFG['modulprm'][$mn]['access'])==1)
+				return true;*/
 			if (count($param))
 				foreach ($param as $r)
 					if (isset($_CFG['modulprm'][$mn]['access'][$r]))
@@ -111,7 +113,7 @@ class static_main {
 		global $_CFG, $SQL;
 		if (!isset($_CFG['modulprm'])) {
 			$_CFG['modulprm'] = $_CFG['modulprm_ext'] = array();
-			$ugroup_id = (isset($_SESSION['user']['gid']) ? (int) $_SESSION['user']['gid'] : 0);
+			$ugroup_id = (isset($_SESSION['user']['gid']) ? (int) $_SESSION['user']['gid'] : 2);
 			if(isset($_SESSION['user']['parent_id']) and $_SESSION['user']['parent_id']) {
 				$ugroup_id = ' and t2.ugroup_id IN ('.$_SESSION['user']['parent_id'].','.$ugroup_id.')';
 			}else
@@ -140,6 +142,7 @@ class static_main {
 				$_CFG['modulprm'][$row['id']]['tablename'] = $row['tablename'];
 				$_CFG['modulprm'][$row['id']]['ver'] = $row['ver'];
 				$_CFG['modulprm'][$row['id']]['extend'] = $row['extend'];
+				$_CFG['modulprm'][$row['id']]['pid'] = $row['parent_id'];
 				if ($row['hook']) {
 					eval('$hook = ' . $row['hook'] . ';');
 					$_CFG['hook'] = self::MergeArrays($_CFG['hook'], $hook);

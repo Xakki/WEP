@@ -1,6 +1,6 @@
 <?
 
-class comments_extends extends kernel_extends {
+class comments_class extends kernel_extends {
 
 	protected function _create_conf() {/* CONFIG */
 		parent::_create_conf();
@@ -22,29 +22,31 @@ class comments_extends extends kernel_extends {
 		if (!parent::_set_features())
 			return false;
 		$this->caption = 'Комментарии';
-		$this->mf_createrid = 'creater_id';
+		$this->mf_createrid = true;
 		$this->mf_actctrl = true;
 		$this->mf_ipcreate = true;
 		$this->mf_timecr = true;
-		$this->messages_on_page = 200;
+		$this->mf_istree = true;
+		$this->messages_on_page = 50;
 		$this->locallang['default']['denied_add'] = 'Оставлять комментарий могут только зарегистрированные пользователи!';
 		$this->locallang['default']['add'] = 'Комментарий добавлен.';
 		$this->locallang['default']['add_name'] = '';
 		$this->locallang['default']['_saveclose'] = 'Написать комментарий';
+		$this->_AllowAjaxFn['addComm'] = true;
 		return true;
 	}
 
 	function _create() {
-		if ($this->config['treelevel'] > 0)
-			$this->mf_istree = true;
 		parent::_create(); //$this->config доступен после этой функции
 
 		$this->fields['text'] = array('type' => 'text', 'attr' => 'NOT NULL', 'min' => '1');
-		$this->fields['vote'] = array('type' => 'int', 'width' => 9, 'attr' => 'NOT NULL', 'default' => 0);
+		$this->fields['modul_id'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0);
+		$this->fields['modul'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0);
+		//$this->fields['vote'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0);
 
-		$this->_setHook['__construct']['ugroup'] = array(
+		/*$this->_setHook['__construct']['ugroup'] = array(
 			'_wep/extcore/comments.extend/comments.hook.php' => 'ugroup_hook__construct',
-		);
+		);*/
 	}
 
 	public function setFieldsForm() {
@@ -57,24 +59,49 @@ class comments_extends extends kernel_extends {
 		  'readonly'=>1,
 		  'mask' =>array('usercheck'=>1)); */
 		$this->fields_form['text'] = array('type' => 'textarea', 'caption' => 'Текст', 'mask' => array('min' => 5, 'max' => 3000));
-		if ($this->config['vote'])
-			$this->fields_form['vote'] = array('type' => 'int', 'caption' => 'Рейтинг', 'readonly' => 1);
+		//$this->fields_form['vote'] = array('type' => 'int', 'caption' => 'Рейтинг', 'readonly' => 1);
 		$this->fields_form['mf_timecr'] = array('type' => 'date', 'caption' => 'Дата добавления', 'readonly' => 1, 'mask' => array());
 		$this->fields_form['mf_ipcreate'] = array('type' => 'text', 'caption' => 'IP-пользователя', 'readonly' => 1, 'mask' => array('usercheck' => 1));
 		if ($this->mf_istree)
 			$this->fields_form['parent_id'] = array('type' => 'hidden');
-		if ($this->owner)
-			$this->fields_form['owner_id'] = array('type' => 'hidden');
 		return true;
+	}
+
+	public function addComm() {
+		if(static_main::_prmModul($this->_cl,array(9))) {
+			if(isset($this->_CFG['modulprm'][$_POST['modul']])) {
+				global $HTML;
+				$DATA = $this->_UpdItemModul(array('ajax'=>1));
+				//print_r('<pre>');print_r($DATA);
+				$DATA = $DATA[0];
+				return $HTML->transformPHP($DATA,'messages');
+			}
+		}
+		return 'Необходимо авторизоваться';
 	}
 
 	public function _UpdItemModul($param) {
 		$mess = $this->antiSpam();
 		if (!count($mess)) {
-			$xml = parent::_UpdItemModul($param);
-			return $xml;
+			$DATA = parent::_UpdItemModul($param);
+			if($DATA[1]) {
+				$tt = $this->_CFG['modulprm'][$_POST['modul']]['tablename'];
+				$result = $this->SQL->execSQL('Update ' .$tt . ' SET comments_count= comments_count+1 WHERE id=' . (int)$_POST['modul_id'] . '');
+			}
+			return $DATA;
 		}else
 			return array(array('messages' => $mess), -1);
+	}
+
+	function displayData($param=array()) {
+		$data = array();
+		_new_class('users',$USERS);
+		$result = $this->SQL->execSQL('SELECT t1.*,t2.name as uname,t2.userpic FROM ' . $this->tablename . ' t1 LEFT JOIN '.$USERS->tablename.' t2 ON t1.'.$this->mf_createrid.'=t2.id WHERE t1.active=1 and  t1.modul="' . $param['modul'].'" and t1.modul_id="' . $param['modul_id'].'"');
+		if (!$result->err)
+			while ($row = $result->fetch_array()) {
+				$data[$row['parent_id']][$row['id']] = $row;
+			}
+		return $data;
 	}
 
 	private function antiSpam() {
@@ -107,16 +134,6 @@ class comments_extends extends kernel_extends {
 		return $mess;
 	}
 
-	function displayData($id, $answerid) {
-		$result = $this->SQL->execSQL('SELECT * FROM ' . $this->tablename . ' WHERE owner_id=' . $id);
-		if (!$result->err)
-			while ($row = $result->fetch_array()) {
-				$this->data[$row['parent_id']][$row['id']] = $row;
-				if ($answerid and $row['id'] == $answerid)
-					$answerid = $row['text'];
-			}
-		return $answerid;
-	}
 
 	public function kPreFields(&$data, &$param) {
 		if (isset($data['name']) and (!isset($_COOKIE[$this->_cl . '_f_name']) or $_COOKIE[$this->_cl . '_f_name'] != $data['name'])) {

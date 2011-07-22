@@ -167,7 +167,8 @@ abstract class kernel_extends {
 				$this->enum =
 				$this->child_path =
 				$this->Achilds =
-				$this->_setHook = array();
+				$this->_setHook = 
+				$this->_AllowAjaxFn = array(); // разрешённые функции для аякса, нужно прописывать в индекс
 		$this->childs = new modul_child($this);
 		$this->ordfield = $this->_clp = '';
 		$this->data = array();
@@ -413,6 +414,8 @@ abstract class kernel_extends {
 			return false;
 		if (count($data) and !$this->_select_memos($data))
 			return false;
+		if (isset($this->_CFG['hook']['_query']))
+			$this->__do_hook('_query', func_get_args());
 		return $data;
 	}
 
