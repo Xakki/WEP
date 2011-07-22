@@ -99,8 +99,8 @@ class static_main {
 		else {
 			if (isset($_CFG['modulprm'][$mn]['access'][0]))
 				return false;
-/*			if(isset($_CFG['modulprm'][$mn]['access']['']) and count($_CFG['modulprm'][$mn]['access'])==1)
-				return true;*/
+			if(isset($_CFG['modulprm'][$mn]['access']['']) and count($_CFG['modulprm'][$mn]['access'])==1)
+				return true;
 			if (count($param))
 				foreach ($param as $r)
 					if (isset($_CFG['modulprm'][$mn]['access'][$r]))
