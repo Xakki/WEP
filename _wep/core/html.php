@@ -3,6 +3,7 @@
 /*
   начальные установки
  */
+ global $_CFG;
 $MODUL = NULL;
 if (!isset($_CFG['_PATH']['core']))
 	die('Can not find config file!');

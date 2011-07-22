@@ -42,7 +42,7 @@
 					}
 					else
 						$tplphp = $FUNCPARAM[1];
-					$DATA = $MODUL->displayData(array(
+					$DATA = $MODUL->displayList(array(
 						'modul'=>$FUNCPARAM[0],
 						'modul_id'=>$_CFG['singleton'][$FUNCPARAM[0]]->id,
 						'pn'=>$FUNCPARAM[2],

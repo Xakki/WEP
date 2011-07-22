@@ -68,16 +68,21 @@ class comments_class extends kernel_extends {
 	}
 
 	public function addComm() {
+		$res = array('messages'=>'Need login!','status'=>-2);
+		session_go();
 		if(static_main::_prmModul($this->_cl,array(9))) {
 			if(isset($this->_CFG['modulprm'][$_POST['modul']])) {
 				global $HTML;
+				$HTML = new html('_design/',$this->_CFG['wep']['design'],false);// упрощённый режим
+
 				$DATA = $this->_UpdItemModul(array('ajax'=>1));
-				//print_r('<pre>');print_r($DATA);
-				$DATA = $DATA[0];
-				return $HTML->transformPHP($DATA,'messages');
+
+				$res = array('messages'=>$HTML->transformPHP($DATA[0],'messages'),'status'=>$DATA[1]);
+				if($DATA[1]) 
+					$res['data'] = $this->displayItem($this->id);
 			}
 		}
-		return 'Необходимо авторизоваться';
+		return $res;
 	}
 
 	public function _UpdItemModul($param) {
@@ -93,7 +98,7 @@ class comments_class extends kernel_extends {
 			return array(array('messages' => $mess), -1);
 	}
 
-	function displayData($param=array()) {
+	function displayList($param=array()) {
 		$data = array();
 		_new_class('users',$USERS);
 		$result = $this->SQL->execSQL('SELECT t1.*,t2.name as uname,t2.userpic FROM ' . $this->tablename . ' t1 LEFT JOIN '.$USERS->tablename.' t2 ON t1.'.$this->mf_createrid.'=t2.id WHERE t1.active=1 and  t1.modul="' . $param['modul'].'" and t1.modul_id="' . $param['modul_id'].'"');
@@ -104,6 +109,16 @@ class comments_class extends kernel_extends {
 		return $data;
 	}
 
+	function displayItem($id) {
+		$data = array();
+		_new_class('users',$USERS);
+		$result = $this->SQL->execSQL('SELECT t1.*,t2.name as uname,t2.userpic FROM ' . $this->tablename . ' t1 LEFT JOIN '.$USERS->tablename.' t2 ON t1.'.$this->mf_createrid.'=t2.id WHERE t1.active=1 and t1.id="' . $id.'"');
+		if (!$result->err)
+			if ($row = $result->fetch_array()) {
+				return $row;
+			}
+		return $data;
+	}
 	private function antiSpam() {
 		global $_CFG;
 		$mess = array();
@@ -122,6 +137,10 @@ class comments_class extends kernel_extends {
 			$cls .= ' and ' . $this->mf_createrid . '="' . $_SESSION['user']['id'] . '"';
 		else
 			$cls .= ' and mf_ipcreate=INET_ATON("' . $_SERVER["REMOTE_ADDR"] . '")';
+		if(isset($_POST['modul']))
+			$cls .= ' and modul="'.mysql_real_escape_string($_POST['modul']).'"';
+		if(isset($_POST['modul_id']))
+			$cls .= ' and modul_id="'.(int)$_POST['modul_id'].'"';
 		$result = $this->SQL->execSQL($cls);
 		if (!$result->err and $row = $result->fetch_array()) {
 			if ($row['cnt'] >= $pb) {
