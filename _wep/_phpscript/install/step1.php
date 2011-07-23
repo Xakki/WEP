@@ -147,13 +147,15 @@ foreach ($USER_CFG['wep'] as $k => $r) {
 			$cap = 'Временная зона';
 			$type = 'list';
 			$valuelist = array();
-			$timezone_identifiers = DateTimeZone::listIdentifiers();
-			$i=0;
-			while(isset($timezone_identifiers[$i])) {
-				$i++;
-				$CD = new dateTime($timezone_identifiers[$i]);
-				$ofset = $CD->getOffset()/3600;
-				$valuelist[] = array('#id#' => $timezone_identifiers[$i], '#name#' => $timezone_identifiers[$i].' [GMT '.$ofset.']');
+			$timezone_identifiers = DateTimeZone::listAbbreviations();
+			foreach($timezone_identifiers as $tt=>$td) {
+				if($td[0]['timezone_id']) {
+					$ofset = $td[0]['offset']/3600;
+					if($ofset>0) $ofset = '+'.$ofset;
+					$valuelist[$tt] = array('#id#' => $td[0]['timezone_id'], '#name#' => $ofset.' GMT','#checked#'=>0);
+					foreach($td as $tt2=>$td2) 
+						$valuelist[$tt]['#item#'][] = array('#id#' => $td2['timezone_id'], '#name#' => $td2['timezone_id']);
+				}
 			}
 		break;
 		case 'access':

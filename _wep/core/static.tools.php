@@ -664,7 +664,7 @@ class static_tools {
 		if (isset($MODUL->unique_fields) and count($MODUL->unique_fields)) {
 			foreach ($MODUL->unique_fields as $k => $r) {
 				if (is_array($r))
-					$r = implode(',', $r);
+					$r = implode('`,`', $r);
 				$fld[] = 'UNIQUE KEY `' . $k . '` (`' . $r . '`)';
 			}
 		}
