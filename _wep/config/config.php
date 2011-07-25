@@ -574,6 +574,35 @@ function _new_class($name, &$MODUL, &$OWNER = NULL) {
 	return false;
 }
 
+function _getChildModul($name, &$MODUL) {
+	global $_CFG;
+
+	static_main::_prmModulLoad();
+	if (isset($_CFG['modulprm'][$name]['pid']) && $_CFG['modulprm'][$name]['pid'] != '')
+	{
+		$moduls = array($name);
+		while (isset($_CFG['modulprm'][$name]['pid']) && $_CFG['modulprm'][$name]['pid'] != '')
+		{
+			$moduls[] = $_CFG['modulprm'][$name]['pid'];
+			$name = $_CFG['modulprm'][$name]['pid'];
+		}
+
+		$cnt = count($moduls);
+
+		_new_class($moduls[$cnt-1], $MODUL);
+		for ($i=$cnt-2; $i>=0; $i--)
+		{
+			$MODUL = $MODUL->childs[$moduls[$i]];
+		}
+	}
+	else
+	{
+		_new_class($name, $MODUL);
+	}
+	if ($MODUL)
+		return true;
+}
+
 function _getExtMod($name) {
 	global $_CFG;
 	//$this->mf_actctrl

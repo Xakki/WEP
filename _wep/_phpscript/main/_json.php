@@ -11,10 +11,11 @@
 
 	if($_GET['_fn']) {
 		session_go();
-		if(_new_class($_GET['_modul'],$MODUL) and isset($MODUL->_AllowAjaxFn[$_GET['_fn']])) {
+		if(_getChildModul($_GET['_modul'],$MODUL) and isset($MODUL->_AllowAjaxFn[$_GET['_fn']])) {
 			eval('$GLOBALS[\'_RESULT\']=$MODUL->'.$_GET['_fn'].'();');
-		} else 
+		} else
 			$GLOBALS['_RESULT']['text'] = 'Вызов функции не разрешён модулем.';
+		
 	} 
 	elseif($_GET['_view']=='ajaxlist' and $_GET['_srlz']=stripslashes($_GET['_srlz']) and $_GET['_hsh']==md5($_GET['_srlz'].$_CFG['wep']['md5'])) {
 		$listname = unserialize($_GET['_srlz']);
