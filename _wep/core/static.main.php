@@ -308,4 +308,15 @@ class static_main {
 		$file = str_replace(array($_SERVER['_DR_'],$cf),'',$file);
 		return $file;
 	}
+
+	static function pre_text($text, $col, $clearFormat = true) {
+		if ($clearFormat)
+			$text = strip_tags($text);
+		if (mb_strlen($text) >= $col)
+		{
+			$length = mb_strripos(mb_substr($text, 0, $col), ' ');
+			$text = mb_substr($text, 0, $length).'...';
+		}
+		return $text;
+	}
 }
