@@ -677,6 +677,15 @@ class pg_class extends kernel_extends {
 		return $xml;
 	}
 
+	function FFTemplate(&$tpl,$dir) {
+		if(strpos($tpl,'#ext#')!==false) {
+			$tpl = str_replace('#ext#','',$tpl);
+			$tpl2 = array($tpl, $dir . '/templates/');
+		}else 
+			$tpl2 = $tpl;
+		return $tpl2;
+	}
+
 //////////
 }
 

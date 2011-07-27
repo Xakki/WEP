@@ -158,7 +158,8 @@ class content_class extends kernel_extends {
 		elseif(file_exists($this->_CFG['_PATH']['ctext'].$rowPG['pagetype'].'.inc.php'))
 			$flagPG = $this->_CFG['_PATH']['ctext'].$rowPG['pagetype'].'.inc.php';
 		else {
-			trigger_error('Обрботчик страниц "'.$this->owner->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php" не найден!', E_USER_WARNING);
+			$formFlex['tr_flexform_0'] = array('type'=>'info', 'css'=>'addparam', 'caption'=>'<span class="error">Обрботчик страниц "'.$this->owner->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php" не найден!</span>');
+			//trigger_error('Обрботчик страниц "'.$this->owner->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php" не найден!', E_USER_WARNING);
 			return $formFlex;
 		}
 		$file = file_get_contents($flagPG);

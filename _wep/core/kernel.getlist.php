@@ -27,6 +27,29 @@
 				$odir->close();
 			}
 		}
+		elseif($listname == 'phptemplates') {
+			$data[''] = ' - ';
+			$f = $value . '/templates';
+			if(file_exists($f)) {
+				$dir = dir($f);
+				while (false !== ($entry = $dir->read())) {
+					if ($entry[0]!='.' && $entry[0]!='..' && strstr($entry,'.php')) {
+						$data['#ext#'.substr($entry,0,-4)] = basename($value).'/'.$entry;
+					}
+				}
+				$dir->close();
+			}
+			_new_class('pg',$PGLIST);
+			if(file_exists($PGLIST->_CFG['_PATH']['design'].$PGLIST->config['design'].'/php')) {
+				$dir = dir($PGLIST->_CFG['_PATH']['design'].$PGLIST->config['design'].'/php');
+				while (false !== ($entry = $dir->read())) {
+					if ($entry[0]!='.' && $entry[0]!='..' && strstr($entry,'.php')) {
+						$data[substr($entry,0,-4)] = ' '.$entry;
+					}
+				}
+				$dir->close();
+			}
+		}
 		elseif($listname == 'mdesign') {
 			$data[''] = ' - По умолчанию -';
 			$dir = dir($_this->_CFG['_PATH']['design']);

@@ -9,7 +9,7 @@
 	require_once($_CFG['_PATH']['core'].'/sql.php');	/**отправляет header и печатает страничку*/
 	$SQL = new sql($_CFG['sql']);
 
-	if($_GET['_fn']) {
+	if(isset($_GET['_fn']) and $_GET['_fn']) {
 		session_go();
 		if(_getChildModul($_GET['_modul'],$MODUL) and isset($MODUL->_AllowAjaxFn[$_GET['_fn']])) {
 			eval('$GLOBALS[\'_RESULT\']=$MODUL->'.$_GET['_fn'].'();');

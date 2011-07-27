@@ -7,6 +7,7 @@
 
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
+		$this->_getCashedList('phptemplates', __DIR__);
 		$this->_enum['typemenuinc'] = array(
 			0=>'выводит всё в виде структуры дерева',
 			1=>'выводит все в общем массиве',
@@ -25,10 +26,12 @@
 			'0'=>array('type'=>'list','listname'=>array('owner','menu'), 'caption'=>'Меню'),
 			'1'=>array('type'=>'list','listname'=>'typemenuinc', 'caption'=>'Тип вывода меню'),
 			'2'=>array('type'=>'list','listname'=>'levelmenuinc', 'caption'=>'Уровень вывода данных'),
-			'3'=>array('type'=>'text','caption'=>'Шаблон'),
+			'3'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон'),
 		);
 		return $form;
 	}
+
+	$tplphp = $this->FFTemplate($FUNCPARAM[3],__DIR__);
 
 	// команды вывода данных для обработчика на с айте
 	 // все действия в этой части относительно модуля pg
@@ -37,6 +40,6 @@
 		$FUNCPARAM[2] = $tmp[(int)substr($FUNCPARAM[2],1)];
 	}
 	$DATA = array($FUNCPARAM[3]=>$PGLIST->getMap($FUNCPARAM[0],$FUNCPARAM[1],$FUNCPARAM[2]));
-	$html .= $HTML->transformPHP($DATA,$FUNCPARAM[3]);
+	$html .= $HTML->transformPHP($DATA,$tplphp);
 
 	return $html;

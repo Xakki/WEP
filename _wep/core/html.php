@@ -74,7 +74,7 @@ class html {
 		$file = $this->_PATHd . 'templates/' . $this->_templates . '.tpl';
 		if ($this->flag and file_exists($file)) {
 			$_html = file_get_contents($file);
-			$_html = str_replace('"', '\"', $_html);
+			$_html = addcslashes($_html,'"\\');
 			include_once($_CFG['_PATH']['core'] . '/includesrc.php');
 			fileInclude($_CFG['fileIncludeOption']);
 			arraySrcToStr();
@@ -334,6 +334,9 @@ function _obHandler($buffer) {
 		//if ($_tpl['logs'] == '')
 		//	$_tpl['onload'] .='fShowHide(\'debug_view\');';
 		eval('$_html = "' . $_html . '";');
+		if(strpos($_html,'$_tpl')!==false) {
+			eval('$_html = "' . addcslashes($_html,'"\\') . '";');
+		}
 		$page = $_html;
 	} else
 		$page = $_tpl['logs'];

@@ -1,6 +1,6 @@
 <?
 
-	if(isset($ShowFlexForm)) {
+	/*if(isset($ShowFlexForm)) {
 		$form = array(
 			'tpl'=>array('type'=>'text','caption'=>'PHP Шаблон'),
 			'remindpage'=>array('type'=>'text','caption'=>'Страница "Напомнить пароль"'),
@@ -8,7 +8,7 @@
 		);
 		return $form;
 	}
-
+*/
 	if(!isset($FUNCPARAM[0]) or !$FUNCPARAM[0]) {
 		$FUNCPARAM[0] = 'loginAjax';
 		$TRFM = array($FUNCPARAM[0],__DIR__.'/templates/'); // Шаблон
