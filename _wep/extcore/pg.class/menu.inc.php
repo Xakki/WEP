@@ -33,12 +33,6 @@
 
 	$tplphp = $this->FFTemplate($FUNCPARAM[3],__DIR__);
 
-	// команды вывода данных для обработчика на с айте
-	 // все действия в этой части относительно модуля pg
-	if($FUNCPARAM[2] and $FUNCPARAM[2]{0}=='#') {
-		$tmp = array_values(array_reverse($this->selected));
-		$FUNCPARAM[2] = $tmp[(int)substr($FUNCPARAM[2],1)];
-	}
 	$DATA = array($FUNCPARAM[3]=>$PGLIST->getMap($FUNCPARAM[0],$FUNCPARAM[1],$FUNCPARAM[2]));
 	$html .= $HTML->transformPHP($DATA,$tplphp);
 
