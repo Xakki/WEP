@@ -200,7 +200,7 @@ $_CFG['_MASK'] = array(
 
 $_CFG['_repl'] = array(
 	'name' => '/[^0-9A-Za-zА-Яа-я\- \,\.@_]+/u',
-	'href' => '/(http:\/\/|www\.)[0-9A-Za-z\/\.\_\-\=\?]*/u',
+	'href' => '/(http:\/\/|www\.)[0-9A-Za-z\/\.\_\-\=\?\&\;]*/u',
 	'alphaint' => '/[^A-Za-z0-9]+/u',);
 
 // WYSIWYG 
