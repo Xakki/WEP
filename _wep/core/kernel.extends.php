@@ -148,6 +148,7 @@ abstract class kernel_extends {
 		$this->caption = $this->_cl; // заголовок модуля
 		$this->_listfields = array('name'); //select по умолч
 		$this->unique_fields =
+				$this->index_fields =
 				$this->_enum =
 				$this->update_records =
 				$this->def_records =
@@ -160,7 +161,6 @@ abstract class kernel_extends {
 				$this->attaches = $this->att_data =
 				$this->memos = $this->mmo_data =
 				$this->services =
-				$this->index_fields =
 				$this->config =
 				$this->config_form =
 				$this->locallang =

@@ -101,10 +101,10 @@ class static_tools {
 				$MODUL->fields[$fldname]['inst'] = '1';
 
 				$currentFields = $fp['create'];
-				$temp_currentFields = trim( str_replace(array('"', "'", chr(194).chr(160),"\xC2xA0","\n"), array('', '', ' ', ' ', ' '), mb_strtolower($currentFields)) );
+				$temp_currentFields = trim( str_replace(array(' ','"', "'", chr(194).chr(160),"\xC2xA0","\n"), '', mb_strtolower($currentFields)) );
 
 				list($newFields,$rDATA[$fldname]['@mess']) = $MODUL->SQL->_fldformer($fldname, $MODUL->fields[$fldname]);
-				$temp_newFields = trim(str_replace(array('"', "'", chr(194).chr(160),"\xC2xA0","\n"), array('', '', ' ', ' ', ' '), mb_strtolower($newFields)));
+				$temp_newFields = trim(str_replace(array(' ','"', "'", chr(194).chr(160),"\xC2xA0","\n"), '', mb_strtolower($newFields)));
 
 				if (isset($MODUL->fields[$fldname]['type']) and $temp_currentFields!=$temp_newFields) {
 					$rDATA[$fldname]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` CHANGE `' . $fldname . '` ' . $newFields;

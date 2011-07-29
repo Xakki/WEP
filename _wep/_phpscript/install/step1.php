@@ -152,11 +152,14 @@ foreach ($USER_CFG['wep'] as $k => $r) {
 				if($td[0]['timezone_id']) {
 					$ofset = $td[0]['offset']/3600;
 					if($ofset>0) $ofset = '+'.$ofset;
-					$valuelist[$tt] = array('#id#' => $td[0]['timezone_id'], '#name#' => $ofset.' GMT','#checked#'=>0);
+					$ofset = (int)$ofset;
+					$valuelist[$td[0]['offset']] = array('#id#' => $td[0]['timezone_id'], '#name#' => $ofset.'ч '.(int)(($td[0]['offset']/60)-$ofset*60).' мин GMT','#checked#'=>0);
 					foreach($td as $tt2=>$td2) 
-						$valuelist[$tt]['#item#'][] = array('#id#' => $td2['timezone_id'], '#name#' => $td2['timezone_id']);
+						$valuelist[$td[0]['offset']]['#item#'][] = array('#id#' => $td2['timezone_id'], '#name#' => $td2['timezone_id']);
 				}
 			}
+
+			ksort($valuelist,SORT_NUMERIC );
 		break;
 		case 'access':
 			$cap = 'Тип доступа в админку';
