@@ -190,12 +190,11 @@ function tpl_form(&$data) {
 					}
 				}
 				elseif($r['fields_type'] =='timestamp' and $r['value']){
-					$temp = sscanf($r['value'], "%d-%d-%d %d:%d:%d");//2007-09-11 10:16:15
+					$temp = $r['value'];//2007-09-11 10:16:15
 				}
 				else{
-					$temp = array(date('Y'),date('m'),date('d'),date('H'));
+					$temp = date("Y-m-d H:i:s");
 				}
-
 				$texthtml .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.$temp.'" '.$attribute.'/></div>';
 			}
 			elseif($r['type']=='date' and !$r['readonly']) {

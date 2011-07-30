@@ -146,8 +146,8 @@ class static_form {
 							self::_resizeImage($_this,$newname, $newname2, $imod['w'], $imod['h']);
 						elseif ($imod['type']=='resizecrop')
 							self::_resizecropImage($_this,$newname, $newname2, $imod['w'], $imod['h']);
-						elseif ($imod['type']=='water')
-							self::_waterMark($_this,$newname,$newname2, $imod['w'], $imod['h']);
+						elseif ($imod['type']=='watermark')
+							self::_waterMark($_this,$newname,$newname2, $imod['logo'], $imod['x'], $imod['y']);
 						chmod($newname, $_this->_CFG['wep']['chmod']);
 					}
 			}
@@ -390,15 +390,45 @@ class static_form {
 	}
 
 /************************* IMAGE *****************************/
-	static function _waterMark(&$_this,$ConvertFile, $OutFile,$logo='',$pos=0)
+	static function _waterMark(&$_this,$InFile, $OutFile,$logoFile='',$posX=0,$posY=0)
 	{
-		if($logo=='')
-			$logo = $_this->_CFG['_imgwater'];
-		if($pos==0) $pos ='center';
-		elseif($pos==1)  $pos ='eastnorth';
-		else  $pos ='northeast';
-		shell_exec('composite -gravity '.$pos.' -dissolve 30 $logo '.$ConvertFile.' '.$OutFile); 
-		if(!file_exists($OutFile)) return static_main::_message('error','Cant composite file on '.__LINE__.' in kernel');
+		if(!$logoFile)
+			$logoFile = $_this->_CFG['_imgwater'];
+		$logoFile = $_this->_CFG['_PATH']['path'].$logoFile;
+
+		if(!$imtypeIn = exif_imagetype($InFile))// опред тип файла
+			return static_main::_message('error','File '.$InFile.' is not image');
+		if($imtypeIn>3) return false;
+
+		if(!$imtypeLogo = exif_imagetype($logoFile))// опред тип файла
+			return static_main::_message('error','File '.$logoFile.' is not image');
+		if($imtypeLogo>3) return false;
+
+		$znak_hw = getimagesize($logoFile);
+		$foto_hw = getimagesize($InFile);
+
+		$znak = self::_imagecreatefrom($_this,$logoFile,$imtypeLogo);
+		$foto = self::_imagecreatefrom($_this,$InFile,$imtypeIn);
+
+		imagecopy ($foto,
+		$znak,
+		$foto_hw[0] - $znak_hw[0],
+		$foto_hw[1] - $znak_hw[1],
+		0,
+		0,
+		$znak_hw[0],
+		$znak_hw[1]);
+		if(file_exists($OutFile)) {
+			chmod($OutFile, $_this->_CFG['wep']['chmod']);
+			unlink($OutFile);
+		}
+		self::_image_to_file($foto, $OutFile,$_this->_CFG['_imgquality'],$imtypeIn);//сохраняем в файл
+		imagedestroy ($znak);
+		imagedestroy ($foto);
+		if(!file_exists($OutFile)) {
+			static_main::_message('error','Cant composite file on '.__LINE__.' in kernel');
+			return false;
+		}
 		return true;
 	}
 

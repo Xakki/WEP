@@ -225,7 +225,7 @@ $_CFG['ckedit']['toolbar']['Board'] = "[
 	['NumberedList','BulletedList'], ['JustifyLeft','JustifyCenter','JustifyBlock'] ]";
 
 $_CFG['_imgquality'] = 80; // качество картинки
-$_CFG['_imgwater'] = $_CFG['_PATH']['path'] . '_design/_img/watermark.png'; //водяной знак
+$_CFG['_imgwater'] = '_design/_img/watermark.png'; //водяной знак
 
 $_CFG['form'] = array(
 	'imgFormat' => array('gif' => 1, 'jpg' => 1, 'jpeg' => 1, 'png' => 1),
