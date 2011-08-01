@@ -620,7 +620,7 @@ class static_form {
 			}
 			//*********** CHECKBOX
 			elseif($form['type']=='checkbox') {
-				$value = ((int)$value == 1 ? 1 : 0);
+				$value = ($value? 1 : 0);
 			}
 			elseif($form['type']=='date') {
 				$value = self::_get_fdate($form, $value, $_this->fields[$key]['type']);
