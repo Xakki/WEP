@@ -133,6 +133,7 @@ class content_class extends kernel_extends {
 	}
 
 	public function kPreFields(&$data,&$param) {
+		$this->addForm = array();
 		$this->fields_form['pagetype']['onchange'] = 'contentIncParam(this,\''.$this->_CFG['PATH']['wepname'] .'\',\''.htmlspecialchars($data['funcparam']).'\');';
 		if($data['pagetype']) {
 			$this->addForm = $this->getContentIncParam($data);
@@ -146,7 +147,7 @@ class content_class extends kernel_extends {
 	}
 
 	function getContentIncParam(&$data,$ajax=false) {
-		$pagetype = $data['pagetype'];print_r('<pre>');print_r($data);
+		$pagetype = $data['pagetype'];
 		$FUNCPARAM = $data['funcparam'];
 		$formFlex = array();
 		$flagPG = false;
@@ -191,11 +192,17 @@ class content_class extends kernel_extends {
 
 	public function _save_item($vars=array()) {
 		$funcparam = array();
-		foreach($this->addForm as $k=>$r) {
-			$funcparam[(int)substr($k,9)] = $vars[$k];
+		if(count($this->addForm)) {
+			foreach($this->addForm as $k=>$r) {
+				if($r['type']!='info') {
+					$funcparam[(int)substr($k,9)] = $vars[$k];
+				}
+			}
+			if(count($funcparam)) {
+				ksort($funcparam);
+				$vars['funcparam'] = implode('&',$funcparam);
+			}
 		}
-		if(count($funcparam))
-			$vars['funcparam'] = implode('&',$funcparam);
 		if($ret = parent::_save_item($vars)) {
 		}
 		return $ret;
@@ -203,11 +210,16 @@ class content_class extends kernel_extends {
 
 	public function _add_item($vars) {
 		$funcparam = array();
-		foreach($this->addForm as $k=>$r) {
-			$funcparam[(int)substr($k,9)] = $vars[$k];
+		if(count($this->addForm)) {
+			foreach($this->addForm as $k=>$r) {
+				if($r['type']!='info')
+					$funcparam[(int)substr($k,9)] = $vars[$k];
+			}
+			if(count($funcparam)) {
+				ksort($funcparam);
+				$vars['funcparam'] = implode('&',$funcparam);
+			}
 		}
-		if(count($funcparam))
-			$vars['funcparam'] = implode('&',$funcparam);
 		if($ret = parent::_add_item($vars)) {
 		}
 		return $ret;

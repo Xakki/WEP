@@ -402,6 +402,7 @@ class pg_class extends kernel_extends {
 		$flagPG = 0;
 		$PGLIST = &$this;
 		$SQL = &$this->SQL;
+		$this->Cdata = array();
 
 		$cls = 'SELECT * FROM '.$this->_CFG['sql']['dbpref'].'pg_content WHERE active=1 and (owner_id="'.$this->id.'"';
 		//if($this->id!='404') // откл повторные глобалные контенты, если это 400 и 401 страница
@@ -410,6 +411,11 @@ class pg_class extends kernel_extends {
 		$resultPG = $this->SQL->execSQL($cls);
 		if(!$resultPG->err)
 			while ($rowPG = $resultPG->fetch_array()) {
+				$this->Cdata[$rowPG['id']] = $rowPG;
+			}
+
+			foreach($this->Cdata as $rowPG) {
+				$Ctitle = $rowPG['name'];
 
 				if (!isset($_tpl[$rowPG['marker']]))
 				{
