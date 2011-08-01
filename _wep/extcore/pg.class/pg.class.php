@@ -414,7 +414,8 @@ class pg_class extends kernel_extends {
 				$this->Cdata[$rowPG['id']] = $rowPG;
 			}
 
-			foreach($this->Cdata as $rowPG) {
+			foreach($this->Cdata as &$rowPG) {
+				if(!$rowPG['active']) continue;
 				$Ctitle = $rowPG['name'];
 
 				if (!isset($_tpl[$rowPG['marker']]))
