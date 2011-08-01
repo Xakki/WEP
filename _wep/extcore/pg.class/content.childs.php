@@ -133,19 +133,21 @@ class content_class extends kernel_extends {
 	}
 
 	public function kPreFields(&$data,&$param) {
-		$mess = parent::kPreFields($data,$param);
 		$this->fields_form['pagetype']['onchange'] = 'contentIncParam(this,\''.$this->_CFG['PATH']['wepname'] .'\',\''.htmlspecialchars($data['funcparam']).'\');';
 		if($data['pagetype']) {
-			$addForm = $this->getContentIncParam($data['pagetype'],$data['funcparam']);
-			if(count($addForm)) {
-				$this->fields_form = static_main::insertInArray($this->fields_form,'pagetype',$addForm); // обработчик параметров рубрики
+			$this->addForm = $this->getContentIncParam($data);
+			if(count($this->addForm)) {
+				$this->fields_form = static_main::insertInArray($this->fields_form,'pagetype',$this->addForm); // обработчик параметров рубрики
 				$this->fields_form['funcparam']['style'] = 'display:none;';
 			}
 		}
+		$mess = parent::kPreFields($data,$param);
 		return $mess;
 	}
 
-	function getContentIncParam($pagetype,$FUNCPARAM=false) {
+	function getContentIncParam(&$data) {
+		$pagetype = $data['pagetype'];
+		$FUNCPARAM = $data['funcparam'];
 		$formFlex = array();
 		$flagPG = false;
 		if($FUNCPARAM) $FUNCPARAM = explode('&',$FUNCPARAM);
@@ -162,14 +164,21 @@ class content_class extends kernel_extends {
 			//trigger_error('Обрботчик страниц "'.$this->owner->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php" не найден!', E_USER_WARNING);
 			return $formFlex;
 		}
+
+		if(count($_POST)!=count($data)) {
+			$fl = true;
+		}
+		else
+			$fl = false;
 		$file = file_get_contents($flagPG);
 		if(strpos($file,'$ShowFlexForm')!==false) {
 			$ShowFlexForm = true;
 			$tempform = include($flagPG);
 			if(count($tempform)) {
 				foreach($tempform as $k=>$r) {
-					if(isset($FUNCPARAM[$k]))
-						$r['value'] = $FUNCPARAM[$k];
+					if($fl) {
+						$r['value'] = $data['flexform_'.$k] = $FUNCPARAM[$k];
+					}
 					$r['css']='addparam';
 					$formFlex['flexform_'.$k] = $r;
 				}
@@ -181,11 +190,9 @@ class content_class extends kernel_extends {
 
 
 	public function _save_item($vars=array()) {
-		$i=0;
 		$funcparam = array();
-		while(isset($vars['flexform_'.$i])) {
-			$funcparam[] = $vars['flexform_'.$i];
-			$i++;
+		foreach($this->addForm as $k=>$r) {
+			$funcparam[(int)substr($k,9)] = $vars[$k];
 		}
 		if(count($funcparam))
 			$vars['funcparam'] = implode('&',$funcparam);
@@ -195,11 +202,9 @@ class content_class extends kernel_extends {
 	}
 
 	public function _add_item($vars) {
-		$i=0;
 		$funcparam = array();
-		while(isset($vars['flexform_'.$i])) {
-			$funcparam[] = $vars['flexform_'.$i];
-			$i++;
+		foreach($this->addForm as $k=>$r) {
+			$funcparam[(int)substr($k,9)] = $vars[$k];
 		}
 		if(count($funcparam))
 			$vars['funcparam'] = implode('&',$funcparam);
