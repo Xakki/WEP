@@ -39,7 +39,8 @@
 	elseif($_GET['_view']=='contentIncParam') {
 		$CT = &$MODUL->childs['content'];
 		$CT->fields_form = array();
-		if($form = $CT->getContentIncParam($_POST['pagetype'],htmlspecialchars_decode($_POST['funcparam'])) and count($form)) {
+		$_POST['funcparam'] = htmlspecialchars_decode($_POST['funcparam']);
+		if($form = $CT->getContentIncParam($_POST,true) and count($form)) {
 			if($CT->kFields2FormFields($form)) {
 				$data['form'] = &$CT->form;
 				$html2 = $HTML->transformPHP($data,'form');

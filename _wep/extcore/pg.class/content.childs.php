@@ -145,8 +145,8 @@ class content_class extends kernel_extends {
 		return $mess;
 	}
 
-	function getContentIncParam(&$data) {
-		$pagetype = $data['pagetype'];
+	function getContentIncParam(&$data,$ajax=false) {
+		$pagetype = $data['pagetype'];print_r('<pre>');print_r($data);
 		$FUNCPARAM = $data['funcparam'];
 		$formFlex = array();
 		$flagPG = false;
@@ -165,7 +165,7 @@ class content_class extends kernel_extends {
 			return $formFlex;
 		}
 
-		if(count($_POST)!=count($data)) {
+		if(count($_POST)!=count($data) or $ajax) {
 			$fl = true;
 		}
 		else
