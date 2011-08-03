@@ -264,7 +264,10 @@ $DATA['showparam3'] = array('type' => 'info', 'caption' => '
 	</div>');
 
 foreach ($USER_CFG['site'] as $k => $r) {
-	$type = 'text';
+	if(is_bool($r))
+		$type = 'checkbox';
+	else
+		$type = 'text';
 	$comm = '';
 	$cap = $k;
 	switch ($k) {
