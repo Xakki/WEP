@@ -352,12 +352,18 @@ class static_main {
 	*/
 	static function redirectLink($text,$name='Ссылка') {
 		global $_CFG;
+		if(!$_CFG['site']['redirectForRobots'] and $_CFG['robot']) return $text;
+
 		$cont = array();
 		preg_match_all($_CFG['_repl']['href'],$text,$cont);
 		if(count($cont[0])) {
 			$temp = array();
 			foreach($cont[0] as $rc) {
-				$temp[] = '<a href="/_redirect.php?url='.(base64_encode($rc)).'" rel="nofollow" target="_blank">'.($name?$name:str_replace(array('http://','www.'),'',$rc)).'</a>';
+				if(!$name)
+					$tn = trim(str_replace(array('http://','https://','www.'),'',$rc),' /');
+				else
+					$tn = $name;
+				$temp[] = '<a href="/_redirect.php?url='.(base64_encode($rc)).'" rel="nofollow" target="_blank">'.$tn.'</a>';
 			}
 			$text = str_replace($cont[0],$temp,$text);
 		}
