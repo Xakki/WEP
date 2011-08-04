@@ -348,7 +348,7 @@ class pg_class extends kernel_extends {
 	}
 
 	function get_pageinfo() {
-		$this->current_path = $this->getHref($this->pageinfo['id'],$this->pageinfo);
+		$this->current_path = $this->getHref($this->pageinfo['id'],true);
 		$parent_id = $this->pageinfo['parent_id'];
 		$id = $this->pageinfo['id'];
 		$this->pageinfo['path'] = array($this->pageinfo['id'] => $this->pageinfo);
@@ -363,7 +363,7 @@ class pg_class extends kernel_extends {
 			}
 		}
 		$this->main_category = $id;
-		$this->pageinfo['path'] = array_reverse($this->pageinfo['path']);
+		$this->pageinfo['path'] = array_reverse($this->pageinfo['path'], true);
 		return true;
 	}
 
@@ -392,7 +392,7 @@ class pg_class extends kernel_extends {
 			if(!is_array($row) or !isset($row['onpath']) or $row['onpath']) {
 				if(is_array($row)) $name = $row['name'];
 				else $name = $row;
-				$data[] = array('href'=>$this->getHref($key,$row),'name'=>$name);
+				$data[] = array('href'=>$this->getHref($key,true),'name'=>$name);
 			}
 		}
 		return $data;
@@ -557,7 +557,7 @@ class pg_class extends kernel_extends {
 				elseif($onmenuPG!='' and !isset($rowPG['onmenu'][$onmenuPG]))
 					continue;
 
-				$href = $this->_CFG['_HREF']['BH'].$this->getHref($keyPG,$rowPG);
+				$href = $this->_CFG['_HREF']['BH'].$this->getHref($keyPG,true);
 
 				if($this->id==$keyPG)
 					$selPG = 2;
@@ -624,16 +624,15 @@ class pg_class extends kernel_extends {
 		return true;
 	}
 
-	function getHref($id='',$row=array()) {
-		if(is_array($row) and isset($row['href']) and $row['href']!='') {
-			$href = $row['href'];
+	function getHref($id=false,$html=false) {
+		if(!$id) $id = $this->id;
+		if($html and isset($this->dataCash[$id]['href']) and $this->dataCash[$id]['href']!='') {
+			$href = $this->dataCash[$id]['href'];
 			if(strstr($href,'http://'))
 				$href ='_redirect.php?url='.base64_encode($href);
 		}
 		else {
-			if(!$id) $id = $this->id;
 			$href = $id;
-
 			if(isset($this->dataCash[$id])) {
 				if($this->dataCash[$id]['alias'])
 					$href = $this->dataCash[$id]['alias'];
@@ -646,7 +645,7 @@ class pg_class extends kernel_extends {
 					$pid = $this->dataCash[$pid]['parent_id'];
 				}
 			}
-			if(count($row)) $href .= '.html';
+			if($html) $href .= '.html';
 		}
 		return $href;
 	}
