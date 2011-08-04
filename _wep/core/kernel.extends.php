@@ -961,8 +961,6 @@ abstract class kernel_extends {
 					$r['value'] = file_get_contents($data[$k]);
 				elseif (isset($data[$k]))
 					$r['value'] = $data[$k];
-				else
-					$r['value'] = '';
 			}
 			elseif (isset($r['multiple']) and $r['multiple'] > 0 and $r['type'] == 'list') {
 				if (!is_array($data[$k])) {
@@ -971,9 +969,9 @@ abstract class kernel_extends {
 				}else
 					$r['value'] = $data[$k];
 			}
-			elseif ($r['type'] == 'checkbox') {
+			/*elseif ($r['type'] == 'checkbox') {
 				$data[$k] = $r['value'] = ((isset($data[$k]) and $data[$k])?1:0);
-			}
+			}*/
 			elseif (isset($data[$k])) //  and $data[$k]
 				$r['value'] = $data[$k];
 
