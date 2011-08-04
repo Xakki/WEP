@@ -13,7 +13,7 @@ class pg_class extends kernel_extends {
 		$this->config['memcachezip'] = 0;
 		$this->config['sitemap'] = 0;
 		$this->config['IfDontHavePage'] = '';
-		$this->config['rootPage'] = 'index';
+		$this->config['rootPage'] = '1';
 		$this->config['menu'] = array(
 			0 => '',
 			1 => 'Меню №1',
@@ -53,7 +53,6 @@ class pg_class extends kernel_extends {
 
 	function _set_features() {
 		if (!parent::_set_features()) return false;
-		$this->mf_use_charid = true;
 		$this->mf_istree = true;
 		$this->mf_ordctrl = true;
 		$this->mf_actctrl = true;
@@ -62,7 +61,7 @@ class pg_class extends kernel_extends {
 		$this->ver = '0.1.1';
 		$this->RCVerCore = '2.2.9';
 		$this->pageinfo = 
-			$this->dataCash = $this->dataCashTree = array();
+			$this->dataCash = $this->dataCashTree = $this->dataCashTreeAlias = array();
 		$this->pageParam = array();
 		return true;
 	}
@@ -70,8 +69,10 @@ class pg_class extends kernel_extends {
 	function _create() {
 		parent::_create();
 		$this->index_fields['ugroup'] = 'ugroup';
+		$this->unique_fields['adress'] = array('parent_id','alias');
 
 		# fields
+		$this->fields['alias'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
 		$this->fields['name_in_menu'] = array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['href'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL','default'=>'');
@@ -103,9 +104,9 @@ class pg_class extends kernel_extends {
 	}
 
 	function setSystemFields() {
-		$this->def_records[] = array('id'=>'index','name'=>'Главная страница','active'=>1,'template'=>'default');
-		$this->def_records[] = array('id'=>'404','name'=>'Страницы нету','parent_id'=>'index','active'=>1,'template'=>'default');
-		$this->def_records[] = array('id'=>'401','name'=>'Недостаточно прав для доступа к странице','parent_id'=>'index','active'=>1,'template'=>'default');
+		$this->def_records[] = array('id'=>1, 'alias'=>'index','name'=>'Главная страница','active'=>1,'template'=>'default');
+		$this->def_records[] = array('id'=>1, 'alias'=>'404','name'=>'Страницы нету','parent_id'=>'index','active'=>1,'template'=>'default');
+		$this->def_records[] = array('id'=>1, 'alias'=>'401','name'=>'Недостаточно прав для доступа к странице','parent_id'=>'index','active'=>1,'template'=>'default');
 		return parent::setSystemFields();
 	}
 	
@@ -115,7 +116,7 @@ class pg_class extends kernel_extends {
 	public function setFieldsForm() {
 		# fields
 		$this->fields_form = array();
-		$this->fields_form['id'] = array('type' => 'text', 'caption' => 'ID','mask'=>array('min'=>1));
+		$this->fields_form['alias'] = array('type' => 'text', 'caption' => 'Алиас', 'comment'=>'Если не указвать, то адрес будет цыфрой', 'mask'=>array());
 		$this->fields_form['parent_id'] = array('type' => 'list', 'listname'=>'parentlist', 'caption' => 'Родительская страница','mask'=>array('fview'=>1));
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Name','mask'=>array('min'=>1));
 		$this->fields_form['name_in_menu'] = array('type' => 'text', 'caption' => 'Название в меню', 'mask' =>array());
@@ -270,19 +271,20 @@ class pg_class extends kernel_extends {
 	function can_show() {
 		if(empty($this->dataCashTree))
 			$this->sqlCashPG();
-		$fp = $this->config['rootPage'];
+		$fid = $this->config['rootPage'];
 		//print_r('*1 ');
 		if(isset($_GET['page']) and is_array($_GET['page']) and count($_GET['page'])) {
 			$this->pageParam = array();
 			foreach($_GET['page'] as $k=>$r) {
-				if(isset($this->dataCashTree[$fp][$r]) and !$this->id)
-					$fp = $r;
+				if(isset($this->dataCashTreeAlias[$fid][$r]) and !$this->id) {
+					$fid = $this->dataCashTreeAlias[$fid][$r]['id'];
+				}
 				else
 					$this->pageParam[] = $r;
 			}
 		}
-		if($fp!=$this->config['rootPage'] and !$this->id)
-			$this->id = $fp;
+		if($fid!=$this->config['rootPage'] and !$this->id)
+			$this->id = $fid;
 
 		/*$row = 0;
 		if(isset($this->dataCash[$this->id])) {
@@ -613,7 +615,8 @@ class pg_class extends kernel_extends {
 				while($row = $result->fetch_array()) {
 					$row['onmenu'] = array_flip(explode('|',trim($row['onmenu'],'|')));
 					$this->dataCash[$row['id']] = $row;
-					$this->dataCashTree[$row['parent_id']][$row['id']] = $this->dataCash[$row['id']];
+					$this->dataCashTree[$row['parent_id']][$row['id']] = &$this->dataCash[$row['id']];
+					$this->dataCashTreeAlias[$row['parent_id']][$row['alias']] = &$this->dataCash[$row['id']];
 				}
 			}else {
 				header('Location: '.$this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['wepname'].'/install.php');die();}
@@ -621,19 +624,25 @@ class pg_class extends kernel_extends {
 		return true;
 	}
 
-	function getHref($key='',$row=array()) {
+	function getHref($id='',$row=array()) {
 		if(is_array($row) and isset($row['href']) and $row['href']!='') {
 			$href = $row['href'];
 			if(strstr($href,'http://'))
 				$href ='_redirect.php?url='.base64_encode($href);
 		}
 		else {
-			if(!$key) $key = $this->id;
-			$href = $key;
-			if(isset($this->dataCash[$key])) {
-				$pid = $this->dataCash[$key]['parent_id'];
-				while($pid and $pid!='index') {
-					$href = $pid.'/'.$href;
+			if(!$id) $id = $this->id;
+			$href = $id;
+
+			if(isset($this->dataCash[$id])) {
+				if($this->dataCash[$id]['alias'])
+					$href = $this->dataCash[$id]['alias'];
+				$pid = $this->dataCash[$id]['parent_id'];
+				while($pid and $pid!=$this->config['rootPage']) {
+					if($this->dataCash[$pid]['alias'])
+						$href = $this->dataCash[$pid]['alias'].'/'.$href;
+					else
+						$href = $pid.'/'.$href;
 					$pid = $this->dataCash[$pid]['parent_id'];
 				}
 			}
@@ -696,4 +705,19 @@ class pg_class extends kernel_extends {
 //////////
 }
 
+/*
+alter table `work_umobile`.`wep_pg` 
+change `id` `alias` varchar(63) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+drop primary key,
+add column `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT after `alias`,
+add primary key(`id`)
+;
 
+UPDATE wep_pg_content SET owner_id=(SELECT id FROM wep_pg WHERE alias=owner_id);
+alter table `work_umobile`.`wep_pg_content` change `owner_id` `owner_id` int(11) NOT NULL;
+
+CREATE TABLE `work_umobile`.`wep_pg_copy` AS(SELECT * FROM `work_umobile`.`wep_pg`);
+UPDATE wep_pg t1 SET t1.parent_id=(SELECT t2.id FROM wep_pg_copy t2 WHERE t2.alias=t1.parent_id);
+drop table `work_umobile`.`wep_pg_copy`;
+alter table `work_umobile`.`wep_pg` change `parent_id` `parent_id` int(11) DEFAULT '0' NOT NULL;
+*/
