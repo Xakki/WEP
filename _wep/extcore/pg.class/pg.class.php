@@ -272,7 +272,6 @@ class pg_class extends kernel_extends {
 		if(empty($this->dataCashTree))
 			$this->sqlCashPG();
 		$fid = $this->config['rootPage'];
-		//print_r('*1 ');
 		if(isset($_GET['page']) and is_array($_GET['page']) and count($_GET['page'])) {
 			$this->pageParam = array();
 			foreach($_GET['page'] as $k=>$r) {
@@ -295,12 +294,10 @@ class pg_class extends kernel_extends {
 		}*/
 		if($this->id and isset($this->dataCash[$this->id]) and !$this->pagePrmCheck($this->dataCash[$this->id]['ugroup'])) {
 			$this->pageinfo = $this->dataCash[$this->id];
-			//print_r('*2 ');
 			return 2;
 		}
 		elseif($this->id and isset($this->dataCash[$this->id]))
 		{
-			//print_r('*3 ');
 			$this->pageinfo = $this->dataCash[$this->id];
 			if ($this->pageinfo['href']){
 				header('Location: '.$this->pageinfo['href']);die();}			
@@ -330,7 +327,6 @@ class pg_class extends kernel_extends {
 			return 1;
 		}
 		elseif($this->config['IfDontHavePage'] and !isset($this->IfDontHavePage)) {
-			//print_r('*4 ');
 			$IfDontHavePage = explode(':',$this->config['IfDontHavePage']);
 			if(file_exists($this->_enum['inc'][$IfDontHavePage[0]]['path'].$IfDontHavePage[1].'.inc.php')) {
 				include($this->_enum['inc'][$IfDontHavePage[0]]['path'].$IfDontHavePage[1].'.inc.php');
@@ -339,7 +335,6 @@ class pg_class extends kernel_extends {
 				return $this->can_show();
 			}
 		}elseif((!$this->id or $this->id != $this->config['rootPage']) and !isset($this->IfrootPage)) {
-			//print_r('*5 ');
 			$this->id = $this->config['rootPage'];
 			$this->IfrootPage = true;
 			return $this->can_show();
@@ -534,10 +529,11 @@ class pg_class extends kernel_extends {
 			$startPG=''
 	*/
 
-	function getMap($onmenuPG='',$flagPG=0,$startPG='') {
+	function getMap($onmenuPG='',$flagPG=0,$startPG=0) {
 		if(empty($this->dataCashTree))
 			$this->sqlCashPG();
 		$DATA_PG = array();
+		if(!$startPG) $startPG = $this->config['rootPage'];
 		if($flagPG>1) //только начальный уровень
 			$tempPG = &$this->dataCashTree[$startPG];
 		elseif($flagPG) //выводит все в общем массиве
@@ -552,10 +548,11 @@ class pg_class extends kernel_extends {
 						continue;
 				}
 				if($onmenuPG==-1) {
-					if(!$rowPG['onmap']) continue;
+					if(!$rowPG['onmap']) {continue;}
 				}
-				elseif($onmenuPG!='' and !isset($rowPG['onmenu'][$onmenuPG]))
+				elseif($onmenuPG!='' and !isset($rowPG['onmenu'][$onmenuPG])) {
 					continue;
+				}
 
 				$href = $this->_CFG['_HREF']['BH'].$this->getHref($keyPG,true);
 
@@ -573,8 +570,9 @@ class pg_class extends kernel_extends {
 				}
 
 				$DATA_PG[$keyPG] = array('name'=>$name, 'href'=>$href, 'attr'=>$rowPG['attr'], 'sel'=>$selPG, 'pgid'=>$keyPG);
-				if(!$flagPG and isset($this->dataCashTree[$keyPG]))
+				if(!$flagPG and isset($this->dataCashTree[$keyPG])) {
 					$DATA_PG[$keyPG]['#item#'] = $this->getMap($onmenuPG,$flagPG,$keyPG);
+				}
 
 				if($onmenuPG==-1 and $rowPG['pagemap']) {
 					$mapPG = explode(':',$rowPG['pagemap']);
