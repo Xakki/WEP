@@ -6,7 +6,8 @@ ini_set('display_errors', -1);
 $_CFG['info'] = array(//информация о СМС
 	'version' => '2.2',
 	'email' => 'info@xakki.ru',
-	'icq' => '222392984');
+	'icq' => '222392984'
+);
 
 /* MAIN_CFG */
 
@@ -451,7 +452,7 @@ function getmicrotime() {
 function SpiderDetect($USER_AGENT='') {
 	if (!$USER_AGENT) {
 		if(!isset($_SERVER['HTTP_USER_AGENT'])) {
-			return '';
+			return '*';
 		}
 		$USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
 	}
@@ -485,7 +486,7 @@ function SpiderDetect($USER_AGENT='') {
 	);
 
 	foreach ($engines as $engine) {
-		if (stristr($USER_AGENT, $engine[0])) {
+		if (stripos($USER_AGENT, $engine[0])!==false) {
 			return $engine[1];
 		}
 	}

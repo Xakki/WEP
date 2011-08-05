@@ -619,6 +619,7 @@ class static_tools {
 					$newr = $SetDataCFG[$k][$kk];
 				elseif(isset($USER_CFG[$k][$kk]))
 					$newr = $USER_CFG[$k][$kk];
+				
 				$flag = false;
 				if(is_string($newr)) {
 					if($newr != $defr)
@@ -629,7 +630,12 @@ class static_tools {
 					if(!is_array($defr) or count(array_diff($newr,$defr)))
 						$flag = true;
 					$newr = str_replace(array("\n","\t","\r",'   ','  '),array('','','',' ',' '),var_export($newr,true));
+				}else {
+					$newr = (int)$newr;
+					if($newr != $defr)
+						$flag = true;
 				}
+
 				if ($flag) {
 					$putFile[$k . '_' . $kk] = '$_CFG[\'' . $k . '\'][\'' . $kk . '\'] = ' . $newr . ';';
 				}

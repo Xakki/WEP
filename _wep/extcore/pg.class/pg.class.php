@@ -109,7 +109,7 @@ class pg_class extends kernel_extends {
 		$this->def_records[] = array('id'=>1, 'alias'=>'401','name'=>'Недостаточно прав для доступа к странице','parent_id'=>'index','active'=>1,'template'=>'default');
 		return parent::setSystemFields();
 	}
-	
+
 	function _childs() {
 		$this->create_child('content');
 	}	
@@ -611,8 +611,10 @@ class pg_class extends kernel_extends {
 				$cls .= ',if((ugroup="" or ugroup="|0|" or ugroup="|anonim|"),1,0) as prm'; */
 			$cls .= ' FROM '.$this->tablename.' WHERE active=1';
 			$result = $this->SQL->execSQL($cls.' ORDER BY ordind');
+
 			if(!$result->err) {
 				while($row = $result->fetch_array()) {
+					if(!isset($row['alias'])) {$this->updateModul();return $this->sqlCashPG();}
 					$row['onmenu'] = array_flip(explode('|',trim($row['onmenu'],'|')));
 					$this->dataCash[$row['id']] = $row;
 					$this->dataCashTree[$row['parent_id']][$row['id']] = &$this->dataCash[$row['id']];
@@ -622,6 +624,20 @@ class pg_class extends kernel_extends {
 				header('Location: '.$this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['wepname'].'/install.php');die();}
 		}
 		return true;
+	}
+
+	function updateModul() {
+		$this->SQL->execSQL('alter table '.$this->tablename.' 
+		change `id` `alias` varchar(63) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+		drop primary key,
+		add column `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT after `alias`,
+		add primary key(`id`)');
+		$this->SQL->execSQL('UPDATE '.$this->childs['content']->tablename.' SET owner_id=(SELECT id FROM '.$this->tablename.' WHERE alias=owner_id)');
+		$this->SQL->execSQL('alter table '.$this->childs['content']->tablename.' change `owner_id` `owner_id` int(11) NOT NULL');
+		$this->SQL->execSQL('CREATE TABLE '.$this->tablename.'_copy AS(SELECT * FROM '.$this->tablename.')');
+		$this->SQL->execSQL('UPDATE '.$this->tablename.' t1 SET t1.parent_id=(SELECT t2.id FROM '.$this->tablename.'_copy t2 WHERE t2.alias=t1.parent_id)');
+		$this->SQL->execSQL('drop table '.$this->tablename.'_copy');
+		$this->SQL->execSQL('alter table '.$this->tablename.' change `parent_id` `parent_id` int(11) DEFAULT "0" NOT NULL');
 	}
 
 	function getHref($id=false,$html=false) {
@@ -703,20 +719,3 @@ class pg_class extends kernel_extends {
 
 //////////
 }
-
-/*
-alter table `work_umobile`.`wep_pg` 
-change `id` `alias` varchar(63) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-drop primary key,
-add column `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT after `alias`,
-add primary key(`id`)
-;
-
-UPDATE wep_pg_content SET owner_id=(SELECT id FROM wep_pg WHERE alias=owner_id);
-alter table `work_umobile`.`wep_pg_content` change `owner_id` `owner_id` int(11) NOT NULL;
-
-CREATE TABLE `work_umobile`.`wep_pg_copy` AS(SELECT * FROM `work_umobile`.`wep_pg`);
-UPDATE wep_pg t1 SET t1.parent_id=(SELECT t2.id FROM wep_pg_copy t2 WHERE t2.alias=t1.parent_id);
-drop table `work_umobile`.`wep_pg_copy`;
-alter table `work_umobile`.`wep_pg` change `parent_id` `parent_id` int(11) DEFAULT '0' NOT NULL;
-*/

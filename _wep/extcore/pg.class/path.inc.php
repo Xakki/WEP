@@ -9,7 +9,7 @@
 		return $form;
 	}
 
-	$tplphp = $this->FFTemplate($FUNCPARAM[2],__DIR__);
+	$tplphp = $this->FFTemplate($FUNCPARAM[0],__DIR__);
 
 /*PATH*/
 	$DATA = array($FUNCPARAM[0]=>$PGLIST->get_path());

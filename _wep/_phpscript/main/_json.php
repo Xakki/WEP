@@ -2,6 +2,7 @@
 	if(!$_CFG['_PATH']['wep']) die('ERROR');
 
 	$GLOBALS['_RESULT']	= array();
+	$_tpl['onload']=$html=$html2='';
 
 	require_once($_CFG['_PATH']['wep'].'/config/config.php');
 	if (!isset($_GET['html']))
