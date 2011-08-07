@@ -2,14 +2,23 @@
 	if(!$_CFG['_PATH']['wep']) die('ERROR');
 
 	$GLOBALS['_RESULT']	= array();
+	$_tpl['onload']=$html=$html2='';
 
 	require_once($_CFG['_PATH']['wep'].'/config/config.php');
-	require_once($_CFG['_PATH']['phpscript'].'/jquery_getjson.php');
+	if (!isset($_GET['html']))
+		require_once($_CFG['_PATH']['phpscript'].'/jquery_getjson.php');
 	require_once($_CFG['_PATH']['core'].'/sql.php');	/**отправляет header и печатает страничку*/
 	$SQL = new sql($_CFG['sql']);
 
-
-	if($_GET['_view']=='ajaxlist' and $_GET['_srlz']=stripslashes($_GET['_srlz']) and $_GET['_hsh']==md5($_GET['_srlz'].$_CFG['wep']['md5'])) {
+	if(isset($_GET['_fn']) and $_GET['_fn']) {
+		session_go();
+		if(_getChildModul($_GET['_modul'],$MODUL) and isset($MODUL->_AllowAjaxFn[$_GET['_fn']])) {
+			eval('$GLOBALS[\'_RESULT\']=$MODUL->'.$_GET['_fn'].'();');
+		} else
+			$GLOBALS['_RESULT']['text'] = 'Вызов функции не разрешён модулем.';
+		
+	} 
+	elseif($_GET['_view']=='ajaxlist' and $_GET['_srlz']=stripslashes($_GET['_srlz']) and $_GET['_hsh']==md5($_GET['_srlz'].$_CFG['wep']['md5'])) {
 		$listname = unserialize($_GET['_srlz']);
 		if(!isset($listname['tablename']) and isset($listname['class']) and $listname['class'])
 			$listname['tablename'] = $_CFG['sql']['dbpref'].$listname['class'];

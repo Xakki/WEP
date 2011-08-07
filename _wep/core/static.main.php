@@ -44,6 +44,10 @@ class static_main {
 			return $_CFG['sql']['dbpref'] . $name;
 	}
 
+	/**
+	* Нахождение фаила содержащего класс модуля
+	* @Mid - модуль
+	*/
 	static function includeModulFile($Mid, &$OWN=NULL) {
 		global $_CFG;
 		$Pid = NULL;
@@ -90,15 +94,17 @@ class static_main {
 		global $_CFG;
 		if (isset($_SESSION['user']['id']) and isset($_SESSION['user']['level']) and $_SESSION['user']['level'] == 0)
 			return true; // админу можно всё
- if (!isset($_CFG['modulprm']))
+		if (!isset($_CFG['modulprm']))
 			self::_prmModulLoad();
 		if (!isset($_CFG['modulprm'][$mn]))
 			return false; // отказ, если модуль отключен
- if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] >= 5)
+		if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] >= 5)
 			return false; //этим всё запрещено
- else {
+		else {
 			if (isset($_CFG['modulprm'][$mn]['access'][0]))
 				return false;
+			if(isset($_CFG['modulprm'][$mn]['access']['']) and count($_CFG['modulprm'][$mn]['access'])==1)
+				return true;
 			if (count($param))
 				foreach ($param as $r)
 					if (isset($_CFG['modulprm'][$mn]['access'][$r]))
@@ -111,14 +117,14 @@ class static_main {
 		global $_CFG, $SQL;
 		if (!isset($_CFG['modulprm'])) {
 			$_CFG['modulprm'] = $_CFG['modulprm_ext'] = array();
-			$ugroup_id = (isset($_SESSION['user']['gid']) ? (int) $_SESSION['user']['gid'] : 0);
+			$ugroup_id = (isset($_SESSION['user']['gid']) ? (int) $_SESSION['user']['gid'] : 2);
 			if(isset($_SESSION['user']['parent_id']) and $_SESSION['user']['parent_id']) {
 				$ugroup_id = ' and t2.ugroup_id IN ('.$_SESSION['user']['parent_id'].','.$ugroup_id.')';
 			}else
 				$ugroup_id = ' and t2.ugroup_id='.$ugroup_id;
 			if (!$SQL)
 				$SQL = new sql($_CFG['sql']);
-			$result = $SQL->execSQL('SELECT t1.*,t2.access, t2.mname FROM `' . $_CFG['sql']['dbpref'] . 'modulprm` t1 LEFT Join `' . $_CFG['sql']['dbpref'] . 'modulgrp` t2 on t2.owner_id=t1.id' . $ugroup_id . ' ORDER BY typemodul,name');
+			$result = $SQL->execSQL('SELECT t1.*,t2.access, t2.mname FROM `' . $_CFG['sql']['dbpref'] . 'modulprm` t1 LEFT Join `' . $_CFG['sql']['dbpref'] . 'modulgrp` t2 on t2.owner_id=t1.id' . $ugroup_id . ' ORDER BY t1.typemodul,t1.name');
 			if ($result->err) {
 				//$_POST['sbmt'] = 1;
 				//static_tools::_checkmodstruct('modulprm');
@@ -140,6 +146,7 @@ class static_main {
 				$_CFG['modulprm'][$row['id']]['tablename'] = $row['tablename'];
 				$_CFG['modulprm'][$row['id']]['ver'] = $row['ver'];
 				$_CFG['modulprm'][$row['id']]['extend'] = $row['extend'];
+				$_CFG['modulprm'][$row['id']]['pid'] = $row['parent_id'];
 				if ($row['hook']) {
 					eval('$hook = ' . $row['hook'] . ';');
 					$_CFG['hook'] = self::MergeArrays($_CFG['hook'], $hook);
@@ -167,7 +174,6 @@ class static_main {
 	/*
 	  Проверка доступа пол-ля по уровню привелегии
 	 */
-
 	static function _prmUserCheck($level=5) {
 		global $_CFG;
 		if (isset($_SESSION['user']['id']) and $_SESSION['user']['id']) {
@@ -177,6 +183,9 @@ class static_main {
 		return false;
 	}
 
+	/*
+	  Проверка доступа пол-ля по её группе
+	 */
 	static function _prmGroupCheck($id=1) {
 		global $_CFG;
 		if(!is_array($id))
@@ -193,7 +202,6 @@ class static_main {
 	/*
 	  Ф. авторизации пользователя
 	 */
-
 	static function userAuth($login='', $pass='') {
 		global $_CFG;
 		session_go(1);
@@ -241,6 +249,8 @@ class static_main {
 		return $result;
 	}
 
+	/* Закрытие сессии пользователя
+	*/
 	static function userExit() {
 		global $_CFG;
 		session_go();
@@ -260,6 +270,8 @@ class static_main {
 		//
 	}
 
+	/* Запись сообщения в лог вывода
+	*/
 	static function _message($type,$msg,$cl='') {
 		global $_CFG;
 		$ar_type = array('error'=>false, 'alert'=>true, 'notice'=>true, 'ok'=>true);
@@ -267,11 +279,18 @@ class static_main {
 		return $ar_type[$type];
 	}
 
+	/* округление числа до кратного 10 и более
+	*/
 	static function okr($x, $y) {
 		$z = pow(10, $y);
 		return $z * round($x / $z);
 	}
 
+	/* Вставка массива , после указанного ключа
+	* @data - Массив в который будет вставляться $insert_data
+	* @afterkey - ключ массива $data, после которого будет вставлен массив $insert_data
+	* @insert_data - вставляемый массив
+	*/
 	static function insertInArray($data, $afterkey, $insert_data) {
 		$output = array();
 		if (count($data)) {
@@ -286,7 +305,9 @@ class static_main {
 		}
 		return $insert_data;
 	}
-
+	
+	/* Рекурсивное слияние 2х многомерных массивов
+	*/
 	static function MergeArrays($Arr1, $Arr2) {
 		foreach ($Arr2 as $key => $Value) {
 			if (array_key_exists($key, $Arr1) && is_array($Value) && is_array($Arr1[$key])) {
@@ -298,11 +319,54 @@ class static_main {
 		return $Arr1;
 	}
 
+	/* ИЗ полного(абсолютного) пути к фаилу получаем относительный путь с корня сайта
+	* @file - абсолютный путь к фаилу
+	*/
 	static function relativePath($file) {
 		$file = str_replace(array('\\\\','\\'),'/',$file);
 		$cf = dirname(dirname(__DIR__));
 		$cf = str_replace(array('\\\\','\\'),'/',$cf);
 		$file = str_replace(array($_SERVER['_DR_'],$cf),'',$file);
 		return $file;
+	}
+
+	/* Обрезание текста по длине , оставляя максимум целых слов.
+	* @text - текст
+	* @col - максим длина строки
+	* @clearFormat - чистка строки от тегов
+	*/
+	static function pre_text($text, $col, $clearFormat = true) {
+		if ($clearFormat)
+			$text = strip_tags($text);
+		if (mb_strlen($text) >= $col)
+		{
+			$length = mb_strripos(mb_substr($text, 0, $col), ' ');
+			$text = mb_substr($text, 0, $length).'...';
+		}
+		return $text;
+	}
+
+	/* Замена в тексте ссылок на редирект
+	* @text - текст в котором будет производится поиск
+	* @name - подстановочное название ссылок, если $name==false - то название будет как самы ссылка только без http:// и www
+	*/
+	static function redirectLink($text,$name='Ссылка') {
+		global $_CFG;
+		if(!$_CFG['site']['redirectForRobots'] and $_CFG['robot']) return $text;
+
+		$cont = array();
+		preg_match_all($_CFG['_repl']['href'],$text,$cont);
+		if(count($cont[0])) {
+			$temp = array();
+			foreach($cont[0] as $rc) {
+				if(!$name)
+					$tn = trim(str_replace(array('http://','https://','www.'),'',$rc),' /');
+				else
+					$tn = $name;
+				$temp[] = '<a href="/_redirect.php?url='.(base64_encode($rc)).'" rel="nofollow" target="_blank">'.$tn.'</a>';
+			}
+			$text = str_replace($cont[0],$temp,$text);
+		}
+		return $text;
 	}
 }

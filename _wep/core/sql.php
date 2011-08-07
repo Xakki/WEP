@@ -115,9 +115,12 @@
 				$param['type'] = $this->alias_types[$param['type']];
 
 			$m = '`' . strtolower($key) . '` ' . $param['type'];
-			if($param['type']=='timestamp')
+			if($param['type']=='timestamp' and (!isset($param['attr']) or ($param['attr']=='NOT NULL' and !isset($param['default'])) ) )
 				$m.=' NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP';
 			elseif($param['type']=='timestamp') {
+				$m.=' ' . $param['attr'];
+				if(isset($param['default']))
+					$m.=' DEFAULT \'' . $param['default'] . '\'';
 			}
 			else
 			{
@@ -133,7 +136,7 @@
 					$m.=' NOT NULL';
 				if(isset($param['default']))
 					$m.=' DEFAULT \'' . $param['default'] . '\'';
-				if(!isset($param['default']) and $param['type']!='text' and !$param['attr'])
+				if(!isset($param['default']) and $param['type']!='text' and !isset($param['attr']))
 					$m.=' DEFAULT NULL';
 			}
 			return array($m,$mess);

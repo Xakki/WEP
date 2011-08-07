@@ -101,10 +101,10 @@ class static_tools {
 				$MODUL->fields[$fldname]['inst'] = '1';
 
 				$currentFields = $fp['create'];
-				$temp_currentFields = trim( str_replace(array('"', "'", chr(194).chr(160),"\xC2xA0","\n"), array('', '', ' ', ' ', ' '), mb_strtolower($currentFields)) );
+				$temp_currentFields = trim( str_replace(array(' ','"', "'", chr(194).chr(160),"\xC2xA0","\n"), '', mb_strtolower($currentFields)) );
 
 				list($newFields,$rDATA[$fldname]['@mess']) = $MODUL->SQL->_fldformer($fldname, $MODUL->fields[$fldname]);
-				$temp_newFields = trim(str_replace(array('"', "'", chr(194).chr(160),"\xC2xA0","\n"), array('', '', ' ', ' ', ' '), mb_strtolower($newFields)));
+				$temp_newFields = trim(str_replace(array(' ','"', "'", chr(194).chr(160),"\xC2xA0","\n"), '', mb_strtolower($newFields)));
 
 				if (isset($MODUL->fields[$fldname]['type']) and $temp_currentFields!=$temp_newFields) {
 					$rDATA[$fldname]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` CHANGE `' . $fldname . '` ' . $newFields;
@@ -191,7 +191,7 @@ class static_tools {
 			foreach ($uniqlist as $k => $r) {
 				if (!isset($rDATA[$k]['@index']))		$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
 				else		$rDATA[$k]['@index'] .= ', ';
-				$rDATA[$k]['@index'] .= ' drop key ' . $k . ' ';
+				$rDATA[$k]['@index'] .= ' drop key `' . $k . '` ';
 				unset($uniqlistR[$k]);
 			}
 		}
@@ -219,7 +219,7 @@ class static_tools {
 			foreach ($indexlist as $k => $r) {
 				if (!isset($rDATA[$k]['@index']))		$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
 				else		$rDATA[$k]['@index'] .= ', ';
-				$rDATA[$k]['@index'] .= ' drop key ' . $k . ' ';
+				$rDATA[$k]['@index'] .= ' drop key `' . $k . '` ';
 			}
 		}
 		$rDATA['Оптимизация']['@newquery'] = 'OPTIMIZE TABLE `' . $MODUL->tablename . '`';
@@ -619,6 +619,7 @@ class static_tools {
 					$newr = $SetDataCFG[$k][$kk];
 				elseif(isset($USER_CFG[$k][$kk]))
 					$newr = $USER_CFG[$k][$kk];
+				
 				$flag = false;
 				if(is_string($newr)) {
 					if($newr != $defr)
@@ -629,7 +630,12 @@ class static_tools {
 					if(!is_array($defr) or count(array_diff($newr,$defr)))
 						$flag = true;
 					$newr = str_replace(array("\n","\t","\r",'   ','  '),array('','','',' ',' '),var_export($newr,true));
+				}else {
+					$newr = (int)$newr;
+					if($newr != $defr)
+						$flag = true;
 				}
+
 				if ($flag) {
 					$putFile[$k . '_' . $kk] = '$_CFG[\'' . $k . '\'][\'' . $kk . '\'] = ' . $newr . ';';
 				}
@@ -664,8 +670,8 @@ class static_tools {
 		if (isset($MODUL->unique_fields) and count($MODUL->unique_fields)) {
 			foreach ($MODUL->unique_fields as $k => $r) {
 				if (is_array($r))
-					$r = implode(',', $r);
-				$fld[] = 'UNIQUE KEY ' . $k . ' (' . $r . ')';
+					$r = implode('`,`', $r);
+				$fld[] = 'UNIQUE KEY `' . $k . '` (`' . $r . '`)';
 			}
 		}
 		if (isset($MODUL->index_fields) and count($MODUL->index_fields)) {
@@ -673,7 +679,7 @@ class static_tools {
 				if (!isset($MODUL->unique_fields[$k])) {
 					if (is_array($r))
 						$r = implode(',', $r);
-					$fld[] = 'KEY ' . $k . ' (' . $r . ')';
+					$fld[] = 'KEY `' . $k . '` (`' . $r . '`)';
 				}
 			}
 		}

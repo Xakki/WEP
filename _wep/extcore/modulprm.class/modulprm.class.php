@@ -362,7 +362,7 @@ final class modulprm_class extends kernel_extends {
 					$MODUL->setSystemFields();// установка системных полей
 					if ($OWN and (!isset($this->data[$Mid]) or $this->data[$Mid]['parent_id'] != $OWN->_cl))
 						$this->fld_data['parent_id'] = $OWN->_cl;
-					if (!isset($this->data[$Mid]))// or $this->data[$Mid]['name'] != $MODUL->caption
+					if (!isset($this->data[$Mid]) or !$this->data[$Mid]['name'])// or $this->data[$Mid]['name'] != $MODUL->caption
 						$this->fld_data['name'] = $MODUL->caption;
 					if (!isset($this->data[$Mid]) or $this->data[$Mid]['tablename'] != $MODUL->tablename)
 						$this->fld_data['tablename'] = $MODUL->tablename;
@@ -473,7 +473,7 @@ final class modulprm_class extends kernel_extends {
 			if ($result->err)
 				exit();
 			while ($row = $result->fetch_array()) {
-				if($row['level']==5) $row['id'] = 0;
+				//if($row['level']==5) $row['id'] = 0;
 				$this->guserData[$row['id']] = $row;
 			}
 		}

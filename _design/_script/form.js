@@ -66,7 +66,7 @@ function textareaChange(obj,max){/* Утилита для подсчёта ко�
 		val = document.createElement('span');
 		val.className = "dscr";
 		val.innerHTML = 'Cимволов:<input type="text" id="'+obj.name+'t2" maxlength="4" readonly="false" class="textcount" style="text-align:right;"/>/<input type="text" id="'+obj.name+'t1" maxlength="4" readonly="false" class="textcount" value="'+max+'"/>';
-		jQuery(val).appendTo(obj.parentNode);
+		jQuery(obj).after(val);
 	}
 	if(obj.value.length>max)
 		obj.value=obj.value.substr(0,max);

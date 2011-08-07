@@ -79,7 +79,7 @@
 		if(isset($_tpl['script']) and is_array($_tpl['script'])) {
 			foreach($_tpl['script'] as $kk=>$rr) {
 				if(is_array($rr))
-					$temp .= '<script type="text/javascript" src="'.implode('"></script>'."\n".'<script type="text/javascript src="',$rr).'"></script>'."\n";
+					$temp .= '<script type="text/javascript" src="'.implode('"></script>'."\n".'<script type="text/javascript" src="',$rr).'"></script>'."\n";
 				elseif($rr==1 and $kk) {
 					$temp .= '<script type="text/javascript" src="'.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].$kk.'.js"></script>'."\n";
 					if($kk=='jquery.fancybox')

@@ -6,7 +6,8 @@ ini_set('display_errors', -1);
 $_CFG['info'] = array(//информация о СМС
 	'version' => '2.2',
 	'email' => 'info@xakki.ru',
-	'icq' => '222392984');
+	'icq' => '222392984'
+);
 
 /* MAIN_CFG */
 
@@ -51,7 +52,8 @@ $_CFG['site'] = array(// для сайта
 	'show_error' => 1, //0- ничего не показывать обычным юзерам, 1 -паказывать только сообщение что произошла ошибка, 2 - паказать ошибку
 	'worktime' => false, // 1 - включает отображение страницы "Технический перерыв"
 	'work_title' => 'Технический перерыв',
-	'work_text' => 'Технический перерыв'
+	'work_text' => 'Технический перерыв',
+	'redirectForRobots' => true,
 );
 
 /* END_MAIN_CFG */
@@ -148,6 +150,7 @@ if (strpos($_SERVER['HTTP_HOST'], 'xn--') !== false) {
 $_CFG['_HREF']['BH'] = 'http://' . $_SERVER['HTTP_HOST'] . $port . '/' . $addpath; // www-путь сайта
 $_CFG['_HREF']['wepJS'] = $_CFG['_HREF']['BH'] . $_CFG['PATH']['wepname'] . '/js.php';
 $_CFG['_HREF']['siteJS'] = $_CFG['_HREF']['BH'] . '_js.php';
+$_CFG['_HREF']['siteAJAX'] = $_CFG['_HREF']['BH'] . '_json.php';
 $_CFG['_HREF']['captcha'] = $_CFG['_HREF']['BH'] . '_captcha.php';
 $_CFG['_HREF']['WSWG'] = $_CFG['_HREF']['BH'] . $_CFG['PATH']['WSWG'];
 $_CFG['_HREF']['_style'] = '_design/_style/'; // дизайн стили
@@ -199,7 +202,7 @@ $_CFG['_MASK'] = array(
 
 $_CFG['_repl'] = array(
 	'name' => '/[^0-9A-Za-zА-Яа-я\- \,\.@_]+/u',
-	'href' => '/(http:\/\/|www\.)[0-9A-Za-z\/\.\_\-\=\?]*/u',
+	'href' => '/(http:\/\/|www\.)[0-9A-Za-z\/\.\_\-\=\?\&\;]*/u',
 	'alphaint' => '/[^A-Za-z0-9]+/u',);
 
 // WYSIWYG 
@@ -224,7 +227,7 @@ $_CFG['ckedit']['toolbar']['Board'] = "[
 	['NumberedList','BulletedList'], ['JustifyLeft','JustifyCenter','JustifyBlock'] ]";
 
 $_CFG['_imgquality'] = 80; // качество картинки
-$_CFG['_imgwater'] = $_CFG['_PATH']['path'] . '_design/_img/watermark.png'; //водяной знак
+$_CFG['_imgwater'] = '_design/_img/watermark.png'; //водяной знак
 
 $_CFG['form'] = array(
 	'imgFormat' => array('gif' => 1, 'jpg' => 1, 'jpeg' => 1, 'png' => 1),
@@ -449,7 +452,7 @@ function getmicrotime() {
 function SpiderDetect($USER_AGENT='') {
 	if (!$USER_AGENT) {
 		if(!isset($_SERVER['HTTP_USER_AGENT'])) {
-			return '';
+			return '*';
 		}
 		$USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
 	}
@@ -483,7 +486,7 @@ function SpiderDetect($USER_AGENT='') {
 	);
 
 	foreach ($engines as $engine) {
-		if (stristr($USER_AGENT, $engine[0])) {
+		if (stripos($USER_AGENT, $engine[0])!==false) {
 			return $engine[1];
 		}
 	}
@@ -571,6 +574,35 @@ function _new_class($name, &$MODUL, &$OWNER = NULL) {
 		}
 	}
 	return false;
+}
+
+function _getChildModul($name, &$MODUL) {
+	global $_CFG;
+
+	static_main::_prmModulLoad();
+	if (isset($_CFG['modulprm'][$name]['pid']) && $_CFG['modulprm'][$name]['pid'] != '')
+	{
+		$moduls = array($name);
+		while (isset($_CFG['modulprm'][$name]['pid']) && $_CFG['modulprm'][$name]['pid'] != '')
+		{
+			$moduls[] = $_CFG['modulprm'][$name]['pid'];
+			$name = $_CFG['modulprm'][$name]['pid'];
+		}
+
+		$cnt = count($moduls);
+
+		_new_class($moduls[$cnt-1], $MODUL);
+		for ($i=$cnt-2; $i>=0; $i--)
+		{
+			$MODUL = $MODUL->childs[$moduls[$i]];
+		}
+	}
+	else
+	{
+		_new_class($name, $MODUL);
+	}
+	if ($MODUL)
+		return true;
 }
 
 function _getExtMod($name) {

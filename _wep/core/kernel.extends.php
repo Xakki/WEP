@@ -148,6 +148,7 @@ abstract class kernel_extends {
 		$this->caption = $this->_cl; // заголовок модуля
 		$this->_listfields = array('name'); //select по умолч
 		$this->unique_fields =
+				$this->index_fields =
 				$this->_enum =
 				$this->update_records =
 				$this->def_records =
@@ -160,14 +161,14 @@ abstract class kernel_extends {
 				$this->attaches = $this->att_data =
 				$this->memos = $this->mmo_data =
 				$this->services =
-				$this->index_fields =
 				$this->config =
 				$this->config_form =
 				$this->locallang =
 				$this->enum =
 				$this->child_path =
 				$this->Achilds =
-				$this->_setHook = array();
+				$this->_setHook = 
+				$this->_AllowAjaxFn = array(); // разрешённые функции для аякса, нужно прописывать в индекс
 		$this->childs = new modul_child($this);
 		$this->ordfield = $this->_clp = '';
 		$this->data = array();
@@ -413,6 +414,8 @@ abstract class kernel_extends {
 			return false;
 		if (count($data) and !$this->_select_memos($data))
 			return false;
+		if (isset($this->_CFG['hook']['_query']))
+			$this->__do_hook('_query', func_get_args());
 		return $data;
 	}
 
@@ -958,8 +961,6 @@ abstract class kernel_extends {
 					$r['value'] = file_get_contents($data[$k]);
 				elseif (isset($data[$k]))
 					$r['value'] = $data[$k];
-				else
-					$r['value'] = '';
 			}
 			elseif (isset($r['multiple']) and $r['multiple'] > 0 and $r['type'] == 'list') {
 				if (!is_array($data[$k])) {
@@ -968,6 +969,9 @@ abstract class kernel_extends {
 				}else
 					$r['value'] = $data[$k];
 			}
+			/*elseif ($r['type'] == 'checkbox') {
+				$data[$k] = $r['value'] = ((isset($data[$k]) and $data[$k])?1:0);
+			}*/
 			elseif (isset($data[$k])) //  and $data[$k]
 				$r['value'] = $data[$k];
 
@@ -1164,7 +1168,7 @@ abstract class kernel_extends {
 		return false;
 	}
 
-	public function _getCashedList(&$listname, $value=NULL) {
+	public function _getCashedList($listname, $value=NULL) {
 		$data = array();
 		$templistname = $listname;
 		if (is_array($listname))

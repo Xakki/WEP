@@ -1,4 +1,5 @@
 <?
+
 		foreach($fields as $k=>&$r) {
 			if(!isset($r['readonly']))
 				$r['readonly'] = false;

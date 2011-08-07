@@ -51,7 +51,7 @@ class content_class extends kernel_extends {
 		$this->fields_form['funcparam'] = array('type' => 'text', 'caption' => 'Доп. параметры', 'mask' =>array('name'=>'all'), 'comment'=>'Значения разделять символом &');
 		$this->fields_form['pg'] = array('type' => 'ckedit', 'caption' => 'Text','mask'=>array('fview'=>1, 'max' => 500000), 'paramedit'=>array('CKFinder'=>1,'extraPlugins'=>"'cntlen'"));
 		if($this->_CFG['wep']['access'])
-			$this->fields_form['ugroup'] = array('type' => 'list','multiple'=>2,'listname'=>'ugroup', 'caption' => 'Доступ пользователю','default'=>'0');
+			$this->fields_form['ugroup'] = array('type' => 'list','multiple'=>2,'listname'=>array('owner','ugroup'), 'caption' => 'Доступ пользователю','default'=>'0');
 		$this->fields_form['styles'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'style', 'caption' => 'CSS', 'mask' =>array('onetd'=>'Дизайн'));
 		$this->fields_form['script'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'script', 'caption' => 'SCRIPT','mask' =>array('onetd'=>'close'));
 		$this->fields_form['ordind'] = array('type' => 'text', 'caption' => 'ORD');
@@ -133,19 +133,22 @@ class content_class extends kernel_extends {
 	}
 
 	public function kPreFields(&$data,&$param) {
-		$mess = parent::kPreFields($data,$param);
+		$this->addForm = array();
 		$this->fields_form['pagetype']['onchange'] = 'contentIncParam(this,\''.$this->_CFG['PATH']['wepname'] .'\',\''.htmlspecialchars($data['funcparam']).'\');';
 		if($data['pagetype']) {
-			$addForm = $this->getContentIncParam($data['pagetype'],$data['funcparam']);
-			if(count($addForm)) {
-				$this->fields_form = static_main::insertInArray($this->fields_form,'pagetype',$addForm); // обработчик параметров рубрики
+			$this->addForm = $this->getContentIncParam($data);
+			if(count($this->addForm)) {
+				$this->fields_form = static_main::insertInArray($this->fields_form,'pagetype',$this->addForm); // обработчик параметров рубрики
 				$this->fields_form['funcparam']['style'] = 'display:none;';
 			}
 		}
+		$mess = parent::kPreFields($data,$param);
 		return $mess;
 	}
 
-	function getContentIncParam($pagetype,$FUNCPARAM=false) {
+	function getContentIncParam(&$data,$ajax=false) {
+		$pagetype = $data['pagetype'];
+		$FUNCPARAM = $data['funcparam'];
 		$formFlex = array();
 		$flagPG = false;
 		if($FUNCPARAM) $FUNCPARAM = explode('&',$FUNCPARAM);
@@ -158,17 +161,25 @@ class content_class extends kernel_extends {
 		elseif(file_exists($this->_CFG['_PATH']['ctext'].$rowPG['pagetype'].'.inc.php'))
 			$flagPG = $this->_CFG['_PATH']['ctext'].$rowPG['pagetype'].'.inc.php';
 		else {
-			trigger_error('Обрботчик страниц "'.$this->owner->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php" не найден!', E_USER_WARNING);
+			$formFlex['tr_flexform_0'] = array('type'=>'info', 'css'=>'addparam', 'caption'=>'<span class="error">Обрботчик страниц "'.$this->owner->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php" не найден!</span>');
+			//trigger_error('Обрботчик страниц "'.$this->owner->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php" не найден!', E_USER_WARNING);
 			return $formFlex;
 		}
+
+		if(count($_POST)!=count($data) or $ajax) {
+			$fl = true;
+		}
+		else
+			$fl = false;
 		$file = file_get_contents($flagPG);
 		if(strpos($file,'$ShowFlexForm')!==false) {
 			$ShowFlexForm = true;
 			$tempform = include($flagPG);
 			if(count($tempform)) {
 				foreach($tempform as $k=>$r) {
-					if(isset($FUNCPARAM[$k]))
-						$r['value'] = $FUNCPARAM[$k];
+					if($fl) {
+						$r['value'] = $data['flexform_'.$k] = $FUNCPARAM[$k];
+					}
 					$r['css']='addparam';
 					$formFlex['flexform_'.$k] = $r;
 				}
@@ -180,28 +191,35 @@ class content_class extends kernel_extends {
 
 
 	public function _save_item($vars=array()) {
-		$i=0;
 		$funcparam = array();
-		while(isset($vars['flexform_'.$i])) {
-			$funcparam[] = $vars['flexform_'.$i];
-			$i++;
+		if(count($this->addForm)) {
+			foreach($this->addForm as $k=>$r) {
+				if($r['type']!='info') {
+					$funcparam[(int)substr($k,9)] = $vars[$k];
+				}
+			}
+			if(count($funcparam)) {
+				ksort($funcparam);
+				$vars['funcparam'] = implode('&',$funcparam);
+			}
 		}
-		if(count($funcparam))
-			$vars['funcparam'] = implode('&',$funcparam);
 		if($ret = parent::_save_item($vars)) {
 		}
 		return $ret;
 	}
 
 	public function _add_item($vars) {
-		$i=0;
 		$funcparam = array();
-		while(isset($vars['flexform_'.$i])) {
-			$funcparam[] = $vars['flexform_'.$i];
-			$i++;
+		if(count($this->addForm)) {
+			foreach($this->addForm as $k=>$r) {
+				if($r['type']!='info')
+					$funcparam[(int)substr($k,9)] = $vars[$k];
+			}
+			if(count($funcparam)) {
+				ksort($funcparam);
+				$vars['funcparam'] = implode('&',$funcparam);
+			}
 		}
-		if(count($funcparam))
-			$vars['funcparam'] = implode('&',$funcparam);
 		if($ret = parent::_add_item($vars)) {
 		}
 		return $ret;
