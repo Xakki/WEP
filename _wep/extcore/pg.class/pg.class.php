@@ -35,6 +35,8 @@ class pg_class extends kernel_extends {
 			'logs' => 'logs',
 			'foot' => 'foot');
 
+                $this->config['auto_include'] = true;
+                
 		// TODO : Сделать форму управления массивами данных и хранить в формате json
 
 		$this->config_form['sitename'] = array('type' => 'text', 'caption' => 'Название сайта','mask'=>array('max'=>1000));
@@ -49,6 +51,7 @@ class pg_class extends kernel_extends {
 		$this->config_form['rootPage'] = array('type' => 'list', 'listname'=>'parentlist', 'caption' => 'Начальная страница сайта');
 		$this->config_form['menu'] = array('type' => 'textarea', 'caption' => 'Блоки меню');
 		$this->config_form['marker'] = array('type' => 'textarea', 'caption' => 'Маркеры');
+                $this->config_form['auto_include'] = array('type' => 'checkbox', 'caption' => 'Подключать скрипты автоиматически');
 	}
 
 	function _set_features() {
