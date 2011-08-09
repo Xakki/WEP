@@ -536,10 +536,14 @@ class pg_class extends kernel_extends {
 		if(empty($this->dataCashTree))
 			$this->sqlCashPG();
 		$DATA_PG = array();
-		if(!$startPG) $startPG = $this->config['rootPage'];
+		if($flagPG==3)
+			$startPG = $this->dataCash[$this->id]['parent_id'];
+		elseif(!$startPG)
+			$startPG = $this->config['rootPage'];
+
 		if($flagPG>1) //только начальный уровень
 			$tempPG = &$this->dataCashTree[$startPG];
-		elseif($flagPG) //выводит все в общем массиве
+		elseif($flagPG==1) //выводит все в общем массиве
 			$tempPG = &$this->dataCash;
 		else //выводит всё в виде структуры дерева
 			$tempPG = &$this->dataCashTree[$startPG];

@@ -12,6 +12,7 @@
 			0=>'выводит всё в виде структуры дерева',
 			1=>'выводит все в общем массиве',
 			2=>'только начальный уровень от `Уровень вывода данных`',
+			3=>'выводить меню только на текущем уровне страницы',
 		);
 		$temp = 'ownerlist';
 		$this->_enum['levelmenuinc'] = $this->_getCashedList($temp);
@@ -24,10 +25,12 @@
 			$this->_enum['levelmenuinc'][0]);
 		$form = array(
 			'0'=>array('type'=>'list','listname'=>array('owner','menu'), 'caption'=>'Меню'),
-			'1'=>array('type'=>'list','listname'=>'typemenuinc', 'caption'=>'Тип вывода меню'),
+			'1'=>array('type'=>'list','listname'=>'typemenuinc', 'caption'=>'Тип вывода меню','onchange'=>'if(this.value==2) jQuery(\'#tr_flexform_2\').show(); else jQuery(\'#tr_flexform_2\').hide();'),
 			'2'=>array('type'=>'list','listname'=>'levelmenuinc', 'caption'=>'Уровень вывода данных'),
 			'3'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон'),
 		);
+		if($FUNCPARAM[1]!=2)
+			$form[0]['1']['style'] = 'display:none;';
 		return $form;
 	}
 

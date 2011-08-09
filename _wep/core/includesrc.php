@@ -95,8 +95,8 @@
 		if(strpos($temp,'jquery.js')!==false)
 			$temp .= '<script type="text/javascript" src="'.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].'include.js"></script>';
 		//if($_tpl['onload']) {
-			$temp .= '<script type="text/javascript">//<!--'."\nfunction readyF() {".$_tpl['onload']."}\n".'//--></script>'."\n";
-			$_tpl['onload'] = 'readyF();';
+		$temp .= "<script type=\"text/javascript\">\n//<!--\nfunction readyF() {".$_tpl['onload']."}\n//-->\n</script>\n";
+		$_tpl['onload'] = 'readyF();';
 		//}
 		$_tpl['script'] = $temp;
 	}
