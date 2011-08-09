@@ -30,7 +30,7 @@
 			'3'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон'),
 		);
 		if($FUNCPARAM[1]!=2)
-			$form[0]['1']['style'] = 'display:none;';
+			$form['2']['style'] = 'display:none;';
 		return $form;
 	}
 
