@@ -60,7 +60,10 @@
 
 	function arraySrcToStr() {
 		global $_tpl,$_CFG;
-		$temp = '';
+		$temp = $solt = '';
+		if($_CFG['site']['debugmode'])
+			$solt = '?t='.time();
+
 		if(isset($_tpl['styles']) and is_array($_tpl['styles'])) {
 			foreach($_tpl['styles'] as $kk=>$rr) {
 				if($rr[0]=='<')
@@ -68,7 +71,7 @@
 				elseif(is_array($rr))
 					$temp .= '<link type="text/css" href="'.implode('" rel="stylesheet"/>'."\n".'<link type="text/css" href="',$rr).'" rel="stylesheet"/>'."\n";
 				elseif($rr==1 and $kk)
-					$temp .= '<link type="text/css" href="'.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_style'].$kk.'.css" rel="stylesheet"/>'."\n";
+					$temp .= '<link type="text/css" href="'.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_style'].$kk.'.css'.$solt.'" rel="stylesheet"/>'."\n";
 				else
 					$temp .= '<style type="text/css">'.$rr.'</style>'."\n";
 			}
@@ -81,7 +84,7 @@
 				if(is_array($rr))
 					$temp .= '<script type="text/javascript" src="'.implode('"></script>'."\n".'<script type="text/javascript" src="',$rr).'"></script>'."\n";
 				elseif($rr==1 and $kk) {
-					$temp .= '<script type="text/javascript" src="'.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].$kk.'.js"></script>'."\n";
+					$temp .= '<script type="text/javascript" src="'.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].$kk.'.js'.$solt.'"></script>'."\n";
 					if($kk=='jquery.fancybox')
 						$_tpl['onload'] .= 'jQuery(\'.fancyimg\').fancybox();';//$_tpl['onload'] .= 'jQuery(\'div.imagebox a\').fancybox();jQuery(\'a.fancyimg\').fancybox();';
 					elseif(strpos($kk,'script.qrtip.jquery')!== false) {
@@ -93,7 +96,7 @@
 			}
 		}
 		if(strpos($temp,'jquery.js')!==false)
-			$temp .= '<script type="text/javascript" src="'.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].'include.js"></script>';
+			$temp .= '<script type="text/javascript" src="'.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].'include.js'.$solt.'"></script>';
 		//if($_tpl['onload']) {
 		$temp .= "<script type=\"text/javascript\">\n//<!--\nfunction readyF() {".$_tpl['onload']."}\n//-->\n</script>\n";
 		$_tpl['onload'] = 'readyF();';
@@ -103,13 +106,17 @@
 
 	function arraySrcToFunc() {
 		global $_tpl,$_CFG;
+		$solt = '';
+		if($_CFG['site']['debugmode'])
+			$solt = '?t='.time();
+
 		$temp = 'clearTimeout(timerid);fShowload(1);';
 		if($_tpl['styles'] and is_array($_tpl['styles']) and count($_tpl['styles'])) {
 			foreach($_tpl['styles'] as $kk=>$rr) {
 				if(is_array($rr))
 					$temp .= '$.includeCSS(\''.implode('\'); $.includeCSS(\'',$rr).'\'); ';
 				elseif($rr==1 and $kk)
-					$temp .= '$.includeCSS(\''.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_style'].$kk.'.css\');';
+					$temp .= '$.includeCSS(\''.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_style'].$kk.'.css'.$solt.'\');';
 				else
 					$temp .= 'alert(\'CSS not found '.$kk.'\');';
 			}
@@ -125,7 +132,7 @@
 					$tcnt++;
 				}
 				elseif($rr==1 and $kk) {
-					$temp .= '$.include(\''.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].$kk.'.js\','.$fn.');';
+					$temp .= '$.include(\''.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].$kk.'.js'.$solt.'\','.$fn.');';
 					$tcnt++;
 				}
 				else
