@@ -54,6 +54,7 @@ $_CFG['site'] = array(// для сайта
 	'work_title' => 'Технический перерыв',
 	'work_text' => 'Технический перерыв',
 	'redirectForRobots' => true,
+	'debugmode'=>false
 );
 
 /* END_MAIN_CFG */

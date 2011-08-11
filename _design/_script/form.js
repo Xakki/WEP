@@ -89,7 +89,7 @@ function checkPass(name) {
 			jQuery("form input[name=re_"+name+"]").attr({'class':'reject'});
 		else{
 			jQuery("form input[name=re_"+name+"]").attr({'class':'accept'});
-			jQuery("form input[type=submit]").attr({'disabled':''});
+			jQuery("form input[type=submit]").removeAttr('disabled');
 		}
 	}else {
 		jQuery("form input[name="+name+"]").attr({'class':'reject'});

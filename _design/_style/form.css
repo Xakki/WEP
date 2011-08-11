@@ -273,10 +273,14 @@
 	}
 	/*Значок в форме ввода*/
 	form input.accept{
-		background:transparent url(../default/img/x16.png) no-repeat scroll 100% 2px;
+		background-image:url(../default/img/x16.png);
+		background-repeat:no-repeat;
+		background-position:100% 2px;
 	}
 	form input.reject{
-		background:transparent url(../default/img/x16.png) no-repeat scroll 100% -30px;
+		background-image:url(../default/img/x16.png);
+		background-repeat:no-repeat;
+		background-position:100% -30px;
 	}
 	form input.load, select.load{
 		background:transparent url(../_img/loader16.gif) no-repeat scroll 100% 2px;

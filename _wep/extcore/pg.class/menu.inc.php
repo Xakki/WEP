@@ -12,10 +12,12 @@
 			0=>'выводит всё в виде структуры дерева',
 			1=>'выводит все в общем массиве',
 			2=>'только начальный уровень от `Уровень вывода данных`',
+			3=>'выводить меню только на текущем уровне страницы',
 		);
 		$temp = 'ownerlist';
 		$this->_enum['levelmenuinc'] = $this->_getCashedList($temp);
 		$this->_enum['levelmenuinc'][0] = array_merge(array(
+			''=>'---',
 			'#0'=>'# первый уровнь адреса',
 			'#1'=>'# второй уровнь адреса',
 			'#2'=>'# третий уровнь адреса',
@@ -24,15 +26,18 @@
 			$this->_enum['levelmenuinc'][0]);
 		$form = array(
 			'0'=>array('type'=>'list','listname'=>array('owner','menu'), 'caption'=>'Меню'),
-			'1'=>array('type'=>'list','listname'=>'typemenuinc', 'caption'=>'Тип вывода меню'),
+			'1'=>array('type'=>'list','listname'=>'typemenuinc', 'caption'=>'Тип вывода меню','onchange'=>'if(this.value==2) jQuery(\'#tr_flexform_2\').show(); else jQuery(\'#tr_flexform_2\').hide();'),
 			'2'=>array('type'=>'list','listname'=>'levelmenuinc', 'caption'=>'Уровень вывода данных'),
 			'3'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон'),
 		);
+		if($FUNCPARAM[1]!=2)
+			$form['2']['style'] = 'display:none;';
 		return $form;
 	}
 
 	$tplphp = $this->FFTemplate($FUNCPARAM[3],__DIR__);
-
+	if($FUNCPARAM[0]!=2)
+		$FUNCPARAM[2] = '';
 	$DATA = array($FUNCPARAM[3]=>$PGLIST->getMap($FUNCPARAM[0],$FUNCPARAM[1],$FUNCPARAM[2]));
 	$html .= $HTML->transformPHP($DATA,$tplphp);
 

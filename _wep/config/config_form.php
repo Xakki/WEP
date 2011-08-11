@@ -63,6 +63,7 @@ $_CFGFORM['site'] = array(// для сайта
 	'work_title' => array('type'=>'text','caption'=>'Заголовок для режима "Технический перерыв"', 'css' => 'fblock hsite', 'style' => 'display:none;'),
 	'work_text' => array('type'=>'text','caption'=>'Текст для режима "Технический перерыв"', 'css' => 'fblock hsite', 'style' => 'display:none;'),
 	'redirectForRobots' => array('type'=>'checkbox','caption'=>'Делать ссылки для Ботов', 'css' => 'fblock hsite', 'style' => 'display:none;'),
+	'debugmode' => array('type'=>'checkbox','caption'=>'DEBUG MODE', 'css' => 'fblock hsite', 'style' => 'display:none;'),
 );
 
 	$_CFGFORM['wep']['timezone']['valuelist'] = array();
