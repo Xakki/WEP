@@ -17,6 +17,7 @@
 		$temp = 'ownerlist';
 		$this->_enum['levelmenuinc'] = $this->_getCashedList($temp);
 		$this->_enum['levelmenuinc'][0] = array_merge(array(
+			''=>'---',
 			'#0'=>'# первый уровнь адреса',
 			'#1'=>'# второй уровнь адреса',
 			'#2'=>'# третий уровнь адреса',
@@ -35,7 +36,8 @@
 	}
 
 	$tplphp = $this->FFTemplate($FUNCPARAM[3],__DIR__);
-
+	if($FUNCPARAM[0]!=2)
+		$FUNCPARAM[2] = '';
 	$DATA = array($FUNCPARAM[3]=>$PGLIST->getMap($FUNCPARAM[0],$FUNCPARAM[1],$FUNCPARAM[2]));
 	$html .= $HTML->transformPHP($DATA,$tplphp);
 

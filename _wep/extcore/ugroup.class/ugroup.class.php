@@ -163,10 +163,6 @@ class ugroup_class extends kernel_extends
 		return $this->childs['users']->regConfirm();
 	}
 
-	function remind() {
-		return $this->childs['users']->remind();
-	}
-
 	public function getUserData($id) {
 		if(!$id) {
 			trigger_error('Error get user data', E_USER_WARNING);
@@ -547,102 +543,79 @@ class users_class extends kernel_extends {
 		return Array(array('messages'=>$mess),$flag);
 	}
 
-	function remind() {
-		global $HTML;
-		$form=1;$html='';
-		if(count($_GET) and $_GET['id']!='' and $_GET['t']!='' and $_GET['hash']!='') {
-			$listfields = array('t1.*');
-			$clause = 't1 where t1.id = \''.$_GET['id'].'\'';
-			$this->data = $this->_query($listfields,$clause);
+	function remindSET($_DATA,$pass,$repass=NULL) {
+		$mess = array();
+		$flag = 0;
+		$listfields = array('t1.*');
+		$clause = 't1 where t1.id = \''.$_DATA['id'].'\'';
+		$this->data = $this->_query($listfields,$clause);
+		$datau=$this->data[0];
+		if(count($this->data)==1 and $datau['active']==1 and $_DATA['hash']==(md5($datau[$this->fn_pass].$_DATA['t'].$datau['email']).'h')) {
+			
+			$form=0;
+			if($pass) {
+				if(is_null($repass) or $pass==$repass){
+					if(_strlen($pass)>=6) {
+						$this->SQL->execSQL('UPDATE '.$this->tablename.' SET '.$this->fn_pass.'="'.md5($this->_CFG['wep']['md5'].$pass).'" where email="'.$datau['email'].'"');
+						$mess[]  = array('ok','Новый пароль упешно записан. И вы можете авторизоваться прямо сейчас.');
+						$flag = 1;
+					}else
+						$mess[]  = array('error','Пароль должен быть длинее 6ти символов.');
+				}
+				else
+					$mess[]  = array('error','Неверно повторен пароль.');
+			}
+			
+		}
+		elseif(count($this->data)==1 and $this->data[0]['active']!=1) {
+			$mess[]  = array('error','Ваш профиль отключен или не подтверждён. Обратитесь в <a href="/mail.html?feedback=1">службу поддержки сайта</a>, если не сможете решить проблему.');
+		}
+		else{
+			$mess[]  = array('error','Не верные параметры данных.<br/> Возможно вы уже воспользовались данной ссылкой.');
+		}
+		if(!$flag)
+			$mess[]  = array('ok','Введите новый пароль для пользователя с email-ом '.$datau['email'].'. Пароль должен быть не менее 6ти символов. Используйте различные комбинации из спецсимволов, цифр, больших и маленьких букв.');
+		return array($flag,$mess);
+	}
+
+	function remindSEND($_DATA) {
+		$mess = array();
+		$flag = 0;
+		$listfields = array('t1.*');
+		$clause = 't1 where t1.email = \''.$_DATA['mail'].'\'';
+		$this->data = $this->_query($listfields,$clause);
+		if(count($this->data)==1 and $this->data[0]['active']==1) {
 			$datau=$this->data[0];
-			if(count($this->data)==1 and $datau['active']==1 and $_GET['hash']==(md5($datau[$this->fn_pass].$_GET['t'].$datau['email']).'h')) {
-				
-				$form=0;
-				if(count($_POST)) {
-					if($_POST['pass']==$_POST['re_pass']){
-						if(preg_match($this->_CFG['_MASK']['name'],$_POST['pass']) and _strlen($_POST['pass'])>=6) {
-							$this->SQL->execSQL('UPDATE '.$this->tablename.' SET '.$this->fn_pass.'="'.md5($this->_CFG['wep']['md5'].$_POST['pass']).'" where email="'.$datau['email'].'"');
-							$html = '<div class="ok">Новый пароль упешно записан. И вы можете авторизоваться прямо сейчас.</div>';
-							$form=1;
-						}else
-							$html = '<div class="error">Неверно повторен пароль.</div>';
-					}
-					else
-						$html = '<div class="error">Некоректные данные.</div>';
-				}
-				
-			}
-			elseif(count($this->data)==1 and $this->data[0]['active']!=1) {
-				$html = '<div class="error">Ваш профиль отключен или не подтверждён. Обратитесь в <a href="/mail.html?feedback=1">службу поддержки сайта</a></div>';
-			}
-			else{
-				$html = '<div class="error">Не верные входные данные.<br/> Возможно вы уже воспользовались данной ссылкой.</div>';
-			}
-			if($html) $html = '<div class="messages">'.$html.'</div>';
-			if(!$form) {
-				$html .= '<div class="messages"><div class="ok">Введите новый пароль для пользователя с email-ом '.$datau['email'].'. Пароль должен состоять из букв руского и английского алфавита, цифр и тире, и не менее 6ти символов.</div></div>
-				<br/>
-				<div class="cform" style="width:540px;"><form action="" method="post" name="newpass">
-					<div>Введите пароль</div> <input type="password" onkeyup="checkPass(\'pass\')" maxlength="32" value="" name="pass" class="accept"/>
-					<div>Повторите пароль</div><input type="password" onkeyup="checkPass(\'pass\')" maxlength="32" value="" name="re_pass" class="reject"/>
-					<div></div><input class="submit" type="submit" name="enter" value="Отправить" disabled="disabled"/>
-				</form>
-				</div>';
-			}
-		}else {
-
-			if(count($_POST) and $_POST['mail']!='') {
-
-				$listfields = array('t1.*');
-				$clause = 't1 where t1.email = \''.$_POST['mail'].'\'';
-				$this->data = $this->_query($listfields,$clause);
-				$datau=$this->data[0];
-				if(count($this->data)==1 and $datau['active']==1) {
-					$form=0;
-					$time=time();
-					$hash =md5($datau[$this->fn_pass].$time.$datau['email']).'h';
-					_new_class('mail',$MAIL);
-					$datamail['from']=$this->owner->config['mailrobot'];
-					$datamail['mail_to']=$datau['email'];
-					$datamail['subject']='Востановление пароля на '.strtoupper($_SERVER['HTTP_HOST']);
-					$href = '?id='.$datau['id'].'&t='.$time.'&hash='.$hash;
-					$datamail['text']=str_replace(
-							array('%email%','%login%','%href%','%time%','%host%'),
-							array($datau['email'],$datau[$this->fn_login],$href,date('Y-m-d H:i:s',($time+3600*24*2)),$_SERVER['HTTP_HOST']),
-							$this->owner->config['mailremind']);
-					$MAIL->reply = 0;
-					if($MAIL->Send($datamail)) {
-						// иногда сервер говорит что ошибка, а сам всеравно письма отсылает
-					}else {
-						trigger_error('Напоминание пароля - '.$this->_CFG['_MESS']['mailerr'], E_USER_WARNING);
-						//$html  = $this->_CFG['_MESS']['mailerr'];
-					}
-					$html = '<div class="ok">На ваш E-mail отправленно письмо с секретной ссылкой на форму для установки нового пароля.<br/> Ссылка действительна в течении 2х суток с момента отправки данной формы.<br/></div>';
-				}
-				elseif(count($this->data)==1) {
-					$html = '<div class="error">Ваш профиль отключен или не подтверждён. Обратитесь в <a href="/mail.html?feedback=1">службу поддержки сайта</a></div>';
-				}
-				else{
-					$html = '<div class="error">Такой адрес на сайте не зарегистрирован.</div>';
-				}
-				$html = '<div class="messages">'.$html.'</div>';
-
-			}
-
-			if($form) {
-				$html .= '<div class="messages"><div class="ok">Введите ваш E-mail, указанный при регистрации.<br/>
-				На даный почтовый ящик будет выслано письмо со ссылкой для смены пароля.<br/>
-				Ссылка на смену пароля будет действовать в течении 2х суток с момента отправки данной формы.</div></div>
-				<br/>
-				<div class="cform" style="width:540px;"><form action="" method="post" name="remind">
-					Введите свой E-mail<br/>
-					<input type="text" name="mail"/>
-					<div></div><input class="submit" type="submit" name="enter" value="Запрос смены пароля"/>
-				</form>
-				</div>';
+			$time=time();
+			$hash =md5($datau[$this->fn_pass].$time.$datau['email']).'h';
+			_new_class('mail',$MAIL);
+			$datamail['from']=$this->owner->config['mailrobot'];
+			$datamail['mail_to']=$datau['email'];
+			$datamail['subject']='Востановление пароля на '.strtoupper($_SERVER['HTTP_HOST']);
+			$href = '?id='.$datau['id'].'&t='.$time.'&hash='.$hash;
+			$datamail['text']=str_replace(
+					array('%email%','%login%','%href%','%time%','%host%'),
+					array($datau['email'],$datau[$this->fn_login],$href,date('Y-m-d H:i:s',($time+3600*24*2)),$_SERVER['HTTP_HOST']),
+					$this->owner->config['mailremind']);
+			$MAIL->reply = 0;
+			if($MAIL->Send($datamail)) {
+				$mess[]  = array('ok','На ваш E-mail отправленно письмо с секретной ссылкой на форму для установки нового пароля.<br/> Ссылка действительна в течении 2х суток с момента отправки данной формы.');
+				$flag = 1;
+			}else {
+				trigger_error('Напоминание пароля - '.$this->_CFG['_MESS']['mailerr'], E_USER_WARNING);
+				$mess[]  = array('error',$this->_CFG['_MESS']['mailerr']);
+				$flag = 0;
 			}
 		}
-		return '<div align="center">'.$html.'</div>';
+		elseif(count($this->data)==1) {
+			$flag = -1;
+			$mess[]  = array('error','Ваш профиль отключен или не подтверждён. Обратитесь в <a href="/mail.html?feedback=1">службу поддержки сайта</a>');
+		}
+		else{
+			$flag = -2;
+			$mess[]  = array('error','Такой адрес на сайте не зарегистрирован.');
+		}
+		return array($flag,$mess);
 	}
 
 	function setUserSession($id) {
