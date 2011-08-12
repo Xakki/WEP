@@ -113,7 +113,7 @@
 						$md = array($md);
 						$key = 0;
 					}
-					$r['valuelist'] = $this->_forlist($md ,$key,$val);
+					$r['valuelist'] = $this->_forlist($md ,$key,$val,$r['multiple']);
 				}
 				elseif(isset($r['listname'])) {
 					if(!$r['readonly']) {

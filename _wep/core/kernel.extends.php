@@ -1784,17 +1784,36 @@ abstract class kernel_extends {
 
 	/* TREE CREATOR */
 
-	public function _forlist(&$data, $id, $select='') {
+	public function _forlist(&$data, $id, $select='',$multiple=0) {
 		/*
 		  array('name'=>'NAME','id'=>1 [, 'sel'=>0, 'checked'=>0])
 		 */
 		//$select - array(значение=>1)
 		$s = array();
+		
+		if($multiple==2 and is_array($select) and count($select)) {
+			foreach($select as $sr) {	
+				foreach($data as $kk=>$kd) {
+					if (isset($kd[$sr])) {
+						$s[$sr] = array('#id#' => $sr, '#sel#' => 1);
+						if(is_array($kd[$sr]) and isset($kd[$sr]['#name#']))
+							$s[$sr]['#name#'] = $kd[$sr]['#name#'];
+						else
+							$s[$sr]['#name#'] = $kd[$sr];
+						break;
+					}
+				}
+			}
+			$multiple = 22;
+		}
+
 		if (isset($data[$id]) and is_array($data[$id]) and count($data[$id]))
 			foreach ($data[$id] as $key => $value) {
 				if ($select != '' and is_array($select)) {
-					if (isset($select[$key]))
+					if (isset($select[$key])) {
+						if($multiple==22) continue;
 						$sel = 1;
+					}
 					else
 						$sel = 0;
 				}
@@ -1814,7 +1833,7 @@ abstract class kernel_extends {
 				}else
 					$s[$key]['#name#'] = $value;
 				if ($key != $id and isset($data[$key]) and count($data[$key]) and is_array($data[$key]))
-					$s[$key]['#item#'] = $this->_forlist($data, $key, $select);
+					$s[$key]['#item#'] = $this->_forlist($data, $key, $select, $multiple);
 			}
 		return $s;
 	}
