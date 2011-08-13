@@ -16,7 +16,7 @@ class content_class extends kernel_extends {
 		parent::_create();
 
 		# fields
-		$this->fields['marker'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'min' => '1');
+		$this->fields['marker'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'min' => '1', 'default'=>'text');
 		$this->fields['href'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL','default'=>'');
 		$this->fields['global'] = array('type' => 'bool', 'attr' => 'NOT NULL','default'=>'0');
 		$this->fields['pagetype'] = array('type' => 'varchar', 'width'=>255, 'attr' => 'NOT NULL','default'=>'');

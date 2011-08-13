@@ -1,21 +1,24 @@
 <?
+	// сначала задаем значения по умолчанию
+	if(!isset($FUNCPARAM[0]) or !$FUNCPARAM[0]) $FUNCPARAM[0] = '#ext#login';
+	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = '';
 
-	if(isset($ShowFlexForm)) {
+	// рисуем форму для админки чтобы удобно задавать параметры
+	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
+		$this->_getCashedList('phptemplates', __DIR__);
+		$temp = 'ownerlist';
+		$this->_enum['levelmenuinc'] = $this->_getCashedList($temp);
 		$form = array(
-			'tpl'=>array('type'=>'text','caption'=>'PHP Шаблон'),
-			'remindpage'=>array('type'=>'text','caption'=>'Страница "Напомнить пароль"'),
+			'0'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон'),
+			'1'=>array('type'=>'list','listname'=>'levelmenuinc', 'caption'=>'Страница напоминания пароля'),
 		);
 		return $form;
 	}
+	if($FUNCPARAM[1])
+		$FUNCPARAM[1] = $this->getHref($FUNCPARAM[1],true);
 
-	if(!isset($FUNCPARAM[0]) or !$FUNCPARAM[0]) { // Шаблон
-		$FUNCPARAM[0] = 'login';
-		$TRFM = array($FUNCPARAM[0],__DIR__.'/templates/');
-	} else 
-		$TRFM = $FUNCPARAM[0];
-	if(!isset($FUNCPARAM[1])) // страница напоминания пароля
-		$FUNCPARAM[1] = '/remind.html';
 
+	$tplphp = $this->FFTemplate($FUNCPARAM[0],__DIR__);
 
 	$result = array();
 	if(isset($_REQUEST['ref']) and $_REQUEST['ref']!='') {
@@ -67,7 +70,7 @@
 	);
 
 	$DATA = array($FUNCPARAM[0]=>$DATA);
-	$html = $HTML->transformPHP($DATA,$TRFM);
+	$html = $HTML->transformPHP($DATA,$tplphp);
 
 	return $html;
 

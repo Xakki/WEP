@@ -79,7 +79,6 @@
 		padding:5px 0;
 	}
 	.divform .infoinput{
-		background:transparent url(../default/img/bluebg.gif) repeat scroll 0 100%;
 		font-size:0.9em;
 		font-weight:bold;
 		text-align:center;
@@ -273,12 +272,12 @@
 	}
 	/*Значок в форме ввода*/
 	form input.accept{
-		background-image:url(../default/img/x16.png);
+		background-image:url(../_img/x16.png);
 		background-repeat:no-repeat;
 		background-position:100% 2px;
 	}
 	form input.reject{
-		background-image:url(../default/img/x16.png);
+		background-image:url(../_img/x16.png);
 		background-repeat:no-repeat;
 		background-position:100% -30px;
 	}

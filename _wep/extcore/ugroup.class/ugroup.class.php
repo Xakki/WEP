@@ -543,20 +543,22 @@ class users_class extends kernel_extends {
 		return Array(array('messages'=>$mess),$flag);
 	}
 
-	function remindSET($_DATA,$pass,$repass=NULL) {
+	function remindSET($_DATA) {
 		$mess = array();
-		$flag = 0;
+		$flag = -1;
 		$listfields = array('t1.*');
-		$clause = 't1 where t1.id = \''.$_DATA['id'].'\'';
+		$clause = 't1 where t1.id = \''.$_DATA['get']['id'].'\'';
 		$this->data = $this->_query($listfields,$clause);
 		$datau=$this->data[0];
-		if(count($this->data)==1 and $datau['active']==1 and $_DATA['hash']==(md5($datau[$this->fn_pass].$_DATA['t'].$datau['email']).'h')) {
+		if($_DATA['get']['t']<(time()-3600*$_DATA['timer']))
+			$mess[]  = array('error','Срок действия ссылки "востановления пароля" истёк.');
+		elseif(count($this->data)==1 and $datau['active']==1 and $_DATA['get']['hash']==(md5($datau[$this->fn_pass].$_DATA['get']['t'].$datau['email']).'h')) {
 			
-			$form=0;
-			if($pass) {
-				if(is_null($repass) or $pass==$repass){
-					if(_strlen($pass)>=6) {
-						$this->SQL->execSQL('UPDATE '.$this->tablename.' SET '.$this->fn_pass.'="'.md5($this->_CFG['wep']['md5'].$pass).'" where email="'.$datau['email'].'"');
+			$flag=0;
+			if(isset($_DATA['pass']) and $_DATA['pass']) {
+				if(!isset($_DATA['re_pass']) or $_DATA['pass']==$_DATA['re_pass']){
+					if(_strlen($_DATA['pass'])>=6) {
+						$this->SQL->execSQL('UPDATE '.$this->tablename.' SET '.$this->fn_pass.'="'.md5($this->_CFG['wep']['md5'].$_DATA['pass']).'" where email="'.$datau['email'].'"');
 						$mess[]  = array('ok','Новый пароль упешно записан. И вы можете авторизоваться прямо сейчас.');
 						$flag = 1;
 					}else
@@ -573,7 +575,7 @@ class users_class extends kernel_extends {
 		else{
 			$mess[]  = array('error','Не верные параметры данных.<br/> Возможно вы уже воспользовались данной ссылкой.');
 		}
-		if(!$flag)
+		if($flag===0)
 			$mess[]  = array('ok','Введите новый пароль для пользователя с email-ом '.$datau['email'].'. Пароль должен быть не менее 6ти символов. Используйте различные комбинации из спецсимволов, цифр, больших и маленьких букв.');
 		return array($flag,$mess);
 	}
@@ -582,7 +584,7 @@ class users_class extends kernel_extends {
 		$mess = array();
 		$flag = 0;
 		$listfields = array('t1.*');
-		$clause = 't1 where t1.email = \''.$_DATA['mail'].'\'';
+		$clause = 't1 where t1.email = \''.$_DATA['post']['mail'].'\'';
 		$this->data = $this->_query($listfields,$clause);
 		if(count($this->data)==1 and $this->data[0]['active']==1) {
 			$datau=$this->data[0];
@@ -595,7 +597,7 @@ class users_class extends kernel_extends {
 			$href = '?id='.$datau['id'].'&t='.$time.'&hash='.$hash;
 			$datamail['text']=str_replace(
 					array('%email%','%login%','%href%','%time%','%host%'),
-					array($datau['email'],$datau[$this->fn_login],$href,date('Y-m-d H:i:s',($time+3600*24*2)),$_SERVER['HTTP_HOST']),
+					array($datau['email'],$datau[$this->fn_login],$href,date('Y-m-d H:i',($time+3600*$_DATA['timer'])),$_SERVER['HTTP_HOST']),
 					$this->owner->config['mailremind']);
 			$MAIL->reply = 0;
 			if($MAIL->Send($datamail)) {

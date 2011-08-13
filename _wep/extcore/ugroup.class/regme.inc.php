@@ -1,7 +1,24 @@
 <?
+	if(!isset($FUNCPARAM[0]) or !$FUNCPARAM[0]) $FUNCPARAM[0] = 'formcreat';
+	//if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = '';
+
+	// рисуем форму для админки чтобы удобно задавать параметры
+	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
+		$this->_getCashedList('phptemplates', __DIR__);
+		//$temp = 'ownerlist';
+		//$this->_enum['levelmenuinc'] = $this->_getCashedList($temp);
+		$form = array(
+			'0'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон'),
+			//'1'=>array('type'=>'list','listname'=>'levelmenuinc', 'caption'=>'Страница напоминания пароля'),
+		);
+		return $form;
+	}
+
 	global $_tpl;
 	_new_class('ugroup', $UGROUP);
-	if(!isset($FUNCPARAM[0])) $FUNCPARAM[0] = 'formcreat'; // шаблон
+
+	$tplphp = $this->FFTemplate($FUNCPARAM[0],__DIR__);
+
 	$DATA = array();
 	if(isset($_GET['confirm'])){
 		list($DATA,$flag) = $UGROUP->regConfirm();
@@ -20,8 +37,6 @@
 		$_tpl['onload'] .= 'fMessPos();';
 	} else {
 		list($DATA[$FUNCPARAM[0]],$flag) = $UGROUP->regForm();
-		$html = $HTML->transformPHP($DATA,$FUNCPARAM[0]);
+		$html = $HTML->transformPHP($DATA,$tplphp);
 	}
 	return $html;
-	//<div style="width: 800px; height: 90%;">
-	//</div>

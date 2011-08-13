@@ -39,6 +39,9 @@
 	if($FUNCPARAM[0]!=2)
 		$FUNCPARAM[2] = '';
 	$DATA = array($FUNCPARAM[3]=>$PGLIST->getMap($FUNCPARAM[0],$FUNCPARAM[1],$FUNCPARAM[2]));
+	if($Ctitle)
+		$DATA[$FUNCPARAM[3]]['#title#'] = $Ctitle;
+
 	$html .= $HTML->transformPHP($DATA,$tplphp);
 
 	return $html;

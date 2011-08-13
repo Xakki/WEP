@@ -1,14 +1,35 @@
 <?
+	if(!isset($FUNCPARAM[0]) or !$FUNCPARAM[0]) $FUNCPARAM[0] = 'messages';
+	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = 48;
+
+	// рисуем форму для админки чтобы удобно задавать параметры
+	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
+		$this->_getCashedList('phptemplates', __DIR__);
+		$form = array(
+			'0'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон для сообщений'),
+			'1'=>array('type'=>'int','caption'=>'Время действия ссылки', 'comment'=>'В часах'),
+		);
+		return $form;
+	}
+
+
+	$tplphp = $this->FFTemplate($FUNCPARAM[0],__DIR__);
+
 	global $UGROUP,$USERS, $HTML;
 	if(!$UGROUP) _new_class('ugroup', $UGROUP);
 	if(!$USERS) $USERS = &$UGROUP->childs['users'];
-
+	
+	$PARAM = array('timer'=>$FUNCPARAM[1]);
 
 	$html='';
 	if(count($_GET) and $_GET['id']!='' and $_GET['t']!='' and $_GET['hash']!='') {
-		list($flag,$DATA) = $USERS->remindSET($_GET,$_POST['fpass'],$_POST['re_fpass']);
-		$DATA = array('messages'=>$DATA);
-		$html .= $HTML->transformPHP($DATA,'messages');
+		$PARAM['get'] = $_GET;
+		if(isset($_POST['fpass']))
+			$PARAM['pass'] = $_POST['fpass'];
+		$PARAM['re_pass'] = (isset($_POST['re_fpass'])?$_POST['re_fpass']:'');
+		list($flag,$DATA) = $USERS->remindSET($PARAM);
+		$DATA = array($FUNCPARAM[0]=>$DATA);
+		$html .= $HTML->transformPHP($DATA,$tplphp);
 		if(!$flag) {
 			$html .= '<br/>
 			<div class="cform" style="width:540px;"><form action="" method="post" name="newpass">
@@ -18,12 +39,13 @@
 			</form>
 			</div>';
 		}
-	}else {
+	} else {
 		$flag = 0;
 		if(count($_POST) and $_POST['mail']!='') {
-			list($flag,$DATA) = $USERS->remindSEND($_POST);
-			$DATA = array('messages'=>$DATA);
-			$html .= $HTML->transformPHP($DATA,'messages');
+			$PARAM['post'] = $_POST;
+			list($flag,$DATA) = $USERS->remindSEND($PARAM);
+			$DATA = array($FUNCPARAM[0]=>$DATA);
+			$html .= $HTML->transformPHP($DATA,$tplphp);
 		}
 
 		if($flag<1) {
