@@ -559,7 +559,7 @@ class users_class extends kernel_extends {
 				if(!isset($_DATA['re_pass']) or $_DATA['pass']==$_DATA['re_pass']){
 					if(_strlen($_DATA['pass'])>=6) {
 						$this->SQL->execSQL('UPDATE '.$this->tablename.' SET '.$this->fn_pass.'="'.md5($this->_CFG['wep']['md5'].$_DATA['pass']).'" where email="'.$datau['email'].'"');
-						$mess[]  = array('ok','Новый пароль упешно записан. И вы можете авторизоваться прямо сейчас.');
+						$mess[]  = array('ok','Ура! Ваш пароль был успешно изменён.');
 						$flag = 1;
 					}else
 						$mess[]  = array('error','Пароль должен быть длинее 6ти символов.');
@@ -584,7 +584,7 @@ class users_class extends kernel_extends {
 		$mess = array();
 		$flag = 0;
 		$listfields = array('t1.*');
-		$clause = 't1 where t1.email = \''.$_DATA['post']['mail'].'\'';
+		$clause = 't1 where t1.email = \''.$_DATA['mail'].'\'';
 		$this->data = $this->_query($listfields,$clause);
 		if(count($this->data)==1 and $this->data[0]['active']==1) {
 			$datau=$this->data[0];
