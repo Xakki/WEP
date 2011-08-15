@@ -56,9 +56,8 @@ abstract class kernel_extends {
 			$this->setFieldsForm();
 			return $this->fields_form;
 		}
-		echo ' - ' . $name;
-		print_r(debugPrint());
-		//return NULL;
+		trigger_error('Своиство '.$name.' не найдено в классе '.$this->_cl, E_USER_NOTICE);
+		return NULL;
 	}
 
 	/* function __set_hook($f) {

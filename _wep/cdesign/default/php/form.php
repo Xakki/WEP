@@ -275,9 +275,9 @@ function tpl_form(&$data) {
 							$temp[0] = (int)$temp[0]; 
 
 							//значения по умолчанию
-							if(!isset($r['range_back']['year'])) $r['range_back']['year'] = 2;
-							if(!isset($r['range_up']['year'])) $r['range_up']['year'] = 3;
-							for($i=((int)date('Y')-($r['range_back']['year']));$i<=((int)date('Y')+($r['range_up']['year']));$i++)
+							if(!isset($r['mask']['year_back'])) $r['mask']['year_back'] = 2;
+							if(!isset($r['mask']['year_up'])) $r['mask']['year_up'] = 3;
+							for($i=((int)date('Y')-($r['mask']['year_back']));$i<=((int)date('Y')+($r['mask']['year_up']));$i++)
 								$r['value']['year']['item'][$i] = array('#id#'=>$i, '#name#'=>$i);							
 						}
 						// месяц

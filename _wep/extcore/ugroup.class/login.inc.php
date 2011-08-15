@@ -41,36 +41,50 @@
 	}
 	else 
 		$ref= $_CFG['_HREF']['BH'];
-	$mess = $form = '';
+	
+	$mess = array();
 
 	if(count($_POST) and isset($_POST['login'])) {
 		$result = static_main::userAuth($_POST['login'],$_POST['pass']);
 		if($result[1]) {
 			//@header("Location: ".$ref);
 			//die();
-			$mess=$result[0];
+			//$mess=$result[0];
 		}
 	}
 	elseif(isset($_REQUEST['exit']) && $_REQUEST['exit']=="ok") {
 		static_main::userExit();
-		$mess=$_CFG['_MESS']['exitok'];
+		$result = array($_CFG['_MESS']['exitok'],1);
 	}
 	elseif(isset($_COOKIE['remember']) and !static_main::_prmUserCheck() and $result = static_main::userAuth() and $result[1]) {
 		//@header("Location: ".$ref);
 		//die();
-		$mess=$result[0];
+		//$mess=$result[0];
 	}
 
 	$DATA = array(
-		'mess'=>$mess,
-		'result'=>$result,
+		'mess'=>'',
+		'result'=>0,
 		'ref'=>$ref,
-		'title'=>$rowPG['name'],
+		'#title#'=>$Ctitle,
 		'remindpage'=>$FUNCPARAM[1]
 	);
+	if(count($result)) {
+		$mess['messages'][0][1] = $result[0];
+		if($result[1]) {
+			$mess['messages'][0][0] = 'ok';
+			$DATA['result'] = 1;
+			$this->pageinfo['template'] = 'waction';
+		}
+		else {
+			$mess['messages'][0][0] = 'error';
+			$DATA['result'] = -1;
+		}
+		$DATA['mess'] = $HTML->transformPHP($mess,'messages');
+	}
 
 	$DATA = array($FUNCPARAM[0]=>$DATA);
 	$html = $HTML->transformPHP($DATA,$tplphp);
-
+print_r($HTML->_templates);
 	return $html;
 

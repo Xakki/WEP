@@ -550,29 +550,44 @@ function _new_class($name, &$MODUL, &$OWNER = NULL) {
 	if (isset($_CFG['singleton'][$name])) {
 		$MODUL = $_CFG['singleton'][$name];
 		return true;
-	} else {
+	} 
+	else {
 		$class_name = $name . "_class";
-		try {
-			if (!class_exists($class_name,false) and $file = _modulExists($class_name,$OWNER)) {
-				require_once($file);
-			}
-			if(class_exists($class_name,false)) {
-				$getparam = array_slice(func_get_args(), 2);
-				$obj = new ReflectionClass($class_name);
-				//$pClass = $obj->getParentClass();
-				$MODUL = $obj->newInstanceArgs($getparam);
-				/* extract($getparam,EXTR_PREFIX_ALL,'param');
-				  if(count($getparam)) {
-				  $p = '$param'.implode(',$param',array_keys($getparam)).'';
-				  } else $p = '';
-				  eval('$MODUL = new '.$class_name.'('.$p.');'); */
-				if ($MODUL)
-					return true;
-			}
-				throw new Exception('Can`t init `' . $class_name . '` modul ');
-		} catch (Exception $e) {
-			trigger_error($e->getMessage(), E_USER_WARNING);
+		if (!class_exists($class_name,false) and (!$_CFG['modulprm'][$name]['pid'] or $OWNER) and $file = _modulExists($class_name,$OWNER)) {
+			require_once($file);
 		}
+		if(class_exists($class_name,false)) {
+			$getparam = array_slice(func_get_args(), 2);
+			$obj = new ReflectionClass($class_name);
+			//$pClass = $obj->getParentClass();
+			$MODUL = $obj->newInstanceArgs($getparam);
+			/* extract($getparam,EXTR_PREFIX_ALL,'param');
+			  if(count($getparam)) {
+			  $p = '$param'.implode(',$param',array_keys($getparam)).'';
+			  } else $p = '';
+			  eval('$MODUL = new '.$class_name.'('.$p.');'); */
+			if ($MODUL)
+				return true;
+		}
+		elseif ($_CFG['modulprm'][$name]['pid'] and is_null($OWNER)) {
+			$moduls = array($name);
+			while ($_CFG['modulprm'][$name]['pid'])
+			{
+				$moduls[] = $_CFG['modulprm'][$name]['pid'];
+				$name = $_CFG['modulprm'][$name]['pid'];
+			}
+
+			$cnt = count($moduls);
+
+			_new_class($moduls[$cnt-1], $MODUL);
+
+			for ($i=$cnt-2; $i>=0; $i--)
+			{
+				$MODUL = $MODUL->childs[$moduls[$i]];
+			}
+			return true;
+		} else
+			trigger_error('Can`t init `' . $class_name . '` modul ', E_USER_WARNING);
 	}
 	return false;
 }

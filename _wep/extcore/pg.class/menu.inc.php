@@ -38,10 +38,10 @@
 	$tplphp = $this->FFTemplate($FUNCPARAM[3],__DIR__);
 	if($FUNCPARAM[0]!=2)
 		$FUNCPARAM[2] = '';
-	$DATA = array($FUNCPARAM[3]=>$PGLIST->getMap($FUNCPARAM[0],$FUNCPARAM[1],$FUNCPARAM[2]));
-	if($Ctitle)
-		$DATA[$FUNCPARAM[3]]['#title#'] = $Ctitle;
-
+	
+	$DATA = array('#item#' => $PGLIST->getMap($FUNCPARAM[0],$FUNCPARAM[1],$FUNCPARAM[2]));
+	$DATA['#title#'] = $Ctitle;
+	$DATA = array($FUNCPARAM[3]=>$DATA);
 	$html .= $HTML->transformPHP($DATA,$tplphp);
 
 	return $html;

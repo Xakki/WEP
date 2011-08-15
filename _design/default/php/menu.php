@@ -1,10 +1,10 @@
 <?
 	function tpl_menu(&$data) {
 		$html = '';
-		if(isset($data) and count($data)) {
+		if(isset($data['#item#']) and count($data['#item#'])) {
 			//$html .= '<div class="menu">';
 			//$last = count($data);
-			foreach($data as $k=>$r) {
+			foreach($data['#item#'] as $k=>$r) {
 				if($r['sel'])
 					$html .= '<span>'.$r['name'].'</span>';
 				else
@@ -15,7 +15,7 @@
 					$r['attr'] .= ' style="width:'.$prs.'%;"';*/
 				
 				if(isset($r['#item#']) and count($r['#item#'])) {
-					$html .= tpl_menu($r['#item#']);
+					$html .= tpl_menu($r);
 				}
 			}
 			//$html .= '</div>';

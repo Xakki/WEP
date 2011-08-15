@@ -5,7 +5,7 @@ function tpl_loginAjax($data) {
 	$html = '<div id="loginblock" style="display:none;position:absolute;z-index:30;top:50%;left:50%;">
 			<div class="layerblock">
 				<div class="blockclose" onclick="$(\'#loginblock\').hide();showBG(0);">&#160;</div>
-				<div class="blockhead">'.$data['title'].'</div><div class="hrb">&#160;</div>
+				<div class="blockhead">'.$data['#title#'].'</div><div class="hrb">&#160;</div>
 				<div class="cform">
 					<form action="'.$_CFG['_HREF']['siteJS'].'?_view=login" method="post" onsubmit="return JSWin({\'type\':this})">
 						<div>Логин:</div><input type="text" name="login" tabindex="1"/>

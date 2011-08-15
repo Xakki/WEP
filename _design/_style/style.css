@@ -128,13 +128,13 @@
 		padding:5px 0;
 	}
 	.folded {
-		background:transparent url(../default/img/x16.png)  no-repeat scroll 0 -16px;
+		background:transparent url(../_img/x16.png)  no-repeat scroll 0 -16px;
 		display:block;
 		padding-left:1.4em;
 		border-bottom:1px dashed #C3CBD1;
 	}
 	.unfolded {
-		background:transparent url(../default/img/x16.png)  no-repeat scroll 0 -48px;
+		background:transparent url(../_img/x16.png)  no-repeat scroll 0 -48px;
 		display:block;
 		padding-left:1.4em;
 		border-bottom:1px dashed transparent;
