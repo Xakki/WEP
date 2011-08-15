@@ -85,6 +85,6 @@
 
 	$DATA = array($FUNCPARAM[0]=>$DATA);
 	$html = $HTML->transformPHP($DATA,$tplphp);
-print_r($HTML->_templates);
+
 	return $html;
 
