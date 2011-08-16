@@ -224,6 +224,8 @@ abstract class kernel_extends {
 			$this->mf_ordctrl = 'ordind';
 		if (is_bool($this->mf_actctrl) and $this->mf_actctrl)
 			$this->mf_actctrl = 'active';
+		if (is_bool($this->mf_timecr) and $this->mf_timecr)
+			$this->mf_timecr = 'mf_timecr';
 
 		$this->_listnameSQL = ($this->mf_namefields ? $this->mf_namefields : 'id'); // для SQL запроса при выводе списка
 		$this->_listname = ($this->mf_namefields ? $this->mf_namefields : 'id'); // ', `_listnameSQL` as `_listname`'
@@ -272,7 +274,7 @@ abstract class kernel_extends {
 		if ($this->mf_timestamp)
 			$this->fields['mf_timestamp'] = array('type' => 'timestamp', 'attr' => 'NOT NULL');
 		if ($this->mf_timecr)
-			$this->fields['mf_timecr'] = array('type' => 'int', 'width' => 11, 'attr' => 'unsigned NOT NULL', 'default' => '0');
+			$this->fields[$this->mf_timecr] = array('type' => 'int', 'width' => 11, 'attr' => 'unsigned NOT NULL', 'default' => '0');
 		if ($this->mf_timeup)
 			$this->fields['mf_timeup'] = array('type' => 'int', 'width' => 11, 'attr' => 'unsigned NOT NULL', 'default' => '0');
 		if ($this->mf_timeoff)

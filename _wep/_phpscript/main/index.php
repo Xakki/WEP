@@ -64,7 +64,7 @@
 
 	session_go();
 
-	$_tpl['logs']=$_tpl['onload']=$_tpl['city']=$_tpl['blockadd']=$_tpl['param']=$_tpl['blockadd']='';
+	$_tpl['meta'] = $_tpl['logs']=$_tpl['onload']=$_tpl['city']=$_tpl['blockadd']=$_tpl['param']=$_tpl['blockadd']='';
 	$rid = 0;
 
 

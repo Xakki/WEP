@@ -12,7 +12,7 @@ class static_form {
 
 	static function _add(&$_this,$flag_select=true) {
 		// add ordind field
-		if ($_this->mf_ordctrl and $_this->fld_data[$_this->mf_ordctrl]==0) {
+		if ($_this->mf_ordctrl and (!isset($_this->fld_data[$_this->mf_ordctrl]) or $_this->fld_data[$_this->mf_ordctrl]==0)) {
 			if ($ordind = $_this->_get_new_ord())
 				$_this->fld_data[$_this->mf_ordctrl] = $ordind;
 		}
@@ -20,7 +20,7 @@ class static_form {
 		if ($_this->mf_istree and $_this->parent_id and !$_this->fld_data[$_this->mf_istree])
 			$_this->fld_data[$_this->mf_istree] = $_this->parent_id;
 		// add owner_id field
-		if (!$_this->fld_data[$_this->owner_name] and $_this->owner)
+		if ($_this->owner and !$_this->fld_data[$_this->owner_name])
 			$_this->fld_data[$_this->owner_name] = $_this->owner->id;
 		if ($_this->mf_timecr) 
 			$_this->fld_data['mf_timecr'] = $_this->_CFG['time'];
@@ -32,7 +32,7 @@ class static_form {
 			if(!(int)$_this->fld_data['mf_ipcreate'])
 				trigger_error('ERROR REMOTE_ADDR `'.$_SERVER['REMOTE_ADDR'].'`. '.print_r($_POST,true), E_USER_WARNING);
 		}
-		if($_this->mf_createrid and !$_this->fld_data[$_this->mf_createrid] and isset($_SESSION['user']['id']))
+		if($_this->mf_createrid and isset($_SESSION['user']['id']) and (!isset($_this->fld_data[$_this->mf_createrid]) or !$_this->fld_data[$_this->mf_createrid]) )
 			$_this->fld_data[$_this->mf_createrid]= $_SESSION['user']['id'];
 
 		if (!isset($_this->fld_data) && !count($_this->fld_data))
