@@ -445,8 +445,9 @@ class users_class extends kernel_extends {
 						if($this->_add_item($arr['vars'])) {
 							$this->SQL->execSQL('UPDATE '.$this->tablename.' SET '.$this->mf_createrid.'="'.$this->id.'" where '.$this->fn_login.'="'.$arr['vars'][$this->fn_login].'"');
 							_new_class('mail',$MAIL);
-							$datamail['from']=$this->owner->config['mailrobot'];
+							$datamail['creater_id']=0;
 							$datamail['mail_to']=$arr['vars']['email'];
+							$datamail['user_to']=$this->id;
 							$datamail['subject']='Подтвердите регистрацию на '.strtoupper($_SERVER['HTTP_HOST']);
 							$href = '?confirm='.$arr['vars'][$this->fn_login].'&hash='.$arr['vars']['reg_hash'];
 							
@@ -591,8 +592,9 @@ class users_class extends kernel_extends {
 			$time=time();
 			$hash =md5($datau[$this->fn_pass].$time.$datau['email']).'h';
 			_new_class('mail',$MAIL);
-			$datamail['from']=$this->owner->config['mailrobot'];
+			$datamail['creater_id']=0;
 			$datamail['mail_to']=$datau['email'];
+			$datamail['user_to']=$datau['id'];
 			$datamail['subject']='Востановление пароля на '.strtoupper($_SERVER['HTTP_HOST']);
 			$href = '?id='.$datau['id'].'&t='.$time.'&hash='.$hash;
 			$datamail['text']=str_replace(
