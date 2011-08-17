@@ -98,15 +98,16 @@ function checkPass(name) {
 	return true;
 }
 
-function password_new() {
+function password_new(obj) {
 	var type1 = 'password';
 	var type2 = 'text';
-	if(!jQuery('input[type=password].password').length){
+	var inp = jQuery(obj).parent().find('input.password');
+	if(inp.attr('type')!='password' ) {
 		type1 = 'text';
 		type2 = 'password';
 	}
-	jQuery('.password').after("<input type='"+type2+"' value='"+jQuery('input[type='+type1+'].password').attr('value')+"' name='"+jQuery('input[type='+type1+'].password').attr('name')+"' class='password'/>");
-	jQuery('input[type='+type1+'].password').remove();
+	inp.after("<input name=\""+inp.attr('name')+"\" type=\""+type2+"\" value=\""+inp.attr('value')+"\" class=\"password\"/>");
+	inp.remove();
 }
 
 /*AXAX LIST*/
