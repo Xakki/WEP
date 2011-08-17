@@ -34,9 +34,9 @@ class content_class extends kernel_extends {
 	}
 
 	function setSystemFields() {
-		$this->def_records[] = array('owner_id'=>'1','pg'=>'Сайт на стадии разработки','marker'=>'text','active'=>1);
-		$this->def_records[] = array('owner_id'=>'404','pg'=>'СТраница не существует. Возможно была удалена.','marker'=>'text','active'=>1);
-		$this->def_records[] = array('owner_id'=>'401','pg'=>'Недостаточно прав для доступа к странице','marker'=>'text','active'=>1);
+		$this->def_records[] = array('owner_id'=>1,'pg'=>'Сайт на стадии разработки','marker'=>'text','active'=>1);
+		$this->def_records[] = array('owner_id'=>2,'pg'=>'СТраница не существует. Возможно была удалена.','marker'=>'text','active'=>1);
+		$this->def_records[] = array('owner_id'=>3,'pg'=>'Недостаточно прав для доступа к странице','marker'=>'text','active'=>1);
 		return parent::setSystemFields();
 	}
 

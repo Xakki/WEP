@@ -107,8 +107,8 @@ class pg_class extends kernel_extends {
 
 	function setSystemFields() {
 		$this->def_records[] = array('id'=>1, 'alias'=>'index','name'=>'Главная страница','active'=>1,'template'=>'default');
-		$this->def_records[] = array('id'=>404,'parent_id'=>1, 'alias'=>'404','name'=>'Страницы нету','active'=>1,'template'=>'default');
-		$this->def_records[] = array('id'=>401,'parent_id'=>1, 'alias'=>'401','name'=>'Недостаточно прав для доступа к странице','active'=>1,'template'=>'default');
+		$this->def_records[] = array('id'=>2,'parent_id'=>1, 'alias'=>'404','name'=>'Страницы нету','active'=>1,'template'=>'default');
+		$this->def_records[] = array('id'=>3,'parent_id'=>1, 'alias'=>'401','name'=>'Недостаточно прав для доступа к странице','active'=>1,'template'=>'default');
 		return parent::setSystemFields();
 	}
 
