@@ -61,8 +61,7 @@ class pg_class extends kernel_extends {
 		$this->mf_actctrl = true;
 		$this->caption = 'Страницы';
 		$this->selected = array();
-		$this->ver = '0.1.1';
-		$this->RCVerCore = '2.2.9';
+		$this->ver = '0.2.1';
 		$this->pageinfo = 
 			$this->dataCash = $this->dataCashTree = $this->dataCashTreeAlias = array();
 		$this->pageParam = array();
@@ -108,8 +107,8 @@ class pg_class extends kernel_extends {
 
 	function setSystemFields() {
 		$this->def_records[] = array('id'=>1, 'alias'=>'index','name'=>'Главная страница','active'=>1,'template'=>'default');
-		$this->def_records[] = array('id'=>1, 'alias'=>'404','name'=>'Страницы нету','parent_id'=>'index','active'=>1,'template'=>'default');
-		$this->def_records[] = array('id'=>1, 'alias'=>'401','name'=>'Недостаточно прав для доступа к странице','parent_id'=>'index','active'=>1,'template'=>'default');
+		$this->def_records[] = array('id'=>404,'parent_id'=>1, 'alias'=>'404','name'=>'Страницы нету','active'=>1,'template'=>'default');
+		$this->def_records[] = array('id'=>401,'parent_id'=>1, 'alias'=>'401','name'=>'Недостаточно прав для доступа к странице','active'=>1,'template'=>'default');
 		return parent::setSystemFields();
 	}
 

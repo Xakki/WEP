@@ -11,7 +11,7 @@ abstract class kernel_extends {
 	 * 2 - добавленн новый функционал, расширен и измененн меющиеся функции -
 	 * 3 - Номер ревизии , исправленны ошибки
 	 */
-	const versionCore = '2.2.9';
+	const versionCore = '2.2.10';
 
 	function __construct($owner=NULL) {
 		global $_CFG;
@@ -136,7 +136,7 @@ abstract class kernel_extends {
 		$this->includeCSStoWEP = false; // подключать ли стили для формы через настройки
 		$this->singleton = true; // класс-одиночка
 		$this->ver = '0.1.1'; // версия модуля
-		$this->RCVerCore = '2.2.9';
+		$this->RCVerCore = self::versionCore;
 		$this->icon = 0; /* числа  означают отсуп для бэкграунда, а если будет задан текст то это сам рисунок */
 
 		$this->text_ext = '.txt'; // расширение для memo фиаилов

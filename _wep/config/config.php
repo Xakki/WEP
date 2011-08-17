@@ -30,11 +30,11 @@ $_CFG['wep'] = array(// для ядра и админки
 	'login' => 'root',
 	'password' => 'rootpass',
 	'charset' => 'utf-8',
-	'locale' => 'ru_RU.UTF-8',
+	'setlocale'=>'ru_RU.UTF-8',
+	'locale' => 'default',
 	'timezone' => 'Europe/Moscow',
 	'locallang' => 'default',
 	'design' => 'default',
-	'msp' => 'paginator',
 	'md5' => 'd3dEegf6EH',
 	'def_filesize' => 200,
 	'sessiontype' => 1, //0 - стандартная сессия, 1 - БД сессия, 2 - ещё какаянибудь
@@ -47,7 +47,6 @@ $_CFG['wep'] = array(// для ядра и админки
 );
 
 $_CFG['site'] = array(// для сайта
-	'msp' => 'paginator', // постраничнка
 	'rf' => 0, // для рускояз доменов
 	'show_error' => 1, //0- ничего не показывать обычным юзерам, 1 -паказывать только сообщение что произошла ошибка, 2 - паказать ошибку
 	'worktime' => false, // 1 - включает отображение страницы "Технический перерыв"

@@ -825,7 +825,7 @@ class static_form {
 					$messages = $_this->getMess('_err_4',array($form['caption']));
 				$arr_err_name[$key]=$key;
 
-				if($param['ajax'])
+				if(isset($param['ajax']) and $param['ajax'])
 					$_tpl['onload'] .= 'putEMF(\''.$key.'\',\''.$messages.'\');'; // запись в форму по ссылке
 				else
 					$form['error'][] = $messages; // запись в форму по ссылке

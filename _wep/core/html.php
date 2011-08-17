@@ -381,7 +381,7 @@ function fDisplLogs($type=0) {
 function headerssent() {
 	global $_CFG;
 	if (!headers_sent()) {
-		setlocale(LC_ALL, 'ru_RU.UTF8');
+		setlocale(LC_ALL, $_CFG['wep']['setlocale']);
 		//date_default_timezone_set('Asia/Yekaterinburg');
 		header("Cache-Control: max-age=0, must-revalidate");
 		header("Last-Modified: " . gmdate("D, d M Y H:i:s", $_CFG['time']) . " GMT");

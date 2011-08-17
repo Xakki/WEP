@@ -389,7 +389,7 @@ function tpl_form(&$data) {
 			}
 			elseif($r['type']=='password_new') {
 				$texthtml .= '<div class="form-value"><input type="password" name="'.$k.'" '.($attr['id']?'':'value="'.$r['value'].'"').' class="password" '.$attribute.'/>
-						<div class="passnewdesc" onclick="password_new()">Отобразить символы/скрыть</div></div>';
+						<div class="passnewdesc" onclick="password_new(this)">Отобразить символы/скрыть</div></div>';
 			}
 			elseif($r['type']=='password_change') {
 				$texthtml .= '<div class="form-value">

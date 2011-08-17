@@ -51,7 +51,7 @@
 				$formflag=0;
 				$flag=-1;
 			}
-			elseif(count($_POST) and ($_POST['sbmt'] or $_POST['sbmt_save'])) {
+			elseif(count($_POST) and (isset($_POST['sbmt']) or isset($_POST['sbmt_save']))) {
 				$this->kPreFields($_POST,$param);
 				$arr = $this->fFormCheck($_POST,$param,$this->fields_form);
 				$flag=-1;
@@ -74,7 +74,7 @@
 			$formflag = 1;
 		elseif($_POST['sbmt'] and $flag==1)
 			$formflag = 0;
-		elseif($_POST['sbmt_save'])
+		elseif(isset($_POST['sbmt_save']) and $_POST['sbmt_save'])
 			$formflag = 1;
 		elseif(isset($param['ajax']))
 			$formflag = 0;

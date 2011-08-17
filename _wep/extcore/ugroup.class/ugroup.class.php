@@ -78,7 +78,7 @@ class ugroup_class extends kernel_extends
 			0=>'Администраторы',
 			1=>'Модераторы',
 			2=>'Пользователи',
-			5=>'Анонимы');
+			5=>'Гости');
 
 		$this->fields[$this->mf_namefields] = array('type' => 'varchar', 'width' =>128, 'attr' => 'NOT NULL');
 		$this->fields['wep'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => 0);
@@ -112,7 +112,7 @@ class ugroup_class extends kernel_extends
 	function setSystemFields() {
 		$this->def_records[1] = array('id'=>1,$this->mf_namefields=>'Администраторы','level'=>0,'filesize'=>'100','active'=>1,'design'=>'default','wep'=>1);
 		$this->def_records[2] = array('id'=>2,$this->mf_namefields=>'Пользователи','level'=>2,'filesize'=>'0','active'=>1,'design'=>'default','wep'=>0);
-		$this->def_records[3] = array('id'=>3,$this->mf_namefields=>'Анонимы','level'=>5,'filesize'=>'0','active'=>1,'design'=>'default','wep'=>0);
+		$this->def_records[3] = array('id'=>3,$this->mf_namefields=>'Гости','level'=>5,'filesize'=>'0','active'=>1,'design'=>'default','wep'=>0);
 		return parent::setSystemFields();
 	}
 

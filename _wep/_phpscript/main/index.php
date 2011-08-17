@@ -47,7 +47,7 @@
 		exit();
 	}
 	elseif(isset($_GET['_php']) and $_GET['_php']=='sitemap') {
-		setlocale(LC_ALL, 'ru_RU.UTF8');
+		setlocale(LC_ALL, $_CFG['wep']['setlocale']);
 		header("Cache-Control: max-age=0, must-revalidate");
 		header("Last-Modified: " . gmdate("D, d M Y H:i:s", $_CFG['time']) . " GMT");
 		header("Expires: " . gmdate("D, d M Y H:i:s", $_CFG['time']) . " GMT");

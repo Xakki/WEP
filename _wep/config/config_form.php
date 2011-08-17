@@ -30,14 +30,14 @@ $_CFGFORM['wep'] = array(// для ядра и админки
 		<span class="sh2">Скрыть</span> настройки ядра и админки сайта
 	</div>'),
 	'charset' => array('type'=>'text','caption'=>'Кодировка сайта', 'css' => 'fblock hwep', 'style' => 'display:none;'),
-	'locale' => array('type'=>'list', 'caption'=>'Локализация', 'css' => 'fblock hwep', 'style' => 'display:none;'),
+	'setlocale' => array('type'=>'text','caption'=>'Локаль ПХП', 'css' => 'fblock hwep', 'style' => 'display:none;'),
+	'locale' => array('type'=>'list', 'caption'=>'Локализация сайта', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'timezone' => array('type'=>'list', 'caption'=>'Временная зона', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'access' => array('type'=>'list', 'caption'=>'Кодировка БД', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'login' => array('type'=>'text','caption'=>'Босс-логин', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'password' => array('type'=>'password_new','caption'=>'Босс-пароль', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'design' => array('type'=>'list','caption'=>'Дизайн админки', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'locallang' => array('type'=>'text','caption'=>'Кодировка БД', 'css' => 'fblock hwep', 'style' => 'display:none;'),
-	'msp' => array('type'=>'list','caption'=>'Модуль вывода постраничной навигации', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'md5' => array('type'=>'text','caption'=>'Соль для паролей', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'def_filesize' => array('type'=>'int','caption'=>'Размер фаилового хранилища, Мб', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'sessiontype' => array('type'=>'list','caption'=>'Тип хранени сессий пользователей', 'css' => 'fblock hwep', 'style' => 'display:none;'),
@@ -56,8 +56,7 @@ $_CFGFORM['site'] = array(// для сайта
 		<span class="sh1">Показать</span>
 		<span class="sh2">Скрыть</span> настройки всего сайта
 	</div>'),
-	'msp' => array('type'=>'list','caption'=>'Модуль вывода постраничной навигации', 'css' => 'fblock hsite', 'style' => 'display:none;'),
-	'show_error' => array('type'=>'list', 'caption'=>'Показ ошибок', 'css' => 'fblock hsite', 'style' => 'display:none;'),
+	'show_error' => array('type'=>'list', 'caption'=>'Показывать ошибки всем?', 'css' => 'fblock hsite', 'style' => 'display:none;'),
 	'rf' => array('type'=>'checkbox','caption'=>'Рускоязычный домен', 'css' => 'fblock hsite', 'style' => 'display:none;'),
 	'worktime' => array('type'=>'checkbox','caption'=>'Включить режим "Технический перерыв"', 'css' => 'fblock hsite', 'style' => 'display:none;'),
 	'work_title' => array('type'=>'text','caption'=>'Заголовок для режима "Технический перерыв"', 'css' => 'fblock hsite', 'style' => 'display:none;'),
@@ -102,12 +101,6 @@ $_CFGFORM['site'] = array(// для сайта
 		}
 	}
 
-	$_CFGFORM['wep']['msp']['valuelist'] = array(
-		array('#id#' => '', '#name#' => 'Стандартное'),
-		array('#id#' => 'paginator', '#name#' => 'paginator')
-	);
-
-
 	$_CFGFORM['wep']['sessiontype']['valuelist'] = array(
 		array('#id#' => 0, '#name#' => 'Стандартное'),
 		array('#id#' => 1, '#name#' => 'В базе данных')
@@ -117,11 +110,6 @@ $_CFGFORM['site'] = array(// для сайта
 	foreach ($_CFG['_error'] as $ke=>$re) {
 		$_CFGFORM['wep']['bug_hunter']['valuelist'][] = array('#id#' => $ke, '#name#' => $re['type']);
 	}
-
-	$_CFGFORM['wep']['msp']['valuelist'] = array(
-		array('#id#' => '', '#name#' => 'Стандартное'),
-		array('#id#' => 'paginator', '#name#' => 'paginator')
-	);
 
 	$_CFGFORM['site']['show_error']['valuelist'] = array(
 		array('#id#' => 0, '#name#' => 'ничего не показывать обычным юзерам'),
