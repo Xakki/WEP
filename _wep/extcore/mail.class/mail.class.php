@@ -310,8 +310,10 @@ class mail_class extends kernel_extends {
 		return $data;
 	}
 	
-	function getMsgList($select_type, $items_on_page)
+	function getMsgList($select_type, $items_on_page, $marker, $tab_id)
 	{
+		global $PGLIST;
+		
 		$where = array(
 			'`user_to`="'.$_SESSION['user']['id'].'"',
 		);
@@ -321,7 +323,7 @@ class mail_class extends kernel_extends {
 			{
 				
 			}
-			default;
+			break;
 				
 			case 'new':
 			{
@@ -360,7 +362,6 @@ class mail_class extends kernel_extends {
 			{
 				$page = 1;
 			}
-			
 			$limit_str = ' limit ' . ($page - 1) . ', '.$items_on_page;
 		}
 		
@@ -389,7 +390,8 @@ class mail_class extends kernel_extends {
 		
 		$data['users'] = array(
 			0 => array(
-				'name' => 'Система'
+				'name' => 'Системное сообщение',
+				'userpic' => 'png',
 			),
 		);
 		if (!empty($users))
@@ -408,18 +410,19 @@ class mail_class extends kernel_extends {
 		
 		$data['page_nav'] = array(
 			'current_page' => $page,
-			'href' => '#',
+			'href' => '#',			
+			'onclick' => 'return wep.privateMsgGetPage(###PAGE_NUM###, \''.$marker.'\', \''.$tab_id.'\', '.$PGLIST->id.')',
 		);
 		if ($limit_str == '' || empty($data['rows']))
 		{
 			$data['page_nav']['count_pages'] = count($data['rows']);
 		}
 		else
-		{
+		{			
 			$result = $this->SQL->execSQL('select count(id) as cnt from `'.$this->tablename.'`'.$where_str);
 			if ($row = $result->fetch_array())
 			{
-				$data['page_nav']['count_pages'] = $row['cnt'];
+				$data['page_nav']['count_pages'] = ceil($row['cnt'] / $items_on_page);
 			}
 		}	
 		
