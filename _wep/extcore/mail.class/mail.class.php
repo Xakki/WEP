@@ -61,7 +61,7 @@ class mail_class extends kernel_extends {
 		$this->fields['from'] = array('type' => 'varchar', 'width' =>64, 'attr' => 'NOT NULL');
 		$this->fields['subject'] = array('type' => 'varchar', 'width' =>255, 'attr' => 'NOT NULL');
 		$this->fields['text'] = array('type' => 'text','attr' => 'NOT NULL');
-		$this->fields['from_user'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
+		$this->fields['user_to'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['mail_to'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['status'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL');
 
@@ -81,12 +81,12 @@ class mail_class extends kernel_extends {
 			'readonly'=>true,
 			'listname'=>array('class'=>'users','nameField'=>'concat(tx.name," [",tx.id,"]")'),
 			'caption' => 'От кого', 'mask' => array('usercheck'=>1));
-		$this->fields_form['from_user'] = array(
+		$this->fields_form['user_to'] = array(
 			'type' => 'list', 
 			'readonly'=>true,
 			'listname'=>array('class'=>'users','nameField'=>'concat(tx.name," [",tx.id,"]")'),
 			'caption' => 'Кому', 'mask' => array('usercheck'=>1));
-		$this->fields_form['mail_to'] = array('type' => 'text', 'caption' => 'email', 'mask' => array('usercheck'=>1));
+		$this->fields_form['mail_to'] = array('type' => 'text', 'caption' => 'Кому email', 'mask' => array('usercheck'=>1));
 		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата создания', 'mask'=>array('usercheck'=>1,'fview'=>2,'sort'=>1));
 		$this->fields_form['status'] = array('type' => 'list', 'listname'=>'status', 'caption' => 'Статус сообщения', 'mask' => array('usercheck'=>1));
 		
@@ -94,6 +94,7 @@ class mail_class extends kernel_extends {
 			0 => 'Не отправлялось на email',
 			1 => 'Отправлялось на email',
 			2 => 'При отправке на email произошли ошибки',
+			3 => 'Не отправлялось на email и было прочитано на сайте',
 		);
 
 		$this->locallang['default']['_saveclose'] = 'Отправить письмо';
@@ -102,28 +103,31 @@ class mail_class extends kernel_extends {
 
 	function Send($data) {
 		$this->__do_hook('Send', $data);
-
+		
+		if(!$data['from'] && isset($data['creater_id']) && $data['creater_id'] == 0)
+			$data['from']=$this->config['mailrobot'];
+		elseif (!$data['from'] && isset($_SESSION['user']) && $_SESSION['user']['email'])
+			$data['from'] = $_SESSION['user']['email'];
+		
 		if(!$data['mail_to']) {
 			unset($data['mail_to']);
 			$data['status'] = 0;
-
-			$this->fld_data = $data;
-			return $this->_add($data);
-		}
-
-		if(method_exists($this, 'mailengine'.$this->config['mailengine'])) {
-			$send_result = call_user_func(array($this, 'mailengine'.$this->config['mailengine']),$data);
 		}
 		else {
-			trigger_error('Попытка вызвать не существующий метод `mailengine'.$this->config['mailengine'].'` в модуле Mail!', E_USER_ERROR);
-			$send_result = false;
-		}
+			if(method_exists($this, 'mailengine'.$this->config['mailengine'])) {
+				$send_result = call_user_func(array($this, 'mailengine'.$this->config['mailengine']),$data);
+			}
+			else {
+				trigger_error('Попытка вызвать не существующий метод `mailengine'.$this->config['mailengine'].'` в модуле Mail!', E_USER_ERROR);
+				$send_result = false;
+			}
 
-		if ($send_result) {
-			$data['status'] = 1;
-		}
-		else {
-			$data['status'] = 2;
+			if ($send_result) {
+				$data['status'] = 1;
+			}
+			else {
+				$data['status'] = 2;
+			}
 		}
 
 		$this->_add_item($data);
@@ -183,8 +187,7 @@ class mail_class extends kernel_extends {
 		$this->config['mailbottom'] = str_replace(array('%host%','%year%'),array($_SERVER['HTTP_HOST'],date('Y')),$this->config['mailbottom']);
 		$text = str_replace(array('%SUBJECT%','%TEXT%','%MAILBOTTOM%'),array($data['subject'],trim($data['text']),$this->config['mailbottom']),$this->config['mailtemplate']);
 		//$text = substr(trim($data['text']), 0, 1000000).$this->config['mailbottom'] = str_replace('%YEAR%',date('Y'),$this->config['mailbottom']);
-		if($data['from']=='')
-			$data['from']=$this->config['mailrobot'];
+			
 		//if(strlen(ini_get('safe_mode'))< 1){
 		@ini_set('sendmail_from', $data['from']);
 		@ini_set('sendmail_path', '/usr/sbin/sendmail -t -i -f '.$data['from']);
@@ -222,8 +225,6 @@ class mail_class extends kernel_extends {
 
 	function mailengine1 ($data) {
 		include_once(__DIR__.'/phpMailer/class.phpmailer.php');
-		if($data['from']=='')
-			$data['from']=$this->config['mailrobot'];
 		$data['subject'] = substr(htmlspecialchars(trim($data['subject'])), 0, 1000);
 		
 		$PHPMailer = new PHPMailer();
@@ -235,7 +236,7 @@ class mail_class extends kernel_extends {
 		$PHPMailer->Password = $this->config['PHPMailer_Password'];
 		$PHPMailer->SMTPDebug = $this->config['PHPMailer_Debug'];
 		$PHPMailer->SetLanguage('ru');
-		$PHPMailer->From = $this->config['mailrobot'];
+		$PHPMailer->From = $data['from'];
 		//$PHPMailer->AddReplyTo($data['from']);
 
 		if($this->config['fromName'])
@@ -270,6 +271,159 @@ class mail_class extends kernel_extends {
 			return false;
 		}
 		return true;
+	}
+	
+	function getMsgCount()
+	{
+		$data = array();
+		
+		$result = $this->SQL->execSQL('
+			select count(id) as cnt from `'.$this->tablename.'`
+			where `status`="0" and user_to="'.$_SESSION['user']['id'].'"
+		');
+		
+		if ($row = $result->fetch_array())
+		{
+			$data['new_msg'] = $row['cnt'];
+		}
+		
+		$result = $this->SQL->execSQL('
+			select count(id) as cnt from `'.$this->tablename.'`
+			where `creater_id`="0" and user_to="'.$_SESSION['user']['id'].'"
+		');
+		
+		if ($row = $result->fetch_array())
+		{
+			$data['system_msg'] = $row['cnt'];
+		}
+		
+		$result = $this->SQL->execSQL('
+			select count(id) as cnt from `'.$this->tablename.'`
+			where `creater_id`!="0" and user_to="'.$_SESSION['user']['id'].'"
+		');
+		
+		if ($row = $result->fetch_array())
+		{
+			$data['private_msg'] = $row['cnt'];
+		}
+		
+		return $data;
+	}
+	
+	function getMsgList($select_type, $items_on_page)
+	{
+		$where = array(
+			'`user_to`="'.$_SESSION['user']['id'].'"',
+		);
+		switch ($select_type)
+		{
+			case 'all':
+			{
+				
+			}
+			default;
+				
+			case 'new':
+			{
+				$where[] = '`status`="0"';
+			}
+			break;
+		
+			case 'private':
+			{
+				$where[] = '`creater_id`!="0"';
+			}
+			break;
+		
+			case 'system':
+			{
+				$where[] = '`creater_id`="0"';
+			}
+			break;
+		}
+		
+		if ($items_on_page == 0)
+		{
+			$limit_str = '';
+		}
+		else
+		{
+			if (isset($_GET['_pn']))
+			{
+				$page = (int)$_GET['_pn'];
+				if ($page <= 0)
+				{
+					$page = 1;
+				}
+			}
+			else
+			{
+				$page = 1;
+			}
+			
+			$limit_str = ' limit ' . ($page - 1) . ', '.$items_on_page;
+		}
+		
+		if (empty($where))
+		{
+			$where_str = '';
+		}
+		else
+		{
+			$where_str = ' where ' . implode(' and ', $where);
+		}
+		
+		$data = array();
+				
+		$result = $this->SQL->execSQL('select * from `'.$this->tablename.'`'.$where_str.' order by `mf_timecr` desc'.$limit_str);
+			
+		$data['rows'] = array();
+		while ($row = $result->fetch_array())
+		{
+			$data['rows'][] = $row;
+			if ($row['creater_id'] != 0)
+			{
+				$users[$row['creater_id']] = true;
+			}			
+		}
+		
+		$data['users'] = array(
+			0 => array(
+				'name' => 'Система'
+			),
+		);
+		if (!empty($users))
+		{
+			$users = array_keys($users);
+			_new_class('ugroup', $UGROUP);
+			
+			$result = $this->SQL->execSQL('
+				select * from `'.$UGROUP->childs['users']->tablename.'` where id in ("'.(implode('", "', $users)).'")
+			');
+			while ($row = $result->fetch_array())
+			{
+				$data['users'][$row['id']] = $row;
+			}
+		}
+		
+		$data['page_nav'] = array(
+			'current_page' => $page,
+			'href' => '#',
+		);
+		if ($limit_str == '' || empty($data['rows']))
+		{
+			$data['page_nav']['count_pages'] = count($data['rows']);
+		}
+		else
+		{
+			$result = $this->SQL->execSQL('select count(id) as cnt from `'.$this->tablename.'`'.$where_str);
+			if ($row = $result->fetch_array())
+			{
+				$data['page_nav']['count_pages'] = $row['cnt'];
+			}
+		}	
+		
+		return $data;
 	}
 
 }
