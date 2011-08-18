@@ -273,6 +273,7 @@ function tpl_form(&$data) {
 						{
 							$r['value']['year'] = array('name'=>$_CFG['_MESS']['year_name'], 'css'=>'year','value'=>$temp[0]);// ГОД
 							$temp[0] = (int)$temp[0]; 
+							$r['value']['year']['item'][0] = array('#id#'=>0, '#name#'=>'--');
 
 							//значения по умолчанию
 							if(!isset($r['mask']['year_back'])) $r['mask']['year_back'] = 2;
@@ -284,6 +285,7 @@ function tpl_form(&$data) {
 						if($item_date == 'm' || $item_date == 'n' || $item_date == 'M' || $item_date == 'F')
 						{
 							$r['value']['month'] = array('name'=>$_CFG['_MESS']['month_name'], 'css'=>'month','value'=>(int)$temp[1]);// Месяц
+							$r['value']['month']['item'][0] = array('#id#'=>0, '#name#'=>'--');
 							foreach($_CFG['_MESS']['month'] as $kr=>$td) {
 								$kr = (int)$kr;
 								$r['value']['month']['item'][$kr] = array('#id#'=>$kr, '#name#'=>$td);
@@ -293,6 +295,7 @@ function tpl_form(&$data) {
 						if($item_date == 'd' || $item_date == 'j')
 						{
 							$r['value']['day'] = array('name'=>$_CFG['_MESS']['day_name'], 'css'=>'day','value'=>(int)$temp[2]);// День
+							$r['value']['day']['item'][0] = array('#id#'=>0, '#name#'=>'--');
 							for($i=1;$i<=31;$i++)
 								$r['value']['day']['item'][$i] = array('#id#'=>$i, '#name#'=>$i);						
 						}

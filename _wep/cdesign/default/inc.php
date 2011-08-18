@@ -64,7 +64,7 @@
 								header('Location: '.$_CFG['_HREF']['BH'].str_replace("&amp;", "&", key($HTML->path)));
 								die();
 							} else {
-								if(!$_SESSION['mess']) 
+								if(!isset($_SESSION['mess']) or !$_SESSION['mess']) 
 									$_SESSION['mess']= array();
 								$DATA['superlist']['messages'] += $_SESSION['mess'];
 								$DATA['superlist']['path'] = $HTML->path;

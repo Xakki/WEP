@@ -20,7 +20,7 @@ class static_form {
 		if ($_this->mf_istree and $_this->parent_id and !$_this->fld_data[$_this->mf_istree])
 			$_this->fld_data[$_this->mf_istree] = $_this->parent_id;
 		// add owner_id field
-		if ($_this->owner and !$_this->fld_data[$_this->owner_name])
+		if ($_this->owner and (!isset($_this->fld_data[$_this->owner_name]) or !$_this->fld_data[$_this->owner_name]) )
 			$_this->fld_data[$_this->owner_name] = $_this->owner->id;
 		if ($_this->mf_timecr) 
 			$_this->fld_data['mf_timecr'] = $_this->_CFG['time'];

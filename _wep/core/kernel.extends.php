@@ -997,7 +997,13 @@ abstract class kernel_extends {
 				}
 			}
 		}
-		if (count($this->fields_form) and !isset($_SESSION['user']['id']) or isset($param['captchaOn'])) {
+		if(!isset($param['captchaOn'])) {
+			if(!isset($_SESSION['user']['id']))
+				$param['captchaOn'] = true;
+			else
+				$param['captchaOn'] = false;
+		}
+		if (count($this->fields_form) and $param['captchaOn']) {
 			$this->fields_form['captcha'] = array(
 				'type' => 'captcha',
 				'caption' => $this->getMess('_captcha'),

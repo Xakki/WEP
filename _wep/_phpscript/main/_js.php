@@ -36,4 +36,6 @@
 		_new_class('ugroup',$UGROUP);
 		$html = $UGROUP->setRating($_GET['_modul'],$_GET['mid'],$_GET['rating']);
 	}
-	$GLOBALS['_RESULT'] = array("html" => $html,"html2" => $html2,'eval'=>$_tpl['onload']);
+	$GLOBALS['_RESULT']['html'] = $html;
+	$GLOBALS['_RESULT']['html2'] = $html2;
+	$GLOBALS['_RESULT']['eval'] = $_tpl['onload'];

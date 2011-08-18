@@ -436,7 +436,7 @@ class users_class extends kernel_extends {
 					if(!$this->id) { // регистрация
 						$arr['vars']['owner_id']=$this->owner->config['noreggroup'];
 						$arr['vars']['active']=0;
-						if(!$arr['vars'][$this->mf_namefields])
+						if(!isset($arr['vars'][$this->mf_namefields]) or !$arr['vars'][$this->mf_namefields])
 							$arr['vars'][$this->mf_namefields] = $arr['vars'][$this->fn_login];
 						$arr['vars']['reg_hash']=md5(time().$arr['vars'][$this->fn_login]);
 						$pass=$arr['vars'][$this->fn_pass];
@@ -491,9 +491,9 @@ class users_class extends kernel_extends {
 			$formflag = $param['formflag'];
 		elseif($flag==0)
 			$formflag = 1;
-		elseif($_POST['sbmt'] and $flag==1)
+		elseif(isset($_POST['sbmt']) and $_POST['sbmt'] and $flag==1)
 			$formflag = 0;
-		elseif($_POST['sbmt_save'])
+		elseif(isset($_POST['sbmt_save']) and $_POST['sbmt_save'])
 			$formflag = 1;
 		elseif(isset($param['ajax']))
 			$formflag = 0;

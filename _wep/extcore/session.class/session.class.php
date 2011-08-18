@@ -114,6 +114,7 @@ class session_class extends kernel_extends {
 			$sess_data = mysql_real_escape_string($sess_data);
 			$lastPage = substr(mysql_real_escape_string($_SERVER['REQUEST_URI']),0,250);
 			$host = mysql_real_escape_string($_SERVER['HTTP_HOST']);
+			$host2 = mysql_real_escape_string($_SERVER['HTTP_HOST2']);
 			if($this->_hash) {
 				$query = 'UPDATE '.$this->tablename.' SET `modified` = "'.$this->_time.'", `users_id`="'.$userId.'", `visits` = (`visits` + 1), `lastpage`= "'.$lastPage.'", `host`="'.$host.'"';
 				if($this->_hash != $tempMD5)
@@ -122,7 +123,7 @@ class session_class extends kernel_extends {
 			} else {
 				$result = $this->SQL->execSQL('INSERT INTO '.$this->tablename.' 
 (`sid`,`created`,`modified`,`expired`,`data`,`users_id`,`mf_ipcreate`,`useragent`,`lastpage`,`host`,`host2`) values
-("'.$sid.'","'.$this->_time.'","'.$this->_time.'","'.$this->expired.'","'.$sess_data.'","'.$userId.'","'.sprintf("%u",ip2long($_SERVER['REMOTE_ADDR'])).'","'.mysql_real_escape_string(substr($_SERVER['HTTP_USER_AGENT'],0,250)).'","'.$lastPage.'","'.$host.'","'.sprintf("%u",ip2long($_SERVER['REMOTE_ADDR'])).'")');
+("'.$sid.'","'.$this->_time.'","'.$this->_time.'","'.$this->expired.'","'.$sess_data.'","'.$userId.'","'.sprintf("%u",ip2long($_SERVER['REMOTE_ADDR'])).'","'.mysql_real_escape_string(substr($_SERVER['HTTP_USER_AGENT'],0,250)).'","'.$lastPage.'","'.$host.'","'.$host2.'")');
 			}
 			
 		}
