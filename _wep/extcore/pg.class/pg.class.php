@@ -126,8 +126,8 @@ class pg_class extends kernel_extends {
 		$this->fields_form['design'] = array('type' => 'list', 'listname'=>'mdesign', 'caption' => 'Дизайн', 'mask' =>array());
 		$this->fields_form['template'] = array('type' => 'list', 'listname'=>'templates', 'caption' => 'Шаблон', 'mask' =>array('onetd'=>'none'));
 
-		$this->fields_form['styles'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'style', 'caption' => 'CSS(*)', 'mask'=>array('onetd'=>'none'));
-		$this->fields_form['script'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'script', 'caption' => 'SCRIPT(*)', 'mask'=>array('onetd'=>'close'));
+		$this->fields_form['styles'] = array('type' => 'text', 'caption' => 'CSS(*)', 'mask'=>array('onetd'=>'none'));
+		$this->fields_form['script'] = array('type' => 'text', 'caption' => 'SCRIPT(*)', 'mask'=>array('onetd'=>'close'));
 
 		$this->fields_form['keywords'] = array('type' => 'text', 'caption' => 'META-keywords','mask'=>array('fview'=>1));
 		$this->fields_form['description'] = array('type' => 'text', 'caption' => 'META-description','mask'=>array('fview'=>1));
