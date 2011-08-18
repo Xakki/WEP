@@ -87,7 +87,7 @@
 	$_tpl['styles']['style'] = 1;
 
 	unset($_tpl['script']['jquery']);
-	$_tpl['script']['jquery.plugin/form'] = 1;
+	$_tpl['script']['script.jquery/form'] = 1;
 	$_tpl['script']['utils'] = 1;
 	//$_tpl['script']['script.localisation/jquery.localisation-min'] = 1;
 

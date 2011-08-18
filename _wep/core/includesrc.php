@@ -5,11 +5,11 @@
 		global $_tpl,$_CFG;
 		if(isset($gfi['multiple'])) {
 			if($gfi['multiple']==2) {
-				$_tpl['styles']['jquery.plugin/ui'] = 1;
-				$_tpl['styles']['jquery.plugin/ui-multiselect'] = 1;
+				$_tpl['styles']['style.jquery/ui'] = 1;
+				$_tpl['styles']['style.jquery/ui-multiselect'] = 1;
 
-				$_tpl['script']['jquery.plugin/ui'] = 1;
-				$_tpl['script']['jquery.plugin/ui-multiselect'] = 1;
+				$_tpl['script']['script.jquery/ui'] = 1;
+				$_tpl['script']['script.jquery/ui-multiselect'] = 1;
 
 				//$_tpl['onload'] .= '$.localise(\'ui-multiselect\', {language: \'ru\', path: \''.$_CFG['_HREF']['_script'].'script.localisation/\'});';
 				$_tpl['onload'] .= 'jQuery(\'select.multiple\').multiselect();';
@@ -23,16 +23,16 @@
 			$_tpl['script']['md5'] = 1;
 		}
 		if(isset($gfi['fancybox']) and $gfi['fancybox']) {
-			$_tpl['script']['jquery.plugin/fancybox'] = 1;
-			$_tpl['styles']['jquery.plugin/fancybox'] = 1;
+			$_tpl['script']['script.jquery/fancybox'] = 1;
+			$_tpl['styles']['style.jquery/fancybox'] = 1;
 			$_tpl['onload'] .= "jQuery('.fancyimg').fancybox();";
 		}
 		if(isset($gfi['datepicker']) and $gfi['datepicker']) {
-			$_tpl['script']['jquery.plugin/ui'] = 1;
-			$_tpl['styles']['jquery.plugin/ui'] = 1;
+			$_tpl['script']['script.jquery/ui'] = 1;
+			$_tpl['styles']['style.jquery/ui'] = 1;
 			if($gfi['datepicker']==2) {
-				$_tpl['script']['jquery.plugin/ui-datetimepicker'] = 1;
-				$_tpl['script']['jquery.plugin/ui-timepicker-addon'] = 1;
+				$_tpl['script']['script.jquery/ui-datetimepicker'] = 1;
+				$_tpl['script']['script.jquery/ui-timepicker-addon'] = 1;
 			}
 		}
 		return true;
@@ -65,7 +65,7 @@
 					$temp .= '<script type="text/javascript" src="'.implode('"></script>'."\n".'<script type="text/javascript" src="',$rr).'"></script>'."\n";
 				elseif($rr==1 and $kk) {
 					$temp .= '<script type="text/javascript" src="'.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].$kk.'.js'.$solt.'"></script>'."\n";
-					if($kk=='jquery.plugin/fancybox')
+					if($kk=='script.jquery/fancybox')
 						$_tpl['onload'] .= 'jQuery(\'.fancyimg\').fancybox();';//$_tpl['onload'] .= 'jQuery(\'div.imagebox a\').fancybox();jQuery(\'a.fancyimg\').fancybox();';
 					elseif(strpos($kk,'qrtip')!== false) {
 						$_tpl['onload'] .= 'jQuery(\'a\').qr();';
@@ -78,7 +78,7 @@
 		if(strpos($temp,'jquery')!==false)
 			$temp .= '<script type="text/javascript" src="'.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].'include.js'.$solt.'"></script>';
 
-		if(strpos($temp,'jquery.js')===false and strpos($temp,'jquery.plugin/')!==false)
+		if(strpos($temp,'jquery.js')===false and strpos($temp,'script.jquery/')!==false)
 			$temp = '<script type="text/javascript" src="'.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].'jquery.js'.$solt.'"></script>'.$temp;
 		//if($_tpl['onload']) {
 		$temp .= "<script type=\"text/javascript\">\n//<!--\nfunction readyF() {".$_tpl['onload']."}\n//-->\n</script>\n";

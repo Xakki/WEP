@@ -299,12 +299,12 @@ class static_tools {
 		$eval = '
 	line1 = [' . implode(',', $data) . '];
 	if(typeof $.jqplot == "undefined")
-		$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'jquery.plugin/jqplot/plugins/jqplot.ohlcRenderer.min.js\',
+		$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'script.jquery/jqplot/plugins/jqplot.ohlcRenderer.min.js\',
 			function(){' . $f . '},[
-			$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'jquery.plugin/jqplot/jquery.jqplot.min.js\'),
-			$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'jquery.plugin/jqplot/plugins/jqplot.cursor.min.js\'),
-			$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'jquery.plugin/jqplot/plugins/jqplot.dateAxisRenderer.min.js\'),
-			$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'jquery.plugin/jqplot/plugins/jqplot.highlighter.min.js\')
+			$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'script.jquery/jqplot/jquery.jqplot.min.js\'),
+			$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'script.jquery/jqplot/plugins/jqplot.cursor.min.js\'),
+			$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'script.jquery/jqplot/plugins/jqplot.dateAxisRenderer.min.js\'),
+			$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'script.jquery/jqplot/plugins/jqplot.highlighter.min.js\')
 		]);
 	else {' . $f . '}
 
@@ -328,8 +328,8 @@ class static_tools {
 		$html .= '
 	<div id="statschart2" data-height="300px" data-width="480px" style="margin-top:10px; margin-left:10px;"></div>
 	<style>
-	@import "' . $MODUL->_CFG['_HREF']['_style'] . 'jquery.plugin/ui.css";
-	@import "' . $MODUL->_CFG['_HREF']['_script'] . 'jquery.plugin/jqplot/jquery.jqplot.min.css";
+	@import "' . $MODUL->_CFG['_HREF']['_style'] . 'style.jquery/ui.css";
+	@import "' . $MODUL->_CFG['_HREF']['_script'] . 'script.jquery/jqplot/jquery.jqplot.min.css";
 	</style>
 	';
 		$html = '<span class="bottonimg imgdel" style="float: right;" onclick="$(this).parent().hide();">EXIT</span>' . $html;

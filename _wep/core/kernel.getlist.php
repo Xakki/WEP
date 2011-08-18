@@ -67,22 +67,35 @@
 				if($k) {
 					$dir = dir($_this->_CFG['_PATH']['design'].$k.'/style');
 					while (false !== ($entry = $dir->read())) {
-						if (strstr($entry,'.css')) {
-							$entry = substr($entry, 0, strpos($entry, '.css'));
-							$data['../'.$k.'/style/'.$entry] = strtoupper($r).' - '.$entry;
+						if (strpos($entry,'.css')) {
+							$entry = substr($entry, 0, -4);
+							$data['']['../'.$k.'/style/'.$entry] = strtoupper($r).' - '.$entry;
 						}
 					}
 					$dir->close();
 				}
 			}
+			$afterSubDir = array();
 			$dir = dir($_this->_CFG['_PATH']['_style']);
 			while (false !== ($entry = $dir->read())) {
-				if (strstr($entry,'.css')) {
-					$entry = substr($entry, 0, strpos($entry, '.css'));
-					$data[$entry] = $entry;
+				if (strpos($entry,'.css')) {
+					$entry = substr($entry, 0, -4);
+					$data[''][$entry] = $entry;
+				}elseif(strpos($entry,'style.')===0) {
+					$afterSubDir[$entry] = array('#name#'=> $entry, '#checked#'=>0);
+					$dir2 = dir($_this->_CFG['_PATH']['_style'].'/'.$entry);
+					while (false !== ($entry2 = $dir2->read())) {
+						if (strpos($entry2,'.css')) {
+							$entry2 = substr($entry2, 0, -4);
+							$data[$entry][$entry.'/'.$entry2] = $entry2;
+						}
+					}
+					$dir2->close();
 				}
 			}
 			$dir->close();
+			if(count($afterSubDir))
+				$data[''] = $data['']+$afterSubDir;
 		}
 		elseif ($listname == "script") {
 			$mdesign = 'mdesign';
@@ -91,8 +104,8 @@
 				if($k) {
 					$dir = dir($_this->_CFG['_PATH']['design'].$k.'/script');
 					while (false !== ($entry = $dir->read())) {
-						if (strstr($entry,'.js')) {
-							$entry = substr($entry, 0, strpos($entry, '.js'));
+						if (strpos($entry,'.js')) {
+							$entry = substr($entry, 0, -3);
 							$data['']['../'.$k.'/script/'.$entry] = strtoupper($r).' - '.$entry;
 						}
 					}
@@ -102,15 +115,15 @@
 			$afterSubDir = array();
 			$dir = dir($_this->_CFG['_PATH']['_script']);
 			while (false !== ($entry = $dir->read())) {
-				if (strstr($entry,'.js')) {
-					$entry = substr($entry, 0, strpos($entry, '.js'));
+				if (strpos($entry,'.js')) {
+					$entry = substr($entry, 0, -3);
 					$data[''][$entry] = $entry;
-				}elseif(substr($entry,0,7)=='script.'){
+				}elseif(strpos($entry,'script.')===0) {
 					$afterSubDir[$entry] = array('#name#'=> $entry, '#checked#'=>0);
 					$dir2 = dir($_this->_CFG['_PATH']['_script'].'/'.$entry);
 					while (false !== ($entry2 = $dir2->read())) {
-						if (strstr($entry2,'.js')) {
-							$entry2 = substr($entry2, 0, strpos($entry2, '.js'));
+						if (strpos($entry2,'.js')) {
+							$entry2 = substr($entry2, 0, -3);
 							$data[$entry][$entry.'/'.$entry2] = $entry2;
 						}
 					}

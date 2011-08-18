@@ -409,13 +409,13 @@ function tpl_form(&$data) {
 				$texthtml .= '<div class="form-value">'.$r['value'].'</div>';
 			}
 			elseif($r['type']=='color') {
-				$_tpl['styles']['../_script/jquery.plugin/colorpicker/css/colorpicker'] = true;
+				$_tpl['styles']['../_script/script.jquery/colorpicker/css/colorpicker'] = true;
 	//			$_tpl['styles']['colorpicker/css/layout'] = true;
 
-				$_tpl['script']['jquery.plugin/colorpicker/js/colorpicker'] = true;
-				$_tpl['script']['jquery.plugin/colorpicker/js/eye'] = true;
-				$_tpl['script']['jquery.plugin/colorpicker/js/utils'] = true;
-				$_tpl['script']['jquery.plugin/colorpicker/js/layout'] = true;
+				$_tpl['script']['script.jquery/colorpicker/js/colorpicker'] = true;
+				$_tpl['script']['script.jquery/colorpicker/js/eye'] = true;
+				$_tpl['script']['script.jquery/colorpicker/js/utils'] = true;
+				$_tpl['script']['script.jquery/colorpicker/js/layout'] = true;
 				$_tpl['onload'] .= ' jQuery(\'#tr_'.$k.' div.colorPicker input\').ColorPicker({
 					onSubmit: function(hsb, hex, rgb, el) {
 						$(el).val(\'#\'+hex);
