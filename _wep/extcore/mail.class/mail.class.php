@@ -10,6 +10,12 @@ class mail_class extends kernel_extends {
 		$this->caption = 'Почта';
 		$this->cf_reinstall = true;
 		$this->mf_timecr = true;
+		
+		$this->_AllowAjaxFn['jsGetUsers'] = true;
+		$this->_AllowAjaxFn['jsSendMsg'] = true;		
+		$this->_AllowAjaxFn['jsDelMsg'] = true;
+		$this->_AllowAjaxFn['jsGetUserData'] = true;
+		
 		return true;
 	}
 
@@ -95,6 +101,7 @@ class mail_class extends kernel_extends {
 			1 => 'Отправлялось на email',
 			2 => 'При отправке на email произошли ошибки',
 			3 => 'Не отправлялось на email и было прочитано на сайте',
+			4 => 'Удалено пользователем',
 		);
 
 		$this->locallang['default']['_saveclose'] = 'Отправить письмо';
@@ -316,6 +323,7 @@ class mail_class extends kernel_extends {
 		
 		$where = array(
 			'`user_to`="'.$_SESSION['user']['id'].'"',
+			'`status`!=4',
 		);
 		switch ($select_type)
 		{
@@ -408,6 +416,8 @@ class mail_class extends kernel_extends {
 			}
 		}
 		
+		$data['tab_id'] = $tab_id;
+		
 		$data['page_nav'] = array(
 			'current_page' => $page,
 			'href' => '#',			
@@ -427,6 +437,140 @@ class mail_class extends kernel_extends {
 		}	
 		
 		return $data;
+	}
+	
+	function jsGetUsers()
+	{
+		$data = array();
+		if (isset($_GET['term']))
+		{
+			_new_class('ugroup', $UGROUP);
+			
+			$term = mysql_real_escape_string((string)$_GET['term']);
+			
+			$result = $this->SQL->execSQL('
+				select `id`, `userpic`,`name`
+				from `'.$UGROUP->childs['users']->tablename.'`
+				where name like "%'.$term.'%"
+			');
+		
+			$data['users'] = array();
+			while ($row = $result->fetch_array())
+			{
+				$data['users'][] = $row;
+			}		
+		}		
+		else
+		{
+			$data['error'] = 'Не переданы все необходимые параметры';
+		}
+		return $data;
+	}
+	
+	function jsSendMsg()
+	{
+		if (isset($_POST['msg']) && isset($_POST['user_id']))
+		{
+			$msg = mysql_real_escape_string((string)$_POST['msg']);
+			$user_id = (int)$_POST['user_id'];
+			
+			$data = array(
+				'subject' => 'Личное сообщение',
+				'user_to' => $user_id,
+				'text' => $msg,
+			);
+			
+			if ($this->_add_item($data)) {
+				$result = array('result' => 1);
+			}
+			else {
+				$result = array(
+					'result' => 0,
+					'error' => 'Во время отправки сообщения произошла ошибка, приносим извинения за неудобства',
+				);
+			}			
+		}
+		else
+		{
+			$result = array(
+				'result' => 0,
+				'error' => 'Не переданы все необходимые параметры',
+			);
+		}
+		
+		return $result;
+	}
+	
+	function jsDelMsg()
+	{
+		if (isset($_GET['msg_id']))
+		{
+			$msg_id = (int)$_GET['msg_id'];
+		
+			$this->id = $msg_id;
+			$data['status'] = 4;
+
+			if ($this->_save_item($data))
+			{
+				$result = array('result' => 1);
+			}
+			else
+			{
+				$result = array(
+					'result' => 0,
+					'error' => 'Во время удаления сообщения произошли ошибки, приносим извинения за неудобства',
+				);
+			}
+		}
+		else
+		{
+			$result = array(
+				'result' => 0,
+				'error' => 'Не переданы все необходимые параметры',
+			);
+		}
+		return $result;			
+	
+	}
+	
+	
+	function jsGetUserData()
+	{
+		if (isset($_GET['user_id']))
+		{
+			$user_id = (int)$_GET['user_id'];
+			
+			_new_class('ugroup', $UGROUP);
+			
+			$result = $this->SQL->execSQL('
+				select `userpic`,`name`
+				from `'.$UGROUP->childs['users']->tablename.'`
+				where id="'.$user_id.'"
+			');
+			
+			if ($row = $result->fetch_array())
+			{
+				$result = array(
+					'result' => 1,
+					'user_data' => $row,
+				);
+			}
+			else
+			{
+				$result = array(
+					'result' => 0,
+					'error' => 'Пользователь не найден',
+				);
+			}
+		}
+		else
+		{
+			$result = array(
+				'result' => 0,
+				'error' => 'Не переданы все необходимые параметры',
+			);
+		}
+		return $result;
 	}
 
 }
