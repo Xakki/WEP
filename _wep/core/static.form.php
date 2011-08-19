@@ -32,7 +32,7 @@ class static_form {
 			if(!(int)$_this->fld_data['mf_ipcreate'])
 				trigger_error('ERROR REMOTE_ADDR `'.$_SERVER['REMOTE_ADDR'].'`. '.print_r($_POST,true), E_USER_WARNING);
 		}
-		if($_this->mf_createrid and isset($_SESSION['user']['id']) and (!isset($_this->fld_data[$_this->mf_createrid]) or !$_this->fld_data[$_this->mf_createrid]) )
+		if($_this->mf_createrid and isset($_SESSION['user']['id']) and (!isset($_this->fld_data[$_this->mf_createrid]) or $_this->fld_data[$_this->mf_createrid]!='') )
 			$_this->fld_data[$_this->mf_createrid]= $_SESSION['user']['id'];
 
 		if (!isset($_this->fld_data) && !count($_this->fld_data))
