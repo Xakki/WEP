@@ -86,7 +86,7 @@ function miga(obj,opc1,opc2){
 
 /*Bacground*/
 function fShowload (show,txt,body,objid,onclk) {
-	if(!onclk) onclk = 'fShowload(0)';
+	if(!onclk) onclk = 'fShowload(0,\'\',\''+body+'\')';
 	if(!body) body='body';
 	if(!objid) objid = 'ajaxload';
 	obj = ' #'+objid;

@@ -408,7 +408,7 @@ function shutdown_function() {
 
 /* SESSION */
 
-function session_go($force=0) {
+function session_go($force=0) { //$force=1 - открывает сесиию для не авторизованного пользователя
 	global $_CFG, $SESSION_GOGO;
 	if (!$_CFG['robot'] and (isset($_COOKIE[$_CFG['session']['name']]) or $force) and !defined('SID')) {
 		if ($_CFG['wep']['sessiontype'] == 1) {
