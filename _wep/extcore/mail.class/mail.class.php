@@ -321,35 +321,49 @@ class mail_class extends kernel_extends {
 	{
 		global $PGLIST;
 		
-		$where = array(
-			'`user_to`="'.$_SESSION['user']['id'].'"',
+		$where = array(			
 			'`status`!=4',
 		);
 		switch ($select_type)
 		{
 			case 'all':
 			{
-				
+	//			$where[] = '(`user_to`="'.$_SESSION['user']['id'].'" OR `creater_id`="'.$_SESSION['user']['id'].'")';	
+				$where[] = '`user_to`="'.$_SESSION['user']['id'].'"';
 			}
 			break;
 				
 			case 'new':
 			{
+				$where[] = '`user_to`="'.$_SESSION['user']['id'].'"';
 				$where[] = '`status`="0"';
 			}
 			break;
 		
 			case 'private':
 			{
+				$where[] = '`user_to`="'.$_SESSION['user']['id'].'"';				
 				$where[] = '`creater_id`!="0"';
 			}
 			break;
 		
 			case 'system':
 			{
+				$where[] = '`user_to`="'.$_SESSION['user']['id'].'"';
 				$where[] = '`creater_id`="0"';
 			}
 			break;
+		
+			case 'sent':
+			{				
+				$where[] = '`creater_id`="'.$_SESSION['user']['id'].'"';
+			}
+			break;
+		
+			default:
+			{
+				trigger_error('Неизвестный тип выборки ' . $select_type, E_USER_WARNING);
+			}
 		}
 		
 		if ($items_on_page == 0)
@@ -392,7 +406,14 @@ class mail_class extends kernel_extends {
 			$data['rows'][] = $row;
 			if ($row['creater_id'] != 0)
 			{
-				$users[$row['creater_id']] = true;
+				if ($row['creater_id'] == $_SESSION['user']['id'])
+				{
+					$users[$row['user_to']] = true;
+				}
+				else
+				{
+					$users[$row['creater_id']] = true;
+				}				
 			}			
 		}
 		
@@ -451,7 +472,7 @@ class mail_class extends kernel_extends {
 			$result = $this->SQL->execSQL('
 				select `id`, `userpic`,`name`
 				from `'.$UGROUP->childs['users']->tablename.'`
-				where name like "%'.$term.'%"
+				where name like "%'.$term.'%" and active=1 and id!="'.$_SESSION['user']['id'].'"
 			');
 		
 			$data['users'] = array();
@@ -474,49 +495,58 @@ class mail_class extends kernel_extends {
 			$msg = mysql_real_escape_string((string)$_POST['msg']);
 			$user_id = (int)$_POST['user_id'];
 			
-			_new_class('ugroup', $UGROUP);
-						
-			$sql_result = $this->SQL->execSQL('
-				select count(id) as cnt from `'.$UGROUP->childs['users']->tablename.'`
-				where id="'.$user_id.'"				
-			');
-			
-			if ($row = $sql_result->fetch_array())
+			if ($user_id == $_SESSION['user']['id'])
 			{
-				if ($row['cnt'] == 1)
-				{
-					$data = array(
-						'subject' => 'Личное сообщение',
-						'user_to' => $user_id,
-						'text' => $msg,
-					);
+				$result = array(
+					'result' => 0,
+					'error' => 'Самому себе отправлять сообщения нельзя',
+				);
+			}
+			else
+			{
+				_new_class('ugroup', $UGROUP);
+						
+				$sql_result = $this->SQL->execSQL('
+					select count(id) as cnt from `'.$UGROUP->childs['users']->tablename.'`
+					where id="'.$user_id.'"	AND active=1			
+				');
 
-					if ($this->_add_item($data)) {
-						$result = array('result' => 1);
+				if ($row = $sql_result->fetch_array())
+				{
+					if ($row['cnt'] == 1)
+					{
+						$data = array(
+							'subject' => 'Личное сообщение',
+							'user_to' => $user_id,
+							'text' => $msg,
+						);
+
+						if ($this->_add_item($data)) {
+							$result = array('result' => 1);
+						}
+						else {
+							$result = array(
+								'result' => 0,
+								'error' => 'Во время отправки сообщения произошла ошибка, приносим извинения за неудобства',
+							);
+						}	
 					}
-					else {
+					else
+					{
 						$result = array(
 							'result' => 0,
-							'error' => 'Во время отправки сообщения произошла ошибка, приносим извинения за неудобства',
+							'error' => 'Пользователь не найден',
 						);
-					}	
+					}				
 				}
 				else
 				{
 					$result = array(
 						'result' => 0,
-						'error' => 'Пользователь не найден',
+						'error' => 'Во время отправки сообщения произошла ошибка, приносим извинения за неудобства',
 					);
-				}				
-			}
-			else
-			{
-				$result = array(
-					'result' => 0,
-					'error' => 'Во время отправки сообщения произошла ошибка, приносим извинения за неудобства',
-				);
-			}
-			
+				}
+			}	
 					
 		}
 		else
@@ -533,15 +563,41 @@ class mail_class extends kernel_extends {
 	function jsDelMsg()
 	{
 		if (isset($_GET['msg_id']))
-		{
+		{						
 			$msg_id = (int)$_GET['msg_id'];
-		
-			$this->id = $msg_id;
-			$data['status'] = 4;
-
-			if ($this->_save_item($data))
+			
+			$sql_result = $this->SQL->execSQL('
+				select count(id) as cnt from `'.$this->tablename.'`
+				where id="'.$msg_id.'"
+			');
+			
+			if ($row = $sql_result->fetch_array())
 			{
-				$result = array('result' => 1);
+				if ($row['cnt'] == 1)
+				{
+					$this->id = $msg_id;
+					$data['status'] = 4;
+
+					if ($this->_save_item($data))
+					{
+						$result = array('result' => 1);
+					}
+					else
+					{
+						$result = array(
+							'result' => 0,
+							'error' => 'Во время удаления сообщения произошли ошибки, приносим извинения за неудобства',
+						);
+					}
+				}
+				else
+				{
+					$result = array(
+						'result' => 0,
+						'error' => 'Сообщение не найдено',
+					);
+				}
+				
 			}
 			else
 			{
@@ -550,6 +606,8 @@ class mail_class extends kernel_extends {
 					'error' => 'Во время удаления сообщения произошли ошибки, приносим извинения за неудобства',
 				);
 			}
+		
+			
 		}
 		else
 		{
