@@ -298,7 +298,7 @@ var tmp;
 function pagenum_super(total,pageCur,cl,order) {
 	if(!order) order = false;
 	if(jQuery('.ppagenum').size()>0 && total>20) {
-		$.includeCSS('/_design/_style/paginator.css');
+		$.includeCSS('/_design/_style/style.jquery/paginator.css');
 		pg = 1;
 		reg = new RegExp('\&*'+cl+'_pn=([0-9]*)', 'i');
 		tmp = reg.exec(lochref);
@@ -317,7 +317,7 @@ function pagenum_super(total,pageCur,cl,order) {
 			param += '?';
 		param += cl+'_pn=';
 		//alert(dump(loc));
-		$.include('/_design/_script/jquery.paginator.js',function(ob){
+		$.include('/_design/_script/script.jquery/paginator.js',function(ob){
 			jQuery('.pagenum').css('display','none');
 			jQuery('.ppagenum').css('display','block').paginator({pagesTotal:total, 
 				pagesSpan:8, 

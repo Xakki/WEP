@@ -569,7 +569,7 @@ var tmp;
 function pagenum(total,order) {
 	if(!order) order = false;
 	if(jQuery('.ppagenum').size()>0 && total>10) {
-		$.includeCSS('/_design/_style/paginator.css');
+		$.includeCSS('/_design/_style/style.jquery/paginator.css');
 		pg = 1;
 		reg = /_p([0-9]*)/;
 		tmp = reg.exec(lochref);
@@ -583,7 +583,7 @@ function pagenum(total,order) {
 			reg = /(.*)_p[0-9]*\.html(.*)/g;
 		tmp = reg.exec(lochref);
 		//alert(dump(tmp));
-		$.include('/_design/_script/jquery.paginator.js',function(){
+		$.include('/_design/_script/script.jquery/paginator.js',function(){
 			jQuery('.pagenum').css('display','none');
 			jQuery('.ppagenum').css('display','block').paginator({pagesTotal:total, 
 				pagesSpan:8,
