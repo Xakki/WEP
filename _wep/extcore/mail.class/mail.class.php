@@ -469,26 +469,55 @@ class mail_class extends kernel_extends {
 	
 	function jsSendMsg()
 	{
-		if (isset($_POST['msg']) && isset($_POST['user_id']))
+		if ((isset($_POST['msg']) && isset($_POST['user_id'])) || $_POST['user_id'] == 0)
 		{
 			$msg = mysql_real_escape_string((string)$_POST['msg']);
 			$user_id = (int)$_POST['user_id'];
 			
-			$data = array(
-				'subject' => 'Личное сообщение',
-				'user_to' => $user_id,
-				'text' => $msg,
-			);
+			_new_class('ugroup', $UGROUP);
+						
+			$sql_result = $this->SQL->execSQL('
+				select count(id) as cnt from `'.$UGROUP->childs['users']->tablename.'`
+				where id="'.$user_id.'"				
+			');
 			
-			if ($this->_add_item($data)) {
-				$result = array('result' => 1);
+			if ($row = $sql_result->fetch_array())
+			{
+				if ($row['cnt'] == 1)
+				{
+					$data = array(
+						'subject' => 'Личное сообщение',
+						'user_to' => $user_id,
+						'text' => $msg,
+					);
+
+					if ($this->_add_item($data)) {
+						$result = array('result' => 1);
+					}
+					else {
+						$result = array(
+							'result' => 0,
+							'error' => 'Во время отправки сообщения произошла ошибка, приносим извинения за неудобства',
+						);
+					}	
+				}
+				else
+				{
+					$result = array(
+						'result' => 0,
+						'error' => 'Пользователь не найден',
+					);
+				}				
 			}
-			else {
+			else
+			{
 				$result = array(
 					'result' => 0,
 					'error' => 'Во время отправки сообщения произошла ошибка, приносим извинения за неудобства',
 				);
-			}			
+			}
+			
+					
 		}
 		else
 		{
