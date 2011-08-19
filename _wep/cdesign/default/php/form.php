@@ -334,6 +334,48 @@ function tpl_form(&$data) {
 						<div class="secret"><img src="'.$r['src'].'" class="i_secret" id="captcha" alt="CARTHA"/></div>
 					</div>';
 			}
+			elseif($r['type']=='file' and isset($r['mask']['async'])) {
+				
+				if(isset($r['default']) and $r['default']!='' and $r['value']=='') {
+					$r['value'] = $r['default'];
+					$r['att_type']='img';
+				}
+
+				if($r['caption']==1)
+					$texthtml .= '';
+				elseif(!is_array($r['value']) and $r['value']!='' and $r['att_type']=='img') {
+					$texthtml .= '<div class="wep_thumb">
+						<a rel="fancy" href="/'.$r['value'].'" target="_blank" class="fancyimg">
+							<img src="/'.$r['value'].'" alt="img" class="attach"'.($r['mask']['width']?' width="'.$r['mask']['width'].'"':'').($r['mask']['height']?' height="'.$r['mask']['height'].'"':'').'/>
+						</a>';
+					if(isset($r['img_size']))
+						$texthtml .= '<div class="wep_thumb_comment">Размер '.$r['img_size'][0].'x'.$r['img_size'][1].'</div>';
+					$texthtml .= '</div>';
+					if(isset($r['thumb']) and $r['mask']['thumb'])
+						foreach($r['thumb'] as $thumb) {
+						$texthtml .= '<div class="wep_thumb">
+							<a rel="fancy" href="/'.$thumb['value'].'?size='.$thumb['filesize'].'" target="_blank" class="fancyimg">
+								<img src="/'.$thumb['value'].'?size='.$thumb['filesize'].'" alt="img" class="attach"'.($thumb['w']?' width="'.$thumb['w'].'"':'').($thumb['h']?' height="'.$thumb['h'].'"':'').'/>
+							</a>';
+						if($thumb['w']) $texthtml .= '<div class="wep_thumb_comment">Эскиз размером '.$thumb['w'].'x'.$thumb['h'].'</div>';
+						$texthtml .= '</div>';
+					}
+					$_CFG['fileIncludeOption']['fancybox'] = 1;
+				}
+				elseif(!is_array($r['value']) and $r['value']!='' and $r['att_type']=='swf')
+					$texthtml .= '<object type="application/x-shockwave-flash" data="/'.$r['value'].'" height="50" width="200"><param name="movie" value="/'.$r['value'].'" /><param name="allowScriptAccess" value="sameDomain" /><param name="quality" value="high" /><param name="scale" value="exactfit" /><param name="bgcolor" value="#ffffff" /><param name="wmode" value="transparent" /></object>';
+				elseif(!is_array($r['value']) and $r['value']!=''){
+					$texthtml .= '<span style="color:green"><a href="/'.$r['value'].'" target="_blank"> фаил загружен</a></span><br/>';
+				}
+
+				$texthtml .= '<div class="form-value divinputfile">';
+				$texthtml .= '<input type="file" name="'.$k.'" '.$attribute.'/><span class="fileinfo"></span>';
+
+				if($r['del']==1 and $r['value']!='')
+					$texthtml .= '<div class="filedelete"><lable for="'.$k.'_del">Удалить?&#160;</lable><input type="checkbox" name="'.$k.'_del" id="'.$k.'_del" value="1"/></div>';
+
+				$texthtml .= '</div>';
+			}
 			elseif($r['type']=='file') {
 				
 				if(isset($r['default']) and $r['default']!='' and $r['value']=='') {
