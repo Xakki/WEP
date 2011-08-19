@@ -368,11 +368,12 @@ function tpl_form(&$data) {
 					$texthtml .= '<span style="color:green"><a href="/'.$r['value'].'" target="_blank"> фаил загружен</a></span><br/>';
 				}
 
+				
 				$texthtml .= '<div class="form-value divinputfile">';
-				$texthtml .= '<input type="file" name="'.$k.'" '.$attribute.'/><span class="fileinfo"></span>';
-
+				$texthtml .= '';
+				/*$texthtml .= '<input type="file" name="'.$k.'" '.$attribute.'/><span class="fileinfo"></span>';
 				if($r['del']==1 and $r['value']!='')
-					$texthtml .= '<div class="filedelete"><lable for="'.$k.'_del">Удалить?&#160;</lable><input type="checkbox" name="'.$k.'_del" id="'.$k.'_del" value="1"/></div>';
+					$texthtml .= '<div class="filedelete"><lable for="'.$k.'_del">Удалить?&#160;</lable><input type="checkbox" name="'.$k.'_del" id="'.$k.'_del" value="1"/></div>';*/
 
 				$texthtml .= '</div>';
 			}
