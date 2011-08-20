@@ -179,3 +179,45 @@
 	border-top-width:0;
 	border-bottom-width:12px;
 }
+
+/*LOGIN FORM*/
+.spanor {
+	border-top: 1px solid #E1E1E1;
+	border-bottom: 1px solid #E1E1E1;
+	display: block;
+	margin: 0;
+	padding: 2px 160px;
+	clear: both;
+ }
+div.layerblock {
+
+}
+div.layerblock div.cform {
+    padding:10px;
+	float: right;
+    width: 200px;
+}
+
+div.layerblock div.cform form div {
+	font-size:11px;text-align:left;
+}
+div.layerblock div.cform input {
+		width:130px;
+		margin:0 0 2px 0;
+		text-align:center;
+		border:2px #63A6CC solid;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
+}
+div.layerblock div.cform .submit {
+	margin:7px auto 0 auto;
+	width:100px;
+	text-align:center;
+}
+div.layerblock .messhead {
+	font-size:19px;
+	color:#228B22;
+	font-weight:bold;
+}
+div.layerblock .messelem {font-weight:bold;font-size:15px;text-align:center;color:gray;}
+div.layerblock .messelem a {
+	font-size:14px;
+}

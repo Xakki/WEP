@@ -32,12 +32,12 @@
 	}
 	elseif(isset($_SERVER['HTTP_REFERER']) and $_SERVER['HTTP_REFERER']!='' and strpos($_SERVER['HTTP_REFERER'], '.html')) {
 		$ref= $_SERVER['HTTP_REFERER'];
-		$pos = strripos($ref, '/');
-		$rest = substr($ref, ($pos+1), 5);
-		if(!strpos($this->dataCash[$rest]['ugroup'], 'anonim'))
+/*		$pos = strripos($ref, '/')+1;
+		$rest = substr($ref, $pos, (strripos($ref, '.html')-$pos));
+		if(strpos($this->dataCash[$rest]['ugroup'], 'anonim')===false)
 			$ref= $ref;
 		else 
-			$ref= $_CFG['_HREF']['BH'];
+			$ref= $_CFG['_HREF']['BH'];*/
 	}
 	else 
 		$ref= $_CFG['_HREF']['BH'];

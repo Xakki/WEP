@@ -1,8 +1,8 @@
 <?php
 
 function tpl_loginAjax($data) {
-	global $_CFG;
-	$html = '<div id="loginblock" style="display:none;position:absolute;z-index:30;top:50%;left:50%;">
+	global $_CFG,$_tpl;
+	$html = '<div id="loginblock" style="display:none;position:fixed;z-index:30;top:30%;left:30%;">
 			<div class="layerblock">
 				<div class="blockclose" onclick="$(\'#loginblock\').hide();showBG(0);">&#160;</div>
 				<div class="blockhead">'.$data['#title#'].'</div><div class="hrb">&#160;</div>
@@ -16,9 +16,24 @@ function tpl_loginAjax($data) {
 					'.($data['remindpage']?'<a href="'.$data['remindpage'].'" style="font-size:0.8em;">Забыли пароль?</a>':'').'
 					<div class="messlogin"></div>
 				</div>
-				
 			</div>
 		</div>';
+	$_tpl['script']['utils']=1;
+	$_tpl['styles']['style']=1;
+	$_tpl['styles']['login']=1;
+	$_tpl['script']['showLoginForm'] = '
+		function showLoginForm(id) {
+		if(jQuery(\'#loginzaiframe\').size()) return true;
+		showBG(0,1);
+		if(!jQuery(\'div.layerblock iframe\').size())
+			jQuery(\'div.layerblock div.cform\').before(\'<iframe src="http://loginza.ru/api/widget?overlay=loginza&token_url=\'+encodeURIComponent(\'http://\'+window.location.hostname+\'/login.html\')+\'&providers_set=yandex,google,rambler,mailruapi,myopenid,openid,loginza" style="width:330px;height:190px;float:left;" scrolling="no" frameborder="no"></iframe><span class="spanor"> или </span>\');
+		//vkontakte,facebook,twitter,
+		jQuery(\'#\'+id).show();
+		jQuery(\'#\'+id+\' .layerblock\').show();
+		fMessPos(0,\' #\'+id);
+		jQuery.include(\'http://loginza.ru/js/widget.js\');
+		return false;
+	}';
 	return $html;
 }
 						

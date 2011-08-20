@@ -19,8 +19,8 @@
 			$this->_enum['levelmenuinc'][0]);
 		$form = array(
 			'0'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон'),
-			'0'=>array('type'=>'list','listname'=>'levelmenuinc', 'caption'=>'Страница "Напомнить пароль"'),
-			'2'=>array('type'=>'list','listname'=>'levelmenuinc', 'caption'=>'Страница исключение'),
+			'1'=>array('type'=>'list','listname'=>'levelmenuinc', 'caption'=>'Страница "Напомнить пароль"'),
+			'2'=>array('type'=>'list','listname'=>'levelmenuinc', 'caption'=>'Страница "Авторизация"'),
 		);
 
 		return $form;
@@ -28,8 +28,10 @@
 
 	$tplphp = $this->FFTemplate($FUNCPARAM[0],__DIR__);
 
-	if(isset($FUNCPARAM[2])) { // страница исключение
+	if(isset($FUNCPARAM[2]) and $FUNCPARAM[2]) { // страница исключение
 		if($this->id==$FUNCPARAM[2]) return '';
+		if(!$this->dataCash[$FUNCPARAM[2]]['attr'])
+			$this->dataCash[$FUNCPARAM[2]]['attr'] = 'onclick="return showLoginForm(\'loginblock\')" class="ajaxlink"';
 	}
 
 	if($FUNCPARAM[1])
