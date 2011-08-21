@@ -31,7 +31,7 @@
 			$_tpl['script']['script.jquery/ui'] = 1;
 			$_tpl['styles']['style.jquery/ui'] = 1;
 			if($gfi['datepicker']==2) {
-				$_tpl['script']['script.jquery/ui-datetimepicker'] = 1;
+				$_tpl['script']['script.jquery/ui-timepicker-addon'] = 1;
 				$_tpl['styles']['style.jquery/ui-timepicker-addon'] = 1;
 			}
 		}

@@ -19,6 +19,7 @@ final class modulprm_class extends kernel_extends {
 		//$this->prm_del = false;
 		$this->mf_createrid = false;
 		$this->caption = "Модули";
+		$this->default_access = '|0|';
 		return true;
 	}
 
@@ -426,16 +427,16 @@ final class modulprm_class extends kernel_extends {
 							}
 						if (isset($this->guserData) and count($this->guserData))
 							foreach ($this->guserData as $gk => $gr) {
-								if (isset($this->modulgrpData[$Mid][$gk])) {
+								/*if (isset($this->modulgrpData[$Mid][$gk])) {
 									if($this->modulgrpData[$Mid][$gk]['name']!=$gr['name']) {
 										$q = 'UPDATE `' . $this->childs['modulgrp']->tablename . '` SET `name`="' . $gr['name'] . '" WHERE id="' . $this->modulgrpData[$Mid][$gk]['id'] . '"';
 										$result = $this->SQL->execSQL($q);
 										if ($result->err)
 											exit();
 									}
-								}
-								else {
-									$q = array('owner_id' => $Mid, 'ugroup_id' => $gk, 'name' => $gr['name']);
+								}*/
+								if (!isset($this->modulgrpData[$Mid][$gk])) {
+									$q = array('owner_id' => $Mid, 'ugroup_id' => $gk, 'name' => $gr['name'],'access'=>$MODUL->default_access);//
 									$q = 'INSERT INTO `' . $this->childs['modulgrp']->tablename . '` (`' . implode('`,`', array_keys($q)) . '`) VALUES (\'' . implode('\',\'', $q) . '\')';
 									$result = $this->SQL->execSQL($q);
 									if ($result->err)
@@ -500,6 +501,7 @@ class modulgrp_class extends kernel_extends {
 		$this->prm_del = false;
 		$this->mf_createrid = false;
 		$this->singleton = false;
+		$this->default_access = '|0|';
 		return true;
 	}
 
@@ -533,9 +535,9 @@ class modulgrp_class extends kernel_extends {
 		$this->fields['ugroup_id'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL');
 		$this->fields['access'] = array('type' => 'varchar', 'width' => 128, 'attr' => 'NOT NULL', 'default' => '');
 
-		$this->fields_form['name'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Группа');
+		//$this->fields_form['name'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Группа');
 		$this->fields_form['owner_id'] = array('type' => 'hidden', 'readonly' => 1);
-		$this->fields_form['ugroup_id'] = array('type' => 'list', 'readonly' => 1, 'listname' => array('class' => 'ugroup'), 'caption' => 'Группа в БД');
+		$this->fields_form['ugroup_id'] = array('type' => 'list', 'readonly' => 1, 'listname' => array('class' => 'ugroup'), 'caption' => 'Группа');
 		$this->fields_form['mname'] = array('type' => 'text', 'caption' => 'СпецНазвание модуля');
 		$this->fields_form['access'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'access', 'caption' => 'Права доступа');
 	}

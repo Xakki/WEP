@@ -49,21 +49,29 @@ function fMessPos(body,obj) {
 /*Показ тултип*/
 function showHelp(obj,mess,time,nomiga) {
 	if(!obj || !mess || !jQuery(obj).size() || jQuery(obj).next().attr('class')=='helpmess') return false;
-	var pos = jQuery(obj).position();
+	jQuery('div.helpmess').remove();
+	var pos = jQuery(obj).offset();
 	pos.top = parseInt(pos.top);
 	pos.left = parseInt(pos.left);
 	if(!time) time = 5000;
-	jQuery(obj).after('<div class="helpmess">'+mess+'<div class="trgl trgl_d"> </div></div>');
-	var slct = jQuery(obj).next();
-	var H = jQuery(slct).height();
-	H = pos.top-17-H;
-	if(H<5) {
-		H = pos.top+10+jQuery(obj).height();
-		jQuery(slct).find('.trgl').attr('class','trgl trgl_u');
+	jQuery(obj).after('<div class="helpmess">'+mess+'<div class="trgl trgl_d"> </div></div>');//Вставляем всплыв блок
+	var slct = jQuery(obj).next();// бурем ссылку на добавленнный блок
+	var H = jQuery(slct).height(); // Определяем его высоту
+	var flag = pos.top-17-H;// Определяем абсолютную позицию элемента
+
+	pos = jQuery(obj).position();//Далее будем работать только с относительной позицией , чтобы избежать ошитбки с позиционированим
+	pos.top = parseInt(pos.top);
+	pos.left = parseInt(pos.left);
+	if(flag<5) {
+		H = pos.top+10+jQuery(obj).height();//по новой высчитываем, и располагаем блогк снизу
+		jQuery(slct).find('div.trgl').attr('class','trgl trgl_u');
 	}
+	else
+		H = pos.top-17-H;//по новой высчитываем
 	jQuery(slct).css({'top':H,'left':pos.left,'opacity':0.8});
 	//if(!nomiga)
 	//	miga(slct,0.8);
+
 	setTimeout(function(){jQuery(slct).stop().fadeOut(1000,function(){jQuery(slct).remove()});},time);
 	//if(time>5000)
 		jQuery(slct).click(function(){

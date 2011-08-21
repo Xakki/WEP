@@ -21,6 +21,7 @@ class bug_class extends kernel_extends {
 		
 		$this->caption = 'Отладчик';
 		$this->ver = '0.0.1';
+		$this->default_access = '|0|';
 		return true;
 	}
 

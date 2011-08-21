@@ -65,6 +65,7 @@ class pg_class extends kernel_extends {
 		$this->pageinfo = 
 			$this->dataCash = $this->dataCashTree = $this->dataCashTreeAlias = array();
 		$this->pageParam = array();
+		$this->default_access = '|1|'; // По умолчанию ставим доступ на чтений всем пользователям
 		return true;
 	}
 

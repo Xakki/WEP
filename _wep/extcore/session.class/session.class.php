@@ -18,6 +18,7 @@ class session_class extends kernel_extends {
 		$this->_hash = '';
 		//$this->expired = get_cfg_var('session.gc_maxlifetime');
 		$this->expired = $this->_CFG['session']['expire'];
+		$this->default_access = '|0|';
 	}
 
 	function _create() {

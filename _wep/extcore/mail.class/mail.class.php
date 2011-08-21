@@ -15,6 +15,7 @@ class mail_class extends kernel_extends {
 		$this->_AllowAjaxFn['jsSendMsg'] = true;		
 		$this->_AllowAjaxFn['jsDelMsg'] = true;
 		$this->_AllowAjaxFn['jsGetUserData'] = true;
+		$this->default_access = '|0|';
 		
 		return true;
 	}

@@ -47,8 +47,14 @@ function tpl_form(&$data) {
 		}
 		else {
 			$texthtml .= '<div class="form-caption">'.$r['caption'];
-			$texthtml .= ((isset($r['mask']['min']) and $r['mask']['min'])?'<span class="form-requere" onmouseover="showHelp(this,\'Данное поле обязательно для заполнения!\',2000,1)">*</span>':'').
-				((isset($r['mask']['min2']) and $r['mask']['min2'])?'<span  class="form-requere" onmouseover="showHelp(this,\''.$r['mask']['min2'].'\',4000,1)">**</span>':'').'</div>';
+			if((isset($r['mask']['min']) and $r['mask']['min']) or (isset($r['mask']['minint']) and $r['mask']['minint'])) {
+				$texthtml .= '<span class="form-requere" onmouseover="showHelp(this,\'Данное поле обязательно для заполнения!\',2000,1)">*</span>';
+			}
+			elseif(isset($r['mask']['min2']) and $r['mask']['min2']) {
+				$texthtml .= '<span  class="form-requere" onmouseover="showHelp(this,\''.$r['mask']['min2'].'\',2000,1)">**</span>';
+			}
+			$texthtml .= '</div>';
+
 			$attribute = '';
 			if(isset($r['readonly']) and $r['readonly'])
 				$attribute .= ' readonly="readonly" class="ronly"';
@@ -201,39 +207,36 @@ function tpl_form(&$data) {
 				$texthtml .= '<div class="form-value">';
 				$temp = '';
 
-				// формат для даты
-				if ($r['mask']['format']) {
-					preg_match_all('/[A-Za-z]/', $r['mask']['format'], $matches);
-					$format = $matches[0];
-				}
-				else {
-					$r['mask']['format'] = 'Y-m-d-H-i-s';
-					$format = explode('-', 'Y-m-d-H-i-s');
-					$r['mask']['params']['dateFormat']='yy-mm-dd';
-					$r['mask']['params']['timeFormat'] = ' hh:mm:ss';
-				}
-
 				if($r['mask']['view']=='input') {
+					// текстовый формат ввода данных
+					if(isset($r['mask']['datepicker'])) {
+						if(is_string($r['mask']['datepicker']))
+							$r['mask']['datepicker'] = array('dateFormat'=>$r['mask']['datepicker']);
+						elseif(!is_array($r['mask']['datepicker']))
+							$r['mask']['datepicker'] = array();
 
-					global $_tpl;
-					$prop = array();
-					if(is_array($r['mask']['params'])) {
-						 foreach ($r['mask']['params'] as $kp => $vp) {
-							 $prop[] = $kp.':\''.$vp.'\'';
-						 }
-						 $prop = '{'.implode(',',$prop).'}';
-					}
-					else $prop = $r['mask']['params'];
+						if(!isset($r['mask']['datepicker']['dateFormat']))
+							$r['mask']['datepicker']['dateFormat']='yy-mm-dd';
+						if(isset($r['mask']['datepicker']['timeFormat']) and $r['mask']['datepicker']['timeFormat']===true)
+							$r['mask']['datepicker']['timeFormat'] = '-hh-mm-ss';
 
-					if(isset($r['mask']['time'])) {
-						$_CFG['fileIncludeOption']['datepicker'] = 2;
-						$_tpl['script']['dp_'.$k] = 'function dp_'.$k.'() { $("input[name='.$k.']").datetimepicker('.$prop.')}';
+						global $_tpl;
+						$prop = array();
+						foreach ($r['mask']['datepicker'] as $kp => $vp) {
+							$prop[] = $kp.':\''.$vp.'\'';
+						}
+						$prop = '{'.implode(',',$prop).'}';
+
+						if(isset($r['mask']['datepicker']['timeFormat'])) {
+							$_CFG['fileIncludeOption']['datepicker'] = 2;
+							$_tpl['script']['dp_'.$k] = 'function dp_'.$k.'() { $("input[name='.$k.']").datetimepicker('.$prop.')}';
+						}
+						else {
+							$_CFG['fileIncludeOption']['datepicker'] = 1;
+							$_tpl['script']['dp_'.$k] = 'function dp_'.$k.'() { $("input[name='.$k.']").datepicker('.$prop.')}';
+						}
+						$_tpl['onload'] .= ' dp_'.$k.'(); ';
 					}
-					else {
-						$_CFG['fileIncludeOption']['datepicker'] = 1;
-						$_tpl['script']['dp_'.$k] = 'function dp_'.$k.'() { $("input[name='.$k.']").datepicker('.$prop.')}';
-					}
-					$_tpl['onload'] .= ' dp_'.$k.'(); ';
 
 					// Тип поля
 					if($r['fields_type']  =='int' and $r['value']){
@@ -266,6 +269,10 @@ function tpl_form(&$data) {
 						$temp = array(date('Y'),date('n'),date('d'),date('H'));
 					}
 					$r['value']= array();
+
+					// формат для даты
+					preg_match_all('/[A-Za-z]/', $r['mask']['format'], $matches);
+					$format = $matches[0];
 					foreach($format as $item_date)
 					{
 						// год
@@ -346,7 +353,7 @@ function tpl_form(&$data) {
 				elseif(!is_array($r['value']) and $r['value']!='' and $r['att_type']=='img') {
 					$texthtml .= '<div class="wep_thumb">
 						<a rel="fancy" href="/'.$r['value'].'" target="_blank" class="fancyimg">
-							<img src="/'.$r['value'].'" alt="img" class="attach"'.($r['mask']['width']?' width="'.$r['mask']['width'].'"':'').($r['mask']['height']?' height="'.$r['mask']['height'].'"':'').'/>
+							<img src="/'.$r['value'].'" alt="img" class="attach"'.($r['mask']['width']?' width="'.$r['mask']['width'].'"':($r['mask']['height']?' height="'.$r['mask']['height'].'"':'')).'/>
 						</a>';
 					if(isset($r['img_size']))
 						$texthtml .= '<div class="wep_thumb_comment">Размер '.$r['img_size'][0].'x'.$r['img_size'][1].'</div>';
@@ -355,7 +362,7 @@ function tpl_form(&$data) {
 						foreach($r['thumb'] as $thumb) {
 						$texthtml .= '<div class="wep_thumb">
 							<a rel="fancy" href="/'.$thumb['value'].'?size='.$thumb['filesize'].'" target="_blank" class="fancyimg">
-								<img src="/'.$thumb['value'].'?size='.$thumb['filesize'].'" alt="img" class="attach"'.($thumb['w']?' width="'.$thumb['w'].'"':'').($thumb['h']?' height="'.$thumb['h'].'"':'').'/>
+								<img src="/'.$thumb['value'].'?size='.$thumb['filesize'].'" alt="img" class="attach"'.($thumb['w']?' width="'.$thumb['w'].'"':($thumb['h']?' height="'.$thumb['h'].'"':'')).'/>
 							</a>';
 						if($thumb['w']) $texthtml .= '<div class="wep_thumb_comment">Эскиз размером '.$thumb['w'].'x'.$thumb['h'].'</div>';
 						$texthtml .= '</div>';
@@ -389,7 +396,7 @@ function tpl_form(&$data) {
 				elseif(!is_array($r['value']) and $r['value']!='' and $r['att_type']=='img') {
 					$texthtml .= '<div class="wep_thumb">
 						<a rel="fancy" href="/'.$r['value'].'" target="_blank" class="fancyimg">
-							<img src="/'.$r['value'].'" alt="img" class="attach"'.($r['mask']['width']?' width="'.$r['mask']['width'].'"':'').($r['mask']['height']?' height="'.$r['mask']['height'].'"':'').'/>
+							<img src="/'.$r['value'].'" alt="img" class="attach"'.($r['mask']['width']?' width="'.$r['mask']['width'].'"':($r['mask']['height']?' height="'.$r['mask']['height'].'"':'')).'/>
 						</a>';
 					if(isset($r['img_size']))
 						$texthtml .= '<div class="wep_thumb_comment">Размер '.$r['img_size'][0].'x'.$r['img_size'][1].'</div>';
@@ -398,7 +405,7 @@ function tpl_form(&$data) {
 						foreach($r['thumb'] as $thumb) {
 						$texthtml .= '<div class="wep_thumb">
 							<a rel="fancy" href="/'.$thumb['value'].'?size='.$thumb['filesize'].'" target="_blank" class="fancyimg">
-								<img src="/'.$thumb['value'].'?size='.$thumb['filesize'].'" alt="img" class="attach"'.($thumb['w']?' width="'.$thumb['w'].'"':'').($thumb['h']?' height="'.$thumb['h'].'"':'').'/>
+								<img src="/'.$thumb['value'].'?size='.$thumb['filesize'].'" alt="img" class="attach"'.($thumb['w']?' width="'.$thumb['w'].'"':($thumb['h']?' height="'.$thumb['h'].'"':'')).'/>
 							</a>';
 						if($thumb['w']) $texthtml .= '<div class="wep_thumb_comment">Эскиз размером '.$thumb['w'].'x'.$thumb['h'].'</div>';
 						$texthtml .= '</div>';

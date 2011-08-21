@@ -138,6 +138,7 @@ abstract class kernel_extends {
 		$this->ver = '0.1.1'; // версия модуля
 		$this->RCVerCore = self::versionCore;
 		$this->icon = 0; /* числа  означают отсуп для бэкграунда, а если будет задан текст то это сам рисунок */
+		$this->default_access = '';
 
 		$this->text_ext = '.txt'; // расширение для memo фиаилов
 
@@ -167,7 +168,8 @@ abstract class kernel_extends {
 				$this->child_path =
 				$this->Achilds =
 				$this->_setHook = 
-				$this->_AllowAjaxFn = array(); // разрешённые функции для аякса, нужно прописывать в индекс
+				$this->_AllowAjaxFn =  // разрешённые функции для аякса, нужно прописывать в индекс
+				 array();
 		$this->childs = new modul_child($this);
 		$this->ordfield = $this->_clp = '';
 		$this->data = array();
@@ -970,6 +972,10 @@ abstract class kernel_extends {
 				}else
 					$r['value'] = $data[$k];
 			}
+			elseif ($r['type'] == 'date') {
+				if(!isset($r['mask']['format']) or !$r['mask']['format'])
+					$r['mask']['format'] = 'Y-m-d-H-i-s';
+			}
 			/*elseif ($r['type'] == 'checkbox') {
 				$data[$k] = $r['value'] = ((isset($data[$k]) and $data[$k])?1:0);
 			}*/
@@ -1560,9 +1566,9 @@ abstract class kernel_extends {
 
 						if ($row['type'] == 'date') {
 
-							$_REQUEST['f_' . $k] = static_form::_get_fdate($row, $_REQUEST['f_' . $k], $this->fields[$k]['type']);
+							$_REQUEST['f_' . $k] = static_form::_get_fdate($_REQUEST['f_' . $k], $row['mask']['format'], $this->fields[$k]['type']);
 							if (isset($_REQUEST['f_' . $k . '_2']))
-								$_REQUEST['f_' . $k . '_2'] = static_form::_get_fdate($row, $_REQUEST['f_' . $k . '_2'], $this->fields[$k]['type']);
+								$_REQUEST['f_' . $k . '_2'] = static_form::_get_fdate($_REQUEST['f_' . $k . '_2'], $row['mask']['format'], $this->fields[$k]['type']);
 						}
 
 						$_SESSION['filter'][$this->_cl][$k] = mysql_real_escape_string($_REQUEST['f_' . $k]);

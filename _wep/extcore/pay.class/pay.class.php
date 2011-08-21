@@ -14,6 +14,7 @@ class pay_class extends kernel_extends {
 		$this->cf_childs = true;
 		$this->icon = '12';
 		$this->ver = '0.1';
+		$this->default_access = '|0|';
 		return true;
 	}
 

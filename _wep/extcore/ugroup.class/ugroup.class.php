@@ -66,6 +66,7 @@ class ugroup_class extends kernel_extends
 		$this->caption = 'Группы';
 		$this->singleton = true;
 		$this->ver = '0.2.1';
+		$this->default_access = '|0|';
 		return true;
 	}
 
@@ -196,6 +197,7 @@ class users_class extends kernel_extends {
 		$this->locallang['default']['title_regme'] = 'Регистрация пользователя';
 		$this->locallang['default']['title_profile'] = 'Редактирование профиля';
 		$this->locallang['default']['_saveclose'] = 'Готово';
+		$this->default_access = '|0|';
 		return true;
 	}
 

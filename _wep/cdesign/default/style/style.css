@@ -1,7 +1,7 @@
 
 body {
 	font-family:Calibri,Arial;
-	font-size:100%;
+	font-size:12px;
 	font-size-adjust:none;
 	font-style:normal;
 	font-variant:normal;
@@ -32,12 +32,12 @@ a:hover{text-decoration:none;}
 	text-align: left;
 	position:relative;
 	z-index:4;
-	font-size:0.9em;
+	font-size:1em;
 }
 
 a.am_home {
 	background:transparent url(../img/home.png) no-repeat 0 0;
-	color:transparent;font-size:1px;
+	color:transparent;font-size:0.01em;
 	display:inline-block;
 	width:32px;height:32px;
 	vertical-align: top;
@@ -45,7 +45,7 @@ a.am_home {
 }
 a.am_exit {
 	background:transparent url(../img/close32.gif) no-repeat 0 0;
-	color:transparent;font-size:1px;
+	color:transparent;font-size:0.01em;
 	display:inline-block;
 	width:32px;height:32px;
 	vertical-align: top;
@@ -57,7 +57,7 @@ a.am_user {
 }
 a.am_tools {
 	background:transparent url(../img/tools.png) no-repeat 0 0;
-	color:transparent;font-size:1px;
+	color:transparent;font-size:0.01em;
 	display:inline-block;
 	width:32px;height:32px;
 	vertical-align: top;
@@ -68,7 +68,7 @@ a.am_tools {
 .nav,
 .nav ul{list-style-type:none; margin:0; padding:0;}
 .nav a {text-decoration:none;}
-.nav {font-family: arial, sans-serif; font-size:12px; margin:2px auto;display:inline-block;}
+.nav {font-family: arial, sans-serif; font-size:1em; margin:2px auto;display:inline-block;}
 
 /* style the links */
 /* needs a background for IE6 - can be a color or a transparent gif */
@@ -146,11 +146,11 @@ a.am_tools {
 	bottom:0;
 }
 	#cmsinfo a {color:#FFF;}
-	#cmsinfo .infname {float:left;width:200px;font-weight:bold;font-size:20px;color:#333;padding:2px 0pt 0pt 10px;}
-	#cmsinfo .infc {float:right;font-weight:none;font-size:10px;color:#FFF;text-align:left;width:160px;}
+	#cmsinfo .infname {float:left;width:200px;font-weight:bold;font-size:1.4em;color:#333;padding:2px 0pt 0pt 10px;}
+	#cmsinfo .infc {float:right;font-weight:none;font-size:0.9em;color:#FFF;text-align:left;width:160px;}
 	#cmsinfo .infc .ctd1 {width:55px;float:left;clear:left;text-align:right;padding:0 5px 0 0;}
 	#cmsinfo .infc .ctd2 {width:100px;float:right;clear:right;text-align:left;}
-	#cmsinfo #inftime {font-size:11px;position:absolute;left:210px;bottom:0;}
+	#cmsinfo #inftime {font-size:1em;position:absolute;left:210px;bottom:0;}
 	#cmsinfo #inftime div {float:left;padding:0 5px 5px;}
 
 	/*IMG*/
@@ -162,7 +162,7 @@ a.am_tools {
 			height:16px;
 			color:transparent;
 			cursor:pointer;
-			font-size:1px;
+			font-size:0.01em;
 			display:block;
 			display:inline-block;
 		}
@@ -194,7 +194,7 @@ a.am_tools {
 		.service {
 			color:#D33;
 			cursor:pointer;
-			font-size:12px;
+			font-size:1em;
 			padding:2px 0pt 1px 18px;
 			white-space:nowrap;
 			display:block;
@@ -222,9 +222,9 @@ a.am_tools {
 #debug_view {
 	position:absolute;right:5px;top:36px;z-index:6;
 	border:1px solid yellow;background:#D7E8FF;
-	width:320px;padding:0;font-size:10px;font-family: arial;
+	width:320px;padding:0;font-size:0.8em;font-family: arial;
 	overflow:auto;}/*white-space:pre;*/
-#debug_view h1 {font-size:12px;text-align:center;font-weight:bold;margin:0;max-height:300px;min-height:40px;overflow:auto;}
+#debug_view h1 {font-size:1em;text-align:center;font-weight:bold;margin:0;max-height:300px;min-height:40px;overflow:auto;}
 .debug_view_img {position:absolute;right:5px;top:4px;z-index:7;cursor:pointer;}
 
 
@@ -247,13 +247,14 @@ a.am_tools {
 div.menu_new {
 	padding: 5px 15px 0 0pt;margin: 0;
 	float: left;
-	height:24px;
+	height:1.6em;
+	font-size:1.2em;
 }
 div.menu_new .botton {
 	background-color:#A1E177;
 	float:left;
 	margin:0 2px;
-	padding:1px 5px 3px;
+	padding:2px 3px 2px;
 	border:1px solid #AAAAAA;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
 }
 div.menu_new .botton:hover {
@@ -270,9 +271,9 @@ div.menu_new .weptools {
 	background-repeat:no-repeat;
 	height:16px;
 	width:16px;
-	margin:2px 0 1px;
+	margin:0;
 	display:block;
-	font-size:5px;
+	font-size:0.6em;
 }
 	div.menu_new .weptools:hover, div.menu_new .weptools_sel {
 		background-image:url(../img/button.png);
@@ -340,7 +341,7 @@ div.menu_new fieldset legend {
 /*TABLE*/
 .superlist {
 	border-bottom:1px dashed #ccc;border-left:1px solid #e0e0e0;
-	font-size:0.8em;}
+	font-size:1em;}
 /*ODD*/
 .superlist tr:nth-child(odd) td { 
 	background:#D5E5B1;
@@ -349,7 +350,7 @@ div.menu_new fieldset legend {
 .superlist tr:hover td {background: none repeat scroll 0 0 #95A5C1;}
 .superlist th {background:#d3d4d4 url() repeat-x; border-bottom:1px solid #ccc;border-right:1px solid #ccc;border-top:1px solid #e0e0e0;padding:0;white-space:nowrap;}
 .superlist td img {border:1px solid #ccc;}
-.superlist .ic{width:0;text-align:center;white-space:nowrap;font-size:13px;}
+.superlist .ic{width:0;text-align:center;white-space:nowrap;font-size:1.1em;}
 .superlist .ic a{margin:0 4px 0 0;}
 .superlist td.b{padding:0;text-align:center;border-top:1px solid #E0E0E0;border-bottom:1px solid #E0E0E0;}
 .superlist .clear {border-right:0;}
@@ -361,10 +362,10 @@ div.menu_new fieldset legend {
 .pagenumcnt {padding:5px 0 5px 10px;float:left;}
 
 span.pagenum {
-	font-size:0.9em;
+	font-size:1em;
 }
 select.pagenum {
-	font-size:0.9em;
+	font-size:1em;
 }
 select.pagenum option[selected='selected']{
 	font-weight: bold;
@@ -380,7 +381,7 @@ div.pagenum a {
 	padding:0 2px;
 }
 .mopselect {
-	font-size:0.8em;
+	font-size:1em;
 	background-color:transparent;
 	border:solid 1px gray;
 	margin:7px 0 6px 10px;
@@ -399,13 +400,13 @@ form table.form {
 	}
 /*FILTER*/
 	div.filter {
-		font-size:0.9em;
+		font-size:1em;
 		text-align:center;
 		position:relative;
 	}
 
 	div.filter select {
-		font-size:12px;
+		font-size:1em;
 		width:170px;
 	}
 
@@ -414,13 +415,13 @@ form table.form {
 	}
 
 	div.filter input {
-		font-size:0.9em;
+		font-size:1em;
 		width:170px;
 	}
 
 	div.filter input[type='text'] {
 		width:16em;
-		font-size:0.8em;
+		font-size:1em;
 		border:1px solid gray;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
 	}
 	div.filter .f_int {
@@ -438,7 +439,7 @@ form table.form {
 		padding:0px 5px;
 	}
 	div.filter div.f_item div.f_caption {
-		font-size:0.9em;
+		font-size:1em;
 		padding:0;
 		height:18px;
 	}
@@ -496,12 +497,12 @@ span.seldebug {
 	margin: 2px 3px 0 0;
 }
 span.seldebug select{
-	font-size:10px;
+	font-size:0.9em;
 	border:solid 1px gray;
 }
 /*MESSAGE*/
 .messages {
-	font-size:0.9em;
+	font-size:1em;
 	text-align:center;
 	background:#F6F6F6;
 	padding:5px 20px;margin:3px 0 0;
