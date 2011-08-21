@@ -14,7 +14,7 @@
 			}
 			//print($this->SQL->query);
 			if(count($this->data)==1) {
-				if(count($_POST) and ($_POST['sbmt'] or $_POST['sbmt_save'])) {
+				if(count($_POST) and (isset($_POST['sbmt']) or isset($_POST['sbmt_save']))) {
 					if(!$this->_prmModulEdit($this->data[$this->id],$param)) {
 						$arr['mess'][] = array('name'=>'error', 'value'=>$this->getMess('denied_up'));
 						$formflag=0;
@@ -72,9 +72,9 @@
 			$formflag = $param['formflag'];
 		elseif($flag==0)
 			$formflag = 1;
-		elseif($_POST['sbmt'] and $flag==1)
+		elseif(isset($_POST['sbmt']) and $flag==1)
 			$formflag = 0;
-		elseif(isset($_POST['sbmt_save']) and $_POST['sbmt_save'])
+		elseif(isset($_POST['sbmt_save']))
 			$formflag = 1;
 		elseif(isset($param['ajax']))
 			$formflag = 0;

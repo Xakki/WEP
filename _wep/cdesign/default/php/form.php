@@ -207,7 +207,7 @@ function tpl_form(&$data) {
 				$texthtml .= '<div class="form-value">';
 				$temp = '';
 
-				if($r['mask']['view']=='input') {
+				if(isset($r['mask']['view']) and $r['mask']['view']=='input') {
 					// текстовый формат ввода данных
 					if(isset($r['mask']['datepicker'])) {
 						if(is_string($r['mask']['datepicker']))
@@ -259,15 +259,18 @@ function tpl_form(&$data) {
 				else {
 				
 					// Тип поля
-					if($r['fields_type'] =='int' and $r['value']){
-						$temp = explode('-',date('Y-m-d-H-i-s',$r['value']));
-					}
-					elseif($r['fields_type'] =='timestamp' and $r['value']){
-						$temp = sscanf($r['value'], "%d-%d-%d %d:%d:%d");//2007-09-11 10:16:15
-					}
-					else{
-						$temp = array(date('Y'),date('n'),date('d'),date('H'));
-					}
+					if(!is_array($r['value'])) {
+						if($r['fields_type'] =='int' and $r['value']) {
+							$temp = explode('-',date('Y-m-d-H-i-s',$r['value']));
+						}
+						elseif($r['fields_type'] =='timestamp' and $r['value'] and is_string($r['value'])){
+							$temp = sscanf($r['value'], "%d-%d-%d %d:%d:%d");//2007-09-11 10:16:15
+						}
+						else{print_r('<pre>');print_r($r['value']);
+							$temp = array(date('Y'),date('n'),date('d'),date('H'));
+						}
+					}else
+						$temp = $r['value'];
 					$r['value']= array();
 
 					// формат для даты

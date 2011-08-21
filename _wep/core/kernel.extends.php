@@ -979,7 +979,7 @@ abstract class kernel_extends {
 			/*elseif ($r['type'] == 'checkbox') {
 				$data[$k] = $r['value'] = ((isset($data[$k]) and $data[$k])?1:0);
 			}*/
-			elseif (isset($data[$k])) //  and $data[$k]
+			if (isset($data[$k]) and !isset($r['value'])) //  and $data[$k]
 				$r['value'] = $data[$k];
 
 			if (isset($this->id) and isset($this->data[$this->id]['_ext_' . $k]))
