@@ -51,7 +51,7 @@ class session_class extends kernel_extends {
 		$this->index_fields['sid'] = 'sid';
 		$this->unique_fields['sid'] = 'sid';
 
-		if(!session_id()) {
+		if(!session_id() or !isset($_SESSION)) {
 			session_set_save_handler(array(&$this,"open"), array(&$this,"close"), array(&$this,"read"), array(&$this,"write"), array(&$this,"destroy"), array(&$this,"gc"));
 			session_start();
 			
