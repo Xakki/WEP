@@ -91,8 +91,9 @@ final class modulprm_class extends kernel_extends {
 		$html = '';
 		$mess = array();
 		$this->mDump();
-		$temp = $this->_CFG['modulprm_ext'];
+		$this->modulprm_ext = $this->_CFG['modulprm_ext'];
 		unset($this->_CFG['modulprm_ext']); // чтобы не подменять обращения к модулям
+
 		foreach ($this->_CFG['modulinc'] as $k => $r) {
 			$dir = dir($r['path']);
 			while (false !== ($entry = $dir->read())) {
@@ -210,6 +211,10 @@ final class modulprm_class extends kernel_extends {
 				$res = 1;
 			}
 		}
+
+		if(!isset($this->_CFG['modulprm_ext']) and isset($this->temp_modulprm_ext))
+			$this->_CFG['modulprm_ext'] = $this->temp_modulprm_ext;
+
 		//TODO : Инфо Фаил модуля
 		$DATA['sbmt'] = array(
 			'type' => 'submit',
@@ -333,10 +338,17 @@ final class modulprm_class extends kernel_extends {
 		}
 
 		$this->mDump();
-		if(isset($this->pdata['']) and count($this->pdata['']))
+		if(isset($this->pdata['']) and count($this->pdata[''])) {
+			$this->modulgrpDump();
+			$this->temp_modulprm_ext = $this->_CFG['modulprm_ext'];
+			$this->_CFG['modulprm_ext'] = NULL;
 			foreach ($this->pdata[''] as $k => $r) {
 				$rDATA = array_merge($rDATA, static_tools::_checkmodstruct($k));
 			}
+
+			$this->_CFG['modulprm_ext'] = $this->temp_modulprm_ext;	
+
+		}
 
 		return $rDATA;
 	}
@@ -344,9 +356,8 @@ final class modulprm_class extends kernel_extends {
 	function ForUpdateModulInfo($Mid, &$OWN = NULL) {
 		$MESS = array();
 		$flag = false;
+
 		try { // ловец снов
-			$this->mDump(); //дамп, выполниться один раз только
-			$this->modulgrpDump();
 			$fpath = '';
 			$ret = static_main::includeModulFile($Mid, $OWN);
 			if ($ret['file']) {
@@ -357,7 +368,6 @@ final class modulprm_class extends kernel_extends {
 			$this->fld_data = array();
 			if ($fpath) {
 				include_once($fpath);
-				unset($this->_CFG['modulprm_ext']);
 
 				if (_new_class($Mid, $MODUL, $OWN)) {
 					$MODUL->setSystemFields();// установка системных полей
@@ -450,6 +460,7 @@ final class modulprm_class extends kernel_extends {
 					$this->id = $Mid;
 					$this->_update();
 				}
+
 			} else {
 				$MESS[] = array('error', 'Фаилы модуля `' . $Mid . '`[' . $path . '] отсутствуют и этот модуль будет удален из базы данных.');
 				$this->id = $Mid;
@@ -471,8 +482,9 @@ final class modulprm_class extends kernel_extends {
 			$this->guserData = array();
 			_new_class('ugroup', $UGROUP);
 			$result = $this->SQL->execSQL('SELECT id,name,level FROM ' . $UGROUP->tablename . ' WHERE level>0'); //админов не учитываем
-			if ($result->err)
+			if ($result->err) {
 				exit();
+			}
 			while ($row = $result->fetch_array()) {
 				//if($row['level']==5) $row['id'] = 0;
 				$this->guserData[$row['id']] = $row;
@@ -481,8 +493,9 @@ final class modulprm_class extends kernel_extends {
 		if (!isset($this->modulgrpData)) {
 			$this->modulgrpData = array();
 			$result = $this->SQL->execSQL('SELECT * FROM ' . $this->childs['modulgrp']->tablename);
-			if ($result->err)
+			if ($result->err){
 				exit();
+			}
 			while ($row = $result->fetch_array())
 				$this->modulgrpData[$row['owner_id']][$row['ugroup_id']] = $row;
 		}

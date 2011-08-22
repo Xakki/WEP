@@ -224,7 +224,7 @@ class users_class extends kernel_extends {
 		}
 
 		$this->attaches['userpic'] = array('mime' => array('image/pjpeg'=>'jpg', 'image/jpeg'=>'jpg', 'image/gif'=>'gif', 'image/png'=>'png'), 'thumb'=>array(array('type'=>'resize', 'w'=>'800', 'h'=>'600','pref'=>'orign_'),array('type'=>'resizecrop', 'w'=>85, 'h'=>85)),'maxsize'=>1000,'path'=>'');
-		if(static_main::_prmUserCheck()) {
+		if(static_main::_prmUserCheck() and !is_null($this->_CFG['modulprm_ext'])) {
 			$params = array(
 				'obj'=>&$this,
 				'func' => 'updateLastVisit',
