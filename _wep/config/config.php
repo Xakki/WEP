@@ -95,7 +95,8 @@ $_CFG['_PATH']['ext'] = $_CFG['_PATH']['wepconf'] . '/ext/'; // путь к по
 $_CFG['_PATH']['config'] = $_CFG['_PATH']['wepconf'] . '/config/'; // конфиги
 $_CFG['_PATH']['ulocallang'] = $_CFG['_PATH']['wepconf'] . '/locallang/'; // язык
 $_CFG['_PATH']['cron'] = $_CFG['_PATH']['wepconf'] . '/cron/'; // кроны
-$_CFG['_PATH']['temp'] = $_CFG['_PATH']['wepconf'] . '/temp/'; // путь к папке для хранения временных файлов
+$_CFG['_PATH']['weptemp'] = $_CFG['_PATH']['wepconf'] . '/temp/'; // путь к папке для хранения временных файлов
+$_CFG['_PATH']['temp'] = $_CFG['_PATH']['path'] . '_content/temp/'; // путь к папке для хранения временных файлов системы
 $_CFG['_PATH']['log'] = $_CFG['_PATH']['wepconf'] . '/log/';
 $_CFG['_PATH']['HASH_KEY'] = $_CFG['_PATH']['config'] . 'hash.key';
 
@@ -115,7 +116,8 @@ $_CFG['PATH']['wepconfname'] = basename($_CFG['_PATH']['wepconf']); // базо�
 $_CFG['PATH']['cdesign'] = $_CFG['PATH']['wepname'] . '/cdesign/'; // дизайн админки
 $_CFG['PATH']['WSWG'] = '_wysiwyg/';
 $_CFG['PATH']['HASH_KEY'] = $_CFG['PATH']['wepconfname'] . '/config/hash.key';
-$_CFG['PATH']['temp'] = $_CFG['PATH']['wepconfname'] . '/temp/'; // путь к папке для хранения временных файлов
+$_CFG['PATH']['weptemp'] = $_CFG['PATH']['wepconfname'] . '/temp/'; // путь к папке для хранения временных файлов
+$_CFG['PATH']['temp'] = '_content/temp/'; // путь к папке для хранения временных файлов
 //
 //Настройка для Nginx
 if (isset($_SERVER['HTTP_X_REAL_IP']) and $_SERVER['HTTP_X_REAL_IP'])

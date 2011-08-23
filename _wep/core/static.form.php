@@ -609,7 +609,7 @@ class static_form {
 					if($tmp == count($error)){
 						static_tools::_checkdir($_this->_CFG['_PATH']['temp']);
 						$temp = $_this->_CFG['_PATH']['temp'].substr(md5(getmicrotime()),16).'.'.$form['mime'][$_FILES[$key]['type']];
-						if(file_exists($temp)) unlink($temp);
+						static_tools::_checkdir($_this->_CFG['_PATH']['temp']);
 						if (move_uploaded_file($_FILES[$key]['tmp_name'], $temp)){
 							$_FILES[$key]['tmp_name']= $temp;
 							$value = $_FILES[$key];

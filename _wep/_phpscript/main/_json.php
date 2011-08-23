@@ -108,7 +108,7 @@
 			if (isset($ext_list[$ext]))	{
 				$temp_name = substr(md5(getmicrotime()),16) . '.' . $ext;
 				$temp_path = $_CFG['_PATH']['temp'].$temp_name;
-				if(file_exists($temp_path)) unlink($temp_path);
+				static_tools::_checkdir($_CFG['_PATH']['temp']);
 				if (move_uploaded_file($_FILES['Filedata']['tmp_name'], $temp_path)){
 					$_FILES['Filedata']['tmp_name']= $temp_name;
 					$GLOBALS['_RESULT']['swf_uploader'] = array(

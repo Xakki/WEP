@@ -41,7 +41,7 @@ function tools_cron() {
 		return $_CFG['_MESS']['denied'];
 	$result = '';
 
-	$ini_file = $_CFG['_PATH']['temp'].'cron.ini';
+	$ini_file = $_CFG['_PATH']['weptemp'].'cron.ini';
 	if(file_exists($ini_file)) 
 		$ini_arr = parse_ini_file($ini_file);
 	else
