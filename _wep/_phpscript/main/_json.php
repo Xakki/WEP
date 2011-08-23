@@ -102,8 +102,8 @@
 				'gif' => 'image/gif',
 				'png' => 'image/png',
 			);
-			
-			$ext = end(explode('.', $_FILES['Filedata']['name']));
+			$parts = explode('.', $_FILES['Filedata']['name']);
+			$ext = end($parts);
 			
 			if (isset($ext_list[$ext]))	{
 				$temp_name = substr(md5(getmicrotime()),16) . '.' . $ext;
