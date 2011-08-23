@@ -113,6 +113,7 @@
 					$_FILES['Filedata']['tmp_name']= $temp_name;
 					$GLOBALS['_RESULT']['swf_uploader'] = array(
 						'name' => $temp_name,
+						'path' => $_CFG['PATH']['temp'],
 						'mime_type' => $ext_list[$ext],
 					);
 				}
