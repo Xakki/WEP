@@ -115,7 +115,8 @@ $_CFG['PATH']['wepconfname'] = basename($_CFG['_PATH']['wepconf']); // базо�
 $_CFG['PATH']['cdesign'] = $_CFG['PATH']['wepname'] . '/cdesign/'; // дизайн админки
 $_CFG['PATH']['WSWG'] = '_wysiwyg/';
 $_CFG['PATH']['HASH_KEY'] = $_CFG['PATH']['wepconfname'] . '/config/hash.key';
-
+$_CFG['PATH']['temp'] = $_CFG['PATH']['wepconfname'] . '/temp/'; // путь к папке для хранения временных файлов
+//
 //Настройка для Nginx
 if (isset($_SERVER['HTTP_X_REAL_IP']) and $_SERVER['HTTP_X_REAL_IP'])
 	$_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_REAL_IP'];

@@ -98,6 +98,7 @@ class static_form {
 		if($result->err) return false;
 		$row = $result->fetch_array();
 		$prop = array();
+		
 		foreach($_this->att_data as $key => $value) 
 		{
 			if (!is_array($value) or $value['tmp_name'] == 'none' or $value['tmp_name'] == '') continue;
@@ -614,10 +615,15 @@ class static_form {
 							$value = $_FILES[$key];
 						}else
 							$error[]=40;
-					}
+					}					
 				}
 				$data[$key] = $value;
 			}
+			elseif (isset($_POST[$key . '_temp_upload']) && is_array($_POST[$key . '_temp_upload'])) {
+				$value = $_POST[$key . '_temp_upload'];	
+				$value['tmp_name'] = $_this->_CFG['_PATH']['temp'] . $value['name'];
+				$data[$key] = $value;
+			}						
 			//*********** CHECKBOX
 			elseif($form['type']=='checkbox') {
 				$value = ($value? 1 : 0);
@@ -842,6 +848,7 @@ class static_form {
 			}
 
 		}
+		
 		$messages = array();
 		if(count($arr_err_name)>0) {
 			$messages[] = array('name'=>'error', 'value'=>'Поля формы заполненны не верно.');

@@ -18,7 +18,7 @@
 			$GLOBALS['_RESULT']['text'] = 'Вызов функции не разрешён модулем.';
 		
 	} 
-	elseif($_GET['_view']=='ajaxlist' and $_GET['_srlz']=stripslashes($_GET['_srlz']) and $_GET['_hsh']==md5($_GET['_srlz'].$_CFG['wep']['md5'])) {
+	elseif(isset($_GET['_view']) && $_GET['_view']=='ajaxlist' and $_GET['_srlz']=stripslashes($_GET['_srlz']) and $_GET['_hsh']==md5($_GET['_srlz'].$_CFG['wep']['md5'])) {
 		$listname = unserialize($_GET['_srlz']);
 		if(!isset($listname['tablename']) and isset($listname['class']) and $listname['class'])
 			$listname['tablename'] = $_CFG['sql']['dbpref'].$listname['class'];
@@ -66,7 +66,7 @@
 			}
 		}*/
 	}
-	elseif($_REQUEST['_view']=='loadpage') {
+	elseif(isset($_REQUEST['_view']) && $_REQUEST['_view']=='loadpage') {
 		require_once($_CFG['_PATH']['core'].'/html.php');
 		$_COOKIE['_showallinfo'] = 0;
 		$_COOKIE['_showerror'] = 0;
@@ -91,6 +91,45 @@
 		}
 		//print_r('<pre>');print_r($GLOBALS['_RESULT']);
 	}
+	elseif (isset($_POST['wepID'])) {
+		if (isset($_FILES['Filedata']) && $_FILES['Filedata']['error'] == 0) {
+//			session_id(mysql_real_escape_string((string)$_POST['wepID']));
+//			session_go();
+//			file_put_contents($_CFG['_PATH']['path'].'test.txt', 'aaa '.var_export($_SESSION, true));
+
+			$ext_list = array(
+				'jpg' => 'image/jpeg',
+				'gif' => 'image/gif',
+				'png' => 'image/png',
+			);
+			
+			$ext = end(explode('.', $_FILES['Filedata']['name']));
+			
+			if (isset($ext_list[$ext]))	{
+				$temp_name = substr(md5(getmicrotime()),16) . '.' . $ext;
+				$temp_path = $_CFG['_PATH']['temp'].$temp_name;
+				if(file_exists($temp_path)) unlink($temp_path);
+				if (move_uploaded_file($_FILES['Filedata']['tmp_name'], $temp_path)){
+					$_FILES['Filedata']['tmp_name']= $temp_name;
+					$GLOBALS['_RESULT']['swf_uploader'] = array(
+						'name' => $temp_name,
+						'mime_type' => $ext_list[$ext],
+					);
+				}
+			}
+			else {
+				$GLOBALS['_RESULT']['error'] = 'Неверный тип файла';
+			}
+			
+
+
+//			file_put_contents($_CFG['_PATH']['path'].'test.txt', 'aaa '.var_export($_FILES, true));
+			
+			
+//			$_SESSION['swf_upload_file'][] = $_FILES['Filedata'];
+		}
+	}
 	else {
 		print('NO VALID DATA');
 	}
+	
