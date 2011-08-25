@@ -588,7 +588,7 @@ class static_tools {
 		if ($fc)
 			eval($fc);
 		else
-			print_r('NO CFG');
+			trigger_error('NO CFG', E_USER_WARNING);
 
 		return $_CFG;
 	}

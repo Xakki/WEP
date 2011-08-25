@@ -31,7 +31,6 @@
 						}
 					}
 					elseif(isset($r['ext'])) {
-		//				print_r($r);
 						$r['value'] = $this->_get_file($this->id,$k);// TODO
 						if(isset($this->_CFG['form']['imgFormat'][$r['ext']]) and $this->id) {
 							$r['att_type'] = 'img';

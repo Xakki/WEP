@@ -73,6 +73,8 @@
 		}
 		.divform .checkbox-value .boxtitle {
 			margin-left:25px; 
+			margin-bottom:3px; 
+			min-height: 1.5em;
 		}
 	.divform .form-submit {
 		text-align:center;

@@ -3,6 +3,19 @@
 class ugroup_class extends kernel_extends
 {
 
+	protected function _set_features() {
+		parent::_set_features();
+
+		$this->mf_actctrl = true;
+		$this->mf_istree = true;
+		$this->mf_treelevel = 1;
+		$this->caption = 'Группы';
+		$this->singleton = true;
+		$this->ver = '0.2.1';
+		$this->default_access = '|0|';
+		return true;
+	}
+
 	function _create_conf() {/*CONFIG*/
 		parent::_create_conf();
 
@@ -58,20 +71,12 @@ class ugroup_class extends kernel_extends
 		$this->config_form['userpic'] = array('type' => 'text', 'mask' =>array(), 'caption' => 'Дефолтная фотка пользователя');
 	}
 
-	protected function _set_features() {
-		if (!parent::_set_features()) return false;
-		$this->mf_actctrl = true;
-		$this->mf_istree = true;
-		$this->mf_treelevel = 1;
-		$this->caption = 'Группы';
-		$this->singleton = true;
-		$this->ver = '0.2.1';
-		$this->default_access = '|0|';
-		return true;
-	}
-
 	function _create() {
 		parent::_create();
+
+		if($this->config['payon']) {// Включается зависимость модуля
+			$this->_dependClass = array('pay');
+		}
 
 		$this->_vf_list = 'concat(name,"[",level,"]")';// агрегатная ф мускл
 		
@@ -216,7 +221,8 @@ class users_class extends kernel_extends {
 		$this->fields[$this->fn_pass] = array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL');
 		// service field
 		$this->fields['reg_hash'] = array('type' => 'varchar', 'width' => 128, 'attr' => 'NOT NULL', 'default'=>'');
-		$this->fields['balance'] = array('type' => 'float', 'width' => '11,2', 'attr' => 'NOT NULL', 'default'=>'0.00');
+		if($this->owner->config['payon'])
+			$this->fields['balance'] = array('type' => 'float', 'width' => '11,4', 'attr' => 'NOT NULL', 'default'=>'0.0000');
 		$this->fields['lastvisit'] =  array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL', 'default'=>0);
 		if($this->owner->config['karma']) {
 			$this->fields['karma'] = array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL', 'default'=>0);
@@ -280,7 +286,7 @@ class users_class extends kernel_extends {
 			$this->fields_form['balance'] =	array(
 				'type' => 'text',
 				'readonly' => true, 
-				'caption' => 'Счет(руб)',
+				'caption' => 'Счет('.$this->owner->config['payon'].')',
 				'mask'=>array('sort'=>1));
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Пользователь активен', 'mask' =>array('usercheck'=>1));
 

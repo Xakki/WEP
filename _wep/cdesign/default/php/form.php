@@ -266,8 +266,9 @@ function tpl_form(&$data) {
 						elseif($r['fields_type'] =='timestamp' and $r['value'] and is_string($r['value'])){
 							$temp = sscanf($r['value'], "%d-%d-%d %d:%d:%d");//2007-09-11 10:16:15
 						}
-						else{print_r('<pre>');print_r($r['value']);
-							$temp = array(date('Y'),date('n'),date('d'),date('H'));
+						else{
+							$temp = array_fill(0,6,0);
+							//$temp = array(date('Y'),date('n'),date('d'),date('H'));
 						}
 					}else
 						$temp = $r['value'];

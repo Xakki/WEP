@@ -3,49 +3,44 @@ class pay_class extends kernel_extends {
 
 	function _set_features() {
 		if (!parent::_set_features()) return false;
-		$this->caption = 'Платежи';
+		$this->caption = 'Pay stream';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';
-		$this->mf_namefields=false;
 		$this->mf_timecr = true; // создать поле хранящее время создания поля
-		$this->mf_timeup = true; // создать поле хранящее время обновления поля
-		$this->mf_timeoff = true; // создать поле хранящее время отключения поля (active=0)
 		$this->mf_ipcreate = true;//IP адрес пользователя с котрого была добавлена запись		
 		$this->mf_timestamp = true; // создать поле  типа timestamp
 		$this->cf_childs = true;
-		$this->icon = '12';
-		$this->ver = '0.1';
+		$this->ver = '0.2';
 		$this->default_access = '|0|';
+		$this->prm_add = false; // добавить в модуле
+		$this->prm_del = false; // удалять в модуле
+		$this->prm_edit = false; // редактировать в модуле
 		return true;
 	}
 
 	protected function _create_conf() { /*CONFIG*/
 		parent::_create_conf();
-		//$this->config_form['childs']['caption'] = 'Подключенные модули платежных систем';
-		
-		$this->config['desc'] = 'Пополнение партнерского счёта partner.ru';
-		
-		$this->config_form['desc'] = array('type' => 'text', 'mask' =>array(), 'caption' => 'Описание денежного перевода');
 	}
 
 	protected function _create() {
 		parent::_create();
-		$this->fields['user_id'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
-		$this->fields['cost'] = array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL'); // в копейках
-		$this->fields['pay_modul'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL'); // в копейках
-		$this->fields['status'] = array('type' => 'tinyint', 'width' => 1,'attr' => 'NOT NULL'); // в копейках
+		$this->fields['user_id'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL');
+		$this->fields['cost'] = array('type' => 'float', 'width' => '11,4', 'attr' => 'NOT NULL');
+		$this->fields['name'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
+		//$this->fields['status'] = array('type' => 'tinyint', 'width' => 1,'attr' => 'NOT NULL');
+		//$this->fields['pay_modul'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL');
 
-		$this->fields_form['user_id'] = array('type' => 'text', 'readonly'=>1,'caption' => 'Юзер', 'mask'=>array());
-		$this->fields_form['cost'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Цена (коп.)', 'mask'=>array());
-		$this->fields_form['pay_modul'] = array('type' => 'text', 'readonly'=>1,'caption' => 'Платежный модуль', 'mask'=>array());
-		$this->fields_form['status'] = array('type' => 'text', 'readonly'=>1,'caption' => 'Статус', 'mask'=>array());
+		$this->fields_form[$this->mf_createrid] = array('type' => 'list', 'listname'=>array('class'=>'users'), 'readonly'=>1, 'caption' => 'От кого', 'comment'=>'От кого переведены средства', 'mask'=>array());
+		$this->fields_form['user_id'] = array('type' => 'list', 'listname'=>array('class'=>'users'), 'readonly'=>1, 'caption' => 'Кому', 'comment'=>'Куму переведены средства', 'mask'=>array());
+		$this->fields_form['cost'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Деньга', 'mask'=>array());
+		$this->fields_form['name'] = array('type' => 'text', 'readonly'=>1,'caption' => 'Комментарий', 'mask'=>array());
+		//$this->fields_form['pay_modul'] = array('type' => 'text', 'readonly'=>1,'caption' => 'Платежный модуль', 'mask'=>array());
+		//$this->fields_form['status'] = array('type' => 'text', 'readonly'=>1,'caption' => 'Статус', 'mask'=>array());
 		
 		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата', 'mask'=>array());
 		//$this->fields_form['mf_timeup'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата обновления', 'mask'=>array('fview'=>2));
 		//$this->fields_form['mf_timeoff'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата отключения', 'mask'=>array('fview'=>2));
-		$this->fields_form['mf_ipcreate'] = array('type' => 'text','readonly'=>1, 'caption' => 'Дата', 'mask'=>array('fview'=>2));
+		$this->fields_form['mf_ipcreate'] = array('type' => 'text','readonly'=>1, 'caption' => 'IP', 'mask'=>array('fview'=>2));
 		
-		$this->locallang['default']['wrong_pay_method'] = 'Данного способа оплаты не существует';
-		$this->locallang['default']['wrong_pay_amount'] = 'Неверно указана цена';
 	}
 
 	// возвращает список платежных систем

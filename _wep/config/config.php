@@ -150,7 +150,7 @@ if (strpos($_SERVER['HTTP_HOST'], 'xn--') !== false) {
 	$_SERVER['HTTP_HOST'] = $IDN->decode($_SERVER['HTTP_HOST']);
 	$_CFG['site']['rf'] = 1;
 }
-$_CFG['_HREF']['BH'] = 'http://' . $_SERVER['HTTP_HOST'] . $port . '/' . $addpath; // www-путь сайта
+$_CFG['_HREF']['BH'] = 'http://' . $_SERVER['HTTP_HOST'] . '/' . $addpath; // www-путь сайта
 $_CFG['_HREF']['wepJS'] = $_CFG['_HREF']['BH'] . $_CFG['PATH']['wepname'] . '/js.php';
 $_CFG['_HREF']['siteJS'] = $_CFG['_HREF']['BH'] . '_js.php';
 $_CFG['_HREF']['siteAJAX'] = $_CFG['_HREF']['BH'] . '_json.php';
@@ -355,10 +355,10 @@ $_CFG['session']['multidomain'] = 0;
 $hostcnt = count($_CFG['_HREF']['arrayHOST']);
 // никто не будет использовать домен 4го уровня, а значит это IP
 if ($hostcnt < 2 or ($hostcnt == 4)) { //учитываем localhost и ИПИ
-	$_SERVER['HTTP_HOST2'] = $_SERVER['HTTP_HOST'] . $port;
+	$_SERVER['HTTP_HOST2'] = $_SERVER['HTTP_HOST'];
 	//$_CFG['session']['domain'] = '';//$_SERVER['HTTP_HOST2'];
 } else {
-	$_SERVER['HTTP_HOST2'] = $_CFG['_HREF']['arrayHOST'][1] . '.' . $_CFG['_HREF']['arrayHOST'][0] . $port;
+	$_SERVER['HTTP_HOST2'] = $_CFG['_HREF']['arrayHOST'][1] . '.' . $_CFG['_HREF']['arrayHOST'][0];
 
 	if ($_CFG['site']['rf'])
 		$_CFG['session']['domain'] = $IDN->encode($_SERVER['HTTP_HOST2']);

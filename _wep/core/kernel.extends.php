@@ -169,6 +169,7 @@ abstract class kernel_extends {
 				$this->Achilds =
 				$this->_setHook = 
 				$this->_AllowAjaxFn =  // разрешённые функции для аякса, нужно прописывать в индекс
+				$this->_dependClass = 
 				 array();
 		$this->childs = new modul_child($this);
 		$this->ordfield = $this->_clp = '';

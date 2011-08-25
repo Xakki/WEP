@@ -131,8 +131,12 @@ final class modulprm_class extends kernel_extends {
 						}else
 							$DATA[$k . '_' . $entry]['comment'] .= 'Не возможно подключить модуль. Класс `'.$entry.'_class` не найден.';
 						if ($resData['parent']) {
-							$DATA[$k . '_' . $entry]['comment'] .= '<div>Зависим от ' . $resData['parent'] . '</div>';
+							$DATA[$k . '_' . $entry]['comment'] .= '<div>Наследуется от ' . $resData['parent'] . '</div>';
 							$DATA[$k . '_' . $entry]['_parent'] = $resData['parent'];
+						}
+						if ($resData['depend']) {
+							$DATA[$k . '_' . $entry]['comment'] .= '<div>Зависим от ' . implode(', ',$resData['depend']) . '</div>';
+							$DATA[$k . '_' . $entry]['_depend'] = $resData['depend'];
 						}
 						// проверяем необходимые модули
 						if (isset($this->_CFG['require_modul'][$entry])) {
@@ -165,6 +169,15 @@ final class modulprm_class extends kernel_extends {
 							$res = -1;
 							continue;
 						}
+						if(count($r['_depend'])) {
+							foreach($r['_depend'] as $dep) {
+								if (!isset($_POST['0_' . $dep]) and !isset($_POST['3_' . $dep]) and !isset($this->data[$dep])) {
+									$mess[] = array('error', 'Ошибка. Не подключен зависимый модуль `' . $dep . '` для `' . $r['_entry'] . '`. ');
+									$res = -1;
+									continue;
+								}
+							}
+						}
 						//Установка модуля
 						$flag = true;
 						$rDATA = static_tools::_checkmodstruct($r['_entry']);
@@ -184,6 +197,16 @@ final class modulprm_class extends kernel_extends {
 							$res = -1;
 						}else
 							$mess[] = array('ok', 'Модуль `' . $r['_entry'] . '` установлен.');
+					} else {
+						if(count($r['_depend']) and $this->data[$r['_entry']]['active']) {
+							foreach($r['_depend'] as $dep) {
+								if (!isset($_POST['0_' . $dep]) and !isset($_POST['3_' . $dep]) and !isset($this->data[$dep])) {
+									$mess[] = array('error', 'Ошибка. Не подключен зависимый модуль `' . $dep . '` для `' . $r['_entry'] . '`. ');
+									$res = -1;
+									continue;
+								}
+							}
+						}
 					}
 				}
 				elseif (isset($this->data[$r['_entry']]) and !isset($r['disabled'])) {
@@ -198,7 +221,7 @@ final class modulprm_class extends kernel_extends {
 						$res = -1;
 					} else
 						$mess[] = array('ok', 'Модуль `' . $r['_entry'] . '` удалён!');
-				}
+				} 
 			}
 			$err = getCatchError();
 			if ($err[0]) {
@@ -250,6 +273,7 @@ final class modulprm_class extends kernel_extends {
 				$data['parent'] = $data['parent'][0];
 			}
 			$MODUL = $obj->newInstance();
+			$data['depend'] = $MODUL->_dependClass;
 		} catch (Exception $e) {
 			trigger_error($e->getMessage(), E_USER_WARNING);
 		}
