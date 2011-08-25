@@ -245,7 +245,7 @@ function JSWin(param) {
 		param['type'] = 'POST';
 	}
 	else if(!param['type']) param['type'] = 'GET';
-	if(!param['href'])		param['href'] = '';
+	if(!param['href'])		param['href'] = '/_json.php';
 	if(!param['data']) 		param['data'] = '';
 	if(!param['dataType'])	param['dataType'] = 'json';
 	if(!param['insertObj'])	param['insertObj'] = 0;
@@ -253,6 +253,7 @@ function JSWin(param) {
 	if(!param['body'])		param['body'] = 'body';
 	clearTimeout(timerid2);timerid2 = 0;
 	timerid = setTimeout(function(){fShowload(1,'',param['body']);},100);
+	//console.log(param);
 	$.ajax({
 		type: param['type'],
 		url: param['href'],
