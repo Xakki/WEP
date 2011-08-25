@@ -619,7 +619,7 @@ class static_form {
 				}
 				$data[$key] = $value;
 			}
-			elseif (isset($_POST[$key . '_temp_upload']) && is_array($_POST[$key . '_temp_upload'])) {
+			elseif (isset($_POST[$key . '_temp_upload']) && is_array($_POST[$key . '_temp_upload']) && $_POST[$key . '_temp_upload']['name'] && $_POST[$key . '_temp_upload']['type']) {
 				$value = $_POST[$key . '_temp_upload'];	
 				$value['tmp_name'] = $_this->_CFG['_PATH']['temp'] . $value['name'];
 				$data[$key] = $value;
