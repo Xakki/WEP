@@ -287,7 +287,7 @@ class mail_class extends kernel_extends {
 		
 		$result = $this->SQL->execSQL('
 			select count(id) as cnt from `'.$this->tablename.'`
-			where `status`="0" and user_to="'.$_SESSION['user']['id'].'"
+			where `mf_timecr`>"'.(time()-24*60*60).'" and user_to="'.$_SESSION['user']['id'].'"
 		');
 		
 		if ($row = $result->fetch_array())
@@ -337,7 +337,7 @@ class mail_class extends kernel_extends {
 			case 'new':
 			{
 				$where[] = '`user_to`="'.$_SESSION['user']['id'].'"';
-				$where[] = '`status`="0"';
+				$where[] = '`mf_timecr`>"'.(time()-24*60*60).'"';
 			}
 			break;
 		
