@@ -229,7 +229,7 @@
 						if ($row = $result->fetch_array())
 							$data[$row['id']] = $row['name'];
 					}
-					elseif($listname['is_tree']) {
+					elseif(isset($listname['is_tree']) and $listname['is_tree']) {
 						while ($row = $result->fetch_array()){
 							if(!isset($row['checked'])) $row['checked'] = true;
 							$data[$row['parent_id']][$row['id']] = array('#name#'=>$row['name'], '#checked#'=>$row['checked']);

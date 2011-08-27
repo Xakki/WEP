@@ -400,12 +400,7 @@ class pg_class extends kernel_extends {
 
 
 	function display_page() {
-		global $SQL, $PGLIST, $HTML, $_CFG, $_tpl;
-		$flagPG = 0;
-		$PGLIST = &$this;
-		$SQL = &$this->SQL;
 		$this->Cdata = array();
-
 		$cls = 'SELECT * FROM '.$this->_CFG['sql']['dbpref'].'pg_content WHERE active=1 and (owner_id="'.$this->id.'"';
 		//if($this->id!='404') // откл повторные глобалные контенты, если это 400 и 401 страница
 			$cls .= ' or (owner_id IN ("'.(implode('","',$this->selected)).'") and global=1)';
@@ -415,115 +410,141 @@ class pg_class extends kernel_extends {
 			while ($rowPG = $resultPG->fetch_array()) {
 				$this->Cdata[$rowPG['id']] = $rowPG;
 			}
+		return $this->getContent($this->Cdata);
+	}
 
-			foreach($this->Cdata as &$rowPG) {
-				if(!$rowPG['active']) continue;
-				$Ctitle = $rowPG['name'];
+	function display_content($marker,$design='default') {
+		global $HTML;
+		if(!$HTML) {
+			if(!$design)
+				$design = $this->config['design'];
+			require_once($this->_CFG['_PATH']['core'].'/html.php');
+			$HTML = new html('_design/',$design,false);//отправляет header и печатает страничку
+		}
+		$Cdata = array();
+		$cls = 'SELECT * FROM '.$this->_CFG['sql']['dbpref'].'pg_content WHERE active=1 and marker IN ("'.$marker.'")';
+		$resultPG = $this->SQL->execSQL($cls);
+		if(!$resultPG->err)
+			while ($rowPG = $resultPG->fetch_array()) {
+				$Cdata[$rowPG['id']] = $rowPG;
+			}
+		return $this->getContent($Cdata);
+	}
 
-				if (!isset($_tpl[$rowPG['marker']]))
-				{
-					$_tpl[$rowPG['marker']] = '';
+	function getContent(&$Cdata) {
+		global $SQL, $PGLIST, $HTML, $_CFG, $_tpl;
+		$flagPG = 0;
+		$PGLIST = &$this;
+		$SQL = &$this->SQL;
+
+		foreach($Cdata as &$rowPG) {
+			if(!$rowPG['active']) continue;
+			$Ctitle = $rowPG['name'];
+
+			if (!isset($_tpl[$rowPG['marker']]))
+			{
+				$_tpl[$rowPG['marker']] = '';
+			}
+			$_tempMarker = '';
+
+			$html = '';
+			if($rowPG['ugroup']) {
+				if(!$this->pagePrmCheck($rowPG['ugroup'])) {
+					$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' ACCESS DENIED-->';
+					continue;
 				}
-				$_tempMarker = '';
+					
+			}
+			if ($rowPG['href']){
+				$temp = $this->_cl .'_'.preg_replace($this->_CFG['_repl']['alphaint'], '', $rowPG['href']);
+				if(!isset($_COOKIE[$temp])) {
+					_setcookie($temp, 1, time()+1);
+					header('Location: '.$rowPG['href']);
+					die();
+				}else {
+					trigger_error('На этой странице '.$this->id.'['.$rowPG['id'].'] обнаружена циклическая переадресация.Веб-страница привела к избыточному количеству переадресаций.', E_USER_WARNING);
+				}
+			}
+			if($rowPG['script']) {
+				$rowPG['script'] = explode('|',trim($rowPG['script'],'|'));
+				if(count($rowPG['script'])) {
+					foreach($rowPG['script'] as $r)
+						if($r)
+							$this->pageinfo['script'][$r] = 1;
+				}
+			}
+			if($rowPG['styles']) {
+				$rowPG['styles'] = explode('|',trim($rowPG['styles'],'|'));
+				if(count($rowPG['styles'])) {
+					foreach($rowPG['styles'] as $r)
+						if($r)
+							$this->pageinfo['styles'][$r] = 1;
+				}
+			}
 
-				$html = '';
-				if($rowPG['ugroup']) {
-					if(!$this->pagePrmCheck($rowPG['ugroup'])) {
-						$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' ACCESS DENIED-->';
+			if($rowPG['pagetype']=='') {
+				/*$text = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['content'].'pg/'.$rowPG['id'].$this->text_ext;
+				if (file_exists($text)) {
+					$flagPG = 1;
+					$_tempMarker .= file_get_contents($text);
+				}*/
+				$_tempMarker .= $rowPG['pg'];
+				$flagPG = 1;
+			} else {
+				$flagMC = false;
+				if(!$rowPG['memcache'] and $this->config['memcache'])
+					$rowPG['memcache'] = $this->config['memcache'];
+				if($rowPG['memcache']) {
+					$hashkeyPG = $_SERVER['HTTP_HOST'].$_SERVER['HTTP_HOST'];
+					global $MEMCACHE;
+
+					if(!$MEMCACHE) {
+						$mc_load = false;
+						if(!extension_loaded('memcache')) {
+							$prefix = (PHP_SHLIB_SUFFIX === 'dll') ? 'php_' : '';
+							if(function_exists('dl') and dl($prefix . 'memcache.' . PHP_SHLIB_SUFFIX))
+								$mc_load = true;
+						}else
+							$mc_load = true;
+						if($mc_load) {
+							$MEMCACHE = new Memcache;
+							$MEMCACHE->connect($_CFG['memcache']['host'],$_CFG['memcache']['port']);
+							$this->config['memcachezip'] = ($this->config['memcachezip']?true:false);
+						}
+					}
+					if($MEMCACHE)
+						$flagPG = $flagMC = $MEMCACHE->get($hashkeyPG);
+				}
+				if(!$flagMC) {
+					if($rowPG['funcparam']) $FUNCPARAM = explode('&',$rowPG['funcparam']);
+					else $FUNCPARAM = array();
+					$typePG = explode(':',$rowPG['pagetype']);
+					if(count($typePG)==2 and file_exists($this->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php'))
+						$flagPG = include($this->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php');
+					elseif(file_exists($this->_CFG['_PATH']['ptext'].$rowPG['pagetype'].'.inc.php'))
+						$flagPG = include($this->_CFG['_PATH']['ptext'].$rowPG['pagetype'].'.inc.php');
+					elseif(file_exists($this->_CFG['_PATH']['ctext'].$rowPG['pagetype'].'.inc.php'))
+						$flagPG = include($this->_CFG['_PATH']['ctext'].$rowPG['pagetype'].'.inc.php');
+					else {
+						trigger_error('Обрботчик страниц "'.$this->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php" не найден!', E_USER_WARNING);
 						continue;
 					}
-						
-				}
-				if ($rowPG['href']){
-					$temp = $this->_cl .'_'.preg_replace($this->_CFG['_repl']['alphaint'], '', $rowPG['href']);
-					if(!isset($_COOKIE[$temp])) {
-						_setcookie($temp, 1, time()+1);
-						header('Location: '.$rowPG['href']);
-						die();
-					}else {
-						trigger_error('На этой странице '.$this->id.'['.$rowPG['id'].'] обнаружена циклическая переадресация.Веб-страница привела к избыточному количеству переадресаций.', E_USER_WARNING);
-					}
-				}
-				if($rowPG['script']) {
-					$rowPG['script'] = explode('|',trim($rowPG['script'],'|'));
-					if(count($rowPG['script'])) {
-						foreach($rowPG['script'] as $r)
-							if($r)
-								$this->pageinfo['script'][$r] = 1;
-					}
-				}
-				if($rowPG['styles']) {
-					$rowPG['styles'] = explode('|',trim($rowPG['styles'],'|'));
-					if(count($rowPG['styles'])) {
-						foreach($rowPG['styles'] as $r)
-							if($r)
-								$this->pageinfo['styles'][$r] = 1;
-					}
-				}
-
-				if($rowPG['pagetype']=='') {
-					/*$text = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['content'].'pg/'.$rowPG['id'].$this->text_ext;
-					if (file_exists($text)) {
-						$flagPG = 1;
-						$_tempMarker .= file_get_contents($text);
-					}*/
-					$_tempMarker .= $rowPG['pg'];
-					$flagPG = 1;
-				} else {
-					$flagMC = false;
-					if(!$rowPG['memcache'] and $this->config['memcache'])
-						$rowPG['memcache'] = $this->config['memcache'];
-					if($rowPG['memcache']) {
-						$hashkeyPG = $_SERVER['HTTP_HOST'].$_SERVER['HTTP_HOST'];
-						global $MEMCACHE;
-
-						if(!$MEMCACHE) {
-							$mc_load = false;
-							if(!extension_loaded('memcache')) {
-								$prefix = (PHP_SHLIB_SUFFIX === 'dll') ? 'php_' : '';
-								if(function_exists('dl') and dl($prefix . 'memcache.' . PHP_SHLIB_SUFFIX))
-									$mc_load = true;
-							}else
-								$mc_load = true;
-							if($mc_load) {
-								$MEMCACHE = new Memcache;
-								$MEMCACHE->connect($_CFG['memcache']['host'],$_CFG['memcache']['port']);
-								$this->config['memcachezip'] = ($this->config['memcachezip']?true:false);
-							}
-						}
-						if($MEMCACHE)
-							$flagPG = $flagMC = $MEMCACHE->get($hashkeyPG);
-					}
-					if(!$flagMC) {
-						if($rowPG['funcparam']) $FUNCPARAM = explode('&',$rowPG['funcparam']);
-						else $FUNCPARAM = array();
-						$typePG = explode(':',$rowPG['pagetype']);
-						if(count($typePG)==2 and file_exists($this->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php'))
-							$flagPG = include($this->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php');
-						elseif(file_exists($this->_CFG['_PATH']['ptext'].$rowPG['pagetype'].'.inc.php'))
-							$flagPG = include($this->_CFG['_PATH']['ptext'].$rowPG['pagetype'].'.inc.php');
-						elseif(file_exists($this->_CFG['_PATH']['ctext'].$rowPG['pagetype'].'.inc.php'))
-							$flagPG = include($this->_CFG['_PATH']['ctext'].$rowPG['pagetype'].'.inc.php');
-						else {
-							trigger_error('Обрботчик страниц "'.$this->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php" не найден!', E_USER_WARNING);
-							continue;
-						}
-						if($rowPG['memcache'] and $MEMCACHE)
-							$MEMCACHE->set($hashkeyPG,$flagPG , $this->config['memcachezip'], $rowPG['memcache']);
-					}
 					if($rowPG['memcache'] and $MEMCACHE)
-						$memcache_obj->close();
-					
-					if(is_string($flagPG)) // если не булевое значение то выводим содержимое
-						$_tempMarker .= $flagPG;
-					$flagPG = 1;
+						$MEMCACHE->set($hashkeyPG,$flagPG , $this->config['memcachezip'], $rowPG['memcache']);
 				}
-				//$_tpl[$rowPG['marker']] .= '<div id="pg_'.$rowPG['id'].'">'.$_tempMarker.'</div>';
-				if(isset($_SESSION['_showallinfo']) && $_SESSION['_showallinfo'])
-					$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' begin-->'.$_tempMarker.'<!--content'.$rowPG['id'].' end-->';
-				else
-					$_tpl[$rowPG['marker']] .= $_tempMarker;
+				if($rowPG['memcache'] and $MEMCACHE)
+					$memcache_obj->close();
+				
+				if(is_string($flagPG)) // если не булевое значение то выводим содержимое
+					$_tempMarker .= $flagPG;
+				$flagPG = 1;
 			}
+			//$_tpl[$rowPG['marker']] .= '<div id="pg_'.$rowPG['id'].'">'.$_tempMarker.'</div>';
+			if(isset($_SESSION['_showallinfo']) && $_SESSION['_showallinfo'])
+				$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' begin-->'.$_tempMarker.'<!--content'.$rowPG['id'].' end-->';
+			else
+				$_tpl[$rowPG['marker']] .= $_tempMarker;
+		}
 		return $flagPG;
 	}
 
@@ -649,6 +670,8 @@ class pg_class extends kernel_extends {
 
 	function getHref($id=false,$html=false) {
 		if(!$id) $id = $this->id;
+		if(empty($this->dataCashTree))
+			$this->sqlCashPG();
 		if($html and isset($this->dataCash[$id]['href']) and $this->dataCash[$id]['href']!='') {
 			$href = $this->dataCash[$id]['href'];
 			if(strstr($href,'http://'))

@@ -40,7 +40,80 @@ class pay_class extends kernel_extends {
 		//$this->fields_form['mf_timeup'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата обновления', 'mask'=>array('fview'=>2));
 		//$this->fields_form['mf_timeoff'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата отключения', 'mask'=>array('fview'=>2));
 		$this->fields_form['mf_ipcreate'] = array('type' => 'text','readonly'=>1, 'caption' => 'IP', 'mask'=>array('fview'=>2));
+	}
+
+	/** Форма перевода средств
+	* 
+	*/
+	function payMove($param=array()) {
+		$data = array();
+		$sel = 'id,name,balance';
+		if(isset($param['sel']))
+			$sel .= ','.$param['sel'];
+		$query = '`id` != '.$_SESSION['user']['id'].' and `active`=1';
+		if(isset($param['cls']))
+			$query .= $param['cls'];
 		
+		if(count($_POST) ) {
+			$_POST['pay'] = (int)$_POST['pay'];
+			$_POST['users'] = (int)$_POST['users'];
+			if(!$_POST['pay']) {
+				$data['respost'] = -2;
+			} 
+			else {
+				_new_class('ugroup', $UGROUP);
+				$temp = $UGROUP->childs['users']->_query($sel,'WHERE '.$query.' and `id` = '.$_POST['users']);
+				if(!$_POST['users'] or !count($temp)) {
+					$data['respost'] = -3;
+				} else {
+					if(isset($_POST['plus']))
+						$data['respost'] = $this->pay($_SESSION['user']['id'],(int)$_POST['users'],(int)$_POST['pay'],'Пополнение баланса');
+					else
+						$data['respost'] = $this->pay((int)$_POST['users'],$_SESSION['user']['id'],(int)$_POST['pay'],'Снятие со счёта');
+				}
+			}
+		} else {
+			_new_class('ugroup', $UGROUP);
+			$query = 'WHERE '.$query;
+			$data['users'] = $UGROUP->childs['users']->_query($sel,$query);
+		}
+		return $data;
+	}
+
+
+	/**
+	* Функция оплаты и перевода средств
+	* 
+	*/
+	function pay($from_user,$to_user,$balance,$mess='') {
+		_new_class('ugroup', $UGROUP);
+		$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance-'.$balance.' WHERE id='.$from_user);
+		$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance+'.$balance.' WHERE id='.$to_user);
+		$data = array(
+			$this->mf_createrid=>$from_user,
+			'user_id'=>$to_user,
+			'cost'=>$balance,
+			'name'=>$mess);
+		$this->_add_item($data);
+		return 1;
+	}
+
+	function diplayList($user) { // Список операций
+		$data = array();
+		$where = 'WHERE (`'.$this->mf_createrid.'` = '.$user.' or `user_id` = '.$user.')';
+		$data['#list#'] = $this->_query('*',$where);
+		if(count($data['#list#'])) {
+			$userlist = array();
+			foreach($data['#list#'] as $k=>$r) {
+				if(!isset($userlist[$r['user_id']]))
+					$userlist[$r['user_id']] = $r['user_id'];
+				if(!isset($userlist[$r[$this->mf_createrid]]))
+					$userlist[$r[$this->mf_createrid]] = $r[$this->mf_createrid];
+			}
+			_new_class('ugroup', $UGROUP);
+			$data['#users#'] = $UGROUP->childs['users']->_query('name,firma,id,balance','WHERE id IN ('.implode(',',$userlist).')','id');
+		}
+		return $data;
 	}
 
 	// возвращает список платежных систем

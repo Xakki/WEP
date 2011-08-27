@@ -275,6 +275,8 @@ function JSWin(param) {
 					jQuery(param['insertObj']).after(result.html);
 				else if(param['insertType']=='before')
 					jQuery(param['insertObj']).before(result.html);
+				else if(param['insertType']=='replace')
+					jQuery(param['insertObj']).replaceWith(result.html);
 				else
 					jQuery(param['insertObj']).html(result.html);
 				timerid2 = setTimeout(function(){fShowload(0,'',param['body']);},200);
