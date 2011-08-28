@@ -83,10 +83,18 @@ class pay_class extends kernel_extends {
 
 	/**
 	* Функция оплаты и перевода средств
-	* 
+	* returт 1 - Успешно
+	* returт 0 - ошибка данных
+	* returт -1 - пользователь отключён либо не существует
+	* returт -2 - Пользователю не разрешено уходить в минус
 	*/
 	function pay($from_user,$to_user,$balance,$mess='') {
 		_new_class('ugroup', $UGROUP);
+		$temp = $UGROUP->childs['users']->_query('t1.id,t1.owner_id,t1.name,t1.balance,t2.negative','t1 JOIN '.$UGROUP->tablename.' t2 ON t1.id=t2.owner_id WHERE t1.`active`=1 and t2.`active`=1 and t1.`id` = '.$from_user);
+		
+		if(!count($temp)) return -1;
+		if($temp[0]['negative'] and ($temp[0]['balance']-$balance)<0) return -2;
+
 		$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance-'.$balance.' WHERE id='.$from_user);
 		$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance+'.$balance.' WHERE id='.$to_user);
 		$data = array(
@@ -94,8 +102,7 @@ class pay_class extends kernel_extends {
 			'user_id'=>$to_user,
 			'cost'=>$balance,
 			'name'=>$mess);
-		$this->_add_item($data);
-		return 1;
+		return $this->_add_item($data);
 	}
 
 	function diplayList($user) { // Список операций
