@@ -626,7 +626,7 @@ class static_form {
 			}						
 			//*********** CHECKBOX
 			elseif($form['type']=='checkbox') {
-				$value = ($value? 1 : 0);
+				$data[$key] = $value = ($value? 1 : 0);
 			}
 			//*********** МАССИВЫ
 			elseif(is_array($value) and count($value)) {

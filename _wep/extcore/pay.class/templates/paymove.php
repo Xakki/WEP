@@ -3,30 +3,33 @@
 function tpl_paymove($data)
 {
 	$html = '';
-	if(isset($data['#pay#']['respost']) and $data['#pay#']['respost']) {
+	if(isset($data['#pay#']['respost']) and $data['#pay#']['respost']==1) {
 		global $PGLIST;
 		$PGLIST->pageinfo['template'] = 'waction';
 		//$html = $HTML->transformPHP($DATA['formcreat'],'messages');
-		if($data['#pay#']['factor'])
-			$res = 'Счёт пополнен!';
+		if(isset($_POST['plus']))
+			$res = 'Счёт пользователя `'.$data['#pay#']['users'][$_POST['users']]['name'].'` пополнен!';
 		else
 			$res = 'Со счёта пользователя успешно сняты средства.';
-		$html .= '<div>'.$res.'</div>';
+		$html .= '<div class="messages"><div class="ok">'.$res.'</div></div>';
 	} else {
 		if(isset($data['#pay#']['respost'])) {
 			if($data['#pay#']['respost']==-1)
-				$res = 'Ошибка операции';
-			if($data['#pay#']['respost']==-2)
+				$res = 'Указан не существующий клиент или клиент отключён';
+			elseif($data['#pay#']['respost']==-2)
+				$res = ''.(isset($_POST['plus'])?'Вам':' Пользователю `'.$data['#pay#']['users'][$_POST['users']]['name'].'`').' не разрешено уходить в минус';
+			elseif($data['#pay#']['respost']==-5)
 				$res = 'Сумма должна быть больше нуля';
 			else
-				$res = 'Указан не существующий клиент или клиент отключён';
+				$res = 'Ошибка операции';
+			$html .= '<div class="messages"><div class="error">'.$res.'</div></div>';
 		}
 		$html .= '<form method="POST">';
 		if(isset($data['#pay#']) and count($data['#pay#'])) {
 			$html .= '<div>Клиент</div>
 			<select name="users">';
 			foreach($data['#pay#']['users'] as $k=>$r)
-				$html .= '<option value="'.$r['id'].'">'.$r['name'].'['.(int)$r['balance'].']('.$r['firma'].')</option>';
+				$html .= '<option value="'.$k.'">'.$r['name'].'['.(int)$r['balance'].']('.$r['firma'].')</option>';
 			$html .= '</select>';
 		}
 		$html .= '<div>Сумма</div> <input type="text" value="0" name="pay"/>

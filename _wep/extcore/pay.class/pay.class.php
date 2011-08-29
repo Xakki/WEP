@@ -58,25 +58,20 @@ class pay_class extends kernel_extends {
 			$_POST['pay'] = (int)$_POST['pay'];
 			$_POST['users'] = (int)$_POST['users'];
 			if(!$_POST['pay']) {
-				$data['respost'] = -2;
+				$data['respost'] = -5;
 			} 
 			else {
-				_new_class('ugroup', $UGROUP);
-				$temp = $UGROUP->childs['users']->_query($sel,'WHERE '.$query.' and `id` = '.$_POST['users']);
-				if(!$_POST['users'] or !count($temp)) {
-					$data['respost'] = -3;
-				} else {
-					if(isset($_POST['plus']))
-						$data['respost'] = $this->pay($_SESSION['user']['id'],(int)$_POST['users'],(int)$_POST['pay'],'Пополнение баланса');
-					else
-						$data['respost'] = $this->pay((int)$_POST['users'],$_SESSION['user']['id'],(int)$_POST['pay'],'Снятие со счёта');
-				}
+				if(isset($_POST['plus']))
+					$data['respost'] = $this->pay($_SESSION['user']['id'],(int)$_POST['users'],(int)$_POST['pay'],'Пополнение баланса');
+				else
+					$data['respost'] = $this->pay((int)$_POST['users'],$_SESSION['user']['id'],(int)$_POST['pay'],'Снятие со счёта');
 			}
-		} else {
-			_new_class('ugroup', $UGROUP);
-			$query = 'WHERE '.$query;
-			$data['users'] = $UGROUP->childs['users']->_query($sel,$query);
 		}
+
+		_new_class('ugroup', $UGROUP);
+		$query = 'WHERE '.$query;
+		$data['users'] = $UGROUP->childs['users']->_query($sel,$query,'id');
+
 		return $data;
 	}
 
@@ -90,10 +85,10 @@ class pay_class extends kernel_extends {
 	*/
 	function pay($from_user,$to_user,$balance,$mess='') {
 		_new_class('ugroup', $UGROUP);
-		$temp = $UGROUP->childs['users']->_query('t1.id,t1.owner_id,t1.name,t1.balance,t2.negative','t1 JOIN '.$UGROUP->tablename.' t2 ON t1.id=t2.owner_id WHERE t1.`active`=1 and t2.`active`=1 and t1.`id` = '.$from_user);
+		$temp = $UGROUP->childs['users']->_query('t1.id,t1.owner_id,t1.name,t1.balance,t2.negative','t1 JOIN '.$UGROUP->tablename.' t2 ON t2.id=t1.owner_id WHERE t1.`active`=1 and t2.`active`=1 and t1.`id` = '.$from_user);
 		
 		if(!count($temp)) return -1;
-		if($temp[0]['negative'] and ($temp[0]['balance']-$balance)<0) return -2;
+		if(!$temp[0]['negative'] and ($temp[0]['balance']-$balance)<0) return -2;
 
 		$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance-'.$balance.' WHERE id='.$from_user);
 		$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance+'.$balance.' WHERE id='.$to_user);
