@@ -3,7 +3,7 @@
 function tpl_paymove($data)
 {
 	$html = '';
-	if(isset($data['#pay#']['respost']) and $data['#pay#']['respost']==1) {
+	if(isset($data['#pay#']['respost']) and $data['#pay#']['respost'][0]==1) {
 		global $PGLIST;
 		$PGLIST->pageinfo['template'] = 'waction';
 		//$html = $HTML->transformPHP($DATA['formcreat'],'messages');
@@ -14,11 +14,11 @@ function tpl_paymove($data)
 		$html .= '<div class="messages"><div class="ok">'.$res.'</div></div>';
 	} else {
 		if(isset($data['#pay#']['respost'])) {
-			if($data['#pay#']['respost']==-1)
+			if($data['#pay#']['respost'][0]==-1)
 				$res = 'Указан не существующий клиент или клиент отключён';
-			elseif($data['#pay#']['respost']==-2)
-				$res = ''.(isset($_POST['plus'])?'Вам':' Пользователю `'.$data['#pay#']['users'][$_POST['users']]['name'].'`').' не разрешено уходить в минус';
-			elseif($data['#pay#']['respost']==-5)
+			elseif($data['#pay#']['respost'][0]==-2)
+				$res = ''.(isset($_POST['plus'])?'У вас':'У пользователя `'.$data['#pay#']['users'][$_POST['users']]['name'].'`').' не достаточно средств на счету ['.$data['#pay#']['respost'][1].'].';
+			elseif($data['#pay#']['respost'][0]==-5)
 				$res = 'Сумма должна быть больше нуля';
 			else
 				$res = 'Ошибка операции';

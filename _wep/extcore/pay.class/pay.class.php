@@ -58,7 +58,7 @@ class pay_class extends kernel_extends {
 			$_POST['pay'] = (int)$_POST['pay'];
 			$_POST['users'] = (int)$_POST['users'];
 			if(!$_POST['pay']) {
-				$data['respost'] = -5;
+				$data['respost'][0] = -5;
 			} 
 			else {
 				if(isset($_POST['plus']))
@@ -87,8 +87,8 @@ class pay_class extends kernel_extends {
 		_new_class('ugroup', $UGROUP);
 		$temp = $UGROUP->childs['users']->_query('t1.id,t1.owner_id,t1.name,t1.balance,t2.negative','t1 JOIN '.$UGROUP->tablename.' t2 ON t2.id=t1.owner_id WHERE t1.`active`=1 and t2.`active`=1 and t1.`id` = '.$from_user);
 		
-		if(!count($temp)) return -1;
-		if(!$temp[0]['negative'] and ($temp[0]['balance']-$balance)<0) return -2;
+		if(!count($temp)) return array(-1);
+		if(!$temp[0]['negative'] and ($temp[0]['balance']-$balance)<0) return array(-2,($temp[0]['balance']-$balance));
 
 		$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance-'.$balance.' WHERE id='.$from_user);
 		$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance+'.$balance.' WHERE id='.$to_user);
@@ -97,7 +97,7 @@ class pay_class extends kernel_extends {
 			'user_id'=>$to_user,
 			'cost'=>$balance,
 			'name'=>$mess);
-		return $this->_add_item($data);
+		return array($this->_add_item($data));
 	}
 
 	function diplayList($user) { // Список операций
