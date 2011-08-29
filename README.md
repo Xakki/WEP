@@ -247,3 +247,6 @@ FB::error('Error message');
 create database `wepbd` character set utf8 ;
 create user 'wepmysqluser'@'localhost' identified by 'defaultpass';
 grant all privileges on wepbd.* to 'wepmysqluser'@'localhost';
+
+
+git diff --name-status commit1 commit2 | awk '{ if ($1 != "D") print $2 }' | xargs git archive -o output.zip HEAD
