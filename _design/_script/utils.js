@@ -237,12 +237,18 @@ function readyPlot(cap,Xname,Yname,stepY) {
 
 function JSWin(param) {
 	if(typeof param['type']=='object') {
-		if(typeof CKEDITOR !== 'undefined') {
-			jQuery.each(jQuery(param['type']).find("textarea"),function(){nm=jQuery(this).attr('name');if(nm) eval("if(typeof CKEDITOR.instances."+nm+" == 'object') {CKEDITOR.instances."+nm+".updateElement();}");});
+		if(param['type'].tagName=='A') {
+			param['href'] = jQuery(param['type']).attr('href');
+			param['type'] = 'GET';
 		}
-		param['href'] = jQuery(param['type']).attr('action');
-		param['data'] = jQuery(param['type']).serialize()+'&sbmt=1';
-		param['type'] = 'POST';
+		else {
+			if(typeof CKEDITOR !== 'undefined') {
+				jQuery.each(jQuery(param['type']).find("textarea"),function(){nm=jQuery(this).attr('name');if(nm) eval("if(typeof CKEDITOR.instances."+nm+" == 'object') {CKEDITOR.instances."+nm+".updateElement();}");});
+			}
+			param['href'] = jQuery(param['type']).attr('action');
+			param['data'] = jQuery(param['type']).serialize()+'&sbmt=1';
+			param['type'] = 'POST';
+		}
 	}
 	else if(!param['type']) param['type'] = 'GET';
 	if(!param['href'])		param['href'] = '/_json.php';
