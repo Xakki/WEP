@@ -628,6 +628,9 @@ class static_form {
 			elseif($form['type']=='checkbox') {
 				$data[$key] = $value = ($value? 1 : 0);
 			}
+			elseif($form['type']=='date') {
+				$value = self::_get_fdate($value, $form['mask']['format'], $_this->fields[$key]['type']);
+			}
 			//*********** МАССИВЫ
 			elseif(is_array($value) and count($value)) {
 /*Доработать*/
@@ -688,9 +691,6 @@ class static_form {
 					{
 						if($value and $_this->_checkList($form['listname'],$value)===false)
 							$error[] = 33;
-					}
-					elseif($form['type']=='date') {
-						$value = self::_get_fdate($value, $form['mask']['format'], $_this->fields[$key]['type']);
 					}
 
 					$preg_mask = '';
@@ -777,9 +777,9 @@ class static_form {
 					$error[] = 1;
 			}
 
-			$form['value'] = $value;
-			if(isset($data[$key]))
-				$data[$key] = $value;
+			
+			//if(isset($data[$key]))
+			$data[$key] = $value;
 
 ///////////////////
 
