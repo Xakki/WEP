@@ -12,12 +12,10 @@ function JSFR(n) {
 				o.dataType = 'json';
 				//preSubmitAJAX (f);
 			},
-		/*notsuccess: 
+		error: 
 			function(d,statusText) {
-				//alert(statusText+'  - form notsuccess: '+d.responseText);
-				clearTimeout(timerid);
-				timerid2 = setTimeout(function(){fShowload(0);},200);
-			},*/
+				alert(statusText+'  - form notsuccess: '+d.responseText);
+			},
 		success: 
 			function(result) {
 				//console.log(result);

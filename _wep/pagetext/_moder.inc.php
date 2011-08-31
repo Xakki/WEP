@@ -27,9 +27,11 @@
 	}
 	else {
 		if(!$FUNCPARAM[1]) $FUNCPARAM[1] = 'superlist';
-		if($_GET['_oid']!='') $MODUL->owner_id = $_GET['_oid'];
-		if($_GET['_pid']!='') $MODUL->parent_id = $_GET['_pid'];
-		if($_GET['_id']!='') $MODUL->id = $_GET['_id'];
+		if(isset($_GET['_oid']) and $_GET['_oid']!='') $MODUL->owner_id = $_GET['_oid'];
+		if(isset($_GET['_pid']) and $_GET['_pid']!='') $MODUL->parent_id = $_GET['_pid'];
+		if(isset($_GET['_id']) and $_GET['_id']!='') $MODUL->id = $_GET['_id'];
+		if(!isset($_GET['_type'])) $_GET['_type'] = '';
+		if(!isset($_GET['_modul'])) $_GET['_modul'] = $FUNCPARAM[0];
 
 		if(static_main::_prmModul($FUNCPARAM[0],array(1,2))) {
 			global $HTML;

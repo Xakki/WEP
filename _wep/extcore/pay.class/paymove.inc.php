@@ -22,8 +22,7 @@
 	_new_class('pay', $PAY);
 	$DATA = array();
 	$param = array(
-		'sel'=>'firma',
-		'cls'=>' and owner_id=2'
+		'sel'=>'t1.firma'
 	);
 	$DATA['#pay#'] = $PAY->payMove($param);
 	$DATA['#title#'] = $Ctitle;// Заголовок контента

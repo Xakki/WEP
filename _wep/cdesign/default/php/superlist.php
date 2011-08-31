@@ -1,6 +1,7 @@
 <?
 	function tpl_superlist(&$data) {
 		global $_CFG, $HTML;
+		$html = '';
 		if(isset($data['path']) and count($data['path'])) {
 			include_once($HTML->_PATHd.'php/path.php');
 			$html = tpl_path($data['path']);// PATH

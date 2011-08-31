@@ -157,7 +157,7 @@
 						}
 					}
 					else{
-						if(isset($r['listname']['idThis'])) {
+						if(isset($r['listname']['idThis']) and $this->id) {
 							$r['value'] = $this->data[$this->id][$r['listname']['idThis']];
 						}
 						if($r['value']) {

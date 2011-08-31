@@ -29,7 +29,7 @@ function tpl_paymove($data)
 			$html .= '<div>Клиент</div>
 			<select name="users">';
 			foreach($data['#pay#']['users'] as $k=>$r)
-				$html .= '<option value="'.$k.'">'.$r['name'].'['.(int)$r['balance'].']('.$r['firma'].')</option>';
+				$html .= '<option value="'.$k.'">'.$r['gname'].' - '.$r['name'].'['.(int)$r['balance'].'руб.]</option>';
 			$html .= '</select>';
 		}
 		$html .= '<div>Сумма</div> <input type="text" value="0" name="pay"/>

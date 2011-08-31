@@ -1661,7 +1661,7 @@ abstract class kernel_extends {
 				$param['clause']['t1.parent_id'] = 't1.parent_id=""';
 			else
 				$param['clause']['t1.parent_id'] = 't1.parent_id=0';
-			if ($this->owner and $this->owner->id and ($this->id or $param['first_pid']))
+			if ($this->owner and $this->owner->id and ($this->id or (isset($param['first_pid']) and $param['first_pid']) ) )
 				unset($param['clause']['t1.' . $this->owner_name]);
 		}
 		//if(isset($this->fields['region_id']) and isset($_SESSION['city']))///////////////**********************

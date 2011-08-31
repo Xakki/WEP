@@ -225,13 +225,10 @@ class users_class extends kernel_extends {
 		$this->fields[$this->fn_pass] = array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL');
 		// service field
 		$this->fields['reg_hash'] = array('type' => 'varchar', 'width' => 128, 'attr' => 'NOT NULL', 'default'=>'');
-		if($this->owner->config['payon'])
-			$this->fields['balance'] = array('type' => 'float', 'width' => '11,4', 'attr' => 'NOT NULL', 'default'=>'0.0000');
+		$this->fields['balance'] = array('type' => 'float', 'width' => '11,4', 'attr' => 'NOT NULL', 'default'=>'0.0000');
 		$this->fields['lastvisit'] =  array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL', 'default'=>0);
-		if($this->owner->config['karma']) {
-			$this->fields['karma'] = array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL', 'default'=>0);
-			$this->fields['kratio'] = array('type' => 'float', 'width' => '8,2','attr' => 'NOT NULL', 'default'=>'0.00');
-		}
+		$this->fields['karma'] = array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL', 'default'=>0);
+		$this->fields['kratio'] = array('type' => 'float', 'width' => '8,2','attr' => 'NOT NULL', 'default'=>'0.00');
 
 		$this->attaches['userpic'] = array('mime' => array('image/pjpeg'=>'jpg', 'image/jpeg'=>'jpg', 'image/gif'=>'gif', 'image/png'=>'png'), 'thumb'=>array(array('type'=>'resize', 'w'=>'800', 'h'=>'600','pref'=>'orign_'),array('type'=>'resizecrop', 'w'=>85, 'h'=>85)),'maxsize'=>1000,'path'=>'');
 		if(static_main::_prmUserCheck() and !is_null($this->_CFG['modulprm_ext'])) {

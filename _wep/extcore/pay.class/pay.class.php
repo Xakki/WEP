@@ -47,14 +47,14 @@ class pay_class extends kernel_extends {
 	*/
 	function payMove($param=array()) {
 		$data = array();
-		$sel = 'id,name,balance';
+		$sel = 't1.id,t1.name,t1.balance';
 		if(isset($param['sel']))
 			$sel .= ','.$param['sel'];
-		$query = '`id` != '.$_SESSION['user']['id'].' and `active`=1';
+		$query = 't1.`id` != '.$_SESSION['user']['id'].' and t1.`active`=1';
 		if(isset($param['cls']))
 			$query .= $param['cls'];
 		
-		if(count($_POST) ) {
+		if(count($_POST)) {
 			$_POST['pay'] = (int)$_POST['pay'];
 			$_POST['users'] = (int)$_POST['users'];
 			if(!$_POST['pay']) {
@@ -70,7 +70,7 @@ class pay_class extends kernel_extends {
 
 		_new_class('ugroup', $UGROUP);
 		$query = 'WHERE '.$query;
-		$data['users'] = $UGROUP->childs['users']->_query($sel,$query,'id');
+		$data['users'] = $UGROUP->childs['users']->_query($sel.',t2.name as gname','t1 JOIN '.$UGROUP->tablename.' t2 ON t1.owner_id=t2.id and t2.active=1 '.$query,'id');
 
 		return $data;
 	}
