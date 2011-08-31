@@ -17,7 +17,7 @@
 					$r['value_2']= $_POST[$k.'_2'];
 
 				if($r['type']=='file') {
-					if(is_array($r['value']) and isset($r['value']['tmp_name']) and $r['value']['tmp_name']) {
+					if(isset($r['value']) and is_array($r['value']) and isset($r['value']['tmp_name']) and $r['value']['tmp_name']) {
 						$r['value'] = $_CFG['PATH']['temp'].$r['value']['name'];
 						if(isset($this->_CFG['form']['imgFormat'][$r['ext']])) {
 							$r['att_type'] = 'img';
@@ -30,7 +30,7 @@
 							
 						}
 					}
-					elseif(isset($r['ext'])) {
+					elseif(isset($r['ext']) and $this->id) {
 						$r['value'] = $this->_get_file($this->id,$k);// TODO
 						if(isset($this->_CFG['form']['imgFormat'][$r['ext']]) and $this->id) {
 							$r['att_type'] = 'img';
@@ -59,7 +59,7 @@
 						}
 					}
 					
-					if(!is_string($r['value']) or !$r['value'])
+					if(!isset($r['value']) or !is_string($r['value']) or !$r['value'])
 						$r['value'] = '';
 					
 					if(!isset($r['comment']))
