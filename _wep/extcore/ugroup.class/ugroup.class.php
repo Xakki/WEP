@@ -652,5 +652,18 @@ class users_class extends kernel_extends {
 		return $DATA[0];
 	}
 
+	function diplayList($data,$field=false) {
+		$DATA = array();
+		if($field===false)
+			$field = array('creater_id');
+		foreach($data as $r) {
+			foreach($field as $ur) 
+				$DATA[$r[$ur]] = $r[$ur];
+		}
+		if(count($DATA))
+			$DATA = $this->_query('t2.name as gname,t1.*',' t1 JOIN '.$this->owner->tablename.' t2 ON t1.owner_id=t2.id WHERE t1.id IN ('.implode(',',$DATA).')','id');
+		return $DATA;
+	}
+
 }
 

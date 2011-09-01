@@ -45,8 +45,8 @@
 	.blockclose {
 		cursor:pointer;
 		position:absolute;
-		right:2px;
-		top:2px;
+		right:-21px;
+		top:-21px;
 		height:30px;
 		width:30px;
 		background: url("../_img/jquery.fancybox/fancy_close.png") repeat scroll 0 0 transparent;

@@ -22,7 +22,7 @@ function tpl_paylist($data)
 				<td>'.$data['#users#'][$r['user_id']]['name'].'</td>
 				<td>'.round($r['cost'],2).' руб.</td>
 				<td>'.$r['mf_timestamp'].'</td>
-				<td>'.long2ip($_SERVER['REMOTE_ADDR']).'</td>
+				<td>'.long2ip($r['mf_ipcreate']).'</td>
 			</tr>';
 		}
 		$html .= '</table>

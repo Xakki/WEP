@@ -287,7 +287,7 @@ function JSWin(param) {
 					jQuery(param['insertObj']).html(result.html);
 				timerid2 = setTimeout(function(){fShowload(0,'',param['body']);},200);
 			}
-			else if(result.html!='' && typeof result.html != 'undefined') fShowload(1,result.html,param['body']);
+			else if(result.html!='' && typeof result.html != 'undefined') fShowload(1,result.html,param['body'],param['objid'],param['onclk']);
 			else timerid2 = setTimeout(function(){fShowload(0,'',param['body']);},200);
 			if(typeof result.text != 'undefined' && result.text!='') fLog(fSpoiler(result.text,'AJAX text result'),1);
 			//alert(result.eval);
