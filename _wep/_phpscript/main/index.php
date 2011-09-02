@@ -18,7 +18,14 @@
 	}
 
 	// эти html.php не подключаем, если что сами подключат
-	if(isset($_GET['_php']) and $_GET['_php']=='json') {
+	if(isset($_GET['_php']) and $_GET['_php']=='robotstxt') {
+		if(file_exists($_CFG['_PATH']['wepconf'].'/_phpscript/robotstxt.php'))
+			require_once($_CFG['_PATH']['wepconf'].'/_phpscript/robotstxt.php');
+		else
+			require_once($_CFG['_PATH']['wep'].'/_phpscript/main/robotstxt.php');
+		exit();
+	}
+	elseif(isset($_GET['_php']) and $_GET['_php']=='json') {
 		if(file_exists($_CFG['_PATH']['wepconf'].'/_phpscript/_json.php'))
 			require_once($_CFG['_PATH']['wepconf'].'/_phpscript/_json.php');
 		else
