@@ -109,14 +109,20 @@ class mail_class extends kernel_extends {
 		$this->ordfield = 'mf_timecr DESC';
 	}
 
+	/**
+	*
+	*
+	*/
 	function Send($data) {
+		$send_result = false;
 		$this->__do_hook('Send', $data);
-		
-		if(!$data['from'] && isset($data['creater_id']) && $data['creater_id'] == 0)
-			$data['from']=$this->config['mailrobot'];
-		elseif (!$data['from'] && isset($_SESSION['user']) && $_SESSION['user']['email'])
-			$data['from'] = $_SESSION['user']['email'];
-		
+		if(!isset($data['from']) or !$data['from']) {
+			if(isset($data['creater_id']) && $data['creater_id'] == 0)
+				$data['from']=$this->config['mailrobot'];
+			elseif (isset($_SESSION['user']['email']) && $_SESSION['user']['email'])
+				$data['from'] = $_SESSION['user']['email'];
+		}
+
 		if(!$data['mail_to']) {
 			unset($data['mail_to']);
 			$data['status'] = 0;
@@ -127,7 +133,6 @@ class mail_class extends kernel_extends {
 			}
 			else {
 				trigger_error('Попытка вызвать не существующий метод `mailengine'.$this->config['mailengine'].'` в модуле Mail!', E_USER_ERROR);
-				$send_result = false;
 			}
 
 			if ($send_result) {

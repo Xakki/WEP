@@ -72,7 +72,7 @@ class pg_class extends kernel_extends {
 	function _create() {
 		parent::_create();
 		$this->index_fields['ugroup'] = 'ugroup';
-		$this->unique_fields['adress'] = array('parent_id','alias');
+		//$this->unique_fields['adress'] = array('parent_id','alias');
 
 		# fields
 		$this->fields['alias'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
@@ -282,6 +282,8 @@ class pg_class extends kernel_extends {
 			foreach($_GET['page'] as $k=>$r) {
 				if(isset($this->dataCashTreeAlias[$fid][$r]) and !$this->id) {
 					$fid = $this->dataCashTreeAlias[$fid][$r]['id'];
+				}elseif(isset($this->dataCashTree[$fid][$r]) and !$this->id) {
+					$fid = $this->dataCashTree[$fid][$r]['id'];
 				}
 				else
 					$this->pageParam[] = $r;

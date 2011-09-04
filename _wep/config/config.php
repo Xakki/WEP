@@ -515,16 +515,17 @@ function _strlen($val) {
 }
 
 function _substr($s, $offset, $len = NULL) {
-	if ($len != NULL) {
-		if (function_exists('mb_substr'))
-			return mb_substr($s, $offset, $len);
-		else
-			return substr($s, $offset, $len);
-	}else {
+	if (is_null($len)){
 		if (function_exists('mb_substr'))
 			return mb_substr($s, $offset);
 		else
 			return substr($s, $offset);
+	}
+	else {
+		if (function_exists('mb_substr'))
+			return mb_substr($s, $offset, $len);
+		else
+			return substr($s, $offset, $len);
 	}
 }
 

@@ -901,7 +901,14 @@ abstract class kernel_extends {
 		return $this->_add();
 	}
 
-	//update modul item
+	/**
+	* $param
+	* - formflag
+	* - ajax
+	* - errMess
+	* - showform
+	*
+	*/
 	public function _UpdItemModul($param) {
 		return include($this->_CFG['_PATH']['core'] . 'kernel.UpdItemModul.php');
 	}

@@ -65,7 +65,7 @@ class ugroup_class extends kernel_extends
 		$this->config_form['premoderation'] = array('type' => 'checkbox', 'caption' => 'Использовать премодерацию?');
 		$this->config_form['noreggroup'] = array('type' => 'list', 'listname'=>'list', 'caption' => 'Неподтвердившие регистрацию');
 		$this->config_form['reggroup'] = array('type' => 'list', 'listname'=>'list', 'caption' => 'Регистрировать по умолчанию');
-		$this->config_form['modergroup'] = array('type' => 'list', 'listname'=>'list', 'caption' => 'Непрошедшие проверку');
+		$this->config_form['modergroup'] = array('type' => 'list', 'listname'=>'list', 'caption' => 'Ожидающие проверку модератором');
 		$this->config_form['rememberday'] = array('type' => 'int', 'mask' =>array('min'=>1), 'caption' => 'Дней запоминания авторизации');
 		$this->config_form['karma'] = array('type' => 'checkbox', 'caption' => 'Включить систему рейтингов?','style'=>'background:green;');
 		$this->config_form['userpic'] = array('type' => 'text', 'mask' =>array(), 'caption' => 'Дефолтная фотка пользователя');
@@ -189,6 +189,38 @@ class ugroup_class extends kernel_extends
 		$this->data[0]['FckEditorUserFilesPath'] = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['userfile'].$id.'/';
 		return $this->data[0];
 	}
+
+	function mailNotif() {
+		$mess = '';
+		if($this->config['mail_to'] and $this->config['premoderation']) {
+			$data = $this->childs['users']->_query('id,name,email','WHERE active=-1 and owner_id='.$this->config['modergroup']);
+			if(count($data)) {
+				$txt = '<table border="1"><tr><td>ID</td><td>Name</td><td>email</td></tr>';
+				foreach($data as $k=>$r) {
+					$txt .= '<tr>
+						<td><a href="http://'.$_SERVER['HTTP_HOST'].'/'.$this->_CFG['PATH']['wepname'].'/index.php?_view=list&_modul=ugroupom&ugroupom_id='.$this->config['modergroup'].'&ugroupom_ch=usersom&usersom_id='.$r['id'].'&_type=edit">'.$r['id'].'</a></td>
+						<td>'.$r['name'].'</td>
+						<td>'.$r['email'].'</td></tr>';
+				}
+				$txt .= '</table>';
+				_new_class('mail',$MAIL);
+				$datamail = array(
+					'creater_id' => 0,
+					'mail_to' => $this->config['mail_to'],
+					'subject' => strtoupper($_SERVER['HTTP_HOST']).' Оповещение: Ожидают проверки '.count($data).' зарегистрированных пользователя',
+					'text' => '<p>Список пользователей ожидающие одобрения.</p>'.$txt,
+
+				);
+				$MAIL->reply = 0;
+				if($MAIL->Send($datamail)) {
+					$mess = 'Оповещение: '.count($data).' пользователей ожидают одобрения.';
+				} else {
+					trigger_error('Оповещение - '.$this->_CFG['_MESS']['mailerr'], E_USER_WARNING);
+				}
+			}
+		}
+		return $mess;
+	}
 	
 }
 
@@ -293,7 +325,7 @@ class users_class extends kernel_extends {
 
 		if(static_main::_prmUserCheck() and !static_main::_prmUserCheck(1)) {  // Запрет поля на редактирование
 			$this->fields_form[$this->fn_login]['readonly']=true;
-			$this->fields_form[$this->fn_login]['email']=true;	
+			//$this->fields_form[$this->fn_login]['email']=true;	
 		}
 			
 	}
@@ -342,11 +374,11 @@ class users_class extends kernel_extends {
 					unset($_SESSION['user']);
 					if(_strlen($this->data[0]['reg_hash'])>5)
 						return array($this->_CFG['_MESS']['authnoconf'],0);
-					elseif($this->data[0]['reg_hash']=='0' && !$this->data[0]['active'])
+					elseif($this->data[0]['reg_hash']=='0' && $this->data[0]['active']==0)
 						return array($this->_CFG['_MESS']['auth_notcheck'],0);
 					elseif(!$this->data[0]['gact'])
 						return array($_CFG['_MESS']['auth_bangroup'],0);
-					elseif(!$this->data[0]['active'])
+					elseif($this->data[0]['active']==0)
 						return array($this->_CFG['_MESS']['auth_banuser'],0);
 					elseif($this->data[0]['level']>=5)
 						return array($this->_CFG['_MESS']['denied'],0);
@@ -381,7 +413,7 @@ class users_class extends kernel_extends {
 				if(count($this->data))
 				{
 					unset($_SESSION['user']);
-					if(!$this->data[0]['active'])
+					if($this->data[0]['active']!=1)
 						return array('Ваш аккаунт заблокирован. За дополнительной информацией обращайтесь к Администратору сайта.',0);
 					elseif(!$this->data[0]['gact'])
 						return array('Ваша группа заблокирована. За дополнительной информацией обращайтесь к Администратору сайта.',0);
@@ -459,7 +491,7 @@ class users_class extends kernel_extends {
 						if($this->_add_item($arr['vars'])) {
 							$this->SQL->execSQL('UPDATE '.$this->tablename.' SET '.$this->mf_createrid.'="'.$this->id.'" where '.$this->fn_login.'="'.$arr['vars'][$this->fn_login].'"');
 							_new_class('mail',$MAIL);
-							$datamail['creater_id']=0;
+							$datamail = array('creater_id'=>0);
 							$datamail['mail_to']=$arr['vars']['email'];
 							$datamail['user_to']=$this->id;
 							$datamail['subject']='Подтвердите регистрацию на '.strtoupper($_SERVER['HTTP_HOST']);
@@ -480,6 +512,8 @@ class users_class extends kernel_extends {
 						} else
 							$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['regerr']);
 					}else { // профиль
+						if($this->id==$_SESSION['user']['id'])
+							unset($arr['vars']['active']);
 						if($this->_save_item($arr['vars'])) {
 							$arr['mess'][] = array('name'=>'ok', 'value'=>$this->_CFG['_MESS']['update']);
 							if($formflag)// кастыль
@@ -534,7 +568,7 @@ class users_class extends kernel_extends {
 				$this->id = $data[0]['id'];
 				$this->fld_data['reg_hash']= 1;
 				if($this->owner->config['premoderation']) {
-					$this->fld_data['active']= 0;
+					$this->fld_data['active']= -1;
 					$this->fld_data['owner_id']= $this->owner->config['modergroup'];
 				}
 				else {
@@ -638,7 +672,7 @@ class users_class extends kernel_extends {
 
 	function setUserSession($id) {
 		$data = $this->owner->getUserData($id);
-		if(!count($data) and !$data['id']) return false;
+		if(!count($data) or !$data['id']) return false;
 		session_go(1);
 		$_SESSION['user'] = $data;
 		if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0)

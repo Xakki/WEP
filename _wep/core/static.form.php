@@ -566,7 +566,10 @@ class static_form {
 
 
 /******************* FORM *****************/
-
+	/**
+	*
+	* $data - POST lfyyst либо  данные из БД
+	*/
 	static function _fFormCheck(&$_this,&$data,&$param,&$FORMS_FIELDS) { //$_this->fields_form
 		global $_tpl;
 		if(!count($FORMS_FIELDS))
@@ -576,6 +579,7 @@ class static_form {
 		$messages='';
 		$arr_err_name=array();
 		$textm = '';
+		$mess = array();
 		foreach($FORMS_FIELDS as $key=>&$form)
 		{
 			$error = array();
@@ -591,207 +595,17 @@ class static_form {
 				continue;
 			}
 
-			$value = (isset($data[$key])?$data[$key]:'');
-			//*********** Файлы
-			if(isset($_FILES[$key]['name'])) {
-				$tmp = count($error);
-				if(isset($data[$key.'_del']) and (int)$data[$key.'_del']==1){
-					$_FILES[$key]['name'] = ':delete:';
-					$_FILES[$key]['tmp_name'] = ':delete:';
-					$value = $_FILES[$key];
-				}elseif(isset($form['mask']['min']) and $form['mask']['min'] and ($_FILES[$key]['name']=='' or $_FILES[$key]['name'] == ':delete:'))
-						$error[] = 1;
-				elseif($_FILES[$key]['name']!='') {
-					if(!isset($form['mime'][$_FILES[$key]['type']]))
-						$error[]=39;
-					if(isset($form['maxsize']) and $_FILES[$key]['size']>($form['maxsize']*1024))
-						$error[]=29;
-					if($tmp == count($error)){
-						static_tools::_checkdir($_this->_CFG['_PATH']['temp']);
-						$temp = $_this->_CFG['_PATH']['temp'].substr(md5(getmicrotime()),16).'.'.$form['mime'][$_FILES[$key]['type']];
-						static_tools::_checkdir($_this->_CFG['_PATH']['temp']);
-						if (move_uploaded_file($_FILES[$key]['tmp_name'], $temp)){
-							$_FILES[$key]['tmp_name']= $temp;
-							$value = $_FILES[$key];
-						}else
-							$error[]=40;
-					}					
-				}
-				$data[$key] = $value;
-			}
-			elseif (isset($_POST[$key . '_temp_upload']) && is_array($_POST[$key . '_temp_upload']) && $_POST[$key . '_temp_upload']['name'] && $_POST[$key . '_temp_upload']['type']) {
-				$value = $_POST[$key . '_temp_upload'];	
-				$value['tmp_name'] = $_this->_CFG['_PATH']['temp'] . $value['name'];
-				$data[$key] = $value;
-			}						
-			//*********** CHECKBOX
-			elseif($form['type']=='checkbox') {
-				$data[$key] = $value = ($value? 1 : 0);
-			}
-			elseif($form['type']=='date') {
-				$value = self::_get_fdate($value, $form['mask']['format'], $_this->fields[$key]['type']);
-			}
-			//*********** МАССИВЫ
-			elseif(is_array($value) and count($value)) {
-/*Доработать*/
-				if(isset($form['mask']['max'])){
-					if(count($value)>$form['mask']['max'])
-						$error[] = 24;
-				}
-				if(isset($form['mask']['min'])){
-					if(count($value)<$form['mask']['min'])
-						$error[] = 25;
-				}
-			}else{
-				$value = trim($value);				
-			//********** ОСТАЛЬНЫЕ
-				if($value!='') {
-					$value;
-					if(isset($form['mask']['entities']) and $form['mask']['entities']==1) 
-						$value= htmlspecialchars($value,ENT_QUOTES,$_this->_CFG['wep']['charset']);
-					if(isset($form['mask']['replace'])) {
-						if(!isset($form['mask']['replaceto']))
-							$form['mask']['replaceto']='';
-						$value = preg_replace($form['mask']['replace'],$form['mask']['replaceto'],$value);
-					}
-					if(isset($form['mask']['striptags'])) {
-						if($form['mask']['striptags']=='all') 
-							$value = strip_tags($value);
-						elseif($form['mask']['striptags']=='') 
-							$value = strip_tags($value,'<table><td><tr><p><span><center><div><a><b><strong><em><u><i><ul><ol><li><br>');
-						else
-							$value=strip_tags($value,$form['mask']['striptags']);
-					}
-					//$value
-					//$value
+			self::check_formfield($_this,$key,$form,$data,$error);			
 
-					/*CHECK TYPE*/
-					if($form['type']=='ckedit'){
-						$value =stripslashes($value);
-						if(!isset($form['paramedit']['allowBody']) or !$form['paramedit']['allowBody']) {
-							$p1 = strpos($value,'<body>');
-							if($p1!==false) {
-								$value = substr($value,$p1+6);
-								$value = substr($value,0,strpos($value,'</body>'));
-							}
-						}
-						$value;
-					}
-					elseif($form['type']=='int' and (!isset($form['mask']['toint']) or !$form['mask']['toint'])) 
-						$value= (int)$value;
-					elseif($form['type']=='captcha' && $value!=$form['captcha']) {
-						$error[] = 31;
-					}
-					elseif($form['type']=='password')
+			/*elseif(isset($form['mask']['name']) && $form['mask']['name']=='date')
+			{
+				if(is_array($value))
+					foreach($value as $name=>$option)
 					{
-						if($value!=$data['re_'.$key])
-							$error[] = 32;
+						if(!isset($form['mask']['patterns']) && !preg_match($MASK[$form['mask']['name']],$data[$name])) $error[] = 3;
+						elseif(isset($form['mask']['patterns']) && !preg_match($form['mask']['patterns'],$data[$name])) $error[] = 3;
 					}
-					elseif(($form['type']=='list' or $form['type']=='ajaxlist'))
-					{
-						if($value and $_this->_checkList($form['listname'],$value)===false)
-							$error[] = 33;
-					}
-
-					$preg_mask = '';
-					if(isset($form['mask']['patterns']))
-						$preg_mask = $form['mask']['patterns'];
-					elseif(isset($form['mask']['name']) and isset($MASK[$form['mask']['name']]))
-						$preg_mask = $MASK[$form['mask']['name']];
-					elseif(isset($MASK[$form['type']]))
-						$preg_mask = $MASK[$form['type']];
-
-					if($preg_mask AND $value) {
-						$nomatch = '';
-						if(is_array($preg_mask)) {
-							if(isset($preg_mask['eval']))
-								eval('$value = '.$preg_mask['eval'].';');
-							if(isset($preg_mask['match'])) {
-								$matches = preg_match_all($preg_mask['match'],$value,$matches2,PREG_OFFSET_CAPTURE);
-								if(!$matches) {
-									$error[$k.'mask'] = 3;
-								}
-							}
-							if(isset($preg_mask['nomatch']))
-								$nomatch = $preg_mask['nomatch'];
-							if(isset($preg_mask['comment']))
-								$FORMS_FIELDS[$key]['comment'] .= $preg_mask['comment'];
-						} else
-							$nomatch = $preg_mask;
-
-						/*CHECK MASK*/
-						if(isset($form['mask']['name']) and ($form['mask']['name']=='phone' or $form['mask']['name']=='phone2')) {
-							if($value) {
-								$value = self::_phoneReplace($value);
-								if(!$value) {
-									$error[$k.'mask'] = 3;
-									$textm = 'Не корректный номер телефона.';
-								}
-							}
-						}
-						elseif($nomatch) {
-							if(isset($data[$key.'_rplf'])) {
-								$value = preg_replace($nomatch,'',$value);
-								unset($error[$k.'mask']);
-							}
-							$matches = preg_match_all($nomatch,$value,$matches2,PREG_OFFSET_CAPTURE);
-							if($matches) {
-								$error[$k.'mask'] = 3;
-							}
-							elseif(isset($form['mask']['checkwww']) and $form['mask']['checkwww'] and !fopen ('http://'.str_replace('http://','',$value), 'r'))
-								$error[] = 4;
-						}
-
-					}
-
-					/*CHECK LEN*/
-					if(isset($form['mask']['max']) && $form['mask']['max']>0)
-					{
-						if(_strlen($value)>$form['mask']['max'])
-							$error[] = 2;
-					}
-					if(isset($form['mask']['min']) and $form['mask']['min']>0)
-					{
-						if($form['mask']['min']>0 and (!$value or $value=='0'))
-							$error[] = 1;
-						elseif(_strlen($value)<$form['mask']['min'])
-							$error[] = 21;
-					}
-					if(isset($form['mask']['maxint']) && $form['mask']['maxint']>0 && (int)$value>$form['mask']['maxint']) {
-						$error[] = 22;
-						if($form['type']=='date' and $_this->fields[$key]['type']=='int') {
-							$form['mask']['maxint'] = date($form['mask']['format'],$form['mask']['maxint']);
-						}
-					}
-					if(isset($form['mask']['minint']) && $form['mask']['minint']>0 && (int)$value<$form['mask']['minint']) {
-						$error[] = 23;
-						if($form['type']=='date' and $_this->fields[$key]['type']=='int') {
-							$form['mask']['minint'] = date($form['mask']['format'],$form['mask']['minint']);
-						}
-					}
-
-				}
-				elseif(isset($form['mask']['min']) and $form['mask']['min'])
-					$error[] = 1;
-				elseif(isset($form['mask']['minint']) and $form['mask']['minint'])
-					$error[] = 1;
-			}
-
-			
-			//if(isset($data[$key]))
-			$data[$key] = $value;
-
-///////////////////
-
-				/*elseif(isset($form['mask']['name']) && $form['mask']['name']=='date')
-				{
-					if(is_array($value))
-						foreach($value as $name=>$option)
-						{
-							if(!isset($form['mask']['patterns']) && !preg_match($MASK[$form['mask']['name']],$data[$name])) $error[] = 3;
-							elseif(isset($form['mask']['patterns']) && !preg_match($form['mask']['patterns'],$data[$name])) $error[] = 3;
-						}
-				}*/
+			}*/
 
 			foreach($error as $row) {
 				$messages = '';
@@ -839,26 +653,262 @@ class static_form {
 					$messages = $_this->getMess('_err_40',array($_FILES[$key]['name']));
 				elseif($row==4)  // wrong link
 					$messages = $_this->getMess('_err_4',array($form['caption']));
+				elseif($row==5)  // wrong link
+					$messages = 'Множественные значения не допустимы!';
 				$arr_err_name[$key]=$key;
 
-				if(isset($param['ajax']) and $param['ajax'])
+				if(isset($param['errMess'])) {
+					$mess[] = array('name'=>'error', 'value'=>$form['caption'].': '.$messages);
+				}
+				elseif(isset($param['ajax'])) {
 					$_tpl['onload'] .= 'putEMF(\''.$key.'\',\''.$messages.'\');'; // запись в форму по ссылке
+				}
 				else
 					$form['error'][] = $messages; // запись в форму по ссылке
 			}
 
 		}
-		
-		$messages = array();
-		if(count($arr_err_name)>0) {
-			$messages[] = array('name'=>'error', 'value'=>'Поля формы заполненны не верно.');
+
+		if(count($arr_err_name)>0 and !isset($param['errMess'])) {
+			$mess[] = array('name'=>'error', 'value'=>'Поля формы заполненны не верно.');
 		}
 		/*$_tpl['onload'] .'CKEDITOR.replace( \'editor1\',
 						 {
 							  toolbar : \'basic\',
 							  uiColor : \'# 9AB8F3\'
 						 });';*/
-		return array('mess'=>$messages,'vars'=>$data);
+		return array('mess'=>$mess,'vars'=>$data);
+	}
+	
+	static function check_formfield($_this,$key,&$form,&$data,&$error) {
+		//*********** МАССИВЫ
+		if(isset($data[$key]) and is_array($data[$key]) and count($data[$key])) {
+		/*TODO:*/
+			if(isset($form['mask']['max'])){
+				if(count($data[$key])>$form['mask']['max'])
+					$error[] = 24;
+			}
+			if(isset($form['mask']['min'])){
+				if(count($data[$key])<$form['mask']['min'])
+					$error[] = 25;
+			}
+			/*Те кому рарешено получать данные в массиве*/
+			$flag = false;
+			if($form['type']=='date')
+				$flag = true;
+			elseif($form['type']=='list' and isset($form['multiple']) and $form['multiple'])
+				$flag = true;
+			elseif($form['type']=='ajaxlist' and isset($form['multiple']) and $form['multiple'])
+				$flag = true;
+			if(!$flag)
+			{
+				$error[] = 5;
+				return true;
+			}
+		}
+		//*********** Файлы
+		if($form['type']=='file') {
+			//TODO: multiple
+			if(isset($_FILES[$key]['name'])) {
+				if(isset($data[$key.'_del']) and (int)$data[$key.'_del']==1){
+					$_FILES[$key]['name'] = ':delete:';
+					$_FILES[$key]['tmp_name'] = ':delete:';
+					$data[$key] = $_FILES[$key];
+				}elseif(isset($form['mask']['min']) and $form['mask']['min'] and ($_FILES[$key]['name']=='' or $_FILES[$key]['name'] == ':delete:'))
+						$error[] = 1;
+				elseif($_FILES[$key]['name']!='') {
+					if(!isset($form['mime'][$_FILES[$key]['type']]))
+						$error[]=39;
+					elseif(isset($form['maxsize']) and $_FILES[$key]['size']>($form['maxsize']*1024))
+						$error[]=29;
+					else {
+						static_tools::_checkdir($_this->_CFG['_PATH']['temp']);
+						$temp = $_this->_CFG['_PATH']['temp'].substr(md5(getmicrotime()),16).'.'.$form['mime'][$_FILES[$key]['type']];
+						static_tools::_checkdir($_this->_CFG['_PATH']['temp']);
+						if (move_uploaded_file($_FILES[$key]['tmp_name'], $temp)){
+							$_FILES[$key]['tmp_name']= $temp;
+							$data[$key] = $_FILES[$key];
+						}else
+							$error[]=40;
+					}					
+				}
+			}
+			elseif (isset($data[$key . '_temp_upload']) && is_array($data[$key . '_temp_upload']) && $data[$key . '_temp_upload']['name'] && $data[$key . '_temp_upload']['type']) {
+				$data[$key] = $data[$key . '_temp_upload'];	
+				$value['tmp_name'] = $_this->_CFG['_PATH']['temp'] . $value['name'];
+			}
+
+		}
+		//*********** CHECKBOX
+		elseif($form['type']=='checkbox')
+		{
+			/*if(isset($data[$key]) and is_array($data[$key])) {
+				foreach($data[$key] as $k=>&$r)
+					$r = ($r? 1 : 0);
+				if($_this->fields[$key]['type']=='int')
+					$data[$key] = 
+			}else*/
+			$data[$key] = ((isset($data[$key]) and $data[$key])? 1 : 0);
+		} 
+		elseif(isset($data[$key]))
+		{
+			if(!is_array($data[$key]))
+				$value = trim($data[$key]);
+			else
+				$value = $data[$key];
+			/* Если есть данные*/
+			if($value)
+			{
+				/*Преоразуем HTML сущности*/
+				if(isset($form['mask']['entities']) and $form['mask']['entities']==1) 
+					$value= htmlspecialchars($value,ENT_QUOTES,$_this->_CFG['wep']['charset']);
+				/*Замена по регулярному выражению*/
+				if(isset($form['mask']['replace']))
+				{
+					if(!isset($form['mask']['replaceto']))
+						$form['mask']['replaceto']='';
+					$value = preg_replace($form['mask']['replace'],$form['mask']['replaceto'],$value);
+				}
+				/*Убираем теги*/
+				if(isset($form['mask']['striptags'])) 
+				{
+					if($form['mask']['striptags']=='all') 
+						$value = strip_tags($value);
+					elseif($form['mask']['striptags']=='') 
+						$value = strip_tags($value,'<table><td><tr><p><span><center><div><a><b><strong><em><u><i><ul><ol><li><br>');
+					else
+						$value=strip_tags($value,$form['mask']['striptags']);
+				}
+
+				/*Если тип данных ДАТА*/
+				if($form['type']=='date') 
+				{
+					$value = self::_get_fdate($value, $form['mask']['format'], $_this->fields[$key]['type']);
+				}
+				/*Редактор*/
+				elseif($form['type']=='ckedit')
+				{
+					$value =stripslashes($value);
+					if(!isset($form['paramedit']['allowBody']) or !$form['paramedit']['allowBody']) {
+						$p1 = strpos($value,'<body>');
+						if($p1!==false) {
+							$value = substr($value,$p1+6);
+							$value = substr($value,0,strpos($value,'</body>'));
+						}
+					}
+					$value;
+				}
+				/*Целое число*/
+				elseif($form['type']=='int' and (!isset($form['mask']['toint']) or !$form['mask']['toint'])) 
+					$value= (int)$value;
+				/*Капча*/
+				elseif($form['type']=='captcha' && $value!=$form['captcha']) {
+					$error[] = 31;
+				}
+				/*пароль*/
+				elseif($form['type']=='password')
+				{
+					if($value!=$data['re_'.$key])
+						$error[] = 32;
+				}
+				/*Список*/
+				elseif(($form['type']=='list' or $form['type']=='ajaxlist'))
+				{
+					if($value and $_this->_checkList($form['listname'],$value)===false)
+						$error[] = 33;
+				}
+
+				/*Проверка по регуляркам*/
+				$preg_mask = '';
+				if(isset($form['mask']['patterns']))
+					$preg_mask = $form['mask']['patterns'];
+				elseif(isset($form['mask']['name']) and isset($MASK[$form['mask']['name']]))
+					$preg_mask = $MASK[$form['mask']['name']];
+				elseif(isset($MASK[$form['type']]))
+					$preg_mask = $MASK[$form['type']];
+
+				if($preg_mask AND $value) {
+					$nomatch = '';
+					if(is_array($preg_mask)) {
+						if(isset($preg_mask['eval']))
+							eval('$value = '.$preg_mask['eval'].';');
+						if(isset($preg_mask['match'])) {
+							$matches = preg_match_all($preg_mask['match'],$value,$matches2,PREG_OFFSET_CAPTURE);
+							if(!$matches) {
+								$error[$k.'mask'] = 3;
+							}
+						}
+						if(isset($preg_mask['nomatch']))
+							$nomatch = $preg_mask['nomatch'];
+						if(isset($preg_mask['comment']))
+							$FORMS_FIELDS[$key]['comment'] .= $preg_mask['comment'];
+					} else
+						$nomatch = $preg_mask;
+
+					/*CHECK MASK*/
+					if(isset($form['mask']['name']) and ($form['mask']['name']=='phone' or $form['mask']['name']=='phone2')) {
+						if($value) {
+							$value = self::_phoneReplace($value);
+							if(!$value) {
+								$error[$k.'mask'] = 3;
+								$textm = 'Не корректный номер телефона.';
+							}
+						}
+					}
+					elseif($nomatch) {
+						if(isset($data[$key.'_rplf'])) {
+							$value = preg_replace($nomatch,'',$value);
+							unset($error[$k.'mask']);
+						}
+						$matches = preg_match_all($nomatch,$value,$matches2,PREG_OFFSET_CAPTURE);
+						if($matches) {
+							$error[$k.'mask'] = 3;
+						}
+						elseif(isset($form['mask']['checkwww']) and $form['mask']['checkwww'] and !fopen ('http://'.str_replace('http://','',$value), 'r'))
+							$error[] = 4;
+					}
+
+				}
+				/* end - Если есть данные*/
+			}
+			$data[$key] = $value;
+
+			/*Проверяем длинну данных*/
+			if(isset($form['mask']['max']) && $form['mask']['max']>0)
+			{
+				if(_strlen($value)>$form['mask']['max'])
+					$error[] = 2;
+			}
+			if(isset($form['mask']['min']) and $form['mask']['min']>0)
+			{
+				if($form['mask']['min']>0 and (!$value or $value=='0'))
+					$error[] = 1;
+				elseif(_strlen($value)<$form['mask']['min'])
+					$error[] = 21;
+			}
+			if(isset($form['mask']['maxint']) && $form['mask']['maxint']>0 && (int)$value>$form['mask']['maxint'])
+			{
+				$error[] = 22;
+				if($form['type']=='date' and $_this->fields[$key]['type']=='int') {
+					$form['mask']['maxint'] = date($form['mask']['format'],$form['mask']['maxint']);
+				}
+			}
+			if(isset($form['mask']['minint']) && $form['mask']['minint']>0 && (int)$value<$form['mask']['minint'])
+			{
+				$error[] = 23;
+				if($form['type']=='date' and $_this->fields[$key]['type']=='int') {
+					$form['mask']['minint'] = date($form['mask']['format'],$form['mask']['minint']);
+				}
+			}
+
+			/*elseif(isset($data[$key]))*/
+		}
+		elseif(isset($form['mask']['min']) and $form['mask']['min'])
+			$error[] = 1;
+		elseif(isset($form['mask']['minint']) and $form['mask']['minint'])
+			$error[] = 1;
+
+		return array($error);
 	}
 
 	static function _phoneReplace($phone)
@@ -972,7 +1022,7 @@ class static_form {
 		if ($field_type == 'int') {
 			$result = mktime($date_str[0], $date_str[1], $date_str[2], $date_str[3], $date_str[4], $date_str[5]);
 		} elseif ($field_type == 'timestamp') {
-			$result = date("Y-m-d H:i:s", mktime($date_str[0], $date_str[1], $date_str[2], $date_str[3], $date_str[4], $date_str[5]));
+			$result = $date_str[5].'-'.$date_str[3].'-'.$date_str[4].' '.$date_str[0].''.$date_str[1].''.$date_str[2];
 		}
 
 		return $result;
