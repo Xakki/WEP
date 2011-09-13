@@ -12,7 +12,7 @@ class loginza_class extends kernel_extends
 	function setSystemFields() {
 		//parent::setSystemFields();
 		$this->_setHook['__construct']['users'] = array(
-			static_main::relativePath(__DIR__).'/hook.php' => '_CHLU',
+			static_main::relativePath(dirname(__FILE__)).'/hook.php' => '_CHLU',
 		);
 	}
 

@@ -4,7 +4,7 @@
 	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = '#ext#userinfo';
 
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
-		$this->_getCashedList('phptemplates', __DIR__);
+		$this->_getCashedList('phptemplates', dirname(__FILE__));
 		$form = array(
 			'0'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон Списка'),
 			'1'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон Инфы о пользователе'),
@@ -14,8 +14,8 @@
 
 	_new_class('ugroup', $UGROUP);
 
-	$tplphp = $this->FFTemplate($FUNCPARAM[0],__DIR__);
-	$tplphp1 = $this->FFTemplate($FUNCPARAM[1],__DIR__);
+	$tplphp = $this->FFTemplate($FUNCPARAM[0],dirname(__FILE__));
+	$tplphp1 = $this->FFTemplate($FUNCPARAM[1],dirname(__FILE__));
 
 	$html = '';
 	if(isset($this->pageParam[1])) {

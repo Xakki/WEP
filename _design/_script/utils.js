@@ -388,14 +388,38 @@ function show_fblock(obj,selector) {
 
 }
 
-function ajaxLoadPage (pg,marker,call) {
-	param = {
-		'href':'_json.php?_view=loadpage&pg='+pg,
-		'type':'POST',
-		'data': marker
-	};
-	if(call)
-		param['call'] = call;
-	JSWin(param);
-	return false;
+
+var wep = {
+	version: 0.1,
+	pgId:0,
+	ajaxLoadPage: function(marker,pg,call) {
+		if(!pg) pg = this.pgId; 
+		param = {
+			'href':'_json.php?_view=loadpage&pg='+pg,
+			'type':'POST',
+			'data': marker
+		};
+		if(call)
+			param['call'] = call;
+		JSWin(param);
+		return false;
+	}
+};
+
+wep.apply = function(o, c, defaults){
+    // no "this" reference for friendly out of scope calls
+    if(defaults){
+        wep.apply(o, defaults);
+    }
+    if(o && c && typeof c == 'object'){
+        for(var p in c){
+            o[p] = c[p];
+        }
+    }
+    return o;
+};
+
+
+function ajaxLoadPage(pg,marker,call) {
+	return wep.ajaxLoadPage(marker,pg,call);
 }

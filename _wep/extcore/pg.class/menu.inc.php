@@ -7,7 +7,7 @@
 
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
-		$this->_getCashedList('phptemplates', __DIR__);
+		$this->_getCashedList('phptemplates', dirname(__FILE__));
 		$this->_enum['typemenuinc'] = array(
 			0=>'выводит всё в виде структуры дерева',
 			1=>'выводит все в общем массиве',
@@ -35,7 +35,7 @@
 		return $form;
 	}
 
-	$tplphp = $this->FFTemplate($FUNCPARAM[3],__DIR__);
+	$tplphp = $this->FFTemplate($FUNCPARAM[3],dirname(__FILE__));
 	if($FUNCPARAM[0]!=2)
 		$FUNCPARAM[2] = '';
 	

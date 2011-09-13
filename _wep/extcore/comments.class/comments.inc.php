@@ -38,7 +38,7 @@
 				if(isset($_CFG['singleton'][$FUNCPARAM[0]]) and $_CFG['singleton'][$FUNCPARAM[0]]->id) {
 					if(strpos($FUNCPARAM[1],'#ext#')!==false) {
 						$FUNCPARAM[1] = str_replace('#ext#','',$FUNCPARAM[1]);
-						$tplphp = array($FUNCPARAM[1], __DIR__ . '/templates/');
+						$tplphp = array($FUNCPARAM[1], dirname(__FILE__) . '/templates/');
 					}
 					else
 						$tplphp = $FUNCPARAM[1];

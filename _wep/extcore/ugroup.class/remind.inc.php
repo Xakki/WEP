@@ -4,7 +4,7 @@
 
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
-		$this->_getCashedList('phptemplates', __DIR__);
+		$this->_getCashedList('phptemplates', dirname(__FILE__));
 		$form = array(
 			'0'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон для сообщений'),
 			'1'=>array('type'=>'int','caption'=>'Время действия ссылки', 'comment'=>'В часах'),
@@ -13,7 +13,7 @@
 	}
 
 
-	$tplphp = $this->FFTemplate($FUNCPARAM[0],__DIR__);
+	$tplphp = $this->FFTemplate($FUNCPARAM[0],dirname(__FILE__));
 
 	global $UGROUP,$USERS, $HTML;
 	if(!$UGROUP) _new_class('ugroup', $UGROUP);

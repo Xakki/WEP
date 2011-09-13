@@ -32,7 +32,7 @@ class static_form {
 			if(!(int)$_this->fld_data['mf_ipcreate'])
 				trigger_error('ERROR REMOTE_ADDR `'.$_SERVER['REMOTE_ADDR'].'`. ', E_USER_WARNING);
 		}
-		if($_this->mf_createrid and isset($_SESSION['user']['id']) and (!isset($_this->fld_data[$_this->mf_createrid]) or $_this->fld_data[$_this->mf_createrid]!='') )
+		if($_this->mf_createrid and isset($_SESSION['user']['id']) and (!isset($_this->fld_data[$_this->mf_createrid]) or $_this->fld_data[$_this->mf_createrid]=='') )
 			$_this->fld_data[$_this->mf_createrid]= $_SESSION['user']['id'];
 
 		if (!isset($_this->fld_data) && !count($_this->fld_data))
@@ -705,6 +705,7 @@ class static_form {
 				$error[] = 5;
 				return true;
 			}
+
 		}
 		//*********** Файлы
 		if($form['type']=='file') {
@@ -783,7 +784,7 @@ class static_form {
 				/*Если тип данных ДАТА*/
 				if($form['type']=='date') 
 				{
-					$value = self::_get_fdate($value, $form['mask']['format'], $_this->fields[$key]['type']);
+					$form['value'] = $value = self::_get_fdate($value, $form['mask']['format'], $_this->fields[$key]['type']);
 				}
 				/*Редактор*/
 				elseif($form['type']=='ckedit')
@@ -796,11 +797,11 @@ class static_form {
 							$value = substr($value,0,strpos($value,'</body>'));
 						}
 					}
-					$value;
+					//$value;
 				}
 				/*Целое число*/
 				elseif($form['type']=='int' and (!isset($form['mask']['toint']) or !$form['mask']['toint'])) 
-					$value= (int)$value;
+					$form['value'] = $value= (int)$value;
 				/*Капча*/
 				elseif($form['type']=='captcha' && $value!=$form['captcha']) {
 					$error[] = 31;
@@ -872,7 +873,8 @@ class static_form {
 				/* end - Если есть данные*/
 			}
 			$data[$key] = $value;
-
+			if(is_array($data[$key]))
+				$value = implode('|',$data[$key]);
 			/*Проверяем длинну данных*/
 			if(isset($form['mask']['max']) && $form['mask']['max']>0)
 			{

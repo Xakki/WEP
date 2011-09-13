@@ -7,7 +7,7 @@
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 		global $_CFG;
-		$this->_getCashedList('phptemplates', __DIR__);
+		$this->_getCashedList('phptemplates', dirname(__FILE__));
 		$this->_enum['modullist'] = array();
 		foreach($_CFG['modulprm'] as $k=>$r) {
 			if($r['active'])
@@ -35,7 +35,7 @@
 
 		if(static_main::_prmModul($FUNCPARAM[0],array(1,2))) {
 			global $HTML;
-			$tplphp = $this->FFTemplate($FUNCPARAM[1],__DIR__);
+			$tplphp = $this->FFTemplate($FUNCPARAM[1],dirname(__FILE__));
 
 			$MODUL->_clp = '_view=list&_modul='.$MODUL->_cl.'&';
 			$param = array('firstpath'=>$PGLIST->current_path.'?','phptemplate'=>$FUNCPARAM[1]);

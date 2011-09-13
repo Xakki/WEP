@@ -33,6 +33,7 @@ class ugroup_class extends kernel_extends
 		$this->config['modergroup'] = 4;
 		$this->config['karma'] = 0;
 		$this->config['userpic'] = '';
+		$this->config['invite'] = 0;
 
 		$this->config_form['mail_to'] = array('type' => 'text', 'mask' =>array('min'=>1,'name'=>'email'), 'caption' => 'Адрес службы поддержки');
 		$this->config_form['mailrobot'] = array('type' => 'text', 'mask' =>array('min'=>1,'name'=>'email'), 'caption' => 'Адрес Робота');
@@ -69,6 +70,8 @@ class ugroup_class extends kernel_extends
 		$this->config_form['rememberday'] = array('type' => 'int', 'mask' =>array('min'=>1), 'caption' => 'Дней запоминания авторизации');
 		$this->config_form['karma'] = array('type' => 'checkbox', 'caption' => 'Включить систему рейтингов?','style'=>'background:green;');
 		$this->config_form['userpic'] = array('type' => 'text', 'mask' =>array(), 'caption' => 'Дефолтная фотка пользователя');
+		$this->config_form['invite'] = array('type' => 'checkbox', 'caption' => 'Включить систему инвайтов?','style'=>'background:gray;');
+
 	}
 
 	function _create() {
@@ -272,6 +275,11 @@ class users_class extends kernel_extends {
 		}
 	}
 
+	function _childs() {
+		if($this->owner->config['invite'])
+			$this->create_child('invite');
+	}
+
 	function setSystemFields() {
 		$this->def_records[1] = array(
 			$this->fn_login => $this->_CFG['wep']['login'],
@@ -297,10 +305,7 @@ class users_class extends kernel_extends {
 		$this->fields_form['owner_id'] = array('type' => 'list', 'listname'=>'ownerlist', 'caption' => 'Группа', 'mask' =>array('usercheck'=>1,'fview'=>1));
 		$this->fields_form[$this->fn_login] =	array('type' => 'text', 'caption' => 'Логин','mask'=>array('name'=>'login','min' => '4','sort'=>1),'comment'=>'Логин должен состоять только из латинских букв и цифр.');
 
-		if(static_main::_prmUserCheck(1)) // Вывод поля генерации пароля если админ
-			$this->fields_form[$this->fn_pass] = array('type' => 'password2', 'caption' => 'Пароль','md5'=>$this->_CFG['wep']['md5'], 'mask'=>array('min' => '6','fview'=>1));
-		elseif(!static_main::_prmUserCheck()) //Доступ только не зарегенным
-			$this->fields_form[$this->fn_pass] = array('type' => 'password_new', 'caption' => 'Пароль','mask'=>array('min' => '6','fview'=>1));
+		$this->fields_form[$this->fn_pass] = array('type' => 'password_new', 'caption' => 'Пароль','mask'=>array('min' => '6','fview'=>1));
 		$this->fields_form['email'] = array('type' => 'text', 'caption' => 'E-mail', 'mask'=>array('name'=>'email','min' => '7'));
 		$this->fields_form[$this->mf_namefields] = array('type' => 'text', 'caption' => 'Имя','mask'=>array('name'=>'name2')); // Вывод поля при редактировании
 		if($this->owner->config['karma']) {
@@ -323,10 +328,10 @@ class users_class extends kernel_extends {
 				'mask'=>array('sort'=>1));
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Пользователь активен', 'mask' =>array('usercheck'=>1));
 
-		if(static_main::_prmUserCheck() and !static_main::_prmUserCheck(1)) {  // Запрет поля на редактирование
+		/*if(static_main::_prmUserCheck() and !static_main::_prmUserCheck(1)) {  // Запрет поля на редактирование
 			$this->fields_form[$this->fn_login]['readonly']=true;
 			//$this->fields_form[$this->fn_login]['email']=true;	
-		}
+		}*/
 			
 	}
 
@@ -448,12 +453,18 @@ class users_class extends kernel_extends {
 			if(isset($this->fields_form[$this->fn_pass]) and (!isset($_POST[$this->fn_pass]) or !$_POST[$this->fn_pass])) {
 				unset($this->fields_form[$this->fn_pass]);unset($_POST[$this->fn_pass]);
 			}
+			$this->fields_form[$this->fn_login]['readonly']=true;
+			if(static_main::_prmUserCheck(1)) // Вывод поля генерации пароля если админ
+				$this->fields_form[$this->fn_pass] = array('type' => 'password2', 'caption' => 'Пароль','md5'=>$this->_CFG['wep']['md5'], 'mask'=>array('min' => '6','fview'=>1));
+			else
+				unset($this->fields_form[$this->fn_pass]);
 		}
 		else {
 		// добавлены настройки на форму регистрации
 			if(!$this->owner->config['reg']) 
 				return array(array('messages'=>array(array('name'=>'error', 'value'=>$this->_CFG['_MESS']['deniedreg']))),1);			
 			$this->fields_form[$this->fn_login]['readonly']=false;
+			$this->fields_form[$this->fn_pass] = array('type' => 'password_new', 'caption' => 'Пароль','mask'=>array('min' => '6','fview'=>1));
 			$DATA = $_POST;
 			$this->id = 0;
 			if(count($_POST) and $_POST['sbmt'] and isset($_SESSION['user']))

@@ -11,7 +11,7 @@ HELP**/
 	if(!isset($FUNCPARAM[2]) or !$FUNCPARAM[2]) $FUNCPARAM[2] = $this->getHref().'.html';
 	if(!isset($FUNCPARAM[3]) or !$FUNCPARAM[3]) {
 		$FUNCPARAM[3] = 'loginza'; // Шаблон
-		$TRFRM = array($FUNCPARAM[3],__DIR__.'/templates/');
+		$TRFRM = array($FUNCPARAM[3],dirname(__FILE__).'/templates/');
 	} else
 		$TRFRM = $FUNCPARAM[3];
 	if(!isset($FUNCPARAM[4])) $FUNCPARAM[4] = '';

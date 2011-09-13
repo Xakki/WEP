@@ -47,9 +47,7 @@ class pay_class extends kernel_extends {
 	*/
 	function payMove($param=array()) {
 		$data = array();
-		$sel = 't1.id,t1.name,t1.balance';
-		if(isset($param['sel']))
-			$sel .= ','.$param['sel'];
+
 		$query = 't1.`id` != '.$_SESSION['user']['id'].' and t1.`active`=1';
 		if(isset($param['cls']))
 			$query .= $param['cls'];
@@ -58,46 +56,135 @@ class pay_class extends kernel_extends {
 			$_POST['pay'] = (int)$_POST['pay'];
 			$_POST['users'] = (int)$_POST['users'];
 			if(!$_POST['pay']) {
-				$data['respost'][0] = -5;
-			} 
+				$data['respost'] = array('flag'=>0,'mess'=>'Не верные данные.');
+			}
 			else {
-				if(isset($_POST['plus']))
-					$data['respost'] = $this->pay($_SESSION['user']['id'],(int)$_POST['users'],(int)$_POST['pay'],'Пополнение баланса');
-				else
-					$data['respost'] = $this->pay((int)$_POST['users'],$_SESSION['user']['id'],(int)$_POST['pay'],'Снятие со счёта');
+				if(isset($_POST['plus'])){
+					$u1 = $_SESSION['user']['id'];
+					$u2 = (int)$_POST['users'];
+					$txt = 'Пополнение баланса';
+				}
+				else {
+					$u2 = $_SESSION['user']['id'];
+					$u1 = (int)$_POST['users'];
+					$txt = 'Снятие со счёта';
+				}
+				if(isset($_POST['name']))
+					$txt .= ': '.$_POST['name'];
+				$summ = (int)$_POST['pay'];
+				$flag = 0;
+				list($mess,$balance) = $this->checkBalance($u1,$summ);
+				if(!$mess) {
+					$flag = $this->pay($u1,$u2,$summ,$txt);
+				}
+				$data['respost'] = array('flag'=>$flag,'mess'=>$mess,'balance'=>$balance);
 			}
 		}
 
 		_new_class('ugroup', $UGROUP);
 		$query = 'WHERE '.$query;
-		$data['users'] = $UGROUP->childs['users']->_query($sel.',t2.name as gname','t1 JOIN '.$UGROUP->tablename.' t2 ON t1.owner_id=t2.id and t2.active=1 '.$query,'id');
+		$data['users'] = $UGROUP->childs['users']->_query('t1.*,t2.name as gname','t1 JOIN '.$UGROUP->tablename.' t2 ON t1.owner_id=t2.id and t2.active=1 '.$query,'id');
 
 		return $data;
 	}
 
+	/**
+	* $flag = -1 - вывод форма подтверждения
+	* $flag = 0 - ошибка
+	* $flag = 1 - успешная оплата
+	*/
 
+	function payDialog($from_user,$to_user,$summ,$functOK=NULL,$paramOK=array()) {
+		$flag = 0;//Ошибка
+		$mess = '';
+		$uq = md5($from_user.$to_user.$summ);
+		$n = 'paycode'.$uq;
+		list($mess,$balance) = $this->checkBalance($from_user,$summ);
+		if(isset($_SESSION[$n]) and isset($_POST[$uq])) {
+			//Действие
+			unset($_SESSION[$n]);
+			list($mess,$balance) = $this->checkBalance($from_user,$summ);
+			if($mess=='') {
+				if($this->pay($from_user,$to_user,$summ)) {
+					$flag = 1;//Оплата
+					// Выполняем пользовательскую функцию при успешной оплате
+					if(!is_null($functOK)) {
+						list($flag,$mess) = call_user_func_array($functOK,$paramOK);
+						if($flag==1) {
+							$this->addPayMess($mess);
+						}
+						else {
+							$this->payBack($from_user,$to_user,$summ);
+						}
+					}
+				}
+				else
+					$mess = $this->getMess('pay_err');
+			}
+		}
+		else {
+			$flag = -1;//Выводим форму подтверждения
+			$_SESSION[$n] = true;
+		}
+		_new_class('ugroup', $UGROUP);
+		$DATA = array(
+			'flag'=>$flag,
+			'mess'=>$mess,
+			'balance'=>$balance,
+			'code'=>$uq,
+			'summ'=>$summ,
+			'm'=>$UGROUP->config['payon'],
+			'to_user'=>$to_user,
+			'#post#' => $_POST,
+		);
+		return $DATA;
+	}
+	/**
+	* Функция проверки средств
+	*/
+	function checkBalance($from_user,$summ) {
+		_new_class('ugroup', $UGROUP);
+		$temp = $UGROUP->childs['users']->_query('t1.id,t1.owner_id,t1.name,t1.balance,t2.negative','t1 JOIN '.$UGROUP->tablename.' t2 ON t2.id=t1.owner_id WHERE t1.`active`=1 and t2.`active`=1 and t1.`id` = '.$from_user);
+		
+		if(!count($temp)) return array($this->getMess('pay_nouser'),0);
+		$d = $temp[0]['balance']-$summ;
+		$mess = '';
+		if(!$temp[0]['negative'] and $d<0) 
+			$mess = $this->getMess('pay_nomonney',array(abs($d).' '.$UGROUP->config['payon']));
+		return array($mess,$temp[0]['balance']);
+	}
 	/**
 	* Функция оплаты и перевода средств
 	* returт 1 - Успешно
 	* returт 0 - ошибка данных
-	* returт -1 - пользователь отключён либо не существует
-	* returт -2 - Пользователю не разрешено уходить в минус
 	*/
-	function pay($from_user,$to_user,$balance,$mess='') {
+	function pay($from_user,$to_user,$summ,$mess='') {
 		_new_class('ugroup', $UGROUP);
-		$temp = $UGROUP->childs['users']->_query('t1.id,t1.owner_id,t1.name,t1.balance,t2.negative','t1 JOIN '.$UGROUP->tablename.' t2 ON t2.id=t1.owner_id WHERE t1.`active`=1 and t2.`active`=1 and t1.`id` = '.$from_user);
-		
-		if(!count($temp)) return array(-1);
-		if(!$temp[0]['negative'] and ($temp[0]['balance']-$balance)<0) return array(-2,($temp[0]['balance']-$balance));
 
-		$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance-'.$balance.' WHERE id='.$from_user);
-		$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance+'.$balance.' WHERE id='.$to_user);
+		$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance-'.$summ.' WHERE id='.$from_user);
+		$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance+'.$summ.' WHERE id='.$to_user);
 		$data = array(
 			$this->mf_createrid=>$from_user,
 			'user_id'=>$to_user,
-			'cost'=>$balance,
+			'cost'=>$summ,
 			'name'=>$mess);
-		return array($this->_add_item($data));
+		return $this->_add_item($data);
+	}
+
+	private function payBack($from_user,$to_user,$summ) {
+		_new_class('ugroup', $UGROUP);
+
+		$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance+'.$summ.' WHERE id='.$from_user);
+		$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance-'.$summ.' WHERE id='.$to_user);
+
+		return $this->_delete();
+	}
+
+	private function addPayMess($mess) {
+		if(!$this->id) return 0;
+		$data = array(
+			'name'=>$mess);
+		return $this->_save_item($data);
 	}
 
 	function diplayList($user) { // Список операций

@@ -323,8 +323,9 @@ class static_main {
 	* @file - абсолютный путь к фаилу
 	*/
 	static function relativePath($file) {
+		global $_CFG;
 		$file = str_replace(array('\\\\','\\'),'/',$file);
-		$cf = dirname(dirname(__DIR__));
+		$cf = $_CFG['_PATH']['path'];
 		$cf = str_replace(array('\\\\','\\'),'/',$cf);
 		$file = str_replace(array($_SERVER['_DR_'],$cf),'',$file);
 		return $file;

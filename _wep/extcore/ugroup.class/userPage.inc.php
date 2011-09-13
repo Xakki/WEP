@@ -5,7 +5,7 @@
 	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = '#ext#userinfo';
 
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
-		$this->_getCashedList('phptemplates', __DIR__);
+		$this->_getCashedList('phptemplates', dirname(__FILE__));
 		$temp = 'ownerlist';
 		$this->_enum['levelpage'] = array(
 			0=>'Из сессии пользователя',
@@ -19,7 +19,7 @@
 		return $form;
 	}
 
-	$tplphp = $this->FFTemplate($FUNCPARAM[1],__DIR__);
+	$tplphp = $this->FFTemplate($FUNCPARAM[1],dirname(__FILE__));
 
 	if($FUNCPARAM[0]) {
 		$FUNCPARAM[0] = $_GET['page'][(int)substr($FUNCPARAM[0],1)-1];

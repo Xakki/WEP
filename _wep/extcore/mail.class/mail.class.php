@@ -237,7 +237,7 @@ class mail_class extends kernel_extends {
 	}
 
 	function mailengine1 ($data) {
-		include_once(__DIR__.'/phpMailer/class.phpmailer.php');
+		include_once(dirname(__FILE__).'/phpMailer/class.phpmailer.php');
 		$data['subject'] = substr(htmlspecialchars(trim($data['subject'])), 0, 1000);
 		
 		$PHPMailer = new PHPMailer();

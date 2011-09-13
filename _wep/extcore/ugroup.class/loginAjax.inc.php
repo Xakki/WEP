@@ -6,7 +6,7 @@
 
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
-		$this->_getCashedList('phptemplates', __DIR__);
+		$this->_getCashedList('phptemplates', dirname(__FILE__));
 		$temp = 'ownerlist';
 		$this->_enum['levelmenuinc'] = $this->_getCashedList($temp);
 		$this->_enum['levelmenuinc'][0] = array_merge(array(
@@ -26,7 +26,7 @@
 		return $form;
 	}
 
-	$tplphp = $this->FFTemplate($FUNCPARAM[0],__DIR__);
+	$tplphp = $this->FFTemplate($FUNCPARAM[0],dirname(__FILE__));
 
 	if(isset($FUNCPARAM[2]) and $FUNCPARAM[2]) { // страница исключение
 		if($this->id==$FUNCPARAM[2]) return '';
