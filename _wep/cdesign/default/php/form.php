@@ -504,6 +504,7 @@ function tpl_form(&$data) {
 }
 
 function selectitem($data,$val=NULL,$flag=0) {
+//	return selectitem2($data,$val,$flag);
 	$texthtml = '';
 	if(!is_null($val)) {
 		if(!is_array($val)) 
@@ -532,18 +533,18 @@ function selectitem($data,$val=NULL,$flag=0) {
 	return $texthtml;
 }
 
-function selectitem_old($data,$val=NULL,$flag=0) {
+function selectitem2($data,$val=NULL,$flag=0) {
 	$texthtml = '';
 	if(!is_null($val)) {
 		if(!is_array($val)) 
 			$val = array($val=>true);
-		//else $val = array_keys($val);
 	}
 	if(is_array($data) and count($data))
 		foreach($data as $r) {
 			//_substr($r['#name#'],0,60).(_strlen($r['#name#'])>60?'...':'')
+			//$r['#name#'] = str_repeat(" -", $flag).' '.$r['#name#'];
 			if(isset($r['#item#']) and count($r['#item#']) and isset($r['#checked#']) and $r['#checked#']==0)
-				$texthtml .= '<optgroup label="'.$r['#name#'].'" class="selpad'.$flag.'"></optgroup>';
+				$texthtml .= '<optgroup label="'.$r['#name#'].'">';
 			else {
 				$sel = '';
 				if(isset($r['#sel#'])) {
@@ -552,11 +553,13 @@ function selectitem_old($data,$val=NULL,$flag=0) {
 				}
 				elseif(!is_null($val) and isset($val[$r['#id#']]))
 					$sel = 'selected="selected"';
-				$texthtml .= '<option value="'.$r['#id#'].'" '.$sel.' class="selpad'.$flag.'">'.$r['#name#'].'</option>';
+					
+				$texthtml .= '<option value="'.$r['#id#'].'" '.$sel.'>'.$r['#name#'].'</option>';
 			}
 			if(isset($r['#item#']) and count($r['#item#']))
-				$texthtml .= selectitem($r['#item#'],$val,($flag+1));//.'&#160;--'
+				$texthtml .= selectitem2($r['#item#'],$val,($flag+1));//.'&#160;--'
+			if(isset($r['#item#']) and count($r['#item#']) and isset($r['#checked#']) and $r['#checked#']==0)
+				$texthtml .= '</optgroup>';
 		}
 	return $texthtml;
 }
-
