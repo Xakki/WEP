@@ -26,7 +26,7 @@
 
 		return $s;
 	}
-	$datamap = rubGetMap($RUBRIC->data3,0,$keyPG);
+	$datamap = rubGetMap($RUBRIC->data3,0,$this->getHref($keyPG));
 	if(!$CITY->id) 
 		$DATA_PG[$keyPG]['hidechild'] =1;
 	return $datamap;

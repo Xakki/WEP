@@ -20,17 +20,8 @@ class rubric_class extends kernel_extends {
 		$this->fields['rname'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'min' => '1');
 		$this->fields['checked'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL','default'=>'0');
 		$this->fields['imgpos'] = array('type' => 'int', 'width' => 3, 'attr' => 'NOT NULL', 'min' => '1');
-		$this->fields['chtext'] = array('type' => 'text', 'attr' => 'NOT NULL', 'min' => '1', 'default'=>'');
-
-		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название рубрики');
-		$this->fields_form['rname'] = array('type' => 'text', 'caption' => 'Адресс рускими буквами');
-		$this->fields_form['lname'] = array('type' => 'text', 'caption' => 'Адресс латинскими буквами');
-		$this->fields_form['parent_id'] = array('type' => 'list', 'listname'=>'parentlist', 'caption' => 'Родительская рубрика','mask' =>array('fview'=>1));
-		$this->fields_form["imgpos"] = array("type" => "int", "caption" => "Позиция пиктограмки");
-		$this->fields_form["ordind"] = array("type" => "int", "caption" => "Сортировка");
-		$this->fields_form["chtext"] = array("type" => "textarea", "caption" => "Текст",'mask' =>array('name'=>'all'));
-		$this->fields_form['checked'] = array('type' => 'checkbox', 'caption' => 'Разрешить для подачи объявления');
-		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Активность');
+		$this->fields['chtext'] = array('type' => 'text', 'attr' => 'NOT NULL', 'min' => '1');
+		$this->fields['zerocost'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'default'=>'');
 
 		$this->index_fields['name'] = 'name';
 		$this->unique_fields['rname'] = 'rname';
@@ -38,8 +29,25 @@ class rubric_class extends kernel_extends {
 		$this->index_fields['checked'] = 'checked';
 		$this->index_fields['imgpos'] = 'imgpos';
 		
-		$this->selFields = 't1.id,t1.name,t1.rname,t1.lname,t1.parent_id,t1.imgpos,t1.ordind,t1.checked,t1.active';
+		$this->selFields = 't1.id,t1.name,t1.rname,t1.lname,t1.parent_id,t1.imgpos,t1.zerocost,t1.ordind,t1.checked,t1.active';
 		//id,name,rname,lname,parent_id,imgpos,ordind,checked,active
+	}
+
+
+	public function setFieldsForm() {
+		parent::setFieldsForm();
+
+		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название рубрики');
+		$this->fields_form['rname'] = array('type' => 'text', 'caption' => 'Адресс на русском');
+		$this->fields_form['lname'] = array('type' => 'text', 'caption' => 'Адресс латиницей');
+		$this->fields_form['parent_id'] = array('type' => 'list', 'listname'=>'parentlist', 'caption' => 'Родительская рубрика','mask' =>array('fview'=>1));
+		$this->fields_form["imgpos"] = array("type" => "int", "caption" => "Icon");
+		$this->fields_form["ordind"] = array("type" => "int", "caption" => "Сортировка");
+		$this->fields_form["chtext"] = array("type" => "textarea", "caption" => "Текст",'mask' =>array('name'=>'all'));
+		$this->fields_form['checked'] = array('type' => 'checkbox', 'caption' => 'Доступ','comment'=>'разрешить для подачи объявления');
+		$this->fields_form['zerocost'] = array('type' => 'text', 'caption' => 'Спец. цена');
+		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Активность');
+
 	}
 
 	function _childs() {
@@ -111,7 +119,7 @@ class rubric_class extends kernel_extends {
 		$tpath= array();
 		while(isset($this->data2[$temp])) {
 			$PGLIST->pageinfo['keywords'] .= ', '.$this->data2[$temp]['name'];
-			$tpath[$this->data2[$temp]['lname'].'/'.$PGLIST->id] = array('name'=>$this->data2[$temp]['name']);
+			$tpath[$this->data2[$temp]['lname'].'/'.$PGLIST->getHref()] = array('name'=>$this->data2[$temp]['name']);
 			$temp=$this->data2[$temp]['parent_id'];
 		}
 		if(count($tpath))
@@ -134,6 +142,8 @@ class param_class extends kernel_extends {
 		if($type<10)
 			return 'checkbox';
 		elseif($type<30)
+			return 'int';
+		elseif($type<50)
 			return 'int';
 		elseif($type<60)
 			return 'list';
@@ -161,6 +171,8 @@ class param_class extends kernel_extends {
 			13=>'Целое(4)3',
 			20=>'Целое(11)0',
 			21=>'Целое(11)1',
+			40=>'Год 1',
+			41=>'Год 2',
 			50=>'Cписок 0',
 			51=>'Cписок 1',
 			52=>'Cписок 2',
@@ -195,22 +207,26 @@ class param_class extends kernel_extends {
 		# attaches
 
 		# memo
+	}
 
+	public function setFieldsForm() {
+		parent::setFieldsForm();
 		# fields
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название', 'mask' =>array('min'=>1));
 		$this->fields_form["type"] = array("type" => "list", "listname"=>"type", "caption" => "Тип параметра", 'mask'=>array('sort'=>1), 'onchange'=>'if(this.value>=50 &amp;&amp; this.value&lt;60) jQuery(\'#tr_formlist, #tr_typelist\').show(); else jQuery(\'#tr_formlist, #tr_typelist\').hide();');
 		$this->fields_form['typelist'] = array('type' => 'list', 'listname'=>'typelist', 'caption' => 'Вид списка', 'style'=>'background:#e1e1e1;');
 		$this->fields_form['formlist'] = array("type" => "list",'listname'=>array('tablename'=>'formlist'), 'caption' => 'Список', 'style'=>'background:#e1e1e1;');
-		$this->fields_form['constrn'] = array('type' => 'checkbox', 'caption' => 'В имени объявления');
-		$this->fields_form['edi'] = array('type' => 'text', 'caption' => 'Ед. измерения');
-		$this->fields_form['def'] = array('type' => 'text', 'caption' => 'Значение по умолчанию','comment'=>'Если в начале прописать "eval=", то будет выполнятся команда');
-		$this->fields_form['min'] = array('type' => 'int', 'caption' => 'Минимум','comment'=>'Минимум символов или минимальное число, 0 - поле не обязательное');
-		$this->fields_form['max'] = array('type' => 'int', 'caption' => 'Максимум','comment'=>'Максимум символов или максимальное число, 0 - максимум соответствует типу');
+		$this->fields_form['constrn'] = array('type' => 'checkbox', 'caption' => 'В имени');
+		$this->fields_form['edi'] = array('type' => 'text', 'caption' => 'Ед.');
+		$this->fields_form['def'] = array('type' => 'text', 'caption' => 'Default','comment'=>'Если в начале прописать "eval=", то будет выполнятся команда');
+		$this->fields_form['min'] = array('type' => 'int', 'caption' => 'Min','comment'=>'Минимум символов или минимальное число, 0 - поле не обязательное');
+		$this->fields_form['max'] = array('type' => 'int', 'caption' => 'Max','comment'=>'Максимум символов или максимальное число, 0 - максимум соответствует типу');
 		$this->fields_form['step'] = array('type' => 'int', 'caption' => 'Шаг','comment'=>'Если "Тип параметра" целое число, нужен шаг для поиска по параметрам');
-		$this->fields_form['mask'] = array('type' => 'text', 'caption' => 'Маска(поиск точного соответствия)', 'mask' =>array('name'=>'all'), 'comment'=>'/^(http:\/\/)?([A-Za-zЁёА-Яа-я\.]+\.)?[0-9A-Za-zЁёА-Яа-я\-\_]+\.[A-Za-zЁёА-Яа-я]+[\/0-9A-Za-zЁёА-Яа-я\.\-\_\=\?\&]*$/u');
-		$this->fields_form['maskn'] = array('type' => 'text', 'caption' => 'Маска(поик не соответствия)', 'mask' =>array('name'=>'all'), 'comment'=>'/[^0-9A-Za-zЁёА-Яа-я:\/\.\-\_\=\?\&]/u');
+		$this->fields_form['mask'] = array('type' => 'text', 'caption' => 'Match', 'comment'=>'(поиск точного соответствия)', 'mask' =>array('name'=>'all'), 'comment'=>'/^(http:\/\/)?([A-Za-zЁёА-Яа-я\.]+\.)?[0-9A-Za-zЁёА-Яа-я\-\_]+\.[A-Za-zЁёА-Яа-я]+[\/0-9A-Za-zЁёА-Яа-я\.\-\_\=\?\&]*$/u');
+		$this->fields_form['maskn'] = array('type' => 'text', 'caption' => 'NoMatch', 'comment'=>'(поик не соответствия)', 'mask' =>array('name'=>'all'), 'comment'=>'/[^0-9A-Za-zЁёА-Яа-я:\/\.\-\_\=\?\&]/u');
 		$this->fields_form['comment'] = array('type' => 'text', 'caption' => 'Комменты', 'mask' =>array('name'=>'all'));
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Активность');
+
 	}
 
 	function kPreFields(&$data,&$param) {

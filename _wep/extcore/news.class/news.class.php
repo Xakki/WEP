@@ -30,7 +30,15 @@ class news_class extends kernel_extends {
 		# attaches
 		$this->attaches['i_news'] = array('mime' => array('image/pjpeg'=>'jpg', 'image/jpeg'=>'jpg', 'image/gif'=>'gif', 'image/png'=>'png'), 
 			'thumb'=>array(array('type'=>'resize', 'w'=>'1024', 'h'=>'768'),array('type'=>'resizecrop', 'w'=>'80', 'h'=>'100', 'pref'=>'s_', 'path'=>'')),'maxsize'=>3000,'path'=>'');
+		
+		$this->_enum['category']=array(
+			0=>'--');
 
+		$this->ordfield = 'ndate DESC';
+	}
+
+	public function setFieldsForm() {
+		parent::setFieldsForm();
 		# form
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Заголовок новости','comment'=>'Короткий: 3-4 слова(до '.$this->fields['name']['width'].' символов).');
 		$this->fields_form['description'] = array('type' => 'textarea', 'caption' => 'Краткий анонс','mask' =>array('max' => 500));
@@ -49,12 +57,6 @@ class news_class extends kernel_extends {
 		$this->fields_form['redirect'] = array('type' => 'checkbox', 'caption' => 'Включить редирект','style'=>'background-color:#FFC0CB;');
 		$this->fields_form['i_'.$this->_cl] = array("type"=>"file","caption"=>"Фотография",'del'=>1, 'mask'=>array('fview'=>1,'width'=>80,'height'=>100,'fview'=>0));
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Опубликовать', 'comment'=>'Видимость новости на сайте');
-		
-		
-		$this->_enum['category']=array(
-			0=>'--');
-
-		$this->ordfield = 'ndate DESC';
 	}
 
 	function fNews()// func display NEWS on INDEX page

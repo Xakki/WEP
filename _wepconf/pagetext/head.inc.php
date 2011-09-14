@@ -42,7 +42,8 @@
 	}
 
 	$html .='<div class="headauth">';
-	$DATA = array('menu'=>$PGLIST->getMap(3,1));
+	$DATA = array('#item#'=>$PGLIST->getMap(3,1));
+	$DATA = array('menu'=>$DATA);
 	$html .= $HTML->transformPHP($DATA,'menu');
 	if($CITY->id==213)
 		$html .= '<a href="/_redirect.php?url='.base64_encode('http://www.ufa.ru/board.html').'" target="_blank" style="color:Crimson;">Доска объявлений Уфы</a>';

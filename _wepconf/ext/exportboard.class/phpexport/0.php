@@ -14,7 +14,7 @@ $eDATA = $EXPORTBOARD->childs['exportrubric']->_query('*','WHERE (rubric IN ('.i
 if(count($eDATA)) {
 	$newPost['category'] = $eDATA[0]['nameid'];
 	$newPost['name'] = 'Продавец';
-	if($vars['phone']) $newPost['phone'] = mb_substr(preg_match('/[^0-9\,\-\(\) ]/','',$vars['phone']),0,254);
+	if($vars['phone']) $newPost['phone'] = mb_substr(preg_replace('/[^0-9\,\-\(\) ]/','',$vars['phone']),0,254);
 	if($vars['email']) $newPost['email'] = $vars['email'];
 	$newPost['code'] = substr(md5(time()),0,8);
 	$newPost['text'] = '';
@@ -49,11 +49,11 @@ if(count($eDATA)) {
 
 	$newPost['text'] .= $this->RUBRIC->cacheData[$vars['rubric']]['name'].' - '.$this->_enum['type'][$vars['type']].". \n";
 	$newPost['text'] .= $fulltext;
-	if($vars['cost']) $newPost['text'] .= 'Цена: '.$vars['cost'].". \n";
+	if($vars['cost']) $newPost['text'] .= 'Цена: '.$vars['cost']." руб. \n";
 	if($vars['contact']) $newPost['text'] .= 'Дополнительные контакты: '.$vars['contact'].". \n";
 	$vars['text'] = str_replace(array('</li>','</div>','</p>','<br />','<br/>'),array("</li> \n","</div> \n","</p> \n"," \n"," \n"),$vars['text']);
 	$newPost['text'] .= strip_tags($vars['text']);
-	$newPost['text'] = mb_substr($newPost['text'],0,999);
+	$newPost['text'] = mb_substr(trim($newPost['text']),0,990);
 	$newPost['add'] = 'Сохранить';
 	$newPost['cid'] = '';
 

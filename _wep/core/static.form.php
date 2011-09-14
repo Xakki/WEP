@@ -574,7 +574,7 @@ class static_form {
 		global $_tpl;
 		if(!count($FORMS_FIELDS))
 			return array('mess'=>array(array('name'=>'error', 'value'=>$_this->_CFG['_MESS']['errdata'])));
-		$MASK = &$_this->_CFG['_MASK'];
+		//$MASK = &$_this->_CFG['_MASK'];
 		$arr_nochek = array('info'=>1,'sbmt'=>1,'alert'=>1);
 		$messages='';
 		$arr_err_name=array();
@@ -610,21 +610,21 @@ class static_form {
 			foreach($error as $row) {
 				$messages = '';
 				if($row==1) //no empty
-					$messages = $_this->getMess('_err_1',array($form['caption']));
+					$messages = $_this->getMess('_err_1');
 				elseif($row==2) //max chars
-					$messages = $_this->getMess('_err_2',array($form['caption'],$form['mask']['max'],(_strlen($value)-$form['mask']['max'])));
+					$messages = $_this->getMess('_err_2',array($form['mask']['max'],(_strlen($value)-$form['mask']['max'])));
 				elseif($row==21) // min chars
-					$messages = $_this->getMess('_err_21',array($form['caption'],$form['mask']['min'],($form['mask']['min']-_strlen($value))));
+					$messages = $_this->getMess('_err_21',array($form['mask']['min'],($form['mask']['min']-_strlen($value))));
 				elseif($row==22) //min int
-					$messages = $_this->getMess('_err_22',array($form['caption'])).$form['mask']['maxint'];
+					$messages = $_this->getMess('_err_22').$form['mask']['maxint'];
 				elseif($row==23) //max int
-					$messages = $_this->getMess('_err_23',array($form['caption'])).$form['mask']['minint'];
+					$messages = $_this->getMess('_err_23').$form['mask']['minint'];
 				elseif($row==24) // min chars
-					$messages = $_this->getMess('_err_22',array($form['caption'])).$form['mask']['max'];
+					$messages = $_this->getMess('_err_22').$form['mask']['max'];
 				elseif($row==25) // max chars
-					$messages = $_this->getMess('_err_23',array($form['caption'])).$form['mask']['min'];
+					$messages = $_this->getMess('_err_23').$form['mask']['min'];
 				elseif($row==29) //limit file size
-					$messages = $_this->getMess('_err_29',array($form['caption'],$_FILES[$key]['name'])).$form['maxsize'].'Kb';
+					$messages = $_this->getMess('_err_29',array($_FILES[$key]['name'])).$form['maxsize'].'Kb';
 				elseif($row==3) {//wrong data
 					if(isset($matches2) and count($matches2[0])) {
 						$textm = 'Обнаружены следующие недопустимые символы - ';
@@ -639,20 +639,20 @@ class static_form {
 						$textm .= ' и следующей попыткой удалить их автоматический?<input type="checkbox" value="1" name="'.$key.'_rplf'.'" checked="checked" style="height: 0.8em;">';
 						//$FORMS_FIELDS[$key.'_rplf'] = array('type'=>'hidden','value'=>'del');
 					}
-					$messages = $_this->getMess('_err_3',array($form['caption'],$textm));
+					$messages = $_this->getMess('_err_3',array($textm));
 				}
 				elseif($row==31) //wrong captchs
-					$messages = $_this->getMess('_err_31',array($form['caption']));
+					$messages = $_this->getMess('_err_31');
 				elseif($row==32) // wrong repeat pass
-					$messages = $_this->getMess('_err_32',array($form['caption']));
+					$messages = $_this->getMess('_err_32');
 				elseif($row==33) //data error
-					$messages = $_this->getMess('_err_33',array($form['caption']));
+					$messages = $_this->getMess('_err_33');
 				elseif($row==39) //wrong file type
 					$messages = $_this->getMess('_err_39',array($_FILES[$key]['name'])).'- '.implode(',',array_unique($form['mime'])).'.';
 				elseif($row==40) //error load file
 					$messages = $_this->getMess('_err_40',array($_FILES[$key]['name']));
 				elseif($row==4)  // wrong link
-					$messages = $_this->getMess('_err_4',array($form['caption']));
+					$messages = $_this->getMess('_err_4');
 				elseif($row==5)  // wrong link
 					$messages = 'Множественные значения не допустимы!';
 				$arr_err_name[$key]=$key;
@@ -660,11 +660,11 @@ class static_form {
 				if(isset($param['errMess'])) {
 					$mess[] = array('name'=>'error', 'value'=>$form['caption'].': '.$messages);
 				}
-				elseif(isset($param['ajax'])) {
+				if(isset($param['ajax'])) {
 					$_tpl['onload'] .= 'putEMF(\''.$key.'\',\''.$messages.'\');'; // запись в форму по ссылке
 				}
 				else
-					$form['error'][] = $messages; // запись в форму по ссылке
+					$form['error'][] = $form['caption'].': '.$messages; // запись в форму по ссылке
 			}
 
 		}
@@ -681,6 +681,7 @@ class static_form {
 	}
 	
 	static function check_formfield($_this,$key,&$form,&$data,&$error) {
+		$MASK = &$_this->_CFG['_MASK'];
 		//*********** МАССИВЫ
 		if(isset($data[$key]) and is_array($data[$key]) and count($data[$key])) {
 		/*TODO:*/
@@ -784,7 +785,7 @@ class static_form {
 				/*Если тип данных ДАТА*/
 				if($form['type']=='date') 
 				{
-					$form['value'] = $value = self::_get_fdate($value, $form['mask']['format'], $_this->fields[$key]['type']);
+					$value = self::_get_fdate($value, $form['mask']['format'], $_this->fields[$key]['type']);
 				}
 				/*Редактор*/
 				elseif($form['type']=='ckedit')
@@ -827,12 +828,13 @@ class static_form {
 					$preg_mask = $MASK[$form['mask']['name']];
 				elseif(isset($MASK[$form['type']]))
 					$preg_mask = $MASK[$form['type']];
-
+			
 				if($preg_mask AND $value) {
 					$nomatch = '';
 					if(is_array($preg_mask)) {
-						if(isset($preg_mask['eval']))
+						if(isset($preg_mask['eval'])){
 							eval('$value = '.$preg_mask['eval'].';');
+						}
 						if(isset($preg_mask['match'])) {
 							$matches = preg_match_all($preg_mask['match'],$value,$matches2,PREG_OFFSET_CAPTURE);
 							if(!$matches) {
@@ -872,7 +874,8 @@ class static_form {
 				}
 				/* end - Если есть данные*/
 			}
-			$data[$key] = $value;
+			$form['value'] = $data[$key] = $value;
+
 			if(is_array($data[$key]))
 				$value = implode('|',$data[$key]);
 			/*Проверяем длинну данных*/
@@ -924,10 +927,12 @@ class static_form {
 				"/^([8])([0-9]{3})([0-9]{3})([0-9]{2})([0-9]{2})$/",
 				"/^([7])([0-9]{3})([0-9]{3})([0-9]{2})([0-9]{2})$/",
 				"/^([0-9]{3})([0-9]{3})([0-9]{2})([0-9]{2})$/",
+				"/^([0-9]{3})([0-9]{2})([0-9]{2})$/",
 				),array(
 				'+7 \\2 \\3-\\4-\\5',
 				'+7 \\2 \\3-\\4-\\5',
 				'+7 \\1 \\2-\\3-\\4',
+				'\\1-\\2-\\3',
 				),	$p);
 		}
 		$phone_2 = implode(', ',$phone_2);

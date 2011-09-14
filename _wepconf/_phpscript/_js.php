@@ -4,8 +4,11 @@
 	$_tpl['onload']=$html=$html2='';
 	if(!isset($_GET['noajax']))
 		require_once($_CFG['_PATH']['phpscript'].'/jquery_getjson.php');
+
 	require_once($_CFG['_PATH']['core'].'/html.php');
-	
+	if(isset($_GET['noajax']))
+		headerssent();
+
 	session_go();
 
 	$HTML = new html('_design/',$_CFG['wep']['design'],false);// упрощённый режим
@@ -83,7 +86,7 @@
 		$MODUL->RUBRIC = &$RUBRIC;
 		if($MODUL){
 			if(count($_POST)) $_POST['sbmt'] = 1;
-			list($DATA['formcreat'],$flag) = $MODUL->_UpdItemModul(array('ajax'=>1));
+			list($DATA['formcreat'],$flag) = $MODUL->_UpdItemModul(array('ajax'=>1,'errMess'=>1));
 			$html = $HTML->transformPHP($DATA,'formcreat');
 
 			if($flag==1) {

@@ -1,4 +1,4 @@
-<FONT SIZE="" COLOR=""></FONT><?
+<?
 	global $SUBSCRIBE;
 	$DATA = array();
 	if(static_main::_prmUserCheck()) {

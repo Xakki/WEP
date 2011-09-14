@@ -21,6 +21,23 @@ class subscribe_class extends kernel_extends {
 		$this->fields['date'] = array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL');
 		$this->fields['period'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL');
 
+		$this->_enum['period']=array(
+			864000=>'10 дней',
+			604800=>'7 дней',
+			432000=>'5 дней',
+			259200=>'3 дня',
+			172800=>'2 дня',
+			86400=>'1 день',
+			43200=>'12 часов'
+		);
+
+		$this->ordfield = 'id DESC';
+
+	}
+
+	public function setFieldsForm() {
+		parent::setFieldsForm();
+
 		//$this->fields_form[$this->mf_createrid] = array('type' => 'list', 'listname'=>array('class'=>'users'),'caption' => 'Пользователи', 'mask' =>array('min'=>1,'usercheck'=>2));
 
 		$this->fields_form['city'] = array(
@@ -35,18 +52,6 @@ class subscribe_class extends kernel_extends {
 		$this->fields_form['date'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата рассылки', 'mask'=>array('eval'=>'time()'));
 		$this->fields_form['period'] = array('type' => 'list', 'listname'=>'period','caption' => 'Период рассылки','mask'=>array('min'=>1));
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл','default'=>1);
-
-		$this->_enum['period']=array(
-			864000=>'10 дней',
-			604800=>'7 дней',
-			432000=>'5 дней',
-			259200=>'3 дня',
-			172800=>'2 дня',
-			86400=>'1 день',
-			43200=>'12 часов'
-		);
-
-		$this->ordfield = 'id DESC';
 
 	}
 
@@ -64,9 +69,7 @@ class subscribe_class extends kernel_extends {
 				$arrparam[$temp2[0]]=$temp2[1];
 			}
 			if($arrparam['rubric']) {
-				global $RUBRIC;
-				if(!$RUBRIC) 
-					$RUBRIC = new rubric_class($this->SQL);
+				_new_class('rubric',$RUBRIC);
 				if(!isset($RUBRIC->data2) or !count($RUBRIC->data2)){
 					$RUBRIC->RubricCache();
 				}

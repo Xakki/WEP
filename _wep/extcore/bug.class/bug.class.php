@@ -41,19 +41,6 @@ class bug_class extends kernel_extends {
 
 		$this->unique_fields['hash'] = 'hash';
 
-		# fields
-		$this->fields_form['name'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Ошибка', 'mask'=>array('filter'=>1, 'onetd'=>'Ошибка'));
-		$this->fields_form['href'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Страница', 'mask' =>array('filter'=>1));
-		$this->fields_form['file'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Файл', 'mask'=>array('filter'=>1));
-		$this->fields_form['line'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Строка', 'mask'=>array('filter'=>1, 'onetd'=>'close'));
-		$this->fields_form['debug'] = array('type' => 'ckedit', 'caption' => 'Текст ошибки',
-			'mask'=>array('fview'=>1,'filter'=>1),
-			'paramedit'=>array('toolbarStartupExpanded'=>'false'));
-		$this->fields_form['page_id'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'PAGE_ID','mask'=>array('sort'=>1,'filter'=>1));
-		$this->fields_form['mf_timecr'] = array('type' => 'date', 'readonly'=>1, 'caption' => 'Дата', 'mask' =>array('sort'=>1,'filter'=>1));
-		$this->fields_form['mf_ipcreate'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'IP','mask'=>array('sort'=>1,'filter'=>1));
-		$this->fields_form[$this->mf_createrid] = array('type' => 'text', 'readonly'=>1, 'caption' => 'User','mask'=>array('sort'=>1,'filter'=>1));
-		$this->fields_form['cnt'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Повторы', 'mask'=>array('sort'=>1));
 	
 		foreach ($this->_CFG['_error'] as $k=>$r) {
 			$this->_enum['err_type'][(int)$k] = $r['type'];
@@ -72,7 +59,26 @@ class bug_class extends kernel_extends {
 		
 		observer::register_observer($params, 'shutdown_function');
 	}
-	
+
+
+	public function setFieldsForm() {
+		parent::setFieldsForm();
+
+		$this->fields_form['name'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Ошибка', 'mask'=>array('filter'=>1, 'onetd'=>'Ошибка'));
+		$this->fields_form['href'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Страница', 'mask' =>array('filter'=>1));
+		$this->fields_form['file'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Файл', 'mask'=>array('filter'=>1));
+		$this->fields_form['line'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Строка', 'mask'=>array('filter'=>1, 'onetd'=>'close'));
+		$this->fields_form['debug'] = array('type' => 'ckedit', 'caption' => 'Текст ошибки',
+			'mask'=>array('fview'=>1,'filter'=>1),
+			'paramedit'=>array('toolbarStartupExpanded'=>'false'));
+		$this->fields_form['page_id'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'PAGE_ID','mask'=>array('sort'=>1,'filter'=>1));
+		$this->fields_form['mf_timecr'] = array('type' => 'date', 'readonly'=>1, 'caption' => 'Дата', 'mask' =>array('sort'=>1,'filter'=>1));
+		$this->fields_form['mf_ipcreate'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'IP','mask'=>array('sort'=>1,'filter'=>1));
+		$this->fields_form[$this->mf_createrid] = array('type' => 'text', 'readonly'=>1, 'caption' => 'User','mask'=>array('sort'=>1,'filter'=>1));
+		$this->fields_form['cnt'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Повторы', 'mask'=>array('sort'=>1));
+
+	}
+
 	function insert2bd()
 	{
 		if (!empty($this->bugs) and isset($this->_CFG['modulprm'][$this->_cl])) {

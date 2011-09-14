@@ -38,6 +38,18 @@ class city_class extends kernel_extends {
 		$this->fields['desc'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'default'=>'');
 		$this->fields['center'] = array('type' => 'bool', 'attr' => 'NOT NULL');
 
+		$this->index_fields['name']='name';
+		$this->index_fields['city']='city';
+		$this->index_fields['city2']='city2';
+		$this->index_fields['region_name']='region_name';
+
+		$this->unique_fields['domen'] = 'domen';
+		$this->unique_fields['domen_rf'] = 'domen_rf';
+	}
+
+	public function setFieldsForm() {
+		parent::setFieldsForm();
+
 		$this->fields_form['id'] = array('type' => 'text', 'caption' => 'ID','readonly'=>1);
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название', 'mask' =>array('min'=>1,'name'=>'all'));
 		$this->fields_form['cnt'] = array('type' => 'text', 'caption' => 'Число объяв', 'readonly'=>1);
@@ -53,13 +65,6 @@ class city_class extends kernel_extends {
 		$this->fields_form['desc'] = array('type' => 'text', 'caption' => 'Описание', 'mask' =>array('name'=>'all'));
 		$this->fields_form['center'] = array('type' => 'checkbox', 'caption' => 'Центр');
 
-		$this->index_fields['name']='name';
-		$this->index_fields['city']='city';
-		$this->index_fields['city2']='city2';
-		$this->index_fields['region_name']='region_name';
-
-		$this->unique_fields['domen'] = 'domen';
-		$this->unique_fields['domen_rf'] = 'domen_rf';
 	}
 
 //update city tt SET tt.region_name_ru=(SELECT t1.`name` FROM city3 t1 WHERE t1.id=tt.parent_id ) WHERE tt.parent_id != 0;
@@ -143,23 +148,31 @@ class city_class extends kernel_extends {
 			die($loc);
 		}*/
 
-		if($this->_CFG['robot']=='' and !$this->id) { //если не робот and !$flag
-			$geoloc= array();
-			$result = $this->SQL->execSQL('SELECT city,country_code FROM ip_group_city where ip_start<=INET_ATON("'.$_SERVER['REMOTE_ADDR'].'") and city!="" order by ip_start desc limit 1;');
-			if(!$result->err)
-				if ($geoloc = $result->fetch_array() and $geoloc['country_code']=="RU") {
-					if($this->_CFG['site']['rf'])
-						$fdomen = 'domen_rf';
-					else
-						$fdomen = 'domen';
-					$clause = 'SELECT id,name,'.$fdomen.' FROM '.$this->tablename.' WHERE  active=1 and (city="'.$geoloc['city'].'" or (city2!="" and city2 LIKE "%|'.$geoloc['city'].'|%")) ORDER BY name LIMIT 1';
-					$result = $this->SQL->execSQL($clause);
-					if(!$result->err)
-						if($row = $result->fetch_array()) {
-							//рекомендациия по смене домена города
-							$this->detectcity = array('href'=>'http://'.$row[$fdomen].'.'.$_SERVER['HTTP_HOST2'],'name'=>$row['name']);//$row;
-						}
+		if(!$this->_CFG['robot'] and !$this->id) { //если не робот and !$flag
+			if(!isset($_COOKIE['detectcity'])) { 
+				$geoloc= array();
+				$result = $this->SQL->execSQL('SELECT city,country_code FROM ip_group_city where ip_start<=INET_ATON("'.$_SERVER['REMOTE_ADDR'].'") and city!="" order by ip_start desc limit 1;');
+				if(!$result->err)
+					if ($geoloc = $result->fetch_array() and $geoloc['country_code']=="RU") {
+						if($this->_CFG['site']['rf'])
+							$fdomen = 'domen_rf';
+						else
+							$fdomen = 'domen';
+						$clause = 'SELECT id,name,'.$fdomen.' FROM '.$this->tablename.' WHERE  active=1 and (city="'.$geoloc['city'].'" or (city2!="" and city2 LIKE "%|'.$geoloc['city'].'|%")) ORDER BY name LIMIT 1';
+						$result = $this->SQL->execSQL($clause);
+						if(!$result->err)
+							if($row = $result->fetch_array()) {
+								//рекомендациия по смене домена города
+								$this->detectcity = array('href'=>'http://'.$row[$fdomen].'.'.$_SERVER['HTTP_HOST2'],'name'=>$row['name']);//$row;
+								_setcookie('detectcity', $this->detectcity['name'], (time()+3600*24));
+								_setcookie('detectcityh', $this->detectcity['href'], (time()+3600*24));
+							}
+				}
+			} else {
+				$this->detectcity['href'] = $_COOKIE['detectcity'];
+				$this->detectcity['name'] = $_COOKIE['detectcityh'];
 			}
+
 		}
 
 		$_SERVER['CITY_HOST'] = ($this->domen!=''?$this->domen.'.':'').$_SERVER['HTTP_HOST2'];
@@ -216,7 +229,7 @@ class city_class extends kernel_extends {
 			$this->cityPosition();
 		$data=array();
 
-		if($this->id)
+		if($this->id) // если выбран город, то остальные города в карте не отображаются
 			return $data;
 
 		$clause = 'SELECT name,'.($this->_CFG['site']['rf']?'domen_rf':'domen').' as domen, parent_id,id FROM '.$this->tablename.' WHERE active=1';
@@ -232,7 +245,7 @@ class city_class extends kernel_extends {
 						$data[$row['id']]['href'] = 'http://'.$_SERVER['HTTP_HOST'].'/'.$row['domen'].'/index.html';
 					else
 						$data[$row['id']]['href'] = 'http://'.$row['domen'].'.'.$_SERVER['HTTP_HOST2'];
-					//if($this->id) $data[$row['id']]['hidechild'] = 1;
+					$data[$row['id']]['hidechild'] = 1;
 				}
 				else {
 					if($SITEMAP)

@@ -398,14 +398,19 @@ function tpl_form(&$data) {
 				if($r['caption']==1)
 					$texthtml .= '';
 				elseif(!is_array($r['value']) and $r['value']!='' and $r['att_type']=='img') {
+					$css = '';
+					if(isset($r['mask']['width']) and $r['mask']['width'])
+						$css .= 'width:'.$r['mask']['width'].'px;';
+					if(isset($r['mask']['height']) and $r['mask']['height'])
+						$css = 'height:'.$r['mask']['height'].'px;';
 					$texthtml .= '<div class="wep_thumb">
 						<a rel="fancy" href="/'.$r['value'].'" target="_blank" class="fancyimg">
-							<img src="/'.$r['value'].'" alt="img" class="attach"'.($r['mask']['width']?' width="'.$r['mask']['width'].'"':($r['mask']['height']?' height="'.$r['mask']['height'].'"':'')).'/>
+							<img src="/'.$r['value'].'" alt="img" class="attach" style="'.$css.'"/>
 						</a>';
 					if(isset($r['img_size']))
 						$texthtml .= '<div class="wep_thumb_comment">Размер '.$r['img_size'][0].'x'.$r['img_size'][1].'</div>';
 					$texthtml .= '</div>';
-					if(isset($r['thumb']) and $r['mask']['thumb'])
+					if(isset($r['thumb']) and $r['thumb'])
 						foreach($r['thumb'] as $thumb) {
 						$texthtml .= '<div class="wep_thumb">
 							<a rel="fancy" href="/'.$thumb['value'].'?size='.$thumb['filesize'].'" target="_blank" class="fancyimg">
@@ -507,7 +512,7 @@ function selectitem($data,$val=NULL,$flag=0) {
 	if(is_array($data) and count($data))
 		foreach($data as $r) {
 			//_substr($r['#name#'],0,60).(_strlen($r['#name#'])>60?'...':'')
-			$r['#name#'] = str_repeat(" -", $flag).' '.$r['#name#'];
+			//$r['#name#'] = str_repeat(" -", $flag).' '.$r['#name#'];
 			if(isset($r['#item#']) and count($r['#item#']) and isset($r['#checked#']) and $r['#checked#']==0)
 				$texthtml .= '<optgroup label="'.$r['#name#'].'"></optgroup>';
 			else {

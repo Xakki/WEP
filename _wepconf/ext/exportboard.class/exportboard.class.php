@@ -20,6 +20,15 @@ class exportboard_class extends kernel_extends {
 		$this->fields['phpexport'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL');
 		$this->fields['ondef'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL', 'default'=>0);
 
+		$this->_enum['phpexport'] = array(
+			0=>'0.php',
+			1=>'1.php'
+		);
+	}
+
+	public function setFieldsForm() {
+		parent::setFieldsForm();
+
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название', 'mask' =>array('min'=>1));
 		$this->fields_form['www'] = array('type' => 'text', 'caption' => 'Сайт', 'mask' =>array('name'=>'www'));
 		$this->fields_form['phpexport'] = array('type' => 'list', 'listname'=>'phpexport', 'caption' => 'Скрипт экспорта');
@@ -34,10 +43,6 @@ class exportboard_class extends kernel_extends {
 		$this->fields_form['ondef'] = array('type' => 'checkbox', 'caption' => 'Включено по умолчанию?');
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
 
-		$this->_enum['phpexport'] = array(
-			0=>'0.php',
-			1=>'1.php'
-		);
 	}
 
 	function _childs() {

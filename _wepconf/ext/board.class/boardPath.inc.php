@@ -1,7 +1,7 @@
 <?
 
 	if(isset($_GET['id']) and $_GET['id'] and count($_GET['page'])>0) {
-		$this->id = 'board';
+		$this->id = 2;
 	}
 
 	return true;

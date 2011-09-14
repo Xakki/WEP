@@ -1,4 +1,19 @@
 <?
+
+		if(count($this->formDSort)) {
+			$temp = $this->fields_form;
+			$this->fields_form = array();
+			foreach($this->formDSort as $rr) {
+				if($rr=='#over#') {
+					$diffForm = array_diff_key($temp,array_keys($this->formdSort));
+					$this->fields_form = array_merge($this->fields_form,$diffForm);
+				}
+				elseif(isset($temp[$rr])) {
+					$this->fields_form[$rr] = $temp[$rr];
+				}
+			}
+		}
+
 		$xml = array();
 		$listfields = array('count(t1.id) as cnt');
 		$moder_clause = $this->_moder_clause($param);
@@ -89,6 +104,7 @@
 					)
 					$arrno[$k]=1; 
 				elseif(!isset($arrno[$k])) {
+					//Списки
 					if(isset($r['listname']) and is_array($r['listname']) and (isset($r['listname']['class']) or isset($r['listname']['tablename']))) {
 						$tmpsort = true;
 						$lsn = $r['listname'];
@@ -126,6 +142,9 @@
 					}elseif(isset($r['listname']) and !is_array($r['listname'])) {
 						$this->_checkList($r['listname'],0);
 					}
+					elseif(isset($r['concat']) and $r['concat']) {
+						$cls[0][] = $r['concat'].' as '.$k;
+					}
 
 					$act=0;
 					if($this->_prmSortField($k)) {
@@ -138,6 +157,7 @@
 					if(isset($r['mask']['onetd']))
 						$xml['data']['thitem'][$k]['onetd'] = $r['mask']['onetd'];
 				}
+
 				if($this->_prmSortField($k)) {
 					if((isset($_GET['sort']) and $k==$_GET['sort']) or (isset($_GET['dsort']) and $k==$_GET['dsort'])) {
 						if($tmpsort)

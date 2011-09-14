@@ -20,7 +20,7 @@
 	$_tpl['script']['form'] = 1;
 	$_tpl['styles']['form'] = 1;
 
-	if($this->id=='index') {
+	if($this->id==1) {
 		if(!$CITY->id and $CITY->detectcity and count($CITY->detectcity)) {
 			$html .= '<div style="text-align:center;font-size:0.8em">Вероятно ваш город <a href="'.$CITY->detectcity['href'].'">'.$CITY->detectcity['name'].'</a></div>';
 		}
@@ -64,7 +64,8 @@
 	$html .= $tp_bl1;
 	$html .= '<div class="menu2"><a href="http://'.$_SERVER['CITY_HOST'].'/add'.($rid?'_'.$rid:'').'.html">Подать объявление'.($rid?'<br/>в раздел "'.$RUBRIC->data2[$rid]['name'].'"':'').'</a></div>';
 	$html .='<div class="menu2">';
-	$DATA = array('menu'=>$PGLIST->getMap(2,1));
+	$DATA = array('#item#'=>$PGLIST->getMap(2,1));
+	$DATA = array('menu'=>$DATA);
 	$html .= $HTML->transformPHP($DATA,'menu');
 	$html .='</div>';
 	$html .= $tp_bl2;

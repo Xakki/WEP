@@ -138,6 +138,8 @@
 							$r['listname']['idThis'] = $k;
 													
 						$md= $this->_getCashedList($r['listname']);
+						if(!isset($r['value']))
+							$r['value'] = '';
 						if(is_array($r['value']))
 							$val = array_combine($r['value'],$r['value']);
 						else

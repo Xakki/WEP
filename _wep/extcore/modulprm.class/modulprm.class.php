@@ -35,6 +35,19 @@ final class modulprm_class extends kernel_extends {
 		$this->fields['typemodul'] = array('type' => 'tinyint', 'width' => 2, 'attr' => 'NOT NULL');
 		$this->fields['hook'] = array('type' => 'text');
 
+		$this->_enum['typemodul'] = array(
+			0 => 'Системный модуль',
+			3 => 'WEPconf Модуль',
+			5 => 'Дочерние модули');
+	}
+
+	function _childs() {
+		$this->create_child('modulgrp');
+	}
+
+	public function setFieldsForm() {
+		parent::setFieldsForm();
+
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название');
 		$this->fields_form['tablename'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Таблица');
 		$this->fields_form['path'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Путь');
@@ -44,14 +57,6 @@ final class modulprm_class extends kernel_extends {
 		$this->fields_form['typemodul'] = array('type' => 'list', 'listname' => 'typemodul', 'readonly' => 1, 'caption' => 'Описание');
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Активность');
 
-		$this->_enum['typemodul'] = array(
-			0 => 'Системный модуль',
-			3 => 'WEPconf Модуль',
-			5 => 'Дочерние модули');
-	}
-
-	function _childs() {
-		$this->create_child('modulgrp');
 	}
 
 	/**
@@ -571,13 +576,17 @@ class modulgrp_class extends kernel_extends {
 		$this->fields['mname'] = array('type' => 'varchar', 'width' => 64, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['ugroup_id'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL');
 		$this->fields['access'] = array('type' => 'varchar', 'width' => 128, 'attr' => 'NOT NULL', 'default' => '');
+	}
+
+	public function setFieldsForm() {
+		parent::setFieldsForm();
 
 		//$this->fields_form['name'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Группа');
 		$this->fields_form['owner_id'] = array('type' => 'hidden', 'readonly' => 1);
 		$this->fields_form['ugroup_id'] = array('type' => 'list', 'readonly' => 1, 'listname' => array('class' => 'ugroup'), 'caption' => 'Группа');
 		$this->fields_form['mname'] = array('type' => 'text', 'caption' => 'СпецНазвание модуля');
 		$this->fields_form['access'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'access', 'caption' => 'Права доступа');
-	}
 
+	}
 }
 

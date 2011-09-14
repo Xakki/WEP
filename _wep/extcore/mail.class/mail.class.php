@@ -27,6 +27,11 @@ class mail_class extends kernel_extends {
 			0=>'SendMail',
 			1=>'phpMailer',
 		);
+		$this->_enum['SMTPSecure'] = array(
+			''=>'',
+			'ssl'=>'ssl',
+			'tls'=>'tls',
+		);
 		$this->_enum['PHPMailer_Debug'] = array(
 			0=>'Отключить',
 			1=>'выжные ошибки',
@@ -39,6 +44,7 @@ class mail_class extends kernel_extends {
 		$this->config['PHPMailer_Username'] = 'usermail@gmail.com';
 		$this->config['PHPMailer_Password'] = 'longpassword';
 		$this->config['PHPMailer_Debug'] = 0;
+		$this->config['PHPMailer_Secure'] = '';
 		$this->config['mailtemplate'] = '<html><head><title>%SUBJECT%</title><meta content="text/html;charset=utf-8" http-equiv="Content-Type" /></head><body>%TEXT% %MAILBOTTOM%</body></html>';
 		$this->config['mailbottom'] = '<hr/>© 2011 «XAKKI»';
 
@@ -49,6 +55,7 @@ class mail_class extends kernel_extends {
 		$this->config_form['PHPMailer_Username'] = array('type' => 'text', 'caption' => 'PHPMailer_Username', 'mask' =>array('name'=>'all'),'style'=>'background:#30B120;');
 		$this->config_form['PHPMailer_Password'] = array('type' => 'text', 'caption' => 'PHPMailer_Password', 'mask' =>array('name'=>'all'),'style'=>'background:#30B120;');
 		$this->config_form['PHPMailer_Debug'] = array('type' => 'list', 'listname'=>'PHPMailer_Debug', 'caption' => 'Дебаг','style'=>'background:#30B120;');
+		$this->config_form['PHPMailer_Secure'] = array('type' => 'list', 'listname'=>'SMTPSecure', 'caption' => 'SMTPSecure','style'=>'background:#30B120;');
 		$this->config_form['mailtemplate'] = array(
 			'type' => 'textarea',
 			'caption' => 'Шаблон по умолчанию', 
@@ -72,6 +79,21 @@ class mail_class extends kernel_extends {
 		$this->fields['mail_to'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['status'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL');
 
+		$this->_enum['status'] = array(
+			0 => 'Не отправлялось на email',
+			1 => 'Отправлялось на email',
+			2 => 'При отправке на email произошли ошибки',
+			3 => 'Не отправлялось на email и было прочитано на сайте',
+			4 => 'Удалено пользователем',
+		);
+
+		$this->locallang['default']['_saveclose'] = 'Отправить письмо';
+		$this->ordfield = 'mf_timecr DESC';
+	}
+
+
+	public function setFieldsForm() {
+		parent::setFieldsForm();
 		$this->fields_form['from']= array('type'=>'text','caption'=>'Обратный email адрес','mask'=>array('name'=>'email', 'min' => '4'));
 		$this->fields_form['subject']= array('type'=>'text','caption'=>'Тема письма', 'mask'=>array('min' => '4'));
 		$this->fields_form['text'] = array(
@@ -97,16 +119,6 @@ class mail_class extends kernel_extends {
 		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата создания', 'mask'=>array('usercheck'=>1,'fview'=>2,'sort'=>1));
 		$this->fields_form['status'] = array('type' => 'list', 'listname'=>'status', 'caption' => 'Статус сообщения', 'mask' => array('usercheck'=>1));
 		
-		$this->_enum['status'] = array(
-			0 => 'Не отправлялось на email',
-			1 => 'Отправлялось на email',
-			2 => 'При отправке на email произошли ошибки',
-			3 => 'Не отправлялось на email и было прочитано на сайте',
-			4 => 'Удалено пользователем',
-		);
-
-		$this->locallang['default']['_saveclose'] = 'Отправить письмо';
-		$this->ordfield = 'mf_timecr DESC';
 	}
 
 	/**
@@ -248,6 +260,7 @@ class mail_class extends kernel_extends {
 		$PHPMailer->Username = $this->config['PHPMailer_Username'];
 		$PHPMailer->Password = $this->config['PHPMailer_Password'];
 		$PHPMailer->SMTPDebug = $this->config['PHPMailer_Debug'];
+		$PHPMailer->SMTPSecure = $this->config['PHPMailer_Secure'];
 		$PHPMailer->SetLanguage('ru');
 		$PHPMailer->From = $data['from'];
 		//$PHPMailer->AddReplyTo($data['from']);

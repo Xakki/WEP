@@ -135,8 +135,9 @@
 	.divform .passnewdesc:hover {border-bottom:1px dashed transparent;}
 
 	/*Date*/
-	.divform .dateselect {margin:0 20px 0 0;float:left;font-size:0.7em;}
-	.divform .dateselect select{width:auto;}
+	.divform .dateselect {margin:0 20px 0 0;float:left;}
+	.divform .dateselect span {display:block;}
+	.divform .dateselect select {width:auto;}
 
 	.divform select{border:1px solid #A6A6A6;height:1.5em;width:100%;}
 	.divform select.small {border:1px solid #A6A6A6;height:8em;}

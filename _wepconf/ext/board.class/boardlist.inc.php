@@ -11,7 +11,7 @@
 			$rid = $_GET['rubric'] = $RUBRIC->data_path[$_GET['page'][$cntPP-2]];
 	}
 	if(isset($_GET['rubric']) and $rid = (int)$_GET['rubric']) {
-		unset($PGLIST->pageinfo['path']['list']);
+		unset($PGLIST->pageinfo['path'][$this->id]);
 		$RUBRIC->simpleRubricCache();
 		if(!count($RUBRIC->data2)) 
 			return '';
@@ -29,8 +29,7 @@
 			else
 				$req = strstr($_SERVER['REQUEST_URI'],'?');
 			$ppath = parse_url($_SERVER['REQUEST_URI']);
-			end($PGLIST->pageinfo['path']);
-			$html = $HTML->transform('<main>'.$BOARD->fListDisplay($rid,$_GET).' <req><![CDATA['.$req.']]></req><pg>'.key($PGLIST->pageinfo['path']).'.html</pg></main>','boardlist');
+			$html = $HTML->transform('<main>'.$BOARD->fListDisplay($rid,$_GET).' <req><![CDATA['.$req.']]></req><pg>'.$PGLIST->getHref().'.html</pg></main>','boardlist');
 		}//'.$ppath['path'].'
 	} else {
 		$html = $HTML->transform($RUBRIC->MainRubricDisplay(),'rubricmain');

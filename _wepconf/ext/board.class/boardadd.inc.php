@@ -8,10 +8,10 @@
 	$DATA  = array();
 
 	list($DATA['formcreat'],$flag) = $BOARD->_UpdItemModul($DATA);
-	if(isset($this->pageinfo['script']['jquery.form']))
+	if(isset($this->pageinfo['script']['script.jquery/form']))
 		$_tpl['onload'] .= '$(\'#form_board\').attr(\'action\',\''.$_CFG['_HREF']['siteJS'].'?_view=add\');JSFR(\'#form_board\');';
 	if($flag==1) {
-		$HTML->_templates = 'waction';
+		$this->pageinfo['template'] = 'waction';
 		$html = $HTML->transformPHP($DATA['formcreat'],'messages');
 	}
 	else {

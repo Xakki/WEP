@@ -11,7 +11,7 @@ abstract class kernel_extends {
 	 * 2 - добавленн новый функционал, расширен и измененн меющиеся функции -
 	 * 3 - Номер ревизии , исправленны ошибки
 	 */
-	const versionCore = '2.2.10';
+	const versionCore = '2.3.11';
 
 	function __construct($owner=NULL) {
 		global $_CFG;
@@ -20,7 +20,10 @@ abstract class kernel_extends {
 		$this->_CFG = &$_CFG; //Config
 
 		$this->owner = true;
-		$this->owner = $owner; //link to owner class
+		if(is_object($owner) and isset($owner->fields))
+			$this->owner = &$owner; //link to owner class
+		else
+			$this->owner = NULL;
 		$this->_set_features(); // настройки модуля
 
 		if ($this->singleton == true)
@@ -32,7 +35,7 @@ abstract class kernel_extends {
 		}
 		$this->_create(); // предустановки модуля
 		$this->_childs();
-		$this->setFieldsForm();
+		//$this->setFieldsForm();
 		if (isset($this->_CFG['hook']['__construct']))
 			$this->__do_hook('__construct', func_get_args());
 	}
@@ -155,8 +158,8 @@ abstract class kernel_extends {
 				$this->fld_data =
 				$this->fields =
 				$this->form =
-				$this->fields_form =
 				$this->formSort = 
+				$this->formDSort =
 				$this->mess_form =
 				$this->attaches = $this->att_data =
 				$this->memos = $this->mmo_data =
@@ -1041,7 +1044,7 @@ abstract class kernel_extends {
 	 * $view [form,list]
 	 */
 	public function setFieldsForm() {
-		///$this->fields_form = array();
+		$this->fields_form = array();
 		return true;
 	}
 

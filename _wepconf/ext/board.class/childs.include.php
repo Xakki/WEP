@@ -25,7 +25,10 @@ class paramb_class extends kernel_extends {
 		
 		$this->fields['name20'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
 		$this->fields['name21'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
-	
+
+		$this->fields['name40'] =	array('type' => 'smallint', 'width' =>4, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
+		$this->fields['name41'] =	array('type' => 'smallint', 'width' =>4, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
+
 		$this->fields['name50'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
 		$this->fields['name51'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
 		$this->fields['name52'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);

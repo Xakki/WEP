@@ -44,12 +44,15 @@ class formlistitems_class extends kernel_extends {
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'min' => '1');
 		$this->fields['checked'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL', 'default'=>0);
 		$this->fields['cntdec'] = array('type' => 'int', 'width' => 7, 'attr' => 'NOT NULL', 'default'=>0);
+	}
+
+	public function setFieldsForm() {
+		parent::setFieldsForm();
 
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название');
 		$this->fields_form['checked'] = array('type' => 'checkbox', 'caption' => 'Разрешить для подачи объявления');
 		$this->fields_form['cntdec'] = array('type' => 'int', 'readonly'=>true, 'caption' => 'Число объявлений');
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Активность');
 	}
-
 }
 
