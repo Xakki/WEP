@@ -391,7 +391,7 @@ abstract class kernel_extends {
 	 * @param string $ord2 - позволяет группировать выходные данные по этому полю (2 уровень)
 	 * @return array
 	 */
-	public function _query($list='', $cls='', $ord='', $ord2='') { // this func. dont use $this->data
+	public function _query($list='', $cls='', $ord='', $ord2='',$debug=false) { // this func. dont use $this->data
 		$query = 'SELECT ';
 		if (is_array($list))
 			$query .= implode(', ', $list);
@@ -402,7 +402,7 @@ abstract class kernel_extends {
 		$query .= ' FROM `' . $this->tablename . '` ';
 		if ($cls)
 			$query .= $cls;
-
+		if($debug) print_r($query.' <br>');
 		$result = $this->SQL->execSQL($query);
 		if ($result->err)
 			return false;
@@ -917,6 +917,7 @@ abstract class kernel_extends {
 	}
 
 	public function kPreFields(&$data, &$param) {
+		$this->setFieldsForm();//обнуляем форму
 		$this->setSystemFields();
 		foreach ($this->fields_form as $k => &$r) {
 			if (isset($r['readonly']) and $r['readonly'] and $this->id) // если поле "только чтение" и редактируется , то значение берем из БД,

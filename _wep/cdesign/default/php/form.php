@@ -504,7 +504,7 @@ function tpl_form(&$data) {
 }
 
 function selectitem($data,$val=NULL,$flag=0) {
-//	return selectitem2($data,$val,$flag);
+	return selectitem2($data,$val,$flag);
 	$texthtml = '';
 	if(!is_null($val)) {
 		if(!is_array($val)) 
@@ -533,8 +533,8 @@ function selectitem($data,$val=NULL,$flag=0) {
 	return $texthtml;
 }
 
-function selectitem2($data,$val=NULL,$flag=0) {
-	$texthtml = '';
+function selectitem2($data,$val=NULL,$flag=0,&$openG=false) {
+	$texthtml = ''."\n";
 	if(!is_null($val)) {
 		if(!is_array($val)) 
 			$val = array($val=>true);
@@ -542,10 +542,17 @@ function selectitem2($data,$val=NULL,$flag=0) {
 	if(is_array($data) and count($data))
 		foreach($data as $r) {
 			//_substr($r['#name#'],0,60).(_strlen($r['#name#'])>60?'...':'')
-			//$r['#name#'] = str_repeat(" -", $flag).' '.$r['#name#'];
-			if(isset($r['#item#']) and count($r['#item#']) and isset($r['#checked#']) and $r['#checked#']==0)
-				$texthtml .= '<optgroup label="'.$r['#name#'].'">';
+			if(isset($r['#item#']) and count($r['#item#']) and isset($r['#checked#']) and $r['#checked#']==0) {
+				if($flag>0)
+					$r['#name#'] = str_repeat("&#160;&#160;", $flag).' '.$r['#name#'];
+				if($openG)
+					$texthtml .= '</optgroup>'."\n";
+				$texthtml .= '<optgroup label="'.$r['#name#'].'">'."\n";
+				$openG = true;
+			}
 			else {
+				if($flag>1)
+					$r['#name#'] = str_repeat("&#160;&#160;", $flag).' '.$r['#name#'];
 				$sel = '';
 				if(isset($r['#sel#'])) {
 					if($r['#sel#'])
@@ -554,12 +561,16 @@ function selectitem2($data,$val=NULL,$flag=0) {
 				elseif(!is_null($val) and isset($val[$r['#id#']]))
 					$sel = 'selected="selected"';
 					
-				$texthtml .= '<option value="'.$r['#id#'].'" '.$sel.'>'.$r['#name#'].'</option>';
+				$texthtml .= "\t".'<option value="'.$r['#id#'].'" '.$sel.'>'.$r['#name#'].'</option>'."\n";
 			}
+
 			if(isset($r['#item#']) and count($r['#item#']))
-				$texthtml .= selectitem2($r['#item#'],$val,($flag+1));//.'&#160;--'
-			if(isset($r['#item#']) and count($r['#item#']) and isset($r['#checked#']) and $r['#checked#']==0)
-				$texthtml .= '</optgroup>';
+				$texthtml .= selectitem2($r['#item#'],$val,($flag+1),$openG);//.'&#160;--'
+
+			if(isset($r['#item#']) and count($r['#item#']) and isset($r['#checked#']) and $r['#checked#']==0 and !$flag) {
+				$texthtml .= '</optgroup>'."\n";
+				$openG=false;
+			}
 		}
 	return $texthtml;
 }

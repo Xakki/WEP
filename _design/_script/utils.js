@@ -10,16 +10,16 @@ function getBrowserInfo() {
 }
 
 function fLog(txt,flag) {
-	wep.fLog(txt,flag);
+	return wep.fLog(txt,flag);
 }
 
 function fMessPos(body,obj) {
-	wep.fMessPos(body,obj);
+	return wep.fMessPos(body,obj);
 }
 
 /*Показ тултип*/
 function showHelp(obj,mess,time,nomiga) {
-	wep.showHelp(obj,mess,time,nomiga);
+	return wep.showHelp(obj,mess,time,nomiga);
 }
 
 function miga(obj,opc1,opc2){
@@ -28,43 +28,44 @@ function miga(obj,opc1,opc2){
 
 /*Bacground*/
 function fShowload (show,txt,body,objid,onclk) {
-	wep.fShowload (show,txt,body,objid,onclk);
+	return wep.fShowload (show,txt,body,objid,onclk);
 }
 
 function showBG(body,show,k) {
-	wep.showBG(body,show,k);
+	return wep.showBG(body,show,k);
 }
 
 
 /*SPOILER*/
 
 function fSpoiler(txt,nm) {
-	wep.fSpoiler(txt,nm);
+	return wep.fSpoiler(txt,nm);
 }
 
 function initSpoilers(context){
-	wep.initSpoilers(context);
+	return wep.initSpoilers(context);
 }
 
 /*END SPOILER*/
 
 function fShowHide(id,f) {
-	wep.fShowHide(id,f);
+	return wep.fShowHide(id,f);
 }
 
 function ulToggle(obj,css) {
 	jQuery(obj).toggleClass(css);
 	jQuery(obj).parent().find('>ul').slideToggle('fast');
+	return true;
 }
 /************************/
 /*simple script*/
 
 function setCookie(name, value, expiredays, path, domain, secure) {
-   wep.setCookie(name, value, expiredays, path, domain, secure);
+   return wep.setCookie(name, value, expiredays, path, domain, secure);
 }
 
 function getCookie(name) {
-   wep.getCookie(name);
+   return wep.getCookie(name);
 }
 
 
@@ -72,11 +73,11 @@ function getCookie(name) {
 /****************/
 
 function ShowTools(id,hrf) {
-	wep.ShowTools(id,hrf);
+	return wep.ShowTools(id,hrf);
 }
 
 function readyPlot(cap,Xname,Yname,stepY) {
-	wep.readyPlot(cap,Xname,Yname,stepY);
+	return wep.readyPlot(cap,Xname,Yname,stepY);
 }
 
 function JSWin(param) {
