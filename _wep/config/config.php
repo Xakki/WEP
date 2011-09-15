@@ -552,6 +552,13 @@ function _new_class($name, &$MODUL, &$OWNER = NULL) {
 	$MODUL = NULL;
 	static_main::_prmModulLoad();
 	$name = _getExtMod($name);
+		
+	if(!isset($_CFG['singleton'][$name]) and $_CFG['modulprm'][$name]['pid'] and !$OWNER) {
+		// кастыль: при обращении к дочерним классам , находяться родители и от него дается ссылка на класс.
+		_new_class($_CFG['modulprm'][$name]['pid'], $MODUL2);
+		$MODUL = $MODUL2->childs[$name];
+		return true;
+	}
 
 	if (isset($_CFG['singleton'][$name])) {
 		$MODUL = $_CFG['singleton'][$name];

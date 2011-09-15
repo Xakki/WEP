@@ -207,9 +207,10 @@ var wep = {
 	},
 
 	ajaxLoadPage: function(marker,pg,call) {
-		if(!pg) pg = this.pgId; 
+		if(!pg) pg = this.pgId;
+		var arr = this.pgParam;
 		param = {
-			'href':'_json.php?_view=loadpage&pg='+pg,
+			'href':'_json.php?_view=loadpage&pg='+pg+'&page[]='+arr.join("&page[]="),
 			'type':'POST',
 			'data': marker
 		};

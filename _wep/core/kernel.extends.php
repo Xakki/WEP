@@ -978,11 +978,13 @@ abstract class kernel_extends {
 					$r['value'] = $data[$k];
 			}
 			elseif (isset($r['multiple']) and $r['multiple'] > 0 and $r['type'] == 'list') {
-				if (!is_array($data[$k])) {
-					$data[$k] = trim($data[$k], '|');
-					$r['value'] = explode('|', $data[$k]);
-				}else
-					$r['value'] = $data[$k];
+				if(isset($data[$k])) {
+					if (!is_array($data[$k])) {
+						$data[$k] = trim($data[$k], '|');
+						$r['value'] = explode('|', $data[$k]);
+					}else
+						$r['value'] = $data[$k];
+				}
 			}
 			elseif ($r['type'] == 'date') {
 				if(!isset($r['mask']['format']) or !$r['mask']['format'])

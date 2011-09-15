@@ -271,7 +271,8 @@ class pg_class extends kernel_extends {
 			$this->pageinfo['template'] = 'default';
 		}
 		$HTML->_templates = $this->pageinfo['template'];
-		$_tpl['onload'] .= 'if(wep) wep.pgId = '.$this->id.';';
+
+		$_tpl['onload'] .= 'if(typeof wep !== "undefined") {wep.pgId = '.$this->id.';wep.pgParam='.json_encode($this->pageParam,JSON_HEX_TAG).';}';
 	}
 
 	function can_show() {

@@ -276,6 +276,7 @@ class users_class extends kernel_extends {
 	}
 
 	function _childs() {
+		parent::_childs();
 		if($this->owner->config['invite'])
 			$this->create_child('invite');
 	}
@@ -306,6 +307,17 @@ class users_class extends kernel_extends {
 		$this->fields_form[$this->fn_login] =	array('type' => 'text', 'caption' => 'Логин','mask'=>array('name'=>'login','min' => '4','sort'=>1),'comment'=>'Логин должен состоять только из латинских букв и цифр.');
 
 		$this->fields_form[$this->fn_pass] = array('type' => 'password_new', 'caption' => 'Пароль','mask'=>array('min' => '6','fview'=>1));
+		if($this->id) {
+			if(static_main::_prmUserCheck(1)) // Вывод поля генерации пароля если админ
+				$this->fields_form[$this->fn_pass] = array('type' => 'password2', 'caption' => 'Пароль','md5'=>$this->_CFG['wep']['md5'], 'mask'=>array('min' => '6','fview'=>1));
+			elseif(isset($_POST[$this->fn_pass]) and !$_POST[$this->fn_pass])
+				unset($this->fields_form[$this->fn_pass]);unset($_POST[$this->fn_pass]);
+			$this->fields_form[$this->fn_login]['readonly']=true;
+		}else {
+			//$this->fields_form[$this->fn_login]['readonly']=false;
+			//$this->fields_form[$this->fn_pass] = array('type' => 'password_new', 'caption' => 'Пароль','mask'=>array('min' => '6','fview'=>1));
+		}
+
 		$this->fields_form['email'] = array('type' => 'text', 'caption' => 'E-mail', 'mask'=>array('name'=>'email','min' => '7'));
 		$this->fields_form[$this->mf_namefields] = array('type' => 'text', 'caption' => 'Имя','mask'=>array('name'=>'name2')); // Вывод поля при редактировании
 		if($this->owner->config['karma']) {
@@ -450,21 +462,11 @@ class users_class extends kernel_extends {
 			$this->id = $_SESSION['user']['id'];
 			$this->data = $this->_select();
 			$DATA = $this->data[$this->id];
-			if(isset($this->fields_form[$this->fn_pass]) and (!isset($_POST[$this->fn_pass]) or !$_POST[$this->fn_pass])) {
-				unset($this->fields_form[$this->fn_pass]);unset($_POST[$this->fn_pass]);
-			}
-			$this->fields_form[$this->fn_login]['readonly']=true;
-			if(static_main::_prmUserCheck(1)) // Вывод поля генерации пароля если админ
-				$this->fields_form[$this->fn_pass] = array('type' => 'password2', 'caption' => 'Пароль','md5'=>$this->_CFG['wep']['md5'], 'mask'=>array('min' => '6','fview'=>1));
-			else
-				unset($this->fields_form[$this->fn_pass]);
 		}
 		else {
 		// добавлены настройки на форму регистрации
 			if(!$this->owner->config['reg']) 
 				return array(array('messages'=>array(array('name'=>'error', 'value'=>$this->_CFG['_MESS']['deniedreg']))),1);			
-			$this->fields_form[$this->fn_login]['readonly']=false;
-			$this->fields_form[$this->fn_pass] = array('type' => 'password_new', 'caption' => 'Пароль','mask'=>array('min' => '6','fview'=>1));
 			$DATA = $_POST;
 			$this->id = 0;
 			if(count($_POST) and $_POST['sbmt'] and isset($_SESSION['user']))

@@ -3,6 +3,9 @@
 
 	$GLOBALS['_RESULT']	= array();
 	$_tpl['onload']=$html=$html2='';
+
+	if(!isset($_GET['noajax']))
+		require_once($_CFG['_PATH']['phpscript'].'/jquery_getjson.php');
 	require_once($_CFG['_PATH']['core'].'/html.php');
 	
 	session_go();
@@ -23,9 +26,6 @@
 			$HTML->_templates = $_GET['_template'];
 	}
 	else {
-
-		if(!isset($_GET['noajax']))
-			require_once($_CFG['_PATH']['phpscript'].'/jquery_getjson.php');
 		
 		if($_GET['_view']=='exit') {
 			static_main::userExit();
