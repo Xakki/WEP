@@ -327,7 +327,9 @@ class static_main {
 		$file = str_replace(array('\\\\','\\'),'/',$file);
 		$cf = $_CFG['_PATH']['path'];
 		$cf = str_replace(array('\\\\','\\'),'/',$cf);
-		$file = str_replace(array($_SERVER['_DR_'],$cf),'',$file);
+		$cf2 = $_CFG['_PATH']['_path'];
+		$cf2 = str_replace(array('\\\\','\\'),'/',$cf2);
+		$file = str_replace(array($_SERVER['_DR_'],$cf,$cf2),'',$file);
 		return $file;
 	}
 

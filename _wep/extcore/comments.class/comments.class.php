@@ -45,7 +45,7 @@ class comments_class extends kernel_extends {
 		//$this->fields['vote'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0);
 
 		/*$this->_setHook['__construct']['ugroup'] = array(
-			'_wep/extcore/comments.extend/comments.hook.php' => 'ugroup_hook__construct',
+			static_main::relativePath(dirname(__FILE__)).'/comments.hook.php' => 'ugroup_hook__construct',
 		);*/
 	}
 

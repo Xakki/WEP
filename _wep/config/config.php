@@ -81,6 +81,7 @@ if (!isset($_CFG['_PATH']['wep'])) //если  путь не был задан
 	$_CFG['_PATH']['wepconf'] = $_CFG['_PATH']['path'] . '/_wepconf'; // файл-путь  к конфигу
 
 	$_SERVER['_DR_'] = $_CFG['_PATH']['path'] = $_CFG['_PATH']['path'] . '/'; // корень сайта, основной путь к проекту
+	$_CFG['_PATH']['_path'] = dirname(dirname(dirname(__FILE__))). '/';
 $_CFG['_PATH']['extcore'] = $_CFG['_PATH']['wep'] . '/extcore/'; // путь к системным модулям
 $_CFG['_PATH']['core'] = $_CFG['_PATH']['wep'] . '/core/'; // путь к ядру
 $_CFG['_PATH']['phpscript'] = $_CFG['_PATH']['wep'] . '/_phpscript';
