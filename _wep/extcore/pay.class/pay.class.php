@@ -57,26 +57,26 @@ class pay_class extends kernel_extends {
 		if(isset($param['cls']))
 			$query .= $param['cls'];
 		
-		if(count($_POST)) {
-			$_POST['pay'] = (int)$_POST['pay'];
-			$_POST['users'] = (int)$_POST['users'];
-			if(!$_POST['pay']) {
+		if(isset($param['POST'])) {
+			$param['POST']['pay'] = (int)$param['POST']['pay'];
+			$param['POST']['users'] = (int)$param['POST']['users'];
+			if(!$param['POST']['pay']) {
 				$data['respost'] = array('flag'=>0,'mess'=>'Не верные данные.');
 			}
 			else {
-				if(isset($_POST['plus'])){
+				if(isset($param['POST']['plus'])){
 					$u1 = $_SESSION['user']['id'];
-					$u2 = (int)$_POST['users'];
+					$u2 = (int)$param['POST']['users'];
 					$txt = 'Пополнение баланса';
 				}
 				else {
 					$u2 = $_SESSION['user']['id'];
-					$u1 = (int)$_POST['users'];
+					$u1 = (int)$param['POST']['users'];
 					$txt = 'Снятие со счёта';
 				}
-				if(isset($_POST['name']))
-					$txt .= ': '.$_POST['name'];
-				$summ = (int)$_POST['pay'];
+				if(isset($param['POST']['name']))
+					$txt .= ': '.$param['POST']['name'];
+				$summ = (int)$param['POST']['pay'];
 				$flag = 0;
 				list($mess,$balance) = $this->checkBalance($u1,$summ);
 				if(!$mess) {

@@ -3,6 +3,8 @@
 function tpl_paymove($data)
 {
 	$html = '';
+	if($data['#title#'])
+		$html .= '<h3>'.$data['#title#'].'</h3>';
 	if(isset($data['#pay#']['respost'])) {
 		if($data['#pay#']['respost']['flag']==1) {
 			//global $PGLIST;
@@ -33,6 +35,7 @@ function tpl_paymove($data)
 		}
 		$html .= '<div>Сумма</div> <input type="text" value="0" name="pay"/>
 		<div>Коментарий</div> <input type="text" value="" name="name"/>
+		 <input type="hidden" value="'.$data['#id#'].'" name="paymove"/>
 		<div>
 			<input type="submit" value="Пополнить" name="plus">
 			<input type="submit" value="Снять со счёта" name="minus">

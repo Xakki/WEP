@@ -5,6 +5,7 @@ function tpl_paydialog($data) {
 	$t = 'error';
 	if(isset($data['summ']))
 		$html .= '<h2>Оплата услуги стоимостью '.$data['summ'].' '.$data['m'].'</h2>';
+
 	if($data['flag']==-1 and ($data['balance']-$data['summ'])<0) {
 		$html .= '<div class="'.$t.'">'.$data['mess'].'</div>
 		<div class="form">';
@@ -15,7 +16,8 @@ function tpl_paydialog($data) {
 		';
 	}
 	elseif($data['flag']==-1) {
-		$html .= '<div>На вашем счету останется '.($data['balance']-$data['summ']).' '.$data['m'].'</div>';
+		$html .= '<div>На вашем счету '.round($data['summ'],2).' '.$data['m'].'</div>';
+		$html .= '<div>после оплаты останется '.round(($data['balance']-$data['summ']),2).' '.$data['m'].'</div>';
 		$html .= '<div class="ok">'.$data['mess'].'</div>
 		<form method="post"><div class="form">';
 		foreach($data['#post#'] as $k=>$r) {

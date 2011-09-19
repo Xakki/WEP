@@ -563,15 +563,20 @@ class pg_class extends kernel_extends {
 		if(empty($this->dataCashTree))
 			$this->sqlCashPG();
 		$DATA_PG = array();
-		if(!$startPG)
-			$startPG = $this->config['rootPage'];
-		elseif(strpos($startPG,'#')!==false) {
-			$startPG = (int)substr($startPG,1);
-			if(!$startPG) $startPG = $this->dataCash[$this->id]['parent_id'];
-			else $startPG = $this->id;
+		if($flagPG==1) {
+			$tempPG = &$this->dataCash;
+		}
+		else {
+			if(!$startPG)
+				$startPG = $this->config['rootPage'];
+			elseif(strpos($startPG,'#')!==false) {
+				$startPG = (int)substr($startPG,1);
+				if(!$startPG) $startPG = $this->dataCash[$this->id]['parent_id'];
+				else $startPG = $this->id;
+			}
+			$tempPG = &$this->dataCashTree[$startPG];
 		}
 
-		$tempPG = &$this->dataCashTree[$startPG];
 		if(count($tempPG))
 			foreach ($tempPG as $keyPG=>$rowPG)
 			{
@@ -602,12 +607,9 @@ class pg_class extends kernel_extends {
 				}
 
 				$DATA_PG[$keyPG] = array('name'=>$name, 'href'=>$href, 'attr'=>$rowPG['attr'], 'sel'=>$selPG, 'pgid'=>$keyPG);
-				if($flagPG<2 and isset($this->dataCashTree[$keyPG])) {
+				if($flagPG==0 and isset($this->dataCashTree[$keyPG])) {
 					$temp = $this->getMap($onmenuPG,$flagPG,$keyPG);
-					if($flagPG==1)
-						$DATA_PG[$keyPG]['#item#'] = $temp;
-					else
-						$DATA_PG = $DATA_PG+$temp;
+					$DATA_PG[$keyPG]['#item#'] = $temp;
 				}
 
 				if($onmenuPG==-1 and $rowPG['pagemap']) {

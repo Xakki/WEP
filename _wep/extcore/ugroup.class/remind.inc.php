@@ -22,7 +22,7 @@
 	$PARAM = array('timer'=>$FUNCPARAM[1]);
 
 	$html='';
-	if(count($_GET) and $_GET['id']!='' and $_GET['t']!='' and $_GET['hash']!='') {
+	if(count($_GET) and isset($_GET['id']) and $_GET['id'] and $_GET['t']!='' and $_GET['hash']!='') {
 		$PARAM['get'] = $_GET;
 		if(isset($_POST['fpass']))
 			$PARAM['pass'] = $_POST['fpass'];

@@ -166,16 +166,18 @@ class mail_class extends kernel_extends {
 		$formflag = 1;// 0 - показывает форму, 1 - не показывать форму
 		$arr = array('mess'=>array(),'vars'=>array());
 		$mess = array();
+		
+		if(!$mail_to)
+			$mail_to = $this->config['mailrobot'];
 
 		$param=array('capthaOn'=>1);
 		$data = array();
 
-		if(static_main::_prmUserCheck()) {
-			$this->fields_form["from"]['default'] = $this->_CFG['info']['email'];
-		}
-		else  $mailFrom='';
 		if(count($_POST) and $_POST['sbmt']) {
 			$this->kPreFields($_POST,$param);
+			if(isset($_SESSION['user']['email']) and $_SESSION['user']['email']) {
+				$_POST["from"] = $_SESSION['user']['email'];
+			}
 			$arr = $this->fFormCheck($_POST,$param,$this->fields_form);
 			$flag=-1;
 			if(!count($arr['mess'])) {
@@ -189,8 +191,11 @@ class mail_class extends kernel_extends {
 				$flag=1;
 				$arr['mess'][] = array('name'=>'ok', 'value'=>$this->getMess('mailok'));
 			}
-		} else
+		} else {
 				$mess = $this->kPreFields($arr['vars'],$param);
+				if(isset($_SESSION['user']['email']) and $_SESSION['user']['email'])
+					unset($this->fields_form["from"]);
+		}
 		if(isset($this->fields_form['captcha']))
 			static_form::setCaptcha();
 

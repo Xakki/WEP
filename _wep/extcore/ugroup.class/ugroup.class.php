@@ -244,6 +244,7 @@ class users_class extends kernel_extends {
 		$this->locallang['default']['title_profile'] = 'Редактирование профиля';
 		$this->locallang['default']['_saveclose'] = 'Готово';
 		$this->default_access = '|0|';
+		$this->userCach = array();
 		return true;
 	}
 
@@ -646,7 +647,7 @@ class users_class extends kernel_extends {
 		$mess = array();
 		$flag = 0;
 		$listfields = array('t1.*');
-		$clause = 't1 where t1.email = \''.$_DATA['mail'].'\'';
+		$clause = 't1 where t1.email = \''.$_DATA['post']['mail'].'\'';
 		$this->data = $this->_query($listfields,$clause);
 		if(count($this->data)==1 and $this->data[0]['active']==1) {
 			$datau=$this->data[0];
@@ -695,8 +696,14 @@ class users_class extends kernel_extends {
 
 	function UserInfo($id) {
 		$id = (int)$id;
+		if(isset($this->userCach[$id]))
+			return $this->userCach[$id];
 		$DATA = $this->_query('t2.name as gname,t1.*',' t1 JOIN '.$this->owner->tablename.' t2 ON t1.owner_id=t2.id WHERE t1.id='.$id);
-		return $DATA[0];
+		if(count($DATA)) {
+			$DATA = $DATA[0];
+			$this->userCach[$id] = $DATA;
+		}
+		return $DATA;
 	}
 
 	function diplayList($data,$field=false) {

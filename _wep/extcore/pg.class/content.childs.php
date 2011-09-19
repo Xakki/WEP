@@ -59,7 +59,7 @@ class content_class extends kernel_extends {
 		$this->fields_form['memcache'] = array('type' => 'int', 'caption' => 'Memcache time','comment'=>'0 - откл кеширование,1> - кеширование в сек.');
 	}
 
-	function _getlist(&$listname,$value=0) {
+	function _getlist(&$listname,$value=NULL) {
 		global $_CFG;
 		$data = array();
 		if ($listname == 'pagetype') {
@@ -138,8 +138,9 @@ class content_class extends kernel_extends {
 	public function kPreFields(&$data,&$param) {
 		$mess = parent::kPreFields($data,$param);
 		$this->addForm = array();
-		$this->fields_form['pagetype']['onchange'] = 'contentIncParam(this,\''.$this->_CFG['PATH']['wepname'] .'\',\''.htmlspecialchars($data['funcparam']).'\');';
-		if($data['pagetype']) {
+		$this->fields_form['pagetype']['onchange'] = 'contentIncParam(this,\''.$this->_CFG['PATH']['wepname'] .'\',\''.(isset($data['funcparam'])?htmlspecialchars($data['funcparam']):'').'\');';
+
+		if(isset($data['pagetype']) and $data['pagetype']) {
 			$this->addForm = $this->getContentIncParam($data);
 			if(count($this->addForm)) {
 				$this->fields_form = static_main::insertInArray($this->fields_form,'pagetype',$this->addForm); // обработчик параметров рубрики

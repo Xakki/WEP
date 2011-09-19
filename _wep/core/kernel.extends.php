@@ -1148,20 +1148,22 @@ abstract class kernel_extends {
 		$templistname = $listname;
 		if (is_array($listname))
 			$templistname = implode(',', $listname);
-		if (!isset($this->_CFG['enum'][$templistname])) {
-			$this->_getCashedList($listname, $value);
-			//$this->_CFG['enum'][$templistname]
-		}
-		if (!$this->_CFG['enum'][$templistname] and $value)
-			return false;
 
 		if (!isset($this->_CFG['enum_check'][$templistname])) {
-			if (!is_array($this->_CFG['enum'][$templistname]))
+
+			if (!isset($this->_CFG['enum'][$templistname])) {
+				$data = $this->_getCashedList($listname, $value);
+				//$this->_CFG['enum'][$templistname]
+			} else
+				$data = $this->_CFG['enum'][$templistname];
+
+			if (!is_array($data) or !count($data))
 				return false;
+
 			$temp2 = array();
-			$temp = current($this->_CFG['enum'][$templistname]);
+			$temp = current($data);
 			if (is_array($temp) and !isset($temp['#name#'])) {
-				foreach ($this->_CFG['enum'][$templistname] as $krow => $row) {
+				foreach ($data as $krow => $row) {
 					if (isset($temp2[$krow])) {
 						if (is_array($temp2[$krow]))
 							$adname = $temp2[$krow]['#name#'];
@@ -1174,11 +1176,13 @@ abstract class kernel_extends {
 					}
 					$temp2 += $row;
 				}
-				$this->_CFG['enum_check'][$templistname] = $temp2;
+				$temp = &$temp2;
 			}else
-				$this->_CFG['enum_check'][$templistname] = &$this->_CFG['enum'][$templistname];
-		}
-		$temp = &$this->_CFG['enum_check'][$templistname];
+				$temp = &$data;
+			if(is_null($value) or !is_array($listname))// не кешируем если задано значение и $listname - выборка из БД(в массиве)
+				$this->_CFG['enum_check'][$templistname] = $temp;
+		}else
+			$temp = &$this->_CFG['enum_check'][$templistname];
 
 		if (is_array($value)) {
 			$return_value = array();
@@ -1203,12 +1207,16 @@ abstract class kernel_extends {
 		if (isset($this->_enum[$templistname])) {
 			$this->_CFG['enum'][$templistname] = $this->_enum[$templistname];
 		} elseif (!isset($this->_CFG['enum'][$templistname])) {
-			$this->_CFG['enum'][$templistname] = $this->_getlist($listname, $value);
+			if(!is_null($value) and is_array($listname)) // не кешируем если задано $value и $listname - выборка из таблиц(задается массивом)
+				return $this->_getlist($listname, $value);
+			else
+				$this->_CFG['enum'][$templistname] = $this->_getlist($listname,$value);
+				
 		}
 		return $this->_CFG['enum'][$templistname];
 	}
 
-	public function _getlist(&$listname, $value=0) {/* LIST SELECTOR */
+	public function _getlist(&$listname, $value=NULL) {/* LIST SELECTOR */
 		include_once($this->_CFG['_PATH']['core'] . 'kernel.getlist.php');
 		return _getlist($this, $listname, $value);
 	}
