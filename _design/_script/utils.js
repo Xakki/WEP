@@ -208,9 +208,13 @@ var wep = {
 
 	ajaxLoadPage: function(marker,pg,call) {
 		if(!pg) pg = this.pgId;
-		var arr = this.pgParam;
+		var arr = '';
+		if(this.pgParam) {
+			arr = this.pgParam;
+			arr = arr.join("&page[]=");
+		}
 		param = {
-			'href':'_json.php?_view=loadpage&pg='+pg+'&page[]='+arr.join("&page[]="),
+			'href':'_json.php?_view=loadpage&pg='+pg+'&page[]='+arr,
 			'type':'POST',
 			'data': marker
 		};
@@ -457,6 +461,26 @@ var wep = {
 			//returnOrder: true
 		}
 	},
+	ZeroClipboard: function(obj,txt) {
+		$.include('_design/_script/zeroclipboard/ZeroClipboard.js',function() {
+			clip = new ZeroClipboard.Client();
+			clip.setHandCursor( true );
+			
+			clip.addEventListener("load", function (client) {
+				debugstr("Flash movie loaded and ready.");
+			});
+			
+			clip.addEventListener("mouseup", function (client) {
+				clip.setText(txt);
+			});
+			
+			clip.addEventListener("complete", function (client, text) {
+				alert("код для вставки в блог скопирован в буфер обмена");
+			});
+			
+			clip.glue(obj);
+		});
+	}
 };
 
 wep.apply = function(o, c, defaults){

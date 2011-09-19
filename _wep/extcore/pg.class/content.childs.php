@@ -136,6 +136,7 @@ class content_class extends kernel_extends {
 	}
 
 	public function kPreFields(&$data,&$param) {
+		$mess = parent::kPreFields($data,$param);
 		$this->addForm = array();
 		$this->fields_form['pagetype']['onchange'] = 'contentIncParam(this,\''.$this->_CFG['PATH']['wepname'] .'\',\''.htmlspecialchars($data['funcparam']).'\');';
 		if($data['pagetype']) {
@@ -145,7 +146,6 @@ class content_class extends kernel_extends {
 				$this->fields_form['funcparam']['style'] = 'display:none;';
 			}
 		}
-		$mess = parent::kPreFields($data,$param);
 		return $mess;
 	}
 

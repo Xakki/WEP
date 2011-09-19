@@ -563,17 +563,15 @@ class pg_class extends kernel_extends {
 		if(empty($this->dataCashTree))
 			$this->sqlCashPG();
 		$DATA_PG = array();
-		if($flagPG==3)
-			$startPG = $this->dataCash[$this->id]['parent_id'];
-		elseif(!$startPG)
+		if(!$startPG)
 			$startPG = $this->config['rootPage'];
+		elseif(strpos($startPG,'#')!==false) {
+			$startPG = (int)substr($startPG,1);
+			if(!$startPG) $startPG = $this->dataCash[$this->id]['parent_id'];
+			else $startPG = $this->id;
+		}
 
-		if($flagPG>1) //только начальный уровень
-			$tempPG = &$this->dataCashTree[$startPG];
-		elseif($flagPG==1) //выводит все в общем массиве
-			$tempPG = &$this->dataCash;
-		else //выводит всё в виде структуры дерева
-			$tempPG = &$this->dataCashTree[$startPG];
+		$tempPG = &$this->dataCashTree[$startPG];
 		if(count($tempPG))
 			foreach ($tempPG as $keyPG=>$rowPG)
 			{
@@ -604,8 +602,12 @@ class pg_class extends kernel_extends {
 				}
 
 				$DATA_PG[$keyPG] = array('name'=>$name, 'href'=>$href, 'attr'=>$rowPG['attr'], 'sel'=>$selPG, 'pgid'=>$keyPG);
-				if($flagPG<1 and isset($this->dataCashTree[$keyPG])) {
-					$DATA_PG[$keyPG]['#item#'] = $this->getMap($onmenuPG,$flagPG,$keyPG);
+				if($flagPG<2 and isset($this->dataCashTree[$keyPG])) {
+					$temp = $this->getMap($onmenuPG,$flagPG,$keyPG);
+					if($flagPG==1)
+						$DATA_PG[$keyPG]['#item#'] = $temp;
+					else
+						$DATA_PG = $DATA_PG+$temp;
 				}
 
 				if($onmenuPG==-1 and $rowPG['pagemap']) {

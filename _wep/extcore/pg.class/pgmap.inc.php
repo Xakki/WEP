@@ -29,7 +29,10 @@
 
 	$tplphp = $this->FFTemplate($FUNCPARAM[2],dirname(__FILE__));
 
-	$DATA = array($FUNCPARAM[2]=>$PGLIST->getMap(-1,$FUNCPARAM[0],$FUNCPARAM[1]));
+	$DATA = array('#item#' => $PGLIST->getMap(-1,$FUNCPARAM[0],$FUNCPARAM[1]));
+	$DATA['#title#'] = $Ctitle;
+
+	$DATA = array($FUNCPARAM[2]=>$DATA);
 	$html .= $HTML->transformPHP($DATA,$tplphp);
 
 	return $html;
