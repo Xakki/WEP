@@ -116,7 +116,7 @@ class pg_class extends kernel_extends {
 	function _childs() {
 		$this->create_child('content');
 	}	
-	public function setFieldsForm() {
+	public function setFieldsForm($form=0) {
 		# fields
 		$this->fields_form = array();
 		$this->fields_form['alias'] = array('type' => 'text', 'caption' => 'Алиас', 'comment'=>'Если не указвать, то адрес будет цыфрой', 'mask'=>array());

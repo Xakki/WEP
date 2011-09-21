@@ -49,8 +49,8 @@ class comments_class extends kernel_extends {
 		);*/
 	}
 
-	public function setFieldsForm() {
-		parent::setFieldsForm();
+	public function setFieldsForm($form=0) {
+		parent::setFieldsForm($form);
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Ваше имя', 'mask' => array('min' => 3));
 		/* $this->fields_form[$this->mf_createrid] = array(
 		  'type' => 'list',

@@ -45,8 +45,8 @@ final class modulprm_class extends kernel_extends {
 		$this->create_child('modulgrp');
 	}
 
-	public function setFieldsForm() {
-		parent::setFieldsForm();
+	public function setFieldsForm($form=0) {
+		parent::setFieldsForm($form);
 
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название');
 		$this->fields_form['tablename'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Таблица');
@@ -578,8 +578,8 @@ class modulgrp_class extends kernel_extends {
 		$this->fields['access'] = array('type' => 'varchar', 'width' => 128, 'attr' => 'NOT NULL', 'default' => '');
 	}
 
-	public function setFieldsForm() {
-		parent::setFieldsForm();
+	public function setFieldsForm($form=0) {
+		parent::setFieldsForm($form);
 
 		//$this->fields_form['name'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Группа');
 		$this->fields_form['owner_id'] = array('type' => 'hidden', 'readonly' => 1);

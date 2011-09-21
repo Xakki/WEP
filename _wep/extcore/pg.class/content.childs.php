@@ -40,7 +40,7 @@ class content_class extends kernel_extends {
 		return parent::setSystemFields();
 	}
 
-	public function setFieldsForm() {
+	public function setFieldsForm($form=0) {
 		# fields
 		$this->fields_form['owner_id'] = array('type' => 'list', 'listname'=>'ownerlist', 'caption' => 'На странице'); 
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Подзаголовок');

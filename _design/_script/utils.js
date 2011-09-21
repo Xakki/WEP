@@ -28,7 +28,7 @@ function miga(obj,opc1,opc2){
 
 /*Bacground*/
 function fShowload (show,txt,body,objid,onclk) {
-	return wep.fShowload (show,txt,body,objid,onclk);
+	return wep.fShowload (show,body,txt,objid,onclk);
 }
 
 function showBG(body,show,k) {
@@ -121,6 +121,34 @@ function dump(arr, level) {/*аналог ф в ПХП print_r*/
     return dumped_text;
 }
 
+function strpos( haystack, needle, offset){	// Find position of first occurrence of a string
+	var i = haystack.indexOf( needle, offset ); // returns -1
+	return i >= 0 ? i : false;
+}
+
+function substr( f_string, f_start, f_length ) {	// Return part of a string
+	if(f_start < 0) {
+		f_start += f_string.length;
+	}
+
+	if(f_length == undefined) {
+		f_length = f_string.length;
+	} else if(f_length < 0){
+		f_length += f_string.length;
+	} else {
+		f_length += f_start;
+	}
+
+	if(f_length < f_start) {
+		f_length = f_start;
+	}
+
+	return f_string.substring(f_start, f_length);
+}
+
+
+
+
 function show_fblock(obj,selector) {
 	if(jQuery(selector).is(':hidden')) {
 		jQuery(selector).show();
@@ -149,61 +177,154 @@ var wep = {
 				}
 				param['href'] = jQuery(param['type']).attr('action');
 				param['data'] = jQuery(param['type']).serialize()+'&sbmt=1';
-				param['type'] = 'POST';
+				param['type'] = jQuery(param['type']).attr('method');
 			}
 		}
 		else if(!param['type']) param['type'] = 'GET';
 		if(!param['href'])		param['href'] = '/_json.php';
 		if(!param['data']) 		param['data'] = '';
 		if(!param['dataType'])	param['dataType'] = 'json';
-		if(!param['insertObj'])	param['insertObj'] = 0;
-		if(!param['insertType'])	param['insertType'] = 0;
+		if(!param['insertObj']) // объект в который(в зависимости от param['insertType']) будут вставляться result.html
+			param['insertObj'] = false;
+		if(!param['insertType']) // Каким образом будут замещаться данные
+			param['insertType'] = false;
 		if(!param['body'])		param['body'] = 'body';
-		clearTimeout(timerid2);timerid2 = 0;
-		timerid = setTimeout(function(){fShowload(1,'',param['body']);},100);
+		if(typeof param['fade'] == 'undefined') {//Затемнение обоасти [false,true,object]
+			if(!param['insertObj'])
+				param['fade'] = true;
+			else
+				param['fade'] = param['insertObj'];
+		}
+		if(typeof param['fadeOff'] == 'undefined') { // зНачение по умолчанию
+			if(!param['insertObj']) //Если обект для вставки не задан, то будет всплывающее окно и затемнение не убираем
+				param['fadeOff'] = false; 
+			else // иначе после выполнения убираем затемнение
+				param['fadeOff'] = true;
+		}
+		param['timeBG'] = 0;
+
+		if(timerid2)// Чистим тамер загрузки, если в это время уже выполняется скрипт
+			clearTimeout(timerid2);
+		timerid2 = 0;
+
+		if(param['fade']) // Вешаем затемнение
+			param['timeBG'] = setTimeout(function(){wep.fShowload(1,param['fade']);param['timeBG'] = 0;},200);
 		//console.log(param);
 		$.ajax({
 			type: param['type'],
 			url: param['href'],
 			data: param['data'],
 			dataType: param['dataType'],
-			beforeSend: function(XMLHttpRequest) {
+			/*beforeSend: function(XMLHttpRequest) {
 				return true;
-			},
+			},*/
 			error: function(XMLHttpRequest, textStatus, errorThrown) {
 				alert('ajaxerror : '+textStatus);
 			},
-			dataFilter: function(data, type) {
+			/*dataFilter: function(data, type) {
 				return data;
-			},
+			},*/
 			success: function(result, textStatus, XMLHttpRequest) {
-				clearTimeout(timerid);
-				if(param['insertObj'] && result.html != '') {
-					if(param['insertType']=='after')
-						jQuery(param['insertObj']).after(result.html);
-					else if(param['insertType']=='before')
-						jQuery(param['insertObj']).before(result.html);
-					else if(param['insertType']=='replace')
-						jQuery(param['insertObj']).replaceWith(result.html);
-					else
-						jQuery(param['insertObj']).html(result.html);
-					timerid2 = setTimeout(function(){fShowload(0,'',param['body']);},200);
+				//функц. предзапуска пользователя, возвращает результат
+				if(typeof param['precall'] != 'undefined' && typeof param['precall'] == 'function') 
+					result = param['precall'].call(result);
+
+				if(typeof result.html != 'undefined' && result.html!='') {
+					if(param['insertObj']) {
+						if(param['insertType']=='after') // вставка до
+							jQuery(param['insertObj']).after(result.html);
+						else if(param['insertType']=='before') // Вставка после
+							jQuery(param['insertObj']).before(result.html);
+						else if(param['insertType']=='replace') // Замена
+							jQuery(param['insertObj']).replaceWith(result.html);
+						else //Внутрь контейнера
+							jQuery(param['insertObj']).html(result.html);
+					}
+					else {
+						param['fadeOff'] = true;
+					}
+				}else
+					param['fadeOff'] = true;
+
+				if(param['fade']) { //Если включено затемнение
+					if(param['fadeOff']) { // Убираем затемнение
+						if(param['timeBG'])
+							clearTimeout(param['timeBG']);// Чистим таймер и тем самым затеменение не отобразиться
+						else
+							wep.fShowload(0,param['fade']);
+					}
 				}
-				else if(result.html!='' && typeof result.html != 'undefined') fShowload(1,result.html,param['body'],param['objid'],param['onclk']);
-				else timerid2 = setTimeout(function(){fShowload(0,'',param['body']);},200);
-				if(typeof result.text != 'undefined' && result.text!='') fLog(fSpoiler(result.text,'AJAX text result'),1);
-				//alert(result.eval);
-				if(typeof result.eval != 'undefined')  {
+
+				if(typeof result.html != 'undefined' && result.html!='' && !param['insertObj']) {
+					wep.fShowload(1,param['body'],result.html,false,param['onclk']);
+				}
+
+
+				if(typeof result.text != 'undefined' && result.text!='') // Вывод ошибок и прочего текста
+					fLog(fSpoiler(result.text,'AJAX text result'),1);
+
+				if(typeof result.eval != 'undefined')  { // запуск onload функции
 					if(typeof result.eval == 'function')
 						result.eval.call();
 					else if(result.eval!='') 
 						eval(result.eval);
 				}
+				//Запуск функции пользователя
 				if(typeof param['call'] != 'undefined' && typeof param['call'] == 'function') 
 					param['call'].call(result);
 			}
 		});
 		return false;
+	},
+
+	fShowload: function(show,body,txt,objid,onclk) {//alert(show+'+'+body+'+'+txt+'+'+objid+'+'+onclk);
+		if(!body || body==true) body='body';
+		if(!onclk) onclk = 'fShowload(0,\'\',\''+body+'\')';
+		if(!objid) objid = 'ajaxload';
+		if(!txt) txt = '';
+		else if(strpos(objid,'#')===0) objid = substr(objid, 2);
+
+		if(!show){
+			jQuery(body+'> #'+objid).css('display','none');
+			showBG(body);
+			if (_Browser.type == 'IE' && 8 > _Browser.version)
+				jQuery('select').toggleClass('hideselectforie7',false);
+		}else{
+			if (_Browser.type == 'IE' && 8 > _Browser.version)
+				jQuery('select').toggleClass('hideselectforie7',true);
+
+			if(jQuery(body+'> #'+objid).size()==0)
+				jQuery(body).append("<div id='"+objid+"'>&#160;</div>");
+			if(!txt || txt==''){
+				txt = "<div class='layerloader'><img src='_design/_img/load.gif' alt=' '/><br/>Подождите. Идёт загрузка</div>";
+				jQuery(body+' div.layerblock').hide();
+			}
+			else {
+				jQuery(body+' div.layerloader').hide();
+				if(objid == 'ajaxload') 
+					txt = '<div class="layerblock"><div class="blockclose" onClick="'+onclk+'"></div>'+txt+'</div>';
+			}		
+			showBG(body,1);
+			if(txt && txt!='') {
+				jQuery(body+' > #'+objid).html(txt);
+			}
+			jQuery(body+' > #'+objid).show();
+			//if(body=='body') // Нах это?
+			fMessPos(body,' #'+objid);
+		}
+		return false;
+	},
+	showBG: function(body,show,k) {
+		if(!body) body='body';
+		if(!show){
+			jQuery(body+' > #ajaxbg').hide();
+		}
+		else {
+			if(!k) k= 0.5;
+			if(jQuery(body+' > #ajaxbg').size()==0)
+				jQuery(body).append("<div id='ajaxbg'>&#160;</div>");
+			jQuery(body+' > #ajaxbg').css('opacity', k).show();
+		}
 	},
 
 	ajaxLoadPage: function(marker,pg,call) {
@@ -259,10 +380,14 @@ var wep = {
 		var ww=Math.round((W-Wblock)/2);
 		if(ww<5) ww=5;
 		jQuery(body+obj).css({'top':hh+'px','left':ww+'px'});
-		if(Hblock>H) 
-			jQuery(body+obj).css({'height':(H-20)+'px'});
+		if(Hblock>H) {
+			Hblock = H - 10;
+			jQuery(body+obj).css({'height':(Hblock)+'px'});
+		}
+	
 		if(Wblock>W) 
-			jQuery(body+obj).css({'width':(W-20)+'px'});
+			Wblock = W - 40;
+		jQuery(body+obj).css({'width':(Wblock+30)+'px'});
 	},
 	showHelp: function(obj,mess,time,nomiga) {
 		if(!obj || !mess || !jQuery(obj).size() || jQuery(obj).next().attr('class')=='helpmess') return false;
@@ -306,51 +431,6 @@ var wep = {
 			opc=opc2;
 		jQuery(obj).animate({'opacity': opc},1000,function(){miga(obj,opc1,opc2);});
 		return false;
-	},
-	fShowload: function(show,txt,body,objid,onclk) {
-		if(!body) body='body';
-		if(!onclk) onclk = 'fShowload(0,\'\',\''+body+'\')';
-		if(!objid) objid = 'ajaxload';
-		obj = ' #'+objid;
-		if(!show){
-			jQuery(body+'>'+obj).css('display','none');
-			showBG(body);
-			if (_Browser.type == 'IE' && 8 > _Browser.version)
-				jQuery('select').toggleClass('hideselectforie7',false);
-		}else{
-			if (_Browser.type == 'IE' && 8 > _Browser.version)
-				jQuery('select').toggleClass('hideselectforie7',true);
-
-			if(jQuery(body+'>'+obj).size()==0)
-				jQuery(body).append("<div id='"+objid+"'>&#160;</div>");
-			if(!txt || txt==''){
-				txt = "<div class='layerloader'><img src='_design/_img/load.gif' alt=' '/><br/>Подождите. Идёт загрузка</div>";
-				jQuery('div.layerblock').hide();
-			}
-			else {
-				jQuery('div.layerloader').hide();
-				if(objid == 'ajaxload') 
-					txt = '<div class="layerblock"><div class="blockclose" onClick="'+onclk+'"></div>'+txt+'</div>';
-			}		
-			showBG(body,1);
-			if(txt && txt!='') 
-				jQuery(body+' > '+obj).html(txt);
-			jQuery(body+' > '+obj).show();
-			if(body=='body')
-				fMessPos(body,obj);
-		}
-	},
-	showBG: function(body,show,k) {
-		if(!body) body='body';
-		if(!show){
-			jQuery(body+' > #ajaxbg').hide();
-		}
-		else {
-			if(!k) k= 0.5;
-			if(jQuery(body+' > #ajaxbg').size()==0)
-				jQuery(body).append("<div id='ajaxbg'>&#160;</div>");
-			jQuery(body+' > #ajaxbg').css('opacity', k).show();
-		}
 	},
 	fSpoiler: function(txt,nm) {
 		//initSpoilers();

@@ -580,6 +580,7 @@ class static_form {
 		$arr_err_name=array();
 		$textm = '';
 		$mess = array();
+		//print_r('<pre>');print_r($FORMS_FIELDS);
 		foreach($FORMS_FIELDS as $key=>&$form)
 		{
 			$error = array();
@@ -591,7 +592,6 @@ class static_form {
 			if((isset($form['readonly']) and $form['readonly']) or 
 				(isset($form['mask']['fview']) and $form['mask']['fview']==2) or 
 				(isset($form['mask']['usercheck']) and !static_main::_prmGroupCheck($form['mask']['usercheck']))) {
-				//unset($value);
 				continue;
 			}
 
@@ -708,6 +708,7 @@ class static_form {
 			}
 
 		}
+		//print_r('<pre>');print_r($form);print_r('</pre>');print_r($data[$key]);
 		//*********** Файлы
 		if($form['type']=='file') {
 			//TODO: multiple

@@ -98,8 +98,8 @@ class ugroup_class extends kernel_extends
 
 	}
 
-	public function setFieldsForm() {
-		parent::setFieldsForm();
+	public function setFieldsForm($form=0) {
+		parent::setFieldsForm($form);
 		$this->fields_form['id'] = array('type' => 'text', 'mask' =>array(), 'caption' => 'ID');
 		$this->fields_form[$this->mf_namefields] = array('type' => 'text', 'mask' =>array('min'=>1), 'caption' => 'Название группы');
 		$this->fields_form['wep'] = array('type' => 'checkbox', 'caption' => 'Разрешить вход в админку?');
@@ -301,8 +301,8 @@ class users_class extends kernel_extends {
 	}
 
 	// FORM FIELDS
-	public function setFieldsForm() {
-		parent::setFieldsForm();
+	public function setFieldsForm($form=0) {
+		parent::setFieldsForm($form);
 		$this->fields_form = array();
 		$this->fields_form['owner_id'] = array('type' => 'list', 'listname'=>'ownerlist', 'caption' => 'Группа', 'mask' =>array('usercheck'=>1,'fview'=>1));
 		$this->fields_form[$this->fn_login] =	array('type' => 'text', 'caption' => 'Логин','mask'=>array('name'=>'login','min' => '4','sort'=>1),'comment'=>'Логин должен состоять только из латинских букв и цифр.');
@@ -694,14 +694,14 @@ class users_class extends kernel_extends {
 		return true;
 	}
 
-	function UserInfo($id) {
-		$id = (int)$id;
-		if(isset($this->userCach[$id]))
-			return $this->userCach[$id];
-		$DATA = $this->_query('t2.name as gname,t1.*',' t1 JOIN '.$this->owner->tablename.' t2 ON t1.owner_id=t2.id WHERE t1.id='.$id);
+	function UserInfo($ID,$fld='id') {
+		$ID = mysql_real_escape_string($ID);
+		if(isset($this->userCach[$ID]))
+			return $this->userCach[$ID];
+		$DATA = $this->_query('t2.name as gname,t1.*',' t1 JOIN '.$this->owner->tablename.' t2 ON t1.owner_id=t2.id WHERE t1.'.$fld.'="'.$ID.'"');
 		if(count($DATA)) {
 			$DATA = $DATA[0];
-			$this->userCach[$id] = $DATA;
+			$this->userCach[$ID] = $DATA;
 		}
 		return $DATA;
 	}

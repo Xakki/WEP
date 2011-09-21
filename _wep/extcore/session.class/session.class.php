@@ -52,8 +52,8 @@ class session_class extends kernel_extends {
 		}
 	}
 
-	public function setFieldsForm() {
-		parent::setFieldsForm();
+	public function setFieldsForm($form=0) {
+		parent::setFieldsForm($form);
 		$this->fields_form['created'] = array('type' => 'date', 'readonly' => 1,'caption' => 'Начало сессии');
 		$this->fields_form['expired'] = array('type' => 'date', 'readonly' => 1,'caption' => 'Срок истекает');
 		$this->fields_form['modified'] = array('type' => 'date', 'readonly' => 1,'caption' => 'Время визита');

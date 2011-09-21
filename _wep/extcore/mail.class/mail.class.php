@@ -92,8 +92,8 @@ class mail_class extends kernel_extends {
 	}
 
 
-	public function setFieldsForm() {
-		parent::setFieldsForm();
+	public function setFieldsForm($form=0) {
+		parent::setFieldsForm($form);
 		$this->fields_form['from']= array('type'=>'text','caption'=>'Обратный email адрес','mask'=>array('name'=>'email', 'min' => '4'));
 		$this->fields_form['subject']= array('type'=>'text','caption'=>'Тема письма', 'mask'=>array('min' => '4'));
 		$this->fields_form['text'] = array(
@@ -118,7 +118,10 @@ class mail_class extends kernel_extends {
 		$this->fields_form['mail_to'] = array('type' => 'text', 'caption' => 'Кому email', 'mask' => array('usercheck'=>1));
 		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата создания', 'mask'=>array('usercheck'=>1,'fview'=>2,'sort'=>1));
 		$this->fields_form['status'] = array('type' => 'list', 'listname'=>'status', 'caption' => 'Статус сообщения', 'mask' => array('usercheck'=>1));
-		
+		if(isset($this->HOOK['setFieldsForm'])){
+			call_user_func($this->HOOK['setFieldsForm'],$this);
+		}
+
 	}
 
 	/**
@@ -183,19 +186,19 @@ class mail_class extends kernel_extends {
 			if(!count($arr['mess'])) {
 				$arr['vars']['mail_to']=$mail_to;
 				if($this->Send($arr['vars'])) {
+					$flag=1;
+					$arr['mess'][] = array('name'=>'ok', 'value'=>$this->getMess('mailok'));
 					// иногда сервер говорит что ошибка, а сам всеравно письма отсылает
 				} else {
-					//$arr['mess'][] = array('name'=>'error', 'value'=>$this->getMess('mailerr'));
-					trigger_error('Почта - '.$this->getMess('mailerr'), E_USER_WARNING);
+					$flag=-1;
+					$arr['mess'][] = array('name'=>'error', 'value'=>$this->getMess('mailerr'));
 				}
-				$flag=1;
-				$arr['mess'][] = array('name'=>'ok', 'value'=>$this->getMess('mailok'));
 			}
 		} else {
 				$mess = $this->kPreFields($arr['vars'],$param);
-				if(isset($_SESSION['user']['email']) and $_SESSION['user']['email'])
-					unset($this->fields_form["from"]);
 		}
+		if(isset($_SESSION['user']['email']) and $_SESSION['user']['email'])
+			unset($this->fields_form["from"]);
 		if(isset($this->fields_form['captcha']))
 			static_form::setCaptcha();
 
@@ -248,9 +251,11 @@ class mail_class extends kernel_extends {
 				$header .= "$content\n";
 			}
 		if(isset($data['att']))
-			$header .= "--{$this->uid}--\r\n";	
-
-		return mail($data['mail_to'], $subject, $mess,$header,'-f'.$data['from']);
+			$header .= "--{$this->uid}--\r\n";
+		$res = mail($data['mail_to'], $subject, $mess,$header,'-f'.$data['from']);
+		if(!$res)
+			trigger_error('SENDMAIL: '.$this->getMess('mailerr'), E_USER_WARNING);
+		return $res;
 	}
 
 	function mailengine1 ($data) {
@@ -296,11 +301,13 @@ class mail_class extends kernel_extends {
 				$content=chunk_split(base64_encode(),76,"\n");
 				$PHPMailer->AddStringAttachment(file_get_contents($file),basename($file));
 			}
+
 		if(!$PHPMailer->Send())
 		{
-			trigger_error($PHPMailer->ErrorInfo, E_USER_WARNING);
+			trigger_error('PHPMailer: '.$PHPMailer->ErrorInfo, E_USER_WARNING);
 			return false;
 		}
+
 		return true;
 	}
 	

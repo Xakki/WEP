@@ -37,8 +37,8 @@ class news_class extends kernel_extends {
 		$this->ordfield = 'ndate DESC';
 	}
 
-	public function setFieldsForm() {
-		parent::setFieldsForm();
+	public function setFieldsForm($form=0) {
+		parent::setFieldsForm($form);
 		# form
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Заголовок новости','comment'=>'Короткий: 3-4 слова(до '.$this->fields['name']['width'].' символов).');
 		$this->fields_form['description'] = array('type' => 'textarea', 'caption' => 'Краткий анонс','mask' =>array('max' => 500));

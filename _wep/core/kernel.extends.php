@@ -170,7 +170,8 @@ abstract class kernel_extends {
 				$this->enum =
 				$this->child_path =
 				$this->Achilds =
-				$this->_setHook = 
+				$this->_setHook = //Перехватчик в предустановки модуля
+				$this->HOOK = //перехватчик в реальном времени
 				$this->_AllowAjaxFn =  // разрешённые функции для аякса, нужно прописывать в индекс
 				$this->_dependClass = 
 				 array();
@@ -917,11 +918,12 @@ abstract class kernel_extends {
 	}
 
 	public function kPreFields(&$data, &$param) {
-		$this->setFieldsForm();//обнуляем форму
+		$this->setFieldsForm(1);//обнуляем форму
 		$this->setSystemFields();
 		foreach ($this->fields_form as $k => &$r) {
 			if (isset($r['readonly']) and $r['readonly'] and $this->id) // если поле "только чтение" и редактируется , то значение берем из БД,
 				$data[$k] = (isset($this->data[$this->id][$k])?$this->data[$this->id][$k]:'');
+
 			if (isset($r['mask']['eval']))
 				$eval = $r['mask']['eval'];
 			elseif (isset($r['mask']['evala']) and !$this->id)
@@ -1046,7 +1048,7 @@ abstract class kernel_extends {
 	/**
 	 * $view [form,list]
 	 */
-	public function setFieldsForm() {
+	public function setFieldsForm($form=0) {
 		$this->fields_form = array();
 		return true;
 	}
