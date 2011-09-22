@@ -39,6 +39,7 @@ function tpl_paylist($data)
 		}//long2ip($r['mf_ipcreate'])
 		$html .= '</table>
 		<div>Баланс : '.round($data['#users#'][$_SESSION['user']['id']]['balance'],2).' руб.</div>';
-	}
+	} else
+		$html .= '<div class="error">Операций по счету нет.</div>';
 	return $html;
 }
