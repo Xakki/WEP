@@ -471,10 +471,20 @@ abstract class kernel_extends {
 				return true;
 			foreach ($data as $ri => &$row) {
 				foreach ($merg as $key => $value) {
+					if(!$row[$key]) continue;
 					$row['_ext_' . $key] = $row[$key];
 					$row[$key] = $this->_get_file($row['id'], $key, $row[$key]);
+					//$row[$key] = $this->_get_file($row['id'], $key, $row[$key]);
+					if(isset($value['thumb'])) {
+						foreach($value['thumb'] as $kk=>$rr) {
+							if(isset($rr['pref']) and $rr['pref']) {
+								$row[$rr['pref'].$key] = $this->_get_file($row['id'], $key, $row['_ext_' . $key],$kk);
+								$row['#'.$rr['pref'].$key] = $rr;
+							}
+						}
+					}
 				}
-			}
+			}//end foreach
 		}
 		return true;
 	}
