@@ -1,9 +1,26 @@
 <?
-	global $BOARD, $RUBRIC;
+	global $BOARD, $RUBRIC, $_tpl;
 	$html='';
 	if(!$BOARD) _new_class('board',$BOARD);
 	if(!$RUBRIC) _new_class('rubric',$RUBRIC);
 	if(!$BOARD->RUBRIC) $BOARD->RUBRIC = &$RUBRIC;
+
+
+	/*$_tpl['script']['script.jquery/selectBox'] = true;
+	$_tpl['styles']['style.jquery/selectBox'] = true;
+	$_tpl['onload'] .= '$("select").selectBox();';*/
+
+	//$_tpl['script']['script.jquery/searchabledropdown'] = true;
+	
+	/*$_tpl['script']['script.jquery/ui'] = true;
+	$_tpl['styles']['style.jquery/ui'] = true;
+	$_tpl['script']['script.jquery/ui.combobox'] = true;
+	$_tpl['styles']['ui.combobox'] = '
+	button.ui-button { margin-left: -1px; }
+	button.ui-button-icon-only .ui-button-text { padding: 0.35em; } 
+	input.ui-autocomplete-input {width:80%; margin: 0; padding: 0.48em 0 0.47em 0.45em; }
+	';
+	$_tpl['onload'] .= '$("select").combobox();';*/
 
 	$DATA  = array();
 

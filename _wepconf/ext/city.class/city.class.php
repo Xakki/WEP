@@ -47,8 +47,8 @@ class city_class extends kernel_extends {
 		$this->unique_fields['domen_rf'] = 'domen_rf';
 	}
 
-	public function setFieldsForm() {
-		parent::setFieldsForm();
+	public function setFieldsForm($form=0) {
+		parent::setFieldsForm($form);
 
 		$this->fields_form['id'] = array('type' => 'text', 'caption' => 'ID','readonly'=>1);
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название', 'mask' =>array('min'=>1,'name'=>'all'));

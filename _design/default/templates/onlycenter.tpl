@@ -9,9 +9,11 @@
 		<meta http-equiv="Pragma" content="no-cache"/>
 		<meta name="keywords" content="{$_tpl['keywords']}"/> 
 		<meta name="description" content="{$_tpl['description']}"/>
-		<link rel="SHORTCUT ICON" href="{$_tpl['design']}img/favicon.ico"/>
+		<link rel="SHORTCUT ICON" href="favicon.ico"/>
 		{$_tpl['styles']}
+		{$_tpl['tplstyles']}
 		{$_tpl['script']}
+		{$_tpl['tplscript']}
 		<style>body,html {width:100%;max-width:100%;}</style>
 	</head>
 	<body onload="{$_tpl['onload']}">

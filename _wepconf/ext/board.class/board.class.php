@@ -153,8 +153,11 @@ class board_class extends kernel_extends {
 		$this->ordfield = 'datea DESC';
 	}
 
-	public function setFieldsForm() {
-		parent::setFieldsForm();
+	/**
+	* $form = 1 - для вывода формы
+	*/
+	public function setFieldsForm($form=0) {
+		parent::setFieldsForm($form);
 		if(!isset($_SESSION['user']['id']))
 			$this->mess_form["info"]= array(
 				"name" => "alert", 
@@ -274,6 +277,27 @@ class board_class extends kernel_extends {
 
 		$this->fields_form['img_board']['mask']['filter'] = 1;
 		$this->fields_form['img_board']['mask']['fview'] = 0;
+
+		if(!static_main::_prmUserCheck(1))
+			unset($this->fields_form['text_ckedit']);
+
+		if($form) {
+			if($this->id){
+				$this->fields_form['rubric']['onchange'] = 'boardrubric(\'rubric\','.$this->id.')';
+				if(static_main::_prmUserCheck(1)) {
+					unset($this->fields_form['datea']['readonly']);
+				}
+			}
+			else{
+				$this->fields_form['datea']['type'] = 'list';
+				$this->fields_form['datea']['listname'] = 'datea';
+				unset($this->fields_form['datea']['readonly']);
+				//= array('type' => 'list', 'listname'=>'datea', 'caption' => 'Дата публикации','css'=>'boardparam formparam sdsd','comment'=>$this->fields_form['datea']['comment']);
+				//if(!$data['contact'] and !$data['datea']) // скрывает доп поля
+				//	$_tpl['onload'] .= 'jQuery(\'#tr_boardparam div.showparam\').click();';
+			} 
+		}
+
 	}
 
 	function _childs() {
@@ -327,23 +351,10 @@ class board_class extends kernel_extends {
 				}
 			}
 		}
-		
-		if($this->id){
-			$this->fields_form['rubric']['onchange'] = 'boardrubric(\'rubric\','.$this->id.')';
-			if(static_main::_prmUserCheck(1)) {
-				unset($this->fields_form['datea']['readonly']);
-			}
-		}
-		else{
-			$this->fields_form['datea']['type'] = 'list';
-			$this->fields_form['datea']['listname'] = 'datea';
-			unset($this->fields_form['datea']['readonly']);
-			//= array('type' => 'list', 'listname'=>'datea', 'caption' => 'Дата публикации','css'=>'boardparam formparam sdsd','comment'=>$this->fields_form['datea']['comment']);
-			//if(!$data['contact'] and !$data['datea']) // скрывает доп поля
-			//	$_tpl['onload'] .= 'jQuery(\'#tr_boardparam div.showparam\').click();';
-		}
+
 		$this->fields_form['city']['default'] = $CITY->id;
 		$this->fields_form['city']['default_2'] = $CITY->name;
+
 
 		if(!$this->id) {
 			$this->eDATA = array();
@@ -359,13 +370,14 @@ class board_class extends kernel_extends {
 				$this->fields_form = array_merge($this->fields_form,$form);
 			$this->fields_form['active']['type'] = 'hidden';
 		}
+
 		if(!isset($this->RUBRIC->tablename))
 			_new_class('rubric',$this->RUBRIC);
 		if($data['rubric']) {
 			$this->fields_form = static_main::insertInArray($this->fields_form,'rubric',$this->ParamFieldsForm($this->id,$data['rubric'],$data['type'])); // обработчик параметров рубрики
 		}
-		if(!static_main::_prmUserCheck(1))
-			unset($this->fields_form['text_ckedit']);
+
+
 		return $mess;
 	}
 

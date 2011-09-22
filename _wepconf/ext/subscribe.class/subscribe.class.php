@@ -35,8 +35,8 @@ class subscribe_class extends kernel_extends {
 
 	}
 
-	public function setFieldsForm() {
-		parent::setFieldsForm();
+	public function setFieldsForm($form=0) {
+		parent::setFieldsForm($form);
 
 		//$this->fields_form[$this->mf_createrid] = array('type' => 'list', 'listname'=>array('class'=>'users'),'caption' => 'Пользователи', 'mask' =>array('min'=>1,'usercheck'=>2));
 
@@ -91,11 +91,12 @@ class subscribe_class extends kernel_extends {
 				$nameparam .= '; ...';
 			}
 		}
+		$mess = parent::kPreFields($data,$param);
+
 		$this->fields_form['param'] = array(
 			'type' => 'infoinput',
 			'value'=>$data['param'],
 			'caption' => 'Параметры поиска <a class="selectcity" href="/list.html" onclick="return JSWin({\'href\':\''.$this->_CFG['_HREF']['siteJS'].'?_view2=subscribeparam&amp;\'+$(\'form input[name=param]\').val()})">'.(!$nameparam?'Выбрать':$nameparam).'</a>');
-		$mess = parent::kPreFields($data,$param);
 		if(!$this->id)
 			unset($this->fields_form['active']);
 		return $mess;

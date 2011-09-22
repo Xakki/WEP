@@ -18,6 +18,10 @@ class uniugroup_class extends ugroup_class
 		$this->fields["paramboard"] = array("type" => "int", "width" =>3, "attr" => "NOT NULL",'default'=>'5');
 		$this->fields["paramsubsc"] = array("type" => "int", "width" =>3, "attr" => "NOT NULL",'default'=>'1');
 		$this->fields["paramupdate"] = array("type" => "int", "width" =>3, "attr" => "NOT NULL",'default'=>'30');
+	}
+
+	public function setFieldsForm($form=0) {
+		parent::setFieldsForm($form);
 
 		$this->fields_form["paramboard"] = array("type" => "int", "caption" => "Объявления", "comment" => "Разрешённое число объявлений в день");
 		$this->fields_form["paramsubsc"] = array("type" => "int", "caption" => "Подписки", "comment" => "Разрешённое число подписок на объявления");
@@ -46,8 +50,8 @@ class uniusers_class extends users_class
 	}
 
 
-	public function setFieldsForm() {
-		parent::setFieldsForm();
+	public function setFieldsForm($form=0) {
+		parent::setFieldsForm($form);
 		$this->fields_form['phone'] = array('type' => 'text', 'caption' => 'phone', 'mask'=>array('name'=>'phone'));
 		$this->fields_form['www'] = array('type' => 'text', 'caption' => 'WWW', 'mask'=>array('name'=>'www'));
 		

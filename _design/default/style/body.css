@@ -12,28 +12,10 @@ img {border:none;}
 a {color:black;}
 p {padding:0;margin:0;}
 .clear{clear:both;padding:0;margin:20px 0 0;width:0;height:0;font-size:0;}
-div.noscript {
-	font-size:0.9em;
-	text-align:justify;
-	background-color:#FFFF00;
-	padding:5px 20px;margin:3px 0 0;
-	white-space:normal;
-	border:1px solid #A6A6A6;-moz-border-radius:4px;-webkit-border-radius:4px;border-radius:4px;
-}
 a:hover {
 	text-decoration:none;
 	color:#709ad1;
 }
-	.jshref {
-		font-size:11px;
-		color:#101796;
-		border-bottom:1px dashed #CCCCCC;
-		cursor:pointer;
-	}
-	.jshref:hover {border-bottom:1px dashed transparent;}
-
-/*скрывать*/
-.sdsd{display:none;}
 
 	.header{
 		width:100%;
@@ -121,7 +103,11 @@ a:hover {
 	.copyright{
 		font-size:0.7em;
 		font-weight:bold;
-		display:inline-block;
+		display:-moz-inline-stack;/*Firefox 2*/
+		display:inline-block; /*Хорошие браузеры*/
+		_overflow:hidden;/*IE6, IE7*/
+		*zoom:1;/*включаем hasLayout для IE6, IE7*/
+		*display:inline;/*при hasLayout true display:inline в IE6, IE7 ведёт себя как display:inline-block*/
 	}
 	.copyright a{
 		color:black;
@@ -185,9 +171,13 @@ a:hover {
 		margin:5px 0 0;
 	}
 	.menu22 a {
-		display:inline-block;
 		margin:0 6px 0 0;
 		text-decoration: none;
+		display:-moz-inline-stack;/*Firefox 2*/
+		display:inline-block; /*Хорошие браузеры*/
+		_overflow:hidden;/*IE6, IE7*/
+		*zoom:1;/*включаем hasLayout для IE6, IE7*/
+		*display:inline;/*при hasLayout true display:inline в IE6, IE7 ведёт себя как display:inline-block*/
 	}
 /*path*/
 	.path {
@@ -311,8 +301,12 @@ a:hover {
 	.blocktext {
 		padding:0;
 		margin:0;
-		display: inline-block;
 		width: 100%;
+		display:-moz-inline-stack;/*Firefox 2*/
+		display:inline-block; /*Хорошие браузеры*/
+		_overflow:hidden;/*IE6, IE7*/
+		*zoom:1;/*включаем hasLayout для IE6, IE7*/
+		*display:inline;/*при hasLayout true display:inline в IE6, IE7 ведёт себя как display:inline-block*/
 	}
 
 	.leftblock .blocktext, .maintext .blocktext {
@@ -395,6 +389,12 @@ a:hover {
 		font-style:italic;
 	}
 
+	.boardlist div.text li {
+		margin:0;
+		text-align:left;
+		padding:0;
+	}
+
 	.to-load-img {
 		margin:0 5px;
 	}
@@ -406,7 +406,11 @@ a:hover {
 		-moz-border-radius:4px;-webkit-border-radius:4px;border-radius:4px;
 		padding:5px 10px;
 		margin:5px;
-		display:inline-block;
+		display:-moz-inline-stack;/*Firefox 2*/
+		display:inline-block; /*Хорошие браузеры*/
+		_overflow:hidden;/*IE6, IE7*/
+		*zoom:1;/*включаем hasLayout для IE6, IE7*/
+		*display:inline;/*при hasLayout true display:inline в IE6, IE7 ведёт себя как display:inline-block*/
 	}
 	.nomination-name {
 		font-weight:bold;
@@ -596,10 +600,6 @@ a:hover {
 	#form_tools_paramselect div.filter div.f_submit input {
 		border:1px solid #A6A6A6;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
 	}
-	select .selpad0 {padding:0;}
-	select .selpad1 {padding:0 0 0 10px;}
-	select .selpad2 {padding:0 0 0 20px;}
-	select .selpad3 {padding:0 0 0 30px;}
 
 	/*AJAX show filter result*/
 	.shres {
@@ -610,6 +610,7 @@ a:hover {
 		font-size:14px;font-weight:bold;
 		top:0;left:0;z-index:3;
 		padding:2px 5px;margin:-5px 0 0 0;
+		white-space: nowrap;
 	}
 	.shresload {
 		background-image:url(../../_img/loader16.gif);
@@ -680,21 +681,33 @@ a:hover {
 	.rubmain {
 		color:black;
 		width:220px;
-		display: inline-block;
 		position: relative;
 		font-size: 14px;
 		vertical-align:top;
 		margin:0;
+		display:-moz-inline-stack;/*Firefox 2*/
+		display:inline-block; /*Хорошие браузеры*/
+		_overflow:hidden;/*IE6, IE7*/
+		*zoom:1;/*включаем hasLayout для IE6, IE7*/
+		*display:inline;/*при hasLayout true display:inline в IE6, IE7 ведёт себя как display:inline-block*/
 	}
 
 	.char {
-		display: inline-block;
 		width: 0;
+		display:-moz-inline-stack;/*Firefox 2*/
+		display:inline-block; /*Хорошие браузеры*/
+		_overflow:hidden;/*IE6, IE7*/
+		*zoom:1;/*включаем hasLayout для IE6, IE7*/
+		*display:inline;/*при hasLayout true display:inline в IE6, IE7 ведёт себя как display:inline-block*/
 	}
 
 	.eol {
-		display: inline-block;
 		width: 100%;
+		display:-moz-inline-stack;/*Firefox 2*/
+		display:inline-block; /*Хорошие браузеры*/
+		_overflow:hidden;/*IE6, IE7*/
+		*zoom:1;/*включаем hasLayout для IE6, IE7*/
+		*display:inline;/*при hasLayout true display:inline в IE6, IE7 ведёт себя как display:inline-block*/
 	}
 
 /*pagenum*/
@@ -764,77 +777,23 @@ a:hover {
 		display:inline;
 	}
 	div.form_boardcomments #tr_sbmt .form-submit{
-		display:inline-block;
 		padding:0;
+		display:-moz-inline-stack;/*Firefox 2*/
+		display:inline-block; /*Хорошие браузеры*/
+		_overflow:hidden;/*IE6, IE7*/
+		*zoom:1;/*включаем hasLayout для IE6, IE7*/
+		*display:inline;/*при hasLayout true display:inline в IE6, IE7 ведёт себя как display:inline-block*/
 	}
 	.button_comm {
 		font-size:16px;
 		margin:0 0 30px;
-		display:inline-block;
+		display:-moz-inline-stack;/*Firefox 2*/
+		display:inline-block; /*Хорошие браузеры*/
+		_overflow:hidden;/*IE6, IE7*/
+		*zoom:1;/*включаем hasLayout для IE6, IE7*/
+		*display:inline;/*при hasLayout true display:inline в IE6, IE7 ведёт себя как display:inline-block*/
 	}
 
-
-/*SPOILER*/
-	.spoiler-wrap {
-		background:gray none repeat scroll 0% 0%;
-		border-color:#C3CBD1;
-		border-style:solid;
-		border-width:1px 1px 1px 2px;
-		margin:6px auto;
-		width:99%;
-		overflow:auto;
-	}
-	.spoiler-head {
-		color:black;
-		font-size:11px;
-		line-height:15px;
-		margin-left:6px;
-		padding:0 0.9em;
-	}
-	.spoiler-body {
-		border-bottom:1px dashed #C3CBD1;
-		display:none;
-		padding:0;
-		display: none;
-	}
-	.spoiler-body pre{
-		background:#F8F7F2 none repeat scroll 0 0;
-		border:medium none;
-		font-size:0.9em;
-		color:black;
-		margin:0;
-	}
-	.spoiler-body pre code{
-		display:block;
-		overflow:auto;
-		white-space:pre;
-		padding:5px 0;
-	}
-	.folded {
-		background:transparent url(../img/x16.png)  no-repeat scroll 0 -16px;
-		display:block;
-		padding-left:1.4em;
-		border-bottom:1px dashed #C3CBD1;
-	}
-	.unfolded {
-		background:transparent url(../img/x16.png)  no-repeat scroll 0 -48px;
-		display:block;
-		padding-left:1.4em;
-		border-bottom:1px dashed transparent;
-	}
-	.clickable {
-		cursor:pointer;
-	}
-
-	.foldedul {
-		background:transparent url(../img/x16.png)  no-repeat scroll 0 -16px;
-		display:inline-block;
-		width:14px;
-		height:13px;
-	}
-	.unfoldedul {
-		background:transparent url(../img/x16.png)  no-repeat scroll 0 -48px;
-	}
 
 	.pgmap {
 		margin:0;
@@ -873,112 +832,6 @@ a:hover {
 	.searchcity a{
 	}
 
-	/*ДОПОЛНИТЕЛЬНЫЕ ПАРАМЕТРЫ ДЛЯ ФОРМЫ ОбъЯВЛЕНИЯ*/
-	.showparam {
-		cursor:pointer;
-		border-bottom:1px dashed #101796;
-		font-size:12px;
-		color:#000;
-		display:inline;
-		padding:0 0 0 11px;
-		background:transparent url(../img/x16.png)  no-repeat scroll 0 -17px;
-	}
-	.hideparam {
-		background:transparent url(../img/x16.png)  no-repeat scroll 0 -49px;
-	}
-	.showparam:hover {
-		border-bottom:1px dashed transparent;
-	}
-
-	.formparam {
-		background-color: rgb(237, 237, 237); 
-		width: 60%; 
-		margin-top: 0px; margin-right: auto; margin-bottom: 0px; margin-left: auto;
-	}
-/*AJAX BG*/
-	.ajaxlink {
-		border-bottom:1px dashed #101796;
-		text-decoration:none;
-	}
-	.ajaxlink:hover {
-		border-bottom:1px dashed transparent;
-		text-decoration:none;
-	}
-	#ajaxload {
-		z-index:30;
-		position:fixed;
-		top:50%;
-		left:50%;
-		display:none;}
-
-	.layerloader {
-		white-space:nowrap;
-		color:#F1F1F1;
-		font-weight:bold;
-		text-align:center;
-	}
-
-	.layerblock{
-		padding:5px 17px 10px;
-		background-color:white;
-		overflow:auto;
-		max-height:90%;
-		border:2px solid gray;-moz-border-radius:8px;-webkit-border-radius:8px;border-radius:8px;
-	}
-
-	#ajaxload .block-tl, #ajaxload .block-tr, #ajaxload .block-bl, #ajaxload .block-br {
-		background-image:none;
-	}
-
-	#ajaxload div.layerloader img {}
-
-		#ajaxload .messages{
-			border:none;
-			background:none;
-			padding:10px;
-		}
-	#boardOnMap {
-		position: fixed; z-index: 30; top: 50%; left: 50%;
-	}
-
-	#boardOnMap div.layerblock {
-		padding:5px;
-		background-color:white;
-		overflow:auto;
-		max-height:90%;
-		border:2px solid gray;-moz-border-radius:8px;-webkit-border-radius:8px;border-radius:8px;
-
-	}
-
-	#ajaxbg {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background-color: #666;
-		display: none;
-		z-index: 20;
-	}
-	* html #ajaxbg {
-		position: absolute;
-		height: expression(document.body.scrollHeight > document.body.offsetHeight ? document.body.scrollHeight : document.body.offsetHeight + 'px');
-	}
-	/*CLOSE LAYER*/
-	.blockclose {
-		cursor:pointer;
-		position:absolute;
-		right:2px;
-		top:2px;
-		height:30px;
-		width:30px;
-		background: url("../../_img/jquery.fancybox/fancy_close.png") repeat scroll 0 0 transparent;
-		z-index:40;
-	}
-
-.ui-slider {
-	margin:3px 5px 5px;
-}
 
 
 /*Всплывающая информация showHelp(obj,mess,time,nomiga)*/
@@ -1019,6 +872,14 @@ a:hover {
 }
 
 /*LOGIN FORM*/
+.spanor {
+	border-top: 1px solid #E1E1E1;
+	border-bottom: 1px solid #E1E1E1;
+	display: block;
+	margin: 0;
+	padding: 2px 160px;
+	clear: both;
+ }
 div.layerblock {
 
 }
@@ -1053,10 +914,16 @@ div.layerblock .messelem a {
 }
 
 
-#tr_map div {
-	background:transparent url('../img/onmap.png') no-repeat scroll 10px 0;
-	padding:2px 0;
-	}
-#tr_map span {
-	font-size:20px;
+#vk_like {
+	display: inline-block;
+}
+#vkwidget1_tt {
+	margin:0 0 0 233px;
+}
+#vkwidget2_tt {
+	margin:0 0 0 233px;
+}
+
+#dsq-content div.dsq-options {
+	display: none;
 }

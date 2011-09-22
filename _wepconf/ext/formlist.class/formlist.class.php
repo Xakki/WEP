@@ -13,11 +13,15 @@ class formlist_class extends kernel_extends {
 
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'min' => '1');
 
-		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название списка');
-		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Активность');
-
 		$this->ordfield = "name";
 
+	}
+
+	public function setFieldsForm($form=0) {
+		parent::setFieldsForm($form);
+
+		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название списка');
+		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Активность');
 	}
 
 	function _childs() {
@@ -46,8 +50,8 @@ class formlistitems_class extends kernel_extends {
 		$this->fields['cntdec'] = array('type' => 'int', 'width' => 7, 'attr' => 'NOT NULL', 'default'=>0);
 	}
 
-	public function setFieldsForm() {
-		parent::setFieldsForm();
+	public function setFieldsForm($form=0) {
+		parent::setFieldsForm($form);
 
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название');
 		$this->fields_form['checked'] = array('type' => 'checkbox', 'caption' => 'Разрешить для подачи объявления');

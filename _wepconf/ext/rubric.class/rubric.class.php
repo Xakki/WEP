@@ -34,8 +34,8 @@ class rubric_class extends kernel_extends {
 	}
 
 
-	public function setFieldsForm() {
-		parent::setFieldsForm();
+	public function setFieldsForm($form=0) {
+		parent::setFieldsForm($form);
 
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название рубрики');
 		$this->fields_form['rname'] = array('type' => 'text', 'caption' => 'Адресс на русском');
@@ -209,8 +209,8 @@ class param_class extends kernel_extends {
 		# memo
 	}
 
-	public function setFieldsForm() {
-		parent::setFieldsForm();
+	public function setFieldsForm($form=0) {
+		parent::setFieldsForm($form);
 		# fields
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название', 'mask' =>array('min'=>1));
 		$this->fields_form["type"] = array("type" => "list", "listname"=>"type", "caption" => "Тип параметра", 'mask'=>array('sort'=>1), 'onchange'=>'if(this.value>=50 &amp;&amp; this.value&lt;60) jQuery(\'#tr_formlist, #tr_typelist\').show(); else jQuery(\'#tr_formlist, #tr_typelist\').hide();');
@@ -230,10 +230,10 @@ class param_class extends kernel_extends {
 	}
 
 	function kPreFields(&$data,&$param) {
+		$mess = parent::kPreFields($data,$param);
 		if($data['type']<50 or $data['type']>=60) {
 			$this->fields_form['typelist']['style'] = $this->fields_form['formlist']['style'] .='display:none;';
 		}
-		$mess = parent::kPreFields($data,$param);
 		return $mess;
 	}
 

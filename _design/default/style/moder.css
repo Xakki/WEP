@@ -13,7 +13,11 @@
 			cursor:pointer;
 			font-size:1px;
 			display:block;
-			display:inline-block;
+			display:-moz-inline-stack;/*Firefox 2*/
+			display:inline-block; /*Хорошие браузеры*/
+			_overflow:hidden;/*IE6, IE7*/
+			*zoom:1;/*включаем hasLayout для IE6, IE7*/
+			*display:inline;/*при hasLayout true display:inline в IE6, IE7 ведёт себя как display:inline-block*/
 		}
 		.bottonimg:hover, .bottonimg_sel {
 			background-image:url(../../_img/button.png);

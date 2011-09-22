@@ -391,9 +391,11 @@ class mail_class extends kernel_extends {
 			}
 			break;
 		
-			default:
+			default:// Удаленные
 			{
-				trigger_error('Неизвестный тип выборки ' . $select_type, E_USER_WARNING);
+				$where = array(			
+					'`status`=4',
+				);
 			}
 		}
 		

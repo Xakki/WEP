@@ -26,8 +26,8 @@ class exportboard_class extends kernel_extends {
 		);
 	}
 
-	public function setFieldsForm() {
-		parent::setFieldsForm();
+	public function setFieldsForm($form=0) {
+		parent::setFieldsForm($form);
 
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название', 'mask' =>array('min'=>1));
 		$this->fields_form['www'] = array('type' => 'text', 'caption' => 'Сайт', 'mask' =>array('name'=>'www'));
@@ -97,6 +97,10 @@ class exportrubric_class extends kernel_extends {
 		$this->fields['nameid'] = array('type' => 'varchar', 'width' => 64, 'attr' => 'NOT NULL', 'min' => '1');
 		$this->fields['rubric'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL');
 		$this->fields['over'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default'=>0);
+	}
+
+	public function setFieldsForm($form=0) {
+		parent::setFieldsForm($form);
 
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название', 'mask' =>array('min'=>1));
 		$this->fields_form['nameid'] = array('type' => 'text', 'caption' => 'Ключ рубрики', 'mask' =>array('min'=>1));
@@ -129,14 +133,6 @@ class sendboard_class extends kernel_extends {
 		$this->fields['textresult'] = array('type' => 'text', 'attr' => 'NOT NULL');
 		$this->fields['pageinfo'] = array('type' => 'text', 'attr' => 'NOT NULL');
 
-		$this->fields_form['board_id'] = array('type' => 'list', 'listname'=> array('tablename'=>'board','nameField'=>'concat(\'<a href="/_wep/index.php?_view=list&_modul=board&board_id=\',tx.id,\'&_type=edit">\',tx.id,\'</a>\')'), 'caption' => 'Объявление','readonly'=>true);
-		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата отправки', 'mask'=>array('fview'=>2,'sort'=>1));
-		$this->fields_form['text'] = array('type' => 'textarea', 'caption' => 'Данные отправки', 'mask'=>array('name'=>'html'));
-		$this->fields_form['result'] = array('type' => 'list', 'listname'=>'resultsend', 'caption' => 'Статус', 'mask'=>array('onetd'=>'Статус экспорта'));
-		$this->fields_form['mf_timeup'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата создания', 'mask'=>array('fview'=>2,'sort'=>1,'onetd'=>'close'));
-		$this->fields_form['textresult'] = array('type' => 'text', 'caption' => 'Текст результата','readonly'=>true);
-		$this->fields_form['pageinfo'] = array('type' => 'text', 'caption' => 'Код результата','readonly'=>true);
-
 		$this->_enum['resultsend'] = array(
 			0=>'готовится к отправке',
 			1=>'отправленно , ожидание статуса',
@@ -145,6 +141,19 @@ class sendboard_class extends kernel_extends {
 
 		$this->index_fields['result'] = 'result';
 		$this->index_fields['board_id'] = 'board_id';
+	}
+	
+	public function setFieldsForm($form=0) {
+		parent::setFieldsForm($form);
+
+		$this->fields_form['board_id'] = array('type' => 'list', 'listname'=> array('tablename'=>'board','nameField'=>'concat(\'<a href="/_wep/index.php?_view=list&_modul=board&board_id=\',tx.id,\'&_type=edit">\',tx.id,\'</a>\')'), 'caption' => 'Объявление','readonly'=>true);
+		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата отправки', 'mask'=>array('fview'=>2,'sort'=>1));
+		$this->fields_form['text'] = array('type' => 'textarea', 'caption' => 'Данные отправки', 'mask'=>array('name'=>'html'));
+		$this->fields_form['result'] = array('type' => 'list', 'listname'=>'resultsend', 'caption' => 'Статус', 'mask'=>array('onetd'=>'Статус экспорта'));
+		$this->fields_form['mf_timeup'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата создания', 'mask'=>array('fview'=>2,'sort'=>1,'onetd'=>'close'));
+		$this->fields_form['textresult'] = array('type' => 'text', 'caption' => 'Текст результата','readonly'=>true);
+		$this->fields_form['pageinfo'] = array('type' => 'text', 'caption' => 'Код результата','readonly'=>true);
+
 	}
 }
 
