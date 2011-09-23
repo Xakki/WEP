@@ -1,4 +1,4 @@
-<?
+<?php
 	function tpl_pgmap(&$data,$attr='') {
 		$html = '';
 		if(isset($data) and count($data)) {

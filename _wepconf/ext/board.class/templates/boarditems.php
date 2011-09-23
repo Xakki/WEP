@@ -1,4 +1,4 @@
-<?
+<?php
 	function tpl_boarditems(&$data) {
 		global $_tpl,$_CFG,$HTML;
 		$html = '';

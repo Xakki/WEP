@@ -1,4 +1,4 @@
-<?
+<?php
 	//$_ADMIN = dirname(__FILE__);
 	//require($_ADMIN."/system/config.ini.php");
 	//require($_ADMIN."/system/sql.class.php");

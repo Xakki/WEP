@@ -1,4 +1,4 @@
-<?
+<?php
 	$_CFG['_PATH']['wep'] = dirname(dirname(dirname(__FILE__))).'/_wep';
 
 	require_once($_CFG['_PATH']['wep'].'/config/config.php');

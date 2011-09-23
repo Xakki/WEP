@@ -1,4 +1,4 @@
-<?
+<?php
 //$vars
 //$exportValue
 $newPost = array();

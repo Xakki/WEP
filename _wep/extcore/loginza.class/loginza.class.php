@@ -1,4 +1,4 @@
-<?
+<?php
 
 class loginza_class extends kernel_extends
 {

@@ -1,4 +1,4 @@
-<?
+<?php
 	function tpl_boardnew(&$data) {
 		global $_tpl,$_CFG,$HTML;
 		$html = '';

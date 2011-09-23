@@ -1,4 +1,4 @@
-<?
+<?php
 class pay_class extends kernel_extends {
 
 	function _set_features() {

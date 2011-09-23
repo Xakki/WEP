@@ -1,4 +1,4 @@
-<?
+<?php
 header("Content-type:text;charset=utf-8");
 echo "User-Agent: *
 Allow: /*.html$

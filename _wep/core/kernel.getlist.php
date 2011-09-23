@@ -1,4 +1,4 @@
-<?
+<?php
 	function _getlist($_this,&$listname, $value=0) /*LIST SELECTOR*/
 	{
 		/*Выдает 1 уровневый массив, либо 2х уровневый для структуры типа дерева*/

@@ -1,4 +1,4 @@
-<?
+<?php
 class paysms_class extends kernel_extends {
 
 	function _set_features() {

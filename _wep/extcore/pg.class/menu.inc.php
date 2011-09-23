@@ -1,4 +1,4 @@
-<?
+<?php
 	// сначала задаем значения по умолчанию
 	if(!isset($FUNCPARAM[0]) or $FUNCPARAM[0] == '') $FUNCPARAM[0] = 1;
 	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = 1;

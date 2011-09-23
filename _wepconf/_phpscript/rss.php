@@ -1,4 +1,4 @@
-<?
+<?php
 
 	$html='';
 	$_GET['_showallinfo']=0;
@@ -33,7 +33,7 @@
 	else
 		$title = 'УниДоски.ру';
 	header("content-type: application/rss+xml");
-	echo '<?xml version="1.0" encoding="utf-8"?>
+	echo '<?phpxml version="1.0" encoding="utf-8"?>
 <rss version="2.0">
 <channel>
 <title>'.$title.'</title>

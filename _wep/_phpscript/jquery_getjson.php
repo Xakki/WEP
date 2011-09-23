@@ -1,4 +1,4 @@
-<?
+<?php
 	//require("a.charset.php");
 	header('Content-type: text/html; charset=utf-8');
 	$AjaxJquery = new AjaxJquery();

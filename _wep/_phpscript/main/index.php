@@ -1,4 +1,4 @@
-<?
+<?php
 	if(!$_CFG['_PATH']['wep']) die('ERROR');
 	
 	require_once($_CFG['_PATH']['wep'].'/config/config.php');

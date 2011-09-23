@@ -1,4 +1,4 @@
-<?
+<?php
 /*PATH - RSS*/
 	global $PGLIST;
 	_new_class('city',$CITY);

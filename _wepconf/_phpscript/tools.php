@@ -1,4 +1,4 @@
-<?
+<?php
 
 function tools_rubricLatName() {
 	return 'Функция отключена';

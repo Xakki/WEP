@@ -1,4 +1,4 @@
-<?
+<?php
 	global $SUBSCRIBE;
 	$DATA = array();
 	if(static_main::_prmUserCheck()) {

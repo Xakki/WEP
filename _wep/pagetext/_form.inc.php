@@ -1,4 +1,4 @@
-<?
+<?php
 	if(!isset($FUNCPARAM[0]) or $FUNCPARAM[0] == '') $FUNCPARAM[0] = '';
 	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = 0;
 	//$FUNCPARAM[0] - модуль

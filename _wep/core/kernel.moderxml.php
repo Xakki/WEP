@@ -1,4 +1,4 @@
-<?
+<?php
 	function _fXmlModuls(&$_this,$modul){
 		$xml = '<moduls'._paramModul($_this).'><name>'.$_this->caption.'</name><msp>1</msp>';
 		if(static_main::_prmModul($_this->_cl,array(11)))

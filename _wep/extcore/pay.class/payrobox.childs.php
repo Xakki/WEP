@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 class payrobox_class extends kernel_extends {

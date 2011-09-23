@@ -1,4 +1,4 @@
-<?
+<?php
 
 class static_form {
 /*------------- ADD ADD ADD ADD ADD ------------------*/

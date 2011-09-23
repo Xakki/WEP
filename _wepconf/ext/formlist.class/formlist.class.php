@@ -1,4 +1,4 @@
-<?
+<?php
 class formlist_class extends kernel_extends {
 
 	function _set_features() {

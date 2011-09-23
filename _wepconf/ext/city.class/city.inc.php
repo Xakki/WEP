@@ -1,4 +1,4 @@
-<?
+<?php
 /*
 	if($_GET['go']=='1dsdsdsdsd') {
 		$dc= array();

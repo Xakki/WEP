@@ -1,4 +1,4 @@
-<?
+<?php
 	global $BOARD, $RUBRIC;
 	$html='';
 	if(!$BOARD) _new_class('board',$BOARD);

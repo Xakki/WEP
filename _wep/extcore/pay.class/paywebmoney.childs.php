@@ -1,4 +1,4 @@
-<?
+<?php
 
 class paywebmoney_class extends kernel_extends {
 	

@@ -1,4 +1,4 @@
-<?
+<?php
 
 class ugroup_class extends kernel_extends
 {

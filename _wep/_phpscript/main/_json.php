@@ -1,4 +1,4 @@
-<?
+<?php
 	if(!$_CFG['_PATH']['wep']) die('ERROR');
 
 	$GLOBALS['_RESULT']	= array();

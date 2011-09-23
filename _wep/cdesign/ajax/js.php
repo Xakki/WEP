@@ -1,4 +1,4 @@
-<?
+<?php
 
 	$DATA = array();
 	if($_GET['_view']=='list'){

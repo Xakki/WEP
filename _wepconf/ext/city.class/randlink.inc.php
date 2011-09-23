@@ -1,4 +1,4 @@
-<?
+<?php
 	_new_class('city',$CITY);
 	$html = '';
 	if($CITY->parent_id==0 and $CITY->id) {

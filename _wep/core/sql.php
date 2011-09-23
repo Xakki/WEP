@@ -1,4 +1,4 @@
-<?
+<?php
 /*SQL*/
 
 	class sql {

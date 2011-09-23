@@ -1,4 +1,4 @@
-<?
+<?php
 // Корзина
 	// сначала задаем значения по умолчанию
 	if(!isset($FUNCPARAM[0]) or $FUNCPARAM[0] == '') $FUNCPARAM[0] = '#ext#paymove';

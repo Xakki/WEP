@@ -1,4 +1,4 @@
-<?
+<?php
 	function tpl_adminmenu(&$data) {
 		global $_CFG;
 		$html = ''; 

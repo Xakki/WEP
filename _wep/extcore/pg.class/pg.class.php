@@ -1,4 +1,4 @@
-<?
+<?php
 class pg_class extends kernel_extends {
 
 	protected function _create_conf() {
@@ -44,8 +44,8 @@ class pg_class extends kernel_extends {
 		$this->config_form['keywords'] = array('type' => 'textarea', 'caption' => 'Ключевые слова по умолчанию','mask'=>array('max'=>1000));
 		$this->config_form['description'] = array('type' => 'textarea', 'caption' => 'Описание страницы по умолчанию','mask'=>array('max'=>1000));
 		$this->config_form['design'] = array('type' => 'list', 'listname'=>'mdesign', 'caption' => 'Дизаин по умолчанию');
-		$this->config_form['memcache'] = array('type' => 'int', 'caption' => 'Memcache time', 'comment'=>'0 - откл кеширование, 1> - кеширование в сек.');
-		$this->config_form['memcachezip'] = array('type' => 'checkbox', 'caption' => 'Memcache сжатие');
+		$this->config_form['memcache'] = array('type' => 'int', 'caption' => 'Memcache time по умолчанию', 'comment'=>'-1 - отключить полностью, 0 - кеширование определяется в контенте, 1> - кеширование в сек. для всех по умолчанию');
+		$this->config_form['memcachezip'] = array('type' => 'checkbox', 'caption' => 'Memcache сжатие кеша');
 		$this->config_form['sitemap'] = array('type' => 'checkbox', 'caption' => 'SiteMap XML' ,'comment'=>'создавать в корне сайта xml файл карты сайта для поисковиков');
 		$this->config_form['IfDontHavePage'] = array('type' => 'list', 'listname'=>'pagetype', 'caption' => 'Если нет страницы в базе, то вызываем обрабочик');
 		$this->config_form['rootPage'] = array('type' => 'list', 'listname'=>'parentlist', 'caption' => 'Начальная страница сайта');
@@ -66,6 +66,7 @@ class pg_class extends kernel_extends {
 			$this->dataCash = $this->dataCashTree = $this->dataCashTreeAlias = array();
 		$this->pageParam = array();
 		$this->default_access = '|1|'; // По умолчанию ставим доступ на чтений всем пользователям
+		$this->MEMCACHE = NULL;
 		return true;
 	}
 
@@ -117,6 +118,7 @@ class pg_class extends kernel_extends {
 		$this->create_child('content');
 	}	
 	public function setFieldsForm($form=0) {
+		parent::setFieldsForm($form);
 		# fields
 		$this->fields_form = array();
 		$this->fields_form['alias'] = array('type' => 'text', 'caption' => 'Алиас', 'comment'=>'Если не указвать, то адрес будет цыфрой', 'mask'=>array());
@@ -191,6 +193,30 @@ class pg_class extends kernel_extends {
 		else return parent::_getlist($listname,$value);
 	}
 
+	function toolsConfigmodul() {
+		$data = parent::toolsConfigmodul();
+		if(!$this->incMemcach())
+			$data['messages'][] = array('error','Модуль PHP Memcach отсутствует либо не верная конфигурия подключения');
+		return $data;
+	}
+	function incMemcach() {
+		if(!$this->MEMCACHE) {
+			$mc_load = false;
+			if(!extension_loaded('memcache')) {
+				$prefix = (PHP_SHLIB_SUFFIX === 'dll') ? 'php_' : '';
+				if(function_exists('dl') and dl($prefix . 'memcache.' . PHP_SHLIB_SUFFIX))
+					$mc_load = true;
+			}else
+				$mc_load = true;
+			if($mc_load) {
+				$this->MEMCACHE = new Memcache;
+				$this->MEMCACHE->connect($this->_CFG['memcache']['host'],$this->_CFG['memcache']['port']);
+				$this->config['memcachezip'] = ($this->config['memcachezip']?MEMCACHE_COMPRESSED:0);
+			}
+		} else
+			$mc_load = true;
+		return $mc_load;
+	}
 
 	/*function allChangeData($type='') {
 		parent::allChangeData($type);
@@ -496,28 +522,37 @@ class pg_class extends kernel_extends {
 				$flagPG = 1;
 			} else {
 				$flagMC = false;
-				if(!$rowPG['memcache'] and $this->config['memcache'])
+				if($this->config['memcache']==-1) // Вообще отключаем кеш
+					$rowPG['memcache'] = 0;
+				elseif($rowPG['memcache']==0 and $this->config['memcache']>0) // Если в контене 0, и есть в конфиг-кеш
 					$rowPG['memcache'] = $this->config['memcache'];
-				if($rowPG['memcache']) {
-					$hashkeyPG = $_SERVER['HTTP_HOST'].$_SERVER['HTTP_HOST'];
-					global $MEMCACHE;
+				elseif($rowPG['memcache']<0)
+					$rowPG['memcache'] = 0;
 
-					if(!$MEMCACHE) {
-						$mc_load = false;
-						if(!extension_loaded('memcache')) {
-							$prefix = (PHP_SHLIB_SUFFIX === 'dll') ? 'php_' : '';
-							if(function_exists('dl') and dl($prefix . 'memcache.' . PHP_SHLIB_SUFFIX))
-								$mc_load = true;
-						}else
-							$mc_load = true;
-						if($mc_load) {
-							$MEMCACHE = new Memcache;
-							$MEMCACHE->connect($_CFG['memcache']['host'],$_CFG['memcache']['port']);
-							$this->config['memcachezip'] = ($this->config['memcachezip']?true:false);
-						}
+				if($rowPG['memcache']) {
+					$hashkeyPG = '';
+					if($rowPG['memcache_solt']==1) {
+						if(isset($_SESSION['user']['id']))
+							$hashkeyPG = $_SESSION['user']['id'];
 					}
-					if($MEMCACHE)
-						$flagPG = $flagMC = $MEMCACHE->get($hashkeyPG);
+					elseif($rowPG['memcache_solt']==2)
+						$hashkeyPG = session_id();
+					elseif($rowPG['memcache_solt']==3) {
+						$tc = '';
+						if(count($_COOKIE))
+							foreach($_COOKIE as $ck=>$cr)
+								$tc .= $cr;
+						$hashkeyPG = md5($tc);
+					}
+					$hashkeyPG .= '@'.$rowPG['id'].'@'.$_SERVER['QUERY_STRING'].$_SERVER['HTTP_HOST'];
+					if(_strlen($hashkeyPG)>255) $hashkeyPG = md5($hashkeyPG);
+
+					if(!$this->MEMCACHE) {
+						$this->incMemcach();
+					}
+					if($this->MEMCACHE) {
+						$flagPG = $flagMC = $this->MEMCACHE->get($hashkeyPG);
+					}
 				}
 				if(!$flagMC) {
 					if($rowPG['funcparam']) $FUNCPARAM = explode('&',$rowPG['funcparam']);
@@ -533,11 +568,10 @@ class pg_class extends kernel_extends {
 						trigger_error('Обрботчик страниц "'.$this->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php" не найден!', E_USER_WARNING);
 						continue;
 					}
-					if($rowPG['memcache'] and $MEMCACHE)
-						$MEMCACHE->set($hashkeyPG,$flagPG , $this->config['memcachezip'], $rowPG['memcache']);
+					if($rowPG['memcache'] and $this->MEMCACHE) {
+						$this->MEMCACHE->set($hashkeyPG,$flagPG , $this->config['memcachezip'], $rowPG['memcache']);
+					}
 				}
-				if($rowPG['memcache'] and $MEMCACHE)
-					$memcache_obj->close();
 				
 				if(is_string($flagPG)) // если не булевое значение то выводим содержимое
 					$_tempMarker .= $flagPG;
@@ -549,6 +583,11 @@ class pg_class extends kernel_extends {
 			else
 				$_tpl[$rowPG['marker']] .= $_tempMarker;
 		}
+		if($this->MEMCACHE) {
+			$this->MEMCACHE->close();
+			$this->MEMCACHE=NULL;
+		}
+
 		return $flagPG;
 	}
 
@@ -726,7 +765,7 @@ class pg_class extends kernel_extends {
 
 	function creatSiteMaps() {
 		$data = $this->getMap(-1);
-		$xml = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+		$xml = '<?phpxml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 		$xml .= $this->reverseDataMap($data);
 		$xml .= '</urlset>';
 		return $xml;

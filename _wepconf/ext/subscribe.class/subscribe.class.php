@@ -1,4 +1,4 @@
-<?
+<?php
 class subscribe_class extends kernel_extends {
 
 	protected function _set_features() {

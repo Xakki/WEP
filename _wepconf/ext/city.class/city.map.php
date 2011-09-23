@@ -1,4 +1,4 @@
-<?
+<?php
 global $SITEMAP;
 	if(!$SITEMAP) {
 		_new_class('city',$CITY);

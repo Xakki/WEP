@@ -1,4 +1,4 @@
-<?
+<?php
 	if(!isset($FUNCPARAM[0])) $FUNCPARAM[0] = 'pathPage'; // Шаблон
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 		$this->_getCashedList('phptemplates', dirname(__FILE__));

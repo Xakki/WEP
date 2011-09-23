@@ -1,4 +1,4 @@
-<?
+<?php
 	function tpl_menu(&$data) {
 		$html = '';
 		if(isset($data['#item#']) and count($data['#item#'])) {

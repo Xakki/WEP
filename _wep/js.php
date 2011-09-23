@@ -1,4 +1,4 @@
-<?
+<?php
 
 	$GLOBALS['_RESULT']	= $DATA = array();
 	$_tpl['onload']=$html=$html2='';

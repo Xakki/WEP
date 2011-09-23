@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 	function tpl_formtools(&$data) {

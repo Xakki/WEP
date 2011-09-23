@@ -1,4 +1,4 @@
-<?
+<?php
 
 $_CFGFORM['sql'] = array(// SQL
 	'host' => array('type'=>'text','caption'=>'Хост подключения к БД'),

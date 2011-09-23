@@ -1,4 +1,4 @@
-<?
+<?php
 	function tpl_userlist(&$data) {
 		$html = '
 		<table cellspacing="0" cellpadding="0" class="extuser-list"><tbody>';

@@ -1,4 +1,4 @@
-<?
+<?php
 	function tpl_superlist(&$data) {
 		global $_CFG, $HTML;
 		$html = '';

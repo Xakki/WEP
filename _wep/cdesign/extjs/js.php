@@ -1,4 +1,4 @@
-<?
+<?php
 	$DATA = array();
 	if($_GET['_view']=='list'){
 		$MODUL->_clp = '_view=list&amp;_modul='.$MODUL->_cl.'&amp;';

@@ -1,4 +1,4 @@
-<?
+<?php
 function tools_step1() {
 	global $_CFG,$HTML,$_tpl;
 	$TEMP_CFG= array();
@@ -340,9 +340,49 @@ function getphpinfo() {
 		return $_CFG['_MESS']['denied'];
 	ob_start();
 	phpinfo();
-	return ob_get_flush();
+	$phpinfo = ob_get_contents();
+	ob_end_clean();
+	preg_match ('%<style type="text/css">(.*?)</style>.*?<body>(.*?)</body>%s', $phpinfo, $matches);
+	//$phpinfo1 = preg_split( '/\n/', trim(preg_replace( "/\nbody/", "\n", $matches[1])) );
+	return '<style type="text/css">'.$matches[1].'</style>'.$matches[2];
 }
 
+function memcachstatus() {
+	global $_CFG;
+	$memcache_obj = new Memcache; 
+	$memcache_obj->addServer($_CFG['memcache']['host'],$_CFG['memcache']['port']); 
+	$status = $memcache_obj->getStats();
+	$html ="<table border='1'>"; 
+	$html .="<tr><td>Memcache Server version:</td><td> ".$status["version"]."</td></tr>"; 
+	$html .="<tr><td>Process id of this server process </td><td>".$status["pid"]."</td></tr>"; 
+	$html .="<tr><td>Number of seconds this server has been running </td><td>".$status["uptime"]."</td></tr>"; 
+	$html .="<tr><td>Accumulated user time for this process </td><td>".$status["rusage_user"]." seconds</td></tr>"; 
+	$html .="<tr><td>Accumulated system time for this process </td><td>".$status["rusage_system"]." seconds</td></tr>";
+	$html .="<tr><td>Total number of items stored by this server ever since it started </td><td>".$status["total_items"]."</td></tr>"; 
+	$html .="<tr><td>Number of open connections </td><td>".$status["curr_connections"]."</td></tr>"; 
+	$html .="<tr><td>Total number of connections opened since the server started running </td><td>".$status["total_connections"]."</td></tr>"; 
+	$html .="<tr><td>Number of connection structures allocated by the server </td><td>".$status["connection_structures"]."</td></tr>"; 
+	$html .="<tr><td>Cumulative number of retrieval requests </td><td>".$status["cmd_get"]."</td></tr>"; 
+	$html .="<tr><td> Cumulative number of storage requests </td><td>".$status["cmd_set"]."</td></tr>"; 
+
+	$percCacheHit=((real)$status["get_hits"]/ (real)$status["cmd_get"] *100); 
+	$percCacheHit=round($percCacheHit,3); 
+	$percCacheMiss=100-$percCacheHit; 
+
+	$html .="<tr><td>Number of keys that have been requested and found present </td><td>".$status["get_hits"]." ($percCacheHit%)</td></tr>"; 
+	$html .="<tr><td>Number of items that have been requested and not found </td><td>".$status["get_misses"]."($percCacheMiss%)</td></tr>"; 
+
+	$MBRead= (real)$status["bytes_read"]/(1024*1024); 
+
+	$html .="<tr><td>Total number of bytes read by this server from network </td><td>".$MBRead." Mega Bytes</td></tr>"; 
+	$MBWrite=(real) $status["bytes_written"]/(1024*1024) ; 
+	$html .="<tr><td>Total number of bytes sent by this server to network </td><td>".$MBWrite." Mega Bytes</td></tr>"; 
+	$MBSize=(real) $status["limit_maxbytes"]/(1024*1024) ; 
+	$html .="<tr><td>Number of bytes this server is allowed to use for storage.</td><td>".$MBSize." Mega Bytes</td></tr>"; 
+	$html .="<tr><td>Number of valid items removed from cache to free memory for new items.</td><td>".$status["evictions"]."</td></tr>"; 
+	$html .="</table>";
+	return $html;
+}
 
 function tools_sendMail() {
 	global $SQL,$_CFG;
@@ -385,6 +425,7 @@ $dataF = array(
 	'tools_sendMail'=>'<span class="tools_item">Отправка почты</span>',
 	'tools_worktime'=>'<span class="tools_item">Режим "технические работы"</span>',
 	'getphpinfo'=>'<span class="tools_item">PHPINFO</span>',
+	'memcachstatus'=>'<span class="tools_item">Memcach status</span>',
 	'allinfos'=> '<span class="tools_item">Выввод глобальных переменных</span>',
 );
 

@@ -1,4 +1,4 @@
-<?
+<?php
 
 	function tpl_comments(&$data) {
 		global $_CFG, $HTML;

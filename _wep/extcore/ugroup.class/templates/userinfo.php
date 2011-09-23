@@ -1,4 +1,4 @@
-<?
+<?php
 	function tpl_userinfo(&$data) {
 		global $_CFG;
 		if(isset($data['data']) and count($data['data'])) {

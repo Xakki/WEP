@@ -1,4 +1,4 @@
-<?
+<?php
 function tpl_form(&$data) {
 	global $_CFG, $_tpl;
 	$attr = array();

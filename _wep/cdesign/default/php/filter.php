@@ -1,4 +1,4 @@
-<?
+<?php
 	function tpl_filter(&$data) {
 		global $_CFG;
 		$html = '';

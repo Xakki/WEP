@@ -1,4 +1,4 @@
-<?
+<?php
 	_new_class('city',$CITY);
 	if(!$CITY->cityPosition())
 		return false;

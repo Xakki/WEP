@@ -1,4 +1,4 @@
-<?
+<?php
 
 class static_tools {
 
@@ -583,7 +583,7 @@ class static_tools {
 		if ($mData !== false) {
 			$_CFG = $mData;
 		}
-		$fc = trim($fc, "<?>\n");
+		$fc = trim($fc, "<?php>\n");
 
 		if ($fc)
 			eval($fc);
@@ -641,7 +641,7 @@ class static_tools {
 				}
 			}
 		}
-		$putFile = "<?\n\t//create time " . date('Y-m-d H:i') . "\n\t".implode("\n\t", $putFile)."\n";
+		$putFile = "<?php\n\t//create time " . date('Y-m-d H:i') . "\n\t".implode("\n\t", $putFile)."\n";
 		//Записать в конфиг все данные которые отличаются от данных по умолчанию
 		if (!file_put_contents($_CFG['_PATH']['wepconf'] . '/config/config.php', $putFile)) {
 			$mess[] = array( 'error','Ошибка записи настроек. Нет доступа к фаилу');

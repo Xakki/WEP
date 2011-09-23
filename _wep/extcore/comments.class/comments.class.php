@@ -1,4 +1,4 @@
-<?
+<?php
 
 class comments_class extends kernel_extends {
 

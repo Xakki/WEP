@@ -1,4 +1,4 @@
-<?
+<?php
 	global $MAIL;
 	if(!$MAIL) _new_class('mail',$MAIL);
 

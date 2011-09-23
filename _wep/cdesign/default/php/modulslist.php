@@ -1,4 +1,4 @@
-<?
+<?php
 	function tpl_modulslist(&$data) {
 		global $_CFG;
 		$html = '';

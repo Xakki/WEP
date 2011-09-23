@@ -1,4 +1,4 @@
-<?
+<?php
 
 class uniugroup_class extends ugroup_class
 {

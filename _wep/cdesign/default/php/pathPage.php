@@ -1,4 +1,4 @@
-<?
+<?php
 	function tpl_pathPage(&$data,$form=0) {
 		$html = '';
 		if(isset($data) and count($data)) {

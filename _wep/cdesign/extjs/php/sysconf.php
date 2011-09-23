@@ -1,4 +1,4 @@
-<?
+<?php
 	function tpl_sysconf(&$data) {
 		global $_CFG;
 		//$html = '<a href="'.$_CFG['PATH']['wepname'].'/login.php?exit=ok" class="exit"><img src="'.$_CFG['PATH']['wepname'].'/cdesign/default/img/close48.gif" class="exit" alt="CLOSE"/></a><div class="uname">'.$data['user']['name'].' ['.$data['user']['gname'].']</div>';

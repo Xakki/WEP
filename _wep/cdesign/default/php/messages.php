@@ -1,4 +1,4 @@
-<?
+<?php
 	function tpl_messages(&$data) {
 		$html = '';
 		if(isset($data) and count($data) and is_array($data)) {

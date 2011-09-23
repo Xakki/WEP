@@ -1,4 +1,4 @@
-<?
+<?php
 	if($this->_CFG['_HREF']['arrayHOST'][0]=='i')
 		$PGLIST->config['counter'] = '';
 	$DATA = array('#item#'=>$PGLIST->getMap(1));

@@ -1,4 +1,4 @@
-<?
+<?php
 /**HELP
 $FUNCPARAM[0] - 0 - авторизация, 1 -регистрация
 $FUNCPARAM[1] - openid провайдеры [yandex,google,rambler,mailruapi,myopenid,openid,loginza]

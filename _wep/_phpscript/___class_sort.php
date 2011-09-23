@@ -1,4 +1,4 @@
-<?
+<?php
 exit();
 $www = $_SERVER["DOCUMENT_ROOT"]."/";
 

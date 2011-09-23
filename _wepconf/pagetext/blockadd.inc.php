@@ -1,4 +1,4 @@
-<?
+<?php
 	global $RUBRIC,$_tpl;
 	_new_class('city',$CITY);
 	$tp_bl1 = '<div class="block"><div class="blocktext">';

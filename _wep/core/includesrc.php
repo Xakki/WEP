@@ -1,4 +1,4 @@
-<?
+<?php
 
 	function fileInclude($gfi) {
 		if(!count($gfi)) return true;

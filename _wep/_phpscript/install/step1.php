@@ -1,4 +1,4 @@
-<?
+<?php
 $_SESSION['step'] = 1;
 if(!isset($var_const))
 	$var_const = array(

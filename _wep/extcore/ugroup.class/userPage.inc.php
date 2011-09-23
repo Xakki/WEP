@@ -1,4 +1,4 @@
-<?
+<?php
 	_new_class('ugroup', $UGROUP);
 
 	if(!isset($FUNCPARAM[0])) $FUNCPARAM[0] = false;// - текущий	 пользователь, цыфра - уровень адреса ID пользователя

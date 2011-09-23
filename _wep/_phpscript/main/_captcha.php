@@ -1,4 +1,4 @@
-<?
+<?php
 $data = 0;
 if(isset($_COOKIE['chash']) and $_COOKIE['chash'] and $_COOKIE['pkey']) {
 	$hash_key = base64_decode($_COOKIE['pkey']);

@@ -1,4 +1,4 @@
-<?
+<?php
 	//$keyPG - id страницы
 	global $BOARD, $RUBRIC, $CITY;
 	_new_class('city',$CITY);

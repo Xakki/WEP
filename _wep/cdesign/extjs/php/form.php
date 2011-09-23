@@ -1,4 +1,4 @@
-<?
+<?php
 function tpl_form(&$data) {
 	global $_CFG;
 	$attr = $data['_*features*_'];

@@ -1,4 +1,4 @@
-<?
+<?php
 	global $_tpl;
 	_new_class('city',$CITY);
 	//$this->config['sitename'] .= ' - '.$CITY->name;

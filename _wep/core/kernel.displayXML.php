@@ -1,4 +1,4 @@
-<?
+<?php
 
 		if(count($this->formDSort)) {
 			$temp = $this->fields_form;
