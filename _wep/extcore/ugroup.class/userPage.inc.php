@@ -22,7 +22,7 @@
 	$tplphp = $this->FFTemplate($FUNCPARAM[1],dirname(__FILE__));
 
 	if($FUNCPARAM[0]) {
-		$FUNCPARAM[0] = $_GET['page'][(int)substr($FUNCPARAM[0],1)-1];
+		$FUNCPARAM[0] = $this->pageParam[(int)substr($FUNCPARAM[0],1)-1];
 	}else
 		$FUNCPARAM[0] = $_SESSION['user']['id'];
 

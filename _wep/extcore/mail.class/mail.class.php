@@ -78,6 +78,7 @@ class mail_class extends kernel_extends {
 		$this->fields['user_to'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['mail_to'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['status'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL');
+		$this->fields['category'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL','default'=>0);
 
 		$this->_enum['status'] = array(
 			0 => 'Не отправлялось на email',
@@ -85,6 +86,12 @@ class mail_class extends kernel_extends {
 			2 => 'При отправке на email произошли ошибки',
 			3 => 'Не отправлялось на email и было прочитано на сайте',
 			4 => 'Удалено пользователем',
+		);
+
+		$this->_enum['category'] = array(
+			0 => '--',
+			1 => 'iBug',
+			2 => 'feedback',
 		);
 
 		$this->locallang['default']['_saveclose'] = 'Отправить письмо';
@@ -95,6 +102,11 @@ class mail_class extends kernel_extends {
 	public function setFieldsForm($form=0) {
 		parent::setFieldsForm($form);
 		$this->fields_form['from']= array('type'=>'text','caption'=>'Обратный email адрес','mask'=>array('name'=>'email', 'min' => '4'));
+		$this->fields_form[$this->mf_createrid] = array(
+			'type' => 'list',
+			'readonly'=>true,
+			'listname'=>array('class'=>'users','nameField'=>'concat(tx.name," [",tx.id,"]")'),
+			'caption' => 'От кого', 'mask' => array('usercheck'=>1));
 		$this->fields_form['subject']= array('type'=>'text','caption'=>'Тема письма', 'mask'=>array('min' => '4'));
 		$this->fields_form['text'] = array(
 			'type' => 'ckedit', 
@@ -105,19 +117,16 @@ class mail_class extends kernel_extends {
 				'toolbarStartupExpanded'=>'false',
 				'extraPlugins'=>"'cntlen'",
 				'plugins'=>"'button,contextmenu,enterkey,entities,justify,keystrokes,list,pastetext,popup,removeformat,toolbar,undo'"));
-		$this->fields_form[$this->mf_createrid] = array(
-			'type' => 'list',
-			'readonly'=>true,
-			'listname'=>array('class'=>'users','nameField'=>'concat(tx.name," [",tx.id,"]")'),
-			'caption' => 'От кого', 'mask' => array('usercheck'=>1));
+		$this->fields_form['mail_to'] = array('type' => 'text', 'caption' => 'Кому email', 'mask' => array('usercheck'=>1));
 		$this->fields_form['user_to'] = array(
 			'type' => 'list', 
 			'readonly'=>true,
 			'listname'=>array('class'=>'users','nameField'=>'concat(tx.name," [",tx.id,"]")'),
 			'caption' => 'Кому', 'mask' => array('usercheck'=>1));
-		$this->fields_form['mail_to'] = array('type' => 'text', 'caption' => 'Кому email', 'mask' => array('usercheck'=>1));
 		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата создания', 'mask'=>array('usercheck'=>1,'fview'=>2,'sort'=>1));
-		$this->fields_form['status'] = array('type' => 'list', 'listname'=>'status', 'caption' => 'Статус сообщения', 'mask' => array('usercheck'=>1));
+		$this->fields_form['status'] = array('type' => 'list', 'listname'=>'status', 'caption' => 'Статус', 'mask' => array('usercheck'=>1));
+		$this->fields_form['category'] = array('type' => 'list', 'listname'=>'category', 'caption' => 'Категория', 'mask' => array('usercheck'=>1));
+
 		if(isset($this->HOOK['setFieldsForm'])){
 			call_user_func($this->HOOK['setFieldsForm'],$this);
 		}
@@ -132,7 +141,7 @@ class mail_class extends kernel_extends {
 		$send_result = false;
 		$this->__do_hook('Send', $data);
 		if(!isset($data['from']) or !$data['from']) {
-			if(isset($data['creater_id']) && $data['creater_id'] == 0)
+			if(isset($data['creater_id']) && $data['creater_id'] == -1)
 				$data['from']=$this->config['mailrobot'];
 			elseif (isset($_SESSION['user']['email']) && $_SESSION['user']['email'])
 				$data['from'] = $_SESSION['user']['email'];
@@ -141,8 +150,11 @@ class mail_class extends kernel_extends {
 		if(!$data['mail_to']) {
 			unset($data['mail_to']);
 			$data['status'] = 0;
+			$send_result = true;
 		}
 		else {
+			if(!$data['from'])
+				$data['from'] = 'anonim@'.$_SERVER['HTTP_HOST'];
 			if(method_exists($this, 'mailengine'.$this->config['mailengine'])) {
 				$send_result = call_user_func(array($this, 'mailengine'.$this->config['mailengine']),$data);
 			}
@@ -163,15 +175,15 @@ class mail_class extends kernel_extends {
 		
 	}
 
-	function mailForm($mail_to) {
+	function mailForm($mail_to='',$category=0) {
 		global $_MESS;
 		$flag=0;// 1 - успешно, 0 - норм, -1  - ошибка
 		$formflag = 1;// 0 - показывает форму, 1 - не показывать форму
-		$arr = array('mess'=>array(),'vars'=>array());
 		$mess = array();
 		
-		if(!$mail_to)
+		/*if(!$mail_to) {
 			$mail_to = $this->config['mailrobot'];
+		}*/
 
 		$param=array('capthaOn'=>1);
 		$data = array();
@@ -185,17 +197,19 @@ class mail_class extends kernel_extends {
 			$flag=-1;
 			if(!count($arr['mess'])) {
 				$arr['vars']['mail_to']=$mail_to;
+				$arr['vars']['category']=$category;
 				if($this->Send($arr['vars'])) {
 					$flag=1;
-					$arr['mess'][] = array('name'=>'ok', 'value'=>$this->getMess('mailok'));
+					$mess[] = array('name'=>'ok', 'value'=>$this->getMess('mailok'));
 					// иногда сервер говорит что ошибка, а сам всеравно письма отсылает
 				} else {
 					$flag=-1;
-					$arr['mess'][] = array('name'=>'error', 'value'=>$this->getMess('mailerr'));
+					$mess[] = array('name'=>'error', 'value'=>$this->getMess('mailerr'));
 				}
-			}
+			}else
+				$mess = $arr['mess'];
 		} else {
-				$mess = $this->kPreFields($arr['vars'],$param);
+				$mess = $this->kPreFields($_POST,$param);
 		}
 		if(isset($_SESSION['user']['email']) and $_SESSION['user']['email'])
 			unset($this->fields_form["from"]);
@@ -209,7 +223,7 @@ class mail_class extends kernel_extends {
 
 		static_form::setCaptcha();
 
-		return Array(Array('messages'=>($mess+$arr['mess']), 'form'=>($formflag?$this->form:array())), $flag);
+		return Array(Array('messages'=>$mess, 'form'=>($formflag?$this->form:array())), $flag);
 
 	}
 
@@ -327,7 +341,7 @@ class mail_class extends kernel_extends {
 		
 		$result = $this->SQL->execSQL('
 			select count(id) as cnt from `'.$this->tablename.'`
-			where `creater_id`="0" and user_to="'.$_SESSION['user']['id'].'"
+			where `creater_id`="-1" and user_to="'.$_SESSION['user']['id'].'"
 		');
 		
 		if ($row = $result->fetch_array())
@@ -337,7 +351,7 @@ class mail_class extends kernel_extends {
 		
 		$result = $this->SQL->execSQL('
 			select count(id) as cnt from `'.$this->tablename.'`
-			where `creater_id`!="0" and user_to="'.$_SESSION['user']['id'].'"
+			where `creater_id`!="-1" and user_to="'.$_SESSION['user']['id'].'"
 		');
 		
 		if ($row = $result->fetch_array())
@@ -374,14 +388,14 @@ class mail_class extends kernel_extends {
 			case 'private':
 			{
 				$where[] = '`user_to`="'.$_SESSION['user']['id'].'"';				
-				$where[] = '`creater_id`!="0"';
+				$where[] = '`creater_id`!="-1"';
 			}
 			break;
 		
 			case 'system':
 			{
 				$where[] = '`user_to`="'.$_SESSION['user']['id'].'"';
-				$where[] = '`creater_id`="0"';
+				$where[] = '`creater_id`="-1"';
 			}
 			break;
 		
@@ -437,7 +451,7 @@ class mail_class extends kernel_extends {
 		while ($row = $result->fetch_array())
 		{
 			$data['rows'][] = $row;
-			if ($row['creater_id'] != 0)
+			if ($row['creater_id'] != -1)
 			{
 				if ($row['creater_id'] == $_SESSION['user']['id'])
 				{
@@ -451,7 +465,7 @@ class mail_class extends kernel_extends {
 		}
 		
 		$data['users'] = array(
-			0 => array(
+			-1 => array(
 				'name' => 'Системное сообщение',
 				'userpic' => 'png',
 			),

@@ -74,19 +74,24 @@
 		session_go();
 		_new_class('pg',$PGLIST);
 		$_tpl = array();
-		$PGLIST->id = $_REQUEST['pg'];
+		$PGLIST->id = $_REQUEST['pgId'];
 		$PGLIST->display(false);
 		//$_tpl['logs'] = '';
 		//print_r('<pre>');print_r($_tpl);
 		//$GLOBALS['_RESULT']['html2'] = $_tpl;
-		foreach($_POST as $k=>$r) {
-			if(isset($_tpl[$k])) {
+		foreach($_REQUEST as $k=>$r) {
+			if($k=='onload') {
+				$GLOBALS['_RESULT']['eval'] .= $_tpl[$k];
+			}
+			else if(isset($_tpl[$k])) {
 				$GLOBALS['_RESULT']['pg_'.$k] = $_tpl[$k];
-				if(is_array($r)) {
-					foreach($r as $vk=>$vr)
-						$GLOBALS['_RESULT']['eval'] .= 'jQuery(\''.$vr.'\').'.$vk.'(result.pg_'.$k.');';
-				} else//replaceWith
-					$GLOBALS['_RESULT']['eval'] .= 'jQuery(\''.$r.'\').html(result.pg_'.$k.');';
+				if(!isset($_REQUEST['onlyget'])) {
+					if(is_array($r)) {
+						foreach($r as $vk=>$vr)
+							$GLOBALS['_RESULT']['eval'] .= 'jQuery(\''.$vr.'\').'.$vk.'(result.pg_'.$k.');';
+					} else//replaceWith
+						$GLOBALS['_RESULT']['eval'] .= 'jQuery(\''.$r.'\').html(result.pg_'.$k.');';
+				}
 			}
 		}
 		//print_r('<pre>');print_r($GLOBALS['_RESULT']);

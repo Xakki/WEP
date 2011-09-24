@@ -1,6 +1,10 @@
 var timerid = 0;
 var timerid2 = 0;
 
+function JSWin(param) {
+	return wep.JSWin(param);
+}
+
 function ajaxLoadPage(pg,marker,call) {
 	return wep.ajaxLoadPage(marker,pg,call);
 }
@@ -78,10 +82,6 @@ function ShowTools(id,hrf) {
 
 function readyPlot(cap,Xname,Yname,stepY) {
 	return wep.readyPlot(cap,Xname,Yname,stepY);
-}
-
-function JSWin(param) {
-	return wep.JSWin(param);
 }
 
 
@@ -178,6 +178,7 @@ var wep = {
 				param['href'] = jQuery(param['type']).attr('action');
 				param['data'] = jQuery(param['type']).serialize()+'&sbmt=1';
 				param['type'] = jQuery(param['type']).attr('method');
+				if(!param['type']) param['type'] = 'POST';
 			}
 		}
 		else if(!param['type']) param['type'] = 'GET';
@@ -263,15 +264,16 @@ var wep = {
 				if(typeof result.text != 'undefined' && result.text!='') // Вывод ошибок и прочего текста
 					fLog(fSpoiler(result.text,'AJAX text result'),1);
 
+				//Запуск функции пользователя
+				if(typeof param['call'] != 'undefined' && typeof param['call'] == 'function') 
+					param['call'].call(result);
+
 				if(typeof result.eval != 'undefined')  { // запуск onload функции
 					if(typeof result.eval == 'function')
 						result.eval.call();
 					else if(result.eval!='') 
 						eval(result.eval);
 				}
-				//Запуск функции пользователя
-				if(typeof param['call'] != 'undefined' && typeof param['call'] == 'function') 
-					param['call'].call(result);
 			}
 		});
 		return false;
@@ -311,7 +313,7 @@ var wep = {
 			jQuery(body+' > #'+objid).show();
 			//if(body=='body') // Нах это?
 			fMessPos(body,' #'+objid);
-		}
+		}console.log(txt);
 		return false;
 	},
 	showBG: function(body,show,k) {
@@ -332,11 +334,11 @@ var wep = {
 		var arr = '';
 		if(this.pgParam) {
 			arr = this.pgParam;
-			arr = arr.join("&page[]=");
+			arr = arr.join("&pageParam[]=");
 		}
 		param = {
-			'href':'_json.php?_view=loadpage&pg='+pg+'&page[]='+arr,
-			'type':'POST',
+			'href':'_json.php?_view=loadpage&pgId='+pg+'&pageParam[]='+arr,
+			'type':'GET',
 			'data': marker
 		};
 		if(call)
@@ -344,6 +346,7 @@ var wep = {
 		JSWin(param);
 		return false;
 	},
+
 	getBrowserInfo: function() {
 		var t,v = undefined;
 		if (window.opera) t = 'Opera';

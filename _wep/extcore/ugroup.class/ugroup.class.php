@@ -208,7 +208,7 @@ class ugroup_class extends kernel_extends
 				$txt .= '</table>';
 				_new_class('mail',$MAIL);
 				$datamail = array(
-					'creater_id' => 0,
+					'creater_id' => -1,
 					'mail_to' => $this->config['mail_to'],
 					'subject' => strtoupper($_SERVER['HTTP_HOST']).' Оповещение: Ожидают проверки '.count($data).' зарегистрированных пользователя',
 					'text' => '<p>Список пользователей ожидающие одобрения.</p>'.$txt,
@@ -505,7 +505,7 @@ class users_class extends kernel_extends {
 						if($this->_add_item($arr['vars'])) {
 							$this->SQL->execSQL('UPDATE '.$this->tablename.' SET '.$this->mf_createrid.'="'.$this->id.'" where '.$this->fn_login.'="'.$arr['vars'][$this->fn_login].'"');
 							_new_class('mail',$MAIL);
-							$datamail = array('creater_id'=>0);
+							$datamail = array('creater_id'=>-1);
 							$datamail['mail_to']=$arr['vars']['email'];
 							$datamail['user_to']=$this->id;
 							$datamail['subject']='Подтвердите регистрацию на '.strtoupper($_SERVER['HTTP_HOST']);
@@ -654,7 +654,7 @@ class users_class extends kernel_extends {
 			$time=time();
 			$hash =md5($datau[$this->fn_pass].$time.$datau['email']).'h';
 			_new_class('mail',$MAIL);
-			$datamail['creater_id']=0;
+			$datamail = array('creater_id'=>-1);
 			$datamail['mail_to']=$datau['email'];
 			$datamail['user_to']=$datau['id'];
 			$datamail['subject']='Востановление пароля на '.strtoupper($_SERVER['HTTP_HOST']);

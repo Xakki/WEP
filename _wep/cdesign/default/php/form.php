@@ -43,6 +43,7 @@ function tpl_form(&$data) {
 			$texthtml .= '<div>'.$r['caption'].'</div>';
 		}
 		elseif($r['type']=='hidden') {
+			$r['value'] = htmlentities($r['value'],ENT_QUOTES,$_CFG['wep']['charset']);
 			$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'" value="'.$r['value'].'" id="'.((isset($r['id']) and $r['id'])?$r['id']:$k).'"/>';
 		}
 		else {

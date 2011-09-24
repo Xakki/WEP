@@ -77,10 +77,10 @@
 
 //INCLUDE*****************
 	_new_class('pg',$PGLIST);
-		if (!isset($_GET['page'])) 
-			$_GET['page'] = "index";
-		if(is_array($_GET['page'])) $_GET['page'] = implode('/',$_GET['page']);
-		$_GET['page'] = explode('/',trim($_GET['page'],'/'));
+		if (!isset($_REQUEST['pageParam'])) 
+			$_REQUEST['pageParam'] = "index";
+		if(is_array($_REQUEST['pageParam'])) $_REQUEST['pageParam'] = implode('/',$_REQUEST['pageParam']);
+		$_REQUEST['pageParam'] = explode('/',trim($_REQUEST['pageParam'],'/'));
 
 
 //if($_SESSION['_showallinfo']) {print('main1 = '.(getmicrotime()-$main1time).'<hr/>');$main2time = getmicrotime();}

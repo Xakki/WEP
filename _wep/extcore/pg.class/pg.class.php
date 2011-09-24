@@ -61,7 +61,7 @@ class pg_class extends kernel_extends {
 		$this->mf_actctrl = true;
 		$this->caption = 'Страницы';
 		$this->selected = array();
-		$this->ver = '0.2.1';
+		$this->ver = '0.3.1';
 		$this->pageinfo = 
 			$this->dataCash = $this->dataCashTree = $this->dataCashTreeAlias = array();
 		$this->pageParam = array();
@@ -305,9 +305,9 @@ class pg_class extends kernel_extends {
 		if(empty($this->dataCashTree))
 			$this->sqlCashPG();
 		$fid = $this->config['rootPage'];
-		if(isset($_GET['page']) and is_array($_GET['page']) and count($_GET['page'])) {
+		if(isset($_REQUEST['pageParam']) and is_array($_REQUEST['pageParam']) and count($_REQUEST['pageParam'])) {
 			$this->pageParam = array();
-			foreach($_GET['page'] as $k=>$r) {
+			foreach($_REQUEST['pageParam'] as $k=>$r) {
 				if(isset($this->dataCashTreeAlias[$fid][$r]) and !$this->id) {
 					$fid = $this->dataCashTreeAlias[$fid][$r]['id'];
 				}elseif(isset($this->dataCashTree[$fid][$r]) and !$this->id) {
