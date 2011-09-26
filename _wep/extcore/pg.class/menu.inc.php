@@ -11,7 +11,6 @@
 		$this->_enum['typemenuinc'] = array(
 			0=>'выводит всё в виде структуры дерева',
 			1=>'выводит все в общем массиве',
-			2=>'только текущий уровень',
 		);
 		$temp = 'ownerlist';
 		$this->_enum['levelmenuinc'] = $this->_getCashedList($temp);

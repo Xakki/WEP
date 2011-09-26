@@ -92,6 +92,7 @@ class mail_class extends kernel_extends {
 			0 => '--',
 			1 => 'iBug',
 			2 => 'feedback',
+			3 => 'over',
 		);
 
 		$this->locallang['default']['_saveclose'] = 'Отправить письмо';
@@ -331,7 +332,7 @@ class mail_class extends kernel_extends {
 		
 		$result = $this->SQL->execSQL('
 			select count(id) as cnt from `'.$this->tablename.'`
-			where `mf_timecr`>"'.(time()-24*60*60).'" and user_to="'.$_SESSION['user']['id'].'"
+			where `mf_timecr`>"'.(time()-24*60*60).'" and user_to="'.$_SESSION['user']['id'].' and status!=4"
 		');
 		
 		if ($row = $result->fetch_array())
@@ -341,17 +342,16 @@ class mail_class extends kernel_extends {
 		
 		$result = $this->SQL->execSQL('
 			select count(id) as cnt from `'.$this->tablename.'`
-			where `creater_id`="-1" and user_to="'.$_SESSION['user']['id'].'"
+			where `creater_id`="-1" and user_to="'.$_SESSION['user']['id'].' and status!=4"
 		');
 		
-		if ($row = $result->fetch_array())
-		{
+		if ($row = $result->fetch_array()) {
 			$data['system_msg'] = $row['cnt'];
 		}
 		
 		$result = $this->SQL->execSQL('
 			select count(id) as cnt from `'.$this->tablename.'`
-			where `creater_id`!="-1" and user_to="'.$_SESSION['user']['id'].'"
+			where `creater_id`!="-1" and user_to="'.$_SESSION['user']['id'].' and status!=4"
 		');
 		
 		if ($row = $result->fetch_array())

@@ -102,10 +102,10 @@ class ugroup_class extends kernel_extends
 		parent::setFieldsForm($form);
 		$this->fields_form['id'] = array('type' => 'text', 'mask' =>array(), 'caption' => 'ID');
 		$this->fields_form[$this->mf_namefields] = array('type' => 'text', 'mask' =>array('min'=>1), 'caption' => 'Название группы');
-		$this->fields_form['wep'] = array('type' => 'checkbox', 'caption' => 'Разрешить вход в админку?');
+		$this->fields_form['wep'] = array('type' => 'checkbox', 'caption'=>'Админка', 'comment' => 'Разрешить вход в админку?');
 		$this->fields_form['level'] = array('type' => 'list', 'listname'=>'level', 'caption' => 'Доступ в CMS', 'default'=>2);
-		$this->fields_form['design'] = array('type' => 'list', 'listname'=>'mdesign', 'caption' => 'Дизаин личного кабинета', 'default'=>'default');
-		$this->fields_form['filesize'] = array('type' => 'int', 'caption' => 'Доступный размер диска', 'comment' => 'Значение в мегабайтах, 0 - запрет','mask'=>array('max'=>1000));
+		$this->fields_form['design'] = array('type' => 'list', 'listname'=>'mdesign', 'caption'=>'Дизайн', 'comment' => 'Дизаин личного кабинета', 'default'=>'default');
+		$this->fields_form['filesize'] = array('type' => 'int', 'caption' => 'Share', 'comment' => 'Доступный размер диска. Значение в мегабайтах, 0 - запрет','mask'=>array('max'=>1000));
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Активность');
 
 		if($this->config['karma']) {
@@ -113,9 +113,9 @@ class ugroup_class extends kernel_extends
 			$this->fields['maxkarma'] = array('type' => 'int', 'width' =>8, 'attr' => 'NOT NULL', 'default' => 0);
 			$this->fields['defkratio'] = array('type' => 'float', 'width' => '8,2','attr' => 'NOT NULL', 'default'=>'0.00');
 
-			$this->fields_form['minkarma'] = array('type' => 'text', 'caption' => 'Минимальная карма');
-			$this->fields_form['maxkarma'] = array('type' => 'text', 'caption' => 'Максимальная карма');
-			$this->fields_form['defkratio'] = array('type' => 'text', 'caption' => 'Коэфициент по умолчанию');
+			$this->fields_form['minkarma'] = array('type' => 'text', 'caption' => 'Мин. карма', 'mask' =>array());
+			$this->fields_form['maxkarma'] = array('type' => 'text', 'caption' => 'Макс. карма', 'mask' =>array('fview'=>1));
+			$this->fields_form['defkratio'] = array('type' => 'text', 'caption' => 'Коэфициент по умол.', 'mask' =>array('fview'=>1));
 		}
 		if($this->config['payon']) {
 			$this->fields_form['negative'] = array('type' => 'checkbox', 'caption' => 'Разрешить отрицательный баланс?');

@@ -5,6 +5,13 @@ function JSWin(param) {
 	return wep.JSWin(param);
 }
 
+function OnJSWin(obj,param) {
+	if(!param) param = {};
+	param['type'] = jQuery(obj);
+	jQuery(obj).submit(function() {JSWin(param);return false;});
+	return false;
+}
+
 function ajaxLoadPage(pg,marker,call) {
 	return wep.ajaxLoadPage(marker,pg,call);
 }
@@ -167,17 +174,18 @@ var wep = {
 	pgId:0,
 	JSWin: function(param) {
 		if(typeof param['type']=='object') {
-			if(param['type'].tagName=='A') {
-				param['href'] = jQuery(param['type']).attr('href');
+			var OBJ = jQuery(param['type']);
+			if(OBJ.get(0).tagName=='A') {
+				param['href'] = OBJ.attr('href');
 				param['type'] = 'GET';
 			}
 			else {
 				if(typeof CKEDITOR !== 'undefined') {
-					jQuery.each(jQuery(param['type']).find("textarea"),function(){nm=jQuery(this).attr('name');if(nm) eval("if(typeof CKEDITOR.instances."+nm+" == 'object') {CKEDITOR.instances."+nm+".updateElement();}");});
+					jQuery.each(OBJ.find("textarea"),function(){nm=jQuery(this).attr('name');if(nm) eval("if(typeof CKEDITOR.instances."+nm+" == 'object') {CKEDITOR.instances."+nm+".updateElement();}");});
 				}
-				param['href'] = jQuery(param['type']).attr('action');
-				param['data'] = jQuery(param['type']).serialize()+'&sbmt=1';
-				param['type'] = jQuery(param['type']).attr('method');
+				param['href'] = OBJ.attr('action');
+				param['data'] = OBJ.serialize()+'&sbmt=1';
+				param['type'] = OBJ.attr('method');
 				if(!param['type']) param['type'] = 'POST';
 			}
 		}

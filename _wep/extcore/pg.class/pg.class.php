@@ -64,7 +64,7 @@ class pg_class extends kernel_extends {
 		$this->ver = '0.3.1';
 		$this->pageinfo = 
 			$this->dataCash = $this->dataCashTree = $this->dataCashTreeAlias = array();
-		$this->pageParam = array();
+		$this->pageParam = $this->pageParamId = array();
 		$this->default_access = '|1|'; // По умолчанию ставим доступ на чтений всем пользователям
 		$this->MEMCACHE = NULL;
 		return true;
@@ -306,12 +306,15 @@ class pg_class extends kernel_extends {
 			$this->sqlCashPG();
 		$fid = $this->config['rootPage'];
 		if(isset($_REQUEST['pageParam']) and is_array($_REQUEST['pageParam']) and count($_REQUEST['pageParam'])) {
-			$this->pageParam = array();
+			$this->pageParam = $this->pageParamId = array();
 			foreach($_REQUEST['pageParam'] as $k=>$r) {
 				if(isset($this->dataCashTreeAlias[$fid][$r]) and !$this->id) {
 					$fid = $this->dataCashTreeAlias[$fid][$r]['id'];
-				}elseif(isset($this->dataCashTree[$fid][$r]) and !$this->id) {
+					$this->pageParamId[$k] = $fid;
+				}
+				elseif(isset($this->dataCashTree[$fid][$r]) and !$this->id) {
 					$fid = $this->dataCashTree[$fid][$r]['id'];
+					$this->pageParamId[$k] = $fid;
 				}
 				else
 					$this->pageParam[] = $r;
@@ -609,9 +612,14 @@ class pg_class extends kernel_extends {
 			if(!$startPG)
 				$startPG = $this->config['rootPage'];
 			elseif(strpos($startPG,'#')!==false) {
-				$startPG = (int)substr($startPG,1);
-				if(!$startPG) $startPG = $this->dataCash[$this->id]['parent_id'];
-				else $startPG = $this->id;
+				$startPG = substr($startPG,1);
+				if($startPG=='') $startPG = $this->dataCash[$this->id]['parent_id'];
+				elseif((int)$startPG) {
+					$startPG = (int)$startPG;
+					while(!isset($this->pageParamId[$startPG]))
+						$startPG--;
+					$startPG = $this->pageParamId[$startPG];
+				}
 			}
 			$tempPG = &$this->dataCashTree[$startPG];
 		}
