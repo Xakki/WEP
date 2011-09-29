@@ -59,7 +59,7 @@ function checkInt(ev) {
 	return true;
 }
 
-function textareaChange(obj,max){/* Утилита для подсчёта кол сиволов в форме, автоматически создаёт необходимые поля*/
+function textareaChange(obj,max) {/* Утилита для подсчёта кол сиволов в форме, автоматически создаёт необходимые поля*/
 	if(!jQuery('#'+obj.name+'t2').size()){
 		val = document.createElement('span');
 		val.className = "dscr";

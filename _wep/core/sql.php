@@ -24,7 +24,7 @@
 		}
 
 		function sql_connect($new_link) {
-			$this->hlink = mysql_connect($this->CFG_SQL['host'], $this->CFG_SQL['login'], $this->CFG_SQL['password']);
+			$this->hlink = @mysql_connect($this->CFG_SQL['host'], $this->CFG_SQL['login'], $this->CFG_SQL['password']);
 			if($this->hlink) {
 				mysql_query ('SET NAMES '.$this->CFG_SQL['setnames']);
 				if(!mysql_select_db($this->CFG_SQL['database'],$this->hlink)) {
@@ -32,11 +32,11 @@
 						mysql_select_db($this->CFG_SQL['database'],$this->hlink);
 					else 
 						trigger_error('Can`t create database `'.$this->CFG_SQL['database'].'`', E_USER_WARNING);
-						die('SQL config error');
+						die('<h4>SQL config error</h4>');
 				}
 			}else {
 				trigger_error('Can`t connect to database `'.$this->CFG_SQL['database'].'`', E_USER_WARNING);
-				die('SQL connect error');
+				die('<h4>SQL connect error</h4>');
 			}
 		}
 

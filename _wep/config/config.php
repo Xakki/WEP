@@ -33,6 +33,7 @@ $_CFG['wep'] = array(// для ядра и админки
 	'setlocale'=>'ru_RU.UTF-8',
 	'locale' => 'default',
 	'timezone' => 'Europe/Moscow',
+	'dateformat' => 'Y-m-d',
 	'locallang' => 'default',
 	'design' => 'default',
 	'md5' => 'd3dEegf6EH',

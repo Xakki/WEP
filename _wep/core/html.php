@@ -165,8 +165,8 @@ class html {
 			$result = xslt_process($this->_xslt, 'arg:/_xml', 'arg:/_xsl', NULL, $arguments);
 			if (!$result) {
 				trigger_error('Error in Template `' . $transform . '` E[' . xslt_errno($this->_xslt) . ']:' . xslt_error($this->_xslt) . '<br/>
-					<div class="spoiler-wrap"><div class="spoiler-head folded clickable" onclick="bugSpoilers(this)">XML</div><div class="spoiler-body" style="display: none;">' . nl2br(htmlspecialchars($xml, ENT_QUOTES, 'UTF-8')) . '</div></div>
-					<div class="spoiler-wrap"><div class="spoiler-head folded clickable" onclick="bugSpoilers(this)">XSL</div><div class="spoiler-body" style="display: none;">' . nl2br(htmlspecialchars($xsl, ENT_QUOTES, 'UTF-8')) . '</div></div>', E_USER_WARNING);
+					<div class="bspoiler-wrap"><div class="spoiler-head folded clickable" onclick="bugSpoilers(this)">XML</div><div class="spoiler-body" style="display: none;">' . nl2br(htmlspecialchars($xml, ENT_QUOTES, 'UTF-8')) . '</div></div>
+					<div class="bspoiler-wrap"><div class="spoiler-head folded clickable" onclick="bugSpoilers(this)">XSL</div><div class="spoiler-body" style="display: none;">' . nl2br(htmlspecialchars($xsl, ENT_QUOTES, 'UTF-8')) . '</div></div>', E_USER_WARNING);
 				return '';
 			}
 		} else {
@@ -180,8 +180,8 @@ class html {
 			}
 			/*
 
-			  <div class="spoiler-wrap"><div class="spoiler-head folded clickable" onclick="bugSpoilers(this)"> Ошибки XML</div><div class="spoiler-body" style="display: none;"><pre>'.htmlentities($xml, ENT_QUOTES).'</pre></div></div>
-			  <div class="spoiler-wrap"><div class="spoiler-head folded clickable" onclick="bugSpoilers(this)"> Ошибки XSL</div><div class="spoiler-body" style="display: none;"><pre>'.htmlentities($xsl, ENT_QUOTES).'</pre></div></div> */
+			  <div class="bspoiler-wrap"><div class="spoiler-head folded clickable" onclick="bugSpoilers(this)"> Ошибки XML</div><div class="spoiler-body" style="display: none;"><pre>'.htmlentities($xml, ENT_QUOTES).'</pre></div></div>
+			  <div class="bspoiler-wrap"><div class="spoiler-head folded clickable" onclick="bugSpoilers(this)"> Ошибки XSL</div><div class="spoiler-body" style="display: none;"><pre>'.htmlentities($xsl, ENT_QUOTES).'</pre></div></div> */
 		}
 		$pos = strpos($result, 'xhtml1-strict.dtd');
 		if ($pos === false)
@@ -238,9 +238,9 @@ function _myErrorHandler($errno, $errstr, $errfile, $errline, $errcontext) {//,$
 			$GLOBALS['_ERR'][$_CFG['wep']['catch_bug']][$type] = '';
 
 		if ($debug)
-			$GLOBALS['_ERR'][$_CFG['wep']['catch_bug']][$type] .='<div class="spoiler-wrap"><div onclick="bugSpoilers(this)" class="spoiler-head folded clickable" style="color:' . $_CFG['_error'][$errno]['color'] . ';">' . $errtype . ' ' . $errstr . ' , in line ' . $errline . ' of file <i>' . $errfile . '</i> </div>' . $debug . '</div>' . "\n";
+			$GLOBALS['_ERR'][$_CFG['wep']['catch_bug']][$type] .='<div class="bspoiler-wrap"><div onclick="bugSpoilers(this)" class="spoiler-head folded clickable" style="background-color:' . $_CFG['_error'][$errno]['color'] . ';">' . $errtype . ' ' . $errstr . ' , in line ' . $errline . ' of file <i>' . $errfile . '</i> </div>' . $debug . '</div>' . "\n";
 		else
-			$GLOBALS['_ERR'][$_CFG['wep']['catch_bug']][$type] .='<div style="color:' . $_CFG['_error'][$errno]['color'] . ';">' . $errtype . ' ' . $errstr . ' , in line ' . $errline . ' of file <i>' . $errfile . '</i> </div>' . "\n";
+			$GLOBALS['_ERR'][$_CFG['wep']['catch_bug']][$type] .='<div style="background-color:' . $_CFG['_error'][$errno]['color'] . ';">' . $errtype . ' ' . $errstr . ' , in line ' . $errline . ' of file <i>' . $errfile . '</i> </div>' . "\n";
 		//остановка на фатальной ошибке
 		if ($_CFG['_error'][$errno]['prior'] == 0 and $_CFG['wep']['stop_fatal_error']) {
 			$GLOBALS['_ERR'][$_CFG['wep']['catch_bug']][$type] .="Aborting...<br />\n";
@@ -298,28 +298,43 @@ function _obHandler($buffer) {
 			$notice .= $r[1];
 	}
 	if (($htmlerr != '' or $notice != '' or $temp[1]) and ($_COOKIE['_showerror'] or $_CFG['site']['show_error'] == 2)) {
-		$htmlerr = '<div class="bugmain">' . $htmlerr;
 		if ($temp[1] and $temp[0])
 			$htmlerr .= $temp[0];
 		if ($notice)
-			$htmlerr .= '<div class="spoiler-wrap"><div onclick="bugSpoilers(this)" class="spoiler-head folded clickable">NOTICE</div><div class="spoiler-body">' . $notice . '</div></div>' . "\n";
+			$htmlerr .= spoilerWrap('NOTICE',$notice);
 	}
 	elseif (($htmlerr != '' or $temp[1]) and $_CFG['site']['show_error'] == 1)
-		$htmlerr = '<div class="bugmain">На странице возникла ошибка! Приносим свои извинения за временные неудобства! Неполадки будут исправлены в ближайшее время.</div>';
+		$htmlerr = 'На странице возникла ошибка! Приносим свои извинения за временные неудобства! Неполадки будут исправлены в ближайшее время.';
 
 	if ((isset($_COOKIE['_showallinfo']) and $_COOKIE['_showallinfo']) or $_CFG['_F']['adminpage']) {
 		$included_files = get_included_files();
-		$htmlinfo .='time=' . substr((getmicrotime() - $_mctime_start), 0, 6) . ' | memory=' . (int) (memory_get_usage() / 1024) . 'Kb | maxmemory=' . (int) (memory_get_peak_usage() / 1024) . 'Kb | query=' . count($_CFG['logs']['sql']) . ' | file include=' . count($included_files);
+		$htmlinfo .= 'time=' . substr((getmicrotime() - $_mctime_start), 0, 6) . ' | memory=' . (int) (memory_get_usage() / 1024) . 'Kb | maxmemory=' . (int) (memory_get_peak_usage() / 1024) . 'Kb | query=' . count($_CFG['logs']['sql']) . ' | file include=' . count($included_files);
 		if ($_COOKIE['_showallinfo'] > 1 and count($_CFG['logs']['sql']) > 0)
-			$htmlerr .='<div class="spoiler-wrap"><div onclick="bugSpoilers(this)" class="spoiler-head folded clickable">SQL QUERY</div><div class="spoiler-body">' . implode(';<br/>', $_CFG['logs']['sql']) . '</div></div>';
+			$htmlerr .= spoilerWrap('SQL QUERY',implode(';<br/>', $_CFG['logs']['sql']));
 		if ($_COOKIE['_showallinfo'] > 2) {
 			if (!$temp[1] and $temp[0])
-				$htmlerr .='<div class="spoiler-wrap"><div onclick="bugSpoilers(this)" class="spoiler-head folded clickable">LOGS</div><div class="spoiler-body">' . $temp[0] . '</div></div>';
-			$htmlerr .='<div class="spoiler-wrap"><div onclick="bugSpoilers(this)" class="spoiler-head folded clickable">FILE INCLUDE</div><div class="spoiler-body">' . implode(';<br/>', $included_files) . '</div></div>';
+				$htmlerr .= spoilerWrap('LOGS',$temp[0]);
+			$htmlerr .= spoilerWrap('FILE INCLUDE',implode(';<br/>', $included_files));
 		}
 	}
 	if ($htmlerr)
-		$htmlerr .= '<link type="text/css" href="_design/_style/bug.css" rel="stylesheet"/></div> <script type="text/javascript" src="_design/_script/bug.js"></script>';
+		$htmlerr = '<div class="bugmain">'.$htmlerr.'</div><style>
+.bugmain {background: none repeat scroll 0 0 #E1E1E1;font-family: arial;}
+.bugtext {background-color:#E1E1E1;font-size:11px;border:solid 1px gray;font-family: arial;}
+.bspoiler-wrap .messelem, .bugmain .messelem {font-weight:bold;font-size:12px;text-align:center;color:gray;}
+.bspoiler-wrap .messelem a, .bugmain .messelem a {font-size:12px;}
+.bspoiler-wrap {border-color:#C3CBD1;border-style:solid;border-width:1px 1px 1px 2px;width:99%;overflow:auto;font-family: arial;}
+.bspoiler-wrap .spoiler-head {color:black;font-size:11px;line-height:15px;margin-left:6px;padding:0 0.9em;}
+.bspoiler-wrap .spoiler-body {border-bottom:1px dashed #C3CBD1;display:none;padding:0;display: none;font-size:10px;color:black;}
+.bspoiler-wrap .spoiler-body pre{background:#F8F7F2 none repeat scroll 0 0;border:medium none;color:black;margin:0;}
+.bspoiler-wrap .spoiler-body pre code{display:block;overflow:auto;white-space:pre;padding:5px 0;}
+.bspoiler-wrap .folded {display:block;padding-left:0;}
+.bspoiler-wrap .folded::before {content: " + ";}
+.bspoiler-wrap .unfolded {display:block;padding-left:0;}
+.bspoiler-wrap .unfolded::before {content: " - ";}
+.bspoiler-wrap .clickable {cursor:pointer;}
+</style>
+<script>function bugSpoilers(obj) {var cl = obj.className;var i = cl.indexOf("unfolded");if(i >= 0) {obj.className = cl.replace("unfolded","");obj.nextSibling.style.display = "none";}else {obj.className = cl+" unfolded";obj.nextSibling.style.display = "block";}}</script>';
 
 	if (!$_CFG['_F']['adminpage'])
 		$_tpl['logs'] .= $htmlinfo . $htmlerr;
@@ -341,6 +356,10 @@ function _obHandler($buffer) {
 	} else
 		$page = $_tpl['logs'];
 	return $page;
+}
+
+function spoilerWrap($head,$text) {
+	return '<div class="bspoiler-wrap"><div onclick="bugSpoilers(this)" class="spoiler-head folded clickable">'.$head.'</div><div class="spoiler-body">' . $text. '</div></div>';
 }
 
 function fDisplLogs($type=0) {

@@ -5,10 +5,10 @@
 		global $_tpl,$_CFG;
 		if(isset($gfi['multiple'])) {
 			if($gfi['multiple']==2) {
-				$_tpl['styles']['style.jquery/ui'] = 1;
+				$_tpl['styles']['style.jquery/ui-smoothness/jquery-ui'] = 1;
 				$_tpl['styles']['style.jquery/ui-multiselect'] = 1;
 
-				$_tpl['script']['script.jquery/ui'] = 1;
+				$_tpl['script']['script.jquery/jquery-ui'] = 1;
 				$_tpl['script']['script.jquery/ui-multiselect'] = 1;
 
 				//$_tpl['onload'] .= '$.localise(\'ui-multiselect\', {language: \'ru\', path: \''.$_CFG['_HREF']['_script'].'script.localisation/\'});';
@@ -28,8 +28,9 @@
 			$_tpl['onload'] .= "jQuery('.fancyimg').fancybox();";
 		}
 		if(isset($gfi['datepicker']) and $gfi['datepicker']) {
-			$_tpl['script']['script.jquery/ui'] = 1;
-			$_tpl['styles']['style.jquery/ui'] = 1;
+			$_tpl['script']['jquery.localisation/jquery.ui.datepicker-ru'] = 1;
+			$_tpl['script']['script.jquery/jquery-ui'] = 1;
+			$_tpl['styles']['style.jquery/ui-smoothness/jquery-ui'] = 1;
 			if($gfi['datepicker']==2) {
 				$_tpl['script']['script.jquery/ui-timepicker-addon'] = 1;
 				$_tpl['styles']['style.jquery/ui-timepicker-addon'] = 1;

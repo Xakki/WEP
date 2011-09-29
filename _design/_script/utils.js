@@ -168,10 +168,31 @@ function show_fblock(obj,selector) {
 
 }
 
+/ * вспомогательные функции для DatePicker* /
+var disabledDays = [];
+function nationalDays(date) {
+	var m = date.getMonth(), d = date.getDate(), y = date.getFullYear();
+	//console.log('Checking (raw): ' + m + '-' + d + '-' + y);
+	for (i = 0; i < disabledDays.length; i++) {
+		if($.inArray((m+1) + '-' + d + '-' + y,disabledDays) != -1 || new Date() > date) {
+			//console.log('bad:  ' + (m+1) + '-' + d + '-' + y + ' / ' + disabledDays[i]);
+			return [false];
+		}
+	}
+	//console.log('good:  ' + (m+1) + '-' + d + '-' + y);
+	return [true];
+}
+function noWeekendsOrHolidays(date) {
+	var noWeekend = jQuery.datepicker.noWeekends(date);
+	return noWeekend[0] ? nationalDays(date) : noWeekend;
+}
+
+
 
 var wep = {
 	version: 0.1,
 	pgId:0,
+	pgParam: {},
 	JSWin: function(param) {
 		if(typeof param['type']=='object') {
 			var OBJ = jQuery(param['type']);
@@ -587,3 +608,4 @@ wep.apply = function(o, c, defaults){
     return o;
 };
 _Browser = getBrowserInfo();
+

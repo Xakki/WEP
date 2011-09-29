@@ -101,45 +101,45 @@
 		width:99%;
 		overflow:auto;
 	}
-	.spoiler-head {
+	.spoiler-wrap .spoiler-head {
 		color:black;
 		font-size:11px;
 		line-height:15px;
 		margin-left:6px;
 		padding:0 0.9em;
 	}
-	.spoiler-body {
+	.spoiler-wrap .spoiler-body {
 		border-bottom:1px dashed #C3CBD1;
 		display:none;
 		padding:0;
 		display: none;
 	}
-	.spoiler-body pre{
+	.spoiler-wrap .spoiler-body pre{
 		background:#F8F7F2 none repeat scroll 0 0;
 		border:medium none;
 		font-size:0.9em;
 		color:black;
 		margin:0;
 	}
-	.spoiler-body pre code{
+	.spoiler-wrap .spoiler-body pre code{
 		display:block;
 		overflow:auto;
 		white-space:pre;
 		padding:5px 0;
 	}
-	.folded {
+	.spoiler-wrap .folded {
 		background:transparent url(../_img/x16.png)  no-repeat scroll 0 -16px;
 		display:block;
 		padding-left:1.4em;
 		border-bottom:1px dashed #C3CBD1;
 	}
-	.unfolded {
+	.spoiler-wrap .unfolded {
 		background:transparent url(../_img/x16.png)  no-repeat scroll 0 -48px;
 		display:block;
 		padding-left:1.4em;
 		border-bottom:1px dashed transparent;
 	}
-	.clickable {
+	.spoiler-wrap .clickable {
 		cursor:pointer;
 }
 
