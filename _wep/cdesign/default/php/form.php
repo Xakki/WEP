@@ -209,6 +209,24 @@ function tpl_form(&$data) {
 				$temp = '';
 
 				if(isset($r['mask']['view']) and $r['mask']['view']=='input') {
+
+					// Тип поля
+					if($r['fields_type']  =='int' and $r['value']){
+						$time = $r['value'];
+						$temp = date($r['mask']['format'],$r['value']);
+					}
+					elseif($r['fields_type'] =='timestamp' and $r['value']){
+						$fs = explode(' ', $r['value']);
+						$f = explode('-', $fs[0]);
+						$s = explode(':', $fs[1]);
+						$time = $temp = mktime($s[0], $s[1], $s[2], $f[1], $f[2], $f[0]);
+						
+						if($r['mask']['time'])
+							$r['mask']['format'] = $r['mask']['format'].' '.$r['mask']['time'];
+						
+						$temp = date($r['mask']['format'],$temp);
+					}
+
 					// текстовый формат ввода данных
 					if(isset($r['mask']['datepicker'])) {
 						if(is_string($r['mask']['datepicker']))
@@ -217,17 +235,18 @@ function tpl_form(&$data) {
 							$r['mask']['datepicker'] = array();
 
 						if(!isset($r['mask']['datepicker']['dateFormat']))
-							$r['mask']['datepicker']['dateFormat']='yy-mm-dd';
+							$r['mask']['datepicker']['dateFormat']='\'yy-mm-dd\'';
 						if(isset($r['mask']['datepicker']['timeFormat']) and $r['mask']['datepicker']['timeFormat']===true)
-							$r['mask']['datepicker']['timeFormat'] = '-hh-mm-ss';
+							$r['mask']['datepicker']['timeFormat'] = '\'-hh-mm-ss\'';
 
 						global $_tpl;
 						$prop = array();
+						if($time)
+							$r['mask']['datepicker']['defaultDate'] = 'new Date('.date('Y,m-1,d',$time).')';
 						foreach ($r['mask']['datepicker'] as $kp => $vp) {
-							$prop[] = $kp.':\''.$vp.'\'';
+							$prop[] = $kp.':'.$vp;
 						}
 						$prop = '{'.implode(',',$prop).'}';
-
 						if(isset($r['mask']['datepicker']['timeFormat'])) {
 							$_CFG['fileIncludeOption']['datepicker'] = 2;
 							$_tpl['script']['dp_'.$k] = 'function dp_'.$k.'() { $("input[name='.$k.']").datetimepicker('.$prop.')}';
@@ -237,22 +256,6 @@ function tpl_form(&$data) {
 							$_tpl['script']['dp_'.$k] = 'function dp_'.$k.'() { $("input[name='.$k.']").datepicker('.$prop.')}';
 						}
 						$_tpl['onload'] .= ' dp_'.$k.'(); ';
-					}
-
-					// Тип поля
-					if($r['fields_type']  =='int' and $r['value']){
-						$temp = date($r['mask']['format'],$r['value']);
-					}
-					elseif($r['fields_type'] =='timestamp' and $r['value']){
-						$fs = explode(' ', $r['value']);
-						$f = explode('-', $fs[0]);
-						$s = explode(':', $fs[1]);
-						$temp = mktime($s[0], $s[1], $s[2], $f[1], $f[2], $f[0]);
-						
-						if($r['mask']['time'])
-							$r['mask']['format'] = $r['mask']['format'].' '.$r['mask']['time'];
-						
-						$temp = date($r['mask']['format'],$temp);
 					}
 					
 					$texthtml .= '<input type="text" name="'.$k.'" value="'.$temp.'" class="dateinput"/>';
