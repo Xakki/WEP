@@ -53,6 +53,13 @@
 			require_once($_CFG['_PATH']['wep'].'/_phpscript/main/_captcha.php');
 		exit();
 	}
+	elseif(isset($_GET['_php']) and $_GET['_php']=='rss') {
+		if(file_exists($_CFG['_PATH']['wepconf'].'/_phpscript/rss.php'))
+			require_once($_CFG['_PATH']['wepconf'].'/_phpscript/rss.php');
+		else
+			require_once($_CFG['_PATH']['wep'].'/_phpscript/main/rss.php');
+		exit();
+	}
 	elseif(isset($_GET['_php']) and $_GET['_php']=='sitemap') {
 		setlocale(LC_ALL, $_CFG['wep']['setlocale']);
 		header("Cache-Control: max-age=0, must-revalidate");

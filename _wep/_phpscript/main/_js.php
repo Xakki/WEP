@@ -3,11 +3,15 @@
 
 	$GLOBALS['_RESULT']	= array();
 	$_tpl['onload']=$html=$html2='';
+	if(!isset($_GET['_view']))
+		$_GET['_view'] = '';
 
 	if(!isset($_GET['noajax']))
 		require_once($_CFG['_PATH']['phpscript'].'/jquery_getjson.php');
 	require_once($_CFG['_PATH']['core'].'/html.php');
-	
+	if(isset($_GET['noajax']))
+		headerssent();
+
 	session_go();
 
 	$DATA  = array();
