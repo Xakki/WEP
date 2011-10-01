@@ -547,6 +547,8 @@ class pg_class extends kernel_extends {
 								$tc .= $cr;
 						$hashkeyPG = md5($tc);
 					}
+					elseif($rowPG['memcache_solt']==4)
+						$hashkeyPG = $_SERVER['REMOTE_ADDR'];
 					$hashkeyPG .= '@'.$rowPG['id'].'@'.$_SERVER['QUERY_STRING'].$_SERVER['HTTP_HOST'];
 					if(_strlen($hashkeyPG)>255) $hashkeyPG = md5($hashkeyPG);
 

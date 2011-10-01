@@ -64,6 +64,7 @@ class content_class extends kernel_extends {
 			1=>'UserID',
 			2=>'SessionID',
 			3=>'COOKIE',
+			4=>'IP',
 		);
 	}
 
