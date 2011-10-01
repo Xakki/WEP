@@ -154,7 +154,7 @@ class html {
 		}
 		//'design/default/xsl/',  'design/'.$this->_design.'/xsl/',
 		$xsl = str_replace(array('\x09'), array(''), file_get_contents($transform));
-		$xml = '<?phpxml version="1.0" encoding="UTF-8"?><!DOCTYPE fragment [<!ENTITY nbsp "&#160;">]> ' . $xml;
+		$xml = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE fragment [<!ENTITY nbsp "&#160;">]> ' . $xml;
 		if (extension_loaded('xsl')) {
 			if (!isset($this->_xslt)) {
 				global $_CFG;
