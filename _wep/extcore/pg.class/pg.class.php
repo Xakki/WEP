@@ -603,6 +603,7 @@ class pg_class extends kernel_extends {
 					}
 
 					if(is_string($flagPG)) {// если не булевое значение то выводим содержимое
+						if(!isset($_tpl[$rowPG['marker']])) $_tpl[$rowPG['marker']] = '';
 						if(isset($_SESSION['_showallinfo']) && $_SESSION['_showallinfo'])
 							$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' begin-->'.$flagPG.'<!--content'.$rowPG['id'].' end-->';
 						else
