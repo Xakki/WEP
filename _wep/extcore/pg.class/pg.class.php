@@ -523,6 +523,12 @@ class pg_class extends kernel_extends {
 				}*/
 				$_tempMarker .= $rowPG['pg'];
 				$flagPG = 1;
+				//$_tpl[$rowPG['marker']] .= '<div id="pg_'.$rowPG['id'].'">'.$_tempMarker.'</div>';
+				if(isset($_SESSION['_showallinfo']) && $_SESSION['_showallinfo'])
+					$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' begin-->'.$_tempMarker.'<!--content'.$rowPG['id'].' end-->';
+				else
+					$_tpl[$rowPG['marker']] .= $_tempMarker;
+
 			} else {
 				$flagMC = false;
 				if($this->config['memcache']==-1) // Вообще отключаем кеш
@@ -532,6 +538,7 @@ class pg_class extends kernel_extends {
 				elseif($rowPG['memcache']<0)
 					$rowPG['memcache'] = 0;
 
+				$MemFlag = false;
 				if($rowPG['memcache']) {
 					$hashkeyPG = '';
 					if($rowPG['memcache_solt']==1) {
@@ -556,10 +563,31 @@ class pg_class extends kernel_extends {
 						$this->incMemcach();
 					}
 					if($this->MEMCACHE) {
-						$flagPG = $flagMC = $this->MEMCACHE->get($hashkeyPG);
+						$MemFlag = true;
+						$temp = $this->MEMCACHE->get($hashkeyPG);
+						if($temp and is_array($temp)) { //Получаем массив с ключами шаблона
+							$flagPG = $flagMC = 1;
+							foreach($temp as $tk=>$tr) { // аполняем данные
+								if(is_array($tr)) {
+									if(!isset($_tpl[$tk]))
+										$_tpl[$tk] = $tr;
+									else
+										$_tpl[$tk] += $tr;
+								} else {
+									if(!isset($_tpl[$tk]))
+										$_tpl[$tk] = '';
+									$_tpl[$tk] .= $tr;
+								}
+							}
+						}
 					}
 				}
 				if(!$flagMC) {
+					if($MemFlag) { // обнуляем $_tpl
+						$temp_tpl = $_tpl;
+						$_tpl = array();
+					}
+
 					if($rowPG['funcparam']) $FUNCPARAM = explode('&',$rowPG['funcparam']);
 					else $FUNCPARAM = array();
 					$typePG = explode(':',$rowPG['pagetype']);
@@ -573,20 +601,36 @@ class pg_class extends kernel_extends {
 						trigger_error('Обрботчик страниц "'.$this->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php" не найден!', E_USER_WARNING);
 						continue;
 					}
-					if($rowPG['memcache'] and $this->MEMCACHE) {
-						$this->MEMCACHE->set($hashkeyPG,$flagPG , $this->config['memcachezip'], $rowPG['memcache']);
+
+					if(is_string($flagPG)) {// если не булевое значение то выводим содержимое
+						if(isset($_SESSION['_showallinfo']) && $_SESSION['_showallinfo'])
+							$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' begin-->'.$flagPG.'<!--content'.$rowPG['id'].' end-->';
+						else
+							$_tpl[$rowPG['marker']] .= $flagPG;
+						$flagPG = 1;
+					}
+
+					if($MemFlag) {
+						$this->MEMCACHE->set($hashkeyPG, $_tpl, $this->config['memcachezip'], $rowPG['memcache']);
+						if(count($_tpl)) {
+							foreach($_tpl as $tk=>$tr) {
+								if(is_array($tr)) {
+									if(!isset($temp_tpl[$tk]))
+										$temp_tpl[$tk] = $tr;
+									else
+										$temp_tpl[$tk] += $tr;
+								} else {
+									if(!isset($temp_tpl[$tk]))
+										$temp_tpl[$tk] = '';
+									$temp_tpl[$tk] .= $tr;
+								}
+							}
+						}
+						$_tpl = $temp_tpl;
 					}
 				}
-				
-				if(is_string($flagPG)) // если не булевое значение то выводим содержимое
-					$_tempMarker .= $flagPG;
-				$flagPG = 1;
 			}
-			//$_tpl[$rowPG['marker']] .= '<div id="pg_'.$rowPG['id'].'">'.$_tempMarker.'</div>';
-			if(isset($_SESSION['_showallinfo']) && $_SESSION['_showallinfo'])
-				$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' begin-->'.$_tempMarker.'<!--content'.$rowPG['id'].' end-->';
-			else
-				$_tpl[$rowPG['marker']] .= $_tempMarker;
+			//////////////////////
 		}
 		if($this->MEMCACHE) {
 			$this->MEMCACHE->close();
