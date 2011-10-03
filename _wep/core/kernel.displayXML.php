@@ -199,9 +199,12 @@
 						if(isset($arrno[$k])) continue;// исключаем поля которые будут отображаться спецефично
 						$tditem = array('name'=>$k,'type'=>$r['type']);
 						if($r['type']=='file') {
-							if(isset($this->_CFG['form']['flashFormat'][$row['_ext_'.$k]])) $tditem['fileType']='swf';
-							elseif(isset($this->_CFG['form']['imgFormat'][$row['_ext_'.$k]])) $tditem['fileType']='img';
-							else $tditem['fileType']='file';
+							if(isset($row['_ext_'.$k])) {
+								if(isset($this->_CFG['form']['flashFormat'][$row['_ext_'.$k]])) $tditem['fileType']='swf';
+								elseif(isset($this->_CFG['form']['imgFormat'][$row['_ext_'.$k]])) $tditem['fileType']='img';
+							}
+							else
+								$tditem['fileType']='file';
 						}
 
 						if(isset($r['mask']['href']))

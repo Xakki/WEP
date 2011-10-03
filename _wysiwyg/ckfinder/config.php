@@ -1,10 +1,8 @@
 <?php
 	global $_CFG,$SQL;
 	$_CFG['_PATH']['path'] = dirname(dirname(dirname(dirname(dirname(dirname($_SERVER['SCRIPT_FILENAME']))))));
-	$_CFG['_PATH']['wep'] = $_CFG['_PATH']['path'].'/_wep';
-	require_once($_CFG['_PATH']['wep'].'/config/config.php');
-	require_once($_CFG['_PATH']['core'].'/sql.php');
-	session_go();//print_r($_SESSION['user']);exit('**');
+	$_GET['_php']='config';
+	require_once($_CFG['_PATH']['path'].'/index.php');
 /*
  * ### CKFinder : Configuration File - Basic Instructions
  *

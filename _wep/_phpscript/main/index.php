@@ -73,6 +73,11 @@
 		echo $PGLIST->creatSiteMaps();
 		exit();
 	}
+	elseif(isset($_GET['_php']) and $_GET['_php']=='config') {
+		//require_once($_CFG['_PATH']['core'].'/html.php');	/**отправляет header и печатает страничку*/
+		session_go();
+		return true;
+	}
 
 	require_once($_CFG['_PATH']['core'].'/html.php');	/**отправляет header и печатает страничку*/
 
