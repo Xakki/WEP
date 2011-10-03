@@ -2,10 +2,6 @@
 	function tpl_formcreat(&$data) {
 		global $HTML;
 		$texthtml = '';
-		if(isset($data['path']) and count($data['path'])) {
-			include_once('path.php');
-			$texthtml = tpl_path($data['path'],1);// PATH
-		}
 		$texthtml .= '<div class="divform'.((isset($data['css']) and $data['css'])?' '.$data['css']:'').'"';
 		if(isset($data['style']) and $data['style'])
 			$texthtml .= ' style="'.$data['style'].'"';
@@ -14,6 +10,7 @@
 			include_once('messages.php');
 			$texthtml .= tpl_messages($data['messages']);// messages
 		}
+		$flag = 0;
 		if(isset($data['form']) and count($data['form'])) {
 			include_once('form.php');
 			$attr = $data['form']['_*features*_'];
@@ -30,6 +27,14 @@
 			if(isset($attr['onsubmit']))
 				$texthtml .= 'onsubmit="'.$attr['onsubmit'].'"';
 			$texthtml .= '>' . tpl_form($data['form']).'</form>';
+			if($attr['id'])
+				$flag = 2;
+			else
+				$flag = 1;
+		}
+		if(isset($data['path']) and count($data['path'])) {
+			include_once('path.php');
+			$texthtml = tpl_path($data['path'],$flag).$texthtml;// PATH
 		}
 		$texthtml .= '</div>';
 		return $texthtml;

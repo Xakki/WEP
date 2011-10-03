@@ -13,10 +13,10 @@
 				elseif($i==$last)  $html .= $r.'&#160;<a class="bottonimg imgf5" href="'.$k.'" onclick="return load_href(this)"></a>';
 				$i++;
 			}
-            if($form) {
-              $html .= '&#160;<span class="bottonimg imgf6" onclick="$(\'form input[name=sbmt_save]\').click();" title="сохранить"></span>';
-              $html .= '&#160;<span class="bottonimg imgf7" onclick="$(\'form input[name=sbmt]\').click();" title="сохранить и закрыть"></span>';
-            }
+            if($form==2)
+					$html .= '&#160;<span class="bottonimg imgf6" onclick="$(\'form input[name=sbmt_save]\').click();" title="сохранить"></span>';
+            if($form>0)
+					$html .= '&#160;<span class="bottonimg imgf7" onclick="$(\'form input[name=sbmt]\').click();" title="сохранить и закрыть"></span>';
 			$html .= '</div>';
 		}
 		return $html;
