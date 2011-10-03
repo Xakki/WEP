@@ -51,10 +51,10 @@ function keys_return(ev) {
 	13 интер*/
 }
 
-
+/*109 минус*/
 function checkInt(ev) {
 	var keys = keys_return(ev);
-	if (keys!=0 && (keys<0x30 || keys>0x39) && (keys<96 || keys>105) && keys!=189) 
+	if (keys!=0 && (keys<0x30 || keys>0x39) && (keys<96 || keys>105) && keys!=189 && keys!=109) 
 		return false;
 	return true;
 }

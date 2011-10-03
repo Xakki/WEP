@@ -342,7 +342,7 @@ var wep = {
 			jQuery(body+' > #'+objid).show();
 			//if(body=='body') // Нах это?
 			fMessPos(body,' #'+objid);
-		}console.log(txt);
+		}
 		return false;
 	},
 	showBG: function(body,show,k) {

@@ -130,7 +130,7 @@ class static_form {
 				return static_main::_message('error','Error copy file '.$value['name']);
 
 			if (isset($_this->attaches[$key]['thumb'])) {
-				if(!exif_imagetype($newname)) // опред тип файла
+				if(!self::_is_image($newname)) // опред тип файла
 					return static_main::_message('error','File '.$newname.' is not image');
 				$prefix = $pathimg.'/';
 				if (count($_this->attaches[$key]['thumb']))
@@ -397,11 +397,11 @@ class static_form {
 			$logoFile = $_this->_CFG['_imgwater'];
 		$logoFile = $_this->_CFG['_PATH']['path'].$logoFile;
 
-		if(!$imtypeIn = exif_imagetype($InFile))// опред тип файла
+		if(!$imtypeIn = self::_is_image($InFile))// опред тип файла
 			return static_main::_message('error','File '.$InFile.' is not image');
 		if($imtypeIn>3) return false;
 
-		if(!$imtypeLogo = exif_imagetype($logoFile))// опред тип файла
+		if(!$imtypeLogo = self::_is_image($logoFile))// опред тип файла
 			return static_main::_message('error','File '.$logoFile.' is not image');
 		if($imtypeLogo>3) return false;
 
@@ -455,7 +455,7 @@ class static_form {
 		}
 
 		$thumb = imagecreatetruecolor($WidthX, $HeightY);//созд пустой рисунок
-		if(!$imtype = exif_imagetype($InFile))// опред тип файла
+		if(!$imtype = self::_is_image($InFile))// опред тип файла
 			return static_main::_message('error','File '.$InFile.' is not image');
 		if($imtype>3) return true;
 		$source = self::_imagecreatefrom($_this,$InFile,$imtype);//открываем рисунок
@@ -472,7 +472,7 @@ class static_form {
 		list($width_orig, $height_orig) = getimagesize($InFile);// опред размер
 		// Resample
 		$thumb = imagecreatetruecolor($WidthX, $HeightY);//созд пустой рисунок
-		if(!$imtype = exif_imagetype($InFile)) // опред тип файла
+		if(!$imtype = self::_is_image($InFile)) // опред тип файла
 			return static_main::_message('error','File is not image');
 		if($imtype>3) return true;
 		$source = self::_imagecreatefrom($_this,$InFile,$imtype);//открываем рисунок
@@ -499,7 +499,7 @@ class static_form {
 		if(!($thumb = @imagecreatetruecolor($WidthX, $HeightY)))
 			return static_main::_message('error','Cannot Initialize new GD image stream');
 		/*Определяем тип рисунка*/
-		if(!$imtype = exif_imagetype($InFile))// опред тип файла
+		if(!$imtype = self::_is_image($InFile))// опред тип файла
 			return static_main::_message('error','File is not image');
 		/*Обработка только jpeg, gif, png*/
 		if($imtype>3) return true;
@@ -561,6 +561,10 @@ class static_form {
 		elseif($imtype==3) imagepng($im, $file,8);
 		else return false;
 		return true;
+	}
+
+	static function _is_image($file) {
+		return exif_imagetype($file);
 	}
 
 
@@ -738,7 +742,7 @@ class static_form {
 			}
 			elseif (isset($data[$key . '_temp_upload']) && is_array($data[$key . '_temp_upload']) && $data[$key . '_temp_upload']['name'] && $data[$key . '_temp_upload']['type']) {
 				$data[$key] = $data[$key . '_temp_upload'];	
-				$value['tmp_name'] = $_this->_CFG['_PATH']['temp'] . $value['name'];
+				$data[$key]['tmp_name'] = $_this->_CFG['_PATH']['temp'] . $data[$key . '_temp_upload']['name'];
 			}
 
 		}
