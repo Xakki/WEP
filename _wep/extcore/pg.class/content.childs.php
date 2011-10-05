@@ -87,10 +87,10 @@ class content_class extends kernel_extends {
 		return $data;
 	}
 
-	function getInc($pref='.inc.php') {
+	function getInc($pref='.inc.php',$def=' - Текст - ') {
 		$data = array();
 		$dir = dir($this->_CFG['_PATH']['ctext']);
-		$data[''] = ' - Текст - ';
+		$data[''] = $def;
 		while (false !== ($entry = $dir->read())) {
 			if ($entry[0]!='.' && $entry[0]!='..' && strstr($entry,$pref)) {
 				$entry = substr($entry, 0, strpos($entry, $pref)); 

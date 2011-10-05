@@ -31,6 +31,7 @@
 		$FUNCPARAM[1] =>
 			array(
 				'data'=>$DATA,
+				'#title#' => $Ctitle,
 			)
 		);
 	$html = $HTML->transformPHP($DATA,$tplphp);

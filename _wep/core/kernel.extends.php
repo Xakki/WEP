@@ -1528,19 +1528,20 @@ abstract class kernel_extends {
 	}
 
 	public function toolsFormfilter() {
+		global $_tpl;
 		$this->form = array();
 		/**
 		 * очистка фильтра
 		 * */
 		if (isset($_REQUEST['f_clear_sbmt'])) {
 			unset($_SESSION['filter'][$this->_cl]);
-			$GLOBALS['_RESULT']['eval'] = 'window.location.href = \'' . $_SERVER['HTTP_REFERER'] . '\';';
+			$_tpl['onload'] .= 'window.location.href = \'' . $_SERVER['HTTP_REFERER'] . '\';';
 		}
 		/**
 		 * задаются параметры фильтра
 		 * */ elseif (isset($_REQUEST['sbmt'])) {
 			$this->setFilter();
-			$GLOBALS['_RESULT']['eval'] = 'window.location.href = \'' . $_SERVER['HTTP_REFERER'] . '\';';
+			$_tpl['onload'] .= 'window.location.href = \'' . $_SERVER['HTTP_REFERER'] . '\';';
 		}
 		else
 			$this->Formfilter();
@@ -1548,10 +1549,12 @@ abstract class kernel_extends {
 	}
 
 	function Formfilter() {
-		$_FILTR = $_SESSION['filter'][$this->_cl];
+		$_FILTR = array();
+		if(isset($_SESSION['filter'][$this->_cl]))
+			$_FILTR = $_SESSION['filter'][$this->_cl];
 		$this->form = array();
 		foreach ($this->fields_form as $k => $r) {
-			if ($r['mask']['filter'] == 1) {
+			if (isset($r['mask']['filter']) and $r['mask']['filter'] == 1) {
 				unset($r['default']);
 				if ($r['type'] == 'list' && is_array($r['listname']) && !isset($r['listname']['idThis']))
 					$r['listname']['idThis'] = $k;
@@ -1617,7 +1620,7 @@ abstract class kernel_extends {
 							foreach ($_REQUEST['f_' . $k] as $row)
 								$_SESSION['filter'][$this->_cl][$k][] = mysql_real_escape_string($row);
 					}
-					if ($_REQUEST['exc_' . $k])
+					if (isset($_REQUEST['exc_' . $k]) and $_REQUEST['exc_' . $k])
 						$_SESSION['filter'][$this->_cl]['exc_' . $k] = 1;
 					else
 						unset($_SESSION['filter'][$this->_cl]['exc_' . $k]);
@@ -1635,8 +1638,16 @@ abstract class kernel_extends {
 	function _filter_clause() {
 		$cl = $_FILTR = array();
 		$flag_filter = 0;
-		if (isset($_SESSION['filter'][$this->_cl]))
+		if(isset($_REQUEST['filter_'.$this->_cl])) {
+			if (!is_array($_REQUEST['filter_'.$this->_cl]))
+				unset($_SESSION['filter'][$this->_cl]);
+			else
+				$_FILTR = $_REQUEST['filter_'.$this->_cl];
+		}
+		elseif(isset($_SESSION['filter'][$this->_cl]))
 			$_FILTR = $_SESSION['filter'][$this->_cl];
+		
+		if(count($_FILTR))
 		foreach ($this->fields_form as $k => $r) {
 			if (isset($r['mask']['filter']) and $r['mask']['filter'] == 1) {
 				if (isset($_FILTR[$k])) {

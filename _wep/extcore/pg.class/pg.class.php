@@ -61,7 +61,7 @@ class pg_class extends kernel_extends {
 		$this->mf_actctrl = true;
 		$this->caption = 'Страницы';
 		$this->selected = array();
-		$this->ver = '0.3.1';
+		$this->ver = '0.3.2';
 		$this->pageinfo = 
 			$this->dataCash = $this->dataCashTree = $this->dataCashTreeAlias = array();
 		$this->pageParam = $this->pageParamId = array();
@@ -82,12 +82,11 @@ class pg_class extends kernel_extends {
 		$this->fields['href'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL','default'=>'');
 		$this->fields['keywords'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL','default'=>'');
 		$this->fields['description'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL','default'=>'');
-		$this->fields['design'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL','default'=>'');
+		$this->fields['design'] = array('type' => 'varchar', 'width' => 20, 'attr' => 'NOT NULL','default'=>'');
 		$this->fields['template'] = array('type' => 'varchar', 'width'=>20, 'attr' => 'NOT NULL','default'=>'default');
-		$this->fields['styles'] = array('type' => 'varchar', 'width'=> 255, 'attr' => 'NOT NULL','default'=>'');
-		$this->fields['script'] = array('type' => 'varchar', 'width'=> 255, 'attr' => 'NOT NULL','default'=>'');
-		$this->fields['ugroup'] =array('type' => 'varchar', 'width'=>255, 'attr' => 'NOT NULL', 'default' => '|0|');
+		$this->fields['ugroup'] =array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL', 'default' => '|0|');
 		$this->fields['attr'] = array('type' => 'varchar', 'width'=>255, 'attr' => 'NOT NULL', 'default' => '');
+		$this->fields['aparam'] = array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['onmenu'] = array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL', 'default' => 0);
 		$this->fields['onmap'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => 1);
 		$this->fields['onmapinc'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => 1);
@@ -125,22 +124,25 @@ class pg_class extends kernel_extends {
 		$this->fields_form['parent_id'] = array('type' => 'list', 'listname'=>'parentlist', 'caption' => 'Родительская страница','mask'=>array('fview'=>1));
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Name','mask'=>array('min'=>1));
 		$this->fields_form['name_in_menu'] = array('type' => 'text', 'caption' => 'Название в меню', 'mask' =>array());
-		$this->fields_form['href'] = array('type' => 'text', 'caption' => 'Redirect', 'mask' =>array('onetd'=>'Содержимое'));
-		$this->fields_form['design'] = array('type' => 'list', 'listname'=>'mdesign', 'caption' => 'Дизайн', 'mask' =>array());
-		$this->fields_form['template'] = array('type' => 'list', 'listname'=>'templates', 'caption' => 'Шаблон', 'mask' =>array('onetd'=>'none'));
 
-		$this->fields_form['styles'] = array('type' => 'text', 'caption' => 'CSS(*)', 'mask'=>array('onetd'=>'none'));
-		$this->fields_form['script'] = array('type' => 'text', 'caption' => 'SCRIPT(*)', 'mask'=>array('onetd'=>'close'));
+		$this->fields_form['href'] = array('type' => 'text', 'caption' => 'Redirect', 'mask' =>array('onetd'=>'Содержимое'));
+
+		$this->fields_form['design'] = array('type' => 'list', 'listname'=>'mdesign', 'caption' => 'Дизайн', 'mask' =>array());
+		$this->fields_form['template'] = array('type' => 'list', 'listname'=>'templates', 'caption' => 'Шаблон', 'mask' =>array('onetd'=>'close'));
 
 		$this->fields_form['keywords'] = array('type' => 'text', 'caption' => 'META-keywords','mask'=>array('fview'=>1));
 		$this->fields_form['description'] = array('type' => 'text', 'caption' => 'META-description','mask'=>array('fview'=>1));
 		$this->fields_form['onmenu'] = array('type' => 'list', 'listname'=>'menu', 'multiple'=>2, 'caption' => 'Меню', 'mask'=>array('onetd'=>'Опции'));
+
 		$this->fields_form['onmap'] = array('type' => 'checkbox', 'caption'=>'Карта', 'comment' => 'Отображать эту страницу на карте сайта','default'=>1,'style'=>'background-color:#B3D142;');
 		//$this->fields_form['onmapinc'] = array('type' => 'checkbox', 'caption'=>'Карта-php', 'comment' => 'Отображать на карте сайта, карту сгенерированную php','default'=>1,'style'=>'background-color:e1e1e1;');
 		$this->fields_form['pagemap'] = array('type' => 'list', 'listname'=>'pagemap', 'caption' => 'Карта-php', 'comment' => 'Отображать на карте сайта, карту сгенерированную php', 'mask' =>array('fview'=>1),'style'=>'background-color:#B3D142;');
 		$this->fields_form['pagemenu'] = array('type' => 'list', 'listname'=>'pagemap', 'caption' => 'Меню-php', 'comment' => 'Отображать подменю, сгенерированную php', 'mask' =>array('fview'=>1),'style'=>'background-color:#B3D142;');
 		$this->fields_form['onpath'] = array('type' => 'checkbox', 'caption'=>'Путь', 'comment' => 'Отображать в хлебных крошках','default'=>1,'mask'=>array('onetd'=>'close'));
+
 		$this->fields_form['attr'] = array('type' => 'text', 'caption' => 'Атрибуты для ссылки в меню', 'comment'=>'Например: `target="_blank" onclick=""` итп', 'mask' =>array('name'=>'all', 'fview'=>1));
+		$this->fields_form['aparam'] = array('type' => 'text', 'caption' => 'Параметры для ссылки в меню', 'comment'=>'Например если прописать: var=1&var2=3 ,дополняет путь в меню alias.html?var=1&var2=3', 'mask' =>array('name'=>'all', 'fview'=>1));
+
 		if($this->_CFG['wep']['access'])
 			$this->fields_form['ugroup'] = array('type' => 'list','multiple'=>2,'listname'=>'ugroup', 'caption' => 'Доступ пользователю','default'=>'0','mask'=>array());
 		$this->fields_form['ordind'] = array('type' => 'int', 'caption' => 'ORD','mask'=>array());
@@ -182,7 +184,7 @@ class pg_class extends kernel_extends {
 			return $data;
 		}
 		elseif($listname == 'pagemap') {
-			return $this->childs['content']->getInc('.map.php');
+			return $this->childs['content']->getInc('.map.php',' --- ');
 		}
 		elseif($listname == 'pagetype') {
 			return $this->childs['content']->getInc();
@@ -349,20 +351,8 @@ class pg_class extends kernel_extends {
 				$this->pageinfo['description'] = $this->config['description'].' '.$this->pageinfo['description'];
 			else
 				$this->pageinfo['description'] = $this->config['description'];
-			$this->pageinfo['script'] = explode('|',trim($this->pageinfo['script'],'|'));
-			if(count($this->pageinfo['script'])) {
-				$temp = $this->pageinfo['script'];$this->pageinfo['script'] = array();
-				foreach($temp as $r)
-					if($r)
-						$this->pageinfo['script'][$r] = 1;
-			}
-			$this->pageinfo['styles'] = explode('|',trim($this->pageinfo['styles'],'|'));
-			if(count($this->pageinfo['styles'])) {
-				$temp = $this->pageinfo['styles'];$this->pageinfo['styles'] = array();
-				foreach($temp as $r)
-					if($r)
-						$this->pageinfo['styles'][$r] = 1;
-			}
+			$this->pageinfo['script'] = array();
+			$this->pageinfo['styles'] = array();
 			$this->get_pageinfo();//$this->pageinfo['path']
 			return 1;
 		}
@@ -795,7 +785,11 @@ class pg_class extends kernel_extends {
 					$pid = $this->dataCash[$pid]['parent_id'];
 				}
 			}
-			if($html) $href .= '.html';
+			if($html) {
+				$href .= '.html';
+				if($this->dataCash[$id]['aparam'])
+					$href .= '?'.$this->dataCash[$id]['aparam'];
+			}
 		}
 		return $href;
 	}

@@ -118,6 +118,8 @@
 					else
 						$r['valuelist'] = array(''=>array('#name#'=>'Все','#id#'=>''))+$r['valuelist'];
 				}
+				if(!isset($r['onchange']))
+					$r['onchange'] = '';
 				$html .= '<div class="f_item" id="tr_'.$k.'">
 				<div class="f_caption">'.$r['caption'].'</div>
 				<div class="f_value">
@@ -193,7 +195,7 @@ function selectitem2($data,$flag=0) {
 			if(isset($r['#item#']) and count($r['#item#']) and (!isset($r['#checked#']) or $r['#checked#']==0))
 				$html .= '<optgroup label="'.$r['#name#'].'" class="selpad'.$flag.'"></optgroup>';
 			else
-				$html .= '<option value="'.$k.'" '.($r['#sel#']?'selected="selected"':'').' class="selpad'.$flag.'">'.$r['#name#'].'</option>';
+				$html .= '<option value="'.$k.'" '.((isset($r['#sel#']) and $r['#sel#'])?'selected="selected"':'').' class="selpad'.$flag.'">'.$r['#name#'].'</option>';
 			if(isset($r['#item#']) and count($r['#item#']))
 				$html .= selectitem2($r['#item#'],($flag+1));//.'&#160;--'
 		}
