@@ -289,6 +289,10 @@ class mail_class extends kernel_extends {
 		$PHPMailer->SMTPDebug = $this->config['PHPMailer_Debug'];
 		$PHPMailer->SMTPSecure = $this->config['PHPMailer_Secure'];
 		$PHPMailer->SetLanguage('ru');
+		if($data['from']!=$this->config['mailrobot']) {
+			$data['Bcc'] = $data['from'];
+			$data['from'] = $this->config['mailrobot'];
+		}
 		$PHPMailer->From = $data['from'];
 		if($data['Bcc'])
 			$PHPMailer->AddReplyTo($data['Bcc']);
