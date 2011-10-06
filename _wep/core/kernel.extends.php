@@ -1647,7 +1647,6 @@ abstract class kernel_extends {
 		elseif(isset($_SESSION['filter'][$this->_cl]))
 			$_FILTR = $_SESSION['filter'][$this->_cl];
 		
-		if(count($_FILTR))
 		foreach ($this->fields_form as $k => $r) {
 			if (isset($r['mask']['filter']) and $r['mask']['filter'] == 1) {
 				if (isset($_FILTR[$k])) {

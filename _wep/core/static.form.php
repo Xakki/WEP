@@ -724,7 +724,9 @@ class static_form {
 				}elseif(isset($form['mask']['min']) and $form['mask']['min'] and ($_FILES[$key]['name']=='' or $_FILES[$key]['name'] == ':delete:'))
 						$error[] = 1;
 				elseif($_FILES[$key]['name']!='') {
-					if(!isset($form['mime'][$_FILES[$key]['type']]))
+					if(!$_FILES[$key]['tmp_name'])
+						$error[]=41;
+					elseif(!isset($form['mime'][$_FILES[$key]['type']]))
 						$error[]=39;
 					elseif(isset($form['maxsize']) and $_FILES[$key]['size']>($form['maxsize']*1024))
 						$error[]=29;

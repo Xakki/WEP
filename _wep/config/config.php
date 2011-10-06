@@ -215,17 +215,15 @@ $_CFG['ckedit']['toolbar']['Full'] = "'Full'";
 $_CFG['ckedit']['toolbar']['Page'] = "[['Source','-','Save','NewPage','Preview','-','Templates'],
 	['Cut','Copy','Paste','PasteText','PasteFromWord','-','Print', 'SpellChecker', 'Scayt'],
 	['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
+	['Maximize', 'ShowBlocks','-','About'],
 	['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'],
-	'/',
+	['Image','Flash','Table','HorizontalRule','Smiley','SpecialChar','PageBreak','Timestamp','Code'],
 	['Bold','Italic','Underline','Strike','-','Subscript','Superscript'],
 	['NumberedList','BulletedList','-','Outdent','Indent','Blockquote'],
 	['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
 	['Link','Unlink','Anchor'],
-	['Image','Flash','Table','HorizontalRule','Smiley','SpecialChar','PageBreak'],
-	'/',
 	['Styles','Format','Font','FontSize'],
-	['TextColor','BGColor'],
-	['Maximize', 'ShowBlocks','-','About'],[ 'UIColor' ]]";
+	['TextColor','BGColor'],[ 'UIColor' ]]";
 
 $_CFG['ckedit']['toolbar']['Board'] = "[ 
 	['PasteText'], ['Undo','Redo','-','RemoveFormat'], ['Bold','Italic','Underline','Superscript'], 

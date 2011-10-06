@@ -36,6 +36,9 @@
 				$_tpl['styles']['style.jquery/ui-timepicker-addon'] = 1;
 			}
 		}
+		if(isset($_tpl['script']['syntaxhighlighter'])) {
+			$_tpl['onload'] .= 'SyntaxHighlighter.all();';
+		}
 		return true;
 	}
 

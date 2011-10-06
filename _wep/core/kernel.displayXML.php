@@ -40,8 +40,13 @@
 					$this->_pn = floor($countfield/$this->messages_on_page)-$this->_pn+1;
 			}
 			/***/
+			if (isset($param['firstpath']))
+				$firstpath = $this->_CFG['_HREF']['BH'] . trim($param['firstpath'],'?');
+			else
+				$firstpath = $this->_CFG['PATH']['wepname'] . '/index.php';
 
-			$xml['pagenum'] = $this->fPageNav($countfield,$_SERVER['SCRIPT_NAME'].'?'.$this->_clp.(($this->id)?$this->_cl.'_id='.$this->id.'&amp;':''),1);
+
+			$xml['pagenum'] = $this->fPageNav($countfield,$firstpath.'?'.$this->_clp.(($this->id)?$this->_cl.'_id='.$this->id.'&amp;':''),1);
 			$pcnt = 0;
 			if($this->reversePageN) {
 				if($this->_pn==floor($countfield/$this->messages_on_page)) {

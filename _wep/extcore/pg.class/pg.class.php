@@ -787,7 +787,7 @@ class pg_class extends kernel_extends {
 			}
 			if($html) {
 				$href .= '.html';
-				if($this->dataCash[$id]['aparam'])
+				if(isset($this->dataCash[$id]['aparam']) and $this->dataCash[$id]['aparam'])
 					$href .= '?'.$this->dataCash[$id]['aparam'];
 			}
 		}

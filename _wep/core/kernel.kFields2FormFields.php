@@ -169,6 +169,7 @@
 					}
 				}
 				elseif($r['type']=='ckedit') {
+					//http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.config.html
 					$ckedit = $r['paramedit'];
 					if(!isset($ckedit['skin']))
 						$ckedit['skin']='\'kama\'';
@@ -178,6 +179,8 @@
 						$ckedit['height'] = '450';
 					if(!isset($ckedit['toolbarStartupExpanded']))
 						$ckedit['toolbarStartupExpanded']='true';
+					if(!isset($ckedit['baseHref']))
+						$ckedit['baseHref'] = '\''.$this->_CFG['_HREF']['BH'].'\'';
 					if(isset($ckedit['toolbar'])) {
 						if(isset($this->_CFG['ckedit']['toolbar'][$ckedit['toolbar']]))
 							$ckedit['toolbar'] = $this->_CFG['ckedit']['toolbar'][$ckedit['toolbar']];
@@ -185,17 +188,21 @@
 							$ckedit['toolbar'] = '\''.$ckedit['toolbar'].'\'';
 					} else
 						$ckedit['toolbar'] = $this->_CFG['ckedit']['toolbar']['Full'];
-					$ckedit['uiColor'] = '\'#9AB8F3\'';
-					//$ckedit['language'] = '\'ru\'';
-					$ckedit['enterMode'] = 'CKEDITOR.ENTER_BR';
-					$ckedit['shiftEnterMode'] = 'CKEDITOR.ENTER_P';
+					if(!isset($ckedit['uiColor']))
+						$ckedit['uiColor'] = '\'#9AB8F3\'';
+					if(!isset($ckedit['language']))
+						$ckedit['language'] = '\'ru\'';
+					if(!isset($ckedit['enterMode']))
+						$ckedit['enterMode'] = 'CKEDITOR.ENTER_BR';
+					if(!isset($ckedit['shiftEnterMode']))
+						$ckedit['shiftEnterMode'] = 'CKEDITOR.ENTER_P';
 
 					global $_tpl;
 					$_tpl['script']['ckeditor.js'] = array($this->_CFG['_HREF']['WSWG'].'ckeditor/ckeditor.js');
 					$fckscript = 'function cke_'.$k.'() { if(typeof CKEDITOR.instances.id_'.$k.' == \'object\'){CKEDITOR.instances.id_'.$k.'.destroy(true);} editor_'.$k.' = CKEDITOR.replace( \'id_'.$k.'\',{';
 					foreach($ckedit as $kc=>$rc)
 						$fckscript .= $kc.' : '.$rc.',';
-					$fckscript .= 'language : \'ru\'});';
+					$fckscript .= '\'temp\' : \'temp\' });';
 
 					if(isset($ckedit['CKFinder']) and $ckedit['CKFinder']) {
 						$fckscript = ' function ckf_'.$k.'() { CKFinder.setupCKEditor(editor_'.$k.',\'/'.$this->_CFG['PATH']['WSWG'].'ckfinder/\');} '.$fckscript;
