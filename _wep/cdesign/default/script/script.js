@@ -1,9 +1,11 @@
 
 function load_href(hrf) {
+	var base_href = $('base').attr('href');
 	if(typeof hrf=='object')
-		window.location.href = $(hrf).attr('href');
-	else
-		window.location.href = hrf;
+		hrf = $(hrf).attr('href');
+	if (hrf.substr(0, 7) != 'http://')
+		hrf = base_href+hrf;
+	window.location.href = hrf;
 	return false;
 }
 

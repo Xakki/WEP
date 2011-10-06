@@ -36,9 +36,6 @@
 				$_tpl['styles']['style.jquery/ui-timepicker-addon'] = 1;
 			}
 		}
-		if(isset($_tpl['script']['syntaxhighlighter'])) {
-			$_tpl['onload'] .= 'SyntaxHighlighter.all();';
-		}
 		return true;
 	}
 
@@ -64,6 +61,9 @@
 
 		$temp = '';
 		if(isset($_tpl['script']) and is_array($_tpl['script'])) {
+			if(isset($_tpl['script']['syntaxhighlighter'])) {
+				$_tpl['onload'] .= '';
+			}
 			foreach($_tpl['script'] as $kk=>$rr) {
 				if(is_array($rr))
 					$temp .= '<script type="text/javascript" src="'.implode('"></script>'."\n".'<script type="text/javascript" src="',$rr).'"></script>'."\n";
