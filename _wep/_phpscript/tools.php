@@ -393,6 +393,8 @@ function tools_sendMail() {
 		$MAIL->reply = 0;
 		$datamail = array();
 		$datamail['from']=$_POST['from'];
+		$datamail['Bcc']=$_POST['Bcc'];
+		$datamail['Reply-To']=$_POST['Reply-To'];
 		$datamail['mail_to']=$_POST['mail_to'];
 		$datamail['subject']=$_POST['subject'];
 		$datamail['text'] = $_POST['text'];
@@ -401,18 +403,19 @@ function tools_sendMail() {
 		else
 			$html .= '<br/>Ошибка отправки письма!';
 		$html .= '---- '.(getmicrotime()-$ttw).'mc -----';
-	} else {
+	}
 		if(!isset($_POST['subject'])) $_POST['subject'] = 'Тут такая тема!';
 		if(!isset($_POST['text'])) $_POST['text'] = '***текст письма***';
 		if(!isset($_POST['mail_to'])) $_POST['mail_to'] = 'tome@xakki.ru';
 		if(!isset($_POST['from'])) $_POST['from'] = $MAIL->config['mailrobot'];
-		$html = '<form method="post">
+		$html .= '<form method="post">
 			<lable>Кому</lable> <input type="text" name="mail_to" value="'.$_POST['mail_to'].'"/><br/>
-			<lable>От кого</lable> <input type="text" name="from" value="'.$_POST['from'].'"/><br/>
+			<lable>from</lable> <input type="text" name="from" value="'.$_POST['from'].'"/><br/>
+			<lable>Bcc</lable> <input type="text" name="Bcc" value="'.$_POST['Bcc'].'"/><br/>
+			<lable>Reply-To</lable> <input type="text" name="Reply-To" value="'.$_POST['Reply-To'].'"/><br/>
 			<lable>Тема</lable> <input type="text" name="subject" value="'.$_POST['subject'].'"/><br/>
 			<lable>Текст</lable><br/><textarea name="text" rows="7" cols="50" >'.htmlspecialchars($_POST['text'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea><br/>
 			<br/><input type="submit" name="Пуск"/></form>';
-	}
 	return $html;
 }
 

@@ -243,9 +243,11 @@ class mail_class extends kernel_extends {
 		$header = "MIME-Version: 1.0\r\n";
 		$header .= "To: {$data['mail_to']}\r\n";
 		$header .= "From: {$data['from']}\r\n";
-		$header .= "Bcc: {$data['from']}\r\n"; 
-		if($this->reply) $header .= "Reply-To: {$data['from']}\r\n";
-		
+		if($data['Bcc'])
+			$header .= 'Bcc: '.$data['Bcc']."\r\n";
+		if($data['Reply-To'])
+			$header .= 'Reply-To: '.$data['reply']."\r\n";
+	
 		if(isset($data['att'])) {
 			$header .= "Content-Type: multipart/alternative; boundary={$this->uid}\r\n";
 			$header .= "--{$this->uid}\r\n";
@@ -288,7 +290,10 @@ class mail_class extends kernel_extends {
 		$PHPMailer->SMTPSecure = $this->config['PHPMailer_Secure'];
 		$PHPMailer->SetLanguage('ru');
 		$PHPMailer->From = $data['from'];
-		//$PHPMailer->AddReplyTo($data['from']);
+		if($data['Bcc'])
+			$PHPMailer->AddReplyTo($data['Bcc']);
+		if($data['Reply-To'])
+			$PHPMailer->AddReplyTo($data['Reply-To']);
 
 		if($this->config['fromName'])
 			$PHPMailer->FromName =  $this->config['fromName'];//iconv('cp1251','koi8-r','www.apitcomp.ru');
