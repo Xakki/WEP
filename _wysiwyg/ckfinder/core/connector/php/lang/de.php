@@ -2,7 +2,7 @@
 // Copyright (c) 2003-2011, CKSource - Frederico Knabben. All rights reserved.
 // For licensing, see LICENSE.html or http://ckfinder.com/license
 
-//  Defines the object, for the German language. This is the base file for all translations.
+//  Defines the object for the German language.
 
 $GLOBALS['CKFLang'] = array (
 	'ErrorUnknown' => 'Ihre Anfrage konnte nicht bearbeitet werden. (Fehler %1)',
@@ -21,7 +21,7 @@ $GLOBALS['CKFLang'] = array (
 		'117' => 'Datei nicht gefunden. Bitte aktualisieren Sie die Dateiliste und versuchen es noch einmal.',
 		'118' => 'Source and target paths are equal.',
 		'201' => 'Es existiert bereits eine Datei unter gleichem Namen. Die hochgeladene Datei wurde unter "%1" gespeichert.',
-		'202' => 'Ungültige Datei',
+		'202' => 'Ungültige Datei.',
 		'203' => 'ungültige Datei. Die Dateigröße ist zu groß.',
 		'204' => 'Die hochgeladene Datei ist korrupt.',
 		'205' => 'Es existiert kein temp. Ordner für das Hochladen auf den Server.',

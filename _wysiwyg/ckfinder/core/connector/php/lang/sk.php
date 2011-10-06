@@ -2,7 +2,7 @@
 // Copyright (c) 2003-2011, CKSource - Frederico Knabben. All rights reserved.
 // For licensing, see LICENSE.html or http://ckfinder.com/license
 
-//  Defines the object, for the Slovak language. This is the base file for all translations.
+//  Defines the object for the Slovak language.
 
 $GLOBALS['CKFLang'] = array (
 	'ErrorUnknown' => 'Server nemohol dokončiť spracovanie požiadavky. (Chyba %1)',
@@ -20,13 +20,13 @@ $GLOBALS['CKFLang'] = array (
 		'116' => 'Adresár nebol nájdený. Aktualizujte obsah adresára (Znovunačítať) a skúste znovu.',
 		'117' => 'Súbor nebol nájdený. Aktualizujte obsah adresára (Znovunačítať) a skúste znovu.',
 		'118' => 'Source and target paths are equal.',
-		'201' => 'Súbor so zadaným názvom už existuje. Prekopírovaný súbor bol premenovaný na "%1"',
-		'202' => 'Neplatný súbor',
+		'201' => 'Súbor so zadaným názvom už existuje. Prekopírovaný súbor bol premenovaný na "%1".',
+		'202' => 'Neplatný súbor.',
 		'203' => 'Neplatný súbor - súbor presahuje maximálnu povolenú veľkosť.',
 		'204' => 'Kopírovaný súbor je poškodený.',
 		'205' => 'Server nemá špecifikovaný dočasný adresár pre kopírované súbory.',
 		'206' => 'Kopírovanie prerušené kvôli nedostatočnému zabezpečeniu. Súbor obsahuje HTML data.',
-		'207' => 'Prekopírovaný súbor bol premenovaný na "%1"',
+		'207' => 'Prekopírovaný súbor bol premenovaný na "%1".',
 		'300' => 'Moving file(s) failed.',
 		'301' => 'Copying file(s) failed.',
 		'500' => 'Prehliadanie súborov je zakázané kvôli bezpečnosti. Kontaktujte prosím administrátora a overte nastavenia v konfiguračnom súbore pre CKFinder.',

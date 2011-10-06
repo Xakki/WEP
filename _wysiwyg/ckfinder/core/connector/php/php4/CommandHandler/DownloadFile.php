@@ -79,8 +79,13 @@ class CKFinder_Connector_CommandHandler_DownloadFile extends CKFinder_Connector_
             header("Content-Type: text/plain; charset=utf-8");
         }
         else {
+            $user_agent = !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : "";
+            $encodedName = str_replace("\"", "\\\"", $fileName);
+            if (strpos($user_agent, "MSIE") !== false) {
+                $encodedName = str_replace(array("+", "%2E"), array(" ", "."), urlencode($encodedName));
+            }
             header("Content-type: application/octet-stream; name=\"" . $fileName . "\"");
-            header("Content-Disposition: attachment; filename=\"" . str_replace("\"", "\\\"", $fileName). "\"");
+            header("Content-Disposition: attachment; filename=\"" . $encodedName. "\"");
         }
         header("Content-Length: " . filesize($filePath));
         CKFinder_Connector_Utils_FileSystem::readfileChunked($filePath);

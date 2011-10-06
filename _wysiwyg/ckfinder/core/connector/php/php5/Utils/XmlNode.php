@@ -140,6 +140,24 @@ class Ckfinder_Connector_Utils_XmlNode
     }
 
     /**
+     * Checks whether the string is valid UTF8
+     * @param string $string
+     */
+    public function asUTF8($string)
+    {
+        if (CKFinder_Connector_Utils_Misc::isValidUTF8($string)) {
+            return $string;
+        }
+
+        $ret = "";
+        for ($i = 0; $i < strlen($string); $i++) {
+            $ret .= CKFinder_Connector_Utils_Misc::isValidUTF8($string[$i]) ? $string[$i] : "?";
+        }
+
+        return $ret;
+    }
+
+    /**
      * Return a well-formed XML string based on Ckfinder_Connector_Utils_XmlNode element
      *
      * @return string
@@ -152,7 +170,7 @@ class Ckfinder_Connector_Utils_XmlNode
         //print Attributes
         if (sizeof($this->_attributes)>0) {
             foreach ($this->_attributes as $_name => $_value) {
-                $ret .= " " . $_name . '="' . htmlspecialchars($_value) . '"';
+                $ret .= " " . $_name . '="' . $this->asUTF8(htmlspecialchars($_value)) . '"';
             }
         }
 
@@ -167,7 +185,7 @@ class Ckfinder_Connector_Utils_XmlNode
 
         //print value
         if (!is_null($this->_value)) {
-            $ret .= htmlspecialchars($this->_value);
+            $ret .= $this->asUTF8(htmlspecialchars($this->_value));
         }
 
         //print child nodes

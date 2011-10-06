@@ -92,6 +92,7 @@ class CKFinder_Connector_Core_Connector
             case 'GetFiles':
             case 'GetFolders':
             case 'Init':
+            case 'LoadCookies':
             case 'MoveFiles':
             case 'RenameFile':
             case 'RenameFolder':

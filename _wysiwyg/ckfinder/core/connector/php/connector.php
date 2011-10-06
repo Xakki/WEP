@@ -79,6 +79,16 @@ $config['Hooks'] = array();
 $config['Plugins'] = array();
 
 /**
+ * Fix cookies bug in Flash.
+ */
+if (!empty($_GET['command']) && $_GET['command'] == 'FileUpload' && !empty($_POST)) {
+	foreach ($_POST as $key => $val) {
+		if (strpos($key, "ckfcookie_") === 0)
+			$_COOKIE[str_replace("ckfcookie_", "", $key)] = $val;
+	}
+}
+
+/**
  * read config file
  */
 require_once CKFINDER_CONNECTOR_CONFIG_FILE_PATH;

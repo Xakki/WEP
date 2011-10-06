@@ -228,6 +228,21 @@ class CKFinder_Connector_Utils_Misc
     }
 
     /**
+    * Checks whether the string is valid UTF8
+    * @static
+    * @access public
+    * @param string $string
+    * @return boolean
+    */
+    public static function isValidUTF8($string)
+    {
+        if (strlen($string) == 0) {
+            return true;
+        }
+        return (preg_match('/^./us', $string) == 1);
+    }
+
+    /**
     * Source: http://pl.php.net/imagecreate
     * (optimized for speed and memory usage, but yet not very efficient)
     *

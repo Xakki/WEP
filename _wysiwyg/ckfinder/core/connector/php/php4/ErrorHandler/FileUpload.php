@@ -55,6 +55,10 @@ class CKFinder_Connector_ErrorHandler_FileUpload extends CKFinder_Connector_Erro
             $sFileName = "";
         }
 
+        if (!empty($_GET['response_type']) && $_GET['response_type'] == 'txt') {
+            echo $sFileName."|".$errorMessage;
+            exit;
+        }
         echo "<script type=\"text/javascript\">";
 
         if (!empty($_GET['CKFinderFuncNum'])) {

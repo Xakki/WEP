@@ -332,6 +332,14 @@ class CKFinder_Connector_Core_ResourceTypeConfig
         return false;
     }
 
+    /**
+     * Check if extension is allowed
+     * Return true if the extension is allowed.
+     *
+     * @param string $extension
+     * @access public
+     * @return boolean
+     */
     function checkSingleExtension($extension)
     {
         $extension = strtolower(ltrim($extension,'.'));

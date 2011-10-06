@@ -2,7 +2,7 @@
 // Copyright (c) 2003-2011, CKSource - Frederico Knabben. All rights reserved.
 // For licensing, see LICENSE.html or http://ckfinder.com/license
 
-//
+//  Defines the object for the Czech language.
 
 $GLOBALS['CKFLang'] = array (
 	'ErrorUnknown' => 'Nebylo možno dokončit příkaz. (Error %1)',
@@ -20,13 +20,13 @@ $GLOBALS['CKFLang'] = array (
 		'116' => 'Složka nenalezena, prosím obnovte stránku.',
 		'117' => 'Soubor nenalezen, prosím obnovte stránku.',
 		'118' => 'Source and target paths are equal.',
-		'201' => 'Již existoval soubor se stejným jménem, nahraný soubor byl přejmenován na "%1"',
-		'202' => 'Špatný soubor',
+		'201' => 'Již existoval soubor se stejným jménem, nahraný soubor byl přejmenován na "%1".',
+		'202' => 'Špatný soubor.',
 		'203' => 'Špatný soubor. Příliš velký.',
 		'204' => 'Nahraný soubor je poškozen.',
 		'205' => 'Na serveru není dostupná dočasná složka.',
 		'206' => 'Nahrávání zrušeno z bezpečnostních důvodů. Soubor obsahuje data podobná HTML.',
-		'207' => 'Nahraný soubor byl přejmenován na "%1"',
+		'207' => 'Nahraný soubor byl přejmenován na "%1".',
 		'300' => 'Moving file(s) failed.',
 		'301' => 'Copying file(s) failed.',
 		'500' => 'Nahrávání zrušeno z bezpečnostních důvodů. Zdělte to prosím administrátorovi a zkontrolujte nastavení CKFinderu.',

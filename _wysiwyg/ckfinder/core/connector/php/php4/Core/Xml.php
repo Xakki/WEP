@@ -96,7 +96,7 @@ class CKFinder_Connector_Core_Xml
         header('Pragma: no-cache') ;
 
         // Set the response format.
-        header( 'Content-Type:text/xml; charset=utf-8' ) ;
+        header( 'Content-Type: text/xml; charset=utf-8' ) ;
     }
 
     /**

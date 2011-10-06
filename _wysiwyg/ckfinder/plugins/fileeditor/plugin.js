@@ -84,8 +84,6 @@
 
 		return {
 			title : api.getSelectedFile().name,
-			// TODO CKFINDER.DIALOG_RESIZE_BOTH
-			// resizable : CKFINDER.DIALOG_RESIZE_BOTH,
 			minWidth : parseInt( width, 10 ) * 0.6,
 			minHeight : parseInt( height, 10 ) * 0.7,
 			onHide : function() {

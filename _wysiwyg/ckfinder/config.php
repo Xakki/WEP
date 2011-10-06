@@ -3,6 +3,7 @@
 	$_CFG['_PATH']['path'] = dirname(dirname(dirname(dirname(dirname(dirname($_SERVER['SCRIPT_FILENAME']))))));
 	$_GET['_php']='config';
 	require_once($_CFG['_PATH']['path'].'/index.php');
+
 /*
  * ### CKFinder : Configuration File - Basic Instructions
  *
@@ -65,8 +66,8 @@ Examples:
 
 ATTENTION: The trailing slash is required.
 */
-//$baseUrl = '/ckfinder/userfiles/';
 $baseUrl = (isset($_SESSION['user']['FckEditorUserFilesUrl'])?$_SESSION['user']['FckEditorUserFilesUrl']:'');
+
 /*
 $baseDir : the path to the local directory (in the server) which points to the
 above $baseUrl URL. This is the path used by CKFinder to handle the files in
@@ -84,8 +85,8 @@ Examples:
 
 ATTENTION: The trailing slash is required.
 */
-//$baseDir = resolveUrl($baseUrl);
 $baseDir = (isset($_SESSION['user']['FckEditorUserFilesPath'])?$_SESSION['user']['FckEditorUserFilesPath']:'');
+
 /*
  * ### Advanced Settings
  */
@@ -233,7 +234,7 @@ $config['ResourceType'][] = Array(
 		'url' => $baseUrl . 'images',
 		'directory' => $baseDir . 'images',
 		'maxSize' => $MSize,
-		'allowedExtensions' => 'bmp,gif,jpeg,jpg,png,avi,iso,mp3',
+		'allowedExtensions' => 'bmp,gif,jpeg,jpg,png',
 		'deniedExtensions' => '');
 
 $config['ResourceType'][] = Array(
@@ -323,7 +324,7 @@ $config['ChmodFiles'] = 0777 ;
 See comments above.
 Used when creating folders that does not exist.
 */
-$config['ChmodFolders'] = 0755 ;
+$config['ChmodFolders'] = 0775 ;
 
 /*
 Force ASCII names for files and folders.
