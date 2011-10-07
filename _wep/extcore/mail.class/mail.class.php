@@ -124,6 +124,7 @@ class mail_class extends kernel_extends {
 			'readonly'=>true,
 			'listname'=>array('class'=>'users','nameField'=>'concat(tx.name," [",tx.id,"]")'),
 			'caption' => 'Кому', 'mask' => array('usercheck'=>1));
+
 		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата создания', 'mask'=>array('usercheck'=>1,'fview'=>2,'sort'=>1));
 		$this->fields_form['status'] = array('type' => 'list', 'listname'=>'status', 'caption' => 'Статус', 'mask' => array('usercheck'=>1));
 		$this->fields_form['category'] = array('type' => 'list', 'listname'=>'category', 'caption' => 'Категория', 'mask' => array('usercheck'=>1));

@@ -1,5 +1,13 @@
 <?php
 
+
+	$_tpl['script']['jquery'] = 1;
+	$_tpl['script']['include'] = 1;
+	$_tpl['script']['utils'] = 1;
+	$_tpl['script']['script.jquery/form'] = 1;
+
+	$_tpl['styles']['style'] = 1;
+
 	$_tpl['modulstree']=$eval='';
 
 	if($_CFG['info']['email'])
@@ -84,11 +92,6 @@
 	}
 	$_tpl['modulsforms'] = $html;
 
-	$_tpl['styles']['style'] = 1;
-
-	unset($_tpl['script']['jquery']);
-	$_tpl['script']['script.jquery/form'] = 1;
-	$_tpl['script']['utils'] = 1;
 	//$_tpl['script']['script.localisation/jquery.localisation-min'] = 1;
 
 //$_CFG['fileIncludeOption']['fancybox']

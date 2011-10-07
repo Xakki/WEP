@@ -30,7 +30,7 @@
 		}
 
 		$html .= tpl_pagenum($data['pagenum']);// pagenum
-		$html .= '<div id="tools_block" style="display:none;"></div>';
+		$html .= '<hr style="border:transparent;"/><div id="tools_block" style="display:none;"></div>';
 		if(isset($data['messages']) and count($data['messages'])) {
 			include_once($HTML->_PATHd.'php/messages.php');
 			$html .= tpl_messages($data['messages']);// messages

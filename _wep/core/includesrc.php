@@ -79,10 +79,10 @@
 					$temp .= "<script type=\"text/javascript\">//<!--\n".$rr."\n//--></script>\n";
 			}
 		}
-		if(strpos($temp,'jquery')!==false)
+		if(strpos($temp,'jquery')!==false and !isset($_tpl['script']['include']))
 			$temp .= '<script type="text/javascript" src="'.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].'include.js'.$solt.'"></script>';
 
-		if(strpos($temp,'jquery.js')===false and strpos($temp,'script.jquery/')!==false)
+		if(!isset($_tpl['script']['jquery']) and strpos($temp,'script.jquery/')!==false)
 			$temp = '<script type="text/javascript" src="'.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].'jquery.js'.$solt.'"></script>'.$temp;
 		//if($_tpl['onload']) {
 		$temp .= "<script type=\"text/javascript\">\n//<!--\nfunction readyF() {".$_tpl['onload']."}\n//-->\n</script>\n";

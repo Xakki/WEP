@@ -87,7 +87,7 @@
 					while (false !== ($entry2 = $dir2->read())) {
 						if (strpos($entry2,'.css')) {
 							$entry2 = substr($entry2, 0, -4);
-							$data[$entry][$entry.'/'.$entry2] = $entry2;
+							$data[$entry][$entry.'/'.$entry2] = $entry.'/'.$entry2;
 						}
 					}
 					$dir2->close();
@@ -124,7 +124,7 @@
 					while (false !== ($entry2 = $dir2->read())) {
 						if (strpos($entry2,'.js')) {
 							$entry2 = substr($entry2, 0, -3);
-							$data[$entry][$entry.'/'.$entry2] = $entry2;
+							$data[$entry][$entry.'/'.$entry2] = $entry.'/'.$entry2;
 						}
 					}
 					$dir2->close();
