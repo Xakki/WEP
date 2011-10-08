@@ -212,9 +212,9 @@ function getAjaxListData(value,view,key) { // загрузка списка
 				if(result && result.data && jQuery(result.data).size()>0) {
 					var c = 0;var temp = 0;
 					for(k in result.data) {
-						txt += '<label id="ajaxlabel'+k+'">'+result.data[k]+'</label>';
-						if(result.data[k]==value){
-							temp = k;
+						txt += '<label id="ajaxlabel'+result.data[k][0]+'">'+result.data[k][1]+'</label>';
+						if(result.data[k][1]==value){
+							temp = result.data[k][0];
 							c++;								
 						}
 					}

@@ -128,7 +128,7 @@ function tpl_form(&$data) {
 				if(!is_array($r['value_2']))
 					$r['value_2'] = array($r['value_2']);
 				$serl = serialize($r['listname']);
-				$max = (isset($r['mask']['max'])?$r['mask']['max']:5);
+				$max = (isset($r['mask']['maxarr'])?$r['mask']['maxarr']:5);
 				for($i=0;$i<$max;$i++) {
 					if(isset($r['value'][$i])) {
 						$value = $r['value'][$i];

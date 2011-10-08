@@ -627,6 +627,10 @@ class static_form {
 					$messages = $_this->getMess('_err_22').$form['mask']['max'];
 				elseif($row==25) // max chars
 					$messages = $_this->getMess('_err_23').$form['mask']['min'];
+				elseif($row==26) // min Array count
+					$messages = $_this->getMess('_err_22').$form['mask']['maxarr'];
+				elseif($row==27) // max Array count
+					$messages = $_this->getMess('_err_23').$form['mask']['minarr'];
 				elseif($row==29) //limit file size
 					$messages = $_this->getMess('_err_29',array($_FILES[$key]['name'])).$form['maxsize'].'Kb';
 				elseif($row==3) {//wrong data
@@ -689,13 +693,14 @@ class static_form {
 		//*********** МАССИВЫ
 		if(isset($data[$key]) and is_array($data[$key]) and count($data[$key])) {
 		/*TODO:*/
-			if(isset($form['mask']['max'])){
-				if(count($data[$key])>$form['mask']['max'])
-					$error[] = 24;
+			$data[$key] = array_filter($data[$key],array('static_form','trimArray'));
+			if(isset($form['mask']['maxarr'])){
+				if(count($data[$key])>$form['mask']['maxarr'])
+					$error[] = 26;
 			}
-			if(isset($form['mask']['min'])){
-				if(count($data[$key])<$form['mask']['min'])
-					$error[] = 25;
+			if(isset($form['mask']['minarr'])){
+				if(count($data[$key])<$form['mask']['minarr'])
+					$error[] = 27;
 			}
 			/*Те кому рарешено получать данные в массиве*/
 			$flag = false;
@@ -921,6 +926,11 @@ class static_form {
 			$error[] = 1;
 
 		return array($error);
+	}
+
+	static function trimArray($var) {
+		if($var=='') return false;
+		return true;
 	}
 
 	static function _phoneReplace($phone)

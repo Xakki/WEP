@@ -51,8 +51,9 @@
 			$clause .= ' LIMIT 25';
 		$result = $SQL->execSQL($clause);
 		if(!$result->err) {
+			$GLOBALS['_RESULT']['data'] = array();
 			while($row = $result->fetch_array())
-				$GLOBALS['_RESULT']['data'][$row['id']] = $row['name'];
+				$GLOBALS['_RESULT']['data'][] = array($row['id'],$row['name']);
 		}else
 			print('NO VALID DATA');
 		/*
