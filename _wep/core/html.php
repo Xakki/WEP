@@ -317,36 +317,18 @@ function _obHandler($buffer) {
 			$htmlerr .= spoilerWrap('FILE INCLUDE',implode(';<br/>', $included_files));
 		}
 	}
-	if ($htmlerr)
-		$htmlerr = '<div class="bugmain">'.$htmlerr.'</div><style>
-.bugmain {background: none repeat scroll 0 0 #E1E1E1;font-family: arial;}
-.bugtext {background-color:#E1E1E1;font-size:11px;border:solid 1px gray;font-family: arial;}
-.bspoiler-wrap .messelem, .bugmain .messelem {font-weight:bold;font-size:12px;text-align:center;color:gray;}
-.bspoiler-wrap .messelem a, .bugmain .messelem a {font-size:12px;}
-.bspoiler-wrap {border-color:#C3CBD1;border-style:solid;border-width:1px 1px 1px 2px;width:99%;overflow:auto;font-family: arial;}
-.bspoiler-wrap .spoiler-head {color:black;font-size:11px;line-height:15px;margin-left:6px;padding:0 0.9em;}
-.bspoiler-wrap .spoiler-body {border-bottom:1px dashed #C3CBD1;display:none;padding:0;display: none;font-size:10px;color:black;}
-.bspoiler-wrap .spoiler-body div {color:white;}
-.bspoiler-wrap .spoiler-body pre{background:#F8F7F2 none repeat scroll 0 0;border:medium none;color:black;margin:0;}
-.bspoiler-wrap .spoiler-body pre code{display:block;overflow:auto;white-space:pre;padding:5px 0;}
-.bspoiler-wrap .folded {display:block;padding-left:0;}
-.bspoiler-wrap .folded::before {content: " + ";}
-.bspoiler-wrap .unfolded {display:block;padding-left:0;}
-.bspoiler-wrap .unfolded::before {content: " - ";}
-.bspoiler-wrap .clickable {cursor:pointer;}
-</style>
-<script>function bugSpoilers(obj) {var cl = obj.className;var i = cl.indexOf("unfolded");if(i >= 0) {obj.className = cl.replace("unfolded","");obj.nextSibling.style.display = "none";}else {obj.className = cl+" unfolded";obj.nextSibling.style.display = "block";}}</script>';
 
-	if (!$_CFG['_F']['adminpage'])
-		$_tpl['logs'] .= $htmlinfo . $htmlerr;
-	else {
+	if ($_CFG['_F']['adminpage']) {
 		$_tpl['time'] .= $htmlinfo;
-		$_tpl['logs'] .= $htmlerr;
-	}
+	}else
+		$htmlerr = $htmlinfo . $htmlerr;
+	
 	//$_tpl['logs'] = htmlspecialchars($_tpl['logs'], ENT_QUOTES);
 	$_tpl['logs'] .= $buffer;
 
 	if ($_html != '') {
+		if ($htmlerr)
+			$_tpl['logs'] .= '<div id="bugmain">'.$htmlerr.'</div><script src="/_design/_script/bug.js"></script><link type="text/css" href="/_design/_style/bug.css" rel="stylesheet">';
 		//if ($_tpl['logs'] == '')
 		//	$_tpl['onload'] .='fShowHide(\'debug_view\');';
 		eval('$_html = "' . $_html . '";');
@@ -354,8 +336,9 @@ function _obHandler($buffer) {
 			eval('$_html = "' . addcslashes($_html,'"\\') . '";');
 		}
 		$page = $_html;
-	} else
-		$page = $_tpl['logs'];
+	} else {
+		$page = $htmlerr.$_tpl['logs'];
+	}
 	return $page;
 }
 

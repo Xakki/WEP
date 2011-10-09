@@ -1,67 +1,23 @@
 
-/*SPOILER*/
-	.bugmain {
-		background: none repeat scroll 0 0 #E1E1E1;
-		font-family: arial;
-	}
-
-	.bugtext {
-		background-color:#E1E1E1;
-		font-size:11px;
-		border:solid 1px gray;
-		font-family: arial;
-	}
-
-	.spoiler-wrap .messelem, .bugmain .messelem {font-weight:bold;font-size:12px;text-align:center;color:gray;}
-	.spoiler-wrap .messelem a, .bugmain .messelem a {
-		font-size:12px;
-	}
-
-	.spoiler-wrap {
-		border-color:#C3CBD1;
-		border-style:solid;
-		border-width:1px 1px 1px 2px;
-		width:99%;
-		overflow:auto;
-		font-family: arial;
-	}
-	.spoiler-head {
-		color:black;
-		font-size:11px;
-		line-height:15px;
-		margin-left:6px;
-		padding:0 0.9em;
-	}
-	.spoiler-body {
-		border-bottom:1px dashed #C3CBD1;
-		display:none;
-		padding:0;
-		display: none;
-		font-size:10px;
-		color:black;
-	}
-	.spoiler-body pre{
-		background:#F8F7F2 none repeat scroll 0 0;
-		border:medium none;
-		color:black;
-		margin:0;
-	}
-	.spoiler-body pre code{
-		display:block;
-		overflow:auto;
-		white-space:pre;
-		padding:5px 0;
-	}
-	.folded {
-		background:transparent url(../_img/x16.png)  no-repeat scroll 0 -16px;
-		display:block;
-		padding-left:1.4em;
-	}
-	.unfolded {
-		background:transparent url(../_img/x16.png)  no-repeat scroll 0 -48px;
-		display:block;
-		padding-left:1.4em;
-	}
-	.clickable {
-		cursor:pointer;
+#bugmain {
+	position:absolute;right:5px;top:5px;z-index:100;
+	border:1px solid yellow;
+	background:#D7E8FF;
+	width:400px;padding:0;font-size:0.8em;font-family: arial;
+	overflow:auto;
 }
+.bugmain {background: none repeat scroll 0 0 #E1E1E1;font-family: arial;}
+.bugtext {background-color:#E1E1E1;font-size:11px;border:solid 1px gray;font-family: arial;}
+.bspoiler-wrap .messelem, .bugmain .messelem {font-weight:bold;font-size:12px;text-align:center;color:gray;}
+.bspoiler-wrap .messelem a, .bugmain .messelem a {font-size:12px;}
+.bspoiler-wrap {border-color:#C3CBD1;border-style:solid;border-width:1px 1px 1px 2px;width:99%;overflow:auto;font-family: arial;}
+.bspoiler-wrap .spoiler-head {color:black;font-size:11px;line-height:15px;margin-left:6px;padding:0 0.9em;}
+.bspoiler-wrap .spoiler-body {border-bottom:1px dashed #C3CBD1;display:none;padding:0;display: none;font-size:10px;color:black;}
+.bspoiler-wrap .spoiler-body div {color:white;}
+.bspoiler-wrap .spoiler-body pre{background:#F8F7F2 none repeat scroll 0 0;border:medium none;color:black;margin:0;}
+.bspoiler-wrap .spoiler-body pre code{display:block;overflow:auto;white-space:pre;padding:5px 0;}
+.bspoiler-wrap .folded {display:block;padding-left:0;}
+.bspoiler-wrap .folded::before {content: " + ";}
+.bspoiler-wrap .unfolded {display:block;padding-left:0;}
+.bspoiler-wrap .unfolded::before {content: " - ";}
+.bspoiler-wrap .clickable {cursor:pointer;}

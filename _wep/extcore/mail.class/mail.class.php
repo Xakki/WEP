@@ -295,9 +295,9 @@ class mail_class extends kernel_extends {
 			$data['from'] = $this->config['mailrobot'];
 		}
 		$PHPMailer->From = $data['from'];
-		if($data['Bcc'])
+		if(isset($data['Bcc']) and $data['Bcc'])
 			$PHPMailer->AddReplyTo($data['Bcc']);
-		if($data['Reply-To'])
+		if(isset($data['Reply-To']) and $data['Reply-To'])
 			$PHPMailer->AddReplyTo($data['Reply-To']);
 
 		if($this->config['fromName'])

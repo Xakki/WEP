@@ -389,11 +389,11 @@ var wep = {
 		return {type:t,version:v};
 	},
 	fLog: function(txt,flag) {
-		if(jQuery('#debug_view').size())
-			jQuery('#debug_view').html(txt+jQuery('#debug_view').html());
+		if(jQuery('#bugmain').size())
+			jQuery("#bugmain").prepend(txt);
 		else
-			jQuery("body").prepend("<div id='debug_view' style='border:1px solid blue;'>"+txt+"</div>");
-		if(flag==1) fShowHide('debug_view',1);
+			jQuery("body").prepend("<div id=\"bugmain\">"+txt+"</div>");
+		if(flag==1) wep.fShowHide('bugmain',1);
 	},
 	fMessPos: function(body,obj) {
 		if(body) body=body+'>';
