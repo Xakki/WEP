@@ -1018,11 +1018,14 @@ abstract class kernel_extends {
 		}
 		if(count($this->formSort)) {
 			$temp = $this->fields_form;
+			$this->key_formSort = array_flip($this->formSort);
+			if(isset($this->key_formSort['#over#'])) {
+				$over = array_diff_key($temp,$this->key_formSort);
+			}
 			$this->fields_form = array();
 			foreach($this->formSort as $rr) {
 				if($rr=='#over#') {
-					$diffForm = array_diff_key($temp,array_keys($this->formSort));
-					$this->fields_form = array_merge($this->fields_form,$diffForm);
+					$this->fields_form = array_merge($this->fields_form,$over);
 				}
 				elseif(isset($temp[$rr])) {
 					$this->fields_form[$rr] = $temp[$rr];

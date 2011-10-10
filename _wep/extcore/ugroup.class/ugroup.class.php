@@ -251,11 +251,14 @@ class users_class extends kernel_extends {
 	function _create()
 	{
 		parent::_create();
-		$this->unique_fields['email']='email';
 		$this->ordfield = 'mf_timecr DESC';
+		$this->unique_fields[$this->fn_login]=$this->fn_login;
+		$this->unique_fields['email']='email';
+		$this->index_fields[$this->fn_pass]=$this->fn_pass;
 
-		if($this->fn_login!='email')
+		if($this->fn_login!='email') {
 			$this->fields[$this->fn_login] = array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL');
+		}
 		$this->fields['email'] =  array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL', 'default'=>'');
 		$this->fields[$this->mf_namefields] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL');
 		$this->fields[$this->fn_pass] = array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL');
@@ -307,14 +310,16 @@ class users_class extends kernel_extends {
 		$this->fields_form['owner_id'] = array('type' => 'list', 'listname'=>'ownerlist', 'caption' => 'Группа', 'mask' =>array('usercheck'=>1,'fview'=>1));
 		$this->fields_form[$this->fn_login] =	array('type' => 'text', 'caption' => 'Логин','mask'=>array('name'=>'login','min' => '4','sort'=>1),'comment'=>'Логин должен состоять только из латинских букв и цифр.');
 
-		$this->fields_form[$this->fn_pass] = array('type' => 'password_new', 'caption' => 'Пароль','mask'=>array('min' => '6','fview'=>1));
 		if($this->id) {
-			if(static_main::_prmUserCheck(1)) // Вывод поля генерации пароля если админ
+			/*Такое лучше не открывать не кому , лучше пользоваться востановлением пароля*/
+			/*if(static_main::_prmUserCheck(1)) // Вывод поля генерации пароля если админ
 				$this->fields_form[$this->fn_pass] = array('type' => 'password2', 'caption' => 'Пароль','md5'=>$this->_CFG['wep']['md5'], 'mask'=>array('min' => '6','fview'=>1));
-			elseif(isset($_POST[$this->fn_pass]) and !$_POST[$this->fn_pass])
+			else*/
+			/*if(isset($_POST[$this->fn_pass]) and !$_POST[$this->fn_pass])
 				unset($this->fields_form[$this->fn_pass]);unset($_POST[$this->fn_pass]);
-			$this->fields_form[$this->fn_login]['readonly']=true;
+			$this->fields_form[$this->fn_login]['readonly']=true;*/
 		}else {
+			$this->fields_form[$this->fn_pass] = array('type' => 'password_new', 'caption' => 'Пароль','mask'=>array('min' => '6','fview'=>1));
 			//$this->fields_form[$this->fn_login]['readonly']=false;
 			//$this->fields_form[$this->fn_pass] = array('type' => 'password_new', 'caption' => 'Пароль','mask'=>array('min' => '6','fview'=>1));
 		}
