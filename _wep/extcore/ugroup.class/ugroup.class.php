@@ -532,7 +532,7 @@ class users_class extends kernel_extends {
 							$arr['mess'][] = array('name'=>'ok', 'value'=>$this->_CFG['_MESS']['regok']);
 						} else
 							$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['regerr']);
-					}else { // профиль
+					} else { // профиль
 						if($this->id==$_SESSION['user']['id'])
 							unset($arr['vars']['active']);
 						if($this->_save_item($arr['vars'])) {
@@ -582,7 +582,7 @@ class users_class extends kernel_extends {
 		elseif(!isset($_GET['confirm']) or !isset($_GET['hash']) or _strlen($_GET['hash'])!=32)
 			$mess[] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['errdata']);
 		else {
-			$data = $this->_query('t1.id,t1.reg_hash','t1 where t1.`'.$this->fn_login.'` = \''.preg_replace("/[^0-9a-z@\.]+/",'',$_GET['confirm']).'\'');
+			$data = $this->_query('t1.id,t1.reg_hash', 't1 where t1.`'.$this->fn_login.'` = \''.preg_replace("/[^0-9a-z@\.]+/u",'', $_GET['confirm']).'\'');
 			if(count($data) and _strlen($data[0]['reg_hash'])<5)
 				$mess[] = array('name'=>'alert', 'value'=>$this->_CFG['_MESS']['confno']);
 			elseif(count($data) and $data[0]['reg_hash']==$_GET['hash']) {

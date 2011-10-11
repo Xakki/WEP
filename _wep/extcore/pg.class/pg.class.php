@@ -778,6 +778,7 @@ class pg_class extends kernel_extends {
 					$href = $this->dataCash[$id]['alias'];
 				$pid = $this->dataCash[$id]['parent_id'];
 				while($pid and $pid!=$this->config['rootPage']) {
+					if(!isset($this->dataCash[$pid])) break;
 					if($this->dataCash[$pid]['alias'])
 						$href = $this->dataCash[$pid]['alias'].'/'.$href;
 					else
