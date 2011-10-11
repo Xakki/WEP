@@ -94,7 +94,7 @@ class static_form {
 
 	static function _add_attaches(&$_this) {
 		if (!count($_this->attaches) or !count($_this->att_data)) return true;
-		$result=$_this->SQL->execSQL('SELECT id, '.implode(',', array_keys($_this->attaches)).' FROM `'.$_this->tablename.'` WHERE id IN ('.$_this->_id_as_string().')');
+		$result=$_this->SQL->execSQL('SELECT id, '.implode(',', array_keys($_this->attaches)).' FROM `'.$_this->tablename.'` WHERE id IN ('.$_this->id.')');
 		if($result->err) return false;
 		$row = $result->fetch_array();
 		$prop = array();
@@ -105,7 +105,7 @@ class static_form {
 			$pathimg = $_this->_CFG['_PATH']['path'].$_this->getPathForAtt($key);
 			// delete old
 			$oldname =$pathimg.'/'. $_this->id. '.'.$row[$key];
-			if (file_exists($oldname)) {
+			if ($row[$key] and file_exists($oldname)) {
 				chmod($oldname, $_this->_CFG['wep']['chmod']);
 				unlink($oldname);
 				if (count($_this->attaches[$key]['thumb']))
@@ -117,7 +117,10 @@ class static_form {
 					}
 
 			}
-			if ($value['tmp_name'] == ':delete:') continue;
+			if ($value['tmp_name'] == ':delete:') {
+				$prop[] = '`'.$key.'` = \'\'';
+				continue;
+			}
 
 			$ext = $_this->attaches[$key]['mime'][$value['type']];
 			$newname = $pathimg.'/'.$_this->id.'.'.$ext;
@@ -719,38 +722,37 @@ class static_form {
 		}
 		//print_r('<pre>');print_r($form);print_r('</pre>');print_r($data[$key]);
 		//*********** Файлы
-		if($form['type']=='file') {
+		elseif($form['type']=='file') {
 			//TODO: multiple
-			if(isset($_FILES[$key]['name'])) {
-				if(isset($data[$key.'_del']) and (int)$data[$key.'_del']==1){
-					$_FILES[$key]['name'] = ':delete:';
-					$_FILES[$key]['tmp_name'] = ':delete:';
-					$data[$key] = $_FILES[$key];
-				}elseif(isset($form['mask']['min']) and $form['mask']['min'] and ($_FILES[$key]['name']=='' or $_FILES[$key]['name'] == ':delete:'))
-						$error[] = 1;
-				elseif($_FILES[$key]['name']!='') {
-					if(!$_FILES[$key]['tmp_name'])
-						$error[]=41;
-					elseif(!isset($form['mime'][$_FILES[$key]['type']]))
-						$error[]=39;
-					elseif(isset($form['maxsize']) and $_FILES[$key]['size']>($form['maxsize']*1024))
-						$error[]=29;
-					else {
-						static_tools::_checkdir($_this->_CFG['_PATH']['temp']);
-						$temp = $_this->_CFG['_PATH']['temp'].substr(md5(getmicrotime()),16).'.'.$form['mime'][$_FILES[$key]['type']];
-						static_tools::_checkdir($_this->_CFG['_PATH']['temp']);
-						if (move_uploaded_file($_FILES[$key]['tmp_name'], $temp)){
-							$_FILES[$key]['tmp_name']= $temp;
-							$data[$key] = $_FILES[$key];
-						}else
-							$error[]=40;
-					}					
+			if(isset($data[$key.'_del']) and (int)$data[$key.'_del']==1){
+					$_FILES[$key] = $data[$key] = array('name'=>':delete:','tmp_name'=>':delete:');
+			}
+			elseif(isset($_FILES[$key]['name']) and $_FILES[$key]['name']!='') {
+				if(!$_FILES[$key]['tmp_name'])
+					$error[]=41;
+				elseif(!isset($form['mime'][$_FILES[$key]['type']]))
+					$error[]=39;
+				elseif(isset($form['maxsize']) and $_FILES[$key]['size']>($form['maxsize']*1024))
+					$error[]=29;
+				else {
+					static_tools::_checkdir($_this->_CFG['_PATH']['temp']);
+					$temp = $_this->_CFG['_PATH']['temp'].substr(md5(getmicrotime()),16).'.'.$form['mime'][$_FILES[$key]['type']];
+					static_tools::_checkdir($_this->_CFG['_PATH']['temp']);
+					if (move_uploaded_file($_FILES[$key]['tmp_name'], $temp)){
+						$_FILES[$key]['tmp_name']= $temp;
+						$data[$key] = $_FILES[$key];
+					}else
+						$error[]=40;
 				}
 			}
-			elseif (isset($data[$key . '_temp_upload']) && is_array($data[$key . '_temp_upload']) && $data[$key . '_temp_upload']['name'] && $data[$key . '_temp_upload']['type']) {
+			elseif(isset($data[$key . '_temp_upload']) && is_array($data[$key . '_temp_upload']) && $data[$key . '_temp_upload']['name'] && $data[$key . '_temp_upload']['type']) {
 				$data[$key] = $data[$key . '_temp_upload'];	
 				$data[$key]['tmp_name'] = $_this->_CFG['_PATH']['temp'] . $data[$key . '_temp_upload']['name'];
+				$_FILES[$key] = $data[$key];
 			}
+			if(isset($form['mask']['min']) and $form['mask']['min'] and (!$_FILES[$key]['name'] or $_FILES[$key]['name'] == ':delete:'))
+				$error[] = 1;
+				
 
 		}
 		//*********** CHECKBOX

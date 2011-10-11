@@ -567,7 +567,7 @@ var wep = {
 						if((!order && page!=1) || (order && page!=total))
 							loc += param+page;
 						window.location.href = loc;
-					},
+					}
 				});
 			});
 			//returnOrder: true

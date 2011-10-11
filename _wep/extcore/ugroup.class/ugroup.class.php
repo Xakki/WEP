@@ -34,6 +34,7 @@ class ugroup_class extends kernel_extends
 		$this->config['karma'] = 0;
 		$this->config['userpic'] = '';
 		$this->config['invite'] = 0;
+		$this->config['uniq_email'] = 1;
 
 		$this->config_form['mail_to'] = array('type' => 'text', 'mask' =>array('min'=>1,'name'=>'email'), 'caption' => 'Адрес службы поддержки');
 		$this->config_form['mailrobot'] = array('type' => 'text', 'mask' =>array('min'=>1,'name'=>'email'), 'caption' => 'Адрес Робота');
@@ -71,6 +72,7 @@ class ugroup_class extends kernel_extends
 		$this->config_form['karma'] = array('type' => 'checkbox', 'caption' => 'Включить систему рейтингов?','style'=>'background:green;');
 		$this->config_form['userpic'] = array('type' => 'text', 'mask' =>array(), 'caption' => 'Дефолтная фотка пользователя');
 		$this->config_form['invite'] = array('type' => 'checkbox', 'caption' => 'Включить систему инвайтов?','style'=>'background:gray;');
+		$this->config_form['uniq_email'] = array('type' => 'checkbox', 'caption' => 'Уникальный Email?');
 
 	}
 
@@ -383,10 +385,10 @@ class users_class extends kernel_extends {
 	function authorization($login,$pass) {
 		if($login!='' && $pass!='')
 		{
-			if ($this->mf_use_charid and !preg_match('/^[0-9A-Za-z]+$/', $login))
-				 return array('Поле `Логин` введено не корректно. Допустим ввод только латинских букв и цифр.',0);
-			elseif (!$this->mf_use_charid and !preg_match('/^[0-9A-Za-z\.\-\@]+$/', $login))
+			if ($this->fn_login=='email' and !preg_match('/^[0-9A-Za-z\.\-\@]+$/', $login))
 				 return array('Поле `Email` введено не корректно. Допустим ввод только латинских букв,цифр, точки, тире и @',0);
+			elseif($this->fn_login!='email' and !preg_match('/^[0-9A-Za-z]+$/', $login))
+				 return array('Поле `Логин` введено не корректно. Допустим ввод только латинских букв и цифр.',0);
 			else
 			{
 				$listfields = array('t2.id as gid, t2.active as gact, t2.name as gname, t2.level, t1.reg_hash,t1.active, t1.id, t1.'.$this->fn_pass);
