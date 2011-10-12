@@ -507,8 +507,9 @@ class users_class extends kernel_extends {
 							$arr['vars'][$this->mf_namefields] = $arr['vars'][$this->fn_login];
 						$arr['vars']['reg_hash']=md5(time().$arr['vars'][$this->fn_login]);
 						$pass=$arr['vars'][$this->fn_pass];
-						$arr['vars'][$this->fn_pass]=md5($this->_CFG['wep']['md5'].$arr['vars'][$this->fn_pass]);
+						$arr['vars'][$this->fn_pass]=md5($this->_CFG['wep']['md5'].$pass);
 						//$_SESSION['user'] = $arr['vars']['id'];
+
 						if($this->_add_item($arr['vars'])) {
 							$this->SQL->execSQL('UPDATE '.$this->tablename.' SET '.$this->mf_createrid.'="'.$this->id.'" where '.$this->fn_login.'="'.$arr['vars'][$this->fn_login].'"');
 							_new_class('mail',$MAIL);

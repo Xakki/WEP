@@ -11,17 +11,6 @@ $_CFGFORM['sql'] = array(// SQL
 	'longquery' =>  array('type'=>'int','caption'=>'Логировать долгие запросы к БД','comment'=>'запись в баг запросы которые выполняются дольше указанного времени в сек'),
 );
 
-$_CFGFORM['memcache'] = array(
-	'showparam1'=>array('type' => 'info', 'caption' => '
-	<div class="showparam" onclick="show_fblock(this,\'.hmemcache\')"> 
-		<span class="shbg"></span>
-		<span class="sh1">Показать</span>
-		<span class="sh2">Скрыть</span> настройки Memcache
-	</div>'),
-	'host' => array('type'=>'text','caption'=>'Хост подключения к Memcache', 'css' => 'fblock hmemcache', 'style' => 'display:none;'),
-	'port' => array('type'=>'text','caption'=>'Порт подключения к Memcache', 'css' => 'fblock hmemcache', 'style' => 'display:none;'),
-);
-
 $_CFGFORM['wep'] = array(// для ядра и админки
 	'showparam2'=>array('type' => 'info', 'caption' => '
 	<div class="showparam" onclick="show_fblock(this,\'.hwep\')"> 
@@ -41,12 +30,17 @@ $_CFGFORM['wep'] = array(// для ядра и админки
 	'locallang' => array('type'=>'text','caption'=>'Кодировка БД', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'md5' => array('type'=>'text','caption'=>'Соль для паролей', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'def_filesize' => array('type'=>'int','caption'=>'Размер фаилового хранилища, Мб', 'css' => 'fblock hwep', 'style' => 'display:none;'),
-	'sessiontype' => array('type'=>'list','caption'=>'Тип хранени сессий пользователей', 'css' => 'fblock hwep', 'style' => 'display:none;'),
-	'bug_hunter' => array('type'=>'list','multiple'=>1, 'caption'=>'Ловец жуков', 'comment'=>'Отлов ошибок', 'css' => 'fblock hwep', 'style' => 'display:none;'),
-	'catch_bug' => array('type'=>'text','caption'=>'Основной сборщик ошибок', 'comment'=>'Системная - указывает на элемент в массиве $GLOBALS["_ERR"] в котором отлавливаются ошибки', 'css' => 'fblock hwep', 'style' => 'display:none;'),
-	'stop_fatal_error' => array('type'=>'checkbox','caption'=>'Останавливать скрипт на фатальной ошибке?', 'css' => 'fblock hwep', 'style' => 'display:none;'),
-	'error_reporting' => array('type'=>'text','caption'=>'php error_reporting', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'chmod'=> array('type'=>'text','caption'=>'chmod', 'css' => 'fblock hwep', 'style' => 'display:none;'),
+	'sessiontype' => array('type'=>'list','caption'=>'Тип хранени сессий пользователей', 'css' => 'fblock hwep', 'style' => 'display:none;'),
+
+	'bug_hunter' => array('type'=>'list','multiple'=>1, 'caption'=>'Ловец жуков', 'comment'=>'Отлов ошибок', 'css' => 'fblock hwep', 'style' => 'display:none;'),
+	//'catch_bug' => array('type'=>'text','caption'=>'Основной сборщик ошибок', 'comment'=>'Системная - указывает на элемент в массиве $GLOBALS["_ERR"] в котором отлавливаются ошибки', 'css' => 'fblock hwep', 'style' => 'display:none;'),
+	//'stop_fatal_error' => array('type'=>'checkbox','caption'=>'Останавливать скрипт на фатальной ошибке?', 'css' => 'fblock hwep', 'style' => 'display:none;'),
+	'error_reporting' => array('type'=>'text','caption'=>'php error_reporting', 'comment'=>'битовая маска, -1 выводит всё виды ошибок', 'css' => 'fblock hwep', 'style' => 'display:none;'),
+	//'show_error' => array('type'=>'list', 'caption'=>'Показывать ошибки всем?', 'css' => 'fblock hwep', 'style' => 'display:none;'),
+	'debugmode' => array('type'=>'list', 'caption'=>'DEBUG MODE', 'css' => 'fblock hwep', 'style' => 'display:none;'),
+	'_showerror' => array('type'=>'text','caption'=>'GET[_showerror] - для вывода ошибок', 'css' => 'fblock hwep', 'style' => 'display:none;'),
+	'_showallinfo' => array('type'=>'text','caption'=>'GET[_showallinfo] - для вывода инфы', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	//'cron'=> array('type'=>'text','caption'=>'cron', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 );
 
@@ -57,13 +51,22 @@ $_CFGFORM['site'] = array(// для сайта
 		<span class="sh1">Показать</span>
 		<span class="sh2">Скрыть</span> настройки всего сайта
 	</div>'),
-	'show_error' => array('type'=>'list', 'caption'=>'Показывать ошибки всем?', 'css' => 'fblock hsite', 'style' => 'display:none;'),
 	'rf' => array('type'=>'checkbox','caption'=>'Рускоязычный домен', 'css' => 'fblock hsite', 'style' => 'display:none;'),
 	'worktime' => array('type'=>'checkbox','caption'=>'Включить режим "Технический перерыв"', 'css' => 'fblock hsite', 'style' => 'display:none;'),
 	'work_title' => array('type'=>'text','caption'=>'Заголовок для режима "Технический перерыв"', 'css' => 'fblock hsite', 'style' => 'display:none;'),
 	'work_text' => array('type'=>'text','caption'=>'Текст для режима "Технический перерыв"', 'css' => 'fblock hsite', 'style' => 'display:none;'),
 	'redirectForRobots' => array('type'=>'checkbox','caption'=>'Делать ссылки для Ботов', 'css' => 'fblock hsite', 'style' => 'display:none;'),
-	'debugmode' => array('type'=>'checkbox','caption'=>'DEBUG MODE', 'css' => 'fblock hsite', 'style' => 'display:none;'),
+);
+
+$_CFGFORM['memcache'] = array(
+	'showparam1'=>array('type' => 'info', 'caption' => '
+	<div class="showparam" onclick="show_fblock(this,\'.hmemcache\')"> 
+		<span class="shbg"></span>
+		<span class="sh1">Показать</span>
+		<span class="sh2">Скрыть</span> настройки Memcache
+	</div>'),
+	'host' => array('type'=>'text','caption'=>'Хост подключения к Memcache', 'css' => 'fblock hmemcache', 'style' => 'display:none;'),
+	'port' => array('type'=>'text','caption'=>'Порт подключения к Memcache', 'css' => 'fblock hmemcache', 'style' => 'display:none;'),
 );
 
 	$_CFGFORM['wep']['timezone']['valuelist'] = array();
@@ -112,10 +115,10 @@ $_CFGFORM['site'] = array(// для сайта
 		$_CFGFORM['wep']['bug_hunter']['valuelist'][] = array('#id#' => $ke, '#name#' => $re['type']);
 	}
 
-	$_CFGFORM['site']['show_error']['valuelist'] = array(
-		array('#id#' => 0, '#name#' => 'ничего не показывать обычным юзерам'),
-		array('#id#' => 1, '#name#' => 'паказывать только сообщение что произошла ошибка'),
-		array('#id#' => 2, '#name#' => 'паказать ашипку :)')
+	$_CFGFORM['wep']['debugmode']['valuelist'] = array(
+		array('#id#' => 0, '#name#' => 'OFF (ошибки не показывать)'),
+		array('#id#' => 1, '#name#' => 'ON (только о том что была ошибка)'),
+		array('#id#' => 2, '#name#' => 'Full ON (все видят ошибки)')
 	);
 
 ?>

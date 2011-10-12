@@ -391,8 +391,11 @@ var wep = {
 	fLog: function(txt,flag) {
 		if(jQuery('#bugmain').size())
 			jQuery("#bugmain").prepend(txt);
-		else
+		else {
 			jQuery("body").prepend("<div id=\"bugmain\">"+txt+"</div>");
+			$.includeCSS('/_design/_style/bug.css');
+			$.include('/_design/_script/bug.js');
+		}
 		if(flag==1) wep.fShowHide('bugmain',1);
 	},
 	fMessPos: function(body,obj) {
@@ -467,8 +470,6 @@ var wep = {
 	fSpoiler: function(txt,nm) {
 		//initSpoilers();
 		if(!nm) nm ='Скрытый текст';
-		$.includeCSS('/_design/_style/bug.css');
-		$.include('/_design/_script/bug.js');
 		return '<div class="spoiler-wrap"><div class="spoiler-head folded clickable" onClick="bugSpoilers(this)">+ '+nm+'</div><div class="spoiler-body" style="display: none;">'+txt+'</div></div>';
 	},
 	initSpoilers: function(context){

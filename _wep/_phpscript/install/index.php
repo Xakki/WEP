@@ -9,8 +9,7 @@ $TEMP_CFG['wep']['access'] = $_CFG['wep']['access'] = 0; // авторизаци
 $TEMP_CFG['wep']['sessiontype'] = $_CFG['wep']['sessiontype'] = 0; // запускаем сессию стандартно
 $TEMP_CFG['site']['bug_hunter'] = $_CFG['site']['bug_hunter'] = array(); // откл запись в баг
 $TEMP_CFG['sql']['log'] = $_CFG['sql']['log'] = 0;
-$TEMP_CFG['site']['show_error'] = $_CFG['site']['show_error'] = 2;
-$TEMP_CFG['wep']['stop_fatal_error'] = $_CFG['wep']['stop_fatal_error'] = false;
+$TEMP_CFG['wep']['debugmode'] = $_CFG['wep']['debugmode'] = 2;
 
 session_go(1);
 $HTML = new html($_CFG['PATH']['cdesign']);

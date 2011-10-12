@@ -14,7 +14,8 @@
 			global $_CFG;
 			$this->CFG_SQL = $CFG_SQL;
 			$this->_iFlag= false;
-			if((int)$this->CFG_SQL['log']) $this->logFile = fopen($_CFG['_PATH']['wep'].'/log/_'.time().'.log', 'wb');
+			if((int)$this->CFG_SQL['log'])
+				$this->logFile = fopen($_CFG['_PATH']['wep'].'/log/_'.time().'.log', 'wb');
 			$this->sql_connect($new_link);
 		}
 
@@ -24,18 +25,22 @@
 		}
 
 		function sql_connect($new_link) {
+			$this->ready = false;
 			$this->hlink = @mysql_connect($this->CFG_SQL['host'], $this->CFG_SQL['login'], $this->CFG_SQL['password']);
 			if($this->hlink) {
 				mysql_query ('SET NAMES '.$this->CFG_SQL['setnames']);
 				if(!mysql_select_db($this->CFG_SQL['database'],$this->hlink)) {
-					if(mysql_query('create database `'.$this->CFG_SQL['database'].'` character set '.$this->CFG_SQL['setnames'].' collate '.$this->CFG_SQL['setnames'].'_general_ci;'))
-						mysql_select_db($this->CFG_SQL['database'],$this->hlink);
+					if(mysql_query('create database `'.$this->CFG_SQL['database'].'` character set '.$this->CFG_SQL['setnames'].' collate '.$this->CFG_SQL['setnames'].'_general_ci;')) {
+						if(mysql_select_db($this->CFG_SQL['database'],$this->hlink))
+							$this->ready = true;
+					}
 					else 
-						trigger_error('Can`t create database `'.$this->CFG_SQL['database'].'`', E_USER_WARNING);
-						die('<h4>SQL config error</h4>');
-				}
-			}else {
-				trigger_error('Can`t connect to database `'.$this->CFG_SQL['database'].'`', E_USER_WARNING);
+						//trigger_error('Can`t create database `'.$this->CFG_SQL['database'].'`', E_USER_WARNING);
+						die('<h4>SQL can`t connect and create database , may be error in config?</h4>');
+				}else
+					$this->ready = true;
+			} else {
+				//trigger_error('SQL connect error', E_USER_WARNING);
 				die('<h4>SQL connect error</h4>');
 			}
 		}

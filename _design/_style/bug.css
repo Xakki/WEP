@@ -1,9 +1,9 @@
 
 #bugmain {
-	position:absolute;right:5px;top:5px;z-index:100;
+	z-index:100;
 	border:1px solid yellow;
 	background:#D7E8FF;
-	width:400px;padding:0;font-size:0.8em;font-family: arial;
+	width:100%;padding:0;font-size:0.8em;font-family: arial;
 	overflow:auto;
 }
 .bugmain {background: none repeat scroll 0 0 #E1E1E1;font-family: arial;}
@@ -13,11 +13,44 @@
 .bspoiler-wrap {border-color:#C3CBD1;border-style:solid;border-width:1px 1px 1px 2px;width:99%;overflow:auto;font-family: arial;}
 .bspoiler-wrap .spoiler-head {color:black;font-size:11px;line-height:15px;margin-left:6px;padding:0 0.9em;}
 .bspoiler-wrap .spoiler-body {border-bottom:1px dashed #C3CBD1;display:none;padding:0;display: none;font-size:10px;color:black;}
-.bspoiler-wrap .spoiler-body div {color:white;}
-.bspoiler-wrap .spoiler-body pre{background:#F8F7F2 none repeat scroll 0 0;border:medium none;color:black;margin:0;}
-.bspoiler-wrap .spoiler-body pre code{display:block;overflow:auto;white-space:pre;padding:5px 0;}
+.bspoiler-wrap .spoiler-body div {color:white;background-color:#858585;}
+#bugmain div.bug_ {background-color:#858585;}
+#bugmain div.bug_0 {background-color:#858585;}
+#bugmain div.bug_1 {background-color:red;}
+#bugmain div.bug_2 {background-color:#F18890;}
+#bugmain div.bug_4 {background-color:red;}
+#bugmain div.bug_8 {background-color:#858585;}
+#bugmain div.bug_16 {background-color:red;}
+#bugmain div.bug_32 {background-color:#F18890;}
+#bugmain div.bug_64 {background-color:red;}
+#bugmain div.bug_128 {background-color:#F18890;}
+#bugmain div.bug_256 {background-color:red;}
+#bugmain div.bug_512 {background-color:#F18890;}
+#bugmain div.bug_1024 {background-color:#858585;}
+#bugmain div.bug_2048 {background-color:brown;}
+#bugmain div.bug_4096 {background-color:red;}
+#bugmain pre{background:#F8F7F2 none repeat scroll 0 0;border:medium none;color:black;margin:0;}
+#bugmain pre code{display:block;overflow:auto;white-space:pre;padding:5px 0;}
 .bspoiler-wrap .folded {display:block;padding-left:0;}
 .bspoiler-wrap .folded::before {content: " + ";}
 .bspoiler-wrap .unfolded {display:block;padding-left:0;}
 .bspoiler-wrap .unfolded::before {content: " - ";}
 .bspoiler-wrap .clickable {cursor:pointer;}
+
+/*Debug print*/
+.xdebug {
+}
+.xdebug .xdebug-item {
+	font-size:10px;color:#000;border-left:solid 1px #333;border-bottom:solid 1px #233;
+	margin:0;
+}
+.xdebug .xdebug-item span {
+	font-size:11px;color:black;
+}
+.xdebug .xdebug-item a {
+	color:blue;
+}
+
+/*TIMER*/
+.allinfo {
+}

@@ -21,10 +21,6 @@ $_CFG['sql'] = array(// SQL
 	'log' => 0, // логирование запросов в фаил
 	'longquery' => 1 // запись в баг запросы которые выполняются дольше указанного времени в сек
 );
-$_CFG['memcache'] = array(
-	'host' => '127.0.0.1',
-	'port' => 11211,
-);
 $_CFG['wep'] = array(// для ядра и админки
 	'access' => 1, // 1 - вкл доступ по модулю пользователей, 0 - вкл доступ по дефолтному паролю
 	'login' => 'root',
@@ -38,23 +34,27 @@ $_CFG['wep'] = array(// для ядра и админки
 	'design' => 'default',
 	'md5' => 'd3dEegf6EH',
 	'def_filesize' => 200,
-	'sessiontype' => 1, //0 - стандартная сессия, 1 - БД сессия, 2 - ещё какаянибудь
-	'bug_hunter' => array(), // логирование ошибок
-	'catch_bug' => 1, // Системная - укзаывает на элемент в массиве $GLOBALS['_ERR'] в котором отлавливаются ошибки
-	'stop_fatal_error' => true,
-	'error_reporting' => '-1', // заменить на multiselect
 	'chmod'=> 0774,
+	'sessiontype' => 1, //0 - стандартная сессия, 1 - БД сессия, 2 - ещё какаянибудь
+	'bug_hunter' => array(), // какие ошибки отлавливать
+	'catch_bug' => 1, // Системная - укзаывает на элемент в массиве $GLOBALS['_ERR'] в котором отлавливаются ошибки
+	'error_reporting' => '0', // заменить на multiselect
+	'debugmode' => 2, //0- ничего не показывать обычным юзерам, 1 -паказывать только сообщение что произошла ошибка, 2 - паказать ошибку
+	'_showerror'=>'_showerror', // для GET запросов
+	'_showallinfo'=>'_showallinfo', // для GET запросов
 	'cron'=>array(),
 );
 
 $_CFG['site'] = array(// для сайта
 	'rf' => 0, // для рускояз доменов
-	'show_error' => 1, //0- ничего не показывать обычным юзерам, 1 -паказывать только сообщение что произошла ошибка, 2 - паказать ошибку
 	'worktime' => false, // 1 - включает отображение страницы "Технический перерыв"
 	'work_title' => 'Технический перерыв',
 	'work_text' => 'Технический перерыв',
 	'redirectForRobots' => true,
-	'debugmode'=>false
+);
+$_CFG['memcache'] = array(
+	'host' => '127.0.0.1',
+	'port' => 11211,
 );
 
 /* END_MAIN_CFG */
@@ -71,6 +71,10 @@ $_CFG['hook'] = array(); // События
 $_CFG['logs']['sql'] = array(); // - массив SQL запросов
 $_CFG['fileIncludeOption'] = array(); //автоподключение SCRIPT & STYLE
 $GLOBALS['_ERR'] = array(); //текс ошибок
+$_CFG['returnFormat'] = 'html';
+//json
+//''
+
 /* * PATH_CFG* */
 
 /* Полные пути по файловым системам для ядра */
@@ -263,84 +267,87 @@ $_CFG['_error'] = array(
 		'prior' => 6,
 		'debug' => 0
 	),
-	E_ERROR => array(
+	E_ERROR => array(//1
 		'type' => '[Fatal Error]',
 		'color' => 'red',
 		'prior' => 0,
 		'debug' => 0
 	),
-	E_CORE_ERROR => array(
-		'type' => '[Fatal Core Error]',
-		'color' => 'red',
-		'prior' => 0,
-		'debug' => 0
-	),
-	E_COMPILE_ERROR => array(
-		'type' => '[Compilation Error]',
-		'color' => 'red',
-		'prior' => 0,
-		'debug' => 0
-	),
-	E_PARSE => array(
+	E_PARSE => array(//4
 		'type' => '[Parse Error]',
 		'color' => 'red',
 		'prior' => 0,
 		'debug' => 0
 	),
-	E_CORE_WARNING => array(
-		'type' => '[Core Warning]',
-		'color' => '#F18890',
-		'prior' => 1,
-		'debug' => 1
-	),
-	E_COMPILE_WARNING => array(
-		'type' => '[Compilation Warning]',
-		'color' => '#F18890',
-		'prior' => 1,
+	E_CORE_ERROR => array(//16
+		'type' => '[Fatal Core Error]',
+		'color' => 'red',
+		'prior' => 0,
 		'debug' => 0
 	),
-	E_WARNING => array(
-		'type' => '[Warning]',
-		'color' => '#F18890',
-		'prior' => 1,
-		'debug' => 1
-	),
-	E_RECOVERABLE_ERROR => array(
-		'type' => '[Catchable Fatal Error]',
+	E_COMPILE_ERROR => array(//64
+		'type' => '[Compilation Error]',
 		'color' => 'red',
-		'prior' => 1,
-		'debug' => 1
+		'prior' => 0,
+		'debug' => 0
 	),
-	E_USER_ERROR => array(
+	E_USER_ERROR => array(//256
 		'type' => '[Triggered Error]',
 		'color' => 'red',
 		'prior' => 2,
 		'debug' => 1
 	),
-	E_USER_WARNING => array(
+	E_RECOVERABLE_ERROR => array(//4096
+		'type' => '[Catchable Fatal Error]',
+		'color' => 'red',
+		'prior' => 1,
+		'debug' => 1
+	),
+
+	E_WARNING => array(//2
+		'type' => '[Warning]',
+		'color' => '#F18890',
+		'prior' => 1,
+		'debug' => 1
+	),
+	E_CORE_WARNING => array(//32
+		'type' => '[Core Warning]',
+		'color' => '#F18890',
+		'prior' => 1,
+		'debug' => 1
+	),
+	E_COMPILE_WARNING => array(//128
+		'type' => '[Compilation Warning]',
+		'color' => '#F18890',
+		'prior' => 1,
+		'debug' => 0
+	),
+	E_USER_WARNING => array(//512
 		'type' => '[Triggered Warning]',
 		'color' => '#F18890',
 		'prior' => 3,
 		'debug' => 1
 	),
-	E_STRICT => array(
+
+	E_STRICT => array(//2048
 		'type' => '[Deprecation Notice]',
 		'color' => 'brown',
 		'prior' => 4,
 		'debug' => 0
 	),
-	E_NOTICE => array(
+
+	E_NOTICE => array(//8
 		'type' => '[Notice]',
-		'color' => 'black',
+		'color' => '#858585',
 		'prior' => 5,
 		'debug' => 0
 	),
-	E_USER_NOTICE => array(
+	E_USER_NOTICE => array(//1024
 		'type' => '[Triggered Notice]',
-		'color' => 'black',
+		'color' => '#858585',
 		'prior' => 5,
 		'debug' => 0
-	)
+	),
 );
 
 /* * *************** */
@@ -415,14 +422,8 @@ function shutdown_function() {
 
 function session_go($force=0) { //$force=1 - открывает сесиию для не авторизованного пользователя
 	global $_CFG, $SESSION_GOGO;
-	if (!$_CFG['robot'] and (isset($_COOKIE[$_CFG['session']['name']]) or $force) and !defined('SID')) {
-		if ($_CFG['wep']['sessiontype'] == 1) {
-			if (!$SESSION_GOGO) {
-				$SESSION_GOGO = new session_class();
-			}
-		} else {
-			session_start();
-		}
+	if (!$_CFG['robot'] and (isset($_COOKIE[$_CFG['session']['name']]) or $force)) {
+		_new_class('session',$SESSION_GOGO);
 		return true;
 	}
 	return false;
@@ -439,108 +440,6 @@ function _setcookie($name, $value='', $expire='', $path='', $domain='', $secure=
 	if ($secure == '')
 		$secure = $_CFG['session']['secure'];
 	setcookie($name, $value, $expire, $path, $domain, $secure);
-}
-
-/*
-  точное время в милисекундах
- */
-
-function getmicrotime() {
-	list($usec, $sec) = explode(" ", microtime());
-	return ((float) $usec + (float) $sec);
-}
-
-/*
-  Функция SpiderDetect - принимает $_SERVER['HTTP_USER_AGENT'] и возвращает имя кравлера поисковой системы или false.
- */
-
-function SpiderDetect($USER_AGENT='') {
-	if (!$USER_AGENT) {
-		if(!isset($_SERVER['HTTP_USER_AGENT'])) {
-			return '*';
-		}
-		$USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
-	}
-	$engines = array(
-		array('Aport', 'Aport robot'),
-		array('Google', 'Google'),
-		array('msnbot', 'MSN'),
-		array('Rambler', 'Rambler'),
-		array('Yahoo', 'Yahoo'),
-		array('AbachoBOT', 'AbachoBOT'),
-		array('accoona', 'Accoona'),
-		array('AcoiRobot', 'AcoiRobot'),
-		array('ASPSeek', 'ASPSeek'),
-		array('CrocCrawler', 'CrocCrawler'),
-		array('Dumbot', 'Dumbot'),
-		array('FAST-WebCrawler', 'FAST-WebCrawler'),
-		array('GeonaBot', 'GeonaBot'),
-		array('Gigabot', 'Gigabot'),
-		array('Lycos', 'Lycos spider'),
-		array('MSRBOT', 'MSRBOT'),
-		array('Scooter', 'Altavista robot'),
-		array('AltaVista', 'Altavista robot'),
-		array('WebAlta', 'WebAlta'),
-		array('IDBot', 'ID-Search Bot'),
-		array('eStyle', 'eStyle Bot'),
-		array('Mail.Ru', 'Mail.Ru Bot'),
-		array('Scrubby', 'Scrubby robot'),
-		array('Yandex', 'Yandex'),
-		array('YaDirectBot', 'Yandex Direct'),
-		array('Bot', 'Bot')
-	);
-
-	foreach ($engines as $engine) {
-		if (stripos($USER_AGENT, $engine[0])!==false) {
-			return $engine[1];
-		}
-	}
-
-	return '';
-}
-
-$_CFG['robot'] = SpiderDetect();
-
-/*
-  Используем эту ф вместо стандартной, для совместимости с UTF-8
- */
-if (function_exists('mb_internal_encoding'))
-	mb_internal_encoding($_CFG['wep']['charset']);
-
-function _strlen($val) {
-	if (function_exists('mb_strlen'))
-		return mb_strlen($val);
-	else
-		return strlen($val);
-}
-
-function _substr($s, $offset, $len = NULL) {
-	if (is_null($len)){
-		if (function_exists('mb_substr'))
-			return mb_substr($s, $offset);
-		else
-			return substr($s, $offset);
-	}
-	else {
-		if (function_exists('mb_substr'))
-			return mb_substr($s, $offset, $len);
-		else
-			return substr($s, $offset, $len);
-	}
-}
-
-function _strtolower($txt) {
-	if (function_exists('mb_strtolower'))
-		return mb_strtolower($txt);
-	else
-		return strtolower($txt);
-}
-
-function _mb_strpos($haystack, $needle, $offset=0) {
-	if (function_exists('mb_strpos'))
-		return mb_strpos($haystack, $needle, $offset);
-	else
-		return strpos($haystack, $needle, $offset);
 }
 
 /**
@@ -683,4 +582,107 @@ function _modulExists($class_name,&$OWNER = NULL) {
 if (!defined('PHP_VERSION_ID')) {
 	$version = explode('.', PHP_VERSION);
 	define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
+}
+
+/*
+  точное время в милисекундах
+ */
+
+function getmicrotime() {
+	list($usec, $sec) = explode(" ", microtime());
+	return ((float) $usec + (float) $sec);
+}
+
+/*
+  Функция SpiderDetect - принимает $_SERVER['HTTP_USER_AGENT'] и возвращает имя кравлера поисковой системы или false.
+ */
+
+function SpiderDetect($USER_AGENT='') {
+	if (!$USER_AGENT) {
+		if(!isset($_SERVER['HTTP_USER_AGENT'])) {
+			return '*';
+		}
+		$USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
+	}
+	$engines = array(
+		array('Aport', 'Aport robot'),
+		array('Google', 'Google'),
+		array('msnbot', 'MSN'),
+		array('Rambler', 'Rambler'),
+		array('Yahoo', 'Yahoo'),
+		array('AbachoBOT', 'AbachoBOT'),
+		array('accoona', 'Accoona'),
+		array('AcoiRobot', 'AcoiRobot'),
+		array('ASPSeek', 'ASPSeek'),
+		array('CrocCrawler', 'CrocCrawler'),
+		array('Dumbot', 'Dumbot'),
+		array('FAST-WebCrawler', 'FAST-WebCrawler'),
+		array('GeonaBot', 'GeonaBot'),
+		array('Gigabot', 'Gigabot'),
+		array('Lycos', 'Lycos spider'),
+		array('MSRBOT', 'MSRBOT'),
+		array('Scooter', 'Altavista robot'),
+		array('AltaVista', 'Altavista robot'),
+		array('WebAlta', 'WebAlta'),
+		array('IDBot', 'ID-Search Bot'),
+		array('eStyle', 'eStyle Bot'),
+		array('Mail.Ru', 'Mail.Ru Bot'),
+		array('Scrubby', 'Scrubby robot'),
+		array('Yandex', 'Yandex'),
+		array('YaDirectBot', 'Yandex Direct'),
+		array('Bot', 'Bot')
+	);
+
+	foreach ($engines as $engine) {
+		if (stripos($USER_AGENT, $engine[0])!==false) {
+			return $engine[1];
+		}
+	}
+
+	return '';
+}
+
+$_CFG['robot'] = SpiderDetect();
+
+
+/*
+  Используем эту ф вместо стандартной, для совместимости с UTF-8
+ */
+if (function_exists('mb_internal_encoding'))
+	mb_internal_encoding($_CFG['wep']['charset']);
+
+function _strlen($val) {
+	if (function_exists('mb_strlen'))
+		return mb_strlen($val);
+	else
+		return strlen($val);
+}
+
+function _substr($s, $offset, $len = NULL) {
+	if (is_null($len)){
+		if (function_exists('mb_substr'))
+			return mb_substr($s, $offset);
+		else
+			return substr($s, $offset);
+	}
+	else {
+		if (function_exists('mb_substr'))
+			return mb_substr($s, $offset, $len);
+		else
+			return substr($s, $offset, $len);
+	}
+}
+
+function _strtolower($txt) {
+	if (function_exists('mb_strtolower'))
+		return mb_strtolower($txt);
+	else
+		return strtolower($txt);
+}
+
+function _strpos($haystack, $needle, $offset=0) {
+	if (function_exists('mb_strpos'))
+		return mb_strpos($haystack, $needle, $offset);
+	else
+		return strpos($haystack, $needle, $offset);
 }

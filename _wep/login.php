@@ -2,7 +2,7 @@
 	$_CFG['_PATH']['wep'] = dirname($_SERVER['SCRIPT_FILENAME']);
 	require_once($_CFG['_PATH']['wep'].'/config/config.php');
 	require_once($_CFG['_PATH']['core'].'html.php');
-	
+	$result = array('','');
 	$delay =4;
 	$variant = "";
 	$ref= $_CFG['_HREF']['BH'].$_CFG['PATH']['wepname'];
@@ -14,7 +14,7 @@
 		if(strstr($ref,'login.php') or strstr($ref,'install.php'))
 			$ref = $_CFG['_HREF']['BH'].$_CFG['PATH']['wepname'];
 	}
-	elseif($_SERVER['HTTP_REFERER']!='' and !strstr($_SERVER['HTTP_REFERER'],'login.php'))
+	elseif(isset($_SERVER['HTTP_REFERER']) and $_SERVER['HTTP_REFERER']!='' and !strstr($_SERVER['HTTP_REFERER'],'login.php'))
 		$ref= $_SERVER['HTTP_REFERER'];
 
 	if(count($_POST) and isset($_POST['login'])) {

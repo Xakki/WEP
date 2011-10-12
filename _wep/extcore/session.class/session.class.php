@@ -38,17 +38,20 @@ class session_class extends kernel_extends {
 		$this->ordfield = 'modified DESC';
 
 		$this->index_fields['sid'] = 'sid';
+		$this->index_fields['users_id'] = 'users_id';
 		$this->unique_fields['sid'] = 'sid';
 
-		if(!session_id() or !isset($_SESSION)) {
-			session_set_save_handler(array(&$this,"open"), array(&$this,"close"), array(&$this,"read"), array(&$this,"write"), array(&$this,"destroy"), array(&$this,"gc"));
+		if(!isset($_SESSION)) {
+			if($this->_CFG['wep']['sessiontype'] == 1)
+				session_set_save_handler(array(&$this,"open"), array(&$this,"close"), array(&$this,"read"), array(&$this,"write"), array(&$this,"destroy"), array(&$this,"gc"));
+
 			session_start();
 			
 			$params = array(
 				'func' => 'session_write_close',
 			);
-			
-			observer::register_observer($params, 'shutdown_function');
+			if($this->_CFG['wep']['sessiontype'] == 1)
+				observer::register_observer($params, 'shutdown_function');
 		}
 	}
 
@@ -143,7 +146,8 @@ class session_class extends kernel_extends {
 	}
 
 	function gc($maxlifetime=0) {
-		$result = $this->SQL->execSQL('DELETE FROM '.$this->tablename.' WHERE `modified` + `expired` < '.$this->_time.' OR (`created` + '.$this->deadsession.' < '.$this->_time.' AND `visits` < '.$this->deadvisits.')');
+		$result = $this->SQL->execSQL('DELETE FROM '.$this->tablename.' WHERE `modified` + `expired` < '.$this->_time.' ');
+		//OR (`created` + '.$this->deadsession.' < '.$this->_time.' AND `visits` < '.$this->deadvisits.')
 		return(true); 
 	}
 

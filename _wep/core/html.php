@@ -19,22 +19,32 @@ $_html = '';
  */
 set_error_handler('_myErrorHandler', error_reporting());
 ob_start('_obHandler');
-
-if (!isset($_COOKIE['_showallinfo']))
-	$_COOKIE['_showallinfo'] = 0;
-if (isset($_GET['_showallinfo']) and !$_CFG['robot']) {// and !isset($_COOKIE['_showallinfo'])
-	if ($_GET['_showallinfo'])
-		_setcookie('_showallinfo', $_GET['_showallinfo']);
+$sai = $_CFG['wep']['_showallinfo'];
+if (!isset($_COOKIE[$sai]))
+	$_COOKIE[$sai] = 0;
+if (isset($_GET[$sai]) and !$_CFG['robot']) {// and !isset($_COOKIE[$sai])
+	if ($_GET[$sai])
+		_setcookie($sai, $_GET[$sai]);
 	else
-		_setcookie('_showallinfo', $_GET['_showallinfo'], (time() - 5000));
-	$_COOKIE['_showallinfo'] = $_GET['_showallinfo'];
+		_setcookie($sai, $_GET[$sai], (time() - 5000));
+	$_COOKIE[$sai] = $_GET[$sai];
 }
+
 // or $_CFG['_F']['adminpage']
-if (!$_CFG['robot'] and (isset($_GET['_showerror']) or $_CFG['_HREF']['arrayHOST'][0] == 'i') and !isset($_COOKIE['_showerror'])) {
-	_setcookie('_showerror', 1);
-	$_COOKIE['_showerror'] = 1;
+if(!$_CFG['robot']) {
+	$se =$_CFG['wep']['_showerror'];
+	if (isset($_GET[$se])) {
+		$_COOKIE[$se] = (int)$_GET[$se];
+		_setcookie($se, $_COOKIE[$se]);
+	}
+	elseif($_CFG['wep']['debugmode'] and !isset($_COOKIE[$se])) { // для localhost
+		$_COOKIE[$se] = 1;
+		_setcookie($se, 1);
+	}
+	if(isset($_COOKIE[$se]) and $_COOKIE[$se])
+		$_CFG['wep']['debugmode'] = 2;
 }
-//else _setcookie('_showerror', '', (time()-5000));
+//else _setcookie($se, '', (time()-5000));
 
 
 /*
@@ -214,7 +224,7 @@ function _myErrorHandler($errno, $errstr, $errfile, $errline, $errcontext) {//,$
 		// Debuger
 		// для вывода отладчика для всех типов ошибок , можно отключить это условие
 		if (isset($_CFG['wep']['bug_hunter'][$errno]) and $_CFG['_error'][$errno]['debug'])
-			$debug = '<div class="spoiler-body" style="background-color: rgb(225, 225, 225);">' . debugPrint(2) . '</div>';
+			$debug = '<div class="spoiler-body">' . debugPrint(2) . '</div>';
 		else
 			$debug = '';
 
@@ -238,11 +248,11 @@ function _myErrorHandler($errno, $errstr, $errfile, $errline, $errcontext) {//,$
 			$GLOBALS['_ERR'][$_CFG['wep']['catch_bug']][$type] = '';
 
 		if ($debug)
-			$GLOBALS['_ERR'][$_CFG['wep']['catch_bug']][$type] .='<div class="bspoiler-wrap"><div onclick="bugSpoilers(this)" class="spoiler-head folded clickable" style="background-color:' . $_CFG['_error'][$errno]['color'] . ';">' . $errtype . ' ' . $errstr . ' , in line ' . $errline . ' of file <i>' . $errfile . '</i> </div>' . $debug . '</div>' . "\n";
+			$GLOBALS['_ERR'][$_CFG['wep']['catch_bug']][$type] .='<div class="bspoiler-wrap"><div onclick="bugSpoilers(this)" class="spoiler-head folded clickable bug_'.$errno.'">' . $errtype . ' ' . $errstr . ' , in line ' . $errline . ' of file <i>' . $errfile . '</i> </div>' . $debug . '</div>' . "\n";
 		else
-			$GLOBALS['_ERR'][$_CFG['wep']['catch_bug']][$type] .='<div style="background-color:' . $_CFG['_error'][$errno]['color'] . ';">' . $errtype . ' ' . $errstr . ' , in line ' . $errline . ' of file <i>' . $errfile . '</i> </div>' . "\n";
+			$GLOBALS['_ERR'][$_CFG['wep']['catch_bug']][$type] .='<div class="bug_'.$errno.'">' . $errtype . ' ' . $errstr . ' , in line ' . $errline . ' of file <i>' . $errfile . '</i> </div>' . "\n";
 		//остановка на фатальной ошибке
-		if ($_CFG['_error'][$errno]['prior'] == 0 and $_CFG['wep']['stop_fatal_error']) {
+		if ($_CFG['_error'][$errno]['prior'] == 0 and !$_CFG['wep']['debugmode']) {
 			$GLOBALS['_ERR'][$_CFG['wep']['catch_bug']][$type] .="Aborting...<br />\n";
 			die();
 		}
@@ -255,10 +265,10 @@ function startCatchError($param=2) {
 		$param = 2;
 	$_CFG['_ctemp' . $param]['catch_bug'] = $_CFG['wep']['catch_bug'];
 	$_CFG['_ctemp' . $param]['bug_hunter'] = $_CFG['wep']['bug_hunter'];
-	$_CFG['_ctemp' . $param]['stop_fatal_error'] = $_CFG['wep']['stop_fatal_error'];
+	$_CFG['_ctemp' . $param]['debugmode'] = $_CFG['wep']['debugmode'];
 	$_CFG['wep']['catch_bug'] = $param;
 	$_CFG['wep']['bug_hunter'] = array();
-	$_CFG['wep']['stop_fatal_error'] = 0;
+	$_CFG['wep']['debugmode'] = 1;
 	return true;
 }
 
@@ -268,7 +278,7 @@ function getCatchError($param=2) {
 		$param = 2;
 	$_CFG['wep']['catch_bug'] = $_CFG['_ctemp' . $param]['catch_bug'];
 	$_CFG['wep']['bug_hunter'] = $_CFG['_ctemp' . $param]['bug_hunter'];
-	$_CFG['wep']['stop_fatal_error'] = $_CFG['_ctemp' . $param]['stop_fatal_error'];
+	$_CFG['wep']['debugmode'] = $_CFG['_ctemp' . $param]['debugmode'];
 	if (isset($GLOBALS['_ERR'][$param])) {
 		$return = $GLOBALS['_ERR'][$param];
 		unset($GLOBALS['_ERR'][$param]);
@@ -291,27 +301,33 @@ function _obHandler($buffer) {
 	$htmlinfo = '';
 	$notice = '';
 	$htmlerr = '';
+
+	/*Вывод ошибок*/
 	foreach ($GLOBALS['_ERR'] as $k => $r) {
 		if (isset($r[0]))
 			$htmlerr .= $r[0];
 		if (isset($r[1])) //нотисы отдельно
 			$notice .= $r[1];
 	}
-	if (($htmlerr != '' or $notice != '' or $temp[1]) and ($_COOKIE['_showerror'] or $_CFG['site']['show_error'] == 2)) {
+	if (($htmlerr != '' or $notice != '' or $temp[1]) and $_CFG['wep']['debugmode'] == 2) {
 		if ($temp[1] and $temp[0])
 			$htmlerr .= $temp[0];
 		if ($notice)
 			$htmlerr .= spoilerWrap('NOTICE',$notice);
 	}
-	elseif (($htmlerr != '' or $temp[1]) and $_CFG['site']['show_error'] == 1)
+	elseif (($htmlerr != '' or $temp[1]) and $_CFG['wep']['debugmode'] == 1)
 		$htmlerr = 'На странице возникла ошибка! Приносим свои извинения за временные неудобства! Неполадки будут исправлены в ближайшее время.';
+	else
+		$htmlerr = '';
 
-	if ((isset($_COOKIE['_showallinfo']) and $_COOKIE['_showallinfo']) or $_CFG['_F']['adminpage']) {
+	/*Вывд логов и инфы*/
+	if ((isset($_COOKIE[$_CFG['wep']['_showallinfo']]) and $_COOKIE[$_CFG['wep']['_showallinfo']]) or $_CFG['_F']['adminpage']) {
 		$included_files = get_included_files();
 		$htmlinfo .= 'time=' . substr((getmicrotime() - $_mctime_start), 0, 6) . ' | memory=' . (int) (memory_get_usage() / 1024) . 'Kb | maxmemory=' . (int) (memory_get_peak_usage() / 1024) . 'Kb | query=' . count($_CFG['logs']['sql']) . ' | file include=' . count($included_files);
-		if ($_COOKIE['_showallinfo'] > 1 and count($_CFG['logs']['sql']) > 0)
+
+		if ($_COOKIE[$_CFG['wep']['_showallinfo']] > 1 and count($_CFG['logs']['sql']) > 0)
 			$htmlerr .= spoilerWrap('SQL QUERY',implode(';<br/>', $_CFG['logs']['sql']));
-		if ($_COOKIE['_showallinfo'] > 2) {
+		if ($_COOKIE[$_CFG['wep']['_showallinfo']] > 2) {
 			if (!$temp[1] and $temp[0])
 				$htmlerr .= spoilerWrap('LOGS',$temp[0]);
 			$htmlerr .= spoilerWrap('FILE INCLUDE',implode(';<br/>', $included_files));
@@ -321,23 +337,23 @@ function _obHandler($buffer) {
 	if ($_CFG['_F']['adminpage']) {
 		$_tpl['time'] .= $htmlinfo;
 	}else
-		$htmlerr = $htmlinfo . $htmlerr;
+		$buffer = $htmlinfo . $buffer;
 	
-	//$_tpl['logs'] = htmlspecialchars($_tpl['logs'], ENT_QUOTES);
-	$_tpl['logs'] .= $buffer;
+	$buffer = trim($buffer.$htmlerr);
 
 	if ($_html != '') {
-		if ($htmlerr)
-			$_tpl['logs'] .= '<div id="bugmain">'.$htmlerr.'</div><script src="/_design/_script/bug.js"></script><link type="text/css" href="/_design/_style/bug.css" rel="stylesheet">';
-		//if ($_tpl['logs'] == '')
-		//	$_tpl['onload'] .='fShowHide(\'debug_view\');';
+		if ($buffer)
+			$buffer = '<link type="text/css" href="/_design/_style/bug.css" rel="stylesheet"/>
+				<script type="text/javascript" src="_design/_script/bug.js"></script>
+				<div id="bugmain">'.$buffer.'</div>';
+		$_tpl['logs'] .= $buffer;
 		eval('$_html = "' . $_html . '";');
 		if(strpos($_html,'$_tpl')!==false) {
 			eval('$_html = "' . addcslashes($_html,'"\\') . '";');
 		}
 		$page = $_html;
 	} else {
-		$page = $htmlerr.$_tpl['logs'];
+		$page = $_tpl['logs'].$buffer;
 	}
 	return $page;
 }
@@ -401,17 +417,16 @@ function headerssent() {
 
 function debugPrint($slice=1) {
 	$MAXSTRLEN = 256;
-	$s = '<div>';
+	$s = '<div class="xdebug">';
 	$traceArr = debug_backtrace();
 	$traceArr = array_slice($traceArr, $slice);
-	$cnt = count($traceArr);
 	$i = 0;
 	foreach ($traceArr as $arr) {
-		$s .= '<div style="font-size:10px;color:#000;margin:0 0 0 ' . (10 * $i) . 'px;border-left:solid 1px #333;border-bottom:solid 1px #233;"><span style="font-size:11px;color:black;">';
+		$s .= '<div class="xdebug-item" style="margin-left:' . (10 * $i) . 'px;"><span>';
 		if (isset($arr['line']) and $arr['file'])
-			$s .= ' #line ' . $arr['line'] . ' #file: <a href="file:/' . $arr['file'] . '" style="color:blue;">' . $arr['file'] . '</a>';
+			$s .= ' #line ' . $arr['line'] . ' in file: <a href="file:/' . $arr['file'] . '">' . $arr['file'] . '</a> : ';
 		if (isset($arr['class']))
-			$s .= ' #class <b>' . $arr['class'] . '-></b>';
+			$s .= '#class <b>' . $arr['class'] . '-></b>';
 		$s .= '</span>';
 		//$s .= '<br/>';
 		$args = array();
@@ -433,7 +448,7 @@ function debugPrint($slice=1) {
 					$args[] = $str;
 				}
 			}
-		$s .= $arr['function'] . '(' . implode(',', $args) . ')';
+		$s .= '<b>'.$arr['function'] . '</b>(' . implode(',', $args) . ')';
 		$s .= '</div>';
 		$i++;
 	}

@@ -3,7 +3,6 @@
 	$_CFG['_PATH']['wep'] = dirname($_SERVER['SCRIPT_FILENAME']);
 	require_once($_CFG['_PATH']['wep'].'/config/config.php');
 	require_once($_CFG['_PATH']['core'].'/html.php');
-
 	$result = static_main::userAuth(); // запскает сессию и проверяет авторизацию
 
 	if(!$result[1]) {
@@ -97,11 +96,11 @@
 	if($_SESSION['user']['wep']) {
 		include($_CFG['_PATH']['cdesign'].$_design.'/inc.php');
 		if(static_main::_prmUserCheck(2)) {
-			$_tpl['debug'] = '<span class="seldebug"><select onchange="window.location.href=\'/'.$_CFG['PATH']['wepname'].'/index.php?_showallinfo=\'+this.value;">
-	<option '.(!$_COOKIE['_showallinfo']?'selected="selected"':'').' value="0">Скрыть инфу</option>
-	<option '.($_COOKIE['_showallinfo']==1?'selected="selected"':'').' value="1">Показать инфу</option>
-	<option '.($_COOKIE['_showallinfo']==2?'selected="selected"':'').' value="2">Показать SQL запросы</option>
-	<option '.($_COOKIE['_showallinfo']==3?'selected="selected"':'').' value="3">Показать все логи</option>
+			$_tpl['debug'] = '<span class="seldebug"><select onchange="window.location.href=\'/'.$_CFG['PATH']['wepname'].'/index.php?'.$_CFG['wep']['_showallinfo'].'=\'+this.value;">
+	<option '.(!$_COOKIE[$_CFG['wep']['_showallinfo']]?'selected="selected"':'').' value="0">Скрыть инфу</option>
+	<option '.($_COOKIE[$_CFG['wep']['_showallinfo']]==1?'selected="selected"':'').' value="1">Показать инфу</option>
+	<option '.($_COOKIE[$_CFG['wep']['_showallinfo']]==2?'selected="selected"':'').' value="2">Показать SQL запросы</option>
+	<option '.($_COOKIE[$_CFG['wep']['_showallinfo']]==3?'selected="selected"':'').' value="3">Показать все логи</option>
 	</select></span>';
 			$_tpl['debug'] .= '<span class="seldebug"><select onchange="setCookie(\'cdesign\',this.value);window.location.href=\''.$_CFG['PATH']['wepname'].'/index.php\';">
 	<option '.($_design=='default'?'selected="selected"':'').' value="default">Default</option>

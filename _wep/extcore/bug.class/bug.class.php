@@ -81,7 +81,7 @@ class bug_class extends kernel_extends {
 
 	function insert2bd()
 	{
-		if (!empty($this->bugs) and isset($this->_CFG['modulprm'][$this->_cl])) {
+		if (!empty($this->bugs) and isset($this->_CFG['modulprm'][$this->_cl]) and $this->SQL->ready) {
 			if (isset($_SESSION['user']['id']))
 				$creater_id = $_SESSION['user']['id'];
 			else
@@ -96,6 +96,11 @@ class bug_class extends kernel_extends {
 				$r[$this->mf_createrid] = $creater_id;
 				$r['mf_ipcreate'] = $mf_ipcreate;
 				$r['mf_timecr'] = $this->_CFG['time'];
+				$r['name'] = mysql_real_escape_string($r['name']);
+				$r['file'] = mysql_real_escape_string($r['file']);
+				$r['line'] = mysql_real_escape_string($r['line']);
+				$r['debug'] = mysql_real_escape_string($r['debug']);
+				$r['href'] = mysql_real_escape_string($r['href']);
 				$query_val[] = '("'.implode('","',$r).'")';
 				if(!$keys)
 					$keys = array_keys($r);
@@ -115,11 +120,11 @@ class bug_class extends kernel_extends {
 						
 			$this->bugs[$hash] = array(
 				'err_type' => $errno,
-				'name' => mysql_real_escape_string($errstr),
-				'file' => mysql_real_escape_string($errfile), 
-				'line' => mysql_real_escape_string($errline),
-				'debug' => mysql_real_escape_string($debug),
-				'href' => mysql_real_escape_string($_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']),
+				'name' => $errstr,
+				'file' => $errfile, 
+				'line' => $errline,
+				'debug' => $debug,
+				'href' => $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'],
 				'hash' => $hash,
 				'cnt' => 1,
 				'page_id'=>''

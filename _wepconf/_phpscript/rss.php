@@ -2,7 +2,7 @@
 
 	$html='';
 	$_GET['_showallinfo']=0;
-	$_CFG['site']['show_error'] = 0;
+	$_CFG['site']['debugmode'] = 0;
 
 	require_once($_CFG['_PATH']['path'].'/_wep/config/config.php');
 	require_once($_CFG['_PATH']['core'].'/html.php');	/**отправляет header и печатает страничку*/

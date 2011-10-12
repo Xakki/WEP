@@ -176,6 +176,7 @@ class static_main {
 	 */
 	static function _prmUserCheck($level=5) {
 		global $_CFG;
+		session_go();
 		if (isset($_SESSION['user']['id']) and $_SESSION['user']['id']) {
 			if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] <= $level)
 				return true;
@@ -204,11 +205,11 @@ class static_main {
 	 */
 	static function userAuth($login='', $pass='') {
 		global $_CFG;
-		session_go(1);
+		session_go();
 		$result = array('', 0);
 		if (!isset($_SESSION['user']['id']) or $login) {
 			if ($_CFG['wep']['access'] and _new_class('ugroup', $UGROUP)) {
-				if (isset($_POST['login']) or $login) {
+				if ($login) {
 					$result = $UGROUP->authorization($login, $pass);
 				}
 				else
@@ -221,6 +222,7 @@ class static_main {
 				elseif ($login and $pass and $_CFG['wep']['login'] == $login and $_CFG['wep']['password'] == $pass)
 					$flag = 1;
 				if ($flag) {
+					session_go(1);
 					$_SESSION['user']['id'] = 1;
 					$_SESSION['user']['name'] = $_CFG['wep']['name'];
 					$_SESSION['user']['gname'] = "GOD MODE";
@@ -258,10 +260,6 @@ class static_main {
 			session_destroy();
 		//if(isset($_SESSION))
 		//	$_SESSION = array();
-		if (isset($_COOKIE['_showallinfo']))
-			_setcookie('_showallinfo', '', (time() - 5000));
-		if (isset($_COOKIE['_showerror']))
-			_setcookie('_showerror', '', (time() - 5000));
 		if (isset($_COOKIE['remember']))
 			_setcookie('remember', '', (time() - 5000));
 		if (isset($_COOKIE[$_CFG['session']['name']]))

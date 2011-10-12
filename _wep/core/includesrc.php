@@ -42,7 +42,7 @@
 	function arraySrcToStr() {
 		global $_tpl,$_CFG;
 		$temp = $solt = '';
-		if($_CFG['site']['debugmode'])
+		if($_CFG['wep']['debugmode'])
 			$solt = '?t='.time();
 
 		if(isset($_tpl['styles']) and is_array($_tpl['styles'])) {
@@ -94,7 +94,7 @@
 	function arraySrcToFunc() {
 		global $_tpl,$_CFG;
 		$solt = '';
-		if($_CFG['site']['debugmode'])
+		if($_CFG['wep']['debugmode'])
 			$solt = '?t='.time();
 
 		$temp = 'clearTimeout(timerid);fShowload(1);';
