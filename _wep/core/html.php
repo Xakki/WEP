@@ -218,7 +218,7 @@ class html {
  */
 
 function _myErrorHandler($errno, $errstr, $errfile, $errline, $errcontext) {//,$cont
-	global $_CFG;
+	global $_CFG;print_r('*******');
 	if ($_CFG['wep']['catch_bug']) {
 
 		// Debuger
@@ -309,16 +309,19 @@ function _obHandler($buffer) {
 		if (isset($r[1])) //нотисы отдельно
 			$notice .= $r[1];
 	}
+
 	if (($htmlerr != '' or $notice != '' or $temp[1]) and $_CFG['wep']['debugmode'] == 2) {
 		if ($temp[1] and $temp[0])
 			$htmlerr .= $temp[0];
 		if ($notice)
 			$htmlerr .= spoilerWrap('NOTICE',$notice);
 	}
-	elseif (($htmlerr != '' or $temp[1]) and $_CFG['wep']['debugmode'] == 1)
+	elseif (($htmlerr != '' or $temp[1]) and $_CFG['wep']['debugmode'] == 1){
 		$htmlerr = 'На странице возникла ошибка! Приносим свои извинения за временные неудобства! Неполадки будут исправлены в ближайшее время.';
-	else
+	}
+	else {
 		$htmlerr = '';
+	}
 
 	/*Вывд логов и инфы*/
 	if ((isset($_COOKIE[$_CFG['wep']['_showallinfo']]) and $_COOKIE[$_CFG['wep']['_showallinfo']]) or $_CFG['_F']['adminpage']) {

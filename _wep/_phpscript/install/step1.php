@@ -14,15 +14,17 @@ $DATA = array();
 include_once($_CFG['_PATH']['wep'] . '/config/config_form.php');
 foreach($_CFGFORM as $kt=>$rb) {
 	foreach($rb as $k=>$r) {
-		$r['value'] = $USER_CFG[$kt][$k];
-		if(isset($_POST['sbmt'])) {
-			if(isset($_POST[$kt][$k])) {
-				if(isset($r['multiple']) and $r['multiple'] and count($_POST[$kt][$k]))
-					$_POST[$kt][$k] = array_combine($_POST[$kt][$k],$_POST[$kt][$k]);
-				$r['value'] = $_POST[$kt][$k];
+		if(isset($USER_CFG[$kt][$k])) {
+			$r['value'] = $USER_CFG[$kt][$k];
+			if(isset($_POST['sbmt'])) {
+				if(isset($_POST[$kt][$k])) {
+					if(isset($r['multiple']) and $r['multiple'] and count($_POST[$kt][$k]))
+						$_POST[$kt][$k] = array_combine($_POST[$kt][$k],$_POST[$kt][$k]);
+					$r['value'] = $_POST[$kt][$k];
+				}
+				elseif($r['type']=='checkbox')
+					$r['value'] = $_POST[$kt][$k] = 0;
 			}
-			elseif($r['type']=='checkbox')
-				$r['value'] = $_POST[$kt][$k] = 0;
 		}
 		$DATA[$kt.'[' . $k.']'] = $r;
 	}

@@ -27,7 +27,7 @@
 			if(isset($attr['onsubmit']))
 				$texthtml .= 'onsubmit="'.$attr['onsubmit'].'"';
 			$texthtml .= '>' . tpl_form($data['form']).'</form>';
-			if($attr['id'])
+			if(isset($attr['id']) and $attr['id'])
 				$flag = 2;
 			else
 				$flag = 1;

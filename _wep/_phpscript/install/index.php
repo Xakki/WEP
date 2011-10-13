@@ -1,6 +1,7 @@
 <?php
 
 $_CFG['_PATH']['wep'] = dirname($_SERVER['SCRIPT_FILENAME']);
+$INSTALL = true;
 require_once($_CFG['_PATH']['wep'] . '/config/config.php');
 require_once($_CFG['_PATH']['core'] . 'html.php');
 require_once($_CFG['_PATH']['core'] . 'sql.php');
@@ -10,8 +11,9 @@ $TEMP_CFG['wep']['sessiontype'] = $_CFG['wep']['sessiontype'] = 0; // запус
 $TEMP_CFG['site']['bug_hunter'] = $_CFG['site']['bug_hunter'] = array(); // откл запись в баг
 $TEMP_CFG['sql']['log'] = $_CFG['sql']['log'] = 0;
 $TEMP_CFG['wep']['debugmode'] = $_CFG['wep']['debugmode'] = 2;
+error_reporting(-1);
 
-session_go(1);
+session_go();
 $HTML = new html($_CFG['PATH']['cdesign']);
 
 $_tpl['title'] = 'Установка WEP';
@@ -36,6 +38,7 @@ if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] === 0) {
 if ($flag) {
 	$HTML->_templates = 'install';
 	$stp = array(
+		0 => array('name' => 'Подключение к БД', 'css' => '', 'comment' => 'Укажите логин и пароль к БД имеющий привелегии для создания пользователя и базы данных.'),
 		1 => array('name' => 'Шаг первый', 'css' => '', 'comment' => 'Подключение к БД и настройка дополнительных параметров'),
 		2 => array('name' => 'Шаг второй', 'css' => '', 'comment' => 'Проверка структуры сайта'),
 		3 => array('name' => 'Шаг третий', 'css' => '', 'comment' => 'Установка модулей и удаление.'),

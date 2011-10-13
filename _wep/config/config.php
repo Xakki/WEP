@@ -382,7 +382,12 @@ if (file_exists($_CFG['_PATH']['ulocallang'] . $_CFG['wep']['locallang'] . '.php
 	include_once($_CFG['_PATH']['ulocallang'] . $_CFG['wep']['locallang'] . '.php');
 
 /* INCLUDE USER CONF */
-include($_CFG['_PATH']['wepconf'] . '/config/config.php');
+if(file_exists($_CFG['_PATH']['wepconf'] . '/config/config.php'))
+	include($_CFG['_PATH']['wepconf'] . '/config/config.php');
+elseif(!isset($INSTALL)) {
+	@header("Location: /".$_CFG['PATH']['wepname'].'/install.php');
+	die();
+}
 
 /* Acept config */
 
@@ -423,7 +428,11 @@ function shutdown_function() {
 function session_go($force=0) { //$force=1 - открывает сесиию для не авторизованного пользователя
 	global $_CFG, $SESSION_GOGO;
 	if (!$_CFG['robot'] and (isset($_COOKIE[$_CFG['session']['name']]) or $force)) {
-		_new_class('session',$SESSION_GOGO);
+		if($_CFG['wep']['sessiontype'] == 1) {
+			_new_class('session',$SESSION_GOGO);
+		}else {
+			session_start();
+		}
 		return true;
 	}
 	return false;

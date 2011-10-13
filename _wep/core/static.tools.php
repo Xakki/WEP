@@ -565,6 +565,12 @@ class static_tools {
 	 * @return <type> Возвращает массив полученных данных $_CFG
 	 */
 	static function getFdata($file, $start='', $end='', $mData = false) {
+		$_CFG = array();
+		if ($mData !== false) {
+			$_CFG = $mData;
+		}
+		if(!file_exists($file))
+			return $_CFG;
 		$fc = '';
 		if ($start == '' and $end == '') {
 			$fc = file_get_contents($file);
@@ -580,9 +586,7 @@ class static_tools {
 					$fc .= $r . "\n";
 			}
 		}
-		if ($mData !== false) {
-			$_CFG = $mData;
-		}
+
 		$fc = trim($fc, "<?php>\n");
 
 		if ($fc)
@@ -594,17 +598,13 @@ class static_tools {
 	}
 
 	static function saveUserCFG($SetDataCFG, $tempCFG=array()) {
-		global $_CFG;
+		global $_CFG,$_CFGFORM;
 		$mess = array();
 		$DEF_CFG = self::getFdata($_CFG['_PATH']['wep'] . '/config/config.php', '/* MAIN_CFG */', '/* END_MAIN_CFG */');// чистый конфиг ядра
 		$USER_CFG = self::getFdata($_CFG['_PATH']['wepconf'] . '/config/config.php', '', '', $DEF_CFG); // конечный конфиг
 		// Редактируемые конфиги
-		$edit_cfg = array(
-			'sql' => true,
-			'memcache' => true,
-			'wep' => true,
-			'site' => true,
-		);
+		include_once($_CFG['_PATH']['wep'] . '/config/config_form.php');
+
 		$fl = false;
 		$putFile = array();
 		if(isset($SetDataCFG['sql'])) {
@@ -613,7 +613,7 @@ class static_tools {
 		//$SetDataCFG = static_main::MergeArrays($USER_CFG,$SetDataCFG);
 		// объединяем конфиг записанный на пользователя и новые конфиги
 
-		foreach ($edit_cfg as $k => $r) {
+		foreach ($_CFGFORM as $k => $r) {
 			foreach ($DEF_CFG[$k] as $kk => $defr) {
 				if(isset($SetDataCFG[$k][$kk]))
 					$newr = $SetDataCFG[$k][$kk];

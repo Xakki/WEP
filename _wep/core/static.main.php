@@ -217,7 +217,7 @@ class static_main {
 			}
 			elseif ($_CFG['wep']['login'] and $_CFG['wep']['password']) {
 				$flag = 0;
-				if ($_COOKIE['remember'] and $_CFG['wep']['login'] == substr($_COOKIE['remember'], ($pos + 1)) and md5($_CFG['wep']['password']) == substr($_COOKIE['remember'], 0, $pos))
+				if (isset($_COOKIE['remember']) and $_COOKIE['remember'] and $_CFG['wep']['login'] == substr($_COOKIE['remember'], ($pos + 1)) and md5($_CFG['wep']['password']) == substr($_COOKIE['remember'], 0, $pos))
 					$flag = 1;
 				elseif ($login and $pass and $_CFG['wep']['login'] == $login and $_CFG['wep']['password'] == $pass)
 					$flag = 1;
