@@ -142,14 +142,14 @@
 			}
 			if(isset($r['active'])) {
 				if($r['act'])
-					$html .= '<a class="bottonimg img'.$r['active'].'" href="'.$hrefpref.'&_type='.($r['active']==1?'dis':'act').'" onclick="return load_href(this)" title="['.$_CFG['_ACT_TITLE'][$r['active']].']"></a>';
+					$html .= '<a class="bottonimg img'.$r['active'].'" href="'.$hrefpref.'&_type='.($r['active']==1?'dis':'act').'" onclick="return load_href(this)" title="['.static_main::m('_ACT_TITLE'.$r['active']).']"></a>';
 				else
 					$html .= '<a class="bottonimg img'.$r['active'].'" title="Изменение данного своиства вам не доступна."></a>';
 			}
 			if($r['edit'])
-				$html .= '<a class="bottonimg imgedit" href="'.$hrefpref.'&_type=edit" onclick="return load_href(this)" title="['.$_CFG['_EDIT_TITLE'].']"></a>';
+				$html .= '<a class="bottonimg imgedit" href="'.$hrefpref.'&_type=edit" onclick="return load_href(this)" title="['.static_main::m('_EDIT_TITLE').']"></a>';
 			if($r['del'])
-				$html .= '<a class="bottonimg imgdel" href="'.$hrefpref.'&_type=del" onclick="return hrefConfirm(this,\'del\')" title="['.$_CFG['_DEL_TITLE'].']"></a>';
+				$html .= '<a class="bottonimg imgdel" href="'.$hrefpref.'&_type=del" onclick="return hrefConfirm(this,\'del\')" title="['.static_main::m('_DEL_TITLE').']"></a>';
 			if(isset($r['istree']))
 				$html .= '<br/><a href="'.$hrefpref.'" onclick="return load_href(this)">'.$r['istree']['value'].' ('.$r['istree']['cnt'].')</a>';
 			if(isset($r['child'])) foreach($r['child'] as $ck=>$cn)

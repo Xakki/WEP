@@ -16,7 +16,7 @@
 			if(count($this->data)==1) {
 				if(count($_POST) and (isset($_POST['sbmt']) or isset($_POST['sbmt_save']))) {
 					if(!$this->_prmModulEdit($this->data[$this->id],$param)) {
-						$arr['mess'][] = array('name'=>'error', 'value'=>$this->getMess('denied_up'));
+						$arr['mess'][] = static_main::am('error','denied_up',$this);
 						$formflag=0;
 					}
 					else {
@@ -25,11 +25,11 @@
 						if(!count($arr['mess'])) {
 							if($rm = $this->_save_item($arr['vars'])) {
 								$flag=1;
-								$arr['mess'][] = array('name'=>'ok', 'value'=>$this->getMess('update'));
+								$arr['mess'][] = static_main::am('','update',$this);
 								if($formflag)// кастыль
 									$mess = $this->kPreFields($this->data[$this->id],$param);
 							} else {
-								$arr['mess'][] = array('name'=>'error', 'value'=>$this->getMess('update_err'));
+								$arr['mess'][] = static_main::am('error','update_err',$this);
 							}
 						}
 					}
@@ -42,12 +42,12 @@
 				if(isset($this->fields_form['captcha']))
 					static_form::setCaptcha();
 			} else {
-				$arr['mess'][] = array('name'=>'error', 'value'=>$this->getMess('nodata'));
+				$arr['mess'][] = static_main::am('error','nodata',$this);
 				$flag=1;
 			}
 		} else { //ADD
 			if(!$this->_prmModulAdd()){
-				$arr['mess'][] = array('name'=>'error', 'value'=>$this->getMess('denied_add'));
+				$arr['mess'][] = static_main::am('error','denied_add',$this);
 				$formflag=0;
 				$flag=-1;
 			}
@@ -58,9 +58,9 @@
 				if(!count($arr['mess'])) {
 					if($rm = $this->_add_item($arr['vars'])) {
 						$flag=1;
-						$arr['mess'][] = array('name'=>'ok', 'value'=>$this->getMess('add'));
+						$arr['mess'][] = static_main::am('ok','add',$this);
 					} else
-						$arr['mess'][] = array('name'=>'error', 'value'=>$this->getMess('add_err'));
+						$arr['mess'][] = static_main::am('error','add_err',$this);
 				}
 			}
 			else 

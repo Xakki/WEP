@@ -94,7 +94,7 @@ class loginza_class extends kernel_extends
 
 				if($flag) {
 					session_go(1);
-					$mess[] = array('name'=>'ok', 'value'=>$this->_CFG['_MESS']['authok']);
+					$mess[] = static_main::am('ok','authok');
 					$USERS->setUserSession($USERS->id);
 					//static_main::_prmModulLoad();
 				}
@@ -156,10 +156,10 @@ class loginza_class extends kernel_extends
 			$datamail['text']=str_replace(array('%pass%','%login%','%host%'),array($pass,$data[$USERS->fn_login],$_SERVER['HTTP_HOST']),$USERS->owner->config['mailinfo']);
 			$MAIL->reply = 0;
 			if(!$MAIL->Send($datamail)) {
-				$mess[] = array('name'=>'error', 'value'=>$MAIL->_CFG['_MESS']['mailerr']);
+				$mess[] = static_main::am('error','mailerr');
 			}
 		} else
-			$mess[] = array('name'=>'error', 'value'=>$MAIL->_CFG['_MESS']['regerr']);
+			$mess[] = static_main::am('error','regerr');
 		return array($flag,$mess);
 	}
 

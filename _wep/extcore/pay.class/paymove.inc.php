@@ -22,7 +22,7 @@
 		return $form;
 	}
 	if($_SESSION['user']['parent_id'])
-		return $this->getMess('denied');
+		return static_main::m('denied');
 	
 	$tplphp = $this->FFTemplate($FUNCPARAM[0],dirname(__FILE__));
 

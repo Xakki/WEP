@@ -150,9 +150,9 @@
 
 			$data = array();
 			if($_this->mf_use_charid)
-				$data[''][''] = $_this->getMess('_listroot');
+				$data[''][''] = static_main::m('_listroot',$_this);
 			else
-				$data[0][0] = $_this->getMess('_listroot');
+				$data[0][0] = static_main::m('_listroot',$_this);
 
 			$q = 'SELECT `id`, `name`, `parent_id` FROM `'.$_this->tablename.'`';
 			if($_this->id) $q .=' WHERE `id`!="'.$_this->id.'"';
@@ -235,9 +235,9 @@
 							$data[$row['parent_id']][$row['id']] = array('#name#'=>$row['name'], '#checked#'=>$row['checked']);
 						}
 						if(isset($data[0]))
-							$data[0] = array(0=>$_this->getMess('_listroot'))+$data[0];
+							$data[0] = array(0=>static_main::m('_listroot',$_this))+$data[0];
 						else
-							$data[''] = array(''=>$_this->getMess('_listroot'))+$data[''];
+							$data[''] = array(''=>static_main::m('_listroot',$_this))+$data[''];
 					}
 					else{
 						$data[''] = ' --- ';

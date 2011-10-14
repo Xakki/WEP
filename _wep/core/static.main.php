@@ -2,6 +2,35 @@
 
 class static_main {
 
+	static function am($type,$msg, $replace=array(), $obj=NULL) {
+		return  array($type,self::m($msg, $replace, $obj));
+	}
+	static function m($msg, $replace=array(), $obj=NULL) {
+		global $_CFG;
+		if(is_object($replace)) {
+			$obj = $replace;
+			$replace=array();
+		}
+		if ($obj and isset($obj->lang[$msg]))
+			$msg = $obj->lang[$msg];
+		elseif (isset($_CFG['lang'][$msg]))
+			$msg = $_CFG['lang'][$msg];
+		if (is_array($replace) and count($replace))
+			foreach ($replace as $k => $r)
+				$msg = str_replace('###' . ($k + 1) . '###', $r, $msg);
+		elseif(!is_array($replace) and $replace)
+			$msg .= $replace;
+		return $msg;
+	}
+	/* Запись сообщения в лог вывода
+	*/
+	static function _message($type,$msg,$cl='') {
+		global $_CFG;
+		$ar_type = array('error'=>false, 'alert'=>true, 'notice'=>true, 'ok'=>true);
+		$_CFG['logs']['mess'][] = array($type,$msg,$cl);
+		return $ar_type[$type];
+	}
+
 	/**
 	 * Парсер настроек модулей
 	 */
@@ -235,7 +264,7 @@ class static_main {
 					$_SESSION['FckEditorUserFilesPath'] = $_CFG['_PATH']['path'] . $_CFG['PATH']['userfile'];
 					if ($_POST['remember'] == '1')
 						_setcookie('remember', md5($_CFG['wep']['password']) . '_' . $_CFG['wep']['login'], $_CFG['remember_expire']);
-					$result = array($_CFG['_MESS']['authok'], 1);
+					$result = array(static_main::m('authok'), 1);
 					_setcookie('_showerror', 1);
 					//$_COOKIE['_showerror']=1;
 				}
@@ -244,7 +273,7 @@ class static_main {
 		else {
 			//if (!$UGROUP)
 			//	_new_class('ugroup', $UGROUP);
-			$result = array($_CFG['_MESS']['authok'], 1);
+			$result = array(static_main::m('authok'), 1);
 		}
 		/*if (!$result[1] and isset($_POST['login'])) //вероятно не нужно удалять авторизацию если была не удачная попытка
 			self::userExit();*/
@@ -266,15 +295,6 @@ class static_main {
 			_setcookie($_CFG['session']['name'], '', (time() - 5000));
 		//_showerror
 		//
-	}
-
-	/* Запись сообщения в лог вывода
-	*/
-	static function _message($type,$msg,$cl='') {
-		global $_CFG;
-		$ar_type = array('error'=>false, 'alert'=>true, 'notice'=>true, 'ok'=>true);
-		$_CFG['logs']['mess'][] = array($type,$msg,$cl);
-		return $ar_type[$type];
 	}
 
 	/* округление числа до кратного 10 и более

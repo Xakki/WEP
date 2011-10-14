@@ -7,13 +7,13 @@ function tools_step1() {
 	if(static_main::_prmUserCheck(1))
 		return require($file);
 	else
-		return $_CFG['_MESS']['denied'];
+		return static_main::m('denied');
 }
 
 function tools_step2() {
 	global $_CFG,$HTML,$_tpl;
 	if(!static_main::_prmUserCheck(1))
-		return $_CFG['_MESS']['denied'];
+		return static_main::m('denied');
 	$_tpl['styles']['install']=1;
 	$file = $_CFG['_PATH']['phpscript'] . '/install/step2.php';
 	return require($file);
@@ -22,7 +22,7 @@ function tools_step2() {
 function tools_step3() {
 	global $_CFG,$HTML,$_tpl;
 	if(!static_main::_prmUserCheck(1))
-		return $_CFG['_MESS']['denied'];
+		return static_main::m('denied');
 	$_tpl['styles']['install']=1;
 	$file = $_CFG['_PATH']['phpscript'] . '/install/step3.php';
 	return require($file);
@@ -38,7 +38,7 @@ function tools_docron() {
 function tools_cron() {
 	global $_CFG,$_tpl;
 	if(!static_main::_prmUserCheck(1))
-		return $_CFG['_MESS']['denied'];
+		return static_main::m('denied');
 	$result = '';
 
 	$ini_file = $_CFG['_PATH']['weptemp'].'cron.ini';
@@ -240,7 +240,7 @@ function tools_cron() {
 function tools_worktime() {
 	global $_CFG,$_tpl;
 	if(!static_main::_prmUserCheck(1))
-		return $_CFG['_MESS']['denied'];
+		return static_main::m('denied');
 	$result = '';
 	$_tpl['styles']['form']=1;
 	if(count($_POST)) {
@@ -295,7 +295,7 @@ function tools_sendReg() {
 	return 'Функция отключена.';
 	global $SQL,$_CFG;
 	if(!static_main::_prmUserCheck(1))
-		return $_CFG['_MESS']['denied'];
+		return static_main::m('denied');
 	_new_class('ugroup', $UGROUP);
 	$data = array();
 	$result = $SQL->execSQL('SELECT * FROM users WHERE reg_hash!="1"');
@@ -337,7 +337,7 @@ function allinfos() {
 
 function getphpinfo() {
 	if(!static_main::_prmUserCheck(1))
-		return $_CFG['_MESS']['denied'];
+		return static_main::m('denied');
 	ob_start();
 	phpinfo();
 	$phpinfo = ob_get_contents();

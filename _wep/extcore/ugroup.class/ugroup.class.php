@@ -220,7 +220,7 @@ class ugroup_class extends kernel_extends
 				if($MAIL->Send($datamail)) {
 					$mess = 'Оповещение: '.count($data).' пользователей ожидают одобрения.';
 				} else {
-					trigger_error('Оповещение - '.$this->_CFG['_MESS']['mailerr'], E_USER_WARNING);
+					trigger_error('Оповещение - '.static_main::m('mailerr'), E_USER_WARNING);
 				}
 			}
 		}
@@ -242,9 +242,9 @@ class users_class extends kernel_extends {
 		$this->mf_timeup = true; // создать поле хранящее время обновления поля
 		$this->mf_ipcreate = true;//IP адрес пользователя с котрого была добавлена запись
 		$this->caption = 'Пользователи';
-		$this->locallang['default']['title_regme'] = 'Регистрация пользователя';
-		$this->locallang['default']['title_profile'] = 'Редактирование профиля';
-		$this->locallang['default']['_saveclose'] = 'Готово';
+		$this->lang['title_regme'] = 'Регистрация пользователя';
+		$this->lang['title_profile'] = 'Редактирование профиля';
+		$this->lang['_saveclose'] = 'Готово';
 		$this->default_access = '|0|';
 		$this->userCach = array();
 		return true;
@@ -398,15 +398,15 @@ class users_class extends kernel_extends {
 				{
 					unset($_SESSION['user']);
 					if(_strlen($this->data[0]['reg_hash'])>5)
-						return array($this->_CFG['_MESS']['authnoconf'],0);
+						return array(static_main::m('authnoconf'),0);
 					elseif($this->data[0]['reg_hash']=='0' && $this->data[0]['active']==0)
-						return array($this->_CFG['_MESS']['auth_notcheck'],0);
+						return array(static_main::m('auth_notcheck'),0);
 					elseif(!$this->data[0]['gact'])
-						return array($_CFG['_MESS']['auth_bangroup'],0);
+						return array(static_main::m('auth_bangroup'),0);
 					elseif($this->data[0]['active']==0)
-						return array($this->_CFG['_MESS']['auth_banuser'],0);
+						return array(static_main::m('auth_banuser'),0);
 					elseif($this->data[0]['level']>=5)
-						return array($this->_CFG['_MESS']['denied'],0);
+						return array(static_main::m('denied'),0);
 					else
 					{
 						if(isset($_POST['remember']) and $_POST['remember']=='1'){
@@ -414,11 +414,11 @@ class users_class extends kernel_extends {
 						}
 						$this->setUserSession($this->data[0]['id']);
 						static_main::_prmModulLoad();
-						return array($this->_CFG['_MESS']['authok'],1);
+						return array(static_main::m('authok'),1);
 					}
 				}
 				else
-					return array($this->_CFG['_MESS']['autherr'],0);
+					return array(static_main::m('autherr'),0);
 			}
 		}
 		else 
@@ -451,7 +451,7 @@ class users_class extends kernel_extends {
 						_setcookie('remember', md5($this->data[0][$this->fn_pass]).'_'.$this->data[0]['id'], (time()+(86400*$this->owner->config['rememberday'])));
 						$this->setUserSession($this->data[0]['id']);
 						static_main::_prmModulLoad();
-						return array($this->_CFG['_MESS']['authok'],1);
+						return array(static_main::m('authok'),1);
 					}
 				}
 			}
@@ -474,7 +474,9 @@ class users_class extends kernel_extends {
 		else {
 		// добавлены настройки на форму регистрации
 			if(!$this->owner->config['reg']) 
-				return array(array('messages'=>array(array('name'=>'error', 'value'=>$this->_CFG['_MESS']['deniedreg']))),1);			
+				return array(array('messages'=>array(
+					static_main::am('error','deniedreg')
+				)),1);			
 			$DATA = $_POST;
 			$this->id = 0;
 			if(count($_POST) and $_POST['sbmt'] and isset($_SESSION['user']))
@@ -496,9 +498,9 @@ class users_class extends kernel_extends {
 				if($this->id) $clause .= ' and id!='.$this->id;
 				$datach = $this->_query('LOWER(t1.'.$this->fn_login.') as lgn',$clause);
 				if(count($datach) and $datach[0]['lgn']==mb_strtolower($arr['vars'][$this->fn_login]))
-					$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['notlogin']);
+					$arr['mess'][] = static_main::am('error','notlogin');
 				elseif(isset($datach[0]))
-					$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['notemail']);
+					$arr['mess'][] = static_main::am('error','notemail');
 				else {
 					if(!$this->id) { // регистрация
 						$arr['vars']['owner_id']=$this->owner->config['noreggroup'];
@@ -524,27 +526,28 @@ class users_class extends kernel_extends {
 							if($MAIL->Send($datamail)) {
 								// иногда сервер говорит что ошибка, а сам всеравно письма отсылает
 							} else {
-								trigger_error('Регистрация - '.$this->_CFG['_MESS']['mailerr'], E_USER_WARNING);
+								trigger_error('Регистрация - '.static_main::m('mailerr'), E_USER_WARNING);
 								//$this->_delete();
-								//$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['mailerr']);
-								//$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['regerr']);
+								//$arr['mess'][] = array('name'=>'error', 'value'=>static_main::m('mailerr'));
+								//$arr['mess'][] = array('name'=>'error', 'value'=>static_main::m('regerr'));
 							}
 							$flag=1;
-							$arr['mess'][] = array('name'=>'ok', 'value'=>$this->_CFG['_MESS']['regok']);
+							$arr['mess'][] = static_main::am('error','regok');
 						} else
-							$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['regerr']);
-					} else { // профиль
+							$arr['mess'][] = static_main::am('error','regerr');
+					} 
+					else { // профиль
 						if($this->id==$_SESSION['user']['id'])
 							unset($arr['vars']['active']);
 						if($this->_save_item($arr['vars'])) {
-							$arr['mess'][] = array('name'=>'ok', 'value'=>$this->_CFG['_MESS']['update']);
+							$arr['mess'][] = static_main::am('ok','update');
 							if($formflag)// кастыль
 								$mess = $this->kPreFields($this->data[$this->id],$param);
 							$this->setUserSession($this->id);
 							$flag=1;
 						}
 						else
-							$arr['mess'][] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['update_err']);
+							$arr['mess'][] = static_main::am('error','update_err');
 					}
 				}
 			}
@@ -552,9 +555,9 @@ class users_class extends kernel_extends {
 			$mess = $this->kPreFields($DATA,$param);
 		}
 		if(static_main::_prmUserCheck())
-			$this->fields_form['_info']= array('type'=>'info','caption'=>$this->getMess('title_profile'),'css'=>'caption');
+			$this->fields_form['_info']= array('type'=>'info','caption'=>static_main::m('title_profile'),'css'=>'caption');
 		else
-			$this->fields_form['_info']= array('type'=>'info','caption'=>$this->getMess('title_regme'),'css'=>'caption');
+			$this->fields_form['_info']= array('type'=>'info','caption'=>static_main::m('title_regme'),'css'=>'caption');
 
 		static_form::setCaptcha();
 		if(isset($param['formflag']))
@@ -579,13 +582,13 @@ class users_class extends kernel_extends {
 		
 		$_GET['hash'] = preg_replace("/[^0-9a-f]+/",'',$_GET['hash']);
 		if(!$this->owner->config['reg'])
-			$mess[] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['deniedreg']);
+			$mess[] = static_main::am('error','deniedreg');
 		elseif(!isset($_GET['confirm']) or !isset($_GET['hash']) or _strlen($_GET['hash'])!=32)
-			$mess[] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['errdata']);
+			$mess[] = static_main::am('error','errdata');
 		else {
 			$data = $this->_query('t1.id,t1.reg_hash', 't1 where t1.`'.$this->fn_login.'` = \''.preg_replace("/[^0-9a-z@\.]+/u",'', $_GET['confirm']).'\'');
 			if(count($data) and _strlen($data[0]['reg_hash'])<5)
-				$mess[] = array('name'=>'alert', 'value'=>$this->_CFG['_MESS']['confno']);
+				$mess[] = static_main::am('alert','confno');
 			elseif(count($data) and $data[0]['reg_hash']==$_GET['hash']) {
 				$this->id = $data[0]['id'];
 				$this->fld_data['reg_hash']= 1;
@@ -599,16 +602,16 @@ class users_class extends kernel_extends {
 				}
 				
 				if($this->_update()) {
-					$mess[] = array('name'=>'ok', 'value'=>$this->_CFG['_MESS']['confok']);
+					$mess[] = static_main::am('ok','confok');
 					$this->setUserSession($this->id);
 					static_main::_prmModulLoad();
 					$flag = true;
 				}
 				else
-					$mess[] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['conferr']);
+					$mess[] = static_main::am('error','conferr');
 			}
 			else
-				$mess[] = array('name'=>'error', 'value'=>$this->_CFG['_MESS']['errdata']);
+				$mess[] = static_main::am('error','errdata');
 		}
 
 		return Array(array('messages'=>$mess),$flag);
@@ -676,8 +679,8 @@ class users_class extends kernel_extends {
 				$mess[]  = array('ok','На ваш E-mail отправленно письмо с секретной ссылкой на форму для установки нового пароля.<br/> Ссылка действительна в течении 2х суток с момента отправки данной формы.');
 				$flag = 1;
 			}else {
-				trigger_error('Напоминание пароля - '.$this->_CFG['_MESS']['mailerr'], E_USER_WARNING);
-				$mess[]  = array('error',$this->_CFG['_MESS']['mailerr']);
+				trigger_error('Напоминание пароля - '.static_main::m('mailerr'), E_USER_WARNING);
+				$mess[]  = static_main::am('error','mailerr');
 				$flag = 0;
 			}
 		}

@@ -11,7 +11,7 @@ abstract class kernel_extends {
 	 * 2 - добавленн новый функционал, расширен и измененн меющиеся функции -
 	 * 3 - Номер ревизии , исправленны ошибки
 	 */
-	const versionCore = '2.3.12';
+	const versionCore = '2.4.13';
 
 	function __construct($owner=NULL) {
 		global $_CFG;
@@ -166,7 +166,7 @@ abstract class kernel_extends {
 				$this->services =
 				$this->config =
 				$this->config_form =
-				$this->locallang =
+				$this->lang =
 				$this->enum =
 				$this->child_path =
 				$this->Achilds =
@@ -368,9 +368,9 @@ abstract class kernel_extends {
 		if (!$result->err) {
 			if($this->mf_istree) {
 				if($this->mf_use_charid)
-					$data[''][''] = $this->getMess('_listroot');
+					$data[''][''] = static_main::m('_listroot',$this);
 				else
-					$data[0][0] = $this->getMess('_listroot');
+					$data[0][0] = static_main::m('_listroot',$this);
 				while (list($id, $name,$pid) = $result->fetch_array(MYSQL_NUM)) {
 					$data[$pid][$id] = $name;
 				}
@@ -669,22 +669,6 @@ abstract class kernel_extends {
 		return static_main::_message('notice','Sorting the module `' . $this->caption . '` successful.');
 	}
 
-	/*	 * *********************** EVENTS ************************ */
-
-	function getMess($name, $wrap=array(), $obj=NULL) {
-		//global $this->_CFG;
-		if (isset($this->locallang['default'][$name]))
-			$text = $this->locallang['default'][$name];
-		elseif (isset($this->_CFG['_MESS'][$name]))
-			$text = $this->_CFG['_MESS'][$name];
-		else
-			$text = 'Внимание. Нейзвестный тип сообщения `' . $name . '`!';
-		if (count($wrap))
-			foreach ($wrap as $k => $r)
-				$text = str_replace('###' . ($k + 1) . '###', $r, $text);
-		return $text;
-	}
-
 	/*	 * ************************ADMIN-PANEL---FUNCTION************************ */
 
 	public function fXmlModuls($modul) {
@@ -792,18 +776,18 @@ abstract class kernel_extends {
 	public function toolsReinstall() {
 		$this->form = $mess = array();
 		if (!static_main::_prmModul($this->_cl, array(11)))
-			$mess[] = array('name' => 'error', 'value' => $this->getMess('denied'));
+			$mess[] = static_main::am('error','denied',$this);
 		elseif (count($_POST) and $_POST['sbmt']) {
 			static_tools::_reinstall($this);
-			$mess[] = array('name' => 'ok', 'value' => $this->getMess('_reinstall_ok'));
+			$mess[] = static_main::am('ok','_reinstall_ok',$this);
 		} else {
 			$this->form['_*features*_'] = array('name' => 'Reinstall', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']));
 			$this->form['_info'] = array(
 				'type' => 'info',
-				'caption' => $this->_CFG['_MESS']['_reinstall_info']);
+				'caption' => static_main::m('_reinstall_info',$this));
 			$this->form['sbmt'] = array(
 				'type' => 'submit',
-				'value' => $this->getMess('_submit'));
+				'value' => static_main::m('_submit',$this));
 		}
 		self::kFields2FormFields($this->form);
 		return Array('form' => $this->form, 'messages' => $mess);
@@ -813,11 +797,11 @@ abstract class kernel_extends {
 		$this->form = array();
 		$arr = array('mess' => '', 'vars' => '');
 		if (!static_main::_prmModul($this->_cl, array(13)))
-			$arr['mess'][] = array('name' => 'error', 'value' => $this->getMess('denied'));
+			$arr['mess'][] = static_main::am('error','denied',$this);
 		elseif (!count($this->config_form)) {
 			$this->form['_info'] = array(
 				'type' => 'info',
-				'caption' => $this->_CFG['_MESS']['_configno']);
+				'caption' => static_main::m('_configno',$this));
 		} else {
 			foreach ($this->config as $k => &$r) {
 				if (is_array($r) and !isset($this->config_form[$k]['multiple'])) {
@@ -842,7 +826,7 @@ abstract class kernel_extends {
 				}
 				$this->config = $config;
 				if (!count($arr['mess'])) {
-					$arr['mess'][] = array('name' => 'ok', 'value' => $this->getMess('update'));
+					$arr['mess'][] = static_main::am('ok','update',$this);
 					static_tools::_save_config($config, $this->_file_cfg);
 				}
 			}
@@ -864,20 +848,20 @@ abstract class kernel_extends {
 	  public function toolsReindex(){
 	  $this->form = $mess = array();
 	  if(!static_main::_prmModul($this->_cl,array(12)))
-	  $mess[] = array('name'=>'error', 'value'=>$this->getMess('denied'));
+	  $mess[] = array('name'=>'error', 'value'=>static_main::m('denied',$this));
 	  elseif(count($_POST) and $_POST['sbmt']){
 	  if(!$this->_reindex())
-	  $mess[] = array('name'=>'error', 'value'=>$this->getMess('_reindex_ok'));
+	  $mess[] = array('name'=>'error', 'value'=>static_main::m('_reindex_ok',$this));
 	  else
-	  $mess[] = array('name'=>'error', 'value'=>$this->getMess('_reindex_err'));
+	  $mess[] = array('name'=>'error', 'value'=>static_main::m('_reindex_err',$this));
 	  }else{
 	  $this->form['_*features*_'] = array('name'=>'reindex','action'=>str_replace('&','&amp;',$_SERVER['REQUEST_URI']));
 	  $this->form['_info'] = array(
 	  'type'=>'info',
-	  'caption'=>$this->getMess('_reindex_info'));
+	  'caption'=>static_main::m('_reindex_info',$this));
 	  $this->form['sbmt'] = array(
 	  'type'=>'submit',
-	  'value'=>$this->getMess('_submit'));
+	  'value'=>static_main::m('_submit',$this));
 	  }
 	  self::kFields2FormFields($this->form);
 	  return Array('form'=>$this->form, 'messages'=>$mess);
@@ -1041,7 +1025,7 @@ abstract class kernel_extends {
 		if (count($this->fields_form) and $param['captchaOn']) {
 			$this->fields_form['captcha'] = array(
 				'type' => 'captcha',
-				'caption' => $this->getMess('_captcha'),
+				'caption' => static_main::m('_captcha',$this),
 				'captcha' => static_form::getCaptcha(),
 				'src' => $this->_CFG['_HREF']['captcha'] . '?' . rand(0, 9999),
 				'value' => (isset($data['captcha'])?$data['captcha']:''),
@@ -1052,7 +1036,7 @@ abstract class kernel_extends {
 		if (isset($this->mess_form) and count($this->mess_form))
 			$mess = $this->mess_form;
 		if (!count($this->fields_form))
-			$mess[] = array('name' => 'error', 'value' => $this->getMess('nodata'));
+			$mess[] = array('name' => 'error', 'value' => static_main::m('nodata',$this));
 		if (isset($this->_CFG['hook']['kPreFields']))
 			$this->__do_hook('kPreFields', func_num_args());
 		return $mess;
@@ -1088,17 +1072,17 @@ abstract class kernel_extends {
 		$this->form['_*features*_'] = array('type' => 'info', 'name' => $this->_cl, 'method' => 'post', 'id' => $this->id, 'action' => $_SERVER['REQUEST_URI']);
 		$this->form['_info'] = array('type' => 'info', 'css' => 'caption');
 		if ($this->id)
-			$this->form['_info']['caption'] = $this->getMess('update_name', array($this->caption));
+			$this->form['_info']['caption'] = static_main::m('update_name', array($this->caption),$this);
 		else
-			$this->form['_info']['caption'] = $this->getMess('add_name', array($this->caption));
+			$this->form['_info']['caption'] = static_main::m('add_name', array($this->caption),$this);
 
 		$this->kFields2FormFields($this->fields_form);
 		if (!$this->id or (isset($this->data[$this->id]) and $this->_prmModulEdit($this->data[$this->id], $param))) {
 			$this->form['sbmt'] = array(
 				'type' => 'submit',
-				'value_save' => ((isset($param['sbmtsave']) and $this->id) ? $this->getMess('_save') : ''),
-				'value_close' => (isset($param['close']) ? $this->getMess('_close') : ''),
-				'value' => $this->getMess('_saveclose')
+				'value_save' => ((isset($param['sbmtsave']) and $this->id) ? static_main::m('_save',$this) : ''),
+				'value_close' => (isset($param['close']) ? static_main::m('_close',$this) : ''),
+				'value' => static_main::m('_saveclose',$this)
 			);
 		}
 		return true;
@@ -1766,20 +1750,20 @@ abstract class kernel_extends {
 
 			if ($this->_update()) {
 				if ($this->fld_data[$this->mf_actctrl] == 5)
-					$xml[] = array('value' => $this->getMess('act5'), 'name' => 'ok');
+					$xml[] = static_main::am('ok','act5',$this);
 				if ($this->fld_data[$this->mf_actctrl] == 6)
-					$xml[] = array('value' => $this->getMess('act6'), 'name' => 'ok');
+					$xml[] = static_main::am('ok','act6',$this);
 				elseif ($act)
-					$xml[] = array('value' => $this->getMess('act1'), 'name' => 'ok');
+					$xml[] = static_main::am('ok','act1',$this);
 				else
-					$xml[] = array('value' => $this->getMess('act0'), 'name' => 'ok');
+					$xml[] = static_main::am('ok','act0',$this);
 				$flag = 0;
 			}
 			else
-				$xml[] = array('value' => $this->getMess('update_err'), 'name' => 'error');
+				$xml[] = static_main::am('error','update_err',$this);
 		}
 		else
-			$xml[] = array('value' => $this->getMess('denied'), 'name' => 'error');
+			$xml[] = static_main::am('error','denied',$this);
 		return array($xml, $flag);
 	}
 
@@ -1801,10 +1785,10 @@ abstract class kernel_extends {
 				$flag = 0;
 			}
 			else
-				$xml[] = array('value' => $this->getMess('update_err'), 'name' => 'error');
+				$xml[] = static_main::am('error','update_err',$this);
 		}
 		else
-			$xml[] = array('value' => $this->getMess('denied'), 'name' => 'error');
+			$xml[] = static_main::am('error','denied',$this);
 		return array($xml, $flag);
 	}
 
@@ -1821,20 +1805,20 @@ abstract class kernel_extends {
 			if (isset($this->fields[$this->mf_actctrl]) and $this->fields[$this->mf_actctrl]['type'] != 'bool') {
 				$this->fld_data[$this->mf_actctrl] = 4;
 				if ($this->_update()) {
-					$xml[] = array('value' => $this->getMess('deleted'), 'name' => 'ok');
+					$xml[] = static_main::am('ok','deleted',$this);
 					$flag = 0;
 				}else
-					$xml[] = array('value' => $this->getMess('del_err'), 'name' => 'error');
+					$xml[] = static_main::am('error','del_err',$this);
 			}else {
 				if ($this->_delete()) {
-					$xml[] = array('value' => $this->getMess('deleted'), 'name' => 'ok');
+					$xml[] = static_main::am('ok','deleted',$this);
 					$flag = 0;
 				}else
-					$xml[] = array('value' => $this->getMess('del_err'), 'name' => 'error');
+					$xml[] = static_main::am('error','del_err',$this);
 			}
 		}
 		else
-			$xml[] = array('value' => $this->getMess('denied'), 'name' => 'error');
+			$xml[] = static_main::am('error','denied',$this);
 		return array($xml, $flag);
 	}
 

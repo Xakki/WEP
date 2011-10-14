@@ -2,11 +2,11 @@
 	function _fXmlModuls(&$_this,$modul){
 		$xml = '<moduls'._paramModul($_this).'><name>'.$_this->caption.'</name><msp>1</msp>';
 		if(static_main::_prmModul($_this->_cl,array(11)))
-			$xml .= '<serv id=\'reinstall\'>'.$_this->_CFG['_MESS']['_reinstall'].'</serv>';
+			$xml .= '<serv id=\'reinstall\'>'.static_main::m('_reinstall').'</serv>';
 		if(isset($_this->config_form) and count($_this->config_form) and static_main::_prmModul($_this->_cl,array(13)))
-			$xml .= '<serv id=\'config\'>'.$_this->_CFG['_MESS']['_config'].'</serv>';
+			$xml .= '<serv id=\'config\'>'.static_main::m('_config').'</serv>';
 		if($_this->mf_indexing and static_main::_prmModul($_this->_cl,array(12)))
-			$xml .= '<serv id=\'reindex\'>'.$_this->_CFG['_MESS']['_reindex'].'</serv>';
+			$xml .= '<serv id=\'reindex\'>'.static_main::m('_reindex').'</serv>';
 
 		if($_this->mf_use_charid) $owner='';else $owner=0;
 		$xml .= _fXmlTreeElem($_this,$modul,$owner);

@@ -63,7 +63,7 @@
 						$r['value'] = '';
 					
 					if(!isset($r['comment']))
-						$r['comment'] = $this->_CFG['_MESS']['_file_size'].$this->attaches[$k]['maxsize'].'Kb';
+						$r['comment'] = static_main::m('_file_size').$this->attaches[$k]['maxsize'].'Kb';
 				}
 				elseif($r['type']=='ajaxlist') {
 					if(!$r['label'])
@@ -221,10 +221,10 @@
 				if(isset($r['mask']['name']))
 				{
 					if($r['mask']['name']=='phone2')
-						$r['comment'] .= $this->_CFG['_MESS']['_comment_phone2'];
+						$r['comment'] .= static_main::m('_comment_phone2');
 					//<br/>Допускается цифры, тире, пробел, запятые и скобки
 					elseif($r['mask']['name']=='phone')
-						$r['comment'] .= $this->_CFG['_MESS']['_comment_phone'];
+						$r['comment'] .= static_main::m('_comment_phone');
 					//Допускается цифры, тире, пробел и скобки
 					//elseif($r['mask']['name']=='phone3')
 					//	$r['comment'] = "";

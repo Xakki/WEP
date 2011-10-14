@@ -36,7 +36,7 @@ class static_form {
 			$_this->fld_data[$_this->mf_createrid]= $_SESSION['user']['id'];
 
 		if (!isset($_this->fld_data) && !count($_this->fld_data))
-			return static_main::_message('error',$_this->getMess('add_empty'));
+			return static_main::_message('error',static_main::m('add_empty',$_this));
 
 		if (!self::_add_fields($_this)) return false;
 
@@ -65,7 +65,7 @@ class static_form {
 		if($_this->id and $flag_select)
 			$_this->data = $_this->_select();
 		if (isset($_this->mf_indexing) && $_this->mf_indexing) $_this->indexing();
-		return static_main::_message('ok',$_this->getMess('add'));
+		return static_main::_message('ok',static_main::m('add',$_this));
 	}
 
 	static function _add_fields(&$_this) {
@@ -580,7 +580,9 @@ class static_form {
 	static function _fFormCheck(&$_this,&$data,&$param,&$FORMS_FIELDS) { //$_this->fields_form
 		global $_tpl;
 		if(!count($FORMS_FIELDS))
-			return array('mess'=>array(array('name'=>'error', 'value'=>$_this->_CFG['_MESS']['errdata'])));
+			return array('mess'=>array(
+				static_main::am('error','errdata',$_this)
+			));
 		//$MASK = &$_this->_CFG['_MASK'];
 		$arr_nochek = array('info'=>1,'sbmt'=>1,'alert'=>1);
 		$messages='';
@@ -592,7 +594,10 @@ class static_form {
 		{
 			$error = array();
 			if($key=='_*features*_') continue;
-			if(!isset($form['type'])) return array('mess'=>array(array('name'=>'error', 'value'=>$_this->_CFG['_MESS']['errdata'].' : '.$key)));
+			if(!isset($form['type']))
+				return array('mess'=>array(
+					static_main::am('error','errdata',' : '.$key,$_this)
+				));
 			if(isset($arr_nochek[$form['type']])) continue;
 
 			/*Поля которые недоступны пользователю не проверяем, дефолтные значения прописываются в kPreFields()*/
@@ -617,25 +622,25 @@ class static_form {
 			foreach($error as $row) {
 				$messages = '';
 				if($row==1) //no empty
-					$messages = $_this->getMess('_err_1');
+					$messages = static_main::m('_err_1',$_this);
 				elseif($row==2) //max chars
-					$messages = $_this->getMess('_err_2',array($form['mask']['max'],(_strlen($value)-$form['mask']['max'])));
+					$messages = static_main::m('_err_2',array($form['mask']['max'],(_strlen($value)-$form['mask']['max'])),$_this);
 				elseif($row==21) // min chars
-					$messages = $_this->getMess('_err_21',array($form['mask']['min'],($form['mask']['min']-_strlen($value))));
+					$messages = static_main::m('_err_21',array($form['mask']['min'],($form['mask']['min']-_strlen($value))),$_this);
 				elseif($row==22) //min int
-					$messages = $_this->getMess('_err_22').$form['mask']['maxint'];
+					$messages = static_main::m('_err_22',$_this).$form['mask']['maxint'];
 				elseif($row==23) //max int
-					$messages = $_this->getMess('_err_23').$form['mask']['minint'];
+					$messages = static_main::m('_err_23',$_this).$form['mask']['minint'];
 				elseif($row==24) // min chars
-					$messages = $_this->getMess('_err_22').$form['mask']['max'];
+					$messages = static_main::m('_err_22',$_this).$form['mask']['max'];
 				elseif($row==25) // max chars
-					$messages = $_this->getMess('_err_23').$form['mask']['min'];
+					$messages = static_main::m('_err_23',$_this).$form['mask']['min'];
 				elseif($row==26) // min Array count
-					$messages = $_this->getMess('_err_22').$form['mask']['maxarr'];
+					$messages = static_main::m('_err_22',$_this).$form['mask']['maxarr'];
 				elseif($row==27) // max Array count
-					$messages = $_this->getMess('_err_23').$form['mask']['minarr'];
+					$messages = static_main::m('_err_23',$_this).$form['mask']['minarr'];
 				elseif($row==29) //limit file size
-					$messages = $_this->getMess('_err_29',array($_FILES[$key]['name'])).$form['maxsize'].'Kb';
+					$messages = static_main::m('_err_29',array($_FILES[$key]['name']),$_this).$form['maxsize'].'Kb';
 				elseif($row==3) {//wrong data
 					if(isset($matches2) and count($matches2[0])) {
 						$textm = 'Обнаружены следующие недопустимые символы - ';
@@ -650,20 +655,20 @@ class static_form {
 						$textm .= ' и следующей попыткой удалить их автоматический?<input type="checkbox" value="1" name="'.$key.'_rplf'.'" checked="checked" style="height: 0.8em;">';
 						//$FORMS_FIELDS[$key.'_rplf'] = array('type'=>'hidden','value'=>'del');
 					}
-					$messages = $_this->getMess('_err_3',array($textm));
+					$messages = static_main::m('_err_3',array($textm),$_this);
 				}
 				elseif($row==31) //wrong captchs
-					$messages = $_this->getMess('_err_31');
+					$messages = static_main::m('_err_31',$_this);
 				elseif($row==32) // wrong repeat pass
-					$messages = $_this->getMess('_err_32');
+					$messages = static_main::m('_err_32',$_this);
 				elseif($row==33) //data error
-					$messages = $_this->getMess('_err_33');
+					$messages = static_main::m('_err_33',$_this);
 				elseif($row==39) //wrong file type
-					$messages = $_this->getMess('_err_39',array($_FILES[$key]['name'])).'- '.implode(',',array_unique($form['mime'])).'.';
+					$messages = static_main::m('_err_39',array($_FILES[$key]['name']),$_this).'- '.implode(',',array_unique($form['mime'])).'.';
 				elseif($row==40) //error load file
-					$messages = $_this->getMess('_err_40',array($_FILES[$key]['name']));
+					$messages = static_main::m('_err_40',array($_FILES[$key]['name']),$_this);
 				elseif($row==4)  // wrong link
-					$messages = $_this->getMess('_err_4');
+					$messages = static_main::m('_err_4',$_this);
 				elseif($row==5)  // wrong link
 					$messages = 'Множественные значения не допустимы!';
 				$arr_err_name[$key]=$key;
@@ -1058,18 +1063,18 @@ class static_form {
 		global $_CFG;
 		$data = rand(10000, 99999); //$_SESSION['captcha']
 		if ($_CFG['wep']['sessiontype'] == 1) {
-			$hash_key = file_get_contents($_CFG['_PATH']['HASH_KEY']);
+			$hash_key = file_get_contents($_CFG['_FILE']['HASH_KEY']);
 			$hash_key = md5($hash_key);
 			$crypttext = trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $hash_key, $data, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))));
 			_setcookie('chash', $crypttext, (time() + 1800));
-			_setcookie('pkey', base64_encode($_CFG['PATH']['HASH_KEY']), (time() + 1800));
+			_setcookie('pkey', base64_encode($_CFG['_FILE']['HASH_KEY']), (time() + 1800));
 		}
 	}
 
 	static function getCaptcha() {
 		global $_CFG;
 		if (isset($_COOKIE['chash']) and $_COOKIE['chash']) {
-			$hash_key = file_get_contents($_CFG['_PATH']['HASH_KEY']);
+			$hash_key = file_get_contents($_CFG['_FILE']['HASH_KEY']);
 			$hash_key = md5($hash_key);
 			$data = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $hash_key, base64_decode($_COOKIE['chash']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));
 			return $data;

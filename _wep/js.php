@@ -3,18 +3,18 @@
 	$GLOBALS['_RESULT']	= $DATA = array();
 	$_tpl['onload']=$html=$html2='';
 
-	$_CFG['_PATH']['wep'] = dirname($_SERVER['SCRIPT_FILENAME']);
-	require_once($_CFG['_PATH']['wep'].'/config/config.php');
-	require($_CFG['_PATH']['phpscript'].'/jquery_getjson.php');
+	$_CFG['_PATH']['wep'] = dirname($_SERVER['SCRIPT_FILENAME']).'/';
+	require_once($_CFG['_PATH']['wep'].'config/config.php');
+	require($_CFG['_PATH']['phpscript'].'jquery_getjson.php');
 
 
 	if($_CFG['robot']) {
-		$GLOBALS['_RESULT']['html'] = $_CFG['_MESS']['deniedrobot'];
-		exit($_CFG['_MESS']['deniedrobot']);
+		$GLOBALS['_RESULT']['html'] = static_main::m('deniedrobot');
+		exit(static_main::m('deniedrobot'));
 	}
 	elseif(!isset($_COOKIE[$_CFG['session']['name']])) {
-		$GLOBALS['_RESULT']['html'] = $_CFG['_MESS']['denieda'];
-		exit($_CFG['_MESS']['denieda']);
+		$GLOBALS['_RESULT']['html'] = static_main::m('denieda');
+		exit(static_main::m('denieda'));
 	}
 
 	require_once($_CFG['_PATH']['core'].'html.php');
@@ -27,13 +27,13 @@
 	}
 
 	if($_CFG['wep']['access'] and (!isset($_SESSION['user']['id']) or $_SESSION['user']['level']>=5)) {
-		$GLOBALS['_RESULT']['html'] = $_CFG['_MESS']['denied'];
-		exit($_CFG['_MESS']['denied']);
+		$GLOBALS['_RESULT']['html'] = static_main::m('denied');
+		exit(static_main::m('denied'));
 		//$_tpl['onload']='window.location="login.php?mess=Недостаточно прав доступа."';
 	}
 	elseif(!$_GET['_modul']) {// or !$_SESSION['user']['wep']
-		$GLOBALS['_RESULT']['html'] = $_CFG['_MESS']['errdata'];
-		exit($_CFG['_MESS']['errdata']);
+		$GLOBALS['_RESULT']['html'] = static_main::m('errdata');
+		exit(static_main::m('errdata'));
 		//$_tpl['onload']='fLog(\'<div style="color:red;">'.date('H:i:s').' : Параметры заданны неверно!</div>\',1);fSwin1();';
 	}
 
@@ -63,7 +63,7 @@
 	//if($_SESSION['user']['wep'])
 		include($_CFG['_PATH']['cdesign'].$_design.'/js.php');
 	/*else {
-		exit($_CFG['_MESS']['denied']);
+		exit(static_main::m('denied'));
 	}*/
 
 	$GLOBALS['_RESULT'] = array("html" => $html,"html2" => $html2,'eval'=>$_tpl['onload']);

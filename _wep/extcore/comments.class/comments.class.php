@@ -28,10 +28,10 @@ class comments_class extends kernel_extends {
 		$this->mf_timecr = true;
 		$this->mf_istree = true;
 		$this->messages_on_page = 50;
-		$this->locallang['default']['denied_add'] = 'Оставлять комментарий могут только зарегистрированные пользователи!';
-		$this->locallang['default']['add'] = 'Комментарий добавлен.';
-		$this->locallang['default']['add_name'] = '';
-		$this->locallang['default']['_saveclose'] = 'Написать комментарий';
+		$this->lang['denied_add'] = 'Оставлять комментарий могут только зарегистрированные пользователи!';
+		$this->lang['add'] = 'Комментарий добавлен.';
+		$this->lang['add_name'] = '';
+		$this->lang['_saveclose'] = 'Написать комментарий';
 		$this->_AllowAjaxFn['addComm'] = true;
 		return true;
 	}

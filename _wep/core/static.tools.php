@@ -69,7 +69,7 @@ class static_tools {
 		}
 		$result = $MODUL->SQL->execSQL('SHOW TABLES LIKE \'' . $MODUL->tablename . '\''); // checking table exist
 		if ($result->err) {
-			$rDATA['Создание таблицы']['@mess'][] = array( 'error',$MODUL->getMess('_big_err') );
+			$rDATA['Создание таблицы']['@mess'][] = static_main::am('error','_big_err',$MODUL);
 			return $rDATA;
 		}
 		$MODUL->setSystemFields();// установка системных полей
@@ -88,7 +88,7 @@ class static_tools {
 				}
 			}
 			else {
-				$rDATA['Создание таблицы']['@mess'][] = array( 'alert', $MODUL->getMess('_install_info',array($MODUL->_cl.'['.$MODUL->tablename.']')) );
+				$rDATA['Создание таблицы']['@mess'][] = static_main::am('alert','_install_info',array($MODUL->_cl.'['.$MODUL->tablename.']'),$MODUL);
 			}
 			return $rDATA;
 		}
@@ -133,7 +133,7 @@ class static_tools {
 					$rDATA[$key]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD ' .$temp ;
 				}
 				if (!self::_checkdir($MODUL->_CFG['_PATH']['path'].$MODUL->getPathForAtt($key))) {
-					$rDATA[$key]['@mess'][] = array( 'error',$MODUL->getMess('_checkdir_error', array($MODUL->getPathForAtt($key))) );
+					$rDATA[$key]['@mess'][] = static_main::am('error','_checkdir_error', array($MODUL->getPathForAtt($key)),$MODUL);
 				}
 				$rDATA['@reattach'] = true;
 			}
@@ -141,7 +141,7 @@ class static_tools {
 		if (isset($MODUL->memos))
 			foreach ($MODUL->memos as $key => $param) {
 				if (!self::_checkdir($MODUL->_CFG['_PATH']['path'].$MODUL->getPathForMemo($key))) {
-					$rDATA[$key]['@mess'][] = array( 'error',$MODUL->getMess('_recheck_err') );
+					$rDATA[$key]['@mess'][] = static_main::am('error','_recheck_err',$MODUL);
 				}
 			}
 
@@ -230,7 +230,7 @@ class static_tools {
 	static function _xmlFormConf(&$MODUL) {
 		$MODUL->form = array();
 		$MODUL->form['_*features*_'] = array('name' => 'Configmodul', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']));
-		$MODUL->form['_info'] = array('type' => 'info', 'css' => 'caption', 'caption' => $MODUL->_CFG['_MESS']['_config']);
+		$MODUL->form['_info'] = array('type' => 'info', 'css' => 'caption', 'caption' => static_main::m('_config'));
 		foreach ($MODUL->config_form as $k => $r) {
 			if (!is_array($MODUL->config[$k]))
 				$MODUL->config_form[$k]['value'] = stripslashes($MODUL->config[$k]);
@@ -240,7 +240,7 @@ class static_tools {
 		$MODUL->form = array_merge($MODUL->form, $MODUL->config_form);
 		$MODUL->form['sbmt'] = array(
 			'type' => 'submit',
-			'value' => $MODUL->_CFG['_MESS']['_submit']);
+			'value' => static_main::m('_submit'));
 	}
 
 	static function _save_config($conf,$file) {
@@ -414,9 +414,9 @@ class static_tools {
 					if (isset($row['@reattach']) and isset($_POST['query_'.$_cl]['reattach'])) {
 						_new_class($_cl, $MODUL_R);
 						if (self::_reattaches($MODUL_R))
-							$mess[] = array( 'ok', '<b>' . $_cl . '</b> - ' . $MODUL->getMess('_file_ok'));
+							$mess[] = array( 'ok', '<b>' . $_cl . '</b> - ' . static_main::m('_file_ok',$MODUL));
 						else {
-							$mess[] = array( 'error','<b>' . $_cl . '</b> - ' . $MODUL->getMess('_file_err'));
+							$mess[] = array( 'error','<b>' . $_cl . '</b> - ' . static_main::m('_file_err',$MODUL));
 							$flag = -1;
 						}
 						unset($row['@reattach']);
@@ -441,9 +441,9 @@ class static_tools {
 					}//end foreach
 				}
 				if (count($_POST)<=1)
-					$mess[] = array( 'alert', $MODUL->getMess('_recheck_have_nothing'));
+					$mess[] = static_main::m('alert','_recheck_have_nothing',$MODUL);
 				if ($flag)
-					$mess[] = array( 'ok', $MODUL->getMess('_recheck_ok'));
+					$mess[] = static_main::m('ok','_recheck_ok',$MODUL);
 				//'  <a href="" onclick="window.location.reload();return false;">Обновите страницу.</a>'
 			}
 			else {
@@ -451,7 +451,7 @@ class static_tools {
 				if (count($check_result)) {
 					$MODUL->form['_info'] = array(
 						'type' => 'info',
-						'caption' => $MODUL->getMess('_recheck'),
+						'caption' => static_main::m('_recheck',$MODUL),
 					);
 					$MODUL->form['invert'] = array(
 						'type' => 'info',
@@ -501,10 +501,10 @@ class static_tools {
 
 					$MODUL->form['sbmt'] = array(
 						'type' => 'submit',
-						'value' => $MODUL->getMess('_submit')
+						'value' => static_main::m('_submit',$MODUL)
 					);
 				} else
-					$mess[] = array( 'ok', $MODUL->getMess('_recheck_have_nothing'));
+					$mess[] = static_main::m('ok','_recheck_have_nothing',$MODUL);
 			}
 		}
 		$DATA = array('form' => $MODUL->form, 'messages' => $mess);
@@ -600,15 +600,19 @@ class static_tools {
 	static function saveUserCFG($SetDataCFG, $tempCFG=array()) {
 		global $_CFG,$_CFGFORM;
 		$mess = array();
-		$DEF_CFG = self::getFdata($_CFG['_PATH']['wep'] . '/config/config.php', '/* MAIN_CFG */', '/* END_MAIN_CFG */');// чистый конфиг ядра
-		$USER_CFG = self::getFdata($_CFG['_PATH']['wepconf'] . '/config/config.php', '', '', $DEF_CFG); // конечный конфиг
+		$DEF_CFG = self::getFdata($_CFG['_FILE']['core_config_f'], '/* MAIN_CFG */', '/* END_MAIN_CFG */');// чистый конфиг ядра
+		$USER_CFG = self::getFdata($_CFG['_FILE']['config_f'], '', '', $DEF_CFG); // конечный конфиг
 		// Редактируемые конфиги
-		include_once($_CFG['_PATH']['wep'] . '/config/config_form.php');
+		include_once($_CFG['_FILE']['core_configform_f']);
 
 		$fl = false;
 		$putFile = array();
 		if(isset($SetDataCFG['sql'])) {
 			$SQL = new sql($SetDataCFG['sql']); //пробуем подключиться к БД
+			if(!$SQL->ready) {
+				$mess[] = array( 'error','Ошибка подключения к БД.');
+				return array($fl,$mess);
+			}
 		}
 		//$SetDataCFG = static_main::MergeArrays($USER_CFG,$SetDataCFG);
 		// объединяем конфиг записанный на пользователя и новые конфиги
@@ -643,7 +647,7 @@ class static_tools {
 		}
 		$putFile = "<?php\n\t//create time " . date('Y-m-d H:i') . "\n\t".implode("\n\t", $putFile)."\n";
 		//Записать в конфиг все данные которые отличаются от данных по умолчанию
-		if (!file_put_contents($_CFG['_PATH']['wepconf'] . '/config/config.php', $putFile)) {
+		if (!file_put_contents($_CFG['_FILE']['config_f'], $putFile)) {
 			$mess[] = array( 'error','Ошибка записи настроек. Нет доступа к фаилу');
 		} else {
 			$fl = true;
@@ -718,12 +722,13 @@ class static_tools {
 	 * @return bool Результат
 	 */
 	static function _checkdir($dir) {
+		global $_CFG;
 		if(!$dir) return false;
 		if (!file_exists($dir)) {
 			if (!file_exists(dirname($dir))) {
 				self::_checkdir(dirname($dir));
 			}
-			if (!mkdir($dir, 0755))
+			if (!mkdir($dir, $_CFG['wep']['chmod']))
 				return static_main::_message('error','Cannot create directory <b>' . $dir . '</b>');
 		}
 		else {
@@ -739,6 +744,21 @@ class static_tools {
 				return static_main::_message('error','Cannot write/read file in directory <b>' . $dir . '</b>');
 		}
 		return true;
+	}
+
+	static function checkWepconf() {
+		global $_CFG;
+		$flag= true;
+		foreach($_CFG['_PATH'] as $k=>$r) {
+			if(!self::_checkdir($r)) {
+				static_main::_message('error','Ошибка создания директории '.$r);
+				$flag= false;
+			}
+		}
+		if(!file_exists($_CFG['_PATH']['wepconf']. '.htaccess')) {
+			file_put_contents($_CFG['_PATH']['wepconf'] . '.htaccess','Deny from all');
+		}
+		return $flag;
 	}
 
 // END static class

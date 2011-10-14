@@ -218,7 +218,7 @@ class html {
  */
 
 function _myErrorHandler($errno, $errstr, $errfile, $errline, $errcontext) {//,$cont
-	global $_CFG;print_r('*******');
+	global $_CFG;
 	if ($_CFG['wep']['catch_bug']) {
 
 		// Debuger

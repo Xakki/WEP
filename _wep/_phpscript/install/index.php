@@ -1,6 +1,5 @@
 <?php
 
-$_CFG['_PATH']['wep'] = dirname($_SERVER['SCRIPT_FILENAME']);
 $INSTALL = true;
 require_once($_CFG['_PATH']['wep'] . '/config/config.php');
 require_once($_CFG['_PATH']['core'] . 'html.php');
@@ -38,7 +37,6 @@ if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] === 0) {
 if ($flag) {
 	$HTML->_templates = 'install';
 	$stp = array(
-		0 => array('name' => 'Подключение к БД', 'css' => '', 'comment' => 'Укажите логин и пароль к БД имеющий привелегии для создания пользователя и базы данных.'),
 		1 => array('name' => 'Шаг первый', 'css' => '', 'comment' => 'Подключение к БД и настройка дополнительных параметров'),
 		2 => array('name' => 'Шаг второй', 'css' => '', 'comment' => 'Проверка структуры сайта'),
 		3 => array('name' => 'Шаг третий', 'css' => '', 'comment' => 'Установка модулей и удаление.'),

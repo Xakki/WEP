@@ -124,7 +124,7 @@ class pay_class extends kernel_extends {
 					}
 				}
 				else
-					$mess = $this->getMess('pay_err');
+					$mess = static_main::m('pay_err',$this);
 			}
 		}
 		else {
@@ -151,11 +151,11 @@ class pay_class extends kernel_extends {
 		_new_class('ugroup', $UGROUP);
 		$temp = $UGROUP->childs['users']->_query('t1.id,t1.owner_id,t1.name,t1.balance,t2.negative','t1 JOIN '.$UGROUP->tablename.' t2 ON t2.id=t1.owner_id WHERE t1.`active`=1 and t2.`active`=1 and t1.`id` = '.$from_user);
 		
-		if(!count($temp)) return array($this->getMess('pay_nouser'),0);
+		if(!count($temp)) return array(static_main::m('pay_nouser',$this),0);
 		$d = $temp[0]['balance']-$summ;
 		$mess = '';
 		if(!$temp[0]['negative'] and $d<0) 
-			$mess = $this->getMess('pay_nomonney',array(abs($d).' '.$UGROUP->config['payon']));
+			$mess = static_main::m('pay_nomonney',array(abs($d).' '.$UGROUP->config['payon']),$this);
 		return array($mess,$temp[0]['balance']);
 	}
 	/**

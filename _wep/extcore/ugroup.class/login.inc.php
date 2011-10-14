@@ -54,7 +54,7 @@
 	}
 	elseif(isset($_REQUEST['exit']) && $_REQUEST['exit']=="ok") {
 		static_main::userExit();
-		$result = array($_CFG['_MESS']['exitok'],1);
+		$result = array(static_main::m('exitok'),1);
 	}
 	elseif(isset($_COOKIE['remember']) and !static_main::_prmUserCheck() and $result = static_main::userAuth() and $result[1]) {
 		//@header("Location: ".$ref);

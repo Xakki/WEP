@@ -11,6 +11,13 @@ $DEF_CFG = static_tools::getFdata($_CFG['_PATH']['wep'] . '/config/config.php', 
 $USER_CFG = static_tools::getFdata($_CFG['_PATH']['wepconf'] . '/config/config.php', '', '', $DEF_CFG);// Текущая полная конфигурация
 //print_r('<pre>');print_r($USER_CFG);exit();
 $DATA = array();
+$DATA['rootlogin'] =  array('type'=>'text','caption'=>'Login БД с правами суперпользователя','style'=>'background-color:#ff9966;');
+$DATA['rootpass'] =  array('type'=>'password_new','caption'=>'Пароль БД с правами суперпользователя','style'=>'background-color:#ff9966;');
+if(isset($_POST['rootlogin']))
+	$DATA['rootlogin']['value'] = $_POST['rootlogin'];
+if(isset($_POST['rootpass']))
+	$DATA['rootpass']['value'] = $_POST['rootpass'];
+
 include_once($_CFG['_PATH']['wep'] . '/config/config_form.php');
 foreach($_CFGFORM as $kt=>$rb) {
 	foreach($rb as $k=>$r) {
@@ -32,9 +39,24 @@ foreach($_CFGFORM as $kt=>$rb) {
 
 $mess = array();
 if (isset($_POST['sbmt'])) {
-	list($fl,$mess) = static_tools::saveUserCFG($_POST,$TEMP_CFG);
+	$sqlfl = true;
+	static_tools::checkWepconf();
+	if(isset($_POST['rootlogin']) and $_POST['rootlogin']) {
+		$sqlfl = false;
+		$temp = array(
+			'host'=>$_POST['sql']['host'],
+			'login'=>$_POST['rootlogin'],
+			'password'=>$_POST['rootpass']);
+		$rSQL = new sql($temp);
+		list($sqlfl,$txt) = $rSQL->sql_install($_POST['sql']);
+	}
+	if($sqlfl)
+		list($sqlfl,$mess) = static_tools::saveUserCFG($_POST,$TEMP_CFG);
+	else
+		$mess[] = array('error',$txt);
 	//Записать в конфиг все данные которые отличаются от данных по умолчанию
-	if ($fl) {
+	if ($sqlfl) {
+		file_put_contents($_CFG['_PATH']['config']. 'hash.key',(md5(time()).md5($_CFG['wep']['md5'])));
 		$mess[] = $var_const['mess'];
 		$DATA['messages'] = $mess;
 		$_SESSION['step'] = 2;

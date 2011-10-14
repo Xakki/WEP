@@ -1,8 +1,8 @@
 <?php
 
-	$_CFG['_PATH']['wep'] = dirname($_SERVER['SCRIPT_FILENAME']);
-	require_once($_CFG['_PATH']['wep'].'/config/config.php');
-	require_once($_CFG['_PATH']['core'].'/html.php');
+	$_CFG['_PATH']['wep'] = dirname($_SERVER['SCRIPT_FILENAME']).'/';
+	require_once($_CFG['_PATH']['wep'].'config/config.php');
+	require_once($_CFG['_PATH']['core'].'html.php');
 	$result = static_main::userAuth(); // запскает сессию и проверяет авторизацию
 
 	if(!$result[1]) {
@@ -110,6 +110,6 @@
 		$_tpl['time'] = 'PHP ver.' . phpversion().' | '.date('Y-m-d H:i:s').' | '.date_default_timezone_get().' | ';
 	}
 	else {
-		$_tpl['mess'] = $_CFG['_MESS']['denied'];
+		$_tpl['mess'] = static_main::m('denied');
 		$HTML->_templates = "login";
 	}

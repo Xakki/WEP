@@ -1,6 +1,6 @@
 <?php	
-	$_CFG['_PATH']['wep'] = dirname($_SERVER['SCRIPT_FILENAME']);
-	require_once($_CFG['_PATH']['wep'].'/config/config.php');
+	$_CFG['_PATH']['wep'] = dirname($_SERVER['SCRIPT_FILENAME']).'/';
+	require_once($_CFG['_PATH']['wep'].'config/config.php');
 	require_once($_CFG['_PATH']['core'].'html.php');
 	$result = array('','');
 	$delay =4;
@@ -27,7 +27,7 @@
 	}
 	elseif(isset($_REQUEST['exit']) && $_REQUEST['exit']=="ok") {
 		static_main::userExit();
-		$mess=$_CFG['_MESS']['exitok'];
+		$mess=static_main::m('exitok');
 		$ref = $_CFG['_HREF']['BH'].'index.html';
 	}
 	elseif(isset($_COOKIE['remember']) and $result = static_main::userAuth() and $result[1]) {

@@ -95,7 +95,7 @@ class mail_class extends kernel_extends {
 			3 => 'over',
 		);
 
-		$this->locallang['default']['_saveclose'] = 'Отправить письмо';
+		$this->lang['_saveclose'] = 'Отправить письмо';
 		$this->ordfield = 'mf_timecr DESC';
 	}
 
@@ -202,11 +202,11 @@ class mail_class extends kernel_extends {
 				$arr['vars']['category']=$category;
 				if($this->Send($arr['vars'])) {
 					$flag=1;
-					$mess[] = array('name'=>'ok', 'value'=>$this->getMess('mailok'));
+					$mess[] = static_main::am('ok','mailok',$this);
 					// иногда сервер говорит что ошибка, а сам всеравно письма отсылает
 				} else {
 					$flag=-1;
-					$mess[] = array('name'=>'error', 'value'=>$this->getMess('mailerr'));
+					$mess[] = static_main::am('error','mailerr',$this);
 				}
 			}else
 				$mess = $arr['mess'];
@@ -272,7 +272,7 @@ class mail_class extends kernel_extends {
 			$header .= "--{$this->uid}--\r\n";
 		$res = mail($data['mail_to'], $subject, $mess,$header,'-f'.$data['from']);
 		if(!$res)
-			trigger_error('SENDMAIL: '.$this->getMess('mailerr'), E_USER_WARNING);
+			trigger_error('SENDMAIL: '.static_main::m('mailerr',$this), E_USER_WARNING);
 		return $res;
 	}
 

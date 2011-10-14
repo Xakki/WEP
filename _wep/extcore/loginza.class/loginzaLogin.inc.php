@@ -36,7 +36,7 @@ HELP**/
 			_new_class('loginza',$LOGINZA);
 			list($flag,$mess) = $LOGINZA->loginzaReg($_SESSION['loginza']);
 			if($flag) {
-				$mess[] = array('name'=>'ok', 'value'=>$LOGINZA->_CFG['_MESS']['authok']);
+				$mess[] = static_main::am('ok','authok',false,$LOGINZA);
 				_new_class('ugroup',$UGROUP);
 				$USERS = $UGROUP->childs['users'];
 				$USERS->setUserSession($USERS->id);

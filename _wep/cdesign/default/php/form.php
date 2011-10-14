@@ -286,7 +286,7 @@ function tpl_form(&$data) {
 						// год
 						if($item_date == 'Y' || $item_date == 'y')
 						{
-							$r['value']['year'] = array('name'=>$_CFG['_MESS']['year_name'], 'css'=>'year','value'=>$temp[0]);// ГОД
+							$r['value']['year'] = array('name'=>static_main::m('year_name'), 'css'=>'year','value'=>$temp[0]);// ГОД
 							$temp[0] = (int)$temp[0]; 
 							$r['value']['year']['item'][0] = array('#id#'=>0, '#name#'=>'--');
 
@@ -299,9 +299,9 @@ function tpl_form(&$data) {
 						// месяц
 						if($item_date == 'm' || $item_date == 'n' || $item_date == 'M' || $item_date == 'F')
 						{
-							$r['value']['month'] = array('name'=>$_CFG['_MESS']['month_name'], 'css'=>'month','value'=>(int)$temp[1]);// Месяц
+							$r['value']['month'] = array('name'=>static_main::m('month_name'), 'css'=>'month','value'=>(int)$temp[1]);// Месяц
 							$r['value']['month']['item'][0] = array('#id#'=>0, '#name#'=>'--');
-							foreach($_CFG['_MESS']['month'] as $kr=>$td) {
+							foreach(static_main::m('month') as $kr=>$td) {
 								$kr = (int)$kr;
 								$r['value']['month']['item'][$kr] = array('#id#'=>$kr, '#name#'=>$td);
 							}
@@ -309,7 +309,7 @@ function tpl_form(&$data) {
 						// день
 						if($item_date == 'd' || $item_date == 'j')
 						{
-							$r['value']['day'] = array('name'=>$_CFG['_MESS']['day_name'], 'css'=>'day','value'=>(int)$temp[2]);// День
+							$r['value']['day'] = array('name'=>static_main::m('day_name'), 'css'=>'day','value'=>(int)$temp[2]);// День
 							$r['value']['day']['item'][0] = array('#id#'=>0, '#name#'=>'--');
 							for($i=1;$i<=31;$i++)
 								$r['value']['day']['item'][$i] = array('#id#'=>$i, '#name#'=>$i);						
@@ -317,21 +317,21 @@ function tpl_form(&$data) {
 						// час
 						if($item_date == 'G' || $item_date == 'g' || $item_date == 'H' || $item_date == 'h')
 						{
-							$r['value']['hour'] = array('name'=>$_CFG['_MESS']['hour_name'], 'css'=>'hour','value'=>$temp[3]);// Час
+							$r['value']['hour'] = array('name'=>static_main::m('hour_name'), 'css'=>'hour','value'=>$temp[3]);// Час
 							for($i=0;$i<=23;$i++)
 								$r['value']['hour']['item'][$i] = array('#id#'=>$i, '#name#'=>$i);
 						}
 						// минуты
 						if($item_date == 'i')
 						{
-							$r['value']['minute'] = array('name'=>$_CFG['_MESS']['minute_name'], 'css'=>'minute','value'=>$temp[4]);// Minute
+							$r['value']['minute'] = array('name'=>static_main::m('minute_name'), 'css'=>'minute','value'=>$temp[4]);// Minute
 							for($i=1;$i<=60;$i++)
 								$r['value']['minute']['item'][$i] = array('#id#'=>$i, '#name#'=>$i);
 						}
 						// секунды
 						if($item_date == 's')
 						{
-							$r['value']['sec'] = array('name'=>$_CFG['_MESS']['sec_name'], 'css'=>'sec','value'=>$temp[5]);
+							$r['value']['sec'] = array('name'=>static_main::m('sec_name'), 'css'=>'sec','value'=>$temp[5]);
 							for($i=1;$i<=60;$i++)
 								$r['value']['sec']['item'][$i] = array('#id#'=>$i, '#name#'=>$i);					
 						}

@@ -38,7 +38,7 @@ $_CFG['wep'] = array(// для ядра и админки
 	'sessiontype' => 1, //0 - стандартная сессия, 1 - БД сессия, 2 - ещё какаянибудь
 	'bug_hunter' => array(), // какие ошибки отлавливать
 	'catch_bug' => 1, // Системная - укзаывает на элемент в массиве $GLOBALS['_ERR'] в котором отлавливаются ошибки
-	'error_reporting' => '0', // заменить на multiselect
+	'error_reporting' => '-1', // заменить на multiselect
 	'debugmode' => 2, //0- ничего не показывать обычным юзерам, 1 -паказывать только сообщение что произошла ошибка, 2 - паказать ошибку
 	'_showerror'=>'_showerror', // для GET запросов
 	'_showallinfo'=>'_showallinfo', // для GET запросов
@@ -78,33 +78,37 @@ $_CFG['returnFormat'] = 'html';
 /* * PATH_CFG* */
 
 /* Полные пути по файловым системам для ядра */
-if (!isset($_CFG['_PATH']['wep'])) //если  путь не был задан
-	$_CFG['_PATH']['wep'] = dirname(dirname(__FILE__)); // файл-путь к ядру, Корень админки
- if (!isset($_CFG['_PATH']['path']))
-	$_CFG['_PATH']['path'] = dirname($_CFG['_PATH']['wep']); // корень сайта
- if (!isset($_CFG['_PATH']['wepconf'])) //если  путь не был задан
-	$_CFG['_PATH']['wepconf'] = $_CFG['_PATH']['path'] . '/_wepconf'; // файл-путь  к конфигу
+if(!isset($_CFG['_PATH']['wep'])) //если  путь не был задан
+	$_CFG['_PATH']['wep'] = dirname(dirname(__FILE__)).'/'; // файл-путь к ядру, Корень админки
+if(!isset($_CFG['_PATH']['path']))
+	$_CFG['_PATH']['path'] = dirname($_CFG['_PATH']['wep']).'/'; // корень сайта
+if(!isset($_CFG['_PATH']['wepconf'])) //если  путь не был задан
+	$_CFG['_PATH']['wepconf'] = $_CFG['_PATH']['path'] . '_wepconf/'; // файл-путь  к конфигу
 
-	$_SERVER['_DR_'] = $_CFG['_PATH']['path'] = $_CFG['_PATH']['path'] . '/'; // корень сайта, основной путь к проекту
-	$_CFG['_PATH']['_path'] = dirname(dirname(dirname(__FILE__))). '/';
-$_CFG['_PATH']['extcore'] = $_CFG['_PATH']['wep'] . '/extcore/'; // путь к системным модулям
-$_CFG['_PATH']['core'] = $_CFG['_PATH']['wep'] . '/core/'; // путь к ядру
-$_CFG['_PATH']['phpscript'] = $_CFG['_PATH']['wep'] . '/_phpscript';
-$_CFG['_PATH']['ctext'] = $_CFG['_PATH']['wep'] . '/pagetext/'; // путь к обработчикам блоков страниц
-$_CFG['_PATH']['cdesign'] = $_CFG['_PATH']['wep'] . '/cdesign/'; // дизайн админки
-$_CFG['_PATH']['locallang'] = $_CFG['_PATH']['wep'] . '/locallang/'; // язык
+$_SERVER['_DR_'] = $_CFG['_PATH']['path'] = $_CFG['_PATH']['path']; // корень сайта, основной путь к проекту
+$_CFG['_PATH']['_path'] = dirname(dirname(dirname(__FILE__))). '/';
+$_CFG['_PATH']['extcore'] = $_CFG['_PATH']['wep'] . 'extcore/'; // путь к системным модулям
+$_CFG['_PATH']['core'] = $_CFG['_PATH']['wep'] . 'core/'; // путь к ядру
+$_CFG['_PATH']['phpscript'] = $_CFG['_PATH']['wep'] . '_phpscript/';
+$_CFG['_PATH']['ctext'] = $_CFG['_PATH']['wep'] . 'pagetext/'; // путь к обработчикам блоков страниц
+$_CFG['_PATH']['cdesign'] = $_CFG['_PATH']['wep'] . 'cdesign/'; // дизайн админки
+$_CFG['_PATH']['locallang'] = $_CFG['_PATH']['wep'] . 'locallang/'; // язык
+$_CFG['_PATH']['core_config'] = $_CFG['_PATH']['wep'] . 'config/'; // конфиги
+$_CFG['_FILE']['core_config_f'] = $_CFG['_PATH']['wep'].'config/config.php';
+$_CFG['_FILE']['core_configform_f'] = $_CFG['_PATH']['wep'].'config/config_form.php';
 
 /* пути для файлов пользовательских модулей */
-$_CFG['_PATH']['phpscript2'] = $_CFG['_PATH']['wepconf'] . '/_phpscript';
-$_CFG['_PATH']['ptext'] = $_CFG['_PATH']['wepconf'] . '/pagetext/'; // путь к обработчикам блоков страниц
-$_CFG['_PATH']['ext'] = $_CFG['_PATH']['wepconf'] . '/ext/'; // путь к пользовательским модулям
-$_CFG['_PATH']['config'] = $_CFG['_PATH']['wepconf'] . '/config/'; // конфиги
-$_CFG['_PATH']['ulocallang'] = $_CFG['_PATH']['wepconf'] . '/locallang/'; // язык
-$_CFG['_PATH']['cron'] = $_CFG['_PATH']['wepconf'] . '/cron/'; // кроны
-$_CFG['_PATH']['weptemp'] = $_CFG['_PATH']['wepconf'] . '/temp/'; // путь к папке для хранения временных файлов
+$_CFG['_PATH']['phpscript2'] = $_CFG['_PATH']['wepconf'] . '_phpscript/';
+$_CFG['_PATH']['ptext'] = $_CFG['_PATH']['wepconf'] . 'pagetext/'; // путь к обработчикам блоков страниц
+$_CFG['_PATH']['ext'] = $_CFG['_PATH']['wepconf'] . 'ext/'; // путь к пользовательским модулям
+$_CFG['_PATH']['config'] = $_CFG['_PATH']['wepconf'] . 'config/'; // конфиги
+$_CFG['_FILE']['config_f'] = $_CFG['_PATH']['config'].'config.php';
+$_CFG['_FILE']['HASH_KEY'] = $_CFG['_PATH']['config'] . 'hash.key';
+$_CFG['_PATH']['ulocallang'] = $_CFG['_PATH']['wepconf'] . 'locallang/'; // язык
+$_CFG['_PATH']['cron'] = $_CFG['_PATH']['wepconf'] . 'cron/'; // кроны
+$_CFG['_PATH']['weptemp'] = $_CFG['_PATH']['wepconf'] . 'temp/'; // путь к папке для хранения временных файлов
 $_CFG['_PATH']['temp'] = $_CFG['_PATH']['path'] . '_content/temp/'; // путь к папке для хранения временных файлов системы
-$_CFG['_PATH']['log'] = $_CFG['_PATH']['wepconf'] . '/log/';
-$_CFG['_PATH']['HASH_KEY'] = $_CFG['_PATH']['config'] . 'hash.key';
+$_CFG['_PATH']['log'] = $_CFG['_PATH']['wepconf'] . 'log/';
 
 /* пути для файлов дизайна страниц */
 $_CFG['_PATH']['design'] = $_CFG['_PATH']['path'] . '_design/'; // дизайн сайта
@@ -382,8 +386,8 @@ if (file_exists($_CFG['_PATH']['ulocallang'] . $_CFG['wep']['locallang'] . '.php
 	include_once($_CFG['_PATH']['ulocallang'] . $_CFG['wep']['locallang'] . '.php');
 
 /* INCLUDE USER CONF */
-if(file_exists($_CFG['_PATH']['wepconf'] . '/config/config.php'))
-	include($_CFG['_PATH']['wepconf'] . '/config/config.php');
+if(file_exists($_CFG['_FILE']['f_config']))
+	include($_CFG['_FILE']['f_config']);
 elseif(!isset($INSTALL)) {
 	@header("Location: /".$_CFG['PATH']['wepname'].'/install.php');
 	die();
