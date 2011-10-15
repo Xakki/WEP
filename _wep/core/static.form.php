@@ -727,7 +727,7 @@ class static_form {
 		}
 		//print_r('<pre>');print_r($form);print_r('</pre>');print_r($data[$key]);
 		//*********** Файлы
-		elseif($form['type']=='file') {
+		if($form['type']=='file') {
 			//TODO: multiple
 			if(isset($data[$key.'_del']) and (int)$data[$key.'_del']==1){
 					$_FILES[$key] = $data[$key] = array('name'=>':delete:','tmp_name'=>':delete:');
@@ -777,6 +777,7 @@ class static_form {
 				$value = trim($data[$key]);
 			else
 				$value = $data[$key];
+
 			/* Если есть данные*/
 			if($value)
 			{
@@ -893,10 +894,12 @@ class static_form {
 				}
 				/* end - Если есть данные*/
 			}
+
+			if(is_array($value))
+				$value = implode('|',$value);
+
 			$form['value'] = $data[$key] = $value;
 
-			if(is_array($data[$key]))
-				$value = implode('|',$data[$key]);
 			/*Проверяем длинну данных*/
 			if(isset($form['mask']['max']) && $form['mask']['max']>0)
 			{
