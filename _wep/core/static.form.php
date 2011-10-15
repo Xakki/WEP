@@ -665,8 +665,8 @@ class static_form {
 					$messages = static_main::m('_err_33',$_this);
 				elseif($row==39) //wrong file type
 					$messages = static_main::m('_err_39',array($_FILES[$key]['name']),$_this).'- '.implode(',',array_unique($form['mime'])).'.';
-				elseif($row==40) //error load file
-					$messages = static_main::m('_err_40',array($_FILES[$key]['name']),$_this);
+				elseif($row>=40 and $row<50) //error load file
+					$messages = static_main::m('_err_'.$row,array($_FILES[$key]['name']),$_this);
 				elseif($row==4)  // wrong link
 					$messages = static_main::m('_err_4',$_this);
 				elseif($row==5)  // wrong link
@@ -732,9 +732,10 @@ class static_form {
 			if(isset($data[$key.'_del']) and (int)$data[$key.'_del']==1){
 					$_FILES[$key] = $data[$key] = array('name'=>':delete:','tmp_name'=>':delete:');
 			}
-			elseif(isset($_FILES[$key]['name']) and $_FILES[$key]['name']!='') {
-				if(!$_FILES[$key]['tmp_name'])
-					$error[]=41;
+			elseif(isset($_FILES[$key]['name']) and $_FILES[$key]['name']!='') {print_r('<pre>');print_r($_FILES[$key]);
+				if($_FILES[$key]['error'] != 0) {
+					$error[]= (int)'4'.$_FILES[$key]['error'];
+				}
 				elseif(!isset($form['mime'][$_FILES[$key]['type']]))
 					$error[]=39;
 				elseif(isset($form['maxsize']) and $_FILES[$key]['size']>($form['maxsize']*1024))

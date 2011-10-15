@@ -8,7 +8,7 @@
 			$html .= '<form id="form_tools_'.$attr['name'].'" method="'.$attr['method'].'" action="'.$attr['action'].'"';
 			if(isset($attr['onsubmit']))
 				$html .= ' onsubmit="'.$attr['onsubmit'].'"';
-			$html .= '><div class="filter">';
+			$html .= '><div class="'.(isset($attr['css'])?$attr['css']:'filter').'">';
 		}
 		
 		$html .= '<!--BEGIN_FILTER-->';

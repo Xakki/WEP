@@ -25,7 +25,7 @@
 						if(!count($arr['mess'])) {
 							if($rm = $this->_save_item($arr['vars'])) {
 								$flag=1;
-								$arr['mess'][] = static_main::am('','update',$this);
+								$arr['mess'][] = static_main::am('ok','update',$this);
 								if($formflag)// кастыль
 									$mess = $this->kPreFields($this->data[$this->id],$param);
 							} else {
