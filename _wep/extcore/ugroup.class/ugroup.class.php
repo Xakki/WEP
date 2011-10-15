@@ -437,7 +437,8 @@ class users_class extends kernel_extends {
 				$this->data = $this->_query($listfields,$clause);
 				if(count($this->data))
 				{
-					unset($_SESSION['user']);
+					if (isset($_SESSION))
+						unset($_SESSION['user']);
 					if($this->data[0]['active']!=1)
 						return array('Ваш аккаунт заблокирован. За дополнительной информацией обращайтесь к Администратору сайта.',0);
 					elseif(!$this->data[0]['gact'])

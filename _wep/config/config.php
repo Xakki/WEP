@@ -386,8 +386,9 @@ if (file_exists($_CFG['_PATH']['ulocallang'] . $_CFG['wep']['locallang'] . '.php
 	include_once($_CFG['_PATH']['ulocallang'] . $_CFG['wep']['locallang'] . '.php');
 
 /* INCLUDE USER CONF */
-if(file_exists($_CFG['_FILE']['f_config']))
-	include($_CFG['_FILE']['f_config']);
+
+if(file_exists($_CFG['_FILE']['config_f']))
+	include($_CFG['_FILE']['config_f']);
 elseif(!isset($INSTALL)) {
 	@header("Location: /".$_CFG['PATH']['wepname'].'/install.php');
 	die();

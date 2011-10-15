@@ -123,13 +123,15 @@ class html {
 		return 'none';
 	}
 
-	function transformPHP(&$data, $transform, $marker='') {
+	function transformPHP(&$data, $transform, $marker='',$_PATHd=false) {
+		if(!$_PATHd)
+			$_PATHd = $this->_PATHd;
 		/* PHP шаблонизатор */
 		if(is_array($transform)) {
 			$transformPath = $transform[1];
 			$transform = $transform[0];
 		}else
-			$transformPath = $this->_PATHd . 'php/';
+			$transformPath = $_PATHd . 'php/';
 		if (!$marker)
 			$marker = $transform;
 		if (!isset($data[$marker])) {
@@ -150,10 +152,12 @@ class html {
 		return $html;
 	}
 
-	function transform($xml, $transform) {
+	function transform($xml, $transform,$_PATHd=false) {
+		if(!$_PATHd)
+			$_PATHd = $this->_PATHd;
 		/* XML шаблонизатор */
 		//$xml = preg_replace(array("/[\x1-\x8\x0b\x0c\x0e-\x1f]+/"),'',$xml);
-		$transform = $this->_PATHd . 'xsl/' . $transform . '.xsl';
+		$transform =  $_PATHd. 'xsl/' . $transform . '.xsl';
 		if (!file_exists($transform)) {
 			trigger_error("Template $transform not exists", E_USER_WARNING);
 			return '';
