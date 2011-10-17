@@ -1,9 +1,9 @@
 <?php
-	global $_CFG,$SQL;
-	$_CFG['_PATH']['path'] = dirname(dirname(dirname(dirname(dirname(dirname($_SERVER['SCRIPT_FILENAME']))))));
+	global $_CFG;
+	$_CFG['_PATH']['path'] = dirname(dirname(dirname(dirname(dirname(dirname($_SERVER['SCRIPT_FILENAME'])))))).'/';
 	$_GET['_php']='config';
-	require_once($_CFG['_PATH']['path'].'/index.php');
-
+	$res = require_once($_CFG['_PATH']['path'].'/index.php');
+ 
 /*
  * ### CKFinder : Configuration File - Basic Instructions
  *
