@@ -220,7 +220,7 @@ class ugroup_class extends kernel_extends
 				if($MAIL->Send($datamail)) {
 					$mess = 'Оповещение: '.count($data).' пользователей ожидают одобрения.';
 				} else {
-					trigger_error('Оповещение - '.static_main::m('mailerr'), E_USER_WARNING);
+					trigger_error('Оповещение - '.static_main::m('mailerr',$this), E_USER_WARNING);
 				}
 			}
 		}
@@ -398,15 +398,15 @@ class users_class extends kernel_extends {
 				{
 					unset($_SESSION['user']);
 					if(_strlen($this->data[0]['reg_hash'])>5)
-						return array(static_main::m('authnoconf'),0);
+						return array(static_main::m('authnoconf',$this),0);
 					elseif($this->data[0]['reg_hash']=='0' && $this->data[0]['active']==0)
-						return array(static_main::m('auth_notcheck'),0);
+						return array(static_main::m('auth_notcheck',$this),0);
 					elseif(!$this->data[0]['gact'])
-						return array(static_main::m('auth_bangroup'),0);
+						return array(static_main::m('auth_bangroup',$this),0);
 					elseif($this->data[0]['active']==0)
-						return array(static_main::m('auth_banuser'),0);
+						return array(static_main::m('auth_banuser',$this),0);
 					elseif($this->data[0]['level']>=5)
-						return array(static_main::m('denied'),0);
+						return array(static_main::m('denied',$this),0);
 					else
 					{
 						if(isset($_POST['remember']) and $_POST['remember']=='1'){
@@ -414,11 +414,11 @@ class users_class extends kernel_extends {
 						}
 						$this->setUserSession($this->data[0]['id']);
 						static_main::_prmModulLoad();
-						return array(static_main::m('authok'),1);
+						return array(static_main::m('authok',$this),1);
 					}
 				}
 				else
-					return array(static_main::m('autherr'),0);
+					return array(static_main::m('autherr',$this),0);
 			}
 		}
 		else 
@@ -453,7 +453,7 @@ class users_class extends kernel_extends {
 						_setcookie('remember', md5($this->data[0][$this->fn_pass]).'_'.$this->data[0]['id'], (time()+(86400*$this->owner->config['rememberday'])));
 						$this->setUserSession($this->data[0]['id']);
 						static_main::_prmModulLoad();
-						return array(static_main::m('authok'),1);
+						return array(static_main::m('authok',$this),1);
 					}
 				}
 			}
@@ -528,10 +528,10 @@ class users_class extends kernel_extends {
 							if($MAIL->Send($datamail)) {
 								// иногда сервер говорит что ошибка, а сам всеравно письма отсылает
 							} else {
-								trigger_error('Регистрация - '.static_main::m('mailerr'), E_USER_WARNING);
+								trigger_error('Регистрация - '.static_main::m('mailerr',$this), E_USER_WARNING);
 								//$this->_delete();
-								//$arr['mess'][] = array('name'=>'error', 'value'=>static_main::m('mailerr'));
-								//$arr['mess'][] = array('name'=>'error', 'value'=>static_main::m('regerr'));
+								//$arr['mess'][] = array('name'=>'error', 'value'=>static_main::m('mailerr',$this));
+								//$arr['mess'][] = array('name'=>'error', 'value'=>static_main::m('regerr',$this));
 							}
 							$flag=1;
 							$arr['mess'][] = static_main::am('error','regok');
@@ -557,9 +557,9 @@ class users_class extends kernel_extends {
 			$mess = $this->kPreFields($DATA,$param);
 		}
 		if(static_main::_prmUserCheck())
-			$this->fields_form['_info']= array('type'=>'info','caption'=>static_main::m('title_profile'),'css'=>'caption');
+			$this->fields_form['_info']= array('type'=>'info','caption'=>static_main::m('title_profile',$this),'css'=>'caption');
 		else
-			$this->fields_form['_info']= array('type'=>'info','caption'=>static_main::m('title_regme'),'css'=>'caption');
+			$this->fields_form['_info']= array('type'=>'info','caption'=>static_main::m('title_regme',$this),'css'=>'caption');
 
 		static_form::setCaptcha();
 		if(isset($param['formflag']))
@@ -681,7 +681,7 @@ class users_class extends kernel_extends {
 				$mess[]  = array('ok','На ваш E-mail отправленно письмо с секретной ссылкой на форму для установки нового пароля.<br/> Ссылка действительна в течении 2х суток с момента отправки данной формы.');
 				$flag = 1;
 			}else {
-				trigger_error('Напоминание пароля - '.static_main::m('mailerr'), E_USER_WARNING);
+				trigger_error('Напоминание пароля - '.static_main::m('mailerr',$this), E_USER_WARNING);
 				$mess[]  = static_main::am('error','mailerr');
 				$flag = 0;
 			}
