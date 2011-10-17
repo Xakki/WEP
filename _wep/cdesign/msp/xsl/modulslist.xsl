@@ -4,7 +4,7 @@
 
 	<xsl:template match="modulslist">
 	  <xsl:for-each select="item">
-	    <div class='modullist' onclick="load_href('?_view=list&amp;_modul={@id}');nameSel(this);"><xsl:value-of select="."/></div>
+	    <div class='modullist' onclick="wep.load_href('?_view=list&amp;_modul={@id}');nameSel(this);"><xsl:value-of select="."/></div>
 	  </xsl:for-each>
 	  <div class="clk"></div>
 	</xsl:template>

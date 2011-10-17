@@ -430,11 +430,13 @@ function shutdown_function() {
 
 /* SESSION */
 
-function session_go($force=0) { //$force=1 - открывает сесиию для не авторизованного пользователя
+function session_go($force=false) { //$force=true - открывает сесиию для не авторизованного пользователя
 	global $_CFG, $SESSION_GOGO;
 	if (!$_CFG['robot'] and (isset($_COOKIE[$_CFG['session']['name']]) or $force)) {
 		if($_CFG['wep']['sessiontype'] == 1) {
-			_new_class('session',$SESSION_GOGO);
+			if(!$SESSION_GOGO)
+				$SESSION_GOGO = new session_class();
+			$SESSION_GOGO->start($force);
 		}else {
 			session_start();
 		}

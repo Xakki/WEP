@@ -2,16 +2,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru">
 	<head>
 		<title>WebEngineOnPHP - {$_SERVER['SERVER_NAME']}</title>
-		<base href="{$_CFG['_HREF']['BH']}"/>
-		<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
-		<meta http-equiv="Pragma" content="no-cache"/>
-		<meta name="keywords" content="WEP"/> 
-		<meta name="description" content="CMS"/>
-		<!--<link rel="SHORTCUT ICON" href="{$_tpl['design']}img/favicon.ico"/>-->
-		{$_tpl['script']}
-		<script type="text/javascript" src="{$_tpl['design']}script/script.js"></script>
+		{$_tpl['meta']}
 		{$_tpl['styles']}
-		<link type="text/css" href="{$_tpl['design']}style/style.css" rel="stylesheet"/>
+		{$_tpl['script']}
 <!--[if lte IE 7]>
 <style type="text/css">
 	/* bug fixes for IE7 and lower - DO NOT CHANGE */

@@ -1,7 +1,7 @@
 <?php
 	if(!$_CFG['_PATH']['wep']) die('ERROR');
 
-	$GLOBALS['_RESULT']	= array();
+	$GLOBALS['_RESULT']	= array('html'=>'','eval'=>'');
 	$_tpl['onload']=$html=$html2='';
 
 	require_once($_CFG['_PATH']['wep'].'/config/config.php');

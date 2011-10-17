@@ -36,15 +36,15 @@
 
 			$html .= '<p class="commitemtext">'.$r['text'].'</p>';
 			/*if($r['act'])
-				$html .= '<a class="bottonimg img'.$r['active'].'" href="?'.$data['req'].$data['cl'].'_id='.$r['id'].'&amp;_type='.($r['active']==1?'dis':'act').'" onclick="return load_href(this)" title="['.$_CFG['_ACT_TITLE'][$r['active']].']"></a>';
+				$html .= '<a class="bottonimg img'.$r['active'].'" href="?'.$data['req'].$data['cl'].'_id='.$r['id'].'&amp;_type='.($r['active']==1?'dis':'act').'" onclick="return wep.load_href(this)" title="['.$_CFG['_ACT_TITLE'][$r['active']].']"></a>';
 			if($r['edit'])
-				$html .= '<a class="bottonimg imgedit" href="?'.$data['req'].$data['cl'].'_id='.$r['id'].'&amp;_type=edit" onclick="return load_href(this)" title="['.$_CFG['_EDIT_TITLE'].']"></a>';
+				$html .= '<a class="bottonimg imgedit" href="?'.$data['req'].$data['cl'].'_id='.$r['id'].'&amp;_type=edit" onclick="return wep.load_href(this)" title="['.$_CFG['_EDIT_TITLE'].']"></a>';
 			if($r['del'])
 				$html .= '<a class="bottonimg imgdel" href="?'.$data['req'].$data['cl'].'_id='.$r['id'].'&amp;_type=del" onclick="return hrefConfirm(this,\'del\')" title="['.$_CFG['_DEL_TITLE'].']"></a>';*/
 			/*if(isset($r['istree']))
-				$html .= '<br/><a href="?'.$data['req'].$data['cl'].'_id='.$r['id'].'" onclick="return load_href(this)">'.$r['istree'].' ('.$r['istree']['cnt'].')</a>';
+				$html .= '<br/><a href="?'.$data['req'].$data['cl'].'_id='.$r['id'].'" onclick="return wep.load_href(this)">'.$r['istree'].' ('.$r['istree']['cnt'].')</a>';
 			if(isset($r['child'])) foreach($r['child'] as $ck=>$cn)
-				$html .= '<br/><a href="?'.$data['req'].$data['cl'].'_id='.$r['id'].'&amp;'.$data['cl'].'_ch='.$ck.'" onclick="return load_href(this)">'.$cn.' ('.$cn['cnt'].')</a>';*/
+				$html .= '<br/><a href="?'.$data['req'].$data['cl'].'_id='.$r['id'].'&amp;'.$data['cl'].'_ch='.$ck.'" onclick="return wep.load_href(this)">'.$cn.' ('.$cn['cnt'].')</a>';*/
 			$html .= '<div class="commchild">';
 			if(isset($data['data'][$k]))
 				$html .= tpl_commdata($data,$k, $vote, ($treelevel-1));
@@ -68,7 +68,7 @@
 				elseif($r['href']=='select_page')
 					$html .=  '<b>['.$r.']</b>';
 				else
-					$html .=  '<a href="'.$r['href'].'" onclick="return load_href(this)">'.$r.'</a>';
+					$html .=  '<a href="'.$r['href'].'" onclick="return wep.load_href(this)">'.$r.'</a>';
 			}
 			$html .= '&#160;</div><div class="ppagenum"></div>';
 		}

@@ -23,7 +23,6 @@ class pg_class extends kernel_extends {
 			5 => 'Меню №5',
 			6 => 'Меню №6',
 		);
-
 		$this->config['marker'] = array(
 			'text' => 'text',
 			'left_column' => 'left_column',
@@ -34,8 +33,8 @@ class pg_class extends kernel_extends {
 			'path' => 'path',
 			'logs' => 'logs',
 			'foot' => 'foot');
-
-                $this->config['auto_include'] = true;
+      $this->config['auto_include'] = true;
+		$this->config['auto_auth'] = true;
                 
 		// TODO : Сделать форму управления массивами данных и хранить в формате json
 
@@ -51,7 +50,8 @@ class pg_class extends kernel_extends {
 		$this->config_form['rootPage'] = array('type' => 'list', 'listname'=>'parentlist', 'caption' => 'Начальная страница сайта');
 		$this->config_form['menu'] = array('type' => 'textarea', 'caption' => 'Блоки меню');
 		$this->config_form['marker'] = array('type' => 'textarea', 'caption' => 'Маркеры');
-                $this->config_form['auto_include'] = array('type' => 'checkbox', 'caption' => 'Подключать скрипты автоиматически');
+		$this->config_form['auto_include'] = array('type' => 'checkbox', 'caption' => 'Подключать скрипты автоиматически');
+		$this->config_form['auto_auth'] = array('type' => 'checkbox', 'caption' => 'Автоматическая авторизация');
 	}
 
 	function _set_features() {
@@ -475,7 +475,8 @@ class pg_class extends kernel_extends {
 			$html = '';
 			if($rowPG['ugroup']) {
 				if(!$this->pagePrmCheck($rowPG['ugroup'])) {
-					$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' ACCESS DENIED-->';
+					if($this->_CFG['wep']['debugmode']==2)
+						$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' ACCESS DENIED-->';
 					continue;
 				}
 					

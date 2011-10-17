@@ -19,7 +19,7 @@
 					$temp_topmenu .= ' onclick="return ShowTools(\'tools_block\',\''.$_CFG['_HREF']['wepJS'].'?'.$r['href'].'\')"';
 				}
 				else {
-					$temp_topmenu .= ' onclick="return load_href(\''.$firstpath.$r['href'].'\')"';
+					$temp_topmenu .= ' onclick="return wep.load_href(\''.$firstpath.$r['href'].'\')"';
 				}
 				if($r['sel'])
 					$temp_topmenu .= ' style="border:2px solid red;"';
@@ -59,11 +59,11 @@
 				}
 				$html .= '<th>';
 				if(isset($r['href']) and $r['href']!='') {
-					$html .= '<a class="'.($r['sel']==1?'bottonimg_sel':'bottonimg').' imgup" title="[SORT]" href="'.$firstpath.'sort='.$r['href'].'" onclick="return load_href(this)"></a>';
+					$html .= '<a class="'.($r['sel']==1?'bottonimg_sel':'bottonimg').' imgup" title="[SORT]" href="'.$firstpath.'sort='.$r['href'].'" onclick="return wep.load_href(this)"></a>';
 				}
 				$html .= $r['value'];
 				if(isset($r['href']) and $r['href']!='') {
-					$html .= '<a class="'.($r['sel']==2?'bottonimg_sel':'bottonimg').' imgdown" title="[SORT]" href="'.$firstpath.'dsort='.$r['href'].'" onclick="return load_href(this)"></a>';
+					$html .= '<a class="'.($r['sel']==2?'bottonimg_sel':'bottonimg').' imgdown" title="[SORT]" href="'.$firstpath.'dsort='.$r['href'].'" onclick="return wep.load_href(this)"></a>';
 				}
 				$html .= '</th>';
 			}
@@ -94,9 +94,9 @@
 				}
 				/////
 				if(isset($data['ord']) and $ktd==$data['ord']) {
-					$html .= '<a class="bottonimg imgup" href="'.$hrefpref.'&_type=ordup" onclick="return load_href(this)" title="[-1]"></a>'
+					$html .= '<a class="bottonimg imgup" href="'.$hrefpref.'&_type=ordup" onclick="return wep.load_href(this)" title="[-1]"></a>'
 						.$tditem['value']
-						.'<a class="bottonimg imgdown" href="'.$hrefpref.'&_type=orddown" onclick="return load_href(this)" title="[+1]"></a>';
+						.'<a class="bottonimg imgdown" href="'.$hrefpref.'&_type=orddown" onclick="return wep.load_href(this)" title="[+1]"></a>';
 				}
 				elseif(isset($tditem['value']) and $tditem['value']!='') {
 					if($tdflag)
@@ -142,18 +142,18 @@
 			}
 			if(isset($r['active'])) {
 				if($r['act'])
-					$html .= '<a class="bottonimg img'.$r['active'].'" href="'.$hrefpref.'&_type='.($r['active']==1?'dis':'act').'" onclick="return load_href(this)" title="['.static_main::m('_ACT_TITLE'.$r['active']).']"></a>';
+					$html .= '<a class="bottonimg img'.$r['active'].'" href="'.$hrefpref.'&_type='.($r['active']==1?'dis':'act').'" onclick="return wep.load_href(this)" title="['.static_main::m('_ACT_TITLE'.$r['active']).']"></a>';
 				else
 					$html .= '<a class="bottonimg img'.$r['active'].'" title="Изменение данного своиства вам не доступна."></a>';
 			}
 			if($r['edit'])
-				$html .= '<a class="bottonimg imgedit" href="'.$hrefpref.'&_type=edit" onclick="return load_href(this)" title="['.static_main::m('_EDIT_TITLE').']"></a>';
+				$html .= '<a class="bottonimg imgedit" href="'.$hrefpref.'&_type=edit" onclick="return wep.load_href(this)" title="['.static_main::m('_EDIT_TITLE').']"></a>';
 			if($r['del'])
-				$html .= '<a class="bottonimg imgdel" href="'.$hrefpref.'&_type=del" onclick="return hrefConfirm(this,\'del\')" title="['.static_main::m('_DEL_TITLE').']"></a>';
+				$html .= '<a class="bottonimg imgdel" href="'.$hrefpref.'&_type=del" onclick="return wep.hrefConfirm(this,\'del\')" title="['.static_main::m('_DEL_TITLE').']"></a>';
 			if(isset($r['istree']))
-				$html .= '<br/><a href="'.$hrefpref.'" onclick="return load_href(this)">'.$r['istree']['value'].' ('.$r['istree']['cnt'].')</a>';
+				$html .= '<br/><a href="'.$hrefpref.'" onclick="return wep.load_href(this)">'.$r['istree']['value'].' ('.$r['istree']['cnt'].')</a>';
 			if(isset($r['child'])) foreach($r['child'] as $ck=>$cn)
-				$html .= '<br/><a href="'.$hrefpref.'&'.$data['cl'].'_ch='.$ck.'" onclick="return load_href(this)">'.$cn['value'].' ('.$cn['cnt'].')</a>';
+				$html .= '<br/><a href="'.$hrefpref.'&'.$data['cl'].'_ch='.$ck.'" onclick="return wep.load_href(this)">'.$cn['value'].' ('.$cn['cnt'].')</a>';
 
 
 			$html .= '</td></tr>';
@@ -176,7 +176,7 @@
 				elseif($r['href']=='select_page')
 					$html .=  '<b>['.$r['value'].']</b>';
 				else
-					$html .=  '<a href="'.$r['href'].'" onclick="return load_href(this)">'.$r['value'].'</a>';
+					$html .=  '<a href="'.$r['href'].'" onclick="return wep.load_href(this)">'.$r['value'].'</a>';
 			}
 			$html .= '&#160;</div><div class="ppagenum"></div>';
 		}

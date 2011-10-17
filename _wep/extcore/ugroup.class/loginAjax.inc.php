@@ -3,6 +3,7 @@
 	if(!isset($FUNCPARAM[0]) or $FUNCPARAM[0] == '') $FUNCPARAM[0] = '#ext#loginAjax';
 	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = '';
 	if(!isset($FUNCPARAM[2])) $FUNCPARAM[2] = '';
+	if(!isset($FUNCPARAM[3])) $FUNCPARAM[3] = 0;
 
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
@@ -21,6 +22,7 @@
 			'0'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон'),
 			'1'=>array('type'=>'list','listname'=>'levelmenuinc', 'caption'=>'Страница "Напомнить пароль"'),
 			'2'=>array('type'=>'list','listname'=>'levelmenuinc', 'caption'=>'Страница "Авторизация"'),
+			'3'=>array('type'=>'checkbox', 'caption'=>'Авторизация по кукам?'),
 		);
 
 		return $form;
@@ -40,7 +42,8 @@
 	$result = array();
 	$mess = $form = '';
 
-	if(isset($_COOKIE['remember']) and !static_main::_prmUserCheck() and $result = static_main::userAuth() and $result[1]) {
+
+	if($FUNCPARAM[3] and $result = static_main::userAuth() and $result[1]) {
 		//@header("Location: ".$ref);
 		//die();
 		$mess=$result[0];

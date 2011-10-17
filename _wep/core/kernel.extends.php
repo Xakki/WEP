@@ -444,6 +444,10 @@ abstract class kernel_extends {
 		return $data;
 	}
 
+	public function SqlEsc($val) {
+		return $this->SQL->SqlEsc($val);
+	}
+
 	private function _select_fields() {
 		$data = array();
 		$agr = ', ' . $this->_listnameSQL . ' as name';
@@ -687,7 +691,7 @@ abstract class kernel_extends {
 		if (!$this->prm_add)
 			return false;
 		if (static_main::_prmModul($this->_cl, array(9)))
-			return true;
+			return true;print_r('<pre>');print_r($this->_CFG['modulprm'][$this->_cl]);
 		return false;
 	}
 
@@ -1423,7 +1427,7 @@ abstract class kernel_extends {
 			elseif ($ftype == 'edit' && $this->id) {
 				if ($this->mf_istree)
 					array_pop($HTML->path);
-				$HTML->path[$firstpath . $this->_cl . '_id=' . $this->id . '&amp;_type=edit'] = 'Редактировать:<b>' . preg_replace($this->_CFG['_repl']['name'], '', $this->data[$this->id][$this->_listname]) . '</b>';
+				$HTML->path[$firstpath . $this->_cl . '_id=' . $this->id . '&amp;_type=edit'] = 'Редактировать:' . preg_replace($this->_CFG['_repl']['name'], '', $this->data[$this->id][$this->_listname]) ;
 				list($xml['formcreat'], $flag) = $this->_UpdItemModul($param);
 				if ($flag == 1) {
 					if (isset($this->parent_id) and $this->parent_id)

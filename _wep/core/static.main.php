@@ -145,6 +145,7 @@ class static_main {
 	static function _prmModulLoad() { // подгрука данных прав доступа
 		global $_CFG, $SQL;
 		if (!isset($_CFG['modulprm'])) {
+			session_go();
 			$_CFG['modulprm'] = $_CFG['modulprm_ext'] = array();
 			$ugroup_id = (isset($_SESSION['user']['gid']) ? (int) $_SESSION['user']['gid'] : 2);
 			if(isset($_SESSION['user']['parent_id']) and $_SESSION['user']['parent_id']) {
@@ -205,7 +206,7 @@ class static_main {
 	 */
 	static function _prmUserCheck($level=5) {
 		global $_CFG;
-		session_go();
+		//session_go(); // TEST
 		if (isset($_SESSION['user']['id']) and $_SESSION['user']['id']) {
 			if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] <= $level)
 				return true;
@@ -236,22 +237,27 @@ class static_main {
 		global $_CFG;
 		session_go();
 		$result = array('', 0);
-		if (!isset($_SESSION['user']['id']) or $login) {
-			if ($_CFG['wep']['access'] and _new_class('ugroup', $UGROUP)) {
+		if (!self::_prmUserCheck() or $login) {
+			if ($_CFG['wep']['access']) {
 				if ($login) {
+					_new_class('ugroup', $UGROUP);
 					$result = $UGROUP->authorization($login, $pass);
 				}
-				else
-					$result = $UGROUP->cookieAuthorization();
+				elseif(!self::_prmUserCheck() and isset($_COOKIE['remember'])) {
+					if (preg_match("/^[0-9A-Za-z\_]+$/",$_COOKIE['remember'])) {
+						_new_class('ugroup', $UGROUP);
+						$result = $UGROUP->cookieAuthorization();
+					}
+				}
 			}
 			elseif ($_CFG['wep']['login'] and $_CFG['wep']['password']) {
 				$flag = 0;
-				if (isset($_COOKIE['remember']) and $_COOKIE['remember'] and $_CFG['wep']['login'] == substr($_COOKIE['remember'], ($pos + 1)) and md5($_CFG['wep']['password']) == substr($_COOKIE['remember'], 0, $pos))
+				if (isset($_COOKIE['remember']) and $_COOKIE['remember'] and $_CFG['wep']['login'] == substr($_COOKIE['remember'], ($pos + 1)) and md5($_CFG['wep']['md5'].$_CFG['wep']['password']) == substr($_COOKIE['remember'], 0, $pos))
 					$flag = 1;
 				elseif ($login and $pass and $_CFG['wep']['login'] == $login and $_CFG['wep']['password'] == $pass)
 					$flag = 1;
 				if ($flag) {
-					session_go(1);
+					session_go(true);
 					$_SESSION['user']['id'] = 1;
 					$_SESSION['user']['name'] = $_CFG['wep']['name'];
 					$_SESSION['user']['gname'] = "GOD MODE";
@@ -263,7 +269,7 @@ class static_main {
 					$_SESSION['FckEditorUserFilesUrl'] = $_CFG['_HREF']['BH'] . $_CFG['PATH']['userfile'];
 					$_SESSION['FckEditorUserFilesPath'] = $_CFG['_PATH']['path'] . $_CFG['PATH']['userfile'];
 					if ($_POST['remember'] == '1')
-						_setcookie('remember', md5($_CFG['wep']['password']) . '_' . $_CFG['wep']['login'], $_CFG['remember_expire']);
+						_setcookie('remember', md5($_CFG['wep']['md5'].$_CFG['wep']['password']) . '_' . $_CFG['wep']['login'], $_CFG['remember_expire']);
 					$result = array(static_main::m('authok'), 1);
 					_setcookie('_showerror', 1);
 					//$_COOKIE['_showerror']=1;

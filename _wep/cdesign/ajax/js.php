@@ -20,7 +20,7 @@
 				}
 			}elseif($flag!=3) {
 				end($HTML->path);
-				$_tpl['onload'] = 'alert(\''.$HTML->transformPHP($DATA['superlist'],'messages').'\');load_href("'.str_replace('&amp;','&',key($HTML->path)).'");';
+				$_tpl['onload'] = 'alert(\''.$HTML->transformPHP($DATA['superlist'],'messages').'\');wep.load_href("'.str_replace('&amp;','&',key($HTML->path)).'");';
 			}else {
 				$DATA['superlist']['path'] = $HTML->path;
 				$html = $HTML->transformPHP($DATA,'superlist');

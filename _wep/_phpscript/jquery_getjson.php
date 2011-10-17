@@ -33,11 +33,16 @@
 		function allreplace($arr) {
 			$mask = array('/\n+/','/\r+/','/\t+/','/\"\"/');//,'/[\']+/','/[\"]+/'
 			$repl = array('','','','""');//,'&#039;','&quot;'
+			$repl2 = array('<br/>','','&#160;&#160;&#160;&#160;','""');
 			foreach($arr as $k=>$r) {
 				if(is_array($r)) 
 					$arr[$k] = $this->allreplace($r);
-				elseif(is_string($arr[$k]))
-					$arr[$k] = preg_replace($mask,$repl,$r);
+				elseif(is_string($arr[$k])) {
+					if($k=='text')
+						$arr[$k] = preg_replace($mask,$repl2,$r);
+					else
+						$arr[$k] = preg_replace($mask,$repl,$r);
+				}
 			}
 			return $arr;
 		}

@@ -41,16 +41,9 @@ class session_class extends kernel_extends {
 		$this->index_fields['users_id'] = 'users_id';
 		$this->unique_fields['sid'] = 'sid';
 
-		if(!isset($_SESSION)) {
-			session_set_save_handler(array(&$this,"open"), array(&$this,"close"), array(&$this,"read"), array(&$this,"write"), array(&$this,"destroy"), array(&$this,"gc"));
-
-			session_start();
-			
-			$params = array(
-				'func' => 'session_write_close',
-			);
-			observer::register_observer($params, 'shutdown_function');
-		}
+		/*$result = $this->SQL->execSQL('SHOW TABLES LIKE \''.$this->tablename.'\'');// checking table exist
+		if ($result->err) echo('Session error');
+		if (!$result->num_rows()) echo('Session no table');*/
 	}
 
 	public function setFieldsForm($form=0) {
@@ -67,7 +60,27 @@ class session_class extends kernel_extends {
 		$this->fields_form['data'] = array('type' => 'textarea', 'readonly' => 1, 'caption' => 'Data','mask'=>array('fview'=>1));
 	}
 
-	function __destruct() {
+	function start($force=false) {
+		if(!isset($_SESSION)) {
+			if(!$force and isset($_COOKIE[$this->_CFG['session']['name']]) and $_COOKIE[$this->_CFG['session']['name']]) {
+				$_COOKIE[$this->_CFG['session']['name']] = $this->SqlEsc($_COOKIE[$this->_CFG['session']['name']]);
+				$data=$this->_query('id','WHERE `sid` = "'.$_COOKIE[$this->_CFG['session']['name']].'" AND `modified` + `expired` > "'.$this->_time.'" LIMIT 1');
+				if(count($data))
+					$force = true;
+			}
+			if($force) {
+				session_set_save_handler(array(&$this,"open"), array(&$this,"close"), array(&$this,"read"), array(&$this,"write"), array(&$this,"destroy"), array(&$this,"gc"));
+
+				session_start();
+				
+				$params = array(
+					'func' => 'session_write_close',
+				);
+				observer::register_observer($params, 'shutdown_function');
+				return true;
+			}
+		}
+		return false;
 	}
 
 	function open($save_path, $session_name) {
@@ -75,8 +88,6 @@ class session_class extends kernel_extends {
 		$this->_session_name = $session_name; 
 		$this->add_query = '';//' AND `domain` = "'.$this->_domain.'"';
 
-		$result = $this->SQL->execSQL('SHOW TABLES LIKE \''.$this->tablename.'\'');// checking table exist
-		if ($result->err) echo('Session error');
 		//if (!$result->num_rows()) $this->_ddInstall();
 		return(true);
 	}

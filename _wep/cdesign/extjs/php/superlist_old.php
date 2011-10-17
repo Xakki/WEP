@@ -17,7 +17,7 @@
 					$temp_topmenu .= ' onclick="return ShowTools(\'tools_block\',\''.$_CFG['_HREF']['wepJS'].'?'.$r['href'].'\')"';
 				}
 				else {
-					$temp_topmenu .= ' onclick="return load_href(\''.$_CFG['PATH']['wepname'].'/index.php?'.$r['href'].'\')"';
+					$temp_topmenu .= ' onclick="return wep.load_href(\''.$_CFG['PATH']['wepname'].'/index.php?'.$r['href'].'\')"';
 				}
 				if($r['sel'])
 					$temp_topmenu .= ' style="border:2px solid red;"';
@@ -57,11 +57,11 @@
 				}
 				$html .= '<th>';
 				if($r['href']!='') {
-					$html .= '<a class="'.($r['sel']==1?'bottonimg_sel':'bottonimg').' imgup" title="[SORT]" href="'.$firstpath.'sort='.$r['href'].'" onclick="return load_href(this)"></a>';
+					$html .= '<a class="'.($r['sel']==1?'bottonimg_sel':'bottonimg').' imgup" title="[SORT]" href="'.$firstpath.'sort='.$r['href'].'" onclick="return wep.load_href(this)"></a>';
 				}
 				$html .= $r['value'];
 				if($r['href']!='') {
-					$html .= '<a class="'.($r['sel']==2?'bottonimg_sel':'bottonimg').' imgdown" title="[SORT]" href="'.$firstpath.'dsort='.$r['href'].'" onclick="return load_href(this)"></a>';
+					$html .= '<a class="'.($r['sel']==2?'bottonimg_sel':'bottonimg').' imgdown" title="[SORT]" href="'.$firstpath.'dsort='.$r['href'].'" onclick="return wep.load_href(this)"></a>';
 				}
 				$html .= '</th>';
 			}
@@ -114,15 +114,15 @@
 			$html .= '<td class="ic" style="vertical-align:top;white-space:nowrap;">';
 
 			if($r['act'])
-				$html .= '<a class="bottonimg img'.$r['active'].'" href="'.$firstpath.$data['cl'].'_id='.$r['id'].'&amp;_type='.($r['active']==1?'dis':'act').'" onclick="return load_href(this)" title="['.$_CFG['_ACT_TITLE'][$r['active']].']"></a>';
+				$html .= '<a class="bottonimg img'.$r['active'].'" href="'.$firstpath.$data['cl'].'_id='.$r['id'].'&amp;_type='.($r['active']==1?'dis':'act').'" onclick="return wep.load_href(this)" title="['.$_CFG['_ACT_TITLE'][$r['active']].']"></a>';
 			if($r['edit'])
-				$html .= '<a class="bottonimg imgedit" href="'.$firstpath.$data['cl'].'_id='.$r['id'].'&amp;_type=edit" onclick="return load_href(this)" title="['.$_CFG['_EDIT_TITLE'].']"></a>';
+				$html .= '<a class="bottonimg imgedit" href="'.$firstpath.$data['cl'].'_id='.$r['id'].'&amp;_type=edit" onclick="return wep.load_href(this)" title="['.$_CFG['_EDIT_TITLE'].']"></a>';
 			if($r['del'])
 				$html .= '<a class="bottonimg imgdel" href="'.$firstpath.$data['cl'].'_id='.$r['id'].'&amp;_type=del" onclick="return hrefConfirm(this,\'del\')" title="['.$_CFG['_DEL_TITLE'].']"></a>';
 			if(isset($r['istree']))
-				$html .= '<br/><a href="'.$firstpath.$data['cl'].'_id='.$r['id'].'" onclick="return load_href(this)">'.$r['istree']['value'].' ('.$r['istree']['cnt'].')</a>';
+				$html .= '<br/><a href="'.$firstpath.$data['cl'].'_id='.$r['id'].'" onclick="return wep.load_href(this)">'.$r['istree']['value'].' ('.$r['istree']['cnt'].')</a>';
 			if(isset($r['child'])) foreach($r['child'] as $ck=>$cn)
-				$html .= '<br/><a href="'.$firstpath.$data['cl'].'_id='.$r['id'].'&amp;'.$data['cl'].'_ch='.$ck.'" onclick="return load_href(this)">'.$cn['value'].' ('.$cn['cnt'].')</a>';
+				$html .= '<br/><a href="'.$firstpath.$data['cl'].'_id='.$r['id'].'&amp;'.$data['cl'].'_ch='.$ck.'" onclick="return wep.load_href(this)">'.$cn['value'].' ('.$cn['cnt'].')</a>';
 
 
 			$html .= '</td></tr>';
@@ -145,7 +145,7 @@
 				elseif($r['href']=='select_page')
 					$html .=  '<b>['.$r['value'].']</b>';
 				else
-					$html .=  '<a href="'.$r['href'].'" onclick="return load_href(this)">'.$r['value'].'</a>';
+					$html .=  '<a href="'.$r['href'].'" onclick="return wep.load_href(this)">'.$r['value'].'</a>';
 			}
 			$html .= '&#160;</div><div class="ppagenum"></div>';
 		}

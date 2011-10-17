@@ -41,8 +41,9 @@ if(!$_CFG['robot']) {
 		$_COOKIE[$se] = 1;
 		_setcookie($se, 1);
 	}
-	if(isset($_COOKIE[$se]) and $_COOKIE[$se])
-		$_CFG['wep']['debugmode'] = 2;
+	if(isset($_COOKIE[$se])) {
+		$_CFG['wep']['debugmode'] = $_COOKIE[$se];
+	}
 }
 //else _setcookie($se, '', (time()-5000));
 
@@ -272,7 +273,7 @@ function startCatchError($param=2) {
 	$_CFG['_ctemp' . $param]['debugmode'] = $_CFG['wep']['debugmode'];
 	$_CFG['wep']['catch_bug'] = $param;
 	$_CFG['wep']['bug_hunter'] = array();
-	$_CFG['wep']['debugmode'] = 1;
+	$_CFG['wep']['debugmode'] = 2;
 	return true;
 }
 

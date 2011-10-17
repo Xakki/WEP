@@ -28,7 +28,7 @@
 		$cl = $this->_cl;
 
 		if($countfield){
-			$xml['data'] = array('cl'=>$cl);
+			$xml['data'] = array('cl'=>$cl, 'caption'=>$this->caption);
 			if($this->_clp!='') 
 				$xml['data']['req'] =$this->_clp;
 						
@@ -195,7 +195,7 @@
 				if(isset($temp[$this->mf_ordctrl]))
 					$xml['data']['ord'] = $this->mf_ordctrl;
 				foreach($this->data as $key=>$row) {
-					$xml['data']['item'][$key] = array('id'=>$row['id']);
+					$xml['data']['item'][$key] = array('id'=>$row['id'],'row'=>$row);
 					$xml['data']['item'][$key] += $this->_tr_attribute($row,$param);
 					//if($xml['data']['item'][$key]['act'])
 					if($this->mf_actctrl and isset($row[$this->mf_actctrl]))

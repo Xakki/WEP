@@ -2,6 +2,7 @@
 	// сначала задаем значения по умолчанию
 	if(!isset($FUNCPARAM[0]) or !$FUNCPARAM[0]) $FUNCPARAM[0] = '#ext#login';
 	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = '';
+	if(!isset($FUNCPARAM[2])) $FUNCPARAM[2] = 0;
 
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
@@ -11,6 +12,7 @@
 		$form = array(
 			'0'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон'),
 			'1'=>array('type'=>'list','listname'=>'levelmenuinc', 'caption'=>'Страница напоминания пароля'),
+			'2'=>array('type'=>'checkbox', 'caption'=>'Авторизация по кукам?'),
 		);
 		return $form;
 	}
@@ -56,9 +58,9 @@
 		static_main::userExit();
 		$result = array(static_main::m('exitok'),1);
 	}
-	elseif(isset($_COOKIE['remember']) and !static_main::_prmUserCheck() and $result = static_main::userAuth() and $result[1]) {
-		//@header("Location: ".$ref);
-		//die();
+	elseif($FUNCPARAM[2] and $result = static_main::userAuth() and $result[1]) {
+		@header("Location: ".$ref);
+		die();
 		//$mess=$result[0];
 	}
 

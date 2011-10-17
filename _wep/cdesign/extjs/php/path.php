@@ -8,9 +8,9 @@
 			foreach($data as $k=>$r){
 				if($i>1) $html .= ' / ';
 				if($i!=$last) {  
-					$html .= '<a href="'.$k.'" onclick="return load_href(this)">'.$r.'</a>';
+					$html .= '<a href="'.$k.'" onclick="return wep.load_href(this)">'.$r.'</a>';
 				}
-				elseif($i==$last)  $html .= $r.'&#160;<a class="bottonimg imgf5" href="'.$k.'" onclick="return load_href(this)"></a>';
+				elseif($i==$last)  $html .= $r.'&#160;<a class="bottonimg imgf5" href="'.$k.'" onclick="return wep.load_href(this)"></a>';
 				$i++;
 			}
             if($form) {

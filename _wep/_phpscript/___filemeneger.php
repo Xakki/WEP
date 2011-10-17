@@ -1,9 +1,9 @@
 <?php
-/* 
+/*
    File Thingie version 2.0.6 - Andreas Haugstrup Pedersen <andreas@solitude.dk>
    The newest version of File Thingie can be found at <http://www.solitude.dk/filethingie/>
    Comments, suggestions etc. are welcome and encouraged at the above e-mail.
-   
+
    LICENSE INFORMATION FOR FILE THINGIE:
    This work is licensed under the Creative Commons Attribution-NoDerivs-NonCommercial.
    To view a copy of this license, visit <http://creativecommons.org/licenses/by-nc-nd/2.5/dk/deed.en_GB>
@@ -37,7 +37,7 @@
    LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
    OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
    WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-   
+
 */
 /*
    TODO for 2.1.0:
@@ -103,7 +103,7 @@ function checkLogin() { // Checks whether a login is valid or not.
 					if (array_key_exists($_POST['ft_user'], $users) && $users[$_POST['ft_user']]['password'] == $_POST['ft_pass']) {
 						// Valid login.
 						$_SESSION['ft_user'] = $_POST['ft_user'];
-						redirect();						
+						redirect();
 					}
 				}
 				redirect("act=error");
@@ -233,7 +233,7 @@ function niceFileSize($size) { // Converts a file size to a nicer kilobytes valu
 	if (strlen($size) > 6) { // Convert to megabyte
 		return round($size/(1024*1024), 2)." MB";
 	} elseif (strlen($size) > 4 || $size > 1024) { // Convert to kilobyte
-		return round($size/1024, 0)." Kb";		
+		return round($size/1024, 0)." Kb";
 	} else {
 		return $size." b";
 	}
@@ -306,7 +306,7 @@ function checkfiletype($file) {
 			return TRUE;
 		} else {
 			return FALSE;
-		}		
+		}
 	} else {
 		// Check against file blacklist.
 		if (FILETYPEBLACKLIST != "") {
@@ -409,7 +409,7 @@ function find_files($dir, $q){ // Searches for file names and directories recurs
 					$dirres = find_files($path, $q);
 					if (is_array($dirres) && count($dirres) > 0) {
 						$output = array_merge($dirres, $output);
-						unset($dirres);						
+						unset($dirres);
 					}
 				}
 			}
@@ -452,7 +452,7 @@ function doSearch($q, $type) {
 			return "<dt class='error'>Error.</dt>";
 		}
 	} else {
-		return "<dt class='error'>Enter a search string.</dt>";		
+		return "<dt class='error'>Enter a search string.</dt>";
 	}
 }
 function doAction() { // This function handles all actions (upload, rename, delete, mkdir, save after edit, duplicate file, create new file, logout)
@@ -466,7 +466,7 @@ function doAction() { // This function handles all actions (upload, rename, dele
   				$newfile = getDir()."/{$_POST['newdir']}";
   				if (file_exists($newfile)) {
   					// Redirect
-  					redirect("status=createdfileexists&dir=".rawurlencode($_REQUEST['dir']));				  
+  					redirect("status=createdfileexists&dir=".rawurlencode($_REQUEST['dir']));
   				} elseif (@touch($newfile)) {
   					// Redirect.
   					redirect("status=createdfile&dir=".rawurlencode($_REQUEST['dir']));
@@ -476,7 +476,7 @@ function doAction() { // This function handles all actions (upload, rename, dele
   				}
   			} else {
 					// Redirect
-					redirect("status=createdfilefail&dir=".rawurlencode($_REQUEST['dir']));  			  
+					redirect("status=createdfilefail&dir=".rawurlencode($_REQUEST['dir']));
   			}
       } else {
   			// Create directory.
@@ -496,7 +496,7 @@ function doAction() { // This function handles all actions (upload, rename, dele
   					redirect("status=createddirfail&dir=".rawurlencode($_REQUEST['dir']));
   				}
   				umask($oldumask);
-  			}        
+  			}
       }
 		# Save edited file
 		} elseif ($_REQUEST['act'] == "savefile" && DISABLEFILEACTIONS == FALSE) {
@@ -601,14 +601,14 @@ function doAction() { // This function handles all actions (upload, rename, dele
 								} else {
 									// Error rename failed.
 									redirect("dir={$_REQUEST['dir']}&status=renamefail&old=".rawurlencode($old));
-								}						
+								}
 							} else {
 								if (@copy(getDir()."/".$old, getDir()."/".$new)) {
 									// Success.
 									redirect("dir={$_REQUEST['dir']}&status=duplicate&old=".rawurlencode($old)."&new=".rawurlencode($new));
 								} else {
 									// Error rename failed.
-									redirect("dir={$_REQUEST['dir']}&status=duplicate&old=".rawurlencode($old));						
+									redirect("dir={$_REQUEST['dir']}&status=duplicate&old=".rawurlencode($old));
 								}
 							}
 						} else {
@@ -617,7 +617,7 @@ function doAction() { // This function handles all actions (upload, rename, dele
 						}
 					} else {
 						// Error destination exists.
-						redirect("dir={$_REQUEST['dir']}&status={$_REQUEST['act']}destfail&old=".rawurlencode($new));					
+						redirect("dir={$_REQUEST['dir']}&status={$_REQUEST['act']}destfail&old=".rawurlencode($new));
 					}
 				} else {
 					// Error file type not allowed.
@@ -641,7 +641,7 @@ function doAction() { // This function handles all actions (upload, rename, dele
 						if (checkfiletype($c['name']) && checkfile($c['name'])) {
 							if (file_exists(getDir()."/{$c['name']}")) {
 								$errorlist[$k] = $c['name'];
-								$errortype[$k] = 6;						
+								$errortype[$k] = 6;
 							} else {
 								if (@move_uploaded_file($c['tmp_name'], getDir()."/{$c['name']}")) {
 									@chmod(getDir()."/{$c['name']}", PERMISSION);
@@ -692,7 +692,7 @@ function doAction() { // This function handles all actions (upload, rename, dele
 				$errorlist = "";
 			}
 			if (strlen($oklist) > 0 || strlen($errorlist) > 0) {
-				redirect("dir=".rawurlencode($_REQUEST['dir'])."&status=upload{$oklist}{$errorlist}");			
+				redirect("dir=".rawurlencode($_REQUEST['dir'])."&status=upload{$oklist}{$errorlist}");
 			} else {
 				redirect("dir=".rawurlencode($_REQUEST['dir'])."&status=uploadfail");
 			}
@@ -722,12 +722,12 @@ function doAction() { // This function handles all actions (upload, rename, dele
   			  if (substr($chmod, 0, 1) == '0') {
   			    $chmod = substr($chmod, 0, 4);
   			  } else {
-  			    $chmod = '0'.substr($chmod, 0, 3);  			    
+  			    $chmod = '0'.substr($chmod, 0, 3);
   			  }
   			  // Chmod
   			  if (chmod(getDir()."/".$file, intval($chmod, 8))) {
   			    redirect("dir={$_REQUEST['dir']}&status=chmod&old=".rawurlencode($file));
-    			  clearstatcache();  			    
+    			  clearstatcache();
   			  } else {
     				redirect("dir={$_REQUEST['dir']}&status=chmodfail&old=".rawurlencode($file));
   			  }
@@ -758,7 +758,7 @@ function makeLink($text, $query = "", $title = "") { // Makes an HTML link - use
 	$str .= "\"";
 	if (!empty($title)) {
 		$str .= "title=\"{$title}\"";
-	}	
+	}
 	$str .= ">{$text}</a>";
 	return $str;
 }
@@ -799,7 +799,7 @@ function makeHeader() { // The header showing which directory is being displayed
 				$str .= makeLink($c, "dir=".rawurlencode($path), "Go to folder");;
 			}
 		}
-		$str .= "</h1>";		
+		$str .= "</h1>";
 	}
 	// Display logout link.
 	$str .= '<p id="logout">'.makeLink("[logout]", "act=logout", "Logout of File Thingie").'</p>';
@@ -857,7 +857,7 @@ function makeStatus($id = false, $old = false) { // Displays status messages.
 	if (!empty($_REQUEST['status']) && $_REQUEST['status'] == "upload") {
 		// Display upload results.
 		$errortypes = array("File couldn't be moved", "File type not allowed", "The file was too large", "Partial upload. Try again", "No file was uploaded. Please try again", "Unknown error", "File already exists", "The file was larger than MAXSIZE setting.");
-		
+
 		$str = "";
 		$oklist = explode(";", $_REQUEST['oklist']);
 		$errorlist = explode(";", $_REQUEST['errorlist']);
@@ -892,10 +892,10 @@ function makeBody() { // The main body, contains either a file list or an edit f
 	if (empty($_REQUEST['act']) && (empty($_REQUEST['status']) || $_REQUEST['status'] != "dirfail")) { // No action set - we show a list of files if directory has been proven openable.
     $totalsize = 0;
 		$files = getFileList(getDir());
-		if (!is_array($files)) { 
+		if (!is_array($files)) {
 			// List couldn't be fetched. Throw error.
 			redirect("status=dirfail");
-		} else {			
+		} else {
 			// Show list of files in a table.
 			$str .= "<table id='filelist'>";
 			$str .= "<thead><tr><th colspan=\"3\">Files</th>";
@@ -939,7 +939,7 @@ function makeBody() { // The main body, contains either a file list or an edit f
 					$previous = $c['type'];
 					$str .= "<tr class='{$c['type']} $odd'>";
 					if ($c['writeable'] && DISABLEFILEACTIONS == FALSE) {
-						$str .= "<td class='details'><span class='{$class}'>&loz;</span><span class='hide' style='display:none;'>&loz;</span></td>";						
+						$str .= "<td class='details'><span class='{$class}'>&loz;</span><span class='hide' style='display:none;'>&loz;</span></td>";
 					} else {
 						$str .= "<td class='details'>&nbsp;</td>";
 					}
@@ -995,7 +995,7 @@ function makeBody() { // The main body, contains either a file list or an edit f
 					</div>
 				</form>';
 			} else {
-				$str .= '<p class="error">Cannot edit file. This file type is not editable.</p>';				
+				$str .= '<p class="error">Cannot edit file. This file type is not editable.</p>';
 			}
 		} else {
 			$str .= '<p class="error">Cannot edit file. It either does not exist or is not writeable.</p>';
@@ -1004,12 +1004,12 @@ function makeBody() { // The main body, contains either a file list or an edit f
 	return $str;
 }
 function makeSidebar() { // Sidebar containing upload form and other actions.
-	$str = '<div id="sidebar">';	
+	$str = '<div id="sidebar">';
 	$status = makeStatus();
 	if (empty($status)) {
 		$str .= "<div id='status' class='hidden'></div>";
 	} else {
-		$str .= "<div id='status' class='section'><h2>Results</h2>{$status}</div>";		
+		$str .= "<div id='status' class='section'><h2>Results</h2>{$status}</div>";
 	}
 	if (DISABLEUPLOAD == FALSE && is_writeable(getDir())) {
 	$str .= '
@@ -1086,7 +1086,7 @@ if (!empty($_POST['method']) && $_POST['method'] == "ajax") {
 			// Authentication error. Send 403.
 			header("HTTP/1.1 403 Forbidden");
 			echo "<p class='error'>Login error.</p>";
-		}		
+		}
 	} elseif (!empty($_POST['act']) && $_POST['act'] == 'save') {
 		if (checklogin()) {
 			sanitizeREQUEST();
@@ -1122,12 +1122,12 @@ if (!empty($_POST['method']) && $_POST['method'] == "ajax") {
 			// Authentication error. Send 403.
 			header("HTTP/1.1 403 Forbidden");
 			echo "<dt class='error'>Login error.</dt>";
-		}	  
+		}
 	} else {
 		if (checklogin()) {
 			sanitizeREQUEST();
   		// Do search.
-			echo doSearch($_POST['q'], $_POST['type']);        
+			echo doSearch($_POST['q'], $_POST['type']);
 		} else {
 			// Authentication error. Send 403.
 			header("HTTP/1.1 403 Forbidden");
@@ -1147,7 +1147,7 @@ if (checklogin()) {
 	$str .= makeLogin();
 }
 $str .= makeFooter();
-
+php?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -1155,9 +1155,9 @@ $str .= makeFooter();
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>File Thingie <?php echo VERSION;</title>
+	<title>File Thingie <?php echo VERSION;php?></title>
 	<link rel="author" href="http://www.solitude.dk/" title="Andreas Haugstrup Pedersen" />
-	<link rel="home" href="<?php echo getSelf();" title="Go to home directory" />
+	<link rel="home" href="<?php echo getSelf();php?>" title="Go to home directory" />
 	<link rel="help" href="http://www.solitude.dk/filethingie/documentation.php" title="Online documentation" />
 <script type="text/javascript">
 /* START jQuery */
@@ -1165,7 +1165,7 @@ eval(function(p,a,c,k,e,d){e=function(c){return(c<a?"":e(parseInt(c/a)))+((c=c%a
 /* END jQuery */
 <?php
 if (AUTOUPDATES != "0") {
-
+php?>
 /**
  * Cookie plugin
  *
@@ -1212,7 +1212,7 @@ jQuery.cookie = function(name, value, options) {
 /* END cookie plugin */
 <?php
 }
-
+php?>
 </script>
 	<script type="text/javascript">
 	$(document).ready(function(){
@@ -1241,7 +1241,7 @@ jQuery.cookie = function(name, value, options) {
 			  } else {
 			    var list = '<li class=\"selected\">Rename</li><li>Move</li><li>Delete</li><li>Duplicate</li><li>chmod</li>';
 			  }
-				$(this).parent().parent().next("tr.filedetails").append("<td colspan=\"3\"><ul class=\"navigation\">"+list+"</ul><form method=\"post\" action=\"<?php echo getSelf();\"><div><label for='newvalue'>Rename to:</label><input type=\"text\" value=\""+$(this).parent().parent().find("td.name").text()+"\" size=\"18\" class='newvalue' name=\"newvalue\" /><input type=\"hidden\" value=\""+$(this).parent().parent().find("td.name").text()+"\" class='file' name=\"file\" /><input type=\"submit\" class='submit' value=\"Ok\" /><input type=\"hidden\" name=\"dir\" value=\"<?php echo $_REQUEST['dir'];\" /><input type=\"hidden\" name=\"act\" class=\"act\" value=\"rename\" /></div></form></td>").find("li").hover(function(){$(this).toggleClass('hover')}, function(){$(this).toggleClass('hover')}).click(showOption);
+				$(this).parent().parent().next("tr.filedetails").append("<td colspan=\"3\"><ul class=\"navigation\">"+list+"</ul><form method=\"post\" action=\"<?php echo getSelf();php?>\"><div><label for='newvalue'>Rename to:</label><input type=\"text\" value=\""+$(this).parent().parent().find("td.name").text()+"\" size=\"18\" class='newvalue' name=\"newvalue\" /><input type=\"hidden\" value=\""+$(this).parent().parent().find("td.name").text()+"\" class='file' name=\"file\" /><input type=\"submit\" class='submit' value=\"Ok\" /><input type=\"hidden\" name=\"dir\" value=\"<?php echo $_REQUEST['dir'];php?>\" /><input type=\"hidden\" name=\"act\" class=\"act\" value=\"rename\" /></div></form></td>").find("li").hover(function(){$(this).toggleClass('hover')}, function(){$(this).toggleClass('hover')}).click(showOption);
 				// Focus on new value field.
 				$(this).parent().parent().next("tr.filedetails").find("input.newvalue").get(0).focus();
 				$(this).parent().parent().next("tr.filedetails").find("input.newvalue").get(0).select();
@@ -1260,7 +1260,7 @@ jQuery.cookie = function(name, value, options) {
 		$("#dosearch").click(function(){
 			$("#searchresults").empty();
 			$("#searchresults").prepend("<h3>Results</h3>").append("<dl id='searchlist'><dt class='error'>Fetching results&hellip;</dt></dl>");
-			$.post("<?php echo getSelf();", {method:'ajax', q:$("#q").val(), type: $("#type").is(":checked"), dir:'<?php echo $_REQUEST['dir'];'}, function(data){
+			$.post("<?php echo getSelf();php?>", {method:'ajax', q:$("#q").val(), type: $("#type").is(":checked"), dir:'<?php echo $_REQUEST['dir'];php?>'}, function(data){
 				$("#searchlist").empty();
 				$("#searchlist").append(data);
 			})
@@ -1273,11 +1273,11 @@ jQuery.cookie = function(name, value, options) {
 <?php
 // Automatic version checking.
 if (AUTOUPDATES != "0" && !empty($_SESSION['ft_user'])) {
-
+php?>
     // Check if cookie is set - if not make update check.
     if ($.cookie('ft_update') == null) {
       // Time for an update.
-			$.post("<?php echo getSelf();", {method:'ajax', act:'versioncheck'}, function(data){
+			$.post("<?php echo getSelf();php?>", {method:'ajax', act:'versioncheck'}, function(data){
 				$('<div class="section" id="autoupdate"><h2>Checking for update</h2><div>'+data+'<button type="button" id="dismiss" class="info">Dismiss</button></div></div>').insertBefore('#status').slideDown().find('#dismiss').click(function() {
 				  $('#autoupdate').slideUp();
           // Set cookie.
@@ -1287,14 +1287,14 @@ if (AUTOUPDATES != "0" && !empty($_SESSION['ft_user'])) {
     }
 <?php
 }
-
+php?>
 		// Manual version check.
 		$("#versioncheck").click(function(){
 			if ($("#versioninfo").css("display") == "block") {
 				$("#versioninfo").hide("slow");
 			} else {
 				$("#versioninfo").empty();
-				$.post("<?php echo getSelf();", {method:'ajax', act:'versioncheck'}, function(data){
+				$.post("<?php echo getSelf();php?>", {method:'ajax', act:'versioncheck'}, function(data){
 					$("#versioninfo").empty().append(data).show("slow");
 				});
 			}
@@ -1303,7 +1303,7 @@ if (AUTOUPDATES != "0" && !empty($_SESSION['ft_user'])) {
 		// Save via ajax (opposed to save & exit)
 		$("#save").click(function(){
 			$("#savestatus").empty().append('<p class="ok">Saving file&hellip;</p>');
-			$.post("<?php echo getSelf();", {method:'ajax', act:'save', file: $('#file').val(), dir: $('#dir').val(), filecontent: $('#filecontent').val(), convertspaces: $('#convertspaces').val()}, function(data){
+			$.post("<?php echo getSelf();php?>", {method:'ajax', act:'save', file: $('#file').val(), dir: $('#dir').val(), filecontent: $('#filecontent').val(), convertspaces: $('#convertspaces').val()}, function(data){
 				$("#savestatus").empty().append(data);
 			});
 		});
@@ -1339,7 +1339,7 @@ if (AUTOUPDATES != "0" && !empty($_SESSION['ft_user'])) {
 			} else if (section == "duplicate") {
 				label.append("Duplicate to file:");
 				if (file.indexOf(".") != -1) {
-					newval.val(file.substring(0, file.lastIndexOf("."))+"(copy)"+file.substr(file.lastIndexOf(".")));					
+					newval.val(file.substring(0, file.lastIndexOf("."))+"(copy)"+file.substr(file.lastIndexOf(".")));
 				} else {
 					newval.val(file+"(copy)");
 				}
@@ -1356,7 +1356,7 @@ if (AUTOUPDATES != "0" && !empty($_SESSION['ft_user'])) {
 			newval.hide();
 			label.empty();
 			label.append("Do you really want to delete file?");
-			submit.val("Yes, delete it");			
+			submit.val("Yes, delete it");
 		} else if (section == "edit") {
 			// Hide new value field.
 			newval.hide();
@@ -1376,7 +1376,7 @@ if (AUTOUPDATES != "0" && !empty($_SESSION['ft_user'])) {
 /*		$(obj).hide();*/
 		// Safari has a weird bug so we can't hide the object in the normal fashion:
 		$(obj).addClass("safarihide");
-		// Make random number: 
+		// Make random number:
 		var d = new Date();
 		var t = d.getTime();
 		$(obj).parent().prepend('<input type="file" size="12" class="upload" name="localfile-'+t+'" id="localfile-'+t+'" />');
@@ -1384,7 +1384,7 @@ if (AUTOUPDATES != "0" && !empty($_SESSION['ft_user'])) {
 		if (obj.value.indexOf("/") != -1) {
 			var v = obj.value.substr(obj.value.lastIndexOf("/")+1);
 		} else if (obj.value.indexOf("\\") != -1) {
-			var v = obj.value.substr(obj.value.lastIndexOf("\\")+1);			
+			var v = obj.value.substr(obj.value.lastIndexOf("\\")+1);
 		} else {
 			var v = obj.value;
 		}
@@ -1405,7 +1405,7 @@ if (AUTOUPDATES != "0" && !empty($_SESSION['ft_user'])) {
 body {
 	font-family:Verdana, sans-serif;
 	font-size:12px;
-	color:<?php echo COLOURTEXT;;
+	color:<?php echo COLOURTEXT;php?>;
 	background:#fff;
 }
 body, h1, h2, .navigation, #sidebar form #sidebar #files_list, #filelist .filedetails form, #filelist .filedetails ul, #logout {
@@ -1413,14 +1413,14 @@ body, h1, h2, .navigation, #sidebar form #sidebar #files_list, #filelist .filede
 	padding:0;
 }
 #filelist tr.rowhover, a:hover, h1, #sidebar h2, #filelist th, #filelist tfoot td, #filelist .details span.hide, #filelist .hover {
-	background:<?php echo COLOURONE;;
-	color:<?php echo COLOURONETEXT;;
+	background:<?php echo COLOURONE;php?>;
+	color:<?php echo COLOURONETEXT;php?>;
 }
 .error {color:red;}
-.ok {color:<?php echo COLOURONE;;}
+.ok {color:<?php echo COLOURONE;php?>;}
 .hidden {display:none;}
 a {
-	color:<?php echo COLOURONE;;
+	color:<?php echo COLOURONE;php?>;
 	text-decoration:none;
 }
 a:hover {
@@ -1434,7 +1434,7 @@ a:hover {
 	bottom:auto;
 }
 h1 a, #logout a {
-	color:<?php echo COLOURONETEXT;;
+	color:<?php echo COLOURONETEXT;php?>;
 }
 h1 {
 	font-size:2em;
@@ -1455,7 +1455,7 @@ h2 {
 	font-size:10px;
 }
 #sidebar .section {
-	background:<?php echo COLOURTWO;;
+	background:<?php echo COLOURTWO;php?>;
 	margin:0 0 2.5em 0;
 	padding-bottom:0.8em;
 	border:1px solid black;
@@ -1477,7 +1477,7 @@ h2 {
 }
 #sidebar ul {
 	margin:0.8em 0 0 1.5em;
-	padding:0;	
+	padding:0;
 }
 #sidebar #files_list, #sidebar #searchlist {
 	margin-left:1.5em;
@@ -1533,7 +1533,7 @@ dl#searchlist dd a {
 	color:#666;
 }
 dl#searchlist dd a:hover {
-	color:<?php echo COLOURONETEXT;;
+	color:<?php echo COLOURONETEXT;php?>;
 }
 /* Status box and auto update box */
 #status p, #autoupdate p {
@@ -1547,11 +1547,11 @@ dl#searchlist dd a:hover {
 	font-size:14px;
 }
 #sidebar #status, #sidebar #autoupdate {
-	background-color:<?php echo COLOURHIGHLIGHT;;
+	background-color:<?php echo COLOURHIGHLIGHT;php?>;
 }
 /* File list */
 #filelist td a {
-	color:<?php echo COLOURTEXT;;
+	color:<?php echo COLOURTEXT;php?>;
 	display:block;
 	width:100%;
 	height:100%;
@@ -1562,7 +1562,7 @@ dl#searchlist dd a:hover {
 	text-decoration:none;
 }
 #filelist tr.rowhover a:hover {
-	color:<?php echo COLOURONETEXT;;
+	color:<?php echo COLOURONETEXT;php?>;
 }
 #filelist {
 	border:1px solid black;
@@ -1601,19 +1601,19 @@ dl#searchlist dd a:hover {
 	background:#fff;
 }
 #filelist tr.odd {
-	background:<?php echo COLOURTWO;;
+	background:<?php echo COLOURTWO;php?>;
 }
 #filelist tr.dir td.name {
 	font-weight:bold;
 }
 #filelist tr.highlight {
-	background:<?php echo COLOURHIGHLIGHT;;
+	background:<?php echo COLOURHIGHLIGHT;php?>;
 	font-style:italic;
 	font-weight:bold;
 }
 #filelist tr.rowhover {
-	background:<?php echo COLOURONE;;
-	color:<?php echo COLOURONETEXT;;
+	background:<?php echo COLOURONE;php?>;
+	color:<?php echo COLOURONETEXT;php?>;
 }
 #filelist .details span.show, #filelist .details span.hide {
 	cursor:pointer;
@@ -1623,7 +1623,7 @@ dl#searchlist dd a:hover {
 	cursor:pointer;
 }
 #filelist .filedetails {
-	background:<?php echo COLOURHIGHLIGHT;;
+	background:<?php echo COLOURHIGHLIGHT;php?>;
 	font-size:10px;
 	border-top:2px solid black;
 	border-bottom:2px solid black;
@@ -1680,19 +1680,19 @@ form#edit textarea {
 	padding-bottom:50px;
 }
 .seperator {
-	border-top:2px solid <?php echo COLOURONE;;
+	border-top:2px solid <?php echo COLOURONE;php?>;
 }
 #versioninfo {
 	display:none;
 	margin:1em 2em;
 	padding:0.5em;
-	border:2px solid <?php echo COLOURONE;;
-	background:<?php echo COLOURHIGHLIGHT;;
+	border:2px solid <?php echo COLOURONE;php?>;
+	background:<?php echo COLOURHIGHLIGHT;php?>;
 	width:250px;
 }
-	</style>	
+	</style>
 </head>
 <body>
-	<?php echo $str;
+	<?php echo $str;phpphp?>
 </body>
 </html>

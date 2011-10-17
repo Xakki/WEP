@@ -1,12 +1,27 @@
 <?php
 
+	$_tpl['meta'] = '
+		<base href="'.$_CFG['_HREF']['BH'].'"/>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+		<meta http-equiv="Pragma" content="no-cache"/>
+		<meta name="keywords" content="WEP"/> 
+		<meta name="description" content="CMS"/>
+		';
+		//<!--<link rel="SHORTCUT ICON" href="{$_tpl['design']}img/favicon.ico"/>-->
 
 	$_tpl['script']['jquery'] = 1;
 	$_tpl['script']['include'] = 1;
-	$_tpl['script']['utils'] = 1;
+	$_tpl['script']['wep'] = 1;
 	$_tpl['script']['script.jquery/form'] = 1;
 
-	$_tpl['styles']['style'] = 1;
+	$_tpl['script']['design'] = array(
+		$_tpl['design'].'script/main.js'
+	);
+
+	$_tpl['styles']['main'] = 1;
+	$_tpl['styles']['design'] = array(
+		$_tpl['design'].'style/main.css'
+	);
 
 	$_tpl['modulstree']=$eval='';
 

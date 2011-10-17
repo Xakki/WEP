@@ -2,7 +2,7 @@
 	if(!$_CFG['_PATH']['wep']) die('ERROR');
 	
 	require_once($_CFG['_PATH']['wep'].'/config/config.php');
-	if($_CFG['site']['worktime'] and !isset($_COOKIE['_showallinfo']) and !isset($_GET['_showallinfo'])) {
+	if($_CFG['site']['worktime'] and !isset($_COOKIE[$_CFG['wep']['_showallinfo']]) and !isset($_GET[$_CFG['wep']['_showallinfo']])) {
 		if(!isset($_CFG["site"]["work_text"]) or !$_CFG["site"]["work_text"])
 			$_CFG["site"]["work_text"] = '<h1>Технический перерыв.</h1>';
 		if(!isset($_CFG["site"]["work_title"]) or !$_CFG["site"]["work_title"])
@@ -83,8 +83,6 @@
 
 	require_once($_CFG['_PATH']['core'].'/html.php');	/**отправляет header и печатает страничку*/
 
-	session_go();
-
 	$_tpl['meta'] = $_tpl['logs']=$_tpl['onload']=$_tpl['city']=$_tpl['blockadd']=$_tpl['param']=$_tpl['blockadd']='';
 	$rid = 0;
 
@@ -98,6 +96,9 @@
 
 
 //if($_SESSION['_showallinfo']) {print('main1 = '.(getmicrotime()-$main1time).'<hr/>');$main2time = getmicrotime();}
+	if ($PGLIST->config['auto_auth']) {
+		static_main::userAuth();
+	}
 
 	$PGLIST->display();
 

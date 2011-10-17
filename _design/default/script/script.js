@@ -1,4 +1,13 @@
 
+wep.apply(wep, {
+	load_href: function(hrf) {
+		if(typeof hrf=='object')
+			window.location.href = jQuery(hrf).attr('href');
+		else
+			window.location.href = hrf;
+		return false;
+	},
+});
 
 function cityChange(ciyid) {
 	str = window.location.href;
@@ -360,15 +369,6 @@ function pagenum(total,order) {
 			});
 		});
 	}
-}
-
-
-function load_href(hrf) {
-	if(typeof hrf=='object')
-		window.location.href = jQuery(hrf).attr('href');
-	else
-		window.location.href = hrf;
-	return false;
 }
 
 function invert_select(form_id)

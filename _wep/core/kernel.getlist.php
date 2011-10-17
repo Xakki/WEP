@@ -240,7 +240,7 @@
 							$data[''] = array(''=>static_main::m('_listroot',$_this))+$data[''];
 					}
 					else{
-						$data[''] = ' --- ';
+						$data[''] = static_main::m('_listroot',$_this);
 						while ($row = $result->fetch_array())
 								$data[$row['id']] = $row['name'];
 					}

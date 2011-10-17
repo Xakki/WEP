@@ -427,7 +427,8 @@ class users_class extends kernel_extends {
 
 	
 	function cookieAuthorization() {
-		if(!isset($_SESSION['user']['id']) and isset($_COOKIE['remember']))
+		$mess = '';
+		if(!static_main::_prmUserCheck() and isset($_COOKIE['remember']))
 		{
 			if (preg_match("/^[0-9A-Za-z\_]+$/",$_COOKIE['remember']))
 			{
@@ -437,16 +438,16 @@ class users_class extends kernel_extends {
 				$this->data = $this->_query($listfields,$clause);
 				if(count($this->data))
 				{
-					if (isset($_SESSION))
+					if (isset($_SESSION['user']))
 						unset($_SESSION['user']);
 					if($this->data[0]['active']!=1)
-						return array('Ваш аккаунт заблокирован. За дополнительной информацией обращайтесь к Администратору сайта.',0);
+						$mess = 'Ваш аккаунт заблокирован. За дополнительной информацией обращайтесь к Администратору сайта.';
 					elseif(!$this->data[0]['gact'])
-						return array('Ваша группа заблокирована. За дополнительной информацией обращайтесь к Администратору сайта.',0);
+						$mess = 'Ваша группа заблокирована. За дополнительной информацией обращайтесь к Администратору сайта.';
 					elseif(_strlen($this->data[0]['reg_hash'])>5)
-						return array('Вы не подтвердили регистрацию.',0);
+						$mess = 'Вы не подтвердили регистрацию.';
 					elseif($this->data[0]['level']>=5)
-						return array('Доступ закрыт.',0);
+						$mess = 'Доступ закрыт.';
 					else
 					{
 						_setcookie('remember', md5($this->data[0][$this->fn_pass]).'_'.$this->data[0]['id'], (time()+(86400*$this->owner->config['rememberday'])));
@@ -457,8 +458,8 @@ class users_class extends kernel_extends {
 				}
 			}
 		}
-
-		return array('',0);
+		_setcookie('remember',0,-10000);
+		return array($mess,0);
 	}
 
 	function regForm($param=array()) {
@@ -699,10 +700,13 @@ class users_class extends kernel_extends {
 	function setUserSession($id) {
 		$data = $this->owner->getUserData($id);
 		if(!count($data) or !$data['id']) return false;
-		session_go(1);
+		session_go(true);
 		$_SESSION['user'] = $data;
 		if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0)
 			_setcookie('_showerror',1);
+		global $_CFG;
+		unset($_CFG['modulprm']);
+		static_main::_prmModulLoad();
 		return true;
 	}
 

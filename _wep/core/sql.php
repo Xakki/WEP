@@ -124,6 +124,9 @@
 		function fError($err) {
 			$this->sql_err[] = $err;
 		}
+		function SqlEsc($val) {
+			return mysql_real_escape_string($val);
+		}
 
 		var $alias_types = array(
 				'bool'=>'tinyint(1)',
