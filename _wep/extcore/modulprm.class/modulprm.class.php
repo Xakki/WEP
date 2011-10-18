@@ -68,7 +68,7 @@ final class modulprm_class extends kernel_extends {
 	function userPrm($ugroup_id=0) {
 		$result = $this->SQL->execSQL('SELECT t1.*,t2.access, t2.mname FROM ' . $this->tablename . ' t1 LEFT Join ' . $this->childs['modulgrp']->tablename . ' t2 on t2.owner_id=t1.id and t2.ugroup_id=' . $ugroup_id . ' where t1.active=1 ORDER BY ' . $this->ordfield);
 		if ($result->err)
-			$this->_message($result->err);
+			static_main::log($result->err);
 		$this->data = array();
 		while ($row = $result->fetch_array()) {
 			$this->data[$row['id']]['active'] = $row['active'];
@@ -229,8 +229,8 @@ final class modulprm_class extends kernel_extends {
 				} 
 			}
 			$err = getCatchError();
-			if ($err[0]) {
-				$mess[] = array('error', $err[0]);
+			if ($err) {
+				$mess[] = array('error', $err);
 				$res = -1;
 			}
 
@@ -283,7 +283,7 @@ final class modulprm_class extends kernel_extends {
 			trigger_error($e->getMessage(), E_USER_WARNING);
 		}
 		if ($err = getCatchError() and isset($err[0]) and $err[0]) {
-			$data['error'][] = $err[0];
+			$data['error'][] = $err;
 		}
 		return $data;
 	}
@@ -310,7 +310,7 @@ final class modulprm_class extends kernel_extends {
 			if ($result->err)
 				$res = false;
 		}
-		//static_main::_message('Table `' . $MODUL->tablename . '` droped.', 3);
+		//static_main::log('Table `' . $MODUL->tablename . '` droped.', 3);
 		$query = 'DELETE FROM `' . $this->tablename . '` WHERE id="' . $MODUL->_cl . '"';
 		$this->SQL->execSQL($query);
 		if (count($MODUL->childs))

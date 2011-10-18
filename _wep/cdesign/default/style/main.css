@@ -78,10 +78,10 @@ a.am_tools {
 .nav a b {background:#999; border:1px solid #000; border-color:#ddd #333 #333 #ddd; color:#fff; font-weight:normal; display:block; padding:5px 10px;}
 .nav a.msel b {color:red;}
 .nav a:hover b {background-color:#aaa; color:#800; cursor:pointer;}
-.nav .fly .main b {background:#999 url() no-repeat 115px 9px;}
-.nav .down b {background:#999 url() no-repeat 113px 11px;}
+.nav .fly .main b {background:#999;}
+.nav .down b {background:#999;}
 .nav .right ul b {text-align:right;}
-.nav .right ul .main b {background:#999 url() no-repeat 10px 9px; text-align:right;}
+.nav .right ul .main b {background:#999; text-align:right;}
 
 /* HEIGHT */
 .nav ul ul {top:-24px;} /* position the top of the flyout sub menus */
@@ -336,7 +336,7 @@ div.menu_new fieldset legend {
 
 /*LIST*/
 .ulist {margin:0;}
-.ulist li {list-style-image:url();margin-left:30px;}
+.ulist li {margin-left:30px;}
 
 /*TABLE*/
 .superlist {
@@ -348,7 +348,7 @@ div.menu_new fieldset legend {
 }
 .superlist td {padding:0;border-right:1px solid #e0e0e0;}
 .superlist tr:hover td {background: none repeat scroll 0 0 #95A5C1;}
-.superlist th {background:#d3d4d4 url() repeat-x; border-bottom:1px solid #ccc;border-right:1px solid #ccc;border-top:1px solid #e0e0e0;padding:0;white-space:nowrap;}
+.superlist th {background:#d3d4d4; border-bottom:1px solid #ccc;border-right:1px solid #ccc;border-top:1px solid #e0e0e0;padding:0;white-space:nowrap;}
 .superlist td img {border:1px solid #ccc;}
 .superlist .ic{width:0;text-align:center;white-space:nowrap;font-size:1.1em;}
 .superlist .ic a{margin:0 4px 0 0;}

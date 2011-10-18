@@ -70,24 +70,26 @@
 
 			$t=2;
 			if(count($this->childs)) foreach($this->childs as $ck=>$cn) {
-				$arrno[$ck.'_cnt'] = 1;
-				$cls[0][] = '(SELECT count(t'.$t.'.id) FROM `'.$cn->tablename.'` t'.$t.' WHERE t'.$t.'.'.$cn->owner_name.'=t1.id) as '.$ck.'_cnt';
-				/*$temp = $cn->_moder_clause(array(),$param);// сырая и недоработана
-				if(count($temp)) $cls[1] .= ' and '.str_replace('t1.','t'.$t.'.',implode(' and ',$temp));
-				//if($cn->_join_check==TRUE)
-					foreach($cn->fields_form as $cnk=>$cnr){
-						if(is_array($cnr['listname']) and isset($cnr['listname']['join']) and $cnr['listname']['class']){
-							$t++;
-							//if (isset($cnr['listname']['include']))
-							//	require_once($this->_CFG['_PATH']['ext'].$cnr['listname']['include'].'.class.php');
-							$cls[1] .=' AND t'.$t.'.id>0 RIGHT JOIN '.getTableNameOfClass($classname).' t'.$t.' ON t'.($t-1).'.'.$cnk.'=t'.$t.'.id ';
-							if(isset($cnr['listname']['join']) and $cnr['listname']['join']!='')
-								$cls[1] .= 'and '.str_replace('tx.','t'.$t.'.',$cnr['listname']['join']).' ';
+				if($cn->tablename and $cn->owner_name) {
+					$arrno[$ck.'_cnt'] = 1;
+					$cls[0][] = '(SELECT count(t'.$t.'.id) FROM `'.$cn->tablename.'` t'.$t.' WHERE t'.$t.'.'.$cn->owner_name.'=t1.id) as '.$ck.'_cnt';
+					/*$temp = $cn->_moder_clause(array(),$param);// сырая и недоработана
+					if(count($temp)) $cls[1] .= ' and '.str_replace('t1.','t'.$t.'.',implode(' and ',$temp));
+					//if($cn->_join_check==TRUE)
+						foreach($cn->fields_form as $cnk=>$cnr){
+							if(is_array($cnr['listname']) and isset($cnr['listname']['join']) and $cnr['listname']['class']){
+								$t++;
+								//if (isset($cnr['listname']['include']))
+								//	require_once($this->_CFG['_PATH']['ext'].$cnr['listname']['include'].'.class.php');
+								$cls[1] .=' AND t'.$t.'.id>0 RIGHT JOIN '.getTableNameOfClass($classname).' t'.$t.' ON t'.($t-1).'.'.$cnk.'=t'.$t.'.id ';
+								if(isset($cnr['listname']['join']) and $cnr['listname']['join']!='')
+									$cls[1] .= 'and '.str_replace('tx.','t'.$t.'.',$cnr['listname']['join']).' ';
+							}
 						}
-					}
-				//if(isset($cn->fields['region_id'])) $cls[1] .=' and t'.$t.'.region_id='.$_SESSION['city'];
-				*/
-				$t++;
+					//if(isset($cn->fields['region_id'])) $cls[1] .=' and t'.$t.'.region_id='.$_SESSION['city'];
+					*/
+					$t++;
+				}
 			}
 			if($this->mf_istree) {
 				$arrno['istree_cnt']=1;

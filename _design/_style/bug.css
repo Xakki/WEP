@@ -14,22 +14,26 @@
 .bspoiler-wrap .spoiler-head {color:black;font-size:11px;line-height:15px;margin-left:6px;padding:0 0.9em;}
 .bspoiler-wrap .spoiler-body {border-bottom:1px dashed #C3CBD1;display:none;padding:0;display: none;font-size:10px;color:black;}
 .bspoiler-wrap .spoiler-body div {color:white;background-color:#858585;}
-#bugmain div.bug_ {background-color:#858585;}
-#bugmain div.bug_0 {background-color:#858585;}
-#bugmain div.bug_1 {background-color:red;}
-#bugmain div.bug_2 {background-color:#F18890;}
-#bugmain div.bug_4 {background-color:red;}
-#bugmain div.bug_8 {background-color:#858585;}
-#bugmain div.bug_16 {background-color:red;}
-#bugmain div.bug_32 {background-color:#F18890;}
-#bugmain div.bug_64 {background-color:red;}
-#bugmain div.bug_128 {background-color:#F18890;}
-#bugmain div.bug_256 {background-color:red;}
-#bugmain div.bug_512 {background-color:#F18890;}
-#bugmain div.bug_1024 {background-color:#858585;}
-#bugmain div.bug_2048 {background-color:brown;}
-#bugmain div.bug_4096 {background-color:red;}
-#bugmain pre{background:#F8F7F2 none repeat scroll 0 0;border:medium none;color:black;margin:0;}
+#bugmain .bug_ {background-color:#858585;}
+#bugmain .bug_0 {background-color:#858585;}
+#bugmain .bug_1 {background-color:red;}
+#bugmain .bug_2 {background-color:#F18890;}
+#bugmain .bug_4 {background-color:red;}
+#bugmain .bug_8 {background-color:#858585;}
+#bugmain .bug_16 {background-color:red;}
+#bugmain .bug_32 {background-color:#F18890;}
+#bugmain .bug_64 {background-color:red;}
+#bugmain .bug_128 {background-color:#F18890;}
+#bugmain .bug_256 {background-color:red;}
+#bugmain .bug_512 {background-color:#F18890;}
+#bugmain .bug_1024 {background-color:#858585;}
+#bugmain .bug_2048 {background-color:brown;}
+#bugmain .bug_4096 {background-color:red;}
+#bugmain pre{
+	background:#F8F7F2 none repeat scroll 0 0;border:medium none;color:black;margin:0;
+	font-family: tahoma;
+	font-size: 12px;
+}
 #bugmain pre code{display:block;overflow:auto;white-space:pre;padding:5px 0;}
 .bspoiler-wrap .folded {display:block;padding-left:0;}
 .bspoiler-wrap .folded::before {content: " + ";}

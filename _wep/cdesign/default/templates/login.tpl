@@ -26,7 +26,6 @@
 				<div>Запомнить?<input type="checkbox" style="border:medium none; width:30px;" tabindex="3" name="remember" value="1"/></div>
 				<input class="submit" type="submit" name="enter" value="Войти" tabindex="3"/>
 			</form>
-			<a href="remind.html">Забыли пароль?</a>
 			
 		</div>
 	</div>

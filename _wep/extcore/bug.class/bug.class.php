@@ -40,23 +40,14 @@ class bug_class extends kernel_extends {
 		$this->fields['cnt'] = array('type' => 'int', 'width' => 8, 'attr' => 'NOT NULL');
 
 		$this->unique_fields['hash'] = 'hash';
+		//$this->unique_fields['name'] = 'name';
 
-	
-		foreach ($this->_CFG['_error'] as $k=>$r) {
-			$this->_enum['err_type'][(int)$k] = $r['type'];
-		}
-		
-		$this->bugs = array();
-
-		$this->unique_fields['name'] = 'name';
-		
 		$this->ordfield = 'active DESC, mf_timecr DESC';
 		
 		$params = array(
 			'obj' => $this,
-			'func' => 'insert2bd',
+			'func' => 'push',
 		);
-		
 		observer::register_observer($params, 'shutdown_function');
 	}
 
@@ -76,7 +67,65 @@ class bug_class extends kernel_extends {
 		$this->fields_form['mf_ipcreate'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'IP','mask'=>array('sort'=>1,'filter'=>1));
 		$this->fields_form[$this->mf_createrid] = array('type' => 'text', 'readonly'=>1, 'caption' => 'User','mask'=>array('sort'=>1,'filter'=>1));
 		$this->fields_form['cnt'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Повторы', 'mask'=>array('sort'=>1));
+	
+		foreach ($this->_CFG['_error'] as $k=>$r) {
+			$this->_enum['err_type'][(int)$k] = $r['type'];
+		}
+	}
 
+	function push() {
+		if(count($GLOBALS['_ERR']) and $this->SQL->ready) {
+			global $PGLIST;
+			$bugs = $query_val = array();
+			$keys = false;
+
+			if (isset($_SESSION['user']['id']))
+				$creater_id = $_SESSION['user']['id'];
+			else
+				$creater_id = 0;
+				
+			if (isset($_SERVER['REMOTE_ADDR']))
+				$mf_ipcreate = sprintf("%u",ip2long($_SERVER['REMOTE_ADDR']));
+			else
+				$mf_ipcreate =	0;
+
+			$href = $this->SqlEsc($_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
+			
+
+			foreach ($GLOBALS['_ERR'] as $err) foreach ($err as $r) {
+				if(isset($_CFG['wep']['bug_hunter'][$r['errno']])) {
+					$hash = md5($r['errno'].$r['errstr'].$r['errfile'].$r['errline'].$_SERVER['REQUEST_URI']);
+					if(!isset($query_val[$hash])) {
+						$bugs = array(
+							'hash' => $hash,
+							$this->mf_createrid => $creater_id,
+							$this->mf_ipcreate => $mf_ipcreate,
+							$this->mf_timecr => $this->_CFG['time'],
+							'err_type' => $r['errno'],
+							'name' => $this->SqlEsc($r['errstr']),
+							'file' => $this->SqlEsc($r['errfile']),
+							'line' => $this->SqlEsc($r['errline']),
+							'debug' => $this->SqlEsc($r['debug']),
+							'href' => $href,
+							'cnt' => 1,
+						);
+						if($this->_CFG['_F']['adminpage'])
+							$bugs['page_id'] = ' -Админка- ';
+						elseif(isset($PGLIST->id))
+							$bugs['page_id'] = $PGLIST->id;
+
+						$query_val[$hash] = '("'.implode('","',$bugs).'")';
+					}
+				}
+			}
+			if(count($query_val)) {
+				$keys = array_keys($bugs);
+				$result = $this->SQL->execSQL('INSERT INTO `'.$this->tablename.'` 
+					('.implode(',', $keys).') VALUES '.implode(',', $query_val).'
+					ON DUPLICATE KEY UPDATE cnt = cnt+1, active=1');
+			}
+		}
+		return true;
 	}
 
 	function insert2bd()

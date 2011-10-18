@@ -17,16 +17,7 @@
 			if(isset($_CFG['log']) and (int)$_CFG['log'] and $_CFG['_PATH']['wep']) {
 				$this->logFile = fopen($_CFG['_PATH']['wep'].'/log/_'.time().'.log', 'wb');
 			}
-			$this->_connect();
-		}
-
-		function err($mess) {
-			global $_CFG;
-			if(!$_CFG['wep']['debugmode'])
-				die($mess);
-			else
-				echo $mess;
-			return false;
+			$this->ready = $this->_connect();
 		}
 
 		function __destruct() {
@@ -35,83 +26,83 @@
 				fclose($this->logFile);
 		}
 
-		function _connect() {
+		private function _connect() {
 			if($this->sql_connect()) {
-				$this->sql_connectDB();
-				return true;
+				return $this->_connectDB();
 			}
 			return false;
 		}
 
-		function sql_connect() {
+		private function sql_connect() {
 			$this->hlink = @mysql_connect($this->CFG_SQL['host'], $this->CFG_SQL['login'], $this->CFG_SQL['password']);
 			if(!$this->hlink)
-				return $this->err('<h4>SQL connect error</h4>');
-			return true;;
+				return $this->err('SQL connect error');
+			return true;
 		}
 
-		function sql_connectDB() {
-			if($this->CFG_SQL['setnames'])
+		private function _connectDB() {
+			if(isset($this->CFG_SQL['setnames']) and $this->CFG_SQL['setnames'])
 				mysql_query ('SET NAMES '.$this->CFG_SQL['setnames'],$this->hlink);
-			if($this->CFG_SQL['database']) {
+			if(isset($this->CFG_SQL['database']) and $this->CFG_SQL['database']) {
 				if(!$this->sql_selectDB($this->CFG_SQL)) {
 					if($this->sql_createDB($this->CFG_SQL)) {
-						if($this->sql_selectDB($this->CFG_SQL))
-							$this->ready = true;
+						if(!$this->sql_selectDB($this->CFG_SQL))
+							return $this->err('SQL can`t connect to database');
 					}
 					else 
-						return $this->err('<h4>SQL can`t connect and create database , may be error in config!?</h4>');
-				} else
-					$this->ready = true;
+						return $this->err('SQL can`t create database');
+				}
 			}
+			return true;
 		}
 
-		function sql_selectDB($CFG) {
+		private function sql_selectDB($CFG) {
 			return mysql_select_db($CFG['database'],$this->hlink);
 		}
 
-		function sql_createDB($CFG) {
+		private function sql_createDB($CFG) {
 			$q = 'create database `'.$CFG['database'].'`';
 			if($CFG['setnames'])
 				$q .= ' character set '.$CFG['setnames'].' collate '.$CFG['setnames'].'_general_ci';
 			return mysql_query($q, $this->hlink);
 		}
 
-		function sql_createUser($CFG) {
+		private function sql_createUser($CFG) {
 			return mysql_query('create user \''.$CFG['login'].'\'@\''.$CFG['host'].'\' identified by \''.$CFG['password'].'\'', $this->hlink);
 		}
 
-		function sql_createGrant($CFG) {
+		private function sql_createGrant($CFG) {
 			return mysql_query('grant all privileges on `'.$CFG['database'].'`.* to \''.$CFG['login'].'\'@\''.$CFG['host'].'\'', $this->hlink);
 		}
 
-		function sql_install($CFG) {
+
+		public function sql_install($CFG) {
+			if(!$this->ready)
+				return array(false,static_main::m('SQL not ready'));
 			if(!$this->sql_selectDB($CFG))
 				if(!$this->sql_createDB($CFG))
-					return array(false,static_main::m('can`t create database'));
+					return array(false,static_main::m('SQL can`t create database'));
 			if(!count($this->q('Select * from mysql.user where user=\''.$CFG['login'].'\' and Host=\''.$CFG['host'].'\'')))
 				if(!$this->sql_createUser($CFG))
-					return array(false,static_main::m('can`t create users'));
+					return array(false,static_main::m('SQL can`t create users'));
 			if(!count($this->q('Select * from mysql.db where user=\''.$CFG['login'].'\' and Host=\''.$CFG['host'].'\' and Db=\''.$CFG['database'].'\'')))
 				if(!$this->sql_createGrant($CFG))
-					return array(false,static_main::m('can`t set grant'));
+					return array(false,static_main::m('SQL can`t set grant'));
 			return array(true,'OK');
 		}
 
-		function sql_close() {
-			if($this->hlink)
-				mysql_close($this->hlink);
-		}
-
-		function sql_id() {
+		public function sql_id() {
+			if(!$this->ready) return false;
 			return mysql_insert_id();
 		}
 
-		function execSQL($sql,$unbuffered=0) {
+		public function execSQL($sql,$unbuffered=0) {
+			if(!$this->ready) return false;
 			return new query($this, $sql, $unbuffered);
 		}
 
-		function q($sql) {
+		public function q($sql) {
+			if(!$this->ready) return false;
 			$result = new query($this, $sql,0);
 			$data = array();
 			if (!$result->err) {
@@ -121,11 +112,32 @@
 			return $data;
 		}
 
-		function fError($err) {
+		public function SqlEsc($val) {
+			if(!$this->ready) return '';
+			return mysql_real_escape_string($val);
+		}
+
+
+/*****************************/
+		private function fError($err) {
 			$this->sql_err[] = $err;
 		}
-		function SqlEsc($val) {
-			return mysql_real_escape_string($val);
+
+		private function err($mess) {
+			global $_CFG;
+			$mess = static_main::m($mess);
+			if(!$_CFG['wep']['debugmode']){
+				die($mess);
+			}
+			else {
+				//static_main::log('error',$mess);
+			}
+			return false;
+		}
+
+		private function sql_close() {
+			if($this->hlink)
+				mysql_close($this->hlink);
 		}
 
 		var $alias_types = array(
@@ -161,7 +173,7 @@
 				'longtext' => true,
 			);
 
-		function _fldformer($key, $param) {
+		public function _fldformer($key, $param) {
 			$mess = array();
 			if (isset($param['attr']) and stristr($param['attr'], 'default')) {
 				$mess[] = array( 'alert', 'Пар-р default прописан в ключе attr. Для корректной работы необходимо прописать его в отдельном элементе с ключом `default`' );
@@ -214,7 +226,8 @@
 			return array($m,$mess);
 		}
 
-		function _getSQLTableInfo($tablename) {
+		public function _getSQLTableInfo($tablename) {
+			if(!$this->ready) return false;
 			$data = array();
 			$result = $this->execSQL('SHOW FULL FIELDS FROM `' . $tablename . '`');
 			while ($COLUMNS = $result->fetch_array()) {
@@ -272,7 +285,7 @@
 			{
 				$ttt = (getmicrotime()-$ttt);
 				if($db->logFile) fwrite($db->logFile,$sql."\n");
-				if($db->CFG_SQL['longquery']>0 and $ttt>$db->CFG_SQL['longquery'])
+				if(isset($db->CFG_SQL['longquery']) and $db->CFG_SQL['longquery']>0 and $ttt>$db->CFG_SQL['longquery'])
 					trigger_error('LONG QUERY ['.$ttt.' sec.] ('.$sql.')', E_USER_WARNING);
 				//if(strstr(strtolower($sql),'insert into'))
 				//	$this->id = $db->sql_id();

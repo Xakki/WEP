@@ -18,7 +18,7 @@ class static_tools {
 	 */
 	static function _installTable(&$MODUL) {
 		if (!$MODUL->tablename) {
-			static_main::_message('notice','Для модуля '.$MODUL->caption.' таблица не требуется.',$MODUL->_cl);
+			static_main::log('notice','Для модуля '.$MODUL->caption.' таблица не требуется.',$MODUL->_cl);
 			return true;
 		}
 		$result = $MODUL->SQL->execSQL('SHOW TABLES LIKE \'' . $MODUL->tablename . '\''); // checking table exist
@@ -26,17 +26,17 @@ class static_tools {
 		if (!$result->num_rows()) {
 			// contruct of query
 			if(!self::_creatTable($MODUL)) {
-				static_main::_message('error','Для модуля `'.$MODUL->caption.'` не удалось создать таблицу.',$MODUL->_cl);
+				static_main::log('error','Для модуля `'.$MODUL->caption.'` не удалось создать таблицу.',$MODUL->_cl);
 				return false;
 			}
 			if (count($MODUL->def_records)) {
 				if (!self::_insertDefault($MODUL)) {
 					$MODUL->SQL->execSQL('DROP TABLE `' . $MODUL->tablename . '`');
-					static_main::_message('error','Для модуля `'.$MODUL->caption.'` не удалось записать дефолтные данные, и поэтому таблица не будет создана.',$MODUL->_cl);
+					static_main::log('error','Для модуля `'.$MODUL->caption.'` не удалось записать дефолтные данные, и поэтому таблица не будет создана.',$MODUL->_cl);
 					return false;
 				}
 			}
-			static_main::_message('notice','Для модуля `'.$MODUL->caption.'` успешно создана таблица.',$MODUL->_cl);
+			static_main::log('notice','Для модуля `'.$MODUL->caption.'` успешно создана таблица.',$MODUL->_cl);
 		}
 		$flag = true;
 		if (count($MODUL->Achilds))
@@ -605,8 +605,19 @@ class static_tools {
 		// Редактируемые конфиги
 		include_once($_CFG['_FILE']['core_configform_f']);
 
-		$fl = false;
+		$fl = false;$mess = array();
 		$putFile = array();
+		if(isset($SetDataCFG['wep'])) {
+			if(!isset($SetDataCFG['wep']['password']) or !$SetDataCFG['wep']['password'] or $SetDataCFG['wep']['password']==$DEF_CFG['wep']['password']) {
+				$mess[] = array( 'error','Поле '.$_CFGFORM['wep']['password']['caption'].' обязательное и не должно совпадать с дефолтным');
+			}
+			if(!isset($SetDataCFG['wep']['md5']) or !$SetDataCFG['wep']['md5'] or $SetDataCFG['wep']['md5']==$DEF_CFG['wep']['md5']) {
+				$mess[] = array( 'error','Поле '.$_CFGFORM['wep']['md5']['caption'].' обязательное и не должно совпадать с дефолтным');
+			}
+		}
+		if(count($mess))
+			return array($fl,$mess);
+
 		if(isset($SetDataCFG['sql'])) {
 			$SQL = new sql($SetDataCFG['sql']); //пробуем подключиться к БД
 			if(!$SQL->ready) {
@@ -706,11 +717,11 @@ class static_tools {
 	static function _insertDefault(&$MODUL) {
 		foreach ($MODUL->def_records as $row) {
 			if (!$MODUL->_add_item($row)) {
-				//return static_main::_message('error','Error add default record into `'.$MODUL->tablename.'`',$MODUL->_cl);
+				//return static_main::log('error','Error add default record into `'.$MODUL->tablename.'`',$MODUL->_cl);
 				return false;
 			}
 		}
-		//return static_main::_message('ok','Insert default records into table ' . $MODUL->tablename . '.',$MODUL->_cl);
+		//return static_main::log('ok','Insert default records into table ' . $MODUL->tablename . '.',$MODUL->_cl);
 		return true;
 	}
 
@@ -729,19 +740,19 @@ class static_tools {
 				self::_checkdir(dirname($dir));
 			}
 			if (!mkdir($dir, $_CFG['wep']['chmod']))
-				return static_main::_message('error','Cannot create directory <b>' . $dir . '</b>');
+				return static_main::log('error','Cannot create directory <b>' . $dir . '</b>');
 		}
 		else {
 			$f = fopen($dir . '/t_e_s_t', 'w');
 			if (!$f)
-				return static_main::_message('error','Cannot create file in directory <b>' . $dir . '</b>');
+				return static_main::log('error','Cannot create file in directory <b>' . $dir . '</b>');
 
 			$err = fwrite($f, 'zzz') == -1;
 			fclose($f);
 			unlink($dir . '/t_e_s_t');
 
 			if ($err)
-				return static_main::_message('error','Cannot write/read file in directory <b>' . $dir . '</b>');
+				return static_main::log('error','Cannot write/read file in directory <b>' . $dir . '</b>');
 		}
 		return true;
 	}
@@ -751,7 +762,7 @@ class static_tools {
 		$flag= true;
 		foreach($_CFG['_PATH'] as $k=>$r) {
 			if(!self::_checkdir($r)) {
-				static_main::_message('error','Ошибка создания директории '.$r);
+				static_main::log('error','Ошибка создания директории '.$r);
 				$flag= false;
 			}
 		}

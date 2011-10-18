@@ -37,7 +37,7 @@ foreach($_CFGFORM as $kt=>$rb) {
 	}
 }
 
-$mess = array();
+$mess = array();$txt = '';
 if (isset($_POST['sbmt'])) {
 	$sqlfl = true;
 	static_tools::checkWepconf();
@@ -48,7 +48,10 @@ if (isset($_POST['sbmt'])) {
 			'login'=>$_POST['rootlogin'],
 			'password'=>$_POST['rootpass']);
 		$rSQL = new sql($temp);
-		list($sqlfl,$txt) = $rSQL->sql_install($_POST['sql']);
+		if($rSQL->ready)
+			list($sqlfl,$txt) = $rSQL->sql_install($_POST['sql']);
+		else
+			$txt = 'Не верный логин-пароль суперпользователя. Не удалось подключиться к БД.';
 	}
 	if($sqlfl)
 		list($sqlfl,$mess) = static_tools::saveUserCFG($_POST,$TEMP_CFG);

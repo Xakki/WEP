@@ -72,7 +72,7 @@
 				header('Location: '.str_replace("&amp;", "&", $cp));
 				die();
 			}else {
-				if(!$_SESSION['mess']) 
+				if(!isset($_SESSION['mess'])) 
 					$_SESSION['mess']= array();
 				$DATA[$FUNCPARAM[1]]['messages'] += $_SESSION['mess'];
 				$DATA[$FUNCPARAM[1]]['firstpath'] = $cp;

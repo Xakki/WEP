@@ -2,6 +2,9 @@
 
 class static_main {
 
+	/**
+	* В формат выода сообщения 
+	*/
 	static function am($type,$msg, $replace=array(), $obj=NULL) {
 		return  array($type,self::m($msg, $replace, $obj));
 	}
@@ -22,15 +25,96 @@ class static_main {
 			$msg .= $replace;
 		return $msg;
 	}
+
 	/* Запись сообщения в лог вывода
 	*/
-	static function _message($type,$msg,$cl='') {
+	static function log($type,$msg,$cl='') {
 		global $_CFG;
 		$ar_type = array('error'=>false, 'alert'=>true, 'notice'=>true, 'ok'=>true);
 		$_CFG['logs']['mess'][] = array($type,$msg,$cl);
 		return $ar_type[$type];
 	}
 
+	/**
+	* вывод лога
+	* $type = 0 - все
+	* 1 - кроме 'ok'
+	* 2 - кроме 'ok', 'modify'
+	* 3 - только 'error'
+	*/
+	static function showLog($type=0) {
+		global $_CFG;
+		$text = '';
+		$flag = true;
+		if (isset($_CFG['logs']['mess']) and count($_CFG['logs']['mess'])) {
+			foreach ($_CFG['logs']['mess'] as $r) {
+				//$c = '';
+				if ($r[0] == 'error') {
+					//$c = 'red';
+					$flag = false;
+				}/* elseif ($r[1] == 'warning' and $type < 3)
+					$c = 'yellow';
+				elseif ($r[1] == 'modify' and $type < 2)
+					$c = 'blue';
+				elseif ($r[1] == 'ok' and $type < 1)
+					$c = 'green';
+				elseif ($type < 3)
+					$c = 'gray';
+				if ($c != '')*/
+				$text .='<div class="messelem '.$r[0].'">' . htmlspecialchars($r[1], ENT_QUOTES, $_CFG['wep']['charset']). '</div>';
+			}
+			$_CFG['logs']['mess'] = array();
+		}
+		return array($text, $flag);
+	}
+
+	/**
+	*
+	*/
+	static function showErr() {
+		global $_CFG;
+		$temp = static_main::showLog(); // сообщения ядра
+		$notice = '';
+		$htmlerr = '';
+		/*Вывод ошибок*/
+		if(count($GLOBALS['_ERR'])) {
+			foreach ($GLOBALS['_ERR'] as $err) foreach ($err as $r) {
+				$var = $r['errtype'] . ' ' . $r['errstr'] . ' , in line ' . $r['errline'] . ' of file <i>' . $r['errfile'] . '</i>';
+				if($r['debug']) //$r['errcontext']
+					$var = self::spoilerWrap($var,$r['debug'],'bug_'.$r['errno']);
+				else
+					$var = '<div class="bug_'.$r['errno'].'">'.$var.'</div>';
+				$var .= "\n";
+				if ($_CFG['_error'][$r['errno']]['prior'] <= 3)
+					$htmlerr .= $var;
+				else //нотисы отдельно
+					$notice .= $var;
+			}
+			// write bug to DB
+			if (is_array($_CFG['wep']['bug_hunter']) and count($_CFG['wep']['bug_hunter']) and $SQL->ready) {
+				_new_class('bug', $BUG);
+			}
+		}
+
+		if ($_CFG['wep']['debugmode'] == 2 and ($htmlerr != '' or $notice != '' or $temp[0])) {
+			if ($notice)
+				$htmlerr .= self::spoilerWrap('NOTICE',$notice);
+			if ($temp[0])
+				$htmlerr .= $temp[0];//self::spoilerWrap('MESSAGES',$temp[0]);
+		}
+		elseif ($_CFG['wep']['debugmode'] == 1 and ($htmlerr != '' or !$temp[1])){
+			$htmlerr = 'На странице возникла ошибка! Приносим свои извинения за временные неудобства! Неполадки будут исправлены в ближайшее время.';
+		}
+		else {
+			$htmlerr = '';
+		}
+		return $htmlerr;
+	}
+
+
+	static function spoilerWrap($head,$text,$css='') {
+		return '<div class="bspoiler-wrap"><div onclick="bugSpoilers(this)" class="spoiler-head folded clickable '.$css.'">'.$head.'</div><div class="spoiler-body">' . $text. '</div></div>';
+	}
 	/**
 	 * Парсер настроек модулей
 	 */
@@ -146,14 +230,14 @@ class static_main {
 		global $_CFG, $SQL;
 		if (!isset($_CFG['modulprm'])) {
 			session_go();
+			if (!$SQL)
+				$SQL = new sql($_CFG['sql']);
 			$_CFG['modulprm'] = $_CFG['modulprm_ext'] = array();
 			$ugroup_id = (isset($_SESSION['user']['gid']) ? (int) $_SESSION['user']['gid'] : 2);
 			if(isset($_SESSION['user']['parent_id']) and $_SESSION['user']['parent_id']) {
 				$ugroup_id = ' and t2.ugroup_id IN ('.$_SESSION['user']['parent_id'].','.$ugroup_id.')';
 			}else
 				$ugroup_id = ' and t2.ugroup_id='.$ugroup_id;
-			if (!$SQL)
-				$SQL = new sql($_CFG['sql']);
 			$result = $SQL->execSQL('SELECT t1.*,t2.access, t2.mname FROM `' . $_CFG['sql']['dbpref'] . 'modulprm` t1 LEFT Join `' . $_CFG['sql']['dbpref'] . 'modulgrp` t2 on t2.owner_id=t1.id' . $ugroup_id . ' ORDER BY t1.typemodul,t1.name');
 			if ($result->err) {
 				//$_POST['sbmt'] = 1;
@@ -259,7 +343,7 @@ class static_main {
 				if ($flag) {
 					session_go(true);
 					$_SESSION['user']['id'] = 1;
-					$_SESSION['user']['name'] = $_CFG['wep']['name'];
+					$_SESSION['user']['name'] = $_CFG['wep']['login'];
 					$_SESSION['user']['gname'] = "GOD MODE";
 					$_SESSION['user']['level'] = 0;
 					$_SESSION['user']['wep'] = 1;
@@ -268,10 +352,10 @@ class static_main {
 					$_SESSION['user']['filesize'] = $_CFG['wep']['def_filesize'];
 					$_SESSION['FckEditorUserFilesUrl'] = $_CFG['_HREF']['BH'] . $_CFG['PATH']['userfile'];
 					$_SESSION['FckEditorUserFilesPath'] = $_CFG['_PATH']['path'] . $_CFG['PATH']['userfile'];
-					if ($_POST['remember'] == '1')
+					if (isset($_POST['remember']) and $_POST['remember'] == '1')
 						_setcookie('remember', md5($_CFG['wep']['md5'].$_CFG['wep']['password']) . '_' . $_CFG['wep']['login'], $_CFG['remember_expire']);
 					$result = array(static_main::m('authok'), 1);
-					_setcookie('_showerror', 1);
+					_setcookie('_showerror', 2);
 					//$_COOKIE['_showerror']=1;
 				}
 			}

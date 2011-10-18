@@ -234,6 +234,9 @@ abstract class kernel_extends {
 		if (is_bool($this->mf_timecr) and $this->mf_timecr)
 			$this->mf_timecr = 'mf_timecr';
 
+		if (is_bool($this->mf_ipcreate) and $this->mf_ipcreate)
+			$this->mf_ipcreate = 'mf_ipcreate';
+
 		$this->_listnameSQL = ($this->mf_namefields ? $this->mf_namefields : 'id'); // для SQL запроса при выводе списка
 		$this->_listname = ($this->mf_namefields ? $this->mf_namefields : 'id'); // ', `_listnameSQL` as `_listname`'
 		// construct fields
@@ -287,7 +290,7 @@ abstract class kernel_extends {
 		if ($this->mf_timeoff)
 			$this->fields['mf_timeoff'] = array('type' => 'int', 'width' => 11, 'attr' => 'unsigned NOT NULL', 'default' => '0');
 		if ($this->mf_ipcreate)
-			$this->fields['mf_ipcreate'] = array('type' => 'bigint', 'width' => 20, 'attr' => 'NOT NULL', 'default' => '0');
+			$this->fields[$this->mf_ipcreate] = array('type' => 'bigint', 'width' => 20, 'attr' => 'NOT NULL', 'default' => '0');
 
 		/* if ($this->mf_typectrl)
 		  $this->fields['typedata'] = array('type' => 'tinyint', 'attr' => 'unsigned NOT NULL');
@@ -626,7 +629,7 @@ abstract class kernel_extends {
 
 	public function _sorting($arr) {
 		if (!$this->mf_ordctrl)
-			return static_main::_message('alert','Sorting denied!');
+			return static_main::log('alert','Sorting denied!');
 		foreach ($arr as $r) {
 			$id = str_replace($this->_cl . '_', '', $r['id']);
 			$id2 = str_replace($this->_cl . '_', '', $r['id2']);
@@ -670,7 +673,7 @@ abstract class kernel_extends {
 			}
 		}
 
-		return static_main::_message('notice','Sorting the module `' . $this->caption . '` successful.');
+		return static_main::log('notice','Sorting the module `' . $this->caption . '` successful.');
 	}
 
 	/*	 * ************************ADMIN-PANEL---FUNCTION************************ */
@@ -691,7 +694,8 @@ abstract class kernel_extends {
 		if (!$this->prm_add)
 			return false;
 		if (static_main::_prmModul($this->_cl, array(9)))
-			return true;print_r('<pre>');print_r($this->_CFG['modulprm'][$this->_cl]);
+			return true;
+		print_r('<pre>');print_r($this->_CFG['modulprm'][$this->_cl]);
 		return false;
 	}
 

@@ -300,7 +300,7 @@ class users_class extends kernel_extends {
 	}
 
 	function updateLastVisit() {
-		if(isset($_SESSION['user']['id']) and (time()-$_SESSION['user']['lastvisit'])>300) {
+		if(isset($_SESSION['user']['id']) and isset($_SESSION['user']['lastvisit']) and (time()-$_SESSION['user']['lastvisit'])>300) {
 			$this->SQL->execSQL('UPDATE `'.$this->tablename.'` SET lastvisit='.time().' WHERE id='.(int)$_SESSION['user']['id'].'');
 		}
 	}
@@ -457,8 +457,8 @@ class users_class extends kernel_extends {
 					}
 				}
 			}
+			_setcookie('remember',0,-10000);
 		}
-		_setcookie('remember',0,-10000);
 		return array($mess,0);
 	}
 
@@ -703,7 +703,7 @@ class users_class extends kernel_extends {
 		session_go(true);
 		$_SESSION['user'] = $data;
 		if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0)
-			_setcookie('_showerror',1);
+			_setcookie('_showerror',2);
 		global $_CFG;
 		unset($_CFG['modulprm']);
 		static_main::_prmModulLoad();

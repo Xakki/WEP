@@ -1,6 +1,6 @@
 <?php
 
-error_reporting(E_ALL ^ E_NOTICE);
+error_reporting(-1);
 ini_set('display_errors', -1);
 
 $_CFG['info'] = array(//информация о СМС
@@ -32,13 +32,13 @@ $_CFG['wep'] = array(// для ядра и админки
 	'dateformat' => 'Y-m-d',
 	'locallang' => 'default',
 	'design' => 'default',
-	'md5' => 'd3dEegf6EH',
+	'md5' => 'change_me',
 	'def_filesize' => 200,
 	'chmod'=> 0774,
 	'sessiontype' => 1, //0 - стандартная сессия, 1 - БД сессия, 2 - ещё какаянибудь
-	'bug_hunter' => array(), // какие ошибки отлавливать
+	'bug_hunter' => array ( 0 => '0', 1 => '1', 4 => '4', 16 => '16', 64 => '64', 256 => '256', 4096 => '4096', 2 => '2', 32 => '32', 128 => '128', 512 => '512', 2048 => '2048'), // какие ошибки отлавливать
 	'catch_bug' => 1, // Системная - укзаывает на элемент в массиве $GLOBALS['_ERR'] в котором отлавливаются ошибки
-	'error_reporting' => '-1', // заменить на multiselect
+	'error_reporting' => -1, // заменить на multiselect
 	'debugmode' => 2, //0- ничего не показывать обычным юзерам, 1 -паказывать только сообщение что произошла ошибка, 2 - паказать ошибку
 	'_showerror'=>'_showerror', // для GET запросов
 	'_showallinfo'=>'_showallinfo', // для GET запросов
@@ -68,9 +68,14 @@ $_CFG['require_modul'] = array(
 );
 $_CFG['singleton'] = array(); // Массив объектов которые не клонируются
 $_CFG['hook'] = array(); // События
-$_CFG['logs']['sql'] = array(); // - массив SQL запросов
-$_CFG['fileIncludeOption'] = array(); //автоподключение SCRIPT & STYLE
+
+$_CFG['logs'] = array(
+	'sql' => array(),
+	'mess' => array(),
+); // - массив SQL запросов
 $GLOBALS['_ERR'] = array(); //текс ошибок
+
+$_CFG['fileIncludeOption'] = array(); //автоподключение SCRIPT & STYLE
 $_CFG['returnFormat'] = 'html';
 //json
 //''
@@ -268,7 +273,7 @@ $_CFG['_error'] = array(
 	0 => array(
 		'type' => '[@]',
 		'color' => 'black',
-		'prior' => 6,
+		'prior' => 5,
 		'debug' => 0
 	),
 	E_ERROR => array(//1
@@ -431,6 +436,7 @@ function shutdown_function() {
 /* SESSION */
 
 function session_go($force=false) { //$force=true - открывает сесиию для не авторизованного пользователя
+	if(isset($_SESSION)) return true;
 	global $_CFG, $SESSION_GOGO;
 	if (!$_CFG['robot'] and (isset($_COOKIE[$_CFG['session']['name']]) or $force)) {
 		if($_CFG['wep']['sessiontype'] == 1) {

@@ -36,7 +36,7 @@ class static_form {
 			$_this->fld_data[$_this->mf_createrid]= $_SESSION['user']['id'];
 
 		if (!isset($_this->fld_data) && !count($_this->fld_data))
-			return static_main::_message('error',static_main::m('add_empty',$_this));
+			return static_main::log('error',static_main::m('add_empty',$_this));
 
 		if (!self::_add_fields($_this)) return false;
 
@@ -65,7 +65,7 @@ class static_form {
 		if($_this->id and $flag_select)
 			$_this->data = $_this->_select();
 		if (isset($_this->mf_indexing) && $_this->mf_indexing) $_this->indexing();
-		return static_main::_message('ok',static_main::m('add',$_this));
+		return static_main::log('ok',static_main::m('add',$_this));
 	}
 
 	static function _add_fields(&$_this) {
@@ -130,11 +130,11 @@ class static_form {
 			}
 			chmod($value['tmp_name'], $_this->_CFG['wep']['chmod']);
 			if (!rename($value['tmp_name'], $newname))
-				return static_main::_message('error','Error copy file '.$value['name']);
+				return static_main::log('error','Error copy file '.$value['name']);
 
 			if (isset($_this->attaches[$key]['thumb'])) {
 				if(!self::_is_image($newname)) // опред тип файла
-					return static_main::_message('error','File '.$newname.' is not image');
+					return static_main::log('error','File '.$newname.' is not image');
 				$prefix = $pathimg.'/';
 				if (count($_this->attaches[$key]['thumb']))
 					foreach($_this->attaches[$key]['thumb'] as $imod) {
@@ -170,18 +170,18 @@ class static_form {
 		foreach($_this->mmo_data as $key => $value)
 		{
 			$pathimg = $_this->_CFG['_PATH']['path'].$_this->getPathForMemo($key);
-			if(!isset($_this->memos[$key])) return static_main::_message('error','Error add memo. Missing field `'.$key.'` in module `'.$_this->caption.'`');
+			if(!isset($_this->memos[$key])) return static_main::log('error','Error add memo. Missing field `'.$key.'` in module `'.$_this->caption.'`');
 			$name = $pathimg.'/'.$_this->id.$_this->text_ext;
 			$f = fopen($name, 'w');
 				if (!$f)
-					return static_main::_message('error','Can`t create file '.$name);
+					return static_main::log('error','Can`t create file '.$name);
 				if (fwrite($f, $value) == -1)
-					return static_main::_message('error','Can`t write data into file '.$name);
+					return static_main::log('error','Can`t write data into file '.$name);
 				if (!fclose($f))
-					return static_main::_message('error','Can`t close file '. $name);
+					return static_main::log('error','Can`t close file '. $name);
 			global $_CFG;
 			chmod($name, $_CFG['wep']['chmod']);
-			static_main::_message('notice','File '.$name.' writed.');
+			static_main::log('notice','File '.$name.' writed.');
 		}
 		return true;
 	}
@@ -199,7 +199,7 @@ class static_form {
 	static function _update(&$_this,$flag_select=true) {
 		if ($_this->mf_istree and !is_array($_this->id)) {
 			if ($_this->fld_data[$_this->mf_istree]==$_this->id)
-				return static_main::_message('error','Child `'.$_this->caption.'` can`t be owner to self ');
+				return static_main::log('error','Child `'.$_this->caption.'` can`t be owner to self ');
 		}
 		if($_this->mf_timeup)
 			$_this->fld_data['mf_timeup'] = $_this->_CFG['time'];
@@ -223,7 +223,7 @@ class static_form {
 		if($_this->id and $flag_select)
 			$_this->data = $_this->_select();
 		if (isset($_this->mf_indexing) && $_this->mf_indexing) $_this->indexing();
-		return static_main::_message('ok','Chenge data in `'.$_this->tablename.'` successful!');
+		return static_main::log('ok','Chenge data in `'.$_this->tablename.'` successful!');
 	}
 
 
@@ -325,7 +325,7 @@ class static_form {
 
 		if ($_this->mf_indexing) $_this->deindexing();
 		$_this->id = NULL;
-		return static_main::_message('notice','Delete data from `'.$_this->caption.'` successful.');
+		return static_main::log('notice','Delete data from `'.$_this->caption.'` successful.');
 	}
 
 	static function _delete_ownered(&$_this) {
@@ -373,7 +373,7 @@ class static_form {
 			
 				$f = $pathimg.'/'. $row['id']. '.'. $row[$key];
 				if (file_exists($f)) {
-					if (!unlink($f)) return static_main::_message('error','Cannot delete file `'.$f.'`');
+					if (!unlink($f)) return static_main::log('error','Cannot delete file `'.$f.'`');
 				}
 			}
 		}
@@ -401,11 +401,11 @@ class static_form {
 		$logoFile = $_this->_CFG['_PATH']['path'].$logoFile;
 
 		if(!$imtypeIn = self::_is_image($InFile))// опред тип файла
-			return static_main::_message('error','File '.$InFile.' is not image');
+			return static_main::log('error','File '.$InFile.' is not image');
 		if($imtypeIn>3) return false;
 
 		if(!$imtypeLogo = self::_is_image($logoFile))// опред тип файла
-			return static_main::_message('error','File '.$logoFile.' is not image');
+			return static_main::log('error','File '.$logoFile.' is not image');
 		if($imtypeLogo>3) return false;
 
 		$znak_hw = getimagesize($logoFile);
@@ -430,7 +430,7 @@ class static_form {
 		imagedestroy ($znak);
 		imagedestroy ($foto);
 		if(!file_exists($OutFile)) {
-			static_main::_message('error','Cant composite file on '.__LINE__.' in kernel');
+			static_main::log('error','Cant composite file on '.__LINE__.' in kernel');
 			return false;
 		}
 		return true;
@@ -459,12 +459,12 @@ class static_form {
 
 		$thumb = imagecreatetruecolor($WidthX, $HeightY);//созд пустой рисунок
 		if(!$imtype = self::_is_image($InFile))// опред тип файла
-			return static_main::_message('error','File '.$InFile.' is not image');
+			return static_main::log('error','File '.$InFile.' is not image');
 		if($imtype>3) return true;
 		$source = self::_imagecreatefrom($_this,$InFile,$imtype);//открываем рисунок
 		imagecopyresized($thumb, $source, 0, 0, 0, 0, $WidthX, $HeightY, $width_orig, $height_orig);//меняем размер
 		self::_image_to_file($thumb, $OutFile,$_this->_CFG['_imgquality'],$imtype);//сохраняем в файл
-		if(!file_exists($OutFile)) return static_main::_message('error','Cant create file');
+		if(!file_exists($OutFile)) return static_main::log('error','Cant create file');
 		return true;
 	}
 
@@ -476,12 +476,12 @@ class static_form {
 		// Resample
 		$thumb = imagecreatetruecolor($WidthX, $HeightY);//созд пустой рисунок
 		if(!$imtype = self::_is_image($InFile)) // опред тип файла
-			return static_main::_message('error','File is not image');
+			return static_main::log('error','File is not image');
 		if($imtype>3) return true;
 		$source = self::_imagecreatefrom($_this,$InFile,$imtype);//открываем рисунок
 		imagecopyresampled($thumb, $source, 0, 0, $width_orig/2-$WidthX/2, $height_orig/2-$HeightY/2, $WidthX, $HeightY, $WidthX, $HeightY);
 		self::_image_to_file($thumb, $OutFile,$_this->_CFG['_imgquality'],$imtype);//сохраняем в файл
-		if(!file_exists($OutFile)) return static_main::_message('error','Cant create img file ');
+		if(!file_exists($OutFile)) return static_main::log('error','Cant create img file ');
 		return true;
 	}
 
@@ -500,23 +500,23 @@ class static_form {
 		}
 		/*Создаем пустое изображение на вывод*/
 		if(!($thumb = @imagecreatetruecolor($WidthX, $HeightY)))
-			return static_main::_message('error','Cannot Initialize new GD image stream');
+			return static_main::log('error','Cannot Initialize new GD image stream');
 		/*Определяем тип рисунка*/
 		if(!$imtype = self::_is_image($InFile))// опред тип файла
-			return static_main::_message('error','File is not image');
+			return static_main::log('error','File is not image');
 		/*Обработка только jpeg, gif, png*/
 		if($imtype>3) return true;
 		/*Открываем исходный рисунок*/
 		if(!$source = self::_imagecreatefrom($_this,$InFile,$imtype))//открываем рисунок
-			return static_main::_message('error','File '.$InFile.' is not image');
+			return static_main::log('error','File '.$InFile.' is not image');
 		if(!imagecopyresampled($thumb, $source, 0, 0, 0, 0, $WidthX, $HeightY, $width_orig, $height_orig))
-			return static_main::_message('error','Error imagecopyresampled');
+			return static_main::log('error','Error imagecopyresampled');
 		if(!($thumb2 = @imagecreatetruecolor($trueX, $trueY)))
-			return static_main::_message('error','Cannot Initialize new GD image stream');
+			return static_main::log('error','Cannot Initialize new GD image stream');
 		if(!imagecopyresampled($thumb2, $thumb, 0, 0, $WidthX/2-$trueX/2, $HeightY/2-$trueY/2, $trueX, $trueY, $trueX, $trueY)) 
-			return static_main::_message('error','Error imagecopyresampled');
+			return static_main::log('error','Error imagecopyresampled');
 		self::_image_to_file($thumb2, $OutFile,$_this->_CFG['_imgquality'],$imtype);//сохраняем в файл
-		if(!file_exists($OutFile)) return static_main::_message('error','Cant create file');
+		if(!file_exists($OutFile)) return static_main::log('error','Cant create file');
 		return true;
 	}
 
@@ -543,15 +543,15 @@ class static_form {
 		*/
 		if($imtype==1) {
 			if(!($image=@imagecreatefromgif($im_file)))
-				static_main::_message('error','Can not create a new image from file');
+				static_main::log('error','Can not create a new image from file');
 		}
 		elseif($imtype==2) {
 			if(!($image=imagecreatefromjpeg($im_file)))
-				static_main::_message('error','Can not create a new image from file');
+				static_main::log('error','Can not create a new image from file');
 		}
 		elseif($imtype==3) {
 			if(!($image=imagecreatefrompng($im_file)))
-				static_main::_message('error','Can not create a new image from file');
+				static_main::log('error','Can not create a new image from file');
 		}
 		else return false;
 		return $image;

@@ -1,1 +1,0 @@
-{$_tpl['logs']}<!--{$_tpl['time']}-->{$_tpl['text']}

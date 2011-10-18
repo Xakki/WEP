@@ -1,17 +1,26 @@
 <?php
 
 $_CFGFORM['sql'] = array(// SQL
-	'host' => array('type'=>'text','caption'=>'Хост подключения к БД'),
-	'login' =>  array('type'=>'text','caption'=>'Логин БД'),
-	'password' =>  array('type'=>'password_new','caption'=>'Пароль БД'),
-	'database' =>  array('type'=>'text','caption'=>'Название БД'),
-	'setnames' =>  array('type'=>'text','caption'=>'Кодировка БД'),
-	'dbpref' =>  array('type'=>'text','caption'=>'Префикс в названии таблиц'),
-	'log' =>  array('type'=>'checkbox','caption'=>'Логирование всех запросов в фаил'),
-	'longquery' =>  array('type'=>'int','caption'=>'Логировать долгие запросы к БД','comment'=>'запись в баг запросы которые выполняются дольше указанного времени в сек'),
+	'host' => array('type'=>'text','caption'=>'Хост подключения к БД', 'mask'=>array('min'=>9)),
+	'login' =>  array('type'=>'text','caption'=>'Логин БД', 'mask'=>array('min'=>2)),
+	'password' =>  array('type'=>'password_new','caption'=>'Пароль БД', 'mask'=>array('min'=>6)),
+	'database' =>  array('type'=>'text','caption'=>'Название БД', 'mask'=>array('min'=>2)),
+	'showparam1'=>array('type' => 'info', 'caption' => '
+	<div class="showparam" onclick="show_fblock(this,\'.hsql\')"> 
+		<span class="shbg"></span>
+		<span class="sh1">Показать</span>
+		<span class="sh2">Скрыть</span> настройки подключения к БД
+	</div>'),
+	'setnames' =>  array('type'=>'text','caption'=>'Кодировка БД', 'css' => 'fblock hsql', 'style' => 'display:none;'),
+	'dbpref' =>  array('type'=>'text','caption'=>'Префикс в названии таблиц', 'css' => 'fblock hsql', 'style' => 'display:none;'),
+	'log' =>  array('type'=>'checkbox','caption'=>'Логирование всех запросов в фаил', 'css' => 'fblock hsql', 'style' => 'display:none;'),
+	'longquery' =>  array('type'=>'int','caption'=>'Логировать долгие запросы к БД','comment'=>'запись в баг запросы которые выполняются дольше указанного времени в сек', 'css' => 'fblock hsql', 'style' => 'display:none;'),
 );
 
 $_CFGFORM['wep'] = array(// для ядра и админки
+	'login' => array('type'=>'text','caption'=>'ROOT-логин', 'mask'=>array('min'=>4)),
+	'password' => array('type'=>'password_new','caption'=>'ROOT-пароль', 'mask'=>array('min'=>8)),
+	'md5' => array('type'=>'text','caption'=>'Соль для паролей', 'mask'=>array('min'=>5)),
 	'showparam2'=>array('type' => 'info', 'caption' => '
 	<div class="showparam" onclick="show_fblock(this,\'.hwep\')"> 
 		<span class="shbg"></span>
@@ -23,20 +32,17 @@ $_CFGFORM['wep'] = array(// для ядра и админки
 	'locale' => array('type'=>'list', 'caption'=>'Локализация сайта', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'timezone' => array('type'=>'list', 'caption'=>'Временная зона', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'dateformat' => array('type'=>'text','caption'=>'Формат Даты', 'css' => 'fblock hwep', 'style' => 'display:none;'),
-	'access' => array('type'=>'list', 'caption'=>'Кодировка БД', 'css' => 'fblock hwep', 'style' => 'display:none;'),
-	'login' => array('type'=>'text','caption'=>'Босс-логин', 'css' => 'fblock hwep', 'style' => 'display:none;'),
-	'password' => array('type'=>'password_new','caption'=>'Босс-пароль', 'css' => 'fblock hwep', 'style' => 'display:none;'),
+	'access' => array('type'=>'list', 'caption'=>'Система авторизации на сайте', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'design' => array('type'=>'list','caption'=>'Дизайн админки', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'locallang' => array('type'=>'text','caption'=>'Кодировка БД', 'css' => 'fblock hwep', 'style' => 'display:none;'),
-	'md5' => array('type'=>'text','caption'=>'Соль для паролей', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'def_filesize' => array('type'=>'int','caption'=>'Размер фаилового хранилища, Мб', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'chmod'=> array('type'=>'text','caption'=>'chmod', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'sessiontype' => array('type'=>'list','caption'=>'Тип хранени сессий пользователей', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 
 	'bug_hunter' => array('type'=>'list','multiple'=>1, 'caption'=>'Ловец жуков', 'comment'=>'Отлов ошибок', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	//'catch_bug' => array('type'=>'text','caption'=>'Основной сборщик ошибок', 'comment'=>'Системная - указывает на элемент в массиве $GLOBALS["_ERR"] в котором отлавливаются ошибки', 'css' => 'fblock hwep', 'style' => 'display:none;'),
-	//'stop_fatal_error' => array('type'=>'checkbox','caption'=>'Останавливать скрипт на фатальной ошибке?', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'error_reporting' => array('type'=>'text','caption'=>'php error_reporting', 'comment'=>'битовая маска, -1 выводит всё виды ошибок', 'css' => 'fblock hwep', 'style' => 'display:none;'),
+	//'stop_fatal_error' => array('type'=>'checkbox','caption'=>'Останавливать скрипт на фатальной ошибке?', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	//'show_error' => array('type'=>'list', 'caption'=>'Показывать ошибки всем?', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'debugmode' => array('type'=>'list', 'caption'=>'DEBUG MODE', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'_showerror' => array('type'=>'text','caption'=>'GET[_showerror] - для вывода ошибок', 'css' => 'fblock hwep', 'style' => 'display:none;'),
@@ -84,7 +90,7 @@ $_CFGFORM['memcache'] = array(
 	ksort($_CFGFORM['wep']['timezone']['valuelist'],SORT_NUMERIC );
 
 	$_CFGFORM['wep']['access']['valuelist'] = array(
-		array('#id#' => 0, '#name#' => 'Не используя БД, по паролю указанным ниже'),
+		array('#id#' => 0, '#name#' => 'Не используя БД, по ROOT-логину и ROOT-паролю'),
 		array('#id#' => 1, '#name#' => 'Используя БД и привелегиий доступа')
 	);
 
