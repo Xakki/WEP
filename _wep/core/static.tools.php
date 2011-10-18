@@ -441,9 +441,9 @@ class static_tools {
 					}//end foreach
 				}
 				if (count($_POST)<=1)
-					$mess[] = static_main::m('alert','_recheck_have_nothing',$MODUL);
+					$mess[] = static_main::am('alert','_recheck_have_nothing',$MODUL);
 				if ($flag)
-					$mess[] = static_main::m('ok','_recheck_ok',$MODUL);
+					$mess[] = static_main::am('ok','_recheck_ok',$MODUL);
 				//'  <a href="" onclick="window.location.reload();return false;">Обновите страницу.</a>'
 			}
 			else {
@@ -504,7 +504,7 @@ class static_tools {
 						'value' => static_main::m('_submit',$MODUL)
 					);
 				} else
-					$mess[] = static_main::m('ok','_recheck_have_nothing',$MODUL);
+					$mess[] = static_main::am('ok','_recheck_have_nothing',$MODUL);
 			}
 		}
 		$DATA = array('form' => $MODUL->form, 'messages' => $mess);

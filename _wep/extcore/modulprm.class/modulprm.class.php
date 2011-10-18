@@ -282,7 +282,7 @@ final class modulprm_class extends kernel_extends {
 		} catch (Exception $e) {
 			trigger_error($e->getMessage(), E_USER_WARNING);
 		}
-		if ($err = getCatchError() and isset($err[0]) and $err[0]) {
+		if ($err = getCatchError() and $err) {
 			$data['error'][] = $err;
 		}
 		return $data;

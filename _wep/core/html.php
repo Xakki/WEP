@@ -225,7 +225,7 @@ function _myErrorHandler($errno, $errstr, $errfile, $errline) {//, $errcontext,$
 		// Debuger
 		// для вывода отладчика для всех типов ошибок , можно отключить это условие
 		$debug = '';
-		if (2) {
+		if (isset($_CFG['wep']['bug_hunter'][$errno]) and $_CFG['_error'][$errno]['debug']) {
 			if(strpos($errstr,'mysql_connect')===false)
 				$debug = debugPrint(2);
 		}
