@@ -151,6 +151,7 @@
 					}
 					elseif(isset($r['concat']) and $r['concat']) {
 						$cls[0][] = $r['concat'].' as '.$k;
+						$r['mask']['sort'] = '';
 					}
 
 					$act=0;
@@ -187,6 +188,7 @@
 			$listfields = $cls[0];
 			$clause = 't1 '.$cls[1].' GROUP BY t1.id';
 			if($order!='') $clause .= ' ORDER BY '.$order;
+			$xml['data']['order'] = $order;
 			//if(!$this->mf_istree)
 				$clause .= ' LIMIT '.$climit;
 			$this->data = $this->_query($listfields,$clause,'id');
@@ -197,6 +199,8 @@
 				if(isset($temp[$this->mf_ordctrl]))
 					$xml['data']['ord'] = $this->mf_ordctrl;
 				foreach($this->data as $key=>$row) {
+					if(!isset($xml['data']['pid']) and $this->mf_istree and isset($row[$this->mf_istree]))
+						$xml['data']['pid'] = $row[$this->mf_istree];
 					$xml['data']['item'][$key] = array('id'=>$row['id'],'row'=>$row);
 					$xml['data']['item'][$key] += $this->_tr_attribute($row,$param);
 					//if($xml['data']['item'][$key]['act'])

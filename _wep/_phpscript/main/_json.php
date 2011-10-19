@@ -89,9 +89,9 @@
 				if(!isset($_REQUEST['onlyget'])) {
 					if(is_array($r)) {
 						foreach($r as $vk=>$vr)
-							$GLOBALS['_RESULT']['eval'] .= 'jQuery(\''.$vr.'\').'.$vk.'(result.pg_'.$k.');';
+							$GLOBALS['_RESULT']['eval'] = 'jQuery(\''.$vr.'\').'.$vk.'(result.pg_'.$k.');'.$GLOBALS['_RESULT']['eval'];
 					} else//replaceWith
-						$GLOBALS['_RESULT']['eval'] .= 'jQuery(\''.$r.'\').html(result.pg_'.$k.');';
+						$GLOBALS['_RESULT']['eval'] = 'jQuery(\''.$r.'\').html(result.pg_'.$k.');'.$GLOBALS['_RESULT']['eval'];
 				}
 			}
 		}

@@ -386,8 +386,28 @@ abstract class kernel_extends {
 		return $data;
 	}
 
+	// SQL QUERY short FUNCTION
+
 	/**
-	 * Функция аналогична _query(), только он принимает данные для запроса в виде параметров и возвращает рез-тат не использую $this->data
+	* Update sql query
+	*
+	*/
+	public function qu($set,$where='') {
+		$q = 'UPDATE `' . $this->tablename . '` SET '.$set;
+		if($where)
+			$q .= ' WHERE '.$where;
+		$result = $this->SQL->execSQL($q);
+		if ($result->err)
+			return false;
+		return true;
+	}
+
+	public function qs($list='', $cls='', $ord='', $ord2='',$debug=false) {
+		return $this->_query($list, $cls, $ord, $ord2,$debug);
+	}
+
+	/**
+	 * Функция аналогична _select(), только он принимает данные для запроса в виде параметров и возвращает рез-тат не использую $this->data
 	 *
 	 * @param string $list - выборка
 	 * @param string $cls - строка запроса
@@ -627,53 +647,35 @@ abstract class kernel_extends {
 
 	/* ------------- ORDER ORDER ORDER ORDER ---------------- */
 
-	public function _sorting($arr) {
-		if (!$this->mf_ordctrl)
-			return static_main::log('alert','Sorting denied!');
-		foreach ($arr as $r) {
-			$id = str_replace($this->_cl . '_', '', $r['id']);
-			$id2 = str_replace($this->_cl . '_', '', $r['id2']);
-			$data = array();
-			$qr = 'select id,' . $this->mf_ordctrl . ' from `' . $this->tablename . '`';
-			$result = $this->SQL->execSQL($qr);
-			if ($result->err)
-				return false;
-			while ($row = $result->fetch_array()) {
-				$data[$row['id']] = (int) $row[$this->mf_ordctrl];
-			}
-			$ex = 0;
-			if ($r['t'] == 'next' and ($data[$id2] - 1) == $data[$id])
-				$ex = 1;
-			elseif ($r['t'] == 'prev' and ($data[$id2] + 1) == $data[$id])
-				$ex = 1;
-			if ($ex != 1) {
-				$qr = 'UPDATE `' . $this->tablename . '` SET `' . $this->mf_ordctrl . '` = -2147483647 WHERE id=\'' . $id . '\'';
-				$result = $this->SQL->execSQL($qr);
-				if ($result->err)
-					return false;
-
-				if ($r['t'] == 'next' and $data[$id2] < $data[$id]) {
-					$ord = $data[$id2];
-					$qr = 'UPDATE `' . $this->tablename . '` SET `' . $this->mf_ordctrl . '` = (' . $this->mf_ordctrl . '+1) WHERE ' . $data[$id2] . '<=' . $this->mf_ordctrl . ' and ' . $this->mf_ordctrl . '<=' . $data[$id] . ' order by `' . $this->mf_ordctrl . '` DESC';
-				} else {
-					if ($r['t'] == 'next')
-						$ord = $data[$id2] - 1;
-					else
-						$ord= $data[$id2];
-					$qr = 'UPDATE `' . $this->tablename . '` SET `' . $this->mf_ordctrl . '` =(' . $this->mf_ordctrl . '-1) WHERE ' . $data[$id] . '<=`' . $this->mf_ordctrl . '` and `' . $this->mf_ordctrl . '`<=' . $ord . ' order by `' . $this->mf_ordctrl . '`';
-				}
-				$result = $this->SQL->execSQL($qr);
-				if ($result->err)
-					return false;
-
-				$qr = 'UPDATE `' . $this->tablename . '` SET `' . $this->mf_ordctrl . '` = ' . $ord . ' WHERE `id`=\'' . $id . '\'';
-				$result = $this->SQL->execSQL($qr);
-				if ($result->err)
-					return false;
-			}
+	public function _sorting() {
+		$res = array('html'=>'','eval'=>'');
+		$this->id = $id = (int)$_GET['id'];
+		$pid = (int)$_GET['pid'];
+		$t1 = (isset($_GET['t1'])?(int)$_GET['t1']:0);
+		$t2 = (isset($_GET['t2'])?(int)$_GET['t2']:0);
+		$data = $this->_select();
+		if(!$this->mf_ordctrl or !$this->_prmModulEdit($data)) {//!static_main::_prmModul($this->_cl,array(10))
+			$res['html'] = static_main::m('Sorting denied!');
+			return $res;
 		}
+		$res['html'] = static_main::m('Sorting error');
 
-		return static_main::log('notice','Sorting the module `' . $this->caption . '` successful.');
+
+		if ($t2) {
+			$data = $this->qs($this->mf_ordctrl,'WHERE id='.$t2);
+			$neword = $data[0][$this->mf_ordctrl];
+
+			$qr = '`' . $this->mf_ordctrl . '`>=\'' . $neword . '\'';
+			if($this->mf_istree and $pid)
+				$qr .= ' and `'.$this->mf_istree.'`='.$pid;
+			if(!$this->qu('`' . $this->mf_ordctrl . '` = `' . $this->mf_ordctrl . '`+1',$qr))
+				return $res;
+
+			if(!$this->qu('`' . $this->mf_ordctrl . '` = ' . $neword,'`id`=' . $id ))
+				return $res;
+		}
+		$res['html'] = '';//static_main::m('Sorting successful.')
+		return $res;
 	}
 
 	/*	 * ************************ADMIN-PANEL---FUNCTION************************ */
@@ -699,7 +701,7 @@ abstract class kernel_extends {
 		return false;
 	}
 
-	public function _prmModulEdit(&$data, &$param) {
+	public function _prmModulEdit(&$data, $param=array()) {
 		if (!$this->prm_edit)
 			return false;
 		if (isset($param['prm']) and count($param['prm'])) {
@@ -1283,12 +1285,14 @@ abstract class kernel_extends {
 				if (isset($param['first_id']) and $param['first_id'] and $parent_id == $param['first_id'])
 					break;
 				$parent_id = $this->data[$parent_id][$this->mf_istree];
+				if(!$this->parent_id)
+					$this->parent_id = $parent_id;
 			}
 			$this->data = $first_data;
 
 			if (isset($param['first_id']) and $param['first_id'] and !$parent_id)
 				$this->id = '';
-			$path2 = array_reverse($path2);
+			$path2 = array_reverse($path2);			
 		}
 		elseif ($this->id) {
 			$this->data = $this->_select();
