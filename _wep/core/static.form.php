@@ -744,7 +744,7 @@ class static_form {
 			if(isset($data[$key.'_del']) and (int)$data[$key.'_del']==1){
 					$_FILES[$key] = $data[$key] = array('name'=>':delete:','tmp_name'=>':delete:');
 			}
-			elseif(isset($_FILES[$key]['name']) and $_FILES[$key]['name']!='') {print_r('<pre>');print_r($_FILES[$key]);
+			elseif(isset($_FILES[$key]['name']) and $_FILES[$key]['name']!='') {
 				if($_FILES[$key]['error'] != 0) {
 					$error[]= (int)'4'.$_FILES[$key]['error'];
 				}
