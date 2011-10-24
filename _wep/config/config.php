@@ -486,7 +486,7 @@ function _new_class($name, &$MODUL, &$OWNER = NULL) {
 	} 
 	else {
 		$class_name = $name . "_class";
-		if (!class_exists($class_name,false) and (!$_CFG['modulprm'][$name]['pid'] or $OWNER) and $file = _modulExists($class_name,$OWNER)) {
+		if (!class_exists($class_name,false) and (!isset($_CFG['modulprm'][$name]) or !$_CFG['modulprm'][$name]['pid'] or $OWNER) and $file = _modulExists($class_name,$OWNER)) {
 			require_once($file);
 		}
 		if(class_exists($class_name,false)) {
@@ -502,7 +502,7 @@ function _new_class($name, &$MODUL, &$OWNER = NULL) {
 			if ($MODUL)
 				return true;
 		}
-		elseif ($_CFG['modulprm'][$name]['pid'] and is_null($OWNER)) {
+		elseif (isset($_CFG['modulprm'][$name]) and $_CFG['modulprm'][$name]['pid'] and is_null($OWNER)) {
 			$moduls = array($name);
 			while ($_CFG['modulprm'][$name]['pid'])
 			{

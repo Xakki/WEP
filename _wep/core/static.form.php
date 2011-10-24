@@ -225,7 +225,7 @@ class static_form {
 		if($_this->id and $flag_select)
 			$_this->data = $_this->_select();
 		if (isset($_this->mf_indexing) && $_this->mf_indexing) $_this->indexing();
-		return static_main::log('ok','Chenge data in `'.$_this->tablename.'` successful!');
+		return true;
 	}
 
 
@@ -337,7 +337,7 @@ class static_form {
 
 		if ($_this->mf_indexing) $_this->deindexing();
 		$_this->id = NULL;
-		return static_main::log('notice','Delete data from `'.$_this->caption.'` successful.');
+		return true;
 	}
 
 	static function _delete_ownered(&$_this) {

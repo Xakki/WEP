@@ -1069,9 +1069,8 @@ abstract class kernel_extends {
 		if (is_array($listname))
 			$templistname = implode(',', $listname);
 		if (isset($this->_enum[$templistname])) {
-			if(!is_null($value))
-				return $this->_enum[$templistname][$value];
-			$this->_CFG['enum'][$templistname] = $this->_enum[$templistname];
+			return $this->_enum[$templistname];
+			//$this->_CFG['enum'][$templistname] = $this->_enum[$templistname];
 		} elseif (!isset($this->_CFG['enum'][$templistname])) {
 			if(!is_null($value) and is_array($listname)) // не кешируем если задано $value и $listname - выборка из таблиц(задается массивом)
 				return $this->_getlist($listname, $value);
