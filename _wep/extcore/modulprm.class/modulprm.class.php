@@ -435,21 +435,30 @@ final class modulprm_class extends kernel_extends {
 					$flag = &$MODUL;
 					if (count($this->fld_data)) {
 						$this->id = $Mid;
+						// Добавляем инфу о модуле
 						if (!isset($this->data[$Mid])) {
 							$this->fld_data['id'] = $Mid;
-							if ($this->_add(false))
-								$MESS[] = array('notice', 'Информация о модуле `' . $Mid . '`[' . $path . '] успешно записанна.');
-							else {
-								$MESS[] = array('error', 'Ошибка записи данных для модуля `' . $Mid . '`[' . $path . '].'.print_r($this->fld_data,true));
-								$flag = false;
-							}
-						} else {
-							if ($this->_update(false))
-								$MESS[] = array('notice', 'Информация о модуле `' . $Mid . '`[' . $path . '] успешно обновленна.');
-							else {
-								$MESS[] = array('error', 'Ошибка обновления данных для модуля `' . $Mid . '`[' . $path . '].');
-								$flag = false;
-							}
+							if (isset($_POST['sbmt'])) {
+								if ($this->_add(false))
+									$MESS[] = array('notice', 'Информация о модуле `' . $Mid . '`[' . $path . '] успешно записанна.');
+								else {
+									$MESS[] = array('error', 'Ошибка записи данных для модуля `' . $Mid . '`[' . $path . '].'.print_r($this->fld_data,true));
+									$flag = false;
+								}
+							}else
+								$MESS[] = array('alert', 'Информация о модуле `' . $Mid . '`[' . $path . '] будет обновлена.');
+						}
+						// Если существует обновляем данные
+						else {
+							if (isset($_POST['sbmt'])) {
+								if ($this->_update(false))
+									$MESS[] = array('notice', 'Информация о модуле `' . $Mid . '`[' . $path . '] успешно обновленна.');
+								else {
+									$MESS[] = array('error', 'Ошибка обновления данных для модуля `' . $Mid . '`[' . $path . '].');
+									$flag = false;
+								}
+							} else
+								$MESS[] = array('alert', 'Информация о модуле `' . $Mid . '`[' . $path . '] будет обновленна.');
 						}
 					}
 					// Обновляем права доступа
@@ -458,10 +467,13 @@ final class modulprm_class extends kernel_extends {
 						if (isset($this->modulgrpData[$Mid]) and count($this->modulgrpData[$Mid]))
 							foreach ($this->modulgrpData[$Mid] as $mk => $mr) {
 								if (!isset($this->guserData[$mk])) {
-									$q = 'DELETE FROM `' . $this->childs['modulgrp']->tablename . '` WHERE `id`=' . $mr['id'];
-									$result = $this->SQL->execSQL($q);
-									if ($result->err)
-										exit();
+									if (isset($_POST['sbmt'])) {
+										$q = 'DELETE FROM `' . $this->childs['modulgrp']->tablename . '` WHERE `id`=' . $mr['id'];
+										$result = $this->SQL->execSQL($q);
+										if ($result->err)
+											exit();
+									} else
+										$MESS[] = array('alert', 'Будет удалена группа '.$mr['name'].'['.$mr['id'].']');
 								}
 							}
 						if (isset($this->guserData) and count($this->guserData))
@@ -475,32 +487,45 @@ final class modulprm_class extends kernel_extends {
 									}
 								}*/
 								if (!isset($this->modulgrpData[$Mid][$gk])) {
-									$q = array('owner_id' => $Mid, 'ugroup_id' => $gk, 'name' => $gr['name'],'access'=>$MODUL->default_access);//
-									$q = 'INSERT INTO `' . $this->childs['modulgrp']->tablename . '` (`' . implode('`,`', array_keys($q)) . '`) VALUES (\'' . implode('\',\'', $q) . '\')';
-									$result = $this->SQL->execSQL($q);
-									if ($result->err)
-										exit();
+									if (isset($_POST['sbmt'])) {
+										$q = array('owner_id' => $Mid, 'ugroup_id' => $gk, 'name' => $gr['name'],'access'=>$MODUL->default_access);//
+										$q = 'INSERT INTO `' . $this->childs['modulgrp']->tablename . '` (`' . implode('`,`', array_keys($q)) . '`) VALUES (\'' . implode('\',\'', $q) . '\')';
+										$result = $this->SQL->execSQL($q);
+										if ($result->err)
+											exit();
+									} else
+										$MESS[] = array('alert', 'Будет добавлена группа '.$gr['name'].'['.$gk.']');
 								}
 							}
 					}
 				} else {
-					$MESS[] = array('error', 'Ошибка при инициализации модуля `' . $Mid . '`[' . $path . ']. Модуль будет отключен.');
-					$this->fld_data['active'] = 0;
-					$this->id = $Mid;
-					$this->_update();
+					if (isset($_POST['sbmt'])) {
+						$MESS[] = array('alert', 'Ошибка при инициализации модуля `' . $Mid . '`[' . $path . ']. Модуль отключен.');
+						$this->fld_data['active'] = 0;
+						$this->id = $Mid;
+						$this->_update();
+					} else
+						$MESS[] = array('error', 'Ошибка при инициализации модуля `' . $Mid . '`[' . $path . ']. Модуль будет отключен.');
 				}
 
 			} else {
-				$MESS[] = array('error', 'Фаилы модуля `' . $Mid . '`[' . $path . '] отсутствуют и этот модуль будет удален из базы данных.');
-				$this->id = $Mid;
-				$this->_delete();
+				if (isset($_POST['sbmt'])) {
+					$MESS[] = array('alert', 'Фаилы модуля `' . $Mid . '`[' . $path . '] отсутствуют и этот модуль удален из базы данных.');
+					$this->id = $Mid;
+					$this->_delete();
+				} else 
+					$MESS[] = array('error', 'Фаилы модуля `' . $Mid . '`[' . $path . '] отсутствуют и этот модуль будет удален из базы данных.');
+
 			}
 		} catch (Exception $e) {
 			trigger_error($e->getMessage(), E_USER_WARNING);
-			$MESS[] = array('error', 'Ошибка при инициализации модуля `' . $Mid . '`[' . $path . ']. Модуль будет отключен.');
-			$this->fld_data['active'] = 0;
-			$this->id = $Mid;
-			$this->_update();
+			if (isset($_POST['sbmt'])) {
+				$MESS[] = array('alert', 'Ошибка при инициализации модуля `' . $Mid . '`[' . $path . ']. Модуль отключен.');
+				$this->fld_data['active'] = 0;
+				$this->id = $Mid;
+				$this->_update();
+			} else
+				$MESS[] = array('error', 'Ошибка при инициализации модуля `' . $Mid . '`[' . $path . ']. Модуль будет отключен.');
 		}
 
 		return array($flag, $MESS);

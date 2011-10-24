@@ -158,13 +158,14 @@
 							$r['valuelist'] = $this->_forlist($md,$key,$val);
 						}
 					}
-					else{
-						if(isset($r['listname']['idThis']) and $this->id) {
+					else {
+						if(is_array($r['listname']) and isset($r['listname']['idThis']) and $this->id) {
 							$r['value'] = $this->data[$this->id][$r['listname']['idThis']];
 						}
 						if($r['value']) {
-							$md = $this->_getCashedList($r['listname'],$r['value']);
-							$r['value'] = implode(',',$md);
+							$r['value'] = $this->_getCashedList($r['listname'],$r['value']);
+							if(is_array($r['value']))
+								$r['value'] = implode(',',$r['value']);
 						}
 					}
 				}

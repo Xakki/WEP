@@ -101,20 +101,31 @@ function tpl_form(&$data) {
 					$texthtml .= ' checkbox-valuelist">';
 					foreach($r['valuelist'] as $kv=>$rv) {
 						$sel = false;
+						$readonly = false;
 						if(is_array($rv) and isset($rv['#id#'])) {
 							$id = $rv['#id#'];
 							$name = $rv['#name#'];
+							if($rv['#readonly#'])
+								$readonly = true;
 							if(isset($rv['#sel#']) and $rv['#sel#'])
 								$sel = true;
 						} else {
 							$id = $kv;
 							$name = $rv;
-							if(isset($r['value']) and $r['value']==$id)
-								$sel = true;
+							if(isset($r['value'])) {
+								if(is_array($r['value'])) {
+									if(isset($r['value'][$id]))
+										$sel = true;
+								}
+								elseif($r['value']==$id)
+									$sel = true;
+							}
 						}
 						$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'['.$id.']" value="'.$id.'" class="radio" '.$attribute;
 						if($sel)
 							$texthtml .= ' checked="checked"';
+						if($readonly)
+							$texthtml .= ' readonly="readonly"';
 						$texthtml .= '/><div class="boxtitle">'.$name.'</div>';
 					}
 				}

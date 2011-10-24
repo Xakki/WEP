@@ -9,7 +9,7 @@ $_CFGFORM['sql'] = array(// SQL
 	<div class="showparam" onclick="show_fblock(this,\'.hsql\')"> 
 		<span class="shbg"></span>
 		<span class="sh1">Показать</span>
-		<span class="sh2">Скрыть</span> настройки подключения к БД
+		<span class="sh2">Скрыть</span> ещё настройки БД
 	</div>'),
 	'setnames' =>  array('type'=>'text','caption'=>'Кодировка БД', 'css' => 'fblock hsql', 'style' => 'display:none;'),
 	'dbpref' =>  array('type'=>'text','caption'=>'Префикс в названии таблиц', 'css' => 'fblock hsql', 'style' => 'display:none;'),
@@ -25,7 +25,7 @@ $_CFGFORM['wep'] = array(// для ядра и админки
 	<div class="showparam" onclick="show_fblock(this,\'.hwep\')"> 
 		<span class="shbg"></span>
 		<span class="sh1">Показать</span>
-		<span class="sh2">Скрыть</span> настройки ядра и админки сайта
+		<span class="sh2">Скрыть</span> ещё настройки ядра
 	</div>'),
 	'charset' => array('type'=>'text','caption'=>'Кодировка сайта', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'setlocale' => array('type'=>'text','caption'=>'Локаль ПХП', 'css' => 'fblock hwep', 'style' => 'display:none;'),

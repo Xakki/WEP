@@ -356,9 +356,9 @@ class users_class extends kernel_extends {
 	}
 
 
-	function _update($flag_select=true) {
+	function _save_item($data,$where=false) {
 		$id = $this->id;
-		$res = parent::_update($flag_select);
+		$res = parent::_save_item($data,$where);
 		if($res) {
 			global $SESSION_GOGO;
 			if($SESSION_GOGO) {
@@ -534,7 +534,7 @@ class users_class extends kernel_extends {
 								//$arr['mess'][] = array('name'=>'error', 'value'=>static_main::m('regerr',$this));
 							}
 							$flag=1;
-							$arr['mess'][] = static_main::am('error','regok');
+							$arr['mess'][] = static_main::am('ok','regok');
 						} else
 							$arr['mess'][] = static_main::am('error','regerr');
 					} 
@@ -593,17 +593,18 @@ class users_class extends kernel_extends {
 				$mess[] = static_main::am('alert','confno');
 			elseif(count($data) and $data[0]['reg_hash']==$_GET['hash']) {
 				$this->id = $data[0]['id'];
-				$this->fld_data['reg_hash']= 1;
+				$DATA = array();
+				$DATA['reg_hash']= 1;
 				if($this->owner->config['premoderation']) {
-					$this->fld_data['active']= -1;
-					$this->fld_data['owner_id']= $this->owner->config['modergroup'];
+					$DATA['active']= -1;
+					$DATA['owner_id']= $this->owner->config['modergroup'];
 				}
 				else {
-					$this->fld_data['active']= 1;
-					$this->fld_data['owner_id']= $this->owner->config['reggroup'];
+					$DATA['active']= 1;
+					$DATA['owner_id']= $this->owner->config['reggroup'];
 				}
 				
-				if($this->_update()) {
+				if($this->_save_item($DATA)) {
 					$mess[] = static_main::am('ok','confok');
 					$this->setUserSession($this->id);
 					static_main::_prmModulLoad();

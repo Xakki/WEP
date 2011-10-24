@@ -11,7 +11,7 @@ abstract class kernel_extends {
 	 * 2 - добавленн новый функционал, расширен и измененн меющиеся функции -
 	 * 3 - Номер ревизии , исправленны ошибки
 	 */
-	const versionCore = '2.4.14';
+	const versionCore = '2.4.15';
 
 	function __construct($owner=NULL) {
 		global $_CFG;
@@ -390,20 +390,18 @@ abstract class kernel_extends {
 
 	/**
 	* Update sql query
-	*
+	 * @param array $set
 	*/
-	public function qu($set,$where='') {
-		$q = 'UPDATE `' . $this->tablename . '` SET '.$set;
-		if($where)
-			$q .= ' WHERE '.$where;
-		$result = $this->SQL->execSQL($q);
-		if ($result->err)
-			return false;
-		return true;
+	public function qu($set,$where=false) {
+		return $this->_save_item($set,$where);
 	}
 
 	public function qs($list='', $cls='', $ord='', $ord2='',$debug=false) {
 		return $this->_query($list, $cls, $ord, $ord2,$debug);
+	}
+
+	public function SqlEsc($val) {
+		return $this->SQL->SqlEsc($val);
 	}
 
 	/**
@@ -467,10 +465,6 @@ abstract class kernel_extends {
 		return $data;
 	}
 
-	public function SqlEsc($val) {
-		return $this->SQL->SqlEsc($val);
-	}
-
 	private function _select_fields() {
 		$data = array();
 		$agr = ', ' . $this->_listnameSQL . ' as name';
@@ -532,6 +526,60 @@ abstract class kernel_extends {
 		return true;
 	}
 
+
+
+	/**
+	 * Обновление данных form
+	 * @param array $data 
+	 * @return array
+	*/
+	public function _save_item($data,$where=false) {
+		if(!is_array($data) and !count($data)) {
+			static_main::log('error','Wrong data for UPDATE query');
+			return false;
+		}
+		foreach ($data as $k => $r) {
+			if (isset($this->memos[$k]))
+				$this->mmo_data[$k] = $r;
+			elseif (isset($this->attaches[$k]))
+				$this->att_data[$k] = $r;
+			elseif (isset($this->fields[$k])) {
+				$this->fld_data[$k] = (is_string($r) ? $this->SqlEsc($r) : $r);
+			}
+		}
+		return $this->_update(true,$where);
+	}
+
+	/**
+	 * Сохранение данных form
+	 * @param array $data 
+	 * @return array
+	*/
+	public function _add_item($data) {
+		foreach ($data as $k => $r) {
+			if (isset($this->memos[$k]))
+				$this->mmo_data[$k] = $r;
+			elseif (isset($this->attaches[$k]))
+				$this->att_data[$k] = $r;
+			elseif (isset($this->fields[$k])) {
+				$this->fld_data[$k] = (is_string($r) ? $this->SqlEsc($r) : $r);
+			}
+		}
+		return $this->_add();
+	}
+
+	/**
+	 * Удаление данных
+	 *
+	 * @return bool
+	 */
+	public function _delete() {
+		$result = static_form::_delete($this);
+		if ($result)
+			$this->allChangeData('delete');
+		return $result;
+	}
+
 	/**
 	 * Функция добавления записей в бд
 	 * В случае успеха выполняет allChangeData('add')
@@ -550,24 +598,13 @@ abstract class kernel_extends {
 	 *
 	 * @return bool
 	 */
-	protected function _update($flag_select=true) {
-		$result = static_form::_update($this, $flag_select);
+	protected function _update($flag_select=true,$where=false) {
+		$result = static_form::_update($this, $flag_select,$where);
 		if ($result)
 			$this->allChangeData('save');
 		return $result;
 	}
 
-	/**
-	 * Удаление данных
-	 *
-	 * @return bool
-	 */
-	public function _delete() {
-		$result = static_form::_delete($this);
-		if ($result)
-			$this->allChangeData('delete');
-		return $result;
-	}
 
 	/**
 	 * Возвращает путь с дополненным параметром size
@@ -627,7 +664,7 @@ abstract class kernel_extends {
 			return '\'' . implode('\',\'', $this->id) . '\'';
 		}
 		else
-			return '\'' . mysql_real_escape_string($this->id) . '\'';
+			return '\'' . $this->SqlEsc($this->id) . '\'';
 	}
 
 	public function _get_new_ord() {
@@ -645,51 +682,6 @@ abstract class kernel_extends {
 		return $ordind;
 	}
 
-	/* ------------- ORDER ORDER ORDER ORDER ---------------- */
-
-	public function _sorting() {
-		$res = array('html'=>'','eval'=>'');
-		$this->id = $id = (int)$_GET['id'];
-		$pid = (int)$_GET['pid'];
-		$t1 = (isset($_GET['t1'])?(int)$_GET['t1']:0);
-		$t2 = (isset($_GET['t2'])?(int)$_GET['t2']:0);
-		$data = $this->_select();
-		if(!$this->mf_ordctrl or !$this->_prmModulEdit($data)) {//!static_main::_prmModul($this->_cl,array(10))
-			$res['html'] = static_main::m('Sorting denied!');
-			return $res;
-		}
-		$res['html'] = static_main::m('Sorting error');
-
-
-		if ($t2) {
-			$data = $this->qs($this->mf_ordctrl,'WHERE id='.$t2);
-			$neword = $data[0][$this->mf_ordctrl];
-
-			$qr = '`' . $this->mf_ordctrl . '`>=\'' . $neword . '\'';
-			if($this->mf_istree and $pid)
-				$qr .= ' and `'.$this->mf_istree.'`='.$pid;
-			if(!$this->qu('`' . $this->mf_ordctrl . '` = `' . $this->mf_ordctrl . '`+1',$qr))
-				return $res;
-
-			if(!$this->qu('`' . $this->mf_ordctrl . '` = ' . $neword,'`id`=' . $id ))
-				return $res;
-		}
-		$res['html'] = '';//static_main::m('Sorting successful.')
-		return $res;
-	}
-
-	/*	 * ************************ADMIN-PANEL---FUNCTION************************ */
-
-	public function fXmlModuls($modul) {
-		include_once($this->_CFG['_PATH']['core'] . 'kernel.moderxml.php');
-		return _fXmlModuls($this, $modul);
-	}
-
-	public function fXmlModulsTree($modul, $id) {
-		include_once($this->_CFG['_PATH']['core'] . 'kernel.moderxml.php');
-		return _fXmlModulsTree($this, $modul, $id);
-	}
-
 // *** PERMISSION ***//
 
 	public function _prmModulAdd() {
@@ -697,7 +689,6 @@ abstract class kernel_extends {
 			return false;
 		if (static_main::_prmModul($this->_cl, array(9)))
 			return true;
-		print_r('<pre>');print_r($this->_CFG['modulprm'][$this->_cl]);
 		return false;
 	}
 
@@ -765,162 +756,28 @@ abstract class kernel_extends {
 	}
 
 // --END PERMISSION -----//
-// MODUL configuration
 
-	public function _checkmodstruct() {
-		return static_tools::_checkmodstruct($this->_cl);
-	}
-
-	function setSystemFields() {
-		$temp = $this->fields_form;
-		$this->fields_form = array();
-		foreach($temp as $k=>$r) {
-			if($r['type']=='ckedit') {
-				$this->fields[$k.'_ckedit'] = array('type' => 'tinyint', 'width'=>3, 'attr' => 'NOT NULL','default'=>'1');
-				$this->fields_form[$k.'_ckedit'] = array('type' => 'list', 'listname'=>'wysiwyg', 'caption' => $r['caption'].' - Выбор редактора', 'mask' =>array(),'onchange'=>'SetWysiwyg(this)','mask'=>array('usercheck'=>1));
-			}
-			$this->fields_form[$k] = $r;
-		}
-	}
-
-	public function toolsReinstall() {
-		$this->form = $mess = array();
-		if (!static_main::_prmModul($this->_cl, array(11)))
-			$mess[] = static_main::am('error','denied',$this);
-		elseif (count($_POST) and $_POST['sbmt']) {
-			static_tools::_reinstall($this);
-			$mess[] = static_main::am('ok','_reinstall_ok',$this);
-		} else {
-			$this->form['_*features*_'] = array('name' => 'Reinstall', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']));
-			$this->form['_info'] = array(
-				'type' => 'info',
-				'caption' => static_main::m('_reinstall_info',$this));
-			$this->form['sbmt'] = array(
-				'type' => 'submit',
-				'value' => static_main::m('_submit',$this));
-		}
-		self::kFields2FormFields($this->form);
-		return Array('form' => $this->form, 'messages' => $mess);
-	}
-
-	public function toolsConfigmodul() {
-		$this->form = array();
-		$arr = array('mess' => '', 'vars' => '');
-		if (!static_main::_prmModul($this->_cl, array(13)))
-			$arr['mess'][] = static_main::am('error','denied',$this);
-		elseif (!count($this->config_form)) {
-			$this->form['_info'] = array(
-				'type' => 'info',
-				'caption' => static_main::m('_configno',$this));
-		} else {
-			foreach ($this->config as $k => &$r) {
-				if (is_array($r) and !isset($this->config_form[$k]['multiple'])) {
-					$temp = array();
-					foreach ($r as $t => $d) {
-						if (strpos($d, ':=') === false)
-							$temp[] = trim($t) . ':=' . trim($d);
-						else
-							$temp[] = trim($d);
-					}
-					$r = implode(' :| ', $temp);
-				}
-			}
-			if (count($_POST)) {
-				$arr = $this->fFormCheck($_POST, $arr['vars'], $this->config_form);
-				$config = array();
-				foreach ($this->config_form as $k => $r) {
-					if (isset($arr['vars'][$k])) {
-						$this->config_form[$k]['value'] = $arr['vars'][$k];
-						$config[$k] = $arr['vars'][$k];
-					}
-				}
-				$this->config = $config;
-				if (!count($arr['mess'])) {
-					$arr['mess'][] = static_main::am('ok','update',$this);
-					static_tools::_save_config($config, $this->_file_cfg);
-				}
-			}
-			static_tools::_xmlFormConf($this);
-		}
-		$this->kFields2FormFields($this->form);
-		return Array('form' => $this->form, 'messages' => $arr['mess']);
-	}
-
-	public function staticStatsmodul($oid='') {
-		return static_tools::_staticStatsmodul($this, $oid);
-	}
-
-	public function toolsCheckmodul() {
-		return static_tools::_toolsCheckmodul($this);
-	}
-
-	/*
-	  public function toolsReindex(){
-	  $this->form = $mess = array();
-	  if(!static_main::_prmModul($this->_cl,array(12)))
-	  $mess[] = array('name'=>'error', 'value'=>static_main::m('denied',$this));
-	  elseif(count($_POST) and $_POST['sbmt']){
-	  if(!$this->_reindex())
-	  $mess[] = array('name'=>'error', 'value'=>static_main::m('_reindex_ok',$this));
-	  else
-	  $mess[] = array('name'=>'error', 'value'=>static_main::m('_reindex_err',$this));
-	  }else{
-	  $this->form['_*features*_'] = array('name'=>'reindex','action'=>str_replace('&','&amp;',$_SERVER['REQUEST_URI']));
-	  $this->form['_info'] = array(
-	  'type'=>'info',
-	  'caption'=>static_main::m('_reindex_info',$this));
-	  $this->form['sbmt'] = array(
-	  'type'=>'submit',
-	  'value'=>static_main::m('_submit',$this));
-	  }
-	  self::kFields2FormFields($this->form);
-	  return Array('form'=>$this->form, 'messages'=>$mess);
-	  }
-
-	  private function _reindex()
-	  {
-	  return true;
-	  }
-	 */
-
-	public function _save_item($data) {
-		foreach ($data as $k => $r) {
-			if (isset($this->memos[$k]))
-				$this->mmo_data[$k] = $r;
-			elseif (isset($this->attaches[$k]))
-				$this->att_data[$k] = $r;
-			elseif (isset($this->fields[$k])) {
-				$this->fld_data[$k] = (is_string($r) ? mysql_real_escape_string($r) : $r);
-			}
-		}
-		return $this->_update();
-	}
-
-	public function _add_item($data) {
-		foreach ($data as $k => $r) {
-			if (isset($this->memos[$k]))
-				$this->mmo_data[$k] = $r;
-			elseif (isset($this->attaches[$k]))
-				$this->att_data[$k] = $r;
-			elseif (isset($this->fields[$k])) {
-				$this->fld_data[$k] = (is_string($r) ? mysql_real_escape_string($r) : $r);
-			}
-		}
-		return $this->_add();
-	}
 
 	/**
+	 * Вывод и обработка данных
+	 * @param array $param параметры
 	* $param
 	* - formflag
 	* - ajax
 	* - errMess
 	* - showform
-	*
+	 * @return array
 	*/
 	public function _UpdItemModul($param) {
 		return include($this->_CFG['_PATH']['core'] . 'kernel.UpdItemModul.php');
 	}
 
+	/**
+	 * Пре обработка формы
+	 * @param array $data данные
+	 * @param array $param параметры
+	 * @return array
+	*/
 	public function kPreFields(&$data, &$param) {
 		$this->setFieldsForm(1);//обнуляем форму
 		$this->setSystemFields();
@@ -1053,15 +910,36 @@ abstract class kernel_extends {
 	}
 
 	/**
-	 * $view [form,list]
-	 */
+	 * Создание данных для формы
+	 * @param mixed $form - 1 = форма
+	 * @return array
+	*/
 	public function setFieldsForm($form=0) {
 		$this->fields_form = array();
 		return true;
 	}
 
-	/*	 * ************************CLIENT---FUNCTION************************ */
-
+	/**
+	 * Создание данных для формы
+	 * @param mixed $param - параметры
+	 * @return array
+	*/
+	function setSystemFields() {
+		$temp = $this->fields_form;
+		$this->fields_form = array();
+		foreach($temp as $k=>$r) {
+			if($r['type']=='ckedit') {
+				$this->fields[$k.'_ckedit'] = array('type' => 'tinyint', 'width'=>3, 'attr' => 'NOT NULL','default'=>'1');
+				$this->fields_form[$k.'_ckedit'] = array('type' => 'list', 'listname'=>'wysiwyg', 'caption' => $r['caption'].' - Выбор редактора', 'mask' =>array(),'onchange'=>'SetWysiwyg(this)','mask'=>array('usercheck'=>1));
+			}
+			$this->fields_form[$k] = $r;
+		}
+	}
+	/**
+	 * Создание данных для формы
+	 * @param mixed $param - параметры
+	 * @return array
+	*/
 	public function kFields2Form(&$param) {
 		/*
 		  $this->form['уник название'] = array(
@@ -1098,61 +976,32 @@ abstract class kernel_extends {
 		return true;
 	}
 
+	/**
+	 * Корректировака и обработка формы для вывода формы
+	 * @param mixed $fields - название списока или массив данных для списка
+	 * @return array
+	*/
 	public function kFields2FormFields(&$fields) {
 		return include($this->_CFG['_PATH']['core'] . 'kernel.kFields2FormFields.php');
 	}
 
+	/**
+	 * проверка формы
+	 * @param mixed $data - данные
+	 * @param mixed $param - параметры
+	 * @param mixed $FORMS - форма
+	 * @return array Данные
+	*/
 	public function fFormCheck(&$data, &$param, &$FORMS) {
 		return static_form::_fFormCheck($this, $data, $param, $FORMS);
 	}
 
-	function kData2xml($DATA, $f='') {
-		$XML = '';
-		if ($f) {
-			$f = str_replace('#', '', $f);
-			$attr = '';
-			$value = '';
-			if (is_array($DATA)) {
-				if (is_int(key($DATA))) {
-					foreach ($DATA as $k => $r) {
-						$attr = '';
-						$value = '';
-						if (is_array($r)) {
-							foreach ($r as $m => $d) {
-								if (is_array($d))
-									$value .= $this->kData2xml($d, $m);
-								elseif ($m == 'value')
-									$value .= $d;
-								elseif ($m == 'name')
-									$value .= '<name><![CDATA[' . $d . ']]></name>';
-								else
-									$attr .= ' ' . str_replace('#', '', $m) . '="' . $d . '"';
-							}
-						}
-						else
-							$value = $r;
-						$XML .= '<' . $f . $attr . '>' . $value . '</' . $f . ">\n";
-					}
-					//$XML = '<'.$f.$attr.'>'.$value.'</'.$f.'>';
-				}
-				else {
-					foreach ($DATA as $k => $r) {
-						if (is_array($r)) {
-							$value .= $this->kData2xml($r, $k);
-						} elseif ($k == 'value')
-							$value .= $r;
-						elseif ($k == 'name')
-							$value .= '<name><![CDATA[' . $r . ']]></name>';
-						else
-							$attr .= ' ' . str_replace('#', '', $k) . '="' . $r . '"';
-					}
-					$XML = '<' . $f . $attr . '>' . $value . '</' . $f . '>';
-				}
-			}
-		}
-		return $XML;
-	}
-
+	/**
+	 * проверка выбранных данных из списка
+	 * @param mixed $listname - название списока или массив данных для списка
+	 * @param mixed $value - значение
+	 * @return array Список
+	*/
 	public function _checkList(&$listname, $value=NULL) {
 		$templistname = $listname;
 		if (is_array($listname))
@@ -1208,12 +1057,20 @@ abstract class kernel_extends {
 		return false;
 	}
 
+	/**
+	 * Получение списка из кеша если он там есть
+	 * @param mixed $listname - название списока или массив данных для списка
+	 * @param mixed $value - значение
+	 * @return array Список
+	*/
 	public function _getCashedList($listname, $value=NULL) {
 		$data = array();
 		$templistname = $listname;
 		if (is_array($listname))
 			$templistname = implode(',', $listname);
 		if (isset($this->_enum[$templistname])) {
+			if(!is_null($value))
+				return $this->_enum[$templistname][$value];
 			$this->_CFG['enum'][$templistname] = $this->_enum[$templistname];
 		} elseif (!isset($this->_CFG['enum'][$templistname])) {
 			if(!is_null($value) and is_array($listname)) // не кешируем если задано $value и $listname - выборка из таблиц(задается массивом)
@@ -1232,16 +1089,16 @@ abstract class kernel_extends {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
-	/*
-	  $param['xsl'] - шаблонизатор
-	  $this->_cl - name текущего класса без _class
-	  $this->_clp - построенный путь
-	 */
-////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////
+
 	/**
-	  $Ajax=0 - не скриптовая
-	 */
+	 * Универсальный обработчик вывода данных
+	 * @param array $param - параметры вывода данных
+	 * 	  $Ajax=0 - не скриптовая
+	 *		$this->_cl - name текущего класса без _class
+	 *		$this->_clp - построенный путь
+	 *		$param['xsl'] - шаблонизатор
+	 * @return array Данные для шаблонизатора
+	*/
 	public function super_inc($param=array(), $ftype='') {
 		global $HTML;
 		$rep = array('\'', '"', '\\', '/');
@@ -1368,14 +1225,20 @@ abstract class kernel_extends {
 						);
 				}
 
-			if (is_null($this->owner) and static_main::_prmModul($this->_cl, array(14)))
-				$xml['topmenu']['Checkmodul'] = array(
+			if (is_null($this->owner) and static_main::_prmModul($this->_cl, array(14))) {
+				/*$xml['topmenu']['Checkmodul'] = array(
 					'href' => $this->_clp . '_type=tools&amp;_func=Checkmodul',
 					'caption' => 'Обновить поля таблицы',
 					'sel' => 0,
 					'type' => 'tools',
 					'css' => 'wepchecktable',
-				);
+				);*/
+				if($this->ver!=$this->_CFG['modulprm'][$this->_cl]['ver']) {
+					//$_tpl['onload'] .= 'showHelp(\'.weptools.wepchecktable\',\'Версия модуля '.$MODUL->caption.'['.$MODUL->_cl.'] ('.$MODUL->ver.') отличается от версии ('.$_CFG['modulprm'][$MODUL->_cl]['ver'].') сконфигурированного для этого сайта. Обновите здесь поля таблицы.\',4000);$(\'.weptools.wepchecktable\').addClass(\'weptools_sel\');';
+					$messages[] = array('error','Версия модуля '.$this->caption.'['.$this->_cl.'] ('.$this->ver.') отличается от версии ('.$this->_CFG['modulprm'][$this->_cl]['ver'].') сконфигурированного для этого сайта. Обновите модуль.');
+				}
+
+			}
 
 			if (isset($this->config_form) and count($this->config_form) and static_main::_prmModul($this->_cl, array(13)))
 				$xml['topmenu']['Configmodul'] = array(
@@ -1522,10 +1385,146 @@ abstract class kernel_extends {
 		return array($xml, $flag);
 	}
 
+	/**
+	 * вывод данных
+	 * @param array $param - параметры вывода данных
+	 * @return array
+	*/
 	public function _displayXML(&$param) {
 		return include($this->_CFG['_PATH']['core'] . 'kernel.displayXML.php');
 	}
 
+
+// MODUL configuration
+
+	/**
+	 * Переустановка БД модуля
+	 * @return array form
+	*/
+	public function toolsReinstall() {
+		$this->form = $mess = array();
+		if (!static_main::_prmModul($this->_cl, array(11)))
+			$mess[] = static_main::am('error','denied',$this);
+		elseif (count($_POST) and $_POST['sbmt']) {
+			static_tools::_reinstall($this);
+			$mess[] = static_main::am('ok','_reinstall_ok',$this);
+		} else {
+			$this->form['_*features*_'] = array('name' => 'Reinstall', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']));
+			$this->form['_info'] = array(
+				'type' => 'info',
+				'caption' => static_main::m('_reinstall_info',$this));
+			$this->form['sbmt'] = array(
+				'type' => 'submit',
+				'value' => static_main::m('_submit',$this));
+		}
+		self::kFields2FormFields($this->form);
+		return Array('form' => $this->form, 'messages' => $mess);
+	}
+
+	public function toolsConfigmodul() {
+		$this->form = array();
+		$arr = array('mess' => '', 'vars' => '');
+		if (!static_main::_prmModul($this->_cl, array(13)))
+			$arr['mess'][] = static_main::am('error','denied',$this);
+		elseif (!count($this->config_form)) {
+			$this->form['_info'] = array(
+				'type' => 'info',
+				'caption' => static_main::m('_configno',$this));
+		} else {
+			foreach ($this->config as $k => &$r) {
+				if (is_array($r) and !isset($this->config_form[$k]['multiple'])) {
+					$temp = array();
+					foreach ($r as $t => $d) {
+						if (strpos($d, ':=') === false)
+							$temp[] = trim($t) . ':=' . trim($d);
+						else
+							$temp[] = trim($d);
+					}
+					$r = implode(' :| ', $temp);
+				}
+			}
+			if (count($_POST)) {
+				$arr = $this->fFormCheck($_POST, $arr['vars'], $this->config_form);
+				$config = array();
+				foreach ($this->config_form as $k => $r) {
+					if (isset($arr['vars'][$k])) {
+						$this->config_form[$k]['value'] = $arr['vars'][$k];
+						$config[$k] = $arr['vars'][$k];
+					}
+				}
+				$this->config = $config;
+				if (!count($arr['mess'])) {
+					$arr['mess'][] = static_main::am('ok','update',$this);
+					static_tools::_save_config($config, $this->_file_cfg);
+				}
+			}
+			static_tools::_xmlFormConf($this);
+		}
+		$this->kFields2FormFields($this->form);
+		return Array('form' => $this->form, 'messages' => $arr['mess']);
+	}
+
+	/**
+	 * Статистика модуля
+	 * @param array $oid 
+	 * @return array
+	*/
+	public function staticStatsmodul($oid='') {
+		return static_tools::_staticStatsmodul($this, $oid);
+	}
+
+
+	/*
+	  public function toolsReindex(){
+	  $this->form = $mess = array();
+	  if(!static_main::_prmModul($this->_cl,array(12)))
+	  $mess[] = array('name'=>'error', 'value'=>static_main::m('denied',$this));
+	  elseif(count($_POST) and $_POST['sbmt']){
+	  if(!$this->_reindex())
+	  $mess[] = array('name'=>'error', 'value'=>static_main::m('_reindex_ok',$this));
+	  else
+	  $mess[] = array('name'=>'error', 'value'=>static_main::m('_reindex_err',$this));
+	  }else{
+	  $this->form['_*features*_'] = array('name'=>'reindex','action'=>str_replace('&','&amp;',$_SERVER['REQUEST_URI']));
+	  $this->form['_info'] = array(
+	  'type'=>'info',
+	  'caption'=>static_main::m('_reindex_info',$this));
+	  $this->form['sbmt'] = array(
+	  'type'=>'submit',
+	  'value'=>static_main::m('_submit',$this));
+	  }
+	  self::kFields2FormFields($this->form);
+	  return Array('form'=>$this->form, 'messages'=>$mess);
+	  }
+
+	  private function _reindex()
+	  {
+	  return true;
+	  }
+	 */
+
+	/**
+	 * Tools для superinc - Проверка модуля (устарешая)
+	 * @return array
+	*/
+	public function toolsCheckmodul() {
+		return static_tools::_toolsCheckmodul($this);
+	}
+
+	/**
+	 * Проверка модуля 
+	 * @return array
+	*/
+
+	public function _checkmodstruct() {
+		$DATA = static_tools::_checkmodstruct($this->_cl);
+		return $DATA;
+	}
+
+	/**
+	 * инструмент Фильтра super_inc
+	 * @return array
+	*/
 	public function toolsFormfilter() {
 		global $_tpl;
 		$this->form = array();
@@ -1547,6 +1546,10 @@ abstract class kernel_extends {
 		return Array('filter' => $this->form, 'messages' => array());
 	}
 
+	/**
+	 * Создает форму данных для фильтра super_inc
+	 * @return array form
+	*/
 	function Formfilter() {
 		$_FILTR = array();
 		if(isset($_SESSION['filter'][$this->_cl]))
@@ -1591,6 +1594,11 @@ abstract class kernel_extends {
 		return $this->form;
 	}
 
+	/**
+	 * задает параметры запроса для super_inc
+	 * @param bool $flag - true не ощищать данные
+	 * @return array
+	*/
 	function setFilter($flag=0) {
 		if (isset($_REQUEST['f_clear_sbmt'])) {
 			unset($_SESSION['filter'][$this->_cl]);
@@ -1607,9 +1615,9 @@ abstract class kernel_extends {
 								$_REQUEST['f_' . $k . '_2'] = static_form::_get_fdate($_REQUEST['f_' . $k . '_2'], $row['mask']['format'], $this->fields[$k]['type']);
 						}
 
-						$_SESSION['filter'][$this->_cl][$k] = mysql_real_escape_string($_REQUEST['f_' . $k]);
+						$_SESSION['filter'][$this->_cl][$k] = $this->SqlEsc($_REQUEST['f_' . $k]);
 						if (isset($_REQUEST['f_' . $k . '_2']))
-							$_SESSION['filter'][$this->_cl][$k . '_2'] = mysql_real_escape_string($_REQUEST['f_' . $k . '_2']);
+							$_SESSION['filter'][$this->_cl][$k . '_2'] = $this->SqlEsc($_REQUEST['f_' . $k . '_2']);
 					} else {
 						$_SESSION['filter'][$this->_cl][$k] = array();
 						if ($is_int)
@@ -1617,7 +1625,7 @@ abstract class kernel_extends {
 								$_SESSION['filter'][$this->_cl][$k][] = (int) $row;
 						else
 							foreach ($_REQUEST['f_' . $k] as $row)
-								$_SESSION['filter'][$this->_cl][$k][] = mysql_real_escape_string($row);
+								$_SESSION['filter'][$this->_cl][$k][] = $this->SqlEsc($row);
 					}
 					if (isset($_REQUEST['exc_' . $k]) and $_REQUEST['exc_' . $k])
 						$_SESSION['filter'][$this->_cl]['exc_' . $k] = 1;
@@ -1629,11 +1637,10 @@ abstract class kernel_extends {
 		}
 	}
 
-	/* вспомогательные функции */
-
 	/**
-	 * ФИЛЬТР в запросе
-	 * */
+	 * ФИЛЬТР в запросе для super_inc
+	 * @return array
+	*/
 	function _filter_clause() {
 		$cl = $_FILTR = array();
 		$flag_filter = 0;
@@ -1685,6 +1692,11 @@ abstract class kernel_extends {
 		return array($cl, $flag_filter);
 	}
 
+	/**
+	 * задает параметры запроса для super_inc
+	 * @param array $param - данные параметра
+	 * @return array
+	*/
 	function _moder_clause(&$param) {
 		if (!isset($param['clause']) or !is_array($param['clause']))
 			$param['clause'] = array();
@@ -1716,6 +1728,12 @@ abstract class kernel_extends {
 		return $param['clause'];
 	}
 
+	/**
+	 * задает атрибуты для super_inc
+	 * @param array $row - данные
+	 * @param array $param - данные параметра
+	 * @return array
+	*/
 	private function _tr_attribute(&$row, &$param) {
 		$xml = array();
 		if ($this->_prmModulEdit($row, $param))
@@ -1733,8 +1751,12 @@ abstract class kernel_extends {
 		return $xml;
 	}
 
-	/* Активация */
-
+	/**
+	 * Активация данных $this->id
+	 * @param array $act - 1 or 0 
+	 * @param array $param - данные 
+	 * @return array
+	*/
 	public function _Act($act, &$param) {
 		$flag = 1;
 		$xml = array();
@@ -1779,34 +1801,11 @@ abstract class kernel_extends {
 		return array($xml, $flag);
 	}
 
-	public function _ORD($ord, &$param) {
-		$flag = 1;
-		$xml = array();
-		if ($param['mess'])
-			$xml = $param['mess'];
-		$this->data = $this->_select();
-		if ($this->_prmModulEdit($this->data, $param)) {
-			$this->fld_data = array();
-			$this->fld_data[$this->mf_ordctrl] = $this->data[$this->id][$this->mf_ordctrl]+$ord;
-
-			if ($this->_update()) {
-				if ($ord<0)
-					$xml[] = array('value' => 'UP', 'name' => 'ok');
-				else
-					$xml[] = array('value' => 'DOWN', 'name' => 'ok');
-				$flag = 0;
-			}
-			else
-				$xml[] = static_main::am('error','update_err',$this);
-		}
-		else
-			$xml[] = static_main::am('error','denied',$this);
-		return array($xml, $flag);
-	}
-
-
-////////////// -------DELETE---------------
-
+	/**
+	 * удаление данных $this->id
+	 * @param array $param - данные 
+	 * @return array
+	*/
 	public function _Del($param) {
 		$flag = 1;
 		$xml = array();
@@ -1834,12 +1833,87 @@ abstract class kernel_extends {
 		return array($xml, $flag);
 	}
 
+	/**
+	 * сортировка $this->id
+	 * @param int $ord - позиция 
+	 * @param array $param - данные 
+	 * @return array
+	*/
+	public function _ORD($ord, &$param) {
+		$flag = 1;
+		$xml = array();
+		if ($param['mess'])
+			$xml = $param['mess'];
+		$this->data = $this->_select();
+		if ($this->_prmModulEdit($this->data, $param)) {
+			$this->fld_data = array();
+			$this->fld_data[$this->mf_ordctrl] = $this->data[$this->id][$this->mf_ordctrl]+$ord;
+
+			if ($this->_update()) {
+				if ($ord<0)
+					$xml[] = array('value' => 'UP', 'name' => 'ok');
+				else
+					$xml[] = array('value' => 'DOWN', 'name' => 'ok');
+				$flag = 0;
+			}
+			else
+				$xml[] = static_main::am('error','update_err',$this);
+		}
+		else
+			$xml[] = static_main::am('error','denied',$this);
+		return array($xml, $flag);
+	}
+
+	/**
+	 * Сортировка 
+	 * @return array
+	*/
+	public function _sorting() {
+		$res = array('html'=>'','eval'=>'');
+		$this->id = $id = (int)$_GET['id'];
+		$pid = (int)$_GET['pid'];
+		$t1 = (isset($_GET['t1'])?(int)$_GET['t1']:0);
+		$t2 = (isset($_GET['t2'])?(int)$_GET['t2']:0);
+		$data = $this->_select();
+		if(!$this->mf_ordctrl or !$this->_prmModulEdit($data)) {//!static_main::_prmModul($this->_cl,array(10))
+			$res['html'] = static_main::m('Sorting denied!');
+			return $res;
+		}
+		$res['html'] = static_main::m('Sorting error');
+
+
+		if ($t2) {
+			$data = $this->qs($this->mf_ordctrl,'WHERE id='.$t2);
+			$neword = $data[0][$this->mf_ordctrl];
+
+			$qr = '`' . $this->mf_ordctrl . '`>=\'' . $neword . '\'';
+			if($this->mf_istree and $pid)
+				$qr .= ' and `'.$this->mf_istree.'`='.$pid;
+			if(!$this->qu(array($this->mf_ordctrl => '`'.$this->mf_ordctrl . '`+1'),$qr))
+				return $res;
+
+			if(!$this->qu(array($this->mf_ordctrl => $neword) ,'`id`=' . $id ))
+				return $res;
+		}
+		$res['html'] = '';//static_main::m('Sorting successful.')
+		return $res;
+	}
+
+	/**
+	 * при успешном изменении данных 
+	 * @param string $type - add, save, delete
+	 * @param array $data - данные 
+	 * @return bool
+	*/
 	function allChangeData($type='', $data='') {
 		return true;
 	}
 
-	/* TREE CREATOR */
-
+	/**
+	 * пулучение древамасиива из одномерного массива
+	 * @param array $path - путь
+	 * @return string XML
+	*/
 	public function _forlist(&$data, $id, $select='',$multiple=0) {
 		/*
 		  array('name'=>'NAME','id'=>1 [, 'sel'=>0, 'checked'=>0])
@@ -1894,20 +1968,7 @@ abstract class kernel_extends {
 		return $s;
 	}
 
-	public function path2xsl($path) {
-		$xml = '<path>';
-		foreach ($path as $key => $value) {
-			if (is_int($key))
-				$href = '<href></href>';
-			else
-				$href = '<href>' . $key . '</href>';
-
-			$xml.= '<item>' . $href . '<name><![CDATA[' . $value . ']]></name></item>';
-		}
-		$xml .= '</path>';
-		return $xml;
-	}
-
+	// Постраничная навигация
 	public function fPageNav($countfield, $thisPage='', $flag=0) {
 		//$countfield - бщее число элем-ов
 		//$thisPage - по умол тек путь к странице
@@ -2006,6 +2067,7 @@ abstract class kernel_extends {
 		return $DATA;
 	}
 
+	// путь к фаилам
 	public function getPathForAtt($key) {
 		if (isset($this->attaches[$key]['path']) and $this->attaches[$key]['path'])
 			$pathimg = $this->attaches[$key]['path'];
@@ -2014,6 +2076,7 @@ abstract class kernel_extends {
 		return $pathimg;
 	}
 
+	// путь к фаилам MEMO данных
 	public function getPathForMemo($key) {
 		if (isset($this->memos[$key]['path']) and $this->memos[$key]['path'])
 			$pathimg = $this->memos[$key]['path'];

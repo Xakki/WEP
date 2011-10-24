@@ -226,7 +226,11 @@ class static_main {
 		return false;
 	}
 
-	static function _prmModulLoad() { // подгрука данных прав доступа
+	/**
+	 * подгрука данных прав доступа и пути подключения модулей
+	 * @return bool
+	 */
+	static function _prmModulLoad() {
 		global $_CFG, $SQL;
 		if (!isset($_CFG['modulprm'])) {
 			session_go();
@@ -273,7 +277,7 @@ class static_main {
 	}
 
 	/**
-	 * Получаем реальный путь из поля path
+	 * Получаем реальный путь из поля path для PG
 	 * @param string $path
 	 * @return string
 	 */
@@ -285,8 +289,10 @@ class static_main {
 		return $_CFG['modulinc'][$path[0]]['path'] . $path[1];
 	}
 
-	/*
-	  Проверка доступа пол-ля по уровню привелегии
+	/**
+	 * Проверка доступа пол-ля по уровню привелегии
+	 * @param int $level - level пользователя
+	 * @return bool
 	 */
 	static function _prmUserCheck($level=5) {
 		global $_CFG;
@@ -298,8 +304,10 @@ class static_main {
 		return false;
 	}
 
-	/*
-	  Проверка доступа пол-ля по её группе
+	/**
+	 * Проверка доступа пользователя по её группе
+	 * @param int $id - id группы
+	 * @return bool
 	 */
 	static function _prmGroupCheck($id=1) {
 		global $_CFG;
@@ -314,12 +322,15 @@ class static_main {
 		return false;
 	}
 
-	/*
-	  Ф. авторизации пользователя
+	/**
+	 * авторизации пользователя по входнным данным либо по кукам
+	 * @param string $login - логин или емал
+	 * @param string $pass - пароль
+	 * @return array 0=>текст сообщения , 1=> статус
 	 */
 	static function userAuth($login='', $pass='') {
 		global $_CFG;
-		session_go();
+		session_go();// запускаем сессию, чтоб проверить авторизован ли пользователь
 		$result = array('', 0);
 		if (!self::_prmUserCheck() or $login) {
 			if ($_CFG['wep']['access']) {
@@ -335,13 +346,14 @@ class static_main {
 				}
 			}
 			elseif ($_CFG['wep']['login'] and $_CFG['wep']['password']) {
+				// Авторизация без использования БД , логин и пароль берутся из конфига
 				$flag = 0;
 				if (isset($_COOKIE['remember']) and $_COOKIE['remember'] and $_CFG['wep']['login'] == substr($_COOKIE['remember'], ($pos + 1)) and md5($_CFG['wep']['md5'].$_CFG['wep']['password']) == substr($_COOKIE['remember'], 0, $pos))
 					$flag = 1;
 				elseif ($login and $pass and $_CFG['wep']['login'] == $login and $_CFG['wep']['password'] == $pass)
 					$flag = 1;
 				if ($flag) {
-					session_go(true);
+					session_go(true);// принудительный запуск сессия для пользователя
 					$_SESSION['user']['id'] = 1;
 					$_SESSION['user']['name'] = $_CFG['wep']['login'];
 					$_SESSION['user']['gname'] = "GOD MODE";
@@ -370,8 +382,10 @@ class static_main {
 		return $result;
 	}
 
-	/* Закрытие сессии пользователя
-	*/
+	/**
+	 * Закрытие сессии пользователя
+	 * @return void
+	 */
 	static function userExit() {
 		global $_CFG;
 		session_go();
@@ -387,17 +401,15 @@ class static_main {
 		//
 	}
 
-	/* округление числа до кратного 10 и более
-	*/
-	static function okr($x, $y) {
-		$z = pow(10, $y);
-		return $z * round($x / $z);
-	}
 
-	/* Вставка массива , после указанного ключа
-	* @data - Массив в который будет вставляться $insert_data
-	* @afterkey - ключ массива $data, после которого будет вставлен массив $insert_data
-	* @insert_data - вставляемый массив
+/*Функции вспомогательные*/
+
+	/**
+	 * Вставка массива , после указанного ключа
+	 * @param array $data - Массив в который будет вставляться $insert_data
+	 * @param value $afterkey - ключ массива $data, после которого будет вставлен массив $insert_data
+	 * @param array $insert_data - вставляемый массив
+	 * @return array
 	*/
 	static function insertInArray($data, $afterkey, $insert_data) {
 		$output = array();
@@ -413,8 +425,12 @@ class static_main {
 		}
 		return $insert_data;
 	}
-	
-	/* Рекурсивное слияние 2х многомерных массивов
+
+	/**
+	 * Рекурсивное слияние 2х многомерных массивов
+	 * @param array $Arr1 - 1ый массив
+	 * @param array $Arr2 - 2ой массив
+	 * @return array
 	*/
 	static function MergeArrays($Arr1, $Arr2) {
 		foreach ($Arr2 as $key => $Value) {
@@ -427,8 +443,10 @@ class static_main {
 		return $Arr1;
 	}
 
-	/* ИЗ полного(абсолютного) пути к фаилу получаем относительный путь с корня сайта
-	* @file - абсолютный путь к фаилу
+	/**
+	 * ИЗ полного(абсолютного) пути к фаилу получаем относительный путь с корня сайта
+	 * @param string $file - абсолютный путь к фаилу
+	 * @return string относительный путь к фаилу	
 	*/
 	static function relativePath($file) {
 		global $_CFG;
@@ -441,10 +459,12 @@ class static_main {
 		return $file;
 	}
 
-	/* Обрезание текста по длине , оставляя максимум целых слов.
-	* @text - текст
-	* @col - максим длина строки
-	* @clearFormat - чистка строки от тегов
+	/**
+	 * Обрезание текста по длине , оставляя максимум целых слов.
+	 * @param string $text - текст
+	 * @param int $col - максим длина строки
+	 * @param bool $clearFormat - чистка строки от тегов
+	 * @return string обрезанный текст
 	*/
 	static function pre_text($text, $col, $clearFormat = true) {
 		if ($clearFormat)
@@ -457,9 +477,11 @@ class static_main {
 		return $text;
 	}
 
-	/* Замена в тексте ссылок на редирект
-	* @text - текст в котором будет производится поиск
-	* @name - подстановочное название ссылок, если $name==false - то название будет как самы ссылка только без http:// и www
+	/**
+	 * Замена в тексте ссылок на редирект
+	 * @param string $text - текст в котором будет производится поиск
+	 * @param int $name - подстановочное название ссылок, если $name==false - то название будет как самы ссылка только без http:// и www
+	 * @return string текст
 	*/
 	static function redirectLink($text,$name='Ссылка') {
 		global $_CFG;
@@ -479,5 +501,58 @@ class static_main {
 			$text = str_replace($cont[0],$temp,$text);
 		}
 		return $text;
+	}
+
+	/**
+	 * Преобразование массива данных в XML формат
+	 * @param array $DATA - путь
+	 * @param strin $f - название тега (по умолч item) 
+	 * @return string XML
+	*/
+	static function kData2xml($DATA, $f='item') {
+		$XML = '';
+		if ($f) {
+			$f = str_replace('#', '', $f);
+			$attr = '';
+			$value = '';
+			if (is_array($DATA)) {
+				if (is_int(key($DATA))) {
+					foreach ($DATA as $k => $r) {
+						$attr = '';
+						$value = '';
+						if (is_array($r)) {
+							foreach ($r as $m => $d) {
+								if (is_array($d))
+									$value .= self::kData2xml($d, $m);
+								elseif ($m == 'value')
+									$value .= $d;
+								elseif ($m == 'name')
+									$value .= '<name><![CDATA[' . $d . ']]></name>';
+								else
+									$attr .= ' ' . str_replace('#', '', $m) . '="' . $d . '"';
+							}
+						}
+						else
+							$value = $r;
+						$XML .= '<' . $f . $attr . '>' . $value . '</' . $f . ">\n";
+					}
+					//$XML = '<'.$f.$attr.'>'.$value.'</'.$f.'>';
+				}
+				else {
+					foreach ($DATA as $k => $r) {
+						if (is_array($r)) {
+							$value .= self::kData2xml($r, $k);
+						} elseif ($k == 'value')
+							$value .= $r;
+						elseif ($k == 'name')
+							$value .= '<name><![CDATA[' . $r . ']]></name>';
+						else
+							$attr .= ' ' . str_replace('#', '', $k) . '="' . $r . '"';
+					}
+					$XML = '<' . $f . $attr . '>' . $value . '</' . $f . '>';
+				}
+			}
+		}
+		return $XML;
 	}
 }

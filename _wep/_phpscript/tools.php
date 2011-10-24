@@ -28,6 +28,11 @@ function tools_step3() {
 	return require($file);
 }
 
+function tools_updater() {
+	$href = 'http://xakki.ru/_json.php?_modul=gitwep&_fn=sourceinfo';
+	return file_get_contents($href);
+}
+
 function tools_docron() {
 	global $_CFG;
 	$ttw  = getmicrotime();
@@ -423,6 +428,7 @@ $dataF = array(
 	'tools_step1'=>'<span class="tools_item">Настройки сайта</span>',
 	'tools_step2'=>'<span class="tools_item">Проверка структуры сайта</span>',
 	'tools_step3'=>'<span class="tools_item">Установка модулей и удаление.</span>',
+	'tools_updater'=>'<span class="tools_item" style="color:red;">Обновление</span>',
 	'tools_cron'=>'<span class="tools_item">Настройка Крона</span>',
 	'tools_docron'=>'<span class="tools_item">Выполнить Крон вручную</span>',
 	'tools_sendMail'=>'<span class="tools_item">Отправка почты</span>',

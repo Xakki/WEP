@@ -9,6 +9,7 @@ class content_class extends kernel_extends {
 		$this->mf_actctrl = true;
 		$this->caption = 'Содержимое';
 		$this->tablename = $this->_CFG['sql']['dbpref'].'pg_content';
+		$this->addForm = array();
 		return true;
 	}
 
@@ -21,6 +22,8 @@ class content_class extends kernel_extends {
 		$this->fields['global'] = array('type' => 'bool', 'attr' => 'NOT NULL','default'=>'0');
 		$this->fields['pagetype'] = array('type' => 'varchar', 'width'=>255, 'attr' => 'NOT NULL','default'=>'');
 		$this->fields['funcparam'] = array('type' => 'varchar', 'width'=>255, 'attr' => 'NOT NULL','default'=>'');
+		$this->fields['keywords'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL','default'=>'');
+		$this->fields['description'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL','default'=>'');
 		$this->fields['ugroup'] =array('type' => 'varchar', 'width'=>254, 'attr' => 'NOT NULL','default'=>'|0|');
 		$this->fields['styles'] = array('type' => 'varchar', 'width'=> 254, 'attr' => 'NOT NULL','default'=>'');
 		$this->fields['script'] = array('type' => 'varchar', 'width'=> 254, 'attr' => 'NOT NULL','default'=>'');
@@ -61,7 +64,9 @@ class content_class extends kernel_extends {
 		if($this->_CFG['wep']['access'])
 			$this->fields_form['ugroup'] = array('type' => 'list','multiple'=>2,'listname'=>'ugroup', 'caption' => 'Доступ','default'=>'0');
 		$this->fields_form['styles'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'style', 'caption' => 'CSS', 'mask' =>array('onetd'=>'Дизайн'));
-		$this->fields_form['script'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'script', 'caption' => 'SCRIPT','mask' =>array('onetd'=>'close'));
+		$this->fields_form['script'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'script', 'caption' => 'SCRIPT','mask' =>array('onetd'=>'none'));
+		$this->fields_form['keywords'] = array('type' => 'text', 'caption' => 'META-keywords','mask'=>array('onetd'=>'none'));
+		$this->fields_form['description'] = array('type' => 'text', 'caption' => 'META-description','mask'=>array('onetd'=>'close'));
 		$this->fields_form['ordind'] = array('type' => 'text', 'caption' => 'ORD');
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
 		$this->fields_form['memcache'] = array('type' => 'int', 'caption' => 'Memcache time','comment'=>'-1 - отключает кеш полностью,0 - откл кеширование,1> - кеширование в сек.','mask' =>array('fview'=>1));
@@ -210,7 +215,7 @@ class content_class extends kernel_extends {
 	}
 
 
-	public function _save_item($vars=array()) {
+	public function _save_item($vars=array(),$where=false) {
 		$funcparam = array();
 		if(count($this->addForm)) {
 			foreach($this->addForm as $k=>$r) {
@@ -223,7 +228,7 @@ class content_class extends kernel_extends {
 				$vars['funcparam'] = implode('&',$funcparam);
 			}
 		}
-		if($ret = parent::_save_item($vars)) {
+		if($ret = parent::_save_item($vars,$where)) {
 		}
 		return $ret;
 	}

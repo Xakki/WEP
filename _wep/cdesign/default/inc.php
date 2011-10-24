@@ -63,6 +63,11 @@
 							$MODUL->setFilter(1);
 							list($DATA,$flag) = $MODUL->super_inc($param,$_GET['_type']);
 
+							if($MODUL->ver!=$_CFG['modulprm'][$MODUL->_cl]['ver']) {
+								$html = 'Версия модуля '.$MODUL->caption.'['.$MODUL->_cl.'] ('.$MODUL->ver.') отличается от версии ('.$_CFG['modulprm'][$MODUL->_cl]['ver'].') сконфигурированного для этого сайта. Обновите здесь поля таблицы.';
+							}
+
+
 							if($_GET['_type']=="add" or $_GET['_type']=="edit") {
 								if(isset($DATA['formcreat']) and isset($DATA['formcreat']['form']) and count($DATA['formcreat']['form'])) {
 									$DATA['formcreat']['path'] = $HTML->path;
@@ -96,8 +101,6 @@
 							}
 
 //} $tt[$j] = getmicrotime()-$tt[$j]; $summ += $tt[$j]; } echo 'Среднее время = "'.($summ/5).'" ';echo $tt;
-					if($MODUL->ver!=$_CFG['modulprm'][$MODUL->_cl]['ver'])
-						$_tpl['onload'] .= 'showHelp(\'.weptools.wepchecktable\',\'Версия модуля '.$MODUL->caption.'['.$MODUL->_cl.'] ('.$MODUL->ver.') отличается от версии ('.$_CFG['modulprm'][$MODUL->_cl]['ver'].') сконфигурированного для этого сайта. Обновите здесь поля таблицы.\',4000);$(\'.weptools.wepchecktable\').addClass(\'weptools_sel\');';
 				}
 
 			}

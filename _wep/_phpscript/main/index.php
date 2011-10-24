@@ -27,10 +27,7 @@
 	}
 	elseif(isset($_GET['_php']) and $_GET['_php']=='json') {
 		$_CFG['returnFormat'] = 'json';
-		if(file_exists($_CFG['_PATH']['wepconf'].'_phpscript/_json.php'))
-			require_once($_CFG['_PATH']['wepconf'].'_phpscript/_json.php');
-		else
-			require_once($_CFG['_PATH']['wep'].'_phpscript/main/_json.php');
+		require_once($_CFG['_PATH']['wep'].'_phpscript/main/_json.php');
 		exit();
 	}
 	elseif(isset($_GET['_php']) and $_GET['_php']=='js') {

@@ -196,7 +196,7 @@ class static_form {
 	// out: 0 - success,
 	//      otherwise errorcode
 
-	static function _update(&$_this,$flag_select=true) {
+	static function _update(&$_this,$flag_select=true,$where=false) {
 		if ($_this->mf_istree and !is_array($_this->id)) {
 			if ($_this->fld_data[$_this->mf_istree]==$_this->id)
 				return static_main::log('error','Child `'.$_this->caption.'` can`t be owner to self ');
@@ -214,7 +214,9 @@ class static_form {
 			if (!self::_rename_attaches($_this)) return false;
 			if (!self::_rename_memos($_this)) return false;
 		}
-		if (!self::_update_fields($_this)) return false;
+
+		if (!self::_update_fields($_this,$where)) return false;
+
 		if (isset($_this->fld_data['id']))
 			$_this->id = $_this->fld_data['id'];
 		//umask($_this->_CFG['wep']['chmod']);
@@ -227,7 +229,7 @@ class static_form {
 	}
 
 
-	static function _update_fields(&$_this) {
+	static function _update_fields(&$_this,$where=false) {
 		if (!count($_this->fld_data)) return true;
 		// preparing
 		$data = array();
@@ -238,8 +240,18 @@ class static_form {
 			else
 				$data[$key] = '`'.$key.'` = \''.$value.'\'';
 		}
-		
-		$result = $_this->SQL->execSQL('UPDATE `'.$_this->tablename.'` SET '.implode(',', $data).' WHERE id IN ('.$_this->_id_as_string().')');
+		$q = 'UPDATE `'.$_this->tablename.'` SET '.implode(',', $data);
+		if($where!==false) {
+			$q .= ' WHERE '.$where;
+		} else {
+			$iq = $_this->_id_as_string();
+			if(!$iq) {
+				static_main::log('error','Error update');
+				return false;
+			}
+			$q .= ' WHERE id IN ('.$iq.')';
+		}
+		$result = $_this->SQL->execSQL($q);
 		if($result->err) return false;
 		if(isset($_this->fld_data[$_this->owner_name]) and !is_array($_this->id))
 			$_this->owner_id = $_this->fld_data[$_this->owner_name];

@@ -294,7 +294,7 @@ class static_tools {
 		else
 			return array($result->err, '');
 
-		$stepY = static_main::okr($maxY, 1) / 10;
+		$stepY = round($maxY, -1) / 10;
 		$f = 'readyPlot(\'' . $MODUL->caption . '\',\'' . $MODUL->mf_statistic['Xname'] . '\',\'' . $MODUL->mf_statistic['Yname'] . '\',' . $stepY . ');';
 		$eval = '
 	line1 = [' . implode(',', $data) . '];
@@ -399,117 +399,6 @@ class static_tools {
 		return true;
 	}
 
-	static function _toolsCheckmodul(&$MODUL) {
-		global $HTML;
-		$flag = 0;
-		$MODUL->form = $mess = array();
-		if (!static_main::_prmModul($MODUL->_cl, array(14)))
-			$mess[] = array( 'error','Access denied');
-		else {
-			$check_result = $MODUL->_checkmodstruct();
-
-			if (isset($_POST['sbmt'])) {
-				$flag = 1;
-				foreach ($check_result as $_cl => $row) {
-					if (isset($row['@reattach']) and isset($_POST['query_'.$_cl]['reattach'])) {
-						_new_class($_cl, $MODUL_R);
-						if (self::_reattaches($MODUL_R))
-							$mess[] = array( 'ok', '<b>' . $_cl . '</b> - ' . static_main::m('_file_ok',$MODUL));
-						else {
-							$mess[] = array( 'error','<b>' . $_cl . '</b> - ' . static_main::m('_file_err',$MODUL));
-							$flag = -1;
-						}
-						unset($row['@reattach']);
-					}
-					foreach ($row as $kk => $rr) {
-						if(is_array($rr)) {
-							if(isset($rr['@newquery']) and isset($_POST['query_'.$_cl][$kk.'@newquery'])) {
-								$result = $MODUL->SQL->execSQL($rr['@newquery']);
-								if ($result->err) {
-									$mess[] = array( 'error','Error new query(' . $rr['@newquery'] . ')');
-									$flag = -1;
-								}
-							}
-							if(isset($rr['@index']) and isset($_POST['query_'.$_cl][$kk.'@index'])) {
-									$result = $MODUL->SQL->execSQL($rr['@index']);
-									if ($result->err) {
-										$mess[] = array( 'error','Error index query(' . $rr['@index']. ')');
-										$flag = -1;
-									}
-							}
-						}
-					}//end foreach
-				}
-				if (count($_POST)<=1)
-					$mess[] = static_main::am('alert','_recheck_have_nothing',$MODUL);
-				if ($flag)
-					$mess[] = static_main::am('ok','_recheck_ok',$MODUL);
-				//'  <a href="" onclick="window.location.reload();return false;">Обновите страницу.</a>'
-			}
-			else {
-				$MODUL->form['_*features*_'] = array('name' => 'Checkmodul', 'method' => 'POST', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']));
-				if (count($check_result)) {
-					$MODUL->form['_info'] = array(
-						'type' => 'info',
-						'caption' => static_main::m('_recheck',$MODUL),
-					);
-					$MODUL->form['invert'] = array(
-						'type' => 'info',
-						'caption' => '<a href="#" onclick="return invert_select(\'form\');">Инвертировать выделение</a>',
-					);
-
-					foreach ($check_result as $_cl => $row) {
-						$valuelist = $message = array();
-						if (is_array($row) and count($row)) {
-							if (isset($row['@reattach'])) {
-								$valuelist['reattach'] = '<span style="color:blue;">Обновить файлы</span>';
-								unset($row['@reattach']);
-							}
-							foreach ($row as $kk => $rr) {
-								if (isset($rr['@mess'])) {
-									$message = array_merge($message,$rr['@mess']);
-								}
-								if (!is_array($rr))
-									$desc = $rr;
-								elseif (isset($rr['@newquery']) and isset($rr['@oldquery']))
-									$desc = 'Было: ' . htmlspecialchars($rr['@oldquery'], ENT_QUOTES, $MODUL->_CFG['wep']['charset']) . '<br/>Будет: ' . htmlspecialchars($rr['@newquery'], ENT_QUOTES, $MODUL->_CFG['wep']['charset']);
-								elseif (isset($rr['@newquery']))
-									$desc = htmlspecialchars($rr['@newquery'], ENT_QUOTES, $MODUL->_CFG['wep']['charset']);
-								else
-									$desc = '';
-								if ($desc)
-									$valuelist[$kk.'@newquery'] = '<i>' . $kk . '</i> - ' . $desc;
-
-								if (is_array($rr) and isset($rr['@index']))
-									$valuelist[$kk.'@index'] = '<i>' . $kk . '</i> - ' . $rr['@index'];
-							}
-							if (count($valuelist)) {
-								$message = array('messages'=>$message);
-								$MODUL->form['query_'.$_cl]  = array(
-									'caption'=>'Модуль '.$_cl,
-									'type'=>'checkbox',
-									'valuelist'=>$valuelist,
-									'comment' => $HTML->transformPHP($message, 'messages'),
-									'style'=>'border:solid 1px gray;margin:3px 0;'
-								);
-							}elseif(count($message))
-								$mess = array_merge($mess,$message);
-						}
-						else
-							$mess[] = array( 'error','Error data (' . $_cl . ' - ' . print_r($row, true) . ')');
-					}
-
-					$MODUL->form['sbmt'] = array(
-						'type' => 'submit',
-						'value' => static_main::m('_submit',$MODUL)
-					);
-				} else
-					$mess[] = static_main::am('ok','_recheck_have_nothing',$MODUL);
-			}
-		}
-		$DATA = array('form' => $MODUL->form, 'messages' => $mess);
-		return Array($flag,$DATA);
-	}
 	/**
 	 * Проверка структуры модуля
 	 *
@@ -552,7 +441,13 @@ class static_tools {
 				if ($temp and count($temp))
 					$rDATA = array_merge($rDATA, $temp);
 			}
-
+		if(!$OWN and $MODUL->ver!=$MODUL->_CFG['modulprm'][$MODUL->_cl]['ver']) {
+			$file = $MODUL->_CFG['modulprm'][$Mid]['path'];
+			$file = substr($file,0,-(strlen($Mid.'.class.php'))).'updater/'.$MODUL->ver.'.php';
+			if(file_exists($file)) {
+				include($file);
+			}
+		}
 		return $rDATA;
 	}
 
@@ -770,6 +665,126 @@ class static_tools {
 			file_put_contents($_CFG['_PATH']['wepconf'] . '.htaccess','Deny from all');
 		}
 		return $flag;
+	}
+
+	/*STEP2 функция*/
+	static function _toolsCheckmodul(&$MODUL) {
+		global $HTML;
+		$flag = 0;
+		$MODUL->form = $mess = array();
+		if (!static_main::_prmModul($MODUL->_cl, array(14)))
+			$mess[] = array( 'error','Access denied');
+		else {
+			$check_result = $MODUL->_checkmodstruct();
+
+			if (isset($_POST['sbmt'])) {
+				$flag = 1;
+				foreach ($check_result as $_cl => $row) {
+					if (isset($row['@reattach']) and isset($_POST['query_'.$_cl]['reattach'])) {
+						_new_class($_cl, $MODUL_R);
+						if (self::_reattaches($MODUL_R))
+							$mess[] = array( 'ok', '<b>' . $_cl . '</b> - ' . static_main::m('_file_ok',$MODUL));
+						else {
+							$mess[] = array( 'error','<b>' . $_cl . '</b> - ' . static_main::m('_file_err',$MODUL));
+							$flag = -1;
+						}
+						unset($row['@reattach']);
+					}
+					foreach ($row as $kk => $rr) {
+						if(is_array($rr)) {
+							if(isset($rr['@newquery']) and isset($_POST['query_'.$_cl][$kk.'@newquery'])) {
+								$result = $MODUL->SQL->execSQL($rr['@newquery']);
+								if ($result->err) {
+									$mess[] = array( 'error','Error new query(' . $rr['@newquery'] . ')');
+									$flag = -1;
+								}
+							}
+							if(isset($rr['@index']) and isset($_POST['query_'.$_cl][$kk.'@index'])) {
+									$result = $MODUL->SQL->execSQL($rr['@index']);
+									if ($result->err) {
+										$mess[] = array( 'error','Error index query(' . $rr['@index']. ')');
+										$flag = -1;
+									}
+							}
+						}
+					}//end foreach
+				}
+				if (count($_POST)<=1)
+					$mess[] = static_main::am('alert','_recheck_have_nothing',$MODUL);
+				if ($flag)
+					$mess[] = static_main::am('ok','_recheck_ok',$MODUL);
+				//'  <a href="" onclick="window.location.reload();return false;">Обновите страницу.</a>'
+			}
+			else {
+				$MODUL->form['_*features*_'] = array('name' => 'Checkmodul', 'method' => 'POST', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']));
+				if (count($check_result)) {
+					$MODUL->form['_info'] = array(
+						'type' => 'info',
+						'caption' => static_main::m('_recheck',$MODUL),
+					);
+					$MODUL->form['invert'] = array(
+						'type' => 'info',
+						'caption' => '<a href="#" onclick="return invert_select(\'form\');">Инвертировать выделение</a>',
+					);
+
+					foreach ($check_result as $_cl => $row) {
+						$valuelist = $message = array();
+						if (is_array($row) and count($row)) {
+							if (isset($row['@reattach'])) {
+								$valuelist['reattach'] = '<span style="color:blue;">Обновить файлы</span>';
+								unset($row['@reattach']);
+							}
+							$value = '';
+							if (isset($row['@value'])) {
+								$value = $row['@value'];
+								unset($row['@value']);
+							}
+							foreach ($row as $kk => $rr) {
+								if (isset($rr['@mess'])) {
+									$message = array_merge($message,$rr['@mess']);
+								}
+								if (!is_array($rr))
+									$desc = $rr;
+								elseif (isset($rr['@newquery']) and isset($rr['@oldquery']))
+									$desc = 'Было: ' . htmlspecialchars($rr['@oldquery'], ENT_QUOTES, $MODUL->_CFG['wep']['charset']) . '<br/>Будет: ' . htmlspecialchars($rr['@newquery'], ENT_QUOTES, $MODUL->_CFG['wep']['charset']);
+								elseif (isset($rr['@newquery']))
+									$desc = htmlspecialchars($rr['@newquery'], ENT_QUOTES, $MODUL->_CFG['wep']['charset']);
+								else
+									$desc = '';
+								if ($desc)
+									$valuelist[$kk.'@newquery'] = '<i>' . $kk . '</i> - ' . $desc;
+
+								if (is_array($rr) and isset($rr['@index']))
+									$valuelist[$kk.'@index'] = '<i>' . $kk . '</i> - ' . $rr['@index'];
+							}
+							if (count($valuelist)) {
+								$message = array('messages'=>$message);
+								$MODUL->form['query_'.$_cl]  = array(
+									'caption'=>'Модуль '.$_cl,
+									'type'=>'checkbox',
+									'valuelist'=>$valuelist,
+									'comment' => $HTML->transformPHP($message, 'messages'),
+									'style'=>'border:solid 1px gray;margin:3px 0;'
+								);
+								if($value)
+									$MODUL->form['query_'.$_cl]['value'] = $value;
+							}elseif(count($message))
+								$mess = array_merge($mess,$message);
+						}
+						else
+							$mess[] = array( 'error','Error data (' . $_cl . ' - ' . print_r($row, true) . ')');
+					}
+
+					$MODUL->form['sbmt'] = array(
+						'type' => 'submit',
+						'value' => static_main::m('_submit',$MODUL)
+					);
+				} else
+					$mess[] = static_main::am('ok','_recheck_have_nothing',$MODUL);
+			}
+		}
+		$DATA = array('form' => $MODUL->form, 'messages' => $mess);
+		return Array($flag,$DATA);
 	}
 
 // END static class

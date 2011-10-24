@@ -23,6 +23,7 @@ class pg_class extends kernel_extends {
 			5 => 'Меню №5',
 			6 => 'Меню №6',
 		);
+
 		$this->config['marker'] = array(
 			'text' => 'text',
 			'left_column' => 'left_column',
@@ -61,7 +62,7 @@ class pg_class extends kernel_extends {
 		$this->mf_actctrl = true;
 		$this->caption = 'Страницы';
 		$this->selected = array();
-		$this->ver = '0.3.2';
+		$this->ver = '0.3.3';
 		$this->pageinfo = 
 			$this->dataCash = $this->dataCashTree = $this->dataCashTreeAlias = array();
 		$this->pageParam = $this->pageParamId = array();
@@ -80,8 +81,6 @@ class pg_class extends kernel_extends {
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
 		$this->fields['name_in_menu'] = array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['href'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL','default'=>'');
-		$this->fields['keywords'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL','default'=>'');
-		$this->fields['description'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL','default'=>'');
 		$this->fields['design'] = array('type' => 'varchar', 'width' => 20, 'attr' => 'NOT NULL','default'=>'');
 		$this->fields['template'] = array('type' => 'varchar', 'width'=>20, 'attr' => 'NOT NULL','default'=>'default');
 		$this->fields['ugroup'] =array('type' => 'varchar', 'width'=>63, 'attr' => 'NOT NULL', 'default' => '|0|');
@@ -130,8 +129,6 @@ class pg_class extends kernel_extends {
 		$this->fields_form['design'] = array('type' => 'list', 'listname'=>'mdesign', 'caption' => 'Дизайн', 'mask' =>array());
 		$this->fields_form['template'] = array('type' => 'list', 'listname'=>'templates', 'caption' => 'Шаблон', 'mask' =>array('onetd'=>'close'));
 
-		$this->fields_form['keywords'] = array('type' => 'text', 'caption' => 'META-keywords','mask'=>array('fview'=>1));
-		$this->fields_form['description'] = array('type' => 'text', 'caption' => 'META-description','mask'=>array('fview'=>1));
 		$this->fields_form['onmenu'] = array('type' => 'list', 'listname'=>'menu', 'multiple'=>2, 'caption' => 'Меню', 'mask'=>array('onetd'=>'Опции'));
 
 		$this->fields_form['onmap'] = array('type' => 'checkbox', 'caption'=>'Карта', 'comment' => 'Отображать эту страницу на карте сайта','default'=>1,'style'=>'background-color:#B3D142;');
@@ -201,6 +198,11 @@ class pg_class extends kernel_extends {
 			$data['messages'][] = array('error','Модуль PHP Memcach отсутствует либо не верная конфигурия подключения');
 		return $data;
 	}
+
+	/**
+	 * Включение MEMCACHE 
+	 * @return bool - true если успешно
+	*/
 	function incMemcach() {
 		if(!$this->MEMCACHE) {
 			$mc_load = false;
@@ -230,9 +232,19 @@ class pg_class extends kernel_extends {
 		return true;
 	}*/
 
+	/**
+	 * frontend display controller
+	 * @return bool
+	*/
 	function display($templ=true) {
 		$this->current_path = '';
 		global $_tpl,$HTML;
+		$_tpl['text'] = '';
+		$_tpl['title'] = '';
+		$_tpl['keywords'] = $this->config['keywords'];
+		$_tpl['description'] = $this->config['description'];
+		$this->pageinfo['script'] = array();
+		$this->pageinfo['styles'] = array();
 		$temp_tpl = $_tpl;
 		$flag_content = $this->can_show();
 		//PAGE****************
@@ -246,8 +258,6 @@ class pg_class extends kernel_extends {
 		if ($flag_content==1) {
 			$flag_content = $this->display_page();
 			$_tpl['title'] = $this->get_caption();
-			$_tpl['keywords'] = $this->pageinfo['keywords'];
-			$_tpl['description'] = $this->pageinfo['description'];
 		}
 
 		if ($flag_content==2) {
@@ -257,15 +267,11 @@ class pg_class extends kernel_extends {
 			{
 				$_tpl['text'] = 'У вас не достаточно прав для доступа к странице. Необходима авторизация.';
 				$_tpl['title'] = "Нет доступа";
-				$_tpl['keywords'] = "";
-				$_tpl['description'] = "";
 			}
 			else
 			{
 				$_tpl=$temp_tpl;
 				$_tpl['title'] = $this->get_caption();
-				$_tpl['keywords'] = $this->pageinfo['keywords'];
-				$_tpl['description'] = $this->pageinfo['description'];
 				$this->display_page();
 			}
 		}
@@ -277,15 +283,11 @@ class pg_class extends kernel_extends {
 			{
 				$_tpl['text'] = "Страница не найдена!";
 				$_tpl['title'] = "404 Страница не найдена!";
-				$_tpl['keywords'] = "";
-				$_tpl['description'] = "";
 			}
 			else
 			{
 				$_tpl=$temp_tpl;
 				$_tpl['title'] = $this->get_caption();
-				$_tpl['keywords'] = $this->pageinfo['keywords'];
-				$_tpl['description'] = $this->pageinfo['description'];
 				$this->display_page();
 
 			}
@@ -303,6 +305,7 @@ class pg_class extends kernel_extends {
 			$_tpl['onload'] .= 'if(typeof wep !== "undefined") {wep.pgId = '.$this->id.';wep.pgParam='.json_encode($this->pageParam,JSON_HEX_TAG).';} ';
 		else
 			$_tpl['onload'] .= 'if(typeof wep !== "undefined") {wep.pgId = '.$this->id.';wep.pgParam='.json_encode($this->pageParam).';} ';
+		return true;
 	}
 
 	function can_show() {
@@ -343,16 +346,6 @@ class pg_class extends kernel_extends {
 			$this->pageinfo = $this->dataCash[$this->id];
 			if ($this->pageinfo['href']){
 				header('Location: '.$this->pageinfo['href']);die();}			
-			if($this->pageinfo['keywords'])
-				$this->pageinfo['keywords'] = $this->config['keywords'].', '.$this->pageinfo['keywords'];
-			else
-				$this->pageinfo['keywords'] = $this->config['keywords'];
-			if($this->pageinfo['description'])
-				$this->pageinfo['description'] = $this->config['description'].' '.$this->pageinfo['description'];
-			else
-				$this->pageinfo['description'] = $this->config['description'];
-			$this->pageinfo['script'] = array();
-			$this->pageinfo['styles'] = array();
 			$this->get_pageinfo();//$this->pageinfo['path']
 			return 1;
 		}
@@ -479,7 +472,7 @@ class pg_class extends kernel_extends {
 						$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' ACCESS DENIED-->';
 					continue;
 				}
-					
+
 			}
 			if ($rowPG['href']){
 				$temp = $this->_cl .'_'.preg_replace($this->_CFG['_repl']['alphaint'], '', $rowPG['href']);
@@ -507,7 +500,12 @@ class pg_class extends kernel_extends {
 							$this->pageinfo['styles'][$r] = 1;
 				}
 			}
+			if($_tpl['keywords'] and $rowPG['keywords'])
+				$_tpl['keywords'] .= ', '.$rowPG['keywords'];
+			if($_tpl['description'] and $rowPG['description'])
+				$_tpl['description'] .= ', '.$rowPG['description'];
 
+			/*Статика*/
 			if($rowPG['pagetype']=='') {
 				/*$text = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['content'].'pg/'.$rowPG['id'].$this->text_ext;
 				if (file_exists($text)) {
@@ -523,16 +521,21 @@ class pg_class extends kernel_extends {
 					$_tpl[$rowPG['marker']] .= $_tempMarker;
 
 			} else {
+				// Флаг проверки о включенном memcache
 				$flagMC = false;
-				if($this->config['memcache']==-1) // Вообще отключаем кеш
+				// Вообще отключаем кеш
+				if($this->config['memcache']==-1)
 					$rowPG['memcache'] = 0;
-				elseif($rowPG['memcache']==0 and $this->config['memcache']>0) // Если в контене 0, и есть в конфиг-кеш
+				// Если в контене 0, и есть в конфиг-кеш
+				elseif($rowPG['memcache']==0 and $this->config['memcache']>0)
 					$rowPG['memcache'] = $this->config['memcache'];
 				elseif($rowPG['memcache']<0)
 					$rowPG['memcache'] = 0;
 
 				$MemFlag = false;
+				//Если разрешено кеширование
 				if($rowPG['memcache']) {
+					// собираем хешкод (идентификатор данных) для memcache
 					$hashkeyPG = '';
 					if($rowPG['memcache_solt']==1) {
 						if(isset($_SESSION['user']['id']))
@@ -551,16 +554,21 @@ class pg_class extends kernel_extends {
 						$hashkeyPG = $_SERVER['REMOTE_ADDR'];
 					$hashkeyPG .= '@'.$rowPG['id'].'@'.$_SERVER['QUERY_STRING'].$_SERVER['HTTP_HOST'];
 					if(_strlen($hashkeyPG)>255) $hashkeyPG = md5($hashkeyPG);
-
+					// Включаем 1 раз MEMCACHE
 					if(!$this->MEMCACHE) {
 						$this->incMemcach();
 					}
+					// если MEMCACHE удалось подключить
 					if($this->MEMCACHE) {
+						// Флаг о том что MEMCACHE успешно включен для этого контента
 						$MemFlag = true;
 						$temp = $this->MEMCACHE->get($hashkeyPG);
-						if($temp and is_array($temp)) { //Получаем массив с ключами шаблона
+						//Получаем массив с ключами шаблона
+						if($temp and is_array($temp)) {
+							// ставим флаг о том что данные поступают из кеша
 							$flagPG = $flagMC = 1;
-							foreach($temp as $tk=>$tr) { // аполняем данные
+							// заполняем данные
+							foreach($temp as $tk=>$tr) {
 								if(is_array($tr)) {
 									if(!isset($_tpl[$tk]))
 										$_tpl[$tk] = $tr;
@@ -575,14 +583,19 @@ class pg_class extends kernel_extends {
 						}
 					}
 				}
+				//Если дынне из кеша не поступили, то запускаем обработчик
 				if(!$flagMC) {
-					if($MemFlag) { // обнуляем $_tpl
+					//Если флаг включен, то работаем с временными фаилами, чтобы потом их записать в кеш
+					if($MemFlag) {
+						// обнуляем $_tpl
 						$temp_tpl = $_tpl;
-						$_tpl = array();
+						$_tpl = array_combine($_tpl,array_fill(0, count($_tpl), ''));
 					}
 
+					// Параметры для обработчика
 					if($rowPG['funcparam']) $FUNCPARAM = explode('&',$rowPG['funcparam']);
 					else $FUNCPARAM = array();
+					// подключение и запуск обработчика
 					$typePG = explode(':',$rowPG['pagetype']);
 					if(count($typePG)==2 and file_exists($this->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php'))
 						$flagPG = include($this->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php');
@@ -595,7 +608,8 @@ class pg_class extends kernel_extends {
 						continue;
 					}
 
-					if(is_string($flagPG)) {// если не булевое значение то выводим содержимое
+					// если не булевое значение то выводим содержимое
+					if(is_string($flagPG)) {
 						if(!isset($_tpl[$rowPG['marker']])) $_tpl[$rowPG['marker']] = '';
 						if(isset($_SESSION['_showallinfo']) && $_SESSION['_showallinfo'])
 							$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' begin-->'.$flagPG.'<!--content'.$rowPG['id'].' end-->';
@@ -604,6 +618,7 @@ class pg_class extends kernel_extends {
 						$flagPG = 1;
 					}
 
+					// Если включен кеш, то записываем полученные данные в кеш
 					if($MemFlag) {
 						$this->MEMCACHE->set($hashkeyPG, $_tpl, $this->config['memcachezip'], $rowPG['memcache']);
 						if(count($_tpl)) {

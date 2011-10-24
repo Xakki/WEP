@@ -408,7 +408,7 @@ mb_internal_encoding($_CFG["wep"]["charset"]);
 date_default_timezone_set($_CFG['wep']['timezone']);
 setlocale(LC_CTYPE, $_CFG['wep']['locale']);
 $_CFG['modulinc'] = array(
-	0 => array('path' => $_CFG['_PATH']['extcore'], 'name' => 'WEPext - '),
+	0 => array('path' => $_CFG['_PATH']['extcore'], 'name' => 'WEP - '),
 	3 => array('path' => $_CFG['_PATH']['ext'], 'name' => 'EXT - ')
 );
 $_CFG['time'] = time();
