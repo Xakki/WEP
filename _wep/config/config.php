@@ -92,10 +92,10 @@ if(!isset($_CFG['_PATH']['wepconf'])) //если  путь не был зада�
 
 $_SERVER['_DR_'] = $_CFG['_PATH']['path'] = $_CFG['_PATH']['path']; // корень сайта, основной путь к проекту
 $_CFG['_PATH']['_path'] = dirname(dirname(dirname(__FILE__))). '/';
-$_CFG['_PATH']['extcore'] = $_CFG['_PATH']['wep'] . 'extcore/'; // путь к системным модулям
+$_CFG['_PATH']['extcore'] = $_CFG['_PATH']['wep'] . 'ext/'; // путь к системным модулям
 $_CFG['_PATH']['core'] = $_CFG['_PATH']['wep'] . 'core/'; // путь к ядру
 $_CFG['_PATH']['phpscript'] = $_CFG['_PATH']['wep'] . '_phpscript/';
-$_CFG['_PATH']['ctext'] = $_CFG['_PATH']['wep'] . 'pagetext/'; // путь к обработчикам блоков страниц
+$_CFG['_PATH']['ctext'] = $_CFG['_PATH']['wep'] . 'inc/'; // путь к обработчикам блоков страниц
 $_CFG['_PATH']['cdesign'] = $_CFG['_PATH']['wep'] . 'cdesign/'; // дизайн админки
 $_CFG['_PATH']['locallang'] = $_CFG['_PATH']['wep'] . 'locallang/'; // язык
 $_CFG['_PATH']['core_config'] = $_CFG['_PATH']['wep'] . 'config/'; // конфиги
