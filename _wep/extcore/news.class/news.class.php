@@ -15,6 +15,18 @@ class news_class extends kernel_extends {
 		return true;
 	}
 
+	protected function _create_conf() {
+		parent::_create_conf();
+
+		$this->config['category'] = array(
+			0 => ' --  ',
+			1 => 'Мировые новости',
+			2 => 'Спортивные новости'
+		);
+                
+		$this->config_form['category'] = array('type' => 'textarea', 'caption' => 'Категории');
+	}
+
 	function _create() {
 		parent::_create();
 	
@@ -31,8 +43,7 @@ class news_class extends kernel_extends {
 		$this->attaches['i_news'] = array('mime' => array('image/pjpeg'=>'jpg', 'image/jpeg'=>'jpg', 'image/gif'=>'gif', 'image/png'=>'png'), 
 			'thumb'=>array(array('type'=>'resize', 'w'=>'1024', 'h'=>'768'),array('type'=>'resizecrop', 'w'=>'80', 'h'=>'100', 'pref'=>'s_', 'path'=>'')),'maxsize'=>3000,'path'=>'');
 		
-		$this->_enum['category']=array(
-			0=>'--');
+		$this->_enum['category']=$this->config['category'];
 
 		$this->ordfield = 'ndate DESC';
 	}
@@ -52,14 +63,15 @@ class news_class extends kernel_extends {
 				'extraPlugins'=>"'cntlen'")
 			);
 		$this->fields_form['ndate'] = array('type' => 'date', 'caption' => 'Дата новости', 'comment'=>'Дата публикации новости', 'mask'=>array('evala'=>'time()','sort'=>1),'readonly'=>1);
-		$this->fields_form['category'] = array('type' => 'list', 'listname'=>'category','caption' => 'Категория','mask'=>array());
+		if(is_array($this->_enum['category']) and count($this->_enum['category']))
+			$this->fields_form['category'] = array('type' => 'list', 'listname'=>'category','caption' => 'Категория','mask'=>array());
 		$this->fields_form['href'] = array('type' => 'text', 'caption' => 'Источник','comment'=>'указать полный адрес','mask'=>array('name'=>'www'),'style'=>'background-color:#FFC0CB;');
 		$this->fields_form['redirect'] = array('type' => 'checkbox', 'caption' => 'Включить редирект','style'=>'background-color:#FFC0CB;');
 		$this->fields_form['i_'.$this->_cl] = array("type"=>"file","caption"=>"Фотография",'del'=>1, 'mask'=>array('fview'=>1,'width'=>80,'height'=>100,'fview'=>0));
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Опубликовать', 'comment'=>'Видимость новости на сайте');
 	}
 
-	function fNews()// func display NEWS on INDEX page
+	function fNews($filter='')// func display NEWS on INDEX page
 	{
 		/*$listfields = array('id,text');
 		$clause ='WHERE description=""'; 
@@ -70,17 +82,15 @@ class news_class extends kernel_extends {
 		}*/
  
 		$DATA = array();
-		$listfields = array('count(id) as cnt');
 		$clause = 'WHERE active=1';
-		if((int)$_GET['year']) {
+		if(isset($_GET['year']) and (int)$_GET['year']) {
 			$clause .= ' and FROM_UNIXTIME(ndate,"%Y")="'.(int)$_GET['year'].'"';
 			global $PGLIST;
 			$PGLIST->pageinfo['path']['newsY'.(int)$_GET['year'].'.html'] = 'Год '.(int)$_GET['year'];	
 		}
-		$this->data = $this->_query();
+		$this->data = $this->_query('count(id) as cnt',$clause);
 		$countfield = $this->data[0]['cnt'];
 		if($countfield){
-			$DATA['pcnt'] = $pcnt;
 			/*** PAGE NUM  REVERSE ***/
 			if($this->reversePageN) {
 				if($this->_pn == 0) 
@@ -105,9 +115,9 @@ class news_class extends kernel_extends {
 					$pcnt = 0;
 			$climit= $pcnt.', '.$this->messages_on_page;
 			/****/
-			$listfields = array('id,ndate,name,i_news,description');
 			$clause .= ' ORDER BY '.$this->ordfield.' LIMIT '.$climit;; 
-			$DATA['item'] = $this->_query($listfields,$clause);
+			$DATA['pcnt'] = $pcnt;
+			$DATA['#item#'] = $this->_query('*',$clause);
 		}
 		return $DATA;
 	}

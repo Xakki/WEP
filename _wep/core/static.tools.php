@@ -441,7 +441,7 @@ class static_tools {
 				if ($temp and count($temp))
 					$rDATA = array_merge($rDATA, $temp);
 			}
-		if(!$OWN and $MODUL->ver!=$MODUL->_CFG['modulprm'][$MODUL->_cl]['ver']) {
+		if(!$OWN and isset($MODUL->_CFG['modulprm'][$MODUL->_cl]) and $MODUL->ver!=$MODUL->_CFG['modulprm'][$MODUL->_cl]['ver']) {
 			$file = $MODUL->_CFG['modulprm'][$Mid]['path'];
 			$file = substr($file,0,-(strlen($Mid.'.class.php'))).'updater/'.$MODUL->ver.'.php';
 			if(file_exists($file)) {

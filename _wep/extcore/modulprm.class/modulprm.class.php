@@ -203,7 +203,7 @@ final class modulprm_class extends kernel_extends {
 						}else
 							$mess[] = array('ok', 'Модуль `' . $r['_entry'] . '` установлен.');
 					} else {
-						if(count($r['_depend']) and $this->data[$r['_entry']]['active']) {
+						if(isset($r['_depend']) and count($r['_depend']) and $this->data[$r['_entry']]['active']) {
 							foreach($r['_depend'] as $dep) {
 								if (!isset($_POST['0_' . $dep]) and !isset($_POST['3_' . $dep]) and !isset($this->data[$dep])) {
 									$mess[] = array('error', 'Ошибка. Не подключен зависимый модуль `' . $dep . '` для `' . $r['_entry'] . '`. ');
