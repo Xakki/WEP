@@ -174,7 +174,7 @@ final class modulprm_class extends kernel_extends {
 							$res = -1;
 							continue;
 						}
-						if(count($r['_depend'])) {
+						if(isset($r['_depend']) and count($r['_depend'])) {
 							foreach($r['_depend'] as $dep) {
 								if (!isset($_POST['0_' . $dep]) and !isset($_POST['3_' . $dep]) and !isset($this->data[$dep])) {
 									$mess[] = array('error', 'Ошибка. Не подключен зависимый модуль `' . $dep . '` для `' . $r['_entry'] . '`. ');

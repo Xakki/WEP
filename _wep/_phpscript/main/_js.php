@@ -7,7 +7,7 @@
 		$_GET['_view'] = '';
 
 	if(!isset($_GET['noajax']))
-		require_once($_CFG['_PATH']['phpscript'].'/jquery_getjson.php');
+		require_once($_CFG['_PATH']['wep_phpscript'].'/jquery_getjson.php');
 	require_once($_CFG['_PATH']['core'].'/html.php');
 	if(isset($_GET['noajax']))
 		headerssent();

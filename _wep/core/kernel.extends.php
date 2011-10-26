@@ -1,6 +1,6 @@
 <?php
 
-/* VERSION=2.2 */
+/* VERSION=2 */
 /* COMMENT=Ядро, дополняющая модули */
 
 abstract class kernel_extends {
@@ -11,7 +11,7 @@ abstract class kernel_extends {
 	 * 2 - добавленн новый функционал, расширен и измененн меющиеся функции -
 	 * 3 - Номер ревизии , исправленны ошибки
 	 */
-	const versionCore = '2.4.15';
+	const versionCore = '2.5.16';
 
 	function __construct($owner=NULL) {
 		global $_CFG;
@@ -45,10 +45,9 @@ abstract class kernel_extends {
 	}
 
 	function __get($name) {
-		global $_CFG;
+		global $_CFG,$SQL;
 		if ($name == 'SQL') {
 			if (!$this->grant_sql) {
-				global $SQL;
 				if (!$SQL)
 					$SQL = new sql($_CFG['sql']);
 				return $SQL;
@@ -335,9 +334,9 @@ abstract class kernel_extends {
 				if (file_exists($this->_CFG['_PATH']['ext'] . $this->_cl . '.class/' . $r . '.childs.php'))
 					$this->child_path[$r] = $this->_CFG['_PATH']['ext'] . $this->_cl . '.class/' . $r . '.childs.php';
 //						include_once($this->_CFG['_PATH']['ext'].$this->_cl.'.class/'.$r.'.childs.php');
-				elseif (file_exists($this->_CFG['_PATH']['extcore'] . $this->_cl . '.class/' . $r . '.childs.php'))
-					$this->child_path[$r] = $this->_CFG['_PATH']['extcore'] . $this->_cl . '.class/' . $r . '.childs.php';
-//					include_once($this->_CFG['_PATH']['extcore'].$this->_cl.'.class/'.$r.'.childs.php');
+				elseif (file_exists($this->_CFG['_PATH']['wep_ext'] . $this->_cl . '.class/' . $r . '.childs.php'))
+					$this->child_path[$r] = $this->_CFG['_PATH']['wep_ext'] . $this->_cl . '.class/' . $r . '.childs.php';
+//					include_once($this->_CFG['_PATH']['wep_ext'].$this->_cl.'.class/'.$r.'.childs.php');
 				$this->create_child($r);
 			}
 		}
@@ -930,7 +929,8 @@ abstract class kernel_extends {
 		foreach($temp as $k=>$r) {
 			if($r['type']=='ckedit') {
 				$this->fields[$k.'_ckedit'] = array('type' => 'tinyint', 'width'=>3, 'attr' => 'NOT NULL','default'=>'1');
-				$this->fields_form[$k.'_ckedit'] = array('type' => 'list', 'listname'=>'wysiwyg', 'caption' => $r['caption'].' - Выбор редактора', 'mask' =>array(),'onchange'=>'SetWysiwyg(this)','mask'=>array('usercheck'=>1));
+				if(static_main::_prmUserCheck(1))
+					$this->fields_form[$k.'_ckedit'] = array('type' => 'list', 'listname'=>'wysiwyg', 'caption' => $r['caption'].' - Выбор редактора', 'mask' =>array(),'onchange'=>'SetWysiwyg(this)','mask'=>array('usercheck'=>1));
 			}
 			$this->fields_form[$k] = $r;
 		}

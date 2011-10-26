@@ -114,10 +114,19 @@ class mail_class extends kernel_extends {
 			'caption' => 'Текcт письма', 
 			'mask' =>array('name'=>'all','min'=>4,'fview'=>1),
 			'paramedit'=>array(
+				'toolbar'=>'Board',
 				'height'=>250,
 				'toolbarStartupExpanded'=>'false',
-				'extraPlugins'=>"'cntlen'",
-				'plugins'=>"'button,contextmenu,enterkey,entities,justify,keystrokes,list,pastetext,popup,removeformat,toolbar,undo'"));
+				'extraPlugins'=>"'cntlen'"));
+		
+		if(static_main::_prmUserCheck(1)) {
+			$this->fields_form['text']['paramedit'] = array(
+				'CKFinder'=>1,
+				'toolbarStartupExpanded'=>'false',
+				'extraPlugins'=>"'cntlen,syntaxhighlight,timestamp'",
+				'toolbar' => 'Page',
+			);
+		}
 		$this->fields_form['mail_to'] = array('type' => 'text', 'caption' => 'Кому email', 'mask' => array('usercheck'=>1));
 		$this->fields_form['user_to'] = array(
 			'type' => 'list', 

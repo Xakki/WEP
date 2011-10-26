@@ -13,8 +13,8 @@
 			$dir = array();
 			if(file_exists($_this->_CFG['_PATH']['ext'].$_this->_cl.'.class'))
 				$dir[''] = $_this->_CFG['_PATH']['ext'].$_this->_cl.'.class';
-			if(file_exists($_this->_CFG['_PATH']['extcore'].$_this->_cl.'.class'))
-				$dir['Ядро - '] = $_this->_CFG['_PATH']['extcore'].$_this->_cl.'.class';
+			if(file_exists($_this->_CFG['_PATH']['wep_ext'].$_this->_cl.'.class'))
+				$dir['Ядро - '] = $_this->_CFG['_PATH']['wep_ext'].$_this->_cl.'.class';
 			$data = array(''=>' --- ');
 			foreach($dir as $k=>$r) {
 				$odir = dir($r);

@@ -3,7 +3,7 @@ function tools_step1() {
 	global $_CFG,$HTML,$_tpl;
 	$TEMP_CFG= array();
 	$_tpl['styles']['install']=1;
-	$file = $_CFG['_PATH']['phpscript'] . '/install/step1.php';
+	$file = $_CFG['_PATH']['wep_phpscript'] . '/install/step1.php';
 	if(static_main::_prmUserCheck(1))
 		return require($file);
 	else
@@ -15,7 +15,7 @@ function tools_step2() {
 	if(!static_main::_prmUserCheck(1))
 		return static_main::m('denied');
 	$_tpl['styles']['install']=1;
-	$file = $_CFG['_PATH']['phpscript'] . '/install/step2.php';
+	$file = $_CFG['_PATH']['wep_phpscript'] . '/install/step2.php';
 	return require($file);
 }
 
@@ -24,7 +24,7 @@ function tools_step3() {
 	if(!static_main::_prmUserCheck(1))
 		return static_main::m('denied');
 	$_tpl['styles']['install']=1;
-	$file = $_CFG['_PATH']['phpscript'] . '/install/step3.php';
+	$file = $_CFG['_PATH']['wep_phpscript'] . '/install/step3.php';
 	return require($file);
 }
 
@@ -44,7 +44,7 @@ function tools_updater() {
 function tools_docron() {
 	global $_CFG;
 	$ttw  = getmicrotime();
-	include($_CFG['_PATH']['phpscript'].'/cron.php');
+	include($_CFG['_PATH']['wep_phpscript'].'/cron.php');
 	return '--Крон выполнен, время обработки задач =  '.(getmicrotime()-$ttw).'mc -----';;
 }
 
@@ -365,35 +365,38 @@ function memcachstatus() {
 	$memcache_obj = new Memcache; 
 	$memcache_obj->addServer($_CFG['memcache']['host'],$_CFG['memcache']['port']); 
 	$status = $memcache_obj->getStats();
-	$html ="<table border='1'>"; 
-	$html .="<tr><td>Memcache Server version:</td><td> ".$status["version"]."</td></tr>"; 
-	$html .="<tr><td>Process id of this server process </td><td>".$status["pid"]."</td></tr>"; 
-	$html .="<tr><td>Number of seconds this server has been running </td><td>".$status["uptime"]."</td></tr>"; 
-	$html .="<tr><td>Accumulated user time for this process </td><td>".$status["rusage_user"]." seconds</td></tr>"; 
-	$html .="<tr><td>Accumulated system time for this process </td><td>".$status["rusage_system"]." seconds</td></tr>";
-	$html .="<tr><td>Total number of items stored by this server ever since it started </td><td>".$status["total_items"]."</td></tr>"; 
-	$html .="<tr><td>Number of open connections </td><td>".$status["curr_connections"]."</td></tr>"; 
-	$html .="<tr><td>Total number of connections opened since the server started running </td><td>".$status["total_connections"]."</td></tr>"; 
-	$html .="<tr><td>Number of connection structures allocated by the server </td><td>".$status["connection_structures"]."</td></tr>"; 
-	$html .="<tr><td>Cumulative number of retrieval requests </td><td>".$status["cmd_get"]."</td></tr>"; 
-	$html .="<tr><td> Cumulative number of storage requests </td><td>".$status["cmd_set"]."</td></tr>"; 
+	if(is_array($status) and count($status)) {
+		$html ="<table border='1'>"; 
+		$html .="<tr><td>Memcache Server version:</td><td> ".$status["version"]."</td></tr>"; 
+		$html .="<tr><td>Process id of this server process </td><td>".$status["pid"]."</td></tr>"; 
+		$html .="<tr><td>Number of seconds this server has been running </td><td>".$status["uptime"]."</td></tr>"; 
+		$html .="<tr><td>Accumulated user time for this process </td><td>".$status["rusage_user"]." seconds</td></tr>"; 
+		$html .="<tr><td>Accumulated system time for this process </td><td>".$status["rusage_system"]." seconds</td></tr>";
+		$html .="<tr><td>Total number of items stored by this server ever since it started </td><td>".$status["total_items"]."</td></tr>"; 
+		$html .="<tr><td>Number of open connections </td><td>".$status["curr_connections"]."</td></tr>"; 
+		$html .="<tr><td>Total number of connections opened since the server started running </td><td>".$status["total_connections"]."</td></tr>"; 
+		$html .="<tr><td>Number of connection structures allocated by the server </td><td>".$status["connection_structures"]."</td></tr>"; 
+		$html .="<tr><td>Cumulative number of retrieval requests </td><td>".$status["cmd_get"]."</td></tr>"; 
+		$html .="<tr><td> Cumulative number of storage requests </td><td>".$status["cmd_set"]."</td></tr>"; 
 
-	$percCacheHit=((real)$status["get_hits"]/ (real)$status["cmd_get"] *100); 
-	$percCacheHit=round($percCacheHit,3); 
-	$percCacheMiss=100-$percCacheHit; 
+		$percCacheHit=((real)$status["get_hits"]/ (real)$status["cmd_get"] *100); 
+		$percCacheHit=round($percCacheHit,3); 
+		$percCacheMiss=100-$percCacheHit; 
 
-	$html .="<tr><td>Number of keys that have been requested and found present </td><td>".$status["get_hits"]." ($percCacheHit%)</td></tr>"; 
-	$html .="<tr><td>Number of items that have been requested and not found </td><td>".$status["get_misses"]."($percCacheMiss%)</td></tr>"; 
+		$html .="<tr><td>Number of keys that have been requested and found present </td><td>".$status["get_hits"]." ($percCacheHit%)</td></tr>"; 
+		$html .="<tr><td>Number of items that have been requested and not found </td><td>".$status["get_misses"]."($percCacheMiss%)</td></tr>"; 
 
-	$MBRead= (real)$status["bytes_read"]/(1024*1024); 
+		$MBRead= (real)$status["bytes_read"]/(1024*1024); 
 
-	$html .="<tr><td>Total number of bytes read by this server from network </td><td>".$MBRead." Mega Bytes</td></tr>"; 
-	$MBWrite=(real) $status["bytes_written"]/(1024*1024) ; 
-	$html .="<tr><td>Total number of bytes sent by this server to network </td><td>".$MBWrite." Mega Bytes</td></tr>"; 
-	$MBSize=(real) $status["limit_maxbytes"]/(1024*1024) ; 
-	$html .="<tr><td>Number of bytes this server is allowed to use for storage.</td><td>".$MBSize." Mega Bytes</td></tr>"; 
-	$html .="<tr><td>Number of valid items removed from cache to free memory for new items.</td><td>".$status["evictions"]."</td></tr>"; 
-	$html .="</table>";
+		$html .="<tr><td>Total number of bytes read by this server from network </td><td>".$MBRead." Mega Bytes</td></tr>"; 
+		$MBWrite=(real) $status["bytes_written"]/(1024*1024) ; 
+		$html .="<tr><td>Total number of bytes sent by this server to network </td><td>".$MBWrite." Mega Bytes</td></tr>"; 
+		$MBSize=(real) $status["limit_maxbytes"]/(1024*1024) ; 
+		$html .="<tr><td>Number of bytes this server is allowed to use for storage.</td><td>".$MBSize." Mega Bytes</td></tr>"; 
+		$html .="<tr><td>Number of valid items removed from cache to free memory for new items.</td><td>".$status["evictions"]."</td></tr>"; 
+		$html .="</table>";
+	} else
+		$html .= '<h2>MEMCACHe serve is down!</h2>';
 	return $html;
 }
 
@@ -446,8 +449,8 @@ $dataF = array(
 	'allinfos'=> '<span class="tools_item">Выввод глобальных переменных</span>',
 );
 
-if(file_exists($_CFG['_PATH']['phpscript2'].'/tools.php'))
-	include($_CFG['_PATH']['phpscript2'].'/tools.php');
+if(file_exists($_CFG['_PATH']['phpscript'].'/tools.php'))
+	include($_CFG['_PATH']['phpscript'].'/tools.php');
 
 $html = '<div>Выбирите функцию для запуска</div><hr><ul>';
 foreach($dataF as $kk=>$rr) {

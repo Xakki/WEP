@@ -62,10 +62,10 @@ class session_class extends kernel_extends {
 
 	function start($force=false) {
 		if(!isset($_SESSION)) {
-			if(!$force and isset($_COOKIE[$this->_CFG['session']['name']]) and $_COOKIE[$this->_CFG['session']['name']]) {
+			if(isset($_COOKIE[$this->_CFG['session']['name']]) and $_COOKIE[$this->_CFG['session']['name']]) {
 				$_COOKIE[$this->_CFG['session']['name']] = $this->SqlEsc($_COOKIE[$this->_CFG['session']['name']]);
-				$data=$this->_query('id','WHERE `sid` = "'.$_COOKIE[$this->_CFG['session']['name']].'" AND `modified` + `expired` > "'.$this->_time.'" LIMIT 1');
-				if(count($data))
+				$this->qdata = $this->_query('*','WHERE `sid` = "'.$_COOKIE[$this->_CFG['session']['name']].'" AND `modified` + `expired` > "'.$this->_time.'" LIMIT 1');
+				if(count($this->qdata))
 					$force = true;
 			}
 			if($force) {
@@ -101,24 +101,13 @@ class session_class extends kernel_extends {
 	{
 		$this->sid = $sid;
 		$this->data = array('data'=>'');
-		$result=$this->SQL->execSQL('SELECT * FROM '.$this->tablename.' WHERE `sid` = "'.$this->sid.'"');//AND `modified` + `expired` > "'.$this->_time.'"
-		if(!$result->err and $row = $result->fetch_array()) {
-			if(($row['modified']+$row['expired'])>$this->_time) {
-				$this->data = $row;
-				$this->_hash = md5($this->data['data']);
-				$_SESSION = unserialize($this->data['data']);
-				$this->data['data'] = session_encode();
-			}else
-				$this->destroy($sid);
+		if(isset($this->qdata) and count($this->qdata)) {
+			$this->data = $this->qdata[0];
+			$this->_hash = md5($this->data['data']);
+			$_SESSION = unserialize($this->data['data']);
+			$this->data['data'] = session_encode();
 		}
-		/*$result = $this->SQL->execSQL('select table_comment from information_schema.`tables` where table_name="'.$this->tablename.'" and table_schema="'.$this->_CFG['sql']['database'].'"');
-		if($row = $result->fetch_array())
-				$this->table_comment = $row['table_comment'];*/
-		//$this->table_comment = $this->ver;
 
-		//if($result->err or count($this->data)!=count($this->fields) or $this->table_comment!=$this->ver) {
-		//	$this->_checkmodstruct();
-		//}
 		return $this->data['data'];
 	}
 

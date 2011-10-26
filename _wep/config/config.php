@@ -4,7 +4,7 @@ error_reporting(-1);
 ini_set('display_errors', -1);
 
 $_CFG['info'] = array(//информация о СМС
-	'version' => '2.2',
+	'version' => 'WEP2',
 	'email' => 'info@xakki.ru',
 	'icq' => '222392984'
 );
@@ -30,7 +30,7 @@ $_CFG['wep'] = array(// для ядра и админки
 	'locale' => 'default',
 	'timezone' => 'Europe/Moscow',
 	'dateformat' => 'Y-m-d',
-	'locallang' => 'default',
+	'lang' => 'default',
 	'design' => 'default',
 	'md5' => 'change_me',
 	'def_filesize' => 200,
@@ -92,24 +92,24 @@ if(!isset($_CFG['_PATH']['wepconf'])) //если  путь не был зада�
 
 $_SERVER['_DR_'] = $_CFG['_PATH']['path'] = $_CFG['_PATH']['path']; // корень сайта, основной путь к проекту
 $_CFG['_PATH']['_path'] = dirname(dirname(dirname(__FILE__))). '/';
-$_CFG['_PATH']['extcore'] = $_CFG['_PATH']['wep'] . 'ext/'; // путь к системным модулям
 $_CFG['_PATH']['core'] = $_CFG['_PATH']['wep'] . 'core/'; // путь к ядру
-$_CFG['_PATH']['phpscript'] = $_CFG['_PATH']['wep'] . '_phpscript/';
-$_CFG['_PATH']['ctext'] = $_CFG['_PATH']['wep'] . 'inc/'; // путь к обработчикам блоков страниц
-$_CFG['_PATH']['cdesign'] = $_CFG['_PATH']['wep'] . 'cdesign/'; // дизайн админки
-$_CFG['_PATH']['locallang'] = $_CFG['_PATH']['wep'] . 'locallang/'; // язык
-$_CFG['_PATH']['core_config'] = $_CFG['_PATH']['wep'] . 'config/'; // конфиги
-$_CFG['_FILE']['core_config_f'] = $_CFG['_PATH']['wep'].'config/config.php';
-$_CFG['_FILE']['core_configform_f'] = $_CFG['_PATH']['wep'].'config/config_form.php';
+$_CFG['_PATH']['cdesign'] = $_CFG['_PATH']['wep'] . 'cdesign/'; // backend админки (контролеры и шаблоны)
+$_CFG['_PATH']['wep_ext'] = $_CFG['_PATH']['wep'] . 'ext/'; // путь к системным модулям
+$_CFG['_PATH']['wep_phpscript'] = $_CFG['_PATH']['wep'] . '_phpscript/';
+$_CFG['_PATH']['wep_inc'] = $_CFG['_PATH']['wep'] . 'inc/'; // путь к обработчикам блоков страниц
+$_CFG['_PATH']['wep_locallang'] = $_CFG['_PATH']['wep'] . 'locallang/'; // язык
+$_CFG['_PATH']['wep_config'] = $_CFG['_PATH']['wep'] . 'config/'; // конфиги
+$_CFG['_FILE']['wep_config'] = $_CFG['_PATH']['wep'].'config/config.php';
+$_CFG['_FILE']['wep_config_form'] = $_CFG['_PATH']['wep'].'config/config_form.php';
 
 /* пути для файлов пользовательских модулей */
-$_CFG['_PATH']['phpscript2'] = $_CFG['_PATH']['wepconf'] . '_phpscript/';
-$_CFG['_PATH']['ptext'] = $_CFG['_PATH']['wepconf'] . 'pagetext/'; // путь к обработчикам блоков страниц
+$_CFG['_PATH']['phpscript'] = $_CFG['_PATH']['wepconf'] . '_phpscript/';
+$_CFG['_PATH']['inc'] = $_CFG['_PATH']['wepconf'] . 'inc/'; // путь к обработчикам блоков страниц
 $_CFG['_PATH']['ext'] = $_CFG['_PATH']['wepconf'] . 'ext/'; // путь к пользовательским модулям
 $_CFG['_PATH']['config'] = $_CFG['_PATH']['wepconf'] . 'config/'; // конфиги
-$_CFG['_FILE']['config_f'] = $_CFG['_PATH']['config'].'config.php';
+$_CFG['_FILE']['config'] = $_CFG['_PATH']['config'].'config.php';
 $_CFG['_FILE']['HASH_KEY'] = $_CFG['_PATH']['config'] . 'hash.key';
-$_CFG['_PATH']['ulocallang'] = $_CFG['_PATH']['wepconf'] . 'locallang/'; // язык
+$_CFG['_PATH']['locallang'] = $_CFG['_PATH']['wepconf'] . 'locallang/'; // язык
 $_CFG['_PATH']['cron'] = $_CFG['_PATH']['wepconf'] . 'cron/'; // кроны
 $_CFG['_PATH']['weptemp'] = $_CFG['_PATH']['wepconf'] . 'temp/'; // путь к папке для хранения временных файлов
 $_CFG['_PATH']['temp'] = $_CFG['_PATH']['path'] . '_content/temp/'; // путь к папке для хранения временных файлов системы
@@ -160,7 +160,7 @@ while (isset($PHP_SELF[$k]) and $PHP_SELF[$k] != $_CFG['PATH']['wepname']) {
 /* $_CFG['_HREF'] */
 /* * ************* */
 if (strpos($_SERVER['HTTP_HOST'], 'xn--') !== false) {
-	require_once($_CFG['_PATH']['phpscript'] . '/idna_convert.class.php');
+	require_once($_CFG['_PATH']['wep_phpscript'] . '/idna_convert.class.php');
 	$IDN = new idna_convert();
 	$_SERVER['HTTP_HOST'] = $IDN->decode($_SERVER['HTTP_HOST']);
 	$_CFG['site']['rf'] = 1;
@@ -225,18 +225,20 @@ $_CFG['_repl'] = array(
 
 // WYSIWYG 
 $_CFG['ckedit']['toolbar']['Full'] = "'Full'";
-$_CFG['ckedit']['toolbar']['Page'] = "[['Source','-','Save','NewPage','Preview','-','Templates'],
+$_CFG['ckedit']['toolbar']['Page'] = "[
+	['Source','-','Save','NewPage','Preview','-','Templates'],
 	['Cut','Copy','Paste','PasteText','PasteFromWord','-','Print', 'SpellChecker', 'Scayt'],
 	['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
 	['Maximize', 'ShowBlocks','-','About'],
 	['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'],
 	['Image','Flash','Table','HorizontalRule','Smiley','SpecialChar','PageBreak','Timestamp','Code'],
 	['Bold','Italic','Underline','Strike','-','Subscript','Superscript'],
+	['TextColor','BGColor'],[ 'UIColor' ],
 	['NumberedList','BulletedList','-','Outdent','Indent','Blockquote'],
 	['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
 	['Link','Unlink','Anchor'],
-	['Styles','Format','Font','FontSize'],
-	['TextColor','BGColor'],[ 'UIColor' ]]";
+	['Styles','Format','Font','FontSize']
+]";
 
 $_CFG['ckedit']['toolbar']['Board'] = "[ 
 	['PasteText'], ['Undo','Redo','-','RemoveFormat'], ['Bold','Italic','Underline','Superscript'], 
@@ -386,14 +388,14 @@ if ($hostcnt==1 or ($hostcnt == 4 and ip2long($_SERVER['HTTP_HOST'])!==false) ) 
 }
 
 /* INCLUDE LANG */
-include_once($_CFG['_PATH']['locallang'] . $_CFG['wep']['locallang'] . '.php');
-if (file_exists($_CFG['_PATH']['ulocallang'] . $_CFG['wep']['locallang'] . '.php'))
-	include_once($_CFG['_PATH']['ulocallang'] . $_CFG['wep']['locallang'] . '.php');
+include_once($_CFG['_PATH']['wep_locallang'] . $_CFG['wep']['lang'] . '.php');
+if (file_exists($_CFG['_PATH']['locallang'] . $_CFG['wep']['lang'] . '.php'))
+	include_once($_CFG['_PATH']['locallang'] . $_CFG['wep']['lang'] . '.php');
 
 /* INCLUDE USER CONF */
 
-if(file_exists($_CFG['_FILE']['config_f']))
-	include($_CFG['_FILE']['config_f']);
+if(file_exists($_CFG['_FILE']['config']))
+	include($_CFG['_FILE']['config']);
 elseif(!isset($INSTALL)) {
 	@header("Location: /".$_CFG['PATH']['wepname'].'/install.php');
 	die();
@@ -408,7 +410,7 @@ mb_internal_encoding($_CFG["wep"]["charset"]);
 date_default_timezone_set($_CFG['wep']['timezone']);
 setlocale(LC_CTYPE, $_CFG['wep']['locale']);
 $_CFG['modulinc'] = array(
-	0 => array('path' => $_CFG['_PATH']['extcore'], 'name' => 'WEP - '),
+	0 => array('path' => $_CFG['_PATH']['wep_ext'], 'name' => 'WEP - '),
 	3 => array('path' => $_CFG['_PATH']['ext'], 'name' => 'EXT - ')
 );
 $_CFG['time'] = time();

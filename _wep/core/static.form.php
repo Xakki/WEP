@@ -197,7 +197,7 @@ class static_form {
 	//      otherwise errorcode
 
 	static function _update(&$_this,$flag_select=true,$where=false) {
-		if ($_this->mf_istree and !is_array($_this->id)) {
+		if ($_this->mf_istree and !is_array($_this->id) and isset($_this->fld_data[$_this->mf_istree])) {
 			if ($_this->fld_data[$_this->mf_istree]==$_this->id)
 				return static_main::log('error','Child `'.$_this->caption.'` can`t be owner to self ');
 		}

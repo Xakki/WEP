@@ -93,7 +93,7 @@ class bug_class extends kernel_extends {
 			
 
 			foreach ($GLOBALS['_ERR'] as $err) foreach ($err as $r) {
-				if(isset($_CFG['wep']['bug_hunter'][$r['errno']])) {
+				if(isset($this->_CFG['wep']['bug_hunter'][$r['errno']])) {
 					$hash = md5($r['errno'].$r['errstr'].$r['errfile'].$r['errline'].$_SERVER['REQUEST_URI']);
 					if(!isset($query_val[$hash])) {
 						$bugs = array(

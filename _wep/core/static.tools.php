@@ -495,10 +495,10 @@ class static_tools {
 	static function saveUserCFG($SetDataCFG, $tempCFG=array()) {
 		global $_CFG,$_CFGFORM;
 		$mess = array();
-		$DEF_CFG = self::getFdata($_CFG['_FILE']['core_config_f'], '/* MAIN_CFG */', '/* END_MAIN_CFG */');// чистый конфиг ядра
-		$USER_CFG = self::getFdata($_CFG['_FILE']['config_f'], '', '', $DEF_CFG); // конечный конфиг
+		$DEF_CFG = self::getFdata($_CFG['_FILE']['wep_config'], '/* MAIN_CFG */', '/* END_MAIN_CFG */');// чистый конфиг ядра
+		$USER_CFG = self::getFdata($_CFG['_FILE']['config'], '', '', $DEF_CFG); // конечный конфиг
 		// Редактируемые конфиги
-		include_once($_CFG['_FILE']['core_configform_f']);
+		include_once($_CFG['_FILE']['wep_config_form']);
 
 		$fl = false;$mess = array();
 		$putFile = array();
@@ -553,7 +553,7 @@ class static_tools {
 		}
 		$putFile = "<?php\n\t//create time " . date('Y-m-d H:i') . "\n\t".implode("\n\t", $putFile)."\n";
 		//Записать в конфиг все данные которые отличаются от данных по умолчанию
-		if (!file_put_contents($_CFG['_FILE']['config_f'], $putFile)) {
+		if (!file_put_contents($_CFG['_FILE']['config'], $putFile)) {
 			$mess[] = array( 'error','Ошибка записи настроек. Нет доступа к фаилу');
 		} else {
 			$fl = true;

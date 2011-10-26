@@ -7,10 +7,10 @@
 			$_CFG["site"]["work_text"] = '<h1>Технический перерыв.</h1>';
 		if(!isset($_CFG["site"]["work_title"]) or !$_CFG["site"]["work_title"])
 			$_CFG["site"]["work_title"] = 'Ушёл на базу.';
-		if(file_exists($_CFG['_PATH']['phpscript2'].'/main/work.html'))
-			$html = file_get_contents($_CFG['_PATH']['phpscript2'].'/main/work.html');
-		else
+		if(file_exists($_CFG['_PATH']['phpscript'].'/main/work.html'))
 			$html = file_get_contents($_CFG['_PATH']['phpscript'].'/main/work.html');
+		else
+			$html = file_get_contents($_CFG['_PATH']['wep_phpscript'].'/main/work.html');
 		$html = str_replace('"', '\"', $html);
 		eval('$html = "' .$html . '";');
 		echo $html;
@@ -101,15 +101,9 @@
 	$PGLIST->display();
 
 //if($_SESSION['_showallinfo']) print('main = '.(getmicrotime()-$main2time).'<hr/>'); // для отладки
-	if(!is_array($PGLIST->pageinfo['styles'])) $PGLIST->pageinfo['styles'] = array();
-	if(!isset($_tpl['styles']) or !is_array($_tpl['styles'])) $_tpl['styles'] = array();
-	if(!is_array($PGLIST->pageinfo['script'])) $PGLIST->pageinfo['script'] = array();
-	if(!isset($_tpl['script']) or !is_array($_tpl['script'])) $_tpl['script'] = array();
-	$_tpl['styles'] = $PGLIST->pageinfo['styles'] + $_tpl['styles'];
-	$_tpl['script'] = $PGLIST->pageinfo['script'] + $_tpl['script'];
         
-        if (!$PGLIST->config['auto_include'])
-            $_CFG['fileIncludeOption'] = array(); // чтобы автоматом не подключались стили и скрптыв
+   if (!$PGLIST->config['auto_include'])
+      $_CFG['fileIncludeOption'] = array(); // чтобы автоматом не подключались стили и скрптыв
 /*
 	if(!isset($_SESSION['showIEwarning'])) $_SESSION['showIEwarning']=0;
 	if($HTML->_fTestIE('MSIE 6') and $_SESSION['showIEwarning']<3) {

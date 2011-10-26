@@ -41,7 +41,7 @@
 			$SQL->_iFlag = TRUE;*/
 		if($_GET['_view']=='list' and $_GET['_modul']=='_tools') {
 			if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0)
-				$html = include($_CFG['_PATH']['phpscript'].'/tools.php');
+				$html = include($_CFG['_PATH']['wep_phpscript'].'/tools.php');
 			else
 				$html = '<div style="color:red;">Доступ только ОДМИНУ</div>';
 		}

@@ -15,15 +15,17 @@
 			$this->ready = false;
 			$this->logFile = false;
 			if(isset($_CFG['log']) and (int)$_CFG['log'] and $_CFG['_PATH']['wep']) {
-				$this->logFile = fopen($_CFG['_PATH']['wep'].'/log/_'.time().'.log', 'wb');
+				$this->logFile = array();
 			}
+
 			$this->ready = $this->_connect();
 		}
 
 		function __destruct() {
 			$this->sql_close();
-			if($this->logFile)
-				fclose($this->logFile);
+			if($this->logFile!==false and count($this->logFile)) {
+				file_put_contents($_CFG['_PATH']['log'].'_'.date('Y-m-d_H-i-s').'.log',implode("\n",$this->logFile));
+			}
 		}
 
 		private function _connect() {
@@ -275,8 +277,8 @@
 			$this->err=mysql_error($db->hlink);
 			if ($this->err!='')
 			{
-				if($db->logFile) 
-					fwrite($db->logFile,'ERORR: '.$this->err.' ('.$sql.')\n');
+				if($db->logFile!==false)
+					$this->logFile[] = 'ERORR: '.$this->err.' ('.$sql.')';
 				trigger_error($this->err.=' ('.$sql.');', E_USER_WARNING);
 				$this->errno = mysql_errno();
 				//$db->fError($this->err);
@@ -284,13 +286,14 @@
 			else
 			{
 				$ttt = (getmicrotime()-$ttt);
-				if($db->logFile) fwrite($db->logFile,$sql."\n");
-				if(isset($db->CFG_SQL['longquery']) and $db->CFG_SQL['longquery']>0 and $ttt>$db->CFG_SQL['longquery'])
+				if(isset($db->CFG_SQL['longquery']) and $db->CFG_SQL['longquery']>0 and $ttt>$db->CFG_SQL['longquery']) {
 					trigger_error('LONG QUERY ['.$ttt.' sec.] ('.$sql.')', E_USER_WARNING);
+					if($db->logFile!==false)
+						$this->logFile[] = '['.date('Y-m-d H:i:s').'] LONG QUERY ['.$ttt.' sec.] ('.$sql.')';
+				}
 				//if(strstr(strtolower($sql),'insert into'))
 				//	$this->id = $db->sql_id();
-				if(isset($_COOKIE['_showallinfo']) and $_COOKIE['_showallinfo']) {
-					
+				if(isset($_COOKIE[$_CFG['wep']['_showallinfo']]) and $_COOKIE[$_CFG['wep']['_showallinfo']]>1) {
 					if($ttt>0.5) $ttt = '<span style="color:#FF0000;">'.$ttt.'</span>';
 					elseif($ttt>0.1) $ttt = '<span style="color:#FF6633;">'.$ttt.'</span>';
 					elseif($ttt>0.05) $ttt = '<span style="color:#006699;">'.$ttt.'</span>';
@@ -299,8 +302,8 @@
 					else $ttt = '<span style="color:#00FF00;">'.$ttt.'</span>';
 					$_CFG['logs']['sql'][] = htmlentities($sql,ENT_NOQUOTES,$_CFG['wep']['charset']).'  TIME='.$ttt;
 				}
-				elseif($_CFG['_F']['adminpage'])
-					$_CFG['logs']['sql'][] = 1;
+				elseif($_CFG['_F']['adminpage'] or isset($_COOKIE[$_CFG['wep']['_showallinfo']]))
+					$_CFG['logs']['sql'][] = true;
 				//$_tpl['logs'] .= " ({$sql});<br/> ";
 			}
 		}

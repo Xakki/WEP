@@ -5,7 +5,7 @@
 
 	$_CFG['_PATH']['wep'] = dirname($_SERVER['SCRIPT_FILENAME']).'/';
 	require_once($_CFG['_PATH']['wep'].'config/config.php');
-	require($_CFG['_PATH']['phpscript'].'jquery_getjson.php');
+	require($_CFG['_PATH']['wep_phpscript'].'jquery_getjson.php');
 
 
 	if($_CFG['robot']) {

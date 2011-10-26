@@ -704,9 +704,8 @@ class users_class extends kernel_extends {
 		session_go(true);
 		$_SESSION['user'] = $data;
 		if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0)
-			_setcookie('_showerror',2);
-		global $_CFG;
-		unset($_CFG['modulprm']);
+			_setcookie($this->_CFG['wep']['_showerror'],2);
+		unset($this->_CFG['modulprm']);
 		static_main::_prmModulLoad();
 		return true;
 	}

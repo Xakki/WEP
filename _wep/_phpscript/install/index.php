@@ -47,7 +47,7 @@ if ($flag) {
 	else
 		$_GET['step'] = (int) $_GET['step'];
 
-	$file = $_CFG['_PATH']['phpscript'] . '/install/step' . $_GET['step'] . '.php';
+	$file = $_CFG['_PATH']['wep_phpscript'] . '/install/step' . $_GET['step'] . '.php';
 	if (file_exists($file)) {
 		$var_const = array(
 			'mess'=>array('name' => 'ok', 'value' => 'Пора перейти к <a href="'.$_CFG['PATH']['wepname'].'/install.php?step=' . ($_GET['step'] + 1) . '">следующему шагу №' . ($_GET['step'] + 1) . '</a>'),
@@ -78,7 +78,8 @@ if ($flag) {
 			$_tpl['step'] .= ' href="'.$_CFG['PATH']['wepname'].'/install.php?step='.$k.'"';
 		$_tpl['step'] .= 'class="stepitem' . $r['css'] . '"><div class="name">' . $r['name'] . '</div></a>';
 	}
-	$_tpl['step'] .= '<div class="stepcomment">' . $stp[$_GET['step']]['comment'] . '</div>';
+	if(isset($stp[$_GET['step']]['comment']))
+		$_tpl['step'] .= '<div class="stepcomment">' . $stp[$_GET['step']]['comment'] . '</div>';
 	$_tpl['onload'] = '';
 	/* 	$_tpl['ref'] = $ref;
 	  $_tpl['action'] = $_CFG['_HREF']['BH'].$_CFG['PATH']['wepname'].'/login.php'.(isset($_GET['install'])?'?install':'');

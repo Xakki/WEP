@@ -101,7 +101,7 @@ class content_class extends kernel_extends {
 
 	function getInc($pref='.inc.php',$def=' - Текст - ') {
 		$data = array();
-		$dir = dir($this->_CFG['_PATH']['ctext']);
+		$dir = dir($this->_CFG['_PATH']['wep_inc']);
 		$data[''] = $def;
 		while (false !== ($entry = $dir->read())) {
 			if ($entry[0]!='.' && $entry[0]!='..' && strstr($entry,$pref)) {
@@ -111,11 +111,11 @@ class content_class extends kernel_extends {
 		}
 		$dir->close();
 
-		$dir = dir($this->_CFG['_PATH']['extcore']);
+		$dir = dir($this->_CFG['_PATH']['wep_ext']);
 		while (false !== ($entry = $dir->read())) {
 			if ($entry[0]!='.' && $entry[0]!='..') {
-				if(is_dir($this->_CFG['_PATH']['extcore'].$entry)) {
-					$dir2 = dir($this->_CFG['_PATH']['extcore'].$entry);
+				if(is_dir($this->_CFG['_PATH']['wep_ext'].$entry)) {
+					$dir2 = dir($this->_CFG['_PATH']['wep_ext'].$entry);
 					while (false !== ($entry2 = $dir2->read())) {
 						if ($entry2[0]!='.' && $entry2[0]!='..' && strstr($entry2,$pref)) {
 							$entry2 = substr($entry2, 0, strpos($entry2, $pref)); 
@@ -128,7 +128,7 @@ class content_class extends kernel_extends {
 		}
 		$dir->close();
 
-		$dir = dir($this->_CFG['_PATH']['ptext']);
+		$dir = dir($this->_CFG['_PATH']['inc']);
 		while (false !== ($entry = $dir->read())) {
 			if ($entry[0]!='.' && $entry[0]!='..' && strstr($entry,$pref)) {
 				$entry = substr($entry, 0, strpos($entry, $pref)); 
@@ -181,10 +181,10 @@ class content_class extends kernel_extends {
 		$typePG = explode(':',$pagetype);
 		if(count($typePG)==2 and file_exists($this->owner->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php'))
 			$flagPG = $this->owner->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php';
-		elseif(file_exists($this->_CFG['_PATH']['ptext'].$rowPG['pagetype'].'.inc.php'))
-			$flagPG = $this->_CFG['_PATH']['ptext'].$rowPG['pagetype'].'.inc.php';
-		elseif(file_exists($this->_CFG['_PATH']['ctext'].$rowPG['pagetype'].'.inc.php'))
-			$flagPG = $this->_CFG['_PATH']['ctext'].$rowPG['pagetype'].'.inc.php';
+		elseif(file_exists($this->_CFG['_PATH']['inc'].$rowPG['pagetype'].'.inc.php'))
+			$flagPG = $this->_CFG['_PATH']['inc'].$rowPG['pagetype'].'.inc.php';
+		elseif(file_exists($this->_CFG['_PATH']['wep_inc'].$rowPG['pagetype'].'.inc.php'))
+			$flagPG = $this->_CFG['_PATH']['wep_inc'].$rowPG['pagetype'].'.inc.php';
 		else {
 			$formFlex['tr_flexform_0'] = array('type'=>'info', 'css'=>'addparam', 'caption'=>'<span class="error">Обрботчик страниц "'.$this->owner->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php" не найден!</span>');
 			//trigger_error('Обрботчик страниц "'.$this->owner->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php" не найден!', E_USER_WARNING);

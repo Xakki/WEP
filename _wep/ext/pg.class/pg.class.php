@@ -98,11 +98,15 @@ class pg_class extends kernel_extends {
 		//'type' => 'list', 'listname'=>'design',-+-
 
 		$this->_enum['inc'] = array(
-			0=>array('path'=>$this->_CFG['_PATH']['ctext'],'name'=>'WEP - '),
-			1=>array('path'=>$this->_CFG['_PATH']['extcore'],'name'=>'WEPext - '),
-			2=>array('path'=>$this->_CFG['_PATH']['ptext'],'name'=>'CONF - '),
+			0=>array('path'=>$this->_CFG['_PATH']['wep_inc'],'name'=>'WEP - '),
+			1=>array('path'=>$this->_CFG['_PATH']['wep_ext'],'name'=>'WEPext - '),
+			2=>array('path'=>$this->_CFG['_PATH']['inc'],'name'=>'CONF - '),
 			3=>array('path'=>$this->_CFG['_PATH']['ext'],'name'=>'EXT - ')
 		);
+
+		if(!file_exists($this->_CFG['_PATH']['inc'])) {
+			rename($this->_CFG['_PATH']['wepconf'] . 'pagetext/',$this->_CFG['_PATH']['inc']);
+		}
 	}
 
 	function setSystemFields() {
@@ -214,8 +218,15 @@ class pg_class extends kernel_extends {
 				$mc_load = true;
 			if($mc_load) {
 				$this->MEMCACHE = new Memcache;
-				$this->MEMCACHE->connect($this->_CFG['memcache']['host'],$this->_CFG['memcache']['port']);
-				$this->config['memcachezip'] = ($this->config['memcachezip']?MEMCACHE_COMPRESSED:0);
+				$this->MEMCACHE->addServer($this->_CFG['memcache']['host'],$this->_CFG['memcache']['port']);
+				//$memstatus = $this->MEMCACHE->getServerStatus($this->_CFG['memcache']['host'],$this->_CFG['memcache']['port']);
+				$memstatus = @$this->MEMCACHE->connect($this->_CFG['memcache']['host'],$this->_CFG['memcache']['port']);
+				if($memstatus) {
+					$this->config['memcachezip'] = ($this->config['memcachezip']?MEMCACHE_COMPRESSED:0);
+				} else {
+					$this->config['memcache']=-1;
+					$this->MEMCACHE = false;
+				}
 			}
 		} else
 			$mc_load = true;
@@ -243,8 +254,6 @@ class pg_class extends kernel_extends {
 		$_tpl['title'] = '';
 		$_tpl['keywords'] = $this->config['keywords'];
 		$_tpl['description'] = $this->config['description'];
-		$this->pageinfo['script'] = array();
-		$this->pageinfo['styles'] = array();
 		$temp_tpl = $_tpl;
 		$flag_content = $this->can_show();
 		//PAGE****************
@@ -468,7 +477,7 @@ class pg_class extends kernel_extends {
 			$html = '';
 			if($rowPG['ugroup']) {
 				if(!$this->pagePrmCheck($rowPG['ugroup'])) {
-					if($this->_CFG['wep']['debugmode']==2)
+					if($this->_CFG['wep']['debugmode']>2)
 						$_tpl[$rowPG['marker']] .= '<!--content'.$rowPG['id'].' ACCESS DENIED-->';
 					continue;
 				}
@@ -489,7 +498,7 @@ class pg_class extends kernel_extends {
 				if(count($rowPG['script'])) {
 					foreach($rowPG['script'] as $r)
 						if($r)
-							$this->pageinfo['script'][$r] = 1;
+							$_tpl['script'][$r] = 1;
 				}
 			}
 			if($rowPG['styles']) {
@@ -497,7 +506,7 @@ class pg_class extends kernel_extends {
 				if(count($rowPG['styles'])) {
 					foreach($rowPG['styles'] as $r)
 						if($r)
-							$this->pageinfo['styles'][$r] = 1;
+							$_tpl['styles'][$r] = 1;
 				}
 			}
 			if($_tpl['keywords'] and $rowPG['keywords'])
@@ -589,7 +598,10 @@ class pg_class extends kernel_extends {
 					if($MemFlag) {
 						// обнуляем $_tpl
 						$temp_tpl = $_tpl;
-						$_tpl = array_combine($_tpl,array_fill(0, count($_tpl), ''));
+						foreach($_tpl as &$r) {
+							if(is_array($r)) $r = array();
+							else $r = '';
+						}
 					}
 
 					// Параметры для обработчика
@@ -599,10 +611,10 @@ class pg_class extends kernel_extends {
 					$typePG = explode(':',$rowPG['pagetype']);
 					if(count($typePG)==2 and file_exists($this->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php'))
 						$flagPG = include($this->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php');
-					elseif(file_exists($this->_CFG['_PATH']['ptext'].$rowPG['pagetype'].'.inc.php'))
-						$flagPG = include($this->_CFG['_PATH']['ptext'].$rowPG['pagetype'].'.inc.php');
-					elseif(file_exists($this->_CFG['_PATH']['ctext'].$rowPG['pagetype'].'.inc.php'))
-						$flagPG = include($this->_CFG['_PATH']['ctext'].$rowPG['pagetype'].'.inc.php');
+					elseif(file_exists($this->_CFG['_PATH']['inc'].$rowPG['pagetype'].'.inc.php'))
+						$flagPG = include($this->_CFG['_PATH']['inc'].$rowPG['pagetype'].'.inc.php');
+					elseif(file_exists($this->_CFG['_PATH']['wep_inc'].$rowPG['pagetype'].'.inc.php'))
+						$flagPG = include($this->_CFG['_PATH']['wep_inc'].$rowPG['pagetype'].'.inc.php');
 					else {
 						trigger_error('Обрботчик страниц "'.$this->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php" не найден!', E_USER_WARNING);
 						continue;

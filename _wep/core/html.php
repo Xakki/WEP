@@ -173,7 +173,7 @@ class html {
 		if (extension_loaded('xsl')) {
 			if (!isset($this->_xslt)) {
 				global $_CFG;
-				include_once($_CFG['_PATH']['phpscript'] . '/_php4xslt.php');
+				include_once($_CFG['_PATH']['wep_phpscript'] . '/_php4xslt.php');
 				$this->_xslt = xslt_create();
 			}
 			$arguments = array('/_xml' => $xml, '/_xsl' => $xsl);
@@ -219,7 +219,7 @@ class html {
  */
 
 function _myErrorHandler($errno, $errstr, $errfile, $errline) {//, $errcontext,$cont
-	global $_CFG;
+	global $_CFG,$BUG;
 	if ($_CFG['wep']['catch_bug']) {
 
 		// Debuger
@@ -240,7 +240,10 @@ function _myErrorHandler($errno, $errstr, $errfile, $errline) {//, $errcontext,$
 			'debug'=>$debug,
 			'errtype' => $_CFG['_error'][$errno]['type'],
 		);
-
+		/*Вывод ошибок*/
+		if(!$BUG and is_array($_CFG['wep']['bug_hunter']) and count($_CFG['wep']['bug_hunter'])) {
+			_new_class('bug', $BUG);
+		}
 		//остановка на фатальной ошибке
 		if ($_CFG['_error'][$errno]['prior'] == 0 and !$_CFG['wep']['debugmode']) {
 			die("\n Aborting...<br />\n");
@@ -289,14 +292,6 @@ function _obHandler($buffer) {
 
 	$htmlinfo = '';
 	$buffer .= static_main::showErr();
-
-	/*Вывод ошибок*/
-	if(count($GLOBALS['_ERR'])) {
-		// write bug to DB
-		if (is_array($_CFG['wep']['bug_hunter']) and count($_CFG['wep']['bug_hunter']) and $SQL->ready) {
-			_new_class('bug', $BUG);
-		}
-	}
 
 	/*Вывд логов и инфы*/
 	if ((isset($_COOKIE[$_CFG['wep']['_showallinfo']]) and $_COOKIE[$_CFG['wep']['_showallinfo']]) or $_CFG['_F']['adminpage']) {

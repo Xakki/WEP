@@ -6,7 +6,7 @@
 
 	require_once($_CFG['_PATH']['wep'].'/config/config.php');
 	if (!isset($_GET['html']))
-		require_once($_CFG['_PATH']['phpscript'].'/jquery_getjson.php');
+		require_once($_CFG['_PATH']['wep_phpscript'].'/jquery_getjson.php');
 	require_once($_CFG['_PATH']['core'].'/sql.php');	/**отправляет header и печатает страничку*/
 	$SQL = new sql($_CFG['sql']);
 

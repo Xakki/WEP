@@ -367,7 +367,7 @@ class static_main {
 					if (isset($_POST['remember']) and $_POST['remember'] == '1')
 						_setcookie('remember', md5($_CFG['wep']['md5'].$_CFG['wep']['password']) . '_' . $_CFG['wep']['login'], $_CFG['remember_expire']);
 					$result = array(static_main::m('authok'), 1);
-					_setcookie('_showerror', 2);
+					_setcookie($_CFG['wep']['_showerror'], 2);
 					//$_COOKIE['_showerror']=1;
 				}
 			}
