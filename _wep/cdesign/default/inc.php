@@ -77,8 +77,7 @@
 								elseif($flag==1){
 									end($HTML->path);prev($HTML->path);
 									$_SESSION['mess']=$DATA['formcreat']['messages'];
-									header('Location: '.$_CFG['_HREF']['BH'].str_replace("&amp;", "&", key($HTML->path)));
-									die();
+									static_main::redirect($_CFG['_HREF']['BH'].str_replace("&amp;", "&", key($HTML->path)));
 								}
 								else {
 									//$DATA['formcreat']['messages'] = $_SESSION['mess'];
@@ -89,8 +88,7 @@
 							} elseif($flag!=3) {
 								end($HTML->path);
 								$_SESSION['mess']=$DATA['superlist']['messages'];
-								header('Location: '.$_CFG['_HREF']['BH'].str_replace("&amp;", "&", key($HTML->path)));
-								die();
+								static_main::redirect($_CFG['_HREF']['BH'].str_replace("&amp;", "&", key($HTML->path)));
 							} else {
 								if(!isset($_SESSION['mess']) or !$_SESSION['mess']) 
 									$_SESSION['mess']= array();

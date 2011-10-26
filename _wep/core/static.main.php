@@ -367,7 +367,7 @@ class static_main {
 					if (isset($_POST['remember']) and $_POST['remember'] == '1')
 						_setcookie('remember', md5($_CFG['wep']['md5'].$_CFG['wep']['password']) . '_' . $_CFG['wep']['login'], $_CFG['remember_expire']);
 					$result = array(static_main::m('authok'), 1);
-					_setcookie($_CFG['wep']['_showerror'], 2);
+					//_setcookie($_CFG['wep']['_showerror'], 2);
 					//$_COOKIE['_showerror']=1;
 				}
 			}
@@ -397,8 +397,6 @@ class static_main {
 			_setcookie('remember', '', (time() - 5000));
 		if (isset($_COOKIE[$_CFG['session']['name']]))
 			_setcookie($_CFG['session']['name'], '', (time() - 5000));
-		//_showerror
-		//
 	}
 
 
@@ -503,6 +501,18 @@ class static_main {
 		return $text;
 	}
 
+	static function redirect($link,$NO=false) {
+		global $_CFG;
+		//301 - перемещение на посточнную основу
+		if($_CFG['wep']['debugmode']<3) {
+			if($NO!==false)
+				header('HTTP/1.0 '.$NO);
+			header("Location: ".$link);
+			die($link);
+		} else {
+			die('Redirect to <a href="'.$link.'">'.$link.'</a>');
+		}
+	}
 	/**
 	 * Преобразование массива данных в XML формат
 	 * @param array $DATA - путь

@@ -1079,9 +1079,15 @@ class static_form {
 		global $_CFG;
 		$data = rand(10000, 99999); //$_SESSION['captcha']
 		if ($_CFG['wep']['sessiontype'] == 1) {
-			$hash_key = file_get_contents($_CFG['_FILE']['HASH_KEY']);
+			$hash_key = file_get_contents($_CFG['_FILE']['HASH_KEY']).$_SERVER['REMOTE_ADDR'];
 			$hash_key = md5($hash_key);
-			$crypttext = trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $hash_key, $data, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))));
+			if(function_exists('openssl_encrypt')) {
+				$crypttext = openssl_encrypt ($data,'aes-128-cbc',$hash_key,false,"1234567812345678");
+			} else {
+				$crypttext = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $hash_key, $data, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND));
+				$crypttext = base64_encode($crypttext);
+			}
+
 			_setcookie('chash', $crypttext, (time() + 1800));
 			_setcookie('pkey', base64_encode($_CFG['_FILE']['HASH_KEY']), (time() + 1800));
 		}
@@ -1090,9 +1096,14 @@ class static_form {
 	static function getCaptcha() {
 		global $_CFG;
 		if (isset($_COOKIE['chash']) and $_COOKIE['chash']) {
-			$hash_key = file_get_contents($_CFG['_FILE']['HASH_KEY']);
+			$hash_key = file_get_contents($_CFG['_FILE']['HASH_KEY']).$_SERVER['REMOTE_ADDR'];
 			$hash_key = md5($hash_key);
-			$data = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $hash_key, base64_decode($_COOKIE['chash']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));
+			if(function_exists('openssl_encrypt')) {
+				$data = openssl_decrypt($_COOKIE['chash'],'aes-128-cbc',$hash_key,false,"1234567812345678");
+			} else {
+				$data = base64_decode($_COOKIE['chash']);
+				$data = mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $hash_key, base64_decode($_COOKIE['chash']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND));
+			}
 			return $data;
 		}
 		return rand(145, 357);

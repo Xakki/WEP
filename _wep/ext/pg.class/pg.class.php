@@ -353,8 +353,8 @@ class pg_class extends kernel_extends {
 		elseif($this->id and isset($this->dataCash[$this->id]))
 		{
 			$this->pageinfo = $this->dataCash[$this->id];
-			if ($this->pageinfo['href']){
-				header('Location: '.$this->pageinfo['href']);die();}			
+			if ($this->pageinfo['href'])
+				static_main::redirect($this->pageinfo['href']);		
 			$this->get_pageinfo();//$this->pageinfo['path']
 			return 1;
 		}
@@ -487,8 +487,7 @@ class pg_class extends kernel_extends {
 				$temp = $this->_cl .'_'.preg_replace($this->_CFG['_repl']['alphaint'], '', $rowPG['href']);
 				if(!isset($_COOKIE[$temp])) {
 					_setcookie($temp, 1, time()+1);
-					header('Location: '.$rowPG['href']);
-					die();
+					static_main::redirect($rowPG['href']);
 				}else {
 					trigger_error('На этой странице '.$this->id.'['.$rowPG['id'].'] обнаружена циклическая переадресация.Веб-страница привела к избыточному количеству переадресаций.', E_USER_WARNING);
 				}
@@ -771,7 +770,8 @@ class pg_class extends kernel_extends {
 					$this->dataCashTreeAlias[$row['parent_id']][$row['alias']] = &$this->dataCash[$row['id']];
 				}
 			}else {
-				header('Location: '.$this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['wepname'].'/install.php');die();}
+				static_main::redirect($this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['wepname'].'/install.php');
+			}
 		}
 		return true;
 	}

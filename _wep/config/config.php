@@ -130,7 +130,7 @@ $_CFG['PATH']['wepname'] = basename($_CFG['_PATH']['wep']); // базовое и
 $_CFG['PATH']['wepconfname'] = basename($_CFG['_PATH']['wepconf']); // базовое имя пользовательских файлов
 $_CFG['PATH']['cdesign'] = $_CFG['PATH']['wepname'] . '/cdesign/'; // дизайн админки
 $_CFG['PATH']['WSWG'] = '_wysiwyg/';
-$_CFG['PATH']['HASH_KEY'] = $_CFG['PATH']['wepconfname'] . '/config/hash.key';
+$_CFG['FILE']['HASH_KEY'] = $_CFG['PATH']['wepconfname'] . '/config/hash.key';
 $_CFG['PATH']['weptemp'] = $_CFG['PATH']['wepconfname'] . '/temp/'; // путь к папке для хранения временных файлов
 $_CFG['PATH']['temp'] = '_content/temp/'; // путь к папке для хранения временных файлов
 //

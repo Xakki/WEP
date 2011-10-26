@@ -112,8 +112,7 @@ function tools_cron() {
 					chmod($ini_file, 0777);
 				}
 				$_SESSION['messtool'] = array('name'=>'ok','value'=>'Задание успешно добавлено.');
-				header('Location: /'.key($DATA['path']));
-				die();
+				static_main::redirect('/'.key($DATA['path']));
 			}
 		}
 		$DATA['path'][$FP.'_type=add'] = 'Добавить';
@@ -195,8 +194,7 @@ function tools_cron() {
 			$_SESSION['messtool'] = array('name'=>'error','value'=>'Ошибка.');
 		else
 			$_SESSION['messtool'] = array('name'=>'ok','value'=>'Задание успешно Удалено.');
-		header('Location: /'.key($DATA['path']));
-		die();
+		static_main::redirect('/'.key($DATA['path']));
 	} 
 	elseif(isset($_GET['_id']) and ($_GET['_type'] == 'act' or $_GET['_type'] == 'dis')) {
 		$act = ($_GET['_type'] == 'act'?1:0);
@@ -208,8 +206,7 @@ function tools_cron() {
 			$_SESSION['messtool'] = array('name'=>'error','value'=>'Ошибка.');
 		else
 			$_SESSION['messtool'] = array('name'=>'ok','value'=>'Задание успешно '.($act?'включено':'отключено').'.');
-		header('Location: /'.key($DATA['path']));
-		die();
+		static_main::redirect('/'.key($DATA['path']));
 	}
 	else {
 		$DATA['data'] = array(

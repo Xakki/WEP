@@ -44,8 +44,7 @@
 
 
 	if($FUNCPARAM[3] and $result = static_main::userAuth() and $result[1]) {
-		//@header("Location: ".$ref);
-		//die();
+		//static_main::redirect($ref);
 		$mess=$result[0];
 	}
 

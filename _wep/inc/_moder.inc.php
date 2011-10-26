@@ -60,8 +60,7 @@
 						$cp = $this->getHref($cp['id'],true).'?';
 					}else
 						$cp = key($HTML->path);
-					header('Location: '.str_replace("&amp;", "&", $cp));
-					die();
+					static_main::redirect('Location: '.str_replace("&amp;", "&", $cp));
 				}
 				else {
 					$DATA['formcreat']['firstpath'] = key($HTML->path);
@@ -69,8 +68,7 @@
 				}
 			}elseif($flag!=3) {
 				$_SESSION['mess']=$DATA[$FUNCPARAM[1]]['messages'];
-				header('Location: '.str_replace("&amp;", "&", $cp));
-				die();
+				static_main::redirect(str_replace("&amp;", "&", $cp));
 			}else {
 				if(!isset($_SESSION['mess'])) 
 					$_SESSION['mess']= array();

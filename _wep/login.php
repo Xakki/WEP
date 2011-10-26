@@ -21,8 +21,7 @@
 		static_main::userExit();
 		$result = static_main::userAuth($_POST['login'],$_POST['pass']);
 		if($result[1]) {
-			@header("Location: ".$ref);
-			die($ref);
+			static_main::redirect($ref);//STOP
 		}
 	}
 	elseif(isset($_REQUEST['exit']) && $_REQUEST['exit']=="ok") {
@@ -31,8 +30,7 @@
 		$ref = $_CFG['_HREF']['BH'].'index.html';
 	}
 	elseif(isset($_COOKIE['remember']) and $result = static_main::userAuth() and $result[1]) {
-		@header("Location: ".$ref);
-		die($ref);
+		static_main::redirect($ref);//STOP
 	}
 	if(isset($_COOKIE['cdesign']) and $_COOKIE['cdesign'])
 		$_design = $_COOKIE['cdesign'];

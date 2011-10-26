@@ -49,8 +49,7 @@
 	if(count($_POST) and isset($_POST['login'])) {
 		$result = static_main::userAuth($_POST['login'],$_POST['pass']);
 		if($result[1]) {
-			//@header("Location: ".$ref);
-			//die();
+			//static_main::redirect($ref);
 			//$mess=$result[0];
 		}
 	}
@@ -59,8 +58,7 @@
 		$result = array(static_main::m('exitok'),1);
 	}
 	elseif($FUNCPARAM[2] and $result = static_main::userAuth() and $result[1]) {
-		@header("Location: ".$ref);
-		die();
+		static_main::redirect($ref);
 		//$mess=$result[0];
 	}
 

@@ -6,8 +6,7 @@
 	$result = static_main::userAuth(); // запскает сессию и проверяет авторизацию
 
 	if(!$result[1]) {
-		header('Location: login.php?ref='.base64_encode($_SERVER['REQUEST_URI']));
-		exit();
+		static_main::redirect('Location: login.php?ref='.base64_encode($_SERVER['REQUEST_URI']));
 	}
 
 	if(isset($_COOKIE['cdesign']) and $_COOKIE['cdesign'])
@@ -100,6 +99,7 @@
 	<option '.(!$_COOKIE[$_CFG['wep']['_showerror']]?'selected="selected"':'').' value="0">не показывать ошибки</option>
 	<option '.($_COOKIE[$_CFG['wep']['_showerror']]==1?'selected="selected"':'').' value="1">сообщение об ошибке</option>
 	<option '.($_COOKIE[$_CFG['wep']['_showerror']]==2?'selected="selected"':'').' value="2">Показать все ошибки</option>
+	<option '.($_COOKIE[$_CFG['wep']['_showerror']]==3?'selected="selected"':'').' value="3">DEBUG MODE</option>
 	</select></span>';
 
 			$_tpl['debug'] .= '<span class="seldebug"><select onchange="window.location.href=\'/'.$_CFG['PATH']['wepname'].'/index.php?'.$_CFG['wep']['_showallinfo'].'=\'+this.value;">

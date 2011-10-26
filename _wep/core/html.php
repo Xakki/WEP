@@ -32,7 +32,7 @@ if (isset($_GET[$sai]) and !$_CFG['robot']) {// and !isset($_COOKIE[$sai])
 
 // or $_CFG['_F']['adminpage']
 if(!$_CFG['robot']) {
-	$se =$_CFG['wep']['_showerror'];
+	$se = $_CFG['wep']['_showerror'];
 	if (isset($_GET[$se])) {
 		$_COOKIE[$se] = (int)$_GET[$se];
 		_setcookie($se, $_COOKIE[$se]);
@@ -296,7 +296,7 @@ function _obHandler($buffer) {
 	/*Вывд логов и инфы*/
 	if ((isset($_COOKIE[$_CFG['wep']['_showallinfo']]) and $_COOKIE[$_CFG['wep']['_showallinfo']]) or $_CFG['_F']['adminpage']) {
 		$included_files = get_included_files();
-		$htmlinfo .= 'time=' . substr((getmicrotime() - $_mctime_start), 0, 6) . ' | memory=' . (int) (memory_get_usage() / 1024) . 'Kb | maxmemory=' . (int) (memory_get_peak_usage() / 1024) . 'Kb | query=' . count($_CFG['logs']['sql']) . ' | file include=' . count($included_files);
+		$htmlinfo .= ' time=' . substr((getmicrotime() - $_mctime_start), 0, 6) . ' | memory=' . (int) (memory_get_usage() / 1024) . 'Kb | maxmemory=' . (int) (memory_get_peak_usage() / 1024) . 'Kb | query=' . count($_CFG['logs']['sql']) . ' | file include=' . count($included_files).' <br/> ';
 
 		if ($_COOKIE[$_CFG['wep']['_showallinfo']] > 1 and count($_CFG['logs']['sql']) > 0)
 			$buffer .= static_main::spoilerWrap('SQL QUERY',implode(';<br/>', $_CFG['logs']['sql']));
