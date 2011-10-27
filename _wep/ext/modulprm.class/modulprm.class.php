@@ -416,6 +416,8 @@ final class modulprm_class extends kernel_extends {
 					}
 					if (!isset($this->data[$Mid]) or $this->data[$Mid]['typemodul'] != $typemodul)
 						$this->fld_data['typemodul'] = $typemodul;
+
+					/*Xros HOOK*/
 					$hook = '';
 					if (count($MODUL->_setHook)) {
 						$hook = str_replace(array("\t", "\n", "\r", ' '), '', var_export($MODUL->_setHook, true));
@@ -423,6 +425,32 @@ final class modulprm_class extends kernel_extends {
 					if (!isset($this->data[$Mid]) or $this->data[$Mid]['hook'] != $hook)
 						$this->fld_data['hook'] = mysql_real_escape_string($hook);;
 					//if($this->data[$Mid]['active']!=1)					$this->fld_data['active'] = 1;
+					// CRON JOB
+					if(count($MODUL->cron)) {
+						$CRON = static_tools::getFdata($this->_CFG['_FILE']['cron']);
+						$cflag= false;
+						foreach($MODUL->cron as $cr) {
+							$cn = md5($cr['file'].$cr['modul'].$cr['function']);
+							if(!isset($CRON['cron'][$cn])) {
+								if (isset($_POST['sbmt'])) {
+									if(!isset($cr['active']))
+										$cr['active'] = 1;
+									if(!isset($cr['time']))
+										$cr['time'] = 86400;
+									$CRON['cron'][$cn] = $cr;
+								}
+								$cflag= true;
+							}
+						}
+						if($cflag) {
+							if(isset($_POST['sbmt'])) {
+								list($cfl,$cmess) = static_tools::saveCFG($CRON,$this->_CFG['_FILE']['cron']);
+								$MESS = array_merge($MESS,$cmess);
+							} else 
+								$MESS[] = array('notice', 'Будет добавленно задание в CRON');
+						}
+					}
+
 					$obj = new ReflectionClass($Mid . '_class');
 					$extend = $obj->getParentClass();
 					$extend = $extend->name;

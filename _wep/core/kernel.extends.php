@@ -172,6 +172,7 @@ abstract class kernel_extends {
 				$this->_setHook = //Перехватчик в предустановки модуля
 				$this->HOOK = //перехватчик в реальном времени
 				$this->_AllowAjaxFn =  // разрешённые функции для аякса, нужно прописывать в индекс
+				$this->cron = // Задания на кроне time,file,modul,function,active,
 				$this->_dependClass = 
 				 array();
 		$this->childs = new modul_child($this);

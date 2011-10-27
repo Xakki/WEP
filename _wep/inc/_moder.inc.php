@@ -60,7 +60,7 @@
 						$cp = $this->getHref($cp['id'],true).'?';
 					}else
 						$cp = key($HTML->path);
-					static_main::redirect('Location: '.str_replace("&amp;", "&", $cp));
+					static_main::redirect(str_replace("&amp;", "&", $cp));
 				}
 				else {
 					$DATA['formcreat']['firstpath'] = key($HTML->path);

@@ -492,16 +492,14 @@ class static_tools {
 		return $_CFG;
 	}
 
-	static function saveUserCFG($SetDataCFG, $tempCFG=array()) {
+	static function saveUserCFG($SetDataCFG) {
+		//$SetDataCFG = static_main::MergeArrays($USER_CFG,$SetDataCFG);
+		// объединяем конфиг записанный на пользователя и новые конфиги
 		global $_CFG,$_CFGFORM;
-		$mess = array();
-		$DEF_CFG = self::getFdata($_CFG['_FILE']['wep_config'], '/* MAIN_CFG */', '/* END_MAIN_CFG */');// чистый конфиг ядра
-		$USER_CFG = self::getFdata($_CFG['_FILE']['config'], '', '', $DEF_CFG); // конечный конфиг
-		// Редактируемые конфиги
+		$fl = false;$mess = array();
+
 		include_once($_CFG['_FILE']['wep_config_form']);
 
-		$fl = false;$mess = array();
-		$putFile = array();
 		if(isset($SetDataCFG['wep'])) {
 			if(!isset($SetDataCFG['wep']['password']) or !$SetDataCFG['wep']['password'] or $SetDataCFG['wep']['password']==$DEF_CFG['wep']['password']) {
 				$mess[] = array( 'error','Поле '.$_CFGFORM['wep']['password']['caption'].' обязательное и не должно совпадать с дефолтным');
@@ -510,21 +508,34 @@ class static_tools {
 				$mess[] = array( 'error','Поле '.$_CFGFORM['wep']['md5']['caption'].' обязательное и не должно совпадать с дефолтным');
 			}
 		}
-		if(count($mess))
-			return array($fl,$mess);
 
 		if(isset($SetDataCFG['sql'])) {
 			$SQL = new sql($SetDataCFG['sql']); //пробуем подключиться к БД
 			if(!$SQL->ready) {
 				$mess[] = array( 'error','Ошибка подключения к БД.');
-				return array($fl,$mess);
 			}
 		}
-		//$SetDataCFG = static_main::MergeArrays($USER_CFG,$SetDataCFG);
-		// объединяем конфиг записанный на пользователя и новые конфиги
+		if(count($mess))
+			return array($fl,$mess);
 
-		foreach ($_CFGFORM as $k => $r) {
-			foreach ($DEF_CFG[$k] as $kk => $defr) {
+		$DEF_CFG = self::getFdata($_CFG['_FILE']['wep_config'], '/* MAIN_CFG */', '/* END_MAIN_CFG */');// чистый конфиг ядра
+
+		return self::saveCFG($SetDataCFG,$_CFG['_FILE']['config'],$DEF_CFG);
+	}
+
+	static function saveCFG($SetDataCFG,$file,$DEF_CFG=array()) {
+		global $_CFG;
+		$fl = false;$mess = array();
+		$putFile = array();
+		$USER_CFG = self::getFdata($file, '', '', $DEF_CFG); // конечный конфиг
+		// Редактируемые конфиги
+		$fl = false;
+		if(!count($DEF_CFG)) {
+			$fl = true;
+			$DEF_CFG = $SetDataCFG;
+		}
+		foreach ($DEF_CFG as $k => $r) {
+			foreach ($r as $kk => $defr) {
 				if(isset($SetDataCFG[$k][$kk]))
 					$newr = $SetDataCFG[$k][$kk];
 				elseif(isset($USER_CFG[$k][$kk]))
@@ -532,17 +543,17 @@ class static_tools {
 				
 				$flag = false;
 				if(is_string($newr)) {
-					if($newr != $defr)
+					if($fl or $newr != $defr)
 						$flag = true;
 					$newr = '\''.addcslashes($newr, '\'').'\'';
 				}
 				elseif(is_array($newr)) {
-					if(!is_array($defr) or count(array_diff($newr,$defr)))
+					if($fl or !is_array($defr) or count(array_diff($newr,$defr)))
 						$flag = true;
 					$newr = str_replace(array("\n","\t","\r",'   ','  '),array('','','',' ',' '),var_export($newr,true));
 				}else {
 					$newr = (int)$newr;
-					if($newr != $defr)
+					if($fl or $newr != $defr)
 						$flag = true;
 				}
 
@@ -553,7 +564,7 @@ class static_tools {
 		}
 		$putFile = "<?php\n\t//create time " . date('Y-m-d H:i') . "\n\t".implode("\n\t", $putFile)."\n";
 		//Записать в конфиг все данные которые отличаются от данных по умолчанию
-		if (!file_put_contents($_CFG['_FILE']['config'], $putFile)) {
+		if (!file_put_contents($file, $putFile)) {
 			$mess[] = array( 'error','Ошибка записи настроек. Нет доступа к фаилу');
 		} else {
 			$fl = true;

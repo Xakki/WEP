@@ -42,10 +42,11 @@ $_CFG['wep'] = array(// для ядра и админки
 	'debugmode' => 2, //0- ничего не показывать обычным юзерам, 1 -паказывать только сообщение что произошла ошибка, 2 - паказать ошибку
 	'_showerror'=>'_showerror', // для GET запросов
 	'_showallinfo'=>'_showallinfo', // для GET запросов
-	'cron'=>array(),
+	'cron'=>array(),// Скоро удалю
 );
 
 $_CFG['site'] = array(// для сайта
+	'www' => $_SERVER['HTTP_HOST'],
 	'rf' => 0, // для рускояз доменов
 	'worktime' => false, // 1 - включает отображение страницы "Технический перерыв"
 	'work_title' => 'Технический перерыв',
@@ -68,6 +69,7 @@ $_CFG['require_modul'] = array(
 );
 $_CFG['singleton'] = array(); // Массив объектов которые не клонируются
 $_CFG['hook'] = array(); // События
+$_CFG['cron'] = array(); // cron
 
 $_CFG['logs'] = array(
 	'sql' => array(),
@@ -108,7 +110,9 @@ $_CFG['_PATH']['inc'] = $_CFG['_PATH']['wepconf'] . 'inc/'; // путь к об�
 $_CFG['_PATH']['ext'] = $_CFG['_PATH']['wepconf'] . 'ext/'; // путь к пользовательским модулям
 $_CFG['_PATH']['config'] = $_CFG['_PATH']['wepconf'] . 'config/'; // конфиги
 $_CFG['_FILE']['config'] = $_CFG['_PATH']['config'].'config.php';
-$_CFG['_FILE']['HASH_KEY'] = $_CFG['_PATH']['config'] . 'hash.key';
+$_CFG['_FILE']['config'] = $_CFG['_PATH']['config'].'config.php';
+$_CFG['_FILE']['cron'] = $_CFG['_PATH']['config'] . 'configcron.php';
+
 $_CFG['_PATH']['locallang'] = $_CFG['_PATH']['wepconf'] . 'locallang/'; // язык
 $_CFG['_PATH']['cron'] = $_CFG['_PATH']['wepconf'] . 'cron/'; // кроны
 $_CFG['_PATH']['weptemp'] = $_CFG['_PATH']['wepconf'] . 'temp/'; // путь к папке для хранения временных файлов

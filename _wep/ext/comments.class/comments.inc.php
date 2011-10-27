@@ -67,7 +67,7 @@
 					if($flag==1) {
 						end($HTML->path);prev($HTML->path);
 						$_SESSION['mess']=$DATA['formcreat']['messages'];
-						header('Location: '.str_replace("&amp;", "&", key($HTML->path)));
+						header(str_replace("&amp;", "&", key($HTML->path)));
 						//static_main::redirect($loc,301);
 					}
 					else {
@@ -77,7 +77,7 @@
 				}elseif($flag!=3) {
 					end($HTML->path);
 					$_SESSION['mess']=$DATA['superlist']['messages'];
-					header('Location: '.str_replace("&amp;", "&", key($HTML->path)));
+					header(str_replace("&amp;", "&", key($HTML->path)));
 					//static_main::redirect($loc,301);
 				}else {
 					if(!$_SESSION['mess']) 

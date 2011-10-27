@@ -220,7 +220,7 @@ function tpl_form(&$data) {
 				$temp = '';
 
 				if(isset($r['mask']['view']) and $r['mask']['view']=='input') {
-
+					$time=NULL;
 					// Тип поля
 					if($r['fields_type']  =='int' and $r['value']){
 						$time = $r['value'];
@@ -252,7 +252,7 @@ function tpl_form(&$data) {
 
 						global $_tpl;
 						$prop = array();
-						if($time)
+						if(!is_null($time))
 							$r['mask']['datepicker']['defaultDate'] = 'new Date('.date('Y,m-1,d',$time).')';
 						foreach ($r['mask']['datepicker'] as $kp => $vp) {
 							$prop[] = $kp.':'.$vp;

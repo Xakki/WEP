@@ -15,6 +15,9 @@ class mail_class extends kernel_extends {
 		$this->_AllowAjaxFn['jsSendMsg'] = true;		
 		$this->_AllowAjaxFn['jsDelMsg'] = true;
 		$this->_AllowAjaxFn['jsGetUserData'] = true;
+
+		$this->cron[] = array('modul'=>$this->_cl,'function'=>'cronSend()','active'=>1);
+
 		$this->default_access = '|0|';
 		
 		return true;
@@ -38,6 +41,7 @@ class mail_class extends kernel_extends {
 			2=>'все ошибки',
 		);
 		$this->config['mailengine'] = 0;
+		$this->config['mailcron'] = 0;
 		$this->config['mailrobot'] = 'robot@xakki.ru';
 		$this->config['fromName'] = '';
 		$this->config['PHPMailer_Host'] = 'ssl://smtp.gmail.com:465';
@@ -48,6 +52,7 @@ class mail_class extends kernel_extends {
 		$this->config['mailtemplate'] = '<html><head><title>%SUBJECT%</title><meta content="text/html;charset=utf-8" http-equiv="Content-Type" /></head><body>%TEXT% %MAILBOTTOM%</body></html>';
 		$this->config['mailbottom'] = '<hr/>© 2011 «XAKKI»';
 
+		$this->config_form['mailcron'] = array('type' => 'checkbox', 'caption' => 'Отправалять почту Кроном');
 		$this->config_form['mailengine'] = array('type' => 'list', 'listname'=>'mailengine', 'caption' => 'Обработчик почты');
 		$this->config_form['mailrobot'] = array('type' => 'text', 'mask' =>array('min'=>1,'name'=>'email'), 'caption' => 'Адрес Робота');
 		$this->config_form['fromName'] = array('type' => 'text', 'caption' => 'Имя отправителя (название сайта)');
@@ -84,6 +89,7 @@ class mail_class extends kernel_extends {
 			0 => 'Не отправлялось на email',
 			1 => 'Отправлялось на email',
 			2 => 'При отправке на email произошли ошибки',
+			21 => 'При повторной отправке на email произошли ошибки',
 			3 => 'Не отправлялось на email и было прочитано на сайте',
 			4 => 'Удалено пользователем',
 		);
@@ -166,18 +172,20 @@ class mail_class extends kernel_extends {
 		else {
 			if(!$data['from'])
 				$data['from'] = 'anonim@'.$_SERVER['HTTP_HOST'];
-			if(method_exists($this, 'mailengine'.$this->config['mailengine'])) {
-				$send_result = call_user_func(array($this, 'mailengine'.$this->config['mailengine']),$data);
-			}
-			else {
-				trigger_error('Попытка вызвать не существующий метод `mailengine'.$this->config['mailengine'].'` в модуле Mail!', E_USER_ERROR);
-			}
+			if(!$this->config['mailcron']) {
+				if(method_exists($this, 'mailengine'.$this->config['mailengine'])) {
+					$send_result = call_user_func(array($this, 'mailengine'.$this->config['mailengine']),$data);
+				}
+				else {
+					trigger_error('Попытка вызвать не существующий метод `mailengine'.$this->config['mailengine'].'` в модуле Mail!', E_USER_ERROR);
+				}
 
-			if ($send_result) {
-				$data['status'] = 1;
-			}
-			else {
-				$data['status'] = 2;
+				if ($send_result) {
+					$data['status'] = 1;
+				}
+				else {
+					$data['status'] = 2;
+				}
 			}
 		}
 
@@ -725,6 +733,28 @@ class mail_class extends kernel_extends {
 		}
 		return $result;
 	}
+
+	function cronSend() {
+		$DAT_LIST = $this->_query('*','WHERE status IN (0,2)');
+		foreach($DAT_LIST as $data) {
+			if(method_exists($this, 'mailengine'.$this->config['mailengine'])) {
+				$send_result = call_user_func(array($this, 'mailengine'.$this->config['mailengine']),$data);
+				if ($send_result) {
+					$status = 1;
+				}
+				elseif($data['status'] == 2)
+					$status = 21;
+				else
+					$status = 2;
+				$this->qu(array('status'=>$status),'WHERE id='.$data['id']);
+			}
+
+		}
+		return true;
+	}
+
+
+
 
 }
 

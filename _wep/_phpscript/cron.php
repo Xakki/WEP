@@ -8,7 +8,7 @@
 		exit();
 	}
 
-	$ini_file = $_CFG['_PATH']['weptemp'].'cron.ini';
+	$ini_file = $_CFG['_PATH']['config'].'cron.ini';
 	if(file_exists($ini_file)) 
 		$ini_arr = parse_ini_file($ini_file);
 	else
@@ -17,6 +17,7 @@
 	$time = time();
 	$res = '';
 	$i = 1;
+	$_SERVER['HTTP_HOST2'] = $_SERVER['HTTP_HOST'] = $_CFG['site']['www'];
 
 	foreach($_CFG['wep']['cron'] as $i=>$r) {
 		if (isset($ini_arr['last_time' . $i]) && ($ini_arr['last_time' . $i] + $r['time']) > $time) {

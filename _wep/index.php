@@ -6,7 +6,7 @@
 	$result = static_main::userAuth(); // запскает сессию и проверяет авторизацию
 
 	if(!$result[1]) {
-		static_main::redirect('Location: login.php?ref='.base64_encode($_SERVER['REQUEST_URI']));
+		static_main::redirect('login.php?ref='.base64_encode($_SERVER['REQUEST_URI']));
 	}
 
 	if(isset($_COOKIE['cdesign']) and $_COOKIE['cdesign'])

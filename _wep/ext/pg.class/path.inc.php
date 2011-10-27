@@ -13,6 +13,13 @@
 
 /*PATH*/
 	$DATA = array($FUNCPARAM[0]=>$PGLIST->get_path());
+
+	if(count($DATA['pathPage'])>1) {
+		end($DATA['pathPage']);
+		$temp = current($DATA['pathPage']);
+		$_tpl['description'] = $temp['name'].' - '.$_tpl['description'];
+	}
+
 	$html = $HTML->transformPHP($DATA, $tplphp);
 /*	PATH */
 	return $html;

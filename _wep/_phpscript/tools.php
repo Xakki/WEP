@@ -53,12 +53,22 @@ function tools_cron() {
 	if(!static_main::_prmUserCheck(1))
 		return static_main::m('denied');
 	$result = '';
+	
+	if(!file_exists($_CFG['_FILE']['cron'])) {// FIX UPDATE
+		$NEWDATA = array();
+		foreach($_CFG['wep']['cron'] as $k=>$r)
+			$NEWDATA['cron'][md5($r['file'].$r['modul'].$r['function'])] = $r;
+		static_tools::saveCFG($NEWDATA,$_CFG['_FILE']['cron']);
+		rename($_CFG['_PATH']['weptemp'].'cron.ini',$_CFG['_PATH']['config'].'cron.ini');
+	}
+	include($_CFG['_FILE']['cron']);// Загружаем конфиг крона
 
-	$ini_file = $_CFG['_PATH']['weptemp'].'cron.ini';
+	$ini_file = $_CFG['_PATH']['config'].'cron.ini';
 	if(file_exists($ini_file)) 
 		$ini_arr = parse_ini_file($ini_file);
-	else
+	else {
 		$ini_arr= array();
+	}
 
 	$FP = $_CFG['PATH']['wepname'].'/index.php?_view=list&_modul=_tools&tfunc=tools_cron&';
 	$_tpl['styles']['form']=1;
@@ -74,35 +84,34 @@ function tools_cron() {
 		'type' => '',
 		'css' => 'add',
 	);
-	if ($_GET['_type'] == 'add' or ($_GET['_type'] == 'edit' and isset($_GET['_id']))) {
+	if (isset($_GET['_type']) and ($_GET['_type'] == 'add' or ($_GET['_type'] == 'edit' and isset($_GET['_id']))) ) {
 
 		$FORM = array('_*features*_' => array('method' => 'POST', 'name' => 'cron'));
 
 		if (isset($_POST['sbmt'])) {
+
 			if(isset($_GET['_id']))
-				$p = (int)$_GET['_id'];
-			elseif(!isset($_CFG['wep']['cron']))
-				$p = 0;
+				$p = $_GET['_id'];
 			else {
-				ksort($_CFG['wep']['cron']);
-				end($_CFG['wep']['cron']);
-				$p = key($_CFG['wep']['cron'])+1;
+				$p = md5($_POST['file'].$_POST['modul'].$_POST['function']);
 			}
+
 			$NEWDATA = array();
-			$NEWDATA['wep']['cron'] = $_CFG['wep']['cron'];
-			$NEWDATA['wep']['cron'][$p] = array(
+			$NEWDATA['cron'] = $_CFG['cron'];
+			$NEWDATA['cron'][$p] = array(
 				'time'=>$_POST['time'],
 				'file'=>$_POST['file'],
 				'modul'=>$_POST['modul'],
 				'function'=>$_POST['function'],
 				'active'=>($_POST['active']?1:0),
 			);
-			list($fl,$mess) = static_tools::saveUserCFG($NEWDATA);
+			list($fl,$mess) = static_tools::saveCFG($NEWDATA,$_CFG['_FILE']['cron']);
 			if(!$fl)
 				$FORM['info'] = array('type'=>'info', 'caption'=>'<h3 style="color:red;">Ошибка</h3>');
 			else {
 				if($_POST['last_time']) {
-					$ini_arr['last_time'.$p] = mktime($_POST['last_time'][3],$_POST['last_time'][4],$_POST['last_time'][5],$_POST['last_time'][1],$_POST['last_time'][2],$_POST['last_time'][0]);
+					$ini_arr['last_time'.$p] = strtotime($_POST['last_time']);
+					//mktime($_POST['last_time'][3],$_POST['last_time'][4],$_POST['last_time'][5],$_POST['last_time'][1],$_POST['last_time'][2],$_POST['last_time'][0]);
 					$conf = '';
 					foreach ($ini_arr as $k=>$v) {
 						$conf .= $k . " = " . $v . "\n";
@@ -116,8 +125,8 @@ function tools_cron() {
 			}
 		}
 		$DATA['path'][$FP.'_type=add'] = 'Добавить';
-		if($_GET['_type'] == 'edit' and isset($_GET['_id']) and isset($_CFG['wep']['cron'][$_GET['_id']])) {
-			$VAL = $_CFG['wep']['cron'][$_GET['_id']];
+		if($_GET['_type'] == 'edit' and isset($_GET['_id']) and isset($_CFG['cron'][$_GET['_id']])) {
+			$VAL = $_CFG['cron'][$_GET['_id']];
 			$VAL['last_time'] = $ini_arr['last_time'.$_GET['_id']];
 			$DATA['path'][$FP.'_type=add'] = 'Правка';
 		}
@@ -171,6 +180,7 @@ function tools_cron() {
 			'comment' => '',
 			'type' => 'date',
 			'fields_type'=>'int',
+			'mask' => array('view'=>'input','format'=>'Y-m-d H:i:s','datepicker'=>array('timeFormat'=>'\' hh:mm:ss\'')),
 			'css' => '',
 			'style' => '',
 			'value'=>$VAL['last_time'],
@@ -185,11 +195,11 @@ function tools_cron() {
 		$result = $HTML->transformPHP($DATA, 'path');
 		$result .= $HTML->transformPHP($FORM, 'formcreat');
 	}
-	elseif($_GET['_type'] == 'del' and isset($_GET['_id'])) {
+	elseif(isset($_GET['_id']) and $_GET['_type'] == 'del') {
 		$NEWDATA = array();
-		$NEWDATA['wep']['cron'] = $_CFG['wep']['cron'];
-		unset($NEWDATA['wep']['cron'][$_GET['_id']]);
-		list($fl,$mess) = static_tools::saveUserCFG($NEWDATA);
+		$NEWDATA['cron'] = $_CFG['cron'];
+		unset($NEWDATA['cron'][$_GET['_id']]);
+		list($fl,$mess) = static_tools::saveCFG($NEWDATA,$_CFG['_FILE']['cron']);
 		if(!$fl)
 			$_SESSION['messtool'] = array('name'=>'error','value'=>'Ошибка.');
 		else
@@ -199,9 +209,9 @@ function tools_cron() {
 	elseif(isset($_GET['_id']) and ($_GET['_type'] == 'act' or $_GET['_type'] == 'dis')) {
 		$act = ($_GET['_type'] == 'act'?1:0);
 		$NEWDATA = array();
-		$NEWDATA['wep']['cron'] = $_CFG['wep']['cron'];
-		$NEWDATA['wep']['cron'][$_GET['_id']]['active'] = $act;
-		list($fl,$mess) = static_tools::saveUserCFG($NEWDATA);
+		$NEWDATA['cron'] = $_CFG['cron'];
+		$NEWDATA['cron'][$_GET['_id']]['active'] = $act;
+		list($fl,$mess) = static_tools::saveCFG($NEWDATA,$_CFG['_FILE']['cron']);
 		if(!$fl)
 			$_SESSION['messtool'] = array('name'=>'error','value'=>'Ошибка.');
 		else
@@ -219,8 +229,8 @@ function tools_cron() {
 				'do_time'=>array('value'=>'Время выполнения задачи в мс.')
 			),
 		);
-		if(isset($_CFG['wep']['cron']) and count($_CFG['wep']['cron'])) {
-			foreach($_CFG['wep']['cron'] as $k=>$r) {
+		if(isset($_CFG['cron']) and count($_CFG['cron'])) {
+			foreach($_CFG['cron'] as $k=>$r) {
 				$DATA['data']['item'][$k]['tditem'] = array(
 					'time'=>array('value'=>$r['time']),
 					'file'=>array('value'=>$r['file']),
@@ -248,6 +258,7 @@ function tools_cron() {
 }
 
 function tools_worktime() {
+	return 'TODO';
 	global $_CFG,$_tpl;
 	if(!static_main::_prmUserCheck(1))
 		return static_main::m('denied');
