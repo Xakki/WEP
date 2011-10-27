@@ -217,6 +217,7 @@ class ugroup_class extends kernel_extends
 
 				);
 				$MAIL->reply = 0;
+				$MAIL->config['mailcron'] = 1;
 				if($MAIL->Send($datamail)) {
 					$mess = 'Оповещение: '.count($data).' пользователей ожидают одобрения.';
 				} else {
@@ -517,6 +518,7 @@ class users_class extends kernel_extends {
 						if($this->_add_item($arr['vars'])) {
 							$this->SQL->execSQL('UPDATE '.$this->tablename.' SET '.$this->mf_createrid.'="'.$this->id.'" where '.$this->fn_login.'="'.$arr['vars'][$this->fn_login].'"');
 							_new_class('mail',$MAIL);
+							$MAIL->config['mailcron'] = 1;
 							$datamail = array('creater_id'=>-1);
 							$datamail['mail_to']=$arr['vars']['email'];
 							$datamail['user_to']=$this->id;
@@ -668,6 +670,7 @@ class users_class extends kernel_extends {
 			$time=time();
 			$hash =md5($datau[$this->fn_pass].$time.$datau['email']).'h';
 			_new_class('mail',$MAIL);
+			$MAIL->config['mailcron'] = 1;
 			$datamail = array('creater_id'=>-1);
 			$datamail['mail_to']=$datau['email'];
 			$datamail['user_to']=$datau['id'];

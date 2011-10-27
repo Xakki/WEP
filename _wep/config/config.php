@@ -112,6 +112,7 @@ $_CFG['_PATH']['config'] = $_CFG['_PATH']['wepconf'] . 'config/'; // конфи�
 $_CFG['_FILE']['config'] = $_CFG['_PATH']['config'].'config.php';
 $_CFG['_FILE']['config'] = $_CFG['_PATH']['config'].'config.php';
 $_CFG['_FILE']['cron'] = $_CFG['_PATH']['config'] . 'configcron.php';
+$_CFG['_FILE']['HASH_KEY'] = $_CFG['_PATH']['config'] . 'hash.key';
 
 $_CFG['_PATH']['locallang'] = $_CFG['_PATH']['wepconf'] . 'locallang/'; // язык
 $_CFG['_PATH']['cron'] = $_CFG['_PATH']['wepconf'] . 'cron/'; // кроны
