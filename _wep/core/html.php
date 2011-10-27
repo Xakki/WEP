@@ -242,7 +242,7 @@ function _myErrorHandler($errno, $errstr, $errfile, $errline) {//, $errcontext,$
 		);
 		/*Вывод ошибок*/
 		if(!$BUG and is_array($_CFG['wep']['bug_hunter']) and count($_CFG['wep']['bug_hunter'])) {
-			_new_class('bug', $BUG);
+			//_new_class('bug', $BUG);
 		}
 		//остановка на фатальной ошибке
 		if ($_CFG['_error'][$errno]['prior'] == 0 and !$_CFG['wep']['debugmode']) {

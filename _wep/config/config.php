@@ -46,7 +46,7 @@ $_CFG['wep'] = array(// для ядра и админки
 );
 
 $_CFG['site'] = array(// для сайта
-	'www' => $_SERVER['HTTP_HOST'],
+	'www' => (isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:'localhost'),
 	'rf' => 0, // для рускояз доменов
 	'worktime' => false, // 1 - включает отображение страницы "Технический перерыв"
 	'work_title' => 'Технический перерыв',
@@ -110,7 +110,6 @@ $_CFG['_PATH']['inc'] = $_CFG['_PATH']['wepconf'] . 'inc/'; // путь к об�
 $_CFG['_PATH']['ext'] = $_CFG['_PATH']['wepconf'] . 'ext/'; // путь к пользовательским модулям
 $_CFG['_PATH']['config'] = $_CFG['_PATH']['wepconf'] . 'config/'; // конфиги
 $_CFG['_FILE']['config'] = $_CFG['_PATH']['config'].'config.php';
-$_CFG['_FILE']['config'] = $_CFG['_PATH']['config'].'config.php';
 $_CFG['_FILE']['cron'] = $_CFG['_PATH']['config'] . 'configcron.php';
 $_CFG['_FILE']['HASH_KEY'] = $_CFG['_PATH']['config'] . 'hash.key';
 
@@ -138,52 +137,7 @@ $_CFG['PATH']['WSWG'] = '_wysiwyg/';
 $_CFG['FILE']['HASH_KEY'] = $_CFG['PATH']['wepconfname'] . '/config/hash.key';
 $_CFG['PATH']['weptemp'] = $_CFG['PATH']['wepconfname'] . '/temp/'; // путь к папке для хранения временных файлов
 $_CFG['PATH']['temp'] = '_content/temp/'; // путь к папке для хранения временных файлов
-//
-//Настройка для Nginx
-if (isset($_SERVER['HTTP_X_REAL_IP']) and $_SERVER['HTTP_X_REAL_IP'])
-	$_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_REAL_IP'];
-if (isset($_SERVER['HTTP_X_REAL_PORT']) and $_SERVER['HTTP_X_REAL_PORT'])
-	$_SERVER['SERVER_PORT'] = $_SERVER['HTTP_X_REAL_PORT'];
 
-/* http пути */
-$port = '';
-if ($_SERVER['SERVER_PORT'] != 80)
-	$port = ':' . $_SERVER['SERVER_PORT'];
-$PHP_SELF = explode('/', $_SERVER['PHP_SELF']);
-if (!$PHP_SELF[0])
-	array_shift($PHP_SELF);
-array_pop($PHP_SELF);
-
-$addpath = '';
-$k = 0;
-while (isset($PHP_SELF[$k]) and $PHP_SELF[$k] != $_CFG['PATH']['wepname']) {
-	$addpath .= $PHP_SELF[$k] . '/';
-	$k++;
-}
-
-/* * ************* */
-/* $_CFG['_HREF'] */
-/* * ************* */
-if (strpos($_SERVER['HTTP_HOST'], 'xn--') !== false) {
-	require_once($_CFG['_PATH']['wep_phpscript'] . '/idna_convert.class.php');
-	$IDN = new idna_convert();
-	$_SERVER['HTTP_HOST'] = $IDN->decode($_SERVER['HTTP_HOST']);
-	$_CFG['site']['rf'] = 1;
-}
-$_CFG['_HREF']['BH'] = 'http://' . $_SERVER['HTTP_HOST'] . '/' . $addpath; // www-путь сайта
-$_CFG['_HREF']['wepJS'] = $_CFG['_HREF']['BH'] . $_CFG['PATH']['wepname'] . '/js.php';
-$_CFG['_HREF']['siteJS'] = $_CFG['_HREF']['BH'] . '_js.php';
-$_CFG['_HREF']['siteAJAX'] = $_CFG['_HREF']['BH'] . '_json.php';
-$_CFG['_HREF']['captcha'] = $_CFG['_HREF']['BH'] . '_captcha.php';
-$_CFG['_HREF']['WSWG'] = $_CFG['_HREF']['BH'] . $_CFG['PATH']['WSWG'];
-$_CFG['_HREF']['_style'] = '_design/_style/'; // дизайн стили
-$_CFG['_HREF']['_script'] = '_design/_script/'; // дизайн стили
-$_CFG['_HREF']['arrayHOST'] = array_reverse(explode('.', $_SERVER['HTTP_HOST']));
-
-if (strstr($_SERVER['PHP_SELF'], '/' . $_CFG['PATH']['wepname'] . '/'))
-	$_CFG['_F']['adminpage'] = true;
-else
-	$_CFG['_F']['adminpage'] = false;
 
 /* * *************** */
 /* $_CFG['_MASK']** */
@@ -366,6 +320,70 @@ $_CFG['_error'] = array(
 	),
 );
 
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+/* INCLUDE USER CONF */
+if(file_exists($_CFG['_FILE']['config']))
+	include($_CFG['_FILE']['config']);
+elseif(!isset($INSTALL)) {
+	@header("Location: /".$_CFG['PATH']['wepname'].'/install.php');
+	die();
+}
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+
+
+
+//Настройка для Nginx
+if (isset($_SERVER['HTTP_X_REAL_IP']) and $_SERVER['HTTP_X_REAL_IP'])
+	$_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_REAL_IP'];
+if (isset($_SERVER['HTTP_X_REAL_PORT']) and $_SERVER['HTTP_X_REAL_PORT'])
+	$_SERVER['SERVER_PORT'] = $_SERVER['HTTP_X_REAL_PORT'];
+
+/* http пути */
+$port = '';
+if (isset($_SERVER['SERVER_PORT']) and $_SERVER['SERVER_PORT'] != 80)
+	$port = ':' . $_SERVER['SERVER_PORT'];
+//addpath
+$PHP_SELF = explode('/', $_SERVER['PHP_SELF']);
+if (!$PHP_SELF[0])
+	array_shift($PHP_SELF);
+array_pop($PHP_SELF);
+$addpath = '';
+$k = 0;
+while (isset($PHP_SELF[$k]) and $PHP_SELF[$k] != $_CFG['PATH']['wepname']) {
+	$addpath .= $PHP_SELF[$k] . '/';
+	$k++;
+}
+/* $_CFG['_HREF'] */
+if (strpos($_SERVER['HTTP_HOST'], 'xn--') !== false) {
+	require_once($_CFG['_PATH']['wep_phpscript'] . '/idna_convert.class.php');
+	$IDN = new idna_convert();
+	$_SERVER['HTTP_HOST'] = $IDN->decode($_SERVER['HTTP_HOST']);
+	$_CFG['site']['rf'] = 1;
+}
+$_CFG['_HREF']['BH'] = 'http://' . $_SERVER['HTTP_HOST'] . '/' . $addpath; // www-путь сайта
+
+
+
+
+$_CFG['_HREF']['wepJS'] = $_CFG['_HREF']['BH'] . $_CFG['PATH']['wepname'] . '/js.php';
+$_CFG['_HREF']['siteJS'] = $_CFG['_HREF']['BH'] . '_js.php';
+$_CFG['_HREF']['siteAJAX'] = $_CFG['_HREF']['BH'] . '_json.php';
+$_CFG['_HREF']['captcha'] = $_CFG['_HREF']['BH'] . '_captcha.php';
+$_CFG['_HREF']['WSWG'] = $_CFG['_HREF']['BH'] . $_CFG['PATH']['WSWG'];
+$_CFG['_HREF']['_style'] = '_design/_style/'; // дизайн стили
+$_CFG['_HREF']['_script'] = '_design/_script/'; // дизайн стили
+$_CFG['_HREF']['arrayHOST'] = array_reverse(explode('.', $_SERVER['HTTP_HOST']));
+
+if (strstr($_SERVER['PHP_SELF'], '/' . $_CFG['PATH']['wepname'] . '/'))
+	$_CFG['_F']['adminpage'] = true;
+else
+	$_CFG['_F']['adminpage'] = false;
+
+
+
 /* * *************** */
 /* $_CFG['session'] */
 /* * *************** */
@@ -397,14 +415,6 @@ include_once($_CFG['_PATH']['wep_locallang'] . $_CFG['wep']['lang'] . '.php');
 if (file_exists($_CFG['_PATH']['locallang'] . $_CFG['wep']['lang'] . '.php'))
 	include_once($_CFG['_PATH']['locallang'] . $_CFG['wep']['lang'] . '.php');
 
-/* INCLUDE USER CONF */
-
-if(file_exists($_CFG['_FILE']['config']))
-	include($_CFG['_FILE']['config']);
-elseif(!isset($INSTALL)) {
-	@header("Location: /".$_CFG['PATH']['wepname'].'/install.php');
-	die();
-}
 
 /* Acept config */
 

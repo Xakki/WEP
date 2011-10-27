@@ -82,6 +82,7 @@ class mail_class extends kernel_extends {
 		$this->fields['mail_to'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['status'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL');
 		$this->fields['category'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL','default'=>0);
+		$this->fields['bcc'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL','default'=>'');
 
 		$this->_enum['status'] = array(
 			0 => 'Не отправлялось на email',
@@ -102,9 +103,12 @@ class mail_class extends kernel_extends {
 		$this->lang['_saveclose'] = 'Отправить письмо';
 		$this->ordfield = 'mf_timecr DESC';
 
-		$this->cron[$this->_cl] = array('modul'=>$this->_cl,'function'=>'cronSend()','active'=>0);
+		$this->cron[$this->_cl] = array('modul'=>$this->_cl,'function'=>'cronSend()','active'=>0,'time'=>300);
 		if($this->config['mailcron'])
 			$this->cron[$this->_cl]['active'] = 1;
+
+		$this->index_fields['status'] = 'status';
+		$this->index_fields['category'] = 'category';
 	}
 
 
@@ -263,9 +267,9 @@ class mail_class extends kernel_extends {
 		$header = "MIME-Version: 1.0\r\n";
 		$header .= "To: {$data['mail_to']}\r\n";
 		$header .= "From: {$data['from']}\r\n";
-		if($data['Bcc'])
+		if(isset($data['Bcc']) and $data['Bcc'])
 			$header .= 'Bcc: '.$data['Bcc']."\r\n";
-		if($data['Reply-To'])
+		if(isset($data['Reply-To']) and $data['Reply-To'])
 			$header .= 'Reply-To: '.$data['reply']."\r\n";
 	
 		if(isset($data['att'])) {
@@ -748,7 +752,7 @@ class mail_class extends kernel_extends {
 					$status = 21;
 				else
 					$status = 2;
-				$this->qu(array('status'=>$status),'WHERE id='.$data['id']);
+				$this->qu(array('status'=>$status),'id='.$data['id']);
 			}
 
 		}

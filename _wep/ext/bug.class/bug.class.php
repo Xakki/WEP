@@ -145,11 +145,11 @@ class bug_class extends kernel_extends {
 				$r[$this->mf_createrid] = $creater_id;
 				$r['mf_ipcreate'] = $mf_ipcreate;
 				$r['mf_timecr'] = $this->_CFG['time'];
-				$r['name'] = mysql_real_escape_string($r['name']);
-				$r['file'] = mysql_real_escape_string($r['file']);
-				$r['line'] = mysql_real_escape_string($r['line']);
-				$r['debug'] = mysql_real_escape_string($r['debug']);
-				$r['href'] = mysql_real_escape_string($r['href']);
+				$r['name'] = $this->SqlEsc($r['name']);
+				$r['file'] = $this->SqlEsc($r['file']);
+				$r['line'] = $this->SqlEsc($r['line']);
+				$r['debug'] = $this->SqlEsc($r['debug']);
+				$r['href'] = $this->SqlEsc($r['href']);
 				$query_val[] = '("'.implode('","',$r).'")';
 				if(!$keys)
 					$keys = array_keys($r);

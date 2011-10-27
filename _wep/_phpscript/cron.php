@@ -3,8 +3,9 @@
 
 	if(!isset($_CFG['_PATH']['wep'])) exit('Ошибка конфигурации.');
 	require_once($_CFG['_PATH']['wep'].'/config/config.php');
+	require_once($_CFG['_FILE']['cron']);
 	
-	if(!isset($_CFG['wep']['cron']) or !count($_CFG['wep']['cron'])) {
+	if(!isset($_CFG['cron']) or !count($_CFG['cron'])) {
 		exit();
 	}
 
@@ -19,7 +20,7 @@
 	$i = 1;
 	$_SERVER['HTTP_HOST2'] = $_SERVER['HTTP_HOST'] = $_CFG['site']['www'];
 
-	foreach($_CFG['wep']['cron'] as $i=>$r) {
+	foreach($_CFG['cron'] as $i=>$r) {
 		if (isset($ini_arr['last_time' . $i]) && ($ini_arr['last_time' . $i] + $r['time']) > $time) {
 			//$res .= 'Рано импортировать файл '. $ini_arr['file'.$i]. ', последний раз он импортировался '.date('d.m.Y H:i', $ini_arr['last_time'.$i]). ', сейчас ' . date('d.m.Y H:i', $time) . '. (Установленный интервал: '.$ini_arr['int' . $i].' минут, осталось ' . round((($ini_arr['last_time' . $i] + ($ini_arr['int' . $i] * 60) - $time) / 60), 1) . ' минут)' . "\n";
 		}

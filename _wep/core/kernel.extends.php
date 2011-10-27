@@ -11,13 +11,14 @@ abstract class kernel_extends {
 	 * 2 - добавленн новый функционал, расширен и измененн меющиеся функции -
 	 * 3 - Номер ревизии , исправленны ошибки
 	 */
-	const versionCore = '2.5.16';
+	const versionCore = '2.6.17';
 
 	function __construct($owner=NULL) {
 		global $_CFG;
 		//FB::info($_CFG);
 		$this->_CFG = true; // баг ПХП
 		$this->_CFG = &$_CFG; //Config
+		$this->cfg_sql = $this->_CFG['sql'];
 
 		$this->owner = true;
 		if(is_object($owner) and isset($owner->fields))
@@ -48,8 +49,10 @@ abstract class kernel_extends {
 		global $_CFG,$SQL;
 		if ($name == 'SQL') {
 			if (!$this->grant_sql) {
-				if (!$SQL)
+				if (!isset($SQL) or !$SQL->ready) {
 					$SQL = new sql($_CFG['sql']);
+				}
+				$this->SQL = &$SQL;
 				return $SQL;
 			} else {
 				return new sql($this->cfg_sql);
@@ -182,7 +185,6 @@ abstract class kernel_extends {
 		$this->null = NULL;
 
 		$this->grant_sql = false;
-		$this->cfg_sql = $this->_CFG['sql'];
 		return true;
 	}
 
