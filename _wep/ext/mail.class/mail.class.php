@@ -16,8 +16,6 @@ class mail_class extends kernel_extends {
 		$this->_AllowAjaxFn['jsDelMsg'] = true;
 		$this->_AllowAjaxFn['jsGetUserData'] = true;
 
-		$this->cron[] = array('modul'=>$this->_cl,'function'=>'cronSend()','active'=>1);
-
 		$this->default_access = '|0|';
 		
 		return true;
@@ -103,6 +101,10 @@ class mail_class extends kernel_extends {
 
 		$this->lang['_saveclose'] = 'Отправить письмо';
 		$this->ordfield = 'mf_timecr DESC';
+
+		$this->cron[$this->_cl] = array('modul'=>$this->_cl,'function'=>'cronSend()','active'=>0);
+		if($this->config['mailcron'])
+			$this->cron[$this->_cl]['active'] = 1;
 	}
 
 
