@@ -40,6 +40,7 @@ class mail_class extends kernel_extends {
 		);
 		$this->config['mailengine'] = 0;
 		$this->config['mailcron'] = 0;
+		$this->config['mailcronlimit'] = 5;
 		$this->config['mailrobot'] = 'robot@xakki.ru';
 		$this->config['fromName'] = '';
 		$this->config['PHPMailer_Host'] = 'ssl://smtp.gmail.com:465';
@@ -50,7 +51,8 @@ class mail_class extends kernel_extends {
 		$this->config['mailtemplate'] = '<html><head><title>%SUBJECT%</title><meta content="text/html;charset=utf-8" http-equiv="Content-Type" /></head><body>%TEXT% %MAILBOTTOM%</body></html>';
 		$this->config['mailbottom'] = '<hr/>© 2011 «XAKKI»';
 
-		$this->config_form['mailcron'] = array('type' => 'checkbox', 'caption' => 'Отправалять почту Кроном');
+		$this->config_form['mailcron'] = array('type' => 'checkbox', 'caption' => 'CRON - Отправалять почту');
+		$this->config_form['mailcronlimit'] = array('type' => 'text', 'caption' => 'CRON - Limit по отправке писем');
 		$this->config_form['mailengine'] = array('type' => 'list', 'listname'=>'mailengine', 'caption' => 'Обработчик почты');
 		$this->config_form['mailrobot'] = array('type' => 'text', 'mask' =>array('min'=>1,'name'=>'email'), 'caption' => 'Адрес Робота');
 		$this->config_form['fromName'] = array('type' => 'text', 'caption' => 'Имя отправителя (название сайта)');
@@ -741,7 +743,7 @@ class mail_class extends kernel_extends {
 	}
 
 	function cronSend() {
-		$DAT_LIST = $this->_query('*','WHERE status IN (0,2)');
+		$DAT_LIST = $this->_query('*','WHERE status IN (0,2) LIMIT '.$this->config['mailcronlimit']);
 		foreach($DAT_LIST as $data) {
 			if(method_exists($this, 'mailengine'.$this->config['mailengine'])) {
 				$send_result = call_user_func(array($this, 'mailengine'.$this->config['mailengine']),$data);
