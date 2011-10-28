@@ -108,26 +108,33 @@
 					$temp .= 'alert(\'CSS not found '.$kk.'\');';
 			}
 		}
-		$temp .= 'var chekcnt=0;';
 		$temp2 = '';
 		$tcnt = 0;
 		if($_tpl['script'] and is_array($_tpl['script']) and count($_tpl['script'])) {
+			$wrap = false;
+			if(isset($_tpl['script']['script.jquery/jquery-ui'])) {
+				$wrap = 'script.jquery/jquery-ui';
+				unset($_tpl['script']['script.jquery/jquery-ui']);
+			}
 			foreach($_tpl['script'] as $kk=>$rr) {
-				$fn = 'function(){chekcnt++;console.log(\''.$kk.'\');}';
+				$fn = 'function(){chekcnt++;}';
 				if(is_array($rr)) {
 					$temp .= '$.include(\''.implode('\','.$fn.'); $.include(\'',$rr).'\','.$fn.'); ';//
 					$tcnt++;
 				}
 				elseif($rr==1 and $kk) {
-					$temp .= '$.include(\''.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].$kk.'.js'.$solt.'\','.$fn.');';
+					$temp .= '$.include(\''.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].$kk.'.js'.$solt.'\','.$fn.'); ';
 					$tcnt++;
 				}
 				else
 					$temp2 .= $rr;
 			}
+			if($wrap!==false) {
+				$temp = '$.include(\''.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].$wrap.'.js'.$solt.'\',function(){'.$temp.'}); ';
+			}
 		}
 		$temp2 .= $_tpl['onload'];
-		$_tpl['onload'] = $temp;
-		$_tpl['onload'] .= 'function fchekcnt() {console.log(chekcnt);if(chekcnt=='.$tcnt.') {console.log(1);'.$temp2.'fShowload(0);} else setTimeout(fchekcnt,200);} setTimeout(fchekcnt,200);';
+		$_tpl['onload'] = 'var chekcnt=0; '.$temp;
+		$_tpl['onload'] .= 'function fchekcnt() {if(chekcnt=='.$tcnt.') {'.$temp2.'fShowload(0);} else setTimeout(fchekcnt,200);} setTimeout(fchekcnt,200);';
 		//$_tpl['onload'] .= $temp2;
 	}
