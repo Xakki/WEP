@@ -80,11 +80,14 @@ class static_form {
 		$data = array();
 		foreach($_this->fld_data as $key => $value) {
 			if(is_array($value))
-				 $value = preg_replace('/\|+/', '|', '|'.implode('|',$value).'|');
-			if($_this->fields[$key]['type']=='bool')
-				 $value = ((int)$value == 1 ? 1 : 0);
+				$value = $_this->SqlEsc(preg_replace('/\|+/', '|', '|'.implode('|',$value).'|'));
+			elseif($_this->fields[$key]['type']=='bool')
+				$value = ((int)$value == 1 ? 1 : 0);
 			elseif(isset($int_type[$_this->fields[$key]['type']]))
-				 $value =  preg_replace('/[^0-9\-]/', '', $value);
+				$value =  preg_replace('/[^0-9\-]/', '', $value);
+			elseif(is_string($r))
+				$value = $_this->SqlEsc($value);
+
 			$data[$key] = $value;
 		}
 		$result=$_this->SQL->execSQL('INSERT INTO `'.$_this->tablename.'` (`'.implode('`,`', array_keys($data)).'`) VALUES (\''.implode('\',\'', $data).'\')');
@@ -231,14 +234,28 @@ class static_form {
 
 	static function _update_fields(&$_this,$where=false) {
 		if (!count($_this->fld_data)) return true;
+		$int_type = array(
+			'int'=>1,
+			'tinyint'=>1,
+			'longint'=>1,
+			'shortint'=>1,
+		);
 		// preparing
 		$data = array();
 		foreach($_this->fld_data as $key => $value) {
 			if(is_array($value)) {
-				$data[$key] = '`'.$key.'` = \''.preg_replace('/\|+/', '|', '|'.implode('|',$value).'|').'\'';
+				$value = '\''.$_this->SqlEsc(preg_replace('/\|+/', '|', '|'.implode('|',$value).'|')).'\'';
 			}
-			else
-				$data[$key] = '`'.$key.'` = \''.$value.'\'';
+			elseif(isset($_this->fields[$key]['noquote']))
+				$value;
+			elseif($_this->fields[$key]['type']=='bool')
+				$value = ((int)$value ? 1 : 0);
+			elseif(isset($int_type[$_this->fields[$key]['type']]))
+				$value = preg_replace('/[^0-9\-]/', '', $value);
+			elseif(is_string($r))
+				$value = '\''.$_this->SqlEsc($value).'\'';
+
+			$data[$key] = '`'.$key.'` = '.$value;
 		}
 		$q = 'UPDATE `'.$_this->tablename.'` SET '.implode(',', $data);
 		if($where!==false) {

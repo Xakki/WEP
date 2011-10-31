@@ -45,7 +45,7 @@
 			else
 				$firstpath = $this->_CFG['PATH']['wepname'] . '/index.php';
 
-
+			// Функция постраничной навигации
 			$xml['pagenum'] = $this->fPageNav($countfield,$firstpath.'?'.$this->_clp.(($this->id)?$this->_cl.'_id='.$this->id.'&amp;':''),1);
 			$pcnt = 0;
 			if($this->reversePageN) {
@@ -61,13 +61,25 @@
 			if($pcnt<0)
 					$pcnt = 0;
 			$climit= $pcnt.', '.$this->messages_on_page;
-
-			$cls =array(0=>array('t1.*'),1=>'',2=>array());
-			$arrno = array($this->mf_actctrl=>1,$this->mf_istree=>1);
-			if($this->owner and $this->owner->id)
-				$arrno[$this->owner_name] = 1;
+			// Начальный отчет элементов на странице
 			$xml['data']['pcnt'] = $pcnt;
 
+			//Паратметры запроса
+			// 0 - запрашиваемые поля
+			// 1 - JOIN
+			// 2 - WHERE
+			$cls =array(0=>array('id'=>'t1.id'),1=>'',2=>array());
+
+			//Исключительные поля ()
+			$arrno = array();
+
+			// Родитель
+			if($this->owner and $this->owner->id) {
+				$arrno[$this->owner_name] = 1;
+				$cls[0][$this->owner_name] = $this->owner_name;
+			}
+
+			// Дети
 			$t=2;
 			if(count($this->childs)) foreach($this->childs as $ck=>$cn) {
 				if($cn->tablename and $cn->owner_name) {
@@ -91,14 +103,28 @@
 					$t++;
 				}
 			}
+			// Древовидность
 			if($this->mf_istree) {
+				$arrno[$this->mf_istree] = 1;
 				$arrno['istree_cnt']=1;
-				$cls[0][] = '(SELECT count(t'.$t.'.id) FROM `'.$this->tablename.'` t'.$t.' WHERE t'.$t.'.parent_id=t1.id) as istree_cnt';
+				//SET listfields
+				$cls[0][$this->mf_istree] = 't1.'.$this->mf_istree;
+				$cls[0][] = '(SELECT count(t'.$t.'.id) FROM `'.$this->tablename.'` t'.$t.' WHERE t'.$t.'.'.$this->mf_istree.'=t1.id) as istree_cnt';
 				$t++;
 			}
+			//SСортировка
+			if($this->mf_ordctrl)
+				$cls[0][$this->mf_ordctrl] = 't1.'.$this->mf_ordctrl;
+			// Статуст активности
+			if($this->mf_actctrl) {
+				$arrno[$this->mf_actctrl] = 1;
+				$cls[0][$this->mf_actctrl] = $this->mf_actctrl;
+			}
 
+			//DEFAULT SET SORT
 			if($this->ordfield!='') $order='t1.'.$this->ordfield;
 			else $order='t1.id';
+
 			foreach($this->fields_form as $k=>$r) {
 				if(isset($r['mask']['usercheck']) and !static_main::_prmGroupCheck($r['mask']['usercheck']))
 					{$arrno[$k]=1; continue;}
@@ -111,6 +137,9 @@
 					)
 					$arrno[$k]=1; 
 				elseif(!isset($arrno[$k])) {
+					//SET listfields
+					if(isset($this->fields[$k]))
+						$cls[0][$k] = 't1.'.$k;
 					//Списки
 					if(isset($r['listname']) and is_array($r['listname']) and (isset($r['listname']['class']) or isset($r['listname']['tablename']))) {
 						$tmpsort = true;
@@ -158,6 +187,12 @@
 					if($this->_prmSortField($k)) {
 						if(isset($_GET['sort']) and $_GET['sort']==$k) $act=1;
 						elseif(isset($_GET['dsort']) and $_GET['dsort']==$k) $act=2;
+						elseif(strpos($order,'t1.'.$k)!==false) {
+							if($order=='t1.'.$k)
+								$act=1;
+							else
+								$act=2;
+						}
 						$temphref = $k.(($this->id)?'&amp;'.$this->_cl.'_id='.$this->id:'');
 					}
 					else $temphref = '';
@@ -197,11 +232,11 @@
 			if(count($this->data)) {
 				$temp = current($this->data);
 				if(isset($temp[$this->mf_ordctrl]))
-					$xml['data']['ord'] = $this->mf_ordctrl;
+					$xml['data']['mf_ordctrl'] = $this->mf_ordctrl;
 				foreach($this->data as $key=>$row) {
 					if(!isset($xml['data']['pid']) and $this->mf_istree and isset($row[$this->mf_istree]))
 						$xml['data']['pid'] = $row[$this->mf_istree];
-					$xml['data']['item'][$key] = array('id'=>$row['id'],'row'=>$row);
+					$xml['data']['item'][$key] = array('id'=>$row['id']);
 					$xml['data']['item'][$key] += $this->_tr_attribute($row,$param);
 					//if($xml['data']['item'][$key]['act'])
 					if($this->mf_actctrl and isset($row[$this->mf_actctrl]))

@@ -301,6 +301,7 @@ abstract class kernel_extends {
 			$this->fields[$this->mf_ordctrl] = array('type' => 'int', 'width' => '10', 'attr' => 'NOT NULL', 'default' => '0');
 			$this->ordfield = $this->mf_ordctrl;
 			$this->index_fields[$this->mf_ordctrl] = $this->mf_ordctrl;
+			$this->_AllowAjaxFn['_sorting'] = true;
 		}
 
 		//pagenum
@@ -394,6 +395,7 @@ abstract class kernel_extends {
 	* Update sql query
 	 * @param array $set
 	*/
+
 	public function qu($set,$where=false) {
 		return $this->_save_item($set,$where);
 	}
@@ -546,7 +548,7 @@ abstract class kernel_extends {
 			elseif (isset($this->attaches[$k]))
 				$this->att_data[$k] = $r;
 			elseif (isset($this->fields[$k])) {
-				$this->fld_data[$k] = (is_string($r) ? $this->SqlEsc($r) : $r);
+				$this->fld_data[$k] = $r;
 			}
 		}
 		return $this->_update(true,$where);
@@ -564,7 +566,7 @@ abstract class kernel_extends {
 			elseif (isset($this->attaches[$k]))
 				$this->att_data[$k] = $r;
 			elseif (isset($this->fields[$k])) {
-				$this->fld_data[$k] = (is_string($r) ? $this->SqlEsc($r) : $r);
+				$this->fld_data[$k] = $r;
 			}
 		}
 		return $this->_add();
@@ -1133,7 +1135,7 @@ abstract class kernel_extends {
 			$agr = ', ' . $this->_listnameSQL . ' as name';
 			$this->tree_data = $first_data = $path2 = array();
 			$parent_id = $this->id;
-			$listfields = array('id,parent_id' . $agr);
+			$listfields = array('id,'.$this->mf_istree . $agr);
 			while ($parent_id) {
 				$clause = 'WHERE id="' . $parent_id . '"';
 				$this->data = $this->_query($listfields, $clause, 'id');
@@ -1708,15 +1710,15 @@ abstract class kernel_extends {
 			$param['clause']['t1.' . $this->owner_name] = 't1.' . $this->owner_name . '="' . $this->owner->id . '"';
 		if ($this->mf_istree) {
 			if ($this->id)
-				$param['clause']['t1.parent_id'] = 't1.parent_id="' . $this->id . '"';
+				$param['clause']['t1.'.$this->mf_istree] = 't1.'.$this->mf_istree.'="' . $this->id . '"';
 			elseif (isset($param['first_id']))
-				$param['clause']['t1.parent_id'] = 't1.id="' . $param['first_id'] . '"';
+				$param['clause']['t1.'.$this->mf_istree] = 't1.id="' . $param['first_id'] . '"';
 			elseif (isset($param['first_pid']))
-				$param['clause']['t1.parent_id'] = 't1.parent_id="' . $param['first_id'] . '"';
+				$param['clause']['t1.'.$this->mf_istree] = 't1.'.$this->mf_istree.'="' . $param['first_id'] . '"';
 			elseif ($this->mf_use_charid)
-				$param['clause']['t1.parent_id'] = 't1.parent_id=""';
+				$param['clause']['t1.'.$this->mf_istree] = 't1.'.$this->mf_istree.'=""';
 			else
-				$param['clause']['t1.parent_id'] = 't1.parent_id=0';
+				$param['clause']['t1.'.$this->mf_istree] = 't1.'.$this->mf_istree.'=0';
 			if ($this->owner and $this->owner->id and ($this->id or (isset($param['first_pid']) and $param['first_pid']) ) )
 				unset($param['clause']['t1.' . $this->owner_name]);
 		}
@@ -1872,7 +1874,7 @@ abstract class kernel_extends {
 	*/
 	public function _sorting() {
 		$res = array('html'=>'','eval'=>'');
-		$this->id = $id = (int)$_GET['id'];
+		$this->id = (int)$_GET['id'];
 		$pid = (int)$_GET['pid'];
 		$t1 = (isset($_GET['t1'])?(int)$_GET['t1']:0);
 		$t2 = (isset($_GET['t2'])?(int)$_GET['t2']:0);
@@ -1891,10 +1893,20 @@ abstract class kernel_extends {
 			$qr = '`' . $this->mf_ordctrl . '`>=\'' . $neword . '\'';
 			if($this->mf_istree and $pid)
 				$qr .= ' and `'.$this->mf_istree.'`='.$pid;
-			if(!$this->qu(array($this->mf_ordctrl => '`'.$this->mf_ordctrl . '`+1'),$qr))
+			$this->fields[$this->mf_ordctrl]['noquote']= true;
+			if(!$this->qu(array($this->mf_ordctrl => '`'.$this->mf_ordctrl . '`+1'),$qr,false))
 				return $res;
 
-			if(!$this->qu(array($this->mf_ordctrl => $neword) ,'`id`=' . $id ))
+			if(!$this->qu(array($this->mf_ordctrl => $neword) ,'`id`=' . $this->id ))
+				return $res;
+		}else {
+			$qr = '';
+			if($this->mf_istree and $pid)
+				$qr .= ' WHERE `'.$this->mf_istree.'`='.$pid;
+
+			$data = $this->qs('max('.$this->mf_ordctrl.') as mx',$qr);
+			$neword = $data[0]['mx']+1;print_r($neword);
+			if(!$this->qu(array($this->mf_ordctrl => $neword) ,'`id`=' . $this->id ))
 				return $res;
 		}
 		$res['html'] = '';//static_main::m('Sorting successful.')

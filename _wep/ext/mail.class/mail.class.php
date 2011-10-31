@@ -194,7 +194,8 @@ class mail_class extends kernel_extends {
 				else {
 					$data['status'] = 2;
 				}
-			}
+			}else
+				$send_result = true;
 		}
 
 		$this->_add_item($data);

@@ -593,6 +593,41 @@ var wep = {
 			
 			clip.glue(obj);
 		});
+	},
+	iSortable : function() {// сортировка
+		$.include('/_design/_script/script.jquery/jquery-ui.js',function() {
+			$('table.superlist>tbody').sortable({
+				items: '>tr.tritem',
+				axis:	'y',
+				//helper: 'original',
+				opacity:'false',
+				//opacity: 0.6,
+				//revert: true,// плавное втыкание
+				//grid: [1, 13],
+				placeholder:'sortHelper',
+				//activeclass : 'sortableactive',
+				//hoverclass : 'sortablehover',
+				handle: '>td a.imgdragdrop',
+				tolerance: 'pointer',
+				//start: function(event, ui) { ... },
+				//sort: function(event, ui) { ... },
+				//change: function(event, ui) {console.log('*change');console.log(ui);},
+				update: function(event, ui) {
+					var Obj = $(ui.item);
+					var id= Obj.attr('data-id');
+					var modul = Obj.attr('data-mod');
+					var pid = Obj.attr('data-pid');
+					var t1 = Obj.prev('tr.tritem').attr('data-id');
+					var t2 = Obj.next('tr.tritem').attr('data-id');
+					var param = {
+						'data' : {'_modul':modul,'_fn':'_sorting','id':id,'t1':t1,'t2':t2,'pid':pid}
+					};
+					JSWin(param);
+					Obj.parent().find('tr.subtd').remove();
+					Obj.find('a.imgminus').removeClass('imgminus').addClass('imgplus');
+				}
+			});
+		});
 	}
 };
 

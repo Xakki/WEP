@@ -180,7 +180,8 @@ a.am_tools {
 		.imgf5{background-position:0 -48px;}
 		.imgf6{background-position:-1px -411px;}
 		.imgf7{background-position:-1px -391px;}
-		.imgconf{background-position:0 -224px;}
+		.imgconf {background-position:0 -224px;}
+		.imgdragdrop {background-position:0 -430px;cursor:move;}
 
 		.img0{background-position:0 -144px;}
 		.img1{background-position:0 -128px;}
@@ -218,6 +219,12 @@ a.am_tools {
 
 	.noelem {color:red;cursor:default;}
 
+.sortHelper
+{
+	background-color:rgb(144, 238, 144);
+	border: 0.5px dashed #532;
+	width: auto !important;
+}
 
 #debug_view {
 	position:absolute;right:5px;top:36px;z-index:6;

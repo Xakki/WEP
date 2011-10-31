@@ -46,11 +46,18 @@
 
 	function tpl_data(&$data,$firstpath='') {
 		if(!$data or !count($data)or !count($data['thitem'])) return '';
-		global $_CFG;
+		global $_CFG,$_tpl;
 		$html = '<table class="superlist"><tbody><tr>';
 		$tdflag = 0;
 		if(!isset($data['thitem']['id']))
 			$html .= '<th>№</th>';
+		// Сортировка
+		if(isset($data['mf_ordctrl'])) {
+			if($data['order']=='t1.'.$data['mf_ordctrl'])
+				$_tpl['onload'] .= 'wep.iSortable();';
+			else
+				unset($data['mf_ordctrl']);
+		}
 		foreach($data['thitem'] as $r) {
 			if(!$tdflag) {
 				if(isset($r['onetd'])){
@@ -74,8 +81,11 @@
 
 		// Проходимся про каждой записи
 		foreach($data['item'] as $k=>$r) {
-			$html .= '<tr';
-			if(isset($r['css']) and $r['css']) $html .= ' class="'.$r['css'].'"';
+			$html .= '<tr class="tritem" data-id="'.$k.'" data-mod="'.$data['cl'].'"';
+			// Атрибут значения сортировки
+			if(isset($data['mf_ordctrl'])) $html .= ' data-ord="'.$r['tditem'][$data['mf_ordctrl']]['value'].'"';
+			// атрибут значения родителя
+			if(isset($data['pid'])) $html .= ' data-pid="'.$data['pid'].'"';
 			if(isset($r['style']) and $r['style']) $html .= ' style="'.$r['style'].'"';
 			$html .= '>';
 			if(!isset($data['thitem']['id']))
@@ -93,10 +103,11 @@
 					if(isset($tditem['onetd'])) $tdflag = 1;
 				}
 				/////
-				if(isset($data['ord']) and $ktd==$data['ord']) {
-					$html .= '<a class="bottonimg imgup" href="'.$hrefpref.'&_type=ordup" onclick="return wep.load_href(this)" title="[-1]"></a>'
+				if(isset($data['mf_ordctrl']) and $ktd==$data['mf_ordctrl']) {
+					$html .= '<a class="bottonimg imgdragdrop" href="'.$hrefpref.'&_type=ordup" onclick="return false;" title="'.$r['tditem'][$data['mf_ordctrl']]['value'].'"></a>';
+					/*$html .= '<a class="bottonimg imgup" href="'.$hrefpref.'&_type=ordup" onclick="return wep.load_href(this)" title="[-1]"></a>'
 						.$tditem['value']
-						.'<a class="bottonimg imgdown" href="'.$hrefpref.'&_type=orddown" onclick="return wep.load_href(this)" title="[+1]"></a>';
+						.'<a class="bottonimg imgdown" href="'.$hrefpref.'&_type=orddown" onclick="return wep.load_href(this)" title="[+1]"></a>';*/
 				}
 				elseif(isset($tditem['value']) and $tditem['value']!='') {
 					if($tdflag)

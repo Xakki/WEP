@@ -64,6 +64,20 @@
 			if(isset($_tpl['script']['syntaxhighlighter'])) {
 				$_tpl['onload'] .= '';
 			}
+			// UPDATE FIX
+			if(isset($_tpl['script']['utils'])) {
+				unset($_tpl['script']['utils']);
+				$_tpl['script']['wep']=1;
+				if($_CFG['wep']['debugmode']>1)
+					print_r('<div style="color:red;">Замените подключение скрипта utils на wep</div>');
+			}
+
+			if(isset($_tpl['script']['wep'])) {
+				unset($_tpl['script']['jquery']);
+				unset($_tpl['script']['wep']);
+				$_tpl['script'] = array('jquery'=>1,'wep'=>1)+$_tpl['script'];
+			}
+
 			foreach($_tpl['script'] as $kk=>$rr) {
 				if(is_array($rr))
 					$temp .= '<script type="text/javascript" src="'.implode('"></script>'."\n".'<script type="text/javascript" src="',$rr).'"></script>'."\n";
@@ -84,10 +98,9 @@
 
 		if(!isset($_tpl['script']['jquery']) and strpos($temp,'script.jquery/')!==false)
 			$temp = '<script type="text/javascript" src="'.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].'jquery.js'.$solt.'"></script>'.$temp;
-		//if($_tpl['onload']) {
+
 		$temp .= "<script type=\"text/javascript\">\n//<!--\nfunction readyF() {".$_tpl['onload']."}\n//-->\n</script>\n";
 		$_tpl['onload'] = 'readyF();';
-		//}
 		$_tpl['script'] = $temp;
 	}
 
