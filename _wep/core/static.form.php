@@ -85,7 +85,7 @@ class static_form {
 				$value = ((int)$value == 1 ? 1 : 0);
 			elseif(isset($int_type[$_this->fields[$key]['type']]))
 				$value =  preg_replace('/[^0-9\-]/', '', $value);
-			elseif(is_string($r))
+			else
 				$value = $_this->SqlEsc($value);
 
 			$data[$key] = $value;
@@ -252,7 +252,7 @@ class static_form {
 				$value = ((int)$value ? 1 : 0);
 			elseif(isset($int_type[$_this->fields[$key]['type']]))
 				$value = preg_replace('/[^0-9\-]/', '', $value);
-			elseif(is_string($r))
+			else
 				$value = '\''.$_this->SqlEsc($value).'\'';
 
 			$data[$key] = '`'.$key.'` = '.$value;

@@ -76,7 +76,7 @@
 			// Родитель
 			if($this->owner and $this->owner->id) {
 				$arrno[$this->owner_name] = 1;
-				$cls[0][$this->owner_name] = $this->owner_name;
+				$cls[0][$this->owner_name] = 't1.'.$this->owner_name;
 			}
 
 			// Дети
@@ -118,7 +118,7 @@
 			// Статуст активности
 			if($this->mf_actctrl) {
 				$arrno[$this->mf_actctrl] = 1;
-				$cls[0][$this->mf_actctrl] = $this->mf_actctrl;
+				$cls[0][$this->mf_actctrl] = 't1.'.$this->mf_actctrl;
 			}
 
 			//DEFAULT SET SORT
