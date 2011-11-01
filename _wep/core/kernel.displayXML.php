@@ -126,6 +126,10 @@
 			else $order='t1.id';
 
 			foreach($this->fields_form as $k=>$r) {
+				//SET listfields
+				if(isset($this->fields[$k]) or isset($this->attaches[$k]) or isset($this->memos[$k]))
+					$cls[0][$k] = 't1.'.$k;
+
 				if(isset($r['mask']['usercheck']) and !static_main::_prmGroupCheck($r['mask']['usercheck']))
 					{$arrno[$k]=1; continue;}
 				$tmpsort = false;
@@ -137,9 +141,6 @@
 					)
 					$arrno[$k]=1; 
 				elseif(!isset($arrno[$k])) {
-					//SET listfields
-					if(isset($this->fields[$k]))
-						$cls[0][$k] = 't1.'.$k;
 					//Списки
 					if(isset($r['listname']) and is_array($r['listname']) and (isset($r['listname']['class']) or isset($r['listname']['tablename']))) {
 						$tmpsort = true;
@@ -227,7 +228,7 @@
 			//if(!$this->mf_istree)
 				$clause .= ' LIMIT '.$climit;
 			$this->data = $this->_query($listfields,$clause,'id');
-//print($this->SQL->query);
+##print($this->SQL->query);
 			/** Обработка запроса*/
 			if(count($this->data)) {
 				$temp = current($this->data);
@@ -236,13 +237,16 @@
 				foreach($this->data as $key=>$row) {
 					if(!isset($xml['data']['pid']) and $this->mf_istree and isset($row[$this->mf_istree]))
 						$xml['data']['pid'] = $row[$this->mf_istree];
-					$xml['data']['item'][$key] = array('id'=>$row['id']);
+					$xml['data']['item'][$key] = array('id'=>$row['id'],'row'=>$row);
 					$xml['data']['item'][$key] += $this->_tr_attribute($row,$param);
 					//if($xml['data']['item'][$key]['act'])
 					if($this->mf_actctrl and isset($row[$this->mf_actctrl]))
 						$xml['data']['item'][$key]['active'] = $row[$this->mf_actctrl];
 					foreach($this->fields_form as $k=>$r) {
-						if(isset($arrno[$k])) continue;// исключаем поля которые будут отображаться спецефично
+
+						if(isset($arrno[$k])) {
+							continue;// исключаем поля которые будут отображаться спецефично
+						}
 						$tditem = array('name'=>$k,'type'=>$r['type']);
 						if($r['type']=='file') {
 							if(isset($row['_ext_'.$k])) {

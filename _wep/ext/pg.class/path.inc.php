@@ -14,9 +14,9 @@
 /*PATH*/
 	$DATA = array($FUNCPARAM[0]=>$PGLIST->get_path());
 
-	if(count($DATA['pathPage'])>1) {
-		end($DATA['pathPage']);
-		$temp = current($DATA['pathPage']);
+	if(count($DATA[$FUNCPARAM[0]])>1) {
+		end($DATA[$FUNCPARAM[0]]);
+		$temp = current($DATA[$FUNCPARAM[0]]);
 		$_tpl['description'] = $temp['name'].' - '.$_tpl['description'];
 	}
 
