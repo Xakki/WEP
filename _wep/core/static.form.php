@@ -330,11 +330,12 @@ class static_form {
 
 /*------------- DELETE DELETE DELETE -----------------*/
 
-	// in:  id											req
-	// out: 0 - success,
-	//      otherwise errorcode
-
-	static function _delete(&$_this) {
+	/**
+	 * Удаление данных
+	 * this->id
+	 * @return bool - результат операции 
+	 */
+	public static function _delete(&$_this) {
 		if (!is_array($_this->id)) $_this->id = array($_this->id);
 		if (!count($_this->id)) return true;
 		// delete childs of owner
@@ -357,7 +358,11 @@ class static_form {
 		return true;
 	}
 
-	static function _delete_ownered(&$_this) {
+	/**
+	 * Удаление дочерних данных из БД
+	 * Вспомогательная функция
+	 */
+	private static function _delete_ownered(&$_this) {
 		// select record ids to delete
 		$result=$_this->SQL->execSQL('SELECT id FROM `'.$_this->tablename.'` WHERE `'.$_this->owner_name.'` IN ('.$_this->_id_as_string().')');
 		if($result->err) return false;
@@ -370,28 +375,41 @@ class static_form {
 		return true;
 	}
 
-	static function _delete_parented(&$_this) {
+	/**
+	 * Удаление всех родителей даных
+	 * Вспомогательная функция
+	 */
+	private static function _delete_parented(&$_this) {
 		// select record ids to delete
 		$result=$_this->SQL->execSQL('SELECT id FROM `'.$_this->tablename.'` WHERE `parent_id` IN ('.$_this->_id_as_string().')');
 		if($result->err) return false;
 
 		// create list
 		$_this->id = array();
-		while (list($id) = $result->fetch_array(MYSQL_NUM)) $_this->id[] = $id;
+		while (list($id) = $result->fetch_array(MYSQL_NUM))
+			$_this->id[] = $id;
 
 		// if list not empty
 		if (count($_this->id)) $_this->_delete();
 		return true;
 	}
 
-	static function _delete_fields(&$_this) {
+	/**
+	 * Удаление данных из БД
+	 * Вспомогательная функция
+	 */
+	private static function _delete_fields(&$_this) {
 		// delete records
 		$result=$_this->SQL->execSQL('DELETE FROM `'.$_this->tablename.'` WHERE `id` IN ('.$_this->_id_as_string().')');
 		if($result->err) return false;
 		return true;
 	}
 
-	static function _delete_attaches(&$_this) {
+	/**
+	 * Удаление фаилов 
+	 * Вспомогательная функция
+	 */
+	private static function _delete_attaches(&$_this) {
 		if (!count($_this->attaches)) return true;
 		$pathimg = $_this->_CFG['_PATH']['path'].$_this->getPathForAtt($key);
 		$result=$_this->SQL->execSQL('SELECT `id`, `'.implode('`,`', array_keys($_this->attaches)).'` FROM `'. $_this->tablename.'` WHERE `id` IN ('.$_this->_id_as_string().')');
@@ -409,7 +427,11 @@ class static_form {
 		return true;
 	}
 
-	static function _delete_memos(&$_this) {
+	/**
+	 * Удаление memo фаилов 
+	 * Вспомогательная функция
+	 */
+	private static function _delete_memos(&$_this) {
 		if (!count($_this->memos)) return true;
 		$pathimg = $_this->getPathForMemo($key);
 		foreach($_this->id as $id) {
@@ -422,7 +444,16 @@ class static_form {
 		return true;
 	}
 
-/************************* IMAGE *****************************/
+	/************************* IMAGE *****************************/
+	/*
+		Реализованно для GD2
+		TODO - imagemagic
+	*/
+
+	/**
+	 * Наложение водяного знака (маркера)
+	 *
+	 */
 	static function _waterMark(&$_this,$InFile, $OutFile,$logoFile='',$posX=0,$posY=0)
 	{
 		if(!$logoFile)
@@ -600,10 +631,8 @@ class static_form {
 	}
 
 
-
-/******************* FORM *****************/
 	/**
-	*
+	* Проверка формы
 	* $data - POST lfyyst либо  данные из БД
 	*/
 	static function _fFormCheck(&$_this,&$data,&$param,&$FORMS_FIELDS) { //$_this->fields_form
@@ -725,6 +754,10 @@ class static_form {
 		return array('mess'=>$mess,'vars'=>$data);
 	}
 	
+	/**
+	 * Проверяющий форму по отдельному полю
+	 *
+	 */
 	static function check_formfield($_this,$key,&$form,&$data,&$error) {
 		$MASK = &$_this->_CFG['_MASK'];
 		//*********** МАССИВЫ
@@ -967,12 +1000,23 @@ class static_form {
 
 		return array($error);
 	}
-
+	
+	/**
+	 * array_filter функция
+	 * вспомогательная функция
+	 * @param string $var - значение каждого элемента массива
+	 * @return bool
+	 */
 	static function trimArray($var) {
 		if($var=='') return false;
 		return true;
 	}
 
+	/**
+	 * Унификация телефонных номеров
+	 * @param string $phone - телефон (разделённые запятой)
+	 * @return string - телефон унифицированный
+	 */
 	static function _phoneReplace($phone)
 	{
 		$phone_2 = array();
@@ -995,6 +1039,13 @@ class static_form {
 		$phone_2 = implode(', ',$phone_2);
 		return $phone_2;
 	}
+
+	/**
+	 * FrontEnd  - Форматирует дату в человеческий вид
+	 * @param int $time - время
+	 * @param string $format - форматирование
+	 * @return string - Дата
+	 */
 	static function _usabilityDate($time, $format='Y-m-d H:i') {
 		global $_CFG;
 		$date = getdate($time);
@@ -1018,6 +1069,11 @@ class static_form {
 		return $date;
 	}
 
+	/**
+	 * Собирает массив даты в массив для mktime
+	 * @param array $arrdate - Дата
+	 * @return string - Дата
+	 */
 	static function _parseDate($arrdate) {
 		$date_str = array();
 		// час
@@ -1060,7 +1116,13 @@ class static_form {
 		return $date_str;
 	}
 
-//возвращает форматированную дату в зависимости от типа поля в fields_form, для добавления записи в БД
+	/**
+	 * возвращает форматированную дату в зависимости от типа поля в fields_form, для добавления записи в БД
+	 * @param string[array,int] $inp_date - Дата в различных форматах
+	 * @param string $format - ФОрмат даты
+	 * @param string $field_type - тип в БД (int,timestamp)
+	 * @return string[array,int] date
+	 */
 	static function _get_fdate($inp_date, $format, $field_type) {
 		$result = NULL;
 
@@ -1092,24 +1154,32 @@ class static_form {
 		return $result;
 	}
 
+	/**
+	 * Записывает в куки закодированный КОД (рандомный), для отображения его на рисунке /capcha.php
+	 * Использует для кодирования OpenSsl или MCrypt, в качестве ключа используется Хэш фаил $_CFG['_FILE']['HASH_KEY']
+	 */
 	static function setCaptcha() {
 		global $_CFG;
-		$data = rand(10000, 99999); //$_SESSION['captcha']
-		if ($_CFG['wep']['sessiontype'] == 1) {
-			$hash_key = file_get_contents($_CFG['_FILE']['HASH_KEY']).$_SERVER['REMOTE_ADDR'];
-			$hash_key = md5($hash_key);
-			if(function_exists('openssl_encrypt')) {
-				$crypttext = openssl_encrypt ($data,'aes-128-cbc',$hash_key,false,"1234567812345678");
-			} else {
-				$crypttext = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $hash_key, $data, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND));
-				$crypttext = base64_encode($crypttext);
-			}
-
-			_setcookie('chash', $crypttext, (time() + 1800));
-			_setcookie('pkey', base64_encode($_CFG['_FILE']['HASH_KEY']), (time() + 1800));
-		}
+		$data = rand(10000, 99999); //Рандомный код 5ти-значный
+		$hash_key = file_get_contents($_CFG['_FILE']['HASH_KEY']).$_SERVER['REMOTE_ADDR'];
+		$hash_key = md5($hash_key); // получаем хешкод
+		if(function_exists('openssl_encrypt')) { // если есть openssl
+			$crypttext = openssl_encrypt($data,'aes-128-cbc',$hash_key,false,"1234567812345678");
+		} else { // будем надеяться что есть mcrypt
+			$crypttext = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $hash_key, $data, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND));
+			$crypttext = base64_encode($crypttext);
+		} else // если нет даже openssl значит и так сойдёт!
+			$crypttext = $data;
+		// Запись в куки зашифрованного кода
+		_setcookie('chash', $crypttext, (time() + 1800));
+		// Где хранится хэшкод (фаил доступен только на сервере)
+		_setcookie('pkey', base64_encode($_CFG['_FILE']['HASH_KEY']), (time() + 1800));
 	}
-
+	
+	/**
+	 * Получить КОД расшифрованный из куки
+	 * @return int
+	 */
 	static function getCaptcha() {
 		global $_CFG;
 		if (isset($_COOKIE['chash']) and $_COOKIE['chash']) {
@@ -1120,10 +1190,11 @@ class static_form {
 			} else {
 				$data = base64_decode($_COOKIE['chash']);
 				$data = mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $hash_key, base64_decode($_COOKIE['chash']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND));
-			}
+			}else
+				$data = $_COOKIE['chash'];
 			return $data;
 		}
-		return rand(145, 357);
+		return rand(145, 357); // Если ничего в куках нет, то генерим рандомный и пользователь по новой должен вводит капчу
 	}
 
 }

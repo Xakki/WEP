@@ -392,25 +392,32 @@ abstract class kernel_extends {
 	// SQL QUERY short FUNCTION
 
 	/**
-	* Update sql query
+	 * Синоним _save_item
 	 * @param array $set
-	*/
-
+	 * @param string $where
+	 * @return bool 
+	 */
 	public function qu($set,$where=false) {
 		return $this->_save_item($set,$where);
 	}
 
+	/**
+	 * Синоним _query
+	 */
 	public function qs($list='', $cls='', $ord='', $ord2='',$debug=false) {
 		return $this->_query($list, $cls, $ord, $ord2,$debug);
 	}
 
+	/**
+	 * Экранирует специальные символы в строках для использования в выражениях SQL
+	 */
 	public function SqlEsc($val) {
 		return $this->SQL->SqlEsc($val);
 	}
 
 	/**
-	 * Функция аналогична _select(), только он принимает данные для запроса в виде параметров и возвращает рез-тат не использую $this->data
-	 *
+	 * принимает данные для запроса в виде параметров и возвращает рез-тат 
+	 * Функция аналогична _select(), только он принемает и передает данные непосредственно
 	 * @param string $list - выборка
 	 * @param string $cls - строка запроса
 	 * @param string $ord - позволяет группировать выходные данные по этому полю (1 уровень)
@@ -444,9 +451,9 @@ abstract class kernel_extends {
 				$data[] = $row;
 		}
 		if (count($data) and !$this->_select_attaches($data))
-			return false;
+			trigger_error('Ошибка выборки ATTACHES в классе '.$this->_cl, E_USER_WARNING);
 		if (count($data) and !$this->_select_memos($data))
-			return false;
+			trigger_error('Ошибка выборки MEMOS в классе '.$this->_cl, E_USER_WARNING);
 		if (isset($this->_CFG['hook']['_query']))
 			$this->__do_hook('_query', func_get_args());
 		return $data;
