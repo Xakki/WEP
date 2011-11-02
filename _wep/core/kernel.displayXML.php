@@ -228,7 +228,7 @@
 			//if(!$this->mf_istree)
 				$clause .= ' LIMIT '.$climit;
 			$this->data = $this->_query($listfields,$clause,'id');
-##print($this->SQL->query);
+print($this->SQL->query);
 			/** Обработка запроса*/
 			if(count($this->data)) {
 				$temp = current($this->data);

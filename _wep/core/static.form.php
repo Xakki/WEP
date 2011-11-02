@@ -1165,7 +1165,7 @@ class static_form {
 		$hash_key = md5($hash_key); // получаем хешкод
 		if(function_exists('openssl_encrypt')) { // если есть openssl
 			$crypttext = openssl_encrypt($data,'aes-128-cbc',$hash_key,false,"1234567812345678");
-		} else { // будем надеяться что есть mcrypt
+		} elseif(function_exists('mcrypt_encrypt')) { // будем надеяться что есть mcrypt
 			$crypttext = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $hash_key, $data, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND));
 			$crypttext = base64_encode($crypttext);
 		} else // если нет даже openssl значит и так сойдёт!
@@ -1187,7 +1187,7 @@ class static_form {
 			$hash_key = md5($hash_key);
 			if(function_exists('openssl_encrypt')) {
 				$data = openssl_decrypt($_COOKIE['chash'],'aes-128-cbc',$hash_key,false,"1234567812345678");
-			} else {
+			} elseif(function_exists('mcrypt_encrypt')) {
 				$data = base64_decode($_COOKIE['chash']);
 				$data = mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $hash_key, base64_decode($_COOKIE['chash']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND));
 			}else
