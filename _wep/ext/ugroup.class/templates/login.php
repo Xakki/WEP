@@ -12,7 +12,7 @@ function tpl_login($data)
 						<div>Запомнить?<input type="checkbox" style="border:medium none; width:30px;" tabindex="3" name="remember" value="1"/></div>
 						<input class="submit" type="submit" name="enter" value="Войти" tabindex="4"/>
 					</form>
-					'.($data['remindpage']?'<a href="'.$data['remindpage'].'" style="font-size:0.8em;">Забыли пароль?</a>':'').'
+					'.($data['remindpage']?'<a href="'.$data['remindpage'].'">Забыли пароль?</a>':'').'
 				 <div style="clear:both;"></div>
 			 </div>';
 	$html = '<div style="height:100%;">
