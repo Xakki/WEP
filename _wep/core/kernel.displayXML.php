@@ -1,4 +1,11 @@
 <?php
+/** КОСТЫЛИ **/
+// Сделать механизм создания форм
+		if(isset($param['display'])) {
+			$this->setFieldsDisplay();
+		} else {
+			$this->setFieldsForm();
+		}
 
 		if(count($this->formDSort)) {
 			$temp = $this->fields_form;
@@ -13,6 +20,7 @@
 				}
 			}
 		}
+/**END  костыли**/
 
 		$xml = array();
 		$listfields = array('count(t1.id) as cnt');
@@ -151,7 +159,7 @@
 							$lsn['nameField'] = str_replace('tx.','t'.$t.'.',$lsn['nameField']);
 						//if (isset($lsn['include']))
 						//	require_once($this->_CFG['_PATH']['ext'].$lsn['include'].'.class.php');
-						if(isset($r['multiple']) and $r['multiple']==1)
+						if(isset($r['multiple']) and $r['multiple'])
 							$cls[0][] = 'group_concat('.$lsn['nameField'].' SEPARATOR " | ") as name_'.$k;
 						else
 							$cls[0][] = $lsn['nameField'].' as name_'.$k;
@@ -171,7 +179,7 @@
 								$lsn['idThis'] = $k;
 							$cls[1] .= ' '.$lsn['idField'].'=t1.'.$lsn['idThis'].' '.str_replace('tx.','t'.$t.'.',($lsn['leftJoin'].$lsn['join']));
 						}
-						elseif(isset($r['multiple']) and $r['multiple']==1)
+						elseif(isset($r['multiple']) and $r['multiple'])
 							$cls[1] .= 't1.'.$k.' LIKE concat("%|",'.$lsn['idField'].',"|%") ';
 						else
 							$cls[1] .= 't1.'.$k.'='.$lsn['idField'].' ';
@@ -228,7 +236,7 @@
 			//if(!$this->mf_istree)
 				$clause .= ' LIMIT '.$climit;
 			$this->data = $this->_query($listfields,$clause,'id');
-//print($this->SQL->query);
+///print($this->SQL->query);
 			/** Обработка запроса*/
 			if(count($this->data)) {
 				$temp = current($this->data);

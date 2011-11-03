@@ -1405,7 +1405,16 @@ abstract class kernel_extends {
 		return include($this->_CFG['_PATH']['core'] . 'kernel.displayXML.php');
 	}
 
+	/**
+	 * вывод данных
+	 * @param array $param - параметры вывода данных
+	 * @return array
+	*/
+	public function setFieldsDisplay() {
+		return parent::setFieldsForm();
+	}
 
+	
 // MODUL configuration
 
 	/**

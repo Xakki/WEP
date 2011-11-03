@@ -38,7 +38,7 @@
 			$tplphp = $this->FFTemplate($FUNCPARAM[1],dirname(__FILE__));
 
 			$MODUL->_clp = '_view=list&_modul='.$MODUL->_cl.'&';
-			$param = array('firstpath'=>$PGLIST->current_path.'?','phptemplate'=>$FUNCPARAM[1]);
+			$param = array('firstpath'=>$this->getHref(),'phptemplate'=>$FUNCPARAM[1],'display'=>true);
 			////////////////////
 			list($DATA,$flag) = $MODUL->super_inc($param,$_GET['_type']);
 			////////////////////
@@ -52,6 +52,8 @@
 				$cp = $this->getHref($cp['id'],true).'?';
 			}else
 				$cp = key($HTML->path);
+
+
 			if(($_GET['_modul'] == $MODUL->_cl) && ($_GET['_type']=="add" or $_GET['_type']=="edit")) {
 				if($flag==1) {
 					prev($HTML->path);
@@ -74,7 +76,7 @@
 				if(!isset($_SESSION['mess'])) 
 					$_SESSION['mess']= array();
 				$DATA[$FUNCPARAM[1]]['messages'] += $_SESSION['mess'];
-				$DATA[$FUNCPARAM[1]]['firstpath'] = $cp;
+				$DATA[$FUNCPARAM[1]]['firstpath'] = $this->getHref();
 
 				$html = $HTML->transformPHP($DATA,$tplphp);
 				$_SESSION['mess'] = array();
