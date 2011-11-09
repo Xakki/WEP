@@ -1167,7 +1167,7 @@ abstract class kernel_extends {
 					else
 						$name = ': №'.$parent_id;
 					//BREAK
-					if(!$this->parent_id)
+					if(!$this->parent_id and $parent_id!=$this->id)
 						$this->parent_id = $parent_id;
 					if (isset($param['first_id']) and $param['first_id'] and $parent_id == $param['first_id'])
 						break;

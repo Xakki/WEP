@@ -58,7 +58,7 @@
 
 			if(isset($DATA['formcreat'])) {
 				end($DATA['path']);prev($DATA['path']);
-				$DATA['formcreat']['form']['_*features*_']['prevhref'] = $_CFG['_HREF']['BH'].str_replace('&amp;', '&', key($DATA['path']));
+				$DATA['formcreat']['form']['_*features*_']['prevhref'] = str_replace('&amp;', '&', key($DATA['path']));
 			}
 
 			if(isset($DATA['formcreat']) and $flag==1) {
