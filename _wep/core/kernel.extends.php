@@ -179,7 +179,8 @@ abstract class kernel_extends {
 				$this->_dependClass = 
 				 array();
 		$this->childs = new modul_child($this);
-		$this->ordfield = $this->_clp = '';
+		$this->ordfield = '';
+		$this->_clp = array();
 		$this->data = array();
 		$this->parent_id = NULL;
 		$this->null = NULL;
@@ -1110,22 +1111,26 @@ abstract class kernel_extends {
 	 *		$param['xsl'] - шаблонизатор
 	 * @return array Данные для шаблонизатора
 	*/
-	public function super_inc($param=array(), $ftype='') {
+	public function super_inc($param=array(), $ftype='', $xml= array()) {
 		global $HTML;
 		$rep = array('\'', '"', '\\', '/');
 		$cl = $this->_cl;
 		$flag = 1;
-		$xml = $messages = array();
 
-		if (!isset($param['phptemplate']))
-			$param['phptemplate'] = 'superlist';
+		// Задаем начальный массив данных
+		if(!count($xml)) {
+			$xml = array(
+				'messages'=>array(),
+				'path'=>array(),
+				'_clp'=>array('_modul'=>$this->_cl)
+				);
+		}
 
-		if ($this->owner and $this->owner->id and !$this->_clp)
-			$this->_clp = $this->owner->_clp . $this->owner->_cl . '_id=' . $this->owner->id . '&amp;' . $this->owner->_cl . '_ch=' . $this->_cl . '&amp;';
-
+		// Задаем данные о странице
 		if ($this->_pn > 1)
-			$this->_clp .= $cl . '_pn=' . $this->_pn . '&amp;';
+			$xml['_clp'][$cl . '_pn'] = $this->_pn;
 
+		// ID элемента
 		if (isset($_GET[$cl . '_id']) and !is_array($_GET[$cl . '_id'])) {
 			if (!$this->mf_use_charid)
 				$this->id = (int) $_GET[$cl . '_id'];
@@ -1133,57 +1138,72 @@ abstract class kernel_extends {
 				$this->id = str_replace($rep, '', $_GET[$cl . '_id']);
 		}
 
-		if (isset($param['firstpath']))
-			$firstpath = $this->_CFG['_HREF']['BH'] . $param['firstpath'] . $this->_clp;
-		else
-			$firstpath = $this->_CFG['PATH']['wepname'] . '/index.php?' . $this->_clp;
+		$xml['path'][$this->_cl] = array(
+			'path' => $xml['_clp'],
+			'name'=>$this->caption
+		);
 
-		if ($this->id and $this->mf_istree) {
-			$agr = ', ' . $this->_listnameSQL . ' as name';
-			$this->tree_data = $first_data = $path2 = array();
-			$parent_id = $this->id;
-			$listfields = array('id,'.$this->mf_istree . $agr);
-			while ($parent_id) {
-				$clause = 'WHERE id="' . $parent_id . '"';
-				$this->data = $this->_query($listfields, $clause, 'id');
-				if (!count($first_data))
-					$first_data = $this->data;
-				$this->tree_data += $this->data;
-				$path2[$firstpath . $this->_cl . '_id=' . $this->data[$parent_id]['id'] . '&amp;'] = $this->caption . ': ' . $this->data[$parent_id][$this->_listname];
-				if (isset($param['first_id']) and $param['first_id'] and $parent_id == $param['first_id'])
-					break;
-				$parent_id = $this->data[$parent_id][$this->mf_istree];
-				if(!$this->parent_id)
-					$this->parent_id = $parent_id;
+		if ($this->id) {
+			// Древо
+			if ($this->mf_istree) {
+				$parent_id = $this->id;
+				$this->tree_data = $first_data = $path = array();
+				$listfields = 'id,'.$this->mf_istree . ', ' . $this->_listnameSQL . ' as name';
+				$name = '';
+				while ($parent_id) {
+					$clause = 'WHERE id="' . $parent_id . '"';
+					$this->data = $this->_query($listfields, $clause, 'id');
+					if (!count($first_data))
+						$first_data = $this->data;
+					$this->tree_data += $this->data;
+
+					//********* Path ************
+					$path[$this->_cl . $parent_id] = array(
+						'path' => $xml['_clp']+array($this->_cl . '_id'=>$parent_id),
+						'name' => $this->caption.$name
+					);
+					if($this->data[$parent_id][$this->_listname])
+						$name = ': '.preg_replace($this->_CFG['_repl']['name'], '', $this->data[$parent_id][$this->_listname]);
+					else
+						$name = ': №'.$parent_id;
+					//BREAK
+					if(!$this->parent_id and $parent_id!=$this->id)
+						$this->parent_id = $parent_id;
+					if (isset($param['first_id']) and $param['first_id'] and $parent_id == $param['first_id'])
+						break;
+					$parent_id = $this->data[$parent_id][$this->mf_istree];
+				}
+				$this->data = $first_data;
+				if (isset($param['first_id']) and $param['first_id'] and !$parent_id)
+					$this->id = '';
+
+				$xml['path'] += array_reverse($path); //Переворачиваем
+				$xml['path'][$this->_cl]['name'] .= $name;
 			}
-			$this->data = $first_data;
+			else {
+				$this->data = $this->_select();
+				//********* Path ************
+				if($this->data[$this->id][$this->_listname])
+					$name = preg_replace($this->_CFG['_repl']['name'], '', $this->data[$this->id][$this->_listname]);
+				else
+					$name = '№'.$this->id;
+				$xml['path'][$this->_cl]['name'] .= ': '.$name;
+			}
+			$xml['_clp'][$this->_cl . '_id'] = $this->id;
+		} 
 
-			if (isset($param['first_id']) and $param['first_id'] and !$parent_id)
-				$this->id = '';
-			$path2 = array_reverse($path2);			
-		}
-		elseif ($this->id) {
-			$this->data = $this->_select();
-		}
-		if ($this->owner and $this->owner->id) {
-			if ($this->owner->mf_istree)
-				array_pop($HTML->path);
-			$HTML->path[$firstpath] = $this->caption . ':' . $this->owner->data[$this->owner->id][$this->owner->_listname];
-		}
-		else
-			$HTML->path[$firstpath] = $this->caption;
-		if (isset($path2) and count($path2))
-			$HTML->path = array_merge($HTML->path, $path2);
 
 		if ($this->id and isset($_GET[$cl . '_ch']) and isset($this->childs[$_GET[$cl . '_ch']])) {
 			if (count($this->data)) {
-				//$HTML->path[$firstpath] =$this->caption.': '.$this->data[$this->id][$this->_listname];
-				list($xml, $flag) = $this->childs[$_GET[$cl . '_ch']]->super_inc($param, $ftype);
-				//	$tmp = $this->childs[$_GET[$cl.'_ch']]->_clp;
-				//if(!isset($HTML->path[$this->_CFG['PATH']['wepname'].'/index.php?'.$tmp]))
-				//	$HTML->path[$this->_CFG['PATH']['wepname'].'/index.php?'.$tmp] =$this->childs[$_GET[$cl.'_ch']]->caption;
+				if ($this->mf_istree)
+					array_pop($xml['path']);
+				/****** CHILD *******/
+				$xml['_clp'][$this->_cl . '_ch'] = $_GET[$cl . '_ch'];
+				list($xml, $flag) = $this->childs[$_GET[$cl . '_ch']]->super_inc($param, $ftype,$xml);
+				/****** CHILD *******/
 			}
-		} else {
+		} 
+		else {
 			global $_tpl;
 			if ($this->includeCSStoWEP and $this->config['cssIncludeToWEP']) {
 				if (!is_array($this->config['cssIncludeToWEP']))
@@ -1205,31 +1225,36 @@ abstract class kernel_extends {
 			$param['clause'] = $filter_clause[0];
 
 			$xml['topmenu'] = array();
-			if ($this->_prmModulAdd())
+			if ($this->_prmModulAdd()) {
+				$t = array('_type'=>'add');
+				if($this->id)
+					$t[$this->_cl . '_id'] = $this->id;
 				$xml['topmenu']['add'] = array(
-					'href' => '_type=add' . (($this->id) ? '&amp;' . $this->_cl . '_id=' . $this->id : ''),
+					'href' => $t,
 					'caption' => 'Добавить ' . $this->caption,
 					'sel' => 0,
 					'type' => '',
 					'css' => 'add'
 				);
+			}
 
 
 			if ($this->owner and count($this->owner->childs))
-				foreach ($this->owner->childs as $ck => $cn) {
-					if (count($cn->fields_form) and $ck != $cl and $cn->_prmModulShow($ck))
-						$xml['topmenu'][] = array(
-							'href' => $this->_clp . $cl . '_id=' . $this->owner->id . '&amp;' . $cl . '_ch=' . $ck,
+				foreach ($this->owner->childs as $ck => &$cn) {
+					if (count($cn->fields_form) and $ck != $cl and $cn->_prmModulShow($ck)) {
+						$xml['topmenu']['ochild_'.$ck] = array(
+							'href' => array($cl . '_id'=>$this->owner->id , $cl . '_ch'=>$ck),
 							'caption' => $cn->caption . '(' . $row[$ck . '_cnt'] . ')',
 							'sel' => 0,
 							'type' => 'child'
 						);
+					}
 				}
 			if ($this->mf_istree and count($this->childs) and $this->id)
-				foreach ($this->childs as $ck => $cn) {
+				foreach ($this->childs as $ck => &$cn) {
 					if (count($cn->fields_form) and $ck != $cl and $cn->_prmModulShow($ck))
 						$xml['topmenu']['child' . $ck] = array(
-							'href' => $this->_clp . $cl . '_id=' . $this->id . '&amp;' . $cl . '_ch=' . $ck,
+							'href' => array($cl . '_id' => $this->id, $cl . '_ch' => $ck),
 							'caption' => $cn->caption . '(' . $row[$ck . '_cnt'] . ')',
 							'sel' => 0,
 							'type' => 'child'
@@ -1238,7 +1263,7 @@ abstract class kernel_extends {
 
 			if (is_null($this->owner) and static_main::_prmModul($this->_cl, array(14))) {
 				/*$xml['topmenu']['Checkmodul'] = array(
-					'href' => $this->_clp . '_type=tools&amp;_func=Checkmodul',
+					'href' => array('_type'=>'tools', '_func'=>'Checkmodul'),
 					'caption' => 'Обновить поля таблицы',
 					'sel' => 0,
 					'type' => 'tools',
@@ -1246,14 +1271,14 @@ abstract class kernel_extends {
 				);*/
 				if($this->ver!=$this->_CFG['modulprm'][$this->_cl]['ver']) {
 					//$_tpl['onload'] .= 'showHelp(\'.weptools.wepchecktable\',\'Версия модуля '.$MODUL->caption.'['.$MODUL->_cl.'] ('.$MODUL->ver.') отличается от версии ('.$_CFG['modulprm'][$MODUL->_cl]['ver'].') сконфигурированного для этого сайта. Обновите здесь поля таблицы.\',4000);$(\'.weptools.wepchecktable\').addClass(\'weptools_sel\');';
-					$messages[] = array('error','Версия модуля '.$this->caption.'['.$this->_cl.'] ('.$this->ver.') отличается от версии ('.$this->_CFG['modulprm'][$this->_cl]['ver'].') сконфигурированного для этого сайта. Обновите модуль.');
+					$xml['messages'][] = array('error','Версия модуля '.$this->caption.'['.$this->_cl.'] ('.$this->ver.') отличается от версии ('.$this->_CFG['modulprm'][$this->_cl]['ver'].') сконфигурированного для этого сайта. Обновите модуль.');
 				}
 
 			}
 
 			if (isset($this->config_form) and count($this->config_form) and static_main::_prmModul($this->_cl, array(13)))
 				$xml['topmenu']['Configmodul'] = array(
-					'href' => $this->_clp . '_type=tools&amp;_func=Configmodul',
+					'href' => array('_type'=>'tools', '_func'=>'Configmodul'),
 					'caption' => 'Настроика модуля',
 					'sel' => 0,
 					'type' => 'tools',
@@ -1261,7 +1286,7 @@ abstract class kernel_extends {
 				);
 			if ($this->mf_indexing and static_main::_prmModul($this->_cl, array(12)))
 				$xml['topmenu']['Reindex'] = array(
-					'href' => $this->_clp . '_type=tools&amp;_func=Reindex',
+					'href' => array('_type'=>'tools', '_func'=>'Reindex'),
 					'caption' => 'Переиндексация',
 					'sel' => 0,
 					'type' => 'tools',
@@ -1269,7 +1294,7 @@ abstract class kernel_extends {
 				);
 			if ($this->cf_reinstall and static_main::_prmModul($this->_cl, array(11)))
 				$xml['topmenu']['Reinstall'] = array(
-					'href' => $this->_clp . '_type=tools&amp;_func=Reinstall',
+					'href' => array('_type'=>'tools', '_func'=>'Reinstall'),
 					'caption' => 'Переустановка',
 					'sel' => 0,
 					'type' => 'tools',
@@ -1277,7 +1302,7 @@ abstract class kernel_extends {
 				);
 			if ($filter_clause[1]) {
 				$xml['topmenu']['Formfilter'] = array(
-					'href' => $this->_clp . '_type=tools&amp;_func=Formfilter',
+					'href' => array('_type'=>'tools', '_func'=>'Formfilter'),
 					'caption' => 'Фильтр',
 					'sel' => 0,
 					'type' => 'tools',
@@ -1288,8 +1313,11 @@ abstract class kernel_extends {
 				}
 			}
 			if ($this->mf_statistic) {
+				$t = array('_type'=>'static', '_func'=>'Statsmodul');
+				if($this->owner and $this->owner->id)
+					$t['_oid'] = $this->owner->id;
 				$xml['topmenu']['Statsmodul'] = array(
-					'href' => $this->_clp . '_type=static&amp;_func=Statsmodul' . (($this->owner and $this->owner->id) ? '&amp;_oid=' . $this->owner->id : ''),
+					'href' =>  $t,
 					'caption' => 'Статистика',
 					'sel' => 0,
 					'type' => 'static',
@@ -1304,33 +1332,43 @@ abstract class kernel_extends {
 				if ($flag == 1 and isset($this->parent_id) and $this->parent_id)
 					$this->id = $this->parent_id;
 				//else
-				$HTML->path[$firstpath . '_type=add' . (($this->parent_id) ? '&amp;' . $this->_cl . '_id=' . $this->parent_id : '')] = 'Добавить';
+				$tmp = $xml['_clp']+array('_type'=>'add');
+				if($this->parent_id)
+					$tmp[$this->_cl . '_id'] = $this->parent_id;
+				$xml['path']['add'] = array(
+					'path' => $tmp,
+					'name'=>'Добавление'
+				);
 			}
 			elseif ($ftype == 'edit' && $this->id) {
 				if ($this->mf_istree)
-					array_pop($HTML->path);
-				$HTML->path[$firstpath . $this->_cl . '_id=' . $this->id . '&amp;_type=edit'] = 'Редактировать:' . preg_replace($this->_CFG['_repl']['name'], '', $this->data[$this->id][$this->_listname]) ;
+					array_pop($xml['path']);
+				$xml['path']['edit'] = array(
+					'path' => $xml['_clp']+array($this->_cl . '_id'=>$this->id, '_type'=>'edit'),
+					'name'=>'Редактирование'
+				);
 				list($xml['formcreat'], $flag) = $this->_UpdItemModul($param);
 				if ($flag == 1) {
 					if (isset($this->parent_id) and $this->parent_id)
 						$this->id = $this->parent_id;
-					if ($this->id)
-						$this->_clp .= $this->_cl . '_id=' . $this->id;
+					$xml['_clp'][$this->_cl . '_id'] = $this->id;
 				}
 			}
 			elseif ($ftype == 'act' && $this->id) {
 				if ($this->mf_istree)
-					array_pop($HTML->path);
+					array_pop($xml['path']);
 				list($messages, $flag) = $this->_Act(1, $param);
-				if ($this->mf_istree)
+				$xml['messages'] = array_merge($xml['messages'],$messages);
+				if($this->mf_istree)
 					$this->id = $this->data[$this->id][$this->mf_istree];
 				else
 					$this->id = NULL;
 			}
 			elseif ($ftype == 'dis' && $this->id) {
 				if ($this->mf_istree)
-					array_pop($HTML->path);
+					array_pop($xml['path']);
 				list($messages, $flag) = $this->_Act(0, $param);
+				$xml['messages'] = array_merge($xml['messages'],$messages);
 				if ($this->mf_istree)
 					$this->id = $this->tree_data[$this->id][$this->mf_istree];
 				else
@@ -1338,8 +1376,9 @@ abstract class kernel_extends {
 			}
 			elseif ($ftype == 'ordup' && $this->id && $this->mf_ordctrl) {
 				if ($this->mf_istree)
-					array_pop($HTML->path);
+					array_pop($xml['path']);
 				list($messages, $flag) = $this->_ORD(-1, $param);
+				$xml['messages'] = array_merge($xml['messages'],$messages);
 				if ($this->mf_istree)
 					$this->id = $this->data[$this->id][$this->mf_istree];
 				else
@@ -1347,8 +1386,9 @@ abstract class kernel_extends {
 			}
 			elseif ($ftype == 'orddown' && $this->id && $this->mf_ordctrl) {
 				if ($this->mf_istree)
-					array_pop($HTML->path);
+					array_pop($xml['path']);
 				list($messages, $flag) = $this->_ORD(1, $param);
+				$xml['messages'] = array_merge($xml['messages'],$messages);
 				if ($this->mf_istree)
 					$this->id = $this->tree_data[$this->id][$this->mf_istree];
 				else
@@ -1356,8 +1396,9 @@ abstract class kernel_extends {
 			}
 			elseif ($ftype == 'del' && $this->id) {
 				if ($this->mf_istree)
-					array_pop($HTML->path);
+					array_pop($xml['path']);
 				list($messages, $flag) = $this->_Del($param);
+				$xml['messages'] = array_merge($xml['messages'],$messages);
 				if ($this->mf_istree)
 					$this->id = $this->tree_data[$this->id][$this->mf_istree];
 				else
@@ -1383,15 +1424,18 @@ abstract class kernel_extends {
 				}
 			} else {
 				$flag = 3;
-				$xml[$param['phptemplate']] = $this->_displayXML($param);
-				$xml[$param['phptemplate']]['topmenu'] = &$xml['topmenu'];
+				$xml['data'] = $this->_displayXML($param);
+				if(count($xml['data']['messages']))
+					$xml['messages'] = array_merge($xml['messages'],$xml['data']['messages']);
+				unset($xml['data']['messages']);
 			}
+			/*elseif ($this->id) { //Просмотр данных
+				$flag = 3;
+				$xml['item'] = $this->data;
+			}*/
+
 		}
-		if (!isset($xml[$param['phptemplate']]['messages']))
-			$xml[$param['phptemplate']]['messages'] = array();
-		if (count($messages))
-			$xml[$param['phptemplate']]['messages'] += $messages;
-		$xml[$param['phptemplate']]['_cl'] = $cl;
+		$xml['_cl'] = $cl;
 
 		return array($xml, $flag);
 	}

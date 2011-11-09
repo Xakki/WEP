@@ -599,7 +599,7 @@ var wep = {
 			$('table.superlist>tbody').sortable({
 				items: '>tr.tritem',
 				axis:	'y',
-				//helper: 'original',
+				helper: 'original',
 				opacity:'false',
 				//opacity: 0.6,
 				//revert: true,// плавное втыкание

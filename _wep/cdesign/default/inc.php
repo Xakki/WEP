@@ -57,46 +57,49 @@
 
 			if(static_main::_prmModul($_GET['_modul'],array(1,2))) {
 				if($_GET['_view']=='list') {
-					$MODUL->_clp = '_view=list&amp;_modul='.$MODUL->_cl.'&amp;';
-					$param = array('sbmtsave'=>1,'close'=>1);
+					$param = array('sbmtsave'=>1, 'close'=>1);
 //$tt = array();$summ = 0;for($j = 1; $j <= 5; $j++) { $tt[$j] = getmicrotime(); for($i = 1; $i <= 20; $i++) {
-							$MODUL->setFilter(1);
-							list($DATA,$flag) = $MODUL->super_inc($param,$_GET['_type']);
+					$MODUL->setFilter(1);
+					list($DATA,$flag) = $MODUL->super_inc($param,$_GET['_type']);
+					$DATA['firstpath'] = $_CFG['PATH']['wepname'] . '/index.php?_view=list&';
 
-							if($MODUL->ver!=$_CFG['modulprm'][$MODUL->_cl]['ver']) {
-								$html = 'Версия модуля '.$MODUL->caption.'['.$MODUL->_cl.'] ('.$MODUL->ver.') отличается от версии ('.$_CFG['modulprm'][$MODUL->_cl]['ver'].') сконфигурированного для этого сайта. Обновите здесь поля таблицы.';
-							}
+					// Adept path
+					$path = array();
+					foreach($DATA['path'] as $r) {
+						$temp = $DATA['firstpath'];
+						foreach($r['path'] as $kp=>$rp)
+							$temp .= $kp.'='.$rp.'&';
+						$path[$temp] = $r['name'];
+					}
+					$DATA['path'] = $path;
 
+					if($MODUL->ver!=$_CFG['modulprm'][$MODUL->_cl]['ver']) {
+						$html = 'Версия модуля '.$MODUL->caption.'['.$MODUL->_cl.'] ('.$MODUL->ver.') отличается от версии ('.$_CFG['modulprm'][$MODUL->_cl]['ver'].') сконфигурированного для этого сайта. Обновите здесь поля таблицы.';
+					}
 
-							if($_GET['_type']=="add" or $_GET['_type']=="edit") {
-								if(isset($DATA['formcreat']) and isset($DATA['formcreat']['form']) and count($DATA['formcreat']['form'])) {
-									$DATA['formcreat']['path'] = $HTML->path;
-									$html = $HTML->transformPHP($DATA,'formcreat');
-									//$_tpl['onload'] .= 'var tmp = $(\'#form_'.$_GET['_modul'].'\').attr(\'action\');$(\'#form_'.$_GET['_modul'].'\').attr(\'action\',tmp.replace(\'index.php\',\'js.php\'));JSFR(\'#form_'.$_GET['_modul'].'\');';
-								}
-								elseif($flag==1){
-									end($HTML->path);prev($HTML->path);
-									$_SESSION['mess']=$DATA['formcreat']['messages'];
-									static_main::redirect($_CFG['_HREF']['BH'].str_replace("&amp;", "&", key($HTML->path)));
-								}
-								else {
-									//$DATA['formcreat']['messages'] = $_SESSION['mess'];
-									$DATA['formcreat']['path'] = $HTML->path;
-									$html = $HTML->transformPHP($DATA,'formcreat');
-									//$_tpl['onload'] .= 'var tmp = $(\'#form_'.$_GET['_modul'].'\').attr(\'action\');$(\'#form_'.$_GET['_modul'].'\').attr(\'action\',tmp.replace(\'index.php\',\'js.php\'));JSFR(\'#form_'.$_GET['_modul'].'\');';
-								}
-							} elseif($flag!=3) {
-								end($HTML->path);
-								$_SESSION['mess']=$DATA['superlist']['messages'];
-								static_main::redirect($_CFG['_HREF']['BH'].str_replace("&amp;", "&", key($HTML->path)));
-							} else {
-								if(!isset($_SESSION['mess']) or !$_SESSION['mess']) 
-									$_SESSION['mess']= array();
-								$DATA['superlist']['messages'] += $_SESSION['mess'];
-								$DATA['superlist']['path'] = $HTML->path;
-								$html = $HTML->transformPHP($DATA,'superlist');
-								$_SESSION['mess'] = array();
-							}
+					if(isset($DATA['formcreat'])) {
+						end($DATA['path']);prev($DATA['path']);
+						$DATA['formcreat']['form']['_*features*_']['prevhref'] = $_CFG['_HREF']['BH'].str_replace('&amp;', '&', key($DATA['path']));
+					}
+
+					if(isset($DATA['formcreat']) and $flag==1) {
+						$_SESSION['mess']=$DATA['formcreat']['messages'];
+						static_main::redirect($DATA['formcreat']['form']['_*features*_']['prevhref']);
+					}
+					elseif(!isset($DATA['formcreat']) and $flag!=3) {
+						$_SESSION['mess']=$DATA['messages'];
+						end($DATA['path']);
+						static_main::redirect($_CFG['_HREF']['BH'].str_replace("&amp;", "&", key($DATA['path'])));
+					}
+					else {
+						if(!isset($_SESSION['mess']) or !is_array($_SESSION['mess']))
+							$_SESSION['mess']= array();
+						elseif(count($_SESSION['mess']))
+							$DATA['messages'] += $_SESSION['mess'];
+						$DATA = array('superlist'=>$DATA);
+						$html = $HTML->transformPHP($DATA,'superlist');
+						$_SESSION['mess'] = array();
+					}
 
 //} $tt[$j] = getmicrotime()-$tt[$j]; $summ += $tt[$j]; } echo 'Среднее время = "'.($summ/5).'" ';echo $tt;
 				}

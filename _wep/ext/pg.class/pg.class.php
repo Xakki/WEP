@@ -814,7 +814,7 @@ class pg_class extends kernel_extends {
 					$pid = $this->dataCash[$pid]['parent_id'];
 				}
 			}
-			if($html) {
+			if($html and strpos($href,'.html')===false) {
 				$href .= '.html';
 				if(isset($this->dataCash[$id]['aparam']) and $this->dataCash[$id]['aparam'])
 					$href .= '?'.$this->dataCash[$id]['aparam'];

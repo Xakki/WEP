@@ -41,8 +41,8 @@
 	}
 	.divform .caption div{
 		text-align:center;
-		font-family: 'MyriadPro-Semibold';
 		font-size:1.2em;
+		font-weight:bold;
 	}
 
 	.divform .form-caption {
@@ -89,9 +89,8 @@
 	}
 	.divform .dscr {
 		/*clear:both;*/
-		font-family: 'Arial';
-		font-size:12px;
-		color:#d93f36;
+		font-size:0.8em;
+		color:#363636;
 	}
 	
 	/*INPUT*/
@@ -128,10 +127,9 @@
 		cursor:pointer;
 	}
 	.divform .passnewdesc {
-		font-family: 'Arial';
-		font-size:12px;
-		color:#006b19;
-		border-bottom:1px dashed #006b19;
+		font-size:11px;
+		color:#101796;
+		border-bottom:1px dashed #CCCCCC;
 		display:inline;
 		cursor:pointer;
 	}
@@ -295,18 +293,17 @@
 	/*Всплывающая информация showHelp(obj,mess,time,nomiga)*/
 .helpmess {
 	position:absolute;
-	border:1px solid #ead6ac;-moz-border-radius:4px;-webkit-border-radius:4px;border-radius:4px;
-	border-width:1px !important;
-	background-color:#fff;
+	border:2px solid #555;-moz-border-radius:4px;-webkit-border-radius:4px;border-radius:4px;
+	border-width:2px !important;
+	background-color:#222;
 	z-index:10;
 	padding:2px 3px;
-	font-family: 'Arial';
-	font-weight:600;
-	font-size:13px;
-	color:#d93f36;
+	font-size:0.9em;
+	color:#FFF;
+	font-weight:bold;
 }
 .trgl {
-	border:1px solid #ead6ac;
+	border:1px solid #555;
 	margin:0;
 	background:none repeat scroll 0 0 transparent;
 	position:absolute;
