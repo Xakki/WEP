@@ -72,7 +72,7 @@ class static_main {
 	*
 	*/
 	static function showErr() {
-		global $_CFG;
+		global $_CFG, $SQL;
 		$temp = static_main::showLog(); // сообщения ядра
 		$notice = '';
 		$htmlerr = '';
@@ -96,7 +96,7 @@ class static_main {
 			}
 		}
 
-		if ($_CFG['wep']['debugmode'] == 2 and ($htmlerr != '' or $notice != '' or $temp[0])) {
+		if ($_CFG['wep']['debugmode'] >1 and ($htmlerr != '' or $notice != '' or $temp[0])) {
 			if ($notice)
 				$htmlerr .= self::spoilerWrap('NOTICE',$notice);
 			if ($temp[0])

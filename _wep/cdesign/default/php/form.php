@@ -30,9 +30,7 @@ function tpl_form(&$data) {
 			$texthtml .= '"/>';
 
 			if(isset($r['value_close']) and $r['value_close']) {
-				global $HTML;
-				end($HTML->path);prev($HTML->path);
-				$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'_close" value="'.$r['value_close'].'" class="sbmt" onclick="window.location.href=\''.key($HTML->path).'\';return false;"/>';
+				$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'_close" value="'.$r['value_close'].'" class="sbmt" onclick="window.location.href=\''.$attr['prevhref'].'\';return false;"/>';
 			}
 			$texthtml .= '</div>';
 		}
@@ -71,7 +69,7 @@ function tpl_form(&$data) {
 			if(isset($r['onchange']) and $r['onchange'])
 				$attribute .= ' onchange="'.$r['onchange'].'"';
 
-			if(isset($r['error']) and count($r['error']))
+			if(isset($r['error']) and is_array($r['error']) and count($r['error']))
 				$texthtml .= '<div class="caption_error">['.implode(' ',$r['error']).']</div>';
 
 			if($r['type']=='textarea') {

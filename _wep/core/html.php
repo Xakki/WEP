@@ -288,7 +288,7 @@ function getCatchError($param=2) {
  */
 
 function _obHandler($buffer) {
-	global $_tpl, $_html, $_mctime_start, $_CFG, $SQL;
+	global $_tpl, $_html, $_mctime_start, $_CFG;
 
 	$htmlinfo = '';
 	$buffer .= static_main::showErr();

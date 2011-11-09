@@ -2,24 +2,35 @@
 	function tpl_superlist(&$data) {
 		global $_CFG, $HTML;
 		$html = '';
+
+		$firstpath = '';
+		if(count($data['_clp'])) {
+			foreach($data['_clp'] as $kp=>$rp)
+				$firstpath .= $kp.'='.$rp.'&';
+		}
+
 		if(isset($data['path']) and count($data['path'])) {
 			include_once($HTML->_PATHd.'php/path.php');
 			$html = tpl_path($data['path']);// PATH
-			end($data['path']);
-			$firstpath = key($data['path']);
-		} elseif($data['firstpath'])
-			$firstpath = $data['firstpath'];
+		}
 
 		if(count($data['topmenu'])) { //MENU
 			$temp_topmenu = '<div class="menu_new">';
 			foreach($data['topmenu'] as $r) {
 				$temp_topmenu .= '<div class="botton"><span';
+				// HREF path
+				if(isset($r['href']) and is_array($r['href'])) {
+					$temp = '';
+					foreach($r['href'] as $hk=>$hr)
+						$temp .= $hk.'='.$hr.'&';
+					$r['href'] = $temp;
+				}
 				if($r['type']=='tools' or $r['type']=='static') {
 					$r['css'] = 'weptools '.$r['css'];
-					$temp_topmenu .= ' onclick="return ShowTools(\'tools_block\',\''.$_CFG['_HREF']['wepJS'].'?'.$r['href'].'\')"';
+					$temp_topmenu .= ' onclick="return ShowTools(\'tools_block\',\''.$_CFG['_HREF']['wepJS'].'?_view=list&'.$firstpath.$r['href'].'\')"';
 				}
 				else {
-					$temp_topmenu .= ' onclick="return wep.load_href(\''.$firstpath.$r['href'].'\')"';
+					$temp_topmenu .= ' onclick="return wep.load_href(\''.$data['firstpath'].$firstpath.$r['href'].'\')"';
 				}
 				if($r['sel'])
 					$temp_topmenu .= ' style="border:2px solid red;"';
@@ -31,12 +42,19 @@
 
 		$html .= tpl_pagenum($data['pagenum']);// pagenum
 		$html .= '<hr style="border:transparent;"/><div id="tools_block" style="display:none;"></div>';
+
 		if(isset($data['messages']) and count($data['messages'])) {
 			include_once($HTML->_PATHd.'php/messages.php');
 			$html .= tpl_messages($data['messages']);// messages
 		}
 
-		$html .= tpl_data($data['data'],$firstpath);// messages
+		if(isset($data['formcreat']) and count($data['formcreat'])) {
+			include_once($HTML->_PATHd.'php/formcreat.php');
+			$html .= tpl_formcreat($data['formcreat']);// PATH
+		}
+		else {
+			$html .= tpl_data($data['data'],$data['firstpath'].$firstpath);// messages
+		}
 
 		$html .= $temp_topmenu; //MENU
 		//$html .= $temp_pagenum; //pagenum

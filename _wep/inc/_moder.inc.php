@@ -37,44 +37,46 @@
 			global $HTML;
 			$tplphp = $this->FFTemplate($FUNCPARAM[1],dirname(__FILE__));
 
-			$MODUL->_clp = '_view=list&_modul='.$MODUL->_cl.'&';
-			$param = array('firstpath'=>$PGLIST->current_path.'?','phptemplate'=>$FUNCPARAM[1]);
+			$param = array('phptemplate'=>$FUNCPARAM[1]);
 			list($DATA,$flag) = $MODUL->super_inc($param,$_GET['_type']);
 
-			reset($HTML->path);
-			//$firstpath = key($HTML->path);
-			array_shift($HTML->path);
-			$HTML->path = $this->pageinfo['path'] = $this->pageinfo['path']+$HTML->path;
-			end($HTML->path);
-			$cp = current($HTML->path);
-			if(is_array($cp)) {
-				$cp = $this->getHref($cp['id'],true).'?';
-			}else
-				$cp = key($HTML->path);
-			if(($_GET['_modul'] == $MODUL->_cl) && ($_GET['_type']=="add" or $_GET['_type']=="edit")) {
-				if($flag==1) {
-					prev($HTML->path);
-					$_SESSION['mess']=$DATA['formcreat']['messages'];
-					$cp = current($HTML->path);
-					if(is_array($cp)) {
-						$cp = $this->getHref($cp['id'],true).'?';
-					}else
-						$cp = key($HTML->path);
-					static_main::redirect(str_replace("&amp;", "&", $cp));
-				}
-				else {
-					$DATA['formcreat']['firstpath'] = key($HTML->path);
-					$html = $HTML->transformPHP($DATA,'formcreat');
-				}
-			}elseif($flag!=3) {
-				$_SESSION['mess']=$DATA[$FUNCPARAM[1]]['messages'];
-				static_main::redirect(str_replace("&amp;", "&", $cp));
-			}else {
-				if(!isset($_SESSION['mess'])) 
-					$_SESSION['mess']= array();
-				$DATA[$FUNCPARAM[1]]['messages'] += $_SESSION['mess'];
-				$DATA[$FUNCPARAM[1]]['firstpath'] = $cp;
+			$DATA['firstpath'] = $this->_CFG['_HREF']['BH'].$PGLIST->current_path;
+			if(strpos($DATA['firstpath'],'?')===false)
+				$DATA['firstpath'] .= '?';
+			else
+				$DATA['firstpath'] .= '&';
+			// Adept path
+			$path = array();
+			$temp = $DATA['firstpath'];
+			foreach($DATA['path'] as $r) {
+				foreach($r['path'] as $kp=>$rp)
+					$temp .= $kp.'='.$rp.'&';
+				$path[$temp] = $r['name'];
+			}
+			array_pop($this->pageinfo['path']);
+			$DATA['path'] = $this->pageinfo['path'] = $this->pageinfo['path']+$path;
 
+			if(isset($DATA['formcreat'])) {
+				end($DATA['path']);prev($DATA['path']);
+				$DATA['formcreat']['form']['_*features*_']['prevhref'] = $_CFG['_HREF']['BH'].str_replace('&amp;', '&', key($DATA['path']));
+			}
+
+			if(isset($DATA['formcreat']) and $flag==1) {
+				$_SESSION['mess']=$DATA['formcreat']['messages'];
+				static_main::redirect($DATA['formcreat']['form']['_*features*_']['prevhref']);
+			}
+			elseif(!isset($DATA['formcreat']) and $flag!=3) {
+				$_SESSION['mess']=$DATA['messages'];
+				end($DATA['path']);
+				static_main::redirect($_CFG['_HREF']['BH'].str_replace("&amp;", "&", key($DATA['path'])));
+			}
+			else {
+				if(!isset($_SESSION['mess']) or !is_array($_SESSION['mess'])) 
+					$_SESSION['mess']= array();
+				elseif(count($_SESSION['mess']))
+					$DATA['messages'] += $_SESSION['mess'];
+				unset($DATA['path']);
+				$DATA = array($FUNCPARAM[1]=>$DATA);
 				$html = $HTML->transformPHP($DATA,$tplphp);
 				$_SESSION['mess'] = array();
 			}
