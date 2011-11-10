@@ -60,12 +60,12 @@
 
 	.divform .form-value {
 	}
-	.divform .checkbox-value{
+	.divform .checkbox-value {
 		float:left;
 		margin:0 10px 0 5px;
 		padding:0 0 0;
 	}
-	.divform .checkbox-valuelist{
+	.divform .checkbox-valuelist {
 		float:none;
 	}
 		.divform .checkbox-value input {
@@ -80,7 +80,7 @@
 		text-align:center;
 		padding:5px 0;
 	}
-	.divform .infoinput{
+	.divform .infoinput {
 		font-size:0.9em;
 		font-weight:bold;
 		text-align:center;

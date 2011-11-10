@@ -82,6 +82,16 @@
 			$arrno[$this->owner_name] = 1;
 			$cls[0][$this->owner_name] = 't1.'.$this->owner_name;
 		}
+		if($this->mf_createrid)
+			$cls[0][$this->mf_createrid] = 't1.'.$this->mf_createrid;
+		if($this->mf_istree)
+			$cls[0][$this->mf_istree] = 't1.'.$this->mf_istree;
+		if ($this->mf_ordctrl)
+			$cls[0][$this->mf_ordctrl] = 't1.'.$this->mf_ordctrl;
+		if ($this->mf_actctrl)
+			$cls[0][$this->mf_actctrl] = 't1.'.$this->mf_actctrl;
+		if ($this->mf_timecr)
+			$cls[0][$this->mf_timecr] = 't1.'.$this->mf_timecr;
 
 		// Дети
 		$t=2;
@@ -241,8 +251,9 @@
 			foreach($this->data as $key=>$row) {
 				if(!isset($DATA['pid']) and $this->mf_istree and isset($row[$this->mf_istree]))
 					$DATA['pid'] = $row[$this->mf_istree];
-				$DATA['item'][$key] = array('id'=>$row['id'],'row'=>$row);
-				$DATA['item'][$key] += $this->_tr_attribute($row,$param);
+				$DATA['item'][$key] = $this->_tr_attribute($row,$param);
+				$DATA['item'][$key]['id'] = $row['id'];
+				$DATA['item'][$key]['row'] = $row;
 				//if($DATA['item'][$key]['act'])
 				if($this->mf_actctrl and isset($row[$this->mf_actctrl]))
 					$DATA['item'][$key]['active'] = $row[$this->mf_actctrl];
