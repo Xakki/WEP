@@ -570,7 +570,7 @@ function selectitem2($data,$val=NULL,$flag=0,&$openG=false) {
 				$openG = true;
 			}
 			else {
-				if($flag>1)
+				if($flag>0)
 					$r['#name#'] = str_repeat("&#160;&#160;", $flag).' '.$r['#name#'];
 				$sel = '';
 				if(isset($r['#sel#'])) {

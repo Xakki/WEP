@@ -8,10 +8,16 @@
 			foreach($data['_clp'] as $kp=>$rp)
 				$firstpath .= $kp.'='.$rp.'&';
 		}
-
+		$flag = 0;
+		if(isset($data['formcreat']) and count($data['formcreat'])) {
+			if(isset($data['formcreat']['form']['_*features*_']['id']) and $data['formcreat']['form']['_*features*_']['id'])
+				$flag = 2;
+			else
+				$flag = 1;
+		}
 		if(isset($data['path']) and count($data['path'])) {
 			include_once($HTML->_PATHd.'php/path.php');
-			$html = tpl_path($data['path']);// PATH
+			$html = tpl_path($data['path'],$flag);// PATH
 		}
 
 		if(count($data['topmenu'])) { //MENU

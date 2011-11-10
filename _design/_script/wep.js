@@ -601,15 +601,13 @@ var wep = {
 				axis:	'y',
 				helper: 'original',
 				opacity:'false',
-				//opacity: 0.6,
 				//revert: true,// плавное втыкание
-				//grid: [1, 13],
-				placeholder:'sortHelper',
-				//activeclass : 'sortableactive',
-				//hoverclass : 'sortablehover',
+				//placeholder:'sortHelper',
 				handle: '>td a.imgdragdrop',
 				tolerance: 'pointer',
-				//start: function(event, ui) { ... },
+				start: function(event, ui) {
+					//console.log(ui.helper);
+				},
 				//sort: function(event, ui) { ... },
 				//change: function(event, ui) {console.log('*change');console.log(ui);},
 				update: function(event, ui) {
