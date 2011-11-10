@@ -76,15 +76,15 @@
 					if($MODUL->ver!=$_CFG['modulprm'][$MODUL->_cl]['ver']) {
 						$html = 'Версия модуля '.$MODUL->caption.'['.$MODUL->_cl.'] ('.$MODUL->ver.') отличается от версии ('.$_CFG['modulprm'][$MODUL->_cl]['ver'].') сконфигурированного для этого сайта. Обновите здесь поля таблицы.';
 					}
-
-					if(isset($DATA['formcreat'])) {
-						end($DATA['path']);prev($DATA['path']);
-						$DATA['formcreat']['form']['_*features*_']['prevhref'] = $_CFG['_HREF']['BH'].str_replace('&amp;', '&', key($DATA['path']));
+					end($DATA['path']);prev($DATA['path']);
+					$prevhref = $_CFG['_HREF']['BH'].str_replace('&amp;', '&', key($DATA['path']));
+					if(isset($DATA['formcreat']['form']['_*features*_'])) {
+						$DATA['formcreat']['form']['_*features*_']['prevhref'] = $prevhref;
 					}
-
-					if(isset($DATA['formcreat']) and $flag==1) {
+							
+					if(isset($DATA['formcreat']['form']) and $flag==1 and !count($DATA['formcreat']['form'])) {
 						$_SESSION['mess']=$DATA['formcreat']['messages'];
-						static_main::redirect($DATA['formcreat']['form']['_*features*_']['prevhref']);
+						static_main::redirect($prevhref);
 					}
 					elseif(!isset($DATA['formcreat']) and $flag!=3) {
 						$_SESSION['mess']=$DATA['messages'];
