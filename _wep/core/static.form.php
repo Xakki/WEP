@@ -84,7 +84,7 @@ class static_form {
 			elseif($_this->fields[$key]['type']=='bool')
 				$value = ((int)$value == 1 ? 1 : 0);
 			elseif(isset($int_type[$_this->fields[$key]['type']]))
-				$value =  preg_replace('/[^0-9\-]/', '', $value);
+				$value =  (int)$value;
 			else
 				$value = $_this->SqlEsc($value);
 
