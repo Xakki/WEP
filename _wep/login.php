@@ -26,12 +26,15 @@
 	}
 	elseif(isset($_REQUEST['exit']) && $_REQUEST['exit']=="ok") {
 		static_main::userExit();
-		$mess=static_main::m('exitok');
+		$result[0] = static_main::m('exitok');
 		$ref = $_CFG['_HREF']['BH'].'index.html';
 	}
+	elseif(isset($_GET['mess']))
+		$result[0] = static_main::m($_GET['mess']);
 	elseif(isset($_COOKIE['remember']) and $result = static_main::userAuth() and $result[1]) {
 		static_main::redirect($ref);//STOP
 	}
+
 	if(isset($_COOKIE['cdesign']) and $_COOKIE['cdesign'])
 		$_design = $_COOKIE['cdesign'];
 	elseif(isset($_SESSION['user']['design']) and $_SESSION['user']['design'])
