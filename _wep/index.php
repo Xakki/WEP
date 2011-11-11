@@ -117,6 +117,5 @@
 		$_tpl['time'] = 'PHP ver.' . phpversion().' | '.date('Y-m-d H:i:s').' | '.date_default_timezone_get().' | ';
 	}
 	else {
-		$_tpl['mess'] = static_main::m('denied');
-		$HTML->_templates = "login";
+		static_main::redirect('login.php?mess=denied&ref='.base64_encode($_SERVER['REQUEST_URI']));
 	}
