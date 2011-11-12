@@ -132,7 +132,7 @@ abstract class kernel_extends {
 		$this->mf_mop = true; // выключить постраничное отображение
 		$this->reversePageN = false; // обратный отчет для постраничного отображения
 		$this->messages_on_page = 20; //число эл-ов на странице
-		$this->numlist = 20; //максим число страниц при котором отображ все номера страниц
+		$this->numlist = 10; //максим число страниц при котором отображ все номера страниц
 		$this->mf_indexing = false; // TOOLS индексация
 		$this->mf_statistic = false; // TOOLS показывать  статистику по дате добавления
 		$this->cf_childs = false; // TOOLS true - включить управление подключение подмодулей в настройках модуля
@@ -2049,92 +2049,121 @@ abstract class kernel_extends {
 		//$this->messages_on_page - число эл-ов на странице
 		//$this->_pn - № текущей страницы
 		//$flag  - опция для paginator, 0 - если номер страницы перед list_2.html , 1 - после ?_pn=1
-		$DATA = array('cnt' => $countfield, 'cntpage' => ceil($countfield / $this->messages_on_page), 'modul' => $this->_cl, 'reverse' => $this->reversePageN);
-		$numlist = $this->numlist;
-		if (($this->messages_on_page * ($this->_pn - 1)) > $countfield) {
-			$this->_pn = $DATA['cntpage'];
+		$numlist = $this->numlist; // кличество числе по бокам максимум
+		$DATA = array('cnt' => $countfield, 'cntpage' => 0, 'modul' => $this->_cl, 'reverse' => $this->reversePageN);
+		if ($this->reversePageN) {
+			$DATA['cntpage'] = floor($countfield / $this->messages_on_page);
+			$temp_pn = $this->_pn;
+			$this->_pn = $DATA['cntpage'] - $this->_pn + 1;
+		} else {
+			$DATA['cntpage'] = ceil($countfield / $this->messages_on_page);
 		}
+		// Приводим к правильным числам
+		if($this->_pn > $DATA['cntpage'])
+			$this->_pn = $DATA['cntpage'];
+		if($this->_pn < 1)
+			$this->_pn = 1;
+		$DATA['_pn'] = $this->_pn;
 
 		foreach ($this->_CFG['enum']['_MOP'] as $k => $r)
 			$DATA['mop'][$k] = array('value' => $r, 'sel' => 0);
 		$DATA['mop'][$this->messages_on_page]['sel'] = 1;
 
-		if (!$countfield || $countfield <= $this->messages_on_page || !$this->messages_on_page || $this->_pn > $DATA['cntpage'] || $this->_pn < 1)
+		if (!$countfield || $countfield <= $this->messages_on_page || !$this->messages_on_page)
 			return $DATA;
 		else {
 			if ($thisPage == '')
 				$thisPage = $_SERVER['REQUEST_URI'];
-			if (strstr($thisPage, '&')) {
+			if (strstr($thisPage, '&amp;')) {
 				$thisPage = str_replace('&amp;', '&', $thisPage);
-				$thisPage = str_replace('&', '&amp;', $thisPage);
 			}
+			//$PP[0] - страница не выбрана
+			//$PP[1] - первая часть 
+			//$PP[2] - вторая часть
+			$PP = array(0=>$thisPage,1=>$thisPage,2=>'');
+			if($flag) {
+				$pregreplPage = '/(.*)&' . $this->_cl . '_pn=[0-9]*(.*)/';
+				if (!preg_match($pregreplPage, $thisPage,$matches)) {
+					$PP[0] = $thisPage;
+					if (_substr($thisPage, -1) != '&')
+						$PP[1] .= '&';
+					$PP[1] .= $this->_cl . '_pn=';
+				} else {
+					$PP[0] = $matches[1].$matches[2];
+					$PP[1] = $matches[1].'&'.$this->_cl . '_pn=';
+					$PP[2] = $matches[2];
+					//print_r('<pre>');print_r($matches);
+				}
+			}
+			else {
+				$pregreplPage = '/(.*)_p[0-9]*(.*)/';
+				if (!preg_match($pregreplPage, $thisPage,$matches)) {
+					$temp = explode('.html',$thisPage);
+					$PP[1] = $temp[0].'_p';
+					$PP[2] = '.html'.$temp[1];
+				} else {
+					$PP[0] = $matches[1].$matches[2];
+					$PP[1] = $matches[1].'_p';
+					$PP[2] = $matches[2];
+					//print_r('<pre>');print_r($matches);
+				}
+			}
+			$DATA['PP'] = $PP;
 
 			if ($this->reversePageN) {// обратная нумирация
-				$DATA['cntpage'] = floor($countfield / $this->messages_on_page);
-				$temp_pn = $this->_pn;
-				$this->_pn = $DATA['cntpage'] - $this->_pn + 1;
-				if (!$flag and strpos($thisPage, '.html')) {
-					$pregreplPage = '/(_p)[0-9]*/';
-					if (!preg_match($pregreplPage, $thisPage)) {
-						$thisPage = str_replace('.html', '_p' . $this->_pn . '.html', $thisPage);
-					}
-				} else {
-					$pregreplPage = '/(' . $this->_cl . '_pn=)[0-9]*/';
-					if (!preg_match($pregreplPage, $thisPage)) {
-						if (_substr($thisPage, -5) != '&amp;')
-							$thisPage .= '&amp;';
-						$thisPage .= $this->_cl . '_pn=' . $this->_pn;
-					}
-				}
-				for ($i = $DATA['cntpage']; $i > 0; $i--) {
+				/*Собираем массив ссылок*/
+				if ($this->_pn==$DATA['cntpage'])
+					$DATA['link'][] = array('value' => $DATA['cntpage'], 'href' => 'select_page');
+				else
+					$DATA['link'][] = array('value' => $DATA['cntpage'], 'href' => $PP[0]);
+				if (($this->_pn + $numlist) < $DATA['cntpage']-1) {
+					$DATA['link'][] = array('value' => '...', 'href' => '');
+					$j = $this->_pn + $numlist;
+				} else 
+					$j = $DATA['cntpage']-1;
+				$vl = $this->_pn - $numlist;
+				if($vl<2) $vl = 2;
+				for ($i = $j; $i >= $vl; $i--) {
 					if ($i == $this->_pn)
 						$DATA['link'][] = array('value' => $i, 'href' => 'select_page');
 					else
-						$DATA['link'][] = array('value' => $i, 'href' => preg_replace($pregreplPage, ($i == $DATA['cntpage'] ? '' : "\${1}" . $i), $thisPage));
+						$DATA['link'][] = array('value' => $i, 'href' => $PP[1].$i.$PP[2]);
 				}
-			} else {
-
-				if (!$flag and strpos($thisPage, '.html')) {
-					$replPage = '_p' . $this->_pn;
-					$pregreplPage = '/_p' . $this->_pn . '/';
-					$inPage = '_p';
-				} else {
-					$replPage = $this->_cl . '_pn=' . $this->_pn;
-					$pregreplPage = '/' . $this->_cl . '_pn=[0-9]*(&amp;)*/';
-					$inPage = $this->_cl . '_pn=';
-				}
-				if (strpos($thisPage, $replPage) === false) {
-					if (!$flag and strpos($thisPage, '.html')) {
-						$pageSuf = _substr($thisPage, strpos($thisPage, '.html') + 5);
-						$thisPage = _substr($thisPage, 0, strpos($thisPage, '.html')) . '_p1.html' . $pageSuf;
-					} else {
-						if (_substr($thisPage, -5) == '&amp;')
-							$thisPage .= $replPage;
-						elseif (strpos($thisPage, '?') === false)
-							$thisPage .= '?' . $replPage;
-						else
-							$thisPage .='&amp;' . $replPage;
-					}
-				}
-				if (($this->_pn - $numlist) > 1) {
-					$DATA['link'][] = array('value' => 1, 'href' => preg_replace($pregreplPage, '', $thisPage));
+				if ($this->_pn - $numlist > 2)
+					$DATA['link'][] = array('value' => '...', 'href' => '');
+				if ($this->_pn==1)
+					$DATA['link'][] = array('value' => 1, 'href' => 'select_page');
+				else
+					$DATA['link'][] = array('value' => 1, 'href' => $PP[1].'1'.$PP[2]);
+			}
+			else {
+				/*****/
+				if ($this->_pn==1)
+					$DATA['link'][] = array('value' => 1, 'href' => 'select_page');
+				else
+					$DATA['link'][] = array('value' => 1, 'href' => $PP[0]);
+				if (($this->_pn - $numlist) > 2) {
 					$DATA['link'][] = array('value' => '...', 'href' => '');
 					$j = $this->_pn - $numlist;
 				} else {
-					$j = 1;
+					$j = 2;
 				}
-				for ($i = $j; $i <= $this->_pn + $numlist; $i++)
-					if ($i <= ($DATA['cntpage']))
-						if ($i == $this->_pn)
-							$DATA['link'][] = array('value' => $i, 'href' => 'select_page');
-						else
-							$DATA['link'][] = array('value' => $i, 'href' => preg_replace($pregreplPage, ($i == 1 ? '' : $inPage . $i . '\\1'), $thisPage));
-				if ($this->_pn + $numlist < $DATA['cntpage']) {
+				$vl = $this->_pn + $numlist;
+				if($vl>=$DATA['cntpage']) $vl = $DATA['cntpage']-1;
+				//print_r($vl);print_r('*');print_r($numlist);
+				for ($i = $j; $i <= $vl; $i++) {
+					if ($i == $this->_pn)
+						$DATA['link'][] = array('value' => $i, 'href' => 'select_page');
+					else
+						$DATA['link'][] = array('value' => $i, 'href' => $PP[1].$i.$PP[2]);// . '\\1'
+				}
+				if ($this->_pn + $numlist < $DATA['cntpage'])
 					$DATA['link'][] = array('value' => '...', 'href' => '');
-					$DATA['link'][] = array('value' => $DATA['cntpage'], 'href' => str_replace($replPage, $inPage . $DATA['cntpage'], $thisPage));
-				}
+				if ($this->_pn==$DATA['cntpage'])
+					$DATA['link'][] = array('value' => $DATA['cntpage'], 'href' => 'select_page');
+				else
+					$DATA['link'][] = array('value' => $DATA['cntpage'], 'href' => $PP[1].$DATA['cntpage'].$PP[2]);
 			}
-			$DATA['_pn'] = $this->_pn;
 			//////////////////
 		}
 

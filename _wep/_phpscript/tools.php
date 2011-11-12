@@ -43,9 +43,13 @@ function tools_updater() {
 
 function tools_docron() {
 	global $_CFG;
-	$ttw  = getmicrotime();
-	include($_CFG['_PATH']['wep_phpscript'].'/cron.php');
-	return '--Крон выполнен, время обработки задач =  '.(getmicrotime()-$ttw).'mc -----';;
+	if(isset($_POST['sbmt'])) {
+		$ttw  = getmicrotime();
+		include($_CFG['_PATH']['wep_phpscript'].'/cron.php');
+		return '--Крон выполнен, время обработки задач =  '.(getmicrotime()-$ttw).'mc -----';
+	} else {
+		return '<form method="post"><input type="submit" name="sbmt" value="Выполнить"/></form>';
+	}
 }
 
 function tools_cron() {
@@ -72,7 +76,7 @@ function tools_cron() {
 
 	$FP = $_CFG['PATH']['wepname'].'/index.php?_view=list&_modul=_tools&tfunc=tools_cron&';
 	$_tpl['styles']['form']=1;
-	$DATA = array();
+	$DATA = array('firstpath'=>$FP);
 	$DATA['path'] = array(
 		$FP=>'Задания'
 	);
