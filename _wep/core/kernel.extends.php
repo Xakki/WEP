@@ -985,6 +985,8 @@ abstract class kernel_extends {
 				'value_close' => (isset($param['close']) ? static_main::m('_close',$this) : ''),
 				'value' => static_main::m('_saveclose',$this)
 			);
+			if($this->id and $this->_prmModulDel($this->data, $param))
+				$this->form['sbmt']['value_del'] = static_main::m('Удалить',$this);
 		}
 		return true;
 	}
@@ -1323,6 +1325,10 @@ abstract class kernel_extends {
 					'type' => 'static',
 					'css' => 'wepstats',
 				);
+			}
+			// Удаление через форму
+			if(isset($_POST['sbmt_del']) and $this->id) {
+				$ftype = 'del';
 			}
 
 			if ($ftype == 'add') {
@@ -1873,7 +1879,7 @@ abstract class kernel_extends {
 	public function _Del($param) {
 		$flag = 1;
 		$DATA = array();
-		if ($param['mess'])
+		if (isset($param['mess']))
 			$DATA = $param['mess'];
 		$this->data = $this->_select();
 		if (count($this->data) and $this->_prmModulDel($this->data, $param)) {
