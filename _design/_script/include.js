@@ -107,21 +107,21 @@ jQuery.extend({
 		}
 		url = url.replace('\n', '');
 		jQuery.includeStates[url] = false;
-		var script = document.createElement('link');
-		script.type = 'text/css';
-		script.rel = 'stylesheet';
-		script.onload = function () {
+		var style = document.createElement('link');
+		style.type = 'text/css';
+		style.rel = 'stylesheet';
+		style.onload = function () {
 			jQuery.includeStates[url] = true;
 			if ( callback )
-				callback.call(script);
+				callback.call(style);
 		};
-		script.onreadystatechange = function () {
+		style.onreadystatechange = function () {
 			if ( this.readyState != "complete" && this.readyState != "loaded" ) return;
 			jQuery.includeStates[url] = true;
 			if ( callback )
-				callback.call(script);
+				callback.call(style);
 		};
-		script.href = url;
+		style.href = url;
 		if ( dependency ) {
 			if ( dependency.constructor != Array )
 				dependency = [dependency];
@@ -134,13 +134,13 @@ jQuery.extend({
 					}
 				})
 				if ( valid )
-					document.getElementsByTagName('head')[0].appendChild(script);
+					document.getElementsByTagName('head')[0].appendChild(style);
 				else
 					setTimeout(arguments.callee, 10);
 			}, 10);
 		}
 		else
-			document.getElementsByTagName('head')[0].appendChild(script);
+			document.getElementsByTagName('head')[0].appendChild(style);
 		return function(){
 			return jQuery.includeStates[url];
 		}

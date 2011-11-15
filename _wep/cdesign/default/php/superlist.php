@@ -69,7 +69,7 @@
 	}
 
 	function tpl_data(&$data,$firstpath='') {
-		if(!$data or !count($data)or !count($data['thitem'])) return '';
+		if(!$data or !count($data) or !isset($data['thitem']) or !count($data['thitem'])) return '';
 		global $_CFG,$_tpl;
 		$html = '<table class="superlist"><tbody><tr>';
 		$tdflag = 0;
