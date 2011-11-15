@@ -463,6 +463,7 @@ class pg_class extends kernel_extends {
 		$flagPG = 0;
 		$PGLIST = &$this;
 		$SQL = &$this->SQL;
+		$Chref = $PGLIST->getHref();
 
 		foreach($Cdata as &$rowPG) {
 			if(!$rowPG['active']) continue;

@@ -7,11 +7,11 @@
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 		global $_CFG;
-		$this->_getCashedList('phptemplates', dirname(__FILE__));
-		$this->_enum['modullist'] = array();
+		$PGLIST->_getCashedList('phptemplates', dirname(__FILE__));
+		$PGLIST->_enum['modullist'] = array();
 		foreach($_CFG['modulprm'] as $k=>$r) {
 			if($r['active'])
-				$this->_enum['modullist'][$r['pid']][$k] = $r['name'];
+				$PGLIST->_enum['modullist'][$r['pid']][$k] = $r['name'];
 		}
 		$form = array(
 			'0'=>array('type'=>'list','listname'=>'modullist', 'caption'=>'Модуль'),
@@ -35,12 +35,12 @@
 
 		if(static_main::_prmModul($FUNCPARAM[0],array(1,2))) {
 			global $HTML;
-			$tplphp = $this->FFTemplate($FUNCPARAM[1],dirname(__FILE__));
+			$tplphp = $PGLIST->FFTemplate($FUNCPARAM[1],dirname(__FILE__));
 
 			$param = array('phptemplate'=>$FUNCPARAM[1]);
 			list($DATA,$flag) = $MODUL->super_inc($param,$_GET['_type']);
 
-			$DATA['firstpath'] = $this->_CFG['_HREF']['BH'].$PGLIST->current_path;
+			$DATA['firstpath'] = $PGLIST->_CFG['_HREF']['BH'].$PGLIST->current_path;
 			if(strpos($DATA['firstpath'],'?')===false)
 				$DATA['firstpath'] .= '?';
 			else
@@ -53,8 +53,8 @@
 					$temp .= $kp.'='.$rp.'&';
 				$path[$temp] = $r['name'];
 			}
-			array_pop($this->pageinfo['path']);
-			$DATA['path'] = $this->pageinfo['path'] = $this->pageinfo['path']+$path;
+			array_pop($PGLIST->pageinfo['path']);
+			$DATA['path'] = $PGLIST->pageinfo['path'] = $PGLIST->pageinfo['path']+$path;
 
 			if(isset($DATA['formcreat'])) {
 				end($DATA['path']);prev($DATA['path']);
