@@ -512,7 +512,7 @@ class pg_class extends kernel_extends {
 			if($_tpl['keywords'] and $rowPG['keywords'])
 				$_tpl['keywords'] .= ', '.$rowPG['keywords'];
 			if($_tpl['description'] and $rowPG['description'])
-				$_tpl['description'] .= ', '.$rowPG['description'];
+				$_tpl['description'] .= ' '.$rowPG['description'];
 
 			/*Статика*/
 			if($rowPG['pagetype']=='') {
