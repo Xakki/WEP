@@ -215,7 +215,7 @@ class content_class extends kernel_extends {
 	}
 
 
-	public function _save_item($vars=array(),$where=false) {
+	public function _save_item($vars,$where=false) {
 		$funcparam = array();
 		if(count($this->addForm)) {
 			foreach($this->addForm as $k=>$r) {

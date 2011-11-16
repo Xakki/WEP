@@ -480,7 +480,7 @@ $HTML->_templates = 'nologs';
 if(!isset($_GET['tfunc'])) {
 	_new_class('session',$SESSION);
 	$html .= '<div>';
-	$html .= '<div>Версия ядра - '.$SESSION::versionCore.'</div>';
+	$html .= '<div>Версия ядра - '.session_class::versionCore.'</div>';
 	//$html .= '<div>Версия ядра - '.$SESSION->RCVerCore.'</div>';
 	$html .= '</div>';
 }
