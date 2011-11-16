@@ -10,11 +10,11 @@
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 		global $_CFG;
-		$PGLIST->_getCashedList('phptemplates', dirname(__FILE__));
-		$PGLIST->_enum['modullist'] = array();
+		$this->_getCashedList('phptemplates', dirname(__FILE__));
+		$this->_enum['modullist'] = array();
 		foreach($_CFG['modulprm'] as $k=>$r) {
 			if($r['active'])
-				$PGLIST->_enum['modullist'][$r['pid']][$k] = $r['name'];
+				$this->_enum['modullist'][$r['pid']][$k] = $r['name'];
 		}
 		$form = array(
 			'0'=>array('type'=>'list','listname'=>'modullist', 'caption'=>'Модуль'),
