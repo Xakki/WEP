@@ -46,7 +46,7 @@
 			$html .= $temp_topmenu;
 		}
 
-		$html .= tpl_pagenum($data['pagenum']);// pagenum
+		$html .= tpl_pagenum($data['data']['pagenum']);// pagenum
 		$html .= '<hr style="border:transparent;"/><div id="tools_block" style="display:none;"></div>';
 
 		if(isset($data['messages']) and count($data['messages'])) {
@@ -69,7 +69,7 @@
 	}
 
 	function tpl_data(&$data,$firstpath='') {
-		if(!$data or !count($data)or !count($data['thitem'])) return '';
+		if(!$data or !count($data) or !isset($data['thitem']) or !count($data['thitem'])) return '';
 		global $_CFG,$_tpl;
 		$html = '<table class="superlist"><tbody><tr>';
 		$tdflag = 0;

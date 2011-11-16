@@ -673,7 +673,10 @@ class static_tools {
 			}
 		}
 		if(!file_exists($_CFG['_PATH']['wepconf']. '.htaccess')) {
-			file_put_contents($_CFG['_PATH']['wepconf'] . '.htaccess','Deny from all');
+			file_put_contents($_CFG['_PATH']['wepconf'] . '.htaccess','<FilesMatch "\.(php|inc|cfg|key|htaccess|cmd)$">
+order allow,deny
+deny from all
+</FilesMatch>');
 		}
 		return $flag;
 	}

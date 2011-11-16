@@ -295,12 +295,12 @@ class static_form {
 
 	static function _rename_attaches(&$_this) {
 		if(!count($_this->attaches)) return true;
-		$pathimg = $_this->_CFG['_PATH']['path'].$_this->getPathForAtt($key);
 		$result=$_this->SQL->execSQL('SELECT `id`, `'.implode('`,`', array_keys($_this->attaches)).'` FROM `'.$_this->tablename.'` WHERE `id` IN ('.$_this->_id_as_string().')');
 		if($result->err) return false;
 		$row = $result->fetch_array();
 		if ($row) {
 			foreach($_this->attaches as $key => $value) {
+				$pathimg = $_this->_CFG['_PATH']['path'].$_this->getPathForAtt($key);
 				$f = $pathimg.'/'. $row['id'].'.'.$value['exts'][$row[$key]];
 				if (file_exists($f))
 					rename($f,$pathimg.'/'. $_this->fld_data['id'].'.'. $value['exts'][$row[$key]]);
@@ -315,8 +315,8 @@ class static_form {
 
 	static function _rename_memos(&$_this) {
 		if(!count($_this->memos)) return true;
-		$pathimg = $_this->_CFG['_PATH']['path'].$_this->getPathForMemo($key);
 		foreach($_this->memos as $key => $value) {
+			$pathimg = $_this->_CFG['_PATH']['path'].$_this->getPathForMemo($key);
 			$f = $pathimg.'/'.$_this->id.$_this->text_ext;
 			if (file_exists($f)) rename($f, $pathimg.'/'.$_this->fld_data['id'].$_this->text_ext);
 		}
@@ -411,16 +411,26 @@ class static_form {
 	 */
 	private static function _delete_attaches(&$_this) {
 		if (!count($_this->attaches)) return true;
-		$pathimg = $_this->_CFG['_PATH']['path'].$_this->getPathForAtt($key);
 		$result=$_this->SQL->execSQL('SELECT `id`, `'.implode('`,`', array_keys($_this->attaches)).'` FROM `'. $_this->tablename.'` WHERE `id` IN ('.$_this->_id_as_string().')');
 		if($result->err) return false;
 
 		while ($row = $result->fetch_array()) {
-			foreach($_this->attaches as $key => $value) {
-			
-				$f = $pathimg.'/'. $row['id']. '.'. $row[$key];
-				if (file_exists($f)) {
-					if (!unlink($f)) return static_main::log('error','Cannot delete file `'.$f.'`');
+			foreach($_this->attaches as $key => $att) {
+				$pathimg = $_this->_CFG['_PATH']['path'].$_this->getPathForAtt($key);
+				$oldname =$pathimg.'/'. $row['id']. '.'.$row[$key];
+				if ($row[$key]) {
+					if(file_exists($oldname)) {
+						chmod($oldname, $_this->_CFG['wep']['chmod']);
+						if (!unlink($oldname)) return static_main::log('error','Cannot delete file `'.$oldname.'`');
+					}
+					if (count($att['thumb']))
+						foreach($att['thumb'] as $imod) {
+							if(!isset($imod['pref'])) $imod['pref'] = '';
+							$oldname =$pathimg.'/'. $imod['pref'].$row['id']. '.'.$row[$key];
+							if (file_exists($oldname))
+								if (!unlink($oldname)) return static_main::log('error','Cannot delete file `'.$oldname.'`');
+						}
+
 				}
 			}
 		}
@@ -433,9 +443,9 @@ class static_form {
 	 */
 	private static function _delete_memos(&$_this) {
 		if (!count($_this->memos)) return true;
-		$pathimg = $_this->getPathForMemo($key);
 		foreach($_this->id as $id) {
 			foreach($_this->memos as $key => $value) {
+				$pathimg = $_this->getPathForMemo($key);
 				$f = $pathimg.'/'.$id.$_this->text_ext;
 				if (file_exists($f))
 					if (!unlink($f)) return $_this->_error('Cannot delete memo `'.$f.'`',1);

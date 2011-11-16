@@ -16,33 +16,33 @@
 		$ini_arr= array();
 
 	$time = time();
-	$res = '';
+	$res_cron = '';
 	$i = 1;
 	$_SERVER['HTTP_HOST2'] = $_SERVER['HTTP_HOST'] = $_CFG['site']['www'];
 
-	foreach($_CFG['cron'] as $i=>$r) {
-		if (isset($ini_arr['last_time' . $i]) && ($ini_arr['last_time' . $i] + $r['time']) > $time) {
-			//$res .= 'Рано импортировать файл '. $ini_arr['file'.$i]. ', последний раз он импортировался '.date('d.m.Y H:i', $ini_arr['last_time'.$i]). ', сейчас ' . date('d.m.Y H:i', $time) . '. (Установленный интервал: '.$ini_arr['int' . $i].' минут, осталось ' . round((($ini_arr['last_time' . $i] + ($ini_arr['int' . $i] * 60) - $time) / 60), 1) . ' минут)' . "\n";
+	foreach($_CFG['cron'] as $key_cron=>$r_cron) {
+		if (isset($ini_arr['last_time' . $key_cron]) && ($ini_arr['last_time' . $key_cron] + $r_cron['time']) > $time) {
+			//$res_cron .= 'Рано импортировать файл '. $ini_arr['file'.$key_cron]. ', последний раз он импортировался '.date('d.m.Y H:i', $ini_arr['last_time'.$key_cron]). ', сейчас ' . date('d.m.Y H:i', $time) . '. (Установленный интервал: '.$ini_arr['int' . $key_cron].' минут, осталось ' . round((($ini_arr['last_time' . $key_cron] + ($ini_arr['int' . $key_cron] * 60) - $time) / 60), 1) . ' минут)' . "\n";
 		}
-		elseif(!isset($r['active']) or $r['active']) {
-			$ini_arr['last_time' . $i] = $time;
+		elseif(!isset($r_cron['active']) or $r_cron['active']) {
+			$ini_arr['last_time' . $key_cron] = $time;
 			$tt  = getmicrotime();
 			//'time' => '600', 'file' => '_wepconf/ext/exportboard.class/exportboard.cron.php', 'modul' => '', 'function' => ''
-			if($r['file']) {
-				$r['file'] = $_CFG['_PATH']['path'].$r['file'];
-				if(file_exists($r['file'])) {
-					$res .= include($r['file']);
+			if($r_cron['file']) {
+				$r_cron['file'] = $_CFG['_PATH']['path'].$r_cron['file'];
+				if(file_exists($r_cron['file'])) {
+					$res_cron .= include($r_cron['file']);
 				}else
-					$res .= 'Can`t find file '.$r['file'].' . //';
+					$res_cron .= 'Can`t find file '.$r_cron['file'].' . //';
 			}
-			if(isset($r['function']) and $r['function'] and $r['modul']) {
-				_new_class($r['modul'],$MODUL);
-				eval('$res .= $MODUL->'.$r['function'].';');
+			if(isset($r_cron['function']) and $r_cron['function'] and $r_cron['modul']) {
+				_new_class($r_cron['modul'],$MODUL);
+				eval('$res_cron .= $MODUL->'.$r_cron['function'].';');
 				//function_exists				
-			}elseif(isset($r['function']) and $r['function']) {
-				eval('$res .= '.$r['function'].';');
+			}elseif(isset($r_cron['function']) and $r_cron['function']) {
+				eval('$res_cron .= '.$r_cron['function'].';');
 			}
-			$ini_arr['do_time' . $i] = getmicrotime()-$tt;
+			$ini_arr['do_time' . $key_cron] = getmicrotime()-$tt;
 		}
 	}
 
@@ -55,4 +55,4 @@
 	chmod($ini_file, 0777);
 
 
-	echo $res;
+	echo $res_cron;

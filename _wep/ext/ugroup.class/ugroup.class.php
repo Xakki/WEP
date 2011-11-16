@@ -397,7 +397,8 @@ class users_class extends kernel_extends {
 				$this->data = $this->_query($listfields,$clause);
 				if(count($this->data))
 				{
-					unset($_SESSION['user']);
+					if(isset($_SESSION['user']))
+						unset($_SESSION['user']);
 					if(_strlen($this->data[0]['reg_hash'])>5)
 						return array(static_main::m('authnoconf',$this),0);
 					elseif($this->data[0]['reg_hash']=='0' && $this->data[0]['active']==0)

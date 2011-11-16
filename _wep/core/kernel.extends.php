@@ -132,7 +132,7 @@ abstract class kernel_extends {
 		$this->mf_mop = true; // выключить постраничное отображение
 		$this->reversePageN = false; // обратный отчет для постраничного отображения
 		$this->messages_on_page = 20; //число эл-ов на странице
-		$this->numlist = 20; //максим число страниц при котором отображ все номера страниц
+		$this->numlist = 10; //максим число страниц при котором отображ все номера страниц
 		$this->mf_indexing = false; // TOOLS индексация
 		$this->mf_statistic = false; // TOOLS показывать  статистику по дате добавления
 		$this->cf_childs = false; // TOOLS true - включить управление подключение подмодулей в настройках модуля
@@ -981,10 +981,12 @@ abstract class kernel_extends {
 		if (!$this->id or (isset($this->data[$this->id]) and $this->_prmModulEdit($this->data[$this->id], $param))) {
 			$this->form['sbmt'] = array(
 				'type' => 'submit',
-				'value_save' => ((isset($param['sbmtsave']) and $this->id) ? static_main::m('_save',$this) : ''),
-				'value_close' => (isset($param['close']) ? static_main::m('_close',$this) : ''),
+				'value_save' => ((isset($param['sbmt_save']) and $this->id) ? static_main::m('_save',$this) : ''),
+				'value_close' => (isset($param['sbmt_close']) ? static_main::m('_close',$this) : ''),
 				'value' => static_main::m('_saveclose',$this)
 			);
+			if($this->id and $this->_prmModulDel($this->data, $param) and isset($param['sbmt_del']))
+				$this->form['sbmt']['value_del'] = static_main::m('Удалить',$this);
 		}
 		return true;
 	}
@@ -1111,15 +1113,15 @@ abstract class kernel_extends {
 	 *		$param['xsl'] - шаблонизатор
 	 * @return array Данные для шаблонизатора
 	*/
-	public function super_inc($param=array(), $ftype='', $xml= array()) {
+	public function super_inc($param=array(), $ftype='', $DATA= array()) {
 		global $HTML;
 		$rep = array('\'', '"', '\\', '/');
 		$cl = $this->_cl;
 		$flag = 1;
 
 		// Задаем начальный массив данных
-		if(!count($xml)) {
-			$xml = array(
+		if(!count($DATA)) {
+			$DATA = array(
 				'messages'=>array(),
 				'path'=>array(),
 				'_clp'=>array('_modul'=>$this->_cl)
@@ -1128,7 +1130,7 @@ abstract class kernel_extends {
 
 		// Задаем данные о странице
 		if ($this->_pn > 1)
-			$xml['_clp'][$cl . '_pn'] = $this->_pn;
+			$DATA['_clp'][$cl . '_pn'] = $this->_pn;
 
 		// ID элемента
 		if (isset($_GET[$cl . '_id']) and !is_array($_GET[$cl . '_id'])) {
@@ -1138,8 +1140,8 @@ abstract class kernel_extends {
 				$this->id = str_replace($rep, '', $_GET[$cl . '_id']);
 		}
 
-		$xml['path'][$this->_cl] = array(
-			'path' => $xml['_clp'],
+		$DATA['path'][$this->_cl] = array(
+			'path' => $DATA['_clp'],
 			'name'=>$this->caption
 		);
 
@@ -1159,7 +1161,7 @@ abstract class kernel_extends {
 
 					//********* Path ************
 					$path[$this->_cl . $parent_id] = array(
-						'path' => $xml['_clp']+array($this->_cl . '_id'=>$parent_id),
+						'path' => $DATA['_clp']+array($this->_cl . '_id'=>$parent_id),
 						'name' => $this->caption.$name
 					);
 					if($this->data[$parent_id][$this->_listname])
@@ -1177,8 +1179,8 @@ abstract class kernel_extends {
 				if (isset($param['first_id']) and $param['first_id'] and !$parent_id)
 					$this->id = '';
 
-				$xml['path'] += array_reverse($path); //Переворачиваем
-				$xml['path'][$this->_cl]['name'] .= $name;
+				$DATA['path'] += array_reverse($path); //Переворачиваем
+				$DATA['path'][$this->_cl]['name'] .= $name;
 			}
 			else {
 				$this->data = $this->_select();
@@ -1187,19 +1189,19 @@ abstract class kernel_extends {
 					$name = preg_replace($this->_CFG['_repl']['name'], '', $this->data[$this->id][$this->_listname]);
 				else
 					$name = '№'.$this->id;
-				$xml['path'][$this->_cl]['name'] .= ': '.$name;
+				$DATA['path'][$this->_cl]['name'] .= ': '.$name;
 			}
-			$xml['_clp'][$this->_cl . '_id'] = $this->id;
+			$DATA['_clp'][$this->_cl . '_id'] = $this->id;
 		} 
 
 
 		if ($this->id and isset($_GET[$cl . '_ch']) and isset($this->childs[$_GET[$cl . '_ch']])) {
 			if (count($this->data)) {
 				if ($this->mf_istree)
-					array_pop($xml['path']);
+					array_pop($DATA['path']);
 				/****** CHILD *******/
-				$xml['_clp'][$this->_cl . '_ch'] = $_GET[$cl . '_ch'];
-				list($xml, $flag) = $this->childs[$_GET[$cl . '_ch']]->super_inc($param, $ftype,$xml);
+				$DATA['_clp'][$this->_cl . '_ch'] = $_GET[$cl . '_ch'];
+				list($DATA, $flag) = $this->childs[$_GET[$cl . '_ch']]->super_inc($param, $ftype,$DATA);
 				/****** CHILD *******/
 			}
 		} 
@@ -1224,12 +1226,12 @@ abstract class kernel_extends {
 			$filter_clause = $this->_filter_clause();
 			$param['clause'] = $filter_clause[0];
 
-			$xml['topmenu'] = array();
+			$DATA['topmenu'] = array();
 			if ($this->_prmModulAdd()) {
 				$t = array('_type'=>'add');
 				if($this->id)
 					$t[$this->_cl . '_id'] = $this->id;
-				$xml['topmenu']['add'] = array(
+				$DATA['topmenu']['add'] = array(
 					'href' => $t,
 					'caption' => 'Добавить ' . $this->caption,
 					'sel' => 0,
@@ -1242,7 +1244,7 @@ abstract class kernel_extends {
 			if ($this->owner and count($this->owner->childs))
 				foreach ($this->owner->childs as $ck => &$cn) {
 					if (count($cn->fields_form) and $ck != $cl and $cn->_prmModulShow($ck)) {
-						$xml['topmenu']['ochild_'.$ck] = array(
+						$DATA['topmenu']['ochild_'.$ck] = array(
 							'href' => array($cl . '_id'=>$this->owner->id , $cl . '_ch'=>$ck),
 							'caption' => $cn->caption . '(' . $row[$ck . '_cnt'] . ')',
 							'sel' => 0,
@@ -1253,7 +1255,7 @@ abstract class kernel_extends {
 			if ($this->mf_istree and count($this->childs) and $this->id)
 				foreach ($this->childs as $ck => &$cn) {
 					if (count($cn->fields_form) and $ck != $cl and $cn->_prmModulShow($ck))
-						$xml['topmenu']['child' . $ck] = array(
+						$DATA['topmenu']['child' . $ck] = array(
 							'href' => array($cl . '_id' => $this->id, $cl . '_ch' => $ck),
 							'caption' => $cn->caption . '(' . $row[$ck . '_cnt'] . ')',
 							'sel' => 0,
@@ -1262,7 +1264,7 @@ abstract class kernel_extends {
 				}
 
 			if (is_null($this->owner) and static_main::_prmModul($this->_cl, array(14))) {
-				/*$xml['topmenu']['Checkmodul'] = array(
+				/*$DATA['topmenu']['Checkmodul'] = array(
 					'href' => array('_type'=>'tools', '_func'=>'Checkmodul'),
 					'caption' => 'Обновить поля таблицы',
 					'sel' => 0,
@@ -1271,13 +1273,13 @@ abstract class kernel_extends {
 				);*/
 				if($this->ver!=$this->_CFG['modulprm'][$this->_cl]['ver']) {
 					//$_tpl['onload'] .= 'showHelp(\'.weptools.wepchecktable\',\'Версия модуля '.$MODUL->caption.'['.$MODUL->_cl.'] ('.$MODUL->ver.') отличается от версии ('.$_CFG['modulprm'][$MODUL->_cl]['ver'].') сконфигурированного для этого сайта. Обновите здесь поля таблицы.\',4000);$(\'.weptools.wepchecktable\').addClass(\'weptools_sel\');';
-					$xml['messages'][] = array('error','Версия модуля '.$this->caption.'['.$this->_cl.'] ('.$this->ver.') отличается от версии ('.$this->_CFG['modulprm'][$this->_cl]['ver'].') сконфигурированного для этого сайта. Обновите модуль.');
+					$DATA['messages'][] = array('error','Версия модуля '.$this->caption.'['.$this->_cl.'] ('.$this->ver.') отличается от версии ('.$this->_CFG['modulprm'][$this->_cl]['ver'].') сконфигурированного для этого сайта. Обновите модуль.');
 				}
 
 			}
 
 			if (isset($this->config_form) and count($this->config_form) and static_main::_prmModul($this->_cl, array(13)))
-				$xml['topmenu']['Configmodul'] = array(
+				$DATA['topmenu']['Configmodul'] = array(
 					'href' => array('_type'=>'tools', '_func'=>'Configmodul'),
 					'caption' => 'Настроика модуля',
 					'sel' => 0,
@@ -1285,7 +1287,7 @@ abstract class kernel_extends {
 					'css' => 'wepconfig',
 				);
 			if ($this->mf_indexing and static_main::_prmModul($this->_cl, array(12)))
-				$xml['topmenu']['Reindex'] = array(
+				$DATA['topmenu']['Reindex'] = array(
 					'href' => array('_type'=>'tools', '_func'=>'Reindex'),
 					'caption' => 'Переиндексация',
 					'sel' => 0,
@@ -1293,7 +1295,7 @@ abstract class kernel_extends {
 					'css' => 'wepreindex',
 				);
 			if ($this->cf_reinstall and static_main::_prmModul($this->_cl, array(11)))
-				$xml['topmenu']['Reinstall'] = array(
+				$DATA['topmenu']['Reinstall'] = array(
 					'href' => array('_type'=>'tools', '_func'=>'Reinstall'),
 					'caption' => 'Переустановка',
 					'sel' => 0,
@@ -1301,7 +1303,7 @@ abstract class kernel_extends {
 					'css' => 'wepreinstall',
 				);
 			if ($filter_clause[1]) {
-				$xml['topmenu']['Formfilter'] = array(
+				$DATA['topmenu']['Formfilter'] = array(
 					'href' => array('_type'=>'tools', '_func'=>'Formfilter'),
 					'caption' => 'Фильтр',
 					'sel' => 0,
@@ -1316,7 +1318,7 @@ abstract class kernel_extends {
 				$t = array('_type'=>'static', '_func'=>'Statsmodul');
 				if($this->owner and $this->owner->id)
 					$t['_oid'] = $this->owner->id;
-				$xml['topmenu']['Statsmodul'] = array(
+				$DATA['topmenu']['Statsmodul'] = array(
 					'href' =>  $t,
 					'caption' => 'Статистика',
 					'sel' => 0,
@@ -1324,41 +1326,45 @@ abstract class kernel_extends {
 					'css' => 'wepstats',
 				);
 			}
+			// Удаление через форму
+			if(isset($_POST['sbmt_del']) and $this->id) {
+				$ftype = 'del';
+			}
 
 			if ($ftype == 'add') {
 				$this->parent_id = $this->id;
 				$this->id = NULL;
-				list($xml['formcreat'], $flag) = $this->_UpdItemModul($param);
+				list($DATA['formcreat'], $flag) = $this->_UpdItemModul($param);
 				if ($flag == 1 and isset($this->parent_id) and $this->parent_id)
 					$this->id = $this->parent_id;
 				//else
-				$tmp = $xml['_clp']+array('_type'=>'add');
+				$tmp = $DATA['_clp']+array('_type'=>'add');
 				if($this->parent_id)
 					$tmp[$this->_cl . '_id'] = $this->parent_id;
-				$xml['path']['add'] = array(
+				$DATA['path']['add'] = array(
 					'path' => $tmp,
 					'name'=>'Добавление'
 				);
 			}
 			elseif ($ftype == 'edit' && $this->id) {
 				if ($this->mf_istree)
-					array_pop($xml['path']);
-				$xml['path']['edit'] = array(
-					'path' => $xml['_clp']+array($this->_cl . '_id'=>$this->id, '_type'=>'edit'),
+					array_pop($DATA['path']);
+				$DATA['path']['edit'] = array(
+					'path' => $DATA['_clp']+array($this->_cl . '_id'=>$this->id, '_type'=>'edit'),
 					'name'=>'Редактирование'
 				);
-				list($xml['formcreat'], $flag) = $this->_UpdItemModul($param);
+				list($DATA['formcreat'], $flag) = $this->_UpdItemModul($param);
 				if ($flag == 1) {
 					if (isset($this->parent_id) and $this->parent_id)
 						$this->id = $this->parent_id;
-					$xml['_clp'][$this->_cl . '_id'] = $this->id;
+					$DATA['_clp'][$this->_cl . '_id'] = $this->id;
 				}
 			}
 			elseif ($ftype == 'act' && $this->id) {
 				if ($this->mf_istree)
-					array_pop($xml['path']);
+					array_pop($DATA['path']);
 				list($messages, $flag) = $this->_Act(1, $param);
-				$xml['messages'] = array_merge($xml['messages'],$messages);
+				$DATA['messages'] = array_merge($DATA['messages'],$messages);
 				if($this->mf_istree)
 					$this->id = $this->data[$this->id][$this->mf_istree];
 				else
@@ -1366,9 +1372,9 @@ abstract class kernel_extends {
 			}
 			elseif ($ftype == 'dis' && $this->id) {
 				if ($this->mf_istree)
-					array_pop($xml['path']);
+					array_pop($DATA['path']);
 				list($messages, $flag) = $this->_Act(0, $param);
-				$xml['messages'] = array_merge($xml['messages'],$messages);
+				$DATA['messages'] = array_merge($DATA['messages'],$messages);
 				if ($this->mf_istree)
 					$this->id = $this->tree_data[$this->id][$this->mf_istree];
 				else
@@ -1376,9 +1382,9 @@ abstract class kernel_extends {
 			}
 			elseif ($ftype == 'ordup' && $this->id && $this->mf_ordctrl) {
 				if ($this->mf_istree)
-					array_pop($xml['path']);
+					array_pop($DATA['path']);
 				list($messages, $flag) = $this->_ORD(-1, $param);
-				$xml['messages'] = array_merge($xml['messages'],$messages);
+				$DATA['messages'] = array_merge($DATA['messages'],$messages);
 				if ($this->mf_istree)
 					$this->id = $this->data[$this->id][$this->mf_istree];
 				else
@@ -1386,9 +1392,9 @@ abstract class kernel_extends {
 			}
 			elseif ($ftype == 'orddown' && $this->id && $this->mf_ordctrl) {
 				if ($this->mf_istree)
-					array_pop($xml['path']);
+					array_pop($DATA['path']);
 				list($messages, $flag) = $this->_ORD(1, $param);
-				$xml['messages'] = array_merge($xml['messages'],$messages);
+				$DATA['messages'] = array_merge($DATA['messages'],$messages);
 				if ($this->mf_istree)
 					$this->id = $this->tree_data[$this->id][$this->mf_istree];
 				else
@@ -1396,48 +1402,48 @@ abstract class kernel_extends {
 			}
 			elseif ($ftype == 'del' && $this->id) {
 				if ($this->mf_istree)
-					array_pop($xml['path']);
+					array_pop($DATA['path']);
 				list($messages, $flag) = $this->_Del($param);
-				$xml['messages'] = array_merge($xml['messages'],$messages);
+				$DATA['messages'] = array_merge($DATA['messages'],$messages);
 				if ($this->mf_istree)
 					$this->id = $this->tree_data[$this->id][$this->mf_istree];
 				else
 					$this->id = NULL;
 			}
 			elseif ($ftype == 'tools') {
-				$xml['formtools'] = array();
-				if (!isset($xml['topmenu'][$_REQUEST['_func']]))
-					$xml['formtools']['messages'] = array(array('value' => 'Опция инструмента не найдена.', 'name' => 'error'));
+				$DATA['formtools'] = array();
+				if (!isset($DATA['topmenu'][$_REQUEST['_func']]))
+					$DATA['formtools']['messages'] = array(array('value' => 'Опция инструмента не найдена.', 'name' => 'error'));
 				elseif (!method_exists($this, 'tools' . $_REQUEST['_func']))
-					$xml['formtools']['messages'] = array(array('value' => 'Функция инструмента не найдена.', 'name' => 'error'));
+					$DATA['formtools']['messages'] = array(array('value' => 'Функция инструмента не найдена.', 'name' => 'error'));
 				else
-					eval('$xml[\'formtools\'] = $this->tools' . $_REQUEST['_func'] . '();');
+					eval('$DATA[\'formtools\'] = $this->tools' . $_REQUEST['_func'] . '();');
 			}
 			elseif ($ftype == 'static') {
-				$xml['static'] = array();
-				if (!isset($xml['topmenu'][$_REQUEST['_func']]))
-					$xml['messages'] = array(array('value' => 'Опция статики не найдена.', 'name' => 'error'));
+				$DATA['static'] = array();
+				if (!isset($DATA['topmenu'][$_REQUEST['_func']]))
+					$DATA['messages'] = array(array('value' => 'Опция статики не найдена.', 'name' => 'error'));
 				elseif (!method_exists($this, 'static' . $_REQUEST['_func']))
-					$xml['messages'] = array(array('value' => 'Функция статики не найдена.', 'name' => 'error'));
+					$DATA['messages'] = array(array('value' => 'Функция статики не найдена.', 'name' => 'error'));
 				else {
-					eval('$xml[\'static\'] = $this->static' . $_REQUEST['_func'] . '();');
+					eval('$DATA[\'static\'] = $this->static' . $_REQUEST['_func'] . '();');
 				}
 			} else {
 				$flag = 3;
-				$xml['data'] = $this->_displayXML($param);
-				if(count($xml['data']['messages']))
-					$xml['messages'] = array_merge($xml['messages'],$xml['data']['messages']);
-				unset($xml['data']['messages']);
+				$DATA['data'] = $this->_displayXML($param);
+				if(count($DATA['data']['messages']))
+					$DATA['messages'] = array_merge($DATA['messages'],$DATA['data']['messages']);
+				unset($DATA['data']['messages']);
 			}
 			/*elseif ($this->id) { //Просмотр данных
 				$flag = 3;
-				$xml['item'] = $this->data;
+				$DATA['item'] = $this->data;
 			}*/
 
 		}
-		$xml['_cl'] = $cl;
+		$DATA['_cl'] = $cl;
 
-		return array($xml, $flag);
+		return array($DATA, $flag);
 	}
 
 	/**
@@ -1799,20 +1805,20 @@ abstract class kernel_extends {
 	 * @return array
 	*/
 	private function _tr_attribute(&$row, &$param) {
-		$xml = array();
+		$DATA = array();
 		if ($this->_prmModulEdit($row, $param))
-			$xml['edit'] = true;
+			$DATA['edit'] = true;
 		else
-			$xml['edit'] = false;
+			$DATA['edit'] = false;
 		if ($this->_prmModulDel(array($row), $param))
-			$xml['del'] = true;
+			$DATA['del'] = true;
 		else
-			$xml['del'] = false;
+			$DATA['del'] = false;
 		if ($this->_prmModulAct(array($row), $param))
-			$xml['act'] = true;
+			$DATA['act'] = true;
 		else
-			$xml['act'] = false;
-		return $xml;
+			$DATA['act'] = false;
+		return $DATA;
 	}
 
 	/**
@@ -1823,9 +1829,9 @@ abstract class kernel_extends {
 	*/
 	public function _Act($act, &$param) {
 		$flag = 1;
-		$xml = array();
+		$DATA = array();
 		if ($param['mess'])
-			$xml = $param['mess'];
+			$DATA = $param['mess'];
 		$param['act'] = $act;
 		$this->data = $this->_select();
 		if ($this->_prmModulAct($this->data, $param)) {
@@ -1848,21 +1854,21 @@ abstract class kernel_extends {
 
 			if ($this->_update()) {
 				if ($this->fld_data[$this->mf_actctrl] == 5)
-					$xml[] = static_main::am('ok','act5',$this);
+					$DATA[] = static_main::am('ok','act5',$this);
 				if ($this->fld_data[$this->mf_actctrl] == 6)
-					$xml[] = static_main::am('ok','act6',$this);
+					$DATA[] = static_main::am('ok','act6',$this);
 				elseif ($act)
-					$xml[] = static_main::am('ok','act1',$this);
+					$DATA[] = static_main::am('ok','act1',$this);
 				else
-					$xml[] = static_main::am('ok','act0',$this);
+					$DATA[] = static_main::am('ok','act0',$this);
 				$flag = 0;
 			}
 			else
-				$xml[] = static_main::am('error','update_err',$this);
+				$DATA[] = static_main::am('error','update_err',$this);
 		}
 		else
-			$xml[] = static_main::am('error','denied',$this);
-		return array($xml, $flag);
+			$DATA[] = static_main::am('error','denied',$this);
+		return array($DATA, $flag);
 	}
 
 	/**
@@ -1872,29 +1878,29 @@ abstract class kernel_extends {
 	*/
 	public function _Del($param) {
 		$flag = 1;
-		$xml = array();
-		if ($param['mess'])
-			$xml = $param['mess'];
+		$DATA = array();
+		if (isset($param['mess']))
+			$DATA = $param['mess'];
 		$this->data = $this->_select();
 		if (count($this->data) and $this->_prmModulDel($this->data, $param)) {
 			if (isset($this->fields[$this->mf_actctrl]) and $this->fields[$this->mf_actctrl]['type'] != 'bool') {
 				$this->fld_data[$this->mf_actctrl] = 4;
 				if ($this->_update()) {
-					$xml[] = static_main::am('ok','deleted',$this);
+					$DATA[] = static_main::am('ok','deleted',$this);
 					$flag = 0;
 				}else
-					$xml[] = static_main::am('error','del_err',$this);
+					$DATA[] = static_main::am('error','del_err',$this);
 			}else {
 				if ($this->_delete()) {
-					$xml[] = static_main::am('ok','deleted',$this);
+					$DATA[] = static_main::am('ok','deleted',$this);
 					$flag = 0;
 				}else
-					$xml[] = static_main::am('error','del_err',$this);
+					$DATA[] = static_main::am('error','del_err',$this);
 			}
 		}
 		else
-			$xml[] = static_main::am('error','denied',$this);
-		return array($xml, $flag);
+			$DATA[] = static_main::am('error','denied',$this);
+		return array($DATA, $flag);
 	}
 
 	/**
@@ -1905,9 +1911,9 @@ abstract class kernel_extends {
 	*/
 	public function _ORD($ord, &$param) {
 		$flag = 1;
-		$xml = array();
+		$DATA = array();
 		if ($param['mess'])
-			$xml = $param['mess'];
+			$DATA = $param['mess'];
 		$this->data = $this->_select();
 		if ($this->_prmModulEdit($this->data, $param)) {
 			$this->fld_data = array();
@@ -1915,17 +1921,17 @@ abstract class kernel_extends {
 
 			if ($this->_update()) {
 				if ($ord<0)
-					$xml[] = array('value' => 'UP', 'name' => 'ok');
+					$DATA[] = array('value' => 'UP', 'name' => 'ok');
 				else
-					$xml[] = array('value' => 'DOWN', 'name' => 'ok');
+					$DATA[] = array('value' => 'DOWN', 'name' => 'ok');
 				$flag = 0;
 			}
 			else
-				$xml[] = static_main::am('error','update_err',$this);
+				$DATA[] = static_main::am('error','update_err',$this);
 		}
 		else
-			$xml[] = static_main::am('error','denied',$this);
-		return array($xml, $flag);
+			$DATA[] = static_main::am('error','denied',$this);
+		return array($DATA, $flag);
 	}
 
 	/**
@@ -2049,92 +2055,121 @@ abstract class kernel_extends {
 		//$this->messages_on_page - число эл-ов на странице
 		//$this->_pn - № текущей страницы
 		//$flag  - опция для paginator, 0 - если номер страницы перед list_2.html , 1 - после ?_pn=1
-		$DATA = array('cnt' => $countfield, 'cntpage' => ceil($countfield / $this->messages_on_page), 'modul' => $this->_cl, 'reverse' => $this->reversePageN);
-		$numlist = $this->numlist;
-		if (($this->messages_on_page * ($this->_pn - 1)) > $countfield) {
-			$this->_pn = $DATA['cntpage'];
+		$numlist = $this->numlist; // кличество числе по бокам максимум
+		$DATA = array('cnt' => $countfield, 'cntpage' => 0, 'modul' => $this->_cl, 'reverse' => $this->reversePageN);
+		if ($this->reversePageN) {
+			$DATA['cntpage'] = floor($countfield / $this->messages_on_page);
+			$temp_pn = $this->_pn;
+			$this->_pn = $DATA['cntpage'] - $this->_pn + 1;
+		} else {
+			$DATA['cntpage'] = ceil($countfield / $this->messages_on_page);
 		}
+		// Приводим к правильным числам
+		if($this->_pn > $DATA['cntpage'])
+			$this->_pn = $DATA['cntpage'];
+		if($this->_pn < 1)
+			$this->_pn = 1;
+		$DATA['_pn'] = $this->_pn;
 
 		foreach ($this->_CFG['enum']['_MOP'] as $k => $r)
 			$DATA['mop'][$k] = array('value' => $r, 'sel' => 0);
 		$DATA['mop'][$this->messages_on_page]['sel'] = 1;
 
-		if (!$countfield || $countfield <= $this->messages_on_page || !$this->messages_on_page || $this->_pn > $DATA['cntpage'] || $this->_pn < 1)
+		if (!$countfield || $countfield <= $this->messages_on_page || !$this->messages_on_page)
 			return $DATA;
 		else {
 			if ($thisPage == '')
 				$thisPage = $_SERVER['REQUEST_URI'];
-			if (strstr($thisPage, '&')) {
+			if (strstr($thisPage, '&amp;')) {
 				$thisPage = str_replace('&amp;', '&', $thisPage);
-				$thisPage = str_replace('&', '&amp;', $thisPage);
 			}
+			//$PP[0] - страница не выбрана
+			//$PP[1] - первая часть 
+			//$PP[2] - вторая часть
+			$PP = array(0=>$thisPage,1=>$thisPage,2=>'');
+			if($flag) {
+				$pregreplPage = '/(.*)&' . $this->_cl . '_pn=[0-9]*(.*)/';
+				if (!preg_match($pregreplPage, $thisPage,$matches)) {
+					$PP[0] = $thisPage;
+					if (_substr($thisPage, -1) != '&')
+						$PP[1] .= '&';
+					$PP[1] .= $this->_cl . '_pn=';
+				} else {
+					$PP[0] = $matches[1].$matches[2];
+					$PP[1] = $matches[1].'&'.$this->_cl . '_pn=';
+					$PP[2] = $matches[2];
+					//print_r('<pre>');print_r($matches);
+				}
+			}
+			else {
+				$pregreplPage = '/(.*)_p[0-9]*(.*)/';
+				if (!preg_match($pregreplPage, $thisPage,$matches)) {
+					$temp = explode('.html',$thisPage);
+					$PP[1] = $temp[0].'_p';
+					$PP[2] = '.html'.$temp[1];
+				} else {
+					$PP[0] = $matches[1].$matches[2];
+					$PP[1] = $matches[1].'_p';
+					$PP[2] = $matches[2];
+					//print_r('<pre>');print_r($matches);
+				}
+			}
+			$DATA['PP'] = $PP;
 
 			if ($this->reversePageN) {// обратная нумирация
-				$DATA['cntpage'] = floor($countfield / $this->messages_on_page);
-				$temp_pn = $this->_pn;
-				$this->_pn = $DATA['cntpage'] - $this->_pn + 1;
-				if (!$flag and strpos($thisPage, '.html')) {
-					$pregreplPage = '/(_p)[0-9]*/';
-					if (!preg_match($pregreplPage, $thisPage)) {
-						$thisPage = str_replace('.html', '_p' . $this->_pn . '.html', $thisPage);
-					}
-				} else {
-					$pregreplPage = '/(' . $this->_cl . '_pn=)[0-9]*/';
-					if (!preg_match($pregreplPage, $thisPage)) {
-						if (_substr($thisPage, -5) != '&amp;')
-							$thisPage .= '&amp;';
-						$thisPage .= $this->_cl . '_pn=' . $this->_pn;
-					}
-				}
-				for ($i = $DATA['cntpage']; $i > 0; $i--) {
+				/*Собираем массив ссылок*/
+				if ($this->_pn==$DATA['cntpage'])
+					$DATA['link'][] = array('value' => $DATA['cntpage'], 'href' => 'select_page');
+				else
+					$DATA['link'][] = array('value' => $DATA['cntpage'], 'href' => $PP[0]);
+				if (($this->_pn + $numlist) < $DATA['cntpage']-1) {
+					$DATA['link'][] = array('value' => '...', 'href' => '');
+					$j = $this->_pn + $numlist;
+				} else 
+					$j = $DATA['cntpage']-1;
+				$vl = $this->_pn - $numlist;
+				if($vl<2) $vl = 2;
+				for ($i = $j; $i >= $vl; $i--) {
 					if ($i == $this->_pn)
 						$DATA['link'][] = array('value' => $i, 'href' => 'select_page');
 					else
-						$DATA['link'][] = array('value' => $i, 'href' => preg_replace($pregreplPage, ($i == $DATA['cntpage'] ? '' : "\${1}" . $i), $thisPage));
+						$DATA['link'][] = array('value' => $i, 'href' => $PP[1].$i.$PP[2]);
 				}
-			} else {
-
-				if (!$flag and strpos($thisPage, '.html')) {
-					$replPage = '_p' . $this->_pn;
-					$pregreplPage = '/_p' . $this->_pn . '/';
-					$inPage = '_p';
-				} else {
-					$replPage = $this->_cl . '_pn=' . $this->_pn;
-					$pregreplPage = '/' . $this->_cl . '_pn=[0-9]*(&amp;)*/';
-					$inPage = $this->_cl . '_pn=';
-				}
-				if (strpos($thisPage, $replPage) === false) {
-					if (!$flag and strpos($thisPage, '.html')) {
-						$pageSuf = _substr($thisPage, strpos($thisPage, '.html') + 5);
-						$thisPage = _substr($thisPage, 0, strpos($thisPage, '.html')) . '_p1.html' . $pageSuf;
-					} else {
-						if (_substr($thisPage, -5) == '&amp;')
-							$thisPage .= $replPage;
-						elseif (strpos($thisPage, '?') === false)
-							$thisPage .= '?' . $replPage;
-						else
-							$thisPage .='&amp;' . $replPage;
-					}
-				}
-				if (($this->_pn - $numlist) > 1) {
-					$DATA['link'][] = array('value' => 1, 'href' => preg_replace($pregreplPage, '', $thisPage));
+				if ($this->_pn - $numlist > 2)
+					$DATA['link'][] = array('value' => '...', 'href' => '');
+				if ($this->_pn==1)
+					$DATA['link'][] = array('value' => 1, 'href' => 'select_page');
+				else
+					$DATA['link'][] = array('value' => 1, 'href' => $PP[1].'1'.$PP[2]);
+			}
+			else {
+				/*****/
+				if ($this->_pn==1)
+					$DATA['link'][] = array('value' => 1, 'href' => 'select_page');
+				else
+					$DATA['link'][] = array('value' => 1, 'href' => $PP[0]);
+				if (($this->_pn - $numlist) > 2) {
 					$DATA['link'][] = array('value' => '...', 'href' => '');
 					$j = $this->_pn - $numlist;
 				} else {
-					$j = 1;
+					$j = 2;
 				}
-				for ($i = $j; $i <= $this->_pn + $numlist; $i++)
-					if ($i <= ($DATA['cntpage']))
-						if ($i == $this->_pn)
-							$DATA['link'][] = array('value' => $i, 'href' => 'select_page');
-						else
-							$DATA['link'][] = array('value' => $i, 'href' => preg_replace($pregreplPage, ($i == 1 ? '' : $inPage . $i . '\\1'), $thisPage));
-				if ($this->_pn + $numlist < $DATA['cntpage']) {
+				$vl = $this->_pn + $numlist;
+				if($vl>=$DATA['cntpage']) $vl = $DATA['cntpage']-1;
+				//print_r($vl);print_r('*');print_r($numlist);
+				for ($i = $j; $i <= $vl; $i++) {
+					if ($i == $this->_pn)
+						$DATA['link'][] = array('value' => $i, 'href' => 'select_page');
+					else
+						$DATA['link'][] = array('value' => $i, 'href' => $PP[1].$i.$PP[2]);// . '\\1'
+				}
+				if ($this->_pn + $numlist < $DATA['cntpage'])
 					$DATA['link'][] = array('value' => '...', 'href' => '');
-					$DATA['link'][] = array('value' => $DATA['cntpage'], 'href' => str_replace($replPage, $inPage . $DATA['cntpage'], $thisPage));
-				}
+				if ($this->_pn==$DATA['cntpage'])
+					$DATA['link'][] = array('value' => $DATA['cntpage'], 'href' => 'select_page');
+				else
+					$DATA['link'][] = array('value' => $DATA['cntpage'], 'href' => $PP[1].$DATA['cntpage'].$PP[2]);
 			}
-			$DATA['_pn'] = $this->_pn;
 			//////////////////
 		}
 

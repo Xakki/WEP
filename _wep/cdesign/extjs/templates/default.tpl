@@ -8,12 +8,10 @@
 		<meta name="keywords" content="WEP"/> 
 		<meta name="description" content="CMS"/>
 		<link rel="SHORTCUT ICON" href="{$_tpl['design']}img/favicon.ico"/>
-		<script type="text/javascript" src="_design/_script/jquery.js"></script>
-		<script type="text/javascript" src="_design/_script/include.js"></script>
+		{$_tpl['script']}
 		<script type="text/javascript" src="_design/_script/extjs/adapter/ext/ext-base.js"></script>
 		<script type="text/javascript" src="_design/_script/extjs/ext-all-debug.js"></script>
 		<script type="text/javascript" src="{$_tpl['design']}script/main.js"></script>
-		{$_tpl['script']}
 		<link type="text/css" href="_design/_script/extjs/resources/css/ext-all-notheme.css" rel="stylesheet"/>
 		<link type="text/css" href="_design/_script/extjs/resources/css/xtheme-gray.css" rel="stylesheet"/>
 		<link type="text/css" href="{$_tpl['design']}style/style.css" rel="stylesheet"/>
@@ -25,14 +23,7 @@
 		<div class="leftblock">
 			<a class="logo" title="Главная" href="_wep"></a>
 			<div style="overflow:auto; height:80%; padding-bottom:30px;">
-				<div class="name_block"><span class="triangle_dowm"></span>WEB</div>
-				<div class="block">
-				{$_tpl['sysconf']}
-				</div>
-				<div class="name_block"><span class="triangle_dowm"></span>Модули</div>
-				<div class="block">
-				{$_tpl['modulslist']}
-				</div>
+				{$_tpl['adminmenu']}
 			</div>
 		</div>
 		<div class="maintext">

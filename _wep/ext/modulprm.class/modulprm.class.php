@@ -385,7 +385,8 @@ final class modulprm_class extends kernel_extends {
 	function ForUpdateModulInfo($Mid, &$OWN = NULL) {
 		$MESS = array();
 		$flag = false;
-
+		$this->mDump();
+		$this->modulgrpDump();
 		try { // ловец снов
 			$fpath = '';
 			$ret = static_main::includeModulFile($Mid, $OWN);

@@ -66,7 +66,7 @@ class content_class extends kernel_extends {
 		$this->fields_form['styles'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'style', 'caption' => 'CSS', 'mask' =>array('onetd'=>'Дизайн'));
 		$this->fields_form['script'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'script', 'caption' => 'SCRIPT','mask' =>array('onetd'=>'none'));
 		$this->fields_form['keywords'] = array('type' => 'text', 'caption' => 'META-keywords','mask'=>array('onetd'=>'none'));
-		$this->fields_form['description'] = array('type' => 'text', 'caption' => 'META-description','mask'=>array('onetd'=>'close'));
+		$this->fields_form['description'] = array('type' => 'text', 'caption' => 'META-description','mask'=>array('onetd'=>'close','name'=>'all'));
 		$this->fields_form['ordind'] = array('type' => 'text', 'caption' => 'ORD');
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
 		$this->fields_form['memcache'] = array('type' => 'int', 'caption' => 'Memcache time','comment'=>'-1 - отключает кеш полностью,0 - откл кеширование,1> - кеширование в сек.','mask' =>array('fview'=>1));

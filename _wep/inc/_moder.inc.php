@@ -1,21 +1,27 @@
 <?php
 	if(!isset($FUNCPARAM[0]) or $FUNCPARAM[0] == '') $FUNCPARAM[0] = '';
 	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = 'superlist';
+	if(!isset($FUNCPARAM[2])) $FUNCPARAM[2] = 0;
+	if(!isset($FUNCPARAM[3])) $FUNCPARAM[3] = 0;
+	if(!isset($FUNCPARAM[4])) $FUNCPARAM[4] = 1;
 	//$FUNCPARAM[0] - модуль
 	//$FUNCPARAM[1] - включить AJAX
 
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 		global $_CFG;
-		$this->_getCashedList('phptemplates', dirname(__FILE__));
-		$this->_enum['modullist'] = array();
+		$PGLIST->_getCashedList('phptemplates', dirname(__FILE__));
+		$PGLIST->_enum['modullist'] = array();
 		foreach($_CFG['modulprm'] as $k=>$r) {
 			if($r['active'])
-				$this->_enum['modullist'][$r['pid']][$k] = $r['name'];
+				$PGLIST->_enum['modullist'][$r['pid']][$k] = $r['name'];
 		}
 		$form = array(
 			'0'=>array('type'=>'list','listname'=>'modullist', 'caption'=>'Модуль'),
 			'1'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон'),
+			'2'=>array('type'=>'checkbox','caption'=>'Сохранить форму и остатья на ней'),
+			'3'=>array('type'=>'checkbox','caption'=>'Закрыть форму'),
+			'4'=>array('type'=>'checkbox','caption'=>'Удалить запись из формы'),
 		);
 		return $form;
 	}
@@ -35,12 +41,18 @@
 
 		if(static_main::_prmModul($FUNCPARAM[0],array(1,2))) {
 			global $HTML;
-			$tplphp = $this->FFTemplate($FUNCPARAM[1],dirname(__FILE__));
+			$tplphp = $PGLIST->FFTemplate($FUNCPARAM[1],dirname(__FILE__));
 
 			$param = array('phptemplate'=>$FUNCPARAM[1]);
+			if($FUNCPARAM[2])
+				$param['sbmt_save'] = true;
+			if($FUNCPARAM[3])
+				$param['sbmt_close'] = true;
+			if($FUNCPARAM[4])
+				$param['sbmt_del'] = true;
 			list($DATA,$flag) = $MODUL->super_inc($param,$_GET['_type']);
 
-			$DATA['firstpath'] = $this->_CFG['_HREF']['BH'].$PGLIST->current_path;
+			$DATA['firstpath'] = $PGLIST->_CFG['_HREF']['BH'].$PGLIST->current_path;
 			if(strpos($DATA['firstpath'],'?')===false)
 				$DATA['firstpath'] .= '?';
 			else
@@ -53,8 +65,8 @@
 					$temp .= $kp.'='.$rp.'&';
 				$path[$temp] = $r['name'];
 			}
-			array_pop($this->pageinfo['path']);
-			$DATA['path'] = $this->pageinfo['path'] = $this->pageinfo['path']+$path;
+			array_pop($PGLIST->pageinfo['path']);
+			$DATA['path'] = $PGLIST->pageinfo['path'] = $PGLIST->pageinfo['path']+$path;
 
 			if(isset($DATA['formcreat'])) {
 				end($DATA['path']);prev($DATA['path']);
@@ -68,7 +80,7 @@
 			elseif(!isset($DATA['formcreat']) and $flag!=3) {
 				$_SESSION['mess']=$DATA['messages'];
 				end($DATA['path']);
-				static_main::redirect($_CFG['_HREF']['BH'].str_replace("&amp;", "&", key($DATA['path'])));
+				static_main::redirect(str_replace("&amp;", "&", key($DATA['path'])));
 			}
 			else {
 				if(!isset($_SESSION['mess']) or !is_array($_SESSION['mess'])) 

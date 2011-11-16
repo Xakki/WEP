@@ -29,6 +29,10 @@ function tpl_form(&$data) {
 				$texthtml .= $r['onclick'];
 			$texthtml .= '"/>';
 
+			if(isset($r['value_del']) and $r['value_del']) {
+				$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'_del" value="'.$r['value_del'].'" class="sbmt" onclick="if(confirm(\''.$r['value_del'].'\')) return true; return false;"/>';
+			}
+
 			if(isset($r['value_close']) and $r['value_close']) {
 				$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'_close" value="'.$r['value_close'].'" class="sbmt" onclick="window.location.href=\''.$attr['prevhref'].'\';return false;"/>';
 			}
