@@ -641,6 +641,7 @@ class static_tools {
 	static function _checkdir($dir) {
 		global $_CFG;
 		if(!$dir) return false;
+		chmod($dir, $_CFG['wep']['chmod']);
 		if (!file_exists($dir)) {
 			if (!file_exists(dirname($dir))) {
 				self::_checkdir(dirname($dir));
@@ -649,16 +650,16 @@ class static_tools {
 				return static_main::log('error','Cannot create directory <b>' . $dir . '</b>');
 		}
 		else {
-			$f = fopen($dir . '/t_e_s_t', 'w');
+			$f = fopen($dir . '/test.file', 'w');
 			if (!$f)
-				return static_main::log('error','Cannot create file in directory <b>' . $dir . '</b>');
+				return static_main::log('error','Cannot create file `test.file` in directory `' . $dir . '`');
 
 			$err = fwrite($f, 'zzz') == -1;
 			fclose($f);
-			unlink($dir . '/t_e_s_t');
+			unlink($dir . '/test.file');
 
 			if ($err)
-				return static_main::log('error','Cannot write/read file in directory <b>' . $dir . '</b>');
+				return static_main::log('error','Cannot write/read file `test.file` in directory `' . $dir . '`');
 		}
 		return true;
 	}
