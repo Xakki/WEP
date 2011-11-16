@@ -981,11 +981,11 @@ abstract class kernel_extends {
 		if (!$this->id or (isset($this->data[$this->id]) and $this->_prmModulEdit($this->data[$this->id], $param))) {
 			$this->form['sbmt'] = array(
 				'type' => 'submit',
-				'value_save' => ((isset($param['sbmtsave']) and $this->id) ? static_main::m('_save',$this) : ''),
-				'value_close' => (isset($param['close']) ? static_main::m('_close',$this) : ''),
+				'value_save' => ((isset($param['sbmt_save']) and $this->id) ? static_main::m('_save',$this) : ''),
+				'value_close' => (isset($param['sbmt_close']) ? static_main::m('_close',$this) : ''),
 				'value' => static_main::m('_saveclose',$this)
 			);
-			if($this->id and $this->_prmModulDel($this->data, $param))
+			if($this->id and $this->_prmModulDel($this->data, $param) and isset($param['sbmt_del']))
 				$this->form['sbmt']['value_del'] = static_main::m('Удалить',$this);
 		}
 		return true;

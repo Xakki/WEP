@@ -1,6 +1,9 @@
 <?php
 	if(!isset($FUNCPARAM[0]) or $FUNCPARAM[0] == '') $FUNCPARAM[0] = '';
 	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = 'superlist';
+	if(!isset($FUNCPARAM[2])) $FUNCPARAM[2] = 0;
+	if(!isset($FUNCPARAM[3])) $FUNCPARAM[3] = 0;
+	if(!isset($FUNCPARAM[4])) $FUNCPARAM[4] = 1;
 	//$FUNCPARAM[0] - модуль
 	//$FUNCPARAM[1] - включить AJAX
 
@@ -16,6 +19,9 @@
 		$form = array(
 			'0'=>array('type'=>'list','listname'=>'modullist', 'caption'=>'Модуль'),
 			'1'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон'),
+			'2'=>array('type'=>'checkbox','caption'=>'Сохранить форму и остатья на ней'),
+			'3'=>array('type'=>'checkbox','caption'=>'Закрыть форму'),
+			'4'=>array('type'=>'checkbox','caption'=>'Удалить запись из формы'),
 		);
 		return $form;
 	}
@@ -38,6 +44,12 @@
 			$tplphp = $PGLIST->FFTemplate($FUNCPARAM[1],dirname(__FILE__));
 
 			$param = array('phptemplate'=>$FUNCPARAM[1]);
+			if($FUNCPARAM[2])
+				$param['sbmt_save'] = true;
+			if($FUNCPARAM[3])
+				$param['sbmt_close'] = true;
+			if($FUNCPARAM[4])
+				$param['sbmt_del'] = true;
 			list($DATA,$flag) = $MODUL->super_inc($param,$_GET['_type']);
 
 			$DATA['firstpath'] = $PGLIST->_CFG['_HREF']['BH'].$PGLIST->current_path;
@@ -68,7 +80,7 @@
 			elseif(!isset($DATA['formcreat']) and $flag!=3) {
 				$_SESSION['mess']=$DATA['messages'];
 				end($DATA['path']);
-				static_main::redirect($_CFG['_HREF']['BH'].str_replace("&amp;", "&", key($DATA['path'])));
+				static_main::redirect(str_replace("&amp;", "&", key($DATA['path'])));
 			}
 			else {
 				if(!isset($_SESSION['mess']) or !is_array($_SESSION['mess'])) 

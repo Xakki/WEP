@@ -95,6 +95,8 @@
 	if($_SESSION['user']['wep']) {
 		include($_CFG['_PATH']['cdesign'].$_design.'/inc.php');
 		if(static_main::_prmUserCheck(2)) {
+			if(!isset($_COOKIE[$_CFG['wep']['_showerror']]))
+				$_COOKIE[$_CFG['wep']['_showerror']] = 0;
 			$_tpl['debug'] = '<span class="seldebug"><select onchange="window.location.href=\'/'.$_CFG['PATH']['wepname'].'/index.php?'.$_CFG['wep']['_showerror'].'=\'+this.value;">
 	<option '.(!$_COOKIE[$_CFG['wep']['_showerror']]?'selected="selected"':'').' value="0">не показывать ошибки</option>
 	<option '.($_COOKIE[$_CFG['wep']['_showerror']]==1?'selected="selected"':'').' value="1">сообщение об ошибке</option>
@@ -102,6 +104,8 @@
 	<option '.($_COOKIE[$_CFG['wep']['_showerror']]==3?'selected="selected"':'').' value="3">DEBUG MODE</option>
 	</select></span>';
 
+			if(!isset($_COOKIE[$_CFG['wep']['_showallinfo']]))
+				$_COOKIE[$_CFG['wep']['_showallinfo']] = 0;
 			$_tpl['debug'] .= '<span class="seldebug"><select onchange="window.location.href=\'/'.$_CFG['PATH']['wepname'].'/index.php?'.$_CFG['wep']['_showallinfo'].'=\'+this.value;">
 	<option '.(!$_COOKIE[$_CFG['wep']['_showallinfo']]?'selected="selected"':'').' value="0">Скрыть инфу</option>
 	<option '.($_COOKIE[$_CFG['wep']['_showallinfo']]==1?'selected="selected"':'').' value="1">Показать инфу</option>
