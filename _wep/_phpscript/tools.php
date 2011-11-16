@@ -29,7 +29,7 @@ function tools_step3() {
 }
 
 function tools_updater() {
-	$href = 'http://xakki.ru/_json.php?_modul=gitwep&_fn=sourceinfo';
+	$href = 'http://xakki.i/_json.php?_modul=wepcontrol&_fn=GetNewVersion';
 	$JSON = file_get_contents($href);
 	$JSON = json_decode($JSON,true);
 	if(isset($JSON['html']) and $JSON['html']) {
@@ -476,4 +476,13 @@ foreach($dataF as $kk=>$rr) {
 }
 $html .= '</ul>';
 $HTML->_templates = 'nologs';
+
+if(!isset($_GET['tfunc'])) {
+	_new_class('session',$SESSION);
+	$html .= '<div>';
+	$html .= '<div>Версия ядра - '.$SESSION::versionCore.'</div>';
+	//$html .= '<div>Версия ядра - '.$SESSION->RCVerCore.'</div>';
+	$html .= '</div>';
+}
+
 return $html;

@@ -124,8 +124,11 @@ class static_form {
 				$prop[] = '`'.$key.'` = \'\'';
 				continue;
 			}
-
-			$ext = $_this->attaches[$key]['mime'][$value['type']];
+			/*if(!isset($_this->fields_form[$key]['mime'])) {
+				print_r('<pre>');print_r($value);exit();
+				//$_this->attaches[$key]['mime'] = array($value['type']=>);
+			}*/
+			$ext = $_this->fields_form[$key]['mime'][$value['type']];
 			$newname = $pathimg.'/'.$_this->id.'.'.$ext;
 			if (file_exists($newname)) {
 				chmod($newname, $_this->_CFG['wep']['chmod']);
@@ -135,12 +138,12 @@ class static_form {
 			if (!rename($value['tmp_name'], $newname))
 				return static_main::log('error','Error copy file '.$value['name']);
 
-			if (isset($_this->attaches[$key]['thumb'])) {
+			if (isset($_this->fields_form[$key]['thumb'])) {
 				if(!self::_is_image($newname)) // опред тип файла
 					return static_main::log('error','File '.$newname.' is not image');
 				$prefix = $pathimg.'/';
-				if (count($_this->attaches[$key]['thumb']))
-					foreach($_this->attaches[$key]['thumb'] as $imod) {
+				if (count($_this->fields_form[$key]['thumb']))
+					foreach($_this->fields_form[$key]['thumb'] as $imod) {
 						if(!isset($imod['pref']) or !$imod['pref'])
 							$imod['pref'] = '';// по умолчинию без префикса
 						if(isset($imod['path']) and $imod['path'])
@@ -808,12 +811,18 @@ class static_form {
 				if($_FILES[$key]['error'] != 0) {
 					$error[]= (int)'4'.$_FILES[$key]['error'];
 				}
-				elseif(!isset($form['mime'][$_FILES[$key]['type']]))
+				elseif(isset($form['mime']) and !isset($form['mime'][$_FILES[$key]['type']]))
 					$error[]=39;
 				elseif(isset($form['maxsize']) and $_FILES[$key]['size']>($form['maxsize']*1024))
 					$error[]=29;
 				else {
 					static_tools::_checkdir($_this->_CFG['_PATH']['temp']);
+					if(!isset($form['mime'])) {
+						$ext = array_pop(explode('.',$_FILES[$key]['name']));
+						if(!$ext) $ext = 'none';
+						//$_this->attaches[$key]['mime'] = 
+							$form['mime'][$_FILES[$key]['type']] = $ext;
+					}
 					$temp = $_this->_CFG['_PATH']['temp'].substr(md5(getmicrotime()),16).'.'.$form['mime'][$_FILES[$key]['type']];
 					static_tools::_checkdir($_this->_CFG['_PATH']['temp']);
 					if (move_uploaded_file($_FILES[$key]['tmp_name'], $temp)){

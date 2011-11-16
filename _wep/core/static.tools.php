@@ -674,10 +674,14 @@ class static_tools {
 			}
 		}
 		if(!file_exists($_CFG['_PATH']['wepconf']. '.htaccess')) {
-			file_put_contents($_CFG['_PATH']['wepconf'] . '.htaccess','<FilesMatch "\.(php|inc|cfg|key|htaccess|cmd)$">
+			file_put_contents($_CFG['_PATH']['wepconf'] . '.htaccess','php_flag engine 0
+<FilesMatch "\.(php|inc|cfg|key|htaccess|cmd)$">
 order allow,deny
 deny from all
 </FilesMatch>');
+		}
+		if(!file_exists($_CFG['_PATH']['content']. '.htaccess')) {
+			file_put_contents($_CFG['_PATH']['content'] . '.htaccess','php_flag engine 0');
 		}
 		return $flag;
 	}
