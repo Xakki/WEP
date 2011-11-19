@@ -509,9 +509,14 @@ class pg_class extends kernel_extends {
 							$_tpl['styles'][$r] = 1;
 				}
 			}
-			if($_tpl['keywords'] and $rowPG['keywords'])
+			if(!isset($_tpl['keywords'])) 
+				$_tpl['keywords']= $rowPG['keywords'];
+			elseif($rowPG['keywords'])
 				$_tpl['keywords'] .= ', '.$rowPG['keywords'];
-			if($_tpl['description'] and $rowPG['description'])
+
+			if(!isset($_tpl['description'])) 
+				$_tpl['description'] = $rowPG['description'];
+			elseif($rowPG['description'])
 				$_tpl['description'] .= ' '.$rowPG['description'];
 
 			/*Статика*/
