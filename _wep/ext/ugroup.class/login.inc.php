@@ -3,6 +3,7 @@
 	if(!isset($FUNCPARAM[0]) or !$FUNCPARAM[0]) $FUNCPARAM[0] = '#ext#login';
 	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = '';
 	if(!isset($FUNCPARAM[2])) $FUNCPARAM[2] = 0;
+	if(!isset($FUNCPARAM[3])) $FUNCPARAM[3] = '';
 
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
@@ -13,11 +14,14 @@
 			'0'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон'),
 			'1'=>array('type'=>'list','listname'=>'levelmenuinc', 'caption'=>'Страница напоминания пароля'),
 			'2'=>array('type'=>'checkbox', 'caption'=>'Авторизация по кукам?'),
+			'3'=>array('type'=>'list','listname'=>'levelmenuinc', 'caption'=>'Страница регистрации'),
 		);
 		return $form;
 	}
 	if($FUNCPARAM[1])
 		$FUNCPARAM[1] = $this->getHref($FUNCPARAM[1],true);
+	if($FUNCPARAM[3])
+		$FUNCPARAM[3] = $this->getHref($FUNCPARAM[3],true);
 
 
 	$tplphp = $this->FFTemplate($FUNCPARAM[0],dirname(__FILE__));
@@ -67,7 +71,8 @@
 		'result'=>0,
 		'ref'=>$ref,
 		'#title#'=>$Ctitle,
-		'remindpage'=>$FUNCPARAM[1]
+		'remindpage'=>$FUNCPARAM[1],
+		'regpage'=>$FUNCPARAM[3]
 	);
 	if(count($result)) {
 		$mess['messages'][0][1] = $result[0];

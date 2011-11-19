@@ -1941,7 +1941,7 @@ abstract class kernel_extends {
 	public function _sorting() {
 		$res = array('html'=>'','eval'=>'');
 		$this->id = (int)$_GET['id'];
-		$pid = (int)$_GET['pid'];
+		$pid = (isset($_GET['pid'])?(int)$_GET['pid']:0);
 		$t1 = (isset($_GET['t1'])?(int)$_GET['t1']:0);
 		$t2 = (isset($_GET['t2'])?(int)$_GET['t2']:0);
 		$data = $this->_select();
