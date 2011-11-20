@@ -270,8 +270,8 @@ class mail_class extends kernel_extends {
 		$header = "MIME-Version: 1.0\r\n";
 		$header .= "To: {$data['mail_to']}\r\n";
 		$header .= "From: {$data['from']}\r\n";
-		if(isset($data['Bcc']) and $data['Bcc'])
-			$header .= 'Bcc: '.$data['Bcc']."\r\n";
+		if(isset($data['bcc']) and $data['bcc'])
+			$header .= 'Bcc: '.$data['bcc']."\r\n";
 		if(isset($data['Reply-To']) and $data['Reply-To'])
 			$header .= 'Reply-To: '.$data['reply']."\r\n";
 	
@@ -321,8 +321,8 @@ class mail_class extends kernel_extends {
 			$data['from'] = $this->config['mailrobot'];
 		}
 		$PHPMailer->From = $data['from'];
-		if(isset($data['Bcc']) and $data['Bcc'])
-			$PHPMailer->AddReplyTo($data['Bcc']);
+		if(isset($data['bcc']) and $data['bcc'])
+			$PHPMailer->AddReplyTo($data['bcc']);
 		if(isset($data['Reply-To']) and $data['Reply-To'])
 			$PHPMailer->AddReplyTo($data['Reply-To']);
 
