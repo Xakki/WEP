@@ -1,8 +1,8 @@
 <?php
 	if(!$_CFG['_PATH']['wep'] or !$_CFG['_PATH']['path']) die('ERROR');
-
+	global $_tpl;
 	$GLOBALS['_RESULT']	= array();
-	$_tpl['onload']=$html=$html2='';
+	$html=$html2='';
 	if(!isset($_GET['_view']))
 		$_GET['_view'] = '';
 

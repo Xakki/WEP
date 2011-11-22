@@ -1059,34 +1059,6 @@ class static_form {
 		return $phone_2;
 	}
 
-	/**
-	 * FrontEnd  - Форматирует дату в человеческий вид
-	 * @param int $time - время
-	 * @param string $format - форматирование
-	 * @return string - Дата
-	 */
-	static function _usabilityDate($time, $format='Y-m-d H:i') {
-		global $_CFG;
-		$date = getdate($time);
-		$de = $_CFG['time'] - $time;
-		if ($de < 3600) {
-			if ($de < 240) {
-				if ($de < 60)
-					$date = 'Минуту назад';
-				else
-					$date = ceil($de / 60) . ' минуты назад';
-			}
-			else
-				$date = ceil($de / 60) . ' минут назад';
-		}
-		elseif ($_CFG['getdate']['year'] == $date['year'] and $_CFG['getdate']['yday'] == $date['yday'])
-			$date = 'Сегодня ' . date('H:i', $time);
-		elseif ($_CFG['getdate']['year'] == $date['year'] and $_CFG['getdate']['yday'] - $date['yday'] == 1)
-			$date = 'Вчера ' . date('H:i', $time);
-		else
-			$date = date($format, $time);
-		return $date;
-	}
 
 	/**
 	 * Собирает массив даты в массив для mktime

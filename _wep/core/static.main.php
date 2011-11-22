@@ -267,7 +267,8 @@ class static_main {
 				$_CFG['modulprm'][$row['id']]['pid'] = $row['parent_id'];
 				if ($row['hook']) {
 					eval('$hook = ' . $row['hook'] . ';');
-					$_CFG['hook'] = self::MergeArrays($_CFG['hook'], $hook);
+					if($hook and is_array($hook) and count($hook))
+						$_CFG['hook'] = self::MergeArrays($_CFG['hook'], $hook);
 				}
 			}
 			/* if (_new_class('modulprm', $MODULs))
@@ -564,5 +565,35 @@ class static_main {
 			}
 		}
 		return $XML;
+	}
+
+
+	/**
+	 * FrontEnd  - Форматирует дату в человеческий вид
+	 * @param int $time - время
+	 * @param string $format - форматирование
+	 * @return string - Дата
+	 */
+	static function _usabilityDate($time, $format='Y-m-d H:i') {
+		global $_CFG;
+		$date = getdate($time);
+		$de = $_CFG['time'] - $time;
+		if ($de < 3600) {
+			if ($de < 240) {
+				if ($de < 60)
+					$date = 'Минуту назад';
+				else
+					$date = ceil($de / 60) . ' минуты назад';
+			}
+			else
+				$date = ceil($de / 60) . ' минут назад';
+		}
+		elseif ($_CFG['getdate']['year'] == $date['year'] and $_CFG['getdate']['yday'] == $date['yday'])
+			$date = 'Сегодня ' . date('H:i', $time);
+		elseif ($_CFG['getdate']['year'] == $date['year'] and $_CFG['getdate']['yday'] - $date['yday'] == 1)
+			$date = 'Вчера ' . date('H:i', $time);
+		else
+			$date = date($format, $time);
+		return $date;
 	}
 }

@@ -250,6 +250,7 @@ class pg_class extends kernel_extends {
 	function display($templ=true) {
 		$this->current_path = '';
 		global $_tpl,$HTML;
+		$_tpl['onload'] = '';
 		$_tpl['text'] = '';
 		$_tpl['title'] = '';
 		$_tpl['keywords'] = $this->config['keywords'];
