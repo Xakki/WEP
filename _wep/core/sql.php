@@ -55,6 +55,7 @@
 						return $this->err('SQL can`t create database');
 				}
 			}
+			mysql_query("SET time_zone = '".date_default_timezone_get()."'", $this->hlink);
 			return true;
 		}
 
