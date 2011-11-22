@@ -25,7 +25,7 @@
 		$tdflag = 0;
 		$html = '';
 		foreach($data['data'][$pid] as $k=>$r) {
-			$date = static_form::_usabilityDate($r['mf_timecr']);
+			$date = static_main::_usabilityDate($r['mf_timecr']);
 			$html .= '<div class="commitem" id="commitem'.$r['id'].'">
 			<p class="commitemhead"><span class="commdate">['.$date.']</span> <a id="elem'.$r['id'].'"></a>';
 			if(isset($_SESSION['user']) and $r['creater_id']==$_SESSION['user'])

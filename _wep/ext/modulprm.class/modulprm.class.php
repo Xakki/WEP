@@ -424,7 +424,7 @@ final class modulprm_class extends kernel_extends {
 						$hook = str_replace(array("\t", "\n", "\r", ' '), '', var_export($MODUL->_setHook, true));
 					}
 					if (!isset($this->data[$Mid]) or $this->data[$Mid]['hook'] != $hook)
-						$this->fld_data['hook'] = mysql_real_escape_string($hook);;
+						$this->fld_data['hook'] = $hook;
 					//if($this->data[$Mid]['active']!=1)					$this->fld_data['active'] = 1;
 					// CRON JOB
 					if(count($MODUL->cron)) {

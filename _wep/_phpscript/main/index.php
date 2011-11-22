@@ -2,6 +2,9 @@
 	if(!$_CFG['_PATH']['wep']) die('ERROR');
 	require_once($_CFG['_PATH']['wep'].'config/config.php');
 
+	$_tpl = array();
+	$_tpl['meta'] = $_tpl['logs']=$_tpl['onload']=$_tpl['title']=$_tpl['text']='';
+
 	if($_CFG['site']['worktime'] and !isset($_COOKIE[$_CFG['wep']['_showallinfo']]) and !isset($_GET[$_CFG['wep']['_showallinfo']])) {
 		if(!isset($_CFG["site"]["work_text"]) or !$_CFG["site"]["work_text"])
 			$_CFG["site"]["work_text"] = '<h1>Технический перерыв.</h1>';
@@ -81,7 +84,6 @@
 
 	require_once($_CFG['_PATH']['core'].'html.php');	/**отправляет header и печатает страничку*/
 
-	$_tpl['meta'] = $_tpl['logs']=$_tpl['onload']=$_tpl['city']=$_tpl['blockadd']=$_tpl['param']=$_tpl['blockadd']='';
 	$rid = 0;
 
 
