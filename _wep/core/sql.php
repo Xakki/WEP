@@ -39,6 +39,7 @@
 			$this->hlink = @mysql_connect($this->CFG_SQL['host'], $this->CFG_SQL['login'], $this->CFG_SQL['password']);
 			if(!$this->hlink)
 				return $this->err('SQL connect error');
+			mysql_query("SET time_zone = '".date_default_timezone_get()."'", $this->hlink);
 			return true;
 		}
 
@@ -55,7 +56,6 @@
 						return $this->err('SQL can`t create database');
 				}
 			}
-			mysql_query("SET time_zone = '".date_default_timezone_get()."'", $this->hlink);
 			return true;
 		}
 

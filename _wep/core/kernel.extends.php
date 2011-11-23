@@ -143,7 +143,7 @@ abstract class kernel_extends {
 		$this->ver = '0.1.1'; // версия модуля
 		$this->RCVerCore = self::versionCore;
 		$this->icon = 0; /* числа  означают отсуп для бэкграунда, а если будет задан текст то это сам рисунок */
-		$this->default_access = '';
+		$this->default_access = '|0|';
 
 		$this->text_ext = '.txt'; // расширение для memo фиаилов
 
@@ -400,6 +400,10 @@ abstract class kernel_extends {
 	 */
 	public function qu($set,$where=false) {
 		return $this->_save_item($set,$where);
+	}
+
+	public function qa($set) {
+		return $this->_add_item($set);
 	}
 
 	/**

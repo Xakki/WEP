@@ -44,6 +44,9 @@ function tpl_form(&$data) {
 		elseif($r['type']=='info') {
 			$texthtml .= '<div>'.$r['caption'].'</div>';
 		}
+		elseif($r['type']=='html') {
+			$texthtml .= '<div class="form-value">'.$r['value'].'</div>';
+		}
 		elseif($r['type']=='hidden') {
 			$r['value'] = htmlentities($r['value'],ENT_QUOTES,$_CFG['wep']['charset']);
 			$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'" value="'.$r['value'].'" id="'.((isset($r['id']) and $r['id'])?$r['id']:$k).'"/>';
@@ -489,9 +492,6 @@ function tpl_form(&$data) {
 								<input type="text" id="a_'.$k.'" name="a_'.$k.'" value="" style="width:80%;vertical-align:top;"/>
 							</div></div>';
 				$_CFG['fileIncludeOption']['md5'] = 1;
-			}
-			elseif($r['type']=='html') {
-				$texthtml .= '<div class="form-value">'.$r['value'].'</div>';
 			}
 			elseif($r['type']=='color') {
 				$_tpl['styles']['../_script/script.jquery/colorpicker/css/colorpicker'] = true;
