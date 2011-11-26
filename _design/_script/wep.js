@@ -193,6 +193,7 @@ var wep = {
 	version: 0.1,
 	pgId:0,
 	pgParam: {},
+	form: {},
 	JSWin: function(param) {
 		if(typeof param['type']=='object') {
 			var OBJ = jQuery(param['type']);

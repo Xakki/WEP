@@ -623,7 +623,7 @@ class static_tools {
 	 */
 	static function _insertDefault(&$MODUL) {
 		foreach ($MODUL->def_records as $row) {
-			if (!$MODUL->_add_item($row)) {
+			if (!$MODUL->_add($row)) {
 				//return static_main::log('error','Error add default record into `'.$MODUL->tablename.'`',$MODUL->_cl);
 				return false;
 			}

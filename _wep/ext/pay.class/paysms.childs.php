@@ -12,9 +12,11 @@ class paysms_class extends kernel_extends {
 	protected function _create() {
 		parent::_create();
 		$this->fields['cost'] = array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL'); // в коппейках
+	}
 
+	public function setFieldsForm($form=0) {
+		parent::setFieldsForm($form);
 		$this->fields_form['cost'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Цена (руб.)', 'mask'=>array());
-
 	}
 }
 

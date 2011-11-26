@@ -698,9 +698,9 @@ class static_form {
 					$messages = static_main::m('_err_2',array($form['mask']['max'],(_strlen($value)-$form['mask']['max'])),$_this);
 				elseif($row==21) // min chars
 					$messages = static_main::m('_err_21',array($form['mask']['min'],($form['mask']['min']-_strlen($value))),$_this);
-				elseif($row==22) //min int
+				elseif($row==22) //max int
 					$messages = static_main::m('_err_22',$_this).$form['mask']['maxint'];
-				elseif($row==23) //max int
+				elseif($row==23) //min int
 					$messages = static_main::m('_err_23',$_this).$form['mask']['minint'];
 				elseif($row==24) // min chars
 					$messages = static_main::m('_err_22',$_this).$form['mask']['max'];
@@ -977,12 +977,25 @@ class static_form {
 				/* end - Если есть данные*/
 			}
 
-			if(is_array($value))
-				$value = implode('|',$value);
-
 			$form['value'] = $data[$key] = $value;
 
+
 			/*Проверяем длинну данных*/
+			if(isset($form['mask']['maxarr']) && $form['mask']['maxarr']>0)
+			{
+				if(is_array($value) and count($value)>$form['mask']['maxarr'])
+					$error[] = 26;
+			}
+			if(isset($form['mask']['minarr']) and $form['mask']['minarr']>0)
+			{
+				if($form['mask']['minarr']>0 and (!$value or !count($value)))
+					$error[] = 1;
+				elseif(count($value)<$form['mask']['minarr'])
+					$error[] = 27;
+			}
+
+			if(is_array($value)) $value = implode('|',$value);
+
 			if(isset($form['mask']['max']) && $form['mask']['max']>0)
 			{
 				if(_strlen($value)>$form['mask']['max'])
@@ -995,6 +1008,7 @@ class static_form {
 				elseif(_strlen($value)<$form['mask']['min'])
 					$error[] = 21;
 			}
+
 			if(isset($form['mask']['maxint']) && $form['mask']['maxint']>0 && (int)$value>$form['mask']['maxint'])
 			{
 				$error[] = 22;

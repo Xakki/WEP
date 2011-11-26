@@ -3,19 +3,6 @@
 class ugroup_class extends kernel_extends
 {
 
-	protected function _set_features() {
-		parent::_set_features();
-
-		$this->mf_actctrl = true;
-		$this->mf_istree = true;
-		$this->mf_treelevel = 1;
-		$this->caption = 'Группы';
-		$this->singleton = true;
-		$this->ver = '0.2.1';
-		$this->default_access = '|0|';
-		return true;
-	}
-
 	function _create_conf() {/*CONFIG*/
 		parent::_create_conf();
 
@@ -35,6 +22,7 @@ class ugroup_class extends kernel_extends
 		$this->config['userpic'] = '';
 		$this->config['invite'] = 0;
 		$this->config['uniq_email'] = 1;
+		$this->config['istree'] = 0;
 
 		$this->config_form['mail_to'] = array('type' => 'text', 'mask' =>array('min'=>1,'name'=>'email'), 'caption' => 'Адрес службы поддержки');
 		$this->config_form['mailrobot'] = array('type' => 'text', 'mask' =>array('min'=>1,'name'=>'email'), 'caption' => 'Адрес Робота');
@@ -73,10 +61,25 @@ class ugroup_class extends kernel_extends
 		$this->config_form['userpic'] = array('type' => 'text', 'mask' =>array(), 'caption' => 'Дефолтная фотка пользователя');
 		$this->config_form['invite'] = array('type' => 'checkbox', 'caption' => 'Включить систему инвайтов?','style'=>'background:gray;');
 		$this->config_form['uniq_email'] = array('type' => 'checkbox', 'caption' => 'Уникальный Email?');
+		$this->config_form['istree'] = array('type' => 'checkbox', 'caption' => 'Включить подгруппы?');
 
 	}
 
-	function _create() {
+	protected function _set_features() {
+		parent::_set_features();
+
+		$this->mf_actctrl = true;
+		$this->mf_istree = false;
+		$this->mf_treelevel = 1;
+		$this->caption = 'Группы';
+		$this->singleton = true;
+		$this->ver = '0.2.1';
+		$this->default_access = '|0|';
+		return true;
+	}
+
+	protected function _create() {
+		$this->mf_istree = (bool) $this->config['istree'];// Выполнять до parent::_create();, тк там BOOL значение преобразуется в назв поля
 		parent::_create();
 
 		if($this->config['payon']) {// Включается зависимость модуля
@@ -357,9 +360,9 @@ class users_class extends kernel_extends {
 	}
 
 
-	function _save_item($data,$where=false) {
+	function _update($data=array(),$where=false,$flag_select=true) {
 		$id = $this->id;
-		$res = parent::_save_item($data,$where);
+		$res = parent::_update($data,$where,$flag_select);
 		if($res) {
 			global $SESSION_GOGO;
 			if($SESSION_GOGO) {
@@ -516,7 +519,7 @@ class users_class extends kernel_extends {
 						$arr['vars'][$this->fn_pass]=md5($this->_CFG['wep']['md5'].$pass);
 						//$_SESSION['user'] = $arr['vars']['id'];
 
-						if($this->_add_item($arr['vars'])) {
+						if($this->_add($arr['vars'])) {
 							$this->SQL->execSQL('UPDATE '.$this->tablename.' SET '.$this->mf_createrid.'="'.$this->id.'" where '.$this->fn_login.'="'.$arr['vars'][$this->fn_login].'"');
 							_new_class('mail',$MAIL);
 							$MAIL->config['mailcron'] = 1;
@@ -544,7 +547,7 @@ class users_class extends kernel_extends {
 					else { // профиль
 						if($this->id==$_SESSION['user']['id'])
 							unset($arr['vars']['active']);
-						if($this->_save_item($arr['vars'])) {
+						if($this->_update($arr['vars'])) {
 							$arr['mess'][] = static_main::am('ok','update');
 							if($formflag)// кастыль
 								$mess = $this->kPreFields($this->data[$this->id],$param);
@@ -607,7 +610,7 @@ class users_class extends kernel_extends {
 					$DATA['owner_id']= $this->owner->config['reggroup'];
 				}
 				
-				if($this->_save_item($DATA)) {
+				if($this->_update($DATA)) {
 					$mess[] = static_main::am('ok','confok');
 					$this->setUserSession($this->id);
 					static_main::_prmModulLoad();

@@ -173,7 +173,7 @@ class pay_class extends kernel_extends {
 			'user_id'=>$to_user,
 			'cost'=>$summ,
 			'name'=>$mess);
-		return $this->_add_item($data);
+		return $this->_add($data);
 	}
 
 	private function payBack($from_user,$to_user,$summ) {
@@ -189,7 +189,7 @@ class pay_class extends kernel_extends {
 		if(!$this->id) return 0;
 		$data = array(
 			'name'=>$mess);
-		return $this->_save_item($data);
+		return $this->_update($data);
 	}
 
 	function diplayList($user) { // Список операций
@@ -255,7 +255,7 @@ class pay_class extends kernel_extends {
 					'pay_modul' => $pay_modul,
 					'status' => 0,
 				);
-				if ($this->_add_item($data)) {
+				if ($this->_add($data)) {
 					return $this->SQL->sql_id();
 				} else {
 					return false;
@@ -266,7 +266,7 @@ class pay_class extends kernel_extends {
 				$data = array(
 					'status' => 1,
 				);
-				if ($this->_save_item($data)) {
+				if ($this->_update($data)) {
 					return $this->id;
 				} else {
 					return false;

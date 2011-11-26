@@ -333,7 +333,7 @@ function tools_sendReg() {
 			$pass=$arr['vars']['pass'];
 			$arr['vars']['pass']=md5($this->_CFG['wep']['md5'].$arr['vars']['pass']);
 			//$_SESSION['user']['id'] = $arr['vars']['id'];
-			if(!$UGROUP->child['user']->_add_item($arr['vars'])) {
+			if(!$UGROUP->child['user']->_add($arr['vars'])) {
 				_new_class('mail', $MAIL);
 				$datamail['from']=$UGROUP->config["mailrobot"];
 				$datamail['mail_to']=$arr['vars']['email'];

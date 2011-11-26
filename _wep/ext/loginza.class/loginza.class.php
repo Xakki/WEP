@@ -141,8 +141,8 @@ class loginza_class extends kernel_extends
 
 			$data[$USERS->fn_login] = $identity;
 		}
-		$USERS->fld_data = $data;
-		if($USERS->_add(true)) {
+
+		if($USERS->_add($data)) {
 			$USERS->fld_data = array($this->mf_createrid=>$USERS->id);
 			$USERS->_update();
 			$flag = true;

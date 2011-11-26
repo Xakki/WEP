@@ -5,7 +5,6 @@ class pg_class extends kernel_extends {
 		parent::_create_conf();
 
 		$this->config['sitename'] = 'MY SITE';
-		$this->config['counter'] = '';
 		$this->config['keywords'] = 'Keys...';
 		$this->config['description'] = 'Desc...';
 		$this->config['design'] = 'default';
@@ -40,7 +39,6 @@ class pg_class extends kernel_extends {
 		// TODO : Сделать форму управления массивами данных и хранить в формате json
 
 		$this->config_form['sitename'] = array('type' => 'text', 'caption' => 'Название сайта','mask'=>array('max'=>1000));
-		$this->config_form['counter'] = array('type' => 'textarea', 'caption' => 'Счётчик','mask'=>array('max'=>1500));
 		$this->config_form['keywords'] = array('type' => 'textarea', 'caption' => 'Ключевые слова по умолчанию','mask'=>array('max'=>1000));
 		$this->config_form['description'] = array('type' => 'textarea', 'caption' => 'Описание страницы по умолчанию','mask'=>array('max'=>1000));
 		$this->config_form['design'] = array('type' => 'list', 'listname'=>'mdesign', 'caption' => 'Дизаин по умолчанию');
@@ -48,7 +46,7 @@ class pg_class extends kernel_extends {
 		$this->config_form['memcachezip'] = array('type' => 'checkbox', 'caption' => 'Memcache сжатие кеша');
 		$this->config_form['sitemap'] = array('type' => 'checkbox', 'caption' => 'SiteMap XML' ,'comment'=>'создавать в корне сайта xml файл карты сайта для поисковиков');
 		$this->config_form['IfDontHavePage'] = array('type' => 'list', 'listname'=>'pagetype', 'caption' => 'Если нет страницы в базе, то вызываем обрабочик');
-		$this->config_form['rootPage'] = array('type' => 'list', 'listname'=>'parentlist', 'caption' => 'Начальная страница сайта');
+		$this->config_form['rootPage'] = array('type' => 'list', 'listname'=>array('class'=>'pg', 'where'=>'parent_id=0'), 'multiple'=>3, 'caption' => 'Мульти-домен', 'comment'=>'Укажите страницу для каждого домена, по умолчанию для ненайденного домена будет загружаться первая позиция', 'mask'=>array('maxarr'=>3));
 		$this->config_form['menu'] = array('type' => 'textarea', 'caption' => 'Блоки меню');
 		$this->config_form['marker'] = array('type' => 'textarea', 'caption' => 'Маркеры');
 		$this->config_form['auto_include'] = array('type' => 'checkbox', 'caption' => 'Подключать скрипты автоиматически');
@@ -62,12 +60,13 @@ class pg_class extends kernel_extends {
 		$this->mf_actctrl = true;
 		$this->caption = 'Страницы';
 		$this->selected = array();
-		$this->ver = '0.3.3';
+		$this->ver = '0.4.4';
 		$this->pageinfo = 
 			$this->dataCash = $this->dataCashTree = $this->dataCashTreeAlias = array();
 		$this->pageParam = $this->pageParamId = array();
 		$this->default_access = '|1|'; // По умолчанию ставим доступ на чтений всем пользователям
 		$this->MEMCACHE = NULL;
+		$this->rootPage = NULL;
 		return true;
 	}
 
@@ -123,10 +122,11 @@ class pg_class extends kernel_extends {
 		parent::setFieldsForm($form);
 		# fields
 		$this->fields_form = array();
+//if(!$this->parent_id)
 		$this->fields_form['alias'] = array('type' => 'text', 'caption' => 'Алиас', 'comment'=>'Если не указвать, то адрес будет цыфрой', 'mask'=>array());
 		$this->fields_form['parent_id'] = array('type' => 'list', 'listname'=>'parentlist', 'caption' => 'Родительская страница','mask'=>array('fview'=>1));
-		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Name','mask'=>array('min'=>1));
-		$this->fields_form['name_in_menu'] = array('type' => 'text', 'caption' => 'Название в меню', 'mask' =>array());
+		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название','mask'=>array('min'=>1,'onetd'=>'Название'));
+		$this->fields_form['name_in_menu'] = array('type' => 'text', 'caption' => 'Название в меню', 'mask' =>array('onetd'=>'close'));
 
 		$this->fields_form['href'] = array('type' => 'text', 'caption' => 'Redirect', 'mask' =>array('onetd'=>'Содержимое'));
 
@@ -321,7 +321,7 @@ class pg_class extends kernel_extends {
 	function can_show() {
 		if(empty($this->dataCashTree))
 			$this->sqlCashPG();
-		$fid = $this->config['rootPage'];
+		$fid = $this->rootPage;
 		if(isset($_REQUEST['pageParam']) and is_array($_REQUEST['pageParam']) and count($_REQUEST['pageParam'])) {
 			$this->pageParam = $this->pageParamId = array();
 			foreach($_REQUEST['pageParam'] as $k=>$r) {
@@ -337,7 +337,7 @@ class pg_class extends kernel_extends {
 					$this->pageParam[] = $r;
 			}
 		}
-		if($fid!=$this->config['rootPage'] and !$this->id)
+		if($fid!=$this->rootPage and !$this->id)
 			$this->id = $fid;
 
 		/*$row = 0;
@@ -367,8 +367,8 @@ class pg_class extends kernel_extends {
 				$this->IfDontHavePage = true;
 				return $this->can_show();
 			}
-		}elseif((!$this->id or $this->id != $this->config['rootPage']) and !isset($this->IfrootPage)) {
-			$this->id = $this->config['rootPage'];
+		}elseif((!$this->id or $this->id != $this->rootPage) and !isset($this->IfrootPage)) {
+			$this->id = $this->rootPage;
 			$this->IfrootPage = true;
 			return $this->can_show();
 		}
@@ -683,7 +683,7 @@ class pg_class extends kernel_extends {
 		}
 		else {
 			if(!$startPG)
-				$startPG = $this->config['rootPage'];
+				$startPG = $this->rootPage;
 			elseif(strpos($startPG,'#')!==false) {
 				$startPG = substr($startPG,1);
 				if($startPG=='') $startPG = $this->dataCash[$this->id]['parent_id'];
@@ -760,6 +760,18 @@ class pg_class extends kernel_extends {
 
 	function sqlCashPG() {
 		if(empty($this->dataCash)) {
+			if(is_array($this->config['rootPage'])) {
+				foreach($this->config['rootPage'] as $k=>$r) {
+					if(strpos($_SERVER['HTTP_HOST'],$k)!==false) {
+						$this->rootPage = $r;
+						break;
+					}
+				}
+				if(is_null($this->rootPage))
+					$this->rootPage = array_shift($this->config['rootPage']);
+			} else
+				$this->rootPage = $this->config['rootPage'];
+
 			$cls = 'SELECT *';
 			/*if(isset($_SESSION['user']['id']))
 				$cls .= ',if((ugroup="" or ugroup="|0|" or ugroup="|user|" or ugroup LIKE "%|'.$_SESSION['user']['owner_id'].'|%"),1,0) as prm';
@@ -812,7 +824,7 @@ class pg_class extends kernel_extends {
 				if($this->dataCash[$id]['alias'])
 					$href = $this->dataCash[$id]['alias'];
 				$pid = $this->dataCash[$id]['parent_id'];
-				while($pid and $pid!=$this->config['rootPage']) {
+				while($pid and $pid!=$this->rootPage) {
 					if(!isset($this->dataCash[$pid])) break;
 					if($this->dataCash[$pid]['alias'])
 						$href = $this->dataCash[$pid]['alias'].'/'.$href;

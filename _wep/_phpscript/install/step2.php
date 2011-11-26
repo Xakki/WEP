@@ -20,8 +20,10 @@ _new_class('modulprm', $MODUL);
 //Форма установки модулей
 list($res, $DATA) = static_tools::_toolsCheckmodul($MODUL);
 if ($res == 1) {
+	if(!isset($_GET['step'])) $_GET['step']= 2;
 	$_SESSION['step'] = $_GET['step']+1;
-	$DATA['messages'][] = $var_const['mess'];
+	if(count($var_const['mess']))
+		$DATA['messages'][] = $var_const['mess'];
 	$html = $HTML->transformPHP($DATA, 'messages');
 } else {
 	$DATA = array('formcreat' => $DATA);
