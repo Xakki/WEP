@@ -583,16 +583,18 @@ abstract class kernel_extends {
 		}
 		else {
 			if(!count($data)) {
-				static_main::log('error','Wrong data for UPDATE query');
-				return false;
-			}
-			foreach ($data as $k => $r) {
-				if (isset($this->memos[$k]))
-					$this->mmo_data[$k] = $r;
-				elseif (isset($this->attaches[$k]))
-					$this->att_data[$k] = $r;
-				elseif (isset($this->fields[$k]))
-					$this->fld_data[$k] = $r;
+				trigger_error('Устаревший метод вызова _update -> первый параметр $data', E_USER_WARNING);
+				if(!count($this->fld_data))
+					return false;
+			} else {
+				foreach ($data as $k => $r) {
+					if (isset($this->memos[$k]))
+						$this->mmo_data[$k] = $r;
+					elseif (isset($this->attaches[$k]))
+						$this->att_data[$k] = $r;
+					elseif (isset($this->fields[$k]))
+						$this->fld_data[$k] = $r;
+				}
 			}
 		}
 		$result = static_form::_update($this, $flag_select,$where);
@@ -898,15 +900,15 @@ abstract class kernel_extends {
 	 * @param mixed $form - 1 = форма
 	 * @return array
 	*/
-	protected function getFieldsForm($form=0) {
+	function getFieldsForm($form=0) {
 		$this->setFieldsForm($form);
 		$temp = $this->fields_form;
 		$this->fields_form = array();
 		foreach($temp as $k=>$r) {
 			if($r['type']=='ckedit') {
 				$this->fields[$k.'_ckedit'] = array('type' => 'tinyint', 'width'=>3, 'attr' => 'NOT NULL','default'=>'1');
-				if($form and static_main::_prmUserCheck(1))
-					$this->fields_form[$k.'_ckedit'] = array('type' => 'list', 'listname'=>'wysiwyg', 'caption' => $r['caption'].' - Выбор редактора', 'mask' =>array(),'onchange'=>'SetWysiwyg(this)','mask'=>array('usercheck'=>1));
+				if($form>0 and static_main::_prmUserCheck(1))
+					$this->fields_form[$k.'_ckedit'] = array('type' => 'list', 'listname'=>'wysiwyg', 'caption' => $r['caption'].' - Выбор редактора', 'onchange'=>'SetWysiwyg(this)','mask'=>array('usercheck'=>1));
 			}elseif($r['type']=='list') {
 				if(!isset($r['listname']))
 					$r['listname'] = 'list';
@@ -1464,14 +1466,6 @@ abstract class kernel_extends {
 		return include($this->_CFG['_PATH']['core'] . 'kernel.displayXML.php');
 	}
 
-	/**
-	 * вывод данных
-	 * @param array $param - параметры вывода данных
-	 * @return array
-	*/
-	public function setFieldsDisplay() {
-		return parent::setFieldsForm();
-	}
 
 	
 // MODUL configuration
@@ -1844,27 +1838,27 @@ abstract class kernel_extends {
 		$param['act'] = $act;
 		$this->data = $this->_select();
 		if ($this->_prmModulAct($this->data, $param)) {
-			$this->fld_data = array();
+			$data = array();
 			$act = (int) $act;
 			if ($this->fields[$this->mf_actctrl]['type'] == 'bool')
-				$this->fld_data[$this->mf_actctrl] = $act;
+				$data[$this->mf_actctrl] = $act;
 			else {
 				if (static_main::_prmModul($this->_cl, array(7))) {
 					if ($act == 0)
-						$this->fld_data[$this->mf_actctrl] = 6;
+						$data[$this->mf_actctrl] = 6;
 					else
-						$this->fld_data[$this->mf_actctrl] = 1;
+						$data[$this->mf_actctrl] = 1;
 				}
 				elseif ($act == 1)
-					$this->fld_data[$this->mf_actctrl] = 5;
+					$data[$this->mf_actctrl] = 5;
 				else
-					$this->fld_data[$this->mf_actctrl] = 2;
+					$data[$this->mf_actctrl] = 2;
 			}
 
-			if ($this->_update()) {
-				if ($this->fld_data[$this->mf_actctrl] == 5)
+			if ($this->_update($data)) {
+				if ($data[$this->mf_actctrl] == 5)
 					$DATA[] = static_main::am('ok','act5',$this);
-				if ($this->fld_data[$this->mf_actctrl] == 6)
+				if ($data[$this->mf_actctrl] == 6)
 					$DATA[] = static_main::am('ok','act6',$this);
 				elseif ($act)
 					$DATA[] = static_main::am('ok','act1',$this);
@@ -1893,14 +1887,14 @@ abstract class kernel_extends {
 		$this->data = $this->_select();
 		if (count($this->data) and $this->_prmModulDel($this->data, $param)) {
 			if (isset($this->fields[$this->mf_actctrl]) and $this->fields[$this->mf_actctrl]['type'] != 'bool') {
-				$this->fld_data[$this->mf_actctrl] = 4;
-				if ($this->_update()) {
+				$data[$this->mf_actctrl] = 4;
+				if ($this->_update($data)) {
 					$DATA[] = static_main::am('ok','deleted',$this);
 					$flag = 0;
 				}else
 					$DATA[] = static_main::am('error','del_err',$this);
 			}else {
-				if ($this->_delete()) {
+				if ($this->_delete($data)) {
 					$DATA[] = static_main::am('ok','deleted',$this);
 					$flag = 0;
 				}else
@@ -1925,10 +1919,10 @@ abstract class kernel_extends {
 			$DATA = $param['mess'];
 		$this->data = $this->_select();
 		if ($this->_prmModulEdit($this->data, $param)) {
-			$this->fld_data = array();
-			$this->fld_data[$this->mf_ordctrl] = $this->data[$this->id][$this->mf_ordctrl]+$ord;
+			$data = array();
+			$data[$this->mf_ordctrl] = $this->data[$this->id][$this->mf_ordctrl]+$ord;
 
-			if ($this->_update()) {
+			if ($this->_update($data)) {
 				if ($ord<0)
 					$DATA[] = array('value' => 'UP', 'name' => 'ok');
 				else
@@ -2097,15 +2091,22 @@ abstract class kernel_extends {
 			//$PP[2] - вторая часть
 			$PP = array(0=>$thisPage,1=>$thisPage,2=>'');
 			if($flag) {
-				$pregreplPage = '/(.*)&' . $this->_cl . '_pn=[0-9]*(.*)/';
+				$pregreplPage = '/(.*)' . $this->_cl . '_pn=[0-9]*(.*)/';
 				if (!preg_match($pregreplPage, $thisPage,$matches)) {
 					$PP[0] = $thisPage;
-					if (_substr($thisPage, -1) != '&')
+					if(strpos($thisPage,'?')===false)
+						$PP[1] .= '?';
+					elseif (_substr($thisPage, -1) != '?' and _substr($thisPage, -1) != '&')
 						$PP[1] .= '&';
 					$PP[1] .= $this->_cl . '_pn=';
 				} else {
 					$PP[0] = $matches[1].$matches[2];
-					$PP[1] = $matches[1].'&'.$this->_cl . '_pn=';
+					$PP[1] = $matches[1];
+					if(strpos($matches[1],'?')===false)
+						$PP[1] .= '?';
+					elseif (_substr($matches[1], -1) != '?' and _substr($matches[1], -1) != '&')
+						$PP[1] .= '&';
+					$PP[1] .= $this->_cl . '_pn=';
 					$PP[2] = $matches[2];
 					//print_r('<pre>');print_r($matches);
 				}
