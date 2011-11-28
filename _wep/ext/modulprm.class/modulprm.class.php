@@ -469,11 +469,11 @@ final class modulprm_class extends kernel_extends {
 						// Добавляем инфу о модуле
 						if (!isset($this->data[$Mid])) {
 							$this->fld_data['id'] = $Mid;
-							if (isset($_POST['sbmt'])) {print_r('<pre>');print_r($this->data);print_r($Mid);exit();
+							if (isset($_POST['sbmt'])) {
 								if ($this->_add($this->fld_data,false))
 									$MESS[] = array('notice', 'Информация о модуле `' . $Mid . '`[' . $path . '] успешно записанна.');
 								else {
-									$MESS[] = array('error', 'Ошибка записи данных для модуля `' . $Mid . '`[' . $path . '].'.print_r($this->fld_data,true));
+									$MESS[] = array('error', 'Ошибка записи данных для модуля `' . $Mid . '`[' . $path . '].'.var_export($this->fld_data,true));
 									$flag = false;
 								}
 							}else
