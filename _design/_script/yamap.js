@@ -9,6 +9,7 @@ var Yamap = {
 	tools : {
 		Search:false,
 		Zoom:true,
+		ScrollSearch:true,
 		Type:true
 	}
 };
@@ -132,8 +133,8 @@ function initMap() {
 				setMap.addControl(new YMaps.TypeControl());
 			if(Yamap.tools.Search)
 				setMap.addControl(new YMaps.SearchControl());
-
-			setMap.enableScrollZoom();
+			if(Yamap.tools.ScrollSearch)
+				setMap.enableScrollZoom();
 			setMap.enableRightButtonMagnifier();
 		}
 	});

@@ -906,7 +906,7 @@ abstract class kernel_extends {
 		$this->fields_form = array();
 		foreach($temp as $k=>$r) {
 			if($r['type']=='ckedit') {
-				$this->fields[$k.'_ckedit'] = array('type' => 'tinyint', 'width'=>3, 'attr' => 'NOT NULL','default'=>'1');
+				//$this->fields[$k.'_ckedit'] = array('type' => 'tinyint', 'width'=>3, 'attr' => 'NOT NULL','default'=>'1');
 				if($form>0 and static_main::_prmUserCheck(1))
 					$this->fields_form[$k.'_ckedit'] = array('type' => 'list', 'listname'=>'wysiwyg', 'caption' => $r['caption'].' - Выбор редактора', 'onchange'=>'SetWysiwyg(this)','mask'=>array('usercheck'=>1));
 			}elseif($r['type']=='list') {
