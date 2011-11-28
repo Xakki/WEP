@@ -312,9 +312,9 @@ class pg_class extends kernel_extends {
 		}
 		$HTML->_templates = $this->pageinfo['template'];
 		if(version_compare(phpversion(),'5.3.0','>'))
-			$_tpl['onload'] .= 'if(typeof wep !== "undefined") {wep.pgId = '.$this->id.';wep.pgParam='.json_encode($this->pageParam,JSON_HEX_TAG).';} ';
+			$_tpl['onload'] = 'if(typeof wep !== "undefined") {wep.pgId = '.$this->id.';wep.pgParam='.json_encode($this->pageParam,JSON_HEX_TAG).';} '.$_tpl['onload'];
 		else
-			$_tpl['onload'] .= 'if(typeof wep !== "undefined") {wep.pgId = '.$this->id.';wep.pgParam='.json_encode($this->pageParam).';} ';
+			$_tpl['onload'] = 'if(typeof wep !== "undefined") {wep.pgId = '.$this->id.';wep.pgParam='.json_encode($this->pageParam).';} '.$_tpl['onload'];
 		return true;
 	}
 

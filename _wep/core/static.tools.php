@@ -72,7 +72,6 @@ class static_tools {
 			$rDATA['Создание таблицы']['@mess'][] = static_main::am('error','_big_err',$MODUL);
 			return $rDATA;
 		}
-		$MODUL->setSystemFields();// установка системных полей
 //if($MODUL->_cl=='uniusers') {print_r('<pre>');print_r($MODUL->_CFG['hook']);}
 		if (!$result->num_rows()) {
 			if (isset($_POST['sbmt'])) {

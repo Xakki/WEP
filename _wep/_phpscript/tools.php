@@ -223,6 +223,7 @@ function tools_cron() {
 		static_main::redirect('/'.key($DATA['path']));
 	}
 	else {
+		$DATA['messages'][] = static_main::am('info','Пропишите в cron <div>*/1 * * * *&#160;&#160;&#160;www-data&#160;&#160;&#160;php '.$_CFG['_PATH']['phpscript'].'cron.php</div>');
 		$DATA['data'] = array(
 			'thitem'=>array(
 				'time'=>array('value'=>'Период'),
@@ -255,7 +256,7 @@ function tools_cron() {
 			$DATA['messages'][] = $_SESSION['messtool'];
 			unset($_SESSION['messtool']);
 		}
-		$DATA['superlist'] = $DATA;
+		$DATA = array('superlist'=>$DATA);
 		$result = $HTML->transformPHP($DATA, 'superlist');
 	}
 	return $result;
