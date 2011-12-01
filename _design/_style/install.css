@@ -52,7 +52,9 @@
 					font-size:1.2em;
 					color:#000;
 					display:inline;
-					padding:0;}
+					padding:0;
+					background:none;
+				}
 				.showparam span.shbg {
 					height: 12px;
 					width: 19px;

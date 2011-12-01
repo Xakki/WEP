@@ -44,6 +44,9 @@ function tpl_form(&$data) {
 		elseif($r['type']=='info') {
 			$texthtml .= '<div>'.$r['caption'].'</div>';
 		}
+		elseif($r['type']=='html') {
+			$texthtml .= '<div class="form-value">'.$r['value'].'</div>';
+		}
 		elseif($r['type']=='hidden') {
 			$r['value'] = htmlentities($r['value'],ENT_QUOTES,$_CFG['wep']['charset']);
 			$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'" value="'.$r['value'].'" id="'.((isset($r['id']) and $r['id'])?$r['id']:$k).'"/>';
@@ -183,19 +186,34 @@ function tpl_form(&$data) {
 			}
 			elseif($r['type']=='list' and !$r['readonly']) {
 				$texthtml .= '<div class="form-value">';
-				if(isset($r['size']) and $r['size']>1) {
-					$texthtml .= '<select size="'.$r['size'].'" name="'.$k.'" class="small" '.$attribute;
-					$texthtml .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
-				}elseif(isset($r['multiple']) and $r['multiple']==2) {
-					$texthtml .= '<select multiple="multiple" size="10" name="'.$k.'[]" class="multiple" '.$attribute;
-					$texthtml .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
+				if(isset($r['multiple'])) {
+					if(!isset($r['mask']['size'])) $r['mask']['size'] = 10;
+					if(!isset($r['mask']['maxarr'])) $r['mask']['maxarr'] = 10;
+				}
+
+				if(isset($r['multiple']) and $r['multiple']==2) {
+					$texthtml .= '<select multiple="multiple" name="'.$k.'[]" class="multiple" size="'.$r['mask']['size'].'" '.$attribute;
+					$texthtml .= '>'.selectitem($r['valuelist']).'</select>';
 					$_CFG['fileIncludeOption']['multiple'] = 2;
+				}elseif(isset($r['multiple']) and $r['multiple']==3) {
+					if(!is_array($r['value']) or !count($r['value'])) $r['value'] = array('');
+					$cnt = 0;
+					foreach($r['value'] as $kval=>$rval) {
+						$cnt++;
+						$texthtml .= '<div class="ilist">
+							<input type="text" value="'.$kval.'" onkeyup="wep.form.ilist(this,\''.$k.'\')"/>
+							<select name="'.$k.'['.$kval.']" '.$attribute.'>'.selectitem($r['valuelist'],$rval).'</select>
+							<span'.($cnt==1?' style="display:none;"':'').' class="ilistdel" onclick="wep.form.ilistdel(this);" title="Удалить"></span>
+						</div>';
+						if($cnt==$r['mask']['maxarr']) break;
+					}
+					$texthtml .= '<span class="ilistmultiple" onclick="wep.form.ilistCopy(this,\'div.ilist\','.$r['mask']['maxarr'].')" title="Добавить '.$r['caption'].'">'.($r['mask']['maxarr']-count($r['value'])).'</span>';
 				}elseif(isset($r['multiple']) and $r['multiple']) {
-					$texthtml .= '<select multiple="multiple" size="10" name="'.$k.'[]" class="small" '.$attribute;
-					$texthtml .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
+					$texthtml .= '<select multiple="multiple" name="'.$k.'[]" class="small" size="'.$r['mask']['size'].'" '.$attribute;
+					$texthtml .= '>'.selectitem($r['valuelist']).'</select>';
 				}else {
 					$texthtml .= '<select name="'.$k.'" '.$attribute;
-					$texthtml .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
+					$texthtml .= '>'.selectitem($r['valuelist']).'</select>';
 				}
 				$texthtml .= '</div>';
 			}
@@ -490,9 +508,6 @@ function tpl_form(&$data) {
 							</div></div>';
 				$_CFG['fileIncludeOption']['md5'] = 1;
 			}
-			elseif($r['type']=='html') {
-				$texthtml .= '<div class="form-value">'.$r['value'].'</div>';
-			}
 			elseif($r['type']=='color') {
 				$_tpl['styles']['../_script/script.jquery/colorpicker/css/colorpicker'] = true;
 	//			$_tpl['styles']['colorpicker/css/layout'] = true;
@@ -527,12 +542,12 @@ function tpl_form(&$data) {
 }
 
 function selectitem($data,$val=NULL,$flag=0) {
-	return selectitem2($data,$val,$flag);
-	$texthtml = '';
 	if(!is_null($val)) {
 		if(!is_array($val)) 
 			$val = array($val=>true);
 	}
+	return selectitem2($data,$val,$flag);
+	$texthtml = '';
 	if(is_array($data) and count($data))
 		foreach($data as $r) {
 			//_substr($r['#name#'],0,60).(_strlen($r['#name#'])>60?'...':'')
@@ -558,10 +573,6 @@ function selectitem($data,$val=NULL,$flag=0) {
 
 function selectitem2($data,$val=NULL,$flag=0,&$openG=false) {
 	$texthtml = ''."\n";
-	if(!is_null($val)) {
-		if(!is_array($val)) 
-			$val = array($val=>true);
-	}
 	if(is_array($data) and count($data))
 		foreach($data as $r) {
 			//_substr($r['#name#'],0,60).(_strlen($r['#name#'])>60?'...':'')
@@ -577,12 +588,14 @@ function selectitem2($data,$val=NULL,$flag=0,&$openG=false) {
 				if($flag>0)
 					$r['#name#'] = str_repeat("&#160;&#160;", $flag).' '.$r['#name#'];
 				$sel = '';
-				if(isset($r['#sel#'])) {
+				if(!is_null($val)) {
+					if(isset($val[$r['#id#']]))
+						$sel = 'selected="selected"';
+				}
+				elseif(isset($r['#sel#'])) {
 					if($r['#sel#'])
 						$sel = 'selected="selected"';
 				}
-				elseif(!is_null($val) and isset($val[$r['#id#']]))
-					$sel = 'selected="selected"';
 					
 				$texthtml .= "\t".'<option value="'.$r['#id#'].'" '.$sel.'>'.$r['#name#'].'</option>'."\n";
 			}

@@ -400,7 +400,6 @@ final class modulprm_class extends kernel_extends {
 				include_once($fpath);
 
 				if (_new_class($Mid, $MODUL, $OWN)) {
-					$MODUL->setSystemFields();// установка системных полей
 					if ($OWN and (!isset($this->data[$Mid]) or $this->data[$Mid]['parent_id'] != $OWN->_cl))
 						$this->fld_data['parent_id'] = $OWN->_cl;
 					if (!isset($this->data[$Mid]) or !$this->data[$Mid]['name'])// or $this->data[$Mid]['name'] != $MODUL->caption
@@ -431,6 +430,9 @@ final class modulprm_class extends kernel_extends {
 						$CRON = static_tools::getFdata($this->_CFG['_FILE']['cron']);
 						$cflag= false;
 						foreach($MODUL->cron as $cr) {
+							if(!isset($cr['file'])) $cr['file'] = '';
+							if(!isset($cr['modul'])) $cr['modul'] = '';
+							if(!isset($cr['function'])) $cr['function'] = '';
 							$cn = md5($cr['file'].$cr['modul'].$cr['function']);
 							if(!isset($CRON['cron'][$cn])) {
 								if (isset($_POST['sbmt'])) {
@@ -468,19 +470,19 @@ final class modulprm_class extends kernel_extends {
 						if (!isset($this->data[$Mid])) {
 							$this->fld_data['id'] = $Mid;
 							if (isset($_POST['sbmt'])) {
-								if ($this->_add(false))
+								if ($this->_add($this->fld_data,false))
 									$MESS[] = array('notice', 'Информация о модуле `' . $Mid . '`[' . $path . '] успешно записанна.');
 								else {
-									$MESS[] = array('error', 'Ошибка записи данных для модуля `' . $Mid . '`[' . $path . '].'.print_r($this->fld_data,true));
+									$MESS[] = array('error', 'Ошибка записи данных для модуля `' . $Mid . '`[' . $path . '].'.var_export($this->fld_data,true));
 									$flag = false;
 								}
 							}else
-								$MESS[] = array('alert', 'Информация о модуле `' . $Mid . '`[' . $path . '] будет обновлена.');
+								$MESS[] = array('alert', 'Информация о модуле `' . $Mid . '`[' . $path . '] будет добавлена.');
 						}
 						// Если существует обновляем данные
 						else {
 							if (isset($_POST['sbmt'])) {
-								if ($this->_update(false))
+								if ($this->_update($this->fld_data,false, false))
 									$MESS[] = array('notice', 'Информация о модуле `' . $Mid . '`[' . $path . '] успешно обновленна.');
 								else {
 									$MESS[] = array('error', 'Ошибка обновления данных для модуля `' . $Mid . '`[' . $path . '].');
@@ -532,7 +534,7 @@ final class modulprm_class extends kernel_extends {
 						$MESS[] = array('alert', 'Ошибка при инициализации модуля `' . $Mid . '`[' . $path . ']. Модуль отключен.');
 						$this->fld_data['active'] = 0;
 						$this->id = $Mid;
-						$this->_update();
+						$this->_update($this->fld_data, false, false);
 					} else
 						$MESS[] = array('error', 'Ошибка при инициализации модуля `' . $Mid . '`[' . $path . ']. Модуль будет отключен.');
 				}
@@ -552,7 +554,7 @@ final class modulprm_class extends kernel_extends {
 				$MESS[] = array('alert', 'Ошибка при инициализации модуля `' . $Mid . '`[' . $path . ']. Модуль отключен.');
 				$this->fld_data['active'] = 0;
 				$this->id = $Mid;
-				$this->_update();
+				$this->_update($this->fld_data,false, false);
 			} else
 				$MESS[] = array('error', 'Ошибка при инициализации модуля `' . $Mid . '`[' . $path . ']. Модуль будет отключен.');
 		}

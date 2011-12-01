@@ -198,7 +198,7 @@ class mail_class extends kernel_extends {
 				$send_result = true;
 		}
 
-		$this->_add_item($data);
+		$this->_add($data);
 		return $send_result;
 		
 	}
@@ -604,7 +604,7 @@ class mail_class extends kernel_extends {
 							'text' => $msg,
 						);
 
-						if ($this->_add_item($data)) {
+						if ($this->_add($data)) {
 							$result = array('result' => 1);
 						}
 						else {
@@ -661,7 +661,7 @@ class mail_class extends kernel_extends {
 					$this->id = $msg_id;
 					$data['status'] = 4;
 
-					if ($this->_save_item($data))
+					if ($this->_update($data))
 					{
 						$result = array('result' => 1);
 					}
@@ -755,7 +755,7 @@ class mail_class extends kernel_extends {
 					$status = 21;
 				else
 					$status = 2;
-				$this->qu(array('status'=>$status),'id='.$data['id']);
+				$this->_update(array('status'=>$status),'id='.$data['id']);
 			}
 
 		}

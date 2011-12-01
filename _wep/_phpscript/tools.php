@@ -29,7 +29,7 @@ function tools_step3() {
 }
 
 function tools_updater() {
-	$href = 'http://xakki.i/_json.php?_modul=wepcontrol&_fn=GetNewVersion';
+	$href = 'http://xakki.ru/_json.php?_modul=wepcontrol&_fn=GetNewVersion';
 	$JSON = file_get_contents($href);
 	$JSON = json_decode($JSON,true);
 	if(isset($JSON['html']) and $JSON['html']) {
@@ -223,6 +223,7 @@ function tools_cron() {
 		static_main::redirect('/'.key($DATA['path']));
 	}
 	else {
+		$DATA['messages'][] = static_main::am('info','Пропишите в cron <div>*/1 * * * *&#160;&#160;&#160;www-data&#160;&#160;&#160;php '.$_CFG['_PATH']['phpscript'].'cron.php</div>');
 		$DATA['data'] = array(
 			'thitem'=>array(
 				'time'=>array('value'=>'Период'),
@@ -255,7 +256,7 @@ function tools_cron() {
 			$DATA['messages'][] = $_SESSION['messtool'];
 			unset($_SESSION['messtool']);
 		}
-		$DATA['superlist'] = $DATA;
+		$DATA = array('superlist'=>$DATA);
 		$result = $HTML->transformPHP($DATA, 'superlist');
 	}
 	return $result;
@@ -333,7 +334,7 @@ function tools_sendReg() {
 			$pass=$arr['vars']['pass'];
 			$arr['vars']['pass']=md5($this->_CFG['wep']['md5'].$arr['vars']['pass']);
 			//$_SESSION['user']['id'] = $arr['vars']['id'];
-			if(!$UGROUP->child['user']->_add_item($arr['vars'])) {
+			if(!$UGROUP->child['user']->_add($arr['vars'])) {
 				_new_class('mail', $MAIL);
 				$datamail['from']=$UGROUP->config["mailrobot"];
 				$datamail['mail_to']=$arr['vars']['email'];

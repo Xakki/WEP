@@ -1,25 +1,8 @@
 <?php
 /** КОСТЫЛИ **/
 // Сделать механизм создания форм
-		if(isset($param['display'])) {
-			$this->setFieldsDisplay();
-		} else {
-			$this->setFieldsForm();
-		}
+		$this->getFieldsForm();
 
-		if(count($this->formDSort)) {
-			$temp = $this->fields_form;
-			$this->fields_form = array();
-			foreach($this->formDSort as $rr) {
-				if($rr=='#over#') {
-					$diffForm = array_diff_key($temp,array_keys($this->formdSort));
-					$this->fields_form = array_merge($this->fields_form,$diffForm);
-				}
-				elseif(isset($temp[$rr])) {
-					$this->fields_form[$rr] = $temp[$rr];
-				}
-			}
-		}
 /**END  костыли**/
 
 		$DATA = array('cl'=>$this->_cl, 'caption'=>$this->caption, 'messages'=>array());

@@ -34,7 +34,7 @@ $_CFGFORM['wep'] = array(// для ядра и админки
 	'dateformat' => array('type'=>'text','caption'=>'Формат Даты', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'access' => array('type'=>'list', 'caption'=>'Система авторизации на сайте', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'design' => array('type'=>'list','caption'=>'Дизайн админки', 'css' => 'fblock hwep', 'style' => 'display:none;'),
-	'lang' => array('type'=>'text','caption'=>'Кодировка БД', 'css' => 'fblock hwep', 'style' => 'display:none;'),
+	'lang' => array('type'=>'text','caption'=>'Язык', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'def_filesize' => array('type'=>'int','caption'=>'Размер фаилового хранилища, Мб', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'chmod'=> array('type'=>'text','caption'=>'chmod', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'sessiontype' => array('type'=>'list','caption'=>'Тип хранени сессий пользователей', 'css' => 'fblock hwep', 'style' => 'display:none;'),

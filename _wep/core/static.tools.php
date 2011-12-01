@@ -72,7 +72,6 @@ class static_tools {
 			$rDATA['Создание таблицы']['@mess'][] = static_main::am('error','_big_err',$MODUL);
 			return $rDATA;
 		}
-		$MODUL->setSystemFields();// установка системных полей
 //if($MODUL->_cl=='uniusers') {print_r('<pre>');print_r($MODUL->_CFG['hook']);}
 		if (!$result->num_rows()) {
 			if (isset($_POST['sbmt'])) {
@@ -295,33 +294,34 @@ class static_tools {
 			return array($result->err, '');
 
 		$stepY = round($maxY, -1) / 10;
-		$f = 'readyPlot(\'' . $MODUL->caption . '\',\'' . $MODUL->mf_statistic['Xname'] . '\',\'' . $MODUL->mf_statistic['Yname'] . '\',' . $stepY . ');';
-		$eval = '
-	line1 = [' . implode(',', $data) . '];
-	if(typeof $.jqplot == "undefined")
-		$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'script.jquery/jqplot/plugins/jqplot.ohlcRenderer.min.js\',
-			function(){' . $f . '},[
-			$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'script.jquery/jqplot/jquery.jqplot.min.js\'),
-			$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'script.jquery/jqplot/plugins/jqplot.cursor.min.js\'),
-			$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'script.jquery/jqplot/plugins/jqplot.dateAxisRenderer.min.js\'),
-			$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'script.jquery/jqplot/plugins/jqplot.highlighter.min.js\')
-		]);
-	else {' . $f . '}
+		$f = 'cap = \'' . $MODUL->caption . '\'; 
+			Xname=\'' . $MODUL->mf_statistic['Xname'] . '\';
+			Yname=\'' . $MODUL->mf_statistic['Yname'] . '\';
+			stepY='.$stepY.';
+			plot1 = $.jqplot(\'statschart2\', [line1], {
+				title:cap,
+				axes:{
+					xaxis:{label:Xname,renderer:$.jqplot.DateAxisRenderer},
+					yaxis:{label:Yname,min:0,tickInterval:stepY,tickOptions:{formatString:\'%d\'} }},
+				cursor:{zoom: true},
+				series:[{lineWidth:4, markerOptions:{style:\'square\'}}]
+			});';
+		/*$plugin = '';
+		if(isset($MODUL->mf_statistic['plugin_date']))
+			$plugin .= '';*/
 
-	';
-		/*
-		  //$.include(\'/script/jquery.ui.all.js\',static function(){readyUI();});
-		  static function readyUI(){
-		  $(\'#statstabs\').tabs();
-		  $(\'#statstabs\').bind(\'tabsshow\', static function(event, ui) {
-		  if (ui.index == 1 && plot1._drawCount == 0) {
-		  plot1.replot();
-		  }
-		  else if (ui.index == 2 && plot2._drawCount == 0) {
-		  plot2.replot();
-		  }
-		  });
-		  }; */
+		$eval = '
+			line1 = [' . implode(',', $data) . '];
+			if(typeof $.jqplot == "undefined")
+				$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'script.jquery/jqplot/plugins/jqplot.ohlcRenderer.min.js\',
+					function(){' . $f . '},[
+					$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'script.jquery/jqplot/jquery.jqplot.min.js\'),
+					$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'script.jquery/jqplot/plugins/jqplot.cursor.min.js\'),
+					$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'script.jquery/jqplot/plugins/jqplot.dateAxisRenderer.min.js\'),
+					$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'script.jquery/jqplot/plugins/jqplot.highlighter.min.js\')
+				]);
+			else {' . $f . '}';
+
 		$html = '';
 		if (count($filtr[0]))
 			$html .= 'Результат статистики выводится по фильтру<br/>';
@@ -622,7 +622,7 @@ class static_tools {
 	 */
 	static function _insertDefault(&$MODUL) {
 		foreach ($MODUL->def_records as $row) {
-			if (!$MODUL->_add_item($row)) {
+			if (!$MODUL->_add($row)) {
 				//return static_main::log('error','Error add default record into `'.$MODUL->tablename.'`',$MODUL->_cl);
 				return false;
 			}

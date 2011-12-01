@@ -12,8 +12,11 @@ class payqiwi_class extends kernel_extends {
 		parent::_create();
 		$this->fields['cost'] = array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL'); // в коппейках
 
-		$this->fields_form['cost'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Цена (руб.)', 'mask'=>array());
+	}
 
+	public function setFieldsForm($form=0) {
+		parent::setFieldsForm($form);
+		$this->fields_form['cost'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Цена (руб.)', 'mask'=>array());
 	}
 }
 

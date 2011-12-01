@@ -215,25 +215,25 @@ class content_class extends kernel_extends {
 	}
 
 
-	public function _save_item($vars,$where=false) {
+	public function _update($data=array(),$where=false,$flag_select=true) {
 		$funcparam = array();
 		if(count($this->addForm)) {
 			foreach($this->addForm as $k=>$r) {
 				if($r['type']!='info') {
-					$funcparam[(int)substr($k,9)] = $vars[$k];
+					$funcparam[(int)substr($k,9)] = $data[$k];
 				}
 			}
 			if(count($funcparam)) {
 				ksort($funcparam);
-				$vars['funcparam'] = implode('&',$funcparam);
+				$data['funcparam'] = implode('&',$funcparam);
 			}
 		}
-		if($ret = parent::_save_item($vars,$where)) {
+		if($ret = parent::_update($data,$where,$flag_select)) {
 		}
 		return $ret;
 	}
 
-	public function _add_item($vars) {
+	public function _add($vars=array(),$flag_select=true) {
 		$funcparam = array();
 		if(count($this->addForm)) {
 			foreach($this->addForm as $k=>$r) {
@@ -245,7 +245,7 @@ class content_class extends kernel_extends {
 				$vars['funcparam'] = implode('&',$funcparam);
 			}
 		}
-		if($ret = parent::_add_item($vars)) {
+		if($ret = parent::_add($vars,$flag_select)) {
 		}
 		return $ret;
 	}

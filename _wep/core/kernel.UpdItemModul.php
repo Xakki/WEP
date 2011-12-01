@@ -23,7 +23,7 @@
 						$mess = $this->kPreFields($_POST,$param);
 						$arr = $this->fFormCheck($_POST,$param,$this->fields_form);
 						if(!count($arr['mess'])) {
-							if($rm = $this->_save_item($arr['vars'])) {
+							if($rm = $this->_update($arr['vars'])) {
 								$flag=1;
 								$arr['mess'][] = static_main::am('ok','update',$this);
 								if($formflag)// кастыль
@@ -56,7 +56,7 @@
 				$arr = $this->fFormCheck($_POST,$param,$this->fields_form);
 				$flag=-1;
 				if(!count($arr['mess'])) {
-					if($rm = $this->_add_item($arr['vars'])) {
+					if($rm = $this->_add($arr['vars'])) {
 						$flag=1;
 						$arr['mess'][] = static_main::am('ok','add',$this);
 					} else

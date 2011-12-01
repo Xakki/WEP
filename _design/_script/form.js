@@ -30,6 +30,34 @@ function JSFR(n) {
 	});
 }
 
+
+wep.form.ilist = function(obj,k) {
+	$(obj).next().attr('name',k+'['+$(obj).val()+']');
+}
+wep.form.ilistCopy = function(ths,obj,max) {
+	var sz = $(obj).size();
+	if(sz<max) {
+		var clon = $(obj+':first').clone();
+		clon.find('input').val('');
+		clon.find('select').val('');
+		clon.find('.ilistdel').show();
+		$(ths).before(clon);
+		var cnt = parseInt($(ths).text())-1;
+		$(ths).text(cnt);
+		if(sz==(max-1)) {
+			//$(ths).hide();
+		} else {
+		}
+	}
+}
+wep.form.ilistdel = function(ths) {
+	var tmp = $(ths).parent();
+	var tmp2 = tmp.parent().find('span.ilistmultiple');
+	var cnt = parseInt(tmp2.text())+1;
+	tmp2.text(cnt);//.show()
+	tmp.remove();
+}
+
 function preSubmitAJAX (obj) {
 	if(typeof CKEDITOR !== 'undefined') {
 		jQuery.each(jQuery(obj).find("textarea"),function(){nm=jQuery(this).attr('name');if(nm) eval("if(typeof CKEDITOR.instances."+nm+" == 'object') {CKEDITOR.instances."+nm+".updateElement();}");});

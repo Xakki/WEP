@@ -128,15 +128,15 @@ $_CFG['_PATH']['_script'] = $_CFG['_PATH']['path'] . '_design/_script/'; // ди
 /* $_CFG['PATH'] */
 /* * ************* */
 // относительные пути
+$_CFG['PATH']['WSWG'] = '_wysiwyg/';
 $_CFG['PATH']['content'] = '_content/';
-$_CFG['PATH']['userfile'] = '_content/_userfile/'; // файлы пользователя
+$_CFG['PATH']['userfile'] = $_CFG['PATH']['content'].'_userfile/'; // файлы пользователя
 $_CFG['PATH']['wepname'] = basename($_CFG['_PATH']['wep']); // базовое имя админки
 $_CFG['PATH']['wepconfname'] = basename($_CFG['_PATH']['wepconf']); // базовое имя пользовательских файлов
 $_CFG['PATH']['cdesign'] = $_CFG['PATH']['wepname'] . '/cdesign/'; // дизайн админки
-$_CFG['PATH']['WSWG'] = '_wysiwyg/';
 $_CFG['FILE']['HASH_KEY'] = $_CFG['PATH']['wepconfname'] . '/config/hash.key';
 $_CFG['PATH']['weptemp'] = $_CFG['PATH']['wepconfname'] . '/temp/'; // путь к папке для хранения временных файлов
-$_CFG['PATH']['temp'] = '_content/temp/'; // путь к папке для хранения временных файлов
+$_CFG['PATH']['temp'] = $_CFG['PATH']['content'].'temp/'; // путь к папке для хранения временных файлов
 
 
 /* * *************** */
@@ -326,8 +326,7 @@ $_CFG['_error'] = array(
 if(file_exists($_CFG['_FILE']['config']))
 	include($_CFG['_FILE']['config']);
 elseif(!isset($INSTALL)) {
-	@header("Location: /".$_CFG['PATH']['wepname'].'/install.php');
-	die();
+	static_main::redirect('/'.$_CFG['PATH']['wepname'].'/install.php');
 }
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -357,6 +356,8 @@ while (isset($PHP_SELF[$k]) and $PHP_SELF[$k] != $_CFG['PATH']['wepname']) {
 	$k++;
 }
 /* $_CFG['_HREF'] */
+if(!isset($_SERVER['HTTP_HOST'])) $_SERVER['HTTP_HOST'] = $_CFG['site']['www'];
+
 if (strpos($_SERVER['HTTP_HOST'], 'xn--') !== false) {
 	require_once($_CFG['_PATH']['wep_phpscript'] . '/idna_convert.class.php');
 	$IDN = new idna_convert();
