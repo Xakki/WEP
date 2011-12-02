@@ -57,11 +57,15 @@
 
 			if(static_main::_prmModul($_GET['_modul'],array(1,2))) {
 				if($_GET['_view']=='list') {
-					$param = array('sbmt_save'=>true, 'sbmt_close'=>true ,'sbmt_del'=>true);
+					$param = array(
+						'sbmt_save'=>true, 
+						'sbmt_close'=>true ,
+						'sbmt_del'=>true,
+						'firstpath'=>$_CFG['PATH']['wepname'] . '/index.php?_view=list&'
+					);
 //$tt = array();$summ = 0;for($j = 1; $j <= 5; $j++) { $tt[$j] = getmicrotime(); for($i = 1; $i <= 20; $i++) {
 					$MODUL->setFilter(1);
 					list($DATA,$flag) = $MODUL->super_inc($param,$_GET['_type']);
-					$DATA['firstpath'] = $_CFG['PATH']['wepname'] . '/index.php?_view=list&';
 
 					// Adept path
 					$path = array();

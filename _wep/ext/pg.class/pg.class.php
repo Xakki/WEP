@@ -250,8 +250,9 @@ class pg_class extends kernel_extends {
 	function display($templ=true) {
 		$this->current_path = '';
 		global $_tpl,$HTML;
+		foreach($this->config['marker'] as $km=>$rm)
+			$_tpl[$km] = '';
 		$_tpl['onload'] = '';
-		$_tpl['text'] = '';
 		$_tpl['title'] = '';
 		$_tpl['keywords'] = $this->config['keywords'];
 		$_tpl['description'] = $this->config['description'];

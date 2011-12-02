@@ -14,7 +14,7 @@ if(isset($_POST['sbmt'])) {
 				$dataup['keywords'] = $r['keywords'];
 			if($r['description'])
 				$dataup['description'] = $r['description'];
-			$MODUL->childs['content']->qu($dataup,'owner_id='.$r['id'].' LIMIT 1');
+			$MODUL->childs['content']->_update($dataup,'owner_id='.$r['id'].' LIMIT 1');
 		}
 		$MODUL->SQL->execSQL($rDATA[$MODUL->_cl]['keywords']['@newquery']);
 		$MODUL->SQL->execSQL($rDATA[$MODUL->_cl]['description']['@newquery']);

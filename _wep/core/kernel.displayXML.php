@@ -23,33 +23,13 @@
 			return $DATA;
 		}
 
-		/*** PAGE NUM  REVERSE ***/
-		if($this->reversePageN) {
-			if($this->_pn == 0) 
-				$this->_pn = 1;
-			else
-				$this->_pn = floor($countfield/$this->messages_on_page)-$this->_pn+1;
-		}
 		// Функция постраничной навигации
-		$pt = implode('&',$this->_clp).($this->id?'&'.$this->_cl.'_id='.$this->id:'');
-		$DATA['pagenum'] = $this->fPageNav($countfield,$pt,1);
-		$pcnt = 0;
-		if($this->reversePageN) {
-			if($this->_pn==floor($countfield/$this->messages_on_page)) {
-				$this->messages_on_page = $countfield-$this->messages_on_page*($this->_pn-1); // правдивый
-				//$this->messages_on_page = $this->messages_on_page*$this->_pn-$countfield; // полная запись
-			}
-			else
-				$pcnt = $countfield-$this->messages_on_page*$this->_pn; // начало отсчета
-		}
-		else
-			$pcnt = $this->messages_on_page*($this->_pn-1); // начало отсчета
-		if($pcnt<0)
-				$pcnt = 0;
-		$climit= $pcnt.', '.$this->messages_on_page;
+		$DATA['pagenum'] = $this->fPageNav2($countfield,$param);
 
 		// Начальный отчет элементов на странице
-		$DATA['pcnt'] = $pcnt;
+		$DATA['pcnt'] = $DATA['pagenum']['start'];
+
+		$climit= $DATA['pagenum']['start'].', '.$this->messages_on_page;
 
 		//Паратметры запроса
 		// 0 - запрашиваемые поля

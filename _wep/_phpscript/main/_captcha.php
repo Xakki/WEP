@@ -6,13 +6,14 @@ if(isset($_COOKIE['chash']) and $_COOKIE['chash'] and $_COOKIE['pkey']) {
 	$hash_key = md5($hash_key);
 	if(function_exists('openssl_encrypt')) {
 		$data = openssl_decrypt($_COOKIE['chash'],'aes-128-cbc',$hash_key,false,"1234567812345678");
-	} else {
+	}elseif(function_exists('mcrypt_encrypt')) {
 		$data = base64_decode($_COOKIE['chash']);
 		$data = mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $hash_key, $data, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND));
-	}
+	} else 
+		$data = $_COOKIE['chash'];
 }
 else {
-	$data = 'ERROR';
+	$data = 'err cookie';
 	/*session_start();
 	if(isset($_SESSION["captcha"]))
 		$data = $_SESSION["captcha"];
@@ -20,6 +21,7 @@ else {
 		$data = $_SESSION["captcha"] = rand(10000,99999);
 	*/
 }
+
 
 header("Content-type: image/png");
 

@@ -46,7 +46,7 @@
 			$html .= $temp_topmenu;
 		}
 
-		$html .= tpl_pagenum($data['data']['pagenum']);// pagenum
+		$html .= tpl_spagenum($data['data']['pagenum']);// pagenum
 		$html .= '<hr style="border:transparent;"/><div id="tools_block" style="display:none;"></div>';
 
 		if(isset($data['messages']) and count($data['messages'])) {
@@ -198,7 +198,7 @@
 	}
 
 
-	function tpl_pagenum(&$data) {
+	function tpl_spagenum(&$data) {
 		global $_CFG,$_tpl;
 		if(!$data or !count($data)) return '';
 		$html = '<div class="pagenumcnt">'.$data['cnt'].'&#160;:&#160;&#160;</div>';
