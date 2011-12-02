@@ -50,13 +50,9 @@
 				$param['sbmt_close'] = true;
 			if($FUNCPARAM[4])
 				$param['sbmt_del'] = true;
+			$param['firstpath'] = $PGLIST->_CFG['_HREF']['BH'].$PGLIST->current_path;
 			list($DATA,$flag) = $MODUL->super_inc($param,$_GET['_type']);
 
-			$DATA['firstpath'] = $PGLIST->_CFG['_HREF']['BH'].$PGLIST->current_path;
-			if(strpos($DATA['firstpath'],'?')===false)
-				$DATA['firstpath'] .= '?';
-			else
-				$DATA['firstpath'] .= '&';
 			// Adept path
 			$path = array();
 			$temp = $DATA['firstpath'];

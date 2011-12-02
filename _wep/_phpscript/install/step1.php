@@ -38,7 +38,13 @@ foreach($_CFGFORM as $kt=>$rb) {
 }
 
 $mess = array();$txt = '';
-if (isset($_POST['sbmt'])) {
+$flag = true;
+if(!function_exists('openssl_encrypt') and !function_exists('mcrypt_decrypt')) {
+	$mess[] = array('name' => 'error', 'value' => 'Необходимо подключить php модуль openssl либо mcrypt');
+	$flag = false;
+}
+
+if (isset($_POST['sbmt']) and $flag) {
 	$sqlfl = true;
 	static_tools::checkWepconf();
 	if(isset($_POST['rootlogin']) and $_POST['rootlogin']) {
@@ -68,15 +74,17 @@ if (isset($_POST['sbmt'])) {
 		//die('<a href="install.php?step=' . ($_GET['step'] + 1) . '">Следующий шаг</a>');
 	}
 	$USER_CFG = $_POST;
-} 
+}
 else {
 	$mess[] = array('name' => 'ok', 'value' => 'Будте осторожны при вводе этих настроек.');
 }
 
 $DATA['_*features*_'] = array('method' => 'POST', 'name' => 'step0');
-$DATA['sbmt'] = array(
-	'type' => 'submit',
-	'value' => $var_const['sbmt']);
+if($flag) {
+	$DATA['sbmt'] = array(
+		'type' => 'submit',
+		'value' => $var_const['sbmt']);
+}
 
 $DATA['formcreat'] = array('form' => $DATA);
 $DATA['formcreat']['messages'] = $mess;

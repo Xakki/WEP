@@ -606,9 +606,9 @@ var wep = {
 				//placeholder:'sortHelper',
 				handle: '>td a.imgdragdrop',
 				tolerance: 'pointer',
-				start: function(event, ui) {
+				/*start: function(event, ui) {
 					//console.log(ui.helper);
-				},
+				},*/
 				//sort: function(event, ui) { ... },
 				//change: function(event, ui) {console.log('*change');console.log(ui);},
 				update: function(event, ui) {
@@ -622,8 +622,6 @@ var wep = {
 						'data' : {'_modul':modul,'_fn':'_sorting','id':id,'t1':t1,'t2':t2,'pid':pid}
 					};
 					JSWin(param);
-					Obj.parent().find('tr.subtd').remove();
-					Obj.find('a.imgminus').removeClass('imgminus').addClass('imgplus');
 				}
 			});
 		});

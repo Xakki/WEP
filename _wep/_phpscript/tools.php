@@ -392,7 +392,8 @@ function memcachstatus() {
 		$html .="<tr><td>Cumulative number of retrieval requests </td><td>".$status["cmd_get"]."</td></tr>"; 
 		$html .="<tr><td> Cumulative number of storage requests </td><td>".$status["cmd_set"]."</td></tr>"; 
 
-		$percCacheHit=((real)$status["get_hits"]/ (real)$status["cmd_get"] *100); 
+		if($status["cmd_get"]) 
+			$percCacheHit=((real)$status["get_hits"]/ (real)$status["cmd_get"] *100); 
 		$percCacheHit=round($percCacheHit,3); 
 		$percCacheMiss=100-$percCacheHit; 
 

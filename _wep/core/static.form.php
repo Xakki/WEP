@@ -22,18 +22,6 @@ class static_form {
 		// add owner_id field
 		if ($_this->owner and (!isset($_this->fld_data[$_this->owner_name]) or !$_this->fld_data[$_this->owner_name]) )
 			$_this->fld_data[$_this->owner_name] = $_this->owner->id;
-		if ($_this->mf_timecr) 
-			$_this->fld_data['mf_timecr'] = $_this->_CFG['time'];
-		if ($_this->mf_timeup) 
-			$_this->fld_data['mf_timeup'] = $_this->_CFG['time'];
-		if($_this->mf_ipcreate) {
-			$_this->fld_data['mf_ipcreate'] = sprintf("%u",ip2long($_SERVER['REMOTE_ADDR']));
-			//$_this->fld_data['mf_ipcreate'] = 'inet_aton("'.$_SERVER['REMOTE_ADDR'].'")';
-			if(!(int)$_this->fld_data['mf_ipcreate'])
-				trigger_error('ERROR REMOTE_ADDR `'.$_SERVER['REMOTE_ADDR'].'`. ', E_USER_WARNING);
-		}
-		if($_this->mf_createrid and isset($_SESSION['user']['id']) and (!isset($_this->fld_data[$_this->mf_createrid]) or $_this->fld_data[$_this->mf_createrid]=='') )
-			$_this->fld_data[$_this->mf_createrid]= $_SESSION['user']['id'];
 
 		if (!isset($_this->fld_data) && !count($_this->fld_data))
 			return static_main::log('error',static_main::m('add_empty',$_this));
@@ -90,6 +78,18 @@ class static_form {
 
 			$data[$key] = $value;
 		}
+		if ($_this->mf_timecr) 
+			$data['mf_timecr'] = $_this->_CFG['time'];
+		if ($_this->mf_timeup) 
+			$data['mf_timeup'] = $_this->_CFG['time'];
+		if($_this->mf_ipcreate) {
+			$data['mf_ipcreate'] = 'inet_aton("'.$_SERVER['REMOTE_ADDR'].'")';
+			//$_this->fld_data['mf_ipcreate'] = sprintf("%u",ip2long($_SERVER['REMOTE_ADDR']));
+			if(!$_SERVER['REMOTE_ADDR'])
+				trigger_error('ERROR REMOTE_ADDR `'.$_SERVER['REMOTE_ADDR'].'`. ', E_USER_WARNING);
+		}
+		if($_this->mf_createrid and isset($_SESSION['user']['id']) and (!isset($_this->fld_data[$_this->mf_createrid]) or $_this->fld_data[$_this->mf_createrid]=='') )
+			$_this->fld_data[$_this->mf_createrid]= $_SESSION['user']['id'];
 		$result=$_this->SQL->execSQL('INSERT INTO `'.$_this->tablename.'` (`'.implode('`,`', array_keys($data)).'`) VALUES (\''.implode('\',\'', $data).'\')');
 		if($result->err) return false;
 		return true;
