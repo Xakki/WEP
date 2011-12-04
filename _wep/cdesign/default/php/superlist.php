@@ -5,8 +5,7 @@
 
 		$firstpath = '';
 		if(count($data['_clp'])) {
-			foreach($data['_clp'] as $kp=>$rp)
-				$firstpath .= $kp.'='.$rp.'&';
+			$firstpath = http_build_query($data['_clp']).'&';
 		}
 		$flag = 0;
 		if(isset($data['formcreat']) and count($data['formcreat'])) {
@@ -15,13 +14,9 @@
 			else
 				$flag = 1;
 		}
-		if(isset($data['path']) and count($data['path'])) {
-			include_once($HTML->_PATHd.'php/path.php');
-			$html = tpl_path($data['path'],$flag);// PATH
-		}
 
+		$temp_topmenu = '<div class="menu_new">';
 		if(count($data['topmenu'])) { //MENU
-			$temp_topmenu = '<div class="menu_new">';
 			foreach($data['topmenu'] as $r) {
 				$temp_topmenu .= '<div class="botton"><span';
 				// HREF path
@@ -42,12 +37,19 @@
 					$temp_topmenu .= ' style="border:2px solid red;"';
 				$temp_topmenu .= ' class="'.$r['css'].'" title="'.$r['caption'].'">'.$r['caption'].'</span></div>';
 			}
-			$temp_topmenu .= '</div>';
-			$html .= $temp_topmenu;
+		}
+		$temp_topmenu .= tpl_spagenum($data['data']['pagenum']);// pagenum
+		$temp_topmenu .= '</div>';
+
+		$html .= $temp_topmenu;
+
+
+		if(isset($data['path']) and count($data['path'])) {
+			include_once($HTML->_PATHd.'php/path.php');
+			$html .= tpl_path($data['path'],$flag);// PATH
 		}
 
-		$html .= tpl_spagenum($data['data']['pagenum']);// pagenum
-		$html .= '<hr style="border:transparent;"/><div id="tools_block" style="display:none;"></div>';
+		$html .= '<div id="tools_block" style="display:none;"></div>';
 
 		if(isset($data['messages']) and count($data['messages'])) {
 			include_once($HTML->_PATHd.'php/messages.php');

@@ -10,7 +10,7 @@ class static_form {
 	// out: 0 - success,
 	//      otherwise errorcode
 
-	static function _add(&$_this,$flag_select=true) {
+	static function _add(&$_this,$flag_select=true, $flag_update=false) {
 		// add ordind field
 		if ($_this->mf_ordctrl and (!isset($_this->fld_data[$_this->mf_ordctrl]) or $_this->fld_data[$_this->mf_ordctrl]==0)) {
 			if ($ordind = $_this->_get_new_ord())
@@ -26,7 +26,7 @@ class static_form {
 		if (!isset($_this->fld_data) && !count($_this->fld_data))
 			return static_main::log('error',static_main::m('add_empty',$_this));
 
-		if (!self::_add_fields($_this)) return false;
+		if (!self::_add_fields($_this,$flag_update)) return false;
 
 		// get last id if not used nick
 		if (!$_this->mf_use_charid && !isset($_this->fld_data['id']))
@@ -56,7 +56,7 @@ class static_form {
 		return static_main::log('ok',static_main::m('add',$_this));
 	}
 
-	static function _add_fields(&$_this) {
+	static function _add_fields(&$_this,$flag_update=false) {
 		$int_type = array(
 			'int'=>1,
 			'tinyint'=>1,
@@ -90,7 +90,16 @@ class static_form {
 		}
 		if($_this->mf_createrid and isset($_SESSION['user']['id']) and (!isset($_this->fld_data[$_this->mf_createrid]) or $_this->fld_data[$_this->mf_createrid]=='') )
 			$_this->fld_data[$_this->mf_createrid]= $_SESSION['user']['id'];
-		$result=$_this->SQL->execSQL('INSERT INTO `'.$_this->tablename.'` (`'.implode('`,`', array_keys($data)).'`) VALUES (\''.implode('\',\'', $data).'\')');
+
+		$q = 'INSERT INTO `'.$_this->tablename.'` (`'.implode('`,`', array_keys($data)).'`) VALUES (\''.implode('\',\'', $data).'\')';
+		if($flag_update) { // параметр передается в ф. _addUp() - обновление данных если найдена конфликтная запись
+			reset($data);$kt = key($data);
+			$q .= ' ON DUPLICATE KEY UPDATE `'.$kt.'`=VALUES(`'.$kt.'`)';
+			unset($data[$kt]);
+			foreach($data as $kt=>$kr)
+				$q .= ', `'.$kt.'` = VALUES(`'.$kt.'`)';
+		}
+		$result=$_this->SQL->execSQL($q);
 		if($result->err) return false;
 		return true;
 	}

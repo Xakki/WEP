@@ -872,6 +872,7 @@ class pg_class extends kernel_extends {
 	}
 
 	function reverseDataMap(&$data) {
+		$xml = '';
 		foreach($data as $k=>$r) {
 			if(isset($r['href']) and $r['href'])
 				$xml .= '

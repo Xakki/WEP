@@ -343,6 +343,7 @@ function headerssent() {
 		header("Last-Modified: " . gmdate("D, d M Y H:i:s", $_CFG['time']) . " GMT");
 		header("Expires: " . gmdate("D, d M Y H:i:s", $_CFG['time']) . " GMT");
 		header("Content-type:text/html;charset=utf-8");
+		header("Access-Control-Allow-Origin: *");
 		return true;
 	}
 	return false;

@@ -245,22 +245,23 @@ a.am_tools {
 
 
 /*SUPER PUPER*/
-	.path {padding:0 0 13px 0;text-align:left;display: inline-block;}
+	.path {padding:0 0 5px 0;text-align:left;}
 	.path div {color:#111;}
 	.path img {vertical-align:middle;height:18px;}
  /*MENU*/
 div.menu_new {
-	padding: 5px 15px 0 0pt;margin: 0;
-	float: left;
+	padding: 5px  15px 0 0;margin: 0;
 	height:1.6em;
 	font-size:1.2em;
+	vertical-align: middle;
 }
 div.menu_new .botton {
 	background-color:#A1E177;
-	float:left;
+	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
 	margin:0 2px;
 	padding:2px 3px 2px;
 	border:1px solid #AAAAAA;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
+	vertical-align: top;
 }
 div.menu_new .botton:hover {
 	border:1px solid #63A6CC;
@@ -366,7 +367,10 @@ div.menu_new fieldset legend {
 .dis td {color:#A1A1A1;}
 
 /* Постраничный просмотр */
-.pagenumcnt {padding:5px 0 5px 10px;float:left;}
+.pagenumcnt {
+	padding:0 0 0 10px;
+	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
+}
 
 span.pagenum {
 	font-size:1em;
@@ -382,7 +386,7 @@ div.pagenum {
 	height:27px;
 	padding:5px 0 0;
 	color: #4B4B4B;
-	float:left;
+	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
 }
 div.pagenum a {
 	padding:0 2px;
@@ -391,7 +395,7 @@ div.pagenum a {
 	font-size:1em;
 	background-color:transparent;
 	border:solid 1px gray;
-	margin:7px 0 6px 10px;
+	margin:0 0 0 10px;
 }
 /* ----  SUPER PUPER*/
 
@@ -486,7 +490,7 @@ form table.form {
 /* фильтр */
 
 .ppagenum {
-	float:left;
+	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
 }
 
 /*tools_block*/
@@ -500,7 +504,7 @@ form table.form {
 /*debug*/
 span.seldebug {
 	vertical-align:top;
-	display: inline-block;
+	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
 	margin: 2px 3px 0 0;
 }
 span.seldebug select{
