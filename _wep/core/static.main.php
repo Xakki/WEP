@@ -74,6 +74,8 @@ class static_main {
 	static function showErr() {
 		global $_CFG, $SQL;
 		$temp = static_main::showLog(); // сообщения ядра
+		if($temp[0])
+				$temp[0] = self::spoilerWrap('Сообщения ядра',$temp[0]);
 		$notice = '';
 		$htmlerr = '';
 		/*Вывод ошибок*/
