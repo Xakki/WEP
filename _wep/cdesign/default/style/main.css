@@ -545,3 +545,9 @@ span.seldebug select{
 	color:blue;
 }
 
+.table {
+	border:solid gray 1px;
+}
+.table td {
+	border:solid gray 1px;
+}

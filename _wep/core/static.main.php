@@ -351,8 +351,12 @@ class static_main {
 			elseif ($_CFG['wep']['login'] and $_CFG['wep']['password']) {
 				// Авторизация без использования БД , логин и пароль берутся из конфига
 				$flag = 0;
-				if (isset($_COOKIE['remember']) and $_COOKIE['remember'] and $_CFG['wep']['login'] == substr($_COOKIE['remember'], ($pos + 1)) and md5($_CFG['wep']['md5'].$_CFG['wep']['password']) == substr($_COOKIE['remember'], 0, $pos))
-					$flag = 1;
+				
+				if (isset($_COOKIE['remember']) and $_COOKIE['remember']) {
+					$pos = strpos($_COOKIE['remember'],'_');
+					if($_CFG['wep']['login'] == substr($_COOKIE['remember'], ($pos + 1)) and md5($_CFG['wep']['md5'].$_CFG['wep']['password']) == substr($_COOKIE['remember'], 0, $pos))
+						$flag = 1;
+				}
 				elseif ($login and $pass and $_CFG['wep']['login'] == $login and $_CFG['wep']['password'] == $pass)
 					$flag = 1;
 				if ($flag) {

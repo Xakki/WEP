@@ -58,9 +58,12 @@ class content_class extends kernel_extends {
 			'paramedit'=>array(
 				'CKFinder'=>1,
 				'extraPlugins'=>"'cntlen,syntaxhighlight,timestamp'",
-				'contentsCss' => "['/_design/default/style/style.css', '/_design/_style/style.css']",
 				'toolbar' => 'Page',
 		));
+		if($form) {
+			//TODO : сделать подключение стилей , которые подключены к этой странице (включая глобальные стили)
+			//$this->fields_form['pg']['paramedit']['contentsCss'] = "['/_design/default/style/main.css', '/_design/_style/main.css']";
+		}
 		if($this->_CFG['wep']['access'])
 			$this->fields_form['ugroup'] = array('type' => 'list','multiple'=>2,'listname'=>'ugroup', 'caption' => 'Доступ','default'=>'0');
 		$this->fields_form['styles'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'style', 'caption' => 'CSS', 'mask' =>array('onetd'=>'Дизайн'));

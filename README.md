@@ -1,18 +1,57 @@
 WEP CMS
 =============
-
+<b>Web Engine on PHP</b>
 Модульная система управления контентом
 
 * https://github.com/Xakki/WEP -- Ветка для сторонних разработчиков
 * http://wep.xakki.ru -- сайт проекта
 
+
+
+Требования
+-------
+MYSQL 5.0 и новее
+PHP 5.3.0 и новее
+Apache 2 или(и) NGINX (с модуем php)
+Apache модули
+	mod_rewrite
+	mod_mime_magic
+PHP модули
+	php_curl
+	php_gd2
+	php_mbstring
+	php_exif
+	php_mysql
+	php_openssl или php_mcrypt
+	php_xsl
+	php_memcache (не обязательно)
+
 Установка
 -------
+1) Скачать фаилы https://github.com/Xakki/WEP/zipball/master
+2) Распаковать на сервере (например /var/www/localhost)
+3) Настройть Apache
+4) Открыть сайт (http://localhost) и вы попадете на страницу дефолтной авторизации (логин root и пароль rootpass)
+5) После успешной авторизации откроется пошаговая установка.(http://localhost/_wep/install.php)
+### Первый шаг
+Поля <b>выделенныен цветом</b> (Login БД с правами суперпользователя и Пароль БД с правами суперпользователя) для первоначального создания базы данных от имени пользователя, обладающими правами создания пользователя и БД
+Если вы уже создали БД вручную
+<code>
+create database `wepbd` character set utf8 ;
+create user 'wepmysqluser'@'localhost' identified by 'defaultpass';
+grant all privileges on wepbd.* to 'wepmysqluser'@'localhost';
+</code>
+то не заполняйте поля выделенные цветом
 
-### Структура фаилов
 ...
 
-### Структура базы данных
+### Второй шаг
+...
+
+### Третий шаг
+...
+
+### Завершение
 ...
 
 Настройка
@@ -244,9 +283,6 @@ FB::info('Info message');
 FB::warn('Warn message');
 FB::error('Error message');
 
-create database `wepbd` character set utf8 ;
-create user 'wepmysqluser'@'localhost' identified by 'defaultpass';
-grant all privileges on wepbd.* to 'wepmysqluser'@'localhost';
 
 
 git diff --name-status commit1 commit2 | awk '{ if ($1 != "D") print $2 }' | xargs git archive -o output.zip HEAD

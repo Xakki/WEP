@@ -118,7 +118,12 @@
 	<option '.($_design=='extjs'?'selected="selected"':'').' value="extjs">ExtJS</option>
 	</select></span>';
 		}
-		$_tpl['time'] = 'PHP ver.' . phpversion().' | '.date('Y-m-d H:i:s').' | '.date_default_timezone_get().' | ';
+		if(!isset($_SESSION['wep_info'])) {
+			if(!$SQL) $SQL = new sql($_CFG['sql']);
+			$info = $SQL->_info();
+			$_SESSION['wep_info'] = 'PHP ver.' . phpversion().' | MySQL ver.' . $info['version'][1].' | '.date_default_timezone_get().' | ';
+		}
+		$_tpl['time'] = $_SESSION['wep_info'].date('Y-m-d H:i:s').' | ';
 	}
 	else {
 		static_main::redirect('login.php?mess=denied&ref='.base64_encode($_SERVER['REQUEST_URI']));

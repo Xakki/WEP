@@ -8,9 +8,9 @@
 		var $sql_res;
 		/**Если тру - то проверка таблиц и папок*/
 
-		function __construct($CFG_SQL) {
+		function __construct(&$CFG_SQL) {
 			global $_CFG;
-			$this->CFG_SQL = $CFG_SQL;
+			$this->CFG_SQL = &$CFG_SQL;
 			$this->_iFlag= false;
 			$this->ready = false;
 			$this->logFile = false;
@@ -99,18 +99,36 @@
 			return mysql_insert_id();
 		}
 
+		public function _info() {
+			return $this->q('show variables',0,MYSQL_NUM);
+		}
+
+		public function _proc() {
+			return $this->q('show full processlist');
+		}
+
+		public function _status() {
+			return $this->q('show status');
+		}
+
 		public function execSQL($sql,$unbuffered=0) {
 			if(!$this->ready) return false;
 			return new query($this, $sql, $unbuffered);
 		}
 
-		public function q($sql) {
+		public function q($sql,$key=false,$type = MYSQL_ASSOC) {
 			if(!$this->ready) return false;
 			$result = new query($this, $sql,0);
 			$data = array();
 			if (!$result->err) {
-				while ($r = $result->fetch_array())
-					$data[] = $r;
+				if($key!==false) {
+					while ($r = $result->fetch_array($type))
+						$data[$r[$key]] = $r;
+				} 
+				else {
+					while ($r = $result->fetch_array($type))
+						$data[] = $r;
+				}
 			}
 			return $data;
 		}
@@ -288,7 +306,7 @@
 			{
 				$ttt = (getmicrotime()-$ttt);
 				if(isset($db->CFG_SQL['longquery']) and $db->CFG_SQL['longquery']>0 and $ttt>$db->CFG_SQL['longquery']) {
-					trigger_error('LONG QUERY ['.$ttt.' sec.] ('.$sql.')', E_USER_WARNING);
+					trigger_error('LONG QUERY ['.$ttt.' sec. - мах '.$db->CFG_SQL['longquery'].'] ('.$sql.')', E_USER_WARNING);
 					if($db->logFile!==false)
 						$this->logFile[] = '['.date('Y-m-d H:i:s').'] LONG QUERY ['.$ttt.' sec.] ('.$sql.')';
 				}
