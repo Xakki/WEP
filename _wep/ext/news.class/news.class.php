@@ -123,7 +123,7 @@ class news_class extends kernel_extends {
 	}
 	function fNewsItem($id)// func display NEWS on INDEX page
 	{
-		$listfields = array('id,ndate,name,i_news,text,href,redirect');
+		$listfields = array('*');
 		$clause = 'WHERE active=1 and id='.$id;
 		return $this->_query($listfields,$clause);
 	}
