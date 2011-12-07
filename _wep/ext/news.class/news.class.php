@@ -78,7 +78,7 @@ class news_class extends kernel_extends {
 		$this->_query($listfields,$clause);
 		foreach($this->data as $r) {
 			$txt = mb_substr(strip_tags($r['text']),0,500,'UTF-8');
-			$this->SQL->execSQL('UPDATE test3_news SET description="'.mysql_real_escape_string($txt).'" WHERE id='.$r['id']);
+			$this->SQL->execSQL('UPDATE test3_news SET description="'.$this->SqlEsc($txt).'" WHERE id='.$r['id']);
 		}*/
  
 		$DATA = array();

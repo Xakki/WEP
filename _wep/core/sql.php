@@ -36,16 +36,16 @@
 		}
 
 		private function sql_connect() {
-			$this->hlink = @mysql_connect($this->CFG_SQL['host'], $this->CFG_SQL['login'], $this->CFG_SQL['password']);
+			$this->hlink = @mysqli_connect($this->CFG_SQL['host'], $this->CFG_SQL['login'], $this->CFG_SQL['password']);
 			if(!$this->hlink)
 				return $this->err('SQL connect error');
-			mysql_query("SET time_zone = '".date_default_timezone_get()."'", $this->hlink);
+			mysqli_query($this->hlink,"SET time_zone = '".date_default_timezone_get()."'");
 			return true;
 		}
 
 		private function _connectDB() {
 			if(isset($this->CFG_SQL['setnames']) and $this->CFG_SQL['setnames'])
-				mysql_query ('SET NAMES '.$this->CFG_SQL['setnames'],$this->hlink);
+				mysqli_query($this->hlink, 'SET NAMES '.$this->CFG_SQL['setnames']);
 			if(isset($this->CFG_SQL['database']) and $this->CFG_SQL['database']) {
 				if(!$this->sql_selectDB($this->CFG_SQL)) {
 					if($this->sql_createDB($this->CFG_SQL)) {
@@ -60,63 +60,48 @@
 		}
 
 		private function sql_selectDB($CFG) {
-			return mysql_select_db($CFG['database'],$this->hlink);
+			return mysqli_select_db($this->hlink,$CFG['database']);
 		}
 
 		private function sql_createDB($CFG) {
 			$q = 'create database `'.$CFG['database'].'`';
 			if($CFG['setnames'])
 				$q .= ' character set '.$CFG['setnames'].' collate '.$CFG['setnames'].'_general_ci';
-			return mysql_query($q, $this->hlink);
+			return mysqli_query($this->hlink, $q);
 		}
 
 		private function sql_createUser($CFG) {
-			return mysql_query('create user \''.$CFG['login'].'\'@\''.$CFG['host'].'\' identified by \''.$CFG['password'].'\'', $this->hlink);
+			return mysqli_query($this->hlink, 'create user \''.$CFG['login'].'\'@\''.$CFG['host'].'\' identified by \''.$CFG['password'].'\'');
 		}
 
 		private function sql_createGrant($CFG) {
-			return mysql_query('grant all privileges on `'.$CFG['database'].'`.* to \''.$CFG['login'].'\'@\''.$CFG['host'].'\'', $this->hlink);
-		}
-
-
-		public function sql_install($CFG) {
-			if(!$this->ready)
-				return array(false,static_main::m('SQL not ready'));
-			if(!$this->sql_selectDB($CFG))
-				if(!$this->sql_createDB($CFG))
-					return array(false,static_main::m('SQL can`t create database'));
-			if(!count($this->q('Select * from mysql.user where user=\''.$CFG['login'].'\' and Host=\''.$CFG['host'].'\'')))
-				if(!$this->sql_createUser($CFG))
-					return array(false,static_main::m('SQL can`t create users'));
-			if(!count($this->q('Select * from mysql.db where user=\''.$CFG['login'].'\' and Host=\''.$CFG['host'].'\' and Db=\''.$CFG['database'].'\'')))
-				if(!$this->sql_createGrant($CFG))
-					return array(false,static_main::m('SQL can`t set grant'));
-			return array(true,'OK');
+			return mysqli_query($this->hlink, 'grant all privileges on `'.$CFG['database'].'`.* to \''.$CFG['login'].'\'@\''.$CFG['host'].'\'');
 		}
 
 		public function sql_id() {
 			if(!$this->ready) return false;
-			return mysql_insert_id();
+			return mysqli_insert_id($this->hlink);
 		}
 
-		public function _info() {
-			return $this->q('show variables',0,MYSQL_NUM);
+
+		public function SqlEsc($val) {
+			if(!$this->ready) return '';
+			return mysqli_real_escape_string($this->hlink,$val);
 		}
 
-		public function _proc() {
-			return $this->q('show full processlist');
+		private function sql_close() {
+			if($this->hlink)
+				mysqli_close($this->hlink);
 		}
 
-		public function _status() {
-			return $this->q('show status');
-		}
+/*****************************/
 
 		public function execSQL($sql,$unbuffered=0) {
 			if(!$this->ready) return false;
 			return new query($this, $sql, $unbuffered);
 		}
 
-		public function q($sql,$key=false,$type = MYSQL_ASSOC) {
+		public function q($sql,$key=false,$type = MYSQLI_ASSOC) {
 			if(!$this->ready) return false;
 			$result = new query($this, $sql,0);
 			$data = array();
@@ -133,15 +118,37 @@
 			return $data;
 		}
 
-		public function SqlEsc($val) {
-			if(!$this->ready) return '';
-			return mysql_real_escape_string($val,$this->hlink);
+/*****************************/
+
+		public function _info() {
+			return $this->q('show variables',0,MYSQLI_NUM);
 		}
 
+		public function _proc() {
+			return $this->q('show full processlist');
+		}
 
-/*****************************/
+		public function _status() {
+			return $this->q('show status');
+		}
+
 		private function fError($err) {
 			$this->sql_err[] = $err;
+		}
+
+		public function sql_install($CFG) {
+			if(!$this->ready)
+				return array(false,static_main::m('SQL not ready'));
+			if(!$this->sql_selectDB($CFG))
+				if(!$this->sql_createDB($CFG))
+					return array(false,static_main::m('SQL can`t create database'));
+			if(!count($this->q('Select * from mysql.user where user=\''.$CFG['login'].'\' and Host=\''.$CFG['host'].'\'')))
+				if(!$this->sql_createUser($CFG))
+					return array(false,static_main::m('SQL can`t create users'));
+			if(!count($this->q('Select * from mysql.db where user=\''.$CFG['login'].'\' and Host=\''.$CFG['host'].'\' and Db=\''.$CFG['database'].'\'')))
+				if(!$this->sql_createGrant($CFG))
+					return array(false,static_main::m('SQL can`t set grant'));
+			return array(true,'OK');
 		}
 
 		private function err($mess) {
@@ -154,11 +161,6 @@
 				//static_main::log('error',$mess);
 			}
 			return false;
-		}
-
-		private function sql_close() {
-			if($this->hlink)
-				mysql_close($this->hlink);
 		}
 
 		var $alias_types = array(
@@ -273,6 +275,28 @@
 			return $data;
 		}
 
+		function longLog($ttt,$sql) {
+			global $_CFG;
+			if(isset($this->CFG_SQL['longquery']) and $this->CFG_SQL['longquery']>0 and $ttt>$this->CFG_SQL['longquery']) {
+				trigger_error('LONG QUERY ['.$ttt.' sec. - мах '.$this->CFG_SQL['longquery'].'] ('.$sql.')', E_USER_WARNING);
+				if($this->logFile!==false)
+					$this->logFile[] = '['.date('Y-m-d H:i:s').'] LONG QUERY ['.$ttt.' sec.] ('.$sql.')';
+			}
+			//if(strstr(strtolower($sql),'insert into'))
+			//	$this->id = $this->sql_id();
+			if(isset($_COOKIE[$_CFG['wep']['_showallinfo']]) and $_COOKIE[$_CFG['wep']['_showallinfo']]>1) {
+				if($ttt>0.5) $ttt = '<span style="color:#FF0000;">'.$ttt.'</span>';
+				elseif($ttt>0.1) $ttt = '<span style="color:#FF6633;">'.$ttt.'</span>';
+				elseif($ttt>0.05) $ttt = '<span style="color:#006699;">'.$ttt.'</span>';
+				elseif($ttt>0.01) $ttt = '<span style="color:#66CCCC;">'.$ttt.'</span>';
+				elseif($ttt>0.005) $ttt = '<span style="color:#006600">'.$ttt.'</span>';
+				else $ttt = '<span style="color:#00FF00;">'.$ttt.'</span>';
+				$_CFG['logs']['sql'][] = htmlentities($sql,ENT_NOQUOTES,$_CFG['wep']['charset']).'  TIME='.$ttt;
+			}
+			elseif($_CFG['_F']['adminpage'] or isset($_COOKIE[$_CFG['wep']['_showallinfo']]))
+				$_CFG['logs']['sql'][] = true;
+		}
+
 	}
 
 	class query {
@@ -282,81 +306,57 @@
 		var $affected;
 		var $err;
 
-		function __construct(&$db, $sql, $unbuffered) {
-			global $_CFG,$_tpl;
-			//if((isset($_COOKIE['_showallinfo']) and $_COOKIE['_showallinfo']) or $db->CFG_SQL['longquery']>0)
-				$ttt = getmicrotime();
-			if($unbuffered) {// Тут можно задавать запросы, разделённые точкой запятой
-				$this->handle = mysql_unbuffered_query($sql, $db->hlink);
-			}
-			else
-				$this->handle = mysql_query($sql, $db->hlink);
+		function __construct(&$db, $sql) {
+			global $_CFG;
+			$ttt = getmicrotime();
+			$this->handle = mysqli_query($db->hlink, $sql);
 			$this->db = &$db;
 			$this->query = $db->query = $sql;
-			$this->err=mysql_error($db->hlink);
+			$this->err=mysqli_error($db->hlink);
 			if ($this->err!='')
 			{
 				if($db->logFile!==false)
 					$this->logFile[] = 'ERORR: '.$this->err.' ('.$sql.')';
 				trigger_error($this->err.=' ('.$sql.');', E_USER_WARNING);
-				$this->errno = mysql_errno();
+				$this->errno = mysqli_errno($db->hlink);
 				//$db->fError($this->err);
 			}
 			else
 			{
-				$ttt = (getmicrotime()-$ttt);
-				if(isset($db->CFG_SQL['longquery']) and $db->CFG_SQL['longquery']>0 and $ttt>$db->CFG_SQL['longquery']) {
-					trigger_error('LONG QUERY ['.$ttt.' sec. - мах '.$db->CFG_SQL['longquery'].'] ('.$sql.')', E_USER_WARNING);
-					if($db->logFile!==false)
-						$this->logFile[] = '['.date('Y-m-d H:i:s').'] LONG QUERY ['.$ttt.' sec.] ('.$sql.')';
-				}
-				//if(strstr(strtolower($sql),'insert into'))
-				//	$this->id = $db->sql_id();
-				if(isset($_COOKIE[$_CFG['wep']['_showallinfo']]) and $_COOKIE[$_CFG['wep']['_showallinfo']]>1) {
-					if($ttt>0.5) $ttt = '<span style="color:#FF0000;">'.$ttt.'</span>';
-					elseif($ttt>0.1) $ttt = '<span style="color:#FF6633;">'.$ttt.'</span>';
-					elseif($ttt>0.05) $ttt = '<span style="color:#006699;">'.$ttt.'</span>';
-					elseif($ttt>0.01) $ttt = '<span style="color:#66CCCC;">'.$ttt.'</span>';
-					elseif($ttt>0.005) $ttt = '<span style="color:#006600">'.$ttt.'</span>';
-					else $ttt = '<span style="color:#00FF00;">'.$ttt.'</span>';
-					$_CFG['logs']['sql'][] = htmlentities($sql,ENT_NOQUOTES,$_CFG['wep']['charset']).'  TIME='.$ttt;
-				}
-				elseif($_CFG['_F']['adminpage'] or isset($_COOKIE[$_CFG['wep']['_showallinfo']]))
-					$_CFG['logs']['sql'][] = true;
-				//$_tpl['logs'] .= " ({$sql});<br/> ";
+				$db->longLog((getmicrotime()-$ttt),$sql);
 			}
 		}
 
 		function sql_id() {
-			return $this->db->sql_id();
+			return mysqli_insert_id($this->handle);
 		}
 
 		function destroy() {
-			return mysql_free_result($this->handle);
+			return mysqli_free_result($this->handle);
 		}
 
 		function num_rows() {
-			return mysql_num_rows($this->handle);
+			return mysqli_num_rows($this->handle);
 		}
 
-		// type MYSQL_ASSOC | MYSQL_BOTH | MYSQL_NUM
-		function fetch_array($type = MYSQL_ASSOC) {
-			return mysql_fetch_array($this->handle, $type);
+		// type MYSQLI_ASSOC | MYSQLI_BOTH | MYSQLI_NUM
+		function fetch_array($type = MYSQLI_ASSOC) {
+			return mysqli_fetch_array($this->handle, $type);
 		}
 
 		function sql_result($row) {
-			return mysql_result($this->handle, $row);
+			return mysqli_result($this->handle, $row);
 		}
 
 		function fetch_object() {
-			return mysql_fetch_object($this->handle);
+			return mysqli_fetch_object($this->handle);
 		}
 
 		function affected_rows() {
-			return mysql_affected_rows($this->db->hlink);
+			return mysqli_affected_rows($this->db->hlink);
 		}
 
 		function sql_seek($row) {
-			return mysql_data_seek($this->handle, $row);
+			return mysqli_data_seek($this->handle, $row);
 		}
 	}

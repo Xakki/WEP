@@ -550,7 +550,7 @@ class mail_class extends kernel_extends {
 		{
 			_new_class('ugroup', $UGROUP);
 			
-			$term = mysql_real_escape_string((string)$_GET['term']);
+			$term = $this->SqlEsc((string)$_GET['term']);
 			
 			$result = $this->SQL->execSQL('
 				select `id`, `userpic`,`name`
@@ -575,7 +575,7 @@ class mail_class extends kernel_extends {
 	{
 		if ((isset($_POST['msg']) && isset($_POST['user_id'])) || $_POST['user_id'] == 0)
 		{
-			$msg = mysql_real_escape_string((string)$_POST['msg']);
+			$msg = $this->SqlEsc((string)$_POST['msg']);
 			$user_id = (int)$_POST['user_id'];
 			
 			if ($user_id == $_SESSION['user']['id'])

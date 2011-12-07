@@ -24,7 +24,7 @@
 
 			if (isset($_GET['_type']) && $_GET['_type'] == 'sort' && isset($_POST['dropindex']) && isset($_POST['nodeid'])) {
 				$dropindex = (int)$_POST['dropindex'];
-				$nodeid = mysql_real_escape_string($_POST['nodeid']);
+				$nodeid = $SQL->SqlEsc($_POST['nodeid']);
 				$HTML->flag = false;
 
 				$msg = '';

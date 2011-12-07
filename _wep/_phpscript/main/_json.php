@@ -34,7 +34,7 @@
 		if(isset($listname['join'])) {
 			$clause .= $listname['join'];
 		}
-		$clause .= ' WHERE '.$listname['nameField'].' LIKE "%'.mysql_real_escape_string($_GET['_value']).'%" ';
+		$clause .= ' WHERE '.$listname['nameField'].' LIKE "%'.$SQL->SqlEsc($_GET['_value']).'%" ';
 		if(isset($listname['where']) and is_array($listname['where']))
 			$clause .= ' and '.implode(' and ',$listname['where']);
 		elseif(isset($listname['where']) and $listname['where']!='')
@@ -58,7 +58,7 @@
 			print('NO VALID DATA');
 		/*
 		if($field['type']=='ajaxlist') {
-			if($field['listname']['where']) $field['listname']['where'] .= ' and '.$_GET['nameField'].' LIKE "%'.mysql_real_escape_string($_GET['_value']).'%"';
+			if($field['listname']['where']) $field['listname']['where'] .= ' and '.$_GET['nameField'].' LIKE "%'.$SQL->SqlEsc($_GET['_value']).'%"';
 			$field['listname']['ordfield'] .= ' LIMIT 25';
 			$md= $MODUL->_getCashedList($field['listname']);
 			unset($md[0]);
@@ -99,7 +99,7 @@
 	}
 	elseif (isset($_POST['wepID'])) {
 		if (isset($_FILES['Filedata']) && $_FILES['Filedata']['error'] == 0) {
-//			session_id(mysql_real_escape_string((string)$_POST['wepID']));
+//			session_id($SQL->SqlEsc((string)$_POST['wepID']));
 //			session_go();
 //			file_put_contents($_CFG['_PATH']['path'].'test.txt', 'aaa '.var_export($_SESSION, true));
 

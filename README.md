@@ -17,13 +17,13 @@ Apache модули
 	mod_rewrite
 	mod_mime_magic
 PHP модули
-	php_curl
 	php_gd2
 	php_mbstring
 	php_exif
-	php_mysql
+	php_mysqli
 	php_openssl или php_mcrypt
-	php_xsl
+	php_xsl (не обязательно)
+	php_curl (не обязательно)
 	php_memcache (не обязательно)
 
 Установка

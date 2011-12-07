@@ -718,7 +718,7 @@ class users_class extends kernel_extends {
 	}
 
 	function UserInfo($ID,$fld='id') {
-		$ID = mysql_real_escape_string($ID);
+		$ID = $this->SqlEsc($ID);
 		if(isset($this->userCach[$ID]))
 			return $this->userCach[$ID];
 		$DATA = $this->_query('t2.name as gname,t1.*',' t1 JOIN '.$this->owner->tablename.' t2 ON t1.owner_id=t2.id WHERE t1.'.$fld.'="'.$ID.'"');
