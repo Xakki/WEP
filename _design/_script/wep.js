@@ -317,7 +317,7 @@ var wep = {
 		else if(strpos(objid,'#')===0) objid = substr(objid, 2);
 
 		if(!show){
-			jQuery(body+'> #'+objid).css('display','none');
+			jQuery(body+'> #'+objid).hide();
 			showBG(body);
 			if (_Browser.type == 'IE' && 8 > _Browser.version)
 				jQuery('select').toggleClass('hideselectforie7',false);
@@ -560,8 +560,8 @@ var wep = {
 			param += cl+'_pn=';
 			//alert(dump(loc));
 			$.include('/_design/_script/script.jquery/paginator.js',function(ob){
-				jQuery('.pagenum').css('display','none');
-				jQuery('.ppagenum').css('display','block').paginator({pagesTotal:total, 
+				jQuery('.pagenum').hide();
+				jQuery('.ppagenum').show().paginator({pagesTotal:total, 
 					pagesSpan:8, 
 					returnOrder:order,
 					pageCurrent:pageCur, 

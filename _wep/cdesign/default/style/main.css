@@ -368,6 +368,7 @@ div.menu_new fieldset legend {
 
 /* Постраничный просмотр */
 .pagenumcnt {
+	vertical-align: top;
 	padding:0 0 0 10px;
 	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
 }
@@ -396,6 +397,7 @@ div.pagenum a {
 	background-color:transparent;
 	border:solid 1px gray;
 	margin:0 0 0 10px;
+	vertical-align: top;
 }
 /* ----  SUPER PUPER*/
 
@@ -489,8 +491,9 @@ form table.form {
 
 /* фильтр */
 
-.ppagenum {
+div.ppagenum {
 	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
+	margin: 0 auto;
 }
 
 /*tools_block*/
