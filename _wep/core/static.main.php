@@ -602,4 +602,10 @@ class static_main {
 			$date = date($format, $time);
 		return $date;
 	}
+
+	static function padeji($txt) {
+		$lw = mb_substr($txt,-1);
+		$ArW = array('а'=>1,''=>1,''=>1,''=>1,''=>1,''=>1,);
+		return $txt;
+	}
 }
