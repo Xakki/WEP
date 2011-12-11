@@ -34,11 +34,50 @@
 				$dir = dir($f);
 				while (false !== ($entry = $dir->read())) {
 					if ($entry[0]!='.' && $entry[0]!='..' && strstr($entry,'.php')) {
-						$data['#ext#'.substr($entry,0,-4)] = basename($value).'/'.$entry;
+						$data['#ext#'.substr($entry,0,-4)] = '*OLD*'.basename($value).'/'.$entry;
 					}
 				}
 				$dir->close();
 			}
+
+			// Системные модули
+			$dir = dir($_this->_CFG['_PATH']['wep_ext']);
+			while (false !== ($entry = $dir->read())) {
+				if ($entry[0]!='.' && $entry[0]!='..' && strpos($entry,'.class')!==false) {
+					$key = substr($entry,0,-6);
+					$dir2 = $_this->_CFG['_PATH']['wep_ext'].$entry.'/templates';
+					if(file_exists($dir2) and is_dir($dir2)) {
+						$dir2 = dir($dir2);
+						while (false !== ($entry2 = $dir2->read())) {
+							if ($entry2[0]!='.' && $entry2[0]!='..' && strstr($entry2,'.php')) {
+								$data['#'.$key.'#'.substr($entry2,0,-4)] = $entry.' : '.$entry2;
+							}
+						}
+						$dir2->close();
+					}
+				}
+			}
+			$dir->close();
+
+			// Пользовательские модули
+			$dir = dir($_this->_CFG['_PATH']['ext']);
+			while (false !== ($entry = $dir->read())) {
+				if ($entry[0]!='.' && $entry[0]!='..' && strpos($entry,'.class')!==false) {
+					$key = substr($entry,0,-6);
+					$dir2 = $_this->_CFG['_PATH']['ext'].$entry.'/templates';
+					if(file_exists($dir2) and is_dir($dir2)) {
+						$dir2 = dir($dir2);
+						while (false !== ($entry2 = $dir2->read())) {
+							if ($entry2[0]!='.' && $entry2[0]!='..' && strstr($entry2,'.php')) {
+								$data['#'.$key.'#'.substr($entry2,0,-4)] = $entry.' : '.$entry2;
+							}
+						}
+						$dir2->close();
+					}
+				}
+			}
+			$dir->close();
+
 			_new_class('pg',$PGLIST);
 			if(file_exists($PGLIST->_CFG['_PATH']['design'].$PGLIST->config['design'].'/php')) {
 				$dir = dir($PGLIST->_CFG['_PATH']['design'].$PGLIST->config['design'].'/php');

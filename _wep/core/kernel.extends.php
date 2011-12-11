@@ -11,7 +11,7 @@ abstract class kernel_extends {
 	 * 2 - добавленн новый функционал, расширен и измененн меющиеся функции -
 	 * 3 - Номер ревизии , исправленны ошибки
 	 */
-	const versionCore = '2.8.19';
+	const versionCore = '2.8.20';
 
 	function __construct($owner=NULL) {
 		global $_CFG;
@@ -149,6 +149,7 @@ abstract class kernel_extends {
 		$this->_cl = str_replace('_class', '', get_class($this)); //- символическое id модуля
 		$this->owner_name = 'owner_id'; // название поля для родительской связи в БД
 		$this->tablename = $this->_CFG['sql']['dbpref'] . $this->_cl; // название таблицы
+		$this->tableEngine = 'MyISAM';
 		$this->caption = $this->_cl; // заголовок модуля
 		$this->_listfields = array('name'); //select по умолч
 		$this->unique_fields =
@@ -293,7 +294,7 @@ abstract class kernel_extends {
 		if ($this->mf_timeoff)
 			$this->fields['mf_timeoff'] = array('type' => 'int', 'width' => 11, 'attr' => 'unsigned NOT NULL', 'default' => '0');
 		if ($this->mf_ipcreate)
-			$this->fields[$this->mf_ipcreate] = array('type' => 'bigint', 'width' => 20, 'attr' => 'NOT NULL', 'default' => '0');
+			$this->fields[$this->mf_ipcreate] = array('type' => 'bigint', 'noquote'=>true, 'width' => 20, 'attr' => 'NOT NULL', 'default' => '0');
 
 		/* if ($this->mf_typectrl)
 		  $this->fields['typedata'] = array('type' => 'tinyint', 'attr' => 'unsigned NOT NULL');

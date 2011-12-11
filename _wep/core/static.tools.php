@@ -604,7 +604,7 @@ class static_tools {
 				}
 			}
 		}
-		$query = 'CREATE TABLE `' . $MODUL->tablename . '` (' . implode(',', $fld) . ') ENGINE=MyISAM DEFAULT CHARSET=' . $MODUL->_CFG['sql']['setnames'] . ' COMMENT = "' . $MODUL->ver . '"';
+		$query = 'CREATE TABLE `' . $MODUL->tablename . '` (' . implode(',', $fld) . ') ENGINE='.$MODUL->tableEngine.' DEFAULT CHARSET=' . $MODUL->_CFG['sql']['setnames'] . ' COMMENT = "' . $MODUL->ver . '"';
 		// to execute query
 		$result = $MODUL->SQL->execSQL($query);
 		if ($result->err) {

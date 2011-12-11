@@ -125,13 +125,22 @@ class html {
 	}
 
 	function transformPHP(&$data, $transform, $marker='',$_PATHd=false) {
+		global $_CFG;
 		if(!$_PATHd)
 			$_PATHd = $this->_PATHd;
 		/* PHP шаблонизатор */
-		if(is_array($transform)) {
+		if(is_array($transform)) {// Старый метод
 			$transformPath = $transform[1];
 			$transform = $transform[0];
-		}else
+		}
+		elseif(strpos($transform,'#')!==false) {
+			$marker = $transform;
+			$temp = explode('#',substr($transform,1));
+			$temp[0] = dirname($_CFG['modulprm'][$temp[0]]['path']).'/templates/';
+			$transformPath = $temp[0];
+			$transform = $temp[1];
+		}
+		else
 			$transformPath = $_PATHd . 'php/';
 		if (!$marker)
 			$marker = $transform;

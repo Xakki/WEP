@@ -612,7 +612,14 @@ class pg_class extends kernel_extends {
 					}
 
 					// Параметры для обработчика
-					if($rowPG['funcparam']) $FUNCPARAM = explode('&',$rowPG['funcparam']);
+					if($rowPG['funcparam']) {
+						$FUNCPARAM = explode('&',$rowPG['funcparam']);
+						foreach($FUNCPARAM as &$rfff) {
+							if(strpos($rfff,'|')!==false) {
+								$rfff = explode('|',$rfff);$rfff = array_combine($rfff,$rfff);
+							}
+						}
+					}
 					else $FUNCPARAM = array();
 					// подключение и запуск обработчика
 					$typePG = explode(':',$rowPG['pagetype']);

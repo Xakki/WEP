@@ -209,6 +209,7 @@ function tpl_form(&$data) {
 					}
 					$texthtml .= '<span class="ilistmultiple" onclick="wep.form.ilistCopy(this,\'div.ilist\','.$r['mask']['maxarr'].')" title="Добавить '.$r['caption'].'">'.($r['mask']['maxarr']-count($r['value'])).'</span>';
 				}elseif(isset($r['multiple']) and $r['multiple']) {
+					
 					$texthtml .= '<select multiple="multiple" name="'.$k.'[]" class="small" size="'.$r['mask']['size'].'" '.$attribute;
 					$texthtml .= '>'.selectitem($r['valuelist']).'</select>';
 				}else {
