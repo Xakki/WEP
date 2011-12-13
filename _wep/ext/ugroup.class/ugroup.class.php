@@ -520,25 +520,8 @@ class users_class extends kernel_extends {
 						//$_SESSION['user'] = $arr['vars']['id'];
 
 						if($this->_add($arr['vars'])) {
-							$this->SQL->execSQL('UPDATE '.$this->tablename.' SET '.$this->mf_createrid.'="'.$this->id.'" where '.$this->fn_login.'="'.$arr['vars'][$this->fn_login].'"');
-							_new_class('mail',$MAIL);
-							$MAIL->config['mailcron'] = 1;
-							$datamail = array('creater_id'=>-1);
-							$datamail['mail_to']=$arr['vars']['email'];
-							$datamail['user_to']=$this->id;
-							$datamail['subject']='Подтвердите регистрацию на '.strtoupper($_SERVER['HTTP_HOST']);
-							$href = '?confirm='.$arr['vars'][$this->fn_login].'&hash='.$arr['vars']['reg_hash'];
-							
-							$datamail['text']=str_replace(array('%pass%','%login%','%href%','%host%'),array($pass,$arr['vars'][$this->fn_login],$href,$_SERVER['HTTP_HOST']),$this->owner->config['mailconfirm']);
-							$MAIL->reply = 0;
-							if($MAIL->Send($datamail)) {
-								// иногда сервер говорит что ошибка, а сам всеравно письма отсылает
-							} else {
-								trigger_error('Регистрация - '.static_main::m('mailerr',$this), E_USER_WARNING);
-								//$this->_delete();
-								//$arr['mess'][] = array('name'=>'error', 'value'=>static_main::m('mailerr',$this));
-								//$arr['mess'][] = array('name'=>'error', 'value'=>static_main::m('regerr',$this));
-							}
+							$this->SQL->execSQL('UPDATE '.$this->tablename.' SET '.$this->mf_createrid.'="'.$this->id.'" where '.$this->fn_login.'="'.$vars[$this->fn_login].'"');
+							$this->sendRegMail($this->data[$this->id],$pass);
 							$flag=1;
 							$arr['mess'][] = static_main::am('ok','regok');
 						} else
@@ -582,6 +565,32 @@ class users_class extends kernel_extends {
 			$formflag = $this->kFields2Form($param);
 
 		return Array(Array('messages'=>($mess+$arr['mess']), 'form'=>($formflag?$this->form:array()), 'class'=>'regform'), $flag);
+	}
+
+	function sendRegMail($vars,$pass='',$subject='') {
+		_new_class('mail',$MAIL);
+		$MAIL->config['mailcron'] = 1;
+		$datamail = array('creater_id'=>-1);
+		$datamail['mail_to']=$vars['email'];
+		$datamail['user_to']=$vars['id'];
+		if($subject)
+			$datamail['subject']=$subject;
+		else
+			$datamail['subject']='Подтвердите регистрацию на '.strtoupper($_SERVER['HTTP_HOST']);
+		$href = '?confirm='.$vars[$this->fn_login].'&hash='.$vars['reg_hash'];
+		
+		$datamail['text']=str_replace(array('%pass%','%login%','%href%','%host%'),array($pass,$vars[$this->fn_login],$href,$_SERVER['HTTP_HOST']),$this->owner->config['mailconfirm']);
+		$MAIL->reply = 0;
+		if($MAIL->Send($datamail)) {
+			// иногда сервер говорит что ошибка, а сам всеравно письма отсылает
+			return true;
+		} else {
+			trigger_error('Регистрация - '.static_main::m('mailerr',$this), E_USER_WARNING);
+			//$this->_delete();
+			//$arr['mess'][] = array('name'=>'error', 'value'=>static_main::m('mailerr',$this));
+			//$arr['mess'][] = array('name'=>'error', 'value'=>static_main::m('regerr',$this));
+			return false;
+		}
 	}
 
 	function regConfirm() {
