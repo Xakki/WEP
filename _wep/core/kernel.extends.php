@@ -11,7 +11,7 @@ abstract class kernel_extends {
 	 * 2 - добавленн новый функционал, расширен и измененн меющиеся функции -
 	 * 3 - Номер ревизии , исправленны ошибки
 	 */
-	const versionCore = '2.7.18';
+	const versionCore = '2.8.20';
 
 	function __construct($owner=NULL) {
 		global $_CFG;
@@ -149,6 +149,7 @@ abstract class kernel_extends {
 		$this->_cl = str_replace('_class', '', get_class($this)); //- символическое id модуля
 		$this->owner_name = 'owner_id'; // название поля для родительской связи в БД
 		$this->tablename = $this->_CFG['sql']['dbpref'] . $this->_cl; // название таблицы
+		$this->tableEngine = 'MyISAM';
 		$this->caption = $this->_cl; // заголовок модуля
 		$this->_listfields = array('name'); //select по умолч
 		$this->unique_fields =
@@ -293,7 +294,7 @@ abstract class kernel_extends {
 		if ($this->mf_timeoff)
 			$this->fields['mf_timeoff'] = array('type' => 'int', 'width' => 11, 'attr' => 'unsigned NOT NULL', 'default' => '0');
 		if ($this->mf_ipcreate)
-			$this->fields[$this->mf_ipcreate] = array('type' => 'bigint', 'width' => 20, 'attr' => 'NOT NULL', 'default' => '0');
+			$this->fields[$this->mf_ipcreate] = array('type' => 'bigint', 'noquote'=>true, 'width' => 20, 'attr' => 'NOT NULL', 'default' => '0');
 
 		/* if ($this->mf_typectrl)
 		  $this->fields['typedata'] = array('type' => 'tinyint', 'attr' => 'unsigned NOT NULL');
@@ -539,6 +540,7 @@ abstract class kernel_extends {
 			$flag_select = $data;
 			trigger_error('Устаревший вариант вызова функция _add', E_USER_WARNING);
 		} else {
+			$this->fld_data = $this->att_data = $this->mmo_data = array();
 			foreach ($data as $k => $r) {
 				if (isset($this->memos[$k]))
 					$this->mmo_data[$k] = $r;
@@ -560,6 +562,28 @@ abstract class kernel_extends {
 		return $this->_add($data, $flag_select);;
 	}
 
+	/**
+	 * Сохранение данных formФункция добавления записей в бд
+	 * В случае успеха выполняет allChangeData('add')
+	 *
+	 * @return bool
+	 */
+	public function _addUp($data,$flag_select=true) {
+		$this->fld_data = $this->att_data = $this->mmo_data = array();
+		foreach ($data as $k => $r) {
+			if (isset($this->memos[$k]))
+				$this->mmo_data[$k] = $r;
+			elseif (isset($this->attaches[$k]))
+				$this->att_data[$k] = $r;
+			elseif (isset($this->fields[$k])) {
+				$this->fld_data[$k] = $r;
+			}
+		}
+		$result = static_form::_add($this, $flag_select, true);
+		if ($result)
+			$this->allChangeData('add');
+		return $result;
+	}
 
 	/**
 	 * Обновление данных form
@@ -580,6 +604,7 @@ abstract class kernel_extends {
 				if(!count($this->fld_data))
 					return false;
 			} else {
+				$this->fld_data = $this->att_data = $this->mmo_data = array();
 				foreach ($data as $k => $r) {
 					if (isset($this->memos[$k]))
 						$this->mmo_data[$k] = $r;
@@ -1150,7 +1175,7 @@ abstract class kernel_extends {
 				$parent_id = $this->id;
 				$this->tree_data = $first_data = $path = array();
 				$listfields = 'id,'.$this->mf_istree . ', ' . $this->_listnameSQL . ' as name';
-				$name = '';
+				$name = $this->caption;
 				while ($parent_id) {
 					$clause = 'WHERE id="' . $parent_id . '"';
 					$this->data = $this->_query($listfields, $clause, 'id');
@@ -1162,12 +1187,12 @@ abstract class kernel_extends {
 						//********* Path ************
 						$path[$this->_cl . $parent_id] = array(
 							'path' => $PARAM['_clp']+array($this->_cl . '_id'=>$parent_id),
-							'name' => $this->caption.$name
+							'name' => $name
 						);
 						if($this->data[$parent_id][$this->_listname])
-							$name = ': '.preg_replace($this->_CFG['_repl']['name'], '', $this->data[$parent_id][$this->_listname]);
+							$name = preg_replace($this->_CFG['_repl']['name'], '', $this->data[$parent_id][$this->_listname]);
 						else
-							$name = ': №'.$parent_id;
+							$name = '№'.$parent_id;
 						//BREAK
 						if(!$this->parent_id and $parent_id!=$this->id)
 							$this->parent_id = $parent_id;
@@ -1187,12 +1212,13 @@ abstract class kernel_extends {
 						}
 					}
 				}
+				//$path[$this->_cl . $parent_id]['name'] = $this->caption.': '.$path[$this->_cl . $parent_id]['name'];
 				$this->data = $first_data;
 				if (isset($PARAM['first_id']) and $PARAM['first_id'] and !$parent_id)
 					$this->id = '';
 
 				$PARAM['path'] += array_reverse($path); //Переворачиваем
-				$PARAM['path'][$this->_cl]['name'] .= $name;
+				$PARAM['path'][$this->_cl]['name'] .= ' : '.$name;
 			}
 			else {
 				$this->data = $this->_select();
@@ -2253,12 +2279,9 @@ abstract class kernel_extends {
 			//$PP[2] - вторая часть
 			$PP = array(0=>$param['firstpath'],1=>$param['firstpath'],2=>'');
 			if(count($param['_clp'])) {
-				foreach($param['_clp'] as $kp=>$rp) {
-					if($kp!=$this->_pa) {
-						$PP[0] .= $kp.'='.$rp.'&';
-						$PP[1] .= $kp.'='.$rp.'&';
-					}
-				}
+				$temp = $param['_clp'];unset($temp[$this->_pa]);
+				$PP[0] .= http_build_query($temp).'&';
+				$PP[1] = $PP[0];
 			}
 			$PP[1] .= $this->_pa . '=';
 			$DATA['PP'] = $PP;

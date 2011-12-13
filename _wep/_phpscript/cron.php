@@ -52,7 +52,7 @@
 	}
 	umask(0777);
 	file_put_contents($ini_file, $conf);
-	chmod($ini_file, 0777);
+	@chmod($ini_file, 0777);
 
 
 	echo $res_cron;

@@ -59,7 +59,7 @@
 		// Дети
 		$t=2;
 		if(count($this->childs)) foreach($this->childs as $ck=>$cn) {
-			if($cn->tablename and $cn->owner_name) {
+			if($cn->tablename and $cn->owner_name and $cn->showinowner) {
 				$arrno[$ck.'_cnt'] = 1;
 				$cls[0][] = '(SELECT count(t'.$t.'.id) FROM `'.$cn->tablename.'` t'.$t.' WHERE t'.$t.'.'.$cn->owner_name.'=t1.id) as '.$ck.'_cnt';
 				/*$temp = $cn->_moder_clause(array(),$param);// сырая и недоработана
@@ -309,8 +309,8 @@
 					$DATA['item'][$key]['tditem'][$k] = $tditem;
 				}
 				if(count($this->childs))
-					foreach($this->childs as $ck=>$cn) {
-						if(count($cn->fields_form))
+					foreach($this->childs as $ck=>&$cn) {
+						if($cn->showinowner and count($cn->fields_form))
 							$DATA['item'][$key]['child'][$ck] = array('value'=>$cn->caption, 'cnt'=>$row[$ck.'_cnt']);
 					}
 				if($this->mf_istree and (!$this->mf_treelevel or !isset($this->tree_data) or (count($this->tree_data)<($this->mf_treelevel))))

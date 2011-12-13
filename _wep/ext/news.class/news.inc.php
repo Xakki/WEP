@@ -16,7 +16,11 @@
 
 
 	if(_new_class('news',$NEWS)) {
-		$DATA = $NEWS->fNews();
+		if(isset($this->pageParam[0])) {
+			$DATA = $NEWS->fNewsItem((int)$this->pageParam[0]);
+			$this->pageinfo['path'][] = $DATA[0]['name'];
+		} else 
+			$DATA = $NEWS->fNews();
 		$DATA['#page#'] = $this->getHref();
 		$DATA = array($FUNCPARAM[0]=>$DATA);
 		$html = $HTML->transformPHP($DATA,$tplphp);

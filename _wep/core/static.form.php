@@ -10,7 +10,7 @@ class static_form {
 	// out: 0 - success,
 	//      otherwise errorcode
 
-	static function _add(&$_this,$flag_select=true) {
+	static function _add(&$_this,$flag_select=true, $flag_update=false) {
 		// add ordind field
 		if ($_this->mf_ordctrl and (!isset($_this->fld_data[$_this->mf_ordctrl]) or $_this->fld_data[$_this->mf_ordctrl]==0)) {
 			if ($ordind = $_this->_get_new_ord())
@@ -26,7 +26,7 @@ class static_form {
 		if (!isset($_this->fld_data) && !count($_this->fld_data))
 			return static_main::log('error',static_main::m('add_empty',$_this));
 
-		if (!self::_add_fields($_this)) return false;
+		if (!self::_add_fields($_this,$flag_update)) return false;
 
 		// get last id if not used nick
 		if (!$_this->mf_use_charid && !isset($_this->fld_data['id']))
@@ -56,7 +56,7 @@ class static_form {
 		return static_main::log('ok',static_main::m('add',$_this));
 	}
 
-	static function _add_fields(&$_this) {
+	static function _add_fields(&$_this,$flag_update=false) {
 		$int_type = array(
 			'int'=>1,
 			'tinyint'=>1,
@@ -66,31 +66,38 @@ class static_form {
 		if (!count($_this->fld_data)) return false;
 		// inserting
 		$data = array();
-		foreach($_this->fld_data as $key => $value) {
-			if(is_array($value))
-				$value = $_this->SqlEsc(preg_replace('/\|+/', '|', '|'.implode('|',$value).'|'));
-			elseif($_this->fields[$key]['type']=='bool')
-				$value = ((int)$value == 1 ? 1 : 0);
-			elseif(isset($int_type[$_this->fields[$key]['type']]))
-				$value =  (int)$value;
-			else
-				$value = $_this->SqlEsc($value);
-
-			$data[$key] = $value;
+		foreach($_this->fld_data as $key => &$value) {
+			if(!isset($_this->fields[$key]['noquote'])) {
+				if(is_array($value))
+					$value = '\''.$_this->SqlEsc(preg_replace('/\|+/', '|', '|'.implode('|',$value).'|')).'\'';
+				elseif($_this->fields[$key]['type']=='bool')
+					$value = ((int)$value == 1 ? 1 : 0);
+				elseif(isset($int_type[$_this->fields[$key]['type']]))
+					$value =  (int)preg_replace('/[^0-9\-]/', '', $value);
+				else
+					$value = '\''.$_this->SqlEsc($value).'\'';
+			}
+			if($flag_update)
+				$data[$key] = '`'.$key.'` = VALUES(`'.$key.'`)';
 		}
 		if ($_this->mf_timecr) 
-			$data['mf_timecr'] = $_this->_CFG['time'];
+			$_this->fld_data['mf_timecr'] = $_this->_CFG['time'];
 		if ($_this->mf_timeup) 
-			$data['mf_timeup'] = $_this->_CFG['time'];
+			$_this->fld_data['mf_timeup'] = $_this->_CFG['time'];
 		if($_this->mf_ipcreate) {
-			$data['mf_ipcreate'] = 'inet_aton("'.$_SERVER['REMOTE_ADDR'].'")';
+			$_this->fld_data['mf_ipcreate'] = 'inet_aton("'.$_SERVER['REMOTE_ADDR'].'")';
 			//$_this->fld_data['mf_ipcreate'] = sprintf("%u",ip2long($_SERVER['REMOTE_ADDR']));
 			if(!$_SERVER['REMOTE_ADDR'])
 				trigger_error('ERROR REMOTE_ADDR `'.$_SERVER['REMOTE_ADDR'].'`. ', E_USER_WARNING);
 		}
 		if($_this->mf_createrid and isset($_SESSION['user']['id']) and (!isset($_this->fld_data[$_this->mf_createrid]) or $_this->fld_data[$_this->mf_createrid]=='') )
 			$_this->fld_data[$_this->mf_createrid]= $_SESSION['user']['id'];
-		$result=$_this->SQL->execSQL('INSERT INTO `'.$_this->tablename.'` (`'.implode('`,`', array_keys($data)).'`) VALUES (\''.implode('\',\'', $data).'\')');
+
+		$q = 'INSERT INTO `'.$_this->tablename.'` (`'.implode('`,`', array_keys($_this->fld_data)).'`) VALUES ('.implode(',', $_this->fld_data).')';
+		if($flag_update) { // параметр передается в ф. _addUp() - обновление данных если найдена конфликтная запись
+			$q .= ' ON DUPLICATE KEY UPDATE '.implode(', ',$data);
+		}
+		$result=$_this->SQL->execSQL($q);
 		if($result->err) return false;
 		return true;
 	}
@@ -246,17 +253,17 @@ class static_form {
 		// preparing
 		$data = array();
 		foreach($_this->fld_data as $key => $value) {
-			if(is_array($value)) {
-				$value = '\''.$_this->SqlEsc(preg_replace('/\|+/', '|', '|'.implode('|',$value).'|')).'\'';
+			if(!isset($_this->fields[$key]['noquote'])) {
+				if(is_array($value)) {
+					$value = '\''.$_this->SqlEsc(preg_replace('/\|+/', '|', '|'.implode('|',$value).'|')).'\'';
+				}
+				elseif($_this->fields[$key]['type']=='bool')
+					$value = ((int)$value ? 1 : 0);
+				elseif(isset($int_type[$_this->fields[$key]['type']]))
+					$value = (int)preg_replace('/[^0-9\-]/', '', $value);
+				else
+					$value = '\''.$_this->SqlEsc($value).'\'';
 			}
-			elseif(isset($_this->fields[$key]['noquote']))
-				$value;
-			elseif($_this->fields[$key]['type']=='bool')
-				$value = ((int)$value ? 1 : 0);
-			elseif(isset($int_type[$_this->fields[$key]['type']]))
-				$value = (int)$value;
-			else
-				$value = '\''.$_this->SqlEsc($value).'\'';
 
 			$data[$key] = '`'.$key.'` = '.$value;
 		}

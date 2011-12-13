@@ -5,6 +5,13 @@
 * [NEW] редактирование шаблонов и css
 * [NEW] Бэкапер
 
+## 2.8.20
+	подключение шаблонов PHP для inc из всех модулей
+
+## 2.8.19
+ - переход на mysqli
+ - информация в TOOLS о mysql server
+
 ## 2.7.18
  - _add_item() устаревшее,  заменён на _add($data=array(),$flag_select=true)
  - _save_item() устаревшее,  заменён на _update($data=array(),$where=false,$flag_select=true)

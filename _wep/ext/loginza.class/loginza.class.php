@@ -64,9 +64,9 @@ class loginza_class extends kernel_extends
 				$mess[] = array('name'=>'error', 'value'=>'Данный провайдер не сообщил ваш Email, который необходим для авторизации на нашем сайте. Возможно в настройках провайдера вашего аккаунта есть опция позволяющая передавать Email. В любом случае вы можете воспользоваться стандартной регистрацие в нашем сайте , это не займет много времени.');
 			} else {*/
 				
-				$q = 't1 Join '.$USERS->owner->tablename.' t2 on t1.'.$USERS->owner_name.'=t2.id where t1.loginza_login=\''.mysql_real_escape_string($dt['loginza_login']).'\'';
+				$q = 't1 Join '.$USERS->owner->tablename.' t2 on t1.'.$USERS->owner_name.'=t2.id where t1.loginza_login=\''.$this->SqlEsc($dt['loginza_login']).'\'';
 				if(isset($dt['email']) and $dt['email'])
-					$q .= ' or t1.email="'.mysql_real_escape_string($dt['email']).'"';
+					$q .= ' or t1.email="'.$this->SqlEsc($dt['email']).'"';
 				$data = $USERS->_query('t2.active as gact,t2.name as gname,t1.id,t1.active',$q);
 				//print_r($data);
 				//print_r('<pre>');print_r($regme);print_r($dt);exit();

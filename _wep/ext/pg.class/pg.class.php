@@ -46,7 +46,7 @@ class pg_class extends kernel_extends {
 		$this->config_form['memcachezip'] = array('type' => 'checkbox', 'caption' => 'Memcache сжатие кеша');
 		$this->config_form['sitemap'] = array('type' => 'checkbox', 'caption' => 'SiteMap XML' ,'comment'=>'создавать в корне сайта xml файл карты сайта для поисковиков');
 		$this->config_form['IfDontHavePage'] = array('type' => 'list', 'listname'=>'pagetype', 'caption' => 'Если нет страницы в базе, то вызываем обрабочик');
-		$this->config_form['rootPage'] = array('type' => 'list', 'listname'=>array('class'=>'pg', 'where'=>'parent_id=0'), 'multiple'=>3, 'caption' => 'Мульти-домен', 'comment'=>'Укажите страницу для каждого домена, по умолчанию для ненайденного домена будет загружаться первая позиция', 'mask'=>array('maxarr'=>3));
+		$this->config_form['rootPage'] = array('type' => 'list', 'listname'=>array('class'=>'pg', 'where'=>'parent_id=0'), 'multiple'=>3, 'caption' => 'Мульти-домен', 'comment'=>'Укажите страницу для каждого домена, по умолчанию для ненайденного домена будет загружаться первая позиция', 'mask'=>array('maxarr'=>10));
 		$this->config_form['menu'] = array('type' => 'textarea', 'caption' => 'Блоки меню');
 		$this->config_form['marker'] = array('type' => 'textarea', 'caption' => 'Маркеры');
 		$this->config_form['auto_include'] = array('type' => 'checkbox', 'caption' => 'Подключать скрипты автоиматически');
@@ -612,7 +612,14 @@ class pg_class extends kernel_extends {
 					}
 
 					// Параметры для обработчика
-					if($rowPG['funcparam']) $FUNCPARAM = explode('&',$rowPG['funcparam']);
+					if($rowPG['funcparam']) {
+						$FUNCPARAM = explode('&',$rowPG['funcparam']);
+						foreach($FUNCPARAM as &$rfff) {
+							if(strpos($rfff,'|')!==false) {
+								$rfff = explode('|',$rfff);$rfff = array_combine($rfff,$rfff);
+							}
+						}
+					}
 					else $FUNCPARAM = array();
 					// подключение и запуск обработчика
 					$typePG = explode(':',$rowPG['pagetype']);
@@ -872,6 +879,7 @@ class pg_class extends kernel_extends {
 	}
 
 	function reverseDataMap(&$data) {
+		$xml = '';
 		foreach($data as $k=>$r) {
 			if(isset($r['href']) and $r['href'])
 				$xml .= '

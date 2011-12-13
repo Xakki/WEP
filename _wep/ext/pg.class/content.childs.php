@@ -58,9 +58,12 @@ class content_class extends kernel_extends {
 			'paramedit'=>array(
 				'CKFinder'=>1,
 				'extraPlugins'=>"'cntlen,syntaxhighlight,timestamp'",
-				'contentsCss' => "['/_design/default/style/style.css', '/_design/_style/style.css']",
 				'toolbar' => 'Page',
 		));
+		if($form) {
+			//TODO : сделать подключение стилей , которые подключены к этой странице (включая глобальные стили)
+			//$this->fields_form['pg']['paramedit']['contentsCss'] = "['/_design/default/style/main.css', '/_design/_style/main.css']";
+		}
 		if($this->_CFG['wep']['access'])
 			$this->fields_form['ugroup'] = array('type' => 'list','multiple'=>2,'listname'=>'ugroup', 'caption' => 'Доступ','default'=>'0');
 		$this->fields_form['styles'] = array('type' => 'list', 'multiple'=>2, 'listname'=>'style', 'caption' => 'CSS', 'mask' =>array('onetd'=>'Дизайн'));
@@ -176,7 +179,14 @@ class content_class extends kernel_extends {
 		$FUNCPARAM = $data['funcparam'];
 		$formFlex = array();
 		$flagPG = false;
-		if($FUNCPARAM) $FUNCPARAM = explode('&',$FUNCPARAM);
+		if($FUNCPARAM) {
+			$FUNCPARAM = explode('&',$FUNCPARAM);
+			foreach($FUNCPARAM as &$rf) {
+				if(strpos($rf,'|')!==false) {
+					$rf = explode('|',$rf);$rf = array_combine($rf,$rf);
+				}
+			}
+		}
 		else $FUNCPARAM = array();
 		$typePG = explode(':',$pagetype);
 		if(count($typePG)==2 and file_exists($this->owner->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php'))
@@ -200,7 +210,8 @@ class content_class extends kernel_extends {
 		if(strpos($file,'$ShowFlexForm')!==false) {
 			$ShowFlexForm = true;
 			$tempform = include($flagPG);
-			if(count($tempform)) {
+			if(is_array($tempform) and count($tempform)) {
+
 				foreach($tempform as $k=>$r) {
 					if($fl) {
 						$r['value'] = $data['flexform_'.$k] = $FUNCPARAM[$k];
@@ -215,39 +226,38 @@ class content_class extends kernel_extends {
 	}
 
 
-	public function _update($data=array(),$where=false,$flag_select=true) {
-		$funcparam = array();
-		if(count($this->addForm)) {
-			foreach($this->addForm as $k=>$r) {
-				if($r['type']!='info') {
-					$funcparam[(int)substr($k,9)] = $data[$k];
-				}
-			}
-			if(count($funcparam)) {
-				ksort($funcparam);
-				$data['funcparam'] = implode('&',$funcparam);
-			}
-		}
-		if($ret = parent::_update($data,$where,$flag_select)) {
+	public function _update($vars=array(),$where=false,$flag_select=true) {
+		$vars = $this->SetFuncparam($vars);
+		if($ret = parent::_update($vars,$where,$flag_select)) {
 		}
 		return $ret;
 	}
 
 	public function _add($vars=array(),$flag_select=true) {
+		$vars = $this->SetFuncparam($vars);
+		if($ret = parent::_add($vars,$flag_select)) {
+		}
+		return $ret;
+	}
+
+	private function SetFuncparam($vars) {
 		$funcparam = array();
 		if(count($this->addForm)) {
 			foreach($this->addForm as $k=>$r) {
-				if($r['type']!='info')
-					$funcparam[(int)substr($k,9)] = $vars[$k];
+				if($r['type']!='info') {
+					$key = (int)substr($k,9);
+					if(is_array($vars[$k]))
+						$funcparam[$key] = implode('|',$vars[$k]);
+					else
+						$funcparam[$key] = $vars[$k];
+				}
 			}
 			if(count($funcparam)) {
 				ksort($funcparam);
 				$vars['funcparam'] = implode('&',$funcparam);
 			}
 		}
-		if($ret = parent::_add($vars,$flag_select)) {
-		}
-		return $ret;
+		return $vars;
 	}
 }
 

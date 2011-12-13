@@ -78,7 +78,7 @@ class news_class extends kernel_extends {
 		$this->_query($listfields,$clause);
 		foreach($this->data as $r) {
 			$txt = mb_substr(strip_tags($r['text']),0,500,'UTF-8');
-			$this->SQL->execSQL('UPDATE test3_news SET description="'.mysql_real_escape_string($txt).'" WHERE id='.$r['id']);
+			$this->SQL->execSQL('UPDATE test3_news SET description="'.$this->SqlEsc($txt).'" WHERE id='.$r['id']);
 		}*/
  
 		$DATA = array();
@@ -123,7 +123,7 @@ class news_class extends kernel_extends {
 	}
 	function fNewsItem($id)// func display NEWS on INDEX page
 	{
-		$listfields = array('id,ndate,name,i_news,text,href,redirect');
+		$listfields = array('*');
 		$clause = 'WHERE active=1 and id='.$id;
 		return $this->_query($listfields,$clause);
 	}

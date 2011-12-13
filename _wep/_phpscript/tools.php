@@ -373,6 +373,41 @@ function getphpinfo() {
 	return '<style type="text/css">'.$matches[1].'</style>'.$matches[2];
 }
 
+function mysqlinfo() {
+	global $SQL;
+	$_info = $SQL->_info();
+	$_status = $SQL->_status();
+	$_proc = $SQL->_proc();
+
+	$html = '<h3>Информация</h3>';
+	$html .= data_to_html($_info);
+
+	$html .= '<h3>Статус</h3>';
+	$html .= data_to_html($_status);
+
+	$html .= '<h3>Процессы</h3>';
+	$html .= data_to_html($_proc,array_keys($_proc[0]));
+	return $html;
+}
+
+function data_to_html($data,$thdata=false) {
+	$html = '<table class="table">';
+	if($thdata!==false) {
+		$html .= '<tr>';
+		foreach($thdata as $th)
+			$html .= '<th>'.$th.'</th>';
+		$html .= '</tr>';
+	}
+	foreach($data as $tr) {
+		$html .= '<tr>';
+		foreach($tr as $td)
+			$html .= '<td>'.substr($td,0,500).'</td>';
+		$html .= '</tr>';
+	}
+	$html .= '</table>';
+	return $html;
+}
+
 function memcachstatus() {
 	global $_CFG;
 	$memcache_obj = new Memcache; 
@@ -459,6 +494,7 @@ $dataF = array(
 	'tools_sendMail'=>'<span class="tools_item">Отправка почты</span>',
 	'tools_worktime'=>'<span class="tools_item">Режим "технические работы"</span>',
 	'getphpinfo'=>'<span class="tools_item">PHPINFO</span>',
+	'mysqlinfo'=>'<span class="tools_item">MySQL info</span>',
 	'memcachstatus'=>'<span class="tools_item">Memcach status</span>',
 	'allinfos'=> '<span class="tools_item">Выввод глобальных переменных</span>',
 );

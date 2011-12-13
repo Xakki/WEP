@@ -227,7 +227,6 @@
 		width-max: 40%;
 	}
 	.divform .ilistmultiple {
-		display:inline-block;
 		background: transparent url(../_img/jquery.ui/ui-icons_2e83ff_256x240.png) no-repeat scroll -32px -129px;
 		color: green;
 		height: 15px;
@@ -235,9 +234,9 @@
 		white-space: nowrap;
 		width: 1px;
 		cursor: pointer;
+		display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
 	}
 	.divform .ilistdel {
-		display:inline-block;
 		background: transparent url(../_img/jquery.ui/ui-icons_2e83ff_256x240.png) no-repeat scroll -32px -193px;
 		color: red;
 		height: 15px;
@@ -245,6 +244,7 @@
 		white-space: nowrap;
 		width: 1px;
 		cursor: pointer;
+		display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
 	}
 	/*MESSAGE*/
 	.messages {

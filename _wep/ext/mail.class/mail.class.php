@@ -50,6 +50,7 @@ class mail_class extends kernel_extends {
 		$this->config['PHPMailer_Secure'] = '';
 		$this->config['mailtemplate'] = '<html><head><title>%SUBJECT%</title><meta content="text/html;charset=utf-8" http-equiv="Content-Type" /></head><body>%TEXT% %MAILBOTTOM%</body></html>';
 		$this->config['mailbottom'] = '<hr/>© 2011 «XAKKI»';
+		$this->config['phpmailer'] = '<h4>Email отправителя %MAILFROM%</h4> <span>Чтобы ответить пользователю, пользуйтесь кнопой "ответить" или копируйте адрес вручную.</span><hr/>';
 
 		$this->config_form['mailcron'] = array('type' => 'checkbox', 'caption' => 'CRON - Отправалять почту');
 		$this->config_form['mailcronlimit'] = array('type' => 'text', 'caption' => 'CRON - Limit по отправке писем');
@@ -68,6 +69,14 @@ class mail_class extends kernel_extends {
 		$this->config_form['mailbottom'] = array(
 			'type' => 'ckedit',
 			'caption' => 'Текст прикрепляемый в конце письма', 
+			'paramedit'=>array(
+				'height'=>350,
+				'fullPage'=>'true',
+				'toolbarStartupExpanded'=>'false'));
+		$this->config_form['phpmailer'] = array(
+			'type' => 'ckedit',
+			'caption' => 'Текст прикрепляемый в начале письма c PHPMailer. ', 
+			'comment'=>'Если отправка письма с помощью PHPMailer, и обратный адресат отличный от mailrobot',
 			'paramedit'=>array(
 				'height'=>350,
 				'fullPage'=>'true',
@@ -141,7 +150,7 @@ class mail_class extends kernel_extends {
 				'toolbar' => 'Page',
 			);
 		}
-		$this->fields_form['mail_to'] = array('type' => 'text', 'caption' => 'Кому email', 'mask' => array('usercheck'=>1));
+		$this->fields_form['mail_to'] = array('type' => 'text', 'caption' => 'Кому email', 'mask' => array('name'=>'email','usercheck'=>1));
 		$this->fields_form['user_to'] = array(
 			'type' => 'list', 
 			'readonly'=>true,
@@ -317,12 +326,13 @@ class mail_class extends kernel_extends {
 		$PHPMailer->SMTPSecure = $this->config['PHPMailer_Secure'];
 		$PHPMailer->SetLanguage('ru');
 		if($data['from']!=$this->config['mailrobot']) {
-			$data['Reply-To'] = $data['from'];
+			$this->Sender = $data['bcc'] = $data['Reply-To'] = $data['from'];
+			$data['text'] = str_replace('%MAILFROM%',$data['Reply-To'],$this->config['phpmailer']).$data['text'];
 			$data['from'] = $this->config['mailrobot'];
 		}
 		$PHPMailer->From = $data['from'];
 		if(isset($data['bcc']) and $data['bcc'])
-			$PHPMailer->AddReplyTo($data['bcc']);
+			$PHPMailer->AddBCC($data['bcc']);
 		if(isset($data['Reply-To']) and $data['Reply-To'])
 			$PHPMailer->AddReplyTo($data['Reply-To']);
 
@@ -550,7 +560,7 @@ class mail_class extends kernel_extends {
 		{
 			_new_class('ugroup', $UGROUP);
 			
-			$term = mysql_real_escape_string((string)$_GET['term']);
+			$term = $this->SqlEsc((string)$_GET['term']);
 			
 			$result = $this->SQL->execSQL('
 				select `id`, `userpic`,`name`
@@ -575,7 +585,7 @@ class mail_class extends kernel_extends {
 	{
 		if ((isset($_POST['msg']) && isset($_POST['user_id'])) || $_POST['user_id'] == 0)
 		{
-			$msg = mysql_real_escape_string((string)$_POST['msg']);
+			$msg = $this->SqlEsc((string)$_POST['msg']);
 			$user_id = (int)$_POST['user_id'];
 			
 			if ($user_id == $_SESSION['user']['id'])

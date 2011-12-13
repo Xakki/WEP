@@ -71,12 +71,12 @@
 					$html .= '</div>';
 				}
 				else {
-					if($r['param']=='checkbox') {
+					if(isset($r['param']) and $r['param']=='checkbox') {
 						$html .= '<div class="f_value checkbox">';
 						$html .= '<input type="checkbox" name="'.$k.'" value="1" '.($r['value']==1?'checked="checked"':'').'/>';
 						$html .= '</div>';
 					}
-					elseif(is_array($r['valuelist'])) {
+					elseif(isset($r['valuelist']) and is_array($r['valuelist'])) {
 						$html .= '<div class="f_value multiplebox">';
 						$html .= '<div><input type="radio" name="'.$k.'" value="" '.($r['value']==''?'checked="checked"':'').'/>Все</div>';
 						foreach($r['valuelist'] as $rk=>$rr) {

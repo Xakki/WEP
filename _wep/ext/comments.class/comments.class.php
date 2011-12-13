@@ -137,7 +137,7 @@ class comments_class extends kernel_extends {
 		else
 			$cls .= ' and mf_ipcreate=INET_ATON("' . $_SERVER["REMOTE_ADDR"] . '")';
 		if(isset($_POST['modul']))
-			$cls .= ' and modul="'.mysql_real_escape_string($_POST['modul']).'"';
+			$cls .= ' and modul="'.$this->SqlEsc($_POST['modul']).'"';
 		if(isset($_POST['modul_id']))
 			$cls .= ' and modul_id="'.(int)$_POST['modul_id'].'"';
 		$result = $this->SQL->execSQL($cls);
