@@ -257,9 +257,11 @@
 	}
 
 	.messages .error, .error {
-		font-weight: bold;
+		font-family: 'MyriadPro';
+		font-size: 15px;
+		font-weight: normal;
 		margin: 0 0 3px 0;
-		color:red;
+		color:#d93f36;
 	}
 	.messages .ok, .ok {
 		margin: 0 0 3px 0;
