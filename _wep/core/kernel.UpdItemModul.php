@@ -43,7 +43,7 @@
 					static_form::setCaptcha();
 			} else {
 				$arr['mess'][] = static_main::am('error','nodata',$this);
-				$flag=1;
+				$flag=-1;
 			}
 		} else { //ADD
 			if(!$this->_prmModulAdd()){

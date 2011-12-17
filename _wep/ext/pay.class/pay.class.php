@@ -3,7 +3,7 @@ class pay_class extends kernel_extends {
 
 	function _set_features() {
 		if (!parent::_set_features()) return false;
-		$this->caption = 'Pay stream';
+		$this->caption = 'Pay System';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';
 		$this->mf_timecr = true; // создать поле хранящее время создания поля
 		$this->mf_ipcreate = true;//IP адрес пользователя с котрого была добавлена запись		
@@ -26,8 +26,14 @@ class pay_class extends kernel_extends {
 		$this->fields['user_id'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL');
 		$this->fields['cost'] = array('type' => 'float', 'width' => '11,4', 'attr' => 'NOT NULL');
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
-		//$this->fields['status'] = array('type' => 'tinyint', 'width' => 1,'attr' => 'NOT NULL');
-		//$this->fields['pay_modul'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL');
+		$this->fields['status'] = array('type' => 'tinyint', 'width' => 1,'attr' => 'NOT NULL','default'=>1);
+		$this->fields['pay_modul'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL','default'=>'');
+
+		$this->_enum['status'] = array(
+			0 => 'Неоплаченный счёт',
+			1 => 'Оплаченный счёт',
+			2 => 'Счёт отклонён'
+		);
 	}
 
 	public function setFieldsForm($form=0) {
@@ -37,8 +43,8 @@ class pay_class extends kernel_extends {
 		$this->fields_form['user_id'] = array('type' => 'list', 'listname'=>array('class'=>'users'), 'readonly'=>1, 'caption' => 'Кому', 'comment'=>'Куму переведены средства', 'mask'=>array());
 		$this->fields_form['cost'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Деньга', 'mask'=>array());
 		$this->fields_form['name'] = array('type' => 'text', 'readonly'=>1,'caption' => 'Комментарий', 'mask'=>array());
-		//$this->fields_form['pay_modul'] = array('type' => 'text', 'readonly'=>1,'caption' => 'Платежный модуль', 'mask'=>array());
-		//$this->fields_form['status'] = array('type' => 'text', 'readonly'=>1,'caption' => 'Статус', 'mask'=>array());
+		$this->fields_form['pay_modul'] = array('type' => 'text', 'readonly'=>1,'caption' => 'Платежный модуль', 'mask'=>array());
+		$this->fields_form['status'] = array('type' => 'list', 'listname'=>'status', 'readonly'=>1,'caption' => 'Статус', 'mask'=>array());
 		
 		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата', 'mask'=>array());
 		//$this->fields_form['mf_timeup'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата обновления', 'mask'=>array('fview'=>2));
@@ -144,6 +150,7 @@ class pay_class extends kernel_extends {
 		);
 		return $DATA;
 	}
+
 	/**
 	* Функция проверки средств
 	*/
@@ -158,21 +165,31 @@ class pay_class extends kernel_extends {
 			$mess = static_main::m('pay_nomonney',array(abs($d).' '.$UGROUP->config['payon']),$this);
 		return array($mess,$temp[0]['balance']);
 	}
+
 	/**
 	* Функция оплаты и перевода средств
-	* returт 1 - Успешно
-	* returт 0 - ошибка данных
+	* @param $from_user
+	* @param $to_user
+	* @param $summ
+	* @param $mess - коммент
+	* @param $status - 1 производит перевод средств сразу
+	* return 1 - Успешно
+	* return 0 - ошибка данных
 	*/
-	function pay($from_user,$to_user,$summ,$mess='') {
-		_new_class('ugroup', $UGROUP);
-
-		$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance-'.$summ.' WHERE id='.$from_user);
-		$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance+'.$summ.' WHERE id='.$to_user);
+	function pay($from_user,$to_user,$summ,$mess='',$status=1,$pay_modul='') {
+		if($status==1) {
+			_new_class('ugroup', $UGROUP);
+			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance-'.$summ.' WHERE id='.$from_user);
+			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance+'.$summ.' WHERE id='.$to_user);
+		}
 		$data = array(
 			$this->mf_createrid=>$from_user,
 			'user_id'=>$to_user,
 			'cost'=>$summ,
-			'name'=>$mess);
+			'name'=>$mess,
+			'status'=>$status,
+			'pay_modul'=>$pay_modul
+		);
 		return $this->_add($data);
 	}
 
@@ -185,6 +202,7 @@ class pay_class extends kernel_extends {
 		return $this->_delete();
 	}
 
+	// Коммент для платежа
 	private function addPayMess($mess) {
 		if(!$this->id) return 0;
 		$data = array(
@@ -192,7 +210,9 @@ class pay_class extends kernel_extends {
 		return $this->_update($data);
 	}
 
-	function diplayList($user) { // Список операций
+
+	// Список операций
+	function diplayList($user) {
 		$data = array();
 		$where = 'WHERE (`'.$this->mf_createrid.'` = '.$user.' or `user_id` = '.$user.')';
 		$data['#list#'] = $this->_query('*',$where);
@@ -277,7 +297,104 @@ class pay_class extends kernel_extends {
 		}
 			
 	}
+
+	/**
+	* Проверяем если группа и пользователи для счиистемы платежей
+	*
+	*/
+	function checkPayUsers($paychild='') {
+		_new_class('ugroup', $UGROUP);
+		$id = 0;
+		// Группа Платежные системы
+		$data1 = $UGROUP->_query('*','WHERE name = "'.$this->caption.'"');
+		if(count($data1)!=1) {
+			$UGROUP->_add(array(
+				'level'=>'-1',
+				'name'=>$this->caption,
+				'wep'=>'0',
+				'negative'=>'1',
+			));
+		}else
+			$UGROUP->id = $UGROUP->data[0]['id'];
+
+		// Юзеры Платежные системы
+		$data2 = $UGROUP->childs['users']->_query('*','WHERE owner_id = '.$data1[0]['id'],'email');
+
+		// юзер по умолчанию
+		$email = 'pay_block@'.$_SERVER['HTTP_HOST'];
+		if(!isset($data2[$email])) {
+			$UGROUP->childs['users']->_add(array(
+				'email'=>$email,
+				'name'=>'Pay',
+				'owner_id'=>$UGROUP->id
+			));
+			$id = $UGROUP->childs['users']->id;
+		} else
+			$id = $data2[$email]['id'];
+
+		if(count($this->childs)) {
+			foreach($this->childs as &$childs) {
+				$email = $childs->_cl.'@'.$_SERVER['HTTP_HOST'];
+				if(!isset($data2[$email])) {
+					$UGROUP->childs['users']->_add(array(
+						'email'=>$email,
+						'name'=>$childs->caption,
+						'owner_id'=>$UGROUP->id
+					));
+					$data2[$email] = current($UGROUP->childs['users']->data);
+				}
+				if($paychild==$childs->_cl)
+					$id = $data2[$email]['id'];
+			}
+		}
+		return $id;
+	}
 	
+	/*
+	*
+	*
+	*/
+	function addMoney($paychild,$comment) {
+		$param = array('errMess'=>true);
+		$this->childs[$paychild]->prm_add = true;
+		$this->id = 0;
+		$_POST['name'] = $comment;
+		list($DATA,$flag) = $this->childs[$paychild]->_UpdItemModul($param);
+		unset($DATA['form']['name']);
+		if($flag==1) {
+			$from_user = $this->checkPayUsers($paychild);
+			$childData = $this->childs[$paychild]->data[$this->childs[$paychild]->id];
+			$flag = $this->pay($from_user,$_SESSION['user']['id'],$childData['cost'],$childData['name'],0,$paychild);
+			if(!$flag) {
+				$this->childs[$paychild]->_delete();
+				$DATA['messages'] = static_main::am('error','Ошибка БД, платёж '.$this->childs[$paychild]->id.' анулирован.'); 
+			} else {
+				$this->childs[$paychild]->_update(array('owner_id'=>$this->id));
+			}
+		}
+		return array($DATA,$flag);
+	}
+
+	function PayTransaction($status,$cost,$id) {
+		$this->id = $id;
+		if($status==1) {
+			$data = $this->_select();
+			$data = $data[$id];
+			_new_class('ugroup', $UGROUP);
+			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance-'.$cost.' WHERE id='.$data[$this->mf_createrid]);
+			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance+'.$cost.' WHERE id='.$data['user_id']);
+			$upd = array(
+				'cost'=>$cost,
+				'status'=>$status
+			);
+			$this->_update($upd);
+		} else {
+			$this->_update(array('status'=>$status));
+		}
+		return true;
+	}
+
+
 }
 
 

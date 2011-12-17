@@ -482,33 +482,33 @@ function tpl_form(&$data) {
 				$texthtml .= '<div class="form-value ckedit-value"><textarea id="id_'.$k.'" name="'.$k.'" rows="10" cols="80" '.$attribute.'>'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
 			}
 			elseif($r['type']=='int' and !$r['readonly']) {
-				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' max="'.$r['mask']['max'].'"';
+				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
 				$texthtml .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.$r['value'].'" onkeydown="return checkInt(event)" '.$attribute.'/></div>';
 			}
-			elseif($r['type']=='password') {
+			elseif($r['type']=='password' and isset($r['mask']['password']) and $r['mask']['password']=='re') {
 				$texthtml .= '<div class="form-value"><input type="password" name="'.$k.'" value="" onkeyup="checkPass("'.$k.'")" '.$attribute.'/>
 					<div class="dscr">Введите пароль</div>
 					<input type="password" name="re_'.$k.'" value="" onkeyup="checkPass("'.$k.'")" '.$attribute.'/>
 					<div class="dscr">Чтобы избежать ошибки повторите ввод пароля</div></div>';
 			}
-			elseif($r['type']=='password_new') {
-				$texthtml .= '<div class="form-value"><input type="password" name="'.$k.'" '.($attr['id']?'':'value="'.$r['value'].'"').' class="password" '.$attribute.'/>
-						<div class="passnewdesc" onclick="password_new(this)">Отобразить/скрыть символы</div></div>';
-			}
-			elseif($r['type']=='password_change') {
+			elseif($r['type']=='password' and isset($r['mask']['password']) and $r['mask']['password']=='change') {
 				$texthtml .= '<div class="form-value">
 					<input type="password" name="'.$k.'_old" value=""/><div class="dscr">Введите старый пароль</div>
 					<input type="password" name="'.$k.'" '.($attr['id']?'':'value="'.$r['value'].'"').' class="password"/>
 					<div class="passnewdesc" onclick="password_new()">Отобразить символы/скрыть</div></div>';
 			}	
-			elseif($r['type']=='password2' and !$r['readonly']) {
+			elseif($r['type']=='password_new' or $r['type']=='password') {
+				$texthtml .= '<div class="form-value"><input type="password" name="'.$k.'" '.($attr['id']?'':'value="'.$r['value'].'"').' class="password" '.$attribute.'/>
+						<div class="passnewdesc" onclick="password_new(this)">Отобразить/скрыть символы</div></div>';
+			}
+			/*elseif($r['type']=='password' and !$r['readonly']) {
 				$texthtml .= '<div class="form-value"><input type="text" id="'.$k.'" name="'.$k.'" value="'.$r['value'].'" style="width:55%;float:left;background:#E1E1A1;" readonly="readonly"/>
 							<div style="width:40%;float:right;">
 								<img src="_wep/cdesign/default/img/aprm.gif" style="width:18px;cursor:pointer;" onclick="if(confirm(\'Вы действительно хотите изменить пароль?\')) $(\'#'.$k.'\').val(hex_md5(\''.$r['md5'].'\'+$(\'#a_'.$k.'\').val()));" alt="Сгенерировать пароль в формате MD5" title="Сгенерировать пароль в формате MD5"/>
 								<input type="text" id="a_'.$k.'" name="a_'.$k.'" value="" style="width:80%;vertical-align:top;"/>
 							</div></div>';
 				$_CFG['fileIncludeOption']['md5'] = 1;
-			}
+			}*/
 			elseif($r['type']=='color') {
 				$_tpl['styles']['../_script/script.jquery/colorpicker/css/colorpicker'] = true;
 	//			$_tpl['styles']['colorpicker/css/layout'] = true;

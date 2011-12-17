@@ -1,0 +1,85 @@
+<?php
+	// сначала задаем значения по умолчанию
+	if(!isset($FUNCPARAM[0]) or $FUNCPARAM[0] == '') $FUNCPARAM[0] = '';
+
+
+	// рисуем форму для админки чтобы удобно задавать параметры
+	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
+
+		$form = array(
+			0=>array('type'=>'email','caption'=>'Кому на Email')
+		);
+		return $form;
+	}
+
+	$Chref = $this->getHref();
+
+	if(isset($this->pageParam[0])) {
+		_new_class('pay', $PAY);
+
+		if($this->pageParam[0]=='cash') {
+			$this->pageinfo['path'][$Chref.'cash'] = 'Заявка на пополнение наличными';
+			_new_class('mail', $MAIL);
+			$res = '';
+			if(count($_POST) and $_POST['plus'] and $_POST['pay']) {
+				$data = array('from'=>$_SESSION['user']['email'],'mail_to'=>$FUNCPARAM[0],'subject'=>'Заявка на пополнение баланса от '.$_SESSION['user']['email']);
+				$data['text'] = '<p>Заявка от пользователя '.$_SESSION['user']['name'].'</p>
+				<ul>
+					<li>ID - '.$_SESSION['user']['id'].'</li>
+					<li>ФИО - '.$_SESSION['user']['name'].' '.$_SESSION['user']['io'].'</li>
+					<li>Фирма - '.$_SESSION['user']['firma'].'</li>
+					<li>Группа - '.$_SESSION['user']['gname'].'</li>
+					<li>Email - '.$_SESSION['user']['email'].'</li>
+					<li>текущий баланс - '.rand($_SESSION['user']['balance'],2).' руб.</li>
+				</ul>
+				<p>Заявка на '.(int)$_POST['pay'].' руб.</p>
+				<p>Комментарий пользователя: <b>'.$_POST['name'].'</b></p>
+				<p>Дата заявки '.date('Y-m-d H:i:s').'</p>
+				';
+				$res = $MAIL->Send($data);
+				if($res) {
+					$html .= '<div class="messages"><div class="ok">Заявка принята на расмотрение. Вашу заявку рассмотрят в ближайшее время , ответ вы получите на ваш почтовый ящик.</div></div>';
+				}
+			}
+			if(!$res) {
+				$html .= '<div class="divform">
+					<form method="POST">
+						<div class="form-caption">Сумма для пополнения</div> 
+						<div class="form-value"><input type="text" value="'.$_REQUEST['summ'].'" name="pay"/> руб.</div>
+
+						<div class="form-caption">Ваш коментарий</div>
+						<div class="form-value">
+							<textarea name="name" style="width:100%;"></textarea>
+							<span class="dscr">Укажите подробные данные о переводе когда и как вы перевели средства</span>
+						</div>
+						<div>
+							<input type="submit" value="Отправить заявку на пополнение" name="plus">
+						</div>
+					</form>
+				</div>';
+			}
+		} elseif(isset($PAY->childs[$this->pageParam[0]])) {
+			$this->pageinfo['path'][$Chref.'cash'] = $PAY->childs[$this->pageParam[0]]->caption;
+			$comm = 'Пополнение кошелька '.$_SESSION['user']['name'].'['.$_SESSION['user']['email'].'], '.$_CFG['site']['www'];
+			list($htmlData,$flag) = $PAY->addMoney($this->pageParam[0],$comm);
+			$htmlData = array('formcreat'=>$htmlData);
+			$html .= $HTML->transformPHP($htmlData,'formcreat');
+
+		}
+		////
+	}
+	else {
+		$html = '<ul>
+		<li><a href="'.$Chref.'/cash.html">Заявка на пополнение наличными</a></li>';
+		_new_class('pay', $PAY);
+		if(count($PAY->childs)) {
+			foreach($PAY->childs as &$child) {
+				$html .= '<li><a href="'.$Chref.'/'.$child->_cl.'.html">'.$child->caption.'</a></li>';
+			}
+		}
+
+		$html .= '</ul>';
+	}
+
+	return $html;
+

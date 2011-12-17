@@ -22,48 +22,63 @@ Options -Indexes
 #mod_gzip_item_exclude rspheader ^Content-Encoding:.*gzip.*
 #</IfModule>
 
-RewriteRule (.*)_p([0-9]+).html $1.html?_pn=$2&%{QUERY_STRING}
+#СравниваемаяСтрока считается путем, проверяется существование этого пути и то что этот путь является обычным файлом.
+RewriteCond %{REQUEST_FILENAME} !-f 
+#Сравниваемая Строка считается путем, проверяется существование этого пути и то что этот путь является каталогом.
+RewriteCond %{REQUEST_FILENAME} !-d 
+RewriteRule (.*)_p([0-9]+).html $1.html?_pn=$2&%{QUERY_STRING} [L]
 
 RewriteCond %{REQUEST_FILENAME} !-f 
 RewriteCond %{REQUEST_FILENAME} !-d 
-RewriteRule ^(([0-9A-z\_\-\.]+)\/)?(add|list)(_([0-9]+))?\.html(.*) index.php?pageParam=$1$3&rubric=$5&%{QUERY_STRING}
+RewriteRule ^(([0-9A-z\_\-\.]+)\/)?(add|list)(_([0-9]+))?\.html(.*) index.php?pageParam=$1$3&rubric=$5&%{QUERY_STRING} [L]
 
 #### WEP PHP
+RewriteCond %{REQUEST_FILENAME} !-f 
+RewriteCond %{REQUEST_FILENAME} !-d 
+RewriteRule ^robots.txt index.php?_php=robotstxt [L]
 
 RewriteCond %{REQUEST_FILENAME} !-f 
 RewriteCond %{REQUEST_FILENAME} !-d 
-RewriteRule ^sitemap.xml index.php?_php=sitemap
+RewriteRule ^sitemap.xml index.php?_php=sitemap [L]
 
 RewriteCond %{REQUEST_FILENAME} !-f 
 RewriteCond %{REQUEST_FILENAME} !-d 
-RewriteRule ^sitemap.php index.php?_php=sitemap
+RewriteRule ^sitemap.php index.php?_php=sitemap [L]
 
 RewriteCond %{REQUEST_FILENAME} !-f 
 RewriteCond %{REQUEST_FILENAME} !-d 
-RewriteRule ^_captcha.php index.php?_php=captcha&%{QUERY_STRING}
+RewriteRule ^_captcha.php index.php?_php=captcha&%{QUERY_STRING} [L]
 
 RewriteCond %{REQUEST_FILENAME} !-f 
 RewriteCond %{REQUEST_FILENAME} !-d 
-RewriteRule ^_json.php index.php?_php=json&%{QUERY_STRING}
+RewriteRule ^_json.php index.php?_php=json&%{QUERY_STRING} [L]
 
 RewriteCond %{REQUEST_FILENAME} !-f 
 RewriteCond %{REQUEST_FILENAME} !-d 
-RewriteRule ^_js.php index.php?_php=js&%{QUERY_STRING}
+RewriteRule ^_js.php index.php?_php=js&%{QUERY_STRING} [L]
 
 RewriteCond %{REQUEST_FILENAME} !-f 
 RewriteCond %{REQUEST_FILENAME} !-d 
-RewriteRule ^_redirect.php index.php?_php=redirect&%{QUERY_STRING}
+RewriteRule ^_redirect.php index.php?_php=redirect&%{QUERY_STRING} [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f 
+RewriteCond %{REQUEST_FILENAME} !-d 
+RewriteRule ^rss.xml index.php?_php=rss&%{QUERY_STRING} [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f 
+RewriteCond %{REQUEST_FILENAME} !-d 
+RewriteRule ^rss.php index.php?_php=rss&%{QUERY_STRING} [L]
 
 #### OTHER
 
 RewriteCond %{REQUEST_FILENAME} !-f 
 RewriteCond %{REQUEST_FILENAME} !-d 
-RewriteRule ^([0-9A-Za-z\-\.\/\_]+)_([0-9]+)\.html(.*) index.php?pageParam=$1&id=$2&%{QUERY_STRING}
+RewriteRule ^([0-9A-Za-z\-\.\/\_]+)_([0-9]+)\.html(.*) index.php?pageParam=$1&id=$2&%{QUERY_STRING} [L]
 
 RewriteCond %{REQUEST_FILENAME} !-f 
 RewriteCond %{REQUEST_FILENAME} !-d 
-RewriteRule ^([0-9A-Za-z\-\/]+)\.html(.*) index.php?pageParam=$1&%{QUERY_STRING}
+RewriteRule ^([0-9A-Za-z\-\/]+)\.html(.*) index.php?pageParam=$1&%{QUERY_STRING} [L]
 
 #RewriteCond %{REQUEST_FILENAME} !-f 
 #RewriteCond %{REQUEST_FILENAME} !-d 
-#RewriteRule ^([A-z\-\.\/]+) index.php?pageParam=$1&%{QUERY_STRING}
+#RewriteRule ^([A-z\-\.\/]+) index.php?pageParam=$1&%{QUERY_STRING} [L]

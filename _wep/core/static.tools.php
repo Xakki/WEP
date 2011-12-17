@@ -403,7 +403,7 @@ class static_tools {
 	 * Проверка структуры модуля
 	 *
 	 *
-	 * @param object $MODUL Текщий объект класса
+	 * @param object $MODUL Текущий объект класса
 	 * @return array
 	 */
 	static function _checkmodstruct($Mid,&$OWN = NULL) {

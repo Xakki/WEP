@@ -273,7 +273,7 @@ class static_form {
 		} else {
 			$iq = $_this->_id_as_string();
 			if(!$iq) {
-				static_main::log('error','Error update');
+				static_main::log('error','Error update: miss id');
 				return false;
 			}
 			$q .= ' WHERE id IN ('.$iq.')';
@@ -739,6 +739,8 @@ class static_form {
 					$messages = static_main::m('_err_31',$_this);
 				elseif($row==32) // wrong repeat pass
 					$messages = static_main::m('_err_32',$_this);
+				elseif($row==321) // wrong old pass
+					$messages = static_main::m('_err_321',$_this);
 				elseif($row==33) //data error
 					$messages = static_main::m('_err_33',$_this);
 				elseif($row==39) //wrong file type
@@ -752,7 +754,7 @@ class static_form {
 				$arr_err_name[$key]=$key;
 
 				if(isset($param['errMess'])) {
-					$mess[] = array('name'=>'error', 'value'=>$form['caption'].': '.$messages);
+					$mess[] = static_main::am('error',$form['caption'].': '.$messages);
 				}
 				if(isset($param['ajax'])) {
 					$_tpl['onload'] .= 'putEMF(\''.$key.'\',\''.$messages.'\');'; // запись в форму по ссылке
@@ -764,7 +766,7 @@ class static_form {
 		}
 
 		if(count($arr_err_name)>0 and !isset($param['errMess'])) {
-			$mess[] = array('name'=>'error', 'value'=>'Поля формы заполненны не верно.');
+			$mess[] = static_main::am('error','Поля формы заполненны не верно.');
 		}
 		/*$_tpl['onload'] .'CKEDITOR.replace( \'editor1\',
 						 {
@@ -911,16 +913,21 @@ class static_form {
 				}
 				/*Целое число*/
 				elseif($form['type']=='int' and (!isset($form['mask']['toint']) or !$form['mask']['toint'])) 
-					$form['value'] = $value= (int)$value;
+					$form['value'] = $value= preg_replace("/[^0-9]+/",'',$value);
 				/*Капча*/
 				elseif($form['type']=='captcha' && $value!=$form['captcha']) {
 					$error[] = 31;
 				}
 				/*пароль*/
-				elseif($form['type']=='password')
+				elseif($form['type']=='password' and isset($form['mask']['password']) and $form['mask']['password']=='re')
 				{
 					if($value!=$data['re_'.$key])
 						$error[] = 32;
+				}
+				elseif($form['type']=='password' and isset($form['mask']['password']) and $form['mask']['password']=='change')
+				{
+					if($_this->data[$_this->id][$key]!=md5($_this->_CFG['wep']['md5'].$data[$key.'_old']))
+						$error[] = 321;
 				}
 				/*Список*/
 				elseif(($form['type']=='list' or $form['type']=='ajaxlist'))
@@ -947,7 +954,7 @@ class static_form {
 						if(isset($preg_mask['match'])) {
 							$matches = preg_match_all($preg_mask['match'],$value,$matches2,PREG_OFFSET_CAPTURE);
 							if(!$matches) {
-								$error[$k.'mask'] = 3;
+								$error[$key.'mask'] = 3;
 							}
 						}
 						if(isset($preg_mask['nomatch']))
@@ -962,7 +969,7 @@ class static_form {
 						if($value) {
 							$value = self::_phoneReplace($value);
 							if(!$value) {
-								$error[$k.'mask'] = 3;
+								$error[$key.'mask'] = 3;
 								$textm = 'Не корректный номер телефона.';
 							}
 						}
@@ -970,11 +977,11 @@ class static_form {
 					elseif($nomatch) {
 						if(isset($data[$key.'_rplf'])) {
 							$value = preg_replace($nomatch,'',$value);
-							unset($error[$k.'mask']);
+							unset($error[$key.'mask']);
 						}
 						$matches = preg_match_all($nomatch,$value,$matches2,PREG_OFFSET_CAPTURE);
 						if($matches) {
-							$error[$k.'mask'] = 3;
+							$error[$key.'mask'] = 3;
 						}
 						elseif(isset($form['mask']['checkwww']) and $form['mask']['checkwww'] and !fopen ('http://'.str_replace('http://','',$value), 'r'))
 							$error[] = 4;

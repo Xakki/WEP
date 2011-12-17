@@ -12,7 +12,7 @@ $USER_CFG = static_tools::getFdata($_CFG['_PATH']['wepconf'] . '/config/config.p
 //print_r('<pre>');print_r($USER_CFG);exit();
 $DATA = array();
 $DATA['rootlogin'] =  array('type'=>'text','caption'=>'Login БД с правами суперпользователя','style'=>'background-color:#ff9966;');
-$DATA['rootpass'] =  array('type'=>'password_new','caption'=>'Пароль БД с правами суперпользователя','style'=>'background-color:#ff9966;');
+$DATA['rootpass'] =  array('type'=>'password','caption'=>'Пароль БД с правами суперпользователя','style'=>'background-color:#ff9966;');
 if(isset($_POST['rootlogin']))
 	$DATA['rootlogin']['value'] = $_POST['rootlogin'];
 if(isset($_POST['rootpass']))

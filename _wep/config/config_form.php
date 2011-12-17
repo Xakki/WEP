@@ -3,7 +3,7 @@
 $_CFGFORM['sql'] = array(// SQL
 	'host' => array('type'=>'text','caption'=>'Хост подключения к БД', 'mask'=>array('min'=>9)),
 	'login' =>  array('type'=>'text','caption'=>'Логин БД', 'mask'=>array('min'=>2)),
-	'password' =>  array('type'=>'password_new','caption'=>'Пароль БД', 'mask'=>array('min'=>6)),
+	'password' =>  array('type'=>'password','caption'=>'Пароль БД', 'mask'=>array('min'=>6)),
 	'database' =>  array('type'=>'text','caption'=>'Название БД', 'mask'=>array('min'=>2)),
 	'showparam1'=>array('type' => 'info', 'caption' => '
 	<div class="showparam" onclick="show_fblock(this,\'.hsql\')"> 
@@ -19,7 +19,7 @@ $_CFGFORM['sql'] = array(// SQL
 
 $_CFGFORM['wep'] = array(// для ядра и админки
 	'login' => array('type'=>'text','caption'=>'ROOT-логин', 'mask'=>array('min'=>4)),
-	'password' => array('type'=>'password_new','caption'=>'ROOT-пароль', 'mask'=>array('min'=>8)),
+	'password' => array('type'=>'password','caption'=>'ROOT-пароль', 'mask'=>array('min'=>8)),
 	'md5' => array('type'=>'text','caption'=>'Соль для паролей', 'mask'=>array('min'=>5)),
 	'showparam2'=>array('type' => 'info', 'caption' => '
 	<div class="showparam" onclick="show_fblock(this,\'.hwep\')"> 

@@ -530,7 +530,7 @@ abstract class kernel_extends {
 	}
 
 	/**
-	 * Сохранение данных formФункция добавления записей в бд
+	 * Сохранение данных form , Функция добавления записей в бд
 	 * В случае успеха выполняет allChangeData('add')
 	 *
 	 * @return bool
@@ -2378,6 +2378,48 @@ abstract class kernel_extends {
 		return $pathimg;
 	}
 
+	function _http($link,$param=array()) {
+		$default = array(
+			'body'=>false,
+			'HTTPHEADER'=>array('Content-Type' => 'text/xml; encoding=utf-8'),
+			'redirect' => false,
+			'USERAGENT' => 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2'
+		);
+		$param = array_merge($default,$param);
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $link);//задаём url
+		if(isset($param['COOKIE']))
+			curl_setopt($ch, CURLOPT_COOKIE, $param['COOKIE']);
+		curl_setopt($ch, CURLOPT_USERAGENT, $param['USERAGENT']);//подделываем юзер-агента
+		if($param['redirect']) {
+			//переходить по редиректам, инициируемым сервером, пока не будет достигнуто CURLOPT_MAXREDIRS (если есть)
+			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		}
+		if($param['body']) {
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+			curl_setopt($ch, CURLOPT_HTTPHEADER, $param['HTTPHEADER']);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $param['body']);
+		}
+		//не включать заголовки ответа сервера в вывод
+		curl_setopt($ch, CURLOPT_HEADER, false);
+		//вернуть ответ сервера в виде строки
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+		$text = curl_exec ($ch);
+
+		$PageInfo = curl_getinfo($ch);
+		$err = '';
+		if($err=curl_errno($ch))
+			$flag = false;
+		elseif($PageInfo['http_code'] == 200)
+			$flag = true;
+		else
+			$flag = false;
+		curl_close($ch);
+		return array('text'=>$text,'info'=>$PageInfo,'err'=>$err,'flag'=>$flag);
+	}
 }
 
 //// Kernel END
@@ -2424,6 +2466,5 @@ class modul_child extends ArrayObject {
 
 		return $value;
 	}
-
 }
 
