@@ -472,8 +472,11 @@ class static_main {
 	 * @return string обрезанный текст
 	*/
 	static function pre_text($text, $col, $clearFormat = true) {
-		if ($clearFormat)
+		if ($clearFormat) {
+			//temp
+			$text = str_replace(array('.<br />',',<br />','<br />'),array('. ',', ','. '),$text);
 			$text = strip_tags($text);
+		}
 		if (mb_strlen($text) >= $col)
 		{
 			$length = mb_strripos(mb_substr($text, 0, $col), ' ');

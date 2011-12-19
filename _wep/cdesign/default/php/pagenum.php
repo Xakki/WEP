@@ -15,7 +15,7 @@
 				else
 					$html .=  '<a href="'.$r['href'].'" onclick="return wep.load_href(this)">'.$r['value'].'</a>';
 			}
-			$html .= '&#160;</div><div class="ppagenum"></div>';
+			$html .= '&#160;</div>';
 		}
 		$html .= '<select class="mopselect" onchange="setCookie(\''.$data['modul'].'_mop\',this.value,20);window.location.reload();">';
 		//,\''.$_CFG['session']['path'].'\',\''.$_CFG['session']['domain'].'\',\''.$_CFG['session']['secure'].'\'

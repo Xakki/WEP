@@ -17,7 +17,14 @@ function tpl_form(&$data) {
 			$texthtml .= '<div id="tr_'.$k.'" style="'.(isset($r['style'])?$r['style']:'').'" class="div-tr'.
 				((isset($r['css']) and $r['css'])?' '.$r['css']:'').
 				((isset($r['readonly']) and $r['readonly'])?' readonly':'').'">';
-		if($r['type']=='submit') {
+
+		if($r['type']=='submit' and is_array($r['value'])) {
+			$texthtml .= '<div class="form-submit">';
+			foreach($r['value'] as $ksubmit=>$rsubmit)
+				$texthtml .= '<input type="'.$r['type'].'" name="'.$k.''.$ksubmit.'" value="'.$rsubmit.'" class="sbmt"/>';
+			$texthtml .= '</div>';
+		}
+		elseif($r['type']=='submit') {
 			$texthtml .= '<div class="form-submit">';
 			if(isset($r['value_save']) and $r['value_save']) {
 				$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'_save" value="'.$r['value_save'].'" class="sbmt"/>';

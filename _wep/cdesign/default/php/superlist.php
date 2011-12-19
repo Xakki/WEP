@@ -18,7 +18,8 @@
 		$temp_topmenu = '<div class="menu_new">';
 		if(count($data['topmenu'])) { //MENU
 			foreach($data['topmenu'] as $r) {
-				$temp_topmenu .= '<div class="botton"><span';
+				if(!isset($r['style'])) $r['style'] = '';
+				$temp_topmenu .= '<div class="botton" style="'.$r['style'].'"><span';
 				// HREF path
 				if(isset($r['href']) and is_array($r['href'])) {
 					$temp = '';
@@ -35,7 +36,8 @@
 				}
 				if($r['sel'])
 					$temp_topmenu .= ' style="border:2px solid red;"';
-				$temp_topmenu .= ' class="'.$r['css'].'" title="'.$r['caption'].'">'.$r['caption'].'</span></div>';
+				if(!isset($r['title'])) $r['title'] = $r['caption'];
+				$temp_topmenu .= ' class="'.$r['css'].'" title="'.$r['title'].'">'.$r['caption'].'</span></div>';
 			}
 		}
 		$temp_topmenu .= tpl_spagenum($data['data']['pagenum']);// pagenum
@@ -102,7 +104,7 @@
 			}
 			if(isset($r['onetd']) and $r['onetd']=='close') $tdflag = 0;
 		}
-		$html .= '<th>&#160;</th></tr>';
+		$html .= '<th style="text-align:right;"><a class="uiicons img10" onclick="wep.SuperGroupInvert(this)" title="Инверт чекбоксов">Инверт</a></th></tr>';
         if(count($data['item']))
 
 		// Проходимся про каждой записи
@@ -187,6 +189,10 @@
 				$html .= '<a class="bottonimg imgedit" href="'.$hrefpref.'&_type=edit" onclick="return wep.load_href(this)" title="['.static_main::m('_EDIT_TITLE').']"></a>';
 			if($r['del'])
 				$html .= '<a class="bottonimg imgdel" href="'.$hrefpref.'&_type=del" onclick="return wep.hrefConfirm(this,\'del\')" title="['.static_main::m('_DEL_TITLE').']"></a>';
+
+			if($r['del'] or (isset($r['active']) and $r['act']))
+				$html .= '<input type="checkbox" name="SuperGroup['.$data['cl'].']['.$r['id'].']" onclick="wep.SuperGroup(this)" title="Групповая операция" '.((isset($_COOKIE['SuperGroup'][$data['cl']][$r['id']]) and $_COOKIE['SuperGroup'][$data['cl']][$r['id']])?' checked="checked"':'').'>';
+
 			if(isset($r['istree']))
 				$html .= '<br/><a href="'.$hrefpref.'" onclick="return wep.load_href(this)">'.$r['istree']['value'].' ('.$r['istree']['cnt'].')</a>';
 			if(isset($r['child'])) foreach($r['child'] as $ck=>$cn)
@@ -215,7 +221,7 @@
 				else
 					$html .=  '<a href="'.$r['href'].'" onclick="return wep.load_href(this)">'.$r['value'].'</a>';
 			}
-			$html .= '&#160;</div><div class="ppagenum"></div>';
+			$html .= '&#160;</div>';
 		}
 		$html .= '<select class="mopselect" onchange="setCookie(\''.$data['modul'].'_mop\',this.value,20);window.location.reload();">';
 		//,\''.$_CFG['session']['path'].'\',\''.$_CFG['session']['domain'].'\',\''.$_CFG['session']['secure'].'\'

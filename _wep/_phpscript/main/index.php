@@ -86,14 +86,12 @@
 
 	$rid = 0;
 
-
 //INCLUDE*****************
 	_new_class('pg',$PGLIST);
 		if (!isset($_REQUEST['pageParam'])) 
 			$_REQUEST['pageParam'] = "index";
 		if(is_array($_REQUEST['pageParam'])) $_REQUEST['pageParam'] = implode('/',$_REQUEST['pageParam']);
 		$_REQUEST['pageParam'] = explode('/',trim($_REQUEST['pageParam'],'/'));
-
 
 //if($_SESSION['_showallinfo']) {print('main1 = '.(getmicrotime()-$main1time).'<hr/>');$main2time = getmicrotime();}
 	if ($PGLIST->config['auto_auth']) {

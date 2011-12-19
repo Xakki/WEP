@@ -35,6 +35,7 @@ class pg_class extends kernel_extends {
 			'foot' => 'foot');
       $this->config['auto_include'] = true;
 		$this->config['auto_auth'] = true;
+		$this->config['rf_on'] = true;
                 
 		// TODO : Сделать форму управления массивами данных и хранить в формате json
 
@@ -51,6 +52,7 @@ class pg_class extends kernel_extends {
 		$this->config_form['marker'] = array('type' => 'textarea', 'caption' => 'Маркеры');
 		$this->config_form['auto_include'] = array('type' => 'checkbox', 'caption' => 'Подключать скрипты автоиматически');
 		$this->config_form['auto_auth'] = array('type' => 'checkbox', 'caption' => 'Автоматическая авторизация');
+		$this->config_form['rf_on'] = array('type' => 'checkbox', 'caption' => 'Для руского домена использовать НАЗВАНИЕ страницы');
 	}
 
 	function _set_features() {

@@ -1373,6 +1373,24 @@ abstract class kernel_extends {
 					'css' => 'wepstats',
 				);
 			}
+
+			// Групповые операции
+			$sg = 0;
+			if(isset($_COOKIE['SuperGroup'][$this->_cl])) {
+				$sg += count($_COOKIE['SuperGroup'][$this->_cl]);
+			}
+			$t = array('_type'=>'tools', '_func'=>'SuperGroup');
+			$PARAM['topmenu']['SuperGroup'] = array(
+				'href' =>  $t,
+				'caption' => 'Групповая операция</span><span class="wepSuperGroupCount" title="Кол-во выбранных элементов">'.$sg,
+				'title'=>'Групповая операция',
+				'sel' => 0,
+				'type' => 'tools',
+				'css' => 'wepSuperGroup',
+				'style'=>(!$sg?'display:none;':'')
+			);
+
+
 			// Удаление через форму
 			if(isset($_POST['sbmt_del']) and $this->id) {
 				$ftype = 'del';
@@ -1580,6 +1598,66 @@ abstract class kernel_extends {
 		return Array('form' => $this->form, 'messages' => $arr['mess']);
 	}
 
+	/**
+	 * Групповые операции
+	 * @return array form
+	*/
+	public function toolsSuperGroup() {
+		global $_tpl;
+		$this->form = $mess = array();
+		if (!static_main::_prmModul($this->_cl, array(5,7)))
+			$mess[] = static_main::am('error','denied',$this);
+		elseif(!isset($_COOKIE['SuperGroup'][$this->_cl]) or !count($_COOKIE['SuperGroup'][$this->_cl]))
+			$mess[] = static_main::am('alert','Нет выбранных элементов',$this);
+		elseif (count($_POST)) {
+			$type = '';
+			if(isset($_POST['sbmt_on'])) {
+				$type = 'on';
+				$this->id = array_keys($_COOKIE['SuperGroup'][$this->_cl]);
+				$this->_update(array('active'=>1));
+				$mess[] = static_main::am('ok','Успешно включено',$this);
+			}
+			elseif(isset($_POST['sbmt_off'])) {
+				$type = 'off';
+				$this->id = array_keys($_COOKIE['SuperGroup'][$this->_cl]);
+				$this->_update(array('active'=>0));
+				$mess[] = static_main::am('ok','Успешно отключено',$this);
+			}
+			elseif(isset($_POST['sbmt_del'])) {
+				$type = 'del';
+				$this->id = array_keys($_COOKIE['SuperGroup'][$this->_cl]);
+				$this->_delete();
+				$mess[] = static_main::am('ok','Успешно удалено',$this);
+			}
+			elseif(isset($_POST['sbmt_clear'])) {
+				$type = 'clear';
+				$mess[] = static_main::am('ok','Список чист',$this);
+			}
+			if(count($mess)) {
+				foreach($_COOKIE['SuperGroup'][$this->_cl] as $ck=>$ck)
+					$_tpl['onload'] .= 'setCookie("SuperGroup['.$this->_cl.']['.$ck.']",0,-10000);';
+				$_tpl['onload'] .= '$("span.wepSuperGroupCount").text(0).parent().hide("slow");wep.SuperGroupClear("'.$type.'");';
+			}
+		} 
+		else {
+			$this->form['_*features*_'] = array('name' => 'SuperGroup', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref'=>$_SERVER['HTTP_REFERER']);
+			$this->form['_info'] = array(
+				'type' => 'info',
+				'caption' => '<h2 style="text-align:center;">'.$this->caption.'</h2><h3 style="text-align:center;">Выбранно элементов : '.count($_COOKIE['SuperGroup'][$this->_cl]).'</h3>');
+			$this->form['sbmt'] = array(
+				'type' => 'submit',
+				'value' => array(
+					'_off'=>static_main::m('Отключить',$this),
+					'_on'=>static_main::m('Включить',$this),
+					'_del'=>static_main::m('Удалить',$this),
+					'_clear'=>static_main::m('Отменить выбранные элементы.',$this),
+					''=>static_main::m('Отмена',$this),
+				)
+			);
+		}
+		self::kFields2FormFields($this->form);
+		return Array('form' => $this->form, 'messages' => $mess);
+	}
 	/**
 	 * Статистика модуля
 	 * @param array $oid 

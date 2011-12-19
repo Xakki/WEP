@@ -13,7 +13,10 @@ img, form , table {margin:0;border:0;padding:0;}
 a{color:black;}
 a:hover{text-decoration:none;}
 .clk {clear:both;}
-
+.cnone {
+	display:none;
+	font-size:1px;
+	height:1px;}
 
 
 #wepmain {
@@ -163,8 +166,7 @@ a.am_tools {
 			color:transparent;
 			cursor:pointer;
 			font-size:0.01em;
-			display:block;
-			display:inline-block;
+			display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
 		}
 		.bottonimg:hover, .bottonimg_sel {
 			background-image:url(../img/button.png);
@@ -191,6 +193,18 @@ a.am_tools {
 		.img5{background-position:0 -160px;}
 		.img6{background-position:0 -144px;}
 		.img-1{background-position:0 -176px;}
+
+		.uiicons {
+			width: 16px; 
+			height: 16px; 
+			background-image: url(/_design/_img/ui-icons_256x240.png);
+			cursor:pointer;
+			font-size:0.01em;
+			display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
+		}
+		.uiicons.img10 {
+			background-position:-63px -145px;
+		}
 
 		.service {
 			color:#D33;
@@ -250,7 +264,7 @@ a.am_tools {
 	.path img {vertical-align:middle;height:18px;}
  /*MENU*/
 div.menu_new {
-	padding: 5px  15px 0 0;margin: 0;
+	padding: 5px 0 0 0;margin: 0;
 	height:1.6em;
 	font-size:1.2em;
 	vertical-align: middle;
@@ -278,7 +292,7 @@ div.menu_new .weptools {
 	height:16px;
 	width:16px;
 	margin:0;
-	display:block;
+	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
 	font-size:0.6em;
 }
 	div.menu_new .weptools:hover, div.menu_new .weptools_sel {
@@ -305,6 +319,14 @@ div.menu_new .weptools {
 	div.menu_new .wepreinstall {
 		background-position:0 -284px;
 	}
+	div.menu_new .wepSuperGroup {
+		background-position:0 -350px;
+	}
+	span.wepSuperGroupCount {
+		vertical-align:top;
+		padding:0 3px;
+	}
+
 div.menu_new .tools_gact {
 	color:transparent;
 	background-image:url(../img/buttonh.png);
@@ -390,8 +412,12 @@ div.pagenum {
 	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
 }
 div.pagenum a {
-	padding:0 2px;
+	padding:0 5px;
 }
+div.pagenum b {
+	padding:0 3px;
+}
+
 .mopselect {
 	font-size:1em;
 	background-color:transparent;
@@ -493,7 +519,7 @@ form table.form {
 
 div.ppagenum {
 	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
-	margin: 0 auto;
+	margin: 0 -10px;
 }
 
 /*tools_block*/

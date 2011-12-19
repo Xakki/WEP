@@ -348,10 +348,11 @@ function headerssent() {
 	if (!headers_sent()) {
 		setlocale(LC_ALL, $_CFG['wep']['setlocale']);
 		//date_default_timezone_set('Asia/Yekaterinburg');
-		header("Cache-Control: max-age=0, must-revalidate");
-		header("Last-Modified: " . gmdate("D, d M Y H:i:s", $_CFG['time']) . " GMT");
-		header("Expires: " . gmdate("D, d M Y H:i:s", $_CFG['time']) . " GMT");
-		header("Content-type:text/html;charset=utf-8");
+		//header("Pragma:");
+		header("Content-type: text/html; charset=utf-8");
+		header("Cache-Control: public, max-age=20, must-revalidate, post-check=0, pre-check=0");// no-store, no-cache,
+		header("Last-Modified: " . gmdate("D, d M Y H:i:s", ($_CFG['time']-20)) . " GMT");
+		header("Expires: " . gmdate("D, d M Y H:i:s", ($_CFG['time']+20)) . " GMT");
 		header("Access-Control-Allow-Origin: *");
 		return true;
 	}
