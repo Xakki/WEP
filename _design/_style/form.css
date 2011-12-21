@@ -25,6 +25,8 @@
 		display:block;
 		margin:0 auto;
 		background-color:#EDEDED;
+		text-align: justify;
+		text-indent: 1em;
 	}
 	div.addparam .form-value {
 		width: auto;

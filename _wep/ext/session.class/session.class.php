@@ -44,6 +44,7 @@ class session_class extends kernel_extends {
 		/*$result = $this->SQL->execSQL('SHOW TABLES LIKE \''.$this->tablename.'\'');// checking table exist
 		if ($result->err) echo('Session error');
 		if (!$result->num_rows()) echo('Session no table');*/
+		$this->cron[] = array('modul'=>$this->_cl,'function'=>'gc()','active'=>1,'time'=>86400);
 	}
 
 	public function setFieldsForm($form=0) {
@@ -144,7 +145,7 @@ class session_class extends kernel_extends {
 	}
 
 	function gc($maxlifetime=0) {
-		$result = $this->SQL->execSQL('DELETE FROM '.$this->tablename.' WHERE `modified` + `expired` < '.$this->_time.' ');
+		$result = $this->SQL->execSQL('DELETE FROM '.$this->tablename.' WHERE `expired` < '.$this->_time.' ');
 		//OR (`created` + '.$this->deadsession.' < '.$this->_time.' AND `visits` < '.$this->deadvisits.')
 		return(true); 
 	}

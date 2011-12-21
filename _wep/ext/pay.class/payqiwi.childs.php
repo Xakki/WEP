@@ -199,20 +199,22 @@ class payqiwi_class extends kernel_extends {
 				if($billlist) {
 					foreach ($billlist->children() as $bill) {
 						$upd = array(
-							'statuses' => $bill['status'],
-							'cost' => $bill['sum']
+							'statuses' => (int)$bill['status'],
+							'cost' => preg_replace('/[^0-9\.]/','',(string)$bill['sum'])
 						);
 						if($this->config['txn-prefix'])
-							$bill['id'] = str_replace($this->config['txn-prefix'],'',$bill['id']);
-						
-						if($bill['status']!=50) {
-							$this->_update($upd,'id='.$bill['id']);
-							if($bill['status']==60)
-								$status = 1;
-							else
-								$status = 2;
-							$this->owner->PayTransaction($status,$this->data[$this->id]['cost'],$this->data[$this->id]['owner_id']);
-						}
+							$upd['id'] = str_replace($this->config['txn-prefix'],'',$bill['id']);
+						$this->id = NULL;
+						$this->_update($upd);
+
+						if($bill['status']==60)
+							$status = 1;
+						elseif($bill['status']==150)
+							$status = 2;
+						else
+							$status = 0;
+
+						$this->owner->PayTransaction($status,$this->data[$this->id]['cost'],$this->data[$this->id]['owner_id']);
 					};
 				}
 			}

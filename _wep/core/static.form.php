@@ -73,7 +73,7 @@ class static_form {
 				elseif($_this->fields[$key]['type']=='bool')
 					$value = ((int)$value == 1 ? 1 : 0);
 				elseif(isset($int_type[$_this->fields[$key]['type']]))
-					$value =  (int)preg_replace('/[^0-9\-]/', '', $value);
+					$value =  (int)preg_replace('/[^0-9]+/', '', $value);
 				else
 					$value = '\''.$_this->SqlEsc($value).'\'';
 			}
@@ -260,7 +260,7 @@ class static_form {
 				elseif($_this->fields[$key]['type']=='bool')
 					$value = ((int)$value ? 1 : 0);
 				elseif(isset($int_type[$_this->fields[$key]['type']]))
-					$value = (int)preg_replace('/[^0-9\-]/', '', $value);
+					$value = (int)preg_replace('/[^0-9]+/', '', $value);
 				else
 					$value = '\''.$_this->SqlEsc($value).'\'';
 			}
@@ -913,7 +913,7 @@ class static_form {
 				}
 				/*Целое число*/
 				elseif($form['type']=='int' and (!isset($form['mask']['toint']) or !$form['mask']['toint'])) 
-					$form['value'] = $value= preg_replace("/[^0-9]+/",'',$value);
+					$form['value'] = $value= preg_replace('/[^0-9]+/','',$value);
 				/*Капча*/
 				elseif($form['type']=='captcha' && $value!=$form['captcha']) {
 					$error[] = 31;

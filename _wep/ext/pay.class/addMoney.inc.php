@@ -13,12 +13,41 @@
 	}
 
 	$Chref = $this->getHref();
+	$_tpl['styles']['pay'] = '
+		.payselect {
+		}
+		.payselect li {
+			vertical-align:top;
+			text-align: center;
+			display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
+		}
+		.payselect li a {
+			font-size:14px;
+			height:30px;
+			width:130px;
+			display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
+			border:1px transparent solid;
+			background: url(/_wep/ext/pay.class/_design/payuser.png) no-repeat scroll 50% 0 transparent;
+			margin:0;
+			padding:50px 5px 5px 5px;
+			vertical-align:bottom;
+			text-align: center;
+		}
+		.payselect li a:hover {
+			border:1px gray solid;
+		}
+		.payselect li.pay-users a {
+		}
+		.payselect li.pay-payqiwi a {
+			background-image: url(/_wep/ext/pay.class/_design/qiwi/logo.png);
+		}
+	';
 
 	if(isset($this->pageParam[0])) {
 		_new_class('pay', $PAY);
 
 		if($this->pageParam[0]=='cash') {
-			$this->pageinfo['path'][$Chref.'cash'] = 'Заявка на пополнение наличными';
+			$this->pageinfo['path'][$Chref.'/cash'] = 'Заявка на пополнение наличными';
 			_new_class('mail', $MAIL);
 			$res = '';
 			if(count($_POST) and $_POST['plus'] and $_POST['pay']) {
@@ -39,17 +68,18 @@
 				$res = $MAIL->Send($data);
 				if($res) {
 					$html .= '<div class="messages"><div class="ok">Заявка принята на расмотрение. Вашу заявку рассмотрят в ближайшее время , ответ вы получите на ваш почтовый ящик.</div></div>';
+					$this->pageinfo['path'][$Chref.'/cash/ok'] = 'Успешно';
 				}
 			}
 			if(!$res) {
 				$html .= '<div class="divform">
 					<form method="POST">
 						<div class="form-caption">Сумма для пополнения</div> 
-						<div class="form-value"><input type="text" value="'.$_REQUEST['summ'].'" name="pay"/> руб.</div>
+						<div class="form-value"><input type="text" value="'.$_REQUEST['pay'].'" name="pay"/> руб.</div>
 
 						<div class="form-caption">Ваш коментарий</div>
 						<div class="form-value">
-							<textarea name="name" style="width:100%;"></textarea>
+							<textarea name="name" style="width:100%;">'.$_REQUEST['name'].'</textarea>
 							<span class="dscr">Укажите подробные данные о переводе когда и как вы перевели средства</span>
 						</div>
 						<div>
@@ -58,10 +88,13 @@
 					</form>
 				</div>';
 			}
-		} elseif(isset($PAY->childs[$this->pageParam[0]])) {
-			$this->pageinfo['path'][$Chref.'cash'] = $PAY->childs[$this->pageParam[0]]->caption;
+		} 
+		elseif(isset($PAY->childs[$this->pageParam[0]])) {
+			$this->pageinfo['path'][$Chref.'/'.$this->pageParam[0]] = $PAY->childs[$this->pageParam[0]]->caption;
 			$comm = 'Пополнение кошелька '.$_SESSION['user']['name'].'['.$_SESSION['user']['email'].'], '.$_CFG['site']['www'];
 			list($htmlData,$flag) = $PAY->addMoney($this->pageParam[0],$comm);
+			if($flag==1)
+				$this->pageinfo['path'][$Chref.'/'.$this->pageParam[0].'/ok'] = 'Успешно';
 			$htmlData = array('formcreat'=>$htmlData);
 			$html .= $HTML->transformPHP($htmlData,'formcreat');
 
@@ -69,12 +102,12 @@
 		////
 	}
 	else {
-		$html = '<ul>
-		<li><a href="'.$Chref.'/cash.html">Заявка на пополнение наличными</a></li>';
+		$html = '<ul class="payselect">
+		<li class="pay-users"><a href="'.$Chref.'/cash.html" title="Наличными">Наличными</a></li>';
 		_new_class('pay', $PAY);
 		if(count($PAY->childs)) {
 			foreach($PAY->childs as &$child) {
-				$html .= '<li><a href="'.$Chref.'/'.$child->_cl.'.html">'.$child->caption.'</a></li>';
+				$html .= '<li class="pay-'.$child->_cl.'"><a href="'.$Chref.'/'.$child->_cl.'.html" title="'.$child->caption.'">'.$child->caption.'</a></li>';
 			}
 		}
 

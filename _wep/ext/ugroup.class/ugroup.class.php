@@ -283,6 +283,7 @@ class users_class extends kernel_extends {
 			);
 			observer::register_observer($params, 'shutdown_function');
 		}
+		$this->cron[] = array('modul'=>$this->_cl,'function'=>'deleteNoConfirmUser()','active'=>0,'time'=>86400);
 	}
 
 	function _childs() {
@@ -324,7 +325,7 @@ class users_class extends kernel_extends {
 			/*if(isset($_POST[$this->fn_pass]) and !$_POST[$this->fn_pass])
 				unset($this->fields_form[$this->fn_pass]);unset($_POST[$this->fn_pass]);
 			$this->fields_form[$this->fn_login]['readonly']=true;*/
-		}else {
+		} else {
 			$this->fields_form[$this->fn_pass] = array('type' => 'password', 'caption' => 'Пароль','mask'=>array('min' => '6','fview'=>1));
 			//$this->fields_form[$this->fn_login]['readonly']=false;
 			//$this->fields_form[$this->fn_pass] = array('type' => 'password', 'caption' => 'Пароль','mask'=>array('min' => '6','fview'=>1));
@@ -751,5 +752,11 @@ class users_class extends kernel_extends {
 		return $DATA;
 	}
 
+	// Удаление пользователей не подтвердивших авторизацию
+	function deleteNoConfirmUser($day=7) {
+		if($this->owner->config['reg'] and $this->owner->config['noreggroup']) {
+			$this->SQL->execSQL('DELETE FROM '.$this->tablename.' WHERE active=0 and owner_id='.$this->owner->config['noreggroup'].' and '.$this->mf_timecr.'<'.($this->_CFG['time']-($day*24*3600)));
+		}
+	}
 }
 

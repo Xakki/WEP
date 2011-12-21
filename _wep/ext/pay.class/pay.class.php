@@ -383,14 +383,13 @@ class pay_class extends kernel_extends {
 			_new_class('ugroup', $UGROUP);
 			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance-'.$cost.' WHERE id='.$data[$this->mf_createrid]);
 			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance+'.$cost.' WHERE id='.$data['user_id']);
-			$upd = array(
-				'cost'=>$cost,
-				'status'=>$status
-			);
-			$this->_update($upd);
 		} else {
-			$this->_update(array('status'=>$status));
 		}
+		$upd = array(
+			'cost'=>$cost,
+			'status'=>$status
+		);
+		$this->_update($upd);
 		return true;
 	}
 

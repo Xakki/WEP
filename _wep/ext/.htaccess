@@ -1,1 +1,5 @@
+php_flag engine 0
+<FilesMatch "\.(php|inc|cfg|key|htaccess|cmd)$">
+order allow,deny
 deny from all
+</FilesMatch>
