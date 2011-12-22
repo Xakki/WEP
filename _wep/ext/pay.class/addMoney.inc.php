@@ -14,6 +14,32 @@
 
 	$Chref = $this->getHref();
 	$_tpl['styles']['pay'] = '
+
+		div.divform {
+			text-align:center;
+			margin:0 auto;
+			width:300px;
+		}
+		.divform .form-caption {
+			text-align:left;
+		}
+
+		.divform .form-value {
+		}
+		.divform .form-caption input {
+			width:50px;
+			margin:0 0 0 20px;
+			text-align:right;
+		}
+		.divform .form-value textarea {
+			width:300px;
+			margin:0 auto;
+		}
+		.divform .form-value .dscr {
+			display:block;
+			text-align:justify;
+		}
+
 		.payselect {
 		}
 		.payselect li {
@@ -59,7 +85,7 @@
 					<li>Фирма - '.$_SESSION['user']['firma'].'</li>
 					<li>Группа - '.$_SESSION['user']['gname'].'</li>
 					<li>Email - '.$_SESSION['user']['email'].'</li>
-					<li>текущий баланс - '.rand($_SESSION['user']['balance'],2).' руб.</li>
+					<li>Текущий баланс - '.rand($_SESSION['user']['balance'],2).' руб.</li>
 				</ul>
 				<p>Заявка на '.(int)$_POST['pay'].' руб.</p>
 				<p>Комментарий пользователя: <b>'.$_POST['name'].'</b></p>
@@ -74,15 +100,13 @@
 			if(!$res) {
 				$html .= '<div class="divform">
 					<form method="POST">
-						<div class="form-caption">Сумма для пополнения</div> 
-						<div class="form-value"><input type="text" value="'.$_REQUEST['pay'].'" name="pay"/> руб.</div>
-
+						<div class="form-caption">Сумма для пополнения <input type="text" value="'.$_REQUEST['pay'].'" name="pay"/> руб.</div>
 						<div class="form-caption">Ваш коментарий</div>
 						<div class="form-value">
-							<textarea name="name" style="width:100%;">'.$_REQUEST['name'].'</textarea>
+							<textarea name="name">'.$_REQUEST['name'].'</textarea>
 							<span class="dscr">Укажите подробные данные о переводе когда и как вы перевели средства</span>
 						</div>
-						<div>
+						<div class="form-value">
 							<input type="submit" value="Отправить заявку на пополнение" name="plus">
 						</div>
 					</form>

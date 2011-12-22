@@ -597,14 +597,14 @@ class users_class extends kernel_extends {
 	function regConfirm() {
 		global $_MESS;
 		$flag = false;
-		
+		print_r('<pre>');print_r($_GET);
 		$_GET['hash'] = preg_replace("/[^0-9a-f]+/",'',$_GET['hash']);
 		if(!$this->owner->config['reg'])
 			$mess[] = static_main::am('error','deniedreg');
 		elseif(!isset($_GET['confirm']) or !isset($_GET['hash']) or _strlen($_GET['hash'])!=32)
 			$mess[] = static_main::am('error','errdata');
 		else {
-			$data = $this->_query('t1.id,t1.reg_hash', 't1 where t1.`'.$this->fn_login.'` = \''.preg_replace("/[^0-9a-z@\.]+/u",'', $_GET['confirm']).'\'');
+			$data = $this->_query('t1.id,t1.reg_hash', 't1 where t1.`'.$this->fn_login.'` = \''.preg_replace("/[^0-9a-z@\-\_\.]+/u",'', $_GET['confirm']).'\'');
 			if(count($data) and _strlen($data[0]['reg_hash'])<5)
 				$mess[] = static_main::am('alert','confno');
 			elseif(count($data) and $data[0]['reg_hash']==$_GET['hash']) {
