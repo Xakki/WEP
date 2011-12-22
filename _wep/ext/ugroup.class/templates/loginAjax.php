@@ -18,7 +18,7 @@ function tpl_loginAjax($data) {
 				</div>
 			</div>
 		</div>';
-	$_tpl['script']['utils']=1;
+	$_tpl['script']['wep']=1;
 	$_tpl['styles']['style']=1;
 	$_tpl['styles']['login']=1;
 	$_tpl['script']['showLoginForm'] = '
