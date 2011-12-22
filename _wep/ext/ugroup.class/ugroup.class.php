@@ -597,7 +597,7 @@ class users_class extends kernel_extends {
 	function regConfirm() {
 		global $_MESS;
 		$flag = false;
-		print_r('<pre>');print_r($_GET);
+
 		$_GET['hash'] = preg_replace("/[^0-9a-f]+/",'',$_GET['hash']);
 		if(!$this->owner->config['reg'])
 			$mess[] = static_main::am('error','deniedreg');
