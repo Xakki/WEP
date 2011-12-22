@@ -28,7 +28,7 @@
 		}
 		.divform .form-caption input {
 			width:50px;
-			margin:0 0 0 20px;
+			margin:0 0 0 10px;
 			text-align:right;
 		}
 		.divform .form-value textarea {
@@ -77,7 +77,7 @@
 			_new_class('mail', $MAIL);
 			$res = '';
 			if(count($_POST) and $_POST['plus'] and $_POST['pay']) {
-				$data = array('from'=>$_SESSION['user']['email'],'mail_to'=>$FUNCPARAM[0],'subject'=>'Заявка на пополнение баланса от '.$_SESSION['user']['email']);
+				$data = array('from'=>$_SESSION['user']['email'], 'mail_to'=>$FUNCPARAM[0], 'subject'=>'Заявка на пополнение баланса от '.$_SESSION['user']['email']);
 				$data['text'] = '<p>Заявка от пользователя '.$_SESSION['user']['name'].'</p>
 				<ul>
 					<li>ID - '.$_SESSION['user']['id'].'</li>
@@ -85,7 +85,7 @@
 					<li>Фирма - '.$_SESSION['user']['firma'].'</li>
 					<li>Группа - '.$_SESSION['user']['gname'].'</li>
 					<li>Email - '.$_SESSION['user']['email'].'</li>
-					<li>Текущий баланс - '.rand($_SESSION['user']['balance'],2).' руб.</li>
+					<li>Текущий баланс - '.round($_SESSION['user']['balance'],2).' руб.</li>
 				</ul>
 				<p>Заявка на '.(int)$_POST['pay'].' руб.</p>
 				<p>Комментарий пользователя: <b>'.$_POST['name'].'</b></p>

@@ -535,6 +535,12 @@ function tpl_form(&$data) {
 				});';
 				$texthtml .= '<div class="form-value colorPicker"><input type="text" name="'.$k.'" value="'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'" '.$attribute.'/></div>';
 			}
+			/*elseif($r['type']=='phone') {
+				$texthtml .= '<div class="form-value" style="font-size:1.2em;">+7(<input type="int" name="'.$k.'[0]" value="" maxlength="3" style="width:27px;"/>) <input type="int" name="'.$k.'[1]" value="" maxlength="3" style="width:27px;"/>
+				<input type="int" name="'.$k.'[2]" value="" maxlength="4" style="width:40px;"/>
+				</div>';
+
+			}*/
 			else {
 				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
 				$texthtml .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'" '.$attribute.'/></div>';
