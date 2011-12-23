@@ -63,7 +63,7 @@ class payqiwi_class extends kernel_extends {
 
 	protected function _create() {
 		parent::_create();
-		$this->fields['name'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL');
+		$this->fields['name'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL','default'=>'');
 		$this->fields['phone'] = array('type' => 'bigint', 'width' => 11,'attr' => 'unsigned NOT NULL');
 		$this->fields['cost'] = array('type' => 'float', 'width' => '11,4','attr' => 'NOT NULL'); // в коппейках
 		$this->fields['statuses'] = array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL');
