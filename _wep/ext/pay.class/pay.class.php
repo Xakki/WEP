@@ -315,10 +315,10 @@ class pay_class extends kernel_extends {
 				'negative'=>'1',
 			));
 		}else
-			$UGROUP->id = $UGROUP->data[0]['id'];
+			$UGROUP->id = $data1[0]['id'];
 
 		// Юзеры Платежные системы
-		$data2 = $UGROUP->childs['users']->_query('*','WHERE owner_id = '.$data1[0]['id'],'email');
+		$data2 = $UGROUP->childs['users']->_query('*','WHERE owner_id = '.$UGROUP->id,'email');
 
 		// юзер по умолчанию
 		$email = 'pay_block@'.$_SERVER['HTTP_HOST'];

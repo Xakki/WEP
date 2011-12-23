@@ -74,9 +74,13 @@ class payqiwi_class extends kernel_extends {
 
 	public function setFieldsForm($form=0) {
 		parent::setFieldsForm($form);
-		$this->fields_form['phone'] = array('type' => 'int', 'caption' => 'Номер телефона', 'comment'=>'10 или 11 значный номер мобильного. Пример: 9271234567 или 79271234567', 'mask'=>array('min'=>10,'max'=>11));
-		if($form and !$this->id and isset($_SESSION['user']['phone']))
+		$this->fields_form['phone'] = array('type' => 'int', 'caption' => 'Номер телефона', 'comment'=>'10 значный номер мобильного. Пример: 9271234567', 'mask'=>array('min'=>10,'max'=>10));
+		if($form and !$this->id and isset($_SESSION['user']['phone'])) {
 			$this->fields_form['phone']['default'] = preg_replace('/[^0-9]/','',$_SESSION['user']['phone']);
+			if($this->fields_form['phone']['default'][0]!='9'){
+				$this->fields_form['phone']['default'] = mb_substr($this->fields_form['phone']['default'],1);
+			}
+		}
 		$this->fields_form['cost'] = array('type' => 'int', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('minint'=>$this->config['minpay'],'maxint'=>$this->config['maxpay']));
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Комментарий', 'mask'=>array('name'=>'all'));
 		$this->fields_form['statuses'] = array('type' => 'list', 'listname'=>'statuses', 'readonly'=>1, 'caption' => 'Статус', 'mask'=>array());
