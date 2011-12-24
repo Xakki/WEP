@@ -322,7 +322,7 @@
 		color:#000;
 		background:none repeat scroll 0 0 #A1B1C1;
 	}
-	.ajaxlist div label:hover {
+	.ajaxlist div label.selected {
 		color:#FFF;
 		background:none repeat scroll 0 0 #111111;
 	}

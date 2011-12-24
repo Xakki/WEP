@@ -167,7 +167,7 @@ function tpl_form(&$data) {
 					$r['csscheck'] = ($value_2?'accept':'reject');
 					$texthtml .= '<div class="form-value ajaxlist">
 						<span style="'.$r['labelstyle'].'">'.$r['label'].'</span>
-						<input type="text" name="'.$k.'_2['.$i.']" value="'.$value_2.'" onfocus="show_hide_label(this,\''.$k.'\',1,\''.$i.'\')" onblur="show_hide_label(this,\''.$k.'\',0,\''.$i.'\')" onkeyup="ajaxlist(this,\''.$k.'\',\''.$i.'\')" class="'.$r['csscheck'].'" autocomplete="off"/>
+						<input type="text" name="'.$k.'_2['.$i.']" value="'.$value_2.'" onfocus="show_hide_label(this,\''.$k.'\',1,\''.$i.'\')" onblur="show_hide_label(this,\''.$k.'\',0,\''.$i.'\')" onkeyup="return ajaxlistOnKey(event,this,\''.$k.'\',\''.$i.'\')" class="'.$r['csscheck'].'" autocomplete="off"/>
 						<div id="ajaxlist_'.$k.'_'.$i.'_" style="display:none;" onfocus="chFocusList(0)" onblur="chFocusList(1)">не найдено</div>
 
 						<input type="hidden" name="'.$k.'['.$i.']" value="'.$value.'" '.$attribute.'/>
@@ -183,7 +183,7 @@ function tpl_form(&$data) {
 				$serl = serialize($r['listname']);
 				$texthtml .= '<div class="form-value ajaxlist">
 					<span style="'.$r['labelstyle'].'">'.$r['label'].'</span>
-					<input type="text" name="'.$k.'_2" value="'.strip_tags ($r['value_2']).'" onfocus="show_hide_label(this,\''.$k.'\',1)" onblur="show_hide_label(this,\''.$k.'\',0)" onkeyup="ajaxlist(this,\''.$k.'\')" class="'.$r['csscheck'].'" autocomplete="off"/>
+					<input type="text" name="'.$k.'_2" value="'.strip_tags ($r['value_2']).'" onfocus="show_hide_label(this,\''.$k.'\',1)" onblur="show_hide_label(this,\''.$k.'\',0)" onkeydown="return ajaxlistOnKey(event,this,\''.$k.'\')" class="'.$r['csscheck'].'" autocomplete="off"/>
 					<div id="ajaxlist_'.$k.'" style="display:none;" onfocus="chFocusList(0)" onblur="chFocusList(1)">не найдено</div>
 
 					<input type="hidden" name="'.$k.'" value="'.$r['value'].'" '.$attribute.'/>

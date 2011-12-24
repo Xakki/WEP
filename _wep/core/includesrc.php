@@ -16,7 +16,7 @@
 			}
 		}
 		if(isset($gfi['form']) and $gfi['form']) {
-			$_tpl['script']['form'] = 1;
+			$_tpl['script']['wepform'] = 1;
 			$_tpl['styles']['form'] = 1;
 		}
 		if(isset($gfi['md5']) and $gfi['md5']) {
@@ -71,8 +71,20 @@
 				if($_CFG['wep']['debugmode']>1)
 					print_r('<div style="color:red;">Замените подключение скрипта utils на wep</div>');
 			}
+			if(isset($_tpl['script']['form'])) {
+				unset($_tpl['script']['form']);
+				$_tpl['script']['wepform']=1;
+				if($_CFG['wep']['debugmode']>1)
+					print_r('<div style="color:red;">Замените подключение скрипта form на wepform</div>');
+			}
 
-			if(isset($_tpl['script']['wep'])) {
+			if(isset($_tpl['script']['wepform'])) {
+				unset($_tpl['script']['jquery']);
+				unset($_tpl['script']['wep']);
+				unset($_tpl['script']['wepform']);
+				$_tpl['script'] = array('jquery'=>1,'wep'=>1,'wepform'=>1)+$_tpl['script'];
+			}
+			elseif(isset($_tpl['script']['wep'])) {
 				unset($_tpl['script']['jquery']);
 				unset($_tpl['script']['wep']);
 				$_tpl['script'] = array('jquery'=>1,'wep'=>1)+$_tpl['script'];

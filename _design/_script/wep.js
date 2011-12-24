@@ -191,15 +191,23 @@ function noWeekendsOrHolidays(date) {
 	return noWeekend[0] ? nationalDays(date) : noWeekend;
 }
 
+/***************************/
+/*  Главный набор скриптов */
+/***************************/
 
 var wep = {
-	version: 0.1,
-	pgId:0,
-	pgParam: {},
-	form: {},
-
-	jsForm: function(obj,param) {
-		// Отлавливаем клик и ставим пометку
+	version: '0.1.1',/*Версия скрипта*/
+	pgId:0,/* ID текущей страницы (загружается из onLOAD)*/
+	pgParam: {},/* параметры текущей страницы (загружается из onLOAD)*/
+	form: {},/*Функции работы с формой*/
+	/*
+	* Аякс отправка формы с примитивными полями
+	* @param obj - объект формы 
+	* @param param - дополнительные параметры запроса
+	* TODO : отправка фаилов флешом
+	*/
+	jsForm: function(obj,param) { 
+		/*Отлавливаем клик и ставим пометку*/
 		$(obj).find('[type=submit],[type=image]').bind('click',function(e){
 			$(this).attr('data-click','1');
 			return true;
@@ -213,7 +221,16 @@ var wep = {
 			return false;
 		});
 	},
-
+	/*
+	* Аякс запрос
+	* @param param - параметры запроса
+	** param['type'] 
+	*    1) - передача объекта ССЫЛКИ (тип запроса будет GET по ссылке указанный в атрибуте href )
+	*    1) - передача объекта ФОРМЫ (тип запроса указанный в атриб. method  по ссылке указанный в атрибуте action, и передаются данные из элеменотов форм )
+	*    1) - передача строки GET либо POST (по умолчанию GET)
+	*
+	*
+	*/
 	JSWin: function(param) {
 		if(typeof param['type']=='object') {
 			var OBJ = jQuery(param['type']);

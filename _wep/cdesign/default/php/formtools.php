@@ -2,10 +2,9 @@
 
 
 	function tpl_formtools(&$data) {
-		global $HTML,$_tpl;
+		global $HTML,$_tpl,$_CFG;
 		$html = '';
-		$_tpl['script']['form'] = 1;
-		$_tpl['styles']['form'] = 1;
+		$_CFG['fileIncludeOption']['form'] = 1;
 		if(isset($data['path']) and count($data['path'])) {
 			include_once($this->_cDesignPath.'/php/path.php');
 			$html = tpl_path($data['path']);// PATH
