@@ -29,13 +29,18 @@ var MESS = {
 
 function contentIncParam(obj,path,funcparam) {
 	var pagetype = obj.options[obj.selectedIndex].value;
-	param = {
-		'href':path+'/js.php?_view=contentIncParam&_modul=pg',
-		'type':'POST',
-		'data': {'pagetype':pagetype,'funcparam':funcparam},
-		'call': function () {jQuery('form>div.addparam').remove();jQuery('#tr_pagetype').after(this.html2);}
-	};
-	//replaceWith
-	JSWin(param);
+	if(pagetype) {
+		param = {
+			'href':path+'/js.php?_view=contentIncParam&_modul=pg',
+			'type':'POST',
+			'data': {'pagetype':pagetype,'funcparam':funcparam},
+			'call': function () {jQuery('form>div.flexform').remove();jQuery('#tr_pagetype').after(this.html2);}
+		};
+		//replaceWith
+		JSWin(param);
+	} else {
+		jQuery('form>div.flexform').remove();
+		jQuery('#tr_funcparam').hide();
+	}
 	return false;
 }

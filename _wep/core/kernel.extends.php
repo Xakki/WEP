@@ -920,19 +920,20 @@ abstract class kernel_extends {
 	*/
 	function getFieldsForm($form=0) {
 		$this->setFieldsForm($form);
-		$temp = $this->fields_form;
+		/*$temp = $this->fields_form;
 		$this->fields_form = array();
 		foreach($temp as $k=>$r) {
 			if($r['type']=='ckedit') {
 				//$this->fields[$k.'_ckedit'] = array('type' => 'tinyint', 'width'=>3, 'attr' => 'NOT NULL','default'=>'1');
 				if($form>0 and static_main::_prmUserCheck(1))
 					$this->fields_form[$k.'_ckedit'] = array('type' => 'list', 'listname'=>'wysiwyg', 'caption' => $r['caption'].' - Выбор редактора', 'onchange'=>'SetWysiwyg(this)','mask'=>array('usercheck'=>1));
-			}elseif($r['type']=='list') {
+			}
+			elseif($r['type']=='list') {
 				if(!isset($r['listname']))
 					$r['listname'] = 'list';
 			}
 			$this->fields_form[$k] = $r;
-		}
+		}*/
 		if(!$form and count($this->formDSort)) {
 			$temp = $this->fields_form;
 			$this->fields_form = array();

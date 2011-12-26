@@ -38,12 +38,19 @@ class bug_class extends kernel_extends {
 		$this->fields['page_id'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
 		$this->fields['hash'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
 		$this->fields['cnt'] = array('type' => 'int', 'width' => 8, 'attr' => 'NOT NULL');
+		$this->fields['notif'] = array('type' => 'tinyint', 'attr' => 'NOT NULL', 'default'=>0);
 
 		$this->unique_fields['hash'] = 'hash';
 		//$this->unique_fields['name'] = 'name';
 
 		$this->ordfield = 'active DESC, mf_timecr DESC';
-		
+
+		$this->cron[] = array('modul'=>$this->_cl,'function'=>'sendNotif()','active'=>0,'time'=>3600);
+
+		$this->_enum['notif']=array(
+			0=>' - ',
+			1=>'Отправлено');
+
 		$params = array(
 			'obj' => $this,
 			'func' => 'push',
@@ -67,7 +74,8 @@ class bug_class extends kernel_extends {
 		$this->fields_form['mf_ipcreate'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'IP','mask'=>array('sort'=>1,'filter'=>1));
 		$this->fields_form[$this->mf_createrid] = array('type' => 'text', 'readonly'=>1, 'caption' => 'User','mask'=>array('sort'=>1,'filter'=>1));
 		$this->fields_form['cnt'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Повторы', 'mask'=>array('sort'=>1));
-	
+		$this->fields_form['notif'] = array('type' => 'list', 'listname'=>'notif', 'readonly'=>1, 'caption' => 'Оповещение', 'mask'=>array('sort'=>1));
+
 		foreach ($this->_CFG['_error'] as $k=>$r) {
 			$this->_enum['err_type'][(int)$k] = $r['type'];
 		}
@@ -184,6 +192,45 @@ class bug_class extends kernel_extends {
 				$this->bugs[$hash]['page_id'] = $PGLIST->id;
 		}else
 			$this->bugs[$hash]['cnt'] ++;
+	}
+
+	function sendNotif() {
+		_new_class('mail',$MAIL);
+		$data = $this->_query('*','WHERE notif=0');
+		if(count($data)) {
+			$txt = '<table border="1"><tr><th width="35%">Ошибка</th><th width="65%">Текст ошибки</th></tr>';
+			$idList = array();
+			foreach($data as $k=>$r) {
+				$idList[$r['id']] = $r['id'];
+				$txt .= '<tr>
+					<td style="vertical-align:top;"><b>Ошибка</b> '.$r['name'].'<br/>
+						<b>Кол-во</b> '.$r['cnt'].'<br/>
+						<b>Страница</b> '.$r['href'].'<br/>
+						<b>PageID</b> '.$r['page_id'].'<br/>
+						<b>Файл</b> '.$r['file'].'<br/>
+						<b>Строка</b> '.$r['line'].'<br/>
+						<b>Время</b> '.date('Y-m-d H:i:s',$r['mf_timecr']).'<br/>
+						<b>UserID</b> '.$r[$this->mf_createrid].'<br/>
+						<b>IP</b> '.long2ip($r['mf_ipcreate']).'</td>
+					<td style="vertical-align:top;">'.$r['debug'].'</td>
+				</tr>';
+			}
+			$txt .= '</table>';
+
+			$datamail = array(
+				'creater_id' => -1,
+				'mail_to' => $MAIL->config['mailrobot'],
+				'subject' => 'Ошибка на сайте '.strtoupper($_SERVER['HTTP_HOST']).' ('.count($data).'шт)',
+				'text' => '<p>Список ошибок</p>'.$txt,
+
+			);
+			$MAIL->reply = 0;
+			//$MAIL->config['mailcron'] = 0;
+			$MAIL->Send($datamail);
+			$result = $this->SQL->execSQL('UPDATE `' . $this->tablename . '` SET notif=1 WHERE id IN (' . implode(',',$idList).')');
+			return '   -sendNotif-  ';
+		}
+		return '';
 	}
 
 }

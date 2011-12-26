@@ -389,7 +389,7 @@ function SetWysiwyg(obj) {
 	
 	var myRe=/([A-Za-z0-9]+)_.+/i;
 	var cid = myRe.exec(obj.name);
-	if(obj.value==0) {
+	if(obj.checked) {
 		eval('CKEDITOR.instances.id_'+cid[1]+'.destroy(true);');
 	} else {
 		eval('cke_'+cid[1]+'();');

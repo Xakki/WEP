@@ -51,7 +51,7 @@ class content_class extends kernel_extends {
 		$this->fields_form['marker'] = array('type' => 'list', 'listname'=>'marker', 'caption' => 'Маркер','mask'=>array());
 		$this->fields_form['global'] = array('type' => 'checkbox', 'caption' => 'Глобально?', 'mask' =>array());
 		$this->fields_form['pagetype'] = array('type' => 'list', 'listname'=>'pagetype', 'caption' => 'INC', 'mask'=>array('onetd'=>'INC'));
-		$this->fields_form['funcparam'] = array('type' => 'text', 'caption' => 'Опции', 'mask' =>array('name'=>'all','onetd'=>'Опции'), 'comment'=>'Значения разделять символом &');
+		$this->fields_form['funcparam'] = array('type' => 'text', 'caption' => 'Опции', 'mask' =>array('name'=>'all','onetd'=>'Опции'), 'comment'=>'Значения разделять символом &', 'css'=>'addparam');
 		$this->fields_form['href'] = array('type' => 'text', 'caption' => 'Redirect', 'mask' =>array('onetd'=>'close'));
 		$this->fields_form['pg'] = array('type' => 'ckedit', 'caption' => 'Text',
 			'mask'=>array('fview'=>1, 'max' => 500000), 
@@ -170,7 +170,8 @@ class content_class extends kernel_extends {
 				$this->fields_form = static_main::insertInArray($this->fields_form,'pagetype',$this->addForm); // обработчик параметров рубрики
 				$this->fields_form['funcparam']['style'] = 'display:none;';
 			}
-		}
+		} else
+			$this->fields_form['funcparam']['style'] = 'display:none;';
 		return $mess;
 	}
 
@@ -191,12 +192,14 @@ class content_class extends kernel_extends {
 		$typePG = explode(':',$pagetype);
 		if(count($typePG)==2 and file_exists($this->owner->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php'))
 			$flagPG = $this->owner->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php';
-		elseif(file_exists($this->_CFG['_PATH']['inc'].$rowPG['pagetype'].'.inc.php'))
-			$flagPG = $this->_CFG['_PATH']['inc'].$rowPG['pagetype'].'.inc.php';
-		elseif(file_exists($this->_CFG['_PATH']['wep_inc'].$rowPG['pagetype'].'.inc.php'))
-			$flagPG = $this->_CFG['_PATH']['wep_inc'].$rowPG['pagetype'].'.inc.php';
+		elseif(!$pagetype)
+			return $formFlex;
+		/*elseif(file_exists($this->_CFG['_PATH']['inc'].$pagetype.'.inc.php'))
+			$flagPG = $this->_CFG['_PATH']['inc'].$pagetype.'.inc.php';
+		elseif(file_exists($this->_CFG['_PATH']['wep_inc'].$pagetype.'.inc.php'))
+			$flagPG = $this->_CFG['_PATH']['wep_inc'].$pagetype.'.inc.php';*/
 		else {
-			$formFlex['tr_flexform_0'] = array('type'=>'info', 'css'=>'addparam', 'caption'=>'<span class="error">Обрботчик страниц "'.$this->owner->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php" не найден!</span>');
+			$formFlex['tr_flexform_0'] = array('type'=>'info', 'css'=>'addparam flexform', 'caption'=>'<span class="error">Обрботчик страниц "'.$this->owner->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php" не найден!</span>');
 			//trigger_error('Обрботчик страниц "'.$this->owner->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php" не найден!', E_USER_WARNING);
 			return $formFlex;
 		}
@@ -216,7 +219,7 @@ class content_class extends kernel_extends {
 					if($fl) {
 						$r['value'] = $data['flexform_'.$k] = $FUNCPARAM[$k];
 					}
-					$r['css']='addparam';
+					$r['css']='addparam flexform';
 					$formFlex['flexform_'.$k] = $r;
 				}
 			}

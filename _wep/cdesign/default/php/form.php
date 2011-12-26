@@ -66,6 +66,8 @@ function tpl_form(&$data) {
 			elseif(isset($r['mask']['min2']) and $r['mask']['min2']) {
 				$texthtml .= '<span  class="form-requere" onmouseover="showHelp(this,\''.$r['mask']['min2'].'\',2000,1)">**</span>';
 			}
+			if($r['type']=='ckedit' and static_main::_prmUserCheck(1))
+				$texthtml .= '<input type="checkbox" onchange="SetWysiwyg(this)" name="'.$k.'_ckedit" style="width:13px;vertical-align: bottom;margin: 0 0 0 5px;"/>';
 			$texthtml .= '</div>';
 
 			$attribute = '';
