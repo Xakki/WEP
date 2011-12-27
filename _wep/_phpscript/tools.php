@@ -499,15 +499,14 @@ function tools_git() {
 		//shell_exec
 		/*$last_line = system('git reset --hard HEAD', $retval);
 		$html .= '<h3>'.$last_line.'</h3>';
-		$html .= '<h4>'.$retval.'</h4>';
-
-		$last_line = system('ls', $retval);
-		$html .= '<h3>'.$last_line.'</h3>';
 		$html .= '<h4>'.$retval.'</h4>';*/
 
+		$last_line = shell_exec($_POST['CMD']);
+		$html .= '<h3>shell_exec - '.$last_line.'</h3>';
+
 		$last_line = system($_POST['CMD'], $retval);
-		$html .= '<h3>'.$last_line.'</h3>';
-		$html .= '<h4>'.$retval.'</h4>';
+		$html .= '<h3>system - last_line = '.$last_line.'</h3>';
+		$html .= '<h4>system - retval = '.var_export($retval,true).'</h4>';
 	}
 	$html .= '<form method="post">
 		<input type="text" name="CMD" value="'.$_POST['CMD'].'"/></br>
