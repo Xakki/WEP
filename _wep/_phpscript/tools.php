@@ -484,6 +484,39 @@ function tools_sendMail() {
 	return $html;
 }
 
+function tools_git() {
+	$html = '';
+	// cd /var/www/xakki_02/
+	// git reset --hard HEAD
+	// chmod -R 774 .
+	// chown -R www-data:users .
+
+	// cd /var/www_zero/core_xakki02/
+	// git pull /var/www/core_wep
+	// chmod -R 774 .
+	// chown -R www-data:users .
+	if(count($_POST)) {
+		//shell_exec
+		/*$last_line = system('git reset --hard HEAD', $retval);
+		$html .= '<h3>'.$last_line.'</h3>';
+		$html .= '<h4>'.$retval.'</h4>';
+
+		$last_line = system('ls', $retval);
+		$html .= '<h3>'.$last_line.'</h3>';
+		$html .= '<h4>'.$retval.'</h4>';*/
+
+		$last_line = system($_POST['CMD'], $retval);
+		$html .= '<h3>'.$last_line.'</h3>';
+		$html .= '<h4>'.$retval.'</h4>';
+	}
+	$html .= '<form method="post">
+		<input type="text" name="CMD" value="'.$_POST['CMD'].'"/></br>
+		<input type="submit" name="Выполнить CMD"/>
+	</form>';
+	//Обновить GIT
+	return $html;
+}
+
 $dataF = array(
 	'tools_step1'=>'<span class="tools_item">Настройки сайта</span>',
 	'tools_step2'=>'<span class="tools_item">Проверка структуры сайта</span>',
@@ -493,6 +526,7 @@ $dataF = array(
 	'tools_docron'=>'<span class="tools_item">Выполнить Крон вручную</span>',
 	'tools_sendMail'=>'<span class="tools_item">Отправка почты</span>',
 	'tools_worktime'=>'<span class="tools_item">Режим "технические работы"</span>',
+	'tools_git'=>'<span class="tools_item">GIT</span>',
 	'getphpinfo'=>'<span class="tools_item">PHPINFO</span>',
 	'mysqlinfo'=>'<span class="tools_item">MySQL info</span>',
 	'memcachstatus'=>'<span class="tools_item">Memcach status</span>',
