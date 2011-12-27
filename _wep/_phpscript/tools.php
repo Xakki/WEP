@@ -508,6 +508,11 @@ function tools_git() {
 		$html .= '<h3>system - last_line = '.$last_line.'</h3>';
 		$html .= '<h4>system - retval = '.var_export($retval,true).'</h4>';
 		$html .= '<h4>system - retval- = '.$retval.'</h4>';
+
+		$last_line = exec($_POST['CMD'], $output, $retval);
+		$html .= '<h3>exec - last_line = '.$last_line.'</h3>';
+		$html .= '<h4>exec - output = '.var_export($output,true).'</h4>';
+		$html .= '<h4>exec - retval = '.$retval.'</h4>';
 	}
 	$html .= '<form method="post">
 		<input type="text" name="CMD" value="'.$_POST['CMD'].'"/></br>
