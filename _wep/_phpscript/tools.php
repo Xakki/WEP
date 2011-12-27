@@ -484,41 +484,28 @@ function tools_sendMail() {
 	return $html;
 }
 
-function tools_git() {
+function tools_shell() {
 	$html = '';
-	// cd /var/www/xakki_02/
-	// git reset --hard HEAD
-	// chmod -R 774 .
-	// chown -R www-data:users .
-
-	// cd /var/www_zero/core_xakki02/
-	// git pull /var/www/core_wep
-	// chmod -R 774 .
-	// chown -R www-data:users .
+	//passthru (string command [, int return_var])  выполняет внешнюю программу и выводит сырой вывод.
 	if(count($_POST)) {
-		//shell_exec
-		/*$last_line = system('git reset --hard HEAD', $retval);
-		$html .= '<h3>'.$last_line.'</h3>';
-		$html .= '<h4>'.$retval.'</h4>';*/
-
-		$last_line = shell_exec($_POST['CMD']);
+		/*$last_line = shell_exec($_POST['CMD']);
 		$html .= '<h3>shell_exec - '.$last_line.'</h3>';
 
 		$last_line = system($_POST['CMD'], $retval);
 		$html .= '<h3>system - last_line = '.$last_line.'</h3>';
 		$html .= '<h4>system - retval = '.var_export($retval,true).'</h4>';
-		$html .= '<h4>system - retval- = '.$retval.'</h4>';
+		$html .= '<h4>system - retval- = '.$retval.'</h4>';*/
 
 		$last_line = exec($_POST['CMD'], $output, $retval);
-		$html .= '<h3>exec - last_line = '.$last_line.'</h3>';
-		$html .= '<h4>exec - output = '.var_export($output,true).'</h4>';
-		$html .= '<h4>exec - retval = '.$retval.'</h4>';
+		foreach($output as $row)
+			$html .= '<div style="color:gray;">'.$row.'</div>';
+		if($retval)
+			$html .= '<h4>Статус команды = '.$retval.'</h4>';
 	}
 	$html .= '<form method="post">
 		<input type="text" name="CMD" value="'.$_POST['CMD'].'"/></br>
-		<input type="submit" name="Выполнить CMD"/>
+		<input type="submit" name="Выполнить команду"/>
 	</form>';
-	//Обновить GIT
 	return $html;
 }
 
@@ -531,7 +518,7 @@ $dataF = array(
 	'tools_docron'=>'<span class="tools_item">Выполнить Крон вручную</span>',
 	'tools_sendMail'=>'<span class="tools_item">Отправка почты</span>',
 	'tools_worktime'=>'<span class="tools_item">Режим "технические работы"</span>',
-	'tools_git'=>'<span class="tools_item">GIT</span>',
+	//'tools_shell'=>'<span class="tools_item">Shell</span>',
 	'getphpinfo'=>'<span class="tools_item">PHPINFO</span>',
 	'mysqlinfo'=>'<span class="tools_item">MySQL info</span>',
 	'memcachstatus'=>'<span class="tools_item">Memcach status</span>',
