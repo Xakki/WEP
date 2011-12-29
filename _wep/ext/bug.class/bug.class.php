@@ -38,7 +38,7 @@ class bug_class extends kernel_extends {
 		$this->fields['page_id'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
 		$this->fields['hash'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
 		$this->fields['cnt'] = array('type' => 'int', 'width' => 8, 'attr' => 'NOT NULL');
-		$this->fields['notif'] = array('type' => 'tinyint', 'attr' => 'NOT NULL', 'default'=>0);
+		$this->fields['notif'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL', 'default'=>0);
 
 		$this->unique_fields['hash'] = 'hash';
 		//$this->unique_fields['name'] = 'name';
@@ -194,7 +194,7 @@ class bug_class extends kernel_extends {
 			$this->bugs[$hash]['cnt'] ++;
 	}
 
-	function sendNotif() {
+	function sendNotif($email='') {
 		_new_class('mail',$MAIL);
 		$data = $this->_query('*','WHERE notif=0');
 		if(count($data)) {
@@ -219,7 +219,7 @@ class bug_class extends kernel_extends {
 
 			$datamail = array(
 				'creater_id' => -1,
-				'mail_to' => $MAIL->config['mailrobot'],
+				'mail_to' => ($email?$email:$MAIL->config['mailrobot']),
 				'subject' => 'Ошибка на сайте '.strtoupper($_SERVER['HTTP_HOST']).' ('.count($data).'шт)',
 				'text' => '<p>Список ошибок</p>'.$txt,
 

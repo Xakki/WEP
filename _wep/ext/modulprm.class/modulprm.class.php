@@ -419,8 +419,8 @@ final class modulprm_class extends kernel_extends {
 
 					/*Xros HOOK*/
 					$hook = '';
-					if (count($MODUL->_setHook)) {
-						$hook = str_replace(array("\t", "\n", "\r", ' '), '', var_export($MODUL->_setHook, true));
+					if (count($MODUL->setHook)) {
+						$hook = str_replace(array("\t", "\n", "\r", ' '), '', var_export($MODUL->setHook, true));
 					}
 					if (!isset($this->data[$Mid]) or $this->data[$Mid]['hook'] != $hook)
 						$this->fld_data['hook'] = $hook;

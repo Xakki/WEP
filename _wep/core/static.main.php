@@ -606,6 +606,16 @@ class static_main {
 		return $date;
 	}
 
+	static function _date($format=NULL,$time=NULL) {
+		global $_CFG;
+		if(is_null($format)) $format = 'd F Yг.';
+		if(is_null($time)) $time = time();
+		$date = date($format, $time);
+		if(strpos($format,'F')!==false)
+			$date = str_replace(array_keys($_CFG['lang']['rumonth']),$_CFG['lang']['rumonth'],$date);
+		return $date;
+	}
+
 	static function padeji($txt) {
 		$lw = mb_substr($txt,-1);
 		$ArW = array('а'=>1,''=>1,''=>1,''=>1,''=>1,''=>1,);

@@ -56,7 +56,12 @@ abstract class kernel_extends {
 			} else {
 				return new sql($this->cfg_sql);
 			}
-		} elseif ($name == 'fields_form') {
+		} 
+		elseif ($name == 'setHook') {
+			$this->_setHook();
+			return $this->setHook;
+		}
+		elseif ($name == 'fields_form') {
 			$this->getFieldsForm(-1);
 			return $this->fields_form;
 		}
@@ -80,12 +85,28 @@ abstract class kernel_extends {
 			if (isset($this->_CFG['hook'][$f][$m])) {
 				foreach ($this->_CFG['hook'][$f][$m] as $k => $r) {
 					$file = NULL;
-					if (!function_exists($r)) {
+					if(strpos($k,':')!==false) {
+						$temp = explode(':',$k);
+						if(isset($this->_CFG['modulprm'][$temp[0]])) {
+							$file = $this->_CFG['modulprm'][$temp[0]]['path'];
+							$file = substr($file,0,strrpos($file,'/')).'/'.$temp[1];
+							if(file_exists($file)) {
+								include_once($file);
+							}
+						}
+					}
+					elseif(isset($this->_CFG['modulprm'][$k])) {
+						if(_new_class($k,$TEMP)) {
+							$r = '$TEMP->'.$r;
+						}
+					}
+					elseif (!function_exists($r)) {
 						$file = $this->_CFG['_PATH']['path'] . $k;
 						if (file_exists($file)) {
 							include_once($file);
 						}
 					}
+
 					if ($file === NULL or function_exists($r)) {
 						eval('return ' . $r . '($this,$arg);');
 					}else
@@ -172,7 +193,6 @@ abstract class kernel_extends {
 				$this->enum =
 				$this->child_path =
 				$this->Achilds =
-				$this->_setHook = //Перехватчик в предустановки модуля
 				$this->HOOK = //перехватчик в реальном времени
 				$this->_AllowAjaxFn =  // разрешённые функции для аякса, нужно прописывать в индекс
 				$this->cron = // Задания на кроне time,file,modul,function,active,
@@ -345,6 +365,11 @@ abstract class kernel_extends {
 		//if ($this->_autoCheckMod)
 		//	$this->childs[$class_name]->tablename;
 		return true;
+	}
+
+	// В этой функции устанавливается хук
+	protected function _setHook() {
+		$this->setHook = array();//Перехватчик в предустановки модуля
 	}
 
 	/**
@@ -2459,6 +2484,14 @@ abstract class kernel_extends {
 
 	function _http($link,$param=array()) {
 		$default = array(
+			'proxy'=>false,
+			'proxyList'=>array(
+				//array('11.11.11.11:8080','user:pass'),
+				'82.200.55.142:3128',
+				//'115.78.135.30:80',
+				//'122.248.194.9:80',
+				/**/
+			),
 			'body'=>false,
 			'HTTPHEADER'=>array('Content-Type' => 'text/xml; encoding=utf-8'),
 			'redirect' => false,
@@ -2485,6 +2518,28 @@ abstract class kernel_extends {
 		curl_setopt($ch, CURLOPT_HEADER, false);
 		//вернуть ответ сервера в виде строки
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		
+		// ПРОКСИ
+		if($param['proxy']) {
+			$c = count($param['proxyList'])-1;
+			$prox = $param['proxyList'][rand(0,$c)];
+			// указываем адрес
+			$CURLOPT_PROXY = '';
+			$CURLOPT_PROXYUSERPWD = '';
+			if(is_array($prox)) {
+				$CURLOPT_PROXY = $prox[0];
+				$CURLOPT_PROXYUSERPWD = $prox[1];
+			}else
+				$CURLOPT_PROXY = $prox;
+			curl_setopt($ch, CURLOPT_PROXY, $CURLOPT_PROXY);
+			print_r($CURLOPT_PROXY);
+			if($CURLOPT_PROXYUSERPWD) {
+				// если необходимо предоставить имя пользователя и пароль
+				//curl_setopt($ch, CURLOPT_PROXYUSERPWD,$CURLOPT_PROXYUSERPWD);
+			}
+		}
+		//Функции обратного вызова
+		//curl_setopt($ch, CURLOPT_WRITEFUNCTION,"progress_function");
 
 		$text = curl_exec ($ch);
 
@@ -2498,6 +2553,11 @@ abstract class kernel_extends {
 			$flag = false;
 		curl_close($ch);
 		return array('text'=>$text,'info'=>$PageInfo,'err'=>$err,'flag'=>$flag);
+	}
+
+	function progress_function($ch,$str) {
+		 echo $str;
+		 return strlen($str);
 	}
 }
 

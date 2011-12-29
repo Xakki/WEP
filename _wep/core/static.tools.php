@@ -125,6 +125,7 @@ class static_tools {
 				}
 			}
 
+		// Проверка фаилов
 		if (isset($MODUL->attaches))
 			foreach ($MODUL->attaches as $key => $param) {
 				if (!isset($param['inst'])) {
@@ -221,7 +222,8 @@ class static_tools {
 				$rDATA[$k]['@index'] .= ' drop key `' . $k . '` ';
 			}
 		}
-		$rDATA['Оптимизация']['@newquery'] = 'OPTIMIZE TABLE `' . $MODUL->tablename . '`';
+		//TODO : перенести в отдельный раздел - Обслуживание БД
+		//$rDATA['Оптимизация']['@newquery'] = 'OPTIMIZE TABLE `' . $MODUL->tablename . '`';
 		return $rDATA;
 	}
 

@@ -67,7 +67,7 @@ class news_class extends kernel_extends {
 			$this->fields_form['category'] = array('type' => 'list', 'listname'=>'category','caption' => 'Категория','mask'=>array());
 		$this->fields_form['href'] = array('type' => 'text', 'caption' => 'Источник','comment'=>'указать полный адрес','mask'=>array('name'=>'www'),'style'=>'background-color:#FFC0CB;');
 		$this->fields_form['redirect'] = array('type' => 'checkbox', 'caption' => 'Включить редирект','style'=>'background-color:#FFC0CB;');
-		$this->fields_form['i_'.$this->_cl] = array("type"=>"file","caption"=>"Фотография",'del'=>1, 'mask'=>array('fview'=>1,'width'=>80,'height'=>100,'fview'=>0));
+		$this->fields_form['i_news'] = array("type"=>"file","caption"=>"Фотография",'del'=>1, 'mask'=>array('fview'=>1,'width'=>80,'height'=>100,'fview'=>0));
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Опубликовать', 'comment'=>'Видимость новости на сайте');
 	}
 

@@ -186,6 +186,7 @@
 				'precision' => false,
 				'real' => false,
 				'int' => 11,
+				'tinyint' => 4,
 				'varchar' => 255,
 			);
 			// типы полей, в которых нет атрибута default

