@@ -54,7 +54,7 @@
 			elseif(count($_POST) and (isset($_POST['sbmt']) or isset($_POST['sbmt_save']))) {
 				$this->kPreFields($_POST,$param);
 				$arr = $this->fFormCheck($_POST,$param,$this->fields_form);
-				$flag=-1;
+				$flag=-1;//print_r('<pre>');print_r($arr);exit();
 				if(!count($arr['mess'])) {
 					if($rm = $this->_add($arr['vars'])) {
 						$flag=1;

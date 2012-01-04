@@ -1,28 +1,35 @@
 <?php
-	if(!isset($FUNCPARAM[0])) $FUNCPARAM[0] = '#ext#news'; // Шаблон
+	if(!isset($FUNCPARAM[0])) $FUNCPARAM[0] = '#news#news'; // Шаблон
+	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = 5;
+	if(!isset($FUNCPARAM[2])) $FUNCPARAM[2] = 3;
+	if(!isset($FUNCPARAM[3])) $FUNCPARAM[3] = '';
+
+	_new_class('news',$NEWS);
 
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 		$this->_getCashedList('phptemplates', dirname(__FILE__));
+		$this->_enum['newscategory'] = $NEWS->config['category'];
 
 		$form = array(
 			'0'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон'),
+			'1'=>array('type'=>'int','caption'=>'Элементов в списке','comment'=>'для постраничной навигации'),
+			'2'=>array('type'=>'int','caption'=>'Ближайшие страницы','comment'=>'для постраничной навигации'),
+			'3'=>array('type'=>'list','listname'=>'newscategory', 'caption'=>'Категория'),
 		);
 		return $form;
 	}
 
-	$tplphp = $this->FFTemplate($FUNCPARAM[0],dirname(__FILE__));
-
 	$html = '';
-
-
-	if(_new_class('news',$NEWS)) {
-		if(isset($this->pageParam[0])) {
-			$DATA = $NEWS->fNewsItem((int)$this->pageParam[0]);
-			$this->pageinfo['path'][] = $DATA[0]['name'];
-		} else 
-			$DATA = $NEWS->fNews();
-		$DATA['#page#'] = $this->getHref();
-		$DATA = array($FUNCPARAM[0]=>$DATA);
-		$html = $HTML->transformPHP($DATA,$tplphp);
+	if(isset($this->pageParam[0])) {
+		$DATA = $NEWS->fNewsItem((int)$this->pageParam[0]);
+		$this->pageinfo['path'][] = $DATA[0]['name'];
+	} else {
+		$NEWS->messages_on_page = $FUNCPARAM[1];
+		$NEWS->numlist=$FUNCPARAM[2];
+		$DATA = $NEWS->fNews(array('category'=>$FUNCPARAM[3]));
 	}
+	$DATA['#page#'] = $this->getHref();
+	$DATA = array($FUNCPARAM[0]=>$DATA);
+	$html = $HTML->transformPHP($DATA,$FUNCPARAM[0]);
+
 	return $html;

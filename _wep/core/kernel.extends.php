@@ -895,7 +895,7 @@ abstract class kernel_extends {
 			}
 			elseif ($r['type'] == 'date') {
 				if(!isset($r['mask']['format']) or !$r['mask']['format'])
-					$r['mask']['format'] = 'Y-m-d-H-i-s';
+					$r['mask']['format'] = 'Y-m-d H:i:s';
 			}
 			/*elseif ($r['type'] == 'checkbox') {
 				$data[$k] = $r['value'] = ((isset($data[$k]) and $data[$k])?1:0);
@@ -2199,147 +2199,18 @@ abstract class kernel_extends {
 	}
 
 	// Постраничная навигация
-	public function fPageNav($countfield, $thisPage='', $flag=0) {
-		//$countfield - бщее число элем-ов
-		//$thisPage - по умол тек путь к странице
-		//$this->messages_on_page - число эл-ов на странице
-		//$this->_pn - № текущей страницы
-		//$flag  - опция для paginator, 0 - если номер страницы перед list_2.html , 1 - после ?_pn=1
-		$numlist = $this->numlist; // кличество числе по бокам максимум
-		$DATA = array('cnt' => $countfield, 'cntpage' => 0, 'modul' => $this->_cl, 'reverse' => $this->reversePageN);
-		if ($this->reversePageN) {
-			$DATA['cntpage'] = floor($countfield / $this->messages_on_page);
-			$temp_pn = $this->_pn;
-			$this->_pn = $DATA['cntpage'] - $this->_pn + 1;
-		} else {
-			$DATA['cntpage'] = ceil($countfield / $this->messages_on_page);
-		}
-		// Приводим к правильным числам
-		if($this->_pn > $DATA['cntpage'])
-			$this->_pn = $DATA['cntpage'];
-		if($this->_pn < 1)
-			$this->_pn = 1;
-		$DATA['_pn'] = $this->_pn;
-
-		foreach ($this->_CFG['enum']['_MOP'] as $k => $r)
-			$DATA['mop'][$k] = array('value' => $r, 'sel' => 0);
-		$DATA['mop'][$this->messages_on_page]['sel'] = 1;
-
-		if (!$countfield || $countfield <= $this->messages_on_page || !$this->messages_on_page)
-			return $DATA;
-		else {
-			if ($thisPage == '')
-				$thisPage = $_SERVER['REQUEST_URI'];
-			if (strstr($thisPage, '&amp;')) {
-				$thisPage = str_replace('&amp;', '&', $thisPage);
-			}
-			//$PP[0] - страница не выбрана
-			//$PP[1] - первая часть 
-			//$PP[2] - вторая часть
-			$PP = array(0=>$thisPage,1=>$thisPage,2=>'');
-			if($flag) {
-				$pregreplPage = '/(.*)' . $this->_cl . '_pn=[0-9]*(.*)/';
-				if (!preg_match($pregreplPage, $thisPage,$matches)) {
-					$PP[0] = $thisPage;
-					if(strpos($thisPage,'?')===false)
-						$PP[1] .= '?';
-					elseif (_substr($thisPage, -1) != '?' and _substr($thisPage, -1) != '&')
-						$PP[1] .= '&';
-					$PP[1] .= $this->_cl . '_pn=';
-				} else {
-					$PP[0] = $matches[1].$matches[2];
-					$PP[1] = $matches[1];
-					if(strpos($matches[1],'?')===false)
-						$PP[1] .= '?';
-					elseif (_substr($matches[1], -1) != '?' and _substr($matches[1], -1) != '&')
-						$PP[1] .= '&';
-					$PP[1] .= $this->_cl . '_pn=';
-					$PP[2] = $matches[2];
-					//print_r('<pre>');print_r($matches);
-				}
-			}
-			else {
-				$pregreplPage = '/(.*)_p[0-9]*(.*)/';
-				if (!preg_match($pregreplPage, $thisPage,$matches)) {
-					$temp = explode('.html',$thisPage);
-					$PP[1] = $temp[0].'_p';
-					$PP[2] = '.html'.$temp[1];
-				} else {
-					$PP[0] = $matches[1].$matches[2];
-					$PP[1] = $matches[1].'_p';
-					$PP[2] = $matches[2];
-					//print_r('<pre>');print_r($matches);
-				}
-			}
-			$DATA['PP'] = $PP;
-
-			if ($this->reversePageN) {// обратная нумирация
-				/*Собираем массив ссылок*/
-				if ($this->_pn==$DATA['cntpage'])
-					$DATA['link'][] = array('value' => $DATA['cntpage'], 'href' => 'select_page');
-				else
-					$DATA['link'][] = array('value' => $DATA['cntpage'], 'href' => $PP[0]);
-				if (($this->_pn + $numlist) < $DATA['cntpage']-1) {
-					$DATA['link'][] = array('value' => '...', 'href' => '');
-					$j = $this->_pn + $numlist;
-				} else 
-					$j = $DATA['cntpage']-1;
-				$vl = $this->_pn - $numlist;
-				if($vl<2) $vl = 2;
-				for ($i = $j; $i >= $vl; $i--) {
-					if ($i == $this->_pn)
-						$DATA['link'][] = array('value' => $i, 'href' => 'select_page');
-					else
-						$DATA['link'][] = array('value' => $i, 'href' => $PP[1].$i.$PP[2]);
-				}
-				if ($this->_pn - $numlist > 2)
-					$DATA['link'][] = array('value' => '...', 'href' => '');
-				if ($this->_pn==1)
-					$DATA['link'][] = array('value' => 1, 'href' => 'select_page');
-				else
-					$DATA['link'][] = array('value' => 1, 'href' => $PP[1].'1'.$PP[2]);
-			}
-			else {
-				/*****/
-				if ($this->_pn==1)
-					$DATA['link'][] = array('value' => 1, 'href' => 'select_page');
-				else
-					$DATA['link'][] = array('value' => 1, 'href' => $PP[0]);
-				if (($this->_pn - $numlist) > 2) {
-					$DATA['link'][] = array('value' => '...', 'href' => '');
-					$j = $this->_pn - $numlist;
-				} else {
-					$j = 2;
-				}
-				$vl = $this->_pn + $numlist;
-				if($vl>=$DATA['cntpage']) $vl = $DATA['cntpage']-1;
-				//print_r($vl);print_r('*');print_r($numlist);
-				for ($i = $j; $i <= $vl; $i++) {
-					if ($i == $this->_pn)
-						$DATA['link'][] = array('value' => $i, 'href' => 'select_page');
-					else
-						$DATA['link'][] = array('value' => $i, 'href' => $PP[1].$i.$PP[2]);// . '\\1'
-				}
-				if ($this->_pn + $numlist < $DATA['cntpage'])
-					$DATA['link'][] = array('value' => '...', 'href' => '');
-				if ($this->_pn==$DATA['cntpage'])
-					$DATA['link'][] = array('value' => $DATA['cntpage'], 'href' => 'select_page');
-				else
-					$DATA['link'][] = array('value' => $DATA['cntpage'], 'href' => $PP[1].$DATA['cntpage'].$PP[2]);
-			}
-			//////////////////
-		}
-
-		return $DATA;
+	public function fPageNav($countfield, $thisPage='') {
+		return $this->fPageNav2($countfield,array('firstpath'=>$thisPage));
 	}
+
 	// Постраничная навигация
-	public function fPageNav2($countfield, $param) {
+	public function fPageNav2($countfield, $param=array()) {
 		//$countfield - бщее число элем-ов
 		//$$param - массив данных
 		//$this->messages_on_page - число эл-ов на странице
 		//$this->_pn - № текущей страницы
 		$numlist = $this->numlist; // кличество числе по бокам максимум
-		$DATA = array('cnt' => $countfield, 'cntpage' => 0, 'modul' => $this->_cl, 'reverse' => $this->reversePageN);
+		$DATA = array('cnt' => $countfield, 'messages_on_page'=>$this->messages_on_page, 'cntpage' => 0, 'modul' => $this->_cl, 'reverse' => $this->reversePageN);
 
 		//pagenum
 		if (isset($_GET[$this->_cl . '_mop'])) {
@@ -2377,72 +2248,73 @@ abstract class kernel_extends {
 			$DATA['mop'][$k] = array('value' => $r, 'sel' => 0);
 		$DATA['mop'][$this->messages_on_page]['sel'] = 1;
 
-		if ($countfield and $countfield > $this->messages_on_page) {
+		$flag = false;
+		if($countfield) {
+			if($this->reversePageN and $countfield >= ($this->messages_on_page*2))
+				$flag = true;
+			elseif(!$this->reversePageN and $countfield > $this->messages_on_page)
+				$flag = true;
+		}
+
+		if ($flag) {
 			//$PP[0] - страница не выбрана
 			//$PP[1] - первая часть 
 			//$PP[2] - вторая часть
+			if(!isset($param['firstpath']) or !$param['firstpath'])
+				$param['firstpath'] = $_SERVER['REQUEST_URI'];
 			$PP = array(0=>$param['firstpath'],1=>$param['firstpath'],2=>'');
-			if(count($param['_clp'])) {
-				$temp = $param['_clp'];unset($temp[$this->_pa]);
-				$PP[0] .= http_build_query($temp).'&';
-				$PP[1] = $PP[0];
+			if(isset($param['_clp'])) {
+				if(count($param['_clp'])) {
+					$temp = $param['_clp'];unset($temp[$this->_pa]);
+					$PP[0] .= http_build_query($temp).'&';
+					$PP[1] = $PP[0];
+				}
+				$PP[1] .= $this->_pa . '=';
+			} else {
+				$pregreplPage = '/(.*)_p[0-9]*(.*)/';
+				if (!preg_match($pregreplPage, $param['firstpath'],$matches)) {
+					$temp = explode('.html',$param['firstpath']);
+					$PP[1] = $temp[0].'_p';
+					$PP[2] = '.html'.$temp[1];
+				} else {
+					$PP[0] = $matches[1].$matches[2];
+					$PP[1] = $matches[1].'_p';
+					$PP[2] = $matches[2];
+				}
 			}
-			$PP[1] .= $this->_pa . '=';
+
 			$DATA['PP'] = $PP;
 
 			if ($this->reversePageN) {// обратная нумирация
 				/*Собираем массив ссылок*/
-				if ($this->_pn==$DATA['cntpage'])
-					$DATA['link'][] = array('value' => $DATA['cntpage'], 'href' => 'select_page');
-				else
-					$DATA['link'][] = array('value' => $DATA['cntpage'], 'href' => $PP[0]);
+				$DATA['link'][$DATA['cntpage']] = $PP[0];
 				if (($this->_pn + $numlist) < $DATA['cntpage']-1) {
-					$DATA['link'][] = array('value' => '...', 'href' => '');
 					$j = $this->_pn + $numlist;
 				} else 
 					$j = $DATA['cntpage']-1;
 				$vl = $this->_pn - $numlist;
-				if($vl<2) $vl = 2;
+				if($vl<2) 
+					$vl = 2;
 				for ($i = $j; $i >= $vl; $i--) {
-					if ($i == $this->_pn)
-						$DATA['link'][] = array('value' => $i, 'href' => 'select_page');
-					else
-						$DATA['link'][] = array('value' => $i, 'href' => $PP[1].$i.$PP[2]);
+					$DATA['link'][$i] = $PP[1].$i.$PP[2];
 				}
-				if ($this->_pn - $numlist > 2)
-					$DATA['link'][] = array('value' => '...', 'href' => '');
-				if ($this->_pn==1)
-					$DATA['link'][] = array('value' => 1, 'href' => 'select_page');
-				else
-					$DATA['link'][] = array('value' => 1, 'href' => $PP[1].'1'.$PP[2]);
+				$DATA['link'][1] = $PP[1].'1'.$PP[2];
 			}
 			else {
 				/*****/
-				if ($this->_pn==1)
-					$DATA['link'][] = array('value' => 1, 'href' => 'select_page');
-				else
-					$DATA['link'][] = array('value' => 1, 'href' => $PP[0]);
+				$DATA['link'][1] = $PP[0];
 				if (($this->_pn - $numlist) > 2) {
-					$DATA['link'][] = array('value' => '...', 'href' => '');
 					$j = $this->_pn - $numlist;
 				} else {
 					$j = 2;
 				}
 				$vl = $this->_pn + $numlist;
-				if($vl>=$DATA['cntpage']) $vl = $DATA['cntpage']-1;
-				//print_r($vl);print_r('*');print_r($numlist);
+				if($vl>=$DATA['cntpage'])
+					$vl = $DATA['cntpage']-1;
 				for ($i = $j; $i <= $vl; $i++) {
-					if ($i == $this->_pn)
-						$DATA['link'][] = array('value' => $i, 'href' => 'select_page');
-					else
-						$DATA['link'][] = array('value' => $i, 'href' => $PP[1].$i.$PP[2]);// . '\\1'
+					$DATA['link'][$i] = $PP[1].$i.$PP[2];
 				}
-				if ($this->_pn + $numlist < $DATA['cntpage'])
-					$DATA['link'][] = array('value' => '...', 'href' => '');
-				if ($this->_pn==$DATA['cntpage'])
-					$DATA['link'][] = array('value' => $DATA['cntpage'], 'href' => 'select_page');
-				else
-					$DATA['link'][] = array('value' => $DATA['cntpage'], 'href' => $PP[1].$DATA['cntpage'].$PP[2]);
+				$DATA['link'][$DATA['cntpage']] = $PP[1].$DATA['cntpage'].$PP[2];
 			}
 			//////////////////
 		}
@@ -2518,6 +2390,7 @@ abstract class kernel_extends {
 		curl_setopt($ch, CURLOPT_HEADER, false);
 		//вернуть ответ сервера в виде строки
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 23);
 		
 		// ПРОКСИ
 		if($param['proxy']) {

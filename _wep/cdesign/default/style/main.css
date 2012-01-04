@@ -435,7 +435,9 @@ form table.form {
 
 /*FORM*/
 	div.divform {
-		width:730px;
+		min-width: 500px;
+		max-width: 800px;
+		width: auto;
 	}
 /*FILTER*/
 	div.filter {

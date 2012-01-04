@@ -219,6 +219,7 @@
 		}
 	/*Select list c индекс Input*/
 	.divform .ilist {
+		margin:3px 0 0;
 	}
 	.divform .ilist input {
 		width: 40%;
@@ -248,6 +249,15 @@
 		cursor: pointer;
 		display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
 	}
+
+	.divform .dateinput {
+		background: transparent url(../_img/jquery.ui/ui-icons_2e83ff_256x240.png) no-repeat scroll -32px -111px;
+		padding: 0 0 0 15px;
+	}
+	.divform .dateinput input{
+		cursor: pointer;
+	}
+
 	/*MESSAGE*/
 	.messages {
 		font-size:0.9em;
@@ -380,8 +390,9 @@
 
 	#tr_map div {
 		background:transparent url('../_img/onmap.png') no-repeat scroll 10px 0;
-		padding:2px 0;
-		}
+		padding: 2px 0 0 48px;
+		text-align: left;
+	}
 	#tr_map span {
 		font-size:20px;
 	}

@@ -38,11 +38,16 @@ wep.form = {
 	ilistCopy : function(ths,obj,max) {
 		var sz = $(obj).size();
 		if(sz<max) {
-			var clon = $(obj+':first').clone();
-			clon.find('input').val('');
-			clon.find('select').val('');
+			var clon = $(obj+':last').clone();
+			var in1 = clon.find('.ilist-key');
+			var defval = '';
+			if(in1.attr('type')=='int')
+				defval = (parseInt(in1.val())+1);
+			in1.val(defval);
+			clon.find('.ilist-val').val('');
 			clon.find('.ilistdel').show();
 			$(ths).before(clon);
+			in1.keyup();
 			var cnt = parseInt($(ths).text())-1;
 			$(ths).text(cnt);
 			if(sz==(max-1)) {
@@ -395,3 +400,9 @@ function SetWysiwyg(obj) {
 		eval('cke_'+cid[1]+'();');
 	}
 }
+
+$(document).ready(function() {
+	$('form input[type=int]').keydown(function(event){
+		return checkInt(event);
+	});
+});

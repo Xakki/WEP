@@ -210,8 +210,8 @@ function tpl_form(&$data) {
 					foreach($r['value'] as $kval=>$rval) {
 						$cnt++;
 						$texthtml .= '<div class="ilist">
-							<input type="text" value="'.$kval.'" onkeyup="wep.form.ilist(this,\''.$k.'\')"/>
-							<select name="'.$k.'['.$kval.']" '.$attribute.'>'.selectitem($r['valuelist'],$rval).'</select>
+							<input class="ilist-key" type="text" value="'.$kval.'" onkeyup="wep.form.ilist(this,\''.$k.'\')"/>
+							<select class="ilist-val" name="'.$k.'['.$kval.']" '.$attribute.'>'.selectitem($r['valuelist'],$rval).'</select>
 							<span'.($cnt==1?' style="display:none;"':'').' class="ilistdel" onclick="wep.form.ilistdel(this);" title="Удалить"></span>
 						</div>';
 						if($cnt==$r['mask']['maxarr']) break;
@@ -246,62 +246,9 @@ function tpl_form(&$data) {
 				$texthtml .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.$temp.'" '.$attribute.'/></div>';
 			}
 			elseif($r['type']=='date' and !$r['readonly']) {
-				$texthtml .= '<div class="form-value">';
+				$texthtml .= '<div class="form-value dateinput">';
 				$temp = '';
-
-				if(isset($r['mask']['view']) and $r['mask']['view']=='input') {
-					$time=NULL;
-					// Тип поля
-					if($r['fields_type']  =='int' and $r['value']){
-						$time = $r['value'];
-						$temp = date($r['mask']['format'],$r['value']);
-					}
-					elseif($r['fields_type'] =='timestamp' and $r['value']){
-						$fs = explode(' ', $r['value']);
-						$f = explode('-', $fs[0]);
-						$s = explode(':', $fs[1]);
-						$time = $temp = mktime($s[0], $s[1], $s[2], $f[1], $f[2], $f[0]);
-						
-						if($r['mask']['time'])
-							$r['mask']['format'] = $r['mask']['format'].' '.$r['mask']['time'];
-						
-						$temp = date($r['mask']['format'],$temp);
-					}
-
-					// текстовый формат ввода данных
-					if(isset($r['mask']['datepicker'])) {
-						if(is_string($r['mask']['datepicker']))
-							$r['mask']['datepicker'] = array('dateFormat'=>$r['mask']['datepicker']);
-						elseif(!is_array($r['mask']['datepicker']))
-							$r['mask']['datepicker'] = array();
-
-						if(!isset($r['mask']['datepicker']['dateFormat']))
-							$r['mask']['datepicker']['dateFormat']='\'yy-mm-dd\'';
-						if(isset($r['mask']['datepicker']['timeFormat']) and $r['mask']['datepicker']['timeFormat']===true)
-							$r['mask']['datepicker']['timeFormat'] = '\'-hh-mm-ss\'';
-
-						global $_tpl;
-						$prop = array();
-						if(!is_null($time))
-							$r['mask']['datepicker']['defaultDate'] = 'new Date('.date('Y,m-1,d',$time).')';
-						foreach ($r['mask']['datepicker'] as $kp => $vp) {
-							$prop[] = $kp.':'.$vp;
-						}
-						$prop = '{'.implode(',',$prop).'}';
-						if(isset($r['mask']['datepicker']['timeFormat'])) {
-							$_CFG['fileIncludeOption']['datepicker'] = 2;
-							$_tpl['script']['dp_'.$k] = 'function dp_'.$k.'() { $("input[name='.$k.']").datetimepicker('.$prop.')}';
-						}
-						else {
-							$_CFG['fileIncludeOption']['datepicker'] = 1;
-							$_tpl['script']['dp_'.$k] = 'function dp_'.$k.'() { $("input[name='.$k.']").datepicker('.$prop.')}';
-						}
-						$_tpl['onload'] .= ' dp_'.$k.'(); ';
-					}
-					
-					$texthtml .= '<input type="text" name="'.$k.'" value="'.$temp.'" class="dateinput"/>';
-				}
-				else {
+				if(isset($r['mask']['view']) and $r['mask']['view']=='split') {
 				
 					// Тип поля
 					if(!is_array($r['value'])) {
@@ -381,7 +328,63 @@ function tpl_form(&$data) {
 					foreach($r['value'] as $row) {
 						$texthtml .= '<div class="dateselect '.$row['css'].'"><span class="name">'.$row['name'].'</span><select name="'.$k.'[]" '.$attribute.'>'.selectitem($row['item'],$row['value']).'</select></div>';
 					}
-				}		
+				}	
+				else {
+					$time=NULL;
+					// Тип поля
+					if($r['value']) {
+						if($r['fields_type']  =='int') {
+							$time = $r['value'];
+							$temp = date($r['mask']['format'],$r['value']);
+						}
+						else {//$r['fields_type'] =='timestamp'
+							$fs = explode(' ', $r['value']);
+							$f = explode('-', $fs[0]);
+							$s = explode(':', $fs[1]);
+							$time = $temp = mktime($s[0], $s[1], $s[2], $f[1], $f[2], $f[0]);
+							
+							if($r['mask']['time'])
+								$r['mask']['format'] = $r['mask']['format'].' '.$r['mask']['time'];
+							
+							$temp = date($r['mask']['format'],$temp);
+						}
+					}
+
+					// текстовый формат ввода данных
+					if(!isset($r['mask']['view']) or isset($r['mask']['datepicker'])) {
+					//if(isset($r['mask']['datepicker'])) {
+						if(!isset($r['mask']['datepicker']) or !is_array($r['mask']['datepicker']))
+							$r['mask']['datepicker'] = array();
+						else
+							$r['mask']['datepicker'] = array('dateFormat'=>$r['mask']['datepicker']);
+
+						if(!isset($r['mask']['datepicker']['dateFormat']))
+							$r['mask']['datepicker']['dateFormat']='\'yy-mm-dd\'';
+						if(!isset($r['mask']['datepicker']['timeFormat']) or $r['mask']['datepicker']['timeFormat']===true)
+							$r['mask']['datepicker']['timeFormat'] = '\' hh:mm:ss\'';
+
+						global $_tpl;
+						$prop = array();
+						if(!is_null($time))
+							$r['mask']['datepicker']['defaultDate'] = 'new Date('.date('Y,m-1,d',$time).')';
+						foreach ($r['mask']['datepicker'] as $kp => $vp) {
+							$prop[] = $kp.':'.$vp;
+						}
+						$prop = '{'.implode(',',$prop).'}';
+						if(isset($r['mask']['datepicker']['timeFormat'])) {
+							$_CFG['fileIncludeOption']['datepicker'] = 2;
+							$_tpl['script']['dp_'.$k] = 'function dp_'.$k.'() { $("input[name='.$k.']").datetimepicker('.$prop.')}';
+						}
+						else {
+							$_CFG['fileIncludeOption']['datepicker'] = 1;
+							$_tpl['script']['dp_'.$k] = 'function dp_'.$k.'() { $("input[name='.$k.']").datepicker('.$prop.')}';
+						}
+						$_tpl['onload'] .= ' dp_'.$k.'(); ';
+					}
+					
+					$texthtml .= '<input type="text" name="'.$k.'" value="'.$temp.'"/>';
+				}
+
 				$texthtml .= '</div>';
 			}
 			elseif($r['type']=='captcha') {
@@ -492,7 +495,7 @@ function tpl_form(&$data) {
 			}
 			elseif($r['type']=='int' and !$r['readonly']) {
 				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
-				$texthtml .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.$r['value'].'" onkeydown="return checkInt(event)" '.$attribute.'/></div>';
+				$texthtml .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.$r['value'].'" '.$attribute.'/></div>';
 			}
 			elseif($r['type']=='password' and isset($r['mask']['password']) and $r['mask']['password']=='re') {
 				$texthtml .= '<div class="form-value"><input type="password" name="'.$k.'" value="" onkeyup="checkPass("'.$k.'")" '.$attribute.'/>
@@ -543,6 +546,24 @@ function tpl_form(&$data) {
 				</div>';
 
 			}*/
+			elseif(isset($r['multiple']) AND $r['multiple']) {
+				if(!is_array($r['value']) or !count($r['value'])) $r['value'] = array('');
+				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
+				if(!isset($r['mask']['maxarr'])) $r['mask']['maxarr'] = 10;
+				if(!isset($r['keytype'])) $r['keytype'] = 'text';
+				$cnt = 0;
+				$texthtml .= '<div class="form-value">';
+					foreach($r['value'] as $kval=>$rval) {
+						$cnt++;
+						$texthtml .= '<div class="ilist">
+						<input class="ilist-key" type="'.$r['keytype'].'" value="'.htmlspecialchars($kval,ENT_QUOTES,$_CFG['wep']['charset']).'" maxlength="20" onkeyup="wep.form.ilist(this,\''.$k.'\')"/>
+						<input class="ilist-val" type="text" name="'.$k.'['.$kval.']" value="'.htmlspecialchars($rval,ENT_QUOTES,$_CFG['wep']['charset']).'" '.$attribute.'/>
+						<span'.($cnt==1?' style="display:none;"':'').' class="ilistdel" onclick="wep.form.ilistdel(this);" title="Удалить"></span></div>';
+						if($cnt==$r['mask']['maxarr']) break;
+					}
+					$texthtml .= '<span class="ilistmultiple" onclick="wep.form.ilistCopy(this,\'div.ilist\','.$r['mask']['maxarr'].')" title="Добавить '.$r['caption'].'">'.($r['mask']['maxarr']-count($r['value'])).'</span>';
+				$texthtml .= '</div>';
+			}
 			else {
 				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
 				$texthtml .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'" '.$attribute.'/></div>';

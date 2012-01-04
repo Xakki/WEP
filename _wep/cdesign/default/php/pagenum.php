@@ -8,14 +8,12 @@
 			$_tpl['onload'] .='pagenum_super('.$data['cntpage'].','.$data['_pn'].',\''.$data['modul'].'\','.($data['reverse']?'true':'false').');';
 			$html .= '<div class="pagenum">';
 			foreach($data['link'] as $k=>$r) {
-				if($r['href']=='')
-					$html .=  $r['value'];
-				elseif($r['href']=='select_page')
-					$html .=  '<b>['.$r['value'].']</b>';
+				if($k==$data['_pn'])
+					$html .=  '<b>['.$k.']</b>';
 				else
-					$html .=  '<a href="'.$r['href'].'" onclick="return wep.load_href(this)">'.$r['value'].'</a>';
+					$html .=  '<a href="'.$r.'" onclick="return wep.load_href(this)">'.$k.'</a>';
 			}
-			$html .= '&#160;</div>';
+			$html .= '</div>';
 		}
 		$html .= '<select class="mopselect" onchange="setCookie(\''.$data['modul'].'_mop\',this.value,20);window.location.reload();">';
 		//,\''.$_CFG['session']['path'].'\',\''.$_CFG['session']['domain'].'\',\''.$_CFG['session']['secure'].'\'

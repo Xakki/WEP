@@ -9,7 +9,7 @@
 			include_once($this->_cDesignPath.'/php/path.php');
 			$html = tpl_path($data['path']);// PATH
 		}
-		$html .= '<span class="bottonimg imgdel" style="float: right;" onclick="$(this).parent().hide();">EXIT</span><div align="center" class="divform" style="width:auto;min-width: 600px;">';
+		$html .= '<span class="bottonimg imgdel" style="float: right;" onclick="$(this).parent().hide();">EXIT</span><div align="center" class="divform" style="min-width: 400px;">';
 		if(isset($data['messages']) and count($data['messages'])) {
 			include_once($HTML->_cDesignPath.'/php/messages.php');
 			$html .= tpl_messages($data['messages']);// messages

@@ -38,8 +38,8 @@ wep.form.ilistCopy = function(ths,obj,max) {
 	var sz = $(obj).size();
 	if(sz<max) {
 		var clon = $(obj+':first').clone();
-		clon.find('input').val('');
-		clon.find('select').val('');
+		clon.find('.ilist-key').val('');
+		clon.find('.ilist-val').val('');
 		clon.find('.ilistdel').show();
 		$(ths).before(clon);
 		var cnt = parseInt($(ths).text())-1;
