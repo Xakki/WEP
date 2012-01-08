@@ -959,7 +959,8 @@ class static_form {
 		if($preg_mask AND $data[$key]) {
 			$nomatch = '';
 			if(is_array($preg_mask)) {
-				if(isset($preg_mask['eval'])){
+				$value = $data[$key];
+				if(isset($preg_mask['eval'])) {
 					eval('$data[$key] = '.$preg_mask['eval'].';');
 				}
 				if(isset($preg_mask['match'])) {

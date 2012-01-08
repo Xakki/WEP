@@ -46,7 +46,7 @@
 					text-align:center;
 				}
 
-				.showparam {
+				div.showparam {
 					cursor:pointer;
 					border-bottom:1px dashed #101796;
 					font-size:1.2em;
@@ -55,7 +55,7 @@
 					padding:0;
 					background:none;
 				}
-				.showparam span.shbg {
+				div.showparam span.shbg {
 					height: 12px;
 					width: 19px;
 					background:transparent url(/_design/_img/buttonh.png)  no-repeat scroll 0 -98px;
@@ -65,10 +65,10 @@
 					*zoom:1;/*включаем hasLayout для IE6, IE7*/
 					*display:inline;/*при hasLayout true display:inline в IE6, IE7 ведёт себя как display:inline-block*/
 				}
-				.showparam .sh1 {display:inline;}
-				.showparam .sh2 {display:none;}
+				div.showparam .sh1 {display:inline;}
+				div.showparam .sh2 {display:none;}
 
-				.shhide span.shbg{
+				div.shhide span.shbg{
 					height:12px;
 					width:19px;
 					background:transparent url(/_design/_img/buttonh.png)  no-repeat scroll 0 -114px;
@@ -79,13 +79,13 @@
 					*display:inline;/*при hasLayout true display:inline в IE6, IE7 ведёт себя как display:inline-block*/
 
 				}
-				.shhide .sh1 {display:none;}
-				.shhide .sh2 {display:inline;}
+				div.shhide .sh1 {display:none;}
+				div.shhide .sh2 {display:inline;}
 
-				.showparam:hover {
+				div.showparam:hover {
 					border-bottom:1px dashed transparent;
 				}
-				.showparam:hover span.shbg {
+				div.showparam:hover span.shbg {
 					background-image:url('/_design/_img/button.png');
 				}
 
