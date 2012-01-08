@@ -277,14 +277,18 @@
 							$def = 0;
 						else
 							$def = '';
-						$_listroot = static_main::m('_listroot',$_this);
-						if($_listroot)
-							$data[$def] = array($def=>$_listroot)+$data[$def];
+						if(!isset($listname['nolistroot'])) {
+							$_listroot = static_main::m('_listroot',$_this);
+							if($_listroot)
+								$data[$def] = array($def=>$_listroot)+$data[$def];
+						}
 					}
 					else {
-						$_listroot = static_main::m('_listroot',$_this);
-						if($_listroot)
-							$data[''] = $_listroot;
+						if(!isset($listname['nolistroot'])) {
+							$_listroot = static_main::m('_listroot',$_this);
+							if($_listroot)
+								$data[''] = $_listroot;
+						}
 						while ($row = $result->fetch_array())
 								$data[$row['id']] = $row['name'];
 					}

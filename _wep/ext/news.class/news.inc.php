@@ -20,7 +20,12 @@
 	}
 
 	$html = '';
-	if(isset($this->pageParam[0])) {
+	if(isset($this->pageParam[0]) and $this->pageParam[0]=='tags') {
+		// TODO : теги
+		$DATA = $NEWS->fNewsItem((int)$this->pageParam[0]);
+		$this->pageinfo['path'][] = 'Теги';
+	}
+	elseif(isset($this->pageParam[0])) {
 		$DATA = $NEWS->fNewsItem((int)$this->pageParam[0]);
 		$this->pageinfo['path'][] = $DATA[0]['name'];
 	} else {

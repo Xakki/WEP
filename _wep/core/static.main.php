@@ -489,22 +489,37 @@ class static_main {
 	 * Замена в тексте ссылок на редирект
 	 * @param string $text - текст в котором будет производится поиск
 	 * @param int $name - подстановочное название ссылок, если $name==false - то название будет как самы ссылка только без http:// и www
+	 * @param int $dolink - 0 - замена всех http на редирект и превращение в ссылки; 1- замена всех http на редирект; 2- замена всех http на редирект в ссылках
 	 * @return string текст
 	*/
-	static function redirectLink($text,$name='Ссылка') {
+	static function redirectLink($text,$name='Источник',$dolink=0) {
 		global $_CFG;
-		if(!$_CFG['site']['redirectForRobots'] and $_CFG['robot']) return $text;
+		//if(!$_CFG['site']['redirectForRobots'] and $_CFG['robot']) return $text;
 
 		$cont = array();
-		preg_match_all($_CFG['_repl']['href'],$text,$cont);
+		if($dolink==2)
+			$match = '/(href=")(http:\/\/|https:\/\/|www\.)[0-9A-Za-zА-Яа-я\/\.\_\-\=\?\&\;]*/u';
+		else
+			$match = '/(href="|=")?(http:\/\/|https:\/\/|www\.)[0-9A-Za-zА-Яа-я\/\.\_\-\=\?\&\;]*/u';
+		preg_match_all($match,$text,$cont);
 		if(count($cont[0])) {
 			$temp = array();
 			foreach($cont[0] as $rc) {
-				if(!$name)
-					$tn = trim(str_replace(array('http://','https://','www.'),'',$rc),' /');
+				if(substr($rc,0,2)=='="') {
+					$temp[] = $rc;continue;
+				}
+				
+				if(strpos($rc,'href="')!==false)
+					$temp[] = 'rel="nofollow" target="_blank" href="'.$_CFG['_HREF']['BH'].'_redirect.php?url='.base64_encode(str_replace('href="','',$rc));
+				elseif($dolink==0) {
+					if(!$name)
+						$tn = trim(str_replace(array('href="','http://','https://','www.'),'',$rc),' /');
+					else
+						$tn = $name;
+					$temp[] = '<a href="'.$_CFG['_HREF']['BH'].'_redirect.php?url='.(base64_encode($rc)).'" rel="nofollow" target="_blank">'.$tn.'</a>';
+				}
 				else
-					$tn = $name;
-				$temp[] = '<a href="/_redirect.php?url='.(base64_encode($rc)).'" rel="nofollow" target="_blank">'.$tn.'</a>';
+					$temp[] = $_CFG['_HREF']['BH'].'_redirect.php?url='.(base64_encode($rc));
 			}
 			$text = str_replace($cont[0],$temp,$text);
 		}
