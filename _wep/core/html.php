@@ -150,12 +150,12 @@ class html {
 		}
 		$transformpath =  $transformPath. $transform . '.php';
 		if (!file_exists($transformpath)) {
-			trigger_error('Отсутствует файл шаблона "' . $transformpath . '"', E_USER_WARNING);
+			trigger_error('Отсутствует файл шаблона `' . $transformpath . '`', E_USER_WARNING);
 			return '';
 		}
 		include_once($transformpath);
 		if (!function_exists('tpl_' . $transform)) {
-			trigger_error('Функция "tpl_' . $transform . '" в шаблоне "' . $transformpath . '" не найдена', E_USER_WARNING);
+			trigger_error('Функция `tpl_' . $transform . '` в шаблоне `' . $transformpath . '` не найдена', E_USER_WARNING);
 			return '';
 		}
 		eval('$html =  tpl_' . $transform . '($data["' . $marker . '"]);');
@@ -324,7 +324,6 @@ function _obHandler($buffer) {
 	if ($_html != '') {
 		if ($buffer)
 			$buffer = '<link type="text/css" href="/_design/_style/bug.css" rel="stylesheet"/>
-				<script type="text/javascript" src="_design/_script/bug.js"></script>
 				<div id="bugmain">'.$buffer.'</div>';
 		$_tpl['logs'] .= $buffer;
 		eval('$_html = "' . $_html . '";');

@@ -53,7 +53,8 @@ class static_form {
 		if($_this->id and $flag_select)
 			$_this->data = $_this->_select();
 		if (isset($_this->mf_indexing) && $_this->mf_indexing) $_this->indexing();
-		return static_main::log('ok',static_main::m('add',$_this));
+		static_main::log('ok',static_main::m('add',array($_this->tablename),$_this));
+		return true;
 	}
 
 	static function _add_fields(&$_this,$flag_update=false) {
@@ -238,7 +239,9 @@ class static_form {
 		if($_this->id and $flag_select)
 			$_this->data = $_this->_select();
 		if (isset($_this->mf_indexing) && $_this->mf_indexing) $_this->indexing();
+		static_main::log('ok',static_main::m('update',array($_this->tablename),$_this));
 		return true;
+
 	}
 
 

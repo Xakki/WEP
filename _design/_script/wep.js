@@ -511,8 +511,9 @@ var wep = {
 	},
 	fSpoiler: function(txt,nm) {
 		//initSpoilers();
+		$.includeCSS('/_design/_style/bug.css');
 		if(!nm) nm ='Скрытый текст';
-		return '<div class="spoiler-wrap"><div class="spoiler-head folded clickable" onClick="bugSpoilers(this)">+ '+nm+'</div><div class="spoiler-body">'+txt+'</div></div>';
+		return '<div class="bspoiler-wrap folded clickable"><div onclick="var obj=this.parentNode;if(obj.className.indexOf(\'unfolded\')>=0) obj.className = obj.className.replace(\'unfolded\',\'\'); else obj.className = obj.className+\' unfolded\';" class="spoiler-head">'+nm+'</div><div class="spoiler-body">'+txt+'</div></div>';
 	},
 	initSpoilers: function(context){
 		var context = context || 'body';

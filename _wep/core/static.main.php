@@ -115,7 +115,8 @@ class static_main {
 
 
 	static function spoilerWrap($head,$text,$css='') {
-		return '<div class="bspoiler-wrap"><div onclick="bugSpoilers(this)" class="spoiler-head folded clickable '.$css.'">'.$head.'</div><div class="spoiler-body">' . $text. '</div></div>';
+		global $_CFG;
+		return '<div class="bspoiler-wrap folded clickable '.$css.'"><div onclick="var obj=this.parentNode;if(obj.className.indexOf(\'unfolded\')>=0) obj.className = obj.className.replace(\'unfolded\',\'\'); else obj.className = obj.className+\'unfolded\';" class="spoiler-head">'.$head.'</div><div class="spoiler-body">' . html_entity_decode($text,ENT_QUOTES,$_CFG['wep']['charset']). '</div></div>';
 	}
 	/**
 	 * Парсер настроек модулей
