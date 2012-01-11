@@ -31,12 +31,10 @@
 		);
 		return $form;
 	}
-
-	$tplphp = $this->FFTemplate($FUNCPARAM[3],dirname(__FILE__));
 	
 	$DATA = array('#item#' => $PGLIST->getMap($FUNCPARAM[0],$FUNCPARAM[1],$FUNCPARAM[2]));
 	$DATA['#title#'] = $Ctitle;
 	$DATA = array($FUNCPARAM[3]=>$DATA);//print_r('<pre>');print_r($DATA);
-	$html .= $HTML->transformPHP($DATA,$tplphp);
+	$html .= $HTML->transformPHP($DATA,$FUNCPARAM[3]);
 
 	return $html;

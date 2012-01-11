@@ -383,7 +383,7 @@ var wep = {
 			}
 			jQuery(body+' > #'+objid).show();
 			//if(body=='body') // Нах это?
-			fMessPos(body,' #'+objid);
+			this.fMessPos(body,' #'+objid);
 		}
 		return false;
 	},
@@ -430,6 +430,8 @@ var wep = {
 		else if (navigator.appName) t = 'Netscape';
 		return {type:t,version:v};
 	},
+
+	// Логи скриптов
 	fLog: function(txt,flag) {
 		if(jQuery('#bugmain').size())
 			jQuery("#bugmain").prepend(txt);
@@ -440,32 +442,36 @@ var wep = {
 		}
 		if(flag==1) wep.fShowHide('bugmain',1);
 	},
+
+	// Позициоонирует блок по центру
 	fMessPos: function(body,obj) {
 		if(body) body=body+'>';
 		else body = '';
 		if(!obj) obj='#ajaxload';
 		jQuery(body+obj).css('width','auto');
 		var H=document.documentElement.clientHeight;
-		var FC = jQuery(body+obj+':first');
+		var FC = jQuery(body+obj+' :first');
 		//alert(FC.text());
-		var Hblock= FC.outerHeight();
+		var Hblock= FC[0].scrollHeight;
 		if(typeof Hblock == 'undefined') return;
 		var hh=Math.round((H-Hblock)/2);
 		if(hh<5) hh=5;
 		var W=document.documentElement.clientWidth;
-		var Wblock= FC.outerWidth();
+		var Wblock= FC[0].scrollWidth;
 		var ww=Math.round((W-Wblock)/2);
 		if(ww<5) ww=5;
 		jQuery(body+obj).css({'top':hh+'px','left':ww+'px'});
 		if(Hblock>H) {
-			Hblock = H - 10;
+			Hblock = H;
 			jQuery(body+obj).css({'height':(Hblock)+'px'});
 		}
 	
 		if(Wblock>W) 
 			Wblock = W - 40;
-		jQuery(body+obj).css({'width':(Wblock+30)+'px'});
+		jQuery(body+obj).css({'width':(Wblock+20)+'px'});
 	},
+
+	// всплывающая подсказка
 	showHelp: function(obj,mess,time,nomiga) {
 		if(!obj || !mess || !jQuery(obj).size() || jQuery(obj).next().attr('class')=='helpmess') return false;
 		jQuery('div.helpmess').remove();
