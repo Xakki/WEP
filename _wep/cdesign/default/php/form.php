@@ -216,7 +216,7 @@ function tpl_form(&$data) {
 						</div>';
 						if($cnt==$r['mask']['maxarr']) break;
 					}
-					$texthtml .= '<span class="ilistmultiple" onclick="wep.form.ilistCopy(this,\'div.ilist\','.$r['mask']['maxarr'].')" title="Добавить '.$r['caption'].'">'.($r['mask']['maxarr']-count($r['value'])).'</span>';
+					$texthtml .= '<span class="ilistmultiple" onclick="wep.form.ilistCopy(this,\'#tr_'.$k.' div.ilist\','.$r['mask']['maxarr'].')" title="Добавить '.$r['caption'].'">'.($r['mask']['maxarr']-count($r['value'])).'</span>';
 				}elseif(isset($r['multiple']) and $r['multiple']) {
 					
 					$texthtml .= '<select multiple="multiple" name="'.$k.'[]" class="small" size="'.$r['mask']['size'].'" '.$attribute;
@@ -561,7 +561,7 @@ function tpl_form(&$data) {
 						<span'.($cnt==1?' style="display:none;"':'').' class="ilistdel" onclick="wep.form.ilistdel(this);" title="Удалить"></span></div>';
 						if($cnt==$r['mask']['maxarr']) break;
 					}
-					$texthtml .= '<span class="ilistmultiple" onclick="wep.form.ilistCopy(this,\'div.ilist\','.$r['mask']['maxarr'].')" title="Добавить '.$r['caption'].'">'.($r['mask']['maxarr']-count($r['value'])).'</span>';
+					$texthtml .= '<span class="ilistmultiple" onclick="wep.form.ilistCopy(this,\'#tr_'.$k.' div.ilist\','.$r['mask']['maxarr'].')" title="Добавить '.$r['caption'].'">'.($r['mask']['maxarr']-count($r['value'])).'</span>';
 				$texthtml .= '</div>';
 			}
 			else {

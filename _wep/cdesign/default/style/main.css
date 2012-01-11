@@ -199,7 +199,7 @@ a.am_tools {
 			height: 16px; 
 			background-image: url(/_design/_img/ui-icons_256x240.png);
 			cursor:pointer;
-			font-size:0.01em;
+			font-size:0;
 			display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
 		}
 		.uiicons.img10 {

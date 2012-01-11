@@ -52,7 +52,7 @@ wep.form = {
 			var cnt = parseInt($(ths).text())-1;
 			$(ths).text(cnt);
 			if(sz==(max-1)) {
-				//$(ths).hide();
+				$(ths).fadeTo('slow', 0.3);
 			} else {
 			}
 		}
@@ -61,7 +61,8 @@ wep.form = {
 		var tmp = $(ths).parent();
 		var tmp2 = tmp.parent().find('span.ilistmultiple');
 		var cnt = parseInt(tmp2.text())+1;
-		tmp2.text(cnt);//.show()
+		tmp2.text(cnt);
+		if(cnt==1) tmp2.fadeTo('slow', 1);
 		tmp.remove();
 	},
 
