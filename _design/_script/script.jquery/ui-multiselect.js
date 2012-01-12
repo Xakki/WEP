@@ -35,7 +35,7 @@ $.widget("ui.multiselect", {
 		animated: 'fast',
 		show: 'slideDown',
 		hide: 'slideUp',
-		dividerLocation: 0.6,
+		dividerLocation: 0.5,
 		nodeComparator: function(node1,node2) {
 			var text1 = node1.text(),
 			    text2 = node2.text();
@@ -57,9 +57,11 @@ $.widget("ui.multiselect", {
 		var that = this;
 
 		// set dimensions
-		this.container.width(this.element.width()+1);
-		this.selectedContainer.width(Math.floor(this.element.width()*this.options.dividerLocation));
-		this.availableContainer.width(Math.floor(this.element.width()*(1-this.options.dividerLocation)));
+		/*var w1 = Math.floor(this.element.width()*this.options.dividerLocation);
+		var w2 = Math.floor(this.element.width()*(1-this.options.dividerLocation));
+		this.container.width(w1+w2+1);
+		this.selectedContainer.width(w1);
+		this.availableContainer.width(w2);*/
 
 		// fix list height to match <option> depending on their individual header's heights
 		this.selectedList.height(Math.max(this.element.height()-this.selectedActions.height(),1));

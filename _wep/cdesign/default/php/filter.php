@@ -55,8 +55,8 @@
 						else
 							$r['value'] = array();
 					}
-					else
-						$r['value'] = array_combine($r['value'],$r['value']);
+					//else
+					//	$r['value'] = array_combine($r['value'],$r['value']);
 					$type = $r['type'];
 					if(count($r['valuelist'])==2)
 						$type = 'radio';

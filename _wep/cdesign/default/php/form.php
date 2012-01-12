@@ -49,7 +49,7 @@ function tpl_form(&$data) {
 			$texthtml .= '<div class="infoinput"><input type="hidden" name="'.$k.'" value="'.$r['value'].'"/>'.$r['caption'].'</div>';
 		}
 		elseif($r['type']=='info') {
-			$texthtml .= '<div>'.$r['caption'].'</div>';
+			$texthtml .= '<div class="form-info">'.$r['caption'].'</div>';
 		}
 		elseif($r['type']=='html') {
 			$texthtml .= '<div class="form-value">'.$r['value'].'</div>';
@@ -202,7 +202,7 @@ function tpl_form(&$data) {
 
 				if(isset($r['multiple']) and $r['multiple']==2) {
 					$texthtml .= '<select multiple="multiple" name="'.$k.'[]" class="multiple" size="'.$r['mask']['size'].'" '.$attribute;
-					$texthtml .= '>'.selectitem($r['valuelist']).'</select>';
+					$texthtml .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
 					$_CFG['fileIncludeOption']['multiple'] = 2;
 				}elseif(isset($r['multiple']) and $r['multiple']==3) {
 					if(!is_array($r['value']) or !count($r['value'])) $r['value'] = array('');
@@ -220,10 +220,10 @@ function tpl_form(&$data) {
 				}elseif(isset($r['multiple']) and $r['multiple']) {
 					
 					$texthtml .= '<select multiple="multiple" name="'.$k.'[]" class="small" size="'.$r['mask']['size'].'" '.$attribute;
-					$texthtml .= '>'.selectitem($r['valuelist']).'</select>';
+					$texthtml .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
 				}else {
 					$texthtml .= '<select name="'.$k.'" '.$attribute;
-					$texthtml .= '>'.selectitem($r['valuelist']).'</select>';
+					$texthtml .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
 				}
 				$texthtml .= '</div>';
 			}
@@ -584,7 +584,7 @@ function selectitem($data,$val=NULL,$flag=0) {
 			$val = array($val=>true);
 	}
 	return selectitem2($data,$val,$flag);
-	$texthtml = '';
+	/*$texthtml = '';
 	if(is_array($data) and count($data))
 		foreach($data as $r) {
 			//_substr($r['#name#'],0,60).(_strlen($r['#name#'])>60?'...':'')
@@ -605,7 +605,7 @@ function selectitem($data,$val=NULL,$flag=0) {
 			if(isset($r['#item#']) and count($r['#item#']))
 				$texthtml .= selectitem($r['#item#'],$val,($flag+1));//.'&#160;--'
 		}
-	return $texthtml;
+	return $texthtml;*/
 }
 
 function selectitem2($data,$val=NULL,$flag=0,&$openG=false) {

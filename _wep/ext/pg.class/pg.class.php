@@ -328,11 +328,13 @@ class pg_class extends kernel_extends {
 		if(isset($_REQUEST['pageParam']) and is_array($_REQUEST['pageParam']) and count($_REQUEST['pageParam'])) {
 			$this->pageParam = $this->pageParamId = array();
 			foreach($_REQUEST['pageParam'] as $k=>$r) {
+				// Ищем совпадение по алиасу
 				if(isset($this->dataCashTreeAlias[$fid][$r]) and !$this->id) {
 					$fid = $this->dataCashTreeAlias[$fid][$r]['id'];
 					$this->pageParamId[$k] = $fid;
 				}
-				elseif(isset($this->dataCashTree[$fid][$r]) and !$this->id) {
+				// Проверяем если не указан алиас но есть совпадение по ID
+				elseif(isset($this->dataCashTree[$fid][$r]) and !$this->dataCashTree[$fid][$r]['alias'] and !$this->id) {
 					$fid = $this->dataCashTree[$fid][$r]['id'];
 					$this->pageParamId[$k] = $fid;
 				}

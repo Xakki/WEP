@@ -120,6 +120,7 @@
 						$val = array_combine($r['value'],$r['value']);
 					else
 						$val = array($r['value']=>$r['value']);
+					$r['value'] = $val;
 					$temp = current($md);
 					if(is_array($temp) and !isset($temp['#name#'])) {
 						if(isset($r['mask']['begin']))
@@ -144,6 +145,7 @@
 							$val = array_combine($r['value'],$r['value']);
 						else
 							$val = array($r['value']=>$r['value']);
+						$r['value'] = $val;
 						if(is_array($md) and count($md)) {
 							$temp = current($md);
 							if(is_array($temp) and !isset($temp['#name#'])) {
