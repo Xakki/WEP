@@ -206,9 +206,15 @@ function show_hide_label(obj,view,flag,key) { // функция на событ�
 				jQuery(al).hide();
 				if (_Browser.type == 'IE' && 8 > _Browser.version)
 					jQuery('select').toggleClass('hideselectforie7',false);
-				timerid5 = setTimeout(function(){ajaxlistClear(obj,view,key);},200);
-				if(!obj.value){
-					jQuery(obj).prev().show();
+
+				var SEL = $(obj).next('div').find('.selected');
+				if(SEL.size())
+					ajaxlist_click(SEL,view,key);
+				else {
+					timerid5 = setTimeout(function(){ajaxlistClear(obj,view,key);},200);
+					if(!obj.value){
+						jQuery(obj).prev().show();
+					}
 				}
 			}
 		},200);
@@ -219,6 +225,7 @@ function ajaxlistClear(obj,view,key) { // функ очистки формы е�
 	var al = '#ajaxlist_'+view;
 	if(typeof key !== 'undefined')
 		al += '_'+key+'_';
+
 	if(jQuery(al+' + input').val()=='') {
 		jQuery(obj).val('');
 		jQuery(obj).prev().show();
@@ -226,13 +233,14 @@ function ajaxlistClear(obj,view,key) { // функ очистки формы е�
 	}
 }
 
-function ajaxlistOnKey(e,obj,view,key) {
+function ajaxlistOnKey(event,obj,view,key) {
 	if (event.keyCode == '40' || event.keyCode == '38') { // вниз
 		var W = 290;
 		var PARENT = $(obj).next('div');
 		var SEL = PARENT.find('.selected');
-		if(!SEL.size())
+		if(!SEL.size()) {
 			SEL = PARENT.find('label:first').addClass('selected');
+		}
 		if(event.keyCode == '40')
 			var NEXT = SEL.next();
 		else
@@ -240,6 +248,7 @@ function ajaxlistOnKey(e,obj,view,key) {
 		if(NEXT.size()) {
 			SEL.removeClass('selected');
 			NEXT.addClass('selected');
+
 			var stop = PARENT.scrollTop();
 			var h = NEXT.outerHeight();
 			if(event.keyCode == '40') {
@@ -260,19 +269,21 @@ function ajaxlistOnKey(e,obj,view,key) {
 		ajaxlist_click(SEL,view,key);
 		return false;
 		// выбор
-	} else
-		ajaxlist(obj,view,key);
+	} else {
+		clearTimeout(timerid4);
+		timerid4 = setTimeout(function(){ajaxlist(obj,view,key);},100);
+	}
 	return true;
 }
 
 function ajaxlist(obj,view,key) { // функция контроля подгрузки слоя списка
-
-	if(obj.value.length>1) {
+console.log(obj.value+' = '+obj.value.length);
+	if(obj.value.length>2) {
 		clearTimeout(timerid4);
 		if(ajaxComplite==1)
-			timerid4 = setTimeout(function(){getAjaxListData(obj.value,view,key);},900);
+			timerid4 = setTimeout(function(){getAjaxListData(obj.value,view,key);},400);
 		else
-			timerid4 = setTimeout(function(){ajaxlist(obj,view,key);},1000);
+			timerid4 = setTimeout(function(){ajaxlist(obj,view,key);},600);
 	} else {
 		clearTimeout(timerid4);timerid4=0;
 		var al = '#ajaxlist_'+view;
@@ -280,6 +291,9 @@ function ajaxlist(obj,view,key) { // функция контроля подгр�
 			al += '_'+key+'_';
 		jQuery(al+' + input').val('');
 		jQuery(al).prev('input').attr('class','reject');
+		jQuery(obj).next('div').hide();
+		jQuery(al+' label.selected').removeClass('selected');
+		ajaxComplite=1;
 	}
 }
 //jQuery('#tr_city .td1').append('+')
@@ -291,8 +305,9 @@ function getAjaxListData(value,view,key) { // загрузка списка
 		al += '_'+key+'_';
 	if(jQuery(al).attr('val')==value) {
 		jQuery(al).show();
+		jQuery(al+' label:first').addClass('selected');
 	}
-	else{
+	else {
 		jQuery(al).prev('input').attr('class','load');
 		ajaxComplite = 0;
 		$.ajax({
