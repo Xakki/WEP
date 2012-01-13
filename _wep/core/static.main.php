@@ -184,6 +184,7 @@ class static_main {
 			while ($tempOWN and $tempOWN->_cl) {
 				$Pid = $tempOWN->_cl;
 				$ret['type'] = 5;
+
 				$ret['path'] = $Pid . '.class/' . $Mid . '.childs.php';
 				$ret['file'] = $r['path'] . $ret['path'];
 				if (is_file($ret['file'])) {
@@ -191,6 +192,15 @@ class static_main {
 					//include_once($ret['file']);
 					return $ret;
 				}
+
+				$ret['path'] = $Pid . '.class/' . $Pid . '.childs.php';
+				$ret['file'] = $r['path'] . $ret['path'];
+				if (is_file($ret['file'])) {
+					$ret['path'] = $k . ':' . $ret['path'];
+					//include_once($ret['file']);
+					return $ret;
+				}
+
 				$ret['path'] = $Pid . '.class/' . $Pid . '.class.php';
 				$ret['file'] = $r['path'] . $ret['path'];
 				if (is_file($ret['file'])) {

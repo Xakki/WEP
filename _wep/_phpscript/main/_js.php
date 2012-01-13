@@ -1,41 +1,50 @@
 <?php
 	if(!$_CFG['_PATH']['wep'] or !$_CFG['_PATH']['path']) die('ERROR');
 	global $_tpl;
-	$GLOBALS['_RESULT']	= array();
+	$GLOBALS['_RESULT'] = array('html' => '','html2' => '','eval'=>'');
 	$html=$html2='';
-	if(!isset($_GET['_view']))
-		$_GET['_view'] = '';
 
 	if(!isset($_GET['noajax']))
-		require_once($_CFG['_PATH']['wep_phpscript'].'/jquery_getjson.php');
-	require_once($_CFG['_PATH']['core'].'/html.php');
+		require_once($_CFG['_PATH']['wep_phpscript'].'jquery_getjson.php');
+	require_once($_CFG['_PATH']['core'].'html.php');
 	if(isset($_GET['noajax']))
 		headerssent();
 
 	session_go();
 
 	$DATA  = array();
+
 	if(isset($_GET['_fn']) and $_GET['_fn']) {
-		session_go();
+
 		if(!isset($_GET['_design']))
-			$_GET['_design'] = 'default';
-		$HTML = new html('_design/',$_GET['_design'],true);
+			$_GET['_design'] = $_CFG['wep']['design'];
+
+		$HTML = new html('_design/',$_GET['_design'],false);// упрощённый режим
+
 		if(_new_class($_GET['_modul'],$MODUL) and isset($MODUL->_AllowAjaxFn[$_GET['_fn']])) {
-			eval('$_tpl=$MODUL->'.$_GET['_fn'].'();');
+			eval('$GLOBALS["_RESULT"]=$MODUL->'.$_GET['_fn'].'();');
 		} else
-			$_tpl['text'] = 'Вызов функции не разрешён модулем.';
-		if(!isset($_GET['_template']))
-			$HTML->_templates = 'default';
-		else
+			$GLOBALS['_RESULT']['text'] = 'Вызов функции не разрешён модулем.';
+		if(isset($GLOBALS['_RESULT']['onload']) and !isset($GLOBALS['_RESULT']['eval'])) {
+			$GLOBALS['_RESULT']['eval'] = $GLOBALS['_RESULT']['onload'];
+			unset($GLOBALS['_RESULT']['onload']);
+		}
+
+		if(isset($_GET['_template']))
 			$HTML->_templates = $_GET['_template'];
+
 	}
 	else {
-		
+		if(!isset($_GET['_view']))
+			$_GET['_view'] = '';
+
 		if($_GET['_view']=='exit') {
+			$_tpl['onload'] = 'alert("TODO: Замена на ф. wep.exit();");';
 			static_main::userExit();
 			$_tpl['onload'] = 'window.location.href=window.location.href;';
 		}
 		elseif($_GET['_view']=='login') {
+			$_tpl['onload'] = 'alert("TODO: Замена на json");';
 			$res=array('',0);
 			if(count($_POST) and isset($_POST['login']))
 			{
@@ -53,10 +62,16 @@
 			}
 			
 		}elseif($_GET['_view']=='rating') {
+			$_tpl['onload'] = 'alert("TODO:Переделать!");';
 			_new_class('ugroup',$UGROUP);
 			$html = $UGROUP->setRating($_GET['_modul'],$_GET['mid'],$_GET['rating']);
-		}
-		$GLOBALS['_RESULT']['html'] = $html;
-		$GLOBALS['_RESULT']['html2'] = $html2;
-		$GLOBALS['_RESULT']['eval'] = $_tpl['onload'];
+		}else
+			$html='ERrOR';
+
+		$GLOBALS['_RESULT'] = array("html" => $html,"html2" => $html2,'eval'=>$_tpl['onload']);
+	}
+	
+	if(isset($_GET['noajax'])) {
+		header('Content-type: text/html; charset=utf-8');
+		print_r($GLOBALS['_RESULT']);
 	}

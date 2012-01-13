@@ -193,9 +193,10 @@ div.layerblock {
 
 }
 div.layerblock div.cform {
-    padding:10px;
-	float: right;
-    width: 200px;
+	padding: 10px;
+	float: none;
+	width: 150px;
+	margin: 0 auto;
 }
 
 div.layerblock div.cform form div {

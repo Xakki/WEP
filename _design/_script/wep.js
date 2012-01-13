@@ -444,9 +444,9 @@ var wep = {
 	},
 
 	// Позициоонирует блок по центру
-	fMessPos: function(body,obj) {
-		if(body) body=body+'>';
-		else body = '';
+	fMessPos: function(body2,obj) {
+		var body = '';
+		if(body2) body=body2+'>';
 		if(!obj) obj='#ajaxload';
 		jQuery(body+obj).css('width','auto');
 		var H=document.documentElement.clientHeight;
@@ -469,6 +469,11 @@ var wep = {
 		if(Wblock>W) 
 			Wblock = W - 40;
 		jQuery(body+obj).css({'width':(Wblock+20)+'px'});
+
+		wep.winResize['fMessPos#'+obj] = function() {
+			if(jQuery(body+obj).size())
+				wep.fMessPos(body2,obj);
+		}
 	},
 
 	// всплывающая подсказка
@@ -789,6 +794,12 @@ var wep = {
 		
 	},
 
+	exit: function(){
+		if(confirm('Вы действительно хотите выйти?'))
+			JSWin({'href':'/_json.php?_view=exit'});
+		return false;
+	},
+
 	// Массив функции выполняющиеся при изменении размера окна 
 	winResize : {}
 };
@@ -805,6 +816,7 @@ wep.apply = function(o, c, defaults){
     }
     return o;
 };
+
 _Browser = getBrowserInfo();
 
 var resizeTimer = null;
@@ -815,7 +827,8 @@ $(window).resize(function() {
 
 function wResize() {
 	for(var item in wep.winResize) {
-		if(typeof wep.winResize[item] == 'function')
+		if(typeof wep.winResize[item] == 'function') {
 			wep.winResize[item]();
+		}
 	}
 }

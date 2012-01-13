@@ -60,13 +60,13 @@
 					$type = $r['type'];
 					if(count($r['valuelist'])==2)
 						$type = 'radio';
-					$html .= '<div><input type="'.$type.'" name="null" value="" ';
+					$html .= '<label><input type="'.$type.'" name="null" value="" ';
 					if(isset($r['value']['']) or !count($r['value'])) {
 						$html .= 'checked="checked"';
 					}
-					$html .= '/>Все</div>';
+					$html .= '/>Все</label>';
 					foreach($r['valuelist'] as $rk=>$rr) {
-						$html .= '<div><input type="'.$type.'" name="'.$k.'[]" value="'.$rk.'" '.(isset($r['value'][$rk])?'checked="checked"':'').'/>'.$rr['#name#'].'</div>';
+						$html .= '<label><input type="'.$type.'" name="'.$k.'[]" value="'.$rk.'" '.(isset($r['value'][$rk])?'checked="checked"':'').'/>'.$rr['#name#'].'</label>';
 					}
 					$html .= '</div>';
 				}
@@ -78,18 +78,18 @@
 					}
 					elseif(isset($r['valuelist']) and is_array($r['valuelist'])) {
 						$html .= '<div class="f_value multiplebox">';
-						$html .= '<div><input type="radio" name="'.$k.'" value="" '.($r['value']==''?'checked="checked"':'').'/>Все</div>';
+						$html .= '<label><input type="radio" name="'.$k.'" value="" '.($r['value']==''?'checked="checked"':'').'/>Все</label>';
 						foreach($r['valuelist'] as $rk=>$rr) {
-							$html .= '<div><input type="radio" name="'.$k.'" value="'.$rk.'" '.($r['value']==$rk?'checked="checked"':'').'/>'.$rr['#name#'].'</div>';
+							$html .= '<label><input type="radio" name="'.$k.'" value="'.$rk.'" '.($r['value']==$rk?'checked="checked"':'').'/>'.$rr['#name#'].'</label>';
 						}
 						$html .= '</div>';
 					} 
 					else {
 						$html .= '<div class="f_value multiplebox">';
 						$html .= '
-							<div><input type="radio" name="'.$k.'" value="" class="radio" '.($r['value']==''?'checked="checked"':'').'/>Все</div>
-							<div><input type="radio" name="'.$k.'" value="0" class="radio" '.($r['value']=='0'?'checked="checked"':'').'/>Нет</div>
-							<div><input type="radio" name="'.$k.'" value="1" class="radio" '.($r['value']=='1'?'checked="checked"':'').'/>Да</div>
+							<label><input type="radio" name="'.$k.'" value="" class="radio" '.($r['value']==''?'checked="checked"':'').'/>Все</label>
+							<label><input type="radio" name="'.$k.'" value="0" class="radio" '.($r['value']=='0'?'checked="checked"':'').'/>Нет</label>
+							<label><input type="radio" name="'.$k.'" value="1" class="radio" '.($r['value']=='1'?'checked="checked"':'').'/>Да</label>
 							';
 						$html .= '</div>';
 					}

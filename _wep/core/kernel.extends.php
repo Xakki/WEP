@@ -11,7 +11,7 @@ abstract class kernel_extends {
 	 * 2 - добавленн новый функционал, расширен и измененн меющиеся функции -
 	 * 3 - Номер ревизии , исправленны ошибки
 	 */
-	const versionCore = '2.8.20';
+	const versionCore = '2.8.21';
 
 	function __construct($owner=NULL) {
 		global $_CFG;

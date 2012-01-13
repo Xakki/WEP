@@ -107,7 +107,7 @@ wep.form = {
 		if(obj.value.length>max)
 			obj.value=obj.value.substr(0,max);
 		jQuery('#'+obj.name+'t2').val(obj.value.length);
-	},
+	}
 }
 
 /*********** FORMa ********/

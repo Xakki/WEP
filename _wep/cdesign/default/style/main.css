@@ -41,7 +41,7 @@ a:hover{text-decoration:none;}
 a.am_home {
 	background:transparent url(../img/home.png) no-repeat 0 0;
 	color:transparent;font-size:0.01em;
-	display:inline-block;
+	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
 	width:32px;height:32px;
 	vertical-align: top;
 	padding:0 4px 0 4px;
@@ -49,7 +49,7 @@ a.am_home {
 a.am_exit {
 	background:transparent url(../img/close32.gif) no-repeat 0 0;
 	color:transparent;font-size:0.01em;
-	display:inline-block;
+	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
 	width:32px;height:32px;
 	vertical-align: top;
 	padding:0 4px 0 4px;
@@ -61,7 +61,7 @@ a.am_user {
 a.am_tools {
 	background:transparent url(../img/tools.png) no-repeat 0 0;
 	color:transparent;font-size:0.01em;
-	display:inline-block;
+	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
 	width:32px;height:32px;
 	vertical-align: top;
 	padding:0 4px 0 4px;
@@ -71,7 +71,10 @@ a.am_tools {
 .nav,
 .nav ul{list-style-type:none; margin:0; padding:0;}
 .nav a {text-decoration:none;}
-.nav {font-family: arial, sans-serif; font-size:1em; margin:2px auto;display:inline-block;}
+.nav {
+	font-family: arial, sans-serif; font-size:1em; margin:2px auto;
+	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
+}
 
 /* style the links */
 /* needs a background for IE6 - can be a color or a transparent gif */

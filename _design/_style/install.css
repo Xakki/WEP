@@ -28,12 +28,7 @@
 					font-weight:bold;
 					width:19.5%;
 					cursor: pointer;
-					display:-moz-inline-stack;/*Firefox 2*/
-					display:inline-block; /*Хорошие браузеры*/
-					_overflow:hidden;/*IE6, IE7*/
-					*zoom:1;/*включаем hasLayout для IE6, IE7*/
-					*display:inline;/*при hasLayout true display:inline в IE6, IE7 ведёт себя как display:inline-block*/
-
+					display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
 				}
 				.step .stepitem:hover {
 					background-color:gray;
@@ -59,11 +54,7 @@
 					height: 12px;
 					width: 19px;
 					background:transparent url(/_design/_img/buttonh.png)  no-repeat scroll 0 -98px;
-					display:-moz-inline-stack;/*Firefox 2*/
-					display:inline-block; /*Хорошие браузеры*/
-					_overflow:hidden;/*IE6, IE7*/
-					*zoom:1;/*включаем hasLayout для IE6, IE7*/
-					*display:inline;/*при hasLayout true display:inline в IE6, IE7 ведёт себя как display:inline-block*/
+					display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
 				}
 				div.showparam .sh1 {display:inline;}
 				div.showparam .sh2 {display:none;}
@@ -72,11 +63,7 @@
 					height:12px;
 					width:19px;
 					background:transparent url(/_design/_img/buttonh.png)  no-repeat scroll 0 -114px;
-					display:-moz-inline-stack;/*Firefox 2*/
-					display:inline-block; /*Хорошие браузеры*/
-					_overflow:hidden;/*IE6, IE7*/
-					*zoom:1;/*включаем hasLayout для IE6, IE7*/
-					*display:inline;/*при hasLayout true display:inline в IE6, IE7 ведёт себя как display:inline-block*/
+					display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
 
 				}
 				div.shhide .sh1 {display:none;}

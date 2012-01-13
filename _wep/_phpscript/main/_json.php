@@ -4,11 +4,8 @@
 	$GLOBALS['_RESULT']	= array('html'=>'','eval'=>'');
 	$_tpl['onload']=$html=$html2='';
 
-	require_once($_CFG['_PATH']['wep'].'/config/config.php');
-	if (!isset($_GET['html']))
+	if (!isset($_GET['html']) and !isset($_GET['noajax']))
 		require_once($_CFG['_PATH']['wep_phpscript'].'/jquery_getjson.php');
-	require_once($_CFG['_PATH']['core'].'/sql.php');	/**отправляет header и печатает страничку*/
-	$SQL = new sql($_CFG['sql']);
 
 	if(isset($_GET['_fn']) and $_GET['_fn']) {
 		session_go();
@@ -19,6 +16,8 @@
 		
 	} 
 	elseif(isset($_GET['_view']) && $_GET['_view']=='ajaxlist' and $_GET['_srlz']=stripslashes($_GET['_srlz']) and $_GET['_hsh']==md5($_GET['_srlz'].$_CFG['wep']['md5'])) {
+		$SQL = new sql($_CFG['sql']);
+
 		$listname = unserialize($_GET['_srlz']);
 		if(!isset($listname['tablename']) and isset($listname['class']) and $listname['class'])
 			$listname['tablename'] = $_CFG['sql']['dbpref'].$listname['class'];
@@ -136,7 +135,30 @@
 //			$_SESSION['swf_upload_file'][] = $_FILES['Filedata'];
 		}
 	}
+	elseif($_GET['_view']=='exit') {
+		static_main::userExit();
+		$GLOBALS['_RESULT']['eval'] = 'window.location.href=window.location.href;';
+	}
+	elseif($_GET['_view']=='login') {
+		$res=array('',0);
+		if(count($_POST) and isset($_POST['login']))
+		{
+			$res = static_main::userAuth($_POST['login'],$_POST['pass']);// повесить обработчик xml
+			if($res[1]) {
+				$GLOBALS['_RESULT']['eval'] .= "window.location.href=window.location.href;";
+			}
+		}
+		if(!$res[1]) {
+			if(count($_POST)) {
+				$GLOBALS['_RESULT']['html2'] = '<div style="font-size:12px;color:red;white-space:normal;">'.$res[0].'</div>';
+				//$_tpl['onload'] = 'clearTimeout(timerid2); fShowload(1,result.html2,0,"loginblock"); jQuery("#loginblock>div.layerblock").show(); '.$_tpl['onload'];
+				$GLOBALS['_RESULT']['eval'] = 'clearTimeout(timerid2);jQuery(\'div.messlogin\').hide().html(result.html2).show(\'slow\');'.$_tpl['onload'];
+				$html='';
+			}
+		}
+		
+	}
 	else {
-		print('NO VALID DATA');
+		print('ErRoR');
 	}
 	

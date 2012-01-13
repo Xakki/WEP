@@ -126,8 +126,6 @@ class html {
 
 	function transformPHP(&$data, $transform, $marker='',$_PATHd=false) {
 		global $_CFG;
-		if(!$_PATHd)
-			$_PATHd = $this->_PATHd;
 		/* PHP шаблонизатор */
 		if(is_array($transform)) {// Старый метод
 			$transformPath = $transform[1];
@@ -140,8 +138,11 @@ class html {
 			$transformPath = $temp[0];
 			$transform = $temp[1];
 		}
-		else
+		else {
+			if(!$_PATHd)
+				$_PATHd = $this->_PATHd;
 			$transformPath = $_PATHd . 'php/';
+		}
 		if (!$marker)
 			$marker = $transform;
 		if (!isset($data[$marker])) {
