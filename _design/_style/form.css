@@ -123,10 +123,13 @@
 	}
 	
 	/*INPUT*/
-	.divform input{
+	.divform input {
 		width:100%;
 		height:1.3em;
 		border:1px solid #A6A6A6;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
+	}
+	.divform input.password {
+		margin:0 0 3px;
 	}
 	.divform input[type='checkbox'] {
 		border:medium none;width:17px;
@@ -425,6 +428,13 @@
 		margin-top: 0px; margin-right: auto; margin-bottom: 0px; margin-left: auto;
 	}
 
+	span.labelInput {
+		position:absolute;
+		z-index:0;
+		color:#BBB;
+		white-space: nowrap;
+		font-size: 1.3em; margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 5px; display: block;
+	}
 	/* YA MAP*/
 	#boardOnMap {
 		position: fixed; z-index: 30; top: 50%; left: 50%;
@@ -470,18 +480,18 @@
 	right:auto;
 }
 .trgl_d {
-	bottom:-14px;
-	left:5px;
+	bottom:-10px;
+	left:3px;
 	border-left:0 none;
-	border-right:15px dotted transparent;
-	border-top-width:12px;
+	border-right:11px dotted transparent;
+	border-top-width:9px;
 	border-bottom-width:0;
 }
 .trgl_u {
-	top:-14px;
-	left:5px;
+	top:-10px;
+	left:3px;
 	border-left:0 none;
-	border-right:15px dotted transparent;
+	border-right:11px dotted transparent;
 	border-top-width:0;
-	border-bottom-width:12px;
+	border-bottom-width:9px;
 }

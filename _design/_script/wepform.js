@@ -158,16 +158,18 @@ function checkPass(name) {
 	return true;
 }
 
-function password_new(obj) {
+function passwordShow(obj) {
 	var type1 = 'password';
 	var type2 = 'text';
 	var inp = jQuery(obj).parent().find('input.password');
-	if(inp.attr('type')!='password' ) {
-		type1 = 'text';
-		type2 = 'password';
-	}
-	inp.after("<input name=\""+inp.attr('name')+"\" type=\""+type2+"\" value=\""+inp.attr('value')+"\" class=\"password\"/>");
-	inp.remove();
+	jQuery.each(inp, function(i,val) {
+		if($(val).attr('type')!='password' ) {
+			type1 = 'text';
+			type2 = 'password';
+		}
+		$(val).after("<input name=\""+$(val).attr('name')+"\" type=\""+type2+"\" value=\""+$(val).attr('value')+"\" class=\"password\"/>");
+		$(val).remove();
+	});
 }
 
 /*AXAX LIST*/
@@ -418,8 +420,26 @@ function SetWysiwyg(obj) {
 	}
 }
 
+
 $(document).ready(function() {
 	$('form input[type=int]').keydown(function(event){
 		return checkInt(event);
+	});
+
+	$('form span.labelInput').click(function() {
+		$(this).next().focus();
+	});
+	$('form span.labelInput+input').focus(function() {
+		$(this).prev().hide();
+	});
+	$('form span.labelInput+input').focusout(function() {
+		if(this.value=='')
+			$(this).prev().show();
+	});
+
+	$('form span.form-requere').click(function() {
+		var tx = $(this).attr('data-text');
+		if(!tx) tx = 'Данное поле обязательно для заполнения!';
+		wep.showHelp(this,tx,2000,1)
 	});
 });

@@ -25,7 +25,7 @@
 						if(!count($arr['mess'])) {
 							if($rm = $this->_update($arr['vars'])) {
 								$flag=1;
-								$arr['mess'][] = static_main::am('ok','update',$this);
+								$arr['mess'][] = static_main::am('ok','update',array($this->tablename),$this);
 								if($formflag)// кастыль
 									$mess = $this->kPreFields($this->data[$this->id],$param);
 							} else {
@@ -58,7 +58,7 @@
 				if(!count($arr['mess'])) {
 					if($rm = $this->_add($arr['vars'])) {
 						$flag=1;
-						$arr['mess'][] = static_main::am('ok','add',$this);
+						$arr['mess'][] = static_main::am('ok','add',array($this->tablename),$this);
 					} else
 						$arr['mess'][] = static_main::am('error','add_err',$this);
 				}

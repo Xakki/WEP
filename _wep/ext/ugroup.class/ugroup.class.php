@@ -319,9 +319,10 @@ class users_class extends kernel_extends {
 
 		if($this->id) {
 			/*Такое лучше не открывать не кому , лучше пользоваться востановлением пароля*/
-			/*if(static_main::_prmUserCheck(1)) // Вывод поля генерации пароля если админ
-				$this->fields_form[$this->fn_pass] = array('type' => 'password', 'caption' => 'Пароль','md5'=>$this->_CFG['wep']['md5'], 'mask'=>array('password'=>'hash', 'min' => '6','fview'=>1));
-			else*/
+			if(static_main::_prmUserCheck(1)) // Вывод поля генерации пароля если админ
+				$this->fields_form[$this->fn_pass] = array('type' => 'password', 'caption' => 'Пароль', 'mask'=>array('password'=>'re', 'min' => '6','fview'=>1));
+				//$this->fields_form[$this->fn_pass] = array('type' => 'password', 'caption' => 'Пароль','md5'=>$this->_CFG['wep']['md5'], 'mask'=>array('password'=>'hash', 'min' => '6','fview'=>1));
+			//else
 			/*if(isset($_POST[$this->fn_pass]) and !$_POST[$this->fn_pass])
 				unset($this->fields_form[$this->fn_pass]);unset($_POST[$this->fn_pass]);
 			$this->fields_form[$this->fn_login]['readonly']=true;*/
@@ -517,7 +518,7 @@ class users_class extends kernel_extends {
 							$arr['vars'][$this->mf_namefields] = $arr['vars'][$this->fn_login];
 						$arr['vars']['reg_hash']=md5(time().$arr['vars'][$this->fn_login]);
 						$pass=$arr['vars'][$this->fn_pass];
-						$arr['vars'][$this->fn_pass]=md5($this->_CFG['wep']['md5'].$pass);
+						//$arr['vars'][$this->fn_pass]=md5($this->_CFG['wep']['md5'].$pass);
 						//$_SESSION['user'] = $arr['vars']['id'];
 
 						if($this->_add($arr['vars'])) {

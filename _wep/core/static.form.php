@@ -53,7 +53,7 @@ class static_form {
 		if($_this->id and $flag_select)
 			$_this->data = $_this->_select();
 		if (isset($_this->mf_indexing) && $_this->mf_indexing) $_this->indexing();
-		static_main::log('ok',static_main::m('add',array($_this->tablename),$_this));
+		//static_main::log('ok',static_main::m('add',array($_this->tablename),$_this));
 		return true;
 	}
 
@@ -239,7 +239,7 @@ class static_form {
 		if($_this->id and $flag_select)
 			$_this->data = $_this->_select();
 		if (isset($_this->mf_indexing) && $_this->mf_indexing) $_this->indexing();
-		static_main::log('ok',static_main::m('update',array($_this->tablename),$_this));
+		//static_main::log('ok',static_main::m('update',array($_this->tablename),$_this));
 		return true;
 
 	}
@@ -696,17 +696,6 @@ class static_form {
 				if($data[$key]!=$form['captcha'])
 					$error[] = 31;
 			}
-			/*пароль*/
-			elseif($form['type']=='password' and isset($form['mask']['password']) and $form['mask']['password']=='re')
-			{
-				if($data[$key]!=$data['re_'.$key])
-					$error[] = 32;
-			}
-			elseif($form['type']=='password' and isset($form['mask']['password']) and $form['mask']['password']=='change')
-			{
-				if($_this->data[$_this->id][$key]!=md5($_this->_CFG['wep']['md5'].$data[$key.'_old']))
-					$error[] = 321;
-			}
 			elseif(isset($form['multiple']) and $form['multiple']) {
 				if(isset($form['mask']['minarr']) and $form['mask']['minarr']>0 and (!isset($data[$key]) or !count($data[$key])))
 					$error[] = 1;
@@ -881,6 +870,39 @@ class static_form {
 			$form['value'] = $data[$key] = ((isset($data[$key]) and $data[$key])? 1 : 0);
 			return true;
 		}
+		/*пароль*/
+		if($form['type']=='password') {
+			if(isset($form['mask']['password']) and $form['mask']['password']=='re')
+			{
+				if($data[$key] or $data['re_'.$key]) {
+					if($data[$key]!=$data['re_'.$key])
+						$error[] = 32;
+					else
+						$data[$key] = md5($_this->_CFG['wep']['md5'].$data[$key]);
+				}
+			}
+			elseif(isset($form['mask']['password']) and $form['mask']['password']=='change')
+			{
+				if(isset($_this->data[$_this->id][$key]) and $data[$key] or $data[$key.'_old']) {
+					if($_this->data[$_this->id][$key]!=md5($_this->_CFG['wep']['md5'].$data[$key.'_old']))
+						$error[] = 321;
+					else
+						$data[$key] = md5($_this->_CFG['wep']['md5'].$data[$key]);
+				}
+			} else {
+				if(isset($form['mask']['max']) && $form['mask']['max']>0 && _strlen($data[$key])>$form['mask']['max'])
+					$error[] = 2;
+				if(isset($form['mask']['min']) and $form['mask']['min']>0)
+				{
+					if(!$data[$key] or $data[$key]=='0')
+						$error[] = 1;
+					elseif(_strlen($data[$key])<$form['mask']['min'])
+						$error[] = 21;
+				}
+				$data[$key] = md5($_this->_CFG['wep']['md5'].$data[$key]);
+			}
+			return true;
+		}
 
 		if(!isset($data[$key])) {
 			if(isset($form['mask']['min']) and $form['mask']['min'])
@@ -895,9 +917,7 @@ class static_form {
 		/*Если тип данных ДАТА*/
 		if($form['type']=='date') 
 		{
-			print_r(' - '.$data[$key]);
 			$data[$key] = self::_get_fdate($data[$key], $form['mask']['format'], $FIELDS['type']);
-			print_r(' * '.$data[$key]);
 		}
 
 		/*Редактор*/

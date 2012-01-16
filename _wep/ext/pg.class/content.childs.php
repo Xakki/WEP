@@ -176,16 +176,20 @@ class content_class extends kernel_extends {
 	}
 
 	function getContentIncParam(&$data,$ajax=false) {
+		global $FUNCPARAM_FIX; // Фикс для совместимости со старыми версиями
 		$pagetype = $data['pagetype'];
 		$FUNCPARAM = $data['funcparam'];
 		$formFlex = array();
 		$flagPG = false;
+		$flag_FIX = false;
 		if($FUNCPARAM) {
 			$FUNCPARAM = explode('&',$FUNCPARAM);
-			foreach($FUNCPARAM as &$rf) {
+			foreach($FUNCPARAM as $kf=>&$rf) {
 				if(strpos($rf,'|')!==false) {
 					$rf = explode('|',$rf);$rf = array_combine($rf,$rf);
 				}
+				elseif(strpos($rf,'#ext#')!==false)
+					$FUNCPARAM_FIX[$kf] = &$rf;
 			}
 		}
 		else $FUNCPARAM = array();
@@ -210,16 +214,16 @@ class content_class extends kernel_extends {
 		else
 			$fl = false;
 		$file = file_get_contents($flagPG);
+		//Проверяем есть ли в коде флексформа
 		if(strpos($file,'$ShowFlexForm')!==false) {
 			$ShowFlexForm = true;
 			$tempform = include($flagPG);
 			if(is_array($tempform) and count($tempform)) {
-
 				foreach($tempform as $k=>$r) {
 					if($fl) {
 						$r['value'] = $data['flexform_'.$k] = $FUNCPARAM[$k];
 					}
-					$r['css']='addparam flexform';
+					$r['css']='addparam flexform';// Добавляем форме спец стиль (завязано на скриптах)
 					$formFlex['flexform_'.$k] = $r;
 				}
 			}

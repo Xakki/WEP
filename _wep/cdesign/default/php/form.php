@@ -61,10 +61,10 @@ function tpl_form(&$data) {
 		else {
 			$texthtml .= '<div class="form-caption">'.$r['caption'];
 			if((isset($r['mask']['min']) and $r['mask']['min']) or (isset($r['mask']['minint']) and $r['mask']['minint'])) {
-				$texthtml .= '<span class="form-requere" onmouseover="showHelp(this,\'Данное поле обязательно для заполнения!\',2000,1)">*</span>';
+				$texthtml .= '<span class="form-requere">*</span>';
 			}
 			elseif(isset($r['mask']['min2']) and $r['mask']['min2']) {
-				$texthtml .= '<span  class="form-requere" onmouseover="showHelp(this,\''.$r['mask']['min2'].'\',2000,1)">**</span>';
+				$texthtml .= '<span  class="form-requere" data-text="'.$r['mask']['min2'].'">**</span>';
 			}
 			if($r['type']=='ckedit' and static_main::_prmUserCheck(1))
 				$texthtml .= '<input type="checkbox" onchange="SetWysiwyg(this)" name="'.$k.'_ckedit" style="width:13px;vertical-align: bottom;margin: 0 0 0 5px;"/>';
@@ -498,20 +498,24 @@ function tpl_form(&$data) {
 				$texthtml .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.$r['value'].'" '.$attribute.'/></div>';
 			}
 			elseif($r['type']=='password' and isset($r['mask']['password']) and $r['mask']['password']=='re') {
-				$texthtml .= '<div class="form-value"><input type="password" name="'.$k.'" value="" onkeyup="checkPass("'.$k.'")" '.$attribute.'/>
-					<div class="dscr">Введите пароль</div>
-					<input type="password" name="re_'.$k.'" value="" onkeyup="checkPass("'.$k.'")" '.$attribute.'/>
-					<div class="dscr">Чтобы избежать ошибки повторите ввод пароля</div></div>';
+				$texthtml .= '<div class="form-value">
+					<span class="labelInput">Введите пароль</span>
+					<input type="password" name="'.$k.'" value="" onkeyup="checkPass("'.$k.'")" class="password" '.$attribute.'/>
+					<span class="labelInput">Повторите ввод пароля</span>
+					<input type="password" name="re_'.$k.'" value="" onkeyup="checkPass("'.$k.'")" class="password" '.$attribute.'/>
+					</div>';
 			}
 			elseif($r['type']=='password' and isset($r['mask']['password']) and $r['mask']['password']=='change') {
 				$texthtml .= '<div class="form-value">
-					<input type="password" name="'.$k.'_old" value=""/><div class="dscr">Введите старый пароль</div>
+					<span class="labelInput">Введите старый пароль</span>
+					<input type="password" name="'.$k.'_old" value="" class="password"/>
+					<span class="labelInput">Введите новый пароль</span>
 					<input type="password" name="'.$k.'" '.($attr['id']?'':'value="'.$r['value'].'"').' class="password"/>
-					<div class="passnewdesc" onclick="password_new()">Отобразить символы/скрыть</div></div>';
+					<div class="passnewdesc" onclick="passwordShow(this)">Отобразить символы/скрыть</div></div>';
 			}	
 			elseif($r['type']=='password_new' or $r['type']=='password') {
 				$texthtml .= '<div class="form-value"><input type="password" name="'.$k.'" '.($attr['id']?'':'value="'.$r['value'].'"').' class="password" '.$attribute.'/>
-						<div class="passnewdesc" onclick="password_new(this)">Отобразить/скрыть символы</div></div>';
+						<div class="passnewdesc" onclick="passwordShow(this)">Отобразить/скрыть символы</div></div>';
 			}
 			/*elseif($r['type']=='password' and !$r['readonly']) {
 				$texthtml .= '<div class="form-value"><input type="text" id="'.$k.'" name="'.$k.'" value="'.$r['value'].'" style="width:55%;float:left;background:#E1E1A1;" readonly="readonly"/>

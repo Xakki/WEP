@@ -29,16 +29,6 @@
 		}
 		elseif($listname == 'phptemplates') {
 			$data[''] = ' - ';
-			$f = $value . '/templates';
-			if(file_exists($f)) {
-				$dir = dir($f);
-				while (false !== ($entry = $dir->read())) {
-					if ($entry[0]!='.' && $entry[0]!='..' && strstr($entry,'.php')) {
-						$data['#ext#'.substr($entry,0,-4)] = '*OLD*'.basename($value).'/'.$entry;
-					}
-				}
-				$dir->close();
-			}
 
 			// Системные модули
 			$dir = dir($_this->_CFG['_PATH']['wep_ext']);
@@ -78,6 +68,7 @@
 			}
 			$dir->close();
 
+			// Дизайн шаблоны
 			_new_class('pg',$PGLIST);
 			if(file_exists($PGLIST->_CFG['_PATH']['design'].$PGLIST->config['design'].'/php')) {
 				$dir = dir($PGLIST->_CFG['_PATH']['design'].$PGLIST->config['design'].'/php');
@@ -87,6 +78,17 @@
 					}
 				}
 				$dir->close();
+			}
+
+			// Совместимость со старой версией
+			global $FUNCPARAM_FIX;
+			$f = $value . '/templates';
+			if($FUNCPARAM_FIX and count($FUNCPARAM_FIX) and file_exists($f)) {
+				$temp = basename($value);$temp = substr($temp,0,-6);
+				print_r('<p class="alert">Данные старой версии - срочно сохраните форму!<p>');
+				foreach($FUNCPARAM_FIX as &$rff) {
+					$rff = str_replace('#ext#','#'.$temp.'#',$rff);
+				}
 			}
 		}
 		elseif($listname == 'mdesign') {

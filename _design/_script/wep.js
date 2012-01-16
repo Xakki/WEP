@@ -487,7 +487,7 @@ var wep = {
 		jQuery(obj).after('<div class="helpmess">'+mess+'<div class="trgl trgl_d"> </div></div>');//Вставляем всплыв блок
 		var slct = jQuery(obj).next();// бурем ссылку на добавленнный блок
 		var H = jQuery(slct).height(); // Определяем его высоту
-		var flag = pos.top-17-H;// Определяем абсолютную позицию элемента
+		var flag = pos.top-12-H;// Определяем абсолютную позицию элемента
 
 		pos = jQuery(obj).position();//Далее будем работать только с относительной позицией , чтобы избежать ошитбки с позиционированим
 		pos.top = parseInt(pos.top);
@@ -497,15 +497,15 @@ var wep = {
 			jQuery(slct).find('div.trgl').attr('class','trgl trgl_u');
 		}
 		else
-			H = pos.top-17-H;//по новой высчитываем
+			H = pos.top-12-H;//по новой высчитываем
 		jQuery(slct).css({'top':H,'left':pos.left,'opacity':0.8});
 		//if(!nomiga)
 		//	miga(slct,0.8);
 
-		setTimeout(function(){jQuery(slct).stop().fadeOut(1000,function(){jQuery(slct).remove()});},time);
+		setTimeout(function(){jQuery(slct).stop().fadeOut(300,function(){jQuery(slct).remove()});},time);
 		//if(time>5000)
 			jQuery(slct).click(function(){
-				jQuery(slct).stop().fadeOut(1000,function(){jQuery(slct).remove()});
+				jQuery(slct).stop().fadeOut(300,function(){jQuery(slct).remove()});
 			});
 	},
 	miga: function(obj,opc1,opc2){

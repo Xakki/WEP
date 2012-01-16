@@ -1,22 +1,19 @@
 <?php
-	function tpl_menu(&$data) {
+	function tpl_menu(&$data,$fl=false) {
 		$html = '';
 		if(isset($data['#item#']) and count($data['#item#'])) {
-			//$html .= '<div class="menu">';
-			//$last = count($data);
+			if($fl)
+				$html .= '<ul class="menu_sub">';
+			else
+				$html .= '<ul class="menu">';
 			foreach($data['#item#'] as $k=>$r) {
-				if($r['sel'])
-					$r['name'] = '<span>'.$r['name'].'</span>';
-				/*if(strpos($r['attr'],'style="'))
-					$r['attr'] = str_replace('style="','style="width:'.$prs.'%;',$r['attr']);
-				else
-					$r['attr'] .= ' style="width:'.$prs.'%;"';*/
-				$html .= '<a href="'.$r['href'].'" '.$r['attr'].'>'.$r['name'].'</a>';
+				$html .= '<li class="'.($r['sel']?'selmenu':'').'"><a href="'.$r['href'].'" '.$r['attr'].'>'.$r['name'].'</a>';
 				if(isset($r['#item#']) and count($r['#item#'])) {
-					$html .= tpl_menu($r);
+					$html .= tpl_menu($r,true);
 				}
+				$html .= '</li>';
 			}
-			//$html .= '</div>';
+			$html .= '</ul>';
 		}
 		return $html;
 	}

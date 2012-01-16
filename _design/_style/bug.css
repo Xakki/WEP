@@ -30,9 +30,13 @@
 	font-size:11px;
 	line-height:15px;
 	display:block;
+	cursor:pointer;
+}
+.bugspoiler-wrap>.spoiler-head:hover {
+	font-weight:bold;
 }
 .bugspoiler-wrap>.spoiler-head::before {content: " + ";}
-.bugspoiler-wrap:hover>.spoiler-head::before {content: " - ";}
+.bugspoiler-wrap.unfolded>.spoiler-head::before {content: " - ";}
 
 .bugspoiler-wrap>.spoiler-body {
 	border-bottom:1px dashed #C3CBD1;
@@ -40,16 +44,10 @@
 	font-size:10px;
 	color:black;
 	padding:0 0 0 1em;
-	overflow: hidden;
-	height: 0;
-	-webkit-transition: height 0.4s linear;
-	-moz-transition: height 0.4s linear;
-	-o-transition: height 0.4s linear;
-	transition: height 0.4s linear;
+	display:none;
 }
-.bugspoiler-wrap:hover>.spoiler-body {
-	overflow: auto;
-	height: 100px;
+.bugspoiler-wrap.unfolded>.spoiler-body {
+	display:block;
 }
 
 /************/
