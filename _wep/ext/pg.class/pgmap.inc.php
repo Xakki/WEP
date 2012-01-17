@@ -4,7 +4,6 @@
 	if(!isset($FUNCPARAM[2])) $FUNCPARAM[2] = 'pgmap'; // Шаблон
 
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
-		$this->_getCashedList('phptemplates', dirname(__FILE__));
 		$this->_enum['typemenuinc'] = array(
 			0=>'выводит всё в виде структуры дерева',
 			1=>'выводит все в общем массиве',
@@ -27,12 +26,10 @@
 		return $form;
 	}
 
-	$tplphp = $this->FFTemplate($FUNCPARAM[2],dirname(__FILE__));
-
 	$DATA = array('#item#' => $PGLIST->getMap(-1,$FUNCPARAM[0],$FUNCPARAM[1]));
 	$DATA['#title#'] = $Ctitle;
 
 	$DATA = array($FUNCPARAM[2]=>$DATA);
-	$html .= $HTML->transformPHP($DATA,$tplphp);
+	$html .= $HTML->transformPHP($DATA,$FUNCPARAM[2]);
 
 	return $html;

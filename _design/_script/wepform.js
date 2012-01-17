@@ -17,7 +17,7 @@ wep.form = {
 			error: 
 				function(d,statusText) {
 					alert(statusText+' - form notsuccess (may be wrong json data, see console log)');
-					console.log(d.responseText);
+					//console.log(d.responseText);
 				},
 			success: 
 				function(result) {
@@ -279,7 +279,6 @@ function ajaxlistOnKey(event,obj,view,key) {
 }
 
 function ajaxlist(obj,view,key) { // функция контроля подгрузки слоя списка
-console.log(obj.value+' = '+obj.value.length);
 	if(obj.value.length>2) {
 		clearTimeout(timerid4);
 		if(ajaxComplite==1)
