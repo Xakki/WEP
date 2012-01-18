@@ -33,8 +33,8 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(([0-9A-z\_\-\.]+)\/)?(add|list)(_([0-9]+))?\.html(.*) index.php?pageParam=$1$3&rubric=$5&%{QUERY_STRING} [L]
 
 #### WEP PHP
-RewriteCond %{REQUEST_FILENAME} !-f 
-RewriteCond %{REQUEST_FILENAME} !-d 
+#RewriteCond %{REQUEST_FILENAME} !-f 
+#RewriteCond %{REQUEST_FILENAME} !-d 
 RewriteRule ^robots.txt index.php?_php=robotstxt [L]
 
 RewriteCond %{REQUEST_FILENAME} !-f 

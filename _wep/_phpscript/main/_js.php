@@ -19,19 +19,22 @@
 		if(!isset($_GET['_design']))
 			$_GET['_design'] = $_CFG['wep']['design'];
 
-		$HTML = new html('_design/',$_GET['_design'],false);// упрощённый режим
+		$HTML = new html('_design/',$_GET['_design'],(isset($_GET['_template'])?true:false));// упрощённый режим
 
 		if(_new_class($_GET['_modul'],$MODUL) and isset($MODUL->_AllowAjaxFn[$_GET['_fn']])) {
 			eval('$GLOBALS["_RESULT"]=$MODUL->'.$_GET['_fn'].'();');
 		} else
 			$GLOBALS['_RESULT']['text'] = 'Вызов функции не разрешён модулем.';
-		if(isset($GLOBALS['_RESULT']['onload']) and !isset($GLOBALS['_RESULT']['eval'])) {
+
+
+		if(isset($_GET['_template'])) {
+			$_tpl = $GLOBALS['_RESULT'];
+			$HTML->_templates = $_GET['_template'];
+		}
+		elseif(isset($GLOBALS['_RESULT']['onload']) and !isset($GLOBALS['_RESULT']['eval'])) {
 			$GLOBALS['_RESULT']['eval'] = $GLOBALS['_RESULT']['onload'];
 			unset($GLOBALS['_RESULT']['onload']);
 		}
-
-		if(isset($_GET['_template']))
-			$HTML->_templates = $_GET['_template'];
 
 	}
 	else {
@@ -71,7 +74,7 @@
 		$GLOBALS['_RESULT'] = array("html" => $html,"html2" => $html2,'eval'=>$_tpl['onload']);
 	}
 	
-	if(isset($_GET['noajax'])) {
+	if(isset($_GET['noajax']) and !isset($_GET['_template'])) {
 		header('Content-type: text/html; charset=utf-8');
 		print_r($GLOBALS['_RESULT']);
 	}
