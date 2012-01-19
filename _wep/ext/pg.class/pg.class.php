@@ -47,7 +47,7 @@ class pg_class extends kernel_extends {
 		$this->config_form['memcachezip'] = array('type' => 'checkbox', 'caption' => 'Memcache сжатие кеша');
 		$this->config_form['sitemap'] = array('type' => 'checkbox', 'caption' => 'SiteMap XML' ,'comment'=>'создавать в корне сайта xml файл карты сайта для поисковиков');
 		$this->config_form['IfDontHavePage'] = array('type' => 'list', 'listname'=>'pagetype', 'caption' => 'Если нет страницы в базе, то вызываем обрабочик');
-		$this->config_form['rootPage'] = array('type' => 'list', 'listname'=>array('class'=>'pg', 'where'=>'parent_id=0'), 'multiple'=>3, 'caption' => 'Мульти-домен', 'comment'=>'Укажите страницу для каждого домена, по умолчанию для ненайденного домена будет загружаться первая позиция', 'mask'=>array('maxarr'=>20));
+		$this->config_form['rootPage'] = array('type' => 'list', 'keytype'=>'text', 'listname'=>array('class'=>'pg', 'where'=>'parent_id=0'), 'multiple'=>3, 'caption' => 'Мульти-домен', 'comment'=>'Укажите страницу для каждого домена, по умолчанию для ненайденного домена будет загружаться первая позиция', 'mask'=>array('maxarr'=>20));
 		$this->config_form['menu'] = array('type' => 'text', 'keytype'=>'int', 'multiple'=>1, 'caption' => 'Блоки меню', 'mask'=>array('maxarr'=>30));
 		$this->config_form['marker'] = array('type' => 'text', 'keytype'=>'text', 'multiple'=>1, 'caption' => 'Маркеры', 'mask'=>array('maxarr'=>50));
 		$this->config_form['auto_include'] = array('type' => 'checkbox', 'caption' => 'Подключать скрипты автоиматически');

@@ -114,13 +114,14 @@
 				}*/
 				elseif(isset($r['listname']) and isset($r['multiple']) and $r['multiple'] and !$r['readonly']) {
 					$md = $this->_getCashedList($r['listname']);
-					if(!isset($r['value']))
-						$val = array();
-					elseif(is_array($r['value']))
-						$val = array_combine($r['value'],$r['value']);
-					else
-						$val = array($r['value']=>$r['value']);
-					$r['value'] = $val;
+					if(!isset($r['value']) or !is_array($r['value']))
+						$r['value'] = array();
+					if($r['multiple']!=3 and count($r['value'])) {
+						if(is_array($r['value']))
+							$r['value'] = array_combine($r['value'],$r['value']);
+						else
+							$r['value'] = array($r['value']=>$r['value']);
+					}
 					$temp = current($md);
 					if(is_array($temp) and !isset($temp['#name#'])) {
 						if(isset($r['mask']['begin']))
@@ -131,7 +132,7 @@
 						$md = array($md);
 						$key = 0;
 					}
-					$r['valuelist'] = $this->_forlist($md ,$key,$val,$r['multiple']);
+					$r['valuelist'] = $this->_forlist($md ,$key,$r['value'],$r['multiple']);
 				}
 				elseif(isset($r['listname'])) {
 					if(!$r['readonly']) {

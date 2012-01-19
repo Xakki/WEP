@@ -345,8 +345,8 @@
 			return mysqli_fetch_array($this->handle, $type);
 		}
 
-		function sql_result($row) {
-			return mysqli_result($this->handle, $row);
+		function sql_result($row) { /// TODO ???
+			return mysqli_fetch_field_direct($this->handle, $row);
 		}
 
 		function fetch_object() {
