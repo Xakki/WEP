@@ -418,7 +418,7 @@ class static_tools {
 			$rDATA['Ошибка']['@mess'][] = array( 'error','Ошибка инициализации модуля `modulprm`');
 			return array($Mid => $rDATA);
 		}
-
+		unset($MODULPRM->_CFG['modulprm2'][$Mid]); // Удаляем отсутствующие модули
 		list($MODUL,$rDATA['modulprm']['@mess']) = $MODULPRM->ForUpdateModulInfo($Mid,$OWN);
 		if ($MODUL===false) {
 			$rDATA['Ошибка']['@mess'][] = array( 'error','Ошибка инициализации модуля `'.$Mid.'`');

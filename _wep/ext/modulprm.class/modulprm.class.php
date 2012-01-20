@@ -354,6 +354,7 @@ final class modulprm_class extends kernel_extends {
 		$rDATA = array();
 		/*Установка и проверка главных модулей*/
 		//$this->_CFG['modulprm'] = array();
+		$this->_CFG['modulprm2'] = $this->_CFG['modulprm'];
 		if(!isset($_POST['sbmt'])) {
 			$_POST['sbmt'] = 1;
 			foreach($this->_CFG['require_modul'] as $k=>$r) {
@@ -379,6 +380,10 @@ final class modulprm_class extends kernel_extends {
 
 		}
 
+		// Удаляем записи отсут-щих модулей
+		if(isset($_POST['sbmt']) and count($this->_CFG['modulprm2'])) {
+			$this->SQL->execSQL('DELETE FROM `' . $this->tablename . '` WHERE `id` IN ("'.implode('","',array_keys($this->_CFG['modulprm2'])).'")');
+		}
 		return $rDATA;
 	}
 
