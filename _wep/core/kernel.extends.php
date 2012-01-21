@@ -2301,20 +2301,29 @@ abstract class kernel_extends {
 				$DATA['link'][1] = $PP[1].'1'.$PP[2];
 			}
 			else {
-				/*****/
-				$DATA['link'][1] = $PP[0];
-				if (($this->_pn - $numlist) > 2) {
-					$j = $this->_pn - $numlist;
-				} else {
-					$j = 2;
-				}
-				$vl = $this->_pn + $numlist;
-				if($vl>=$DATA['cntpage'])
-					$vl = $DATA['cntpage']-1;
-				for ($i = $j; $i <= $vl; $i++) {
-					$DATA['link'][$i] = $PP[1].$i.$PP[2];
-				}
-				$DATA['link'][$DATA['cntpage']] = $PP[1].$DATA['cntpage'].$PP[2];
+					$DATA['link'][1] = $PP[0];
+
+					if (($this->_pn - $numlist) > 3) {
+						$j = $this->_pn - $numlist;
+						$DATA['link'][' ...'] = false;
+					} else {
+						$j = 2;
+					}
+						
+					$vl = $this->_pn + $numlist;
+					if($vl>=($DATA['cntpage']-2))
+						$vl = $DATA['cntpage']-1;
+					for ($i = $j; $i <= $vl; $i++) {
+						$DATA['link'][$i] = $PP[1].$i.$PP[2];
+					}
+					if($vl<$DATA['cntpage']-1)
+						$DATA['link']['... '] = false;
+					$DATA['link'][$DATA['cntpage']] = $PP[1].$DATA['cntpage'].$PP[2];
+
+					/*$DATA['link'][1] = $PP[0];
+					for ($i = 2; $i <= $DATA['cntpage']; $i++) {
+						$DATA['link'][$i] = $PP[1].$i.$PP[2];
+					}*/
 			}
 			//////////////////
 		}

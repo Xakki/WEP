@@ -275,7 +275,11 @@ class static_tools {
 			$clause = 'WHERE ' . implode(' and ', $clause);
 		else
 			$clause = '';
-		$clause = 'SELECT ' . $MODUL->mf_statistic['X'] . ' as `X`, ' . $MODUL->mf_statistic['Y'] . ' as `Y` FROM `' . $MODUL->tablename . '` t1 ' . $clause . ' GROUP BY X ORDER BY X';
+		if(is_array($MODUL->mf_statistic['X'])) {
+			$X = current($MODUL->mf_statistic['X']);
+		}else
+			$X = $MODUL->mf_statistic['X'];
+		$clause = 'SELECT ' . $X . ' as `X`, ' . $MODUL->mf_statistic['Y'] . ' as `Y` FROM `' . $MODUL->tablename . '` t1 ' . $clause . ' GROUP BY X ORDER BY X';
 		$result = $MODUL->SQL->execSQL($clause);
 		$data = array();
 		$maxY = 0;

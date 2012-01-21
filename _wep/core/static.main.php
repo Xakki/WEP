@@ -80,21 +80,25 @@ class static_main {
 		$htmlerr = '';
 		/*Вывод ошибок*/
 		if(count($GLOBALS['_ERR'])) {
-			foreach ($GLOBALS['_ERR'] as $err) foreach ($err as $r) {
-				$var = $r['errtype'] . ' ' . $r['errstr'] . ' , in line ' . $r['errline'] . ' of file <i>' . $r['errfile'] . '</i>';
-				if($r['debug']) //$r['errcontext']
-					$var = self::spoilerWrap($var,$r['debug'],'bug_'.$r['errno']);
-				else
-					$var = '<div class="bug_'.$r['errno'].'">'.$var.'</div>';
-				$var .= "\n";
-				if ($_CFG['_error'][$r['errno']]['prior'] <= 3)
-					$htmlerr .= $var;
-				else //нотисы отдельно
-					$notice .= $var;
-			}
-			// write bug to DB
-			if (is_array($_CFG['wep']['bug_hunter']) and count($_CFG['wep']['bug_hunter']) and $SQL->ready) {
-				_new_class('bug', $BUG);
+			if($_CFG['wep']['_showerror']==5) {
+				return var_export($GLOBALS['_ERR'],true);
+			} else {
+				foreach ($GLOBALS['_ERR'] as $err) foreach ($err as $r) {
+					$var = $r['errtype'] . ' ' . $r['errstr'] . ' , in line ' . $r['errline'] . ' of file <i>' . $r['errfile'] . '</i>';
+					if($r['debug']) //$r['errcontext']
+						$var = self::spoilerWrap($var,$r['debug'],'bug_'.$r['errno']);
+					else
+						$var = '<div class="bug_'.$r['errno'].'">'.$var.'</div>';
+					$var .= "\n";
+					if ($_CFG['_error'][$r['errno']]['prior'] <= 3)
+						$htmlerr .= $var;
+					else //нотисы отдельно
+						$notice .= $var;
+				}
+				// write bug to DB
+				if (is_array($_CFG['wep']['bug_hunter']) and count($_CFG['wep']['bug_hunter']) and $SQL->ready) {
+					_new_class('bug', $BUG);
+				}
 			}
 		}
 
