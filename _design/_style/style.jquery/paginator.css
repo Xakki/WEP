@@ -95,7 +95,7 @@
 	top:-4px;
 	width:100%; height:12px;
 	overflow:hidden;
-	background:url(../_img/slider_knob.gif) no-repeat 50% 50%;
+	background:url(../../_img/slider_knob.gif) no-repeat 50% 50%;
 	cursor:pointer; cursor:hand;
 }
 .ppagenum .current_page_mark {

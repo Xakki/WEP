@@ -189,6 +189,15 @@ function tools_cron() {
 			'style' => '',
 			'value'=>$VAL['last_time'],
 		);
+		$FORM['res'] = array (
+			'caption' => 'Сообщения',
+			'comment' => '',
+			'readonly' => true,
+			'type' => 'text',
+			'css' => '',
+			'style' => '',
+			'value'=>$VAL['active'],
+		);
 		$FORM['sbmt'] = array(
 			'type' => 'submit',
 			'value' => 'Сохранить');
@@ -231,7 +240,8 @@ function tools_cron() {
 				'modul'=>array('value'=>'Модуль'),
 				'function'=>array('value'=>'Функция'),
 				'lasttime'=>array('value'=>'Время прошлого выполнения'),
-				'do_time'=>array('value'=>'Время выполнения задачи в мс.')
+				'do_time'=>array('value'=>'Время выполнения задачи в мс.'),
+				'res'=>array('value'=>'Сообщение')
 			),
 		);
 		if(isset($_CFG['cron']) and count($_CFG['cron'])) {
@@ -243,6 +253,7 @@ function tools_cron() {
 					'function'=>array('value'=>$r['function']),
 					'lasttime'=>array('value'=>date('Y-m-d H:i:s',$ini_arr['last_time'.$k])),
 					'do_time'=>array('value'=>$ini_arr['do_time'.$k]),
+					'res'=>array('value'=>$ini_arr['res'.$k]),
 				);
 				$DATA['data']['item'][$k]['active'] = (!isset($r['active'])?1:(int)$r['active']);
 				$DATA['data']['item'][$k]['act'] = 1;

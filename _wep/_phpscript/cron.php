@@ -43,6 +43,7 @@
 				eval('$res_cron .= '.$r_cron['function'].';');
 			}
 			$ini_arr['do_time' . $key_cron] = getmicrotime()-$tt;
+			$ini_arr['res' . $key_cron] = str_replace(array("\n","\r"),'',$res_cron);
 		}
 	}
 

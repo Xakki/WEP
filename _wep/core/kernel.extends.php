@@ -132,7 +132,6 @@ abstract class kernel_extends {
 		$this->id = NULL;
 		$this->_file_cfg = NULL;
 		$this->mf_use_charid = false; //if true - id varchar
-		$this->mf_idwidth = 63; // длина поля ID
 		$this->mf_namefields = true; //добавлять поле name
 		$this->mf_createrid = true; //польз владелец
 		$this->mf_istree = false; // древовидная структура?
@@ -265,7 +264,9 @@ abstract class kernel_extends {
 		$this->_listname = ($this->mf_namefields ? $this->mf_namefields : 'id'); // ', `_listnameSQL` as `_listname`'
 		// construct fields
 		if ($this->mf_use_charid) {
-			$this->fields['id'] = array('type' => 'varchar', 'width' => $this->mf_idwidth, 'attr' => 'NOT NULL');
+			if (is_bool($this->mf_use_charid) and $this->mf_use_charid)
+				$this->mf_use_charid = 63; // длина поля ID
+			$this->fields['id'] = array('type' => 'varchar', 'width' => $this->mf_use_charid, 'attr' => 'NOT NULL');
 		}
 		else
 			$this->fields['id'] = array('type' => 'int', 'width' => 11, 'attr' => 'UNSIGNED NOT NULL AUTO_INCREMENT');

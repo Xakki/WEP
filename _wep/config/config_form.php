@@ -18,8 +18,8 @@ $_CFGFORM['sql'] = array(// SQL
 );
 
 $_CFGFORM['wep'] = array(// для ядра и админки
-	'login' => array('type'=>'text','caption'=>'ROOT-логин', 'mask'=>array('min'=>4)),
-	'password' => array('type'=>'password','caption'=>'ROOT-пароль', 'mask'=>array('min'=>8)),
+	'login' => array('type'=>'text','caption'=>'Мастер-логин', 'mask'=>array('min'=>4)),
+	'password' => array('type'=>'password','caption'=>'Мастер-пароль', 'mask'=>array('min'=>8)),
 	'md5' => array('type'=>'text','caption'=>'Соль для паролей', 'mask'=>array('min'=>5)),
 	'showparam2'=>array('type' => 'info', 'caption' => '
 	<div class="showparam" onclick="show_fblock(this,\'.hwep\')"> 
@@ -58,11 +58,11 @@ $_CFGFORM['site'] = array(// для сайта
 		<span class="sh1">Показать</span>
 		<span class="sh2">Скрыть</span> настройки всего сайта
 	</div>'),
-	'rf' => array('type'=>'checkbox','caption'=>'Рускоязычный домен', 'css' => 'fblock hsite', 'style' => 'display:none;'),
+	//'rf' => array('type'=>'checkbox','caption'=>'Рускоязычный домен', 'css' => 'fblock hsite', 'style' => 'display:none;'),
 	'worktime' => array('type'=>'checkbox','caption'=>'Включить режим "Технический перерыв"', 'css' => 'fblock hsite', 'style' => 'display:none;'),
 	'work_title' => array('type'=>'text','caption'=>'Заголовок для режима "Технический перерыв"', 'css' => 'fblock hsite', 'style' => 'display:none;'),
 	'work_text' => array('type'=>'text','caption'=>'Текст для режима "Технический перерыв"', 'css' => 'fblock hsite', 'style' => 'display:none;'),
-	'redirectForRobots' => array('type'=>'checkbox','caption'=>'Делать ссылки для Ботов', 'css' => 'fblock hsite', 'style' => 'display:none;'),
+	//'redirectForRobots' => array('type'=>'checkbox','caption'=>'Делать ссылки для Ботов', 'css' => 'fblock hsite', 'style' => 'display:none;'),
 );
 
 $_CFGFORM['memcache'] = array(

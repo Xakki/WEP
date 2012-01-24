@@ -2,7 +2,7 @@
 	if(!isset($FUNCPARAM[0]) or $FUNCPARAM[0] == '') $FUNCPARAM[0] = 'Код полученный в SAPE.RU';
 	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = 2;
 	if(!isset($FUNCPARAM[2])) $FUNCPARAM[2] = 0;
-	if(!isset($FUNCPARAM[3])) $FUNCPARAM[3] = 7200;
+	if(!isset($FUNCPARAM[3])) $FUNCPARAM[3] = 0;
 	if(!isset($FUNCPARAM[4])) $FUNCPARAM[4] = 7200;
 
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
