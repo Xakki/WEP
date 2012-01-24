@@ -191,6 +191,7 @@ class content_class extends kernel_extends {
 				elseif(strpos($rf,'#ext#')!==false)
 					$FUNCPARAM_FIX[$kf] = &$rf;
 			}
+			unset($rf);
 		}
 		else $FUNCPARAM = array();
 		$typePG = explode(':',$pagetype);

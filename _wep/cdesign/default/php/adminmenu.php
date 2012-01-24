@@ -8,7 +8,7 @@
 		$sys_m = '';
 		$over_m = '';
 		$over = '';
-		if(is_array($data['item']) and count($data['item']))
+		if(is_array($data['item']) and count($data['item'])) {
 			foreach($data['item'] as $k=>&$r) {
 				$sel = '';
 				if($r['sel'])
@@ -28,6 +28,8 @@
 					$over_m .= '<li class="fly"><a class="main down'.$sel.'" href="'.$_CFG['PATH']['wepname'].'/index.php?_view=list&amp;_modul='.$k.'"><b>'.$r['name'].'</b></a></li>';
 				}
 			}
+			unset($r);
+		}
 		$html .= '<ul class="nav">';
 		if($sys_r) {
 			$html .= '<li class="drop"><a class="main"><b>Главные модули</b></a><ul>'.$sys_r.'</ul></li>';

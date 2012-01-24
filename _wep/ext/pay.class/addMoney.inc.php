@@ -133,6 +133,7 @@
 			foreach($PAY->childs as &$child) {
 				$html .= '<li class="pay-'.$child->_cl.'"><a href="'.$Chref.'/'.$child->_cl.'.html" title="'.$child->caption.'">'.$child->caption.'</a></li>';
 			}
+			unset($child);
 		}
 
 		$html .= '</ul>';

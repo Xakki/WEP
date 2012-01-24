@@ -613,16 +613,18 @@ class pg_class extends kernel_extends {
 							if(is_array($r)) $r = array();
 							else $r = '';
 						}
+						unset($r);
 					}
 
 					// Параметры для обработчика
 					if($rowPG['funcparam']) {
 						$FUNCPARAM = explode('&',$rowPG['funcparam']);
-						foreach($FUNCPARAM as &$rfff) {
-							if(strpos($rfff,'|')!==false) {
-								$rfff = explode('|',$rfff);$rfff = array_combine($rfff,$rfff);
+						foreach($FUNCPARAM as &$r) {
+							if(strpos($r,'|')!==false) {
+								$r = explode('|',$r);$r = array_combine($r,$r);
 							}
 						}
+						unset($r);
 					}
 					else $FUNCPARAM = array();
 					// подключение и запуск обработчика
@@ -671,6 +673,7 @@ class pg_class extends kernel_extends {
 			}
 			//////////////////////
 		}
+		unset($rowPG);
 		if($this->MEMCACHE) {
 			$this->MEMCACHE->close();
 			$this->MEMCACHE=NULL;

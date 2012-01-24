@@ -89,6 +89,7 @@
 				foreach($FUNCPARAM_FIX as &$rff) {
 					$rff = str_replace('#ext#','#'.$temp.'#',$rff);
 				}
+				unset($rff);
 			}
 		}
 		elseif($listname == 'mdesign') {

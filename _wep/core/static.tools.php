@@ -39,11 +39,13 @@ class static_tools {
 			static_main::log('notice','Для модуля `'.$MODUL->caption.'` успешно создана таблица.',$MODUL->_cl);
 		}
 		$flag = true;
-		if (count($MODUL->Achilds))
+		if (count($MODUL->Achilds)) {
 			foreach ($MODUL->childs as &$child) {
 				$temp = self::_installTable($child);
 				if(!$temp) return false;
 			}
+			unset($child);
+		}
 		return $flag;
 	}
 
@@ -258,6 +260,7 @@ class static_tools {
 				}
 			}
 		}
+		unset($r);
 		file_put_contents($file, var_export($conf, true) );
 		return true;
 	}

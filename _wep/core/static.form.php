@@ -364,9 +364,12 @@ class static_form {
 		if (!is_array($_this->id)) $_this->id = array($_this->id);
 		if (!count($_this->id)) return true;
 		// delete childs of owner
-		if (count($_this->childs)) foreach($_this->childs as &$child){
-			$child->id = $_this->id;
-			if (!self::_delete_ownered($child)) return false;
+		if (count($_this->childs)) {
+			foreach($_this->childs as &$child){
+				$child->id = $_this->id;
+				if (!self::_delete_ownered($child)) return false;
+			}
+			unset($child);
 		}
 		// delete childs of tree
 		if ($_this->mf_istree) {
@@ -727,6 +730,7 @@ class static_form {
 						foreach($data[$key] as $tk=>&$tv) {
 							self::check_formfield($_this,$form,$error,$data[$key],$tk);
 						}
+						unset($tv);
 					}
 					else {
 						$error[] = 51;
@@ -810,7 +814,7 @@ class static_form {
 			}
 
 		}
-
+		unset($form);
 		if(count($arr_err_name)>0 and !isset($param['errMess'])) {
 			$mess[] = static_main::am('error','Поля формы заполненны не верно.');
 		}

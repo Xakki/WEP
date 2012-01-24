@@ -346,6 +346,7 @@ class pay_class extends kernel_extends {
 				if($paychild==$childs->_cl)
 					$id = $data2[$email]['id'];
 			}
+			unset($child);
 		}
 		return $id;
 	}

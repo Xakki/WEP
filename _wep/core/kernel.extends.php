@@ -926,6 +926,9 @@ abstract class kernel_extends {
 				'src' => $this->_CFG['_HREF']['captcha'] . '?' . rand(0, 9999),
 				'value' => (isset($data['captcha'])?$data['captcha']:''),
 				'mask' => array('min' => 1));
+			if(1) {
+				$this->fields_form['captcha']['error'] = array('У вас отключены Куки');
+			}
 		}
 
 		$mess = array();
@@ -1235,6 +1238,7 @@ abstract class kernel_extends {
 							foreach($path as &$tp) {
 								$tp['path'][$this->_pa] = $PARAM['_clp'][$this->_pa];
 							}
+							unset($tp);
 						}
 					}
 				}

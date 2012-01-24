@@ -224,8 +224,8 @@ function stripSlashesOnArray(array &$theArray) {
 		} else {
 			$value = stripslashes($value);
 		}
-		unset($value);
 	}
+	unset($value);
 	reset($theArray);
 }
 

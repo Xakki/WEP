@@ -313,9 +313,11 @@ final class modulprm_class extends kernel_extends {
 		//static_main::log('Table `' . $MODUL->tablename . '` droped.', 3);
 		$query = 'DELETE FROM `' . $this->tablename . '` WHERE id="' . $MODUL->_cl . '"';
 		$this->SQL->execSQL($query);
-		if (count($MODUL->childs))
+		if (count($MODUL->childs)) {
 			foreach ($MODUL->childs as &$child)
 				$this->Mdelete($child);
+			unset($child);
+		}
 		return $res;
 	}
 

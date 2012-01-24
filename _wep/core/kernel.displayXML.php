@@ -308,11 +308,13 @@
 					}
 					$DATA['item'][$key]['tditem'][$k] = $tditem;
 				}
-				if(count($this->childs))
+				if(count($this->childs)) {
 					foreach($this->childs as $ck=>&$cn) {
 						if($cn->showinowner and count($cn->fields_form))
 							$DATA['item'][$key]['child'][$ck] = array('value'=>$cn->caption, 'cnt'=>$row[$ck.'_cnt']);
 					}
+					unset($cn);
+				}
 				if($this->mf_istree and (!$this->mf_treelevel or !isset($this->tree_data) or (count($this->tree_data)<($this->mf_treelevel))))
 					$DATA['item'][$key]['istree'] = array('value'=>$this->caption, 'cnt'=>$row['istree_cnt']);
 			}

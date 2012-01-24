@@ -240,5 +240,5 @@
 				$r['fields_type'] = $this->fields[$k]['type'];
 			$this->form[$k] = $r;
 		}
-
+		unset($r);
 		return true;
