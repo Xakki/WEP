@@ -20,7 +20,7 @@
 		function _obHandler($buf) {
 			global $GLOBALS,$_tpl;
 			if($buf) $GLOBALS['_RESULT']['text'] = $buf;
-			if($_tpl['time'])  $GLOBALS['_RESULT']['eval'] .= '$(\'#inftime\').html(\''.$_tpl['time'].'\');';
+			if(isset($_tpl['time']) and $_tpl['time'])  $GLOBALS['_RESULT']['eval'] .= '$(\'#inftime\').html(\''.$_tpl['time'].'\');';
 			
 			if(version_compare(phpversion(),'5.3.0','>')) {
 				$GLOBALS['_RESULT'] = $this->allreplace($GLOBALS['_RESULT']);

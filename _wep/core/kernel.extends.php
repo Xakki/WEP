@@ -842,7 +842,7 @@ abstract class kernel_extends {
 			}
 			if (isset($eval)) {
 				if (isset($data[$k]))
-					$val = $data[$k];
+					$val = $data[$k]; // Переменная используемая в eval
 				else
 					$val = '';
 				$eval = '$data[$k]=' . $eval;
@@ -852,7 +852,7 @@ abstract class kernel_extends {
 				unset($eval);
 			}
 
-			if (isset($this->attaches[$k]))
+			if (isset($this->attaches[$k])) 
 				$r = $r + $this->attaches[$k];
 			if (isset($this->memos[$k]))
 				$r = $r + $this->memos[$k];

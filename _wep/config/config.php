@@ -161,8 +161,8 @@ $_CFG['_MASK'] = array(
 	),
 	'email' => array(
 		'eval' => 'mb_strtolower($value)', //$value = EVAL;
-		'match' => '/^[0-9a-zёа-я_\-\.]+@[0-9a-zЁёа-я_\.\-]+\.[a-zёа-я]{2,5}$/u',
-		'nomatch' => '/[^0-9a-zёа-я_\-\.\@]/u',
+		'match' => '/^[0-9a-z_\-\.]+@[0-9a-z_\.\-]+\.[a-z]{2,5}$/u',
+		'nomatch' => '/[^0-9a-z_\-\.\@]/u',
 	//'comment'=>'',
 	),
 	'www' => array(

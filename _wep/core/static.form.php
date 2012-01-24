@@ -109,12 +109,16 @@ class static_form {
 		if($result->err) return false;
 		$row = $result->fetch_array();
 		$prop = array();
-		
+
 		foreach($_this->att_data as $key => $value) 
 		{
+			// Пропускаем если нету данных ("вероятно" фаил не загружали или не меняли)
 			if (!is_array($value) or $value['tmp_name'] == 'none' or $value['tmp_name'] == '') continue;
+			
+			// Путь к папке фаила
 			$pathimg = $_this->_CFG['_PATH']['path'].$_this->getPathForAtt($key);
-			// delete old
+			
+			// старый фаил, для удаления, может имет другое расширение
 			$oldname =$pathimg.'/'. $_this->id. '.'.$row[$key];
 			if ($row[$key] and file_exists($oldname)) {
 				chmod($oldname, $_this->_CFG['wep']['chmod']);
@@ -128,17 +132,24 @@ class static_form {
 					}
 
 			}
+
+			// Удаление фаила 
 			if ($value['tmp_name'] == ':delete:') {
 				$prop[] = '`'.$key.'` = \'\'';
 				continue;
 			}
+
 			/*if(!isset($_this->fields_form[$key]['mime'])) {
 				print_r('<pre>');print_r($value);exit();
 				//$_this->attaches[$key]['mime'] = array($value['type']=>);
 			}*/
-			$ext = $_this->fields_form[$key]['mime'][$value['type']];
+			if(isset($value['ext']) and $value['ext'])
+				$ext = $value['ext'];
+			else
+				$value['ext'] = strtolower(array_pop(explode('.',$value['name'])));
+
 			$newname = $pathimg.'/'.$_this->id.'.'.$ext;
-			if (file_exists($newname)) {
+			if (file_exists($newname)) { // Удаляем старое
 				chmod($newname, $_this->_CFG['wep']['chmod']);
 				unlink($newname);
 			}
@@ -146,9 +157,10 @@ class static_form {
 			if (!rename($value['tmp_name'], $newname))
 				return static_main::log('error','Error copy file '.$value['name']);
 
+			// Дополнительные изображения
 			if (isset($_this->fields_form[$key]['thumb'])) {
-				if(!self::_is_image($newname)) // опред тип файла
-					return static_main::log('error','File '.$newname.' is not image');
+				if(isset($value['att_type']) and $value['att_type']!='img') // если это не рисунок, то thumb не приминим
+					return static_main::log('error','File `'.$newname.'` is not image. Function `thumb` not accept.');
 				$prefix = $pathimg.'/';
 				if (count($_this->fields_form[$key]['thumb']))
 					foreach($_this->fields_form[$key]['thumb'] as $imod) {
@@ -819,28 +831,57 @@ class static_form {
 					$_FILES[$key] = $data[$key] = array('name'=>':delete:','tmp_name'=>':delete:');
 			}
 			elseif(isset($_FILES[$key]['name']) and $_FILES[$key]['name']!='') {
-				if($_FILES[$key]['error'] != 0) {
-					$error[]= (int)'4'.$_FILES[$key]['error'];
+				$value = &$_FILES[$key];
+				if($value['error'] != 0) {
+					$error[]= (int)'4'.$value['error'];
+					return false;
 				}
-				elseif(isset($form['mime']) and !isset($form['mime'][$_FILES[$key]['type']]))
-					$error[]=39;
-				elseif(isset($form['maxsize']) and $_FILES[$key]['size']>($form['maxsize']*1024))
+				elseif(isset($form['maxsize']) and $value['size']>($form['maxsize']*1024)) {
 					$error[]=29;
+					return false;
+				}
 				else {
-					static_tools::_checkdir($_this->_CFG['_PATH']['temp']);
-					if(!isset($form['mime'])) {
-						$ext = array_pop(explode('.',$_FILES[$key]['name']));
-						if(!$ext) $ext = 'none';
-						//$_this->attaches[$key]['mime'] = 
-							$form['mime'][$_FILES[$key]['type']] = $ext;
+					$is_image = self::_is_image($value['tmp_name']);
+					$form['att_type'] = '';
+					if($is_image) {
+						$value['ext'] = image_type_to_extension($is_image,false);
+						$form['att_type'] = 'img';
+					} else {
+						$value['ext'] = strtolower(array_pop(explode('.',$value['name'])));
+						if(preg_match('/[^A-Za-z0-9]/',$value['ext'])) { // Кривое расширение фаила
+							$error[]=39;
+							return false;
+						}
 					}
-					$temp = $_this->_CFG['_PATH']['temp'].substr(md5(getmicrotime()),16).'.'.$form['mime'][$_FILES[$key]['type']];
-					static_tools::_checkdir($_this->_CFG['_PATH']['temp']);
-					if (move_uploaded_file($_FILES[$key]['tmp_name'], $temp)){
-						$_FILES[$key]['tmp_name']= $temp;
-						$data[$key] = $_FILES[$key];
-					}else
-						$error[]=40;
+					 // Ищем совпадения
+					if(isset($form['mime'])) {
+						$flag = false;
+						if(in_array('image',$form['mime']) and $form['att_type'] == 'img') // Для любых изображений
+							$flag = true;
+						elseif(in_array($value['ext'],$form['mime']))
+							$flag = true;
+						elseif($value['type'] and isset($form['mime'][$value['type']]))
+							$flag = true;
+					}
+					else
+						$flag = true;
+
+					if(!$flag) { //Не верный тип фаилы
+						$error[]=39;
+						return false;
+					}
+					else {
+						static_tools::_checkdir($_this->_CFG['_PATH']['temp']);
+						$temp = $_this->_CFG['_PATH']['temp'].substr(md5(getmicrotime().rand(0,50)),16).'.'.$value['ext'];
+						static_tools::_checkdir($_this->_CFG['_PATH']['temp']);
+						if (move_uploaded_file($value['tmp_name'], $temp)){
+							$value['tmp_name']= $temp;
+							$data[$key] = $value;
+						}else {
+							$error[]=40;
+							return false;
+						}
+					}
 				}
 			}
 			elseif(isset($data[$key . '_temp_upload']) && is_array($data[$key . '_temp_upload']) && $data[$key . '_temp_upload']['name'] && $data[$key . '_temp_upload']['type']) {
@@ -848,9 +889,10 @@ class static_form {
 				$data[$key]['tmp_name'] = $_this->_CFG['_PATH']['temp'] . $data[$key . '_temp_upload']['name'];
 				$_FILES[$key] = $data[$key];
 			}
-			if(isset($form['mask']['min']) and $form['mask']['min'] and (!$_FILES[$key]['name'] or $_FILES[$key]['name'] == ':delete:'))
+			if(isset($form['mask']['min']) and $form['mask']['min'] and (!$_FILES[$key]['name'] or $_FILES[$key]['name'] == ':delete:')) {
 				$error[] = 1;
-				
+				return false;
+			}
 
 		}
 		return true;

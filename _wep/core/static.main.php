@@ -80,7 +80,7 @@ class static_main {
 		$htmlerr = '';
 		/*Вывод ошибок*/
 		if(count($GLOBALS['_ERR'])) {
-			if($_CFG['wep']['_showerror']==5) {
+			if($_CFG['wep']['debugmode']==5) {
 				return var_export($GLOBALS['_ERR'],true);
 			} else {
 				foreach ($GLOBALS['_ERR'] as $err) foreach ($err as $r) {
@@ -490,10 +490,11 @@ class static_main {
 	static function pre_text($text, $col, $clearFormat = true) {
 		if ($clearFormat) {
 			//temp
-			$text = str_replace(array('.<br />',',<br />','<br />'),array('. ',', ','. '),$text);
+			if($clearFormat===2)
+				$text = str_replace(array('.<br />',',<br />','<br />'),array('. ',', ','. '),$text);
 			$text = strip_tags($text);
 		}
-		if (mb_strlen($text) >= $col)
+		if (mb_strlen($text) > $col)
 		{
 			$length = mb_strripos(mb_substr($text, 0, $col), ' ');
 			$text = mb_substr($text, 0, $length).'...';

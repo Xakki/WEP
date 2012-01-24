@@ -1,202 +1,11 @@
-var timerid = 0;
-var timerid2 = 0;
 
-function JSWin(param) {
-	return wep.JSWin(param);
-}
-
-function OnJSWin(obj,param) {
-	if(!param) param = {};
-	param['type'] = jQuery(obj);
-	jQuery(obj).submit(function() {JSWin(param);return false;});
-	return false;
-}
-
-function ajaxLoadPage(pg,marker,call) {
-	return wep.ajaxLoadPage(marker,pg,call);
-}
-
-function getBrowserInfo() {
-	return wep.getBrowserInfo();
-}
-
-function fLog(txt,flag) {
-	return wep.fLog(txt,flag);
-}
-
-function fMessPos(body,obj) {
-	return wep.fMessPos(body,obj);
-}
-
-/*Показ тултип*/
-function showHelp(obj,mess,time,nomiga) {
-	return wep.showHelp(obj,mess,time,nomiga);
-}
-
-function miga(obj,opc1,opc2){
-	return wep.miga(obj,opc1,opc2);
-}
-
-/*Bacground*/
-function fShowload (show,txt,body,objid,onclk) {
-	return wep.fShowload (show,body,txt,objid,onclk);
-}
-
-function showBG(body,show,k) {
-	return wep.showBG(body,show,k);
-}
-
-
-/*SPOILER*/
-
-function fSpoiler(txt,nm) {
-	return wep.fSpoiler(txt,nm);
-}
-
-function initSpoilers(context){
-	return wep.initSpoilers(context);
-}
-
-/*END SPOILER*/
-
-function fShowHide(id,f) {
-	return wep.fShowHide(id,f);
-}
-
-function ulToggle(obj,css) {
-	jQuery(obj).toggleClass(css);
-	jQuery(obj).parent().find('>ul').slideToggle('fast');
-	return true;
-}
-/************************/
-/*simple script*/
-
-function setCookie(name, value, expiredays, path, domain, secure) {
-   return wep.setCookie(name, value, expiredays, path, domain, secure);
-}
-
-function getCookie(name) {
-   return wep.getCookie(name);
-}
-
-
-/************************/
-/****************/
-
-function ShowTools(id,hrf) {
-	return wep.ShowTools(id,hrf);
-}
-
-function readyPlot(cap,Xname,Yname,stepY) {
-	return wep.readyPlot(cap,Xname,Yname,stepY);
-}
-
-
-var lochref = window.location.href;
-var i = lochref.indexOf('#', 0);
-if(i >= 0) {
-	lochref = lochref.substring(0, i);
-}
-var tmp;
-
-function pagenum_super(total,pageCur,cl,order) {
-	wep.pagenum_super(total,pageCur,cl,order);
-}
-
-function pagenum(total,order) {
-	wep.pagenum(total,order);
-}
-
-function dump(arr, level) {/*аналог ф в ПХП print_r*/
-    var dumped_text = "";
-    if(!level) level = 0;
-
-    var level_padding = "    ";
-
-    if(typeof(arr) == 'object') {
-        for(var item in arr) {
-            var value = arr[item];
- 
-            if(typeof(value) == 'object') {
-                dumped_text += level_padding + "’" + item + "’ …\n";
-                if(level>0) dumped_text += dump(value,level-1);
-            }
-            else {
-                dumped_text += level_padding + "’" + item + "’ => \"" + value + "\"\n";
-            }
-        }
-    }
-    else {
-        dumped_text = "===>"+arr+"<===("+typeof(arr)+")";
-    }
-    return dumped_text;
-}
-
-function strpos( haystack, needle, offset){	// Find position of first occurrence of a string
-	var i = haystack.indexOf( needle, offset ); // returns -1
-	return i >= 0 ? i : false;
-}
-
-function substr( f_string, f_start, f_length ) {	// Return part of a string
-	if(f_start < 0) {
-		f_start += f_string.length;
-	}
-
-	if(f_length == undefined) {
-		f_length = f_string.length;
-	} else if(f_length < 0){
-		f_length += f_string.length;
-	} else {
-		f_length += f_start;
-	}
-
-	if(f_length < f_start) {
-		f_length = f_start;
-	}
-
-	return f_string.substring(f_start, f_length);
-}
-
-
-
-
-function show_fblock(obj,selector) {
-	if(jQuery(selector).is(':hidden')) {
-		jQuery(selector).show();
-		jQuery(obj).addClass('shhide');
-	}
-	else {
-		jQuery(selector).hide();
-		jQuery(obj).removeClass('shhide');
-	}
-
-}
-
-/ * вспомогательные функции для DatePicker* /
-var disabledDays = [];
-function nationalDays(date) {
-	var m = date.getMonth(), d = date.getDate(), y = date.getFullYear();
-	//console.log('Checking (raw): ' + m + '-' + d + '-' + y);
-	for (i = 0; i < disabledDays.length; i++) {
-		if($.inArray((m+1) + '-' + d + '-' + y,disabledDays) != -1 || new Date() > date) {
-			//console.log('bad:  ' + (m+1) + '-' + d + '-' + y + ' / ' + disabledDays[i]);
-			return [false];
-		}
-	}
-	//console.log('good:  ' + (m+1) + '-' + d + '-' + y);
-	return [true];
-}
-function noWeekendsOrHolidays(date) {
-	var noWeekend = jQuery.datepicker.noWeekends(date);
-	return noWeekend[0] ? nationalDays(date) : noWeekend;
-}
 
 /***************************/
 /*  Главный набор скриптов */
 /***************************/
 
 var wep = {
-	version: '0.1.1',/*Версия скрипта*/
+	version: '0.1.2',/*Версия скрипта*/
 	pgId:0,/* ID текущей страницы (загружается из onLOAD)*/
 	pgParam: {},/* параметры текущей страницы (загружается из onLOAD)*/
 	form: {},/*Функции работы с формой*/
@@ -597,9 +406,10 @@ var wep = {
 			pg = 1;
 			reg = new RegExp('\&*'+cl+'_pn=([0-9]*)', 'i');
 			tmp = reg.exec(lochref);
-			if(tmp)
+
+			if(tmp)// Если уже выбрана страница, то берем номер текущей страницы
 				pg =  tmp[2];
-			else if(!tmp && order)
+			else if(!tmp && order)// если не выбрана страница, но включена обратная постраницка то текущий номер - последний номер
 				pg = total;
 			
 			loc = lochref.replace(reg, '');
@@ -610,8 +420,8 @@ var wep = {
 			}
 			else
 				param += '?';
-			param += cl+'_pn=';
-			//alert(dump(loc));
+			param += cl+'_pn='; // строка которую вставляем в состав адреса для перехода по страницам
+
 			$.include('/_design/_script/script.jquery/paginator.js',function() {
 				var s_left = jQuery('.pagenum').position();
 				var s_width = jQuery('.pagenum').parent().width();
@@ -625,7 +435,8 @@ var wep = {
 						pagesSpan:parseInt(s_pages), 
 						returnOrder:order,
 						pageCurrent:pageCur, 
-						baseUrl: function (page){
+						baseUrl: function (page) {
+							// Срабатывает при нажатии на номер страницы
 							if((!order && page!=1) || (order && page!=total))
 								loc += param+page;
 							window.location.href = loc;
@@ -816,6 +627,202 @@ wep.apply = function(o, c, defaults){
     }
     return o;
 };
+
+//////////////////////////////////////////
+
+var timerid = 0;
+var timerid2 = 0;
+
+function JSWin(param) {
+	return wep.JSWin(param);
+}
+
+function OnJSWin(obj,param) {
+	if(!param) param = {};
+	param['type'] = jQuery(obj);
+	jQuery(obj).submit(function() {JSWin(param);return false;});
+	return false;
+}
+
+function ajaxLoadPage(pg,marker,call) {
+	return wep.ajaxLoadPage(marker,pg,call);
+}
+
+function getBrowserInfo() {
+	return wep.getBrowserInfo();
+}
+
+function fLog(txt,flag) {
+	return wep.fLog(txt,flag);
+}
+
+function fMessPos(body,obj) {
+	return wep.fMessPos(body,obj);
+}
+
+/*Показ тултип*/
+function showHelp(obj,mess,time,nomiga) {
+	return wep.showHelp(obj,mess,time,nomiga);
+}
+
+function miga(obj,opc1,opc2){
+	return wep.miga(obj,opc1,opc2);
+}
+
+/*Bacground*/
+function fShowload (show,txt,body,objid,onclk) {
+	return wep.fShowload (show,body,txt,objid,onclk);
+}
+
+function showBG(body,show,k) {
+	return wep.showBG(body,show,k);
+}
+
+
+/*SPOILER*/
+
+function fSpoiler(txt,nm) {
+	return wep.fSpoiler(txt,nm);
+}
+
+function initSpoilers(context){
+	return wep.initSpoilers(context);
+}
+
+/*END SPOILER*/
+
+function fShowHide(id,f) {
+	return wep.fShowHide(id,f);
+}
+
+function ulToggle(obj,css) {
+	jQuery(obj).toggleClass(css);
+	jQuery(obj).parent().find('>ul').slideToggle('fast');
+	return true;
+}
+/************************/
+/*simple script*/
+
+function setCookie(name, value, expiredays, path, domain, secure) {
+   return wep.setCookie(name, value, expiredays, path, domain, secure);
+}
+
+function getCookie(name) {
+   return wep.getCookie(name);
+}
+
+
+/************************/
+/****************/
+
+function ShowTools(id,hrf) {
+	return wep.ShowTools(id,hrf);
+}
+
+function readyPlot(cap,Xname,Yname,stepY) {
+	return wep.readyPlot(cap,Xname,Yname,stepY);
+}
+
+
+var lochref = window.location.href;
+var i = lochref.indexOf('#', 0);
+if(i >= 0) {
+	lochref = lochref.substring(0, i);
+}
+var tmp;
+
+function pagenum_super(total,pageCur,cl,order) {
+	wep.pagenum_super(total,pageCur,cl,order);
+}
+
+function pagenum(total,order) {
+	wep.pagenum(total,order);
+}
+
+function dump(arr, level) {/*аналог ф в ПХП print_r*/
+    var dumped_text = "";
+    if(!level) level = 0;
+
+    var level_padding = "    ";
+
+    if(typeof(arr) == 'object') {
+        for(var item in arr) {
+            var value = arr[item];
+ 
+            if(typeof(value) == 'object') {
+                dumped_text += level_padding + "’" + item + "’ …\n";
+                if(level>0) dumped_text += dump(value,level-1);
+            }
+            else {
+                dumped_text += level_padding + "’" + item + "’ => \"" + value + "\"\n";
+            }
+        }
+    }
+    else {
+        dumped_text = "===>"+arr+"<===("+typeof(arr)+")";
+    }
+    return dumped_text;
+}
+
+function strpos( haystack, needle, offset){	// Find position of first occurrence of a string
+	var i = haystack.indexOf( needle, offset ); // returns -1
+	return i >= 0 ? i : false;
+}
+
+function substr( f_string, f_start, f_length ) {	// Return part of a string
+	if(f_start < 0) {
+		f_start += f_string.length;
+	}
+
+	if(f_length == undefined) {
+		f_length = f_string.length;
+	} else if(f_length < 0){
+		f_length += f_string.length;
+	} else {
+		f_length += f_start;
+	}
+
+	if(f_length < f_start) {
+		f_length = f_start;
+	}
+
+	return f_string.substring(f_start, f_length);
+}
+
+
+
+
+function show_fblock(obj,selector) {
+	if(jQuery(selector).is(':hidden')) {
+		jQuery(selector).show();
+		jQuery(obj).addClass('shhide');
+	}
+	else {
+		jQuery(selector).hide();
+		jQuery(obj).removeClass('shhide');
+	}
+
+}
+
+/ * вспомогательные функции для DatePicker* /
+var disabledDays = [];
+function nationalDays(date) {
+	var m = date.getMonth(), d = date.getDate(), y = date.getFullYear();
+	//console.log('Checking (raw): ' + m + '-' + d + '-' + y);
+	for (i = 0; i < disabledDays.length; i++) {
+		if($.inArray((m+1) + '-' + d + '-' + y,disabledDays) != -1 || new Date() > date) {
+			//console.log('bad:  ' + (m+1) + '-' + d + '-' + y + ' / ' + disabledDays[i]);
+			return [false];
+		}
+	}
+	//console.log('good:  ' + (m+1) + '-' + d + '-' + y);
+	return [true];
+}
+function noWeekendsOrHolidays(date) {
+	var noWeekend = jQuery.datepicker.noWeekends(date);
+	return noWeekend[0] ? nationalDays(date) : noWeekend;
+}
+
 
 _Browser = getBrowserInfo();
 
