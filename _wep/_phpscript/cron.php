@@ -21,6 +21,7 @@
 	$_SERVER['HTTP_HOST2'] = $_SERVER['HTTP_HOST'] = $_CFG['site']['www'];
 
 	foreach($_CFG['cron'] as $key_cron=>$r_cron) {
+		$result = '';
 		if (isset($ini_arr['last_time' . $key_cron]) && ($ini_arr['last_time' . $key_cron] + $r_cron['time']) > $time) {
 			//$res_cron .= 'Рано импортировать файл '. $ini_arr['file'.$key_cron]. ', последний раз он импортировался '.date('d.m.Y H:i', $ini_arr['last_time'.$key_cron]). ', сейчас ' . date('d.m.Y H:i', $time) . '. (Установленный интервал: '.$ini_arr['int' . $key_cron].' минут, осталось ' . round((($ini_arr['last_time' . $key_cron] + ($ini_arr['int' . $key_cron] * 60) - $time) / 60), 1) . ' минут)' . "\n";
 		}
@@ -31,19 +32,20 @@
 			if($r_cron['file']) {
 				$r_cron['file'] = $_CFG['_PATH']['path'].$r_cron['file'];
 				if(file_exists($r_cron['file'])) {
-					$res_cron .= include($r_cron['file']);
+					$result = include($r_cron['file']);
 				}else
-					$res_cron .= 'Can`t find file '.$r_cron['file'].' . //';
+					$result = 'Can`t find file '.$r_cron['file'].' . //';
 			}
 			if(isset($r_cron['function']) and $r_cron['function'] and $r_cron['modul']) {
 				_new_class($r_cron['modul'],$MODUL);
-				eval('$res_cron .= $MODUL->'.$r_cron['function'].';');
+				eval('$result = $MODUL->'.$r_cron['function'].';');
 				//function_exists				
 			}elseif(isset($r_cron['function']) and $r_cron['function']) {
-				eval('$res_cron .= '.$r_cron['function'].';');
+				eval('$result = '.$r_cron['function'].';');
 			}
 			$ini_arr['do_time' . $key_cron] = getmicrotime()-$tt;
-			$ini_arr['res' . $key_cron] = str_replace(array("\n","\r"),'',$res_cron);
+			$ini_arr['res' . $key_cron] = str_replace(array("\n","\r"),'',$result);
+			$res_cron .= $result;
 		}
 	}
 

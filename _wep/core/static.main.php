@@ -490,9 +490,10 @@ class static_main {
 	static function pre_text($text, $col, $clearFormat = true) {
 		if ($clearFormat) {
 			//temp
-			if($clearFormat===2)
+			$text = html_entity_decode($text,ENT_QUOTES,'UTF-8');
+			if($clearFormat===2) // TEMP : 
 				$text = str_replace(array('.<br />',',<br />','<br />'),array('. ',', ','. '),$text);
-			$text = strip_tags($text);
+			$text = trim(strip_tags($text)," \s\t\r\n\0\x0B\xA0\xC2");
 		}
 		if (mb_strlen($text) > $col)
 		{
