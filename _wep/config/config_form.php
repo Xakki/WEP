@@ -51,7 +51,7 @@ $_CFGFORM['wep'] = array(// для ядра и админки
 );
 
 $_CFGFORM['site'] = array(// для сайта
-	'www' => array('type'=>'text','caption'=>'HTTP_HOST','default'=>(isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:'localhost')),
+	'www' => array('type'=>'text','caption'=>'HTTP_HOST'),
 	'showparam3'=>array('type' => 'info', 'caption' => '
 	<div class="showparam" onclick="show_fblock(this,\'.hsite\')"> 
 		<span class="shbg"></span>

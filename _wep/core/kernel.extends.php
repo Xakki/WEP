@@ -927,7 +927,7 @@ abstract class kernel_extends {
 				'src' => $this->_CFG['_HREF']['captcha'] . '?' . rand(0, 9999),
 				'value' => (isset($data['captcha'])?$data['captcha']:''),
 				'mask' => array('min' => 1));
-			if(1) {
+			if(0) {
 				$this->fields_form['captcha']['error'] = array('У вас отключены Куки');
 			}
 		}
