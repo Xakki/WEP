@@ -46,7 +46,7 @@ $_CFG['wep'] = array(// для ядра и админки
 );
 
 $_CFG['site'] = array(// для сайта
-	'www' => (isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:'localhost'),
+	'www' => '',
 	'rf' => 0, // для рускояз доменов
 	'worktime' => false, // 1 - включает отображение страницы "Технический перерыв"
 	'work_title' => 'Технический перерыв',
