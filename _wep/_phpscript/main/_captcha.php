@@ -13,7 +13,7 @@ if(isset($_COOKIE['chash']) and $_COOKIE['chash'] and $_COOKIE['pkey']) {
 		$data = $_COOKIE['chash'];
 }
 else {
-	$data = 'err cookie';
+	$data = 'error';
 	/*session_start();
 	if(isset($_SESSION["captcha"]))
 		$data = $_SESSION["captcha"];
@@ -59,7 +59,7 @@ for ($i=0;$i<$height;$i+=5) imageline($im,0, $i, $width, $i, $g1);
 $k = 0;
 for($i=0; $i<$l;$i++) {
 	$cl=imagecolorallocate($im, rand(0,128), rand(0,128), rand(0,128));
-	imagettftext($im, $font_size+rand(0,3), rand(-$dA, $dA), $k+rand(0, $shX), $center+rand($shY1, $shY), $cl, $path.$fonts[rand(0, 2)].'.ttf', substr($data, $i, 1));
+	imagettftext($im, $font_size+rand(0,3), rand(-$dA, $dA), $k+rand(0, $shX), $center+rand($shY1, $shY), $cl, $path.$fonts[rand(0, (count($fonts)-1))].'.ttf', substr($data, $i, 1));
 	$k+=$step;
 }
 

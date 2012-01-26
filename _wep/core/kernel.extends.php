@@ -1301,8 +1301,11 @@ abstract class kernel_extends {
 						$_tpl['script'][$sr] = 1;
 				}
 			}
-			$filter_clause = $this->_filter_clause();
-			$PARAM['clause'] = $filter_clause[0];
+			$filter_clause = array(0=>array(),1=>array());
+			if(!isset($PARAM['filter']) or $PARAM['filter']==true) {
+				$filter_clause = $this->_filter_clause();
+				$PARAM['clause'] = $filter_clause[0];
+			}
 
 			$PARAM['topmenu'] = array();
 			if ($this->_prmModulAdd()) {

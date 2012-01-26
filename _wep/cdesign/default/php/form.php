@@ -353,25 +353,28 @@ function tpl_form(&$data) {
 					// текстовый формат ввода данных
 					if(!isset($r['mask']['view']) or isset($r['mask']['datepicker'])) {
 					//if(isset($r['mask']['datepicker'])) {
-						if(!isset($r['mask']['datepicker']) or !is_array($r['mask']['datepicker']))
+						if(!isset($r['mask']['datepicker']))
 							$r['mask']['datepicker'] = array();
-						else
+						elseif(!is_array($r['mask']['datepicker']))
 							$r['mask']['datepicker'] = array('dateFormat'=>$r['mask']['datepicker']);
 
 						if(!isset($r['mask']['datepicker']['dateFormat']))
 							$r['mask']['datepicker']['dateFormat']='\'yy-mm-dd\'';
+
 						if(!isset($r['mask']['datepicker']['timeFormat']) or $r['mask']['datepicker']['timeFormat']===true)
 							$r['mask']['datepicker']['timeFormat'] = '\' hh:mm:ss\'';
+
 
 						global $_tpl;
 						$prop = array();
 						if(!is_null($time))
 							$r['mask']['datepicker']['defaultDate'] = 'new Date('.date('Y,m-1,d',$time).')';
 						foreach ($r['mask']['datepicker'] as $kp => $vp) {
-							$prop[] = $kp.':'.$vp;
+							if($vp)
+								$prop[] = $kp.':'.$vp;
 						}
 						$prop = '{'.implode(',',$prop).'}';
-						if(isset($r['mask']['datepicker']['timeFormat'])) {
+						if($r['mask']['datepicker']['timeFormat']) {
 							$_CFG['fileIncludeOption']['datepicker'] = 2;
 							$_tpl['script']['dp_'.$k] = 'function dp_'.$k.'() { $("input[name='.$k.']").datetimepicker('.$prop.')}';
 						}

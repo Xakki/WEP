@@ -4,6 +4,7 @@
 	if(!isset($FUNCPARAM[2])) $FUNCPARAM[2] = 0;
 	if(!isset($FUNCPARAM[3])) $FUNCPARAM[3] = 0;
 	if(!isset($FUNCPARAM[4])) $FUNCPARAM[4] = 1;
+	if(!isset($FUNCPARAM[5])) $FUNCPARAM[5] = 1;
 	//$FUNCPARAM[0] - модуль
 	//$FUNCPARAM[1] - включить AJAX
 
@@ -22,6 +23,7 @@
 			'2'=>array('type'=>'checkbox','caption'=>'Сохранить форму и остатья на ней'),
 			'3'=>array('type'=>'checkbox','caption'=>'Закрыть форму'),
 			'4'=>array('type'=>'checkbox','caption'=>'Удалить запись из формы'),
+			'5'=>array('type'=>'checkbox','caption'=>'Включить фильтр'),
 		);
 		return $form;
 	}
@@ -50,6 +52,10 @@
 				$param['sbmt_close'] = true;
 			if($FUNCPARAM[4])
 				$param['sbmt_del'] = true;
+			if($FUNCPARAM[5])
+				$param['filter'] = true;
+			else
+				$param['filter'] = false;
 			$param['firstpath'] = $PGLIST->_CFG['_HREF']['BH'].$PGLIST->current_path;
 			list($DATA,$flag) = $MODUL->super_inc($param,$_GET['_type']);
 
