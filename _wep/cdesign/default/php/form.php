@@ -391,10 +391,12 @@ function tpl_form(&$data) {
 				$texthtml .= '</div>';
 			}
 			elseif($r['type']=='captcha') {
-				$texthtml .= '<div class="form-value">
-						<div class="form-value-left"><input type="text" name="'.$k.'" value="'.$r['value'].'" maxlength="5" size="10" class="secret" autocomplete="off"/></div>
-						<div class="secret"><img src="'.$r['src'].'" class="i_secret" id="captcha" alt="CARTHA"/></div>
+				$texthtml .= '<div class="form-value secret">
+						<div class="inline"><input type="text" name="'.$k.'" value="'.$r['value'].'" maxlength="5" size="10" class="secret" autocomplete="off"/></div>
+						<div class="secretimg inline"><img src="'.$r['src'].'" class="i_secret" id="captcha" alt="CARTHA"/></div>
+						<div class="secretinfo inline"><a class="i-reload">&#160;&#160;&#160;&#160;&#160;Неразобрать? Обновите картинку!</a><a class="i-help">&#160;&#160;&#160;&#160;&#160;Нужна помощь?</a></div>
 					</div>';
+				$_tpl['onload'] .= ' jQuery(\'form a.i-reload\').click(function(){reloadCaptcha(\''.$k.'\');})';
 			}
 			elseif($r['type']=='file' and isset($r['mask']['async'])) {
 				
@@ -573,7 +575,8 @@ function tpl_form(&$data) {
 			}
 			else {
 				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
-				$texthtml .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'" '.$attribute.'/></div>';
+				if($r['type']=='email') $attribute .=  ' x-autocompletetype="'.$r['type'].'"';
+				$texthtml .= '<div class="form-value"><input type="'.$r['type'].'" name="'.$k.'" value="'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'" '.$attribute.'/></div>';
 			}
 		}
 

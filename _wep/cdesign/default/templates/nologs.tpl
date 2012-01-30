@@ -20,9 +20,9 @@
 			<div class='spacer'></div>
 		</div>
 		<div id="cmsinfo">
-			<div class="infname"><a href="http://xakki.ru">WebEngineOnPHP</a></div>
-			<div class="infc">{$_tpl['contact']}</div>
+			<div class="infname"><a href="http://xakki.ru">WebEngineOnPHP {$_tpl['wep_ver']}</a></div>
 			<div id="inftime">{$_tpl['time']}</div>
+			<div class="infc">{$_tpl['contact']}</div>
 		</div>
 		<div id="debug_view" style=""></div>
 		

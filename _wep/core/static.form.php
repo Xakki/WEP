@@ -810,7 +810,8 @@ class static_form {
 					$_tpl['onload'] .= 'putEMF(\''.$key.'\',\''.$messages.'\');'; // запись в форму по ссылке
 				}
 				else
-					$form['error'][] = $form['caption'].': '.$messages; // запись в форму по ссылке
+					$form['error'][] = $messages; // запись в форму по ссылке
+				//$form['caption'].': '.
 			}
 
 		}
@@ -842,6 +843,10 @@ class static_form {
 				}
 				elseif(isset($form['maxsize']) and $value['size']>($form['maxsize']*1024)) {
 					$error[]=29;
+					return false;
+				}
+				elseif(!$value['tmp_name']) {
+					$error[]=40;
 					return false;
 				}
 				else {

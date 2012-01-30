@@ -311,6 +311,9 @@ class mail_class extends kernel_extends {
 		return $res;
 	}
 
+	/**
+	* Отправка писем с помощью PHPMailer
+	*/
 	function mailengine1 ($data) {
 		include_once(dirname(__FILE__).'/phpMailer/class.phpmailer.php');
 		$data['subject'] = substr(htmlspecialchars(trim($data['subject'])), 0, 1000);
@@ -326,7 +329,7 @@ class mail_class extends kernel_extends {
 		$PHPMailer->SMTPSecure = $this->config['PHPMailer_Secure'];
 		$PHPMailer->SetLanguage('ru');
 		if($data['from']!=$this->config['mailrobot']) {
-			$this->Sender = $data['bcc'] = $data['Reply-To'] = $data['from'];
+			$this->Sender = $data['Reply-To'] = $data['from'];
 			$data['text'] = str_replace('%MAILFROM%',$data['Reply-To'],$this->config['phpmailer']).$data['text'];
 			$data['from'] = $this->config['mailrobot'];
 		}

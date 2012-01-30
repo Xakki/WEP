@@ -236,8 +236,7 @@ function _myErrorHandler($errno, $errstr, $errfile, $errline) {//, $errcontext,$
 		// для вывода отладчика для всех типов ошибок , можно отключить это условие
 		$debug = '';
 		if (isset($_CFG['wep']['bug_hunter'][$errno]) and $_CFG['_error'][$errno]['debug']) {
-			if(strpos($errstr,'mysql_connect')===false)
-				$debug = debugPrint(2);
+			$debug = debugPrint(2);
 		}
 			
 
@@ -250,10 +249,6 @@ function _myErrorHandler($errno, $errstr, $errfile, $errline) {//, $errcontext,$
 			'debug'=>$debug,
 			'errtype' => $_CFG['_error'][$errno]['type'],
 		);
-		/*Вывод ошибок*/
-		if(!$BUG and is_array($_CFG['wep']['bug_hunter']) and count($_CFG['wep']['bug_hunter'])) {
-			//_new_class('bug', $BUG);
-		}
 		//остановка на фатальной ошибке
 		if ($_CFG['_error'][$errno]['prior'] == 0 and !$_CFG['wep']['debugmode']) {
 			die("\n Aborting...<br />\n");

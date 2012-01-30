@@ -124,6 +124,15 @@
 			$_SESSION['wep_info'] = 'PHP ver.' . phpversion().' | MySQL ver.' . $info['version'][1].' | '.date_default_timezone_get().' | ';
 		}
 		$_tpl['time'] = $_SESSION['wep_info'].date('Y-m-d H:i:s').' | ';
+
+		if($_CFG['info']['email'])
+			$_tpl['contact'] = '<div class="ctd1">e-mail:</div>	<div class="ctd2"><a href="mailto:'.$_CFG['info']['email'].'">'.$_CFG['info']['email'].'</a></div>';
+		if($_CFG['info']['icq'])
+			$_tpl['contact'] .= '<div class="ctd1">icq:</div><div class="ctd2">'.$_CFG['info']['icq'].'</div>';
+		if(isset($_CFG['info']['phone']) and $_CFG['info']['phone'])
+			$_tpl['contact'] .= '<div class="ctd1">телефон:</div><div class="ctd2">'.$_CFG['info']['phone'].'</div>';
+
+		$_tpl['wep_ver'] = $_CFG['info']['version'];
 	}
 	else {
 		static_main::redirect('login.php?mess=denied&ref='.base64_encode($_SERVER['REQUEST_URI']));

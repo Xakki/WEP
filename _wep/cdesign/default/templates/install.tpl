@@ -22,9 +22,9 @@
 			<div class="debug_view">{$_tpl['logs']}</div>
 			<div class="text">{$_tpl['text']}</div>
 			<div class="cmsinfo">
-				<div class="infname"><a href="http://xakki.ru">WebEngineOnPHP</a></div>
-				<div class="infc">{$_tpl['contact']}</div>
+				<div class="infname"><a href="http://xakki.ru">WebEngineOnPHP {$_tpl['wep_ver']}</a></div>
 				<div id="inftime">{$_tpl['time']}</div>
+				<div class="infc">{$_tpl['contact']}</div>
 			</div>
 		</div>
 	</body>

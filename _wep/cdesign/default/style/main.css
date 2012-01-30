@@ -152,12 +152,33 @@ a.am_tools {
 	bottom:0;
 }
 	#cmsinfo a {color:#FFF;}
-	#cmsinfo .infname {float:left;width:200px;font-weight:bold;font-size:1.4em;color:#333;padding:2px 0pt 0pt 10px;}
-	#cmsinfo .infc {float:right;font-weight:none;font-size:0.9em;color:#FFF;text-align:left;width:160px;}
-	#cmsinfo .infc .ctd1 {width:55px;float:left;clear:left;text-align:right;padding:0 5px 0 0;}
-	#cmsinfo .infc .ctd2 {width:100px;float:right;clear:right;text-align:left;}
-	#cmsinfo #inftime {font-size:1em;position:absolute;left:210px;bottom:0;}
-	#cmsinfo #inftime div {float:left;padding:0 5px 5px;}
+	#cmsinfo .infname {
+		font-weight:bold;font-size:1.4em;color:#333;
+		padding:2px 0pt 0pt 10px;
+		width:200px;
+		position:absolute;
+		left:0;top:0;
+	}
+	#cmsinfo #inftime {
+		font-size:1em;
+		vertical-align:top;
+		margin:0 160px 0 210px;
+	}
+		#cmsinfo #inftime div {
+			padding:0 5px 5px;
+		}
+	#cmsinfo .infc {
+		font-weight:none;font-size:0.9em;color:#FFF;text-align:left;
+		width:160px;
+		position:absolute;
+		right:0;top:0;
+	}
+		#cmsinfo .infc .ctd1 {
+			width:55px;float:left;text-align:right;padding:0 5px 0 0;
+		}
+		#cmsinfo .infc .ctd2 {
+			text-align:left;
+		}
 
 	/*IMG*/
 		.bottonimg, .bottonimg_sel{

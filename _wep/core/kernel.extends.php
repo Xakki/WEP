@@ -1,17 +1,8 @@
 <?php
 
-/* VERSION=2 */
-/* COMMENT=Ядро, дополняющая модули */
+/* COMMENT = класс расширения для модулей */
 
 abstract class kernel_extends {
-	/*
-	 * версия ядра
-	 *  нумерация отличает от других версией
-	 * 1 - структурной не совместимостью, различия в хранении данных и в исполняемых функциях, вызывающие критические ошибки в коде
-	 * 2 - добавленн новый функционал, расширен и измененн меющиеся функции -
-	 * 3 - Номер ревизии , исправленны ошибки
-	 */
-	const versionCore = '2.8.21';
 
 	function __construct($owner=NULL) {
 		global $_CFG;
@@ -160,7 +151,7 @@ abstract class kernel_extends {
 		$this->includeCSStoWEP = false; // подключать ли стили для формы через настройки
 		$this->singleton = true; // класс-одиночка
 		$this->ver = '0.1.1'; // версия модуля
-		$this->RCVerCore = self::versionCore;
+		$this->verCore = $this->_CFG['info']['version'];
 		$this->icon = 0; /* числа  означают отсуп для бэкграунда, а если будет задан текст то это сам рисунок */
 		$this->default_access = '|0|';
 
@@ -2384,7 +2375,8 @@ abstract class kernel_extends {
 			'body'=>false,
 			'HTTPHEADER'=>array('Content-Type' => 'text/xml; encoding=utf-8'),
 			'redirect' => false,
-			'USERAGENT' => 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2'
+			'USERAGENT' => 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2',
+			'TIMEOUT'=>20
 		);
 		$param = array_merge($default,$param);
 
@@ -2407,7 +2399,7 @@ abstract class kernel_extends {
 		curl_setopt($ch, CURLOPT_HEADER, false);
 		//вернуть ответ сервера в виде строки
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 23);
+		curl_setopt($ch, CURLOPT_TIMEOUT, $param['TIMEOUT']);
 		
 		// ПРОКСИ
 		if($param['proxy']) {

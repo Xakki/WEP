@@ -25,12 +25,6 @@
 
 	$_tpl['modulstree']=$eval='';
 
-	if($_CFG['info']['email'])
-		$_tpl['contact'] = '<div class="ctd1">e-mail:</div>	<div class="ctd2"><a href="mailto:'.$_CFG['info']['email'].'">'.$_CFG['info']['email'].'</a></div>';
-	if($_CFG['info']['icq'])
-		$_tpl['contact'] .= '<div class="ctd1">icq:</div><div class="ctd2">'.$_CFG['info']['icq'].'</div>';
-	if(isset($_CFG['info']['phone']) and $_CFG['info']['phone'])
-		$_tpl['contact'] .= '<div class="ctd1">телефон:</div><div class="ctd2">'.$_CFG['info']['phone'].'</div>';
 	$DATA = array('adminmenu'=>fAdminMenu($_GET['_modul'])); $_tpl['adminmenu'] = $HTML->transformPHP($DATA,'adminmenu');
 
 	if(!$_GET['_modul'] or !(isset($_GET['_view']) or isset($_GET['_type']))) {

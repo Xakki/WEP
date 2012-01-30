@@ -234,7 +234,10 @@
 
 
 	.divform div.no{font-size:11px;color:#000;padding:0;}
-	.divform div.form-value-left{float:left;}
+	.divform div.inline {
+		vertical-align:top;
+		display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
+	}
 	.divform div.left1{float:left;padding-top:4px;}
 	.divform div.clear{clear:both;}
 	.divform textarea{
@@ -250,7 +253,27 @@
 		margin:3px 0 0;
 		width:100px;
 	}
-	.divform div.secret{padding:3px 0 0 5px;float:left;}
+	.divform div.secret {}
+	.divform div.secret:hover .secretinfo a {opacity:0.7;}
+		.divform div.secretimg {padding:3px 0 0 5px;}
+		.divform .secretinfo {width:30px;}
+			.divform .secretinfo a {
+				display:block;
+				width:15px;
+				height:15px;
+				margin:5px;
+				background: transparent url(../_img/jquery.ui/ui-icons_2e83ff_256x240.png) no-repeat scroll -32px -129px;
+				opacity:0;
+				cursor:pointer;
+				font-size:0;
+				white-space:nowrap;
+			}
+			.divform .secretinfo a:hover {
+				opacity:1 !important;
+				font-size:14px;
+			}
+			a.i-reload {background-position:-65px -81px !important;}
+			a.i-help {background-position:-48px -145px !important; display:none !important;}
 	.divform input.ronly{
 		background:none repeat scroll 0 0 #E6E6E6;
 		color:#666666;}

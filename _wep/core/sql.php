@@ -36,24 +36,39 @@
 		}
 
 		private function sql_connect() {
+			global $_CFG;
+
+			$temp = $_CFG['wep']['catch_bug'];
+			$_CFG['wep']['catch_bug'] = 0;
+
 			$this->hlink = @mysqli_connect($this->CFG_SQL['host'], $this->CFG_SQL['login'], $this->CFG_SQL['password']);
-			if(!$this->hlink)
-				return $this->err('SQL connect error');
+			if(!$this->hlink) {
+				$_CFG["site"]["work_text"] = '<err>'.static_main::m('nosql').'</err>';
+				static_main::downSite();
+			}
+
+			$_CFG['wep']['catch_bug'] = $temp;
+
 			mysqli_query($this->hlink,"SET time_zone = '".date_default_timezone_get()."'");
 			return true;
 		}
 
 		private function _connectDB() {
+			global $_CFG;
 			if(isset($this->CFG_SQL['setnames']) and $this->CFG_SQL['setnames'])
 				mysqli_query($this->hlink, 'SET NAMES '.$this->CFG_SQL['setnames']);
 			if(isset($this->CFG_SQL['database']) and $this->CFG_SQL['database']) {
 				if(!$this->sql_selectDB($this->CFG_SQL)) {
 					if($this->sql_createDB($this->CFG_SQL)) {
-						if(!$this->sql_selectDB($this->CFG_SQL))
-							return $this->err('SQL can`t connect to database');
+						if(!$this->sql_selectDB($this->CFG_SQL)) {
+							$_CFG["site"]["work_text"] = '<err>'.static_main::m('nosqlbd').'</err>';
+							static_main::downSite();
+						}
 					}
-					else 
-						return $this->err('SQL can`t create database');
+					else {
+						$_CFG["site"]["work_text"] = '<err>'.static_main::m('nosqlp').'</err>';
+						static_main::downSite();
+					}
 				}
 			}
 			return true;
