@@ -352,10 +352,10 @@ var wep = {
 
 	setCookie: function(name, value, expiredays, path, domain, secure) {
 
-		if (!name || !value) return false;
+		if (!name) return false;
 		var str = name + '=' + encodeURIComponent(value);
 
-		if (expiredays) {
+		if (typeof expiredays!='undefined' && expiredays!=0) {
 			var exdate=new Date();
 			exdate.setDate(exdate.getDate()+expiredays);
 			if (exdate) str += '; expires=' + exdate.toGMTString();
