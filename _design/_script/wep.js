@@ -349,20 +349,35 @@ var wep = {
 		else
 			jQuery('#'+id).animate({ opacity: "show" }, "slow");
 	},
+
 	setCookie: function(name, value, expiredays, path, domain, secure) {
+
+		if (!name || !value) return false;
+		var str = name + '=' + encodeURIComponent(value);
+
 		if (expiredays) {
 			var exdate=new Date();
 			exdate.setDate(exdate.getDate()+expiredays);
-			var expires = exdate.toGMTString();
+			if (exdate) str += '; expires=' + exdate.toGMTString();
 		}
-		document.cookie = name + "=" + escape(value) +
-		((expiredays) ? "; expires=" + expires : "") +
-		((path) ? "; path=" + path : "") +
-		((domain) ? "; domain=" + domain : "") +
-		((secure) ? "; secure" : "");
+
+		if (path)    str += '; path=' + path;
+		if (domain)  str += '; domain=' + domain;
+		if (secure)  str += '; secure';
+		
+		document.cookie = str;
+		return true;
 	},
+
 	getCookie: function(name) {
-		var cookie = " " + document.cookie;
+		var pattern = "(?:; )?" + name + "=([^;]*);?";
+		var regexp  = new RegExp(pattern);
+		
+		if (regexp.test(document.cookie))
+			return decodeURIComponent(RegExp["$1"]);
+		return false;
+
+		/*var cookie = " " + document.cookie;
 		var search = " " + name + "=";
 		var setStr = null;
 		var offset = 0;
@@ -378,8 +393,14 @@ var wep = {
 				setStr = unescape(cookie.substring(offset, end));
 			}
 		}
-		return setStr;
+		return setStr;*/
 	},
+
+	deleteCookie: function(name, path, domain) {
+		this.setCookie(name, null, -100, path, domain);
+		return true;
+	},
+
 	ShowTools: function(id,hrf) {
 		/*Панель инструментов модуля(фильтр, статистика, обновление таблицы итп)*/
 		jQuery('#'+id).show();
@@ -838,4 +859,9 @@ function wResize() {
 			wep.winResize[item]();
 		}
 	}
+}
+
+var tmp = wep.getCookie('referrer');
+if(tmp==false){
+	wep.setCookie('referrer',document.referrer);
 }

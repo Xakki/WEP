@@ -394,9 +394,24 @@ function tpl_form(&$data) {
 				$texthtml .= '<div class="form-value secret">
 						<div class="inline"><input type="text" name="'.$k.'" value="'.$r['value'].'" maxlength="5" size="10" class="secret" autocomplete="off"/></div>
 						<div class="secretimg inline"><img src="'.$r['src'].'" class="i_secret" id="captcha" alt="CARTHA"/></div>
-						<div class="secretinfo inline"><a class="i-reload">&#160;&#160;&#160;&#160;&#160;Неразобрать? Обновите картинку!</a><a class="i-help">&#160;&#160;&#160;&#160;&#160;Нужна помощь?</a></div>
+						<div class="secretinfo inline">
+							<a class="i-reload">&#160;&#160;&#160;&#160;&#160;Неразобрать? Обновите картинку!</a>';
+						switch ($r['mask']['dif']) {
+							case 0:
+								$texthtml .= '<a class="i-help">&#160;&#160;&#160;&#160;&#160;Только цифры</a>';
+							break;
+							case 1:
+								$texthtml .= '<a class="i-help">&#160;&#160;&#160;&#160;&#160;Только цифры и заглавные карилица</a>';
+							break;
+							case 2:
+								$texthtml .= '<a class="i-help">&#160;&#160;&#160;&#160;&#160;Только цифры и карилица</a>';
+							break;
+							default:
+								$texthtml .= '<a class="i-help">&#160;&#160;&#160;&#160;&#160;Только цифры, буквы</a>';
+						}
+				$texthtml .= '</div>
 					</div>';
-				$_tpl['onload'] .= ' jQuery(\'form a.i-reload\').click(function(){reloadCaptcha(\''.$k.'\');})';
+				$_tpl['onload'] .= ' jQuery(\'form a.i-reload\').click(function(){reloadCaptcha(\''.$k.'\');}); jQuery(\'#tr_captcha input\').click(function(){wep.setCookie(\'testtest\',1);});';
 			}
 			elseif($r['type']=='file' and isset($r['mask']['async'])) {
 				

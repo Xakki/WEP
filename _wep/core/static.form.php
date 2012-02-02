@@ -708,6 +708,7 @@ class static_form {
 			}
 			/*Капча*/
 			elseif($form['type']=='captcha') {
+				//strcasecmp($data[$key],$form['captcha'])
 				if($data[$key]!=$form['captcha'])
 					$error[] = 31;
 			}
@@ -1244,18 +1245,38 @@ class static_form {
 	 * Записывает в куки закодированный КОД (рандомный), для отображения его на рисунке /capcha.php
 	 * Использует для кодирования OpenSsl или MCrypt, в качестве ключа используется Хэш фаил $_CFG['_FILE']['HASH_KEY']
 	 */
-	static function setCaptcha() {
+	static function setCaptcha($len=5,$def=1) {
 		global $_CFG;
-		$data = rand(10000, 99999); //Рандомный код 5ти-значный
+
+		if(!$def) {
+			$word = rand(10000, 99999); //Рандомный код 5ти-значный
+		}
+		else {
+			$A = array(
+				1=>array(0,1,2,3,4,5,6,7,8,9,'А','Б','В','Г','Д','Е','Ж','З','И','К','Л','М','Н','О','П','Р','С','Т','У','Ф','Х','Ц','Ч','Ш','Щ','Э','Ю','Я'),
+				2=>array(0,1,2,3,4,5,6,7,8,9,'а','б','в','г','д','е','ж','з','и','к','л','м','н','о','п','р','с','т','у','ф','х','ц','ч','ш','щ','э','ю','я'),
+				3=>array(0,1,2,3,4,5,6,7,8,9,'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'),
+				4=>array(0,1,2,3,4,5,6,7,8,9,'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'),
+				5=>array(0,1,2,3,4,5,6,7,8,9,'А','Б','В','Г','Д','Е','Ж','З','И','К','Л','М','Н','О','П','Р','С','Т','У','Ф','Х','Ц','Ч','Ш','Щ','Э','Ю','Я','а','б','в','г','д','е','ж','з','и','к','л','м','н','о','п','р','с','т','у','ф','х','ц','ч','ш','щ','э','ю','я'),
+				6=>array(0,1,2,3,4,5,6,7,8,9,'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'),
+				7=>array(0,1,2,3,4,5,6,7,8,9,'А','Б','В','Г','Д','Е','Ж','З','И','К','Л','М','Н','О','П','Р','С','Т','У','Ф','Х','Ц','Ч','Ш','Щ','Э','Ю','Я','а','б','в','г','д','е','ж','з','и','к','л','м','н','о','п','р','с','т','у','ф','х','ц','ч','ш','щ','э','ю','я','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'),
+			);
+			$word = '';
+			$C = count($A[$def])-1;
+			for($i = 1; $i <= $len; $i++) {
+				$word .= $A[$def][rand(0,$C)];
+			}
+		}
+
 		$hash_key = file_get_contents($_CFG['_FILE']['HASH_KEY']).$_SERVER['REMOTE_ADDR'];
 		$hash_key = md5($hash_key); // получаем хешкод
 		if(function_exists('openssl_encrypt')) { // если есть openssl
-			$crypttext = openssl_encrypt($data,'aes-128-cbc',$hash_key,false,"1234567812345678");
+			$crypttext = openssl_encrypt($word,'aes-128-cbc',$hash_key,false,"1234567812345678");
 		} elseif(function_exists('mcrypt_encrypt')) { // будем надеяться что есть mcrypt
-			$crypttext = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $hash_key, $data, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND));
+			$crypttext = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $hash_key, $word, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND));
 			$crypttext = base64_encode($crypttext);
 		} else // если нет даже openssl значит и так сойдёт!
-			$crypttext = $data;
+			$crypttext = $word;
 		// Запись в куки зашифрованного кода
 		_setcookie('chash', $crypttext, (time() + 1800));
 		// Где хранится хэшкод (фаил доступен только на сервере)
@@ -1272,13 +1293,13 @@ class static_form {
 			$hash_key = file_get_contents($_CFG['_FILE']['HASH_KEY']).$_SERVER['REMOTE_ADDR'];
 			$hash_key = md5($hash_key);
 			if(function_exists('openssl_encrypt')) {
-				$data = openssl_decrypt($_COOKIE['chash'],'aes-128-cbc',$hash_key,false,"1234567812345678");
+				$word = openssl_decrypt($_COOKIE['chash'],'aes-128-cbc',$hash_key,false,"1234567812345678");
 			} elseif(function_exists('mcrypt_encrypt')) {
-				$data = base64_decode($_COOKIE['chash']);
-				$data = mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $hash_key, base64_decode($_COOKIE['chash']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND));
+				$word = base64_decode($_COOKIE['chash']);
+				$word = mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $hash_key, base64_decode($_COOKIE['chash']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND));
 			}else
-				$data = $_COOKIE['chash'];
-			return $data;
+				$word = $_COOKIE['chash'];
+			return $word;
 		}
 		return rand(145, 357); // Если ничего в куках нет, то генерим рандомный и пользователь по новой должен вводит капчу
 	}

@@ -911,13 +911,19 @@ abstract class kernel_extends {
 				$param['captchaOn'] = false;
 		}
 		if (count($this->fields_form) and $param['captchaOn']) {
+			$LEN = 5;
+			$DIF = 1;
+			if(is_array($param['captchaOn'])) {
+				if(isset($param['captchaOn']['len'])) $LEN = $param['captchaOn']['len'];
+				if(isset($param['captchaOn']['dif'])) $DIF = $param['captchaOn']['dif'];
+			}
 			$this->fields_form['captcha'] = array(
 				'type' => 'captcha',
 				'caption' => static_main::m('_captcha',$this),
-				'captcha' => static_form::getCaptcha(),
+				'captcha' => static_form::getCaptcha($LEN,$DIF),
 				'src' => $this->_CFG['_HREF']['captcha'] . '?' . rand(0, 9999),
 				'value' => (isset($data['captcha'])?$data['captcha']:''),
-				'mask' => array('min' => 1));
+				'mask' => array('min' => 1,'max'=>$LEN,'dif'=>$DIF));
 			if(0) {
 				$this->fields_form['captcha']['error'] = array('У вас отключены Куки');
 			}
