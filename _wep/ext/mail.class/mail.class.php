@@ -111,7 +111,7 @@ class mail_class extends kernel_extends {
 			3 => 'over',
 		);
 
-		$this->lang['_saveclose'] = 'Отправить письмо';
+		$this->lang['Save and close'] = 'Отправить письмо';
 		$this->ordfield = 'mf_timecr DESC';
 
 		$this->cron[$this->_cl] = array('modul'=>$this->_cl,'function'=>'cronSend()','active'=>0,'time'=>300);
@@ -384,7 +384,7 @@ class mail_class extends kernel_extends {
 			where `mf_timecr`>"'.(time()-24*60*60).'" and user_to="'.$_SESSION['user']['id'].' and status!=4"
 		');
 		
-		if ($row = $result->fetch_array())
+		if ($row = $result->fetch())
 		{
 			$data['new_msg'] = $row['cnt'];
 		}
@@ -394,7 +394,7 @@ class mail_class extends kernel_extends {
 			where `creater_id`="-1" and user_to="'.$_SESSION['user']['id'].' and status!=4"
 		');
 		
-		if ($row = $result->fetch_array()) {
+		if ($row = $result->fetch()) {
 			$data['system_msg'] = $row['cnt'];
 		}
 		
@@ -403,7 +403,7 @@ class mail_class extends kernel_extends {
 			where `creater_id`!="-1" and user_to="'.$_SESSION['user']['id'].' and status!=4"
 		');
 		
-		if ($row = $result->fetch_array())
+		if ($row = $result->fetch())
 		{
 			$data['private_msg'] = $row['cnt'];
 		}
@@ -497,7 +497,7 @@ class mail_class extends kernel_extends {
 		$result = $this->SQL->execSQL('select * from `'.$this->tablename.'`'.$where_str.' order by `mf_timecr` desc'.$limit_str);
 			
 		$data['rows'] = array();
-		while ($row = $result->fetch_array())
+		while ($row = $result->fetch())
 		{
 			$data['rows'][] = $row;
 			if ($row['creater_id'] != -1)
@@ -527,7 +527,7 @@ class mail_class extends kernel_extends {
 			$result = $this->SQL->execSQL('
 				select * from `'.$UGROUP->childs['users']->tablename.'` where id in ("'.(implode('", "', $users)).'")
 			');
-			while ($row = $result->fetch_array())
+			while ($row = $result->fetch())
 			{
 				$data['users'][$row['id']] = $row;
 			}
@@ -547,7 +547,7 @@ class mail_class extends kernel_extends {
 		else
 		{			
 			$result = $this->SQL->execSQL('select count(id) as cnt from `'.$this->tablename.'`'.$where_str);
-			if ($row = $result->fetch_array())
+			if ($row = $result->fetch())
 			{
 				$data['page_nav']['count_pages'] = ceil($row['cnt'] / $items_on_page);
 			}
@@ -572,7 +572,7 @@ class mail_class extends kernel_extends {
 			');
 		
 			$data['users'] = array();
-			while ($row = $result->fetch_array())
+			while ($row = $result->fetch())
 			{
 				$data['users'][] = $row;
 			}		
@@ -607,7 +607,7 @@ class mail_class extends kernel_extends {
 					where id="'.$user_id.'"	AND active=1			
 				');
 
-				if ($row = $sql_result->fetch_array())
+				if ($row = $sql_result->fetch())
 				{
 					if ($row['cnt'] == 1)
 					{
@@ -667,7 +667,7 @@ class mail_class extends kernel_extends {
 				where id="'.$msg_id.'"
 			');
 			
-			if ($row = $sql_result->fetch_array())
+			if ($row = $sql_result->fetch())
 			{
 				if ($row['cnt'] == 1)
 				{
@@ -731,7 +731,7 @@ class mail_class extends kernel_extends {
 				where id="'.$user_id.'"
 			');
 			
-			if ($row = $result->fetch_array())
+			if ($row = $result->fetch())
 			{
 				$result = array(
 					'result' => 1,

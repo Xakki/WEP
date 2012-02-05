@@ -16,7 +16,7 @@
 		
 	} 
 	elseif(isset($_GET['_view']) && $_GET['_view']=='ajaxlist' and $_GET['_srlz']=stripslashes($_GET['_srlz']) and $_GET['_hsh']==md5($_GET['_srlz'].$_CFG['wep']['md5'])) {
-		$SQL = new sql($_CFG['sql']);
+		$SQL = new $_CFG['sql']['type']($_CFG['sql']);
 
 		$listname = unserialize($_GET['_srlz']);
 		if(!isset($listname['tablename']) and isset($listname['class']) and $listname['class'])
@@ -51,7 +51,7 @@
 		$result = $SQL->execSQL($clause);
 		if(!$result->err) {
 			$GLOBALS['_RESULT']['data'] = array();
-			while($row = $result->fetch_array())
+			while($row = $result->fetch())
 				$GLOBALS['_RESULT']['data'][] = array($row['id'],$row['name']);
 		}else
 			print('NO VALID DATA');

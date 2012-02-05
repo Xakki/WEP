@@ -140,7 +140,7 @@ class ugroup_class extends kernel_extends
 			/*$this->create_child('modulgrp');
 			$this->childs['modulgrp']->owner_name = 'ugroup_id';//теперь родитель в этом поле привязан
 			unset($this->childs['modulgrp']->fields_form['ugroup_id']);//отклю список групп
-			$this->childs['modulgrp']->fields_form['owner_id'] = array('type' => 'list', 'readonly' => 1, 'listname'=>array('tablename'=>$this->_CFG['sql']['dbpref'].'modulprm'), 'caption' => 'Модуль');//и включаем модули
+			$this->childs['modulgrp']->fields_form['owner_id'] = array('type' => 'list', 'readonly' => 1, 'listname'=>array('tablename'=>$this->SQL_CFG['dbpref'].'modulprm'), 'caption' => 'Модуль');//и включаем модули
 			$this->childs['modulgrp']->fields['owner_id'] = array(); // чтобы  не ругался модчекструкт, тк это поле может задаваться по умолчанию от родителя
 			*/
 		}
@@ -151,7 +151,7 @@ class ugroup_class extends kernel_extends
 		if ($listname == 'glist') {
 			$result = $this->SQL->execSQL('SELECT id, '.$this->mf_namefields.' FROM '.$this->tablename);
 			if(!$result->err)
-				while ($row = $result->fetch_array())
+				while ($row = $result->fetch())
 					$data[$row['id']] = $row[$this->mf_namefields];
 			return $data;
 		}
@@ -248,7 +248,7 @@ class users_class extends kernel_extends {
 		$this->caption = 'Пользователи';
 		$this->lang['title_regme'] = 'Регистрация пользователя';
 		$this->lang['title_profile'] = 'Редактирование профиля';
-		$this->lang['_saveclose'] = 'Готово';
+		$this->lang['Save and close'] = 'Готово';
 		$this->default_access = '|0|';
 		$this->userCach = array();
 		return true;

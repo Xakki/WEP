@@ -23,7 +23,7 @@
 				<input type="hidden" name="ref" value="{$_tpl['ref']}"/>
 				<div>{$_tpl['login']}:</div><input type="text" name="login" tabindex="1"/>
 				<div>Пароль:</div><input type="password" name="pass" tabindex="2"/>
-				<div>Запомнить?<input type="checkbox" style="border:medium none; width:30px;" tabindex="3" name="remember" value="1"/></div>
+				<label style="display:block;">Запомнить?<input type="checkbox" style="border:medium none; width:30px;" tabindex="3" name="remember" value="1"/></label>
 				<input class="submit" type="submit" name="enter" value="Войти" tabindex="3"/>
 			</form>
 			

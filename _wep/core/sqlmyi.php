@@ -1,28 +1,32 @@
 <?php
 /*SQL*/
 
-	class sql {
+	class sqlmyi {
 		var $hlink;
 		var $sql_query;
 		var $sql_err;
 		var $sql_res;
 		/**Если тру - то проверка таблиц и папок*/
 
-		function __construct(&$CFG_SQL) {
+		function __construct(&$SQL_CFG) {
 			global $_CFG;
-			$this->CFG_SQL = &$CFG_SQL;
+			$this->SQL_CFG = &$SQL_CFG;
 			$this->_iFlag= false;
 			$this->ready = false;
 			$this->logFile = false;
 			if(isset($_CFG['log']) and (int)$_CFG['log'] and $_CFG['_PATH']['wep']) {
 				$this->logFile = array();
 			}
-
-			$this->ready = $this->_connect();
+			if(function_exists('mysqli_connect'))
+				$this->ready = $this->_connect();
+			else {
+				$_CFG["site"]["work_text"] = '<err>'.static_main::m('Need MySQL php driver').'</err>';
+				static_main::downSite();
+			}
 		}
 
 		function __destruct() {
-			//$this->sql_close();
+			$this->sql_close();
 			if($this->logFile!==false and count($this->logFile)) {
 				file_put_contents($_CFG['_PATH']['log'].'_'.date('Y-m-d_H-i-s').'.log',implode("\n",$this->logFile));
 			}
@@ -41,9 +45,9 @@
 			$temp = $_CFG['wep']['catch_bug'];
 			$_CFG['wep']['catch_bug'] = 0;
 
-			$this->hlink = @mysqli_connect($this->CFG_SQL['host'], $this->CFG_SQL['login'], $this->CFG_SQL['password']);
+			$this->hlink = @mysqli_connect($this->SQL_CFG['host'], $this->SQL_CFG['login'], $this->SQL_CFG['password']);
 			if(!$this->hlink) {
-				$_CFG["site"]["work_text"] = '<err>'.static_main::m('nosql').'</err>';
+				$_CFG["site"]["work_text"] = '<err>'.static_main::m('Can`t connect to SQL server').'</err>';
 				static_main::downSite();
 			}
 
@@ -55,18 +59,18 @@
 
 		private function _connectDB() {
 			global $_CFG;
-			if(isset($this->CFG_SQL['setnames']) and $this->CFG_SQL['setnames'])
-				mysqli_query($this->hlink, 'SET NAMES '.$this->CFG_SQL['setnames']);
-			if(isset($this->CFG_SQL['database']) and $this->CFG_SQL['database']) {
-				if(!$this->sql_selectDB($this->CFG_SQL)) {
-					if($this->sql_createDB($this->CFG_SQL)) {
-						if(!$this->sql_selectDB($this->CFG_SQL)) {
-							$_CFG["site"]["work_text"] = '<err>'.static_main::m('nosqlbd').'</err>';
+			if(isset($this->SQL_CFG['setnames']) and $this->SQL_CFG['setnames'])
+				mysqli_query($this->hlink,'SET NAMES '.$this->SQL_CFG['setnames']);
+			if(isset($this->SQL_CFG['database']) and $this->SQL_CFG['database']) {
+				if(!$this->sql_selectDB($this->SQL_CFG)) {
+					if($this->sql_createDB($this->SQL_CFG)) {
+						if(!$this->sql_selectDB($this->SQL_CFG)) {
+							$_CFG["site"]["work_text"] = '<err>'.static_main::m('Cant`t connect to database').'</err>';
 							static_main::downSite();
 						}
 					}
 					else {
-						$_CFG["site"]["work_text"] = '<err>'.static_main::m('nosqlp').'</err>';
+						$_CFG["site"]["work_text"] = '<err>'.static_main::m('Permission denied to create database').'</err>';
 						static_main::downSite();
 					}
 				}
@@ -111,22 +115,22 @@
 
 /*****************************/
 
-		public function execSQL($sql,$unbuffered=0) {
+		public function execSQL($sql) {
 			if(!$this->ready) return false;
-			return new query($this, $sql, $unbuffered);
+			return new myiquery($this, $sql);
 		}
 
-		public function q($sql,$key=false,$type = MYSQLI_ASSOC) {
+		public function q($sql,$key=false,$type = 0) {
 			if(!$this->ready) return false;
-			$result = new query($this, $sql,0);
+			$result = new myiquery($this, $sql);
 			$data = array();
 			if (!$result->err) {
 				if($key!==false) {
-					while ($r = $result->fetch_array($type))
+					while ($r = $result->fetch($type))
 						$data[$r[$key]] = $r;
 				} 
 				else {
-					while ($r = $result->fetch_array($type))
+					while ($r = $result->fetch($type))
 						$data[] = $r;
 				}
 			}
@@ -265,16 +269,89 @@
 			return array($m,$mess);
 		}
 
+
+		/******************************/
+		/******************************/
+		/******************************/
+
+		public function _tableCreate(&$MODUL) {
+			$fld = array();
+			if (count($MODUL->fields))
+				foreach ($MODUL->fields as $key => $param)
+					list($fld[],$mess) = $MODUL->SQL->_fldformer($key, $param);
+			if (count($MODUL->attaches))
+				foreach ($MODUL->attaches as $key => $param)
+					list($fld[],$mess) = $MODUL->SQL->_fldformer($key, $MODUL->attprm);
+			/*foreach($MODUL->memos as $key => $param)
+			  $fld[]= $MODUL->SQL->_fldformer($key, $MODUL->mmoprm);
+			 */
+			$fld[] = 'PRIMARY KEY(id)';
+
+			if (isset($MODUL->unique_fields) and count($MODUL->unique_fields)) {
+				foreach ($MODUL->unique_fields as $k => $r) {
+					if (is_array($r))
+						$r = implode('`,`', $r);
+					$fld[] = 'UNIQUE KEY `' . $k . '` (`' . $r . '`)';
+				}
+			}
+			if (isset($MODUL->index_fields) and count($MODUL->index_fields)) {
+				foreach ($MODUL->index_fields as $k => $r) {
+					if (!isset($MODUL->unique_fields[$k])) {
+						if (is_array($r))
+							$r = implode(',', $r);
+						$fld[] = 'KEY `' . $k . '` (`' . $r . '`)';
+					}
+				}
+			}
+			$query = 'CREATE TABLE `' . $MODUL->tablename . '` (' . implode(',', $fld) . ') ENGINE='.$MODUL->SQL_CFG['engine'].' DEFAULT CHARSET=' . $MODUL->SQL_CFG['setnames'] . ' COMMENT = "' . $MODUL->ver . '"';
+			// to execute query
+			$result = $this->execSQL($query);
+			if ($result->err) {
+				return false;
+			}
+			return true;
+		}
+
+		public function _tableDelete(&$MODUL) {
+			return $this->execSQL('DROP TABLE `' . $MODUL->tablename . '`');
+		}
+
+		public function _tableExists(&$MODUL) {
+			$result = $this->execSQL('SHOW TABLES LIKE `' . $MODUL->tablename . '`');
+			if (!$result->err) {
+				if($result->num_rows())
+					return true;
+				else
+					return false;
+			}
+			return NULL;
+		}
+
+		public function _tableKeys(&$MODUL) {
+			$result = $this->execSQL('SHOW KEYS FROM `' . $MODUL->tablename . '`');
+			while ($data = $result->fetch(1)) {
+				if ($data[2] == 'PRIMARY') //только 1 примарикей
+					$primary = $data[4];
+				elseif (!$data[1]) //!NON_unique
+					$uniqlist[$data[2]][$data[4]] = $data[4];
+				else
+					$indexlist[$data[2]][$data[4]] = $data[4];
+			}
+			return array($primary,$uniqlist,$indexlist);
+		}
+
+		/******************************/
+
 		public function _getSQLTableInfo($tablename) {
 			if(!$this->ready) return false;
 			$data = array();
 			$result = $this->execSQL('SHOW FULL FIELDS FROM `' . $tablename . '`');
-			while ($COLUMNS = $result->fetch_array()) {
+			while ($COLUMNS = $result->fetch()) {
 				$fldname = $COLUMNS['Field'];//mb_strtolower(
 				$data[$fldname] = $COLUMNS;
 			}
 			$result = $this->execSQL('SHOW CREATE TABLE `' . $tablename . '`');
-			if ($row = $result->fetch_array()) {
+			if ($row = $result->fetch()) {
 				$creat_table = $row['Create Table'];
 				$creat_table = explode("\n",$creat_table);
 				array_shift($creat_table);
@@ -293,8 +370,8 @@
 
 		function longLog($ttt,$sql) {
 			global $_CFG;
-			if(isset($this->CFG_SQL['longquery']) and $this->CFG_SQL['longquery']>0 and $ttt>$this->CFG_SQL['longquery']) {
-				trigger_error('LONG QUERY ['.$ttt.' sec. - мах '.$this->CFG_SQL['longquery'].'] ('.$sql.')', E_USER_WARNING);
+			if(isset($this->SQL_CFG['longquery']) and $this->SQL_CFG['longquery']>0 and $ttt>$this->SQL_CFG['longquery']) {
+				trigger_error('LONG QUERY ['.$ttt.' sec. - мах '.$this->SQL_CFG['longquery'].'] ('.$sql.')', E_USER_WARNING);
 				if($this->logFile!==false)
 					$this->logFile[] = '['.date('Y-m-d H:i:s').'] LONG QUERY ['.$ttt.' sec.] ('.$sql.')';
 			}
@@ -315,7 +392,7 @@
 
 	}
 
-	class query {
+	class myiquery {
 
 		var $handle;
 		var $id;
@@ -343,36 +420,59 @@
 			}
 		}
 
-		function sql_id() {
+		function sql_id() { // ID Последний добавленой записи
 			return mysqli_insert_id($this->handle);
 		}
 
-		function destroy() {
+		function destroy() { // очистка памяти
 			return mysqli_free_result($this->handle);
 		}
 
-		function num_rows() {
+		function num_rows() { // Кол-во полученных записей
 			return mysqli_num_rows($this->handle);
 		}
 
+
 		// type MYSQLI_ASSOC | MYSQLI_BOTH | MYSQLI_NUM
-		function fetch_array($type = MYSQLI_ASSOC) {
-			return mysqli_fetch_array($this->handle, $type);
+
+		function fetch($type=0) { // Выдает асоциативный и нумеровнаый масив
+			if($type==0)
+				return $this->fetch_assoc($this->handle);
+			elseif($type==1)
+				return $this->fetch_row($this->handle);
+			elseif($type==2)
+				return $this->fetch_array($this->handle);
+			else
+				return $this->fetch_object($this->handle);
 		}
+
+		function fetch_assoc() { // Выдает асоциативный масив
+			return mysqli_fetch_assoc($this->handle);
+		}
+
+		function fetch_row() { // Выдает нумеровнаый масив
+			return mysqli_fetch_row($this->handle);
+		}
+
+		function fetch_array() { // Выдает асоциативный и нумеровнаый масив
+			return mysqli_fetch_array($this->handle, MYSQLI_BOTH);
+		}
+
+		function fetch_object() { // Выдает данные в виде обекта
+			return mysqli_fetch_object($this->handle);
+		}
+
+		// ТЕСТОВЫЕ
 
 		function sql_result($row) { /// TODO ???
 			return mysqli_fetch_field_direct($this->handle, $row);
 		}
 
-		function fetch_object() {
-			return mysqli_fetch_object($this->handle);
-		}
-
-		function affected_rows() {
+		function affected_rows() { // Возвращает кол-во затронутых записей в последней оперции
 			return mysqli_affected_rows($this->db->hlink);
 		}
 
-		function sql_seek($row) {
+		function sql_seek($row) { // ПЕРЕмещает указатель
 			return mysqli_data_seek($this->handle, $row);
 		}
 	}

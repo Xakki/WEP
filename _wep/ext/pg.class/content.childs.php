@@ -8,7 +8,7 @@ class content_class extends kernel_extends {
 		$this->mf_ordctrl = true;
 		$this->mf_actctrl = true;
 		$this->caption = 'Содержимое';
-		$this->tablename = $this->_CFG['sql']['dbpref'].'pg_content';
+		$this->tablename = 'pg_content';
 		$this->addForm = array();
 		return true;
 	}

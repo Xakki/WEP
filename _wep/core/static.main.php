@@ -252,8 +252,9 @@ class static_main {
 		global $_CFG, $SQL;
 		if (!isset($_CFG['modulprm'])) {
 			session_go();
-			if (!$SQL)
-				$SQL = new sql($_CFG['sql']);
+			if (!$SQL) {
+				$SQL = new $_CFG['sql']['type']($_CFG['sql']);
+			}
 			$_CFG['modulprm'] = $_CFG['modulprm_ext'] = array();
 			$ugroup_id = (isset($_SESSION['user']['gid']) ? (int) $_SESSION['user']['gid'] : 2);
 			if(isset($_SESSION['user']['parent_id']) and $_SESSION['user']['parent_id']) {
@@ -267,7 +268,7 @@ class static_main {
 				return false;
 			}
 			$_CFG['modulprm'] = array();
-			while ($row = $result->fetch_array()) {
+			while ($row = $result->fetch()) {
 				if ($row['extend'])
 					$_CFG['modulprm_ext'][$row['extend']][] = $row['id'];
 				if(!isset($_CFG['modulprm'][$row['id']]['access']) or !$_CFG['modulprm'][$row['id']]['access'])

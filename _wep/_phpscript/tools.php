@@ -337,7 +337,7 @@ function tools_sendReg() {
 	$data = array();
 	$result = $SQL->execSQL('SELECT * FROM users WHERE reg_hash!="1"');
 	if(!$result->err)  {
-		while ($row = $result->fetch_array()) {
+		while ($row = $result->fetch()) {
 			$arr['vars']['owner_id']=$UGROUP->config["noreggroup"];
 			$arr['vars']['active']=0;
 			$arr['vars'][$this->mf_createrid]=$arr['vars']['id'];

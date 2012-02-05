@@ -119,7 +119,7 @@
 	</select></span>';
 		}
 		if(!isset($_SESSION['wep_info'])) {
-			if(!$SQL) $SQL = new sql($_CFG['sql']);
+			if(!$SQL) $SQL = new $_CFG['sql']['type']($_CFG['sql']);
 			$info = $SQL->_info();
 			$_SESSION['wep_info'] = 'PHP ver.' . phpversion().' | MySQL ver.' . $info['version'][1].' | '.date_default_timezone_get().' | ';
 		}

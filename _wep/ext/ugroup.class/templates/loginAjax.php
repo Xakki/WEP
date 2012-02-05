@@ -10,7 +10,7 @@ function tpl_loginAjax($data) {
 					<form action="'.$_CFG['_HREF']['siteAJAX'].'?_view=login" method="post" onsubmit="return JSWin({\'type\':this})">
 						<div>Логин:</div><input type="text" name="login" tabindex="1"/>
 						<div>Пароль:</div><input type="password" name="pass" tabindex="2"/>
-						<div>Запомнить?<input type="checkbox" style="margin:0;width:30px;vertical-align:middle;border:none;" tabindex="3" name="remember" value="1"/></div>
+						<label style="display:block;">Запомнить?<input type="checkbox" style="margin:0;width:30px;vertical-align:middle;border:none;" tabindex="3" name="remember" value="1"/></label>
 						<input class="submit" type="submit" name="enter" value="Войти" tabindex="4"/>
 					</form>
 					'.($data['remindpage']?'<a href="'.$data['remindpage'].'">Забыли пароль?</a>':'').'

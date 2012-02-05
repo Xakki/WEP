@@ -160,7 +160,7 @@ class pg_class extends kernel_extends {
 			$data['0'] = ' - Все -';
 			$result = $this->SQL->execSQL('SELECT id, name FROM `'.static_main::getTableNameOfClass('ugroup').'`');
 			if(!$result->err) {
-				while ($row = $result->fetch_array())
+				while ($row = $result->fetch())
 					$data[$row['id']] = $row['name'];
 			}
 			return $data;
@@ -434,13 +434,13 @@ class pg_class extends kernel_extends {
 
 	function display_page() {
 		$this->Cdata = array();
-		$cls = 'SELECT * FROM '.$this->_CFG['sql']['dbpref'].'pg_content WHERE active=1 and (owner_id="'.$this->id.'"';
+		$cls = 'SELECT * FROM '.$this->SQL_CFG['dbpref'].'pg_content WHERE active=1 and (owner_id="'.$this->id.'"';
 		//if($this->id!='404') // откл повторные глобалные контенты, если это 400 и 401 страница
 			$cls .= ' or (owner_id IN ("'.(implode('","',$this->selected)).'") and global=1)';
 		$cls .= ' ) ORDER BY ordind';
 		$resultPG = $this->SQL->execSQL($cls);
 		if(!$resultPG->err)
-			while ($rowPG = $resultPG->fetch_array()) {
+			while ($rowPG = $resultPG->fetch()) {
 				$this->Cdata[$rowPG['id']] = $rowPG;
 			}
 		return $this->getContent($this->Cdata);
@@ -455,10 +455,10 @@ class pg_class extends kernel_extends {
 			$HTML = new html('_design/',$design,false);//отправляет header и печатает страничку
 		}
 		$Cdata = array();
-		$cls = 'SELECT * FROM '.$this->_CFG['sql']['dbpref'].'pg_content WHERE active=1 and marker IN ("'.$marker.'")';
+		$cls = 'SELECT * FROM '.$this->SQL_CFG['dbpref'].'pg_content WHERE active=1 and marker IN ("'.$marker.'")';
 		$resultPG = $this->SQL->execSQL($cls);
 		if(!$resultPG->err)
-			while ($rowPG = $resultPG->fetch_array()) {
+			while ($rowPG = $resultPG->fetch()) {
 				$Cdata[$rowPG['id']] = $rowPG;
 			}
 		return $this->getContent($Cdata);
@@ -796,7 +796,7 @@ class pg_class extends kernel_extends {
 			$result = $this->SQL->execSQL($cls.' ORDER BY ordind');
 
 			if(!$result->err) {
-				while($row = $result->fetch_array()) {
+				while($row = $result->fetch()) {
 					if(!isset($row['alias'])) {$this->updateModul();return $this->sqlCashPG();}
 					$row['onmenu'] = array_flip(explode('|',trim($row['onmenu'],'|')));
 					$this->dataCash[$row['id']] = $row;

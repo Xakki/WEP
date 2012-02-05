@@ -7,7 +7,7 @@ class static_tools {
 	}
 
 	static function _reinstall(&$MODUL) {
-		$MODUL->SQL->execSQL('DROP TABLE `' . $MODUL->tablename . '`');
+		$MODUL->SQL->_tableDelete($MODUL);
 		self::_installTable($MODUL);
 	}
 
@@ -21,23 +21,24 @@ class static_tools {
 			static_main::log('notice','Для модуля '.$MODUL->caption.' таблица не требуется.',$MODUL->_cl);
 			return true;
 		}
-		$result = $MODUL->SQL->execSQL('SHOW TABLES LIKE \'' . $MODUL->tablename . '\''); // checking table exist
+		$flag = $MODUL->SQL->_tableExists($MODUL);// checking table exist
 
-		if (!$result->num_rows()) {
+		if (!$flag) {
 			// contruct of query
-			if(!self::_creatTable($MODUL)) {
+			if(!$MODUL->SQL->_tableCreate($MODUL)) {
 				static_main::log('error','Для модуля `'.$MODUL->caption.'` не удалось создать таблицу.',$MODUL->_cl);
 				return false;
 			}
 			if (count($MODUL->def_records)) {
 				if (!self::_insertDefault($MODUL)) {
-					$MODUL->SQL->execSQL('DROP TABLE `' . $MODUL->tablename . '`');
+					$MODUL->SQL->_tableDelete($MODUL);
 					static_main::log('error','Для модуля `'.$MODUL->caption.'` не удалось записать дефолтные данные, и поэтому таблица не будет создана.',$MODUL->_cl);
 					return false;
 				}
 			}
 			static_main::log('notice','Для модуля `'.$MODUL->caption.'` успешно создана таблица.',$MODUL->_cl);
 		}
+
 		$flag = true;
 		if (count($MODUL->Achilds)) {
 			foreach ($MODUL->childs as &$child) {
@@ -69,20 +70,19 @@ class static_tools {
 			$rDATA['Создание таблицы']['@mess'][] = array( 'notice', 'Модуль `'.$MODUL->caption.'`['.$MODUL->_cl.'] не использует базу данных.' );
 			return $rDATA;
 		}
-		$result = $MODUL->SQL->execSQL('SHOW TABLES LIKE \'' . $MODUL->tablename . '\''); // checking table exist
-		if ($result->err) {
+		$flag = $MODUL->SQL->_tableExists($MODUL);
+		/*if (is_null($flag)) {
 			$rDATA['Создание таблицы']['@mess'][] = static_main::am('error','_big_err',$MODUL);
 			return $rDATA;
-		}
-
-		if (!$result->num_rows()) {
+		}*/
+		if (!$flag) {
 			if (isset($_POST['sbmt'])) {
-				if (!self::_creatTable($MODUL)) {
+				if (!$MODUL->SQL->_tableCreate($MODUL)) {
 					$rDATA['Создание таблицы']['@mess'][] = array( 'error','Для модуля `'.$MODUL->caption.'` не удалось создать таблицу.' );
 				}
 				else {
 					if (count($MODUL->def_records) and !self::_insertDefault($MODUL)) {
-						self::deleteTable($MODUL);
+						$MODUL->SQL->_tableDelete($MODUL);
 						$rDATA['Создание таблицы']['@mess'][] = array( 'error', 'Для модуля `'.$MODUL->caption.'` не удалось записать дефолтные данные, и поэтому таблица не будет создана.' );
 					} else
 						$rDATA['Создание таблицы']['@mess'][] = array( 'notice', 'Для модуля `'.$MODUL->caption.'` успешно создана таблица.' );
@@ -150,15 +150,7 @@ class static_tools {
 
 		$indexlist = $uniqlistR = $uniqlist = array();
 		$primary = '';
-		$result = $MODUL->SQL->execSQL('SHOW KEYS FROM `' . $MODUL->tablename . '`');
-		while ($data = $result->fetch_array(MYSQL_NUM)) {
-			if ($data[2] == 'PRIMARY') //только 1 примарикей
-				$primary = $data[4];
-			elseif (!$data[1]) //!NON_unique
-				$uniqlist[$data[2]][$data[4]] = $data[4];
-			else
-				$indexlist[$data[2]][$data[4]] = $data[4];
-		}
+		list($primary,$uniqlist,$indexlist) = $MODUL->SQL->_tableKeys($MODUL);
 
 		// CREATE PRIMARY KEY
 		if (isset($MODUL->fields['id']) and !$primary) {
@@ -289,7 +281,7 @@ class static_tools {
 		$minX = 0;
 		$maxX = 0;
 		if (!$result->err) {
-			while ($row = $result->fetch_array()) {
+			while ($row = $result->fetch()) {
 				$data[] = '[\'' . $row['X'] . '\',' . $row['Y'] . ']';
 				if ($row['Y'] > $maxY)
 					$maxY = $row['Y'];
@@ -356,7 +348,7 @@ class static_tools {
 				return false;
 			// create list
 
-			while ($row = $result->fetch_array()) {
+			while ($row = $result->fetch()) {
 				//$data[]= $row;
 				foreach ($MODUL->attaches as $key => $value) {
 					$pathimg = $MODUL->_CFG['_PATH']['path'] . $MODUL->getPathForAtt($key);
@@ -425,7 +417,7 @@ class static_tools {
 			$rDATA['Ошибка']['@mess'][] = array( 'error','Ошибка инициализации модуля `modulprm`');
 			return array($Mid => $rDATA);
 		}
-		unset($MODULPRM->_CFG['modulprm2'][$Mid]); // Удаляем отсутствующие модули
+		unset($MODULPRM->_CFG['modulprm2'][$Mid]); // Потом Удаляем отсутствующие модули
 		list($MODUL,$rDATA['modulprm']['@mess']) = $MODULPRM->ForUpdateModulInfo($Mid,$OWN);
 		if ($MODUL===false) {
 			$rDATA['Ошибка']['@mess'][] = array( 'error','Ошибка инициализации модуля `'.$Mid.'`');
@@ -519,7 +511,7 @@ class static_tools {
 		}
 
 		if(isset($SetDataCFG['sql'])) {
-			$SQL = new sql($SetDataCFG['sql']); //пробуем подключиться к БД
+			$SQL = new $SetDataCFG['sql']['type']($SetDataCFG['sql']); //пробуем подключиться к БД
 			if(!$SQL->ready) {
 				$mess[] = array( 'error','Ошибка подключения к БД.');
 			}
@@ -584,47 +576,6 @@ class static_tools {
 		return array($fl,$mess);
 	}
 
-	static function _creatTable(&$MODUL) {
-		$fld = array();
-		if (count($MODUL->fields))
-			foreach ($MODUL->fields as $key => $param)
-				list($fld[],$mess) = $MODUL->SQL->_fldformer($key, $param);
-		if (count($MODUL->attaches))
-			foreach ($MODUL->attaches as $key => $param)
-				list($fld[],$mess) = $MODUL->SQL->_fldformer($key, $MODUL->attprm);
-		/*foreach($MODUL->memos as $key => $param)
-		  $fld[]= $MODUL->SQL->_fldformer($key, $MODUL->mmoprm);
-		 */
-		$fld[] = 'PRIMARY KEY(id)';
-
-		if (isset($MODUL->unique_fields) and count($MODUL->unique_fields)) {
-			foreach ($MODUL->unique_fields as $k => $r) {
-				if (is_array($r))
-					$r = implode('`,`', $r);
-				$fld[] = 'UNIQUE KEY `' . $k . '` (`' . $r . '`)';
-			}
-		}
-		if (isset($MODUL->index_fields) and count($MODUL->index_fields)) {
-			foreach ($MODUL->index_fields as $k => $r) {
-				if (!isset($MODUL->unique_fields[$k])) {
-					if (is_array($r))
-						$r = implode(',', $r);
-					$fld[] = 'KEY `' . $k . '` (`' . $r . '`)';
-				}
-			}
-		}
-		$query = 'CREATE TABLE `' . $MODUL->tablename . '` (' . implode(',', $fld) . ') ENGINE='.$MODUL->tableEngine.' DEFAULT CHARSET=' . $MODUL->_CFG['sql']['setnames'] . ' COMMENT = "' . $MODUL->ver . '"';
-		// to execute query
-		$result = $MODUL->SQL->execSQL($query);
-		if ($result->err) {
-			return false;
-		}
-		return true;
-	}
-
-	static function deleteTable(&$MODUL) {
-		return $MODUL->SQL->execSQL('DROP TABLE `' . $MODUL->tablename . '`');
-	}
 	/**
 	 * Запись дефолтных данных
 	 * @return <type>

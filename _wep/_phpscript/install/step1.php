@@ -53,7 +53,7 @@ if (isset($_POST['sbmt']) and $flag) {
 			'host'=>$_POST['sql']['host'],
 			'login'=>$_POST['rootlogin'],
 			'password'=>$_POST['rootpass']);
-		$rSQL = new sql($temp);
+		$rSQL = new $temp['type']($temp);
 		if($rSQL->ready)
 			list($sqlfl,$txt) = $rSQL->sql_install($_POST['sql']);
 		else

@@ -12,7 +12,6 @@ class session_class extends kernel_extends {
 		$this->caption = 'Сессии';
 		$this->deadvisits  = 2; // мин число визитов
 		$this->deadsession = 1800; //мин сек в течении которго если пользователь не зашел >= $this->deadvisits, то удаляются
-		$this->tablename = $this->_CFG['sql']['dbpref'].'_session';
 		$this->uip = $_SERVER['REMOTE_ADDR']; 
 		$this->_time = time();
 		$this->_hash = '';

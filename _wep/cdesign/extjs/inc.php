@@ -30,7 +30,7 @@
 				$msg = '';
 
 				$result = $SQL->execSQL('SELECT ordind, parent_id FROM `'.$MODUL->tablename.'` WHERE id="'.$nodeid.'"');
-				if ($row = $result->fetch_array()) {
+				if ($row = $result->fetch()) {
 					$dragindex = $row['ordind'];
 
 					if ($dragindex < $dropindex) {

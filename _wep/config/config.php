@@ -19,12 +19,14 @@ $_CFG['info'] = array(//информация о СМС
 /* MAIN_CFG */
 
 $_CFG['sql'] = array(// SQL
+	'type' => 'sqlmyi',
 	'host' => 'localhost',
 	'login' => 'wepmysqluser',
 	'password' => 'defaultpass',
 	'database' => 'wepbd',
 	'setnames' => 'utf8',
 	'dbpref' => '',
+	'engine' => 'MyISAM',
 	'log' => 0, // логирование запросов в фаил
 	'longquery' => 1 // запись в баг запросы которые выполняются дольше указанного времени в сек
 );
@@ -173,7 +175,7 @@ $_CFG['_MASK'] = array(
 	//'comment'=>'',
 	),
 	'www' => array(
-		'match' => '/^(http:\/\/)?([0-9A-Za-zЁёА-Яа-я\.]+\.)?[0-9A-Za-zЁёА-Яа-я\-\_]+\.[0-9A-Za-zЁёА-Яа-я]{2,5}\\?$/u',
+		'match' => '/^(http:\/\/)?([0-9A-Za-zЁёА-Яа-я\.]+\.)?[0-9A-Za-zЁёА-Яа-я\-\_]+\.[0-9A-Za-zЁёА-Яа-я]{2,5}$/u',
 		'nomatch' => '/[^0-9A-Za-zЁёА-Яа-я:\/\.\-\_]/u',
 	//'comment'=>'',
 	),

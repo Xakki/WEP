@@ -70,7 +70,7 @@ final class modulprm_class extends kernel_extends {
 		if ($result->err)
 			static_main::log($result->err);
 		$this->data = array();
-		while ($row = $result->fetch_array()) {
+		while ($row = $result->fetch()) {
 			$this->data[$row['id']]['active'] = $row['active'];
 			$this->data[$row['id']]['access'] = array_flip(explode('|', trim($row['access'], '|')));
 			if ($row['mname'])
@@ -339,7 +339,7 @@ final class modulprm_class extends kernel_extends {
 			$result = $this->SQL->execSQL('SELECT * FROM ' . $this->tablename);
 			if ($result->err)
 				return $check_result;
-			while ($row = $result->fetch_array()) {
+			while ($row = $result->fetch()) {
 				$this->data[$row['id']] = $row;
 				$this->pdata[$row['parent_id']][$row['id']] = $row['id'];
 			}
@@ -577,7 +577,7 @@ final class modulprm_class extends kernel_extends {
 			if ($result->err) {
 				exit();
 			}
-			while ($row = $result->fetch_array()) {
+			while ($row = $result->fetch()) {
 				//if($row['level']==5) $row['id'] = 0;
 				$this->guserData[$row['id']] = $row;
 			}
@@ -588,7 +588,7 @@ final class modulprm_class extends kernel_extends {
 			if ($result->err){
 				exit();
 			}
-			while ($row = $result->fetch_array())
+			while ($row = $result->fetch())
 				$this->modulgrpData[$row['owner_id']][$row['ugroup_id']] = $row;
 		}
 		return true;

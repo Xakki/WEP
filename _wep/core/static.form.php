@@ -107,7 +107,7 @@ class static_form {
 		if (!count($_this->attaches) or !count($_this->att_data)) return true;
 		$result=$_this->SQL->execSQL('SELECT id, '.implode(',', array_keys($_this->attaches)).' FROM `'.$_this->tablename.'` WHERE id IN ('.$_this->id.')');
 		if($result->err) return false;
-		$row = $result->fetch_array();
+		$row = $result->fetch();
 		$prop = array();
 
 		foreach($_this->att_data as $key => $value) 
@@ -322,7 +322,7 @@ class static_form {
 		if(!count($_this->attaches)) return true;
 		$result=$_this->SQL->execSQL('SELECT `id`, `'.implode('`,`', array_keys($_this->attaches)).'` FROM `'.$_this->tablename.'` WHERE `id` IN ('.$_this->_id_as_string().')');
 		if($result->err) return false;
-		$row = $result->fetch_array();
+		$row = $result->fetch();
 		if ($row) {
 			foreach($_this->attaches as $key => $value) {
 				$pathimg = $_this->_CFG['_PATH']['path'].$_this->getPathForAtt($key);
@@ -396,7 +396,7 @@ class static_form {
 		if($result->err) return false;
 		// create list
 		$_this->id = array();
-		while (list($id) = $result->fetch_array(MYSQL_NUM)) 
+		while (list($id) = $result->fetch_row()) 
 			$_this->id[] = $id;
 		// if list not empty
 		if (count($_this->id)) $_this->_delete();
@@ -414,7 +414,7 @@ class static_form {
 
 		// create list
 		$_this->id = array();
-		while (list($id) = $result->fetch_array(MYSQL_NUM))
+		while (list($id) = $result->fetch_row())
 			$_this->id[] = $id;
 
 		// if list not empty
@@ -442,7 +442,7 @@ class static_form {
 		$result=$_this->SQL->execSQL('SELECT `id`, `'.implode('`,`', array_keys($_this->attaches)).'` FROM `'. $_this->tablename.'` WHERE `id` IN ('.$_this->_id_as_string().')');
 		if($result->err) return false;
 
-		while ($row = $result->fetch_array()) {
+		while ($row = $result->fetch()) {
 			foreach($_this->attaches as $key => $att) {
 				$pathimg = $_this->_CFG['_PATH']['path'].$_this->getPathForAtt($key);
 				$oldname =$pathimg.'/'. $row['id']. '.'.$row[$key];
@@ -1040,7 +1040,7 @@ class static_form {
 					eval('$data[$key] = '.$preg_mask['eval'].';');
 				}
 				if(isset($preg_mask['match'])) {
-					$matches = preg_match_all($preg_mask['match'],$data[$key],$temp,PREG_OFFSET_CAPTURE);
+					$matches = preg_match_all($preg_mask['match'],$data[$key],$temp);
 					if(!$matches) {
 						$error[$key.'mask'] = 3;
 					}

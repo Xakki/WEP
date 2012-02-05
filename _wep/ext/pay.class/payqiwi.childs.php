@@ -30,7 +30,7 @@ class payqiwi_class extends kernel_extends {
 		$this->caption = 'QIWI';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';
 		$this->lang['add_name'] = 'Пополнение кошелька из QIWI';
-		$this->lang['_saveclose'] = 'Выписать счёт';
+		$this->lang['Save and close'] = 'Выписать счёт';
 		$this->lang['add'] = 'Счёт на пополнение кошелька отправлено в систему QIWI.<br/> Чтобы оплатить его перейдите на сайт <a href="https://w.qiwi.ru/orders.action">QIWI</a> и в течении 5ти минут после оплаты, сумма поступит на ваш баланс.';
 		$this->default_access = '|0|';
 		$this->mf_timestamp = true; // создать поле  типа timestamp

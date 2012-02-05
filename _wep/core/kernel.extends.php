@@ -1,6 +1,8 @@
 <?php
 
-/* COMMENT = класс расширения для модулей */
+/**
+* COMMENT = класс расширения для модулей 
+*/
 
 abstract class kernel_extends {
 
@@ -9,7 +11,7 @@ abstract class kernel_extends {
 		//FB::info($_CFG);
 		$this->_CFG = true; // баг ПХП
 		$this->_CFG = &$_CFG; //Config
-		$this->cfg_sql = $this->_CFG['sql'];
+		$this->SQL_CFG = $this->_CFG['sql'];
 
 		$this->owner = true;
 		if(is_object($owner) and isset($owner->fields))
@@ -22,7 +24,8 @@ abstract class kernel_extends {
 			$_CFG['singleton'][$this->_cl] = &$this;
 
 		$this->_create_conf(); // загрузки формы конфига
-		if (isset($this->config_form) and count($this->config_form)) { // загрузка конфига из файла для модуля
+		if (isset($this->config_form) and count($this->config_form)) {
+			// загрузка конфига из файла для модуля
 			$this->configParse();
 		}
 		$this->_create(); // предустановки модуля
@@ -36,16 +39,25 @@ abstract class kernel_extends {
 	}
 
 	function __get($name) {
-		global $_CFG,$SQL;
+		global $SQL,$PSQL;
 		if ($name == 'SQL') {
 			if (!$this->grant_sql) {
-				if (!isset($SQL) or !$SQL->ready) {
-					$SQL = new sql($_CFG['sql']);
+				if ($this->SQL_CFG['type']=='sqlpostgre') {
+					if (!isset($PSQL) or !$PSQL->ready) {
+						$PSQL = new $this->SQL_CFG['type']($this->SQL_CFG);
+					}
+					$this->SQL = &$PSQL;
+					return $PSQL;
 				}
-				$this->SQL = &$SQL;
-				return $SQL;
+				else {
+					if (!isset($SQL) or !$SQL->ready) {
+						$SQL = new $this->SQL_CFG['type']($this->SQL_CFG);
+					}
+					$this->SQL = &$SQL;
+					return $SQL;
+				}
 			} else {
-				return new sql($this->cfg_sql);
+				return new $this->SQL_CFG['type']($this->SQL_CFG);
 			}
 		} 
 		elseif ($name == 'setHook') {
@@ -159,8 +171,7 @@ abstract class kernel_extends {
 
 		$this->_cl = str_replace('_class', '', get_class($this)); //- символическое id модуля
 		$this->owner_name = 'owner_id'; // название поля для родительской связи в БД
-		$this->tablename = $this->_CFG['sql']['dbpref'] . $this->_cl; // название таблицы
-		$this->tableEngine = 'MyISAM';
+		$this->tablename = $this->_cl; // название таблицы
 		$this->caption = $this->_cl; // заголовок модуля
 		$this->_listfields = array('name'); //select по умолч
 		$this->unique_fields =
@@ -200,7 +211,6 @@ abstract class kernel_extends {
 	}
 
 	protected function _create_conf() { // Здесь можно установить стандартные настройки модулей
-		global $_CFG;
 		if ($this->cf_childs) {
 			$this->config['childs'] = '';
 			$this->config_form['childs'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'child.class', 'caption' => 'Подмодули');
@@ -233,7 +243,7 @@ abstract class kernel_extends {
 	}
 
 	protected function _create() {
-
+		$this->tablename = $this->SQL_CFG['dbpref'] . $this->tablename; // название таблицы
 		if (is_bool($this->mf_namefields) and $this->mf_namefields)
 			$this->mf_namefields = 'name';
 		if (is_bool($this->mf_createrid) and $this->mf_createrid)
@@ -387,12 +397,12 @@ abstract class kernel_extends {
 					$data[''][''] = static_main::m('_listroot',$this);
 				else
 					$data[0][0] = static_main::m('_listroot',$this);
-				while (list($id, $name,$pid) = $result->fetch_array(MYSQL_NUM)) {
+				while (list($id, $name,$pid) = $result->fetch_row()) {
 					$data[$pid][$id] = $name;
 				}
 			}
 			else {
-				while (list($key, $value) = $result->fetch_array(MYSQL_NUM))
+				while (list($key, $value) = $result->fetch_row())
 					$data[$key] = $value;
 			}
 		}
@@ -432,13 +442,13 @@ abstract class kernel_extends {
 			return false;
 		$data = array();
 		if ($ord != '' and $ord2 != '') {
-			while ($row = $result->fetch_array())
+			while ($row = $result->fetch())
 				$data[$row[$ord2]][$row[$ord]] = $row;
 		} elseif ($ord != '') {
-			while ($row = $result->fetch_array())
+			while ($row = $result->fetch())
 				$data[$row[$ord]] = $row;
 		} else {
-			while ($row = $result->fetch_array())
+			while ($row = $result->fetch())
 				$data[] = $row;
 		}
 		if (count($data) and !$this->_select_attaches($data))
@@ -485,7 +495,7 @@ abstract class kernel_extends {
 		$result = $this->SQL->execSQL($sql_query);
 		if ($result->err)
 			return $data;
-		while ($row = $result->fetch_array())
+		while ($row = $result->fetch())
 			$data[$row['id']] = $row;
 		return $data;
 	}
@@ -713,7 +723,7 @@ abstract class kernel_extends {
 		$result = $this->SQL->execSQL($query);
 		if ($result->err)
 			return 0;
-		list($ordind) = $result->fetch_array(MYSQL_NUM);
+		list($ordind) = $result->fetch_row();
 		if ($ordind = (int) $ordind)
 			$ordind++;
 		return $ordind;
@@ -1031,12 +1041,12 @@ abstract class kernel_extends {
 		if (!$this->id or (isset($this->data[$this->id]) and $this->_prmModulEdit($this->data[$this->id], $param))) {
 			$this->form['sbmt'] = array(
 				'type' => 'submit',
-				'value_save' => ((isset($param['sbmt_save']) and $this->id) ? static_main::m('_save',$this) : ''),
-				'value_close' => (isset($param['sbmt_close']) ? static_main::m('_close',$this) : ''),
-				'value' => static_main::m('_saveclose',$this)
+				'value_save' => ((isset($param['sbmt_save']) and $this->id) ? static_main::m('Save',$this) : ''),
+				'value_close' => (isset($param['sbmt_close']) ? static_main::m('Close',$this) : ''),
+				'value' => static_main::m('Save and close',$this)
 			);
 			if($this->id and $this->_prmModulDel($this->data, $param) and isset($param['sbmt_del']))
-				$this->form['sbmt']['value_del'] = static_main::m('Удалить',$this);
+				$this->form['sbmt']['value_del'] = static_main::m('Delete',$this);
 		}
 		return true;
 	}
@@ -1351,7 +1361,7 @@ abstract class kernel_extends {
 					'css' => 'wepchecktable',
 				);*/
 				if($this->ver!=$this->_CFG['modulprm'][$this->_cl]['ver']) {
-					//$_tpl['onload'] .= 'showHelp(\'.weptools.wepchecktable\',\'Версия модуля '.$MODUL->caption.'['.$MODUL->_cl.'] ('.$MODUL->ver.') отличается от версии ('.$_CFG['modulprm'][$MODUL->_cl]['ver'].') сконфигурированного для этого сайта. Обновите здесь поля таблицы.\',4000);$(\'.weptools.wepchecktable\').addClass(\'weptools_sel\');';
+					//$_tpl['onload'] .= 'showHelp(\'.weptools.wepchecktable\',\'Версия модуля '.$MODUL->caption.'['.$MODUL->_cl.'] ('.$MODUL->ver.') отличается от версии ('.$this->_CFG['modulprm'][$MODUL->_cl]['ver'].') сконфигурированного для этого сайта. Обновите здесь поля таблицы.\',4000);$(\'.weptools.wepchecktable\').addClass(\'weptools_sel\');';
 					$PARAM['messages'][] = array('error','Версия модуля '.$this->caption.'['.$this->_cl.'] ('.$this->ver.') отличается от версии ('.$this->_CFG['modulprm'][$this->_cl]['ver'].') сконфигурированного для этого сайта. Обновите модуль.');
 				}
 
@@ -1581,7 +1591,7 @@ abstract class kernel_extends {
 				'caption' => static_main::m('_reinstall_info',$this));
 			$this->form['sbmt'] = array(
 				'type' => 'submit',
-				'value' => static_main::m('_submit',$this));
+				'value' => static_main::m('Submit',$this));
 		}
 		self::kFields2FormFields($this->form);
 		return Array('form' => $this->form, 'messages' => $mess);
@@ -1681,7 +1691,7 @@ abstract class kernel_extends {
 				'value' => array(
 					'_off'=>static_main::m('Отключить',$this),
 					'_on'=>static_main::m('Включить',$this),
-					'_del'=>static_main::m('Удалить',$this),
+					'_del'=>static_main::m('Delete',$this),
 					'_clear'=>static_main::m('Отменить выбранные элементы.',$this),
 					''=>static_main::m('Отмена',$this),
 				)
@@ -1717,7 +1727,7 @@ abstract class kernel_extends {
 	  'caption'=>static_main::m('_reindex_info',$this));
 	  $this->form['sbmt'] = array(
 	  'type'=>'submit',
-	  'value'=>static_main::m('_submit',$this));
+	  'value'=>static_main::m('Submit',$this));
 	  }
 	  self::kFields2FormFields($this->form);
 	  return Array('form'=>$this->form, 'messages'=>$mess);

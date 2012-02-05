@@ -59,16 +59,19 @@ function tpl_form(&$data) {
 			$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'" value="'.$r['value'].'" id="'.((isset($r['id']) and $r['id'])?$r['id']:$k).'"/>';
 		}
 		else {
-			$texthtml .= '<div class="form-caption">'.$r['caption'];
-			if((isset($r['mask']['min']) and $r['mask']['min']) or (isset($r['mask']['minint']) and $r['mask']['minint'])) {
-				$texthtml .= '<span class="form-requere">*</span>';
+				$CAPTION = $r['caption'];
+				if((isset($r['mask']['min']) and $r['mask']['min']) or (isset($r['mask']['minint']) and $r['mask']['minint'])) {
+					$CAPTION .= '<span class="form-requere">*</span>';
+				}
+				elseif(isset($r['mask']['min2']) and $r['mask']['min2']) {
+					$CAPTION .= '<span  class="form-requere" data-text="'.$r['mask']['min2'].'">**</span>';
+				}
+				if($r['type']=='ckedit' and static_main::_prmUserCheck(1))
+					$CAPTION .= '<input type="checkbox" onchange="SetWysiwyg(this)" name="'.$k.'_ckedit" style="width:13px;vertical-align: bottom;margin: 0 0 0 5px;"/>';
+
+			if($r['type']!='checkbox') {
+				$texthtml .= '<div class="form-caption">'.$CAPTION.'</div>';
 			}
-			elseif(isset($r['mask']['min2']) and $r['mask']['min2']) {
-				$texthtml .= '<span  class="form-requere" data-text="'.$r['mask']['min2'].'">**</span>';
-			}
-			if($r['type']=='ckedit' and static_main::_prmUserCheck(1))
-				$texthtml .= '<input type="checkbox" onchange="SetWysiwyg(this)" name="'.$k.'_ckedit" style="width:13px;vertical-align: bottom;margin: 0 0 0 5px;"/>';
-			$texthtml .= '</div>';
 
 			$attribute = '';
 			if(isset($r['readonly']) and $r['readonly'])
@@ -108,10 +111,18 @@ function tpl_form(&$data) {
 				$texthtml .= '</div>';
 			}
 			elseif($r['type']=='checkbox') {
-				$texthtml .= '<div class="form-value checkbox-value';
-				if(!isset($r['valuelist']) or !count($r['valuelist']))
-					$texthtml .= '"><input type="'.$r['type'].'" name="'.$k.'" value="1" '.($r['value']?'checked="checked"':'').' '.$attribute.'/>';
+
+				if(!isset($r['valuelist']) or !count($r['valuelist'])) {
+					if($r['value'])
+						$attribute .= ' checked="checked"';
+					$texthtml .= '<label class="form-value checkbox-value">
+						<input type="'.$r['type'].'" name="'.$k.'" value="1" '.$attribute.'/>
+						<div class="form-caption">'.$CAPTION.'</div>
+					</label>';
+				}
 				else {
+					$texthtml .= '<div class="form-caption">'.$CAPTION.'</div>';
+					$texthtml .= '<div class="form-value checkbox-value';
 					$texthtml .= ' checkbox-valuelist">';
 					foreach($r['valuelist'] as $kv=>$rv) {
 						$sel = false;
@@ -135,15 +146,16 @@ function tpl_form(&$data) {
 									$sel = true;
 							}
 						}
-						$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'['.$id.']" value="'.$id.'" class="radio" '.$attribute;
+						$texthtml .= '<label class="boxtitle"><input type="'.$r['type'].'" name="'.$k.'['.$id.']" value="'.$id.'" class="radio" '.$attribute;
 						if($sel)
 							$texthtml .= ' checked="checked"';
 						if($readonly)
 							$texthtml .= ' readonly="readonly"';
-						$texthtml .= '/><div class="boxtitle">'.$name.'</div>';
+						$texthtml .= '/>'.$name.'</label>';
 					}
+					$texthtml .= '</div>';
 				}
-				$texthtml .= '</div>';
+				// end checkbox
 			}
 			elseif($r['type']=='ajaxlist' and isset($r['multiple'])) {
 				global $_tpl;				
@@ -455,7 +467,7 @@ function tpl_form(&$data) {
 				$texthtml .= '';
 				/*$texthtml .= '<input type="file" name="'.$k.'" '.$attribute.'/><span class="fileinfo"></span>';
 				if($r['del']==1 and $r['value']!='')
-					$texthtml .= '<div class="filedelete"><lable for="'.$k.'_del">Удалить?&#160;</lable><input type="checkbox" name="'.$k.'_del" id="'.$k.'_del" value="1"/></div>';*/
+					$texthtml .= '<div class="filedelete"><label for="'.$k.'_del">Удалить?&#160;</label><input type="checkbox" name="'.$k.'_del" id="'.$k.'_del" value="1"/></div>';*/
 
 				$texthtml .= '</div>';
 			}
@@ -505,7 +517,7 @@ function tpl_form(&$data) {
 				$texthtml .= '<input type="file" name="'.$k.'" '.$attribute.'/><span class="fileinfo"></span>';
 
 				if($r['del']==1 and $r['value']!='')
-					$texthtml .= '<div class="filedelete"><lable for="'.$k.'_del">Удалить?&#160;</lable><input type="checkbox" name="'.$k.'_del" id="'.$k.'_del" value="1"/></div>';
+					$texthtml .= '<label class="filedelete">Удалить?&#160;<input type="checkbox" name="'.$k.'_del" value="1"/></label>';
 
 				$texthtml .= '</div>';
 			}

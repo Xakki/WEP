@@ -201,7 +201,7 @@
 			if($_this->mf_ordctrl) $q .= ' ORDER BY '.$_this->mf_ordctrl;
 			$result = $_this->SQL->execSQL($q);
 			if(!$result->err)
-				while (list($id, $name,$pid) = $result->fetch_array(MYSQL_NUM)) {
+				while (list($id, $name,$pid) = $result->fetch_row()) {
 					$data[$pid][$id] = $name;
 				}
 		} 
@@ -264,15 +264,15 @@
 //print($_this->SQL->query);
 				if(!$result->err) {
 					if(!is_null($value) and is_array($value) and count($value)) {
-						while ($row = $result->fetch_array())
+						while ($row = $result->fetch())
 							$data[$row['id']] = $row['name'];
 					}
 					elseif(!is_null($value)) {
-						if ($row = $result->fetch_array())
+						if ($row = $result->fetch())
 							$data[$row['id']] = $row['name'];
 					}
 					elseif(isset($listname['is_tree']) and $listname['is_tree']) {
-						while ($row = $result->fetch_array()){
+						while ($row = $result->fetch()){
 							if(!isset($row['checked'])) $row['checked'] = true;
 							$data[$row['parent_id']][$row['id']] = array('#name#'=>$row['name'], '#checked#'=>$row['checked']);
 						}
@@ -292,7 +292,7 @@
 							if($_listroot)
 								$data[''] = $_listroot;
 						}
-						while ($row = $result->fetch_array())
+						while ($row = $result->fetch())
 								$data[$row['id']] = $row['name'];
 					}
 				}
