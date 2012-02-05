@@ -1245,7 +1245,7 @@ class static_form {
 	 * Записывает в куки закодированный КОД (рандомный), для отображения его на рисунке /capcha.php
 	 * Использует для кодирования OpenSsl или MCrypt, в качестве ключа используется Хэш фаил $_CFG['_FILE']['HASH_KEY']
 	 */
-	static function setCaptcha($len=5,$def=1) {
+	static function setCaptcha($len=5,$def=0) {
 		global $_CFG;
 
 		if(!$def) {

@@ -917,10 +917,11 @@ abstract class kernel_extends {
 				if(isset($param['captchaOn']['len'])) $LEN = $param['captchaOn']['len'];
 				if(isset($param['captchaOn']['dif'])) $DIF = $param['captchaOn']['dif'];
 			}
+			//$LEN,$DIF
 			$this->fields_form['captcha'] = array(
 				'type' => 'captcha',
 				'caption' => static_main::m('_captcha',$this),
-				'captcha' => static_form::getCaptcha($LEN,$DIF),
+				'captcha' => static_form::getCaptcha(),
 				'src' => $this->_CFG['_HREF']['captcha'] . '?' . rand(0, 9999),
 				'value' => (isset($data['captcha'])?$data['captcha']:''),
 				'mask' => array('min' => 1,'max'=>$LEN,'dif'=>$DIF));
