@@ -1033,13 +1033,14 @@ class static_form {
 	
 		if($preg_mask AND $data[$key]) {
 			$nomatch = '';
+			$data[$key] = trim($data[$key]);
 			if(is_array($preg_mask)) {
 				$value = $data[$key];
 				if(isset($preg_mask['eval'])) {
 					eval('$data[$key] = '.$preg_mask['eval'].';');
 				}
 				if(isset($preg_mask['match'])) {
-					$matches = preg_match_all($preg_mask['match'],$data[$key],$form['matches_err'],PREG_OFFSET_CAPTURE);
+					$matches = preg_match_all($preg_mask['match'],$data[$key],$temp,PREG_OFFSET_CAPTURE);
 					if(!$matches) {
 						$error[$key.'mask'] = 3;
 					}
