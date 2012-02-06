@@ -40,7 +40,10 @@
 				$temp_topmenu .= ' class="'.$r['css'].'" title="'.$r['title'].'">'.$r['caption'].'</span></div>';
 			}
 		}
-		include_once($HTML->_PATHd.'php/pagenum.php');
+		if(file_exists($HTML->_PATHd.'php/pagenum.php'))
+			include_once($HTML->_PATHd.'php/pagenum.php');
+		else
+			include_once('pagenum.php');
 		$temp_topmenu .= tpl_pagenum($data['data']['pagenum']);// pagenum
 		$temp_topmenu .= '</div>';
 

@@ -26,6 +26,7 @@
 		}
 
 		function __destruct() {
+			global $_CFG;
 			$this->sql_close();
 			if($this->logFile!==false and count($this->logFile)) {
 				file_put_contents($_CFG['_PATH']['log'].'_'.date('Y-m-d_H-i-s').'.log',implode("\n",$this->logFile));
@@ -97,62 +98,9 @@
 			return mysqli_query($this->hlink, 'grant all privileges on `'.$CFG['database'].'`.* to \''.$CFG['login'].'\'@\''.$CFG['host'].'\'');
 		}
 
-		public function sql_id() {
-			if(!$this->ready) return false;
-			return mysqli_insert_id($this->hlink);
-		}
-
-
-		public function SqlEsc($val) {
-			if(!$this->ready) return '';
-			return mysqli_real_escape_string($this->hlink,$val);
-		}
-
 		private function sql_close() {
 			if($this->hlink)
 				mysqli_close($this->hlink);
-		}
-
-/*****************************/
-
-		public function execSQL($sql) {
-			if(!$this->ready) return false;
-			return new myiquery($this, $sql);
-		}
-
-		public function q($sql,$key=false,$type = 0) {
-			if(!$this->ready) return false;
-			$result = new myiquery($this, $sql);
-			$data = array();
-			if (!$result->err) {
-				if($key!==false) {
-					while ($r = $result->fetch($type))
-						$data[$r[$key]] = $r;
-				} 
-				else {
-					while ($r = $result->fetch($type))
-						$data[] = $r;
-				}
-			}
-			return $data;
-		}
-
-/*****************************/
-
-		public function _info() {
-			return $this->q('show variables',0,MYSQLI_NUM);
-		}
-
-		public function _proc() {
-			return $this->q('show full processlist');
-		}
-
-		public function _status() {
-			return $this->q('show status');
-		}
-
-		private function fError($err) {
-			$this->sql_err[] = $err;
 		}
 
 		public function sql_install($CFG) {
@@ -170,17 +118,163 @@
 			return array(true,'OK');
 		}
 
-		private function err($mess) {
-			global $_CFG;
-			$mess = static_main::m($mess);
-			if(!$_CFG['wep']['debugmode']){
-				die($mess);
-			}
-			else {
-				//static_main::log('error',$mess);
-			}
-			return false;
+/*****************************/
+
+		public function query($sql) {
+			if(!$this->ready) return false;
+			return new myiquery($this, $sql);
 		}
+		public function execSQL($sql) { // Синоним
+			return $this->query($sql);
+		}
+
+		public function lastId() {
+			if(!$this->ready) return false;
+			return $this->lastId;
+		}
+		public function sql_id() { // Синоним
+			if(!$this->ready) return false;
+			return $this->lastId;
+		}
+
+		public function escape($val) {
+			if(!$this->ready) return '';
+			return mysqli_real_escape_string($this->hlink,$val);
+		}
+		public function SqlEsc($val) { // Синоним
+			return $this->escape($val);
+		}
+
+		public function q($sql,$key=false,$type = 0) {
+			if(!$this->ready) return false;
+			$result = $this->query($sql);
+			$data = array();
+			if (!$result->err) {
+				if($key!==false) {
+					while ($r = $result->fetch($type))
+						$data[$r[$key]] = $r;
+				} 
+				else {
+					while ($r = $result->fetch($type))
+						$data[] = $r;
+				}
+			}
+			return $data;
+		}
+
+		/******************************/
+		/******************************/
+		/******************************/
+
+		public function _tableCreate(&$MODUL) {
+			$fld = array();
+			if (count($MODUL->fields))
+				foreach ($MODUL->fields as $key => $param)
+					list($fld[],$mess) = $MODUL->SQL->_fldformer($key, $param);
+			if (count($MODUL->attaches))
+				foreach ($MODUL->attaches as $key => $param)
+					list($fld[],$mess) = $MODUL->SQL->_fldformer($key, $MODUL->attprm);
+			/*foreach($MODUL->memos as $key => $param)
+			  $fld[]= $MODUL->SQL->_fldformer($key, $MODUL->mmoprm);
+			 */
+			$fld[] = 'PRIMARY KEY(id)';
+
+			if (isset($MODUL->unique_fields) and count($MODUL->unique_fields)) {
+				foreach ($MODUL->unique_fields as $k => $r) {
+					if (is_array($r))
+						$r = implode('`,`', $r);
+					$fld[] = 'UNIQUE KEY `' . $k . '` (`' . $r . '`)';
+				}
+			}
+			if (isset($MODUL->index_fields) and count($MODUL->index_fields)) {
+				foreach ($MODUL->index_fields as $k => $r) {
+					if (!isset($MODUL->unique_fields[$k])) {
+						if (is_array($r))
+							$r = implode(',', $r);
+						$fld[] = 'KEY `' . $k . '` (`' . $r . '`)';
+					}
+				}
+			}
+			$query = 'CREATE TABLE `' . $MODUL->tablename . '` (' . implode(',', $fld) . ') ENGINE='.$MODUL->SQL_CFG['engine'].' DEFAULT CHARSET=' . $MODUL->SQL_CFG['setnames'] . ' COMMENT = "' . $MODUL->ver . '"';
+			// to execute query
+			$result = $this->query($query);
+			if ($result->err) {
+				return false;
+			}
+			return true;
+		}
+
+		public function _tableDelete(&$MODUL) {
+			return $this->query('DROP TABLE `' . $MODUL->tablename . '`');
+		}
+
+		public function _tableExists(&$MODUL) {
+			$result = $this->query('SHOW TABLES LIKE "' . $MODUL->tablename . '"');
+			if (!$result->err) {
+				if($result->num_rows())
+					return true;
+				else
+					return false;
+			}
+			return NULL;
+		}
+
+		public function _tableKeys(&$MODUL) {
+          $primary = $uniqlist = $indexlist = array();
+			$result = $this->query('SHOW KEYS FROM `' . $MODUL->tablename . '`');
+			while ($data = $result->fetch(1)) {
+				if ($data[2] == 'PRIMARY') //только 1 примарикей
+					$primary = $data[4];
+				elseif (!$data[1]) //!NON_unique
+					$uniqlist[$data[2]][$data[4]] = $data[4];
+				else
+					$indexlist[$data[2]][$data[4]] = $data[4];
+			}
+			return array($primary,$uniqlist,$indexlist);
+		}
+
+
+		/*****************************/
+
+		public function _info() {
+			return $this->q('show variables',0,MYSQLI_NUM);
+		}
+
+		public function _proc() {
+			return $this->q('show full processlist');
+		}
+
+		public function _status() {
+			return $this->q('show status');
+		}
+
+		public function _getSQLTableInfo($tablename) {
+			if(!$this->ready) return false;
+			$data = array();
+			$result = $this->query('SHOW FULL FIELDS FROM `' . $tablename . '`');
+			while ($COLUMNS = $result->fetch()) {
+				$fldname = $COLUMNS['Field'];//mb_strtolower(
+				$data[$fldname] = $COLUMNS;
+			}
+			$result = $this->query('SHOW CREATE TABLE `' . $tablename . '`');
+			if ($row = $result->fetch()) {
+				$creat_table = $row['Create Table'];
+				$creat_table = explode("\n",$creat_table);
+				array_shift($creat_table);
+				$info = array_pop($creat_table);
+				foreach($creat_table as $r) {
+					$r = trim($r," ,\t\r");
+					if(substr($r,0,1)=='`') {
+						$pos = strpos($r,'`',1);
+						$fldname = substr($r,1,($pos-1));
+						$data[$fldname]['create'] = $r;
+					}
+				}
+			}
+			return $data;
+		}
+
+/*****************************/
 
 		var $alias_types = array(
 				'bool'=>'tinyint(1)',
@@ -270,102 +364,20 @@
 		}
 
 
-		/******************************/
-		/******************************/
-		/******************************/
-
-		public function _tableCreate(&$MODUL) {
-			$fld = array();
-			if (count($MODUL->fields))
-				foreach ($MODUL->fields as $key => $param)
-					list($fld[],$mess) = $MODUL->SQL->_fldformer($key, $param);
-			if (count($MODUL->attaches))
-				foreach ($MODUL->attaches as $key => $param)
-					list($fld[],$mess) = $MODUL->SQL->_fldformer($key, $MODUL->attprm);
-			/*foreach($MODUL->memos as $key => $param)
-			  $fld[]= $MODUL->SQL->_fldformer($key, $MODUL->mmoprm);
-			 */
-			$fld[] = 'PRIMARY KEY(id)';
-
-			if (isset($MODUL->unique_fields) and count($MODUL->unique_fields)) {
-				foreach ($MODUL->unique_fields as $k => $r) {
-					if (is_array($r))
-						$r = implode('`,`', $r);
-					$fld[] = 'UNIQUE KEY `' . $k . '` (`' . $r . '`)';
-				}
-			}
-			if (isset($MODUL->index_fields) and count($MODUL->index_fields)) {
-				foreach ($MODUL->index_fields as $k => $r) {
-					if (!isset($MODUL->unique_fields[$k])) {
-						if (is_array($r))
-							$r = implode(',', $r);
-						$fld[] = 'KEY `' . $k . '` (`' . $r . '`)';
-					}
-				}
-			}
-			$query = 'CREATE TABLE `' . $MODUL->tablename . '` (' . implode(',', $fld) . ') ENGINE='.$MODUL->SQL_CFG['engine'].' DEFAULT CHARSET=' . $MODUL->SQL_CFG['setnames'] . ' COMMENT = "' . $MODUL->ver . '"';
-			// to execute query
-			$result = $this->execSQL($query);
-			if ($result->err) {
-				return false;
-			}
-			return true;
+		private function fError($err) {
+			$this->sql_err[] = $err;
 		}
 
-		public function _tableDelete(&$MODUL) {
-			return $this->execSQL('DROP TABLE `' . $MODUL->tablename . '`');
-		}
-
-		public function _tableExists(&$MODUL) {
-			$result = $this->execSQL('SHOW TABLES LIKE `' . $MODUL->tablename . '`');
-			if (!$result->err) {
-				if($result->num_rows())
-					return true;
-				else
-					return false;
+		private function err($mess) {
+			global $_CFG;
+			$mess = static_main::m($mess);
+			if(!$_CFG['wep']['debugmode']){
+				die($mess);
 			}
-			return NULL;
-		}
-
-		public function _tableKeys(&$MODUL) {
-			$result = $this->execSQL('SHOW KEYS FROM `' . $MODUL->tablename . '`');
-			while ($data = $result->fetch(1)) {
-				if ($data[2] == 'PRIMARY') //только 1 примарикей
-					$primary = $data[4];
-				elseif (!$data[1]) //!NON_unique
-					$uniqlist[$data[2]][$data[4]] = $data[4];
-				else
-					$indexlist[$data[2]][$data[4]] = $data[4];
+			else {
+				//static_main::log('error',$mess);
 			}
-			return array($primary,$uniqlist,$indexlist);
-		}
-
-		/******************************/
-
-		public function _getSQLTableInfo($tablename) {
-			if(!$this->ready) return false;
-			$data = array();
-			$result = $this->execSQL('SHOW FULL FIELDS FROM `' . $tablename . '`');
-			while ($COLUMNS = $result->fetch()) {
-				$fldname = $COLUMNS['Field'];//mb_strtolower(
-				$data[$fldname] = $COLUMNS;
-			}
-			$result = $this->execSQL('SHOW CREATE TABLE `' . $tablename . '`');
-			if ($row = $result->fetch()) {
-				$creat_table = $row['Create Table'];
-				$creat_table = explode("\n",$creat_table);
-				array_shift($creat_table);
-				$info = array_pop($creat_table);
-				foreach($creat_table as $r) {
-					$r = trim($r," ,\t\r");
-					if(substr($r,0,1)=='`') {
-						$pos = strpos($r,'`',1);
-						$fldname = substr($r,1,($pos-1));
-						$data[$fldname]['create'] = $r;
-					}
-				}
-			}
-			return $data;
+			return false;
 		}
 
 		function longLog($ttt,$sql) {
@@ -400,7 +412,6 @@
 		var $err;
 
 		function __construct(&$db, $sql) {
-			global $_CFG;
 			$ttt = getmicrotime();
 			$this->handle = mysqli_query($db->hlink, $sql);
 			$this->db = &$db;
@@ -419,9 +430,11 @@
 				$db->longLog((getmicrotime()-$ttt),$sql);
 			}
 		}
-
-		function sql_id() { // ID Последний добавленой записи
-			return mysqli_insert_id($this->handle);
+		function lastId() {// ID Последний добавленой записи
+			return mysqli_insert_id($this->db->hlink);
+		}
+		function sql_id() { // Синоним
+			return $this->lastId();
 		}
 
 		function destroy() { // очистка памяти
@@ -462,17 +475,18 @@
 			return mysqli_fetch_object($this->handle);
 		}
 
-		// ТЕСТОВЫЕ
-
-		function sql_result($row) { /// TODO ???
-			return mysqli_fetch_field_direct($this->handle, $row);
-		}
-
 		function affected_rows() { // Возвращает кол-во затронутых записей в последней оперции
 			return mysqli_affected_rows($this->db->hlink);
 		}
 
-		function sql_seek($row) { // ПЕРЕмещает указатель
-			return mysqli_data_seek($this->handle, $row);
+		function sql_seek($offset) { // ПЕРЕмещает указатель
+			return mysqli_data_seek($this->handle, $offset);
 		}
+
+		// ТЕСТОВЫЕ
+
+		function sql_result($row) {
+			return mysqli_fetch_field_direct($this->handle, $row);
+		}
+
 	}

@@ -101,9 +101,10 @@
 			float:left;
 		}
 		.divform .checkbox-value .boxtitle {
-			margin-left:25px; 
-			margin-bottom:3px; 
+			margin-left:10px; 
+			margin-bottom:5px; 
 			min-height: 1.5em;
+			display: block;
 		}
 	.divform .form-submit {
 		text-align:center;

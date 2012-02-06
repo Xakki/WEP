@@ -276,7 +276,7 @@ class pay_class extends kernel_extends {
 					'status' => 0,
 				);
 				if ($this->_add($data)) {
-					return $this->SQL->sql_id();
+					return $this->id;
 				} else {
 					return false;
 				}

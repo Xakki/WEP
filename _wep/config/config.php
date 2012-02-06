@@ -23,6 +23,7 @@ $_CFG['sql'] = array(// SQL
 	'host' => 'localhost',
 	'login' => 'wepmysqluser',
 	'password' => 'defaultpass',
+	'port' => '3306',
 	'database' => 'wepbd',
 	'setnames' => 'utf8',
 	'dbpref' => '',
@@ -177,7 +178,7 @@ $_CFG['_MASK'] = array(
 	'www' => array(
 		'match' => '/^(http:\/\/)?([0-9A-Za-zЁёА-Яа-я\.]+\.)?[0-9A-Za-zЁёА-Яа-я\-\_]+\.[0-9A-Za-zЁёА-Яа-я]{2,5}$/u',
 		'nomatch' => '/[^0-9A-Za-zЁёА-Яа-я:\/\.\-\_]/u',
-	//'comment'=>'',
+		'comment'=>'http://xakki.ru или xakki.ru',
 	),
 	'wwwq' => array(
 		'match' => '/^(http:\/\/)?([0-9A-Za-zЁёА-Яа-я\.]+\.)?[0-9A-Za-zЁёА-Яа-я\-\_]+\.[0-9A-Za-zЁёА-Яа-я]+[\/0-9A-Za-zЁёА-Яа-я\.\-\_\=\?\&\#]*$/u',

@@ -632,6 +632,20 @@ var wep = {
 		return false;
 	},
 
+	load_href: function(hrf) {
+		return true;
+	},
+
+	hrefConfirm: function(obj,mess)
+	{
+		if(MESS[mess])
+			mess = MESS[mess];
+
+		if(confirm(mess)) {
+			return true;
+		}
+		return false;
+	},
 	// Массив функции выполняющиеся при изменении размера окна 
 	winResize : {}
 };

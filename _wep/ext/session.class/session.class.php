@@ -14,6 +14,7 @@ class session_class extends kernel_extends {
 		$this->deadsession = 1800; //мин сек в течении которго если пользователь не зашел >= $this->deadvisits, то удаляются
 		$this->uip = $_SERVER['REMOTE_ADDR']; 
 		$this->_time = time();
+		$this->tablename = '_session';
 		$this->_hash = '';
 		//$this->expired = get_cfg_var('session.gc_maxlifetime');
 		$this->expired = $this->_CFG['session']['expire'];

@@ -23,7 +23,8 @@
 		$DATA  = array();
 		list($DATA['formcreat'],$flag) = $MODUL->_UpdItemModul(array('showform'=>1));
 		$html = $HTML->transformPHP($DATA,'formcreat');
-		if($FUNCPARAM[1]) $_tpl['onload'] .= 'JSFR("form#form_'.$MODUL->_cl.'");';
+		if($FUNCPARAM[1]) 
+			$_tpl['onload'] .= '$("#form_'.$MODUL->_cl.'").attr("action","/_js.php?_fn=AjaxAdd&_modul='.$MODUL->_cl.'"); wep.form.JSFR("#form_'.$MODUL->_cl.'");';
 	}
 	else $html = 'Ошибка подключения модуля';
 	return $html;

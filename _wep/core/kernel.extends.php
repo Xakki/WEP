@@ -42,7 +42,8 @@ abstract class kernel_extends {
 		global $SQL,$PSQL;
 		if ($name == 'SQL') {
 			if (!$this->grant_sql) {
-				if ($this->SQL_CFG['type']=='sqlpostgre') {
+				if ($this->SQL_CFG['type']=='sqlpostgre') 
+				  {
 					if (!isset($PSQL) or !$PSQL->ready) {
 						$PSQL = new $this->SQL_CFG['type']($this->SQL_CFG);
 					}
@@ -243,7 +244,8 @@ abstract class kernel_extends {
 	}
 
 	protected function _create() {
-		$this->tablename = $this->SQL_CFG['dbpref'] . $this->tablename; // название таблицы
+		if($this->tablename)
+		  $this->tablename = $this->SQL_CFG['dbpref'] . $this->tablename; // название таблицы
 		if (is_bool($this->mf_namefields) and $this->mf_namefields)
 			$this->mf_namefields = 'name';
 		if (is_bool($this->mf_createrid) and $this->mf_createrid)
@@ -413,7 +415,7 @@ abstract class kernel_extends {
 	 * Экранирует специальные символы в строках для использования в выражениях SQL
 	 */
 	public function SqlEsc($val) {
-		return $this->SQL->SqlEsc($val);
+		return $this->SQL->escape($val);
 	}
 
 	/**
@@ -2458,6 +2460,52 @@ abstract class kernel_extends {
 		 echo $str;
 		 return strlen($str);
 	}
+
+	/**
+	* AJAX add data function
+	* TODO : вынести в отдельный "модуль-контролер"
+	*/
+	public function AjaxAdd() {
+		global $HTML,$_tpl;
+		$RESULT = array('html'=>'', 'html2'=>'', 'text'=>'','onload'=>'');
+		$DATA  = array();
+		//$htmlb = '';
+
+		if(count($_POST)) $_POST['sbmt'] = 1;
+		list($DATA['formcreat'],$flag) = $this->_UpdItemModul(array('ajax'=>1,'errMess'=>1));
+		$RESULT['html'] = $HTML->transformPHP($DATA,'formcreat');
+
+		if($flag==1) {
+			$RESULT['onload'] .= 'clearTimeout(timerid2);fShowload (1,result.html2,0,0,\'location.href = location.href;\');';
+
+			/*$DATA2 = array('#board#boarditems'=>$this->fDisplay($this->id));
+			$DATA2['#board#boarditems']['simple'] = true;
+			$htmlb = $HTML->transformPHP($DATA2,'#board#boarditems').'<style>'.$_tpl['styles']['rnd'].'</style>';
+			eval('$htmlb = "' . addcslashes($htmlb,'"\\') . '";');*/
+
+			$RESULT['html2'] = '<div class="blockhead ok">'.static_main::m('add',$this).'</div><div class="hrb">&nbsp;</div>
+			<div class="divform"><div class="messages" style="text-align:justify;">
+			</div></div>';
+			$RESULT['html'] = '';
+		}
+		elseif($flag==-1){
+			//$RESULT['onload'] = 'GetId("messages").innerHTML=result.html2;'.$RESULT['onload'];
+			$RESULT['onload'] = 'jQuery(\'.caption_error\').remove();'.$RESULT['onload'].'clearTimeout(timerid2);fShowload(1,result.html2);';
+			$RESULT['html2']="<div class='blockhead'>Внимание. Некоректно заполнены поля.</div><div class='hrb'>&#160;</div>".$RESULT['html'];
+			$RESULT['html']='';
+		}
+		else{
+			$RESULT['onload'] .= 'clearTimeout(timerid2);fShowload(1,result.html2);';
+			$RESULT['html2']=$RESULT['html'];
+			$RESULT['html']='';
+		}
+		if(!isset($_SESSION['user']['id']))
+			$RESULT['onload'] .= 'reloadCaptcha(\'captcha\');jQuery(\'input.secret\').attr(\'value\',\'\');';
+		$RESULT['onload'] .= $_tpl['onload'];
+
+		return $RESULT;
+	}
+
 }
 
 //// Kernel END

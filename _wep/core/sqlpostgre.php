@@ -26,6 +26,7 @@
 		}
 
 		function __destruct() {
+			 global $_CFG;
 			//$this->sql_close();
 			if($this->logFile!==false and count($this->logFile)) {
 				file_put_contents($_CFG['_PATH']['log'].'_'.date('Y-m-d_H-i-s').'.log',implode("\n",$this->logFile));
@@ -36,7 +37,7 @@
 			return $this->sql_connect();
 		}
 
-		private funct-+ion sql_connect() {
+		function sql_connect() {
 			global $_CFG;
 
 			$temp = $_CFG['wep']['catch_bug'];
@@ -94,62 +95,9 @@
 			return pg_query($this->hlink, 'grant all privileges on `'.$CFG['database'].'`.* to \''.$CFG['login'].'\'@\''.$CFG['host'].'\'');
 		}
 
-		public function sql_id() {
-			if(!$this->ready) return false;
-			return $this->lastId;
-		}
-
-
-		public function SqlEsc($val) {
-			if(!$this->ready) return '';
-			return pg_escape_string($val);
-		}
-
 		private function sql_close() {
 			if($this->hlink)
 				pg_close($this->hlink);
-		}
-
-/*****************************/
-
-		public function execSQL($sql,$unbuffered=0) {
-			if(!$this->ready) return false;
-			return new pquery($this, $sql, $unbuffered);
-		}
-
-		public function q($sql,$key=false,$type = MYSQLI_ASSOC) {
-			if(!$this->ready) return false;
-			$result = new pquery($this, $sql,0);
-			$data = array();
-			if (!$result->err) {
-				if($key!==false) {
-					while ($r = $result->fetch_array($type))
-						$data[$r[$key]] = $r;
-				} 
-				else {
-					while ($r = $result->fetch_array($type))
-						$data[] = $r;
-				}
-			}
-			return $data;
-		}
-
-/*****************************/
-
-		public function _info() {
-			return $this->q('show variables',0,MYSQLI_NUM);
-		}
-
-		public function _proc() {
-			return $this->q('show full processlist');
-		}
-
-		public function _status() {
-			return $this->q('show status');
-		}
-
-		private function fError($err) {
-			$this->sql_err[] = $err;
 		}
 
 		public function sql_install($CFG) {
@@ -167,17 +115,158 @@
 			return array(true,'OK');
 		}
 
-		private function err($mess) {
-			global $_CFG;
-			$mess = static_main::m($mess);
-			if(!$_CFG['wep']['debugmode']){
-				die($mess);
-			}
-			else {
-				//static_main::log('error',$mess);
-			}
-			return false;
+		/*****************************/
+
+		public function query($sql) {
+			if(!$this->ready) return false;
+			return new pquery($this, $sql);
 		}
+		public function execSQL($sql) { // Синоним
+			return $this->query($sql);
+		}
+
+		public function lastId() {
+			if(!$this->ready) return false;
+			return $this->lastId;
+		}
+
+		public function escape($val) {
+			if(!$this->ready) return '';
+			return pg_escape_string($val);
+		}
+		public function SqlEsc($val) { // Синоним
+			return $this->escape($val);
+		}
+
+		public function q($sql,$key=false,$type = 0) {
+			if(!$this->ready) return false;
+			$result = $this->query($sql);
+			$data = array();
+			if (!$result->err) {
+				if($key!==false) {
+					while ($r = $result->fetch($type))
+						$data[$r[$key]] = $r;
+				} 
+				else {
+					while ($r = $result->fetch($type))
+						$data[] = $r;
+				}
+			}
+			return $data;
+		}
+
+		/******************************/
+		/******************************/
+		/******************************/
+
+		public function _tableCreate(&$MODUL) {
+			$fld = array();
+			if (count($MODUL->fields))
+				foreach ($MODUL->fields as $key => $param)
+					list($fld[],$mess) = $MODUL->SQL->_fldformer($key, $param);
+			if (count($MODUL->attaches))
+				foreach ($MODUL->attaches as $key => $param)
+					list($fld[],$mess) = $MODUL->SQL->_fldformer($key, $MODUL->attprm);
+			/*foreach($MODUL->memos as $key => $param)
+			  $fld[]= $MODUL->SQL->_fldformer($key, $MODUL->mmoprm);
+			 */
+			$fld[] = 'PRIMARY KEY(id)';
+
+			if (isset($MODUL->unique_fields) and count($MODUL->unique_fields)) {
+				foreach ($MODUL->unique_fields as $k => $r) {
+					if (is_array($r))
+						$r = implode('`,`', $r);
+					$fld[] = 'UNIQUE KEY `' . $k . '` (`' . $r . '`)';
+				}
+			}
+			if (isset($MODUL->index_fields) and count($MODUL->index_fields)) {
+				foreach ($MODUL->index_fields as $k => $r) {
+					if (!isset($MODUL->unique_fields[$k])) {
+						if (is_array($r))
+							$r = implode(',', $r);
+						$fld[] = 'KEY `' . $k . '` (`' . $r . '`)';
+					}
+				}
+			}
+			$query = 'CREATE TABLE `' . $MODUL->tablename . '` (' . implode(',', $fld) . ') ENGINE='.$MODUL->SQL_CFG['engine'].' DEFAULT CHARSET=' . $MODUL->SQL_CFG['setnames'] . ' COMMENT = "' . $MODUL->ver . '"';
+			// to execute query
+			$result = $this->query($query);
+			if ($result->err) {
+				return false;
+			}
+			return true;
+		}
+
+		public function _tableDelete(&$MODUL) {
+			return $this->query('DROP TABLE `' . $MODUL->tablename . '`');
+		}
+
+		public function _tableExists(&$MODUL) {
+			$result = $this->query('SHOW TABLES LIKE `' . $MODUL->tablename . '`');
+			if (!$result->err) {
+				if($result->num_rows())
+					return true;
+				else
+					return false;
+			}
+			return NULL;
+		}
+
+		public function _tableKeys(&$MODUL) {
+			$primary = $uniqlist = $indexlist = array();
+			$result = $this->query('SHOW KEYS FROM `' . $MODUL->tablename . '`');
+			while ($data = $result->fetch_row()) {
+				if ($data[2] == 'PRIMARY') //только 1 примарикей
+					$primary = $data[4];
+				elseif (!$data[1]) //!NON_unique
+					$uniqlist[$data[2]][$data[4]] = $data[4];
+				else
+					$indexlist[$data[2]][$data[4]] = $data[4];
+			}
+			return array($primary,$uniqlist,$indexlist);
+		}
+
+		/******************************/
+
+		public function _info() {
+			return $this->q('show variables',0,MYSQLI_NUM);
+		}
+
+		public function _proc() {
+			return $this->q('show full processlist');
+		}
+
+		public function _status() {
+			return $this->q('show status');
+		}
+
+		public function _getSQLTableInfo($tablename) {
+			if(!$this->ready) return false;
+			$data = array();
+			$result = $this->query('SHOW FULL FIELDS FROM `' . $tablename . '`');
+			while ($COLUMNS = $result->fetch()) {
+				$fldname = $COLUMNS['Field'];//mb_strtolower(
+				$data[$fldname] = $COLUMNS;
+			}
+			$result = $this->query('SHOW CREATE TABLE `' . $tablename . '`');
+			if ($row = $result->fetch()) {
+				$creat_table = $row['Create Table'];
+				$creat_table = explode("\n",$creat_table);
+				array_shift($creat_table);
+				$info = array_pop($creat_table);
+				foreach($creat_table as $r) {
+					$r = trim($r," ,\t\r");
+					if(substr($r,0,1)=='`') {
+						$pos = strpos($r,'`',1);
+						$fldname = substr($r,1,($pos-1));
+						$data[$fldname]['create'] = $r;
+					}
+				}
+			}
+			return $data;
+		}
+
+		/*****************************/
 
 		var $alias_types = array(
 				'bool'=>'tinyint(1)',
@@ -266,102 +355,20 @@
 			return array($m,$mess);
 		}
 
-		/******************************/
-		/******************************/
-		/******************************/
-
-		public function _tableCreate(&$MODUL) {
-			$fld = array();
-			if (count($MODUL->fields))
-				foreach ($MODUL->fields as $key => $param)
-					list($fld[],$mess) = $MODUL->SQL->_fldformer($key, $param);
-			if (count($MODUL->attaches))
-				foreach ($MODUL->attaches as $key => $param)
-					list($fld[],$mess) = $MODUL->SQL->_fldformer($key, $MODUL->attprm);
-			/*foreach($MODUL->memos as $key => $param)
-			  $fld[]= $MODUL->SQL->_fldformer($key, $MODUL->mmoprm);
-			 */
-			$fld[] = 'PRIMARY KEY(id)';
-
-			if (isset($MODUL->unique_fields) and count($MODUL->unique_fields)) {
-				foreach ($MODUL->unique_fields as $k => $r) {
-					if (is_array($r))
-						$r = implode('`,`', $r);
-					$fld[] = 'UNIQUE KEY `' . $k . '` (`' . $r . '`)';
-				}
-			}
-			if (isset($MODUL->index_fields) and count($MODUL->index_fields)) {
-				foreach ($MODUL->index_fields as $k => $r) {
-					if (!isset($MODUL->unique_fields[$k])) {
-						if (is_array($r))
-							$r = implode(',', $r);
-						$fld[] = 'KEY `' . $k . '` (`' . $r . '`)';
-					}
-				}
-			}
-			$query = 'CREATE TABLE `' . $MODUL->tablename . '` (' . implode(',', $fld) . ') ENGINE='.$MODUL->SQL_CFG['engine'].' DEFAULT CHARSET=' . $MODUL->SQL_CFG['setnames'] . ' COMMENT = "' . $MODUL->ver . '"';
-			// to execute query
-			$result = $this->execSQL($query);
-			if ($result->err) {
-				return false;
-			}
-			return true;
+		private function fError($err) {
+			$this->sql_err[] = $err;
 		}
 
-		public function _tableDelete(&$MODUL) {
-			return $this->execSQL('DROP TABLE `' . $MODUL->tablename . '`');
-		}
-
-		public function _tableExists(&$MODUL) {
-			$result = $this->execSQL('SHOW TABLES LIKE `' . $MODUL->tablename . '`');
-			if (!$result->err) {
-				if($result->num_rows())
-					return true;
-				else
-					return false;
+		private function err($mess) {
+			global $_CFG;
+			$mess = static_main::m($mess);
+			if(!$_CFG['wep']['debugmode']){
+				die($mess);
 			}
-			return NULL;
-		}
-
-		public function _tableKeys(&$MODUL) {
-			$result = $this->execSQL('SHOW KEYS FROM `' . $MODUL->tablename . '`');
-			while ($data = $result->fetch_array(MYSQL_NUM)) {
-				if ($data[2] == 'PRIMARY') //только 1 примарикей
-					$primary = $data[4];
-				elseif (!$data[1]) //!NON_unique
-					$uniqlist[$data[2]][$data[4]] = $data[4];
-				else
-					$indexlist[$data[2]][$data[4]] = $data[4];
+			else {
+				//static_main::log('error',$mess);
 			}
-			return array($primary,$uniqlist,$indexlist);
-		}
-
-		/******************************/
-
-		public function _getSQLTableInfo($tablename) {
-			if(!$this->ready) return false;
-			$data = array();
-			$result = $this->execSQL('SHOW FULL FIELDS FROM `' . $tablename . '`');
-			while ($COLUMNS = $result->fetch_array()) {
-				$fldname = $COLUMNS['Field'];//mb_strtolower(
-				$data[$fldname] = $COLUMNS;
-			}
-			$result = $this->execSQL('SHOW CREATE TABLE `' . $tablename . '`');
-			if ($row = $result->fetch_array()) {
-				$creat_table = $row['Create Table'];
-				$creat_table = explode("\n",$creat_table);
-				array_shift($creat_table);
-				$info = array_pop($creat_table);
-				foreach($creat_table as $r) {
-					$r = trim($r," ,\t\r");
-					if(substr($r,0,1)=='`') {
-						$pos = strpos($r,'`',1);
-						$fldname = substr($r,1,($pos-1));
-						$data[$fldname]['create'] = $r;
-					}
-				}
-			}
-			return $data;
+			return false;
 		}
 
 		function longLog($ttt,$sql) {
@@ -371,8 +378,6 @@
 				if($this->logFile!==false)
 					$this->logFile[] = '['.date('Y-m-d H:i:s').'] LONG QUERY ['.$ttt.' sec.] ('.$sql.')';
 			}
-			if(strpos(strtolower($sql),'insert into')!==false)
-				$this->lastId = $this->sql_id();
 
 			if(isset($_COOKIE[$_CFG['wep']['_showallinfo']]) and $_COOKIE[$_CFG['wep']['_showallinfo']]>1) {
 				if($ttt>0.5) $ttt = '<span style="color:#FF0000;">'.$ttt.'</span>';
@@ -414,40 +419,65 @@
 			else
 			{
 				$db->longLog((getmicrotime()-$ttt),$sql);
+				if(stripos($sql,'insert into')!==false)
+					$db->lastId = $this->sql_id();
 			}
 		}
 
-		function sql_id() {
+		function lastId() { // ID Последний добавленой записи
 			return pg_last_oid($this->handle);
 		}
 
-		function destroy() {
+		function destroy() { // очистка памяти
 			return pg_free_result($this->handle);
 		}
 
-		function num_rows() {
+		function num_rows() { // Кол-во полученных записей
 			return pg_fetch_row($this->handle);
 		}
 
-		// type PGSQL_ASSOC | PGSQL_BOTH | PGSQL_NUM
-		function fetch_array($type = ASSOC) {
-			//pg_fetch_assoc()
-			return pg_fetch_array($this->handle,null, PGSQL_ASSOC);
+
+		// type MYSQLI_ASSOC | MYSQLI_BOTH | MYSQLI_NUM
+
+		function fetch($type=0) { // Выдает асоциативный и нумеровнаый масив
+			if($type==0)
+				return $this->fetch_assoc($this->handle);
+			elseif($type==1)
+				return $this->fetch_row($this->handle);
+			elseif($type==2)
+				return $this->fetch_array($this->handle);
+			else
+				return $this->fetch_object($this->handle);
 		}
 
-		function sql_result($row) { /// TODO ???
-			return pg_fetch_result($this->handle, $row);
+		function fetch_assoc() { // Выдает асоциативный масив
+			return pg_fetch_assoc($this->handle);
 		}
 
-		function fetch_object() {
+		function fetch_row() { // Выдает нумеровнаый масив
+			return pg_fetch_row($this->handle);
+		}
+
+		function fetch_array() { // Выдает асоциативный и нумеровнаый масив
+			return pg_fetch_array($this->handle, null, PGSQL_BOTH);
+		}
+
+		function fetch_object() { // Выдает данные в виде обекта
 			return pg_fetch_object($this->handle);
 		}
 
-		function affected_rows() {
+
+		function affected_rows() { // Возвращает кол-во затронутых записей в последней оперции
 			return pg_affected_rows($this->db->hlink);
 		}
 
-		function sql_seek($offset) {
+		function sql_seek($offset) { // ПЕРЕмещает указатель
 			return pg_result_seek($this->handle, $offset);
+		}
+
+		// ТЕСТОВЫЕ
+
+		function sql_result($row) {
+			return pg_fetch_result($this->handle, $row);
 		}
 	}

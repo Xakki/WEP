@@ -235,11 +235,11 @@ class static_tools {
 		$MODUL->form = array_merge($MODUL->form, $MODUL->config_form);
 		$MODUL->form['sbmt'] = array(
 			'type' => 'submit',
-			'value' => static_main::m('_submit'));
+			'value' => static_main::m('Submit'));
 	}
 
 	static function _save_config($conf,$file) {
-		foreach($conf as $k=>&$r) {
+		foreach($conf as &$r) {
 			if(is_string($r) and strpos($r,':|')!==false) {
 				$temp = explode(':|',$r);
 				$r = array();
@@ -756,7 +756,7 @@ deny from all
 
 					$MODUL->form['sbmt'] = array(
 						'type' => 'submit',
-						'value' => static_main::m('_submit',$MODUL)
+						'value' => static_main::m('Submit',$MODUL)
 					);
 				} else
 					$mess[] = static_main::am('ok','_recheck_have_nothing',$MODUL);

@@ -28,13 +28,6 @@ class static_form {
 
 		if (!self::_add_fields($_this,$flag_update)) return false;
 
-		// get last id if not used nick
-		if (!$_this->mf_use_charid && !isset($_this->fld_data['id']))
-			$_this->id = (int)$_this->SQL->sql_id();
-		elseif($_this->fld_data['id'])
-			$_this->id = $_this->fld_data['id'];
-		else $_this->id = NULL;
-
 		//umask($_this->_CFG['wep']['chmod']);
 		if (isset($_this->att_data) && count($_this->att_data)) {
 			if (!self::_add_attaches($_this)) {
@@ -100,6 +93,14 @@ class static_form {
 		}
 		$result=$_this->SQL->execSQL($q);
 		if($result->err) return false;
+
+		// get last id if not used nick
+		if (!$_this->mf_use_charid && !isset($_this->fld_data['id']))
+			$_this->id = (int)$result->lastId();
+		elseif($_this->fld_data['id'])
+			$_this->id = $_this->fld_data['id'];
+		else $_this->id = NULL;
+
 		return true;
 	}
 
