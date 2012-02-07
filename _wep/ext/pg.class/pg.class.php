@@ -259,6 +259,7 @@ class pg_class extends kernel_extends {
 		$_tpl['keywords'] = $this->config['keywords'];
 		$_tpl['description'] = $this->config['description'];
 		$temp_tpl = $_tpl;
+		$this->id = NULL;
 		$flag_content = $this->can_show();
 		//PAGE****************
 		if(!$HTML) {
@@ -273,38 +274,32 @@ class pg_class extends kernel_extends {
 			$_tpl['title'] = $this->get_caption();
 		}
 
-		if ($flag_content==2) {
-			$this->id = "401";
-			header("HTTP/1.0 401");
-			if(!$this->can_show())
-			{
-				$_tpl['text'] = 'У вас не достаточно прав для доступа к странице. Необходима авторизация.';
-				$_tpl['title'] = "Нет доступа";
-			}
-			else
-			{
-				$_tpl=$temp_tpl;
-				$_tpl['title'] = $this->get_caption();
-				$this->display_page();
-			}
-		}
-		elseif(!$flag_content)
-		{
-			$this->id = "404";
-			header("HTTP/1.0 404 Not Found");
-			if (!$this->can_show())
-			{
-				$_tpl['text'] = "Страница не найдена!";
-				$_tpl['title'] = "404 Страница не найдена!";
-			}
-			else
-			{
-				$_tpl=$temp_tpl;
-				$_tpl['title'] = $this->get_caption();
-				$this->display_page();
+		if(!$flag_content)
+			$flag_content = 404;
+		if ($flag_content>=100) {
+			$_tpl['title'] = $this->get_caption();
+			if($flag_content==401 and static_main::_prmUserCheck())
+				$flag_content = 403;
+			$this->id = $this->dataCashTreeAlias[$this->rootPage][$flag_content]['id'];
 
+			header("HTTP/1.0 ".$flag_content);//header("HTTP/1.0 404 Not Found");
+			if(!$this->id)
+			{
+				$text = '<h2>'.static_main::m($flag_content).'</h2>';
+				if(isset($this->dataCashTreeAlias[$this->rootPage][$flag_content]))
+					$this->id = $this->dataCashTreeAlias[$this->rootPage][$flag_content]['id'];
+				else
+					$this->id = $this->rootPage;
 			}
+			// Мог бы  использовать $this->can_show() , но поведение этой функции не предсказуемо
+			$this->pageinfo = $this->dataCash[$this->id];
+			$this->get_pageinfo();
+
+			$this->display_page();
+			if(isset($text))
+				$_tpl['text'] = $text;
 		}
+
 		if($this->config['sitename']) {
 			if($_tpl['title']) $_tpl['title'] .= ' - ';
 			$_tpl['title'] .= $this->config['sitename'];//$_SERVER['SERVER_NAME']
@@ -338,12 +333,17 @@ class pg_class extends kernel_extends {
 					$fid = $this->dataCashTree[$fid][$r]['id'];
 					$this->pageParamId[$k] = $fid;
 				}
-				else
+				elseif($this->dataCash[$fid]['alias']==$r) {
+					$this->IfrootPage = true;
+				} else
 					$this->pageParam[] = $r;
 			}
 		}
 		if($fid!=$this->rootPage and !$this->id)
 			$this->id = $fid;
+		elseif(is_null($this->id) and isset($this->IfrootPage)) {
+			$this->id = $fid;
+		}
 
 		/*$row = 0;
 		if(isset($this->dataCash[$this->id])) {
@@ -354,7 +354,8 @@ class pg_class extends kernel_extends {
 		}*/
 		if($this->id and isset($this->dataCash[$this->id]) and !$this->pagePrmCheck($this->dataCash[$this->id]['ugroup'])) {
 			$this->pageinfo = $this->dataCash[$this->id];
-			return 2;
+			$this->get_pageinfo();
+			return 401;
 		}
 		elseif($this->id and isset($this->dataCash[$this->id]))
 		{
@@ -372,10 +373,6 @@ class pg_class extends kernel_extends {
 				$this->IfDontHavePage = true;
 				return $this->can_show();
 			}
-		}elseif((!$this->id or $this->id != $this->rootPage) and !isset($this->IfrootPage)) {
-			$this->id = $this->rootPage;
-			$this->IfrootPage = true;
-			return $this->can_show();
 		}
 		return 0;
 	}

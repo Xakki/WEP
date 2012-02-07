@@ -27,7 +27,7 @@
 
 		function __destruct() {
 			global $_CFG;
-			$this->sql_close();
+			//$this->sql_close();
 			if($this->logFile!==false and count($this->logFile)) {
 				file_put_contents($_CFG['_PATH']['log'].'_'.date('Y-m-d_H-i-s').'.log',implode("\n",$this->logFile));
 			}

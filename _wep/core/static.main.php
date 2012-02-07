@@ -547,6 +547,7 @@ class static_main {
 
 	static function redirect($link,$NO=false) {
 		global $_CFG;
+		// TODO : Проверка на зацикленный редирект
 		//301 - перемещение на посточнную основу
 		if($_CFG['wep']['debugmode']<3) {
 			if($NO!==false)

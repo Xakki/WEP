@@ -145,7 +145,7 @@
 		{
 			$res = static_main::userAuth($_POST['login'],$_POST['pass']);// повесить обработчик xml
 			if($res[1]) {
-				$GLOBALS['_RESULT']['eval'] .= "window.location.href=window.location.href;";
+				$GLOBALS['_RESULT']['eval'] .= "window.location.reload();";
 			}
 		}
 		if(!$res[1]) {
