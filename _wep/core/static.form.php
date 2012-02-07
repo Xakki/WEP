@@ -1276,10 +1276,12 @@ class static_form {
 			$crypttext = openssl_encrypt($word,'aes-128-cbc',$hash_key,false,"1234567812345678");
 		} elseif(function_exists('mcrypt_encrypt')) { // будем надеяться что есть mcrypt
 			$crypttext = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $hash_key, $word, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND));
+			print_r($crypttext);print_r('<hr>');
 			$crypttext = base64_encode($crypttext);
 		} else // если нет даже openssl значит и так сойдёт!
 			$crypttext = $word;
 		// Запись в куки зашифрованного кода
+		 print_r($crypttext);print_r('<hr>');
 		_setcookie('chash', $crypttext, (time() + 1800));
 		// Где хранится хэшкод (фаил доступен только на сервере)
 		_setcookie('pkey', base64_encode($_CFG['_FILE']['HASH_KEY']), (time() + 1800));
