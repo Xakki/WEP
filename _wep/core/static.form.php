@@ -932,7 +932,8 @@ class static_form {
 						$error[] = 32;
 					else
 						$data[$key] = md5($_this->_CFG['wep']['md5'].$data[$key]);
-				}
+				}else
+					unset($data[$key]);
 			}
 			elseif(isset($form['mask']['password']) and $form['mask']['password']=='change')
 			{
@@ -1274,10 +1275,14 @@ class static_form {
 		$hash_key = md5($hash_key); // получаем хешкод
 		if(function_exists('openssl_encrypt')) { // если есть openssl
 			$crypttext = openssl_encrypt($word,'aes-128-cbc',$hash_key,false,"1234567812345678");
-		} elseif(function_exists('mcrypt_encrypt')) { // будем надеяться что есть mcrypt
-			$crypttext = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $hash_key, $word, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND));
+		}
+		elseif(function_exists('mcrypt_encrypt')) { // будем надеяться что есть mcrypt
+			//$ivsize = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
+			//$iv = mcrypt_create_iv($ivsize, MCRYPT_RAND);
+			$crypttext = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $hash_key, $word, MCRYPT_MODE_ECB);
 			$crypttext = base64_encode($crypttext);
-		} else // если нет даже openssl значит и так сойдёт!
+		} 
+		else // если нет даже openssl значит и так сойдёт!
 			$crypttext = $word;
 		// Запись в куки зашифрованного кода
 		_setcookie('chash', $crypttext, (time() + 1800));
