@@ -361,7 +361,6 @@ class users_class extends kernel_extends {
 			
 	}
 
-
 	function _update($data=array(),$where=false,$flag_select=true) {
 		$id = $this->id;
 		$res = parent::_update($data,$where,$flag_select);
@@ -518,7 +517,6 @@ class users_class extends kernel_extends {
 							$arr['vars'][$this->mf_namefields] = $arr['vars'][$this->fn_login];
 						$arr['vars']['reg_hash']=md5(time().$arr['vars'][$this->fn_login]);
 						$pass=$arr['vars'][$this->fn_pass];
-						//$arr['vars'][$this->fn_pass]=md5($this->_CFG['wep']['md5'].$pass);
 						//$_SESSION['user'] = $arr['vars']['id'];
 
 						if($this->_add($arr['vars'])) {

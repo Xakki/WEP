@@ -291,9 +291,9 @@ function tpl_form(&$data) {
 							$r['value']['year']['item'][0] = array('#id#'=>0, '#name#'=>'--');
 
 							//значения по умолчанию
-							if(!isset($r['mask']['year_back'])) $r['mask']['year_back'] = 2;
+							if(!isset($r['mask']['year_back'])) $r['mask']['year_back'] = -2;
 							if(!isset($r['mask']['year_up'])) $r['mask']['year_up'] = 3;
-							for($i=((int)date('Y')-($r['mask']['year_back']));$i<=((int)date('Y')+($r['mask']['year_up']));$i++)
+							for($i=((int)date('Y')+($r['mask']['year_back']));$i<=((int)date('Y')+($r['mask']['year_up']));$i++)
 								$r['value']['year']['item'][$i] = array('#id#'=>$i, '#name#'=>$i);							
 						}
 						// месяц
@@ -373,7 +373,7 @@ function tpl_form(&$data) {
 						if(!isset($r['mask']['datepicker']['dateFormat']))
 							$r['mask']['datepicker']['dateFormat']='\'yy-mm-dd\'';
 
-						if(!isset($r['mask']['datepicker']['timeFormat']) or $r['mask']['datepicker']['timeFormat']===true)
+						if($r['mask']['datepicker']['timeFormat']===true or strpos($r['mask']['format'],'H:i:s')!==false)
 							$r['mask']['datepicker']['timeFormat'] = '\' hh:mm:ss\'';
 
 
@@ -381,6 +381,12 @@ function tpl_form(&$data) {
 						$prop = array();
 						if(!is_null($time))
 							$r['mask']['datepicker']['defaultDate'] = 'new Date('.date('Y,m-1,d',$time).')';
+						if(!isset($r['mask']['datepicker']['maxDate']) and isset($r['mask']['year_up'])) {
+							$r['mask']['datepicker']['maxDate'] = '\''.$r['mask']['year_up'].'y\'';
+						}
+						if(!isset($r['mask']['datepicker']['minDate']) and isset($r['mask']['year_back'])) {
+							$r['mask']['datepicker']['minDate'] = '\''.$r['mask']['year_back'].'y\'';
+						}
 						foreach ($r['mask']['datepicker'] as $kp => $vp) {
 							if($vp)
 								$prop[] = $kp.':'.$vp;
