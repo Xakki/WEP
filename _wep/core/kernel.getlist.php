@@ -1,5 +1,5 @@
 <?php
-	function _getlist($_this,&$listname, $value=0) /*LIST SELECTOR*/
+	function _getlist($_this,&$listname, $value=NULL) /*LIST SELECTOR*/
 	{
 		/*Выдает 1 уровневый массив, либо 2х уровневый для структуры типа дерева*/
 		/*Конечный уровень может быть с елемнтами массива #name# итп, этот уровень в счет не входит*/
@@ -8,8 +8,10 @@
 		if(is_array($listname))
 			$templistname = implode(',',$listname);
 
-
-		if($templistname == 'child.class') {
+		if (isset($_this->_enum[$templistname])) {
+			return $_this->_enum[$templistname];
+		}
+		elseif($templistname == 'child.class') {
 			$dir = array();
 			if(file_exists($_this->_CFG['_PATH']['ext'].$_this->_cl.'.class'))
 				$dir[''] = $_this->_CFG['_PATH']['ext'].$_this->_cl.'.class';
@@ -185,6 +187,10 @@
 			else
 				$data = array('Ошибка - список ownerlist не может быть создан, тк родитель не доступен');
 		}
+		// TODO : что за Х ?
+		elseif(is_array($listname) and isset($listname[0]) and isset($listname[1]) and $listname[0]=='owner' ) {
+			return $_this->owner->_getlist($listname[1],$value);
+		}
 		elseif ($templistname == 'select') {
 			$data = $_this->_select();
 		}
@@ -205,18 +211,16 @@
 					$data[$pid][$id] = $name;
 				}
 		} 
-		elseif(is_array($listname) and isset($listname[0]) and isset($listname[1]) and $listname[0]=='owner' ) {
-			return $_this->owner->_getlist($listname[1],$value);
-		}
+
 		elseif(is_array($listname) and (isset($listname['class']) or isset($listname['tablename'])))  {
-			
+			$clause = array();
 			if(isset($listname['class'])) {
 				$listname['tablename'] = static_main::getTableNameOfClass($listname['class']);
 			}
 
-			if(!isset($listname['idField'])) 
+			if(!isset($listname['idField']))
 				$listname['idField'] = 'tx.id';
-			if(!isset($listname['nameField'])) 
+			if(!isset($listname['nameField']))
 				$listname['nameField'] = 'tx.name';
 
 			if(isset($listname['leftJoin'])) {
@@ -240,27 +244,31 @@
 			}
 			if(isset($listname['is_checked']))
 				$clause['field'] .= ', tx.checked as checked';
-			
-			$clause['where'] = '';
-			if(isset($listname['where']) and is_array($listname['where']))
-				$listname['where'] = implode(' and ',$listname['where']);
-			/*Выбранные элементы*/ /*помоему это лишнее - надо проверить*/
-			if(!is_null($value) and is_array($value))
-				$clause['where'] = $listname['idField'].' IN ("'.implode('", "',$value).'")';
-			elseif(!is_null($value))
-				$clause['where'] = $listname['idField'].'="'.$value.'"';
 
-			if(isset($listname['where']) and $listname['where'])
-				$clause['where'] .= ($clause['where']!=''?' AND ':'').$listname['where'];
-			if($clause['where'])
-				$clause['where'] = ' WHERE '.$clause['where'];
+			if(!isset($listname['where']))
+				$listname['where'] = array();
+			elseif(!is_array($listname['where']))
+				$listname['where'] = array($listname['where']);
+
+			/*Выбранные элементы*/
+			if(!is_null($value)) {
+				if(is_array($value))
+					$listname['where'][] = $listname['idField'].' IN ("'.implode('", "',$value).'")';
+				else
+					$listname['where'][] = $listname['idField'].'="'.$value.'"';
+			}
+
+			if(count($listname['where']))
+				$listname['where'] = ' WHERE '.implode(' and ',$listname['where']);
+			else
+				$listname['where'] = '';
 
 			if(isset($listname['leftJoin']) and $listname['idThis'])
-				$clause['where'] .= ' GROUP BY t1.'.$listname['idThis'];
+				$listname['where'] .= ' GROUP BY t1.'.$listname['idThis'];
 			if (isset($listname['ordfield']) and $listname['ordfield'])
-				$clause['where'] .= ' ORDER BY '.$listname['ordfield'];
+				$listname['where'] .= ' ORDER BY '.$listname['ordfield'];
 
-			$result = $_this->SQL->execSQL($clause['field'].$clause['from'].$clause['where']);
+			$result = $_this->SQL->execSQL($clause['field'].$clause['from'].$listname['where']);
 //print($_this->SQL->query);
 				if(!$result->err) {
 					if(!is_null($value) and is_array($value) and count($value)) {
@@ -296,6 +304,7 @@
 								$data[$row['id']] = $row['name'];
 					}
 				}
+			return $data; // Потому что тут уже обрабатывается $value
 		}
 		elseif(!is_array($listname)) {
 			static_main::log('error','List data `'.$listname.'` not found');

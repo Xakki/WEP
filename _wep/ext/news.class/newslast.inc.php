@@ -1,4 +1,12 @@
 <?php
+/**
+ * Новости новые
+ * @ShowFlexForm true
+ * @author Xakki
+ * @version 0.1 
+ * @return $form
+ * @return $html
+ */
 	if(!isset($FUNCPARAM[0])) $FUNCPARAM[0] = '#news#newslast'; // Шаблон
 	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = 0; // Страница с новостями
 	if(!isset($FUNCPARAM[2])) $FUNCPARAM[2] = 4; // Лимит
@@ -7,7 +15,6 @@
 	_new_class('news',$NEWS);
 
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
-		$this->_getCashedList('phptemplates', dirname(__FILE__));
 		$this->_enum['newscategory'] = $NEWS->config['category'];
 
 		$form = array(

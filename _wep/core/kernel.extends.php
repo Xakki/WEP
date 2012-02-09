@@ -1145,16 +1145,32 @@ abstract class kernel_extends {
 		$templistname = $listname;
 		if (is_array($listname))
 			$templistname = implode(',', $listname);
-		if (isset($this->_enum[$templistname])) {
-			return $this->_enum[$templistname];
-			//$this->_CFG['enum'][$templistname] = $this->_enum[$templistname];
-		} elseif (!isset($this->_CFG['enum'][$templistname])) {
-			if(!is_null($value) and is_array($listname)) // не кешируем если задано $value и $listname - выборка из таблиц(задается массивом)
-				return $this->_getlist($listname, $value);
+
+		if(!is_null($value)) {// не кешируем если задано $value и $listname - выборка из таблиц(задается массивом)
+			
+			$data = $this->_getlist($listname, $value);
+
+			// VALUE
+			if(!is_array($value))
+				$tvalue = array($value=>$value);
 			else
-				$this->_CFG['enum'][$templistname] = $this->_getlist($listname,$value);
-				
+				$tvalue = array_combine($value,$value);
+
+			$new = array();
+			if(!is_array(current($data)))
+				$data = array_intersect_key($data,$tvalue);
+			else {
+				$tdata = array();
+				foreach($data as $r) {
+					$tdata = array_merge($tdata, array_intersect_key($r,$tvalue));
+				}
+				$data =$tdata;
+			}
+			return $data;
 		}
+		elseif (!isset($this->_CFG['enum'][$templistname]))
+			$this->_CFG['enum'][$templistname] = $this->_getlist($listname,$value);
+
 		return $this->_CFG['enum'][$templistname];
 	}
 

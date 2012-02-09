@@ -1,19 +1,23 @@
 <?php
+/**
+ * Напоминание пароля
+ * @ShowFlexForm true
+ * @author Xakki
+ * @version 0.1 
+ * @return $form
+ * @return $html
+ */
 	if(!isset($FUNCPARAM[0]) or !$FUNCPARAM[0]) $FUNCPARAM[0] = 'messages';
 	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = 48;
 
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
-		$this->_getCashedList('phptemplates', dirname(__FILE__));
 		$form = array(
 			'0'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон для сообщений'),
 			'1'=>array('type'=>'int','caption'=>'Время действия ссылки', 'comment'=>'В часах'),
 		);
 		return $form;
 	}
-
-
-	$tplphp = $this->FFTemplate($FUNCPARAM[0],dirname(__FILE__));
 
 	global $UGROUP,$USERS, $HTML;
 	if(!$UGROUP) _new_class('ugroup', $UGROUP);
@@ -29,7 +33,7 @@
 		$PARAM['re_pass'] = (isset($_POST['re_fpass'])?$_POST['re_fpass']:'');
 		list($flag,$DATA) = $USERS->remindSET($PARAM);
 		$DATA = array($FUNCPARAM[0]=>$DATA);
-		$html .= $HTML->transformPHP($DATA,$tplphp);
+		$html .= $HTML->transformPHP($DATA,$FUNCPARAM[0]);
 		if(!$flag) {
 			$html .= '<br/>
 			<div class="cform" style="width:540px;"><form action="" method="post" name="newpass">
@@ -45,7 +49,7 @@
 			$PARAM['post'] = $_POST;
 			list($flag,$DATA) = $USERS->remindSEND($PARAM);
 			$DATA = array($FUNCPARAM[0]=>$DATA);
-			$html .= $HTML->transformPHP($DATA,$tplphp);
+			$html .= $HTML->transformPHP($DATA,$FUNCPARAM[0]);
 		}
 
 		if($flag<1) {

@@ -3,9 +3,12 @@
 Введение
 ----------
 WEP - означает <b>Web Engine on PHP</b>
-* https://github.com/Xakki/WEP -- Основная ветка разработки
-* https://github.com/Xakki/WEP_PLUGIN -- дополнительные модули
-* http://wep.xakki.ru -- сайт проекта
+
+https://github.com/Xakki/WEP -- Основная ветка разработки
+
+https://github.com/Xakki/WEP_PLUGIN -- дополнительные модули
+
+http://wep.xakki.ru -- сайт проекта
 
 Особенности
 -----------
@@ -17,21 +20,11 @@ WEP - означает <b>Web Engine on PHP</b>
 
 Требования
 ----------
-*MYSQL 5.0 и новее
-*PHP 5.3.0 и новее
-*Apache 2 или(и) NGINX (с модуем php)
-*Apache модули
-	**mod_rewrite
-	**mod_mime_magic
-*PHP модули
-	**php_gd2
-	**php_mbstring
-	**php_exif
-	**php_mysqli
-	**php_openssl или php_mcrypt
-	**php_xsl (не обязательно)
-	**php_curl (не обязательно)
-	**php_memcache (не обязательно)
+* MYSQL 5.0 и новее
+* PHP 5.3.0 и новее
+* Apache 2 или(и) NGINX (с модуем php)
+* Apache модули [mod_rewrite, mod_mime_magic]
+* PHP модули [php_gd2, php_mbstring, php_exif, php_mysqli, php_openssl или php_mcrypt, php_xsl (не обязательно), php_curl (не обязательно), php_memcache (не обязательно)]
 
 Установка
 ---------
@@ -42,14 +35,13 @@ WEP - означает <b>Web Engine on PHP</b>
 5. После успешной авторизации откроется пошаговая установка.(http://localhost/_wep/install.php)<br/>
 
 ### Первый шаг - Настройки сайта###
-Поля <b>выделенныен цветом</b> (Login БД с правами суперпользователя и Пароль БД с правами суперпользователя) необходимы для первоначального создания базы данных.
+Поля <b>выделенныен цветом</b> (Login БД с правами суперпользователя и Пароль БД с правами суперпользователя) необходимы для первоначального создания базы данных. Если вы уже создали БД вручную, то <b>не</b> заполняйте их
 
 1. `create database 'wepbd' character set utf8;`
 2. `create user 'wepmysqluser'@'localhost' identified by 'defaultpass';`
 3. `grant all privileges on wepbd.* to 'wepmysqluser'@'localhost';`
 
-
-Если вы уже создали БД вручную, то <b>не</b> заполняйте поля выделенные цветом.
+Определения и значения полей:
 
 * Мастер-логин и Мастер-пароль - для авторизации/регистрации админа (только с этим логином и паролем в последствии можно запускать установщик и менять настройки , если сломалась база)
 * Система авторизации на сайте - определяет, создавать БД для пользователей и прав доступа либо будет только один Мастер-логин
@@ -73,7 +65,16 @@ WEP - означает <b>Web Engine on PHP</b>
 ### Завершение ###
 Если всё успешно пройдено, то можно перейти в админку , откроется форма авторизации, потребуется ввести мастер-логин и пароль. На этом установка закончена.
 
+
+
+
+
 ### Поздравляю тебя мой юный подаван. Велики ждёт путь тебя. Джедаем стать можешь ты, овладев этой СМС :) ###
+
+
+
+
+
 
 Создание и управление контентом
 -------------------------------
@@ -124,4 +125,6 @@ WEP - означает <b>Web Engine on PHP</b>
 * `$this->default_access = '|0|';`
 
 
-git diff --name-status commit1 commit2 | awk '{ if ($1 != "D") print $2 }' | xargs git archive -o output.zip HEAD
+
+###Как получить комулятивный патч###
+`git diff --name-status commit1 commit2 | awk '{ if ($1 != "D") print $2 }' | xargs git archive -o output.zip HEAD`
