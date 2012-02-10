@@ -208,6 +208,10 @@
 			return $this->query('DROP TABLE `' . $MODUL->tablename . '`');
 		}
 
+		public function _tableClear(&$MODUL) {
+			return $this->query('truncate TABLE `' . $MODUL->tablename . '`');
+		}
+
 		public function _tableExists(&$MODUL) {
 			$result = $this->query('SHOW TABLES LIKE "' . $MODUL->tablename . '"');
 			if (!$result->err) {
