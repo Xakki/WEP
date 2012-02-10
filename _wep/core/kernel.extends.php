@@ -1097,6 +1097,10 @@ abstract class kernel_extends {
 
 			$temp2 = array();
 			$temp = current($data);
+
+			// Скорее всего вскоре этот блок будет лишним , 
+			// по идее _checkList всегжа жолжен иметь $value
+			// и _getCashedList выдает готовый рез-тат
 			if (is_array($temp) and !isset($temp['#name#'])) {
 				foreach ($data as $krow => $row) {
 					if (isset($temp2[$krow])) {
@@ -1162,7 +1166,7 @@ abstract class kernel_extends {
 			else {
 				$tdata = array();
 				foreach($data as $r) {
-					$tdata = array_merge($tdata, array_intersect_key($r,$tvalue));
+					$tdata += array_intersect_key($r,$tvalue);
 				}
 				$data =$tdata;
 			}

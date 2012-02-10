@@ -373,7 +373,7 @@ function tpl_form(&$data) {
 						if(!isset($r['mask']['datepicker']['dateFormat']))
 							$r['mask']['datepicker']['dateFormat']='\'yy-mm-dd\'';
 
-						if($r['mask']['datepicker']['timeFormat']===true or strpos($r['mask']['format'],'H:i:s')!==false)
+						if(strpos($r['mask']['format'],'H:i:s')!==false or $r['mask']['datepicker']['timeFormat']===true)
 							$r['mask']['datepicker']['timeFormat'] = '\' hh:mm:ss\'';
 
 

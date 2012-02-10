@@ -1050,7 +1050,7 @@ class static_form {
 				if(isset($preg_mask['nomatch']))
 					$nomatch = $preg_mask['nomatch'];
 				if(isset($preg_mask['comment']))
-					$FORMS_FIELDS[$key]['comment'] .= $preg_mask['comment'];
+					$form['comment'] .= $preg_mask['comment'];
 			} else
 				$nomatch = $preg_mask;
 
