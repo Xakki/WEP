@@ -263,7 +263,6 @@ class pg_class extends kernel_extends {
 		$_tpl['keywords'] = $this->config['keywords'];
 		$_tpl['description'] = $this->config['description'];
 		$temp_tpl = $_tpl;
-		$this->id = NULL;
 		$flag_content = $this->can_show();
 		//PAGE****************
 		if (!$HTML) {

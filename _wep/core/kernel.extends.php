@@ -230,7 +230,7 @@ abstract class kernel_extends {
 					eval('$data=' . $cont . ';');
 				else
 					$data = static_main::_fParseIni($this->_file_cfg, $this->config_form);
-				$this->config = array_merge($this->config, $data);
+				$this->config = $data+$this->config;
 			}
 		}
 		return true;
@@ -975,7 +975,7 @@ abstract class kernel_extends {
 			foreach ($this->formDSort as $rr) {
 				if ($rr == '#over#') {
 					$diffForm = array_diff_key($temp, array_keys($this->formdSort));
-					$this->fields_form = array_merge($this->fields_form, $diffForm);
+					$this->fields_form = $diffForm+$this->fields_form;
 				} elseif (isset($temp[$rr])) {
 					$this->fields_form[$rr] = $temp[$rr];
 				}
@@ -989,7 +989,7 @@ abstract class kernel_extends {
 			$this->fields_form = array();
 			foreach ($this->formSort as $rr) {
 				if ($rr == '#over#') {
-					$this->fields_form = array_merge($this->fields_form, $over);
+					$this->fields_form = $over+$this->fields_form;
 				} elseif (isset($temp[$rr])) {
 					$this->fields_form[$rr] = $temp[$rr];
 				}
@@ -1111,7 +1111,7 @@ abstract class kernel_extends {
 				$temp = &$temp2;
 			}else
 				$temp = &$data;
-			if (is_null($value) or !is_array($listname))// не кешируем если задано значение и $listname - выборка из БД(в массиве)
+			if (is_null($value))// не кешируем если задано значение и  or !is_array($listname) $listname - выборка из БД(в массиве)
 				$this->_CFG['enum_check'][$templistname] = $temp;
 		}else
 			$temp = &$this->_CFG['enum_check'][$templistname];
@@ -1162,6 +1162,7 @@ abstract class kernel_extends {
 				}
 				$data = $tdata;
 			}
+			if($listname=='menu'){print_r('<pre>*');print_r($value);print_r($tvalue);print_r($data);print_r('*');}
 			return $data;
 		} elseif (!isset($this->_CFG['enum'][$templistname]))
 			$this->_CFG['enum'][$templistname] = $this->_getlist($listname, $value);

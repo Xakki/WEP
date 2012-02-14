@@ -28,8 +28,13 @@
 
 	global $MAIL;
 	if(!$MAIL) _new_class('mail', $MAIL);
-
+	$MAIL->formSort = array(
+		'from','subject','text',
+	);
 	$DATA = array();
+	if(!$FUNCPARAM[1]) {
+		$FUNCPARAM[1] = $MAIL->config['mailrobot'];
+	}
 	list($DATA[$FUNCPARAM[0]],$flag) = $MAIL->mailForm($FUNCPARAM[1]);
 	if(isset($DATA[$FUNCPARAM[0]]['form']['_info']))
 		$DATA[$FUNCPARAM[0]]['form']['_info']['caption'] = $Ctitle;

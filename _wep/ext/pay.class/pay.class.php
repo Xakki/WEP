@@ -326,7 +326,8 @@ class pay_class extends kernel_extends {
 			$UGROUP->childs['users']->_add(array(
 				'email'=>$email,
 				'name'=>'Pay',
-				'owner_id'=>$UGROUP->id
+				'owner_id'=>$UGROUP->id,
+				'parent_id'=>0,
 			));
 			$id = $UGROUP->childs['users']->id;
 		} else
@@ -339,7 +340,8 @@ class pay_class extends kernel_extends {
 					$UGROUP->childs['users']->_add(array(
 						'email'=>$email,
 						'name'=>$childs->caption,
-						'owner_id'=>$UGROUP->id
+						'owner_id'=>$UGROUP->id,
+						'parent_id'=>0,
 					));
 					$data2[$email] = current($UGROUP->childs['users']->data);
 				}

@@ -729,10 +729,9 @@ class static_form {
 							if(count($data[$key])<$form['mask']['minarr'])
 								$error[] = 27;
 						}
-						foreach($data[$key] as $tk=>&$tv) {
+						foreach($data[$key] as $tk=>$tv) {
 							self::check_formfield($_this,$form,$error,$data[$key],$tk);
 						}
-						unset($tv);
 					}
 					else {
 						$error[] = 51;

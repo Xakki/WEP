@@ -239,7 +239,7 @@ class static_tools {
 			else
 				$MODUL->config_form[$k]['value'] = $MODUL->config[$k];
 		}
-		$MODUL->form = array_merge($MODUL->form, $MODUL->config_form);
+		$MODUL->form = $MODUL->form+$MODUL->config_form;
 		$MODUL->form['sbmt'] = array(
 			'type' => 'submit',
 			'value' => static_main::m('Submit'));
