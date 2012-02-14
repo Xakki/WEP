@@ -1,4 +1,12 @@
 <?php
+/**
+ * Начисление денег (списывается с вашего счета)
+ * @ShowFlexForm true
+ * @author Xakki
+ * @version 0.1 
+ * @return $form
+ * @return $html
+ */
 	// сначала задаем значения по умолчанию
 	if(!isset($FUNCPARAM[0]) or $FUNCPARAM[0] == '') $FUNCPARAM[0] = '';
 

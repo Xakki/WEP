@@ -19,6 +19,9 @@
 			$_tpl['script']['wepform'] = 1;
 			$_tpl['styles']['form'] = 1;
 		}
+		if(isset($gfi['jqueryform'])) {
+			$_tpl['script']['script.jquery/form'] = 1;
+		}
 		if(isset($gfi['md5']) and $gfi['md5']) {
 			$_tpl['script']['md5'] = 1;
 		}
@@ -60,34 +63,22 @@
 		$_tpl['styles'] = $temp;
 
 		$temp = '';
+
 		if(isset($_tpl['script']) and is_array($_tpl['script'])) {
+			if(isset($_tpl['script']['wepform']))
+				$_tpl['script'] = array('jquery'=>1,'wep'=>1,'wepform'=>1)+$_tpl['script'];
+			else
+				$_tpl['script'] = array('jquery'=>1,'wep'=>1)+$_tpl['script'];
+
 			if(isset($_tpl['script']['syntaxhighlighter'])) {
 				$_tpl['onload'] .= '';
 			}
 			// UPDATE FIX
 			if(isset($_tpl['script']['utils'])) {
 				unset($_tpl['script']['utils']);
-				$_tpl['script']['wep']=1;
-				if($_CFG['wep']['debugmode']>1)
-					print_r('<div style="color:red;">Замените подключение скрипта utils на wep</div>');
 			}
 			if(isset($_tpl['script']['form'])) {
 				unset($_tpl['script']['form']);
-				$_tpl['script']['wepform']=1;
-				if($_CFG['wep']['debugmode']>1)
-					print_r('<div style="color:red;">Замените подключение скрипта form на wepform</div>');
-			}
-
-			if(isset($_tpl['script']['wepform'])) {
-				unset($_tpl['script']['jquery']);
-				unset($_tpl['script']['wep']);
-				unset($_tpl['script']['wepform']);
-				$_tpl['script'] = array('jquery'=>1,'wep'=>1,'wepform'=>1)+$_tpl['script'];
-			}
-			elseif(isset($_tpl['script']['wep'])) {
-				unset($_tpl['script']['jquery']);
-				unset($_tpl['script']['wep']);
-				$_tpl['script'] = array('jquery'=>1,'wep'=>1)+$_tpl['script'];
 			}
 
 			foreach($_tpl['script'] as $kk=>$rr) {

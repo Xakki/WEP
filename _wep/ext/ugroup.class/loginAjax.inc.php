@@ -1,13 +1,21 @@
 <?php
+/**
+ * Авторизация AJAX
+ * @ShowFlexForm true
+ * @author Xakki
+ * @version 0.1 
+ * @return $form
+ * @return $html
+ */
+
 	// сначала задаем значения по умолчанию
-	if(!isset($FUNCPARAM[0]) or $FUNCPARAM[0] == '') $FUNCPARAM[0] = '#ext#loginAjax';
+	if(!isset($FUNCPARAM[0]) or $FUNCPARAM[0] == '') $FUNCPARAM[0] = '#ugroup#loginAjax';
 	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = '';
 	if(!isset($FUNCPARAM[2])) $FUNCPARAM[2] = '';
 	if(!isset($FUNCPARAM[3])) $FUNCPARAM[3] = 0;
 
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
-		$this->_getCashedList('phptemplates', dirname(__FILE__));
 		$temp = 'ownerlist';
 		$this->_enum['levelmenuinc'] = $this->_getCashedList($temp);
 		$this->_enum['levelmenuinc'][0] = array_merge(array(
@@ -27,8 +35,6 @@
 
 		return $form;
 	}
-
-	$tplphp = $this->FFTemplate($FUNCPARAM[0],dirname(__FILE__));
 
 	if(isset($FUNCPARAM[2]) and $FUNCPARAM[2]) { // страница исключение
 		if($this->id==$FUNCPARAM[2]) return '';
@@ -57,7 +63,7 @@
 
 
 	$DATA = array($FUNCPARAM[0]=>$DATA);
-	$html = $HTML->transformPHP($DATA,$tplphp);
+	$html = $HTML->transformPHP($DATA,$FUNCPARAM[0]);
 
 	return $html;
 

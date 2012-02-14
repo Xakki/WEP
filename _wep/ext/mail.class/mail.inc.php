@@ -1,4 +1,12 @@
 <?php
+/**
+ * Форма "написать письмо"
+ * @ShowFlexForm true
+ * @author Xakki
+ * @version 0.1 
+ * @return $form
+ * @return $html
+ */
 	// сначала задаем значения по умолчанию
 	if(!isset($FUNCPARAM[0]) or $FUNCPARAM[0] == '') $FUNCPARAM[0] = 'formcreat';
 	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = '';
@@ -6,7 +14,6 @@
 
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
-		$this->_getCashedList('phptemplates', dirname(__FILE__));
 		$this->_enum['pagelist'] = array(
 			0=>'Обратная связь',
 			2=>'--');
@@ -19,12 +26,15 @@
 	}
 	if(!$Ctitle) $Ctitle = 'Отправка письма службе поддержки';
 
-	$tplphp = $this->FFTemplate($FUNCPARAM[0],dirname(__FILE__));
-
 	global $MAIL;
 	if(!$MAIL) _new_class('mail', $MAIL);
-
+	$MAIL->formSort = array(
+		'from','subject','text',
+	);
 	$DATA = array();
+	if(!$FUNCPARAM[1]) {
+		$FUNCPARAM[1] = $MAIL->config['mailrobot'];
+	}
 	list($DATA[$FUNCPARAM[0]],$flag) = $MAIL->mailForm($FUNCPARAM[1]);
 	if(isset($DATA[$FUNCPARAM[0]]['form']['_info']))
 		$DATA[$FUNCPARAM[0]]['form']['_info']['caption'] = $Ctitle;
@@ -34,6 +44,6 @@
 		$html = $HTML->transformPHP($DATA[$FUNCPARAM[0]],'messages');
 	}
 	else
-		$html = $HTML->transformPHP($DATA,$tplphp);
+		$html = $HTML->transformPHP($DATA,$FUNCPARAM[0]);
 	return $html;
 

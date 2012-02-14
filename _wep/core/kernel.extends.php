@@ -1,12 +1,11 @@
 <?php
 
 /**
-* COMMENT = класс расширения для модулей 
-*/
-
+ * COMMENT = класс расширения для модулей 
+ */
 abstract class kernel_extends {
 
-	function __construct($owner=NULL) {
+	function __construct($owner = NULL) {
 		global $_CFG;
 		//FB::info($_CFG);
 		$this->_CFG = true; // баг ПХП
@@ -14,7 +13,7 @@ abstract class kernel_extends {
 		$this->SQL_CFG = $this->_CFG['sql'];
 
 		$this->owner = true;
-		if(is_object($owner) and isset($owner->fields))
+		if (is_object($owner) and isset($owner->fields))
 			$this->owner = &$owner; //link to owner class
 		else
 			$this->owner = NULL;
@@ -35,22 +34,20 @@ abstract class kernel_extends {
 	}
 
 	function __destruct() {
-
+		
 	}
 
 	function __get($name) {
-		global $SQL,$PSQL;
+		global $SQL, $PSQL;
 		if ($name == 'SQL') {
 			if (!$this->grant_sql) {
-				if ($this->SQL_CFG['type']=='sqlpostgre') 
-				  {
+				if ($this->SQL_CFG['type'] == 'sqlpostgre') {
 					if (!isset($PSQL) or !$PSQL->ready) {
 						$PSQL = new $this->SQL_CFG['type']($this->SQL_CFG);
 					}
 					$this->SQL = &$PSQL;
 					return $PSQL;
-				}
-				else {
+				} else {
 					if (!isset($SQL) or !$SQL->ready) {
 						$SQL = new $this->SQL_CFG['type']($this->SQL_CFG);
 					}
@@ -60,16 +57,14 @@ abstract class kernel_extends {
 			} else {
 				return new $this->SQL_CFG['type']($this->SQL_CFG);
 			}
-		} 
-		elseif ($name == 'setHook') {
+		} elseif ($name == 'setHook') {
 			$this->_setHook();
 			return $this->setHook;
-		}
-		elseif ($name == 'fields_form') {
+		} elseif ($name == 'fields_form') {
 			$this->getFieldsForm(-1);
 			return $this->fields_form;
 		}
-		trigger_error('Своиство '.$name.' не найдено в классе '.$this->_cl, E_USER_NOTICE);
+		trigger_error('Своиство ' . $name . ' не найдено в классе ' . $this->_cl, E_USER_NOTICE);
 		return NULL;
 	}
 
@@ -89,22 +84,20 @@ abstract class kernel_extends {
 			if (isset($this->_CFG['hook'][$f][$m])) {
 				foreach ($this->_CFG['hook'][$f][$m] as $k => $r) {
 					$file = NULL;
-					if(strpos($k,':')!==false) {
-						$temp = explode(':',$k);
-						if(isset($this->_CFG['modulprm'][$temp[0]])) {
+					if (strpos($k, ':') !== false) {
+						$temp = explode(':', $k);
+						if (isset($this->_CFG['modulprm'][$temp[0]])) {
 							$file = $this->_CFG['modulprm'][$temp[0]]['path'];
-							$file = substr($file,0,strrpos($file,'/')).'/'.$temp[1];
-							if(file_exists($file)) {
+							$file = substr($file, 0, strrpos($file, '/')) . '/' . $temp[1];
+							if (file_exists($file)) {
 								include_once($file);
 							}
 						}
-					}
-					elseif(isset($this->_CFG['modulprm'][$k])) {
-						if(_new_class($k,$TEMP)) {
-							$r = '$TEMP->'.$r;
+					} elseif (isset($this->_CFG['modulprm'][$k])) {
+						if (_new_class($k, $TEMP)) {
+							$r = '$TEMP->' . $r;
 						}
-					}
-					elseif (!function_exists($r)) {
+					} elseif (!function_exists($r)) {
 						$file = $this->_CFG['_PATH']['path'] . $k;
 						if (file_exists($file)) {
 							include_once($file);
@@ -114,7 +107,7 @@ abstract class kernel_extends {
 					if ($file === NULL or function_exists($r)) {
 						eval('return ' . $r . '($this,$arg);');
 					}else
-						trigger_error('Для модуля `'.$this->_cl.'`, функция хука `'.$r.'` не определена', E_USER_WARNING);
+						trigger_error('Для модуля `' . $this->_cl . '`, функция хука `' . $r . '` не определена', E_USER_WARNING);
 				}
 			}
 		}
@@ -183,7 +176,7 @@ abstract class kernel_extends {
 				$this->fld_data =
 				$this->fields =
 				$this->form =
-				$this->formSort = 
+				$this->formSort =
 				$this->formDSort =
 				$this->mess_form =
 				$this->attaches = $this->att_data =
@@ -196,10 +189,10 @@ abstract class kernel_extends {
 				$this->child_path =
 				$this->Achilds =
 				$this->HOOK = //перехватчик в реальном времени
-				$this->_AllowAjaxFn =  // разрешённые функции для аякса, нужно прописывать в индекс
+				$this->_AllowAjaxFn = // разрешённые функции для аякса, нужно прописывать в индекс
 				$this->cron = // Задания на кроне time,file,modul,function,active,
-				$this->_dependClass = 
-				 array();
+				$this->_dependClass =
+				array();
 		$this->childs = new modul_child($this);
 		$this->ordfield = '';
 		$this->_clp = array();
@@ -237,15 +230,15 @@ abstract class kernel_extends {
 					eval('$data=' . $cont . ';');
 				else
 					$data = static_main::_fParseIni($this->_file_cfg, $this->config_form);
-				$this->config = array_merge($this->config, $data);
+				$this->config = $data+$this->config;
 			}
 		}
 		return true;
 	}
 
 	protected function _create() {
-		if($this->tablename)
-		  $this->tablename = $this->SQL_CFG['dbpref'] . $this->tablename; // название таблицы
+		if ($this->tablename)
+			$this->tablename = $this->SQL_CFG['dbpref'] . $this->tablename; // название таблицы
 		if (is_bool($this->mf_namefields) and $this->mf_namefields)
 			$this->mf_namefields = 'name';
 		if (is_bool($this->mf_createrid) and $this->mf_createrid)
@@ -318,7 +311,7 @@ abstract class kernel_extends {
 		if ($this->mf_timeoff)
 			$this->fields['mf_timeoff'] = array('type' => 'int', 'width' => 11, 'attr' => 'unsigned NOT NULL', 'default' => '0');
 		if ($this->mf_ipcreate)
-			$this->fields[$this->mf_ipcreate] = array('type' => 'bigint', 'noquote'=>true, 'width' => 20, 'attr' => 'NOT NULL', 'default' => '0');
+			$this->fields[$this->mf_ipcreate] = array('type' => 'bigint', 'noquote' => true, 'width' => 20, 'attr' => 'NOT NULL', 'default' => '0');
 
 		/* if ($this->mf_typectrl)
 		  $this->fields['typedata'] = array('type' => 'tinyint', 'attr' => 'unsigned NOT NULL');
@@ -332,7 +325,7 @@ abstract class kernel_extends {
 
 		$this->attprm = array('type' => 'varchar(4)', 'attr' => 'NOT NULL DEFAULT \'\'');
 
-		$this->_pa = $this->_cl .'_pn'; // ключ страницы в ссылке
+		$this->_pa = $this->_cl . '_pn'; // ключ страницы в ссылке
 		// номер текущей страницы
 		if (isset($_REQUEST[$this->_pa]) && (int) $_REQUEST[$this->_pa])
 			$this->_pn = (int) $_REQUEST[$this->_pa];
@@ -373,7 +366,7 @@ abstract class kernel_extends {
 
 	// В этой функции устанавливается хук
 	protected function _setHook() {
-		$this->setHook = array();//Перехватчик в предустановки модуля
+		$this->setHook = array(); //Перехватчик в предустановки модуля
 	}
 
 	/**
@@ -382,28 +375,27 @@ abstract class kernel_extends {
 	 * @param string $where - для дополнительного условия
 	 * @return array
 	 */
-	public function _dump($where='') {
+	public function _dump($where = '') {
 		$data = array();
 		if (!isset($this->fields[$this->mf_namefields]))
 			$name = 'id as name';
 		else
 			$name = '`' . $this->mf_namefields . '` as name';
-		if($this->mf_istree)
-			$name .= ', '.$this->mf_istree;
+		if ($this->mf_istree)
+			$name .= ', ' . $this->mf_istree;
 		if ($where != '')
 			$where = ' WHERE ' . $where;
 		$result = $this->SQL->execSQL('SELECT id, ' . $name . ' FROM `' . $this->tablename . '`' . $where);
 		if (!$result->err) {
-			if($this->mf_istree) {
-				if($this->mf_use_charid)
-					$data[''][''] = static_main::m('_listroot',$this);
+			if ($this->mf_istree) {
+				if ($this->mf_use_charid)
+					$data[''][''] = static_main::m('_listroot', $this);
 				else
-					$data[0][0] = static_main::m('_listroot',$this);
-				while (list($id, $name,$pid) = $result->fetch_row()) {
+					$data[0][0] = static_main::m('_listroot', $this);
+				while (list($id, $name, $pid) = $result->fetch_row()) {
 					$data[$pid][$id] = $name;
 				}
-			}
-			else {
+			} else {
 				while (list($key, $value) = $result->fetch_row())
 					$data[$key] = $value;
 			}
@@ -427,7 +419,7 @@ abstract class kernel_extends {
 	 * @param string $ord2 - позволяет группировать выходные данные по этому полю (2 уровень)
 	 * @return array
 	 */
-	public function _query($list='', $cls='', $ord='', $ord2='',$debug=false) { // this func. dont use $this->data
+	public function _query($list = '', $cls = '', $ord = '', $ord2 = '', $debug = false) { // this func. dont use $this->data
 		$query = 'SELECT ';
 		if (is_array($list))
 			$query .= implode(', ', $list);
@@ -438,7 +430,8 @@ abstract class kernel_extends {
 		$query .= ' FROM `' . $this->tablename . '` ';
 		if ($cls)
 			$query .= $cls;
-		if($debug) print_r($query.' <br>');
+		if ($debug)
+			print_r($query . ' <br>');
 		$result = $this->SQL->execSQL($query);
 		if ($result->err)
 			return false;
@@ -454,18 +447,19 @@ abstract class kernel_extends {
 				$data[] = $row;
 		}
 		if (count($data) and !$this->_select_attaches($data))
-			trigger_error('Ошибка выборки ATTACHES в классе '.$this->_cl, E_USER_WARNING);
+			trigger_error('Ошибка выборки ATTACHES в классе ' . $this->_cl, E_USER_WARNING);
 		if (count($data) and !$this->_select_memos($data))
-			trigger_error('Ошибка выборки MEMOS в классе '.$this->_cl, E_USER_WARNING);
+			trigger_error('Ошибка выборки MEMOS в классе ' . $this->_cl, E_USER_WARNING);
 		if (isset($this->_CFG['hook']['_query']))
 			$this->__do_hook('_query', func_get_args());
 		return $data;
 	}
+
 	/**
 	 * Синоним _query
 	 */
-	public function qs($list='', $cls='', $ord='', $ord2='',$debug=false) {
-		return $this->_query($list, $cls, $ord, $ord2,$debug);
+	public function qs($list = '', $cls = '', $ord = '', $ord2 = '', $debug = false) {
+		return $this->_query($list, $cls, $ord, $ord2, $debug);
 	}
 
 	/**
@@ -512,15 +506,16 @@ abstract class kernel_extends {
 				return true;
 			foreach ($data as $ri => &$row) {
 				foreach ($merg as $key => $value) {
-					if(!$row[$key]) continue;
+					if (!$row[$key])
+						continue;
 					$row['_ext_' . $key] = $row[$key];
 					$row[$key] = $this->_get_file($row['id'], $key, $row[$key]);
 					//$row[$key] = $this->_get_file($row['id'], $key, $row[$key]);
-					if(isset($value['thumb'])) {
-						foreach($value['thumb'] as $kk=>$rr) {
-							if(isset($rr['pref']) and $rr['pref']) {
-								$row[$rr['pref'].$key] = $this->_get_file($row['id'], $key, $row['_ext_' . $key],$kk);
-								$row['#'.$rr['pref'].$key] = $rr;
+					if (isset($value['thumb'])) {
+						foreach ($value['thumb'] as $kk => $rr) {
+							if (isset($rr['pref']) and $rr['pref']) {
+								$row[$rr['pref'] . $key] = $this->_get_file($row['id'], $key, $row['_ext_' . $key], $kk);
+								$row['#' . $rr['pref'] . $key] = $rr;
 							}
 						}
 					}
@@ -530,7 +525,7 @@ abstract class kernel_extends {
 		return true;
 	}
 
-	private function _select_memos(&$data='') {
+	private function _select_memos(&$data = '') {
 		if (count($this->memos) and count($data)) {
 			$temp = current($data);
 			if (!isset($temp['id']))
@@ -564,8 +559,8 @@ abstract class kernel_extends {
 	 *
 	 * @return bool
 	 */
-	public function _add($data=array(),$flag_select=true) {
-		if(is_bool($data)) {
+	public function _add($data = array(), $flag_select = true) {
+		if (is_bool($data)) {
 			$flag_select = $data;
 			trigger_error('Устаревший вариант вызова функция _add', E_USER_WARNING);
 		} else {
@@ -586,9 +581,10 @@ abstract class kernel_extends {
 		return $result;
 	}
 
-	function _add_item($data,$flag_select=true) {
+	function _add_item($data, $flag_select = true) {
 		trigger_error('Устаревший функция _add_item -> заменить на _add', E_USER_WARNING);
-		return $this->_add($data, $flag_select);;
+		return $this->_add($data, $flag_select);
+		;
 	}
 
 	/**
@@ -597,7 +593,7 @@ abstract class kernel_extends {
 	 *
 	 * @return bool
 	 */
-	public function _addUp($data,$flag_select=true) {
+	public function _addUp($data, $flag_select = true) {
 		$this->fld_data = $this->att_data = $this->mmo_data = array();
 		foreach ($data as $k => $r) {
 			if (isset($this->memos[$k]))
@@ -620,17 +616,16 @@ abstract class kernel_extends {
 	 * @param array $data 
 	 * @param string $where 
 	 * @return array
-	*/
-	protected function _update($data=array(),$where=false,$flag_select=true) {
-		if(is_bool($data)) {
+	 */
+	protected function _update($data = array(), $where = false, $flag_select = true) {
+		if (is_bool($data)) {
 			trigger_error('Устаревший метод вызова _save_item -> первый параметр $data', E_USER_WARNING);
 			$where = $flag_select;
 			$flag_select = $data;
-		}
-		else {
-			if(!count($data)) {
+		} else {
+			if (!count($data)) {
 				trigger_error('Устаревший метод вызова _update -> первый параметр $data', E_USER_WARNING);
-				if(!count($this->fld_data))
+				if (!count($this->fld_data))
 					return false;
 			} else {
 				$this->fld_data = $this->att_data = $this->mmo_data = array();
@@ -644,16 +639,16 @@ abstract class kernel_extends {
 				}
 			}
 		}
-		$result = static_form::_update($this, $flag_select,$where);
-		if($result) $this->allChangeData('save');
+		$result = static_form::_update($this, $flag_select, $where);
+		if ($result)
+			$this->allChangeData('save');
 		return $result;
 	}
 
-	public function _save_item($data,$where=false) {
+	public function _save_item($data, $where = false) {
 		trigger_error('Устаревший функция _save_item -> заменить на _update', E_USER_WARNING);
-		return $this->_update($data,true,$where);
+		return $this->_update($data, true, $where);
 	}
-
 
 	/**
 	 * Возвращает путь с дополненным параметром size
@@ -676,7 +671,7 @@ abstract class kernel_extends {
 	 * @param <type> $modkey
 	 * @return string
 	 */
-	public function _get_file($id, $key, $extValue='', $modkey=-1) {
+	public function _get_file($id, $key, $extValue = '', $modkey = -1) {
 		if (!$id)
 			$id = $this->id;
 		if (!$extValue and isset($this->data[$id]))
@@ -717,9 +712,9 @@ abstract class kernel_extends {
 	}
 
 	public function _get_new_ord() {
-		$query = 'SELECT max(' . 
-			(($this->mf_use_charid and $this->mf_ordctrl)?$this->mf_ordctrl:'id')
-			. ') FROM `' . $this->tablename . '`';
+		$query = 'SELECT max(' .
+				(($this->mf_use_charid and $this->mf_ordctrl) ? $this->mf_ordctrl : 'id')
+				. ') FROM `' . $this->tablename . '`';
 		if ($this->mf_istree and $this->parent_id and !$this->fld_data[$this->mf_istree])
 			$query .= ' WHERE ' . $this->mf_istree . '=' . $this->parent_id;
 		$result = $this->SQL->execSQL($query);
@@ -741,7 +736,7 @@ abstract class kernel_extends {
 		return false;
 	}
 
-	public function _prmModulEdit(&$data, $param=array()) {
+	public function _prmModulEdit(&$data, $param = array()) {
 		if (!$this->prm_edit)
 			return false;
 		if (isset($param['prm']) and count($param['prm'])) {
@@ -759,7 +754,7 @@ abstract class kernel_extends {
 		return false;
 	}
 
-	public function _prmModulDel($dataList, $param=array()) {//$dataList нельзя по ссылке
+	public function _prmModulDel($dataList, $param = array()) {//$dataList нельзя по ссылке
 		if (!$this->prm_del)
 			return false;
 		if (static_main::_prmModul($this->_cl, array(5)))
@@ -773,7 +768,7 @@ abstract class kernel_extends {
 		return false;
 	}
 
-	public function _prmModulAct($dataList, $param=array()) {//$dataList нельзя по ссылке
+	public function _prmModulAct($dataList, $param = array()) {//$dataList нельзя по ссылке
 		if (!$this->mf_actctrl)
 			return false;
 		if (static_main::_prmModul($this->_cl, array(7)))
@@ -797,26 +792,25 @@ abstract class kernel_extends {
 
 	private function _prmSortField($key) {
 		//включаем сортировку для всех полей
-		/*if (isset($this->fields_form[$key]['mask']['sort']))
-			return true;
-		elseif ($key == $this->mf_namefields or $key == 'ordfield' or $key == $this->mf_actctrl)*/
-			return true;
+		/* if (isset($this->fields_form[$key]['mask']['sort']))
+		  return true;
+		  elseif ($key == $this->mf_namefields or $key == 'ordfield' or $key == $this->mf_actctrl) */
+		return true;
 		//return false;
 	}
 
 // --END PERMISSION -----//
 
-
 	/**
 	 * Вывод и обработка данных
 	 * @param array $param параметры
-	* $param
-	* - formflag
-	* - ajax
-	* - errMess
-	* - showform
+	 * $param
+	 * - formflag
+	 * - ajax
+	 * - errMess
+	 * - showform
 	 * @return array
-	*/
+	 */
 	public function _UpdItemModul($param) {
 		return include($this->_CFG['_PATH']['core'] . 'kernel.UpdItemModul.php');
 	}
@@ -826,12 +820,12 @@ abstract class kernel_extends {
 	 * @param array $data данные
 	 * @param array $param параметры
 	 * @return array
-	*/
+	 */
 	public function kPreFields(&$data, &$param) {
-		$this->getFieldsForm(1);//обнуляем форму
+		$this->getFieldsForm(1); //обнуляем форму
 		foreach ($this->fields_form as $k => &$r) {
 			if (isset($r['readonly']) and $r['readonly'] and $this->id) // если поле "только чтение" и редактируется , то значение берем из БД,
-				$data[$k] = (isset($this->data[$this->id][$k])?$this->data[$this->id][$k]:'');
+				$data[$k] = (isset($this->data[$this->id][$k]) ? $this->data[$this->id][$k] : '');
 
 			if (isset($r['mask']['eval']))
 				$eval = $r['mask']['eval'];
@@ -856,7 +850,7 @@ abstract class kernel_extends {
 				unset($eval);
 			}
 
-			if (isset($this->attaches[$k])) 
+			if (isset($this->attaches[$k]))
 				$r = $r + $this->attaches[$k];
 			if (isset($this->memos[$k]))
 				$r = $r + $this->memos[$k];
@@ -889,7 +883,7 @@ abstract class kernel_extends {
 					$r['value'] = $data[$k];
 			}
 			elseif (isset($r['multiple']) and $r['multiple'] > 0 and $r['type'] == 'list') {
-				if(isset($data[$k])) {
+				if (isset($data[$k])) {
 					if (!is_array($data[$k])) {
 						$data[$k] = trim($data[$k], '|');
 						$r['value'] = explode('|', $data[$k]);
@@ -898,12 +892,12 @@ abstract class kernel_extends {
 				}
 			}
 			elseif ($r['type'] == 'date') {
-				if(!isset($r['mask']['format']) or !$r['mask']['format'])
+				if (!isset($r['mask']['format']) or !$r['mask']['format'])
 					$r['mask']['format'] = 'Y-m-d H:i:s';
 			}
-			/*elseif ($r['type'] == 'checkbox') {
-				$data[$k] = $r['value'] = ((isset($data[$k]) and $data[$k])?1:0);
-			}*/
+			/* elseif ($r['type'] == 'checkbox') {
+			  $data[$k] = $r['value'] = ((isset($data[$k]) and $data[$k])?1:0);
+			  } */
 			if (isset($data[$k]) and !isset($r['value'])) //  and $data[$k]
 				$r['value'] = $data[$k];
 
@@ -916,8 +910,8 @@ abstract class kernel_extends {
 			//end foreach
 		}
 
-		if(!isset($param['captchaOn'])) {
-			if(!isset($_SESSION['user']['id']))
+		if (!isset($param['captchaOn'])) {
+			if (!isset($_SESSION['user']['id']))
 				$param['captchaOn'] = true;
 			else
 				$param['captchaOn'] = false;
@@ -925,19 +919,21 @@ abstract class kernel_extends {
 		if (count($this->fields_form) and $param['captchaOn']) {
 			$LEN = 5;
 			$DIF = 1;
-			if(is_array($param['captchaOn'])) {
-				if(isset($param['captchaOn']['len'])) $LEN = $param['captchaOn']['len'];
-				if(isset($param['captchaOn']['dif'])) $DIF = $param['captchaOn']['dif'];
+			if (is_array($param['captchaOn'])) {
+				if (isset($param['captchaOn']['len']))
+					$LEN = $param['captchaOn']['len'];
+				if (isset($param['captchaOn']['dif']))
+					$DIF = $param['captchaOn']['dif'];
 			}
 			//$LEN,$DIF
 			$this->fields_form['captcha'] = array(
 				'type' => 'captcha',
-				'caption' => static_main::m('_captcha',$this),
+				'caption' => static_main::m('_captcha', $this),
 				'captcha' => static_form::getCaptcha(),
 				'src' => $this->_CFG['_HREF']['captcha'] . '?' . rand(0, 9999),
-				'value' => (isset($data['captcha'])?$data['captcha']:''),
-				'mask' => array('min' => 1,'max'=>$LEN,'dif'=>$DIF));
-			if(0) {
+				'value' => (isset($data['captcha']) ? $data['captcha'] : ''),
+				'mask' => array('min' => 1, 'max' => $LEN, 'dif' => $DIF));
+			if (0) {
 				$this->fields_form['captcha']['error'] = array('У вас отключены Куки');
 			}
 		}
@@ -946,7 +942,7 @@ abstract class kernel_extends {
 		if (isset($this->mess_form) and count($this->mess_form))
 			$mess = $this->mess_form;
 		if (!count($this->fields_form))
-			$mess[] = array('name' => 'error', 'value' => static_main::m('nodata',$this));
+			$mess[] = array('name' => 'error', 'value' => static_main::m('nodata', $this));
 		if (isset($this->_CFG['hook']['kPreFields']))
 			$this->__do_hook('kPreFields', func_num_args());
 		return $mess;
@@ -956,48 +952,45 @@ abstract class kernel_extends {
 	 * Создание данных для формы
 	 * @param mixed $form - 1 = форма
 	 * @return array
-	*/
-	function getFieldsForm($form=0) {
+	 */
+	function getFieldsForm($form = 0) {
 		$this->setFieldsForm($form);
-		/*$temp = $this->fields_form;
-		$this->fields_form = array();
-		foreach($temp as $k=>$r) {
-			if($r['type']=='ckedit') {
-				//$this->fields[$k.'_ckedit'] = array('type' => 'tinyint', 'width'=>3, 'attr' => 'NOT NULL','default'=>'1');
-				if($form>0 and static_main::_prmUserCheck(1))
-					$this->fields_form[$k.'_ckedit'] = array('type' => 'list', 'listname'=>'wysiwyg', 'caption' => $r['caption'].' - Выбор редактора', 'onchange'=>'SetWysiwyg(this)','mask'=>array('usercheck'=>1));
-			}
-			elseif($r['type']=='list') {
-				if(!isset($r['listname']))
-					$r['listname'] = 'list';
-			}
-			$this->fields_form[$k] = $r;
-		}*/
-		if(!$form and count($this->formDSort)) {
+		/* $temp = $this->fields_form;
+		  $this->fields_form = array();
+		  foreach($temp as $k=>$r) {
+		  if($r['type']=='ckedit') {
+		  //$this->fields[$k.'_ckedit'] = array('type' => 'tinyint', 'width'=>3, 'attr' => 'NOT NULL','default'=>'1');
+		  if($form>0 and static_main::_prmUserCheck(1))
+		  $this->fields_form[$k.'_ckedit'] = array('type' => 'list', 'listname'=>'wysiwyg', 'caption' => $r['caption'].' - Выбор редактора', 'onchange'=>'SetWysiwyg(this)','mask'=>array('usercheck'=>1));
+		  }
+		  elseif($r['type']=='list') {
+		  if(!isset($r['listname']))
+		  $r['listname'] = 'list';
+		  }
+		  $this->fields_form[$k] = $r;
+		  } */
+		if (!$form and count($this->formDSort)) {
 			$temp = $this->fields_form;
 			$this->fields_form = array();
-			foreach($this->formDSort as $rr) {
-				if($rr=='#over#') {
-					$diffForm = array_diff_key($temp,array_keys($this->formdSort));
-					$this->fields_form = array_merge($this->fields_form,$diffForm);
-				}
-				elseif(isset($temp[$rr])) {
+			foreach ($this->formDSort as $rr) {
+				if ($rr == '#over#') {
+					$diffForm = array_diff_key($temp, array_keys($this->formdSort));
+					$this->fields_form = $diffForm+$this->fields_form;
+				} elseif (isset($temp[$rr])) {
 					$this->fields_form[$rr] = $temp[$rr];
 				}
 			}
-		}
-		elseif($form and count($this->formSort)) {
+		} elseif ($form and count($this->formSort)) {
 			$temp = $this->fields_form;
 			$this->key_formSort = array_flip($this->formSort);
-			if(isset($this->key_formSort['#over#'])) {
-				$over = array_diff_key($temp,$this->key_formSort);
+			if (isset($this->key_formSort['#over#'])) {
+				$over = array_diff_key($temp, $this->key_formSort);
 			}
 			$this->fields_form = array();
-			foreach($this->formSort as $rr) {
-				if($rr=='#over#') {
-					$this->fields_form = array_merge($this->fields_form,$over);
-				}
-				elseif(isset($temp[$rr])) {
+			foreach ($this->formSort as $rr) {
+				if ($rr == '#over#') {
+					$this->fields_form = $over+$this->fields_form;
+				} elseif (isset($temp[$rr])) {
 					$this->fields_form[$rr] = $temp[$rr];
 				}
 			}
@@ -1005,7 +998,7 @@ abstract class kernel_extends {
 		return true;
 	}
 
-	public function setFieldsForm($form=0) {
+	public function setFieldsForm($form = 0) {
 		$this->fields_form = array();
 		return true;
 	}
@@ -1014,7 +1007,7 @@ abstract class kernel_extends {
 	 * Создание данных для формы
 	 * @param mixed $param - параметры
 	 * @return array
-	*/
+	 */
 	public function kFields2Form(&$param) {
 		/*
 		  $this->form['уник название'] = array(
@@ -1035,20 +1028,20 @@ abstract class kernel_extends {
 		$this->form['_*features*_'] = array('type' => 'info', 'name' => $this->_cl, 'method' => 'post', 'id' => $this->id, 'action' => $_SERVER['REQUEST_URI']);
 		$this->form['_info'] = array('type' => 'info', 'css' => 'caption');
 		if ($this->id)
-			$this->form['_info']['caption'] = static_main::m('update_name', array($this->caption),$this);
+			$this->form['_info']['caption'] = static_main::m('update_name', array($this->caption), $this);
 		else
-			$this->form['_info']['caption'] = static_main::m('add_name', array($this->caption),$this);
+			$this->form['_info']['caption'] = static_main::m('add_name', array($this->caption), $this);
 
 		$this->kFields2FormFields($this->fields_form);
 		if (!$this->id or (isset($this->data[$this->id]) and $this->_prmModulEdit($this->data[$this->id], $param))) {
 			$this->form['sbmt'] = array(
 				'type' => 'submit',
-				'value_save' => ((isset($param['sbmt_save']) and $this->id) ? static_main::m('Save',$this) : ''),
-				'value_close' => (isset($param['sbmt_close']) ? static_main::m('Close',$this) : ''),
-				'value' => static_main::m('Save and close',$this)
+				'value_save' => ((isset($param['sbmt_save']) and $this->id) ? static_main::m('Save', $this) : ''),
+				'value_close' => (isset($param['sbmt_close']) ? static_main::m('Close', $this) : ''),
+				'value' => static_main::m('Save and close', $this)
 			);
-			if($this->id and $this->_prmModulDel($this->data, $param) and isset($param['sbmt_del']))
-				$this->form['sbmt']['value_del'] = static_main::m('Delete',$this);
+			if ($this->id and $this->_prmModulDel($this->data, $param) and isset($param['sbmt_del']))
+				$this->form['sbmt']['value_del'] = static_main::m('Delete', $this);
 		}
 		return true;
 	}
@@ -1057,7 +1050,7 @@ abstract class kernel_extends {
 	 * Корректировака и обработка формы для вывода формы
 	 * @param mixed $fields - название списока или массив данных для списка
 	 * @return array
-	*/
+	 */
 	public function kFields2FormFields(&$fields) {
 		return include($this->_CFG['_PATH']['core'] . 'kernel.kFields2FormFields.php');
 	}
@@ -1068,7 +1061,7 @@ abstract class kernel_extends {
 	 * @param mixed $param - параметры
 	 * @param mixed $FORMS - форма
 	 * @return array Данные
-	*/
+	 */
 	public function fFormCheck(&$data, &$param, &$FORMS) {
 		return static_form::_fFormCheck($this, $data, $param, $FORMS);
 	}
@@ -1078,8 +1071,8 @@ abstract class kernel_extends {
 	 * @param mixed $listname - название списока или массив данных для списка
 	 * @param mixed $value - значение
 	 * @return array Список
-	*/
-	public function _checkList(&$listname, $value=NULL) {
+	 */
+	public function _checkList(&$listname, $value = NULL) {
 		$templistname = $listname;
 		if (is_array($listname))
 			$templistname = implode(',', $listname);
@@ -1097,6 +1090,10 @@ abstract class kernel_extends {
 
 			$temp2 = array();
 			$temp = current($data);
+
+			// Скорее всего вскоре этот блок будет лишним , 
+			// по идее _checkList всегжа жолжен иметь $value
+			// и _getCashedList выдает готовый рез-тат
 			if (is_array($temp) and !isset($temp['#name#'])) {
 				foreach ($data as $krow => $row) {
 					if (isset($temp2[$krow])) {
@@ -1114,7 +1111,7 @@ abstract class kernel_extends {
 				$temp = &$temp2;
 			}else
 				$temp = &$data;
-			if(is_null($value) or !is_array($listname))// не кешируем если задано значение и $listname - выборка из БД(в массиве)
+			if (is_null($value))// не кешируем если задано значение и  or !is_array($listname) $listname - выборка из БД(в массиве)
 				$this->_CFG['enum_check'][$templistname] = $temp;
 		}else
 			$temp = &$this->_CFG['enum_check'][$templistname];
@@ -1139,26 +1136,41 @@ abstract class kernel_extends {
 	 * @param mixed $listname - название списока или массив данных для списка
 	 * @param mixed $value - значение
 	 * @return array Список
-	*/
-	public function _getCashedList($listname, $value=NULL) {
+	 */
+	public function _getCashedList($listname, $value = NULL) {
 		$data = array();
 		$templistname = $listname;
 		if (is_array($listname))
 			$templistname = implode(',', $listname);
-		if (isset($this->_enum[$templistname])) {
-			return $this->_enum[$templistname];
-			//$this->_CFG['enum'][$templistname] = $this->_enum[$templistname];
-		} elseif (!isset($this->_CFG['enum'][$templistname])) {
-			if(!is_null($value) and is_array($listname)) // не кешируем если задано $value и $listname - выборка из таблиц(задается массивом)
-				return $this->_getlist($listname, $value);
+
+		if (!is_null($value)) {// не кешируем если задано $value и $listname - выборка из таблиц(задается массивом)
+			$data = $this->_getlist($listname, $value);
+
+			// VALUE
+			if (!is_array($value))
+				$tvalue = array($value => $value);
 			else
-				$this->_CFG['enum'][$templistname] = $this->_getlist($listname,$value);
-				
-		}
+				$tvalue = array_combine($value, $value);
+
+			$new = array();
+			if (!is_array(current($data)))
+				$data = array_intersect_key($data, $tvalue);
+			else {
+				$tdata = array();
+				foreach ($data as $r) {
+					$tdata += array_intersect_key($r, $tvalue);
+				}
+				$data = $tdata;
+			}
+			if($listname=='menu'){print_r('<pre>*');print_r($value);print_r($tvalue);print_r($data);print_r('*');}
+			return $data;
+		} elseif (!isset($this->_CFG['enum'][$templistname]))
+			$this->_CFG['enum'][$templistname] = $this->_getlist($listname, $value);
+
 		return $this->_CFG['enum'][$templistname];
 	}
 
-	public function _getlist(&$listname, $value=NULL) {/* LIST SELECTOR */
+	public function _getlist(&$listname, $value = NULL) {/* LIST SELECTOR */
 		include_once($this->_CFG['_PATH']['core'] . 'kernel.getlist.php');
 		return _getlist($this, $listname, $value);
 	}
@@ -1170,26 +1182,26 @@ abstract class kernel_extends {
 	 * Универсальный обработчик вывода данных
 	 * @param array $PARAM - параметры вывода данных и в нём формируется массив данных
 	 * 	  $Ajax=0 - не скриптовая
-	 *		$this->_cl - name текущего класса без _class
-	 *		$this->_clp - построенный путь
-	 *		$param['xsl'] - шаблонизатор
+	 * 		$this->_cl - name текущего класса без _class
+	 * 		$this->_clp - построенный путь
+	 * 		$param['xsl'] - шаблонизатор
 	 * @param string $ftype
 	 * @return array Данные для шаблонизатора
-	*/
-	public function super_inc($PARAM=array(), $ftype='') {
+	 */
+	public function super_inc($PARAM = array(), $ftype = '') {
 		// Результат работы скрипта
 		// $flag = 3; - вывод данных
 		$flag = 1;
 
 		// Задаем начальный массив данных
-		if(!isset($PARAM['messages'])) {
+		if (!isset($PARAM['messages'])) {
 			$PARAM['messages'] = array();
 			$PARAM['path'] = array();
-			$PARAM['_clp'] = array('_modul'=>$this->_cl);
-			if(strpos($PARAM['firstpath'],'?')===false)
+			$PARAM['_clp'] = array('_modul' => $this->_cl);
+			if (strpos($PARAM['firstpath'], '?') === false)
 				$PARAM['firstpath'] .= '?';
 			else {
-				if(substr($PARAM['firstpath'],-1)!='&')
+				if (substr($PARAM['firstpath'], -1) != '&')
 					$PARAM['firstpath'] .= '&';
 			}
 		}
@@ -1206,7 +1218,7 @@ abstract class kernel_extends {
 
 		$PARAM['path'][$this->_cl] = array(
 			'path' => $PARAM['_clp'],
-			'name'=>$this->caption
+			'name' => $this->caption
 		);
 
 		if ($this->id) {
@@ -1214,27 +1226,27 @@ abstract class kernel_extends {
 			if ($this->mf_istree) {
 				$parent_id = $this->id;
 				$this->tree_data = $first_data = $path = array();
-				$listfields = 'id,'.$this->mf_istree . ', ' . $this->_listnameSQL . ' as name';
+				$listfields = 'id,' . $this->mf_istree . ', ' . $this->_listnameSQL . ' as name';
 				$name = $this->caption;
 				while ($parent_id) {
 					$clause = 'WHERE id="' . $parent_id . '"';
 					$this->data = $this->_query($listfields, $clause, 'id');
-					if(count($this->data)) {
+					if (count($this->data)) {
 						if (!count($first_data))
 							$first_data = $this->data;
 						$this->tree_data += $this->data;
 
 						//********* Path ************
 						$path[$this->_cl . $parent_id] = array(
-							'path' => $PARAM['_clp']+array($this->_cl . '_id'=>$parent_id),
+							'path' => $PARAM['_clp'] + array($this->_cl . '_id' => $parent_id),
 							'name' => $name
 						);
-						if($this->data[$parent_id][$this->_listname])
+						if ($this->data[$parent_id][$this->_listname])
 							$name = preg_replace($this->_CFG['_repl']['name'], '', $this->data[$parent_id][$this->_listname]);
 						else
-							$name = '№'.$parent_id;
+							$name = '№' . $parent_id;
 						//BREAK
-						if(!$this->parent_id and $parent_id!=$this->id)
+						if (!$this->parent_id and $parent_id != $this->id)
 							$this->parent_id = $parent_id;
 						if (isset($PARAM['first_id']) and $PARAM['first_id'] and $parent_id == $PARAM['first_id'])
 							break;
@@ -1243,10 +1255,10 @@ abstract class kernel_extends {
 						$parent_id = $this->data[$parent_id][$this->mf_istree];
 
 						// Задаем данные о номере странице
-						$this->_pa = $this->_cl .$parent_id. '_pn';
+						$this->_pa = $this->_cl . $parent_id . '_pn';
 						if (isset($_REQUEST[$this->_pa]) && (int) $_REQUEST[$this->_pa]) {
 							$PARAM['_clp'][$this->_pa] = (int) $_REQUEST[$this->_pa];
-							foreach($path as &$tp) {
+							foreach ($path as &$tp) {
 								$tp['path'][$this->_pa] = $PARAM['_clp'][$this->_pa];
 							}
 							unset($tp);
@@ -1259,19 +1271,19 @@ abstract class kernel_extends {
 					$this->id = '';
 
 				$PARAM['path'] += array_reverse($path); //Переворачиваем
-				$PARAM['path'][$this->_cl]['name'] .= ' : '.$name;
+				$PARAM['path'][$this->_cl]['name'] .= ' : ' . $name;
 			}
 			else {
 				$this->data = $this->_select();
 				//********* Path ************
-				if($this->data[$this->id][$this->_listname])
+				if ($this->data[$this->id][$this->_listname])
 					$name = preg_replace($this->_CFG['_repl']['name'], '', $this->data[$this->id][$this->_listname]);
 				else
-					$name = '№'.$this->id;
-				$PARAM['path'][$this->_cl]['name'] .= ': '.$name;
+					$name = '№' . $this->id;
+				$PARAM['path'][$this->_cl]['name'] .= ': ' . $name;
 			}
 			$PARAM['_clp'][$this->_cl . '_id'] = $this->id;
-			$this->_pa = $this->_cl .$this->id. '_pn';
+			$this->_pa = $this->_cl . $this->id . '_pn';
 		}
 
 		// Задаем данные о номере странице
@@ -1283,16 +1295,16 @@ abstract class kernel_extends {
 			if (count($this->data)) {
 				if ($this->mf_istree)
 					array_pop($PARAM['path']);
-/****************************************/
-/****** CHILD ***************************/
-/****************************************/
+				/*				 * ************************************* */
+				/*				 * **** CHILD ************************** */
+				/*				 * ************************************* */
 				$PARAM['_clp'][$this->_cl . '_ch'] = $_GET[$this->_cl . '_ch'];
 				list($PARAM, $flag) = $this->childs[$_GET[$this->_cl . '_ch']]->super_inc($PARAM, $ftype);
-/****************************************/
-/****** CHILD ***************************/
-/****************************************/
+				/*				 * ************************************* */
+				/*				 * **** CHILD ************************** */
+				/*				 * ************************************* */
 			}
-		} 
+		}
 		else {
 			global $_tpl;
 			if ($this->includeCSStoWEP and $this->config['cssIncludeToWEP']) {
@@ -1311,16 +1323,16 @@ abstract class kernel_extends {
 						$_tpl['script'][$sr] = 1;
 				}
 			}
-			$filter_clause = array(0=>array(),1=>array());
-			if(!isset($PARAM['filter']) or $PARAM['filter']==true) {
+			$filter_clause = array(0 => array(), 1 => array());
+			if (!isset($PARAM['filter']) or $PARAM['filter'] == true) {
 				$filter_clause = $this->_filter_clause();
 				$PARAM['clause'] = $filter_clause[0];
 			}
 
 			$PARAM['topmenu'] = array();
 			if ($this->_prmModulAdd()) {
-				$t = array('_type'=>'add');
-				if($this->id)
+				$t = array('_type' => 'add');
+				if ($this->id)
 					$t[$this->_cl . '_id'] = $this->id;
 				$PARAM['topmenu']['add'] = array(
 					'href' => $t,
@@ -1335,8 +1347,8 @@ abstract class kernel_extends {
 			if ($this->owner and count($this->owner->childs))
 				foreach ($this->owner->childs as $ck => &$cn) {
 					if (count($cn->fields_form) and $ck != $this->_cl and $cn->_prmModulShow($ck)) {
-						$PARAM['topmenu']['ochild_'.$ck] = array(
-							'href' => array($this->_cl . '_id'=>$this->owner->id , $this->_cl . '_ch'=>$ck),
+						$PARAM['topmenu']['ochild_' . $ck] = array(
+							'href' => array($this->_cl . '_id' => $this->owner->id, $this->_cl . '_ch' => $ck),
 							'caption' => $cn->caption . '(' . $row[$ck . '_cnt'] . ')',
 							'sel' => 0,
 							'type' => 'child'
@@ -1355,23 +1367,22 @@ abstract class kernel_extends {
 				}
 
 			if (is_null($this->owner) and static_main::_prmModul($this->_cl, array(14))) {
-				/*$PARAM['topmenu']['Checkmodul'] = array(
-					'href' => array('_type'=>'tools', '_func'=>'Checkmodul'),
-					'caption' => 'Обновить поля таблицы',
-					'sel' => 0,
-					'type' => 'tools',
-					'css' => 'wepchecktable',
-				);*/
-				if($this->ver!=$this->_CFG['modulprm'][$this->_cl]['ver']) {
+				/* $PARAM['topmenu']['Checkmodul'] = array(
+				  'href' => array('_type'=>'tools', '_func'=>'Checkmodul'),
+				  'caption' => 'Обновить поля таблицы',
+				  'sel' => 0,
+				  'type' => 'tools',
+				  'css' => 'wepchecktable',
+				  ); */
+				if ($this->ver != $this->_CFG['modulprm'][$this->_cl]['ver']) {
 					//$_tpl['onload'] .= 'showHelp(\'.weptools.wepchecktable\',\'Версия модуля '.$MODUL->caption.'['.$MODUL->_cl.'] ('.$MODUL->ver.') отличается от версии ('.$this->_CFG['modulprm'][$MODUL->_cl]['ver'].') сконфигурированного для этого сайта. Обновите здесь поля таблицы.\',4000);$(\'.weptools.wepchecktable\').addClass(\'weptools_sel\');';
-					$PARAM['messages'][] = array('error','Версия модуля '.$this->caption.'['.$this->_cl.'] ('.$this->ver.') отличается от версии ('.$this->_CFG['modulprm'][$this->_cl]['ver'].') сконфигурированного для этого сайта. Обновите модуль.');
+					$PARAM['messages'][] = array('error', 'Версия модуля ' . $this->caption . '[' . $this->_cl . '] (' . $this->ver . ') отличается от версии (' . $this->_CFG['modulprm'][$this->_cl]['ver'] . ') сконфигурированного для этого сайта. Обновите модуль.');
 				}
-
 			}
 
 			if (isset($this->config_form) and count($this->config_form) and static_main::_prmModul($this->_cl, array(13)))
 				$PARAM['topmenu']['Configmodul'] = array(
-					'href' => array('_type'=>'tools', '_func'=>'Configmodul'),
+					'href' => array('_type' => 'tools', '_func' => 'Configmodul'),
 					'caption' => 'Настроика модуля',
 					'sel' => 0,
 					'type' => 'tools',
@@ -1379,7 +1390,7 @@ abstract class kernel_extends {
 				);
 			if ($this->mf_indexing and static_main::_prmModul($this->_cl, array(12)))
 				$PARAM['topmenu']['Reindex'] = array(
-					'href' => array('_type'=>'tools', '_func'=>'Reindex'),
+					'href' => array('_type' => 'tools', '_func' => 'Reindex'),
 					'caption' => 'Переиндексация',
 					'sel' => 0,
 					'type' => 'tools',
@@ -1387,7 +1398,7 @@ abstract class kernel_extends {
 				);
 			if ($this->cf_reinstall and static_main::_prmModul($this->_cl, array(11)))
 				$PARAM['topmenu']['Reinstall'] = array(
-					'href' => array('_type'=>'tools', '_func'=>'Reinstall'),
+					'href' => array('_type' => 'tools', '_func' => 'Reinstall'),
 					'caption' => 'Переустановка',
 					'sel' => 0,
 					'type' => 'tools',
@@ -1395,7 +1406,7 @@ abstract class kernel_extends {
 				);
 			if ($filter_clause[1]) {
 				$PARAM['topmenu']['Formfilter'] = array(
-					'href' => array('_type'=>'tools', '_func'=>'Formfilter'),
+					'href' => array('_type' => 'tools', '_func' => 'Formfilter'),
 					'caption' => 'Фильтр',
 					'sel' => 0,
 					'type' => 'tools',
@@ -1406,11 +1417,11 @@ abstract class kernel_extends {
 				}
 			}
 			if ($this->mf_statistic) {
-				$t = array('_type'=>'static', '_func'=>'Statsmodul');
-				if($this->owner and $this->owner->id)
+				$t = array('_type' => 'static', '_func' => 'Statsmodul');
+				if ($this->owner and $this->owner->id)
 					$t['_oid'] = $this->owner->id;
 				$PARAM['topmenu']['Statsmodul'] = array(
-					'href' =>  $t,
+					'href' => $t,
 					'caption' => 'Статистика',
 					'sel' => 0,
 					'type' => 'static',
@@ -1420,48 +1431,48 @@ abstract class kernel_extends {
 
 			// Групповые операции
 			$sg = 0;
-			if(isset($_COOKIE['SuperGroup'][$this->_cl])) {
+			if (isset($_COOKIE['SuperGroup'][$this->_cl])) {
 				$sg += count($_COOKIE['SuperGroup'][$this->_cl]);
 			}
-			$t = array('_type'=>'tools', '_func'=>'SuperGroup');
+			$t = array('_type' => 'tools', '_func' => 'SuperGroup');
 			$PARAM['topmenu']['SuperGroup'] = array(
-				'href' =>  $t,
-				'caption' => 'Групповая операция</span><span class="wepSuperGroupCount" title="Кол-во выбранных элементов">'.$sg,
-				'title'=>'Групповая операция',
+				'href' => $t,
+				'caption' => 'Групповая операция</span><span class="wepSuperGroupCount" title="Кол-во выбранных элементов">' . $sg,
+				'title' => 'Групповая операция',
 				'sel' => 0,
 				'type' => 'tools',
 				'css' => 'wepSuperGroup',
-				'style'=>(!$sg?'display:none;':'')
+				'style' => (!$sg ? 'display:none;' : '')
 			);
 
 
 			// Удаление через форму
-			if(isset($_POST['sbmt_del']) and $this->id) {
+			if (isset($_POST['sbmt_del']) and $this->id) {
 				$ftype = 'del';
 			}
 
 			if ($ftype == 'add') {
-				if($this->mf_istree and $this->id)
+				if ($this->mf_istree and $this->id)
 					$this->parent_id = $this->id;
 				$this->id = NULL;
 				list($PARAM['formcreat'], $flag) = $this->_UpdItemModul($PARAM);
 				if ($flag == 1 and isset($this->parent_id) and $this->parent_id)
 					$this->id = $this->parent_id;
 				//else
-				$tmp = $PARAM['_clp']+array('_type'=>'add');
-				if($this->parent_id)
+				$tmp = $PARAM['_clp'] + array('_type' => 'add');
+				if ($this->parent_id)
 					$tmp[$this->_cl . '_id'] = $this->parent_id;
 				$PARAM['path']['add'] = array(
 					'path' => $tmp,
-					'name'=>'Добавление'
+					'name' => 'Добавление'
 				);
 			}
 			elseif ($ftype == 'edit' && $this->id) {
 				if ($this->mf_istree)
 					array_pop($PARAM['path']);
 				$PARAM['path']['edit'] = array(
-					'path' => $PARAM['_clp']+array($this->_cl . '_id'=>$this->id, '_type'=>'edit'),
-					'name'=>'Редактирование'
+					'path' => $PARAM['_clp'] + array($this->_cl . '_id' => $this->id, '_type' => 'edit'),
+					'name' => 'Редактирование'
 				);
 				list($PARAM['formcreat'], $flag) = $this->_UpdItemModul($PARAM);
 				if ($flag == 1) {
@@ -1474,8 +1485,8 @@ abstract class kernel_extends {
 				if ($this->mf_istree)
 					array_pop($PARAM['path']);
 				list($messages, $flag) = $this->_Act(1, $PARAM);
-				$PARAM['messages'] = array_merge($PARAM['messages'],$messages);
-				if($this->mf_istree)
+				$PARAM['messages'] = array_merge($PARAM['messages'], $messages);
+				if ($this->mf_istree)
 					$this->id = $this->data[$this->id][$this->mf_istree];
 				else
 					$this->id = NULL;
@@ -1484,7 +1495,7 @@ abstract class kernel_extends {
 				if ($this->mf_istree)
 					array_pop($PARAM['path']);
 				list($messages, $flag) = $this->_Act(0, $PARAM);
-				$PARAM['messages'] = array_merge($PARAM['messages'],$messages);
+				$PARAM['messages'] = array_merge($PARAM['messages'], $messages);
 				if ($this->mf_istree)
 					$this->id = $this->tree_data[$this->id][$this->mf_istree];
 				else
@@ -1494,7 +1505,7 @@ abstract class kernel_extends {
 				if ($this->mf_istree)
 					array_pop($PARAM['path']);
 				list($messages, $flag) = $this->_ORD(-1, $PARAM);
-				$PARAM['messages'] = array_merge($PARAM['messages'],$messages);
+				$PARAM['messages'] = array_merge($PARAM['messages'], $messages);
 				if ($this->mf_istree)
 					$this->id = $this->data[$this->id][$this->mf_istree];
 				else
@@ -1504,7 +1515,7 @@ abstract class kernel_extends {
 				if ($this->mf_istree)
 					array_pop($PARAM['path']);
 				list($messages, $flag) = $this->_ORD(1, $PARAM);
-				$PARAM['messages'] = array_merge($PARAM['messages'],$messages);
+				$PARAM['messages'] = array_merge($PARAM['messages'], $messages);
 				if ($this->mf_istree)
 					$this->id = $this->tree_data[$this->id][$this->mf_istree];
 				else
@@ -1514,14 +1525,14 @@ abstract class kernel_extends {
 				if ($this->mf_istree)
 					array_pop($PARAM['path']);
 				list($messages, $flag) = $this->_Del($PARAM);
-				$PARAM['messages'] = array_merge($PARAM['messages'],$messages);
+				$PARAM['messages'] = array_merge($PARAM['messages'], $messages);
 				if ($this->mf_istree)
 					$this->id = $this->tree_data[$this->id][$this->mf_istree];
 				else
 					$this->id = NULL;
 			}
 			elseif ($ftype == 'tools') {
-				if($this->mf_istree and $this->id)
+				if ($this->mf_istree and $this->id)
 					$this->parent_id = $this->id;
 				$PARAM['formtools'] = array();
 				if (!isset($PARAM['topmenu'][$_REQUEST['_func']]))
@@ -1532,7 +1543,7 @@ abstract class kernel_extends {
 					eval('$PARAM[\'formtools\'] = $this->tools' . $_REQUEST['_func'] . '();');
 			}
 			elseif ($ftype == 'static') {
-				if($this->mf_istree and $this->id)
+				if ($this->mf_istree and $this->id)
 					$this->parent_id = $this->id;
 				$PARAM['static'] = array();
 				if (!isset($PARAM['topmenu'][$_REQUEST['_func']]))
@@ -1543,19 +1554,18 @@ abstract class kernel_extends {
 					eval('$PARAM[\'static\'] = $this->static' . $_REQUEST['_func'] . '();');
 				}
 			} else {
-				if($this->mf_istree and $this->id)
+				if ($this->mf_istree and $this->id)
 					$this->parent_id = $this->id;
 				$flag = 3;
 				$PARAM['data'] = $this->_displayXML($PARAM);
-				if(count($PARAM['data']['messages']))
-					$PARAM['messages'] = array_merge($PARAM['messages'],$PARAM['data']['messages']);
+				if (count($PARAM['data']['messages']))
+					$PARAM['messages'] = array_merge($PARAM['messages'], $PARAM['data']['messages']);
 				unset($PARAM['data']['messages']);
 			}
-			/*elseif ($this->id) { //Просмотр данных
-				$flag = 3;
-				$PARAM['item'] = $this->data;
-			}*/
-
+			/* elseif ($this->id) { //Просмотр данных
+			  $flag = 3;
+			  $PARAM['item'] = $this->data;
+			  } */
 		}
 		$PARAM['_cl'] = $this->_cl;
 
@@ -1566,34 +1576,32 @@ abstract class kernel_extends {
 	 * вывод данных
 	 * @param array $param - параметры вывода данных
 	 * @return array
-	*/
+	 */
 	public function _displayXML(&$param) {
 		return include($this->_CFG['_PATH']['core'] . 'kernel.displayXML.php');
 	}
 
-
-	
 // MODUL configuration
 
 	/**
 	 * Переустановка БД модуля
 	 * @return array form
-	*/
+	 */
 	public function toolsReinstall() {
 		$this->form = $mess = array();
 		if (!static_main::_prmModul($this->_cl, array(11)))
-			$mess[] = static_main::am('error','denied',$this);
+			$mess[] = static_main::am('error', 'denied', $this);
 		elseif (count($_POST) and $_POST['sbmt']) {
 			static_tools::_reinstall($this);
-			$mess[] = static_main::am('ok','_reinstall_ok',$this);
+			$mess[] = static_main::am('ok', '_reinstall_ok', $this);
 		} else {
 			$this->form['_*features*_'] = array('name' => 'Reinstall', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']));
 			$this->form['_info'] = array(
 				'type' => 'info',
-				'caption' => static_main::m('_reinstall_info',$this));
+				'caption' => static_main::m('_reinstall_info', $this));
 			$this->form['sbmt'] = array(
 				'type' => 'submit',
-				'value' => static_main::m('Submit',$this));
+				'value' => static_main::m('Submit', $this));
 		}
 		self::kFields2FormFields($this->form);
 		return Array('form' => $this->form, 'messages' => $mess);
@@ -1603,11 +1611,11 @@ abstract class kernel_extends {
 		$this->form = array();
 		$arr = array('mess' => '', 'vars' => '');
 		if (!static_main::_prmModul($this->_cl, array(13)))
-			$arr['mess'][] = static_main::am('error','denied',$this);
+			$arr['mess'][] = static_main::am('error', 'denied', $this);
 		elseif (!count($this->config_form)) {
 			$this->form['_info'] = array(
 				'type' => 'info',
-				'caption' => static_main::m('_configno',$this));
+				'caption' => static_main::m('_configno', $this));
 		} else {
 			foreach ($this->config as $k => &$r) {
 				if (is_array($r) and !isset($this->config_form[$k]['multiple'])) {
@@ -1622,7 +1630,7 @@ abstract class kernel_extends {
 				}
 			}
 			if (count($_POST)) {
-				$arr = $this->fFormCheck($_POST, $arr['vars'], $this->config_form);// 2ой параметр просто так
+				$arr = $this->fFormCheck($_POST, $arr['vars'], $this->config_form); // 2ой параметр просто так
 				$config = array();
 				foreach ($this->config_form as $k => $r) {
 					if (isset($arr['vars'][$k])) {
@@ -1632,7 +1640,7 @@ abstract class kernel_extends {
 				}
 				$this->config = $config;
 				if (!count($arr['mess'])) {
-					$arr['mess'][] = static_main::am('ok','update',$this);
+					$arr['mess'][] = static_main::am('ok', 'update', $this);
 					static_tools::_save_config($config, $this->_file_cfg);
 				}
 			}
@@ -1645,72 +1653,68 @@ abstract class kernel_extends {
 	/**
 	 * Групповые операции
 	 * @return array form
-	*/
+	 */
 	public function toolsSuperGroup() {
 		global $_tpl;
 		$this->form = $mess = array();
-		if (!static_main::_prmModul($this->_cl, array(5,7)))
-			$mess[] = static_main::am('error','denied',$this);
-		elseif(!isset($_COOKIE['SuperGroup'][$this->_cl]) or !count($_COOKIE['SuperGroup'][$this->_cl]))
-			$mess[] = static_main::am('alert','Нет выбранных элементов',$this);
+		if (!static_main::_prmModul($this->_cl, array(5, 7)))
+			$mess[] = static_main::am('error', 'denied', $this);
+		elseif (!isset($_COOKIE['SuperGroup'][$this->_cl]) or !count($_COOKIE['SuperGroup'][$this->_cl]))
+			$mess[] = static_main::am('alert', 'Нет выбранных элементов', $this);
 		elseif (count($_POST)) {
 			$type = '';
-			if(isset($_POST['sbmt_on'])) {
+			if (isset($_POST['sbmt_on'])) {
 				$type = 'on';
 				$this->id = array_keys($_COOKIE['SuperGroup'][$this->_cl]);
-				$this->_update(array('active'=>1));
-				$mess[] = static_main::am('ok','Успешно включено',$this);
-			}
-			elseif(isset($_POST['sbmt_off'])) {
+				$this->_update(array('active' => 1));
+				$mess[] = static_main::am('ok', 'Успешно включено', $this);
+			} elseif (isset($_POST['sbmt_off'])) {
 				$type = 'off';
 				$this->id = array_keys($_COOKIE['SuperGroup'][$this->_cl]);
-				$this->_update(array('active'=>0));
-				$mess[] = static_main::am('ok','Успешно отключено',$this);
-			}
-			elseif(isset($_POST['sbmt_del'])) {
+				$this->_update(array('active' => 0));
+				$mess[] = static_main::am('ok', 'Успешно отключено', $this);
+			} elseif (isset($_POST['sbmt_del'])) {
 				$type = 'del';
 				$this->id = array_keys($_COOKIE['SuperGroup'][$this->_cl]);
 				$this->_delete();
-				$mess[] = static_main::am('ok','Успешно удалено',$this);
-			}
-			elseif(isset($_POST['sbmt_clear'])) {
+				$mess[] = static_main::am('ok', 'Успешно удалено', $this);
+			} elseif (isset($_POST['sbmt_clear'])) {
 				$type = 'clear';
-				$mess[] = static_main::am('ok','Список чист',$this);
+				$mess[] = static_main::am('ok', 'Список чист', $this);
 			}
-			if(count($mess)) {
-				foreach($_COOKIE['SuperGroup'][$this->_cl] as $ck=>$ck)
-					$_tpl['onload'] .= 'setCookie("SuperGroup['.$this->_cl.']['.$ck.']",0,-10000);';
-				$_tpl['onload'] .= '$("span.wepSuperGroupCount").text(0).parent().hide("slow");wep.SuperGroupClear("'.$type.'");';
+			if (count($mess)) {
+				foreach ($_COOKIE['SuperGroup'][$this->_cl] as $ck => $ck)
+					$_tpl['onload'] .= 'setCookie("SuperGroup[' . $this->_cl . '][' . $ck . ']",0,-10000);';
+				$_tpl['onload'] .= '$("span.wepSuperGroupCount").text(0).parent().hide("slow");wep.SuperGroupClear("' . $type . '");';
 			}
-		} 
-		else {
-			$this->form['_*features*_'] = array('name' => 'SuperGroup', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref'=>$_SERVER['HTTP_REFERER']);
+		} else {
+			$this->form['_*features*_'] = array('name' => 'SuperGroup', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
 			$this->form['_info'] = array(
 				'type' => 'info',
-				'caption' => '<h2 style="text-align:center;">'.$this->caption.'</h2><h3 style="text-align:center;">Выбранно элементов : '.count($_COOKIE['SuperGroup'][$this->_cl]).'</h3>');
+				'caption' => '<h2 style="text-align:center;">' . $this->caption . '</h2><h3 style="text-align:center;">Выбранно элементов : ' . count($_COOKIE['SuperGroup'][$this->_cl]) . '</h3>');
 			$this->form['sbmt'] = array(
 				'type' => 'submit',
 				'value' => array(
-					'_off'=>static_main::m('Отключить',$this),
-					'_on'=>static_main::m('Включить',$this),
-					'_del'=>static_main::m('Delete',$this),
-					'_clear'=>static_main::m('Отменить выбранные элементы.',$this),
-					''=>static_main::m('Отмена',$this),
+					'_off' => static_main::m('Отключить', $this),
+					'_on' => static_main::m('Включить', $this),
+					'_del' => static_main::m('Delete', $this),
+					'_clear' => static_main::m('Отменить выбранные элементы.', $this),
+					'' => static_main::m('Отмена', $this),
 				)
 			);
 		}
 		self::kFields2FormFields($this->form);
 		return Array('form' => $this->form, 'messages' => $mess);
 	}
+
 	/**
 	 * Статистика модуля
 	 * @param array $oid 
 	 * @return array
-	*/
-	public function staticStatsmodul($oid='') {
+	 */
+	public function staticStatsmodul($oid = '') {
 		return static_tools::_staticStatsmodul($this, $oid);
 	}
-
 
 	/*
 	  public function toolsReindex(){
@@ -1744,7 +1748,7 @@ abstract class kernel_extends {
 	/**
 	 * Tools для superinc - Проверка модуля (устарешая)
 	 * @return array
-	*/
+	 */
 	public function toolsCheckmodul() {
 		return static_tools::_toolsCheckmodul($this);
 	}
@@ -1752,8 +1756,7 @@ abstract class kernel_extends {
 	/**
 	 * Проверка модуля 
 	 * @return array
-	*/
-
+	 */
 	public function _checkmodstruct() {
 		$DATA = static_tools::_checkmodstruct($this->_cl);
 		return $DATA;
@@ -1762,7 +1765,7 @@ abstract class kernel_extends {
 	/**
 	 * инструмент Фильтра super_inc
 	 * @return array
-	*/
+	 */
 	public function toolsFormfilter() {
 		global $_tpl;
 		$this->form = array();
@@ -1787,10 +1790,10 @@ abstract class kernel_extends {
 	/**
 	 * Создает форму данных для фильтра super_inc
 	 * @return array form
-	*/
+	 */
 	function Formfilter() {
 		$_FILTR = array();
-		if(isset($_SESSION['filter'][$this->_cl]))
+		if (isset($_SESSION['filter'][$this->_cl]))
 			$_FILTR = $_SESSION['filter'][$this->_cl];
 		$this->form = array();
 		foreach ($this->fields_form as $k => $r) {
@@ -1836,8 +1839,8 @@ abstract class kernel_extends {
 	 * задает параметры запроса для super_inc
 	 * @param bool $flag - true не ощищать данные
 	 * @return array
-	*/
-	function setFilter($flag=0) {
+	 */
+	function setFilter($flag = 0) {
 		if (isset($_REQUEST['f_clear_sbmt'])) {
 			unset($_SESSION['filter'][$this->_cl]);
 		} else {
@@ -1878,19 +1881,19 @@ abstract class kernel_extends {
 	/**
 	 * ФИЛЬТР в запросе для super_inc
 	 * @return array
-	*/
+	 */
 	function _filter_clause() {
 		$cl = $_FILTR = array();
 		$flag_filter = 0;
-		if(isset($_REQUEST['filter_'.$this->_cl])) {
-			if (!is_array($_REQUEST['filter_'.$this->_cl]))
+		if (isset($_REQUEST['filter_' . $this->_cl])) {
+			if (!is_array($_REQUEST['filter_' . $this->_cl]))
 				unset($_SESSION['filter'][$this->_cl]);
 			else
-				$_FILTR = $_REQUEST['filter_'.$this->_cl];
+				$_FILTR = $_REQUEST['filter_' . $this->_cl];
 		}
-		elseif(isset($_SESSION['filter'][$this->_cl]))
+		elseif (isset($_SESSION['filter'][$this->_cl]))
 			$_FILTR = $_SESSION['filter'][$this->_cl];
-		
+
 		foreach ($this->fields_form as $k => $r) {
 			if (isset($r['mask']['filter']) and $r['mask']['filter'] == 1) {
 				if (isset($_FILTR[$k])) {
@@ -1934,7 +1937,7 @@ abstract class kernel_extends {
 	 * задает параметры запроса для super_inc
 	 * @param array $param - данные параметра
 	 * @return array
-	*/
+	 */
 	function _moder_clause(&$param) {
 		if (!isset($param['clause']) or !is_array($param['clause']))
 			$param['clause'] = array();
@@ -1944,21 +1947,20 @@ abstract class kernel_extends {
 			$param['clause']['t1.' . $this->owner_name] = 't1.' . $this->owner_name . '="' . $this->owner->id . '"';
 		if ($this->mf_istree) {
 			if ($this->id)
-				$param['clause']['t1.'.$this->mf_istree] = 't1.'.$this->mf_istree.'="' . $this->id . '"';
+				$param['clause']['t1.' . $this->mf_istree] = 't1.' . $this->mf_istree . '="' . $this->id . '"';
 			elseif (isset($param['first_id']))
-				$param['clause']['t1.'.$this->mf_istree] = 't1.id="' . $param['first_id'] . '"';
+				$param['clause']['t1.' . $this->mf_istree] = 't1.id="' . $param['first_id'] . '"';
 			elseif (isset($param['first_pid']))
-				$param['clause']['t1.'.$this->mf_istree] = 't1.'.$this->mf_istree.'="' . $param['first_id'] . '"';
+				$param['clause']['t1.' . $this->mf_istree] = 't1.' . $this->mf_istree . '="' . $param['first_id'] . '"';
 			elseif ($this->mf_use_charid)
-				$param['clause']['t1.'.$this->mf_istree] = 't1.'.$this->mf_istree.'=""';
+				$param['clause']['t1.' . $this->mf_istree] = 't1.' . $this->mf_istree . '=""';
 			else
-				$param['clause']['t1.'.$this->mf_istree] = 't1.'.$this->mf_istree.'=0';
-			if ($this->owner and $this->owner->id and ($this->id or (isset($param['first_pid']) and $param['first_pid']) ) )
+				$param['clause']['t1.' . $this->mf_istree] = 't1.' . $this->mf_istree . '=0';
+			if ($this->owner and $this->owner->id and ($this->id or (isset($param['first_pid']) and $param['first_pid']) ))
 				unset($param['clause']['t1.' . $this->owner_name]);
 		}
 		//if(isset($this->fields['region_id']) and isset($_SESSION['city']))///////////////**********************
 		//	$param['clause']['t1.region_id'] ='t1.region_id='.$_SESSION['city'];
-
 		//if (isset($_GET['_type']) and $_GET['_type'] == 'deleted' and $this->fields_form[$this->mf_actctrl]['listname'] == $this->mf_actctrl)
 		//	$param['clause']['t1.' . $this->mf_actctrl] = 't1.' . $this->mf_actctrl . '=4';
 		elseif (isset($this->fields_form[$this->mf_actctrl]['listname']) and $this->fields_form[$this->mf_actctrl]['listname'] == $this->mf_actctrl)
@@ -1971,7 +1973,7 @@ abstract class kernel_extends {
 	 * @param array $row - данные
 	 * @param array $param - данные параметра
 	 * @return array
-	*/
+	 */
 	private function _tr_attribute(&$row, &$param) {
 		$DATA = array();
 		if ($this->_prmModulEdit($row, $param))
@@ -1994,7 +1996,7 @@ abstract class kernel_extends {
 	 * @param array $act - 1 or 0 
 	 * @param array $param - данные 
 	 * @return array
-	*/
+	 */
 	public function _Act($act, &$param) {
 		$flag = 1;
 		$DATA = array();
@@ -2022,20 +2024,20 @@ abstract class kernel_extends {
 
 			if ($this->_update($data)) {
 				if ($data[$this->mf_actctrl] == 5)
-					$DATA[] = static_main::am('ok','act5',$this);
+					$DATA[] = static_main::am('ok', 'act5', $this);
 				if ($data[$this->mf_actctrl] == 6)
-					$DATA[] = static_main::am('ok','act6',$this);
+					$DATA[] = static_main::am('ok', 'act6', $this);
 				elseif ($act)
-					$DATA[] = static_main::am('ok','act1',$this);
+					$DATA[] = static_main::am('ok', 'act1', $this);
 				else
-					$DATA[] = static_main::am('ok','act0',$this);
+					$DATA[] = static_main::am('ok', 'act0', $this);
 				$flag = 0;
 			}
 			else
-				$DATA[] = static_main::am('error','update_err',$this);
+				$DATA[] = static_main::am('error', 'update_err', $this);
 		}
 		else
-			$DATA[] = static_main::am('error','denied',$this);
+			$DATA[] = static_main::am('error', 'denied', $this);
 		return array($DATA, $flag);
 	}
 
@@ -2043,7 +2045,7 @@ abstract class kernel_extends {
 	 * удаление данных $this->id
 	 * @param array $param - данные 
 	 * @return array
-	*/
+	 */
 	public function _Del($param) {
 		$flag = 1;
 		$DATA = array();
@@ -2054,20 +2056,20 @@ abstract class kernel_extends {
 			if (isset($this->fields[$this->mf_actctrl]) and $this->fields[$this->mf_actctrl]['type'] != 'bool') {
 				$data[$this->mf_actctrl] = 4;
 				if ($this->_update($data)) {
-					$DATA[] = static_main::am('ok','deleted',$this);
+					$DATA[] = static_main::am('ok', 'deleted', $this);
 					$flag = 0;
 				}else
-					$DATA[] = static_main::am('error','del_err',$this);
+					$DATA[] = static_main::am('error', 'del_err', $this);
 			}else {
 				if ($this->_delete($data)) {
-					$DATA[] = static_main::am('ok','deleted',$this);
+					$DATA[] = static_main::am('ok', 'deleted', $this);
 					$flag = 0;
 				}else
-					$DATA[] = static_main::am('error','del_err',$this);
+					$DATA[] = static_main::am('error', 'del_err', $this);
 			}
 		}
 		else
-			$DATA[] = static_main::am('error','denied',$this);
+			$DATA[] = static_main::am('error', 'denied', $this);
 		return array($DATA, $flag);
 	}
 
@@ -2076,7 +2078,7 @@ abstract class kernel_extends {
 	 * @param int $ord - позиция 
 	 * @param array $param - данные 
 	 * @return array
-	*/
+	 */
 	public function _ORD($ord, &$param) {
 		$flag = 1;
 		$DATA = array();
@@ -2085,35 +2087,35 @@ abstract class kernel_extends {
 		$this->data = $this->_select();
 		if ($this->_prmModulEdit($this->data, $param)) {
 			$data = array();
-			$data[$this->mf_ordctrl] = $this->data[$this->id][$this->mf_ordctrl]+$ord;
+			$data[$this->mf_ordctrl] = $this->data[$this->id][$this->mf_ordctrl] + $ord;
 
 			if ($this->_update($data)) {
-				if ($ord<0)
+				if ($ord < 0)
 					$DATA[] = array('value' => 'UP', 'name' => 'ok');
 				else
 					$DATA[] = array('value' => 'DOWN', 'name' => 'ok');
 				$flag = 0;
 			}
 			else
-				$DATA[] = static_main::am('error','update_err',$this);
+				$DATA[] = static_main::am('error', 'update_err', $this);
 		}
 		else
-			$DATA[] = static_main::am('error','denied',$this);
+			$DATA[] = static_main::am('error', 'denied', $this);
 		return array($DATA, $flag);
 	}
 
 	/**
 	 * Сортировка 
 	 * @return array
-	*/
+	 */
 	public function _sorting() {
-		$res = array('html'=>'','eval'=>'');
-		$this->id = (int)$_GET['id'];
-		$pid = (isset($_GET['pid'])?(int)$_GET['pid']:0);
-		$t1 = (isset($_GET['t1'])?(int)$_GET['t1']:0);
-		$t2 = (isset($_GET['t2'])?(int)$_GET['t2']:0);
+		$res = array('html' => '', 'eval' => '');
+		$this->id = (int) $_GET['id'];
+		$pid = (isset($_GET['pid']) ? (int) $_GET['pid'] : 0);
+		$t1 = (isset($_GET['t1']) ? (int) $_GET['t1'] : 0);
+		$t2 = (isset($_GET['t2']) ? (int) $_GET['t2'] : 0);
 		$data = $this->_select();
-		if(!$this->mf_ordctrl or !$this->_prmModulEdit($data)) {//!static_main::_prmModul($this->_cl,array(10))
+		if (!$this->mf_ordctrl or !$this->_prmModulEdit($data)) {//!static_main::_prmModul($this->_cl,array(10))
 			$res['html'] = static_main::m('Sorting denied!');
 			return $res;
 		}
@@ -2121,29 +2123,29 @@ abstract class kernel_extends {
 
 
 		if ($t2) {
-			$data = $this->qs($this->mf_ordctrl,'WHERE id='.$t2);
+			$data = $this->qs($this->mf_ordctrl, 'WHERE id=' . $t2);
 			$neword = $data[0][$this->mf_ordctrl];
 
 			$qr = '`' . $this->mf_ordctrl . '`>=\'' . $neword . '\'';
-			if($this->mf_istree and $pid)
-				$qr .= ' and `'.$this->mf_istree.'`='.$pid;
-			$this->fields[$this->mf_ordctrl]['noquote']= true;
-			if(!$this->_update(array($this->mf_ordctrl => '`'.$this->mf_ordctrl . '`+1'),$qr,false))
+			if ($this->mf_istree and $pid)
+				$qr .= ' and `' . $this->mf_istree . '`=' . $pid;
+			$this->fields[$this->mf_ordctrl]['noquote'] = true;
+			if (!$this->_update(array($this->mf_ordctrl => '`' . $this->mf_ordctrl . '`+1'), $qr, false))
 				return $res;
 
-			if(!$this->_update(array($this->mf_ordctrl => $neword) ,'`id`=' . $this->id ))
+			if (!$this->_update(array($this->mf_ordctrl => $neword), '`id`=' . $this->id))
 				return $res;
 		}else {
 			$qr = '';
-			if($this->mf_istree and $pid)
-				$qr .= ' WHERE `'.$this->mf_istree.'`='.$pid;
+			if ($this->mf_istree and $pid)
+				$qr .= ' WHERE `' . $this->mf_istree . '`=' . $pid;
 
-			$data = $this->qs('max('.$this->mf_ordctrl.') as mx',$qr);
-			$neword = $data[0]['mx']+1;
-			if(!$this->_update(array($this->mf_ordctrl => $neword) ,'`id`=' . $this->id ))
+			$data = $this->qs('max(' . $this->mf_ordctrl . ') as mx', $qr);
+			$neword = $data[0]['mx'] + 1;
+			if (!$this->_update(array($this->mf_ordctrl => $neword), '`id`=' . $this->id))
 				return $res;
 		}
-		$res['html'] = '';//static_main::m('Sorting successful.')
+		$res['html'] = ''; //static_main::m('Sorting successful.')
 		return $res;
 	}
 
@@ -2152,8 +2154,8 @@ abstract class kernel_extends {
 	 * @param string $type - add, save, delete
 	 * @param array $data - данные 
 	 * @return bool
-	*/
-	function allChangeData($type='', $data='') {
+	 */
+	function allChangeData($type = '', $data = '') {
 		return true;
 	}
 
@@ -2161,20 +2163,20 @@ abstract class kernel_extends {
 	 * пулучение древамасиива из одномерного массива
 	 * @param array $path - путь
 	 * @return string XML
-	*/
-	public function _forlist(&$data, $id, $select='',$multiple=0) {
+	 */
+	public function _forlist(&$data, $id, $select = '', $multiple = 0) {
 		/*
 		  array('name'=>'NAME','id'=>1 [, 'sel'=>0, 'checked'=>0])
 		 */
 		//$select - array(значение=>1)
 		$s = array();
-		
-		if($multiple==2 and is_array($select) and count($select)) {
-			foreach($select as $sr) {	
-				foreach($data as $kk=>$kd) {
+
+		if ($multiple == 2 and is_array($select) and count($select)) {
+			foreach ($select as $sr) {
+				foreach ($data as $kk => $kd) {
 					if (isset($kd[$sr])) {
 						$s[$sr] = array('#id#' => $sr, '#sel#' => 1);
-						if(is_array($kd[$sr]) and isset($kd[$sr]['#name#']))
+						if (is_array($kd[$sr]) and isset($kd[$sr]['#name#']))
 							$s[$sr]['#name#'] = $kd[$sr]['#name#'];
 						else
 							$s[$sr]['#name#'] = $kd[$sr];
@@ -2189,7 +2191,8 @@ abstract class kernel_extends {
 			foreach ($data[$id] as $key => $value) {
 				if ($select != '' and is_array($select)) {
 					if (isset($select[$key])) {
-						if($multiple==22) continue;
+						if ($multiple == 22)
+							continue;
 						$sel = 1;
 					}
 					else
@@ -2217,18 +2220,18 @@ abstract class kernel_extends {
 	}
 
 	// Постраничная навигация
-	public function fPageNav($countfield, $thisPage='') {
-		return $this->fPageNav2($countfield,array('firstpath'=>$thisPage));
+	public function fPageNav($countfield, $thisPage = '') {
+		return $this->fPageNav2($countfield, array('firstpath' => $thisPage));
 	}
 
 	// Постраничная навигация
-	public function fPageNav2($countfield, $param=array()) {
+	public function fPageNav2($countfield, $param = array()) {
 		//$countfield - бщее число элем-ов
 		//$$param - массив данных
 		//$this->messages_on_page - число эл-ов на странице
 		//$this->_pn - № текущей страницы
 		$numlist = $this->numlist; // кличество числе по бокам максимум
-		$DATA = array('cnt' => $countfield, 'messages_on_page'=>$this->messages_on_page, 'cntpage' => 0, 'modul' => $this->_cl, 'reverse' => $this->reversePageN);
+		$DATA = array('cnt' => $countfield, 'messages_on_page' => $this->messages_on_page, 'cntpage' => 0, 'modul' => $this->_cl, 'reverse' => $this->reversePageN);
 
 		//pagenum
 		if (isset($_GET[$this->_cl . '_mop'])) {
@@ -2241,24 +2244,24 @@ abstract class kernel_extends {
 		if (!$this->messages_on_page)
 			$this->messages_on_page = 20;
 
-		/*** PAGE NUM REVERSE ***/
+		/*		 * * PAGE NUM REVERSE ** */
 		if ($this->reversePageN) {
-			if($this->_pn == 0) 
+			if ($this->_pn == 0)
 				$this->_pn = 1;
 			else
-				$this->_pn = floor($countfield/$this->messages_on_page)-$this->_pn+1;
+				$this->_pn = floor($countfield / $this->messages_on_page) - $this->_pn + 1;
 			$DATA['cntpage'] = floor($countfield / $this->messages_on_page);
 			$temp_pn = $this->_pn;
 			$this->_pn = $DATA['cntpage'] - $this->_pn + 1;
-		} 
+		}
 		else {
 			$DATA['cntpage'] = ceil($countfield / $this->messages_on_page);
 		}
 
 		// Приводим к правильным числам
-		if($this->_pn > $DATA['cntpage'])
+		if ($this->_pn > $DATA['cntpage'])
 			$this->_pn = $DATA['cntpage'];
-		if($this->_pn < 1)
+		if ($this->_pn < 1)
 			$this->_pn = 1;
 		$DATA['_pn'] = $this->_pn;
 
@@ -2267,10 +2270,10 @@ abstract class kernel_extends {
 		$DATA['mop'][$this->messages_on_page]['sel'] = 1;
 
 		$flag = false;
-		if($countfield) {
-			if($this->reversePageN and $countfield >= ($this->messages_on_page*2))
+		if ($countfield) {
+			if ($this->reversePageN and $countfield >= ($this->messages_on_page * 2))
 				$flag = true;
-			elseif(!$this->reversePageN and $countfield > $this->messages_on_page)
+			elseif (!$this->reversePageN and $countfield > $this->messages_on_page)
 				$flag = true;
 		}
 
@@ -2278,25 +2281,26 @@ abstract class kernel_extends {
 			//$PP[0] - страница не выбрана
 			//$PP[1] - первая часть 
 			//$PP[2] - вторая часть
-			if(!isset($param['firstpath']) or !$param['firstpath'])
+			if (!isset($param['firstpath']) or !$param['firstpath'])
 				$param['firstpath'] = $_SERVER['REQUEST_URI'];
-			$PP = array(0=>$param['firstpath'],1=>$param['firstpath'],2=>'');
-			if(isset($param['_clp'])) {
-				if(count($param['_clp'])) {
-					$temp = $param['_clp'];unset($temp[$this->_pa]);
-					$PP[0] .= http_build_query($temp).'&';
+			$PP = array(0 => $param['firstpath'], 1 => $param['firstpath'], 2 => '');
+			if (isset($param['_clp'])) {
+				if (count($param['_clp'])) {
+					$temp = $param['_clp'];
+					unset($temp[$this->_pa]);
+					$PP[0] .= http_build_query($temp) . '&';
 					$PP[1] = $PP[0];
 				}
 				$PP[1] .= $this->_pa . '=';
 			} else {
 				$pregreplPage = '/(.*)_p[0-9]*(.*)/';
-				if (!preg_match($pregreplPage, $param['firstpath'],$matches)) {
-					$temp = explode('.html',$param['firstpath']);
-					$PP[1] = $temp[0].'_p';
-					$PP[2] = '.html'.$temp[1];
+				if (!preg_match($pregreplPage, $param['firstpath'], $matches)) {
+					$temp = explode('.html', $param['firstpath']);
+					$PP[1] = $temp[0] . '_p';
+					$PP[2] = '.html' . $temp[1];
 				} else {
-					$PP[0] = $matches[1].$matches[2];
-					$PP[1] = $matches[1].'_p';
+					$PP[0] = $matches[1] . $matches[2];
+					$PP[1] = $matches[1] . '_p';
 					$PP[2] = $matches[2];
 				}
 			}
@@ -2304,64 +2308,62 @@ abstract class kernel_extends {
 			$DATA['PP'] = $PP;
 
 			if ($this->reversePageN) {// обратная нумирация
-				/*Собираем массив ссылок*/
+				/* Собираем массив ссылок */
 				$DATA['link'][$DATA['cntpage']] = $PP[0];
-				if (($this->_pn + $numlist) < $DATA['cntpage']-1) {
+				if (($this->_pn + $numlist) < $DATA['cntpage'] - 1) {
 					$j = $this->_pn + $numlist;
-				} else 
-					$j = $DATA['cntpage']-1;
+				} else
+					$j = $DATA['cntpage'] - 1;
 				$vl = $this->_pn - $numlist;
-				if($vl<2) 
+				if ($vl < 2)
 					$vl = 2;
 				for ($i = $j; $i >= $vl; $i--) {
-					$DATA['link'][$i] = $PP[1].$i.$PP[2];
+					$DATA['link'][$i] = $PP[1] . $i . $PP[2];
 				}
-				$DATA['link'][1] = $PP[1].'1'.$PP[2];
-			}
-			else {
-					$DATA['link'][1] = $PP[0];
+				$DATA['link'][1] = $PP[1] . '1' . $PP[2];
+			} else {
+				$DATA['link'][1] = $PP[0];
 
-					if (($this->_pn - $numlist) > 3) {
-						$j = $this->_pn - $numlist;
-						$DATA['link'][' ...'] = false;
-					} else {
-						$j = 2;
-					}
-						
-					$vl = $this->_pn + $numlist;
-					if($vl>=($DATA['cntpage']-2))
-						$vl = $DATA['cntpage']-1;
-					for ($i = $j; $i <= $vl; $i++) {
-						$DATA['link'][$i] = $PP[1].$i.$PP[2];
-					}
-					if($vl<$DATA['cntpage']-1)
-						$DATA['link']['... '] = false;
-					$DATA['link'][$DATA['cntpage']] = $PP[1].$DATA['cntpage'].$PP[2];
+				if (($this->_pn - $numlist) > 3) {
+					$j = $this->_pn - $numlist;
+					$DATA['link'][' ...'] = false;
+				} else {
+					$j = 2;
+				}
 
-					/*$DATA['link'][1] = $PP[0];
-					for ($i = 2; $i <= $DATA['cntpage']; $i++) {
-						$DATA['link'][$i] = $PP[1].$i.$PP[2];
-					}*/
+				$vl = $this->_pn + $numlist;
+				if ($vl >= ($DATA['cntpage'] - 2))
+					$vl = $DATA['cntpage'] - 1;
+				for ($i = $j; $i <= $vl; $i++) {
+					$DATA['link'][$i] = $PP[1] . $i . $PP[2];
+				}
+				if ($vl < $DATA['cntpage'] - 1)
+					$DATA['link']['... '] = false;
+				$DATA['link'][$DATA['cntpage']] = $PP[1] . $DATA['cntpage'] . $PP[2];
+
+				/* $DATA['link'][1] = $PP[0];
+				  for ($i = 2; $i <= $DATA['cntpage']; $i++) {
+				  $DATA['link'][$i] = $PP[1].$i.$PP[2];
+				  } */
 			}
 			//////////////////
 		}
 
 		$DATA['start'] = 0;
-		if($this->reversePageN) {
-			if($this->_pn==floor($countfield/$this->messages_on_page)) {
-				$this->messages_on_page = $countfield-$this->messages_on_page*($this->_pn-1); // правдивый
+		if ($this->reversePageN) {
+			if ($this->_pn == floor($countfield / $this->messages_on_page)) {
+				$this->messages_on_page = $countfield - $this->messages_on_page * ($this->_pn - 1); // правдивый
 				//$this->messages_on_page = $this->messages_on_page*$this->_pn-$countfield; // полная запись
 			}
 			else
-				$DATA['start'] = $countfield-$this->messages_on_page*$this->_pn; // начало отсчета
+				$DATA['start'] = $countfield - $this->messages_on_page * $this->_pn; // начало отсчета
 		}
 		else
-			$DATA['start'] = $this->messages_on_page*($this->_pn-1); // начало отсчета
-		if($DATA['start']<0)
-				$DATA['start'] = 0;
+			$DATA['start'] = $this->messages_on_page * ($this->_pn - 1); // начало отсчета
+		if ($DATA['start'] < 0)
+			$DATA['start'] = 0;
 		return $DATA;
 	}
-
 
 	// путь к фаилам
 	public function getPathForAtt($key) {
@@ -2381,34 +2383,34 @@ abstract class kernel_extends {
 		return $pathimg;
 	}
 
-	function _http($link,$param=array()) {
+	function _http($link, $param = array()) {
 		$default = array(
-			'proxy'=>false,
-			'proxyList'=>array(
+			'proxy' => false,
+			'proxyList' => array(
 				//array('11.11.11.11:8080','user:pass'),
 				'82.200.55.142:3128',
-				//'115.78.135.30:80',
-				//'122.248.194.9:80',
-				/**/
+			//'115.78.135.30:80',
+			//'122.248.194.9:80',
+			/**/
 			),
-			'body'=>false,
-			'HTTPHEADER'=>array('Content-Type' => 'text/xml; encoding=utf-8'),
+			'body' => false,
+			'HTTPHEADER' => array('Content-Type' => 'text/xml; encoding=utf-8'),
 			'redirect' => false,
 			'USERAGENT' => 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2',
-			'TIMEOUT'=>20
+			'TIMEOUT' => 20
 		);
-		$param = array_merge($default,$param);
+		$param = array_merge($default, $param);
 
 		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $link);//задаём url
-		if(isset($param['COOKIE']))
+		curl_setopt($ch, CURLOPT_URL, $link); //задаём url
+		if (isset($param['COOKIE']))
 			curl_setopt($ch, CURLOPT_COOKIE, $param['COOKIE']);
-		curl_setopt($ch, CURLOPT_USERAGENT, $param['USERAGENT']);//подделываем юзер-агента
-		if($param['redirect']) {
+		curl_setopt($ch, CURLOPT_USERAGENT, $param['USERAGENT']); //подделываем юзер-агента
+		if ($param['redirect']) {
 			//переходить по редиректам, инициируемым сервером, пока не будет достигнуто CURLOPT_MAXREDIRS (если есть)
 			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 		}
-		if($param['body']) {
+		if ($param['body']) {
 			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 			curl_setopt($ch, CURLOPT_HTTPHEADER, $param['HTTPHEADER']);
@@ -2419,22 +2421,22 @@ abstract class kernel_extends {
 		//вернуть ответ сервера в виде строки
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_TIMEOUT, $param['TIMEOUT']);
-		
+
 		// ПРОКСИ
-		if($param['proxy']) {
-			$c = count($param['proxyList'])-1;
-			$prox = $param['proxyList'][rand(0,$c)];
+		if ($param['proxy']) {
+			$c = count($param['proxyList']) - 1;
+			$prox = $param['proxyList'][rand(0, $c)];
 			// указываем адрес
 			$CURLOPT_PROXY = '';
 			$CURLOPT_PROXYUSERPWD = '';
-			if(is_array($prox)) {
+			if (is_array($prox)) {
 				$CURLOPT_PROXY = $prox[0];
 				$CURLOPT_PROXYUSERPWD = $prox[1];
 			}else
 				$CURLOPT_PROXY = $prox;
 			curl_setopt($ch, CURLOPT_PROXY, $CURLOPT_PROXY);
 			print_r($CURLOPT_PROXY);
-			if($CURLOPT_PROXYUSERPWD) {
+			if ($CURLOPT_PROXYUSERPWD) {
 				// если необходимо предоставить имя пользователя и пароль
 				//curl_setopt($ch, CURLOPT_PROXYUSERPWD,$CURLOPT_PROXYUSERPWD);
 			}
@@ -2442,64 +2444,63 @@ abstract class kernel_extends {
 		//Функции обратного вызова
 		//curl_setopt($ch, CURLOPT_WRITEFUNCTION,"progress_function");
 
-		$text = curl_exec ($ch);
+		$text = curl_exec($ch);
 
 		$PageInfo = curl_getinfo($ch);
 		$err = '';
-		if($err=curl_errno($ch))
+		if ($err = curl_errno($ch))
 			$flag = false;
-		elseif($PageInfo['http_code'] == 200)
+		elseif ($PageInfo['http_code'] == 200)
 			$flag = true;
 		else
 			$flag = false;
 		curl_close($ch);
-		return array('text'=>$text,'info'=>$PageInfo,'err'=>$err,'flag'=>$flag);
+		return array('text' => $text, 'info' => $PageInfo, 'err' => $err, 'flag' => $flag);
 	}
 
-	function progress_function($ch,$str) {
-		 echo $str;
-		 return strlen($str);
+	function progress_function($ch, $str) {
+		echo $str;
+		return strlen($str);
 	}
 
 	/**
-	* AJAX add data function
-	* TODO : вынести в отдельный "модуль-контролер"
-	*/
+	 * AJAX add data function
+	 * TODO : вынести в отдельный "модуль-контролер"
+	 */
 	public function AjaxAdd() {
-		global $HTML,$_tpl;
-		$RESULT = array('html'=>'', 'html2'=>'', 'text'=>'','onload'=>'');
-		$DATA  = array();
+		global $HTML, $_tpl;
+		$RESULT = array('html' => '', 'html2' => '', 'text' => '', 'onload' => '');
+		$DATA = array();
 		//$htmlb = '';
 
-		if(count($_POST)) $_POST['sbmt'] = 1;
-		list($DATA['formcreat'],$flag) = $this->_UpdItemModul(array('ajax'=>1,'errMess'=>1));
-		$RESULT['html'] = $HTML->transformPHP($DATA,'formcreat');
+		if (count($_POST))
+			$_POST['sbmt'] = 1;
+		list($DATA['formcreat'], $flag) = $this->_UpdItemModul(array('ajax' => 1, 'errMess' => 1));
+		$RESULT['html'] = $HTML->transformPHP($DATA, 'formcreat');
 
-		if($flag==1) {
+		if ($flag == 1) {
 			$RESULT['onload'] .= 'clearTimeout(timerid2);fShowload (1,result.html2,0,0,\'location.href = location.href;\');';
 
-			/*$DATA2 = array('#board#boarditems'=>$this->fDisplay($this->id));
-			$DATA2['#board#boarditems']['simple'] = true;
-			$htmlb = $HTML->transformPHP($DATA2,'#board#boarditems').'<style>'.$_tpl['styles']['rnd'].'</style>';
-			eval('$htmlb = "' . addcslashes($htmlb,'"\\') . '";');*/
+			/* $DATA2 = array('#board#boarditems'=>$this->fDisplay($this->id));
+			  $DATA2['#board#boarditems']['simple'] = true;
+			  $htmlb = $HTML->transformPHP($DATA2,'#board#boarditems').'<style>'.$_tpl['styles']['rnd'].'</style>';
+			  eval('$htmlb = "' . addcslashes($htmlb,'"\\') . '";'); */
 
-			$RESULT['html2'] = '<div class="blockhead ok">'.static_main::m('add',$this).'</div><div class="hrb">&nbsp;</div>
+			$RESULT['html2'] = '<div class="blockhead ok">' . static_main::m('add', $this) . '</div><div class="hrb">&nbsp;</div>
 			<div class="divform"><div class="messages" style="text-align:justify;">
 			</div></div>';
 			$RESULT['html'] = '';
-		}
-		elseif($flag==-1){
+		} elseif ($flag == -1) {
 			//$RESULT['onload'] = 'GetId("messages").innerHTML=result.html2;'.$RESULT['onload'];
-			$RESULT['onload'] = 'jQuery(\'.caption_error\').remove();'.$RESULT['onload'].'clearTimeout(timerid2);fShowload(1,result.html2);';
-			$RESULT['html2']="<div class='blockhead'>Внимание. Некоректно заполнены поля.</div><div class='hrb'>&#160;</div>".$RESULT['html'];
-			$RESULT['html']='';
-		}
-		else{
+			$RESULT['onload'] = 'jQuery(\'.caption_error\').remove();' . $RESULT['onload'] . 'clearTimeout(timerid2);fShowload(1,result.html2);';
+			$RESULT['html2'] = "<div class='blockhead'>Внимание. Некоректно заполнены поля.</div><div class='hrb'>&#160;</div>" . $RESULT['html'];
+			$RESULT['html'] = '';
+		} else {
 			$RESULT['onload'] .= 'clearTimeout(timerid2);fShowload(1,result.html2);';
-			$RESULT['html2']=$RESULT['html'];
-			$RESULT['html']='';
+			$RESULT['html2'] = $RESULT['html'];
+			$RESULT['html'] = '';
 		}
-		if(!isset($_SESSION['user']['id']))
+		if (!isset($_SESSION['user']['id']))
 			$RESULT['onload'] .= 'reloadCaptcha(\'captcha\');jQuery(\'input.secret\').attr(\'value\',\'\');';
 		$RESULT['onload'] .= $_tpl['onload'];
 
@@ -2531,10 +2532,10 @@ class modul_child extends ArrayObject {
 
 	function offsetGet($index) {
 		global $_CFG;
-		/*if (isset($_CFG['modulprm_ext'][$index]) && isset($_CFG['modulprm'][$index]) && !$_CFG['modulprm'][$index][$this->modul_obj->mf_actctrl])
-			$clname = $_CFG['modulprm_ext'][$index][0];
-		else
-			$clname = $index;*/
+		/* if (isset($_CFG['modulprm_ext'][$index]) && isset($_CFG['modulprm'][$index]) && !$_CFG['modulprm'][$index][$this->modul_obj->mf_actctrl])
+		  $clname = $_CFG['modulprm_ext'][$index][0];
+		  else
+		  $clname = $index; */
 		$clname = _getExtMod($index);
 		$value = parent ::offsetGet($clname);
 		if ($this->offsetExists($clname) && $value === true) {
@@ -2552,5 +2553,6 @@ class modul_child extends ArrayObject {
 
 		return $value;
 	}
+
 }
 

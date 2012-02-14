@@ -1,12 +1,18 @@
 <?php
+/**
+ * Страница пользователя
+ * @ShowFlexForm true
+ * @author Xakki
+ * @version 0.1 
+ * @return $form
+ * @return $html
+ */
 	_new_class('ugroup', $UGROUP);
 
 	if(!isset($FUNCPARAM[0])) $FUNCPARAM[0] = false;// - текущий	 пользователь, цыфра - уровень адреса ID пользователя
-	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = '#ext#userinfo';
+	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = '#ugroup#userinfo';
 
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
-		$this->_getCashedList('phptemplates', dirname(__FILE__));
-		$temp = 'ownerlist';
 		$this->_enum['levelpage'] = array(
 			0=>'Из сессии пользователя',
 			1=>'Из первого уровня страницы',
@@ -18,8 +24,6 @@
 		);
 		return $form;
 	}
-
-	$tplphp = $this->FFTemplate($FUNCPARAM[1],dirname(__FILE__));
 
 	if($FUNCPARAM[0]) {
 		$FUNCPARAM[0] = $this->pageParam[(int)substr($FUNCPARAM[0],1)-1];
@@ -34,7 +38,7 @@
 				'#title#' => $Ctitle,
 			)
 		);
-	$html = $HTML->transformPHP($DATA,$tplphp);
+	$html = $HTML->transformPHP($DATA,$FUNCPARAM[1]);
 	//TODO : информация о пользователе
 
 	return $html;

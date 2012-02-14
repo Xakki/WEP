@@ -1,16 +1,17 @@
 <?php
-/**HELP
-$FUNCPARAM[0] - 0 - авторизация, 1 -регистрация
-$FUNCPARAM[1] - openid провайдеры [yandex,google,rambler,mailruapi,myopenid,openid,loginza]
-$FUNCPARAM[2] - страница редиректа для логинзы
-$FUNCPARAM[3] - шаблон
-$FUNCPARAM[4] - стиль
-HELP**/
-	if(!isset($FUNCPARAM[0]) or !$FUNCPARAM[0]) $FUNCPARAM[0] = 0;
-	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = 'yandex,google,rambler,mailruapi,myopenid,openid,loginza';
-	if(!isset($FUNCPARAM[2])) $FUNCPARAM[2] = '';
-	if(!isset($FUNCPARAM[3])) $FUNCPARAM[3] =  '#ext#loginza';
-	if(!isset($FUNCPARAM[4])) $FUNCPARAM[4] = '';
+/**
+ * Авторизация чарез Loginza
+ * @ShowFlexForm true
+ * @author Xakki
+ * @version 0.1 
+ * @return $form
+ * @return $html
+ */
+	if(!isset($FUNCPARAM[0]) or !$FUNCPARAM[0]) $FUNCPARAM[0] = 0; // - авторизация, 1 -регистрация
+	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = 'yandex,google,rambler,mailruapi,myopenid,openid,loginza'; //openid провайдеры [yandex,google,rambler,mailruapi,myopenid,openid,loginza]
+	if(!isset($FUNCPARAM[2])) $FUNCPARAM[2] = ''; //страница редиректа для логинзы
+	if(!isset($FUNCPARAM[3])) $FUNCPARAM[3] =  '#ext#loginza'; //шаблон
+	if(!isset($FUNCPARAM[4])) $FUNCPARAM[4] = ''; //стиль
 
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 		$this->_getCashedList('phptemplates', dirname(__FILE__));

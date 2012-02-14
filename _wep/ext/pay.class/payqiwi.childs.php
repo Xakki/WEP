@@ -186,7 +186,7 @@ class payqiwi_class extends kernel_extends {
 
 	function check_response($xml,$flag='send') {
 		$flag = false;
-		if($xml) {
+		if($xml) {print_r($xml);
 			$flag = true;
 			$xml = simplexml_load_string('<?xml version="1.0" encoding="utf-8"?>'.$xml);
 			$rc = $xml->{'result-code'};

@@ -1,14 +1,21 @@
 <?php
+/**
+ * перевод денег другому пользователю
+ * @ShowFlexForm true
+ * @author Xakki
+ * @version 0.1 
+ * @return $form
+ * @return $html
+ */
 // Корзина
 	// сначала задаем значения по умолчанию
-	if(!isset($FUNCPARAM[0]) or $FUNCPARAM[0] == '') $FUNCPARAM[0] = '#ext#paymove';
+	if(!isset($FUNCPARAM[0]) or $FUNCPARAM[0] == '') $FUNCPARAM[0] = '#pay#paymove';
 	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = 0;
 	if(!isset($FUNCPARAM[2])) $FUNCPARAM[2] = 0;
 
 
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
-		$this->_getCashedList('phptemplates', dirname(__FILE__));
 		//$temp = 'ownerlist';
 		$this->_enum['typeselp'] = array(
 			0=>'Все либо указанные ниже',
@@ -23,8 +30,6 @@
 	}
 	if($_SESSION['user']['parent_id'])
 		return static_main::m('denied');
-	
-	$tplphp = $this->FFTemplate($FUNCPARAM[0],dirname(__FILE__));
 
 	_new_class('pay', $PAY);
 	$DATA = array();
@@ -42,6 +47,6 @@
 	$DATA['#id#'] = $rowPG['id'];
 	$DATA['#pagemenu#'] = $this->getHref();// Адрес тек страницы
 	$DATA = array($FUNCPARAM[0]=>$DATA);
-	$html .= $HTML->transformPHP($DATA,$tplphp);
+	$html .= $HTML->transformPHP($DATA,$FUNCPARAM[0]);
 
 	return $html;

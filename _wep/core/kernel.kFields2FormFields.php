@@ -167,9 +167,13 @@
 							$r['value'] = $this->data[$this->id][$r['listname']['idThis']];
 						}
 						if($r['value']) {
-							$r['value'] = $this->_getCashedList($r['listname'],$r['value']);
-							if(is_array($r['value']))
-								$r['value'] = implode(',',$r['value']);
+							$tval = $r['value'];
+							$ltemp = $this->_getCashedList($r['listname'],$tval);
+							if(is_array($ltemp)) {
+								$r['value'] = implode(',',$ltemp);
+							}
+							else
+								$r['value'] = $ltemp;
 						}
 					}
 				}

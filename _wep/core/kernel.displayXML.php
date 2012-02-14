@@ -154,7 +154,7 @@
 						$cls[1] .= 't1.'.$k.'='.$lsn['idField'].' ';
 					$t++;
 				}elseif(isset($r['listname']) and !is_array($r['listname'])) {
-					$this->_checkList($r['listname'],0);
+					$this->_checkList($r['listname']);
 				}
 				elseif(isset($r['concat']) and $r['concat']) {
 					$cls[0][] = $r['concat'].' as '.$k;

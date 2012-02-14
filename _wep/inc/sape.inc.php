@@ -1,4 +1,12 @@
 <?php
+/**
+ * SAPE [биржа ссылок]
+ * @ShowFlexForm true
+ * @author Xakki
+ * @version 0.1 
+ * @return $form
+ * @return $html
+ */
 	if(!isset($FUNCPARAM[0]) or $FUNCPARAM[0] == '') $FUNCPARAM[0] = 'Код полученный в SAPE.RU';
 	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = 2;
 	if(!isset($FUNCPARAM[2])) $FUNCPARAM[2] = 0;

@@ -3,7 +3,7 @@
 class static_tools {
 
 	private function ___construct() {
-
+		
 	}
 
 	static function _reinstall(&$MODUL) {
@@ -18,32 +18,33 @@ class static_tools {
 	 */
 	static function _installTable(&$MODUL) {
 		if (!$MODUL->tablename) {
-			static_main::log('notice','Для модуля '.$MODUL->caption.' таблица не требуется.',$MODUL->_cl);
+			static_main::log('notice', 'Для модуля ' . $MODUL->caption . ' таблица не требуется.', $MODUL->_cl);
 			return true;
 		}
-		$flag = $MODUL->SQL->_tableExists($MODUL);// checking table exist
+		$flag = $MODUL->SQL->_tableExists($MODUL); // checking table exist
 
 		if (!$flag) {
 			// contruct of query
-			if(!$MODUL->SQL->_tableCreate($MODUL)) {
-				static_main::log('error','Для модуля `'.$MODUL->caption.'` не удалось создать таблицу.',$MODUL->_cl);
+			if (!$MODUL->SQL->_tableCreate($MODUL)) {
+				static_main::log('error', 'Для модуля `' . $MODUL->caption . '` не удалось создать таблицу.', $MODUL->_cl);
 				return false;
 			}
 			if (count($MODUL->def_records)) {
 				if (!self::_insertDefault($MODUL)) {
 					$MODUL->SQL->_tableDelete($MODUL);
-					static_main::log('error','Для модуля `'.$MODUL->caption.'` не удалось записать дефолтные данные, и поэтому таблица не будет создана.',$MODUL->_cl);
+					static_main::log('error', 'Для модуля `' . $MODUL->caption . '` не удалось записать дефолтные данные, и поэтому таблица не будет создана.', $MODUL->_cl);
 					return false;
 				}
 			}
-			static_main::log('notice','Для модуля `'.$MODUL->caption.'` успешно создана таблица.',$MODUL->_cl);
+			static_main::log('notice', 'Для модуля `' . $MODUL->caption . '` успешно создана таблица.', $MODUL->_cl);
 		}
 
 		$flag = true;
 		if (count($MODUL->Achilds)) {
 			foreach ($MODUL->childs as &$child) {
 				$temp = self::_installTable($child);
-				if(!$temp) return false;
+				if (!$temp)
+					return false;
 			}
 			unset($child);
 		}
@@ -67,47 +68,46 @@ class static_tools {
 	static function _checkTable(&$MODUL) {
 		$rDATA = array();
 		if (!$MODUL->tablename) {
-			$rDATA['Создание таблицы']['@mess'][] = array( 'notice', 'Модуль `'.$MODUL->caption.'`['.$MODUL->_cl.'] не использует базу данных.' );
+			$rDATA['Создание таблицы']['@mess'][] = array('notice', 'Модуль `' . $MODUL->caption . '`[' . $MODUL->_cl . '] не использует базу данных.');
 			return $rDATA;
 		}
 		$flag = $MODUL->SQL->_tableExists($MODUL);
-		/*if (is_null($flag)) {
-			$rDATA['Создание таблицы']['@mess'][] = static_main::am('error','_big_err',$MODUL);
-			return $rDATA;
-		}*/
+		/* if (is_null($flag)) {
+		  $rDATA['Создание таблицы']['@mess'][] = static_main::am('error','_big_err',$MODUL);
+		  return $rDATA;
+		  } */
 		if (!$flag) {
 			if (isset($_POST['sbmt'])) {
 				if (!$MODUL->SQL->_tableCreate($MODUL)) {
-					$rDATA['Создание таблицы']['@mess'][] = array( 'error','Для модуля `'.$MODUL->caption.'` не удалось создать таблицу.' );
-				}
-				else {
+					$rDATA['Создание таблицы']['@mess'][] = array('error', 'Для модуля `' . $MODUL->caption . '` не удалось создать таблицу.');
+				} else {
 					if (count($MODUL->def_records) and !self::_insertDefault($MODUL)) {
 						$MODUL->SQL->_tableDelete($MODUL);
-						$rDATA['Создание таблицы']['@mess'][] = array( 'error', 'Для модуля `'.$MODUL->caption.'` не удалось записать дефолтные данные, и поэтому таблица не будет создана.' );
+						$rDATA['Создание таблицы']['@mess'][] = array('error', 'Для модуля `' . $MODUL->caption . '` не удалось записать дефолтные данные, и поэтому таблица не будет создана.');
 					} else
-						$rDATA['Создание таблицы']['@mess'][] = array( 'notice', 'Для модуля `'.$MODUL->caption.'` успешно создана таблица.' );
+						$rDATA['Создание таблицы']['@mess'][] = array('notice', 'Для модуля `' . $MODUL->caption . '` успешно создана таблица.');
 				}
 			}
 			else {
-				$rDATA['Создание таблицы']['@mess'][] = static_main::am('alert','_install_info',array($MODUL->_cl.'['.$MODUL->tablename.']'),$MODUL);
+				$rDATA['Создание таблицы']['@mess'][] = static_main::am('alert', '_install_info', array($MODUL->_cl . '[' . $MODUL->tablename . ']'), $MODUL);
 			}
 			return $rDATA;
 		}
-		
+
 		$dataTable = $MODUL->SQL->_getSQLTableInfo($MODUL->tablename);
 //exit('TODO');
 
-		foreach($dataTable as $fldname=>$fp) {
+		foreach ($dataTable as $fldname => $fp) {
 			if (isset($MODUL->fields[$fldname])) {
 				$MODUL->fields[$fldname]['inst'] = '1';
 
 				$currentFields = $fp['create'];
-				$temp_currentFields = trim( str_replace(array(' ','"', "'", chr(194).chr(160),"\xC2xA0","\n"), '', mb_strtolower($currentFields)) );
+				$temp_currentFields = trim(str_replace(array(' ', '"', "'", chr(194) . chr(160), "\xC2xA0", "\n"), '', mb_strtolower($currentFields)));
 
-				list($newFields,$rDATA[$fldname]['@mess']) = $MODUL->SQL->_fldformer($fldname, $MODUL->fields[$fldname]);
-				$temp_newFields = trim(str_replace(array(' ','"', "'", chr(194).chr(160),"\xC2xA0","\n"), '', mb_strtolower($newFields)));
+				list($newFields, $rDATA[$fldname]['@mess']) = $MODUL->SQL->_fldformer($fldname, $MODUL->fields[$fldname]);
+				$temp_newFields = trim(str_replace(array(' ', '"', "'", chr(194) . chr(160), "\xC2xA0", "\n"), '', mb_strtolower($newFields)));
 
-				if (isset($MODUL->fields[$fldname]['type']) and $temp_currentFields!=$temp_newFields) {
+				if (isset($MODUL->fields[$fldname]['type']) and $temp_currentFields != $temp_newFields) {
 					$rDATA[$fldname]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` CHANGE `' . $fldname . '` ' . $newFields;
 					$rDATA[$fldname]['@oldquery'] = $currentFields;
 				}
@@ -122,8 +122,8 @@ class static_tools {
 		if (isset($MODUL->fields))
 			foreach ($MODUL->fields as $key => $param) {
 				if (!isset($param['inst'])) {
-					list($temp,$rDATA[$key]['@mess']) = $MODUL->SQL->_fldformer($key, $param);
-					$rDATA[$key]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD ' .$temp ;
+					list($temp, $rDATA[$key]['@mess']) = $MODUL->SQL->_fldformer($key, $param);
+					$rDATA[$key]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD ' . $temp;
 				}
 			}
 
@@ -131,26 +131,26 @@ class static_tools {
 		if (isset($MODUL->attaches))
 			foreach ($MODUL->attaches as $key => $param) {
 				if (!isset($param['inst'])) {
-					list($temp,$rDATA[$key]['@mess']) = $MODUL->SQL->_fldformer($key, $MODUL->attprm);
-					$rDATA[$key]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD ' .$temp ;
+					list($temp, $rDATA[$key]['@mess']) = $MODUL->SQL->_fldformer($key, $MODUL->attprm);
+					$rDATA[$key]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD ' . $temp;
 				}
-				if (!self::_checkdir($MODUL->_CFG['_PATH']['path'].$MODUL->getPathForAtt($key))) {
-					$rDATA[$key]['@mess'][] = static_main::am('error','_checkdir_error', array($MODUL->getPathForAtt($key)),$MODUL);
+				if (!self::_checkdir($MODUL->_CFG['_PATH']['path'] . $MODUL->getPathForAtt($key))) {
+					$rDATA[$key]['@mess'][] = static_main::am('error', '_checkdir_error', array($MODUL->getPathForAtt($key)), $MODUL);
 				}
 				$rDATA['@reattach'] = true;
 			}
 
 		if (isset($MODUL->memos))
 			foreach ($MODUL->memos as $key => $param) {
-				if (!self::_checkdir($MODUL->_CFG['_PATH']['path'].$MODUL->getPathForMemo($key))) {
-					$rDATA[$key]['@mess'][] = static_main::am('error','_recheck_err',$MODUL);
+				if (!self::_checkdir($MODUL->_CFG['_PATH']['path'] . $MODUL->getPathForMemo($key))) {
+					$rDATA[$key]['@mess'][] = static_main::am('error', '_recheck_err', $MODUL);
 				}
 			}
 
 
 		$indexlist = $uniqlistR = $uniqlist = array();
 		$primary = '';
-		list($primary,$uniqlist,$indexlist) = $MODUL->SQL->_tableKeys($MODUL);
+		list($primary, $uniqlist, $indexlist) = $MODUL->SQL->_tableKeys($MODUL);
 
 		// CREATE PRIMARY KEY
 		if (isset($MODUL->fields['id']) and !$primary) {
@@ -167,14 +167,16 @@ class static_tools {
 					foreach ($r as $kk => $rr)
 						$uniqlistR[$k][$kk] = $rr;
 					$tmp = '';
-					if (isset($indexlist[$k])){
+					if (isset($indexlist[$k])) {
 						$tmp = ' drop key `' . $k . '`, ';
 						unset($indexlist[$k]);
 					}
 					if (is_array($r))
 						$r = implode('`,`', $r);
-					if (!isset($rDATA[$k]['@index']))		$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
-					else		$rDATA[$k]['@index'] .= ', ';
+					if (!isset($rDATA[$k]['@index']))
+						$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
+					else
+						$rDATA[$k]['@index'] .= ', ';
 					$rDATA[$k]['@index'] .= ' ' . $tmp . ' ADD UNIQUE KEY `' . $k . '` (`' . $r . '`)';
 				} else {
 					unset($uniqlist[$k]);
@@ -183,8 +185,10 @@ class static_tools {
 		}
 		if (count($uniqlist)) {
 			foreach ($uniqlist as $k => $r) {
-				if (!isset($rDATA[$k]['@index']))		$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
-				else		$rDATA[$k]['@index'] .= ', ';
+				if (!isset($rDATA[$k]['@index']))
+					$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
+				else
+					$rDATA[$k]['@index'] .= ', ';
 				$rDATA[$k]['@index'] .= ' drop key `' . $k . '` ';
 				unset($uniqlistR[$k]);
 			}
@@ -202,8 +206,10 @@ class static_tools {
 		if (count($MODUL->index_fields))
 			foreach ($MODUL->index_fields as $k => $r) {
 				if (!isset($indexlist[$k]) and !isset($uniqlistR[$k])) {
-					if (!isset($rDATA[$k]['@index']))		$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
-					else		$rDATA[$k]['@index'] .= ', ';
+					if (!isset($rDATA[$k]['@index']))
+						$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
+					else
+						$rDATA[$k]['@index'] .= ', ';
 					$rDATA[$k]['@index'] .= ' add index `' . $k . '` (`' . $r . '`)';
 				} else {
 					unset($indexlist[$k]);
@@ -211,8 +217,10 @@ class static_tools {
 			}
 		if (count($indexlist)) {
 			foreach ($indexlist as $k => $r) {
-				if (!isset($rDATA[$k]['@index']))		$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
-				else		$rDATA[$k]['@index'] .= ', ';
+				if (!isset($rDATA[$k]['@index']))
+					$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
+				else
+					$rDATA[$k]['@index'] .= ', ';
 				$rDATA[$k]['@index'] .= ' drop key `' . $k . '` ';
 			}
 		}
@@ -220,7 +228,6 @@ class static_tools {
 		//$rDATA['Оптимизация']['@newquery'] = 'OPTIMIZE TABLE `' . $MODUL->tablename . '`';
 		return $rDATA;
 	}
-
 
 	static function _xmlFormConf(&$MODUL) {
 		$MODUL->form = array();
@@ -232,32 +239,32 @@ class static_tools {
 			else
 				$MODUL->config_form[$k]['value'] = $MODUL->config[$k];
 		}
-		$MODUL->form = array_merge($MODUL->form, $MODUL->config_form);
+		$MODUL->form = $MODUL->form+$MODUL->config_form;
 		$MODUL->form['sbmt'] = array(
 			'type' => 'submit',
 			'value' => static_main::m('Submit'));
 	}
 
-	static function _save_config($conf,$file) {
-		foreach($conf as &$r) {
-			if(is_string($r) and strpos($r,':|')!==false) {
-				$temp = explode(':|',$r);
+	static function _save_config($conf, $file) {
+		foreach ($conf as &$r) {
+			if (is_string($r) and strpos($r, ':|') !== false) {
+				$temp = explode(':|', $r);
 				$r = array();
-				foreach($temp as $t=>$d) {
-					$temp2 = explode(':=',$d);
-					if(count($temp2)>1)
-						$r[trim($temp2[0])]=trim($temp2[1]);
+				foreach ($temp as $t => $d) {
+					$temp2 = explode(':=', $d);
+					if (count($temp2) > 1)
+						$r[trim($temp2[0])] = trim($temp2[1]);
 					else
-						$r[]=trim($d);
+						$r[] = trim($d);
 				}
 			}
 		}
 		unset($r);
-		file_put_contents($file, var_export($conf, true) );
+		file_put_contents($file, var_export($conf, true));
 		return true;
 	}
 
-	static function _staticStatsmodul(&$MODUL, $oid='') {
+	static function _staticStatsmodul(&$MODUL, $oid = '') {
 		$clause = array();
 		if (!$oid and isset($_GET['_oid']))
 			$oid = (int) $_GET['_oid'];
@@ -270,7 +277,7 @@ class static_tools {
 			$clause = 'WHERE ' . implode(' and ', $clause);
 		else
 			$clause = '';
-		if(is_array($MODUL->mf_statistic['X'])) {
+		if (is_array($MODUL->mf_statistic['X'])) {
 			$X = current($MODUL->mf_statistic['X']);
 		}else
 			$X = $MODUL->mf_statistic['X'];
@@ -298,7 +305,7 @@ class static_tools {
 		$f = 'cap = \'' . $MODUL->caption . '\'; 
 			Xname=\'' . $MODUL->mf_statistic['Xname'] . '\';
 			Yname=\'' . $MODUL->mf_statistic['Yname'] . '\';
-			stepY='.$stepY.';
+			stepY=' . $stepY . ';
 			plot1 = $.jqplot(\'statschart2\', [line1], {
 				title:cap,
 				axes:{
@@ -307,9 +314,9 @@ class static_tools {
 				cursor:{zoom: true},
 				series:[{lineWidth:4, markerOptions:{style:\'square\'}}]
 			});';
-		/*$plugin = '';
-		if(isset($MODUL->mf_statistic['plugin_date']))
-			$plugin .= '';*/
+		/* $plugin = '';
+		  if(isset($MODUL->mf_statistic['plugin_date']))
+		  $plugin .= ''; */
 
 		$eval = '
 			line1 = [' . implode(',', $data) . '];
@@ -407,27 +414,25 @@ class static_tools {
 	 * @param object $MODUL Текущий объект класса
 	 * @return array
 	 */
-	static function _checkmodstruct($Mid,&$OWN = NULL) {
+	static function _checkmodstruct($Mid, &$OWN = NULL) {
 		$rDATA = array();
-			//'mess'=>array(),
-			//'oldquery'=>array(),
-			//'newquery'=>array()
+		//'mess'=>array(),
+		//'oldquery'=>array(),
+		//'newquery'=>array()
 
 		if (!_new_class('modulprm', $MODULPRM)) {
-			$rDATA['Ошибка']['@mess'][] = array( 'error','Ошибка инициализации модуля `modulprm`');
+			$rDATA['Ошибка']['@mess'][] = array('error', 'Ошибка инициализации модуля `modulprm`');
 			return array($Mid => $rDATA);
 		}
 		unset($MODULPRM->_CFG['modulprm2'][$Mid]); // Потом Удаляем отсутствующие модули
-		list($MODUL,$rDATA['modulprm']['@mess']) = $MODULPRM->ForUpdateModulInfo($Mid,$OWN);
-		if ($MODUL===false) {
-			$rDATA['Ошибка']['@mess'][] = array( 'error','Ошибка инициализации модуля `'.$Mid.'`');
+		list($MODUL, $rDATA['modulprm']['@mess']) = $MODULPRM->ForUpdateModulInfo($Mid, $OWN);
+		if ($MODUL === false) {
+			$rDATA['Ошибка']['@mess'][] = array('error', 'Ошибка инициализации модуля `' . $Mid . '`');
 			return array($Mid => $rDATA);
-		}
-		elseif(!$MODUL->tablename) {
-			$rDATA['Ахтунг']['@mess'][] = array( 'alert', 'Модуль `'.$MODUL->caption.'`['.$Mid.'] не использует базу данных.');
+		} elseif (!$MODUL->tablename) {
+			$rDATA['Ахтунг']['@mess'][] = array('alert', 'Модуль `' . $MODUL->caption . '`[' . $Mid . '] не использует базу данных.');
 			return array($Mid => $rDATA);
-		}
-		elseif(!isset($MODULPRM->data[$Mid]) or $MODULPRM->data[$Mid][$MODULPRM->mf_actctrl]) {
+		} elseif (!isset($MODULPRM->data[$Mid]) or $MODULPRM->data[$Mid][$MODULPRM->mf_actctrl]) {
 			// синонимы для типов полей
 			$temp = self::_checkTable($MODUL);
 			if ($temp and count($temp))
@@ -438,14 +443,14 @@ class static_tools {
 			$rDATA = array($Mid => $rDATA);
 		if (count($MODUL->Achilds))
 			foreach ($MODUL->Achilds as $k => $r) {
-				$temp = self::_checkmodstruct($k,$MODUL);
+				$temp = self::_checkmodstruct($k, $MODUL);
 				if ($temp and count($temp))
 					$rDATA = array_merge($rDATA, $temp);
 			}
-		if(!$OWN and isset($MODUL->_CFG['modulprm'][$MODUL->_cl]) and $MODUL->ver!=$MODUL->_CFG['modulprm'][$MODUL->_cl]['ver']) {
+		if (!$OWN and isset($MODUL->_CFG['modulprm'][$MODUL->_cl]) and $MODUL->ver != $MODUL->_CFG['modulprm'][$MODUL->_cl]['ver']) {
 			$file = $MODUL->_CFG['modulprm'][$Mid]['path'];
-			$file = substr($file,0,-(strlen($Mid.'.class.php'))).'updater/'.$MODUL->ver.'.php';
-			if(file_exists($file)) {
+			$file = substr($file, 0, -(strlen($Mid . '.class.php'))) . 'updater/' . $MODUL->ver . '.php';
+			if (file_exists($file)) {
 				include($file);
 			}
 		}
@@ -460,12 +465,12 @@ class static_tools {
 	 * @param <type> $mData не обязательно, дефолтное значение отслеживаемой переменной
 	 * @return <type> Возвращает массив полученных данных $_CFG
 	 */
-	static function getFdata($file, $start='', $end='', $mData = false) {
+	static function getFdata($file, $start = '', $end = '', $mData = false) {
 		$_CFG = array();
 		if ($mData !== false) {
 			$_CFG = $mData;
 		}
-		if(!file_exists($file))
+		if (!file_exists($file))
 			return $_CFG;
 		$fc = '';
 		if ($start == '' and $end == '') {
@@ -496,65 +501,67 @@ class static_tools {
 	static function saveUserCFG($SetDataCFG) {
 		//$SetDataCFG = static_main::MergeArrays($USER_CFG,$SetDataCFG);
 		// объединяем конфиг записанный на пользователя и новые конфиги
-		global $_CFG,$_CFGFORM;
-		$fl = false;$mess = array();
+		global $_CFG, $_CFGFORM;
+		$fl = false;
+		$mess = array();
 
 		include_once($_CFG['_FILE']['wep_config_form']);
 
-		if(isset($SetDataCFG['wep'])) {
-			if(!isset($SetDataCFG['wep']['password']) or !$SetDataCFG['wep']['password'] or $SetDataCFG['wep']['password']==$DEF_CFG['wep']['password']) {
-				$mess[] = array( 'error','Поле '.$_CFGFORM['wep']['password']['caption'].' обязательное и не должно совпадать с дефолтным');
+		if (isset($SetDataCFG['wep'])) {
+			if (!isset($SetDataCFG['wep']['password']) or !$SetDataCFG['wep']['password'] or $SetDataCFG['wep']['password'] == $DEF_CFG['wep']['password']) {
+				$mess[] = array('error', 'Поле ' . $_CFGFORM['wep']['password']['caption'] . ' обязательное и не должно совпадать с дефолтным');
 			}
-			if(!isset($SetDataCFG['wep']['md5']) or !$SetDataCFG['wep']['md5'] or $SetDataCFG['wep']['md5']==$DEF_CFG['wep']['md5']) {
-				$mess[] = array( 'error','Поле '.$_CFGFORM['wep']['md5']['caption'].' обязательное и не должно совпадать с дефолтным');
+			if (!isset($SetDataCFG['wep']['md5']) or !$SetDataCFG['wep']['md5'] or $SetDataCFG['wep']['md5'] == $DEF_CFG['wep']['md5']) {
+				$mess[] = array('error', 'Поле ' . $_CFGFORM['wep']['md5']['caption'] . ' обязательное и не должно совпадать с дефолтным');
 			}
 		}
 
-		if(isset($SetDataCFG['sql'])) {
+		if (isset($SetDataCFG['sql'])) {
 			$SQL = new $SetDataCFG['sql']['type']($SetDataCFG['sql']); //пробуем подключиться к БД
-			if(!$SQL->ready) {
-				$mess[] = array( 'error','Ошибка подключения к БД.');
+			if (!$SQL->ready) {
+				$mess[] = array('error', 'Ошибка подключения к БД.');
 			}
 		}
-		if(count($mess))
-			return array($fl,$mess);
+		if (count($mess))
+			return array($fl, $mess);
 
-		$DEF_CFG = self::getFdata($_CFG['_FILE']['wep_config'], '/* MAIN_CFG */', '/* END_MAIN_CFG */');// чистый конфиг ядра
+		$DEF_CFG = self::getFdata($_CFG['_FILE']['wep_config'], '/* MAIN_CFG */', '/* END_MAIN_CFG */'); // чистый конфиг ядра
 
-		return self::saveCFG($SetDataCFG,$_CFG['_FILE']['config'],$DEF_CFG);
+		return self::saveCFG($SetDataCFG, $_CFG['_FILE']['config'], $DEF_CFG);
 	}
 
-	static function saveCFG($SetDataCFG,$file,$DEF_CFG=array()) {
+	static function saveCFG($SetDataCFG, $file, $DEF_CFG = array()) {
 		global $_CFG;
-		$fl = false;$mess = array();
+		$fl = false;
+		$mess = array();
 		$putFile = array();
 		$USER_CFG = self::getFdata($file, '', '', $DEF_CFG); // конечный конфиг
 		// Редактируемые конфиги
 		$fl = false;
-		if(!count($DEF_CFG)) {
+		if (!count($DEF_CFG)) {
 			$fl = true;
 			$DEF_CFG = $SetDataCFG;
 		}
 		foreach ($DEF_CFG as $k => $r) {
 			foreach ($r as $kk => $defr) {
-				if(isset($SetDataCFG[$k][$kk]))
+				if (isset($SetDataCFG[$k][$kk]))
 					$newr = $SetDataCFG[$k][$kk];
-				elseif(isset($USER_CFG[$k][$kk]))
+				elseif (isset($USER_CFG[$k][$kk]))
 					$newr = $USER_CFG[$k][$kk];
-				
+
 				$flag = false;
-				if(is_string($newr)) {
-					if($fl or $newr != $defr)
+				if (is_string($newr)) {
+					if ($fl or $newr != $defr)
 						$flag = true;
-					$newr = '\''.addcslashes($newr, '\'').'\'';
+					$newr = '\'' . addcslashes($newr, '\'') . '\'';
 				}
-				elseif(is_array($newr)) {
-					if($fl or !is_array($defr) or count(array_diff($newr,$defr)))
+				elseif (is_array($newr)) {
+					if ($fl or !is_array($defr) or count(array_diff($newr, $defr)))
 						$flag = true;
-					$newr = str_replace(array("\n","\t","\r",'   ','  '),array('','','',' ',' '),var_export($newr,true));
+					$newr = str_replace(array("\n", "\t", "\r", '   ', '  '), array('', '', '', ' ', ' '), var_export($newr, true));
 				}else {
-					$newr = (int)$newr;
-					if($fl or $newr != $defr)
+					$newr = (int) $newr;
+					if ($fl or $newr != $defr)
 						$flag = true;
 				}
 
@@ -563,17 +570,17 @@ class static_tools {
 				}
 			}
 		}
-		$putFile = "<?php\n\t//create time " . date('Y-m-d H:i') . "\n\t".implode("\n\t", $putFile)."\n";
+		$putFile = "<?php\n\t//create time " . date('Y-m-d H:i') . "\n\t" . implode("\n\t", $putFile) . "\n";
 		//Записать в конфиг все данные которые отличаются от данных по умолчанию
 		if (!file_put_contents($file, $putFile)) {
-			$mess[] = array( 'error','Ошибка записи настроек. Нет доступа к фаилу');
+			$mess[] = array('error', 'Ошибка записи настроек. Нет доступа к фаилу');
 		} else {
 			$fl = true;
-			if(isset($SetDataCFG['sql']))
-				$mess[] = array( 'ok', 'Подключение к БД успешно.');
-			$mess[] = array( 'ok', 'Конфигурация успешно сохранена.');
+			if (isset($SetDataCFG['sql']))
+				$mess[] = array('ok', 'Подключение к БД успешно.');
+			$mess[] = array('ok', 'Конфигурация успешно сохранена.');
 		}
-		return array($fl,$mess);
+		return array($fl, $mess);
 	}
 
 	/**
@@ -600,98 +607,100 @@ class static_tools {
 	 */
 	static function _checkdir($dir) {
 		global $_CFG;
-		if(!$dir) return false;
+		if (!$dir)
+			return false;
 		if (!file_exists($dir)) {
 			if (!file_exists(dirname($dir))) {
 				self::_checkdir(dirname($dir));
 			}
 			if (!mkdir($dir, $_CFG['wep']['chmod']))
-				return static_main::log('error','Cannot create directory <b>' . $dir . '</b>');
+				return static_main::log('error', 'Cannot create directory <b>' . $dir . '</b>');
 		}
 		else {
 			chmod($dir, $_CFG['wep']['chmod']);
 			$f = fopen($dir . '/test.file', 'w');
 			if (!$f)
-				return static_main::log('error','Cannot create file `test.file` in directory `' . $dir . '`');
+				return static_main::log('error', 'Cannot create file `test.file` in directory `' . $dir . '`');
 
 			$err = fwrite($f, 'zzz') == -1;
 			fclose($f);
 			unlink($dir . '/test.file');
 
 			if ($err)
-				return static_main::log('error','Cannot write/read file `test.file` in directory `' . $dir . '`');
+				return static_main::log('error', 'Cannot write/read file `test.file` in directory `' . $dir . '`');
 		}
 		return true;
 	}
 
 	static function checkWepconf() {
 		global $_CFG;
-		$flag= true;
-		foreach($_CFG['_PATH'] as $k=>$r) {
-			if(!self::_checkdir($r)) {
-				static_main::log('error','Ошибка создания директории '.$r);
-				$flag= false;
+		$flag = true;
+		foreach ($_CFG['_PATH'] as $k => $r) {
+			if (!self::_checkdir($r)) {
+				static_main::log('error', 'Ошибка создания директории ' . $r);
+				$flag = false;
 			}
 		}
-		if(!file_exists($_CFG['_PATH']['wepconf']. '.htaccess')) {
-			file_put_contents($_CFG['_PATH']['wepconf'] . '.htaccess','php_flag engine 0
+		if (!file_exists($_CFG['_PATH']['wepconf'] . '.htaccess')) {
+			file_put_contents($_CFG['_PATH']['wepconf'] . '.htaccess', 'php_flag engine 0
 <FilesMatch "\.(php|inc|cfg|key|htaccess|cmd)$">
 order allow,deny
 deny from all
 </FilesMatch>');
 		}
-		if(!file_exists($_CFG['_PATH']['content']. '.htaccess')) {
-			file_put_contents($_CFG['_PATH']['content'] . '.htaccess','php_flag engine 0');
+		if (!file_exists($_CFG['_PATH']['content'] . '.htaccess')) {
+			file_put_contents($_CFG['_PATH']['content'] . '.htaccess', 'php_flag engine 0');
 		}
 		return $flag;
 	}
 
-	/*STEP2 функция*/
+	/* STEP2 функция */
+
 	static function _toolsCheckmodul(&$MODUL) {
 		global $HTML;
 		$flag = 0;
 		$MODUL->form = $mess = array();
 		if (!static_main::_prmModul($MODUL->_cl, array(14)))
-			$mess[] = array( 'error','Access denied');
+			$mess[] = array('error', 'Access denied');
 		else {
 			$check_result = $MODUL->_checkmodstruct();
 
 			if (isset($_POST['sbmt'])) {
 				$flag = 1;
 				foreach ($check_result as $_cl => $row) {
-					if (isset($row['@reattach']) and isset($_POST['query_'.$_cl]['reattach'])) {
+					if (isset($row['@reattach']) and isset($_POST['query_' . $_cl]['reattach'])) {
 						_new_class($_cl, $MODUL_R);
 						if (self::_reattaches($MODUL_R))
-							$mess[] = array( 'ok', '<b>' . $_cl . '</b> - ' . static_main::m('_file_ok',$MODUL));
+							$mess[] = array('ok', '<b>' . $_cl . '</b> - ' . static_main::m('_file_ok', $MODUL));
 						else {
-							$mess[] = array( 'error','<b>' . $_cl . '</b> - ' . static_main::m('_file_err',$MODUL));
+							$mess[] = array('error', '<b>' . $_cl . '</b> - ' . static_main::m('_file_err', $MODUL));
 							$flag = -1;
 						}
 						unset($row['@reattach']);
 					}
 					foreach ($row as $kk => $rr) {
-						if(is_array($rr)) {
-							if(isset($rr['@newquery']) and isset($_POST['query_'.$_cl][$kk.'@newquery'])) {
+						if (is_array($rr)) {
+							if (isset($rr['@newquery']) and isset($_POST['query_' . $_cl][$kk . '@newquery'])) {
 								$result = $MODUL->SQL->execSQL($rr['@newquery']);
 								if ($result->err) {
-									$mess[] = array( 'error','Error new query(' . $rr['@newquery'] . ')');
+									$mess[] = array('error', 'Error new query(' . $rr['@newquery'] . ')');
 									$flag = -1;
 								}
 							}
-							if(isset($rr['@index']) and isset($_POST['query_'.$_cl][$kk.'@index'])) {
-									$result = $MODUL->SQL->execSQL($rr['@index']);
-									if ($result->err) {
-										$mess[] = array( 'error','Error index query(' . $rr['@index']. ')');
-										$flag = -1;
-									}
+							if (isset($rr['@index']) and isset($_POST['query_' . $_cl][$kk . '@index'])) {
+								$result = $MODUL->SQL->execSQL($rr['@index']);
+								if ($result->err) {
+									$mess[] = array('error', 'Error index query(' . $rr['@index'] . ')');
+									$flag = -1;
+								}
 							}
 						}
 					}//end foreach
 				}
-				if (count($_POST)<=1)
-					$mess[] = static_main::am('alert','_recheck_have_nothing',$MODUL);
+				if (count($_POST) <= 1)
+					$mess[] = static_main::am('alert', '_recheck_have_nothing', $MODUL);
 				if ($flag)
-					$mess[] = static_main::am('ok','_recheck_ok',$MODUL);
+					$mess[] = static_main::am('ok', '_recheck_ok', $MODUL);
 				//'  <a href="" onclick="window.location.reload();return false;">Обновите страницу.</a>'
 			}
 			else {
@@ -699,7 +708,7 @@ deny from all
 				if (count($check_result)) {
 					$MODUL->form['_info'] = array(
 						'type' => 'info',
-						'caption' => static_main::m('_recheck',$MODUL),
+						'caption' => static_main::m('_recheck', $MODUL),
 					);
 					$MODUL->form['invert'] = array(
 						'type' => 'info',
@@ -720,7 +729,7 @@ deny from all
 							}
 							foreach ($row as $kk => $rr) {
 								if (isset($rr['@mess'])) {
-									$message = array_merge($message,$rr['@mess']);
+									$message = array_merge($message, $rr['@mess']);
 								}
 								if (!is_array($rr))
 									$desc = $rr;
@@ -731,39 +740,39 @@ deny from all
 								else
 									$desc = '';
 								if ($desc)
-									$valuelist[$kk.'@newquery'] = '<i>' . $kk . '</i> - ' . $desc;
+									$valuelist[$kk . '@newquery'] = '<i>' . $kk . '</i> - ' . $desc;
 
 								if (is_array($rr) and isset($rr['@index']))
-									$valuelist[$kk.'@index'] = '<i>' . $kk . '</i> - ' . $rr['@index'];
+									$valuelist[$kk . '@index'] = '<i>' . $kk . '</i> - ' . $rr['@index'];
 							}
 							if (count($valuelist)) {
-								$message = array('messages'=>$message);
-								$MODUL->form['query_'.$_cl]  = array(
-									'caption'=>'Модуль '.$_cl,
-									'type'=>'checkbox',
-									'valuelist'=>$valuelist,
+								$message = array('messages' => $message);
+								$MODUL->form['query_' . $_cl] = array(
+									'caption' => 'Модуль ' . $_cl,
+									'type' => 'checkbox',
+									'valuelist' => $valuelist,
 									'comment' => $HTML->transformPHP($message, 'messages'),
-									'style'=>'border:solid 1px gray;margin:3px 0;'
+									'style' => 'border:solid 1px gray;margin:3px 0;'
 								);
-								if($value)
-									$MODUL->form['query_'.$_cl]['value'] = $value;
-							}elseif(count($message))
-								$mess = array_merge($mess,$message);
+								if ($value)
+									$MODUL->form['query_' . $_cl]['value'] = $value;
+							}elseif (count($message))
+								$mess = array_merge($mess, $message);
 						}
 						else
-							$mess[] = array( 'error','Error data (' . $_cl . ' - ' . print_r($row, true) . ')');
+							$mess[] = array('error', 'Error data (' . $_cl . ' - ' . print_r($row, true) . ')');
 					}
 
 					$MODUL->form['sbmt'] = array(
 						'type' => 'submit',
-						'value' => static_main::m('Submit',$MODUL)
+						'value' => static_main::m('Submit', $MODUL)
 					);
 				} else
-					$mess[] = static_main::am('ok','_recheck_have_nothing',$MODUL);
+					$mess[] = static_main::am('ok', '_recheck_have_nothing', $MODUL);
 			}
 		}
 		$DATA = array('form' => $MODUL->form, 'messages' => $mess);
-		return Array($flag,$DATA);
+		return Array($flag, $DATA);
 	}
 
 // END static class

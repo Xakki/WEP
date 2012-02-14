@@ -195,7 +195,6 @@ class bug_class extends kernel_extends {
 	}
 
 	function sendNotif($email='') {
-		_new_class('mail',$MAIL);
 		$data = $this->_query('*','WHERE notif=0');
 		if(count($data)) {
 			$txt = '<table border="1"><tr><th width="35%">Ошибка</th><th width="65%">Текст ошибки</th></tr>';
@@ -216,7 +215,7 @@ class bug_class extends kernel_extends {
 				</tr>';
 			}
 			$txt .= '</table>';
-
+			_new_class('mail',$MAIL);
 			$datamail = array(
 				'creater_id' => -1,
 				'mail_to' => ($email?$email:$MAIL->config['mailrobot']),

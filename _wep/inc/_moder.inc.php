@@ -1,17 +1,22 @@
 <?php
+/**
+ * Управлятор
+ * @ShowFlexForm true
+ * @author Xakki
+ * @version 0.1 
+ * @return $form
+ * @return $html
+ */
 	if(!isset($FUNCPARAM[0]) or $FUNCPARAM[0] == '') $FUNCPARAM[0] = '';
 	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = 'superlist';
 	if(!isset($FUNCPARAM[2])) $FUNCPARAM[2] = 0;
 	if(!isset($FUNCPARAM[3])) $FUNCPARAM[3] = 0;
 	if(!isset($FUNCPARAM[4])) $FUNCPARAM[4] = 1;
 	if(!isset($FUNCPARAM[5])) $FUNCPARAM[5] = 1;
-	//$FUNCPARAM[0] - модуль
-	//$FUNCPARAM[1] - включить AJAX
 
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 		global $_CFG;
-		$this->_getCashedList('phptemplates', dirname(__FILE__));
 		$this->_enum['modullist'] = array();
 		foreach($_CFG['modulprm'] as $k=>$r) {
 			if($r['active'])
@@ -43,7 +48,6 @@
 
 		if(static_main::_prmModul($FUNCPARAM[0],array(1,2))) {
 			global $HTML;
-			$tplphp = $PGLIST->FFTemplate($FUNCPARAM[1],dirname(__FILE__));
 
 			$param = array('phptemplate'=>$FUNCPARAM[1]);
 			if($FUNCPARAM[2])
@@ -91,8 +95,9 @@
 					$DATA['messages'] += $_SESSION['mess'];
 				unset($DATA['path']);
 				$DATA = array($FUNCPARAM[1]=>$DATA);
-				$html = $HTML->transformPHP($DATA,$tplphp);
+				$html = $HTML->transformPHP($DATA,$FUNCPARAM[1]);
 				$_SESSION['mess'] = array();
+				$_CFG['fileIncludeOption']['form'] = 1;
 			}
 
 		}

@@ -53,7 +53,7 @@
 			{
 				$res = static_main::userAuth($_POST['login'],$_POST['pass']);// повесить обработчик xml
 				if($res[1]) {//alert('Поздравляем! Вы успешно авторизованы!');  
-					$_tpl['onload'] .= "window.location.href=window.location.href;";
+					$_tpl['onload'] .= "window.location.reload();";
 				}
 			}
 			if(!$res[1]) {

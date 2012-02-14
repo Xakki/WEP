@@ -373,7 +373,7 @@ function tpl_form(&$data) {
 						if(!isset($r['mask']['datepicker']['dateFormat']))
 							$r['mask']['datepicker']['dateFormat']='\'yy-mm-dd\'';
 
-						if($r['mask']['datepicker']['timeFormat']===true or strpos($r['mask']['format'],'H:i:s')!==false)
+						if(strpos($r['mask']['format'],'H:i:s')!==false or $r['mask']['datepicker']['timeFormat']===true)
 							$r['mask']['datepicker']['timeFormat'] = '\' hh:mm:ss\'';
 
 
@@ -588,7 +588,7 @@ function tpl_form(&$data) {
 				</div>';
 
 			}*/
-			elseif(isset($r['multiple']) AND $r['multiple']) {
+			elseif(isset($r['multiple']) AND $r['multiple'] and !$r['readonly']) {
 				if(!is_array($r['value']) or !count($r['value'])) $r['value'] = array('');
 				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
 				if(!isset($r['mask']['maxarr'])) $r['mask']['maxarr'] = 10;

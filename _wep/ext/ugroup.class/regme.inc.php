@@ -1,10 +1,17 @@
 <?php
+/**
+ * Регистрация пользователя
+ * @ShowFlexForm true
+ * @author Xakki
+ * @version 0.1 
+ * @return $form
+ * @return $html
+ */
 	if(!isset($FUNCPARAM[0]) or !$FUNCPARAM[0]) $FUNCPARAM[0] = 'formcreat';
 	//if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = '';
 
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
-		$this->_getCashedList('phptemplates', dirname(__FILE__));
 		//$temp = 'ownerlist';
 		//$this->_enum['levelmenuinc'] = $this->_getCashedList($temp);
 		$form = array(
@@ -16,8 +23,6 @@
 
 	global $_tpl;
 	_new_class('ugroup', $UGROUP);
-
-	$tplphp = $this->FFTemplate($FUNCPARAM[0],dirname(__FILE__));
 
 	$DATA = array();
 	if(isset($_GET['confirm'])){
@@ -37,6 +42,6 @@
 		$_tpl['onload'] .= 'fMessPos();';
 	} else {
 		list($DATA[$FUNCPARAM[0]],$flag) = $UGROUP->regForm();
-		$html = $HTML->transformPHP($DATA,$tplphp);
+		$html = $HTML->transformPHP($DATA,$FUNCPARAM[0]);
 	}
 	return $html;
