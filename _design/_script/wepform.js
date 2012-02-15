@@ -442,3 +442,154 @@ $(document).ready(function() {
 		wep.showHelp(this,tx,2000,1)
 	});
 });
+
+/////////////////////////////
+///////////swfuploader/////////
+
+wep.swfuploader = {
+		PhotosResult : "",
+		Count : 0,
+		UploadedFiles : 0,
+		photos_fileDialogComplete : function(numFilesSelected, numFilesQueued) {
+			try {
+				if (numFilesQueued > 0) {
+//					PhotosResult = numFilesQueued == '1' ? ' картинка' : ' картинки';
+//					PhotosResult = numFilesQueued + PhotosResult + " attached";
+//					wep.swfuploader.PhotosResult = 'Картинка загружена';
+					wep.swfuploader.Count = parseInt(numFilesQueued);
+//					$('#AddPhotos').val('Загрузка...');
+
+					$('#'+wep.swfuploader.config.field_name+'_progress_wrap').show();
+					$('#'+wep.swfuploader.config.field_name+'_progress_wrap .progress').css('width', 0);
+					
+//					$('#submitStatus')
+//						.attr('disabled', 'disabled')
+//						.addClass('disabled');
+					this.startUpload();
+				}
+			} catch (ex) {
+			}
+		},
+
+		photos_uploadProgress : function(file, bytesLoaded) {
+			try {					
+				var pw = 100;				
+//				var w = Math.ceil(pw * (wep.swfuploader.UploadedFiles / wep.swfuploader.Count + (bytesLoaded / (file.size * wep.swfuploader.Count))));			
+				var w = Math.ceil(pw * (1 / (bytesLoaded / (file.size * 1))));			
+				$('#'+wep.swfuploader.config.field_name+'_progress_wrap .progress').stop().animate({width: w+'%'});
+			} catch (ex) {
+			}
+		},
+		
+		photos_uploadSuccess : function(file, serverData) {
+			var serverData = $.parseJSON(serverData);
+		//	$('#'+this.+'_temp_upload')
+//			$('#'+wep.swfuploader.config.field_name+'_progress_wrap .progress').stop().css('width', 0);
+
+			if (wep.isDef(serverData['swf_uploader'].name)) {
+				wep.swfuploader.Count = 0;
+				wep.swfuploader.UploadedFiles = 0;
+
+				this.setFileUploadLimit(this.getSetting('file_upload_limit')+1);
+
+		//		$('#AddPhotos').val('Upload');
+				$('#'+wep.swfuploader.config.field_name+'_temp_upload_img').attr('src', serverData['swf_uploader'].path+serverData['swf_uploader'].name);
+				
+				var id;
+				id = wep.swfuploader.config.field_name+'_temp_upload_name';
+				if($('#'+id).size()==0)
+					$('#'+wep.swfuploader.swfuPhotos.movieName).after('<input id="'+id+'" type="hidden" name="'+wep.swfuploader.config.field_name+'_temp_upload[name]" value="">')
+				$('#'+id).val(serverData['swf_uploader'].name);
+
+				id = wep.swfuploader.config.field_name+'_temp_upload_type';
+				if($('#'+id).size()==0)
+					$('#'+wep.swfuploader.swfuPhotos.movieName).after('<input id="'+id+'" type="hidden" name="'+wep.swfuploader.config.field_name+'_temp_upload[type]" value="">')
+				$('#'+id).val(serverData['swf_uploader'].mime_type);
+
+				$('#'+wep.swfuploader.config.field_name+'_notice_swf_uploader').html('Изображение загружено. Сохраните изменения');
+				try {
+					wep.swfuploader.UploadedFiles++;
+				} catch (ex) {
+
+				}
+			}
+			else {
+				alert('Во время загрузки изображения произошли ошибки, пожалуйста обратитесь к администратору');
+			}
+				
+			
+		},
+
+		photos_uploadComplete : function(file) {	
+			try {
+				if (this.getStats().files_queued > 0) {
+					this.startUpload();
+				} else {
+			//		$('#UploadPhotos').hide();
+//					$('#UploadResult').html(wep.swfuploader.PhotosResult);
+				}
+			} catch (ex) {
+			}
+		},
+		
+		photos_fileQueueError : function(file, errorCode, message) {
+			try {
+				switch (errorCode) {
+					case SWFUpload.QUEUE_ERROR.QUEUE_LIMIT_EXCEEDED:
+						alert('Можно загружать не более одной картинки');
+						break;
+					case SWFUpload.QUEUE_ERROR.ZERO_BYTE_FILE:
+					case SWFUpload.QUEUE_ERROR.FILE_EXCEEDS_SIZE_LIMIT:
+					case SWFUpload.QUEUE_ERROR.ZERO_BYTE_FILE:
+					case SWFUpload.QUEUE_ERROR.INVALID_FILETYPE:
+						break;
+				}
+			} catch (ex) {
+			}
+
+		},
+
+		swfuploadLoaded : function() {		
+/*			$('#Buttons object').hover(
+				function() {
+					$(this).next().addClass('hover');
+				}
+				,
+				function() {
+					$(this).next().removeClass('hover');
+				}
+			); */
+		},
+		
+		bindSWFUpload : function(config) {
+			var defaults = {
+				file_dialog_complete_handler: wep.swfuploader.photos_fileDialogComplete,
+				upload_progress_handler: wep.swfuploader.photos_uploadProgress,
+				upload_success_handler: wep.swfuploader.photos_uploadSuccess,
+				upload_complete_handler: wep.swfuploader.photos_uploadComplete,
+				swfupload_loaded_handler: wep.swfuploader.swfuploadLoaded,
+				file_queue_error_handler: wep.swfuploader.photos_fileQueueError,
+				file_size_limit: "2 MB",
+				file_types: "*.jpg;*.png;*.gif",
+				file_types_description: "JPG, PNG, GIF",
+				file_upload_limit: "1",
+				flash_url: "/_design/_script/SWFUpload/swfupload_fp10/swfupload.swf",
+				upload_url: "/_json.php",
+				post_params: {
+					//"wepID": SESSID
+					'fileupload':'1'
+				},
+				button_width: 65,
+				button_height: 29,
+				button_image_url: "/_design/_img/spacer.gif",
+
+				button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
+				button_cursor: SWFUpload.CURSOR.HAND
+			};
+			
+			this.config = $.extend(defaults, config);
+			wep.swfuploader.swfuPhotos = new SWFUpload(this.config);
+		}
+	}
+
+

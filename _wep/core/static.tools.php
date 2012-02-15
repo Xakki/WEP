@@ -516,7 +516,7 @@ class static_tools {
 			}
 		}
 
-		if (isset($SetDataCFG['sql'])) {
+		if (isset($SetDataCFG['sql']) and $SetDataCFG['sql']['type']) {
 			$SQL = new $SetDataCFG['sql']['type']($SetDataCFG['sql']); //пробуем подключиться к БД
 			if (!$SQL->ready) {
 				$mess[] = array('error', 'Ошибка подключения к БД.');

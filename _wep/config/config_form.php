@@ -1,6 +1,7 @@
 <?php
 
 $_CFGFORM['sql'] = array(// SQL
+	'type' => array('type'=>'list', 'caption'=>'Тип БД'),
 	'host' => array('type'=>'text','caption'=>'Хост подключения к БД', 'mask'=>array('min'=>9)),
 	'login' =>  array('type'=>'text','caption'=>'Логин БД', 'mask'=>array('min'=>2)),
 	'password' =>  array('type'=>'password','caption'=>'Пароль БД', 'mask'=>array('min'=>6)),
@@ -75,6 +76,12 @@ $_CFGFORM['memcache'] = array(
 	'host' => array('type'=>'text','caption'=>'Хост подключения к Memcache', 'css' => 'fblock hmemcache', 'style' => 'display:none;'),
 	'port' => array('type'=>'text','caption'=>'Порт подключения к Memcache', 'css' => 'fblock hmemcache', 'style' => 'display:none;'),
 );
+
+
+	$_CFGFORM['sql']['type']['valuelist'] = array(
+		array('#id#' => 'sqlmyi', '#name#' => 'MySQLi'),
+		array('#id#' => 'sqlpostgre', '#name#' => 'PostgreSQL'),
+	);
 
 	$_CFGFORM['wep']['timezone']['valuelist'] = array();
 	$timezone_identifiers = DateTimeZone::listAbbreviations();

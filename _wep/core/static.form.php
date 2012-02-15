@@ -147,7 +147,7 @@ class static_form {
 			if(isset($value['ext']) and $value['ext'])
 				$ext = $value['ext'];
 			else
-				$value['ext'] = strtolower(array_pop(explode('.',$value['name'])));
+				$ext = $value['ext'] = strtolower(array_pop(explode('.',$value['name'])));
 
 			$newname = $pathimg.'/'.$_this->id.'.'.$ext;
 			if (file_exists($newname)) { // Удаляем старое
