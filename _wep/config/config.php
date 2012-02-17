@@ -61,7 +61,7 @@ $_CFG['site'] = array(// для сайта
 	'worktime' => false, // 1 - включает отображение страницы "Технический перерыв"
 	'work_title' => 'Технический перерыв',
 	'work_text' => 'Технический перерыв',
-	'redirectForRobots' => true,
+	'redirectPlugin' => 0,
 );
 $_CFG['memcache'] = array(
 	'host' => '127.0.0.1',
@@ -436,8 +436,8 @@ mb_internal_encoding($_CFG["wep"]["charset"]);
 date_default_timezone_set($_CFG['wep']['timezone']);
 setlocale(LC_CTYPE, $_CFG['wep']['locale']);
 $_CFG['modulinc'] = array(
-	0 => array('path' => $_CFG['_PATH']['wep_ext'], 'name' => 'WEP - '),
-	3 => array('path' => $_CFG['_PATH']['ext'], 'name' => 'EXT - ')
+	0 => array('path' => $_CFG['_PATH']['wep_ext'], 'name' => 'Ядро - '),
+	3 => array('path' => $_CFG['_PATH']['ext'], 'name' => 'Плагины - ')
 );
 $_CFG['time'] = time();
 $_CFG['getdate'] = getdate();
@@ -495,13 +495,13 @@ function _setcookie($name, $value='', $expire='', $path='', $domain='', $secure=
 /**
  * Инициализация модулей
  */
-function _new_class($name, &$MODUL, &$OWNER = NULL) {
+function _new_class($name, &$MODUL, $force = false) {
 	global $_CFG;
 	$MODUL = NULL;
 	static_main::_prmModulLoad();
 	$name = _getExtMod($name);
 		
-	if(!isset($_CFG['singleton'][$name]) and $_CFG['modulprm'][$name]['pid'] and !$OWNER) {
+	if(!isset($_CFG['singleton'][$name]) and $_CFG['modulprm'][$name]['pid']) {
 		// кастыль: при обращении к дочерним классам , находяться родители и от него дается ссылка на класс.
 		_new_class($_CFG['modulprm'][$name]['pid'], $MODUL2);
 		$MODUL = $MODUL2->childs[$name];
@@ -511,44 +511,50 @@ function _new_class($name, &$MODUL, &$OWNER = NULL) {
 	if (isset($_CFG['singleton'][$name])) {
 		$MODUL = $_CFG['singleton'][$name];
 		return true;
-	} 
+	}
 	else {
 		$class_name = $name . "_class";
-		if (!class_exists($class_name,false) and (!isset($_CFG['modulprm'][$name]) or !$_CFG['modulprm'][$name]['pid'] or $OWNER) and $file = _modulExists($class_name,$OWNER)) {
-			require_once($file);
-		}
-		if(class_exists($class_name,false)) {
-			$getparam = array_slice(func_get_args(), 2);
-			$obj = new ReflectionClass($class_name);
-			//$pClass = $obj->getParentClass();
-			$MODUL = $obj->newInstanceArgs($getparam);
-			/* extract($getparam,EXTR_PREFIX_ALL,'param');
-			  if(count($getparam)) {
-			  $p = '$param'.implode(',$param',array_keys($getparam)).'';
-			  } else $p = '';
-			  eval('$MODUL = new '.$class_name.'('.$p.');'); */
-			if ($MODUL)
+
+			if(!class_exists($class_name,false)) {
+				if((isset($_CFG['modulprm'][$name]) or $force) and $file = _modulExists($class_name)) {
+					// !$_CFG['modulprm'][$name]['pid']) 
+					require_once($file);
+				}
+			}
+
+			if(class_exists($class_name,false)) {
+				$getparam = array_slice(func_get_args(), 2);
+				$obj = new ReflectionClass($class_name);
+				//$pClass = $obj->getParentClass();
+				$MODUL = $obj->newInstanceArgs($getparam);
+				/* extract($getparam,EXTR_PREFIX_ALL,'param');
+				  if(count($getparam)) {
+				  $p = '$param'.implode(',$param',array_keys($getparam)).'';
+				  } else $p = '';
+				  eval('$MODUL = new '.$class_name.'('.$p.');'); */
+				if ($MODUL)
+					return true;
+			}
+			elseif (isset($_CFG['modulprm'][$name]) and $_CFG['modulprm'][$name]['pid']) {
+				$moduls = array($name);
+				while ($_CFG['modulprm'][$name]['pid'])
+				{
+					$moduls[] = $_CFG['modulprm'][$name]['pid'];
+					$name = $_CFG['modulprm'][$name]['pid'];
+				}
+
+				$cnt = count($moduls);
+
+				_new_class($moduls[$cnt-1], $MODUL);
+
+				for ($i=$cnt-2; $i>=0; $i--)
+				{
+					$MODUL = $MODUL->childs[$moduls[$i]];
+				}
 				return true;
-		}
-		elseif (isset($_CFG['modulprm'][$name]) and $_CFG['modulprm'][$name]['pid'] and is_null($OWNER)) {
-			$moduls = array($name);
-			while ($_CFG['modulprm'][$name]['pid'])
-			{
-				$moduls[] = $_CFG['modulprm'][$name]['pid'];
-				$name = $_CFG['modulprm'][$name]['pid'];
 			}
-
-			$cnt = count($moduls);
-
-			_new_class($moduls[$cnt-1], $MODUL);
-
-			for ($i=$cnt-2; $i>=0; $i--)
-			{
-				$MODUL = $MODUL->childs[$moduls[$i]];
-			}
-			return true;
-		} else
-			trigger_error('Can`t init `' . $class_name . '` modul ', E_USER_WARNING);
+			else
+				trigger_error('Can`t init `' . $class_name . '` modul ', E_USER_WARNING);
 	}
 	return false;
 }
@@ -610,7 +616,7 @@ function __autoload($class_name) { //автозагрузка модулей
  * @param string $class_name
  * @return string
  */
-function _modulExists($class_name,&$OWNER = NULL) {
+function _modulExists($class_name) {
 	global $_CFG;
 	$class_name = explode('_', $class_name);
 
@@ -624,9 +630,62 @@ function _modulExists($class_name,&$OWNER = NULL) {
 	if (file_exists($file))
 		return $file;
 
-	$ret = static_main::includeModulFile($class_name[0],$OWNER);
+	$ret = static_main::includeModulFile($class_name[0]);
 	return $ret['file'];
 }
+
+
+	/**
+	* Нахождение фаила содержащего класс модуля
+	* @Mid - модуль
+	*/
+	function includeModulFile($Mid, &$OWN=NULL) {
+		global $_CFG;
+		$Pid = NULL;
+		$ret = array('type' => 0, 'path' => '', 'file' => false);
+		foreach ($_CFG['modulinc'] as $k => $r) {
+			$ret['type'] = $k;
+			$ret['path'] = $Mid . '.class/' . $Mid . '.class.php';
+			$ret['file'] = $r['path'] . $ret['path'];
+
+			if (is_file($ret['file'])) {
+				$ret['path'] = $k . ':' . $ret['path'];
+				//include_once($ret['file']);
+				return $ret;
+			}
+			$tempOWN = &$OWN;
+			while ($tempOWN and $tempOWN->_cl) {
+				$Pid = $tempOWN->_cl;
+				$ret['type'] = 5;
+
+				$ret['path'] = $Pid . '.class/' . $Mid . '.childs.php';
+				$ret['file'] = $r['path'] . $ret['path'];
+				if (is_file($ret['file'])) {
+					$ret['path'] = $k . ':' . $ret['path'];
+					//include_once($ret['file']);
+					return $ret;
+				}
+
+				$ret['path'] = $Pid . '.class/' . $Pid . '.childs.php';
+				$ret['file'] = $r['path'] . $ret['path'];
+				if (is_file($ret['file'])) {
+					$ret['path'] = $k . ':' . $ret['path'];
+					//include_once($ret['file']);
+					return $ret;
+				}
+
+				$ret['path'] = $Pid . '.class/' . $Pid . '.class.php';
+				$ret['file'] = $r['path'] . $ret['path'];
+				if (is_file($ret['file'])) {
+					$ret['path'] = $k . ':' . $ret['path'];
+					//include_once($ret['file']);
+					return $ret;
+				}
+				$tempOWN = &$tempOWN->owner;
+			}
+		}
+		return array('type' => false, 'path' => false, 'file' => false);
+	}
 
 
 if (!defined('PHP_VERSION_ID')) {

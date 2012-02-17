@@ -2543,7 +2543,7 @@ class modul_child extends ArrayObject {
 				require_once $this->modul_obj->child_path[$clname];
 			}
 			$modul_child = NULL;
-			if (!_new_class($clname, $modul_child, $this->modul_obj))
+			if (!_new_class($clname, $modul_child))
 				return false;
 			//$this->modul_obj->childs[$index] = $modul_child;
 			return $modul_child;

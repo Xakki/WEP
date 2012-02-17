@@ -165,58 +165,6 @@ class static_main {
 			return $_CFG['sql']['dbpref'] . $name;
 	}
 
-	/**
-	* Нахождение фаила содержащего класс модуля
-	* @Mid - модуль
-	*/
-	static function includeModulFile($Mid, &$OWN=NULL) {
-		global $_CFG;
-		$Pid = NULL;
-		$ret = array('type' => 0, 'path' => '', 'file' => false);
-		foreach ($_CFG['modulinc'] as $k => $r) {
-			$ret['type'] = $k;
-			$ret['path'] = $Mid . '.class/' . $Mid . '.class.php';
-			$ret['file'] = $r['path'] . $ret['path'];
-
-			if (is_file($ret['file'])) {
-				$ret['path'] = $k . ':' . $ret['path'];
-				//include_once($ret['file']);
-				return $ret;
-			}
-			$tempOWN = &$OWN;
-			while ($tempOWN and $tempOWN->_cl) {
-				$Pid = $tempOWN->_cl;
-				$ret['type'] = 5;
-
-				$ret['path'] = $Pid . '.class/' . $Mid . '.childs.php';
-				$ret['file'] = $r['path'] . $ret['path'];
-				if (is_file($ret['file'])) {
-					$ret['path'] = $k . ':' . $ret['path'];
-					//include_once($ret['file']);
-					return $ret;
-				}
-
-				$ret['path'] = $Pid . '.class/' . $Pid . '.childs.php';
-				$ret['file'] = $r['path'] . $ret['path'];
-				if (is_file($ret['file'])) {
-					$ret['path'] = $k . ':' . $ret['path'];
-					//include_once($ret['file']);
-					return $ret;
-				}
-
-				$ret['path'] = $Pid . '.class/' . $Pid . '.class.php';
-				$ret['file'] = $r['path'] . $ret['path'];
-				if (is_file($ret['file'])) {
-					$ret['path'] = $k . ':' . $ret['path'];
-					//include_once($ret['file']);
-					return $ret;
-				}
-				$tempOWN = &$tempOWN->owner;
-			}
-		}
-		return array('type' => false, 'path' => false, 'file' => false);
-	}
-
 	/*
 	  Проверка доступа пол-ля к модулю
 	 */
@@ -513,7 +461,6 @@ class static_main {
 	*/
 	static function redirectLink($text,$name='Источник',$dolink=0) {
 		global $_CFG;
-		//if(!$_CFG['site']['redirectForRobots'] and $_CFG['robot']) return $text;
 
 		$cont = array();
 		if($dolink==2)
@@ -549,7 +496,11 @@ class static_main {
 		global $_CFG;
 		// TODO : Проверка на зацикленный редирект
 		//301 - перемещение на посточнную основу
-		if($_CFG['wep']['debugmode']<3) {
+		if($_SERVER['HTTP_REFERER']==$link) {
+			header("HTTP/1.0 400 Bad Request");
+			die('Warning!!! Self redirect for <a href="'.$link.'">'.$link.'</a>');
+		}
+		elseif($_CFG['wep']['debugmode']<3) {
 			if($NO!==false)
 				header('HTTP/1.0 '.$NO);
 			header("Location: ".$link);

@@ -128,7 +128,7 @@ final class modulprm_class extends kernel_extends {
 							'_parent' => '',
 							'_type' => $k
 						);
-						$ret = static_main::includeModulFile($entry);
+						$ret = includeModulFile($entry);
 						if($ret['file']) require_once($ret['file']);
 						$resData = array();
 						if(class_exists($entry. '_class',false)) {
@@ -215,7 +215,7 @@ final class modulprm_class extends kernel_extends {
 					}
 				}
 				elseif (isset($this->data[$r['_entry']]) and !isset($r['disabled'])) {
-					if (!_new_class($r['_entry'], $MODUL, $this->null, true)) {
+					if (!_new_class($r['_entry'], $MODUL, true)) {
 						$mess[] = array('error', 'Ошибка запуска модуля `' . $r['_entry'] . '`');
 						$res = -1;
 						continue;
@@ -396,7 +396,7 @@ final class modulprm_class extends kernel_extends {
 		$this->modulgrpDump();
 		try { // ловец снов
 			$fpath = '';
-			$ret = static_main::includeModulFile($Mid, $OWN);
+			$ret = includeModulFile($Mid, $OWN);
 			if ($ret['file']) {
 				$fpath = $ret['file'];
 				$path = $ret['path'];
@@ -406,7 +406,7 @@ final class modulprm_class extends kernel_extends {
 			if ($fpath) {
 				include_once($fpath);
 
-				if (_new_class($Mid, $MODUL, $OWN)) {
+				if (_new_class($Mid, $MODUL)) {
 					if ($OWN and (!isset($this->data[$Mid]) or $this->data[$Mid]['parent_id'] != $OWN->_cl))
 						$this->fld_data['parent_id'] = $OWN->_cl;
 					if (!isset($this->data[$Mid]) or !$this->data[$Mid]['name'])// or $this->data[$Mid]['name'] != $MODUL->caption

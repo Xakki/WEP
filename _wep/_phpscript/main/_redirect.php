@@ -10,4 +10,9 @@ if(isset($_GET['url']) and $_GET['url']!=''){
 }
 else
 	$url = 'http://'.$_SERVER['HTTP_HOST'];
-header('Location: '.$url);
+
+if($_CFG['site']['redirectPlugin']) {
+	if(_new_class('redirect',$MODUL))
+		$MODUL->addRedirect($url);
+}
+//header('Location: '.$url);

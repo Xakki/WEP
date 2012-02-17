@@ -63,7 +63,7 @@ $_CFGFORM['site'] = array(// для сайта
 	'worktime' => array('type'=>'checkbox','caption'=>'Включить режим "Технический перерыв"', 'css' => 'fblock hsite', 'style' => 'display:none;'),
 	'work_title' => array('type'=>'text','caption'=>'Заголовок для режима "Технический перерыв"', 'css' => 'fblock hsite', 'style' => 'display:none;'),
 	'work_text' => array('type'=>'text','caption'=>'Текст для режима "Технический перерыв"', 'css' => 'fblock hsite', 'style' => 'display:none;'),
-	//'redirectForRobots' => array('type'=>'checkbox','caption'=>'Делать ссылки для Ботов', 'css' => 'fblock hsite', 'style' => 'display:none;'),
+	'redirectPlugin' => array('type'=>'checkbox','caption'=>'Регистрировать переходы по ссылкам?', 'css' => 'fblock hsite', 'style' => 'display:none;'),
 );
 
 $_CFGFORM['memcache'] = array(
