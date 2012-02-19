@@ -71,8 +71,12 @@ class static_form {
 				else
 					$value = '\''.$_this->SqlEsc($value).'\'';
 			}
-			if($flag_update)
-				$data[$key] = '`'.$key.'` = VALUES(`'.$key.'`)';
+			if($flag_update) {
+				if(!isset($_this->fields[$key]['noquote']))
+					$data[$key] = '`'.$key.'` = VALUES(`'.$key.'`)';
+				else
+					$data[$key] = '`'.$key.'` = '.$_this->fld_data[$key];
+			}
 		}
 		if ($_this->mf_timecr) 
 			$_this->fld_data['mf_timecr'] = $_this->_CFG['time'];
@@ -91,9 +95,10 @@ class static_form {
 		if($flag_update) { // параметр передается в ф. _addUp() - обновление данных если найдена конфликтная запись
 			$q .= ' ON DUPLICATE KEY UPDATE '.implode(', ',$data);
 		}
-		$result=$_this->SQL->execSQL($q);
-		if($result->err) return false;
 
+		$result=$_this->SQL->execSQL($q);
+
+		if($result->err) return false;
 		// get last id if not used nick
 		if (!$_this->mf_use_charid && !isset($_this->fld_data['id']))
 			$_this->id = (int)$result->lastId();

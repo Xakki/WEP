@@ -215,7 +215,7 @@ final class modulprm_class extends kernel_extends {
 					}
 				}
 				elseif (isset($this->data[$r['_entry']]) and !isset($r['disabled'])) {
-					if (!_new_class($r['_entry'], $MODUL, true)) {
+					if (!_new_class($r['_entry'], $MODUL, $this->null, true)) {
 						$mess[] = array('error', 'Ошибка запуска модуля `' . $r['_entry'] . '`');
 						$res = -1;
 						continue;
@@ -406,7 +406,7 @@ final class modulprm_class extends kernel_extends {
 			if ($fpath) {
 				include_once($fpath);
 
-				if (_new_class($Mid, $MODUL)) {
+				if (_new_class($Mid, $MODUL, $OWN)) {
 					if ($OWN and (!isset($this->data[$Mid]) or $this->data[$Mid]['parent_id'] != $OWN->_cl))
 						$this->fld_data['parent_id'] = $OWN->_cl;
 					if (!isset($this->data[$Mid]) or !$this->data[$Mid]['name'])// or $this->data[$Mid]['name'] != $MODUL->caption

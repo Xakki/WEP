@@ -65,6 +65,7 @@
 		exit();
 	}
 	elseif(isset($_GET['_php']) and $_GET['_php']=='config') {
+		$_GET[$_CFG['wep']['_showallinfo']] = 0;
 		//Применяется для CKFinder для авторизации по сессии
 		require_once($_CFG['_PATH']['core'].'html.php');	/**отправляет header и печатает страничку*/
 		session_go();
@@ -76,27 +77,29 @@
 	$rid = 0;
 
 //INCLUDE*****************
-	_new_class('pg',$PGLIST);
+	if(_new_class('pg',$PGLIST)) {
 		if (!isset($_REQUEST['pageParam'])) 
 			$_REQUEST['pageParam'] = "index";
 		if(is_array($_REQUEST['pageParam'])) $_REQUEST['pageParam'] = implode('/',$_REQUEST['pageParam']);
 		$_REQUEST['pageParam'] = explode('/',trim($_REQUEST['pageParam'],'/'));
 
-//if($_SESSION['_showallinfo']) {print('main1 = '.(getmicrotime()-$main1time).'<hr/>');$main2time = getmicrotime();}
-	if ($PGLIST->config['auto_auth']) {
-		static_main::userAuth();
-	}
+		//if($_SESSION['_showallinfo']) {print('main1 = '.(getmicrotime()-$main1time).'<hr/>');$main2time = getmicrotime();}
+			if ($PGLIST->config['auto_auth']) {
+				static_main::userAuth();
+			}
 
-	$PGLIST->display();
+			$PGLIST->display();
 
-//if($_SESSION['_showallinfo']) print('main = '.(getmicrotime()-$main2time).'<hr/>'); // для отладки
-        
-   if (!$PGLIST->config['auto_include'])
-      $_CFG['fileIncludeOption'] = array(); // чтобы автоматом не подключались стили и скрптыв
-/*
-	if(!isset($_SESSION['showIEwarning'])) $_SESSION['showIEwarning']=0;
-	if($HTML->_fTestIE('MSIE 6') and $_SESSION['showIEwarning']<3) {
-		$_SESSION['showIEwarning']++;
-		//$_tpl['script'] .='<!--[if IE 6]><script type="text/javascript"></script><![endif]-->';
-	}
-*/
+		//if($_SESSION['_showallinfo']) print('main = '.(getmicrotime()-$main2time).'<hr/>'); // для отладки
+				  
+			if (!$PGLIST->config['auto_include'])
+				$_CFG['fileIncludeOption'] = array(); // чтобы автоматом не подключались стили и скрптыв
+		/*
+			if(!isset($_SESSION['showIEwarning'])) $_SESSION['showIEwarning']=0;
+			if($HTML->_fTestIE('MSIE 6') and $_SESSION['showIEwarning']<3) {
+				$_SESSION['showIEwarning']++;
+				//$_tpl['script'] .='<!--[if IE 6]><script type="text/javascript"></script><![endif]-->';
+			}
+		*/
+	} else 
+		static_main::downSite('Система ещё не установлена','Модуль "Страницы" не установлен или отключен.');

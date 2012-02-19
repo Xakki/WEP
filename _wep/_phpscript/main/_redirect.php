@@ -15,4 +15,4 @@ if($_CFG['site']['redirectPlugin']) {
 	if(_new_class('redirect',$MODUL))
 		$MODUL->addRedirect($url);
 }
-//header('Location: '.$url);
+header('Location: '.$url);

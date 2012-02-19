@@ -5,18 +5,19 @@
  */
 abstract class kernel_extends {
 
-	function __construct($owner = NULL) {
+	function __construct($owner = NULL, $_forceLoad=false) {
 		global $_CFG;
 		//FB::info($_CFG);
-		$this->_CFG = true; // баг ПХП
+		$this->_CFG = true; // bug fix for link
 		$this->_CFG = &$_CFG; //Config
 		$this->SQL_CFG = $this->_CFG['sql'];
-
-		$this->owner = true;
+		$this->_forceLoad = $_forceLoad;// если true - Принудительная загрузка не подключенного класса
+		$this->owner = true; // bug fix  for link
 		if (is_object($owner) and isset($owner->fields))
 			$this->owner = &$owner; //link to owner class
 		else
 			$this->owner = NULL;
+
 		$this->_set_features(); // настройки модуля
 
 		if ($this->singleton == true)
@@ -2543,8 +2544,11 @@ class modul_child extends ArrayObject {
 				require_once $this->modul_obj->child_path[$clname];
 			}
 			$modul_child = NULL;
-			if (!_new_class($clname, $modul_child))
+			if (!_new_class($clname, $modul_child,$this->modul_obj,$this->modul_obj->_forceLoad)) {
+				exit('Cant find child class');
 				return false;
+			}
+			//
 			//$this->modul_obj->childs[$index] = $modul_child;
 			return $modul_child;
 		} else {

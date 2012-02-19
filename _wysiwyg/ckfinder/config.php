@@ -2,7 +2,7 @@
 	global $_CFG;
 	$_CFG['_PATH']['path'] = dirname(dirname(dirname(dirname(dirname(dirname($_SERVER['SCRIPT_FILENAME'])))))).'/';
 	$_GET['_php']='config';
-	$res = require_once($_CFG['_PATH']['path'].'/index.php');
+	$res = require_once($_CFG['_PATH']['path'].'index.php');
  
 /*
  * ### CKFinder : Configuration File - Basic Instructions
@@ -220,13 +220,17 @@ Available options are: G, M, K (case insensitive).
 Example: 'maxSize' => "8M",
 */
 $config['DefaultResourceTypes'] = '';
+if(isset($_SESSION['wswg']['AE']))
+	$allowedExtensions = $_SESSION['wswg']['AE'];
+else
+	$allowedExtensions = '7z,aiff,asf,avi,bmp,csv,doc,docx,fla,flv,gif,gz,gzip,jpeg,jpg,mid,mov,mp3,mp4,mpc,mpeg,mpg,ods,odt,pdf,png,ppt,pptx,pxd,qt,ram,rar,rm,rmi,rmvb,rtf,sdc,sitd,swf,sxc,sxw,tar,tgz,tif,tiff,txt,vsd,wav,wma,wmv,xls,xlsx,zip';
 
 $config['ResourceType'][] = Array(
 		'name' => 'Files',				// Single quotes not allowed
 		'url' => $baseUrl . 'files',
 		'directory' => $baseDir . 'files',
 		'maxSize' => $MSize,
-		'allowedExtensions' => '7z,aiff,asf,avi,bmp,csv,doc,docx,fla,flv,gif,gz,gzip,jpeg,jpg,mid,mov,mp3,mp4,mpc,mpeg,mpg,ods,odt,pdf,png,ppt,pptx,pxd,qt,ram,rar,rm,rmi,rmvb,rtf,sdc,sitd,swf,sxc,sxw,tar,tgz,tif,tiff,txt,vsd,wav,wma,wmv,xls,xlsx,zip',
+		'allowedExtensions' => $allowedExtensions,
 		'deniedExtensions' => '');
 
 $config['ResourceType'][] = Array(
@@ -242,7 +246,7 @@ $config['ResourceType'][] = Array(
 		'url' => $baseUrl . 'flash',
 		'directory' => $baseDir . 'flash',
 		'maxSize' => $MSize,
-		'allowedExtensions' => 'swf,flv',
+		'allowedExtensions' => 'swf',
 		'deniedExtensions' => '');
 
 /*
@@ -265,7 +269,8 @@ If CheckDoubleExtension is enabled, each part of the file name after a dot is
 checked, not only the last part. In this way, uploading foo.php.rar would be
 denied, because "php" is on the denied extensions list.
 */
-$config['CheckDoubleExtension'] = true;
+//$config['CheckDoubleExtension'] = true;
+$config['CheckDoubleExtension'] = false;
 
 /*
 If you have iconv enabled (visit http://php.net/iconv for more information),

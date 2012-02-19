@@ -60,7 +60,7 @@ class content_class extends kernel_extends {
 		$this->fields_form['pg'] = array('type' => 'ckedit', 'caption' => 'Text',
 			'mask' => array('fview' => 1, 'max' => 500000),
 			'paramedit' => array(
-				'CKFinder' => 1,
+				'CKFinder' => array('allowedExtensions'=>''), // разрешаем загрузку любых фаилов
 				'extraPlugins' => "'cntlen,syntaxhighlight,timestamp'",
 				'toolbar' => 'Page',
 				));
