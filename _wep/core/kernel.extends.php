@@ -154,6 +154,7 @@ abstract class kernel_extends {
 		$this->mf_statistic = false; // TOOLS показывать  статистику по дате добавления
 		$this->cf_childs = false; // TOOLS true - включить управление подключение подмодулей в настройках модуля
 		$this->cf_reinstall = false; // TOOLS
+		$this->cf_tools = array(); // TOOLS button, function
 		$this->includeJStoWEP = false; // подключать ли скрипты для формы через настройки
 		$this->includeCSStoWEP = false; // подключать ли стили для формы через настройки
 		$this->singleton = true; // класс-одиночка
@@ -1445,6 +1446,20 @@ abstract class kernel_extends {
 				'css' => 'wepSuperGroup',
 				'style' => (!$sg ? 'display:none;' : '')
 			);
+
+			// TOOLS
+			if(count($this->cf_tools)) {
+				foreach($this->cf_tools as $r) {
+					$PARAM['topmenu'][$r['func']] = array(
+						'href' => array('_type' => 'tools', '_func' => $r['func']),
+						'caption' => $r['name'],
+						//'sel' => 0,
+						'type' => 'tools',
+						'css' => $r['func'],
+						//'style' => (!$sg ? 'display:none;' : '')
+					);
+				}
+			}
 
 
 			// Удаление через форму

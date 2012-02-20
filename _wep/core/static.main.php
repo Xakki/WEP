@@ -509,11 +509,11 @@ class static_main {
 		global $_CFG;
 		// TODO : Проверка на зацикленный редирект
 		//301 - перемещение на посточнную основу
-		if($_SERVER['HTTP_REFERER']==$link) {
+		/*if($_SERVER['HTTP_REFERER']==$link) {
 			header("HTTP/1.0 400 Bad Request");
 			die('Warning!!! Self redirect for <a href="'.$link.'">'.$link.'</a>');
 		}
-		elseif($_CFG['wep']['debugmode']<3) {
+		else*/if($_CFG['wep']['debugmode']<3) {
 			if($NO!==false)
 				header('HTTP/1.0 '.$NO);
 			header("Location: ".$link);
@@ -678,6 +678,7 @@ function _setcookie($name, $value='', $expire='', $path='', $domain='', $secure=
 	if ($secure == '')
 		$secure = $_CFG['session']['secure'];
 	setcookie($name, $value, $expire, $path, $domain, $secure);
+	$_COOKIE[$name] = $value;
 }
 
 /**
