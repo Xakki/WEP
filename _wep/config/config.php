@@ -451,7 +451,11 @@ session_name($_CFG['session']['name']);
 session_set_cookie_params($_CFG['session']['expire'], $_CFG['session']['path'], $_CFG['session']['domain'], $_CFG['session']['secure']);
 ini_set('session.cookie_domain', $_CFG['session']['domain']);
 
-if(!isset($_COOKIE['wep123456']))
-	_setcookie('wep123456',base64_encode($_SERVER['HTTP_REFERER']),(time() + 86400));
 
 include $_CFG['_PATH']['core'] . 'static.main.php';
+
+if(!isset($_COOKIE['wep123456'])) {
+	if(!isset($_SERVER['HTTP_REFERER']))
+		$_SERVER['HTTP_REFERER'] = '';
+	_setcookie('wep123456',base64_encode($_SERVER['HTTP_REFERER']),(time() + 86400));
+}
