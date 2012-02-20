@@ -457,5 +457,5 @@ include $_CFG['_PATH']['core'] . 'static.main.php';
 if(!isset($_COOKIE['wep123456'])) {
 	if(!isset($_SERVER['HTTP_REFERER']))
 		$_SERVER['HTTP_REFERER'] = '';
-	_setcookie('wep123456',base64_encode($_SERVER['HTTP_REFERER']),(time() + 86400));
+	_setcookie('wep123456',base64encode($_SERVER['HTTP_REFERER']),(time() + 86400));
 }

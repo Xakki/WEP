@@ -849,7 +849,7 @@ class pg_class extends kernel_extends {
 		if ($html and isset($this->dataCash[$id]['href']) and $this->dataCash[$id]['href'] != '') {
 			$href = $this->dataCash[$id]['href'];
 			if (strstr($href, 'http://'))
-				$href = '_redirect.php?url=' . base64_encode($href);
+				$href = '_redirect.php?url=' . base64encode($href);
 		}
 		else {
 			$href = $id;

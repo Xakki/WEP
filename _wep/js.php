@@ -21,7 +21,7 @@
 
 	$result = static_main::userAuth(); // запскает сессию и проверяет авторизацию
 	if(!$result[1]) {
-		//header('login.php?ref='.base64_encode($_SERVER['REQUEST_URI']));
+		//header('login.php?ref='.base64encode($_SERVER['REQUEST_URI']));
 		$GLOBALS['_RESULT']['html'] = 'Вы не авторизованы , либо доступ закрыт.';
 		exit($GLOBALS['_RESULT']['html']);
 	}

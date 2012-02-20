@@ -484,21 +484,21 @@ class static_main {
 		if(count($cont[0])) {
 			$temp = array();
 			foreach($cont[0] as $rc) {
-				if(substr($rc,0,2)=='="') {
+				if(mb_substr($rc,0,2)=='="') {
 					$temp[] = $rc;continue;
 				}
 				
-				if(strpos($rc,'href="')!==false)
-					$temp[] = 'rel="nofollow" target="_blank" href="'.$_CFG['_HREF']['BH'].'_redirect.php?url='.base64_encode(str_replace('href="','',$rc));
+				if(mb_strpos($rc,'href="')!==false)
+					$temp[] = 'rel="nofollow" target="_blank" href="'.$_CFG['_HREF']['BH'].'_redirect.php?url='.base64encode(str_replace('href="','',$rc));
 				elseif($dolink==0) {
 					if(!$name)
 						$tn = trim(str_replace(array('href="','http://','https://','www.'),'',$rc),' /');
 					else
 						$tn = $name;
-					$temp[] = '<a href="'.$_CFG['_HREF']['BH'].'_redirect.php?url='.(base64_encode($rc)).'" rel="nofollow" target="_blank">'.$tn.'</a>';
+					$temp[] = '<a href="'.$_CFG['_HREF']['BH'].'_redirect.php?url='.(base64encode($rc)).'" rel="nofollow" target="_blank">'.$tn.'</a>';
 				}
 				else
-					$temp[] = $_CFG['_HREF']['BH'].'_redirect.php?url='.(base64_encode($rc));
+					$temp[] = $_CFG['_HREF']['BH'].'_redirect.php?url='.(base64encode($rc));
 			}
 			$text = str_replace($cont[0],$temp,$text);
 		}
@@ -991,4 +991,13 @@ function _strpos($haystack, $needle, $offset=0) {
 		return mb_strpos($haystack, $needle, $offset);
 	else
 		return strpos($haystack, $needle, $offset);
+}
+
+function base64encode($txt) {
+	$txt = base64_encode($txt);
+	return str_replace(array('+','/'),array('-','_'),$txt);
+}
+function base64decode($txt) {
+	$txt = str_replace(array('-','_'),array('+','/'),$txt);
+	return base64_decode($txt);
 }

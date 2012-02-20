@@ -1284,14 +1284,14 @@ class static_form {
 			//$ivsize = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
 			//$iv = mcrypt_create_iv($ivsize, MCRYPT_RAND);
 			$crypttext = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $hash_key, $word, MCRYPT_MODE_ECB);
-			$crypttext = base64_encode($crypttext);
+			$crypttext = base64encode($crypttext);
 		} 
 		else // если нет даже openssl значит и так сойдёт!
 			$crypttext = $word;
 		// Запись в куки зашифрованного кода
 		_setcookie('chash', $crypttext, (time() + 1800));
 		// Где хранится хэшкод (фаил доступен только на сервере)
-		_setcookie('pkey', base64_encode($_CFG['_FILE']['HASH_KEY']), (time() + 1800));
+		_setcookie('pkey', base64encode($_CFG['_FILE']['HASH_KEY']), (time() + 1800));
 	}
 	
 	/**
@@ -1306,8 +1306,8 @@ class static_form {
 			if(function_exists('openssl_encrypt')) {
 				$word = openssl_decrypt($_COOKIE['chash'],'aes-128-cbc',$hash_key,false,"1234567812345678");
 			} elseif(function_exists('mcrypt_encrypt')) {
-				$word = base64_decode($_COOKIE['chash']);
-				$word = mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $hash_key, base64_decode($_COOKIE['chash']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND));
+				$word = base64decode($_COOKIE['chash']);
+				$word = mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $hash_key, base64decode($_COOKIE['chash']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND));
 			}else
 				$word = $_COOKIE['chash'];
 			return $word;

@@ -33,14 +33,14 @@ $dafault_read = array(
 
 $data = 0;
 if(isset($_COOKIE['chash']) and $_COOKIE['chash'] and $_COOKIE['pkey']) {
-	$hash_key = base64_decode($_COOKIE['pkey']);
+	$hash_key = base64_decode(str_replace(array('-','_'),array('+','/'),$_COOKIE['pkey']));
 	$hash_key = file_get_contents($hash_key).$_SERVER['REMOTE_ADDR'];
 	$hash_key = md5($hash_key);
 	if(function_exists('openssl_encrypt')) {
 		$data = openssl_decrypt($_COOKIE['chash'],'aes-128-cbc',$hash_key,false,"1234567812345678");
 	} 
 	elseif(function_exists('mcrypt_encrypt')) {
-		$data = base64_decode($_COOKIE['chash']);
+		$data = base64_decode(str_replace(array('-','_'),array('+','/'),$_COOKIE['chash']));
 		//$ivsize = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
 		//$iv = mcrypt_create_iv($ivsize, MCRYPT_RAND);
 		$data = mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $hash_key, $data, MCRYPT_MODE_ECB);
