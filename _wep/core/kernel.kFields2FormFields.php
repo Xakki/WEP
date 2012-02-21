@@ -213,16 +213,19 @@
 						$fckscript .= $kc.' : '.$rc.',';
 					$fckscript .= '\'temp\' : \'temp\' });';
 
-					if(isset($ckedit['CKFinder']) and $ckedit['CKFinder']) {
+					if(isset($ckedit['CKFinder'])) {
 						$fckscript = ' function ckf_'.$k.'() { CKFinder.setupCKEditor(editor_'.$k.',\'/'.$this->_CFG['PATH']['WSWG'].'ckfinder/\');} '.$fckscript;
 						$fckscript .= ' ckf_'.$k.'();';
 //if(!CKFinder) $.include(\''.$this->_CFG['_HREF']['WSWG'].'ckfinder/ckfinder.js\',ckf_'.$k.'()); else 
 						$_tpl['script']['ckfinder.js'] = array($this->_CFG['_HREF']['WSWG'].'ckfinder/ckfinder.js');
+						if(isset($ckedit['CKFinder']['allowedExtensions']) and $_SESSION)
+							$_SESSION['wswg']['AE'] = $ckedit['CKFinder']['allowedExtensions'];
 					}
 					$_tpl['script']['ckeditor.ckf_'.$k] = $fckscript.'}';
 					if(!isset($fields[$k.'_ckedit']['value']) or $fields[$k.'_ckedit']['value']=='' or $fields[$k.'_ckedit']['value']=='1')
 						$_tpl['onload'] .= ' cke_'.$k.'();';
 //if(!window.CKEDITOR) $.include(\''.$this->_CFG['_HREF']['WSWG'].'ckeditor/ckeditor.js\',cke_'.$k.'); else 
+
 				} elseif($k=='mf_ipcreate') {
 					$r['value'] = long2ip($r['value']);
 				}

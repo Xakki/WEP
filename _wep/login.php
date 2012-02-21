@@ -8,7 +8,7 @@
 	$ref= $_CFG['_HREF']['BH'].$_CFG['PATH']['wepname'];
 	if(isset($_REQUEST['ref']) and $_REQUEST['ref']!='') {
 		if(substr($_REQUEST['ref'],0,1)!='/' and !strstr($_REQUEST['ref'],'.'))
-			$ref = base64_decode($_REQUEST['ref']);
+			$ref = base64decode($_REQUEST['ref']);
 		else
 			$ref = $_REQUEST['ref'];
 		if(strstr($ref,'login.php') or strstr($ref,'install.php'))

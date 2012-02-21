@@ -2,11 +2,13 @@
 
 
 	function tpl_formtools(&$data) {
+		if(!is_array($data))
+			return $data;
 		global $HTML,$_tpl,$_CFG;
 		$html = '';
 		$_CFG['fileIncludeOption']['form'] = 1;
 		if(isset($data['path']) and count($data['path'])) {
-			include_once($this->_cDesignPath.'/php/path.php');
+			include_once($HTML->_cDesignPath.'/php/path.php');
 			$html = tpl_path($data['path']);// PATH
 		}
 		$html .= '<span class="bottonimg imgdel" style="float: right;" onclick="$(this).parent().hide();">EXIT</span><div align="center" class="divform" style="min-width: 400px;">';

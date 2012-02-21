@@ -1,4 +1,13 @@
 <?php
+/*
+  Функция завершения работы скрипта
+ */
+include $_CFG['_PATH']['core'] . 'observer.php';
+function shutdown_function() {
+	observer::notify_observers('shutdown_function');
+}
+register_shutdown_function('shutdown_function'); // Запускается первым при завершении скрипта
+
 
 class static_main {
 
@@ -165,58 +174,6 @@ class static_main {
 			return $_CFG['sql']['dbpref'] . $name;
 	}
 
-	/**
-	* Нахождение фаила содержащего класс модуля
-	* @Mid - модуль
-	*/
-	static function includeModulFile($Mid, &$OWN=NULL) {
-		global $_CFG;
-		$Pid = NULL;
-		$ret = array('type' => 0, 'path' => '', 'file' => false);
-		foreach ($_CFG['modulinc'] as $k => $r) {
-			$ret['type'] = $k;
-			$ret['path'] = $Mid . '.class/' . $Mid . '.class.php';
-			$ret['file'] = $r['path'] . $ret['path'];
-
-			if (is_file($ret['file'])) {
-				$ret['path'] = $k . ':' . $ret['path'];
-				//include_once($ret['file']);
-				return $ret;
-			}
-			$tempOWN = &$OWN;
-			while ($tempOWN and $tempOWN->_cl) {
-				$Pid = $tempOWN->_cl;
-				$ret['type'] = 5;
-
-				$ret['path'] = $Pid . '.class/' . $Mid . '.childs.php';
-				$ret['file'] = $r['path'] . $ret['path'];
-				if (is_file($ret['file'])) {
-					$ret['path'] = $k . ':' . $ret['path'];
-					//include_once($ret['file']);
-					return $ret;
-				}
-
-				$ret['path'] = $Pid . '.class/' . $Pid . '.childs.php';
-				$ret['file'] = $r['path'] . $ret['path'];
-				if (is_file($ret['file'])) {
-					$ret['path'] = $k . ':' . $ret['path'];
-					//include_once($ret['file']);
-					return $ret;
-				}
-
-				$ret['path'] = $Pid . '.class/' . $Pid . '.class.php';
-				$ret['file'] = $r['path'] . $ret['path'];
-				if (is_file($ret['file'])) {
-					$ret['path'] = $k . ':' . $ret['path'];
-					//include_once($ret['file']);
-					return $ret;
-				}
-				$tempOWN = &$tempOWN->owner;
-			}
-		}
-		return array('type' => false, 'path' => false, 'file' => false);
-	}
-
 	/*
 	  Проверка доступа пол-ля к модулю
 	 */
@@ -355,13 +312,17 @@ class static_main {
 		if (!self::_prmUserCheck() or $login) {
 			if ($_CFG['wep']['access']) {
 				if ($login) {
-					_new_class('ugroup', $UGROUP);
-					$result = $UGROUP->authorization($login, $pass);
+					if(_new_class('ugroup', $UGROUP))
+						$result = $UGROUP->authorization($login, $pass);
+					else
+						$result[0] = 'Ugroup modul is off';
 				}
 				elseif(!self::_prmUserCheck() and isset($_COOKIE['remember'])) {
 					if (preg_match("/^[0-9A-Za-z\_]+$/",$_COOKIE['remember'])) {
-						_new_class('ugroup', $UGROUP);
-						$result = $UGROUP->cookieAuthorization();
+						if(_new_class('ugroup', $UGROUP))
+							$result = $UGROUP->cookieAuthorization();
+						else
+							$result[0] = 'Ugroup modul is off';
 					}
 				}
 			}
@@ -513,7 +474,6 @@ class static_main {
 	*/
 	static function redirectLink($text,$name='Источник',$dolink=0) {
 		global $_CFG;
-		//if(!$_CFG['site']['redirectForRobots'] and $_CFG['robot']) return $text;
 
 		$cont = array();
 		if($dolink==2)
@@ -524,21 +484,21 @@ class static_main {
 		if(count($cont[0])) {
 			$temp = array();
 			foreach($cont[0] as $rc) {
-				if(substr($rc,0,2)=='="') {
+				if(mb_substr($rc,0,2)=='="') {
 					$temp[] = $rc;continue;
 				}
 				
-				if(strpos($rc,'href="')!==false)
-					$temp[] = 'rel="nofollow" target="_blank" href="'.$_CFG['_HREF']['BH'].'_redirect.php?url='.base64_encode(str_replace('href="','',$rc));
+				if(mb_strpos($rc,'href="')!==false)
+					$temp[] = 'rel="nofollow" target="_blank" href="'.$_CFG['_HREF']['BH'].'_redirect.php?url='.base64encode(str_replace('href="','',$rc));
 				elseif($dolink==0) {
 					if(!$name)
 						$tn = trim(str_replace(array('href="','http://','https://','www.'),'',$rc),' /');
 					else
 						$tn = $name;
-					$temp[] = '<a href="'.$_CFG['_HREF']['BH'].'_redirect.php?url='.(base64_encode($rc)).'" rel="nofollow" target="_blank">'.$tn.'</a>';
+					$temp[] = '<a href="'.$_CFG['_HREF']['BH'].'_redirect.php?url='.(base64encode($rc)).'" rel="nofollow" target="_blank">'.$tn.'</a>';
 				}
 				else
-					$temp[] = $_CFG['_HREF']['BH'].'_redirect.php?url='.(base64_encode($rc));
+					$temp[] = $_CFG['_HREF']['BH'].'_redirect.php?url='.(base64encode($rc));
 			}
 			$text = str_replace($cont[0],$temp,$text);
 		}
@@ -549,7 +509,11 @@ class static_main {
 		global $_CFG;
 		// TODO : Проверка на зацикленный редирект
 		//301 - перемещение на посточнную основу
-		if($_CFG['wep']['debugmode']<3) {
+		/*if($_SERVER['HTTP_REFERER']==$link) {
+			header("HTTP/1.0 400 Bad Request");
+			die('Warning!!! Self redirect for <a href="'.$link.'">'.$link.'</a>');
+		}
+		else*/if($_CFG['wep']['debugmode']<3) {
 			if($NO!==false)
 				header('HTTP/1.0 '.$NO);
 			header("Location: ".$link);
@@ -657,13 +621,19 @@ class static_main {
 		return $txt;
 	}
 
-	static function downSite() {
+	static function downSite($title=false,$text=false) {
 		global $_CFG;
 		header('HTTP/1.1 503 Service Unavailable');
-		if(!isset($_CFG["site"]["work_text"]) or !$_CFG["site"]["work_text"])
-			$_CFG["site"]["work_text"] = '<h1>Технический перерыв.</h1>';
-		if(!isset($_CFG["site"]["work_title"]) or !$_CFG["site"]["work_title"])
-			$_CFG["site"]["work_title"] = 'Ушёл на базу.';
+		if($title)
+			$_CFG["site"]["work_title"] = $title;
+		elseif(!isset($_CFG["site"]["work_title"]) or !$_CFG["site"]["work_title"])
+			$_CFG["site"]["work_title"] = 'Технический перерыв.';
+
+		if($text)
+			$_CFG["site"]["work_text"] = $text;
+		elseif(!isset($_CFG["site"]["work_text"]) or !$_CFG["site"]["work_text"])
+			$_CFG["site"]["work_text"] = 'Ушёл на базу.';
+
 		if(file_exists($_CFG['_PATH']['phpscript'].'/main/work.html'))
 			$html = file_get_contents($_CFG['_PATH']['phpscript'].'/work.html');
 		else
@@ -673,4 +643,361 @@ class static_main {
 		echo $html;
 		exit();
 	}
+}
+
+
+
+/* SESSION */
+
+function session_go($force=false) { //$force=true - открывает сесиию для не авторизованного пользователя
+	if(isset($_SESSION)) return true;
+	global $_CFG, $SESSION_GOGO;
+	if (!$_CFG['robot'] and (isset($_COOKIE[$_CFG['session']['name']]) or $force)) {
+		if($_CFG['wep']['sessiontype'] == 1) {
+			if(!$SESSION_GOGO){
+				include_once $_CFG['_PATH']['wep_ext'] . 'session.class/session.class.php';
+				$SESSION_GOGO = new session_class();
+			}
+			$SESSION_GOGO->start($force);
+		}else {
+			session_start();
+		}
+		return true;
+	}
+	return false;
+}
+
+function _setcookie($name, $value='', $expire='', $path='', $domain='', $secure='') {
+	global $_CFG;
+	if ($expire == '')
+		$expire = $_CFG['session']['expire'];
+	if ($path == '')
+		$path = $_CFG['session']['path'];
+	if ($domain == '')
+		$domain = $_CFG['session']['domain'];
+	if ($secure == '')
+		$secure = $_CFG['session']['secure'];
+	setcookie($name, $value, $expire, $path, $domain, $secure);
+	$_COOKIE[$name] = $value;
+}
+
+/**
+ * Инициализация модулей
+ */
+function _new_class($name, &$MODUL, &$OWNER=NULL, $_forceLoad = false) {
+	global $_CFG;
+	$MODUL = NULL;
+	static_main::_prmModulLoad();
+	$name = _getExtMod($name);
+	
+	if (isset($_CFG['singleton'][$name])) {
+		$MODUL = $_CFG['singleton'][$name];
+		return true;
+	}
+	elseif(is_null($OWNER) and $_CFG['modulprm'][$name]['pid']) {
+		// кастыль: при обращении к дочерним классам , находяться родители и от него дается ссылка на класс.
+		_new_class($_CFG['modulprm'][$name]['pid'], $MODUL2);
+		$MODUL = $MODUL2->childs[$name];
+		return true;
+	}
+	else {
+		$class_name = $name . "_class";
+
+		if(!class_exists($class_name,false)) {
+			if((isset($_CFG['modulprm'][$name]) or $_forceLoad) and $file = _modulExists($class_name)) {
+				require_once($file);
+			}
+		}
+
+		if(class_exists($class_name,false)) {
+			$getparam = array_slice(func_get_args(), 2);
+			try {
+				$ReflectedClass = new ReflectionClass($class_name);
+				//$pClass = $ReflectedClass->getParentClass();
+				$MODUL = $ReflectedClass->newInstanceArgs((array)$getparam);
+				/* extract($getparam,EXTR_PREFIX_ALL,'param');
+				  if(count($getparam)) {
+				  $p = '$param'.implode(',$param',array_keys($getparam)).'';
+				  } else $p = '';
+				  eval('$MODUL = new '.$class_name.'('.$p.');'); */
+			} catch (LogicException $Exception) {
+				die('Not gonna make it in here...');
+			} catch (ReflectionException $Exception) {
+				die('Your class does not exist!');
+			}
+			if ($MODUL)
+				return true;
+		}
+		elseif (isset($_CFG['modulprm'][$name]) and $_CFG['modulprm'][$name]['pid']) {
+			$moduls = array($name);
+			while ($_CFG['modulprm'][$name]['pid'])
+			{
+				$moduls[] = $_CFG['modulprm'][$name]['pid'];
+				$name = $_CFG['modulprm'][$name]['pid'];
+			}
+
+			$cnt = count($moduls);
+
+			_new_class($moduls[$cnt-1], $MODUL);
+
+			for ($i=$cnt-2; $i>=0; $i--)
+			{
+				$MODUL = $MODUL->childs[$moduls[$i]];
+			}
+			return true;
+		}
+		else{
+			trigger_error('Can`t init `' . $class_name . '` modul ', E_USER_WARNING);
+		}
+	}
+	return false;
+}
+
+function _getChildModul($name, &$MODUL) {
+	global $_CFG;
+
+	static_main::_prmModulLoad();
+	if (isset($_CFG['modulprm'][$name]['pid']) && $_CFG['modulprm'][$name]['pid'] != '')
+	{
+		$moduls = array($name);
+		while (isset($_CFG['modulprm'][$name]['pid']) && $_CFG['modulprm'][$name]['pid'] != '')
+		{
+			$moduls[] = $_CFG['modulprm'][$name]['pid'];
+			$name = $_CFG['modulprm'][$name]['pid'];
+		}
+
+		$cnt = count($moduls);
+
+		_new_class($moduls[$cnt-1], $MODUL);
+		for ($i=$cnt-2; $i>=0; $i--)
+		{
+			$MODUL = $MODUL->childs[$moduls[$i]];
+		}
+	}
+	else
+	{
+		_new_class($name, $MODUL);
+	}
+	if ($MODUL)
+		return true;
+}
+
+function _getExtMod($name) {
+	global $_CFG;
+	//$this->mf_actctrl
+	if (isset($_CFG['modulprm_ext'][$name]) && isset($_CFG['modulprm'][$name]) && !$_CFG['modulprm'][$name]['active'])
+		$name = $_CFG['modulprm_ext'][$name][0];
+	return $name;
+}
+/*
+  Автозагрузка модулей
+ */
+
+function __autoload($class_name) { //автозагрузка модулей
+	if ($file = _modulExists($class_name)) {
+		require_once($file);
+	}
+	if(!class_exists($class_name,false)) {
+		trigger_error('Can`t init `'.$class_name.'` modul ', E_USER_WARNING);
+		//throw new Exception('Can`t init `' . $class_name . '` modul ');
+	}
+}
+
+/**
+ * Проверка существ модуля
+ *
+ * Осторожно! Тут хитрая-оптимизированная логика
+ * @global array $_CFG
+ * @param string $class_name
+ * @return string
+ */
+function _modulExists($class_name) {
+	global $_CFG;
+	$class_name = explode('_', $class_name);
+
+	if (isset($_CFG['modulprm'][$class_name[0]])) {
+		$file = $_CFG['modulprm'][$class_name[0]]['path'];
+		if ($file and file_exists($file))
+			return $file;
+	}
+	
+	$file = $_CFG['_PATH']['core'] . $class_name[0] . (isset($class_name[1]) ? '.' . $class_name[1] : '') . '.php';
+	if (file_exists($file))
+		return $file;
+
+	$ret = includeModulFile($class_name[0]);exit();
+	return $ret['file'];
+}
+
+
+	/**
+	* Нахождение фаила содержащего класс модуля
+	* @Mid - модуль
+	*/
+	function includeModulFile($Mid, &$OWN=NULL) {
+		global $_CFG;
+		$Pid = NULL;
+		$ret = array('type' => 0, 'path' => '', 'file' => false);
+		foreach ($_CFG['modulinc'] as $k => $r) {
+			$ret['type'] = $k;
+			$ret['path'] = $Mid . '.class/' . $Mid . '.class.php';
+			$ret['file'] = $r['path'] . $ret['path'];
+
+			if (is_file($ret['file'])) {
+				$ret['path'] = $k . ':' . $ret['path'];
+				//include_once($ret['file']);
+				return $ret;
+			}
+			if(!is_null($OWN)) {
+				$tempOWN = &$OWN;
+				while (!is_null($tempOWN) and $tempOWN->_cl) {
+					$Pid = $tempOWN->_cl;
+					$ret['type'] = 5;
+
+					$ret['path'] = $Pid . '.class/' . $Mid . '.childs.php';
+					$ret['file'] = $r['path'] . $ret['path'];
+					if (is_file($ret['file'])) {
+						$ret['path'] = $k . ':' . $ret['path'];
+						//include_once($ret['file']);
+						return $ret;
+					}
+
+					$ret['path'] = $Pid . '.class/' . $Pid . '.childs.php';
+					$ret['file'] = $r['path'] . $ret['path'];
+					if (is_file($ret['file'])) {
+						$ret['path'] = $k . ':' . $ret['path'];
+						//include_once($ret['file']);
+						return $ret;
+					}
+
+					$ret['path'] = $Pid . '.class/' . $Pid . '.class.php';
+					$ret['file'] = $r['path'] . $ret['path'];
+					if (is_file($ret['file'])) {
+						$ret['path'] = $k . ':' . $ret['path'];
+						//include_once($ret['file']);
+						return $ret;
+					}
+					$tempOWN = &$tempOWN->owner;
+				}
+			}
+		}
+		return array('type' => false, 'path' => false, 'file' => false);
+	}
+
+
+if (!defined('PHP_VERSION_ID')) {
+	$version = explode('.', PHP_VERSION);
+	define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
+}
+
+/*
+  точное время в милисекундах
+ */
+
+function getmicrotime() {
+	list($usec, $sec) = explode(" ", microtime());
+	return ((float) $usec + (float) $sec);
+}
+
+/*
+  Функция SpiderDetect - принимает $_SERVER['HTTP_USER_AGENT'] и возвращает имя кравлера поисковой системы или false.
+ */
+
+function SpiderDetect($USER_AGENT='') {
+	if (!$USER_AGENT) {
+		if(!isset($_SERVER['HTTP_USER_AGENT'])) {
+			return '*';
+		}
+		$USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
+	}
+	$engines = array(
+		array('Aport', 'Aport robot'),
+		array('Google', 'Google'),
+		array('msnbot', 'MSN'),
+		array('Rambler', 'Rambler'),
+		array('Yahoo', 'Yahoo'),
+		array('AbachoBOT', 'AbachoBOT'),
+		array('accoona', 'Accoona'),
+		array('AcoiRobot', 'AcoiRobot'),
+		array('ASPSeek', 'ASPSeek'),
+		array('CrocCrawler', 'CrocCrawler'),
+		array('Dumbot', 'Dumbot'),
+		array('FAST-WebCrawler', 'FAST-WebCrawler'),
+		array('GeonaBot', 'GeonaBot'),
+		array('Gigabot', 'Gigabot'),
+		array('Lycos', 'Lycos spider'),
+		array('MSRBOT', 'MSRBOT'),
+		array('Scooter', 'Altavista robot'),
+		array('AltaVista', 'Altavista robot'),
+		array('WebAlta', 'WebAlta'),
+		array('IDBot', 'ID-Search Bot'),
+		array('eStyle', 'eStyle Bot'),
+		array('Mail.Ru', 'Mail.Ru Bot'),
+		array('Scrubby', 'Scrubby robot'),
+		array('Yandex', 'Yandex'),
+		array('YaDirectBot', 'Yandex Direct'),
+		array('Bot', 'Bot')
+	);
+
+	foreach ($engines as $engine) {
+		if (stripos($USER_AGENT, $engine[0])!==false) {
+			return $engine[1];
+		}
+	}
+
+	return '';
+}
+
+$_CFG['robot'] = SpiderDetect();
+
+
+/*
+  Используем эту ф вместо стандартной, для совместимости с UTF-8
+ */
+if (function_exists('mb_internal_encoding'))
+	mb_internal_encoding($_CFG['wep']['charset']);
+
+function _strlen($val) {
+	if (function_exists('mb_strlen'))
+		return mb_strlen($val);
+	else
+		return strlen($val);
+}
+
+function _substr($s, $offset, $len = NULL) {
+	if (is_null($len)){
+		if (function_exists('mb_substr'))
+			return mb_substr($s, $offset);
+		else
+			return substr($s, $offset);
+	}
+	else {
+		if (function_exists('mb_substr'))
+			return mb_substr($s, $offset, $len);
+		else
+			return substr($s, $offset, $len);
+	}
+}
+
+function _strtolower($txt) {
+	if (function_exists('mb_strtolower'))
+		return mb_strtolower($txt);
+	else
+		return strtolower($txt);
+}
+
+function _strpos($haystack, $needle, $offset=0) {
+	if (function_exists('mb_strpos'))
+		return mb_strpos($haystack, $needle, $offset);
+	else
+		return strpos($haystack, $needle, $offset);
+}
+
+function base64encode($txt) {
+	$txt = base64_encode($txt);
+	return str_replace(array('+','/'),array('-','_'),$txt);
+}
+function base64decode($txt) {
+	$txt = str_replace(array('-','_'),array('+','/'),$txt);
+	return base64_decode($txt);
 }

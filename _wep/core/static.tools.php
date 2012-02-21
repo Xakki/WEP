@@ -516,7 +516,7 @@ class static_tools {
 			}
 		}
 
-		if (isset($SetDataCFG['sql'])) {
+		if (isset($SetDataCFG['sql']) and $SetDataCFG['sql']['type']) {
 			$SQL = new $SetDataCFG['sql']['type']($SetDataCFG['sql']); //пробуем подключиться к БД
 			if (!$SQL->ready) {
 				$mess[] = array('error', 'Ошибка подключения к БД.');
@@ -773,6 +773,47 @@ deny from all
 		}
 		$DATA = array('form' => $MODUL->form, 'messages' => $mess);
 		return Array($flag, $DATA);
+	}
+
+	function extractZip($zipFile = '', $zipDir = '', $dirFromZip = '') {
+		 // $zipDir Папка для распаковки.
+
+		 $zip = zip_open($zipFile);
+
+		 if ($zip) {
+			  while ($zip_entry = zip_read($zip)) {
+					// Перекодируем с CP866 в CP1251
+					$completePath = $zipDir . dirname(iconv('CP866', 'CP1251', zip_entry_name($zip_entry)));
+					$completeName = $zipDir . iconv('CP866', 'CP1251', zip_entry_name($zip_entry));
+					
+					if (!file_exists($completePath) && preg_match('#^' . $dirFromZip .'.*#', dirname(zip_entry_name($zip_entry)))) {
+						 $tmp = '';
+						 foreach (explode('/', $completePath) as $k) {
+							  $tmp .= $k . '/';
+							  if (!file_exists($tmp)) {
+									@mkdir($tmp, 0777);
+							  }
+						 }
+					}
+				  
+					if (zip_entry_open($zip, $zip_entry, "r")) {
+						 if (preg_match( '#^' . $dirFromZip . '.*#', dirname(zip_entry_name($zip_entry)))) {
+							  if ($fd = @fopen($completeName, 'w+')) {
+									fwrite($fd, zip_entry_read($zip_entry, zip_entry_filesize($zip_entry)));
+									fclose($fd);
+							  } else {
+									mkdir($completeName, 0777);
+							  }
+							  
+							  zip_entry_close($zip_entry);
+						 }
+					}
+			  }
+			  
+			  zip_close($zip);
+		 }
+		 
+		 return true;
 	}
 
 // END static class

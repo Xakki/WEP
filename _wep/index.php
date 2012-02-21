@@ -6,7 +6,7 @@
 	$result = static_main::userAuth(); // запскает сессию и проверяет авторизацию
 
 	if(!$result[1]) {
-		static_main::redirect('login.php?ref='.base64_encode($_SERVER['REQUEST_URI']));
+		static_main::redirect('login.php?ref='.base64encode($_SERVER['REQUEST_URI']));
 	}
 
 	if(isset($_COOKIE['cdesign']) and $_COOKIE['cdesign'])
@@ -135,5 +135,5 @@
 		$_tpl['wep_ver'] = $_CFG['info']['version'];
 	}
 	else {
-		static_main::redirect('login.php?mess=denied&ref='.base64_encode($_SERVER['REQUEST_URI']));
+		static_main::redirect('login.php?mess=denied&ref='.base64encode($_SERVER['REQUEST_URI']));
 	}

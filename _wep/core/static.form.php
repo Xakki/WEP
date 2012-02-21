@@ -71,8 +71,12 @@ class static_form {
 				else
 					$value = '\''.$_this->SqlEsc($value).'\'';
 			}
-			if($flag_update)
-				$data[$key] = '`'.$key.'` = VALUES(`'.$key.'`)';
+			if($flag_update) {
+				if(!isset($_this->fields[$key]['noquote']))
+					$data[$key] = '`'.$key.'` = VALUES(`'.$key.'`)';
+				else
+					$data[$key] = '`'.$key.'` = '.$_this->fld_data[$key];
+			}
 		}
 		if ($_this->mf_timecr) 
 			$_this->fld_data['mf_timecr'] = $_this->_CFG['time'];
@@ -91,9 +95,10 @@ class static_form {
 		if($flag_update) { // параметр передается в ф. _addUp() - обновление данных если найдена конфликтная запись
 			$q .= ' ON DUPLICATE KEY UPDATE '.implode(', ',$data);
 		}
-		$result=$_this->SQL->execSQL($q);
-		if($result->err) return false;
 
+		$result=$_this->SQL->execSQL($q);
+
+		if($result->err) return false;
 		// get last id if not used nick
 		if (!$_this->mf_use_charid && !isset($_this->fld_data['id']))
 			$_this->id = (int)$result->lastId();
@@ -147,7 +152,7 @@ class static_form {
 			if(isset($value['ext']) and $value['ext'])
 				$ext = $value['ext'];
 			else
-				$value['ext'] = strtolower(array_pop(explode('.',$value['name'])));
+				$ext = $value['ext'] = strtolower(array_pop(explode('.',$value['name'])));
 
 			$newname = $pathimg.'/'.$_this->id.'.'.$ext;
 			if (file_exists($newname)) { // Удаляем старое
@@ -931,7 +936,8 @@ class static_form {
 						$error[] = 32;
 					else
 						$data[$key] = md5($_this->_CFG['wep']['md5'].$data[$key]);
-				}
+				}else
+					unset($data[$key]);
 			}
 			elseif(isset($form['mask']['password']) and $form['mask']['password']=='change')
 			{
@@ -1273,17 +1279,19 @@ class static_form {
 		$hash_key = md5($hash_key); // получаем хешкод
 		if(function_exists('openssl_encrypt')) { // если есть openssl
 			$crypttext = openssl_encrypt($word,'aes-128-cbc',$hash_key,false,"1234567812345678");
-		} elseif(function_exists('mcrypt_encrypt')) { // будем надеяться что есть mcrypt
-			$crypttext = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $hash_key, $word, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND));
-			print_r($crypttext);print_r('<hr>');
-			$crypttext = base64_encode($crypttext);
-		} else // если нет даже openssl значит и так сойдёт!
+		}
+		elseif(function_exists('mcrypt_encrypt')) { // будем надеяться что есть mcrypt
+			//$ivsize = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
+			//$iv = mcrypt_create_iv($ivsize, MCRYPT_RAND);
+			$crypttext = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $hash_key, $word, MCRYPT_MODE_ECB);
+			$crypttext = base64encode($crypttext);
+		} 
+		else // если нет даже openssl значит и так сойдёт!
 			$crypttext = $word;
 		// Запись в куки зашифрованного кода
-		 print_r($crypttext);print_r('<hr>');
 		_setcookie('chash', $crypttext, (time() + 1800));
 		// Где хранится хэшкод (фаил доступен только на сервере)
-		_setcookie('pkey', base64_encode($_CFG['_FILE']['HASH_KEY']), (time() + 1800));
+		_setcookie('pkey', base64encode($_CFG['_FILE']['HASH_KEY']), (time() + 1800));
 	}
 	
 	/**
@@ -1298,8 +1306,8 @@ class static_form {
 			if(function_exists('openssl_encrypt')) {
 				$word = openssl_decrypt($_COOKIE['chash'],'aes-128-cbc',$hash_key,false,"1234567812345678");
 			} elseif(function_exists('mcrypt_encrypt')) {
-				$word = base64_decode($_COOKIE['chash']);
-				$word = mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $hash_key, base64_decode($_COOKIE['chash']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND));
+				$word = base64decode($_COOKIE['chash']);
+				$word = mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $hash_key, base64decode($_COOKIE['chash']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND));
 			}else
 				$word = $_COOKIE['chash'];
 			return $word;

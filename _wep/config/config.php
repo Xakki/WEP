@@ -11,7 +11,7 @@ ini_set('display_errors', -1);
  * 3 - Номер ревизии , исправленны ошибки
  */
 $_CFG['info'] = array(//информация о СМС
-	'version' => '2.8.22',
+	'version' => '2.8.23',
 	'email' => 'wep@xakki.ru',
 	'icq' => '222392984'
 );
@@ -61,7 +61,7 @@ $_CFG['site'] = array(// для сайта
 	'worktime' => false, // 1 - включает отображение страницы "Технический перерыв"
 	'work_title' => 'Технический перерыв',
 	'work_text' => 'Технический перерыв',
-	'redirectForRobots' => true,
+	'redirectPlugin' => 0,
 );
 $_CFG['memcache'] = array(
 	'host' => '127.0.0.1',
@@ -376,7 +376,8 @@ if (strpos($_SERVER['HTTP_HOST'], 'xn--') !== false) {
 }
 $_CFG['_HREF']['BH'] = 'http://' . $_SERVER['HTTP_HOST'] . '/' . $addpath; // www-путь сайта
 
-
+if($_CFG['site']['redirectPlugin'])
+	$_CFG['require_modul']['redirect'] = true;
 
 
 $_CFG['_HREF']['wepJS'] = $_CFG['_HREF']['BH'] . $_CFG['PATH']['wepname'] . '/js.php';
@@ -436,8 +437,8 @@ mb_internal_encoding($_CFG["wep"]["charset"]);
 date_default_timezone_set($_CFG['wep']['timezone']);
 setlocale(LC_CTYPE, $_CFG['wep']['locale']);
 $_CFG['modulinc'] = array(
-	0 => array('path' => $_CFG['_PATH']['wep_ext'], 'name' => 'WEP - '),
-	3 => array('path' => $_CFG['_PATH']['ext'], 'name' => 'EXT - ')
+	0 => array('path' => $_CFG['_PATH']['wep_ext'], 'name' => 'Ядро - '),
+	3 => array('path' => $_CFG['_PATH']['ext'], 'name' => 'Плагины - ')
 );
 $_CFG['time'] = time();
 $_CFG['getdate'] = getdate();
@@ -449,290 +450,12 @@ if($_CFG['wep']['sessiontype']===1)
 session_name($_CFG['session']['name']);
 session_set_cookie_params($_CFG['session']['expire'], $_CFG['session']['path'], $_CFG['session']['domain'], $_CFG['session']['secure']);
 ini_set('session.cookie_domain', $_CFG['session']['domain']);
-register_shutdown_function('shutdown_function'); // Запускается первым при завершении скрипта
-
-include $_CFG['_PATH']['core'] . 'observer.php';
-
-/*
-  Функция завершения работы скрипта
- */
-
-function shutdown_function() {
-	observer::notify_observers('shutdown_function');
-}
-
-/* SESSION */
-
-function session_go($force=false) { //$force=true - открывает сесиию для не авторизованного пользователя
-	if(isset($_SESSION)) return true;
-	global $_CFG, $SESSION_GOGO;
-	if (!$_CFG['robot'] and (isset($_COOKIE[$_CFG['session']['name']]) or $force)) {
-		if($_CFG['wep']['sessiontype'] == 1) {
-			if(!$SESSION_GOGO)
-				$SESSION_GOGO = new session_class();
-			$SESSION_GOGO->start($force);
-		}else {
-			session_start();
-		}
-		return true;
-	}
-	return false;
-}
-
-function _setcookie($name, $value='', $expire='', $path='', $domain='', $secure='') {
-	global $_CFG;
-	if ($expire == '')
-		$expire = $_CFG['session']['expire'];
-	if ($path == '')
-		$path = $_CFG['session']['path'];
-	if ($domain == '')
-		$domain = $_CFG['session']['domain'];
-	if ($secure == '')
-		$secure = $_CFG['session']['secure'];
-	setcookie($name, $value, $expire, $path, $domain, $secure);
-}
-
-/**
- * Инициализация модулей
- */
-function _new_class($name, &$MODUL, &$OWNER = NULL) {
-	global $_CFG;
-	$MODUL = NULL;
-	static_main::_prmModulLoad();
-	$name = _getExtMod($name);
-		
-	if(!isset($_CFG['singleton'][$name]) and $_CFG['modulprm'][$name]['pid'] and !$OWNER) {
-		// кастыль: при обращении к дочерним классам , находяться родители и от него дается ссылка на класс.
-		_new_class($_CFG['modulprm'][$name]['pid'], $MODUL2);
-		$MODUL = $MODUL2->childs[$name];
-		return true;
-	}
-
-	if (isset($_CFG['singleton'][$name])) {
-		$MODUL = $_CFG['singleton'][$name];
-		return true;
-	} 
-	else {
-		$class_name = $name . "_class";
-		if (!class_exists($class_name,false) and (!isset($_CFG['modulprm'][$name]) or !$_CFG['modulprm'][$name]['pid'] or $OWNER) and $file = _modulExists($class_name,$OWNER)) {
-			require_once($file);
-		}
-		if(class_exists($class_name,false)) {
-			$getparam = array_slice(func_get_args(), 2);
-			$obj = new ReflectionClass($class_name);
-			//$pClass = $obj->getParentClass();
-			$MODUL = $obj->newInstanceArgs($getparam);
-			/* extract($getparam,EXTR_PREFIX_ALL,'param');
-			  if(count($getparam)) {
-			  $p = '$param'.implode(',$param',array_keys($getparam)).'';
-			  } else $p = '';
-			  eval('$MODUL = new '.$class_name.'('.$p.');'); */
-			if ($MODUL)
-				return true;
-		}
-		elseif (isset($_CFG['modulprm'][$name]) and $_CFG['modulprm'][$name]['pid'] and is_null($OWNER)) {
-			$moduls = array($name);
-			while ($_CFG['modulprm'][$name]['pid'])
-			{
-				$moduls[] = $_CFG['modulprm'][$name]['pid'];
-				$name = $_CFG['modulprm'][$name]['pid'];
-			}
-
-			$cnt = count($moduls);
-
-			_new_class($moduls[$cnt-1], $MODUL);
-
-			for ($i=$cnt-2; $i>=0; $i--)
-			{
-				$MODUL = $MODUL->childs[$moduls[$i]];
-			}
-			return true;
-		} else
-			trigger_error('Can`t init `' . $class_name . '` modul ', E_USER_WARNING);
-	}
-	return false;
-}
-
-function _getChildModul($name, &$MODUL) {
-	global $_CFG;
-
-	static_main::_prmModulLoad();
-	if (isset($_CFG['modulprm'][$name]['pid']) && $_CFG['modulprm'][$name]['pid'] != '')
-	{
-		$moduls = array($name);
-		while (isset($_CFG['modulprm'][$name]['pid']) && $_CFG['modulprm'][$name]['pid'] != '')
-		{
-			$moduls[] = $_CFG['modulprm'][$name]['pid'];
-			$name = $_CFG['modulprm'][$name]['pid'];
-		}
-
-		$cnt = count($moduls);
-
-		_new_class($moduls[$cnt-1], $MODUL);
-		for ($i=$cnt-2; $i>=0; $i--)
-		{
-			$MODUL = $MODUL->childs[$moduls[$i]];
-		}
-	}
-	else
-	{
-		_new_class($name, $MODUL);
-	}
-	if ($MODUL)
-		return true;
-}
-
-function _getExtMod($name) {
-	global $_CFG;
-	//$this->mf_actctrl
-	if (isset($_CFG['modulprm_ext'][$name]) && isset($_CFG['modulprm'][$name]) && !$_CFG['modulprm'][$name]['active'])
-		$name = $_CFG['modulprm_ext'][$name][0];
-	return $name;
-}
-/*
-  Автозагрузка модулей
- */
-
-function __autoload($class_name) { //автозагрузка модулей
-	if ($file = _modulExists($class_name)) {
-		require_once($file);
-	}
-	if(!class_exists($class_name,false))
-		trigger_error('Can`t init `'.$class_name.'` modul ', E_USER_WARNING);
-		//throw new Exception('Can`t init `' . $class_name . '` modul ');
-}
-
-/**
- * Проверка существ модуля
- *
- * Осторожно! Тут хитрая-оптимизированная логика
- * @global array $_CFG
- * @param string $class_name
- * @return string
- */
-function _modulExists($class_name,&$OWNER = NULL) {
-	global $_CFG;
-	$class_name = explode('_', $class_name);
-
-	if (isset($_CFG['modulprm'][$class_name[0]])) {
-		$file = $_CFG['modulprm'][$class_name[0]]['path'];
-		if ($file and file_exists($file))
-			return $file;
-	}
-	
-	$file = $_CFG['_PATH']['core'] . $class_name[0] . (isset($class_name[1]) ? '.' . $class_name[1] : '') . '.php';
-	if (file_exists($file))
-		return $file;
-
-	$ret = static_main::includeModulFile($class_name[0],$OWNER);
-	return $ret['file'];
-}
 
 
-if (!defined('PHP_VERSION_ID')) {
-	$version = explode('.', PHP_VERSION);
-	define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
-}
+include $_CFG['_PATH']['core'] . 'static.main.php';
 
-/*
-  точное время в милисекундах
- */
-
-function getmicrotime() {
-	list($usec, $sec) = explode(" ", microtime());
-	return ((float) $usec + (float) $sec);
-}
-
-/*
-  Функция SpiderDetect - принимает $_SERVER['HTTP_USER_AGENT'] и возвращает имя кравлера поисковой системы или false.
- */
-
-function SpiderDetect($USER_AGENT='') {
-	if (!$USER_AGENT) {
-		if(!isset($_SERVER['HTTP_USER_AGENT'])) {
-			return '*';
-		}
-		$USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
-	}
-	$engines = array(
-		array('Aport', 'Aport robot'),
-		array('Google', 'Google'),
-		array('msnbot', 'MSN'),
-		array('Rambler', 'Rambler'),
-		array('Yahoo', 'Yahoo'),
-		array('AbachoBOT', 'AbachoBOT'),
-		array('accoona', 'Accoona'),
-		array('AcoiRobot', 'AcoiRobot'),
-		array('ASPSeek', 'ASPSeek'),
-		array('CrocCrawler', 'CrocCrawler'),
-		array('Dumbot', 'Dumbot'),
-		array('FAST-WebCrawler', 'FAST-WebCrawler'),
-		array('GeonaBot', 'GeonaBot'),
-		array('Gigabot', 'Gigabot'),
-		array('Lycos', 'Lycos spider'),
-		array('MSRBOT', 'MSRBOT'),
-		array('Scooter', 'Altavista robot'),
-		array('AltaVista', 'Altavista robot'),
-		array('WebAlta', 'WebAlta'),
-		array('IDBot', 'ID-Search Bot'),
-		array('eStyle', 'eStyle Bot'),
-		array('Mail.Ru', 'Mail.Ru Bot'),
-		array('Scrubby', 'Scrubby robot'),
-		array('Yandex', 'Yandex'),
-		array('YaDirectBot', 'Yandex Direct'),
-		array('Bot', 'Bot')
-	);
-
-	foreach ($engines as $engine) {
-		if (stripos($USER_AGENT, $engine[0])!==false) {
-			return $engine[1];
-		}
-	}
-
-	return '';
-}
-
-$_CFG['robot'] = SpiderDetect();
-
-
-/*
-  Используем эту ф вместо стандартной, для совместимости с UTF-8
- */
-if (function_exists('mb_internal_encoding'))
-	mb_internal_encoding($_CFG['wep']['charset']);
-
-function _strlen($val) {
-	if (function_exists('mb_strlen'))
-		return mb_strlen($val);
-	else
-		return strlen($val);
-}
-
-function _substr($s, $offset, $len = NULL) {
-	if (is_null($len)){
-		if (function_exists('mb_substr'))
-			return mb_substr($s, $offset);
-		else
-			return substr($s, $offset);
-	}
-	else {
-		if (function_exists('mb_substr'))
-			return mb_substr($s, $offset, $len);
-		else
-			return substr($s, $offset, $len);
-	}
-}
-
-function _strtolower($txt) {
-	if (function_exists('mb_strtolower'))
-		return mb_strtolower($txt);
-	else
-		return strtolower($txt);
-}
-
-function _strpos($haystack, $needle, $offset=0) {
-	if (function_exists('mb_strpos'))
-		return mb_strpos($haystack, $needle, $offset);
-	else
-		return strpos($haystack, $needle, $offset);
+if(!isset($_COOKIE['wep123456'])) {
+	if(!isset($_SERVER['HTTP_REFERER']))
+		$_SERVER['HTTP_REFERER'] = '';
+	_setcookie('wep123456',base64encode($_SERVER['HTTP_REFERER']),(time() + 86400));
 }

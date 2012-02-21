@@ -96,11 +96,8 @@
 		}
 		//print_r('<pre>');print_r($GLOBALS['_RESULT']);
 	}
-	elseif (isset($_POST['wepID'])) {
+	elseif (isset($_REQUEST['fileupload'])) {
 		if (isset($_FILES['Filedata']) && $_FILES['Filedata']['error'] == 0) {
-//			session_id($SQL->SqlEsc((string)$_POST['wepID']));
-//			session_go();
-//			file_put_contents($_CFG['_PATH']['path'].'test.txt', 'aaa '.var_export($_SESSION, true));
 
 			$ext_list = array(
 				'jpg' => 'image/jpeg',
@@ -127,12 +124,6 @@
 				$GLOBALS['_RESULT']['error'] = 'Неверный тип файла';
 			}
 			
-
-
-//			file_put_contents($_CFG['_PATH']['path'].'test.txt', 'aaa '.var_export($_FILES, true));
-			
-			
-//			$_SESSION['swf_upload_file'][] = $_FILES['Filedata'];
 		}
 	}
 	elseif($_GET['_view']=='exit') {

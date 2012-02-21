@@ -23,7 +23,8 @@ $DATA = array($FUNCPARAM[0] => $PGLIST->get_path());
 if (count($DATA[$FUNCPARAM[0]]) > 1) {
 	end($DATA[$FUNCPARAM[0]]);
 	$temp = current($DATA[$FUNCPARAM[0]]);
-	$_tpl['description'] = $temp['name'] . ' - ' . $_tpl['description'];
+	if(!$_tpl['description'])
+		$_tpl['description'] = $temp['name'];
 }
 
 $html = $HTML->transformPHP($DATA, $FUNCPARAM[0]);

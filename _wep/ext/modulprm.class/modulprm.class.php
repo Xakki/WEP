@@ -128,7 +128,7 @@ final class modulprm_class extends kernel_extends {
 							'_parent' => '',
 							'_type' => $k
 						);
-						$ret = static_main::includeModulFile($entry);
+						$ret = includeModulFile($entry);
 						if($ret['file']) require_once($ret['file']);
 						$resData = array();
 						if(class_exists($entry. '_class',false)) {
@@ -396,7 +396,7 @@ final class modulprm_class extends kernel_extends {
 		$this->modulgrpDump();
 		try { // ловец снов
 			$fpath = '';
-			$ret = static_main::includeModulFile($Mid, $OWN);
+			$ret = includeModulFile($Mid, $OWN);
 			if ($ret['file']) {
 				$fpath = $ret['file'];
 				$path = $ret['path'];

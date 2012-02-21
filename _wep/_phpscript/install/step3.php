@@ -14,8 +14,8 @@ if(!isset($var_const))
 		'sbmt'=>'Сохранить'
 	);
 
-//static_main::includeModulFile('modulprm');
-//static_main::includeModulFile('ugroup');
+//includeModulFile('modulprm');
+//includeModulFile('ugroup');
 
 if(_new_class('modulprm', $MODULPRM)) {
 	//Форма установки модулей

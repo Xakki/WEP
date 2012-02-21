@@ -68,7 +68,8 @@ class pg_class extends kernel_extends {
 		$this->mf_actctrl = true;
 		$this->caption = 'Страницы';
 		$this->selected = array();
-		$this->ver = '0.4.4';
+		$this->messages_on_page = 50;
+		$this->ver = '0.4.5';
 		$this->pageinfo =
 				$this->dataCash = $this->dataCashTree = $this->dataCashTreeAlias = array();
 		$this->pageParam = $this->pageParamId = array();
@@ -260,6 +261,7 @@ class pg_class extends kernel_extends {
 			$_tpl[$km] = '';
 		$_tpl['onload'] = '';
 		$_tpl['title'] = '';
+		$_tpl['name'] = '';
 		$_tpl['keywords'] = $this->config['keywords'];
 		$_tpl['description'] = $this->config['description'];
 		$temp_tpl = $_tpl;
@@ -303,9 +305,14 @@ class pg_class extends kernel_extends {
 		}
 
 		if ($this->config['sitename']) {
+			$_tpl['name'] = $this->config['sitename'];
 			if ($_tpl['title'])
 				$_tpl['title'] .= ' - ';
 			$_tpl['title'] .= $this->config['sitename']; //$_SERVER['SERVER_NAME']
+		} else {
+			reset($this->pageinfo['path']);
+			$temp = current($this->pageinfo['path']);
+			$_tpl['name'] = $temp['name'];
 		}
 
 		if (!$this->pageinfo['template']) {
@@ -842,7 +849,7 @@ class pg_class extends kernel_extends {
 		if ($html and isset($this->dataCash[$id]['href']) and $this->dataCash[$id]['href'] != '') {
 			$href = $this->dataCash[$id]['href'];
 			if (strstr($href, 'http://'))
-				$href = '_redirect.php?url=' . base64_encode($href);
+				$href = '_redirect.php?url=' . base64encode($href);
 		}
 		else {
 			$href = $id;

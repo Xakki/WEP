@@ -497,7 +497,7 @@ function tpl_form(&$data) {
 
 					$texthtml .= '<div class="wep_thumb">
 						<a rel="fancy" href="/'.$r['value'].'" target="_blank" class="fancyimg">
-							<img src="/'.$r['value'].'" alt="img" class="attach" style="'.$css.'"/>
+							<img src="/'.$r['value'].'" alt="img" class="attach" style="'.$css.'" id="'.$k.'_temp_upload_img"/>
 						</a>';
 					if(isset($r['img_size']))
 						$texthtml .= '<div class="wep_thumb_comment">Размер '.$r['img_size'][0].'x'.$r['img_size'][1].'</div>';
@@ -520,7 +520,20 @@ function tpl_form(&$data) {
 				}
 
 				$texthtml .= '<div class="form-value divinputfile">';
-				$texthtml .= '<input type="file" name="'.$k.'" '.$attribute.'/><span class="fileinfo"></span>';
+				
+				if(isset($r['mask']['swf_uploader'])) {
+					$texthtml .= '
+						<div class="fuploader">Загрузка фаила<input type="file" name="'.$k.'" id="'.$k.'_uploader" '.$attribute.'/></div><span class="fileinfo"></span>
+						<div id="'.$k.'_notice_swf_uploader"></div>';
+
+					$_tpl['script']['SWFUpload/swfupload_fp10/swfupload'] = true;
+					$_tpl['onload'] .= 'wep.swfuploader.bindSWFUpload({button_placeholder_id:"'.$k.'_uploader", field_name:"'.$k.'"});';
+					//SESSID = "'.session_id().'"; 
+				}
+				else {
+					$texthtml .= '<input type="file" name="'.$k.'" '.$attribute.'/><span class="fileinfo"></span>';
+				}
+
 
 				if($r['del']==1 and $r['value']!='')
 					$texthtml .= '<label class="filedelete">Удалить?&#160;<input type="checkbox" name="'.$k.'_del" value="1"/></label>';
