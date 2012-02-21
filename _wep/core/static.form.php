@@ -715,8 +715,9 @@ class static_form {
 			/*Капча*/
 			elseif($form['type']=='captcha') {
 				//strcasecmp($data[$key],$form['captcha'])
-				if($data[$key]!=$form['captcha'])
+				if($data[$key]!=$form['captcha']) {
 					$error[] = 31;
+				}
 			}
 			elseif(isset($form['multiple']) and $form['multiple']) {
 				if(isset($form['mask']['minarr']) and $form['mask']['minarr']>0 and (!isset($data[$key]) or !count($data[$key])))
@@ -1308,6 +1309,7 @@ class static_form {
 			} elseif(function_exists('mcrypt_encrypt')) {
 				$word = base64decode($_COOKIE['chash']);
 				$word = mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $hash_key, base64decode($_COOKIE['chash']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND));
+				$word = trim($word);
 			}else
 				$word = $_COOKIE['chash'];
 			return $word;
