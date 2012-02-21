@@ -556,10 +556,11 @@ class static_tools {
 					$newr = '\'' . addcslashes($newr, '\'') . '\'';
 				}
 				elseif (is_array($newr)) {
-					if ($fl or !is_array($defr) or count(array_diff($newr, $defr)))
+					if ($fl or !is_array($defr) or count(array_diff($defr, $newr))){
 						$flag = true;
+					}
 					$newr = str_replace(array("\n", "\t", "\r", '   ', '  '), array('', '', '', ' ', ' '), var_export($newr, true));
-				}else {
+				} else {
 					$newr = (int) $newr;
 					if ($fl or $newr != $defr)
 						$flag = true;
