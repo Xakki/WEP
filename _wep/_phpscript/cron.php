@@ -1,6 +1,7 @@
 <?php
 	header('Content-Type: text/html; charset=utf-8');
-	$_CFG['_PATH']['wep'] = dirname(__DIR__).'/';
+
+	if(!isset($_CFG['_PATH']['wep'])) exit('Ошибка конфигурации.');
 	require_once($_CFG['_PATH']['wep'].'/config/config.php');
 	require_once($_CFG['_FILE']['cron']);
 	
