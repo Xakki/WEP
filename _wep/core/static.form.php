@@ -997,7 +997,7 @@ class static_form {
 
 		/*Целое число*/
 		elseif($form['type']=='int' and (!isset($form['mask']['toint']) or !$form['mask']['toint'])) 
-			$data[$key]= preg_replace('/[^0-9]+/','',$data[$key]);
+			$data[$key]= preg_replace('/[^0-9\-]+/','',$data[$key]);
 
 		/*Список*/
 		elseif(($form['type']=='list' or $form['type']=='ajaxlist'))
