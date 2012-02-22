@@ -73,7 +73,7 @@ class news_class extends kernel_extends {
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Опубликовать', 'comment'=>'Видимость новости на сайте');
 	}
 
-	function fNews($filter=array())// func display NEWS on INDEX page
+	function flist($filter=array())// func display NEWS on INDEX page
 	{
 		/*$listfields = array('id,text');
 		$clause ='WHERE description=""'; 
@@ -107,19 +107,19 @@ class news_class extends kernel_extends {
 			/****/
 			$clause .= ' ORDER BY '.$this->ordfield.' LIMIT '.$climit;; 
 			$DATA['pcnt'] = $DATA['pagenum']['start'];
-			$DATA['#item#'] = $this->_query('*',$clause);
+			$DATA['#list#'] = $this->_query('*',$clause);
 		}
 		return $DATA;
 	}
 
-	function fNewsItem($id)// func display NEWS on INDEX page
+	function fItem($id)// func display NEWS on INDEX page
 	{
 		$listfields = array('*');
 		$clause = 'WHERE active=1 and id='.$id;
 		return $this->_query($listfields,$clause);
 	}
 
-	function fLastNews($limit=4,$filter=array())// func display NEWS on INDEX page
+	function fLast($limit=4,$filter=array())// func display NEWS on INDEX page
 	{
 		$listfields = array('*');
 		$clause = 'WHERE active=1 ';
@@ -133,7 +133,7 @@ class news_class extends kernel_extends {
 		return $this->_query($listfields,$clause);
 	}
 
-	function fMenuNews($group='ndate')// func display NEWS on INDEX page
+	function fMenu($group='ndate')// func display NEWS on INDEX page
 	{
 		$listfields = array($group);
 		$clause = 'WHERE active=1 ORDER BY ndate DESC,id DESC GROUP BY '.$group;

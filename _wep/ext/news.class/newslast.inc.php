@@ -30,9 +30,9 @@
 	//$FUNCPARAM[0] - limit
 	//$FUNCPARAM[1] - php template
 
-	$DATA = $NEWS->fLastNews($FUNCPARAM[2], array('category'=>$FUNCPARAM[3]));
+	$DATA = $NEWS->fLast($FUNCPARAM[2], array('category'=>$FUNCPARAM[3]));
 	$DATA = array(
-		'#item#'=>$DATA,
+		'#list#'=>$DATA,
 		'#Ctitle#'=>$Ctitle);
 	if($FUNCPARAM[2])
 		$DATA['#page#'] = $this->getHref($FUNCPARAM[1]);

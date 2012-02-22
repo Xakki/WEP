@@ -628,16 +628,16 @@ class pg_class extends kernel_extends {
 					if ($rowPG['funcparam']) {
 						$FUNCPARAM = explode('&', $rowPG['funcparam']);
 						foreach ($FUNCPARAM as &$r) {
-							if (strpos($r, '|') !== false) {
-								$r = explode('|', $r);
-								$r = array_combine($r, $r);
-							}
 							// UPDATE FIX
 							if (strpos($r, '#ext#') !== false) {
 								$temp = explode('.',$typePG[1]);
 								$r = str_replace('#ext#','#'.$temp[0].'#',$r);
 							}
 							// UPDATE FIX
+							if (strpos($r, '|') !== false) {
+								$r = explode('|', $r);
+								$r = array_combine($r, $r);
+							}
 						}
 						unset($r);
 					}

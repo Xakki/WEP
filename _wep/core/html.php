@@ -264,7 +264,7 @@ function startCatchError($param=2) {
 	$_CFG['_ctemp' . $param]['bug_hunter'] = $_CFG['wep']['bug_hunter'];
 	$_CFG['_ctemp' . $param]['debugmode'] = $_CFG['wep']['debugmode'];
 	$_CFG['wep']['catch_bug'] = $param;
-	$_CFG['wep']['bug_hunter'] = array();
+	$_CFG['wep']['bug_hunter'] = array ( 0 => '0', 1 => '1', 4 => '4', 16 => '16', 64 => '64', 256 => '256', 4096 => '4096', 2 => '2', 32 => '32', 128 => '128', 512 => '512', 2048 => '2048');
 	$_CFG['wep']['debugmode'] = 2;
 	return true;
 }

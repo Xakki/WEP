@@ -433,7 +433,7 @@ abstract class kernel_extends {
 		if ($cls)
 			$query .= $cls;
 		if ($debug)
-			print_r($query . ' <br>');
+			echo(' * '.$query . ' * <br>');
 		$result = $this->SQL->execSQL($query);
 		if ($result->err)
 			return false;
@@ -1164,7 +1164,6 @@ abstract class kernel_extends {
 				}
 				$data = $tdata;
 			}
-			if($listname=='menu'){print_r('<pre>*');print_r($value);print_r($tvalue);print_r($data);print_r('*');}
 			return $data;
 		} elseif (!isset($this->_CFG['enum'][$templistname]))
 			$this->_CFG['enum'][$templistname] = $this->_getlist($listname, $value);
@@ -2451,7 +2450,8 @@ abstract class kernel_extends {
 			}else
 				$CURLOPT_PROXY = $prox;
 			curl_setopt($ch, CURLOPT_PROXY, $CURLOPT_PROXY);
-			print_r($CURLOPT_PROXY);
+			if($this->_CFG['wep']['debugmode']>1)
+				echo ' * '.$CURLOPT_PROXY.' * ';
 			if ($CURLOPT_PROXYUSERPWD) {
 				// если необходимо предоставить имя пользователя и пароль
 				//curl_setopt($ch, CURLOPT_PROXYUSERPWD,$CURLOPT_PROXYUSERPWD);

@@ -27,7 +27,7 @@
 		}
 		else {
 			$DATA = array();
-			$DATA[$FUNCPARAM[1]] = $NEWS->fMenuNews($FUNCPARAM[0]);
+			$DATA[$FUNCPARAM[1]] = $NEWS->fMenu($FUNCPARAM[0]);
 			$html = $HTML->transformPHP($DATA,$FUNCPARAM[1]);
 		}
 	return $html;

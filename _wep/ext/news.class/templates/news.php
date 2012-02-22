@@ -1,9 +1,9 @@
 <?php
 	function tpl_news(&$data) {
 		$html = '';
-		if(isset($data['#item#']) and count($data['#item#'])) {
+		if(isset($data['#list#']) and count($data['#list#'])) {
 			$html .= '<div class="news">';
-			foreach($data['#item#'] as $k=>$r) {
+			foreach($data['#list#'] as $k=>$r) {
 				if(!$r['i_news']) $r['i_news'] = '';
 				$html .= '<div class="news-items">
 						'.($r['i_news']?'<img src="'.$r['i_news'].'" class="news-img" alt="'.$r['name'].'"/>':'').'

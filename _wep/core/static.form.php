@@ -184,6 +184,8 @@ class static_form {
 							self::_resizecropImage($_this,$newname, $newname2, $imod['w'], $imod['h']);
 						elseif ($imod['type']=='watermark')
 							self::_waterMark($_this,$newname,$newname2, $imod['logo'], $imod['x'], $imod['y']);
+						elseif($newname!=$newname2)
+							copy($newname,$newname2);
 						chmod($newname, $_this->_CFG['wep']['chmod']);
 					}
 			}
@@ -905,7 +907,7 @@ class static_form {
 				$data[$key]['tmp_name'] = $_this->_CFG['_PATH']['temp'] . $data[$key . '_temp_upload']['name'];
 				$_FILES[$key] = $data[$key];
 			}
-			if(isset($form['mask']['min']) and $form['mask']['min'] and (!$_FILES[$key]['name'] or $_FILES[$key]['name'] == ':delete:')) {
+			if(isset($form['mask']['min']) and $form['mask']['min'] and !$_this->data[$_this->id][$key] and (!$_FILES[$key]['name'] or $_FILES[$key]['name'] == ':delete:')) {
 				$error[] = 1;
 				return false;
 			}

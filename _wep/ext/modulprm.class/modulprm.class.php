@@ -96,7 +96,7 @@ final class modulprm_class extends kernel_extends {
 		$html = '';
 		$mess = array();
 		$this->mDump();
-		$this->modulprm_ext = $this->_CFG['modulprm_ext'];
+		$this->_CFG['temp_modulprm_ext'] = $this->_CFG['modulprm_ext'];
 		unset($this->_CFG['modulprm_ext']); // чтобы не подменять обращения к модулям
 
 		foreach ($this->_CFG['modulinc'] as $k => $r) {
@@ -240,8 +240,8 @@ final class modulprm_class extends kernel_extends {
 			}
 		}
 
-		if(!isset($this->_CFG['modulprm_ext']) and isset($this->temp_modulprm_ext))
-			$this->_CFG['modulprm_ext'] = $this->temp_modulprm_ext;
+		if(!isset($this->_CFG['modulprm_ext']) and isset($this->_CFG['temp_modulprm_ext']))
+			$this->_CFG['modulprm_ext'] = $this->_CFG['temp_modulprm_ext'];
 
 		//TODO : Инфо Фаил модуля
 		$DATA['sbmt'] = array(
@@ -333,24 +333,6 @@ final class modulprm_class extends kernel_extends {
 		return true;
 	}
 
-	protected function mDump() {
-		if (!isset($this->pdata) or !count($this->pdata) or !count($this->data)) {
-			$this->data = $this->pdata = array();
-			$result = $this->SQL->execSQL('SELECT * FROM ' . $this->tablename);
-			if ($result->err)
-				return $check_result;
-			while ($row = $result->fetch()) {
-				$this->data[$row['id']] = $row;
-				$this->pdata[$row['parent_id']][$row['id']] = $row['id'];
-			}
-			foreach($this->_CFG['require_modul'] as $k=>$r) {
-				if(!isset($this->pdata[''][$k]))
-					$this->pdata[''][$k] = $r;
-			}
-		}
-		return true;
-	}
-
 	//Обновление базы всех модулей
 	public function _checkmodstruct() {
 		$rDATA = array();
@@ -372,13 +354,13 @@ final class modulprm_class extends kernel_extends {
 		$this->mDump();
 		if(isset($this->pdata['']) and count($this->pdata[''])) {
 			$this->modulgrpDump();
-			$this->temp_modulprm_ext = $this->_CFG['modulprm_ext'];
-			$this->_CFG['modulprm_ext'] = NULL;
+			$this->_CFG['temp_modulprm_ext'] = $this->_CFG['modulprm_ext'];
+			unset($this->_CFG['modulprm_ext']);
 			foreach ($this->pdata[''] as $k => $r) {
 				$rDATA = array_merge($rDATA, static_tools::_checkmodstruct($k));
 			}
 
-			$this->_CFG['modulprm_ext'] = $this->temp_modulprm_ext;	
+			$this->_CFG['modulprm_ext'] = $this->_CFG['temp_modulprm_ext'];	
 
 		}
 
@@ -569,7 +551,29 @@ final class modulprm_class extends kernel_extends {
 		return array($flag, $MESS);
 	}
 
+
+	protected function mDump() {
+		if (!isset($this->pdata) or !count($this->pdata) or !count($this->data)) {
+			$this->data = $this->pdata = array();
+			$result = $this->SQL->execSQL('SELECT * FROM ' . $this->tablename);
+			if ($result->err)
+				return $check_result;
+			while ($row = $result->fetch()) {
+				$this->data[$row['id']] = $row;
+				$this->pdata[$row['parent_id']][$row['id']] = $row['id'];
+			}
+			foreach($this->_CFG['require_modul'] as $k=>$r) {
+				if(!isset($this->pdata[''][$k]))
+					$this->pdata[''][$k] = $r;
+			}
+		}
+		return true;
+	}
+
 	function modulgrpDump() {
+		if(!isset($this->_CFG['modulprm_ext']) and isset($this->_CFG['temp_modulprm_ext'])) // Нужно
+			$this->_CFG['modulprm_ext'] = $this->_CFG['temp_modulprm_ext'];
+
 		if (!isset($this->guserData)) {
 			$this->guserData = array();
 			_new_class('ugroup', $UGROUP);
@@ -591,6 +595,7 @@ final class modulprm_class extends kernel_extends {
 			while ($row = $result->fetch())
 				$this->modulgrpData[$row['owner_id']][$row['ugroup_id']] = $row;
 		}
+		$this->_CFG['temp_modulprm_ext'] = $this->_CFG['modulprm_ext'];unset($this->_CFG['modulprm_ext']);
 		return true;
 	}
 
