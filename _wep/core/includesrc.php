@@ -101,9 +101,12 @@
 
 		if(!isset($_tpl['script']['jquery']) and strpos($temp,'script.jquery/')!==false)
 			$temp = '<script type="text/javascript" src="'.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].'jquery.js'.$solt.'"></script>'.$temp;
+		
+		if(isset($_tpl['onload2']) and count($_tpl['onload2']))
+				$_tpl['onload'] .= implode(' ',$_tpl['onload2']);
 
 		if(isset($_tpl['onload']) and $_tpl['onload']) {
-			$temp .= "<script type=\"text/javascript\">\n//<!--\nfunction readyF() {".$_tpl['onload']."}\n//-->\n</script>\n";
+			$temp .= "<script type=\"text/javascript\">\n//<!--\nfunction readyF() {".(string)$_tpl['onload']."}\n//-->\n</script>\n";
 			$_tpl['onload'] = 'readyF();';
 		}
 		$_tpl['script'] = $temp;

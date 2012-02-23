@@ -74,8 +74,12 @@ class pg_class extends kernel_extends {
 				$this->dataCash = $this->dataCashTree = $this->dataCashTreeAlias = array();
 		$this->pageParam = $this->pageParamId = array();
 		$this->default_access = '|1|'; // По умолчанию ставим доступ на чтений всем пользователям
-		$this->MEMCACHE = NULL;
-		$this->rootPage = NULL;
+		$this->MEMCACHE = null;
+		$this->rootPage = null;
+		$this->_AllowAjaxFn = array(
+			'AjaxForm'=>true,
+		);
+		$this->formFlag = null; // Для Аякс формы, 
 		return true;
 	}
 
@@ -319,10 +323,17 @@ class pg_class extends kernel_extends {
 			$this->pageinfo['template'] = 'default';
 		}
 		$HTML->_templates = $this->pageinfo['template'];
-		if (version_compare(phpversion(), '5.3.0', '>'))
-			$_tpl['onload'] = 'if(typeof wep !== "undefined") {wep.pgId = ' . $this->id . ';wep.pgParam=' . json_encode($this->pageParam, JSON_HEX_TAG) . ';} ' . $_tpl['onload'];
-		else
-			$_tpl['onload'] = 'if(typeof wep !== "undefined") {wep.pgId = ' . $this->id . ';wep.pgParam=' . json_encode($this->pageParam) . ';} ' . $_tpl['onload'];
+		$temp = json_encode($this->pageParam, JSON_HEX_TAG);
+		$temp2 = $_GET;unset($temp2['pageParam']);
+		$temp2 = json_encode($temp2, JSON_HEX_TAG);
+
+		$_tpl['onload'] = 'if(typeof wep !== "undefined") {
+			wep.pgId = ' . $this->id . ';
+			wep.pgParam =' . $temp . ';
+			wep.pgGet =' . $temp2 . ';
+			wep.siteJS = "' . $this->_CFG['_HREF']['siteJS'] . '";
+		}
+		' . $_tpl['onload'];
 		return true;
 	}
 
@@ -477,6 +488,7 @@ class pg_class extends kernel_extends {
 		$Chref = $this->getHref();
 
 		foreach ($Cdata as &$rowPG) {
+			$this->contentID = $rowPG['id'];
 			if (!$rowPG['active'])
 				continue;
 			$Ctitle = $rowPG['name'];
@@ -927,5 +939,47 @@ class pg_class extends kernel_extends {
 		return $tpl2;
 	}
 
+
+	public function AjaxForm() {
+		global $HTML,$_tpl;
+		$RESULT = array('html'=>'Не верные данные', 'html2'=>'', 'text'=>'','onload'=>'');
+		$DATA  = array();
+		$htmlb = '';
+		if(count($_POST)) $_POST['sbmt'] = 1;
+
+		$Cdata = array();
+		// TODO : проверка правд доступа
+		$cls = 'SELECT * FROM ' . $this->SQL_CFG['dbpref'] . 'pg_content WHERE active=1 and id=' . (int)$_GET['contentID'];
+		$resultPG = $this->SQL->execSQL($cls);
+		if (!$resultPG->err)
+			while ($rowPG = $resultPG->fetch()) {
+				$Cdata[$rowPG['id']] = $rowPG;
+			}
+		if(!count($Cdata) or !$this->getContent($Cdata))
+			return $RESULT;
+		if(is_null($this->formFlag)) {
+			$RESULT['html'] = 'Не верные данные! Отсутствует параметр $this->formFlag';
+			return $RESULT;
+		}
+		$RESULT['html'] = $_tpl['text'];
+		if($this->formFlag==1) {
+			$RESULT['onload'] .= 'clearTimeout(timerid2);wep.fShowload (1,false,result.html2,0,\'location.href = location.href;\');';
+		}
+		elseif($this->formFlag==-1){
+			//$RESULT['onload'] = 'GetId("messages").innerHTML=result.html2;'.$RESULT['onload'];
+			$RESULT['onload'] = 'jQuery(\'.caption_error\').remove();'.$RESULT['onload'].'clearTimeout(timerid2);wep.fShowload(1,false,result.html2);';
+			$RESULT['html']="<div class='blockhead'>Внимание. Некоректно заполнены поля.</div><div class='hrb'>&#160;</div>".$RESULT['html'];
+		}
+		else{
+			$RESULT['onload'] .= 'clearTimeout(timerid2);wep.fShowload(1,false,result.html2);';
+		}
+		$RESULT['html2']=$RESULT['html'];
+		$RESULT['html']='';
+		if(!isset($_SESSION['user']['id']))
+			$RESULT['onload'] .= 'reloadCaptcha(\'captcha\');';
+		$RESULT['onload'] .= $_tpl['onload'];
+
+		return $RESULT;
+	}
 //////////
 }

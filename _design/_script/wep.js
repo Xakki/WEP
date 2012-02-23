@@ -8,6 +8,8 @@ var wep = {
 	version: '0.1.2',/*Версия скрипта*/
 	pgId:0,/* ID текущей страницы (загружается из onLOAD)*/
 	pgParam: {},/* параметры текущей страницы (загружается из onLOAD)*/
+	pgGet : {}, // GET параметры
+	siteJS: "/_js.php",
 	form: {},/*Функции работы с формой*/
 	isDef: function(v) {
 		return typeof v !== 'undefined';
@@ -92,7 +94,7 @@ var wep = {
 		timerid2 = 0;
 
 		if(param['fade']) // Вешаем затемнение
-			param['timeBG'] = setTimeout(function(){wep.fShowload(1,param['fade']);param['timeBG'] = 0;},200);
+			param['timeBG'] = setTimeout(function(){wep.fShowload(1,false,param['fade']);param['timeBG'] = 0;},200);
 		//console.log(param);
 		$.ajax({
 			type: param['type'],
@@ -135,7 +137,7 @@ var wep = {
 						if(param['timeBG'])
 							clearTimeout(param['timeBG']);// Чистим таймер и тем самым затеменение не отобразиться
 						else
-							wep.fShowload(0,param['fade']);
+							wep.fShowload(0,false,param['fade']);
 					}
 				}
 
@@ -164,7 +166,7 @@ var wep = {
 
 	fShowload: function(show,body,txt,objid,onclk) {//alert(show+'+'+body+'+'+txt+'+'+objid+'+'+onclk);
 		if(!body || body==true) body='body';
-		if(!onclk) onclk = 'fShowload(0,\'\',\''+body+'\')';
+		if(!onclk) onclk = 'wep.fShowload(0,\''+body+'\',\'\')';
 		if(!objid) objid = 'ajaxload';
 		if(!txt) txt = '';
 		else if(strpos(objid,'#')===0) objid = substr(objid, 2);
@@ -219,6 +221,7 @@ var wep = {
 			arr = this.pgParam;
 			arr = arr.join("&pageParam[]=");
 		}
+		// TODO marker = wep.pgGet + marker;
 		param = {
 			'href':'_json.php?_view=loadpage&pgId='+pg+'&pageParam[]='+arr,
 			'type':'GET',

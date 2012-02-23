@@ -224,7 +224,6 @@ class mail_class extends kernel_extends {
 
 		$param=array('capthaOn'=>1);
 		$data = array();
-
 		if(count($_POST) and $_POST['sbmt']) {
 			$this->kPreFields($_POST,$param);
 			if(isset($_SESSION['user']['email']) and $_SESSION['user']['email']) {
@@ -246,7 +245,10 @@ class mail_class extends kernel_extends {
 			}else
 				$mess = $arr['mess'];
 		} else {
-				$mess = $this->kPreFields($_POST,$param);
+			if(isset($_GET['subject'])) {
+				$_POST['subject'] = $_GET['subject']; 
+			}
+			$mess = $this->kPreFields($_POST,$param);
 		}
 		if(isset($_SESSION['user']['email']) and $_SESSION['user']['email'])
 			unset($this->fields_form["from"]);

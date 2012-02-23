@@ -1,6 +1,10 @@
 <?php
 	//update modul item
-
+		//$param
+		if($this->_CFG['returnFormat'] == 'json') {
+			$param['ajax'] = 1;
+			$param['errMess'] = 1;
+		}
 		$flag=0;// 1 - успешно, 0 - норм, -1  - ошибка
 		$formflag = 1;// 0 - показывает форму, 1 - не показывать форму
 		$arr = array('mess'=>array(),'vars'=>array());

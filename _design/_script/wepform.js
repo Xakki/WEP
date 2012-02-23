@@ -4,6 +4,17 @@ var timerid2 = 0;
 var ajaxComplite = 1;
 
 wep.form = {
+	// Делаем форму на странице аяксовой
+	ajaxForm : function(id,contentID) {
+		var hrf = wep.siteJS+'?';
+		for (var key in wep.pgGet)
+		{
+			hrf += key+'='+wep.pgGet[key]+'&';
+		}
+		$(id).attr('action',hrf+'_modul=pg&_fn=AjaxForm&contentID='+contentID);
+		JSFR(id);
+	},
+
 	// Аякс отправка формы
 	JSFR: function(n) {
 		// NEED INCLUDE jquery.form
@@ -23,8 +34,10 @@ wep.form = {
 				function(result) {
 					//console.log(result);
 					clearTimeout(timerid);
-					timerid2 = setTimeout(function(){fShowload(0);},200);
-					if(result.html!= undefined && result.html!='') jQuery('#ajaxload').html(result.html);
+					if(result.html!= undefined && result.html!='') {
+						wep.fShowload(1,false,result.html);
+					} else
+						timerid2 = setTimeout(function(){wep.fShowload(0);},200);
 					if(result.eval!= undefined && result.eval!='') eval(result.eval);
 					if(result.text!= undefined && result.text!='') fLog(fSpoiler(result.text,'AJAX text result'),1);
 
@@ -136,6 +149,7 @@ function textareaChange(obj,max) {
 function reloadCaptcha(id)
 {
 	jQuery('#'+id).attr('src',"/_captcha.php?"+ Math.random());
+	jQuery('input.secret').attr('value','');
 }
 
 /*PASS FORM*/

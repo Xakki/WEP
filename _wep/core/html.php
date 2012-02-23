@@ -70,8 +70,11 @@ class html {
 		$this->_templates = 'default';
 		$this->_PATHd = $_SERVER['_DR_'] . $_PATHd . $_design . '/';
 		$this->flag = $flag;
+		$_tpl['BH'] = $_CFG['_HREF']['BH'];
+		$_tpl['REQUEST_URI'] = $_SERVER['REQUEST_URI'];
 		$_tpl['design'] = $_CFG['_HREF']['BH'] . $_PATHd . $_design . '/';
 		$_tpl['title'] = $_tpl['time'] = $_tpl['onload'] = $_tpl['logs'] = '';
+		$_tpl['onload2'] = array();
 		$_tpl['script'] = $_tpl['styles'] = array();
 		$params = array(
 			'obj' => &$this,
@@ -85,7 +88,7 @@ class html {
 		$file = $this->_PATHd . 'templates/' . $this->_templates . '.tpl';
 		if ($this->flag and file_exists($file)) {
 			$_html = file_get_contents($file);
-			$_html = addcslashes($_html,'"\\');
+			//$_html = addcslashes($_html,'"\\');
 			include_once($_CFG['_PATH']['core'] . '/includesrc.php');
 			fileInclude($_CFG['fileIncludeOption']);
 			arraySrcToStr();
@@ -322,10 +325,25 @@ function _obHandler($buffer) {
 			$buffer = '<link type="text/css" href="/_design/_style/bug.css" rel="stylesheet"/>
 				<div id="bugmain">'.$buffer.'</div>';
 		$_tpl['logs'] .= $buffer;
-		eval('$_html = "' . $_html . '";');
-		if(strpos($_html,'$_tpl')!==false) {
-			eval('$_html = "' . addcslashes($_html,'"\\') . '";');
+
+		preg_match_all('/\{\$_tpl\[\'([A-z0-9_]+)\'\]\}/u',$_html,$temp);
+		foreach($temp[1] as $k=>$r) {
+			if(!isset($_tpl[$r]))
+				$_tpl[$r] = '';
+			$_html = str_replace($temp[0][$k],$_tpl[$r],$_html);
 		}
+		$_html = str_replace('{$_CFG[\'_HREF\'][\'BH\']}',$_CFG['_HREF']['BH'],$_html);
+		//eval('$_html = "' . $_html . '";');
+
+		if(strpos($_html,'$_tpl')!==false) {
+			preg_match_all('/\{\$_tpl\[\'([A-z0-9_]+)\'\]\}/u',$_html,$temp);
+			foreach($temp[1] as $k=>$r) {
+				if(!isset($_tpl[$r]))
+					$_tpl[$r] = '';
+				$_html = str_replace($temp[0][$k],$_tpl[$r],$_html);
+			}
+		}
+
 		$page = $_html;
 	} else {
 		$page = $_tpl['logs'].$buffer;

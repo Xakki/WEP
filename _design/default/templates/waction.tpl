@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru">
 	<head>
 		<title>{$_tpl['title']}</title>
-		<base href="{$_CFG['_HREF']['BH']}"/>
+		<base href="{$_tpl['BH']}"/>
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 		<meta http-equiv="Pragma" content="no-cache"/>
 		<meta name="keywords" content="{$_tpl['keywords']}"/> 
@@ -51,7 +51,7 @@
 		<div style="height:100%;">
 			<div class="cform">
 				{$_tpl['text']}
-				<span>Через 5 секунд страница автоматический <a href="{$_SERVER['REQUEST_URI']}">перезагрузится</a></span>
+				<span>Через 5 секунд страница автоматический <a href="{$_tpl['REQUEST_URI']}">перезагрузится</a></span>
 			</div>
 		</div>
 	</body>

@@ -1138,8 +1138,8 @@ class static_form {
 	static function _phoneReplace($phone)
 	{
 		$phone_2 = array();
-		$phone_1 = preg_replace("/[^0-9\,]+/",'',$phone);
-		$phone_1 = explode(',',$phone_1);
+		$phone_1 = preg_replace("/[^0-9\,\;]+/",'',$phone);
+		$phone_1 = preg_split("/[\,\;]+/",$phone_1, -1, PREG_SPLIT_NO_EMPTY);
 		foreach($phone_1 as $k=>$p)
 		{
 			$phone_2[] = preg_replace(array(

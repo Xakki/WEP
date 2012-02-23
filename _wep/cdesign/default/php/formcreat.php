@@ -1,6 +1,6 @@
 <?php
 	function tpl_formcreat(&$data) {
-		global $HTML;
+		global $HTML,$_tpl,$PGLIST;
 		$texthtml = '';
 		$texthtml .= '<div class="divform'.((isset($data['css']) and $data['css'])?' '.$data['css']:'').'"';
 		if(isset($data['style']) and $data['style'])
@@ -12,8 +12,12 @@
 		}
 		$flag = 0;
 		if(isset($data['form']) and count($data['form'])) {
-			include_once('form.php');
 			$attr = $data['form']['_*features*_'];
+			$ID = 'form_'.$attr['name'];
+			if(isset($_tpl['script']['script.jquery/form']))
+				$_tpl['onload'] .= 'wep.form.ajaxForm(\'#'.$ID.'\','.$PGLIST->contentID.');';
+
+			include_once('form.php');
 			if (isset($attr['enctype']))
 				if ($attr['enctype'] == '')
 					$enctype = '';
@@ -23,7 +27,7 @@
 				$enctype = ' enctype="multipart/form-data"';
 			if(!isset($attr['action']))
 				$attr['action'] = '';
-			$texthtml .= '<form id="form_'.$attr['name'].'" method="'.$attr['method'].'"'.$enctype.' action="'.$attr['action'].'" ';
+			$texthtml .= '<form id="'.$ID.'" method="'.$attr['method'].'"'.$enctype.' action="'.$attr['action'].'" ';
 			if(isset($attr['onsubmit']))
 				$texthtml .= 'onsubmit="'.$attr['onsubmit'].'"';
 			$texthtml .= '>' . tpl_form($data['form']).'</form>';

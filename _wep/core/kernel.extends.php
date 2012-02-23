@@ -813,7 +813,7 @@ abstract class kernel_extends {
 	 * - showform
 	 * @return array
 	 */
-	public function _UpdItemModul($param) {
+	public function _UpdItemModul($param=array()) {
 		return include($this->_CFG['_PATH']['core'] . 'kernel.UpdItemModul.php');
 	}
 
