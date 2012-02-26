@@ -16,7 +16,7 @@ if (!isset($FUNCPARAM[1]))
 if (!isset($FUNCPARAM[2]))
 	$FUNCPARAM[2] = ''; //Показывать меню начиная с уровня ID page {id page, #1 - использовать id первого уровня адреса, #2 итп}
 if (!isset($FUNCPARAM[3]))
-	$FUNCPARAM[3] = 'menu';
+	$FUNCPARAM[3] = '#pg#menu';
 
 // рисуем форму для админки чтобы удобно задавать параметры
 if (isset($ShowFlexForm)) { // все действия в этой части относительно модуля content

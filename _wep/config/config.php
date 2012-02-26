@@ -80,6 +80,7 @@ $_CFG['require_modul'] = array(
 $_CFG['singleton'] = array(); // Массив объектов которые не клонируются
 $_CFG['hook'] = array(); // События
 $_CFG['cron'] = array(); // cron
+$_CFG['ReflectedClass'] = array(); // cron
 
 $_CFG['logs'] = array(
 	'sql' => array(),
@@ -127,6 +128,7 @@ $_CFG['_PATH']['locallang'] = $_CFG['_PATH']['wepconf'] . 'locallang/'; // яз�
 $_CFG['_PATH']['cron'] = $_CFG['_PATH']['wepconf'] . 'cron/'; // кроны
 $_CFG['_PATH']['weptemp'] = $_CFG['_PATH']['wepconf'] . 'temp/'; // путь к папке для хранения временных файлов
 $_CFG['_PATH']['temp'] = $_CFG['_PATH']['path'] . '_content/temp/'; // путь к папке для хранения временных файлов системы
+$_CFG['_PATH']['content'] = $_CFG['_PATH']['path'] . '_content/'; // путь к папке для хранения временных файлов системы
 $_CFG['_PATH']['log'] = $_CFG['_PATH']['wepconf'] . 'log/';
 
 /* пути для файлов дизайна страниц */
@@ -330,6 +332,8 @@ $_CFG['_error'] = array(
 	),
 );
 
+include $_CFG['_PATH']['core'] . 'static.main.php';
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 /* INCLUDE USER CONF */
@@ -451,8 +455,6 @@ session_name($_CFG['session']['name']);
 session_set_cookie_params($_CFG['session']['expire'], $_CFG['session']['path'], $_CFG['session']['domain'], $_CFG['session']['secure']);
 ini_set('session.cookie_domain', $_CFG['session']['domain']);
 
-
-include $_CFG['_PATH']['core'] . 'static.main.php';
 
 if(!isset($_COOKIE['wep123456'])) {
 	if(!isset($_SERVER['HTTP_REFERER']))

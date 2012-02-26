@@ -174,7 +174,6 @@ abstract class kernel_extends {
 				$this->index_fields =
 				$this->_enum =
 				$this->update_records =
-				$this->def_records =
 				$this->fld_data =
 				$this->fields =
 				$this->form =
@@ -813,7 +812,11 @@ abstract class kernel_extends {
 	 * - showform
 	 * @return array
 	 */
-	public function _UpdItemModul($param=array()) {
+	public function _UpdItemModul($param = array(),&$argForm = null) {
+		if(is_null($argForm)) {
+			$this->getFieldsForm(1);
+			$argForm = &$this->fields_form;
+		}
 		return include($this->_CFG['_PATH']['core'] . 'kernel.UpdItemModul.php');
 	}
 
@@ -823,11 +826,15 @@ abstract class kernel_extends {
 	 * @param array $param параметры
 	 * @return array
 	 */
-	public function kPreFields(&$data, &$param) {
-		$this->getFieldsForm(1); //обнуляем форму
-		foreach ($this->fields_form as $k => &$r) {
+	public function kPreFields(&$f_data, &$f_param = array(), &$f_fieldsForm = null) {
+		if(is_null($f_fieldsForm)) {
+			$this->getFieldsForm(1);
+			$f_fieldsForm = &$this->fields_form;
+		}
+
+		foreach ($f_fieldsForm as $k => &$r) {
 			if (isset($r['readonly']) and $r['readonly'] and $this->id) // если поле "только чтение" и редактируется , то значение берем из БД,
-				$data[$k] = (isset($this->data[$this->id][$k]) ? $this->data[$this->id][$k] : '');
+				$f_data[$k] = (isset($this->data[$this->id][$k]) ? $this->data[$this->id][$k] : '');
 
 			if (isset($r['mask']['eval']))
 				$eval = $r['mask']['eval'];
@@ -837,15 +844,15 @@ abstract class kernel_extends {
 				$eval = $r['mask']['evalu'];
 			elseif ((isset($r['mask']['fview']) and $r['mask']['fview'] == 2) or (isset($r['mask']['usercheck']) and !static_main::_prmGroupCheck($r['mask']['usercheck']))) {
 				$r['mask']['fview'] = 2;
-				unset($data[$k]);
+				unset($f_data[$k]);
 				continue;
 			}
 			if (isset($eval)) {
-				if (isset($data[$k]))
-					$val = $data[$k]; // Переменная используемая в eval
+				if (isset($f_data[$k]))
+					$val = $f_data[$k]; // Переменная используемая в eval
 				else
 					$val = '';
-				$eval = '$data[$k]=' . $eval;
+				$eval = '$f_data[$k]=' . $eval;
 				if (substr($eval, -1) != ';')
 					$eval .= ';';
 				eval($eval);
@@ -863,14 +870,14 @@ abstract class kernel_extends {
 			if (!isset($r['default']) and isset($this->fields[$k]['default']))
 				$r['default'] = $this->fields[$k]['default'];
 
-			if ($k == $this->owner_name and !isset($data[$k])) {
+			if ($k == $this->owner_name and !isset($f_data[$k])) {
 				if (!isset($this->owner->id) and $this->owner->mf_use_charid)
 					$this->owner->id = '';
 				elseif (!isset($this->owner->id))
 					$this->owner->id = 0;
 				$r['value'] = $this->owner->id;
 			}
-			elseif ($k == $this->mf_istree and !isset($data[$k])) {
+			elseif ($k == $this->mf_istree and !isset($f_data[$k])) {
 				if (isset($this->parent_id) and $this->parent_id)
 					$r['value'] = $this->parent_id;
 				elseif (!isset($this->parent_id) and $this->mf_use_charid)
@@ -879,18 +886,18 @@ abstract class kernel_extends {
 					$this->parent_id = 0;
 			}
 			elseif ($r['type'] == 'ckedit') {
-				if (isset($this->memos[$k]) and !count($_POST) and file_exists($data[$k]))
-					$r['value'] = file_get_contents($data[$k]);
-				elseif (isset($data[$k]))
-					$r['value'] = $data[$k];
+				if (isset($this->memos[$k]) and !count($_POST) and file_exists($f_data[$k]))
+					$r['value'] = file_get_contents($f_data[$k]);
+				elseif (isset($f_data[$k]))
+					$r['value'] = $f_data[$k];
 			}
 			elseif (isset($r['multiple']) and $r['multiple'] > 0 and $r['type'] == 'list') {
-				if (isset($data[$k])) {
-					if (!is_array($data[$k])) {
-						$data[$k] = trim($data[$k], '|');
-						$r['value'] = explode('|', $data[$k]);
+				if (isset($f_data[$k])) {
+					if (!is_array($f_data[$k])) {
+						$f_data[$k] = trim($f_data[$k], '|');
+						$r['value'] = explode('|', $f_data[$k]);
 					}else
-						$r['value'] = $data[$k];
+						$r['value'] = $f_data[$k];
 				}
 			}
 			elseif ($r['type'] == 'date') {
@@ -898,10 +905,10 @@ abstract class kernel_extends {
 					$r['mask']['format'] = 'Y-m-d H:i:s';
 			}
 			/* elseif ($r['type'] == 'checkbox') {
-			  $data[$k] = $r['value'] = ((isset($data[$k]) and $data[$k])?1:0);
+			  $f_data[$k] = $r['value'] = ((isset($f_data[$k]) and $f_data[$k])?1:0);
 			  } */
-			if (isset($data[$k]) and !isset($r['value'])) //  and $data[$k]
-				$r['value'] = $data[$k];
+			if (isset($f_data[$k]) and !isset($r['value'])) //  and $f_data[$k]
+				$r['value'] = $f_data[$k];
 
 			if (isset($this->id) and isset($this->data[$this->id]['_ext_' . $k]))
 				$r['ext'] = $this->data[$this->id]['_ext_' . $k];
@@ -912,38 +919,38 @@ abstract class kernel_extends {
 			//end foreach
 		}
 
-		if (!isset($param['captchaOn'])) {
+		if (!isset($f_param['captchaOn'])) {
 			if (!isset($_SESSION['user']['id']))
-				$param['captchaOn'] = true;
+				$f_param['captchaOn'] = true;
 			else
-				$param['captchaOn'] = false;
+				$f_param['captchaOn'] = false;
 		}
-		if (count($this->fields_form) and $param['captchaOn']) {
+		if (count($f_fieldsForm) and $f_param['captchaOn']) {
 			$LEN = 5;
 			$DIF = 1;
-			if (is_array($param['captchaOn'])) {
-				if (isset($param['captchaOn']['len']))
-					$LEN = $param['captchaOn']['len'];
-				if (isset($param['captchaOn']['dif']))
-					$DIF = $param['captchaOn']['dif'];
+			if (is_array($f_param['captchaOn'])) {
+				if (isset($f_param['captchaOn']['len']))
+					$LEN = $f_param['captchaOn']['len'];
+				if (isset($f_param['captchaOn']['dif']))
+					$DIF = $f_param['captchaOn']['dif'];
 			}
 			//$LEN,$DIF
-			$this->fields_form['captcha'] = array(
+			$f_fieldsForm['captcha'] = array(
 				'type' => 'captcha',
 				'caption' => static_main::m('_captcha', $this),
 				'captcha' => static_form::getCaptcha(),
 				'src' => $this->_CFG['_HREF']['captcha'] . '?' . rand(0, 9999),
-				'value' => (isset($data['captcha']) ? $data['captcha'] : ''),
+				'value' => (isset($f_data['captcha']) ? $f_data['captcha'] : ''),
 				'mask' => array('min' => 1, 'max' => $LEN, 'dif' => $DIF));
 			if (0) {
-				$this->fields_form['captcha']['error'] = array('У вас отключены Куки');
+				$f_fieldsForm['captcha']['error'] = array('У вас отключены Куки');
 			}
 		}
 
 		$mess = array();
 		if (isset($this->mess_form) and count($this->mess_form))
 			$mess = $this->mess_form;
-		if (!count($this->fields_form))
+		if (!count($f_fieldsForm))
 			$mess[] = array('name' => 'error', 'value' => static_main::m('nodata', $this));
 		if (isset($this->_CFG['hook']['kPreFields']))
 			$this->__do_hook('kPreFields', func_num_args());
@@ -1010,7 +1017,7 @@ abstract class kernel_extends {
 	 * @param mixed $param - параметры
 	 * @return array
 	 */
-	public function kFields2Form(&$param) {
+	public function kFields2Form(&$param, &$fields_form=null) {
 		/*
 		  $this->form['уник название'] = array(
 		  обяз*	'type'=>'ТИП(submit,info,hidden,checkbox,list,int,text,textarea)',
@@ -1024,7 +1031,11 @@ abstract class kernel_extends {
 		  'min'=>2//0 -не обязательное поле,)
 		  );
 		 */
-		if (!is_array($this->fields_form) or !count($this->fields_form))
+		if(is_null($fields_form)) {
+			$this->getFieldsForm(1); //обнуляем форму
+			$fields_form = &$this->fields_form;
+		}
+		if (!is_array($fields_form) or !count($fields_form))
 			return false;
 		$this->form = array();
 		$this->form['_*features*_'] = array('type' => 'info', 'name' => $this->_cl, 'method' => 'post', 'id' => $this->id, 'action' => $_SERVER['REQUEST_URI']);
@@ -1034,7 +1045,7 @@ abstract class kernel_extends {
 		else
 			$this->form['_info']['caption'] = static_main::m('add_name', array($this->caption), $this);
 
-		$this->kFields2FormFields($this->fields_form);
+		$this->kFields2FormFields($fields_form);
 		if (!$this->id or (isset($this->data[$this->id]) and $this->_prmModulEdit($this->data[$this->id], $param))) {
 			$this->form['sbmt'] = array(
 				'type' => 'submit',
@@ -2230,6 +2241,9 @@ abstract class kernel_extends {
 					$s[$key]['#name#'] = $value;
 				if ($key != $id and isset($data[$key]) and count($data[$key]) and is_array($data[$key]))
 					$s[$key]['#item#'] = $this->_forlist($data, $key, $select, $multiple);
+				/*Если это использовать то проверка данных сломается*/
+				//if (isset($value['#item#']) and is_array($value['#item#']) and count($value['#item#']))
+				//	$s[$key]['#item#'] = $value['#item#']+$s[$key]['#item#'];
 			}
 		return $s;
 	}

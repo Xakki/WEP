@@ -15,8 +15,8 @@ if(!isset($var_const))
 		'sbmt'=>'Сохранить'
 	);
 //$_CFG['modulprm'] = array();
-
-_new_class('modulprm', $MODUL);
+$temp = null;
+_new_class('modulprm', $MODUL, $temp, true);
 //Форма установки модулей
 list($res, $DATA) = static_tools::_toolsCheckmodul($MODUL);
 if ($res == 1) {

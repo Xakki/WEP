@@ -47,14 +47,17 @@
 			$_CFG['wep']['catch_bug'] = 0;
 
 			$this->hlink = @mysqli_connect($this->SQL_CFG['host'], $this->SQL_CFG['login'], $this->SQL_CFG['password']);
-			if(!$this->hlink) {
+
+			if(!$this->hlink) return false;
+
+			if(!$this->hlink and !isset($this->SQL_CFG['nonstop'])) {
 				$_CFG["site"]["work_text"] = '<err>'.static_main::m('Can`t connect to SQL server').'</err>';
 				static_main::downSite();
 			}
 
 			$_CFG['wep']['catch_bug'] = $temp;
-
-			mysqli_query($this->hlink,"SET time_zone = '".date_default_timezone_get()."'");
+			if($this->hlink)
+				mysqli_query($this->hlink,"SET time_zone = '".date_default_timezone_get()."'");
 			return true;
 		}
 

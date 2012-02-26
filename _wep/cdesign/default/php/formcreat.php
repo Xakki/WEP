@@ -1,23 +1,27 @@
 <?php
 	function tpl_formcreat(&$data) {
-		global $HTML,$_tpl,$PGLIST;
+		global $HTML,$_tpl,$PGLIST,$_CFG;
 		$texthtml = '';
 		$texthtml .= '<div class="divform'.((isset($data['css']) and $data['css'])?' '.$data['css']:'').'"';
 		if(isset($data['style']) and $data['style'])
 			$texthtml .= ' style="'.$data['style'].'"';
 		$texthtml .= '>';
+
+		if(!isset($data['DIR']))
+			$data['DIR'] = __DIR__;
+
 		if(isset($data['messages']) and count($data['messages'])) {
-			include_once('messages.php');
+			include_once($data['DIR'].'/messages.php');
 			$texthtml .= tpl_messages($data['messages']);// messages
 		}
 		$flag = 0;
 		if(isset($data['form']) and count($data['form'])) {
 			$attr = $data['form']['_*features*_'];
 			$ID = 'form_'.$attr['name'];
-			if(isset($_tpl['script']['script.jquery/form']))
+			if((isset($_tpl['script']['script.jquery/form']) or isset($_CFG['fileIncludeOption']['jqueryform']) ) and isset($PGLIST->contentID))
 				$_tpl['onload'] .= 'wep.form.ajaxForm(\'#'.$ID.'\','.$PGLIST->contentID.');';
 
-			include_once('form.php');
+			include_once($data['DIR'].'/form.php');
 			if (isset($attr['enctype']))
 				if ($attr['enctype'] == '')
 					$enctype = '';
@@ -37,7 +41,7 @@
 				$flag = 1;
 		}
 		if(isset($data['path']) and count($data['path'])) {
-			include_once('path.php');
+			include_once($data['DIR'].'/path.php');
 			$texthtml = tpl_path($data['path'],$flag).$texthtml;// PATH
 		}
 		$texthtml .= '</div>';

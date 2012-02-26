@@ -11,7 +11,7 @@
 		<script type="text/javascript" src="_design/_script/jquery.js"></script>
 		<script type="text/javascript" src="_design/_script/include.js"></script>
 		<script type="text/javascript" src="_design/_script/wep.js"></script>
-		<script type="text/javascript" src="_design/_script/form.js"></script>
+		<script type="text/javascript" src="_design/_script/wepform.js"></script>
 		<link type="text/css" href="_design/_style/form.css" rel="stylesheet"/>
 		<link type="text/css" href="_design/_style/install.css" rel="stylesheet"/>
 	</head>

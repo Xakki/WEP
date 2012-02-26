@@ -1,5 +1,5 @@
 <?php
-	function tpl_productitems(&$data) {
+	function tpl_productItem(&$data) {
 		$html = '';
 
 		$html = '<div class="prodpage">';
@@ -28,7 +28,7 @@
 
 				$html .= '</div>
 					<div class="prodparam">'.$r['descr'].'</div><br/>
-					<div class="prodcost">'.$r['cost'].'</div> <a href="##zakaz" alt="Подать заявку на покупку" onclick="return JSWin({\'href\':\''.$_CFG['_HREF']['siteAJAX'].'?_modul=catalog&_fn=jsOrder&id='.$r['id'].'\'});">Заказать</a>
+					<div class="prodcost">'.$r['cost'].'</div> <a href="##zakaz" alt="Подать заявку на покупку" onclick="return JSWin({\'href\':\''.$_CFG['_HREF']['siteAJAX'].'?_modul=shop&_fn=jsOrder&id='.$r['id'].'\'});">Заказать</a>
 					<div class="prodtext">'.$r['text'].'</div>
 				</div>';
 			}

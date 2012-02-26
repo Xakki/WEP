@@ -239,8 +239,10 @@ class static_form {
 			$_this->fld_data['mf_timeup'] = $_this->_CFG['time'];
 		if($_this->mf_timeoff and !isset($_this->fld_data['mf_timeoff']) and isset($_this->fld_data[$_this->mf_actctrl]) and !$_this->fld_data[$_this->mf_actctrl] and $_this->data[$_this->id][$_this->mf_actctrl]) 
 			$_this->fld_data['mf_timeoff'] = $_this->_CFG['time'];
-		//if($_this->mf_ipcreate) 
-		//	$_this->fld_data['mf_ipcreate'] = ip2long($_SERVER['REMOTE_ADDR']);
+		if($_this->mf_ipcreate) {
+			unset($_this->fld_data['mf_ipcreate']);
+		}
+
 		// rename attaches & memos
 		if (!is_array($_this->id) and isset($_this->fld_data['id']) && $_this->fld_data['id'] != $_this->id) {
 			if (!self::_rename_parent_childs($_this)) return false;

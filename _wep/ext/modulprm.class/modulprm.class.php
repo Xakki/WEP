@@ -336,13 +336,14 @@ final class modulprm_class extends kernel_extends {
 	//Обновление базы всех модулей
 	public function _checkmodstruct() {
 		$rDATA = array();
+		$temp = NULL;
 		/*Установка и проверка главных модулей*/
 		//$this->_CFG['modulprm'] = array();
 		$this->_CFG['modulprm2'] = $this->_CFG['modulprm'];
 		if(!isset($_POST['sbmt'])) {
 			$_POST['sbmt'] = 1;
 			foreach($this->_CFG['require_modul'] as $k=>$r) {
-				_new_class($k, $MODUL);
+				_new_class($k, $MODUL,$temp, true);
 				$temp = static_tools::_checkTableRev($MODUL);
 				if(count($temp))
 					$rDATA = array_merge($rDATA, $temp);
@@ -576,24 +577,13 @@ final class modulprm_class extends kernel_extends {
 
 		if (!isset($this->guserData)) {
 			$this->guserData = array();
-			_new_class('ugroup', $UGROUP);
-			$result = $this->SQL->execSQL('SELECT id,name,level FROM ' . $UGROUP->tablename . ' WHERE level>0'); //админов не учитываем
-			if ($result->err) {
-				exit();
-			}
-			while ($row = $result->fetch()) {
-				//if($row['level']==5) $row['id'] = 0;
-				$this->guserData[$row['id']] = $row;
+			if(_new_class('ugroup', $UGROUP)) {
+				$this->guserData = $UGROUP->qs('id,name,level',' WHERE level>0','id'); //админов не учитываем
 			}
 		}
 		if (!isset($this->modulgrpData)) {
-			$this->modulgrpData = array();
-			$result = $this->SQL->execSQL('SELECT * FROM ' . $this->childs['modulgrp']->tablename);
-			if ($result->err){
-				exit();
-			}
-			while ($row = $result->fetch())
-				$this->modulgrpData[$row['owner_id']][$row['ugroup_id']] = $row;
+			$this->modulgrpData = $this->childs['modulgrp']->qs('*','','ugroup_id','owner_id');
+
 		}
 		$this->_CFG['temp_modulprm_ext'] = $this->_CFG['modulprm_ext'];unset($this->_CFG['modulprm_ext']);
 		return true;

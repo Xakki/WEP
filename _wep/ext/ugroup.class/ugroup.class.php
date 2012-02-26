@@ -127,11 +127,11 @@ class ugroup_class extends kernel_extends
 		}
 	}
 
-	function setSystemFields() {
+	function _setDefaultRecords() {
 		$this->def_records[1] = array('id'=>1,$this->mf_namefields=>'Администраторы','level'=>0,'filesize'=>'100','active'=>1,'design'=>'default','wep'=>1);
 		$this->def_records[2] = array('id'=>2,$this->mf_namefields=>'Пользователи','level'=>2,'filesize'=>'0','active'=>1,'design'=>'default','wep'=>0);
 		$this->def_records[3] = array('id'=>3,$this->mf_namefields=>'Гости','level'=>5,'filesize'=>'0','active'=>1,'design'=>'default','wep'=>0);
-		return parent::setSystemFields();
+		return parent::_setDefaultRecords();
 	}
 
 	function _childs() {
@@ -292,7 +292,7 @@ class users_class extends kernel_extends {
 			$this->create_child('invite');
 	}
 
-	function setSystemFields() {
+	function _setDefaultRecords() {
 		$this->def_records[1] = array(
 			$this->fn_login => $this->_CFG['wep']['login'],
 			$this->mf_namefields=>'Администратор',
@@ -301,7 +301,7 @@ class users_class extends kernel_extends {
 			'mf_timecr'=>time(),
 			'owner_id'=>1,
 			'reg_hash'=>1);
-		return parent::setSystemFields();
+		return parent::_setDefaultRecords();
 	}
 
 	function updateLastVisit() {

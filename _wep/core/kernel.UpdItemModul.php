@@ -1,5 +1,6 @@
 <?php
 	//update modul item
+
 		//$param
 		if($this->_CFG['returnFormat'] == 'json') {
 			$param['ajax'] = 1;
@@ -24,14 +25,14 @@
 						$formflag=0;
 					}
 					else {
-						$mess = $this->kPreFields($_POST,$param);
-						$arr = $this->fFormCheck($_POST,$param,$this->fields_form);
+						$mess = $this->kPreFields($_POST,$param,$argForm);
+						$arr = $this->fFormCheck($_POST,$param,$argForm);
 						if(!count($arr['mess'])) {
 							if($rm = $this->_update($arr['vars'])) {
 								$flag=1;
 								$arr['mess'][] = static_main::am('ok','update',array($this->tablename),$this);
 								if($formflag)// кастыль
-									$mess = $this->kPreFields($this->data[$this->id],$param);
+									$mess = $this->kPreFields($this->data[$this->id],$param,$argForm);
 							} else {
 								$arr['mess'][] = static_main::am('error','update_err',$this);
 							}
@@ -41,9 +42,9 @@
 				else {
 					$flag=0;
 					$tempdata = $this->data[$this->id];
-					$mess = $this->kPreFields($tempdata,$param);
+					$mess = $this->kPreFields($tempdata,$param,$argForm);
 				}
-				if(isset($this->fields_form['captcha']))
+				if(isset($argForm['captcha']))
 					static_form::setCaptcha();
 			} else {
 				$arr['mess'][] = static_main::am('error','nodata',$this);
@@ -56,8 +57,8 @@
 				$flag=-1;
 			}
 			elseif(count($_POST) and (isset($_POST['sbmt']) or isset($_POST['sbmt_save']))) {
-				$this->kPreFields($_POST,$param);
-				$arr = $this->fFormCheck($_POST,$param,$this->fields_form);
+				$this->kPreFields($_POST,$param,$argForm);
+				$arr = $this->fFormCheck($_POST,$param,$argForm);
 				$flag=-1;//print_r('<pre>');print_r($arr);exit();
 				if(!count($arr['mess'])) {
 					if($rm = $this->_add($arr['vars'])) {
@@ -68,8 +69,8 @@
 				}
 			}
 			else 
-				$mess = $this->kPreFields($arr['vars'],$param);
-			if(isset($this->fields_form['captcha']))
+				$mess = $this->kPreFields($_POST,$param,$argForm);
+			if(isset($argForm['captcha']))
 				static_form::setCaptcha();
 		}
 		if(isset($param['formflag']))
@@ -83,6 +84,6 @@
 		elseif(isset($param['ajax']))
 			$formflag = 0;
 		if($formflag) // показывать форму
-			$formflag = $this->kFields2Form($param);
+			$formflag = $this->kFields2Form($param,$argForm);
 
 		return Array(Array('messages'=>array_merge($mess,$arr['mess']), 'form'=>($formflag?$this->form:array())), $flag);

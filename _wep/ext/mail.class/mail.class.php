@@ -17,7 +17,9 @@ class mail_class extends kernel_extends {
 		$this->_AllowAjaxFn['jsGetUserData'] = true;
 
 		$this->default_access = '|0|';
-		
+		$this->lang['add'] = 'Письмо успешно отправленно!';
+		$this->lang['add_err'] = 'Ошибка отправки письма! Информация о данной ошибке уже сообщена авминистратору и проблема разрешится в течении суток.';
+
 		return true;
 	}
 
@@ -41,15 +43,15 @@ class mail_class extends kernel_extends {
 		$this->config['mailengine'] = 0;
 		$this->config['mailcron'] = 0;
 		$this->config['mailcronlimit'] = 5;
-		$this->config['mailrobot'] = 'robot@xakki.ru';
+		$this->config['mailrobot'] = 'robot@'.$this->_CFG['site']['www'];
 		$this->config['fromName'] = '';
-		$this->config['PHPMailer_Host'] = 'ssl://smtp.gmail.com:465';
-		$this->config['PHPMailer_Username'] = 'usermail@gmail.com';
-		$this->config['PHPMailer_Password'] = 'longpassword';
+		$this->config['PHPMailer_Host'] = '';
+		$this->config['PHPMailer_Username'] = '';
+		$this->config['PHPMailer_Password'] = '';
 		$this->config['PHPMailer_Debug'] = 0;
 		$this->config['PHPMailer_Secure'] = '';
 		$this->config['mailtemplate'] = '<html><head><title>%SUBJECT%</title><meta content="text/html;charset=utf-8" http-equiv="Content-Type" /></head><body>%TEXT% %MAILBOTTOM%</body></html>';
-		$this->config['mailbottom'] = '<hr/>© 2011 «XAKKI»';
+		$this->config['mailbottom'] = '<hr/>© '.date('Y').' «'.$this->_CFG['site']['www'].'»';
 		$this->config['phpmailer'] = '<h4>Email отправителя %MAILFROM%</h4> <span>Чтобы ответить пользователю, пользуйтесь кнопой "ответить" или копируйте адрес вручную.</span><hr/>';
 
 		$this->config_form['mailcron'] = array('type' => 'checkbox', 'caption' => 'CRON - Отправалять почту');
@@ -57,8 +59,8 @@ class mail_class extends kernel_extends {
 		$this->config_form['mailengine'] = array('type' => 'list', 'listname'=>'mailengine', 'caption' => 'Обработчик почты');
 		$this->config_form['mailrobot'] = array('type' => 'text', 'mask' =>array('min'=>1,'name'=>'email'), 'caption' => 'Адрес Робота');
 		$this->config_form['fromName'] = array('type' => 'text', 'caption' => 'Имя отправителя (название сайта)');
-		$this->config_form['PHPMailer_Host'] = array('type' => 'text', 'caption' => 'PHPMailer_Host', 'mask' =>array('name'=>'all'),'style'=>'background:#30B120;');
-		$this->config_form['PHPMailer_Username'] = array('type' => 'text', 'caption' => 'PHPMailer_Username', 'mask' =>array('name'=>'all'),'style'=>'background:#30B120;');
+		$this->config_form['PHPMailer_Host'] = array('type' => 'text', 'caption' => 'PHPMailer_Host', 'comment'=>'ssl://smtp.gmail.com:465', 'mask' =>array('name'=>'all'),'style'=>'background:#30B120;');
+		$this->config_form['PHPMailer_Username'] = array('type' => 'text', 'caption' => 'PHPMailer_Username', 'comment'=>'usermail@gmail.com', 'mask' =>array('name'=>'all'),'style'=>'background:#30B120;');
 		$this->config_form['PHPMailer_Password'] = array('type' => 'text', 'caption' => 'PHPMailer_Password', 'mask' =>array('name'=>'all'),'style'=>'background:#30B120;');
 		$this->config_form['PHPMailer_Debug'] = array('type' => 'list', 'listname'=>'PHPMailer_Debug', 'caption' => 'Дебаг','style'=>'background:#30B120;');
 		$this->config_form['PHPMailer_Secure'] = array('type' => 'list', 'listname'=>'SMTPSecure', 'caption' => 'SMTPSecure','style'=>'background:#30B120;');
@@ -213,57 +215,25 @@ class mail_class extends kernel_extends {
 	}
 
 	function mailForm($mail_to='',$category=0) {
-		global $_MESS;
-		$flag=0;// 1 - успешно, 0 - норм, -1  - ошибка
-		$formflag = 1;// 0 - показывает форму, 1 - не показывать форму
-		$mess = array();
-		
-		/*if(!$mail_to) {
-			$mail_to = $this->config['mailrobot'];
-		}*/
+		$this->formSort = array(
+			'from','subject','text','category','mail_to'
+		);
 
-		$param=array('capthaOn'=>1);
-		$data = array();
-		if(count($_POST) and $_POST['sbmt']) {
-			$this->kPreFields($_POST,$param);
-			if(isset($_SESSION['user']['email']) and $_SESSION['user']['email']) {
-				$_POST["from"] = $_SESSION['user']['email'];
-			}
-			$arr = $this->fFormCheck($_POST,$param,$this->fields_form);
-			$flag=-1;
-			if(!count($arr['mess'])) {
-				$arr['vars']['mail_to']=$mail_to;
-				$arr['vars']['category']=$category;
-				if($this->Send($arr['vars'])) {
-					$flag=1;
-					$mess[] = static_main::am('ok','mailok',$this);
-					// иногда сервер говорит что ошибка, а сам всеравно письма отсылает
-				} else {
-					$flag=-1;
-					$mess[] = static_main::am('error','mailerr',$this);
-				}
-			}else
-				$mess = $arr['mess'];
-		} else {
-			if(isset($_GET['subject'])) {
-				$_POST['subject'] = $_GET['subject']; 
-			}
-			$mess = $this->kPreFields($_POST,$param);
+		$this->getFieldsForm(1);
+		$argForm = $this->fields_form;
+
+		$argForm['category']['mask']['evala'] = '"'.$category.'";';
+		$argForm['category']['readonly'] = true;
+		$argForm['mail_to']['mask']['evala'] = '"'.$mail_to.'";';
+		$argForm['mail_to']['readonly'] = true;
+		if(isset($_SESSION['user']['email']) and $_SESSION['user']['email']) {
+			$argForm['from']['mask']['evala'] = '"'.$_SESSION['user']['email'].'";';
+			$argForm['from']['readonly'] = true;
 		}
-		if(isset($_SESSION['user']['email']) and $_SESSION['user']['email'])
-			unset($this->fields_form["from"]);
-		if(isset($this->fields_form['captcha']))
-			static_form::setCaptcha();
-
-		if($flag==1)
-			$formflag = 0;
-		if($formflag) // показывать форму , также если это АЯКС и 
-			$formflag = $this->kFields2Form($param);
-
-		static_form::setCaptcha();
-
-		return Array(Array('messages'=>$mess, 'form'=>($formflag?$this->form:array())), $flag);
-
+		if(isset($_GET['subject']) and !count($_POST)) {
+			$_POST['subject'] = $_GET['subject']; 
+		}
+		return $this->_UpdItemModul(array('capthaOn'=>1),$argForm);
 	}
 
 	function mailengine0 ($data) {

@@ -8,7 +8,7 @@
  * @return $html
  */
 	if(!isset($FUNCPARAM[0]) or $FUNCPARAM[0] == '') $FUNCPARAM[0] = '';
-	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = 'superlist';
+	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = '#pg#superlist';
 	if(!isset($FUNCPARAM[2])) $FUNCPARAM[2] = 0;
 	if(!isset($FUNCPARAM[3])) $FUNCPARAM[3] = 0;
 	if(!isset($FUNCPARAM[4])) $FUNCPARAM[4] = 1;
@@ -39,12 +39,14 @@
 		$html = '<div style="color:red;">'.date('H:i:s').' : Модуль '.$FUNCPARAM[0].' не установлен</div>';
 	}
 	else {
+		$_CFG['fileIncludeOption']['jqueryform'] = 1;
+
 		if(!$FUNCPARAM[1]) $FUNCPARAM[1] = 'superlist';
 		if(isset($_GET['_oid']) and $_GET['_oid']!='') $MODUL->owner_id = $_GET['_oid'];
 		if(isset($_GET['_pid']) and $_GET['_pid']!='') $MODUL->parent_id = $_GET['_pid'];
 		if(isset($_GET['_id']) and $_GET['_id']!='') $MODUL->id = $_GET['_id'];
 		if(!isset($_GET['_type'])) $_GET['_type'] = '';
-		if(!isset($_GET['_modul'])) $_GET['_modul'] = $FUNCPARAM[0];
+		$_GET['_modul'] = $FUNCPARAM[0];
 
 		if(static_main::_prmModul($FUNCPARAM[0],array(1,2))) {
 			global $HTML;
@@ -60,44 +62,53 @@
 				$param['filter'] = true;
 			else
 				$param['filter'] = false;
+
 			$param['firstpath'] = $PGLIST->_CFG['_HREF']['BH'].$PGLIST->current_path;
-			list($DATA,$flag) = $MODUL->super_inc($param,$_GET['_type']);
 
-			// Adept path
-			$path = array();
-			$temp = $DATA['firstpath'];
-			foreach($DATA['path'] as $r) {
-				foreach($r['path'] as $kp=>$rp)
-					$temp .= $kp.'='.$rp.'&';
-				$path[$temp] = $r['name'];
-			}
-			array_pop($PGLIST->pageinfo['path']);
-			$DATA['path'] = $PGLIST->pageinfo['path'] = $PGLIST->pageinfo['path']+$path;
+			list($DATA,$this->formFlag) = $MODUL->super_inc($param,$_GET['_type']);
 
-			if(isset($DATA['formcreat'])) {
-				end($DATA['path']);prev($DATA['path']);
-				$DATA['formcreat']['form']['_*features*_']['prevhref'] = str_replace('&amp;', '&', key($DATA['path']));
-			}
+			if($this->_CFG['returnFormat'] == 'html' or $this->formFlag==3) {
+				// Adept path
+				$path = array();
+				$temp = $DATA['firstpath'];
+				foreach($DATA['path'] as $r) {
+					foreach($r['path'] as $kp=>$rp)
+						$temp .= $kp.'='.$rp.'&';
+					$path[$temp] = $r['name'];
+				}
+				if(isset($PGLIST->pageinfo['path'])) {
+					array_pop($PGLIST->pageinfo['path']);
+					$DATA['path'] = $PGLIST->pageinfo['path'] = $PGLIST->pageinfo['path']+$path;
+				}
 
-			if(isset($DATA['formcreat']) and $flag==1) {
-				$_SESSION['mess']=$DATA['formcreat']['messages'];
-				static_main::redirect($DATA['formcreat']['form']['_*features*_']['prevhref']);
-			}
-			elseif(!isset($DATA['formcreat']) and $flag!=3) {
-				$_SESSION['mess']=$DATA['messages'];
-				end($DATA['path']);
-				static_main::redirect(str_replace("&amp;", "&", key($DATA['path'])));
-			}
-			else {
-				if(!isset($_SESSION['mess']) or !is_array($_SESSION['mess'])) 
-					$_SESSION['mess']= array();
-				elseif(count($_SESSION['mess']))
-					$DATA['messages'] += $_SESSION['mess'];
-				unset($DATA['path']);
-				$DATA = array($FUNCPARAM[1]=>$DATA);
-				$html = $HTML->transformPHP($DATA,$FUNCPARAM[1]);
-				$_SESSION['mess'] = array();
-				$_CFG['fileIncludeOption']['form'] = 1;
+				if(isset($DATA['formcreat'])) {
+					end($DATA['path']);prev($DATA['path']);
+					$DATA['formcreat']['form']['_*features*_']['prevhref'] = str_replace('&amp;', '&', key($DATA['path']));
+				}
+				
+				if(isset($DATA['formcreat']) and $this->formFlag==1) {
+					 $_SESSION['mess']=$DATA['formcreat']['messages'];
+					static_main::redirect($DATA['formcreat']['form']['_*features*_']['prevhref']);
+				}
+				elseif(!isset($DATA['formcreat']) and $this->formFlag!=3) {
+					$_SESSION['mess']=$DATA['messages'];
+					end($DATA['path']);
+					static_main::redirect(str_replace("&amp;", "&", key($DATA['path'])));
+				}
+				else {
+					if(!isset($_SESSION['mess']) or !is_array($_SESSION['mess'])) 
+						$_SESSION['mess']= array();
+					elseif(count($_SESSION['mess']))
+						$DATA['messages'] += $_SESSION['mess'];
+					unset($DATA['path']);
+					$DATA = array($FUNCPARAM[1]=>$DATA);
+					$html = $HTML->transformPHP($DATA,$FUNCPARAM[1]);
+					$_SESSION['mess'] = array();
+				}
+			} else {
+				if(count($DATA['formcreat']['messages']))
+					$DATA = $DATA['formcreat'];
+				$html = $HTML->transformPHP($DATA,'#pg#messages');
 			}
 
 		}

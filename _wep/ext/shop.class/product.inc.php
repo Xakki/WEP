@@ -1,14 +1,35 @@
 <?php
-	if(!isset($FUNCPARAM[0]) or !$FUNCPARAM[0]) $FUNCPARAM[0] = 'productitems';
-	global $PRODUCT, $_CFG;
+/**
+ * Страница одного товара
+ * @ShowFlexForm true
+ * @author Xakki
+ * @version 0.1 
+ * @return $form
+ * @return $html
+ */
+
+	if(!$FUNCPARAM[0]) $FUNCPARAM[0] = '#shop#productItem';
+	//if(!$FUNCPARAM[1]) $FUNCPARAM[1] = '0';
+
+	// рисуем форму для админки чтобы удобно задавать параметры
+	if (isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
+		$form = array(
+			'0' => array('type' => 'list', 'listname' => 'phptemplates', 'caption' => 'Шаблон'),
+			//'1'=>array('type'=>'list','listname'=>'levelmenuinc', 'caption'=>'Страница каталога'),
+		);
+		return $form;
+	}
+
+	if(!_new_class('shop',$SHOP)) return false;
+
 	$html='';
-	_new_class('catalog',$CATALOG);
-	$PRODUCT = &$CATALOG->childs['product'];
+
+	$PRODUCT = &$SHOP->childs['product'];
 	if(isset($_GET['id']) and $id = (int)$_GET['id']) {
 		$DATA= array($FUNCPARAM[0]=>$PRODUCT->fDisplay($id));
 		$html = $HTML->transformPHP($DATA,$FUNCPARAM[0]);
 		if(isset($PRODUCT->data[$id]) and count($PRODUCT->data[$id])) {
-			$PRODUCT->data[$id]['catalogs'] = array_reverse($PRODUCT->data[$id]['catalogs']);
+			$PRODUCT->data[$id]['shops'] = array_reverse($PRODUCT->data[$id]['shops']);
 			$temp = $this->pageinfo['path'];$tcnt = count($temp);
 			$this->pageinfo['path'] = array();
 			$c=1;
@@ -20,15 +41,15 @@
 					$this->pageinfo['path'][$tk]['name'] = $PRODUCT->data[$id]['name'];
 				}
 				else {
-					foreach($PRODUCT->data[$id]['catalogs'] as $rr)
-						$this->pageinfo['path'][$CATALOG->data2[$rr['id']]['lname'].'/'.$PGLIST->getHref($tk)] = $rr['name'];
+					foreach($PRODUCT->data[$id]['shops'] as $rr)
+						$this->pageinfo['path'][$SHOP->data2[$rr['id']]['path'].'/'.$PGLIST->getHref($tk)] = $rr['name'];
 				}
 				$c++;
 			}
-		}else
+		} else
 			header("HTTP/1.0 404");
 
-		if(count($PRODUCT->data) and isset($PRODUCT->childs['productcomments']) and ($PRODUCT->config['onComm']=='2' or $PRODUCT->data[$id]['on_comm'])) {
+		/*if(count($PRODUCT->data) and isset($PRODUCT->childs['productcomments']) and ($PRODUCT->config['onComm']=='2' or $PRODUCT->data[$id]['on_comm'])) {
 
 			$MODUL_COMM = &$PRODUCT->childs['productcomments'];
 			$_tpl['script']['form'] = 1;
@@ -49,7 +70,8 @@
 
 			$html .= $HTML->transformPHP($DATA2,'comments').'<span onclick="loadFormComm(this,'.$MODUL_COMM->owner->id.',\''.$MODUL_COMM->_cl.'\')" class="jshref button_comm">'.$MODUL_COMM->lang['_saveclose'].'</span>';
 
-		}
+		}*/
+
 	}else {
 		header("HTTP/1.0 404");
 		$html = '<div class="divform">	<div class="messages"><div class="error">Ссылка не верна. Вероятно товар был удален с сайта.</div></div></div>';

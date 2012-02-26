@@ -18,7 +18,10 @@
 		<div class="header">
 			{$_tpl['head']}
 		</div>
-		<div class="center">
+		<div class="leftblock">
+			{$_tpl['leftblock']}
+		</div>
+		<div class="center" style="margin:0 0 0 200px;">
 			{$_tpl['path']}
 			<div class="text">
 				{$_tpl['text']}
@@ -27,7 +30,9 @@
 		<div class="clear"></div>
 		
 		<div class="footer">
-			{$_tpl['foot']}
+			<div class="block">
+				{$_tpl['foot']}
+			</div>
 		</div>
 		<!--{$_tpl['time']}-->
 	</body>

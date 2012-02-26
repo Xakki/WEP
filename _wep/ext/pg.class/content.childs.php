@@ -41,13 +41,6 @@ class content_class extends kernel_extends {
 		$this->owner->_listnameSQL = 'template, name';
 	}
 
-	function setSystemFields() {
-		$this->def_records[] = array('owner_id' => 1, 'pg' => 'Сайт на стадии разработки', 'marker' => 'text', 'active' => 1);
-		$this->def_records[] = array('owner_id' => 2, 'pg' => 'СТраница не существует. Возможно была удалена.', 'marker' => 'text', 'active' => 1);
-		$this->def_records[] = array('owner_id' => 3, 'pg' => 'Недостаточно прав для доступа к странице', 'marker' => 'text', 'active' => 1);
-		return parent::setSystemFields();
-	}
-
 	public function setFieldsForm($form = 0) {
 		# fields
 		$this->fields_form['owner_id'] = array('type' => 'list', 'listname' => 'ownerlist', 'caption' => 'На странице');
@@ -92,10 +85,15 @@ class content_class extends kernel_extends {
 		$data = array();
 		if ($listname == 'pagetype') {
 			return $this->getInc();
-		} elseif ($listname == 'ugroup') {
+		} 
+		elseif ($listname == 'ugroup') {
 			return $this->owner->_getlist($listname, $value);
-		} elseif ($listname == 'marker') {
+		} 
+		elseif ($listname == 'marker') {
 			return $this->owner->config['marker'];
+		}
+		elseif ($listname == 'content') {
+			return $this->getContentList();
 		}
 		else
 			return parent::_getlist($listname, $value);
@@ -103,6 +101,19 @@ class content_class extends kernel_extends {
 		  return $this->owner->_getlist($listname,$value);
 		  } */
 		return $data;
+	}
+
+	function getContentList() {
+		$contentData = $this->qs('id as `#id#`,concat(id," - ",name," [",marker,"] ",pagetype) as `#name#`,"1" as `#checked#`,concat("p",owner_id) as oid','','#id#','oid');
+		$vData = $this->owner->qs('concat("p",parent_id) as pid, concat("p",id) as `#id#`,name as `#name#`,"0" as `#checked#`','','#id#','pid');
+		foreach($contentData as $k=>&$r) {
+			if(isset($vData[$k])) {
+				$vData[$k] = $r+$vData[$k];
+			} else
+				$vData[$k] = $r;
+		}
+		//print_r('<pre>');print_r($vData);
+		return $vData;
 	}
 
 	function getInc($pref = '.inc.php', $def = ' - Текст - ') {
@@ -116,7 +127,7 @@ class content_class extends kernel_extends {
 				$name= $this->getIncFileInfo($this->_CFG['_PATH']['wep_inc'] . '/'.$entry,'name');
 
 				if($name)
-					$name = $this->owner->_enum['inc'][0]['name'] . $name. '('.$entry.')';
+					$name = $this->owner->_enum['inc'][0]['name'] . $entry. '('.$name.')';
 				else
 					$name = $this->owner->_enum['inc'][0]['name'] . $temp;
 				$data['0:' . $temp] = $name;
@@ -136,7 +147,7 @@ class content_class extends kernel_extends {
 							$name= $this->getIncFileInfo($this->_CFG['_PATH']['wep_ext'] . $entry.'/'.$entry2,'name');
 
 							if($name)
-								$name = $this->owner->_enum['inc'][1]['name'] . $name. '('.$entry.')';
+								$name = $this->owner->_enum['inc'][1]['name'] . $entry. '('.$name.')';
 							else
 								$name = $this->owner->_enum['inc'][1]['name'] . $entry . '/' . $temp;
 
@@ -157,7 +168,7 @@ class content_class extends kernel_extends {
 				$name= $this->getIncFileInfo($this->_CFG['_PATH']['inc'] . '/'.$entry,'name');
 
 				if($name)
-					$name = $this->owner->_enum['inc'][2]['name'] . $name. '('.$entry.')';
+					$name = $this->owner->_enum['inc'][2]['name'] . $entry. '('.$name.')';
 				else
 					$name = $this->owner->_enum['inc'][2]['name'] . $temp;
 
@@ -178,7 +189,7 @@ class content_class extends kernel_extends {
 							$name= $this->getIncFileInfo($this->_CFG['_PATH']['ext'] . $entry.'/'.$entry2,'name');
 
 							if($name)
-								$name = $this->owner->_enum['inc'][3]['name'] . $name. '('.$entry.')';
+								$name = $this->owner->_enum['inc'][3]['name'] . $entry. '('.$name.')';
 							else
 								$name = $this->owner->_enum['inc'][3]['name'] . $entry . '/' . $temp;
 
@@ -205,13 +216,13 @@ class content_class extends kernel_extends {
 		return false;
 	}
 
-	public function kPreFields(&$data, &$param) {
-		$mess = parent::kPreFields($data, $param);
+	public function kPreFields(&$f_data, &$f_param = array(), &$f_fieldsForm = null) {
+		$mess = parent::kPreFields($f_data, $f_param, $f_fieldsForm );
 		$this->addForm = array();
-		$this->fields_form['pagetype']['onchange'] = 'contentIncParam(this,\'' . $this->_CFG['PATH']['wepname'] . '\',\'' . (isset($data['funcparam']) ? htmlspecialchars($data['funcparam']) : '') . '\');';
+		$this->fields_form['pagetype']['onchange'] = 'contentIncParam(this,\'' . $this->_CFG['PATH']['wepname'] . '\',\'' . (isset($f_data['funcparam']) ? htmlspecialchars($f_data['funcparam']) : '') . '\');';
 
-		if (isset($data['pagetype']) and $data['pagetype']) {
-			$this->addForm = $this->getContentIncParam($data);
+		if (isset($f_data['pagetype']) and $f_data['pagetype']) {
+			$this->addForm = $this->getContentIncParam($f_data);
 			if (count($this->addForm)) {
 				$this->fields_form = static_main::insertInArray($this->fields_form, 'pagetype', $this->addForm); // обработчик параметров рубрики
 				$this->fields_form['funcparam']['style'] = 'display:none;';

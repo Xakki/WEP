@@ -26,16 +26,14 @@
 		);
 		return $form;
 	}
+	$_CFG['fileIncludeOption']['jqueryform'] = 1;
 
 	if(_new_class($FUNCPARAM[0],$MODUL)) {
 		$DATA  = array();
-		list($DATA['formcreat'],$flag) = $MODUL->_UpdItemModul(array('showform'=>1));
-		$html = $HTML->transformPHP($DATA,'formcreat');
-		if($FUNCPARAM[1]) {
-			$_tpl['onload'] .= '$("#form_'.$MODUL->_cl.'").attr("action","/_js.php?_fn=AjaxAdd&_modul='.$MODUL->_cl.'"); wep.form.JSFR("#form_'.$MODUL->_cl.'");';
-			$_CFG['fileIncludeOption']['jqueryform'] = 1;
-		}
-		$_CFG['fileIncludeOption']['form'] = 1;
+		list($DATA['#pg#formcreat'],$this->formFlag) = $MODUL->_UpdItemModul(array('showform'=>1));
+		$html = $HTML->transformPHP($DATA,'#pg#formcreat');
+		//if($FUNCPARAM[1]) {
+		//}
 	}
 	else $html = 'Ошибка подключения модуля';
 	return $html;

@@ -209,43 +209,47 @@ class static_main {
 		global $_CFG, $SQL;
 		if (!isset($_CFG['modulprm'])) {
 			session_go();
-			if (!$SQL) {
-				$SQL = new $_CFG['sql']['type']($_CFG['sql']);
-			}
+			$temp = NULL;
+			_new_class('modulprm', $MODULPRM,$temp, true);
 			$_CFG['modulprm'] = $_CFG['modulprm_ext'] = array();
 			$ugroup_id = (isset($_SESSION['user']['gid']) ? (int) $_SESSION['user']['gid'] : 2);
-			if(isset($_SESSION['user']['parent_id']) and $_SESSION['user']['parent_id']) {
-				$ugroup_id = ' and t2.ugroup_id IN ('.$_SESSION['user']['parent_id'].','.$ugroup_id.')';
-			}else
-				$ugroup_id = ' and t2.ugroup_id='.$ugroup_id;
-			$result = $SQL->execSQL('SELECT t1.*,t2.access, t2.mname FROM `' . $_CFG['sql']['dbpref'] . 'modulprm` t1 LEFT Join `' . $_CFG['sql']['dbpref'] . 'modulgrp` t2 on t2.owner_id=t1.id' . $ugroup_id . ' ORDER BY t1.typemodul,t1.name');
-			if ($result->err) {
-				//$_POST['sbmt'] = 1;
-				//static_tools::_checkmodstruct('modulprm');
-				return false;
-			}
-			$_CFG['modulprm'] = array();
-			while ($row = $result->fetch()) {
-				if ($row['extend'])
-					$_CFG['modulprm_ext'][$row['extend']][] = $row['id'];
-				if(!isset($_CFG['modulprm'][$row['id']]['access']) or !$_CFG['modulprm'][$row['id']]['access'])
-					$_CFG['modulprm'][$row['id']]['access'] = array_flip(explode('|', trim($row['access'], '|')));
-				if ($row['mname'])
-					$_CFG['modulprm'][$row['id']]['name'] = $row['mname'];
-				else
-					$_CFG['modulprm'][$row['id']]['name'] = $row['name'];
-				$_CFG['modulprm'][$row['id']]['path'] = self::getPathModul($row['path']);
-				$_CFG['modulprm'][$row['id']]['active'] = $row['active'];
-				$_CFG['modulprm'][$row['id']]['typemodul'] = $row['typemodul'];
-				$_CFG['modulprm'][$row['id']]['tablename'] = $row['tablename'];
-				$_CFG['modulprm'][$row['id']]['ver'] = $row['ver'];
-				$_CFG['modulprm'][$row['id']]['extend'] = $row['extend'];
-				$_CFG['modulprm'][$row['id']]['pid'] = $row['parent_id'];
-				if ($row['hook']) {
-					eval('$hook = ' . $row['hook'] . ';');
-					if($hook and is_array($hook) and count($hook))
-						$_CFG['hook'] = self::MergeArrays($_CFG['hook'], $hook);
+			// Если есть таблица
+			if($MODULPRM->SQL->_tableExists($MODULPRM)) {
+				if(isset($_SESSION['user']['parent_id']) and $_SESSION['user']['parent_id']) {
+					$ugroup_id = ' and t2.ugroup_id IN ('.$_SESSION['user']['parent_id'].','.$ugroup_id.')';
+				}else
+					$ugroup_id = ' and t2.ugroup_id='.$ugroup_id;
+				$result = $MODULPRM->SQL->execSQL('SELECT t1.*,t2.access, t2.mname FROM `' . $MODULPRM->tablename . '` t1 LEFT Join `' . $MODULPRM->childs['modulgrp']->tablename . '` t2 on t2.owner_id=t1.id' . $ugroup_id . ' ORDER BY t1.typemodul,t1.name');
+				if ($result->err) {
+					//$_POST['sbmt'] = 1;
+					//static_tools::_checkmodstruct('modulprm');
+					return false;
 				}
+				$_CFG['modulprm'] = array();
+				while ($row = $result->fetch()) {
+					if ($row['extend'])
+						$_CFG['modulprm_ext'][$row['extend']][] = $row['id'];
+					if(!isset($_CFG['modulprm'][$row['id']]['access']) or !$_CFG['modulprm'][$row['id']]['access'])
+						$_CFG['modulprm'][$row['id']]['access'] = array_flip(explode('|', trim($row['access'], '|')));
+					if ($row['mname'])
+						$_CFG['modulprm'][$row['id']]['name'] = $row['mname'];
+					else
+						$_CFG['modulprm'][$row['id']]['name'] = $row['name'];
+					$_CFG['modulprm'][$row['id']]['path'] = self::getPathModul($row['path']);
+					$_CFG['modulprm'][$row['id']]['active'] = $row['active'];
+					$_CFG['modulprm'][$row['id']]['typemodul'] = $row['typemodul'];
+					$_CFG['modulprm'][$row['id']]['tablename'] = $row['tablename'];
+					$_CFG['modulprm'][$row['id']]['ver'] = $row['ver'];
+					$_CFG['modulprm'][$row['id']]['extend'] = $row['extend'];
+					$_CFG['modulprm'][$row['id']]['pid'] = $row['parent_id'];
+					if ($row['hook']) {
+						eval('$hook = ' . $row['hook'] . ';');
+						if($hook and is_array($hook) and count($hook))
+							$_CFG['hook'] = self::MergeArrays($_CFG['hook'], $hook);
+					}
+				}
+			} else {
+				// TODO
 			}
 			/* if (_new_class('modulprm', $MODULs))
 			  $_CFG['modulprm'] = $MODULs->userPrm((isset($_SESSION['user']['owner_id']) ? (int) $_SESSION['user']['owner_id'] : 0)); */
@@ -687,14 +691,14 @@ function _setcookie($name, $value='', $expire='', $path='', $domain='', $secure=
 function _new_class($name, &$MODUL, &$OWNER=NULL, $_forceLoad = false) {
 	global $_CFG;
 	$MODUL = NULL;
-	static_main::_prmModulLoad();
+	if(!$_forceLoad) static_main::_prmModulLoad();
 	$name = _getExtMod($name);
 	
 	if (isset($_CFG['singleton'][$name])) {
 		$MODUL = $_CFG['singleton'][$name];
 		return true;
 	}
-	elseif(is_null($OWNER) and $_CFG['modulprm'][$name]['pid']) {
+	elseif(is_null($OWNER) and isset($_CFG['modulprm'][$name]) and $_CFG['modulprm'][$name]['pid']) {
 		// кастыль: при обращении к дочерним классам , находяться родители и от него дается ссылка на класс.
 		_new_class($_CFG['modulprm'][$name]['pid'], $MODUL2);
 		$MODUL = $MODUL2->childs[$name];
@@ -704,7 +708,7 @@ function _new_class($name, &$MODUL, &$OWNER=NULL, $_forceLoad = false) {
 		$class_name = $name . "_class";
 
 		if(!class_exists($class_name,false)) {
-			if((isset($_CFG['modulprm'][$name]) or $_forceLoad) and $file = _modulExists($class_name)) {
+			if((isset($_CFG['modulprm'][$name]) or $_forceLoad) and $file = _modulExists($class_name, $OWNER)) {
 				require_once($file);
 			}
 		}
@@ -725,7 +729,7 @@ function _new_class($name, &$MODUL, &$OWNER=NULL, $_forceLoad = false) {
 			} catch (ReflectionException $Exception) {
 				die('Your class does not exist!');
 			}
-			if ($MODUL)
+			if ($MODUL and is_object($MODUL))
 				return true;
 		}
 		elseif (isset($_CFG['modulprm'][$name]) and $_CFG['modulprm'][$name]['pid']) {
@@ -811,7 +815,7 @@ function __autoload($class_name) { //автозагрузка модулей
  * @param string $class_name
  * @return string
  */
-function _modulExists($class_name) {
+function _modulExists($class_name, &$OWNER=NULL) {
 	global $_CFG;
 	$class_name = explode('_', $class_name);
 
@@ -825,7 +829,7 @@ function _modulExists($class_name) {
 	if (file_exists($file))
 		return $file;
 
-	$ret = includeModulFile($class_name[0]);exit();
+	$ret = includeModulFile($class_name[0], $OWNER);
 	return $ret['file'];
 }
 

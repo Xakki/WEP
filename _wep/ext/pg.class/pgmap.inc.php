@@ -13,7 +13,7 @@ if (!isset($FUNCPARAM[0]))
 if (!isset($FUNCPARAM[1]))
 	$FUNCPARAM[1] = 1; // Показывать меню начиная с уровня ID page
 if (!isset($FUNCPARAM[2]))
-	$FUNCPARAM[2] = 'pgmap'; // Шаблон
+	$FUNCPARAM[2] = '#pg#pgmap'; // Шаблон
 
 if (isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 	$this->_enum['typemenuinc'] = array(

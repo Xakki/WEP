@@ -140,6 +140,8 @@ class html {
 			$temp[0] = dirname($_CFG['modulprm'][$temp[0]]['path']).'/templates/';
 			$transformPath = $temp[0];
 			$transform = $temp[1];
+			if(isset($data[$transform]))
+				$marker = $transform;
 		}
 		else {
 			if(!$_PATHd)
@@ -148,10 +150,13 @@ class html {
 		}
 		if (!$marker)
 			$marker = $transform;
+
 		if (!isset($data[$marker])) {
-			trigger_error('В входных данных шаблона не найдены исходные данные "$data[' . $marker . ']"', E_USER_WARNING);
-			return '';
-		}
+			//trigger_error('Внимание! В входных данных шаблона не найден маркер "$data[' . $marker . ']"', E_USER_NOTICE);
+			$marker = '$data';
+		} else
+			$marker = '$data["' . $marker . '"]';
+
 		$transformpath =  $transformPath. $transform . '.php';
 		if (!file_exists($transformpath)) {
 			trigger_error('Отсутствует файл шаблона `' . $transformpath . '`', E_USER_WARNING);
@@ -162,7 +167,7 @@ class html {
 			trigger_error('Функция `tpl_' . $transform . '` в шаблоне `' . $transformpath . '` не найдена', E_USER_WARNING);
 			return '';
 		}
-		eval('$html =  tpl_' . $transform . '($data["' . $marker . '"]);');
+		eval('$html =  tpl_' . $transform . '(' . $marker . ');');
 		return $html;
 	}
 

@@ -15,32 +15,30 @@ class pg_class extends kernel_extends {
 		$this->config['design'] = 'default';
 		$this->config['memcache'] = 0;
 		$this->config['memcachezip'] = 0;
-		$this->config['sitemap'] = 0;
+		$this->config['sitemap'] = 1;
 		$this->config['IfDontHavePage'] = '';
-		$this->config['rootPage'] = '1';
+		$this->config['rootPage'] =  array (0 => 1);
 		$this->config['menu'] = array(
 			0 => '',
-			1 => 'Меню №1',
-			2 => 'Меню №2',
-			3 => 'Меню №3',
+			1 => 'Меню TOP',
+			2 => 'Меню BOTTOM',
+			3 => 'Меню LEFT',
 			4 => 'Меню №4',
 			5 => 'Меню №5',
 			6 => 'Меню №6',
 		);
 
 		$this->config['marker'] = array(
-			'text' => 'text',
-			'left_column' => 'left_column',
-			'right_column' => 'right_column',
-			'head' => 'head',
-			'blockadd' => 'blockadd',
-			'param' => 'param',
-			'path' => 'path',
-			'logs' => 'logs',
-			'foot' => 'foot');
+			'text' => 'Главный текст',
+			'head' => 'Заголовок',
+			'left_column' => 'Левая колонка',
+			'right_column' => 'Правая колонка',
+			'path' => 'Хлебные крошки',
+			'logs' => 'Логи',
+			'foot' => 'Подвал');
 		$this->config['auto_include'] = true;
 		$this->config['auto_auth'] = true;
-		$this->config['rf_on'] = true;
+		$this->config['rf_on'] = false;
 
 		// TODO : Сделать форму управления массивами данных и хранить в формате json
 
@@ -80,6 +78,7 @@ class pg_class extends kernel_extends {
 			'AjaxForm'=>true,
 		);
 		$this->formFlag = null; // Для Аякс формы, 
+		$this->current_path = '';
 		return true;
 	}
 
@@ -118,13 +117,6 @@ class pg_class extends kernel_extends {
 		if (!file_exists($this->_CFG['_PATH']['inc'])) {
 			rename($this->_CFG['_PATH']['wepconf'] . 'pagetext/', $this->_CFG['_PATH']['inc']);
 		}
-	}
-
-	function setSystemFields() {
-		$this->def_records[] = array('id' => 1, 'alias' => 'index', 'name' => 'Главная страница', 'active' => 1, 'template' => 'default');
-		$this->def_records[] = array('id' => 2, 'parent_id' => 1, 'alias' => '404', 'name' => 'Страницы нету', 'active' => 1, 'template' => 'default');
-		$this->def_records[] = array('id' => 3, 'parent_id' => 1, 'alias' => '401', 'name' => 'Недостаточно прав для доступа к странице', 'active' => 1, 'template' => 'default');
-		return parent::setSystemFields();
 	}
 
 	function _childs() {
@@ -175,7 +167,8 @@ class pg_class extends kernel_extends {
 					$data[$row['id']] = $row['name'];
 			}
 			return $data;
-		} elseif ($listname == 'templates') {
+		} 
+		elseif ($listname == 'templates') {
 			$data[''] = ' - По умолчанию -';
 			$temp = 'mdesign';
 			$temp = $this->_getlist($temp);
@@ -198,10 +191,15 @@ class pg_class extends kernel_extends {
 		}
 		elseif ($listname == 'pagemap') {
 			return $this->childs['content']->getInc('.map.php', ' --- ');
-		} elseif ($listname == 'pagetype') {
+		} 
+		elseif ($listname == 'pagetype') {
 			return $this->childs['content']->getInc();
-		} elseif ($listname == 'menu') {
+		} 
+		elseif ($listname == 'menu') {
 			return $this->config['menu'];
+		} 
+		elseif ($listname == 'content') {
+			return $this->childs['content']->getContentList();
 		}
 		else
 			return parent::_getlist($listname, $value);
@@ -259,7 +257,6 @@ class pg_class extends kernel_extends {
 	 * @return bool
 	 */
 	function display($templ = true) {
-		$this->current_path = '';
 		global $_tpl, $HTML;
 		foreach ($this->config['marker'] as $km => $rm)
 			$_tpl[$km] = '';
@@ -472,6 +469,24 @@ class pg_class extends kernel_extends {
 		}
 		$Cdata = array();
 		$cls = 'SELECT * FROM ' . $this->SQL_CFG['dbpref'] . 'pg_content WHERE active=1 and marker IN ("' . $marker . '")';
+		$resultPG = $this->SQL->execSQL($cls);
+		if (!$resultPG->err)
+			while ($rowPG = $resultPG->fetch()) {
+				$Cdata[$rowPG['id']] = $rowPG;
+			}
+		return $this->getContent($Cdata);
+	}
+
+	public function display_inc($id, $design = 'default') {
+		global $HTML;
+		if (!$HTML) {
+			if (!$design)
+				$design = $this->config['design'];
+			require_once($this->_CFG['_PATH']['core'] . '/html.php');
+			$HTML = new html('_design/', $design, false); //отправляет header и печатает страничку
+		}
+		$Cdata = array();
+		$cls = 'SELECT * FROM ' . $this->SQL_CFG['dbpref'] . 'pg_content WHERE active=1 and id IN ("' . $id . '")';
 		$resultPG = $this->SQL->execSQL($cls);
 		if (!$resultPG->err)
 			while ($rowPG = $resultPG->fetch()) {

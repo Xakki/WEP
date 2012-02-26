@@ -45,7 +45,7 @@ function tools_docron() {
 	global $_CFG;
 	if(isset($_POST['sbmt'])) {
 		$ttw  = getmicrotime();
-		include($_CFG['_PATH']['wep_phpscript'].'/cron.php');
+		include($_CFG['_PATH']['phpscript'].'/cron.php');
 		return '--Крон выполнен, время обработки задач =  '.(getmicrotime()-$ttw).'mc -----';
 	} else {
 		return '<form method="post"><input type="submit" name="sbmt" value="Выполнить"/></form>';
@@ -232,7 +232,7 @@ function tools_cron() {
 		static_main::redirect('/'.key($DATA['path']));
 	}
 	else {
-		$DATA['messages'][] = static_main::am('info','Пропишите в cron <div>*/1 * * * *&#160;&#160;&#160;www-data&#160;&#160;&#160;php '.$_CFG['_PATH']['wep_phpscript'].'cron.php</div>');
+		$DATA['messages'][] = static_main::am('info','Пропишите в cron <div>*/1 * * * *&#160;&#160;&#160;www-data&#160;&#160;&#160;php '.$_CFG['_PATH']['phpscript'].'cron.php</div>');
 		$DATA['data'] = array(
 			'thitem'=>array(
 				'time'=>array('value'=>'Период'),

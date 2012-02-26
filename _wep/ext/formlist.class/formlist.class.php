@@ -45,7 +45,7 @@ class formlistitems_class extends kernel_extends {
 
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'min' => '1');
 		$this->fields['checked'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL', 'default'=>0);
-		$this->fields['cntdec'] = array('type' => 'int', 'width' => 7, 'attr' => 'NOT NULL', 'default'=>0);
+		$this->fields['cntdec'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'default'=>0);
 
 	}
 

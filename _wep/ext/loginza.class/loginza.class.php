@@ -10,7 +10,6 @@ class loginza_class extends kernel_extends
 	}
 
 	function _setHook() {
-		//parent::setSystemFields();
 		$this->setHook['__construct']['users'] = array(
 			'loginza' => '_CHLU',
 			//'loginza:hook.php' => '_CHLU',

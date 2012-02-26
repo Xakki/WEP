@@ -7,7 +7,7 @@
  * @return $form
  * @return $html
  */
-	if(!isset($FUNCPARAM[0]) or !$FUNCPARAM[0]) $FUNCPARAM[0] = 'messages';
+	if(!isset($FUNCPARAM[0]) or !$FUNCPARAM[0]) $FUNCPARAM[0] = '#pg#messages';
 	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = 48;
 
 	// рисуем форму для админки чтобы удобно задавать параметры

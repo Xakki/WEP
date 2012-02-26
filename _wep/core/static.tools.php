@@ -29,12 +29,10 @@ class static_tools {
 				static_main::log('error', 'Для модуля `' . $MODUL->caption . '` не удалось создать таблицу.', $MODUL->_cl);
 				return false;
 			}
-			if (count($MODUL->def_records)) {
-				if (!self::_insertDefault($MODUL)) {
-					$MODUL->SQL->_tableDelete($MODUL);
-					static_main::log('error', 'Для модуля `' . $MODUL->caption . '` не удалось записать дефолтные данные, и поэтому таблица не будет создана.', $MODUL->_cl);
-					return false;
-				}
+			if (!self::_insertDefault($MODUL)) {
+				$MODUL->SQL->_tableDelete($MODUL);
+				static_main::log('error', 'Для модуля `' . $MODUL->caption . '` не удалось записать дефолтные данные, и поэтому таблица не будет создана.', $MODUL->_cl);
+				return false;
 			}
 			static_main::log('notice', 'Для модуля `' . $MODUL->caption . '` успешно создана таблица.', $MODUL->_cl);
 		}
@@ -81,7 +79,7 @@ class static_tools {
 				if (!$MODUL->SQL->_tableCreate($MODUL)) {
 					$rDATA['Создание таблицы']['@mess'][] = array('error', 'Для модуля `' . $MODUL->caption . '` не удалось создать таблицу.');
 				} else {
-					if (count($MODUL->def_records) and !self::_insertDefault($MODUL)) {
+					if (!self::_insertDefault($MODUL)) {
 						$MODUL->SQL->_tableDelete($MODUL);
 						$rDATA['Создание таблицы']['@mess'][] = array('error', 'Для модуля `' . $MODUL->caption . '` не удалось записать дефолтные данные, и поэтому таблица не будет создана.');
 					} else
@@ -507,6 +505,8 @@ class static_tools {
 
 		include_once($_CFG['_FILE']['wep_config_form']);
 
+		$DEF_CFG = self::getFdata($_CFG['_FILE']['wep_config'], '/* MAIN_CFG */', '/* END_MAIN_CFG */'); // чистый конфиг ядра
+
 		if (isset($SetDataCFG['wep'])) {
 			if (!isset($SetDataCFG['wep']['password']) or !$SetDataCFG['wep']['password'] or $SetDataCFG['wep']['password'] == $DEF_CFG['wep']['password']) {
 				$mess[] = array('error', 'Поле ' . $_CFGFORM['wep']['password']['caption'] . ' обязательное и не должно совпадать с дефолтным');
@@ -524,8 +524,6 @@ class static_tools {
 		}
 		if (count($mess))
 			return array($fl, $mess);
-
-		$DEF_CFG = self::getFdata($_CFG['_FILE']['wep_config'], '/* MAIN_CFG */', '/* END_MAIN_CFG */'); // чистый конфиг ядра
 
 		return self::saveCFG($SetDataCFG, $_CFG['_FILE']['config'], $DEF_CFG);
 	}
@@ -589,12 +587,26 @@ class static_tools {
 	 * @return <type>
 	 */
 	static function _insertDefault(&$MODUL) {
-		foreach ($MODUL->def_records as $row) {
+		global $_CFG;
+		$ReflectedClass = new ReflectionClass($MODUL->_cl.'_class');
+		$file = $ReflectedClass->getFileName();
+		$file = dirname($file).'/'.$MODUL->_cl.'.default.'.$MODUL->SQL_CFG['type'];
+		if(file_exists($file)) {
+			$lines = file($file);
+			foreach ($lines as $line) {
+				$line = trim($line,"\s\;");
+				if($line) {
+					if(!$MODUL->SQL->execSQL($line))
+						return false;
+				}
+			}
+		}
+		/*foreach ($MODUL->def_records as $row) {
 			if (!$MODUL->_add($row)) {
 				//return static_main::log('error','Error add default record into `'.$MODUL->tablename.'`',$MODUL->_cl);
 				return false;
 			}
-		}
+		}*/
 		//return static_main::log('ok','Insert default records into table ' . $MODUL->tablename . '.',$MODUL->_cl);
 		return true;
 	}

@@ -4,9 +4,14 @@
 		$html = '';
 
 		$firstpath = '';
+
 		if(count($data['_clp'])) {
 			$firstpath = http_build_query($data['_clp']).'&';
 		}
+
+		if(!isset($data['DIR']))
+			$data['DIR'] = __DIR__;
+
 		$flag = 0;
 		if(isset($data['formcreat']) and count($data['formcreat'])) {
 			if(isset($data['formcreat']['form']['_*features*_']['id']) and $data['formcreat']['form']['_*features*_']['id'])
@@ -40,10 +45,7 @@
 				$temp_topmenu .= ' class="'.$r['css'].'" title="'.$r['title'].'">'.$r['caption'].'</span></div>';
 			}
 		}
-		if(file_exists($HTML->_PATHd.'php/pagenum.php'))
-			include_once($HTML->_PATHd.'php/pagenum.php');
-		else
-			include_once('pagenum.php');
+		include_once($data['DIR'].'/pagenum.php');
 		$temp_topmenu .= tpl_pagenum($data['data']['pagenum']);// pagenum
 		$temp_topmenu .= '</div>';
 
@@ -51,19 +53,19 @@
 
 
 		if(isset($data['path']) and count($data['path'])) {
-			include_once($HTML->_PATHd.'php/path.php');
+			include_once($data['DIR'].'/path.php');
 			$html .= tpl_path($data['path'],$flag);// PATH
 		}
 
 		$html .= '<div id="tools_block" style="display:none;"></div>';
 
 		if(isset($data['messages']) and count($data['messages'])) {
-			include_once($HTML->_PATHd.'php/messages.php');
+			include_once($data['DIR'].'/messages.php');
 			$html .= tpl_messages($data['messages']);// messages
 		}
 
 		if(isset($data['formcreat']) and count($data['formcreat'])) {
-			include_once($HTML->_PATHd.'php/formcreat.php');
+			include_once($data['DIR'].'/formcreat.php');
 			$html .= tpl_formcreat($data['formcreat']);// PATH
 		}
 		else {

@@ -3,7 +3,7 @@
 $INSTALL = true;
 require_once($_CFG['_PATH']['wep'] . '/config/config.php');
 require_once($_CFG['_PATH']['core'] . 'html.php');
-require_once($_CFG['_PATH']['core'] . 'sql.php');
+//require_once($_CFG['_PATH']['core'] . 'sql.php');
 $TEMP_CFG= array();
 $TEMP_CFG['wep']['access'] = $_CFG['wep']['access'] = 0; // авторизация только по главному паролю
 $TEMP_CFG['wep']['sessiontype'] = $_CFG['wep']['sessiontype'] = 0; // запускаем сессию стандартно

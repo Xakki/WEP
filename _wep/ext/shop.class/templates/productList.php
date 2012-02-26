@@ -1,5 +1,5 @@
 <?php
-	function tpl_catalog(&$data) {
+	function tpl_productList(&$data) {
 		$html = '';
 		if(isset($data) and count($data)) {
 			$html = '<div class="prodlist">';

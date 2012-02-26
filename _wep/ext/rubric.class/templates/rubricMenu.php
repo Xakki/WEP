@@ -1,25 +1,26 @@
 <?php
-	function tpl_catalogMenu(&$data) {
+	function tpl_rubricMenu(&$data) {
 		$html = '';
 		if(isset($data) and count($data)) {
-			$html = '<div class="leftblock_item"><div class="leftblock_catalog">';
-			$html .= tpl_catalog_rev($data['#item#'],'',$data['pgid']);
-			$html .= '</div></div>';
+			$html = '<div class="rubricMenu">
+			'.($data['#title#']?'<h3>'.$data['#title#'].'</h3>':'').'';
+			$html .= tpl_rubric_rev($data['#item#'],'',$data['#page#']);
+			$html .= '</div>';
 		}
 		return $html;
 	}
-	function tpl_catalog_rev(&$data,$pref='',$pgid=0) {
+	function tpl_rubric_rev(&$data,$pref='',$pgid=0) {
 		$html = '<ul>';
 		foreach($data as $k=>$r) {
 			$html .= '<li>';
-			if($r['img_catalog']) {
-				$html .= '<img src="'.$r['s_img_catalog'].'" alt="'.$r['name'].'"/>';
+			if($r['img']) {
+				$html .= '<img src="'.$r['img'].'" alt="'.$r['name'].'"/>';
 			}
 			$html .= '<a href="/'.$r['path'].'/'.$pgid.'.html" class="'.($r['#sel#']?'selected':'').'">';
 			$html .= $r['name'].'</a>';
 			if(isset($r['#item#']) and count($r['#item#'])) {
 				//$pref .= ' - ';
-				$html .= tpl_catalog_rev($r['#item#'],$pref,$pgid);
+				$html .= tpl_rubric_rev($r['#item#'],$pref,$pgid);
 			}
 			$html .= '</li>';
 		}

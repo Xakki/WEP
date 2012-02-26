@@ -1,8 +1,6 @@
 <?php
 class product_class extends kernel_extends {
 
-	var $CATALOG;
-
 	protected function _create_conf() {/*CONFIG*/
 		parent::_create_conf();
 		
@@ -41,7 +39,7 @@ class product_class extends kernel_extends {
 		if (!parent::_set_features()) return false;
 		$this->mf_actctrl = true;
 		$this->caption = 'Продкция';
-		$this->owner_name = 'catalog';
+		$this->owner_name = 'shop';
 		//$this->mf_statistic = array('Y'=>'count(id)','X'=>'FROM_UNIXTIME(mf_timecr,"%Y-%m")','Yname'=>'Кол','Xname'=>'Дата');//-%d
 		$this->reversePageN = true;
 		$this->messages_on_page = 20;
@@ -91,11 +89,11 @@ class product_class extends kernel_extends {
 		parent::setFieldsForm($form);
 
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название товара');
-		$this->fields_form['catalog'] = array(
+		$this->fields_form['shop'] = array(
 			'type' => 'list', 
 			'listname'=>'ownerlist',
 			'caption' => 'Каталог',
-			'onchange'=>'productcatalog(\'catalog\')', 
+			'onchange'=>'productshop(\'shop\')', 
 			'mask' =>array('min'=>1,'filter'=>1));
 		$this->fields_form['descr'] = array(
 			'type' => 'textarea', 
@@ -145,14 +143,14 @@ class product_class extends kernel_extends {
 	}
 
 	function _childs() {
-		if($this->_CFG['_F']['adminpage']) {
+		$this->create_child('prodparam');
+		/*if($this->_CFG['_F']['adminpage']) {
 			include_once(__DIR__.'/childs.include.php');
-			$this->create_child('paramb');
-			$this->create_child('productvote');
+			$this->create_child('prodvote');
 		}
 		if($this->config['onComm']) {
 			$this->create_child('productcomments');
-		}
+		}*/
 	}
 
 	function _checkmodstruct() {
@@ -165,11 +163,11 @@ class product_class extends kernel_extends {
 		return parent::Formfilter();
 	}
 
-	public function kPreFields(&$data,&$param) {
+	public function kPreFields(&$f_data, &$f_param = array(), &$f_fieldsForm = null) {
 		global $_tpl;
 
-		if(!isset($data['catalog']) and isset($_REQUEST['catalog']))
-			$data['catalog'] = (int)$_REQUEST['catalog'];
+		if(!isset($f_data['shop']) and isset($_REQUEST['shop']))
+			$f_data['shop'] = (int)$_REQUEST['shop'];
 
 	
 		/*if($this->config['imageCnt']>0) {
@@ -185,24 +183,24 @@ class product_class extends kernel_extends {
 				$this->fields_form['img_product'.$ni]['comment'] .= ' <div class="shownextfoto" onclick="shownextfoto(this,\'img_product'.$i.'\')">Ещё фото</div>';
 			}
 		}*/
-		$mess = parent::kPreFields($data,$param);
+		$mess = parent::kPreFields($f_data, $f_param, $f_fieldsForm);
 		
 		if($this->id){
-			$this->fields_form['catalog']['onchange'] = 'productcatalog(\'catalog\','.$this->id.')';
+			$f_fieldsForm['shop']['onchange'] = 'productshop(\'shop\','.$this->id.')';
 		}
 
 
-		if($data['catalog']) {
-			$this->fields_form = static_main::insertInArray($this->fields_form,'catalog',$this->ParamFieldsForm($this->id,$data['catalog'],$data['type'])); // обработчик параметров рубрики
+		if($f_data['shop']) {
+			$f_fieldsForm = static_main::insertInArray($f_fieldsForm,'shop',$this->ParamFieldsForm($this->id,$f_data['shop'],$f_data['type'])); // обработчик параметров рубрики
 		}
-		unset($this->fields_form['text_ckedit']);
+		unset($f_fieldsForm['text_ckedit']);
 		return $mess;
 	}
 
 
 	public function _update($data=array(),$where=false,$flag_select=true) {
 		$cls=array();$ct= array();$tmp = array();
-		$PARAM = &$this->owner->childs['param'];
+		$PARAM = &$this->owner->childs['rubricparam'];
 
 		if(isset($PARAM->data) and is_array($PARAM->data) and count($PARAM->data)){
 			foreach($PARAM->data as $k=>$r) {
@@ -237,9 +235,9 @@ class product_class extends kernel_extends {
 		if($ret = parent::_update($data,$where,$flag_select)) {
 			if(isset($PARAM->data) and is_array($PARAM->data) and count($PARAM->data)) {
 				if(count($cls)) {
-					$result=$this->SQL->execSQL('DELETE FROM paramb WHERE owner_id='.$this->id);
+					$result=$this->SQL->execSQL('DELETE FROM prodparam WHERE owner_id='.$this->id);
 					if($result->err) return false;
-					$query = 'INSERT into paramb (owner_id,'.implode(',',array_keys($cls)).') values ('.$this->id.',"'.implode('","',$cls).'")';
+					$query = 'INSERT into prodparam (owner_id,'.implode(',',array_keys($cls)).') values ('.$this->id.',"'.implode('","',$cls).'")';
 					$result=$this->SQL->execSQL($query);
 					if($result->err) return false;
 				}
@@ -250,7 +248,7 @@ class product_class extends kernel_extends {
 
 	public function _add($data=array(),$flag_select=true) {
 	
-		$PARAM = &$this->owner->childs['param'];
+		$PARAM = &$this->owner->childs['rubricparam'];
 		$cls=array();
 		$tmp = array();
 
@@ -288,11 +286,11 @@ class product_class extends kernel_extends {
 
 		if($ret = parent::_add($data,$flag_select)) {
 			if(count($cls)) {
-				$query = 'INSERT into paramb (owner_id,'.implode(',',array_keys($cls)).') values ('.$this->id.',"'.implode('","',$cls).'")';
+				$query = 'INSERT into prodparam (owner_id,'.implode(',',array_keys($cls)).') values ('.$this->id.',"'.implode('","',$cls).'")';
 				$result=$this->SQL->execSQL($query);
 				if($result->err) return false;
 			}else {
-				$query = 'INSERT into paramb (owner_id) values ('.$this->id.')';
+				$query = 'INSERT into prodparam (owner_id) values ('.$this->id.')';
 				$result=$this->SQL->execSQL($query);
 				if($result->err) return false;
 			}
@@ -313,7 +311,7 @@ class product_class extends kernel_extends {
 		else
 			$flagNew = 0;
 		if(!$flagNew and $id) {
-			$result = $this->SQL->execSQL('SELECT * FROM paramb WHERE owner_id IN ('.$id.')');
+			$result = $this->SQL->execSQL('SELECT * FROM prodparam WHERE owner_id IN ('.$id.')');
 			if(!$result->err) {
 				if ($row = $result->fetch()){
 					$paramdata=$row;
@@ -323,7 +321,7 @@ class product_class extends kernel_extends {
 				return array();
 			}
 		}
-		$PARAM = &$this->owner->childs['param'];
+		$PARAM = &$this->owner->childs['rubricparam'];
 		$listfields = array('*');
 		$cls = 'WHERE owner_id="'.$rid.'" and active=1 order by ordind';
 		$PARAM->data = $PARAM->_query($listfields,$cls,'id');
@@ -374,7 +372,7 @@ class product_class extends kernel_extends {
 
 					/*if($listclause!='' and ($r['min']>0 or $r['max']==0)) {
 						$temcls = 'SELECT min(t2.name'.$k.') as min,max(t2.name'.$k.') as max FROM '.$this->tablename.' t1 
-						JOIN paramb t2 ON t2.owner_id=t1.id and t2.owner_id= '.$listclause;
+						JOIN prodparam t2 ON t2.owner_id=t1.id and t2.owner_id= '.$listclause;
 						$result2 = $this->SQL->execSQL($temcls);
 						$maxmin = $result2->fetch_array(MYSQL_NUM);
 						if($r['min']>0)
@@ -491,14 +489,13 @@ class product_class extends kernel_extends {
 	}
 
 
-	public function fListDisplay($rid,$filter,$rss=0,$order='t1.mf_timecr',$limit=0) {
+	public function fList($rid,$filter,$rss=0,$order='t1.mf_timecr',$limit=0) {
 		//$this->owner->data - кэш рубрик
 		//$this->owner->data2 - кэш рубрик
 		//$PARAM->data
 		// if $limit>0 без постранички
 
-		$PARAM = &$this->owner->childs['param'];
-		
+		$PARAM = &$this->owner->childs['rubricparam'];
 		if(isset($PARAM->data)){
 			reset($PARAM->data);
 			$temp = current($PARAM->data);
@@ -513,7 +510,7 @@ class product_class extends kernel_extends {
 		$type='';
 		if(count($filter)) {
 			foreach($filter as $k=>$r) {
-				if($k=='id' or $k=='catalog') continue;
+				if($k=='id' or $k=='shop') continue;
 				$tempid = substr($k,6);
 				if(isset($PARAM->data[$tempid])) {
 					$nameK = $PARAM->data[$tempid]['type'];
@@ -585,7 +582,7 @@ class product_class extends kernel_extends {
 		$xml=array();
 
 		$clause['from'] = 'FROM '.$this->tablename.' t1 ';//1
-		$clause['ljoin'] = ' LEFT JOIN paramb t4 ON t4.owner_id=t1.id ';//2
+		$clause['ljoin'] = ' LEFT JOIN prodparam t4 ON t4.owner_id=t1.id ';//2
 		$clause['where'] = ' WHERE t1.active=1 ';//4
 
 		$rlist = array();
@@ -602,7 +599,7 @@ class product_class extends kernel_extends {
 			}
 		}
 		if(count($rlist))
-			$clause['where'] .= ' and t1.catalog IN ('.implode(',',array_keys($rlist)).') ';
+			$clause['where'] .= ' and t1.shop IN ('.implode(',',array_keys($rlist)).') ';
 
 		$cls_filtr = '';
 		if(count($clauseF)) {
@@ -658,14 +655,14 @@ class product_class extends kernel_extends {
 				$moder = 0;
 			foreach($this->data as $k=>$r) {
 				$rname=array();
-				$temp=$r['catalog'];
+				$temp=$r['shop'];
 				if(!$rss) {
 					while(isset($this->owner->data2[$temp]) and $rid!=$temp) {
 						$rname[] = $this->owner->data2[$temp]['name'];
 						$temp=$this->owner->data2[$temp]['parent_id'];
 					};
 					$tempData = $r;
-					$tempData['rpath']=$this->owner->data2[$r['catalog']]['lname'];
+					$tempData['rpath']=$this->owner->data2[$r['shop']]['path'];
 					if(count($rname)) 
 						$tempData['rname'] = $rname;
 					foreach($this->attaches as $tk=>$tr)
@@ -692,7 +689,7 @@ class product_class extends kernel_extends {
 					if($r['name'])
 						$xml .= $r['name'];
 					$xml .='</title> 
-						<link>http://'.$r['domen'].'.'.$_SERVER['HTTP_HOST2'].'/'.$this->owner->data2[$r['catalog']]['lname'].'/'.$r['path'].'_'.$r['id'].'.html</link> 
+						<link>http://'.$r['domen'].'.'.$_SERVER['HTTP_HOST2'].'/'.$this->owner->data2[$r['shop']]['path'].'/'.$r['path'].'_'.$r['id'].'.html</link> 
 						<description>'.mb_substr(html_entity_decode(strip_tags($r['text']),2,'UTF-8'),0,300).'...</description>
 						<pubDate>'.date('r',$r['mf_timecr']).'</pubDate>';
 					$i = 1;
@@ -716,8 +713,8 @@ class product_class extends kernel_extends {
 	}
 
 	/*public function fDisplayList($limit) {
-		$PARAM = &$this->owner->childs['param'];
-		$clause = 'SELECT t1.id,t1.path,t1.name,t1.catalog,t1.descr, FROM '.$this->tablename.' t1 WHERE t1.active=1 ';
+		$PARAM = &$this->owner->childs['rubricparam'];
+		$clause = 'SELECT t1.id,t1.path,t1.name,t1.shop,t1.descr, FROM '.$this->tablename.' t1 WHERE t1.active=1 ';
 
 		$clause .= ' ORDER BY t1.mf_timecr DESC LIMIT '.$limit;
 		
@@ -734,10 +731,10 @@ class product_class extends kernel_extends {
 							<id>'.$r['id'].'</id>
 							<path>'.$r['path'].'</path>
 							<name>'.$r['name'].'</name>
-							<rname>'.$this->owner->data2[$r['catalog']]['name'].'</rname>
+							<rname>'.$this->owner->data2[$r['shop']]['name'].'</rname>
 							<descr><![CDATA['._substr(html_entity_decode(strip_tags($r['descr']),ENT_QUOTES,'UTF-8'),0,200).'...]]></descr>
 							<mf_timecr>'.date('Y-m-d',$r['mf_timecr']).'</mf_timecr>';
-						$xml .= '<rubpath>/'.$this->owner->data2[$r['catalog']]['lname'].'</rubpath>';
+						$xml .= '<rubpath>/'.$this->owner->data2[$r['shop']]['path'].'</rubpath>';
 						$xml .= '</item>';
 					}
 			}
@@ -753,10 +750,10 @@ class product_class extends kernel_extends {
 		$arr_stat=$id=array();
 		foreach($idt as $r)//сохр тока уник знач
 			$id[(int)$r]=(int)$r;
-		$PARAM = &$this->owner->childs['param'];
+		$PARAM = &$this->owner->childs['rubricparam'];
 		$clause = 'SELECT t3.*, t1.*, GROUP_CONCAT(t2.id,":",t2.name,":",t2.type,":",t2.formlist,":",t2.edi ORDER BY t2.ordind SEPARATOR "|") as param FROM '.$this->tablename.' t1
-		LEFT JOIN paramb t3 ON t1.id=t3.owner_id  
-		LEFT JOIN '.$PARAM->tablename.' t2 ON t1.catalog=t2.owner_id and t2.active 
+		LEFT JOIN prodparam t3 ON t1.id=t3.owner_id  
+		LEFT JOIN '.$PARAM->tablename.' t2 ON t1.shop=t2.owner_id and t2.active 
 		WHERE t1.active=1 and t1.id IN ('.implode(',',$id).') 
 		GROUP BY t1.id ORDER BY t1.mf_timecr DESC';
 		
@@ -779,8 +776,7 @@ class product_class extends kernel_extends {
 	
 	function fDataCreate($statview=0) {
 		$arr_stat = array();
-		if(!isset($this->owner->data2)) 
-			$this->owner->simpleCatalogCache();
+		$this->owner->simplefCache();
 		$DATA = array();
 		if(static_main::_prmUserCheck() and static_main::_prmModul($this->_cl, array(3)))
 			$moder = 1;
@@ -788,17 +784,17 @@ class product_class extends kernel_extends {
 			$moder = 0;
 		foreach($this->data as $k=>&$r) {
 			$tempData = array();
-			$r['catalogs']=array();
+			$r['shops']=array();
 			$rname=array();
-			$temp=$r['catalog'];
+			$temp=$r['shop'];
 			while(isset($this->owner->data2[$temp])) {
-				$r['catalogs'][] = array('id'=>$temp, 'name'=>$this->owner->data2[$temp]['name']); // product.inc for path
+				$r['shops'][] = array('id'=>$temp, 'name'=>$this->owner->data2[$temp]['name']); // product.inc for path
 				$rname[] = $this->owner->data2[$temp]['name'];
 				$temp=$this->owner->data2[$temp]['parent_id'];
 			}
 			$tempData = $r;
 			$tempData['moder']=$moder;
-			$tempData['rpath']=$this->owner->data2[$r['catalog']]['lname'];
+			$tempData['rpath']=$this->owner->data2[$r['shop']]['path'];
 			$ik = '';
 			while(isset($r['img_product'.$ik])) {
 				if($r['img_product'.$ik]!='' and $file=$this->_get_file($r['id'],'img_product'.$ik,$r['img_product'.$ik]))
@@ -844,7 +840,7 @@ class product_class extends kernel_extends {
 	public function fGetParamproduct($clause) {
 /*SELECT PARAMETR*/
 		$idFL = array();
-		$PARAM = &$this->owner->childs['param'];
+		$PARAM = &$this->owner->childs['rubricparam'];
 		$this->data=$typeclass=$pData=$idList=$idFL=array();
 		$result = $this->SQL->execSQL($clause);
 		if(!$result->err)
@@ -902,43 +898,43 @@ class product_class extends kernel_extends {
 		if($flag) {
 			$datalist[$rid] =$this->owner->data2[$rid]['name'];
 			if(isset($this->owner->data[$rid])) {
-				//$this->_enum['catalogs'][$this->owner->data2[$rid]['parent_id']][$rid] = $this->owner->data2[$rid]['name'];
-				//$this->_enum['catalogs'][$rid] =$this->owner->data[$rid];
+				//$this->_enum['shops'][$this->owner->data2[$rid]['parent_id']][$rid] = $this->owner->data2[$rid]['name'];
+				//$this->_enum['shops'][$rid] =$this->owner->data[$rid];
 				foreach($this->owner->data[$rid] as $k=>$r){
 					if(isset($this->owner->data[$k])){
 						$datalist = $this->owner->data[$k]+$datalist;
-						$this->_enum['catalogs'][$k]= array('#name#'=>$r,'#href#'=>$this->owner->data2[$k]['lname'].'/'.$PGLIST->id.'.html');	
+						$this->_enum['shops'][$k]= array('#name#'=>$r,'#href#'=>$this->owner->data2[$k]['path'].'/'.$PGLIST->id.'.html');	
 						foreach($this->owner->data[$k] as $rk=>$rr)
-							$this->_enum['catalogs'][$k]['#item#'][$rk]= array('#name#'=>$rr,'#href#'=>$this->owner->data2[$rk]['lname'].'/'.$PGLIST->id.'.html');
+							$this->_enum['shops'][$k]['#item#'][$rk]= array('#name#'=>$rr,'#href#'=>$this->owner->data2[$rk]['path'].'/'.$PGLIST->id.'.html');
 					}else
-						$this->_enum['catalogs'][$k]= array('#name#'=>$r,'#href#'=>$this->owner->data2[$k]['lname'].'/'.$PGLIST->id.'.html');						
+						$this->_enum['shops'][$k]= array('#name#'=>$r,'#href#'=>$this->owner->data2[$k]['path'].'/'.$PGLIST->id.'.html');						
 				}
-				$this->filter_form['catalogl']= array(
+				$this->filter_form['shopl']= array(
 					'type'=>'linklist',
 					'caption'=>'Каталог',
 					//'onchange'=>'window.location.href=window.location.href.replace(\'_'.$rid.'\',\'_\'+this.value).replace(\'='.$rid.'\', \'=\'+this.value)',
-					'valuelist'=>$this->_enum['catalogs']);
-				if(isset($filter['catalog']))
-					$this->filter_form['catalogl']['value']=$filter['catalog'];
+					'valuelist'=>$this->_enum['shops']);
+				if(isset($filter['shop']))
+					$this->filter_form['shopl']['value']=$filter['shop'];
 			}
-			$this->filter_form['catalog']= array('type'=>'hidden','value'=>$rid);
+			$this->filter_form['shop']= array('type'=>'hidden','value'=>$rid);
 		}
 		else {
-			$datalist[$rid] =(int)$filter['catalog'];
-			$this->_enum['catalogs'] = &$this->owner->data;
-			//$this->_enum['catalogs'][0] = array(0=>'---')+$this->_enum['catalogs'][0];
-			$this->filter_form['catalog']= array(
+			$datalist[$rid] =(int)$filter['shop'];
+			$this->_enum['shops'] = &$this->owner->data;
+			//$this->_enum['shops'][0] = array(0=>'---')+$this->_enum['shops'][0];
+			$this->filter_form['shop']= array(
 				'type'=>'list',
-				'listname'=>'catalogs',
+				'listname'=>'shops',
 				'caption'=>'Каталог',
-				'onchange'=>'JSWin({\'href\':\''.$this->_CFG['_HREF']['siteJS'].'?_view2=subscribeparam\',\'data\':{\'catalog\':this.value}})');
-			if(isset($filter['catalog']))
-				$this->filter_form['catalog']['value']=$filter['catalog'];
+				'onchange'=>'JSWin({\'href\':\''.$this->_CFG['_HREF']['siteJS'].'?_view2=subscribeparam\',\'data\':{\'shop\':this.value}})');
+			if(isset($filter['shop']))
+				$this->filter_form['shop']['value']=$filter['shop'];
 		}
 
 		$this->filter_form['cost'] = $this->fields_form['cost'];
 
-			$temcls = ' WHERE t1.active=1 and t1.catalog IN ('.implode(',',array_keys($datalist)).') ';
+			$temcls = ' WHERE t1.active=1 and t1.shop IN ('.implode(',',array_keys($datalist)).') ';
 
 			$result2 = $this->SQL->execSQL('SELECT min(t1.cost) as mincost,max(t1.cost) as maxcost FROM '.$this->tablename.' t1 '.$temcls);
 			if(!$result2 or !$minmax = $result2->fetch_array(MYSQL_NUM) or !$minmax[1])
@@ -971,7 +967,7 @@ class product_class extends kernel_extends {
 		$this->filter_form['text'] = array('type' => 'text','caption' => 'Ключевое слово','mask' =>array('max'=>128),'value'=>(isset($filter['text'])?$filter['text']:''));
 
 		if($rid) {
-			//$this->filter_form = static_main::insertInArray($this->filter_form,'catalog',$this->ParamFieldsForm($filter,$rid,0,$temcls));
+			//$this->filter_form = static_main::insertInArray($this->filter_form,'shop',$this->ParamFieldsForm($filter,$rid,0,$temcls));
 			$temp = $this->ParamFieldsForm($filter,$rid,0,$temcls);
 			$this->filter_form += $temp;
 		}
@@ -1016,6 +1012,55 @@ class product_class extends kernel_extends {
 		$var = strtr($var,array('_____'=>'_','____'=>'_','___'=>'_','__'=>'_'));
 		$var = mb_substr($var,0,80,'UTF-8');
 		return trim($var,' _');
+
+	}
+}
+
+
+
+class prodparam_class extends kernel_extends {
+	function _set_features() {
+		if (!parent::_set_features()) return false;
+		$this->showinowner=false;// не показывать
+		$this->mf_createrid = false;
+		$this->owner_unique = true; // уникальная запис для одного объявления
+		return true;
+	}
+	function _create() {
+		parent::_create();
+		$this->caption = 'Значения параметров';
+		$this->fields['name0'] =	array('type' => 'tinyint', 'width' =>1, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
+		$this->fields['name1'] =	array('type' => 'tinyint', 'width' =>1, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
+		$this->fields['name2'] =	array('type' => 'tinyint', 'width' =>1, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
+		$this->fields['name3'] =	array('type' => 'tinyint', 'width' =>1, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
+		$this->fields['name4'] =	array('type' => 'tinyint', 'width' =>1, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
+		$this->fields['name5'] =	array('type' => 'tinyint', 'width' =>1, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
+
+		$this->fields['name10'] =	array('type' => 'smallint', 'width' =>4, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
+		$this->fields['name11'] =	array('type' => 'smallint', 'width' =>4, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
+		$this->fields['name12'] =	array('type' => 'smallint', 'width' =>4, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
+		$this->fields['name13'] =	array('type' => 'smallint', 'width' =>4, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
+		
+		$this->fields['name20'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
+		$this->fields['name21'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
+	
+		$this->fields['name50'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
+		$this->fields['name51'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
+		$this->fields['name52'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
+		$this->fields['name53'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
+		$this->fields['name54'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
+		$this->fields['name55'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
+		$this->fields['name56'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
+		$this->fields['name57'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
+		$this->fields['name58'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
+		$this->fields['name59'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
+	
+		$this->fields['name70'] = array('type' => 'varchar', 'width' =>254, 'attr' => 'NOT NULL','default'=>'');
+		$this->fields['name71'] = array('type' => 'varchar', 'width' =>254, 'attr' => 'NOT NULL','default'=>'');
+
+		//$this->fields['name80'] = array('type' => 'float', 'width' =>11, 'attr' => 'NOT NULL');
+	
+		//$this->fields['name90'] = array('type' => 'text', 'attr' => 'NOT NULL');
 
 	}
 }
