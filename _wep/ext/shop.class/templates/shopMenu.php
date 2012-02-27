@@ -2,11 +2,14 @@
 	function tpl_shopMenu(&$data) {
 		$html = '';
 		if(isset($data) and count($data)) {
-			$html = '<div class="leftblock_item">
+			global $_tpl;
+			$_tpl['styles']['shop'] = array('/'.static_main::relativePath(dirname(__DIR__)).'/style/menu.css');
+
+			$html = '<div class="shop-menu">
 			'.($data['#title#']?'<h3>'.$data['#title#'].'</h3>':'').'
-			<div class="leftblock_shop">';
+			';
 			$html .= tpl_shop_rev($data['#item#'],'',$data['#page#']);
-			$html .= '</div></div>';
+			$html .= '</div>';
 		}
 		return $html;
 	}

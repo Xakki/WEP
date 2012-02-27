@@ -11,6 +11,13 @@
 		if (isset($_this->_enum[$templistname])) {
 			return $_this->_enum[$templistname];
 		}
+		elseif($listname[0] == 'count') {
+			if(!$listname[1]) $listname[1] = 1;
+			if(!$listname[2]) $listname[2] = 20;
+			for($i=$listname[1];$i<=$listname[2];$i++) {
+				$data[$i] = $i;
+			}
+		}
 		elseif($templistname == 'child.class') {
 			$dir = array();
 			if(file_exists($_this->_CFG['_PATH']['ext'].$_this->_cl.'.class'))

@@ -20,7 +20,7 @@
 	if (isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 		$form = array(
 			'0' => array('type' => 'list', 'listname' => 'phptemplates', 'caption' => 'Шаблон'),
-			'1' => array('type' => 'list', 'listname' => array('class'=>'shop'), 'caption' => 'Рубрика'),
+			'1' => array('type' => 'list', 'listname' => array('class'=>'shop','is_tree'=>true), 'caption' => 'Рубрика'),
 			'2' => array('type' => 'checkbox', 'caption' => 'RSS'),
 			'3' => array('type' => 'text', 'caption' => 'сортировка'),
 			'4' => array('type' => 'int', 'caption' => 'LIMIT'),

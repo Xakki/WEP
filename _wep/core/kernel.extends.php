@@ -261,7 +261,7 @@ abstract class kernel_extends {
 		$this->_listname = ($this->mf_namefields ? $this->mf_namefields : 'id'); // ', `_listnameSQL` as `_listname`'
 		// construct fields
 		if ($this->mf_use_charid) {
-			if (is_bool($this->mf_use_charid) and $this->mf_use_charid)
+			if (is_bool($this->mf_use_charid))
 				$this->mf_use_charid = 63; // длина поля ID
 			$this->fields['id'] = array('type' => 'varchar', 'width' => $this->mf_use_charid, 'attr' => 'NOT NULL');
 		}
@@ -1003,6 +1003,10 @@ abstract class kernel_extends {
 					$this->fields_form[$rr] = $temp[$rr];
 				}
 			}
+		}
+
+		if(isset($this->HOOK['getFieldsForm'])){
+			call_user_func($this->HOOK['getFieldsForm'],$this);
 		}
 		return true;
 	}

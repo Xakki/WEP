@@ -4,7 +4,7 @@ class shop_class extends rubric_class {
 	function _set_features() {
 		if (!parent::_set_features()) return false;
 		$this->caption = 'Каталог товаров';
-		$this->_AllowAjaxFn = array('jsOrder'=>true);
+		$this->_AllowAjaxFn['jsOrder'] = true;
 		return true;
 	}
 
@@ -25,7 +25,7 @@ class shop_class extends rubric_class {
 	function sdfs($MAIL) {
 		$MAIL->fields_form['from']['caption'] = 'Ваш Email';
 
-		$MAIL->fields_form['p_count'] = array('type'=>'int','caption'=>'Количество', 'mask'=>array('minint' => '1'),'default'=>'1');
+		$MAIL->fields_form['p_count'] = array('type'=>'list', 'listname'=>array('count',1,10), 'caption'=>'Количество', 'mask'=>array('minint' => '1','maxint'=>10),'default'=>'1');
 		$MAIL->fields_form['p_addr'] = array('type'=>'text','caption'=>'Адрес доставки', 'mask'=>array('min' => '10'),'default'=>'Уфа, ');
 		$MAIL->fields_form['p_phone'] = array('type'=>'text','caption'=>'Телефон', 'mask'=>array('min' => '5'),'default'=>'+7','comment'=>'Пример: +7-987-254-00-28, +7-347-298-23-88');
 		$MAIL->fields_form['p_comment'] = array('type'=>'textarea','caption'=>'Дополнительная информация', 'mask'=>array('max' => '500'));
@@ -42,12 +42,12 @@ class shop_class extends rubric_class {
 			if(count($data)) {
 				require_once($this->_CFG['_PATH']['core'].'/html.php');
 				global $HTML;
-				$HTML = new html('_design/','default',false);
+				if(!$HTML) $HTML = new html('_design/','default',false);
 
 				_new_class('mail', $MAIL);
 				_new_class('ugroup',$UGROUP);
 
-				$MAIL->HOOK['setFieldsForm'] = array($this,'sdfs');
+				$MAIL->HOOK['getFieldsForm'] = array($this,'sdfs');
 
 				$DATA = array();
 				$cap = 'Заказ товара №'.$_GET['id'].' ('.$data[$PRODUCT->id]['name'].')';
@@ -80,10 +80,10 @@ class shop_class extends rubric_class {
 					$DATA['formcreat']['messages'][0]['value'] = 'Ваш заказ принят на расмотрение. В дальнейшем с вами свяжется наш менеджер.';
 					//$HTML->_templates = "waction";
 					if(isset($DATA['formcreat']['messages']))
-						$html = $HTML->transformPHP($DATA['formcreat'],'messages');
+						$html = $HTML->transformPHP($DATA['formcreat'],'#pg#messages');
 				}
 				else {
-					$html = $HTML->transformPHP($DATA,'formcreat');
+					$html = $HTML->transformPHP($DATA,'#pg#formcreat');
 					$res['eval'] = '$(\'#form_mail\').submit(function(){ JSWin({\'type\':this}); return false;});';
 				}
 			}

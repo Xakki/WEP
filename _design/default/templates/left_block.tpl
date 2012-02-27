@@ -19,7 +19,7 @@
 			{$_tpl['head']}
 		</div>
 		<div class="leftblock">
-			{$_tpl['leftblock']}
+			{$_tpl['left_column']}
 		</div>
 		<div class="center" style="margin:0 0 0 200px;">
 			{$_tpl['path']}

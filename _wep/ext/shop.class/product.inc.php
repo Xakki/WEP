@@ -5,10 +5,10 @@
  * @author Xakki
  * @version 0.1 
  * @return $form
- * @return $html
+ * @return $result
  */
 
-	if(!$FUNCPARAM[0]) $FUNCPARAM[0] = '#shop#productItem';
+	if(!isset($FUNCPARAM[0]) and !$FUNCPARAM[0]) $FUNCPARAM[0] = '#shop#productItem';
 	//if(!$FUNCPARAM[1]) $FUNCPARAM[1] = '0';
 
 	// рисуем форму для админки чтобы удобно задавать параметры
@@ -21,13 +21,13 @@
 	}
 
 	if(!_new_class('shop',$SHOP)) return false;
-
-	$html='';
+	global $HTML;
+	$result = '';
 
 	$PRODUCT = &$SHOP->childs['product'];
 	if(isset($_GET['id']) and $id = (int)$_GET['id']) {
 		$DATA= array($FUNCPARAM[0]=>$PRODUCT->fDisplay($id));
-		$html = $HTML->transformPHP($DATA,$FUNCPARAM[0]);
+		$result = $HTML->transformPHP($DATA,$FUNCPARAM[0]);
 		if(isset($PRODUCT->data[$id]) and count($PRODUCT->data[$id])) {
 			$PRODUCT->data[$id]['shops'] = array_reverse($PRODUCT->data[$id]['shops']);
 			$temp = $this->pageinfo['path'];$tcnt = count($temp);
@@ -68,12 +68,12 @@
 			$DATA2['comments']['vote'] = $MODUL_COMM->config['vote'];
 			$DATA2['comments']['treelevel'] = $MODUL_COMM->config['treelevel'];
 
-			$html .= $HTML->transformPHP($DATA2,'comments').'<span onclick="loadFormComm(this,'.$MODUL_COMM->owner->id.',\''.$MODUL_COMM->_cl.'\')" class="jshref button_comm">'.$MODUL_COMM->lang['_saveclose'].'</span>';
+			$result .= $HTML->transformPHP($DATA2,'comments').'<span onclick="loadFormComm(this,'.$MODUL_COMM->owner->id.',\''.$MODUL_COMM->_cl.'\')" class="jshref button_comm">'.$MODUL_COMM->lang['_saveclose'].'</span>';
 
 		}*/
 
 	}else {
 		header("HTTP/1.0 404");
-		$html = '<div class="divform">	<div class="messages"><div class="error">Ссылка не верна. Вероятно товар был удален с сайта.</div></div></div>';
+		$result = '<div class="divform">	<div class="messages"><div class="error">Ссылка не верна. Вероятно товар был удален с сайта.</div></div></div>';
 	}
-	return $html;
+	return $result;

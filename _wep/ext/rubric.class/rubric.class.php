@@ -34,7 +34,7 @@ class rubric_class extends kernel_extends {
 		$this->fields['txt'] = array('type' => 'text', 'attr' => 'NOT NULL');
 		$this->fields['cnt'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default'=>'0');
 
-		$this->index_fields['name'] = 'name';
+		$this->unique_fields['name'] = 'name';
 		$this->unique_fields['lname'] = 'lname';
 		$this->index_fields['checked'] = 'checked';
 		$this->index_fields[$this->v_img] = $this->v_img;
@@ -49,10 +49,10 @@ class rubric_class extends kernel_extends {
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название рубрики');
 		$this->fields_form['lname'] = array('type' => 'text', 'caption' => 'Название латиницей');
 		$this->fields_form['parent_id'] = array('type' => 'list', 'listname'=>'parentlist', 'caption' => 'Родительская рубрика','mask' =>array('fview'=>1));
-		$this->fields_form[$this->v_img] = array('type'=>'file','caption'=>'Картинка','del'=>1, 'mask'=>array('fview'=>1,'height'=>80), 'comment'=>static_main::m('_file_size').$this->attaches[$this->v_img]['maxsize'].'Kb');	
-		//$this->fields_form["desc"] = array("type" => "textarea", "caption" => "Описание",'mask' =>array('name'=>'all'));
-		//$this->fields_form["text"] = array("type" => "textarea", "caption" => "Описание",'mask' =>array('name'=>'all'));
-		$this->fields_form['checked'] = array('type' => 'checkbox', 'caption' => 'Доступ','comment'=>'разрешить для подачи объявления');
+		$this->fields_form[$this->v_img] = array('type'=>'file','caption'=>'Картинка','del'=>1, 'mask'=>array('height'=>80), 'comment'=>static_main::m('_file_size').$this->attaches[$this->v_img]['maxsize'].'Kb');	
+		$this->fields_form["desc"] = array("type" => "textarea", "caption" => "Описание",'mask' =>array('name'=>'all'));
+		$this->fields_form["txt"] = array("type" => "ckedit", "caption" => "Полный текст",'mask' =>array('fview'=>1,'name'=>'all'));
+		$this->fields_form['checked'] = array('type' => 'checkbox', 'caption' => 'Доступ','comment'=>'разрешить для выбора в списке');
 		$this->fields_form["ordind"] = array("type" => "int", "caption" => "Сортировка");
 		$this->fields_form["cnt"] = array("type" => "int", 'readonly'=>true, "caption" => "Кол-во элм.");
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Активность');
@@ -72,6 +72,9 @@ class rubric_class extends kernel_extends {
 		if(!$result->err) {
 			$ar_last = array();
 			while ($row = $result->fetch()){
+				$row['img'] = $this->_get_file($row['id'],$this->v_img,$row['img']);
+				$row['orig_img'] = $this->_get_file($row['id'],$this->v_img,$row['img'],1);
+				
 				$this->data2[$row['id']] = $row;
 				$this->data[$row['parent_id']][$row['id']] = $row['name'];
 				$this->data3[$row['parent_id']][$row['id']] = &$this->data2[$row['id']];
@@ -96,9 +99,9 @@ class rubric_class extends kernel_extends {
 		return 0;	
 	}
 
-	function fDisplay($select=0) {
+	function fDisplay($start=0,$select=0) {
 		$this->fCache();
-		return $this->_forlist($this->data3,0,$select);
+		return $this->_forlist($this->data3,$start,$select);
 	}
 
 	function getPath($id,$page) {
@@ -107,11 +110,12 @@ class rubric_class extends kernel_extends {
 		$tpath= array();
 		while(isset($this->data2[$temp])) {
 			$_tpl['keywords'] .= ', '.$this->data2[$temp]['name'];
-			$tpath[$this->data2[$temp]['lname'].'/'.$page] = array('name'=>$this->data2[$temp]['name']);
+			$tpath[$this->data2[$temp]['path'].'/'.$page] = array('name'=>$this->data2[$temp]['name']);
 			$temp=$this->data2[$temp]['parent_id'];
 		}
 		return array_reverse($tpath);
 	}
+
 ////////////////////////////////////////////////////
 ////////////////////////////////////////////////////
 ////////////////////////////////////////////////////
@@ -125,7 +129,7 @@ class rubric_class extends kernel_extends {
 			while ($row = $result->fetch()){
 				$this->data2[$row['id']] = $row;
 				$this->data[$row['parent_id']][$row['id']] = $row['name'];
-				$this->data_path[$row['lname']] = $row['id'];
+				$this->data_path[$row['path']] = $row['id'];
 		}
 		return true;	
 	}
@@ -151,10 +155,12 @@ class rubricparam_class extends kernel_extends {
 			return 'int';
 		elseif($type<50)
 			return 'int';
-		elseif($type<60)
+		elseif($type<70)
 			return 'list';
-		else
+		elseif($type<80)
 			return 'text';
+		else
+			return 'float';
 	}
 
 	function _create() {
@@ -178,6 +184,11 @@ class rubricparam_class extends kernel_extends {
 			11=>'Целое(4)1',
 			12=>'Целое(4)2',
 			13=>'Целое(4)3',
+			14=>'Целое(4)4',
+			15=>'Целое(4)5',
+			16=>'Целое(4)6',
+			17=>'Целое(4)7',
+			18=>'Целое(4)8',
 			20=>'Целое(11)0',
 			21=>'Целое(11)1',
 			40=>'Год 1',
@@ -196,8 +207,14 @@ class rubricparam_class extends kernel_extends {
 			71=>'Текст(254)1',
 			72=>'Текст(128)2',
 			73=>'Текст(64)3',
-			//80=>'Дробное0'
-			//90=>'Текст0'
+			74=>'Текст(64)4',
+			75=>'Текст(64)5',
+			80=>'Дробное0',
+			81=>'Дробное1',
+			82=>'Дробное2',
+			83=>'Дробное3',
+			84=>'Дробное4',
+			85=>'Дробное5',
 			);
 
 		# fields

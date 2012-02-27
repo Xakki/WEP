@@ -49,7 +49,7 @@ class pg_class extends kernel_extends {
 		$this->config_form['memcache'] = array('type' => 'int', 'caption' => 'Memcache time по умолчанию', 'comment' => '-1 - отключить полностью, 0 - кеширование определяется в контенте, 1> - кеширование в сек. для всех по умолчанию');
 		$this->config_form['memcachezip'] = array('type' => 'checkbox', 'caption' => 'Memcache сжатие кеша');
 		$this->config_form['sitemap'] = array('type' => 'checkbox', 'caption' => 'SiteMap XML', 'comment' => 'создавать в корне сайта xml файл карты сайта для поисковиков');
-		$this->config_form['IfDontHavePage'] = array('type' => 'list', 'listname' => 'pagetype', 'caption' => 'Если нет страницы в базе, то вызываем обрабочик');
+		$this->config_form['IfDontHavePage'] = array('type' => 'list', 'listname' => 'list', 'caption' => 'Если нету совпадений , то по умолчанию будет следующая страница');
 		$this->config_form['rootPage'] = array('type' => 'list', 'keytype' => 'text', 'listname' => array('class' => 'pg', 'where' => 'parent_id=0'), 'multiple' => 3, 'caption' => 'Мульти-домен', 'comment' => 'Укажите страницу для каждого домена, по умолчанию для ненайденного домена будет загружаться первая позиция', 'mask' => array('maxarr' => 20));
 		$this->config_form['menu'] = array('type' => 'text', 'keytype' => 'int', 'multiple' => 1, 'caption' => 'Блоки меню', 'mask' => array('maxarr' => 30));
 		$this->config_form['marker'] = array('type' => 'text', 'keytype' => 'text', 'multiple' => 1, 'caption' => 'Маркеры', 'mask' => array('maxarr' => 50));
@@ -191,6 +191,9 @@ class pg_class extends kernel_extends {
 		}
 		elseif ($listname == 'pagemap') {
 			return $this->childs['content']->getInc('.map.php', ' --- ');
+		} 
+		elseif ($listname == 'realurl') {
+			return $this->childs['content']->getInc('.realurl.php', ' --- ');
 		} 
 		elseif ($listname == 'pagetype') {
 			return $this->childs['content']->getInc();
@@ -381,13 +384,18 @@ class pg_class extends kernel_extends {
 			return 1;
 		}
 		elseif ($this->config['IfDontHavePage'] and !isset($this->IfDontHavePage)) {
-			$IfDontHavePage = explode(':', $this->config['IfDontHavePage']);
-			if (file_exists($this->_enum['inc'][$IfDontHavePage[0]]['path'] . $IfDontHavePage[1] . '.inc.php')) {
-				include($this->_enum['inc'][$IfDontHavePage[0]]['path'] . $IfDontHavePage[1] . '.inc.php');
-				$this->config['IfDontHavePage'] = '';
-				$this->IfDontHavePage = true;
-				return $this->can_show();
+			/*if(is_array($this->config['IfDontHavePage'])) {
+				$this->display_inc(implode(',',$this->config['IfDontHavePage']));
 			}
+			*/
+			$this->id = $this->config['IfDontHavePage'];
+			$this->pageinfo = $this->dataCash[$this->id];
+			if ($this->pageinfo['href'])
+				static_main::redirect($this->pageinfo['href']);
+			$this->get_pageinfo(); //$this->pageinfo['path']
+
+			$this->IfDontHavePage = true;
+			return 1;
 		}
 		return 0;
 	}
@@ -478,13 +486,13 @@ class pg_class extends kernel_extends {
 	}
 
 	public function display_inc($id, $design = 'default') {
-		global $HTML;
+		/*global $HTML;
 		if (!$HTML) {
 			if (!$design)
 				$design = $this->config['design'];
 			require_once($this->_CFG['_PATH']['core'] . '/html.php');
 			$HTML = new html('_design/', $design, false); //отправляет header и печатает страничку
-		}
+		}*/
 		$Cdata = array();
 		$cls = 'SELECT * FROM ' . $this->SQL_CFG['dbpref'] . 'pg_content WHERE active=1 and id IN ("' . $id . '")';
 		$resultPG = $this->SQL->execSQL($cls);

@@ -4,34 +4,12 @@ class product_class extends kernel_extends {
 	protected function _create_conf() {/*CONFIG*/
 		parent::_create_conf();
 		
-		$this->config['onDate'] = 0;
+		$this->config['reversePage'] = 0;
 		$this->config['onComm'] = 0;
-		$this->config['levelComm'] = 0;
-		$this->config['nomination1'] = '';
-		$this->config['nomination2'] = '';
-		$this->config['nomination3'] = '';
-		$this->config['nomination4'] = '';
-		$this->config['nomination5'] = '';
-		/*$this->config['mail'] = '';
-		$this->config['mailend'] = '';*/
 		$this->config['imageCnt'] = 6;
 
-		//$this->config_form['onDate'] = array('type' => 'checkbox', 'caption' => 'Показывать согласно периоду?');
+		$this->config_form['reversePage'] = array('type' => 'checkbox', 'caption' => 'Режим постраничной навигации', 'comment'=>'если откл. - прямая нумерация');
 		$this->config_form['onComm'] = array('type' => 'list', 'listname'=>'onComm', 'caption' => 'Включить комментарии?');
-		$this->config_form['levelComm'] = array('type' => 'int', 'caption' => 'Число подуровней коментария');
-		$this->config_form['nomination1'] = array('type' => 'varchar', 'caption' => 'Номинация №1','comment'=>'Введите название, чтобы включить номинацию');
-		$this->config_form['nomination2'] = array('type' => 'varchar', 'caption' => 'Номинация №2');
-		$this->config_form['nomination3'] = array('type' => 'varchar', 'caption' => 'Номинация №3');
-		$this->config_form['nomination4'] = array('type' => 'varchar', 'caption' => 'Номинация №4');
-		$this->config_form['nomination5'] = array('type' => 'varchar', 'caption' => 'Номинация №5');
-		/*$this->config_form['mail'] = array(
-			'type' => 'ckedit', 
-			'caption' => 'Письмо', 
-			'paramedit'=>array(
-				'height'=>350,
-				'fullPage'=>'true',
-				'toolbarStartupExpanded'=>'false'));
-		$this->config_form['mailend'] = array('type' => 'textarea', 'caption' => 'Концовка для письма');*/
 		$this->config_form['imageCnt'] = array('type' => 'int', 'caption' => 'Число фотографий');
 	}
 
@@ -41,19 +19,21 @@ class product_class extends kernel_extends {
 		$this->caption = 'Продкция';
 		$this->owner_name = 'shop';
 		//$this->mf_statistic = array('Y'=>'count(id)','X'=>'FROM_UNIXTIME(mf_timecr,"%Y-%m")','Yname'=>'Кол','Xname'=>'Дата');//-%d
-		$this->reversePageN = true;
 		$this->messages_on_page = 20;
-		$this->includeJStoWEP = true;
+		//$this->includeJStoWEP = true;
 		//$this->includeCSStoWEP = true;
 		$this->lang['add'] = 'Продукция добавлена.';
 		$this->mf_timecr = true; // создать поле хранящее время создания поля
 		$this->mf_timeup = true; // создать поле хранящее время обновления поля
 		$this->mf_ipcreate = true;//IP адрес пользователя с котрого была добавлена запись
-		$this->ver = '0.1.2';
+		$this->_listnameSQL ='name';
+		$this->ver = '0.2.3';
 
 		$this->_enum['onComm']=array(
 			0=>'Отключить',
 			1=>'Включить');
+
+		$this->_AllowAjaxFn['AjaxShopParam'] = true;
 
 		return true;
 	}
@@ -61,10 +41,11 @@ class product_class extends kernel_extends {
 	protected function _create() {
 		parent::_create();
 
+		$this->reversePageN = (bool)$this->config['reversePage'];
+
 		$this->index_fields['img_product'] = 'img_product';
 		$this->index_fields['name'] = 'name';
 
-		$this->_listnameSQL ='name';
 
 		$thumb = array('type'=>'resize', 'w'=>'1024', 'h'=>'768');
 		$maxsize = 3000;
@@ -78,6 +59,7 @@ class product_class extends kernel_extends {
 		$this->fields['descr'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['text'] = array('type' => 'text', 'attr' => 'NOT NULL');
 		$this->fields['cost'] = array('type' => 'int', 'width' => 10,'attr' => 'NOT NULL','default'=>0);
+		$this->fields['cost2'] = array('type' => 'int', 'width' => 10,'attr' => 'NOT NULL','default'=>0);
 		$this->fields['statview'] = array('type' => 'int', 'width' => 9, 'attr' => 'NOT NULL','default'=>0);
 		$this->fields['path'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL','default'=>'');
 
@@ -87,7 +69,8 @@ class product_class extends kernel_extends {
 
 	public function setFieldsForm($form=0) {
 		parent::setFieldsForm($form);
-
+		global $_tpl;
+		$_tpl['script']['shop'] = array('/'.static_main::relativePath(__DIR__).'/script/shop.js');
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название товара');
 		$this->fields_form['shop'] = array(
 			'type' => 'list', 
@@ -185,13 +168,15 @@ class product_class extends kernel_extends {
 		}*/
 		$mess = parent::kPreFields($f_data, $f_param, $f_fieldsForm);
 		
-		if($this->id){
+		/*if($this->id){
 			$f_fieldsForm['shop']['onchange'] = 'productshop(\'shop\','.$this->id.')';
-		}
+		}*/
 
-
-		if($f_data['shop']) {
-			$f_fieldsForm = static_main::insertInArray($f_fieldsForm,'shop',$this->ParamFieldsForm($this->id,$f_data['shop'],$f_data['type'])); // обработчик параметров рубрики
+		
+		if($f_data['shop'] or $this->owner->id) {
+			if($this->owner->id and !$f_data['shop'])
+				$f_data['shop'] = $this->owner->id;
+			$f_fieldsForm = static_main::insertInArray($f_fieldsForm,'shop',$this->ParamFieldsForm($this->id,$f_data['shop'])); // обработчик параметров рубрики
 		}
 		unset($f_fieldsForm['text_ckedit']);
 		return $mess;
@@ -299,10 +284,9 @@ class product_class extends kernel_extends {
 	}
 
 
-	public function ParamFieldsForm($id,$rid,$tp=0,$listclause='') { // форма для редак-добавл объявы и поиска объявы
+	public function ParamFieldsForm($id,$rid,$listclause='') { // форма для редак-добавл объявы и поиска объявы
 		//$id - id объявы
 		//$rid - id рубрики
-		//$tp - тип объявления
 		//listclause - подзапрос
 		global $_tpl;//в onLoad слайдер
 		$FLI = $FMCB = array();
@@ -393,9 +377,6 @@ class product_class extends kernel_extends {
 
 				if($r['comment']!='') $form['param_'.$k]['comment']=$r['comment'];
 				
-				$tp=(int)$tp;
-				if($tp==1 || $tp==3) unset($form['param_'.$k]['mask']['min']);
-
 				if($type=='ajaxlist') {
 					$form['param_'.$k]['listname'] = array('tablename'=>'formlistitems','where'=>' tx.checked=1 and tx.active=1 GROUP BY tx.id','ordfield'=>'tx.ordind');
 					$form['param_'.$k]['value_2'] = $id['param_'.$k.'_2'];
@@ -612,35 +593,10 @@ class product_class extends kernel_extends {
 			if(is_string($rss) and $rss=='cnt') return $row['cnt'];
 			if(!$limit) {
 				$xml['cnt'] = $row['cnt'];
-				/*** PAGE NUM  REVERSE ***/
-				if($this->reversePageN) {
-					if($this->_pn == 0) 
-						$this->_pn = 1;
-					else
-						$this->_pn = floor($row['cnt']/$this->messages_on_page)-$this->_pn+1;
-				}
-				/***/
-				global $PGLIST;
-				$pgData = $this->fPageNav($row['cnt'],$PGLIST->getHref().'.html');
-				$xml['pagenum'] = $pgData;
-				if($row['cnt']>12) {
-					global $_tpl;
-					$_tpl['onload'] .='pagenum('.$pgData['cntpage'].','.($this->reversePageN?'true':'false').');';
-				}
-				$pcnt = 0;
-				if($this->reversePageN) {
-					if($this->_pn==floor($row['cnt']/$this->messages_on_page)) {
-						$this->messages_on_page = $row['cnt']-$this->messages_on_page*($this->_pn-1); // правдивый
-						//$this->messages_on_page = $this->messages_on_page*$this->_pn-$countfield; // полная запись
-					}
-					else {
-						$pcnt = $row['cnt']-$this->messages_on_page*$this->_pn; // начало отсчета
-					}
-				}
-				else
-					$pcnt = $this->messages_on_page*($this->_pn-1); // начало отсчета
-				if($pcnt<0)
-					$pcnt = 0;
+
+				$xml['pagenum'] = $this->fPageNav($row['cnt']);
+				$pcnt = $xml['pcnt'] = $xml['pagenum']['start'];// Начальный отчет элементов на странице
+
 			}
 
 			$clause['where'] .= ' GROUP BY t1.id ORDER BY '.$order.' DESC';
@@ -758,8 +714,9 @@ class product_class extends kernel_extends {
 		GROUP BY t1.id ORDER BY t1.mf_timecr DESC';
 		
 		$this->fGetParamproduct($clause);
+		
 		///** Nomination **///
-		$clause = 'SELECT * FROM product_vote WHERE owner_id IN ('.implode(',',$id).')';
+		/*$clause = 'SELECT * FROM product_vote WHERE owner_id IN ('.implode(',',$id).')';
 		if(static_main::_prmUserCheck())
 			$clause .= ' and '.$this->mf_createrid.'="'.$_SESSION['user']['id'].'"';
 		else
@@ -767,7 +724,7 @@ class product_class extends kernel_extends {
 		$result = $this->SQL->execSQL($clause);
 		while($row = $result->fetch()) {
 			$this->data[$row['owner_id']]['nomination'][$row['type']] = 1;
-		}
+		}*/
 		///////////
 		$xml = $this->fDataCreate(1);
 
@@ -881,13 +838,13 @@ class product_class extends kernel_extends {
 		return 0;
 	}
 
-	function productFindForm($rid,$flag=1) {
+	function productFindForm($rid,$flag=1,$page='catalog') {
 		//$this->owner->data - кэш рубрик
 		//$this->owner->data2 - кэш рубрик
 		//if $flag==0 то это "утановка параметров при подписке"
 //$newtime = getmicrotime();
 
-		global $_tpl,$PGLIST;
+		global $_tpl;
 		$filter = $_REQUEST;
 		$xml='';
 		$datalist = array();
@@ -903,11 +860,11 @@ class product_class extends kernel_extends {
 				foreach($this->owner->data[$rid] as $k=>$r){
 					if(isset($this->owner->data[$k])){
 						$datalist = $this->owner->data[$k]+$datalist;
-						$this->_enum['shops'][$k]= array('#name#'=>$r,'#href#'=>$this->owner->data2[$k]['path'].'/'.$PGLIST->id.'.html');	
+						$this->_enum['shops'][$k]= array('#name#'=>$r,'#href#'=>$this->owner->data2[$k]['path'].'/'.$page.'.html');	
 						foreach($this->owner->data[$k] as $rk=>$rr)
-							$this->_enum['shops'][$k]['#item#'][$rk]= array('#name#'=>$rr,'#href#'=>$this->owner->data2[$rk]['path'].'/'.$PGLIST->id.'.html');
+							$this->_enum['shops'][$k]['#item#'][$rk]= array('#name#'=>$rr,'#href#'=>$this->owner->data2[$rk]['path'].'/'.$page.'.html');
 					}else
-						$this->_enum['shops'][$k]= array('#name#'=>$r,'#href#'=>$this->owner->data2[$k]['path'].'/'.$PGLIST->id.'.html');						
+						$this->_enum['shops'][$k]= array('#name#'=>$r,'#href#'=>$this->owner->data2[$k]['path'].'/'.$page.'.html');						
 				}
 				$this->filter_form['shopl']= array(
 					'type'=>'linklist',
@@ -1013,6 +970,30 @@ class product_class extends kernel_extends {
 		$var = mb_substr($var,0,80,'UTF-8');
 		return trim($var,' _');
 
+	}
+
+
+	public function AjaxShopParam() {
+		global $HTML,$_tpl;
+		$RESULT = array('html'=>'', 'html2'=>'', 'text'=>'','onload'=>'');
+		$DATA  = array();
+		$this->fields_form = array();
+		$_GET['_rid']=(int)$_GET['_rid'];
+		$_GET['_id']=(int)$_GET['_id'];
+		$this->flag_AjaxBoardList = true;
+
+		if($_GET['_rid'] and $form = $this->ParamFieldsForm($_GET['_id'],$_GET['_rid'])) {
+			if(count($form) and $this->kFields2FormFields($form)) {
+				$DATA['form'] = &$this->form;
+				$RESULT['html'] = $HTML->transformPHP($DATA,'#pg#form');
+			}
+			//$RESULT['onload'] .= 'rclaim(\'type\');';
+		}
+		else {
+			//$RESULT['onload'] .= '';
+		}
+		$RESULT['onload'] .= $_tpl['onload'];
+		return $RESULT;
 	}
 }
 

@@ -37,14 +37,22 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 		$SHOP->simplefCache();
 		if(!count($SHOP->data2)) 
 			return '';
-		$SHOP->getPath($rid);// прописываем путь
-		//$_tpl['title'] = $PGLIST->get_caption();
+
+
+		// Путь рубрики
+		$href = '';
+		$fPATH = $SHOP->getPath($rid,$Chref);// прописываем путь
+		if(count($fPATH)) {
+			$PGLIST->pageinfo['path']=$PGLIST->pageinfo['path']+$fPATH;
+			end($fPATH);
+			$href = key($fPATH);
+		}
 
 		$formparam = array();
-		$formparam['filter'] = $SHOP->childs['product']->productFindForm($rid);// форма поиска
+		$formparam['filter'] = $SHOP->childs['product']->productFindForm($rid,1,$Chref);// форма поиска
 
 		if(count($formparam)) {
-			$html .='<div class="blockhead searchslide" onclick="slideBlock(this,\'#form_tools_paramselect\');">Поиск</div><div class="hrb"></div>'.$HTML->transformPHP($formparam,'filter').'<br/>';
+			$html .='<div class="blockhead searchslide" onclick="slideBlock(this,\'#form_tools_paramselect\');">Поиск</div><div class="hrb"></div>'.$HTML->transformPHP($formparam,'#pg#filter').'<br/>';
 			if(isset($_GET['sbmt']) and $_GET['sbmt']=='Поиск')
 				$_tpl['onload'] .= 'jQuery(\'div.searchslide\').click();';
 			//$_tpl['onload'] .= "JSFR('#form_tools_paramselect');";
@@ -56,7 +64,7 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 
 			$DATA = $SHOP->childs['product']->fList($rid,$_GET);
 			$DATA['req'] = $req;
-			$DATA['pg'] = $PGLIST->getHref();
+			$DATA['pg'] = $Chref;
 			$html .= $HTML->transformPHP($DATA,$FUNCPARAM[0]);
 		}//'.$ppath['path'].'
 	} else {
