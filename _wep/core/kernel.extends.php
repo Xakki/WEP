@@ -61,6 +61,10 @@ abstract class kernel_extends {
 		} elseif ($name == 'setHook') {
 			$this->_setHook();
 			return $this->setHook;
+		} elseif ($name == 'def_records') {
+			$this->def_records = array();
+			$this->_setDefaultRecords();
+			return $this->def_records;
 		} elseif ($name == 'fields_form') {
 			$this->getFieldsForm(-1);
 			return $this->fields_form;
@@ -368,6 +372,9 @@ abstract class kernel_extends {
 	// В этой функции устанавливается хук
 	protected function _setHook() {
 		$this->setHook = array(); //Перехватчик в предустановки модуля
+	}
+
+	protected function _setDefaultRecords() {
 	}
 
 	/**

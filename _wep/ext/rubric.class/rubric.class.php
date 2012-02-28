@@ -144,7 +144,9 @@ class rubricparam_class extends kernel_extends {
 		$this->mf_ordctrl = true;
 		$this->mf_actctrl = true;
 		$this->caption = 'Параметры';
-		$this->tablename = 'rubric_param';
+		$this->singleton = false;
+		$this->tablename = $this->owner->_cl.'_param';
+		//print_r("TODO : Доработать  проблему вызова подкласса 2 раза ".$this->tablename);
 		return true;
 	}
 

@@ -113,10 +113,6 @@ class pg_class extends kernel_extends {
 			2 => array('path' => $this->_CFG['_PATH']['inc'], 'name' => 'CONF - '),
 			3 => array('path' => $this->_CFG['_PATH']['ext'], 'name' => 'EXT - ')
 		);
-
-		if (!file_exists($this->_CFG['_PATH']['inc'])) {
-			rename($this->_CFG['_PATH']['wepconf'] . 'pagetext/', $this->_CFG['_PATH']['inc']);
-		}
 	}
 
 	function _childs() {

@@ -126,7 +126,7 @@ class product_class extends kernel_extends {
 	}
 
 	function _childs() {
-		$this->create_child('prodparam');
+		$this->create_child('product_value');
 		/*if($this->_CFG['_F']['adminpage']) {
 			include_once(__DIR__.'/childs.include.php');
 			$this->create_child('prodvote');
@@ -220,9 +220,9 @@ class product_class extends kernel_extends {
 		if($ret = parent::_update($data,$where,$flag_select)) {
 			if(isset($PARAM->data) and is_array($PARAM->data) and count($PARAM->data)) {
 				if(count($cls)) {
-					$result=$this->SQL->execSQL('DELETE FROM prodparam WHERE owner_id='.$this->id);
+					$result=$this->SQL->execSQL('DELETE FROM product_value WHERE owner_id='.$this->id);
 					if($result->err) return false;
-					$query = 'INSERT into prodparam (owner_id,'.implode(',',array_keys($cls)).') values ('.$this->id.',"'.implode('","',$cls).'")';
+					$query = 'INSERT into product_value (owner_id,'.implode(',',array_keys($cls)).') values ('.$this->id.',"'.implode('","',$cls).'")';
 					$result=$this->SQL->execSQL($query);
 					if($result->err) return false;
 				}
@@ -271,11 +271,11 @@ class product_class extends kernel_extends {
 
 		if($ret = parent::_add($data,$flag_select)) {
 			if(count($cls)) {
-				$query = 'INSERT into prodparam (owner_id,'.implode(',',array_keys($cls)).') values ('.$this->id.',"'.implode('","',$cls).'")';
+				$query = 'INSERT into product_value (owner_id,'.implode(',',array_keys($cls)).') values ('.$this->id.',"'.implode('","',$cls).'")';
 				$result=$this->SQL->execSQL($query);
 				if($result->err) return false;
 			}else {
-				$query = 'INSERT into prodparam (owner_id) values ('.$this->id.')';
+				$query = 'INSERT into product_value (owner_id) values ('.$this->id.')';
 				$result=$this->SQL->execSQL($query);
 				if($result->err) return false;
 			}
@@ -295,7 +295,7 @@ class product_class extends kernel_extends {
 		else
 			$flagNew = 0;
 		if(!$flagNew and $id) {
-			$result = $this->SQL->execSQL('SELECT * FROM prodparam WHERE owner_id IN ('.$id.')');
+			$result = $this->SQL->execSQL('SELECT * FROM product_value WHERE owner_id IN ('.$id.')');
 			if(!$result->err) {
 				if ($row = $result->fetch()){
 					$paramdata=$row;
@@ -356,7 +356,7 @@ class product_class extends kernel_extends {
 
 					/*if($listclause!='' and ($r['min']>0 or $r['max']==0)) {
 						$temcls = 'SELECT min(t2.name'.$k.') as min,max(t2.name'.$k.') as max FROM '.$this->tablename.' t1 
-						JOIN prodparam t2 ON t2.owner_id=t1.id and t2.owner_id= '.$listclause;
+						JOIN product_value t2 ON t2.owner_id=t1.id and t2.owner_id= '.$listclause;
 						$result2 = $this->SQL->execSQL($temcls);
 						$maxmin = $result2->fetch_array(MYSQL_NUM);
 						if($r['min']>0)
@@ -563,7 +563,7 @@ class product_class extends kernel_extends {
 		$xml=array();
 
 		$clause['from'] = 'FROM '.$this->tablename.' t1 ';//1
-		$clause['ljoin'] = ' LEFT JOIN prodparam t4 ON t4.owner_id=t1.id ';//2
+		$clause['ljoin'] = ' LEFT JOIN product_value t4 ON t4.owner_id=t1.id ';//2
 		$clause['where'] = ' WHERE t1.active=1 ';//4
 
 		$rlist = array();
@@ -708,7 +708,7 @@ class product_class extends kernel_extends {
 			$id[(int)$r]=(int)$r;
 		$PARAM = &$this->owner->childs['rubricparam'];
 		$clause = 'SELECT t3.*, t1.*, GROUP_CONCAT(t2.id,":",t2.name,":",t2.type,":",t2.formlist,":",t2.edi ORDER BY t2.ordind SEPARATOR "|") as param FROM '.$this->tablename.' t1
-		LEFT JOIN prodparam t3 ON t1.id=t3.owner_id  
+		LEFT JOIN product_value t3 ON t1.id=t3.owner_id  
 		LEFT JOIN '.$PARAM->tablename.' t2 ON t1.shop=t2.owner_id and t2.active 
 		WHERE t1.active=1 and t1.id IN ('.implode(',',$id).') 
 		GROUP BY t1.id ORDER BY t1.mf_timecr DESC';
@@ -999,49 +999,38 @@ class product_class extends kernel_extends {
 
 
 
-class prodparam_class extends kernel_extends {
+class product_value_class extends kernel_extends {
 	function _set_features() {
 		if (!parent::_set_features()) return false;
 		$this->showinowner=false;// не показывать
 		$this->mf_createrid = false;
 		$this->owner_unique = true; // уникальная запис для одного объявления
+		$this->tablename = $this->owner->_cl.'_value';
 		return true;
 	}
+
 	function _create() {
 		parent::_create();
 		$this->caption = 'Значения параметров';
-		$this->fields['name0'] =	array('type' => 'tinyint', 'width' =>1, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
-		$this->fields['name1'] =	array('type' => 'tinyint', 'width' =>1, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
-		$this->fields['name2'] =	array('type' => 'tinyint', 'width' =>1, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
-		$this->fields['name3'] =	array('type' => 'tinyint', 'width' =>1, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
-		$this->fields['name4'] =	array('type' => 'tinyint', 'width' =>1, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
-		$this->fields['name5'] =	array('type' => 'tinyint', 'width' =>1, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
-
-		$this->fields['name10'] =	array('type' => 'smallint', 'width' =>4, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
-		$this->fields['name11'] =	array('type' => 'smallint', 'width' =>4, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
-		$this->fields['name12'] =	array('type' => 'smallint', 'width' =>4, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
-		$this->fields['name13'] =	array('type' => 'smallint', 'width' =>4, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
-		
-		$this->fields['name20'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
-		$this->fields['name21'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
-	
-		$this->fields['name50'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
-		$this->fields['name51'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
-		$this->fields['name52'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
-		$this->fields['name53'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
-		$this->fields['name54'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
-		$this->fields['name55'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
-		$this->fields['name56'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
-		$this->fields['name57'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
-		$this->fields['name58'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
-		$this->fields['name59'] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
-	
-		$this->fields['name70'] = array('type' => 'varchar', 'width' =>254, 'attr' => 'NOT NULL','default'=>'');
-		$this->fields['name71'] = array('type' => 'varchar', 'width' =>254, 'attr' => 'NOT NULL','default'=>'');
-
-		//$this->fields['name80'] = array('type' => 'float', 'width' =>11, 'attr' => 'NOT NULL');
-	
-		//$this->fields['name90'] = array('type' => 'text', 'attr' => 'NOT NULL');
-
+		$rubricparam = &$this->owner->owner->childs['rubricparam'];
+		foreach($rubricparam->_enum['type'] as $k=>$r) {
+			if($k<10)
+				$this->fields['name'.$k] =	array('type' => 'tinyint', 'width' =>1, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
+			elseif($k<20)
+				$this->fields['name'.$k] =	array('type' => 'smallint', 'width' =>4, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
+			elseif($k<70)
+				$this->fields['name'.$k] =	array('type' => 'int', 'width' =>11, 'attr' => 'UNSIGNED NOT NULL', 'default'=>0);
+			elseif($k<73)
+				$this->fields['name'.$k] = array('type' => 'varchar', 'width' =>254, 'attr' => 'NOT NULL','default'=>'');
+			elseif($k<76)
+				$this->fields['name'.$k] = array('type' => 'varchar', 'width' =>128, 'attr' => 'NOT NULL','default'=>'');
+			elseif($k<80)
+				$this->fields['name'.$k] = array('type' => 'varchar', 'width' =>64, 'attr' => 'NOT NULL','default'=>'');
+			elseif($k<90)
+				$this->fields['name'.$k] = array('type' => 'float', 'width' =>'11,2', 'attr' => 'NOT NULL','default'=>'0.00');
+			else
+				$this->fields['name'.$k] = array('type' => 'text', 'width' =>64, 'attr' => 'NOT NULL');
+		}
 	}
+
 }

@@ -601,12 +601,12 @@ class static_tools {
 				}
 			}
 		}
-		/*foreach ($MODUL->def_records as $row) {
+		foreach ($MODUL->def_records as $row) {
 			if (!$MODUL->_add($row)) {
 				//return static_main::log('error','Error add default record into `'.$MODUL->tablename.'`',$MODUL->_cl);
 				return false;
 			}
-		}*/
+		}
 		//return static_main::log('ok','Insert default records into table ' . $MODUL->tablename . '.',$MODUL->_cl);
 		return true;
 	}
