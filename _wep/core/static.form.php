@@ -550,6 +550,14 @@ class static_form {
 		chmod($InFile, $_CFG['wep']['chmod']);
 		list($width_orig, $height_orig) = getimagesize($InFile);// опред размер
 
+		if(!$WidthX and !$HeightY) 
+			return true;
+		if(!$WidthX)
+			$WidthX = ($width_orig*$HeightY)/$height_orig;
+		if(!$HeightY) {
+			$HeightY = ($height_orig*$WidthX)/$width_orig;
+		}
+
 		if($width_orig<$WidthX and $height_orig<$HeightY) {
 			if($InFile!=$OutFile) {
 				copy($InFile,$OutFile);
@@ -581,6 +589,15 @@ class static_form {
 		global $_CFG;
 		chmod($InFile, $_CFG['wep']['chmod']);
 		list($width_orig, $height_orig) = getimagesize($InFile);// опред размер
+
+		if(!$WidthX and !$HeightY) 
+			return true;
+		if(!$WidthX)
+			$WidthX = ($width_orig*$HeightY)/$height_orig;
+		if(!$HeightY) {
+			$HeightY = ($height_orig*$WidthX)/$width_orig;
+		}
+
 		// Resample
 		$thumb = imagecreatetruecolor($WidthX, $HeightY);//созд пустой рисунок
 		if(!$imtype = self::_is_image($InFile)) // опред тип файла
@@ -599,6 +616,14 @@ class static_form {
 		$trueX=$WidthX;$trueY=$HeightY;
 		chmod($InFile, $_CFG['wep']['chmod']);
 		list($width_orig, $height_orig) = getimagesize($InFile);
+
+		if(!$trueX and !$trueY) 
+			return true;
+		if(!$trueX)
+			$WidthX = $trueX = ($width_orig*$trueY)/$height_orig;
+		if(!$trueY) {
+			$HeightY = $trueY = ($height_orig*$trueX)/$width_orig;
+		}
 
 		$ratio_orig = $width_orig/$height_orig;
 		if ($WidthX/$HeightY > $ratio_orig) {

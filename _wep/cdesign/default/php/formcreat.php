@@ -8,7 +8,7 @@
 		$texthtml .= '>';
 
 		if(!isset($data['DIR']))
-			$data['DIR'] = __DIR__;
+			$data['DIR'] = dirname(__FILE__);
 
 		if(isset($data['messages']) and count($data['messages'])) {
 			include_once($data['DIR'].'/messages.php');

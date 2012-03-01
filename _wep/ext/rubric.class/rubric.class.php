@@ -12,19 +12,38 @@ class rubric_class extends kernel_extends {
 			$this->data2 = array();
 		$this->_dependClass = array('formlist');
 		$this->v_img = 'img_'.$this->_cl;
+		$this->_enum['thumb'] = array(
+			'original'=>'original',
+			'resizecrop'=>'resizecrop',
+			'resize'=>'resize'
+		);
 		return true;
+	}
+
+	protected function _create_conf() {/*CONFIG*/
+		parent::_create_conf();
+		
+
+		$this->config['thumbs'] = array(
+			'pref=org_'=> 'original',
+			'w=60;h=;pref=org_;path='=> 'resizecrop',
+		);
+		$this->config['imgsize'] = 3000;
+
+		$this->config_form['thumbs'] = array('type' => 'list', 'listname'=>'thumb', 'multiple'=>3, 'caption' => 'Модификации изображений','mask'=>array('maxarr'=>10));
+		$this->config_form['imgsize'] = array('type' => 'int', 'caption' => 'Максим. размер загружаемых изображений');
 	}
 
 	function _create() {
 		parent::_create();
 
 		$this->attaches[$this->v_img] = array(
-			'mime' => array('image/pjpeg'=>'jpg', 'image/jpeg'=>'jpg', 'image/gif'=>'gif', 'image/png'=>'png'), 
-			'thumb'=>array(
+			'mime' => array('image'), 'thumb'=>array(),
+			/*'thumb'=>array(
 				array('type'=>'original', 'pref'=>'org_'),
-				array('type'=>'resizecrop', 'w'=>'60', 'h'=>'60', 'pref'=>'', 'path'=>'')
-			),
-			'maxsize'=>3000, 
+				array('type'=>'resizecrop', 'w'=>'60', 'h'=>false, 'pref'=>'', 'path'=>'')
+			),*/
+			'maxsize'=>$this->config['imgsize'], 
 			'path'=>'');
 
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'min' => '1');
@@ -45,6 +64,16 @@ class rubric_class extends kernel_extends {
 
 	public function setFieldsForm($form=0) {
 		parent::setFieldsForm($form);
+
+		foreach($this->config['thumbs'] as $k=>$r) {
+			$k = explode(';',$k);
+			$new = array('type'=>$r);
+			foreach($k as $p) {
+				$p = explode('=',$p);
+				$new[$p[0]] = $p[1];
+			}
+			$this->attaches[$this->v_img]['thumb'][] = $new;
+		}
 
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название рубрики');
 		$this->fields_form['lname'] = array('type' => 'text', 'caption' => 'Название латиницей');

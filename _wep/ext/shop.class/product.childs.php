@@ -49,7 +49,7 @@ class product_class extends kernel_extends {
 
 		$thumb = array('type'=>'resize', 'w'=>'1024', 'h'=>'768');
 		$maxsize = 3000;
-		$this->attaches['img_product'] = array('mime' => array('image/pjpeg'=>'jpg', 'image/jpeg'=>'jpg', 'image/gif'=>'gif', 'image/png'=>'png'), 'thumb'=>array($thumb,array('type'=>'resize', 'w'=>'250', 'h'=>'250', 'pref'=>'s_', 'path'=>'')),'maxsize'=>$maxsize,'path'=>'');
+		$this->attaches['img_product'] = array('mime' => array('image'), 'thumb'=>array($thumb,array('type'=>'resize', 'w'=>'250', 'h'=>'250', 'pref'=>'s_', 'path'=>'')),'maxsize'=>$maxsize,'path'=>'');
 		if($this->config['imageCnt']>0) {
 			for($i = 2; $i <= $this->config['imageCnt']; $i++) 
 				$this->attaches['img_product'.$i]=$this->attaches['img_product'];
@@ -70,7 +70,7 @@ class product_class extends kernel_extends {
 	public function setFieldsForm($form=0) {
 		parent::setFieldsForm($form);
 		global $_tpl;
-		$_tpl['script']['shop'] = array('/'.static_main::relativePath(__DIR__).'/script/shop.js');
+		$_tpl['script']['shop'] = array('/'.static_main::relativePath(dirname(__FILE__)).'/script/shop.js');
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название товара');
 		$this->fields_form['shop'] = array(
 			'type' => 'list', 
@@ -128,7 +128,7 @@ class product_class extends kernel_extends {
 	function _childs() {
 		$this->create_child('product_value');
 		/*if($this->_CFG['_F']['adminpage']) {
-			include_once(__DIR__.'/childs.include.php');
+			include_once(dirname(__FILE__).'/childs.include.php');
 			$this->create_child('prodvote');
 		}
 		if($this->config['onComm']) {

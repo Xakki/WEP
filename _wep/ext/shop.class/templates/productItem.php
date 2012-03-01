@@ -6,6 +6,9 @@
 		if(!isset($data) or !count($data)) {
 			$html .= 'нету';
 		} else {
+			global $_CFG;
+			$_CFG['fileIncludeOption']['fancybox'] = true;
+
 			foreach($data as $r) {
 				$href = $r['rpath'].'/'.$r['path'].'_'.$r['id'].'.html';
 				$html .= '<div class="proditem">
@@ -13,9 +16,9 @@
 					<div class="prodimg-block">';
 				if(count($r['image']) and $r['image'][0][0]) {
 					$fimg = array_shift($r['image']);
-					$html .= '<a href="'.$fimg[1].'" title="'.$r['name'].'" class="prodimg-first fancyimg" rel="fancy"><img src="'.$fimg[0].'" alt="'.$r['name'].'"/></a>';
+					$html .= '<a href="/'.$fimg[1].'" title="'.$r['name'].'" class="prodimg-first fancyimg" rel="fancy"><img src="/'.$fimg[0].'" alt="'.$r['name'].'"/></a>';
 					foreach($r['image'] as $img) {
-						$html .= '<a href="'.$img[1].'" title="'.$r['name'].'" class="prodimg-over fancyimg" rel="fancy"><img src="'.$img[0].'" alt="'.$r['name'].'"/></a>';
+						$html .= '<a href="/'.$img[1].'" title="'.$r['name'].'" class="prodimg-over fancyimg" rel="fancy"><img src="/'.$img[0].'" alt="'.$r['name'].'"/></a>';
 					}
 				} else
 					$html .= '<img src="_design/default/img/cancel.png" alt="'.$r['name'].'"/>';

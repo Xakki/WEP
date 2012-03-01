@@ -29,23 +29,11 @@
 		$FUNCPARAM[3] = $this->getHref($FUNCPARAM[3],true);
 
 	$result = array();
-	if(isset($_REQUEST['ref']) and $_REQUEST['ref']!='') {
+	if(isset($_REQUEST['ref']) and $_REQUEST['ref']!='' and mb_strpos($_SERVER['HTTP_REFERER'],$_REQUEST['ref'])===false) {
 		$ref= $_REQUEST['ref'];
-		$pos = strripos($ref, '/');
-		$rest = substr($ref, ($pos+1), 5);
-		if(!strpos($this->dataCash[$rest]['ugroup'], 'anonim'))
-			$ref= $ref;
-		else 
-			$ref= $_CFG['_HREF']['BH'];
 	}
-	elseif(isset($_SERVER['HTTP_REFERER']) and $_SERVER['HTTP_REFERER']!='' and strpos($_SERVER['HTTP_REFERER'], '.html')) {
+	elseif(isset($_SERVER['HTTP_REFERER']) and $_SERVER['HTTP_REFERER']!='' and mb_strpos($_SERVER['HTTP_REFERER'],$_SERVER['REQUEST_URI'])===false) {
 		$ref= $_SERVER['HTTP_REFERER'];
-/*		$pos = strripos($ref, '/')+1;
-		$rest = substr($ref, $pos, (strripos($ref, '.html')-$pos));
-		if(strpos($this->dataCash[$rest]['ugroup'], 'anonim')===false)
-			$ref= $ref;
-		else 
-			$ref= $_CFG['_HREF']['BH'];*/
 	}
 	else 
 		$ref= $_CFG['_HREF']['BH'];
@@ -87,10 +75,9 @@
 			$mess['messages'][0][0] = 'error';
 			$DATA['result'] = -1;
 		}
-		$DATA['mess'] = $HTML->transformPHP($mess,'messages');
+		$DATA['mess'] = $HTML->transformPHP($mess,'#pg#messages');
 	}
 
-	$DATA = array($FUNCPARAM[0]=>$DATA);
 	$html = $HTML->transformPHP($DATA,$FUNCPARAM[0]);
 
 	return $html;

@@ -10,7 +10,7 @@
 		}
 
 		if(!isset($data['DIR']))
-			$data['DIR'] = __DIR__;
+			$data['DIR'] = dirname(__FILE__);
 
 		$flag = 0;
 		if(isset($data['formcreat']) and count($data['formcreat'])) {

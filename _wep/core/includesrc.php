@@ -1,6 +1,7 @@
 <?php
 
 	function fileInclude($gfi) {
+		//$gfi -> $_CFG['fileIncludeOption']
 		if(!count($gfi)) return true;
 		global $_tpl,$_CFG;
 		if(isset($gfi['multiple'])) {

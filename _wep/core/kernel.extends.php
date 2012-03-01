@@ -374,6 +374,7 @@ abstract class kernel_extends {
 		$this->setHook = array(); //Перехватчик в предустановки модуля
 	}
 
+	// Дефолтные значения
 	protected function _setDefaultRecords() {
 	}
 
