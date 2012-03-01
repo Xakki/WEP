@@ -49,7 +49,7 @@ class rubric_class extends kernel_extends {
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'min' => '1');
 		$this->fields['lname'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'min' => '1');
 		$this->fields['checked'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL','default'=>'0');
-		$this->fields['desc'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
+		$this->fields['dsc'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['txt'] = array('type' => 'text', 'attr' => 'NOT NULL');
 		$this->fields['cnt'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default'=>'0');
 
@@ -79,7 +79,7 @@ class rubric_class extends kernel_extends {
 		$this->fields_form['lname'] = array('type' => 'text', 'caption' => 'Название латиницей');
 		$this->fields_form['parent_id'] = array('type' => 'list', 'listname'=>'parentlist', 'caption' => 'Родительская рубрика','mask' =>array('fview'=>1));
 		$this->fields_form[$this->v_img] = array('type'=>'file','caption'=>'Картинка','del'=>1, 'mask'=>array('height'=>80), 'comment'=>static_main::m('_file_size').$this->attaches[$this->v_img]['maxsize'].'Kb');	
-		$this->fields_form["desc"] = array("type" => "textarea", "caption" => "Описание",'mask' =>array('name'=>'all'));
+		$this->fields_form["dsc"] = array("type" => "textarea", "caption" => "Описание",'mask' =>array('name'=>'all'));
 		$this->fields_form["txt"] = array("type" => "ckedit", "caption" => "Полный текст",'mask' =>array('fview'=>1,'name'=>'all'));
 		$this->fields_form['checked'] = array('type' => 'checkbox', 'caption' => 'Доступ','comment'=>'разрешить для выбора в списке');
 		$this->fields_form["ordind"] = array("type" => "int", "caption" => "Сортировка");
@@ -143,6 +143,19 @@ class rubric_class extends kernel_extends {
 			$temp=$this->data2[$temp]['parent_id'];
 		}
 		return array_reverse($tpath);
+	}
+
+	function fItem($id,$field='*') {
+		$data = $this->qs($field,'WHERE id="'.$id.'"');
+		if($field!="*") {
+			if(count($data))
+				return $data[0][$field];
+			return '';
+		} else {
+			if(count($data))
+				return $data[0];
+			return array();
+		}
 	}
 
 ////////////////////////////////////////////////////
