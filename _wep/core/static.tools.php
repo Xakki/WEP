@@ -654,6 +654,7 @@ class static_tools {
 				$flag = false;
 			}
 		}
+
 		if (!file_exists($_CFG['_PATH']['wepconf'] . '.htaccess')) {
 			file_put_contents($_CFG['_PATH']['wepconf'] . '.htaccess', 'php_flag engine 0
 <FilesMatch "\.(php|inc|cfg|key|htaccess|cmd)$">
@@ -661,6 +662,13 @@ order allow,deny
 deny from all
 </FilesMatch>');
 		}
+
+		if (!file_exists($_CFG['_PATH']['phpscript'] . 'cron.php')) {
+			file_put_contents($_CFG['_PATH']['phpscript'] . 'cron.php', '<?php
+	$_CFG[\'_PATH\'][\'wep\'] = dirname(dirname(dirname(__FILE__))).\'/_wep/\';
+	include($_CFG[\'_PATH\'][\'wep\'].\'_phpscript/cron.php\');');
+		}
+
 		if (!file_exists($_CFG['_PATH']['content'] . '.htaccess')) {
 			file_put_contents($_CFG['_PATH']['content'] . '.htaccess', 'php_flag engine 0');
 		}
