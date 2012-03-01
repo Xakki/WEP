@@ -51,12 +51,6 @@ class static_form {
 	}
 
 	static function _add_fields(&$_this,$flag_update=false) {
-		$int_type = array(
-			'int'=>1,
-			'tinyint'=>1,
-			'longint'=>1,
-			'shortint'=>1,
-		);
 		if (!count($_this->fld_data)) return false;
 		// inserting
 		$data = array();
@@ -65,9 +59,11 @@ class static_form {
 				if(is_array($value))
 					$value = '\''.$_this->SqlEsc(preg_replace('/\|+/', '|', '|'.implode('|',$value).'|')).'\'';
 				elseif($_this->fields[$key]['type']=='bool')
-					$value = ((int)$value == 1 ? 1 : 0);
-				elseif(isset($int_type[$_this->fields[$key]['type']]))
-					$value =  preg_replace('/[^0-9\-]+/', '', $value);
+					$value = (int)(bool)$value;
+				elseif(strpos($_this->fields[$key]['type'],'int')!==false)
+					$value = intval($value);
+				elseif(strpos($_this->fields[$key]['type'],'float')!==false)
+					$value = floatval($value);
 				else
 					$value = '\''.$_this->SqlEsc($value).'\'';
 			}
@@ -269,12 +265,6 @@ class static_form {
 
 	static function _update_fields(&$_this,$where=false) {
 		if (!count($_this->fld_data)) return true;
-		$int_type = array(
-			'int'=>1,
-			'tinyint'=>1,
-			'longint'=>1,
-			'shortint'=>1,
-		);
 		// preparing
 		$data = array();
 		foreach($_this->fld_data as $key => $value) {
@@ -283,9 +273,11 @@ class static_form {
 					$value = '\''.$_this->SqlEsc(preg_replace('/\|+/', '|', '|'.implode('|',$value).'|')).'\'';
 				}
 				elseif($_this->fields[$key]['type']=='bool')
-					$value = ((int)$value ? 1 : 0);
-				elseif(isset($int_type[$_this->fields[$key]['type']]))
-					$value = preg_replace('/[^0-9\-]+/', '', $value);
+					$value = (int)(bool)$value;
+				elseif(strpos($_this->fields[$key]['type'],'int')!==false)
+					$value = intval($value);
+				elseif(strpos($_this->fields[$key]['type'],'float')!==false)
+					$value = floatval($value);
 				else
 					$value = '\''.$_this->SqlEsc($value).'\'';
 			}
