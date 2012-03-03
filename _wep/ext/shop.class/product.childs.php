@@ -624,18 +624,6 @@ class product_class extends kernel_extends {
 					foreach($this->attaches as $tk=>$tr)
 						if($r[$tk]!='')
 							$tempData['image'][] = array($this->getPathForAtt($tk).'/s_'.$r['id'].'.'.$r[$tk], $this->getPathForAtt($tk).'/'.$r['id'].'.'.$r[$tk]);
-					$i = 1;
-					while(isset($this->config['nomination'.$i])) {
-						if($this->config['nomination'.$i]!='') {
-							$tempData['nomination'][] = array(
-								'value'=>$r['nomination'.$i],
-								'sel'=>(isset($r['nomination'][$i])?1:0),
-								'type'=>$i,
-								'name'=>$this->config['nomination'.$i],
-								);
-						}
-						$i++;
-					}
 					$xml['#item#'][] = $tempData;
 				} else {
 					/*while(isset($this->owner->data2[$temp])) {
@@ -701,7 +689,7 @@ class product_class extends kernel_extends {
 		return $xml;
 	}*/
 
-	public function fDisplay($id) {//$id - число либо массив
+	public function fItem($id) {//$id - число либо массив
 		$idt= explode(',',$id);
 		$arr_stat=$id=array();
 		foreach($idt as $r)//сохр тока уник знач
@@ -740,7 +728,6 @@ class product_class extends kernel_extends {
 		else
 			$moder = 0;
 		foreach($this->data as $k=>&$r) {
-			$tempData = array();
 			$r['shops']=array();
 			$rname=array();
 			$temp=$r['shop'];
@@ -749,49 +736,33 @@ class product_class extends kernel_extends {
 				$rname[] = $this->owner->data2[$temp]['name'];
 				$temp=$this->owner->data2[$temp]['parent_id'];
 			}
-			$tempData = $r;
-			$tempData['moder']=$moder;
-			$tempData['rpath']=$this->owner->data2[$r['shop']]['path'];
+			$r['moder']=$moder;
+			$r['rpath']=$this->owner->data2[$r['shop']]['path'];
 			$ik = '';
 			while(isset($r['img_product'.$ik])) {
 				if($r['img_product'.$ik]!='' and $file=$this->_get_file($r['id'],'img_product'.$ik,$r['img_product'.$ik]))
-					$tempData['image'][] = array($this->_get_file($r['id'],'img_product'.$ik,$r['img_product'.$ik],1), $file);
+					$r['image'][] = array($this->_get_file($r['id'],'img_product'.$ik,$r['img_product'.$ik],1), $file);
 				if(!$ik) $ik=1;
 				$ik++;
 			}
 			if(count($r['param']))
-				foreach($r['param'] as $pk=>$pr){
-					if($r['name'.$pr[2]]) {
-						$tempData['param'][] = array('name'=>$pr[1],'id'=>$pr[0], 'edi'=>$pr[4], 'value'=>$r['name'.$pr[2]]);
-					}
+				foreach($r['param'] as $pk=>&$pr){
+					$pr = array('name'=>$pr[1],'id'=>$pr[0], 'edi'=>$pr[4], 'value'=>$r['name'.$pr[2]]);
 				}
-			/**Номинации*/
-			$i = 1;
-			while(isset($this->config['nomination'.$i])) {
-				if($this->config['nomination'.$i]!='') {
-					$tempData['nomination'][] = array(
-						'value'=>$r['nomination'.$i],
-						'sel'=>(isset($r['nomination'][$i])?1:0),
-						'type'=>$i,
-						'name'=>$this->config['nomination'.$i],
-					);
-				}
-				$i++;
-			}
-			$tempData['param'][] = array('name'=>'Цена','id'=>'', 'edi'=>'', 'value'=>($r['cost']?number_format($r['cost'], 0, ',', ' ').' руб.':' - '));
 
-			if($this->_CFG['robot']=='' and !isset($_COOKIE['statview_'.$r['id']]) and $statview){
+			$r['param'][] = array('name'=>'Цена','id'=>'', 'edi'=>'', 'value'=>($r['cost']?number_format($r['cost'], 0, ',', ' ').' руб.':' - '));
+
+			/*if($this->_CFG['robot']=='' and !isset($_COOKIE['statview_'.$r['id']]) and $statview){
 				$arr_stat[]=$r['id'];
 				_setcookie('statview_'.$r['id'], 1, (time()+3600*24));
-			}
-			$DATA[] = $tempData;
+			}*/
 		}
 
 		if(count($arr_stat) and $statview){
 			//statview
 			$this->SQL->execSQL('UPDATE '.$this->tablename.' SET statview=statview+1 WHERE id IN ('.implode(',',$arr_stat).')');
 		}
-		return $DATA;
+		return $this->data;
 	}
 
 	public function fGetParamproduct($clause) {

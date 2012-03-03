@@ -26,7 +26,7 @@
 
 	$PRODUCT = &$SHOP->childs['product'];
 	if(isset($_GET['id']) and $id = (int)$_GET['id']) {
-		$DATA= array($FUNCPARAM[0]=>$PRODUCT->fDisplay($id));
+		$DATA= array($FUNCPARAM[0]=>$PRODUCT->fItem($id));
 		$result = $HTML->transformPHP($DATA,$FUNCPARAM[0]);
 		if(isset($PRODUCT->data[$id]) and count($PRODUCT->data[$id])) {
 			$PRODUCT->data[$id]['shops'] = array_reverse($PRODUCT->data[$id]['shops']);

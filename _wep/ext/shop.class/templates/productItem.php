@@ -1,7 +1,6 @@
 <?php
 	function tpl_productItem(&$data) {
 		$html = '';
-
 		$html = '<div class="prodpage">';
 		if(!isset($data) or !count($data)) {
 			$html .= 'нету';
@@ -30,10 +29,18 @@
 					$r['cost'] = $r['cost'].' <span>руб.</span>';
 
 				$html .= '</div>
-					<div class="prodparam">'.$r['descr'].'</div><br/>
-					<div class="prodcost">'.$r['cost'].'</div> <a href="##zakaz" alt="Подать заявку на покупку" onclick="return JSWin({\'href\':\''.$_CFG['_HREF']['siteAJAX'].'?_modul=shop&_fn=jsOrder&id='.$r['id'].'\'});">Заказать</a>
-					<div class="prodtext">'.$r['text'].'</div>
-				</div>';
+					<div class="proddescr">'.$r['descr'].'</div><br/>
+					<div class="prodcost">'.$r['cost'].'</div> <a href="##zakaz" alt="Подать заявку на покупку" onclick="return JSWin({\'href\':\''.$_CFG['_HREF']['siteAJAX'].'?_modul=shop&_fn=jsOrder&id='.$r['id'].'\'});">Заказать</a>';
+				if(count($r['param'])) {
+					$html .= '<ul class="prodparam">';
+					foreach($r['param'] as $d) {
+						if($d['value'])
+							$html .= '<li>'.$d['name'].' - '.$d['value'].' '.$d['edi'].'</li>';
+					}
+					$html .= '</ul>';
+				}
+				$html .= '<div class="prodtext">'.$r['text'].'</div>';
+				$html .= '</div>';
 			}
 		}
 		$html .= '</div>';

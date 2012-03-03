@@ -28,6 +28,6 @@
 			}
 			$html .= '</li>';
 		}
-		$html .= '</ul><div class="clear"></div>';
+		$html .= '</ul>';
 		return $html;
 	}

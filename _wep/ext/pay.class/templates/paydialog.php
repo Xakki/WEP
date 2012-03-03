@@ -16,7 +16,7 @@ function tpl_paydialog($data) {
 		';
 	}
 	elseif($data['flag']==-1) {
-		$html .= '<div>На вашем счету '.round($data['summ'],2).' '.$data['m'].'</div>';
+		$html .= '<div>На вашем счету '.round($data['balance'],2).' '.$data['m'].'</div>';
 		$html .= '<div>после оплаты останется '.round(($data['balance']-$data['summ']),2).' '.$data['m'].'</div>';
 		$html .= '<div class="ok">'.$data['mess'].'</div>
 		<form method="post"><div class="form">';
