@@ -298,7 +298,7 @@
 						if(!isset($listname['nolistroot'])) {
 							$_listroot = static_main::m('_listroot',$_this);
 							if($_listroot)
-								$data[$def] = array($def=>$_listroot)+$data[$def];
+								$data[$def] = static_main::MergeArrays(array($def=>$_listroot),$data[$def]);
 						}
 					}
 					else {
