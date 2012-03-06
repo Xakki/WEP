@@ -80,7 +80,7 @@
 	.prodpage .prodimg-block .prodimg-over img:hover {
 		border:1px solid gray;
 	}
-	.proditem .descr {
+	.proditem .proddescr {
 		display:inline-block;
 		font-size: 0.8em;
 		white-space:pre;
@@ -109,6 +109,14 @@
 	.proditem .prodcost span {
 		font-size:0.65em;
 	}
+
+	.proditem .prodparam-h {
+		margin: 0 0 0 30px;
+	}
+	.proditem .prodparam {
+		margin: 0 0 0 30px;
+	}
+
 	.proditem .prodtext {
 		margin:0 20px;
 	}

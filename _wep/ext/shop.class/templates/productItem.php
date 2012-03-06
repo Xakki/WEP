@@ -5,8 +5,10 @@
 		if(!isset($data) or !count($data)) {
 			$html .= 'нету';
 		} else {
-			global $_CFG;
+
+			global $_CFG, $_tpl;
 			$_CFG['fileIncludeOption']['fancybox'] = true;
+			$_tpl['styles']['../default/style/proditem'] = 1;
 
 			foreach($data as $r) {
 				$href = $r['rpath'].'/'.$r['path'].'_'.$r['id'].'.html';
@@ -21,7 +23,6 @@
 					}
 				} else
 					$html .= '<img src="_design/default/img/cancel.png" alt="'.$r['name'].'"/>';
-				global $_CFG;
 
 				if(!$r['cost'])
 					$r['cost'] = '&#160;';
@@ -32,7 +33,7 @@
 					<div class="proddescr">'.$r['descr'].'</div><br/>
 					<div class="prodcost">'.$r['cost'].'</div> <a href="##zakaz" alt="Подать заявку на покупку" onclick="return JSWin({\'href\':\''.$_CFG['_HREF']['siteAJAX'].'?_modul=shop&_fn=jsOrder&id='.$r['id'].'\'});">Заказать</a>';
 				if(count($r['param'])) {
-					$html .= '<ul class="prodparam">';
+					$html .= '<h3 class="prodparam-h">ТЕХНИЧЕСКИЕ ХАРАКТЕРИСТИКИ</h3><ul class="prodparam">';
 					foreach($r['param'] as $d) {
 						if($d['value'])
 							$html .= '<li>'.$d['name'].' - '.$d['value'].' '.$d['edi'].'</li>';

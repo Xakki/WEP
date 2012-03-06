@@ -6,6 +6,10 @@
 			if(!isset($data['#item#']) or !count($data['#item#'])) {
 				$html .= 'нету';
 			} else {
+
+				global $_tpl;
+				$_tpl['styles']['../default/style/proditem'] = 1;
+
 				foreach($data['#item#'] as $r) {
 					$html .= '<div class="proditem">';
 					$href = $r['rpath'].'/'.$r['path'].'_'.$r['id'].'.html';
@@ -15,7 +19,7 @@
 						$html .= '<img src="'.$r['image'][0][0].'" alt="'.$r['name'].'"/>';
 					} else
 						$html .= '<img src="_design/default/img/cancel.png" alt="'.$r['name'].'"/>';
-					$html .= '</a><div class="prodparam">'.$r['descr'].'</div><br/>';
+					$html .= '</a><div class="proddescr">'.$r['descr'].'</div><br/>';
 					//$html .= '';
 					if(!$r['cost'])
 						$r['cost'] = '&#160;';

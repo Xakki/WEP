@@ -750,7 +750,7 @@ class product_class extends kernel_extends {
 					$pr = array('name'=>$pr[1],'id'=>$pr[0], 'edi'=>$pr[4], 'value'=>$r['name'.$pr[2]]);
 				}
 
-			$r['param'][] = array('name'=>'Цена','id'=>'', 'edi'=>'', 'value'=>($r['cost']?number_format($r['cost'], 0, ',', ' ').' руб.':' - '));
+			//$r['param'][] = array('name'=>'Цена','id'=>'', 'edi'=>'', 'value'=>($r['cost']?number_format($r['cost'], 0, ',', ' ').' руб.':' - '));
 
 			/*if($this->_CFG['robot']=='' and !isset($_COOKIE['statview_'.$r['id']]) and $statview){
 				$arr_stat[]=$r['id'];
