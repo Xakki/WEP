@@ -212,14 +212,15 @@ class static_main {
 			$temp = NULL;
 			_new_class('modulprm', $MODULPRM,$temp, true);
 			$_CFG['modulprm'] = $_CFG['modulprm_ext'] = array();
-			$ugroup_id = (isset($_SESSION['user']['gid']) ? (int) $_SESSION['user']['gid'] : 2);
+			$ugroup_id = (isset($_SESSION['user']['gid']) ? (int) $_SESSION['user']['gid'] : $_CFG['wep']['guestid']);
 			// Если есть таблица
 			if($MODULPRM->SQL->_tableExists($MODULPRM)) {
 				if(isset($_SESSION['user']['parent_id']) and $_SESSION['user']['parent_id']) {
 					$ugroup_id = ' and t2.ugroup_id IN ('.$_SESSION['user']['parent_id'].','.$ugroup_id.')';
 				}else
 					$ugroup_id = ' and t2.ugroup_id='.$ugroup_id;
-				$result = $MODULPRM->SQL->execSQL('SELECT t1.*,t2.access, t2.mname FROM `' . $MODULPRM->tablename . '` t1 LEFT Join `' . $MODULPRM->childs['modulgrp']->tablename . '` t2 on t2.owner_id=t1.id' . $ugroup_id . ' ORDER BY t1.typemodul,t1.name');
+				$q = 'SELECT t1.*,t2.access, t2.mname FROM `' . $MODULPRM->tablename . '` t1 LEFT Join `' . $MODULPRM->childs['modulgrp']->tablename . '` t2 on t2.owner_id=t1.id' . $ugroup_id . ' ORDER BY t1.typemodul,t1.name';
+				$result = $MODULPRM->SQL->execSQL($q);
 				if ($result->err) {
 					//$_POST['sbmt'] = 1;
 					//static_tools::_checkmodstruct('modulprm');

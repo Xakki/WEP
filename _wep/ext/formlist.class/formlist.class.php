@@ -59,7 +59,7 @@ class formlist_class extends kernel_extends {
 				)						
 			);
 			//$_tpl['onload'] .= 'mCBoxVis(\''.$rr.'_'.$rrr.'\');';
-			$RESULT['html'] = $HTML->transformPHP($DATA,'filter');
+			$RESULT['html'] = $HTML->transformPHP($DATA,'#pg#filter');
 
 		return $RESULT;
 	}

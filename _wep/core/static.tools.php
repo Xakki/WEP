@@ -767,18 +767,23 @@ deny from all
 									$valuelist[$kk . '@index'] = '<i>' . $kk . '</i> - ' . $rr['@index'];
 							}
 							if (count($valuelist)) {
-								$message = array('messages' => $message);
 								$MODUL->form['query_' . $_cl] = array(
 									'caption' => 'Модуль ' . $_cl,
 									'type' => 'checkbox',
 									'valuelist' => $valuelist,
 									'comment' => $HTML->transformPHP($message, 'messages'),
-									'style' => 'border:solid 1px gray;margin:3px 0;'
+									'style' => 'border-bottom:solid 1px #e1e1e1;margin:3px 0;'
 								);
 								if ($value)
 									$MODUL->form['query_' . $_cl]['value'] = $value;
-							}elseif (count($message))
-								$mess = array_merge($mess, $message);
+							} elseif (count($message)) {
+								$MODUL->form['query_' . $_cl] = array(
+									'type' => 'html',
+									'value' => 'Модуль ' . $_cl.' : '.$HTML->transformPHP($message, 'messages'),
+									'style' => 'border-bottom:solid 1px gray;margin:3px 0;'
+								);
+								//$mess = array_merge($mess, $message);
+							}
 						}
 						else
 							$mess[] = array('error', 'Error data (' . $_cl . ' - ' . print_r($row, true) . ')');

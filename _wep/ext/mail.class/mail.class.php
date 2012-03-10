@@ -43,7 +43,7 @@ class mail_class extends kernel_extends {
 		$this->config['mailengine'] = 0;
 		$this->config['mailcron'] = 0;
 		$this->config['mailcronlimit'] = 5;
-		$this->config['mailrobot'] = 'robot@'.$this->_CFG['site']['www'];
+		$this->config['mailrobot'] = $this->_CFG['site']['email'];
 		$this->config['fromName'] = '';
 		$this->config['PHPMailer_Host'] = '';
 		$this->config['PHPMailer_Username'] = '';

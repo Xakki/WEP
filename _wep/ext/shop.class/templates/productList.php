@@ -8,7 +8,7 @@
 			} else {
 
 				global $_tpl;
-				$_tpl['styles']['../default/style/proditem'] = 1;
+				$_tpl['styles']['../default/style/productItem'] = 1;
 
 				foreach($data['#item#'] as $r) {
 					$html .= '<div class="proditem">';

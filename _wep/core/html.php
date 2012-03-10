@@ -171,7 +171,7 @@ class html {
 		return $html;
 	}
 
-	function transform($xml, $transform,$_PATHd=false) {
+	function transform(&$xml, $transform,$_PATHd=false) {
 		if(!$_PATHd)
 			$_PATHd = $this->_PATHd;
 		/* XML шаблонизатор */
@@ -331,29 +331,37 @@ function _obHandler($buffer) {
 				<div id="bugmain">'.$buffer.'</div>';
 		$_tpl['logs'] .= $buffer;
 
-		preg_match_all('/\{\$_tpl\[\'([A-z0-9_]+)\'\]\}/u',$_html,$temp);
-		foreach($temp[1] as $k=>$r) {
-			if(!isset($_tpl[$r]))
-				$_tpl[$r] = '';
-			$_html = str_replace($temp[0][$k],$_tpl[$r],$_html);
-		}
-		$_html = str_replace('{$_CFG[\'_HREF\'][\'BH\']}',$_CFG['_HREF']['BH'],$_html);
-		//eval('$_html = "' . $_html . '";');
+		parseTemplate($_html,$_tpl);
 
-		if(strpos($_html,'$_tpl')!==false) {
-			preg_match_all('/\{\$_tpl\[\'([A-z0-9_]+)\'\]\}/u',$_html,$temp);
-			foreach($temp[1] as $k=>$r) {
-				if(!isset($_tpl[$r]))
-					$_tpl[$r] = '';
-				$_html = str_replace($temp[0][$k],$_tpl[$r],$_html);
-			}
-		}
-
-		$page = $_html;
 	} else {
-		$page = $_tpl['logs'].$buffer;
+		$_html = $_tpl['logs'].$buffer;
 	}
-	return $page;
+	return $_html;
+}
+
+function parseTemplate(&$TEXT,&$TPL) {
+	
+	if(strpos($TEXT,'{#')!==false) { // NEW STANDART
+		preg_match_all('/\{\#([A-z0-9_]+)\#\}/u',$TEXT,$temp);
+		//return '<pre>'.var_export($temp,true);
+		foreach($temp[1] as $k=>$r) {
+			if(!isset($TPL[$r]))
+				$TPL[$r] = '';
+			$TEXT = str_replace($temp[0][$k],$TPL[$r],$TEXT);
+		}
+	}
+	else {
+		preg_match_all('/\{\$_tpl\[\'([A-z0-9_]+)\'\]\}/ui',$TEXT,$temp);
+		foreach($temp[1] as $k=>$r) {
+			if(!isset($TPL[$r]))
+				$TPL[$r] = '';
+			$TEXT = str_replace($temp[0][$k],$TPL[$r],$TEXT);
+		}
+	}
+	if(strpos($TEXT,'{#')!==false or strpos($TEXT,'$_tpl')!==false) {
+		parseTemplate($TEXT,$TPL);
+	}
+	return true;
 }
 
 

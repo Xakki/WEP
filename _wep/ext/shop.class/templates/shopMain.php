@@ -2,6 +2,9 @@
 	function tpl_shopMain(&$data) {
 		$html = '';
 		if(isset($data) and count($data)) {
+			global $_tpl;
+			$_tpl['styles']['../default/style/shopMain'] = 1;
+
 			$html = '<div class="shopmain">';
 			$html .= tpl_shopmain_rev($data['#item#'],'',$data['#page#']);
 			$html .= '</div>';

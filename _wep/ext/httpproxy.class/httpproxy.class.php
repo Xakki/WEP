@@ -17,6 +17,7 @@ class httpproxy_class extends kernel_extends {
 		$this->cf_tools = array(
 			array('func'=>'loadList','name'=>'Загрузка списка прокси'),
 			array('func'=>'clearUse','name'=>'Очистка счётчиков'),
+			array('func'=>'FixCapture','name'=>'Исправления'),
 		);
 		return true;
 	}
@@ -131,6 +132,18 @@ class httpproxy_class extends kernel_extends {
 		$mess = array(static_main::am('ok', 'Сделано', $this));
 
 		return Array('form' => array(), 'messages' => $mess);
+	}
+
+	function toolsFixCapture() {
+		$upd = array(
+			'capture'=>0, 
+		);
+		$this->_update($upd,'id',false);
+
+		$mess = array(static_main::am('ok', 'Сделано', $this));
+
+		return Array('form' => array(), 'messages' => $mess);
+
 	}
 
 //UPDATE wep_httpproxy SET `use`=0,err=0,time=0,autoprior=0

@@ -46,7 +46,7 @@
 			}
 		</style>
 	</head>
-	<body onload="setTimeout(function() {window.location.href=location.href;},5000)">
+	<body onload="setTimeout(function() {window.location.reload();},5000)">
 		{$_tpl['logs']}
 		<div style="height:100%;">
 			<div class="cform">

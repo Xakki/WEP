@@ -121,9 +121,8 @@ function tpl_form(&$data) {
 					</label>';
 				}
 				else {
-					$texthtml .= '<div class="form-caption">'.$CAPTION.'</div>';
-					$texthtml .= '<div class="form-value checkbox-value';
-					$texthtml .= ' checkbox-valuelist">';
+					$texthtml .= '<div class="form-caption">'.$CAPTION.'</div>
+						<div class="form-value checkbox-value checkbox-valuelist">';
 					foreach($r['valuelist'] as $kv=>$rv) {
 						$sel = false;
 						$readonly = false;

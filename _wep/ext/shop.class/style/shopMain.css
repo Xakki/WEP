@@ -1,0 +1,29 @@
+
+/* shopmain*/
+.shopmain {
+}
+.shopmain .shop_item {
+	width:220px;
+	min-height:70px;
+	padding:5px;
+	margin:3px;
+	border:1px solid #e1e1e1;
+	display:inline-block;
+	vertical-align:top;
+	white-space:nowrap;
+}
+.shopmain .shop_item:hover {
+	border:1px solid gray;
+}
+
+.shopmain .shop_item .itemimg {
+	width:60px;
+	height:60px;
+	margin:5px 5px 5px 0;
+	float:left;
+}
+.shopmain .shop_item .itemname {
+	font-size:1.0em;
+	font-weight:bold;
+	white-space:normal;
+}

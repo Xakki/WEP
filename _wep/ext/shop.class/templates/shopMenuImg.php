@@ -3,7 +3,7 @@
 		$html = '';
 		if(isset($data) and count($data)) {
 			global $_tpl;
-			$_tpl['styles']['shop'] = array('/'.static_main::relativePath(dirname(dirname(__FILE__))).'/style/menu.css');
+			$_tpl['styles']['../default/style/shopMenu'] = 1;
 
 			$html = '<div class="shop-menu">
 			'.($data['#title#']?'<h3>'.$data['#title#'].'</h3>':'').'

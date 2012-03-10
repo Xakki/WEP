@@ -2437,7 +2437,7 @@ abstract class kernel_extends {
 			'body' => false,
 			'HTTPHEADER' => array('Content-Type' => 'text/xml; encoding=utf-8'),
 			'redirect' => false,
-			'USERAGENT' => 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2',
+			'USERAGENT' => 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/'.rand(9,16).'.0.874.121 Safari/535.2',
 			'TIMEOUT' => 20
 		);
 		$param = array_merge($default, $param);

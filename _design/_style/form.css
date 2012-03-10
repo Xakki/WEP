@@ -428,6 +428,28 @@
 		background:transparent url(../_img/loader16.gif) no-repeat scroll 100% 2px;
 	}
 
+	/*Свернутый блок формы*/
+	form .minform {
+	}
+	form .minform .form-caption {
+		cursor:pointer;
+		border-bottom:1px dashed #101796;
+		font-size:12px;
+		color:#000;
+		display:inline;
+		padding:0 0 0 11px;
+		background:transparent url(../_img/x16.png)  no-repeat scroll 0 -17px;
+	}
+	form .minform:hover .form-caption {
+		background:transparent url(../_img/x16.png)  no-repeat scroll 0 -49px;
+	}
+	form .minform .form-value {
+		display:none;
+	}
+	form .minform:hover .form-value {
+		display:block;
+	}
+
 	/*ДОПОЛНИТЕЛЬНЫЕ ПАРАМЕТРЫ ДЛЯ ФОРМЫ*/
 	.showparam {
 		cursor:pointer;
