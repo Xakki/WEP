@@ -1311,9 +1311,9 @@ class static_form {
 		else // если нет даже openssl значит и так сойдёт!
 			$crypttext = $word;
 		// Запись в куки зашифрованного кода
-		_setcookie('chash', $crypttext, (time() + 1800));
+		_setcookie('chash', $crypttext, (time() + 9999999)); // У некоторых косяк из-за разных часовых поясов
 		// Где хранится хэшкод (фаил доступен только на сервере)
-		_setcookie('pkey', base64encode($_CFG['_FILE']['HASH_KEY']), (time() + 1800));
+		_setcookie('pkey', base64encode($_CFG['_FILE']['HASH_KEY']), (time() + 9999999));
 	}
 	
 	/**

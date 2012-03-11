@@ -95,6 +95,12 @@ $_CFG['returnFormat'] = 'html';
 //json
 //''
 
+
+$_CFG['header'] = array(
+	'modif'=> time(),
+	'expires'=> time()-864000,
+);
+
 /* * PATH_CFG* */
 
 /* Полные пути по файловым системам для ядра */

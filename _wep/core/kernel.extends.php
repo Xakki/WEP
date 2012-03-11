@@ -477,9 +477,9 @@ abstract class kernel_extends {
 	 *
 	 * @return bool - true если успех
 	 */
-	public function _select() {
+	public function _select($cls='') {
 		$data = array();
-		$data = $this->_select_fields();
+		$data = $this->_select_fields($cls);
 		if (count($data)) {
 			$this->_select_attaches($data);
 			$this->_select_memos($data);
@@ -488,13 +488,15 @@ abstract class kernel_extends {
 		return $data;
 	}
 
-	private function _select_fields() {
+	private function _select_fields($cls='') {
 		$data = array();
 		$agr = ', ' . $this->_listnameSQL . ' as name';
 		$pref = 'SELECT *' . $agr;
-		$sql_query = $pref . ' FROM `' . $this->tablename . '`';
+		$sql_query = $pref . ' FROM `' . $this->tablename . '` ';
 		if (isset($this->id) and $this->id)
-			$sql_query .= ' WHERE id IN (' . $this->_id_as_string() . ')';
+			$cls .= ($cls?' AND ':'').' id IN (' . $this->_id_as_string() . ') ';
+		if($cls)
+			$sql_query .= ' WHERE '.$cls;
 		if ($this->ordfield)
 			$sql_query .= ' ORDER BY ' . $this->ordfield;
 		$result = $this->SQL->execSQL($sql_query);

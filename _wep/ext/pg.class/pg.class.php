@@ -275,7 +275,7 @@ class pg_class extends kernel_extends {
 			$HTML = new html('_design/', $this->config['design'], $templ); //отправляет header и печатает страничку
 		}
 		if ($flag_content == 1) {
-			$flag_content = $this->display_page();
+			$flag_content = $this->display_page($this->id,true);
 			$_tpl['title'] = $this->get_caption();
 		}
 
@@ -299,7 +299,7 @@ class pg_class extends kernel_extends {
 			$this->pageinfo = $this->dataCash[$this->id];
 			$this->get_pageinfo();
 
-			$this->display_page();
+			$this->display_page($this->id);
 			if (isset($text))
 				$_tpl['text'] = $text;
 		}
@@ -449,18 +449,27 @@ class pg_class extends kernel_extends {
 		return $data;
 	}
 
-	function display_page() {
-		$this->Cdata = array();
-		$cls = 'SELECT * FROM ' . $this->SQL_CFG['dbpref'] . 'pg_content WHERE active=1 and (owner_id="' . $this->id . '"';
+	function displayHttpCode($a = 404) {
+		header("HTTP/1.0 ".$a);
+		$this->id = $this->dataCashTreeAlias[$this->rootPage][$a]['id'];
+		$this->pageinfo = $this->dataCash[$this->id];
+		$this->get_pageinfo();
+		return $this->display_page($this->id);
+	}
+
+	function display_page($id,$full=false) {
+		$Cdata = array();
+		$cls = 'SELECT * FROM ' . $this->SQL_CFG['dbpref'] . 'pg_content WHERE active=1 and (owner_id="' . $id . '"';
 		//if($this->id!='404') // откл повторные глобалные контенты, если это 400 и 401 страница
-		$cls .= ' or (owner_id IN ("' . (implode('","', $this->selected)) . '") and global=1)';
+		if($full)
+			$cls .= ' or (owner_id IN ("' . (implode('","', $this->selected)) . '") and global=1)';
 		$cls .= ' ) ORDER BY ordind';
 		$resultPG = $this->SQL->execSQL($cls);
 		if (!$resultPG->err)
 			while ($rowPG = $resultPG->fetch()) {
-				$this->Cdata[$rowPG['id']] = $rowPG;
+				$Cdata[$rowPG['id']] = $rowPG;
 			}
-		return $this->getContent($this->Cdata);
+		return $this->getContent($Cdata);
 	}
 
 	function display_content($marker, $design = 'default') {

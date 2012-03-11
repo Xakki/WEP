@@ -66,6 +66,7 @@
 						$arr['mess'][] = static_main::am('ok','add',array($this->tablename),$this);
 					} else
 						$arr['mess'][] = static_main::am('error','add_err',$this);
+
 				}
 			}
 			else 
