@@ -74,9 +74,7 @@ class pg_class extends kernel_extends {
 		$this->default_access = '|1|'; // По умолчанию ставим доступ на чтений всем пользователям
 		$this->MEMCACHE = null;
 		$this->rootPage = null;
-		$this->_AllowAjaxFn = array(
-			'AjaxForm'=>true,
-		);
+		$this->_AllowAjaxFn['AjaxForm'] = true;
 		$this->formFlag = null; // Для Аякс формы, 
 		$this->current_path = '';
 		return true;
