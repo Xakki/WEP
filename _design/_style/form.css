@@ -147,11 +147,11 @@
 		margin-left:5px;
 		}
 
+/* BUTONS*/
 	.divform input.sbmt {
 		cursor:pointer;
 		width:auto;
 		height:auto;
-		margin:0 10px;
 		background-color: #3BB3E0;
 		font-family: 'Open Sans', sans-serif;
 		font-size: 1.2em;
@@ -195,6 +195,27 @@
 		-o-box-shadow: inset 0px 0px 0px #2ab7ec, 0px 1px 0px 0px #156785, 0px 3px 3px #999;
 		box-shadow: inset 0px 0px 0px #2ab7ec, 0px 1px 0px 0px #156785, 0px 3px 3px #999;
 	}
+	.divform input.sbmt[disabled=disabled] {
+		border-color: gray;
+		background-color: #e1e1e1;
+		background-image: linear-gradient(bottom, gray 0%, #e1e1e1 100%);
+		background-image: -o-linear-gradient(bottom, gray 0%, #e1e1e1 100%);
+		background-image: -moz-linear-gradient(bottom, gray 0%, #e1e1e1 100%);
+		background-image: -webkit-linear-gradient(bottom, gray 0%, #e1e1e1 100%);
+		background-image: -ms-linear-gradient(bottom, gray 0%, #e1e1e1 100%);
+		background-image: -webkit-gradient( linear, left bottom, left top, color-stop(0, gray), color-stop(1, #e1e1e1) );
+		-webkit-box-shadow: inset 0px 1px 0px #e1e1e1, 0px 2px 0px 0px #444, 0px 6px 5px gray;
+		-moz-box-shadow: inset 0px 1px 0px #e1e1e1, 0px 2px 0px 0px #444, 0px 6px 5px gray;
+		-o-box-shadow: inset 0px 1px 0px #e1e1e1, 0px 2px 0px 0px #444, 0px 6px 5px gray;
+		box-shadow: inset 0px 1px 0px #e1e1e1, 0px 2px 0px 0px #444, 0px 6px 5px gray;
+	}
+	.divform input.sbmt[disabled=disabled]:hover {
+		color:white;
+	}
+	.divform input.sbmt[disabled=disabled]:active {
+		top: 0;
+	}
+/* BUTONS*/
 
 	.divform .shownextfoto {
 		background:transparent url(../_img/jquery.ui/ui-icons_2e83ff_256x240.png) no-repeat scroll -32px -129px;

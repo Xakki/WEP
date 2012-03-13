@@ -60,7 +60,7 @@ class httpproxy_class extends kernel_extends {
 		if(!isset($_GET['pos']))
 			$_GET['pos'] = rand(0,3);
 		$res = '';
-		$this->data = $this->_query('*','WHERE `active`=1 and `capture`= 0 and `mf_timeup`<('.$this->_CFG['time'].'-`timeout`) and (`err`<`use` or `use`<3) 
+		$this->data = $this->_query('*','WHERE `active`=1 and `capture`= 0 and `mf_timeup`<('.$this->_CFG['time'].'-`timeout`) and (`err`<`use` or `use`<10) 
 		ORDER BY `err`,`autoprior`,`mf_timeup`,`use`,`time`
 		LIMIT '.(int)$_GET['pos'].',1');
 		if(count($this->data)) {

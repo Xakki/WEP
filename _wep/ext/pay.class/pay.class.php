@@ -17,8 +17,10 @@ class pay_class extends kernel_extends {
 		return true;
 	}
 
-	protected function _create_conf() { /*CONFIG*/
-		parent::_create_conf();
+	function _childs() { /*CONFIG*/
+		parent::_childs();
+		foreach($this->childs as &$r)
+			$r->_create_conf2($this);
 	}
 
 	protected function _create() {
@@ -47,8 +49,6 @@ class pay_class extends kernel_extends {
 		$this->fields_form['status'] = array('type' => 'list', 'listname'=>'status', 'readonly'=>1,'caption' => 'Статус', 'mask'=>array());
 		
 		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата', 'mask'=>array());
-		//$this->fields_form['mf_timeup'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата обновления', 'mask'=>array('fview'=>2));
-		//$this->fields_form['mf_timeoff'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата отключения', 'mask'=>array('fview'=>2));
 		$this->fields_form['mf_ipcreate'] = array('type' => 'text','readonly'=>1, 'caption' => 'IP', 'mask'=>array('fview'=>2));
 
 	}
