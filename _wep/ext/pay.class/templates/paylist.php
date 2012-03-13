@@ -27,11 +27,20 @@ function tpl_paylist($data)
 				$b  -= $r['cost'];
 			else
 				$b  += $r['cost'];
+				
+			$fromuser = $data['#users#'][$r['creater_id']]['name'];
+			if($fromuser!='-Вы-')
+				$fromuser = $data['#users#'][$r['creater_id']]['gname'].' №'.$data['#users#'][$r['creater_id']]['id'].' '.$fromuser;
+				
+			$touser = $data['#users#'][$r['user_id']]['name'];
+			if($touser!='-Вы-')
+				$touser = $data['#users#'][$r['user_id']]['gname'].' №'.$data['#users#'][$r['user_id']]['id'].' '.$touser;
+				
 			$html .= '<tr>
 				<td>'.$r['id'].'</td>
 				<td>'.$r['name'].'</td>
-				<td>'.$data['#users#'][$r['creater_id']]['name'].'</td>
-				<td>'.$data['#users#'][$r['user_id']]['name'].'</td>
+				<td>'.$fromuser.'</td>
+				<td>'.$touser.'</td>
 				<td>'.round($r['cost'],2).' руб.</td>
 				<td>'.$r['mf_timestamp'].'</td>
 				<td>'.$b.'</td>

@@ -1046,7 +1046,7 @@ abstract class kernel_extends {
 		  );
 		 */
 		if(is_null($fields_form)) {
-			$this->getFieldsForm(1); //обнуляем форму
+			//$this->getFieldsForm(1); //обнуляем форму
 			$fields_form = &$this->fields_form;
 		}
 		if (!is_array($fields_form) or !count($fields_form))
@@ -1925,6 +1925,7 @@ abstract class kernel_extends {
 	function _filter_clause() {
 		$cl = $_FILTR = array();
 		$flag_filter = 0;
+		
 		if (isset($_REQUEST['filter_' . $this->_cl])) {
 			if (!is_array($_REQUEST['filter_' . $this->_cl]))
 				unset($_SESSION['filter'][$this->_cl]);
@@ -1934,8 +1935,9 @@ abstract class kernel_extends {
 		elseif (isset($_SESSION['filter'][$this->_cl]))
 			$_FILTR = $_SESSION['filter'][$this->_cl];
 
+		if(count($_FILTR))
 		foreach ($this->fields_form as $k => $r) {
-			if (isset($r['mask']['filter']) and $r['mask']['filter'] == 1) {
+			//if (isset($r['mask']['filter']) and $r['mask']['filter'] == 1) {
 				if (isset($_FILTR[$k])) {
 					$tempex = 0;
 					if (isset($_FILTR['exc_' . $k]))
@@ -1956,7 +1958,7 @@ abstract class kernel_extends {
 								$cl[$k] = '(t1.' . $k . '>"' . $_FILTR[$k] . '" and t1.' . $k . '<"' . $_FILTR[$k . '_2'] . '")';
 						}
 						elseif ($this->fields_form[$k]['type'] == 'list') {
-							if ($_FILTR[$k]) {
+							if ($_FILTR[$k]!='') {
 								$cl[$k] = 't1.' . $k . '="' . $_FILTR[$k] . '"';
 							}
 						} elseif ($_FILTR[$k] == '!0')
@@ -1966,9 +1968,9 @@ abstract class kernel_extends {
 						else
 							$cl[$k] = 't1.' . $k . ' ' . ($tempex ? 'NOT ' : '') . 'LIKE "' . $_FILTR[$k] . '"';
 					}
+					$flag_filter = 1;
 				}
-				$flag_filter = 1;
-			}
+			//}
 		}
 		return array($cl, $flag_filter);
 	}
@@ -2125,7 +2127,7 @@ abstract class kernel_extends {
 		if ($param['mess'])
 			$DATA = $param['mess'];
 		$this->data = $this->_select();
-		if ($this->_prmModulEdit($this->data, $param)) {
+		if ($this->_prmModulEdit($this->data[$this->id], $param)) {
 			$data = array();
 			$data[$this->mf_ordctrl] = $this->data[$this->id][$this->mf_ordctrl] + $ord;
 
@@ -2155,7 +2157,8 @@ abstract class kernel_extends {
 		$t1 = (isset($_GET['t1']) ? (int) $_GET['t1'] : 0);
 		$t2 = (isset($_GET['t2']) ? (int) $_GET['t2'] : 0);
 		$data = $this->_select();
-		if (!$this->mf_ordctrl or !$this->_prmModulEdit($data)) {//!static_main::_prmModul($this->_cl,array(10))
+
+		if (!$this->mf_ordctrl or !$this->_prmModulEdit($data[$this->id])) {//!static_main::_prmModul($this->_cl,array(10))
 			$res['html'] = static_main::m('Sorting denied!');
 			return $res;
 		}
