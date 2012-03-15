@@ -94,7 +94,7 @@ class pay_class extends kernel_extends {
 
 		_new_class('ugroup', $UGROUP);
 		$query = 'WHERE '.$query;
-		$data['users'] = $UGROUP->childs['users']->_query('t1.*,t2.name as gname','t1 JOIN '.$UGROUP->tablename.' t2 ON t1.owner_id=t2.id and t2.active=1 '.$query,'id');
+		$data['users'] = $UGROUP->childs['users']->_query('t1.*,t2.name as gname','t1 JOIN '.$UGROUP->tablename.' t2 ON t1.owner_id=t2.id and t2.active=1 '.$query.' ORDER BY t1.id','id');
 
 		return $data;
 	}
@@ -225,7 +225,7 @@ class pay_class extends kernel_extends {
 					$userlist[$r[$this->mf_createrid]] = $r[$this->mf_createrid];
 			}
 			_new_class('ugroup', $UGROUP);
-			$data['#users#'] = $UGROUP->childs['users']->_query('name,firma,id,balance','WHERE id IN ('.implode(',',$userlist).')','id');
+			$data['#users#'] = $UGROUP->childs['users']->_query('t1.*,t2.name as gname','t1 JOIN '.$UGROUP->tablename.' t2 ON t1.owner_id=t2.id WHERE t1.id IN ('.implode(',',$userlist).')','id');
 		}
 		return $data;
 	}

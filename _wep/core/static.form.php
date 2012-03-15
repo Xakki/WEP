@@ -20,7 +20,7 @@ class static_form {
 		if ($_this->mf_istree and $_this->parent_id and !$_this->fld_data[$_this->mf_istree])
 			$_this->fld_data[$_this->mf_istree] = $_this->parent_id;
 		// add owner_id field
-		if ($_this->owner and (!isset($_this->fld_data[$_this->owner_name]) or !$_this->fld_data[$_this->owner_name]) )
+		if ($_this->owner and $_this->owner->id and (!isset($_this->fld_data[$_this->owner_name]) or !$_this->fld_data[$_this->owner_name]) )
 			$_this->fld_data[$_this->owner_name] = $_this->owner->id;
 
 		if (!isset($_this->fld_data) && !count($_this->fld_data))
@@ -845,7 +845,7 @@ class static_form {
 		}
 		unset($form);
 		if(count($arr_err_name)>0 and !isset($param['errMess'])) {
-			$mess[] = static_main::am('error','Поля формы заполненны не верно.');
+			$mess[] = static_main::am('error','Поля формы заполнены не верно.');
 		}
 		/*$_tpl['onload'] .'CKEDITOR.replace( \'editor1\',
 						 {

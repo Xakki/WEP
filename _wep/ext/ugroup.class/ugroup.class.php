@@ -221,7 +221,7 @@ class ugroup_class extends kernel_extends
 
 				);
 				$MAIL->reply = 0;
-				$MAIL->config['mailcron'] = 1;
+				$MAIL->config['mailcron'] = 0;
 				if($MAIL->Send($datamail)) {
 					$mess = 'Оповещение: '.count($data).' пользователей ожидают одобрения.';
 				} else {
@@ -498,6 +498,7 @@ class users_class extends kernel_extends {
 			//if($this->fn_pass!='pass') $_POST[$this->fn_pass] = $_POST['pass'];
 			//if($this->fn_pass!='login') $_POST[$this->fn_login] = $_POST['login'];
 			$this->kPreFields($_POST,$param);
+			$pass = $_POST[$this->fn_pass];
 			$arr = $this->fFormCheck($_POST,$param,$this->fields_form);
 			if(!count($arr['mess'])){
 				$clause = 't1 where (t1.'.$this->fn_login.' = \''.$arr['vars'][$this->fn_login].'\'';
@@ -513,16 +514,15 @@ class users_class extends kernel_extends {
 					$arr['mess'][] = static_main::am('error','notemail');
 				else {
 					if(!$this->id) { // регистрация
-						$arr['vars']['owner_id']=$this->owner->config['noreggroup'];
+						$arr['vars'][$this->owner_name]=$this->owner->config['noreggroup'];
 						$arr['vars']['active']=0;
 						if(!isset($arr['vars'][$this->mf_namefields]) or !$arr['vars'][$this->mf_namefields])
 							$arr['vars'][$this->mf_namefields] = $arr['vars'][$this->fn_login];
 						$arr['vars']['reg_hash']=md5(time().$arr['vars'][$this->fn_login]);
-						$pass=$arr['vars'][$this->fn_pass];
 						//$_SESSION['user'] = $arr['vars']['id'];
 
 						if($this->_add($arr['vars'])) {
-							$this->SQL->execSQL('UPDATE '.$this->tablename.' SET '.$this->mf_createrid.'="'.$this->id.'" where '.$this->fn_login.'="'.$vars[$this->fn_login].'"');
+							$this->SQL->execSQL('UPDATE '.$this->tablename.' SET '.$this->mf_createrid.'="'.$this->id.'" where id="'.$this->id.'"');
 							$this->sendRegMail($this->data[$this->id],$pass);
 							$flag=1;
 							$arr['mess'][] = static_main::am('ok','regok');
@@ -571,7 +571,7 @@ class users_class extends kernel_extends {
 
 	function sendRegMail($vars,$pass='',$subject='') {
 		_new_class('mail',$MAIL);
-		$MAIL->config['mailcron'] = 1;
+		$MAIL->config['mailcron'] = 0;
 		$datamail = array('creater_id'=>-1);
 		$datamail['mail_to']=$vars['email'];
 		$datamail['user_to']=$vars['id'];
@@ -614,11 +614,11 @@ class users_class extends kernel_extends {
 				$DATA['reg_hash']= 1;
 				if($this->owner->config['premoderation']) {
 					$DATA['active']= -1;
-					$DATA['owner_id']= $this->owner->config['modergroup'];
+					//$DATA['owner_id']= $this->owner->config['modergroup'];
 				}
 				else {
 					$DATA['active']= 1;
-					$DATA['owner_id']= $this->owner->config['reggroup'];
+					//$DATA['owner_id']= $this->owner->config['reggroup'];
 				}
 				
 				if($this->_update($DATA)) {
@@ -685,7 +685,7 @@ class users_class extends kernel_extends {
 			$time=time();
 			$hash =md5($datau[$this->fn_pass].$time.$datau['email']).'h';
 			_new_class('mail',$MAIL);
-			$MAIL->config['mailcron'] = 1;
+			$MAIL->config['mailcron'] = 0;
 			$datamail = array('creater_id'=>-1);
 			$datamail['mail_to']=$datau['email'];
 			$datamail['user_to']=$datau['id'];
@@ -697,7 +697,7 @@ class users_class extends kernel_extends {
 					$this->owner->config['mailremind']);
 			$MAIL->reply = 0;
 			if($MAIL->Send($datamail)) {
-				$mess[]  = array('ok','На ваш E-mail отправленно письмо с секретной ссылкой на форму для установки нового пароля.<br/> Ссылка действительна в течении 2х суток с момента отправки данной формы.');
+				$mess[]  = array('ok','На ваш E-mail отправлено письмо с секретной ссылкой на форму для установки нового пароля.<br/> Ссылка действительна в течении 2х суток с момента отправки данной формы.');
 				$flag = 1;
 			}else {
 				trigger_error('Напоминание пароля - '.static_main::m('mailerr',$this), E_USER_WARNING);

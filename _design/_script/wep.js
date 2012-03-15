@@ -300,7 +300,7 @@ var wep = {
 		pos.left = parseInt(pos.left);
 		if(!time) time = 5000;
 		jQuery(obj).after('<div class="helpmess">'+mess+'<div class="trgl trgl_d"> </div></div>');//Вставляем всплыв блок
-		var slct = jQuery(obj).next();// бурем ссылку на добавленнный блок
+		var slct = jQuery(obj).next();// бурем ссылку на добавленный блок
 		var H = jQuery(slct).height(); // Определяем его высоту
 		var flag = pos.top-12-H;// Определяем абсолютную позицию элемента
 

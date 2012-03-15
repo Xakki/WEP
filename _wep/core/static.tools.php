@@ -631,7 +631,7 @@ class static_tools {
 		}
 		else {
 			chmod($dir, $_CFG['wep']['chmod']);
-			$f = fopen($dir . '/test.file', 'w');
+			$f = fopen($dir . 'test.file', 'w');
 			if (!$f)
 				return static_main::log('error', 'Cannot create file `test.file` in directory `' . $dir . '`');
 

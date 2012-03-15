@@ -17,7 +17,7 @@ class mail_class extends kernel_extends {
 		$this->_AllowAjaxFn['jsGetUserData'] = true;
 
 		$this->default_access = '|0|';
-		$this->lang['add'] = 'Письмо успешно отправленно!';
+		$this->lang['add'] = 'Письмо успешно отправлено!';
 		$this->lang['add_err'] = 'Ошибка отправки письма! Информация о данной ошибке уже сообщена авминистратору и проблема разрешится в течении суток.';
 
 		return true;
@@ -245,7 +245,7 @@ class mail_class extends kernel_extends {
 		@ini_set('sendmail_path', '/usr/sbin/sendmail -t -i -f '.$data['from']);
 		 //}
 		$header = "MIME-Version: 1.0\r\n";
-		$header .= "To: {$data['mail_to']}\r\n";
+		//$header .= "To: {$data['mail_to']}\r\n";
 		$header .= "From: {$data['from']}\r\n";
 		if(isset($data['bcc']) and $data['bcc'])
 			$header .= 'Bcc: '.$data['bcc']."\r\n";

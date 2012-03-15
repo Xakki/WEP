@@ -41,7 +41,7 @@ $mess = array();$txt = '';
 $flag = true;
 if(!function_exists('openssl_encrypt') and !function_exists('mcrypt_decrypt')) {
 	$mess[] = array('name' => 'error', 'value' => 'Необходимо подключить php модуль openssl либо mcrypt');
-	$flag = false;
+	//$flag = false;
 }
 
 if (isset($_POST['sbmt']) and $flag) {
