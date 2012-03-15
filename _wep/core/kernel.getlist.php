@@ -192,7 +192,7 @@
 			if($_this->owner)
 				$data = $_this->owner->_dump();
 			else
-				$data = array('Ошибка - список ownerlist не может быть создан, тк родитель не доступен');
+				$data = array('Ошибка - список ownerlist не может быть создан, так как родитель не доступен');
 		}
 		// TODO : что за Х ?
 		elseif(is_array($listname) and isset($listname[0]) and isset($listname[1]) and $listname[0]=='owner' ) {
