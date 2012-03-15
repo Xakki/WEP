@@ -29,6 +29,17 @@ class payqiwi_class extends kernel_extends {
 	protected function _create_conf() {/*CONFIG*/
 		parent::_create_conf();
 		$this->config = &$this->owner->config;
+		if(0) {
+			$this->config['login'];
+			$this->config['password'];
+			$this->config['txn-prefix'];
+			$this->config['create-agt'];
+			$this->config['lifetime'];
+			$this->config['alarm-sms'];
+			$this->config['alarm-call'];
+			$this->config['minpay'];
+			$this->config['maxpay'];
+		}
 	}
 
 	function _set_features() {
