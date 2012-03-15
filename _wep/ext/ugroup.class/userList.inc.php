@@ -21,8 +21,8 @@
 	_new_class('ugroup', $UGROUP);
 
 	$html = '';
-	if(isset($this->pageParam[1])) {
-		$DATA = $UGROUP->childs['users']->_query('t2.*,t1.*',' t1 LEFT JOIN '.$UGROUP->childs['users']->childs['extuserscontact']->tablename.' t2 ON t1.id=t2.owner_id WHERE t1.active=1 and t1.id='.(int)$this->pageParam[1]);
+	if(isset($this->pageParam[0])) {
+		$DATA = $UGROUP->childs['users']->_query('t1.*, t2.name as gname',' t1 LEFT JOIN '.$UGROUP->tablename.' t2 ON t2.id=t1.owner_id WHERE t1.active=1 and t1.id='.(int)$this->pageParam[0]);
 		$this->pageinfo['path'][''] = $DATA[0]['name'];
 		$DATA = array($FUNCPARAM[1]=>array('data'=>$DATA[0],'href'=>$this->getHref()));
 		$html = $HTML->transformPHP($DATA,$FUNCPARAM[1]);
