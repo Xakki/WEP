@@ -16,15 +16,15 @@ class payrobox_class extends kernel_extends {
 		return true;
 	}
 	
-	protected function _create_conf() {
-		parent::_create_conf();
+	function _create_conf2(&$obj) {
+		//parent::_create_conf();
 
-		$this->config['mrh_login'] = 'rbxch';
-		$this->config['mrh_pass1'] = 'testing123';
-		$this->config['mrh_pass2'] = 'testing456';
+		$obj->config['mrh_login'] = 'rbxch';
+		$obj->config['mrh_pass1'] = 'testing123';
+		$obj->config['mrh_pass2'] = 'testing456';
 		
-		$this->config['in_curr'] = 'PCR';
-		$this->config['culture'] = 'ru';
+		$obj->config['in_curr'] = 'PCR';
+		$obj->config['culture'] = 'ru';
 		
 	}
 

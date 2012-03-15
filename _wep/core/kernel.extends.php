@@ -843,6 +843,7 @@ abstract class kernel_extends {
 		}
 
 		foreach ($f_fieldsForm as $k => &$r) {
+			if(!isset($r['type'])) continue;
 			if (isset($r['readonly']) and $r['readonly'] and $this->id) // если поле "только чтение" и редактируется , то значение берем из БД,
 				$f_data[$k] = (isset($this->data[$this->id][$k]) ? $this->data[$this->id][$k] : '');
 
@@ -908,6 +909,7 @@ abstract class kernel_extends {
 						$r['value'] = explode('|', $f_data[$k]);
 					}else
 						$r['value'] = $f_data[$k];
+					$r['value'] = array_combine($f_data[$k],$f_data[$k]); // На всякий, иногда эта функция может самостоятельно работать
 				}
 			}
 			elseif ($r['type'] == 'date') {
@@ -2442,7 +2444,7 @@ abstract class kernel_extends {
 			'body' => false,
 			'HTTPHEADER' => array('Content-Type' => 'text/xml; encoding=utf-8'),
 			'redirect' => false,
-			'USERAGENT' => 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/'.rand(9,16).'.0.874.121 Safari/535.2',
+			'USERAGENT' => 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/'.rand(50,190).' (KHTML, like Gecko) Chrome/'.rand(9,16).'.0.8'.rand(1,99).'.121 Safari/535.2',
 			'TIMEOUT' => 20
 		);
 		$param = array_merge($default, $param);

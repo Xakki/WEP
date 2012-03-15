@@ -334,7 +334,7 @@ class users_class extends kernel_extends {
 			//$this->fields_form[$this->fn_pass] = array('type' => 'password', 'caption' => 'Пароль','mask'=>array('min' => '6','fview'=>1));
 		}
 
-		$this->fields_form['email'] = array('type' => 'text', 'caption' => 'E-mail', 'mask'=>array('name'=>'email','min' => '7'));
+		$this->fields_form['email'] = array('type' => 'email', 'caption' => 'E-mail', 'mask'=>array('name'=>'email','min' => '7'));
 		$this->fields_form[$this->mf_namefields] = array('type' => 'text', 'caption' => 'Имя','mask'=>array('name'=>'name2')); // Вывод поля при редактировании
 		if($this->owner->config['karma']) {
 			$this->fields_form['karma'] = array('type' => 'text', 'caption' => 'Карма', 'readonly'=>true,'mask'=>array('usercheck'=>1));

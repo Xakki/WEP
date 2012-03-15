@@ -59,9 +59,11 @@ function tpl_form(&$data) {
 			$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'" value="'.$r['value'].'" id="'.((isset($r['id']) and $r['id'])?$r['id']:$k).'"/>';
 		}
 		else {
+			$attribute = '';
 				$CAPTION = $r['caption'];
 				if((isset($r['mask']['min']) and $r['mask']['min']) or (isset($r['mask']['minint']) and $r['mask']['minint'])) {
 					$CAPTION .= '<span class="form-requere">*</span>';
+					$attribute .= ' required="required"';
 				}
 				elseif(isset($r['mask']['min2']) and $r['mask']['min2']) {
 					$CAPTION .= '<span  class="form-requere" data-text="'.$r['mask']['min2'].'">**</span>';
@@ -73,7 +75,6 @@ function tpl_form(&$data) {
 				$texthtml .= '<div class="form-caption">'.$CAPTION.'</div>';
 			}
 
-			$attribute = '';
 			if(isset($r['readonly']) and $r['readonly'])
 				$attribute .= ' readonly="readonly" class="ronly"';
 			else
@@ -545,7 +546,7 @@ function tpl_form(&$data) {
 			}
 			elseif($r['type']=='int' and !$r['readonly']) {
 				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
-				$texthtml .= '<div class="form-value"><input type="text" name="'.$k.'" value="'.$r['value'].'" '.$attribute.'/></div>';
+				$texthtml .= '<div class="form-value"><input type="number" name="'.$k.'" value="'.$r['value'].'" '.$attribute.'/></div>';
 			}
 			elseif($r['type']=='password' and isset($r['mask']['password']) and $r['mask']['password']=='re') {
 				$texthtml .= '<div class="form-value">

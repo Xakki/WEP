@@ -232,10 +232,12 @@ class static_tools {
 		$MODUL->form['_*features*_'] = array('name' => 'Configmodul', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']));
 		$MODUL->form['_info'] = array('type' => 'info', 'css' => 'caption', 'caption' => static_main::m('_config'));
 		foreach ($MODUL->config_form as $k => $r) {
-			if (!is_array($MODUL->config[$k]))
-				$MODUL->config_form[$k]['value'] = stripslashes($MODUL->config[$k]);
-			else
-				$MODUL->config_form[$k]['value'] = $MODUL->config[$k];
+			if(isset($MODUL->config[$k])) {
+				if (!is_array($MODUL->config[$k]))
+					$MODUL->config_form[$k]['value'] = stripslashes($MODUL->config[$k]);
+				else
+					$MODUL->config_form[$k]['value'] = $MODUL->config[$k];
+			}
 		}
 		$MODUL->form = $MODUL->form+$MODUL->config_form;
 		$MODUL->form['sbmt'] = array(
@@ -445,6 +447,7 @@ class static_tools {
 				if ($temp and count($temp))
 					$rDATA = array_merge($rDATA, $temp);
 			}
+
 		if (!$OWN and isset($MODUL->_CFG['modulprm'][$MODUL->_cl]) and $MODUL->ver != $MODUL->_CFG['modulprm'][$MODUL->_cl]['ver']) {
 			$file = $MODUL->_CFG['modulprm'][$Mid]['path'];
 			$file = substr($file, 0, -(strlen($Mid . '.class.php'))) . 'updater/' . $MODUL->ver . '.php';

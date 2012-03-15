@@ -9,7 +9,7 @@ class pay_class extends kernel_extends {
 		$this->mf_ipcreate = true;//IP адрес пользователя с котрого была добавлена запись		
 		$this->mf_timestamp = true; // создать поле  типа timestamp
 		$this->cf_childs = true;
-		$this->ver = '0.2.1';
+		$this->ver = '0.3.2';
 		$this->default_access = '|0|';
 		$this->prm_add = false; // добавить в модуле
 		$this->prm_del = false; // удалять в модуле
@@ -17,9 +17,17 @@ class pay_class extends kernel_extends {
 		return true;
 	}
 
-	protected function _create_conf() { /*CONFIG*/
+	protected function _create_conf() {/*CONFIG*/
 		parent::_create_conf();
 	}
+
+	function _childs() { /*CONFIG*/
+		parent::_childs();
+		foreach($this->childs as &$r)
+			$r->_create_conf2($this);
+		$this->configParse();
+	}
+
 
 	protected function _create() {
 		parent::_create();
@@ -47,8 +55,6 @@ class pay_class extends kernel_extends {
 		$this->fields_form['status'] = array('type' => 'list', 'listname'=>'status', 'readonly'=>1,'caption' => 'Статус', 'mask'=>array());
 		
 		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата', 'mask'=>array());
-		//$this->fields_form['mf_timeup'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата обновления', 'mask'=>array('fview'=>2));
-		//$this->fields_form['mf_timeoff'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата отключения', 'mask'=>array('fview'=>2));
 		$this->fields_form['mf_ipcreate'] = array('type' => 'text','readonly'=>1, 'caption' => 'IP', 'mask'=>array('fview'=>2));
 
 	}
