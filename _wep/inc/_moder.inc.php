@@ -32,7 +32,7 @@
 		);
 		return $form;
 	}
-
+//$Ctitle
 	//$FUNCPARAM[0] - модуль
 	//$FUNCPARAM[1] - php template
 	if(!$FUNCPARAM[0] or !_new_class($FUNCPARAM[0],$MODUL)) {

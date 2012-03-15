@@ -909,7 +909,7 @@ abstract class kernel_extends {
 						$r['value'] = explode('|', $f_data[$k]);
 					}else
 						$r['value'] = $f_data[$k];
-					$r['value'] = array_combine($f_data[$k],$f_data[$k]); // На всякий, иногда эта функция может самостоятельно работать
+					$r['value'] = array_combine($r['value'],$r['value']); // На всякий, иногда эта функция может самостоятельно работать
 				}
 			}
 			elseif ($r['type'] == 'date') {

@@ -30,10 +30,12 @@
 
 	if(_new_class($FUNCPARAM[0],$MODUL)) {
 		$DATA  = array();
+		if($Ctitle!='')
+			$MODUL->lang['add_name'] = ($Ctitle?$Ctitle:'');
 		list($DATA['#pg#formcreat'],$this->formFlag) = $MODUL->_UpdItemModul(array('showform'=>1));
 		$html = $HTML->transformPHP($DATA,'#pg#formcreat');
 		//if($FUNCPARAM[1]) {
 		//}
 	}
-	else $html = 'Ошибка подключения модуля';
+	else $html = '<error>Ошибка подключения модуля</error>';
 	return $html;
