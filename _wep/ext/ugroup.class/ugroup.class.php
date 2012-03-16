@@ -614,11 +614,11 @@ class users_class extends kernel_extends {
 				$DATA['reg_hash']= 1;
 				if($this->owner->config['premoderation']) {
 					$DATA['active']= -1;
-					//$DATA['owner_id']= $this->owner->config['modergroup'];
+					$DATA['owner_id']= $this->owner->config['modergroup'];
 				}
 				else {
 					$DATA['active']= 1;
-					//$DATA['owner_id']= $this->owner->config['reggroup'];
+					$DATA['owner_id']= $this->owner->config['reggroup'];
 				}
 				
 				if($this->_update($DATA)) {

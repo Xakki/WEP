@@ -980,7 +980,8 @@ class pg_class extends kernel_extends {
 		if(count($_POST)) $_POST['sbmt'] = 1;
 
 		$Cdata = array();
-		$this->pageParam = $_GET['pageParam'];
+		if(isset($_GET['pageParam']))
+			$this->pageParam = $_GET['pageParam'];
 		// TODO : проверка правд доступа
 		$cls = 'SELECT * FROM ' . $this->SQL_CFG['dbpref'] . 'pg_content WHERE active=1 and id=' . (int)$_GET['contentID'];
 		$resultPG = $this->SQL->execSQL($cls);
