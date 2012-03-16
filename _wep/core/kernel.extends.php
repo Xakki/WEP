@@ -794,15 +794,23 @@ abstract class kernel_extends {
 	}
 
 	public function _prmModulShow($dataList = array(), $param = array()) {
-		if (static_main::_prmModul($this->_cl, array(1)))
-			return true;
-		if ($this->mf_createrid and static_main::_prmModul($this->_cl, array(2))) {
-			foreach ($dataList as $k => $r)
-				if ($r[$this->mf_createrid] != $_SESSION['user']['id'])
-					return false;
-			return true;
+		// TODO тут какой то косяк
+		if(!count($dataList)) {
+			if (static_main::_prmModul($this->_cl, array(1)))
+				return false;
+			if ($this->mf_createrid and static_main::_prmModul($this->_cl, array(2)))
+				return true;
+		} else {
+			if (static_main::_prmModul($this->_cl, array(1)))
+				return true;
+			if ($this->mf_createrid and static_main::_prmModul($this->_cl, array(2))) {
+				foreach ($dataList as $k => $r)
+					if ($r[$this->mf_createrid] != $_SESSION['user']['id'])
+						return false;
+				return true;
+			}
+			return false;
 		}
-		return false;
 	}
 
 	private function _prmSortField($key) {
