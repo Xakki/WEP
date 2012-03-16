@@ -217,8 +217,8 @@ var wep = {
 	ajaxLoadPage: function(marker,pg,call) {
 		if(!pg) pg = this.pgId;
 		var arr = '';
-		if(this.pgParam) {
-			arr = this.pgParam;
+		if(wep.pgParam) {
+			arr = wep.pgParam;
 			arr = arr.join("&pageParam[]=");
 		}
 		// TODO marker = wep.pgGet + marker;

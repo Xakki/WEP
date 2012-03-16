@@ -74,7 +74,7 @@
 		session_go();
 		_new_class('pg',$PGLIST);
 		$_tpl = array();
-		$PGLIST->id = $_REQUEST['pgId'];
+		$PGLIST->id = (int)$_REQUEST['pgId'];
 		$PGLIST->display(false);
 		//$_tpl['logs'] = '';
 		//print_r('<pre>');print_r($_tpl);

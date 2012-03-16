@@ -205,9 +205,9 @@
 
 			$data = array();
 			if($_this->mf_use_charid)
-				$data[''][''] = static_main::m('_listroot',$_this);
+				$data[''][''] = static_main::m('_zeroname',$_this);
 			else
-				$data[0][0] = static_main::m('_listroot',$_this);
+				$data[0][0] = static_main::m('_zeroname',$_this);
 
 			$q = 'SELECT `id`, `name`, `parent_id` FROM `'.$_this->tablename.'`';
 			if($_this->id) $q .=' WHERE `id`!="'.$_this->id.'"';
@@ -275,6 +275,12 @@
 			if (isset($listname['ordfield']) and $listname['ordfield'])
 				$listname['where'] .= ' ORDER BY '.$listname['ordfield'];
 
+
+			if(isset($listname['zeroname']))
+				$_zeroname = $listname['zeroname'];
+			else
+				$_zeroname = static_main::m('_zeroname',$_this);
+
 			$result = $_this->SQL->execSQL($clause['field'].$clause['from'].$listname['where']);
 //print($_this->SQL->query);
 				if(!$result->err) {
@@ -295,18 +301,12 @@
 							$def = 0;
 						else
 							$def = '';
-						if(!isset($listname['nolistroot'])) {
-							$_listroot = static_main::m('_listroot',$_this);
-							if($_listroot)
-								$data[$def] = static_main::MergeArrays(array($def=>$_listroot),$data[$def]);
-						}
+						if($_zeroname)
+							$data[$def] = static_main::MergeArrays(array($def=>$_zeroname),$data[$def]);
 					}
 					else {
-						if(!isset($listname['nolistroot'])) {
-							$_listroot = static_main::m('_listroot',$_this);
-							if($_listroot)
-								$data[''] = $_listroot;
-						}
+						if($_zeroname)
+							$data[''] = $_zeroname;
 						while ($row = $result->fetch())
 								$data[$row['id']] = $row['name'];
 					}

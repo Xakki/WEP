@@ -6,12 +6,17 @@ var ajaxComplite = 1;
 wep.form = {
 	// Делаем форму на странице аяксовой
 	ajaxForm : function(id,contentID) {
+		var arr = '';
+		if(wep.pgParam) {
+			arr = wep.pgParam;
+			arr = arr.join("&pageParam[]=");
+		}
 		var hrf = wep.siteJS+'?';
 		for (var key in wep.pgGet)
 		{
 			hrf += key+'='+wep.pgGet[key]+'&';
 		}
-		$(id).attr('action',hrf+'_modul=pg&_fn=AjaxForm&contentID='+contentID);
+		$(id).attr('action',hrf+'_modul=pg&_fn=AjaxForm&contentID='+contentID+'&pageParam[]='+arr);
 		JSFR(id);
 	},
 

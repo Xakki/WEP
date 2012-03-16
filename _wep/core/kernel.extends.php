@@ -398,9 +398,9 @@ abstract class kernel_extends {
 		if (!$result->err) {
 			if ($this->mf_istree) {
 				if ($this->mf_use_charid)
-					$data[''][''] = static_main::m('_listroot', $this);
+					$data[''][''] = static_main::m('_zeroname', $this);
 				else
-					$data[0][0] = static_main::m('_listroot', $this);
+					$data[0][0] = static_main::m('_zeroname', $this);
 				while (list($id, $name, $pid) = $result->fetch_row()) {
 					$data[$pid][$id] = $name;
 				}
@@ -793,11 +793,15 @@ abstract class kernel_extends {
 		return false;
 	}
 
-	public function _prmModulShow($mn) {
-		if (static_main::_prmModul($mn, array(1)))
-			return false;
-		if ($this->mf_createrid and static_main::_prmModul($mn, array(2)))
+	public function _prmModulShow($dataList = array(), $param = array()) {
+		if (static_main::_prmModul($this->_cl, array(1)))
 			return true;
+		if ($this->mf_createrid and static_main::_prmModul($this->_cl, array(2))) {
+			foreach ($dataList as $k => $r)
+				if ($r[$this->mf_createrid] != $_SESSION['user']['id'])
+					return false;
+			return true;
+		}
 		return false;
 	}
 
@@ -1374,7 +1378,7 @@ abstract class kernel_extends {
 
 			if ($this->owner and count($this->owner->childs))
 				foreach ($this->owner->childs as $ck => &$cn) {
-					if (count($cn->fields_form) and $ck != $this->_cl and $cn->_prmModulShow($ck)) {
+					if (count($cn->fields_form) and $ck != $this->_cl and $cn->_prmModulShow()) {
 						$PARAM['topmenu']['ochild_' . $ck] = array(
 							'href' => array($this->_cl . '_id' => $this->owner->id, $this->_cl . '_ch' => $ck),
 							'caption' => $cn->caption . '(' . $row[$ck . '_cnt'] . ')',
@@ -1385,7 +1389,7 @@ abstract class kernel_extends {
 				}
 			if ($this->mf_istree and count($this->childs) and $this->id)
 				foreach ($this->childs as $ck => &$cn) {
-					if (count($cn->fields_form) and $ck != $this->_cl and $cn->_prmModulShow($ck))
+					if (count($cn->fields_form) and $ck != $this->_cl and $cn->_prmModulShow())
 						$PARAM['topmenu']['child' . $ck] = array(
 							'href' => array($this->_cl . '_id' => $this->id, $this->_cl . '_ch' => $ck),
 							'caption' => $cn->caption . '(' . $row[$ck . '_cnt'] . ')',
@@ -1985,7 +1989,7 @@ abstract class kernel_extends {
 	function _moder_clause(&$param) {
 		if (!isset($param['clause']) or !is_array($param['clause']))
 			$param['clause'] = array();
-		if ($this->mf_createrid and $this->_prmModulShow($this->_cl))
+		if ($this->mf_createrid and $this->_prmModulShow())
 			$param['clause']['t1.' . $this->mf_createrid] = 't1.' . $this->mf_createrid . '="' . $_SESSION['user']['id'] . '"';
 		if ($this->owner and $this->owner->id)
 			$param['clause']['t1.' . $this->owner_name] = 't1.' . $this->owner_name . '="' . $this->owner->id . '"';
