@@ -280,26 +280,10 @@ class pg_class extends kernel_extends {
 		if (!$flag_content)
 			$flag_content = 404;
 		if ($flag_content >= 100) {
-			$_tpl['title'] = $this->get_caption();
 			if ($flag_content == 401 and static_main::_prmUserCheck())
 				$flag_content = 403;
-			$this->id = $this->dataCashTreeAlias[$this->rootPage][$flag_content]['id'];
 
-			header("HTTP/1.0 " . $flag_content); //header("HTTP/1.0 404 Not Found");
-			if (!$this->id) {
-				$text = '<h2>' . static_main::m($flag_content) . '</h2>';
-				if (isset($this->dataCashTreeAlias[$this->rootPage][$flag_content]))
-					$this->id = $this->dataCashTreeAlias[$this->rootPage][$flag_content]['id'];
-				else
-					$this->id = $this->rootPage;
-			}
-			// Мог бы  использовать $this->can_show() , но поведение этой функции не предсказуемо
-			$this->pageinfo = $this->dataCash[$this->id];
-			$this->get_pageinfo();
-
-			$this->display_page($this->id);
-			if (isset($text))
-				$_tpl['text'] = $text;
+			$this->displayHttpCode($flag_content,true);
 		}
 
 		if ($this->config['sitename']) {
@@ -453,12 +437,25 @@ class pg_class extends kernel_extends {
 		return $data;
 	}
 
-	function displayHttpCode($a = 404) {
+	function displayHttpCode($a = 404,$full=false) {
 		header("HTTP/1.0 ".$a);
-		$this->id = $this->dataCashTreeAlias[$this->rootPage][$a]['id'];
+		if (isset($this->dataCashTreeAlias[$this->rootPage][$a])) {
+			$this->id = $this->dataCashTreeAlias[$this->rootPage][$a]['id'];
+		}
+		else {
+			$this->id = $this->rootPage;
+			$text = '<h2>' . static_main::m($a) . '</h2>';
+		}
+		// Мог бы  использовать $this->can_show() , но поведение этой функции не предсказуемо
 		$this->pageinfo = $this->dataCash[$this->id];
 		$this->get_pageinfo();
-		return $this->display_page($this->id);
+		$this->display_page($this->id,$full);
+		if (isset($text)) {
+			global $_tpl;
+			$_tpl['text'] = $text;
+		}
+		//$_tpl['title'] = $this->get_caption();
+		return true;
 	}
 
 	function display_page($id,$full=false) {
