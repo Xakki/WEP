@@ -520,7 +520,12 @@ class users_class extends kernel_extends {
 							$arr['vars'][$this->mf_namefields] = $arr['vars'][$this->fn_login];
 						$arr['vars']['reg_hash']=md5(time().$arr['vars'][$this->fn_login]);
 						//$_SESSION['user'] = $arr['vars']['id'];
-
+						if($this->owner->config['premoderation']) {
+							$arr['vars']['owner_id']= $this->owner->config['modergroup'];
+						}
+						else {
+							$arr['vars']['owner_id']= $this->owner->config['reggroup'];
+						}
 						if($this->_add($arr['vars'])) {
 							$this->SQL->execSQL('UPDATE '.$this->tablename.' SET '.$this->mf_createrid.'="'.$this->id.'" where id="'.$this->id.'"');
 							$this->sendRegMail($this->data[$this->id],$pass);
@@ -614,11 +619,9 @@ class users_class extends kernel_extends {
 				$DATA['reg_hash']= 1;
 				if($this->owner->config['premoderation']) {
 					$DATA['active']= -1;
-					$DATA['owner_id']= $this->owner->config['modergroup'];
 				}
 				else {
 					$DATA['active']= 1;
-					$DATA['owner_id']= $this->owner->config['reggroup'];
 				}
 				
 				if($this->_update($DATA)) {
