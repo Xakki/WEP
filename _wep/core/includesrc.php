@@ -119,7 +119,7 @@
 		if($_CFG['wep']['debugmode'])
 			$solt = '?t='.time();
 
-		$temp = 'clearTimeout(timerid);fShowload(1);';
+		$temp = '';
 		if($_tpl['styles'] and is_array($_tpl['styles']) and count($_tpl['styles'])) {
 			foreach($_tpl['styles'] as $kk=>$rr) {
 				if(is_array($rr))
@@ -157,6 +157,6 @@
 		}
 		$temp2 .= $_tpl['onload'];
 		$_tpl['onload'] = 'var chekcnt=0; '.$temp;
-		$_tpl['onload'] .= 'function fchekcnt() {if(chekcnt=='.$tcnt.') {'.$temp2.'fShowload(0);} else setTimeout(fchekcnt,200);} setTimeout(fchekcnt,200);';
+		$_tpl['onload'] .= 'function fchekcnt() {if(chekcnt=='.$tcnt.') {'.$temp2.'} else setTimeout(fchekcnt,200);} setTimeout(fchekcnt,200);';
 		//$_tpl['onload'] .= $temp2;
 	}

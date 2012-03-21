@@ -227,24 +227,6 @@ class static_tools {
 		return $rDATA;
 	}
 
-	static function _xmlFormConf(&$MODUL) {
-		$MODUL->form = array();
-		$MODUL->form['_*features*_'] = array('name' => 'Configmodul', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']));
-		$MODUL->form['_info'] = array('type' => 'info', 'css' => 'caption', 'caption' => static_main::m('_config'));
-		foreach ($MODUL->config_form as $k => $r) {
-			if(isset($MODUL->config[$k])) {
-				if (!is_array($MODUL->config[$k]))
-					$MODUL->config_form[$k]['value'] = stripslashes($MODUL->config[$k]);
-				else
-					$MODUL->config_form[$k]['value'] = $MODUL->config[$k];
-			}
-		}
-		$MODUL->form = $MODUL->form+$MODUL->config_form;
-		$MODUL->form['sbmt'] = array(
-			'type' => 'submit',
-			'value' => static_main::m('Submit'));
-	}
-
 	static function _save_config($conf, $file) {
 		foreach ($conf as &$r) {
 			if (is_string($r) and strpos($r, ':|') !== false) {
@@ -634,7 +616,7 @@ class static_tools {
 		}
 		else {
 			chmod($dir, $_CFG['wep']['chmod']);
-			$f = fopen($dir . 'test.file', 'w');
+			$f = fopen($dir . '/test.file', 'w');
 			if (!$f)
 				return static_main::log('error', 'Cannot create file `test.file` in directory `' . $dir . '`');
 

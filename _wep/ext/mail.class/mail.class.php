@@ -10,7 +10,7 @@ class mail_class extends kernel_extends {
 		$this->caption = 'Почта';
 		$this->cf_reinstall = true;
 		$this->mf_timecr = true;
-		
+		$this->default_access = '|9|';
 		$this->_AllowAjaxFn['jsGetUsers'] = true;
 		$this->_AllowAjaxFn['jsSendMsg'] = true;		
 		$this->_AllowAjaxFn['jsDelMsg'] = true;
@@ -68,17 +68,17 @@ class mail_class extends kernel_extends {
 			'type' => 'textarea',
 			'caption' => 'Шаблон по умолчанию', 
 			'comment' => '%SUBJECT%, %TEXT%, %MAILBOTTOM%');
-		$this->config_form['mailbottom'] = array(
-			'type' => 'ckedit',
-			'caption' => 'Текст прикрепляемый в конце письма', 
-			'paramedit'=>array(
-				'height'=>350,
-				'fullPage'=>'true',
-				'toolbarStartupExpanded'=>'false'));
 		$this->config_form['phpmailer'] = array(
 			'type' => 'ckedit',
 			'caption' => 'Текст прикрепляемый в начале письма c PHPMailer. ', 
 			'comment'=>'Если отправка письма с помощью PHPMailer, и обратный адресат отличный от mailrobot',
+			'paramedit'=>array(
+				'height'=>350,
+				'fullPage'=>'true',
+				'toolbarStartupExpanded'=>'false'));
+		$this->config_form['mailbottom'] = array(
+			'type' => 'ckedit',
+			'caption' => 'Текст прикрепляемый в конце письма', 
 			'paramedit'=>array(
 				'height'=>350,
 				'fullPage'=>'true',

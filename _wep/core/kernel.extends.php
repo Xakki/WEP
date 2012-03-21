@@ -416,7 +416,7 @@ abstract class kernel_extends {
 	 * Экранирует специальные символы в строках для использования в выражениях SQL
 	 */
 	public function SqlEsc($val) {
-		return $this->SQL->escape($val);
+		return $this->SQL->escape((string)$val);
 	}
 
 	/**
@@ -440,7 +440,7 @@ abstract class kernel_extends {
 		if ($cls)
 			$query .= $cls;
 		if ($debug)
-			echo(' * '.$query . ' * <br>');
+			echo(' * '.htmlentities($query) . ' * <br>');
 		$result = $this->SQL->execSQL($query);
 		if ($result->err)
 			return false;
@@ -813,7 +813,7 @@ abstract class kernel_extends {
 		}
 	}
 
-	private function _prmSortField($key) {
+	private function _prmSortField($key='') {
 		//включаем сортировку для всех полей
 		/* if (isset($this->fields_form[$key]['mask']['sort']))
 		  return true;
@@ -837,7 +837,7 @@ abstract class kernel_extends {
 	public function _UpdItemModul($param = array(),&$argForm = null) {
 		if(is_null($argForm)) {
 			$this->getFieldsForm(1);
-			$argForm = &$this->fields_form;
+			$argForm = $this->fields_form;
 		}
 		return include($this->_CFG['_PATH']['core'] . 'kernel.UpdItemModul.php');
 	}
@@ -1047,7 +1047,7 @@ abstract class kernel_extends {
 	 */
 	public function kFields2Form(&$param, &$fields_form=null) {
 		/*
-		  $this->form['уник название'] = array(
+		  $fields_form['уник название'] = array(
 		  обяз*	'type'=>'ТИП(submit,info,hidden,checkbox,list,int,text,textarea)',
 		  обяз*	'value'=>'Значение',
 		  'data'=>'значение масивов и пр формируемое отдельно',
@@ -1065,24 +1065,23 @@ abstract class kernel_extends {
 		}
 		if (!is_array($fields_form) or !count($fields_form))
 			return false;
-		$this->form = array();
-		$this->form['_*features*_'] = array('type' => 'info', 'name' => $this->_cl, 'method' => 'post', 'id' => $this->id, 'action' => $_SERVER['REQUEST_URI']);
-		$this->form['_info'] = array('type' => 'info', 'css' => 'caption');
+		$fields_form['_*features*_'] = array('type' => 'info', 'name' => $this->_cl, 'method' => 'post', 'id' => $this->id, 'action' => $_SERVER['REQUEST_URI']);
+		$fields_form = array('_info'=>array('type' => 'info', 'css' => 'caption')) + $fields_form;
 		if ($this->id)
-			$this->form['_info']['caption'] = static_main::m('update_name', array($this->caption), $this);
+			$fields_form['_info']['caption'] = static_main::m('update_name', array($this->caption), $this);
 		else
-			$this->form['_info']['caption'] = static_main::m('add_name', array($this->caption), $this);
+			$fields_form['_info']['caption'] = static_main::m('add_name', array($this->caption), $this);
 
 		$this->kFields2FormFields($fields_form);
 		if (!$this->id or (isset($this->data[$this->id]) and $this->_prmModulEdit($this->data[$this->id], $param))) {
-			$this->form['sbmt'] = array(
+			$fields_form['sbmt'] = array(
 				'type' => 'submit',
 				'value_save' => ((isset($param['sbmt_save']) and $this->id) ? static_main::m('Save', $this) : ''),
 				'value_close' => (isset($param['sbmt_close']) ? static_main::m('Close', $this) : ''),
 				'value' => static_main::m('Save and close', $this)
 			);
 			if ($this->id and $this->_prmModulDel($this->data, $param) and isset($param['sbmt_del']))
-				$this->form['sbmt']['value_del'] = static_main::m('Delete', $this);
+				$fields_form['sbmt']['value_del'] = static_main::m('Delete', $this);
 		}
 		return true;
 	}
@@ -1642,32 +1641,32 @@ abstract class kernel_extends {
 	 * @return array form
 	 */
 	public function toolsReinstall() {
-		$this->form = $mess = array();
+		$fields_form = $mess = array();
 		if (!static_main::_prmModul($this->_cl, array(11)))
 			$mess[] = static_main::am('error', 'denied', $this);
 		elseif (count($_POST) and $_POST['sbmt']) {
 			static_tools::_reinstall($this);
 			$mess[] = static_main::am('ok', '_reinstall_ok', $this);
 		} else {
-			$this->form['_*features*_'] = array('name' => 'Reinstall', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']));
-			$this->form['_info'] = array(
+			$fields_form['_*features*_'] = array('name' => 'Reinstall', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']));
+			$fields_form['_info'] = array(
 				'type' => 'info',
 				'caption' => static_main::m('_reinstall_info', $this));
-			$this->form['sbmt'] = array(
+			$fields_form['sbmt'] = array(
 				'type' => 'submit',
 				'value' => static_main::m('Submit', $this));
 		}
-		self::kFields2FormFields($this->form);
-		return Array('form' => $this->form, 'messages' => $mess);
+		self::kFields2FormFields($fields_form);
+		return Array('form' => $fields_form, 'messages' => $mess);
 	}
 
 	public function toolsConfigmodul() {
-		$this->form = array();
+		$fields_form = array();
 		$arr = array('mess' => '', 'vars' => '');
 		if (!static_main::_prmModul($this->_cl, array(13)))
 			$arr['mess'][] = static_main::am('error', 'denied', $this);
 		elseif (!count($this->config_form)) {
-			$this->form['_info'] = array(
+			$fields_form['_info'] = array(
 				'type' => 'info',
 				'caption' => static_main::m('_configno', $this));
 		} else {
@@ -1683,6 +1682,7 @@ abstract class kernel_extends {
 					$r = implode(' :| ', $temp);
 				}
 			}
+			unset($r);
 			if (count($_POST)) {
 				$arr = $this->fFormCheck($_POST, $arr['vars'], $this->config_form); // 2ой параметр просто так
 				$config = array();
@@ -1698,10 +1698,23 @@ abstract class kernel_extends {
 					static_tools::_save_config($config, $this->_file_cfg);
 				}
 			}
-			static_tools::_xmlFormConf($this);
+			$fields_form['_*features*_'] = array('name' => 'Configmodul', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']));
+			$fields_form['_info'] = array('type' => 'info', 'css' => 'caption', 'caption' => static_main::m('_config'));
+			foreach ($this->config_form as $k => $r) {
+				if(isset($this->config[$k])) {
+					if (!is_array($this->config[$k]))
+						$this->config_form[$k]['value'] = stripslashes($this->config[$k]);
+					else
+						$this->config_form[$k]['value'] = $this->config[$k];
+				}
+			}
+			$fields_form = $fields_form+$this->config_form;
+			$fields_form['sbmt'] = array(
+				'type' => 'submit',
+				'value' => static_main::m('Submit'));
 		}
-		$this->kFields2FormFields($this->form);
-		return Array('form' => $this->form, 'messages' => $arr['mess']);
+		$this->kFields2FormFields($fields_form);
+		return Array('form' => $fields_form, 'messages' => $arr['mess']);
 	}
 
 	/**
@@ -1710,7 +1723,7 @@ abstract class kernel_extends {
 	 */
 	public function toolsSuperGroup() {
 		global $_tpl;
-		$this->form = $mess = array();
+		$fields_form = $mess = array();
 		if (!static_main::_prmModul($this->_cl, array(5, 7)))
 			$mess[] = static_main::am('error', 'denied', $this);
 		elseif (!isset($_COOKIE['SuperGroup'][$this->_cl]) or !count($_COOKIE['SuperGroup'][$this->_cl]))
@@ -1742,11 +1755,11 @@ abstract class kernel_extends {
 				$_tpl['onload'] .= '$("span.wepSuperGroupCount").text(0).parent().hide("slow");wep.SuperGroupClear("' . $type . '");';
 			}
 		} else {
-			$this->form['_*features*_'] = array('name' => 'SuperGroup', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
-			$this->form['_info'] = array(
+			$fields_form['_*features*_'] = array('name' => 'SuperGroup', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
+			$fields_form['_info'] = array(
 				'type' => 'info',
 				'caption' => '<h2 style="text-align:center;">' . $this->caption . '</h2><h3 style="text-align:center;">Выбранно элементов : ' . count($_COOKIE['SuperGroup'][$this->_cl]) . '</h3>');
-			$this->form['sbmt'] = array(
+			$fields_form['sbmt'] = array(
 				'type' => 'submit',
 				'value' => array(
 					'_off' => static_main::m('Отключить', $this),
@@ -1757,8 +1770,8 @@ abstract class kernel_extends {
 				)
 			);
 		}
-		self::kFields2FormFields($this->form);
-		return Array('form' => $this->form, 'messages' => $mess);
+		self::kFields2FormFields($fields_form);
+		return Array('form' => $fields_form, 'messages' => $mess);
 	}
 
 	/**
@@ -1772,7 +1785,7 @@ abstract class kernel_extends {
 
 	/*
 	  public function toolsReindex(){
-	  $this->form = $mess = array();
+	  $fields_form = $mess = array();
 	  if(!static_main::_prmModul($this->_cl,array(12)))
 	  $mess[] = array('name'=>'error', 'value'=>static_main::m('denied',$this));
 	  elseif(count($_POST) and $_POST['sbmt']){
@@ -1781,16 +1794,16 @@ abstract class kernel_extends {
 	  else
 	  $mess[] = array('name'=>'error', 'value'=>static_main::m('_reindex_err',$this));
 	  }else{
-	  $this->form['_*features*_'] = array('name'=>'reindex','action'=>str_replace('&','&amp;',$_SERVER['REQUEST_URI']));
-	  $this->form['_info'] = array(
+	  $fields_form['_*features*_'] = array('name'=>'reindex','action'=>str_replace('&','&amp;',$_SERVER['REQUEST_URI']));
+	  $fields_form['_info'] = array(
 	  'type'=>'info',
 	  'caption'=>static_main::m('_reindex_info',$this));
-	  $this->form['sbmt'] = array(
+	  $fields_form['sbmt'] = array(
 	  'type'=>'submit',
 	  'value'=>static_main::m('Submit',$this));
 	  }
-	  self::kFields2FormFields($this->form);
-	  return Array('form'=>$this->form, 'messages'=>$mess);
+	  self::kFields2FormFields($fields_form);
+	  return Array('form'=>$fields_form, 'messages'=>$mess);
 	  }
 
 	  private function _reindex()
@@ -1822,7 +1835,7 @@ abstract class kernel_extends {
 	 */
 	public function toolsFormfilter() {
 		global $_tpl;
-		$this->form = array();
+		$fields_form = array();
 		/**
 		 * очистка фильтра
 		 * */
@@ -1837,8 +1850,8 @@ abstract class kernel_extends {
 			$_tpl['onload'] .= 'window.location.href = \'' . $_SERVER['HTTP_REFERER'] . '\';';
 		}
 		else
-			$this->Formfilter();
-		return Array('filter' => $this->form, 'messages' => array());
+			$fields_form = $this->Formfilter();
+		return Array('filter' => $fields_form, 'messages' => array());
 	}
 
 	/**
@@ -1849,44 +1862,49 @@ abstract class kernel_extends {
 		$_FILTR = array();
 		if (isset($_SESSION['filter'][$this->_cl]))
 			$_FILTR = $_SESSION['filter'][$this->_cl];
-		$this->form = array();
-		foreach ($this->fields_form as $k => $r) {
-			if (isset($r['mask']['filter']) and $r['mask']['filter'] == 1) {
+		$fields_form = array();
+		$this->getFieldsForm(1);
+		foreach ($this->fields_form as $k => &$r) {
+			if(!isset($r['caption']) or !$r['caption']) continue;
+			if($r['type']=='hidden' or !isset($this->fields[$k])) continue;
+			//if (isset($r['mask']['filter']) and $r['mask']['filter'] == 1) {
 				unset($r['default']);
 				if ($r['type'] == 'list' && is_array($r['listname']) && !isset($r['listname']['idThis']))
 					$r['listname']['idThis'] = $k;
-				$this->form['f_' . $k] = $r;
+				$fields_form['f_' . $k] = $r;
+				$fields_form['f_' . $k]['value'] = '';
+				$fields_form['f_' . $k]['value_2'] = '';
 				if (isset($_FILTR[$k])) {
 					if (isset($_FILTR[$k . '_2']))
-						$this->form['f_' . $k]['value_2'] = $_FILTR[$k . '_2'];
-					$this->form['f_' . $k]['value'] = $_FILTR[$k];
+						$fields_form['f_' . $k]['value_2'] = $_FILTR[$k . '_2'];
+					$fields_form['f_' . $k]['value'] = $_FILTR[$k];
 				}
 				if ($r['type'] == 'ajaxlist') {
-					if (!$this->form['f_' . $k]['label'])
-						$this->form['f_' . $k]['label'] = 'Введите текст';
-					$this->form['f_' . $k]['labelstyle'] = ($_FILTR[$k] ? 'display: none;' : '');
-					$this->form['f_' . $k]['csscheck'] = ($_FILTR[$k] ? 'accept' : 'reject');
+					if (!isset($fields_form['f_' . $k]['label']))
+						$fields_form['f_' . $k]['label'] = 'Введите текст';
+					$fields_form['f_' . $k]['labelstyle'] = ((isset($_FILTR[$k]) and $_FILTR[$k]) ? 'display: none;' : '');
+					$fields_form['f_' . $k]['csscheck'] = ((isset($_FILTR[$k]) and $_FILTR[$k]) ? 'accept' : 'reject');
 				}
 				elseif ($r['type'] != 'radio' and $r['type'] != 'checkbox' and $r['type'] != 'list' and $r['type'] != 'int' and $r['type'] != 'file' and $r['type'] != 'ajaxlist' and $r['type'] != 'date')
-					$this->form['f_' . $k]['type'] = 'text';
+					$fields_form['f_' . $k]['type'] = 'text';
 				if (isset($_FILTR['exc_' . $k]))
-					$this->form['f_' . $k]['exc'] = 1;
-			}
+					$fields_form['f_' . $k]['exc'] = 1;
+			//}
 		}
 		//фильтр	
-		if (count($this->form)) {
-			$this->form['_*features*_'] = array('name' => 'Formfilter', 'action' => '', 'method' => 'post');
-			$this->form['sbmt'] = array(
+		if (count($fields_form)) {
+			$fields_form['_*features*_'] = array('name' => 'Formfilter', 'action' => '', 'method' => 'post');
+			$fields_form['sbmt'] = array(
 				'type' => 'submit',
 				'value' => 'Отфильтровать');
 
-			$this->kFields2FormFields($this->form);
+			$this->kFields2FormFields($fields_form);
 
-			$this->form['f_clear_sbmt'] = array(
+			$fields_form['f_clear_sbmt'] = array(
 				'type' => 'info',
 				'caption' => '<a href="' . $_SERVER['HTTP_REFERER'] . '" onclick="JSWin({\'insertObj\':\'#form_tools_Formfilter\',\'href\':$(\'#form_tools_Formfilter\').attr(\'action\'),\'data\':{ f_clear_sbmt:1}});return false;">Очистить</a>');
 		}
-		return $this->form;
+		return $fields_form;
 	}
 
 	/**
@@ -1899,7 +1917,7 @@ abstract class kernel_extends {
 			unset($_SESSION['filter'][$this->_cl]);
 		} else {
 			foreach ($this->fields_form as $k => $row) {
-				if (isset($_REQUEST['f_' . $k]) && $_REQUEST['f_' . $k] != '' && isset($this->fields_form[$k]['mask']['filter'])) {
+				if (isset($_REQUEST['f_' . $k]) && $_REQUEST['f_' . $k] != '') {// && isset($this->fields_form[$k]['mask']['filter'])
 					$is_int = 0;
 					if (!is_array($_REQUEST['f_' . $k])) {
 
@@ -1939,7 +1957,9 @@ abstract class kernel_extends {
 	function _filter_clause() {
 		$cl = $_FILTR = array();
 		$flag_filter = 0;
-		
+		if($this->_prmSortField())
+			$flag_filter = 1;
+
 		if (isset($_REQUEST['filter_' . $this->_cl])) {
 			if (!is_array($_REQUEST['filter_' . $this->_cl]))
 				unset($_SESSION['filter'][$this->_cl]);
@@ -1949,42 +1969,44 @@ abstract class kernel_extends {
 		elseif (isset($_SESSION['filter'][$this->_cl]))
 			$_FILTR = $_SESSION['filter'][$this->_cl];
 
-		if(count($_FILTR))
-		foreach ($this->fields_form as $k => $r) {
-			//if (isset($r['mask']['filter']) and $r['mask']['filter'] == 1) {
-				if (isset($_FILTR[$k])) {
-					$tempex = 0;
-					if (isset($_FILTR['exc_' . $k]))
-						$tempex = 1;
-					if (is_array($_FILTR[$k]))
-						$cl[$k] = 't1.' . $k . ' ' . ($tempex ? 'NOT' : '') . 'IN ("' . implode('","', $_FILTR[$k]) . '")';
-					else {
-						if ($this->fields_form[$k]['type'] == 'int') {
-							if ($tempex)
-								$cl[$k] = '(t1.' . $k . '<' . $_FILTR[$k] . ' or t1.' . $k . '>' . $_FILTR[$k . '_2'] . ')';
-							else
-								$cl[$k] = '(t1.' . $k . '>' . $_FILTR[$k] . ' and t1.' . $k . '<' . $_FILTR[$k . '_2'] . ')';
+		if(count($_FILTR)) {
+			$this->getFieldsForm(1);
+			foreach ($this->fields_form as $k => &$r) {
+				//if (isset($r['mask']['filter']) and $r['mask']['filter'] == 1) {
+					if (isset($_FILTR[$k]) or isset($_FILTR[$k . '_2'])) {
+						$tempex = 0;
+						if (isset($_FILTR['exc_' . $k]))
+							$tempex = 1;
+						if (isset($_FILTR[$k]) and is_array($_FILTR[$k])) {
+							array_map(array($this,'SqlEsc'),$_FILTR[$k]);
+							$cl[$k] = 't1.' . $k . ' ' . ($tempex ? 'NOT' : '') . 'IN ("' . implode('","', $_FILTR[$k]) . '")';
 						}
-						elseif ($this->fields_form[$k]['type'] == 'date') {
-							if ($tempex)
-								$cl[$k] = '(t1.' . $k . '<"' . $_FILTR[$k] . '" or t1.' . $k . '>"' . $_FILTR[$k . '_2'] . '")';
-							else
-								$cl[$k] = '(t1.' . $k . '>"' . $_FILTR[$k] . '" and t1.' . $k . '<"' . $_FILTR[$k . '_2'] . '")';
-						}
-						elseif ($this->fields_form[$k]['type'] == 'list') {
-							if ($_FILTR[$k]!='') {
-								$cl[$k] = 't1.' . $k . '="' . $_FILTR[$k] . '"';
+						else {
+							if ($r['type'] == 'int' or $r['type'] == 'date') {
+								$_FILTR[$k] = (int)$_FILTR[$k];
+								$_FILTR[$k . '_2'] = (int)$_FILTR[$k . '_2'];
+								$tmp = array();
+								if (isset($_FILTR[$k]) and $_FILTR[$k]!='')
+									$tmp[] = 't1.' . $k . ($tempex?'<':'>') . $_FILTR[$k];
+								if (isset($_FILTR[$k . '_2']) and $_FILTR[$k . '_2']!='')
+									$tmp[] = 't1.' . $k . ($tempex?'>':'<') . $_FILTR[$k . '_2'];
+
+								$cl[$k] = '(' . implode(($tempex?' or ':' and '),$tmp) . ')';
 							}
-						} elseif ($_FILTR[$k] == '!0')
-							$cl[$k] = 't1.' . $k . '!=""';
-						elseif ($_FILTR[$k] == '!1')
-							$cl[$k] = 't1.' . $k . '=""';
-						else
-							$cl[$k] = 't1.' . $k . ' ' . ($tempex ? 'NOT ' : '') . 'LIKE "' . $_FILTR[$k] . '"';
+							elseif ($r['type'] == 'list') {
+								if ($_FILTR[$k]!='') {
+									$cl[$k] = 't1.' . $k . '="' . $this->SqlEsc($_FILTR[$k]) . '"';
+								}
+							} elseif ($_FILTR[$k] == '!0')
+								$cl[$k] = 't1.' . $k . '!=""';
+							elseif ($_FILTR[$k] == '!1')
+								$cl[$k] = 't1.' . $k . '=""';
+							else
+								$cl[$k] = 't1.' . $k . ' ' . ($tempex ? 'NOT ' : '') . 'LIKE "' . $this->SqlEsc($_FILTR[$k]) . '"';
+						}
 					}
-					$flag_filter = 1;
-				}
-			//}
+				//}
+			}
 		}
 		return array($cl, $flag_filter);
 	}

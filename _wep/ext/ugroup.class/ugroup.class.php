@@ -520,7 +520,10 @@ class users_class extends kernel_extends {
 							$arr['vars'][$this->mf_namefields] = $arr['vars'][$this->fn_login];
 						$arr['vars']['reg_hash']=md5(time().$arr['vars'][$this->fn_login]);
 						//$_SESSION['user'] = $arr['vars']['id'];
-						if($this->owner->config['premoderation']) {
+						if(isset($param['owner_id'])) {
+							$arr['vars']['owner_id']= $param['owner_id'];
+						}
+						elseif($this->owner->config['premoderation']) {
 							$arr['vars']['owner_id']= $this->owner->config['modergroup'];
 						}
 						else {

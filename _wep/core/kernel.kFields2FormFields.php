@@ -5,8 +5,10 @@
 				$r['readonly'] = false;
 			if(($r['readonly'] and !$this->id) or 
 				(isset($r['mask']['fview']) and $r['mask']['fview']==2) or 
-				(isset($r['mask']['usercheck']) and !static_main::_prmGroupCheck($r['mask']['usercheck'])))
+				(isset($r['mask']['usercheck']) and !static_main::_prmGroupCheck($r['mask']['usercheck']))) {
+				unset($fields[$k]);
 				continue;
+			}
 			if(isset($r['type']) and $r['type']!='info') {
 				if(!isset($r['value']) and isset($r['default']) and !isset($_POST[$k])) {// and !$this->id
 					$r['value']= $r['default'];
@@ -205,6 +207,7 @@
 						$ckedit['enterMode'] = 'CKEDITOR.ENTER_BR';
 					if(!isset($ckedit['shiftEnterMode']))
 						$ckedit['shiftEnterMode'] = 'CKEDITOR.ENTER_P';
+					$ckedit['autoUpdateElement'] = 'true';
 
 					global $_tpl;
 					$_tpl['script']['ckeditor.js'] = array($this->_CFG['_HREF']['WSWG'].'ckeditor/ckeditor.js');
@@ -245,7 +248,9 @@
 			}
 			if(isset($this->fields[$k]))
 				$r['fields_type'] = $this->fields[$k]['type'];
-			$this->form[$k] = $r;
 		}
 		unset($r);
+		if(!isset($fields['_*features*_'])) {
+			$fields['_*features*_'] = array('name' => 'f'.$this->_cl, 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
+		}
 		return true;

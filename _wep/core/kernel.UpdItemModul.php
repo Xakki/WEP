@@ -91,4 +91,4 @@
 		if($formflag) // показывать форму
 			$formflag = $this->kFields2Form($param,$argForm);
 
-		return Array(Array('messages'=>array_merge($mess,$arr['mess']), 'form'=>($formflag?$this->form:array())), $flag);
+		return Array(Array('messages'=>array_merge($mess,$arr['mess']), 'form'=>($formflag?$argForm:array())), $flag);

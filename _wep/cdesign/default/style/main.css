@@ -458,83 +458,89 @@ form table.form {
 }
 
 /*FORM*/
-	div.divform {
+	form.divform {
 		min-width: 500px;
 		max-width: 800px;
+		margin:0 auto;
 	}
 /*FILTER*/
-	div.filter {
+	form.filter {
 		font-size:1em;
 		text-align:center;
 		position:relative;
 	}
 
-	div.filter select {
+	form.filter select {
 		font-size:1em;
 		width:170px;
 	}
 
-	div.filter select[id='rubric'] {
+	form.filter select[id='rubric'] {
 		border: 1px solid rgb(58, 170, 170);
 	}
 
-	div.filter input {
+	form.filter input {
 		font-size:1em;
 		width:170px;
 	}
+	form.filter input[type="radio"] {
+		width:1em;
+	}
 
-	div.filter input[type='text'] {
-		width:16em;
+	form.filter input[type='text'] {
+		width:14em;
 		font-size:1em;
 		border:1px solid gray;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
 	}
-	div.filter .f_int {
+	form.filter .f_int {
 		padding:0;
 	}
-	div.filter .f_int input[type='text'] {
+	form.filter .f_int input[type='text'] {
 		width:4.5em;
 	}
 
-	div.filter input[type='text']:hover {
+	form.filter input[type='text']:hover {
 		border:1px solid green;
 	}
-	div.filter div.f_item {
+	form.filter div.f_item {
 		float:left;
 		padding:0px 5px;
+		margin:10px;
+		height: 3.5em;
+		width: 15em;
 	}
-	div.filter div.f_item div.f_caption {
+	form.filter div.f_item div.f_caption {
 		font-size:1em;
 		padding:0;
 		height:18px;
 	}
 
-	div.filter div.f_item div.f_value {
+	form.filter div.f_item div.f_value {
 		height:20px;
 	}
-	div.filter div.f_item div.f_value div{
+	form.filter div.f_item div.f_value div{
 		display:inline;
 	}
 
-	div.filter div.f_submit{
-		float:left;
-		padding:19px 10px 2px;
+	form.filter div.f_submit{
+		clear: left;
 		text-align:center;
 	}
-	div.filter div.f_submit input {
+	form.filter div.f_submit input {
 		border:1px solid #A6A6A6;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
 	}
-	div.filter div.f_submit input[name='f_clear_sbmt'] {
+	form.filter div.f_submit input[name='f_clear_sbmt'] {
 		width:80px;
 	}
 
 
 /* для текстового  типа int поля */
-	div.filter div.cll2_3
+	form.filter div.cll2_3
 	{
 	clear:left;
 	float:left;
 	}
-		div.filter div.cll2_3 input
+		form.filter div.cll2_3 input
 		{
 		width:40px;
 		text-align:center;
@@ -554,6 +560,7 @@ div.ppagenum {
 	margin:10px auto;
 	min-width:770px;
 	display:block;
+	text-align: center;
 }
 /*debug*/
 span.seldebug {

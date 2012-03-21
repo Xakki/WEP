@@ -11,7 +11,7 @@
 			include_once($HTML->_cDesignPath.'/php/path.php');
 			$html = tpl_path($data['path']);// PATH
 		}
-		$html .= '<span class="bottonimg imgdel" style="float: right;" onclick="$(this).parent().hide();">EXIT</span><div align="center" class="divform" style="min-width: 400px;">';
+		$html .= '<span class="bottonimg imgdel" style="float: right;" onclick="$(this).parent().hide();">EXIT</span>';
 		if(isset($data['messages']) and count($data['messages'])) {
 			include_once($HTML->_cDesignPath.'/php/messages.php');
 			$html .= tpl_messages($data['messages']);// messages
@@ -19,7 +19,7 @@
 		if(isset($data['form']) and count($data['form'])) {
 			include_once($HTML->_cDesignPath.'/php/form.php');
 			$attr = $data['form']['_*features*_'];
-			$html .= '<form id="form_tools_'.$attr['name'].'" method="post" enctype="multipart/form-data" action="'.$attr['action'].'"">';
+			$html .= '<form id="form_tools_'.$attr['name'].'" method="post" enctype="multipart/form-data" action="'.$attr['action'].'" class="'.(isset($attr['css'])?$attr['css']:'divform').'">';
 			$html .= tpl_form($data['form']).'</form>';
 		}
 		elseif(isset($data['filter']) and count($data['filter'])) {
@@ -28,7 +28,7 @@
 			$html .= tpl_filter($data['filter']);
 		}
 
-		$html .= '</div>';
+		$html .= '';
 		return $html;
 	}
 

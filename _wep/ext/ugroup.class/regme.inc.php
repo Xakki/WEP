@@ -8,14 +8,14 @@
  * @return $html
  */
 	if(!isset($FUNCPARAM[0]) or !$FUNCPARAM[0]) $FUNCPARAM[0] = '#pg#formcreat';
-	//if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = '';
+	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = '';
 
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 		//$temp = 'ownerlist';
 		$form = array(
 			'0'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон'),
-			//'1'=>array('type'=>'list','listname'=>'levelmenuinc', 'caption'=>'Страница напоминания пароля'),
+			'1'=>array('type'=>'list','listname'=>array('class'=>'ugroup'), 'caption'=>'Регистрировать в указанную группу'),
 		);
 		return $form;
 	}
@@ -40,6 +40,9 @@
 		<div id="ajaxbg" style="opacity: 0.5; display: block;">&nbsp;</div>';
 		$_tpl['onload'] .= 'fMessPos();';
 	} else {
+		$param = array();
+		if((int)$FUNCPARAM[1])
+			$param['owner_id'] = (int)$FUNCPARAM[1]; 
 		list($DATA[$FUNCPARAM[0]],$flag) = $UGROUP->regForm();
 		$html = $HTML->transformPHP($DATA,$FUNCPARAM[0]);
 	}

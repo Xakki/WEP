@@ -162,7 +162,7 @@
 				}
 
 				$act=0;
-				if($this->_prmSortField($k)) {
+				//if($this->_prmSortField($k)) {
 					if(isset($_GET['sort']) and $_GET['sort']==$k) $act=1;
 					elseif(isset($_GET['dsort']) and $_GET['dsort']==$k) $act=2;
 					elseif(strpos($order,'t1.'.$k)!==false) {
@@ -172,14 +172,14 @@
 							$act=2;
 					}
 					$temphref = $k.(($this->id)?'&amp;'.$this->_cl.'_id='.$this->id:'');
-				}
-				else $temphref = '';
+				//}
+				//else $temphref = '';
 				$DATA['thitem'][$k] = array('value'=>$r['caption'],'href'=>$temphref,'sel'=>$act);
 				if(isset($r['mask']['onetd']))
 					$DATA['thitem'][$k]['onetd'] = $r['mask']['onetd'];
 			}
 
-			if($this->_prmSortField($k)) {
+			//if($this->_prmSortField($k)) {
 				if((isset($_GET['sort']) and $k==$_GET['sort']) or (isset($_GET['dsort']) and $k==$_GET['dsort'])) {
 					if($tmpsort)
 						$order = 'name_'.$k;
@@ -190,7 +190,7 @@
 					if(isset($_GET['dsort']) and $k==$_GET['dsort'])
 						$order .= ' DESC';
 				}
-			}
+			//}
 		}
 
 		/** Сборка запроса на вывод*/

@@ -26,7 +26,7 @@ var wep = {
 			$(this).attr('data-click','1');
 			return true;
 		});
-		$(obj).bind('submit',function(e){
+		$(obj).bind('submit',function(e) {
 			param['type']  = this;
 			var sbmt = $(this).find('[data-click=1]');
 			param['sbmt']  = sbmt.attr('name')+'='+sbmt.attr('value');// передаем данные о кнопке на которую нажали
@@ -53,11 +53,10 @@ var wep = {
 				param['type'] = 'GET';
 			}
 			else {
-				if(typeof CKEDITOR !== 'undefined') {
-					jQuery.each(OBJ.find("textarea"),function(){nm=jQuery(this).attr('name');if(nm) eval("if(typeof CKEDITOR.instances."+nm+" == 'object') {CKEDITOR.instances."+nm+".updateElement();}");});
-				}
+				wep.preSubmitAJAX(param['type']);
 				param['href'] = OBJ.attr('action');
 				param['data'] = OBJ.serialize();
+
 				if(!param['sbmt'])
 					param['data'] += '&sbmt=1'
 				else
@@ -92,9 +91,13 @@ var wep = {
 		if(timerid2)// Чистим тамер загрузки, если в это время уже выполняется скрипт
 			clearTimeout(timerid2);
 		timerid2 = 0;
-
+///alert(dump(param));
 		if(param['fade']) // Вешаем затемнение
-			param['timeBG'] = setTimeout(function(){wep.fShowload(1,false,param['fade']);param['timeBG'] = 0;},200);
+			param['timeBG'] = setTimeout(function(){
+				//alert('q');
+				wep.fShowload(1,false,false,param['fade']);param['timeBG'] = 0;
+			},200);
+///alert('a');
 		//console.log(param);
 		$.ajax({
 			type: param['type'],
@@ -111,6 +114,7 @@ var wep = {
 				return data;
 			},*/
 			success: function(result, textStatus, XMLHttpRequest) {
+//alert('s');
 				//функц. предзапуска пользователя, возвращает результат
 				if(typeof param['precall'] != 'undefined' && typeof param['precall'] == 'function') 
 					result = param['precall'].call(result);
@@ -137,12 +141,12 @@ var wep = {
 						if(param['timeBG'])
 							clearTimeout(param['timeBG']);// Чистим таймер и тем самым затеменение не отобразиться
 						else
-							wep.fShowload(0,false,param['fade']);
+							wep.fShowload(0,false,false,param['fade']);
 					}
 				}
 
-				if(typeof result.html != 'undefined' && result.html!='' && !param['insertObj']) {
-					wep.fShowload(1,param['body'],result.html,false,param['onclk']);
+				else if(typeof result.html != 'undefined' && result.html!='' && !param['insertObj']) {
+					wep.fShowload(1,param['body'],result.html,param['fade'],param['onclk']);
 				}
 
 
@@ -152,31 +156,32 @@ var wep = {
 				//Запуск функции пользователя
 				if(typeof param['call'] != 'undefined' && typeof param['call'] == 'function') 
 					param['call'].call(result);
-
+//alert('f');
 				if(typeof result.eval != 'undefined')  { // запуск onload функции
 					if(typeof result.eval == 'function')
 						result.eval.call();
 					else if(result.eval!='') 
 						eval(result.eval);
 				}
+//alert('g');
 			}
 		});
 		return false;
 	},
 
-	fShowload: function(show,body,txt,objid,onclk) {//alert(show+'+'+body+'+'+txt+'+'+objid+'+'+onclk);
+	fShowload: function(show,body,txt,objid,onclk) {
+//alert('* '+show+'+'+body+'+'+txt+'+'+objid+'+'+onclk);
 		if(!body || body==true) body='body';
 		if(!onclk) onclk = 'wep.fShowload(0,\''+body+'\',\'\')';
 		if(!objid) objid = 'ajaxload';
 		if(!txt) txt = '';
-		else if(strpos(objid,'#')===0) objid = substr(objid, 2);
-
-		if(!show){
+		objid = trim(objid, '#\s');
+		if(!show) {
 			jQuery(body+'> #'+objid).hide();
 			showBG(body);
 			if (_Browser.type == 'IE' && 8 > _Browser.version)
 				jQuery('select').toggleClass('hideselectforie7',false);
-		}else{
+		} else {
 			if (_Browser.type == 'IE' && 8 > _Browser.version)
 				jQuery('select').toggleClass('hideselectforie7',true);
 
@@ -197,7 +202,7 @@ var wep = {
 			}
 			jQuery(body+' > #'+objid).show();
 			//if(body=='body') // Нах это?
-			this.fMessPos(body,' #'+objid);
+			wep.fMessPos(body,' #'+objid);
 		}
 		return false;
 	},
@@ -658,6 +663,18 @@ var wep = {
 		}
 		return false;
 	},
+
+	preSubmitAJAX : function(obj) {
+		if(typeof CKEDITOR !== 'undefined') {
+			jQuery.each(jQuery(obj).find("textarea"),function() {
+				nm=jQuery(this).attr('name');
+				if(nm) {
+					eval("if(typeof CKEDITOR.instances.id_"+nm+" == 'object') {CKEDITOR.instances.id_"+nm+".updateElement();}");
+				}
+			});
+		}
+		return true;
+	},
 	// Массив функции выполняющиеся при изменении размера окна 
 	winResize : {}
 };
@@ -835,8 +852,11 @@ function substr( f_string, f_start, f_length ) {	// Return part of a string
 
 	return f_string.substring(f_start, f_length);
 }
-
-
+function trim( str, charlist ) {
+    charlist = !charlist ? ' \\s\xA0' : charlist.replace(/([\[\]\(\)\.\?\/\*\{\}\+\$\^\:])/g, '\$1');
+    var re = new RegExp('^[' + charlist + ']+|[' + charlist + ']+$', 'g');
+    return str.replace(re, '');
+}
 
 
 function show_fblock(obj,selector) {

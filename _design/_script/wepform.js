@@ -28,7 +28,7 @@ wep.form = {
 				function(a,f,o) {
 					//var formElement = f[0];
 					o.dataType = 'json';
-					//preSubmitAJAX (f);
+					//wep.preSubmitAJAX (f);
 				},
 			error: 
 				function(d,statusText) {
@@ -84,13 +84,6 @@ wep.form = {
 		tmp.remove();
 	},
 
-	preSubmitAJAX : function(obj) {
-		if(typeof CKEDITOR !== 'undefined') {
-			jQuery.each(jQuery(obj).find("textarea"),function(){nm=jQuery(this).attr('name');if(nm) eval("if(typeof CKEDITOR.instances."+nm+" == 'object') {CKEDITOR.instances."+nm+".updateElement();}");});
-		}
-		return true;
-	},
-
 	/*
 	39 37 стрелки
 	46 делете
@@ -132,11 +125,6 @@ wep.form = {
 
 function JSFR(n) {
 	wep.form.JSFR(n);
-}
-
-
-function preSubmitAJAX (obj) {
-	return wep.form.preSubmitAJAX(obj);
 }
 
 function keys_return(ev) {
