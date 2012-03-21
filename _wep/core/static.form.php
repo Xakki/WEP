@@ -160,12 +160,12 @@ class static_form {
 				return static_main::log('error','Error copy file '.$value['name']);
 
 			// Дополнительные изображения
-			if (isset($_this->fields_form[$key]['thumb'])) {
+			if (isset($_this->attaches[$key]['thumb'])) {
 				if(isset($value['att_type']) and $value['att_type']!='img') // если это не рисунок, то thumb не приминим
 					return static_main::log('error','File `'.$newname.'` is not image. Function `thumb` not accept.');
 				$prefix = $pathimg.'/';
-				if (count($_this->fields_form[$key]['thumb']))
-					foreach($_this->fields_form[$key]['thumb'] as $imod) {
+				if (count($_this->attaches[$key]['thumb']))
+					foreach($_this->attaches[$key]['thumb'] as $imod) {
 						if(!isset($imod['pref']) or !$imod['pref'])
 							$imod['pref'] = '';// по умолчинию без префикса
 						if(isset($imod['path']) and $imod['path'])
