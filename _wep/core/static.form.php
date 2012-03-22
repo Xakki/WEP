@@ -884,8 +884,9 @@ class static_form {
 						$value['ext'] = image_type_to_extension($is_image,false);
 						$form['att_type'] = 'img';
 					} else {
-						$value['ext'] = strtolower(array_pop(explode('.',$value['name'])));
-						if(preg_match('/[^A-Za-z0-9]/',$value['ext'])) { // Кривое расширение фаила
+						if($value['name'])
+							$value['ext'] = strtolower(array_pop(explode('.',$value['name'])));
+						if(!$value['ext'] or preg_match('/[^A-Za-z0-9]/',$value['ext'])) { // Кривое расширение фаила
 							$error[]=39;
 							return false;
 						}

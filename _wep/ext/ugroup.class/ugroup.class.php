@@ -493,13 +493,15 @@ class users_class extends kernel_extends {
 				unset($_SESSION['user']);
 		}
 
+		$argForm = $this->fields_form;
+
 		if(count($_POST) and $_POST['sbmt']) {
 			$flag=-1;
 			//if($this->fn_pass!='pass') $_POST[$this->fn_pass] = $_POST['pass'];
 			//if($this->fn_pass!='login') $_POST[$this->fn_login] = $_POST['login'];
-			$this->kPreFields($_POST,$param);
+			$this->kPreFields($_POST,$param,$argForm);
 			$pass = $_POST[$this->fn_pass];
-			$arr = $this->fFormCheck($_POST,$param,$this->fields_form);
+			$arr = $this->fFormCheck($_POST,$param,$argForm);
 			if(!count($arr['mess'])){
 				$clause = 't1 where (t1.'.$this->fn_login.' = \''.$arr['vars'][$this->fn_login].'\'';
 				if($this->fn_login!='email' and $arr['vars']['email']) {
@@ -543,7 +545,7 @@ class users_class extends kernel_extends {
 						if($this->_update($arr['vars'])) {
 							$arr['mess'][] = static_main::am('ok','update');
 							if($formflag)// кастыль
-								$mess = $this->kPreFields($this->data[$this->id],$param);
+								$mess = $this->kPreFields($this->data[$this->id],$param,$argForm);
 							$this->setUserSession($this->id);
 							$flag=1;
 						}
@@ -553,7 +555,7 @@ class users_class extends kernel_extends {
 				}
 			}
 		} else  {
-			$mess = $this->kPreFields($DATA,$param);
+			$mess = $this->kPreFields($DATA,$param,$argForm);
 		}
 		if(static_main::_prmUserCheck())
 			$this->fields_form['_info']= array('type'=>'info','caption'=>static_main::m('title_profile',$this),'css'=>'caption');
@@ -572,9 +574,9 @@ class users_class extends kernel_extends {
 		elseif(isset($param['ajax']))
 			$formflag = 0;
 		if($formflag) // показывать форму
-			$formflag = $this->kFields2Form($param);
+			$formflag = $this->kFields2Form($param,$argForm);
 
-		return Array(Array('messages'=>($mess+$arr['mess']), 'form'=>($formflag?$this->form:array()), 'class'=>'regform'), $flag);
+		return Array(Array('messages'=>($mess+$arr['mess']), 'form'=>($formflag?$argForm:array()), 'class'=>'regform'), $flag);
 	}
 
 	function sendRegMail($vars,$pass='',$subject='') {
