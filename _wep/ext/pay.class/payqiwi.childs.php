@@ -16,7 +16,7 @@ class payqiwi_class extends kernel_extends {
 
 		$obj->config_form['qiwi_info'] = array('type' => 'info', 'caption'=>'<h3>QIWI</h3>');
 		$obj->config_form['qiwi_login'] = array('type' => 'text', 'caption' => 'Логин', 'comment'=>'', 'style'=>'background-color:#2ab7ec;');
-		$obj->config_form['qiwi_password'] = array('type' => 'password', 'caption' => 'Пароль', 'style'=>'background-color:#2ab7ec;');
+		$obj->config_form['qiwi_password'] = array('type' => 'password', 'md5'=>false, 'caption' => 'Пароль', 'style'=>'background-color:#2ab7ec;');
 		$obj->config_form['qiwi_txn-prefix'] = array('type' => 'text', 'caption' => 'Префикс в номере счёта','comment'=>'', 'style'=>'background-color:#2ab7ec;');
 		//$this->config_form['qiwi_create-agt'] = array('type' => 'text', 'caption' => 'Логин','comment'=>'Если 1 то при выставлении счёта создается пользователь в системе QIWI. При этом оплатить счёт можно в терминале наличными без ввода ПИН-кода.', 'style'=>'background-color:gray;');
 		$obj->config_form['qiwi_lifetime'] = array('type' => 'text', 'caption' => 'Таймаут','comment'=>'Время жизни счёта по умолчанию. Задается в часах. Если 0 , то будетмаксимум (45 суток)', 'style'=>'background-color:#2ab7ec;');
@@ -29,17 +29,6 @@ class payqiwi_class extends kernel_extends {
 	protected function _create_conf() {/*CONFIG*/
 		parent::_create_conf();
 		$this->config = &$this->owner->config;
-		if(0) {
-			$this->config['login'];
-			$this->config['password'];
-			$this->config['txn-prefix'];
-			$this->config['create-agt'];
-			$this->config['lifetime'];
-			$this->config['alarm-sms'];
-			$this->config['alarm-call'];
-			$this->config['minpay'];
-			$this->config['maxpay'];
-		}
 	}
 
 	function _set_features() {

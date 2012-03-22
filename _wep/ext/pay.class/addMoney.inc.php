@@ -20,7 +20,6 @@
 		return $form;
 	}
 
-	$Chref = $this->getHref();
 	$_tpl['styles']['pay'] = '
 
 		div.divform {

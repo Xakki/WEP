@@ -979,7 +979,8 @@ class static_form {
 					elseif(_strlen($data[$key])<$form['mask']['min'])
 						$error[] = 21;
 				}
-				$data[$key] = md5($_this->_CFG['wep']['md5'].$data[$key]);
+				if(!isset($form['md5']) or $form['md5'])
+					$data[$key] = md5($_this->_CFG['wep']['md5'].$data[$key]);
 			}
 			return true;
 		}

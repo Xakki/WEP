@@ -14,6 +14,10 @@ class pay_class extends kernel_extends {
 		$this->prm_add = false; // добавить в модуле
 		$this->prm_del = false; // удалять в модуле
 		$this->prm_edit = false; // редактировать в модуле
+		//$this->unique_fields['_key'] = '_key';
+		$this->index_fields['_key'] = '_key';
+		$this->index_fields['user_id'] = 'user_id';
+		$this->index_fields['status'] = 'status';
 		return true;
 	}
 
@@ -36,6 +40,8 @@ class pay_class extends kernel_extends {
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['status'] = array('type' => 'tinyint', 'width' => 1,'attr' => 'NOT NULL','default'=>1);
 		$this->fields['pay_modul'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL','default'=>'');
+		$this->fields['_key'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL','default'=>'');
+		$this->fields['_eval'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL','default'=>'');
 
 		$this->_enum['status'] = array(
 			0 => 'Неоплаченный счёт',
@@ -57,6 +63,20 @@ class pay_class extends kernel_extends {
 		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата', 'mask'=>array());
 		$this->fields_form['mf_ipcreate'] = array('type' => 'text','readonly'=>1, 'caption' => 'IP', 'mask'=>array('fview'=>2));
 
+	}
+
+	function billingFrom($summ,$comm='',$eval='') {
+		$data = array();
+		//eval($eval);
+		$data['#title#'] = 'Выбирите вариант опаты';
+		$data['summ'] = $summ;
+		$data['comm'] = $comm;
+		$data['#currency#'] = 'руб.';
+		// ADD pay
+		foreach($this->childs as &$child) {
+			$data['child'][] = array('_cl'=>$child->_cl,'caption'=>$child->caption);
+		}
+		return $data;
 	}
 
 	/** Форма перевода средств

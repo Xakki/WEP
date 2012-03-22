@@ -61,15 +61,16 @@ class httpproxy_class extends kernel_extends {
 		if(!isset($_GET['pos']))
 			$_GET['pos'] = rand(0,3);
 		$res = '';
-		$this->data = $this->_query('t1.name,t1.port,t1.id,t2.id as domenid', 
+		$this->data = $this->_query('t1.name,t1.port,t1.id,t2.id as domenid,if(t2.id,1,0) as fl', 
 			't1 LEFT JOIN '.$this->childs['httpproxycheck']->tablename.' t2 
 				ON t2.name="'.$this->SqlEsc($this->domen).'" and t2.owner_id=t1.id
-				WHERE t1.`active`=1 and t1.`capture`= 0
-				ORDER BY domenid, t1.`autoprior` DESC,t1.`mf_timeup`,t1.`timeout`
+				WHERE t1.`active`=1 and t1.`capture`= 0 and t1.`mf_timeup`<('.time().'-t1.`timeout`) 
+				ORDER BY fl, t1.`autoprior` DESC, t1.`mf_timeup`
 				LIMIT '.(int)$_GET['pos'].',1');//,false,false,true
 		//`use`,`err`,`autoprior`,`mf_timeup`,`time`
 		// and t1.`capture`= 0 and (t2.`err`<t2.`use` or t2.`use`<1)  and t1.`mf_timeup`<('.time().'-t1.`timeout`) 
 		//print_r(' * '.time().' * ');
+		//,t1.`timeout`
 
 		//print_r('<pre>');print_r($this->data);//exit();
 
@@ -92,19 +93,23 @@ class httpproxy_class extends kernel_extends {
 	}
 
 	function upStatus($time,$err=0,$autoprior=0,$lastcode=200) {
+
+		$updCheck = array( 'use'=>'`use`+1', 'time'=>(int)$time, 'lastcode'=>(int)$lastcode);
+		$upd = array('capture'=>0, 'autoprior'=>'`autoprior`+1');
+
+		if($err) {
+			$updCheck['err'] = '`err`+'.$err;
+			$upd['autoprior'] = '`autoprior`-1';
+		}
+
 		if($this->id) {
-			$updCheck = array( 'use'=>'`use`+1', 'time'=>(int)$time, 'lastcode'=>(int)$lastcode);
-			$upd = array('capture'=>0, 'autoprior'=>'`autoprior`+1');
-
-			if($err) {
-				$updCheck['err'] = '`err`+'.$err;
-				$upd['autoprior'] = '`autoprior`-1';
-			}
-
 			$this->_update($upd,false,false);
 			$this->childs['httpproxycheck']->_update($updCheck,false,false);
-			
-		} 
+		} else {
+			$this->id = 1;
+			$this->_update($upd,false,false);
+		}
+
 		//else $this->_update($upd,'`name`="localhost"',false);
 	}
 

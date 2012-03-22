@@ -37,9 +37,9 @@ http://wep.xakki.ru -- сайт проекта
 ### Первый шаг - Настройки сайта###
 Поля <b>выделенныен цветом</b> (Login БД с правами суперпользователя и Пароль БД с правами суперпользователя) необходимы для первоначального создания базы данных. Если вы уже создали БД вручную, то <b>не</b> заполняйте их
 
-1. `create database 'wepbd' character set utf8;`
-2. `create user 'wepmysqluser'@'localhost' identified by 'defaultpass';`
-3. `grant all privileges on wepbd.* to 'wepmysqluser'@'localhost';`
+create database `wepbd` character set utf8;
+create user 'wepmysqluser'@'localhost' identified by 'defaultpass';
+grant all privileges on wepbd.* to 'wepmysqluser'@'localhost';
 
 Определения и значения полей:
 
