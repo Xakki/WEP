@@ -131,7 +131,8 @@ var wep = {
 							jQuery(param['insertObj']).html(result.html);
 					}
 					else {
-						param['fadeOff'] = true;
+						//param['fadeOff'] = true;
+						param['fade'] = false;
 					}
 				}else
 					param['fadeOff'] = true;
