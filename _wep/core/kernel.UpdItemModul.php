@@ -29,8 +29,9 @@
 						$formflag=0;
 					}
 					else {
-						$mess = $this->kPreFields($_POST,$param,$argForm);
-						$arr = $this->fFormCheck($_POST,$param,$argForm);
+						$DATA = $_POST;
+						$mess = $this->kPreFields($DATA,$param,$argForm);
+						$arr = $this->fFormCheck($DATA,$param,$argForm);
 						if(!count($arr['mess'])) {
 							if($rm = $this->_update($arr['vars'])) {
 								$flag=1;
@@ -61,8 +62,9 @@
 				$flag=-1;
 			}
 			elseif(count($_POST) and (isset($_POST['sbmt']) or isset($_POST['sbmt_save']))) {
-				$this->kPreFields($_POST,$param,$argForm);
-				$arr = $this->fFormCheck($_POST,$param,$argForm);
+				$DATA = $_POST;
+				$this->kPreFields($DATA,$param,$argForm);
+				$arr = $this->fFormCheck($DATA,$param,$argForm);
 				$flag=-1;//print_r('<pre>');print_r($arr);exit();
 				if(!count($arr['mess'])) {
 					if($rm = $this->_add($arr['vars'])) {

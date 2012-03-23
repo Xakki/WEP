@@ -843,6 +843,30 @@ class static_form {
 			}
 
 		}
+		// Проверка уник полей
+		if(count($_this->unique_fields)) {
+			foreach($_this->unique_fields as $uk=>$ur) {
+				//TODO: если массив данных вдруг
+				if(is_array($ur) or !isset($FORMS_FIELDS[$ur])) continue;
+				$key = $ur;
+				$q = 'WHERE '.$key.'="'.$_this->SqlEsc($data[$key]).'"';
+				if($_this->id)
+					$q .= ' and id!='.$_this->id;
+				$temp = $_this->qs($key,$q);
+				if(count($temp)) {
+					$messages = static_main::m('_err_34',$_this);
+					if(isset($param['errMess'])) {
+						$mess[] = static_main::am('error',$FORMS_FIELDS[$key]['caption'].': '.$messages);
+					}
+					if(isset($param['ajax'])) {
+						$_tpl['onload'] .= 'putEMF(\''.$key.'\',\''.$messages.'\');'; // запись в форму по ссылке
+					}
+					else
+						$form['error'][] = $messages; // запись в форму по ссылке
+				}
+			}
+		}
+
 		unset($form);
 		if(count($arr_err_name)>0 and !isset($param['errMess'])) {
 			$mess[] = static_main::am('error','Поля формы заполнены не верно.');

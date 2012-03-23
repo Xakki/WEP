@@ -152,6 +152,7 @@ class httpproxy_class extends kernel_extends {
 			elseif($html['info']['redirect_url']!='') {
 				$err = 1;
 				$autoprior=70;
+				print_r('<p style="color:red;">Редирект <b>'.$html['info']['redirect_url'].'</b></p>');
 			}
 			elseif($html['text']=='') {
 				$err = 1;
@@ -162,9 +163,11 @@ class httpproxy_class extends kernel_extends {
 				if(count($matches[0])<5) {
 					$err = 1;
 					$autoprior=140;
+					print_r('<p style="color:red;">Мало букв</p>');
 				} elseif(isset($param['find']) and mb_stripos($html['text'],$param['find'])===false) {
 					$err = 1;
 					$autoprior=120;
+					print_r('<p style="color:red;">Не найден текст <b>'.$param['find'].'</b></p>');
 				}
 			}
 
@@ -225,9 +228,11 @@ class httpproxy_class extends kernel_extends {
 			$mess[] = static_main::am('error', 'denied', $this);
 		elseif (count($_POST) and $_POST['dsbmt']) {
 			$upd = array(
-				'autoprior'=>0,  'capture'=>0, 
+				//'autoprior'=>0,  
+				'capture'=>0, 
 			);
-			$this->_update($upd,'capture!=0 or autoprior!=0',false);
+				//or autoprior!=0
+			$this->_update($upd,'capture!=0',false);
 			$mess = array(static_main::am('ok', 'Сделано', $this));
 		} else {
 			$fields_form['_*features*_'] = array('name' => 'clearUse', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);

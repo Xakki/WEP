@@ -264,6 +264,17 @@ class pg_class extends kernel_extends {
 		$_tpl['description'] = $this->config['description'];
 		$temp_tpl = $_tpl;
 		$flag_content = $this->can_show();
+
+		if(version_compare(phpversion(),'5.3.0','>'))
+			$temp = json_encode($this->pageParam, JSON_HEX_TAG);
+		else
+			$temp = json_encode($this->pageParam);
+		$temp2 = $_GET;unset($temp2['pageParam']);
+		if(version_compare(phpversion(),'5.3.0','>')) 
+			$temp2 = json_encode($temp2, JSON_HEX_TAG);
+		else
+			$temp2 = json_encode($temp2);
+
 		//PAGE****************
 		if (!$HTML) {
 			if ($this->pageinfo['design'])
@@ -301,15 +312,6 @@ class pg_class extends kernel_extends {
 			$this->pageinfo['template'] = 'default';
 		}
 		$HTML->_templates = $this->pageinfo['template'];
-		if(version_compare(phpversion(),'5.3.0','>'))
-			$temp = json_encode($this->pageParam, JSON_HEX_TAG);
-		else
-			$temp = json_encode($this->pageParam);
-		$temp2 = $_GET;unset($temp2['pageParam']);
-		if(version_compare(phpversion(),'5.3.0','>')) 
-			$temp2 = json_encode($temp2, JSON_HEX_TAG);
-		else
-			$temp2 = json_encode($temp2);
 
 		$_tpl['onload'] = 'if(typeof wep !== "undefined") {
 			wep.pgId = ' . $this->id . ';

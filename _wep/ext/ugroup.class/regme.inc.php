@@ -32,7 +32,7 @@
 			<div onclick="window.location=\'/index.html\'" class="blockclose"></div>
 				<div class="blockhead"><a href="/index.html">'.($flag?'Вы успешно авторизованы. ':'').'Обновите страницу</a></div>
 					<div class="hrb">&nbsp;</div>
-					'.$HTML->transformPHP($DATA,'messages').'
+					'.$HTML->transformPHP($DATA,'#pg#messages').'
 					<div class="clear">&nbsp;</div>
 				</div>
 			</div>
