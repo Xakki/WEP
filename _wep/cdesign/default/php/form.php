@@ -547,7 +547,8 @@ function tpl_form(&$data) {
 			}
 			elseif($r['type']=='int' and !$r['readonly']) {
 				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
-				$texthtml .= '<div class="form-value"><input type="number" name="'.$k.'" value="'.$r['value'].'" '.$attribute.'/></div>';
+				if(!isset($r['itype'])) $r['itype'] = 'int';//number
+				$texthtml .= '<div class="form-value"><input type="'.$r['itype'].'" name="'.$k.'" value="'.$r['value'].'" '.$attribute.'/></div>';
 			}
 			elseif($r['type']=='password' and isset($r['mask']['password']) and $r['mask']['password']=='re') {
 				$texthtml .= '<div class="form-value">

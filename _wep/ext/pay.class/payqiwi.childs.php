@@ -103,6 +103,19 @@ class payqiwi_class extends kernel_extends {
 	/*
 	* При добавлении делаем запрос XML
 	*/
+
+	function billingFrom($summ, $comm) {
+		$this->prm_add = true;
+		$this->getFieldsForm(1);
+		$argForm = $this->fields_form;
+		$argForm['cost']['mask']['evala'] = $summ;
+		$argForm['cost']['readonly'] = true;
+		$argForm['name']['mask']['evala'] = '"'.addcslashes($comm,'"').'"';
+		$argForm['name']['readonly'] = true;
+		unset($_POST['sbmt']);
+		return $this->_UpdItemModul(array('showform'=>1),$argForm);
+	}
+
 	function _add($data=array(),$flag_select=true) {
 		$data2 = array(
 			'phone'=>$data['phone'],

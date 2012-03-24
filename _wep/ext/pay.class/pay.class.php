@@ -68,14 +68,31 @@ class pay_class extends kernel_extends {
 	function billingFrom($summ,$comm='',$eval='') {
 		$data = array();
 		//eval($eval);
-		$data['#title#'] = 'Выбирите вариант опаты';
+		if(isset($_POST['paymethod']) and isset($this->childs[$_POST['paymethod']]) and isset($this->childs[$_POST['paymethod']]->pay_systems)) {
+			list($data,$resFlag) = $this->childs[$_POST['paymethod']]->billingFrom($summ,$comm);
+			if($resFlag==1) {
+				$from_user = $this->checkPayUsers($_POST['paymethod']);
+				if($this->pay($from_user,1,$summ,$comm,0,$_POST['paymethod'])) {
+					$this->childs[$_POST['paymethod']]->_update(array('owner_id'=>$this->id))
+					$data['#title#'] = 'Счёт выставлен!';
+				}else
+					$data['#title#'] = 'Ошибка';
+			} 
+			else {
+				$data['#title#'] = 'Укажите необходимые данные';
+			}
+			$data['#resFlag#'] = $resFlag;
+		} else {
+			// ADD pay
+			foreach($this->childs as &$child) {
+				if (isset($child->pay_systems))
+					$data['child'][$child->_cl] = array('_cl'=>$child->_cl,'caption'=>$child->caption);
+			}
+			$data['#title#'] = 'Выбирите вариант опаты';
+		}
 		$data['summ'] = $summ;
 		$data['comm'] = $comm;
 		$data['#currency#'] = 'руб.';
-		// ADD pay
-		foreach($this->childs as &$child) {
-			$data['child'][] = array('_cl'=>$child->_cl,'caption'=>$child->caption);
-		}
 		return $data;
 	}
 

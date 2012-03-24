@@ -180,6 +180,7 @@ function absPath(url) {
 			i = url.indexOf('../');
 		}
 	}
+	url = url.replace(/\?.+/, '');
 	return url;
 }
 
