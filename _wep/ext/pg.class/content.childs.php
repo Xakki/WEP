@@ -219,16 +219,16 @@ class content_class extends kernel_extends {
 	public function kPreFields(&$f_data, &$f_param = array(), &$f_fieldsForm = null) {
 		$mess = parent::kPreFields($f_data, $f_param, $f_fieldsForm );
 		$this->addForm = array();
-		$this->fields_form['pagetype']['onchange'] = 'contentIncParam(this,\'' . $this->_CFG['PATH']['wepname'] . '\',\'' . (isset($f_data['funcparam']) ? htmlspecialchars($f_data['funcparam']) : '') . '\');';
+		$f_fieldsForm['pagetype']['onchange'] = 'contentIncParam(this,\'' . $this->_CFG['PATH']['wepname'] . '\',\'' . (isset($f_data['funcparam']) ? htmlspecialchars($f_data['funcparam']) : '') . '\');';
 
 		if (isset($f_data['pagetype']) and $f_data['pagetype']) {
 			$this->addForm = $this->getContentIncParam($f_data);
 			if (count($this->addForm)) {
-				$this->fields_form = static_main::insertInArray($this->fields_form, 'pagetype', $this->addForm); // обработчик параметров рубрики
-				$this->fields_form['funcparam']['style'] = 'display:none;';
+				$f_fieldsForm = static_main::insertInArray($f_fieldsForm, 'pagetype', $this->addForm); // обработчик параметров рубрики
+				$f_fieldsForm['funcparam']['style'] = 'display:none;';
 			}
 		} else
-			$this->fields_form['funcparam']['style'] = 'display:none;';
+			$f_fieldsForm['funcparam']['style'] = 'display:none;';
 		return $mess;
 	}
 

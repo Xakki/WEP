@@ -42,7 +42,7 @@
 		$_POST['funcparam'] = htmlspecialchars_decode($_POST['funcparam']);
 		if($form = $CT->getContentIncParam($_POST,true) and count($form)) {
 			if($CT->kFields2FormFields($form)) {
-				$data['form'] = &$CT->form;
+				$data['form'] = &$form;
 				$html2 = $HTML->transformPHP($data,'form');
 			}
 			$_tpl['onload'] .= 'jQuery(\'#tr_funcparam\').hide();';

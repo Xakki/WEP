@@ -714,12 +714,15 @@ abstract class kernel_extends {
 
 	public function _id_as_string() {
 		if (is_array($this->id)) {
+			if(!count($this->id)) return false;
 			/* 	foreach($this->id as $key => $value)
 			  $this->id[$key] = $value; */
 			return '\'' . implode('\',\'', $this->id) . '\'';
 		}
-		else
+		else {
+			if(!$this->id) return false;
 			return '\'' . $this->SqlEsc($this->id) . '\'';
+		}
 	}
 
 	public function _get_new_ord() {

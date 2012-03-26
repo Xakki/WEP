@@ -61,7 +61,7 @@ class static_form {
 				elseif($_this->fields[$key]['type']=='bool')
 					$value = (int)(bool)$value;
 				elseif(strpos($_this->fields[$key]['type'],'int')!==false)
-					$value = intval($value);
+					$value = str2int($value);
 				elseif(strpos($_this->fields[$key]['type'],'float')!==false)
 					$value = floatval($value);
 				else
@@ -240,7 +240,7 @@ class static_form {
 		}
 
 		// rename attaches & memos
-		if (!is_array($_this->id) and isset($_this->fld_data['id']) && $_this->fld_data['id'] != $_this->id) {
+		if (!is_array($_this->id) and isset($_this->fld_data['id']) && $_this->fld_data['id'] != $_this->id && $_this->id) {
 			if (!self::_rename_parent_childs($_this)) return false;
 			if (!self::_rename_childs($_this)) return false;
 			if (!self::_rename_attaches($_this)) return false;
@@ -275,7 +275,7 @@ class static_form {
 				elseif($_this->fields[$key]['type']=='bool')
 					$value = (int)(bool)$value;
 				elseif(strpos($_this->fields[$key]['type'],'int')!==false)
-					$value = intval($value);
+					$value = str2int($value);
 				elseif(strpos($_this->fields[$key]['type'],'float')!==false)
 					$value = floatval($value);
 				else
@@ -290,7 +290,7 @@ class static_form {
 		} else {
 			$iq = $_this->_id_as_string();
 			if(!$iq) {
-				static_main::log('error','Error update: miss id');
+				trigger_error('Error update: miss id', E_USER_WARNING);
 				return false;
 			}
 			$q .= ' WHERE id IN ('.$iq.')';
@@ -1042,7 +1042,7 @@ class static_form {
 
 		/*Целое число*/
 		elseif($form['type']=='int' and (!isset($form['mask']['toint']) or !$form['mask']['toint'])) 
-			$data[$key]= preg_replace('/[^0-9\-]+/','',$data[$key]);
+			$data[$key]= str2int($data[$key]);
 
 		/*Список*/
 		elseif(($form['type']=='list' or $form['type']=='ajaxlist'))
@@ -1144,14 +1144,14 @@ class static_form {
 				$error[] = 21;
 		}
 
-		if(isset($form['mask']['maxint']) && $form['mask']['maxint']>0 && (int)$data[$key]>$form['mask']['maxint'])
+		if(isset($form['mask']['maxint']) && $form['mask']['maxint']>0 && str2int($data[$key])>$form['mask']['maxint'])
 		{
 			$error[] = 22;
 			if($form['type']=='date' and $FIELDS['type']=='int') {
 				$form['mask']['maxint'] = date($form['mask']['format'],$form['mask']['maxint']);
 			}
 		}
-		if(isset($form['mask']['minint']) && $form['mask']['minint']>0 && (int)$data[$key]<$form['mask']['minint'])
+		if(isset($form['mask']['minint']) && $form['mask']['minint']>0 && str2int($data[$key])<$form['mask']['minint'])
 		{
 			$error[] = 23;
 			if($form['type']=='date' and $FIELDS['type']=='int') {

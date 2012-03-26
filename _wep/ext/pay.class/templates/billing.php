@@ -3,7 +3,7 @@
 function tpl_billing($data)
 {
 	global $_tpl, $HTML;
-print_r('<pre>');print_r($_POST);print_r($data);
+//print_r('<pre>');print_r($_POST);print_r($data);
 	// AJAX forma
 	$_CFG['fileIncludeOption']['form'] = 1;
 	$_CFG['fileIncludeOption']['jqueryform'] = 1;
@@ -24,7 +24,7 @@ print_r('<pre>');print_r($_POST);print_r($data);
 
 		if(isset($data['messages'])) {
 			$html .= $HTML->transformPHP($data['messages'], '#pg#messages');
-		} 
+		}
 
 		if(isset($data['child'])) {
 			$html .= '<div class="paymethod">';
@@ -39,7 +39,7 @@ print_r('<pre>');print_r($_POST);print_r($data);
 			unset($data['form']['_info']);
 			$html .= $HTML->transformPHP($data['form'], '#pg#form');
 			$html .= '</div>';
-		} 
+		}
 		else {
 			$html .= 'OK';
 		}

@@ -14,7 +14,6 @@ class pay_class extends kernel_extends {
 		$this->prm_add = false; // добавить в модуле
 		$this->prm_del = false; // удалять в модуле
 		$this->prm_edit = false; // редактировать в модуле
-		//$this->unique_fields['_key'] = '_key';
 		$this->index_fields['_key'] = '_key';
 		$this->index_fields['user_id'] = 'user_id';
 		$this->index_fields['status'] = 'status';
@@ -64,18 +63,21 @@ class pay_class extends kernel_extends {
 		$this->fields_form['mf_ipcreate'] = array('type' => 'text','readonly'=>1, 'caption' => 'IP', 'mask'=>array('fview'=>2));
 
 	}
-
-	function billingFrom($summ,$comm='',$eval='') {
+	
+	// Формы выставления счёта пользователю
+	function billingFrom($summ, $key, $comm='',$eval='') {
 		$data = array();
 		//eval($eval);
 		if(isset($_POST['paymethod']) and isset($this->childs[$_POST['paymethod']]) and isset($this->childs[$_POST['paymethod']]->pay_systems)) {
 			list($data,$resFlag) = $this->childs[$_POST['paymethod']]->billingFrom($summ,$comm);
 			if($resFlag==1) {
-				$from_user = $this->checkPayUsers($_POST['paymethod']);
-				if($this->pay($from_user,1,$summ,$comm,0,$_POST['paymethod'])) {
-					$this->childs[$_POST['paymethod']]->_update(array('owner_id'=>$this->id))
-					$data['#title#'] = 'Счёт выставлен!';
-				}else
+				$from_user = $this->checkPayUsers($_POST['paymethod']); // User плат. системы
+				// тк это функция сразу оплачивает услуги, то сумму переводим сразу АДМИНУ и списываем со счета плат.системы
+				if($this->payAdd($from_user,1,$summ, $key, $comm,0,$_POST['paymethod'],$eval)) {
+					$this->childs[$_POST['paymethod']]->_update(array('owner_id'=>$this->id));
+					$data['#title#'] = 'Счёт выставлен успешно!';
+					// Открыть окно системы в новом окне
+				} else
 					$data['#title#'] = 'Ошибка';
 			} 
 			else {
@@ -95,6 +97,136 @@ class pay_class extends kernel_extends {
 		$data['#currency#'] = 'руб.';
 		return $data;
 	}
+
+
+	/**
+	* Функция оплаты и перевода средств
+	* @param $from_user
+	* @param $to_user
+	* @param $summ
+	* @param $key - ключ операции, для вывода потом и поиска
+	* @param $mess - коммент
+	* @param $status - 1 производит перевод средств сразу
+	* return 1 - Успешно
+	* return 0 - ошибка данных
+	*/
+	function payAdd($from_user,$to_user,$summ,$key,$mess='',$status=1,$pay_modul='',$eval='') {
+		if($status==1) {
+			_new_class('ugroup', $UGROUP);
+			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance-'.$summ.' WHERE id='.$from_user);
+			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance+'.$summ.' WHERE id='.$to_user);
+		}
+		$data = array(
+			$this->mf_createrid=>$from_user,
+			'user_id'=>$to_user,
+			'cost'=>$summ,
+			'name'=>$mess,
+			'status'=>$status,
+			'pay_modul'=>$pay_modul,
+			'_key'=>$key,
+			'_eval'=>$eval,
+		);
+		return $this->_add($data);
+	}
+
+
+	/**
+	* Проверяем есть ли группа и пользователи для системы платежей и возвращаем ID плат.сист. если указана плат.сист.
+	*
+	*/
+	function checkPayUsers($paychild='') {
+		_new_class('ugroup', $UGROUP);
+		$id = 0;
+		// Группа Платежные системы
+		$data1 = $UGROUP->_query('*','WHERE name = "'.$this->caption.'"');
+		if(count($data1)!=1) {
+			$UGROUP->_add(array(
+				'level'=>'-1',
+				'name'=>$this->caption,
+				'wep'=>'0',
+				'negative'=>'1',
+			));
+		}else
+			$UGROUP->id = $data1[0]['id'];
+
+		// Юзеры Платежные системы
+		$data2 = $UGROUP->childs['users']->_query('*','WHERE owner_id = '.$UGROUP->id,'email');
+
+		// юзер по умолчанию
+		$email = 'pay_block@'.$_SERVER['HTTP_HOST'];
+		if(!isset($data2[$email])) {
+			$UGROUP->childs['users']->_add(array(
+				'email'=>$email,
+				'name'=>'Pay',
+				'owner_id'=>$UGROUP->id,
+				'parent_id'=>0,
+			));
+			$id = $UGROUP->childs['users']->id;
+		} else
+			$id = $data2[$email]['id'];
+
+		if(count($this->childs)) {
+			foreach($this->childs as &$childs) {
+				$email = $childs->_cl.'@'.$_SERVER['HTTP_HOST'];
+				if(!isset($data2[$email])) {
+					$UGROUP->childs['users']->_add(array(
+						'email'=>$email,
+						'name'=>$childs->caption,
+						'owner_id'=>$UGROUP->id,
+						'parent_id'=>0,
+					));
+					$data2[$email] = current($UGROUP->childs['users']->data);
+				}
+				if($paychild==$childs->_cl)
+					$id = $data2[$email]['id'];
+			}
+			unset($child);
+		}
+		return $id;
+	}
+
+	/**
+	* В случае успешной оплаты, переводим средва му пользователями, ставим соотв. статус, выполняем необходимые операции
+	*/
+	function PayTransaction($status,$cost,$id) {
+		$this->id = $id;
+		if($status==1) {
+			$data = $this->_select();
+			$data = $data[$id];
+			_new_class('ugroup', $UGROUP);
+			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance-'.$cost.' WHERE id='.$data[$this->mf_createrid]);
+			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance+'.$cost.' WHERE id='.$data['user_id']);
+			if($data['_eval']) {
+				eval($data['_eval']);
+			}
+		} else {
+		}
+		$upd = array(
+			'cost'=>$cost,
+			'status'=>$status
+		);
+		$this->_update($upd);
+		return true;
+	}
+
+
+	function displayList($key=NULL) {
+		$data = array();
+		$q = 't1';
+		if(!is_null($key))
+			$q .= ' WHERE t1._key LIKE "'.$key.'"';
+		$data['#list#'] = $this->qs('t1.*', $q.' ORDER BY id DESC');
+		foreach($data['#list#'] as &$r) {
+			$r['#status#'] = $this->_enum['status'][$r['status']];
+			$r['#pay_modul#'] = $this->childs[$r['pay_modul']]->caption;
+		}
+		return $data;
+	}
+
+
+/********************************************/
+/********************************************/
+/********************************************/
 
 	/** Форма перевода средств
 	* 
@@ -129,7 +261,7 @@ class pay_class extends kernel_extends {
 				$flag = 0;
 				list($mess,$balance) = $this->checkBalance($u1,$summ);
 				if(!$mess) {
-					$flag = $this->pay($u1,$u2,$summ,$txt);
+					$flag = $this->payAdd($u1,$u2,$summ,'move',$txt);
 				}
 				$data['respost'] = array('flag'=>$flag,'mess'=>$mess,'balance'=>$balance);
 			}
@@ -159,7 +291,7 @@ class pay_class extends kernel_extends {
 			unset($_SESSION[$n]);
 			list($mess,$balance) = $this->checkBalance($from_user,$summ);
 			if($mess=='') {
-				if($this->pay($from_user,$to_user,$summ)) {
+				if($this->payAdd($from_user,$to_user,$summ,'refill')) {
 					$flag = 1;//Оплата
 					// Выполняем пользовательскую функцию при успешной оплате
 					if(!is_null($functOK)) {
@@ -207,33 +339,6 @@ class pay_class extends kernel_extends {
 		if(!$temp[0]['negative'] and $d<0) 
 			$mess = static_main::m('pay_nomonney',array(abs($d).' '.$UGROUP->config['payon']),$this);
 		return array($mess,$temp[0]['balance']);
-	}
-
-	/**
-	* Функция оплаты и перевода средств
-	* @param $from_user
-	* @param $to_user
-	* @param $summ
-	* @param $mess - коммент
-	* @param $status - 1 производит перевод средств сразу
-	* return 1 - Успешно
-	* return 0 - ошибка данных
-	*/
-	function pay($from_user,$to_user,$summ,$mess='',$status=1,$pay_modul='') {
-		if($status==1) {
-			_new_class('ugroup', $UGROUP);
-			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance-'.$summ.' WHERE id='.$from_user);
-			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance+'.$summ.' WHERE id='.$to_user);
-		}
-		$data = array(
-			$this->mf_createrid=>$from_user,
-			'user_id'=>$to_user,
-			'cost'=>$summ,
-			'name'=>$mess,
-			'status'=>$status,
-			'pay_modul'=>$pay_modul
-		);
-		return $this->_add($data);
 	}
 
 	private function payBack($from_user,$to_user,$summ) {
@@ -341,60 +446,6 @@ class pay_class extends kernel_extends {
 			
 	}
 
-	/**
-	* Проверяем если группа и пользователи для счиистемы платежей
-	*
-	*/
-	function checkPayUsers($paychild='') {
-		_new_class('ugroup', $UGROUP);
-		$id = 0;
-		// Группа Платежные системы
-		$data1 = $UGROUP->_query('*','WHERE name = "'.$this->caption.'"');
-		if(count($data1)!=1) {
-			$UGROUP->_add(array(
-				'level'=>'-1',
-				'name'=>$this->caption,
-				'wep'=>'0',
-				'negative'=>'1',
-			));
-		}else
-			$UGROUP->id = $data1[0]['id'];
-
-		// Юзеры Платежные системы
-		$data2 = $UGROUP->childs['users']->_query('*','WHERE owner_id = '.$UGROUP->id,'email');
-
-		// юзер по умолчанию
-		$email = 'pay_block@'.$_SERVER['HTTP_HOST'];
-		if(!isset($data2[$email])) {
-			$UGROUP->childs['users']->_add(array(
-				'email'=>$email,
-				'name'=>'Pay',
-				'owner_id'=>$UGROUP->id,
-				'parent_id'=>0,
-			));
-			$id = $UGROUP->childs['users']->id;
-		} else
-			$id = $data2[$email]['id'];
-
-		if(count($this->childs)) {
-			foreach($this->childs as &$childs) {
-				$email = $childs->_cl.'@'.$_SERVER['HTTP_HOST'];
-				if(!isset($data2[$email])) {
-					$UGROUP->childs['users']->_add(array(
-						'email'=>$email,
-						'name'=>$childs->caption,
-						'owner_id'=>$UGROUP->id,
-						'parent_id'=>0,
-					));
-					$data2[$email] = current($UGROUP->childs['users']->data);
-				}
-				if($paychild==$childs->_cl)
-					$id = $data2[$email]['id'];
-			}
-			unset($child);
-		}
-		return $id;
-	}
 	
 	/*
 	*
@@ -410,7 +461,7 @@ class pay_class extends kernel_extends {
 		if($flag==1) {
 			$from_user = $this->checkPayUsers($paychild);
 			$childData = $this->childs[$paychild]->data[$this->childs[$paychild]->id];
-			$flag = $this->pay($from_user,$_SESSION['user']['id'],$childData['cost'],$childData['name'],0,$paychild);
+			$flag = $this->payAdd($from_user,$_SESSION['user']['id'],$childData['cost'],'addMoney',$childData['name'],0,$paychild);
 			if(!$flag) {
 				$this->childs[$paychild]->_delete();
 				$DATA['messages'] = static_main::am('error','Ошибка БД, платёж '.$this->childs[$paychild]->id.' анулирован.'); 
@@ -419,24 +470,6 @@ class pay_class extends kernel_extends {
 			}
 		}
 		return array($DATA,$flag);
-	}
-
-	function PayTransaction($status,$cost,$id) {
-		$this->id = $id;
-		if($status==1) {
-			$data = $this->_select();
-			$data = $data[$id];
-			_new_class('ugroup', $UGROUP);
-			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance-'.$cost.' WHERE id='.$data[$this->mf_createrid]);
-			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance+'.$cost.' WHERE id='.$data['user_id']);
-		} else {
-		}
-		$upd = array(
-			'cost'=>$cost,
-			'status'=>$status
-		);
-		$this->_update($upd);
-		return true;
 	}
 
 

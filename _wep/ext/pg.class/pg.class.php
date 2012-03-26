@@ -976,7 +976,7 @@ class pg_class extends kernel_extends {
 		$RESULT = array('html'=>'Не верные данные', 'html2'=>'', 'text'=>'','onload'=>'');
 		$DATA  = array();
 		$htmlb = '';
-		if(count($_POST)) $_POST['sbmt'] = 1;
+		//if(count($_POST)) $_POST['sbmt'] = 1;
 
 		$Cdata = array();
 		if(isset($_GET['pageParam']))

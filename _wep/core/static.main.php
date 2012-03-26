@@ -1006,3 +1006,11 @@ function base64decode($txt) {
 	$txt = str_replace(array('-','_'),array('+','/'),$txt);
 	return base64_decode($txt);
 }
+
+// Преобразование типа строки в число
+function str2int($string,$concat=true) {
+	if(!$concat)
+		return floatval($string);
+   else
+		return floatval(preg_replace('/[^0-9\-]+/','',$string));
+}

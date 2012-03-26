@@ -37,7 +37,9 @@ class payqiwi_class extends kernel_extends {
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';
 		$this->lang['add_name'] = 'Пополнение кошелька из QIWI';
 		$this->lang['Save and close'] = 'Выписать счёт';
-		$this->lang['add'] = 'Счёт на пополнение кошелька отправлено в систему QIWI.<br/> Чтобы оплатить его перейдите на сайт <a href="https://w.qiwi.ru/orders.action">QIWI</a> и в течении 5ти минут после оплаты, сумма поступит на ваш баланс.';
+		$this->lang['add_err'] = 'Ошибка выставление счёта. Обратитесь к администратору сайта.';
+		$this->lang['add'] = 'Счёт на оплату отправлено в систему QIWI.<br/> Чтобы оплатить его перейдите на сайт <a href="https://w.qiwi.ru/orders.action" target="_blank">QIWI</a> в раздел "Счета".';
+		//$this->lang['add'] = 'Счёт на пополнение кошелька отправлено в систему QIWI.<br/> Чтобы оплатить его перейдите на сайт <a href="https://w.qiwi.ru/orders.action">QIWI</a> и в течении 5ти минут после оплаты, сумма поступит на ваш баланс.';
 		$this->default_access = '|0|';
 		$this->mf_timestamp = true; // создать поле  типа timestamp
 		$this->prm_add = false; // добавить в модуле
@@ -49,33 +51,48 @@ class payqiwi_class extends kernel_extends {
 
 		$this->_enum['statuses'] = array(
 			50 => 'Неоплаченный счёт',
+			52 => 'Проводится',
 			60 => 'Оплаченный счёт',
-			150 => 'Счёт отклонён'
+			150 => 'Отменен (ошибка на терминале)',
+			151 => 'Отменен (ошибка авторизации: недостаточно средств на балансе, отклонен абонентом при оплате с лицевого счета оператора сотовой связи и т.п.).',
+			160 => 'Отменен',
+			161 => 'Отменен (Истекло время)',
 		);
+/*
+Возможны иные статусы счетов.
+Счета со статусом менее либо равным 50 трактуются как выставленные, но еще не оплаченные 
+счета.
+Cчета с 51 по 59 трактуются как счета в процессе проведения (могут перейти в статус 60).
+Cчета со статусом большим или равным 100 трактуются как отмененные счет
+*/
 
 		$this->_enum['errors'] =array(
-			300 => 'Неизвестная ошибка',
-			13 => 'Сервер занят. Повторите запрос позже',
-			150 => 'Неверный логин или пароль',
-			215 => 'Счёт с таким номером уже существует',
+			0 => ' - ',
+			13 => 'Сервер занят, повторите запрос позже',
+			150 => 'Ошибка авторизации (неверный логин/пароль)',
+			210 => 'Счет не найден',
+			215 => 'Счет с таким txn-id уже существует',
+			241 => 'Сумма слишком мала',
+			242 => 'Превышена максимальная сумма платежа – 15 000р',
 			278 => 'Превышение максимального интервала получения списка счетов',
-			298 => 'Агент не существует в системе',
+			298 => 'Агента не существует в системе',
+			300 => 'Неизвестная ошибка',
 			330 => 'Ошибка шифрования',
-			370 => 'Превышено макс. кол-во одновременно выполняемых запросов',
-			0 => 'OK'
+			339 => 'Не пройден контроль IP-адреса',
+			370 => 'Превышено максимальное кол-во одновременно выполняемых запросов',
 		);
+
+		$this->cron[] = array('modul'=>$this->_cl,'function'=>'checkBill()','active'=>1,'time'=>300);
 		return true;
 	}
 
 	protected function _create() {
 		parent::_create();
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL','default'=>'');
-		$this->fields['phone'] = array('type' => 'bigint', 'width' => 11,'attr' => 'unsigned NOT NULL');
+		$this->fields['phone'] = array('type' => 'bigint', 'width' => 13,'attr' => 'unsigned NOT NULL');
 		$this->fields['cost'] = array('type' => 'float', 'width' => '11,4','attr' => 'NOT NULL'); // в коппейках
 		$this->fields['statuses'] = array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL');
 		$this->fields['errors'] = array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL','default'=>0);
-
-		$this->cron[] = array('modul'=>$this->_cl,'function'=>'checkBill()','active'=>1,'time'=>300);
 	}
 
 	public function setFieldsForm($form=0) {
@@ -92,18 +109,11 @@ class payqiwi_class extends kernel_extends {
 		$this->fields_form['statuses'] = array('type' => 'list', 'listname'=>'statuses', 'readonly'=>1, 'caption' => 'Статус', 'mask'=>array());
 		$this->fields_form['errors'] = array('type' => 'list', 'listname'=>'errors', 'readonly'=>1, 'caption' => 'Ошибка', 'mask'=>array());
 	}
-	/**
-	* При обновлении статуса
-	*/
-	/*function _update($data=array(),$where=false,$flag_select=true) {
-		$result = parent::_update($data,$where,$flag_select);
-		return $result;
-	}*/
+
 
 	/*
 	* При добавлении делаем запрос XML
 	*/
-
 	function billingFrom($summ, $comm) {
 		$this->prm_add = true;
 		$this->getFieldsForm(1);
@@ -112,10 +122,16 @@ class payqiwi_class extends kernel_extends {
 		$argForm['cost']['readonly'] = true;
 		$argForm['name']['mask']['evala'] = '"'.addcslashes($comm,'"').'"';
 		$argForm['name']['readonly'] = true;
-		unset($_POST['sbmt']);
 		return $this->_UpdItemModul(array('showform'=>1),$argForm);
 	}
 
+	/**
+	* При обновлении статуса
+	*/
+	/*function _update($data=array(),$where=false,$flag_select=true) {
+		$result = parent::_update($data,$where,$flag_select);
+		return $result;
+	}*/
 	function _add($data=array(),$flag_select=true) {
 		$data2 = array(
 			'phone'=>$data['phone'],
@@ -179,7 +195,7 @@ class payqiwi_class extends kernel_extends {
 	}
 
 	function checkBill() {
-		$bills = $this->_query('*','WHERE statuses=50');
+		$bills = $this->_query('*','WHERE statuses<60');
 		if(!count($bills)) return true;
 
 		$x = '<?xml version="1.0" encoding="utf-8"?><request>';
@@ -205,7 +221,7 @@ class payqiwi_class extends kernel_extends {
 
 	function check_response($xml,$flag='send') {
 		$flag = false;
-		if($xml) {print_r($xml);
+		if($xml) {
 			$flag = true;
 			$xml = simplexml_load_string('<?xml version="1.0" encoding="utf-8"?>'.$xml);
 			$rc = $xml->{'result-code'};
@@ -216,30 +232,32 @@ class payqiwi_class extends kernel_extends {
 					$this->_update(array('errors'=>$rc),false,false);
 			}
 			if($fatality=='true') {
-				trigger_error('Ошибка запроса QIWI '.$xml, E_USER_WARNING);
+				trigger_error('Ошибка запроса QIWI `'.$this->_enum['errors'][$rc].'`', E_USER_WARNING);
 				return false;
 			}
 			if($flag=='check') {
 				$billlist = $xml->{'bills-list'};
 				if($billlist) {
 					foreach ($billlist->children() as $bill) {
+
 						$upd = array(
 							'statuses' => (int)$bill['status'],
-							'cost' => preg_replace('/[^0-9\.]/','',(string)$bill['sum'])
+							'cost' => floatval($bill['sum'])
 						);
 						if($this->config['qiwi_txn-prefix'])
-							$upd['id'] = str_replace($this->config['qiwi_txn-prefix'],'',$bill['id']);
-						$this->id = NULL;
+							$this->id = (int)str_replace($this->config['qiwi_txn-prefix'],'',$bill['id']);
+						else
+							$this->id = (int)$bill['id'];
 						$this->_update($upd);
 
-						if($bill['status']==60)
+						if($upd['statuses']==60)
 							$status = 1;
-						elseif($bill['status']==150)
+						elseif($upd['statuses']>=100)
 							$status = 2;
 						else
 							$status = 0;
-
-						$this->owner->PayTransaction($status,$this->data[$this->id]['cost'],$this->data[$this->id]['owner_id']);
+						if($this->id)
+							$this->owner->PayTransaction($status,$this->data[$this->id]['cost'],$this->data[$this->id]['owner_id']);
 					};
 				}
 			}
