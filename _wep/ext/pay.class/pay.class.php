@@ -90,7 +90,7 @@ class pay_class extends kernel_extends {
 				if (isset($child->pay_systems))
 					$data['child'][$child->_cl] = array('_cl'=>$child->_cl,'caption'=>$child->caption);
 			}
-			$data['#title#'] = 'Выбирите вариант опаты';
+			$data['#title#'] = 'Выбирите вариант оплаты';
 		}
 		$data['summ'] = $summ;
 		$data['comm'] = $comm;
