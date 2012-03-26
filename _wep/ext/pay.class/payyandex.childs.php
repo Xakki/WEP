@@ -21,6 +21,7 @@ class payyandex_class extends kernel_extends {
 		if (!parent::_set_features()) return false;
 		$this->caption = 'Яндекс.Деньги';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';
+		$this->default_access = '|9|';
 		return true;
 	}
 

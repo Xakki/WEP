@@ -40,7 +40,7 @@ class payqiwi_class extends kernel_extends {
 		$this->lang['add_err'] = 'Ошибка выставление счёта. Обратитесь к администратору сайта.';
 		$this->lang['add'] = 'Счёт на оплату отправлено в систему QIWI.<br/> Чтобы оплатить его перейдите на сайт <a href="https://w.qiwi.ru/orders.action" target="_blank">QIWI</a> в раздел "Счета".';
 		//$this->lang['add'] = 'Счёт на пополнение кошелька отправлено в систему QIWI.<br/> Чтобы оплатить его перейдите на сайт <a href="https://w.qiwi.ru/orders.action">QIWI</a> и в течении 5ти минут после оплаты, сумма поступит на ваш баланс.';
-		$this->default_access = '|0|';
+		$this->default_access = '|9|';
 		$this->mf_timestamp = true; // создать поле  типа timestamp
 		$this->prm_add = false; // добавить в модуле
 		$this->prm_del = false; // удалять в модуле
