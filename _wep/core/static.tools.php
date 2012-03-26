@@ -341,7 +341,12 @@ class static_tools {
 				//$data[]= $row;
 				foreach ($MODUL->attaches as $key => $value) {
 					$pathimg = $MODUL->_CFG['_PATH']['path'] . $MODUL->getPathForAtt($key);
-					foreach (array_unique($value['mime']) as $k => $ext) {
+					$MIME = $value['mime'];
+					if(isset($MIME['image'])) {
+						unset($MIME['image']);
+						$MIME = array_merge($MIME, array('gif','jpeg','jpg','png','swf','psd','bmp','tiff','jpc','jp2','jpx','jb2','swc','iff','wbmp','xbm','ico'));
+					}
+					foreach ($MIME as $k => $ext) {
 						$newname = $pathimg . '/' . $row['id'] . '.' . $ext;
 						if (file_exists($newname)) {
 							if (isset($value['thumb']) and count($value['thumb'])) { // проверка на наличие модифицированных изображений
