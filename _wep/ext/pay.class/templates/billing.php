@@ -10,9 +10,11 @@ function tpl_billing($data)
 	$_tpl['onload'] .= 'wep.form.ajaxForm(\'#paymethod\','.$data['#contentID#'].');';
 	$_tpl['styles']['../default/_pay/pay'] = 1;
 
+	if(!isset($data['#action#'])) $data['#action#'] = '';
+
 	$html = '<div class="payselect" style="width:340px;margin:10px;">
 		<h2>'.$data['#title#'].'</h2>
-		<form action="" enctype="multipart/form-data" method="post" id="paymethod">';
+		<form action="'.$data['#action#'].'" enctype="multipart/form-data" method="post" id="paymethod">';
 		foreach($_POST as $k=>$r) {
 			if(!is_array($r))
 				$html .= '<input type="hidden" value="'.$r.'" name="'.$k.'">';
@@ -29,7 +31,11 @@ function tpl_billing($data)
 		if(isset($data['child'])) {
 			$html .= '<div class="paymethod">';
 			foreach($data['child'] as $r) {
+				/*if(isset($r['_button']))
+					$html .= '<span>'.$r['_button'].'</span>';
+				else*/
 				$html .= '<input class="pay-'.$r['_cl'].'" type="submit" value="'.$r['_cl'].'" name="paymethod" title="'.$r['caption'].'">';
+
 			}
 			$html .= '</div>';
 		}

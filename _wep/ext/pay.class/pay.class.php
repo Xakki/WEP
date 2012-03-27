@@ -87,8 +87,9 @@ class pay_class extends kernel_extends {
 		} else {
 			// ADD pay
 			foreach($this->childs as &$child) {
-				if (isset($child->pay_systems))
+				if (isset($child->pay_systems)) {
 					$data['child'][$child->_cl] = array('_cl'=>$child->_cl,'caption'=>$child->caption);
+				}
 			}
 			$data['#title#'] = 'Выбирите вариант оплаты';
 		}
