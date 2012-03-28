@@ -4,9 +4,11 @@
 		//$gfi -> $_CFG['fileIncludeOption']
 		if(!count($gfi)) return true;
 		global $_tpl,$_CFG;
+		if(!isset($_CFG['fileIncludeOption']['uiStyle']))
+			$_CFG['fileIncludeOption']['uiStyle'] = 'ui-smoothness';
 		if(isset($gfi['multiple'])) {
 			if($gfi['multiple']==2) {
-				$_tpl['styles']['style.jquery/ui-smoothness/jquery-ui'] = 1;
+				$_tpl['styles']['style.jquery/'.$_CFG['fileIncludeOption']['uiStyle'].'/jquery-ui'] = 1;
 				$_tpl['styles']['style.jquery/ui-multiselect'] = 1;
 
 				$_tpl['script']['script.jquery/jquery-ui'] = 1;
@@ -34,7 +36,7 @@
 		if(isset($gfi['datepicker']) and $gfi['datepicker']) {
 			$_tpl['script']['jquery.localisation/jquery.ui.datepicker-ru'] = 1;
 			$_tpl['script']['script.jquery/jquery-ui'] = 1;
-			$_tpl['styles']['style.jquery/ui-smoothness/jquery-ui'] = 1;
+			$_tpl['styles']['style.jquery/'.$_CFG['fileIncludeOption']['uiStyle'].'/jquery-ui'] = 1;
 			if($gfi['datepicker']==2) {
 				$_tpl['script']['script.jquery/ui-timepicker-addon'] = 1;
 				$_tpl['styles']['style.jquery/ui-timepicker-addon'] = 1;

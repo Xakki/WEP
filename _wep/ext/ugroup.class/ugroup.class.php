@@ -579,7 +579,7 @@ class users_class extends kernel_extends {
 		return Array(Array('messages'=>($mess+$arr['mess']), 'form'=>($formflag?$argForm:array()), 'class'=>'regform'), $flag);
 	}
 
-	function sendRegMail($vars,$pass='',$subject='') {
+	function sendRegMail($vars,$pass='',$subject='',$flaInfo=false) {
 		_new_class('mail',$MAIL);
 		$MAIL->config['mailcron'] = 0;
 		$datamail = array('creater_id'=>-1);
@@ -591,7 +591,11 @@ class users_class extends kernel_extends {
 			$datamail['subject']='Подтвердите регистрацию на '.strtoupper($_SERVER['HTTP_HOST']);
 		$href = '?confirm='.$vars[$this->fn_login].'&hash='.$vars['reg_hash'];
 		
-		$datamail['text']=str_replace(array('%pass%','%login%','%href%','%host%'),array($pass,$vars[$this->fn_login],$href,$_SERVER['HTTP_HOST']),$this->owner->config['mailconfirm']);
+		$datamail['text']=str_replace(
+			array('%pass%','%login%','%href%','%host%'),
+			array($pass,$vars[$this->fn_login],$href,$_SERVER['HTTP_HOST']),
+			($flagInfo?$this->owner->config['mailinfo']:$this->owner->config['mailconfirm'])
+		);
 		$MAIL->reply = 0;
 		if($MAIL->Send($datamail)) {
 			// иногда сервер говорит что ошибка, а сам всеравно письма отсылает
