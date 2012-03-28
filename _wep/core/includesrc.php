@@ -13,9 +13,13 @@
 
 				$_tpl['script']['script.jquery/jquery-ui'] = 1;
 				$_tpl['script']['script.jquery/ui-multiselect'] = 1;
-
-				//$_tpl['onload'] .= '$.localise(\'ui-multiselect\', {language: \'ru\', path: \''.$_CFG['_HREF']['_script'].'script.localisation/\'});';
+				
+				//
+				$_tpl['script']['jquery.localisation/ui-multiselect-ru'] = 1;
+	
 				$_tpl['onload'] .= 'jQuery(\'select.multiple\').multiselect();';
+				##
+				$_tpl['onload'] .= '$.localise(\'ui-multiselect\', {language: \'ru\', path: \''.$_CFG['_HREF']['_script'].'script.localisation/\'});';
 			}
 		}
 		if(isset($gfi['form']) and $gfi['form']) {
@@ -34,13 +38,13 @@
 			$_tpl['onload'] .= "jQuery('.fancyimg').fancybox();";
 		}
 		if(isset($gfi['datepicker']) and $gfi['datepicker']) {
-			$_tpl['script']['jquery.localisation/jquery.ui.datepicker-ru'] = 1;
 			$_tpl['script']['script.jquery/jquery-ui'] = 1;
-			$_tpl['styles']['style.jquery/'.$_CFG['fileIncludeOption']['uiStyle'].'/jquery-ui'] = 1;
+			$_tpl['script']['jquery.localisation/jquery.ui.datepicker-ru'] = 1;
 			if($gfi['datepicker']==2) {
 				$_tpl['script']['script.jquery/ui-timepicker-addon'] = 1;
 				$_tpl['styles']['style.jquery/ui-timepicker-addon'] = 1;
 			}
+			$_tpl['styles']['style.jquery/'.$_CFG['fileIncludeOption']['uiStyle'].'/jquery-ui'] = 1;
 		}
 		return true;
 	}
