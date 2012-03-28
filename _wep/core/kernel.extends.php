@@ -1689,7 +1689,7 @@ abstract class kernel_extends {
 			if (count($_POST)) {
 				$arr = $this->fFormCheck($_POST, $arr['vars'], $this->config_form); // 2ой параметр просто так
 				$config = array();
-				foreach ($this->config_form as $k => $r) {
+				foreach ($this->config as $k => $r) {
 					if (isset($arr['vars'][$k])) {
 						$this->config_form[$k]['value'] = $arr['vars'][$k];
 						$config[$k] = $arr['vars'][$k];
@@ -2469,6 +2469,11 @@ abstract class kernel_extends {
 	}
 
 	function _http($link, $param = array()) {
+		//http://ru.php.net/curl_setopt
+		if (isset($param['body'])) {
+			exit('ERROR - body не поддерживается');
+		}
+
 		$default = array(
 			'proxy' => false,
 			'proxyList' => array(
@@ -2478,28 +2483,65 @@ abstract class kernel_extends {
 			//'122.248.194.9:80',
 			/**/
 			),
-			'body' => false,
 			'HTTPHEADER' => array('Content-Type' => 'text/xml; encoding=utf-8'),
 			'redirect' => false,
 			'USERAGENT' => 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/'.rand(50,190).' (KHTML, like Gecko) Chrome/'.rand(9,16).'.0.8'.rand(1,99).'.121 Safari/535.2',
-			'TIMEOUT' => 20
+			'TIMEOUT' => 20,
+			'REFERER' => false,
+			'POST'=>false,
+			'SSL'=>false,
+			'FORBID'=>false, //TRUE для принудительного закрытия соединения после завершения его обработки так, чтобы его нельзя было использовать повторно.
 		);
 		$param = array_merge($default, $param);
 
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $link); //задаём url
+
 		if (isset($param['COOKIE']))
 			curl_setopt($ch, CURLOPT_COOKIE, $param['COOKIE']);
+
+		if (isset($param['COOKIEFILE'])) // Считываем из фаила
+			curl_setopt($ch, CURLOPT_COOKIEFILE, $param['COOKIEFILE']);
+
+		if (isset($param['COOKIEJAR'])) // Записываем куки в фаил
+			curl_setopt($ch, CURLOPT_COOKIEJAR, $param['COOKIEJAR']);
+
 		curl_setopt($ch, CURLOPT_USERAGENT, $param['USERAGENT']); //подделываем юзер-агента
+
 		if ($param['redirect']) {
 			//переходить по редиректам, инициируемым сервером, пока не будет достигнуто CURLOPT_MAXREDIRS (если есть)
 			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 		}
-		if ($param['body']) {
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+
+		if($param['REFERER']) {
+			if($param['REFERER']===true)
+				$param['REFERER'] = $link;
+			curl_setopt($ch, CURLOPT_REFERER, $param['REFERER']); 
+		}
+
+		if ($param['SSL']) {
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, TRUE);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 1);
+			curl_setopt($ch, CURLOPT_CAINFO, $param['SSL']);
+		} else {
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+		}
+
+		if ($param['HTTPHEADER']) {
 			curl_setopt($ch, CURLOPT_HTTPHEADER, $param['HTTPHEADER']);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $param['body']);
+		}
+
+		if ($param['FORBID']) {
+			curl_setopt($ch, CURLOPT_FORBID_REUSE, TRUE);
+		}
+
+		if ($param['POST']) {
+			if(is_array($param['POST'])) {
+				$param['POST'] = http_build_query($param['POST']);
+			}
+			curl_setopt($ch, CURLOPT_POST, 1);
+			curl_setopt($ch, CURLOPT_POSTFIELDS,$param['POST']); 
 		}
 		//не включать заголовки ответа сервера в вывод
 		curl_setopt($ch, CURLOPT_HEADER, false);

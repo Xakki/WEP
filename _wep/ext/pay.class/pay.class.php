@@ -65,11 +65,11 @@ class pay_class extends kernel_extends {
 	}
 	
 	// Формы выставления счёта пользователю
-	function billingFrom($summ, $key, $comm='',$eval='') {
+	function billingFrom($summ, $key, $comm='',$eval='',$addInfo=array()) {
 		$data = array();
 		//eval($eval);
 		if(isset($_POST['paymethod']) and isset($this->childs[$_POST['paymethod']]) and isset($this->childs[$_POST['paymethod']]->pay_systems)) {
-			list($data,$resFlag) = $this->childs[$_POST['paymethod']]->billingFrom($summ,$comm);
+			list($data,$resFlag) = $this->childs[$_POST['paymethod']]->billingFrom($summ,$comm,$addInfo);
 			if($resFlag==1) {
 				$from_user = $this->checkPayUsers($_POST['paymethod']); // User плат. системы
 				// тк это функция сразу оплачивает услуги, то сумму переводим сразу АДМИНУ и списываем со счета плат.системы
@@ -135,7 +135,7 @@ class pay_class extends kernel_extends {
 	* Проверяем есть ли группа и пользователи для системы платежей и возвращаем ID плат.сист. если указана плат.сист.
 	*
 	*/
-	function checkPayUsers($paychild='') {
+	function checkPayUsers($paychild='',$flag=false) {
 		_new_class('ugroup', $UGROUP);
 		$id = 0;
 		// Группа Платежные системы
@@ -154,7 +154,7 @@ class pay_class extends kernel_extends {
 		$data2 = $UGROUP->childs['users']->_query('*','WHERE owner_id = '.$UGROUP->id,'email');
 
 		// юзер по умолчанию
-		$email = 'pay_block@'.$_SERVER['HTTP_HOST'];
+		$email = 'pay_block@'.$this->_CFG['site']['www'];
 		if(!isset($data2[$email])) {
 			$UGROUP->childs['users']->_add(array(
 				'email'=>$email,
@@ -168,7 +168,7 @@ class pay_class extends kernel_extends {
 
 		if(count($this->childs)) {
 			foreach($this->childs as &$childs) {
-				$email = $childs->_cl.'@'.$_SERVER['HTTP_HOST'];
+				$email = $childs->_cl.'@'.$this->_CFG['site']['www'];
 				if(!isset($data2[$email])) {
 					$UGROUP->childs['users']->_add(array(
 						'email'=>$email,
@@ -183,6 +183,8 @@ class pay_class extends kernel_extends {
 			}
 			unset($child);
 		}
+		if($flag and $paychild)
+			return $data2[$paychild.'@'.$this->_CFG['site']['www']];
 		return $id;
 	}
 

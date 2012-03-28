@@ -1,31 +1,49 @@
 /*payselect*/
 .payselect {
+	margin:0;padding:0;
+	text-align: center;
 }
-.payselect li {
+.payselect h2 {
+	text-align: center;
+}
+.payselect .paymethod input {
 	vertical-align:top;
 	text-align: center;
 	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
-}
-.payselect li a {
 	font-size:14px;
-	height:30px;
-	width:130px;
+	height:42px;
+	width:120px;
 	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
-	border:1px transparent solid;
+	border:1px #e1e1e1 solid;
 	background: url(payuser.png) no-repeat scroll 50% 0 transparent;
-	margin:0;
-	padding:50px 5px 5px 5px;
+	margin:5px;
+	padding:5px;
 	vertical-align:bottom;
 	text-align: center;
+	color: transparent;
+	cursor:pointer;
 }
-.payselect li a:hover {
+.payselect .paymethod input:hover {
 	border:1px gray solid;
 }
-.payselect li.pay-users a {
+.payselect .paymethod .pay-users {
 }
-.payselect li.pay-payqiwi a {
+.payselect .paymethod .pay-payqiwi {
 	background-image: url(qiwi/logo.png);
 }
-.payselect li.pay-payqiwi a {
-	background-image: url(qiwi/logo.png);
+.payselect .paymethod .pay-payyandex {
+	background-image: url(yandex/logo.png);
+}
+.payselect div.divform {
+	width: auto;
+}
+
+
+/*pay_list*/
+.pay_list td, .pay_list th {
+	border-bottom:1px solid gray;
+	border-right:1px solid gray;
+}
+.pay_list th {
+	background-color:#e1e1e1;
 }

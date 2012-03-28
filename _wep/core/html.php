@@ -237,7 +237,7 @@ class html {
  */
 
 function _myErrorHandler($errno, $errstr, $errfile, $errline) {//, $errcontext,$cont
-	global $_CFG,$BUG;
+	global $_CFG,$BUG,$SQL;
 	if ($_CFG['wep']['catch_bug']) {
 
 		// Debuger
@@ -257,6 +257,10 @@ function _myErrorHandler($errno, $errstr, $errfile, $errline) {//, $errcontext,$
 			'debug'=>$debug,
 			'errtype' => $_CFG['_error'][$errno]['type'],
 		);
+		// Инициальзация ловца-ошибок
+		if (is_array($_CFG['wep']['bug_hunter']) and count($_CFG['wep']['bug_hunter']) and $SQL->ready and !$BUG) {
+			_new_class('bug', $BUG);
+		}
 		//остановка на фатальной ошибке
 		if ($_CFG['_error'][$errno]['prior'] == 0 and !$_CFG['wep']['debugmode']) {
 			die("\n Aborting...<br />\n");

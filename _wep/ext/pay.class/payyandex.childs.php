@@ -2,17 +2,47 @@
 class payyandex_class extends kernel_extends {
 
 	function _create_conf2(&$obj) {/*CONFIG*/
+
+		$this->REDIRECT_URI = 'http://'.$_SERVER['HTTP_HOST'].'/_js.php?_modul=pay&_fn=redirectFromYa';
+		$this->URI_YM_API = 'https://money.yandex.ru/api';
+		$this->URI_YM_AUTH = 'https://sp-money.yandex.ru/oauth/authorize';
+		$this->URI_YM_TOKEN = 'https://sp-money.yandex.ru/oauth/token';
+		$this->YM_USER_AGENT = 'wep-php';
+		$this->SSL = dirname(__FILE__).'/lib/PHP-Yandex.Money-API-SDK/src/yamoney/ym.crt';
+		//$this->SCOPE = array('account-info','operation-history','operation-details','payment','payment-shop','payment-p2p','money-source("wallet","card")');
+		$this->SCOPE = array('account-info','operation-history','operation-details');
+
 		//parent::_create_conf();
+		$obj->config['ya_cid'] = '';
+		$obj->config['ya_token'] = '';
 		$obj->config['ya_id'] = '';
-		$obj->config['ya_code'] = '';
-		$obj->config['ya_minpay'] = 10;
+		/*$obj->config['ya_login'] = '';
+		$obj->config['ya_pass'] = '';
+		$obj->config['ya_pass2'] = '';*/
+		$obj->config['ya_minpay'] = 5;
 		$obj->config['ya_maxpay'] = 15000;
 
 		$obj->config_form['ya_info'] = array('type' => 'info', 'caption'=>'<h3>Яндекс.Деньги</h3>');
 		$obj->config_form['ya_id'] = array('type' => 'text', 'caption'=>'Номер счёта','style'=>'background-color:#F60;');
-		$obj->config_form['ya_code'] = array('type' => 'text', 'caption'=>'Идентификатор приложения','comment'=>'Получить его можно <a href="https://sp-money.yandex.ru/myservices/new.xml" target="_blank">тут</a>', 'style'=>'background-color:#F60;');
-		$obj->config_form['ya_minpay'] = array('type' => 'int', 'caption' => 'Миним. сумма','comment'=>'при пополнении счёта', 'style'=>'background-color:#F60;');
-		$obj->config_form['ya_maxpay'] = array('type' => 'int', 'caption' => 'Максим. сумма','comment'=>'при пополнении счёта', 'style'=>'background-color:#F60;');
+		$obj->config_form['ya_cid'] = array('type' => 'text', 'caption'=>'Идентификатор приложения','comment'=>'Получить его можно <a href="https://sp-money.yandex.ru/myservices/new.xml" target="_blank">тут</a> и <a href="https://sp-money.yandex.ru/myservices/admin.xml">настраивать</a><br>Redirect URI: <b>http://'.$_SERVER['HTTP_HOST'].'/_js.php?_modul=pay&_fn=redirectFromYa</b> ', 'style'=>'background-color:#F60;');
+		$obj->config_form['ya_token'] = array('type' => 'hidden');
+		$obj->config_form['ya_newtoken'] = array('type' => 'checkbox','caption'=>'Установить новый токен', 'onchange'=>'if(this.checked) $(\'.ya_newtoken\').show(); else $(\'.ya_newtoken\').hide();', 'style'=>'background-color:#F60;');
+		$obj->config_form['ya_login'] = array('type' => 'text', 'caption'=>'Логин авторизации','style'=>'background-color:#F65;display:none;', 'css'=>'ya_newtoken');
+		$obj->config_form['ya_pass'] = array('type' => 'password', 'caption'=>'Пароль авторизации','style'=>'background-color:#F65;display:none;', 'css'=>'ya_newtoken');
+		$obj->config_form['ya_pass2'] = array('type' => 'password', 'caption'=>'Пароль подтверждения платежа','style'=>'background-color:#F65;display:none;', 'css'=>'ya_newtoken');
+		//$obj->config_form['ya_minpay'] = array('type' => 'int', 'caption' => 'Миним. сумма','comment'=>'при пополнении счёта', 'style'=>'background-color:#F60;');
+		//$obj->config_form['ya_maxpay'] = array('type' => 'int', 'caption' => 'Максим. сумма','comment'=>'при пополнении счёта', 'style'=>'background-color:#F60;');
+		if(count($_POST) and isset($_POST['ya_id']) and isset($_POST['ya_cid']) and (!$_POST['ya_token'] or isset($_POST['ya_newtoken']))) {
+			if($_POST['ya_login'] and $_POST['ya_pass'] and $_POST['ya_pass2']) {
+				$CODE = $this->yandexGetCode($_POST['ya_cid'],$_POST['ya_login'],$_POST['ya_pass'],$_POST['ya_pass2']);
+				if(!$CODE) return 'Error yandexGetCode';
+				$CODE = $this->receiveOAuthToken($_POST['ya_cid'],$CODE);
+				if(!$CODE) return 'Error receiveOAuthToken';
+				$_POST['ya_token'] = $CODE;
+			}
+			else 
+				print_r('<h3>Не введены необходимые данные</h3>');
+		}
 	}
 
 	protected function _create_conf() {/*CONFIG*/
@@ -56,7 +86,7 @@ class payyandex_class extends kernel_extends {
 			'card' => 'Платеж с привязанной к счету банковской карты.',
 		);
 
-		//$this->cron[] = array('modul'=>$this->_cl,'function'=>'checkBill()','active'=>1,'time'=>300);
+		$this->cron[] = array('modul'=>$this->_cl,'function'=>'checkBill()','active'=>1,'time'=>300);
 		$this->_AllowAjaxFn = array(
 			'redirectFromYa'=>true
 		);
@@ -68,7 +98,7 @@ class payyandex_class extends kernel_extends {
 		parent::_create();
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL','default'=>'');
 		$this->fields['phone'] = array('type' => 'bigint', 'width' => 13,'attr' => 'unsigned NOT NULL');
-		$this->fields['email'] = array('type' => 'varchar', 'width' => 32,'attr' => 'unsigned NOT NULL');
+		$this->fields['email'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL');
 		$this->fields['amount'] = array('type' => 'float', 'width' => '11,4','attr' => 'NOT NULL'); // в коппейках
 		$this->fields['status'] = array('type' => 'varchar', 'width' => 63,'attr' => 'NOT NULL','default'=>'');
 		//Код ошибки при проведении платежа (пояснение к полю status). Присутствует только при ошибках.
@@ -100,16 +130,21 @@ class payyandex_class extends kernel_extends {
 	/*
 	* При добавлении делаем запрос XML
 	*/
-	function billingFrom($summ, $comm) {
-		global $_tpl;
+	function billingFrom($summ, $comm, $data=array()) {
+		global $_tpl;$summ=1;
 		$ADD = array('amount'=>$summ,'name'=>$comm);
 		if(isset($_SESSION['user']['phone']))
 			$ADD['phone'] = $_SESSION['user']['phone'];
 		if(isset($_SESSION['user']['login']))
 			$ADD['phone'] = $_SESSION['user']['login'];
-		//$this->_add($ADD);
-		$form = array(
-			'info'=>array('type'=>'info','caption'=>'Выполняется открытие страницы оплаты на Яндекс.Деньги. Если у вас не открылось окно оплаты, возможно ваш браузер заблокировал открытие окна (Ваш браузер должен был выдать предупреждение об этом, кликните на всплывшее сообщение и разрешите данную операцию)'),
+		$this->_add($ADD);
+		$DATA = array();
+		$DATA['messages'] = array(
+			array('alert','Выполняется открытие страницы оплаты на Яндекс.Деньги.'),
+			array('notice','<small>Если у вас не открылось окно оплаты, возможно ваш браузер заблокировал открытие окна (Ваш браузер должен был выдать предупреждение об этом, кликните на всплывшее сообщение и разрешите данную операцию)</small>'),
+			array('txt','После оплаты обновите <a href="javascript:window.location.reload();">страницу</a>, чтобы узнать состояние счёта.'),
+		);
+		$DATA['form'] = array(
 			'receiver'=>array('type'=>'hidden','value'=>$this->owner->config['ya_id']),
 			'FormComment'=>array('type'=>'hidden','value'=>'Оплата товара/услуги'),
 			'short-dest'=>array('type'=>'hidden','value'=>'Оплата товара/услуги'),
@@ -120,14 +155,241 @@ class payyandex_class extends kernel_extends {
 			'targets'=>array('type'=>'hidden','value'=>$comm),
 			'sum'=>array('type'=>'hidden','value'=>$summ),
 			'mail'=>array('type'=>'hidden','value'=>'true'),
-			'sbmt'=>array('type'=>'submit','value'=>'Перейти к оплате на Яндекс.Деньги'),
 		);
+		if(isset($data['email']))
+			$DATA['form']['address_email'] = array('type'=>'hidden','value'=>$data['email']);
+		$DATA['form']['sbmt'] = array('type'=>'submit','value'=>'Перейти на Яндекс.Деньги');
+		$DATA['#action#'] = 'https://money.yandex.ru/quickpay/confirm.xml"  target="_blank';
 		$_tpl['onload'] .= '$("#paymethod").submit();';
-		return array(array('form'=>$form,'#action#'=>'https://money.yandex.ru/quickpay/confirm.xml"  target="_blank'),0);// 1
+		return array($DATA,1);// 1
 	}
 	
-	//http://unidoski.ru/_js.php?_modul=pay&_fn=redirectFromYa
+	//http://unidoski.ru
 	function redirectFromYa() {
+	}
+
+	function yandexAuth($LOGIN,$PASS) {
+		$param = array();
+		$param['COOKIEJAR'] = $this->_CFG['_PATH']['temp'].'payyandex.txt';
+		$param['REFERER'] = true;
+		$html = $this->_http('http://passport.yandex.ru/passport?mode=auth&msg=money',$param);
+		$param['POST'] = 'from=passport&idkey=22M1332881456_tFPe13IK&display=page&login='.$LOGIN.'&passwd='.$PASS.'&timestamp=1332880245212&login=xakki&passwd=dedmazai28';
+		
+		$param['COOKIEFILE'] = $param['COOKIEJAR'];
+		$param['redirect'] = true;
+		$html = $this->_http('http://passport.yandex.ru/passport?mode=auth&msg=money',$param);
+		//$html['text'] = htmlentities($html['text'],ENT_NOQUOTES,'UTF-8');
+		//print_r('<pre>');print_r($html);
+		//print_r(file_get_contents($param['COOKIEJAR']));
+		return $param['COOKIEJAR'];
+	}
+
+	function yandexGetCode($CODE,$LOGIN,$PASS,$PASS2) {
+
+		$CF = $this->yandexAuth($LOGIN,$PASS);
+
+		$SCOPE = implode(' ',$this->SCOPE);
+		$URL = $this->URI_YM_AUTH . '?client_id='.$CODE.'&response_type=code&scope=' . urlencode($SCOPE) . '&redirect_uri=' . urlencode($this->REDIRECT_URI);
+
+		$param = array();
+		$param['HTTPHEADER'][] = 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8';
+		$param['SSL'] = $this->SSL;
+		$html = $this->_http($URL,$param);
+
+		/********/
+		$param = array();
+		$param['REFERER'] = $html['info']['url'];
+		$param['redirect'] = true;
+		$param['COOKIEFILE'] = $param['COOKIEJAR'] = $CF;
+		$html = $this->_http($html['info']['redirect_url'],$param);
+
+		$pos1 = mb_strpos($html['text'],'window.location.replace("')+25;	
+		$pos2 = mb_strpos($html['text'],'");');
+		$URL = mb_substr($html['text'],$pos1,($pos2-$pos1));
+		if(!$URL) return false;
+
+		/********/
+		$param = array();
+		$param['REFERER'] = $html['info']['url'];
+		//$param['redirect'] = true;
+		$param['SSL'] = $this->SSL;
+		$param['COOKIEFILE'] = $param['COOKIEJAR'] = $CF;
+		$html = $this->_http($URL,$param);
+
+		/********/
+		$param = array();
+		$param['REFERER'] = $html['info']['url'];
+		//$param['redirect'] = true;
+		$param['SSL'] = $this->SSL;
+		//Получаем код формы
+		$html['text'] = substr($html['text'], strpos($html['text'],'<form method="post" name="checkpay"'));	
+		$html['text'] = substr($html['text'], 0, (strpos($html['text'],'form>')+5));
+		include_once($this->_CFG['_PATH']['wep_phpscript'].'simple_html_dom.php');
+		$DOM = str_get_html($html['text']);
+		// Берем урл
+		$obj = $DOM->find('form');
+		$URL = $obj[0]->attr['action'];
+		if(!$URL) return false;
+		$temp = parse_url($html['info']['url']);
+		$URL = $temp['scheme'].'://'.$temp['host'].$URL;
+		// находим все инпуты
+		$obj = $DOM->find('input');
+		$POST = array();
+		if(count($obj)) {
+			foreach($obj as $r) {
+				$POST[$r->attr['name']] = $r->attr['value'];
+			}
+		}
+		$POST['passwd'] = $PASS2;
+		$param['POST'] = $POST;
+		$param['COOKIEFILE'] = $param['COOKIEJAR'] = $CF;
+		$html = $this->_http($URL,$param);
+		
+		unlink($CF);
+		//$html['text'] = htmlentities($html['text'],ENT_NOQUOTES,'windows-1251');//,'windows-1251' 'UTF-8'
+		//print_r('<pre>');print_r($POST);print_r($html);
+		//print_r(file_get_contents($param['COOKIEJAR']));
+		if(strpos($html['info']['redirect_url'],$this->REDIRECT_URI)!==false) {
+			$result = parse_url($html['info']['redirect_url']);
+			$result = explode('=',$result['query']);
+			return array_pop($result);
+		} 
+		else {
+			// triger errror
+			return false;
+		}
+
+	}
+
+    /**
+     * Метод для обмена временного кода, полученного от сервера Яндекс.Денег
+     * после вызова метода authorize, на постоянный токен доступа к счету
+     * пользователя.
+     * @abstract
+     * @param $code string временный код (токен), подлежащий обмену на токен авторизации.
+     * Присутствует в случае успешного подтверждения авторизации пользователем.
+     * @param $REDIRECT_URI string URI, на который OAuth-сервер осуществляет передачу
+     * события результата авторизации. Значение этого параметра при посимвольном сравнении
+     * должно быть идентично значению REDIRECT_URI, ранее переданному в метод authorize.
+     * @return string при успешном выполнении возвращает токен авторизации пользователя
+     */
+	private function  receiveOAuthToken($CLIENT_ID, $CODE) {
+		$param = array();
+		$param['HTTPHEADER'][] = 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8';
+		$param['HTTPHEADER'][] = 'Expect:';
+		$param['POST']['grant_type'] = 'authorization_code';
+		$param['POST']['client_id'] = $CLIENT_ID;
+		$param['POST']['code'] = $CODE;
+		$param['POST']['redirect_uri'] = $this->REDIRECT_URI;
+		$param['SSL'] = $this->SSL;
+		$param['FORBID'] = true;
+		$param['USERAGENT'] = $this->YM_USER_AGENT;
+		$html = $this->_http($this->URI_YM_TOKEN,$param);
+
+		$response = json_decode($html['text'], TRUE);
+		if (!$response or isset($response['error']) or !$response['access_token']) {
+			// err
+			return false;
+		}
+		return $response['access_token'];
+	}
+
+    /**
+     * Метод получения информации о текущем состоянии счета пользователя.
+     * Требуемые права токена: account-info
+     * @abstract
+     * @param $accessToken string токен авторизации пользователя
+     * @return YMAccountInfoResponse возвращает экземпляр класса AccountInfoResponse
+     */
+	private function accountInfo($accessToken) {
+		$param = array();
+		$param['HTTPHEADER'][] = 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8';
+		$param['HTTPHEADER'][] = 'Expect:';
+		$param['HTTPHEADER'][] = 'Authorization: Bearer ' . $accessToken;
+		$param['SSL'] = $this->SSL;
+		$param['FORBID'] = true;
+		$param['POST'] = true;
+		$param['USERAGENT'] = $this->YM_USER_AGENT;
+		$html = $this->_http($this->URI_YM_API. '/account-info',$param);
+		$response = json_decode($html['text'], TRUE);
+		return $response;
+	}
+
+
+    /**
+     * Метод позволяет просматривать историю операций (полностью или частично)
+     * в постраничном режиме. Записи истории выдаются в обратном хронологическом
+     * порядке. Операции выдаются для постраничного отображения (ограниченное количество).
+     * Требуемые права токена: operation-history.
+     * @abstract
+     * @param $accessToken string токен авторизации пользователя
+     * @param $startRecord integer порядковый номер первой записи в выдаче. По умолчанию
+     * выдается с первой записи
+     * @param $records integer количество запрашиваемых записей истории операций.
+     * Допустимые значения: от 1 до 100, по умолчанию 30.
+     * @param $type string перечень типов операций, которые требуется отобразить.
+     * Типы операций перечисляются через пробел. В случае, если параметр
+     * отсутствует, выводятся все операции. Возможные значения: payment deposition.
+     * В качестве разделителя элементов списка используется пробел, элементы списка
+     * чувствительны к регистру.
+     * @return YMOperationHistoryResponse возвращает экземпляр класса
+     * OperationHistoryResponse
+     */
+	public function operationHistory($accessToken, $startRecord = NULL, $records = NULL, $type = NULL) {
+		$param = array();
+		$param['HTTPHEADER'][] = 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8';
+		$param['HTTPHEADER'][] = 'Expect:';
+		$param['HTTPHEADER'][] = 'Authorization: Bearer ' . $accessToken;
+		$param['SSL'] = $this->SSL;
+		$param['FORBID'] = true;
+		$param['POST'] = array();
+		if ($type != NULL)
+			$param['POST']['type'] = $type;
+		if ($startRecord != NULL)
+			$param['POST']['start_record'] = $startRecord;
+		if ($records != NULL)
+			$param['POST']['records'] = $records;
+		$param['USERAGENT'] = $this->YM_USER_AGENT;
+		$html = $this->_http($this->URI_YM_API. '/operation-history',$param);
+		$response = json_decode($html['text'], TRUE);
+		return $response;
+	}
+
+
+
+    /**
+     * Метод получения детальной информации по операции из истории.
+     * @abstract
+     * @param $accessToken string токен авторизации пользователя
+     * @param $operationId string идентификатор операции. Значение параметра соответствует
+     * либо значению поля operationId ответа метода operationHistory, либо, в
+     * случае если запрашивается история счета плательщика, значению поля
+     * paymentId ответа метода processPayment.
+     * @return YMOperationDetailResponse возвращает экземпляр класса
+     * OperationDetailResponse
+     */
+    public function operationDetail($accessToken, $operationId) {
+		$param = array();
+		$param['HTTPHEADER'][] = 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8';
+		$param['HTTPHEADER'][] = 'Expect:';
+		$param['HTTPHEADER'][] = 'Authorization: Bearer ' . $accessToken;
+		$param['SSL'] = $this->SSL;
+		$param['FORBID'] = true;
+		$param['POST']['operation_id'] = $operationId;
+		$param['USERAGENT'] = $this->YM_USER_AGENT;
+		$html = $this->_http($this->URI_YM_API. '/operation-details',$param);
+		$response = json_decode($html['text'], TRUE);
+		return $response;
+    }
+
+
+	/*CRON*/
+	function checkBill() {
+		//$INFO = $this->accountInfo($this->owner->config['ya_token']);
+		$INFO = $this->operationHistory($this->owner->config['ya_token'],NULL,NULL,'deposition');
+		$INFO2 = $this->operationDetail($this->owner->config['ya_token'],'772450975214158017');
+		print_r('<pre>');print_r($INFO2);print_r($INFO);
+		return '-OK-';
 	}
 
 }

@@ -18,7 +18,8 @@
 	$time = time();
 	$res_cron = '';
 	$i = 1;
-	$_SERVER['HTTP_HOST2'] = $_SERVER['HTTP_HOST'] = $_CFG['site']['www'];
+	if(!isset($_SERVER['HTTP_HOST']) or !$_SERVER['HTTP_HOST'])
+		$_SERVER['HTTP_HOST2'] = $_SERVER['HTTP_HOST'] = $_CFG['site']['www'];
 	$_SERVER['SERVER_PORT'] = 80;
 	$_SERVER['REQUEST_URI'] = '/index.html';
 	$_SERVER['HTTP_USER_AGENT'] = $_CFG['site']['www'];

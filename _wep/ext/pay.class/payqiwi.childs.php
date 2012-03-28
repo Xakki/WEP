@@ -114,7 +114,7 @@ Cчета со статусом большим или равным 100 трак�
 	/*
 	* При добавлении делаем запрос XML
 	*/
-	function billingFrom($summ, $comm) {
+	function billingFrom($summ, $comm, $data=array()) {
 		$this->prm_add = true;
 		$this->getFieldsForm(1);
 		$argForm = $this->fields_form;

@@ -104,10 +104,6 @@ class static_main {
 					else //нотисы отдельно
 						$notice .= $var;
 				}
-				// write bug to DB
-				if (is_array($_CFG['wep']['bug_hunter']) and count($_CFG['wep']['bug_hunter']) and $SQL->ready) {
-					_new_class('bug', $BUG);
-				}
 			}
 		}
 

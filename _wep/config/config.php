@@ -11,7 +11,7 @@ ini_set('display_errors', -1);
  * 3 - Номер ревизии , исправленны ошибки
  */
 $_CFG['info'] = array(//информация о СМС
-	'version' => '2.9.24',
+	'version' => '2.9.25',
 	'email' => 'wep@xakki.ru',
 	'icq' => '222392984'
 );
@@ -378,7 +378,6 @@ while (isset($PHP_SELF[$k]) and $PHP_SELF[$k] != $_CFG['PATH']['wepname']) {
 	$k++;
 }
 /* $_CFG['_HREF'] */
-if(!isset($_SERVER['HTTP_HOST'])) $_SERVER['HTTP_HOST'] = $_CFG['site']['www'];
 
 if (strpos($_SERVER['HTTP_HOST'], 'xn--') !== false) {
 	require_once($_CFG['_PATH']['wep_phpscript'] . '/idna_convert.class.php');
@@ -469,3 +468,4 @@ if(!isset($_COOKIE['wep123456'])) {
 		$_SERVER['HTTP_REFERER'] = '';
 	_setcookie('wep123456',base64encode($_SERVER['HTTP_REFERER']),(time() + 86400));
 }
+
