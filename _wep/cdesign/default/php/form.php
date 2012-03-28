@@ -414,7 +414,7 @@ function tpl_form(&$data) {
 						<div class="inline"><input type="text" name="'.$k.'" value="'.$r['value'].'" maxlength="5" size="10" class="secret" autocomplete="off"/></div>
 						<div class="secretimg inline"><img src="'.$r['src'].'" class="i_secret" id="captcha" alt="CARTHA"/></div>
 						<div class="secretinfo inline">
-							<a class="i-reload">&#160;&#160;&#160;&#160;&#160;Неразобрать? Обновите картинку!</a>';
+							<a class="i-reload">&#160;&#160;&#160;&#160;&#160;Обновить картинку</a>';
 						switch ($r['mask']['dif']) {
 							case 0:
 								$texthtml .= '<a class="i-help">&#160;&#160;&#160;&#160;&#160;Только цифры</a>';
