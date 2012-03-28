@@ -63,7 +63,7 @@ function tpl_form(&$data) {
 				$CAPTION = $r['caption'];
 				if((isset($r['mask']['min']) and $r['mask']['min']) or (isset($r['mask']['minint']) and $r['mask']['minint'])) {
 					$CAPTION .= '<span class="form-requere">*</span>';
-					if($r['type']!='ckedit') // в CKEDITORE глюк из за этого
+					if($r['type']!='ckedit' and !($r['type']=='password' and isset($r['mask']['password']) and $r['mask']['password']=='re')) // в CKEDITORE глюк из за этого
 						$attribute .= ' required="required"';
 				}
 				elseif(isset($r['mask']['min2']) and $r['mask']['min2']) {

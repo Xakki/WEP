@@ -284,7 +284,7 @@ class static_form {
 
 			$data[$key] = '`'.$key.'` = '.$value;
 		}
-		$q = 'UPDATE `'.$_this->tablename.'` SET '.implode(',', $data);print_r($q);
+		$q = 'UPDATE `'.$_this->tablename.'` SET '.implode(',', $data);
 		if($where!==false) {
 			$q .= ' WHERE '.$where;
 		} else {
