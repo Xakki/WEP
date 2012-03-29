@@ -26,6 +26,15 @@
 		exit($GLOBALS['_RESULT']['html']);
 	}
 
+	if(isset($_COOKIE['cdesign']) and $_COOKIE['cdesign'])
+		$_design = $_COOKIE['cdesign'];
+	elseif($_SESSION['user']['design'])
+		$_design = $_SESSION['user']['design'];
+	else 
+		$_design = $_CFG['wep']['design'];
+
+	$HTML = new html($_CFG['PATH']['cdesign'],$_design,false);// упрощённый режим
+
 	if($_CFG['wep']['access'] and (!isset($_SESSION['user']['id']) or $_SESSION['user']['level']>=5)) {
 		$GLOBALS['_RESULT']['html'] = static_main::m('denied');
 		exit(static_main::m('denied'));
@@ -45,16 +54,6 @@
 		exit('Доступ к модулю '.$_GET['_modul'].' запрещён администратором');
 		//$_tpl['onload']='fLog(\'<div style="color:red;">'.date('H:i:s').' : Доступ к модулю '.$_GET['_modul'].' запрещён администратором</div>\',1);fSwin1();';
 
-
-
-	if(isset($_COOKIE['cdesign']) and $_COOKIE['cdesign'])
-		$_design = $_COOKIE['cdesign'];
-	elseif($_SESSION['user']['design'])
-		$_design = $_SESSION['user']['design'];
-	else 
-		$_design = $_CFG['wep']['design'];
-
-	$HTML = new html($_CFG['PATH']['cdesign'],$_design,false);// упрощённый режим
 
 	if(isset($_GET['_oid']) and $_GET['_oid']!='') $MODUL->owner_id = $_GET['_oid'];
 	if(isset($_GET['_pid']) and $_GET['_pid']!='') $MODUL->parent_id = $_GET['_pid'];

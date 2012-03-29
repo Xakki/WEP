@@ -19,7 +19,7 @@
 	
 				$_tpl['onload'] .= 'jQuery(\'select.multiple\').multiselect();';
 				##
-				$_tpl['onload'] .= '$.localise(\'ui-multiselect\', {language: \'ru\', path: \''.$_CFG['_HREF']['_script'].'script.localisation/\'});';
+				//$_tpl['onload'] .= '$.localise(\'ui-multiselect\', {language: \'ru\', path: \''.$_CFG['_HREF']['_script'].'script.localisation/\'});';
 			}
 		}
 		if(isset($gfi['form']) and $gfi['form']) {

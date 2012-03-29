@@ -9,7 +9,7 @@
 			if(isset($DATA['formcreat']) and count($DATA['formcreat'])) {
 				if($flag==1) {
 					end($HTML->path);prev($HTML->path);
-					$_tpl['onload'] = 'alert(\''.$HTML->transformPHP($DATA['formcreat'],'messages').'\');';
+					$_tpl['onload'] .= 'alert(\''.$HTML->transformPHP($DATA['formcreat'],'messages').'\');';
 				}
 				else {
 					$DATA['formcreat']['path'] = $HTML->path;
