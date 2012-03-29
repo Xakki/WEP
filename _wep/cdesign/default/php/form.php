@@ -12,6 +12,7 @@ function tpl_form(&$data) {
 	$_CFG['fileIncludeOption']['form'] = 1;
 
 	foreach($data as $k=>$r) {
+		if($k=='_*features*_') continue;
 		if(!isset($r['value'])) $r['value'] = '';
 		if($r['type']!='hidden')
 			$texthtml .= '<div id="tr_'.$k.'" style="'.(isset($r['style'])?$r['style']:'').'" class="div-tr'.

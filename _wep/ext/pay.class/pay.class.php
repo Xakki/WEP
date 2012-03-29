@@ -17,10 +17,14 @@ class pay_class extends kernel_extends {
 		$this->index_fields['_key'] = '_key';
 		$this->index_fields['user_id'] = 'user_id';
 		$this->index_fields['status'] = 'status';
+		$this->_AllowAjaxFn['payFormBilling'] = true;
 		return true;
 	}
 
 	protected function _create_conf() {/*CONFIG*/
+		$this->config['curr'] = 'руб.';
+		$this->config_form['curr'] = array('type' => 'text', 'caption'=>'Название валюты');
+
 		parent::_create_conf();
 	}
 
@@ -95,10 +99,24 @@ class pay_class extends kernel_extends {
 		}
 		$data['summ'] = $summ;
 		$data['comm'] = $comm;
-		$data['#currency#'] = 'руб.';
+		$data['#currency#'] = $this->config['curr'];
 		return $data;
 	}
 
+	// Функция вызова формы оплаты для систем работающих только через форму оплаты (не выставляя счёт)
+	function payFormBilling() {
+		global $_tpl,$HTML;
+		$res = array('html'=>'Нет доступа к данным!');
+		$this->id = (int)$_GET['id'];
+		$pData = current($this->_select());
+		if($pData['id']) {
+			$this->childs[$pData['pay_modul']]->id = NULL;
+			$pcData = current($this->childs[$pData['pay_modul']]->_select());
+			$DATA = $this->childs[$pData['pay_modul']]->payFormBilling($pcData);
+			$res = array('html'=>$HTML->transformPHP($DATA,'#pg#formcreat'), 'onload' => $_tpl['onload']);
+		}
+		return $res;
+	}
 
 	/**
 	* Функция оплаты и перевода средств
@@ -213,8 +231,9 @@ class pay_class extends kernel_extends {
 	}
 
 
-	function displayList($key=NULL) {
+	function displayListKey($key=NULL) {
 		$data = array();
+		$data['#curr#'] = $this->config['curr'];
 		$q = 't1';
 		if(!is_null($key))
 			$q .= ' WHERE t1._key LIKE "'.$key.'"';
@@ -222,10 +241,32 @@ class pay_class extends kernel_extends {
 		foreach($data['#list#'] as &$r) {
 			$r['#status#'] = $this->_enum['status'][$r['status']];
 			$r['#pay_modul#'] = $this->childs[$r['pay_modul']]->caption;
+			$cl = $this->childs[$r['pay_modul']]->_cl;
+			$r['#lifetime#'] = $this->config[substr($cl,3).'_lifetime'];
+			$r['#formType#'] = $this->childs[$r['pay_modul']]->pay_formType;
 		}
 		return $data;
 	}
 
+	// Список операций
+	function displayListUser($user) {
+		$data = array();
+		$data['#curr#'] = $this->config['curr'];
+		$where = 'WHERE (`'.$this->mf_createrid.'` = '.$user.' or `user_id` = '.$user.')';
+		$data['#list#'] = $this->_query('*',$where);
+		if(count($data['#list#'])) {
+			$userlist = array();
+			foreach($data['#list#'] as $k=>$r) {
+				if(!isset($userlist[$r['user_id']]))
+					$userlist[$r['user_id']] = $r['user_id'];
+				if(!isset($userlist[$r[$this->mf_createrid]]))
+					$userlist[$r[$this->mf_createrid]] = $r[$this->mf_createrid];
+			}
+			_new_class('ugroup', $UGROUP);
+			$data['#users#'] = $UGROUP->childs['users']->_query('t1.*,t2.name as gname','t1 JOIN '.$UGROUP->tablename.' t2 ON t1.owner_id=t2.id WHERE t1.id IN ('.implode(',',$userlist).')','id');
+		}
+		return $data;
+	}
 
 /********************************************/
 /********************************************/
@@ -362,24 +403,6 @@ class pay_class extends kernel_extends {
 	}
 
 
-	// Список операций
-	function diplayList($user) {
-		$data = array();
-		$where = 'WHERE (`'.$this->mf_createrid.'` = '.$user.' or `user_id` = '.$user.')';
-		$data['#list#'] = $this->_query('*',$where);
-		if(count($data['#list#'])) {
-			$userlist = array();
-			foreach($data['#list#'] as $k=>$r) {
-				if(!isset($userlist[$r['user_id']]))
-					$userlist[$r['user_id']] = $r['user_id'];
-				if(!isset($userlist[$r[$this->mf_createrid]]))
-					$userlist[$r[$this->mf_createrid]] = $r[$this->mf_createrid];
-			}
-			_new_class('ugroup', $UGROUP);
-			$data['#users#'] = $UGROUP->childs['users']->_query('t1.*,t2.name as gname','t1 JOIN '.$UGROUP->tablename.' t2 ON t1.owner_id=t2.id WHERE t1.id IN ('.implode(',',$userlist).')','id');
-		}
-		return $data;
-	}
 
 	// возвращает список платежных систем
 	function get_pay_systems()
@@ -393,7 +416,7 @@ class pay_class extends kernel_extends {
 		return $ps;
 	}
 	
-	// проверяет формат пополняемой суммы в рублях
+	// проверяет формат пополняемой суммы
 	function check_amount($amount) {
 		if (is_numeric($amount) && $amount>0) {
 			$dot_pos = strpos($amount, '.');

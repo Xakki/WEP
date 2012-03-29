@@ -20,10 +20,16 @@ function tpl_list($data)
 			2=>'red',
 		);
 		foreach($data['#list#'] as $k=>$r) {
+			if(!$r['status']) {
+				if($r['#formType#']===true)
+					$r['#status#'] .= ' [<a href="/_js.php?_modul=pay&_fn=payFormBilling&id='.$r['id'].'" onclick="return wep.JSWin({\'type\':this});" target="_blank">Оплатить</a>]';
+				elseif($r['#formType#'])
+					$r['#status#'] .= ' [<a href="'.$r['#formType#'].'" target="_blank">Оплатить</a>]';
+			}
 			$html .= '<tr>
 				<td>'.$r['id'].'</td>
-				<td>'.$r['name'].'</td>
-				<td>'.round($r['cost'],2).' руб.</td>
+				<td>'.$r['name'].' '.(!$r['status']?'[действителен до '.date('Y-m-d H:i',($r['mf_timecr']+($r['#lifetime#']*3600))).']':'').'</td>
+				<td>'.round($r['cost'],2).' '.$data['#curr#'].'</td>
 				<td style="color:'.$color[$r['status']].';">'.$r['#status#'].'</td>
 				<td>'.$r['#pay_modul#'].'</td>
 				<td>'.$r['mf_timestamp'].'</td>
@@ -31,6 +37,6 @@ function tpl_list($data)
 		}
 		$html .= '</table>';
 	} else
-		$html .= '<messages><notice>Операций по счету нет.</notice></messages>';
+		$html .= '<messages><notice>Операций по счёту нет.</notice></messages>';
 	return $html.'<br/>';
 }

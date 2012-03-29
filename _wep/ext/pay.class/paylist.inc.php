@@ -25,7 +25,7 @@
 	}
 
 	_new_class('pay', $PAY);
-	$DATA = $PAY->diplayList($_SESSION['user']['id']);
+	$DATA = $PAY->displayListUser($_SESSION['user']['id']);
 	$DATA['#title#'] = $Ctitle;// Заголовок контента
 	$DATA['#pagemenu#'] = $this->getHref();// Адрес тек страницы
 	$DATA = array($FUNCPARAM[0]=>$DATA);

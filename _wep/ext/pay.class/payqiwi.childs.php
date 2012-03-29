@@ -8,7 +8,7 @@ class payqiwi_class extends kernel_extends {
 		$obj->config['qiwi_password'] = '';
 		$obj->config['qiwi_txn-prefix'] = '';
 		$obj->config['qiwi_create-agt'] = 1;
-		$obj->config['qiwi_lifetime'] = 0;
+		$obj->config['qiwi_lifetime'] = 1080;
 		$obj->config['qiwi_alarm-sms'] = 0;
 		$obj->config['qiwi_alarm-call'] = 0;
 		$obj->config['qiwi_minpay'] = 10;
@@ -18,17 +18,12 @@ class payqiwi_class extends kernel_extends {
 		$obj->config_form['qiwi_login'] = array('type' => 'text', 'caption' => 'Логин', 'comment'=>'', 'style'=>'background-color:#2ab7ec;');
 		$obj->config_form['qiwi_password'] = array('type' => 'password', 'md5'=>false, 'caption' => 'Пароль', 'style'=>'background-color:#2ab7ec;');
 		$obj->config_form['qiwi_txn-prefix'] = array('type' => 'text', 'caption' => 'Префикс в номере счёта','comment'=>'', 'style'=>'background-color:#2ab7ec;');
-		//$this->config_form['qiwi_create-agt'] = array('type' => 'text', 'caption' => 'Логин','comment'=>'Если 1 то при выставлении счёта создается пользователь в системе QIWI. При этом оплатить счёт можно в терминале наличными без ввода ПИН-кода.', 'style'=>'background-color:gray;');
-		$obj->config_form['qiwi_lifetime'] = array('type' => 'text', 'caption' => 'Таймаут','comment'=>'Время жизни счёта по умолчанию. Задается в часах. Если 0 , то будетмаксимум (45 суток)', 'style'=>'background-color:#2ab7ec;');
+		//$this->owner->config_form['qiwi_create-agt'] = array('type' => 'text', 'caption' => 'Логин','comment'=>'Если 1 то при выставлении счёта создается пользователь в системе QIWI. При этом оплатить счёт можно в терминале наличными без ввода ПИН-кода.', 'style'=>'background-color:gray;');
+		$obj->config_form['qiwi_lifetime'] = array('type' => 'text', 'caption' => 'Таймаут','comment'=>'Время жизни счёта по умолчанию. Задается в часах. Максимум 45 суток (1080 часов)', 'style'=>'background-color:#2ab7ec;');
 		$obj->config_form['qiwi_alarm-sms'] = array('type' => 'text', 'caption' => 'alarm-sms','comment'=>'1 - включит СМС оповещение (СМС платно)', 'style'=>'background-color:#2ab7ec;');
 		$obj->config_form['qiwi_alarm-call'] = array('type' => 'text', 'caption' => 'alarm-call','comment'=>'1 - включит звонок (платно)', 'style'=>'background-color:#2ab7ec;');
 		$obj->config_form['qiwi_minpay'] = array('type' => 'int', 'caption' => 'Миним. сумма','comment'=>'при пополнении счёта', 'style'=>'background-color:#2ab7ec;');
 		$obj->config_form['qiwi_maxpay'] = array('type' => 'int', 'caption' => 'Максим. сумма','comment'=>'при пополнении счёта', 'style'=>'background-color:#2ab7ec;');
-	}
-
-	protected function _create_conf() {/*CONFIG*/
-		parent::_create_conf();
-		$this->config = &$this->owner->config;
 	}
 
 	function _set_features() {
@@ -45,9 +40,10 @@ class payqiwi_class extends kernel_extends {
 		$this->prm_add = false; // добавить в модуле
 		$this->prm_del = false; // удалять в модуле
 		$this->prm_edit = false; // редактировать в модуле
-		$this->_href = 'http://ishop.qiwi.ru/xml';
-		$this->ver = '0.1';
+		$this->API_HREF = 'http://ishop.qiwi.ru/xml';
+		$this->ver = '0.2';
 		$this->pay_systems = true; // Это модуль платёжной системы
+		$this->pay_formType = 'https://w.qiwi.ru/orders.action';
 
 		$this->_enum['statuses'] = array(
 			50 => 'Неоплаченный счёт',
@@ -83,6 +79,7 @@ Cчета со статусом большим или равным 100 трак�
 		);
 
 		$this->cron[] = array('modul'=>$this->_cl,'function'=>'checkBill()','active'=>1,'time'=>300);
+
 		return true;
 	}
 
@@ -104,7 +101,7 @@ Cчета со статусом большим или равным 100 трак�
 				$this->fields_form['phone']['default'] = mb_substr($this->fields_form['phone']['default'],1);
 			}
 		}
-		$this->fields_form['cost'] = array('type' => 'int', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['qiwi_minpay'].'р, максимум '.$this->config['qiwi_maxpay'].'р', 'default'=>100, 'mask'=>array('minint'=>$this->config['qiwi_minpay'],'maxint'=>$this->config['qiwi_maxpay']));
+		$this->fields_form['cost'] = array('type' => 'int', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->owner->config['qiwi_minpay'].'р, максимум '.$this->owner->config['qiwi_maxpay'].'р', 'default'=>100, 'mask'=>array('minint'=>$this->owner->config['qiwi_minpay'],'maxint'=>$this->owner->config['qiwi_maxpay']));
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Комментарий', 'mask'=>array('name'=>'all'));
 		$this->fields_form['statuses'] = array('type' => 'list', 'listname'=>'statuses', 'readonly'=>1, 'caption' => 'Статус', 'mask'=>array());
 		$this->fields_form['errors'] = array('type' => 'list', 'listname'=>'errors', 'readonly'=>1, 'caption' => 'Ошибка', 'mask'=>array());
@@ -141,7 +138,7 @@ Cчета со статусом большим или равным 100 трак�
 
 		$result = parent::_add($data2,true);
 		if($result) {
-			$data['name'] .= ' (Счёт №'.$this->config['qiwi_txn-prefix'].$this->id.')';
+			$data['name'] .= ' (Счёт №'.$this->owner->config['qiwi_txn-prefix'].$this->id.')';
 			$options = array(
 				'phone'=>$this->data[$this->id]['phone'],
 				'amount'=>$this->data[$this->id]['cost'],
@@ -161,11 +158,11 @@ Cчета со статусом большим или равным 100 трак�
 	*/
 	private function createBill($options) {
 		$defaults = array(
-			'create-agt' => $this->config['qiwi_create-agt'],
-			'lifetime' => $this->config['qiwi_lifetime'],
-			'alarm-sms' => $this->config['qiwi_alarm-sms'],
-			'alarm-call' => $this->config['qiwi_alarm-call'],
-			'txn-prefix' => $this->config['qiwi_txn-prefix'],
+			'create-agt' => $this->owner->config['qiwi_create-agt'],
+			'lifetime' => $this->owner->config['qiwi_lifetime'],
+			'alarm-sms' => $this->owner->config['qiwi_alarm-sms'],
+			'alarm-call' => $this->owner->config['qiwi_alarm-call'],
+			'txn-prefix' => $this->owner->config['qiwi_txn-prefix'],
 			'comment'=>'Пополнение кошелька',
 		);
 		$options = array_merge($defaults, $options);
@@ -173,8 +170,8 @@ Cчета со статусом большим или равным 100 трак�
 		$x = '<?xml version="1.0" encoding="utf-8"?><request>';
 		$x .= '<protocol-version>4.00</protocol-version>';
 		$x .= '<request-type>30</request-type>';
-		$x .= '<extra name="password">' . $this->config['qiwi_password'] . '</extra>';
-		$x .= '<terminal-id>' . $this->config['qiwi_login'] . '</terminal-id>';
+		$x .= '<extra name="password">' . $this->owner->config['qiwi_password'] . '</extra>';
+		$x .= '<terminal-id>' . $this->owner->config['qiwi_login'] . '</terminal-id>';
 		$x .= '<extra name="txn-id">' . $options['txn-prefix'] . $this->id . '</extra>';
 		$x .= '<extra name="to-account">' . $options['phone'] . '</extra>';
 		$x .= '<extra name="amount">' . (int)$options['amount'] . '</extra>';
@@ -189,7 +186,7 @@ Cчета со статусом большим или равным 100 трак�
 			'POST'=>$x
 		);
 
-		$result = $this->_http($this->_href,$param);
+		$result = $this->_http($this->API_HREF,$param);
 
 		return $this->check_response($result['text'],'send');
 	}
@@ -201,11 +198,11 @@ Cчета со статусом большим или равным 100 трак�
 		$x = '<?xml version="1.0" encoding="utf-8"?><request>';
 		$x .= '<protocol-version>4.00</protocol-version>';
 		$x .= '<request-type>33</request-type>';
-		$x .= '<extra name="password">' . $this->config['qiwi_password'] . '</extra>';
-		$x .= '<terminal-id>' . $this->config['qiwi_login'] . '</terminal-id>';
+		$x .= '<extra name="password">' . $this->owner->config['qiwi_password'] . '</extra>';
+		$x .= '<terminal-id>' . $this->owner->config['qiwi_login'] . '</terminal-id>';
 		$x .= '<bills-list>';
 		foreach($bills as $txnID) {
-			$x .= '<bill txn-id="' . $this->config['qiwi_txn-prefix'] . $txnID['id'] . '"/>';
+			$x .= '<bill txn-id="' . $this->owner->config['qiwi_txn-prefix'] . $txnID['id'] . '"/>';
 		}
 		$x .= '</bills-list>';
 		$x .= '</request>';
@@ -214,7 +211,7 @@ Cчета со статусом большим или равным 100 трак�
 			'POST'=>$x
 		);
 
-		$result = $this->_http($this->_href,$param);
+		$result = $this->_http($this->API_HREF,$param);
 		$flag = $this->check_response($result['text'],'check');
 		if($flag)
 			return '-Успешно-';
@@ -246,8 +243,8 @@ Cчета со статусом большим или равным 100 трак�
 						'statuses' => (int)$bill['status'],
 						'cost' => floatval($bill['sum'])
 					);
-					if($this->config['qiwi_txn-prefix'])
-						$this->id = (int)str_replace($this->config['qiwi_txn-prefix'],'',$bill['id']);
+					if($this->owner->config['qiwi_txn-prefix'])
+						$this->id = (int)str_replace($this->owner->config['qiwi_txn-prefix'],'',$bill['id']);
 					else
 						$this->id = (int)$bill['id'];
 					$this->_update($upd);

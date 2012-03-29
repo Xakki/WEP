@@ -11,8 +11,8 @@
 	text-align: center;
 	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
 	font-size:14px;
-	height:42px;
-	width:120px;
+	height:50px;
+	width:100px;
 	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
 	border:1px #e1e1e1 solid;
 	background: url(payuser.png) no-repeat scroll 50% 0 transparent;
@@ -46,4 +46,13 @@
 }
 .pay_list th {
 	background-color:#e1e1e1;
+}
+.pay_list td {
+	min-width:80px;
+}
+.pay_list tr td:first-child {
+	min-width:10px;
+}
+.pay_list tr td:nth-child(3) {
+	min-width:60px;
 }

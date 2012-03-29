@@ -752,7 +752,7 @@ class users_class extends kernel_extends {
 		return $DATA;
 	}
 
-	function diplayList($data,$field=false) {
+	function displayList($data,$field=false) {
 		$DATA = array();
 		if($field===false)
 			$field = array('creater_id');

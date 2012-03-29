@@ -31,6 +31,8 @@
 				$enctype = ' enctype="multipart/form-data"';
 			if(!isset($attr['action']))
 				$attr['action'] = '';
+			if(!isset($attr['method']) or !$attr['method'])
+				$attr['method'] = 'POST';
 			$texthtml .= '<form id="'.$ID.'" method="'.$attr['method'].'"'.$enctype.' action="'.$attr['action'].'" ';
 			if(isset($attr['onsubmit']))
 				$texthtml .= 'onsubmit="'.$attr['onsubmit'].'"';

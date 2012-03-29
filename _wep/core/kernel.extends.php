@@ -493,8 +493,10 @@ abstract class kernel_extends {
 		$agr = ', ' . $this->_listnameSQL . ' as name';
 		$pref = 'SELECT *' . $agr;
 		$sql_query = $pref . ' FROM `' . $this->tablename . '` ';
-		if (isset($this->id) and $this->id)
+		if (isset($this->id) and $this->id) // либо по ID
 			$cls .= ($cls?' AND ':'').' id IN (' . $this->_id_as_string() . ') ';
+		elseif (isset($this->owner->id) and $this->owner->id) // либо по owner id
+			$cls .= ($cls?' AND ':'').' '.$this->owner_name.' IN (' . $this->owner->_id_as_string() . ') ';
 		if($cls)
 			$sql_query .= ' WHERE '.$cls;
 		if ($this->ordfield)

@@ -41,7 +41,7 @@ function tpl_paylist($data)
 				<td>'.$r['name'].'</td>
 				<td>'.$fromuser.'</td>
 				<td>'.$touser.'</td>
-				<td>'.round($r['cost'],2).' руб.</td>
+				<td>'.round($r['cost'],2).' '.$data['#curr#'].'</td>
 				<td>'.$r['mf_timestamp'].'</td>
 				<td>'.$b.'</td>
 			</tr>';
