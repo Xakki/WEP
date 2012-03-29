@@ -186,7 +186,7 @@ Cчета со статусом большим или равным 100 трак�
 		$x .= '</request>';
 
 		$param = array(
-			'body'=>$x
+			'POST'=>$x
 		);
 
 		$result = $this->_http($this->_href,$param);
@@ -211,7 +211,7 @@ Cчета со статусом большим или равным 100 трак�
 		$x .= '</request>';
 
 		$param = array(
-			'body'=>$x
+			'POST'=>$x
 		);
 
 		$result = $this->_http($this->_href,$param);
