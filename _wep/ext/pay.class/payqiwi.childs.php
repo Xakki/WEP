@@ -256,8 +256,11 @@ Cчета со статусом большим или равным 100 трак�
 							$status = 2;
 						else
 							$status = 0;
-						if($this->id)
+						if($this->id and $this->data[$this->id])
 							$this->owner->PayTransaction($status,$this->data[$this->id]['cost'],$this->data[$this->id]['owner_id']);
+						else {
+							trigger_error('Ошибка проверки оплаты qiwi: счёт не найден '.$bill['id'].' не найден в базе', E_USER_WARNING);
+						}
 					};
 				}
 			}

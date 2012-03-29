@@ -274,7 +274,9 @@
 		height:35px;
 		margin:3px 0 0;
 	}
-	.divform div.secret {}
+	.divform div.secret {
+		white-space: nowrap;
+	}
 	.divform div.secret:hover .secretinfo a {opacity:0.7;}
 		.divform div.secretimg {padding:3px 0 0 5px;}
 		.divform .secretinfo {width:30px;}

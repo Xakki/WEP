@@ -147,6 +147,7 @@ var wep = {
 				}
 
 				else if(typeof result.html != 'undefined' && result.html!='' && !param['insertObj']) {
+					clearTimeout(param['timeBG']);// Чистим таймер и тем самым затеменение не отобразиться
 					wep.fShowload(1,param['body'],result.html,param['fade'],param['onclk']);
 				}
 

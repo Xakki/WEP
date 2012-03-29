@@ -9,7 +9,7 @@ class pay_class extends kernel_extends {
 		$this->mf_ipcreate = true;//IP адрес пользователя с котрого была добавлена запись		
 		$this->mf_timestamp = true; // создать поле  типа timestamp
 		$this->cf_childs = true;
-		$this->ver = '0.3.3';
+		$this->ver = '0.3.4';
 		$this->default_access = '|0|';
 		$this->prm_add = false; // добавить в модуле
 		$this->prm_del = false; // удалять в модуле
@@ -91,7 +91,7 @@ class pay_class extends kernel_extends {
 					$data['child'][$child->_cl] = array('_cl'=>$child->_cl,'caption'=>$child->caption);
 				}
 			}
-			$data['#title#'] = 'Выбирите вариант оплаты';
+			$data['#title#'] = 'Выберите вариант оплаты';
 		}
 		$data['summ'] = $summ;
 		$data['comm'] = $comm;

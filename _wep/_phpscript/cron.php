@@ -30,7 +30,6 @@
 			//$res_cron .= 'Рано импортировать файл '. $ini_arr['file'.$key_cron]. ', последний раз он импортировался '.date('d.m.Y H:i', $ini_arr['last_time'.$key_cron]). ', сейчас ' . date('d.m.Y H:i', $time) . '. (Установленный интервал: '.$ini_arr['int' . $key_cron].' минут, осталось ' . round((($ini_arr['last_time' . $key_cron] + ($ini_arr['int' . $key_cron] * 60) - $time) / 60), 1) . ' минут)' . "\n";
 		}
 		elseif(!isset($r_cron['active']) or $r_cron['active']) {
-			$ini_arr['last_time' . $key_cron] = $time;
 			$tt  = getmicrotime();
 			//'time' => '600', 'file' => '_wepconf/ext/exportboard.class/exportboard.cron.php', 'modul' => '', 'function' => ''
 			if($r_cron['file']) {
@@ -47,6 +46,8 @@
 			}elseif(isset($r_cron['function']) and $r_cron['function']) {
 				eval('$result = '.$r_cron['function'].';');
 			}
+
+			$ini_arr['last_time' . $key_cron] = $time;
 			$ini_arr['do_time' . $key_cron] = getmicrotime()-$tt;
 			$ini_arr['res' . $key_cron] = str_replace(array("\n","\r"),'',$result);
 			$res_cron .= $result;

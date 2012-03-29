@@ -74,11 +74,12 @@ class payyandex_class extends kernel_extends {
 		);
 
 		$this->_enum['error'] =array(
-			0 => ' - ',
+			'' => ' - ',
 			'illegal_params' => 'Обязательные параметры платежа отсутствуют или имеют недопустимые значения.',
 			'phone_unknown' => 'Указан номер телефона не связанный со счетом пользователя или получателя платежа.',
 			'payment_refused' => 'Магазин отказал в приеме платежа (например пользователь попробовал заплатить за товар, которого нет в магазине).',
 			1 => 'Техническая ошибка, повторите вызов операции позднее.',
+			'small_money' => 'Счёт не оплачен полностью.',
 		);
 
 		$this->_enum['money_source'] = array(
@@ -99,17 +100,19 @@ class payyandex_class extends kernel_extends {
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL','default'=>'');
 		$this->fields['phone'] = array('type' => 'bigint', 'width' => 13,'attr' => 'unsigned NOT NULL');
 		$this->fields['email'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL');
-		$this->fields['amount'] = array('type' => 'float', 'width' => '11,4','attr' => 'NOT NULL'); // в коппейках
+		$this->fields['sender'] = array('type' => 'varchar', 'width' => 20,'attr' => 'NOT NULL','default'=>''); // № плательщика в системе
+		$this->fields['amount'] = array('type' => 'float', 'width' => '11,2','attr' => 'NOT NULL'); // в коппейках
+		$this->fields['tax'] = array('type' => 'float', 'width' => '11,2','attr' => 'NOT NULL'); // в коппейках
 		$this->fields['status'] = array('type' => 'varchar', 'width' => 63,'attr' => 'NOT NULL','default'=>'');
 		//Код ошибки при проведении платежа (пояснение к полю status). Присутствует только при ошибках.
 		$this->fields['error'] = array('type' => 'varchar', 'width' => 63,'attr' => 'NOT NULL','default'=>'');
 		//Доступные для приложения методы проведения платежа, см. Доступные методы платежа. Присутствует только при успешном выполнении метода.
 		//@allowed
-		$this->fields['money_source'] = array('type' => 'varchar', 'width' => 63,'attr' => 'NOT NULL','default'=>'');
+		//$this->fields['money_source'] = array('type' => 'varchar', 'width' => 63,'attr' => 'NOT NULL','default'=>'');
 		//Идентификатор запроса платежа, сгенерированный системой. Присутствует только при успешном выполнении метода.
-		$this->fields['request_id'] = array('type' => 'varchar', 'width' => 63,'attr' => 'NOT NULL','default'=>'');
+		//$this->fields['request_id'] = array('type' => 'varchar', 'width' => 63,'attr' => 'NOT NULL','default'=>'');
 		//Остаток на счете пользователя. Присутствует только при успешном выполнении метода.
-		$this->fields['balance'] = array('type' => 'float', 'width' => '11,4','attr' => 'NOT NULL','default'=>0);
+		//$this->fields['balance'] = array('type' => 'float', 'width' => '11,2','attr' => 'NOT NULL','default'=>0);
 	}
 
 	/*function getButton($summ,$comm) {
@@ -146,7 +149,7 @@ class payyandex_class extends kernel_extends {
 		);
 		$DATA['form'] = array(
 			'receiver'=>array('type'=>'hidden','value'=>$this->owner->config['ya_id']),
-			'FormComment'=>array('type'=>'hidden','value'=>'Оплата товара/услуги'),
+			'FormComment'=>array('type'=>'hidden','value'=>$comm),
 			'short-dest'=>array('type'=>'hidden','value'=>'Оплата товара/услуги'),
 			'writable-targets'=>array('type'=>'hidden','value'=>'false'),
 			'writable-sum'=>array('type'=>'hidden','value'=>'false'),
@@ -155,6 +158,9 @@ class payyandex_class extends kernel_extends {
 			'targets'=>array('type'=>'hidden','value'=>$comm),
 			'sum'=>array('type'=>'hidden','value'=>$summ),
 			'mail'=>array('type'=>'hidden','value'=>'true'),
+			'p2payment'=>array('type'=>'hidden','value'=>$this->id),
+			'destination'=>array('type'=>'hidden','value'=>$this->id),
+			'codepro'=>array('type'=>'hidden','value'=>$this->id),
 		);
 		if(isset($data['email']))
 			$DATA['form']['address_email'] = array('type'=>'hidden','value'=>$data['email']);
@@ -385,10 +391,47 @@ class payyandex_class extends kernel_extends {
 
 	/*CRON*/
 	function checkBill() {
+		$temp = $this->qs('*','WHERE status=""','name');
+		$DATA = array();
+		foreach($temp as $r) {
+			$key = preg_replace('/[^0-9A-zА-я\:\№]+/ui','',$r['name']);
+			$key = trim($key,';:№,.\s');
+			$DATA[$key] = $r;
+		}
+		$CNT = count($DATA);
+		//if(!$CNT) return '-нет выставленных счетов-';
+
 		//$INFO = $this->accountInfo($this->owner->config['ya_token']);
 		$INFO = $this->operationHistory($this->owner->config['ya_token'],NULL,NULL,'deposition');
-		$INFO2 = $this->operationDetail($this->owner->config['ya_token'],'772450975214158017');
-		print_r('<pre>');print_r($INFO2);print_r($INFO);
+		if(!count($INFO['operations'])) return '-нет платежей ('.$CNT.' не оплачено)-';
+
+		$i=0;
+		foreach($INFO['operations'] as $r) {
+			//date($r['datetime'])
+			$INFO2 = $this->operationDetail($this->owner->config['ya_token'], $r['operation_id']);
+			$key = preg_replace('/[^0-9A-zА-я\:\№]+/ui','',$INFO2['message']);
+			$key = trim($key,';:№,.\s');
+	print_r('<pre>');print_r($INFO2);return '-OK-';
+		if(isset($DATA[$key])) {
+				$this->id = $DATA[$key]['id'];
+				$upd = array('amount'=>$INFO2['amount'], 'tax'=>($DATA[$key]['amount']-$INFO2['amount']), 'sender'=>$INFO2['sender']);
+				if($INFO2['amount']>=($DATA[$key]['amount']*0.95)) {
+					$upd['status'] = 'success';
+					//$upd['money_source'] = 'wallet';
+					$this->_update($upd);
+					$this->owner->PayTransaction(1,$DATA[$key]['amount'],$this->data[$this->id]['owner_id']);				
+				} else {
+					$upd['status'] = 'refused';
+					$upd['error'] = 'small_money';
+					$this->_update($upd);
+				}
+
+				$i++;
+				if($i>=$CNT) {
+					return '-Всё счета проверены-';
+				}
+			}
+		}
 		return '-OK-';
 	}
 
