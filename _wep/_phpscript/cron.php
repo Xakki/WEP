@@ -49,7 +49,7 @@
 
 			$ini_arr['last_time' . $key_cron] = $time;
 			$ini_arr['do_time' . $key_cron] = getmicrotime()-$tt;
-			$ini_arr['res' . $key_cron] = str_replace(array("\n","\r"),'',$result);
+			$ini_arr['res' . $key_cron] = '"'.str_replace(array("\n","\r"),'',htmlspecialchars($result,'UTF-8')).'"';
 			$res_cron .= $result;
 		}
 	}
@@ -58,9 +58,9 @@
 	foreach ($ini_arr as $k=>$v) {
 		$conf .= $k . " = " . $v . "\n";
 	}
-	umask(0777);
+	umask(0774);
 	file_put_contents($ini_file, $conf);
-	@chmod($ini_file, 0777);
+	@chmod($ini_file, 0774);
 
 
 	echo $res_cron;

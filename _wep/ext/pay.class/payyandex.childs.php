@@ -37,7 +37,7 @@ class payyandex_class extends kernel_extends {
 		if(isset($_GET['_func']) and $_GET['_func']=='Configmodul') {
 			global $_tpl;
 			if(count($_POST) and isset($_POST['ya_id']) and isset($_POST['ya_cid']) and !$_POST['ya_token']) {
-				$_tpl['onload'] .= 'window.open("'.$this->REDIRECT_URI.'");';
+				$_tpl['onload'] .= 'window.open("'.$this->REDIRECT_URI.'","Получение TOKEN","width=800,height=750,resizable=yes,scrollbars=yes,status=yes");';
 			}
 			/*$_tpl['onload'] .= 'if($("input[name=ya_token]").val()) $(\'.ya_newtoken\').hide(); else $(\'.ya_newtoken\').show();';
 			if(count($_POST) and isset($_POST['ya_id']) and isset($_POST['ya_cid']) and (!$_POST['ya_token'] or isset($_POST['ya_newtoken']))) {
@@ -420,11 +420,11 @@ class payyandex_class extends kernel_extends {
 			$DATA[$key] = $r;
 		}
 		$CNT = count($DATA);
-		//if(!$CNT) return '-нет выставленных счетов-';
+		if(!$CNT) return '-нет выставленных счетов-';
 
 		//$INFO = $this->accountInfo($this->owner->config['ya_token']);
 		$INFO = $this->operationHistory($this->owner->config['ya_token'],NULL,NULL,'deposition');
-		if(!count($INFO['operations'])) return '-нет платежей ('.$CNT.' не оплачено)-';
+		if(!count($INFO['operations'])) return '-нет платежей , '.$CNT.' не оплачено-';
 
 		$i=0;
 		foreach($INFO['operations'] as $r) {

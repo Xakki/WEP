@@ -196,7 +196,7 @@ Cчета со статусом большим или равным 100 трак�
 
 	function checkBill() {
 		$bills = $this->_query('*','WHERE statuses<60');
-		if(!count($bills)) return true;
+		if(!count($bills)) return 'Нету счетов';
 
 		$x = '<?xml version="1.0" encoding="utf-8"?><request>';
 		$x .= '<protocol-version>4.00</protocol-version>';
@@ -215,57 +215,58 @@ Cчета со статусом большим или равным 100 трак�
 		);
 
 		$result = $this->_http($this->_href,$param);
-
-		return $this->check_response($result['text'],'check');
+		$flag = $this->check_response($result['text'],'check');
+		if($flag)
+			return '-Успешно-';
+		else
+			return '-Ошибка-';
 	}
 
 	function check_response($xml,$flag='send') {
-		$flag = false;
-		if($xml) {
-			$flag = true;
-			$xml = simplexml_load_string('<?xml version="1.0" encoding="utf-8"?>'.$xml);
-			$rc = $xml->{'result-code'};
-			$fatality = $rc['fatal'];
-			if($rc!='0') {
-				$flag = false;
-				if($this->id)
-					$this->_update(array('errors'=>$rc),false,false);
-			}
-			if($fatality=='true') {
-				trigger_error('Ошибка запроса QIWI `'.$this->_enum['errors'][$rc].'`', E_USER_WARNING);
-				return false;
-			}
-			if($flag=='check') {
-				$billlist = $xml->{'bills-list'};
-				if($billlist) {
-					foreach ($billlist->children() as $bill) {
+		if(!$xml) return false;
+		$result = true;
+		$xml = simplexml_load_string('<?xml version="1.0" encoding="utf-8"?>'.$xml);
+		$rc = $xml->{'result-code'};
+		$fatality = $rc['fatal'];
+		if($rc!='0') {
+			$result = false;
+			if($this->id)
+				$this->_update(array('errors'=>$rc),false,false);
+		}
+		if($fatality=='true') {
+			trigger_error('Ошибка запроса QIWI `'.$this->_enum['errors'][$rc].'`', E_USER_WARNING);
+			return false;
+		}
+		if($flag=='check') {
+			$billlist = $xml->{'bills-list'};
+			if($billlist) {
+				foreach ($billlist->children() as $bill) {
 
-						$upd = array(
-							'statuses' => (int)$bill['status'],
-							'cost' => floatval($bill['sum'])
-						);
-						if($this->config['qiwi_txn-prefix'])
-							$this->id = (int)str_replace($this->config['qiwi_txn-prefix'],'',$bill['id']);
-						else
-							$this->id = (int)$bill['id'];
-						$this->_update($upd);
+					$upd = array(
+						'statuses' => (int)$bill['status'],
+						'cost' => floatval($bill['sum'])
+					);
+					if($this->config['qiwi_txn-prefix'])
+						$this->id = (int)str_replace($this->config['qiwi_txn-prefix'],'',$bill['id']);
+					else
+						$this->id = (int)$bill['id'];
+					$this->_update($upd);
 
-						if($upd['statuses']==60)
-							$status = 1;
-						elseif($upd['statuses']>=100)
-							$status = 2;
-						else
-							$status = 0;
-						if($this->id and $this->data[$this->id])
-							$this->owner->PayTransaction($status,$this->data[$this->id]['cost'],$this->data[$this->id]['owner_id']);
-						else {
-							trigger_error('Ошибка проверки оплаты qiwi: счёт не найден '.$bill['id'].' не найден в базе', E_USER_WARNING);
-						}
-					};
-				}
+					if($upd['statuses']==60)
+						$status = 1;
+					elseif($upd['statuses']>=100)
+						$status = 2;
+					else
+						$status = 0;
+					if($this->id and $this->data[$this->id])
+						$this->owner->PayTransaction($status,$this->data[$this->id]['cost'],$this->data[$this->id]['owner_id']);
+					else {
+						trigger_error('Ошибка проверки оплаты qiwi: счёт '.$bill['id'].' не найден в базе', E_USER_WARNING);
+					}
+				};
 			}
 		}
-		return $flag;
+		return $result;
 	}
 }
 
