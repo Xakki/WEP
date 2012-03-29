@@ -3,7 +3,7 @@ class payyandex_class extends kernel_extends {
 
 	function _create_conf2(&$obj) {/*CONFIG*/
 
-		$this->REDIRECT_URI = 'http://'.$_SERVER['HTTP_HOST2'].'/_js.php?_modul=pay&_fn=redirectFromYa';
+		$this->REDIRECT_URI = 'http://'.$_SERVER['HTTP_HOST2'].'/_js.php?_modul='.$this->_cl.'&_fn=redirectFromYa&noajax=1';
 		$this->URI_YM_API = 'https://money.yandex.ru/api';
 		$this->URI_YM_AUTH = 'https://sp-money.yandex.ru/oauth/authorize';
 		$this->URI_YM_TOKEN = 'https://sp-money.yandex.ru/oauth/token';
@@ -25,17 +25,21 @@ class payyandex_class extends kernel_extends {
 		$obj->config_form['ya_info'] = array('type' => 'info', 'caption'=>'<h3>Яндекс.Деньги</h3>');
 		$obj->config_form['ya_id'] = array('type' => 'text', 'caption'=>'Номер счёта','style'=>'background-color:#F60;');
 		$obj->config_form['ya_cid'] = array('type' => 'text', 'caption'=>'Идентификатор приложения','comment'=>'Получить его можно <a href="https://sp-money.yandex.ru/myservices/new.xml" target="_blank">тут</a> и <a href="https://sp-money.yandex.ru/myservices/admin.xml">настраивать</a><br>Redirect URI: <b>http://'.$_SERVER['HTTP_HOST'].'/_js.php?_modul=pay&_fn=redirectFromYa</b> ', 'style'=>'background-color:#F60;');
-		$obj->config_form['ya_token'] = array('type' => 'hidden');
+		$obj->config_form['ya_token'] = array('type' => 'text', 'caption'=>'TOKEN', 'style'=>'background-color:#F60;');
+		/*$obj->config_form['ya_token'] = array('type' => 'hidden');
 		$obj->config_form['ya_newtoken'] = array('type' => 'checkbox','caption'=>'Установить новый токен', 'onchange'=>'if(this.checked) $(\'.ya_newtoken\').show(); else $(\'.ya_newtoken\').hide();', 'style'=>'background-color:#F60;');
 		$obj->config_form['ya_login'] = array('type' => 'text', 'caption'=>'Логин авторизации', 'css'=>'ya_newtoken','style'=>'background-color:#F65;');
 		$obj->config_form['ya_pass'] = array('type' => 'password', 'caption'=>'Пароль авторизации', 'css'=>'ya_newtoken','style'=>'background-color:#F65;');
-		$obj->config_form['ya_pass2'] = array('type' => 'password', 'caption'=>'Пароль подтверждения платежа', 'css'=>'ya_newtoken','style'=>'background-color:#F65;');
+		$obj->config_form['ya_pass2'] = array('type' => 'password', 'caption'=>'Пароль подтверждения платежа', 'css'=>'ya_newtoken','style'=>'background-color:#F65;');*/
 		//$obj->config_form['ya_minpay'] = array('type' => 'int', 'caption' => 'Миним. сумма','comment'=>'при пополнении счёта', 'style'=>'background-color:#F60;');
 		//$obj->config_form['ya_maxpay'] = array('type' => 'int', 'caption' => 'Максим. сумма','comment'=>'при пополнении счёта', 'style'=>'background-color:#F60;');
 
 		if(isset($_GET['_func']) and $_GET['_func']=='Configmodul') {
 			global $_tpl;
-			$_tpl['onload'] .= 'if($("input[name=ya_token]").val()) $(\'.ya_newtoken\').hide(); else $(\'.ya_newtoken\').show();';
+			if(count($_POST) and isset($_POST['ya_id']) and isset($_POST['ya_cid']) and !$_POST['ya_token']) {
+				$_tpl['onload'] .= 'window.open("'.$this->REDIRECT_URI.'");';
+			}
+			/*$_tpl['onload'] .= 'if($("input[name=ya_token]").val()) $(\'.ya_newtoken\').hide(); else $(\'.ya_newtoken\').show();';
 			if(count($_POST) and isset($_POST['ya_id']) and isset($_POST['ya_cid']) and (!$_POST['ya_token'] or isset($_POST['ya_newtoken']))) {
 				if($_POST['ya_login'] and $_POST['ya_pass'] and $_POST['ya_pass2']) {
 					$CODE = $this->yandexGetCode($_POST['ya_cid'],$_POST['ya_login'],$_POST['ya_pass'],$_POST['ya_pass2']);
@@ -49,7 +53,7 @@ class payyandex_class extends kernel_extends {
 				}
 				else 
 					print_r('<h3>Не введены необходимые данные</h3>');
-			}
+			}*/
 		}
 	}
 
@@ -180,6 +184,11 @@ class payyandex_class extends kernel_extends {
 	
 	//http://unidoski.ru
 	function redirectFromYa() {
+		if(!isset($_GET['code'])) {
+			header("Location: ".$this->URI_YM_AUTH . '?client_id='.$this->owner->config['ya_cid'].'&response_type=code&scope=' . urlencode(implode(' ',$this->SCOPE)) . '&redirect_uri=' . urlencode($this->REDIRECT_URI));
+			die();
+		}
+		return '<h2>Код вставить в поле `TOKEN` для Яндекс.Деньги в конфиге модуля:<h2><textarea style="width:500px;height:150px;">'.$_GET['code'].'</textarea>';
 	}
 
 	function yandexAuth($LOGIN,$PASS) {
@@ -209,7 +218,7 @@ class payyandex_class extends kernel_extends {
 		$param['HTTPHEADER'][] = 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8';
 		$param['SSL'] = $this->SSL;
 		$html = $this->_http($URL,$param);
-		if(!$html['info']['redirect_url']) return false;
+		if(!$html['info']['redirect_url']) {return false;}
 
 		/********/
 		$param = array();
@@ -423,7 +432,7 @@ class payyandex_class extends kernel_extends {
 			$INFO2 = $this->operationDetail($this->owner->config['ya_token'], $r['operation_id']);
 			$key = preg_replace('/[^0-9A-zА-я\:\№]+/ui','',$INFO2['message']);
 			$key = trim($key,';:№,.\s');
-	print_r('<pre>');print_r($INFO2);return '-OK-';
+	//print_r('<pre>');print_r($INFO2);return '-OK-';
 		if(isset($DATA[$key])) {
 				$this->id = $DATA[$key]['id'];
 				$upd = array('amount'=>$INFO2['amount'], 'tax'=>($DATA[$key]['amount']-$INFO2['amount']), 'sender'=>$INFO2['sender']);
