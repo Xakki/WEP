@@ -5,7 +5,7 @@
 
 		$firstpath = '';
 
-		if(count($data['_clp'])) {
+		if(isset($data['_clp']) and count($data['_clp'])) {
 			$firstpath = http_build_query($data['_clp']).'&';
 		}
 
@@ -112,6 +112,8 @@
 		}
 		$html .= '<th style="text-align:right;"><a class="uiicons img10" onclick="wep.SuperGroupInvert(this)" title="Инверт чекбоксов">Инверт</a></th></tr>';
         if(count($data['item']))
+		if(!isset($data['cl']))
+			  $data['cl'] = '';
 
 		// Проходимся про каждой записи
 		foreach($data['item'] as $k=>$r) {

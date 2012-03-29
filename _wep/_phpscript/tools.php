@@ -251,9 +251,9 @@ function tools_cron() {
 					'file'=>array('value'=>$r['file']),
 					'modul'=>array('value'=>$r['modul']),
 					'function'=>array('value'=>$r['function']),
-					'lasttime'=>array('value'=>date('Y-m-d H:i:s',$ini_arr['last_time'.$k])),
-					'do_time'=>array('value'=>$ini_arr['do_time'.$k]),
-					'res'=>array('value'=>$ini_arr['res'.$k]),
+					'lasttime'=>array('value'=>(isset($ini_arr['last_time'.$k])?date('Y-m-d H:i:s',$ini_arr['last_time'.$k]):'') ),
+					'do_time'=>array('value'=>(isset($ini_arr['do_time'.$k])?$ini_arr['do_time'.$k]:'')),
+					'res'=>array('value'=>(isset($ini_arr['res'.$k])?$ini_arr['res'.$k]:'')),
 				);
 				$DATA['data']['item'][$k]['active'] = (!isset($r['active'])?1:(int)$r['active']);
 				$DATA['data']['item'][$k]['act'] = 1;

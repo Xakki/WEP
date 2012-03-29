@@ -73,7 +73,7 @@ class ugroup_class extends kernel_extends
 		$this->mf_treelevel = 1;
 		$this->caption = 'Группы';
 		$this->singleton = true;
-		$this->ver = '0.2.1';
+		$this->ver = '0.2.2';
 		$this->default_access = '|0|';
 		return true;
 	}

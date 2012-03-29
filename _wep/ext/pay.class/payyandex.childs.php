@@ -146,7 +146,7 @@ class payyandex_class extends kernel_extends {
 	* При добавлении делаем запрос XML
 	*/
 	function billingFrom($summ, $comm, $data=array()) {
-		global $_tpl;$summ=1;
+		global $_tpl;
 		$ADD = array('amount'=>$summ,'name'=>$comm);
 		if(isset($_SESSION['user']['phone']))
 			$ADD['phone'] = $_SESSION['user']['phone'];
