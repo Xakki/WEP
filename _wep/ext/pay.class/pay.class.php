@@ -112,8 +112,11 @@ class pay_class extends kernel_extends {
 		if($pData['id']) {
 			$this->childs[$pData['pay_modul']]->id = NULL;
 			$pcData = current($this->childs[$pData['pay_modul']]->_select());
-			$DATA = $this->childs[$pData['pay_modul']]->payFormBilling($pcData);
-			$res = array('html'=>$HTML->transformPHP($DATA,'#pg#formcreat'), 'onload' => $_tpl['onload']);
+			if($pcData['id']) {
+				$this->childs[$pData['pay_modul']]->id = $pcData['id'];
+				$DATA = $this->childs[$pData['pay_modul']]->payFormBilling($pcData);
+				$res = array('html'=>$HTML->transformPHP($DATA,'#pg#formcreat'), 'onload' => $_tpl['onload']);
+			}
 		}
 		return $res;
 	}

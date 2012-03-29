@@ -179,7 +179,7 @@ class payyandex_class extends kernel_extends {
 		$DATA['form'] = array(
 			'receiver'=>array('type'=>'hidden','value'=>$this->owner->config['yandex_id']),
 			'FormComment'=>array('type'=>'hidden','value'=>$data['name']),
-			'short-dest'=>array('type'=>'hidden','value'=>'Оплата товара/услуги'),
+			'short-dest'=>array('type'=>'hidden','value'=>'Счёт№'.$this->id),
 			'writable-targets'=>array('type'=>'hidden','value'=>'false'),
 			'writable-sum'=>array('type'=>'hidden','value'=>'false'),
 			'comment-needed'=>array('type'=>'hidden','value'=>'true'),
