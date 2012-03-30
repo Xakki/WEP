@@ -612,11 +612,11 @@ class static_tools {
 		global $_CFG;
 		if (!$dir)
 			return false;
-		if (!file_exists($dir)) {
-			if (!file_exists(dirname($dir))) {
+		if (!file_exists(trim($dir,'/'))) {
+			/*if (!file_exists(dirname($dir))) {
 				self::_checkdir(dirname($dir));
-			}
-			if (!mkdir($dir, $_CFG['wep']['chmod']))
+			}*/
+			if (!mkdir($dir, $_CFG['wep']['chmod'], true))
 				return static_main::log('error', 'Cannot create directory <b>' . $dir . '</b>');
 		}
 		else {
@@ -806,7 +806,7 @@ deny from all
 						 $tmp = '';
 						 foreach (explode('/', $completePath) as $k) {
 							  $tmp .= $k . '/';
-							  if (!file_exists($tmp)) {
+							  if (!file_exists(trim($tmp,'/'))) {
 									@mkdir($tmp, 0777);
 							  }
 						 }
