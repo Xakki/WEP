@@ -178,16 +178,15 @@ class payyandex_class extends kernel_extends {
 		);
 		$DATA['form'] = array(
 			'receiver'=>array('type'=>'hidden','value'=>$this->owner->config['yandex_id']),
-			'FormComment'=>array('type'=>'hidden','value'=>'Счёт№'.$this->id.'; '.$data['name']),
-			'short-dest'=>array('type'=>'hidden','value'=>$data['name']),
+			'FormComment'=>array('type'=>'hidden','value'=>'Счёт№'.$this->id.'; '.$data['name']), // заголовок у отправителя
+			'short-dest'=>array('type'=>'hidden','value'=>$data['name']), // Комментарий у отправителя
 			'writable-targets'=>array('type'=>'hidden','value'=>'false'),
 			'writable-sum'=>array('type'=>'hidden','value'=>'false'),
 			'comment-needed'=>array('type'=>'hidden','value'=>'true'),
 			'quickpay-form'=>array('type'=>'hidden','value'=>'small'),
-			'targets'=>array('type'=>'hidden','value'=>'Счёт№'.$this->id),
+			'targets'=>array('type'=>'hidden','value'=>'Счёт№'.$this->id), // Сообщение получателю
 			'sum'=>array('type'=>'hidden','value'=>$data['amount']),
 			'mail'=>array('type'=>'hidden','value'=>'true'),
-			'title'=>array('type'=>'hidden','value'=>'Оплата услуг'),
 			//'p2payment'=>array('type'=>'hidden','value'=>$this->id),
 			//'destination'=>array('type'=>'hidden','value'=>$this->id),
 			//'codepro'=>array('type'=>'hidden','value'=>$this->id),
@@ -438,9 +437,9 @@ class payyandex_class extends kernel_extends {
 		$temp = $this->qs('*','WHERE status=""','name');
 		$DATA = array();
 		foreach($temp as $r) {
-			$key = preg_replace('/[^0-9A-zА-я\:\;\№]+/ui', '', 'Счёт№'.$r['id'].'; '.$r['name']);
-			$key = trim($key,';:№,.\s');
-			$DATA[$key] = $r;
+			//$key = preg_replace('/[^0-9A-zА-я\:\;\№]+/ui', '', 'Счёт№'.$r['id'].'; '.$r['name']);
+			//$key = trim($key,';:№,.\s');
+			$DATA['Счёт№'.$r['id']] = $r;
 		}
 		$CNT = count($DATA);
 		if(!$CNT) return '-нет выставленных счетов-';
@@ -454,8 +453,8 @@ class payyandex_class extends kernel_extends {
 		foreach($INFO['operations'] as $r) {
 			//date($r['datetime'])
 			$INFO2 = $this->operationDetail($this->owner->config['yandex_token'], $r['operation_id']);
-			$key = preg_replace('/[^0-9A-zА-я\:\;\№]+/ui','',$INFO2['message']);
-			$key = trim($key,';:№,.\s');
+			//$key = preg_replace('/[^0-9A-zА-я\:\;\№]+/ui','',$INFO2['message']);
+			$key = trim($INFO2['message'],';:№,.\s');
 
 			if(isset($DATA[$key])) {
 				$this->id = $DATA[$key]['id'];
