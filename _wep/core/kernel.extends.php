@@ -502,10 +502,19 @@ abstract class kernel_extends {
 		if ($this->ordfield)
 			$sql_query .= ' ORDER BY ' . $this->ordfield;
 		$result = $this->SQL->execSQL($sql_query);
-		if ($result->err)
+		if($result->err)
 			return $data;
-		while ($row = $result->fetch())
+		while ($row = $result->fetch()) {
 			$data[$row['id']] = $row;
+		}
+		if (isset($this->id) and $this->id) {
+			if(count($data)==1)
+				$this->id = key($data);
+			elseif(count($data)>1)
+				$this->id = array_keys($data);
+			else
+				$this->id = NULL;
+		}
 		return $data;
 	}
 
@@ -716,13 +725,13 @@ abstract class kernel_extends {
 
 	public function _id_as_string() {
 		if (is_array($this->id)) {
-			if(!count($this->id)) return false;
-			/* 	foreach($this->id as $key => $value)
-			  $this->id[$key] = $value; */
+			if(!count($this->id)) return 0;
+			foreach($this->id as &$value)
+			  $value = $this->SqlEsc($value); 
 			return '\'' . implode('\',\'', $this->id) . '\'';
 		}
 		else {
-			if(!$this->id) return false;
+			if(!$this->id) return 0;
 			return '\'' . $this->SqlEsc($this->id) . '\'';
 		}
 	}

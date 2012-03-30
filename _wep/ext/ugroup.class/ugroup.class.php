@@ -653,8 +653,8 @@ class users_class extends kernel_extends {
 		$mess = array();
 		$flag = -1;
 		$listfields = array('t1.*');
-		$clause = 't1 where t1.id = \''.$_DATA['get']['id'].'\'';
-		$this->data = $this->_query($listfields,$clause);
+		$this->id = $_DATA['get']['id'];
+		$this->data = $this->_select();
 		$datau=$this->data[0];
 		if($_DATA['get']['t']<(time()-3600*$_DATA['timer']))
 			$mess[]  = array('error','Срок действия ссылки "востановления пароля" истёк.');
