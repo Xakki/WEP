@@ -184,9 +184,10 @@ class payyandex_class extends kernel_extends {
 			'writable-sum'=>array('type'=>'hidden','value'=>'false'),
 			'comment-needed'=>array('type'=>'hidden','value'=>'true'),
 			'quickpay-form'=>array('type'=>'hidden','value'=>'small'),
-			'targets'=>array('type'=>'hidden','value'=>$data['name']),
+			'targets'=>array('type'=>'hidden','value'=>'Счёт№'.$this->id),
 			'sum'=>array('type'=>'hidden','value'=>$data['amount']),
 			'mail'=>array('type'=>'hidden','value'=>'true'),
+			'title'=>array('type'=>'hidden','value'=>'Оплата услуг'),
 			//'p2payment'=>array('type'=>'hidden','value'=>$this->id),
 			//'destination'=>array('type'=>'hidden','value'=>$this->id),
 			//'codepro'=>array('type'=>'hidden','value'=>$this->id),
@@ -437,7 +438,7 @@ class payyandex_class extends kernel_extends {
 		$temp = $this->qs('*','WHERE status=""','name');
 		$DATA = array();
 		foreach($temp as $r) {
-			$key = preg_replace('/[^0-9A-zА-я\:\№]+/ui','',$r['name']);
+			$key = preg_replace('/[^0-9A-zА-я\:\;\№]+/ui', '', 'Счёт№'.$r['id'].'; '.$r['name']);
 			$key = trim($key,';:№,.\s');
 			$DATA[$key] = $r;
 		}
@@ -453,7 +454,7 @@ class payyandex_class extends kernel_extends {
 		foreach($INFO['operations'] as $r) {
 			//date($r['datetime'])
 			$INFO2 = $this->operationDetail($this->owner->config['yandex_token'], $r['operation_id']);
-			$key = preg_replace('/[^0-9A-zА-я\:\№]+/ui','',$INFO2['message']);
+			$key = preg_replace('/[^0-9A-zА-я\:\;\№]+/ui','',$INFO2['message']);
 			$key = trim($key,';:№,.\s');
 
 			if(isset($DATA[$key])) {
