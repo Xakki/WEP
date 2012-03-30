@@ -271,7 +271,7 @@ class payyandex_class extends kernel_extends {
 		$html['text'] = substr($html['text'], $pos1);	
 		$html['text'] = substr($html['text'], 0, (strpos($html['text'],'form>')+5));
 
-		include_once($this->_CFG['_PATH']['wep_phpscript'].'simple_html_dom.php');
+		include_once($this->_CFG['_PATH']['wep_phpscript'].'lib/simple_html_dom.php');
 		$DOM = str_get_html($html['text']);
 		// Берем урл
 		$obj = $DOM->find('form');

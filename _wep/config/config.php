@@ -381,7 +381,7 @@ while (isset($PHP_SELF[$k]) and $PHP_SELF[$k] != $_CFG['PATH']['wepname']) {
 if(!isset($_SERVER['HTTP_HOST'])) $_SERVER['HTTP_HOST'] = $_CFG['site']['www'];
 
 if (strpos($_SERVER['HTTP_HOST'], 'xn--') !== false) {
-	require_once($_CFG['_PATH']['wep_phpscript'] . '/idna_convert.class.php');
+	require_once($_CFG['_PATH']['wep_phpscript'] . '/lib/idna_convert.class.php');
 	$IDN = new idna_convert();
 	$_SERVER['HTTP_HOST'] = $IDN->decode($_SERVER['HTTP_HOST']);
 	$_CFG['site']['rf'] = 1;

@@ -191,7 +191,7 @@ class html {
 		if (extension_loaded('xsl')) {
 			if (!isset($this->_xslt)) {
 				global $_CFG;
-				include_once($_CFG['_PATH']['wep_phpscript'] . '/_php4xslt.php');
+				include_once($_CFG['_PATH']['wep_phpscript'] . '/lib/_php4xslt.php');
 				$this->_xslt = xslt_create();
 			}
 			$arguments = array('/_xml' => $xml, '/_xsl' => $xsl);

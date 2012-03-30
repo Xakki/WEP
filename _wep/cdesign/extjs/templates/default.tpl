@@ -9,11 +9,8 @@
 		<meta name="description" content="CMS"/>
 		<link rel="SHORTCUT ICON" href="{$_tpl['design']}img/favicon.ico"/>
 		{$_tpl['script']}
-		<script type="text/javascript" src="_design/_script/extjs/adapter/ext/ext-base.js"></script>
-		<script type="text/javascript" src="_design/_script/extjs/ext-all-debug.js"></script>
+		<script type="text/javascript" charset="utf-8" src="http://cdn.sencha.io/ext-4.0.7-gpl/ext-all.js"></script>
 		<script type="text/javascript" src="{$_tpl['design']}script/main.js"></script>
-		<link type="text/css" href="_design/_script/extjs/resources/css/ext-all-notheme.css" rel="stylesheet"/>
-		<link type="text/css" href="_design/_script/extjs/resources/css/xtheme-gray.css" rel="stylesheet"/>
 		<link type="text/css" href="{$_tpl['design']}style/style.css" rel="stylesheet"/>
 
 		

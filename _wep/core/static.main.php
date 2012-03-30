@@ -635,10 +635,10 @@ class static_main {
 		elseif(!isset($_CFG["site"]["work_text"]) or !$_CFG["site"]["work_text"])
 			$_CFG["site"]["work_text"] = 'Ушёл на базу.';
 
-		if(file_exists($_CFG['_PATH']['phpscript'].'/main/work.html'))
+		if(file_exists($_CFG['_PATH']['phpscript'].'/frontend/work.html'))
 			$html = file_get_contents($_CFG['_PATH']['phpscript'].'/work.html');
 		else
-			$html = file_get_contents($_CFG['_PATH']['wep_phpscript'].'/main/work.html');
+			$html = file_get_contents($_CFG['_PATH']['wep_phpscript'].'/frontend/work.html');
 		$html = str_replace('"', '\"', $html);
 		eval('$html = "' .$html . '";');
 		echo $html;

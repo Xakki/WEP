@@ -48,7 +48,7 @@
 		global $_tpl;
 		$m_ug = _getExtMod('ugroup');
 		$m_u = _getExtMod('users');
-		$_tpl['uname']='<a href="'.$_CFG['PATH']['wepname'].'/login.php?exit=ok" class="exit"><img src="'.$_CFG['PATH']['wepname'].'/cdesign/extjs/img/close48.gif" class="exit" alt="CLOSE"/></a>
+		$_tpl['uname']='<a href="'.$_CFG['PATH']['wepname'].'/login.php?exit=ok" class="exit"><img src="'.$_CFG['PATH']['wepname'].'/cdesign/default/img/close48.gif" class="exit" alt="CLOSE"/></a>
 		<div class="uname"><a class="am_user" href="'.$_CFG['PATH']['wepname'].'/index.php?_view=list&_modul='.$m_ug.'&'.$m_ug.'_id='.$data['user']['gid'].'&'.$m_ug.'_ch='.$m_u.'&'.$m_u.'_id='.$data['user']['id'].'&_type=edit">'.$data['user']['name'].' ['.$data['user']['gname'].']</a></div>';
 
 		return $html.'<div class="clk"></div>';

@@ -14,7 +14,7 @@ class payqiwi_class extends kernel_extends {
 		$obj->config['qiwi_minpay'] = 10;
 		$obj->config['qiwi_maxpay'] = 15000;
 
-		$obj->config_form['qiwi_info'] = array('type' => 'info', 'caption'=>'<h3>QIWI</h3>');
+		$obj->config_form['qiwi_info'] = array('type' => 'info', 'caption'=>'<h3>QIWI</h3><p>На сайте необходимо разместить логотип и описание(<a href="http://ishopnew.qiwi.ru/docs.html" target="_blank">материалы QIWI для сайта</a>)</p>');
 		$obj->config_form['qiwi_login'] = array('type' => 'text', 'caption' => 'Логин', 'comment'=>'', 'style'=>'background-color:#2ab7ec;');
 		$obj->config_form['qiwi_password'] = array('type' => 'password', 'md5'=>false, 'caption' => 'Пароль', 'style'=>'background-color:#2ab7ec;');
 		$obj->config_form['qiwi_txn-prefix'] = array('type' => 'text', 'caption' => 'Префикс в номере счёта','comment'=>'', 'style'=>'background-color:#2ab7ec;');

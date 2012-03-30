@@ -293,19 +293,7 @@
 	$_tpl['modulsforms'] = $html;
 
 	$_tpl['styles']['style'] = 1;
-	// extjs style
-//	$_tpl['styles']['extjs/ext-all'] = 1;
-//	$_tpl['script']['script.jquery/form'] = 1;
 	$_tpl['script']['wep'] = 1;
-	
-	// extjs script
-//	$_tpl['script']['extjs/adapter/ext/ext-base'] = 1;
-//	$_tpl['script']['extjs/ext-all-debug'] = 1;
-//	$_tpl['script']['extjs/src/ext-core/src/util/Observable'] = 1;
-	
-	//$_tpl['script']['script.localisation/jquery.localisation-min'] = 1;
-
-//$_CFG['fileIncludeOption']['fancybox']
 
 
 
