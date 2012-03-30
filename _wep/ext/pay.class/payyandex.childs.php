@@ -178,8 +178,8 @@ class payyandex_class extends kernel_extends {
 		);
 		$DATA['form'] = array(
 			'receiver'=>array('type'=>'hidden','value'=>$this->owner->config['yandex_id']),
-			'FormComment'=>array('type'=>'hidden','value'=>$data['name']),
-			'short-dest'=>array('type'=>'hidden','value'=>'Счёт№'.$this->id),
+			'FormComment'=>array('type'=>'hidden','value'=>'Счёт№'.$this->id.'; '.$data['name']),
+			'short-dest'=>array('type'=>'hidden','value'=>$data['name']),
 			'writable-targets'=>array('type'=>'hidden','value'=>'false'),
 			'writable-sum'=>array('type'=>'hidden','value'=>'false'),
 			'comment-needed'=>array('type'=>'hidden','value'=>'true'),
@@ -187,9 +187,9 @@ class payyandex_class extends kernel_extends {
 			'targets'=>array('type'=>'hidden','value'=>$data['name']),
 			'sum'=>array('type'=>'hidden','value'=>$data['amount']),
 			'mail'=>array('type'=>'hidden','value'=>'true'),
-			'p2payment'=>array('type'=>'hidden','value'=>$this->id),
-			'destination'=>array('type'=>'hidden','value'=>$this->id),
-			'codepro'=>array('type'=>'hidden','value'=>$this->id),
+			//'p2payment'=>array('type'=>'hidden','value'=>$this->id),
+			//'destination'=>array('type'=>'hidden','value'=>$this->id),
+			//'codepro'=>array('type'=>'hidden','value'=>$this->id),
 		);
 		if(isset($data['email']))
 			$DATA['form']['address_email'] = array('type'=>'hidden','value'=>$data['email']);
@@ -455,7 +455,7 @@ class payyandex_class extends kernel_extends {
 			$INFO2 = $this->operationDetail($this->owner->config['yandex_token'], $r['operation_id']);
 			$key = preg_replace('/[^0-9A-zА-я\:\№]+/ui','',$INFO2['message']);
 			$key = trim($key,';:№,.\s');
-print_r('<pre>');print_r($INFO2);print_r($INFO);return '-test-';
+
 			if(isset($DATA[$key])) {
 				$this->id = $DATA[$key]['id'];
 				$upd = array('amount'=>$INFO2['amount'], 'tax'=>($DATA[$key]['amount']-$INFO2['amount']), 'sender'=>$INFO2['sender']);
