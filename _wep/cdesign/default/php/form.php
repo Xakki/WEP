@@ -455,6 +455,7 @@ function tpl_form(&$data) {
 					$texthtml .= '</div>';
 					if(isset($r['thumb']) and $r['mask']['thumb'])
 						foreach($r['thumb'] as $thumb) {
+							if(!$thumb['path']) continue;
 							$texthtml .= '<div class="wep_thumb">
 								<a rel="fancy" href="/'.$thumb['value'].'?size='.$thumb['filesize'].'" target="_blank" class="fancyimg">
 									<img src="/'.$thumb['value'].'?size='.$thumb['filesize'].'" alt="img" class="attach" style="height:'.$H.'px;"/>
@@ -506,13 +507,14 @@ function tpl_form(&$data) {
 					$texthtml .= '</div>';
 					if(isset($r['thumb']) and $r['thumb'])
 						foreach($r['thumb'] as $thumb) {
-						$texthtml .= '<div class="wep_thumb">
-							<a rel="fancy" href="/'.$thumb['value'].'?size='.$thumb['filesize'].'" target="_blank" class="fancyimg">
-								<img src="/'.$thumb['value'].'?size='.$thumb['filesize'].'" alt="img" class="attach" style="'.$css.'"/>
-							</a>';
-						if($thumb['w']) $texthtml .= '<div class="wep_thumb_comment">Эскиз размером '.$thumb['w'].'x'.$thumb['h'].'</div>';
-						$texthtml .= '</div>';
-					}
+							if(!$thumb['pref']) continue;
+							$texthtml .= '<div class="wep_thumb">
+								<a rel="fancy" href="/'.$thumb['value'].'?size='.$thumb['filesize'].'" target="_blank" class="fancyimg">
+									<img src="/'.$thumb['value'].'?size='.$thumb['filesize'].'" alt="img" class="attach" style="'.$css.'"/>
+								</a>';
+							if($thumb['w']) $texthtml .= '<div class="wep_thumb_comment">Эскиз размером '.$thumb['w'].'x'.$thumb['h'].'</div>';
+							$texthtml .= '</div>';
+						}
 					$_CFG['fileIncludeOption']['fancybox'] = 1;
 				}
 				elseif(!is_array($r['value']) and $r['value']!='' and $r['att_type']=='swf')

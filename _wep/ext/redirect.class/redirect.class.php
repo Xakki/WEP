@@ -31,6 +31,7 @@ class redirect_class extends kernel_extends {
 		$this->unique_fields['uniq'] = 'uniq';
 
 		//$this->cron[] = array('modul'=>$this->_cl,'function'=>'gc()','active'=>1,'time'=>86400);
+		$this->ordfield = 'id DESC';
 	}
 
 	public function setFieldsForm($form=0) {

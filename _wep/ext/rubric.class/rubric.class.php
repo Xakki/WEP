@@ -26,7 +26,7 @@ class rubric_class extends kernel_extends {
 
 		$this->config['thumbs'] = array(
 			'pref=org_'=> 'original',
-			'w=60;h=;pref=org_;path='=> 'resizecrop',
+			'w=60;h=;pref=;path='=> 'resizecrop',
 		);
 		$this->config['imgsize'] = 3000;
 
@@ -46,6 +46,15 @@ class rubric_class extends kernel_extends {
 			'maxsize'=>$this->config['imgsize'], 
 			'path'=>'');
 
+		foreach($this->config['thumbs'] as $k=>$r) {
+			$k = explode(';',$k);
+			$new = array('type'=>$r);
+			foreach($k as $p) {
+				$p = explode('=',$p);
+				$new[$p[0]] = $p[1];
+			}
+			$this->attaches[$this->v_img]['thumb'][] = $new;
+		}
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'min' => '1');
 		$this->fields['lname'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'min' => '1');
 		$this->fields['checked'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL','default'=>'0');
@@ -65,18 +74,8 @@ class rubric_class extends kernel_extends {
 	public function setFieldsForm($form=0) {
 		parent::setFieldsForm($form);
 
-		foreach($this->config['thumbs'] as $k=>$r) {
-			$k = explode(';',$k);
-			$new = array('type'=>$r);
-			foreach($k as $p) {
-				$p = explode('=',$p);
-				$new[$p[0]] = $p[1];
-			}
-			$this->attaches[$this->v_img]['thumb'][] = $new;
-		}
-
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название рубрики');
-		$this->fields_form['lname'] = array('type' => 'text', 'caption' => 'Название латиницей');
+		$this->fields_form['lname'] = array('type' => 'text', 'caption' => 'Название латиницей', 'mask'=>array('name'=>'name2','min'=>2));
 		$this->fields_form['parent_id'] = array('type' => 'list', 'listname'=>'parentlist', 'caption' => 'Родительская рубрика','mask' =>array('fview'=>1));
 		$this->fields_form[$this->v_img] = array('type'=>'file','caption'=>'Картинка','del'=>1, 'mask'=>array('height'=>80), 'comment'=>static_main::m('_file_size').$this->attaches[$this->v_img]['maxsize'].'Kb');	
 		$this->fields_form["dsc"] = array("type" => "textarea", "caption" => "Описание",'mask' =>array('name'=>'all'));

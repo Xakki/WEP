@@ -11,7 +11,7 @@ ini_set('display_errors', -1);
  * 3 - Номер ревизии , исправленны ошибки
  */
 $_CFG['info'] = array(//информация о СМС
-	'version' => '2.9.26',
+	'version' => '2.9.27',
 	'email' => 'wep@xakki.ru',
 	'icq' => '222392984'
 );
