@@ -25,7 +25,7 @@ class payyandex_class extends kernel_extends {
 
 		$obj->config_form['yandex_info'] = array('type' => 'info', 'caption'=>'<h3>Яндекс.Деньги</h3>');
 		$obj->config_form['yandex_id'] = array('type' => 'text', 'caption'=>'Номер счёта','style'=>'background-color:#F60;');
-		$obj->config_form['yandex_cid'] = array('type' => 'text', 'caption'=>'Идентификатор приложения','comment'=>'Получить его можно <a href="https://sp-money.yandex.ru/myservices/new.xml" target="_blank">тут</a> и <a href="https://sp-money.yandex.ru/myservices/admin.xml">настраивать</a><br>Redirect URI: <b>http://'.$_SERVER['HTTP_HOST'].'/_js.php?_modul=pay&_fn=redirectFromYa</b> ', 'style'=>'background-color:#F60;');
+		$obj->config_form['yandex_cid'] = array('type' => 'text', 'caption'=>'Идентификатор приложения','comment'=>'Получить его можно <a href="https://sp-money.yandex.ru/myservices/new.xml" target="_blank">тут</a> и <a href="https://sp-money.yandex.ru/myservices/admin.xml" target="_blank">настраивать</a><br>Redirect URI: <b>'.$this->REDIRECT_URI.'</b> ', 'style'=>'background-color:#F60;');
 		$obj->config_form['yandex_token'] = array('type' => 'text', 'caption'=>'TOKEN', 'style'=>'background-color:#F60;');
 		$obj->config_form['yandex_lifetime'] = array('type' => 'text', 'caption'=>'Время жизни счёта по умолчанию. Задается в часах. Если 0 , то будетмаксимум (45 суток)', 'style'=>'background-color:#F60;');
 		/*$obj->config_form['yandex_token'] = array('type' => 'hidden');
@@ -207,7 +207,8 @@ class payyandex_class extends kernel_extends {
 			header("Location: ".$this->URI_YM_AUTH . '?client_id='.$this->owner->config['yandex_cid'].'&response_type=code&scope=' . urlencode(implode(' ',$this->SCOPE)) . '&redirect_uri=' . urlencode($this->REDIRECT_URI));
 			die();
 		}
-		return '<h2>Код вставить в поле `TOKEN` для Яндекс.Деньги в конфиге модуля:<h2><textarea style="width:500px;height:150px;">'.$_GET['code'].'</textarea>';
+		$CODE = $this->receiveOAuthToken($this->owner->config['yandex_cid'],$_GET['code']);
+		return '<h2>Код вставить в поле `TOKEN` для Яндекс.Деньги в конфиге модуля:<h2><textarea style="width:500px;height:150px;">'.$CODE.'</textarea>';
 	}
 
 	function yandexAuth($LOGIN,$PASS) {
@@ -397,6 +398,8 @@ class payyandex_class extends kernel_extends {
 			$param['POST']['records'] = $records;
 		$param['USERAGENT'] = $this->YM_USER_AGENT;
 		$html = $this->_http($this->URI_YM_API. '/operation-history',$param);
+		if(!$html['text'] or $html['info']['http_code']!=200)
+			trigger_error('Ошибка запроса к Яндекс API', E_USER_WARNING);
 		$response = json_decode($html['text'], TRUE);
 		return $response;
 	}
@@ -443,6 +446,7 @@ class payyandex_class extends kernel_extends {
 
 		//$INFO = $this->accountInfo($this->owner->config['yandex_token']);
 		$INFO = $this->operationHistory($this->owner->config['yandex_token'],NULL,NULL,'deposition');
+
 		if(!count($INFO['operations'])) return '-нет платежей , '.$CNT.' не оплачено-';
 
 		$i=0;
@@ -451,8 +455,8 @@ class payyandex_class extends kernel_extends {
 			$INFO2 = $this->operationDetail($this->owner->config['yandex_token'], $r['operation_id']);
 			$key = preg_replace('/[^0-9A-zА-я\:\№]+/ui','',$INFO2['message']);
 			$key = trim($key,';:№,.\s');
-	//print_r('<pre>');print_r($INFO2);return '-OK-';
-		if(isset($DATA[$key])) {
+print_r('<pre>');print_r($INFO2);print_r($INFO);return '-test-';
+			if(isset($DATA[$key])) {
 				$this->id = $DATA[$key]['id'];
 				$upd = array('amount'=>$INFO2['amount'], 'tax'=>($DATA[$key]['amount']-$INFO2['amount']), 'sender'=>$INFO2['sender']);
 				if($INFO2['amount']>=($DATA[$key]['amount']*0.95)) {

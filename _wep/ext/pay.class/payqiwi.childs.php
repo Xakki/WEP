@@ -193,7 +193,7 @@ Cчета со статусом большим или равным 100 трак�
 
 	function checkBill() {
 		$bills = $this->_query('*','WHERE statuses<60');
-		if(!count($bills)) return 'Нету счетов';
+		if(!count($bills)) return '-нет выставленных счетов-';
 
 		$x = '<?xml version="1.0" encoding="utf-8"?><request>';
 		$x .= '<protocol-version>4.00</protocol-version>';
