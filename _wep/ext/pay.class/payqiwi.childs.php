@@ -96,7 +96,7 @@ Cчета со статусом большим или равным 100 трак�
 
 	public function setFieldsForm($form=0) {
 		parent::setFieldsForm($form);
-		$this->fields_form['phone'] = array('type' => 'int', 'caption' => 'Номер телефона', 'comment'=>'10 значный номер мобильного. Пример: 9271234567', 'mask'=>array('min'=>10,'max'=>10));
+		$this->fields_form['phone'] = array('type' => 'int', 'caption' => 'Номер телефона', 'comment'=>'10 значный номер мобильного, <b>без 8ки</b>. <br/>Пример: 9271234567', 'mask'=>array('min'=>10,'max'=>10));
 		if($form and !$this->id and isset($_SESSION['user']['phone'])) {
 			$this->fields_form['phone']['default'] = preg_replace('/[^0-9]/','',$_SESSION['user']['phone']);
 			if($this->fields_form['phone']['default'][0]!='9'){
