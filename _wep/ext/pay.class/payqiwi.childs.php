@@ -71,11 +71,13 @@ Cчета со статусом большим или равным 100 трак�
 			241 => 'Сумма слишком мала',
 			242 => 'Превышена максимальная сумма платежа – 15 000р',
 			278 => 'Превышение максимального интервала получения списка счетов',
-			298 => 'Агента не существует в системе',
+			298 => 'Номер телефона введён неверный либо не существует в системе',
 			300 => 'Неизвестная ошибка',
-			330 => 'Ошибка шифрования',
-			339 => 'Не пройден контроль IP-адреса',
-			370 => 'Превышено максимальное кол-во одновременно выполняемых запросов',
+			330 => 'Ошибка шифрования на сервере',
+			339 => 'Не пройден контроль IP-адреса для сервера',
+			370 => 'Превышено максимальное кол-во одновременно выполняемых запросов, повторите запрос позже',
+			510=> 'Ошибка проверки оплаты qiwi, счёт не найден в базе',
+			520=> 'Ошибка при получении данных от QIWI',
 		);
 
 		$this->cron[] = array('modul'=>$this->_cl,'function'=>'checkBill()','active'=>1,'time'=>300);
@@ -144,11 +146,15 @@ Cчета со статусом большим или равным 100 трак�
 				'amount'=>$this->data[$this->id]['cost'],
 				'comment'=>$data['name']
 			);
-			$result = $this->createBill($options);
-			if(!$result)
-				$this->_delete();
-			else
+			$err = $this->createBill($options);
+			if($err===0) {
 				$this->_update(array('name'=>$data['name']));
+			}
+			else {
+				$this->_delete();
+				$this->lang['add_err'] = $this->_enum['errors'][$err];
+				$result = false;
+			}
 		}
 		return $result;
 	}
@@ -187,52 +193,22 @@ Cчета со статусом большим или равным 100 трак�
 		);
 
 		$result = $this->_http($this->API_HREF,$param);
-
-		return $this->check_response($result['text'],'send');
-	}
-
-	function checkBill() {
-		$bills = $this->_query('*','WHERE statuses<60');
-		if(!count($bills)) return '-нет выставленных счетов-';
-
-		$x = '<?xml version="1.0" encoding="utf-8"?><request>';
-		$x .= '<protocol-version>4.00</protocol-version>';
-		$x .= '<request-type>33</request-type>';
-		$x .= '<extra name="password">' . $this->owner->config['qiwi_password'] . '</extra>';
-		$x .= '<terminal-id>' . $this->owner->config['qiwi_login'] . '</terminal-id>';
-		$x .= '<bills-list>';
-		foreach($bills as $txnID) {
-			$x .= '<bill txn-id="' . $this->owner->config['qiwi_txn-prefix'] . $txnID['id'] . '"/>';
-		}
-		$x .= '</bills-list>';
-		$x .= '</request>';
-
-		$param = array(
-			'POST'=>$x
-		);
-
-		$result = $this->_http($this->API_HREF,$param);
-		$flag = $this->check_response($result['text'],'check');
-		if($flag)
-			return '-Успешно-';
-		else
-			return '-Ошибка-';
+		$err = $this->check_response($result['text'],'send');
+		return $err;
 	}
 
 	function check_response($xml,$flag='send') {
-		if(!$xml) return false;
-		$result = true;
+		if(!$xml) return 520;
 		$xml = simplexml_load_string('<?xml version="1.0" encoding="utf-8"?>'.$xml);
 		$rc = $xml->{'result-code'};
 		$fatality = $rc['fatal'];
-		if($rc!='0') {
-			$result = false;
+		$err = (int)$rc;
+		if($err!==0) {
 			if($this->id)
 				$this->_update(array('errors'=>$rc),false,false);
 		}
 		if($fatality=='true') {
-			trigger_error('Ошибка запроса QIWI `'.$this->_enum['errors'][$rc].'`', E_USER_WARNING);
-			return false;
+			return $err;
 		}
 		if($flag=='check') {
 			$billlist = $xml->{'bills-list'};
@@ -258,13 +234,47 @@ Cчета со статусом большим или равным 100 трак�
 					if($this->id and $this->data[$this->id])
 						$this->owner->PayTransaction($status,$this->data[$this->id]['cost'],$this->data[$this->id]['owner_id']);
 					else {
+						$err = 501;
 						trigger_error('Ошибка проверки оплаты qiwi: счёт '.$bill['id'].' не найден в базе', E_USER_WARNING);
 					}
 				};
 			}
 		}
-		return $result;
+		return $err;
 	}
+
+
+	/// CRON
+	function checkBill() {
+		$bills = $this->_query('*','WHERE statuses<60');
+		if(!count($bills)) return '-нет выставленных счетов-';
+
+		$x = '<?xml version="1.0" encoding="utf-8"?><request>';
+		$x .= '<protocol-version>4.00</protocol-version>';
+		$x .= '<request-type>33</request-type>';
+		$x .= '<extra name="password">' . $this->owner->config['qiwi_password'] . '</extra>';
+		$x .= '<terminal-id>' . $this->owner->config['qiwi_login'] . '</terminal-id>';
+		$x .= '<bills-list>';
+		foreach($bills as $txnID) {
+			$x .= '<bill txn-id="' . $this->owner->config['qiwi_txn-prefix'] . $txnID['id'] . '"/>';
+		}
+		$x .= '</bills-list>';
+		$x .= '</request>';
+
+		$param = array(
+			'POST'=>$x
+		);
+
+		$result = $this->_http($this->API_HREF,$param);
+		$err = $this->check_response($result['text'],'check');
+		if($err===0)
+			return '-Успешно-';
+		else{
+			trigger_error('Ошибка запроса QIWI `'.$this->_enum['errors'][$err].'`', E_USER_WARNING);
+			return '-Ошибка-'.$this->_enum['errors'][$err];
+		}
+	}
+
 }
 
 
