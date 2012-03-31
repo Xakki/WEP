@@ -156,8 +156,8 @@ class payyandex_class extends kernel_extends {
 		elseif(isset($data['phone']))
 			$ADD['phone'] = $data['phone'];
 
-		if(isset($_SESSION['user']['login']))
-			$ADD['email'] = $data['email'] = $_SESSION['user']['login'];
+		if(isset($_SESSION['user']['email']))
+			$ADD['email'] = $data['email'] = $_SESSION['user']['email'];
 		elseif(isset($data['email']))
 			$ADD['email'] = $data['email'];
 

@@ -15,6 +15,7 @@
 		$_design = $_SESSION['user']['design'];
 	else 
 		$_design = $_CFG['wep']['design'];
+	$_design = 'default';////////////////////////////
 		
 	$HTML = new html($_CFG['PATH']['cdesign'],$_design);
 	if(!isset($_GET['_modul'])) $_GET['_modul'] = '';
@@ -113,10 +114,10 @@
 	<option '.($_COOKIE[$_CFG['wep']['_showallinfo']]==3?'selected="selected"':'').' value="3">Показать все логи</option>
 	</select></span>';
 
-			$_tpl['debug'] .= '<span class="seldebug"><select onchange="setCookie(\'cdesign\',this.value);window.location.href=\''.$_CFG['PATH']['wepname'].'/index.php\';">
+			/*$_tpl['debug'] .= '<span class="seldebug"><select onchange="setCookie(\'cdesign\',this.value);window.location.href=\''.$_CFG['PATH']['wepname'].'/index.php\';">
 	<option '.($_design=='default'?'selected="selected"':'').' value="default">Default</option>
 	<option '.($_design=='extjs'?'selected="selected"':'').' value="extjs">ExtJS</option>
-	</select></span>';
+	</select></span>';*/
 		}
 		if(!isset($_SESSION['wep_info'])) {
 			if(!$SQL) $SQL = new $_CFG['sql']['type']($_CFG['sql']);

@@ -909,7 +909,7 @@ class static_form {
 						$form['att_type'] = 'img';
 					} else {
 						if($value['name'])
-							$value['ext'] = strtolower(array_pop(explode('.',$value['name'])));
+							$value['ext'] = strtolower(array_pop(explode('.',(string)$value['name'])));
 						if(!$value['ext'] or preg_match('/[^A-Za-z0-9]/',$value['ext'])) { // Кривое расширение фаила
 							$error[]=39;
 							return false;
