@@ -610,9 +610,10 @@ class static_tools {
 	 */
 	static function _checkdir($dir) {
 		global $_CFG;
+		$dir = rtrim($dir,'/');
 		if (!$dir)
 			return false;
-		if (!file_exists(trim($dir,'/'))) {
+		if (!file_exists($dir)) {
 			/*if (!file_exists(dirname($dir))) {
 				self::_checkdir(dirname($dir));
 			}*/
