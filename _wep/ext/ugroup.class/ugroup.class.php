@@ -477,7 +477,7 @@ class users_class extends kernel_extends {
 		$arr = array('mess'=>array(),'vars'=>array());
 		$mess = $DATA = array();
 		if(static_main::_prmUserCheck()) {
-			$this->id = $_SESSION['user']['id'];
+			$this->id = (int)$_SESSION['user']['id'];
 			$this->data = $this->_select();
 			$DATA = current($this->data);
 		}
@@ -503,9 +503,9 @@ class users_class extends kernel_extends {
 			$pass = $_POST[$this->fn_pass];
 			$arr = $this->fFormCheck($_POST,$param,$argForm);
 			if(!count($arr['mess'])){
-				$clause = 't1 where (t1.'.$this->fn_login.' = \''.$arr['vars'][$this->fn_login].'\'';
+				$clause = 't1 where (t1.'.$this->fn_login.' = \''.$this->SqlEsc($arr['vars'][$this->fn_login]).'\'';
 				if($this->fn_login!='email' and $arr['vars']['email']) {
-					$clause .= ' or t1.email = \''.$arr['vars']['email'].'\'';
+					$clause .= ' or t1.email = \''.$this->SqlEsc($arr['vars']['email']).'\'';
 				}
 				$clause .= ' )';
 				if($this->id) $clause .= ' and id!='.$this->id;
@@ -690,7 +690,7 @@ class users_class extends kernel_extends {
 		$mess = array();
 		$flag = 0;
 		$listfields = array('t1.*');
-		$clause = 't1 where t1.email = \''.$_DATA['post']['mail'].'\'';
+		$clause = 't1 where t1.email = \''.$this->SqlEsc($_DATA['post']['mail']).'\'';
 		$this->data = $this->_query($listfields,$clause);
 		if(count($this->data)==1 and $this->data[0]['active']==1) {
 			$datau=$this->data[0];
@@ -744,7 +744,7 @@ class users_class extends kernel_extends {
 		$ID = $this->SqlEsc($ID);
 		if(isset($this->userCach[$ID]))
 			return $this->userCach[$ID];
-		$DATA = $this->_query('t2.name as gname,t1.*',' t1 JOIN '.$this->owner->tablename.' t2 ON t1.owner_id=t2.id WHERE t1.'.$fld.'="'.$ID.'"');
+		$DATA = $this->_query('t2.name as gname,t1.*',' t1 JOIN '.$this->owner->tablename.' t2 ON t1.owner_id=t2.id WHERE t1.'.$fld.'="'.$this->SqlEsc($ID).'"');
 		if(count($DATA)) {
 			$DATA = $DATA[0];
 			$this->userCach[$ID] = $DATA;
@@ -758,7 +758,7 @@ class users_class extends kernel_extends {
 			$field = array('creater_id');
 		foreach($data as $r) {
 			foreach($field as $ur) 
-				$DATA[$r[$ur]] = $r[$ur];
+				$DATA[$r[$ur]] = $this->SqlEsc($r[$ur]);
 		}
 		if(count($DATA))
 			$DATA = $this->_query('t2.name as gname,t1.*',' t1 JOIN '.$this->owner->tablename.' t2 ON t1.owner_id=t2.id WHERE t1.id IN ('.implode(',',$DATA).')','id');
