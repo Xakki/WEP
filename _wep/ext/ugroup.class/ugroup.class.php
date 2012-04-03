@@ -479,7 +479,7 @@ class users_class extends kernel_extends {
 		if(static_main::_prmUserCheck()) {
 			$this->id = $_SESSION['user']['id'];
 			$this->data = $this->_select();
-			$DATA = $this->data[$this->id];
+			$DATA = current($this->data);
 		}
 		else {
 		// добавлены настройки на форму регистрации
@@ -655,7 +655,7 @@ class users_class extends kernel_extends {
 		$listfields = array('t1.*');
 		$this->id = $_DATA['get']['id'];
 		$this->data = $this->_select();
-		$datau=$this->data[0];
+		$datau=current($this->data);
 		if($_DATA['get']['t']<(time()-3600*$_DATA['timer']))
 			$mess[]  = array('error','Срок действия ссылки "востановления пароля" истёк.');
 		elseif(count($this->data)==1 and $datau['active']==1 and $_DATA['get']['hash']==(md5($datau[$this->fn_pass].$_DATA['get']['t'].$datau['email']).'h')) {

@@ -215,8 +215,7 @@ class pay_class extends kernel_extends {
 	function PayTransaction($status,$cost,$id) {
 		$this->id = $id;
 		if($status==1) {
-			$data = $this->_select();
-			$data = $data[$id];
+			$data = current($this->_select());
 			_new_class('ugroup', $UGROUP);
 			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance-'.$cost.' WHERE id='.$data[$this->mf_createrid]);
 			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance+'.$cost.' WHERE id='.$data['user_id']);
