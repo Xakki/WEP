@@ -127,7 +127,7 @@ class pg_class extends kernel_extends {
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название', 'mask' => array('min' => 1, 'onetd' => 'Название'));
 		$this->fields_form['name_in_menu'] = array('type' => 'text', 'caption' => 'Название в меню', 'mask' => array('onetd' => 'close'));
 
-		$this->fields_form['href'] = array('type' => 'text', 'caption' => 'Redirect', 'mask' => array('onetd' => 'Содержимое'));
+		$this->fields_form['href'] = array('type' => 'text', 'caption' => 'Ссылка', 'comment'=>'Перенаправление по другому адресу (/ или http://)', 'mask' => array('onetd' => 'Содержимое'));
 
 		$this->fields_form['design'] = array('type' => 'list', 'listname' => 'mdesign', 'caption' => 'Дизайн', 'mask' => array());
 		$this->fields_form['template'] = array('type' => 'list', 'listname' => 'templates', 'caption' => 'Шаблон', 'mask' => array('onetd' => 'close'));
@@ -135,7 +135,6 @@ class pg_class extends kernel_extends {
 		$this->fields_form['onmenu'] = array('type' => 'list', 'listname' => 'menu', 'multiple' => 2, 'caption' => 'Меню', 'mask' => array('onetd' => 'Опции'));
 
 		$this->fields_form['onmap'] = array('type' => 'checkbox', 'caption' => 'Карта', 'comment' => 'Отображать эту страницу на карте сайта', 'default' => 1, 'style' => 'background-color:#B3D142;');
-		//$this->fields_form['onmapinc'] = array('type' => 'checkbox', 'caption'=>'Карта-php', 'comment' => 'Отображать на карте сайта, карту сгенерированную php','default'=>1,'style'=>'background-color:e1e1e1;');
 		$this->fields_form['pagemap'] = array('type' => 'list', 'listname' => 'pagemap', 'caption' => 'Карта-php', 'comment' => 'Отображать на карте сайта, карту сгенерированную php', 'mask' => array('fview' => 1), 'style' => 'background-color:#B3D142;');
 		$this->fields_form['pagemenu'] = array('type' => 'list', 'listname' => 'pagemap', 'caption' => 'Меню-php', 'comment' => 'Отображать подменю, сгенерированную php', 'mask' => array('fview' => 1), 'style' => 'background-color:#B3D142;');
 		$this->fields_form['onpath'] = array('type' => 'checkbox', 'caption' => 'Путь', 'comment' => 'Отображать в хлебных крошках', 'default' => 1, 'mask' => array('onetd' => 'close'));
@@ -147,6 +146,13 @@ class pg_class extends kernel_extends {
 			$this->fields_form['ugroup'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'ugroup', 'caption' => 'Доступ пользователю', 'default' => '0', 'mask' => array());
 		$this->fields_form['ordind'] = array('type' => 'int', 'caption' => 'ORD', 'mask' => array());
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
+
+		
+		$this->formSort = array(
+			'Основное'=>array('alias','name','href','template','onmenu','ugroup','active'),
+			'Дополнительно'=>array('parent_id','name_in_menu','design','onmap','pagemap','pagemenu','onpath','attr','aparam','ordind'),
+		);
+
 	}
 
 	function _getlist(&$listname, $value = 0) {

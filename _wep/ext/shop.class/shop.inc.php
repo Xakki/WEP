@@ -52,7 +52,9 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 		$formparam['filter'] = $SHOP->childs['product']->productFindForm($rid,1,$Chref);// форма поиска
 
 		if(count($formparam)) {
-			$html .='<div class="blockhead searchslide" onclick="slideBlock(this,\'#form_tools_paramselect\');">Поиск</div><div class="hrb"></div>'.$HTML->transformPHP($formparam,'#pg#filter').'<br/>';
+			//print_r('<pre>');print_r($formparam['filter']);
+			if(count($formparam['filter']))
+				$html .='<div class="blockhead searchslide" onclick="slideBlock(this,\'#form_tools_paramselect\');">Поиск</div><div class="hrb"></div>'.$HTML->transformPHP($formparam,'#pg#filter').'<br/>';
 			if(isset($_GET['sbmt']) and $_GET['sbmt']=='Поиск')
 				$_tpl['onload'] .= 'jQuery(\'div.searchslide\').click();';
 			//$_tpl['onload'] .= "JSFR('#form_tools_paramselect');";

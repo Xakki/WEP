@@ -299,6 +299,11 @@ class rubricparam_class extends kernel_extends {
 		$this->fields_form['comment'] = array('type' => 'text', 'caption' => 'Комменты', 'mask' =>array('name'=>'all'));
 		$this->fields_form['ordind'] = array('type' => 'int', 'caption' => 'ORD','mask'=>array());
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Активность');
+		
+		$this->formSort = array(
+			'Основное'=>array('name','type','typelist','formlist','edi','active'),
+			'Дополнительно'=>array('owner_id','constrn','def','min','max','step','mask','maskn','comment','ordind'),
+		);
 
 	}
 

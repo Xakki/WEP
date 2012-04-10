@@ -1016,7 +1016,7 @@ abstract class kernel_extends {
 		  }
 		  $this->fields_form[$k] = $r;
 		  } */
-		if (!$form and count($this->formDSort)) {
+		if ($form==0 and count($this->formDSort)) {
 			$temp = $this->fields_form;
 			$this->fields_form = array();
 			foreach ($this->formDSort as $rr) {
@@ -1027,14 +1027,25 @@ abstract class kernel_extends {
 					$this->fields_form[$rr] = $temp[$rr];
 				}
 			}
-		} elseif ($form and count($this->formSort)) {
+		} elseif ($form==1 and count($this->formSort)) {
+			$formSort = array();
+			if(is_array(current($this->formSort))) {
+				foreach($this->formSort as $tr) {
+					if(is_array($tr))
+						$formSort = array_merge($formSort, $tr);
+					else
+						$formSort[] = $tr;
+				}
+			}
+			else
+				$formSort = $this->formSort;
 			$temp = $this->fields_form;
-			$this->key_formSort = array_flip($this->formSort);
+			$this->key_formSort = array_flip($formSort);
 			if (isset($this->key_formSort['#over#'])) {
 				$over = array_diff_key($temp, $this->key_formSort);
 			}
 			$this->fields_form = array();
-			foreach ($this->formSort as $rr) {
+			foreach ($formSort as $rr) {
 				if ($rr == '#over#') {
 					$this->fields_form = $over+$this->fields_form;
 				} elseif (isset($temp[$rr])) {
@@ -1079,7 +1090,7 @@ abstract class kernel_extends {
 		}
 		if (!is_array($fields_form) or !count($fields_form))
 			return false;
-		$fields_form['_*features*_'] = array('type' => 'info', 'name' => $this->_cl, 'method' => 'post', 'id' => $this->id, 'action' => $_SERVER['REQUEST_URI']);
+		$fields_form['_*features*_'] = array('name' => $this->_cl, 'method' => 'post', 'id' => $this->id, 'action' => $_SERVER['REQUEST_URI']);
 		$fields_form = array('_info'=>array('type' => 'info', 'css' => 'caption')) + $fields_form;
 		if ($this->id)
 			$fields_form['_info']['caption'] = static_main::m('update_name', array($this->caption), $this);
@@ -1399,7 +1410,7 @@ abstract class kernel_extends {
 
 			if ($this->owner and count($this->owner->childs))
 				foreach ($this->owner->childs as $ck => &$cn) {
-					if (count($cn->fields_form) and $ck != $this->_cl and $cn->_prmModulShow()) {
+					if ($ck != $this->_cl and $cn->_prmModulShow()) {//count($cn->fields_form) and 
 						$PARAM['topmenu']['ochild_' . $ck] = array(
 							'href' => array($this->_cl . '_id' => $this->owner->id, $this->_cl . '_ch' => $ck),
 							'caption' => $cn->caption . '(' . $row[$ck . '_cnt'] . ')',

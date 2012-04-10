@@ -42,6 +42,7 @@ class content_class extends kernel_extends {
 	}
 
 	public function setFieldsForm($form = 0) {
+		parent::setFieldsForm($form);
 		# fields
 		$this->fields_form['owner_id'] = array('type' => 'list', 'listname' => 'ownerlist', 'caption' => 'На странице');
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Подзаголовок');
@@ -62,15 +63,24 @@ class content_class extends kernel_extends {
 			//$this->fields_form['pg']['paramedit']['contentsCss'] = "['/_design/default/style/main.css', '/_design/_style/main.css']";
 		}
 		if ($this->_CFG['wep']['access'])
-			$this->fields_form['ugroup'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'ugroup', 'caption' => 'Доступ', 'default' => '0', 'css'=>'minform');
-		$this->fields_form['styles'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'style', 'caption' => 'CSS', 'mask' => array('onetd' => 'Дизайн'), 'css'=>'minform');
-		$this->fields_form['script'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'script', 'caption' => 'SCRIPT', 'mask' => array('onetd' => 'none'), 'css'=>'minform');
+			$this->fields_form['ugroup'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'ugroup', 'caption' => 'Доступ', 'def
+		ault' => '0'); //'css'=>'minform'
+		$this->fields_form['styles'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'style', 'caption' => 'CSS', 'mask' => array('onetd' => 'Дизайн')); //, 'css'=>'minform'
+		$this->fields_form['script'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'script', 'caption' => 'SCRIPT', 'mask' => array('onetd' => 'none')); //, 'css'=>'minform'
 		$this->fields_form['keywords'] = array('type' => 'text', 'caption' => 'META-keywords', 'mask' => array('onetd' => 'none'));
 		$this->fields_form['description'] = array('type' => 'text', 'caption' => 'META-description', 'mask' => array('onetd' => 'close', 'name' => 'all'));
-		$this->fields_form['ordind'] = array('type' => 'int', 'caption' => 'ORD');
-		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
 		$this->fields_form['memcache'] = array('type' => 'int', 'caption' => 'Memcache time', 'comment' => '-1 - отключает кеш полностью,0 - откл кеширование,1> - кеширование в сек.', 'mask' => array('fview' => 1));
 		$this->fields_form['memcache_solt'] = array('type' => 'list', 'listname' => 'memcache_solt', 'caption' => 'Memcache соль', 'mask' => array('fview' => 1));
+		$this->fields_form['ordind'] = array('type' => 'int', 'caption' => 'ORD');
+		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
+		
+		$this->formSort = array(
+			'Основное'=>array('marker','global','pagetype','funcparam'),
+			'Контент'=>array('pg','keywords','description'),
+			'Дополнительно'=>array('owner_id','name','href','ugroup','styles','script','memcache','memcache_solt','ordind'),
+			'active',
+		);
+
 		$this->_enum['memcache_solt'] = array(
 			0 => '---',
 			1 => 'UserID',
@@ -224,6 +234,7 @@ class content_class extends kernel_extends {
 		if (isset($f_data['pagetype']) and $f_data['pagetype']) {
 			$this->addForm = $this->getContentIncParam($f_data);
 			if (count($this->addForm)) {
+				$this->formSort['Основное'] = array_merge($this->formSort['Основное'], array_keys($this->addForm));
 				$f_fieldsForm = static_main::insertInArray($f_fieldsForm, 'pagetype', $this->addForm); // обработчик параметров рубрики
 				$f_fieldsForm['funcparam']['style'] = 'display:none;';
 			}

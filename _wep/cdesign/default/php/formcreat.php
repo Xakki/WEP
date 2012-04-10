@@ -36,7 +36,17 @@
 			$texthtml .= '<form id="'.$ID.'" method="'.$attr['method'].'"'.$enctype.' action="'.$attr['action'].'" ';
 			if(isset($attr['onsubmit']))
 				$texthtml .= 'onsubmit="'.$attr['onsubmit'].'"';
-			$texthtml .= '>' . tpl_form($data['form']).'</form>';
+			$texthtml .= '>';
+
+			if(count($data['formSort']) and is_array(current($data['formSort']))) {
+				$_CFG['fileIncludeOption']['jquery-ui']= true;
+				$_tpl['onload'] .= '$("#'.$ID.'").tabs();';
+				$texthtml .= tpl_form($data['form'], $data['formSort']);
+			}
+			else
+				$texthtml .= tpl_form($data['form']);
+			$texthtml .= '</form>';
+
 			if(isset($attr['id']) and $attr['id'])
 				$flag = 2;
 			else

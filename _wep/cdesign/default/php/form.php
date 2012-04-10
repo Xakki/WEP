@@ -1,18 +1,52 @@
 <?php
-function tpl_form(&$data) {
+function tpl_form(&$data, $tabs = array()) {
 	global $_CFG, $_tpl;
+
 	$attr = array();
 	if(isset($data['_*features*_'])) {
 		$attr = $data['_*features*_'];
-		unset($data['_*features*_']);
 	}
 	if(!isset($attr['id']))
 		$attr['id'] = 0;
 	$texthtml = '';
-	$_CFG['fileIncludeOption']['form'] = 1;
+	$_CFG['fileIncludeOption']['form'] = true;
 
+	// TABS
+	$flagTabs = null;
+	if(count($tabs)) {
+		$i=0;
+		$tempTabs = array();
+		$tabMenu = '<ul>';
+		foreach($tabs as $kS=>$rS) {
+			if(is_array($rS)) {
+				$tabMenu .= '<li><a href="#weptabs'.$i.'">'.$kS.'</a></li>';
+				$tempTabs[$i] = array_flip($rS);
+				$i++;
+			}
+		}
+		$tabMenu .= '</ul>';
+		$flagTabs = 0;
+	}
+
+	$tagStatus = false;
 	foreach($data as $k=>$r) {
-		if($k=='_*features*_') continue;
+		if(!isset($r['type'])) continue;
+
+		if(!is_null($flagTabs)) {
+
+			if($tagStatus and (isset($tempTabs[$flagTabs][$k]) or !isset($tempTabs[($flagTabs-1)][$k])) ) {
+				$texthtml .= '</div>';
+				$tagStatus = false;
+			}
+
+			if(!$tagStatus and isset($tempTabs[$flagTabs][$k])) {
+				$texthtml .= $tabMenu.'<div id="weptabs'.$flagTabs.'">';
+				$tagStatus = true;
+				$flagTabs++;
+				$tabMenu = '';
+			}
+		}
+
 		if(!isset($r['value'])) $r['value'] = '';
 		if($r['type']!='hidden')
 			$texthtml .= '<div id="tr_'.$k.'" style="'.(isset($r['style'])?$r['style']:'').'" class="div-tr'.
@@ -636,6 +670,11 @@ function tpl_form(&$data) {
 		if($r['type']!='hidden')
 			$texthtml .= '</div>';
 	}
+
+	if(!is_null($flagTabs) and $tagStatus) { // TABS
+		$texthtml .= '</div>';
+	}
+
 	return $texthtml;
 }
 

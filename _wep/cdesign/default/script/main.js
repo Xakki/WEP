@@ -39,7 +39,7 @@ function contentIncParam(obj,path,funcparam) {
 		//replaceWith
 		JSWin(param);
 	} else {
-		jQuery('form>div.flexform').remove();
+		jQuery('form div.flexform').remove();
 		jQuery('#tr_funcparam').hide();
 	}
 	return false;

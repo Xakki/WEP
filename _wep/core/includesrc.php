@@ -37,6 +37,10 @@
 			$_tpl['styles']['style.jquery/fancybox'] = 1;
 			$_tpl['onload'] .= "jQuery('.fancyimg').fancybox();";
 		}
+		if(isset($gfi['jquery-ui']) and $gfi['jquery-ui']) {
+			$_tpl['script']['script.jquery/jquery-ui'] = 1;
+			$_tpl['styles']['style.jquery/'.$_CFG['fileIncludeOption']['uiStyle'].'/jquery-ui'] = 1;
+		}
 		if(isset($gfi['datepicker']) and $gfi['datepicker']) {
 			$_tpl['script']['script.jquery/jquery-ui'] = 1;
 			$_tpl['script']['jquery.localisation/jquery.ui.datepicker-ru'] = 1;

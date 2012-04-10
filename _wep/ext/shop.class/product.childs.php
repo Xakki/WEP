@@ -916,7 +916,7 @@ class product_class extends kernel_extends {
 		$this->kFields2FormFields($this->filter_form);
 		/*if($flag)
 			$_tpl['onload'] .= '$(\'#form_tools_paramselect div.multiplebox input\').live(\'click\',multiCheckBox); $(\'#form_tools_paramselect input\').live(\'change\',filterChange);';*/
-		return $this->form;
+		return $this->filter_form;
 	}
 
 	function getTranslitePatchFromText($var) {
