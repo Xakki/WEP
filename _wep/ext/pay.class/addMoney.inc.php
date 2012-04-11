@@ -137,8 +137,12 @@
 		<li class="pay-users"><a href="'.$Chref.'/cash.html" title="Наличными">Наличными</a></li>';
 		_new_class('pay', $PAY);
 		if(count($PAY->childs)) {
+			if(isset($_GET['summ']) and $_GET['summ'])
+				$summ = '?summ='.$_GET['summ'];
+			else
+				$summ = '';
 			foreach($PAY->childs as &$child) {
-				$html .= '<li class="pay-'.$child->_cl.'"><a href="'.$Chref.'/'.$child->_cl.'.html" title="'.$child->caption.'">'.$child->caption.'</a></li>';
+				$html .= '<li class="pay-'.$child->_cl.'"><a href="'.$Chref.'/'.$child->_cl.'.html'.$summ.'" title="'.$child->caption.'">'.$child->caption.'</a></li>';
 			}
 			unset($child);
 		}

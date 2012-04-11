@@ -56,3 +56,15 @@
 .pay_list tr td:nth-child(3) {
 	min-width:60px;
 }
+.pay_list tr.paylist0 {
+
+}
+.pay_list tr.paylist1 {
+	color:green;
+}
+.pay_list tr.paylist2 {
+	color:gray;
+}
+.pay_list tr.paylist3 {
+	color:#e1e1e1;
+}

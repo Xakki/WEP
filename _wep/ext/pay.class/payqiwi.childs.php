@@ -98,12 +98,16 @@ Cчета со статусом большим или равным 100 трак�
 		parent::setFieldsForm($form);
 		$this->fields_form['phone'] = array('type' => 'int', 'caption' => 'Номер телефона', 'comment'=>'10 значный номер мобильного, <b>без 8ки</b>. <br/>Пример: 9271234567', 'mask'=>array('min'=>10,'max'=>10));
 		if($form and !$this->id and isset($_SESSION['user']['phone'])) {
-			$this->fields_form['phone']['default'] = preg_replace('/[^0-9]/','',$_SESSION['user']['phone']);
-			if($this->fields_form['phone']['default'][0]!='9'){
-				$this->fields_form['phone']['default'] = mb_substr($this->fields_form['phone']['default'],1);
+			$tmp = preg_replace('/[^0-9]/','',$_SESSION['user']['phone']);
+			if($tmp[0]!='9'){
+				$tmp = mb_substr($tmp,1);
 			}
+			if($tmp and strlen($tmp)==10)
+				$this->fields_form['phone']['default'] = $tmp;
 		}
 		$this->fields_form['cost'] = array('type' => 'int', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->owner->config['qiwi_minpay'].'р, максимум '.$this->owner->config['qiwi_maxpay'].'р', 'default'=>100, 'mask'=>array('minint'=>$this->owner->config['qiwi_minpay'],'maxint'=>$this->owner->config['qiwi_maxpay']));
+		if(isset($_GET['summ']))
+			$this->fields_form['cost']['default'] = ceil(floatval($_GET['summ']));
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Комментарий', 'mask'=>array('name'=>'all'));
 		$this->fields_form['statuses'] = array('type' => 'list', 'listname'=>'statuses', 'readonly'=>1, 'caption' => 'Статус', 'mask'=>array());
 		$this->fields_form['errors'] = array('type' => 'list', 'listname'=>'errors', 'readonly'=>1, 'caption' => 'Ошибка', 'mask'=>array());
@@ -146,6 +150,7 @@ Cчета со статусом большим или равным 100 трак�
 				'amount'=>$this->data[$this->id]['cost'],
 				'comment'=>$data['name']
 			);
+			$_SESSION['user']['phone'] = $this->data[$this->id]['phone'];
 			$err = $this->createBill($options);
 			if($err===0) {
 				$this->_update(array('name'=>$data['name']));
@@ -214,11 +219,11 @@ Cчета со статусом большим или равным 100 трак�
 			$billlist = $xml->{'bills-list'};
 			if($billlist) {
 				foreach ($billlist->children() as $bill) {
-
 					$upd = array(
 						'statuses' => (int)$bill['status'],
 						'cost' => floatval($bill['sum'])
 					);
+					/////$upd['statuses']=60; //TEST - успешная оплата
 					if($this->owner->config['qiwi_txn-prefix'])
 						$this->id = (int)str_replace($this->owner->config['qiwi_txn-prefix'],'',$bill['id']);
 					else

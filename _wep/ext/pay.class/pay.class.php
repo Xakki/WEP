@@ -49,7 +49,8 @@ class pay_class extends kernel_extends {
 		$this->_enum['status'] = array(
 			0 => 'Неоплаченный счёт',
 			1 => 'Оплаченный счёт',
-			2 => 'Счёт отклонён'
+			2 => 'Счёт отклонён',
+			3 => 'Счёт отменён',
 		);
 	}
 
@@ -159,11 +160,12 @@ class pay_class extends kernel_extends {
 	function checkPayUsers($paychild='',$flag=false) {
 		_new_class('ugroup', $UGROUP);
 		$id = 0;
+		// 51 - уникальный код уровня доступа для этого модуля
 		// Группа Платежные системы
-		$data1 = $UGROUP->_query('*','WHERE name = "'.$this->caption.'"');
+		$data1 = $UGROUP->_query('*','WHERE level = "51"');
 		if(count($data1)!=1) {
 			$UGROUP->_add(array(
-				'level'=>'-1',
+				'level'=>'51',
 				'name'=>$this->caption,
 				'wep'=>'0',
 				'negative'=>'1',
@@ -175,7 +177,7 @@ class pay_class extends kernel_extends {
 		$data2 = $UGROUP->childs['users']->_query('*','WHERE owner_id = '.$UGROUP->id,'email');
 
 		// юзер по умолчанию
-		$email = 'pay_block@'.$this->_CFG['site']['www'];
+		$email = 'pay@'.$this->_CFG['site']['www'];
 		if(!isset($data2[$email])) {
 			$UGROUP->childs['users']->_add(array(
 				'email'=>$email,
@@ -216,6 +218,7 @@ class pay_class extends kernel_extends {
 		$this->id = $id;
 		if($status==1) {
 			$data = current($this->_select());
+			if(!count($data)) return false;
 			_new_class('ugroup', $UGROUP);
 			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance-'.$cost.' WHERE id='.$data[$this->mf_createrid]);
 			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance+'.$cost.' WHERE id='.$data['user_id']);
@@ -258,14 +261,20 @@ class pay_class extends kernel_extends {
 		$data['#list#'] = $this->_query('*',$where);
 		if(count($data['#list#'])) {
 			$userlist = array();
-			foreach($data['#list#'] as $k=>$r) {
+			foreach($data['#list#'] as &$r) {
 				if(!isset($userlist[$r['user_id']]))
 					$userlist[$r['user_id']] = $r['user_id'];
 				if(!isset($userlist[$r[$this->mf_createrid]]))
 					$userlist[$r[$this->mf_createrid]] = $r[$this->mf_createrid];
+				$r['#status#'] = $this->_enum['status'][$r['status']];
+				if(isset($this->childs[$r['pay_modul']])) {
+					$r['#pay_modul#'] = $this->childs[$r['pay_modul']]->caption;
+					$r['#lifetime#'] = $this->config[substr($this->childs[$r['pay_modul']]->_cl,3).'_lifetime'];
+					$r['#formType#'] = $this->childs[$r['pay_modul']]->pay_formType;
+				}
 			}
 			_new_class('ugroup', $UGROUP);
-			$data['#users#'] = $UGROUP->childs['users']->_query('t1.*,t2.name as gname','t1 JOIN '.$UGROUP->tablename.' t2 ON t1.owner_id=t2.id WHERE t1.id IN ('.implode(',',$userlist).')','id');
+			$data['#users#'] = $UGROUP->childs['users']->_query('t1.*,t2.level,t2.name as gname','t1 JOIN '.$UGROUP->tablename.' t2 ON t1.owner_id=t2.id WHERE t1.id IN ('.implode(',',$userlist).')','id');
 		}
 		return $data;
 	}

@@ -2,48 +2,59 @@
 
 function tpl_paylist($data)
 {
+	global $_tpl;
+	$_tpl['styles']['../default/_pay/pay'] = 1;
 	$html = '';
 	if(count($data['#list#'])) {
 		$html .= '<h3>Начальный баланс 0 руб.</h3>';
-		if(isset($_SESSION['user']['id']))
-			$data['#users#'][$_SESSION['user']['id']]['name'] = '-Вы-';
 		global $PGLIST;
-		if(isset($data['#users#'][1]) and isset($PGLIST->config['sitename'])) {
-			$data['#users#'][1]['name'] = $PGLIST->config['sitename'];
-		}
-		$html .= '<table border="1">
+		//if(isset($data['#users#'][1]) and isset($PGLIST->config['sitename'])) {
+		//	$data['#users#'][1]['name'] = $PGLIST->config['sitename'];
+		//}
+		$html .= '<table class="pay_list">
 			<tr>
 				<td>#</td>
 				<td>Операция</td>
-				<td>От кого</td>
-				<td>Кому</td>
-				<td>Сколько</td>
+				<td>Плательщик / Получатель</td>
+				<td>Статус</td>
+				<td>Сумма<br/>'.$data['#curr#'].'</td>
 				<td>Время</td>
 				<td>Баланс</td>
 			</tr>';
 		$b  = 0;
 		foreach($data['#list#'] as $k=>$r) {
-			if($_SESSION['user']['id']==$r['creater_id'])
-				$b  -= $r['cost'];
-			else
-				$b  += $r['cost'];
+			if(!$r['status']) {
+				if($r['#formType#']===true)
+					$r['#status#'] .= ' [<a href="/_js.php?_modul=pay&_fn=payFormBilling&id='.$r['id'].'" onclick="return wep.JSWin({\'type\':this});" target="_blank">Оплатить</a>]';
+				elseif($r['#formType#'])
+					$r['#status#'] .= ' [<a href="'.$r['#formType#'].'" target="_blank">Оплатить</a>]';
+				$r['#status#'] .= '<br/><i>[до '.date('Y-m-d H:i',($r['mf_timecr']+($r['#lifetime#']*3600))).']</i>';
+			}
+			elseif($r['status']==1) {
+				if($_SESSION['user']['id']==$r['creater_id'])
+					$b = bcsub($b, $r['cost'],2);
+				else
+					$b = bcadd($b, $r['cost'],2);
+			}
+
+			if(isset($_SESSION['user']['id'])) {
+				if($_SESSION['user']['id']==$r['creater_id'])
+					$nm = 'user_id';
+				else
+					$nm = 'creater_id';
+				$fromuser = $data['#users#'][$r[$nm]]['name'];
+				if($data['#users#'][$r[$nm]]['level']<10 and $data['#users#'][$r[$nm]]['level']>0)
+					$fromuser = $data['#users#'][$r[$nm]]['gname'].' №'.$data['#users#'][$r[$nm]]['id'].' '.$fromuser;
+			}
 				
-			$fromuser = $data['#users#'][$r['creater_id']]['name'];
-			if($fromuser!='-Вы-')
-				$fromuser = $data['#users#'][$r['creater_id']]['gname'].' №'.$data['#users#'][$r['creater_id']]['id'].' '.$fromuser;
-				
-			$touser = $data['#users#'][$r['user_id']]['name'];
-			if($touser!='-Вы-')
-				$touser = $data['#users#'][$r['user_id']]['gname'].' №'.$data['#users#'][$r['user_id']]['id'].' '.$touser;
-				
-			$html .= '<tr>
+			$html .= '<tr class="paylist'.$r['status'].'">
 				<td>'.$r['id'].'</td>
 				<td>'.$r['name'].'</td>
 				<td>'.$fromuser.'</td>
-				<td>'.$touser.'</td>
-				<td>'.round($r['cost'],2).' '.$data['#curr#'].'</td>
+				<td>'.$r['#status#'].'</td>
+				<td>'.round($r['cost'],2).'</td>
 				<td>'.$r['mf_timestamp'].'</td>
-				<td>'.$b.'</td>
+				<td>'.($r['status']==1?$b:'').'</td>
 			</tr>';
 		}//long2ip($r['mf_ipcreate'])
 		$html .= '</table>

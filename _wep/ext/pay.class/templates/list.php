@@ -2,6 +2,8 @@
 
 function tpl_list($data)
 {
+	global $_tpl;
+	$_tpl['styles']['../default/_pay/pay'] = 1;
 	$html = '';
 	if(count($data['#list#'])) {
 		$html .= '<h3>'.$data['#title#'].'</h3>
