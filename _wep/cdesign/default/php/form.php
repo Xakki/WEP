@@ -68,7 +68,7 @@ function tpl_form(&$data, $tabs = array()) {
 			if(isset($r['confirm']) and $r['confirm'])
 				$texthtml .= 'if(!confirm(\''.$r['confirm'].'\')) return false;'.($r['onclick']?' else ':'');
 			if(isset($r['onclick']))
-				$texthtml .= $r['onclick'];
+				$texthtml .= htmlentities($r['onclick'],ENT_COMPAT,$_CFG['wep']['charset']);
 			$texthtml .= '"/>';
 
 			if(isset($r['value_del']) and $r['value_del']) {
@@ -123,7 +123,7 @@ function tpl_form(&$data, $tabs = array()) {
 				$r['onchange'] .= 'input_file(this)';
 			}
 			if(isset($r['onchange']) and $r['onchange'])
-				$attribute .= ' onchange="'.$r['onchange'].'"';
+				$attribute .= ' onchange="'.htmlentities($r['onchange'],ENT_COMPAT,$_CFG['wep']['charset']).'"';
 
 			if(isset($r['error']) and is_array($r['error']) and count($r['error']))
 				$texthtml .= '<div class="caption_error">['.implode(' ',$r['error']).']</div>';

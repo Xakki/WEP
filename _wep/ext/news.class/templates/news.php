@@ -14,8 +14,7 @@
 			}
 			if(isset($data['pagenum']) and count($data['pagenum'])) {
 				global $HTML;
-				include_once($HTML->_PATHd.'php/pagenum.php');
-				$html .= tpl_pagenum($data['pagenum']);// messages
+				$html .= $HTML->transformPHP($data['pagenum'],'#pg#pagenum');// pagenum
 			}
 			$html .= '</div>';
 		}

@@ -339,7 +339,8 @@ final class modulprm_class extends kernel_extends {
 		$temp = NULL;
 		/*Установка и проверка главных модулей*/
 		//$this->_CFG['modulprm'] = array();
-		$this->_CFG['modulprm2'] = $this->_CFG['modulprm'];
+		if(isset($this->_CFG['modulprm']))
+			$this->_CFG['modulprm2'] = $this->_CFG['modulprm'];
 		if(!isset($_POST['sbmt'])) {
 			$_POST['sbmt'] = 1;
 			foreach($this->_CFG['require_modul'] as $k=>$r) {
@@ -355,18 +356,19 @@ final class modulprm_class extends kernel_extends {
 		$this->mDump();
 		if(isset($this->pdata['']) and count($this->pdata[''])) {
 			$this->modulgrpDump();
-			$this->_CFG['temp_modulprm_ext'] = $this->_CFG['modulprm_ext'];
+			if(isset($this->_CFG['modulprm_ext']))
+				$this->_CFG['temp_modulprm_ext'] = $this->_CFG['modulprm_ext'];
 			unset($this->_CFG['modulprm_ext']);
 			foreach ($this->pdata[''] as $k => $r) {
 				$rDATA = array_merge($rDATA, static_tools::_checkmodstruct($k));
 			}
-
-			$this->_CFG['modulprm_ext'] = $this->_CFG['temp_modulprm_ext'];	
+			if(isset($this->_CFG['modulprm_ext']))
+				$this->_CFG['modulprm_ext'] = $this->_CFG['temp_modulprm_ext'];	
 
 		}
 
 		// Удаляем записи отсут-щих модулей
-		if(isset($_POST['sbmt']) and count($this->_CFG['modulprm2'])) {
+		if(isset($_POST['sbmt']) and isset($this->_CFG['modulprm2']) and count($this->_CFG['modulprm2'])) {
 			$this->SQL->execSQL('DELETE FROM `' . $this->tablename . '` WHERE `id` IN ("'.implode('","',array_keys($this->_CFG['modulprm2'])).'")');
 		}
 		return $rDATA;
@@ -577,7 +579,7 @@ final class modulprm_class extends kernel_extends {
 
 		if (!isset($this->guserData)) {
 			$this->guserData = array();
-			if(_new_class('ugroup', $UGROUP)) {
+			if(_new_class('ugroup', $UGROUP, true)) {
 				$this->guserData = $UGROUP->qs('id,name,level',' WHERE level>0','id'); //админов не учитываем
 			}
 		}
@@ -585,7 +587,8 @@ final class modulprm_class extends kernel_extends {
 			$this->modulgrpData = $this->childs['modulgrp']->qs('*','','ugroup_id','owner_id');
 
 		}
-		$this->_CFG['temp_modulprm_ext'] = $this->_CFG['modulprm_ext'];unset($this->_CFG['modulprm_ext']);
+		if(isset($this->_CFG['modulprm_ext']))
+			$this->_CFG['temp_modulprm_ext'] = $this->_CFG['modulprm_ext'];unset($this->_CFG['modulprm_ext']);
 		return true;
 	}
 

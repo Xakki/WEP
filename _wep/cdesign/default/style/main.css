@@ -13,6 +13,7 @@ img, form , table {margin:0;border:0;padding:0;}
 a{color:black;}
 a:hover{text-decoration:none;}
 .clk {clear:both;}
+.clear {clear:both;padding:0;width:0;height:0;font-size:0;} 
 .cnone {
 	display:none;
 	font-size:1px;

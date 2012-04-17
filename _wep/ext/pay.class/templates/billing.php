@@ -49,12 +49,14 @@ function tpl_billing($data)
 			$html .= '</div>';
 		}
 		else {
-			$html .= 'OK';
+			$html .= '';
 		}
 		$html .= '</form>
-	<p>К оплате: <b>'.$data['summ'].' '.$data['#currency#'].'</b></p>
-	<p>'.$data['comm'].'</p>
-	</div>';
+	<p class="payselect-summ">К оплате: <b>'.$data['summ'].' '.$data['#currency#'].'</b></p>
+	<p class="payselect-comm">'.$data['comm'].'</p>';
+	if(isset($data['#foot#']))
+		$html .= '<div class="payselect-foot">'.$data['#foot#'].'</div>';
+	$html .= '</div>';
 
 	return $html;
 }

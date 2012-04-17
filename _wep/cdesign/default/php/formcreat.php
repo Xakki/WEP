@@ -38,7 +38,7 @@
 				$texthtml .= 'onsubmit="'.$attr['onsubmit'].'"';
 			$texthtml .= '>';
 
-			if(count($data['formSort']) and is_array(current($data['formSort']))) {
+			if(isset($data['formSort']) and count($data['formSort']) and is_array(current($data['formSort']))) {
 				$_CFG['fileIncludeOption']['jquery-ui']= true;
 				$_tpl['onload'] .= '$("#'.$ID.'").tabs();';
 				$texthtml .= tpl_form($data['form'], $data['formSort']);

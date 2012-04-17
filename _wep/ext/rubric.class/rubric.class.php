@@ -132,7 +132,7 @@ class rubric_class extends kernel_extends {
 		return $this->_forlist($this->data3,$start,$select);
 	}
 
-	function getPath($id,$page) {
+	function getPath($id, $page, $startId=0) {
 		global $_tpl;
 		$temp = $id;
 		$tpath= array();
@@ -140,6 +140,7 @@ class rubric_class extends kernel_extends {
 			$_tpl['keywords'] .= ', '.$this->data2[$temp]['name'];
 			$tpath[$this->data2[$temp]['path'].'/'.$page] = array('name'=>$this->data2[$temp]['name']);
 			$temp=$this->data2[$temp]['parent_id'];
+			if($startId==$temp) break;
 		}
 		return array_reverse($tpath);
 	}

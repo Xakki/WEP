@@ -8,6 +8,7 @@
 		if(isset($data['_clp']) and count($data['_clp'])) {
 			$firstpath = http_build_query($data['_clp']).'&';
 		}
+		//$data['firstpath'] = '/'.$data['firstpath'];
 
 		if(!isset($data['DIR']))
 			$data['DIR'] = dirname(__FILE__);
@@ -45,6 +46,7 @@
 				$temp_topmenu .= ' class="'.$r['css'].'" title="'.$r['title'].'">'.$r['caption'].'</span></div>';
 			}
 		}
+		//$temp_topmenu .= $HTML->transformPHP($data['data']['pagenum'],'pagenum');// pagenum
 		include_once($data['DIR'].'/pagenum.php');
 		$temp_topmenu .= tpl_pagenum($data['data']['pagenum']);// pagenum
 		$temp_topmenu .= '</div>';

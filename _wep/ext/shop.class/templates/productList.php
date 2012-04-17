@@ -4,11 +4,18 @@
 		if(isset($data) and count($data)) {
 			$html = '<div class="prodlist">';
 			if(!isset($data['#item#']) or !count($data['#item#'])) {
-				$html .= 'нету';
+				$html .= '<h3>К сожаленю, по вашему запросу творы не найдены</h3>';
 			} else {
 
 				global $_tpl;
 				$_tpl['styles']['../default/style/productItem'] = 1;
+
+				$PGnum = '';
+				if(isset($data['pagenum']) and count($data['pagenum'])) {
+					global $HTML;
+					$PGnum = $HTML->transformPHP($data['pagenum'],'#pg#pagenum');
+					$html .= $PGnum;
+				}
 
 				foreach($data['#item#'] as $r) {
 					$html .= '<div class="proditem">';
@@ -28,6 +35,7 @@
 					$html .= '<a href="'.$href.'" title="заказать доставку" class="prodcost">'.$r['cost'].'</a>';
 					$html .= '</div>';
 				}
+				$html .= $PGnum;
 			}
 			$html .= '</div>';
 		}

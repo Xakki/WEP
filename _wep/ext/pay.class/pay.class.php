@@ -51,6 +51,7 @@ class pay_class extends kernel_extends {
 			1 => 'Оплаченный счёт',
 			2 => 'Счёт отклонён',
 			3 => 'Счёт отменён',
+			4 => 'Истекло время ожидания',
 		);
 	}
 
@@ -71,22 +72,42 @@ class pay_class extends kernel_extends {
 	
 	// Формы выставления счёта пользователю
 	function billingFrom($summ, $key, $comm='',$eval='',$addInfo=array()) {
+		global $_tpl;
 		$data = array();
+
 		//eval($eval);
 		if(isset($_POST['paymethod']) and isset($this->childs[$_POST['paymethod']]) and isset($this->childs[$_POST['paymethod']]->pay_systems)) {
-			list($data,$resFlag) = $this->childs[$_POST['paymethod']]->billingFrom($summ,$comm,$addInfo);
-			if($resFlag==1) {
-				$from_user = $this->checkPayUsers($_POST['paymethod']); // User плат. системы
-				// тк это функция сразу оплачивает услуги, то сумму переводим сразу АДМИНУ и списываем со счета плат.системы
-				if($this->payAdd($from_user,1,$summ, $key, $comm,0,$_POST['paymethod'],$eval)) {
-					$this->childs[$_POST['paymethod']]->_update(array('owner_id'=>$this->id));
-					$data['#title#'] = 'Счёт выставлен успешно!';
-					// Открыть окно системы в новом окне
-				} else
-					$data['#title#'] = 'Ошибка';
+
+			$CHILD = &$this->childs[$_POST['paymethod']];
+
+			$temp = $this->qs('id','WHERE status=0 and _key="'.$this->SqlEsc($key).'" and name="'.$this->SqlEsc($comm).'"');
+			if(count($temp)) {
+				$data['#title#'] = '';//Счёт на оплату выставлен.
+				if($CHILD->pay_formType===true)
+					$data['#title#'] .= '<a id="gotopay" href="/_js.php?_modul=pay&_fn=payFormBilling&id='.$temp[0]['id'].'" onclick="return wep.JSWin({type:this,onclk:\'reload\'});" target="_blank">Оплатить</a>';
+				elseif($CHILD->pay_formType)
+					$data['#title#'] .= '<a id="gotopay" href="'.$CHILD->pay_formType.'" target="_blank">Оплатить</a>';
+				$resFlag = 1;
+				$data['#foot#'] = '<div class="paySpanMess" onclick="window.location.reload();">Обновите страницу, чтобы узнать состояния счёта.</div>';
+				$_tpl['onload'] .= '$("#gotopay").click();';
 			} 
 			else {
-				$data['#title#'] = 'Укажите необходимые данные';
+				list($data,$resFlag) = $CHILD->billingFrom($summ,$comm,$addInfo);
+				if($resFlag==1) {
+					$from_user = $this->checkPayUsers($_POST['paymethod']); // User плат. системы
+					// тк это функция сразу оплачивает услуги, то сумму переводим сразу АДМИНУ и списываем со счета плат.системы
+					if($this->payAdd($from_user,1,$summ, $key, $comm,0,$_POST['paymethod'],$eval)) {
+						$this->childs[$_POST['paymethod']]->_update(array('owner_id'=>$this->id));
+						$data['#title#'] = 'Счёт выставлен успешно!';
+						// Открыть окно системы в новом окне
+						$data['#foot#'] = '<span class="paySpanMess" onclick="window.location.reload();">Обновите страницу, чтобы узнать состояния счёта.</span>';
+					} 
+					else
+						$data['#title#'] = 'Ошибка';
+				}
+				else {
+					$data['#title#'] = 'Укажите необходимые данные';
+				}
 			}
 			$data['#resFlag#'] = $resFlag;
 		} else {
@@ -98,6 +119,7 @@ class pay_class extends kernel_extends {
 			}
 			$data['#title#'] = 'Выберите вариант оплаты';
 		}
+
 		$data['summ'] = $summ;
 		$data['comm'] = $comm;
 		$data['#currency#'] = $this->config['curr'];
@@ -236,12 +258,14 @@ class pay_class extends kernel_extends {
 	}
 
 
-	function displayListKey($key=NULL) {
+	function displayListKey($key=NULL, $status=array()) {
 		$data = array();
 		$data['#curr#'] = $this->config['curr'];
-		$q = 't1';
+		$q = 't1 WHERE id ';
 		if(!is_null($key))
-			$q .= ' WHERE t1._key LIKE "'.$key.'"';
+			$q .= 'and t1._key LIKE "'.$key.'"';
+		if(count($status) and $status=implode(',',$status))
+			$q .= 'and t1.status IN ('.$status.')';
 		$data['#list#'] = $this->qs('t1.*', $q.' ORDER BY id DESC');
 		foreach($data['#list#'] as &$r) {
 			$r['#status#'] = $this->_enum['status'][$r['status']];
@@ -510,6 +534,21 @@ class pay_class extends kernel_extends {
 	}
 
 
+	/**
+	* Сервис служба очистки данных
+	* Отключает неоплаченные платежи 
+	* @param $M - модуль платежной системы
+	* @param $leftTime - в секундах
+	*/
+	function clearOldData($M, $leftTime, $dataUp) {
+		$temp = $this->qs('id','WHERE status=0 and '.$this->mf_timecr.'<"'.(time()-$leftTime).'" and pay_modul="'.$M.'"','id');
+
+		if(count($temp)) {
+			$this->id = array_keys($temp);
+			$this->childs[$M]->_update($dataUp);
+			$this->_update(array('status'=>'4'));
+		}
+	}
 }
 
 

@@ -305,9 +305,17 @@ class product_class extends kernel_extends {
 				return array();
 			}
 		}
+
+		$rlist = array();
+		$temp=$rid;
+		while(isset($this->owner->data2[$temp])) {
+			$rlist[$temp] = $temp;
+			$temp=$this->owner->data2[$temp]['parent_id'];
+		};
+
 		$PARAM = &$this->owner->childs['rubricparam'];
 		$listfields = array('*');
-		$cls = 'WHERE owner_id="'.$rid.'" and active=1 order by ordind';
+		$cls = 'WHERE owner_id IN ('.implode(',',$rlist).') and active=1 order by ordind';
 		$PARAM->data = $PARAM->_query($listfields,$cls,'id');
 		if(count($PARAM->data)) {
 			$form=array();
@@ -365,11 +373,14 @@ class product_class extends kernel_extends {
 							$r['max']=$maxmin[1];
 					}*/
 
-					if($form['param_'.$k]['value']=='')	$form['param_'.$k]['value']=$r['min'];
-					if(!isset($form['param_'.$k]['value_2']) or $form['param_'.$k]['value_2']=='')	$form['param_'.$k]['value_2']=$r['max'];
-					/*if($flagNew) // для фильтра
-						$_tpl['onload'] .= "gSlide('tr_param_".$k."',".(int)$r['min'].",".(int)$r['max'].",".(int)$form['param_'.$k]['value'].",".(int)$form['param_'.$k]['value_2'].",".(int)$r['step'].");";*/	
-				}else
+					if($form['param_'.$k]['value']=='')
+						$form['param_'.$k]['value']=$r['min'];
+					if(!isset($form['param_'.$k]['value_2']) or $form['param_'.$k]['value_2']=='')						
+						$form['param_'.$k]['value_2']=$r['max'];
+
+					$form['param_'.$k]['mask']['step'] = (int)$r['step'];
+				}
+				else
 					$form['param_'.$k]['mask']=array('min'=>$r['min'],'max'=>$r['max']);
 
 				if($r['mask']) $form['param_'.$k]['mask']['patterns']=array('match'=>$r['mask']);
@@ -469,8 +480,11 @@ class product_class extends kernel_extends {
 		return array();
 	}
 
-
-	public function fList($rid,$filter,$rss=0,$order='t1.mf_timecr',$limit=0) {
+	/**
+	* param $Flag - list: список товаров со всеми подкатегориями, listn: список товаров только текущей категории, cnt:  , 
+	*
+	*/
+	public function fList($rid,$filter,$Flag='list',$order='t1.mf_timecr',$limit=0) {
 		//$this->owner->data - кэш рубрик
 		//$this->owner->data2 - кэш рубрик
 		//$PARAM->data
@@ -570,7 +584,7 @@ class product_class extends kernel_extends {
 		if($rid) {
 			if(isset($this->owner->data2[$rid]))
 				$rlist[$rid] = $this->owner->data2[$rid]['name'];
-			if(isset($this->owner->data[$rid])) {
+			if(isset($this->owner->data[$rid]) and $Flag!='listn') {
 				foreach($this->owner->data[$rid] as $k=>$r) {
 					if(isset($this->owner->data[$k])){
 						$rlist = $this->owner->data[$k]+$rlist;
@@ -590,7 +604,7 @@ class product_class extends kernel_extends {
 
 		$result = $this->SQL->execSQL('SELECT count(DISTINCT t1.id) as cnt '.$clause['from'].$cls_filtr.$clause['where']);
 		if(!$result->err and $row = $result->fetch() and $row['cnt']>0) {
-			if(is_string($rss) and $rss=='cnt') return $row['cnt'];
+			if(is_string($Flag) and $Flag=='cnt') return $row['cnt'];
 			if(!$limit) {
 				$xml['cnt'] = $row['cnt'];
 
@@ -612,46 +626,24 @@ class product_class extends kernel_extends {
 			foreach($this->data as $k=>$r) {
 				$rname=array();
 				$temp=$r['shop'];
-				if(!$rss) {
-					while(isset($this->owner->data2[$temp]) and $rid!=$temp) {
-						$rname[] = $this->owner->data2[$temp]['name'];
-						$temp=$this->owner->data2[$temp]['parent_id'];
-					};
-					$tempData = $r;
-					$tempData['rpath']=$this->owner->data2[$r['shop']]['path'];
-					if(count($rname)) 
-						$tempData['rname'] = $rname;
-					foreach($this->attaches as $tk=>$tr)
-						if($r[$tk]!='')
-							$tempData['image'][] = array($this->getPathForAtt($tk).'/s_'.$r['id'].'.'.$r[$tk], $this->getPathForAtt($tk).'/'.$r['id'].'.'.$r[$tk]);
-					$xml['#item#'][] = $tempData;
-				} else {
-					/*while(isset($this->owner->data2[$temp])) {
-						$rname[] = $this->owner->data2[$temp]['name'];
-						$temp=$this->owner->data2[$temp]['parent_id'];
-					}
-					if($r['name'])
-						$xml .= $r['name'];
-					$xml .='</title> 
-						<link>http://'.$r['domen'].'.'.$_SERVER['HTTP_HOST2'].'/'.$this->owner->data2[$r['shop']]['path'].'/'.$r['path'].'_'.$r['id'].'.html</link> 
-						<description>'.mb_substr(html_entity_decode(strip_tags($r['text']),2,'UTF-8'),0,300).'...</description>
-						<pubDate>'.date('r',$r['mf_timecr']).'</pubDate>';
-					$i = 1;
-					while(isset($this->config['nomination'.$i])) {
-						if($this->config['nomination'.$i]!='') {
-							$xml .= '<nomination value="'.$r['nomination'.$i].'" sel="'.(isset($r['nomination'][$i])?1:0).'" type="'.$i.'">'.$this->config['nomination'.$i].'</nomination>';
-						}
-						$i++;
-					}
-					$xml .= '</item>';*/
-				}
+				while(isset($this->owner->data2[$temp]) and $rid!=$temp) {
+					$rname[] = $this->owner->data2[$temp]['name'];
+					$temp=$this->owner->data2[$temp]['parent_id'];
+				};
+				$tempData = $r;
+				$tempData['rpath']=$this->owner->data2[$r['shop']]['path'];
+				if(count($rname)) 
+					$tempData['rname'] = $rname;
+				foreach($this->attaches as $tk=>$tr)
+					if($r[$tk]!='')
+						$tempData['image'][] = array($this->getPathForAtt($tk).'/s_'.$r['id'].'.'.$r[$tk], $this->getPathForAtt($tk).'/'.$r['id'].'.'.$r[$tk]);
+				$xml['#item#'][] = $tempData;
 			}
-			if(!$rss) {
-				if(isset($_COOKIE['checkloadfoto']) and $_COOKIE['checkloadfoto']=='0')
-					$xml['imcookie'] = 0;
-				else
-					$xml['imcookie'] = 1;
-			}
+
+			if(isset($_COOKIE['checkloadfoto']) and $_COOKIE['checkloadfoto']=='0')
+				$xml['imcookie'] = 0;
+			else
+				$xml['imcookie'] = 1;
 		}
 		return $xml;
 	}
@@ -809,6 +801,12 @@ class product_class extends kernel_extends {
 		return 0;
 	}
 
+	/**
+	* param $rid - текущая рубрика
+	* param $flag - 0:форма для подписки, 1:поиск, 2:поиск и каталог 1го уровня выводить
+	* param $page - алиас страницы
+	*
+	*/
 	function productFindForm($rid,$flag=1,$page='catalog') {
 		//$this->owner->data - кэш рубрик
 		//$this->owner->data2 - кэш рубрик
@@ -826,24 +824,30 @@ class product_class extends kernel_extends {
 		if($flag) {
 			$datalist[$rid] =$this->owner->data2[$rid]['name'];
 			if(isset($this->owner->data[$rid])) {
+				$datalist += $this->owner->data[$rid];
 				//$this->_enum['shops'][$this->owner->data2[$rid]['parent_id']][$rid] = $this->owner->data2[$rid]['name'];
 				//$this->_enum['shops'][$rid] =$this->owner->data[$rid];
 				foreach($this->owner->data[$rid] as $k=>$r){
-					if(isset($this->owner->data[$k])){
-						$datalist = $this->owner->data[$k]+$datalist;
-						$this->_enum['shops'][$k]= array('#name#'=>$r,'#href#'=>$this->owner->data2[$k]['path'].'/'.$page.'.html');	
-						foreach($this->owner->data[$k] as $rk=>$rr)
-							$this->_enum['shops'][$k]['#item#'][$rk]= array('#name#'=>$rr,'#href#'=>$this->owner->data2[$rk]['path'].'/'.$page.'.html');
-					}else
+					if(isset($this->owner->data[$k])) {
+						$datalist += $this->owner->data[$k];
+						if($flag==1) {
+							$this->_enum['shops'][$k]= array('#name#'=>$r,'#href#'=>$this->owner->data2[$k]['path'].'/'.$page.'.html');	
+							foreach($this->owner->data[$k] as $rk=>$rr) {
+								$this->_enum['shops'][$k]['#item#'][$rk]= array('#name#'=>$rr,'#href#'=>$this->owner->data2[$rk]['path'].'/'.$page.'.html');
+							}
+						}
+					}elseif($flag==1)
 						$this->_enum['shops'][$k]= array('#name#'=>$r,'#href#'=>$this->owner->data2[$k]['path'].'/'.$page.'.html');						
 				}
-				$this->filter_form['shopl']= array(
-					'type'=>'linklist',
-					'caption'=>'Каталог',
-					//'onchange'=>'window.location.href=window.location.href.replace(\'_'.$rid.'\',\'_\'+this.value).replace(\'='.$rid.'\', \'=\'+this.value)',
-					'valuelist'=>$this->_enum['shops']);
-				if(isset($filter['shop']))
-					$this->filter_form['shopl']['value']=$filter['shop'];
+				if($flag==1) {
+					$this->filter_form['shopl']= array(
+						'type'=>'linklist',
+						'caption'=>'Каталог',
+						//'onchange'=>'window.location.href=window.location.href.replace(\'_'.$rid.'\',\'_\'+this.value).replace(\'='.$rid.'\', \'=\'+this.value)',
+						'valuelist'=>$this->_enum['shops']);
+					if(isset($filter['shop']))
+						$this->filter_form['shopl']['value']=$filter['shop'];
+				}
 			}
 			$this->filter_form['shop']= array('type'=>'hidden','value'=>$rid);
 		}
@@ -884,14 +888,13 @@ class product_class extends kernel_extends {
 		if(isset($filter['cost'])) {
 			$this->filter_form['cost']['value']=$filter['cost'];
 			$this->filter_form['cost']['value_2']=$filter['cost_2'];
-			//$_tpl['onload'] .= "gSlide('tr_cost',".(int)$minmax[0].",".(int)$minmax[1].",".(int)$filter['cost'].",".(int)$filter['cost_2'].",".$step.");";				
 		}else{
 			$this->filter_form['cost']['value']=$minmax[0];
 			$this->filter_form['cost']['value_2']=$minmax[1];
-			//$_tpl['onload'] .= "gSlide('tr_cost',".(int)$minmax[0].",".(int)$minmax[1].",".(int)$minmax[0].",".(int)$minmax[1].",".$step.");";
 		}
 		$this->filter_form['cost']['mask']['minint']=$minmax[0];
 		$this->filter_form['cost']['mask']['maxint']=$minmax[1];
+		$this->filter_form['cost']['mask']['step'] = $step;
 		$this->filter_form['text'] = array('type' => 'text','caption' => 'Ключевое слово','mask' =>array('max'=>128),'value'=>(isset($filter['text'])?$filter['text']:''));
 
 		if($rid) {

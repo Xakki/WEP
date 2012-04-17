@@ -20,11 +20,13 @@ function tpl_list($data)
 			0=>'auto',
 			1=>'green',
 			2=>'red',
+			3=>'gray',
+			4=>'#a151a1',
 		);
 		foreach($data['#list#'] as $k=>$r) {
 			if(!$r['status']) {
 				if($r['#formType#']===true)
-					$r['#status#'] .= ' [<a href="/_js.php?_modul=pay&_fn=payFormBilling&id='.$r['id'].'" onclick="return wep.JSWin({\'type\':this});" target="_blank">Оплатить</a>]';
+					$r['#status#'] .= ' [<a href="/_js.php?_modul=pay&_fn=payFormBilling&id='.$r['id'].'" onclick="return wep.JSWin({type:this,onclk:\'reload\'});" target="_blank">Оплатить</a>]';
 				elseif($r['#formType#'])
 					$r['#status#'] .= ' [<a href="'.$r['#formType#'].'" target="_blank">Оплатить</a>]';
 			}

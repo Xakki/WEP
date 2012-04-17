@@ -86,6 +86,7 @@ class payyandex_class extends kernel_extends {
 		$this->_enum['status'] = array(
 			'success' => 'Успешное выполнение.',
 			'refused' => 'Отказ в проведении платежа, объяснение причины отказа содержится в поле error. Это конечное состояние платежа.',
+			'timeout' => 'Время действия платежа истекло',
 		);
 
 		$this->_enum['error'] =array(
@@ -93,7 +94,7 @@ class payyandex_class extends kernel_extends {
 			'illegal_params' => 'Обязательные параметры платежа отсутствуют или имеют недопустимые значения.',
 			'phone_unknown' => 'Указан номер телефона не связанный со счетом пользователя или получателя платежа.',
 			'payment_refused' => 'Магазин отказал в приеме платежа (например пользователь попробовал заплатить за товар, которого нет в магазине).',
-			1 => 'Техническая ошибка, повторите вызов операции позднее.',
+			'1' => 'Техническая ошибка, повторите вызов операции позднее.',
 			'small_money' => 'Счёт не оплачен полностью.',
 		);
 
@@ -142,6 +143,7 @@ class payyandex_class extends kernel_extends {
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Комментарий', 'mask'=>array('name'=>'all'));
 		$this->fields_form['status'] = array('type' => 'list', 'listname'=>'status', 'readonly'=>1, 'caption' => 'Статус', 'mask'=>array());
 		$this->fields_form['error'] = array('type' => 'list', 'listname'=>'error', 'readonly'=>1, 'caption' => 'Ошибка', 'mask'=>array());
+		$this->fields_form['mf_timestamp'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Дата', 'mask'=>array());
 	}
 
 
@@ -178,13 +180,13 @@ class payyandex_class extends kernel_extends {
 		);
 		$DATA['form'] = array(
 			'receiver'=>array('type'=>'hidden','value'=>$this->owner->config['yandex_id']),
-			'FormComment'=>array('type'=>'hidden','value'=>'Счёт№'.$this->id.'; '.$data['name']), // заголовок у отправителя
+			'FormComment'=>array('type'=>'hidden','value'=>'Счёт№'.$this->owner->id.'; '.$data['name']), // заголовок у отправителя
 			'short-dest'=>array('type'=>'hidden','value'=>$data['name']), // Комментарий у отправителя
 			'writable-targets'=>array('type'=>'hidden','value'=>'false'),
 			'writable-sum'=>array('type'=>'hidden','value'=>'false'),
 			'comment-needed'=>array('type'=>'hidden','value'=>'true'),
 			'quickpay-form'=>array('type'=>'hidden','value'=>'small'),
-			'targets'=>array('type'=>'hidden','value'=>'Счёт№'.$this->id), // Сообщение получателю
+			'targets'=>array('type'=>'hidden','value'=>'Счёт№'.$this->owner->id), // Сообщение получателю
 			'sum'=>array('type'=>'hidden','value'=>$data['amount']),
 			'mail'=>array('type'=>'hidden','value'=>'true'),
 			//'p2payment'=>array('type'=>'hidden','value'=>$this->id),
@@ -434,6 +436,9 @@ class payyandex_class extends kernel_extends {
 
 	/*CRON*/
 	function checkBill() {
+		$this->owner->clearOldData($this->_cl, ($this->owner->config['yandex_lifetime']*3600), array('status'=>'timeout'));
+		return '_test-';
+
 		$temp = $this->qs('*','WHERE status=""','name');
 		$DATA = array();
 		foreach($temp as $r) {

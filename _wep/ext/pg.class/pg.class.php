@@ -31,8 +31,8 @@ class pg_class extends kernel_extends {
 		$this->config['marker'] = array(
 			'text' => 'Главный текст',
 			'head' => 'Заголовок',
-			'left_column' => 'Левая колонка',
-			'right_column' => 'Правая колонка',
+			'lblock' => 'Левая колонка',
+			'rblock' => 'Правая колонка',
 			'path' => 'Хлебные крошки',
 			'logs' => 'Логи',
 			'foot' => 'Подвал');

@@ -1,11 +1,11 @@
 <?php
-
+$tmp = explode('.',$_SERVER['HTTP_HOST']);
 $_CFGFORM['sql'] = array(// SQL
 	'type' => array('type'=>'list', 'caption'=>'Тип БД'),
 	'host' => array('type'=>'text','caption'=>'Хост подключения к БД', 'mask'=>array('min'=>9)),
-	'login' =>  array('type'=>'text','caption'=>'Логин БД', 'mask'=>array('min'=>2)),
+	'login' =>  array('type'=>'text','caption'=>'Логин БД', 'mask'=>array('min'=>2), 'default'=>$tmp[0]),
 	'password' =>  array('type'=>'password','md5'=>false,'caption'=>'Пароль БД', 'mask'=>array('min'=>6)),
-	'database' =>  array('type'=>'text','caption'=>'Название БД', 'mask'=>array('min'=>2)),
+	'database' =>  array('type'=>'text','caption'=>'Название БД', 'mask'=>array('min'=>2), 'default'=>$tmp[0]),
 	'showparam1'=>array('type' => 'info', 'caption' => '
 	<div class="showparam" onclick="show_fblock(this,\'.hsql\')"> 
 		<span class="shbg"></span>
@@ -52,8 +52,8 @@ $_CFGFORM['wep'] = array(// для ядра и админки
 );
 
 $_CFGFORM['site'] = array(// для сайта
-	'www' => array('type'=>'text','caption'=>'HTTP_HOST','mask'=>array('min'=>3)),
-	'email' => array('type'=>'text','caption'=>'Email','mask'=>array('min'=>3)),
+	'www' => array('type'=>'text','caption'=>'HTTP_HOST','mask'=>array('min'=>3), 'default'=>$_SERVER['HTTP_HOST']),
+	'email' => array('type'=>'text','caption'=>'Email','mask'=>array('min'=>3), 'default'=>'info@'.$_SERVER['HTTP_HOST']),
 	'showparam3'=>array('type' => 'info', 'caption' => '
 	<div class="showparam" onclick="show_fblock(this,\'.hsite\')"> 
 		<span class="shbg"></span>

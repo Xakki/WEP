@@ -67,6 +67,7 @@ var wep = {
 		}
 		else if(!param['type']) param['type'] = 'GET';
 		if(!param['href'])		param['href'] = '/_json.php';
+		if(param['onclk']=='reload')		param['onclk'] = 'window.location.reload();';
 		if(!param['data']) 		param['data'] = '';
 		if(!param['dataType'])	param['dataType'] = 'json';
 		if(!param['insertObj']) // объект в который(в зависимости от param['insertType']) будут вставляться result.html
@@ -678,7 +679,29 @@ var wep = {
 		return true;
 	},
 	// Массив функции выполняющиеся при изменении размера окна 
-	winResize : {}
+	winResize : {},
+
+	/*FILTER*/
+	/*Слайдер для фильтра, возможность установки чесловых пределов*/
+	gSlide : function(id,_min,_max,val0, val1,stp) {
+			if(!_max && val1) _max = val1*3;
+			else if(!_max) _max = 100;
+			if(!val1) val1 = _max;
+			jQuery('#'+id+' .f_value').after("<div id='slide"+id+"'></div>");
+			jQuery('#slide'+id).slider({
+				range: true,
+				step: stp,
+				min: _min,
+				max: _max,
+				values: [val0, val1],
+				slide: function(event, ui) {
+					jQuery('#'+id+' input:eq(0)').val(ui.values[0]);
+					jQuery('#'+id+' input:eq(1)').val(ui.values[1]);
+				}
+			});
+			jQuery('#'+id+' input:eq(0)').bind('change',function (){jQuery('#slide'+id).slider( 'values' , 0 , this.value)});
+			jQuery('#'+id+' input:eq(1)').bind('change',function (){jQuery('#slide'+id).slider( 'values' , 1 , this.value)});
+	}
 };
 
 wep.apply = function(o, c, defaults){

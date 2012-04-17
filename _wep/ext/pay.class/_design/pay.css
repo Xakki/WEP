@@ -38,6 +38,14 @@
 	width: auto;
 }
 
+.payselect .paySpanMess {
+	color:gray;
+	cursor:pointer;
+}
+.payselect .paySpanMess:hover {
+	color:blue;
+}
+
 
 /*pay_list*/
 .pay_list td, .pay_list th {

@@ -277,7 +277,7 @@ class users_class extends kernel_extends {
 		$this->fields['kratio'] = array('type' => 'float', 'width' => '8,2','attr' => 'NOT NULL', 'default'=>'0.00');
 
 		$this->attaches['userpic'] = array('mime' => array('image/pjpeg'=>'jpg', 'image/jpeg'=>'jpg', 'image/gif'=>'gif', 'image/png'=>'png'), 'thumb'=>array(array('type'=>'resize', 'w'=>'800', 'h'=>'600','pref'=>'orign_'),array('type'=>'resizecrop', 'w'=>85, 'h'=>85)),'maxsize'=>1000,'path'=>'');
-		if(static_main::_prmUserCheck() and !is_null($this->_CFG['modulprm_ext'])) {
+		if(static_main::_prmUserCheck() and isset($this->_CFG['modulprm_ext']) and !is_null($this->_CFG['modulprm_ext'])) {
 			$params = array(
 				'obj'=>&$this,
 				'func' => 'updateLastVisit',
@@ -348,12 +348,12 @@ class users_class extends kernel_extends {
 		$this->fields_form['mf_ipcreate'] =	array('type' => 'text','readonly' => true, 'caption' => 'IP-пользователя','mask'=>array('usercheck'=>1));
 		$this->fields_form['mf_timecr'] =	array('type' => 'date','readonly' => true, 'caption' => 'Дата регистрации','mask'=>array('sort'=>1));
 		$this->fields_form['reg_hash'] = array('type' => 'hidden',  'caption' => 'Хэш','mask'=>array('eval'=>1,'fview'=>1,'usercheck'=>1));
-		if(isset($this->owner->config['payon']) && $this->owner->config['payon'])
+		if($this->owner->config['payon'] or static_main::_prmUserCheck(1))
 			$this->fields_form['balance'] =	array(
 				'type' => 'text',
 				'readonly' => true, 
 				'caption' => 'Счет('.$this->owner->config['payon'].')',
-				'mask'=>array('sort'=>1));
+				'mask'=>array());
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Пользователь активен', 'mask' =>array('usercheck'=>1));
 
 		/*if(static_main::_prmUserCheck() and !static_main::_prmUserCheck(1)) {  // Запрет поля на редактирование

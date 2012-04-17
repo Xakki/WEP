@@ -1897,6 +1897,7 @@ abstract class kernel_extends {
 				if ($r['type'] == 'list' && is_array($r['listname']) && !isset($r['listname']['idThis']))
 					$r['listname']['idThis'] = $k;
 				$fields_form['f_' . $k] = $r;
+				unset($fields_form['f_' . $k]['readonly']);
 				$fields_form['f_' . $k]['value'] = '';
 				$fields_form['f_' . $k]['value_2'] = '';
 				if (isset($_FILTR[$k])) {

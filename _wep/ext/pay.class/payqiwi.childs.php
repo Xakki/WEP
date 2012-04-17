@@ -251,6 +251,10 @@ Cчета со статусом большим или равным 100 трак�
 
 	/// CRON
 	function checkBill() {
+		if(!$this->owner->config['qiwi_lifetime']) $this->owner->config['qiwi_lifetime'] = 1080;
+		$this->owner->clearOldData($this->_cl, ($this->owner->config['qiwi_lifetime']*3600), array('statuses'=>161));
+		return '_test-';
+
 		$bills = $this->_query('*','WHERE statuses<60');
 		if(!count($bills)) return '-нет выставленных счетов-';
 

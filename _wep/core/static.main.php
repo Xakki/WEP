@@ -685,9 +685,13 @@ function _setcookie($name, $value='', $expire='', $path='', $domain='', $secure=
 /**
  * Инициализация модулей
  */
-function _new_class($name, &$MODUL, &$OWNER=NULL, $_forceLoad = false) {
+function _new_class($name, &$MODUL, $OWNER=NULL, $_forceLoad = false) {
 	global $_CFG;
 	$MODUL = NULL;
+	if(is_bool($OWNER)) {
+		$_forceLoad = $OWNER;
+		$OWNER=NULL;
+	}
 	if(!$_forceLoad) static_main::_prmModulLoad();
 	$name = _getExtMod($name);
 	

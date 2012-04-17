@@ -70,7 +70,7 @@ class html {
 		$this->_templates = 'default';
 		$this->_PATHd = $_SERVER['_DR_'] . $_PATHd . $_design . '/';
 		$this->flag = $flag;
-		$_tpl['BH'] = $_CFG['_HREF']['BH'];
+		$_tpl['BH'] = rtrim($_CFG['_HREF']['BH'],'/');
 		$_tpl['REQUEST_URI'] = $_SERVER['REQUEST_URI'];
 		$_tpl['design'] = $_CFG['_HREF']['BH'] . $_PATHd . $_design . '/';
 		$_tpl['title'] = $_tpl['time'] = $_tpl['onload'] = $_tpl['logs'] = '';
@@ -258,7 +258,7 @@ function _myErrorHandler($errno, $errstr, $errfile, $errline) {//, $errcontext,$
 			'errtype' => $_CFG['_error'][$errno]['type'],
 		);
 		// Инициальзация ловца-ошибок
-		if (is_array($_CFG['wep']['bug_hunter']) and count($_CFG['wep']['bug_hunter']) and $SQL->ready and !$BUG) {
+		if (is_array($_CFG['wep']['bug_hunter']) and count($_CFG['wep']['bug_hunter']) and $SQL and $SQL->ready and !$BUG) {
 			_new_class('bug', $BUG);
 		}
 		//остановка на фатальной ошибке

@@ -74,7 +74,7 @@ function tools_cron() {
 		$ini_arr= array();
 	}
 
-	$FP = $_CFG['PATH']['wepname'].'/index.php?_view=list&_modul=_tools&tfunc=tools_cron&';
+	$FP = '/'.$_CFG['PATH']['wepname'].'/index.php?_view=list&_modul=_tools&tfunc=tools_cron&';
 	$_tpl['styles']['form']=1;
 	$DATA = array('firstpath'=>$FP);
 	$DATA['path'] = array(

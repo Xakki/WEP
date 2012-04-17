@@ -290,8 +290,12 @@ class static_form {
 		} else {
 			$iq = $_this->_id_as_string();
 			if(!$iq) {
-				trigger_error('Error update: miss id', E_USER_WARNING);
-				return false;
+				if($_this->owner)
+					$iq = $_this->owner->_id_as_string();
+				if(!$iq) {
+					trigger_error('Error update: miss id', E_USER_WARNING);
+					return false;
+				}
 			}
 			$q .= ' WHERE id IN ('.$iq.')';
 		}

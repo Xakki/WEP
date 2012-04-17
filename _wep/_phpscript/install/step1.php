@@ -22,7 +22,10 @@ include_once($_CFG['_PATH']['wep'] . '/config/config_form.php');
 foreach($_CFGFORM as $kt=>$rb) {
 	foreach($rb as $k=>$r) {
 		if(isset($USER_CFG[$kt][$k])) {
-			$r['value'] = $USER_CFG[$kt][$k];
+			if(!$USER_CFG[$kt][$k] and isset($r['default']))
+				$r['value'] = $r['default'];
+			else
+				$r['value'] = $USER_CFG[$kt][$k];
 			if(isset($_POST['sbmt'])) {
 				if(isset($_POST[$kt][$k])) {
 					if(isset($r['multiple']) and $r['multiple'] and count($_POST[$kt][$k]))
