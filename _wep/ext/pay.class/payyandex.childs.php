@@ -437,7 +437,6 @@ class payyandex_class extends kernel_extends {
 	/*CRON*/
 	function checkBill() {
 		$this->owner->clearOldData($this->_cl, ($this->owner->config['yandex_lifetime']*3600), array('status'=>'timeout'));
-		return '_test-';
 
 		$temp = $this->qs('*','WHERE status=""','name');
 		$DATA = array();
