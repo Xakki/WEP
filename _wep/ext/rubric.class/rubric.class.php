@@ -75,7 +75,7 @@ class rubric_class extends kernel_extends {
 		parent::setFieldsForm($form);
 
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название рубрики');
-		$this->fields_form['lname'] = array('type' => 'text', 'caption' => 'Название латиницей', 'mask'=>array('name'=>'name2','min'=>2));
+		$this->fields_form['lname'] = array('type' => 'text', 'caption' => 'Название латиницей', 'mask'=>array('name'=>'/[^0-9A-Za-zА-Яа-яЁё_\- ]/u', 'min'=>2));
 		$this->fields_form['parent_id'] = array('type' => 'list', 'listname'=>'parentlist', 'caption' => 'Родительская рубрика','mask' =>array('fview'=>1));
 		$this->fields_form[$this->v_img] = array('type'=>'file','caption'=>'Картинка','del'=>1, 'mask'=>array('height'=>80), 'comment'=>static_main::m('_file_size').$this->attaches[$this->v_img]['maxsize'].'Kb');	
 		$this->fields_form["dsc"] = array("type" => "textarea", "caption" => "Описание",'mask' =>array('name'=>'all'));
