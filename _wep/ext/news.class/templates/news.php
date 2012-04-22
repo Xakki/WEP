@@ -1,15 +1,17 @@
 <?php
 	function tpl_news(&$data) {
+		global $_tpl;
+		$_tpl['styles']['../default/style/news'] = 1;
 		$html = '';
 		if(isset($data['#list#']) and count($data['#list#'])) {
 			$html .= '<div class="news">';
 			foreach($data['#list#'] as $k=>$r) {
 				if(!$r['i_news']) $r['i_news'] = '';
 				$html .= '<div class="news-items">
-						'.($r['i_news']?'<img src="'.$r['i_news'].'" class="news-img" alt="'.$r['name'].'"/>':'').'
+						'.($r['i_news']?'<a class="news-read" href="'.$data['#page#'].'/'.$r['id'].'.html"><img src="'.$r['i_news'].'" class="news-img" alt="'.htmlentities($r['name'],ENT_NOQUOTES,'UTF-8').'"/></a>':'').'
 						<span class="news-date">'.static_main::_date('d F Yг.',$r['ndate']).'/</span> 
 						<span class="news-name"><a href="'.$data['#page#'].'/'.$r['id'].'.html">'.$r['name'].'</a></span>
-						<p class="news-desc">'.$r['description'].' <a class="news-read" href="'.$data['#page#'].'/'.$r['id'].'.html" title="Читать далее">подробнее...</a></p>
+						<p class="news-desc">'.$r['description'].'</p>
 					</div>';
 			}
 			if(isset($data['pagenum']) and count($data['pagenum'])) {

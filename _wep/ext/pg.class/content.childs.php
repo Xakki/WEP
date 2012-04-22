@@ -33,6 +33,7 @@ class content_class extends kernel_extends {
 		$this->fields['script'] = array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['memcache'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0);
 		$this->fields['memcache_solt'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL', 'default' => 0);
+		$this->fields['access_flag'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => '0');
 
 		# memo
 		//$this->memos['pg'] = array('max' => 50000);
@@ -72,12 +73,13 @@ class content_class extends kernel_extends {
 		$this->fields_form['memcache'] = array('type' => 'int', 'caption' => 'Memcache time', 'comment' => '-1 - отключает кеш полностью,0 - откл кеширование,1> - кеширование в сек.', 'mask' => array('fview' => 1));
 		$this->fields_form['memcache_solt'] = array('type' => 'list', 'listname' => 'memcache_solt', 'caption' => 'Memcache соль', 'mask' => array('fview' => 1));
 		$this->fields_form['ordind'] = array('type' => 'int', 'caption' => 'ORD');
+		$this->fields_form['access_flag'] = array('type' => 'checkbox', 'caption' => 'Не отображать на спец. страницах');
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
 		
 		$this->formSort = array(
 			'Основное'=>array('marker','global','pagetype','funcparam'),
 			'Контент'=>array('pg','keywords','description'),
-			'Дополнительно'=>array('owner_id','name','href','ugroup','styles','script','memcache','memcache_solt','ordind'),
+			'Дополнительно'=>array('owner_id','name','href','ugroup','styles','script','memcache','memcache_solt','ordind','access_flag'),
 			'active',
 		);
 

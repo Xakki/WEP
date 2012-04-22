@@ -2,7 +2,7 @@
 /**
  * Модуль страниц для frontend
  * @author Xakki
- * @version 0.4.5 
+ * @version 0.5.6 
  */
 class pg_class extends kernel_extends {
 
@@ -67,7 +67,7 @@ class pg_class extends kernel_extends {
 		$this->caption = 'Страницы';
 		$this->selected = array();
 		$this->messages_on_page = 50;
-		$this->ver = '0.4.5';
+		$this->ver = '0.5.6';
 		$this->pageinfo =
 				$this->dataCash = $this->dataCashTree = $this->dataCashTreeAlias = array();
 		$this->pageParam = $this->pageParamId = array();
@@ -520,6 +520,7 @@ class pg_class extends kernel_extends {
 	function getContent(&$Cdata) {
 		global $SQL, $PGLIST, $HTML, $_CFG, $_tpl;
 		$flagPG = 0;
+		$this->access_flag = false;
 		$PGLIST = &$this;
 		$SQL = &$this->SQL;
 		$Chref = $this->getHref();
@@ -539,10 +540,16 @@ class pg_class extends kernel_extends {
 			if ($rowPG['ugroup']) {
 				if (!$this->pagePrmCheck($rowPG['ugroup'])) {
 					if ($this->_CFG['wep']['debugmode'] > 2)
-						$_tpl[$rowPG['marker']] .= '<!--content' . $rowPG['id'] . ' ACCESS DENIED-->';
+						$_tpl[$rowPG['marker']] .= '<!--content' . $rowPG['id'] . ' ACCESS DENIED -->';
 					continue;
 				}
 			}
+			if ($this->access_flag and $rowPG['access_flag']) {
+				if ($this->_CFG['wep']['debugmode'] > 2)
+					$_tpl[$rowPG['marker']] .= '<!--content' . $rowPG['id'] . ' ACCESS2 DENIED -->';
+				continue;
+			}
+
 			if ($rowPG['href']) {
 				$temp = $this->_cl . '_' . preg_replace($this->_CFG['_repl']['alphaint'], '', $rowPG['href']);
 				if (!isset($_COOKIE[$temp])) {

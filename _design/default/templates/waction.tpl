@@ -3,15 +3,18 @@
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru">
 	<head>
-		<title>{$_tpl['title']}</title>
-		<base href="{$_tpl['BH']}"/>
+		<title>{#title#}</title>
+		<base href="{#BH#}"/>
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 		<meta http-equiv="Pragma" content="no-cache"/>
-		<meta name="keywords" content="{$_tpl['keywords']}"/> 
-		<meta name="description" content="{$_tpl['description']}"/>
-		<link rel="SHORTCUT ICON" href="{$_tpl['design']}img/favicon.ico"/>
-		{$_tpl['styles']}
-		{$_tpl['script']}
+		<meta name="keywords" content="{#keywords#}"/> 
+		<meta name="description" content="{#description#}"/>
+		{#meta#}
+		<link rel="SHORTCUT ICON" href="/favicon.ico"/>
+		{#styles#}
+		{#tplstyles#}
+		{#script#}
+		{#tplscript#}
 		<style type="text/css">
 			html, body {text-align:center;vertical-align:middle;height:100%;}
 			.cform {
@@ -47,11 +50,11 @@
 		</style>
 	</head>
 	<body onload="setTimeout(function() {window.location.reload();},5000)">
-		{$_tpl['logs']}
+		{#logs#}
 		<div style="height:100%;">
 			<div class="cform">
-				{$_tpl['text']}
-				<span>Через 5 секунд страница автоматический <a href="{$_tpl['REQUEST_URI']}">перезагрузится</a></span>
+				{#text#}
+				<span>Через 5 секунд страница автоматический <a href="{#REQUEST_URI#}">перезагрузится</a></span>
 			</div>
 		</div>
 	</body>

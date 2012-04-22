@@ -3,32 +3,35 @@
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru">
 	<head>
-		<title>{$_tpl['title']}</title>
-		<base href="{$_tpl['BH']}"/>
+		<title>{#title#}</title>
+		<base href="{#BH#}"/>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 		<meta http-equiv="Pragma" content="no-cache"/>
-		<meta name="keywords" content="{$_tpl['keywords']}"/> 
-		<meta name="description" content="{$_tpl['description']}"/>
-		<link rel="SHORTCUT ICON" href="favicon.ico"/>
-		{$_tpl['styles']}
-		{$_tpl['script']}
+		<meta name="keywords" content="{#keywords#}"/> 
+		<meta name="description" content="{#description#}"/>
+		{#meta#}
+		<link rel="SHORTCUT ICON" href="/favicon.ico"/>
+		{#styles#}
+		{#tplstyles#}
+		{#script#}
+		{#tplscript#}
 	</head>
-	<body onload="{$_tpl['onload']}">
-		{$_tpl['logs']}
+	<body onload="{#onload#}">
+		{#logs#}
 		<div class="header">
-			{$_tpl['head']}
+			{#head#}
 		</div>
 		<div class="center">
-			{$_tpl['path']}
+			{#path#}
 			<div class="text">
-				{$_tpl['text']}
+				{#text#}
 			</div>
 		</div>
 		<div class="clear"></div>
 		
 		<div class="footer">
-			{$_tpl['foot']}
+			{#foot#}
 		</div>
-		<!--{$_tpl['time']}-->
+		<!--{#time#}-->
 	</body>
 </html>

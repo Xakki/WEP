@@ -59,6 +59,7 @@ class news_class extends kernel_extends {
 			'caption' => 'Текст новости', 
 			'mask' =>array('fview'=>1,'name'=>'html','min'=>50,'max' => 61000,'substr'=>150),//61000 максимум для поля text, еслу нужно болшье то longtext
 			'paramedit'=>array(
+				'CKFinder' => array('allowedExtensions'=>''), // разрешаем загрузку любых фаилов
 				'toolbar'=>'Full',
 				'height'=>300,
 				'extraPlugins'=>"'cntlen'")
