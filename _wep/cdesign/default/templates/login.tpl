@@ -9,11 +9,11 @@
 		<meta http-equiv="Pragma" content="no-cache"/>
 		<meta name="keywords" content="WEP"/> 
 		<meta name="description" content="CMS"/>
-		<link rel="SHORTCUT ICON" href="{#design#}img/favicon.ico"/>
+		<link rel="SHORTCUT ICON" href="/favicon.ico"/>
 		<style type="text/css">
 			html, body {text-align:center;vertical-align:middle;height:100%;margin:0;}
 		</style>
-		<link rel="stylesheet" href="{#BH#}_design/_style/login.css" type="text/css">
+		<link rel="stylesheet" href="{#BH#}/_design/_style/login.css" type="text/css">
 	</head>
 	<body onload="">{#logs#}
 	<div style="position:relative;top:40%;">
