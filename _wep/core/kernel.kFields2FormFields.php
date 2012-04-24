@@ -229,8 +229,14 @@
 						$_tpl['onload'] .= ' cke_'.$k.'();';
 //if(!window.CKEDITOR) $.include(\''.$this->_CFG['_HREF']['WSWG'].'ckeditor/ckeditor.js\',cke_'.$k.'); else 
 
-				} elseif($k=='mf_ipcreate') {
+				}
+				elseif($k=='mf_ipcreate') {
 					$r['value'] = long2ip($r['value']);
+				}
+
+				// Преобразуем теги, чтобы их не съел шаблонизатор
+				if(($r['type']=='ckedit' or $r['type']=='text' or $r['type']=='textarea') and strpos($r['value'],'{#')!==false) {
+					$r['value'] = str_replace(array('{#','#}'),array('(#','#)'),$r['value']);
 				}
 
 				if(isset($r['mask']['name']))

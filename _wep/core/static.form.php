@@ -1044,6 +1044,12 @@ class static_form {
 			}
 		}
 
+		// Преобразуем теги, чтобы их не съел шаблонизатор
+		if(($form['type']=='ckedit' or $form['type']=='text' or $form['type']=='textarea') and strpos($data[$key],'(#')!==false) {
+			$data[$key] = str_replace(array('(#','#)'),array('{#','#}'),$data[$key]);
+		}
+
+
 		/*Целое число*/
 		elseif($form['type']=='int' and (!isset($form['mask']['toint']) or !$form['mask']['toint'])) 
 			$data[$key]= str2int($data[$key]);
@@ -1187,21 +1193,23 @@ class static_form {
 	static function _phoneReplace($phone)
 	{
 		$phone_2 = array();
-		$phone_1 = preg_replace("/[^0-9\,\;]+/",'',$phone);
-		$phone_1 = preg_split("/[\,\;]+/",$phone_1, -1, PREG_SPLIT_NO_EMPTY);
+		$phone_1 = preg_replace("/[^0-9\,\;\+]+/",'',$phone);
+		$phone_1 = preg_split("/[\,\;\+]+/",$phone_1, -1, PREG_SPLIT_NO_EMPTY);
 		foreach($phone_1 as $k=>$p)
 		{
-			$phone_2[] = preg_replace(array(
-				"/^([8])([0-9]{3})([0-9]{3})([0-9]{2})([0-9]{2})$/",
-				"/^([7])([0-9]{3})([0-9]{3})([0-9]{2})([0-9]{2})$/",
-				"/^([0-9]{3})([0-9]{3})([0-9]{2})([0-9]{2})$/",
-				"/^([0-9]{3})([0-9]{2})([0-9]{2})$/",
-				),array(
-				'+7 \\2 \\3-\\4-\\5',
-				'+7 \\2 \\3-\\4-\\5',
-				'+7 \\1 \\2-\\3-\\4',
-				'\\1-\\2-\\3',
-				),	$p);
+			if(trim($p)) {
+				$phone_2[] = preg_replace(array(
+					"/^([8])([0-9]{3})([0-9]{3})([0-9]{2})([0-9]{2})$/",
+					"/^([7])([0-9]{3})([0-9]{3})([0-9]{2})([0-9]{2})$/",
+					"/^([0-9]{3})([0-9]{3})([0-9]{2})([0-9]{2})$/",
+					"/^([0-9]{3})([0-9]{2})([0-9]{2})$/",
+					),array(
+					'+7 \\2 \\3-\\4-\\5',
+					'+7 \\2 \\3-\\4-\\5',
+					'+7 \\1 \\2-\\3-\\4',
+					'\\1-\\2-\\3',
+					),	$p);
+			}
 		}
 		$phone_2 = implode(', ',$phone_2);
 		return $phone_2;
