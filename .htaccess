@@ -39,7 +39,7 @@ RewriteRule ^robots.txt index.php?_php=robotstxt [L]
 
 RewriteCond %{REQUEST_FILENAME} !-f 
 RewriteCond %{REQUEST_FILENAME} !-d 
-RewriteRule ^sitemap.xml index.php?_php=sitemap [L]
+RewriteRule ^([0-9A-Za-z\-\.\_]+).xml index.php?_type=xml&_php=$1 [L]
 
 RewriteCond %{REQUEST_FILENAME} !-f 
 RewriteCond %{REQUEST_FILENAME} !-d 

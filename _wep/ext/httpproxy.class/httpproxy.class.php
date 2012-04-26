@@ -10,15 +10,16 @@ class httpproxy_class extends kernel_extends {
 		$this->mf_timeup = true;
 		$this->default_access = '|0|';
 		$this->messages_on_page = 100;
+
 		$this->unique_fields['name'] = 'name';
+
 		$this->index_fields['timeout'] = 'timeout';
 		$this->index_fields['autoprior'] = 'autoprior';
 		$this->index_fields['mf_timeup'] = 'mf_timeup';
-		$this->cf_tools = array(
-			array('func'=>'loadList','name'=>'Загрузка списка прокси'),
-			array('func'=>'clearUse','name'=>'Очистка счётчиков'),
-			array('func'=>'CheckSite','name'=>'Проверка xakki.ru'),
-		);
+
+		$this->cf_tools[] = array('func'=>'loadList','name'=>'Загрузка списка прокси');
+		$this->cf_tools[] = array('func'=>'clearUse','name'=>'Очистка счётчиков');
+		$this->cf_tools[] = array('func'=>'CheckSite','name'=>'Проверка xakki.ru');
 		return true;
 	}
 

@@ -175,6 +175,7 @@ class static_tools {
 						$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
 					else
 						$rDATA[$k]['@index'] .= ', ';
+					if(is_array($r)) $r = implode('`,`',$r);
 					$rDATA[$k]['@index'] .= ' ' . $tmp . ' ADD UNIQUE KEY `' . $k . '` (`' . $r . '`)';
 				} else {
 					unset($uniqlist[$k]);
@@ -208,6 +209,7 @@ class static_tools {
 						$rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
 					else
 						$rDATA[$k]['@index'] .= ', ';
+					if(is_array($r)) $r = implode('`,`',$r);
 					$rDATA[$k]['@index'] .= ' add index `' . $k . '` (`' . $r . '`)';
 				} else {
 					unset($indexlist[$k]);

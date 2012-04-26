@@ -86,7 +86,7 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 
 			$searchHtml = '';
 			if(count($formparam['filter'])) {
-				$searchHtml ='<div class="blockhead searchslide" onclick="slideBlock(this,\'#form_tools_paramselect\');">Поиск</div><div class="hrb"></div>'.$HTML->transformPHP($formparam,'#pg#filter').'<br/>';
+				$searchHtml ='<div class="blockhead searchslide shhide" onclick="slideBlock(this,\'#form_tools_paramselect\');">Поиск</div><div class="hrb"></div>'.$HTML->transformPHP($formparam,'#pg#filter').'<br/>';
 				if(isset($_GET['sbmt']) and $_GET['sbmt']=='Поиск')
 					$_tpl['onload'] .= 'jQuery(\'div.searchslide\').click();';//$("#form_tools_paramselect").hide(); 
 				//$_tpl['onload'] .= "$('#tr_shopl').insertBefore('.searchslide');";
@@ -104,7 +104,7 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 
 			$DATA = $SHOP->childs['product']->fList($rid, $_GET, $FUNCPARAM[7], $FUNCPARAM[6], $FUNCPARAM[4]);
 			// $rid,$filter,$rss=0,$order='t1.mf_timecr',$limit=0
-
+			
 			$html .= $subCatHtml;
 
 			if(count($DATA) or !$subCatHtml) {
@@ -115,7 +115,9 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 				//$ppath = parse_url($_SERVER['REQUEST_URI']);//'.$ppath['path'].'
 				$DATA['req'] = $req;
 				$DATA['pg'] = $Chref;
-				$html .= $searchHtml.$HTML->transformPHP($DATA, $FUNCPARAM[0]);
+				if($subCatHtml or isset($DATA['#item#']) or isset($DATA['#filter#']))
+					$html .= $searchHtml;
+				$html .= $HTML->transformPHP($DATA, $FUNCPARAM[0]);
 			}
 		}
 	} 

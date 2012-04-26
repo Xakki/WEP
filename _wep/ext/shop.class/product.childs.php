@@ -33,6 +33,13 @@ class product_class extends kernel_extends {
 			0=>'Отключить',
 			1=>'Включить');
 
+		$this->_enum['available']=array(
+			0=>'На складе',
+			1=>'Предзаказ',
+			2=>'Ожидается поставка',
+			3=>'Не доступно для заказа',
+		);
+
 		$this->_AllowAjaxFn['AjaxShopParam'] = true;
 
 		return true;
@@ -62,7 +69,12 @@ class product_class extends kernel_extends {
 		$this->fields['cost2'] = array('type' => 'int', 'width' => 10,'attr' => 'NOT NULL','default'=>0);
 		$this->fields['statview'] = array('type' => 'int', 'width' => 9, 'attr' => 'NOT NULL','default'=>0);
 		$this->fields['path'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL','default'=>'');
-
+		$this->fields['available'] = array('type' => 'tinyint', 'width' => 1,'attr' => 'NOT NULL','default'=>0);
+/*YML*/
+//vendor Производитель. Не отображается в названии предложения. Необязательный элемент.
+// артикул
+// страна производитель
+// модель
 		$this->ordfield = 'name DESC';
 
 	}
@@ -77,21 +89,22 @@ class product_class extends kernel_extends {
 			'listname'=>'ownerlist',
 			'caption' => 'Каталог',
 			'onchange'=>'productshop(\'shop\')', 
-			'mask' =>array('min'=>1,'filter'=>1));
+			'mask' =>array('min'=>1));
 		$this->fields_form['descr'] = array(
 			'type' => 'textarea', 
 			'caption' => 'Краткое описание товара', 
-			'mask' =>array('name'=>'all','min'=>15,'filter'=>1),
+			'mask' =>array('name'=>'all','min'=>15),
 		);
 		$this->fields_form['text'] = array(
 			'type' => 'ckedit', 
 			'caption' => 'Описание товара', 
-			'mask' =>array('name'=>'all','min'=>15, 'filter'=>1, 'fview'=>1),
+			'mask' =>array('name'=>'all','min'=>15, 'fview'=>1),
 			'paramedit'=>array(
 				'height'=>250,
 				'toolbarStartupExpanded'=>'false',
 				'extraPlugins'=>"'cntlen'",));
-		$this->fields_form['cost'] = array('type' => 'int', 'caption' => 'Цена (руб.)', 'mask'=>array('max'=>8,'filter'=>1,'maxint'=>20000000));
+		$this->fields_form['cost'] = array('type' => 'int', 'caption' => 'Цена (руб.)', 'mask'=>array('max'=>8,'maxint'=>20000000));
+		$this->fields_form['cost2'] = array('type' => 'int', 'caption' => 'Старая цена (руб.)', 'mask'=>array('max'=>8,'maxint'=>20000000));
 		$this->fields_form['img_product'] = array('type'=>'file','caption'=>'Фотография №1','del'=>1, 'mask'=>array('fview'=>1,'width'=>80,'height'=>100), 'comment'=>static_main::m('_file_size').$this->attaches['img_product']['maxsize'].'Kb');
 		if($this->config['imageCnt']>0) {
 			$fcnt = $this->config['imageCnt'];
@@ -107,8 +120,8 @@ class product_class extends kernel_extends {
 		if($this->config['onComm']=='1')
 			$this->fields_form['on_comm'] = array('type' => 'checkbox', 'caption' => 'Включить отзывы?','mask'=>array('fview'=>1));
 		//$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата создания', 'mask'=>array('fview'=>2,'sort'=>1));
-		//$this->fields_form['mf_ipcreate'] = array('type' => 'text', 'caption' => 'IP','readonly'=>1, 'mask'=>array('usercheck'=>1,'filter'=>1,'sort'=>1));
-		//$this->fields_form['statview'] = array('type' => 'int', 'caption' => 'Просмотры','readonly'=>1, 'mask' =>array('filter'=>1,'sort'=>1));
+		//$this->fields_form['mf_ipcreate'] = array('type' => 'text', 'caption' => 'IP','readonly'=>1, 'mask'=>array('usercheck'=>1,'sort'=>1));
+		//$this->fields_form['statview'] = array('type' => 'int', 'caption' => 'Просмотры','readonly'=>1, 'mask' =>array('sort'=>1));
 		$this->fields_form['path'] = array('type' => 'hidden', 'caption' => 'Путь','readonly'=>1);
 		
 		/*Прописываем поля для номинаций*/
@@ -116,12 +129,14 @@ class product_class extends kernel_extends {
 		while(isset($this->config['nomination'.$i])) {
 			if($this->config['nomination'.$i]!='') {
 				$this->fields['nomination'.$i] = array('type' => 'int', 'width' => 9, 'attr' => 'NOT NULL','default'=>0);
-				$this->fields_form['nomination'.$i] = array('type' => 'int', 'caption' => '!'.$this->config['nomination'.$i],'readonly'=>1, 'mask' =>array('filter'=>1,'sort'=>1,'usercheck'=>2));//'fview'=>1,
+				$this->fields_form['nomination'.$i] = array('type' => 'int', 'caption' => '!'.$this->config['nomination'.$i],'readonly'=>1, 'mask' =>array('sort'=>1,'usercheck'=>2));//'fview'=>1,
 			}
 			$i++;
 		}
 
-		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Отображать','default'=>1, 'mask' =>array('filter'=>1,'usercheck'=>2));
+		$this->fields_form['available'] = array('type' => 'list', 'listname'=>'available', 'caption' => 'Наличие','default'=>1, 'mask' =>array());
+
+		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Отображать','default'=>1, 'mask' =>array());
 
 	}
 
@@ -489,6 +504,7 @@ class product_class extends kernel_extends {
 		//$this->owner->data2 - кэш рубрик
 		//$PARAM->data
 		// if $limit>0 без постранички
+		$xml=array();
 
 		$PARAM = &$this->owner->childs['rubricparam'];
 		if(isset($PARAM->data)){
@@ -503,7 +519,7 @@ class product_class extends kernel_extends {
 		$clauseF=array();
 		$lcnt=4;
 		$type='';
-		if(count($filter)) {
+		if(count($filter) and isset($filter['sbmt'])) {
 			foreach($filter as $k=>$r) {
 				if($k=='id' or $k=='shop') continue;
 				$tempid = substr($k,6);
@@ -540,7 +556,7 @@ class product_class extends kernel_extends {
 					}
 					else {
 						if($r)
-							$clauseF[$k] = 't4.name'.$nameK.'="'.$r.'"';
+							$clauseF[$k] = 't4.name'.$nameK.'="'.$this->SqlEsc($r).'"';
 					}
 				}
 				//elseif($k=='mf_timecr')
@@ -554,17 +570,21 @@ class product_class extends kernel_extends {
 							$clauseF[$k.'_2'] = 't1.'.$k.'<='.(int)$filter[$k.'_2'];
 					}
 					elseif($this->fields_form[$k]['type']=='list'){
-						if(is_array($r) and count($r))
+						if(is_array($r) and count($r)) {
+							foreach($r as &$ar)
+								$ar = $this->SqlEsc($ar);
+							unset($ar);
 							$clauseF[$k] = 't1.'.$k.' IN ("'.implode('","',$r).'")';
+						}
 						elseif($r!='')
-							$clauseF[$k] = 't1.'.$k.'="'.$r.'"';
+							$clauseF[$k] = 't1.'.$k.'="'.$this->SqlEsc($r).'"';
 					}
 					elseif($k=='text' or $k=='descr'){
 						if($r!='')
-							$clauseF[$k] = 't1.'.$k.' LIKE "%'.$r.'%"';
+							$clauseF[$k] = 't1.'.$k.' LIKE "%'.$this->SqlEsc($r).'%"';
 					}
 					elseif($k=='mf_timecr')
-						$clauseF[$k] = 't1.mf_timecr>"'.$r.'"';
+						$clauseF[$k] = 't1.mf_timecr>"'.(int)$r.'"';
 				}
 				elseif($r=='1' and $k=='foto') {
 					$temp=array();
@@ -573,8 +593,9 @@ class product_class extends kernel_extends {
 					$clauseF[$k] = '('.implode(' or ',$temp).')';
 				}
 			}
+			if(count($clauseF)) // Данные по фильтру отправим в шаблон на всякий
+				$xml['#filter#'] = $clauseF;
 		}
-		$xml=array();
 
 		$clause['from'] = 'FROM '.$this->tablename.' t1 ';//1
 		$clause['ljoin'] = ' LEFT JOIN product_value t4 ON t4.owner_id=t1.id ';//2

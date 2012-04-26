@@ -2,13 +2,17 @@
 	function tpl_productList(&$data) {
 		$html = '';
 		if(isset($data) and count($data)) {
+			global $_tpl;
+			$_tpl['styles']['../default/style/productItem'] = 1;
+
 			$html = '<div class="prodlist">';
 			if(!isset($data['#item#']) or !count($data['#item#'])) {
-				$html .= '<h3>К сожаленю, по вашему запросу творы не найдены</h3>';
-			} else {
-
-				global $_tpl;
-				$_tpl['styles']['../default/style/productItem'] = 1;
+				if(isset($data['#filter#']))
+					$html .= '<h3>К сожаленю, по вашему запросу товары не найдены</h3>';
+				else
+					$html .= '<h3>В данной категории товары ещё не добавлены!</h3>';
+			} 
+			else {
 
 				$PGnum = '';
 				if(isset($data['pagenum']) and count($data['pagenum'])) {

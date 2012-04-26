@@ -71,6 +71,13 @@
 		session_go();
 		return true;
 	}
+	elseif(isset($_GET['_php']) and $_GET['_type']=='xml') {
+		if(file_exists($_CFG['_PATH']['wepconf'].'_phpscript/'.$_GET['_php'].'.xml.php'))
+			require_once($_CFG['_PATH']['wepconf'].'_phpscript/'.$_GET['_php'].'.xml.php');
+		else
+			require_once($_CFG['_PATH']['wep'].'_phpscript/frontend/'.$_GET['_php'].'.xml.php');
+		exit();
+	}
 
 	require_once($_CFG['_PATH']['core'].'html.php');	/**отправляет header и печатает страничку*/
 

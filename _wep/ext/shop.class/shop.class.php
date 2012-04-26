@@ -1,10 +1,20 @@
 <?php
 class shop_class extends rubric_class {
 
+	protected function _create_conf() {/*CONFIG*/
+		parent::_create_conf();
+		
+
+		//$this->config['yml_info'] = '';
+
+		$this->config_form['yml_info'] = array('type' => 'html', 'value'=>'<h3>Настройка Яндекс.Маркета</h3> Ссылка на XML <b><a href="'.$this->_CFG['_HREF']['BH'].'yml.xml" target="_blank">'.$this->_CFG['_HREF']['BH'].'yml.xml</a></b>');
+	}
+
 	function _set_features() {
 		if (!parent::_set_features()) return false;
 		$this->caption = 'Каталог товаров';
 		$this->_AllowAjaxFn['jsOrder'] = true;
+		$this->cf_tools[] = array('func'=>'ImportXls','name'=>'Загрузка прайса');
 		return true;
 	}
 
@@ -92,5 +102,43 @@ class shop_class extends rubric_class {
 			$html = '<div class="messages"><div class="'.$mess[0].'">'.$mess[1].'</div></div>';
 		$res['html'] = $html;
 		return $res;
+	}
+
+	function toolsImportXls() {
+		global $_tpl;
+		$fields_form = $mess = array();
+		if (!static_main::_prmModul($this->_cl, array(5, 7)))
+			$mess[] = static_main::am('error', 'denied', $this);
+		elseif (count($_POST) and $_POST['sbmt']) {
+			/*$data = explode("\n",$_POST['txt']);
+			foreach($data as $r) {
+				$temp = preg_split("/[\s\t\,\:\;]+/",$r,-1,PREG_SPLIT_NO_EMPTY);
+				if(!$temp[1]) $temp[1]='80';
+				$AD = array('name'=>$temp[0],'port'=>$temp[1]);
+				if(isset($temp[2]))
+					$AD['desc'] = implode(" \n",array_slice($temp[2],2));
+				if(!$this->_add($AD,false))
+					$mess[] = static_main::am('error', 'Прокси '.$temp[0].' уже есть в списке!', $this);
+			}*/
+			$mess[] = static_main::am('ok', 'Сделано', $this);
+		} else {
+			$fields_form['_*features*_'] = array('name' => 'loadList', 'action' => $_SERVER['REQUEST_URI'], 'prevhref' => $_SERVER['HTTP_REFERER']);
+			$fields_form['_info'] = array(
+				'type' => 'info',
+				'caption' => '<h2 style="text-align:center;">Импорт товаров из XLS</h2>');
+			$fields_form['xls'] = array(
+				'type' => 'file',
+				'caption' => 'Прайс',
+				'comment'=>'В формате xls',
+				'mask'=>array(),
+			);
+			
+			$fields_form['sbmt'] = array(
+				'type' => 'submit',
+				'value' => 'Импортировать',
+			);
+			self::kFields2FormFields($fields_form);
+		}
+		return Array('form' => $fields_form, 'messages' => $mess);
 	}
 }

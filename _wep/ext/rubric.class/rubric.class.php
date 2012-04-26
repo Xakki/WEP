@@ -209,6 +209,9 @@ class rubricparam_class extends kernel_extends {
 
 	function _create() {
 		parent::_create();
+
+		$this->index_fields['slist'] = array('owner_id','active');
+
 		$this->_enum['typelist'] = array(
 			0=>'Простой список',
 			1=>'AJAX список',
