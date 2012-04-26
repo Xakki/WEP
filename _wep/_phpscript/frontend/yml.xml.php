@@ -21,7 +21,7 @@ $offer = '';
 $DATA = $SHOP->childs['product']->qs('*','WHERE active=1');
 foreach($DATA as $r) {
 	$offer .= '
-			<offer id="'.$r['id'].'" type="vendor.model" bid="13" cbid="20" available="'.(!$r['available']?'true':'false').'">
+			<offer id="'.$r['id'].'" available="'.(!$r['available']?'true':'false').'">
 				 <url>'.$_CFG['_HREF']['BH'].$SHOP->data2[$r['shop']]['path'].'/'.$r['path'].'_'.$r['id'].'.html</url>
 				 <price>'.$r['cost'].'</price>
 				 <currencyId>RUR</currencyId>
