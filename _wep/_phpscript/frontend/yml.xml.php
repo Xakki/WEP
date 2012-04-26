@@ -25,13 +25,15 @@ foreach($DATA as $r) {
 				 <url>'.$_CFG['_HREF']['BH'].$SHOP->data2[$r['shop']]['path'].'/'.$r['path'].'_'.$r['id'].'.html</url>
 				 <price>'.$r['cost'].'</price>
 				 <currencyId>RUR</currencyId>
-				 <categoryId type="Own">'.$r['shop'].'</categoryId>
-				 <name>'.htmlspecialchars($r['name'], ENT_QUOTES, $_CFG['wep']['charset']).'</name>
-				 <description>'.htmlspecialchars($r['descr'], ENT_QUOTES, $_CFG['wep']['charset']).'</description>';
+				 <categoryId>'.$r['shop'].'</categoryId>';
 
 	if($r['img_product'])
-		$offer .= '<picture>'. $_CFG['_HREF']['BH'].$r['img_product']. '</picture>';
-	
+		$offer .= '
+				<picture>'. $_CFG['_HREF']['BH'].$r['img_product']. '</picture>';
+	$offer .= '
+				<name>'.htmlspecialchars($r['name'], ENT_QUOTES, $_CFG['wep']['charset']).'</name>
+				<description>'.htmlspecialchars($r['descr'], ENT_QUOTES, $_CFG['wep']['charset']).'</description>';
+
 	/*$offer .= '<delivery>true</delivery>';
 	$offer .= '<local_delivery_cost>300</local_delivery_cost>';
 	$offer .= '<typePrefix>Принтер</typePrefix>';
@@ -43,7 +45,8 @@ foreach($DATA as $r) {
 	//<param name="Максимальный формат">А4</param>
 	//<param name="Максимальный формат">А4</param>
 	*/
-	$offer .= '</offer>';
+	$offer .= '
+			</offer>';
 }
 
 

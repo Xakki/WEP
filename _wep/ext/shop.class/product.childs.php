@@ -72,8 +72,10 @@ class product_class extends kernel_extends {
 		$this->fields['available'] = array('type' => 'tinyint', 'width' => 1,'attr' => 'NOT NULL','default'=>0);
 /*YML*/
 //vendor Производитель. Не отображается в названии предложения. Необязательный элемент.
+//vendorCode Код товара (указывается код производителя).Необязательный элемент.
+// country_of_origin страна производитель
+
 // артикул
-// страна производитель
 // модель
 		$this->ordfield = 'name DESC';
 
