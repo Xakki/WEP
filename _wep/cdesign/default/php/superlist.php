@@ -40,7 +40,7 @@
 				else {
 					$temp_topmenu .= ' onclick="return wep.load_href(\''.$data['firstpath'].$firstpath.$r['href'].'\')"';
 				}
-				if($r['sel'])
+				if(isset($r['sel']) and $r['sel'])
 					$temp_topmenu .= ' style="border:2px solid red;"';
 				if(!isset($r['title'])) $r['title'] = $r['caption'];
 				$temp_topmenu .= ' class="'.$r['css'].'" title="'.$r['title'].'">'.$r['caption'].'</span></div>';

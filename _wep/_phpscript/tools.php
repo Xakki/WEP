@@ -125,7 +125,7 @@ function tools_cron() {
 					chmod($ini_file, 0777);
 				}
 				$_SESSION['messtool'] = array('name'=>'ok','value'=>'Задание успешно добавлено.');
-				static_main::redirect('/'.key($DATA['path']));
+				static_main::redirect(key($DATA['path']));
 			}
 		}
 		$DATA['path'][$FP.'_type=add'] = 'Добавить';
@@ -217,7 +217,7 @@ function tools_cron() {
 			$_SESSION['messtool'] = array('name'=>'error','value'=>'Ошибка.');
 		else
 			$_SESSION['messtool'] = array('name'=>'ok','value'=>'Задание успешно Удалено.');
-		static_main::redirect('/'.key($DATA['path']));
+		static_main::redirect(key($DATA['path']));
 	} 
 	elseif(isset($_GET['_id']) and ($_GET['_type'] == 'act' or $_GET['_type'] == 'dis')) {
 		$act = ($_GET['_type'] == 'act'?1:0);
@@ -229,7 +229,7 @@ function tools_cron() {
 			$_SESSION['messtool'] = array('name'=>'error','value'=>'Ошибка.');
 		else
 			$_SESSION['messtool'] = array('name'=>'ok','value'=>'Задание успешно '.($act?'включено':'отключено').'.');
-		static_main::redirect('/'.key($DATA['path']));
+		static_main::redirect(key($DATA['path']));
 	}
 	else {
 		$DATA['messages'][] = static_main::am('info','Пропишите в cron <div>*/1 * * * *&#160;&#160;&#160;www-data&#160;&#160;&#160;php '.$_CFG['_PATH']['phpscript'].'cron.php</div>');

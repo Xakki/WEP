@@ -11,12 +11,12 @@
 			include_once($HTML->_cDesignPath.'/php/path.php');
 			$html = tpl_path($data['path']);// PATH
 		}
-		$html .= '<span class="bottonimg imgdel" style="float: right;" onclick="$(this).parent().hide();">EXIT</span>';
 		if(isset($data['messages']) and count($data['messages'])) {
 			include_once($HTML->_cDesignPath.'/php/messages.php');
 			$html .= tpl_messages($data['messages']);// messages
 		}
 		if(isset($data['form']) and count($data['form'])) {
+			$html = '<span class="bottonimg imgdel" style="float: right;" onclick="$(this).parent().hide();">EXIT</span>'.$html;
 			include_once($HTML->_cDesignPath.'/php/form.php');
 			$attr = $data['form']['_*features*_'];
 			$html .= '<form id="form_tools_'.$attr['name'].'" method="post" enctype="multipart/form-data" action="'.$attr['action'].'" class="'.(isset($attr['css'])?$attr['css']:'divform').'">';

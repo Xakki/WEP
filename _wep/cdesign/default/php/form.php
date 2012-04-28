@@ -573,7 +573,7 @@ function tpl_form(&$data, $tabs = array()) {
 				}
 
 
-				if($r['del']==1 and $r['value']!='')
+				if(isset($r['del']) and $r['del']==1 and $r['value']!='')
 					$texthtml .= '<label class="filedelete">Удалить?&#160;<input type="checkbox" name="'.$k.'_del" value="1"/></label>';
 
 				$texthtml .= '</div>';

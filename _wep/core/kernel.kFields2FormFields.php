@@ -1,6 +1,7 @@
 <?php
 
 		foreach($fields as $k=>&$r) {
+			if(!is_array($r)) continue;
 			if(!isset($r['readonly']))
 				$r['readonly'] = false;
 			if(($r['readonly'] and !$this->id) or 
@@ -256,7 +257,10 @@
 				$r['fields_type'] = $this->fields[$k]['type'];
 		}
 		unset($r);
-		if(!isset($fields['_*features*_'])) {
-			$fields['_*features*_'] = array('name' => 'f'.$this->_cl, 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
+		if(count($fields)) {
+			if(!isset($fields['_*features*_']))
+				$fields['_*features*_'] = array('name' => 'f'.$this->_cl, 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
+			elseif(is_string($fields['_*features*_']))
+				$fields['_*features*_'] = array('name' => $fields['_*features*_'], 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
 		}
 		return true;

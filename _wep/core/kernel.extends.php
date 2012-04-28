@@ -1617,8 +1617,11 @@ abstract class kernel_extends {
 					$PARAM['formtools']['messages'] = array(array('value' => 'Опция инструмента не найдена.', 'name' => 'error'));
 				elseif (!method_exists($this, 'tools' . $_REQUEST['_func']))
 					$PARAM['formtools']['messages'] = array(array('value' => 'Функция инструмента не найдена.', 'name' => 'error'));
-				else
+				else {
 					eval('$PARAM[\'formtools\'] = $this->tools' . $_REQUEST['_func'] . '();');
+					if(isset($PARAM['formtools']['form']) and count($PARAM['formtools']['form']))
+						$PARAM['formtools']['form']['_*features*_'] = array('name' => $_REQUEST['_func'], 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
+				}
 			}
 			elseif ($ftype == 'static') {
 				if ($this->mf_istree and $this->id)
@@ -1722,21 +1725,22 @@ abstract class kernel_extends {
 					$arr['mess'][] = static_main::am('ok', 'update', $this);
 					static_tools::_save_config($config, $this->_file_cfg);
 				}
-			}
-			$fields_form['_*features*_'] = array('name' => 'Configmodul', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']));
-			$fields_form['_info'] = array('type' => 'info', 'css' => 'caption', 'caption' => static_main::m('_config'));
-			foreach ($this->config_form as $k => $r) {
-				if(isset($this->config[$k])) {
-					if (!is_array($this->config[$k]))
-						$this->config_form[$k]['value'] = stripslashes($this->config[$k]);
-					else
-						$this->config_form[$k]['value'] = $this->config[$k];
+			} 
+			else {
+				$fields_form['_info'] = array('type' => 'info', 'css' => 'caption', 'caption' => static_main::m('_config'));
+				foreach ($this->config_form as $k => $r) {
+					if(isset($this->config[$k])) {
+						if (!is_array($this->config[$k]))
+							$this->config_form[$k]['value'] = stripslashes($this->config[$k]);
+						else
+							$this->config_form[$k]['value'] = $this->config[$k];
+					}
 				}
+				$fields_form = $fields_form+$this->config_form;
+				$fields_form['sbmt'] = array(
+					'type' => 'submit',
+					'value' => static_main::m('Submit'));
 			}
-			$fields_form = $fields_form+$this->config_form;
-			$fields_form['sbmt'] = array(
-				'type' => 'submit',
-				'value' => static_main::m('Submit'));
 		}
 		$this->kFields2FormFields($fields_form);
 		return Array('form' => $fields_form, 'messages' => $arr['mess']);

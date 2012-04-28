@@ -889,6 +889,14 @@ function _modulExists($class_name, &$OWNER=NULL) {
 		return array('type' => false, 'path' => false, 'file' => false);
 	}
 
+	// получить путь к PHP фаилам сторонних библиотек
+	function getLib($name) {
+		global $_CFG;
+		$file = $_CFG['_PATH']['phpscript'].'lib/'.$name.'.php';
+		if(file_exists($file))
+			return $file;
+		return $_CFG['_PATH']['wep_phpscript'].'lib/'.$name.'.php';
+	}
 
 if (!defined('PHP_VERSION_ID')) {
 	$version = explode('.', PHP_VERSION);

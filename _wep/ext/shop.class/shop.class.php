@@ -8,6 +8,7 @@ class shop_class extends rubric_class {
 		//$this->config['yml_info'] = '';
 
 		$this->config_form['yml_info'] = array('type' => 'html', 'value'=>'<h3>Настройка Яндекс.Маркета</h3> Ссылка на XML <b><a href="'.$this->_CFG['_HREF']['BH'].'yml.xml" target="_blank">'.$this->_CFG['_HREF']['BH'].'yml.xml</a></b>');
+		//http://help.yandex.ru/partnermarket/?id=1111425
 	}
 
 	function _set_features() {
@@ -110,6 +111,14 @@ class shop_class extends rubric_class {
 		if (!static_main::_prmModul($this->_cl, array(5, 7)))
 			$mess[] = static_main::am('error', 'denied', $this);
 		elseif (count($_POST) and $_POST['sbmt']) {
+			error_reporting(E_ALL ^ E_NOTICE);
+			require_once getLib('excel_reader2');
+			if($_FILES['xls']['tmp_name']) {
+				
+				$DT = $this->dumpXlsData();
+				print_r('<pre>');print_r($DT);
+			}
+
 			/*$data = explode("\n",$_POST['txt']);
 			foreach($data as $r) {
 				$temp = preg_split("/[\s\t\,\:\;]+/",$r,-1,PREG_SPLIT_NO_EMPTY);
@@ -122,7 +131,6 @@ class shop_class extends rubric_class {
 			}*/
 			$mess[] = static_main::am('ok', 'Сделано', $this);
 		} else {
-			$fields_form['_*features*_'] = array('name' => 'loadList', 'action' => $_SERVER['REQUEST_URI'], 'prevhref' => $_SERVER['HTTP_REFERER']);
 			$fields_form['_info'] = array(
 				'type' => 'info',
 				'caption' => '<h2 style="text-align:center;">Импорт товаров из XLS</h2>');
@@ -140,5 +148,34 @@ class shop_class extends rubric_class {
 			self::kFields2FormFields($fields_form);
 		}
 		return Array('form' => $fields_form, 'messages' => $mess);
+	}
+
+	function dumpXlsData($sheet=0) {
+		$dataXLS = new Spreadsheet_Excel_Reader($_FILES['xls']['tmp_name']);
+		$out = array();
+		for($row=1;$row<=$this->rowcount($sheet);$row++) {
+			for($col=1;$col<=$this->colcount($sheet);$col++) {
+				// Account for Rowspans/Colspans
+				/*$rowspan = $this->rowspan($row,$col,$sheet);
+				$colspan = $this->colspan($row,$col,$sheet);
+				for($i=0;$i<$rowspan;$i++) {
+					for($j=0;$j<$colspan;$j++) {
+						if ($i>0 || $j>0) {
+							$this->sheets[$sheet]['cellsInfo'][$row+$i][$col+$j]['dontprint']=1;
+						}
+					}
+				}
+				if(!$this->sheets[$sheet]['cellsInfo'][$row][$col]['dontprint']) {*/
+
+					$val = $this->val($row,$col,$sheet);
+					if ($val!='') { 
+						$val = htmlentities($val,ENT_QUOTES,"WINDOWS-1251");
+						$val = mb_convert_encoding($val, 'UTF-8', 'WINDOWS-1251' );
+					}
+					$out[$row][$col] = $val;
+				//}
+			}
+		}
+		return $out;
 	}
 }

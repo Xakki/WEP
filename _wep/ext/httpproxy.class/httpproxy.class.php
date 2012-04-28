@@ -203,7 +203,6 @@ class httpproxy_class extends kernel_extends {
 			}
 			$mess[] = static_main::am('ok', 'Сделано', $this);
 		} else {
-			$fields_form['_*features*_'] = array('name' => 'loadList', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
 			$fields_form['_info'] = array(
 				'type' => 'info',
 				'caption' => '<h2 style="text-align:center;">' . $this->caption . '</h2>');
@@ -236,7 +235,6 @@ class httpproxy_class extends kernel_extends {
 			$this->_update($upd,'capture!=0',false);
 			$mess = array(static_main::am('ok', 'Сделано', $this));
 		} else {
-			$fields_form['_*features*_'] = array('name' => 'clearUse', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
 			$fields_form['_info'] = array(
 				'type' => 'info',
 				'caption' => '<h2 style="text-align:center;">Обнулить данные?</h2>');

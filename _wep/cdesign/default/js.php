@@ -14,7 +14,7 @@
 				else {
 					$DATA['formcreat']['path'] = $HTML->path;
 					$html = $HTML->transformPHP($DATA,'formcreat');
-					$_tpl['onload'] .= 'JSFR("form");';
+					$_tpl['onload'] .= 'wep.form.JSFR("form");';
 				}
 			}
 			elseif(isset($DATA['static']) and $DATA['static']) {
@@ -26,12 +26,14 @@
 				if(isset($DATA['formtools'][1]['form']))
 					$DATA['formtools'] = $DATA['formtools'][1];
 				$html = $HTML->transformPHP($DATA,'formtools');
-				$_tpl['onload'] .= 'wep.jsForm(\'#form_tools_'.$_REQUEST['_func'].'\',{\'insertObj\':\'#tools_block\'});';
+				//$_tpl['onload'] .= 'wep.jsForm(\'#form_tools_'.$_REQUEST['_func'].'\',{\'insertObj\':\'#tools_block\'});';
+				$_tpl['onload'] .= 'wep.form.JSFR(\'#form_tools_'.$_REQUEST['_func'].'\');';
 			}
 			elseif($flag!=3) {
 				end($HTML->path);
 				$_tpl['onload'] = 'alert(\''.$HTML->transformPHP($DATA['superlist'],'messages').'\');wep.load_href("'.str_replace('&amp;','&',key($HTML->path)).'");';
-			}else {
+			}
+			else {
 				$DATA['superlist']['path'] = $HTML->path;
 				$html = $HTML->transformPHP($DATA,'superlist');
 			}
