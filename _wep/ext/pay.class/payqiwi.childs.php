@@ -36,7 +36,8 @@ class payqiwi_class extends kernel_extends {
 		$this->lang['add'] = 'Счёт на оплату отправлено в систему QIWI.<br/> Чтобы оплатить его перейдите на сайт <a href="https://w.qiwi.ru/orders.action" target="_blank">QIWI</a> в раздел "Счета".';
 		//$this->lang['add'] = 'Счёт на пополнение кошелька отправлено в систему QIWI.<br/> Чтобы оплатить его перейдите на сайт <a href="https://w.qiwi.ru/orders.action">QIWI</a> и в течении 5ти минут после оплаты, сумма поступит на ваш баланс.';
 		$this->default_access = '|9|';
-		$this->mf_timestamp = true; // создать поле  типа timestamp
+		$this->mf_timecr = true; // создать поле хранящее время создания поля
+		$this->mf_actctrl = true;
 		$this->prm_add = false; // добавить в модуле
 		$this->prm_del = false; // удалять в модуле
 		$this->prm_edit = false; // редактировать в модуле
@@ -251,8 +252,7 @@ Cчета со статусом большим или равным 100 трак�
 
 	/// CRON
 	function checkBill() {
-		if(!$this->owner->config['qiwi_lifetime']) $this->owner->config['qiwi_lifetime'] = 1080;
-		$this->owner->clearOldData($this->_cl, ($this->owner->config['qiwi_lifetime']*3600), array('statuses'=>161));
+		$this->clearOldData();
 
 		$bills = $this->_query('*','WHERE statuses<60');
 		if(!count($bills)) return '-нет выставленных счетов-';
@@ -283,6 +283,20 @@ Cчета со статусом большим или равным 100 трак�
 		}
 	}
 
+	/**
+	* Сервис служба очистки данных
+	* Отключает неоплаченные платежи 
+	* @param $M - модуль платежной системы
+	* @param $leftTime - в секундах
+	*/
+	function clearOldData() {
+		if(!$this->owner->config['qiwi_lifetime']) $this->owner->config['qiwi_lifetime'] = 1080;
+		$leftTime = ($this->owner->config['qiwi_lifetime']*3600);
+
+		$this->_update(array('statuses'=>'161', $this->mf_actctrl=>0), 'statuses<60 and '.$this->mf_timecr.'<"'.(time()-$leftTime).'"');
+
+		$this->owner->clearOldData($this->_cl, $leftTime);
+	}
 }
 
 

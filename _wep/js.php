@@ -5,7 +5,8 @@
 
 	$_CFG['_PATH']['wep'] = dirname($_SERVER['SCRIPT_FILENAME']).'/';
 	require_once($_CFG['_PATH']['wep'].'config/config.php');
-	require($_CFG['_PATH']['wep_phpscript'].'lib/jquery_getjson.php');
+	if(!isset($_GET['noajax']))
+		require($_CFG['_PATH']['wep_phpscript'].'lib/jquery_getjson.php');
 
 
 	if($_CFG['robot']) {
@@ -66,3 +67,8 @@
 	}*/
 
 	$GLOBALS['_RESULT'] = array("html" => $html,"html2" => $html2,'eval'=>$_tpl['onload']);
+
+	if(isset($_GET['noajax']) and !isset($_GET['_template'])) {
+		header('Content-type: text/html; charset=utf-8');
+		print_r($GLOBALS['_RESULT']);
+	}

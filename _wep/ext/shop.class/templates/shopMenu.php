@@ -2,9 +2,9 @@
 	function tpl_shopMenu(&$data) {
 		$html = '';
 		if(isset($data) and count($data)) {
-			global $_tpl;
+			global $_tpl,$HTML;
 			//$_tpl['styles']['shop'] = array('/'.static_main::relativePath(dirname(dirname(__FILE__))).'/style/menu.css');
-			$_tpl['styles']['../default/style/shopMenu'] = 1;
+			$_tpl['styles']['../'.$HTML->_design.'/_shop/style/shopMenu'] = 1;
 
 			$html = '<div class="shop-menu">
 			'.($data['#title#']?'<h3>'.$data['#title#'].'</h3>':'').'

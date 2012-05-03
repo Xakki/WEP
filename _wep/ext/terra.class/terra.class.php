@@ -358,7 +358,7 @@ class terra_class extends kernel_extends {
 					$this->id = $r['id'];
 					$r['name'] = strtr($r['name'],array('<br />'=>'-',' '=>'-','_'=>'-',','=>'-','.'=>'-','+'=>'-'));
 					$upd = array(
-						'domen'=>$this->getTranslitePatchFromText($r['name']),
+						'domen'=>$this->transliteRuToLat($r['name']),
 						'domen_rf'=>mb_strtolower(preg_replace("/[^0-9A-Za-zА-Яа-я\-]+/u",'',$r['name'])),
 					);
 					$upd['domen_rf'] = $var;
@@ -380,23 +380,6 @@ class terra_class extends kernel_extends {
 			$res['onload'] = 'window.location.href=location.href;';
 		}
 		return $res;
-	}
-
-	function getTranslitePatchFromText($var,$len=0) {
-		$var = mb_strtolower(strip_tags(html_entity_decode($var,ENT_QUOTES,'UTF-8')));
-		$var = strtr($var,
-			array(
-				'<br />'=>'-',' '=>'-','_'=>'-',','=>'-','.'=>'-','+'=>'-',
-				'а'=>'a','б'=>'b','в'=>'v','г'=>'g','д'=>'d','е'=>'e','ё'=>'e','з'=>'z','и'=>'i','й'=>'y','к'=>'k','л'=>'l','м'=>'m','н'=>'n','о'=>'o','п'=>'p','р'=>'r','с'=>'s','т'=>'t','у'=>'u','ф'=>'f','х'=>'h','ы'=>'i',
-				"ж"=>"zh", "ц"=>"ts", "ч"=>"ch", "ш"=>"sh","щ"=>"shch",'э'=>'e',"ю"=>"yu", "я"=>"ya",
-				"ї"=>"i", "є"=>"ie","ь"=>"","ъ"=>""
-				)
-		);
-		$var = preg_replace("/[^0-9A-Za-z\-]+/u",'',$var);
-		$var = strtr($var,array('-----'=>'-','----'=>'-','---'=>'-','--'=>'-'));
-		if($len)
-			$var = mb_substr($var,0,$len);
-		return trim($var,'-');
 	}
 
 }

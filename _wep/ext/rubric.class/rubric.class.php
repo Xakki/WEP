@@ -3,6 +3,7 @@ class rubric_class extends kernel_extends {
 
 	function _set_features() {
 		if (!parent::_set_features()) return false;
+		$this->ver = '0.0.1';
 		$this->mf_istree = true;
 		$this->mf_ordctrl = true;
 		$this->mf_actctrl = true;
@@ -176,7 +177,25 @@ class rubric_class extends kernel_extends {
 		return true;	
 	}
 
+	public function _add($data=array(), $flag_select=true) {
 
+		if(!isset($data['lname']) or !$data['lname'])
+			$data['lname'] = $this->transliteRuToLat($data['name']);
+
+		if($ret = parent::_add($data, $flag_select)) {
+		}
+		return $ret;
+	}
+
+	public function _update($data=array(), $where=false, $flag_select=true) {
+
+		if(!isset($data['lname']) or !$data['lname'])
+			$data['lname'] = $this->transliteRuToLat($data['name']);
+
+		if($ret = parent::_update($data, $where, $flag_select)) {
+		}
+		return $ret;
+	}
 }
 
 class rubricparam_class extends kernel_extends {

@@ -13,6 +13,7 @@ class shop_class extends rubric_class {
 
 	function _set_features() {
 		if (!parent::_set_features()) return false;
+		$this->ver = '0.0.2';
 		$this->caption = 'Каталог товаров';
 		$this->_AllowAjaxFn['jsOrder'] = true;
 		$this->cf_tools[] = array('func'=>'ImportXls','name'=>'Загрузка прайса');
@@ -111,25 +112,54 @@ class shop_class extends rubric_class {
 		if (!static_main::_prmModul($this->_cl, array(5, 7)))
 			$mess[] = static_main::am('error', 'denied', $this);
 		elseif (count($_POST) and $_POST['sbmt']) {
-			error_reporting(E_ALL ^ E_NOTICE);
-			require_once getLib('excel_reader2');
 			if($_FILES['xls']['tmp_name']) {
-				
-				$DT = $this->dumpXlsData();
-				print_r('<pre>');print_r($DT);
-			}
+				$DT = $this->dumpXlsData($_FILES['xls']['tmp_name']);
+				$this->_tableClear();
+				foreach($DT['dataCat'] as $r) {
+					$this->_add($r);
+				}
 
-			/*$data = explode("\n",$_POST['txt']);
-			foreach($data as $r) {
-				$temp = preg_split("/[\s\t\,\:\;]+/",$r,-1,PREG_SPLIT_NO_EMPTY);
-				if(!$temp[1]) $temp[1]='80';
-				$AD = array('name'=>$temp[0],'port'=>$temp[1]);
-				if(isset($temp[2]))
-					$AD['desc'] = implode(" \n",array_slice($temp[2],2));
-				if(!$this->_add($AD,false))
-					$mess[] = static_main::am('error', 'Прокси '.$temp[0].' уже есть в списке!', $this);
-			}*/
-			$mess[] = static_main::am('ok', 'Сделано', $this);
+				$prodName = array(
+					1 => 'id',
+					2 => 'code',
+					3 => 'name',
+					4 => 'model',
+					5 => 'articul',
+					6 => 'madein',
+					7 => 'cost',
+					'shop'=>'shop'
+				);
+				$optName = array(
+				);
+$cc = 0;
+
+				$this->childs['product']->_tableClear();
+				$this->childs['product']->childs['product_value']->_tableClear();
+				foreach($DT['dataProd'] as $r) {
+					$tmpProd = array();
+					foreach($prodName as $kk=>$rr) {
+						if(isset($r[$kk]))
+							$tmpProd[$rr] = $r[$kk];
+					}
+
+					$tmpOpt = array();
+					if(count($optName)) {
+						foreach($optName as $kk=>$rr) {
+							if(isset($r[$kk]))
+								$tmpOpt[$rr] = $r[$kk];
+						}
+					}
+					$this->childs['product']->_add($tmpProd);
+
+					if(count($tmpOpt)) {
+						$tmpOpt['owner_id'] = $this->childs['product']->id;
+						$this->childs['product']->childs['product_value']->_add($tmpOpt);
+					}
+				}
+				$mess[] = static_main::am('ok', 'Сделано', $this);
+			}
+			else
+				$mess[] = static_main::am('ok', 'Фаил не загружен', $this);
 		} else {
 			$fields_form['_info'] = array(
 				'type' => 'info',
@@ -150,11 +180,22 @@ class shop_class extends rubric_class {
 		return Array('form' => $fields_form, 'messages' => $mess);
 	}
 
-	function dumpXlsData($sheet=0) {
-		$dataXLS = new Spreadsheet_Excel_Reader($_FILES['xls']['tmp_name']);
-		$out = array();
-		for($row=1;$row<=$this->rowcount($sheet);$row++) {
-			for($col=1;$col<=$this->colcount($sheet);$col++) {
+	function dumpXlsData($file, $sheet=0) {
+
+		error_reporting(E_ALL ^ E_NOTICE);
+		require_once getLib('excel_reader2');
+		$dataXLS = new Spreadsheet_Excel_Reader($file);
+
+		$out = array(
+			'dataCat'=>array(),
+			'dataProd'=>array(),
+			'info'=>array(),
+		);
+
+		$idCat=0;
+		for($row=1;$row<=$dataXLS->rowcount($sheet);$row++) {
+			$tmp = array();
+			for($col=1;$col<=$dataXLS->colcount($sheet);$col++) {
 				// Account for Rowspans/Colspans
 				/*$rowspan = $this->rowspan($row,$col,$sheet);
 				$colspan = $this->colspan($row,$col,$sheet);
@@ -167,14 +208,78 @@ class shop_class extends rubric_class {
 				}
 				if(!$this->sheets[$sheet]['cellsInfo'][$row][$col]['dontprint']) {*/
 
-					$val = $this->val($row,$col,$sheet);
+					$val = trim($dataXLS->val($row,$col,$sheet));
 					if ($val!='') { 
-						$val = htmlentities($val,ENT_QUOTES,"WINDOWS-1251");
-						$val = mb_convert_encoding($val, 'UTF-8', 'WINDOWS-1251' );
+						//$val = htmlentities($val,ENT_QUOTES,"WINDOWS-1251");
+						$val = mb_convert_encoding($val, 'UTF-8', 'WINDOWS-1251');
+						$tmp[$col] = $val;
 					}
-					$out[$row][$col] = $val;
 				//}
 			}
+
+			//print_r($tmp);
+			$randi = 2;
+			if($cnt = count($tmp)) {
+				if($cnt==1) {
+					if(isset($tmp[1])) {
+						$idCat++;
+						$name0 = '';
+						$name1 =$tmp[1];
+						$tmpName = explode('/', $name1);
+						if(count($tmpName)>1) {
+							$name0 = $tmpName[0];
+							$name1 = $tmpName[1];
+							//$name1 = str_replace($name0,'',$tmpName[1]);
+							if(!isset($out['dataCat'][$name0])) {
+								$out['dataCat'][$name0] = array(
+									'name'=>$name0,
+									'id'=>$idCat,
+									'parent_id'=>0
+								);
+								$idCat++;
+							}
+							$pid = 0;
+							if(isset($out['dataCat'][$name0]))
+								$pid = $out['dataCat'][$name0]['id'];
+
+							if(isset($out['dataCat'][$name1])) {
+								$name1 .= ' ('.$randi.')';
+								$randi++;
+							}
+
+							$out['dataCat'][$name1] = array(
+								'name'=> $name1,
+								'id'=> $idCat,
+								'parent_id'=> $pid
+							);
+						} 
+						else {
+							if(isset($out['dataCat'][$name1])) {
+								$name1 .= ' ('.$randi.')';
+								$randi++;
+							}
+							$out['dataCat'][$name1] = array(
+								'name'=>$name1,
+								'id'=>$idCat,
+								'parent_id'=>0
+							);
+						}
+					}
+					else {
+						$out['info'][] = current($tmp);
+					}
+				}
+				elseif (isset($tmp[1]) and isset($out['field'])) {
+					$tmp['shop'] = $idCat;
+					$out['dataProd'][(int)$tmp[1]] = $tmp;
+				}
+				elseif (isset($tmp[1])) {
+					$out['field'] = $tmp;
+				}
+				else
+					$out['info'][] = $tmp;
+			}
+			//if($row>4) return $out;
 		}
 		return $out;
 	}

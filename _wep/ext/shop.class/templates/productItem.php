@@ -8,7 +8,7 @@
 
 			global $_CFG, $_tpl;
 			$_CFG['fileIncludeOption']['fancybox'] = true;
-			$_tpl['styles']['../default/style/productItem'] = 1;
+			$_tpl['styles']['../'.$HTML->_design.'/_shop/style/product'] = 1;
 
 			foreach($data as $r) {
 				$href = $r['rpath'].'/'.$r['path'].'_'.$r['id'].'.html';

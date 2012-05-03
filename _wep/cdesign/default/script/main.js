@@ -34,7 +34,7 @@ function contentIncParam(obj,path,funcparam) {
 			'href':path+'/js.php?_view=contentIncParam&_modul=pg',
 			'type':'POST',
 			'data': {'pagetype':pagetype,'funcparam':funcparam},
-			'call': function () {jQuery('form>div.flexform').remove();jQuery('#tr_pagetype').after(this.html2);}
+			'call': function () {jQuery('form div.flexform').remove();jQuery('#tr_pagetype').after(this.html2);}
 		};
 		//replaceWith
 		JSWin(param);

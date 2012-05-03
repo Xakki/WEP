@@ -74,7 +74,8 @@ class payyandex_class extends kernel_extends {
 		$this->lang['add'] = 'Счёт на оплату отправлено в систему QIWI.<br/> Чтобы оплатить его перейдите на сайт <a href="https://w.qiwi.ru/orders.action" target="_blank">QIWI</a> в раздел "Счета".';
 		//$this->lang['add'] = 'Счёт на пополнение кошелька отправлено в систему QIWI.<br/> Чтобы оплатить его перейдите на сайт <a href="https://w.qiwi.ru/orders.action">QIWI</a> и в течении 5ти минут после оплаты, сумма поступит на ваш баланс.';*/
 		$this->default_access = '|9|';
-		$this->mf_timestamp = true; // создать поле  типа timestamp
+		$this->mf_timecr = true; // создать поле хранящее время создания поля
+		$this->mf_actctrl = true;
 		$this->prm_add = false; // добавить в модуле
 		$this->prm_del = false; // удалять в модуле
 		$this->prm_edit = false; // редактировать в модуле
@@ -114,7 +115,7 @@ class payyandex_class extends kernel_extends {
 	protected function _create() {
 		parent::_create();
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL','default'=>'');
-		$this->fields['phone'] = array('type' => 'bigint', 'width' => 13,'attr' => 'unsigned NOT NULL');
+		$this->fields['phone'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL','default'=>'');
 		$this->fields['email'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL');
 		$this->fields['sender'] = array('type' => 'varchar', 'width' => 20,'attr' => 'NOT NULL','default'=>''); // № плательщика в системе
 		$this->fields['amount'] = array('type' => 'float', 'width' => '11,2','attr' => 'NOT NULL'); // в коппейках
@@ -180,13 +181,13 @@ class payyandex_class extends kernel_extends {
 		);
 		$DATA['form'] = array(
 			'receiver'=>array('type'=>'hidden','value'=>$this->owner->config['yandex_id']),
-			'FormComment'=>array('type'=>'hidden','value'=>'Счёт№'.$this->owner->id.'; '.$data['name']), // заголовок у отправителя
+			'FormComment'=>array('type'=>'hidden','value'=>'Счёт№'.$data['id'].'; '.$data['name']), // заголовок у отправителя
 			'short-dest'=>array('type'=>'hidden','value'=>$data['name']), // Комментарий у отправителя
 			'writable-targets'=>array('type'=>'hidden','value'=>'false'),
 			'writable-sum'=>array('type'=>'hidden','value'=>'false'),
 			'comment-needed'=>array('type'=>'hidden','value'=>'true'),
 			'quickpay-form'=>array('type'=>'hidden','value'=>'small'),
-			'targets'=>array('type'=>'hidden','value'=>'Счёт№'.$this->owner->id), // Сообщение получателю
+			'targets'=>array('type'=>'hidden','value'=>'Счёт№'.$data['id']), // Сообщение получателю
 			'sum'=>array('type'=>'hidden','value'=>$data['amount']),
 			'mail'=>array('type'=>'hidden','value'=>'true'),
 			//'p2payment'=>array('type'=>'hidden','value'=>$this->id),
@@ -436,7 +437,7 @@ class payyandex_class extends kernel_extends {
 
 	/*CRON*/
 	function checkBill() {
-		$this->owner->clearOldData($this->_cl, ($this->owner->config['yandex_lifetime']*3600), array('status'=>'timeout'));
+		//$this->clearOldData();
 
 		$temp = $this->qs('*','WHERE status=""','name');
 		$DATA = array();
@@ -452,7 +453,6 @@ class payyandex_class extends kernel_extends {
 		$INFO = $this->operationHistory($this->owner->config['yandex_token'],NULL,NULL,'deposition');
 
 		if(!count($INFO['operations'])) return '-нет платежей , '.$CNT.' не оплачено-';
-
 		$i=0;
 		foreach($INFO['operations'] as $r) {
 			//date($r['datetime'])
@@ -483,6 +483,17 @@ class payyandex_class extends kernel_extends {
 		return '-OK-';
 	}
 
+	/**
+	* Сервис служба очистки данных
+	* Отключает неоплаченные платежи 
+	* @param $M - модуль платежной системы
+	* @param $leftTime - в секундах
+	*/
+	function clearOldData() {
+		$leftTime = ($this->owner->config['yandex_lifetime']*3600);
+		$this->_update(array('status'=>'timeout', $this->mf_actctrl=>0), 'status="" and '.$this->mf_timecr.'<"'.(time()-$leftTime).'"');
+		$this->owner->clearOldData($this->_cl, $leftTime);
+	}
 }
 
 

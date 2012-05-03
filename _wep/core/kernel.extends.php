@@ -145,6 +145,7 @@ abstract class kernel_extends {
 		$this->mf_timeup = false; // создать поле хранящще время обновления поля
 		$this->mf_timeoff = false; // создать поле хранящще время отключения поля (active=0)
 		$this->mf_ipcreate = false; //IP адрес пользователя с котрого была добавлена запись
+		$this->cf_fields = false; // Возможность добавлять дополнительные поля в конфиге
 		$this->prm_add = true; // добавить в модуле
 		$this->prm_del = true; // удалять в модуле
 		$this->prm_edit = true; // редактировать в модуле
@@ -221,6 +222,10 @@ abstract class kernel_extends {
 		if ($this->includeCSStoWEP) {
 			$this->config['cssIncludeToWEP'] = '';
 			$this->config_form['cssIncludeToWEP'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'style', 'caption' => 'CSS модуля');
+		}
+		if($this->cf_fields) {
+			$this->config['cf_fields'] = array();
+			$this->config_form['cf_fields'] = array('type' => 'cf_fields', 'caption' => 'Дополнительные поля формы');
 		}
 		return true;
 	}
@@ -326,6 +331,15 @@ abstract class kernel_extends {
 			$this->ordfield = $this->mf_ordctrl;
 			$this->index_fields[$this->mf_ordctrl] = $this->mf_ordctrl;
 			$this->_AllowAjaxFn['_sorting'] = true;
+		}
+
+		if(isset($this->config['cf_fields']) and count($this->config['cf_fields'])) {
+			foreach($this->config['cf_fields'] as $fk=>$fr) {
+				$this->fields[$fk] = $fr;
+				if($fr['unique']) {
+					$this->unique_fields[$fk] = $fk;
+				}
+			}
 		}
 
 		$this->attprm = array('type' => 'varchar(4)', 'attr' => 'NOT NULL DEFAULT \'\'');
@@ -469,6 +483,9 @@ abstract class kernel_extends {
 	 */
 	public function qs($list = '', $cls = '', $ord = '', $ord2 = '', $debug = false) {
 		return $this->_query($list, $cls, $ord, $ord2, $debug);
+	}
+	protected function _tableClear() {
+		$this->SQL->_tableClear($this);
 	}
 
 	/**
@@ -1016,6 +1033,15 @@ abstract class kernel_extends {
 		  }
 		  $this->fields_form[$k] = $r;
 		  } */
+
+		if(isset($this->config['cf_fields']) and count($this->config['cf_fields'])) {
+			foreach($this->config['cf_fields'] as $fk=>$fr) {
+				if(isset($fr['ftype']))
+					$fr['type'] = $fr['ftype'];
+				$this->fields_form[$fk] = $fr;
+			}
+		}
+
 		if ($form==0 and count($this->formDSort)) {
 			$temp = $this->fields_form;
 			$this->fields_form = array();
@@ -2662,6 +2688,10 @@ abstract class kernel_extends {
 		return $RESULT;
 	}
 
+	public function transliteRuToLat($var,$len=0) {
+		return static_tools::transliteRuToLat($var,$len);
+	}
+
 }
 
 //// Kernel END
@@ -2671,6 +2701,7 @@ class modul_child extends ArrayObject {
 
 	function __construct(&$obj) {
 		$this->modul_obj = $obj;
+		$this->childs_obj = array();
 	}
 
 	function getIterator() {
@@ -2703,7 +2734,8 @@ class modul_child extends ArrayObject {
 				return false;
 			}
 			//
-			//$this->modul_obj->childs[$index] = $modul_child;
+			$this->modul_obj->childs[$index] = $modul_child; // Исправил ошибку, когнда для несинглтона, каждый вызов подмодуля приводит к созданию объекта
+			//$this->childs_obj[$index] = $modul_child;
 			return $modul_child;
 		} else {
 			//если один и тот же клас исползуется в как ребенок в других классах, то $this->singleton = false; вам в помощь, иначе сюда будут выдаваться ссылки на класс созданный в первы раз для другого модуля

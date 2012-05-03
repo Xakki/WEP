@@ -11,13 +11,48 @@ class product_class extends kernel_extends {
 		$this->config_form['reversePage'] = array('type' => 'checkbox', 'caption' => 'Режим постраничной навигации', 'comment'=>'если откл. - прямая нумерация');
 		$this->config_form['onComm'] = array('type' => 'list', 'listname'=>'onComm', 'caption' => 'Включить комментарии?');
 		$this->config_form['imageCnt'] = array('type' => 'int', 'caption' => 'Число фотографий');
+
+		$this->config['cf_fields'] = array(
+			'code' => array(
+				'type' => 'int',
+				'width' => 11,
+				'attr' => 'NOT NULL',
+				'default'=> 0,
+				'unique' => true,
+				'caption' => 'Код',
+				'mask'=>array(),//'max'=>8,'maxint'=>20000000
+			),
+			'model' => array(
+				'type' => 'varchar',
+				'width' => 64,
+				'attr' => 'NOT NULL',
+				'default'=> '',
+				'unique' => false,
+				'caption' => 'Модель',
+			),
+			'articul' => array(
+				'type' => 'varchar',
+				'width' => 64,
+				'attr' => 'NOT NULL',
+				'default'=> '',
+				'unique' => false,
+				'caption' => 'Артикул',
+			),
+			'madein' => array(
+				'type' => 'varchar',
+				'width' => 64,
+				'attr' => 'NOT NULL',
+				'unique' => false,
+				'default'=> '',
+				'caption' => 'Страна изготовитель',
+			),
+		);
 	}
 
 	protected function _set_features() {
 		if (!parent::_set_features()) return false;
-		$this->mf_actctrl = true;
+		$this->ver = '0.0.1';
 		$this->caption = 'Продкция';
-		$this->owner_name = 'shop';
 		//$this->mf_statistic = array('Y'=>'count(id)','X'=>'FROM_UNIXTIME(mf_timecr,"%Y-%m")','Yname'=>'Кол','Xname'=>'Дата');//-%d
 		$this->messages_on_page = 20;
 		//$this->includeJStoWEP = true;
@@ -26,7 +61,10 @@ class product_class extends kernel_extends {
 		$this->mf_timecr = true; // создать поле хранящее время создания поля
 		$this->mf_timeup = true; // создать поле хранящее время обновления поля
 		$this->mf_ipcreate = true;//IP адрес пользователя с котрого была добавлена запись
+		$this->mf_actctrl = true;
+		$this->owner_name = 'shop';
 		$this->_listnameSQL ='name';
+		$this->cf_fields = true; // Разрешить добавлять добавлять дополнительные поля в таблицу
 		$this->ver = '0.2.3';
 
 		$this->_enum['onComm']=array(
@@ -63,6 +101,7 @@ class product_class extends kernel_extends {
 		}
 
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
+		$this->fields['code'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['descr'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['text'] = array('type' => 'text', 'attr' => 'NOT NULL');
 		$this->fields['cost'] = array('type' => 'int', 'width' => 10,'attr' => 'NOT NULL','default'=>0);
@@ -84,7 +123,7 @@ class product_class extends kernel_extends {
 	public function setFieldsForm($form=0) {
 		parent::setFieldsForm($form);
 		global $_tpl;
-		$_tpl['script']['shop'] = array('/'.static_main::relativePath(dirname(__FILE__)).'/script/shop.js');
+		$_tpl['script']['shop'] = array('/'.static_main::relativePath(dirname(__FILE__)).'/_design/script/shop.js');
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название товара');
 		$this->fields_form['shop'] = array(
 			'type' => 'list', 
@@ -233,7 +272,10 @@ class product_class extends kernel_extends {
 				}
 			}
 		}
-		$data['path'] = $this->getTranslitePatchFromText($data['name']);
+
+		if(!isset($data['path']) or !$data['path'])
+			$data['path'] = $this->transliteRuToLat($data['name']);
+
 		if($ret = parent::_update($data,$where,$flag_select)) {
 			if(isset($PARAM->data) and is_array($PARAM->data) and count($PARAM->data)) {
 				if(count($cls)) {
@@ -249,16 +291,15 @@ class product_class extends kernel_extends {
 	}
 
 	public function _add($data=array(),$flag_select=true) {
-	
 		$PARAM = &$this->owner->childs['rubricparam'];
 		$cls=array();
 		$tmp = array();
 
 		if(isset($PARAM->data) and is_array($PARAM->data) and count($PARAM->data)) {
-			foreach($PARAM->data as $k=>$r){
+			foreach($PARAM->data as $k=>$r) {
 				if($data['param_'.$k]) {
 					$val = $data['param_'.$k];
-					$cls['name'.$r['type']]=$val;
+					$cls['name'.$r['type']] = $this->SqlEsc($val);
 					if($r['constrn']) {
 						if(isset($this->_enum['fli'.$r['formlist']])) {
 							if(isset($this->_enum['fli'.$r['formlist']][$val]))
@@ -283,19 +324,30 @@ class product_class extends kernel_extends {
 				}
 			}
 		}
-
-		$data['path'] = $this->getTranslitePatchFromText($data['name']);
+		if(!isset($data['path']) or !$data['path'])
+			$data['path'] = $this->transliteRuToLat($data['name']);
 
 		if($ret = parent::_add($data,$flag_select)) {
+			$temp = $this->childs['product_value']->qs('id', 'WHERE owner_id='.$this->id);
+			$tn = $this->childs['product_value']->tablename;
 			if(count($cls)) {
-				$query = 'INSERT into product_value (owner_id,'.implode(',',array_keys($cls)).') values ('.$this->id.',"'.implode('","',$cls).'")';
-				$result=$this->SQL->execSQL($query);
-				if($result->err) return false;
-			}else {
-				$query = 'INSERT into product_value (owner_id) values ('.$this->id.')';
-				$result=$this->SQL->execSQL($query);
-				if($result->err) return false;
+				$query = 'INSERT into '.$tn.' (owner_id,'.implode(',',array_keys($cls)).') values ('.$this->id.',"'.implode('","',$cls).'")';
+				if(count($temp)) {
+					foreach($cls as $ck=>$cr)
+						$cls[$ck] = '`'.$ck.'`="'.$cr.'"';
+					$query .= ' ON DUPLICATE KEY UPDATE '.implode(', ',$cls);
+				}
+			} else {
+				$query = 'INSERT into '.$tn.' (owner_id) values ('.$this->id.')';
+				if(count($temp)) {
+					$cls = array();
+					foreach($PARAM->data as $k=>$r)
+						$cls[] = '`name'.$r['type'].'`=""';
+					$query .= ' ON DUPLICATE KEY UPDATE '.implode(', ',$cls);
+				}
 			}
+			$result=$this->SQL->execSQL($query);
+			if($result->err) return false;
 		}
 		return $ret;
 	}
@@ -944,31 +996,6 @@ class product_class extends kernel_extends {
 			$_tpl['onload'] .= '$(\'#form_tools_paramselect div.multiplebox input\').live(\'click\',multiCheckBox); $(\'#form_tools_paramselect input\').live(\'change\',filterChange);';*/
 		return $this->filter_form;
 	}
-
-	function getTranslitePatchFromText($var) {
-		$var = strip_tags(html_entity_decode($var));
-		$var = strtr($var,
-			array(
-				'<br />'=>'_',' '=>'_','-'=>'_',','=>'_','.'=>'_','+'=>'_',
-				'а'=>'a','б'=>'b','в'=>'v','г'=>'g','д'=>'d','е'=>'e','ё'=>'e','з'=>'z','и'=>'i','й'=>'y','к'=>'k','л'=>'l','м'=>'m','н'=>'n','о'=>'o','п'=>'p','р'=>'r',
-				'с'=>'s','т'=>'t','у'=>'u','ф'=>'f','х'=>'h','ы'=>'i','э'=>'e',
-				'А'=>'A','Б'=>'B','В'=>'V','Г'=>'G','Д'=>'D','Е'=>'E','Ё'=>'E','З'=>'Z','И'=>'I','Й'=>'Y','К'=>'K','Л'=>'L','М'=>'M','Н'=>'N','О'=>'O','П'=>'P','Р'=>'R',
-				'С'=>'S','Т'=>'T','У'=>'U','Ф'=>'F','Х'=>'H','Ы'=>'I','Э'=>'E',
-				"ж"=>"zh", "ц"=>"ts", "ч"=>"ch", "ш"=>"sh",
-				"щ"=>"shch", "ю"=>"yu", "я"=>"ya",
-				"Ж"=>"ZH", "Ц"=>"TS", "Ч"=>"CH", "Ш"=>"SH",
-				"Щ"=>"SHCH", "Ю"=>"YU", "Я"=>"YA",
-				"ї"=>"i", "Ї"=>"Yi", "є"=>"ie", "Є"=>"Ye"
-				,"Ь"=>"","Ъ"=>"","ь"=>"","ъ"=>""
-				)
-		 );
-		$var = preg_replace("/[^0-9A-Za-z_]+/u",'',$var);
-		$var = strtr($var,array('_____'=>'_','____'=>'_','___'=>'_','__'=>'_'));
-		$var = mb_substr($var,0,80,'UTF-8');
-		return trim($var,' _');
-
-	}
-
 
 	public function AjaxShopParam() {
 		global $HTML,$_tpl;

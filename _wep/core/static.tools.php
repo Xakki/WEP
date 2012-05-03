@@ -794,7 +794,7 @@ deny from all
 		return Array($flag, $DATA);
 	}
 
-	function extractZip($zipFile = '', $zipDir = '', $dirFromZip = '') {
+	static function extractZip($zipFile = '', $zipDir = '', $dirFromZip = '') {
 		 // $zipDir Папка для распаковки.
 
 		 $zip = zip_open($zipFile);
@@ -835,5 +835,28 @@ deny from all
 		 return true;
 	}
 
+	static function transliteRuToLat($var,$len=0) {
+		$var = strip_tags(html_entity_decode($var,ENT_QUOTES,'UTF-8'));
+		$var = strtr($var,
+			array(
+				'<br />'=>'-',' '=>'-','_'=>'-',','=>'-','.'=>'-','+'=>'-',
+				'а'=>'a','б'=>'b','в'=>'v','г'=>'g','д'=>'d','е'=>'e','ё'=>'e','з'=>'z','и'=>'i','й'=>'y','к'=>'k','л'=>'l','м'=>'m','н'=>'n','о'=>'o','п'=>'p','р'=>'r',
+				'с'=>'s','т'=>'t','у'=>'u','ф'=>'f','х'=>'h','ы'=>'i','э'=>'e',
+				'А'=>'A','Б'=>'B','В'=>'V','Г'=>'G','Д'=>'D','Е'=>'E','Ё'=>'E','З'=>'Z','И'=>'I','Й'=>'Y','К'=>'K','Л'=>'L','М'=>'M','Н'=>'N','О'=>'O','П'=>'P','Р'=>'R',
+				'С'=>'S','Т'=>'T','У'=>'U','Ф'=>'F','Х'=>'H','Ы'=>'I','Э'=>'E',
+				"ж"=>"zh", "ц"=>"ts", "ч"=>"ch", "ш"=>"sh",
+				"щ"=>"shch", "ю"=>"yu", "я"=>"ya",
+				"Ж"=>"ZH", "Ц"=>"TS", "Ч"=>"CH", "Ш"=>"SH",
+				"Щ"=>"SHCH", "Ю"=>"YU", "Я"=>"YA",
+				"ї"=>"i", "Ї"=>"Yi", "є"=>"ie", "Є"=>"Ye"
+				,"Ь"=>"","Ъ"=>"","ь"=>"","ъ"=>""
+				)
+		);
+		$var = preg_replace("/[^0-9A-Za-z\-]+/",'',$var);
+		$var = strtr($var,array('-----'=>'-','----'=>'-','---'=>'-','--'=>'-'));
+		if($len)
+			$var = mb_substr($var,0,$len,'UTF-8');
+		return trim($var,'-');
+	}
 // END static class
 }

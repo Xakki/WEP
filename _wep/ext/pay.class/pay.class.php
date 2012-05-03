@@ -9,7 +9,7 @@ class pay_class extends kernel_extends {
 		$this->mf_ipcreate = true;//IP адрес пользователя с котрого была добавлена запись		
 		$this->mf_timestamp = true; // создать поле  типа timestamp
 		$this->cf_childs = true;
-		$this->ver = '0.3.4';
+		$this->ver = '0.4.5';
 		$this->default_access = '|0|';
 		$this->prm_add = false; // добавить в модуле
 		$this->prm_del = false; // удалять в модуле
@@ -540,14 +540,8 @@ class pay_class extends kernel_extends {
 	* @param $M - модуль платежной системы
 	* @param $leftTime - в секундах
 	*/
-	function clearOldData($M, $leftTime, $dataUp) {
-		$temp = $this->qs('id','WHERE status=0 and '.$this->mf_timecr.'<"'.(time()-$leftTime).'" and pay_modul="'.$M.'"','id');
-
-		if(count($temp)) {
-			$this->id = array_keys($temp);
-			$this->childs[$M]->_update($dataUp);
-			$this->_update(array('status'=>'4'));
-		}
+	function clearOldData($M, $leftTime) {
+		$this->_update(array('status'=>'4'), 'status=0 and '.$this->mf_timecr.'<"'.(time()-$leftTime).'" and pay_modul="'.$M.'"');
 	}
 }
 
