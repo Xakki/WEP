@@ -437,7 +437,7 @@ class payyandex_class extends kernel_extends {
 
 	/*CRON*/
 	function checkBill() {
-		//$this->clearOldData();
+		$this->clearOldData();
 
 		$temp = $this->qs('*','WHERE status=""','name');
 		$DATA = array();
