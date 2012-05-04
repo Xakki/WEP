@@ -2,7 +2,7 @@
 	function tpl_shopMenuImg(&$data) {
 		$html = '';
 		if(isset($data) and count($data)) {
-			global $_tpl;
+			global $_tpl,$HTML;
 			$_tpl['styles']['../'.$HTML->_design.'/_shop/style/shopMenu'] = 1;
 
 			$html = '<div class="shop-menu">

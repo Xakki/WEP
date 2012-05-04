@@ -6,7 +6,7 @@
 			$html .= 'нету';
 		} else {
 
-			global $_CFG, $_tpl;
+			global $_CFG, $_tpl,$HTML;
 			$_CFG['fileIncludeOption']['fancybox'] = true;
 			$_tpl['styles']['../'.$HTML->_design.'/_shop/style/product'] = 1;
 
