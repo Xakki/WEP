@@ -76,6 +76,8 @@ class html {
 		$_tpl['title'] = $_tpl['time'] = $_tpl['onload'] = $_tpl['logs'] = '';
 		$_tpl['onload2'] = array();
 		$_tpl['script'] = $_tpl['styles'] = array();
+		$_tpl['YEAR'] = date('Y');
+
 		$params = array(
 			'obj' => &$this,
 			'func' => 'createTemplate',
