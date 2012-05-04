@@ -66,7 +66,7 @@ abstract class kernel_extends {
 			$this->_setDefaultRecords();
 			return $this->def_records;
 		} elseif ($name == 'fields_form') {
-			$this->getFieldsForm(-1);
+			$this->getFieldsForm(1);
 			return $this->fields_form;
 		}
 		trigger_error('Своиство ' . $name . ' не найдено в классе ' . $this->_cl, E_USER_NOTICE);

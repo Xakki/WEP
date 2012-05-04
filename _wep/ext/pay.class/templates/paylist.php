@@ -15,13 +15,14 @@ function tpl_paylist($data)
 			<tr>
 				<td>#</td>
 				<td>Операция</td>
-				<td>Плательщик / Получатель</td>
+				'.($data['#noUser#']?'':'<td>Плательщик / Получатель</td>').'
 				<td>Статус</td>
 				<td>Сумма<br/>'.$data['#curr#'].'</td>
-				<td>Время</td>
+				<td>Дата</td>
 				<td>Баланс</td>
 			</tr>';
 		$b  = 0;
+//print_r('<pre>');print_r($data);
 		foreach($data['#list#'] as $k=>$r) {
 			if(!$r['status']) {
 				if($r['#formType#']===true)
@@ -50,9 +51,9 @@ function tpl_paylist($data)
 			$html .= '<tr class="paylist'.$r['status'].'">
 				<td>'.$r['id'].'</td>
 				<td>'.$r['name'].'</td>
-				<td>'.$fromuser.'</td>
+				'.($data['#noUser#']?'':'<td>'.$fromuser.'</td>').'
 				<td>'.$r['#status#'].'</td>
-				<td>'.round($r['cost'],2).'</td>
+				<td class="'.($r['#sign#']?'plus':'minus').'">'.round($r['cost'],2).'</td>
 				<td>'.$r['mf_timestamp'].'</td>
 				<td>'.($r['status']==1?$b:'').'</td>
 			</tr>';

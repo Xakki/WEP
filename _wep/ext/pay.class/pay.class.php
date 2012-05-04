@@ -47,10 +47,10 @@ class pay_class extends kernel_extends {
 		$this->fields['_eval'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL','default'=>'');
 
 		$this->_enum['status'] = array(
-			0 => 'Неоплаченный счёт',
-			1 => 'Оплаченный счёт',
-			2 => 'Счёт отклонён',
-			3 => 'Счёт отменён',
+			0 => 'Неоплачено',
+			1 => 'Успешно',
+			2 => 'Отклонено',
+			3 => 'Отменено',
 			4 => 'Истекло время ожидания',
 		);
 	}
@@ -286,6 +286,7 @@ class pay_class extends kernel_extends {
 		if(count($data['#list#'])) {
 			$userlist = array();
 			foreach($data['#list#'] as &$r) {
+				$r['#sign#'] = ($user==$r['user_id']?true:false);
 				if(!isset($userlist[$r['user_id']]))
 					$userlist[$r['user_id']] = $r['user_id'];
 				if(!isset($userlist[$r[$this->mf_createrid]]))
