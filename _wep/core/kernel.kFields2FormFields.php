@@ -236,7 +236,7 @@
 				}
 
 				// Преобразуем теги, чтобы их не съел шаблонизатор
-				if(($r['type']=='ckedit' or $r['type']=='text' or $r['type']=='textarea') and strpos($r['value'],'{#')!==false) {
+				if(isset($r['value']) and $r['value'] and ($r['type']=='ckedit' or $r['type']=='text' or $r['type']=='textarea') and strpos($r['value'],'{#')!==false) {
 					$r['value'] = str_replace(array('{#','#}'),array('(#','#)'),$r['value']);
 				}
 
