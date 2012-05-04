@@ -28,6 +28,10 @@
 	$DATA = $PAY->displayListUser($_SESSION['user']['id']);
 	$DATA['#title#'] = $Ctitle;// Заголовок контента
 	$DATA['#pagemenu#'] = $this->getHref();// Адрес тек страницы
+	$DATA['#noUser#'] = true;
+	if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']<2)
+		$DATA['#noUser#'] = false;
+	  
 	$DATA = array($FUNCPARAM[0]=>$DATA);
 	$html .= $HTML->transformPHP($DATA,$FUNCPARAM[0]);
 
