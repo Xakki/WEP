@@ -1,18 +1,47 @@
 <?php
 
 class payzpayment_class extends kernel_extends {
-	
+
 	function _set_features() {
 		if (!parent::_set_features()) return false;
+		$this->default_access = '|9|';
+		$this->mf_timecr = true; // создать поле хранящее время создания поля
+		$this->mf_actctrl = true;
+		$this->prm_add = false; // добавить в модуле
+		$this->prm_del = false; // удалять в модуле
+		$this->prm_edit = false; // редактировать в модуле
+		$this->pay_systems = true; // Это модуль платёжной системы
+
 		$this->caption = 'Платежи Z-payment';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';
-		$this->mf_timecr = true; // создать поле хранящще время создания поля
-		$this->mf_timeup = true; // создать поле хранящще время обновления поля
-		$this->mf_timeoff = true; // создать поле хранящще время отключения поля (active=0)
-		$this->mf_ipcreate = true;//IP адрес пользователя с котрого была добавлена запись
-		$this->cf_childs = true;
+
 		$this->ver = '0.1';
 		return true;
+	}
+	
+	function _create_conf2(&$obj) {/*CONFIG*/
+		//parent::_create_conf();
+
+		$obj->config['zpayment_login'] = '';
+		$obj->config['zpayment_password'] = '';
+		$obj->config['zpayment_txn-prefix'] = '';
+		$obj->config['zpayment_create-agt'] = 1;
+		$obj->config['zpayment_lifetime'] = 1080;
+		$obj->config['zpayment_alarm-zpayment'] = 0;
+		$obj->config['zpayment_alarm-call'] = 0;
+		$obj->config['zpayment_minpay'] = 10;
+		$obj->config['zpayment_maxpay'] = 15000;
+
+		$obj->config_form['zpayment_info'] = array('type' => 'info', 'caption'=>'<h3>zpayment</h3><p>На сайте необходимо разместить логотип и описание(<a href="http://ishopnew.zpayment.ru/docs.html" target="_blank">материалы zpayment для сайта</a>)</p>');
+		$obj->config_form['zpayment_login'] = array('type' => 'text', 'caption' => 'Логин', 'comment'=>'', 'style'=>'background-color:#2ab7ec;');
+		$obj->config_form['zpayment_password'] = array('type' => 'password', 'md5'=>false, 'caption' => 'Пароль', 'style'=>'background-color:#2ab7ec;');
+		$obj->config_form['zpayment_txn-prefix'] = array('type' => 'text', 'caption' => 'Префикс в номере счёта','comment'=>'', 'style'=>'background-color:#2ab7ec;');
+		//$this->owner->config_form['zpayment_create-agt'] = array('type' => 'text', 'caption' => 'Логин','comment'=>'Если 1 то при выставлении счёта создается пользователь в системе zpayment. При этом оплатить счёт можно в терминале наличными без ввода ПИН-кода.', 'style'=>'background-color:gray;');
+		$obj->config_form['zpayment_lifetime'] = array('type' => 'text', 'caption' => 'Таймаут','comment'=>'Время жизни счёта по умолчанию. Задается в часах. Максимум 45 суток (1080 часов)', 'style'=>'background-color:#2ab7ec;');
+		$obj->config_form['zpayment_alarm-zpayment'] = array('type' => 'text', 'caption' => 'alarm-zpayment','comment'=>'1 - включит СМС оповещение (СМС платно)', 'style'=>'background-color:#2ab7ec;');
+		$obj->config_form['zpayment_alarm-call'] = array('type' => 'text', 'caption' => 'alarm-call','comment'=>'1 - включит звонок (платно)', 'style'=>'background-color:#2ab7ec;');
+		$obj->config_form['zpayment_minpay'] = array('type' => 'int', 'caption' => 'Миним. сумма','comment'=>'при пополнении счёта', 'style'=>'background-color:#2ab7ec;');
+		$obj->config_form['zpayment_maxpay'] = array('type' => 'int', 'caption' => 'Максим. сумма','comment'=>'при пополнении счёта', 'style'=>'background-color:#2ab7ec;');
 	}
 
 	protected function _create() {

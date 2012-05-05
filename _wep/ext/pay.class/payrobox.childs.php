@@ -2,16 +2,19 @@
 
 
 class payrobox_class extends kernel_extends {
-	
+
 	function _set_features() {
 		if (!parent::_set_features()) return false;
+		$this->default_access = '|9|';
+		$this->mf_timecr = true; // создать поле хранящее время создания поля
+		$this->mf_actctrl = true;
+		$this->prm_add = false; // добавить в модуле
+		$this->prm_del = false; // удалять в модуле
+		$this->prm_edit = false; // редактировать в модуле
+		$this->pay_systems = true; // Это модуль платёжной системы
+
 		$this->caption = 'Платежи Робо кассы';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';
-		$this->mf_timecr = true; // создать поле хранящще время создания поля
-		$this->mf_timeup = true; // создать поле хранящще время обновления поля
-		$this->mf_timeoff = true; // создать поле хранящще время отключения поля (active=0)
-		$this->mf_ipcreate = true;//IP адрес пользователя с котрого была добавлена запись
-		$this->cf_childs = true;
 		$this->ver = '0.1';
 		return true;
 	}
