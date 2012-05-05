@@ -1,2 +1,2 @@
 <?php
-include_once($this->_cDesignPath.'/php/formcreat.php');
+include_once($_CFG['_PATH']['cdesign'].'default/php/formcreat.php');

@@ -1,3 +1,2 @@
 <?php
-global $HTML;
-include_once($HTML->_cDesignPath.'/php/path.php');
+include_once($_CFG['_PATH']['cdesign'].'default/php/path.php');

@@ -129,8 +129,12 @@ class html {
 		return 'none';
 	}
 
-	function transformPHP(&$data, $transform, $marker='',$_PATHd=false) {
+	function transformPHP($data, $transform=NULL, $marker='',$_PATHd=false) {
 		global $_CFG;
+		if(is_null($transform)) {
+			$transform = (string)$data;
+			$data = array();
+		}
 		/* PHP шаблонизатор */
 		if(is_array($transform)) {// Старый метод
 			$transformPath = $transform[1];

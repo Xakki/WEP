@@ -140,6 +140,10 @@
 			return $this->lastId;
 		}
 
+		function affected_rows() { // Возвращает кол-во затронутых записей в последней оперции
+			return mysqli_affected_rows($this->hlink);
+		}
+
 		public function escape($val) {
 			if(!$this->ready) return '';
 			return mysqli_real_escape_string($this->hlink,$val);
@@ -480,10 +484,6 @@
 
 		function fetch_object() { // Выдает данные в виде обекта
 			return mysqli_fetch_object($this->handle);
-		}
-
-		function affected_rows() { // Возвращает кол-во затронутых записей в последней оперции
-			return mysqli_affected_rows($this->db->hlink);
 		}
 
 		function sql_seek($offset) { // ПЕРЕмещает указатель

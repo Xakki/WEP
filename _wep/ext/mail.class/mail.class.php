@@ -211,6 +211,7 @@ class mail_class extends kernel_extends {
 	}
 
 	function mailForm($mail_to='',$category=0) {
+		if(!$mail_to) $mail_to = $this->config['mailrobot'];
 		$this->formSort = array(
 			'from','subject','text','category','mail_to'
 		);
