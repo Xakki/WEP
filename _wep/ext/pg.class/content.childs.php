@@ -2,7 +2,7 @@
 /**
  * Дочерний модуль "Контент страниц"
  * @author Xakki
- * @version 0.4.5 
+ * @version 0.4.6 
  */
 class content_class extends kernel_extends {
 
@@ -341,5 +341,11 @@ class content_class extends kernel_extends {
 		return $vars;
 	}
 
+	public function fFormCheck(&$DATA, &$param, &$argForm) {
+		$RESULT = parent::fFormCheck($DATA,$param,$argForm);
+		if(mb_strlen($DATA['funcparam'])>255)
+			$RESULT['mess'][] = static_main::am('error', 'Длина строки параметров `funcparam` превысила 255 символов.');
+		return $RESULT;
+	}
 }
 

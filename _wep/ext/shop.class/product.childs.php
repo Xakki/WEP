@@ -14,17 +14,17 @@ class product_class extends kernel_extends {
 
 		$this->config['cf_fields'] = array(
 			'code' => array(
-				'type' => 'int',
+				'type' => 'varchar',
 				'width' => 11,
 				'attr' => 'NOT NULL',
-				'default'=> 0,
+				'default'=> '',
 				'unique' => true,
 				'caption' => 'Код',
 				'mask'=>array(),//'max'=>8,'maxint'=>20000000
 			),
 			'model' => array(
 				'type' => 'varchar',
-				'width' => 64,
+				'width' => 32,
 				'attr' => 'NOT NULL',
 				'default'=> '',
 				'unique' => false,
@@ -32,7 +32,7 @@ class product_class extends kernel_extends {
 			),
 			'articul' => array(
 				'type' => 'varchar',
-				'width' => 64,
+				'width' => 32,
 				'attr' => 'NOT NULL',
 				'default'=> '',
 				'unique' => false,
@@ -40,7 +40,7 @@ class product_class extends kernel_extends {
 			),
 			'madein' => array(
 				'type' => 'varchar',
-				'width' => 64,
+				'width' => 32,
 				'attr' => 'NOT NULL',
 				'unique' => false,
 				'default'=> '',
@@ -94,10 +94,12 @@ class product_class extends kernel_extends {
 
 		$thumb = array('type'=>'resize', 'w'=>'1024', 'h'=>'768');
 		$maxsize = 3000;
-		$this->attaches['img_product'] = array('mime' => array('image'), 'thumb'=>array($thumb,array('type'=>'resize', 'w'=>'250', 'h'=>'250', 'pref'=>'s_', 'path'=>'')),'maxsize'=>$maxsize,'path'=>'');
+		$this->attaches['img_product'] = array('mime' => array('image'), 'thumb'=>array($thumb,array('type'=>'resize', 'w'=>'250', 'h'=>'250', 'pref'=>'s_', 'path'=>'_content/img_product_thumb')),'maxsize'=>$maxsize,'path'=>'');
 		if($this->config['imageCnt']>0) {
-			for($i = 2; $i <= $this->config['imageCnt']; $i++) 
-				$this->attaches['img_product'.$i]=$this->attaches['img_product'];
+			for($i = 2; $i <= $this->config['imageCnt']; $i++) {
+				$this->attaches['img_product'.$i] = $this->attaches['img_product'];
+				$this->attaches['img_product'.$i]['thumb'][1]['path'] = '_content/img_product'.$i.'_thumb';
+			}
 		}
 
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
@@ -273,7 +275,7 @@ class product_class extends kernel_extends {
 			}
 		}
 
-		if(!isset($data['path']) or !$data['path'])
+		if(isset($data['name']) and (!isset($data['path']) or !$data['path']))
 			$data['path'] = $this->transliteRuToLat($data['name']);
 
 		if($ret = parent::_update($data,$where,$flag_select)) {
@@ -377,10 +379,13 @@ class product_class extends kernel_extends {
 
 		$rlist = array();
 		$temp=$rid;
+		$this->owner->simplefCache();
 		while(isset($this->owner->data2[$temp])) {
 			$rlist[$temp] = $temp;
 			$temp=$this->owner->data2[$temp]['parent_id'];
 		};
+
+		if(!count($rlist)) return array();
 
 		$PARAM = &$this->owner->childs['rubricparam'];
 		$listfields = array('*');
@@ -709,9 +714,12 @@ class product_class extends kernel_extends {
 				$tempData['rpath']=$this->owner->data2[$r['shop']]['path'];
 				if(count($rname)) 
 					$tempData['rname'] = $rname;
+
 				foreach($this->attaches as $tk=>$tr)
 					if($r[$tk]!='')
-						$tempData['image'][] = array($this->getPathForAtt($tk).'/s_'.$r['id'].'.'.$r[$tk], $this->getPathForAtt($tk).'/'.$r['id'].'.'.$r[$tk]);
+						if($r[$tk]!='' and $file=$this->_get_file($r['id'],$tk,$r[$tk]))
+							$tempData['image'][] = array($file, $this->_get_file($r['id'],$tk,$r[$tk],1));
+
 				$xml['#item#'][] = $tempData;
 			}
 
@@ -795,23 +803,22 @@ class product_class extends kernel_extends {
 		else
 			$moder = 0;
 		foreach($this->data as $k=>&$r) {
-			$r['shops']=array();
+			/*$r['shops']=array();
 			$rname=array();
 			$temp=$r['shop'];
 			while(isset($this->owner->data2[$temp])) {
 				$r['shops'][] = array('id'=>$temp, 'name'=>$this->owner->data2[$temp]['name']); // product.inc for path
 				$rname[] = $this->owner->data2[$temp]['name'];
 				$temp=$this->owner->data2[$temp]['parent_id'];
-			}
+			}*/
 			$r['moder']=$moder;
 			$r['rpath']=$this->owner->data2[$r['shop']]['path'];
-			$ik = '';
-			while(isset($r['img_product'.$ik])) {
-				if($r['img_product'.$ik]!='' and $file=$this->_get_file($r['id'],'img_product'.$ik,$r['img_product'.$ik]))
-					$r['image'][] = array($this->_get_file($r['id'],'img_product'.$ik,$r['img_product'.$ik],1), $file);
-				if(!$ik) $ik=1;
-				$ik++;
-			}
+
+			foreach($this->attaches as $tk=>$tr)
+				if($r[$tk]!='')
+					if($r[$tk]!='' and $file=$this->_get_file($r['id'],$tk,$r[$tk]))
+						$r['image'][] = array($file, $this->_get_file($r['id'],$tk,$r[$tk],1));
+
 			if(count($r['param']))
 				foreach($r['param'] as $pk=>&$pr){
 					$pr = array('name'=>$pr[1],'id'=>$pr[0], 'edi'=>$pr[4], 'value'=>$r['name'.$pr[2]]);
@@ -906,13 +913,13 @@ class product_class extends kernel_extends {
 					if(isset($this->owner->data[$k])) {
 						$datalist += $this->owner->data[$k];
 						if($flag==1) {
-							$this->_enum['shops'][$k]= array('#name#'=>$r,'#href#'=>$this->owner->data2[$k]['path'].'/'.$page.'.html');	
+							$this->_enum['shops'][$k]= array('#name#'=>$r,'#href#'=>$page.'/'.$this->owner->data2[$k]['path'].'.html');	
 							foreach($this->owner->data[$k] as $rk=>$rr) {
-								$this->_enum['shops'][$k]['#item#'][$rk]= array('#name#'=>$rr,'#href#'=>$this->owner->data2[$rk]['path'].'/'.$page.'.html');
+								$this->_enum['shops'][$k]['#item#'][$rk]= array('#name#'=>$rr,'#href#'=>$page.'/'.$this->owner->data2[$rk]['path'].'.html');
 							}
 						}
 					}elseif($flag==1)
-						$this->_enum['shops'][$k]= array('#name#'=>$r,'#href#'=>$this->owner->data2[$k]['path'].'/'.$page.'.html');						
+						$this->_enum['shops'][$k]= array('#name#'=>$r,'#href#'=>$page.'/'.$this->owner->data2[$k]['path'].'.html');						
 				}
 				if($flag==1) {
 					$this->filter_form['shopl']= array(

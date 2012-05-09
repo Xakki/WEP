@@ -22,8 +22,13 @@
 	margin:5px 5px 5px 0;
 	float:left;
 }
+.shopmain .shop_item .itemimg img {
+	width:60px;
+	height:60px;
+}
 .shopmain .shop_item .itemname {
 	font-size:1.0em;
 	font-weight:bold;
 	white-space:normal;
 }
+

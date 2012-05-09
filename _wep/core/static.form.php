@@ -107,90 +107,88 @@ class static_form {
 
 	static function _add_attaches(&$_this) {
 		if (!count($_this->attaches) or !count($_this->att_data)) return true;
-		$result=$_this->SQL->execSQL('SELECT id, '.implode(',', array_keys($_this->attaches)).' FROM `'.$_this->tablename.'` WHERE id IN ('.$_this->id.')');
+		$result=$_this->SQL->execSQL('SELECT id, '.implode(',', array_keys($_this->attaches)).' FROM `'.$_this->tablename.'` WHERE id IN ('.$_this->_id_as_string().')');
 		if($result->err) return false;
-		$row = $result->fetch();
-		$prop = array();
+		while ($row = $result->fetch()) {
+			$prop = array();
+			foreach($_this->att_data as $key => $value) 
+			{
+				// Пропускаем если нету данных ("вероятно" фаил не загружали или не меняли)
+				if (!is_array($value) or $value['tmp_name'] == 'none' or $value['tmp_name'] == '') continue;
+				
+				// Путь к папке фаила
+				$pathimg = $_this->_CFG['_PATH']['path'].$_this->getPathForAtt($key);
+				
+				// старый фаил, для удаления, может имет другое расширение
+				$oldname =$pathimg.'/'. $row['id']. '.'.$row[$key];
+				if ($row[$key] and file_exists($oldname)) {
+					chmod($oldname, $_this->_CFG['wep']['chmod']);
+					unlink($oldname);
+					if (count($_this->attaches[$key]['thumb']))
+						foreach($_this->attaches[$key]['thumb'] as $imod) {
+							if(!isset($imod['pref'])) $imod['pref'] = '';
+							$oldname =$pathimg.'/'. $imod['pref'].$row['id']. '.'.$row[$key];
+							if (file_exists($oldname))
+								unlink($oldname);
+						}
 
-		foreach($_this->att_data as $key => $value) 
-		{
-			// Пропускаем если нету данных ("вероятно" фаил не загружали или не меняли)
-			if (!is_array($value) or $value['tmp_name'] == 'none' or $value['tmp_name'] == '') continue;
-			
-			// Путь к папке фаила
-			$pathimg = $_this->_CFG['_PATH']['path'].$_this->getPathForAtt($key);
-			
-			// старый фаил, для удаления, может имет другое расширение
-			$oldname =$pathimg.'/'. $_this->id. '.'.$row[$key];
-			if ($row[$key] and file_exists($oldname)) {
-				chmod($oldname, $_this->_CFG['wep']['chmod']);
-				unlink($oldname);
-				if (count($_this->attaches[$key]['thumb']))
-					foreach($_this->attaches[$key]['thumb'] as $imod) {
-						if(!isset($imod['pref'])) $imod['pref'] = '';
-						$oldname =$pathimg.'/'. $imod['pref'].$_this->id. '.'.$row[$key];
-						if (file_exists($oldname))
-							unlink($oldname);
-					}
+				}
 
+				// Удаление фаила 
+				if ($value['tmp_name'] == ':delete:') {
+					$prop[] = '`'.$key.'` = \'\'';
+					continue;
+				}
+
+				/*if(!isset($_this->fields_form[$key]['mime'])) {
+					print_r('<pre>');print_r($value);exit();
+					//$_this->attaches[$key]['mime'] = array($value['type']=>);
+				}*/
+				if(isset($value['ext']) and $value['ext'])
+					$ext = $value['ext'];
+				else
+					$ext = $value['ext'] = strtolower(array_pop(explode('.',$value['name'])));
+
+				$newname = $pathimg.'/'.$row['id'].'.'.$ext;
+				if (file_exists($newname)) { // Удаляем старое
+					chmod($newname, $_this->_CFG['wep']['chmod']);
+					unlink($newname);
+				}
+				chmod($value['tmp_name'], $_this->_CFG['wep']['chmod']);
+				if (!rename($value['tmp_name'], $newname))
+					return static_main::log('error','Error copy file '.$value['name']);
+				// Дополнительные изображения
+				if (isset($_this->attaches[$key]['thumb'])) {
+					if(isset($value['att_type']) and $value['att_type']!='img') // если это не рисунок, то thumb не приминим
+						return static_main::log('error','File `'.$newname.'` is not image. Function `thumb` not accept.');
+					$prefix = $pathimg.'/';
+					if (count($_this->attaches[$key]['thumb']))
+						foreach($_this->attaches[$key]['thumb'] as $imod) {
+							if(!isset($imod['pref']) or !$imod['pref'])
+								$imod['pref'] = '';// по умолчинию без префикса
+							if(isset($imod['path']) and $imod['path'])
+								$newname2 = $_this->_CFG['_PATH']['path'].$imod['path'].'/'.$imod['pref'].$row['id'].'.'.$ext;
+							else
+								$newname2 = $prefix.$imod['pref'].$row['id'].'.'.$ext;
+							if ($imod['type']=='crop')
+								self::_cropImage($_this,$newname, $newname2, $imod['w'], $imod['h']);
+							elseif ($imod['type']=='resize')
+								self::_resizeImage($_this,$newname, $newname2, $imod['w'], $imod['h']);
+							elseif ($imod['type']=='resizecrop')
+								self::_resizecropImage($_this,$newname, $newname2, $imod['w'], $imod['h']);
+							elseif ($imod['type']=='watermark')
+								self::_waterMark($_this,$newname,$newname2, $imod['logo'], $imod['x'], $imod['y']);
+							elseif($newname!=$newname2)
+								copy($newname,$newname2);
+							chmod($newname, $_this->_CFG['wep']['chmod']);
+						}
+				}
+				$prop[] = '`'.$key.'` = \''.$ext.'\'';
 			}
-
-			// Удаление фаила 
-			if ($value['tmp_name'] == ':delete:') {
-				$prop[] = '`'.$key.'` = \'\'';
-				continue;
+			if (count($prop)) {
+				$result2=$_this->SQL->execSQL('UPDATE `'.$_this->tablename.'` SET '.implode(',', $prop).' WHERE id = '.  $row['id'].'');
+				if($result2->err) return false;
 			}
-
-			/*if(!isset($_this->fields_form[$key]['mime'])) {
-				print_r('<pre>');print_r($value);exit();
-				//$_this->attaches[$key]['mime'] = array($value['type']=>);
-			}*/
-			if(isset($value['ext']) and $value['ext'])
-				$ext = $value['ext'];
-			else
-				$ext = $value['ext'] = strtolower(array_pop(explode('.',$value['name'])));
-
-			$newname = $pathimg.'/'.$_this->id.'.'.$ext;
-			if (file_exists($newname)) { // Удаляем старое
-				chmod($newname, $_this->_CFG['wep']['chmod']);
-				unlink($newname);
-			}
-			chmod($value['tmp_name'], $_this->_CFG['wep']['chmod']);
-			if (!rename($value['tmp_name'], $newname))
-				return static_main::log('error','Error copy file '.$value['name']);
-
-			// Дополнительные изображения
-			if (isset($_this->attaches[$key]['thumb'])) {
-				if(isset($value['att_type']) and $value['att_type']!='img') // если это не рисунок, то thumb не приминим
-					return static_main::log('error','File `'.$newname.'` is not image. Function `thumb` not accept.');
-				$prefix = $pathimg.'/';
-				if (count($_this->attaches[$key]['thumb']))
-					foreach($_this->attaches[$key]['thumb'] as $imod) {
-						if(!isset($imod['pref']) or !$imod['pref'])
-							$imod['pref'] = '';// по умолчинию без префикса
-						if(isset($imod['path']) and $imod['path'])
-							$newname2 = $_this->_CFG['_PATH']['path'].$imod['path'].'/'.$imod['pref'].$_this->id.'.'.$ext;
-						else
-							$newname2 = $prefix.$imod['pref'].$_this->id.'.'.$ext;
-						if ($imod['type']=='crop')
-							self::_cropImage($_this,$newname, $newname2, $imod['w'], $imod['h']);
-						elseif ($imod['type']=='resize')
-							self::_resizeImage($_this,$newname, $newname2, $imod['w'], $imod['h']);
-						elseif ($imod['type']=='resizecrop')
-							self::_resizecropImage($_this,$newname, $newname2, $imod['w'], $imod['h']);
-						elseif ($imod['type']=='watermark')
-							self::_waterMark($_this,$newname,$newname2, $imod['logo'], $imod['x'], $imod['y']);
-						elseif($newname!=$newname2)
-							copy($newname,$newname2);
-						chmod($newname, $_this->_CFG['wep']['chmod']);
-					}
-			}
-			$prop[] = '`'.$key.'` = \''.$ext.'\'';
-		}
-		if (count($prop)) {
-			$result=$_this->SQL->execSQL('UPDATE `'.$_this->tablename.'` SET '.implode(',', $prop).' WHERE id = \''.$_this->id.'\'');
-			if($result->err) return false;
-			unset($prop);
 		}
 		return true;
 	}
@@ -226,11 +224,26 @@ class static_form {
 	// out: 0 - success,
 	//      otherwise errorcode
 
-	static function _update(&$_this,$flag_select=true,$where=false) {
-		if ($_this->mf_istree and !is_array($_this->id) and isset($_this->fld_data[$_this->mf_istree])) {
-			if ($_this->fld_data[$_this->mf_istree]==$_this->id)
-				return static_main::log('error','Child `'.$_this->caption.'` can`t be owner to self ');
+	static function _update(&$_this, $flag_select=true) {
+
+		if ($_this->mf_istree and isset($_this->fld_data[$_this->mf_istree])) {
+			if(is_array($_this->id) and isset($_this->id[$_this->fld_data[$_this->mf_istree]])) {
+				unset($_this->id[$_this->fld_data[$_this->mf_istree]]);
+				static_main::log('error','Child `'.$_this->caption.'` can`t be owner to self ');
+			}
+			if (!is_array($_this->id) and $_this->fld_data[$_this->mf_istree]==$_this->id) {
+				static_main::log('error','Child `'.$_this->caption.'` can`t be owner to self ');
+				return false;
+			}
 		}
+
+		$where = $_this->_id_as_string();
+		if(!$where) {
+			trigger_error('Error update: miss id', E_USER_WARNING);
+			return false;
+		}
+		$where = 'id IN ('.$where.')';
+
 		if($_this->mf_timeup)
 			$_this->fld_data['mf_timeup'] = $_this->_CFG['time'];
 		if($_this->mf_timeoff and !isset($_this->fld_data['mf_timeoff']) and isset($_this->fld_data[$_this->mf_actctrl]) and !$_this->fld_data[$_this->mf_actctrl] and $_this->data[$_this->id][$_this->mf_actctrl]) 
@@ -247,13 +260,13 @@ class static_form {
 			if (!self::_rename_memos($_this)) return false;
 		}
 
-		if (!self::_update_fields($_this,$where)) return false;
+		if (!self::_update_fields($_this, $where)) return false;
 
 		if (isset($_this->fld_data['id']))
 			$_this->id = $_this->fld_data['id'];
 		//umask($_this->_CFG['wep']['chmod']);
-		if (!self::_update_attaches($_this)) return false;
-		if (!self::_update_memos($_this)) return false;
+		if (!self::_update_attaches($_this, $where)) return false;
+		if (!self::_update_memos($_this, $where)) return false;
 		if($_this->id and $flag_select)
 			$_this->data = $_this->_select();
 		if (isset($_this->mf_indexing) && $_this->mf_indexing) $_this->indexing();
@@ -263,8 +276,9 @@ class static_form {
 	}
 
 
-	static function _update_fields(&$_this,$where=false) {
+	static function _update_fields(&$_this, $where) {
 		if (!count($_this->fld_data)) return true;
+
 		// preparing
 		$data = array();
 		foreach($_this->fld_data as $key => $value) {
@@ -284,27 +298,16 @@ class static_form {
 
 			$data[$key] = '`'.$key.'` = '.$value;
 		}
-		$q = 'UPDATE `'.$_this->tablename.'` SET '.implode(',', $data);
-		if($where!==false) {
-			$q .= ' WHERE '.$where;
-		} else {
-			$iq = $_this->_id_as_string();
-			if(!$iq) {
-				if($_this->owner)
-					$iq = $_this->owner->_id_as_string();
-				if(!$iq) {
-					trigger_error('Error update: miss id', E_USER_WARNING);
-					return false;
-				}
-			}
-			$q .= ' WHERE id IN ('.$iq.')';
-		}
+
+		$q = 'UPDATE `'.$_this->tablename.'` SET '.implode(',', $data).' WHERE '.$where;
 		$result = $_this->SQL->execSQL($q);
 		if($result->err) return false;
+
 		if(isset($_this->fld_data[$_this->owner_name]) and !is_array($_this->id))
 			$_this->owner_id = $_this->fld_data[$_this->owner_name];
 		if(isset($_this->fld_data[$_this->mf_istree]) and !is_array($_this->id))
 			$_this->parent_id = $_this->fld_data[$_this->mf_istree];
+
 		return true;
 	}
 

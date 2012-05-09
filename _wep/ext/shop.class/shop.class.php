@@ -6,8 +6,16 @@ class shop_class extends rubric_class {
 		
 
 		//$this->config['yml_info'] = '';
+		$this->config['prodListTable'] = array(
+			'id' => '№',
+			'img_product' => 'Фото',
+			'name' => 'Наименование',
+			'descr' => 'Описание',
+			'cost' => 'Цена',
+		);
 
 		$this->config_form['yml_info'] = array('type' => 'html', 'value'=>'<h3>Настройка Яндекс.Маркета</h3> Ссылка на XML <b><a href="'.$this->_CFG['_HREF']['BH'].'yml.xml" target="_blank">'.$this->_CFG['_HREF']['BH'].'yml.xml</a></b>');
+		$this->config_form['prodListTable'] = array('type' => 'text', 'keytype' => 'text', 'multiple' => 1, 'caption' => 'Формат вывода шаблона табличного списка', 'mask' => array('maxarr' => 15));
 		//http://help.yandex.ru/partnermarket/?id=1111425
 	}
 
@@ -16,7 +24,7 @@ class shop_class extends rubric_class {
 		$this->ver = '0.0.2';
 		$this->caption = 'Каталог товаров';
 		$this->_AllowAjaxFn['jsOrder'] = true;
-		$this->cf_tools[] = array('func'=>'ImportXls','name'=>'Загрузка прайса');
+		//$this->cf_tools[] = array('func'=>'ImportXls','name'=>'Загрузка прайса');
 		return true;
 	}
 
@@ -106,181 +114,16 @@ class shop_class extends rubric_class {
 		return $res;
 	}
 
-	function toolsImportXls() {
+	function getPath($id, $page, $startId=0) {
 		global $_tpl;
-		$fields_form = $mess = array();
-		if (!static_main::_prmModul($this->_cl, array(5, 7)))
-			$mess[] = static_main::am('error', 'denied', $this);
-		elseif (count($_POST) and $_POST['sbmt']) {
-			if($_FILES['xls']['tmp_name']) {
-				$DT = $this->dumpXlsData($_FILES['xls']['tmp_name']);
-				$this->_tableClear();
-				foreach($DT['dataCat'] as $r) {
-					$this->_add($r);
-				}
-
-				$prodName = array(
-					1 => 'id',
-					2 => 'code',
-					3 => 'name',
-					4 => 'model',
-					5 => 'articul',
-					6 => 'madein',
-					7 => 'cost',
-					'shop'=>'shop'
-				);
-				$optName = array(
-				);
-$cc = 0;
-
-				$this->childs['product']->_tableClear();
-				$this->childs['product']->childs['product_value']->_tableClear();
-				foreach($DT['dataProd'] as $r) {
-					$tmpProd = array();
-					foreach($prodName as $kk=>$rr) {
-						if(isset($r[$kk]))
-							$tmpProd[$rr] = $r[$kk];
-					}
-
-					$tmpOpt = array();
-					if(count($optName)) {
-						foreach($optName as $kk=>$rr) {
-							if(isset($r[$kk]))
-								$tmpOpt[$rr] = $r[$kk];
-						}
-					}
-					$this->childs['product']->_add($tmpProd);
-
-					if(count($tmpOpt)) {
-						$tmpOpt['owner_id'] = $this->childs['product']->id;
-						$this->childs['product']->childs['product_value']->_add($tmpOpt);
-					}
-				}
-				$mess[] = static_main::am('ok', 'Сделано', $this);
-			}
-			else
-				$mess[] = static_main::am('ok', 'Фаил не загружен', $this);
-		} else {
-			$fields_form['_info'] = array(
-				'type' => 'info',
-				'caption' => '<h2 style="text-align:center;">Импорт товаров из XLS</h2>');
-			$fields_form['xls'] = array(
-				'type' => 'file',
-				'caption' => 'Прайс',
-				'comment'=>'В формате xls',
-				'mask'=>array(),
-			);
-			
-			$fields_form['sbmt'] = array(
-				'type' => 'submit',
-				'value' => 'Импортировать',
-			);
-			self::kFields2FormFields($fields_form);
+		$temp = $id;
+		$tpath= array();
+		while(isset($this->data2[$temp])) {
+			$_tpl['keywords'] .= ', '.$this->data2[$temp]['name'];
+			$tpath[$page.'/'.$this->data2[$temp]['path']] = array('name'=>$this->data2[$temp]['name']);
+			$temp=$this->data2[$temp]['parent_id'];
+			if($startId==$temp) break;
 		}
-		return Array('form' => $fields_form, 'messages' => $mess);
-	}
-
-	function dumpXlsData($file, $sheet=0) {
-
-		error_reporting(E_ALL ^ E_NOTICE);
-		require_once getLib('excel_reader2');
-		$dataXLS = new Spreadsheet_Excel_Reader($file);
-
-		$out = array(
-			'dataCat'=>array(),
-			'dataProd'=>array(),
-			'info'=>array(),
-		);
-
-		$idCat=0;
-		for($row=1;$row<=$dataXLS->rowcount($sheet);$row++) {
-			$tmp = array();
-			for($col=1;$col<=$dataXLS->colcount($sheet);$col++) {
-				// Account for Rowspans/Colspans
-				/*$rowspan = $this->rowspan($row,$col,$sheet);
-				$colspan = $this->colspan($row,$col,$sheet);
-				for($i=0;$i<$rowspan;$i++) {
-					for($j=0;$j<$colspan;$j++) {
-						if ($i>0 || $j>0) {
-							$this->sheets[$sheet]['cellsInfo'][$row+$i][$col+$j]['dontprint']=1;
-						}
-					}
-				}
-				if(!$this->sheets[$sheet]['cellsInfo'][$row][$col]['dontprint']) {*/
-
-					$val = trim($dataXLS->val($row,$col,$sheet));
-					if ($val!='') { 
-						//$val = htmlentities($val,ENT_QUOTES,"WINDOWS-1251");
-						$val = mb_convert_encoding($val, 'UTF-8', 'WINDOWS-1251');
-						$tmp[$col] = $val;
-					}
-				//}
-			}
-
-			//print_r($tmp);
-			$randi = 2;
-			if($cnt = count($tmp)) {
-				if($cnt==1) {
-					if(isset($tmp[1])) {
-						$idCat++;
-						$name0 = '';
-						$name1 =$tmp[1];
-						$tmpName = explode('/', $name1);
-						if(count($tmpName)>1) {
-							$name0 = $tmpName[0];
-							$name1 = $tmpName[1];
-							//$name1 = str_replace($name0,'',$tmpName[1]);
-							if(!isset($out['dataCat'][$name0])) {
-								$out['dataCat'][$name0] = array(
-									'name'=>$name0,
-									'id'=>$idCat,
-									'parent_id'=>0
-								);
-								$idCat++;
-							}
-							$pid = 0;
-							if(isset($out['dataCat'][$name0]))
-								$pid = $out['dataCat'][$name0]['id'];
-
-							if(isset($out['dataCat'][$name1])) {
-								$name1 .= ' ('.$randi.')';
-								$randi++;
-							}
-
-							$out['dataCat'][$name1] = array(
-								'name'=> $name1,
-								'id'=> $idCat,
-								'parent_id'=> $pid
-							);
-						} 
-						else {
-							if(isset($out['dataCat'][$name1])) {
-								$name1 .= ' ('.$randi.')';
-								$randi++;
-							}
-							$out['dataCat'][$name1] = array(
-								'name'=>$name1,
-								'id'=>$idCat,
-								'parent_id'=>0
-							);
-						}
-					}
-					else {
-						$out['info'][] = current($tmp);
-					}
-				}
-				elseif (isset($tmp[1]) and isset($out['field'])) {
-					$tmp['shop'] = $idCat;
-					$out['dataProd'][(int)$tmp[1]] = $tmp;
-				}
-				elseif (isset($tmp[1])) {
-					$out['field'] = $tmp;
-				}
-				else
-					$out['info'][] = $tmp;
-			}
-			//if($row>4) return $out;
-		}
-		return $out;
+		return array_reverse($tpath);
 	}
 }

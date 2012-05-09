@@ -210,7 +210,7 @@ class static_main {
 			$_CFG['modulprm'] = $_CFG['modulprm_ext'] = array();
 			$ugroup_id = (isset($_SESSION['user']['gid']) ? (int) $_SESSION['user']['gid'] : $_CFG['wep']['guestid']);
 			// Если есть таблица
-			if($MODULPRM->SQL->_tableExists($MODULPRM)) {
+			if($MODULPRM->SQL->_tableExists($MODULPRM->tablename)) {
 				if(isset($_SESSION['user']['parent_id']) and $_SESSION['user']['parent_id']) {
 					$ugroup_id = ' and t2.ugroup_id IN ('.$_SESSION['user']['parent_id'].','.$ugroup_id.')';
 				}else

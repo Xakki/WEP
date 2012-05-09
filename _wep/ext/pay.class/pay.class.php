@@ -18,6 +18,7 @@ class pay_class extends kernel_extends {
 		$this->index_fields['user_id'] = 'user_id';
 		$this->index_fields['status'] = 'status';
 		$this->_AllowAjaxFn['payFormBilling'] = true;
+		$this->ordfield = 'id DESC';
 		return true;
 	}
 

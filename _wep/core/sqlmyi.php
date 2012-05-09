@@ -211,16 +211,16 @@
 			return true;
 		}
 
-		public function _tableDelete(&$MODUL) {
-			return $this->query('DROP TABLE `' . $MODUL->tablename . '`');
+		public function _tableDelete($tablename) {
+			return $this->query('DROP TABLE `' . $tablename . '`');
 		}
 
-		public function _tableClear(&$MODUL) {
-			return $this->query('truncate TABLE `' . $MODUL->tablename . '`');
+		public function _tableClear($tablename) {
+			return $this->query('truncate TABLE `' . $tablename . '`');
 		}
 
-		public function _tableExists(&$MODUL) {
-			$result = $this->query('SHOW TABLES LIKE "' . $MODUL->tablename . '"');
+		public function _tableExists($tablename) {
+			$result = $this->query('SHOW TABLES LIKE "' . $tablename . '"');
 			if (!$result->err) {
 				if($result->num_rows())
 					return true;
@@ -461,13 +461,13 @@
 
 		function fetch($type=0) { // Выдает асоциативный и нумеровнаый масив
 			if($type==0)
-				return $this->fetch_assoc($this->handle);
+				return $this->fetch_assoc();
 			elseif($type==1)
-				return $this->fetch_row($this->handle);
+				return $this->fetch_row();
 			elseif($type==2)
-				return $this->fetch_array($this->handle);
+				return $this->fetch_array();
 			else
-				return $this->fetch_object($this->handle);
+				return $this->fetch_object();
 		}
 
 		function fetch_assoc() { // Выдает асоциативный масив

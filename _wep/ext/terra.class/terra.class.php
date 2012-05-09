@@ -193,7 +193,7 @@ class terra_class extends kernel_extends {
 		}
 		unset($file);
 		//print_r('<pre>');
-		$this->SQL->_tableClear($this->childs['terraip']);
+		$this->SQL->_tableClear($this->childs['terraip']->tablename);
 		foreach($data as $k=>$r) {
 			$lst = $this->qs('t1.*',' t1 WHERE t1.name="'.$this->SqlEsc($k).'" ORDER BY t1.socr_id','parent_id');
 			if(is_array($lst) and count($lst)) {
@@ -262,8 +262,8 @@ class terra_class extends kernel_extends {
 
 	function _importKLADR() {exit();
 
-		$this->SQL->_tableClear($this);
-		$this->SQL->_tableClear($this->childs['terrasocr']);
+		$this->SQL->_tableClear($this->tablename);
+		$this->SQL->_tableClear($this->childs['terrasocr']->tablename);
 
 		//http://xakki.i/_js.php?_template=text&noajax=1&_template=text&_fn=KladrImport&_modul=terra
 		$_COOKIE[$this->_CFG['wep']['_showallinfo']] = 1;

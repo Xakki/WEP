@@ -20,7 +20,7 @@
 			if($r['img']) {
 				$html .= '<img src="'.$r['img'].'" alt="'.$r['name'].'"/>';
 			}
-			$html .= '<a href="/'.$r['path'].'/'.$pgid.'.html" class="'.($r['#sel#']?'selected':'').'">';
+			$html .= '<a href="/'.$pgid.'/'.$r['path'].'.html" class="'.($r['#sel#']?'selected':'').'">';
 			$html .= $r['name'].'</a>';
 			if(isset($r['#item#']) and count($r['#item#'])) {
 				//$pref .= ' - ';

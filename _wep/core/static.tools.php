@@ -7,7 +7,7 @@ class static_tools {
 	}
 
 	static function _reinstall(&$MODUL) {
-		$MODUL->SQL->_tableDelete($MODUL);
+		$MODUL->SQL->_tableDelete($MODUL->tablename);
 		self::_installTable($MODUL);
 	}
 
@@ -21,7 +21,7 @@ class static_tools {
 			static_main::log('notice', 'Для модуля ' . $MODUL->caption . ' таблица не требуется.', $MODUL->_cl);
 			return true;
 		}
-		$flag = $MODUL->SQL->_tableExists($MODUL); // checking table exist
+		$flag = $MODUL->SQL->_tableExists($MODUL->tablename); // checking table exist
 
 		if (!$flag) {
 			// contruct of query
@@ -30,7 +30,7 @@ class static_tools {
 				return false;
 			}
 			if (!self::_insertDefault($MODUL)) {
-				$MODUL->SQL->_tableDelete($MODUL);
+				$MODUL->SQL->_tableDelete($MODUL->tablename);
 				static_main::log('error', 'Для модуля `' . $MODUL->caption . '` не удалось записать дефолтные данные, и поэтому таблица не будет создана.', $MODUL->_cl);
 				return false;
 			}
@@ -69,7 +69,7 @@ class static_tools {
 			$rDATA['Создание таблицы']['@mess'][] = array('notice', 'Модуль `' . $MODUL->caption . '`[' . $MODUL->_cl . '] не использует базу данных.');
 			return $rDATA;
 		}
-		$flag = $MODUL->SQL->_tableExists($MODUL);
+		$flag = $MODUL->SQL->_tableExists($MODUL->tablename);
 		/* if (is_null($flag)) {
 		  $rDATA['Создание таблицы']['@mess'][] = static_main::am('error','_big_err',$MODUL);
 		  return $rDATA;
@@ -80,7 +80,7 @@ class static_tools {
 					$rDATA['Создание таблицы']['@mess'][] = array('error', 'Для модуля `' . $MODUL->caption . '` не удалось создать таблицу.');
 				} else {
 					if (!self::_insertDefault($MODUL)) {
-						$MODUL->SQL->_tableDelete($MODUL);
+						$MODUL->SQL->_tableDelete($MODUL->tablename);
 						$rDATA['Создание таблицы']['@mess'][] = array('error', 'Для модуля `' . $MODUL->caption . '` не удалось записать дефолтные данные, и поэтому таблица не будет создана.');
 					} else
 						$rDATA['Создание таблицы']['@mess'][] = array('notice', 'Для модуля `' . $MODUL->caption . '` успешно создана таблица.');
@@ -638,6 +638,26 @@ class static_tools {
 		return true;
 	}
 
+	/**
+	 * Удаление дериктории с патрохами
+	 *
+	 * @param string $dir Удаляемая дирректория
+	 * @return bool Результат
+	 */
+	
+	static function _rmdir($dir) {
+		if (!file_exists($dir)) return true;
+		if (!is_dir($dir) || is_link($dir)) return unlink($dir);
+		foreach (scandir($dir) as $item) {
+			if ($item == '.' || $item == '..') continue;
+			if (!self::_rmdir($dir . "/" . $item)) {
+				chmod($dir . "/" . $item, 0777);
+				if (!self::_rmdir($dir . "/" . $item)) return false;
+			}
+		}
+		return rmdir($dir);
+	}
+	
 	static function checkWepconf() {
 		global $_CFG;
 		$flag = true;
@@ -796,8 +816,10 @@ deny from all
 
 	static function extractZip($zipFile = '', $zipDir = '', $dirFromZip = '') {
 		 // $zipDir Папка для распаковки.
-
-		 $zip = zip_open($zipFile);
+		if(!$zipDir) {
+			$zipDir = substr($zipFile,0,-4).'/';
+		}
+		$zip = zip_open($zipFile);
 
 		 if ($zip) {
 			  while ($zip_entry = zip_read($zip)) {
@@ -817,11 +839,12 @@ deny from all
 				  
 					if (zip_entry_open($zip, $zip_entry, "r")) {
 						 if (preg_match( '#^' . $dirFromZip . '.*#', dirname(zip_entry_name($zip_entry)))) {
-							  if ($fd = @fopen($completeName, 'w+')) {
+							  if (substr($completeName,-1)!='/' and $fd = @fopen($completeName, 'w+')) {
 									fwrite($fd, zip_entry_read($zip_entry, zip_entry_filesize($zip_entry)));
 									fclose($fd);
 							  } else {
-									mkdir($completeName, 0777);
+									if (!file_exists(trim($completeName,'/')))
+										mkdir($completeName, 0777);
 							  }
 							  
 							  zip_entry_close($zip_entry);
@@ -832,7 +855,7 @@ deny from all
 			  zip_close($zip);
 		 }
 		 
-		 return true;
+		 return rtrim($zipDir,'/');
 	}
 
 	static function transliteRuToLat($var,$len=0) {

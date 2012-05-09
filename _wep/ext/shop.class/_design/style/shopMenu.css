@@ -13,11 +13,14 @@
 }
 
 .shop-menu ul li a {
-	text-decoration:none; color:#779A5D; font-size:15px;font-weight: bold;
-	width:230px; height:59px;
+	text-decoration:none; color:#487292 ; font-size:15px;font-weight: bold;
+	width:230px;
+	border:1px solid #fff; border-width:1px 1px 0 0;
+	line-height:19px;
 	vertical-align: middle;text-align:left; 
 	display:table-cell;
-	padding:0 5px;
+	padding:3px 5px;
+	height:32px;
 }
 .shop-menu a.selected {
 	font-weight:bold;
@@ -29,17 +32,20 @@
 	float:left;
 }
 .shop-menu ul li {
-	border-bottom: solid 1px #E1E1E1;margin:0; position:relative;z-index:21;
+	float:left; margin:0; position:relative;z-index:21;
+	border-bottom: 1px solid gray;
 }
 .shop-menu ul li ul {display: none;}
 
 /* for IE browsers */
 .shop-menu ul li:hover, .shop-menu ul li:hover li {
 	color:#fff;
+	background: #7bbfd0;
 	background: linear-gradient(top,#b2dae4,#7bbfd0,#b2dae4);
 	background: -webkit-gradient(linear, left top, left bottom, from(#b2dae4), color-stop(0.5, #7bbfd0), to(#b2dae4));
 	background: -webkit-linear-gradient(top, #b2dae4,#7bbfd0,#b2dae4);
 	background: -moz-linear-gradient(top,#b2dae4,#7bbfd0,#b2dae4);
+	background: -o-linear-gradient(top,#b2dae4,#7bbfd0,#b2dae4);
 	filter: progid:DXImageTransform.Microsoft.gradient(enabled='true',startColorstr=#b2dae4,endColorstr=#7bbfd0,GradientType=0); zoom: 1;
 }
 .shop-menu ul li:hover ul {display:block; position:absolute;z-index:22; top:0; left:242px; width:240px;}
@@ -53,3 +59,31 @@
 .shop-menu ul li:hover ul li:hover ul li a {}
 .shop-menu ul li:hover ul li:hover a.hide {width:240px;}
 .shop-menu ul li:hover ul li:hover ul li a:hover {color:#fff;}
+
+
+
+/*product NEW*/
+
+	.productnew{
+		width:225px;
+		font-size:0.71em;
+		margin:0;
+		padding:0 0 8px 12px;
+	}
+	.productnew li{
+		margin:5px 0 5px;
+		text-align:left;
+		padding:0 0 0 0px;
+	}
+
+	.productnew li:hover{
+		background:#EAFAEA;
+	}
+
+	.productnew .name {
+		font-weight:bold;
+	}
+
+	.productnew .text {
+		overflow:hidden;
+	}

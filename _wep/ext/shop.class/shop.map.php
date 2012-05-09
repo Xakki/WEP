@@ -13,7 +13,7 @@
 			foreach ($data[$id] as $key => $value)
 			{
 				$s[$key] = $value;
-				$s[$key]['href'] = 'http://'.$_SERVER['HTTP_HOST'].'/'.$SHOP->data2[$key]['path'].'/'.$kPG.'.html';
+				$s[$key]['href'] = 'http://'.$_SERVER['HTTP_HOST'].'/'.$kPG.'/'.$SHOP->data2[$key]['path'].'.html';
 				if ($key!=$id and isset($data[$key]) and count($data[$key]) and is_array($data[$key])) {
 					$s[$key]['#item#'] = shopGetMap($data,$key,$kPG);
 				}

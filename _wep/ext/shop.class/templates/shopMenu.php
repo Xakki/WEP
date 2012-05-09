@@ -18,7 +18,7 @@
 		$html = '<ul>';
 		foreach($data as $k=>$r) {
 			$html .= '<li>';
-			$html .= '<a href="/'.$r['path'].'/'.$pgid.'.html" class="'.($r['#sel#']?'selected':'').'">';
+			$html .= '<a href="/'.$pgid.'/'.$r['path'].'.html" class="'.($r['#sel#']?'selected':'').'">';
 			$html .= $r['name'].'</a>';
 			if(isset($r['#item#']) and count($r['#item#'])) {
 				//$pref .= ' - ';

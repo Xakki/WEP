@@ -485,7 +485,41 @@ abstract class kernel_extends {
 		return $this->_query($list, $cls, $ord, $ord2, $debug);
 	}
 	protected function _tableClear() {
-		$this->SQL->_tableClear($this);
+		$this->SQL->_tableClear($this->tablename);
+	}
+
+
+	/**
+	 * Проверка на существование записи в БД
+	 * в this->id записывает ID выбранных данных
+	 * @return bool - true если успех
+	 */
+	public function _isset($where=NULL) {
+		if(!is_null($where)) {
+			if(is_array($where)) {
+				foreach($where as $k=>$r) {
+					if(isset($this->fields[$k]))
+						$where[$k] = '`'.$k.'`="'.$this->SqlEsc($r).'"';
+				}
+				$where = implode(' and ',$where);
+			} 
+			elseif(is_int($where))
+				$where = '`id`="'.(int)$where.'"';
+			/*else
+				$where = '';
+			if(!$where) return false;*/
+			$this->id = null;
+			$res = $this->_query('id', ' WHERE '.$where, 'id');
+			if(count($res)) {
+				$this->id = array_keys($res);
+				$this->id = array_combine($this->id, $this->id);
+				return true;
+			}
+		}
+		else {
+			return $this->SQL->_tableExists($this->tablename);
+		}
+		return false;
 	}
 
 	/**
@@ -650,43 +684,62 @@ abstract class kernel_extends {
 	}
 
 	/**
-	 * Обновление данных form
-	 * for $where=false -> id= $this->id
-	 * @param array $data 
-	 * @param string $where 
-	 * @return array
+	 * Обновление данных по $this->id или $where
+	 * @param ARRAY $data
+	 * @param STRING $where 
+	 * @param BOOL $flag_select - выборка данных после обновления ($this->data) 
+	 * @return BOOL
 	 */
-	protected function _update($data = array(), $where = false, $flag_select = true) {
-		if (is_bool($data)) {
+	protected function _update($data = array(), $where = NULL, $flag_select = true) {
+		if (!is_array($data) or !count($data)) {
 			trigger_error('Устаревший метод вызова _save_item -> первый параметр $data', E_USER_WARNING);
-			$where = $flag_select;
-			$flag_select = $data;
-		} else {
-			if (!count($data)) {
-				trigger_error('Устаревший метод вызова _update -> первый параметр $data', E_USER_WARNING);
-				if (!count($this->fld_data))
-					return false;
-			} else {
-				$this->fld_data = $this->att_data = $this->mmo_data = array();
-				foreach ($data as $k => $r) {
-					if (isset($this->memos[$k]))
-						$this->mmo_data[$k] = $r;
-					elseif (isset($this->attaches[$k]))
-						$this->att_data[$k] = $r;
-					elseif (isset($this->fields[$k]))
-						$this->fld_data[$k] = $r;
-				}
-			}
+			return false;
 		}
-		$result = static_form::_update($this, $flag_select, $where);
+
+		$this->fld_data = $this->att_data = $this->mmo_data = array();
+		foreach ($data as $k => $r) {
+			if (isset($this->memos[$k]))
+				$this->mmo_data[$k] = $r;
+			elseif (isset($this->attaches[$k]))
+				$this->att_data[$k] = $r;
+			elseif (isset($this->fields[$k]))
+				$this->fld_data[$k] = $r;
+		}
+
+		// Если задан $where - получаем список IDшников
+		if($where) {
+			if(!$this->_isset($where)) return false; // в $this->id вносит выбранные ID
+		}
+
+		$result = static_form::_update($this, $flag_select);
 		if ($result)
 			$this->allChangeData('save');
 		return $result;
 	}
 
-	public function _save_item($data, $where = false) {
+	/**
+	 * Обновление данных выбранные по ID родителя
+	 * @param ARRAY $data
+	 * @param BOOL $flag_select - выборка данных после обновления ($this->data) 
+	 * @return BOOL
+	 */
+	protected function _updateByOwner($data = array(), $flag_select = true) {
+		if(!$this->owner) {
+			trigger_error('Error update: CLASS don`t have OWNER', E_USER_WARNING);
+			return false;
+		}
+		$where = $this->owner->_id_as_string();
+		if(!$where) {
+			trigger_error('Error update: miss OWNER id', E_USER_WARNING);
+			return false;
+		}
+		$where = $this->owner_name.' IN ('.$where.')';
+		return $this->_update($data, $where, $flag_select);
+	}
+
+	public function _save_item($data, $where = NULL) {
 		trigger_error('Устаревший функция _save_item -> заменить на _update', E_USER_WARNING);
-		return $this->_update($data, true, $where);
+		return $this->_update($data, $where, true);
 	}
 
 	/**

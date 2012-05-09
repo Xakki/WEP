@@ -197,16 +197,16 @@
 			return true;
 		}
 
-		public function _tableDelete(&$MODUL) {
-			return $this->query('DROP TABLE `' . $MODUL->tablename . '`');
+		public function _tableDelete($tablename) {
+			return $this->query('DROP TABLE `' . $tablename . '`');
 		}
 
-		public function _tableClear(&$MODUL) {
-			return $this->query('truncate TABLE `' . $MODUL->tablename . '`');
+		public function _tableClear($tablename) {
+			return $this->query('truncate TABLE `' . $tablename . '`');
 		}
 
-		public function _tableExists(&$MODUL) {
-			$result = $this->query('SHOW TABLES LIKE `' . $MODUL->tablename . '`');
+		public function _tableExists($tablename) {
+			$result = $this->query('SHOW TABLES LIKE `' . $tablename . '`');
 			if (!$result->err) {
 				if($result->num_rows())
 					return true;

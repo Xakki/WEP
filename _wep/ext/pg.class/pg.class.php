@@ -2,7 +2,7 @@
 /**
  * Модуль страниц для frontend
  * @author Xakki
- * @version 0.5.6 
+ * @version 0.5.7 
  */
 class pg_class extends kernel_extends {
 
@@ -64,6 +64,7 @@ class pg_class extends kernel_extends {
 		$this->mf_istree = true;
 		$this->mf_ordctrl = true;
 		$this->mf_actctrl = true;
+		//$this->unique_fields['pages'] = array('alias','parent_id');
 		$this->caption = 'Страницы';
 		$this->selected = array();
 		$this->messages_on_page = 50;
@@ -1028,4 +1029,24 @@ class pg_class extends kernel_extends {
 		return $RESULT;
 	}
 //////////
+	/*public function _update($data=array(),$where=false,$flag_select=true) {
+		if($ret = parent::_update($data,$where,$flag_select)) {
+		}
+		return $ret;
+	}
+	public function _add($data=array(),$flag_select=true) {
+		if($ret = parent::_add($data,$flag_select)) {
+		}
+		return $ret;
+	}*/
+
+	public function fFormCheck(&$DATA, &$param, &$argForm) {
+		$RESULT = parent::fFormCheck($DATA,$param,$argForm);
+		if(isset($DATA['alias']) and $DATA['alias']!=='') {
+			$resdata = $this->qs('id','WHERE parent_id='.(int)$DATA['parent_id'].' and alias="'.$this->SqlEsc($DATA['alias']).'" '.($this->id?' and id!='.$this->id:''));
+			if(count($resdata))
+				$RESULT['mess'][] = static_main::am('error', 'Запрещено дублировать страницы (Алиас) на одном подуровне');
+		}
+		return $RESULT;
+	}
 }
