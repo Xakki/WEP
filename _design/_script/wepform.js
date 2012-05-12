@@ -51,8 +51,12 @@ wep.form = {
 	},
 
 	// Мультисписок
-	ilist : function(obj,k) {
-		$(obj).next().attr('name',k+'['+$(obj).val()+']');
+	iList : function(obj,k) {
+		$(obj).parent().find('select').attr('name',k+'['+$(obj).val()+']');
+	},
+	// Мультисписок
+	iListRev : function(obj,k) {
+		$(obj).parent().find('input').attr('name',k+'['+$(obj).val()+']');
 	},
 	ilistCopy : function(ths,obj,max) {
 		var sz = $(obj).size();

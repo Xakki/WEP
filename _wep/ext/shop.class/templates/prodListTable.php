@@ -20,37 +20,32 @@
 					$PGnum = $HTML->transformPHP($data['pagenum'],'#pg#pagenum');
 					$html .= $PGnum;
 				}
-				$html .= '<table cellpadding="0" cellspacing="0">
-					<tr>
-						<th>№
-						<th>Картинка
-						<th>Название
-						<th>Описание';
-				if(isset($data['#cf_fields#'])) {
-					foreach($data['#cf_fields#'] as $cf_fields)
-						$html .= '<th>'.$cf_fields['caption'];
+				$html .= '<table cellpadding="0" cellspacing="0"><tr>';
+				if(isset($data['#prodListTable#'])) {
+					foreach($data['#prodListTable#'] as $cf_r)
+						$html .= '<th>'.$cf_r;
 				}
-				$html .= '
-						<th>Цена
-					</tr>';
+				$html .= '</tr>';
 				foreach($data['#item#'] as $r) {
 					$href = $data['#page#'].'/'.$r['rpath'].'/'.$r['path'].'_'.$r['id'].'.html';
 					if(isset($r['image']) and count($r['image']) and $r['image'][0][1]) {
 						$img = $r['image'][0][1];
 					} else
 						$img = '_design/'.$HTML->_design.'/_shop/img/nofoto.gif';
-					$html .= '<tr>
-						<td>'.$r['id'].'
-						<td><img src="'.$img.'" alt="'.$r['name'].'"/>
-						<td><a href="'.$href.'" title="'.$r['name'].'">'.$r['name'].'</a>
-						<td>'.$r['descr'];
-					if(isset($data['#cf_fields#'])) {
-						foreach($data['#cf_fields#'] as $cf=>$fields)
-							$html .= '<td>'.$r[$cf];
+					$html .= '<tr>';
+					if(isset($data['#prodListTable#'])) {
+						foreach($data['#prodListTable#'] as $cf_k=>$cf_r) {
+							if($cf_k=='cost')
+								$html .= '<td>'.($r['cost']?$r['cost'].' <span>руб.</span>':'&#160;');
+							elseif(strpos($cf_k,'img_product')!==false)
+								$html .= '<td><img src="'.$img.'" alt="'.$r['name'].'"/>';
+							elseif($cf_k=='name')
+								$html .= '<td><a href="'.$href.'" title="'.$r['name'].'">'.$r['name'].'</a>';
+							else
+								$html .= '<td>'.$r[$cf_k];
+						}
 					}
-					$html .= '
-						<td>'.($r['cost']?$r['cost'].' <span>руб.</span>':'&#160;').'
-					</tr>';					
+					$html .= '</tr>';					
 				}
 				$html .= '</table>';
 				$html .= $PGnum;

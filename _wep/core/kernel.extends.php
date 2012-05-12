@@ -224,8 +224,8 @@ abstract class kernel_extends {
 			$this->config_form['cssIncludeToWEP'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'style', 'caption' => 'CSS модуля');
 		}
 		if($this->cf_fields) {
-			$this->config['cf_fields'] = array();
-			$this->config_form['cf_fields'] = array('type' => 'cf_fields', 'caption' => 'Дополнительные поля формы');
+			//$this->config['cf_fields'] = array();
+			//$this->config_form['cf_fields'] = array('type' => 'cf_fields', 'caption' => 'Дополнительные поля формы');
 		}
 		return true;
 	}
@@ -1217,6 +1217,7 @@ abstract class kernel_extends {
 	 * @return array Список
 	 */
 	public function _checkList(&$listname, $value = NULL) {
+
 		$templistname = $listname;
 		if (is_array($listname))
 			$templistname = implode(',', $listname);
@@ -1778,7 +1779,7 @@ abstract class kernel_extends {
 				'caption' => static_main::m('_configno', $this));
 		} else {
 			foreach ($this->config as $k => &$r) {
-				if (is_array($r) and !isset($this->config_form[$k]['multiple'])) {
+				if (is_array($r) and isset($this->config_form[$k]) and !isset($this->config_form[$k]['multiple'])) {
 					$temp = array();
 					foreach ($r as $t => $d) {
 						if (strpos($d, ':=') === false)

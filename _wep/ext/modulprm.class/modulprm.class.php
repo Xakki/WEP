@@ -120,7 +120,7 @@ final class modulprm_class extends kernel_extends {
 						else
 							$val = false;
 						$DATA[$k . '_' . $entry] = array(
-							'caption' => $this->_enum['typemodul'][$k] . ' <b>' . $entry . '</b>',
+							'caption' => $this->_enum['typemodul'][$k] . ' <b>' . (isset($this->data[$entry])?$this->data[$entry]['name'].' ['.$entry.']' : $entry) . '</b>',
 							'comment' => (isset($this->data[$entry])?' <i>Включено.</i> ':''),
 							'type' => 'checkbox',
 							'value' => $val,
@@ -133,8 +133,9 @@ final class modulprm_class extends kernel_extends {
 						$resData = array();
 						if(class_exists($entry. '_class',false)) {
 							$resData = $this->checkClassStruct($entry);
-						}else
+						} else
 							$DATA[$k . '_' . $entry]['comment'] .= 'Не возможно подключить модуль. Класс `'.$entry.'_class` не найден.';
+
 						if ($resData['parent']) {
 							$DATA[$k . '_' . $entry]['comment'] .= '<div>Наследуется от ' . $resData['parent'] . '</div>';
 							$DATA[$k . '_' . $entry]['_parent'] = $resData['parent'];

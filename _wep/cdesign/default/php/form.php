@@ -257,19 +257,25 @@ function tpl_form(&$data, $tabs = array()) {
 					$cnt = 0;
 					foreach($r['value'] as $kval=>$rval) {
 						$cnt++;
+						$text2 = '';
+						if(isset($r['mask']['keylist']) and $r['mask']['keylist'])
+							$text2 = '<select class="ilist-val" onchange="wep.form.iListRev(this,\''.$k.'\')">'.selectitem($r['valuelist'],$kval).'</select>
+								<input class="ilist-key" type="text" value="'.$rval.'" name="'.$k.'['.$kval.']"/>';
+						else
+							$text2 = '<input class="ilist-key" type="text" value="'.$kval.'" onkeyup="wep.form.iList(this,\''.$k.'\')"/>
+								<select class="ilist-val" name="'.$k.'['.$kval.']" '.$attribute.'>'.selectitem($r['valuelist'],$rval).'</select>';
 						$texthtml .= '<div class="ilist">
-							<input class="ilist-key" type="text" value="'.$kval.'" onkeyup="wep.form.ilist(this,\''.$k.'\')"/>
-							<select class="ilist-val" name="'.$k.'['.$kval.']" '.$attribute.'>'.selectitem($r['valuelist'],$rval).'</select>
+							'.$text2.'
 							<span'.($cnt==1?' style="display:none;"':'').' class="ilistdel" onclick="wep.form.ilistdel(this);" title="Удалить"></span>
 						</div>';
 						if($cnt==$r['mask']['maxarr']) break;
 					}
 					$texthtml .= '<span class="ilistmultiple" onclick="wep.form.ilistCopy(this,\'#tr_'.$k.' div.ilist\','.$r['mask']['maxarr'].')" title="Добавить '.$r['caption'].'">'.($r['mask']['maxarr']-count($r['value'])).'</span>';
-				}elseif(isset($r['multiple']) and $r['multiple']) {
+				} elseif(isset($r['multiple']) and $r['multiple']) {
 					
 					$texthtml .= '<select multiple="multiple" name="'.$k.'[]" class="small" size="'.$r['mask']['size'].'" '.$attribute;
 					$texthtml .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
-				}else {
+				} else {
 					$texthtml .= '<select name="'.$k.'" '.$attribute;
 					$texthtml .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
 				}

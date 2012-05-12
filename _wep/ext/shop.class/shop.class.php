@@ -6,16 +6,8 @@ class shop_class extends rubric_class {
 		
 
 		//$this->config['yml_info'] = '';
-		$this->config['prodListTable'] = array(
-			'id' => '№',
-			'img_product' => 'Фото',
-			'name' => 'Наименование',
-			'descr' => 'Описание',
-			'cost' => 'Цена',
-		);
 
 		$this->config_form['yml_info'] = array('type' => 'html', 'value'=>'<h3>Настройка Яндекс.Маркета</h3> Ссылка на XML <b><a href="'.$this->_CFG['_HREF']['BH'].'yml.xml" target="_blank">'.$this->_CFG['_HREF']['BH'].'yml.xml</a></b>');
-		$this->config_form['prodListTable'] = array('type' => 'text', 'keytype' => 'text', 'multiple' => 1, 'caption' => 'Формат вывода шаблона табличного списка', 'mask' => array('maxarr' => 15));
 		//http://help.yandex.ru/partnermarket/?id=1111425
 	}
 

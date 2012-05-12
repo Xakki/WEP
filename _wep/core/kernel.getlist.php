@@ -185,23 +185,30 @@
 			if(count($afterSubDir))
 				$data[''] = $data['']+$afterSubDir;
 		}
-		elseif($templistname == 'list') {
+		elseif('list' == $templistname) {
 			$data = $_this->_dump();
 		}
-		elseif ($templistname == 'ownerlist') {
+		elseif('fieldslist' == $templistname) {
+			$data['id'] = '№';
+			foreach($_this->fields_form as $k=>$r) {
+				if($_this->fields_form[$k]['caption'])
+					$data[$k] = $_this->fields_form[$k]['caption'];
+			}
+		}
+		elseif ('ownerlist' == $templistname) {
 			if($_this->owner)
 				$data = $_this->owner->_dump();
 			else
 				$data = array('Ошибка - список ownerlist не может быть создан, так как родитель не доступен');
 		}
 		// TODO : что за Х ?
-		elseif(is_array($listname) and isset($listname[0]) and isset($listname[1]) and $listname[0]=='owner' ) {
+		elseif(is_array($listname) and isset($listname[0]) and isset($listname[1]) and 'owner' == $listname[0] ) {
 			return $_this->owner->_getlist($listname[1],$value);
 		}
-		elseif ($templistname == 'select') {
+		elseif ('select' == $templistname) {
 			$data = $_this->_select();
 		}
-		elseif ($templistname == 'parentlist' and $_this->mf_istree) {
+		elseif ('parentlist' == $templistname and $_this->mf_istree) {
 
 			$data = array();
 			if($_this->mf_use_charid)

@@ -68,6 +68,7 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 	if($PRODUCT->id) {
 		$DATA = array('#item#'=>$PRODUCT->fItem($PRODUCT->id));
 		$DATA['#page#'] = $Chref;
+		$DATA['#prodItem#'] = &$PRODUCT->config['prodItem'];
 		$html .= $HTML->transformPHP($DATA,$FUNCPARAM[8]);
 		if(isset($PRODUCT->data[$PRODUCT->id]) and count($PRODUCT->data[$PRODUCT->id])) {
 			array_pop($PGLIST->pageinfo['path']);
@@ -157,7 +158,8 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 				$DATA['#page#'] = $Chref;
 				if($subCatHtml or isset($DATA['#item#']) or isset($DATA['#filter#']))
 					$html .= $searchHtml;
-				$DATA['#fields#'] = &$PRODUCT->fields;
+				//$DATA['#fields#'] = &$PRODUCT->fields;
+				$DATA['#prodListTable#'] = &$PRODUCT->config['prodListTable'];
 				$html .= $HTML->transformPHP($DATA, $FUNCPARAM[0]);
 			}
 		}

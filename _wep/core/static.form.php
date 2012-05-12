@@ -1060,8 +1060,14 @@ class static_form {
 		/*Список*/
 		elseif(($form['type']=='list' or $form['type']=='ajaxlist'))
 		{
-			if($data[$key] and $_this->_checkList($form['listname'],$data[$key])===false)
-				$error[] = 33;
+			if(isset($form['mask']['keylist']) and $form['mask']['keylist']) {
+				if($data[$key] and $_this->_checkList($form['listname'],$key)===false)
+					$error[] = 33;
+			} 
+			else {
+				if($data[$key] and $_this->_checkList($form['listname'],$data[$key])===false)
+					$error[] = 33;
+			}
 		}
 
 

@@ -512,11 +512,12 @@ class static_main {
 		//301 - перемещение на посточнную основу
 		/*if($_SERVER['HTTP_REFERER']==$link) {
 			header("HTTP/1.0 400 Bad Request");
+			//301 Moved Permanently
 			die('Warning!!! Self redirect for <a href="'.$link.'">'.$link.'</a>');
 		}
 		else*/if($_CFG['wep']['debugmode']<3) {
 			if($NO!==false)
-				header('HTTP/1.0 '.$NO);
+				header('HTTP/1.1 '.$NO);
 			header("Location: ".$link);
 			die($link);
 		} else {

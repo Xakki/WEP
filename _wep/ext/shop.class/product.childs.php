@@ -7,10 +7,22 @@ class product_class extends kernel_extends {
 		$this->config['reversePage'] = 0;
 		$this->config['onComm'] = 0;
 		$this->config['imageCnt'] = 6;
+		$this->config['prodListTable'] = array(
+			'id' => '№',
+			'img_product' => 'Фото',
+			'name' => 'Наименование',
+			'descr' => 'Описание',
+			'cost' => 'Цена',
+		);
+		$this->config['prodItem'] = array(
+			//'text' => 'Полное описание',
+		);
 
 		$this->config_form['reversePage'] = array('type' => 'checkbox', 'caption' => 'Режим постраничной навигации', 'comment'=>'если откл. - прямая нумерация');
 		$this->config_form['onComm'] = array('type' => 'list', 'listname'=>'onComm', 'caption' => 'Включить комментарии?');
 		$this->config_form['imageCnt'] = array('type' => 'int', 'caption' => 'Число фотографий');
+		$this->config_form['prodListTable'] = array('type' => 'list', 'keytype' => 'text', 'listname' => 'fieldslist', 'multiple' => 3, 'caption' => 'Формат вывода шаблона табличного списка', 'mask' => array('maxarr' => 15,'keylist'=>true));
+		$this->config_form['prodItem'] = array('type' => 'list', 'keytype' => 'text', 'listname' => 'fieldslist', 'multiple' => 3, 'caption' => 'Формат вывода шаблона табличного списка', 'mask' => array('maxarr' => 15,'keylist'=>true));
 
 		$this->config['cf_fields'] = array(
 			'code' => array(
@@ -103,7 +115,7 @@ class product_class extends kernel_extends {
 		}
 
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
-		$this->fields['code'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
+		//$this->fields['code'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['descr'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['text'] = array('type' => 'text', 'attr' => 'NOT NULL');
 		$this->fields['cost'] = array('type' => 'int', 'width' => 10,'attr' => 'NOT NULL','default'=>0);
