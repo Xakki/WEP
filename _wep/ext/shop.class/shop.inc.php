@@ -159,7 +159,6 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 				if($subCatHtml or isset($DATA['#item#']) or isset($DATA['#filter#']))
 					$html .= $searchHtml;
 				//$DATA['#fields#'] = &$PRODUCT->fields;
-				$DATA['#prodListTable#'] = &$PRODUCT->config['prodListTable'];
 				$html .= $HTML->transformPHP($DATA, $FUNCPARAM[0]);
 			}
 		}

@@ -599,7 +599,7 @@ class product_class extends kernel_extends {
 					$type = $PARAM->getTypeForm($nameK);
 					if($type=='checkbox') {
 						if($r!='')
-							$clauseF[$k] = 't4.name'.$nameK.'="'.$r.'"';
+							$clauseF[$k] = 't4.name'.$nameK.'="'.(int)$r.'"';
 					}
 					elseif($type=='int') {
 						$temparr=array();
@@ -650,12 +650,12 @@ class product_class extends kernel_extends {
 						elseif($r!='')
 							$clauseF[$k] = 't1.'.$k.'="'.$this->SqlEsc($r).'"';
 					}
-					elseif($k=='text' or $k=='descr'){
-						if($r!='')
-							$clauseF[$k] = 't1.'.$k.' LIKE "%'.$this->SqlEsc($r).'%"';
-					}
 					elseif($k=='mf_timecr')
 						$clauseF[$k] = 't1.mf_timecr>"'.(int)$r.'"';
+					else {//if($k=='text' or $k=='descr')
+						if($r)
+							$clauseF[$k] = 't1.'.$k.' LIKE "%'.$this->SqlEsc($r).'%"';
+					}
 				}
 				elseif($r=='1' and $k=='foto') {
 					$temp=array();
@@ -740,6 +740,7 @@ class product_class extends kernel_extends {
 			else
 				$xml['imcookie'] = 1;
 		}
+		$xml['#prodListTable#'] = &$this->config['prodListTable'];
 		return $xml;
 	}
 

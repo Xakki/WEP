@@ -28,6 +28,8 @@
 				$html .= '</tr>';
 				foreach($data['#item#'] as $r) {
 					$href = $data['#page#'].'/'.$r['rpath'].'/'.$r['path'].'_'.$r['id'].'.html';
+					if(isset($data['atarget']))
+						$href .= '" target="'.$data['atarget'].'"';
 					if(isset($r['image']) and count($r['image']) and $r['image'][0][1]) {
 						$img = $r['image'][0][1];
 					} else

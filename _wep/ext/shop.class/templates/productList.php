@@ -24,6 +24,8 @@
 				foreach($data['#item#'] as $r) {
 					$html .= '<div class="proditem">';
 					$href = $data['#page#'].'/'.$r['rpath'].'/'.$r['path'].'_'.$r['id'].'.html';
+					if(isset($data['atarget']))
+						$href .= '" target="'.$data['atarget'].'"';
 					$html .= '<a href="'.$href.'" class="prodname">'.$r['name'].'</a>';
 					$html .= '<a href="'.$href.'" title="'.$r['name'].'" class="prodimg">';
 					if(count($r['image']) and $r['image'][0][0]) {
