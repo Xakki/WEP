@@ -68,6 +68,7 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 	if($PRODUCT->id) {
 		$DATA = array('#item#'=>$PRODUCT->fItem($PRODUCT->id));
 		$DATA['#page#'] = $Chref;
+		$DATA['#basketEnabled#'] = $SHOP->basketEnabled;
 		$DATA['#prodItem#'] = &$PRODUCT->config['prodItem'];
 		$html .= $HTML->transformPHP($DATA,$FUNCPARAM[8]);
 		if(isset($PRODUCT->data[$PRODUCT->id]) and count($PRODUCT->data[$PRODUCT->id])) {

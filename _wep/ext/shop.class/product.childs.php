@@ -22,7 +22,7 @@ class product_class extends kernel_extends {
 		$this->config_form['onComm'] = array('type' => 'list', 'listname'=>'onComm', 'caption' => 'Включить комментарии?');
 		$this->config_form['imageCnt'] = array('type' => 'int', 'caption' => 'Число фотографий');
 		$this->config_form['prodListTable'] = array('type' => 'list', 'keytype' => 'text', 'listname' => 'fieldslist', 'multiple' => 3, 'caption' => 'Формат вывода шаблона табличного списка', 'mask' => array('maxarr' => 15,'keylist'=>true));
-		$this->config_form['prodItem'] = array('type' => 'list', 'keytype' => 'text', 'listname' => 'fieldslist', 'multiple' => 3, 'caption' => 'Формат вывода шаблона табличного списка', 'mask' => array('maxarr' => 15,'keylist'=>true));
+		$this->config_form['prodItem'] = array('type' => 'list', 'keytype' => 'text', 'listname' => 'fieldslist', 'multiple' => 3, 'caption' => 'Данные для вывода в информации о товаре', 'mask' => array('maxarr' => 15,'keylist'=>true));
 
 		$this->config['cf_fields'] = array(
 			'code' => array(
@@ -208,6 +208,11 @@ class product_class extends kernel_extends {
 
 	function _checkmodstruct() {
 		return parent::_checkmodstruct();
+	}
+
+	function allChangeData($type = '', $data = '') {
+		unlink($this->owner->YML_FILE);
+		return parent::allChangeData($type, $data);
 	}
 
 	public function Formfilter() {// фильтр админки

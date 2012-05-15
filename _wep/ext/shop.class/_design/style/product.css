@@ -50,6 +50,7 @@
 	.prodpage .prodimg-block {
 		display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
 		margin:0 20px;
+		float: left;
 	}
 	.prodpage .prodimg-block .prodimg-first {
 		display:block;
@@ -86,9 +87,11 @@
 		vertical-align: top;
 		padding:5px 0 0;
 	}
+
 	.prodpage .proditem .proddescr {
 		margin:0 10px;
 	}
+
 	.proditem .prodcost {
 		background:url('../img/price.png') no-repeat;
 		font: bold 1.1em Tahoma, sans-serif;
@@ -101,16 +104,76 @@
 		margin: 0 0 0 10px;
 		text-decoration:none;
 	}
+
 	.prodlist .proditem .prodcost {
 		position:absolute;
 		top:135px;
 	}
+
 	.prodpage .proditem .prodcost {
 		margin: 0 0 0 30px;
 	}
-	.proditem .prodcost span {
-		font-size:0.65em;
+
+		.proditem .prodcost span {
+			font-size:0.65em;
+		}
+
+	.prodpage .proditem .buybotton {
+		font: bold 1.1em Tahoma, sans-serif;
+		color:white;
+		text-align: center;
+		display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
+		position: relative;
+		padding: 8px 10px;
+		margin: 0 10px;
+		cursor:pointer;
+		width:auto;
+		height:auto;
+
+		background-color: #3BB3E0;
+		background-image: linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+		background-image: -o-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+		background-image: -moz-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+		background-image: -webkit-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+		background-image: -ms-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+		background-image: -webkit-gradient( linear, left bottom, left top, color-stop(0, rgb(44,160,202)), color-stop(1, rgb(62,184,229)) );
+
+		border: solid 1px #2AB7EC;
+		-webkit-border-radius: 7px;
+		-moz-border-radius: 7px;
+		-o-border-radius: 7px;
+		border-radius: 7px;
+
+		-webkit-box-shadow: inset 0px 1px 0px #2ab7ec, 0px 2px 0px 0px #156785, 0px 6px 5px #999;
+		-moz-box-shadow: inset 0px 1px 0px #2ab7ec, 0px 2px 0px 0px #156785, 0px 6px 5px #999;
+		-o-box-shadow: inset 0px 1px 0px #2ab7ec, 0px 2px 0px 0px #156785, 0px 6px 5px #999;
+		box-shadow: inset 0px 1px 0px #2ab7ec, 0px 2px 0px 0px #156785, 0px 6px 5px #999;
 	}
+		.prodpage .proditem .buybotton:hover {
+			color:yellow;
+		}
+		.prodpage .proditem .buybotton:active {
+			top: 1px;
+			background-image: linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
+			background-image: -o-linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
+			background-image: -moz-linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
+			background-image: -webkit-linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
+			background-image: -ms-linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
+			background-image: -webkit-gradient( linear, left bottom, left top, color-stop(0, rgb(62,184,229)), color-stop(1, rgb(44,160,202)) );
+			-webkit-box-shadow: inset 0px 0px 0px #2ab7ec, 0px 1px 0px 0px #156785, 0px 3px 3px #999;
+			-moz-box-shadow: inset 0px 0px 0px #2ab7ec, 0px 1px 0px 0px #156785, 0px 3px 3px #999;
+			-o-box-shadow: inset 0px 0px 0px #2ab7ec, 0px 1px 0px 0px #156785, 0px 3px 3px #999;
+			box-shadow: inset 0px 0px 0px #2ab7ec, 0px 1px 0px 0px #156785, 0px 3px 3px #999;
+		}
+		.prodpage .proditem .buybotton a{
+			text-decoration:none;
+		}
+		.prodpage .proditem .buybotton a:hover {
+			color:yellow;
+		}
+		.prodpage .proditem .buybotton input{
+			width:3em;
+		}
 	.proditem .prodtext {
 		margin:0 20px;
 		clear: both;
@@ -119,9 +182,30 @@
 	.proditem .prodparam-h {
 		margin: 10px 0 10px 30px;
 	}
+
 	.proditem .prodparam {
 		margin: 0 0 20px 30px;
 	}
+
+/*prodListTable*/
+
+	.prodListTable {
+		margin:0 auto;
+		text-align:center;
+	}
+
+	.prodListTable table td {
+		padding:2px;
+		text-align:left;
+	}
+	.prodListTable table tr:hover td {
+		background-color:#dce1e8;
+	}
+	.prodListTable table img {
+		width:60px;
+	}
+
+/*Over*/
 
 	.fotocheckbox {
 		position:absolute;
@@ -288,20 +372,63 @@
 	form.filter div.f_item div.f_value {
 		height:20px;
 	}
-	form.filter div.f_item div.f_value div{
+	form.filter div.f_item div.f_value div {
 		display:inline;
+	}
+
+	/*linklist*/
+	form.filter div.f_item.linklist {
+		height:auto;
+		float:none;
+		margin: 0 auto;
+		width: auto;
+	}
+	form.filter div.f_item.linklist div.f_value {
+		height:auto;
+	}
+	form.filter div.f_item.linklist div.f_value div {
+		display:block;
+		font-size: 1.3em;
+		margin:3px 0;
 	}
 
 	form.filter div.f_submit{
 		float: left;
 		padding: 0px 5px;
-		margin: 10px;
+		margin: 0 10px 5px;
 		height: 3.5em;
 		width: 15em;
 	}
 	form.filter div.f_submit input {
+		font-weight:bold;
+		cursor:pointer;
 		margin-top:0.4em;
-		border:1px solid #A6A6A6;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
+		padding:2px 18px;
+		border:1px solid gray;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
+		background-color: #e1e1e1;
+		background-image: linear-gradient(bottom, gray 0%, #e1e1e1 100%);
+		background-image: -o-linear-gradient(bottom, gray 0%, #e1e1e1 100%);
+		background-image: -moz-linear-gradient(bottom, gray 0%, #e1e1e1 100%);
+		background-image: -webkit-linear-gradient(bottom, gray 0%, #e1e1e1 100%);
+		background-image: -ms-linear-gradient(bottom, gray 0%, #e1e1e1 100%);
+		background-image: -webkit-gradient( linear, left bottom, left top, color-stop(0, gray), color-stop(1, #e1e1e1) );
+		-webkit-box-shadow: inset 0px 1px 0px #e1e1e1, 0px 2px 0px 0px #444, 0px 4px 3px gray;
+		-moz-box-shadow: inset 0px 1px 0px #e1e1e1, 0px 2px 0px 0px #444, 0px 4px 3px gray;
+		-o-box-shadow: inset 0px 1px 0px #e1e1e1, 0px 2px 0px 0px #444, 0px 4px 3px gray;
+		box-shadow: inset 0px 1px 0px #e1e1e1, 0px 2px 0px 0px #444, 0px 4px 3px gray;
+	}
+	form.filter div.f_submit input:active {
+		top: 1px;
+		background-image: linear-gradient(bottom, gray 0%, #999 100%);
+		background-image: -o-linear-gradient(bottom, gray 0%, #999 100%);
+		background-image: -moz-linear-gradient(bottom, gray 0%, #999 100%);
+		background-image: -webkit-linear-gradient(bottom, gray 0%, #999 100%);
+		background-image: -ms-linear-gradient(bottom, gray 0%, #999 100%);
+		background-image: -webkit-gradient( linear, left bottom, left top, color-stop(0, gray), color-stop(1, #999) );
+		-webkit-box-shadow: inset 0px 0px 0px gray, 0px 1px 0px 0px #e1e1e1, 0px 1px 1px gray;
+		-moz-box-shadow: inset 0px 0px 0px gray, 0px 1px 0px 0px #e1e1e1, 0px 1px 1px gray;
+		-o-box-shadow: inset 0px 0px 0px gray, 0px 1px 0px 0px #e1e1e1, 0px 1px 1px gray;
+		box-shadow: inset 0px 0px 0px gray, 0px 1px 0px 0px #e1e1e1, 0px 1px 1px gray;
 	}
 	form.filter div.f_submit input[name='f_clear_sbmt'] {
 		width:80px;

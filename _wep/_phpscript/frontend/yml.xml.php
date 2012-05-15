@@ -5,8 +5,15 @@ $_CFG['wep']['_showerror'] = 0;
 
 require_once($_CFG['_PATH']['core'].'html.php');	/**отправляет header и печатает страничку*/
 $_COOKIE[$_CFG['wep']['_showallinfo']] = 0;
-
+ini_set("max_execution_time", "1000");
+set_time_limit (1000);
 header("Content-type: text/xml; charset=utf-8");
+
+$YML_FILE = $_CFG['_PATH']['content'].'yml.xml';
+if(file_exists($YML_FILE)) {
+	echo file_get_contents($YML_FILE);
+	die();
+}
 
 if(!_new_class('pg',$PGLIST)) return false;
 if(!_new_class('shop',$SHOP)) return false;
@@ -76,5 +83,7 @@ $XML = '<?xml version="1.0" encoding="utf-8"?>
 
 	</shop>
 </yml_catalog>';
+
+file_put_contents($YML_FILE, $XML);
 
 echo $XML;

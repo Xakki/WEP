@@ -1,22 +1,37 @@
 <?php
+/** Каталог товаров (интеренет магазин)
+*
+* Для включения "Корзины" достаточно подключить INC basket(Корзина)
+* Варианта заказа : форма письма, онлайн покупка через платежные системы
+*
+*
+*/
 class shop_class extends rubric_class {
 
 	protected function _create_conf() {/*CONFIG*/
 		parent::_create_conf();
 		
 
-		//$this->config['yml_info'] = '';
+		$this->config['orderset'] = array(0 => '0');
 
-		$this->config_form['yml_info'] = array('type' => 'html', 'value'=>'<h3>Настройка Яндекс.Маркета</h3> Ссылка на XML <b><a href="'.$this->_CFG['_HREF']['BH'].'yml.xml" target="_blank">'.$this->_CFG['_HREF']['BH'].'yml.xml</a></b>');
+		$this->config_form['orderset'] = array('type' => 'list', 'listname'=>'orderset', 'multiple'=>1, 'caption'=>'Варианты заказа товара');
+		$this->config_form['yml_info'] = array('type' => 'html', 'value'=>'Ссылка на XML Яндекс.Маркета <b><a href="'.$this->_CFG['_HREF']['BH'].'yml.xml" target="_blank">'.$this->_CFG['_HREF']['BH'].'yml.xml</a></b>');
 		//http://help.yandex.ru/partnermarket/?id=1111425
 	}
 
 	function _set_features() {
 		if (!parent::_set_features()) return false;
-		$this->ver = '0.0.2';
+		$this->ver = '0.0.3';
 		$this->caption = 'Каталог товаров';
 		$this->_AllowAjaxFn['jsOrder'] = true;
 		//$this->cf_tools[] = array('func'=>'ImportXls','name'=>'Загрузка прайса');
+		$this->YML_FILE = $this->_CFG['_PATH']['content'].'yml.xml';
+		$this->basketEnabled = false;
+
+		$this->_enum['orderset']=array(
+			0=>'Письмом',
+			1=>'Онлайн оплата');
+
 		return true;
 	}
 
@@ -41,6 +56,11 @@ class shop_class extends rubric_class {
 		$MAIL->fields_form['p_addr'] = array('type'=>'text','caption'=>'Адрес доставки', 'mask'=>array('min' => '10'),'default'=>'Уфа, ');
 		$MAIL->fields_form['p_phone'] = array('type'=>'text','caption'=>'Телефон', 'mask'=>array('min' => '5'),'default'=>'+7','comment'=>'Пример: +7-987-254-00-28, +7-347-298-23-88');
 		$MAIL->fields_form['p_comment'] = array('type'=>'textarea','caption'=>'Дополнительная информация', 'mask'=>array('max' => '500'));
+	}
+
+	function allChangeData($type = '', $data = '') {
+		unlink($this->YML_FILE);
+		return parent::allChangeData($type, $data);
 	}
 
 	function jsOrder() {
@@ -117,5 +137,14 @@ class shop_class extends rubric_class {
 			if($startId==$temp) break;
 		}
 		return array_reverse($tpath);
+	}
+
+	/** Список товаров положенных в корзину
+	*
+	*
+	*/
+	function fBasketList() {
+		$RESULT = array();
+		return $RESULT;
 	}
 }

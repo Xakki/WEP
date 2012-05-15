@@ -305,6 +305,10 @@
 							$tditem['value'] = _substr(strip_tags(htmlspecialchars_decode($row[$k])),0,$r['mask']['substr']);
 						else//if($r['type']!='file')
 							$tditem['value'] = $row[$k];
+
+						if(isset($r['mask']['sformat']) and method_exists($this, $r['mask']['sformat'])) {
+							eval('$tditem["value"] = $this->'.$r['mask']['sformat'].'($tditem["value"]);');
+						}
 					}
 					$DATA['item'][$key]['tditem'][$k] = $tditem;
 				}

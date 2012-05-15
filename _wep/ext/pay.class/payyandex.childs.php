@@ -121,6 +121,7 @@ class payyandex_class extends kernel_extends {
 		$this->fields['amount'] = array('type' => 'float', 'width' => '11,2','attr' => 'NOT NULL'); // в коппейках
 		$this->fields['tax'] = array('type' => 'float', 'width' => '11,2','attr' => 'NOT NULL'); // в коппейках
 		$this->fields['status'] = array('type' => 'varchar', 'width' => 63,'attr' => 'NOT NULL','default'=>'');
+		$this->fields['operation_id'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL','default'=>'');
 		//Код ошибки при проведении платежа (пояснение к полю status). Присутствует только при ошибках.
 		$this->fields['error'] = array('type' => 'varchar', 'width' => 63,'attr' => 'NOT NULL','default'=>'');
 		//Доступные для приложения методы проведения платежа, см. Доступные методы платежа. Присутствует только при успешном выполнении метода.
@@ -138,13 +139,14 @@ class payyandex_class extends kernel_extends {
 
 	public function setFieldsForm($form=0) {
 		parent::setFieldsForm($form);
-		$this->fields_form['phone'] = array('type' => 'int', 'caption' => 'Номер телефона');
-		$this->fields_form['email'] = array('type' => 'int', 'caption' => 'Email');
+		$this->fields_form['sender'] = array('type' => 'text', 'caption' => 'Номер плательщика');
+		$this->fields_form['phone'] = array('type' => 'text', 'caption' => 'Номер телефона');
+		$this->fields_form['email'] = array('type' => 'text', 'caption' => 'Email');
 		$this->fields_form['amount'] = array('type' => 'int', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['yandex_minpay'].'р, максимум '.$this->config['yandex_maxpay'].'р', 'default'=>100, 'mask'=>array('minint'=>$this->config['yandex_minpay'],'maxint'=>$this->config['yandex_maxpay']));
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Комментарий', 'mask'=>array('name'=>'all'));
 		$this->fields_form['status'] = array('type' => 'list', 'listname'=>'status', 'readonly'=>1, 'caption' => 'Статус', 'mask'=>array());
 		$this->fields_form['error'] = array('type' => 'list', 'listname'=>'error', 'readonly'=>1, 'caption' => 'Ошибка', 'mask'=>array());
-		$this->fields_form['mf_timestamp'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Дата', 'mask'=>array());
+		$this->fields_form['mf_timecr'] = array('type' => 'date', 'readonly'=>1, 'caption' => 'Дата', 'mask'=>array());
 	}
 
 
@@ -455,16 +457,22 @@ class payyandex_class extends kernel_extends {
 		if(!count($INFO['operations'])) return '-нет платежей , '.$CNT.' не оплачено-';
 		$i=0;
 		foreach($INFO['operations'] as $r) {
+			$tempOP = $this->qs('id','WHERE operation_id="'.$r['operation_id'].'"');
+			if(count($tempOP)) {
+				continue;
+			}
 			//date($r['datetime'])
 			$INFO2 = $this->operationDetail($this->owner->config['yandex_token'], $r['operation_id']);
 			//$key = preg_replace('/[^0-9A-zА-я\:\;\№]+/ui','',$INFO2['message']);
 			$key = trim($INFO2['message'],';:№,.\s');
 
 			if(isset($DATA[$key])) {
+
 				$this->id = $DATA[$key]['id'];
 				$upd = array('amount'=>$INFO2['amount'], 'tax'=>($DATA[$key]['amount']-$INFO2['amount']), 'sender'=>$INFO2['sender']);
 				if($INFO2['amount']>=($DATA[$key]['amount']*0.95)) {
 					$upd['status'] = 'success';
+					$upd['operation_id'] = $r['operation_id'];
 					//$upd['money_source'] = 'wallet';
 					$this->_update($upd);
 					$this->owner->PayTransaction(1,$DATA[$key]['amount'],$this->data[$this->id]['owner_id']);				

@@ -10,6 +10,7 @@
 			global $_CFG, $_tpl,$HTML;
 			$_CFG['fileIncludeOption']['fancybox'] = true;
 			$_tpl['styles']['../'.$HTML->_design.'/_shop/style/product'] = 1;
+			$_tpl['styles']['form'] = 1;
 
 			foreach($data['#item#'] as $r) {
 				$href = $data['#page#'].'/'.$r['rpath'].'/'.$r['path'].'_'.$r['id'].'.html';
@@ -25,13 +26,7 @@
 					}
 				} else
 					$html .= '<br/><img src="_design/'.$HTML->_design.'/_shop/img/nofoto.gif" alt="'.$r['name'].'" class="prodimg-first"/>';
-
-				if(!$r['cost'])
-					$r['cost'] = '&#160;';
-				else
-					$r['cost'] = $r['cost'].' <span>руб.</span>';
-
-				$html .= '</div><br/>';
+				$html .= '</div>';
 
 				if(count($data['#prodItem#'])) {
 					$html .= '<ul class="prodparam">';
@@ -41,9 +36,21 @@
 					$html .= '</ul>';
 				}
 
+				if(!$r['cost'])
+					$r['cost'] = '&#160;';
+				else
+					$r['cost'] = $r['cost'].' <span>руб.</span>';
 				$html .= '<div class="proddescr">'.$r['descr'].'</div><br/>
-					<div class="prodcost">'.$r['cost'].'</div> <a href="##zakaz" alt="Подать заявку на покупку" onclick="return JSWin({\'href\':\''.$_CFG['_HREF']['siteAJAX'].'?_modul=shop&_fn=jsOrder&id='.$r['id'].'\'});">Заказать</a>';
-				$_tpl['styles']['form'] = 1;
+					<div class="prodcost">'.$r['cost'].'</div> 
+					<div class="buybotton">
+						<a href="##zakaz" alt="Оформить заказ" onclick="return JSWin({\'href\':\''.$_CFG['_HREF']['siteAJAX'].'?_modul=shop&_fn=jsOrder&id='.$r['id'].'\'});">Купить</a>
+					</div>';
+				if($data['#basketEnabled#']) {
+					$html .= '<div class="buybotton">
+						<a href="##zakaz" alt="Положить покупку в корзину" onclick="return JSWin({\'href\':\''.$_CFG['_HREF']['siteAJAX'].'?_modul=shop&_fn=jsAddBuyItem&id='.$r['id'].'\'});">В корзину</a>
+						<input type="number" value="1"/>
+					</div>';
+				}
 
 
 				if(count($r['param'])) {

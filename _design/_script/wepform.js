@@ -60,7 +60,7 @@ wep.form = {
 	},
 	ilistCopy : function(ths,obj,max) {
 		var sz = $(obj).size();
-		if(sz<max) {
+		if(sz<max || !max) {
 			var clon = $(obj+':last').clone();
 			var in1 = clon.find('.ilist-key');
 			var defval = '';
@@ -73,12 +73,13 @@ wep.form = {
 			in1.keyup();
 			var cnt = parseInt($(ths).text())-1;
 			$(ths).text(cnt);
-			if(sz==(max-1)) {
-				$(ths).fadeTo('slow', 0.3);
+			if(sz==(max-1) && max) {
+				$(ths).fadeTo('slow', 0.3).remove();
 			} else {
 			}
 		}
 	},
+
 	ilistdel : function(ths) {
 		var tmp = $(ths).parent();
 		var tmp2 = tmp.parent().find('span.ilistmultiple');
@@ -86,6 +87,27 @@ wep.form = {
 		tmp2.text(cnt);
 		if(cnt==1) tmp2.fadeTo('slow', 1);
 		tmp.remove();
+	},
+
+	ilistsort : function(id) {// сортировка
+		$.include('/_design/_script/script.jquery/jquery-ui.js', function() {
+			console.log(id);
+			$(id).sortable({
+				items: '>div.ilist',
+				axis:	'y',
+				helper: 'original',
+				opacity:'false',
+				revert: true,// плавное втыкание
+				//placeholder:'sortHelper',
+				handle: '.ilistsort',
+				tolerance: 'pointer',
+				/*start: function(event, ui) {
+					//console.log(ui.helper);
+				},*/
+				//sort: function(event, ui) { ... },
+				//change: function(event, ui) {console.log('*change');console.log(ui);},
+			});
+		});
 	},
 
 	/*

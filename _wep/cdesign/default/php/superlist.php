@@ -165,7 +165,9 @@
 					elseif(isset($tditem['href']) and $tditem['href']!='') {
 						$html .= '<a href="'.$tditem['href'].'" target="_blank">'.$tditem['value'].'</a>&#160;';
 					}
-					else $html .= $tditem['value'];
+					else {
+						$html .= $tditem['value'];
+					}
 				}
 				/////
 				if(isset($tditem['onetd']) and $tditem['onetd']=='close')

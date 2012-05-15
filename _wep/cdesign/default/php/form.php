@@ -245,14 +245,16 @@ function tpl_form(&$data, $tabs = array()) {
 				$texthtml .= '<div class="form-value">';
 				if(isset($r['multiple'])) {
 					if(!isset($r['mask']['size'])) $r['mask']['size'] = 10;
-					if(!isset($r['mask']['maxarr'])) $r['mask']['maxarr'] = 10;
+					if(!isset($r['mask']['maxarr'])) $r['mask']['maxarr'] = 0;
+					if(!isset($r['mask']['minarr'])) $r['mask']['minarr'] = 0;
 				}
 
 				if(isset($r['multiple']) and $r['multiple']==2) {
 					$texthtml .= '<select multiple="multiple" name="'.$k.'[]" class="multiple" size="'.$r['mask']['size'].'" '.$attribute;
 					$texthtml .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
 					$_CFG['fileIncludeOption']['multiple'] = 2;
-				}elseif(isset($r['multiple']) and $r['multiple']==3) {
+				}
+				elseif(isset($r['multiple']) and $r['multiple']==3) {
 					if(!is_array($r['value']) or !count($r['value'])) $r['value'] = array('');
 					$cnt = 0;
 					foreach($r['value'] as $kval=>$rval) {
@@ -266,16 +268,21 @@ function tpl_form(&$data, $tabs = array()) {
 								<select class="ilist-val" name="'.$k.'['.$kval.']" '.$attribute.'>'.selectitem($r['valuelist'],$rval).'</select>';
 						$texthtml .= '<div class="ilist">
 							'.$text2.'
-							<span'.($cnt==1?' style="display:none;"':'').' class="ilistdel" onclick="wep.form.ilistdel(this);" title="Удалить"></span>
+							<span class="ilistsort" title="Переместить"></span>
+							<span class="ilistdel" title="Удалить"'.(($cnt==1 and $r['mask']['minarr'])?' style="display:none;"':'').' onclick="wep.form.ilistdel(this);"></span>
 						</div>';
-						if($cnt==$r['mask']['maxarr']) break;
+						if($r['mask']['maxarr'] and $cnt==$r['mask']['maxarr']) break;
 					}
 					$texthtml .= '<span class="ilistmultiple" onclick="wep.form.ilistCopy(this,\'#tr_'.$k.' div.ilist\','.$r['mask']['maxarr'].')" title="Добавить '.$r['caption'].'">'.($r['mask']['maxarr']-count($r['value'])).'</span>';
-				} elseif(isset($r['multiple']) and $r['multiple']) {
+					$_tpl['onload'] .= 'wep.form.ilistsort("#tr_'.$k.' .form-value");';
+					$_CFG['fileIncludeOption']['jquery-ui'] = 1;
+				}
+				elseif(isset($r['multiple']) and $r['multiple']) {
 					
 					$texthtml .= '<select multiple="multiple" name="'.$k.'[]" class="small" size="'.$r['mask']['size'].'" '.$attribute;
 					$texthtml .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
-				} else {
+				} 
+				else {
 					$texthtml .= '<select name="'.$k.'" '.$attribute;
 					$texthtml .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
 				}
