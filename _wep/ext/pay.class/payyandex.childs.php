@@ -458,12 +458,13 @@ class payyandex_class extends kernel_extends {
 		$i=0;
 		foreach($INFO['operations'] as $r) {
 			$tempOP = $this->qs('id','WHERE operation_id="'.$r['operation_id'].'"');
-			if(count($tempOP)) {
-				continue;
-			}
+			if(count($tempOP)) continue;
+
 			//date($r['datetime'])
 			$INFO2 = $this->operationDetail($this->owner->config['yandex_token'], $r['operation_id']);
 			//$key = preg_replace('/[^0-9A-zА-я\:\;\№]+/ui','',$INFO2['message']);
+			if(!isset($INFO2['message'])) continue;
+
 			$key = trim($INFO2['message'],';:№,.\s');
 
 			if(isset($DATA[$key])) {
