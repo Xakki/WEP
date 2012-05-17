@@ -146,7 +146,7 @@ class static_image {
 
 		if(class_exists('Imagick',false)) {///// todo 
 			$thumb = new Imagick($InFile);
-			$thumb->cropThumbnailImage($WidthX2,$HeightY2);
+			$thumb->cropThumbnailImage($WidthX,$HeightY);
 			$res = $thumb->writeImage($OutFile);
 			$thumb->destroy();
 		} 
