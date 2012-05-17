@@ -2,7 +2,7 @@
 	function tpl_prodListTable(&$data) {
 		$html = '';
 		if(isset($data) and count($data)) {
-			global $_tpl,$HTML;
+			global $_tpl, $HTML, $_CFG;
 			$_tpl['styles']['../'.$HTML->_design.'/_shop/style/product'] = 1;
 
 			$html = '<div class="prodListTable">';
@@ -34,7 +34,7 @@
 						$img = $r['image'][0][1];
 					} else
 						$img = '_design/'.$HTML->_design.'/_shop/img/nofoto.gif';
-					$html .= '<tr>';
+					$html .= '<tr data-id="'.$r['id'].'">';
 					if(isset($data['#prodListTable#'])) {
 						foreach($data['#prodListTable#'] as $cf_k=>$cf_r) {
 							if($cf_k=='cost')
@@ -45,6 +45,14 @@
 								$html .= '<td><a href="'.$href.'" title="'.$r['name'].'">'.$r['name'].'</a>';
 							else
 								$html .= '<td>'.$r[$cf_k];
+						}
+						if(isset($data['#basket#'])) {
+							$html .= '<td class="addbasket"><a href="##vkorziny" title="В корзину">
+								<img src="_design/'.$HTML->_design.'/_shop/img/basket-icon-small.png" alt="В корзину"/>
+							</a>
+							<input type="number" min="1" max="50" value="'.(isset($data['#basket#'][$r['id']])?$data['#basket#'][$r['id']]['cnt'].'" disabled="disabled':1).'"/>
+							';
+							$_tpl['script']['../'.$HTML->_design.'/_shop/script/shop'] = 1;
 						}
 					}
 					$html .= '</tr>';					

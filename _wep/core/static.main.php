@@ -645,6 +645,7 @@ class static_main {
 		echo $html;
 		exit();
 	}
+
 }
 
 
@@ -1022,4 +1023,11 @@ function str2int($string,$concat=true) {
 		return floatval($string);
    else
 		return floatval(preg_replace('/[^0-9\-]+/','',$string));
+}
+
+
+function _chmod($file,$mode=null) {
+	global $_CFG;
+	if(is_null($mode)) $mode = $_CFG['wep']['chmod'];
+	chmod($file, $mode);
 }

@@ -105,8 +105,10 @@ class product_class extends kernel_extends {
 
 
 		$thumb = array('type'=>'resize', 'w'=>'1024', 'h'=>'768');
-		$maxsize = 3000;
-		$this->attaches['img_product'] = array('mime' => array('image'), 'thumb'=>array($thumb,array('type'=>'resize', 'w'=>'250', 'h'=>'250', 'pref'=>'s_', 'path'=>'_content/img_product_thumb')),'maxsize'=>$maxsize,'path'=>'');
+		$thumb2 = array('type'=>'resize', 'w'=>'250', 'h'=>'250', 'pref'=>'s_', 'path'=>'_content/img_product_thumb');
+		$maxsz = 3000;
+		$this->attaches['img_product'] = array('mime' => array('image'), 'toWebImg'=>true, 'thumb'=>array($thumb,$thumb2), 'maxsize'=>$maxsz, 'path'=>'');
+		// toWebImg - преобразует все рисунки не относящиеся к png,jpg,gif - в jpg по умолчанию(если toWebImg=true) или указать свой	 тип
 		if($this->config['imageCnt']>0) {
 			for($i = 2; $i <= $this->config['imageCnt']; $i++) {
 				$this->attaches['img_product'.$i] = $this->attaches['img_product'];
@@ -118,8 +120,8 @@ class product_class extends kernel_extends {
 		//$this->fields['code'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['descr'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['text'] = array('type' => 'text', 'attr' => 'NOT NULL');
-		$this->fields['cost'] = array('type' => 'int', 'width' => 10,'attr' => 'NOT NULL','default'=>0);
-		$this->fields['cost2'] = array('type' => 'int', 'width' => 10,'attr' => 'NOT NULL','default'=>0);
+		$this->fields['cost'] = array('type' => 'float', 'width' => '8,2', 'attr' => 'NOT NULL', 'default'=>'0.00', 'min' => '1');
+		$this->fields['cost2'] = array('type' => 'float', 'width' => '8,2', 'attr' => 'NOT NULL', 'default'=>'0.00');
 		$this->fields['statview'] = array('type' => 'int', 'width' => 9, 'attr' => 'NOT NULL','default'=>0);
 		$this->fields['path'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL','default'=>'');
 		$this->fields['available'] = array('type' => 'tinyint', 'width' => 1,'attr' => 'NOT NULL','default'=>0);
@@ -197,13 +199,6 @@ class product_class extends kernel_extends {
 
 	function _childs() {
 		$this->create_child('product_value');
-		/*if($this->_CFG['_F']['adminpage']) {
-			include_once(dirname(__FILE__).'/childs.include.php');
-			$this->create_child('prodvote');
-		}
-		if($this->config['onComm']) {
-			$this->create_child('productcomments');
-		}*/
 	}
 
 	function _checkmodstruct() {
@@ -357,13 +352,13 @@ class product_class extends kernel_extends {
 					$query .= ' ON DUPLICATE KEY UPDATE '.implode(', ',$cls);
 				}
 			} else {
-				$query = 'INSERT into '.$tn.' (owner_id) values ('.$this->id.')';
+				/*$query = 'INSERT into '.$tn.' (owner_id) values ('.$this->id.')';
 				if(count($temp)) {
 					$cls = array();
 					foreach($PARAM->data as $k=>$r)
 						$cls[] = '`name'.$r['type'].'`=""';
 					$query .= ' ON DUPLICATE KEY UPDATE '.implode(', ',$cls);
-				}
+				}*/
 			}
 			$result=$this->SQL->execSQL($query);
 			if($result->err) return false;

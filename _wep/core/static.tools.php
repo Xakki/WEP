@@ -352,7 +352,7 @@ class static_tools {
 						$newname = $pathimg . '/' . $row['id'] . '.' . $ext;
 						if (file_exists($newname)) {
 							if (isset($value['thumb']) and count($value['thumb'])) { // проверка на наличие модифицированных изображений
-								if (!exif_imagetype($newname)) // опред тип файла
+								if (!static_image::_is_image($newname)) // опред тип файла
 									break;
 								foreach ($value['thumb'] as $imod) {
 									if (!isset($imod['pref']) or !$imod['pref'])
@@ -363,13 +363,13 @@ class static_tools {
 										$newname2 = $pathimg . '/' . $imod['pref'] . $row['id'] . '.' . $ext;
 									if ($newname != $newname2 and !file_exists($newname2)) {
 										if ($imod['type'] == 'crop')
-											static_form::_cropImage($MODUL, $newname, $newname2, $imod['w'], $imod['h']);
+											static_image::_cropImage($MODUL, $newname, $newname2, $imod['w'], $imod['h']);
 										elseif ($imod['type'] == 'resize')
-											static_form::_resizeImage($MODUL, $newname, $newname2, $imod['w'], $imod['h']);
+											static_image::_resizeImage($MODUL, $newname, $newname2, $imod['w'], $imod['h']);
 										elseif ($imod['type'] == 'resizecrop')
-											static_form::_resizecropImage($MODUL, $newname, $newname2, $imod['w'], $imod['h']);
+											static_image::_resizecropImage($MODUL, $newname, $newname2, $imod['w'], $imod['h']);
 										elseif ($imod['type'] == 'water')
-											static_form::_waterMark($MODUL, $newname, $newname2, $imod['w'], $imod['h']);
+											static_image::_waterMark($MODUL, $newname, $newname2, $imod['w'], $imod['h']);
 									}
 								}
 							}
@@ -623,7 +623,7 @@ class static_tools {
 				return static_main::log('error', 'Cannot create directory <b>' . $dir . '</b>');
 		}
 		else {
-			chmod($dir, $_CFG['wep']['chmod']);
+			_chmod($dir);
 			$f = fopen($dir . '/test.file', 'w');
 			if (!$f)
 				return static_main::log('error', 'Cannot create file `test.file` in directory `' . $dir . '`');
@@ -651,7 +651,7 @@ class static_tools {
 		foreach (scandir($dir) as $item) {
 			if ($item == '.' || $item == '..') continue;
 			if (!self::_rmdir($dir . "/" . $item)) {
-				chmod($dir . "/" . $item, 0777);
+				_chmod($dir . "/" . $item, 0777);
 				if (!self::_rmdir($dir . "/" . $item)) return false;
 			}
 		}

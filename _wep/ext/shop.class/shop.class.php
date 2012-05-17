@@ -139,12 +139,4 @@ class shop_class extends rubric_class {
 		return array_reverse($tpath);
 	}
 
-	/** Список товаров положенных в корзину
-	*
-	*
-	*/
-	function fBasketList() {
-		$RESULT = array();
-		return $RESULT;
-	}
 }

@@ -35,7 +35,7 @@ class rubric_class extends kernel_extends {
 		$this->config_form['imgsize'] = array('type' => 'int', 'caption' => 'Максим. размер загружаемых изображений');
 	}
 
-	function _create() {
+	public function _create() {
 		parent::_create();
 
 		$this->attaches[$this->v_img] = array(

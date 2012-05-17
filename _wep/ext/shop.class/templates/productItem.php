@@ -45,11 +45,12 @@
 					<div class="buybotton">
 						<a href="##zakaz" alt="Оформить заказ" onclick="return JSWin({\'href\':\''.$_CFG['_HREF']['siteAJAX'].'?_modul=shop&_fn=jsOrder&id='.$r['id'].'\'});">Купить</a>
 					</div>';
-				if($data['#basketEnabled#']) {
+				if(isset($data['#basket#'])) {
 					$html .= '<div class="buybotton">
-						<a href="##zakaz" alt="Положить покупку в корзину" onclick="return JSWin({\'href\':\''.$_CFG['_HREF']['siteAJAX'].'?_modul=shop&_fn=jsAddBuyItem&id='.$r['id'].'\'});">В корзину</a>
-						<input type="number" value="1"/>
+						<a href="##zakaz" data-id="'.$r['id'].'" alt="Положить покупку в корзину">В корзину</a>
+						<input type="number" min="1" max="50" value="'.(isset($data['#basket#'][$r['id']])?$data['#basket#'][$r['id']]['cnt'].'" disabled="disabled':1).'"/>
 					</div>';
+					$_tpl['script']['../'.$HTML->_design.'/_shop/script/shop'] = 1;
 				}
 
 
@@ -66,6 +67,7 @@
 			}
 		}
 		$html .= '</div>';
+
 		return $html;
 	}
 

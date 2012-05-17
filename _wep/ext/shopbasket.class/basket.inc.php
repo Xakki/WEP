@@ -4,13 +4,12 @@
  * @ShowFlexForm true
  * @author Xakki
  * @version 0.1 
- * @return $form
  * @return $html
  */
 
 // сначала задаем значения по умолчанию
 	if(!isset($FUNCPARAM[0]) or !$FUNCPARAM[0])
-		$FUNCPARAM[0] = '#shop#basket';
+		$FUNCPARAM[0] = '#shopbasket#basket';
 	if(!isset($FUNCPARAM[1]))
 		$FUNCPARAM[1] = '';
 

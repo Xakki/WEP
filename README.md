@@ -128,3 +128,8 @@ grant all privileges on wepbd.* to 'wepmysqluser'@'localhost';
 
 ###Как получить комулятивный патч###
 `git diff --name-status commit1 commit2 | awk '{ if ($1 != "D") print $2 }' | xargs git archive -o output.zip HEAD`
+
+
+### Форма и вывод данных (fields_form)
+
+['mask']['sformat'] - позволяет форматировать вывод для superDisplay , строковая, указывается только название функции в данном модуле,  принимает 1 параметр (данные поля) и возвращает на вывод 

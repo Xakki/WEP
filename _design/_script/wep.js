@@ -10,6 +10,7 @@ var wep = {
 	pgParam: {},/* параметры текущей страницы (загружается из onLOAD)*/
 	pgGet : {}, // GET параметры
 	siteJS: "/_js.php",
+	siteJSON: "/_json.php",
 	form: {},/*Функции работы с формой*/
 	isDef: function(v) {
 		return typeof v !== 'undefined';

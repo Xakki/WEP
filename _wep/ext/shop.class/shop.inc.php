@@ -68,7 +68,8 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 	if($PRODUCT->id) {
 		$DATA = array('#item#'=>$PRODUCT->fItem($PRODUCT->id));
 		$DATA['#page#'] = $Chref;
-		$DATA['#basketEnabled#'] = $SHOP->basketEnabled;
+		if($SHOP->basketEnabled)
+			$DATA['#basket#'] = $SHOP->fBasketData();
 		$DATA['#prodItem#'] = &$PRODUCT->config['prodItem'];
 		$html .= $HTML->transformPHP($DATA,$FUNCPARAM[8]);
 		if(isset($PRODUCT->data[$PRODUCT->id]) and count($PRODUCT->data[$PRODUCT->id])) {
@@ -121,6 +122,8 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 				$DATA2 = array();
 				$DATA2['#item#'] = $SHOP->fDisplay($rid);
 				$DATA2['#page#'] = $Chref;
+				if($SHOP->basketEnabled)
+					$DATA2['#basket#'] = $SHOP->fBasketData();
 				//$DATA2['#title#'] = $Ctitle;
 				$subCatHtml = $HTML->transformPHP($DATA2,$FUNCPARAM[1]);
 			}
@@ -157,6 +160,8 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 				//$ppath = parse_url($_SERVER['REQUEST_URI']);//'.$ppath['path'].'
 				$DATA['req'] = $req;
 				$DATA['#page#'] = $Chref;
+				if($SHOP->basketEnabled)
+					$DATA['#basket#'] = $SHOP->fBasketData();
 				if($subCatHtml or isset($DATA['#item#']) or isset($DATA['#filter#']))
 					$html .= $searchHtml;
 				//$DATA['#fields#'] = &$PRODUCT->fields;
@@ -169,6 +174,8 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 			$DATA2 = array();
 			$DATA2['#item#'] = $SHOP->fDisplay($FUNCPARAM[2]);
 			$DATA2['#page#'] = $Chref;
+			if($SHOP->basketEnabled)
+				$DATA2['#basket#'] = $SHOP->fBasketData();
 			//$DATA2['#title#'] = $Ctitle;
 			$html .= $HTML->transformPHP($DATA2,$FUNCPARAM[1]);
 		}
