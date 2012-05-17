@@ -20,11 +20,17 @@ class static_image {
 		$res = true;
 
 		_chmod($InFile);
+		list($width_orig, $height_orig) = getimagesize($InFile);// опред размер
 
 		if(class_exists('Imagick',false)) {
+			if(strpos($posX,'%')!==false)
+				$posX = $width_orig*substr($posX,0,-1)/100;
+			if(strpos($posY,'%')!==false)
+				$posY = $height_orig*substr($posY,0,-1)/100;
+
 			$thumb = new Imagick($InFile);
 			$logo = new Imagick($logoFile);
-			$thumb->compositeImage( $logo, imagick::COMPOSITE_COPYOPACITY, $posX, $posY );
+			$thumb->compositeImage( $logo, imagick::COMPOSITE_DEFAULT, $posX, $posY );
 			$res = $thumb->writeImage($OutFile);
 			$thumb->destroy();
 		} 
