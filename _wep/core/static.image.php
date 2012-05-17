@@ -35,9 +35,11 @@ class static_image {
 			$thumb->destroy();
 		} 
 		else {
-			$p =  '-compose bumpmap -gravity south';//southeast //center
-			$cmd = 'composite '.$p.' '.escapeshellarg($InFile).' '.escapeshellarg($OutFile);
+			//southeast //center
+			//$cmd = 'composite -compose bumpmap -gravity south '.escapeshellarg($InFile).' '.escapeshellarg($logoFile).' '.escapeshellarg($OutFile);
+			$cmd = 'convert '.escapeshellarg($InFile).' -gravity SouthWest -draw "image Over 0,0,0,0 '.escapeshellarg($logoFile).'" '.escapeshellarg($OutFile);
 			$out=array();$err = 0;$run = exec($cmd, $out, $err);
+			//print_r($cmd);
 			//echo implode ("<br>",$out);
 			//print_r($err);
 			//print_r($run);

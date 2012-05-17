@@ -16,7 +16,6 @@ class static_imageGD2 {
 		global $_CFG;
 		if(!$logoFile)
 			$logoFile = $_CFG['_imgwater'];
-		$logoFile = $_CFG['_PATH']['path'].$logoFile;
 
 		if(!$imtypeIn = self::_is_image($InFile))// опред тип файла
 			return static_main::log('error','File '.$InFile.' is not image');
