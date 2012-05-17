@@ -40,7 +40,8 @@ class static_main {
 	static function log($type,$msg,$cl='') {
 		global $_CFG;
 		$ar_type = array('error'=>false, 'alert'=>true, 'notice'=>true, 'ok'=>true);
-		$_CFG['logs']['mess'][] = array($type,$msg,$cl);
+		if(!$ar_type[$type] or $_CFG['wep']['debugmode']) 
+			$_CFG['logs']['mess'][] = array($type,$msg,$cl);
 		return $ar_type[$type];
 	}
 

@@ -30,7 +30,7 @@
 					}
 
 					if(isset($r['value']) and $r['value'] and file_exists($this->_CFG['_PATH']['path'].$r['value'])) {
-						$_is_image = static_form::_is_image($this->_CFG['_PATH']['path'].$r['value']); // Проверяем , является ли фаил изображением
+						$_is_image = static_image::_is_image($this->_CFG['_PATH']['path'].$r['value']); // Проверяем , является ли фаил изображением
 						if($_is_image) {// Если это изображение
 							$r['att_type'] = 'img'; // Маркер для рисования формы
 							$r['img_size'] = getimagesize($this->_CFG['_PATH']['path'].$r['value']);

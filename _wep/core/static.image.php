@@ -21,7 +21,7 @@ class static_image {
 
 		_chmod($InFile);
 
-		if(class_exists('Imagick')) {
+		if(class_exists('Imagick',false)) {
 			$thumb = new Imagick($InFile);
 			$logo = new Imagick($logoFile);
 			$thumb->compositeImage( $logo, imagick::COMPOSITE_COPYOPACITY, $posX, $posY );
@@ -36,7 +36,8 @@ class static_image {
 			//print_r($err);
 			//print_r($run);
 			if($err) {
-				static_main::log('error','Exec error - '.$err);
+				return static_imageGD2::_waterMark($InFile, $OutFile,$logoFile,$posX,$posY);
+				static_main::log('error','Неверное выполнение команды "'.$cmd.'" , код ошибки - '.$err);
 				$res = false;
 			}
 		}
@@ -68,7 +69,7 @@ class static_image {
 			return true;
 		}
 
-		if(class_exists('Imagick')) {
+		if(class_exists('Imagick',false)) {
 			$thumb = new Imagick($InFile);
 			$thumb->resizeImage($WidthX,$HeightY,Imagick::FILTER_LANCZOS,1);
 			$res = $thumb->writeImage($OutFile);
@@ -83,7 +84,8 @@ class static_image {
 			//print_r($err);
 			//print_r($run);
 			if($err) {
-				static_main::log('error','Exec error - '.$err);
+				return static_imageGD2::_resizeImage($InFile, $OutFile, $WidthX, $HeightY);
+				static_main::log('error','Неверное выполнение команды "'.$cmd.'" , код ошибки - '.$err);
 				$res = false;
 			}
 		}
@@ -104,7 +106,7 @@ class static_image {
 
 		_chmod($InFile);
 
-		if(class_exists('Imagick')) {
+		if(class_exists('Imagick',false)) {
 			$thumb = new Imagick($InFile);
 			$thumb->cropImage($WidthX,$HeightY,$posX,$posY);
 			$res = $thumb->writeImage($OutFile);
@@ -119,7 +121,8 @@ class static_image {
 			//print_r($err);
 			//print_r($run);
 			if($err) {
-				static_main::log('error','Exec error - '.$err);
+				return static_imageGD2::_cropImage($InFile, $OutFile, $WidthX, $HeightY,$posX,$posY);
+				static_main::log('error','Неверное выполнение команды "'.$cmd.'" , код ошибки - '.$err);
 				$res = false;
 			}
 		}
@@ -141,7 +144,7 @@ class static_image {
 
 		_chmod($InFile);
 
-		if(class_exists('Imagick')) {///// todo 
+		if(class_exists('Imagick',false)) {///// todo 
 			$thumb = new Imagick($InFile);
 			$thumb->cropThumbnailImage($WidthX2,$HeightY2);
 			$res = $thumb->writeImage($OutFile);
@@ -151,11 +154,13 @@ class static_image {
 			//$cmd = 'convert '.$InFile.' -thumbnail "'.$WidthX.'x'.$HeightY.'" '.$OutFile;
 			$cmd = 'convert '.escapeshellarg($InFile).' -resize "'.$WidthX.'x'.$HeightY.'^" -gravity center -crop '.$WidthX.'x'.$HeightY.'+0+0 +repage  '.escapeshellarg($OutFile);
 			$out=array();$err = 0;$run = exec($cmd, $out, $err);
-			//echo implode ("<br>",$out);
-			//print_r($err);
-			//print_r($run);
+			/*print_r('***-<pre>');
+			print_r($out);
+			print_r($err);
+			print_r($run);*/
 			if($err) {
-				static_main::log('error','Exec error - '.$err);
+				return static_imageGD2::_thumbnailImage($InFile, $OutFile, $WidthX, $HeightY);
+				static_main::log('error','Неверное выполнение команды "'.$cmd.'" , код ошибки - '.$err);
 				$res = false;
 			}
 		}
@@ -169,7 +174,7 @@ class static_image {
 		return exif_imagetype($file);
 	}
 
-	static function _get_ext($file) {
-		return image_type_to_extension($file);
+	static function _get_ext($file, $include_dot=false) {
+		return image_type_to_extension($file, $include_dot);
 	}
 }

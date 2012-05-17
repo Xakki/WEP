@@ -24,7 +24,7 @@ class static_form {
 			$_this->fld_data[$_this->owner_name] = $_this->owner->id;
 
 		if (!isset($_this->fld_data) && !count($_this->fld_data))
-			return static_main::log('error',static_main::m('add_empty',$_this));
+			return static_main::log('error',static_main::m('add_empty'));
 
 		if (!self::_add_fields($_this,$flag_update)) return false;
 
@@ -46,7 +46,7 @@ class static_form {
 		if($_this->id and $flag_select)
 			$_this->data = $_this->_select();
 		if (isset($_this->mf_indexing) && $_this->mf_indexing) $_this->indexing();
-		//static_main::log('ok',static_main::m('add',array($_this->tablename),$_this));
+		static_main::log('ok',static_main::m('add',array($_this->tablename),$_this));
 		return true;
 	}
 
@@ -156,11 +156,11 @@ class static_form {
 				}
 				_chmod($value['tmp_name']);
 				if (!rename($value['tmp_name'], $newname))
-					return static_main::log('error','Error copy file '.$value['name']);
+					return static_main::log('error', static_main::m('Error rename file',array($value['tmp_name'],$newname)));
 				// Дополнительные изображения
 				if (isset($_this->attaches[$key]['thumb'])) {
 					if(isset($value['att_type']) and $value['att_type']!='img') // если это не рисунок, то thumb не приминим
-						return static_main::log('error','File `'.$newname.'` is not image. Function `thumb` not accept.');
+						return static_main::log('error', static_main::m('File is not image',array($newname)));
 					$prefix = $pathimg.'/';
 					if (count($_this->attaches[$key]['thumb']))
 						foreach($_this->attaches[$key]['thumb'] as $imod) {
@@ -170,17 +170,21 @@ class static_form {
 								$newname2 = $_this->_CFG['_PATH']['path'].$imod['path'].'/'.$imod['pref'].$row['id'].'.'.$ext;
 							else
 								$newname2 = $prefix.$imod['pref'].$row['id'].'.'.$ext;
+							$res = true;
 							if ($imod['type']=='crop')
-								static_image::_cropImage($newname, $newname2, $imod['w'], $imod['h']);
+								$res = static_image::_cropImage($newname, $newname2, $imod['w'], $imod['h']);
 							elseif ($imod['type']=='resize')
-								static_image::_resizeImage($newname, $newname2, $imod['w'], $imod['h']);
-							elseif ($imod['type']=='resizecrop')
-								static_image::_thumbnailImage($newname, $newname2, $imod['w'], $imod['h']);
+								$res = static_image::_resizeImage($newname, $newname2, $imod['w'], $imod['h']);
+							elseif ($imod['type']=='resizecrop' or $imod['type']=='thumb')
+								$res = static_image::_thumbnailImage($newname, $newname2, $imod['w'], $imod['h']);
 							elseif ($imod['type']=='watermark')
-								static_image::_waterMark($newname,$newname2, $imod['logo'], $imod['x'], $imod['y']);
+								$res = static_image::_waterMark($newname,$newname2, $imod['logo'], $imod['x'], $imod['y']);
 							elseif($newname!=$newname2)
-								copy($newname,$newname2);
-							_chmod($newname);
+								$res = copy($newname,$newname2);
+							if($res)
+								_chmod($newname2);
+							else
+								return false;
 						}
 				}
 				$prop[] = '`'.$key.'` = \''.$ext.'\'';
@@ -198,7 +202,8 @@ class static_form {
 		foreach($_this->mmo_data as $key => $value)
 		{
 			$pathimg = $_this->_CFG['_PATH']['path'].$_this->getPathForMemo($key);
-			if(!isset($_this->memos[$key])) return static_main::log('error','Error add memo. Missing field `'.$key.'` in module `'.$_this->caption.'`');
+			if(!isset($_this->memos[$key])) 
+				return static_main::log('error', static_main::m('Error add memo', array($key,$_this->caption)));
 			$name = $pathimg.'/'.$_this->id.$_this->text_ext;
 			$f = fopen($name, 'w');
 				if (!$f)
@@ -270,7 +275,7 @@ class static_form {
 		if($_this->id and $flag_select)
 			$_this->data = $_this->_select();
 		if (isset($_this->mf_indexing) && $_this->mf_indexing) $_this->indexing();
-		//static_main::log('ok',static_main::m('update',array($_this->tablename),$_this));
+		static_main::log('ok',static_main::m('update',array($_this->tablename),$_this));
 		return true;
 
 	}
@@ -458,14 +463,16 @@ class static_form {
 				if ($row[$key]) {
 					if(file_exists($oldname)) {
 						_chmod($oldname);
-						if (!unlink($oldname)) return static_main::log('error','Cannot delete file `'.$oldname.'`');
+						if (!unlink($oldname)) 
+							return static_main::log('error','Cannot delete file `'.$oldname.'`');
 					}
 					if (count($att['thumb']))
 						foreach($att['thumb'] as $imod) {
 							if(!isset($imod['pref'])) $imod['pref'] = '';
 							$oldname =$pathimg.'/'. $imod['pref'].$row['id']. '.'.$row[$key];
 							if (file_exists($oldname))
-								if (!unlink($oldname)) return static_main::log('error','Cannot delete file `'.$oldname.'`');
+								if (!unlink($oldname)) 
+								return static_main::log('error','Cannot delete file `'.$oldname.'`');
 						}
 
 				}
