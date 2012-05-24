@@ -67,7 +67,7 @@ var wep = {
 			}
 		}
 		else if(!param['type']) param['type'] = 'GET';
-		if(!param['href'])		param['href'] = '/_json.php';
+		if(!param['href'])		param['href'] = wep.siteJSON;
 		if(param['onclk']=='reload')		param['onclk'] = 'window.location.reload();';
 		if(!param['data']) 		param['data'] = '';
 		if(!param['dataType'])	param['dataType'] = 'json';
@@ -225,16 +225,29 @@ var wep = {
 
 	ajaxLoadPage: function(marker,pg,call) {
 		if(!pg) pg = this.pgId;
-		var arr = '';
-		if(wep.pgParam) {
-			arr = wep.pgParam;
-			arr = arr.join("&pageParam[]=");
-		}
+		marker['_view'] = 'loadpage';
+		marker['_pgId'] = pg;
+		marker['pageParam'] = wep.pgParam;
 		// TODO marker = wep.pgGet + marker;
 		param = {
-			'href':'_json.php?_view=loadpage&pgId='+pg+'&pageParam[]='+arr,
+			'href':wep.siteJSON,
 			'type':'GET',
 			'data': marker
+		};
+		if(call)
+			param['call'] = call;
+		JSWin(param);
+		return false;
+	},
+
+	ajaxLoadContent: function(ctId,selector,call) {
+		if(!ctId) return false;
+		param = {
+			'href' : wep.siteJSON,
+			'type' : 'GET',
+			'data' : {'_view':'loadpage', '_ctId':ctId, '_slc':selector, 'pageParam':wep.pgParam },
+			'insertObj' : selector,
+			'insertType' : 'replace'
 		};
 		if(call)
 			param['call'] = call;
@@ -643,7 +656,7 @@ var wep = {
 
 	exit: function(){
 		if(confirm('Вы действительно хотите выйти?'))
-			JSWin({'href':'/_json.php?_view=exit'});
+			JSWin({'href':wep.siteJSON+'?_view=exit'});
 		return false;
 	},
 

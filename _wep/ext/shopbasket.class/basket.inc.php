@@ -16,16 +16,16 @@
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if (isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 		$form = array(
-			'0' => array('type' => 'list', 'listname' => 'phptemplates', 'caption' => 'Шаблон'),
+			'0' => array('type' => 'list', 'listname' => 'phptemplates', 'caption' => 'Шаблон плавающей корзины'),
 			'1'=>array('type'=>'list','listname'=>'ownerlist', 'caption'=>'Страница корзины'),
-			'2'=>array('type'=>'list','listname'=>'ownerlist', 'caption'=>'Страница каталога'),
 		);
 		return $form;
 	}
 
+	if(!_new_class('shopbasket',$SHOPBASKET)) return false;
 	if(!_new_class('shop',$SHOP)) return false;
 	$SHOP->basketEnabled = true;
-	$DATA = $SHOP->fBasketList();
-	$DATA['#pageCat#'] = $this->getHref($FUNCPARAM[1]);
-	$DATA['#page#'] = $this->getHref($FUNCPARAM[2]);
+
+	$DATA = $SHOPBASKET->fBasket();
+	$DATA['#page#'] = $this->getHref($FUNCPARAM[1]);
 	return $HTML->transformPHP($DATA,$FUNCPARAM[0]);

@@ -108,7 +108,7 @@ class product_class extends kernel_extends {
 		$thumb2 = array('type'=>'resize', 'w'=>'250', 'h'=>'250', 'pref'=>'s_', 'path'=>'_content/img_product_thumb');
 		$maxsz = 3000;
 		$this->attaches['img_product'] = array('mime' => array('image'), 'toWebImg'=>true, 'thumb'=>array($thumb,$thumb2), 'maxsize'=>$maxsz, 'path'=>'');
-		// toWebImg - преобразует все рисунки не относящиеся к png,jpg,gif - в jpg по умолчанию(если toWebImg=true) или указать свой	 тип
+		// toWebImg - преобразует все рисунки не относящиеся к png,jpg,gif - в jpg по умолчанию(если toWebImg=true) или указать свой	 тип или false - отменяет преобразование
 		if($this->config['imageCnt']>0) {
 			for($i = 2; $i <= $this->config['imageCnt']; $i++) {
 				$this->attaches['img_product'.$i] = $this->attaches['img_product'];

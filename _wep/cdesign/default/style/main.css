@@ -82,56 +82,79 @@ a.am_tools {
 .nav a {filter: alpha(opacity=90); opacity:0.9;} 
 
 /* style the <b> element so that is does not affect the size of the link */
-.nav a b {background:#999; border:1px solid #000; border-color:#ddd #333 #333 #ddd; color:#fff; font-weight:normal; display:block; padding:5px 10px;}
-.nav a.msel b {color:red;}
-.nav a:hover b {background-color:#aaa; color:#800; cursor:pointer;}
-.nav .fly .main b {background:#999;}
-.nav .down b {background:#999;}
-.nav .right ul b {text-align:right;}
-.nav .right ul .main b {background:#999; text-align:right;}
+.nav a {
+	background:#999; 
+	border:1px solid #000;
+	border-color:#ddd #333 #333 #ddd; 
+	color:#fff;
+	font-weight:normal; 
+	display:block;
+	padding:5px 10px;
+	white-space:nowrap;
+}
+.nav a.msel {color:red;}
+.nav a:hover {background-color:#aaa; color:#800; cursor:pointer;}
+.nav .fly .main a {background:#999;}
+.nav .down a {background:#999;}
+.nav .right ul a {text-align:right;}
+.nav .right ul .main a {background:#999; text-align:right;}
 
 /* HEIGHT */
-.nav ul ul {top:-24px;} /* position the top of the flyout sub menus */
+.nav ul ul {} /* position the top of the flyout sub menus */
 
 /* WIDTH change this WITH CARE to suit your requirements */
 
 /*set the link width here*/
 .nav .drop,
-.nav a {width:130px;}
-.nav ul li {max-width:130px;} /* fix for IE8 */
+.nav a {}
+.nav li {min-width:130px;} /* fix for IE8 */
 
 /* set the left flyout position here */
-.nav ul ul {left:120px;}
+.nav ul ul {}
 /* set the right flyout position here */
-.nav li.right ul ul {left:auto; right:120px;}
+.nav li.right ul ul {}
 
 /* make this WIDTH - 1px */ /* or WIDTH - 0.063em if using em sizing */
-.nav a {margin-right:-129px;}
+.nav a {}
 
 /* ----------------------------------------------------------------------------	*/
 
 /* DO NOT CHANGE ANYTHING BELOW */
-.nav li {float:left;} /* fixes IE related bugs, and allows for clearing */
-.nav ul {float:left; position:relative; z-index:20;} /* necessary for float drop and to stack the <ul>s */
-.nav ul li {clear:left;} /* must clear the floated list item inside sublist */
-.nav a {position:relative; display:block;} /* needs to have a position above the rest */
-.nav a.main {float:left; /* necessary for float drop */
-    margin-top:10000px;} /* bring the top level links back into view */
+.nav li {
+	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
+	position:relative;
+}
+
+	.nav li ul { 
+		z-index:20;
+		display:none;
+		position:absolute;
+	}
+
+	.nav li:hover ul {
+		display:block;
+	}
+
+	.nav li ul li {
+		display:block;
+	}
+.nav a {position:relative; display:block;} 
+.nav a.main {} 
 .nav .drop,
-.nav .fly {margin-top:-10000px;} /* hide the sub links and their containers, opera has low upper limits */
-.nav ul {margin-bottom:-5000px;} /* avoid any interaction between the subs, can be any large size */
+.nav .fly {} 
+.nav ul {} 
 
 /* The bit that does ALL the work to bring the sub menus into view */
 .nav a:hover,
 .nav a:focus,
-.nav a:active {margin-right:0; z-index:10; outline:0}
+.nav a:active { z-index:10;}
 
 .nav a:focus b,
 .nav a:active b {background:#aaa; color:#800;} /* for tabbing */
 
 /* OPERA fix */
 .nav ul:hover,
-.nav ul ul:hover {clear:left;} /* to stop intermittent sub link :hover problems */
+.nav ul ul:hover {} /* to stop intermittent sub link :hover problems */
 
 
 /************************/

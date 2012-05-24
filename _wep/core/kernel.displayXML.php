@@ -11,7 +11,7 @@
 		if(is_array($moder_clause) and count($moder_clause))
 			$clause =' t1 WHERE '.(implode(' and ',$moder_clause)); 
 		else 
-			$clause =' t1';
+			$clause =' t1 WHERE t1.id';
 		$this->data = $this->_query($listfields,$clause);
 
 ###print($this->SQL->query);
@@ -306,8 +306,11 @@
 						else//if($r['type']!='file')
 							$tditem['value'] = $row[$k];
 
-						if(isset($r['mask']['sformat']) and method_exists($this, $r['mask']['sformat'])) {
-							eval('$tditem["value"] = $this->'.$r['mask']['sformat'].'($tditem["value"]);');
+						if(isset($r['mask']['sformat'])) {
+							if(method_exists($this, $r['mask']['sformat']))
+								eval('$tditem["value"] = $this->'.$r['mask']['sformat'].'($tditem["value"]);');
+							elseif(function_exists($r['mask']['sformat']))
+								eval('$tditem["value"] = '.$r['mask']['sformat'].'($tditem["value"]);');
 						}
 					}
 					$DATA['item'][$key]['tditem'][$k] = $tditem;

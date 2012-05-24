@@ -16,7 +16,6 @@
 
 				$PGnum = '';
 				if(isset($data['pagenum']) and count($data['pagenum'])) {
-					global $HTML;
 					$PGnum = $HTML->transformPHP($data['pagenum'],'#pg#pagenum');
 					$html .= $PGnum;
 				}
@@ -28,10 +27,10 @@
 						$href .= '" target="'.$data['atarget'].'"';
 					$html .= '<a href="'.$href.'" class="prodname">'.$r['name'].'</a>';
 					$html .= '<a href="'.$href.'" title="'.$r['name'].'" class="prodimg">';
-					if(count($r['image']) and $r['image'][0][0]) {
-						$html .= '<img src="'.$r['image'][0][0].'" alt="'.$r['name'].'"/>';
+					if(isset($r['image']) and count($r['image']) and $r['image'][0][1]) {
+						$html .= '<img src="/'.$r['image'][0][1].'" alt="'.$r['name'].'"/>';
 					} else
-						$html .= '<img src="_design/default/img/cancel.png" alt="'.$r['name'].'"/>';
+						$html .= '<img src="/_design/'.$HTML->_design.'/_shop/img/nofoto.gif" alt="'.$r['name'].'"/>';
 					$html .= '</a><div class="proddescr">'.$r['descr'].'</div><br/>';
 					//$html .= '';
 					if(!$r['cost'])

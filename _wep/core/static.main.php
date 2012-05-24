@@ -386,6 +386,19 @@ class static_main {
 			_setcookie($_CFG['session']['name'], '', (time() - 5000));
 	}
 
+	/**
+	* Получить ID пользователя или зарегить как анонима
+	*
+	*/
+	static function userId($force=false) {
+		session_go();
+		if(isset($_SESSION['user']['id']))
+			return $_SESSION['user']['id'];
+		elseif($force) {
+			//TODO : Создаем пользователя  гостя
+		}
+		return null;
+	}
 
 /*Функции вспомогательные*/
 
@@ -1026,6 +1039,19 @@ function str2int($string,$concat=true) {
 		return floatval(preg_replace('/[^0-9\-]+/','',$string));
 }
 
+function isint($val) {
+	$res = preg_match_all('/^[0-9]+$/', $val, $matches);
+	if($res==1)
+		return true;
+	return false;
+}
+
+function isfloat($val) {
+	$res = preg_match_all('/^[0-9]+(,[0-9]{,6})?$/', $val, $matches);
+	if($res==1)
+		return true;
+	return false;
+}
 
 function _chmod($file,$mode=null) {
 	global $_CFG;

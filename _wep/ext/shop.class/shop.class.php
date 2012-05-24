@@ -22,15 +22,15 @@ class shop_class extends rubric_class {
 	function _set_features() {
 		if (!parent::_set_features()) return false;
 		$this->ver = '0.0.3';
-		$this->caption = 'Каталог товаров';
+		$this->caption = 'Магазин - Каталог';
 		$this->_AllowAjaxFn['jsOrder'] = true;
 		//$this->cf_tools[] = array('func'=>'ImportXls','name'=>'Загрузка прайса');
 		$this->YML_FILE = $this->_CFG['_PATH']['content'].'yml.xml';
 		$this->basketEnabled = false;
 
 		$this->_enum['orderset']=array(
-			0=>'Письмом',
-			1=>'Онлайн оплата');
+			0=>'Заказ письмом',
+			1=>'В корзину');
 
 		return true;
 	}
@@ -139,4 +139,9 @@ class shop_class extends rubric_class {
 		return array_reverse($tpath);
 	}
 
+	function fBasketData() {
+		$RESULT = array();
+		if(!_new_class('shopbasket',$SHOPBASKET)) return false;
+		return $SHOPBASKET->fBasketData();
+	}
 }

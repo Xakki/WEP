@@ -73,9 +73,21 @@
 		$DATA  = array();
 		session_go();
 		_new_class('pg',$PGLIST);
-		$_tpl = array();
-		$PGLIST->id = (int)$_REQUEST['pgId'];
-		$PGLIST->display(false);
+
+		if(!isset($_GET['_design']))
+			$_GET['_design'] = $_CFG['wep']['design'];
+
+		if(isset($_REQUEST['_pgId'])) {
+			$PGLIST->id = (int)$_REQUEST['_pgId'];
+			$PGLIST->display(false);
+		}
+		elseif(isset($_REQUEST['_ctId'])) {
+			$PGLIST->display_inc((int)$_REQUEST['_ctId'],$_GET['_design']);
+			foreach($_tpl as $k=>$r) {
+				if($k!='styles' and $k!='script')
+					$_REQUEST[$k] = array('replaceWith'=>$_REQUEST['_slc']);
+			}
+		}
 		//$_tpl['logs'] = '';
 		//print_r('<pre>');print_r($_tpl);
 		//$GLOBALS['_RESULT']['html2'] = $_tpl;

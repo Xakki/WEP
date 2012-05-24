@@ -712,7 +712,7 @@ class static_form {
 					$form['att_type'] = '';
 					if($is_image) {
 						$form['att_type'] = 'img';
-						if(isset($form['toWebImg']) and $is_image>3)
+						if((!isset($form['toWebImg']) or $form['toWebImg']) and $is_image>3)
 							$value['ext'] = (is_string($form['toWebImg'])?$form['toWebImg']:'jpg');
 						else
 							$value['ext'] = static_image::_get_ext($is_image,false);

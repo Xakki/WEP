@@ -68,6 +68,7 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 	if($PRODUCT->id) {
 		$DATA = array('#item#'=>$PRODUCT->fItem($PRODUCT->id));
 		$DATA['#page#'] = $Chref;
+		$DATA['#shopconfig#'] = $SHOP->config;
 		if($SHOP->basketEnabled)
 			$DATA['#basket#'] = $SHOP->fBasketData();
 		$DATA['#prodItem#'] = &$PRODUCT->config['prodItem'];
@@ -122,7 +123,7 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 				$DATA2 = array();
 				$DATA2['#item#'] = $SHOP->fDisplay($rid);
 				$DATA2['#page#'] = $Chref;
-				if($SHOP->basketEnabled)
+				if($SHOP->basketEnabled) 
 					$DATA2['#basket#'] = $SHOP->fBasketData();
 				//$DATA2['#title#'] = $Ctitle;
 				$subCatHtml = $HTML->transformPHP($DATA2,$FUNCPARAM[1]);

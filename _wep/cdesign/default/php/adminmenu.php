@@ -21,24 +21,24 @@
 					(isset($_CFG['require_modul'][$k]) and $_CFG['require_modul'][$k]) or
 					($r['extend'] and isset($_CFG['require_modul'][$r['extend']]) and $_CFG['require_modul'][$r['extend']])
 				) {
-					$sys_r .= '<li class="fly"><a class="main down'.$sel.'" href="'.$_CFG['PATH']['wepname'].'/index.php?_view=list&amp;_modul='.$k.'"><b>'.$r['name'].'</b></a></li>';
+					$sys_r .= '<li class="fly"><a class="main down'.$sel.'" href="'.$_CFG['PATH']['wepname'].'/index.php?_view=list&amp;_modul='.$k.'">'.$r['name'].'</a></li>';
 				}elseif($r['typemodul']==0) {
-					$sys_m .= '<li class="fly"><a class="main down'.$sel.'" href="'.$_CFG['PATH']['wepname'].'/index.php?_view=list&amp;_modul='.$k.'"><b>'.$r['name'].'</b></a></li>';
+					$sys_m .= '<li class="fly"><a class="main down'.$sel.'" href="'.$_CFG['PATH']['wepname'].'/index.php?_view=list&amp;_modul='.$k.'">'.$r['name'].'</a></li>';
 				}elseif($r['typemodul']==3) {
-					$over_m .= '<li class="fly"><a class="main down'.$sel.'" href="'.$_CFG['PATH']['wepname'].'/index.php?_view=list&amp;_modul='.$k.'"><b>'.$r['name'].'</b></a></li>';
+					$over_m .= '<li class="fly"><a class="main down'.$sel.'" href="'.$_CFG['PATH']['wepname'].'/index.php?_view=list&amp;_modul='.$k.'">'.$r['name'].'</a></li>';
 				}
 			}
 			unset($r);
 		}
 		$html .= '<ul class="nav">';
 		if($sys_r) {
-			$html .= '<li class="drop"><a class="main"><b>Главные модули</b></a><ul>'.$sys_r.'</ul></li>';
+			$html .= '<li class="drop"><a class="main">Главные модули</a><ul>'.$sys_r.'</ul></li>';
 		}
 		if($sys_m) {
-			$html .= '<li class="drop"><a class="main"><b>Вторичные модули</b></a><ul>'.$sys_m.'</ul></li>';
+			$html .= '<li class="drop"><a class="main">Вторичные модули</a><ul>'.$sys_m.'</ul></li>';
 		}
 		if($over_m) {
-			$html .= '<li class="drop"><a class="main"><b>Модули</b></a><ul>'.$over_m.'</ul></li>';
+			$html .= '<li class="drop"><a class="main">Модули</a><ul>'.$over_m.'</ul></li>';
 		}
 		$html .= '</ul>';
 

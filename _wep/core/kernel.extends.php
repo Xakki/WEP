@@ -282,7 +282,7 @@ abstract class kernel_extends {
 
 		if ($this->owner) {
 			$this->fields[$this->owner_name] = $this->owner->fields['id'];
-			if (strpos($this->fields[$this->owner_name]['attr'], 'UNSIGNED') !== false)
+			if (stripos($this->fields[$this->owner_name]['attr'], 'UNSIGNED') !== false)
 				$this->fields[$this->owner_name]['attr'] = 'UNSIGNED NOT NULL';
 			else
 				$this->fields[$this->owner_name]['attr'] = 'NOT NULL';
@@ -433,6 +433,30 @@ abstract class kernel_extends {
 		return $this->SQL->escape((string)$val);
 	}
 
+	public function queryEscape($where, $union='and') {
+		if(is_array($where)) {
+			$where2 = array();
+			foreach($where as $k=>$r) {
+				if(isset($this->fields[$k]))
+					$where2[$k] = '`'.$k.'`="'.$this->SqlEsc($r).'"';
+			}
+			if(count($where2))
+				$where = 'WHERE '.implode(' '.$union.' ',$where2);
+			else
+				$where = '';
+		}
+		elseif(isint($where)) {
+			if((int)$where>0)
+				$where = 'WHERE `id`="'.(int)$where.'"';
+			else
+				$where = '';
+		}
+		else {
+			//TODO : экранировать запрос от инъекций
+		}
+
+		return $where;
+	}
 	/**
 	 * принимает данные для запроса в виде параметров и возвращает рез-тат 
 	 * Функция аналогична _select(), только он принемает и передает данные непосредственно
@@ -451,8 +475,14 @@ abstract class kernel_extends {
 		else
 			$query .= '*';
 		$query .= ' FROM `' . $this->tablename . '` ';
-		if ($cls)
-			$query .= $cls;
+
+		if($cls = $this->queryEscape($cls)) {
+			//if (stripos($cls,'WHERE')!==false)
+				$query .= $cls;
+			//else
+			//	$query .= 'WHERE '.$cls;
+		}
+
 		if ($debug)
 			echo(' * '.htmlentities($query) . ' * <br>');
 		$result = $this->SQL->execSQL($query);
@@ -496,20 +526,15 @@ abstract class kernel_extends {
 	 */
 	public function _isset($where=NULL) {
 		if(!is_null($where)) {
-			if(is_array($where)) {
-				foreach($where as $k=>$r) {
-					if(isset($this->fields[$k]))
-						$where[$k] = '`'.$k.'`="'.$this->SqlEsc($r).'"';
-				}
-				$where = implode(' and ',$where);
-			} 
-			elseif(is_int($where))
-				$where = '`id`="'.(int)$where.'"';
-			/*else
-				$where = '';
-			if(!$where) return false;*/
+			
+			if($where = $this->queryEscape($where)) {
+				if (stripos($where,'WHERE')===false)
+					$where = 'WHERE '.$where;
+			}else
+				return false; // TODO : need error reporting
+
 			$this->id = null;
-			$res = $this->_query('id', ' WHERE '.$where, 'id');
+			$res = $this->_query('id', $where, 'id');
 			if(count($res)) {
 				$this->id = array_keys($res);
 				$this->id = array_combine($this->id, $this->id);
@@ -529,6 +554,7 @@ abstract class kernel_extends {
 	 * @return bool - true если успех
 	 */
 	public function _select($cls='') {
+		// TODO : избавиться от $cls либо заэкранировать
 		$data = array();
 		$data = $this->_select_fields($cls);
 		if (count($data)) {

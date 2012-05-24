@@ -260,8 +260,28 @@ class pg_class extends kernel_extends {
 	 * frontend display controller
 	 * @return bool
 	 */
+	function initHTML($templ) {
+		global $HTML;
+		if (!$HTML) {
+			// TODO : смена дизайна и получение инфы о странице в аяксе
+			/*if (isset($_GET['_design']))
+				$this->config['design'] = $_GET['_design'];
+			else*/
+			if ($this->pageinfo['design'])
+				$this->config['design'] = $this->pageinfo['design'];
+			elseif (!$this->config['design'])
+				$this->config['design'] = 'default';
+			$HTML = new html('_design/', $this->config['design'], $templ); //отправляет header и печатает страничку
+		}
+		return true;
+	}
+	
 	function display($templ = true) {
 		global $_tpl, $HTML;
+
+		$flag_content = $this->can_show();
+		$this->initHTML($templ);
+
 		foreach ($this->config['marker'] as $km => $rm)
 			$_tpl[$km] = '';
 		$_tpl['onload'] = '';
@@ -270,7 +290,6 @@ class pg_class extends kernel_extends {
 		$_tpl['keywords'] = $this->config['keywords'];
 		$_tpl['description'] = $this->config['description'];
 		$temp_tpl = $_tpl;
-		$flag_content = $this->can_show();
 
 		if(version_compare(phpversion(),'5.3.0','>'))
 			$temp = json_encode($this->pageParam, JSON_HEX_TAG);
@@ -282,14 +301,7 @@ class pg_class extends kernel_extends {
 		else
 			$temp2 = json_encode($temp2);
 
-		//PAGE****************
-		if (!$HTML) {
-			if ($this->pageinfo['design'])
-				$this->config['design'] = $this->pageinfo['design'];
-			elseif (!$this->config['design'])
-				$this->config['design'] = 'default';
-			$HTML = new html('_design/', $this->config['design'], $templ); //отправляет header и печатает страничку
-		}
+		
 		if ($flag_content == 1) {
 			$flag_content = $this->display_page($this->id,true);
 			$_tpl['title'] = $this->get_caption();
@@ -501,20 +513,22 @@ class pg_class extends kernel_extends {
 	}
 
 	public function display_inc($id, $design = 'default') {
-		/*global $HTML;
-		if (!$HTML) {
-			if (!$design)
-				$design = $this->config['design'];
-			require_once($this->_CFG['_PATH']['core'] . '/html.php');
-			$HTML = new html('_design/', $design, false); //отправляет header и печатает страничку
-		}*/
-		$Cdata = array();
+		$Cdata = $oId = array();
 		$cls = 'SELECT * FROM ' . $this->SQL_CFG['dbpref'] . 'pg_content WHERE active=1 and id IN ("' . $id . '")';
 		$resultPG = $this->SQL->execSQL($cls);
 		if (!$resultPG->err)
 			while ($rowPG = $resultPG->fetch()) {
 				$Cdata[$rowPG['id']] = $rowPG;
+				$oId[$rowPG['owner_id']] = $rowPG['owner_id'];
 			}
+		$data = $this->qs('*','WHERE id IN ('.implode(',',$oId).') LIMIT 1');
+		$this->pageinfo = $data[0];
+
+		$this->initHTML(false);
+
+		global $_tpl;
+		$_tpl = array();
+
 		return $this->getContent($Cdata);
 	}
 
@@ -576,15 +590,19 @@ class pg_class extends kernel_extends {
 							$_tpl['styles'][$r] = 1;
 				}
 			}
-			if (!isset($_tpl['keywords']))
-				$_tpl['keywords'] = $rowPG['keywords'];
-			elseif ($rowPG['keywords'])
-				$_tpl['keywords'] .= ', ' . $rowPG['keywords'];
+			if($rowPG['keywords']) {
+				if (!isset($_tpl['keywords']))
+					$_tpl['keywords'] = $rowPG['keywords'];
+				else
+					$_tpl['keywords'] .= ', ' . $rowPG['keywords'];
+			}
 
-			if (!isset($_tpl['description']))
-				$_tpl['description'] = $rowPG['description'];
-			elseif ($rowPG['description'])
-				$_tpl['description'] .= ' ' . $rowPG['description'];
+			if($rowPG['description']) {
+				if (!isset($_tpl['description']))
+					$_tpl['description'] = $rowPG['description'];
+				else
+					$_tpl['description'] .= ' ' . $rowPG['description'];
+			}
 
 			/* Статика */
 			if ($rowPG['pagetype'] == '') {

@@ -41,14 +41,18 @@
 				else
 					$r['cost'] = $r['cost'].' <span>руб.</span>';
 				$html .= '<div class="proddescr">'.$r['descr'].'</div><br/>
-					<div class="prodcost">'.$r['cost'].'</div> 
-					<div class="buybotton">
-						<a href="##zakaz" alt="Оформить заказ" onclick="return JSWin({\'href\':\''.$_CFG['_HREF']['siteAJAX'].'?_modul=shop&_fn=jsOrder&id='.$r['id'].'\'});">Купить</a>
-					</div>';
-				if(isset($data['#basket#'])) {
+					<div class="prodcost">'.$r['cost'].'</div>';
+
+				if(isset($data['#shopconfig#']['orderset'][0]))
 					$html .= '<div class="buybotton">
-						<a href="##zakaz" data-id="'.$r['id'].'" alt="Положить покупку в корзину">В корзину</a>
-						<input type="number" min="1" max="50" value="'.(isset($data['#basket#'][$r['id']])?$data['#basket#'][$r['id']]['cnt'].'" disabled="disabled':1).'"/>
+						<a href="##zakaz" alt="Оформить заказ" onclick="return JSWin({\'href\':\''.$_CFG['_HREF']['siteAJAX'].'?_modul=shop&_fn=jsOrder&id='.$r['id'].'\'});">Оформить заказ</a>
+					</div>';
+
+				if(isset($data['#basket#']) and isset($data['#shopconfig#']['orderset'][1])) {
+					$html .= '<div class="buybotton'.(isset($data['#basket#'][$r['id']])?' sel':'').'">
+						<a href="javascript::void();" data-id="'.$r['id'].'" alt="Убрать товар из корзины" class="dellink">Убрать из корзины</a>
+						<a href="javascript::void();" data-id="'.$r['id'].'" alt="Положить товар в корзину" class="addlink">В корзину</a>
+						<input type="number" min="1" max="50" value="'.(isset($data['#basket#'][$r['id']])?$data['#basket#'][$r['id']]['count'].'" disabled="disabled':1).'"/>
 					</div>';
 					$_tpl['script']['../'.$HTML->_design.'/_shop/script/shop'] = 1;
 				}
