@@ -292,14 +292,15 @@ class pg_class extends kernel_extends {
 		$temp_tpl = $_tpl;
 
 		if(version_compare(phpversion(),'5.3.0','>'))
-			$temp = json_encode($this->pageParam, JSON_HEX_TAG);
+			$pageParamEncode = json_encode($this->pageParam, JSON_HEX_TAG);
 		else
-			$temp = json_encode($this->pageParam);
-		$temp2 = $_GET;unset($temp2['pageParam']);
+			$pageParamEncode = json_encode($this->pageParam);
+
+		$getEncode = $_GET;unset($getEncode['pageParam']);
 		if(version_compare(phpversion(),'5.3.0','>')) 
-			$temp2 = json_encode($temp2, JSON_HEX_TAG);
+			$getEncode = json_encode($getEncode, JSON_HEX_TAG);
 		else
-			$temp2 = json_encode($temp2);
+			$getEncode = json_encode($getEncode);
 
 		
 		if ($flag_content == 1) {
@@ -334,8 +335,8 @@ class pg_class extends kernel_extends {
 
 		$_tpl['onload'] = 'if(typeof wep !== "undefined") {
 			wep.pgId = ' . $this->id . ';
-			wep.pgParam =' . $temp . ';
-			wep.pgGet =' . $temp2 . ';
+			wep.pgParam =' . $pageParamEncode . ';
+			wep.pgGet =' . $getEncode . ';
 			wep.siteJS = "' . $this->_CFG['_HREF']['siteJS'] . '";
 		}
 		' . $_tpl['onload'];
