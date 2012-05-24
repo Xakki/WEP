@@ -521,13 +521,15 @@ class pg_class extends kernel_extends {
 				$Cdata[$rowPG['id']] = $rowPG;
 				$oId[$rowPG['owner_id']] = $rowPG['owner_id'];
 			}
-		$data = $this->qs('*','WHERE id IN ('.implode(',',$oId).') LIMIT 1');
-		$this->pageinfo = $data[0];
+		if(!count($this->pageinfo)) {
+			$data = $this->qs('*','WHERE id IN ('.implode(',',$oId).') LIMIT 1');
+			$this->pageinfo = $data[0];
 
-		$this->initHTML(false);
+			$this->initHTML(false);
 
-		global $_tpl;
-		$_tpl = array();
+			global $_tpl;
+			$_tpl = array();
+		}
 
 		return $this->getContent($Cdata);
 	}
