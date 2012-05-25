@@ -8,16 +8,16 @@
 		';
 		$html = '
 		<table cellspacing="0" cellpadding="0" class="extuser-list"><tbody>
-		<tr><th>Группа</th><th>Фото</th><th>Имя</th><th>Email</th></tr>';
+		<tr><th>Группа<th>ID<th>Имя<th>Email</tr>';
 		if(isset($data['list']) and count($data['list'])) {
 			foreach($data['list'] as $k=>$r){
 				if(!$r['userpic'])
 					$r['userpic'] = $data['userpic'];
 				$html .= '<tr>
-					<td>'.$data['owner'][$r['owner_id']]['name'].'</td>
-					<td><img src="'.$r['userpic'].'" alt=""/> </td>
-					<td><a href="'.$data['href'].'/'.$r['id'].'.html">'.$r['name'].'</a></td>
-					<td>'.$r['email'].'</td>
+					<td>'.$data['owner'][$r['owner_id']]['name'].'
+					<td>'.$r['id'].'
+					<td><a href="'.$data['href'].'/'.$r['id'].'.html">'.$r['name'].'</a>
+					<td>'.$r['email'].'
 				</tr>';
 			}
 		}

@@ -1,6 +1,6 @@
 <?php
 /**
- * Начисление денег (списывается с вашего счета)
+ * Начисление денег на баланс
  * @ShowFlexForm true
  * @author Xakki
  * @version 0.1 
@@ -80,7 +80,7 @@
 		_new_class('pay', $PAY);
 
 		if($this->pageParam[0]=='cash') {
-			$this->pageinfo['path'][$Chref.'/cash'] = 'Заявка на пополнение наличными';
+			$this->pageinfo['path'][$Chref.'/cash'] = 'Заявка на пополнение банковским переводом';
 			_new_class('mail', $MAIL);
 			$res = '';
 			if(count($_POST) and $_POST['plus'] and $_POST['pay']) {
@@ -134,7 +134,7 @@
 	}
 	else {
 		$html = '<ul class="payselect">
-		<li class="pay-users"><a href="'.$Chref.'/cash.html" title="Наличными">Наличными</a></li>';
+		<li class="pay-users"><a href="'.$Chref.'/cash.html" title="Банковский перевод">Банковский перевод</a></li>';
 		_new_class('pay', $PAY);
 		if(count($PAY->childs)) {
 			if(isset($_GET['summ']) and $_GET['summ'])

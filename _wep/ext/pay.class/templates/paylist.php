@@ -13,13 +13,13 @@ function tpl_paylist($data)
 		//}
 		$html .= '<table class="pay_list">
 			<tr>
-				<td>#</td>
-				<td>Операция</td>
-				'.($data['#noUser#']?'':'<td>Плательщик / Получатель</td>').'
-				<td>Статус</td>
-				<td>Сумма<br/>'.$data['#curr#'].'</td>
-				<td>Дата</td>
-				<td>Баланс</td>
+				<td>#
+				<td>Операция
+				'.($data['#noUser#']?'':'<td>Плательщик / Получатель').'
+				<td>Статус
+				<td>Сумма<br/>'.$data['#curr#'].'
+				<td>Дата
+				<td>Баланс
 			</tr>';
 		$b  = 0;
 //print_r('<pre>');print_r($data);
@@ -49,13 +49,13 @@ function tpl_paylist($data)
 			}
 				
 			$html .= '<tr class="paylist'.$r['status'].'">
-				<td>'.$r['id'].'</td>
-				<td>'.$r['name'].'</td>
-				'.($data['#noUser#']?'':'<td>'.$fromuser.'</td>').'
-				<td>'.$r['#status#'].'</td>
-				<td class="'.($r['#sign#']?'plus':'minus').'">'.round($r['cost'],2).'</td>
-				<td>'.$r['mf_timestamp'].'</td>
-				<td>'.($r['status']==1?$b:'').'</td>
+				<td>'.$r['id'].'
+				<td>'.$r['name'].'
+				'.($data['#noUser#']?'':'<td>'.$fromuser).'
+				<td>'.$r['#status#'].'
+				<td class="'.($r['#sign#']?'plus':'minus').'">'.round($r['cost'],2).'
+				<td>'.$r['mf_timestamp'].'
+				<td>'.($r['status']==1?$b:'').'
 			</tr>';
 		}//long2ip($r['mf_ipcreate'])
 		$html .= '</table>
