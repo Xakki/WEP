@@ -73,6 +73,7 @@ class ugroup_class extends kernel_extends
 		$this->mf_treelevel = 1;
 		$this->caption = 'Группы';
 		$this->singleton = true;
+		$this->tablename = 'ugroup';
 		$this->ver = '0.2.2';
 		$this->default_access = '|0|';
 		return true;
@@ -252,6 +253,7 @@ class users_class extends kernel_extends {
 		$this->lang['Save and close'] = 'Готово';
 		$this->default_access = '|0|';
 		$this->userCach = array();
+		$this->tablename = 'users';
 		return true;
 	}
 
