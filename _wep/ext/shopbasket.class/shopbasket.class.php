@@ -88,7 +88,7 @@ class shopbasket_class extends kernel_extends {
 		$updData = array(
 			'id_product'=>(int)$_GET['id_product'],
 			'owner_id'=>0,
-			$this->mf_createrid=>static_main::userId(true)
+			$this->mf_createrid=>$this->userId(true)
 		);
 		$basketitemData = $BASKETITEM->qs('id',$updData);
 		if(count($basketitemData) and $BASKETITEM->id=$basketitemData[0]['id']) {
@@ -113,7 +113,7 @@ class shopbasket_class extends kernel_extends {
 				$addData = array(
 					'id_product'=>$PRODUCT->id,
 					'owner_id'=>0,
-					$this->mf_createrid=>static_main::userId(true)
+					$this->mf_createrid=>$this->userId(true)
 				);
 				$BASKETITEM = &$this->childs['shopbasketitem'];
 				$basketitemData = $BASKETITEM->qs('id',$addData);
@@ -150,7 +150,7 @@ class shopbasket_class extends kernel_extends {
 	*/
 	function fBasket() {
 		$RESULT = array('cnt'=>0, 'summ'=>0);
-		if(!$uId = static_main::userId()) return $RESULT;
+		if(!$uId = $this->userId()) return $RESULT;
 		_new_class('shop',$SHOP);
 		$data = $this->childs['shopbasketitem']->qs('sum(t1.count) as cnt,sum(t2.cost*t1.count) as `summ`' ,'t1 JOIN '.$SHOP->childs['product']->tablename.' t2 ON t1.id_product=t2.id WHERE t1.owner_id=0 and t1.'.$this->mf_createrid.'='.$uId);
 		$RESULT = $data[0];
@@ -163,7 +163,7 @@ class shopbasket_class extends kernel_extends {
 	*/
 	function fBasketList() {
 		$RESULT = array();
-		if(!$uId = static_main::userId()) return $RESULT;
+		if(!$uId = $this->userId()) return $RESULT;
 		_new_class('shop',$SHOP);
 		// TODO ошибка выборки картинок
 		$this->childs['shopbasketitem']->attaches = $SHOP->childs['product']->attaches;
@@ -175,9 +175,33 @@ class shopbasket_class extends kernel_extends {
 
 	function fBasketData() {
 		$RESULT = array();
-		if(!$uId = static_main::userId()) return $RESULT;
+		if(!$uId = $this->userId()) return $RESULT;
 		$RESULT = $this->childs['shopbasketitem']->qs('id,id_product,count','WHERE owner_id=0 and '.$this->mf_createrid.'='.$uId,'id_product');
 		return $RESULT;
+	}
+
+	function userId($force=false) {
+		$id = static_main::userId();
+		if(!$id) {
+			if(isset($_COOKIE['basketcid'])) {
+				$id = -(int)$_COOKIE['basketcid'];
+			}
+			elseif($force) {
+				$id = $this->generateId();
+				$data = $this->qs('id',array($this->mf_createrid=>-$id));
+				while(count($data)) {
+					$id = $this->generateId();
+					$data = $this->qs('id',array($this->mf_createrid=>-$id));
+				}
+				_setcookie('basketcid', $id, (time() + 999999999));
+				$id = -$id;
+			} 
+			
+		}
+		return $id;
+	}
+	function generateId() {
+		return rand(1,999999);
 	}
 }
 

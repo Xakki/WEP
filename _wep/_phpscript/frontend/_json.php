@@ -8,6 +8,7 @@
 		require_once($_CFG['_PATH']['wep_phpscript'].'/lib/jquery_getjson.php');
 
 	if(isset($_GET['_fn']) and $_GET['_fn']) {
+		require_once($_CFG['_PATH']['core'].'html.php');
 		session_go();
 		if(_new_class($_GET['_modul'],$MODUL) and isset($MODUL->_AllowAjaxFn[$_GET['_fn']])) {
 			eval('$GLOBALS[\'_RESULT\']=$MODUL->'.$_GET['_fn'].'();');

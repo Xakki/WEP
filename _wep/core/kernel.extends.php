@@ -535,7 +535,7 @@ abstract class kernel_extends {
 
 			$this->id = null;
 			$res = $this->_query('id', $where, 'id');
-			if(count($res)) {
+			if($res and count($res)) {
 				$this->id = array_keys($res);
 				$this->id = array_combine($this->id, $this->id);
 				return true;
@@ -2324,13 +2324,13 @@ abstract class kernel_extends {
 	 */
 	public function _sorting() {
 		$res = array('html' => '', 'eval' => '');
-		$this->id = (int) $_GET['id'];
+		$this->id = $id = (int) $_GET['id'];
 		$pid = (isset($_GET['pid']) ? (int) $_GET['pid'] : 0);
 		$t1 = (isset($_GET['t1']) ? (int) $_GET['t1'] : 0);
 		$t2 = (isset($_GET['t2']) ? (int) $_GET['t2'] : 0);
 		$data = $this->_select();
 
-		if (!$this->mf_ordctrl or !$this->_prmModulEdit($data[$this->id])) {//!static_main::_prmModul($this->_cl,array(10))
+		if (!$this->mf_ordctrl or !$this->_prmModulEdit($data[$id])) {//!static_main::_prmModul($this->_cl,array(10))
 			$res['html'] = static_main::m('Sorting denied!');
 			return $res;
 		}
@@ -2347,8 +2347,8 @@ abstract class kernel_extends {
 			$this->fields[$this->mf_ordctrl]['noquote'] = true;
 			if (!$this->_update(array($this->mf_ordctrl => '`' . $this->mf_ordctrl . '`+1'), $qr, false))
 				return $res;
-
-			if (!$this->_update(array($this->mf_ordctrl => $neword), '`id`=' . $this->id))
+			$this->id = $id;
+			if (!$this->_update(array($this->mf_ordctrl => $neword)))
 				return $res;
 		}else {
 			$qr = '';
@@ -2357,7 +2357,8 @@ abstract class kernel_extends {
 
 			$data = $this->qs('max(' . $this->mf_ordctrl . ') as mx', $qr);
 			$neword = $data[0]['mx'] + 1;
-			if (!$this->_update(array($this->mf_ordctrl => $neword), '`id`=' . $this->id))
+			$this->id = $id;
+			if (!$this->_update(array($this->mf_ordctrl => $neword)))
 				return $res;
 		}
 		$res['html'] = ''; //static_main::m('Sorting successful.')
