@@ -251,7 +251,7 @@ class product_class extends kernel_extends {
 	}
 
 
-	public function _update($data=array(),$where=false,$flag_select=true) {
+	public function _update($data=array(),$where=null,$flag_select=true) {
 		$cls=array();$ct= array();$tmp = array();
 		$PARAM = &$this->owner->childs['rubricparam'];
 

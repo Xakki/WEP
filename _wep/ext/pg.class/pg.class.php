@@ -1050,7 +1050,7 @@ class pg_class extends kernel_extends {
 		return $RESULT;
 	}
 //////////
-	/*public function _update($data=array(),$where=false,$flag_select=true) {
+	/*public function _update($data=array(),$where=null,$flag_select=true) {
 		if($ret = parent::_update($data,$where,$flag_select)) {
 		}
 		return $ret;

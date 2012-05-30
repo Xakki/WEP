@@ -132,7 +132,7 @@ Cчета со статусом большим или равным 100 трак�
 	/**
 	* При обновлении статуса
 	*/
-	/*function _update($data=array(),$where=false,$flag_select=true) {
+	/*function _update($data=array(),$where=null,$flag_select=true) {
 		$result = parent::_update($data,$where,$flag_select);
 		return $result;
 	}*/

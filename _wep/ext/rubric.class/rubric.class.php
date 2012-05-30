@@ -187,7 +187,7 @@ class rubric_class extends kernel_extends {
 		return $ret;
 	}
 
-	public function _update($data=array(), $where=false, $flag_select=true) {
+	public function _update($data=array(), $where=null, $flag_select=true) {
 
 		if(!isset($data['lname']) or !$data['lname'])
 			$data['lname'] = $this->transliteRuToLat($data['name']);

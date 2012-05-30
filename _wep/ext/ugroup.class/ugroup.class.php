@@ -365,7 +365,7 @@ class users_class extends kernel_extends {
 			
 	}
 
-	function _update($data=array(),$where=false,$flag_select=true) {
+	function _update($data=array(),$where=null,$flag_select=true) {
 		$id = $this->id;
 		$res = parent::_update($data,$where,$flag_select);
 		if($res) {
