@@ -1,6 +1,7 @@
 <?php
 	function tpl_productItem(&$data) {
 		$html = '';
+		//print_r('<pre>');print_r($data);
 		$html = '<div class="prodpage">';
 		if(!isset($data['#item#']) or !count($data['#item#'])) {
 			header("HTTP/1.0 404");
@@ -14,8 +15,8 @@
 
 			foreach($data['#item#'] as $r) {
 				$href = $data['#page#'].'/'.$r['rpath'].'/'.$r['path'].'_'.$r['id'].'.html';
+				//<a href="'.$href.'" class="prodname">'.$r['name'].'</a>
 				$html .= '<div class="proditem">
-					<a href="'.$href.'" class="prodname">'.$r['name'].'</a>
 					<div class="prodimg-block">';
 
 				if(isset($r['image']) and count($r['image']) and $r['image'][0][0]) {
@@ -36,12 +37,21 @@
 					$html .= '</ul>';
 				}
 
+				if($r['descr'])
+					$html .= '<div class="proddescr">'.$r['descr'].'</div>';
+
+				
 				if(!$r['cost'])
 					$r['cost'] = '&#160;';
 				else
-					$r['cost'] = $r['cost'].' <span>руб.</span>';
-				$html .= '<div class="proddescr">'.$r['descr'].'</div><br/>
-					<div class="prodcost">'.$r['cost'].'</div>';
+					$r['cost'] = round($r['cost'],2).' <span class="cur">руб.</span>';
+				
+				if(isset($r['sale'])) {
+					if($r['sale']['name'])
+						$html .= '<div class="prodsale">'.$r['sale']['name'].'</div>';
+					$html .= '<div class="prodcost"><span class="old">'.$r['old_cost'].'</span> '.$r['cost'].'</div>';
+				} else
+					$html .= '<div class="prodcost">'.$r['cost'].'</div>';
 
 				if(isset($data['#shopconfig#']['orderset'][0]))
 					$html .= '<div class="buybotton">

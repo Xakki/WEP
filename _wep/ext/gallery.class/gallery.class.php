@@ -24,7 +24,7 @@ class gallery_class extends kernel_extends {
 			2 => 'Спортивные новости'
 		);
                 
-		$this->config_form['category'] = array('type' => 'text', 'keytype'=>'int', 'multiple'=>1, 'caption' => 'Категории');
+		$this->config_form['category'] = array('type' => 'text', 'keytype'=>'int', 'multiple'=>3, 'caption' => 'Категории');
 	}*/
 
 	function _create() {

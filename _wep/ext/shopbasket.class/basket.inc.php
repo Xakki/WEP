@@ -24,8 +24,11 @@
 
 	if(!_new_class('shopbasket',$SHOPBASKET)) return false;
 	if(!_new_class('shop',$SHOP)) return false;
+	if(!_new_class('pay', $PAY)) return false;
 	$SHOP->basketEnabled = true;
 
 	$DATA = $SHOPBASKET->fBasket();
 	$DATA['#page#'] = $this->getHref($FUNCPARAM[1]);
+	$DATA['#curr#'] = $PAY->config['curr'];
+	
 	return $HTML->transformPHP($DATA,$FUNCPARAM[0]);

@@ -10,7 +10,7 @@
 
 			$html .= '<div id="basketBlock">';
 			if($data['cnt'])
-				$html .= '<a href="'.$data['#page#'].'.html">В корзине</a> '.$data['cnt'].' товаров на сумму '.$data['summ'];
+				$html .= '<a href="'.$data['#page#'].'.html">В корзине</a> товаров '.$data['cnt'].' шт. на сумму '.$data['summ'].' '.$data['#curr#'];
 			else
 				$html .= 'Корзина пуста';
 			$html .= '</div>';

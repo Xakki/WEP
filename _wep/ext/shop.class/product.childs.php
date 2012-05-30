@@ -121,7 +121,6 @@ class product_class extends kernel_extends {
 		$this->fields['descr'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['text'] = array('type' => 'text', 'attr' => 'NOT NULL');
 		$this->fields['cost'] = array('type' => 'float', 'width' => '8,2', 'attr' => 'NOT NULL', 'default'=>'0.00', 'min' => '1');
-		$this->fields['cost2'] = array('type' => 'float', 'width' => '8,2', 'attr' => 'NOT NULL', 'default'=>'0.00');
 		$this->fields['statview'] = array('type' => 'int', 'width' => 9, 'attr' => 'NOT NULL','default'=>0);
 		$this->fields['path'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL','default'=>'');
 		$this->fields['available'] = array('type' => 'tinyint', 'width' => 1,'attr' => 'NOT NULL','default'=>0);
@@ -161,7 +160,6 @@ class product_class extends kernel_extends {
 				'toolbarStartupExpanded'=>'false',
 				'extraPlugins'=>"'cntlen'",));
 		$this->fields_form['cost'] = array('type' => 'int', 'caption' => 'Цена (руб.)', 'mask'=>array('max'=>8,'maxint'=>20000000));
-		$this->fields_form['cost2'] = array('type' => 'int', 'caption' => 'Старая цена (руб.)', 'mask'=>array('max'=>8,'maxint'=>20000000));
 		$this->fields_form['img_product'] = array('type'=>'file','caption'=>'Фотография №1','del'=>1, 'mask'=>array('fview'=>1,'width'=>80,'height'=>100), 'comment'=>static_main::m('_file_size').$this->attaches['img_product']['maxsize'].'Kb');
 		if($this->config['imageCnt']>0) {
 			$fcnt = $this->config['imageCnt'];
@@ -715,7 +713,7 @@ class product_class extends kernel_extends {
 				$moder = 1;
 			else
 				$moder = 0;
-			foreach($this->data as $k=>$r) {
+			foreach($this->data as $r) {
 				$rname=array();
 				$temp=$r['shop'];
 				while(isset($this->owner->data2[$temp]) and $rid!=$temp) {
@@ -732,7 +730,7 @@ class product_class extends kernel_extends {
 						if($r[$tk]!='' and $file=$this->_get_file($r['id'],$tk,$r[$tk]))
 							$tempData['image'][] = array($file, $this->_get_file($r['id'],$tk,$r[$tk],1));
 
-				$xml['#item#'][] = $tempData;
+				$xml['#item#'][$tempData['id']] = $tempData;
 			}
 
 			if(isset($_COOKIE['checkloadfoto']) and $_COOKIE['checkloadfoto']=='0')

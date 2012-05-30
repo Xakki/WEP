@@ -16,17 +16,19 @@
 	function tpl_shopMenuImg_rev(&$data,$pref='',$pgid=0) {
 		$html = '<ul>';
 		foreach($data as $k=>$r) {
-			$html .= '<li>';
+			if(isset($r['#item#']) and count($r['#item#'])) {
+				$html .= '<li class="sub">';
+				//$pref .= ' - ';
+				$sub = tpl_shopMenuImg_rev($r['#item#'],$pref,$pgid);
+			}
+			else {
+				$html .= '<li>';
+				$sub = '';
+			}
 			if($r['img']) {
 				$html .= '<img src="'.$r['img'].'" alt="'.$r['name'].'"/>';
 			}
-			$html .= '<a href="/'.$pgid.'/'.$r['path'].'.html" class="'.($r['#sel#']?'selected':'').'">';
-			$html .= $r['name'].'</a>';
-			if(isset($r['#item#']) and count($r['#item#'])) {
-				//$pref .= ' - ';
-				$html .= tpl_shopMenuImg_rev($r['#item#'],$pref,$pgid);
-			}
-			$html .= '</li>';
+			$html .= '<a href="/'.$pgid.'/'.$r['path'].'.html" class="'.($r['#sel#']?'selected':'').'">'.$r['name'].'</a>'.$sub.'</li>';
 		}
 		$html .= '</ul>';
 		return $html;

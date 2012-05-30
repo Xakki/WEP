@@ -17,14 +17,16 @@
 	function tpl_shop_rev(&$data,$pref='',$pgid=0) {
 		$html = '<ul>';
 		foreach($data as $k=>$r) {
-			$html .= '<li>';
-			$html .= '<a href="/'.$pgid.'/'.$r['path'].'.html" class="'.($r['#sel#']?'selected':'').'">';
-			$html .= $r['name'].'</a>';
 			if(isset($r['#item#']) and count($r['#item#'])) {
+				$html .= '<li class="sub">';
 				//$pref .= ' - ';
-				$html .= tpl_shop_rev($r['#item#'],$pref,$pgid);
+				$sub = tpl_shop_rev($r['#item#'],$pref,$pgid);
 			}
-			$html .= '</li>';
+			else {
+				$html .= '<li>';
+				$sub = '';
+			}
+			$html .= '<a href="/'.$pgid.'/'.$r['path'].'.html" class="'.($r['#sel#']?'selected':'').'">'.$r['name'].'</a>'.$sub.'</li>';
 		}
 		$html .= '</ul>';
 		return $html;

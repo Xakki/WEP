@@ -72,6 +72,9 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 		if($SHOP->basketEnabled)
 			$DATA['#basket#'] = $SHOP->fBasketData();
 		$DATA['#prodItem#'] = &$PRODUCT->config['prodItem'];
+		if(count($DATA['#item#']) and _new_class('shopsale',$SHOPSALE)) {
+			$SHOPSALE->getData($DATA['#item#']);
+		}
 		$html .= $HTML->transformPHP($DATA,$FUNCPARAM[8]);
 		if(isset($PRODUCT->data[$PRODUCT->id]) and count($PRODUCT->data[$PRODUCT->id])) {
 			array_pop($PGLIST->pageinfo['path']);
@@ -161,8 +164,14 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 				//$ppath = parse_url($_SERVER['REQUEST_URI']);//'.$ppath['path'].'
 				$DATA['req'] = $req;
 				$DATA['#page#'] = $Chref;
+
 				if($SHOP->basketEnabled)
 					$DATA['#basket#'] = $SHOP->fBasketData();
+
+				if(count($DATA['#item#']) and _new_class('shopsale',$SHOPSALE)) {
+					$SHOPSALE->getData($DATA['#item#'], $rid);
+				}
+
 				if($subCatHtml or isset($DATA['#item#']) or isset($DATA['#filter#']))
 					$html .= $searchHtml;
 				//$DATA['#fields#'] = &$PRODUCT->fields;

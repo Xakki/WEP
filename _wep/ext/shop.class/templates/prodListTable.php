@@ -21,8 +21,10 @@
 				}
 				$html .= '<table cellpadding="0" cellspacing="0"><tr>';
 				if(isset($data['#prodListTable#'])) {
-					foreach($data['#prodListTable#'] as $cf_r)
+					foreach($data['#prodListTable#'] as $cf_k=>$cf_r) {
 						$html .= '<th>'.$cf_r;
+						if($cf_k=='cost') $html .= ' <span>(руб.)</span>';
+					}
 				}
 				$html .= '</tr>';
 				foreach($data['#item#'] as $r) {
@@ -36,12 +38,16 @@
 					$html .= '<tr data-id="'.$r['id'].'" class="'.(isset($data['#basket#'][$r['id']])?'sel':'').'">';
 					if(isset($data['#prodListTable#'])) {
 						foreach($data['#prodListTable#'] as $cf_k=>$cf_r) {
-							if($cf_k=='cost')
-								$html .= '<td>'.($r['cost']?$r['cost'].' <span>руб.</span>':'&#160;');
+							if($cf_k=='cost') {
+								$html .= '<td>'.($r['cost']?round($r['cost'],2):'&#160;');
+							} 
 							elseif(strpos($cf_k,'img_product')!==false)
 								$html .= '<td><img src="/'.$img.'" alt="'.$r['name'].'"/>';
-							elseif($cf_k=='name')
+							elseif($cf_k=='name') {
 								$html .= '<td><a href="'.$href.'" title="'.$r['name'].'">'.$r['name'].'</a>';
+								if(isset($r['sale']))
+									$html .= '<span class="prodlable sale" title="'.$r['sale']['name'].'">&#160;</span>';
+							}
 							else
 								$html .= '<td>'.$r[$cf_k];
 						}

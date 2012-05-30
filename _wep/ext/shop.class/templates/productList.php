@@ -36,7 +36,7 @@
 					if(!$r['cost'])
 						$r['cost'] = '&#160;';
 					else
-						$r['cost'] = $r['cost'].' <span>руб.</span>';
+						$r['cost'] = round($r['cost'],2).' <span class="cur">руб.</span>';
 					$html .= '<a href="'.$href.'" title="заказать доставку" class="prodcost">'.$r['cost'].'</a>';
 					$html .= '</div>';
 				}

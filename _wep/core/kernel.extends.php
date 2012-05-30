@@ -581,7 +581,24 @@ abstract class kernel_extends {
 		$result = $this->SQL->execSQL($sql_query);
 		if($result->err)
 			return $data;
+
+		/*if(1) {
+			$listAr = array();
+			foreach($this->fields_form as $k=>$r) {
+				if($r['type']=='list') {
+					$this->_getCashedList($r['listname']);
+					$templistname = $r['listname'];
+					if (is_array($r['listname']))
+						$templistname = implode(',', $r['listname']);
+					$listAr[$k] = $templistname;
+				}
+			}
+		}*/
+
 		while ($row = $result->fetch()) {
+			/*foreach($listAr as $k=>$r) {
+				$row['#'.$k.'#'] = $this->_CFG['enum'][$r][$row[$k]];
+			}*/
 			$data[$row['id']] = $row;
 		}
 		if (isset($this->id) and $this->id) {
@@ -733,7 +750,7 @@ abstract class kernel_extends {
 		}
 
 		// Если задан $where - получаем список IDшников
-		if($where) {
+		if(!is_null($where)) {
 			if(!$this->_isset($where)) return false; // в $this->id вносит выбранные ID
 		}
 

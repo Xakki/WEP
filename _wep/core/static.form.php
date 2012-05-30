@@ -555,13 +555,16 @@ class static_form {
 							if(count($data[$key])>$form['mask']['maxarr'])
 								$error[] = 26;
 						}
+
 						if(isset($form['mask']['minarr'])){
 							if(count($data[$key])<$form['mask']['minarr'])
 								$error[] = 27;
 						}
+
 						if($form['multiple']<=2) {
 							$data[$key] = array_combine($data[$key],$data[$key]);
 						}
+
 						foreach($data[$key] as $tk=>$tv) {
 							self::check_formfield($_this,$form,$error,$data[$key],$tk);
 						}

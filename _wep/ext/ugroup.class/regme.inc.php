@@ -43,7 +43,7 @@
 		$param = array();
 		if((int)$FUNCPARAM[1])
 			$param['owner_id'] = (int)$FUNCPARAM[1]; 
-		list($DATA[$FUNCPARAM[0]],$flag) = $UGROUP->regForm();
+		list($DATA[$FUNCPARAM[0]],$flag) = $UGROUP->regForm();print_r('<pre>');print_r($DATA);
 		$html = $HTML->transformPHP($DATA,$FUNCPARAM[0]);
 	}
 	return $html;

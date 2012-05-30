@@ -725,7 +725,11 @@ function _new_class($name, &$MODUL, $OWNER=NULL, $_forceLoad = false) {
 		$class_name = $name . "_class";
 
 		if(!class_exists($class_name,false)) {
-			if((isset($_CFG['modulprm'][$name]) or $_forceLoad) and $file = _modulExists($class_name, $OWNER)) {
+
+			if(isset($_CFG['modulprm'][$name]) and $_CFG['modulprm'][$name]['active'])
+				$_forceLoad = true;
+
+			if($_forceLoad and $file = _modulExists($class_name, $OWNER)) {
 				require_once($file);
 			}
 		}
@@ -749,12 +753,16 @@ function _new_class($name, &$MODUL, $OWNER=NULL, $_forceLoad = false) {
 			if ($MODUL and is_object($MODUL))
 				return true;
 		}
+		elseif (!$_CFG['modulprm'][$name]['active']) 
+			return false;
 		elseif (isset($_CFG['modulprm'][$name]) and $_CFG['modulprm'][$name]['pid']) {
+
 			$moduls = array($name);
 			while ($_CFG['modulprm'][$name]['pid'])
 			{
 				$moduls[] = $_CFG['modulprm'][$name]['pid'];
 				$name = $_CFG['modulprm'][$name]['pid'];
+				if(!$_CFG['modulprm'][$name]['active']) return false;
 			}
 
 			$cnt = count($moduls);

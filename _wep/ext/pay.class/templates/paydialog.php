@@ -10,7 +10,12 @@ function tpl_paydialog($data) {
 		$html .= '<div class="'.$t.'">'.$data['mess'].'</div>
 		<div class="form">';
 		$d = abs($data['balance']-$data['summ']);
-		if($data['#pagemoney#']) $html .= '<input type="submit" value="Пополнить счёт на '.$d.' '.$data['m'].'" onclick="location.href=\''.$data['#pagemoney#'].'?summ='.$d.'\';return false;" class=""/>';
+		$max = 2000;
+		if($d<=$max)
+			$html .= '<input type="submit" value="Оплата наличными '.$d.' '.$data['m'].'" title="При получении заказа, максимум '.$max.' '.$data['m'].'" onclick="return false;" class=""/>';
+
+		if($data['#pagemoney#']) 
+			$html .= '<input type="submit" value="Пополнить счёт на '.$d.' '.$data['m'].'" onclick="location.href=\''.$data['#pagemoney#'].'?summ='.$d.'\';return false;" class=""/>';
 		$html .= '<input type="submit" value="Вернуться" onclick="location.href=\''.$_SERVER['HTTP_REFERER'].'\';return false;" class="cancel"/>
 		</div>
 		';

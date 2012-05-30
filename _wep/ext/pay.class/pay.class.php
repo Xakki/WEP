@@ -96,7 +96,6 @@ class pay_class extends kernel_extends {
 				list($data,$resFlag) = $CHILD->billingFrom($summ,$comm,$addInfo);
 				if($resFlag==1) {
 					$from_user = $this->checkPayUsers($_POST['paymethod']); // User плат. системы
-					// тк это функция сразу оплачивает услуги, то сумму переводим сразу АДМИНУ и списываем со счета плат.системы
 					if($this->payAdd($from_user,1,$summ, $key, $comm,0,$_POST['paymethod'],$eval)) {
 						$this->childs[$_POST['paymethod']]->_update(array('owner_id'=>$this->id));
 						$data['#title#'] = 'Счёт выставлен успешно!';

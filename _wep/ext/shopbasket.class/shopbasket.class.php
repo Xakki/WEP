@@ -27,13 +27,23 @@ class shopbasket_class extends kernel_extends {
 		$this->mf_timeup = true; // создать поле хранящее время обновления записи
 		$this->mf_ipcreate = true;//IP адрес пользователя с котрого была добавлена запись
 
-		$this->_enum['paytype']=array(
-			0=>'Онлайн оплата',
-			1=>'Наличными (при получении)',
-			2=>'наложенным платежеом (по почте)',
-			3=>'Безналичный (банковский перевод)'
-		);
+		$this->prm_add = false; // добавить в модуле
+		$this->prm_del = false; // удалять в модуле
+		$this->prm_edit = true; // редактировать в модуле
 
+		$this->allowedPay = array();
+
+		$this->_enum['status'] =array(
+			0=>'Заказ ожидает оплаты',
+			1=>'Заказ ожидает подтверждения менеджером',
+			2=>'Заказ забронирован',
+			3=>'Оплачено',
+			4=>'Отправлено',
+			5=>'Доставлено',
+			6=>'Отменено пользователем',
+			7=>'Отменено магазином',
+			8=>'',
+		);
 
 		return true;
 	}
@@ -41,8 +51,11 @@ class shopbasket_class extends kernel_extends {
 	protected function _create() {
 		parent::_create();
 
-		$this->fields['cost'] = array('type' => 'float', 'width' => '8,2', 'attr' => 'NOT NULL', 'default'=>'0.00', 'min' => '1');
-		$this->fields['paytype'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL', 'min' => '1');
+		$this->fields['fio'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'min' => 6);
+		$this->fields['adress'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'default' => '');
+		$this->fields['phone'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'min' => 6);
+		$this->fields['summ'] = array('type' => 'float', 'width' => '8,2', 'attr' => 'NOT NULL', 'default'=>'0.00', 'min' => '1');
+		$this->fields['paytype'] = array('type' => 'varchar', 'width' => 16, 'attr' => 'NOT NULL', 'min' => '1');
 		$this->fields['delivertype'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL', 'min' => '1');
 		$this->fields['laststatus'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL', 'default'=>0);
 
@@ -53,13 +66,15 @@ class shopbasket_class extends kernel_extends {
 	public function setFieldsForm($form=0) {
 		parent::setFieldsForm($form);
 
-		$this->fields_form['cost'] = array('type' => 'int', 'caption' => 'Сумма', 'mask'=>array());
-		$this->fields_form['paytype'] = array('type' => 'int', 'listname'=>'paytype', 'caption' => 'Тип платежа', 'readonly'=>1, 'mask' =>array());
-		$this->fields_form['delivertype'] = array('type' => 'list', 'class'=>array('class'=>'shopdeliver'), 'caption' => 'Тип доставки', 'readonly'=>1, 'mask' =>array());
-		$this->fields_form['laststatus'] = array('type' => 'list', 'listname'=>array('class'=>'shopbasketstatus'), 'caption' => 'Статус', 'readonly'=>1, 'mask' =>array());
-
+		$this->fields_form['fio'] = array('type' => 'text', 'caption' => 'Ваша фамилия и имя', 'mask'=>array('min'=>6));
+		$this->fields_form['adress'] = array('type' => 'text', 'caption' => 'Адрес доставки', 'mask'=>array('min'=>6));
+		$this->fields_form['phone'] = array('type' => 'phone', 'caption' => 'Телефон для связи и оповещения', 'mask'=>array('name'=>'phone3', 'min'=>6));
+		$this->fields_form['summ'] = array('type' => 'int', 'caption' => 'Сумма', 'mask'=>array());
+		$this->fields_form['delivertype'] = array('type' => 'list', 'listname'=>'delivertype', 'caption' => 'Тип доставки', 'mask' =>array());
+		$this->fields_form['paytype'] = array('type' => 'list', 'listname' => 'paytype', 'caption' => 'Тип платежа', 'mask' =>array());
+		$this->fields_form['laststatus'] = array('type' => 'list', 'listname'=>'status', 'caption' => 'Статус', 'readonly'=>1, 'mask' =>array());
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Отображать','default'=>1, 'readonly'=>1, 'mask' =>array());
-		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата заказа', 'mask'=>array('fview'=>2));
+		$this->fields_form['mf_timecr'] = array('type' => 'date', 'readonly'=>1, 'caption' => 'Дата заказа', 'mask'=>array('fview'=>2));
 		$this->fields_form['mf_ipcreate'] = array('type' => 'text', 'caption' => 'IP','readonly'=>1, 'css'=>'boardparam formparam', 'mask'=>array('usercheck'=>1));
 		$this->fields_form[$this->mf_createrid] = array(
 			'type' => 'ajaxlist', 
@@ -71,6 +86,27 @@ class shopbasket_class extends kernel_extends {
 
 	}
 
+	function _getlist(&$listname, $value = 0) {
+		$data = array();
+		if ($listname == 'paytype') {
+			_new_class('pay',$PAY);
+			foreach($PAY->childs as &$child) {
+				if (isset($child->pay_systems) and (!count($this->allowedPay) or in_array($child->_cl,$this->allowedPay))) {
+					$data[$child->_cl] = $child->caption;
+				}
+			}
+			return $data;
+		} 
+		elseif ($listname == 'delivertype') {
+			_new_class('shopdeliver',$MODUL);
+			$data = $MODUL->qs('id,name,paylist','WHERE active=1','id');
+			if($value) {
+				$this->allowedPay = explode('|',trim($data[$value]['paylist'],'|'));
+			}
+			return $data;
+		} else
+			return parent::_getlist($listname, $value);
+	}
 
 	function _childs() {
 		parent::_childs();
@@ -78,11 +114,16 @@ class shopbasket_class extends kernel_extends {
 		$this->create_child('shopbasketstatus');
 	}
 
+
 	/*function allChangeData($type = '', $data = '') {
 		unlink($this->YML_FILE);
 		return parent::allChangeData($type, $data);
 	}*/
 	function jsCheckedBasket() {
+		if($this->_CFG['robot']) {
+			return array('html'=>'Ботам ни к чему сюда лезть!');
+		}
+
 		$res = array('html'=>'');
 		$BASKETITEM = &$this->childs['shopbasketitem'];
 		$updData = array(
@@ -102,7 +143,12 @@ class shopbasket_class extends kernel_extends {
 		$mess = array('error','Ошибка данных!');
 		$res = array('html'=>'');
 
+		if($this->_CFG['robot']) {
+			return array('html'=>'Ботам ни к чему сюда лезть!');
+		}
+
 		if(!_new_class('shop',$SHOP)) return array('html'=>'Error: Need modul SHOP');
+
 		$PRODUCT = &$SHOP->childs['product'];
 		$PRODUCT->id = (int)$_GET['id_product'];
 		$count = (int)$_GET['count'];
@@ -150,25 +196,52 @@ class shopbasket_class extends kernel_extends {
 	*/
 	function fBasket() {
 		$RESULT = array('cnt'=>0, 'summ'=>0);
+
 		if(!$uId = $this->userId()) return $RESULT;
+
 		_new_class('shop',$SHOP);
-		$data = $this->childs['shopbasketitem']->qs('sum(t1.count) as cnt,sum(t2.cost*t1.count) as `summ`' ,'t1 JOIN '.$SHOP->childs['product']->tablename.' t2 ON t1.id_product=t2.id WHERE t1.owner_id=0 and t1.'.$this->mf_createrid.'='.$uId);
-		$RESULT = $data[0];
+
+		$DATA = $this->childs['shopbasketitem']->qs('t1.count, t2.id, t2.cost, t2.shop' ,'t1 JOIN '.$SHOP->childs['product']->tablename.' t2 ON t1.id_product=t2.id WHERE t1.owner_id=0 and t1.'.$this->mf_createrid.'='.$uId.' GROUP BY t1.id', 'id');
+
+		if(count($DATA) and _new_class('shopsale',$SHOPSALE)) {
+			$SHOPSALE->getData($DATA);
+		}
+		foreach($DATA as $r) {
+			$RESULT['cnt'] += $r['count'];
+			$RESULT['summ'] += $r['count']*$r['cost'];
+		}
 		return $RESULT;
 	}
 
-	/** Список товаров положенных в корзину
+	/** Список заказов
 	*
 	*
 	*/
 	function fBasketList() {
 		$RESULT = array();
 		if(!$uId = $this->userId()) return $RESULT;
+		$RESULT['#list#'] = $this->_select($this->mf_createrid.'='.$uId);
+		return $RESULT;
+	}
+
+
+	/** Список товаров положенных в корзину
+	*
+	*
+	*/
+	function fBasketListItem() {
+		$RESULT = array();
+		if(!$uId = $this->userId()) return $RESULT;
+
 		_new_class('shop',$SHOP);
-		// TODO ошибка выборки картинок
-		$this->childs['shopbasketitem']->attaches = $SHOP->childs['product']->attaches;
-		$RESULT['#list#'] = $this->childs['shopbasketitem']->qs('t1.*, t2.id, t2.cost, t2.name, t2.img_product, sum(t2.cost*t1.count) as `summ`' ,'t1 LEFT JOIN '.$SHOP->childs['product']->tablename.' t2 ON t1.id_product=t2.id WHERE t1.owner_id=0 and t1.'.$this->mf_createrid.'='.$uId.' GROUP BY t1.id');
+
+		$this->childs['shopbasketitem']->attaches = $SHOP->childs['product']->attaches; // кастыль для загрузки изобр
+		$RESULT['#list#'] = $this->childs['shopbasketitem']->qs('t1.*, t2.id, t2.cost, t2.shop, t2.name, t2.img_product' ,'t1 JOIN '.$SHOP->childs['product']->tablename.' t2 ON t1.id_product=t2.id WHERE t1.owner_id=0 and t1.'.$this->mf_createrid.'='.$uId.' GROUP BY t1.id', 'id');
 		$this->childs['shopbasketitem']->attaches = array();
+
+		if(count($RESULT['#list#']) and _new_class('shopsale',$SHOPSALE)) {
+			$SHOPSALE->getData($RESULT['#list#']);
+		}
 
 		return $RESULT;
 	}
@@ -180,28 +253,94 @@ class shopbasket_class extends kernel_extends {
 		return $RESULT;
 	}
 
+	/**
+	* получаем id пользователя или генерим  для гостя чтоб мог ложить товары в корзину
+	*/
 	function userId($force=false) {
+		if($this->_CFG['robot']) {
+			return 0;
+		}
+
 		$id = static_main::userId();
 		if(!$id) {
-			if(isset($_COOKIE['basketcid'])) {
+			if(isset($_COOKIE['basketcid']) and $_COOKIE['basketcid']) {
 				$id = -(int)$_COOKIE['basketcid'];
 			}
 			elseif($force) {
 				$id = $this->generateId();
-				$data = $this->qs('id',array($this->mf_createrid=>-$id));
+				$data = $this->childs['shopbasketitem']->qs('id',array($this->mf_createrid=>-$id));
 				while(count($data)) {
 					$id = $this->generateId();
-					$data = $this->qs('id',array($this->mf_createrid=>-$id));
+					$data = $this->childs['shopbasketitem']->qs('id',array($this->mf_createrid=>-$id));
 				}
 				_setcookie('basketcid', $id, (time() + 999999999));
 				$id = -$id;
 			} 
 			
 		}
+		elseif(isset($_COOKIE['basketcid']) and $_COOKIE['basketcid']) {
+			$this->childs['shopbasketitem']->_update(array($this->mf_createrid=>$id),array($this->mf_createrid=>-(int)$_COOKIE['basketcid']));
+			_setcookie('basketcid', 0);
+			$res = $this->childs['shopbasketitem']->qs('id','WHERE '.$this->mf_createrid.'='.$id.' GROUP BY id_product HAVING count(id)>1','id');
+			if(count($res)) {
+				$this->childs['shopbasketitem']->id = array_keys($res);
+				$this->childs['shopbasketitem']->_delete();
+			}
+		}
 		return $id;
 	}
+
 	function generateId() {
 		return rand(1,999999);
+	}
+
+	/**
+	* Сумма текущего заказа
+	*/
+	function getSummOrder($deliveryData=null) {
+		if(!$uId = $this->userId()) return 0;
+		_new_class('shop',$SHOP);
+		$RESULT = array();
+		$RESULT['#list#'] = $this->childs['shopbasketitem']->qs('t1.*, t1.id as bid, t2.id, t2.cost, t2.shop' ,'t1 JOIN '.$SHOP->childs['product']->tablename.' t2 ON t1.id_product=t2.id WHERE t1.owner_id=0 and t1.checked=1 and t1.'.$this->mf_createrid.'='.$uId.' GROUP BY t1.id');
+
+		if(is_null($deliveryData)) {
+			return (count($RESULT['#list#'])?true:false);
+		}
+
+		if(count($RESULT['#list#']) and _new_class('shopsale',$SHOPSALE)) {
+			$SHOPSALE->getData($RESULT['#list#']);
+		}
+		$summ = 0;
+		$this->orderItem = array();
+		foreach($RESULT['#list#'] as $r) {
+			$summ += $r['cost']*$r['count'];
+			if(isset($r['sale']))
+				$this->orderItem[$r['bid']] = array('cost_item'=>$r['old_cost'], 'shopsale_id'=>$r['sale']['id']);
+			else
+				$this->orderItem[$r['bid']] = array('cost_item'=>$r['cost'], 'shopsale_id'=>0);
+		}
+		if(!$deliveryData['minsumm'] or $deliveryData['minsumm']>=$summ)
+			$summ += $deliveryData['cost'];
+		return $summ;
+	}
+
+
+	public function _add($data=array(),$flag_select=true) {
+		if($result = parent::_add($data,$flag_select)) {
+			foreach($this->orderItem as $k=>$r) {
+				$this->childs['shopbasketitem']->id = $k;
+				$r['owner_id'] = $this->id;
+				$result = $this->childs['shopbasketitem']->_update($r);
+			}
+			// Добавить статус
+			$this->childs['shopbasketstatus']->_add(array('status'=>0));
+		}
+		return $result;
+	}
+
+	function payStatus($id,$status) {
+		$this->id = $id;
+		$this->childs['shopbasketstatus']->_add(array('status'=>$status));
 	}
 }
 
@@ -229,8 +368,8 @@ class shopbasketitem_class extends kernel_extends {
 
 		$this->fields['id_product'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'min'=>1);
 		$this->fields['count'] = array('type' => 'tinyint', 'width' => 3, 'attr' => 'NOT NULL', 'default'=>1, 'min'=>1);
-		//$this->fields['cost_item'] = array('type' => 'float', 'width' => '8,2', 'attr' => 'NOT NULL', 'default'=>'0.00', 'min' => '1');
-		//$this->fields['cost_full'] = array('type' => 'float', 'width' => '8,2', 'attr' => 'NOT NULL', 'default'=>'0.00', 'min' => '1');
+		$this->fields['cost_item'] = array('type' => 'float', 'width' => '8,2', 'attr' => 'NOT NULL', 'default' => '0.00');
+		$this->fields['shopsale_id'] = array('type' => 'int', 'width' => '11', 'attr' => 'NOT NULL', 'default' => 0);
 		$this->fields['checked'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default'=>1);
 
 		//$this->ordfield = 'name DESC';
@@ -246,8 +385,8 @@ class shopbasketitem_class extends kernel_extends {
 			'caption' => 'Товар', 'readonly' => 1,
 			'mask' =>array('min'=>1));
 		$this->fields_form['count'] = array('type' => 'int', 'caption' => 'Кол-во');
-		//$this->fields_form['cost_item'] = array('type' => 'text', 'caption' => 'Цена', 'readonly' => 1);
-		//$this->fields_form['cost_full'] = array('type' => 'text', 'caption' => 'Итого', 'readonly' => 1);
+		//$this->fields_form['cost_item'] = array('type' => 'text', 'caption' => 'Цена товара на момент заказа', 'comment'=>'без учета скидки', 'readonly' => 1);
+		//$this->fields_form['shopsale_id'] = array('type' => 'list', 'listname'=>array('class'=>'shopsale',), 'caption' => 'Скидка', 'readonly' => 1);
 		$this->fields_form['checked'] = array('type' => 'checkbox', 'caption' => 'Отмечено', 'default'=>1);
 
 	}
@@ -263,17 +402,7 @@ class shopbasketstatus_class extends kernel_extends {
 		$this->mf_timecr = true; // создать поле хранящее время создания поля
 		$this->mf_ipcreate = true;//IP адрес пользователя с котрого была добавлена запись
 
-		$this->_enum['status']=array(
-			0=>'Заказ ожидает оплаты',
-			0=>'Заказ ожидает подтверждения менеджером',
-			0=>'Заказ забронирован',
-			1=>'Оплачено',
-			2=>'Отправлено',
-			2=>'Доставлено',
-			3=>'Отменено пользователем',
-			4=>'Отменено магазином',
-			5=>'',
-		);
+		$this->_enum['status'] = $this->owner->_enum['status'];
 
 		return true;
 	}
@@ -281,14 +410,14 @@ class shopbasketstatus_class extends kernel_extends {
 	protected function _create() {
 		parent::_create();
 		$this->fields['status'] = array('type' => 'tinyint', 'width' => 1, 'default'=>0);
-		$this->fields['comment'] = array('type' => 'varchar', 'width' => 255);
+		//$this->fields['comment'] = array('type' => 'varchar', 'width' => 255);
 	}
 
 	public function setFieldsForm($form=0) {
 		parent::setFieldsForm($form);
 
 		$this->fields_form['status'] = array('type' => 'int', 'listname'=>'status', 'caption' => 'Статус', 'default'=>1);
-		$this->fields_form['comment'] = array('type' => 'text', 'caption' => 'Комментарий');
+		//$this->fields_form['comment'] = array('type' => 'text', 'caption' => 'Комментарий');
 
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Отображать','default'=>1, 'mask' =>array());
 		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата заказа', 'mask'=>array('fview'=>2,'sort'=>1,'filter'=>1));
@@ -301,4 +430,13 @@ class shopbasketstatus_class extends kernel_extends {
 			'mask' =>array('usercheck'=>1, 'filter'=>1)
 		);*/
 	}
+
+
+	public function _add($data=array(),$flag_select=true) {
+		if($result = parent::_add($data,$flag_select)) {
+			$result = $this->owner->_update(array('laststatus'=>$data['status']));
+		}
+		return $result;
+	}
+
 }

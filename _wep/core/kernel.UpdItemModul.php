@@ -1,4 +1,5 @@
 <?php
+/* _UpdItemModul($param = array(),&$argForm = null) */
 	//update modul item
 
 		//$param
@@ -10,6 +11,7 @@
 		$formflag = 1;// 0 - показывает форму, 1 - не показывать форму
 		$arr = array('mess'=>array(),'vars'=>array());
 		$mess = array();
+
 		if(!empty($this->id) and $this->id) { //EDIT
 			$flag=-1;
 			if(!isset($this->data[$this->id]) or count($this->data[$this->id])<count($this->fields)) {
@@ -55,7 +57,8 @@
 				$arr['mess'][] = static_main::am('error','nodata',$this);
 				$flag=-1;
 			}
-		} else { //ADD
+		} 
+		else { //ADD
 			if(!$this->_prmModulAdd()){
 				$arr['mess'][] = static_main::am('error','denied_add',$this);
 				$formflag=0;
@@ -80,6 +83,7 @@
 			if(isset($argForm['captcha']))
 				static_form::setCaptcha();
 		}
+
 		if(isset($param['formflag']))
 			$formflag = $param['formflag'];
 		elseif($flag==0)

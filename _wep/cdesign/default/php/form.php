@@ -90,6 +90,8 @@ function tpl_form(&$data, $tabs = array()) {
 			$texthtml .= '<div class="form-value">'.$r['value'].'</div>';
 		}
 		elseif($r['type']=='hidden') {
+			if(is_array($r['value']))
+				$r['value'] = implode('|',$r['value']);
 			$r['value'] = htmlentities($r['value'],ENT_QUOTES,$_CFG['wep']['charset']);
 			$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'" value="'.$r['value'].'" id="'.((isset($r['id']) and $r['id'])?$r['id']:$k).'"/>';
 		}

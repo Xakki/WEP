@@ -38,6 +38,8 @@
 
 	if(isset($FUNCPARAM[2]) and $FUNCPARAM[2]) { // страница исключение
 		if($this->id==$FUNCPARAM[2]) return '';
+		if(!isset($this->dataCash[$FUNCPARAM[2]]))
+			 return 'Ошибка AJAX-login';
 		if(!$this->dataCash[$FUNCPARAM[2]]['attr'])
 			$this->dataCash[$FUNCPARAM[2]]['attr'] = 'onclick="return showLoginForm(\'loginblock\')" class="ajaxlink"';
 	}
