@@ -169,10 +169,10 @@ function absPath(url) {
 			if(baseHref=='')
 				baseHref = 'http://'+window.location.host;
 			else {
-				baseHref = trim(baseHref,'/');
+				baseHref = trimUrl(baseHref,'/');
 			}
 		}
-		url = baseHref+'/'+trim(url,'/');
+		url = baseHref+'/'+trimUrl(url,'/');
 	}else {
 		var i = url.indexOf('../');
 		while(i>-1){
@@ -184,7 +184,7 @@ function absPath(url) {
 	return url;
 }
 
-function trim( str, charlist ) {	// Strip whitespace (or other characters) from the beginning and end of a string
+function trimUrl( str, charlist ) {	// Strip whitespace (or other characters) from the beginning and end of a string
 	charlist = !charlist ? ' \s\xA0' : charlist.replace(/([\[\]\(\)\.\?\/\*\{\}\+\$\^\:])/g, '\$1');
 	var re = new RegExp('^[' + charlist + ']+|[' + charlist + ']+$', 'g');
 	return str.replace(re, '');

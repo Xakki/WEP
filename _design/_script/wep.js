@@ -175,10 +175,11 @@ var wep = {
 
 	fShowload: function(show,body,txt,objid,onclk) {
 //alert('* '+show+'+'+body+'+'+txt+'+'+objid+'+'+onclk);
-		if(!body || body==true) body='body';
+		if(!body || body===true) body='body';
 		if(!onclk) onclk = 'wep.fShowload(0,\''+body+'\',\'\')';
-		if(!objid) objid = 'ajaxload';
+		if(!objid || objid===true) objid = 'ajaxload';
 		if(!txt) txt = '';
+
 		objid = trim(objid, '#\s');
 		if(!show) {
 			jQuery(body+'> #'+objid).hide();
