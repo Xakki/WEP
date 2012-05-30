@@ -4,7 +4,7 @@
 		//print_r('<pre>');print_r($data);
 		if(isset($data['#list#']) and count($data['#list#'])) {
 			global $HTML;
-			$html .= '<table class="basketlist"><tr> 
+			$html .= '<table class="basket-list-item"><tr> 
 				<th>Заказать
 				<th>Фото
 				<th>Наименование товара

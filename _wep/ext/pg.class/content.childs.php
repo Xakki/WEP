@@ -305,7 +305,7 @@ class content_class extends kernel_extends {
 		return $formFlex;
 	}
 
-	public function _update($vars = array(), $where = false, $flag_select = true) {
+	public function _update($vars = array(), $where = null, $flag_select = true) {
 		$vars = $this->SetFuncparam($vars);
 		if ($ret = parent::_update($vars, $where, $flag_select)) {
 			

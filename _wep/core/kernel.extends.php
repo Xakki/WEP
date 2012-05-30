@@ -530,8 +530,10 @@ abstract class kernel_extends {
 			if($where = $this->queryEscape($where)) {
 				if (stripos($where,'WHERE')===false)
 					$where = 'WHERE '.$where;
-			}else
+			} else {
+				trigger_error('Ошибка! Условие запроса пустое!', E_USER_WARNING);
 				return false; // TODO : need error reporting
+			}
 
 			$this->id = null;
 			$res = $this->_query('id', $where, 'id');
@@ -582,7 +584,7 @@ abstract class kernel_extends {
 		if($result->err)
 			return $data;
 
-		/*if(1) {
+		if(1) {
 			$listAr = array();
 			foreach($this->fields_form as $k=>$r) {
 				if($r['type']=='list') {
@@ -593,12 +595,12 @@ abstract class kernel_extends {
 					$listAr[$k] = $templistname;
 				}
 			}
-		}*/
+		}
 
 		while ($row = $result->fetch()) {
-			/*foreach($listAr as $k=>$r) {
+			foreach($listAr as $k=>$r) {
 				$row['#'.$k.'#'] = $this->_CFG['enum'][$r][$row[$k]];
-			}*/
+			}
 			$data[$row['id']] = $row;
 		}
 		if (isset($this->id) and $this->id) {
