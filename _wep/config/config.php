@@ -1,7 +1,5 @@
 <?php
 //namespace WEP;
-error_reporting(-1);
-ini_set('display_errors', -1);
 
 /*
  * версия ядра
@@ -11,7 +9,7 @@ ini_set('display_errors', -1);
  * 3 - Номер ревизии , исправленны ошибки
  */
 $_CFG['info'] = array(//информация о СМС
-	'version' => '2.10.33',
+	'version' => '2.10.34',
 	'email' => 'wep@xakki.ru',
 	'icq' => '222392984'
 );
@@ -39,7 +37,8 @@ $_CFG['wep'] = array(// для ядра и админки
 	'setlocale'=>'ru_RU.UTF-8',
 	'locale' => 'default',
 	'timezone' => 'Europe/Moscow',
-	'dateformat' => 'Y-m-d',
+	'dateformat' => 'd F Yг.',
+	'timeformat' => 'd F Yг. H:i:s',
 	'lang' => 'default',
 	'design' => 'default',
 	'md5' => 'change_me',
@@ -201,6 +200,8 @@ $_CFG['_repl'] = array(
 	'name' => '/[^0-9A-Za-zА-Яа-я\- \,\.@_]+/u',
 	'href' => '/(http:\/\/|https:\/\/|www\.)[0-9A-Za-zА-Яа-я\/\.\_\-\=\?\&\;]*/u',
 	'alphaint' => '/[^A-Za-z0-9]+/u',);
+
+$_CFG['_striptag'] = '<table><td><tr><p><span><center><div><a><b><strong><em><u><i><ul><ol><li><br>';
 
 // WYSIWYG 
 $_CFG['ckedit']['toolbar']['Full'] = "'Full'";

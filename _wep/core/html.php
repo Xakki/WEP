@@ -17,6 +17,9 @@ $_html = '';
 /*
   Запуск обработчиков и перехватчиков
  */
+error_reporting(-1); // включаем показ всех ошибок
+ini_set('display_errors', -1);
+
 set_error_handler('_myErrorHandler');
 ob_start('_obHandler');
 $sai = $_CFG['wep']['_showallinfo'];

@@ -7,8 +7,11 @@
  * @return $form
  * @return $html
  */
+	_new_class('ugroup', $UGROUP);
+
 	if(!isset($FUNCPARAM[0]) or !$FUNCPARAM[0]) $FUNCPARAM[0] = '#pg#formcreat';
 	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = '';
+	if(!isset($FUNCPARAM[2])) $FUNCPARAM[2] = array('email'=>'email', $UGROUP->childs['users']->fn_pass=>$UGROUP->childs['users']->fn_pass);
 
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
@@ -16,12 +19,14 @@
 		$form = array(
 			'0'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон'),
 			'1'=>array('type'=>'list','listname'=>array('class'=>'ugroup'), 'caption'=>'Регистрировать в указанную группу'),
+			'2'=>array('type'=>'list','listname'=>'userfieldlist', 'multiple'=>2, 'caption'=>'Выводимые поля'),
 		);
+		$this->_enum['userfieldlist'] = array();
+		foreach($UGROUP->childs['users']->fields_form as $k=>$r) {
+			$this->_enum['userfieldlist'][$k] = $r['caption'];
+		}
 		return $form;
 	}
-
-	global $_tpl;
-	_new_class('ugroup', $UGROUP);
 
 	$DATA = array();
 	if(isset($_GET['confirm'])){
@@ -43,7 +48,16 @@
 		$param = array();
 		if((int)$FUNCPARAM[1])
 			$param['owner_id'] = (int)$FUNCPARAM[1]; 
-		list($DATA[$FUNCPARAM[0]],$flag) = $UGROUP->regForm();print_r('<pre>');print_r($DATA);
+		$argForm = array();
+
+		foreach($FUNCPARAM[2] as $r) {
+			if(isset($UGROUP->childs['users']->fields_form[$r]))
+				$argForm[$r] = $UGROUP->childs['users']->fields_form[$r];
+		}
+		$argForm[$UGROUP->childs['users']->fn_pass] = array('type' => 'password', 'caption' => 'Пароль','mask'=>array('min' => '6','fview'=>1));
+
+		list($DATA[$FUNCPARAM[0]],$flag) = $UGROUP->regForm($param,$argForm);
+
 		$html = $HTML->transformPHP($DATA,$FUNCPARAM[0]);
 	}
 	return $html;

@@ -97,17 +97,18 @@ function tpl_form(&$data, $tabs = array()) {
 		}
 		else {
 			$attribute = '';
-				$CAPTION = $r['caption'];
-				if((isset($r['mask']['min']) and $r['mask']['min']) or (isset($r['mask']['minint']) and $r['mask']['minint'])) {
-					$CAPTION .= '<span class="form-requere">*</span>';
-					if($r['type']!='ckedit' and !($r['type']=='password' and isset($r['mask']['password']) and $r['mask']['password']=='re')) // в CKEDITORE глюк из за этого
-						$attribute .= ' required="required"';
-				}
-				elseif(isset($r['mask']['min2']) and $r['mask']['min2']) {
-					$CAPTION .= '<span  class="form-requere" data-text="'.$r['mask']['min2'].'">**</span>';
-				}
-				if($r['type']=='ckedit' and static_main::_prmUserCheck(1))
-					$CAPTION .= '<input type="checkbox" onchange="SetWysiwyg(this)" name="'.$k.'_ckedit" style="width:13px;vertical-align: bottom;margin: 0 0 0 5px;"/>';
+
+			$CAPTION = $r['caption'];
+			if((isset($r['mask']['min']) and $r['mask']['min']) or (isset($r['mask']['minint']) and $r['mask']['minint'])) {
+				$CAPTION .= '<span class="form-requere">*</span>';
+				if($r['type']!='ckedit' and !($r['type']=='password' and isset($r['mask']['password']) and $r['mask']['password']=='re')) // в CKEDITORE глюк из за этого
+					$attribute .= ' required="required"';
+			}
+			elseif(isset($r['mask']['min2']) and $r['mask']['min2']) {
+				$CAPTION .= '<span  class="form-requere" data-text="'.$r['mask']['min2'].'">**</span>';
+			}
+			if($r['type']=='ckedit' and static_main::_prmUserCheck(1))
+				$CAPTION .= '<input type="checkbox" onchange="SetWysiwyg(this)" name="'.$k.'_ckedit" style="width:13px;vertical-align: bottom;margin: 0 0 0 5px;"/>';
 
 			if($r['type']!='checkbox') {
 				$texthtml .= '<div class="form-caption">'.$CAPTION.'</div>';
@@ -131,9 +132,12 @@ function tpl_form(&$data, $tabs = array()) {
 				$texthtml .= '<div class="caption_error">['.implode(' ',$r['error']).']</div>';
 
 			if($r['type']=='textarea') {
-				if(!isset($r['mask']['max'])) $r['mask']['max'] = 5000;
-				$attribute .= ' maxlength="'.$r['mask']['max'].'"';
-				$texthtml .= '<div class="form-value"><textarea name="'.$k.'" onkeyup="textareaChange(this,\''.$r['mask']['max'].'\')" rows="5" cols="50" '.$attribute.'>'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
+				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
+				$texthtml .= '<div class="form-value"><textarea name="'.$k.'" onkeyup="textareaChange(this,\''.$r['mask']['max'].'\')" rows="10" cols="80" '.$attribute.'>'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
+			}
+			elseif($r['type']=='ckedit') {
+				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
+				$texthtml .= '<div class="form-value ckedit-value"><textarea id="id_'.$k.'" name="'.$k.'" rows="10" cols="80" '.$attribute.'>'.htmlspecialchars((string)$r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
 			}
 			elseif($r['type']=='radio') {
 				$texthtml .= '<div class="form-value">';
@@ -592,10 +596,6 @@ function tpl_form(&$data, $tabs = array()) {
 					$texthtml .= '<label class="filedelete">Удалить?&#160;<input type="checkbox" name="'.$k.'_del" value="1"/></label>';
 
 				$texthtml .= '</div>';
-			}
-			elseif($r['type']=='ckedit') {
-				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
-				$texthtml .= '<div class="form-value ckedit-value"><textarea id="id_'.$k.'" name="'.$k.'" rows="10" cols="80" '.$attribute.'>'.htmlspecialchars((string)$r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
 			}
 			elseif($r['type']=='int' and !$r['readonly']) {
 				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';

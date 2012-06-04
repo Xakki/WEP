@@ -238,6 +238,7 @@
 				// Преобразуем теги, чтобы их не съел шаблонизатор
 				if(isset($r['value']) and $r['value'] and is_string($r['value']) and ($r['type']=='ckedit' or $r['type']=='text' or $r['type']=='textarea') and strpos($r['value'],'{#')!==false) {
 					$r['value'] = str_replace(array('{#','#}'),array('(#','#)'),$r['value']);
+					// TODO : возможна дыра в безопастности, решить срочно
 				}
 
 				if(isset($r['mask']['name']))

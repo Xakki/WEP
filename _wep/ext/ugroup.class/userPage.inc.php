@@ -19,8 +19,8 @@
 			2=>'Из второго уровня страницы',
 			3=>'Из третъего уровня страницы');
 		$form = array(
-			'0'=>array('type'=>'list','listname'=>'levelpage', 'caption'=>'Как брать ID пользователя?'),
-			'1'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон'),
+			'0'=>array('type'=>'list', 'listname'=>'levelpage', 'caption'=>'Как брать ID пользователя?'),
+			'1'=>array('type'=>'list', 'listname'=>'phptemplates', 'caption'=>'Шаблон'),
 		);
 		return $form;
 	}

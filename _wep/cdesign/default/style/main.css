@@ -482,9 +482,9 @@ form table.form {
 }
 
 /*FORM*/
-	form.divform {
-		min-width: 500px;
-		max-width: 800px;
+	div.divform {
+		min-width: 700px;
+		max-width: 1000px;
 		margin:0 auto;
 	}
 /*FILTER*/

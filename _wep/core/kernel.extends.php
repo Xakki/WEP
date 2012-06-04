@@ -224,8 +224,9 @@ abstract class kernel_extends {
 			$this->config_form['cssIncludeToWEP'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'style', 'caption' => 'CSS модуля');
 		}
 		if($this->cf_fields) {
-			//$this->config['cf_fields'] = array();
+			$this->config['cf_fields'] = array();
 			//$this->config_form['cf_fields'] = array('type' => 'cf_fields', 'caption' => 'Дополнительные поля формы');
+			// TODO form create
 		}
 		return true;
 	}
@@ -333,7 +334,7 @@ abstract class kernel_extends {
 			$this->_AllowAjaxFn['_sorting'] = true;
 		}
 
-		if(isset($this->config['cf_fields']) and count($this->config['cf_fields'])) {
+		if($this->cf_fields and count($this->config['cf_fields'])) {
 			foreach($this->config['cf_fields'] as $fk=>$fr) {
 				$this->fields[$fk] = $fr;
 				if($fr['unique']) {
@@ -525,7 +526,7 @@ abstract class kernel_extends {
 	 * @return bool - true если успех
 	 */
 	public function _isset($where=NULL) {
-		if(!is_null($where)) {
+		if(!is_null($where) and $where!==false) {
 			
 			if($where = $this->queryEscape($where)) {
 				if (stripos($where,'WHERE')===false)
@@ -599,7 +600,8 @@ abstract class kernel_extends {
 
 		while ($row = $result->fetch()) {
 			foreach($listAr as $k=>$r) {
-				$row['#'.$k.'#'] = $this->_CFG['enum'][$r][$row[$k]];
+				if(isset($row[$k]) and isset($this->_CFG['enum'][$r][$row[$k]]))
+					$row['#'.$k.'#'] = $this->_CFG['enum'][$r][$row[$k]];
 			}
 			$data[$row['id']] = $row;
 		}
@@ -752,7 +754,7 @@ abstract class kernel_extends {
 		}
 
 		// Если задан $where - получаем список IDшников
-		if(!is_null($where)) {
+		if(!is_null($where) and $where!==false) {
 			if(!$this->_isset($where)) return false; // в $this->id вносит выбранные ID
 		}
 
@@ -1132,7 +1134,7 @@ abstract class kernel_extends {
 		  $this->fields_form[$k] = $r;
 		  } */
 
-		if(isset($this->config['cf_fields']) and count($this->config['cf_fields'])) {
+		if($this->cf_fields and count($this->config['cf_fields'])) {
 			foreach($this->config['cf_fields'] as $fk=>$fr) {
 				if(isset($fr['ftype']))
 					$fr['type'] = $fr['ftype'];

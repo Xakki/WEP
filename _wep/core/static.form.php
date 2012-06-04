@@ -536,6 +536,9 @@ class static_form {
 			if($form['type']=='file') {
 				self::check_file_field($_this,$form,$error,$data,$key);	
 			}
+			elseif($form['type']=='cf_fields') {
+				// TODO : проверка правильности форм
+			}
 			/*Капча*/
 			elseif($form['type']=='captcha') {
 				//strcasecmp($data[$key],$form['captcha'])
@@ -584,9 +587,7 @@ class static_form {
 
 			foreach($error as $row) {
 				$messages = '';
-				if($row==1) //no empty
-					$messages = static_main::m('_err_1',$_this);
-				elseif($row==2) //max chars
+				if($row==2) //max chars
 					$messages = static_main::m('_err_2',array($form['mask']['max'],(_strlen($data[$key])-$form['mask']['max'])),$_this);
 				elseif($row==21) // min chars
 					$messages = static_main::m('_err_21',array($form['mask']['min'],($form['mask']['min']-_strlen($data[$key]))),$_this);
@@ -620,24 +621,17 @@ class static_form {
 					}
 					$messages = static_main::m('_err_3',array($textm),$_this);
 				}
-				elseif($row==31) //wrong captchs
-					$messages = static_main::m('_err_31',$_this);
-				elseif($row==32) // wrong repeat pass
-					$messages = static_main::m('_err_32',$_this);
-				elseif($row==321) // wrong old pass
-					$messages = static_main::m('_err_321',$_this);
-				elseif($row==33) //data error
-					$messages = static_main::m('_err_33',$_this);
 				elseif($row==39) //wrong file type
 					$messages = static_main::m('_err_39',array($_FILES[$key]['name']),$_this).'- '.implode(',',array_unique($form['mime'])).'.';
 				elseif($row>=40 and $row<50) //error load file
 					$messages = static_main::m('_err_'.$row,array($_FILES[$key]['name']),$_this);
-				elseif($row==4)  // wrong link
-					$messages = static_main::m('_err_4',$_this);
-				elseif($row==5)  // wrong link
+				elseif($row==5)
 					$messages = 'Множественные значения не допустимы!';
-				elseif($row==51)  // wrong link
+				elseif($row==51)
 					$messages = 'Множественные значения не обнаружены!';
+				else
+					$messages = static_main::m('_err_'.$row,$_this);
+
 				$arr_err_name[$key]=$key;
 
 				if(isset($param['errMess'])) {
@@ -799,6 +793,14 @@ class static_form {
 				}else
 					unset($data[$key]);
 			}
+			elseif(isset($form['mask']['password']) and $form['mask']['password']=='confirm')
+			{
+				if(isset($_this->data[$_this->id][$key]) and $data[$key]) {
+					if($_this->data[$_this->id][$key]!=md5($_this->_CFG['wep']['md5'].$data[$key]))
+						$error[] = 322;
+					unset($data[$key]);
+				}
+			} 
 			elseif(isset($form['mask']['password']) and $form['mask']['password']=='change')
 			{
 				if(isset($_this->data[$_this->id][$key]) and $data[$key] or $data[$key.'_old']) {
@@ -807,7 +809,8 @@ class static_form {
 					else
 						$data[$key] = md5($_this->_CFG['wep']['md5'].$data[$key]);
 				}
-			} else {
+			} 
+			else {
 				if(isset($form['mask']['max']) && $form['mask']['max']>0 && _strlen($data[$key])>$form['mask']['max'])
 					$error[] = 2;
 				if(isset($form['mask']['min']) and $form['mask']['min']>0)
@@ -896,9 +899,26 @@ class static_form {
 			if($form['mask']['striptags']=='all') 
 				$data[$key] = strip_tags($data[$key]);
 			elseif($form['mask']['striptags']=='') 
-				$data[$key] = strip_tags($data[$key],'<table><td><tr><p><span><center><div><a><b><strong><em><u><i><ul><ol><li><br>');
+				$data[$key] = strip_tags($data[$key],$_this->_CFG['_striptag']);
 			else
 				$data[$key]=strip_tags($data[$key],$form['mask']['striptags']);
+		}
+
+		/*Убираем атрибуты у тегов*/
+		if(isset($form['mask']['stripAttr'])) 
+		{
+			// TODO : сделать возможность оставлять некоторые атрибуты
+			/*$tmp = '';
+			if($form['mask']['stripAttr'] and $tmp = explode(',',$form['mask']['stripAttr']) and count($tmp)) {
+				$tmp
+			}*/
+			$data[$key] = preg_replace( "/<([^>\s]+) [^>]+>/u", "<\\1>", $data[$key]);
+		}
+
+		/*Проверка правописания*/
+		if(isset($form['mask']['spellCheck'])) 
+		{
+			$data[$key] = self::SpellCheck($data[$key]);
 		}
 
 		/*Проверка по регуляркам*/
@@ -1191,12 +1211,38 @@ class static_form {
 		return rand(145, 357); // Если ничего в куках нет, то генерим рандомный и пользователь по новой должен вводит капчу
 	}
 
-	function spellCheck($text) {
-		// Проверка знаков препинания
+	static function SpellCheck($txt) {
+		// исправляем пунктуацию
+		$txt = html_entity_decode($txt,ENT_QUOTES,'UTF-8');
+		$txt2 = preg_replace(
+			array(
+				'/(\s|\`|\~|\@|\#|\$|\%|\^|\&|\*|\(|\)|\_|\-|\+|\=|\[|\]|\{|\}|\"|\'|\/){3,}?/u', // прочие повторяющиеся не символы 
+				'/([\s]?)(\.|\,|\!|\?\:\;)+/u', // Убирает пробел перед знаками припинания
+				'/(\S)(\<br[ \/]+\>)/u', // ставим знак после до разрыва
+				'/([^\s]{1})(\.|\,|\!|\?\:\;\-)([^\d\s]{1})/u', // Если после знака нету цифры, то исправляем
+				'/([^\d\s]{1})(\.|\,|\!|\?\:\;\-)([^\s]{1})/u', // Если до знака нету цифры, то исправляем
+				//'/(\.|\,|\!|\?\:\;\-)(\s)?([A-ZА-Я]{1})([A-ZА-Я]+)/eu', // исправляем капсы
+				//'/([А-ЯЁ]{1})([А-ЯЁ]+)/eu', // исправляем капсы
+			),
+			array(
+				'\\1', 
+				'\\2', 
+				'\\1 \\2',
+				'\\1\\2 \\3', 
+				'\\1\\2 \\3', 
+				//"'\\1 \\2'.mb_strtolower('\\3')",
+				//"mb_strtolower('\\1\\2')",
+			),
+			$txt);
+		preg_match_all('/([А-ЯЁ]{4,})/eu',$txt2,$temp);
+		if(count($temp[0])>1) {// исправляем капсы у тех кто переборщил
+			$txt2 = preg_replace(
+				'/([А-ЯЁ]{2,})/eu', // исправляем капсы
+				"mb_strtolower('\\1\\2')",
+				$txt2
+			);
+		}
 
-		// Проверка орфографии
-
-		return $text;
+		return $txt2;
 	}
-
 }

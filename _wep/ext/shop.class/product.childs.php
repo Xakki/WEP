@@ -1,66 +1,6 @@
 <?php
 class product_class extends kernel_extends {
 
-	protected function _create_conf() {/*CONFIG*/
-		parent::_create_conf();
-		
-		$this->config['reversePage'] = 0;
-		$this->config['onComm'] = 0;
-		$this->config['imageCnt'] = 6;
-		$this->config['prodListTable'] = array(
-			'id' => '№',
-			'img_product' => 'Фото',
-			'name' => 'Наименование',
-			'descr' => 'Описание',
-			'cost' => 'Цена',
-		);
-		$this->config['prodItem'] = array(
-			//'text' => 'Полное описание',
-		);
-
-		$this->config_form['reversePage'] = array('type' => 'checkbox', 'caption' => 'Режим постраничной навигации', 'comment'=>'если откл. - прямая нумерация');
-		$this->config_form['onComm'] = array('type' => 'list', 'listname'=>'onComm', 'caption' => 'Включить комментарии?');
-		$this->config_form['imageCnt'] = array('type' => 'int', 'caption' => 'Число фотографий');
-		$this->config_form['prodListTable'] = array('type' => 'list', 'keytype' => 'text', 'listname' => 'fieldslist', 'multiple' => 3, 'caption' => 'Формат вывода шаблона табличного списка', 'mask' => array('maxarr' => 15,'keylist'=>true));
-		$this->config_form['prodItem'] = array('type' => 'list', 'keytype' => 'text', 'listname' => 'fieldslist', 'multiple' => 3, 'caption' => 'Данные для вывода в информации о товаре', 'mask' => array('maxarr' => 15,'keylist'=>true));
-
-		$this->config['cf_fields'] = array(
-			'code' => array(
-				'type' => 'varchar',
-				'width' => 11,
-				'attr' => 'NOT NULL',
-				'default'=> '',
-				'unique' => true,
-				'caption' => 'Код',
-				'mask'=>array(),//'max'=>8,'maxint'=>20000000
-			),
-			'model' => array(
-				'type' => 'varchar',
-				'width' => 32,
-				'attr' => 'NOT NULL',
-				'default'=> '',
-				'unique' => false,
-				'caption' => 'Модель',
-			),
-			'articul' => array(
-				'type' => 'varchar',
-				'width' => 32,
-				'attr' => 'NOT NULL',
-				'default'=> '',
-				'unique' => false,
-				'caption' => 'Артикул',
-			),
-			'madein' => array(
-				'type' => 'varchar',
-				'width' => 32,
-				'attr' => 'NOT NULL',
-				'unique' => false,
-				'default'=> '',
-				'caption' => 'Страна изготовитель',
-			),
-		);
-	}
-
 	protected function _set_features() {
 		if (!parent::_set_features()) return false;
 		$this->ver = '0.0.1';
@@ -95,7 +35,69 @@ class product_class extends kernel_extends {
 		return true;
 	}
 
+	protected function _create_conf() {/*CONFIG*/
+		parent::_create_conf();
+
+		$this->config['imageCnt'] = 6;
+		$this->config['prodListTable'] = array(
+			'id' => '№',
+			'img_product' => 'Фото',
+			'name' => 'Наименование',
+			'descr' => 'Описание',
+			'cost' => 'Цена',
+		);
+		$this->config['prodItem'] = array(
+			//'text' => 'Полное описание',
+		);
+
+		$this->config['temp_olden'] = 0;
+		$this->config['cf_fields'] = array();
+		$this->config_form['temp_olden'] = array('type' => 'checkbox', 'caption' => 'Включить дополнительные поля');
+
+		$this->config_form['imageCnt'] = array('type' => 'int', 'caption' => 'Число фотографий');
+		$this->config_form['prodListTable'] = array('type' => 'list', 'keytype' => 'text', 'listname' => 'fieldslist', 'multiple' => 3, 'caption' => 'Формат вывода шаблона табличного списка', 'mask' => array('maxarr' => 15,'keylist'=>true));
+		$this->config_form['prodItem'] = array('type' => 'list', 'keytype' => 'text', 'listname' => 'fieldslist', 'multiple' => 3, 'caption' => 'Данные для вывода в информации о товаре', 'mask' => array('maxarr' => 15,'keylist'=>true));
+	}
+
 	protected function _create() {
+
+		if($this->config['temp_olden'])
+			$this->config['cf_fields'] = array(
+				'code' => array(
+					'type' => 'varchar',
+					'width' => 11,
+					'attr' => 'NOT NULL',
+					'default'=> '',
+					'unique' => true,
+					'caption' => 'Код',
+					'mask'=>array(),//'max'=>8,'maxint'=>20000000
+				),
+				'model' => array(
+					'type' => 'varchar',
+					'width' => 32,
+					'attr' => 'NOT NULL',
+					'default'=> '',
+					'unique' => false,
+					'caption' => 'Модель',
+				),
+				'articul' => array(
+					'type' => 'varchar',
+					'width' => 32,
+					'attr' => 'NOT NULL',
+					'default'=> '',
+					'unique' => false,
+					'caption' => 'Артикул',
+				),
+				'madein' => array(
+					'type' => 'varchar',
+					'width' => 32,
+					'attr' => 'NOT NULL',
+					'unique' => false,
+					'default'=> '',
+					'caption' => 'Страна изготовитель',
+				),
+			);
+
 		parent::_create();
 
 		$this->reversePageN = (bool)$this->config['reversePage'];

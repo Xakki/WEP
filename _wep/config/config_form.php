@@ -33,6 +33,7 @@ $_CFGFORM['wep'] = array(// для ядра и админки
 	'locale' => array('type'=>'list', 'caption'=>'Локализация сайта', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'timezone' => array('type'=>'list', 'caption'=>'Временная зона', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'dateformat' => array('type'=>'text','caption'=>'Формат Даты', 'css' => 'fblock hwep', 'style' => 'display:none;'),
+	'dateformat' => array('type'=>'text','caption'=>'Формат Даты+Время', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'access' => array('type'=>'list', 'caption'=>'Система авторизации на сайте', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'design' => array('type'=>'list','caption'=>'Дизайн админки', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'lang' => array('type'=>'text','caption'=>'Язык', 'css' => 'fblock hwep', 'style' => 'display:none;'),

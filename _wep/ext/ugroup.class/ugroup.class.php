@@ -176,8 +176,8 @@ class ugroup_class extends kernel_extends
 	function cookieAuthorization() {
 		return $this->childs['users']->cookieAuthorization();
 	}
-	function regForm($param=array()) {
-		return $this->childs['users']->regForm($param);
+	function regForm($param=array(), $argForm=null) {
+		return $this->childs['users']->regForm($param, $argForm);
 	}
 	function regConfirm() {
 		return $this->childs['users']->regConfirm();
@@ -244,11 +244,13 @@ class users_class extends kernel_extends {
 		$this->fn_login = 'email';//login or email
 		$this->fn_pass = 'pass';
 		$this->mf_use_charid = false;
+		$this->cf_fields = true; // Разрешить добавлять добавлять дополнительные поля в таблицу
 		$this->mf_timecr = true; // создать поле хранящее время создания поля
 		$this->mf_timeup = true; // создать поле хранящее время обновления поля
 		$this->mf_ipcreate = true;//IP адрес пользователя с котрого была добавлена запись
 		$this->caption = 'Пользователи';
 		$this->lang['title_regme'] = 'Регистрация пользователя';
+		//$this->lang['update_name'] = 
 		$this->lang['title_profile'] = 'Редактирование профиля';
 		$this->lang['Save and close'] = 'Готово';
 		$this->default_access = '|0|';
@@ -257,8 +259,35 @@ class users_class extends kernel_extends {
 		return true;
 	}
 
+	protected function _create_conf() {/*CONFIG*/
+		parent::_create_conf();
+
+		$this->config['temp_olden'] = 0;
+		$this->config['cf_fields'] = array();
+		$this->config_form['temp_olden'] = array('type' => 'checkbox', 'caption' => 'Включить дополнительные поля');
+	}
+
 	function _create()
 	{
+		if($this->config['temp_olden'])
+			$this->config['cf_fields'] = array(
+				'cf1' => array(
+					'type' => 'varchar',
+					'width' => 32,
+					'attr' => 'NOT NULL',
+					'default'=> '',
+					'caption' => 'Телефон',
+					'mask'=>array('name'=>'phone3'),
+				),
+				'cf2' => array(
+					'type' => 'varchar',
+					'width' => 32,
+					'attr' => 'NOT NULL',
+					'default'=> '',
+					'caption' => 'Адрес',
+				),
+			);
+
 		parent::_create();
 		$this->ordfield = 'mf_timecr DESC';
 		$this->unique_fields[$this->fn_login]=$this->fn_login;
@@ -272,8 +301,9 @@ class users_class extends kernel_extends {
 		$this->fields[$this->mf_namefields] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL');
 		$this->fields[$this->fn_pass] = array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL');
 		// service field
+
 		$this->fields['reg_hash'] = array('type' => 'varchar', 'width' => 128, 'attr' => 'NOT NULL', 'default'=>'');
-		$this->fields['balance'] = array('type' => 'float', 'width' => '11,4', 'attr' => 'NOT NULL', 'default'=>'0.0000');
+		$this->fields['balance'] = array('type' => 'float', 'width' => '11,2', 'attr' => 'NOT NULL', 'default'=>'0.00');
 		$this->fields['lastvisit'] =  array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL', 'default'=>0);
 		$this->fields['karma'] = array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL', 'default'=>0);
 		$this->fields['kratio'] = array('type' => 'float', 'width' => '8,2','attr' => 'NOT NULL', 'default'=>'0.00');
@@ -346,7 +376,7 @@ class users_class extends kernel_extends {
 				unset($this->fields_form['kratio']['readonly']);
 			}
 		}
-		$this->fields_form['userpic'] = array('type'=>'file','caption'=>'Юзерпик','del'=>1, 'mask'=>array('fview'=>1,'width'=>85,'height'=>85,'thumb'=>0), 'default'=>$this->owner->config['userpic']);
+		$this->fields_form['userpic'] = array('type'=>'file','caption'=>'Аватар','del'=>1, 'mask'=>array('fview'=>1,'width'=>85,'height'=>85,'thumb'=>0), 'default'=>$this->owner->config['userpic']);
 		$this->fields_form['mf_ipcreate'] =	array('type' => 'text','readonly' => true, 'caption' => 'IP-пользователя','mask'=>array('usercheck'=>1));
 		$this->fields_form['mf_timecr'] =	array('type' => 'date','readonly' => true, 'caption' => 'Дата регистрации','mask'=>array('sort'=>1));
 		$this->fields_form['reg_hash'] = array('type' => 'hidden',  'caption' => 'Хэш','mask'=>array('eval'=>1,'fview'=>1,'usercheck'=>1));
@@ -472,7 +502,7 @@ class users_class extends kernel_extends {
 		return array($mess,0);
 	}
 
-	function regForm($param=array()) {
+	function regForm($param=array(), $argForm=null) {
 		global $_MESS,$_tpl;
 		$flag=0;// 1 - успешно, 0 - норм, -1  - ошибка
 		$formflag = 1;// 0 - показывает форму, 1 - не показывать форму
@@ -494,8 +524,8 @@ class users_class extends kernel_extends {
 			if(count($_POST) and $_POST['sbmt'] and isset($_SESSION['user']))
 				unset($_SESSION['user']);
 		}
-
-		$argForm = $this->fields_form;
+		if(is_null($argForm))
+			$argForm = $this->fields_form;
 
 		if(count($_POST) and $_POST['sbmt']) {
 			$flag=-1;
@@ -559,10 +589,6 @@ class users_class extends kernel_extends {
 		} else  {
 			$mess = $this->kPreFields($DATA,$param,$argForm);
 		}
-		if(static_main::_prmUserCheck())
-			$this->fields_form['_info']= array('type'=>'info','caption'=>static_main::m('title_profile',$this),'css'=>'caption');
-		else
-			$this->fields_form['_info']= array('type'=>'info','caption'=>static_main::m('title_regme',$this),'css'=>'caption');
 
 		static_form::setCaptcha();
 		if(isset($param['formflag']))
@@ -577,6 +603,11 @@ class users_class extends kernel_extends {
 			$formflag = 0;
 		if($formflag) // показывать форму
 			$formflag = $this->kFields2Form($param,$argForm);
+
+		if(static_main::_prmUserCheck())
+			$argForm['_info']= array('type'=>'info','caption'=>static_main::m('title_profile',$this),'css'=>'caption');
+		else
+			$argForm['_info']= array('type'=>'info','caption'=>static_main::m('title_regme',$this),'css'=>'caption');
 
 		return Array(Array('messages'=>($mess+$arr['mess']), 'form'=>($formflag?$argForm:array()), 'class'=>'regform'), $flag);
 	}

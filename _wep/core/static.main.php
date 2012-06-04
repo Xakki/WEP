@@ -623,7 +623,7 @@ class static_main {
 
 	static function _date($format=NULL,$time=NULL) {
 		global $_CFG;
-		if(is_null($format)) $format = 'd F Yг.';
+		if(is_null($format)) $format = $_CFG['wep']['dateformat'];
 		if(is_null($time)) $time = time();
 		$date = date($format, $time);
 		if(strpos($format,'F')!==false)

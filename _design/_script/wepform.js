@@ -91,7 +91,6 @@ wep.form = {
 
 	ilistsort : function(id) {// сортировка
 		$.include('/_design/_script/script.jquery/jquery-ui.js', function() {
-			console.log(id);
 			$(id).sortable({
 				items: '>div.ilist',
 				axis:	'y',
