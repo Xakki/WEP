@@ -2,39 +2,58 @@
 /*leftblock*/
 .shop-menu {
 	font-family: arial, sans-serif; 
-	width:242px; height:auto; 
+	height:auto; 
 	position:relative; margin:0; 
-	font-size:11px; margin:0;
+	font-size:12px; margin:0;
 	z-index:20;
 }
+
+.shop-menu h3 {
+	padding:0; margin:0;
+	font-size:1.4em;
+}
+
 .shop-menu ul {
 	padding:0; margin:0;
 	list-style-type: none;
 }
 
 .shop-menu ul li a {
-	text-decoration:none; color:#487292 ; font-size:15px;font-weight: bold;
-	width:230px;
-	border:1px solid #fff; border-width:1px 1px 0 0;
-	line-height:19px;
+	text-decoration:none; color:#487292 ; 
+	font-size:1em;font-weight: bold;
+	width:190px;
+	border:1px solid #fff; border-width:0 1px 1px 0;
+	border-bottom: 1px solid #e1e1e1;
+	line-height:1.2em;
 	vertical-align: middle;text-align:left; 
 	display:table-cell;
-	padding:3px 5px;
-	height:32px;
+	padding:1px 0 1px 7px;
+	height:2em;
 }
+
+.shop-menu ul li.sub>a{
+	background:transparent url(../img/bullet.gif) no-repeat scroll 0 50%;
+}
+
+.shop-menu ul li:hover a {
+	border-color:#e1e1e1;
+}
+
 .shop-menu a.selected {
 	font-weight:bold;
 	color:#E85302;
 }
+
 .shop-menu ul img{
 	width:60px;
 	height:60px;
 	float:left;
 }
+
 .shop-menu ul li {
-	float:left; margin:0; position:relative;z-index:21;
-	border-bottom: 1px solid gray;
+	margin:0; position:relative;z-index:21;
 }
+
 .shop-menu ul li ul {display: none;}
 
 /* for IE browsers */
@@ -48,16 +67,16 @@
 	background: -o-linear-gradient(top,#b2dae4,#7bbfd0,#b2dae4);
 	filter: progid:DXImageTransform.Microsoft.gradient(enabled='true',startColorstr=#b2dae4,endColorstr=#7bbfd0,GradientType=0); zoom: 1;
 }
-.shop-menu ul li:hover ul {display:block; position:absolute;z-index:22; top:0; left:242px; width:240px;}
-.shop-menu ul li:hover ul li a {height:32px;color:#000;border-color:#e1e1e1;}
+.shop-menu ul li:hover ul {display:block; position:absolute;z-index:22; top:0; left:190px; width:190px;}
+.shop-menu ul li:hover ul li a {height:2em;color:#000;border-color:#e1e1e1;}
 .shop-menu ul li:hover ul li a.hide {color:#000;}
 .shop-menu ul li:hover ul li a:hover {color:#fff;}
 
 .shop-menu ul li:hover ul li ul {display: none;}
 .shop-menu ul li:hover ul li:hover>a {color:#fff;}
-.shop-menu ul li:hover ul li:hover ul {display:block; position:absolute;z-index:23; left:240px; top:0; color:#000;}
+.shop-menu ul li:hover ul li:hover ul {display:block; position:absolute;z-index:23; left:190px; top:0; color:#000;}
 .shop-menu ul li:hover ul li:hover ul li a {}
-.shop-menu ul li:hover ul li:hover a.hide {width:240px;}
+.shop-menu ul li:hover ul li:hover a.hide {width:190px;}
 .shop-menu ul li:hover ul li:hover ul li a:hover {color:#fff;}
 
 

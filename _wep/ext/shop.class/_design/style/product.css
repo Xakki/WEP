@@ -24,7 +24,7 @@
 		height:30px;
 		overflow:hidden;
 		white-space:nowrap;
-		font-size:1em;
+		font-size:1.6em;
 		padding:0 0 0 5px;
 		font-weight:bold;
 		border:1px solid #77aad2;
@@ -94,7 +94,7 @@
 
 	.proditem .prodcost {
 		background:url('../img/price.png') no-repeat;
-		font: bold 1.1em Tahoma, sans-serif;
+		font: bold 1.5em Tahoma, sans-serif;
 		color:white;
 		text-align: center;
 		line-height: 38px;
@@ -114,9 +114,13 @@
 		margin: 0 0 0 30px;
 	}
 
-		.proditem .prodcost span {
-			font-size:0.65em;
-		}
+	.proditem .prodcost .cur {
+		font-size:0.65em;
+	}
+	.proditem .prodcost .old {
+		text-decoration:line-through;
+		color:gray;
+	}
 
 	.prodpage .proditem .buybotton {
 		font: bold 1.1em Tahoma, sans-serif;
@@ -174,6 +178,17 @@
 		.prodpage .proditem .buybotton input{
 			width:3em;
 		}
+
+		.prodpage .buybotton a.addlink,
+		.prodpage .buybotton.sel a.dellink {
+			display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
+		}
+
+		.prodpage .buybotton a.dellink,
+		.prodpage .buybotton.sel a.addlink {
+			display:none;
+		}
+
 	.proditem .prodtext {
 		margin:0 20px;
 		clear: both;
@@ -184,7 +199,7 @@
 	}
 
 	.proditem .prodparam {
-		margin: 0 0 20px 30px;
+		margin: 10px 0 20px 30px;
 	}
 
 /*prodListTable*/
@@ -194,17 +209,66 @@
 		text-align:center;
 	}
 
-	.prodListTable table td {
-		padding:2px;
-		text-align:left;
-	}
-	.prodListTable table tr:hover td {
-		background-color:#dce1e8;
-	}
-	.prodListTable table img {
-		width:60px;
-	}
+		.prodListTable table td {
+			padding:2px;
+		}
 
+		.prodListTable table tr:hover td {
+			background-color:#dce1e8;
+		}
+
+		.prodListTable table img {
+			width:60px;
+		}
+
+		.prodListTable table td .prodlable {
+			display:inline-block;
+			width:15px;height:15px;
+			background:transparent url(../../../_img/jquery.ui/ui-icons_2e83ff_256x240.png) no-repeat scroll -241px -97px;
+		}
+
+		.prodListTable table td .prodlable.sale {
+
+		}
+
+		.prodListTable table .addbasket {
+			position:relative;
+		}
+
+		.prodListTable table .addbasket a.addlink {
+			display:block;
+		}
+
+		.prodListTable table .addbasket a.dellink {
+			display:none;
+		}
+
+		.prodListTable table .addbasket img {
+			width:30px;
+		}
+
+		.prodListTable table .addbasket input {
+			width:35px;
+			position:absolute;
+			display:none;
+			top:15px;
+			left:-31px;
+		}
+
+		.prodListTable table .addbasket:hover input {
+			display:block;
+		}
+
+		/* Положенный в корзину */
+		.prodListTable table tr.sel td {
+			background-color:#e1e1e1;
+		}
+		.prodListTable table tr.sel .addbasket a.addlink {
+			display:none;
+		}
+		.prodListTable table tr.sel .addbasket a.dellink {
+			display:block;
+		}
 /*Over*/
 
 	.fotocheckbox {
@@ -304,7 +368,7 @@
 
 /*FILTER*/
 	form.filter {
-		font-size: 0.8em;
+		font-size: 1em;
 		text-align:center;
 		position:relative;
 	}
@@ -332,23 +396,23 @@
 	form.filter .f_value input[type='text'] {
 		width:14em;
 		font-size:1em;
-		border:1px solid gray;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
+		border: 1px solid gray;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
 	}
 	form.filter .f_int {
-		padding:0;
+		padding: 0;
 	}
 	form.filter .f_int input[type='text'] {
-		width:4.5em;
+		width: 4.5em;
 	}
 
 	form.filter .f_value  input[type='text']:hover {
-		border:1px solid green;
+		border: 1px solid green;
 	}
 
 	/*SLIDER*/
 	form.filter .ui-slider {
-		font-size:0.5em;
-		margin:4px 5px 5px;
+		font-size: 0.5em;
+		margin: 4px 5px 5px;
 	}
 	form.filter .ui-slider-horizontal .ui-slider-handle {
 		top: -.63em;
@@ -358,28 +422,28 @@
 	/*****/
 
 	form.filter div.f_item {
-		float:left;
-		padding:0px 5px;
-		margin:0 10px 5px;
+		float: left;
+		padding: 0px 5px;
+		margin: 0 10px 5px;
 		height: 3.5em;
 		width: 15em;
 	}
 	form.filter div.f_item div.f_caption {
-		font-size: 0.8em;
-		padding:0;
+		font-size: 1em;
+		padding: 0 0 2px;
 	}
 
 	form.filter div.f_item div.f_value {
-		height:20px;
+		height: 20px;
 	}
 	form.filter div.f_item div.f_value div {
-		display:inline;
+		display: inline;
 	}
 
 	/*linklist*/
 	form.filter div.f_item.linklist {
-		height:auto;
-		float:none;
+		height: auto;
+		float: none;
 		margin: 0 auto;
 		width: auto;
 	}
@@ -387,9 +451,9 @@
 		height:auto;
 	}
 	form.filter div.f_item.linklist div.f_value div {
-		display:block;
+		display: block;
 		font-size: 1.3em;
-		margin:3px 0;
+		margin: 3px 0;
 	}
 
 	form.filter div.f_submit{
@@ -400,11 +464,11 @@
 		width: 15em;
 	}
 	form.filter div.f_submit input {
-		font-weight:bold;
-		cursor:pointer;
-		margin-top:0.4em;
-		padding:2px 18px;
-		border:1px solid gray;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
+		font-weight: bold;
+		cursor: pointer;
+		margin-top: 0.4em;
+		padding: 2px 18px;
+		border: 1px solid gray;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
 		background-color: #e1e1e1;
 		background-image: linear-gradient(bottom, gray 0%, #e1e1e1 100%);
 		background-image: -o-linear-gradient(bottom, gray 0%, #e1e1e1 100%);
@@ -443,8 +507,8 @@
 	}
 		form.filter div.cll2_3 input
 		{
-		width:40px;
-		text-align:center;
+		width: 40px;
+		text-align: center;
 		}
 
 /* фильтр */
