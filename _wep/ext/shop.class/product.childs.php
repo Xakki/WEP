@@ -7,6 +7,7 @@ class product_class extends kernel_extends {
 		$this->caption = 'Продкция';
 		//$this->mf_statistic = array('Y'=>'count(id)','X'=>'FROM_UNIXTIME(mf_timecr,"%Y-%m")','Yname'=>'Кол','Xname'=>'Дата');//-%d
 		$this->messages_on_page = 20;
+		$this->reversePageN = false;
 		//$this->includeJStoWEP = true;
 		//$this->includeCSStoWEP = true;
 		$this->lang['add'] = 'Продукция добавлена.';
@@ -17,14 +18,11 @@ class product_class extends kernel_extends {
 		$this->owner_name = 'shop';
 		$this->_listnameSQL ='name';
 		$this->cf_fields = true; // Разрешить добавлять добавлять дополнительные поля в таблицу
-		$this->ver = '0.2.3';
+		$this->ver = '0.3.4';
 
-		$this->_enum['onComm']=array(
-			0=>'Отключить',
-			1=>'Включить');
 
 		$this->_enum['available']=array(
-			0=>'На складе',
+			0=>'Есть на складе',
 			1=>'Предзаказ',
 			2=>'Ожидается поставка',
 			3=>'Не доступно для заказа',
@@ -52,8 +50,9 @@ class product_class extends kernel_extends {
 
 		$this->config['temp_olden'] = 0;
 		$this->config['cf_fields'] = array();
-		$this->config_form['temp_olden'] = array('type' => 'checkbox', 'caption' => 'Включить дополнительные поля');
 
+
+		$this->config_form['temp_olden'] = array('type' => 'checkbox', 'caption' => 'Включить дополнительные поля');
 		$this->config_form['imageCnt'] = array('type' => 'int', 'caption' => 'Число фотографий');
 		$this->config_form['prodListTable'] = array('type' => 'list', 'keytype' => 'text', 'listname' => 'fieldslist', 'multiple' => 3, 'caption' => 'Формат вывода шаблона табличного списка', 'mask' => array('maxarr' => 15,'keylist'=>true));
 		$this->config_form['prodItem'] = array('type' => 'list', 'keytype' => 'text', 'listname' => 'fieldslist', 'multiple' => 3, 'caption' => 'Данные для вывода в информации о товаре', 'mask' => array('maxarr' => 15,'keylist'=>true));
@@ -100,8 +99,6 @@ class product_class extends kernel_extends {
 
 		parent::_create();
 
-		$this->reversePageN = (bool)$this->config['reversePage'];
-
 		$this->index_fields['img_product'] = 'img_product';
 		$this->index_fields['name'] = 'name';
 
@@ -139,8 +136,8 @@ class product_class extends kernel_extends {
 
 	public function setFieldsForm($form=0) {
 		parent::setFieldsForm($form);
-		global $_tpl;
-		$_tpl['script']['shop'] = array('/'.static_main::relativePath(dirname(__FILE__)).'/_design/script/shop.js');
+		global $_tpl, $HTML;
+		$_tpl['script']['../'.$HTML->_design.'/_shop/script/shop']=1;
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название товара');
 		$this->fields_form['shop'] = array(
 			'type' => 'list', 
@@ -174,8 +171,6 @@ class product_class extends kernel_extends {
 		$this->fields_form['img_product']['mask']['filter'] = 1;
 		$this->fields_form['img_product']['mask']['fview'] = 0;
 
-		if($this->config['onComm']=='1')
-			$this->fields_form['on_comm'] = array('type' => 'checkbox', 'caption' => 'Включить отзывы?','mask'=>array('fview'=>1));
 		//$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата создания', 'mask'=>array('fview'=>2,'sort'=>1));
 		//$this->fields_form['mf_ipcreate'] = array('type' => 'text', 'caption' => 'IP','readonly'=>1, 'mask'=>array('usercheck'=>1,'sort'=>1));
 		//$this->fields_form['statview'] = array('type' => 'int', 'caption' => 'Просмотры','readonly'=>1, 'mask' =>array('sort'=>1));
@@ -652,9 +647,20 @@ class product_class extends kernel_extends {
 					}
 					elseif($k=='mf_timecr')
 						$clauseF[$k] = 't1.mf_timecr>"'.(int)$r.'"';
+					elseif($k=='text') {
+						if($r) {
+							$clauseF[$k] = '(t1.name RLIKE "[[:<:]]'.$this->SqlEsc($r).'[[:>:]]" or t1.'.$k.' RLIKE "[[:<:]]'.$this->SqlEsc($r).'[[:>:]]")';
+						}
+					}
+					elseif($k=='name') {
+						if($r) {
+							$clauseF[$k] = 't1.name RLIKE "[[:<:]]'.$this->SqlEsc($r).'[[:>:]]"';
+						}
+					}
 					else {//if($k=='text' or $k=='descr')
-						if($r)
-							$clauseF[$k] = 't1.'.$k.' LIKE "%'.$this->SqlEsc($r).'%"';
+						if($r) {
+							$clauseF[$k] = 't1.'.$k.' LIKE "'.$this->SqlEsc($r).'"';
+						}
 					}
 				}
 				elseif($r=='1' and $k=='foto') {
@@ -701,15 +707,16 @@ class product_class extends kernel_extends {
 				$xml['cnt'] = $row['cnt'];
 
 				$xml['pagenum'] = $this->fPageNav($row['cnt']);
-				$pcnt = $xml['pcnt'] = $xml['pagenum']['start'];// Начальный отчет элементов на странице
+				//$xml['pagenum'] = $this->fPageNav2($row['cnt']);
 
+				// Начальный отчет элементов на странице
+				$xml['pcnt'] = $xml['pagenum']['start'];
+
+				$limit = $xml['pagenum']['start'].', '.$this->messages_on_page;
 			}
 
 			$clause['where'] .= ' GROUP BY t1.id ORDER BY '.$order.' DESC';
-			if(!$limit)
-				$clause['where'] .= ' LIMIT '.$pcnt.', '.$this->messages_on_page;
-			else
-				$clause['where'] .= ' LIMIT '.$limit;
+			$clause['where'] .= ' LIMIT '.$limit;
 			$pData = $this->fGetParamproduct('SELECT t4.*, t1.* '.implode(' ',$clause));// retutn $this->data
 			if(static_main::_prmUserCheck() and static_main::_prmModul($this->_cl, array(3)))
 				$moder = 1;
@@ -826,6 +833,7 @@ class product_class extends kernel_extends {
 			}*/
 			$r['moder']=$moder;
 			$r['rpath']=$this->owner->data2[$r['shop']]['path'];
+			$r['#available#']= $this->_enum['available'][$r['available']];
 
 			foreach($this->attaches as $tk=>$tr)
 				if($r[$tk]!='')

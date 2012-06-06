@@ -91,6 +91,8 @@
 					$FORM['summ']['value'] = $_POST['cost'] = $SHOPBASKET->getSummOrder($deliveryData);
 					$FORM['delivertype']['type'] = 'hidden';
 					$FORM['delivertype']['value'] = $_POST['delivertype'] = $_GET['typedelivery'];
+					$FORM['phone']['value'] = $_SESSION['user']['cf1'];
+					$FORM['adress']['value'] = $_SESSION['user']['cf2'];
 					$SHOPBASKET->allowedPay = $deliveryData['paylist'];
 					$SHOPBASKET->allowedPay = explode('|',trim($SHOPBASKET->allowedPay,'|'));
 					// Убираем ненужные поля

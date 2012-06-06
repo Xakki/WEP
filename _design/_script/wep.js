@@ -157,9 +157,6 @@ var wep = {
 				if(typeof result.text != 'undefined' && result.text!='') // Вывод ошибок и прочего текста
 					fLog(fSpoiler(result.text,'AJAX text result'),1);
 
-				//Запуск функции пользователя
-				if(typeof param['call'] != 'undefined' && typeof param['call'] == 'function') 
-					param['call'].call(result);
 //alert('f');
 				if(typeof result.eval != 'undefined')  { // запуск onload функции
 					if(typeof result.eval == 'function')
@@ -167,6 +164,10 @@ var wep = {
 					else if(result.eval!='') 
 						eval(result.eval);
 				}
+
+				//Запуск функции пользователя
+				if(typeof param['call'] != 'undefined' && typeof param['call'] == 'function') 
+					param['call'].call(result);
 //alert('g');
 			}
 		});

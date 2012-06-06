@@ -56,11 +56,16 @@
 							<a href="##vkorziny" title="В корзину" class="addlink">
 								<img src="/_design/'.$HTML->_design.'/_shop/img/basket-add.png" alt="В корзину"/>
 							</a>
+							<a href="##vkorziny" title="Перейти в корзину" class="gotobasket">
+								<img src="/_design/'.$HTML->_design.'/_shop/img/basket-go.png" alt="В корзину"/>
+							</a>
+							<input type="hidden" min="1" max="50" value="'.(isset($data['#basket#'][$r['id']])?$data['#basket#'][$r['id']]['count'].'" disabled="disabled':1).'"/>
+							';
+							/*
 							<a href="##vkorziny" title="Удалить из корзины" class="dellink">
 								<img src="/_design/'.$HTML->_design.'/_shop/img/basket-del.png" alt="Удалить из корзины"/>
 							</a>
-							<input type="number" min="1" max="50" value="'.(isset($data['#basket#'][$r['id']])?$data['#basket#'][$r['id']]['count'].'" disabled="disabled':1).'"/>
-							';
+							*/
 							$_tpl['script']['../'.$HTML->_design.'/_shop/script/shop'] = 1;
 						}
 					}

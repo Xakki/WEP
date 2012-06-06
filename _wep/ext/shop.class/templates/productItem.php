@@ -12,6 +12,7 @@
 			$_CFG['fileIncludeOption']['fancybox'] = true;
 			$_tpl['styles']['../'.$HTML->_design.'/_shop/style/product'] = 1;
 			$_tpl['styles']['form'] = 1;
+			$_tpl['script']['../'.$HTML->_design.'/_shop/script/shop'] = 1;
 
 			foreach($data['#item#'] as $r) {
 				$href = $data['#page#'].'/'.$r['rpath'].'/'.$r['path'].'_'.$r['id'].'.html';
@@ -40,32 +41,57 @@
 				if($r['descr'])
 					$html .= '<div class="proddescr">'.$r['descr'].'</div>';
 
-				
+
 				if(!$r['cost'])
-					$r['cost'] = '&#160;';
-				else
+					$r['cost'] = 'не указана';
+				else {
 					$r['cost'] = round($r['cost'],2).' <span class="cur">руб.</span>';
+					if(isset($r['sale'])) {
+						//if($r['sale']['name'])
+						//	$r['cost'] = '<div class="prodsale">'.$r['sale']['name'].'</div>';
+						$r['cost'] = '<span class="old">'.$r['old_cost'].'</span> '.$r['cost'];
+					}
+				}
+
+				/*PRICE BLOCK*/ 
+				$html .= '<div class="prodBlock">
+					<div class="prodBlock-price">
+						<p>Цена: <span class="cost">'.$r['cost'].'</span></p>
+						'.(isset($r['sale']['name'])?'<p class="sale ico"><i></i>'.$r['sale']['name'].'</p>':'').'
+						'.($data['#shopconfig#']['available']?'<p class="available ico"><i></i>'.$r['#available#'].'</p>':'').'
+					</div>';
+
+					if(isset($data['#basket#']) and isset($data['#shopconfig#']['orderset'][1]))
+						$html .= '<div class="prodBlock-button prodBlock-basket ico'.(isset($data['#basket#'][$r['id']])?' inbasket':'').'" data-id="'.$r['id'].'"><i></i>
+							<span class="put">Положить в корзину</span>
+							<span class="go" title="Товар лежит в корзине">Перейти в корзину</span>
+						</div>';
+
+					if(isset($data['#shopconfig#']['orderset'][0]))
+						$html .= '<div class="prodBlock-button prodBlock-buy1 ico" data-id="'.$r['id'].'"><i></i>Купить в 1 клик</div>';
+
+				$html .= '</div>';
+				/*PRICE BLOCK END*/ 
 				
-				if(isset($r['sale'])) {
+				/*if(isset($r['sale'])) {
 					if($r['sale']['name'])
 						$html .= '<div class="prodsale">'.$r['sale']['name'].'</div>';
 					$html .= '<div class="prodcost"><span class="old">'.$r['old_cost'].'</span> '.$r['cost'].'</div>';
 				} else
-					$html .= '<div class="prodcost">'.$r['cost'].'</div>';
+					$html .= '<div class="prodcost">'.$r['cost'].'</div>';*/
 
-				if(isset($data['#shopconfig#']['orderset'][0]))
+				/*if(isset($data['#shopconfig#']['orderset'][0]))
 					$html .= '<div class="buybotton">
 						<a href="##zakaz" alt="Оформить заказ" onclick="return JSWin({\'href\':\''.$_CFG['_HREF']['siteAJAX'].'?_modul=shop&_fn=jsOrder&id='.$r['id'].'\'});">Оформить заказ</a>
-					</div>';
+					</div>';*/
 
-				if(isset($data['#basket#']) and isset($data['#shopconfig#']['orderset'][1])) {
+				/*if(isset($data['#basket#']) and isset($data['#shopconfig#']['orderset'][1])) {
 					$html .= '<div class="buybotton'.(isset($data['#basket#'][$r['id']])?' sel':'').'">
 						<a href="javascript::void();" data-id="'.$r['id'].'" alt="Убрать товар из корзины" class="dellink">Убрать из корзины</a>
 						<a href="javascript::void();" data-id="'.$r['id'].'" alt="Положить товар в корзину" class="addlink">В корзину</a>
 						<input type="number" min="1" max="50" value="'.(isset($data['#basket#'][$r['id']])?$data['#basket#'][$r['id']]['count'].'" disabled="disabled':1).'"/>
 					</div>';
-					$_tpl['script']['../'.$HTML->_design.'/_shop/script/shop'] = 1;
-				}
+				}*/
 
 
 				if(count($r['param'])) {

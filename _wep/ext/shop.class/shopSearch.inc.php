@@ -32,7 +32,16 @@
 	if(!_new_class('shop',$SHOP)) return false;
 
 	$SHOP->simplefCache();
-	$DATA = $SHOP->childs['product']->fList(0,$_GET,0,$FUNCPARAM[1],$FUNCPARAM[2]);
+	$SHOP->childs['product']->messages_on_page = $FUNCPARAM[2];
+	$DATA = $SHOP->childs['product']->fList(0,$_GET,0,$FUNCPARAM[1]);
+
+	if($SHOP->basketEnabled)
+		$DATA['#basket#'] = $SHOP->fBasketData();
+
+	if(count($DATA['#item#']) and _new_class('shopsale',$SHOPSALE)) {
+		$SHOPSALE->getData($DATA['#item#']);
+	}
+
 	$DATA['#page#'] = $this->getHref($FUNCPARAM[3]);
 	if(strpos($_SERVER['REQUEST_URI'],'?')=== false)
 		$req = '?shop='.$rid;

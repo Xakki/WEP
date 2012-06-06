@@ -337,7 +337,7 @@ abstract class kernel_extends {
 		if($this->cf_fields and count($this->config['cf_fields'])) {
 			foreach($this->config['cf_fields'] as $fk=>$fr) {
 				$this->fields[$fk] = $fr;
-				if($fr['unique']) {
+				if(isset($fr['unique']) and $fr['unique']) {
 					$this->unique_fields[$fk] = $fk;
 				}
 			}
