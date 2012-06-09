@@ -68,7 +68,7 @@ class pg_class extends kernel_extends {
 		$this->caption = 'Страницы';
 		$this->selected = array();
 		$this->messages_on_page = 50;
-		$this->ver = '0.5.6';
+		$this->ver = '0.5.7';
 		$this->pageinfo =
 				$this->dataCash = $this->dataCashTree = $this->dataCashTreeAlias = array();
 		$this->pageParam = $this->pageParamId = array();
@@ -90,6 +90,7 @@ class pg_class extends kernel_extends {
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
 		$this->fields['name_in_menu'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['href'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'default' => '');
+		$this->fields['menuajax'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => 0);
 		$this->fields['design'] = array('type' => 'varchar', 'width' => 20, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['template'] = array('type' => 'varchar', 'width' => 20, 'attr' => 'NOT NULL', 'default' => 'default');
 		$this->fields['ugroup'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'default' => '|0|');
@@ -134,6 +135,7 @@ class pg_class extends kernel_extends {
 		$this->fields_form['template'] = array('type' => 'list', 'listname' => 'templates', 'caption' => 'Шаблон', 'mask' => array('onetd' => 'close'));
 
 		$this->fields_form['onmenu'] = array('type' => 'list', 'listname' => 'menu', 'multiple' => 2, 'caption' => 'Меню', 'mask' => array('onetd' => 'Опции'));
+		$this->fields_form['menuajax'] = array('type' => 'checkbox', 'caption' => 'AJAX', 'comment' => 'Загружать контент аяксом при клике в меню', 'default' => 0, 'style' => 'background-color:#33D142;');
 
 		$this->fields_form['onmap'] = array('type' => 'checkbox', 'caption' => 'Карта', 'comment' => 'Отображать эту страницу на карте сайта', 'default' => 1, 'style' => 'background-color:#B3D142;');
 		$this->fields_form['pagemap'] = array('type' => 'list', 'listname' => 'pagemap', 'caption' => 'Карта-php', 'comment' => 'Отображать на карте сайта, карту сгенерированную php', 'mask' => array('fview' => 1), 'style' => 'background-color:#B3D142;');
@@ -151,7 +153,7 @@ class pg_class extends kernel_extends {
 		
 		$this->formSort = array(
 			'Основное'=>array('alias','name','href','template','onmenu','ugroup','active'),
-			'Дополнительно'=>array('parent_id','name_in_menu','design','onmap','pagemap','pagemenu','onpath','attr','aparam','ordind'),
+			'Дополнительно'=>array('parent_id','name_in_menu','menuajax','design','onmap','pagemap','pagemenu','onpath','attr','aparam','ordind'),
 		);
 
 	}
@@ -835,7 +837,14 @@ class pg_class extends kernel_extends {
 					$name = $rowPG['name_in_menu'];
 				}
 
-				$DATA_PG[$keyPG] = array('name' => $name, 'href' => $href, 'attr' => $rowPG['attr'], 'sel' => $selPG, 'pgid' => $keyPG);
+				$DATA_PG[$keyPG] = array(
+					'name' => $name, 
+					'href' => $href, 
+					'attr' => $rowPG['attr'], 
+					'sel' => $selPG, 
+					'pgid' => $keyPG,
+					'menuajax'=>$rowPG['menuajax'], 
+				);
 				if ($flagPG == 0 and isset($this->dataCashTree[$keyPG])) {
 					$temp = $this->getMap($onmenuPG, $flagPG, $keyPG);
 					$DATA_PG[$keyPG]['#item#'] = $temp;

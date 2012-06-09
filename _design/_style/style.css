@@ -13,12 +13,17 @@
 	left:50%;
 	display:none;}
 
-.layerloader {
-	white-space:nowrap;
-	color:#F1F1F1;
-	font-weight:bold;
-	text-align:center;
-}
+	.layerloader {
+		white-space:nowrap;
+		color:#555;
+		font-weight:bold;
+		text-align:center;
+		padding:5px 17px 10px;
+		background-color:white;
+		overflow:auto;
+		max-height:90%;
+		border:2px solid gray;-moz-border-radius:8px;-webkit-border-radius:8px;border-radius:8px;
+	}
 
 .layerblock{
 	padding:5px 17px 10px;

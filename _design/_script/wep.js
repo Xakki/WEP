@@ -157,8 +157,8 @@ var wep = {
 				if(typeof result.text != 'undefined' && result.text!='') // Вывод ошибок и прочего текста
 					fLog(fSpoiler(result.text,'AJAX text result'),1);
 
-//alert('f');
-				if(typeof result.eval != 'undefined')  { // запуск onload функции
+				 // запуск onload функции
+				if(typeof result.eval != 'undefined')  {
 					if(typeof result.eval == 'function')
 						result.eval.call();
 					else if(result.eval!='') 
@@ -168,7 +168,7 @@ var wep = {
 				//Запуск функции пользователя
 				if(typeof param['call'] != 'undefined' && typeof param['call'] == 'function') 
 					param['call'].call(result);
-//alert('g');
+
 			}
 		});
 		return false;
@@ -225,6 +225,15 @@ var wep = {
 		}
 	},
 
+	ajaxMenu: function(pg) {
+		wep.fShowload(1,false,false,true);
+		marker = {'text':'#ajaxload .layerloader'};
+		wep.ajaxLoadPage(marker,pg);
+		//wep.fShowload(1,param['body'],result.html,param['fade'],param['onclk']);
+		return false;
+	},
+
+
 	ajaxLoadPage: function(marker,pg,call) {
 		if(!pg) pg = this.pgId;
 		marker['_view'] = 'loadpage';
@@ -236,8 +245,16 @@ var wep = {
 			'type':'GET',
 			'data': marker
 		};
-		if(call)
-			param['call'] = call;
+		/*if(call)
+			param['call'] = call;*/
+		param['call'] = function() {
+			for(var item in marker) {
+				if(this['pg_'+item]) {
+					jQuery(marker[item]).html(this['pg_'+item]);
+				}
+			}
+			wResize();
+		};
 		JSWin(param);
 		return false;
 	},
@@ -749,9 +766,6 @@ function OnJSWin(obj,param) {
 	return false;
 }
 
-function ajaxLoadPage(pg,marker,call) {
-	return wep.ajaxLoadPage(marker,pg,call);
-}
 
 function getBrowserInfo() {
 	return wep.getBrowserInfo();

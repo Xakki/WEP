@@ -69,8 +69,10 @@
 	}
 	elseif(isset($_REQUEST['_view']) && $_REQUEST['_view']=='loadpage') {
 		require_once($_CFG['_PATH']['core'].'/html.php');
-		$_COOKIE['_showallinfo'] = 0;
-		$_COOKIE['_showerror'] = 0;
+		$_COOKIE[$_CFG['wep']['_showerror']] = 0;
+		$_COOKIE[$_CFG['wep']['_showallinfo']] = 0;
+		$_CFG['wep']['debugmode'] = 0;
+
 		$DATA  = array();
 		session_go();
 		_new_class('pg',$PGLIST);
@@ -88,7 +90,7 @@
 				if($k!='styles' and $k!='script')
 					$_REQUEST[$k] = array('replaceWith'=>$_REQUEST['_slc']);
 			}
-		}
+		};
 		//$_tpl['logs'] = '';
 		//print_r('<pre>');print_r($_tpl);
 		//$GLOBALS['_RESULT']['html2'] = $_tpl;
@@ -96,15 +98,21 @@
 			if($k=='onload') {
 				$GLOBALS['_RESULT']['eval'] .= $_tpl[$k];
 			}
+			else if($k=='styles') {
+				$GLOBALS['_RESULT']['styles'] = $_tpl[$k];
+			}
+			else if($k=='script') {
+				$GLOBALS['_RESULT']['script'] = $_tpl[$k];
+			}
 			else if(isset($_tpl[$k])) {
 				$GLOBALS['_RESULT']['pg_'.$k] = $_tpl[$k];
-				if(!isset($_REQUEST['onlyget'])) {
+				/*if(!isset($_REQUEST['onlyget'])) {
 					if(is_array($r)) {
 						foreach($r as $vk=>$vr)
 							$GLOBALS['_RESULT']['eval'] = 'jQuery(\''.$vr.'\').'.$vk.'(result.pg_'.$k.');'.$GLOBALS['_RESULT']['eval'];
 					} else//replaceWith
 						$GLOBALS['_RESULT']['eval'] = 'jQuery(\''.$r.'\').html(result.pg_'.$k.');'.$GLOBALS['_RESULT']['eval'];
-				}
+				}*/
 			}
 		}
 		//print_r('<pre>');print_r($GLOBALS['_RESULT']);

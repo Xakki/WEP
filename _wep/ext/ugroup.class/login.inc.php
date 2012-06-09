@@ -23,6 +23,8 @@
 		);
 		return $form;
 	}
+
+
 	if($FUNCPARAM[1])
 		$FUNCPARAM[1] = $this->getHref($FUNCPARAM[1],true);
 	if($FUNCPARAM[3])
@@ -62,8 +64,10 @@
 		'ref'=>$ref,
 		'#title#'=>$Ctitle,
 		'remindpage'=>$FUNCPARAM[1],
-		'regpage'=>$FUNCPARAM[3]
+		'regpage'=>$FUNCPARAM[3],
+		'#page#'=>$Chref,
 	);
+
 	if(count($result)) {
 		$mess['messages'][0][1] = $result[0];
 		if($result[1]) {
