@@ -504,26 +504,34 @@ class users_class extends kernel_extends {
 
 	function regForm($param=array(), $argForm=null) {
 		global $_MESS,$_tpl;
-		$flag=0;// 1 - успешно, 0 - норм, -1  - ошибка
-		$formflag = 1;// 0 - показывает форму, 1 - не показывать форму
-		$arr = array('mess'=>array(),'vars'=>array());
+		$flag=0; // 1 - успешно, 0 - норм, -1  - ошибка
+		$formflag = 1; // 0 - показывает форму, 1 - не показывать форму
+		$arr = array('mess'=>array(), 'vars'=>array());
 		$mess = $DATA = array();
-		if(static_main::_prmUserCheck()) {
-			$this->id = (int)$_SESSION['user']['id'];
+
+		if($this->id) {
+			//$this->id = (int)$_SESSION['user']['id'];
 			$this->data = $this->_select();
 			$DATA = current($this->data);
 		}
 		else {
-		// добавлены настройки на форму регистрации
-			if(!$this->owner->config['reg']) 
-				return array(array('messages'=>array(
-					static_main::am('error','deniedreg')
-				)),1);			
+			// добавлены настройки на форму регистрации
+			if(!$this->owner->config['reg']) {
+				return array(
+					array(
+						'messages'=>array(
+							static_main::am('error','deniedreg')
+						)
+					),
+					1
+				);
+			}
 			$DATA = $_POST;
-			$this->id = 0;
+			$this->id = null;
 			if(count($_POST) and $_POST['sbmt'] and isset($_SESSION['user']))
 				unset($_SESSION['user']);
 		}
+
 		if(is_null($argForm))
 			$argForm = $this->fields_form;
 
@@ -552,17 +560,19 @@ class users_class extends kernel_extends {
 						$arr['vars']['active']=0;
 						if(!isset($arr['vars'][$this->mf_namefields]) or !$arr['vars'][$this->mf_namefields])
 							$arr['vars'][$this->mf_namefields] = $arr['vars'][$this->fn_login];
-						$arr['vars']['reg_hash']=md5(time().$arr['vars'][$this->fn_login]);
+						$arr['vars']['reg_hash'] = md5(time().$arr['vars'][$this->fn_login]);
+
 						//$_SESSION['user'] = $arr['vars']['id'];
 						if(isset($param['owner_id'])) {
-							$arr['vars']['owner_id']= $param['owner_id'];
+							$arr['vars']['owner_id'] = $param['owner_id'];
 						}
 						elseif($this->owner->config['premoderation']) {
-							$arr['vars']['owner_id']= $this->owner->config['modergroup'];
+							$arr['vars']['owner_id'] = $this->owner->config['modergroup'];
 						}
 						else {
-							$arr['vars']['owner_id']= $this->owner->config['reggroup'];
+							$arr['vars']['owner_id'] = $this->owner->config['reggroup'];
 						}
+
 						if($this->_add($arr['vars'])) {
 							$this->SQL->execSQL('UPDATE '.$this->tablename.' SET '.$this->mf_createrid.'="'.$this->id.'" where id="'.$this->id.'"');
 							$this->sendRegMail($this->data[$this->id],$pass);
@@ -570,7 +580,7 @@ class users_class extends kernel_extends {
 							$arr['mess'][] = static_main::am('ok','regok');
 						} else
 							$arr['mess'][] = static_main::am('error','regerr');
-					} 
+					}
 					else { // профиль
 						if($this->id==$_SESSION['user']['id'])
 							unset($arr['vars']['active']);
@@ -586,7 +596,8 @@ class users_class extends kernel_extends {
 					}
 				}
 			}
-		} else  {
+		} 
+		else  {
 			$mess = $this->kPreFields($DATA,$param,$argForm);
 		}
 

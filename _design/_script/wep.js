@@ -6,6 +6,9 @@
 
 var wep = {
 	version: '0.1.2',/*Версия скрипта*/
+	BH:'',
+	HREF_style:'_design/_style/',
+	HREF_script:'_design/_script/',
 	pgId:0,/* ID текущей страницы (загружается из onLOAD)*/
 	pgParam: {},/* параметры текущей страницы (загружается из onLOAD)*/
 	pgGet : {}, // GET параметры
@@ -116,7 +119,6 @@ var wep = {
 				return data;
 			},*/
 			success: function(result, textStatus, XMLHttpRequest) {
-//alert('s');
 				//функц. предзапуска пользователя, возвращает результат
 				if(typeof param['precall'] != 'undefined' && typeof param['precall'] == 'function') 
 					result = param['precall'].call(result);
@@ -158,16 +160,30 @@ var wep = {
 					fLog(fSpoiler(result.text,'AJAX text result'),1);
 
 				 // запуск onload функции
-				if(typeof result.eval != 'undefined')  {
-					if(typeof result.eval == 'function')
-						result.eval.call();
-					else if(result.eval!='') 
-						eval(result.eval);
+				if(typeof result.onload != 'undefined')  {
+					if(typeof result.onload == 'function')
+						result.onload.call();
+					else if(result.onload!='') {
+						eval(result.onload);
+					}
+				}
+
+				 // подключение Стилей
+				if(typeof result.styles != 'undefined')  {
+					//console.log(result.styles);
+					wep.cssLoad(result.styles);
+				}
+
+				 // подключение скриптов
+				if(typeof result.script != 'undefined')  {
+					//console.log(result.script);
+					wep.scriptLoad(result.script);
 				}
 
 				//Запуск функции пользователя
-				if(typeof param['call'] != 'undefined' && typeof param['call'] == 'function') 
+				if(typeof param['call'] != 'undefined' && typeof param['call'] == 'function') {
 					param['call'].call(result);
+				}
 
 			}
 		});
@@ -227,10 +243,23 @@ var wep = {
 
 	ajaxMenu: function(pg) {
 		wep.fShowload(1,false,false,true);
-		marker = {'text':'#ajaxload .layerloader'};
-		wep.ajaxLoadPage(marker,pg);
-		//wep.fShowload(1,param['body'],result.html,param['fade'],param['onclk']);
+		var marker = {'text':1};
+		var call = function() {wep.ajaxMenuCall(this);};
+		wep.ajaxLoadPage(marker,pg,call);
 		return false;
+	},
+
+	ajaxMenuCall: function(resData) {
+		// Функция обратного вызова при получении данных от аякса
+		resData['pg_text'] = '<div class="blockhead">'+resData['title']+'</div><hr/>'+resData['pg_text'];
+		wep.fShowload(1,false,resData['pg_text']);
+
+		wep.paramTemp = {'call':function() {wep.ajaxMenuCall(this)}};
+		if(resData.styles.login || resData.script.wepform) {
+			$('#ajaxload form').one('submit',function() {console.log('+'); wep.paramTemp['type'] = $(this); JSWin(wep.paramTemp); return false;});
+		}
+
+		setTimeout(wResize,500);
 	},
 
 
@@ -239,27 +268,41 @@ var wep = {
 		marker['_view'] = 'loadpage';
 		marker['_pgId'] = pg;
 		marker['pageParam'] = wep.pgParam;
+		marker['onload']=1;
+		marker['styles']=1;
+		marker['script']=1;
 		// TODO marker = wep.pgGet + marker;
 		param = {
 			'href':wep.siteJSON,
 			'type':'GET',
 			'data': marker
 		};
-		/*if(call)
-			param['call'] = call;*/
-		param['call'] = function() {
-			for(var item in marker) {
-				if(this['pg_'+item]) {
-					jQuery(marker[item]).html(this['pg_'+item]);
-				}
-			}
-			wResize();
-		};
+
+		if(call)
+			param['call'] = call;
+		else
+			param['call'] = function() {wep.ajaxLoadPageCall(this,marker)};
 		JSWin(param);
 		return false;
 	},
 
-	ajaxLoadContent: function(ctId,selector,call) {
+	ajaxLoadPageCall: function(resData, marker) {
+		// Функция обратного вызова при получении данных от аякса
+		for(var item in marker) {
+			if(resData['pg_'+item]) {
+				jQuery(marker[item]).html(resData['pg_'+item]);
+			}
+		}
+
+		wep.paramTemp = {'call':function() {wep.ajaxLoadPageCall(this);}};
+		if(resData.styles.login || resData.script.wepform) {
+			$('#ajaxload form').one('submit',function() {wep.paramTemp['type'] = $(this); JSWin(wep.paramTemp); return false;});
+		}
+
+		setTimeout(wResize,500);
+	},
+
+	ajaxLoadContent: function(ctId,selector,callFunc) {
 		if(!ctId) return false;
 		param = {
 			'href' : wep.siteJSON,
@@ -268,8 +311,11 @@ var wep = {
 			'insertObj' : selector,
 			'insertType' : 'replace'
 		};
-		if(call)
-			param['call'] = call;
+		
+		if(callFunc)
+			param['call'] = function(){callFunc.call();};
+		/*else
+			param['call'] = function(){};*/
 		JSWin(param);
 		return false;
 	},
@@ -446,6 +492,26 @@ var wep = {
 	deleteCookie: function(name, path, domain) {
 		this.setCookie(name, null, -100, path, domain);
 		return true;
+	},
+
+	cssLoad: function(css) {
+		for(var i in css) {
+			if(i && css[i]==1) {
+				$.includeCSS(wep.BH+wep.HREF_style+i+'.css');
+			} else {
+				// TODO прочие виды загрузок
+			}
+		}
+	},
+
+	scriptLoad: function(script) {
+		for(var i in script) {
+			if(i && script[i]==1) {
+				$.include(wep.BH+wep.HREF_script+i+'.js');
+			} else {
+				// TODO прочие виды загрузок
+			}
+		}
 	},
 
 	ShowTools: function(id,hrf) {

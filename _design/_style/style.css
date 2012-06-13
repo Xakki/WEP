@@ -13,7 +13,7 @@
 	left:50%;
 	display:none;}
 
-	.layerloader {
+	#ajaxload .layerloader {
 		white-space:nowrap;
 		color:#555;
 		font-weight:bold;
@@ -25,37 +25,39 @@
 		border:2px solid gray;-moz-border-radius:8px;-webkit-border-radius:8px;border-radius:8px;
 	}
 
-.layerblock{
-	padding:5px 17px 10px;
-	background-color:white;
-	overflow:auto;
-	max-height:90%;
-	border:2px solid gray;-moz-border-radius:8px;-webkit-border-radius:8px;border-radius:8px;
-}
+	#ajaxload .layerblock {
+		padding:5px 17px 10px;
+		background-color:white;
+		overflow:auto;
+		max-height:90%;
+		border:2px solid gray;-moz-border-radius:8px;-webkit-border-radius:8px;border-radius:8px;
+	}
 
-	.blockhead{
+	#ajaxload .blockhead {
 		padding:3px 0;
-		font-size:0.85em;
+		font-size:1.1em;
 		font-weight:bold;
 		text-align:center;	
+	}
+
+	#ajaxload .layerblock hr {
+		margin:0;
+	}
+
+	#ajaxload .blockclose {
+		cursor:pointer;
+		position:absolute;
+		right:2px;
+		top:2px;
+		height:30px;
+		width:30px;
+		background: url("../_img/jquery.fancybox/fancy_close.png") repeat scroll 0 0 transparent;
 	}
 
 	.cnone {
 		display:none;
 		font-size:1px;
 		height:1px;}
-
-	
-	/*CLOSE LAYER*/
-	.blockclose {
-		cursor:pointer;
-		position:absolute;
-		right:-21px;
-		top:-21px;
-		height:30px;
-		width:30px;
-		background: url("../_img/jquery.fancybox/fancy_close.png") repeat scroll 0 0 transparent;
-	}
 
 	.uiicons {
 		width: 16px; 
@@ -185,45 +187,3 @@
 	border-bottom-width:12px;
 }
 
-/*LOGIN FORM*/
-.spanor {
-	border-top: 1px solid #E1E1E1;
-	border-bottom: 1px solid #E1E1E1;
-	display: block;
-	margin: 0;
-	padding: 2px 160px;
-	clear: both;
- }
-div.layerblock {
-
-}
-div.layerblock div.cform {
-	padding: 10px;
-	float: none;
-	width: 150px;
-	margin: 0 auto;
-}
-
-div.layerblock div.cform form div {
-	font-size:11px;text-align:left;
-}
-div.layerblock div.cform input {
-		width:130px;
-		margin:0 0 2px 0;
-		text-align:center;
-		border:2px #63A6CC solid;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
-}
-div.layerblock div.cform .submit {
-	margin:7px auto 0 auto;
-	width:100px;
-	text-align:center;
-}
-div.layerblock .messhead {
-	font-size:19px;
-	color:#228B22;
-	font-weight:bold;
-}
-div.layerblock .messelem {font-weight:bold;font-size:15px;text-align:center;color:gray;}
-div.layerblock .messelem a {
-	font-size:14px;
-}

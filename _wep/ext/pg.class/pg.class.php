@@ -334,14 +334,16 @@ class pg_class extends kernel_extends {
 			$this->pageinfo['template'] = 'default';
 		}
 		$HTML->_templates = $this->pageinfo['template'];
-
-		$_tpl['onload'] = 'if(typeof wep !== "undefined") {
-			wep.pgId = ' . $this->id . ';
-			wep.pgParam =' . $pageParamEncode . ';
-			wep.pgGet =' . $getEncode . ';
-			wep.siteJS = "' . $this->_CFG['_HREF']['siteJS'] . '";
+		if($this->_CFG['returnFormat'] == 'html') {
+			$_tpl['onload'] = 'if(typeof wep !== "undefined") {
+				wep.pgId = ' . $this->id . ';
+				wep.pgParam =' . $pageParamEncode . ';
+				wep.pgGet =' . $getEncode . ';
+				wep.siteJS = "' . $this->_CFG['_HREF']['siteJS'] . '";
+				wep.BH = "' . $this->_CFG['_HREF']['BH'] . '";
+			}
+			' . $_tpl['onload'];
 		}
-		' . $_tpl['onload'];
 		return true;
 	}
 

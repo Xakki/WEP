@@ -66,7 +66,7 @@
 		exit(static_main::m('denied'));
 	}*/
 
-	$GLOBALS['_RESULT'] = array("html" => $html,"html2" => $html2,'eval'=>$_tpl['onload']);
+	$GLOBALS['_RESULT'] = array("html" => $html,"html2" => $html2,'onload'=>$_tpl['onload']);
 
 	if(isset($_GET['noajax']) and !isset($_GET['_template'])) {
 		header('Content-type: text/html; charset=utf-8');

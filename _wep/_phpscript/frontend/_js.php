@@ -1,7 +1,7 @@
 <?php
 	if(!$_CFG['_PATH']['wep'] or !$_CFG['_PATH']['path']) die('ERROR');
 	global $_tpl;
-	$GLOBALS['_RESULT'] = array('html' => '','html2' => '','eval'=>'');
+	$GLOBALS['_RESULT'] = array('html' => '','html2' => '','onload'=>'');
 	$html=$html2='';
 
 	if(!isset($_GET['noajax']))
@@ -30,10 +30,6 @@
 		if(isset($_GET['_template'])) {
 			$_tpl = $GLOBALS['_RESULT'];
 			$HTML->_templates = $_GET['_template'];
-		}
-		elseif(isset($GLOBALS['_RESULT']['onload']) and !isset($GLOBALS['_RESULT']['eval'])) {
-			$GLOBALS['_RESULT']['eval'] = $GLOBALS['_RESULT']['onload'];
-			unset($GLOBALS['_RESULT']['onload']);
 		}
 
 	}
@@ -71,7 +67,7 @@
 		}else
 			$html='ERrOR';
 
-		$GLOBALS['_RESULT'] = array("html" => $html,"html2" => $html2,'eval'=>$_tpl['onload']);
+		$GLOBALS['_RESULT'] = array("html" => $html,"html2" => $html2,'onload'=>$_tpl['onload']);
 	}
 	/*
 	include($_CFG['_PATH']['core'].'/includesrc.php');

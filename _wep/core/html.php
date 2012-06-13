@@ -106,7 +106,7 @@ class html {
 			/* include_once($_CFG['_PATH']['core'].'/includesrc.php');
 			  fileInclude($_CFG['fileIncludeOption']);
 			  arraySrcToFunc();
-			  $GLOBALS['_RESULT']['eval'] = $_tpl['onload']; */
+			  $GLOBALS['_RESULT']['onload'] = $_tpl['onload']; */
 		}
 	}
 

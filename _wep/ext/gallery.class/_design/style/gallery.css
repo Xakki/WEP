@@ -1,0 +1,22 @@
+
+.gallery {
+}
+
+.gallery li {
+	display:inline-block;
+	margin:10px;
+	text-align:center;
+}
+
+.gallery li a {
+}
+
+.gallery li img {
+	height:80px;
+	padding:5px; margin:5px;
+	border:1px gray;
+}
+
+.gallery li div {
+	text-align:center;
+}

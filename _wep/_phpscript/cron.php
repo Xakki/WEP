@@ -49,7 +49,7 @@
 
 			$ini_arr['last_time' . $key_cron] = $time;
 			$ini_arr['do_time' . $key_cron] = getmicrotime()-$tt;
-			$ini_arr['res' . $key_cron] = '"'.str_replace(array("\n","\r"),'',addslashes((string)$result)).'"';
+			$ini_arr['res' . $key_cron] = '"*'.str_replace(array("\n","\r"),'',addslashes((string)$result)).'"';
 			$res_cron .= $result;
 		}
 	}

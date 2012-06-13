@@ -36,6 +36,8 @@
 	}
 	$argForm[$UGROUP->childs['users']->fn_pass] = array('type' => 'password', 'caption' => 'Для подтверждения введите пароль','mask'=>array('min' => '6','fview'=>1, 'password'=>'confirm'));
 
+	$UGROUP->childs['users']->id = (int)$_SESSION['user']['id'];
+
 	list($DATA[$FUNCPARAM[0]],$flag) = $UGROUP->regForm($param,$argForm);
 	$html = $HTML->transformPHP($DATA,$FUNCPARAM[0]);
 

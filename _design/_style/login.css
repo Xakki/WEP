@@ -1,32 +1,51 @@
+.loginForm {
+}
 
 .cform {
 	width:200px;
-	margin:10px auto 20px;}
+	margin:10px auto 20px;
+	padding: 10px;
+	float: none;
+}
+
 .cform img {width:200px;border:0 none;}
 .cform form div {
-	font-size:11px;text-align:left;
+	font-size:13px;text-align:left;
 }
+
 .cform input {
-		width:200px;
-		margin:0 0 2px 0;
-		text-align:center;
-		border:2px #63A6CC solid;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
+	width:200px;
+	margin:0 0 2px 0;
+	text-align:center;
+	border:2px #63A6CC solid;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
 }
+
 .cform .submit {
-	margin:7px 0 0 0px;
-	width:204px;
+	width:200px;
+	margin:7px auto 0 auto;
+	text-align:center;
 }
+
+
+/*MESSAGE*/
+
 .messhead {
 	font-size:1em;
 	color:#228B22;
 	font-weight:bold;
 }
-.messelem {font-weight:bold;font-size:15px;text-align:center;color:gray;}
+
+.messelem {
+	font-weight:bold;
+	font-size:15px;
+	text-align:center;
+	color:gray;
+}
+
 .messelem a {
 	font-size:14px;
 }
 
-/*MESSAGE*/
 .messages, messages {
 	font-size:1em;
 	text-align:center;
@@ -44,33 +63,85 @@
 	color:#d93f36;
 	font-weight: bold;
 }
+
 .messages .ok, messages ok, .ok {
 	margin: 0 0 3px 0;
 	color:green;
 }
+
 .messages .alert, messages alert, .alert {
 	margin: 0 0 3px 0;
 	color:blue;
 }
 
+.spanor {
+	border-top: 1px solid #E1E1E1;
+	border-bottom: 1px solid #E1E1E1;
+	display: block;
+	margin: 0;
+	padding: 2px 160px;
+	clear: both;
+}
+
 
 /*loginza*/
 
-.loginza {
+.loginzaForm {
 	text-align:center;
 }
 
-.loginza iframe {
+.loginzaForm a {
+	white-space:nowrap;
+}
+
+.loginzaForm iframe {
 	width:330px;
 	display:inline-block;
 }
 
-.loginza .cform {
+.loginzaForm .cform {
 	width:210px;
 	display:inline-block;
 	vertical-align: top;
 	margin:0 50px 0 40px;
+	padding:10px;
 	text-align:left;
+	float: none;
 }
 
+.loginzaForm div.cform input {
+	width:200px;
+	margin:0 0 2px 0;
+	text-align:center;
+	font-size: 17px;
+	border:2px #63A6CC solid;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
+}
 
+.loginzaForm div.cform .submit {
+	margin:7px auto 0 auto;
+	width:100px;
+	text-align:center;
+}
+
+.loginzaForm .messhead {
+	font-size:19px;
+	color:#228B22;
+	font-weight:bold;
+}
+
+.loginzaForm .messelem {font-weight:bold;font-size:15px;text-align:center;color:gray;}
+.loginzaForm .messelem a {
+	font-size:14px;
+}
+
+/*Reg FORM*/
+#form_users {
+	width:290px;
+	margin: 0 auto;
+}
+#form_users input {
+	font-size:17px;
+}
+#form_users input.secret {
+	font-size: 2em;
+}

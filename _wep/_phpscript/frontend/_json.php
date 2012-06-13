@@ -1,7 +1,7 @@
 <?php
 	if(!$_CFG['_PATH']['wep']) die('ERROR');
 
-	$GLOBALS['_RESULT']	= array('html'=>'','eval'=>'');
+	$GLOBALS['_RESULT']	= array('html'=>'','onload'=>'');
 	$_tpl['onload']=$html=$html2='';
 
 	if (!isset($_GET['html']) and !isset($_GET['noajax']))
@@ -69,9 +69,6 @@
 	}
 	elseif(isset($_REQUEST['_view']) && $_REQUEST['_view']=='loadpage') {
 		require_once($_CFG['_PATH']['core'].'/html.php');
-		$_COOKIE[$_CFG['wep']['_showerror']] = 0;
-		$_COOKIE[$_CFG['wep']['_showallinfo']] = 0;
-		$_CFG['wep']['debugmode'] = 0;
 
 		$DATA  = array();
 		session_go();
@@ -83,39 +80,44 @@
 		if(isset($_REQUEST['_pgId'])) {
 			$PGLIST->id = (int)$_REQUEST['_pgId'];
 			$PGLIST->display(false);
+
+			$GLOBALS['_RESULT']['title'] = $PGLIST->pageinfo['name'];
+
+			// Подключение функциональных скриптов
+			include($_CFG['_PATH']['core'].'/includesrc.php');
+			fileInclude($_CFG['fileIncludeOption']);
+
+			foreach($_REQUEST as $k=>$r) {
+				if($k=='onload') {
+					$GLOBALS['_RESULT']['onload'] .= $_tpl[$k];
+				}
+				else if($k=='styles') {
+					$GLOBALS['_RESULT']['styles'] = $_tpl[$k];
+				}
+				else if($k=='script') {
+					$GLOBALS['_RESULT']['script'] = $_tpl[$k];
+				}
+				else if(isset($_tpl[$k])) {
+					$GLOBALS['_RESULT']['pg_'.$k] = $_tpl[$k];
+					/*if(!isset($_REQUEST['onlyget'])) {
+						if(is_array($r)) {
+							foreach($r as $vk=>$vr)
+								$GLOBALS['_RESULT']['onload'] = 'jQuery(\''.$vr.'\').'.$vk.'(result.pg_'.$k.');'.$GLOBALS['_RESULT']['onload'];
+						} else//replaceWith
+							$GLOBALS['_RESULT']['onload'] = 'jQuery(\''.$r.'\').html(result.pg_'.$k.');'.$GLOBALS['_RESULT']['onload'];
+					}*/
+				}
+			};
+			/////////////////////////////////////
 		}
 		elseif(isset($_REQUEST['_ctId'])) {
 			$PGLIST->display_inc((int)$_REQUEST['_ctId'],$_GET['_design']);
+			$GLOBALS['_RESULT']['html'] = '';
 			foreach($_tpl as $k=>$r) {
-				if($k!='styles' and $k!='script')
-					$_REQUEST[$k] = array('replaceWith'=>$_REQUEST['_slc']);
+				if($k!='styles' and $k!='script' and $k!='onload')
+					$GLOBALS['_RESULT']['html'] .= $r;
 			}
 		};
-		//$_tpl['logs'] = '';
-		//print_r('<pre>');print_r($_tpl);
-		//$GLOBALS['_RESULT']['html2'] = $_tpl;
-		foreach($_REQUEST as $k=>$r) {
-			if($k=='onload') {
-				$GLOBALS['_RESULT']['eval'] .= $_tpl[$k];
-			}
-			else if($k=='styles') {
-				$GLOBALS['_RESULT']['styles'] = $_tpl[$k];
-			}
-			else if($k=='script') {
-				$GLOBALS['_RESULT']['script'] = $_tpl[$k];
-			}
-			else if(isset($_tpl[$k])) {
-				$GLOBALS['_RESULT']['pg_'.$k] = $_tpl[$k];
-				/*if(!isset($_REQUEST['onlyget'])) {
-					if(is_array($r)) {
-						foreach($r as $vk=>$vr)
-							$GLOBALS['_RESULT']['eval'] = 'jQuery(\''.$vr.'\').'.$vk.'(result.pg_'.$k.');'.$GLOBALS['_RESULT']['eval'];
-					} else//replaceWith
-						$GLOBALS['_RESULT']['eval'] = 'jQuery(\''.$r.'\').html(result.pg_'.$k.');'.$GLOBALS['_RESULT']['eval'];
-				}*/
-			}
-		}
-		//print_r('<pre>');print_r($GLOBALS['_RESULT']);
 	}
 	elseif (isset($_REQUEST['fileupload'])) {
 		if (isset($_FILES['Filedata']) && $_FILES['Filedata']['error'] == 0) {
@@ -149,7 +151,7 @@
 	}
 	elseif($_GET['_view']=='exit') {
 		static_main::userExit();
-		$GLOBALS['_RESULT']['eval'] = 'window.location.href=window.location.href;';
+		$GLOBALS['_RESULT']['onload'] = 'window.location.href=window.location.href;';
 	}
 	elseif($_GET['_view']=='login') {
 		$res=array('',0);
@@ -157,14 +159,14 @@
 		{
 			$res = static_main::userAuth($_POST['login'],$_POST['pass']);// повесить обработчик xml
 			if($res[1]) {
-				$GLOBALS['_RESULT']['eval'] .= "window.location.reload();";
+				$GLOBALS['_RESULT']['onload'] .= "window.location.reload();";
 			}
 		}
 		if(!$res[1]) {
 			if(count($_POST)) {
 				$GLOBALS['_RESULT']['html2'] = '<div style="font-size:12px;color:red;white-space:normal;">'.$res[0].'</div>';
 				//$_tpl['onload'] = 'clearTimeout(timerid2); fShowload(1,result.html2,0,"loginblock"); jQuery("#loginblock>div.layerblock").show(); '.$_tpl['onload'];
-				$GLOBALS['_RESULT']['eval'] = 'clearTimeout(timerid2);jQuery(\'div.messlogin\').hide().html(result.html2).show(\'slow\');'.$_tpl['onload'];
+				$GLOBALS['_RESULT']['onload'] = 'clearTimeout(timerid2);jQuery(\'div.messlogin\').hide().html(result.html2).show(\'slow\');'.$_tpl['onload'];
 				$html='';
 			}
 		}

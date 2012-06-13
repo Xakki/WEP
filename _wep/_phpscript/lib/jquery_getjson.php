@@ -19,9 +19,9 @@
 		function _obHandler($buf) {
 			global $GLOBALS,$_tpl;
 			if($buf) $GLOBALS['_RESULT']['text'] = $buf;
-			if(isset($_tpl['time']) and $_tpl['time'])  $GLOBALS['_RESULT']['eval'] .= '$(\'#inftime\').html(\''.$_tpl['time'].'\');';
+			if(isset($_tpl['time']) and $_tpl['time'])  $GLOBALS['_RESULT']['onload'] .= '$(\'#inftime\').html(\''.$_tpl['time'].'\');';
 			if(isset($_tpl['onload2']) and count($_tpl['onload2']))
-				$GLOBALS['_RESULT']['eval'] .= implode(' ',$_tpl['onload2']);
+				$GLOBALS['_RESULT']['onload'] .= implode(' ',$_tpl['onload2']);
 			
 			if(version_compare(phpversion(),'5.3.0','>')) {
 				$GLOBALS['_RESULT'] = $this->allreplace($GLOBALS['_RESULT']);

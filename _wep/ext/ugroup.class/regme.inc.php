@@ -56,8 +56,12 @@
 		}
 		$argForm[$UGROUP->childs['users']->fn_pass] = array('type' => 'password', 'caption' => 'Пароль','mask'=>array('min' => '6','fview'=>1));
 
-		list($DATA[$FUNCPARAM[0]],$flag) = $UGROUP->regForm($param,$argForm);
+		$UGROUP->childs['users']->id = null;
 
+		list($DATA,$flag) = $UGROUP->regForm($param,$argForm);
+		unset($DATA['form']['_info']);
 		$html = $HTML->transformPHP($DATA,$FUNCPARAM[0]);
+
+		$_tpl['styles']['login']=1;
 	}
 	return $html;

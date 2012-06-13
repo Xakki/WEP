@@ -10,7 +10,7 @@ class gallery_class extends kernel_extends {
 		$this->caption = 'Галлерея';
 		$this->version = 0.1;
 		$this->messages_on_page = 10;
-		$this->numlist=10;
+		$this->numlist = 10;
 		//$this->reversePageN = true;
 		return true;
 	}
@@ -64,6 +64,21 @@ class gallery_class extends kernel_extends {
 	function _childs() {
 		parent::_childs();
 		$this->create_child('gallitem');
+	}
+
+	function mainList() {
+		if($this->id) {
+			$data['#info-gallery#'] = $this->qs('*', 'WHERE id='.$this->id.' and active=1');
+			if(count($data['#info-gallery#'])) {
+				$data['#info-gallery#'] = current($data['#info-gallery#']);
+				$data['#list-gallitem#'] = $this->childs['gallitem']->qs('*', 'WHERE owner_id = '.$this->id.' ');
+			}
+		} 
+		else {
+			$data['#list-gallery#'] = $this->qs('*', 'WHERE active=1 ORDER BY name', 'id');
+			$data['#temp-gallitem#'] = $this->childs['gallitem']->qs('*', 'WHERE owner_id IN ('.implode(',',array_keys($data['#list-gallery#'])).') GROUP BY owner_id', 'owner_id');
+		}
+		return $data;
 	}
 }
 
