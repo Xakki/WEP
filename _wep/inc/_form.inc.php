@@ -8,7 +8,8 @@
  * @return $html
  */
 	if(!isset($FUNCPARAM[0]) or $FUNCPARAM[0] == '') $FUNCPARAM[0] = '';
-	//if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = 0;
+	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = array();
+	if(!isset($FUNCPARAM[2])) $FUNCPARAM[2] = 0;
 	//$FUNCPARAM[0] - модуль
 	//$FUNCPARAM[1] - включить AJAX
 
@@ -20,22 +21,42 @@
 			if($r['active'])
 				$this->_enum['modullist'][$r['pid']][$k] = $r['name'];
 		}
+
+		$this->_enum['userfieldlist'] = array();
+		if($FUNCPARAM[0] and _new_class($FUNCPARAM[0],$MODUL)) {
+			foreach($MODUL->fields_form as $k=>$r) {
+				$this->_enum['userfieldlist'][$k] = $r['caption'];
+			}
+		}
+
 		$form = array(
 			'0'=>array('type'=>'list','listname'=>'modullist', 'caption'=>'Модуль'),
-			//'1'=>array('type'=>'checkbox', 'caption'=>'Включить AJAX?'),
+			'1'=>array('type'=>'list','listname'=>'userfieldlist', 'multiple'=>2, 'caption'=>'Выводимые поля'),
+			'2'=>array('type'=>'checkbox', 'caption'=>'Включить AJAX форму?'),
 		);
 		return $form;
 	}
-	$_CFG['fileIncludeOption']['jqueryform'] = 1;
 
 	if(_new_class($FUNCPARAM[0],$MODUL)) {
 		$DATA  = array();
 		if($Ctitle!='')
 			$MODUL->lang['add_name'] = ($Ctitle?$Ctitle:'');
-		list($DATA['#pg#formcreat'],$this->formFlag) = $MODUL->_UpdItemModul(array('showform'=>1));
+
+		$argForm = array();
+		foreach($FUNCPARAM[1] as $r) {
+			if(isset($MODUL->fields_form[$r]))
+				$argForm[$r] = $MODUL->fields_form[$r];
+		}
+
+		list($DATA['#pg#formcreat'],$this->formFlag) = $MODUL->_UpdItemModul(array('showform'=>1), $argForm);
+
 		$html = $HTML->transformPHP($DATA,'#pg#formcreat');
-		//if($FUNCPARAM[1]) {
-		//}
+		
+		if($FUNCPARAM[2])
+			$_CFG['fileIncludeOption']['jqueryform'] = 1;
+
 	}
-	else $html = '<error>Ошибка подключения модуля</error>';
+	else 
+		$html = '<error>Ошибка подключения модуля</error>';
+
 	return $html;
