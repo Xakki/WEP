@@ -94,6 +94,7 @@
 
 .loginzaForm iframe {
 	width:330px;
+	min-height: 220px;
 	display:inline-block;
 }
 

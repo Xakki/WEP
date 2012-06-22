@@ -153,8 +153,8 @@ class loginza_class extends kernel_extends
 		}
 
 		if($USERS->_add($data)) {
-			$USERS->fld_data = array($this->mf_createrid=>$USERS->id);
-			$USERS->_update();
+			$updata = array($this->mf_createrid=>$USERS->id);
+			$USERS->_update($updata);
 			$flag = true;
 			$datamail = array();
 			global $MAIL;

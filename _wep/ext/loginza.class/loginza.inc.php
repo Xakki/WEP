@@ -39,7 +39,7 @@
 		}
 
 		//$_tpl['onload'] .= 'fShowload(1,jQuery("#LoginzaMess").html(),0,0,"window.location.href=window.location.href;");';
-		return '<div id="LoginzaMess">'.$HTML->transformPHP($mess,'messages').'</div>';
+		return '<div id="LoginzaMess">'.$HTML->transformPHP($mess,'#pg#messages').'</div>';
 	}
 	// LOGINZA registration
 	elseif(isset($_GET['regme']) and isset($_SESSION['loginza']) and count($_SESSION['loginza'])) {
@@ -55,17 +55,19 @@
 		}
 
 		//$_tpl['onload'] .= 'fShowload(1,jQuery("#LoginzaMess").html(),0,0,"window.location.href=window.location.href;");';
-		return '<div id="LoginzaMess">'.$HTML->transformPHP($mess,'messages').'</div>';
+		return '<div id="LoginzaMess">'.$HTML->transformPHP($mess,'#pg#messages').'</div>';
 	}
 
 	if(isset($_SESSION['loginza'])) unset($_SESSION['loginza']); // Очистка
 
-	$html = '<div class="loginzaForm" style="'.$FUNCPARAM[7].'">
-			<iframe src="http://loginza.ru/api/widget?overlay=loginza&token_url='.rawurlencode('http://'.$_SERVER['HTTP_HOST'].'/'.$Chref.'.html').'&providers_set='.$FUNCPARAM[5].'" scrolling="no" frameborder="no"></iframe>
-			'.$importInc.'
-		</div>';
+	if($this->pageinfo['template'] != 'waction') { // Не выводим хтмл , если едет успешная авторизация
+		$html = '<div class="loginzaForm" style="'.$FUNCPARAM[7].'">
+				<iframe src="http://loginza.ru/api/widget?overlay=loginza&token_url='.rawurlencode('http://'.$_SERVER['HTTP_HOST'].'/'.$Chref.'.html').'&providers_set='.$FUNCPARAM[5].'" scrolling="no" frameborder="no"></iframe>
+				'.$importInc.'
+			</div>';
 
-	$_tpl['script']['loginza'] = array('http://loginza.ru/js/widget.js');
+		$_tpl['script']['loginza'] = array('http://loginza.ru/js/widget.js');
+	}
 
 	return $html;
 
