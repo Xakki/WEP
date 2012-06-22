@@ -1,26 +1,26 @@
 <?php
 /**
- * Авторизация LOGINZA
+ * Авторизация LOGINZA Регистрация
  * @ShowFlexForm true
  * @author Xakki
  * @version 0.1 
  * @return $form
  * @return $html
  */
-	if($file = $this->getIncFile('1:ugroup.class/login') and $file)
+	if($file = $this->getIncFile('1:ugroup.class/regme') and $file)
 		$importInc = include($file);
 
 	// сначала задаем значения по умолчанию
-	if(!isset($FUNCPARAM[5])) $FUNCPARAM[5] = 'yandex,google,rambler,mailruapi,myopenid,openid,loginza'; //openid провайдеры
-	if(!isset($FUNCPARAM[6])) $FUNCPARAM[6] = 1; // - авторизация, 1 -регистрация
-	if(!isset($FUNCPARAM[7])) $FUNCPARAM[7] = ''; //стиль
+	if(!isset($FUNCPARAM[3])) $FUNCPARAM[3] = 'yandex,google,rambler,mailruapi,myopenid,openid,loginza'; //openid провайдеры
+	if(!isset($FUNCPARAM[4])) $FUNCPARAM[4] = 1; // - авторизация, 1 -регистрация
+	if(!isset($FUNCPARAM[5])) $FUNCPARAM[5] = ''; //стиль
 	// рисуем форму для админки чтобы удобно задавать параметры
 
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 		$form = $importInc;
-		$form['5'] = array('type'=>'text', 'caption'=>'Провайдеры', 'comment'=>'yandex,google,rambler,mailruapi,myopenid,openid,loginza');
-		$form['6'] = array('type'=>'checkbox', 'caption'=>'Регистрировать через Loginza по умолчанию?');
-		$form['7'] = array('type'=>'text', 'caption'=>'Cтиль');
+		$form[3] = array('type'=>'text', 'caption'=>'Провайдеры', 'comment'=>'yandex,google,rambler,mailruapi,myopenid,openid,loginza');
+		$form[4] = array('type'=>'checkbox', 'caption'=>'Регистрировать через Loginza по умолчанию?');
+		$form[5] = array('type'=>'text', 'caption'=>'Cтиль');
 		return $form;
 	}
 
@@ -31,7 +31,7 @@
 	if(isset($_POST['token']) and $_POST['token']) {
 		if(isset($_SESSION['loginza'])) unset($_SESSION['loginza']);
 		_new_class('loginza',$LOGINZA);
-		list($flag,$mess) =  $LOGINZA->loginzaAuth($FUNCPARAM[6]);
+		list($flag,$mess) =  $LOGINZA->loginzaAuth($FUNCPARAM[4]);
 		if(!$flag and isset($_SESSION['loginza']) and count($_SESSION['loginza'])) {
 			$mess[] = array('name'=>'alert', 'value'=>'Авторизация через данного OpenID провайдера не возможна, поскольку вы не зарегистрированы на нашем сайте. Если вы уже регистрировались, то авторизация должна соответствовать методу регистрации.');
 			$mess[] = array('name'=>'ok', 'value'=>'Зарегистрировать Вас прямо сейчас?');
@@ -60,8 +60,8 @@
 
 	if(isset($_SESSION['loginza'])) unset($_SESSION['loginza']); // Очистка
 
-	$html = '<div class="loginzaForm" style="'.$FUNCPARAM[7].'">
-			<iframe src="http://loginza.ru/api/widget?overlay=loginza&token_url='.rawurlencode('http://'.$_SERVER['HTTP_HOST'].'/'.$Chref.'.html').'&providers_set='.$FUNCPARAM[5].'" scrolling="no" frameborder="no"></iframe>
+	$html = '<div class="loginzaForm" style="'.$FUNCPARAM[5].'">
+			<iframe src="http://loginza.ru/api/widget?overlay=loginza&token_url='.rawurlencode('http://'.$_SERVER['HTTP_HOST'].'/'.$Chref.'.html').'&providers_set='.$FUNCPARAM[3].'" scrolling="no" frameborder="no"></iframe>
 			'.$importInc.'
 		</div>';
 

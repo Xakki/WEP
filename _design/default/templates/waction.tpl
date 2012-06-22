@@ -49,7 +49,7 @@
 			}
 		</style>
 	</head>
-	<body onload="setTimeout(function() {window.location.reload();},5000)">
+	<body onload="setTimeout(function() {window.location.href='{#REQUEST_URI#}';},5000)">
 		{#logs#}
 		<div style="height:100%;">
 			<div class="cform">

@@ -33,7 +33,7 @@ wep.form = {
 			error: 
 				function(d,statusText) {
 					alert(statusText+' - form notsuccess (may be wrong json data, see console log)');
-					//console.log(d.responseText);
+					console.log(d);console.log(d.responseText);
 				},
 			success: 
 				function(result) {

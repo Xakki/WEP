@@ -225,7 +225,7 @@ abstract class kernel_extends {
 		}
 		if($this->cf_fields) {
 			$this->config['cf_fields'] = array();
-			//$this->config_form['cf_fields'] = array('type' => 'cf_fields', 'caption' => 'Дополнительные поля формы');
+			$this->config_form['cf_fields'] = array('type' => 'cf_fields', 'caption' => 'Дополнительные поля формы');
 			// TODO form create
 		}
 		return true;
@@ -490,15 +490,34 @@ abstract class kernel_extends {
 		if ($result->err)
 			return false;
 		$data = array();
+		foreach($this->fields as $kf=>$rf) {
+			if(isset($rf['secure']))
+				$secureKey[] = $kf;
+		}
 		if ($ord != '' and $ord2 != '') {
-			while ($row = $result->fetch())
+			while ($row = $result->fetch()) {
+				if(isset($secureKey)) {
+					foreach($secureKey as $sk)
+						$row[$sk] = static_main::EnDecryptString($row[$sk]);
+				}
 				$data[$row[$ord2]][$row[$ord]] = $row;
+			}
 		} elseif ($ord != '') {
-			while ($row = $result->fetch())
+			while ($row = $result->fetch()) {
+				if(isset($secureKey)) {
+					foreach($secureKey as $sk)
+						$row[$sk] = static_main::EnDecryptString($row[$sk]);
+				}
 				$data[$row[$ord]] = $row;
+			}
 		} else {
-			while ($row = $result->fetch())
+			while ($row = $result->fetch()) {
+				if(isset($secureKey)) {
+					foreach($secureKey as $sk)
+						$row[$sk] = static_main::EnDecryptString($row[$sk]);
+				}
 				$data[] = $row;
+			}
 		}
 		if (count($data) and !$this->_select_attaches($data))
 			trigger_error('Ошибка выборки ATTACHES в классе ' . $this->_cl, E_USER_WARNING);
@@ -556,10 +575,10 @@ abstract class kernel_extends {
 	 *
 	 * @return bool - true если успех
 	 */
-	public function _select($cls='') {
+	public function _select($cls='', $simple=false) {
 		// TODO : избавиться от $cls либо заэкранировать
 		$data = array();
-		$data = $this->_select_fields($cls);
+		$data = $this->_select_fields($cls, $simple);
 		if (count($data)) {
 			$this->_select_attaches($data);
 			$this->_select_memos($data);
@@ -568,7 +587,7 @@ abstract class kernel_extends {
 		return $data;
 	}
 
-	private function _select_fields($cls='') {
+	private function _select_fields($cls='', $simple=false) {
 		$data = array();
 		$agr = ', ' . $this->_listnameSQL . ' as name';
 		$pref = 'SELECT *' . $agr;
@@ -585,7 +604,7 @@ abstract class kernel_extends {
 		if($result->err)
 			return $data;
 
-		if(1) {
+		if(!$simple) {
 			$listAr = array();
 			foreach($this->fields_form as $k=>$r) {
 				if($r['type']=='list') {
@@ -599,12 +618,15 @@ abstract class kernel_extends {
 		}
 
 		while ($row = $result->fetch()) {
-			foreach($listAr as $k=>$r) {
-				if(isset($row[$k]) and isset($this->_CFG['enum'][$r][$row[$k]]))
-					$row['#'.$k.'#'] = $this->_CFG['enum'][$r][$row[$k]];
+			if(!$simple) {
+				foreach($listAr as $k=>$r) {
+					if(isset($row[$k]) and isset($this->_CFG['enum'][$r][$row[$k]]))
+						$row['#'.$k.'#'] = $this->_CFG['enum'][$r][$row[$k]];
+				}
 			}
 			$data[$row['id']] = $row;
 		}
+
 		if (isset($this->id) and $this->id) {
 			if(count($data)==1)
 				$this->id = key($data);

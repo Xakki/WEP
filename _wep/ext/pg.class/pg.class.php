@@ -704,36 +704,14 @@ class pg_class extends kernel_extends {
 						unset($r);
 					}
 
-					$typePG = explode(':', $rowPG['pagetype']);
-
 					// Параметры для обработчика
-					if ($rowPG['funcparam']) {
-						$FUNCPARAM = explode('&', $rowPG['funcparam']);
-						foreach ($FUNCPARAM as &$r) {
-							// UPDATE FIX
-							if (strpos($r, '#ext#') !== false) {
-								$temp = explode('.',$typePG[1]);
-								$r = str_replace('#ext#','#'.$temp[0].'#',$r);
-							}
-							// UPDATE FIX
-							if (strpos($r, '|') !== false) {
-								$r = explode('|', $r);
-								$r = array_combine($r, $r);
-							}
-						}
-						unset($r);
-					}
-					else
-						$FUNCPARAM = array();
+					$FUNCPARAM = $this->parserFlexData($rowPG['funcparam'], $rowPG['pagetype']);
+
 					// подключение и запуск обработчика
-					if (count($typePG) == 2 and file_exists($this->_enum['inc'][$typePG[0]]['path'] . $typePG[1] . '.inc.php'))
-						$flagPG = include($this->_enum['inc'][$typePG[0]]['path'] . $typePG[1] . '.inc.php');
-					elseif (file_exists($this->_CFG['_PATH']['inc'] . $rowPG['pagetype'] . '.inc.php'))
-						$flagPG = include($this->_CFG['_PATH']['inc'] . $rowPG['pagetype'] . '.inc.php');
-					elseif (file_exists($this->_CFG['_PATH']['wep_inc'] . $rowPG['pagetype'] . '.inc.php'))
-						$flagPG = include($this->_CFG['_PATH']['wep_inc'] . $rowPG['pagetype'] . '.inc.php');
+					if ($file = $this->getIncFile($rowPG['pagetype']) and $file)
+						$flagPG = include($file);
 					else {
-						trigger_error('Обрботчик страниц "' . $this->_enum['inc'][$typePG[0]]['path'] . $typePG[1] . '.inc.php" не найден!', E_USER_WARNING);
+						trigger_error('Обрботчик страниц "' . $rowPG['pagetype'] . '" не найден!', E_USER_WARNING);
 						continue;
 					}
 
@@ -965,6 +943,9 @@ class pg_class extends kernel_extends {
 		return $href;
 	}
 
+	/*
+	* Проверка правд доступа к странице
+	*/
 	function pagePrmCheck($ugroup = '') {
 		global $_tpl;
 
@@ -984,6 +965,10 @@ class pg_class extends kernel_extends {
 		return true;
 	}
 
+	/*
+	* XML карта сайта
+	*
+	*/
 	function creatSiteMaps() {
 		$data = $this->getMap(-1);
 		$xml = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
@@ -992,6 +977,9 @@ class pg_class extends kernel_extends {
 		return $xml;
 	}
 
+	/*
+	* Вспомогательная (реверс) функ для XML карты
+	*/
 	function reverseDataMap(&$data) {
 		$xml = '';
 		foreach ($data as $k => $r) {
@@ -1007,16 +995,58 @@ class pg_class extends kernel_extends {
 		return $xml;
 	}
 
-	function FFTemplate(&$tpl, $dir = false) {
-		if (strpos($tpl, '#ext#') !== false and $dir) {
-			$tpl = str_replace('#ext#', '', $tpl);
-			$tpl2 = array($tpl, $dir . '/templates/');
-		}else
-			$tpl2 = $tpl;
-		return $tpl2;
+	/**
+	* Получаем путь к фаилу INC из строкового параметра (запись в виде 1:ugroup.class/login)
+	*
+	*/
+	public function getIncFile($typePG) {
+		$inc = explode(':',$typePG);
+		if (count($inc) == 2) {
+			$file = $this->_enum['inc'][$inc[0]]['path'] . $inc[1] . '.inc.php';
+		}
+		else {
+			$file = $this->_CFG['_PATH']['inc'] . $typePG . '.inc.php';
+			if(!file_exists($file))
+				$file = $this->_CFG['_PATH']['wep_inc'] .$typePG . '.inc.php';
+		}
+		if(!file_exists($file)) $file = false;
+		return $file;
 	}
 
+	/*
+	*
+	*/
+	function parserFlexData($stringFlexData, $pagetype, $setIndex=false) {
+		// Преобразование данных Контент-модуля по полю funcparam
+		$pagetype = explode(':', $pagetype);
+		$FUNCPARAM = array();
+		// Параметры для обработчика
+		if ($stringFlexData) {
+			$stringFlexData = explode('&', $stringFlexData);
+			foreach ($stringFlexData as $k=>$r) {
 
+				// UPDATE FIX
+				if (strpos($r, '#ext#') !== false) { // Поддержка старых версий, где вместо названия модуля использовалось #ext# 
+					$temp = explode('.',$pagetype[1]);
+					$r = str_replace('#ext#','#'.$temp[0].'#',$r);
+				}
+
+				// UPDATE FIX
+				if (strpos($r, '|') !== false) { // Делаем асоциативный массив
+					$r = explode('|', $r);
+					$r = array_combine($r, $r);
+				}
+				if($setIndex) $k = 'flexform_'.$k; // эта опция для формы
+				$FUNCPARAM[$k] = $r;
+			}
+		}
+
+		return $FUNCPARAM;
+	}
+
+	/*
+	* Обработка АЯКС запросов с страницы содержащий форму
+	*/
 	public function AjaxForm() {
 		global $HTML,$_tpl;
 		$RESULT = array('html'=>'Не верные данные', 'html2'=>'', 'text'=>'','onload'=>'');
@@ -1060,6 +1090,7 @@ class pg_class extends kernel_extends {
 
 		return $RESULT;
 	}
+
 //////////
 	/*public function _update($data=array(),$where=null,$flag_select=true) {
 		if($ret = parent::_update($data,$where,$flag_select)) {
@@ -1080,5 +1111,18 @@ class pg_class extends kernel_extends {
 				$RESULT['mess'][] = static_main::am('error', 'Запрещено дублировать страницы (Алиас) на одном подуровне');
 		}
 		return $RESULT;
+	}
+
+
+	/*
+	* Устаревшая функция 
+	*/
+	public function FFTemplate(&$tpl, $dir = false) {
+		if (strpos($tpl, '#ext#') !== false and $dir) {
+			$tpl = str_replace('#ext#', '', $tpl);
+			$tpl2 = array($tpl, $dir . '/templates/');
+		}else
+			$tpl2 = $tpl;
+		return $tpl2;
 	}
 }

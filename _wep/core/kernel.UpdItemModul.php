@@ -68,7 +68,7 @@
 				$DATA = $_POST;
 				$this->kPreFields($DATA,$param,$argForm);
 				$arr = $this->fFormCheck($DATA,$param,$argForm);
-				$flag=-1;//print_r('<pre>');print_r($arr);exit();
+				$flag=-1;
 				if(!count($arr['mess'])) {
 					if($rm = $this->_add($arr['vars'])) {
 						$flag=1;

@@ -650,6 +650,7 @@ class product_class extends kernel_extends {
 					elseif($k=='text') {
 						if($r) {
 							$clauseF[$k] = '(t1.name RLIKE "[[:<:]]'.$this->SqlEsc($r).'[[:>:]]" or t1.'.$k.' RLIKE "[[:<:]]'.$this->SqlEsc($r).'[[:>:]]")';
+							// TODO @match against@
 						}
 					}
 					elseif($k=='name') {

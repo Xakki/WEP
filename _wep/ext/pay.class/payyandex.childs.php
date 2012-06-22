@@ -446,8 +446,9 @@ class payyandex_class extends kernel_extends {
 		foreach($temp as $r) {
 			//$key = preg_replace('/[^0-9A-zА-я\:\;\№]+/ui', '', 'Счёт№'.$r['id'].'; '.$r['name']);
 			//$key = trim($key,';:№,.\s');
-			$DATA['Счёт№'.$r['id']] = $r;
+			$DATA[$r['id']] = $r;
 		}
+
 		$CNT = count($DATA);
 		if(!$CNT) return '-нет выставленных счетов-';
 
@@ -463,9 +464,11 @@ class payyandex_class extends kernel_extends {
 			//date($r['datetime'])
 			$INFO2 = $this->operationDetail($this->owner->config['yandex_token'], $r['operation_id']);
 			//$key = preg_replace('/[^0-9A-zА-я\:\;\№]+/ui','',$INFO2['message']);
-			if(!isset($INFO2['message'])) continue;
 
-			$key = trim($INFO2['message'],';:№,.\s');
+			if(!isset($INFO2['message']) or mb_strpos($INFO2['message'],'Счёт№')===false) continue;
+
+			preg_match_all('|Счёт№([0-9]+)|', $INFO2['message'], $out, PREG_SET_ORDER);
+			$key = $out[0][1];
 
 			if(isset($DATA[$key])) {
 

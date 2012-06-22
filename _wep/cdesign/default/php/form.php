@@ -89,6 +89,10 @@ function tpl_form(&$data, $tabs = array()) {
 		elseif($r['type']=='html') {
 			$texthtml .= '<div class="form-value">'.$r['value'].'</div>';
 		}
+		elseif($r['type']=='cf_fields') {
+			include_once(dirname(__FILE__).'/cffields.php');
+			$texthtml .= '<div class="form-value">'.tpl_cffields($data).'</div>';
+		}
 		elseif($r['type']=='hidden') {
 			if(is_array($r['value']))
 				$r['value'] = implode('|',$r['value']);

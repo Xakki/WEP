@@ -424,8 +424,8 @@ class users_class extends kernel_extends {
 	function authorization($login,$pass) {
 		if($login!='' && $pass!='')
 		{
-			if ($this->fn_login=='email' and !preg_match('/^[0-9A-Za-z\.\-\@]+$/', $login))
-				 return array('Поле `Email` введено не корректно. Допустим ввод только латинских букв,цифр, точки, тире и @',0);
+			if ($this->fn_login=='email' and !preg_match('/^[0-9A-Za-z_\-\.\@]+$/', $login))
+				 return array('Поле `Email` введено не корректно. Допустим ввод только латинских букв,цифр, точки, тире, подчёркивание и @',0);
 			elseif($this->fn_login!='email' and !preg_match('/^[0-9A-Za-z]+$/', $login))
 				 return array('Поле `Логин` введено не корректно. Допустим ввод только латинских букв и цифр.',0);
 			else

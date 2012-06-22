@@ -24,9 +24,9 @@
 				$GLOBALS['_RESULT']['onload'] .= implode(' ',$_tpl['onload2']);
 			
 			if(version_compare(phpversion(),'5.3.0','>')) {
-				$GLOBALS['_RESULT'] = $this->allreplace($GLOBALS['_RESULT']);
+				//$GLOBALS['_RESULT'] = $this->allreplace($GLOBALS['_RESULT']);
 				//return var_export($GLOBALS['_RESULT'],true);
-				return json_encode($GLOBALS['_RESULT'],JSON_HEX_TAG);//JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_AMP|JSON_UNESCAPED_UNICODE
+				return json_encode($GLOBALS['_RESULT'], JSON_HEX_QUOT | JSON_HEX_TAG); //JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_AMP|JSON_UNESCAPED_UNICODE
 			}
 			else
 				return $this->jsonencode($GLOBALS['_RESULT']);

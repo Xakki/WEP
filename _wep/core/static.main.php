@@ -157,6 +157,30 @@ class static_main {
 	}
 
 	/**
+	* Шифрование и дешифрование данных
+	*
+	*/
+	function EnDecryptString( $str, $hashKey=null )
+	{
+		if(is_null($hashKey)) {
+			global $_CFG;
+			if(isset($_CFG['HASH_KEY']))
+				$hashKey = $_CFG['HASH_KEY'];
+			else
+				$hashKey = $_CFG['HASH_KEY'] = file_get_contents($_CFG['_FILE']['HASH_KEY']);
+		}
+		$hashKeyLen = mb_strlen( $hashKey );
+		$strLen = mb_strlen( $str );
+		for ( $i = 0; $i < $strLen; $i++ )
+		{
+			$pos = $i % $hashKeyLen;// Если  строка длиннее ключа
+			$r = ord( $str[$i] ) ^ ord( $hashKey[$pos] ); // Побитовый XOR ASCII-кодов символов
+			$str[$i] = chr($r); // соответствующий полученному ASCII-коду 
+		}
+		 return $str;
+	}
+
+	/**
 	 * Вывод названия таблицы у класса , без его подключения,
 	 *  главное чтобу в модуле не было указано явно свое название табл
 	 */
@@ -1066,3 +1090,4 @@ function _chmod($file,$mode=null) {
 	if(is_null($mode)) $mode = $_CFG['wep']['chmod'];
 	chmod($file, $mode);
 }
+

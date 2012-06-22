@@ -237,12 +237,18 @@ class content_class extends kernel_extends {
 			$this->addForm = $this->getContentIncParam($f_data);
 			if (count($this->addForm)) {
 				$this->formSort['Основное'] = array_merge($this->formSort['Основное'], array_keys($this->addForm));
+				print_r(' * ');//print_r($f_fieldsForm);print_r($this->addForm);
 				$f_fieldsForm = static_main::insertInArray($f_fieldsForm, 'pagetype', $this->addForm); // обработчик параметров рубрики
+				//print_r(' - ');print_r($f_fieldsForm['flexform_2']);
 				$f_fieldsForm['funcparam']['style'] = 'display:none;';
 			}
 		} else
 			$f_fieldsForm['funcparam']['style'] = 'display:none;';
 		return $mess;
+	}
+
+	public function getIncFile($typePG) {
+		return $this->owner->getIncFile($typePG);
 	}
 
 	function getContentIncParam(&$data, $ajax = false) {
@@ -308,7 +314,8 @@ class content_class extends kernel_extends {
 	public function _update($vars = array(), $where = null, $flag_select = true) {
 		$vars = $this->SetFuncparam($vars);
 		if ($ret = parent::_update($vars, $where, $flag_select)) {
-			
+			// в форме для вывода обрабатываем данные
+			$this->data[$this->id] += $this->owner->parserFlexData($this->data[$this->id]['funcparam'], $this->data[$this->id]['pagetype'], true);
 		}
 		return $ret;
 	}
@@ -316,11 +323,16 @@ class content_class extends kernel_extends {
 	public function _add($vars = array(), $flag_select = true) {
 		$vars = $this->SetFuncparam($vars);
 		if ($ret = parent::_add($vars, $flag_select)) {
-			
+			// в форме для вывода обрабатываем данные
+			$this->data[$this->id] += $this->owner->parserFlexData($this->data[$this->id]['funcparam'], $this->data[$this->id]['pagetype'], true);
 		}
 		return $ret;
 	}
 
+	/*
+	* Перед записью в БД массив funcparam, кодируем в строку
+	* - по сути можно было бы использоваться serialize, но он немного избыточен по длине сроки, хотя и удобен
+	*/
 	private function SetFuncparam($vars) {
 		$funcparam = array();
 		if (count($this->addForm)) {

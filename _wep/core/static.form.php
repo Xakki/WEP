@@ -44,7 +44,7 @@ class static_form {
 			}
 		}
 		if($_this->id and $flag_select)
-			$_this->data = $_this->_select();
+			$_this->data = $_this->_select('',true);
 		if (isset($_this->mf_indexing) && $_this->mf_indexing) $_this->indexing();
 		static_main::log('ok',static_main::m('add',array($_this->tablename),$_this));
 		return true;
@@ -64,6 +64,8 @@ class static_form {
 					$value = str2int($value);
 				elseif(strpos($_this->fields[$key]['type'],'float')!==false)
 					$value = floatval($value);
+				elseif(isset($_this->fields[$key]['secure']))
+					$value = '\''.$_this->SqlEsc(static_main::EnDecryptString($value)).'\'';
 				else
 					$value = '\''.$_this->SqlEsc($value).'\'';
 			}
@@ -273,7 +275,7 @@ class static_form {
 		if (!self::_update_attaches($_this, $where)) return false;
 		if (!self::_update_memos($_this, $where)) return false;
 		if($_this->id and $flag_select)
-			$_this->data = $_this->_select();
+			$_this->data = $_this->_select('',true);
 		if (isset($_this->mf_indexing) && $_this->mf_indexing) $_this->indexing();
 		static_main::log('ok',static_main::m('update',array($_this->tablename),$_this));
 		return true;
@@ -297,6 +299,8 @@ class static_form {
 					$value = str2int($value);
 				elseif(strpos($_this->fields[$key]['type'],'float')!==false)
 					$value = floatval($value);
+				elseif(isset($_this->fields[$key]['secure']))
+					$value = '\''.$_this->SqlEsc(static_main::EnDecryptString($value)).'\'';
 				else
 					$value = '\''.$_this->SqlEsc($value).'\'';
 			}

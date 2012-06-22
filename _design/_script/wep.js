@@ -99,11 +99,9 @@ var wep = {
 ///alert(dump(param));
 		if(param['fade']) // Вешаем затемнение
 			param['timeBG'] = setTimeout(function(){
-				//alert('q');
 				wep.fShowload(1,false,false,param['fade']);param['timeBG'] = 0;
 			},200);
-///alert('a');
-		//console.log(param);
+
 		$.ajax({
 			type: param['type'],
 			url: param['href'],
@@ -114,6 +112,7 @@ var wep = {
 			},*/
 			error: function(XMLHttpRequest, textStatus, errorThrown) {
 				alert('ajaxerror : '+textStatus);
+				console.log(XMLHttpRequest);console.log(textStatus);console.log(errorThrown);
 			},
 			/*dataFilter: function(data, type) {
 				return data;
@@ -159,15 +158,6 @@ var wep = {
 				if(typeof result.text != 'undefined' && result.text!='') // Вывод ошибок и прочего текста
 					fLog(fSpoiler(result.text,'AJAX text result'),1);
 
-				 // запуск onload функции
-				if(typeof result.onload != 'undefined')  {
-					if(typeof result.onload == 'function')
-						result.onload.call();
-					else if(result.onload!='') {
-						eval(result.onload);
-					}
-				}
-
 				 // подключение Стилей
 				if(typeof result.styles != 'undefined')  {
 					//console.log(result.styles);
@@ -185,6 +175,14 @@ var wep = {
 					param['call'].call(result);
 				}
 
+				 // запуск onload функции
+				if(typeof result.onload != 'undefined')  {
+					if(typeof result.onload == 'function')
+						result.onload.call();
+					else if(result.onload!='') {
+						eval(result.onload);
+					}
+				}
 			}
 		});
 		return false;
@@ -256,7 +254,7 @@ var wep = {
 
 		wep.paramTemp = {'call':function() {wep.ajaxMenuCall(this)}};
 		if(resData.styles.login || resData.script.wepform) {
-			$('#ajaxload form').one('submit',function() {console.log('+'); wep.paramTemp['type'] = $(this); JSWin(wep.paramTemp); return false;});
+			$('#ajaxload form').one('submit',function() {wep.paramTemp['type'] = $(this); JSWin(wep.paramTemp); return false;});
 		}
 
 		setTimeout(wResize,500);

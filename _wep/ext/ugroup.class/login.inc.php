@@ -42,7 +42,6 @@
 	}
 	else 
 		$ref= $_CFG['_HREF']['BH'];
-	
 
 	if(count($_POST) and isset($_POST['login'])) {
 		$result = static_main::userAuth($_POST['login'],$_POST['pass']);
@@ -77,6 +76,8 @@
 			$mess['messages'][0][0] = 'ok';
 			$DATA['result'] = 1;
 			$this->pageinfo['template'] = 'waction';
+			$_tpl['REQUEST_URI'] = $ref;
+			$_tpl['onload'] .= '$(\'#ajaxload .blockclose\').click(function(){window.location.href=\''.$ref.'\';}); setTimeout(function() {window.location.href=\''.$ref.'\';}, 3000);';
 		}
 		else {
 			$mess['messages'][0][0] = 'error';
