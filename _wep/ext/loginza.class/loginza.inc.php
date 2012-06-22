@@ -62,9 +62,12 @@
 
 	if($this->pageinfo['template'] != 'waction') { // Не выводим хтмл , если едет успешная авторизация
 		$html = '<div class="loginzaForm" style="'.$FUNCPARAM[7].'">
+			<div class="loginzaIframe">
+				<div class="loginzaInfo">Вы можете авторизоваться с помощью следующих сервисов</div>
 				<iframe src="http://loginza.ru/api/widget?overlay=loginza&token_url='.rawurlencode('http://'.$_SERVER['HTTP_HOST'].'/'.$Chref.'.html').'&providers_set='.$FUNCPARAM[5].'" scrolling="no" frameborder="no"></iframe>
-				'.$importInc.'
-			</div>';
+			</div>
+			'.$importInc.'
+		</div>';
 
 		$_tpl['script']['loginza'] = array('http://loginza.ru/js/widget.js');
 	}

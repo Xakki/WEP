@@ -528,14 +528,14 @@ class users_class extends kernel_extends {
 			}
 			$DATA = $_POST;
 			$this->id = null;
-			if(count($_POST) and $_POST['sbmt'] and isset($_SESSION['user']))
+			if(count($_POST) and isset($_POST['sbmt']) and isset($_SESSION['user']))
 				unset($_SESSION['user']);
 		}
 
 		if(is_null($argForm))
 			$argForm = $this->fields_form;
 
-		if(count($_POST) and $_POST['sbmt']) {
+		if(count($_POST) and isset($_POST['sbmt'])) {
 			$flag=-1;
 			//if($this->fn_pass!='pass') $_POST[$this->fn_pass] = $_POST['pass'];
 			//if($this->fn_pass!='login') $_POST[$this->fn_login] = $_POST['login'];

@@ -92,10 +92,14 @@
 	white-space:nowrap;
 }
 
-.loginzaForm iframe {
+.loginzaForm .loginzaIframe {
 	width:330px;
 	min-height: 220px;
 	display:inline-block;
+}
+
+.loginzaForm .loginzaIframe .loginzaInfo {
+	width:330px;
 }
 
 .loginzaForm div.loginForm {
