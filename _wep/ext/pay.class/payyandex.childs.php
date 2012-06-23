@@ -439,9 +439,8 @@ class payyandex_class extends kernel_extends {
 
 	/*CRON*/
 	function checkBill() {
-		$this->clearOldData();
 
-		$temp = $this->qs('*','WHERE status=""','name');
+		$temp = $this->qs('*','WHERE status=""', 'name');
 		$DATA = array();
 		foreach($temp as $r) {
 			//$key = preg_replace('/[^0-9A-zА-я\:\;\№]+/ui', '', 'Счёт№'.$r['id'].'; '.$r['name']);
@@ -453,7 +452,7 @@ class payyandex_class extends kernel_extends {
 		if(!$CNT) return '-нет выставленных счетов-';
 
 		//$INFO = $this->accountInfo($this->owner->config['yandex_token']);
-		$INFO = $this->operationHistory($this->owner->config['yandex_token'],NULL,NULL,'deposition');
+		$INFO = $this->operationHistory($this->owner->config['yandex_token'], NULL, NULL, 'deposition');
 
 		if(!count($INFO['operations'])) return '-нет платежей , '.$CNT.' не оплачено-';
 		$i=0;
@@ -493,6 +492,7 @@ class payyandex_class extends kernel_extends {
 				}
 			}
 		}
+		$this->clearOldData();
 		return '-OK-';
 	}
 
