@@ -56,7 +56,7 @@
 
 	$conf = '';
 	foreach ($ini_arr as $k=>$v) {
-		$conf .= $k . " = " . $v . "\n";
+		$conf .= $k . " = " . $v . "\r\n";
 	}
 	umask(0774);
 	file_put_contents($ini_file, $conf);
