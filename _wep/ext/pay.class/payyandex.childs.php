@@ -483,6 +483,7 @@ class payyandex_class extends kernel_extends {
 				} else {
 					$upd['status'] = 'refused';
 					$upd['error'] = 'small_money';
+					//$upd['operation_id'] = $r['operation_id'];
 					$this->_update($upd);
 				}
 
