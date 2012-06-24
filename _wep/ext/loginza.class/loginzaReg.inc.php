@@ -12,15 +12,16 @@
 
 	// сначала задаем значения по умолчанию
 	if(!isset($FUNCPARAM[3])) $FUNCPARAM[3] = 'yandex,google,rambler,mailruapi,myopenid,openid,loginza'; //openid провайдеры
-	if(!isset($FUNCPARAM[4])) $FUNCPARAM[4] = 1; // - авторизация, 1 -регистрация
-	if(!isset($FUNCPARAM[5])) $FUNCPARAM[5] = ''; //стиль
+	//if(!isset($FUNCPARAM[4])) $FUNCPARAM[4] = 0; // - авторизация, или ID группы для регистрации
+	if(!isset($FUNCPARAM[4])) $FUNCPARAM[4] = ''; //стиль
 	// рисуем форму для админки чтобы удобно задавать параметры
 
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 		$form = $importInc;
 		$form[3] = array('type'=>'text', 'caption'=>'Провайдеры', 'comment'=>'yandex,google,rambler,mailruapi,myopenid,openid,loginza');
-		$form[4] = array('type'=>'checkbox', 'caption'=>'Регистрировать через Loginza по умолчанию?');
-		$form[5] = array('type'=>'text', 'caption'=>'Cтиль');
+		//$form[4] = array('type'=>'checkbox', 'caption'=>'Регистрировать через Loginza по умолчанию?');
+		//$form[4] = array('type'=>'list','listname'=>array('class'=>'ugroup', 'zeroname'=>'Откл. регистрацию'), 'caption'=>'Регистрировать в указанную группу');
+		$form[4] = array('type'=>'text', 'caption'=>'Cтиль');
 		return $form;
 	}
 
@@ -31,7 +32,7 @@
 	if(isset($_POST['token']) and $_POST['token']) {
 		if(isset($_SESSION['loginza'])) unset($_SESSION['loginza']);
 		_new_class('loginza',$LOGINZA);
-		list($flag,$mess) =  $LOGINZA->loginzaAuth($FUNCPARAM[4]);
+		list($flag,$mess) =  $LOGINZA->loginzaAuth($FUNCPARAM[1]);
 		if(!$flag and isset($_SESSION['loginza']) and count($_SESSION['loginza'])) {
 			$mess[] = array('name'=>'alert', 'value'=>'Авторизация через данного OpenID провайдера не возможна, поскольку вы не зарегистрированы на нашем сайте. Если вы уже регистрировались, то авторизация должна соответствовать методу регистрации.');
 			$mess[] = array('name'=>'ok', 'value'=>'Зарегистрировать Вас прямо сейчас?');
@@ -63,7 +64,7 @@
 	$html = '<div class="loginzaForm" style="'.$FUNCPARAM[5].'">
 			<div class="loginzaIframe">
 				<div class="loginzaInfo">Вы можете зарегистрироваться с помощью следующих сервисов</div>
-				<iframe src="http://loginza.ru/api/widget?overlay=loginza&token_url='.rawurlencode('http://'.$_SERVER['HTTP_HOST'].'/'.$Chref.'.html').'&providers_set='.$FUNCPARAM[3].'" scrolling="no" frameborder="no"></iframe>
+				<iframe style="height:300px;" src="http://loginza.ru/api/widget?overlay=loginza&token_url='.rawurlencode('http://'.$_SERVER['HTTP_HOST'].'/'.$Chref.'.html').'&providers_set='.$FUNCPARAM[3].'" scrolling="no" frameborder="no"></iframe>
 			</div>
 			'.$importInc.'
 		</div>';

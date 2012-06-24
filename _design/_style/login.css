@@ -122,12 +122,11 @@
 	margin:0 0 2px 0;
 	text-align:center;
 	font-size: 17px;
-	border:2px #63A6CC solid;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
 }
 
-.loginzaForm div.cform .submit {
+.loginzaForm div.cform input.submit {
 	margin:7px auto 0 auto;
-	width:100px;
+	width:200px;
 	text-align:center;
 }
 

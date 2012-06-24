@@ -8,7 +8,13 @@
 		';
 		$html = '
 		<table cellspacing="0" cellpadding="0" class="extuser-list"><tbody>
-		<tr><th>Группа<th>ID<th>Имя<th>Email</tr>';
+		<tr>
+			<th>Группа
+			<th>ID
+			<th>Имя
+			<th>Email
+			<th>Баланс
+		</tr>';
 		if(isset($data['list']) and count($data['list'])) {
 			foreach($data['list'] as $k=>$r){
 				if(!$r['userpic'])
@@ -18,6 +24,7 @@
 					<td>'.$r['id'].'
 					<td><a href="'.$data['href'].'/'.$r['id'].'.html">'.$r['name'].'</a>
 					<td>'.$r['email'].'
+					<td>'.$r['balance'].'
 				</tr>';
 			}
 		}

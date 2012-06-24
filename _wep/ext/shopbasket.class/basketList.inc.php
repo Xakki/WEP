@@ -35,11 +35,15 @@
 	$_tpl['styles']['../'.$HTML->_design.'/_shop/style/shopBasket'] = 1;
 
 	$subMenu = array(
-		array('name'=>'Список заказов', 'href'=>$Chref.'.html?basketorder'),
+		array('name'=>'Список заказов'),
 		array('name'=>'Шаг 1: Выбор товаров', 'href'=>$Chref.'.html'),
 		array('name'=>'Шаг 2: Подтверждение и оплата'),
 		array('name'=>'Завершение'),
 	);
+
+	if(static_main::_prmUserCheck())
+		$subMenu[0]['href'] = $Chref.'.html?basketorder';
+
 	$subK = 1;
 	$html = '';
 

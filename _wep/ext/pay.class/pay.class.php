@@ -413,11 +413,18 @@ class pay_class extends kernel_extends {
 		_new_class('ugroup', $UGROUP);
 		$temp = $UGROUP->childs['users']->_query('t1.id,t1.owner_id,t1.name,t1.balance,t2.negative','t1 JOIN '.$UGROUP->tablename.' t2 ON t2.id=t1.owner_id WHERE t1.`active`=1 and t2.`active`=1 and t1.`id` = '.$from_user);
 		
-		if(!count($temp)) return array(static_main::m('pay_nouser',$this),0);
+		if(!count($temp)) return array(static_main::m('pay_nouser', $this), 0);
 		$d = $temp[0]['balance']-$summ;
 		$mess = '';
-		if(!$temp[0]['negative'] and $d<0) 
-			$mess = static_main::m('pay_nomonney',array(abs($d).' '.$UGROUP->config['payon']),$this);
+		if($temp[0]['balance']<0)
+			$mess = static_main::m('pay_nobalance',array($temp[0]['balance'].' '.$UGROUP->config['payon']), $this);
+		elseif($temp[0]['negative'] and $d<0) {
+			$def = ($temp[0]['negative']+$d);
+			if($def<0)
+				$mess = static_main::m('pay_nomonney',array($def.' '.$UGROUP->config['payon']), $this);
+		}
+		elseif($d<0) 
+			$mess = static_main::m('pay_nomonney',array(abs($d).' '.$UGROUP->config['payon']), $this);
 		return array($mess,$temp[0]['balance']);
 	}
 

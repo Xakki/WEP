@@ -74,7 +74,7 @@ class ugroup_class extends kernel_extends
 		$this->caption = 'Группы';
 		$this->singleton = true;
 		$this->tablename = 'ugroup';
-		$this->ver = '0.2.2';
+		$this->ver = '0.2.3';
 		$this->default_access = '|0|';
 		return true;
 	}
@@ -98,7 +98,7 @@ class ugroup_class extends kernel_extends
 		$this->fields[$this->mf_namefields] = array('type' => 'varchar', 'width' =>128, 'attr' => 'NOT NULL');
 		$this->fields['wep'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => 0);
 		$this->fields['level'] = array('type' => 'tinyint', 'width' =>2, 'attr' => 'NOT NULL',  'default' => 1);
-		$this->fields['negative'] = array('type' => 'tinyint', 'width' =>2, 'attr' => 'NOT NULL',  'default' => 0);
+		$this->fields['negative'] = array('type' => 'int', 'width' =>11, 'attr' => 'NOT NULL',  'default' => 0);
 		$this->fields['filesize'] = array('type' => 'int', 'width' =>5, 'attr' => 'NOT NULL', 'default' => 0);
 		$this->fields['design'] = array('type' => 'varchar', 'width' =>128, 'attr' => 'NOT NULL', 'default' => '');
 
@@ -124,7 +124,7 @@ class ugroup_class extends kernel_extends
 			$this->fields_form['defkratio'] = array('type' => 'text', 'caption' => 'Коэфициент по умол.', 'mask' =>array('fview'=>1));
 		}
 		if($this->config['payon']) {
-			$this->fields_form['negative'] = array('type' => 'checkbox', 'caption' => 'Разрешить отрицательный баланс?');
+			$this->fields_form['negative'] = array('type' => 'int', 'caption' => 'Разрешенный отрицательный баланс');
 		}
 	}
 
@@ -664,7 +664,7 @@ class users_class extends kernel_extends {
 			$mess[] = static_main::am('error','errdata');
 		else {
 			$data = $this->_query('t1.id,t1.reg_hash', 't1 where t1.`'.$this->fn_login.'` = \''.preg_replace("/[^0-9a-z@\-\_\.]+/u",'', $_GET['confirm']).'\'');
-			if(count($data) and _strlen($data[0]['reg_hash'])<5)
+			if(count($data) and _strlen($data[0]['reg_hash'])<32)
 				$mess[] = static_main::am('alert','confno');
 			elseif(count($data) and $data[0]['reg_hash']==$_GET['hash']) {
 				$this->id = $data[0]['id'];

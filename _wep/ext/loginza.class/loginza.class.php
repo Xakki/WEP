@@ -26,7 +26,7 @@ class loginza_class extends kernel_extends
 			unset($_this->owner->unique_fields['email']);
 	}
 
-	function loginzaAuth($regme=false) {
+	function loginzaAuth($regmeIdGroup=0) {
 		$UGROUP = NULL;
 		_new_class('ugroup',$UGROUP);
 		$USERS = $UGROUP->childs['users'];
@@ -92,13 +92,14 @@ class loginza_class extends kernel_extends
 						$USERS->id = $data['id'];
 					}
 				}
-				elseif(!$regme and !isset($_GET['regme'])) {
+				elseif(!$regmeIdGroup and !isset($_GET['regme'])) {
 					global $PGLIST;
 					session_go(1);
 					$_SESSION['loginza'] = $dt;
 				} 
 				else {
 					if(!$dt[$USERS->mf_namefields]) $dt[$USERS->mf_namefields] = $dt['email'];
+					$dt['owner_id'] = $regmeIdGroup;
 					list($flag,$mess) = $this->loginzaReg($dt);
 				}
 
@@ -117,9 +118,10 @@ class loginza_class extends kernel_extends
 		$flag = false;
 		_new_class('ugroup',$UGROUP);
 		$USERS = $UGROUP->childs['users'];
-		$data['owner_id']=$USERS->owner->config['reggroup'];
+		if(!isset($data['owner_id']))
+			$data['owner_id']=$USERS->owner->config['reggroup'];
 		$data['active']=1;
-		$data['reg_hash'] = 2; // отметка  о том что регестрируются через LOGINZA
+		$data['reg_hash'] = 'loginza'; // отметка  о том что регестрируются через LOGINZA
 		$pass = substr($data['loginza_login'],10);
 		$data[$USERS->fn_pass]=md5($USERS->_CFG['wep']['md5'].$pass);
 		if($USERS->fn_login!='email') {
@@ -127,7 +129,7 @@ class loginza_class extends kernel_extends
 			$identity = '';
 			if(isset($temp['nickname'])) {
 				$identity = preg_replace("/[^0-9A-Za-z]+/",'',$temp['nickname']);
-			}elseif($data['email']) {
+			} elseif($data['email']) {
 				$identity = explode('@',$data['email']);
 				$identity = preg_replace("/[^0-9A-Za-z]+/",'',$identity[0]);
 			}
