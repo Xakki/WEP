@@ -52,13 +52,13 @@ wep.form = {
 
 	// Мультисписок
 	iList : function(obj,k) {
-		$(obj).parent().find('select').attr('name',k+'['+$(obj).val()+']');
+		$(obj).parent().find('.ilist-val').attr('name',k+'['+$(obj).val()+']');
 	},
 	// Мультисписок
 	iListRev : function(obj,k) {
-		$(obj).parent().find('input').attr('name',k+'['+$(obj).val()+']');
+		$(obj).parent().find('.ilist-val').attr('name',k+'['+$(obj).val()+']');
 	},
-	ilistCopy : function(ths,obj,max) {
+	iListCopy : function(ths,obj,max) {
 		var sz = $(obj).size();
 		if(sz<max || !max) {
 			var clon = $(obj+':last').clone();
@@ -80,7 +80,7 @@ wep.form = {
 		}
 	},
 
-	ilistdel : function(ths) {
+	iListdel : function(ths) {
 		var tmp = $(ths).parent();
 		var tmp2 = tmp.parent().find('span.ilistmultiple');
 		var cnt = parseInt(tmp2.text())+1;
@@ -89,7 +89,7 @@ wep.form = {
 		tmp.remove();
 	},
 
-	ilistsort : function(id) {// сортировка
+	iListsort : function(id) {// сортировка
 		$.include('/_design/_script/script.jquery/jquery-ui.js', function() {
 			$(id).sortable({
 				items: '>div.ilist',

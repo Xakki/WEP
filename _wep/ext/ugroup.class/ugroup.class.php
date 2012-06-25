@@ -252,7 +252,7 @@ class users_class extends kernel_extends {
 		$this->lang['title_regme'] = 'Регистрация пользователя';
 		//$this->lang['update_name'] = 
 		$this->lang['title_profile'] = 'Редактирование профиля';
-		$this->lang['Save and close'] = 'Готово';
+		$this->lang['Save and close'] = 'Зарегистрировать';
 		$this->default_access = '|0|';
 		$this->userCach = array();
 		$this->tablename = 'users';
@@ -263,13 +263,12 @@ class users_class extends kernel_extends {
 		parent::_create_conf();
 
 		$this->config['temp_olden'] = 0;
-		$this->config['cf_fields'] = array();
 		$this->config_form['temp_olden'] = array('type' => 'checkbox', 'caption' => 'Включить дополнительные поля');
 	}
 
 	function _create()
 	{
-		if($this->config['temp_olden'])
+		/*if($this->config['temp_olden'])
 			$this->config['cf_fields'] = array(
 				'cf1' => array(
 					'type' => 'varchar',
@@ -286,7 +285,7 @@ class users_class extends kernel_extends {
 					'default'=> '',
 					'caption' => 'Адрес',
 				),
-			);
+			);*/
 
 		parent::_create();
 		$this->ordfield = 'mf_timecr DESC';

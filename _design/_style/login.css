@@ -18,12 +18,51 @@
 	border:2px #63A6CC solid;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
 }
 
-.cform .submit {
-	width:200px;
-	margin:7px auto 0 auto;
-	text-align:center;
+.cform .submit  {
+	cursor:pointer;
+	background-color: #3BB3E0;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 1.2em;
+	text-decoration: none;
+	color: white;
+	position: relative;
+	padding: 8px 10px;
+	margin: 5px 0;
+	background-image: linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	background-image: -o-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	background-image: -moz-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	background-image: -webkit-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	background-image: -ms-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	background-image: -webkit-gradient( linear, left bottom, left top, color-stop(0, rgb(44,160,202)), color-stop(1, rgb(62,184,229)) );
+
+	border: solid 1px #2AB7EC;
+	-webkit-border-radius: 7px;
+	-moz-border-radius: 7px;
+	-o-border-radius: 7px;
+	border-radius: 7px;
+
+	-webkit-box-shadow: inset 0px 1px 0px #2ab7ec, 0px 2px 0px 0px #156785, 0px 6px 5px #999;
+	-moz-box-shadow: inset 0px 1px 0px #2ab7ec, 0px 2px 0px 0px #156785, 0px 6px 5px #999;
+	-o-box-shadow: inset 0px 1px 0px #2ab7ec, 0px 2px 0px 0px #156785, 0px 6px 5px #999;
+	box-shadow: inset 0px 1px 0px #2ab7ec, 0px 2px 0px 0px #156785, 0px 6px 5px #999;
 }
 
+.cform .submit:hover {
+	color:yellow;
+}
+.cform .submit:active {
+	top: 1px;
+	background-image: linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
+	background-image: -o-linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
+	background-image: -moz-linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
+	background-image: -webkit-linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
+	background-image: -ms-linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
+	background-image: -webkit-gradient( linear, left bottom, left top, color-stop(0, rgb(62,184,229)), color-stop(1, rgb(44,160,202)) );
+	-webkit-box-shadow: inset 0px 0px 0px #2ab7ec, 0px 1px 0px 0px #156785, 0px 3px 3px #999;
+	-moz-box-shadow: inset 0px 0px 0px #2ab7ec, 0px 1px 0px 0px #156785, 0px 3px 3px #999;
+	-o-box-shadow: inset 0px 0px 0px #2ab7ec, 0px 1px 0px 0px #156785, 0px 3px 3px #999;
+	box-shadow: inset 0px 0px 0px #2ab7ec, 0px 1px 0px 0px #156785, 0px 3px 3px #999;
+}
 
 /*MESSAGE*/
 
@@ -118,16 +157,8 @@
 }
 
 .loginzaForm div.cform input {
-	width:200px;
-	margin:0 0 2px 0;
 	text-align:center;
 	font-size: 17px;
-}
-
-.loginzaForm div.cform input.submit {
-	margin:7px auto 0 auto;
-	width:200px;
-	text-align:center;
 }
 
 .loginzaForm .messhead {

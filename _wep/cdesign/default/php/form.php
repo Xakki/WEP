@@ -91,7 +91,7 @@ function tpl_form(&$data, $tabs = array()) {
 		}
 		elseif($r['type']=='cf_fields') {
 			include_once(dirname(__FILE__).'/cffields.php');
-			$texthtml .= '<div class="form-value">'.tpl_cffields($data).'</div>';
+			$texthtml .= '<div class="form-value">'.tpl_cffields($k,$r).'</div>';
 		}
 		elseif($r['type']=='hidden') {
 			if(is_array($r['value']))
@@ -279,12 +279,12 @@ function tpl_form(&$data, $tabs = array()) {
 						$texthtml .= '<div class="ilist">
 							'.$text2.'
 							<span class="ilistsort" title="Переместить"></span>
-							<span class="ilistdel" title="Удалить"'.(($cnt==1 and $r['mask']['minarr'])?' style="display:none;"':'').' onclick="wep.form.ilistdel(this);"></span>
+							<span class="ilistdel" title="Удалить"'.(($cnt==1 and $r['mask']['minarr'])?' style="display:none;"':'').' onclick="wep.form.iListdel(this);"></span>
 						</div>';
 						if($r['mask']['maxarr'] and $cnt==$r['mask']['maxarr']) break;
 					}
-					$texthtml .= '<span class="ilistmultiple" onclick="wep.form.ilistCopy(this,\'#tr_'.$k.' div.ilist\','.$r['mask']['maxarr'].')" title="Добавить '.$r['caption'].'">'.($r['mask']['maxarr']-count($r['value'])).'</span>';
-					$_tpl['onload'] .= 'wep.form.ilistsort("#tr_'.$k.' .form-value");';
+					$texthtml .= '<span class="ilistmultiple" onclick="wep.form.iListCopy(this,\'#tr_'.$k.' div.ilist\','.$r['mask']['maxarr'].')" title="Добавить '.$r['caption'].'">'.($r['mask']['maxarr']-count($r['value'])).'</span>';
+					$_tpl['onload'] .= 'wep.form.iListsort("#tr_'.$k.' .form-value");';
 					$_CFG['fileIncludeOption']['jquery-ui'] = 1;
 				}
 				elseif(isset($r['multiple']) and $r['multiple']) {
@@ -669,12 +669,12 @@ function tpl_form(&$data, $tabs = array()) {
 					foreach($r['value'] as $kval=>$rval) {
 						$cnt++;
 						$texthtml .= '<div class="ilist">
-						<input class="ilist-key" type="'.$r['keytype'].'" value="'.htmlspecialchars($kval,ENT_QUOTES,$_CFG['wep']['charset']).'" maxlength="20" onkeyup="wep.form.ilist(this,\''.$k.'\')"/>
+						<input class="ilist-key" type="'.$r['keytype'].'" value="'.htmlspecialchars($kval,ENT_QUOTES,$_CFG['wep']['charset']).'" maxlength="20" onkeyup="wep.form.iList(this,\''.$k.'\')"/>
 						<input class="ilist-val" type="text" name="'.$k.'['.$kval.']" value="'.htmlspecialchars($rval,ENT_QUOTES,$_CFG['wep']['charset']).'" '.$attribute.'/>
-						<span'.($cnt==1?' style="display:none;"':'').' class="ilistdel" onclick="wep.form.ilistdel(this);" title="Удалить"></span></div>';
+						<span'.($cnt==1?' style="display:none;"':'').' class="ilistdel" onclick="wep.form.iListdel(this);" title="Удалить"></span></div>';
 						if($cnt==$r['mask']['maxarr']) break;
 					}
-					$texthtml .= '<span class="ilistmultiple" onclick="wep.form.ilistCopy(this,\'#tr_'.$k.' div.ilist\','.$r['mask']['maxarr'].')" title="Добавить '.$r['caption'].'">'.($r['mask']['maxarr']-count($r['value'])).'</span>';
+					$texthtml .= '<span class="ilistmultiple" onclick="wep.form.iListCopy(this,\'#tr_'.$k.' div.ilist\','.$r['mask']['maxarr'].')" title="Добавить '.$r['caption'].'">'.($r['mask']['maxarr']-count($r['value'])).'</span>';
 				$texthtml .= '</div>';
 			}
 			else {

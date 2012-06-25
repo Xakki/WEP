@@ -151,6 +151,7 @@
 	.divform input.sbmt {
 		cursor:pointer;
 		width:auto;
+		min-width:100px;
 		height:auto;
 		background-color: #3BB3E0;
 		font-family: 'Open Sans', sans-serif;

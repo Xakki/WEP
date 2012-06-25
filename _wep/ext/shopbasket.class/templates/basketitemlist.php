@@ -54,7 +54,7 @@
 			<form type="GET">
 				<div class="basketdiv">Тип доставки '.$sitem.'</div>
 				<div class="basketdiv">Итого: <span id="basketitogo">'.$summ.'</span> '.$data['#curr#'].'</div>
-				<div class="basketdiv"><input type="submit" value="Оформить заказ"></div>
+				<div class="basketdiv"><input type="submit" class="sbmt" value="Оформить заказ"></div>
 			</form>
 			';
 		} else

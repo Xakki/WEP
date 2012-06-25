@@ -35,33 +35,7 @@ class product_class extends kernel_extends {
 
 	protected function _create_conf() {/*CONFIG*/
 		parent::_create_conf();
-
-		$this->config['imageCnt'] = 6;
-		$this->config['prodListTable'] = array(
-			'id' => '№',
-			'img_product' => 'Фото',
-			'name' => 'Наименование',
-			'descr' => 'Описание',
-			'cost' => 'Цена',
-		);
-		$this->config['prodItem'] = array(
-			//'text' => 'Полное описание',
-		);
-
-		$this->config['temp_olden'] = 0;
-		$this->config['cf_fields'] = array();
-
-
-		$this->config_form['temp_olden'] = array('type' => 'checkbox', 'caption' => 'Включить дополнительные поля');
-		$this->config_form['imageCnt'] = array('type' => 'int', 'caption' => 'Число фотографий');
-		$this->config_form['prodListTable'] = array('type' => 'list', 'keytype' => 'text', 'listname' => 'fieldslist', 'multiple' => 3, 'caption' => 'Формат вывода шаблона табличного списка', 'mask' => array('maxarr' => 15,'keylist'=>true));
-		$this->config_form['prodItem'] = array('type' => 'list', 'keytype' => 'text', 'listname' => 'fieldslist', 'multiple' => 3, 'caption' => 'Данные для вывода в информации о товаре', 'mask' => array('maxarr' => 15,'keylist'=>true));
-	}
-
-	protected function _create() {
-
-		if($this->config['temp_olden'])
-			$this->config['cf_fields'] = array(
+$this->config['cf_fields'] = array(
 				'code' => array(
 					'type' => 'varchar',
 					'width' => 11,
@@ -96,6 +70,25 @@ class product_class extends kernel_extends {
 					'caption' => 'Страна изготовитель',
 				),
 			);
+		$this->config['imageCnt'] = 6;
+		$this->config['prodListTable'] = array(
+			'id' => '№',
+			'img_product' => 'Фото',
+			'name' => 'Наименование',
+			'descr' => 'Описание',
+			'cost' => 'Цена',
+		);
+		$this->config['prodItem'] = array(
+			//'text' => 'Полное описание',
+		);
+		$this->config['temp_olden'] = 0;
+
+		$this->config_form['imageCnt'] = array('type' => 'int', 'caption' => 'Число фотографий');
+		$this->config_form['prodListTable'] = array('type' => 'list', 'keytype' => 'text', 'listname' => 'fieldslist', 'multiple' => 3, 'caption' => 'Формат вывода шаблона табличного списка', 'mask' => array('maxarr' => 15,'keylist'=>true));
+		$this->config_form['prodItem'] = array('type' => 'list', 'keytype' => 'text', 'listname' => 'fieldslist', 'multiple' => 3, 'caption' => 'Данные для вывода в информации о товаре', 'mask' => array('maxarr' => 15,'keylist'=>true));
+	}
+
+	protected function _create() {
 
 		parent::_create();
 

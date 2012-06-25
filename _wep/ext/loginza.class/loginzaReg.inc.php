@@ -61,7 +61,7 @@
 
 	if(isset($_SESSION['loginza'])) unset($_SESSION['loginza']); // Очистка
 
-	$html = '<div class="loginzaForm" style="'.$FUNCPARAM[5].'">
+	$html = '<div class="loginzaForm" style="'.$FUNCPARAM[4].'">
 			<div class="loginzaIframe">
 				<div class="loginzaInfo">Вы можете зарегистрироваться с помощью следующих сервисов</div>
 				<iframe style="height:300px;" src="http://loginza.ru/api/widget?overlay=loginza&token_url='.rawurlencode('http://'.$_SERVER['HTTP_HOST'].'/'.$Chref.'.html').'&providers_set='.$FUNCPARAM[3].'" scrolling="no" frameborder="no"></iframe>

@@ -1156,7 +1156,7 @@ abstract class kernel_extends {
 		  $this->fields_form[$k] = $r;
 		  } */
 
-		if($this->cf_fields and count($this->config['cf_fields'])) {
+		if($this->cf_fields and is_array($this->config['cf_fields']) and count($this->config['cf_fields'])) {
 			foreach($this->config['cf_fields'] as $fk=>$fr) {
 				if(isset($fr['ftype']))
 					$fr['type'] = $fr['ftype'];
@@ -1849,14 +1849,14 @@ abstract class kernel_extends {
 		} else {
 			foreach ($this->config as $k => &$r) {
 				if (is_array($r) and isset($this->config_form[$k]) and !isset($this->config_form[$k]['multiple'])) {
-					$temp = array();
+					/*$temp = array();
 					foreach ($r as $t => $d) {
 						if (strpos($d, ':=') === false)
 							$temp[] = trim($t) . ':=' . trim($d);
 						else
 							$temp[] = trim($d);
 					}
-					$r = implode(' :| ', $temp);
+					$r = implode(' :| ', $temp);*/
 				}
 			}
 			unset($r);
