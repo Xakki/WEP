@@ -56,7 +56,7 @@ class formlist_class extends kernel_extends {
 					'value'=>0,
 					'css'=>'addparam',
 					'valuelist'=>$enumlist,
-				)						
+				)
 			);
 			//$_tpl['onload'] .= 'mCBoxVis(\''.$rr.'_'.$rrr.'\');';
 			$RESULT['html'] = $HTML->transformPHP($DATA,'#pg#filter');

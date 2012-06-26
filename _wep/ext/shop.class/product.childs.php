@@ -35,7 +35,33 @@ class product_class extends kernel_extends {
 
 	protected function _create_conf() {/*CONFIG*/
 		parent::_create_conf();
-$this->config['cf_fields'] = array(
+
+		$this->config['imageCnt'] = 6;
+		$this->config['prodListTable'] = array(
+			'id' => '№',
+			'img_product' => 'Фото',
+			'name' => 'Наименование',
+			'descr' => 'Описание',
+			'cost' => 'Цена',
+		);
+		$this->config['prodItem'] = array(
+			//'text' => 'Полное описание',
+		);
+
+		$this->config['temp_olden'] = 0;
+		$this->config['cf_fields'] = array();
+
+
+		$this->config_form['temp_olden'] = array('type' => 'checkbox', 'caption' => 'Включить дополнительные поля');
+		$this->config_form['imageCnt'] = array('type' => 'int', 'caption' => 'Число фотографий');
+		$this->config_form['prodListTable'] = array('type' => 'list', 'keytype' => 'text', 'listname' => 'fieldslist', 'multiple' => 3, 'caption' => 'Формат вывода шаблона табличного списка', 'mask' => array('maxarr' => 15,'keylist'=>true));
+		$this->config_form['prodItem'] = array('type' => 'list', 'keytype' => 'text', 'listname' => 'fieldslist', 'multiple' => 3, 'caption' => 'Данные для вывода в информации о товаре', 'mask' => array('maxarr' => 15,'keylist'=>true));
+	}
+
+	protected function _create() {
+
+		if($this->config['temp_olden'])
+			$this->config['cf_fields'] = array(
 				'code' => array(
 					'type' => 'varchar',
 					'width' => 11,
@@ -70,25 +96,6 @@ $this->config['cf_fields'] = array(
 					'caption' => 'Страна изготовитель',
 				),
 			);
-		$this->config['imageCnt'] = 6;
-		$this->config['prodListTable'] = array(
-			'id' => '№',
-			'img_product' => 'Фото',
-			'name' => 'Наименование',
-			'descr' => 'Описание',
-			'cost' => 'Цена',
-		);
-		$this->config['prodItem'] = array(
-			//'text' => 'Полное описание',
-		);
-		$this->config['temp_olden'] = 0;
-
-		$this->config_form['imageCnt'] = array('type' => 'int', 'caption' => 'Число фотографий');
-		$this->config_form['prodListTable'] = array('type' => 'list', 'keytype' => 'text', 'listname' => 'fieldslist', 'multiple' => 3, 'caption' => 'Формат вывода шаблона табличного списка', 'mask' => array('maxarr' => 15,'keylist'=>true));
-		$this->config_form['prodItem'] = array('type' => 'list', 'keytype' => 'text', 'listname' => 'fieldslist', 'multiple' => 3, 'caption' => 'Данные для вывода в информации о товаре', 'mask' => array('maxarr' => 15,'keylist'=>true));
-	}
-
-	protected function _create() {
 
 		parent::_create();
 
@@ -187,6 +194,7 @@ $this->config['cf_fields'] = array(
 
 	function _childs() {
 		$this->create_child('product_value');
+		$this->create_child('product_like');
 	}
 
 	function _checkmodstruct() {
@@ -570,17 +578,19 @@ $this->config['cf_fields'] = array(
 			reset($PARAM->data);
 			$temp = current($PARAM->data);
 		}
-		if(!$temp or $temp['owner_id']!=$rid) { // для RSS и рассылки
+		// параметрытоваров по рубрике
+		if($rid and (!$temp or $temp['owner_id']!=$rid)) { // для RSS и рассылки
 			$listfields = array('*');
 			$cls = 'WHERE owner_id="'.$rid.'" and active=1 order by ordind';
 			$PARAM->data = $PARAM->_query($listfields,$cls,'id');
 		}
+
 		$clauseF=array();
 		$lcnt=4;
 		$type='';
 		if(count($filter) and isset($filter['sbmt'])) {
 			foreach($filter as $k=>$r) {
-				if($k=='id' or $k=='shop') continue;
+				//if($k=='id' or $k=='shop') continue;
 				$tempid = substr($k,6);
 				if(isset($PARAM->data[$tempid])) {
 					$nameK = $PARAM->data[$tempid]['type'];
@@ -628,7 +638,7 @@ $this->config['cf_fields'] = array(
 						if((int)$filter[$k.'_2'] and (!$this->filter_form[$k]['mask']['maxint'] or $this->filter_form[$k]['mask']['maxint']>(int)$filter[$k.'_2']))
 							$clauseF[$k.'_2'] = 't1.'.$k.'<='.(int)$filter[$k.'_2'];
 					}
-					elseif($this->fields_form[$k]['type']=='list'){
+					elseif($this->fields_form[$k]['type']=='list' or $this->fields_form[$k]['type']=='int'){
 						if(is_array($r) and count($r)) {
 							foreach($r as &$ar)
 								$ar = $this->SqlEsc($ar);
@@ -1044,7 +1054,6 @@ $this->config['cf_fields'] = array(
 }
 
 
-
 class product_value_class extends kernel_extends {
 	function _set_features() {
 		if (!parent::_set_features()) return false;
@@ -1079,4 +1088,41 @@ class product_value_class extends kernel_extends {
 		}
 	}
 
+}
+
+
+class product_like_class extends kernel_extends {
+	function _set_features() {
+		if (!parent::_set_features()) return false;
+		//$this->showinowner=false;// не показывать
+		$this->mf_createrid = false;
+		$this->tablename = $this->owner->_cl.'_like';
+		return true;
+	}
+
+	function _create() {
+		parent::_create();
+		$this->caption = 'Сопутствующие товары';
+		$this->fields['prodid'] =	array('type' => 'int', 'width' =>11, 'attr' => 'NOT NULL', 'min'=>1);
+
+	}
+
+	// FORM FIELDS
+	public function setFieldsForm($form=0) {
+		parent::setFieldsForm($form);
+		//$this->fields_form = array();
+		$this->fields_form['prodid'] = array('type' => 'ajaxlist', 'listname'=>array('class'=>$this->owner->_cl), 'caption' => 'Товары');
+
+	}
+
+	public function fLike($prodid) {
+		$data = array();
+		if($prodid = (int)$prodid and $prodid) {
+			$klist = $this->qs('prodid','WHERE owner_id='.(int)$prodid,'prodid');
+			$this->owner->fields_form;
+			$this->owner->fields_form['id'] = array('type'=>'list');
+			$data = $this->owner->fList(0,array('id'=>array_keys($klist),'sbmt'=>true),'list','t1.mf_timecr',10);
+		}
+		return $data;
+	}
 }

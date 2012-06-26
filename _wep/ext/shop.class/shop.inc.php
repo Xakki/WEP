@@ -27,6 +27,8 @@ if (!isset($FUNCPARAM[7]))
 	$FUNCPARAM[7] = 1;
 if(!isset($FUNCPARAM[8]))
 	$FUNCPARAM[8] = '#shop#productItem';
+if(!isset($FUNCPARAM[9]))
+	$FUNCPARAM[9] = '#shop#productLike';
 
 // рисуем форму для админки чтобы удобно задавать параметры
 if (isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
@@ -41,6 +43,7 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 		'6' => array('type' => 'text', 'caption' => 'Сортировка'),
 		'7' => array('type' => 'checkbox', 'caption' => 'Выводить список товаров подкатегории, если есть подкатегории'),
 		'8' => array('type' => 'list', 'listname' => 'phptemplates', 'caption' => 'Шаблон Продукта'),
+		'9' => array('type' => 'list', 'listname' => 'phptemplates', 'caption' => 'Шаблон Сопутствующие товары'),
 		// ,'style'=>($FUNCPARAM[3]!=2?'display:none;':'')
 		// , 'onchange'=>'if(this.value==2) $("#tr_flexform_4").slideDown("slow"); else $("#tr_flexform_4").slideUp("slow"); '
 	);
@@ -101,8 +104,15 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 				}
 				$c++;
 			}*/
-		} else
-			header("HTTP/1.0 404");
+		} else {
+			return 404;
+		}
+		if($FUNCPARAM[9]) {
+			$DATA = $PRODUCT->childs['product_like']->fLike($PRODUCT->id);
+			$DATA['#page#'] = $Chref;
+			$DATA['#shopconfig#'] = $SHOP->config;
+			$html .= $HTML->transformPHP($DATA,$FUNCPARAM[9]);
+		}
 	}
 	elseif(isset($_GET['shop']) and $rid = (int)$_GET['shop']) {
 

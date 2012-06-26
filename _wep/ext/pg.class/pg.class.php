@@ -725,6 +725,11 @@ class pg_class extends kernel_extends {
 							$_tpl[$rowPG['marker']] .= $flagPG;
 						$flagPG = 1;
 					}
+					elseif (is_int($flagPG) and  $flagPG >= 100 and $flagPG < 600) {
+						// Если INC возвращает число - то выводим HTTP код ошибки
+						$this->displayHttpCode($flagPG);
+						$MemFlag = false;
+					}
 
 					// Если включен кеш, то записываем полученные данные в кеш
 					if ($MemFlag) {

@@ -146,6 +146,7 @@
 			  </div>	';
 			}
 			elseif($r['type']=='int') {
+				if(!isset($r['mask']['minint'])) $r['mask']['minint'] = 0;
 				$html .= '<div class="f_item" id="tr_'.$k.'">
 				<div class="f_caption">'.$r['caption'].'</div>
 				<div class="f_value f_int">
@@ -155,6 +156,7 @@
 				$_CFG['fileIncludeOption']['jquery-ui'] = true;
 			}
 			elseif($r['type']=='float') {
+				if(!isset($r['mask']['minint'])) $r['mask']['minint'] = 0;
 				$html .= '<div class="f_item" id="tr_'.$k.'">
 				<div class="f_caption">'.$r['caption'].'</div>
 				<div class="f_value f_int">
