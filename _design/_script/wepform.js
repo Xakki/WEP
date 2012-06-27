@@ -43,7 +43,7 @@ wep.form = {
 						wep.fShowload(1,false,result.html);
 					} else
 						timerid2 = setTimeout(function(){wep.fShowload(0);},200);
-					if(result.eval!= undefined && result.eval!='') eval(result.eval);
+					if(result.onload!= undefined && result.onload!='') eval(result.onload);
 					if(result.text!= undefined && result.text!='') fLog(fSpoiler(result.text,'AJAX text result'),1);
 
 				}
