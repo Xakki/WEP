@@ -23,11 +23,9 @@
 			}
 		}
 		if(isset($gfi['form']) and $gfi['form']) {
-			$_tpl['script']['wepform'] = 1;
-			$_tpl['styles']['form'] = 1;
-		}
-		if(isset($gfi['jqueryform'])) {
 			$_tpl['script']['script.jquery/form'] = 1;
+			$_tpl['styles']['form'] = 1;
+			$_tpl['script']['wepform'] = 1;
 		}
 		if(isset($gfi['md5']) and $gfi['md5']) {
 			$_tpl['script']['md5'] = 1;

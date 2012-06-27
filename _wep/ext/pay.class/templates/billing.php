@@ -9,8 +9,9 @@ function tpl_billing($data)
 	$action = '';
 	if(isset($data['form']['_*features*_']['action']))
 		$action = $data['form']['_*features*_']['action'];
-	$_CFG['fileIncludeOption']['form'] = 1;
-	$_CFG['fileIncludeOption']['jqueryform'] = 1;
+
+	//$_CFG['fileIncludeOption']['form'] = 1;
+
 	$_tpl['onload'] .= 'wep.form.ajaxForm(\'#'.$ID.'\','.$data['#contentID#'].');';
 	$_tpl['styles']['../default/_pay/pay'] = 1;
 

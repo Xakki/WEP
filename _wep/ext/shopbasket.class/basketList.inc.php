@@ -33,6 +33,7 @@
 	if(!_new_class('pay', $PAY)) return false;
 
 	$_tpl['styles']['../'.$HTML->_design.'/_shop/style/shopBasket'] = 1;
+	$_CFG['fileIncludeOption']['form'] = 1;
 
 	$subMenu = array(
 		array('name'=>'Список заказов'),
@@ -57,6 +58,7 @@
 	}
 	elseif(isset($_GET['basketpay'])) {
 		$subK = 3;
+		$uid = $SHOPBASKET->userId();
 		// Выписывать счёт
 		$SHOPBASKET->id = (int)$_GET['basketpay'];
 		$BDATA = $SHOPBASKET->_select();
@@ -104,7 +106,7 @@
 					$norequere = $deliveryData['norequere'];
 					$norequere = explode('|',trim($norequere,'|'));
 					$FORM = array_diff_key($FORM,array_flip($norequere));
-
+					$FORM['paytype']['type'] = 'radio' ;
 					list($DATA['formcreat'], $this->formFlag) = $SHOPBASKET->_UpdItemModul(array(),$FORM);
 
 					if($SHOPBASKET->id) {
