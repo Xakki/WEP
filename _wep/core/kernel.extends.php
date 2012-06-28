@@ -30,8 +30,10 @@ abstract class kernel_extends {
 		}
 		$this->_create(); // предустановки модуля
 		$this->_childs();
-		if (isset($this->_CFG['hook']['__construct']))
-			$this->__do_hook('__construct', func_get_args());
+		if (isset($this->_CFG['hook']['__construct'])) {
+			$funcParam = func_get_args();
+			$this->__do_hook('__construct', $funcParam);
+		}
 	}
 
 	function __destruct() {
