@@ -777,7 +777,7 @@ function _new_class($name, &$MODUL, $OWNER=NULL, $_forceLoad = false) {
 			if ($MODUL and is_object($MODUL))
 				return true;
 		}
-		elseif (!$_CFG['modulprm'][$name]['active']) 
+		elseif (!isset($_CFG['modulprm'][$name]) or !$_CFG['modulprm'][$name]['active']) 
 			return false;
 		elseif (isset($_CFG['modulprm'][$name]) and $_CFG['modulprm'][$name]['pid']) {
 

@@ -1,5 +1,8 @@
 <?php
-
+/**
+* Форма оплаты счета
+* 
+*/
 function tpl_billing($data)
 {
 	global $_tpl, $HTML;

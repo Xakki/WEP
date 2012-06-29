@@ -147,6 +147,7 @@
 			}
 			elseif($r['type']=='int') {
 				if(!isset($r['mask']['minint'])) $r['mask']['minint'] = 0;
+				if(!isset($r['mask']['maxint'])) $r['mask']['maxint'] = (int)$r['value_2']*10;
 				$html .= '<div class="f_item" id="tr_'.$k.'">
 				<div class="f_caption">'.$r['caption'].'</div>
 				<div class="f_value f_int">

@@ -190,7 +190,7 @@ class pay_class extends kernel_extends {
 				'level'=>'51',
 				'name'=>$this->caption,
 				'wep'=>'0',
-				'negative'=>'1',
+				'negative'=>'-1000000000',
 			));
 		}else
 			$UGROUP->id = $data1[0]['id'];
