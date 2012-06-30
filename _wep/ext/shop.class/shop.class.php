@@ -119,7 +119,7 @@ class shop_class extends rubric_class {
 				}
 				else {
 					$html = $HTML->transformPHP($DATA,'#pg#formcreat');
-					$res['eval'] = '$(\'#form_mail\').submit(function(){ JSWin({\'type\':this}); return false;});';
+					$res['onload'] = '$(\'#form_mail\').submit(function(){ JSWin({\'type\':this}); return false;});';
 				}
 			}
 		}
