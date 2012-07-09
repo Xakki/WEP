@@ -23,30 +23,32 @@ wep.form = {
 	// Аякс отправка формы
 	JSFR: function(n) {
 		// NEED INCLUDE jquery.form
-		jQuery(n).ajaxForm({
-			beforeSubmit: 
-				function(a,f,o) {
-					//var formElement = f[0];
-					o.dataType = 'json';
-					//wep.preSubmitAJAX (f);
-				},
-			error: 
-				function(d,statusText) {
-					alert(statusText+' - form notsuccess (may be wrong json data, see console log)');
-					console.log(d);console.log(d.responseText);
-				},
-			success: 
-				function(result) {
-					//console.log(result);
-					clearTimeout(timerid);
-					if(result.html!= undefined && result.html!='') {
-						wep.fShowload(1,false,result.html);
-					} else
-						timerid2 = setTimeout(function(){wep.fShowload(0);},200);
-					if(result.onload!= undefined && result.onload!='') eval(result.onload);
-					if(result.text!= undefined && result.text!='') fLog(fSpoiler(result.text,'AJAX text result'),1);
+		$.include(wep.HREF_script+'script.jquery/form.js', function() {
+			jQuery(n).ajaxForm({
+				beforeSubmit: 
+					function(a,f,o) {
+						//var formElement = f[0];
+						o.dataType = 'json';
+						//wep.preSubmitAJAX (f);
+					},
+				error: 
+					function(d,statusText) {
+						alert(statusText+' - form notsuccess (may be wrong json data, see console log)');
+						console.log(d);console.log(d.responseText);
+					},
+				success: 
+					function(result) {
+						//console.log(result);
+						clearTimeout(timerid);
+						if(result.html!= undefined && result.html!='') {
+							wep.fShowload(1,false,result.html);
+						} else
+							timerid2 = setTimeout(function(){wep.fShowload(0);},200);
+						if(result.onload!= undefined && result.onload!='') eval(result.onload);
+						if(result.text!= undefined && result.text!='') fLog(fSpoiler(result.text,'AJAX text result'),1);
 
-				}
+					}
+			});
 		});
 	},
 

@@ -496,7 +496,11 @@ var wep = {
 		for(var i in css) {
 			if(i && css[i]==1) {
 				$.includeCSS(wep.BH+wep.HREF_style+i+'.css');
-			} else {
+			} 
+			else if(typeof css[i] == 'object') {
+				$.includeCSS(wep.BH+wep.HREF_style+i+'.css', function(){ wep.cssLoad(css[i]); });
+			}
+			else {
 				// TODO прочие виды загрузок
 			}
 		}
@@ -506,8 +510,12 @@ var wep = {
 		for(var i in script) {
 			if(i && script[i]==1) {
 				$.include(wep.BH+wep.HREF_script+i+'.js');
-			} else {
-				// TODO прочие виды загрузок
+			} 
+			else if(typeof script[i] == 'object') {
+				$.include(wep.BH+wep.HREF_script+i+'.js', function(){ wep.scriptLoad(script[i]); });
+			}
+			else {
+				eval(script[i]);
 			}
 		}
 	},
@@ -521,15 +529,51 @@ var wep = {
 
 		return false;
 	},
-	readyPlot: function(cap,Xname,Yname,stepY) {
-		plot1 = $.jqplot('statschart2', [line1], {
-			title:cap,
-			axes:{
-				xaxis:{label:Xname,renderer:$.jqplot.DateAxisRenderer},
-				yaxis:{label:Yname,min:0,tickInterval:stepY,tickOptions:{formatString:'%d'} }},
-			cursor:{zoom: true},
+	readyPlot: function(options) {
+		var settings = {
+			idObj : 'statschart1',
+			caption : 'Stats',
+			xName : 'X',
+			yName : 'Y',
+			yStep : '10'
+		};
+
+		if(options) { jQuery.extend(settings, options); };
+
+		$.jqplot.config.enablePlugins = true;
+
+		plot1 = $.jqplot(settings.idObj, [line1], {
+			title: settings.caption,
+			seriesDefaults:{neighborThreshold:0, showMarker: false},
+			// Turns on animatino for all series in this plot.
+			animate: true,
+			// Will animate plot on calls to plot1.replot({resetAxes:true})
+			animateReplot: true,
+			axes: {
+				xaxis:{label:settings.xName, renderer:$.jqplot.DateAxisRenderer},
+				yaxis:{label:settings.yName, min:0, tickOptions:{formatString:'%d'}, autoscale:false, useSeriesColor:true }
+			},
+			cursor:{show: true, zoom: true},
 			series:[{lineWidth:4, markerOptions:{style:'square'}}]
 		});
+
+		plot2 = $.jqplot('statschart2', [line1], {
+			title: settings.caption,
+			seriesDefaults:{neighborThreshold:0, showMarker: false},
+			// Turns on animatino for all series in this plot.
+			animate: true,
+			// Will animate plot on calls to plot1.replot({resetAxes:true})
+			animateReplot: true,
+			axes: {
+				xaxis:{label:settings.xName, renderer:$.jqplot.DateAxisRenderer},
+				yaxis:{label:settings.yName, min:0, tickOptions:{formatString:'%d'} , autoscale:false, useSeriesColor:true}
+			},
+			cursor:{showTooltip: false, zoom: true, constrainZoomTo: 'x'},
+			series:[{lineWidth:4, markerOptions:{style:'square'}}],
+		});
+
+      
+		$.jqplot.Cursor.zoomProxy(plot1, plot2);
 	},
 	pagenum_super: function(total,pageCur,cl,order) {
 		if(!order) order = false;

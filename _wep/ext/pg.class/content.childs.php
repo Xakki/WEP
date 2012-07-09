@@ -315,7 +315,8 @@ class content_class extends kernel_extends {
 		$vars = $this->SetFuncparam($vars);
 		if ($ret = parent::_update($vars, $where, $flag_select)) {
 			// в форме для вывода обрабатываем данные
-			$this->data[$this->id] += $this->owner->parserFlexData($this->data[$this->id]['funcparam'], $this->data[$this->id]['pagetype'], true);
+			if($flag_select and isset($this->data[$this->id]['funcparam']))
+				$this->data[$this->id] += $this->owner->parserFlexData($this->data[$this->id]['funcparam'], $this->data[$this->id]['pagetype'], true);
 		}
 		return $ret;
 	}
@@ -324,7 +325,8 @@ class content_class extends kernel_extends {
 		$vars = $this->SetFuncparam($vars);
 		if ($ret = parent::_add($vars, $flag_select)) {
 			// в форме для вывода обрабатываем данные
-			$this->data[$this->id] += $this->owner->parserFlexData($this->data[$this->id]['funcparam'], $this->data[$this->id]['pagetype'], true);
+			if($flag_select and isset($this->data[$this->id]['funcparam']))
+				$this->data[$this->id] += $this->owner->parserFlexData($this->data[$this->id]['funcparam'], $this->data[$this->id]['pagetype'], true);
 		}
 		return $ret;
 	}

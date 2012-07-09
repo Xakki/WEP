@@ -23,7 +23,6 @@
 			}
 		}
 		if(isset($gfi['form']) and $gfi['form']) {
-			$_tpl['script']['script.jquery/form'] = 1;
 			$_tpl['styles']['form'] = 1;
 			$_tpl['script']['wepform'] = 1;
 		}
@@ -34,6 +33,11 @@
 			$_tpl['script']['script.jquery/fancybox'] = 1;
 			$_tpl['styles']['style.jquery/fancybox'] = 1;
 			$_tpl['onload'] .= "jQuery('.fancyimg').fancybox();";
+		}
+		if(isset($gfi['qrtip']) and $gfi['qrtip']) {
+			$_tpl['script']['script.jquery/qrtip'] = 1;
+			$_tpl['styles']['style.jquery/qrtip'] = 1;
+			$_tpl['onload'] .= 'jQuery(\'a\').qr();';
 		}
 		if(isset($gfi['jquery-ui']) and $gfi['jquery-ui']) {
 			$_tpl['script']['script.jquery/jquery-ui'] = 1;
@@ -48,6 +52,28 @@
 			}
 			$_tpl['styles']['style.jquery/'.$gfi['uiStyle'].'/jquery-ui'] = 1;
 		}
+
+		if(isset($_tpl['script']['wepform']))
+			$_tpl['script'] = array('wepform'=>1)+$_tpl['script'];
+
+		$_tpl['script'] = array('wep'=>1)+$_tpl['script'];
+		$_tpl['script'] = array('include'=>1)+$_tpl['script'];
+		$_tpl['script'] = array('jquery'=>1)+$_tpl['script'];
+
+
+		/*if(isset($_tpl['script']['syntaxhighlighter'])) {
+			$_tpl['onload'] .= '';
+		}*/
+
+		// UPDATE FIX
+		if(isset($_tpl['script']['utils'])) {
+			unset($_tpl['script']['utils']);
+		}
+		if(isset($_tpl['script']['form'])) {
+			unset($_tpl['script']['form']);
+		}
+
+		/////////////////////
 		return true;
 	}
 
@@ -74,32 +100,12 @@
 		$temp = '';
 
 		if(isset($_tpl['script']) and is_array($_tpl['script'])) {
-			if(isset($_tpl['script']['wepform']))
-				$_tpl['script'] = array('jquery'=>1,'wep'=>1,'wepform'=>1)+$_tpl['script'];
-			else
-				$_tpl['script'] = array('jquery'=>1,'wep'=>1)+$_tpl['script'];
-
-			if(isset($_tpl['script']['syntaxhighlighter'])) {
-				$_tpl['onload'] .= '';
-			}
-			// UPDATE FIX
-			if(isset($_tpl['script']['utils'])) {
-				unset($_tpl['script']['utils']);
-			}
-			if(isset($_tpl['script']['form'])) {
-				unset($_tpl['script']['form']);
-			}
 
 			foreach($_tpl['script'] as $kk=>$rr) {
 				if(is_array($rr))
 					$temp .= '<script type="text/javascript" src="'.implode('"></script>'."\n".'<script type="text/javascript" src="',$rr).'"></script>'."\n";
 				elseif($rr==1 and $kk) {
 					$temp .= '<script type="text/javascript" src="'.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].$kk.'.js'.$solt.'"></script>'."\n";
-					if($kk=='script.jquery/fancybox')
-						$_tpl['onload'] .= 'jQuery(\'.fancyimg\').fancybox();';//$_tpl['onload'] .= 'jQuery(\'div.imagebox a\').fancybox();jQuery(\'a.fancyimg\').fancybox();';
-					elseif(strpos($kk,'qrtip')!== false) {
-						$_tpl['onload'] .= 'jQuery(\'a\').qr();';
-					}
 				}
 				else
 					$temp .= "<script type=\"text/javascript\">//<!--\n".$rr."\n//--></script>\n";

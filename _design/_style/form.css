@@ -160,7 +160,7 @@
 		color: white;
 		position: relative;
 		padding: 8px 10px;
-		margin: 0 10px;
+		margin: 4px 10px;
 		background-image: linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
 		background-image: -o-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
 		background-image: -moz-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);

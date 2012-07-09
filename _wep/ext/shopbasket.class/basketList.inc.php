@@ -37,9 +37,9 @@
 
 	$subMenu = array(
 		array('name'=>'Список заказов'),
-		array('name'=>'Шаг 1: Выбор товаров', 'href'=>$Chref.'.html'),
-		array('name'=>'Шаг 2: Подтверждение и оплата'),
-		array('name'=>'Завершение'),
+		array('name'=>'Шаг 1: Выбор товаров'),
+		array('name'=>'Шаг 2: Контактные данные'),
+		array('name'=>'Шаг 3: Оплата'),
 	);
 
 	if(static_main::_prmUserCheck())
@@ -49,6 +49,7 @@
 	$html = '';
 
 	if(isset($_GET['basketorder']) and $SHOPBASKET->userId()) {
+		$subMenu[1]['href'] = $Chref.'.html';
 		$subK = 0;
 		// STEP 1 
 		$DATA = $SHOPBASKET->fBasketList();
@@ -71,6 +72,7 @@
 			'if(_new_class(\'shopbasket\',$M)){$M->payStatus('.$SHOPBASKET->id.');}', // Исполняемая команда
 			$BDATA[$SHOPBASKET->id] // Дополнительные данные (email, phone итп)
 		);
+		$this->formFlag = $DATA['#resFlag#'];
 		$DATA['#contentID#'] = $PGLIST->contentID;
 		$html = $HTML->transformPHP($DATA,'#pay#billing');
 	}

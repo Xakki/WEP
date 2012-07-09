@@ -859,6 +859,81 @@ class pg_class extends kernel_extends {
 		return $DATA_PG;
 	}
 
+
+	function getPGMap($list) {
+		if (empty($this->dataCashTree))
+			$this->sqlCashPG();
+		$DATA_PG = array();
+
+		if (count($this->dataCash))
+			foreach ($list as $keyPG) {
+				$rowPG = $this->dataCash[$keyPG];
+				if ($rowPG['ugroup']) {
+					if (!$this->pagePrmCheck($rowPG['ugroup']))
+						continue;
+				}
+				/*if ($onmenuPG == -1) {
+					if (!$rowPG['onmap']) {
+						continue;
+					}
+				}*/
+				if (!isset($list[$keyPG])) {
+					continue;
+				}
+
+				$href = $this->_CFG['_HREF']['BH'] . $this->getHref($keyPG, true);
+
+				if ($this->id == $keyPG)
+					$selPG = 2;
+				elseif (is_array($this->selected) and isset($this->selected[$keyPG]))
+					$selPG = 1;
+				else
+					$selPG = 0;
+
+				if ($rowPG['name_in_menu'] == '') {
+					$name = $rowPG['name'];
+				} else {
+					$name = $rowPG['name_in_menu'];
+				}
+
+				$DATA_PG[$keyPG] = array(
+					'name' => $name, 
+					'href' => $href, 
+					'attr' => $rowPG['attr'], 
+					'sel' => $selPG, 
+					'pgid' => $keyPG,
+					'menuajax'=>$rowPG['menuajax'], 
+				);
+				if ($pid = $rowPG['parent_id'] and isset($this->dataCashTree[$pid]) and isset($DATA_PG[$pid])) {
+					$DATA_PG[$pid]['#item#'][] = $DATA_PG[$keyPG];
+					unset($DATA_PG[$keyPG]);
+				}
+
+				/*if ($onmenuPG == -1 and $rowPG['pagemap']) {
+					$mapPG = explode(':', $rowPG['pagemap']);
+					if (count($mapPG) == 2 and file_exists($this->_enum['inc'][$mapPG[0]]['path'] . $mapPG[1] . '.map.php')) {
+						$tempinc = include($this->_enum['inc'][$mapPG[0]]['path'] . $mapPG[1] . '.map.php');
+						if (isset($DATA_PG[$keyPG]['#item#']) and is_array($DATA_PG[$keyPG]['#item#']))
+							$DATA_PG[$keyPG]['#item#'] += $tempinc;
+						else
+							$DATA_PG[$keyPG]['#item#'] = $tempinc;
+					}
+				}
+				else*/
+				if ($rowPG['pagemenu']) {
+					$mapPG = explode(':', $rowPG['pagemenu']);
+					if (count($mapPG) == 2 and file_exists($this->_enum['inc'][$mapPG[0]]['path'] . $mapPG[1] . '.map.php')) {
+						$tempinc = include($this->_enum['inc'][$mapPG[0]]['path'] . $mapPG[1] . '.map.php');
+						if (isset($DATA_PG[$keyPG]['#item#']) and is_array($DATA_PG[$keyPG]['items']))
+							$DATA_PG[$keyPG]['#item#'] += $tempinc;
+						else
+							$DATA_PG[$keyPG]['#item#'] = $tempinc;
+					}
+				}
+			}
+		return $DATA_PG;
+	}
+
 	function sqlCashPG() {
 		if (empty($this->dataCash)) {
 			if (is_array($this->config['rootPage'])) {
@@ -1079,7 +1154,7 @@ class pg_class extends kernel_extends {
 		if($this->formFlag==1) {
 			$RESULT['onload'] .= 'clearTimeout(timerid2);wep.fShowload (1,false,result.html2,0,\'location.href = location.href;\');';
 		}
-		elseif($this->formFlag==-1){
+		elseif($this->formFlag==-1) {
 			//$RESULT['onload'] = 'GetId("messages").innerHTML=result.html2;'.$RESULT['onload'];
 			$RESULT['onload'] = 'jQuery(\'.caption_error\').remove();'.$RESULT['onload'].'clearTimeout(timerid2);wep.fShowload(1,false,result.html2);';
 			$RESULT['html']="<div class='blockhead'>Внимание. Некоректно заполнены поля.</div><div class='hrb'>&#160;</div>".$RESULT['html'];

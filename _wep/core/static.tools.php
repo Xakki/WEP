@@ -286,39 +286,39 @@ class static_tools {
 			return array($result->err, '');
 
 		$stepY = round($maxY, -1) / 10;
-		$f = 'cap = \'' . $MODUL->caption . '\'; 
-			Xname=\'' . $MODUL->mf_statistic['Xname'] . '\';
-			Yname=\'' . $MODUL->mf_statistic['Yname'] . '\';
-			stepY=' . $stepY . ';
-			plot1 = $.jqplot(\'statschart2\', [line1], {
-				title:cap,
-				axes:{
-					xaxis:{label:Xname,renderer:$.jqplot.DateAxisRenderer},
-					yaxis:{label:Yname,min:0,tickInterval:stepY,tickOptions:{formatString:\'%d\'} }},
-				cursor:{zoom: true},
-				series:[{lineWidth:4, markerOptions:{style:\'square\'}}]
-			});';
+		$eval= ' 
+			jqplot = function() {
+				line1 = [' . implode(',', $data) . '];
+				var option = {
+					caption : \'' . $MODUL->caption . '\',
+					xName : \'' . $MODUL->mf_statistic['Xname'] . '\',
+					yName : \'' . $MODUL->mf_statistic['Yname'] . '\',
+					yStep : ' . $stepY . ',
+				};
+				readyPlot(option);
+			}
+			var plotScript = {
+				\'script.jquery/jqplot/jquery.jqplot.min\' : {
+					\'script.jquery/jqplot/plugins/jqplot.ohlcRenderer.min\' : {
+						\'script.jquery/jqplot/plugins/jqplot.cursor.min\':1,
+						\'script.jquery/jqplot/plugins/jqplot.dateAxisRenderer.min\': {
+							\'script.jquery/jqplot/plugins/jqplot.highlighter.min\': \'jqplot();\'
+						}
+					}
+				}
+			};
+			wep.scriptLoad(plotScript);
+		';
 		/* $plugin = '';
 		  if(isset($MODUL->mf_statistic['plugin_date']))
 		  $plugin .= ''; */
-
-		$eval = '
-			line1 = [' . implode(',', $data) . '];
-			if(typeof $.jqplot == "undefined")
-				$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'script.jquery/jqplot/plugins/jqplot.ohlcRenderer.min.js\',
-					function(){' . $f . '},[
-					$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'script.jquery/jqplot/jquery.jqplot.min.js\'),
-					$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'script.jquery/jqplot/plugins/jqplot.cursor.min.js\'),
-					$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'script.jquery/jqplot/plugins/jqplot.dateAxisRenderer.min.js\'),
-					$.include(\'' . $MODUL->_CFG['_HREF']['_script'] . 'script.jquery/jqplot/plugins/jqplot.highlighter.min.js\')
-				]);
-			else {' . $f . '}';
 
 		$html = '';
 		if (count($filtr[0]))
 			$html .= 'Результат статистики выводится по фильтру<br/>';
 		$html .= '
-	<div id="statschart2" data-height="300px" data-width="480px" style="margin-top:10px; margin-left:10px;"></div>
+	<div id="statschart1" data-height="380px" data-width="100%" style="margin-top:10px; margin-left:10px;"></div>
+	<div id="statschart2" data-height="150px" data-width="100%" style="margin-top:10px; margin-left:10px;"></div>
 	<style>
 	@import "' . $MODUL->_CFG['_HREF']['_style'] . 'style.jquery/ui.css";
 	@import "' . $MODUL->_CFG['_HREF']['_script'] . 'script.jquery/jqplot/jquery.jqplot.min.css";

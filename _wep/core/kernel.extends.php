@@ -1899,6 +1899,7 @@ abstract class kernel_extends {
 
 	/**
 	 * Групповые операции
+	 * TODO : это контрол - нужно его вынести из модуля
 	 * @return array form
 	 */
 	public function toolsSuperGroup() {
@@ -1933,6 +1934,7 @@ abstract class kernel_extends {
 				foreach ($_COOKIE['SuperGroup'][$this->_cl] as $ck => $ck)
 					$_tpl['onload'] .= 'setCookie("SuperGroup[' . $this->_cl . '][' . $ck . ']",0,-10000);';
 				$_tpl['onload'] .= '$("span.wepSuperGroupCount").text(0).parent().hide("slow");wep.SuperGroupClear("' . $type . '");';
+				$_tpl['onload'] .= '$("#tools_block").hide();';
 			}
 		} else {
 			$fields_form['_*features*_'] = array('name' => 'SuperGroup', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
