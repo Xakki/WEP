@@ -300,9 +300,10 @@ class static_tools {
 			var plotScript = {
 				\'script.jquery/jqplot/jquery.jqplot.min\' : {
 					\'script.jquery/jqplot/plugins/jqplot.ohlcRenderer.min\' : {
-						\'script.jquery/jqplot/plugins/jqplot.cursor.min\':1,
-						\'script.jquery/jqplot/plugins/jqplot.dateAxisRenderer.min\': {
-							\'script.jquery/jqplot/plugins/jqplot.highlighter.min\': \'jqplot();\'
+						\'script.jquery/jqplot/plugins/jqplot.cursor.min\': {
+							\'script.jquery/jqplot/plugins/jqplot.dateAxisRenderer.min\': {
+								\'script.jquery/jqplot/plugins/jqplot.highlighter.min\': \'jqplot();\'
+							}
 						}
 					}
 				}
