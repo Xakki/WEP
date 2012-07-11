@@ -85,12 +85,17 @@
 
 		if(isset($_tpl['styles']) and is_array($_tpl['styles'])) {
 			foreach($_tpl['styles'] as $kk=>$rr) {
-				if($rr[0]=='<')
+				if(is_string($rr) and $rr[0]=='<')
 					$temp .= $rr."\n";
 				elseif(is_array($rr))
 					$temp .= '<link type="text/css" href="'.implode('" rel="stylesheet"/>'."\n".'<link type="text/css" href="',$rr).'" rel="stylesheet"/>'."\n";
-				elseif($rr==1 and $kk)
-					$temp .= '<link type="text/css" href="'.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_style'].$kk.'.css'.$solt.'" rel="stylesheet"/>'."\n";
+				elseif($rr==1 and $kk) {
+					if(substr($kk,0,7)=='http://')
+						$src = $kk;
+					else
+						$src = $_CFG['_HREF']['BH'].$_CFG['_HREF']['_style'].$kk.'.css'.$solt;
+					$temp .= '<link type="text/css" href="'.$src.'" rel="stylesheet"/>'."\n";
+				}
 				else
 					$temp .= '<style type="text/css">'.$rr.'</style>'."\n";
 			}
@@ -102,13 +107,19 @@
 		if(isset($_tpl['script']) and is_array($_tpl['script'])) {
 
 			foreach($_tpl['script'] as $kk=>$rr) {
-				if(is_array($rr))
+				if(is_string($rr) and $rr[0]=='<')
+					$temp .= $rr."\n";
+				elseif(is_array($rr))
 					$temp .= '<script type="text/javascript" src="'.implode('"></script>'."\n".'<script type="text/javascript" src="',$rr).'"></script>'."\n";
 				elseif($rr==1 and $kk) {
-					$temp .= '<script type="text/javascript" src="'.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].$kk.'.js'.$solt.'"></script>'."\n";
+					if(substr($kk,0,7)=='http://')
+						$src = $kk;
+					else
+						$src = $_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].$kk.'.js'.$solt;
+					$temp .= '<script type="text/javascript" src="'.$src.'"></script>'."\n";
 				}
 				else
-					$temp .= "<script type=\"text/javascript\">//<!--\n".$rr."\n//--></script>\n";
+					$temp .= "<script type=\"text/javascript\">".$kk."//<!--\n".$rr."\n//--></script>\n";
 			}
 		}
 		if(strpos($temp,'jquery')!==false and !isset($_tpl['script']['include']))

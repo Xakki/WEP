@@ -494,11 +494,16 @@ var wep = {
 
 	cssLoad: function(css) {
 		for(var i in css) {
+			//if(is_string($rr) and $rr[0]=='<')
+			if (i.substr(0, 7) == 'http://')
+				var src = i;
+			else
+				var src = wep.BH+wep.HREF_style+i+'.css';
 			if(i && css[i]==1) {
-				$.includeCSS(wep.BH+wep.HREF_style+i+'.css');
+				$.includeCSS(src);
 			} 
 			else if(typeof css[i] == 'object') {
-				$.includeCSS(wep.BH+wep.HREF_style+i+'.css', function(){ wep.cssLoad(css[i]); });
+				$.includeCSS(src, function(){ wep.cssLoad(css[i]); });
 			}
 			else {
 				// TODO прочие виды загрузок
@@ -508,11 +513,16 @@ var wep = {
 
 	scriptLoad: function(script) {
 		for(var i in script) {
+			//if(is_string($rr) and $rr[0]=='<')
+			if (i.substr(0, 7) == 'http://')
+				var src = i;
+			else
+				var src = wep.BH+wep.HREF_script+i+'.js';
 			if(i && script[i]==1) {
-				$.include(wep.BH+wep.HREF_script+i+'.js');
+				$.include(src);
 			} 
 			else if(typeof script[i] == 'object') {
-				$.include(wep.BH+wep.HREF_script+i+'.js', function(){ wep.scriptLoad(script[i]); });
+				$.include(src, function(){ wep.scriptLoad(script[i]); });
 			}
 			else {
 				eval(script[i]);
@@ -544,32 +554,30 @@ var wep = {
 
 		plot1 = $.jqplot(settings.idObj, [line1], {
 			title: settings.caption,
-			seriesDefaults:{neighborThreshold:0, showMarker: false},
 			// Turns on animatino for all series in this plot.
 			animate: true,
 			// Will animate plot on calls to plot1.replot({resetAxes:true})
 			animateReplot: true,
 			axes: {
 				xaxis:{label:settings.xName, renderer:$.jqplot.DateAxisRenderer},
-				yaxis:{label:settings.yName, min:0, tickOptions:{formatString:'%d'}, autoscale:false, useSeriesColor:true }
+				yaxis:{label:settings.yName, min:0, tickOptions:{formatString:'%d'}, useSeriesColor:true }
 			},
-			cursor:{show: true, zoom: true},
-			series:[{lineWidth:4, markerOptions:{style:'square'}}]
+			highlighter: {
+				show: true,
+				sizeAdjust: 7
+			},
+			cursor:{show: false},
 		});
 
 		plot2 = $.jqplot('statschart2', [line1], {
 			title: settings.caption,
 			seriesDefaults:{neighborThreshold:0, showMarker: false},
-			// Turns on animatino for all series in this plot.
-			animate: true,
-			// Will animate plot on calls to plot1.replot({resetAxes:true})
-			animateReplot: true,
 			axes: {
 				xaxis:{label:settings.xName, renderer:$.jqplot.DateAxisRenderer},
-				yaxis:{label:settings.yName, min:0, tickOptions:{formatString:'%d'} , autoscale:false, useSeriesColor:true}
+				yaxis:{label:settings.yName, min:0, tickOptions:{formatString:'%d'} , useSeriesColor:true}
 			},
 			cursor:{showTooltip: false, zoom: true, constrainZoomTo: 'x'},
-			series:[{lineWidth:4, markerOptions:{style:'square'}}],
+			series:[{lineWidth:2}],
 		});
 
       
@@ -842,8 +850,13 @@ var wep = {
 			});
 			jQuery('#'+id+' input:eq(0)').bind('change',function (){jQuery('#slide'+id).slider( 'values' , 0 , this.value)});
 			jQuery('#'+id+' input:eq(1)').bind('change',function (){jQuery('#slide'+id).slider( 'values' , 1 , this.value)});
+	},
+	clearHref : function() {
+		window.location.href=window.location.pathname;
+		return false;
 	}
 };
+
 
 wep.apply = function(o, c, defaults){
     // no "this" reference for friendly out of scope calls

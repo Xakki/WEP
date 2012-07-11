@@ -9,7 +9,7 @@ function tpl_form(&$data, $tabs = array()) {
 	if(!isset($attr['id']))
 		$attr['id'] = 0;
 	$texthtml = '';
-	$_CFG['fileIncludeOption']['form'] = true;
+	$_CFG['fileIncludeOption']['form'] = 1;
 
 	// TABS
 	$flagTabs = null;
@@ -137,7 +137,7 @@ function tpl_form(&$data, $tabs = array()) {
 
 			if($r['type']=='textarea') {
 				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
-				$texthtml .= '<div class="form-value"><textarea name="'.$k.'" onkeyup="textareaChange(this,\''.$r['mask']['max'].'\')" rows="10" cols="80" '.$attribute.'>'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
+				$texthtml .= '<div class="form-value"><textarea name="'.$k.'" onkeyup="textareaChange(this)" rows="10" cols="80" '.$attribute.'>'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
 			}
 			elseif($r['type']=='ckedit') {
 				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
@@ -587,7 +587,7 @@ function tpl_form(&$data, $tabs = array()) {
 						<div class="fuploader">Загрузка фаила<input type="file" name="'.$k.'" id="'.$k.'_uploader" '.$attribute.'/></div><span class="fileinfo"></span>
 						<div id="'.$k.'_notice_swf_uploader"></div>';
 
-					$_tpl['script']['SWFUpload/swfupload_fp10/swfupload'] = true;
+					$_tpl['script']['SWFUpload/swfupload_fp10/swfupload'] = 1;
 					$_tpl['onload'] .= 'wep.swfuploader.bindSWFUpload({button_placeholder_id:"'.$k.'_uploader", field_name:"'.$k.'"});';
 					//SESSID = "'.session_id().'"; 
 				}
@@ -635,13 +635,13 @@ function tpl_form(&$data, $tabs = array()) {
 				$_CFG['fileIncludeOption']['md5'] = 1;
 			}*/
 			elseif($r['type']=='color') {
-				$_tpl['styles']['../_script/script.jquery/colorpicker/css/colorpicker'] = true;
+				$_tpl['styles']['../_script/script.jquery/colorpicker/css/colorpicker'] = 1;
 	//			$_tpl['styles']['colorpicker/css/layout'] = true;
 
-				$_tpl['script']['script.jquery/colorpicker/js/colorpicker'] = true;
-				$_tpl['script']['script.jquery/colorpicker/js/eye'] = true;
-				$_tpl['script']['script.jquery/colorpicker/js/utils'] = true;
-				$_tpl['script']['script.jquery/colorpicker/js/layout'] = true;
+				$_tpl['script']['script.jquery/colorpicker/js/colorpicker'] = 1;
+				$_tpl['script']['script.jquery/colorpicker/js/eye'] = 1;
+				$_tpl['script']['script.jquery/colorpicker/js/utils'] = 1;
+				$_tpl['script']['script.jquery/colorpicker/js/layout'] = 1;
 				$_tpl['onload'] .= ' jQuery(\'#tr_'.$k.' div.colorPicker input\').ColorPicker({
 					onSubmit: function(hsb, hex, rgb, el) {
 						$(el).val(\'#\'+hex);

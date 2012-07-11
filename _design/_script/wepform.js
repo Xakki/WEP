@@ -136,6 +136,8 @@ wep.form = {
 
 	/* Утилита для подсчёта кол сиволов в форме, автоматически создаёт необходимые поля*/
 	textareaChange : function(obj,max) {
+		if(!max) max = $(obj).attr('maxlength');
+		if(!max) max = 5000;
 		if(!jQuery('#'+obj.name+'t2').size()){
 			val = document.createElement('span');
 			val.className = "dscr";

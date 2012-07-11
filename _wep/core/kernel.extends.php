@@ -2079,7 +2079,8 @@ abstract class kernel_extends {
 			$fields_form['_*features*_'] = array('name' => 'Formfilter', 'action' => '', 'method' => 'post');
 			$fields_form['sbmt'] = array(
 				'type' => 'submit',
-				'value' => 'Отфильтровать');
+				'value' => 'Отфильтровать'
+			);
 
 			$this->kFields2FormFields($fields_form);
 
