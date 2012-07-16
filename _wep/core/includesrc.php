@@ -26,6 +26,10 @@
 			$_tpl['styles']['form'] = 1;
 			$_tpl['script']['wepform'] = 1;
 		}
+		if(isset($gfi['fcontrol']) and $gfi['fcontrol']) {
+			$_tpl['styles']['fcontrol'] = 1;
+			$_tpl['script']['fcontrol'] = 1;
+		}
 		if(isset($gfi['md5']) and $gfi['md5']) {
 			$_tpl['script']['md5'] = 1;
 		}

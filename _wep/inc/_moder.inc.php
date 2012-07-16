@@ -1,12 +1,15 @@
 <?php
 /**
  * Управлятор
+ * Механизм управления модулем
  * @ShowFlexForm true
+ * @type Форма
+ * @ico moder.png
  * @author Xakki
- * @version 0.1 
- * @return $form
- * @return $html
+ * @version 0.2
+ * @return string html
  */
+
 	if(!isset($FUNCPARAM[0]) or $FUNCPARAM[0] == '') $FUNCPARAM[0] = '';
 	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = '#pg#superlist';
 	if(!isset($FUNCPARAM[2])) $FUNCPARAM[2] = 0;

@@ -1,12 +1,15 @@
 <?php
 /**
  * Карта страниц
+ * Составляет карту сайта, возможность отображать карту относительно текущей страницы
  * @ShowFlexForm true
+ * @type Элементы страниц
+ * @ico system.png
  * @author Xakki
- * @version 0.1 
- * @return $form
- * @return $html
+ * @version 0.2
+ * @return string html
  */
+
 
 if (!isset($FUNCPARAM[0]))
 	$FUNCPARAM[0] = 0; //0 - выводит всё в виде структуры дерева , 1 - выводит все в общем массиве, 2 только начальный уровень от $FUNCPARAM[2]

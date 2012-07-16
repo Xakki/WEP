@@ -1317,8 +1317,15 @@ abstract class kernel_extends {
 							$adname = $temp2[$krow]['#name#'];
 						else
 							$adname = $temp2[$krow];
-						foreach ($row as $kk => $rr)
+						foreach ($row as $kk => $rr) {
+							if(is_array($rr)) {
+								if(isset($rr['#name#']))
+									$rr = $rr['#name#'];
+								else
+									$rr = implode(' / ',$rr);
+							}
 							$row[$kk] = $adname . ' - ' . $rr;
+						}
 						if (is_array($temp2[$krow]) and isset($temp2[$krow]['#checked#']))
 							unset($temp2[$krow]);
 					}

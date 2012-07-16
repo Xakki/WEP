@@ -1,14 +1,15 @@
 <?php
-TODO:
 /**
  * Список платежей
  * @ShowFlexForm true
+ * @type Pay
+ * @ico default.png
  * @author Xakki
- * @version 0.1 
- * @return $form
- * @return $html
+ * @version 0.2
+ * @return string html
  */
-// Корзина
+
+
 	// сначала задаем значения по умолчанию
 	if(!isset($FUNCPARAM[0]) or $FUNCPARAM[0] == '') $FUNCPARAM[0] = '#pay#paylist';
 	//if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = 0;

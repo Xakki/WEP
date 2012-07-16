@@ -1,11 +1,13 @@
 <?php
 /**
- * Авторизация LOGINZA ONLY
+ * LOGINZA
+ * Авторизация только через LOGINZA
  * @ShowFlexForm true
+ * @type Форма
+ * @ico login.png
  * @author Xakki
- * @version 0.1 
- * @return $form
- * @return $html
+ * @version 0.2
+ * @return string html
  */
 
 

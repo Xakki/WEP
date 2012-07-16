@@ -78,6 +78,7 @@
 			$_GET['_design'] = $_CFG['wep']['design'];
 
 		if(isset($_REQUEST['_pgId'])) {
+			$PGLIST->ajaxRequest = true;
 			$PGLIST->id = (int)$_REQUEST['_pgId'];
 			$PGLIST->display(false);
 

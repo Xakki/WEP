@@ -1,11 +1,13 @@
 <?php
 /**
  * Хлебные крошки
+ * Путь к текущей смтранице
  * @ShowFlexForm true
+ * @type Элементы страниц
+ * @ico system.png
  * @author Xakki
- * @version 0.1 
- * @return $form
- * @return $html
+ * @version 0.2
+ * @return string html
  */
 
 if (!isset($FUNCPARAM[0]))

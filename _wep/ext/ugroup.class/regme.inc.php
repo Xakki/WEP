@@ -2,11 +2,13 @@
 /**
  * Регистрация пользователя
  * @ShowFlexForm true
+ * @type Форма
+ * @ico default.png
  * @author Xakki
- * @version 0.1 
- * @return $form
- * @return $html
+ * @version 0.2
+ * @return string html
  */
+
 	_new_class('ugroup', $UGROUP);
 
 	if(!isset($FUNCPARAM[0]) or !$FUNCPARAM[0]) $FUNCPARAM[0] = '#pg#formcreat';

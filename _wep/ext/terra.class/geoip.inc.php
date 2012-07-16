@@ -1,10 +1,11 @@
 <?php
 /**
  * GEO IP
+ * @type Контент
+ * @ico default.png
  * @author Xakki
- * @version 0.1 
- * @return $form
- * @return $html
+ * @version 0.2
+ * @return string html
  */
 
 $jfunct = false;

@@ -1,11 +1,13 @@
 <?php
 /**
  * Галлерея
+ * Лента изображений модуля "Галлерея"
  * @ShowFlexForm true
+ * @type Контент
+ * @ico system.png
  * @author Xakki
- * @version 0.1 
- * @return $form
- * @return $html
+ * @version 0.2
+ * @return string html
  */
 
 // сначала задаем значения по умолчанию

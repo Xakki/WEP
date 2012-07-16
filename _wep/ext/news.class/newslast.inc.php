@@ -1,12 +1,15 @@
 <?php
 /**
- * Новости новые
+ * Анонс новостей
+ * вывод свежих новостей
  * @ShowFlexForm true
+ * @type Новости
+ * @ico mixcontent.png
  * @author Xakki
- * @version 0.1 
- * @return $form
- * @return $html
+ * @version 0.2
+ * @return string html
  */
+
 	if(!isset($FUNCPARAM[0])) $FUNCPARAM[0] = '#news#newslast'; // Шаблон
 	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = 0; // Страница с новостями
 	if(!isset($FUNCPARAM[2])) $FUNCPARAM[2] = 4; // Лимит

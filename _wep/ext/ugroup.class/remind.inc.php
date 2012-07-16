@@ -2,11 +2,13 @@
 /**
  * Напоминание пароля
  * @ShowFlexForm true
+ * @type Форма
+ * @ico default.png
  * @author Xakki
- * @version 0.1 
- * @return $form
- * @return $html
+ * @version 0.2
+ * @return string html
  */
+
 	if(!isset($FUNCPARAM[0]) or !$FUNCPARAM[0]) $FUNCPARAM[0] = '#pg#messages';
 	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = 48;
 

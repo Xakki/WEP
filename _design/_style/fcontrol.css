@@ -1,0 +1,42 @@
+
+#fcontrol {
+	position:relative;
+	z-index: 1000;
+	font-size:14px;
+}
+
+#fcontrol .fcontrol-button {
+	position:absolute;
+	top:100%;
+	left:30%;
+	width:auto;
+	padding:3px 10px;
+	height:auto;
+	background-color: #e1e1e1;
+	border: solid gray 1px;
+	font-size:1.2em;
+	font-weight: bold;
+	cursor: pointer;
+	-moz-border-radius:0 0 7px 7px;-webkit-border-radius:0 0 7px 7px;border-radius:0 0 7px 7px;
+}
+#fcontrol .fcontrol-button:hover {
+	color:green;
+	padding:4px 10px 3px 10px;
+}
+#fcontrol .fcontrol-button i::before {
+	 content: "Скрыть админку";
+}
+#fcontrol.hidden .fcontrol-button i::before {
+	 content: "Показать админку";
+}
+
+#fcontrol .fcontrol-text {
+	display: block;
+	padding:10px;
+	background-color: #e1e1e1;
+	border: solid gray 1px;
+	width:100%;
+}
+#fcontrol.hidden .fcontrol-text {
+	display: none;
+}

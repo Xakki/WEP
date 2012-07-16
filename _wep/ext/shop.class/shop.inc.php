@@ -2,10 +2,11 @@
 /**
  * Каталог товаров
  * @ShowFlexForm true
+ * @type Shop
+ * @ico default.png
  * @author Xakki
- * @version 0.1 
- * @return $form
- * @return $html
+ * @version 0.2
+ * @return string html
  */
 
 // сначала задаем значения по умолчанию

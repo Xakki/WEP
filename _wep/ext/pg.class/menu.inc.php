@@ -1,11 +1,13 @@
 <?php
 /**
- * Меню страниц
+ * Меню (С)
+ * Динамическое меню страниц
  * @ShowFlexForm true
+ * @type Элементы страниц
+ * @ico form.png
  * @author Xakki
- * @version 0.1 
- * @return $form
- * @return $html
+ * @version 0.2
+ * @return string html
  */
 
 // сначала задаем значения по умолчанию

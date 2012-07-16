@@ -78,6 +78,7 @@ class pg_class extends kernel_extends {
 		$this->_AllowAjaxFn['AjaxForm'] = true;
 		$this->formFlag = null; // Для Аякс формы, 
 		$this->current_path = '';
+		$this->ajaxRequest = false;
 		return true;
 	}
 
@@ -108,10 +109,10 @@ class pg_class extends kernel_extends {
 		//'type' => 'list', 'listname'=>'design',-+-
 
 		$this->_enum['inc'] = array(
-			0 => array('path' => $this->_CFG['_PATH']['wep_inc'], 'name' => 'WEP - '),
-			1 => array('path' => $this->_CFG['_PATH']['wep_ext'], 'name' => 'WEPext - '),
-			2 => array('path' => $this->_CFG['_PATH']['inc'], 'name' => 'CONF - '),
-			3 => array('path' => $this->_CFG['_PATH']['ext'], 'name' => 'EXT - ')
+			0 => array('path' => $this->_CFG['_PATH']['wep_inc'], 'name' => 'Служебные'),
+			1 => array('path' => $this->_CFG['_PATH']['wep_ext'], 'name' => 'Модульные'),
+			2 => array('path' => $this->_CFG['_PATH']['inc'], 'name' => 'Общие'),
+			3 => array('path' => $this->_CFG['_PATH']['ext'], 'name' => 'Модульные')
 		);
 	}
 
@@ -1132,6 +1133,7 @@ class pg_class extends kernel_extends {
 		$RESULT = array('html'=>'Не верные данные', 'html2'=>'', 'text'=>'','onload'=>'');
 		$DATA  = array();
 		$htmlb = '';
+		$this->ajaxRequest = true;
 		//if(count($_POST)) $_POST['sbmt'] = 1;
 
 		$Cdata = array();

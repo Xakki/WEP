@@ -1,12 +1,15 @@
 <?php
 /**
- * Форма "написать письмо"
+ * Написать письмо
+ * Форма "написать письмо" / обратная связь
  * @ShowFlexForm true
+ * @type Форма
+ * @ico mail.png
  * @author Xakki
- * @version 0.1 
- * @return $form
- * @return $html
+ * @version 0.2
+ * @return string html
  */
+
 	// сначала задаем значения по умолчанию
 	if(!isset($FUNCPARAM[0]) or $FUNCPARAM[0] == '') $FUNCPARAM[0] = '#pg#formcreat';
 	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = '';

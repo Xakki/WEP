@@ -1,12 +1,15 @@
 <?php
 /**
- * Авторизация LOGINZA Регистрация
+ * LOGINZA Регистрация
+ * Регистрация + LOGINZA
  * @ShowFlexForm true
+ * @type Форма
+ * @ico form.png
  * @author Xakki
- * @version 0.1 
- * @return $form
- * @return $html
+ * @version 0.2
+ * @return string html
  */
+
 	if($file = $this->getIncFile('1:ugroup.class/regme') and $file)
 		$importInc = include($file);
 

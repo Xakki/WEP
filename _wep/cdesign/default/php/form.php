@@ -733,15 +733,15 @@ function selectitem2($data,$val=NULL,$flag=0,&$openG=false) {
 		foreach($data as $r) {
 			//_substr($r['#name#'],0,60).(_strlen($r['#name#'])>60?'...':'')
 			if(isset($r['#item#']) and count($r['#item#']) and isset($r['#checked#']) and $r['#checked#']==0) {
-				if($flag>0)
-					$r['#name#'] = str_repeat("&#160;&#160;", $flag).' '.$r['#name#'];
+				//if($flag>0)
+				//	$r['#name#'] = str_repeat("&#160;&#160;", $flag).' '.$r['#name#'];
 				if($openG)
 					$texthtml .= '</optgroup>'."\n";
 				$texthtml .= '<optgroup label="'.$r['#name#'].'">'."\n";
 				$openG = true;
 			}
 			else {
-				if($flag>0)
+				if($flag>0 and !$openG)
 					$r['#name#'] = str_repeat("&#160;&#160;", $flag).' '.$r['#name#'];
 				$sel = '';
 				if(!is_null($val)) {

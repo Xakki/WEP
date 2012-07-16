@@ -130,102 +130,97 @@ class content_class extends kernel_extends {
 
 	function getInc($pref = '.inc.php', $def = ' - Текст - ') {
 		$data = array();
-		$dir = dir($this->_CFG['_PATH']['wep_inc']);
-		$data[''] = $def;
-		while (false !== ($entry = $dir->read())) {
-			if ($entry[0] != '.' && $entry[0] != '..' && strstr($entry, $pref)) {
-				$temp = substr($entry, 0, strpos($entry, $pref));
+		$data[''][''] = $def;
 
-				$name= $this->getIncFileInfo($this->_CFG['_PATH']['wep_inc'] . '/'.$entry,'name');
+		$dirList = array(
+			'2' => $this->_CFG['_PATH']['inc'],
+			'3' => $this->_CFG['_PATH']['ext'],
+			'0' => $this->_CFG['_PATH']['wep_inc'],
+			'1' => $this->_CFG['_PATH']['wep_ext'],
+		);
 
-				if($name)
-					$name = $this->owner->_enum['inc'][0]['name'] . $entry. '('.$name.')';
-				else
-					$name = $this->owner->_enum['inc'][0]['name'] . $temp;
-				$data['0:' . $temp] = $name;
-			}
-		}
-		$dir->close();
+		foreach($dirList as $kDir=>$rDir) {
+			$dir = dir($rDir);
+			while (false !== ($entry = $dir->read())) {
+				if($entry[0] != '.' && $entry[0] != '..') {
+					// Если тек. фаил это деректория, то смотрим внутри то что нам нужно
+					if (is_dir($rDir . $entry)) {
+						$mn = substr($entry,0,-6);
+						if (isset($this->_CFG['modulprm'][$mn])) {
+							// Если модуль включен
+							$dir2 = dir($rDir . $entry);
+							while (false !== ($entry2 = $dir2->read())) {
+								if ($entry2[0] != '.' && $entry2[0] != '..' && strstr($entry2, $pref)) {
 
-		$dir = dir($this->_CFG['_PATH']['wep_ext']);
-		while (false !== ($entry = $dir->read())) {
-			if ($entry[0] != '.' && $entry[0] != '..') {
-				if (is_dir($this->_CFG['_PATH']['wep_ext'] . $entry)) {
-					$dir2 = dir($this->_CFG['_PATH']['wep_ext'] . $entry);
-					while (false !== ($entry2 = $dir2->read())) {
-						if ($entry2[0] != '.' && $entry2[0] != '..' && strstr($entry2, $pref)) {
-							$temp = substr($entry2, 0, strpos($entry2, $pref));
+									$temp = substr($entry2, 0, strpos($entry2, $pref));
 
-							$name= $this->getIncFileInfo($this->_CFG['_PATH']['wep_ext'] . $entry.'/'.$entry2,'name');
+									$fi = $this->getDocFileInfo($rDir . $entry.'/'.$entry2);
+									if(!$fi['type']) $fi['type'] = $this->owner->_enum['inc'][$kDir]['name'];
+									if(!$fi['name']) $fi['name'] = $entry.'/'.$temp;
 
-							if($name)
-								$name = $this->owner->_enum['inc'][1]['name'] . $entry. '('.$name.')';
-							else
-								$name = $this->owner->_enum['inc'][1]['name'] . $entry . '/' . $temp;
+									if(!isset($data[$fi['type']]))
+										$data[''][$fi['type']] = array('#name#'=>$fi['type'], '#checked#'=>0);
 
-							$data['1:' . $entry . '/' . $temp] = $name;
+									$data[$fi['type']] [$kDir.':' . $entry . '/' . $temp] = array(
+										'#name#' => $fi['name'],
+										'info' => $fi,
+									);
+								}
+							}
+							$dir2->close();
 						}
 					}
-					$dir2->close();
-				}
-			}
-		}
-		$dir->close();
+					elseif (strstr($entry, $pref)) {
 
-		$dir = dir($this->_CFG['_PATH']['inc']);
-		while (false !== ($entry = $dir->read())) {
-			if ($entry[0] != '.' && $entry[0] != '..' && strstr($entry, $pref)) {
-				$temp = substr($entry, 0, strpos($entry, $pref));
-				
-				$name= $this->getIncFileInfo($this->_CFG['_PATH']['inc'] . '/'.$entry,'name');
+						$temp = substr($entry, 0, strpos($entry, $pref));
 
-				if($name)
-					$name = $this->owner->_enum['inc'][2]['name'] . $entry. '('.$name.')';
-				else
-					$name = $this->owner->_enum['inc'][2]['name'] . $temp;
+						$fi = $this->getDocFileInfo($rDir . '/'.$entry);
+						if(!$fi['type']) $fi['type'] = $this->owner->_enum['inc'][$kDir]['name'];
+						if(!$fi['name']) $fi['name'] = $temp;
 
-				$data['2:' . $temp] = $name;
-			}
-		}
-		$dir->close();
+						if(!isset($data[$fi['type']]))
+							$data[''][$fi['type']] = array('#name#'=>$fi['type'], '#checked#'=>0);
 
-		$dir = dir($this->_CFG['_PATH']['ext']);
-		while (false !== ($entry = $dir->read())) {
-			if ($entry[0] != '.' && $entry[0] != '..') {
-				if (is_dir($this->_CFG['_PATH']['ext'] . $entry)) {
-					$dir2 = dir($this->_CFG['_PATH']['ext'] . $entry);
-					while (false !== ($entry2 = $dir2->read())) {
-						if ($entry2[0] != '.' && $entry2[0] != '..' && strstr($entry2, $pref)) {
-							$temp = substr($entry2, 0, strpos($entry2, $pref));
-
-							$name= $this->getIncFileInfo($this->_CFG['_PATH']['ext'] . $entry.'/'.$entry2,'name');
-
-							if($name)
-								$name = $this->owner->_enum['inc'][3]['name'] . $entry. '('.$name.')';
-							else
-								$name = $this->owner->_enum['inc'][3]['name'] . $entry . '/' . $temp;
-
-							$data['3:' . $entry . '/' . $temp] = $name;
-						}
+						$data[$fi['type']] [$kDir.':' . $temp] = array(
+							'#name#' => $fi['name'],
+							'info' => $fi,
+						);
 					}
-					$dir2->close();
 				}
+
 			}
+			$dir->close();
 		}
-		$dir->close();
 		return $data;
 	}
 
-	private function getIncFileInfo($file,$param=false) {
+	private function getDocFileInfo($file,$param=false) {
+		$fi = array('name'=>'', 'desc'=>'', 'ShowFlexForm'=>false, 'type'=>'', 'ico'=>'defaul.png', 'author'=>'', 'version'=>'', 'return'=>'');
 		$fcontent = file_get_contents($file);
 		if($p1 = mb_strpos($fcontent,'/**')) {
 			$fcontent = mb_substr($fcontent,($p1+3),(mb_strpos($fcontent,'*/')-($p1+3)));
 			$fcontent = explode('*',$fcontent);
-			if($param=='name')
-				return $fcontent[1];
-			return $fcontent;
+			foreach($fcontent as $r) {
+				$r = trim($r);
+				if($r) {
+					$temp = explode(' ', $r);
+					if($temp[0] and $temp[0][0]=='@') {
+						$nm = substr($temp[0],1);
+						array_shift($temp);
+						$fi[$nm] = implode(' ',$temp);
+						if($fi[$nm]==='true')
+							$fi[$nm] = true;
+						elseif($fi[$nm]==='false')
+							$fi[$nm] = false;
+					} 
+					elseif(!$fi['name'])
+						$fi['name'] = $r;
+					else
+						$fi['desc'] .= $r;
+				}
+			}
 		}
-		return false;
+		return $fi;
 	}
 
 	public function kPreFields(&$f_data, &$f_param = array(), &$f_fieldsForm = null) {
@@ -237,7 +232,7 @@ class content_class extends kernel_extends {
 			$this->addForm = $this->getContentIncParam($f_data);
 			if (count($this->addForm)) {
 				$this->formSort['Основное'] = array_merge($this->formSort['Основное'], array_keys($this->addForm));
-				print_r(' * ');//print_r($f_fieldsForm);print_r($this->addForm);
+				//print_r($f_fieldsForm);print_r($this->addForm);
 				$f_fieldsForm = static_main::insertInArray($f_fieldsForm, 'pagetype', $this->addForm); // обработчик параметров рубрики
 				//print_r(' - ');print_r($f_fieldsForm['flexform_2']);
 				$f_fieldsForm['funcparam']['style'] = 'display:none;';

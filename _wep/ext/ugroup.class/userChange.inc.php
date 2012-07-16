@@ -2,11 +2,13 @@
 /**
  * Смена пользователя [для администраторов]
  * @ShowFlexForm true
+ * @type Служебные
+ * @ico default.png
  * @author Xakki
- * @version 0.1 
- * @return $form
- * @return $html
+ * @version 0.2
+ * @return string html
  */
+
 	if(!isset($FUNCPARAM[0]) or !$FUNCPARAM[0]) $FUNCPARAM[0] = '#ugroup#userChange';
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 		$form = array(

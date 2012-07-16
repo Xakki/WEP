@@ -1,12 +1,15 @@
 <?php
 /**
  * Новости
+ * Список новостей с постраничной навигацией
  * @ShowFlexForm true
+ * @type Новости
+ * @ico mixcontent.png
  * @author Xakki
- * @version 0.1 
- * @return $form
- * @return $html
+ * @version 0.2
+ * @return string html
  */
+
 	if(!isset($FUNCPARAM[0])) $FUNCPARAM[0] = '#news#news'; // Шаблон
 	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = 5;
 	if(!isset($FUNCPARAM[2])) $FUNCPARAM[2] = 3;
