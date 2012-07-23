@@ -201,8 +201,10 @@ class static_main {
 
 	static function _prmModul($mn, $param=array()) {
 		global $_CFG;
+
 		if (isset($_SESSION['user']['id']) and isset($_SESSION['user']['level']) and $_SESSION['user']['level'] == 0)
 			return true; // админу можно всё
+		
 		if (!isset($_CFG['modulprm']))
 			self::_prmModulLoad();
 		if (!isset($_CFG['modulprm'][$mn]))

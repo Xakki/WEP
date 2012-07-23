@@ -87,7 +87,7 @@ $(document).ready(function() {
 	});
 
 	/*Подробная инфа о товаре - корзина*/
-	$('div.buybotton a').click(function() {
+	$('div.buybutton a').click(function() {
 		var nn = $(this).nextAll('input');
 		if(!nn.attr('disabled')) {
 			JSWin({'href':wep.siteJSON+'?_modul=shopbasket&_fn=jsAddBasket&id_product='+$(this).attr('data-id')+'&count='+nn.val()});

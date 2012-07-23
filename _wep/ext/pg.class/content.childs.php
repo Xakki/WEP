@@ -39,7 +39,7 @@ class content_class extends kernel_extends {
 		//$this->memos['pg'] = array('max' => 50000);
 		$this->fields['pg'] = array('type' => 'mediumtext', 'attr' => 'NOT NULL');
 
-		$this->owner->_listnameSQL = 'template, name';
+		$this->owner->_listname = 'name';
 	}
 
 	public function setFieldsForm($form = 0) {
@@ -92,7 +92,7 @@ class content_class extends kernel_extends {
 		);
 	}
 
-	function _getlist(&$listname, $value = NULL) {
+	function _getlist($listname, $value = NULL) {
 		global $_CFG;
 		$data = array();
 		if ($listname == 'pagetype') {

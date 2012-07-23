@@ -17,7 +17,7 @@
 	<xsl:template match="topmenu">
 		<div class="menu_new">
 		<xsl:for-each select="item">
-			<div class="botton">
+			<div class="button">
 			<xsl:choose>
 				<xsl:when test="@type='tools'">
 					<a href="{@href}" onclick="return ShowTools('tools_block',this)" class="{@class}" title="{.}"><xsl:value-of select="."/></a>
@@ -42,12 +42,12 @@
 			<xsl:choose>
 				<xsl:when test="@href!=''">
 					<xsl:if test="@sel>0"><xsl:attribute name="style">border: 1px solid red;</xsl:attribute></xsl:if>
-					<a class="bottonimg imgup" title="[SORT]" href="?{../../data/req}sort={@href}" onclick="return wep.load_href(this)">
-						<xsl:if test="@sel=1"><xsl:attribute name="class">bottonimg_sel imgup</xsl:attribute></xsl:if>
+					<a class="buttonimg imgup" title="[SORT]" href="?{../../data/req}sort={@href}" onclick="return wep.load_href(this)">
+						<xsl:if test="@sel=1"><xsl:attribute name="class">buttonimg_sel imgup</xsl:attribute></xsl:if>
 					</a>
 					<xsl:value-of select="."/>
-					<a class="bottonimg imgdown" title="[SORT]" href="?{../../data/req}dsort={@href}" onclick="return wep.load_href(this)">
-						<xsl:if test="@sel=2"><xsl:attribute name="class">bottonimg_sel imgdown</xsl:attribute></xsl:if>
+					<a class="buttonimg imgdown" title="[SORT]" href="?{../../data/req}dsort={@href}" onclick="return wep.load_href(this)">
+						<xsl:if test="@sel=2"><xsl:attribute name="class">buttonimg_sel imgdown</xsl:attribute></xsl:if>
 					</a>
 				</xsl:when>
 				<xsl:otherwise><xsl:value-of select="."/></xsl:otherwise>
@@ -103,32 +103,32 @@
 
 			<td class="ic" style="vertical-align:top;white-space:nowrap;">
 				 <xsl:if test="active/@type!='bool'">
-					<xsl:if test="active='7'"><a class="bottonimg img7" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" onclick="return wep.load_href(this)" title="[Истек срок размещения]"></a></xsl:if>
-					<xsl:if test="active='6'"><a class="bottonimg img6" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" onclick="return wep.load_href(this)" title="[Откл]"></a> <xsl:if test="denied_reason!=''"> (по причине: <xsl:value-of select="denied_reason" />)</xsl:if></xsl:if>
-					<xsl:if test="active='5'"><a class="bottonimg img5" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" onclick="return wep.load_href(this)" title="[Активировать пользователем]"></a></xsl:if>
-					<xsl:if test="active='4'"><a class="bottonimg img4" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" onclick="return wep.load_href(this)" title="[Удалено пользователем]"></a></xsl:if>
-					<xsl:if test="active='3'"><a class="bottonimg img3" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" onclick="return wep.load_href(this)" title="[Редакт. пользователем]"></a></xsl:if>
-					<xsl:if test="active='2'"><a class="bottonimg img2" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" onclick="return wep.load_href(this)" title="[Дезактивировано пользователем]"></a></xsl:if>
-					<xsl:if test="active='1'"><a class="bottonimg img1" href="?{../req}{../cl}_id={id}&amp;_type=dis#{id}" onclick="return wep.load_href(this)" title="[Вкл]"></a></xsl:if>
-					<xsl:if test="active='0'"><a class="bottonimg img0" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" onclick="return wep.load_href(this)" title="[Новоё]"></a></xsl:if>
+					<xsl:if test="active='7'"><a class="buttonimg img7" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" onclick="return wep.load_href(this)" title="[Истек срок размещения]"></a></xsl:if>
+					<xsl:if test="active='6'"><a class="buttonimg img6" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" onclick="return wep.load_href(this)" title="[Откл]"></a> <xsl:if test="denied_reason!=''"> (по причине: <xsl:value-of select="denied_reason" />)</xsl:if></xsl:if>
+					<xsl:if test="active='5'"><a class="buttonimg img5" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" onclick="return wep.load_href(this)" title="[Активировать пользователем]"></a></xsl:if>
+					<xsl:if test="active='4'"><a class="buttonimg img4" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" onclick="return wep.load_href(this)" title="[Удалено пользователем]"></a></xsl:if>
+					<xsl:if test="active='3'"><a class="buttonimg img3" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" onclick="return wep.load_href(this)" title="[Редакт. пользователем]"></a></xsl:if>
+					<xsl:if test="active='2'"><a class="buttonimg img2" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" onclick="return wep.load_href(this)" title="[Дезактивировано пользователем]"></a></xsl:if>
+					<xsl:if test="active='1'"><a class="buttonimg img1" href="?{../req}{../cl}_id={id}&amp;_type=dis#{id}" onclick="return wep.load_href(this)" title="[Вкл]"></a></xsl:if>
+					<xsl:if test="active='0'"><a class="buttonimg img0" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" onclick="return wep.load_href(this)" title="[Новоё]"></a></xsl:if>
 				 </xsl:if>
 				 <xsl:if test="active/@type='bool'">
 					<xsl:if test="active='1'">
-						<a class="bottonimg img1" href="?{../req}{../cl}_id={id}&amp;_type=dis#{id}" onclick="return wep.load_href(this)" title="[Вкл]">
+						<a class="buttonimg img1" href="?{../req}{../cl}_id={id}&amp;_type=dis#{id}" onclick="return wep.load_href(this)" title="[Вкл]">
 							<xsl:if test="@act=0"><xsl:attribute name="onclick">return false</xsl:attribute></xsl:if>
 						</a></xsl:if>
 					<xsl:if test="active!='1'">
-						<a class="bottonimg img0" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" onclick="return wep.load_href(this)" title="[Новоё]">
+						<a class="buttonimg img0" href="?{../req}{../cl}_id={id}&amp;_type=act#{id}" onclick="return wep.load_href(this)" title="[Новоё]">
 							<xsl:if test="@act=0"><xsl:attribute name="onclick">return false</xsl:attribute></xsl:if>
 						</a></xsl:if>
 				 </xsl:if>
 
 				<xsl:if test="@edit='1'">
-					<a class="bottonimg imgedit" href="?{../req}{../cl}_id={id}&amp;_type=edit#{id}" onclick="return wep.load_href(this)" title="[редактировать]"></a>
+					<a class="buttonimg imgedit" href="?{../req}{../cl}_id={id}&amp;_type=edit#{id}" onclick="return wep.load_href(this)" title="[редактировать]"></a>
 				</xsl:if>
 
 				<xsl:if test="@del='1'">
-					<a class="bottonimg imgdel" href="?{../req}{../cl}_id={id}&amp;_type=del" onclick="return hrefConfirm(this,'del')" title="[удалить]"></a>
+					<a class="buttonimg imgdel" href="?{../req}{../cl}_id={id}&amp;_type=del" onclick="return hrefConfirm(this,'del')" title="[удалить]"></a>
 				</xsl:if>
 
 				<xsl:if test="count(istree)>0">

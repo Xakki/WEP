@@ -26,7 +26,7 @@
 					$formflag=0;
 				}
 				elseif(count($_POST) and (isset($_POST['sbmt']) or isset($_POST['sbmt_save']))) {
-					if(!$this->_prmModulEdit($this->data[$this->id],$param)) {
+					if(!$this->_prmModulEdit($this->data,$param)) {
 						$arr['mess'][] = static_main::am('error','denied_up',$this);
 						$formflag=0;
 					}

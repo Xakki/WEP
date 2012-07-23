@@ -11,7 +11,7 @@
 		if(count($data['topmenu'])) { //MENU
 			$temp_topmenu = '<div class="menu_new">';
 			foreach($data['topmenu'] as $r) {
-				$temp_topmenu .= '<div class="botton"><span';
+				$temp_topmenu .= '<div class="button"><span';
 				if($r['type']=='tools' or $r['type']=='static') {
 					$r['css'] = 'weptools '.$r['css'];
 					$temp_topmenu .= ' onclick="return ShowTools(\'tools_block\',\''.$_CFG['_HREF']['wepJS'].'?'.$r['href'].'\')"';
@@ -57,11 +57,11 @@
 				}
 				$html .= '<th>';
 				if($r['href']!='') {
-					$html .= '<a class="'.($r['sel']==1?'bottonimg_sel':'bottonimg').' imgup" title="[SORT]" href="'.$firstpath.'sort='.$r['href'].'" onclick="return wep.load_href(this)"></a>';
+					$html .= '<a class="'.($r['sel']==1?'buttonimg_sel':'buttonimg').' imgup" title="[SORT]" href="'.$firstpath.'sort='.$r['href'].'" onclick="return wep.load_href(this)"></a>';
 				}
 				$html .= $r['value'];
 				if($r['href']!='') {
-					$html .= '<a class="'.($r['sel']==2?'bottonimg_sel':'bottonimg').' imgdown" title="[SORT]" href="'.$firstpath.'dsort='.$r['href'].'" onclick="return wep.load_href(this)"></a>';
+					$html .= '<a class="'.($r['sel']==2?'buttonimg_sel':'buttonimg').' imgdown" title="[SORT]" href="'.$firstpath.'dsort='.$r['href'].'" onclick="return wep.load_href(this)"></a>';
 				}
 				$html .= '</th>';
 			}
@@ -114,11 +114,11 @@
 			$html .= '<td class="ic" style="vertical-align:top;white-space:nowrap;">';
 
 			if($r['act'])
-				$html .= '<a class="bottonimg img'.$r['active'].'" href="'.$firstpath.$data['cl'].'_id='.$r['id'].'&amp;_type='.($r['active']==1?'dis':'act').'" onclick="return wep.load_href(this)" title="['.$_CFG['_ACT_TITLE'][$r['active']].']"></a>';
+				$html .= '<a class="buttonimg img'.$r['active'].'" href="'.$firstpath.$data['cl'].'_id='.$r['id'].'&amp;_type='.($r['active']==1?'dis':'act').'" onclick="return wep.load_href(this)" title="['.$_CFG['_ACT_TITLE'][$r['active']].']"></a>';
 			if($r['edit'])
-				$html .= '<a class="bottonimg imgedit" href="'.$firstpath.$data['cl'].'_id='.$r['id'].'&amp;_type=edit" onclick="return wep.load_href(this)" title="['.$_CFG['_EDIT_TITLE'].']"></a>';
+				$html .= '<a class="buttonimg imgedit" href="'.$firstpath.$data['cl'].'_id='.$r['id'].'&amp;_type=edit" onclick="return wep.load_href(this)" title="['.$_CFG['_EDIT_TITLE'].']"></a>';
 			if($r['del'])
-				$html .= '<a class="bottonimg imgdel" href="'.$firstpath.$data['cl'].'_id='.$r['id'].'&amp;_type=del" onclick="return hrefConfirm(this,\'del\')" title="['.$_CFG['_DEL_TITLE'].']"></a>';
+				$html .= '<a class="buttonimg imgdel" href="'.$firstpath.$data['cl'].'_id='.$r['id'].'&amp;_type=del" onclick="return hrefConfirm(this,\'del\')" title="['.$_CFG['_DEL_TITLE'].']"></a>';
 			if(isset($r['istree']))
 				$html .= '<br/><a href="'.$firstpath.$data['cl'].'_id='.$r['id'].'" onclick="return wep.load_href(this)">'.$r['istree']['value'].' ('.$r['istree']['cnt'].')</a>';
 			if(isset($r['child'])) foreach($r['child'] as $ck=>$cn)

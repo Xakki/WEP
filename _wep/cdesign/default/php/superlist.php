@@ -3,12 +3,9 @@
 		global $_CFG, $HTML;
 		$html = '';
 
-		$firstpath = '';
-
-		if(isset($data['_clp']) and count($data['_clp'])) {
-			$firstpath = http_build_query($data['_clp']).'&';
+		if(!isset($data['_clp'])) {
+			$data['_clp'] = array();
 		}
-		//$data['firstpath'] = '/'.$data['firstpath'];
 
 		if(!isset($data['DIR']))
 			$data['DIR'] = dirname(__FILE__);
@@ -21,34 +18,11 @@
 				$flag = 1;
 		}
 
-		$temp_topmenu = '<div class="menu_new">';
-		if(count($data['topmenu'])) { //MENU
-			foreach($data['topmenu'] as $r) {
-				if(!isset($r['style'])) $r['style'] = '';
-				$temp_topmenu .= '<div class="botton" style="'.$r['style'].'"><span';
-				// HREF path
-				if(isset($r['href']) and is_array($r['href'])) {
-					$temp = '';
-					foreach($r['href'] as $hk=>$hr)
-						$temp .= $hk.'='.$hr.'&';
-					$r['href'] = $temp;
-				}
-				if($r['type']=='tools' or $r['type']=='static') {
-					$r['css'] = 'weptools '.$r['css'];
-					$temp_topmenu .= ' onclick="return ShowTools(\'tools_block\',\''.$_CFG['_HREF']['wepJS'].'?_view=list&'.$firstpath.$r['href'].'\')"';
-				}
-				else {
-					$temp_topmenu .= ' onclick="return wep.load_href(\''.$data['firstpath'].$firstpath.$r['href'].'\')"';
-				}
-				if(isset($r['sel']) and $r['sel'])
-					$temp_topmenu .= ' style="border:2px solid red;"';
-				if(!isset($r['title'])) $r['title'] = $r['caption'];
-				$temp_topmenu .= ' class="'.$r['css'].'" title="'.$r['title'].'">'.$r['caption'].'</span></div>';
-			}
-		}
-		//$temp_topmenu .= $HTML->transformPHP($data['data']['pagenum'],'pagenum');// pagenum
-		include_once($data['DIR'].'/pagenum.php');
-		$temp_topmenu .= tpl_pagenum($data['data']['pagenum']);// pagenum
+		$temp_topmenu = '<div class="superMenu">';
+			$temp_topmenu .= tpl_topmenu($data['topmenu'], $data['firstpath'], $data['_clp']);
+
+			include_once($data['DIR'].'/pagenum.php');
+			$temp_topmenu .= tpl_pagenum($data['data']['pagenum']);// pagenum
 		$temp_topmenu .= '</div>';
 
 		$html .= $temp_topmenu;
@@ -71,7 +45,7 @@
 			$html .= tpl_formcreat($data['formcreat']);// PATH
 		}
 		else {
-			$html .= tpl_data($data['data'],$data['firstpath'].$firstpath);// messages
+			$html .= tpl_data($data['data'], $data['firstpath'].http_build_query($data['_clp']).'&');// messages
 		}
 
 		$html .= $temp_topmenu; //MENU
@@ -80,7 +54,49 @@
 		return $html;
 	}
 
-	function tpl_data(&$data,$firstpath='') {
+	function tpl_topmenu(&$data, $firstpath, $httpQuery=array()) {
+		global $_CFG;
+		$temp_topmenu = '';
+		if(count($data)) { //MENU
+			include_once(dirname(__FILE__).'/formSelect.php');
+			foreach($data as $r) {
+				if($r['type']=='split') {
+					$temp_topmenu .= '<div class="split">&#160;</div>';
+					continue;
+				}
+
+				if(!isset($r['title'])) $r['title'] = $r['caption'];
+				if(!isset($r['style'])) $r['style'] = '';
+				if(!isset($r['css'])) $r['css'] = '';
+
+				// HREF path
+				$href =  array_reverse($r['href']+$httpQuery);
+				$href = http_build_query($href);
+				
+				$temp_topmenu .= '<div class="'.$r['type'].($r['sel']?' selected':'').'" style="'.$r['style'].'">';
+
+				if($r['type']=='select') {
+					$temp_topmenu .= '<span class="caption">'.$r['caption'].'</span> <select class="'.$r['css'].'" title="'.$r['title'].'"';
+					$temp_topmenu .= ' onchange="console.log(this);alert(\''.$firstpath.$href.'\'+this.options[this.selectedIndex].value)"';//return wep.load_href
+					$temp_topmenu .= '>'.tpl_formSelect($r['list']).'</select>';
+				}
+				else {
+					$temp_topmenu .= '<span class="'.$r['css'].'" title="'.$r['title'].'"';
+					if(isset($r['is_popup']) and $r['is_popup'])
+						$temp_topmenu .= ' onclick="return ShowTools(\'tools_block\',\''.$_CFG['_HREF']['wepJS'].'?_view=list&'.$href.'\')"';
+					else
+						$temp_topmenu .= ' onclick="return wep.load_href(\''.$firstpath.$href.'\')"';
+					$temp_topmenu .= '>'.$r['caption'].'</span>';
+				}
+
+				$temp_topmenu .= '</div>';
+			}
+		}
+		return $temp_topmenu;
+	}
+
+
+	function tpl_data(&$data, $firstpath='') {
 		if(!$data or !count($data) or !isset($data['thitem']) or !count($data['thitem'])) return '';
 		global $_CFG,$_tpl;
 		$html = '<table class="superlist"><tbody><tr>';
@@ -102,11 +118,11 @@
 				}
 				$html .= '<th>';
 				if(isset($r['href']) and $r['href']!='') {
-					$html .= '<a class="'.($r['sel']==1?'bottonimg_sel':'bottonimg').' imgup" title="[SORT]" href="'.$firstpath.'sort='.$r['href'].'" onclick="return wep.load_href(this)"></a>';
+					$html .= '<a class="'.($r['sel']==1?'buttonimg_sel':'buttonimg').' imgup" title="[SORT]" href="'.$firstpath.'sort='.$r['href'].'" onclick="return wep.load_href(this)"></a>';
 				}
 				$html .= $r['value'];
 				if(isset($r['href']) and $r['href']!='') {
-					$html .= '<a class="'.($r['sel']==2?'bottonimg_sel':'bottonimg').' imgdown" title="[SORT]" href="'.$firstpath.'dsort='.$r['href'].'" onclick="return wep.load_href(this)"></a>';
+					$html .= '<a class="'.($r['sel']==2?'buttonimg_sel':'buttonimg').' imgdown" title="[SORT]" href="'.$firstpath.'dsort='.$r['href'].'" onclick="return wep.load_href(this)"></a>';
 				}
 				$html .= '</th>';
 			}
@@ -142,10 +158,10 @@
 				}
 				/////
 				if(isset($data['mf_ordctrl']) and $ktd==$data['mf_ordctrl']) {
-					$html .= '<a class="bottonimg imgdragdrop" href="'.$hrefpref.'&_type=ordup" onclick="return false;" title="'.$r['tditem'][$data['mf_ordctrl']]['value'].'"></a>';
-					/*$html .= '<a class="bottonimg imgup" href="'.$hrefpref.'&_type=ordup" onclick="return wep.load_href(this)" title="[-1]"></a>'
+					$html .= '<a class="buttonimg imgdragdrop" href="'.$hrefpref.'&_type=ordup" onclick="return false;" title="'.$r['tditem'][$data['mf_ordctrl']]['value'].'"></a>';
+					/*$html .= '<a class="buttonimg imgup" href="'.$hrefpref.'&_type=ordup" onclick="return wep.load_href(this)" title="[-1]"></a>'
 						.$tditem['value']
-						.'<a class="bottonimg imgdown" href="'.$hrefpref.'&_type=orddown" onclick="return wep.load_href(this)" title="[+1]"></a>';*/
+						.'<a class="buttonimg imgdown" href="'.$hrefpref.'&_type=orddown" onclick="return wep.load_href(this)" title="[+1]"></a>';*/
 				}
 				elseif(isset($tditem['value']) and $tditem['value']!='') {
 					if($tdflag)
@@ -188,19 +204,19 @@
 					if(!isset($rr['style'])) $rr['style']='';
 					if(!isset($rr['onclick'])) $rr['onclick']='';
 					$rr['href'] = str_replace(array('%id%','%firstpath%'),array($r['id'],$hrefpref.'&_type='),$rr['href']);
-					$html .= '<a class="bottonimg img'.$rr['css'].'" style="'.$rr['style'].'" href="'.$rr['href'].'" title="['.$rr['title'].']" onclick="'.$rr['onclick'].'"></a>';
+					$html .= '<a class="buttonimg img'.$rr['css'].'" style="'.$rr['style'].'" href="'.$rr['href'].'" title="['.$rr['title'].']" onclick="'.$rr['onclick'].'"></a>';
 				}
 			}
 			if(isset($r['active'])) {
 				if($r['act'])
-					$html .= '<a class="bottonimg img'.$r['active'].'" href="'.$hrefpref.'&_type='.($r['active']==1?'dis':'act').'" onclick="return wep.load_href(this)" title="['.static_main::m('_ACT_TITLE'.$r['active']).']"></a>';
+					$html .= '<a class="buttonimg img'.$r['active'].'" href="'.$hrefpref.'&_type='.($r['active']==1?'dis':'act').'" onclick="return wep.load_href(this)" title="['.static_main::m('_ACT_TITLE'.$r['active']).']"></a>';
 				else
-					$html .= '<a class="bottonimg img'.$r['active'].'" title="Изменение данного своиства вам не доступна."></a>';
+					$html .= '<a class="buttonimg img'.$r['active'].'" title="Изменение данного своиства вам не доступна."></a>';
 			}
 			if($r['edit'])
-				$html .= '<a class="bottonimg imgedit" href="'.$hrefpref.'&_type=edit" onclick="return wep.load_href(this)" title="['.static_main::m('_EDIT_TITLE').']"></a>';
+				$html .= '<a class="buttonimg imgedit" href="'.$hrefpref.'&_type=edit" onclick="return wep.load_href(this)" title="['.static_main::m('_EDIT_TITLE').']"></a>';
 			if($r['del'])
-				$html .= '<a class="bottonimg imgdel" href="'.$hrefpref.'&_type=del" onclick="return wep.hrefConfirm(this,\'del\')" title="['.static_main::m('_DEL_TITLE').']"></a>';
+				$html .= '<a class="buttonimg imgdel" href="'.$hrefpref.'&_type=del" onclick="return wep.hrefConfirm(this,\'del\')" title="['.static_main::m('_DEL_TITLE').']"></a>';
 
 			if($r['del'] or (isset($r['active']) and $r['act']))
 				$html .= '<input type="checkbox" name="SuperGroup['.$data['cl'].']['.$r['id'].']" onclick="wep.SuperGroup(this)" title="Групповая операция" '.((isset($_COOKIE['SuperGroup'][$data['cl']][$r['id']]) and $_COOKIE['SuperGroup'][$data['cl']][$r['id']])?' checked="checked"':'').'>';

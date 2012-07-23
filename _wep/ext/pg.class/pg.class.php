@@ -159,7 +159,7 @@ class pg_class extends kernel_extends {
 
 	}
 
-	function _getlist(&$listname, $value = 0) {
+	function _getlist($listname, $value = 0) {
 		$data = array();
 		if ($listname == 'ugroup') {
 			$data['user'] = ' - Авторизованные -';

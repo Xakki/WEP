@@ -161,6 +161,7 @@ abstract class kernel_extends {
 		$this->mf_statistic = false; // TOOLS показывать  статистику по дате добавления
 		$this->cf_childs = false; // TOOLS true - включить управление подключение подмодулей в настройках модуля
 		$this->cf_reinstall = false; // TOOLS
+		$this->cf_filter = true;
 		$this->cf_tools = array(); // TOOLS button, function
 		$this->includeJStoWEP = false; // подключать ли скрипты для формы через настройки
 		$this->includeCSStoWEP = false; // подключать ли стили для формы через настройки
@@ -177,6 +178,7 @@ abstract class kernel_extends {
 		$this->tablename = $this->_cl; // название таблицы
 		$this->caption = $this->_cl; // заголовок модуля
 		$this->_listfields = array('name'); //select по умолч
+		$this->_listname = false;
 		$this->unique_fields =
 				$this->index_fields =
 				$this->_enum =
@@ -269,8 +271,9 @@ abstract class kernel_extends {
 		if (is_bool($this->mf_ipcreate) and $this->mf_ipcreate)
 			$this->mf_ipcreate = 'mf_ipcreate';
 
-		$this->_listnameSQL = ($this->mf_namefields ? $this->mf_namefields : 'id'); // для SQL запроса при выводе списка
-		$this->_listname = ($this->mf_namefields ? $this->mf_namefields : 'id'); // ', `_listnameSQL` as `_listname`'
+		if(!$this->_listname)
+			$this->_listname = ($this->mf_namefields ? $this->mf_namefields : 'id');
+
 		// construct fields
 		if ($this->mf_use_charid) {
 			if (is_bool($this->mf_use_charid))
@@ -393,40 +396,6 @@ abstract class kernel_extends {
 
 	// Дефолтные значения
 	protected function _setDefaultRecords() {
-	}
-
-	/**
-	 * Делает запрос к тек таблице с выводом всех данных
-	 *
-	 * @param string $where - для дополнительного условия
-	 * @return array
-	 */
-	public function _dump($where = '') {
-		$data = array();
-		if (!isset($this->fields[$this->mf_namefields]))
-			$name = 'id as name';
-		else
-			$name = '`' . $this->mf_namefields . '` as name';
-		if ($this->mf_istree)
-			$name .= ', ' . $this->mf_istree;
-		if ($where != '')
-			$where = ' WHERE ' . $where;
-		$result = $this->SQL->execSQL('SELECT id, ' . $name . ' FROM `' . $this->tablename . '`' . $where);
-		if (!$result->err) {
-			if ($this->mf_istree) {
-				if ($this->mf_use_charid)
-					$data[''][''] = static_main::m('_zeroname', $this);
-				else
-					$data[0][0] = static_main::m('_zeroname', $this);
-				while (list($id, $name, $pid) = $result->fetch_row()) {
-					$data[$pid][$id] = $name;
-				}
-			} else {
-				while (list($key, $value) = $result->fetch_row())
-					$data[$key] = $value;
-			}
-		}
-		return $data;
 	}
 
 	/**
@@ -577,10 +546,10 @@ abstract class kernel_extends {
 	 *
 	 * @return bool - true если успех
 	 */
-	public function _select($cls='', $simple=false) {
+	public function _select($sql=null, $simple=false) {
 		// TODO : избавиться от $cls либо заэкранировать
 		$data = array();
-		$data = $this->_select_fields($cls, $simple);
+		$data = $this->_select_fields($sql, $simple);
 		if (count($data)) {
 			$this->_select_attaches($data);
 			$this->_select_memos($data);
@@ -589,32 +558,55 @@ abstract class kernel_extends {
 		return $data;
 	}
 
-	private function _select_fields($cls='', $simple=false) {
+
+	private function _select_fields($sql=null, $simple=false) {
 		$data = array();
-		$agr = ', ' . $this->_listnameSQL . ' as name';
-		$pref = 'SELECT *' . $agr;
-		$sql_query = $pref . ' FROM `' . $this->tablename . '` ';
-		if (isset($this->id) and $this->id) // либо по ID
-			$cls .= ($cls?' AND ':'').' id IN (' . $this->_id_as_string() . ') ';
-		elseif (isset($this->owner->id) and $this->owner->id) // либо по owner id
-			$cls .= ($cls?' AND ':'').' '.$this->owner_name.' IN (' . $this->owner->_id_as_string() . ') ';
-		if($cls)
-			$sql_query .= ' WHERE '.$cls;
+		$q_select = '*, ' . $this->_listname . ' as name';
+		$q_where = array();
+		$q_order = '';
+		
 		if ($this->ordfield)
-			$sql_query .= ' ORDER BY ' . $this->ordfield;
-		$result = $this->SQL->execSQL($sql_query);
+			$q_order = $this->ordfield;
+
+		if (isset($this->id) and $this->id) // либо по ID
+			$q_where[] = 'id IN (' . $this->_id_as_string() . ')';
+		elseif (isset($this->owner->id) and $this->owner->id) // либо по owner id
+			$q_where[] = $this->owner_name.' IN (' . $this->owner->_id_as_string() . ')';
+
+		if(!is_null($sql)) {
+			if(is_array($sql)) {
+				if(isset($sql['select']) and $sql['select'])
+					$q_select = $sql['select'];
+				if(isset($sql['where']) and $sql['where'])
+					$q_where[] = $sql['where'];
+				if(isset($sql['order']) and $sql['order'])
+					$q_order = $sql['order'];
+			}
+			else
+				$q_where[] = $sql;
+		}
+
+		if(count($q_where))
+			$q_where = ' WHERE '.implode(' and ', $q_where);
+		else
+			$q_where = ' ';
+
+		if($q_order)
+			$q_order = ' ORDER BY '.$q_order;
+
+		$result = $this->SQL->execSQL('SELECT '.$q_select.' FROM `' . $this->tablename . '` '.$q_where.$q_order);
 		if($result->err)
 			return $data;
 
 		if(!$simple) {
 			$listAr = array();
-			foreach($this->fields_form as $k=>$r) {
-				if($r['type']=='list') {
-					$this->_getCashedList($r['listname']);
-					$templistname = $r['listname'];
-					if (is_array($r['listname']))
-						$templistname = implode(',', $r['listname']);
-					$listAr[$k] = $templistname;
+			$fields = $result->fetch_fields();
+			foreach($fields as $fr) {
+				if(isset($this->fields_form[$fr->name]) and $this->fields_form[$fr->name]['type']=='list') {
+					$templistname = $this->fields_form[$fr->name]['listname'];
+					if (is_array($this->fields_form[$fr->name]['listname']))
+						$templistname = implode(',', $this->fields_form[$fr->name]['listname']);
+					$listAr[$fr->name] = $templistname;
 				}
 			}
 		}
@@ -622,6 +614,9 @@ abstract class kernel_extends {
 		while ($row = $result->fetch()) {
 			if(!$simple) {
 				foreach($listAr as $k=>$r) {
+					if(!isset($this->_CFG['enum'][$r]))
+						$this->_getCashedList($r);
+
 					if(isset($row[$k]) and isset($this->_CFG['enum'][$r][$row[$k]]))
 						$row['#'.$k.'#'] = $this->_CFG['enum'][$r][$row[$k]];
 				}
@@ -684,6 +679,7 @@ abstract class kernel_extends {
 		}
 		return true;
 	}
+
 
 	/**
 	 * Удаление данных
@@ -902,12 +898,12 @@ abstract class kernel_extends {
 		return false;
 	}
 
-	public function _prmModulEdit(&$data, $param = array()) {
+	public function _prmModulEdit($dataList, $param = array()) {
 		if (!$this->prm_edit)
 			return false;
 		if (isset($param['prm']) and count($param['prm'])) {
 			foreach ($param['prm'] as $k => $r) {
-				foreach ($data as $row)
+				foreach ($dataList as $row)
 					if (!isset($row[$k]) and $row[$k] != $r)
 						return false;
 			}
@@ -915,8 +911,12 @@ abstract class kernel_extends {
 		}
 		if (static_main::_prmModul($this->_cl, array(3)))
 			return true;
-		if ($this->mf_createrid and isset($_SESSION['user']['id']) and static_main::_prmModul($this->_cl, array(4)) and $data[$this->mf_createrid] == $_SESSION['user']['id'])
+		if ($this->mf_createrid and static_main::_prmModul($this->_cl, array(4))) {
+			foreach ($dataList as $k => $r)
+				if ($r[$this->mf_createrid] != $_SESSION['user']['id'])
+					return false;
 			return true;
+		}
 		return false;
 	}
 
@@ -952,23 +952,31 @@ abstract class kernel_extends {
 		// TODO тут какой то косяк
 		if(!count($dataList)) {
 			if (static_main::_prmModul($this->_cl, array(1)))
-				return false;
-			if ($this->mf_createrid and static_main::_prmModul($this->_cl, array(2)))
+			{
+				return true; 
+			}
+			if ($this->mf_createrid and static_main::_prmModul($this->_cl, array(2))) 
+			{
 				return true;
-		} else {
+			}
+		} 
+		else {
 			if (static_main::_prmModul($this->_cl, array(1)))
+			{
 				return true;
-			if ($this->mf_createrid and static_main::_prmModul($this->_cl, array(2))) {
+			}
+			if ($this->mf_createrid and static_main::_prmModul($this->_cl, array(2))) 
+			{
 				foreach ($dataList as $k => $r)
 					if ($r[$this->mf_createrid] != $_SESSION['user']['id'])
 						return false;
 				return true;
 			}
-			return false;
 		}
+		return false;
 	}
 
-	private function _prmSortField($key='') {
+	public function _prmSortField($key='') {
 		//включаем сортировку для всех полей
 		/* if (isset($this->fields_form[$key]['mask']['sort']))
 		  return true;
@@ -1248,7 +1256,7 @@ abstract class kernel_extends {
 			$fields_form['_info']['caption'] = static_main::m('add_name', array($this->caption), $this);
 
 		$this->kFields2FormFields($fields_form);
-		if (!$this->id or (isset($this->data[$this->id]) and $this->_prmModulEdit($this->data[$this->id], $param))) {
+		if (!$this->id or (isset($this->data[$this->id]) and $this->_prmModulEdit($this->data, $param))) {
 			$fields_form['sbmt'] = array(
 				'type' => 'submit',
 				'value_save' => ((isset($param['sbmt_save']) and $this->id) ? static_main::m('Save', $this) : ''),
@@ -1360,11 +1368,12 @@ abstract class kernel_extends {
 	 * @param mixed $value - значение
 	 * @return array Список
 	 */
-	public function _getCashedList($listname, $value = NULL) {
+	public function &_getCashedList($listname, $value = NULL) {
 		$data = array();
 		$templistname = $listname;
 		if (is_array($listname))
 			$templistname = implode(',', $listname);
+		$templistname = $this->_cl.'_'.$templistname;
 
 		if (!is_null($value)) {// не кешируем если задано $value и $listname - выборка из таблиц(задается массивом)
 			$data = $this->_getlist($listname, $value);
@@ -1392,7 +1401,7 @@ abstract class kernel_extends {
 		return $this->_CFG['enum'][$templistname];
 	}
 
-	public function _getlist(&$listname, $value = NULL) {/* LIST SELECTOR */
+	public function _getlist($listname, $value = NULL) {/* LIST SELECTOR */
 		include_once($this->_CFG['_PATH']['core'] . 'kernel.getlist.php');
 		return _getlist($this, $listname, $value);
 	}
@@ -1448,7 +1457,7 @@ abstract class kernel_extends {
 			if ($this->mf_istree) {
 				$parent_id = $this->id;
 				$this->tree_data = $first_data = $path = array();
-				$listfields = 'id,' . $this->mf_istree . ', ' . $this->_listnameSQL . ' as name';
+				$listfields = 'id,' . $this->mf_istree . ', ' . $this->_listname . ' as name';
 				$name = $this->caption;
 				while ($parent_id) {
 					$clause = 'WHERE id="' . $parent_id . '"';
@@ -1545,147 +1554,28 @@ abstract class kernel_extends {
 						$_tpl['script'][$sr] = 1;
 				}
 			}
-			$filter_clause = array(0 => array(), 1 => array());
+
 			if (!isset($PARAM['filter']) or $PARAM['filter'] == true) {
-				$filter_clause = $this->_filter_clause();
-				$PARAM['clause'] = $filter_clause[0];
-			}
+				$PARAM['clause'] = $this->_filter_clause();
 
-			$PARAM['topmenu'] = array();
-			if ($this->_prmModulAdd()) {
-				$t = array('_type' => 'add');
-				if ($this->id)
-					$t[$this->_cl . '_id'] = $this->id;
-				$PARAM['topmenu']['add'] = array(
-					'href' => $t,
-					'caption' => 'Добавить ' . $this->caption,
-					'sel' => 0,
-					'type' => '',
-					'css' => 'add'
-				);
-			}
-
-
-			if ($this->owner and count($this->owner->childs))
-				foreach ($this->owner->childs as $ck => &$cn) {
-					if ($ck != $this->_cl and $cn->_prmModulShow()) {//count($cn->fields_form) and 
-						$PARAM['topmenu']['ochild_' . $ck] = array(
-							'href' => array($this->_cl . '_id' => $this->owner->id, $this->_cl . '_ch' => $ck),
-							'caption' => $cn->caption . '(' . $row[$ck . '_cnt'] . ')',
-							'sel' => 0,
-							'type' => 'child'
-						);
-					}
+				if (count($PARAM['clause']) and isset($_SESSION['filter'][$this->_cl]) and count($_SESSION['filter'][$this->_cl])) {
+					$_tpl['onload'] .= 'showHelp(\'.button-filter\',\'Внимание! Включен фильтр.\',4000);$(\'.button-filter\').addClass(\'weptools_sel\');';
 				}
-			if ($this->mf_istree and count($this->childs) and $this->id)
-				foreach ($this->childs as $ck => &$cn) {
-					if (count($cn->fields_form) and $ck != $this->_cl and $cn->_prmModulShow())
-						$PARAM['topmenu']['child' . $ck] = array(
-							'href' => array($this->_cl . '_id' => $this->id, $this->_cl . '_ch' => $ck),
-							'caption' => $cn->caption . '(' . $row[$ck . '_cnt'] . ')',
-							'sel' => 0,
-							'type' => 'child'
-						);
-				}
+			}
 
 			if (is_null($this->owner) and static_main::_prmModul($this->_cl, array(14))) {
-				/* $PARAM['topmenu']['Checkmodul'] = array(
-				  'href' => array('_type'=>'tools', '_func'=>'Checkmodul'),
-				  'caption' => 'Обновить поля таблицы',
-				  'sel' => 0,
-				  'type' => 'tools',
-				  'css' => 'wepchecktable',
-				  ); */
 				if ($this->ver != $this->_CFG['modulprm'][$this->_cl]['ver']) {
-					//$_tpl['onload'] .= 'showHelp(\'.weptools.wepchecktable\',\'Версия модуля '.$MODUL->caption.'['.$MODUL->_cl.'] ('.$MODUL->ver.') отличается от версии ('.$this->_CFG['modulprm'][$MODUL->_cl]['ver'].') сконфигурированного для этого сайта. Обновите здесь поля таблицы.\',4000);$(\'.weptools.wepchecktable\').addClass(\'weptools_sel\');';
+					//$_tpl['onload'] .= 'showHelp(\'.button-checktable\',\'Версия модуля '.$MODUL->caption.'['.$MODUL->_cl.'] ('.$MODUL->ver.') отличается от версии ('.$this->_CFG['modulprm'][$MODUL->_cl]['ver'].') сконфигурированного для этого сайта. Обновите здесь поля таблицы.\',4000);$(\'.button-checktable\').addClass(\'weptools_sel\');';
 					$PARAM['messages'][] = array('error', 'Версия модуля ' . $this->caption . '[' . $this->_cl . '] (' . $this->ver . ') отличается от версии (' . $this->_CFG['modulprm'][$this->_cl]['ver'] . ') сконфигурированного для этого сайта. Обновите модуль.');
 				}
 			}
-
-			if (isset($this->config_form) and count($this->config_form) and static_main::_prmModul($this->_cl, array(13)))
-				$PARAM['topmenu']['Configmodul'] = array(
-					'href' => array('_type' => 'tools', '_func' => 'Configmodul'),
-					'caption' => 'Настроика модуля',
-					'sel' => 0,
-					'type' => 'tools',
-					'css' => 'wepconfig',
-				);
-			if ($this->mf_indexing and static_main::_prmModul($this->_cl, array(12)))
-				$PARAM['topmenu']['Reindex'] = array(
-					'href' => array('_type' => 'tools', '_func' => 'Reindex'),
-					'caption' => 'Переиндексация',
-					'sel' => 0,
-					'type' => 'tools',
-					'css' => 'wepreindex',
-				);
-			if ($this->cf_reinstall and static_main::_prmModul($this->_cl, array(11)))
-				$PARAM['topmenu']['Reinstall'] = array(
-					'href' => array('_type' => 'tools', '_func' => 'Reinstall'),
-					'caption' => 'Переустановка',
-					'sel' => 0,
-					'type' => 'tools',
-					'css' => 'wepreinstall',
-				);
-			if ($filter_clause[1]) {
-				$PARAM['topmenu']['Formfilter'] = array(
-					'href' => array('_type' => 'tools', '_func' => 'Formfilter'),
-					'caption' => 'Фильтр',
-					'sel' => 0,
-					'type' => 'tools',
-					'css' => 'wepfilter',
-				);
-				if (count($filter_clause[0]) and isset($_SESSION['filter'][$this->_cl]) and count($_SESSION['filter'][$this->_cl])) {
-					$_tpl['onload'] .= 'showHelp(\'.weptools.wepfilter\',\'Внимание! Включен фильтр.\',4000);$(\'.weptools.wepfilter\').addClass(\'weptools_sel\');';
-				}
-			}
-			if ($this->mf_statistic) {
-				$t = array('_type' => 'static', '_func' => 'Statsmodul');
-				if ($this->owner and $this->owner->id)
-					$t['_oid'] = $this->owner->id;
-				$PARAM['topmenu']['Statsmodul'] = array(
-					'href' => $t,
-					'caption' => 'Статистика',
-					'sel' => 0,
-					'type' => 'static',
-					'css' => 'wepstats',
-				);
-			}
-
-			// Групповые операции
-			$sg = 0;
-			if (isset($_COOKIE['SuperGroup'][$this->_cl])) {
-				$sg += count($_COOKIE['SuperGroup'][$this->_cl]);
-			}
-			$t = array('_type' => 'tools', '_func' => 'SuperGroup');
-			$PARAM['topmenu']['SuperGroup'] = array(
-				'href' => $t,
-				'caption' => 'Групповая операция</span><span class="wepSuperGroupCount" title="Кол-во выбранных элементов">' . $sg,
-				'title' => 'Групповая операция',
-				'sel' => 0,
-				'type' => 'tools',
-				'css' => 'wepSuperGroup',
-				'style' => (!$sg ? 'display:none;' : '')
-			);
-
-			// TOOLS
-			if(count($this->cf_tools)) {
-				foreach($this->cf_tools as $r) {
-					$PARAM['topmenu'][$r['func']] = array(
-						'href' => array('_type' => 'tools', '_func' => $r['func']),
-						'caption' => $r['name'],
-						//'sel' => 0,
-						'type' => 'tools',
-						'css' => $r['func'],
-						//'style' => (!$sg ? 'display:none;' : '')
-					);
-				}
-			}
-
 
 			// Удаление через форму
 			if (isset($_POST['sbmt_del']) and $this->id) {
 				$ftype = 'del';
 			}
+
+			$PARAM['topmenu'] = static_super::modulMenu($this);
 
 			if ($ftype == 'add') {
 				if ($this->mf_istree and $this->id)
@@ -1792,7 +1682,8 @@ abstract class kernel_extends {
 				else {
 					eval('$PARAM[\'static\'] = $this->static' . $_REQUEST['_func'] . '();');
 				}
-			} else {
+			} 
+			else {
 				if ($this->mf_istree and $this->id)
 					$this->parent_id = $this->id;
 				$flag = 3;
@@ -1805,6 +1696,7 @@ abstract class kernel_extends {
 			  $flag = 3;
 			  $PARAM['item'] = $this->data;
 			  } */
+
 		}
 		$PARAM['_cl'] = $this->_cl;
 
@@ -1820,6 +1712,10 @@ abstract class kernel_extends {
 		return include($this->_CFG['_PATH']['core'] . 'kernel.displayXML.php');
 	}
 
+
+	function getListCount() {
+		return 3;
+	}
 // MODUL configuration
 
 	/**
@@ -2147,9 +2043,7 @@ abstract class kernel_extends {
 	 */
 	function _filter_clause() {
 		$cl = $_FILTR = array();
-		$flag_filter = 0;
-		if($this->_prmSortField())
-			$flag_filter = 1;
+		if(!$this->cf_filter or !$this->_prmSortField()) return $cl;
 
 		if (isset($_REQUEST['filter_' . $this->_cl])) {
 			if (!is_array($_REQUEST['filter_' . $this->_cl]))
@@ -2199,7 +2093,7 @@ abstract class kernel_extends {
 				//}
 			}
 		}
-		return array($cl, $flag_filter);
+		return $cl;
 	}
 
 	/**
@@ -2245,7 +2139,7 @@ abstract class kernel_extends {
 	 */
 	private function _tr_attribute(&$row, &$param) {
 		$DATA = array();
-		if ($this->_prmModulEdit($row, $param))
+		if ($this->_prmModulEdit(array($row), $param))
 			$DATA['edit'] = true;
 		else
 			$DATA['edit'] = false;
@@ -2354,7 +2248,7 @@ abstract class kernel_extends {
 		if ($param['mess'])
 			$DATA = $param['mess'];
 		$this->data = $this->_select();
-		if ($this->_prmModulEdit($this->data[$this->id], $param)) {
+		if ($this->_prmModulEdit($this->data, $param)) {
 			$data = array();
 			$data[$this->mf_ordctrl] = $this->data[$this->id][$this->mf_ordctrl] + $ord;
 
@@ -2385,7 +2279,7 @@ abstract class kernel_extends {
 		$t2 = (isset($_GET['t2']) ? (int) $_GET['t2'] : 0);
 		$data = $this->_select();
 
-		if (!$this->mf_ordctrl or !$this->_prmModulEdit($data[$id])) {//!static_main::_prmModul($this->_cl,array(10))
+		if (!$this->mf_ordctrl or !$this->_prmModulEdit($data)) {//!static_main::_prmModul($this->_cl,array(10))
 			$res['html'] = static_main::m('Sorting denied!');
 			return $res;
 		}
@@ -2431,16 +2325,17 @@ abstract class kernel_extends {
 	}
 
 	/**
-	 * пулучение древамасиива из одномерного массива
+	 * Преобразование списка в шаблонный список для формы
 	 * @param array $path - путь
 	 * @return string XML
 	 */
-	public function _forlist(&$data, $id, $select = '', $multiple = 0) {
+	public function _forlist(&$data, $id=0, $select = '', $multiple = 0) {
 		/*
 		  array('name'=>'NAME','id'=>1 [, 'sel'=>0, 'checked'=>0])
 		 */
 		//$select - array(значение=>1)
 		$s = array();
+		if(!is_array($data) or !count($data)) return $s;
 
 		if ($multiple == 2 and is_array($select) and count($select)) {
 			foreach ($select as $sr) {
@@ -2459,37 +2354,41 @@ abstract class kernel_extends {
 		}
 
 		if (isset($data[$id]) and is_array($data[$id]) and count($data[$id]))
-			foreach ($data[$id] as $key => $value) {
-				if ($select != '' and is_array($select)) {
-					if (isset($select[$key])) {
-						if ($multiple == 22)
-							continue;
-						$sel = 1;
-					}
-					else
-						$sel = 0;
-				}
-				elseif ($select != '' and $select == $key)
+			$temp = &$data[$id];
+		else
+			$temp = &$data;
+
+		foreach ($temp as $key => $value) {
+			if ($select != '' and is_array($select)) {
+				if (isset($select[$key])) {
+					if ($multiple == 22)
+						continue;
 					$sel = 1;
+				}
 				else
 					$sel = 0;
-				$s[$key] = array('#id#' => $key, '#sel#' => $sel);
-				if (is_array($value)) {
-					foreach ($value as $k => $r)
-						if ($k != '#name#' and $k != '#id#')
-							$s[$key][$k] = $r;
-					if (!isset($value['#name#']))
-						$s[$key]['#name#'] = $key;
-					else
-						$s[$key]['#name#'] = $value['#name#']; //_substr($value['name'],0,60).(_strlen($value['name'])>60?'...':'')
-				}else
-					$s[$key]['#name#'] = $value;
-				if ($key != $id and isset($data[$key]) and count($data[$key]) and is_array($data[$key]))
-					$s[$key]['#item#'] = $this->_forlist($data, $key, $select, $multiple);
-				/*Если это использовать то проверка данных сломается*/
-				//if (isset($value['#item#']) and is_array($value['#item#']) and count($value['#item#']))
-				//	$s[$key]['#item#'] = $value['#item#']+$s[$key]['#item#'];
 			}
+			elseif ($select != '' and $select == $key)
+				$sel = 1;
+			else
+				$sel = 0;
+			$s[$key] = array('#id#' => $key, '#sel#' => $sel);
+			if (is_array($value)) {
+				foreach ($value as $k => $r)
+					if ($k != '#name#' and $k != '#id#')
+						$s[$key][$k] = $r;
+				if (!isset($value['#name#']))
+					$s[$key]['#name#'] = $key;
+				else
+					$s[$key]['#name#'] = $value['#name#']; //_substr($value['name'],0,60).(_strlen($value['name'])>60?'...':'')
+			}else
+				$s[$key]['#name#'] = $value;
+			if ($key != $id and isset($data[$key]) and count($data[$key]) and is_array($data[$key]))
+				$s[$key]['#item#'] = $this->_forlist($data, $key, $select, $multiple);
+			/*Если это использовать то проверка данных сломается*/
+			//if (isset($value['#item#']) and is_array($value['#item#']) and count($value['#item#']))
+			//	$s[$key]['#item#'] = $value['#item#']+$s[$key]['#item#'];
+		}
 		return $s;
 	}
 

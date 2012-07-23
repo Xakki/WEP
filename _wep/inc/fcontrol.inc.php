@@ -52,7 +52,11 @@
 
 	if(isset($_COOKIE['wepfcontrol']) and $_COOKIE['wepfcontrol']==2) {
 		$cssClass='';
-		$html = $HTML->transformPHP($DATA,'#modulprm#fcontrol');
+		$DATA = array();
+		$DATA['button'] = array(
+			'config' => 1
+		);
+		$html = $HTML->transformPHP($DATA, '#modulprm#fcontrol');
 	}
 
 	if($_CFG['returnFormat'] == 'json') return '<div class="fcontrol-text">'.$html.'</div>';

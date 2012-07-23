@@ -9,7 +9,8 @@
 			if(isset($DATA['formcreat']) and count($DATA['formcreat'])) {
 				if($flag==1) {
 					end($HTML->path);prev($HTML->path);
-					$_tpl['onload'] .= 'alert(\''.$HTML->transformPHP($DATA['formcreat'],'messages').'\');';
+					$html = $HTML->transformPHP($DATA['formcreat'],'messages');
+					//$_tpl['onload'] .= 'wep.fShowload(1,0,result.html);';
 				}
 				else {
 					$DATA['formcreat']['path'] = $HTML->path;
@@ -31,7 +32,9 @@
 			}
 			elseif($flag!=3) {
 				end($HTML->path);
-				$_tpl['onload'] = 'alert(\''.$HTML->transformPHP($DATA['superlist'],'messages').'\');wep.load_href("'.str_replace('&amp;','&',key($HTML->path)).'");';
+				$html = $HTML->transformPHP($DATA['superlist'],'messages');
+				//$_tpl['onload'] .= 'wep.fShowload(1,0,result.html);';
+				$_tpl['onload'] = 'wep.load_href("'.str_replace('&amp;','&',key($HTML->path)).'");';
 			}
 			else {
 				$DATA['superlist']['path'] = $HTML->path;
@@ -57,8 +60,7 @@
 		$_tpl['onload']='fLog(\'<div style="color:red;">'.date('H:i:s').' : Параметры заданны неверно!</div>\',1);';
 
 
-	include($_CFG['_PATH']['core'].'/includesrc.php');
+	include_once($_CFG['_PATH']['core'].'/includesrc.php');
 	fileInclude($_CFG['fileIncludeOption']);
-	arraySrcToFunc();
 	
 

@@ -456,6 +456,10 @@
 			return mysqli_num_rows($this->handle);
 		}
 
+		function fetch_fields() { // Кол-во полученных записей
+			return mysqli_fetch_fields($this->handle);
+		}
+
 
 		// type MYSQLI_ASSOC | MYSQLI_BOTH | MYSQLI_NUM
 

@@ -252,6 +252,8 @@ function tpl_form(&$data, $tabs = array()) {
 				<input type="hidden" name="srlz_'.$k.'" value="'.htmlspecialchars($serl,ENT_QUOTES,$_CFG['wep']['charset']).'"/>';
 			}
 			elseif($r['type']=='list' and !$r['readonly']) {
+				include_once(dirname(__FILE__).'/formSelect.php');
+
 				$texthtml .= '<div class="form-value">';
 				if(isset($r['multiple'])) {
 					if(!isset($r['mask']['size'])) $r['mask']['size'] = 10;
@@ -261,7 +263,7 @@ function tpl_form(&$data, $tabs = array()) {
 
 				if(isset($r['multiple']) and $r['multiple']==2) {
 					$texthtml .= '<select multiple="multiple" name="'.$k.'[]" class="multiple" size="'.$r['mask']['size'].'" '.$attribute;
-					$texthtml .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
+					$texthtml .= '>'.tpl_formSelect($r['valuelist'],$r['value']).'</select>';
 					$_CFG['fileIncludeOption']['multiple'] = 2;
 				}
 				elseif(isset($r['multiple']) and $r['multiple']==3) {
@@ -271,11 +273,11 @@ function tpl_form(&$data, $tabs = array()) {
 						$cnt++;
 						$text2 = '';
 						if(isset($r['mask']['keylist']) and $r['mask']['keylist'])
-							$text2 = '<select class="ilist-val" onchange="wep.form.iListRev(this,\''.$k.'\')">'.selectitem($r['valuelist'],$kval).'</select>
+							$text2 = '<select class="ilist-val" onchange="wep.form.iListRev(this,\''.$k.'\')">'.tpl_formSelect($r['valuelist'],$kval).'</select>
 								<input class="ilist-key" type="text" value="'.$rval.'" name="'.$k.'['.$kval.']"/>';
 						else
 							$text2 = '<input class="ilist-key" type="text" value="'.$kval.'" onkeyup="wep.form.iList(this,\''.$k.'\')"/>
-								<select class="ilist-val" name="'.$k.'['.$kval.']" '.$attribute.'>'.selectitem($r['valuelist'],$rval).'</select>';
+								<select class="ilist-val" name="'.$k.'['.$kval.']" '.$attribute.'>'.tpl_formSelect($r['valuelist'],$rval).'</select>';
 						$texthtml .= '<div class="ilist">
 							'.$text2.'
 							<span class="ilistsort" title="Переместить"></span>
@@ -290,11 +292,11 @@ function tpl_form(&$data, $tabs = array()) {
 				elseif(isset($r['multiple']) and $r['multiple']) {
 					
 					$texthtml .= '<select multiple="multiple" name="'.$k.'[]" class="small" size="'.$r['mask']['size'].'" '.$attribute;
-					$texthtml .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
+					$texthtml .= '>'.tpl_formSelect($r['valuelist'],$r['value']).'</select>';
 				} 
 				else {
 					$texthtml .= '<select name="'.$k.'" '.$attribute;
-					$texthtml .= '>'.selectitem($r['valuelist'],$r['value']).'</select>';
+					$texthtml .= '>'.tpl_formSelect($r['valuelist'],$r['value']).'</select>';
 				}
 				$texthtml .= '</div>';
 			}
@@ -320,7 +322,7 @@ function tpl_form(&$data, $tabs = array()) {
 				$texthtml .= '<div class="form-value dateinput">';
 				$temp = '';
 				if(isset($r['mask']['view']) and $r['mask']['view']=='split') {
-				
+					include_once(dirname(__FILE__).'/formSelect.php');
 					// Тип поля
 					if(!is_array($r['value'])) {
 						if($r['fields_type'] =='int' and $r['value']) {
@@ -397,7 +399,7 @@ function tpl_form(&$data, $tabs = array()) {
 					}
 
 					foreach($r['value'] as $row) {
-						$texthtml .= '<div class="dateselect '.$row['css'].'"><span class="name">'.$row['name'].'</span><select name="'.$k.'[]" '.$attribute.'>'.selectitem($row['item'],$row['value']).'</select></div>';
+						$texthtml .= '<div class="dateselect '.$row['css'].'"><span class="name">'.$row['name'].'</span><select name="'.$k.'[]" '.$attribute.'>'.tpl_formSelect($row['item'],$row['value']).'</select></div>';
 					}
 				}	
 				else {
@@ -697,72 +699,3 @@ function tpl_form(&$data, $tabs = array()) {
 	return $texthtml;
 }
 
-function selectitem($data,$val=NULL,$flag=0) {
-	if(!is_null($val)) {
-		if(!is_array($val)) 
-			$val = array($val=>true);
-	}
-	return selectitem2($data,$val,$flag);
-	/*$texthtml = '';
-	if(is_array($data) and count($data))
-		foreach($data as $r) {
-			//_substr($r['#name#'],0,60).(_strlen($r['#name#'])>60?'...':'')
-			//$r['#name#'] = str_repeat(" -", $flag).' '.$r['#name#'];
-			if(isset($r['#item#']) and count($r['#item#']) and isset($r['#checked#']) and $r['#checked#']==0)
-				$texthtml .= '<optgroup label="'.$r['#name#'].'"></optgroup>';
-			else {
-				$sel = '';
-				if(isset($r['#sel#'])) {
-					if($r['#sel#'])
-						$sel = 'selected="selected"';
-				}
-				elseif(!is_null($val) and isset($val[$r['#id#']]))
-					$sel = 'selected="selected"';
-					
-				$texthtml .= '<option value="'.$r['#id#'].'" '.$sel.' class="selpad'.$flag.'">'.$r['#name#'].'</option>';
-			}
-			if(isset($r['#item#']) and count($r['#item#']))
-				$texthtml .= selectitem($r['#item#'],$val,($flag+1));//.'&#160;--'
-		}
-	return $texthtml;*/
-}
-
-function selectitem2($data,$val=NULL,$flag=0,&$openG=false) {
-	$texthtml = ''."\n";
-	if(is_array($data) and count($data))
-		foreach($data as $r) {
-			//_substr($r['#name#'],0,60).(_strlen($r['#name#'])>60?'...':'')
-			if(isset($r['#item#']) and count($r['#item#']) and isset($r['#checked#']) and $r['#checked#']==0) {
-				//if($flag>0)
-				//	$r['#name#'] = str_repeat("&#160;&#160;", $flag).' '.$r['#name#'];
-				if($openG)
-					$texthtml .= '</optgroup>'."\n";
-				$texthtml .= '<optgroup label="'.$r['#name#'].'">'."\n";
-				$openG = true;
-			}
-			else {
-				if($flag>0 and !$openG)
-					$r['#name#'] = str_repeat("&#160;&#160;", $flag).' '.$r['#name#'];
-				$sel = '';
-				if(!is_null($val)) {
-					if(isset($val[$r['#id#']]))
-						$sel = 'selected="selected"';
-				}
-				elseif(isset($r['#sel#'])) {
-					if($r['#sel#'])
-						$sel = 'selected="selected"';
-				}
-					
-				$texthtml .= "\t".'<option value="'.$r['#id#'].'" '.$sel.'>'.$r['#name#'].'</option>'."\n";
-			}
-
-			if(isset($r['#item#']) and count($r['#item#']))
-				$texthtml .= selectitem2($r['#item#'],$val,($flag+1),$openG);//.'&#160;--'
-
-			if(isset($r['#item#']) and count($r['#item#']) and isset($r['#checked#']) and $r['#checked#']==0 and !$flag) {
-				$texthtml .= '</optgroup>'."\n";
-				$openG=false;
-			}
-		}
-	return $texthtml;
-}

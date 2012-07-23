@@ -325,7 +325,7 @@ class static_tools {
 	@import "' . $MODUL->_CFG['_HREF']['_script'] . 'script.jquery/jqplot/jquery.jqplot.min.css";
 	</style>
 	';
-		$html = '<span class="bottonimg imgdel" style="float: right;" onclick="$(this).parent().hide();">EXIT</span>' . $html;
+		$html = '<span class="buttonimg imgdel" style="float: right;" onclick="$(this).parent().hide();">EXIT</span>' . $html;
 		global $_tpl;
 		$_tpl['onload'] .= $eval;
 		return $html;

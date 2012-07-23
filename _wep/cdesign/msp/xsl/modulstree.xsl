@@ -7,26 +7,26 @@
 
 	<xsl:template match="moduls">
 	  <xsl:for-each select="serv">
-	    <a class="bottonimg imgconf service" href="javascript:void('conf')" onclick="sf('{../@modul}','{@id}')"><xsl:value-of select="."/></a>
+	    <a class="buttonimg imgconf service" href="javascript:void('conf')" onclick="sf('{../@modul}','{@id}')"><xsl:value-of select="."/></a>
 	  </xsl:for-each>
 		<div class="treename">
 			<div class="name"><xsl:value-of select="name"/>(<xsl:value-of select="cnt"/>) <xsl:apply-templates select="pagenum"/></div>
-			<xsl:if test="@add=1"><a class="bottonimg ti_r imgadd" href="javascript:void('ADD')" onclick="lf('{@modul}','','{@oid}','{@pid}')" title="[ADD]"></a></xsl:if>
+			<xsl:if test="@add=1"><a class="buttonimg ti_r imgadd" href="javascript:void('ADD')" onclick="lf('{@modul}','','{@oid}','{@pid}')" title="[ADD]"></a></xsl:if>
 			<div class="clk"></div>
 		</div>
 		
 		<xsl:for-each select="item">
 	    <div class="treeitem" id="{../@modul}_{@id}" mod="{../@modul}">
-				<xsl:if test="../@child=1"><a class="bottonimg ti imgplus" href="javascript:void('SHOW')" onclick="Lmtree('{../@modul}',this,'{@id}')" title="[SHOW]"></a></xsl:if>
+				<xsl:if test="../@child=1"><a class="buttonimg ti imgplus" href="javascript:void('SHOW')" onclick="Lmtree('{../@modul}',this,'{@id}')" title="[SHOW]"></a></xsl:if>
 				<div onclick="lf('{../@modul}','{@id}','{../@oid}','{../@pid}')" class="tiname">
 					<xsl:if test="@act=0"><xsl:attribute name="class">tiname noact</xsl:attribute></xsl:if>
 					<xsl:if test="not(../@child)">•</xsl:if><xsl:value-of select="."/></div>
 				<div style="position:absolute;right:0;">
-					<xsl:if test="@del=1"><a class="bottonimg ti_r imgdel" href="javascript:void('DEL')" onclick="df('{../@modul}','{@id}','{.}')" title="[DEL]"></a></xsl:if>
+					<xsl:if test="@del=1"><a class="buttonimg ti_r imgdel" href="javascript:void('DEL')" onclick="df('{../@modul}','{@id}','{.}')" title="[DEL]"></a></xsl:if>
 					<xsl:if test="../@ord=1">
 						<!--<img onclick="ou('{../@modul}','{@id}',this)" class="ti_r" src="/admin/img/ou.png" width="12"/>
 						<img onclick="od('{../@modul}','{@id}',this)" class="ti_r" src="/admin/img/od.png" width="12"/>-->
-						<a class="bottonimg ti_replace" href="javascript:void('SORT')" title="[SORT]"></a>
+						<a class="buttonimg ti_replace" href="javascript:void('SORT')" title="[SORT]"></a>
 					</xsl:if>
 				</div>
 				<div class="clk"></div>

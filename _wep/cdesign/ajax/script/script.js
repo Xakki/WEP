@@ -37,12 +37,12 @@ function Lmtree(modul,obj,id) {
 		//fShowload(1);
 		if(GetId('_'+modul+'_'+id).style.display=='none') {
 			if(obj)
-				obj.className='bottonimg ti imgminus';
+				obj.className='buttonimg ti imgminus';
 			_last_load = 'js.php?_type=modulschild&_modul='+modul+'&_id='+id;
 			JSHR('_'+modul+'_'+id,_last_load);
 		}else{
 			if(obj)
-				obj.className='bottonimg ti imgplus';
+				obj.className='buttonimg ti imgplus';
 			$('#_'+modul+'_'+id).slideUp('fast');
 		}
 	}

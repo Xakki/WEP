@@ -67,7 +67,7 @@ a:hover{text-decoration:none;}
 	#cmsinfo #inftime div {float:left;padding:0 5px 5px;}
 
 	/*IMG*/
-		.bottonimg, .bottonimg_sel{
+		.buttonimg, .buttonimg_sel{
 			background-image:url(/admin/design/default/img/buttonh.png);
 			background-position:0 0;
 			background-repeat:no-repeat;
@@ -76,7 +76,7 @@ a:hover{text-decoration:none;}
 			display:block;
 			display:inline-block;
 		}
-		.bottonimg:hover, .bottonimg_sel {
+		.buttonimg:hover, .buttonimg_sel {
 			background-image:url(/admin/design/default/img/button.png);
 		}
 		.imglist{background-position:0 -192px;}
@@ -153,17 +153,17 @@ div.menu_new {
 	float: left;
 	height:24px;
 }
-div.menu_new .botton {
+div.menu_new .button {
 	background-color:#A1E177;
 	float:left;
 	margin:0;
 	padding:1px 5px 3px;
 	border:1px solid #AAAAAA;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
 }
-div.menu_new .botton:hover {
+div.menu_new .button:hover {
 	border:1px solid #63A6CC;
 }
-div.menu_new .botton a {
+div.menu_new .button a {
 	text-decoration:none;
 }
 

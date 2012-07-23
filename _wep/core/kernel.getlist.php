@@ -185,9 +185,6 @@
 			if(count($afterSubDir))
 				$data[''] = $data['']+$afterSubDir;
 		}
-		elseif('list' == $templistname) {
-			$data = $_this->_dump();
-		}
 		elseif('fieldslist' == $templistname) {
 			$data['id'] = '№';
 			foreach($_this->fields_form as $k=>$r) {
@@ -195,17 +192,52 @@
 					$data[$k] = $_this->fields_form[$k]['caption'];
 			}
 		}
-		elseif ('ownerlist' == $templistname) {
-			if($_this->owner)
-				$data = $_this->owner->_dump();
+		elseif('list' == $templistname) {
+
+			$q_where = array();
+			$q_order = '';
+			
+			$name = 'id, `' . $_this->_listname . '` as name';
+			if ($_this->mf_istree)
+				$name .= ', ' . $_this->mf_istree;
+		
+			if ($_this->ordfield)
+				$q_order = ' ORDER BY '.$_this->ordfield;
+
+			if (isset($_this->owner->id) and $_this->owner->id) // либо по owner id
+				$q_where[] = $_this->owner_name.' IN (' . $_this->owner->_id_as_string() . ')';
+
+			if(count($q_where))
+				$q_where = ' WHERE '.implode(' and ', $q_where);
 			else
-				$data = array('Ошибка - список ownerlist не может быть создан, так как родитель не доступен');
-		}
-		// TODO : что за Х ?
-		elseif(is_array($listname) and isset($listname[0]) and isset($listname[1]) and 'owner' == $listname[0] ) {
-			return $_this->owner->_getlist($listname[1],$value);
+				$q_where = ' ';
+
+			$result = $_this->SQL->execSQL('SELECT ' . $name . ' FROM `' . $_this->tablename . '`' . $q_where.$q_order);
+
+			if (!$result->err) {
+				if ($_this->mf_istree) {
+			
+					if ($_this->mf_use_charid)
+						$data[''][''] = static_main::m('_zeroname', $_this);
+					else
+						$data[0][0] = static_main::m('_zeroname', $_this);
+
+					while (list($id, $name, $pid) = $result->fetch_row()) {
+						$data[$pid][$id] = ($name?$name:$_this->caption.' #'.$id);
+					}
+				} else {
+					if ($_this->mf_use_charid)
+						$data[''] = static_main::m('_zeroname', $_this);
+					else
+						$data[0] = static_main::m('_zeroname', $_this);
+
+					while (list($id, $name) = $result->fetch_row())
+						$data[$id] = ($name?$name:$_this->caption.' #'.$id);
+				}
+			}
 		}
 		elseif ('select' == $templistname) {
+			trigger_error('Использование списка `select` переделать на `list`', E_USER_WARNING);
 			$data = $_this->_select();
 		}
 		elseif ('parentlist' == $templistname and $_this->mf_istree) {
@@ -225,7 +257,16 @@
 					$data[$pid][$id] = $name;
 				}
 		} 
-
+		elseif(is_array($listname) and isset($listname[0]) and isset($listname[1]) and 'owner' == $listname[0] ) {
+			$data = $_this->owner->_getlist($listname[1],$value);
+		}
+		elseif ('ownerlist' == $templistname) {
+			// TODO : это Кастыль совместимости
+			if($_this->owner)
+				$data = $_this->owner->_getlist('list',$value);
+			else
+				$data = array('Ошибка - список ownerlist не может быть создан, так как родитель не доступен');
+		}
 		elseif(is_array($listname) and (isset($listname['class']) or isset($listname['tablename'])))  {
 			$clause = array();
 			if(isset($listname['class'])) {

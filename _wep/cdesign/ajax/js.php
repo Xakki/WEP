@@ -112,7 +112,7 @@
 	}
 	elseif($_GET['_type']=='stats'){
 		$htmleval = $MODUL->statisticModule((int)$_GET['_oid']);
-		$html = '<span class="bottonimg imgdel" style="float: right;" onclick="$(this).parent().hide();">EXIT</span>'.$htmleval[0];
+		$html = '<span class="buttonimg imgdel" style="float: right;" onclick="$(this).parent().hide();">EXIT</span>'.$htmleval[0];
 		$_tpl['onload'] .= $htmleval[1];
 	}
 	/**
@@ -120,7 +120,7 @@
 	**/
 	elseif($_REQUEST['_type']=='formfilter') {
 		$DATA['filter'] = $MODUL->filtrForm();
-		$html = '<span class="bottonimg imgdel" style="float: right;" onclick="$(this).parent().hide();">EXIT</span>'.$HTML->transformPHP($DATA,'filter');
+		$html = '<span class="buttonimg imgdel" style="float: right;" onclick="$(this).parent().hide();">EXIT</span>'.$HTML->transformPHP($DATA,'filter');
 		$_tpl['onload'] .= '$(\'#form_filter\').bind(\'submit\',function(e){return JSFRWin(\'#form_filter\');});';
 	}
 	/**

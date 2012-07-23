@@ -205,7 +205,7 @@ a.am_tools {
 		}
 
 	/*IMG*/
-		.bottonimg, .bottonimg_sel{
+		.buttonimg, .buttonimg_sel{
 			background-image:url(../img/buttonh.png);
 			background-position:0 0;
 			background-repeat:no-repeat;
@@ -216,31 +216,9 @@ a.am_tools {
 			font-size:0.01em;
 			display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
 		}
-		.bottonimg:hover, .bottonimg_sel {
+		.buttonimg:hover, .buttonimg_sel {
 			background-image:url(../img/button.png);
 		}
-		.imglist{background-position:0 -192px;}
-		.imgadd{background-position:0 0;}
-		.imgdel{background-position:0 -16px;}
-		.imgedit{background-position:0 -32px;}
-		.imgplus{background-position:0 -96px;}
-		.imgminus{background-position:0 -112px;}
-		.imgup{background-position:0 -64px;}
-		.imgdown{background-position:0 -80px;}
-		.imgf5{background-position:0 -48px;}
-		.imgf6{background-position:-1px -411px;}
-		.imgf7{background-position:-1px -391px;}
-		.imgconf {background-position:0 -224px;}
-		.imgdragdrop {background-position:0 -430px;cursor:move;}
-
-		.img0{background-position:0 -144px;}
-		.img1{background-position:0 -128px;}
-		.img2{background-position:0 -176px;}
-		.img3{background-position:0 -160px;}
-		.img4{background-position:0 -176px;}
-		.img5{background-position:0 -160px;}
-		.img6{background-position:0 -144px;}
-		.img-1{background-position:0 -176px;}
 
 		.uiicons {
 			width: 16px; 
@@ -310,72 +288,46 @@ a.am_tools {
 	.path {padding:0 0 5px 0;text-align:left;}
 	.path div {color:#111;}
 	.path img {vertical-align:middle;height:18px;}
+
  /*MENU*/
-div.menu_new {
+div.superMenu {
 	padding: 5px 0 0 0;margin: 0;
-	height:1.6em;
 	font-size:1.2em;
 	vertical-align: middle;
 }
-div.menu_new .botton {
-	background-color:#A1E177;
-	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
-	margin:0 2px;
-	padding:2px 3px 2px;
-	border:1px solid #AAAAAA;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
+
+div.superMenu>div {
+	display:inline-block;
+}
+
+
+div.superMenu .split {
+	display:inline-block;
+	margin:0 5px;
+	border-left: 1px solid gray;
+	width:1px;
+	font-size: 1.8em;
 	vertical-align: top;
 }
-div.menu_new .botton:hover {
-	border:1px solid #63A6CC;
-}
-div.menu_new .botton span {
-	text-decoration:none;
-	cursor:pointer;
-}
-div.menu_new .weptools {
-	color:transparent;
-	background-image:url(../img/buttonh.png);
-	background-position:0 -284px;
-	background-repeat:no-repeat;
-	height:16px;
-	width:16px;
-	margin:0;
-	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
-	font-size:0.6em;
-}
-	div.menu_new .weptools:hover, div.menu_new .weptools_sel {
-		background-image:url(../img/button.png);
-	}
-	div.menu_new .wepfilter {
-		background-position:0 -306px;
-	}
-	div.menu_new .wepchecktable {
-		background-position:0 -262px;
-	}
-	div.menu_new .wepstats {
-		background-position:0 -370px;
-	}
-	div.menu_new .wepconfig {
-		background-position:0 -329px;
-	}
-	div.menu_new .reattaches {
-		background-position:0 -284px;
-	}
-	div.menu_new .wepreindex {
-		background-position:0 -215px;
-	}
-	div.menu_new .wepreinstall {
-		background-position:0 -284px;
-	}
-	div.menu_new .wepSuperGroup {
-		background-position:0 -350px;
-	}
-	span.wepSuperGroupCount {
-		vertical-align:top;
-		padding:0 3px;
-	}
 
-div.menu_new .tools_gact {
+/* SELECT BUTTONS*/
+div.superMenu .select {
+
+}
+
+div.superMenu .select .caption {
+	display: block;
+	font-size: 11px;
+}
+
+div.superMenu .select select {
+	display: block;
+	font-size: 11px;
+	margin: 0;
+}
+/**************/
+
+div.superMenu .tools_gact {
 	color:transparent;
 	background-image:url(../img/buttonh.png);
 	background-position:0 -215px;
@@ -385,11 +337,11 @@ div.menu_new .tools_gact {
 	margin:2px 0 1px;
 	display:block;
 }
-	div.menu_new .tools_gact:hover, .tools_gact_sel {
+	div.superMenu .tools_gact:hover, .tools_gact_sel {
 		background-image:url(../img/button.png);
 	}
 
-div.menu_new fieldset{
+div.superMenu fieldset{
 	padding:0;
 	width:550px;
 	position:relative;
@@ -402,7 +354,7 @@ div.menu_new fieldset{
 	padding:5px;
 	background-color:#A1A1E1;
 }
-div.menu_new fieldset legend {
+div.superMenu fieldset legend {
 	background-image:url(../img/button.png);
 	background-repeat:no-repeat;
 	background-position:0 -95px;
@@ -636,3 +588,87 @@ span.seldebug select{
 .table td {
 	border:solid gray 1px;
 }
+
+/* IMAGE BUTTON*/
+
+.button {
+	background-color:#A1E177;
+	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
+	margin:0 2px;
+	padding:7px;
+	border:1px solid #AAAAAA;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
+	vertical-align: top;
+	text-decoration:none;
+	cursor:pointer;
+}
+
+.button:hover{
+	border:1px solid #63A6CC;
+}
+
+.button span {
+	color:transparent;
+	background-image:url(../img/buttonh.png);
+	background-position:0 -284px;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	margin:0;
+	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
+	font-size:0.6em;
+}
+.button:hover span, .button.selected span{
+	background-image:url(../img/button.png);
+}
+
+	.button-filter {
+		background-position:0 -306px;
+	}
+	.button-checktable {
+		background-position:0 -262px;
+	}
+	.button-stats {
+		background-position:0 -370px;
+	}
+	.button-config {
+		background-position:0 -329px;
+	}
+	.button-reattaches {
+		background-position:0 -284px;
+	}
+	.button-reindex {
+		background-position:0 -215px;
+	}
+	.button-reinstall {
+		background-position:0 -284px;
+	}
+	.button-SuperGroup {
+		background-position:0 -350px;
+	}
+	.button-SuperGroup .wepSuperGroupCount {
+		vertical-align:top;
+		padding:0 3px;
+	}
+
+	.imglist {background-position:0 -192px !important;}
+	.imgadd, .button-add {background-position:0 0 !important;}
+	.imgdel, .button-del {background-position:0 -16px !important;}
+	.imgedit, .button-edit {background-position:0 -32px !important;}
+	.imgplus, .button-plus {background-position:0 -96px !important;}
+	.imgminus, .button-minus {background-position:0 -112px !important;}
+	.imgup, .button-up {background-position:0 -64px !important;}
+	.imgdown, .button-down {background-position:0 -80px !important;}
+	.imgf5, .button-f5 {background-position:0 -48px !important;}
+	.imgf6, .button-f6 {background-position:-1px -411px !important;}
+	.imgf7, .button-f7 {background-position:-1px -391px !important;}
+	.imgconf, .button-conf {background-position:0 -224px !important;}
+	.imgdragdrop, .button-dragdrop {background-position:0 -430px !important;cursor:move;}
+
+	.img0, .button-0 {background-position:0 -144px !important;}
+	.img1, .button-1 {background-position:0 -128px !important;}
+	.img2, .button-2 {background-position:0 -176px !important;}
+	.img3, .button-3 {background-position:0 -160px !important;}
+	.img4, .button-4 {background-position:0 -176px !important;}
+	.img5, .button-5 {background-position:0 -160px !important;}
+	.img6, .button-6 {background-position:0 -144px !important;}
+	.img-1, .button-7 {background-position:0 -176px !important;}

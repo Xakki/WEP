@@ -99,7 +99,7 @@ var wep = {
 ///alert(dump(param));
 		if(param['fade']) // Вешаем затемнение
 			param['timeBG'] = setTimeout(function(){
-				wep.fShowload(1,false,false,param['fade']);param['timeBG'] = 0;
+				wep.fShowload(1,false,false,param['fade']); param['timeBG'] = 0;
 			},200);
 
 		$.ajax({
@@ -118,6 +118,7 @@ var wep = {
 				return data;
 			},*/
 			success: function(result, textStatus, XMLHttpRequest) {
+				//console.log(result);
 				//функц. предзапуска пользователя, возвращает результат
 				if(typeof param['precall'] != 'undefined' && typeof param['precall'] == 'function') 
 					result = param['precall'].call(result);
@@ -160,7 +161,6 @@ var wep = {
 
 				 // подключение Стилей
 				if(typeof result.styles != 'undefined')  {
-					//console.log(result.styles);
 					wep.cssLoad(result.styles);
 				}
 
@@ -169,23 +169,39 @@ var wep = {
 					//console.log(result.script);
 					wep.scriptLoad(result.script);
 				}
+				
+					
+				wep.timerExecLoadFunction(param, result);
 
-				//Запуск функции пользователя
-				if(typeof param['call'] != 'undefined' && typeof param['call'] == 'function') {
-					param['call'].call(result);
-				}
-
-				 // запуск onload функции
-				if(typeof result.onload != 'undefined')  {
-					if(typeof result.onload == 'function')
-						result.onload.call();
-					else if(result.onload!='') {
-						eval(result.onload);
-					}
-				}
 			}
 		});
 		return false;
+	},
+
+	timerExecLoadFunction: function (param, result) {
+		if(wep._loadCount<0){
+			setTimeout(function(){wep.timerExecLoadFunction(param, result);},200);
+			console.log('*');
+		}
+		else
+			wep.execLoadFunction(param, result);
+	},
+
+	// Выполнение функции при полной загрузке
+	execLoadFunction: function (param, result) {
+		//Запуск функции пользователя
+		if(typeof param['call'] != 'undefined' && typeof param['call'] == 'function') {
+			param['call'].call(result);
+		}
+		
+		 // запуск onload функции
+		if(typeof result.onload != 'undefined')  {
+			if(typeof result.onload == 'function')
+				result.onload.call(result);
+			else if(result.onload!='') {
+				eval(result.onload);
+			}
+		}
 	},
 
 	fShowload: function(show,body,txt,objid,onclk) {
@@ -510,8 +526,10 @@ var wep = {
 			}
 		}
 	},
-
+	_onLoad: false,
+	_loadCount:0,
 	scriptLoad: function(script) {
+		--wep._loadCount;
 		for(var i in script) {
 			//if(is_string($rr) and $rr[0]=='<')
 			if (i.substr(0, 7) == 'http://')
@@ -519,15 +537,18 @@ var wep = {
 			else
 				var src = wep.BH+wep.HREF_script+i+'.js';
 			if(i && script[i]==1) {
-				$.include(src);
+				--wep._loadCount;
+				$.include(src, function(){++wep._loadCount;});
 			} 
 			else if(typeof script[i] == 'object') {
-				$.include(src, function(){ wep.scriptLoad(script[i]); });
+				--wep._loadCount;
+				$.include(src, function(){ wep.scriptLoad(script[i]); ++wep._loadCount;});
 			}
 			else {
 				eval(script[i]);
 			}
 		}
+		++wep._loadCount;
 	},
 
 	ShowTools: function(id,hrf) {

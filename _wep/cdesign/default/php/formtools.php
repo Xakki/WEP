@@ -16,7 +16,7 @@
 			$html .= tpl_messages($data['messages']);// messages
 		}
 		if(isset($data['form']) and count($data['form'])) {
-			$html = '<span class="bottonimg imgdel" style="float: right;" onclick="$(this).parent().hide();">EXIT</span>'.$html;
+			$html = '<span class="buttonimg imgdel" style="float: right;" onclick="$(this).parent().hide();">EXIT</span>'.$html;
 			include_once($HTML->_cDesignPath.'/php/form.php');
 			$attr = $data['form']['_*features*_'];
 			$html .= '<form id="form_tools_'.$attr['name'].'" method="post" enctype="multipart/form-data" action="'.$attr['action'].'" class="'.(isset($attr['css'])?$attr['css']:'divform').'">';

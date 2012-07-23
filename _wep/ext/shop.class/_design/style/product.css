@@ -122,7 +122,7 @@
 		color:gray;
 	}
 
-	.prodpage .proditem .buybotton {
+	.prodpage .proditem .buybutton {
 		font: bold 1.1em Tahoma, sans-serif;
 		color:white;
 		text-align: center;
@@ -153,10 +153,10 @@
 		-o-box-shadow: inset 0px 1px 0px #2ab7ec, 0px 2px 0px 0px #156785, 0px 6px 5px #999;
 		box-shadow: inset 0px 1px 0px #2ab7ec, 0px 2px 0px 0px #156785, 0px 6px 5px #999;
 	}
-		.prodpage .proditem .buybotton:hover {
+		.prodpage .proditem .buybutton:hover {
 			color:yellow;
 		}
-		.prodpage .proditem .buybotton:active {
+		.prodpage .proditem .buybutton:active {
 			top: 1px;
 			background-image: linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
 			background-image: -o-linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
@@ -169,23 +169,23 @@
 			-o-box-shadow: inset 0px 0px 0px #2ab7ec, 0px 1px 0px 0px #156785, 0px 3px 3px #999;
 			box-shadow: inset 0px 0px 0px #2ab7ec, 0px 1px 0px 0px #156785, 0px 3px 3px #999;
 		}
-		.prodpage .proditem .buybotton a{
+		.prodpage .proditem .buybutton a{
 			text-decoration:none;
 		}
-		.prodpage .proditem .buybotton a:hover {
+		.prodpage .proditem .buybutton a:hover {
 			color:yellow;
 		}
-		.prodpage .proditem .buybotton input{
+		.prodpage .proditem .buybutton input{
 			width:3em;
 		}
 
-		.prodpage .buybotton a.addlink,
-		.prodpage .buybotton.sel a.dellink {
+		.prodpage .buybutton a.addlink,
+		.prodpage .buybutton.sel a.dellink {
 			display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
 		}
 
-		.prodpage .buybotton a.dellink,
-		.prodpage .buybotton.sel a.addlink {
+		.prodpage .buybutton a.dellink,
+		.prodpage .buybutton.sel a.addlink {
 			display:none;
 		}
 
