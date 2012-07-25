@@ -14,7 +14,7 @@
 			$clause =' t1 WHERE t1.id';
 		$this->data = $this->_query($listfields,$clause);
 
-###print($this->SQL->query);
+		//print($this->SQL->query);
 
 		$countfield = $this->data[0]['cnt'];
 

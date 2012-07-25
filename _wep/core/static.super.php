@@ -5,6 +5,8 @@ class static_super {
 	static function modulMenu(&$_this) {//, $row=array()
 
 		$topmenu = array();
+		if(!isset($_this->data[$_this->id]))
+			$_this->id = null;
 
 		if ($_this->_prmModulAdd()) {
 			$t = array('_type' => 'add');
@@ -22,13 +24,13 @@ class static_super {
 
 
 		if ($_this->id) {
-			if(isset($_this->data[$_this->id]))
-				$data = $_this->data;
-			else
-				$data = $_this->_select();
+			//if(isset($_this->data[$_this->id]))
+			$data = $_this->data;
+			//else
+			//	$data = $_this->_select();
 
 			$topmenu['select_'.$_this->_cl ] = array(
-				'href' => array($_this->_cl . '_id' => ''),
+				'href' => array($_this->_cl . '_id' => '', '_type' => 'edit'),
 				'caption' => $_this->caption,
 				'sel' => 0,
 				'type' => 'select',
@@ -178,7 +180,12 @@ class static_super {
 		if ($_this->mf_istree and count($_this->childs) and $_this->id)
 			foreach ($_this->childs as $ck => &$cn) {
 				if (count($cn->fields_form) and $ck != $_this->_cl and $cn->_prmModulShow())
-					$t = array($_this->_cl . '_id' => $_this->id, $_this->_cl . '_ch' => $ck);
+					$t = array(
+						$ck . '_id' => '',
+						'_type' => 'edit', 
+						$_this->_cl . '_ch' => $ck, 
+						$_this->_cl . '_id' => $_this->id, 
+					);
 
 					if ($cn->_prmModulAdd()) {
 						$topmenu['add_' . $ck] = array(

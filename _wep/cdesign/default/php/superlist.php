@@ -77,7 +77,7 @@
 
 				if($r['type']=='select') {
 					$temp_topmenu .= '<span class="caption">'.$r['caption'].'</span> <select class="'.$r['css'].'" title="'.$r['title'].'"';
-					$temp_topmenu .= ' onchange="console.log(this);alert(\''.$firstpath.$href.'\'+this.options[this.selectedIndex].value)"';//return wep.load_href
+					$temp_topmenu .= ' onchange="return wep.load_href(\''.$firstpath.$href.'\'+this.options[this.selectedIndex].value)"';//
 					$temp_topmenu .= '>'.tpl_formSelect($r['list']).'</select>';
 				}
 				else {

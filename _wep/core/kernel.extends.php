@@ -1495,6 +1495,8 @@ abstract class kernel_extends {
 							unset($tp);
 						}
 					}
+					else
+						$parent_id = 0;
 				}
 				//$path[$this->_cl . $parent_id]['name'] = $this->caption.': '.$path[$this->_cl . $parent_id]['name'];
 				$this->data = $first_data;

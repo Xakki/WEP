@@ -62,7 +62,7 @@ function formSelectGenerator($data,$val=NULL,$flag=0,&$openG=false) {
 			}
 
 			if(isset($r['#item#']) and count($r['#item#']))
-				$texthtml .= formSelectGenerator($r['#item#'],$val,++$flag,$openG);//.'&#160;--'
+				$texthtml .= formSelectGenerator($r['#item#'],$val,($flag+1),$openG);//.'&#160;--'
 
 			if(isset($r['#item#']) and count($r['#item#']) and isset($r['#checked#']) and $r['#checked#']==0 and !$flag) {
 				$texthtml .= '</optgroup>'."\n";
