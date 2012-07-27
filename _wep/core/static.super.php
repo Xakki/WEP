@@ -18,25 +18,30 @@ class static_super {
 				'sel' => 0,
 				'type' => 'button',
 				'css' => 'button-add',
-				'is_popup' => true,
+				//'is_popup' => true,
 			);
 		}
 
-
-		if ($_this->id) {
-			//if(isset($_this->data[$_this->id]))
-			$data = $_this->data;
-			//else
-			//	$data = $_this->_select();
-
+		if ($_this->mf_istree) {
+			$t = array($_this->_cl . '_id' => '');
+			//if (!$_this->mf_istree)
+			//	$t['_type'] = 'edit';
 			$topmenu['select_'.$_this->_cl ] = array(
-				'href' => array($_this->_cl . '_id' => '', '_type' => 'edit'),
+				'href' => $t,
 				'caption' => $_this->caption,
 				'sel' => 0,
 				'type' => 'select',
 				'css' => '',
 				'list' => $_this->_forlist($_this->_getCashedList('list'), 0, $_this->id),
 			);
+			//$topmenu['select_'.$_this->_cl ]['caption'] .= ' ('.count($topmenu['select_'.$_this->_cl ]['list']).')';
+		}
+
+		if ($_this->id) {
+			//if(isset($_this->data[$_this->id]))
+			$data = $_this->data;
+			//else
+			//	$data = $_this->_select();
 
 			if($_this->_prmModulEdit($data))
 				$topmenu['edit'] = array(
@@ -45,7 +50,7 @@ class static_super {
 					'sel' => 0,
 					'type' => 'button',
 					'css' => 'button-edit',
-					'is_popup' => true,
+					//'is_popup' => true,
 				);
 
 			if($_this->mf_actctrl and $data[$_this->id][$_this->mf_actctrl])
@@ -138,7 +143,7 @@ class static_super {
 		$t = array('_type' => 'tools', '_func' => 'SuperGroup');
 		$topmenu['SuperGroup'] = array(
 			'href' => $t,
-			'caption' => 'Групповая операция</span><span class="wepSuperGroupCount" title="Кол-во выбранных элементов">' . $sg,
+			'caption' => 'Групповая операция<i title="Кол-во выбранных элементов">'.$sg.'</i>',
 			'title' => 'Групповая операция',
 			'sel' => 0,
 			'type' => 'button',
@@ -162,7 +167,6 @@ class static_super {
 			}
 		}
 
-		$topmenu[] = array('type'=>'split');
 
 		/*if ($_this->owner and count($_this->owner->childs) and $_this->owner->id)
 			foreach ($_this->owner->childs as $ck => &$cn) {
@@ -179,6 +183,7 @@ class static_super {
 
 		if ($_this->mf_istree and count($_this->childs) and $_this->id)
 			foreach ($_this->childs as $ck => &$cn) {
+				$topmenu[] = array('type'=>'split');
 				if (count($cn->fields_form) and $ck != $_this->_cl and $cn->_prmModulShow())
 					$t = array(
 						$ck . '_id' => '',
@@ -187,23 +192,24 @@ class static_super {
 						$_this->_cl . '_id' => $_this->id, 
 					);
 
-					if ($cn->_prmModulAdd()) {
-						$topmenu['add_' . $ck] = array(
-							'href' => $t+array('_type' => 'add'),
-							'caption' => 'Добавить ' . $cn->caption,
-							'sel' => 0,
-							'type' => 'button',
-							'css' => 'button-add'
-						);
-					}
-
-					$topmenu['child' . $ck] = array(
-						'href' => $t,
-						'caption' => $cn->caption . '(' . $cn->getListCount() . ')',
+				if ($cn->_prmModulAdd()) {
+					$topmenu['add_' . $ck] = array(
+						'href' => $t+array('_type' => 'add'),
+						'caption' => 'Добавить ' . $cn->caption,
 						'sel' => 0,
-						'list' => $cn->_forlist($cn->_getCashedList('list'), 0),
-						'type' => 'select',
+						'type' => 'button',
+						'css' => 'button-add'
 					);
+				}
+
+				$topmenu['child' . $ck] = array(
+					'href' => $t,
+					'caption' => $cn->caption ,
+					'sel' => 0,
+					'list' => $cn->_forlist($cn->_getCashedList('list'), 0),
+					'type' => 'select',
+				);
+				$topmenu['child' . $ck]['caption'] .= '(' . count($topmenu['child' . $ck]['list']) . ')';
 			}
 			
 		return $topmenu;

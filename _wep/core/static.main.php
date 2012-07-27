@@ -557,7 +557,8 @@ class static_main {
 			//301 Moved Permanently
 			die('Warning!!! Self redirect for <a href="'.$link.'">'.$link.'</a>');
 		}
-		else*/if($_CFG['wep']['debugmode']<3) {
+		else*/
+		if($_CFG['wep']['debugmode']<3) {
 			if($NO!==false)
 				header('HTTP/1.1 '.$NO);
 			header("Location: ".$link);

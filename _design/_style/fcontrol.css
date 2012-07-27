@@ -40,3 +40,41 @@
 #fcontrol.hidden .fcontrol-text {
 	display: none;
 }
+
+ /*MENU*/
+div.superMenu {
+	padding: 5px 0 0 0;margin: 0;
+	font-size:1.2em;
+	vertical-align: middle;
+}
+
+div.superMenu a {
+	display:inline-block;
+}
+
+
+div.superMenu .split {
+	display:inline-block;
+	margin:0 5px;
+	border-left: 1px solid gray;
+	width:1px;
+	font-size: 1.8em;
+	vertical-align: top;
+}
+
+/* SELECT BUTTONS*/
+div.superMenu .select {
+
+}
+
+div.superMenu .select .caption {
+	display: block;
+	font-size: 11px;
+}
+
+div.superMenu .select select {
+	display: block;
+	font-size: 11px;
+	margin: 0;
+}
+/**************/

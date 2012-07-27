@@ -54,7 +54,8 @@
 		$cssClass='';
 		$DATA = array();
 		$DATA['button'] = array(
-			'config' => 1
+			'config' => 1,
+			'topmenu' => static_super::modulMenu($this),
 		);
 		$html = $HTML->transformPHP($DATA, '#modulprm#fcontrol');
 	}

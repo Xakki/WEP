@@ -582,7 +582,7 @@ abstract class kernel_extends {
 				if(isset($sql['order']) and $sql['order'])
 					$q_order = $sql['order'];
 			}
-			else
+			elseif($sql)
 				$q_where[] = $sql;
 		}
 
@@ -680,6 +680,21 @@ abstract class kernel_extends {
 		return true;
 	}
 
+	public function _select_id_tree(array $id, $format='simple') { // TODO const
+		$list = array();
+		if(!$this->mf_istree or !count($id)) return $list;
+		$result = $this->SQL->execSQL('SELECT id FROM `' . $this->tablename . '` WHERE  '.$this->mf_istree.' IN ('.implode(',',$id).')');
+		while ($row = $result->fetch()) {
+			$list[] = $row['id'];
+		}
+		if(count($list)) {
+			$subList  = $this->_select_id_tree($list);
+			if(count($subList))
+				$list = array_merge($list, $subList);
+		}
+		return $list;
+	}
+
 
 	/**
 	 * Удаление данных
@@ -687,9 +702,11 @@ abstract class kernel_extends {
 	 * @return bool
 	 */
 	public function _delete() {
-		$result = static_form::_delete($this);
-		if ($result)
+		$result = static_form::_delete($this, $this->id);
+		if ($result) {
 			$this->allChangeData('delete');
+			$this->id = NULL;
+		}
 		return $result;
 	}
 
@@ -861,15 +878,19 @@ abstract class kernel_extends {
 	}
 
 	public function _id_as_string() {
-		if (is_array($this->id)) {
-			if(!count($this->id)) return 0;
-			foreach($this->id as &$value)
+		return $this->_as_string($this->id);
+	}
+
+	public function _as_string($list) {
+		if (is_array($list)) {
+			if(!count($list)) return 0;
+			foreach($list as &$value)
 			  $value = $this->SqlEsc($value); 
-			return '\'' . implode('\',\'', $this->id) . '\'';
+			return '\'' . implode('\',\'', $list) . '\'';
 		}
 		else {
-			if(!$this->id) return 0;
-			return '\'' . $this->SqlEsc($this->id) . '\'';
+			if(!$list) return 0;
+			return '\'' . $this->SqlEsc($list) . '\'';
 		}
 	}
 
@@ -1449,7 +1470,7 @@ abstract class kernel_extends {
 
 		$PARAM['path'][$this->_cl] = array(
 			'path' => $PARAM['_clp'],
-			'name' => $this->caption
+			'name' => '<b>'.$this->caption.'</b>'
 		);
 
 		if ($this->id) {
@@ -1458,7 +1479,9 @@ abstract class kernel_extends {
 				$parent_id = $this->id;
 				$this->tree_data = $first_data = $path = array();
 				$listfields = 'id,' . $this->mf_istree . ', ' . $this->_listname . ' as name';
-				$name = $this->caption;
+				if($this->mf_actctrl)
+					$listfields .= ','.$this->mf_actctrl;
+				$name = '<i>Список подуровня</i>';//'.$this->caption.'
 				while ($parent_id) {
 					$clause = 'WHERE id="' . $parent_id . '"';
 					$this->data = $this->_query($listfields, $clause, 'id');
@@ -1573,7 +1596,7 @@ abstract class kernel_extends {
 			}
 
 			// Удаление через форму
-			if (isset($_POST['sbmt_del']) and $this->id) {
+			if (isset($_POST['sbmt_del']) and $this->id and !$ftype) {
 				$ftype = 'del';
 			}
 
@@ -1654,7 +1677,7 @@ abstract class kernel_extends {
 					array_pop($PARAM['path']);
 				list($messages, $flag) = $this->_Del($PARAM);
 				$PARAM['messages'] = array_merge($PARAM['messages'], $messages);
-				if ($this->mf_istree)
+				if ($this->mf_istree and isset($this->tree_data[$this->id]))
 					$this->id = $this->tree_data[$this->id][$this->mf_istree];
 				else
 					$this->id = NULL;
@@ -1815,26 +1838,31 @@ abstract class kernel_extends {
 		elseif (!isset($_COOKIE['SuperGroup'][$this->_cl]) or !count($_COOKIE['SuperGroup'][$this->_cl]))
 			$mess[] = static_main::am('alert', 'Нет выбранных элементов', $this);
 		elseif (count($_POST)) {
+
 			$type = '';
 			if (isset($_POST['sbmt_on'])) {
 				$type = 'on';
 				$this->id = array_keys($_COOKIE['SuperGroup'][$this->_cl]);
 				$this->_update(array('active' => 1));
 				$mess[] = static_main::am('ok', 'Успешно включено', $this);
-			} elseif (isset($_POST['sbmt_off'])) {
+			} 
+			elseif (isset($_POST['sbmt_off'])) {
 				$type = 'off';
 				$this->id = array_keys($_COOKIE['SuperGroup'][$this->_cl]);
 				$this->_update(array('active' => 0));
 				$mess[] = static_main::am('ok', 'Успешно отключено', $this);
-			} elseif (isset($_POST['sbmt_del'])) {
+			} 
+			elseif (isset($_POST['sbmt_del'])) {
 				$type = 'del';
 				$this->id = array_keys($_COOKIE['SuperGroup'][$this->_cl]);
 				$this->_delete();
 				$mess[] = static_main::am('ok', 'Успешно удалено', $this);
-			} elseif (isset($_POST['sbmt_clear'])) {
+			} 
+			elseif (isset($_POST['sbmt_clear'])) {
 				$type = 'clear';
 				$mess[] = static_main::am('ok', 'Список чист', $this);
 			}
+
 			if (count($mess)) {
 				foreach ($_COOKIE['SuperGroup'][$this->_cl] as $ck => $ck)
 					$_tpl['onload'] .= 'setCookie("SuperGroup[' . $this->_cl . '][' . $ck . ']",0,-10000);';
@@ -2165,7 +2193,7 @@ abstract class kernel_extends {
 	public function _Act($act, &$param) {
 		$flag = 1;
 		$DATA = array();
-		if ($param['mess'])
+		if (isset($param['mess']))
 			$DATA = $param['mess'];
 		$param['act'] = $act;
 		$this->data = $this->_select();
@@ -2226,7 +2254,7 @@ abstract class kernel_extends {
 				}else
 					$DATA[] = static_main::am('error', 'del_err', $this);
 			}else {
-				if ($this->_delete($data)) {
+				if ($this->_delete()) {
 					$DATA[] = static_main::am('ok', 'deleted', $this);
 					$flag = 0;
 				}else

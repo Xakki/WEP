@@ -181,54 +181,6 @@
 					}
 				}
 				elseif($r['type']=='ckedit') {
-					//http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.config.html
-					$ckedit = $r['paramedit'];
-					if(!isset($ckedit['skin']))
-						$ckedit['skin']='\'kama\'';
-					if(!isset($ckedit['width']))
-						$ckedit['width'] = '\'100%\'';
-					if(!isset($ckedit['height']))
-						$ckedit['height'] = '450';
-					if(!isset($ckedit['toolbarStartupExpanded']))
-						$ckedit['toolbarStartupExpanded']='true';
-					if(!isset($ckedit['baseHref']))
-						$ckedit['baseHref'] = '\''.$this->_CFG['_HREF']['BH'].'\'';
-					if(isset($ckedit['toolbar'])) {
-						if(isset($this->_CFG['ckedit']['toolbar'][$ckedit['toolbar']]))
-							$ckedit['toolbar'] = $this->_CFG['ckedit']['toolbar'][$ckedit['toolbar']];
-						else
-							$ckedit['toolbar'] = '\''.$ckedit['toolbar'].'\'';
-					} else
-						$ckedit['toolbar'] = $this->_CFG['ckedit']['toolbar']['Full'];
-					if(!isset($ckedit['uiColor']))
-						$ckedit['uiColor'] = '\'#9AB8F3\'';
-					if(!isset($ckedit['language']))
-						$ckedit['language'] = '\'ru\'';
-					if(!isset($ckedit['enterMode']))
-						$ckedit['enterMode'] = 'CKEDITOR.ENTER_BR';
-					if(!isset($ckedit['shiftEnterMode']))
-						$ckedit['shiftEnterMode'] = 'CKEDITOR.ENTER_P';
-					$ckedit['autoUpdateElement'] = 'true';
-
-					global $_tpl;
-					$_tpl['script']['ckeditor.js'] = array($this->_CFG['_HREF']['WSWG'].'ckeditor/ckeditor.js');
-					$fckscript = 'function cke_'.$k.'() { if(typeof CKEDITOR.instances.id_'.$k.' == \'object\'){CKEDITOR.instances.id_'.$k.'.destroy(true);} editor_'.$k.' = CKEDITOR.replace( \'id_'.$k.'\',{';
-					foreach($ckedit as $kc=>$rc)
-						$fckscript .= $kc.' : '.$rc.',';
-					$fckscript .= '\'temp\' : \'temp\' });';
-
-					if(isset($ckedit['CKFinder'])) {
-						$fckscript = ' function ckf_'.$k.'() { CKFinder.setupCKEditor(editor_'.$k.',\'/'.$this->_CFG['PATH']['WSWG'].'ckfinder/\');} '.$fckscript;
-						$fckscript .= ' ckf_'.$k.'();';
-//if(!CKFinder) $.include(\''.$this->_CFG['_HREF']['WSWG'].'ckfinder/ckfinder.js\',ckf_'.$k.'()); else 
-						$_tpl['script']['ckfinder.js'] = array($this->_CFG['_HREF']['WSWG'].'ckfinder/ckfinder.js');
-						if(isset($ckedit['CKFinder']['allowedExtensions']) and $_SESSION)
-							$_SESSION['wswg']['AE'] = $ckedit['CKFinder']['allowedExtensions'];
-					}
-					$_tpl['script']['ckeditor.ckf_'.$k] = $fckscript.'}';
-					if(!isset($fields[$k.'_ckedit']['value']) or $fields[$k.'_ckedit']['value']=='' or $fields[$k.'_ckedit']['value']=='1')
-						$_tpl['onload'] .= ' cke_'.$k.'();';
-//if(!window.CKEDITOR) $.include(\''.$this->_CFG['_HREF']['WSWG'].'ckeditor/ckeditor.js\',cke_'.$k.'); else 
 
 				}
 				elseif($k=='mf_ipcreate') {

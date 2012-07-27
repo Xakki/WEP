@@ -286,9 +286,9 @@ class content_class extends kernel_extends {
 		}
 		else
 			$fl = false;
-		$file = file_get_contents($flagPG);
 		//Проверяем есть ли в коде флексформа
-		if (strpos($file, '$ShowFlexForm') !== false) {
+		$fi = $this->getDocFileInfo($flagPG);
+		if ($fi['ShowFlexForm']) {
 			$ShowFlexForm = true;
 			$tempform = include($flagPG);
 			if (is_array($tempform) and count($tempform)) {

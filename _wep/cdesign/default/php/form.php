@@ -140,7 +140,57 @@ function tpl_form(&$data, $tabs = array()) {
 				$texthtml .= '<div class="form-value"><textarea name="'.$k.'" onkeyup="textareaChange(this)" rows="10" cols="80" '.$attribute.'>'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
 			}
 			elseif($r['type']=='ckedit') {
+				$_tpl['script'][$_CFG['_HREF']['WSWG'].'ckeditor/ckeditor.js'] = 1;
+
 				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
+
+				//http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.config.html
+					$ckedit = $r['paramedit'];
+					if(!isset($ckedit['skin']))
+						$ckedit['skin']='\'kama\'';
+					if(!isset($ckedit['width']))
+						$ckedit['width'] = '\'100%\'';
+					if(!isset($ckedit['height']))
+						$ckedit['height'] = '450';
+					if(!isset($ckedit['toolbarStartupExpanded']))
+						$ckedit['toolbarStartupExpanded']='true';
+					if(!isset($ckedit['baseHref']))
+						$ckedit['baseHref'] = '\''.$_CFG['_HREF']['BH'].'\'';
+					if(isset($ckedit['toolbar'])) {
+						if(isset($_CFG['ckedit']['toolbar'][$ckedit['toolbar']]))
+							$ckedit['toolbar'] = $_CFG['ckedit']['toolbar'][$ckedit['toolbar']];
+						else
+							$ckedit['toolbar'] = '\''.$ckedit['toolbar'].'\'';
+					} else
+						$ckedit['toolbar'] = $_CFG['ckedit']['toolbar']['Full'];
+					if(!isset($ckedit['uiColor']))
+						$ckedit['uiColor'] = '\'#9AB8F3\'';
+					if(!isset($ckedit['language']))
+						$ckedit['language'] = '\'ru\'';
+					if(!isset($ckedit['enterMode']))
+						$ckedit['enterMode'] = 'CKEDITOR.ENTER_BR';
+					if(!isset($ckedit['shiftEnterMode']))
+						$ckedit['shiftEnterMode'] = 'CKEDITOR.ENTER_P';
+					$ckedit['autoUpdateElement'] = 'true';
+
+					$fckscript = 'function cke_'.$k.'() { if(typeof CKEDITOR.instances.id_'.$k.' == \'object\'){CKEDITOR.instances.id_'.$k.'.destroy(true);} editor_'.$k.' = CKEDITOR.replace( \'id_'.$k.'\',{';
+					foreach($ckedit as $kc=>$rc)
+						$fckscript .= $kc.' : '.$rc.',';
+					$fckscript .= '\'temp\' : \'temp\' });';
+
+					if(isset($ckedit['CKFinder'])) {
+						$_tpl['script'][$_CFG['_HREF']['WSWG'].'ckfinder/ckfinder.js'] = 1;
+
+						$fckscript = ' function ckf_'.$k.'() { CKFinder.setupCKEditor(editor_'.$k.',\'/'.$_CFG['PATH']['WSWG'].'ckfinder/\');} '.$fckscript;
+						$fckscript .= ' ckf_'.$k.'();';
+						
+						if(isset($ckedit['CKFinder']['allowedExtensions']) and $_SESSION)
+							$_SESSION['wswg']['AE'] = $ckedit['CKFinder']['allowedExtensions'];
+					}
+					$fckscript .= '}';
+					//if(!isset($fields[$k.'_ckedit']['value']) or $fields[$k.'_ckedit']['value']=='' or $fields[$k.'_ckedit']['value']=='1')
+						$_tpl['onload'] .= $fckscript.' cke_'.$k.'();';
+
 				$texthtml .= '<div class="form-value ckedit-value"><textarea id="id_'.$k.'" name="'.$k.'" rows="10" cols="80" '.$attribute.'>'.htmlspecialchars((string)$r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
 			}
 			elseif($r['type']=='radio') {

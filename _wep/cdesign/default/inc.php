@@ -14,14 +14,11 @@
 	$_tpl['script']['wep'] = 1;
 	$_tpl['script']['script.jquery/form'] = 1;
 
-	$_tpl['script']['design'] = array(
-		$_tpl['design'].'script/main.js'
-	);
+	$_tpl['script'][$_tpl['design'].'script/main.js'] = 1;
 
+	$_tpl['styles']['button'] = 1;
 	$_tpl['styles']['main'] = 1;
-	$_tpl['styles']['design'] = array(
-		$_tpl['design'].'style/main.css'
-	);
+	$_tpl['styles'][$_tpl['design'].'style/main.css'] = 1;
 
 	$_tpl['modulstree']=$eval='';
 
@@ -79,15 +76,22 @@
 					if(isset($DATA['formcreat']['form']['_*features*_'])) {
 						$DATA['formcreat']['form']['_*features*_']['prevhref'] = $prevhref;
 					}
-							
+
 					if(isset($DATA['formcreat']['form']) and $flag==1 and !count($DATA['formcreat']['form'])) {
 						$_SESSION['mess']=$DATA['formcreat']['messages'];
-						static_main::redirect($prevhref);
+						/*if($_SERVER['HTTP_REFERER'])
+							static_main::redirect($_SERVER['HTTP_REFERER']);
+						else*/
+							static_main::redirect($prevhref);
 					}
 					elseif(!isset($DATA['formcreat']) and $flag!=3) {
+						// После успешного удаления
 						$_SESSION['mess']=$DATA['messages'];
 						end($DATA['path']);
-						static_main::redirect($_CFG['_HREF']['BH'].str_replace("&amp;", "&", key($DATA['path'])));
+						if($_SERVER['HTTP_REFERER'])
+							static_main::redirect($_SERVER['HTTP_REFERER']);
+						else
+							static_main::redirect($_CFG['_HREF']['BH'].str_replace("&amp;", "&", key($DATA['path'])));
 					}
 					else {
 						if(!isset($_SESSION['mess']) or !is_array($_SESSION['mess']))

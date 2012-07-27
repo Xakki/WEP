@@ -46,6 +46,8 @@
 		}
 		else {
 			$html .= tpl_data($data['data'], $data['firstpath'].http_build_query($data['_clp']).'&');// messages
+			if(!isset($data['data']['item']) or count($data['data']['item'])<8)
+				$temp_topmenu = '';
 		}
 
 		$html .= $temp_topmenu; //MENU
@@ -73,23 +75,23 @@
 				$href =  array_reverse($r['href']+$httpQuery);
 				$href = http_build_query($href);
 				
-				$temp_topmenu .= '<div class="'.$r['type'].($r['sel']?' selected':'').'" style="'.$r['style'].'">';
+				$temp_topmenu .= '<a class="'.$r['type'].($r['sel']?' selected':'').'" style="'.$r['style'].'"';
 
 				if($r['type']=='select') {
-					$temp_topmenu .= '<span class="caption">'.$r['caption'].'</span> <select class="'.$r['css'].'" title="'.$r['title'].'"';
-					$temp_topmenu .= ' onchange="return wep.load_href(\''.$firstpath.$href.'\'+this.options[this.selectedIndex].value)"';//
+					$temp_topmenu .= ' onclick="return false;"><span class="caption">'.$r['caption'].'</span> <select class="'.$r['css'].'" title="'.$r['title'].'"';
+					$temp_topmenu .= ' onchange="return wep.load_href(\''.$firstpath.$href.'\'+this.options[this.selectedIndex].value)"';
 					$temp_topmenu .= '>'.tpl_formSelect($r['list']).'</select>';
 				}
 				else {
-					$temp_topmenu .= '<span class="'.$r['css'].'" title="'.$r['title'].'"';
+					//$temp_topmenu .= ' onclick="return wep.load_href(\''.$firstpath.$href.'\')"';
+					$temp_topmenu .= ' href="'.$firstpath.$href.'"';
 					if(isset($r['is_popup']) and $r['is_popup'])
-						$temp_topmenu .= ' onclick="return ShowTools(\'tools_block\',\''.$_CFG['_HREF']['wepJS'].'?_view=list&'.$href.'\')"';
-					else
-						$temp_topmenu .= ' onclick="return wep.load_href(\''.$firstpath.$href.'\')"';
+						$temp_topmenu .= ' onclick="return ShowTools(\''.$_CFG['_HREF']['wepJS'].'?_view=list&'.$href.'\')"';//, \'tools_block\'
+					$temp_topmenu .= '><span class="'.$r['css'].'" title="'.$r['title'].'"';
 					$temp_topmenu .= '>'.$r['caption'].'</span>';
 				}
 
-				$temp_topmenu .= '</div>';
+				$temp_topmenu .= '</a>';
 			}
 		}
 		return $temp_topmenu;

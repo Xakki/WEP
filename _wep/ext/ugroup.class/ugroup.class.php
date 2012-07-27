@@ -148,7 +148,7 @@ class ugroup_class extends kernel_extends
 		}
 	}
 
-	function _getlist(&$listname,$value=0) {
+	function _getlist($listname,$value=0) {
 		$data = array();
 		if ($listname == 'glist') {
 			$result = $this->SQL->execSQL('SELECT id, '.$this->mf_namefields.' FROM '.$this->tablename);

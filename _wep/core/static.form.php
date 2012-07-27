@@ -378,29 +378,28 @@ class static_form {
 	 * this->id
 	 * @return bool - результат операции 
 	 */
-	public static function _delete(&$_this) {
-		if (!is_array($_this->id)) $_this->id = array($_this->id);
-		if (!count($_this->id)) return true;
+	public static function _delete(&$_this, $id) {
+		if (!is_array($id)) $id = array($id);
+		if (!count($id)) return false;
+
+		// delete childs of tree
+		if ($_this->mf_istree) {
+			$id = self::_delete_parented($_this, $id);
+		}
+
 		// delete childs of owner
 		if (count($_this->childs)) {
 			foreach($_this->childs as &$child){
-				$child->id = $_this->id;
-				if (!self::_delete_ownered($child)) return false;
+				if (!self::_delete_ownered($child, $id)) return false;
 			}
 			unset($child);
 		}
-		// delete childs of tree
-		if ($_this->mf_istree) {
-			$id = $_this->id;
-			if (!self::_delete_parented($_this)) return false;
-			$_this->id = $id;
-		}
-		if (!self::_delete_attaches($_this)) return false;
-		if (!self::_delete_memos($_this)) return false;
-		if (!self::_delete_fields($_this)) return false;
 
-		if ($_this->mf_indexing) $_this->deindexing();
-		$_this->id = NULL;
+		if (!self::_delete_attaches($_this, $id)) return false;
+		if (!self::_delete_memos($_this, $id)) return false;
+		if (!self::_delete_fields($_this, $id)) return false;
+
+		//if ($_this->mf_indexing) $_this->deindexing($id);
 		return true;
 	}
 
@@ -408,16 +407,16 @@ class static_form {
 	 * Удаление дочерних данных из БД
 	 * Вспомогательная функция
 	 */
-	private static function _delete_ownered(&$_this) {
+	private static function _delete_ownered(&$child, array $id) {
 		// select record ids to delete
-		$result=$_this->SQL->execSQL('SELECT id FROM `'.$_this->tablename.'` WHERE `'.$_this->owner_name.'` IN ('.$_this->_id_as_string().')');
+		$result=$child->SQL->execSQL('SELECT id FROM `'.$child->tablename.'` WHERE `'.$child->owner_name.'` IN ('.$child->_as_string($id).')');
 		if($result->err) return false;
 		// create list
-		$_this->id = array();
-		while (list($id) = $result->fetch_row()) 
-			$_this->id[] = $id;
+		$idChild = array();
+		while (list($k) = $result->fetch_row()) 
+			$idChild[] = $k;
 		// if list not empty
-		if (count($_this->id)) $_this->_delete();
+		if (count($idChild)) self::_delete($child, $idChild);
 		return true;
 	}
 
@@ -425,28 +424,22 @@ class static_form {
 	 * Удаление всех родителей даных
 	 * Вспомогательная функция
 	 */
-	private static function _delete_parented(&$_this) {
+	private static function _delete_parented(&$_this, array $id) {
 		// select record ids to delete
-		$result=$_this->SQL->execSQL('SELECT id FROM `'.$_this->tablename.'` WHERE `parent_id` IN ('.$_this->_id_as_string().')');
-		if($result->err) return false;
+		$data = $_this->_select_id_tree($id);
 
-		// create list
-		$_this->id = array();
-		while (list($id) = $result->fetch_row())
-			$_this->id[] = $id;
-
-		// if list not empty
-		if (count($_this->id)) $_this->_delete();
-		return true;
+		if(count($data))
+			$id = array_merge($id, $data);
+		return $id;
 	}
 
 	/**
 	 * Удаление данных из БД
 	 * Вспомогательная функция
 	 */
-	private static function _delete_fields(&$_this) {
+	private static function _delete_fields(&$_this, array $id) {
 		// delete records
-		$result=$_this->SQL->execSQL('DELETE FROM `'.$_this->tablename.'` WHERE `id` IN ('.$_this->_id_as_string().')');
+		$result=$_this->SQL->execSQL('DELETE FROM `'.$_this->tablename.'` WHERE `id` IN ('.$_this->_as_string($id).')');
 		if($result->err) return false;
 		return true;
 	}
@@ -455,9 +448,9 @@ class static_form {
 	 * Удаление фаилов 
 	 * Вспомогательная функция
 	 */
-	private static function _delete_attaches(&$_this) {
+	private static function _delete_attaches(&$_this, array $id) {
 		if (!count($_this->attaches)) return true;
-		$result=$_this->SQL->execSQL('SELECT `id`, `'.implode('`,`', array_keys($_this->attaches)).'` FROM `'. $_this->tablename.'` WHERE `id` IN ('.$_this->_id_as_string().')');
+		$result=$_this->SQL->execSQL('SELECT `id`, `'.implode('`,`', array_keys($_this->attaches)).'` FROM `'. $_this->tablename.'` WHERE `id` IN ('.$_this->_as_string($id).')');
 		if($result->err) return false;
 
 		while ($row = $result->fetch()) {
@@ -489,12 +482,12 @@ class static_form {
 	 * Удаление memo фаилов 
 	 * Вспомогательная функция
 	 */
-	private static function _delete_memos(&$_this) {
+	private static function _delete_memos(&$_this, array $id) {
 		if (!count($_this->memos)) return true;
-		foreach($_this->id as $id) {
+		foreach($id as $k) {
 			foreach($_this->memos as $key => $value) {
 				$pathimg = $_this->getPathForMemo($key);
-				$f = $pathimg.'/'.$id.$_this->text_ext;
+				$f = $pathimg.'/'.$k.$_this->text_ext;
 				if (file_exists($f))
 					if (!unlink($f)) return $_this->_error('Cannot delete memo `'.$f.'`',1);
 			}

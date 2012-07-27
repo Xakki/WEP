@@ -86,7 +86,7 @@ class shopbasket_class extends kernel_extends {
 
 	}
 
-	function _getlist(&$listname, $value = 0) {
+	function _getlist($listname, $value = 0) {
 		$data = array();
 		if ($listname == 'paytype') {
 			_new_class('pay',$PAY);

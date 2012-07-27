@@ -143,9 +143,9 @@ var wep = {
 
 				if(param['fade']) { //Если включено затемнение
 					if(param['fadeOff']) { // Убираем затемнение
-						if(param['timeBG'])
+						if(param['timeBG'])// Если  таймер затемения ещё не сработал, то откл таймер
 							clearTimeout(param['timeBG']);// Чистим таймер и тем самым затеменение не отобразиться
-						else
+						else // иначе убираем его сами
 							wep.fShowload(0,false,false,param['fade']);
 					}
 				}
@@ -180,11 +180,13 @@ var wep = {
 
 	timerExecLoadFunction: function (param, result) {
 		if(wep._loadCount<0){
-			setTimeout(function(){wep.timerExecLoadFunction(param, result);},200);
-			console.log('*');
+			setTimeout(function(){wep.timerExecLoadFunction(param, result);},500);
+			console.log('--in process--'+wep._loadCount);
 		}
-		else
+		else {
 			wep.execLoadFunction(param, result);
+			console.log('--READY--'+wep._loadCount);
+		}
 	},
 
 	// Выполнение функции при полной загрузке
@@ -242,6 +244,11 @@ var wep = {
 		}
 		return false;
 	},
+
+	/*fShowloadReload: function() {
+		$('#ajaxload .blockclose').click(function(){window.location.reload();});
+	},*/
+
 	showBG: function(body,show,k) {
 		if(!body) body='body';
 		if(!show){
@@ -371,11 +378,11 @@ var wep = {
 		var Hblock= FC[0].scrollHeight;
 		if(typeof Hblock == 'undefined') return;
 		var hh=Math.round((H-Hblock)/2);
-		if(hh<5) hh=5;
+		if(hh<5) hh=20;
 		var W=document.documentElement.clientWidth;
 		var Wblock= FC[0].scrollWidth;
 		var ww=Math.round((W-Wblock)/2);
-		if(ww<5) ww=5;
+		if(ww<5) ww=10;
 		jQuery(body+obj).css({'top':hh+'px','left':ww+'px'});
 		if(Hblock>H) {
 			Hblock = H;
@@ -536,6 +543,7 @@ var wep = {
 				var src = i;
 			else
 				var src = wep.BH+wep.HREF_script+i+'.js';
+
 			if(i && script[i]==1) {
 				--wep._loadCount;
 				$.include(src, function(){++wep._loadCount;});
@@ -551,13 +559,17 @@ var wep = {
 		++wep._loadCount;
 	},
 
-	ShowTools: function(id,hrf) {
+	ShowTools: function(hrf,id) {
 		/*Панель инструментов модуля(фильтр, статистика, обновление таблицы итп)*/
-		jQuery('#'+id).show();
 		if(typeof hrf=='object')
 			_last_load = jQuery(hrf).attr('href');
-		JSWin({'href':hrf,'insertObj':'#'+id});
-
+		var param = {'href':hrf};
+		if(typeof id !== 'undefined') {
+			jQuery('#'+id).show();
+			param['insertObj']  = '#'+id;
+		} else
+			param['onclk']='reload';	
+		JSWin(param);
 		return false;
 	},
 	readyPlot: function(options) {
@@ -761,20 +773,20 @@ var wep = {
 
 	SuperGroup: function(obj) {
 		$('#tools_block').hide("slow");
-		var sg = parseInt($('span.wepSuperGroupCount:first').text());
+		var sg = parseInt($('span.button-SuperGroup i:first').text());
 		if(obj.checked) {
 			setCookie(obj.name,1,1);
 			sg++;
-			$('span.wepSuperGroupCount').text(sg);
+			$('span.button-SuperGroup i').text(sg);
 			if(sg>0)
-				$('span.wepSuperGroupCount').parent().show("slow");
+				$('span.button-SuperGroup').parent().show("slow");
 		}
 		else {
 			setCookie(obj.name,0,-1000);
 			sg--;
-			$('span.wepSuperGroupCount').text(sg);
+			$('span.button-SuperGroup i').text(sg);
 			if(sg<1)
-				$('span.wepSuperGroupCount').parent().hide("slow");
+				$('span.button-SuperGroup').parent().hide("slow");
 		}
 	},
 	SuperGroupClear: function(type) {
@@ -965,7 +977,8 @@ function ulToggle(obj,css) {
 /*simple script*/
 
 function setCookie(name, value, expiredays, path, domain, secure) {
-   return wep.setCookie(name, value, expiredays, path, domain, secure);
+	if(!path) path = '/';
+	return wep.setCookie(name, value, expiredays, path, domain, secure);
 }
 
 function getCookie(name) {
