@@ -518,7 +518,7 @@ var wep = {
 	cssLoad: function(css) {
 		for(var i in css) {
 			//if(is_string($rr) and $rr[0]=='<')
-			if (i.substr(0, 7) == 'http://')
+			if (i.substr(0, 4) == 'http')
 				var src = i;
 			else
 				var src = wep.BH+wep.HREF_style+i+'.css';
@@ -533,28 +533,39 @@ var wep = {
 			}
 		}
 	},
+
 	_onLoad: false,
 	_loadCount:0,
 	scriptLoad: function(script) {
+		//console.log(script);
 		--wep._loadCount;
-		for(var i in script) {
-			//if(is_string($rr) and $rr[0]=='<')
-			if (i.substr(0, 7) == 'http://')
-				var src = i;
-			else
-				var src = wep.BH+wep.HREF_script+i+'.js';
+		if(typeof script == 'object') {
+			for(var i in script) {
+				//if(is_string($rr) and $rr[0]=='<')
+				if (i.substr(0, 4) == 'http')
+					var src = i;
+				else
+					var src = wep.BH+wep.HREF_script+i+'.js';
 
-			if(i && script[i]==1) {
-				--wep._loadCount;
-				$.include(src, function(){++wep._loadCount;});
-			} 
-			else if(typeof script[i] == 'object') {
-				--wep._loadCount;
-				$.include(src, function(){ wep.scriptLoad(script[i]); ++wep._loadCount;});
+				if(i && script[i]==1) {
+					--wep._loadCount;
+					$.include(src, function(){++wep._loadCount;});
+				} 
+				else if(typeof script[i] == 'object') {
+					--wep._loadCount;
+					$.include(src, function(){ wep.scriptLoad(script[i]); ++wep._loadCount;});
+				}
+				else if (script[i].substr(0, 4) == 'http') {
+					--wep._loadCount;//console.log(' -* '+ script[i]);
+					$.include(script[i], function(){++wep._loadCount;console.log(' ***** '+ script[i]);});
+				}
+				else if(script[i]) {
+					eval(script[i]);
+				}
 			}
-			else {
-				eval(script[i]);
-			}
+		} 
+		else {
+			eval(script);
 		}
 		++wep._loadCount;
 	},
@@ -572,6 +583,7 @@ var wep = {
 		JSWin(param);
 		return false;
 	},
+
 	readyPlot: function(options) {
 		var settings = {
 			idObj : 'statschart1',
@@ -593,17 +605,20 @@ var wep = {
 			animateReplot: true,
 			axes: {
 				xaxis:{label:settings.xName, renderer:$.jqplot.DateAxisRenderer},
-				yaxis:{label:settings.yName, min:0, tickOptions:{formatString:'%d'}, useSeriesColor:true }
+				yaxis:{label:settings.yName, min:0, tickOptions:{formatString:'%d'}, autoscale:false, useSeriesColor:true }
 			},
 			highlighter: {
 				show: true,
 				sizeAdjust: 7
 			},
-			cursor:{show: false},
+			cursor:{show: true, zoom: true},
+			series:[{lineWidth:4, markerOptions:{style:'square'}}]
 		});
 
 		plot2 = $.jqplot('statschart2', [line1], {
 			title: settings.caption,
+			animate: true,
+			animateReplot: true,
 			seriesDefaults:{neighborThreshold:0, showMarker: false},
 			axes: {
 				xaxis:{label:settings.xName, renderer:$.jqplot.DateAxisRenderer},
@@ -616,6 +631,7 @@ var wep = {
       
 		$.jqplot.Cursor.zoomProxy(plot1, plot2);
 	},
+
 	pagenum_super: function(total,pageCur,cl,order) {
 		if(!order) order = false;
 		if(total>20) {
@@ -739,6 +755,7 @@ var wep = {
 			clip.glue(obj);
 		});
 	},
+
 	iSortable : function() {// сортировка
 		$.include('/_design/_script/script.jquery/jquery-ui.js',function() {
 			$('table.superlist>tbody').sortable({

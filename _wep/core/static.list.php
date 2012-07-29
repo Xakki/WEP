@@ -1,5 +1,120 @@
 <?php
-	function _getlist($_this,&$listname, $value=NULL) /*LIST SELECTOR*/
+class static_list {
+
+	/**
+	 * проверка выбранных данных из списка
+	 * @param mixed $listname - название списока или массив данных для списка
+	 * @param mixed $value - значение
+	 * @return array Список
+	 */
+	static function _checkList($_this, &$listname, $value = NULL) {
+
+		$templistname = $listname;
+		if (is_array($listname))
+			$templistname = implode(',', $listname);
+
+		if (!isset($_this->_CFG['enum_check'][$templistname])) {
+
+			if (!isset($_this->_CFG['enum'][$templistname])) {
+				$data = &$_this->_getCashedList($listname); // , $value
+				//$_this->_CFG['enum'][$templistname]
+			} else
+				$data = &$_this->_CFG['enum'][$templistname];
+
+			if (!is_array($data) or !count($data))
+				return false;
+
+			$temp2 = array();
+			$temp = current($data);
+
+			// Скорее всего вскоре этот блок будет лишним , 
+			// по идее _checkList всегжа жолжен иметь $value
+			// и _getCashedList выдает готовый рез-тат
+			if (is_array($temp) and !isset($temp['#name#'])) {
+				foreach ($data as $krow => $row) {
+					if (isset($temp2[$krow])) {
+						if (is_array($temp2[$krow]))
+							$adname = $temp2[$krow]['#name#'];
+						else
+							$adname = $temp2[$krow];
+						foreach ($row as $kk => $rr) {
+							if(is_array($rr)) {
+								if(isset($rr['#name#']))
+									$rr = $rr['#name#'];
+								else
+									$rr = implode(' / ',$rr);
+							}
+							$row[$kk] = $adname . ' - ' . $rr;
+						}
+						if (is_array($temp2[$krow]) and isset($temp2[$krow]['#checked#']))
+							unset($temp2[$krow]);
+					}
+					$temp2 += $row;
+				}
+				$temp = &$temp2;
+			}else
+				$temp = &$data;
+			if (is_null($value))// не кешируем если задано значение и  or !is_array($listname) $listname - выборка из БД(в массиве)
+				$_this->_CFG['enum_check'][$templistname] = $temp;
+		}else
+			$temp = &$_this->_CFG['enum_check'][$templistname];
+
+		if (is_array($value)) {
+			$return_value = array();
+			foreach ($value as $r) {
+				if (isset($temp[$r]))
+					$return_value[] = $temp[$r];
+			}
+			if (count($return_value) == count($value))
+				return $return_value;
+		}
+		elseif (isset($temp[$value])) {
+			return $temp[$value];
+		}
+		return false;
+	}
+
+	/**
+	 * Получение списка из кеша если он там есть
+	 * @param mixed $listname - название списока или массив данных для списка
+	 * @param mixed $value - значение
+	 * @return array Список
+	 */
+	static function &_getCashedList($_this, $listname, $value = NULL) {
+		$data = array();
+		$templistname = $listname;
+		if (is_array($listname))
+			$templistname = implode(',', $listname);
+		$templistname = $_this->_cl.'_'.$templistname;
+
+		if (!is_null($value)) { // не кешируем если задано $value и $listname - выборка из таблиц(задается массивом)
+			$data = $_this->_getlist($listname, $value);
+
+			// VALUE
+			if (!is_array($value))
+				$tvalue = array($value => $value);
+			else
+				$tvalue = array_combine($value, $value);
+
+			$new = array();
+			if (!is_array(current($data)))
+				$data = array_intersect_key($data, $tvalue);
+			else {
+				$tdata = array();
+				foreach ($data as $r) {
+					$tdata += array_intersect_key($r, $tvalue);
+				}
+				$data = $tdata;
+			}
+			return $data;
+		}
+		elseif (!isset($_this->_CFG['enum'][$templistname]))
+			$_this->_CFG['enum'][$templistname] = $_this->_getlist($listname, $value);
+
+		return $_this->_CFG['enum'][$templistname];
+	}
+
+	static function &_getlist($_this, &$listname, $value=NULL) /*LIST SELECTOR*/
 	{
 		/*Выдает 1 уровневый массив, либо 2х уровневый для структуры типа дерева*/
 		/*Конечный уровень может быть с елемнтами массива #name# итп, этот уровень в счет не входит*/
@@ -197,7 +312,7 @@
 			$q_where = array();
 			$q_order = '';
 			
-			$name = 'id, `' . $_this->_listname . '` as name';
+			$name = 'id, ' . $_this->_listname . ' as name';
 			if ($_this->mf_istree)
 				$name .= ', ' . $_this->mf_istree;
 		
@@ -370,3 +485,5 @@
 
 		return $data;
 	}
+
+}

@@ -74,7 +74,7 @@
 			'.$importInc.'
 		</div>';
 
-		$_tpl['script']['loginza'] = array('http://loginza.ru/js/widget.js');
+		$_tpl['script']['loginza'] = 'http://loginza.ru/js/widget.js';
 	}
 
 	return $html;

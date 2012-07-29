@@ -111,9 +111,7 @@
 		if(isset($_tpl['script']) and is_array($_tpl['script'])) {
 
 			foreach($_tpl['script'] as $kk=>$rr) {
-				if(is_string($rr) and $rr[0]=='<')
-					$temp .= $rr."\n";
-				elseif(is_array($rr))
+				if(is_array($rr))
 					$temp .= '<script type="text/javascript" src="'.implode('"></script>'."\n".'<script type="text/javascript" src="',$rr).'"></script>'."\n";
 				elseif($rr==1 and $kk) {
 					if(substr($kk,0,7)=='http://')
@@ -122,8 +120,12 @@
 						$src = $_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].$kk.'.js'.$solt;
 					$temp .= '<script type="text/javascript" src="'.$src.'"></script>'."\n";
 				}
+				elseif(substr($rr,0,7)=='http://')
+					$temp .= '<script type="text/javascript" src="'.$rr.'"></script>'."\n";
+				elseif(substr($rr,0,7)=='<script')
+					$temp .= $rr."\n";
 				else
-					$temp .= "<script type=\"text/javascript\">".$kk."//<!--\n".$rr."\n//--></script>\n";
+					$temp .= "<script type=\"text/javascript\">\n//<!--\n".$rr."\n//-->\n</script>\n";
 			}
 		}
 		if(strpos($temp,'jquery')!==false and !isset($_tpl['script']['include']))

@@ -299,10 +299,10 @@ class static_tools {
 			}
 			var plotScript = {
 				\'script.jquery/jqplot/jquery.jqplot.min\' : {
-					\'script.jquery/jqplot/plugins/jqplot.ohlcRenderer.min\' : {
-						\'script.jquery/jqplot/plugins/jqplot.cursor.min\': {
-							\'script.jquery/jqplot/plugins/jqplot.dateAxisRenderer.min\': {
-								\'script.jquery/jqplot/plugins/jqplot.highlighter.min\': \'jqplot();\'
+					\'script.jquery/jqplot/plugins/jqplot.cursor.min\' : {
+						\'script.jquery/jqplot/plugins/jqplot.dateAxisRenderer.min\': {
+							\'script.jquery/jqplot/plugins/jqplot.highlighter.min\': {
+								\'script.jquery/jqplot/plugins/jqplot.ohlcRenderer.min\': {\'onload\':\'jqplot();\'}
 							}
 						}
 					}
@@ -318,8 +318,8 @@ class static_tools {
 		if (count($filtr[0]))
 			$html .= 'Результат статистики выводится по фильтру<br/>';
 		$html .= '
-	<div id="statschart1" data-height="380px" data-width="100%" style="margin-top:10px; margin-left:10px;"></div>
-	<div id="statschart2" data-height="150px" data-width="100%" style="margin-top:10px; margin-left:10px;"></div>
+	<div id="statschart1" data-height="380px" data-width="100%" style="margin-top:10px; margin-left:10px;min-width:1200px;width:100%;"></div>
+	<div id="statschart2" data-height="150px" data-width="100%" style="margin-top:10px; margin-left:10px;width:100%;"></div>
 	<style>
 	@import "' . $MODUL->_CFG['_HREF']['_style'] . 'style.jquery/ui.css";
 	@import "' . $MODUL->_CFG['_HREF']['_script'] . 'script.jquery/jqplot/jquery.jqplot.min.css";

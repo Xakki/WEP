@@ -163,7 +163,7 @@ jQuery.extend({
 var baseHref = '';
 function absPath(url) {
 
-	if(url.substr(0,7)!='http://') {
+	if(url.substr(0,4)!='http') {
 		if(baseHref=='') {
 			baseHref = jQuery('base').attr('href');
 			if(baseHref=='')

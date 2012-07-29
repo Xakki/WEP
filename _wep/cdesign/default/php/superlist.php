@@ -70,15 +70,16 @@
 				if(!isset($r['title'])) $r['title'] = $r['caption'];
 				if(!isset($r['style'])) $r['style'] = '';
 				if(!isset($r['css'])) $r['css'] = '';
+				if(!isset($r['onConfirm'])) $r['onConfirm'] = false;
 
 				// HREF path
-				$href =  array_reverse($r['href']+$httpQuery);
+				$href =  array_merge($httpQuery, $r['href']);
 				$href = http_build_query($href);
 				
-				$temp_topmenu .= '<a class="'.$r['type'].($r['sel']?' selected':'').'" style="'.$r['style'].'"';
+				$temp_topmenu .= '<a class="'.$r['type'].($r['sel']?' selected':'').'" style="'.$r['style'].'" title="'.$r['title'].'" ';
 
 				if($r['type']=='select') {
-					$temp_topmenu .= ' onclick="return false;"><span class="caption">'.$r['caption'].'</span> <select class="'.$r['css'].'" title="'.$r['title'].'"';
+					$temp_topmenu .= ' onclick="return false;"><span class="caption">'.$r['caption'].'</span> <select class="'.$r['css'].'"';
 					$temp_topmenu .= ' onchange="return wep.load_href(\''.$firstpath.$href.'\'+this.options[this.selectedIndex].value)"';
 					$temp_topmenu .= '>'.tpl_formSelect($r['list']).'</select>';
 				}
@@ -87,8 +88,7 @@
 					$temp_topmenu .= ' href="'.$firstpath.$href.'"';
 					if(isset($r['is_popup']) and $r['is_popup'])
 						$temp_topmenu .= ' onclick="return ShowTools(\''.$_CFG['_HREF']['wepJS'].'?_view=list&'.$href.'\')"';//, \'tools_block\'
-					$temp_topmenu .= '><span class="'.$r['css'].'" title="'.$r['title'].'"';
-					$temp_topmenu .= '>'.$r['caption'].'</span>';
+					$temp_topmenu .= '> <span class="'.$r['css'].'">'.$r['caption'].'</span>';
 				}
 
 				$temp_topmenu .= '</a>';
@@ -209,14 +209,17 @@
 					$html .= '<a class="buttonimg img'.$rr['css'].'" style="'.$rr['style'].'" href="'.$rr['href'].'" title="['.$rr['title'].']" onclick="'.$rr['onclick'].'"></a>';
 				}
 			}
+			
 			if(isset($r['active'])) {
 				if($r['act'])
-					$html .= '<a class="buttonimg img'.$r['active'].'" href="'.$hrefpref.'&_type='.($r['active']==1?'dis':'act').'" onclick="return wep.load_href(this)" title="['.static_main::m('_ACT_TITLE'.$r['active']).']"></a>';
+					$html .= '<a class="buttonimg img'.$r['active'].'" href="'.$hrefpref.'&_type='.($r['active']==1?'dis':'act').'" onclick="return wep.load_href(this)" title="['.static_main::m('act'.$r['active']).']"></a>';
 				else
 					$html .= '<a class="buttonimg img'.$r['active'].'" title="Изменение данного своиства вам не доступна."></a>';
 			}
+			
 			if($r['edit'])
 				$html .= '<a class="buttonimg imgedit" href="'.$hrefpref.'&_type=edit" onclick="return wep.load_href(this)" title="['.static_main::m('_EDIT_TITLE').']"></a>';
+			
 			if($r['del'])
 				$html .= '<a class="buttonimg imgdel" href="'.$hrefpref.'&_type=del" onclick="return wep.hrefConfirm(this,\'del\')" title="['.static_main::m('_DEL_TITLE').']"></a>';
 
@@ -225,6 +228,7 @@
 
 			if(isset($r['istree']))
 				$html .= '<br/><a href="'.$hrefpref.'" onclick="return wep.load_href(this)">'.$r['istree']['value'].' ('.$r['istree']['cnt'].')</a>';
+			
 			if(isset($r['child'])) foreach($r['child'] as $ck=>$cn)
 				$html .= '<br/><a href="'.$hrefpref.'&'.$data['cl'].'_ch='.$ck.'" onclick="return wep.load_href(this)">'.$cn['value'].' ('.$cn['cnt'].')</a>';
 
