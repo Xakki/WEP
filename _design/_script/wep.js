@@ -556,8 +556,8 @@ var wep = {
 					$.include(src, function(){ wep.scriptLoad(script[i]); ++wep._loadCount;});
 				}
 				else if (script[i].substr(0, 4) == 'http') {
-					--wep._loadCount;//console.log(' -* '+ script[i]);
-					$.include(script[i], function(){++wep._loadCount;console.log(' ***** '+ script[i]);});
+					--wep._loadCount;
+					$.include(script[i], function(){++wep._loadCount;});
 				}
 				else if(script[i]) {
 					eval(script[i]);

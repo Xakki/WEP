@@ -58,7 +58,7 @@ function tpl_paydialog($data) {
 		$html .= '<h2 class="messhead">Оплата прошла успешно</h2>';
 		$html .= '<div class="ok">'.$data['mess'].'</div>
 		<form method="post"><div class="form">';
-		$html .= '<input type="submit" value="Вернуться" onclick="location.href=\''.$_SERVER['HTTP_REFERER'].'\';return false;" class="acept"/>
+		$html .= '<input type="submit" value="'.$data['#refer#'][0].'" onclick="location.href=\''.$data['#refer#'][1].'\';return false;" class="acept"/>
 		</div></form>
 		';
 	}

@@ -361,6 +361,7 @@ class pay_class extends kernel_extends {
 	*/
 
 	function payDialog($from_user,$to_user,$summ,$functOK=NULL,$paramOK=array()) {
+		$refer = NULL;
 		$flag = 0;//Ошибка
 		$mess = '';
 		$uq = md5($from_user.$to_user.$summ);
@@ -375,7 +376,7 @@ class pay_class extends kernel_extends {
 					$flag = 1;//Оплата
 					// Выполняем пользовательскую функцию при успешной оплате
 					if(!is_null($functOK)) {
-						list($flag,$mess) = call_user_func_array($functOK,$paramOK);
+						list($flag, $mess, $refer) = call_user_func_array($functOK,$paramOK);
 						if($flag==1) {
 							$this->addPayMess($mess);
 						}
@@ -393,6 +394,8 @@ class pay_class extends kernel_extends {
 			$_SESSION[$n] = true;
 		}
 		_new_class('ugroup', $UGROUP);
+		if(!$refer) 
+			$refer = array('Вернуться в корзину', $_SERVER['HTTP_REFERER']);
 		$DATA = array(
 			'flag'=>$flag,
 			'mess'=>$mess,
@@ -402,6 +405,7 @@ class pay_class extends kernel_extends {
 			'm'=>$UGROUP->config['payon'],
 			'to_user'=>$to_user,
 			'#post#' => $_POST,
+			'#refer#' => $refer,
 		);
 		return $DATA;
 	}

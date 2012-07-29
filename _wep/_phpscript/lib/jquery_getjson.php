@@ -26,7 +26,10 @@
 			if(version_compare(phpversion(),'5.3.0','>')) {
 				//$GLOBALS['_RESULT'] = $this->allreplace($GLOBALS['_RESULT']);
 				//return var_export($GLOBALS['_RESULT'],true);
-				return json_encode($GLOBALS['_RESULT'], JSON_HEX_QUOT | JSON_HEX_TAG); //JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_AMP|JSON_UNESCAPED_UNICODE
+				//$GLOBALS['_RESULT']['onload'] = str_replace(array('\\r','\\n','\\t'),'', $GLOBALS['_RESULT']['onload']);
+				$result = json_encode($GLOBALS['_RESULT'], JSON_HEX_QUOT | JSON_HEX_TAG ); 
+				//JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_FORCE_OBJECT | JSON_UNESCAPED_UNICODE
+				return $result;
 			}
 			else
 				return $this->jsonencode($GLOBALS['_RESULT']);
