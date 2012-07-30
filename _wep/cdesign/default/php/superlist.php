@@ -76,22 +76,22 @@
 				$href =  array_merge($httpQuery, $r['href']);
 				$href = http_build_query($href);
 				
-				$temp_topmenu .= '<a class="'.$r['type'].($r['sel']?' selected':'').'" style="'.$r['style'].'" title="'.$r['title'].'" ';
-
 				if($r['type']=='select') {
+					$temp_topmenu .= '<div class="'.$r['type'].($r['sel']?' selected':'').'" style="'.$r['style'].'" title="'.$r['title'].'" ';
 					$temp_topmenu .= ' onclick="return false;"><span class="caption">'.$r['caption'].'</span> <select class="'.$r['css'].'"';
 					$temp_topmenu .= ' onchange="return wep.load_href(\''.$firstpath.$href.'\'+this.options[this.selectedIndex].value)"';
 					$temp_topmenu .= '>'.tpl_formSelect($r['list']).'</select>';
+					$temp_topmenu .= '</div>';
 				}
 				else {
+					$temp_topmenu .= '<a class="'.$r['type'].($r['sel']?' selected':'').'" style="'.$r['style'].'" title="'.$r['title'].'" ';
 					//$temp_topmenu .= ' onclick="return wep.load_href(\''.$firstpath.$href.'\')"';
 					$temp_topmenu .= ' href="'.$firstpath.$href.'"';
 					if(isset($r['is_popup']) and $r['is_popup'])
 						$temp_topmenu .= ' onclick="return ShowTools(\''.$_CFG['_HREF']['wepJS'].'?_view=list&'.$href.'\')"';//, \'tools_block\'
 					$temp_topmenu .= '> <span class="'.$r['css'].'">'.$r['caption'].'</span>';
+					$temp_topmenu .= '</a>';
 				}
-
-				$temp_topmenu .= '</a>';
 			}
 		}
 		return $temp_topmenu;

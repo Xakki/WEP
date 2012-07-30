@@ -51,11 +51,18 @@
 	$html = '';
 
 	if(isset($_COOKIE['wepfcontrol']) and $_COOKIE['wepfcontrol']==2) {
+		$this->data = $this->dataCash;
+//$this->id
 		$cssClass='';
 		$DATA = array();
 		$DATA['button'] = array(
 			'config' => 1,
 			'topmenu' => static_super::modulMenu($this),
+			'firstpath' => '/_wep/index.php?_view=list&',
+			'_clp' => Array(
+				'_modul' => 'pg',
+				'pg_id' => 1,
+			)
 		);
 		$html = $HTML->transformPHP($DATA, '#modulprm#fcontrol');
 	}

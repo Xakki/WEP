@@ -707,6 +707,10 @@ class static_super {
 		return $param['clause'];
 	}
 
+
+	/**
+	* Менюшечка админки
+	*/
 	static function modulMenu(&$_this, $PARAM=array()) { //, $row=array()
 
 		$topmenu = array();

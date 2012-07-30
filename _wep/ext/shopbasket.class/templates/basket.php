@@ -11,7 +11,7 @@
 			$html .= '<div id="basketBlock"><i class="ico"></i>';
 			if($data['cnt'])
 				$html .= '<p>Товаров '.$data['cnt'].' шт.</p>
-				<p>на сумму '.$data['summ'].' '.$data['#curr#'].'</p>';
+				<p>'.$data['summ'].' '.$data['#curr#'].'</p>';
 			else
 				$html .= '<p class="emptybasket">Корзина пуста</p>';
 			$html .= '</div>';

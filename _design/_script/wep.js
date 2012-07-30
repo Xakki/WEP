@@ -366,32 +366,39 @@ var wep = {
 		if(flag==1) wep.fShowHide('bugmain',1);
 	},
 
+	hTopPos: 20, 
 	// Позициоонирует блок по центру
 	fMessPos: function(body2,obj) {
 		var body = '';
 		if(body2) body=body2+'>';
 		if(!obj) obj='#ajaxload';
 		jQuery(body+obj).css('width','auto');
-		var H=document.documentElement.clientHeight;
 		var FC = jQuery(body+obj+' :first');
 		//alert(FC.text());
+
+		var H=document.documentElement.clientHeight;
 		var Hblock= FC[0].scrollHeight;
 		if(typeof Hblock == 'undefined') return;
 		var hh=Math.round((H-Hblock)/2);
-		if(hh<5) hh=20;
+		if(hh<wep.hTopPos) hh=wep.hTopPos;
+
 		var W=document.documentElement.clientWidth;
 		var Wblock= FC[0].scrollWidth;
 		var ww=Math.round((W-Wblock)/2);
-		if(ww<5) ww=10;
+		if(ww<10) ww=10;
+
 		jQuery(body+obj).css({'top':hh+'px','left':ww+'px'});
-		if(Hblock>H) {
-			Hblock = H;
+console.log('H='+H);
+console.log('Hblock='+Hblock);
+console.log('hh='+hh);
+		if(Hblock>(H-hh)) {
+			Hblock = H-hh;
 			jQuery(body+obj).css({'height':(Hblock)+'px'});
 		}
 	
-		if(Wblock>W) 
+		if(Wblock>(W-20)) 
 			Wblock = W - 40;
-		jQuery(body+obj).css({'width':(Wblock+20)+'px'});
+		jQuery(body+obj).css({'width':(Wblock)+'px'});
 
 		wep.winResize['fMessPos#'+obj] = function() {
 			if(jQuery(body+obj).size())

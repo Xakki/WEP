@@ -364,9 +364,16 @@ class pg_class extends kernel_extends {
 				elseif (isset($this->dataCashTree[$fid][$r]) and !$this->dataCashTree[$fid][$r]['alias'] and !$this->id) {
 					$fid = $this->dataCashTree[$fid][$r]['id'];
 					$this->pageParamId[$k] = $fid;
-				} elseif ($this->dataCash[$fid]['alias'] == $r) {
+				} 
+				elseif ($this->dataCash[$fid]['alias'] == $r) {
 					$this->IfrootPage = true;
-				} else
+				} 
+				elseif( count($_REQUEST['pageParam'])==1 and isset($this->dataCash[(int)$r]) ) {
+					$href = $this->getHref((int) $r, true);
+					if($_SERVER['HTTP_REQUEST']!=$href)
+						static_main::redirect($href);
+				} 
+				else
 					$this->pageParam[] = $r;
 			}
 		}

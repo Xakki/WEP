@@ -297,7 +297,7 @@ div.superMenu {
 	vertical-align: middle;
 }
 
-div.superMenu a {
+div.superMenu .select {
 	display:inline-block;
 }
 
