@@ -388,17 +388,15 @@ var wep = {
 		if(ww<10) ww=10;
 
 		jQuery(body+obj).css({'top':hh+'px','left':ww+'px'});
-console.log('H='+H);
-console.log('Hblock='+Hblock);
-console.log('hh='+hh);
+
 		if(Hblock>(H-hh)) {
 			Hblock = H-hh;
 			jQuery(body+obj).css({'height':(Hblock)+'px'});
 		}
 	
 		if(Wblock>(W-20)) 
-			Wblock = W - 40;
-		jQuery(body+obj).css({'width':(Wblock)+'px'});
+			Wblock = W;
+		jQuery(body+obj).css({'width':(Wblock+20)+'px'});
 
 		wep.winResize['fMessPos#'+obj] = function() {
 			if(jQuery(body+obj).size())

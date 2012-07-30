@@ -16,7 +16,7 @@ class static_list {
 		if (!isset($_this->_CFG['enum_check'][$templistname])) {
 
 			if (!isset($_this->_CFG['enum'][$templistname])) {
-				$data = &$_this->_getCashedList($listname); // , $value
+				$data = &$_this->_getCashedList($listname, $value); // , $value
 				//$_this->_CFG['enum'][$templistname]
 			} else
 				$data = &$_this->_CFG['enum'][$templistname];
