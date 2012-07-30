@@ -100,7 +100,7 @@
 		//if($_SESSION['_showallinfo']) print('main = '.(getmicrotime()-$main2time).'<hr/>'); // для отладки
 				  
 			if (!$PGLIST->config['auto_include'])
-				$_CFG['fileIncludeOption'] = array(); // чтобы автоматом не подключались стили и скрптыв
+				$_CFG['fileIncludeOption'] = null; // чтобы автоматом не подключались стили и скрптыв
 		/*
 			if(!isset($_SESSION['showIEwarning'])) $_SESSION['showIEwarning']=0;
 			if($HTML->_fTestIE('MSIE 6') and $_SESSION['showIEwarning']<3) {

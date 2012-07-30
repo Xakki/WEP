@@ -2,7 +2,7 @@
 
 	function fileInclude($gfi) {
 		//$gfi -> $_CFG['fileIncludeOption']
-		if(!count($gfi)) return true;
+		if(is_null($gfi)) return true;
 		global $_tpl,$_CFG;
 		if(!isset($gfi['uiStyle']))
 			$gfi['uiStyle'] = 'ui-smoothness';
