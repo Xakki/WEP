@@ -32,7 +32,7 @@
 
 #fcontrol .fcontrol-text {
 	display: block;
-	padding:10px;
+	padding:3px 0px 5px;;
 	background-color: #e1e1e1;
 	border: solid gray 1px;
 	width:100%;
@@ -47,7 +47,10 @@ div.superMenu {
 	font-size:1.2em;
 	vertical-align: middle;
 }
-
+div.superMenu .button {
+	padding: 9px;
+	margin: 0 4px;
+}
 div.superMenu .select {
 	display:inline-block;
 }
@@ -55,10 +58,10 @@ div.superMenu .select {
 
 div.superMenu .split {
 	display:inline-block;
-	margin:0 5px;
+	margin:0 10px;
 	border-left: 1px solid gray;
 	width:1px;
-	font-size: 1.8em;
+	height: 32px;
 	vertical-align: top;
 }
 

@@ -651,14 +651,16 @@ class product_class extends kernel_extends {
 					elseif($k=='mf_timecr')
 						$clauseF[$k] = 't1.mf_timecr>"'.(int)$r.'"';
 					elseif($k=='text') {
+						$r = $this->SqlEsc(mb_strtolower($r));
 						if($r) {
-							$clauseF[$k] = '(t1.name RLIKE "[[:<:]]'.$this->SqlEsc($r).'[[:>:]]" or t1.'.$k.' RLIKE "[[:<:]]'.$this->SqlEsc($r).'[[:>:]]")';
+							$clauseF[$k] = '(lower(t1.name) RLIKE "[[:<:]]'.$r.'[[:>:]]" or lower(t1.'.$k.') RLIKE "[[:<:]]'.$r.'[[:>:]]")';
 							// TODO @match against@
 						}
 					}
 					elseif($k=='name') {
 						if($r) {
-							$clauseF[$k] = 't1.name RLIKE "[[:<:]]'.$this->SqlEsc($r).'[[:>:]]"';
+							$r = $this->SqlEsc(mb_strtolower($r));
+							$clauseF[$k] = 'lower(t1.name) RLIKE "[[:<:]]'.$r.'[[:>:]]"';
 						}
 					}
 					else {//if($k=='text' or $k=='descr')
