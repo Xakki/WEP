@@ -85,10 +85,10 @@ class static_list {
 		$templistname = $listname;
 		if (is_array($listname))
 			$templistname = implode(',', $listname);
-		$templistname = $_this->_cl.'_'.$templistname;
+		//$templistname = $_this->_cl.'_'.$templistname;
 
 		if (!is_null($value)) { // не кешируем если задано $value и $listname - выборка из таблиц(задается массивом)
-			$data = $_this->_getlist($listname, $value);
+			$data = self::_getlist($_this, $listname, $value);
 
 			// VALUE
 			if (!is_array($value))
@@ -109,7 +109,7 @@ class static_list {
 			return $data;
 		}
 		elseif (!isset($_this->_CFG['enum'][$templistname]))
-			$_this->_CFG['enum'][$templistname] = $_this->_getlist($listname, $value);
+			$_this->_CFG['enum'][$templistname] = self::_getlist($_this, $listname, $value);
 
 		return $_this->_CFG['enum'][$templistname];
 	}
