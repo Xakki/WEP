@@ -64,6 +64,18 @@
 				'pg_id' => 1,
 			)
 		);
+		$linkWep =  array(
+			'wep'=>array(
+				'href' => array(),
+				'caption' => 'АДМИНКА',
+				'sel' => 0,
+				'type' => 'button',
+				'css' => 'button-admin',
+				'link' => '/_wep/index.php',
+			),
+			'wepsplit' => array('type' => 'split')
+		);
+		$DATA['button']['topmenu'] = $linkWep + $DATA['button']['topmenu'];
 		$html = $HTML->transformPHP($DATA, '#modulprm#fcontrol');
 	}
 

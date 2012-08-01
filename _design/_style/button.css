@@ -66,6 +66,9 @@
 		padding: 0 3px;
 		position: absolute;
 	}
+	.button-admin {
+		background-position:0 -285px !important;
+	}
 
 	.imglist {background-position:0 -192px !important;}
 	.imgadd, .button-add {background-position:0 0 !important;}

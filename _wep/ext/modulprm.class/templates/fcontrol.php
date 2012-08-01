@@ -42,9 +42,15 @@
 				else {
 					$temp_topmenu .= '<a class="'.$r['type'].($r['sel']?' selected':'').'" style="'.$r['style'].'"';
 					//$temp_topmenu .= ' onclick="return wep.load_href(\''.$firstpath.$href.'\')"';
-					$temp_topmenu .= ' href="'.$firstpath.$href.'"';
+					
 					//if(isset($r['is_popup']) and $r['is_popup'])
+					if(isset($r['link'])) {
+						$temp_topmenu .= ' target="_blank" href="'.$r['link'].'"';
+					}
+					else {
+						$temp_topmenu .= ' href="'.$firstpath.$href.'"';
 						$temp_topmenu .= ' onclick="return ShowTools(\''.$_CFG['_HREF']['wepJS'].'?_view=list&'.$href.'\');"';//, \'tools_block\'
+					}
 					$temp_topmenu .= '><span class="'.$r['css'].'" title="'.$r['title'].'"';
 					$temp_topmenu .= '>'.$r['caption'].'</span>';
 					$temp_topmenu .= '</a>';
