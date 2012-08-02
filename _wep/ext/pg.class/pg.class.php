@@ -727,8 +727,8 @@ class pg_class extends kernel_extends {
 					if (is_string($flagPG)) {
 						if (!isset($_tpl[$rowPG['marker']]))
 							$_tpl[$rowPG['marker']] = '';
-						if (isset($_SESSION['_showallinfo']) && $_SESSION['_showallinfo'])
-							$_tpl[$rowPG['marker']] .= '<!--content' . $rowPG['id'] . ' begin-->' . $flagPG . '<!--content' . $rowPG['id'] . ' end-->';
+						if (strpos($flagPG,'<')===0)
+							$_tpl[$rowPG['marker']] .= '<div class="wep-pgc" id="pgc' . $rowPG['id'] . '">' . $flagPG . '</div>';
 						else
 							$_tpl[$rowPG['marker']] .= $flagPG;
 						$flagPG = 1;

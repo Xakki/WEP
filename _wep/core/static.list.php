@@ -12,6 +12,7 @@ class static_list {
 		$templistname = $listname;
 		if (is_array($listname))
 			$templistname = implode(',', $listname);
+		$templistname = $_this->_cl.'_'.$templistname;
 
 		if (!isset($_this->_CFG['enum_check'][$templistname])) {
 
@@ -54,7 +55,7 @@ class static_list {
 				$temp = &$temp2;
 			}else
 				$temp = &$data;
-			if (is_null($value))// не кешируем если задано значение и  or !is_array($listname) $listname - выборка из БД(в массиве)
+			if (is_null($value))// не кешируем если не задано значение и  or !is_array($listname) $listname - выборка из БД(в массиве)
 				$_this->_CFG['enum_check'][$templistname] = $temp;
 		}else
 			$temp = &$_this->_CFG['enum_check'][$templistname];
@@ -85,10 +86,10 @@ class static_list {
 		$templistname = $listname;
 		if (is_array($listname))
 			$templistname = implode(',', $listname);
-		//$templistname = $_this->_cl.'_'.$templistname;
+		$templistname = $_this->_cl.'_'.$templistname;
 
 		if (!is_null($value)) { // не кешируем если задано $value и $listname - выборка из таблиц(задается массивом)
-			$data = self::_getlist($_this, $listname, $value);
+			$data = $_this->_getlist($listname, $value);
 
 			// VALUE
 			if (!is_array($value))
@@ -109,7 +110,7 @@ class static_list {
 			return $data;
 		}
 		elseif (!isset($_this->_CFG['enum'][$templistname]))
-			$_this->_CFG['enum'][$templistname] = self::_getlist($_this, $listname, $value);
+			$_this->_CFG['enum'][$templistname] = $_this->_getlist($listname, $value);
 
 		return $_this->_CFG['enum'][$templistname];
 	}

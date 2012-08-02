@@ -18,22 +18,24 @@
 	</head>
 	<body onload="{#onload#}">
 		{#logs#}
-		<div class="header">
+		<div class="header" data-tpl="head">
 			{#head#}
 		</div>
-		<div class="leftblock">
+		<div class="leftblock" data-tpl="lblock">
 			{#lblock#}
 		</div>
 		<div class="center" style="margin:0 0 0 200px;">
-			{#path#}
-			<div class="text">
+			<div class="path" data-tpl="path">
+				{#path#}
+			</div>
+			<div class="text" data-tpl="text">
 				{#text#}
 			</div>
 		</div>
 		<div class="clear"></div>
 		
 		<div class="footer">
-			<div class="block">
+			<div class="block" data-tpl="foot">
 				{#foot#}
 			</div>
 		</div>

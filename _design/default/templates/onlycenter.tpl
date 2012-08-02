@@ -19,27 +19,22 @@
 	</head>
 	<body onload="{#onload#}">
 		{#logs#}
-		<div class="header">
-			<div class="block">
-				<div class="blocktext">
-					{#head#}
-				</div>
-			</div>
+		<div class="header" data-tpl="head">
+			{#head#}
 		</div>
-		<div class="maintext" style="margin-left: 20px;">
-			<div class="block">
-				<div class="blocktext">
-					{#path#}
-					<div class="hrb"></div>
-					{#text#}
-					<div class="clear"></div>
-				</div>
+
+		<div class="center">
+			<div class="path" data-tpl="path">
+				{#path#}
+			</div>
+			<div class="text" data-tpl="text">
+				{#text#}
 			</div>
 		</div>
 		<div class="clear"></div>
 		
 		<div class="footer">
-			<div class="block">
+			<div class="block" data-tpl="foot">
 				{#foot#}
 			</div>
 		</div>

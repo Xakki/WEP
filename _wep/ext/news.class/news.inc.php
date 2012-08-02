@@ -21,10 +21,11 @@
 		$this->_enum['newscategory'] = $NEWS->config['category'];
 
 		$form = array(
-			'0'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон'),
-			'1'=>array('type'=>'int','caption'=>'Элементов в списке','comment'=>'для постраничной навигации'),
-			'2'=>array('type'=>'int','caption'=>'Ближайшие страницы','comment'=>'для постраничной навигации'),
-			'3'=>array('type'=>'list','listname'=>'newscategory', 'caption'=>'Категория'),
+			'0'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон', 'comment'=>'Подключаемый шаблон для отображения новостей'),
+			'1'=>array('type'=>'int','caption'=>'Новостей на одну страницу','comment'=>'Максимальное кол-во новостей на одной странице'),
+			'2'=>array('type'=>'int','caption'=>'Кол-во страниц для пролистывания','comment'=>'Для постраничной навигации, указываем кол-во ссылок на следующие страницы, от текущей страницы'),
+			'3'=>array('type'=>'list','listname'=>'newscategory', 'caption'=>'Категория','comment'=>'Выбирите категорию новости, которая будет отображаться'),
+			'4'=>array('type'=>'info','caption'=>'<h3><a href="/_wep/index.php?_view=list&_modul=news">Управление новостями</a></h3>'),
 		);
 		return $form;
 	}

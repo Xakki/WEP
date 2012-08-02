@@ -601,8 +601,8 @@ class static_super {
 							$temp=array();
 
 							foreach($row[$k] as $er) {
-								if(isset($_this->_CFG['enum_check'][$r['listname']][$er])) {
-									$templist = $_this->_CFG['enum_check'][$r['listname']][$er];
+								if(isset($_this->_CFG['enum_check'][$_this->_cl.'_'.$r['listname']][$er])) {
+									$templist = $_this->_CFG['enum_check'][$_this->_cl.'_'.$r['listname']][$er];
 									if(!is_array($templist)) {
 										$temp[] = $templist;
 									} elseif(isset($templist['#name#'])) {

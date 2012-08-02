@@ -95,6 +95,7 @@
 					$templistname = $r['listname'];
 					if(is_array($r['listname']))
 						$templistname = implode(',',$r['listname']);
+					$templistname =	$_this->_cl.'_'.$templistname;
 					$arrlist = &$this->_CFG['enum_check'][$templistname];
 
 					if($arrlist and is_array($arrlist)) {
