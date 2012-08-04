@@ -39,7 +39,7 @@ class pg_class extends kernel_extends {
 		$this->config['auto_include'] = true;
 		$this->config['auto_auth'] = true;
 		$this->config['rf_on'] = false;
-		$this->config['newadmin_on'] = true;
+		//$this->config['newadmin_on'] = true;
 
 		// TODO : Сделать форму управления массивами данных и хранить в формате json
 
@@ -57,7 +57,7 @@ class pg_class extends kernel_extends {
 		$this->config_form['auto_include'] = array('type' => 'checkbox', 'caption' => 'Подключать скрипты автоиматически');
 		$this->config_form['auto_auth'] = array('type' => 'checkbox', 'caption' => 'Автоматическая авторизация');
 		$this->config_form['rf_on'] = array('type' => 'checkbox', 'caption' => 'Для руского домена использовать НАЗВАНИЕ страницы');
-		$this->config_form['newadmin_on'] = array('type' => 'checkbox', 'caption' => 'Включить "Новую админку"', 'comment'=>'В последствии к каждому контенту будет создаваться div обертка');
+		//$this->config_form['newadmin_on'] = array('type' => 'checkbox', 'caption' => 'Включить "Новую админку"', 'comment'=>'В последствии к каждому контенту будет создаваться div обертка');
 	}
 
 	function _set_features() {
@@ -729,10 +729,11 @@ class pg_class extends kernel_extends {
 					if (is_string($flagPG)) {
 						if (!isset($_tpl[$rowPG['marker']]))
 							$_tpl[$rowPG['marker']] = '';
-						if ($this->config['newadmin_on'] and strpos($flagPG,'<')===0)
-							$_tpl[$rowPG['marker']] .= '<div class="wep-pgc" id="pgc' . $rowPG['id'] . '">' . $flagPG . '</div>';
-						else
-							$_tpl[$rowPG['marker']] .= $flagPG;
+						$_tpl[$rowPG['marker']] .= '<!--#' . $rowPG['id'] . '-->' . $flagPG . '<!--' . $rowPG['id'] . '#-->';
+						//if ($this->config['newadmin_on'] and strpos($flagPG,'<')===0)
+							//$_tpl[$rowPG['marker']] .= '<div class="wep-pgc" id="pgc' . $rowPG['id'] . '">' . $flagPG . '</div>';
+						//else
+							//$_tpl[$rowPG['marker']] .= $flagPG;
 						$flagPG = 1;
 					}
 					elseif (is_int($flagPG) and  $flagPG >= 100 and $flagPG < 600) {
