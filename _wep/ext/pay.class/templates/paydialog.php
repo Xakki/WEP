@@ -11,7 +11,7 @@ function tpl_paydialog($data) {
 		<div class="'.$t.'">'.$data['mess'].'</div>
 		<form method="post"><div class="form">';
 		$d = abs($data['balance']-$data['summ']);
-		$max = 2000;
+		$max = $_SESSION['user']['negative'];
 		if($data['balance']>=0) {
 			if($d<=$max) {
 				foreach($data['#post#'] as $k=>$r) {
