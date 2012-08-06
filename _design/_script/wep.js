@@ -282,7 +282,6 @@ var wep = {
 			$('#ajaxload form').one('submit',function() {wep.paramTemp['type'] = $(this); JSWin(wep.paramTemp); return false;});
 		}
 
-		setTimeout(wResize,500);
 	},
 
 
@@ -321,8 +320,6 @@ var wep = {
 		if(resData.styles.login || resData.script.wepform) {
 			$('#ajaxload form').one('submit',function() {wep.paramTemp['type'] = $(this); JSWin(wep.paramTemp); return false;});
 		}
-
-		setTimeout(wResize,500);
 	},
 
 	ajaxLoadContent: function(ctId,selector,callFunc) {
@@ -918,7 +915,7 @@ var wep = {
 	// Массив функции выполняющиеся при изменении размера окна 
 
 	setResize : function (k, funct){
-		if(wep.flagResizeStart) wep.setResizeTimer();
+		if(!wep.flagResizeStart) wep.setResizeTimer();
 		wep.winResize[k] = funct;
 	},
 
