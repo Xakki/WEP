@@ -17,7 +17,7 @@ class pay_class extends kernel_extends {
 		$this->index_fields['_key'] = '_key';
 		$this->index_fields['user_id'] = 'user_id';
 		$this->index_fields['status'] = 'status';
-		$this->_AllowAjaxFn['payFormBilling'] = true;
+		$this->_AllowAjaxFn['showPayInfo'] = true;
 		$this->ordfield = 'id DESC';
 		return true;
 	}
@@ -85,7 +85,7 @@ class pay_class extends kernel_extends {
 			if(count($temp)) {
 				$data['#title#'] = '';//Счёт на оплату выставлен.
 				if($CHILD->pay_formType===true)
-					$data['#title#'] .= '<a id="gotopay" href="/_js.php?_modul=pay&_fn=payFormBilling&id='.$temp[0]['id'].'" onclick="return wep.JSWin({type:this,onclk:\'reload\'});" target="_blank">Оплатить</a>';
+					$data['#title#'] .= '<a id="gotopay" href="/_js.php?_modul=pay&_fn=showPayInfo&id='.$temp[0]['id'].'" onclick="return wep.JSWin({type:this,onclk:\'reload\'});" target="_blank">Оплатить</a>';
 				elseif($CHILD->pay_formType)
 					$data['#title#'] .= '<a id="gotopay" href="'.$CHILD->pay_formType.'" target="_blank">Оплатить</a>';
 				$resFlag = 1;
@@ -97,7 +97,7 @@ class pay_class extends kernel_extends {
 				if($resFlag==1) {
 					$from_user = $this->checkPayUsers($_POST['paymethod']); // User плат. системы
 					if($this->payAdd($from_user,1,$summ, $key, $comm,0,$_POST['paymethod'],$eval)) {
-						$this->childs[$_POST['paymethod']]->_update(array('owner_id'=>$this->id));
+						$CHILD->_update(array('owner_id'=>$this->id));
 						$data['#title#'] = 'Счёт выставлен успешно!';
 						// Открыть окно системы в новом окне
 						$data['#foot#'] = '<span class="paySpanMess" onclick="window.location.reload();">Обновите страницу, чтобы узнать состояния счёта.</span>';
@@ -127,7 +127,7 @@ class pay_class extends kernel_extends {
 	}
 
 	// Функция вызова формы оплаты для систем работающих только через форму оплаты (не выставляя счёт)
-	function payFormBilling() {
+	function showPayInfo() {
 		global $_tpl,$HTML;
 		$res = array('html'=>'Нет доступа к данным!');
 		$this->id = (int)$_GET['id'];
@@ -136,13 +136,20 @@ class pay_class extends kernel_extends {
 			$this->childs[$pData['pay_modul']]->id = NULL;
 			$pcData = current($this->childs[$pData['pay_modul']]->_select());
 			if($pcData['id']) {
-				$this->childs[$pData['pay_modul']]->id = $pcData['id'];
 				$DATA = $this->childs[$pData['pay_modul']]->payFormBilling($pcData);
 				$res = array('html'=>$HTML->transformPHP($DATA,'#pg#formcreat'), 'onload' => $_tpl['onload']);
 			}
 		}
 		return $res;
 	}
+
+	// Функция вызова формы оплаты для систем работающих только через форму оплаты (не выставляя счёт)
+	/*function payFormBilling($pcData, $pay_modul) {
+		$DATA = $this->childs[$pay_modul]->payFormBilling($pcData);
+		array_unshift($DATA['messages'],);
+		return $DATA;
+	}*/
+
 
 	/**
 	* Функция оплаты и перевода средств

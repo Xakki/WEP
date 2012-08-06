@@ -42,7 +42,6 @@ class shopbasket_class extends kernel_extends {
 			5=>'Доставлено',
 			6=>'Отменено пользователем',
 			7=>'Отменено магазином',
-			8=>'',
 		);
 
 		return true;
@@ -50,7 +49,7 @@ class shopbasket_class extends kernel_extends {
 
 	protected function _create() {
 		parent::_create();
-
+		$this->fields['pay_id'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL');
 		$this->fields['fio'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'min' => 6);
 		$this->fields['adress'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['phone'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'min' => 6);
@@ -59,7 +58,7 @@ class shopbasket_class extends kernel_extends {
 		$this->fields['delivertype'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL', 'min' => '1');
 		$this->fields['laststatus'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL', 'default'=>0);
 
-		//$this->ordfield = 'name DESC';
+		$this->ordfield = 'mf_timecr DESC';
 
 	}
 
@@ -127,7 +126,7 @@ class shopbasket_class extends kernel_extends {
 		$res = array('html'=>'');
 		$BASKETITEM = &$this->childs['shopbasketitem'];
 		$updData = array(
-			'id_product'=>(int)$_GET['id_product'],
+			'product_id'=>(int)$_GET['product_id'],
 			'owner_id'=>0,
 			$this->mf_createrid=>$this->userId(true)
 		);
@@ -150,14 +149,15 @@ class shopbasket_class extends kernel_extends {
 		if(!_new_class('shop',$SHOP)) return array('html'=>'Error: Need modul SHOP');
 
 		$PRODUCT = &$SHOP->childs['product'];
-		$PRODUCT->id = (int)$_GET['id_product'];
+		$PRODUCT->id = (int)$_GET['product_id'];
 		$count = (int)$_GET['count'];
 
 		if($PRODUCT->id) {
-			$productData = $PRODUCT->qs('id',$PRODUCT->id);
+			$productData = $PRODUCT->qs('id, name', $PRODUCT->id, 'id');
 			if(count($productData)) {
 				$addData = array(
-					'id_product'=>$PRODUCT->id,
+					'product_id'=>$PRODUCT->id,
+					'product_name' => $productData[$PRODUCT->id]['name'],
 					'owner_id'=>0,
 					$this->mf_createrid=>$this->userId(true)
 				);
@@ -201,7 +201,7 @@ class shopbasket_class extends kernel_extends {
 
 		_new_class('shop',$SHOP);
 
-		$DATA = $this->childs['shopbasketitem']->qs('t1.count, t2.id, t2.cost, t2.shop' ,'t1 JOIN '.$SHOP->childs['product']->tablename.' t2 ON t1.id_product=t2.id WHERE t1.owner_id=0 and t1.'.$this->mf_createrid.'='.$uId.' GROUP BY t1.id', 'id');
+		$DATA = $this->childs['shopbasketitem']->qs('t1.count, t2.id, t2.cost, t2.shop' ,'t1 JOIN '.$SHOP->childs['product']->tablename.' t2 ON t1.product_id=t2.id WHERE t1.owner_id=0 and t1.'.$this->mf_createrid.'='.$uId.' GROUP BY t1.id', 'id');
 
 		if(count($DATA) and _new_class('shopsale',$SHOPSALE)) {
 			$SHOPSALE->getData($DATA);
@@ -218,9 +218,26 @@ class shopbasket_class extends kernel_extends {
 	*
 	*/
 	function fBasketList() {
+		_new_class('pay', $PAY);
+		_new_class('shop',$SHOP);
+
 		$RESULT = array();
 		if(!$uId = $this->userId()) return $RESULT;
-		$RESULT['#list#'] = $this->_select($this->mf_createrid.'='.$uId);
+		$RESULT['#list#'] = $this->qs('t1.*' ,'t1 WHERE t1.'.$this->mf_createrid.'='.$uId.' GROUP BY t1.id ORDER BY t1.mf_timecr DESC', 'id');
+
+		if(count($RESULT['#list#'])) {
+			$shopbasketitem = $this->childs['shopbasketitem']->qs('t1.*' ,'t1 WHERE t1.owner_id in ('.implode(',', array_keys($RESULT['#list#'])).') and t1.'.$this->mf_createrid.'='.$uId.' GROUP BY t1.id', 'id', 'owner_id');
+
+			foreach($RESULT['#list#'] as &$r) {
+				if($r['paytype'] and isset($PAY->childs[$r['paytype']]))
+					$r['#paytype#'] = $PAY->childs[$r['paytype']]->caption;
+				else
+					$r['#paytype#'] = ' - ';
+				$r['#laststatus#'] = $this->_enum['status'][$r['laststatus']];
+				$r['#shopbasketitem#'] = $shopbasketitem[$r['id']];
+			}
+			unset($r);
+		}
 		return $RESULT;
 	}
 
@@ -236,7 +253,7 @@ class shopbasket_class extends kernel_extends {
 		_new_class('shop',$SHOP);
 
 		$this->childs['shopbasketitem']->attaches = $SHOP->childs['product']->attaches; // кастыль для загрузки изобр
-		$RESULT['#list#'] = $this->childs['shopbasketitem']->qs('t1.*, t2.id, t2.cost, t2.shop, t2.name, t2.img_product' ,'t1 JOIN '.$SHOP->childs['product']->tablename.' t2 ON t1.id_product=t2.id WHERE t1.owner_id=0 and t1.'.$this->mf_createrid.'='.$uId.' GROUP BY t1.id', 'id');
+		$RESULT['#list#'] = $this->childs['shopbasketitem']->qs('t1.*, t2.id, t2.cost, t2.shop, t2.name, t2.img_product' ,'t1 JOIN '.$SHOP->childs['product']->tablename.' t2 ON t1.product_id=t2.id WHERE t1.owner_id=0 and t1.'.$this->mf_createrid.'='.$uId.' GROUP BY t1.id', 'id');
 		$this->childs['shopbasketitem']->attaches = array();
 
 		if(count($RESULT['#list#']) and _new_class('shopsale',$SHOPSALE)) {
@@ -249,7 +266,7 @@ class shopbasket_class extends kernel_extends {
 	function fBasketData() {
 		$RESULT = array();
 		if(!$uId = $this->userId()) return $RESULT;
-		$RESULT = $this->childs['shopbasketitem']->qs('id,id_product,count','WHERE owner_id=0 and '.$this->mf_createrid.'='.$uId,'id_product');
+		$RESULT = $this->childs['shopbasketitem']->qs('id,product_id,count','WHERE owner_id=0 and '.$this->mf_createrid.'='.$uId,'product_id');
 		return $RESULT;
 	}
 
@@ -281,7 +298,7 @@ class shopbasket_class extends kernel_extends {
 		elseif(isset($_COOKIE['basketcid']) and $_COOKIE['basketcid']) {
 			$this->childs['shopbasketitem']->_update(array($this->mf_createrid=>$id),array($this->mf_createrid=>-(int)$_COOKIE['basketcid']));
 			_setcookie('basketcid', 0);
-			$res = $this->childs['shopbasketitem']->qs('id','WHERE '.$this->mf_createrid.'='.$id.' GROUP BY id_product HAVING count(id)>1','id');
+			$res = $this->childs['shopbasketitem']->qs('id','WHERE '.$this->mf_createrid.'='.$id.' GROUP BY product_id HAVING count(id)>1','id');
 			if(count($res)) {
 				$this->childs['shopbasketitem']->id = array_keys($res);
 				$this->childs['shopbasketitem']->_delete();
@@ -294,6 +311,9 @@ class shopbasket_class extends kernel_extends {
 		return rand(1,999999);
 	}
 
+	function getPayKey($force=false) {
+		return 'shop'.$this->userId($force);
+	}
 	/**
 	* Сумма текущего заказа
 	*/
@@ -301,7 +321,7 @@ class shopbasket_class extends kernel_extends {
 		if(!$uId = $this->userId()) return 0;
 		_new_class('shop',$SHOP);
 		$RESULT = array();
-		$RESULT['#list#'] = $this->childs['shopbasketitem']->qs('t1.*, t1.id as bid, t2.id, t2.cost, t2.shop' ,'t1 JOIN '.$SHOP->childs['product']->tablename.' t2 ON t1.id_product=t2.id WHERE t1.owner_id=0 and t1.checked=1 and t1.'.$this->mf_createrid.'='.$uId.' GROUP BY t1.id');
+		$RESULT['#list#'] = $this->childs['shopbasketitem']->qs('t1.*, t1.id as bid, t2.id, t2.cost, t2.shop' ,'t1 JOIN '.$SHOP->childs['product']->tablename.' t2 ON t1.product_id=t2.id WHERE t1.owner_id=0 and t1.checked=1 and t1.'.$this->mf_createrid.'='.$uId.' GROUP BY t1.id');
 
 		if(is_null($deliveryData)) {
 			return (count($RESULT['#list#'])?true:false);
@@ -366,7 +386,8 @@ class shopbasketitem_class extends kernel_extends {
 	protected function _create() {
 		parent::_create();
 
-		$this->fields['id_product'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'min'=>1);
+		$this->fields['product_id'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'min'=>1);
+		$this->fields['product_name'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['count'] = array('type' => 'tinyint', 'width' => 3, 'attr' => 'NOT NULL', 'default'=>1, 'min'=>1);
 		$this->fields['cost_item'] = array('type' => 'float', 'width' => '8,2', 'attr' => 'NOT NULL', 'default' => '0.00');
 		$this->fields['shopsale_id'] = array('type' => 'int', 'width' => '11', 'attr' => 'NOT NULL', 'default' => 0);
@@ -379,11 +400,13 @@ class shopbasketitem_class extends kernel_extends {
 	public function setFieldsForm($form=0) {
 		parent::setFieldsForm($form);
 
-		$this->fields_form['id_product'] = array(
+		/*$this->fields_form['product_id'] = array(
 			'type' => 'list', 
 			'listname'=>array('class'=>'product'),
 			'caption' => 'Товар', 'readonly' => 1,
-			'mask' =>array('min'=>1));
+			'mask' =>array('min'=>1));*/
+		$this->fields_form['product_id'] = array('type' => 'int', 'caption' => 'ID Товара');
+		$this->fields_form['product_name'] = array('type' => 'text', 'caption' => 'Название Товара');
 		$this->fields_form['count'] = array('type' => 'int', 'caption' => 'Кол-во');
 		//$this->fields_form['cost_item'] = array('type' => 'text', 'caption' => 'Цена товара на момент заказа', 'comment'=>'без учета скидки', 'readonly' => 1);
 		//$this->fields_form['shopsale_id'] = array('type' => 'list', 'listname'=>array('class'=>'shopsale',), 'caption' => 'Скидка', 'readonly' => 1);

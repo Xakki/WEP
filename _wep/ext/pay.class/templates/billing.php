@@ -55,9 +55,7 @@ function tpl_billing($data)
 		else {
 			$html .= '';
 		}
-		$html .= '</form>
-	<p class="payselect-summ">К оплате: <b>'.$data['summ'].' '.$data['#currency#'].'</b></p>
-	<p class="payselect-comm">'.$data['comm'].'</p>';
+		$html .= '</form>';
 	if(isset($data['#foot#']))
 		$html .= '<div class="payselect-foot">'.$data['#foot#'].'</div>';
 	$html .= '</div>';

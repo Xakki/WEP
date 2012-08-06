@@ -174,7 +174,7 @@ class payyandex_class extends kernel_extends {
 
 	function payFormBilling($data) {
 		global $_tpl;
-//$_tpl['onload'] .= '$("#form_paymethod").submit();';
+		$_tpl['onload'] .= '$("#form_paymethod").submit();';
 		$DATA = array();
 		$DATA['messages'] = array(
 			array('alert','Выполняется открытие страницы оплаты на Яндекс.Деньги.'),

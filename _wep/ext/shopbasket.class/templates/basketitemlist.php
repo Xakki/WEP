@@ -19,10 +19,10 @@
 					$img = $r['s_img_product'];
 				} else
 					$img = '_design/'.$HTML->_design.'/_shop/img/nofoto.gif';
-				$html .= '<tr data-id="'.$r['id_product'].'" class="'.($r['checked']?'checked':'').'">
+				$html .= '<tr data-id="'.$r['product_id'].'" class="'.($r['checked']?'checked':'').'">
 					<td><input type="checkbox" '.($r['checked']?'checked="checked"':'').'>
 					<td><img src="/'.$img.'" alt="'.$r['name'].'"/>
-					<td><a href="'.$data['#pageCat#'].'/product/alias_'.$r['id_product'].'.html" target="_blank">'.$r['name'].'</a>
+					<td><a href="'.$data['#pageCat#'].'/product/alias_'.$r['product_id'].'.html" target="_blank">'.$r['name'].'</a>
 						'.(isset($r['sale'])?'<span class="prodlable sale" title="'.$r['sale']['name'].'">&#160;</span>':'').'
 					<td><span>'.$r['cost'].'</span> '.$data['#curr#'].'
 					<td class="count"><input type="number" min="1" max="50" value="'.$r['count'].'"/>

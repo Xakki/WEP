@@ -80,7 +80,8 @@ class pg_class extends kernel_extends {
 		$this->_AllowAjaxFn['AjaxForm'] = true;
 		$this->formFlag = null; // Для Аякс формы, 
 		$this->current_path = '';
-		$this->ajaxRequest = false;
+		$this->ajaxRequest = false; // ставится метка об аякс запросе
+		$this->access_flag = false; // Если значение выставить true, то каждое "Содержимое" будет проверяться на допуск к отображению на "Спец страницах" (отмеченные галочкой не выполнятся)
 		return true;
 	}
 
@@ -338,14 +339,20 @@ class pg_class extends kernel_extends {
 		}
 		$HTML->_templates = $this->pageinfo['template'];
 		if($this->_CFG['returnFormat'] == 'html') {
-			$_tpl['onload'] = 'if(typeof wep !== "undefined") {
-				wep.pgId = ' . $this->id . ';
-				wep.pgParam =' . $pageParamEncode . ';
-				wep.pgGet =' . $getEncode . ';
-				wep.siteJS = "' . $this->_CFG['_HREF']['siteJS'] . '";
-				wep.BH = "' . $this->_CFG['_HREF']['BH'] . '";
-			}
-			' . $_tpl['onload'];
+			$_tpl['script']['wepSet'] = 'if(typeof wep !== "undefined") {
+	wep.pgId = ' . $this->id . ';
+	wep.pgParam =' . $pageParamEncode . ';
+	wep.pgGet =' . $getEncode . ';
+	wep.siteJS = "' . $this->_CFG['_HREF']['siteJS'] . '";
+	wep.BH = "' . $this->_CFG['_HREF']['BH'] . '";
+	wep.DOMAIN = "' . $_SERVER['HTTP_HOST2'] . '";
+}
+
+var tmp = wep.getCookie(\'wepjs123456\');
+if(tmp==false){
+	wep.setCookie(\'wepjs123456\',document.referrer);
+}
+';
 		}
 		return true;
 	}
@@ -506,6 +513,11 @@ class pg_class extends kernel_extends {
 			while ($rowPG = $resultPG->fetch()) {
 				$Cdata[$rowPG['id']] = $rowPG;
 			}
+		
+		$this->access_flag = false;
+		if($this->_CFG['returnFormat'] != 'html')
+			$this->access_flag = true;
+
 		return $this->getContent($Cdata);
 	}
 
@@ -524,6 +536,11 @@ class pg_class extends kernel_extends {
 			while ($rowPG = $resultPG->fetch()) {
 				$Cdata[$rowPG['id']] = $rowPG;
 			}
+		
+		$this->access_flag = false;
+		if($this->_CFG['returnFormat'] != 'html')
+			$this->access_flag = true;
+
 		return $this->getContent($Cdata);
 	}
 
@@ -545,14 +562,14 @@ class pg_class extends kernel_extends {
 			global $_tpl;
 			$_tpl = array();
 		}
-
+		$this->access_flag = false;
 		return $this->getContent($Cdata);
 	}
 
 	function getContent(&$Cdata) {
 		global $SQL, $PGLIST, $HTML, $_CFG, $_tpl;
 		$flagPG = 0;
-		$this->access_flag = false;
+
 		$PGLIST = &$this;
 		$SQL = &$this->SQL;
 		$Chref = $this->getHref();
@@ -1156,13 +1173,18 @@ class pg_class extends kernel_extends {
 			while ($rowPG = $resultPG->fetch()) {
 				$Cdata[$rowPG['id']] = $rowPG;
 			}
+		
+		$this->access_flag = false;
 		if(!count($Cdata) or !$this->getContent($Cdata))
 			return $RESULT;
+
 		if(is_null($this->formFlag)) {
 			$RESULT['html'] = 'Не верные данные! Отсутствует параметр $this->formFlag';
 			return $RESULT;
 		}
+
 		$RESULT['html'] = $_tpl['text'];
+
 		if($this->formFlag==1) {
 			$RESULT['onload'] .= 'clearTimeout(timerid2);wep.fShowload (1,false,result.html2,0,\'location.href = location.href;\');';
 		}

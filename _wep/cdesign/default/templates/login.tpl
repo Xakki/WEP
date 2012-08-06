@@ -17,6 +17,7 @@
 	</head>
 	<body onload="">{#logs#}
 	<div style="position:relative;top:40%;">
+		<div><a href="/index.html">HOME</a></div>
 		{#mess#}
 		<div class="cform">
 			<form action="{#action#}" method="post">

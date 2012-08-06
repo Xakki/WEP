@@ -3,6 +3,7 @@ class mail_class extends kernel_extends {
 
 	function _set_features() {
 		if (!parent::_set_features()) return false;
+		$this->ver = '0.0.2';
 		$this->reply=1;
 		$this->contenttype= 'text/html';
 		$this->uid='';		
@@ -96,6 +97,7 @@ class mail_class extends kernel_extends {
 		$this->fields['status'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL');
 		$this->fields['category'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL','default'=>0);
 		$this->fields['bcc'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL','default'=>'');
+		$this->fields['comment'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'default'=>'');
 
 		$this->_enum['status'] = array(
 			0 => 'Новое',
@@ -162,7 +164,7 @@ class mail_class extends kernel_extends {
 		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата создания', 'mask'=>array('usercheck'=>1,'fview'=>2,'sort'=>1));
 		$this->fields_form['status'] = array('type' => 'list', 'listname'=>'status', 'caption' => 'Статус', 'mask' => array('usercheck'=>1));
 		$this->fields_form['category'] = array('type' => 'list', 'listname'=>'category', 'caption' => 'Категория', 'mask' => array('usercheck'=>1));
-
+		$this->fields_form['comment']= array('type'=>'text', 'caption'=>'Redirect url', 'readonly'=>1);
 	}
 
 	/**
@@ -213,7 +215,7 @@ class mail_class extends kernel_extends {
 	function mailForm($mail_to='',$category=0) {
 		if(!$mail_to) $mail_to = $this->config['mailrobot'];
 		$this->formSort = array(
-			'from','subject','text','category','mail_to'
+			'from','subject','text','category','mail_to', 'comment'
 		);
 
 		$this->getFieldsForm(1);
@@ -223,6 +225,18 @@ class mail_class extends kernel_extends {
 		$argForm['category']['readonly'] = true;
 		$argForm['mail_to']['mask']['evala'] = '"'.$mail_to.'";';
 		$argForm['mail_to']['readonly'] = true;
+
+		$uri_hash = md5($_SERVER['REQUEST_URI']);
+		if(
+				!isset($_COOKIE['ref'.$uri_hash]) 
+			or 
+				($this->_CFG['returnFormat'] == 'html' and $_SERVER['HTTP_REFERER']  and $_COOKIE['ref'.$uri_hash]!=$_SERVER['HTTP_REFERER'] and strpos($_SERVER['HTTP_REFERER'],$_SERVER['REQUEST_URI'])===false) 
+			) {
+			_setcookie('ref'.$uri_hash, $_SERVER['HTTP_REFERER'], ($this->_CFG['time']+3600));
+		}
+		if(isset($_COOKIE['REFERER']))
+			$argForm['comment']['mask']['evala'] = '"'.$this->SqlEsc($_COOKIE['REFERER']).'";';
+
 		if(isset($_SESSION['user']['email']) and $_SESSION['user']['email']) {
 			$argForm['from']['mask']['evala'] = '"'.$_SESSION['user']['email'].'";';
 			$argForm['from']['readonly'] = true;

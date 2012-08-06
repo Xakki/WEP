@@ -63,7 +63,7 @@ $(document).ready(function() {
 			ajaxjob = true;
 			if($(this).hasClass('addlink')) {
 				JSWin({
-					'href':wep.siteJSON+'?_modul=shopbasket&_fn=jsAddBasket&id_product='+pp.attr('data-id')+'&count='+nn.val(), 'call':function(){
+					'href':wep.siteJSON+'?_modul=shopbasket&_fn=jsAddBasket&product_id='+pp.attr('data-id')+'&count='+nn.val(), 'call':function(){
 						ajaxjob = false;
 						pp.addClass('sel');
 						nn.attr('disabled','disabled');
@@ -73,7 +73,7 @@ $(document).ready(function() {
 			}
 			else {
 				JSWin({
-					'href':wep.siteJSON+'?_modul=shopbasket&_fn=jsAddBasket&id_product='+pp.attr('data-id')+'&count=0',
+					'href':wep.siteJSON+'?_modul=shopbasket&_fn=jsAddBasket&product_id='+pp.attr('data-id')+'&count=0',
 					'call':function(){
 						ajaxjob = false;
 						pp.removeClass('sel');
@@ -90,11 +90,11 @@ $(document).ready(function() {
 	$('div.buybutton a').click(function() {
 		var nn = $(this).nextAll('input');
 		if(!nn.attr('disabled')) {
-			JSWin({'href':wep.siteJSON+'?_modul=shopbasket&_fn=jsAddBasket&id_product='+$(this).attr('data-id')+'&count='+nn.val()});
+			JSWin({'href':wep.siteJSON+'?_modul=shopbasket&_fn=jsAddBasket&product_id='+$(this).attr('data-id')+'&count='+nn.val()});
 			nn.attr('disabled','disabled');
 			$(this).parent().addClass('sel');
 		} else {
-			JSWin({'href':wep.siteJSON+'?_modul=shopbasket&_fn=jsAddBasket&id_product='+$(this).attr('data-id')+'&count=0'});
+			JSWin({'href':wep.siteJSON+'?_modul=shopbasket&_fn=jsAddBasket&product_id='+$(this).attr('data-id')+'&count=0'});
 			nn.removeAttr('disabled');
 			$(this).parent().removeClass('sel');
 		}
@@ -108,7 +108,7 @@ $(document).ready(function() {
 		$('.basket-list-item .dellink a').click(function() {
 			var pp = $(this).parent().parent();
 			JSWin({
-				'href':wep.siteJSON+'?_modul=shopbasket&_fn=jsAddBasket&id_product='+pp.attr('data-id')+'&count=0',
+				'href':wep.siteJSON+'?_modul=shopbasket&_fn=jsAddBasket&product_id='+pp.attr('data-id')+'&count=0',
 				'call':function(){
 					pp.slideUp().remove();
 					wep.shop.updateBasketBlock();
@@ -127,7 +127,7 @@ $(document).ready(function() {
 			var deff = (newCost-1*oldCost);
 			$('#basketitogo').text((1*$('#basketitogo').text()+deff));
 			JSWin({
-				'href':wep.siteJSON+'?_modul=shopbasket&_fn=jsAddBasket&id_product='+pp.attr('data-id')+'&count='+this.value,
+				'href':wep.siteJSON+'?_modul=shopbasket&_fn=jsAddBasket&product_id='+pp.attr('data-id')+'&count='+this.value,
 				'call':function(){
 					wep.shop.updateBasketBlock();
 					wep.shop.updateFullCost();
@@ -138,7 +138,7 @@ $(document).ready(function() {
 
 		$('.basket-list-item input[type="checkbox"]').change(function() {
 			var pp = $(this).parent().parent();
-			var data = {'_modul':'shopbasket', '_fn':'jsCheckedBasket', 'id_product':pp.attr('data-id'), '_checked':1};
+			var data = {'_modul':'shopbasket', '_fn':'jsCheckedBasket', 'product_id':pp.attr('data-id'), '_checked':1};
 			if(this.checked) {
 				$(this).parent().parent().addClass('checked');
 			} else {

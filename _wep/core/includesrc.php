@@ -4,8 +4,13 @@
 		//$gfi -> $_CFG['fileIncludeOption']
 		if(is_null($gfi)) return true;
 		global $_tpl,$_CFG;
+
+		if(!isset($_tpl['script']))
+			$_tpl['script'] = array();
+
 		if(!isset($gfi['uiStyle']))
 			$gfi['uiStyle'] = 'ui-smoothness';
+		
 		if(isset($gfi['multiple'])) {
 			if($gfi['multiple']==2) {
 				$_tpl['styles']['style.jquery/'.$gfi['uiStyle'].'/jquery-ui'] = 1;

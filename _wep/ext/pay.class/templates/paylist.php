@@ -26,7 +26,7 @@ function tpl_paylist($data)
 		foreach($data['#list#'] as $k=>$r) {
 			if(!$r['status']) {
 				if($r['#formType#']===true)
-					$r['#status#'] .= ' [<a href="/_js.php?_modul=pay&_fn=payFormBilling&id='.$r['id'].'" onclick="return wep.JSWin({\'type\':this});" target="_blank">Оплатить</a>]';
+					$r['#status#'] .= ' [<a href="/_js.php?_modul=pay&_fn=showPayInfo&id='.$r['id'].'" onclick="return wep.JSWin({\'type\':this});" target="_blank">Оплатить</a>]';
 				elseif($r['#formType#'])
 					$r['#status#'] .= ' [<a href="'.$r['#formType#'].'" target="_blank">Оплатить</a>]';
 				$r['#status#'] .= '<br/><i>[до '.date('Y-m-d H:i',($r['mf_timecr']+($r['#lifetime#']*3600))).']</i>';

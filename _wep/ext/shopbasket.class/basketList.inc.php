@@ -58,10 +58,16 @@
 		$DATA['#page#'] = $Chref;
 		$DATA['#curr#'] = $PAY->config['curr'];
 		$html = $HTML->transformPHP($DATA,$FUNCPARAM[0]);
+		/*
+		$DATA = $PAY->displayListKey('shop'.$SHOPBASKET->getPayKey());
+		if(count($DATA['#list#'])) {
+			$DATA['#title#'] = 'Список выставленных счетов за услуги по данному объявлению';
+			$html = $HTML->transformPHP($DATA,'#pay#list');
+		}
+		*/
 	}
 	elseif(isset($_GET['basketpay'])) {
 		$subK = 3;
-		$uid = $SHOPBASKET->userId();
 		// Выписывать счёт
 		$SHOPBASKET->id = (int)$_GET['basketpay'];
 		$BDATA = $SHOPBASKET->_select();
@@ -69,14 +75,18 @@
 		$_POST['paymethod'] = $BDATA[$SHOPBASKET->id]['paytype'];
 		$DATA = $PAY->billingFrom(
 			$BDATA[$SHOPBASKET->id]['summ'], // К оплате
-			'shop'.$uid, // Ключ
-			'Покупка. Заказ №'.$SHOPBASKET->id, // Коммент
+			$SHOPBASKET->getPayKey(), // Ключ
+			'Оформление заказа по счёту №'.$SHOPBASKET->id, // Коммент
 			'if(_new_class(\'shopbasket\',$M)){$M->payStatus('.$SHOPBASKET->id.');}', // Исполняемая команда
 			$BDATA[$SHOPBASKET->id] // Дополнительные данные (email, phone итп)
 		);
 		$this->formFlag = $DATA['#resFlag#'];
 		$DATA['#contentID#'] = $PGLIST->contentID;
 		$html = $HTML->transformPHP($DATA,'#pay#billing');
+
+		if(!$BDATA[$SHOPBASKET->id]['pay_id']) {
+			$SHOPBASKET->_update(array('pay_id'=>$PAY->id));
+		}
 	}
 	elseif(isset($_GET['typedelivery']) and $SHOPBASKET->getSummOrder()) {
 		$subK = 2;

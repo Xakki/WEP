@@ -7,6 +7,7 @@
 var wep = {
 	version: '0.1.2',/*Версия скрипта*/
 	BH:'',
+	DOMAIN:'',
 	HREF_style:'_design/_style/',
 	HREF_script:'_design/_script/',
 	pgId:0,/* ID текущей страницы (загружается из onLOAD)*/
@@ -118,6 +119,12 @@ var wep = {
 				return data;
 			},*/
 			success: function(result, textStatus, XMLHttpRequest) {
+
+				 // подключение Стилей
+				if(typeof result.styles != 'undefined')  {
+					wep.cssLoad(result.styles);
+				}
+
 				//console.log(result);
 				//функц. предзапуска пользователя, возвращает результат
 				if(typeof param['precall'] != 'undefined' && typeof param['precall'] == 'function') 
@@ -158,11 +165,6 @@ var wep = {
 
 				if(typeof result.text != 'undefined' && result.text!='') // Вывод ошибок и прочего текста
 					fLog(fSpoiler(result.text,'AJAX text result'),1);
-
-				 // подключение Стилей
-				if(typeof result.styles != 'undefined')  {
-					wep.cssLoad(result.styles);
-				}
 
 				 // подключение скриптов
 				if(typeof result.script != 'undefined')  {
@@ -276,7 +278,7 @@ var wep = {
 		wep.fShowload(1,false,resData['pg_text']);
 
 		wep.paramTemp = {'call':function() {wep.ajaxMenuCall(this)}};
-		if(resData.styles.login || resData.script.wepform) {
+		if(typeof resData.styles.login != 'undefined' || typeof resData.script.wepform != 'undefined') {
 			$('#ajaxload form').one('submit',function() {wep.paramTemp['type'] = $(this); JSWin(wep.paramTemp); return false;});
 		}
 
@@ -396,12 +398,12 @@ var wep = {
 	
 		if(Wblock>(W-20)) 
 			Wblock = W;
-		jQuery(body+obj).css({'width':(Wblock+20)+'px'});
+		jQuery(body+obj).css({'width':(Wblock+22)+'px'});
 
-		wep.winResize['fMessPos#'+obj] = function() {
+		wep.setResize('fMessPos#'+obj, function() {
 			if(jQuery(body+obj).size())
 				wep.fMessPos(body2,obj);
-		}
+		});
 	},
 
 	// всплывающая подсказка
@@ -472,6 +474,8 @@ var wep = {
 	setCookie: function(name, value, expiredays, path, domain, secure) {
 
 		if (!name) return false;
+		if (!domain) domain = wep.DOMAIN;
+
 		var str = name + '=' + encodeURIComponent(value);
 
 		if (typeof expiredays!='undefined' && expiredays!=0) {
@@ -483,7 +487,8 @@ var wep = {
 		if (path)    str += '; path=' + path;
 		if (domain)  str += '; domain=' + domain;
 		if (secure)  str += '; secure';
-		
+		console.log(wep.DOMAIN);
+		console.log(domain);
 		document.cookie = str;
 		return true;
 	},
@@ -681,11 +686,11 @@ var wep = {
 						}
 					});
 				});
-				wep.winResize['paginator'] = function() {
+				wep.setResize('paginator', function() {
 					jQuery('div.ppagenum').remove();
 					jQuery('div.pagenum').show();
 					wep.pagenum_super(total,pageCur,cl,order);
-				}
+				});
 			});
 			//returnOrder: true
 		}
@@ -730,11 +735,11 @@ var wep = {
 						}
 					});
 				});
-				wep.winResize['paginator'] = function() {
+				wep.setResize('paginator', function() {
 					jQuery('div.ppagenum').remove();
 					jQuery('div.pagenum').show();
 					wep.pagenum(total,order);
-				}
+				});
 
 			});
 		}
@@ -882,8 +887,6 @@ var wep = {
 		}
 		return true;
 	},
-	// Массив функции выполняющиеся при изменении размера окна 
-	winResize : {},
 
 	/*FILTER*/
 	/*Слайдер для фильтра, возможность установки чесловых пределов*/
@@ -906,10 +909,39 @@ var wep = {
 			jQuery('#'+id+' input:eq(0)').bind('change',function (){jQuery('#slide'+id).slider( 'values' , 0 , this.value)});
 			jQuery('#'+id+' input:eq(1)').bind('change',function (){jQuery('#slide'+id).slider( 'values' , 1 , this.value)});
 	},
+
 	clearHref : function() {
 		window.location.href=window.location.pathname;
 		return false;
+	},
+
+	// Массив функции выполняющиеся при изменении размера окна 
+
+	setResize : function (k, funct){
+		if(wep.flagResizeStart) wep.setResizeTimer();
+		wep.winResize[k] = funct;
+	},
+
+	winResize : {},
+	flagResizeStart : false,
+	resizeTimer : null,
+
+	setResizeTimer : function () {
+		wep.flagResizeStart = true;
+		$(window).resize(function() {
+		    if (wep.resizeTimer) clearTimeout(wep.resizeTimer);
+		    wep.resizeTimer = setTimeout(wep.wResize, 300);
+		});
+	},
+
+	wResize : function () {
+		for(var item in wep.winResize) {
+			if(typeof wep.winResize[item] == 'function') {
+				wep.winResize[item]();
+			}
+		}
 	}
+
 };
 
 
@@ -1124,22 +1156,3 @@ function noWeekendsOrHolidays(date) {
 
 
 _Browser = getBrowserInfo();
-
-var resizeTimer = null;
-$(window).resize(function() {
-    if (resizeTimer) clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(wResize, 300);
-});
-
-function wResize() {
-	for(var item in wep.winResize) {
-		if(typeof wep.winResize[item] == 'function') {
-			wep.winResize[item]();
-		}
-	}
-}
-
-var tmp = wep.getCookie('referrer');
-if(tmp==false){
-	wep.setCookie('referrer',document.referrer);
-}
