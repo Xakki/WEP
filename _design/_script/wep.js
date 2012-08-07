@@ -468,10 +468,11 @@ var wep = {
 			jQuery('#'+id).animate({ opacity: "show" }, "slow");
 	},
 
-	setCookie: function(name, value, expiredays, path, domain, secure) {
+	setCookie: function(name, value, expiredays, domain, path, secure) {
 
 		if (!name) return false;
 		if (!domain) domain = wep.DOMAIN;
+		if (!path) path = '/';
 
 		var str = name + '=' + encodeURIComponent(value);
 
@@ -484,8 +485,6 @@ var wep = {
 		if (path)    str += '; path=' + path;
 		if (domain)  str += '; domain=' + domain;
 		if (secure)  str += '; secure';
-		console.log(wep.DOMAIN);
-		console.log(domain);
 		document.cookie = str;
 		return true;
 	},
@@ -517,8 +516,10 @@ var wep = {
 		return setStr;*/
 	},
 
-	deleteCookie: function(name, path, domain) {
-		this.setCookie(name, null, -100, path, domain);
+	deleteCookie: function(name, domain, path) {
+		if (!domain) domain = wep.DOMAIN;
+		if (!path) path = '/';
+		this.setCookie(name, null, -100, domain, path);
 		return true;
 	},
 
@@ -1027,9 +1028,8 @@ function ulToggle(obj,css) {
 /************************/
 /*simple script*/
 
-function setCookie(name, value, expiredays, path, domain, secure) {
-	if(!path) path = '/';
-	return wep.setCookie(name, value, expiredays, path, domain, secure);
+function setCookie(name, value, expiredays, domain, path, secure) {
+	return wep.setCookie(name, value, expiredays, domain, path, secure);
 }
 
 function getCookie(name) {

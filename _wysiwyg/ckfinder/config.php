@@ -1,4 +1,6 @@
 <?php
+//ini_set('upload_max_filesize','100M');
+//ini_set('post_max_size','100M');
 	global $_CFG;
 	$_CFG['_PATH']['path'] = dirname(dirname(dirname(dirname(dirname(dirname($_SERVER['SCRIPT_FILENAME'])))))).'/';
 	$_GET['_php']='config';

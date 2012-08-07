@@ -1,4 +1,5 @@
 <?php
+include_once(dirname(__FILE__).'/formSelect.php');
 	function tpl_cffields($k, $r) {
 		$enum = array(
 			'type'=>array(
@@ -32,6 +33,6 @@
 
 	function tpl_cffields_item($k, $kf, $rf, &$enum) {
 		return '<li>
-			<select name="'.$k.'['.$kf.'][type]">'.selectitem($enum['type'], $rf['type']).'</select>
+			<select name="'.$k.'['.$kf.'][type]">'.tpl_formSelect($enum['type'], $rf['type']).'</select>
 		</li>';
 	}
