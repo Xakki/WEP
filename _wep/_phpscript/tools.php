@@ -82,7 +82,7 @@ function tools_cron() {
 	);
 
 	$DATA['topmenu']['add'] = array(
-		'href' => '_type=add',
+		'href' => array('_type'=>'add'),
 		'caption' => 'Добавить задание',
 		'sel' => 0,
 		'type' => '',

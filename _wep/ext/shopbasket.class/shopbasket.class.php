@@ -26,6 +26,7 @@ class shopbasket_class extends kernel_extends {
 		$this->mf_timecr = true; // создать поле хранящее время создания записи
 		$this->mf_timeup = true; // создать поле хранящее время обновления записи
 		$this->mf_ipcreate = true;//IP адрес пользователя с котрого была добавлена запись
+		$this->mf_notif = true;
 
 		$this->prm_add = false; // добавить в модуле
 		$this->prm_del = false; // удалять в модуле
@@ -51,7 +52,7 @@ class shopbasket_class extends kernel_extends {
 		parent::_create();
 		$this->fields['pay_id'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL');
 		$this->fields['fio'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'min' => 6);
-		$this->fields['adress'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'default' => '');
+		$this->fields['address'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['phone'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'min' => 6);
 		$this->fields['summ'] = array('type' => 'float', 'width' => '8,2', 'attr' => 'NOT NULL', 'default'=>'0.00', 'min' => '1');
 		$this->fields['paytype'] = array('type' => 'varchar', 'width' => 16, 'attr' => 'NOT NULL', 'min' => '1');
@@ -66,11 +67,11 @@ class shopbasket_class extends kernel_extends {
 		parent::setFieldsForm($form);
 
 		$this->fields_form['fio'] = array('type' => 'text', 'caption' => 'Ваша фамилия и имя', 'mask'=>array('min'=>6));
-		$this->fields_form['adress'] = array('type' => 'text', 'caption' => 'Адрес доставки', 'mask'=>array('min'=>6));
+		$this->fields_form['address'] = array('type' => 'text', 'caption' => 'Адрес доставки', 'mask'=>array('min'=>6));
 		$this->fields_form['phone'] = array('type' => 'phone', 'caption' => 'Телефон для связи и оповещения', 'mask'=>array('name'=>'phone3', 'min'=>6));
 		$this->fields_form['summ'] = array('type' => 'int', 'caption' => 'Сумма', 'mask'=>array());
 		$this->fields_form['delivertype'] = array('type' => 'list', 'listname'=>'delivertype', 'caption' => 'Тип доставки', 'mask' =>array());
-		$this->fields_form['paytype'] = array('type' => 'list', 'listname' => 'paytype', 'caption' => 'Тип платежа', 'mask' =>array());
+		$this->fields_form['paytype'] = array('type' => 'list', 'listname' => 'paytype', 'caption' => 'Тип платежа', 'mask' =>array('min'=>2));
 		$this->fields_form['laststatus'] = array('type' => 'list', 'listname'=>'status', 'caption' => 'Статус', 'readonly'=>1, 'mask' =>array());
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Отображать','default'=>1, 'readonly'=>1, 'mask' =>array());
 		$this->fields_form['mf_timecr'] = array('type' => 'date', 'readonly'=>1, 'caption' => 'Дата заказа', 'mask'=>array('fview'=>2));
@@ -246,14 +247,14 @@ class shopbasket_class extends kernel_extends {
 	*
 	*
 	*/
-	function fBasketListItem() {
+	function fBasketListItem($oid=0) {
 		$RESULT = array();
 		if(!$uId = $this->userId()) return $RESULT;
 
 		_new_class('shop',$SHOP);
 
 		$this->childs['shopbasketitem']->attaches = $SHOP->childs['product']->attaches; // кастыль для загрузки изобр
-		$RESULT['#list#'] = $this->childs['shopbasketitem']->qs('t1.*, t2.id, t2.cost, t2.shop, t2.name, t2.img_product' ,'t1 JOIN '.$SHOP->childs['product']->tablename.' t2 ON t1.product_id=t2.id WHERE t1.owner_id=0 and t1.'.$this->mf_createrid.'='.$uId.' GROUP BY t1.id', 'id');
+		$RESULT['#list#'] = $this->childs['shopbasketitem']->qs('t1.*, t2.id, t2.cost, t2.shop, t2.name, t2.img_product' ,'t1 JOIN '.$SHOP->childs['product']->tablename.' t2 ON t1.product_id=t2.id WHERE t1.owner_id='.$oid.' and t1.'.$this->mf_createrid.'='.$uId.' GROUP BY t1.id', 'id');
 		$this->childs['shopbasketitem']->attaches = array();
 
 		if(count($RESULT['#list#']) and _new_class('shopsale',$SHOPSALE)) {
@@ -362,6 +363,8 @@ class shopbasket_class extends kernel_extends {
 		$this->id = $id;
 		$this->childs['shopbasketstatus']->_add(array('status'=>$status));
 	}
+
+
 }
 
 class shopbasketitem_class extends kernel_extends {

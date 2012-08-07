@@ -47,8 +47,13 @@ class paybank_class extends kernel_extends {
 		$obj->config['bank_KC'] = '';
 		$obj->config['bank_minpay'] = '';
 		$obj->config['bank_maxpay'] = '';
+		$obj->config['bank_info'] = '';
+		$obj->config['bank_prefix'] = 'НФ-';
+		$obj->config['bank_firmaddress'] = '';
+		$obj->config['bank_firmcontact'] = '';
 
-		$obj->config_form['bank_info'] = array('type' => 'info', 'caption'=>'<h3>Оплата безналичным расчетом</h3>');
+		$obj->config_form['bank_iiii'] = array('type' => 'info', 'caption'=>'<h3>Оплата безналичным расчетом</h3>');
+		$obj->config_form['bank_prefix'] = array('type' => 'text', 'caption' => 'Префикс номера счёта', 'style'=>'background-color:#2a37ec;');
 		$obj->config_form['bank_namefirm'] = array('type' => 'text', 'caption' => 'Наименование получателя платежа', 'style'=>'background-color:#2a37ec;');
 		$obj->config_form['bank_INN'] = array('type' => 'text', 'caption' => 'ИНН получателя платежа', 'style'=>'background-color:#2a37ec;');
 		$obj->config_form['bank_KPP'] = array('type' => 'text', 'caption' => 'КПП получателя платежа', 'style'=>'background-color:#2a37ec;');
@@ -56,18 +61,24 @@ class paybank_class extends kernel_extends {
 		$obj->config_form['bank_namebank'] = array('type' => 'text', 'caption' => 'Наименование банка получателя', 'style'=>'background-color:#2a37ec;');
 		$obj->config_form['bank_BIK'] = array('type' => 'text', 'caption' => 'БИК', 'style'=>'background-color:#2a37ec;');
 		$obj->config_form['bank_KC'] = array('type' => 'text', 'caption' => 'К/С счет банка получателя', 'style'=>'background-color:#2a37ec;');
+		$obj->config_form['bank_firmaddress'] = array('type' => 'text', 'caption' => 'Адресс', 'style'=>'background-color:#2a37ec;');
+		$obj->config_form['bank_firmaddress'] = array('type' => 'text', 'caption' => 'Адресс', 'style'=>'background-color:#2a37ec;');
+		$obj->config_form['bank_firmcontact'] = array('type' => 'text', 'caption' => 'Контакты', 'style'=>'background-color:#2a37ec;');
 		$obj->config_form['bank_minpay'] = array('type' => 'int', 'caption' => 'Миним. сумма','comment'=>'при пополнении счёта', 'style'=>'background-color:#2a37ec;');
 		$obj->config_form['bank_maxpay'] = array('type' => 'int', 'caption' => 'Максим. сумма','comment'=>'при пополнении счёта', 'style'=>'background-color:#2a37ec;');
+		$obj->config_form['bank_info'] = array('type' => 'ckedit', 'caption' => 'Информация', 'comment'=>'вывод при распечатке квитанции', 'style'=>'background-color:#2a37ec;');
 	}
 
 
 	protected function _create() {
 		parent::_create();
-		$this->fields['name'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'default'=>'');
-		$this->fields['fio'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'default'=>'');
-		$this->fields['address'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'default'=>'');
-		$this->fields['amount'] = array('type' => 'float', 'width' => '11,4','attr' => 'NOT NULL'); // в коппейках
+		$this->fields['name'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
+		$this->fields['fio'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
+		$this->fields['phone'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
+		$this->fields['address'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
+		$this->fields['amount'] = array('type' => 'float', 'width' => '11,2','attr' => 'NOT NULL'); // в коппейках
 		$this->fields['statuses'] = array('type' => 'tinyint', 'width' => 1,'attr' => 'NOT NULL');
+		$this->fields['json_data'] = array('type' => 'text', 'attr' => 'NOT NULL');
 	}
 
 	public function setFieldsForm($form=0) {
@@ -75,10 +86,12 @@ class paybank_class extends kernel_extends {
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Назначение платежа');
 		$this->fields_form['fio'] = array('type' => 'text', 'caption' => 'ФИО плательщика');
 		$this->fields_form['address'] = array('type' => 'text', 'caption' => 'Адрес плательщика ');
+		$this->fields_form['phone'] = array('type' => 'text', 'caption' => 'Контактный телефон');
 		$this->fields_form['amount'] = array('type' => 'int', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->owner->config['bank_minpay'].'р, максимум '.$this->owner->config['bank_maxpay'].'р', 'default'=>100, 'mask'=>array('minint'=>$this->owner->config['bank_minpay'],'maxint'=>$this->owner->config['bank_maxpay']));
 		if(isset($_GET['summ']))
 			$this->fields_form['amount']['default'] = ceil(floatval($_GET['summ']));
 		$this->fields_form['statuses'] = array('type' => 'list', 'listname'=>'statuses', 'readonly'=>1, 'caption' => 'Статус', 'mask'=>array());
+		$this->fields_form['json_data'] = array('type' => 'textarea', 'caption' => 'JSON DATA');
 	}
 
 	function billingFrom($summ, $comm, $data=array()) {
@@ -93,6 +106,14 @@ class paybank_class extends kernel_extends {
 			$ADD['address'] = $data['address'] = $_SESSION['user']['address'];
 		elseif(isset($data['address']))
 			$ADD['address'] = $data['address'];
+
+		if(isset($_SESSION['user']['phone']))
+			$ADD['phone'] = $data['phone'] = $_SESSION['user']['phone'];
+		elseif(isset($data['phone']))
+			$ADD['phone'] = $data['phone'];
+
+		if(isset($data['json_data']))
+			$ADD['json_data'] = $data['json_data'];
 		// TODO : Если нету fio и address - то выводить форму сначала для их заполнения
 
 		$st = $this->_add($ADD);
@@ -131,7 +152,19 @@ class paybank_class extends kernel_extends {
 	
 	function printBill() {
 		global $HTML;
-		$DATA = array();
+		$result = array(
+			'text' => 'Ошибка. Нет данных.',
+			'title' => 'Ошибка',
+		);
+		$this->id = (int)$_GET['id'];
+		if(!$this->id) return $result;
+		$item = $this->_select();
+		if(!count($item)) return $result;
+
+		$DATA = array(
+			'#config#' => $this->owner->config,
+			'#item#' => $item[$this->id]
+		);
 		if($_GET['blank']=='kvit') {
 			$result = array(
 				'text' => $HTML->transformPHP($DATA,'#pay#paybankReceipt'),

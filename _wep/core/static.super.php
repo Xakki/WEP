@@ -19,17 +19,23 @@ class static_super {
 		// Результат работы скрипта
 		// $flag = 3; - вывод данных
 		$flag = 1;
-
+		if(!isset($PARAM['clause']))
+			$PARAM['clause'] = array();
+		
 		// Задаем начальный массив данных
 		if (!isset($PARAM['messages'])) {
 			$PARAM['messages'] = array();
 			$PARAM['path'] = array();
 			$PARAM['_clp'] = array('_modul' => $_this->_cl);
-			if (strpos($PARAM['firstpath'], '?') === false)
-				$PARAM['firstpath'] .= '?';
+			if(!isset($PARAM['firstpath']))
+				$PARAM['firstpath'] = '';
 			else {
-				if (substr($PARAM['firstpath'], -1) != '&')
-					$PARAM['firstpath'] .= '&';
+				if (strpos($PARAM['firstpath'], '?') === false)
+					$PARAM['firstpath'] .= '?';
+				else {
+					if (substr($PARAM['firstpath'], -1) != '&')
+						$PARAM['firstpath'] .= '&';
+				}
 			}
 		}
 
@@ -156,7 +162,7 @@ class static_super {
 			}
 
 			if (!isset($PARAM['filter']) or $PARAM['filter'] == true) {
-				$PARAM['clause'] = $_this->_filter_clause();
+				$PARAM['clause'] += $_this->_filter_clause();
 
 				if (count($PARAM['clause']) and isset($_SESSION['filter'][$_this->_cl]) and count($_SESSION['filter'][$_this->_cl])) {
 					$_tpl['onload'] .= 'showHelp(\'.button-filter\',\'Внимание! Включен фильтр.\',4000);$(\'.button-filter\').addClass(\'weptools_sel\');';
@@ -175,7 +181,8 @@ class static_super {
 				$ftype = 'del';
 			}
 
-			$PARAM['topmenu'] = static_super::modulMenu($_this, $PARAM);
+			if(!isset($PARAM['hide_topmenu']))
+				$PARAM['topmenu'] = static_super::modulMenu($_this, $PARAM);
 
 			if ($ftype == 'add') {
 				if ($_this->mf_istree and $_this->id)
@@ -628,7 +635,7 @@ class static_super {
 					}
 					$DATA['item'][$key]['tditem'][$k] = $tditem;
 				}
-				if(count($_this->childs)) {
+				if(count($_this->childs) and !isset($param['hide_child'])) {
 					foreach($_this->childs as $ck=>&$cn) {
 						if($cn->showinowner and count($cn->fields_form))
 							$DATA['item'][$key]['child'][$ck] = array('value'=>$cn->caption, 'cnt'=>$row[$ck.'_cnt']);

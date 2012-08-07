@@ -9,6 +9,8 @@ class pay_class extends kernel_extends {
 		$this->mf_ipcreate = true;//IP адрес пользователя с котрого была добавлена запись		
 		$this->mf_timestamp = true; // создать поле  типа timestamp
 		$this->cf_childs = true;
+		$this->mf_notif = true;
+
 		$this->ver = '0.4.5';
 		$this->default_access = '|0|';
 		$this->prm_add = false; // добавить в модуле
@@ -54,6 +56,7 @@ class pay_class extends kernel_extends {
 			3 => 'Отменено',
 			4 => 'Истекло время ожидания',
 		);
+
 	}
 
 	public function setFieldsForm($form=0) {
@@ -178,6 +181,7 @@ class pay_class extends kernel_extends {
 			'_key'=>$key,
 			'_eval'=>$eval,
 		);
+
 		return $this->_add($data);
 	}
 
@@ -562,6 +566,7 @@ class pay_class extends kernel_extends {
 	function clearOldData($M, $leftTime) {
 		$this->_update(array('status'=>'4'), 'status=0 and '.$this->mf_timecr.'<"'.(time()-$leftTime).'" and pay_modul="'.$M.'"');
 	}
+
 }
 
 

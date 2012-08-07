@@ -88,7 +88,7 @@ class pg_class extends kernel_extends {
 	function _create() {
 		parent::_create();
 		$this->index_fields['ugroup'] = 'ugroup';
-		//$this->unique_fields['adress'] = array('parent_id','alias');
+		//$this->unique_fields['address'] = array('parent_id','alias');
 		# fields
 		$this->fields['alias'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');

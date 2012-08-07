@@ -147,6 +147,7 @@ abstract class kernel_extends {
 		$this->mf_timeup = false; // создать поле хранящще время обновления поля
 		$this->mf_timeoff = false; // создать поле хранящще время отключения поля (active=0)
 		$this->mf_ipcreate = false; //IP адрес пользователя с котрого была добавлена запись
+		$this->mf_notif = false; // Уведомления о добавлении записи в базу
 		$this->cf_fields = false; // Возможность добавлять дополнительные поля в конфиге
 		$this->prm_add = true; // добавить в модуле
 		$this->prm_del = true; // удалять в модуле
@@ -270,6 +271,8 @@ abstract class kernel_extends {
 			$this->mf_timestamp = 'mf_timestamp';
 		if (is_bool($this->mf_ipcreate) and $this->mf_ipcreate)
 			$this->mf_ipcreate = 'mf_ipcreate';
+		if (is_bool($this->mf_notif) and $this->mf_notif)
+			$this->mf_notif = 'mf_notif';
 
 		if(!$this->_listname)
 			$this->_listname = ($this->mf_namefields ? $this->mf_namefields : 'id');
@@ -316,6 +319,12 @@ abstract class kernel_extends {
 		if ($this->mf_actctrl) {
 			$this->fields[$this->mf_actctrl] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => 1);
 			$this->index_fields[$this->mf_actctrl] = $this->mf_actctrl;
+		}
+
+		if ($this->mf_notif) {
+			$this->fields[$this->mf_notif] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => 0);
+			$this->index_fields[$this->mf_notif] = $this->mf_notif;
+			$this->cron[] = array('modul'=>$this->_cl,'function'=>'sendNotif()','active'=>0,'time'=>3600);
 		}
 
 		if ($this->mf_timestamp)
@@ -2119,6 +2128,40 @@ $simple = true;
 		if ($DATA['start'] < 0)
 			$DATA['start'] = 0;
 		return $DATA;
+	}
+
+	/**
+	* Генератор сообщений на мыло
+	*/
+	function sendNotif($email='') {
+		global $HTML;
+		$param = array(
+			'clause'=>array('t1.'.$this->mf_notif=>'t1.'.$this->mf_notif.'=0'),
+			'hide_topmenu' => true,
+			'hide_child' => true
+		);
+		list($DATA,$formFlag) = $this->super_inc($param);
+
+		if(isset($DATA['data']['item']) and $cnt = count($DATA['data']['item'])) 
+		{
+			unset($DATA['data']['pagenum']);
+			unset($DATA['path']);
+
+			_new_class('mail',$MAIL);
+			$datamail = array(
+				'creater_id' => -1,
+				'mail_to' => ($email?$email:$MAIL->config['mailrobot']),
+				'subject' => strtoupper($_SERVER['HTTP_HOST']).' - Оформленно заказов '.$cnt.'шт.',
+				'text' => '<p>Список заказов</p>'. $HTML->transformPHP($DATA,'#pg#superlist'),
+
+			);
+			$MAIL->reply = 0;
+			$MAIL->config['mailcron'] = 1;
+			$MAIL->Send($datamail);
+			$result = $this->SQL->execSQL('UPDATE `' . $this->tablename . '` SET '.$this->mf_notif.'=1 WHERE id IN (' . implode(',',array_keys($DATA['data']['item'])).')');
+			return '   -sendNotif-  ';
+		}
+		return '';
 	}
 
 	// путь к фаилам

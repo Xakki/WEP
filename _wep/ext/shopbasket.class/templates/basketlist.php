@@ -2,7 +2,7 @@
 	function tpl_basketlist(&$data) {
 		global $_CFG;
 		$html = '';
-		//print_r('<pre>');print_r($data);
+		$url = explode('?',$_SERVER['REQUEST_URI']);
 		if(isset($data['#list#']) and count($data['#list#'])) {
 			$html .= '<table class="basketlist"><tr> 
 				<th>№
@@ -19,6 +19,10 @@
 					$prod .= '<li>'.$p['product_name'].' ['.$p['count'].' шт. по '.$p['cost_item'].' '.$data['#curr#'].']';
 				}
 				$prod .= '</ul>';
+				if($r['pay_id'])
+					$link = '<a href="/_js.php?_modul=pay&_fn=showPayInfo&id='.$r['pay_id'].'" onclick="return wep.JSWin({type:this,onclk:\'reload\'});" target="_blank">'.$r['#laststatus#'].'</a>';
+				else
+					$link = 'Забронированно <a href="'.$url[0].'?basketpay='.$r['id'].'">Оформить заказ</a>';
 				$html .= '
 				<tr data-id="'.$r['id'].'">
 					<td>'.$r['id'].'
@@ -26,7 +30,7 @@
 					<td class="summ"><span>'.$r['summ'].'</span> '.$data['#curr#'].'
 					<td>'.$r['#paytype#'].'
 					<td class="basketlist-basketitem">'.$prod.'
-					<td><a href="/_js.php?_modul=pay&_fn=showPayInfo&id='.$r['pay_id'].'" onclick="return wep.JSWin({type:this,onclk:\'reload\'});" target="_blank">'.$r['#laststatus#'].'</a>
+					<td>'.$link.'
 				</tr>';
 			}
 			$html .= '</table>';

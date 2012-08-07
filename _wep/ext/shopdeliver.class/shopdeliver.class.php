@@ -21,7 +21,7 @@ class shopdeliver_class extends kernel_extends {
 
 		$this->_enum['norequere']=array(
 			'fio' => 'Фамилия Имя',
-			'adress' => 'Адрес',
+			'address' => 'Адрес',
 			'phone' => 'Телефон',
 		);
 

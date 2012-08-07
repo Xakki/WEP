@@ -59,7 +59,7 @@
 	function tpl_topmenu(&$data, $firstpath, $httpQuery=array()) {
 		global $_CFG;
 		$temp_topmenu = '';
-		if(count($data)) { //MENU
+		if(is_array($data) and count($data)) { //MENU
 			include_once(dirname(__FILE__).'/formSelect.php');
 			foreach($data as $r) {
 				if($r['type']=='split') {

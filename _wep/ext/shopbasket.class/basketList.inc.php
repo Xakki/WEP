@@ -49,7 +49,8 @@
 
 	$subK = 1;
 	$html = '';
-
+_new_class('pay', $PAY);
+print_r($PAY->sendNotif());
 	if(isset($_GET['basketorder']) and $SHOPBASKET->userId()) {
 		$subMenu[1]['href'] = $Chref.'.html';
 		$subK = 0;
@@ -70,22 +71,29 @@
 		$subK = 3;
 		// Выписывать счёт
 		$SHOPBASKET->id = (int)$_GET['basketpay'];
-		$BDATA = $SHOPBASKET->_select();
-		_new_class('pay', $PAY);
-		$_POST['paymethod'] = $BDATA[$SHOPBASKET->id]['paytype'];
-		$DATA = $PAY->billingFrom(
-			$BDATA[$SHOPBASKET->id]['summ'], // К оплате
-			$SHOPBASKET->getPayKey(), // Ключ
-			'Оформление заказа по счёту №'.$SHOPBASKET->id, // Коммент
-			'if(_new_class(\'shopbasket\',$M)){$M->payStatus('.$SHOPBASKET->id.');}', // Исполняемая команда
-			$BDATA[$SHOPBASKET->id] // Дополнительные данные (email, phone итп)
-		);
-		$this->formFlag = $DATA['#resFlag#'];
-		$DATA['#contentID#'] = $PGLIST->contentID;
-		$html = $HTML->transformPHP($DATA,'#pay#billing');
+		$IDATA = $SHOPBASKET->fBasketListItem($SHOPBASKET->id);
+		if(count($IDATA)) {
+			$BDATA = $SHOPBASKET->_select();
+			
+			$BDATA[$SHOPBASKET->id]['json_data'] = json_encode($IDATA);
 
-		if(!$BDATA[$SHOPBASKET->id]['pay_id']) {
-			$SHOPBASKET->_update(array('pay_id'=>$PAY->id));
+			_new_class('pay', $PAY);
+			$_POST['paymethod'] = $BDATA[$SHOPBASKET->id]['paytype'];
+
+			$DATA = $PAY->billingFrom(
+				$BDATA[$SHOPBASKET->id]['summ'], // К оплате
+				$SHOPBASKET->getPayKey(), // Ключ
+				'Оформление заказа по счёту №'.$SHOPBASKET->id, // Коммент
+				'if(_new_class(\'shopbasket\',$M)){$M->payStatus('.$SHOPBASKET->id.');}', // Исполняемая команда
+				$BDATA[$SHOPBASKET->id] // Дополнительные данные (email, phone итп)
+			);
+			$this->formFlag = $DATA['#resFlag#'];
+			$DATA['#contentID#'] = $PGLIST->contentID;
+			$html = $HTML->transformPHP($DATA,'#pay#billing');
+
+			if(!$BDATA[$SHOPBASKET->id]['pay_id']) {
+				$SHOPBASKET->_update(array('pay_id'=>$PAY->id));
+			}
 		}
 	}
 	elseif(isset($_GET['typedelivery']) and $SHOPBASKET->getSummOrder()) {
@@ -112,7 +120,7 @@
 					$FORM['delivertype']['type'] = 'hidden';
 					$FORM['delivertype']['value'] = $_POST['delivertype'] = $_GET['typedelivery'];
 					$FORM['phone']['value'] = $_SESSION['user']['cf1'];
-					$FORM['adress']['value'] = $_SESSION['user']['cf2'];
+					$FORM['address']['value'] = $_SESSION['user']['cf2'];
 					$FORM['fio']['value'] = $_SESSION['user']['name'];
 					$SHOPBASKET->allowedPay = $deliveryData['paylist'];
 					$SHOPBASKET->allowedPay = explode('|',trim($SHOPBASKET->allowedPay,'|'));
