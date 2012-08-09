@@ -147,7 +147,7 @@
 .loginzaForm .loginzaIframe {
 	width:330px;
 	min-height: 220px;
-	display:inline-block;
+	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
 }
 
 .loginzaForm .loginzaIframe .loginzaInfo {
@@ -156,7 +156,7 @@
 
 .loginzaForm div.loginForm {
 	width:229px;
-	display:inline-block;
+	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
 	vertical-align: top;
 	margin:0 0px;
 	padding:10px;
@@ -165,7 +165,7 @@
 }
 .loginzaForm div.divform {
 	width:300px;
-	display:inline-block;
+	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
 	vertical-align: top;
 }
 

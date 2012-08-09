@@ -1,7 +1,7 @@
 <?php
 include_once(dirname(__FILE__).'/formSelect.php');
-	function tpl_cffields($k, $r) {
-		$enum = array(
+	global $enum;
+	$enum = array(
 			'type'=>array(
 				array('#name#'=>'text', '#id#'=>'text'),
 				array('#name#'=>'textarea', '#id#'=>'textarea'),
@@ -21,18 +21,27 @@ include_once(dirname(__FILE__).'/formSelect.php');
 				array('#name#'=>'info', '#id#'=>'info'),
 			),	
 		);
+
+	function tpl_cffields($k, $r) {
+
 		$html = '<div class="form-caption">'.$r['caption'].'</div>
 		<ul class="cffields">';
+		print_r('<pre>');print_r($r['value']);
 		foreach($r['value'] as $kf=>$rf) {
-			$html .= tpl_cffields_item($k, $kf, $rf, $enum);
+			$html .= tpl_cffields_item($k, $kf, $rf);
 		}
 
 		$html .= '</ul>';
 		return $html;
 	}
 
-	function tpl_cffields_item($k, $kf, $rf, &$enum) {
+	function tpl_cffields_item($k, $kf, $rf) {
+		global $enum;
 		return '<li>
-			<select name="'.$k.'['.$kf.'][type]">'.tpl_formSelect($enum['type'], $rf['type']).'</select>
+			Lable <input type="text" name="'.$k.'['.$kf.'][caption]" value="'.$rf['caption'].'"><br/>
+			Type <select name="'.$k.'['.$kf.'][type]">'.tpl_formSelect($enum['type'], $rf['type']).'</select><br/>
+			Width <input type="text" name="'.$k.'['.$kf.'][width]" value="'.$rf['width'].'"><br/>
+			default <input type="text" name="'.$k.'['.$kf.'][default]" value="'.$rf['default'].'"><br/>
+
 		</li>';
 	}

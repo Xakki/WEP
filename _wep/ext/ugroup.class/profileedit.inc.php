@@ -29,6 +29,8 @@
 
 	if(!static_main::_prmUserCheck()) return false;
 
+	$UGROUP->childs['users']->lang['Save and close'] = 'Сохранить';
+
 	$DATA = array();
 	$param = array('formflag'=>1);
 	$argForm = array();
