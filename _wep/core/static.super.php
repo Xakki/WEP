@@ -278,8 +278,6 @@ class static_super {
 						$PARAM['messages'] = array(array('value' => 'Функция инструмента не найдена.', 'name' => 'error'));
 					else {
 						$PARAM['formtools'] = call_user_func_array(array($method[0],$method[1]), $method[2]);
-						if(isset($PARAM['formtools']['form']) and count($PARAM['formtools']['form']))
-							$PARAM['formtools']['form']['_*features*_'] = array('name' => $_REQUEST['_func'], 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
 					}
 				}
 			}

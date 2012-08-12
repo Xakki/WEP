@@ -214,8 +214,8 @@
 		unset($r);
 		if(count($fields)) {
 			if(!isset($fields['_*features*_']))
-				$fields['_*features*_'] = array('name' => 'f'.$this->_cl, 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
+				$fields['_*features*_'] = array('name' => 'f'.$this->_cl, 'method'=>'GET', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
 			elseif(is_string($fields['_*features*_']))
-				$fields['_*features*_'] = array('name' => $fields['_*features*_'], 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
+				$fields['_*features*_'] = array('name' => $fields['_*features*_'], 'method'=>'GET', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
 		}
 		return true;

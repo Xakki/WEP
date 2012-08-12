@@ -25,10 +25,18 @@
 			}
 			elseif(isset($DATA['formtools']) and count($DATA['formtools'])) {
 				if(isset($DATA['formtools'][1]['form']))
-					$DATA['formtools'] = $DATA['formtools'][1];
+					$DATA['formtools'] = $DATA['formtools'][1]; // WTF?
+				
+				if((isset($DATA['formtools']['form']) and count($DATA['formtools']['form'])) or isset($DATA['formtools']['filter']) and count($DATA['formtools']['filter'])) {
+					//$_tpl['onload'] .= 'wep.jsForm(\'#form_tools_'.$_REQUEST['_func'].'\',{\'insertObj\':\'#tools_block\'});';
+					$_tpl['onload'] .= 'wep.form.JSFR(\'#form_tools_f'.$MODUL->_cl.'\');';
+				}
+
+				if(isset($DATA['formtools']['reloadPage']) and $DATA['formtools']['reloadPage'])
+					$_tpl['onload'] .= 'wep.fShowloadReload();';
+
 				$html = $HTML->transformPHP($DATA,'formtools');
-				//$_tpl['onload'] .= 'wep.jsForm(\'#form_tools_'.$_REQUEST['_func'].'\',{\'insertObj\':\'#tools_block\'});';
-				$_tpl['onload'] .= 'wep.form.JSFR(\'#form_tools_'.$_REQUEST['_func'].'\');';
+
 			}
 			elseif($flag!=3) {
 				end($HTML->path);

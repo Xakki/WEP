@@ -125,6 +125,13 @@ var wep = {
 					wep.cssLoad(result.styles);
 				}
 
+				if(typeof result.param == 'object')  {
+					for(var i in result.param) {
+						param[i] = result.param[i];
+					}
+					
+				}
+
 				//console.log(result);
 				//функц. предзапуска пользователя, возвращает результат
 				if(typeof param['precall'] != 'undefined' && typeof param['precall'] == 'function') 
@@ -156,7 +163,7 @@ var wep = {
 							wep.fShowload(0,false,false,param['fade']);
 					}
 				}
-
+				/// Может тут убрать условие else ? TODO
 				else if(typeof result.html != 'undefined' && result.html!='' && !param['insertObj']) {
 					clearTimeout(param['timeBG']);// Чистим таймер и тем самым затеменение не отобразиться
 					wep.fShowload(1,param['body'],result.html,param['fade'],param['onclk']);
@@ -248,9 +255,9 @@ var wep = {
 		return false;
 	},
 
-	/*fShowloadReload: function() {
+	fShowloadReload: function() {
 		$('#ajaxload .blockclose').click(function(){window.location.reload();});
-	},*/
+	},
 
 	showBG: function(body,show,k) {
 		if(!body) body='body';
@@ -592,8 +599,9 @@ var wep = {
 		if(typeof id !== 'undefined') {
 			jQuery('#'+id).show();
 			param['insertObj']  = '#'+id;
-		} else
-			param['onclk']='reload';	
+		}
+		/* else
+			param['onclk']='reload';	*/
 		JSWin(param);
 		return false;
 	},

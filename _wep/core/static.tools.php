@@ -271,16 +271,25 @@ class static_tools {
 		return Array('form' => $fields_form, 'messages' => $mess);
 	}
 
+	/**
+	* Tools для редактирования конфига у модуля
+	*/
 	static public function toolsConfigmodul($_this) {
 		$fields_form = array();
-		$arr = array('mess' => '', 'vars' => '');
-		if (!static_main::_prmModul($_this->_cl, array(13)))
-			$arr['mess'][] = static_main::am('error', 'denied', $_this);
-		elseif (!count($_this->config_form)) {
+		$RESULT = array('messages' => array(), 'form' => array());
+
+		if (!static_main::_prmModul($_this->_cl, array(13))) 
+		{
+			$RESULT['messages'][] = static_main::am('error', 'denied', $_this);
+		}
+		elseif (!count($_this->config_form)) 
+		{
 			$fields_form['_info'] = array(
 				'type' => 'info',
 				'caption' => static_main::m('_configno', $_this));
-		} else {
+		} 
+		else
+		{
 			foreach ($_this->config as $k => &$r) {
 				if (is_array($r) and isset($_this->config_form[$k]) and !isset($_this->config_form[$k]['multiple'])) {
 					/*$temp = array();
@@ -294,25 +303,37 @@ class static_tools {
 				}
 			}
 			unset($r);
-			if (count($_POST)) {
-				$arr = $_this->fFormCheck($_POST, $arr['vars'], $_this->config_form); // 2ой параметр просто так
+
+			// Сохраняемся
+			if (count($_POST)) 
+			{
+				$params = array();
+				$arr = $_this->fFormCheck($_POST, $params, $_this->config_form); // 2ой параметр просто так
 				$config = array();
-				foreach ($_this->config as $k => $r) {
+				foreach ($_this->config as $k => $r) 
+				{
 					if (isset($arr['vars'][$k])) {
 						$_this->config_form[$k]['value'] = $arr['vars'][$k];
 						$config[$k] = $arr['vars'][$k];
 					}
 				}
 				$_this->config = $config;
-				if (!count($arr['mess'])) {
-					$arr['mess'][] = static_main::am('ok', 'update', $_this);
+				if (!count($arr['mess'])) 
+				{
+					$RESULT['messages'][] = static_main::am('ok', 'update', $_this);
 					static_tools::_save_config($config, $_this->_file_cfg);
+					$RESULT['reloadPage'] = true; // Это явный костыль, но включать мозг у меня нет времени, когда нибудь что нибудь придумаю
 				}
+				else
+					$RESULT['messages'] = array_merge($RESULT['messages'],$arr['mess']);
 			} 
-			else {
+			else 
+			{
 				$fields_form['_info'] = array('type' => 'info', 'css' => 'caption', 'caption' => static_main::m('_config'));
-				foreach ($_this->config_form as $k => $r) {
-					if(isset($_this->config[$k])) {
+				foreach ($_this->config_form as $k => $r) 
+				{
+					if(isset($_this->config[$k])) 
+					{
 						if (!is_array($_this->config[$k]))
 							$_this->config_form[$k]['value'] = stripslashes($_this->config[$k]);
 						else
@@ -326,7 +347,8 @@ class static_tools {
 			}
 		}
 		$_this->kFields2FormFields($fields_form);
-		return Array('form' => $fields_form, 'messages' => $arr['mess']);
+		$RESULT['form'] = $fields_form;
+		return $RESULT;
 	}
 
 	/**

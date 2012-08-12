@@ -120,7 +120,8 @@
 		$temp = '';
 		foreach($script as $kk=>$rr) {
 			if(substr($rr,0,4)=='http' or substr($rr,0,1)=='<') {
-				trigger_error('Обнаружена не совместимость: ошибка загрузки скриптов', E_USER_WARNING);
+				trigger_error('Обнаружена не совместимость: ошибка загрузки скриптов `'.$kk.'` - `'.$rr.'`', E_USER_WARNING);
+				//print_r('<pre>');print_r($script);
 			}
 
 			$src = '';
@@ -145,8 +146,9 @@
 		$temp = '';
 
 		foreach($css as $kk=>$rr) {
-			if(substr($rr,0,4)=='http' or substr($rr,0,1)=='<') {
-				trigger_error('Обнаружена не совместимость: ошибка загрузки скриптов', E_USER_WARNING);
+			if(substr($rr,0,4)==='http' or substr($rr,0,1)==='<') {
+				trigger_error('Обнаружена не совместимость: ошибка загрузки стилей `'.$kk.'` - `'.$rr.'`', E_USER_WARNING);
+				//print_r('<pre>');print_r($css);
 			}
 
 			$src = '';
