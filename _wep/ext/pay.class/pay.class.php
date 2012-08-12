@@ -11,7 +11,7 @@ class pay_class extends kernel_extends {
 		$this->cf_childs = true;
 		$this->mf_notif = true;
 
-		$this->ver = '0.4.5';
+		$this->ver = '0.6.6';
 		$this->default_access = '|0|';
 		$this->prm_add = false; // добавить в модуле
 		$this->prm_del = false; // удалять в модуле
@@ -25,19 +25,12 @@ class pay_class extends kernel_extends {
 	}
 
 	protected function _create_conf() {/*CONFIG*/
+		parent::_create_conf();
+
 		$this->config['curr'] = 'руб.';
 		$this->config_form['curr'] = array('type' => 'text', 'caption'=>'Название валюты');
 
-		parent::_create_conf();
 	}
-
-	function _childs() { /*CONFIG*/
-		parent::_childs();
-		foreach($this->childs as &$r)
-			$r->_create_conf2($this);
-		$this->configParse();
-	}
-
 
 	protected function _create() {
 		parent::_create();
@@ -282,7 +275,7 @@ class pay_class extends kernel_extends {
 			$r['#status#'] = $this->_enum['status'][$r['status']];
 			$r['#pay_modul#'] = $this->childs[$r['pay_modul']]->caption;
 			$cl = $this->childs[$r['pay_modul']]->_cl;
-			$r['#lifetime#'] = $this->config[substr($cl,3).'_lifetime'];
+			$r['#lifetime#'] = $this->childs[$r['pay_modul']]->config['lifetime'];
 			$r['#formType#'] = $this->childs[$r['pay_modul']]->pay_formType;
 		}
 		return $data;
@@ -305,7 +298,7 @@ class pay_class extends kernel_extends {
 				$r['#status#'] = $this->_enum['status'][$r['status']];
 				if(isset($this->childs[$r['pay_modul']])) {
 					$r['#pay_modul#'] = $this->childs[$r['pay_modul']]->caption;
-					$r['#lifetime#'] = $this->config[substr($this->childs[$r['pay_modul']]->_cl,3).'_lifetime'];
+					$r['#lifetime#'] = $this->childs[$r['pay_modul']]->config['lifetime'];
 					$r['#formType#'] = $this->childs[$r['pay_modul']]->pay_formType;
 				}
 			}

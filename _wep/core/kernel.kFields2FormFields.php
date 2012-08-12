@@ -182,7 +182,8 @@
 					}
 				}
 				elseif($r['type']=='ckedit') {
-
+					if(!isset($r['paramedit']))
+						$r['paramedit'] = array();
 				}
 				elseif($k=='mf_ipcreate') {
 					$r['value'] = long2ip($r['value']);

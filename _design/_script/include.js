@@ -49,7 +49,7 @@ jQuery.extend({
 		url = url.replace('\n', '');
 		jQuery.includeStates[url] = false;
 		var script = document.createElement('script');
-		script.type = 'text/javascript';
+		//script.type = 'text/javascript';
 		script.onload = function () {
 			jQuery.includeStates[url] = true;
 			if ( callback )
@@ -108,7 +108,7 @@ jQuery.extend({
 		url = url.replace('\n', '');
 		jQuery.includeStates[url] = false;
 		var style = document.createElement('link');
-		style.type = 'text/css';
+		//style.type = 'text/css';
 		style.rel = 'stylesheet';
 		style.onload = function () {
 			jQuery.includeStates[url] = true;
@@ -163,11 +163,11 @@ jQuery.extend({
 var baseHref = '';
 function absPath(url) {
 
-	if(url.substr(0,4)!='http') {
+	if(url.substr(0,4)!='http' && url.substr(0,2)!='//') {
 		if(baseHref=='') {
 			baseHref = jQuery('base').attr('href');
 			if(baseHref=='')
-				baseHref = 'http://'+window.location.host;
+				baseHref = '//'+window.location.host;
 			else {
 				baseHref = trimUrl(baseHref,'/');
 			}

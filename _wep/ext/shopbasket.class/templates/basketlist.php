@@ -1,6 +1,6 @@
 <?php
 	function tpl_basketlist(&$data) {
-		global $_CFG;
+		global $_CFG, $HTML;
 		$html = '';
 		$url = explode('?',$_SERVER['REQUEST_URI']);
 		if(isset($data['#list#']) and count($data['#list#'])) {
@@ -36,6 +36,7 @@
 			$html .= '</table>';
 		} 
 		else
-			$html = '<div class="basket">Корзина пуста</div>';
+			$html = '<div class="basket">'.static_render::message('Корзина пуста').'</div>';
+		
 		return $html;
 	}

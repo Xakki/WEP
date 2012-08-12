@@ -243,6 +243,7 @@ var wep = {
 			jQuery(body+' > #'+objid).show();
 			//if(body=='body') // Нах это?
 			wep.fMessPos(body,' #'+objid);
+			setTimeout(function(){wep.fMessPos(body,' #'+objid);},1000);
 		}
 		return false;
 	},
@@ -526,17 +527,24 @@ var wep = {
 	cssLoad: function(css) {
 		for(var i in css) {
 			//if(is_string($rr) and $rr[0]=='<')
-			if (i.substr(0, 4) == 'http')
-				var src = i;
-			else
-				var src = wep.BH+wep.HREF_style+i+'.css';
-			if(i && css[i]==1) {
-				$.includeCSS(src);
-			} 
-			else if(typeof css[i] == 'object') {
+			var src = '';
+			if (i.substr(0, 4) == 'http' || i.substr(0, 2) == '//')
+				src = i;
+			else if(typeof i == 'string')
+				src = wep.BH+wep.HREF_style+i+'.css';
+
+			
+			if(typeof css[i] == 'object') {
 				$.includeCSS(src, function(){ wep.cssLoad(css[i]); });
 			}
-			else {
+			else if(src) {
+				$.includeCSS(src);
+			}
+
+			if(typeof css[i] == 'string') {
+				var style = document.createElement('style');
+				style.innerHTML = css[i];
+				document.getElementsByTagName('head')[0].appendChild(style);
 				// TODO прочие виды загрузок
 			}
 		}
@@ -549,25 +557,23 @@ var wep = {
 		--wep._loadCount;
 		if(typeof script == 'object') {
 			for(var i in script) {
-				//if(is_string($rr) and $rr[0]=='<')
-				if (i.substr(0, 4) == 'http')
+				var src = '';
+				if (i.substr(0, 4) == 'http' || i.substr(0, 2) == '//')
 					var src = i;
-				else
+				else if(typeof i == 'string')
 					var src = wep.BH+wep.HREF_script+i+'.js';
 
-				if(i && script[i]==1) {
-					--wep._loadCount;
-					$.include(src, function(){++wep._loadCount;});
-				} 
-				else if(typeof script[i] == 'object') {
+				
+				if(typeof script[i] == 'object') {
 					--wep._loadCount;
 					$.include(src, function(){ wep.scriptLoad(script[i]); ++wep._loadCount;});
 				}
-				else if (script[i].substr(0, 4) == 'http') {
+				else if(src) {
 					--wep._loadCount;
-					$.include(script[i], function(){++wep._loadCount;});
-				}
-				else if(script[i]) {
+					$.include(src, function(){++wep._loadCount;});
+				} 
+
+				if(typeof script[i] == 'string') {
 					eval(script[i]);
 				}
 			}

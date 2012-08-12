@@ -1,69 +1,6 @@
 <?php
 class payyandex_class extends kernel_extends {
-
-	function _create_conf2(&$obj) {/*CONFIG*/
-
-		$this->REDIRECT_URI = 'http://'.$_SERVER['HTTP_HOST2'].'/_js.php?_modul='.$this->_cl.'&_fn=redirectFromYa&noajax=1';
-		$this->URI_YM_API = 'https://money.yandex.ru/api';
-		$this->URI_YM_AUTH = 'https://sp-money.yandex.ru/oauth/authorize';
-		$this->URI_YM_TOKEN = 'https://sp-money.yandex.ru/oauth/token';
-		$this->YM_USER_AGENT = 'wep-php';
-		$this->SSL = dirname(__FILE__).'/lib/ym.crt';
-		//$this->SCOPE = array('account-info','operation-history','operation-details','payment','payment-shop','payment-p2p','money-source("wallet","card")');
-		$this->SCOPE = array('account-info','operation-history','operation-details');
-
-		//parent::_create_conf();
-		$obj->config['yandex_cid'] = '';
-		$obj->config['yandex_token'] = '';
-		$obj->config['yandex_id'] = '';
-		/*$obj->config['yandex_login'] = '';
-		$obj->config['yandex_pass'] = '';
-		$obj->config['yandex_pass2'] = '';*/
-		$obj->config['yandex_minpay'] = 5;
-		$obj->config['yandex_maxpay'] = 15000;
-		$obj->config['yandex_lifetime'] = 336; // 14 дней
-
-		$obj->config_form['yandex_info'] = array('type' => 'info', 'caption'=>'<h3>Яндекс.Деньги</h3>');
-		$obj->config_form['yandex_id'] = array('type' => 'text', 'caption'=>'Номер счёта','style'=>'background-color:#F60;');
-		$obj->config_form['yandex_cid'] = array('type' => 'text', 'caption'=>'Идентификатор приложения','comment'=>'Получить его можно <a href="https://sp-money.yandex.ru/myservices/new.xml" target="_blank">тут</a> и <a href="https://sp-money.yandex.ru/myservices/admin.xml" target="_blank">настраивать</a><br>Redirect URI: <b>'.$this->REDIRECT_URI.'</b> ', 'style'=>'background-color:#F60;');
-		$obj->config_form['yandex_token'] = array('type' => 'text', 'caption'=>'TOKEN', 'style'=>'background-color:#F60;');
-		$obj->config_form['yandex_lifetime'] = array('type' => 'text', 'caption'=>'Время жизни счёта по умолчанию. Задается в часах. Если 0 , то будетмаксимум (45 суток)', 'style'=>'background-color:#F60;');
-		/*$obj->config_form['yandex_token'] = array('type' => 'hidden');
-		$obj->config_form['yandex_newtoken'] = array('type' => 'checkbox','caption'=>'Установить новый токен', 'onchange'=>'if(this.checked) $(\'.yandex_newtoken\').show(); else $(\'.yandex_newtoken\').hide();', 'style'=>'background-color:#F60;');
-		$obj->config_form['yandex_login'] = array('type' => 'text', 'caption'=>'Логин авторизации', 'css'=>'yandex_newtoken','style'=>'background-color:#F65;');
-		$obj->config_form['yandex_pass'] = array('type' => 'password', 'caption'=>'Пароль авторизации', 'css'=>'yandex_newtoken','style'=>'background-color:#F65;');
-		$obj->config_form['yandex_pass2'] = array('type' => 'password', 'caption'=>'Пароль подтверждения платежа', 'css'=>'yandex_newtoken','style'=>'background-color:#F65;');*/
-		//$obj->config_form['yandex_minpay'] = array('type' => 'int', 'caption' => 'Миним. сумма','comment'=>'при пополнении счёта', 'style'=>'background-color:#F60;');
-		//$obj->config_form['yandex_maxpay'] = array('type' => 'int', 'caption' => 'Максим. сумма','comment'=>'при пополнении счёта', 'style'=>'background-color:#F60;');
-
-		if(isset($_GET['_func']) and $_GET['_func']=='Configmodul') {
-			global $_tpl;
-			if(count($_POST) and isset($_POST['yandex_id']) and isset($_POST['yandex_cid']) and !$_POST['yandex_token']) {
-				$_tpl['onload'] .= 'window.open("'.$this->REDIRECT_URI.'","Получение TOKEN","width=800,height=750,resizable=yes,scrollbars=yes,status=yes");';
-			}
-			/*$_tpl['onload'] .= 'if($("input[name=yandex_token]").val()) $(\'.yandex_newtoken\').hide(); else $(\'.yandex_newtoken\').show();';
-			if(count($_POST) and isset($_POST['yandex_id']) and isset($_POST['yandex_cid']) and (!$_POST['yandex_token'] or isset($_POST['yandex_newtoken']))) {
-				if($_POST['yandex_login'] and $_POST['yandex_pass'] and $_POST['yandex_pass2']) {
-					$CODE = $this->yandexGetCode($_POST['yandex_cid'],$_POST['yandex_login'],$_POST['yandex_pass'],$_POST['yandex_pass2']);
-					if(!$CODE) {
-						print_r('<h3>Error yandexGetCodeе</h3>');
-					} else {
-						$CODE = $this->receiveOAuthToken($_POST['yandex_cid'],$CODE);
-						if(!$CODE) print_r('<h3>Error receiveOAuthToken</h3>');
-						$_POST['yandex_token'] = $CODE;
-					}
-				}
-				else 
-					print_r('<h3>Не введены необходимые данные</h3>');
-			}*/
-		}
-	}
-
-	protected function _create_conf() {/*CONFIG*/
-		parent::_create_conf();
-		$this->config = &$this->owner->config;
-	}
-
+	
 	function _set_features() {
 		if (!parent::_set_features()) return false;
 		$this->caption = 'Яндекс.Деньги';
@@ -109,7 +46,66 @@ class payyandex_class extends kernel_extends {
 			'redirectFromYa'=>true
 		);
 		$this->_Button = true;
+
+		$this->REDIRECT_URI = 'http://'.$_SERVER['HTTP_HOST2'].'/_js.php?_modul='.$this->_cl.'&_fn=redirectFromYa&noajax=1';
+		$this->URI_YM_API = 'https://money.yandex.ru/api';
+		$this->URI_YM_AUTH = 'https://sp-money.yandex.ru/oauth/authorize';
+		$this->URI_YM_TOKEN = 'https://sp-money.yandex.ru/oauth/token';
+		$this->YM_USER_AGENT = 'wep-php';
+		$this->SSL = dirname(__FILE__).'/lib/ym.crt';
+		//$this->SCOPE = array('account-info','operation-history','operation-details','payment','payment-shop','payment-p2p','money-source("wallet","card")');
+		$this->SCOPE = array('account-info','operation-history','operation-details');
+
 		return true;
+	}
+
+	function _create_conf() {/*CONFIG*/
+
+		//parent::_create_conf();
+		$this->config['yandex_cid'] = '';
+		$this->config['yandex_token'] = '';
+		$this->config['yandex_id'] = '';
+		/*$this->config['yandex_login'] = '';
+		$this->config['yandex_pass'] = '';
+		$this->config['yandex_pass2'] = '';*/
+		$this->config['minpay'] = 5;
+		$this->config['maxpay'] = 15000;
+		$this->config['lifetime'] = 336; // 14 дней
+
+		$this->config_form['yandex_info'] = array('type' => 'info', 'caption'=>'<h3>Яндекс.Деньги</h3>');
+		$this->config_form['yandex_id'] = array('type' => 'text', 'caption'=>'Номер счёта');
+		$this->config_form['yandex_cid'] = array('type' => 'text', 'caption'=>'Идентификатор приложения','comment'=>'Получить его можно <a href="https://sp-money.yandex.ru/myservices/new.xml" target="_blank">тут</a> и <a href="https://sp-money.yandex.ru/myservices/admin.xml" target="_blank">настраивать</a><br>Redirect URI: <b>'.$this->REDIRECT_URI.'</b> ');
+		$this->config_form['yandex_token'] = array('type' => 'text', 'caption'=>'TOKEN');
+		/*$this->config_form['yandex_token'] = array('type' => 'hidden');
+		$this->config_form['yandex_newtoken'] = array('type' => 'checkbox','caption'=>'Установить новый токен', 'onchange'=>'if(this.checked) $(\'.yandex_newtoken\').show(); else $(\'.yandex_newtoken\').hide();', 'style'=>'background-color:#F60;');
+		$this->config_form['yandex_login'] = array('type' => 'text', 'caption'=>'Логин авторизации', 'css'=>'yandex_newtoken','style'=>'background-color:#F65;');
+		$this->config_form['yandex_pass'] = array('type' => 'password', 'caption'=>'Пароль авторизации', 'css'=>'yandex_newtoken','style'=>'background-color:#F65;');
+		$this->config_form['yandex_pass2'] = array('type' => 'password', 'caption'=>'Пароль подтверждения платежа', 'css'=>'yandex_newtoken','style'=>'background-color:#F65;');*/
+		$this->config_form['minpay'] = array('type' => 'int', 'caption' => 'Миним. сумма','comment'=>'при пополнении счёта', 'style'=>'background-color:#F60;');
+		$this->config_form['maxpay'] = array('type' => 'int', 'caption' => 'Максим. сумма','comment'=>'при пополнении счёта', 'style'=>'background-color:#F60;');
+		$this->config_form['lifetime'] = array('type' => 'text', 'caption'=>'Время жизни счёта по умолчанию. Задается в часах. Если 0 , то будет максимум (45 суток)');
+
+		if(isset($_GET['_func']) and $_GET['_func']=='Configmodul') {
+			global $_tpl;
+			if(count($_POST) and isset($_POST['yandex_id']) and isset($_POST['yandex_cid']) and !$_POST['yandex_token']) {
+				$_tpl['onload'] .= 'window.open("'.$this->REDIRECT_URI.'","Получение TOKEN","width=800,height=750,resizable=yes,scrollbars=yes,status=yes");';
+			}
+			/*$_tpl['onload'] .= 'if($("input[name=yandex_token]").val()) $(\'.yandex_newtoken\').hide(); else $(\'.yandex_newtoken\').show();';
+			if(count($_POST) and isset($_POST['yandex_id']) and isset($_POST['yandex_cid']) and (!$_POST['yandex_token'] or isset($_POST['yandex_newtoken']))) {
+				if($_POST['yandex_login'] and $_POST['yandex_pass'] and $_POST['yandex_pass2']) {
+					$CODE = $this->yandexGetCode($_POST['yandex_cid'],$_POST['yandex_login'],$_POST['yandex_pass'],$_POST['yandex_pass2']);
+					if(!$CODE) {
+						print_r('<h3>Error yandexGetCodeе</h3>');
+					} else {
+						$CODE = $this->receiveOAuthToken($_POST['yandex_cid'],$CODE);
+						if(!$CODE) print_r('<h3>Error receiveOAuthToken</h3>');
+						$_POST['yandex_token'] = $CODE;
+					}
+				}
+				else 
+					print_r('<h3>Не введены необходимые данные</h3>');
+			}*/
+		}
 	}
 
 	protected function _create() {
@@ -142,7 +138,7 @@ class payyandex_class extends kernel_extends {
 		$this->fields_form['sender'] = array('type' => 'text', 'caption' => 'Номер плательщика');
 		$this->fields_form['phone'] = array('type' => 'text', 'caption' => 'Номер телефона');
 		$this->fields_form['email'] = array('type' => 'text', 'caption' => 'Email');
-		$this->fields_form['amount'] = array('type' => 'int', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['yandex_minpay'].'р, максимум '.$this->config['yandex_maxpay'].'р', 'default'=>100, 'mask'=>array('minint'=>$this->config['yandex_minpay'],'maxint'=>$this->config['yandex_maxpay']));
+		$this->fields_form['amount'] = array('type' => 'int', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('minint'=>$this->config['minpay'],'maxint'=>$this->config['maxpay']));
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Комментарий', 'mask'=>array('name'=>'all'));
 		$this->fields_form['status'] = array('type' => 'list', 'listname'=>'status', 'readonly'=>1, 'caption' => 'Статус', 'mask'=>array());
 		$this->fields_form['error'] = array('type' => 'list', 'listname'=>'error', 'readonly'=>1, 'caption' => 'Ошибка', 'mask'=>array());
@@ -182,7 +178,7 @@ class payyandex_class extends kernel_extends {
 			array('txt','После оплаты обновите <a href="javascript:window.location.reload();">страницу</a>, чтобы узнать состояние счёта.'),
 		);
 		$DATA['form'] = array(
-			'receiver'=>array('type'=>'hidden','value'=>$this->owner->config['yandex_id']),
+			'receiver'=>array('type'=>'hidden','value'=>$this->config['yandex_id']),
 			'FormComment'=>array('type'=>'hidden','value'=>'Счёт№'.$data['id'].'; '.$data['name']), // заголовок у отправителя
 			'short-dest'=>array('type'=>'hidden','value'=>$data['name']), // Комментарий у отправителя
 			'writable-targets'=>array('type'=>'hidden','value'=>'false'),
@@ -209,10 +205,10 @@ class payyandex_class extends kernel_extends {
 	//http://unidoski.ru
 	function redirectFromYa() {
 		if(!isset($_GET['code'])) {
-			header("Location: ".$this->URI_YM_AUTH . '?client_id='.$this->owner->config['yandex_cid'].'&response_type=code&scope=' . urlencode(implode(' ',$this->SCOPE)) . '&redirect_uri=' . urlencode($this->REDIRECT_URI));
+			header("Location: ".$this->URI_YM_AUTH . '?client_id='.$this->config['yandex_cid'].'&response_type=code&scope=' . urlencode(implode(' ',$this->SCOPE)) . '&redirect_uri=' . urlencode($this->REDIRECT_URI));
 			die();
 		}
-		$CODE = $this->receiveOAuthToken($this->owner->config['yandex_cid'],$_GET['code']);
+		$CODE = $this->receiveOAuthToken($this->config['yandex_cid'],$_GET['code']);
 		return '<h2>Код вставить в поле `TOKEN` для Яндекс.Деньги в конфиге модуля:<h2><textarea style="width:500px;height:150px;">'.$CODE.'</textarea>';
 	}
 
@@ -220,12 +216,12 @@ class payyandex_class extends kernel_extends {
 		$param = array();
 		$param['COOKIEJAR'] = $this->_CFG['_PATH']['temp'].'payyandex.txt';
 		$param['REFERER'] = true;
-		$html = $this->_http('http://passport.yandex.ru/passport?mode=auth&msg=money',$param);
+		$html = static_tools::_http('http://passport.yandex.ru/passport?mode=auth&msg=money',$param);
 		$param['POST'] = 'from=passport&idkey=22M1332881456_tFPe13IK&display=page&login='.$LOGIN.'&passwd='.$PASS.'&timestamp=1332880245212&login=xakki&passwd=dedmazai28';
 		
 		$param['COOKIEFILE'] = $param['COOKIEJAR'];
 		$param['redirect'] = true;
-		$html = $this->_http('http://passport.yandex.ru/passport?mode=auth&msg=money',$param);
+		$html = static_tools::_http('http://passport.yandex.ru/passport?mode=auth&msg=money',$param);
 		//$html['text'] = htmlentities($html['text'],ENT_NOQUOTES,'UTF-8');
 		//print_r('<pre>');print_r($html);
 		//print_r(file_get_contents($param['COOKIEJAR']));
@@ -242,7 +238,7 @@ class payyandex_class extends kernel_extends {
 		$param = array();
 		$param['HTTPHEADER'][] = 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8';
 		$param['SSL'] = $this->SSL;
-		$html = $this->_http($URL,$param);
+		$html = static_tools::_http($URL,$param);
 		if(!$html['info']['redirect_url']) {return false;}
 
 		/********/
@@ -250,7 +246,7 @@ class payyandex_class extends kernel_extends {
 		$param['REFERER'] = $html['info']['url'];
 		$param['redirect'] = true;
 		$param['COOKIEFILE'] = $param['COOKIEJAR'] = $CF;
-		$html = $this->_http($html['info']['redirect_url'],$param);
+		$html = static_tools::_http($html['info']['redirect_url'],$param);
 
 		$pos1 = mb_strpos($html['text'],'window.location.replace("')+25;	
 		$pos2 = mb_strpos($html['text'],'");');
@@ -263,7 +259,7 @@ class payyandex_class extends kernel_extends {
 		//$param['redirect'] = true;
 		$param['SSL'] = $this->SSL;
 		$param['COOKIEFILE'] = $param['COOKIEJAR'] = $CF;
-		$html = $this->_http($URL,$param);
+		$html = static_tools::_http($URL,$param);
 
 		/********/
 		$param = array();
@@ -295,7 +291,7 @@ class payyandex_class extends kernel_extends {
 		$POST['passwd'] = $PASS2;
 		$param['POST'] = $POST;
 		$param['COOKIEFILE'] = $param['COOKIEJAR'] = $CF;
-		$html = $this->_http($URL,$param);
+		$html = static_tools::_http($URL,$param);
 		
 		unlink($CF);
 		//$html['text'] = htmlentities($html['text'],ENT_NOQUOTES,'windows-1251');//,'windows-1251' 'UTF-8'
@@ -336,7 +332,7 @@ class payyandex_class extends kernel_extends {
 		$param['SSL'] = $this->SSL;
 		$param['FORBID'] = true;
 		$param['USERAGENT'] = $this->YM_USER_AGENT;
-		$html = $this->_http($this->URI_YM_TOKEN,$param);
+		$html = static_tools::_http($this->URI_YM_TOKEN,$param);
 
 		$response = json_decode($html['text'], TRUE);
 		if (!$response or isset($response['error']) or !$response['access_token']) {
@@ -362,7 +358,7 @@ class payyandex_class extends kernel_extends {
 		$param['FORBID'] = true;
 		$param['POST'] = true;
 		$param['USERAGENT'] = $this->YM_USER_AGENT;
-		$html = $this->_http($this->URI_YM_API. '/account-info',$param);
+		$html = static_tools::_http($this->URI_YM_API. '/account-info',$param);
 		$response = json_decode($html['text'], TRUE);
 		return $response;
 	}
@@ -402,7 +398,7 @@ class payyandex_class extends kernel_extends {
 		if ($records != NULL)
 			$param['POST']['records'] = $records;
 		$param['USERAGENT'] = $this->YM_USER_AGENT;
-		$html = $this->_http($this->URI_YM_API. '/operation-history',$param);
+		$html = static_tools::_http($this->URI_YM_API. '/operation-history',$param);
 		if(!$html['text'] or $html['info']['http_code']!=200)
 			trigger_error('Ошибка запроса к Яндекс API', E_USER_WARNING);
 		$response = json_decode($html['text'], TRUE);
@@ -431,7 +427,7 @@ class payyandex_class extends kernel_extends {
 		$param['FORBID'] = true;
 		$param['POST']['operation_id'] = $operationId;
 		$param['USERAGENT'] = $this->YM_USER_AGENT;
-		$html = $this->_http($this->URI_YM_API. '/operation-details',$param);
+		$html = static_tools::_http($this->URI_YM_API. '/operation-details',$param);
 		$response = json_decode($html['text'], TRUE);
 		return $response;
     }
@@ -451,8 +447,8 @@ class payyandex_class extends kernel_extends {
 		$CNT = count($DATA);
 		if(!$CNT) return '-нет выставленных счетов-';
 
-		//$INFO = $this->accountInfo($this->owner->config['yandex_token']);
-		$INFO = $this->operationHistory($this->owner->config['yandex_token'], NULL, NULL, 'deposition');
+		//$INFO = $this->accountInfo($this->config['yandex_token']);
+		$INFO = $this->operationHistory($this->config['yandex_token'], NULL, NULL, 'deposition');
 
 		if(!count($INFO['operations'])) return '-нет платежей , '.$CNT.' не оплачено-';
 		$i=0;
@@ -461,7 +457,7 @@ class payyandex_class extends kernel_extends {
 			if(count($tempOP)) continue;
 
 			//date($r['datetime'])
-			$INFO2 = $this->operationDetail($this->owner->config['yandex_token'], $r['operation_id']);
+			$INFO2 = $this->operationDetail($this->config['yandex_token'], $r['operation_id']);
 			//$key = preg_replace('/[^0-9A-zА-я\:\;\№]+/ui','',$INFO2['message']);
 
 			if(!isset($INFO2['message']) or mb_strpos($INFO2['message'],'Счёт№')===false) continue;
@@ -503,7 +499,7 @@ class payyandex_class extends kernel_extends {
 	* @param $leftTime - в секундах
 	*/
 	function clearOldData() {
-		$leftTime = ($this->owner->config['yandex_lifetime']*3600);
+		$leftTime = ($this->config['yandex_lifetime']*3600);
 		$this->_update(array('status'=>'timeout', $this->mf_actctrl=>0), 'status="" and '.$this->mf_timecr.'<"'.(time()-$leftTime).'"');
 		$this->owner->clearOldData($this->_cl, $leftTime);
 	}

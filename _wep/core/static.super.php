@@ -268,27 +268,34 @@ class static_super {
 				if ($_this->mf_istree and $_this->id)
 					$_this->parent_id = $_this->id;
 				$PARAM['formtools'] = array();
-				if (!isset($PARAM['topmenu'][$_REQUEST['_func']]))
-					$PARAM['formtools']['messages'] = array(array('value' => 'Опция инструмента не найдена.', 'name' => 'error'));
-				elseif (!method_exists($_this, 'tools' . $_REQUEST['_func']))
-					$PARAM['formtools']['messages'] = array(array('value' => 'Функция инструмента не найдена.', 'name' => 'error'));
+				if (!isset($PARAM['topmenu'][$_REQUEST['_func']]) or !$PARAM['topmenu'][$_REQUEST['_func']]['function'])
+					$PARAM['messages'] = array(array('value' => 'Опция инструмента не найдена.', 'name' => 'error'));
 				else {
-					eval('$PARAM[\'formtools\'] = $_this->tools' . $_REQUEST['_func'] . '();');
-					if(isset($PARAM['formtools']['form']) and count($PARAM['formtools']['form']))
-						$PARAM['formtools']['form']['_*features*_'] = array('name' => $_REQUEST['_func'], 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
+					$method = $PARAM['topmenu'][$_REQUEST['_func']]['function'];
+					if(!is_array($method))
+						$method = array($_this,$method,array());
+					if(!method_exists($method[0],$method[1]))
+						$PARAM['messages'] = array(array('value' => 'Функция инструмента не найдена.', 'name' => 'error'));
+					else {
+						$PARAM['formtools'] = call_user_func_array(array($method[0],$method[1]), $method[2]);
+						if(isset($PARAM['formtools']['form']) and count($PARAM['formtools']['form']))
+							$PARAM['formtools']['form']['_*features*_'] = array('name' => $_REQUEST['_func'], 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
+					}
 				}
 			}
 			elseif ($ftype == 'static') {
+				exit('ТОДО');
+				/*
 				if ($_this->mf_istree and $_this->id)
 					$_this->parent_id = $_this->id;
 				$PARAM['static'] = array();
 				if (!isset($PARAM['topmenu'][$_REQUEST['_func']]))
 					$PARAM['messages'] = array(array('value' => 'Опция статики не найдена.', 'name' => 'error'));
-				elseif (!method_exists($_this, 'static' . $_REQUEST['_func']))
+				elseif (!method_exists($_this, 'static' . $PARAM['topmenu'][$_REQUEST['_func']]['function']))
 					$PARAM['messages'] = array(array('value' => 'Функция статики не найдена.', 'name' => 'error'));
 				else {
 					eval('$PARAM[\'static\'] = $_this->static' . $_REQUEST['_func'] . '();');
-				}
+				}*/
 			} 
 			else {
 				if ($_this->mf_istree and $_this->id)
@@ -796,28 +803,22 @@ class static_super {
 		}
 		$topmenu[] = array('type'=>'split');
 
+		self::modulMenuConfig($_this, $topmenu);
 
-		if (isset($_this->config_form) and count($_this->config_form) and static_main::_prmModul($_this->_cl, array(13)))
-			$topmenu['Configmodul'] = array(
-				'href' => array('_type' => 'tools', '_func' => 'Configmodul'),
-				'caption' => 'Настроика модуля',
-				'sel' => 0,
-				'type' => 'button',
-				'css' => 'button-config',
-				'is_popup' => true,
-			);
-		if ($_this->mf_indexing and static_main::_prmModul($_this->_cl, array(12)))
+		/*if ($_this->mf_indexing and static_main::_prmModul($_this->_cl, array(12)))
 			$topmenu['Reindex'] = array(
 				'href' => array('_type' => 'tools', '_func' => 'Reindex'),
+				'function' => 'toolsReindex',
 				'caption' => 'Переиндексация',
 				'sel' => 0,
 				'type' => 'button',
 				'css' => 'button-reindex',
 				'is_popup' => true,
-			);
+			);*/
 		if ($_this->cf_reinstall and static_main::_prmModul($_this->_cl, array(11)))
 			$topmenu['Reinstall'] = array(
 				'href' => array('_type' => 'tools', '_func' => 'Reinstall'),
+				'function' => 'toolsReinstall',
 				'caption' => 'Переустановка',
 				'sel' => 0,
 				'type' => 'button',
@@ -827,6 +828,7 @@ class static_super {
 		if ($_this->cf_filter and $_this->_prmSortField()) {
 			$topmenu['Formfilter'] = array(
 				'href' => array('_type' => 'tools', '_func' => 'Formfilter'),
+				'function' => 'toolsFormfilter',
 				'caption' => 'Фильтр',
 				'sel' => 0,
 				'type' => 'button',
@@ -836,11 +838,12 @@ class static_super {
 
 		}
 		if ($_this->mf_statistic) {
-			$t = array('_type' => 'static', '_func' => 'Statsmodul');
+			$t = array('_type' => 'tools', '_func' => 'Statsmodul');
 			if ($_this->owner and $_this->owner->id)
 				$t['_oid'] = $_this->owner->id;
 			$topmenu['Statsmodul'] = array(
 				'href' => $t,
+				'function' => 'toolsStatsmodul',
 				'caption' => 'Статистика',
 				'sel' => 0,
 				'type' => 'button',
@@ -857,6 +860,7 @@ class static_super {
 		$t = array('_type' => 'tools', '_func' => 'SuperGroup');
 		$topmenu['SuperGroup'] = array(
 			'href' => $t,
+			'function' => 'toolsSuperGroup',
 			'caption' => 'Групповая операция<i title="Кол-во выбранных элементов">'.$sg.'</i>',
 			'title' => 'Групповая операция',
 			'sel' => 0,
@@ -868,9 +872,10 @@ class static_super {
 
 		// TOOLS
 		if(count($_this->cf_tools)) {
-			foreach($_this->cf_tools as $r) {
-				$topmenu[$r['func']] = array(
-					'href' => array('_type' => 'tools', '_func' => $r['func']),
+			foreach($_this->cf_tools as $k=>$r) {
+				$topmenu['cf_tools'.$k] = array(
+					'href' => array('_type' => 'tools', '_func' => 'cf_tools'.$k),
+					'function' => $r['func'],
 					'caption' => $r['name'],
 					//'sel' => 0,
 					'type' => 'button',
@@ -931,5 +936,20 @@ class static_super {
 			
 		return $topmenu;
 	}
-
+	static function modulMenuConfig(&$_this, &$topmenu) {
+		if (isset($_this->config_form) and count($_this->config_form) and static_main::_prmModul($_this->_cl, array(13)))
+			$topmenu['Configmodul'.$_this->_cl] = array(
+				'href' => array('_type' => 'tools', '_func' => 'Configmodul'.$_this->_cl, '_modul'=>$_this->_cl),
+				'function' => 'toolsConfigmodul',
+				'caption' => 'Настроика модуля `'.$_this->caption.'`',
+				'sel' => 0,
+				'type' => 'button',
+				'css' => 'button-config',
+				'is_popup' => true,
+			);
+		if (count($_this->childs))
+			foreach ($_this->childs as &$cn) {
+				self::modulMenuConfig($cn, $topmenu);
+			}
+	}
 }

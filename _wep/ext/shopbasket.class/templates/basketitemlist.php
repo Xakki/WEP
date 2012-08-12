@@ -58,6 +58,6 @@
 			</form>
 			';
 		} else
-			$html = '<div class="basket">Корзина пуста</div>';
+			$html = '<div class="basket">'.static_render::message('Корзина пуста').'</div>';
 		return $html;
 	}

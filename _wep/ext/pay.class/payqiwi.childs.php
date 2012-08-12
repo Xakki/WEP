@@ -4,26 +4,26 @@ class payqiwi_class extends kernel_extends {
 	function _create_conf2(&$obj) {/*CONFIG*/
 		//parent::_create_conf();
 
-		$obj->config['qiwi_login'] = '';
-		$obj->config['qiwi_password'] = '';
-		$obj->config['qiwi_txn-prefix'] = '';
-		$obj->config['qiwi_create-agt'] = 1;
-		$obj->config['qiwi_lifetime'] = 1080;
-		$obj->config['qiwi_alarm-sms'] = 0;
-		$obj->config['qiwi_alarm-call'] = 0;
-		$obj->config['qiwi_minpay'] = 10;
-		$obj->config['qiwi_maxpay'] = 15000;
+		$this->config['qiwi_login'] = '';
+		$this->config['qiwi_password'] = '';
+		$this->config['qiwi_txn-prefix'] = '';
+		$this->config['qiwi_create-agt'] = 1;
+		$this->config['qiwi_alarm-sms'] = 0;
+		$this->config['qiwi_alarm-call'] = 0;
+		$this->config['minpay'] = 10;
+		$this->config['maxpay'] = 15000;
+		$this->config['qiwi_lifetime'] = 1080;
 
-		$obj->config_form['qiwi_info'] = array('type' => 'info', 'caption'=>'<h3>QIWI</h3><p>На сайте необходимо разместить логотип и описание(<a href="http://ishopnew.qiwi.ru/docs.html" target="_blank">материалы QIWI для сайта</a>)</p>');
-		$obj->config_form['qiwi_login'] = array('type' => 'text', 'caption' => 'Логин', 'comment'=>'', 'style'=>'background-color:#2ab7ec;');
-		$obj->config_form['qiwi_password'] = array('type' => 'password', 'md5'=>false, 'caption' => 'Пароль', 'style'=>'background-color:#2ab7ec;');
-		$obj->config_form['qiwi_txn-prefix'] = array('type' => 'text', 'caption' => 'Префикс в номере счёта','comment'=>'', 'style'=>'background-color:#2ab7ec;');
+		$this->config_form['qiwi_info'] = array('type' => 'info', 'caption'=>'<h3>QIWI</h3><p>На сайте необходимо разместить логотип и описание(<a href="http://ishopnew.qiwi.ru/docs.html" target="_blank">материалы QIWI для сайта</a>)</p>');
+		$this->config_form['qiwi_login'] = array('type' => 'text', 'caption' => 'Логин', 'comment'=>'');
+		$this->config_form['qiwi_password'] = array('type' => 'password', 'md5'=>false, 'caption' => 'Пароль');
+		$this->config_form['qiwi_txn-prefix'] = array('type' => 'text', 'caption' => 'Префикс в номере счёта','comment'=>'');
 		//$this->owner->config_form['qiwi_create-agt'] = array('type' => 'text', 'caption' => 'Логин','comment'=>'Если 1 то при выставлении счёта создается пользователь в системе QIWI. При этом оплатить счёт можно в терминале наличными без ввода ПИН-кода.', 'style'=>'background-color:gray;');
-		$obj->config_form['qiwi_lifetime'] = array('type' => 'text', 'caption' => 'Таймаут','comment'=>'Время жизни счёта по умолчанию. Задается в часах. Максимум 45 суток (1080 часов)', 'style'=>'background-color:#2ab7ec;');
-		$obj->config_form['qiwi_alarm-sms'] = array('type' => 'text', 'caption' => 'alarm-sms','comment'=>'1 - включит СМС оповещение (СМС платно)', 'style'=>'background-color:#2ab7ec;');
-		$obj->config_form['qiwi_alarm-call'] = array('type' => 'text', 'caption' => 'alarm-call','comment'=>'1 - включит звонок (платно)', 'style'=>'background-color:#2ab7ec;');
-		$obj->config_form['qiwi_minpay'] = array('type' => 'int', 'caption' => 'Миним. сумма','comment'=>'при пополнении счёта', 'style'=>'background-color:#2ab7ec;');
-		$obj->config_form['qiwi_maxpay'] = array('type' => 'int', 'caption' => 'Максим. сумма','comment'=>'при пополнении счёта', 'style'=>'background-color:#2ab7ec;');
+		$this->config_form['qiwi_alarm-sms'] = array('type' => 'text', 'caption' => 'alarm-sms','comment'=>'1 - включит СМС оповещение (СМС платно)');
+		$this->config_form['qiwi_alarm-call'] = array('type' => 'text', 'caption' => 'alarm-call','comment'=>'1 - включит звонок (платно)');
+		$this->config_form['minpay'] = array('type' => 'int', 'caption' => 'Миним. сумма','comment'=>'при пополнении счёта');
+		$this->config_form['maxpay'] = array('type' => 'int', 'caption' => 'Максим. сумма','comment'=>'при пополнении счёта');
+		$this->config_form['lifetime'] = array('type' => 'text', 'caption' => 'Таймаут','comment'=>'Время жизни счёта по умолчанию. Задается в часах. Максимум 1080 часов (45 суток)');
 	}
 
 	function _set_features() {
@@ -106,7 +106,7 @@ Cчета со статусом большим или равным 100 трак�
 			if($tmp and strlen($tmp)==10)
 				$this->fields_form['phone']['default'] = $tmp;
 		}
-		$this->fields_form['cost'] = array('type' => 'int', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->owner->config['qiwi_minpay'].'р, максимум '.$this->owner->config['qiwi_maxpay'].'р', 'default'=>100, 'mask'=>array('minint'=>$this->owner->config['qiwi_minpay'],'maxint'=>$this->owner->config['qiwi_maxpay']));
+		$this->fields_form['cost'] = array('type' => 'int', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['qiwi_minpay'].'р, максимум '.$this->config['qiwi_maxpay'].'р', 'default'=>100, 'mask'=>array('minint'=>$this->config['qiwi_minpay'],'maxint'=>$this->config['qiwi_maxpay']));
 		if(isset($_GET['summ']))
 			$this->fields_form['cost']['default'] = ceil(floatval($_GET['summ']));
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Комментарий', 'mask'=>array('name'=>'all'));
@@ -145,7 +145,7 @@ Cчета со статусом большим или равным 100 трак�
 
 		$result = parent::_add($data2,true);
 		if($result) {
-			$data['name'] .= ' (Счёт №'.$this->owner->config['qiwi_txn-prefix'].$this->id.')';
+			$data['name'] .= ' (Счёт №'.$this->config['qiwi_txn-prefix'].$this->id.')';
 			$options = array(
 				'phone'=>$this->data[$this->id]['phone'],
 				'amount'=>$this->data[$this->id]['cost'],
@@ -170,11 +170,11 @@ Cчета со статусом большим или равным 100 трак�
 	*/
 	private function createBill($options) {
 		$defaults = array(
-			'create-agt' => $this->owner->config['qiwi_create-agt'],
-			'lifetime' => $this->owner->config['qiwi_lifetime'],
-			'alarm-sms' => $this->owner->config['qiwi_alarm-sms'],
-			'alarm-call' => $this->owner->config['qiwi_alarm-call'],
-			'txn-prefix' => $this->owner->config['qiwi_txn-prefix'],
+			'create-agt' => $this->config['qiwi_create-agt'],
+			'lifetime' => $this->config['lifetime'],
+			'alarm-sms' => $this->config['qiwi_alarm-sms'],
+			'alarm-call' => $this->config['qiwi_alarm-call'],
+			'txn-prefix' => $this->config['qiwi_txn-prefix'],
 			'comment'=>'Пополнение кошелька',
 		);
 		$options = array_merge($defaults, $options);
@@ -182,8 +182,8 @@ Cчета со статусом большим или равным 100 трак�
 		$x = '<?xml version="1.0" encoding="utf-8"?><request>';
 		$x .= '<protocol-version>4.00</protocol-version>';
 		$x .= '<request-type>30</request-type>';
-		$x .= '<extra name="password">' . $this->owner->config['qiwi_password'] . '</extra>';
-		$x .= '<terminal-id>' . $this->owner->config['qiwi_login'] . '</terminal-id>';
+		$x .= '<extra name="password">' . $this->config['qiwi_password'] . '</extra>';
+		$x .= '<terminal-id>' . $this->config['qiwi_login'] . '</terminal-id>';
 		$x .= '<extra name="txn-id">' . $options['txn-prefix'] . $this->id . '</extra>';
 		$x .= '<extra name="to-account">' . $options['phone'] . '</extra>';
 		$x .= '<extra name="amount">' . (int)$options['amount'] . '</extra>';
@@ -198,7 +198,7 @@ Cчета со статусом большим или равным 100 трак�
 			'POST'=>$x
 		);
 
-		$result = $this->_http($this->API_HREF,$param);
+		$result = static_tools::_http($this->API_HREF,$param);
 		$err = $this->check_response($result['text'],'send');
 		return $err;
 	}
@@ -225,8 +225,8 @@ Cчета со статусом большим или равным 100 трак�
 						'cost' => floatval($bill['sum'])
 					);
 					/////$upd['statuses']=60; //TEST - успешная оплата
-					if($this->owner->config['qiwi_txn-prefix'])
-						$this->id = (int)str_replace($this->owner->config['qiwi_txn-prefix'],'',$bill['id']);
+					if($this->config['qiwi_txn-prefix'])
+						$this->id = (int)str_replace($this->config['qiwi_txn-prefix'],'',$bill['id']);
 					else
 						$this->id = (int)$bill['id'];
 					$this->_update($upd);
@@ -260,11 +260,11 @@ Cчета со статусом большим или равным 100 трак�
 		$x = '<?xml version="1.0" encoding="utf-8"?><request>';
 		$x .= '<protocol-version>4.00</protocol-version>';
 		$x .= '<request-type>33</request-type>';
-		$x .= '<extra name="password">' . $this->owner->config['qiwi_password'] . '</extra>';
-		$x .= '<terminal-id>' . $this->owner->config['qiwi_login'] . '</terminal-id>';
+		$x .= '<extra name="password">' . $this->config['qiwi_password'] . '</extra>';
+		$x .= '<terminal-id>' . $this->config['qiwi_login'] . '</terminal-id>';
 		$x .= '<bills-list>';
 		foreach($bills as $txnID) {
-			$x .= '<bill txn-id="' . $this->owner->config['qiwi_txn-prefix'] . $txnID['id'] . '"/>';
+			$x .= '<bill txn-id="' . $this->config['qiwi_txn-prefix'] . $txnID['id'] . '"/>';
 		}
 		$x .= '</bills-list>';
 		$x .= '</request>';
@@ -290,8 +290,8 @@ Cчета со статусом большим или равным 100 трак�
 	* @param $leftTime - в секундах
 	*/
 	function clearOldData() {
-		if(!$this->owner->config['qiwi_lifetime']) $this->owner->config['qiwi_lifetime'] = 1080;
-		$leftTime = ($this->owner->config['qiwi_lifetime']*3600);
+		if(!$this->config['lifetime']) $this->config['lifetime'] = 1080;
+		$leftTime = ($this->config['lifetime']*3600);
 
 		$this->_update(array('statuses'=>'161', $this->mf_actctrl=>0), 'statuses<60 and '.$this->mf_timecr.'<"'.(time()-$leftTime).'"');
 

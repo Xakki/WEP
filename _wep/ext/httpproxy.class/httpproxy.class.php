@@ -128,7 +128,7 @@ class httpproxy_class extends kernel_extends {
 			$param['proxy'] = true;
 			$param['proxyList'] = array($temp);
 		}
-		$html = $this->_http($link,$param);
+		$html = static_tools::_http($link,$param);
 
 			$err = 0;
 			$autoprior=0;

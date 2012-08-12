@@ -9,7 +9,7 @@
  * 3 - Номер ревизии , исправленны ошибки
  */
 $_CFG['info'] = array(//информация о СМС
-	'version' => '2.13.37',
+	'version' => '2.14.38',
 	'email' => 'wep@xakki.ru',
 	'icq' => '222392984'
 );
@@ -389,7 +389,8 @@ if (strpos($_SERVER['HTTP_HOST'], 'xn--') !== false) {
 	$_SERVER['HTTP_HOST'] = $IDN->decode($_SERVER['HTTP_HOST']);
 	$_CFG['site']['rf'] = 1;
 }
-$_CFG['_HREF']['BH'] = 'http://' . $_SERVER['HTTP_HOST'] . '/' . $addpath; // www-путь сайта
+$_CFG['_HREF']['_BH'] = $_SERVER['HTTP_HOST'] . '/' . $addpath; // www-путь сайта
+$_CFG['_HREF']['BH'] = 'http://' . $_CFG['_HREF']['_BH']; 
 
 if($_CFG['site']['redirectPlugin'])
 	$_CFG['require_modul']['redirect'] = true;

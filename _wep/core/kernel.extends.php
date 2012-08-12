@@ -1368,81 +1368,11 @@ $simple = true;
 	 * @return array form
 	 */
 	public function toolsReinstall() {
-		$fields_form = $mess = array();
-		if (!static_main::_prmModul($this->_cl, array(11)))
-			$mess[] = static_main::am('error', 'denied', $this);
-		elseif (count($_POST) and $_POST['sbmt']) {
-			static_tools::_reinstall($this);
-			$mess[] = static_main::am('ok', '_reinstall_ok', $this);
-		} else {
-			$fields_form['_*features*_'] = array('name' => 'Reinstall', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']));
-			$fields_form['_info'] = array(
-				'type' => 'info',
-				'caption' => static_main::m('_reinstall_info', $this));
-			$fields_form['sbmt'] = array(
-				'type' => 'submit',
-				'value' => static_main::m('Submit', $this));
-		}
-		self::kFields2FormFields($fields_form);
-		return Array('form' => $fields_form, 'messages' => $mess);
+		return static_tools::toolsReinstall($this);
 	}
 
 	public function toolsConfigmodul() {
-		$fields_form = array();
-		$arr = array('mess' => '', 'vars' => '');
-		if (!static_main::_prmModul($this->_cl, array(13)))
-			$arr['mess'][] = static_main::am('error', 'denied', $this);
-		elseif (!count($this->config_form)) {
-			$fields_form['_info'] = array(
-				'type' => 'info',
-				'caption' => static_main::m('_configno', $this));
-		} else {
-			foreach ($this->config as $k => &$r) {
-				if (is_array($r) and isset($this->config_form[$k]) and !isset($this->config_form[$k]['multiple'])) {
-					/*$temp = array();
-					foreach ($r as $t => $d) {
-						if (strpos($d, ':=') === false)
-							$temp[] = trim($t) . ':=' . trim($d);
-						else
-							$temp[] = trim($d);
-					}
-					$r = implode(' :| ', $temp);*/
-				}
-			}
-			unset($r);
-			if (count($_POST)) {
-				$arr = $this->fFormCheck($_POST, $arr['vars'], $this->config_form); // 2ой параметр просто так
-				$config = array();
-				foreach ($this->config as $k => $r) {
-					if (isset($arr['vars'][$k])) {
-						$this->config_form[$k]['value'] = $arr['vars'][$k];
-						$config[$k] = $arr['vars'][$k];
-					}
-				}
-				$this->config = $config;
-				if (!count($arr['mess'])) {
-					$arr['mess'][] = static_main::am('ok', 'update', $this);
-					static_tools::_save_config($config, $this->_file_cfg);
-				}
-			} 
-			else {
-				$fields_form['_info'] = array('type' => 'info', 'css' => 'caption', 'caption' => static_main::m('_config'));
-				foreach ($this->config_form as $k => $r) {
-					if(isset($this->config[$k])) {
-						if (!is_array($this->config[$k]))
-							$this->config_form[$k]['value'] = stripslashes($this->config[$k]);
-						else
-							$this->config_form[$k]['value'] = $this->config[$k];
-					}
-				}
-				$fields_form = $fields_form+$this->config_form;
-				$fields_form['sbmt'] = array(
-					'type' => 'submit',
-					'value' => static_main::m('Submit'));
-			}
-		}
-		$this->kFields2FormFields($fields_form);
-		return Array('form' => $fields_form, 'messages' => $arr['mess']);
+		return static_tools::toolsConfigmodul($this);
 	}
 
 	/**
@@ -1451,62 +1381,7 @@ $simple = true;
 	 * @return array form
 	 */
 	public function toolsSuperGroup() {
-		global $_tpl;
-		$fields_form = $mess = array();
-		if (!static_main::_prmModul($this->_cl, array(5, 7)))
-			$mess[] = static_main::am('error', 'denied', $this);
-		elseif (!isset($_COOKIE['SuperGroup'][$this->_cl]) or !count($_COOKIE['SuperGroup'][$this->_cl]))
-			$mess[] = static_main::am('alert', 'Нет выбранных элементов', $this);
-		elseif (count($_POST)) {
-
-			$type = '';
-			if (isset($_POST['sbmt_on'])) {
-				$type = 'on';
-				$this->id = array_keys($_COOKIE['SuperGroup'][$this->_cl]);
-				$this->_update(array('active' => 1));
-				$mess[] = static_main::am('ok', 'Успешно включено', $this);
-			} 
-			elseif (isset($_POST['sbmt_off'])) {
-				$type = 'off';
-				$this->id = array_keys($_COOKIE['SuperGroup'][$this->_cl]);
-				$this->_update(array('active' => 0));
-				$mess[] = static_main::am('ok', 'Успешно отключено', $this);
-			} 
-			elseif (isset($_POST['sbmt_del'])) {
-				$type = 'del';
-				$this->id = array_keys($_COOKIE['SuperGroup'][$this->_cl]);
-				$this->_delete();
-				$mess[] = static_main::am('ok', 'Успешно удалено', $this);
-			} 
-			elseif (isset($_POST['sbmt_clear'])) {
-				$type = 'clear';
-				$mess[] = static_main::am('ok', 'Список чист', $this);
-			}
-
-			if (count($mess)) {
-				foreach ($_COOKIE['SuperGroup'][$this->_cl] as $ck => $ck)
-					$_tpl['onload'] .= 'setCookie("SuperGroup[' . $this->_cl . '][' . $ck . ']",0,-10000);';
-				$_tpl['onload'] .= '$("span.wepSuperGroupCount").text(0).parent().hide("slow");wep.SuperGroupClear("' . $type . '");';
-				$_tpl['onload'] .= '$("#tools_block").hide();';
-			}
-		} else {
-			$fields_form['_*features*_'] = array('name' => 'SuperGroup', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
-			$fields_form['_info'] = array(
-				'type' => 'info',
-				'caption' => '<h2 style="text-align:center;">' . $this->caption . '</h2><h3 style="text-align:center;">Выбранно элементов : ' . count($_COOKIE['SuperGroup'][$this->_cl]) . '</h3>');
-			$fields_form['sbmt'] = array(
-				'type' => 'submit',
-				'value' => array(
-					'_off' => static_main::m('Отключить', $this),
-					'_on' => static_main::m('Включить', $this),
-					'_del' => static_main::m('Delete', $this),
-					'_clear' => static_main::m('Отменить выбранные элементы.', $this),
-					'' => static_main::m('Отмена', $this),
-				)
-			);
-		}
-		self::kFields2FormFields($fields_form);
-		return Array('form' => $fields_form, 'messages' => $mess);
+		return static_tools::toolsSuperGroup($this);
 	}
 
 	/**
@@ -1517,35 +1392,10 @@ $simple = true;
 	public function staticStatsmodul($oid = '') {
 		return static_tools::_staticStatsmodul($this, $oid);
 	}
-
-	/*
-	  public function toolsReindex(){
-	  $fields_form = $mess = array();
-	  if(!static_main::_prmModul($this->_cl,array(12)))
-	  $mess[] = array('name'=>'error', 'value'=>static_main::m('denied',$this));
-	  elseif(count($_POST) and $_POST['sbmt']){
-	  if(!$this->_reindex())
-	  $mess[] = array('name'=>'error', 'value'=>static_main::m('_reindex_ok',$this));
-	  else
-	  $mess[] = array('name'=>'error', 'value'=>static_main::m('_reindex_err',$this));
-	  }else{
-	  $fields_form['_*features*_'] = array('name'=>'reindex','action'=>str_replace('&','&amp;',$_SERVER['REQUEST_URI']));
-	  $fields_form['_info'] = array(
-	  'type'=>'info',
-	  'caption'=>static_main::m('_reindex_info',$this));
-	  $fields_form['sbmt'] = array(
-	  'type'=>'submit',
-	  'value'=>static_main::m('Submit',$this));
-	  }
-	  self::kFields2FormFields($fields_form);
-	  return Array('form'=>$fields_form, 'messages'=>$mess);
-	  }
-
-	  private function _reindex()
-	  {
-	  return true;
-	  }
-	 */
+	
+	/*public function toolsReindex(){
+		return static_tools::toolsReindex($this, $oid);
+	}*/
 
 	/**
 	 * Tools для superinc - Проверка модуля (устарешая)
@@ -2180,129 +2030,6 @@ $simple = true;
 		else
 			$pathimg = $this->_CFG['PATH']['content'] . $key;
 		return $pathimg;
-	}
-
-	function _http($link, $param = array()) {
-		//http://ru.php.net/curl_setopt
-		if (isset($param['body'])) {
-			exit('ERROR - body не поддерживается');
-		}
-
-		$default = array(
-			'proxy' => false,
-			'proxyList' => array(
-				//array('11.11.11.11:8080','user:pass'),
-				'82.200.55.142:3128',
-			//'115.78.135.30:80',
-			//'122.248.194.9:80',
-			/**/
-			),
-			'HTTPHEADER' => array('Content-Type' => 'text/xml; encoding=utf-8'),
-			'redirect' => false,
-			'USERAGENT' => 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/'.rand(50,190).' (KHTML, like Gecko) Chrome/'.rand(9,16).'.0.8'.rand(1,99).'.121 Safari/535.2',
-			'TIMEOUT' => 20,
-			'REFERER' => false,
-			'POST'=>false,
-			'SSL'=>false,
-			'FORBID'=>false, //TRUE для принудительного закрытия соединения после завершения его обработки так, чтобы его нельзя было использовать повторно.
-		);
-		$param = array_merge($default, $param);
-
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $link); //задаём url
-
-		if (isset($param['COOKIE']))
-			curl_setopt($ch, CURLOPT_COOKIE, $param['COOKIE']);
-
-		if (isset($param['COOKIEFILE'])) // Считываем из фаила
-			curl_setopt($ch, CURLOPT_COOKIEFILE, $param['COOKIEFILE']);
-
-		if (isset($param['COOKIEJAR'])) // Записываем куки в фаил
-			curl_setopt($ch, CURLOPT_COOKIEJAR, $param['COOKIEJAR']);
-
-		curl_setopt($ch, CURLOPT_USERAGENT, $param['USERAGENT']); //подделываем юзер-агента
-
-		if ($param['redirect']) {
-			//переходить по редиректам, инициируемым сервером, пока не будет достигнуто CURLOPT_MAXREDIRS (если есть)
-			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		}
-
-		if($param['REFERER']) {
-			if($param['REFERER']===true)
-				$param['REFERER'] = $link;
-			curl_setopt($ch, CURLOPT_REFERER, $param['REFERER']); 
-		}
-
-		if ($param['SSL']) {
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, TRUE);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 1);
-			curl_setopt($ch, CURLOPT_CAINFO, $param['SSL']);
-		} else {
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-		}
-
-		if ($param['HTTPHEADER']) {
-			curl_setopt($ch, CURLOPT_HTTPHEADER, $param['HTTPHEADER']);
-		}
-
-		if ($param['FORBID']) {
-			curl_setopt($ch, CURLOPT_FORBID_REUSE, TRUE);
-		}
-
-		if ($param['POST']) {
-			if(is_array($param['POST'])) {
-				$param['POST'] = http_build_query($param['POST']);
-			}
-			curl_setopt($ch, CURLOPT_POST, 1);
-			curl_setopt($ch, CURLOPT_POSTFIELDS,$param['POST']); 
-		}
-		//не включать заголовки ответа сервера в вывод
-		curl_setopt($ch, CURLOPT_HEADER, false);
-		//вернуть ответ сервера в виде строки
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_TIMEOUT, $param['TIMEOUT']);
-
-		// ПРОКСИ
-		if ($param['proxy']) {
-			$c = count($param['proxyList']) - 1;
-			$prox = $param['proxyList'][rand(0, $c)];
-			// указываем адрес
-			$CURLOPT_PROXY = '';
-			$CURLOPT_PROXYUSERPWD = '';
-			if (is_array($prox)) {
-				$CURLOPT_PROXY = $prox[0];
-				$CURLOPT_PROXYUSERPWD = $prox[1];
-			}else
-				$CURLOPT_PROXY = $prox;
-			curl_setopt($ch, CURLOPT_PROXY, $CURLOPT_PROXY);
-			if($this->_CFG['wep']['debugmode']>1)
-				echo ' * '.$CURLOPT_PROXY.' * ';
-			if ($CURLOPT_PROXYUSERPWD) {
-				// если необходимо предоставить имя пользователя и пароль
-				//curl_setopt($ch, CURLOPT_PROXYUSERPWD,$CURLOPT_PROXYUSERPWD);
-			}
-		}
-		//Функции обратного вызова
-		//curl_setopt($ch, CURLOPT_WRITEFUNCTION,"progress_function");
-
-		$text = curl_exec($ch);
-
-		$PageInfo = curl_getinfo($ch);
-		$err = '';
-		if ($err = curl_errno($ch))
-			$flag = false;
-		elseif ($PageInfo['http_code'] == 200)
-			$flag = true;
-		else
-			$flag = false;
-		curl_close($ch);
-		return array('text' => $text, 'info' => $PageInfo, 'err' => $err, 'flag' => $flag);
-	}
-
-	function progress_function($ch, $str) {
-		echo $str;
-		return strlen($str);
 	}
 
 	/**

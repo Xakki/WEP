@@ -16,11 +16,10 @@
 				$_tpl['styles']['style.jquery/'.$gfi['uiStyle'].'/jquery-ui'] = 1;
 				$_tpl['styles']['style.jquery/ui-multiselect'] = 1;
 
-				$_tpl['script']['script.jquery/jquery-ui'] = 1;
-				$_tpl['script']['script.jquery/ui-multiselect'] = 1;
-				
-				//
-				$_tpl['script']['jquery.localisation/ui-multiselect-ru'] = 1;
+				$_tpl['script']['script.jquery/jquery-ui'] = array(
+					'script.jquery/ui-multiselect' => 1,
+					'jquery.localisation/ui-multiselect-ru' => 1,
+				);
 	
 				$_tpl['onload'] .= 'jQuery(\'select.multiple\').multiselect();';
 				##
@@ -92,107 +91,78 @@
 		if($_CFG['wep']['debugmode'])
 			$solt = '?t='.time();
 
+		// include STYLE into HTML
 		if(isset($_tpl['styles']) and is_array($_tpl['styles'])) {
-			foreach($_tpl['styles'] as $kk=>$rr) {
-				if(is_string($rr) and $rr[0]=='<')
-					$temp .= $rr."\n";
-				elseif(is_array($rr))
-					$temp .= '<link type="text/css" href="'.implode('" rel="stylesheet"/>'."\n".'<link type="text/css" href="',$rr).'" rel="stylesheet"/>'."\n";
-				elseif($rr==1 and $kk) {
-					if(substr($kk,0,7)=='http://')
-						$src = $kk;
-					else
-						$src = $_CFG['_HREF']['BH'].$_CFG['_HREF']['_style'].$kk.'.css'.$solt;
-					$temp .= '<link type="text/css" href="'.$src.'" rel="stylesheet"/>'."\n";
-				}
-				else
-					$temp .= '<style type="text/css">'.$rr.'</style>'."\n";
-			}
+			//print_r('<pre>');print_r($_tpl['styles']);
+			$temp .= cssRecursive($_tpl['styles'], $solt);
 		}
 		$_tpl['styles'] = $temp;
 
+		// include SCRIPT into HTML
 		$temp = '';
-
 		if(isset($_tpl['script']) and is_array($_tpl['script'])) {
-
-			foreach($_tpl['script'] as $kk=>$rr) {
-				if(is_array($rr))
-					$temp .= '<script type="text/javascript" src="'.implode('"></script>'."\n".'<script type="text/javascript" src="',$rr).'"></script>'."\n";
-				elseif($rr==1 and $kk) {
-					if(substr($kk,0,7)=='http://')
-						$src = $kk;
-					else
-						$src = $_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].$kk.'.js'.$solt;
-					$temp .= '<script type="text/javascript" src="'.$src.'"></script>'."\n";
-				}
-				elseif(substr($rr,0,7)=='http://')
-					$temp .= '<script type="text/javascript" src="'.$rr.'"></script>'."\n";
-				elseif(substr($rr,0,7)=='<script')
-					$temp .= $rr."\n";
-				else
-					$temp .= "<script type=\"text/javascript\">\n//<!--\n".$rr."\n//-->\n</script>\n";
-			}
+			$temp .= scriptRecursive($_tpl['script'], $solt);
 		}
-		if(strpos($temp,'jquery')!==false and !isset($_tpl['script']['include']))
-			$temp .= '<script type="text/javascript" src="'.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].'include.js'.$solt.'"></script>';
-
-		if(!isset($_tpl['script']['jquery']) and strpos($temp,'script.jquery/')!==false)
-			$temp = '<script type="text/javascript" src="'.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].'jquery.js'.$solt.'"></script>'.$temp;
 		
-		if(isset($_tpl['onload2']) and count($_tpl['onload2']))
+		if(isset($_tpl['onload2']) and count($_tpl['onload2'])) // WTF?
 				$_tpl['onload'] .= implode(' ',$_tpl['onload2']);
 
 		if(isset($_tpl['onload']) and $_tpl['onload']) {
-			$temp .= "<script type=\"text/javascript\">\n//<!--\nfunction readyF() {".(string)$_tpl['onload']."}\n//-->\n</script>\n";
+			$temp .= "<script>\n//<!--\nfunction readyF() {".(string)$_tpl['onload']."}\n//-->\n</script>\n";
 			$_tpl['onload'] = 'readyF();';
-		}
+		} else
+			$_tpl['onload'] = '';
 		$_tpl['script'] = $temp;
 	}
 
-	function arraySrcToFunc() {
-		global $_tpl,$_CFG;
-		$solt = '';
-		if($_CFG['wep']['debugmode'])
-			$solt = '?t='.time();
-
+	function scriptRecursive($script, $solt='') {
+		global $_CFG;
 		$temp = '';
-		if($_tpl['styles'] and is_array($_tpl['styles']) and count($_tpl['styles'])) {
-			foreach($_tpl['styles'] as $kk=>$rr) {
-				if(is_array($rr))
-					$temp .= '$.includeCSS(\''.implode('\'); $.includeCSS(\'',$rr).'\'); ';
-				elseif($rr==1 and $kk)
-					$temp .= '$.includeCSS(\''.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_style'].$kk.'.css'.$solt.'\');';
-				else
-					$temp .= 'alert(\'CSS not found '.$kk.'\');';
+		foreach($script as $kk=>$rr) {
+			if(substr($rr,0,4)=='http' or substr($rr,0,1)=='<') {
+				trigger_error('Обнаружена не совместимость: ошибка загрузки скриптов', E_USER_WARNING);
 			}
+
+			$src = '';
+			if (strpos($kk, '//')!==false)
+				$src = str_replace(array('http:','https:'), '', $kk);
+			elseif(is_string($kk))
+				$src = '//'.$_CFG['_HREF']['_BH'].$_CFG['_HREF']['_script'].$kk.'.js'.$solt;
+
+			if($src)
+				$temp .= '<script src="'.$src.'"></script>'."\n";
+
+			if(is_array($rr))
+				$temp .= scriptRecursive($rr, $solt);
+			elseif(is_string($rr))
+				$temp .= "<script>\n//<!--\n".$rr."\n//-->\n</script>\n";
 		}
-		$temp2 = '';
-		$tcnt = 0;
-		if($_tpl['script'] and is_array($_tpl['script']) and count($_tpl['script'])) {
-			$wrap = false;
-			if(isset($_tpl['script']['script.jquery/jquery-ui'])) {
-				$wrap = 'script.jquery/jquery-ui';
-				unset($_tpl['script']['script.jquery/jquery-ui']);
+		return $temp;
+	}
+
+	function cssRecursive($css, $solt='') {
+		global $_CFG;
+		$temp = '';
+
+		foreach($css as $kk=>$rr) {
+			if(substr($rr,0,4)=='http' or substr($rr,0,1)=='<') {
+				trigger_error('Обнаружена не совместимость: ошибка загрузки скриптов', E_USER_WARNING);
 			}
-			foreach($_tpl['script'] as $kk=>$rr) {
-				$fn = 'function(){chekcnt++;}';
-				if(is_array($rr)) {
-					$temp .= '$.include(\''.implode('\','.$fn.'); $.include(\'',$rr).'\','.$fn.'); ';//
-					$tcnt++;
-				}
-				elseif($rr==1 and $kk) {
-					$temp .= '$.include(\''.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].$kk.'.js'.$solt.'\','.$fn.'); ';
-					$tcnt++;
-				}
-				else
-					$temp2 .= $rr;
+
+			$src = '';
+			if (strpos($kk, '//')!==false)
+				$src = str_replace(array('http:','https:'), '', $kk);
+			elseif(is_string($kk))
+				$src = '//'.$_CFG['_HREF']['_BH'].$_CFG['_HREF']['_style'].$kk.'.css'.$solt;
+
+			if($src)
+				$temp .= '<link rel="stylesheet" href="'.$src.'"></link>'."\n";
+
+			if(is_array($rr)) {
+				$temp .= cssRecursive($rr, $solt);
 			}
-			if($wrap!==false) {
-				$temp = '$.include(\''.$_CFG['_HREF']['BH'].$_CFG['_HREF']['_script'].$wrap.'.js'.$solt.'\',function(){'.$temp.'}); ';
-			}
+			elseif(is_string($rr))
+				$temp .= "<style>".$rr."</style>\n";
 		}
-		$temp2 .= $_tpl['onload'];
-		$_tpl['onload'] = 'var chekcnt=0; '.$temp;
-		$_tpl['onload'] .= 'function fchekcnt() {if(chekcnt=='.$tcnt.') {'.$temp2.'} else setTimeout(fchekcnt,200);} setTimeout(fchekcnt,200);';
-		//$_tpl['onload'] .= $temp2;
+		return $temp;
 	}

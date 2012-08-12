@@ -35,38 +35,40 @@ class paybank_class extends kernel_extends {
 		return true;
 	}
 
-	function _create_conf2(&$obj) {/*CONFIG*/
-		//parent::_create_conf();
+	function _create_conf() {/*CONFIG*/
+		parent::_create_conf();
 
-		$obj->config['bank_namefirm'] = 'ООО "Рога и Копыта"';
-		$obj->config['bank_INN'] = '';
-		$obj->config['bank_KPP'] = '';
-		$obj->config['bank_nomer'] = '';
-		$obj->config['bank_namebank'] = '';
-		$obj->config['bank_BIK'] = '';
-		$obj->config['bank_KC'] = '';
-		$obj->config['bank_minpay'] = '';
-		$obj->config['bank_maxpay'] = '';
-		$obj->config['bank_info'] = '';
-		$obj->config['bank_prefix'] = 'НФ-';
-		$obj->config['bank_firmaddress'] = '';
-		$obj->config['bank_firmcontact'] = '';
+		$this->config['bank_namefirm'] = 'ООО "Рога и Копыта"';
+		$this->config['bank_INN'] = '';
+		$this->config['bank_KPP'] = '';
+		$this->config['bank_nomer'] = '';
+		$this->config['bank_namebank'] = '';
+		$this->config['bank_BIK'] = '';
+		$this->config['bank_KC'] = '';
+		$this->config['bank_info'] = '';
+		$this->config['bank_prefix'] = 'НФ-';
+		$this->config['bank_firmaddress'] = '';
+		$this->config['bank_firmcontact'] = '';
+		$this->config['minpay'] = '';
+		$this->config['maxpay'] = '';
+		$this->config['lifetime'] = 720;
 
-		$obj->config_form['bank_iiii'] = array('type' => 'info', 'caption'=>'<h3>Оплата безналичным расчетом</h3>');
-		$obj->config_form['bank_prefix'] = array('type' => 'text', 'caption' => 'Префикс номера счёта', 'style'=>'background-color:#2a37ec;');
-		$obj->config_form['bank_namefirm'] = array('type' => 'text', 'caption' => 'Наименование получателя платежа', 'style'=>'background-color:#2a37ec;');
-		$obj->config_form['bank_INN'] = array('type' => 'text', 'caption' => 'ИНН получателя платежа', 'style'=>'background-color:#2a37ec;');
-		$obj->config_form['bank_KPP'] = array('type' => 'text', 'caption' => 'КПП получателя платежа', 'style'=>'background-color:#2a37ec;');
-		$obj->config_form['bank_nomer'] = array('type' => 'text', 'caption' => 'Номер счета получателя', 'style'=>'background-color:#2a37ec;');
-		$obj->config_form['bank_namebank'] = array('type' => 'text', 'caption' => 'Наименование банка получателя', 'style'=>'background-color:#2a37ec;');
-		$obj->config_form['bank_BIK'] = array('type' => 'text', 'caption' => 'БИК', 'style'=>'background-color:#2a37ec;');
-		$obj->config_form['bank_KC'] = array('type' => 'text', 'caption' => 'К/С счет банка получателя', 'style'=>'background-color:#2a37ec;');
-		$obj->config_form['bank_firmaddress'] = array('type' => 'text', 'caption' => 'Адресс', 'style'=>'background-color:#2a37ec;');
-		$obj->config_form['bank_firmaddress'] = array('type' => 'text', 'caption' => 'Адресс', 'style'=>'background-color:#2a37ec;');
-		$obj->config_form['bank_firmcontact'] = array('type' => 'text', 'caption' => 'Контакты', 'style'=>'background-color:#2a37ec;');
-		$obj->config_form['bank_minpay'] = array('type' => 'int', 'caption' => 'Миним. сумма','comment'=>'при пополнении счёта', 'style'=>'background-color:#2a37ec;');
-		$obj->config_form['bank_maxpay'] = array('type' => 'int', 'caption' => 'Максим. сумма','comment'=>'при пополнении счёта', 'style'=>'background-color:#2a37ec;');
-		$obj->config_form['bank_info'] = array('type' => 'ckedit', 'caption' => 'Информация', 'comment'=>'вывод при распечатке квитанции', 'style'=>'background-color:#2a37ec;');
+		$this->config_form['bank_iiii'] = array('type' => 'info', 'caption'=>'<h3>Оплата безналичным расчетом</h3>');
+		$this->config_form['bank_prefix'] = array('type' => 'text', 'caption' => 'Префикс номера счёта');
+		$this->config_form['bank_namefirm'] = array('type' => 'text', 'caption' => 'Наименование получателя платежа');
+		$this->config_form['bank_INN'] = array('type' => 'text', 'caption' => 'ИНН получателя платежа');
+		$this->config_form['bank_KPP'] = array('type' => 'text', 'caption' => 'КПП получателя платежа');
+		$this->config_form['bank_nomer'] = array('type' => 'text', 'caption' => 'Номер счета получателя');
+		$this->config_form['bank_namebank'] = array('type' => 'text', 'caption' => 'Наименование банка получателя');
+		$this->config_form['bank_BIK'] = array('type' => 'text', 'caption' => 'БИК');
+		$this->config_form['bank_KC'] = array('type' => 'text', 'caption' => 'К/С счет банка получателя');
+		$this->config_form['bank_firmaddress'] = array('type' => 'text', 'caption' => 'Адресс');
+		$this->config_form['bank_firmaddress'] = array('type' => 'text', 'caption' => 'Адресс');
+		$this->config_form['bank_firmcontact'] = array('type' => 'text', 'caption' => 'Контакты');
+		$this->config_form['bank_info'] = array('type' => 'ckedit', 'caption' => 'Информация', 'comment'=>'вывод при распечатке квитанции');
+		$this->config_form['minpay'] = array('type' => 'int', 'caption' => 'Миним. сумма','comment'=>'при пополнении счёта');
+		$this->config_form['maxpay'] = array('type' => 'int', 'caption' => 'Максим. сумма','comment'=>'при пополнении счёта');
+		$this->config_form['lifetime'] = array('type' => 'text', 'caption' => 'Таймаут','comment'=>'Время жизни счёта по умолчанию. В часах.');
 	}
 
 
@@ -87,7 +89,7 @@ class paybank_class extends kernel_extends {
 		$this->fields_form['fio'] = array('type' => 'text', 'caption' => 'ФИО плательщика');
 		$this->fields_form['address'] = array('type' => 'text', 'caption' => 'Адрес плательщика ');
 		$this->fields_form['phone'] = array('type' => 'text', 'caption' => 'Контактный телефон');
-		$this->fields_form['amount'] = array('type' => 'int', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->owner->config['bank_minpay'].'р, максимум '.$this->owner->config['bank_maxpay'].'р', 'default'=>100, 'mask'=>array('minint'=>$this->owner->config['bank_minpay'],'maxint'=>$this->owner->config['bank_maxpay']));
+		$this->fields_form['amount'] = array('type' => 'int', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('minint'=>$this->config['minpay'],'maxint'=>$this->config['maxpay']));
 		if(isset($_GET['summ']))
 			$this->fields_form['amount']['default'] = ceil(floatval($_GET['summ']));
 		$this->fields_form['statuses'] = array('type' => 'list', 'listname'=>'statuses', 'readonly'=>1, 'caption' => 'Статус', 'mask'=>array());
