@@ -18,7 +18,7 @@ class payqiwi_class extends kernel_extends {
 		$this->config_form['qiwi_login'] = array('type' => 'text', 'caption' => 'Логин', 'comment'=>'');
 		$this->config_form['qiwi_password'] = array('type' => 'password', 'md5'=>false, 'caption' => 'Пароль');
 		$this->config_form['qiwi_txn-prefix'] = array('type' => 'text', 'caption' => 'Префикс в номере счёта','comment'=>'');
-		//$this->owner->config_form['qiwi_create-agt'] = array('type' => 'text', 'caption' => 'Логин','comment'=>'Если 1 то при выставлении счёта создается пользователь в системе QIWI. При этом оплатить счёт можно в терминале наличными без ввода ПИН-кода.', 'style'=>'background-color:gray;');
+		$this->owner->config_form['qiwi_create-agt'] = array('type' => 'checkbox', 'caption' => 'Разрешать не клиентам QIWI','comment'=>'Если вкл. то при выставлении счёта создается пользователь в системе QIWI. При этом оплатить счёт можно в терминале наличными без ввода ПИН-кода.', 'style'=>'background-color:gray;');
 		$this->config_form['qiwi_alarm-sms'] = array('type' => 'text', 'caption' => 'alarm-sms','comment'=>'1 - включит СМС оповещение (СМС платно)');
 		$this->config_form['qiwi_alarm-call'] = array('type' => 'text', 'caption' => 'alarm-call','comment'=>'1 - включит звонок (платно)');
 		$this->config_form['minpay'] = array('type' => 'int', 'caption' => 'Миним. сумма','comment'=>'при пополнении счёта');
@@ -33,7 +33,8 @@ class payqiwi_class extends kernel_extends {
 		$this->lang['add_name'] = 'Пополнение кошелька из QIWI';
 		$this->lang['Save and close'] = 'Выписать счёт';
 		$this->lang['add_err'] = 'Ошибка выставление счёта. Обратитесь к администратору сайта.';
-		$this->lang['add'] = 'Счёт на оплату отправлено в систему QIWI.<br/> Чтобы оплатить его перейдите на сайт <a href="https://w.qiwi.ru/orders.action" target="_blank">QIWI</a> в раздел "Счета".';
+		// TODO - ввывод сообщения реализовать через конфиг
+		$this->lang['add'] = 'Счёт на оплату отправлено в систему QIWI.<br/> Чтобы оплатить его перейдите на сайт <a href="https://w.qiwi.ru/orders.action" target="_blank" id="tempoQiwi">QIWI</a> в раздел "Счета".<script>$("#tempoQiwi").click();</script>';
 		//$this->lang['add'] = 'Счёт на пополнение кошелька отправлено в систему QIWI.<br/> Чтобы оплатить его перейдите на сайт <a href="https://w.qiwi.ru/orders.action">QIWI</a> и в течении 5ти минут после оплаты, сумма поступит на ваш баланс.';
 		$this->default_access = '|9|';
 		$this->mf_timecr = true; // создать поле хранящее время создания поля
@@ -188,7 +189,8 @@ Cчета со статусом большим или равным 100 трак�
 		$x .= '<extra name="to-account">' . $options['phone'] . '</extra>';
 		$x .= '<extra name="amount">' . (int)$options['amount'] . '</extra>';
 		$x .= '<extra name="comment">' . $options['comment'] . '</extra>';
-		//$x .= '<extra name="create-agt">' . $options['create-agt'] . '</extra>';
+		if($options['create-agt'])
+			$x .= '<extra name="create-agt">1</extra>';
 		$x .= '<extra name="ltime">' . $options['lifetime'] . '</extra>';
 		$x .= '<extra name="ALARM_SMS">' . $options['alarm-sms'] . '</extra>';
 		$x .= '<extra name="ACCEPT_CALL">' . $options['alarm-call'] . '</extra>';
