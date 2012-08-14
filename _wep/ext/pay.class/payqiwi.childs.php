@@ -1,7 +1,7 @@
 <?php
 class payqiwi_class extends kernel_extends {
 
-	function _create_conf2(&$obj) {/*CONFIG*/
+	function _create_conf() {/*CONFIG*/
 		//parent::_create_conf();
 
 		$this->config['qiwi_login'] = '';
@@ -18,7 +18,7 @@ class payqiwi_class extends kernel_extends {
 		$this->config_form['qiwi_login'] = array('type' => 'text', 'caption' => 'Логин', 'comment'=>'');
 		$this->config_form['qiwi_password'] = array('type' => 'password', 'md5'=>false, 'caption' => 'Пароль');
 		$this->config_form['qiwi_txn-prefix'] = array('type' => 'text', 'caption' => 'Префикс в номере счёта','comment'=>'');
-		$this->owner->config_form['qiwi_create-agt'] = array('type' => 'checkbox', 'caption' => 'Разрешать не клиентам QIWI','comment'=>'Если вкл. то при выставлении счёта создается пользователь в системе QIWI. При этом оплатить счёт можно в терминале наличными без ввода ПИН-кода.', 'style'=>'background-color:gray;');
+		$this->config_form['qiwi_create-agt'] = array('type' => 'checkbox', 'caption' => 'Разрешать не клиентам QIWI','comment'=>'Если вкл. то при выставлении счёта создается пользователь в системе QIWI. При этом оплатить счёт можно в терминале наличными без ввода ПИН-кода.', 'style'=>'background-color:gray;');
 		$this->config_form['qiwi_alarm-sms'] = array('type' => 'text', 'caption' => 'alarm-sms','comment'=>'1 - включит СМС оповещение (СМС платно)');
 		$this->config_form['qiwi_alarm-call'] = array('type' => 'text', 'caption' => 'alarm-call','comment'=>'1 - включит звонок (платно)');
 		$this->config_form['minpay'] = array('type' => 'int', 'caption' => 'Миним. сумма','comment'=>'при пополнении счёта');
