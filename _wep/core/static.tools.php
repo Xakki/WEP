@@ -252,14 +252,17 @@ class static_tools {
 	 * @return array form
 	 */
 	static public function toolsReinstall($_this) {
+		$RESULT = array('messages' => array(), 'form' => array());
 		$fields_form = $mess = array();
 		if (!static_main::_prmModul($_this->_cl, array(11)))
-			$mess[] = static_main::am('error', 'denied', $_this);
+			$RESULT['messages'][] = static_main::am('error', 'denied', $_this);
 		elseif (count($_POST) and $_POST['sbmt']) {
 			static_tools::_reinstall($_this);
-			$mess[] = static_main::am('ok', '_reinstall_ok', $_this);
-		} else {
-			$fields_form['_*features*_'] = array('name' => 'Reinstall', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']));
+			$RESULT['messages'][] = static_main::am('ok', '_reinstall_ok', $_this);
+			$RESULT['reloadPage'] = true;
+		} 
+		else {
+			//$fields_form['_*features*_'] = array('name' => 'Reinstall', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']));
 			$fields_form['_info'] = array(
 				'type' => 'info',
 				'caption' => static_main::m('_reinstall_info', $_this));
@@ -267,8 +270,9 @@ class static_tools {
 				'type' => 'submit',
 				'value' => static_main::m('Submit', $_this));
 		}
-		self::kFields2FormFields($fields_form);
-		return Array('form' => $fields_form, 'messages' => $mess);
+		$_this->kFields2FormFields($fields_form);
+		$RESULT['form'] = $fields_form;
+		return $RESULT;
 	}
 
 	/**
@@ -411,7 +415,7 @@ class static_tools {
 				)
 			);
 		}
-		self::kFields2FormFields($fields_form);
+		$_this->kFields2FormFields($fields_form);
 		return Array('form' => $fields_form, 'messages' => $mess);
 	}
 
@@ -434,7 +438,7 @@ class static_tools {
 	  'type'=>'submit',
 	  'value'=>static_main::m('Submit',$_this));
 	  }
-	  self::kFields2FormFields($fields_form);
+	  $_this->kFields2FormFields($fields_form);
 	  return Array('form'=>$fields_form, 'messages'=>$mess);
 	  }
 

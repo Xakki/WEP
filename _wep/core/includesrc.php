@@ -125,9 +125,10 @@
 			}
 
 			$src = '';
-			if (strpos($kk, '//')!==false)
+			// TODO - учесть и преобразовывать, возможен косяк, когда внутри урла есть "http:"
+			if (strpos($kk, '//')===0 or strpos($kk, 'http:')===0 or strpos($kk, 'https:')===0)
 				$src = str_replace(array('http:','https:'), '', $kk);
-			elseif(is_string($kk))
+			elseif(is_string($kk) and 1==$rr)
 				$src = '//'.$_CFG['_HREF']['_BH'].$_CFG['_HREF']['_script'].$kk.'.js'.$solt;
 
 			if($src)
@@ -154,7 +155,7 @@
 			$src = '';
 			if (strpos($kk, '//')!==false)
 				$src = str_replace(array('http:','https:'), '', $kk);
-			elseif(is_string($kk))
+			elseif(is_string($kk) and 1==$rr)
 				$src = '//'.$_CFG['_HREF']['_BH'].$_CFG['_HREF']['_style'].$kk.'.css'.$solt;
 
 			if($src)

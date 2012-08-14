@@ -537,7 +537,7 @@ var wep = {
 			var src = '';
 			if (i.substr(0, 4) == 'http' || i.substr(0, 2) == '//')
 				src = i;
-			else if(typeof i == 'string')
+			else if(typeof i == 'string' && 1==css[i])
 				src = wep.BH+wep.HREF_style+i+'.css';
 
 			
@@ -567,7 +567,7 @@ var wep = {
 				var src = '';
 				if (i.substr(0, 4) == 'http' || i.substr(0, 2) == '//')
 					var src = i;
-				else if(typeof i == 'string')
+				else if(typeof i == 'string' && 1==script[i])
 					var src = wep.BH+wep.HREF_script+i+'.js';
 
 				

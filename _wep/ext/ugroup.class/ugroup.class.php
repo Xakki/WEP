@@ -719,7 +719,7 @@ class users_class extends kernel_extends {
 			}
 			
 		}
-		elseif(count($this->data)==1 and $this->data[0]['active']!=1) {
+		elseif(count($this->data)==1 and $this->data[$this->id]['active']!=1) {
 			$mess[]  = array('error','Ваш профиль отключен или не подтверждён. Обратитесь в <a href="/mail.html?feedback=1">службу поддержки сайта</a>, если не сможете решить проблему.');
 		}
 		else{

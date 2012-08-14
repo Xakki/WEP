@@ -23,6 +23,7 @@
 
 	global $UGROUP,$USERS, $HTML;
 	$_tpl['styles']['login']=1;
+	$_tpl['script']['wepform'] =  1;
 
 	if(!$UGROUP) _new_class('ugroup', $UGROUP);
 	if(!$USERS) $USERS = &$UGROUP->childs['users'];
