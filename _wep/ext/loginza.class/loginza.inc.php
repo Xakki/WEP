@@ -69,7 +69,7 @@
 		$html = '<div class="loginzaForm" style="'.$FUNCPARAM[7].'">
 			<div class="loginzaIframe">
 				<div class="loginzaInfo">Вы можете авторизоваться с помощью следующих сервисов</div>
-				<iframe style="height:220px;" src="http://loginza.ru/api/widget?overlay=loginza&token_url='.rawurlencode('http://'.$_SERVER['HTTP_HOST'].'/'.$Chref.'.html').'&providers_set='.$FUNCPARAM[5].'" scrolling="auto" frameborder="no"></iframe>
+				<iframe style="height:220px;" src="http://loginza.ru/api/widget?overlay=loginza&token_url='.rawurlencode($_SERVER['HTTP_PROTO'].$_SERVER['HTTP_HOST'].'/'.$_SERVER['REQUEST_URI']).'&providers_set='.$FUNCPARAM[5].'" scrolling="auto" frameborder="no"></iframe>
 			</div>
 			'.$importInc.'
 		</div>';

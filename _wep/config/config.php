@@ -380,6 +380,9 @@ while (isset($PHP_SELF[$k]) and $PHP_SELF[$k] != $_CFG['PATH']['wepname']) {
 	$addpath .= $PHP_SELF[$k] . '/';
 	$k++;
 }
+
+$_SERVER['HTTP_PROTO'] = 'http://'; // TODO - определение протокола
+
 /* $_CFG['_HREF'] */
 if(!isset($_SERVER['HTTP_HOST'])) $_SERVER['HTTP_HOST'] = $_CFG['site']['www'];
 
@@ -390,7 +393,7 @@ if (strpos($_SERVER['HTTP_HOST'], 'xn--') !== false) {
 	$_CFG['site']['rf'] = 1;
 }
 $_CFG['_HREF']['_BH'] = $_SERVER['HTTP_HOST'] . '/' . $addpath; // www-путь сайта
-$_CFG['_HREF']['BH'] = 'http://' . $_CFG['_HREF']['_BH']; 
+$_CFG['_HREF']['BH'] = $_SERVER['HTTP_PROTO'] . $_CFG['_HREF']['_BH']; 
 
 if($_CFG['site']['redirectPlugin'])
 	$_CFG['require_modul']['redirect'] = true;

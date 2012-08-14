@@ -105,6 +105,9 @@ _new_class('pay', $PAY);
 				$this->display_inc($FUNCPARAM[3]);
 				if($this->pageinfo['template'] != 'waction')
 					$_tpl['text'] = '<h3>Для продолжения оформления покупки необходимо авторизоваться</h3><br/>'.$_tpl['text'];
+				$uid = $SHOPBASKET->userId();
+				if($uid>0)
+					static_main::redirect();
 				// Новый пользователь, нужно его зарегить или авторизовать
 			} 
 			else {

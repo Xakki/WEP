@@ -551,7 +551,7 @@ class static_main {
 		return $text;
 	}
 
-	static function redirect($link,$NO=false) {
+	static function redirect($link=true,$NO=false) {
 		global $_CFG;
 		// TODO : Проверка на зацикленный редирект
 		//301 - перемещение на посточнную основу
@@ -561,6 +561,9 @@ class static_main {
 			die('Warning!!! Self redirect for <a href="'.$link.'">'.$link.'</a>');
 		}
 		else*/
+		if($link===true)
+			$link = $_SERVER['HTTP_PROTO'].$_SERVER['HTTP_HOST'].'/'.$_SERVER['REQUEST_URI'];
+		
 		if($_CFG['wep']['debugmode']<3) {
 			if($NO!==false)
 				header('HTTP/1.1 '.$NO);
