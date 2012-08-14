@@ -83,7 +83,7 @@ class payyandex_class extends kernel_extends {
 		$this->config_form['yandex_pass2'] = array('type' => 'password', 'caption'=>'Пароль подтверждения платежа', 'css'=>'yandex_newtoken','style'=>'background-color:#F65;');*/
 		$this->config_form['minpay'] = array('type' => 'int', 'caption' => 'Миним. сумма','comment'=>'при пополнении счёта', 'style'=>'background-color:#F60;');
 		$this->config_form['maxpay'] = array('type' => 'int', 'caption' => 'Максим. сумма','comment'=>'при пополнении счёта', 'style'=>'background-color:#F60;');
-		$this->config_form['lifetime'] = array('type' => 'text', 'caption'=>'Время жизни счёта по умолчанию. Задается в часах. Если 0 , то будет максимум (45 суток)');
+		$this->config_form['lifetime'] = array('type' => 'text', 'caption'=>'Время жизни счёта по умолчанию. Задается в часах. Если 0 , то будет максимум (45 суток)', 'style'=>'background-color:#F60;');
 
 		if(isset($_GET['_func']) and $_GET['_func']=='Configmodul') {
 			global $_tpl;

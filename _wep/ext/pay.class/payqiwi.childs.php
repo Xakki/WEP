@@ -18,12 +18,12 @@ class payqiwi_class extends kernel_extends {
 		$this->config_form['qiwi_login'] = array('type' => 'text', 'caption' => 'Логин', 'comment'=>'');
 		$this->config_form['qiwi_password'] = array('type' => 'password', 'md5'=>false, 'caption' => 'Пароль');
 		$this->config_form['qiwi_txn-prefix'] = array('type' => 'text', 'caption' => 'Префикс в номере счёта','comment'=>'');
-		$this->config_form['qiwi_create-agt'] = array('type' => 'checkbox', 'caption' => 'Разрешать не клиентам QIWI','comment'=>'Если вкл. то при выставлении счёта создается пользователь в системе QIWI. При этом оплатить счёт можно в терминале наличными без ввода ПИН-кода.', 'style'=>'background-color:gray;');
+		$this->config_form['qiwi_create-agt'] = array('type' => 'checkbox', 'caption' => 'Разрешать не клиентам QIWI','comment'=>'Если вкл. то при выставлении счёта создается пользователь в системе QIWI. При этом оплатить счёт можно в терминале наличными без ввода ПИН-кода.');
 		$this->config_form['qiwi_alarm-sms'] = array('type' => 'text', 'caption' => 'alarm-sms','comment'=>'1 - включит СМС оповещение (СМС платно)');
 		$this->config_form['qiwi_alarm-call'] = array('type' => 'text', 'caption' => 'alarm-call','comment'=>'1 - включит звонок (платно)');
-		$this->config_form['minpay'] = array('type' => 'int', 'caption' => 'Миним. сумма','comment'=>'при пополнении счёта');
-		$this->config_form['maxpay'] = array('type' => 'int', 'caption' => 'Максим. сумма','comment'=>'при пополнении счёта');
-		$this->config_form['lifetime'] = array('type' => 'text', 'caption' => 'Таймаут','comment'=>'Время жизни счёта по умолчанию. Задается в часах. Максимум 1080 часов (45 суток)');
+		$this->config_form['minpay'] = array('type' => 'int', 'caption' => 'Миним. сумма','comment'=>'при пополнении счёта', 'style'=>'background-color:#F60;');
+		$this->config_form['maxpay'] = array('type' => 'int', 'caption' => 'Максим. сумма','comment'=>'при пополнении счёта', 'style'=>'background-color:#F60;');
+		$this->config_form['lifetime'] = array('type' => 'text', 'caption' => 'Таймаут','comment'=>'Время жизни счёта по умолчанию. Задается в часах. Максимум 1080 часов (45 суток)', 'style'=>'background-color:#F60;');
 	}
 
 	function _set_features() {
