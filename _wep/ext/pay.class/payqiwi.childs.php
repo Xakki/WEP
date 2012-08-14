@@ -12,7 +12,7 @@ class payqiwi_class extends kernel_extends {
 		$this->config['qiwi_alarm-call'] = 0;
 		$this->config['minpay'] = 10;
 		$this->config['maxpay'] = 15000;
-		$this->config['qiwi_lifetime'] = 1080;
+		$this->config['lifetime'] = 1080;
 
 		$this->config_form['qiwi_info'] = array('type' => 'info', 'caption'=>'<h3>QIWI</h3><p>На сайте необходимо разместить логотип и описание(<a href="http://ishopnew.qiwi.ru/docs.html" target="_blank">материалы QIWI для сайта</a>)</p>');
 		$this->config_form['qiwi_login'] = array('type' => 'text', 'caption' => 'Логин', 'comment'=>'');
@@ -107,7 +107,7 @@ Cчета со статусом большим или равным 100 трак�
 			if($tmp and strlen($tmp)==10)
 				$this->fields_form['phone']['default'] = $tmp;
 		}
-		$this->fields_form['cost'] = array('type' => 'int', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['qiwi_minpay'].'р, максимум '.$this->config['qiwi_maxpay'].'р', 'default'=>100, 'mask'=>array('minint'=>$this->config['qiwi_minpay'],'maxint'=>$this->config['qiwi_maxpay']));
+		$this->fields_form['cost'] = array('type' => 'int', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('minint'=>$this->config['minpay'],'maxint'=>$this->config['maxpay']));
 		if(isset($_GET['summ']))
 			$this->fields_form['cost']['default'] = ceil(floatval($_GET['summ']));
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Комментарий', 'mask'=>array('name'=>'all'));

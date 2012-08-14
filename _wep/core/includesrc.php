@@ -119,7 +119,7 @@
 		global $_CFG;
 		$temp = '';
 		foreach($script as $kk=>$rr) {
-			if(substr($rr,0,4)=='http' or substr($rr,0,1)=='<') {
+			if(is_string($rr) and (substr($rr,0,4)=='http' or substr($rr,0,1)=='<')) {
 				trigger_error('Обнаружена не совместимость: ошибка загрузки скриптов `'.$kk.'` - `'.$rr.'`', E_USER_WARNING);
 				//print_r('<pre>');print_r($script);
 			}
@@ -128,7 +128,7 @@
 			// TODO - учесть и преобразовывать, возможен косяк, когда внутри урла есть "http:"
 			if (strpos($kk, '//')===0 or strpos($kk, 'http:')===0 or strpos($kk, 'https:')===0)
 				$src = str_replace(array('http:','https:'), '', $kk);
-			elseif(is_string($kk) and 1==$rr)
+			elseif(is_string($kk) and is_int($rr))
 				$src = '//'.$_CFG['_HREF']['_BH'].$_CFG['_HREF']['_script'].$kk.'.js'.$solt;
 
 			if($src)
@@ -155,7 +155,7 @@
 			$src = '';
 			if (strpos($kk, '//')!==false)
 				$src = str_replace(array('http:','https:'), '', $kk);
-			elseif(is_string($kk) and 1==$rr)
+			elseif(is_string($kk) and is_int($rr))
 				$src = '//'.$_CFG['_HREF']['_BH'].$_CFG['_HREF']['_style'].$kk.'.css'.$solt;
 
 			if($src)

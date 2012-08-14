@@ -164,7 +164,7 @@ class paybank_class extends kernel_extends {
 		if(!count($item)) return $result;
 
 		$DATA = array(
-			'#config#' => $this->owner->config,
+			'#config#' => ($this->owner->config + $this->config),
 			'#item#' => $item[$this->id]
 		);
 		if($_GET['blank']=='kvit') {

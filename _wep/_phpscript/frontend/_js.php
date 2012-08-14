@@ -11,7 +11,7 @@
 		headerssent();
 
 	session_go();
-
+// TODO - избавиться от _json.php , а если подумать хорошенько то можно избавиться от этого и сделать единую точку входа
 	$DATA  = array();
 
 	if(isset($_GET['_fn']) and $_GET['_fn']) {
