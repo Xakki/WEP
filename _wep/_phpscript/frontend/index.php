@@ -105,7 +105,7 @@
 			if(!isset($_SESSION['showIEwarning'])) $_SESSION['showIEwarning']=0;
 			if($HTML->_fTestIE('MSIE 6') and $_SESSION['showIEwarning']<3) {
 				$_SESSION['showIEwarning']++;
-				//$_tpl['script'] .='<!--[if IE 6]><script type="text/javascript"></script><![endif]-->';
+				//$_tpl['meta'] .='<!--[if IE 6]><script type="text/javascript"></script><![endif]-->';
 			}
 		*/
 	} else 

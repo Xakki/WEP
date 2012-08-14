@@ -50,7 +50,7 @@
 	$subK = 1;
 	$html = '';
 _new_class('pay', $PAY);
-print_r($PAY->sendNotif());
+
 	if(isset($_GET['basketorder']) and $SHOPBASKET->userId()) {
 		$subMenu[1]['href'] = $Chref.'.html';
 		$subK = 0;
@@ -129,6 +129,7 @@ print_r($PAY->sendNotif());
 					$norequere = explode('|',trim($norequere,'|'));
 					$FORM = array_diff_key($FORM,array_flip($norequere));
 					$FORM['paytype']['type'] = 'radio' ;
+	
 					list($DATA['formcreat'], $this->formFlag) = $SHOPBASKET->_UpdItemModul(array(),$FORM);
 
 					if($SHOPBASKET->id) {
