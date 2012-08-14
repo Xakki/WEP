@@ -275,7 +275,7 @@ Cчета со статусом большим или равным 100 трак�
 			'POST'=>$x
 		);
 
-		$result = $this->_http($this->API_HREF,$param);
+		$result = static_tools::_http($this->API_HREF,$param);
 		$err = $this->check_response($result['text'],'check');
 		if($err===0)
 			return '-Успешно-';
