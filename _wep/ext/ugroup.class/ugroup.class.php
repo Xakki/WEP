@@ -302,7 +302,7 @@ class users_class extends kernel_extends {
 		$this->fields[$this->fn_pass] = array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL');
 		// service field
 
-		$this->fields['reg_hash'] = array('type' => 'varchar', 'width' => 128, 'attr' => 'NOT NULL', 'default'=>'');
+		$this->fields['reg_hash'] = array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL', 'default'=>'');
 		$this->fields['balance'] = array('type' => 'float', 'width' => '11,2', 'attr' => 'NOT NULL', 'default'=>'0.00');
 		$this->fields['lastvisit'] =  array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL', 'default'=>0);
 		$this->fields['karma'] = array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL', 'default'=>0);
@@ -437,7 +437,7 @@ class users_class extends kernel_extends {
 				{
 					if(isset($_SESSION['user']))
 						unset($_SESSION['user']);
-					if(_strlen($this->data[0]['reg_hash'])>5)
+					if(_strlen($this->data[0]['reg_hash'])==32)
 						return array(static_main::m('authnoconf',$this),0);
 					elseif($this->data[0]['reg_hash']=='0' && $this->data[0]['active']==0)
 						return array(static_main::m('auth_notcheck',$this),0);
@@ -484,7 +484,7 @@ class users_class extends kernel_extends {
 						$mess = 'Ваш аккаунт заблокирован. За дополнительной информацией обращайтесь к Администратору сайта.';
 					elseif(!$this->data[0]['gact'])
 						$mess = 'Ваша группа заблокирована. За дополнительной информацией обращайтесь к Администратору сайта.';
-					elseif(_strlen($this->data[0]['reg_hash'])>5)
+					elseif(_strlen($this->data[0]['reg_hash'])==32)
 						$mess = 'Вы не подтвердили регистрацию.';
 					elseif($this->data[0]['level']>=5)
 						$mess = 'Доступ закрыт.';
