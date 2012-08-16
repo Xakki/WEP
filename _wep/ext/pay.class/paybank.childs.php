@@ -38,6 +38,7 @@ class paybank_class extends kernel_extends {
 	function _create_conf() {/*CONFIG*/
 		parent::_create_conf();
 
+		$this->config['bank_prefix'] = 'НФ-';
 		$this->config['bank_namefirm'] = 'ООО "Рога и Копыта"';
 		$this->config['bank_INN'] = '';
 		$this->config['bank_KPP'] = '';
@@ -46,14 +47,13 @@ class paybank_class extends kernel_extends {
 		$this->config['bank_BIK'] = '';
 		$this->config['bank_KC'] = '';
 		$this->config['bank_info'] = '';
-		$this->config['bank_prefix'] = 'НФ-';
 		$this->config['bank_firmaddress'] = '';
 		$this->config['bank_firmcontact'] = '';
 		$this->config['minpay'] = '';
 		$this->config['maxpay'] = '';
 		$this->config['lifetime'] = 720;
 
-		$this->config_form['bank_iiii'] = array('type' => 'info', 'caption'=>'<h3>Оплата безналичным расчетом</h3>');
+		$this->config_form['i'] = array('type' => 'info', 'caption'=>'<h3>Оплата безналичным расчетом</h3>');
 		$this->config_form['bank_prefix'] = array('type' => 'text', 'caption' => 'Префикс номера счёта');
 		$this->config_form['bank_namefirm'] = array('type' => 'text', 'caption' => 'Наименование получателя платежа');
 		$this->config_form['bank_INN'] = array('type' => 'text', 'caption' => 'ИНН получателя платежа');
@@ -62,10 +62,9 @@ class paybank_class extends kernel_extends {
 		$this->config_form['bank_namebank'] = array('type' => 'text', 'caption' => 'Наименование банка получателя');
 		$this->config_form['bank_BIK'] = array('type' => 'text', 'caption' => 'БИК');
 		$this->config_form['bank_KC'] = array('type' => 'text', 'caption' => 'К/С счет банка получателя');
-		$this->config_form['bank_firmaddress'] = array('type' => 'text', 'caption' => 'Адресс');
+		$this->config_form['bank_info'] = array('type' => 'ckedit', 'caption' => 'Информация', 'comment'=>'вывод при распечатке квитанции');
 		$this->config_form['bank_firmaddress'] = array('type' => 'text', 'caption' => 'Адресс');
 		$this->config_form['bank_firmcontact'] = array('type' => 'text', 'caption' => 'Контакты');
-		$this->config_form['bank_info'] = array('type' => 'ckedit', 'caption' => 'Информация', 'comment'=>'вывод при распечатке квитанции');
 		$this->config_form['minpay'] = array('type' => 'int', 'caption' => 'Миним. сумма','comment'=>'при пополнении счёта');
 		$this->config_form['maxpay'] = array('type' => 'int', 'caption' => 'Максим. сумма','comment'=>'при пополнении счёта');
 		$this->config_form['lifetime'] = array('type' => 'text', 'caption' => 'Таймаут','comment'=>'Время жизни счёта по умолчанию. В часах.');

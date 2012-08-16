@@ -134,7 +134,12 @@ class static_list {
 				$data[$i] = $i;
 			}
 		}
-		elseif($templistname == 'child.class') {
+		elseif($templistname == 'classList') 
+		{
+			
+		}
+		elseif($templistname == 'child.class') 
+		{
 			$dir = array();
 			if(file_exists($_this->_CFG['_PATH']['ext'].$_this->_cl.'.class'))
 				$dir[''] = $_this->_CFG['_PATH']['ext'].$_this->_cl.'.class';
