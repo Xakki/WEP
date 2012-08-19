@@ -136,7 +136,9 @@ class static_list {
 		}
 		elseif($templistname == 'classList') 
 		{
-			
+			$data = array(''=>' --- ');
+			foreach($_this->_CFG['modulprm'] as $k=>$r)
+				$data[$k] = $r['name'];			
 		}
 		elseif($templistname == 'child.class') 
 		{

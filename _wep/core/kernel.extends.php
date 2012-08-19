@@ -1141,6 +1141,24 @@ $simple = true;
 			if (!isset($r['comment']))
 				$r['comment'] = '';
 
+			// Зависимые формы
+			if (isset($r['relationForm']))
+			{
+				if($r['relationForm']===true) // default function
+					$r['relationForm'] = 'relationForm';
+
+				if(method_exists($this, $r['relationForm'])) 
+				{
+					call_user_func_array(
+						array($this, $r['relationForm']), 
+						array($r['value'], $f_fieldsForm)
+					);//$r['relationForm']
+				} else {
+					//TRIGER ERROR
+				}
+			}
+				$r['comment'] = '';
+
 			//end foreach
 		}
 
@@ -1167,7 +1185,7 @@ $simple = true;
 				'src' => $this->_CFG['_HREF']['captcha'] . '?' . rand(0, 9999),
 				'value' => (isset($f_data['captcha']) ? $f_data['captcha'] : ''),
 				'mask' => array('min' => 1, 'max' => $LEN, 'dif' => $DIF));
-			if (0) {
+			if (0) {// TODO /
 				$f_fieldsForm['captcha']['error'] = array('У вас отключены Куки');
 			}
 		}
