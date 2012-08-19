@@ -440,9 +440,13 @@ class static_main {
 	 * @param array $insert_data - вставляемый массив
 	 * @return array
 	*/
-	static function insertInArray($data, $afterkey, $insert_data) {
+	static function insertInArray(array $data, $afterkey, array $insert_data) {
 		$output = array();
-		if (count($data)) {
+		if(!is_array($insert_data)) {
+			trigger_error('Не верный переданный 3тий аргумент $insert_data, должен быть массив.', E_USER_WARNING);
+			return $data;
+		}
+		elseif (count($data)) {
 			foreach ($data as $k => $r) {
 				$output[$k] = $r;
 				if ($k == $afterkey) {

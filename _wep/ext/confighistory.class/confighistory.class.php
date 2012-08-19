@@ -26,11 +26,12 @@ class confighistory_class extends kernel_extends {
 		$this->fields_form['conf'] = array('type' => 'hidden', 'caption' => 'Конфиг', 'mask'=>array('min'=>3));
 	}
 
-	protected function relationForm($val, &$f_fieldsForm) {
-		$my_fieldsForm = array();
-		
-		print_r('<pre>');print_r('*****'.$val);
-		//$f_fieldsForm = static_main::insertInArray($f_fieldsForm,'rubric',$this->ParamFieldsForm($this->id,$data['rubric'],$data['type']));
+	protected function relationForm($val, &$my_fieldsForm) {
+		$my_fieldsForm['param_'] = array(
+			'caption'=>'***',
+			'type'=>'text',
+			'value'=>'+',
+			'css'=>'addparam');
 	}
 	// TODO - сделать inc для применения различных вариантов конфигов
 

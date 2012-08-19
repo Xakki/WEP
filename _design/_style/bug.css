@@ -26,14 +26,14 @@
 .bugspoiler-wrap {
 }
 .bugspoiler-wrap>.spoiler-head {
-	color:black;
+	color:#797979;
 	font-size:11px;
 	line-height:15px;
 	display:block;
 	cursor:pointer;
 }
 .bugspoiler-wrap>.spoiler-head:hover {
-	font-weight:bold;
+	color:black;
 }
 .bugspoiler-wrap>.spoiler-head::before {content: " + ";}
 .bugspoiler-wrap.unfolded>.spoiler-head::before {content: " - ";}

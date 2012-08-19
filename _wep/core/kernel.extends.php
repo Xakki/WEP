@@ -1055,7 +1055,9 @@ $simple = true;
 			$f_fieldsForm = &$this->fields_form;
 		}
 
-		foreach ($f_fieldsForm as $k => &$r) {
+		$my_fieldsForm = array();
+
+		foreach ($f_fieldsForm as $k => $r) {
 			if(!isset($r['type'])) continue;
 			if (isset($r['readonly']) and $r['readonly'] and $this->id) // если поле "только чтение" и редактируется , то значение берем из БД,
 				$f_data[$k] = (isset($this->data[$this->id][$k]) ? $this->data[$this->id][$k] : '');
@@ -1141,6 +1143,9 @@ $simple = true;
 			if (!isset($r['comment']))
 				$r['comment'] = '';
 
+			//*****************
+			$my_fieldsForm[$k] = $r;
+
 			// Зависимые формы
 			if (isset($r['relationForm']))
 			{
@@ -1151,16 +1156,19 @@ $simple = true;
 				{
 					call_user_func_array(
 						array($this, $r['relationForm']), 
-						array($r['value'], $f_fieldsForm)
+						array($r['value'], &$my_fieldsForm)
 					);//$r['relationForm']
-				} else {
-					//TRIGER ERROR
+					//print_r('<pre>');print_r($my_fieldsForm);
+					//$f_fieldsForm = static_main::insertInArray($f_fieldsForm, $k, $my_fieldsForm);
+				} 
+				else 
+				{
+					trigger_error('Метод `'.$r['relationForm'].'` не определен в модуле '.$this->_cl, E_USER_WARNING);
 				}
 			}
-				$r['comment'] = '';
-
 			//end foreach
 		}
+		$f_fieldsForm = $my_fieldsForm;
 
 		if (!isset($f_param['captchaOn'])) {
 			if (!isset($_SESSION['user']['id']))
