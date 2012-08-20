@@ -64,13 +64,48 @@ class confighistory_class extends kernel_extends {
 		return $arr;
 	}
 
-	public function _add($data=array(),$flag_select=true) {
-		//print_r('<pre>'.htmlspecialchars(print_r($data,true)));return false;
-		return parent::_add($data,$flag_select);
-	}
-	// TODO - сделать inc для применения различных вариантов конфигов
+	public function setConfig($id) {
+		$mess = array();
+		$this->id = (int) $id;
+		$data = $this->_select();
+		if(count($data)) 
+		{
+			$data = current($data);
+			if(_new_class($data['modul'], $Modul) and count($Modul->config_form)) {
+				$conf = json_decode($data['conf'],true);
 
-	// TODO - метод добавления - храниение конфига в виде JSON в поле conf
+				$params = array();
+				$arr = $Modul->fFormCheck($conf, $params, $Modul->config_form); // 2ой параметр просто так
+				$config = array();
+				$configPrint = '<h3>Текущие настройки</h3><table border="1">';
+				foreach ($Modul->config as $k => $r) 
+				{
+					if (isset($arr['vars'][$k])) {
+						$Modul->config_form[$k]['value'] = $arr['vars'][$k];
+						$config[$k] = $arr['vars'][$k];
+						$configPrint .= '<tr><td>'.$Modul->config_form[$k]['caption'].'<td>'.$config[$k];
+					}
+				}
+				$configPrint .= '</table>';
+
+				$Modul->config = $config;
+				if (!count($arr['mess'])) 
+				{
+					$mess[] = static_main::am('ok', 'update', $Modul);
+					$mess[] = static_main::am('txt', $configPrint);
+					static_tools::_save_config($config, $Modul->_file_cfg);
+				}
+				else
+					$mess = $arr['mess'];
+			}
+			else
+				$mess[] = static_main::am('error', 'Ошибка модуля '.$data['modul']);
+		}
+		else
+			$mess[] = static_main::am('error', 'Данные по вашему запросы отсутствуют.');
+
+		return $mess;
+	}
 }
 
 
