@@ -1149,6 +1149,7 @@ $simple = true;
 			// Зависимые формы
 			if (isset($r['relationForm']))
 			{
+				//TODO - change script
 				if($r['relationForm']===true) // default function
 					$r['relationForm'] = 'relationForm';
 

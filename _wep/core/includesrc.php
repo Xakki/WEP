@@ -48,11 +48,13 @@
 			$_tpl['onload'] .= 'jQuery(\'a\').qr();';
 		}
 		if(isset($gfi['jquery-ui']) and $gfi['jquery-ui']) {
-			$_tpl['script']['script.jquery/jquery-ui'] = 1;
+			if(!isset($_tpl['script']['script.jquery/jquery-ui']))
+				$_tpl['script']['script.jquery/jquery-ui'] = 1;
 			$_tpl['styles']['style.jquery/'.$gfi['uiStyle'].'/jquery-ui'] = 1;
 		}
 		if(isset($gfi['datepicker']) and $gfi['datepicker']) {
-			$_tpl['script']['script.jquery/jquery-ui'] = 1;
+			if(!isset($_tpl['script']['script.jquery/jquery-ui']))
+				$_tpl['script']['script.jquery/jquery-ui'] = 1;
 			$_tpl['script']['jquery.localisation/jquery.ui.datepicker-ru'] = 1;
 			if($gfi['datepicker']==2) {
 				$_tpl['script']['script.jquery/ui-timepicker-addon'] = 1;
@@ -128,7 +130,7 @@
 			// TODO - учесть и преобразовывать, возможен косяк, когда внутри урла есть "http:"
 			if (strpos($kk, '//')===0 or strpos($kk, 'http:')===0 or strpos($kk, 'https:')===0)
 				$src = str_replace(array('http:','https:'), '', $kk);
-			elseif(is_string($kk) and is_int($rr))
+			elseif(is_string($kk))
 				$src = '//'.$_CFG['_HREF']['_BH'].$_CFG['_HREF']['_script'].$kk.'.js'.$solt;
 
 			if($src)
@@ -155,7 +157,7 @@
 			$src = '';
 			if (strpos($kk, '//')!==false)
 				$src = str_replace(array('http:','https:'), '', $kk);
-			elseif(is_string($kk) and is_int($rr))
+			elseif(is_string($kk))
 				$src = '//'.$_CFG['_HREF']['_BH'].$_CFG['_HREF']['_style'].$kk.'.css'.$solt;
 
 			if($src)
