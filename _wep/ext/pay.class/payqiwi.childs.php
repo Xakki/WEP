@@ -42,6 +42,8 @@ class payqiwi_class extends kernel_extends {
 		$this->prm_add = false; // добавить в модуле
 		$this->prm_del = false; // удалять в модуле
 		$this->prm_edit = false; // редактировать в модуле
+		$this->showinowner = false;
+		
 		$this->API_HREF = 'http://ishop.qiwi.ru/xml';
 		$this->ver = '0.2';
 		$this->pay_systems = true; // Это модуль платёжной системы

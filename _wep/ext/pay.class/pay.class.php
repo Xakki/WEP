@@ -59,14 +59,26 @@ class pay_class extends kernel_extends {
 		$this->fields_form['user_id'] = array('type' => 'list', 'listname'=>array('class'=>'users','nameField'=>'concat("№",tx.id," ",tx.name)'), 'readonly'=>1, 'caption' => 'Кому', 'comment'=>'Кому переведены средства', 'mask'=>array());
 		$this->fields_form['cost'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Сумма', 'mask'=>array());
 		$this->fields_form['name'] = array('type' => 'text', 'readonly'=>1,'caption' => 'Комментарий', 'mask'=>array());
-		$this->fields_form['pay_modul'] = array('type' => 'text', 'readonly'=>1,'caption' => 'Платежный модуль', 'mask'=>array());
+		$this->fields_form['pay_modul'] = array('type' => 'list', 'listname'=>'pay_modul', 'readonly'=>1,'caption' => 'Платежный модуль', 'mask'=>array());
 		$this->fields_form['status'] = array('type' => 'list', 'listname'=>'status', 'readonly'=>1,'caption' => 'Статус', 'mask'=>array());
 		
 		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата', 'mask'=>array());
 		$this->fields_form['mf_ipcreate'] = array('type' => 'text','readonly'=>1, 'caption' => 'IP', 'mask'=>array('fview'=>2));
 
 	}
-	
+
+	function _getlist($listname, $value = 0) {
+		$data = array();
+		if ($listname == 'pay_modul') {
+			foreach ($this->childs as $key => &$value) {
+				$data[$key] = $value->caption;
+			}
+			return $data;
+		} 
+		else
+			return parent::_getlist($listname, $value);
+	}
+
 	// Формы выставления счёта пользователю
 	function billingFrom($summ, $key, $comm='',$eval='',$addInfo=array()) {
 		global $_tpl;
@@ -259,53 +271,6 @@ class pay_class extends kernel_extends {
 		);
 		$this->_update($upd);
 		return true;
-	}
-
-
-	function displayListKey($key=NULL, $status=array()) {
-		$data = array();
-		$data['#curr#'] = $this->config['curr'];
-		$q = 't1 WHERE id ';
-		if(!is_null($key))
-			$q .= 'and t1._key LIKE "'.$key.'"';
-		if(count($status) and $status=implode(',',$status))
-			$q .= 'and t1.status IN ('.$status.')';
-		$data['#list#'] = $this->qs('t1.*', $q.' ORDER BY id DESC');
-		foreach($data['#list#'] as &$r) {
-			$r['#status#'] = $this->_enum['status'][$r['status']];
-			$r['#pay_modul#'] = $this->childs[$r['pay_modul']]->caption;
-			$cl = $this->childs[$r['pay_modul']]->_cl;
-			$r['#lifetime#'] = $this->childs[$r['pay_modul']]->config['lifetime'];
-			$r['#formType#'] = $this->childs[$r['pay_modul']]->pay_formType;
-		}
-		return $data;
-	}
-
-	// Список операций
-	function displayListUser($user) {
-		$data = array();
-		$data['#curr#'] = $this->config['curr'];
-		$where = 'WHERE (`'.$this->mf_createrid.'` = '.$user.' or `user_id` = '.$user.')';
-		$data['#list#'] = $this->_query('*',$where);
-		if(count($data['#list#'])) {
-			$userlist = array();
-			foreach($data['#list#'] as &$r) {
-				$r['#sign#'] = ($user==$r['user_id']?true:false);
-				if(!isset($userlist[$r['user_id']]))
-					$userlist[$r['user_id']] = $r['user_id'];
-				if(!isset($userlist[$r[$this->mf_createrid]]))
-					$userlist[$r[$this->mf_createrid]] = $r[$this->mf_createrid];
-				$r['#status#'] = $this->_enum['status'][$r['status']];
-				if(isset($this->childs[$r['pay_modul']])) {
-					$r['#pay_modul#'] = $this->childs[$r['pay_modul']]->caption;
-					$r['#lifetime#'] = $this->childs[$r['pay_modul']]->config['lifetime'];
-					$r['#formType#'] = $this->childs[$r['pay_modul']]->pay_formType;
-				}
-			}
-			_new_class('ugroup', $UGROUP);
-			$data['#users#'] = $UGROUP->childs['users']->_query('t1.*,t2.level,t2.name as gname','t1 JOIN '.$UGROUP->tablename.' t2 ON t1.owner_id=t2.id WHERE t1.id IN ('.implode(',',$userlist).')','id');
-		}
-		return $data;
 	}
 
 /********************************************/
@@ -559,6 +524,55 @@ class pay_class extends kernel_extends {
 	function clearOldData($M, $leftTime) {
 		$this->_update(array('status'=>'4'), 'status=0 and '.$this->mf_timecr.'<"'.(time()-$leftTime).'" and pay_modul="'.$M.'"');
 	}
+
+
+	function displayListKey($key=NULL, $status=array()) {
+		$data = array();
+		$data['#curr#'] = $this->config['curr'];
+		$q = 't1 WHERE id ';
+		if(!is_null($key))
+			$q .= 'and t1._key LIKE "'.$key.'"';
+		if(count($status) and $status=implode(',',$status))
+			$q .= 'and t1.status IN ('.$status.')';
+		$data['#list#'] = $this->qs('t1.*', $q.' ORDER BY id DESC');
+		foreach($data['#list#'] as &$r) {
+			$r['#status#'] = $this->_enum['status'][$r['status']];
+			$r['#pay_modul#'] = $this->childs[$r['pay_modul']]->caption;
+			$cl = $this->childs[$r['pay_modul']]->_cl;
+			$r['#lifetime#'] = $this->childs[$r['pay_modul']]->config['lifetime'];
+			$r['#formType#'] = $this->childs[$r['pay_modul']]->pay_formType;
+		}
+		return $data;
+	}
+
+	// Список операций
+	function displayListUser($user=false) {
+		$data = array();
+		$data['#curr#'] = $this->config['curr'];
+		$where = 'WHERE (`'.$this->mf_createrid.'` = '.$user.' or `user_id` = '.$user.')';
+		$data['#list#'] = $this->_query('*',$where);
+		if(count($data['#list#'])) {
+			$userlist = array();
+			foreach($data['#list#'] as &$r) {
+				$r['#sign#'] = ($user==$r['user_id']?true:false);
+				if(!isset($userlist[$r['user_id']]))
+					$userlist[$r['user_id']] = $r['user_id'];
+				if(!isset($userlist[$r[$this->mf_createrid]]))
+					$userlist[$r[$this->mf_createrid]] = $r[$this->mf_createrid];
+				$r['#status#'] = $this->_enum['status'][$r['status']];
+				if(isset($this->childs[$r['pay_modul']])) {
+					$r['#pay_modul#'] = $this->childs[$r['pay_modul']]->caption;
+					$r['#lifetime#'] = $this->childs[$r['pay_modul']]->config['lifetime'];
+					$r['#formType#'] = $this->childs[$r['pay_modul']]->pay_formType;
+				}
+			}
+			_new_class('ugroup', $UGROUP);
+			$data['#users#'] = $UGROUP->childs['users']->_query('t1.*,t2.level,t2.name as gname','t1 JOIN '.$UGROUP->tablename.' t2 ON t1.owner_id=t2.id WHERE t1.id IN ('.implode(',',$userlist).')','id');
+		}
+		return $data;
+	}
+
+
 
 }
 

@@ -12,6 +12,7 @@ class paybank_class extends kernel_extends {
 		$this->prm_del = false; // удалять в модуле
 		$this->prm_edit = false; // редактировать в модуле
 		$this->pay_systems = true; // Это модуль платёжной системы
+		//$this->showinowner = false;
 
 		$this->caption = 'Безналичный расчёт';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';
@@ -84,6 +85,7 @@ class paybank_class extends kernel_extends {
 
 	public function setFieldsForm($form=0) {
 		parent::setFieldsForm($form);
+		$this->fields_form[$this->mf_createrid] = array('type' => 'list', 'listname'=>array('class'=>'users','nameField'=>'concat("№",tx.id," ",tx.name)'), 'readonly'=>1, 'caption' => 'Пользователь', 'comment'=>'', 'mask'=>array());
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Назначение платежа');
 		$this->fields_form['fio'] = array('type' => 'text', 'caption' => 'ФИО плательщика');
 		$this->fields_form['address'] = array('type' => 'text', 'caption' => 'Адрес плательщика ');
@@ -92,7 +94,7 @@ class paybank_class extends kernel_extends {
 		if(isset($_GET['summ']))
 			$this->fields_form['amount']['default'] = ceil(floatval($_GET['summ']));
 		$this->fields_form['statuses'] = array('type' => 'list', 'listname'=>'statuses', 'readonly'=>1, 'caption' => 'Статус', 'mask'=>array());
-		$this->fields_form['json_data'] = array('type' => 'textarea', 'caption' => 'JSON DATA');
+		$this->fields_form['json_data'] = array('type' => 'textarea', 'caption' => 'JSON DATA', 'mask'=>array('fview'=>1));
 	}
 
 	function billingFrom($summ, $comm, $data=array()) {

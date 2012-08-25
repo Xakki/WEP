@@ -12,6 +12,7 @@ class payrobox_class extends kernel_extends {
 		$this->prm_del = false; // удалять в модуле
 		$this->prm_edit = false; // редактировать в модуле
 		$this->pay_systems = true; // Это модуль платёжной системы
+		$this->showinowner = false;
 
 		$this->caption = 'Платежи Робо кассы';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';

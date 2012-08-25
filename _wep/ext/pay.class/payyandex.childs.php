@@ -20,6 +20,7 @@ class payyandex_class extends kernel_extends {
 		$this->ver = '0.1';
 		$this->pay_systems = true; // Это модуль платёжной системы
 		$this->pay_formType = true; // Оплата производится по форме
+		$this->showinowner = false;
 
 		$this->_enum['status'] = array(
 			'success' => 'Успешное выполнение.',
@@ -499,7 +500,7 @@ class payyandex_class extends kernel_extends {
 	* @param $leftTime - в секундах
 	*/
 	function clearOldData() {
-		$leftTime = ($this->config['yandex_lifetime']*3600);
+		$leftTime = ($this->config['lifetime']*3600);
 		$this->_update(array('status'=>'timeout', $this->mf_actctrl=>0), 'status="" and '.$this->mf_timecr.'<"'.(time()-$leftTime).'"');
 		$this->owner->clearOldData($this->_cl, $leftTime);
 	}
