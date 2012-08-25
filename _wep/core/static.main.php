@@ -577,6 +577,16 @@ class static_main {
 			die('Redirect to <a href="'.$link.'">'.$link.'</a>');
 		}
 	}
+
+	static function urlAppend($query, $url=false) {
+		if(!$url) 
+			$url = $_SERVER['REQUEST_URI'];
+		if(strpos($url,'?'))
+			$url .= '&'.$query;
+		else
+			$url .= '?'.$query;
+		return $url;
+	}
 	/**
 	 * Преобразование массива данных в XML формат
 	 * @param array $DATA - путь
