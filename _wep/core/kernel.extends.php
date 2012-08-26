@@ -469,6 +469,7 @@ abstract class kernel_extends {
 		$result = $this->SQL->execSQL($query);
 		if ($result->err)
 			return false;
+
 		$data = array();
 		foreach($this->fields as $kf=>$rf) {
 			if(isset($rf['secure']))
@@ -1339,7 +1340,7 @@ $simple = true;
 	 * @param mixed $fields - название списока или массив данных для списка
 	 * @return array
 	 */
-	public function kFields2FormFields(&$fields) {
+	public function kFields2FormFields(&$fields, $method='GET') {
 		return include($this->_CFG['_PATH']['core'] . 'kernel.kFields2FormFields.php');
 	}
 

@@ -35,9 +35,9 @@ class shopbasket_class extends kernel_extends {
 		$this->allowedPay = array();
 
 		$this->_enum['status'] =array(
-			0=>'Заказ ожидает оплаты',
-			1=>'Заказ ожидает подтверждения менеджером',
-			2=>'Заказ забронирован',
+			0=>'Ожидание оплаты',
+			1=>'Ожидание подтверждения менеджером',
+			2=>' * ',
 			3=>'Оплачено',
 			4=>'Отправлено',
 			5=>'Доставлено',
@@ -70,12 +70,12 @@ class shopbasket_class extends kernel_extends {
 		$this->fields_form['address'] = array('type' => 'text', 'caption' => 'Адрес доставки', 'mask'=>array('min'=>6));
 		$this->fields_form['phone'] = array('type' => 'phone', 'caption' => 'Телефон для связи и оповещения', 'mask'=>array('name'=>'phone3', 'min'=>6));
 		$this->fields_form['summ'] = array('type' => 'int', 'caption' => 'Сумма', 'mask'=>array());
-		$this->fields_form['delivertype'] = array('type' => 'list', 'listname'=>'delivertype', 'caption' => 'Тип доставки', 'mask' =>array());
-		$this->fields_form['paytype'] = array('type' => 'list', 'listname' => 'paytype', 'caption' => 'Тип платежа', 'mask' =>array('min'=>2));
+		$this->fields_form['delivertype'] = array('type' => 'list', 'listname'=>'delivertype', 'caption' => 'Тип доставки', 'mask' =>array('min'=>1));
+		$this->fields_form['paytype'] = array('type' => 'list', 'listname' => 'paytype', 'caption' => 'Тип платежа', 'mask' =>array('min'=>1));
 		$this->fields_form['laststatus'] = array('type' => 'list', 'listname'=>'status', 'caption' => 'Статус', 'readonly'=>1, 'mask' =>array());
-		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Отображать','default'=>1, 'readonly'=>1, 'mask' =>array());
+		//$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Отображать','default'=>1, 'readonly'=>1, 'mask' =>array());
 		$this->fields_form['mf_timecr'] = array('type' => 'date', 'readonly'=>1, 'caption' => 'Дата заказа', 'mask'=>array('fview'=>2));
-		$this->fields_form['mf_ipcreate'] = array('type' => 'text', 'caption' => 'IP','readonly'=>1, 'css'=>'boardparam formparam', 'mask'=>array('usercheck'=>1));
+		$this->fields_form['mf_ipcreate'] = array('type' => 'text', 'caption' => 'IP','readonly'=>1, 'mask'=>array('usercheck'=>1));
 		$this->fields_form[$this->mf_createrid] = array(
 			'type' => 'ajaxlist', 
 			'listname'=>array('class'=>'users','nameField'=>'concat(tx.name," [",tx.id,"]")'),
@@ -99,12 +99,17 @@ class shopbasket_class extends kernel_extends {
 		} 
 		elseif ($listname == 'delivertype') {
 			_new_class('shopdeliver',$MODUL);
-			$data = $MODUL->qs('id,name,paylist','WHERE active=1','id');
+			$dataTemp = $MODUL->qs('id,name,paylist','WHERE active=1','id');
 			if($value) {
-				$this->allowedPay = explode('|',trim($data[$value]['paylist'],'|'));
+				$this->allowedPay = explode('|',trim($dataTemp[$value]['paylist'],'|'));
 			}
+
+			foreach($dataTemp as $r)
+				$data[$r['id']] = $r['name'];
+
 			return $data;
-		} else
+		} 
+		else
 			return parent::_getlist($listname, $value);
 	}
 
@@ -114,6 +119,12 @@ class shopbasket_class extends kernel_extends {
 		$this->create_child('shopbasketstatus');
 	}
 
+	public function _UpdItemModul($param = array(), &$argForm = null) {
+		if($this->data[$_this->id]['laststatus']>=3) {
+			$this->prm_edit = false;
+		}
+		return parent::_UpdItemModul($param,$argForm);
+	}
 
 	/*function allChangeData($type = '', $data = '') {
 		unlink($this->YML_FILE);
@@ -218,18 +229,27 @@ class shopbasket_class extends kernel_extends {
 	*
 	*
 	*/
-	function fBasketList() {
+	function fBasketList($showUser=false, $status=false) {
 		_new_class('pay', $PAY);
-		_new_class('shop',$SHOP);
+		//_new_class('shop',$SHOP);
 
 		$RESULT = array();
+
 		if(!$uId = $this->userId()) return $RESULT;
-		$RESULT['#list#'] = $this->qs('t1.*' ,'t1 WHERE t1.'.$this->mf_createrid.'='.$uId.' GROUP BY t1.id ORDER BY t1.mf_timecr DESC', 'id');
 
-		if(count($RESULT['#list#'])) {
-			$shopbasketitem = $this->childs['shopbasketitem']->qs('t1.*' ,'t1 WHERE t1.owner_id in ('.implode(',', array_keys($RESULT['#list#'])).') and t1.'.$this->mf_createrid.'='.$uId.' GROUP BY t1.id', 'id', 'owner_id');
+		if($status!==false) {
+			// TODO status select 
+		}
 
-			foreach($RESULT['#list#'] as &$r) {
+		if($showUser)
+			$RESULT = $this->qs('t1.*, t2.name as uname' ,'t1 JOIN '.static_main::getTableNameOfClass('users').' t2 ON t1.creater_id=t2.id GROUP BY t1.id ORDER BY t1.mf_timecr DESC', 'id');
+		else
+			$RESULT = $this->qs('t1.*' ,'t1 WHERE t1.'.$this->mf_createrid.'='.$uId.' GROUP BY t1.id ORDER BY t1.mf_timecr DESC', 'id');
+
+		if(count($RESULT)) {
+			$shopbasketitem = $this->childs['shopbasketitem']->qs('t1.*' ,'t1 WHERE t1.owner_id in ('.implode(',', array_keys($RESULT)).') GROUP BY t1.id', 'id', 'owner_id');
+
+			foreach($RESULT as &$r) {
 				if($r['paytype'] and isset($PAY->childs[$r['paytype']]))
 					$r['#paytype#'] = $PAY->childs[$r['paytype']]->caption;
 				else
@@ -242,6 +262,30 @@ class shopbasket_class extends kernel_extends {
 		return $RESULT;
 	}
 
+	
+	public function displayItem($id,$flag=true) {
+		$RESULT = array();
+		$this->id = $id;
+		$data = $this->_select();
+		if(!count($data)) return $RESULT;
+
+		_new_class('pay', $PAY);
+		_new_class('shopdeliver',$SHOPDELIVER);
+
+		if($data[$this->id]['paytype'] and isset($PAY->childs[$data[$this->id]['paytype']]))
+			$data[$this->id]['#paytype#'] = $PAY->childs[$data[$this->id]['paytype']]->caption;
+		else
+			$data[$this->id]['#paytype#'] = ' - ';
+		$data[$this->id]['#laststatus#'] = $this->_enum['status'][$data[$this->id]['laststatus']];
+
+		$RESULT = $data[$this->id];
+
+		$RESULT['#shopbasketitem#'] = $this->childs['shopbasketitem']->_select();
+
+		list($RESULT['#delivery#']) = $SHOPDELIVER->qs('*','WHERE id='.$data[$this->id]['delivertype']);
+
+		return $RESULT;
+	}
 
 	/** Список товаров положенных в корзину
 	*
@@ -364,7 +408,9 @@ class shopbasket_class extends kernel_extends {
 		$this->childs['shopbasketstatus']->_add(array('status'=>$status));
 	}
 
+	public function moderStatus($id,$stat) {
 
+	}
 }
 
 class shopbasketitem_class extends kernel_extends {
@@ -429,6 +475,10 @@ class shopbasketstatus_class extends kernel_extends {
 		$this->mf_ipcreate = true;//IP адрес пользователя с котрого была добавлена запись
 
 		$this->_enum['status'] = $this->owner->_enum['status'];
+
+		$this->prm_add = false; // добавить в модуле
+		$this->prm_del = false; // удалять в модуле
+		$this->prm_edit = false; // редактировать в модуле
 
 		return true;
 	}

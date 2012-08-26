@@ -20,7 +20,7 @@ class payyandex_class extends kernel_extends {
 		$this->ver = '0.1';
 		$this->pay_systems = true; // Это модуль платёжной системы
 		$this->pay_formType = true; // Оплата производится по форме
-		$this->showinowner = false;
+		//$this->showinowner = false;
 
 		$this->_enum['status'] = array(
 			'success' => 'Успешное выполнение.',

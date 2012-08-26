@@ -226,7 +226,7 @@ class mail_class extends kernel_extends {
 		$argForm['mail_to']['mask']['evala'] = '"'.$mail_to.'";';
 		$argForm['mail_to']['readonly'] = true;
 
-		$uri_hash = md5($_SERVER['REQUEST_URI']);
+		$uri_hash = md5($mail_to.$category);
 		if(
 				!isset($_COOKIE['ref'.$uri_hash]) 
 			or 
@@ -234,8 +234,8 @@ class mail_class extends kernel_extends {
 			) {
 			_setcookie('ref'.$uri_hash, $_SERVER['HTTP_REFERER'], ($this->_CFG['time']+3600));
 		}
-		if(isset($_COOKIE['REFERER']))
-			$argForm['comment']['mask']['evala'] = '"'.$this->SqlEsc($_COOKIE['REFERER']).'";';
+		if(isset($_COOKIE['ref'.$uri_hash]))
+			$argForm['comment']['mask']['evala'] = '"'.$this->SqlEsc($_COOKIE['ref'.$uri_hash]).'";';
 
 		if(isset($_SESSION['user']['email']) and $_SESSION['user']['email']) {
 			$argForm['from']['mask']['evala'] = '"'.$_SESSION['user']['email'].'";';

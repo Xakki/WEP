@@ -8,7 +8,7 @@
 			$html = '<div class="prodListTable">';
 			if(!isset($data['#item#']) or !count($data['#item#'])) {
 				if(isset($data['#filter#']))
-					$html .= '<h3>К сожаленю, по вашему запросу товары не найдены</h3>';
+					$html .= '<h3>К сожалению, по вашему запросу товары не найдены</h3>';
 				else
 					$html .= '<h3>В данной категории товары ещё не добавлены!</h3>';
 			} 
@@ -48,8 +48,10 @@
 								if(isset($r['sale']))
 									$html .= '<span class="prodlable sale" title="'.$r['sale']['name'].'">&#160;</span>';
 							}
-							else
+							elseif(isset($r[$cf_k]) and $r[$cf_k])
 								$html .= '<td>'.$r[$cf_k];
+							else
+								$html .= '<td> - ';
 						}
 						if(isset($data['#basket#'])) {
 							$html .= '<td class="addbasket">

@@ -62,7 +62,7 @@ class shop_class extends rubric_class {
 	}
 
 	function allChangeData($type = '', $data = '') {
-		unlink($this->YML_FILE);
+		if(file_exists($this->YML_FILE)) unlink($this->YML_FILE);
 		return parent::allChangeData($type, $data);
 	}
 

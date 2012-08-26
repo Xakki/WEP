@@ -26,6 +26,7 @@
 			'1' => array('type' => 'list', 'listname' => 'phptemplates', 'caption' => 'Шаблон корзины-список', 'mask'=>array('min'=>1)),
 			'2'=>array('type'=>'list','listname'=>'ownerlist', 'caption'=>'Страница каталога', 'mask'=>array('min'=>1)),
 			'3'=>array('type'=>'list','listname'=>'content','caption'=>'Блок Авторизации', 'mask'=>array('min'=>1)),
+			'4'=>array('type'=>'list','listname'=>'ownerlist','caption'=>'Страница пользователей', 'mask'=>array('min'=>1)),
 		);
 		return $form;
 	}
@@ -39,35 +40,42 @@
 
 	$subMenu = array(
 		array('name'=>'Список заказов'),
-		array('name'=>'Шаг 1: Выбор товаров'),
+		array('name'=>'Шаг 1: Выбор товаров', 'href'=>$Chref.'.html'),
 		array('name'=>'Шаг 2: Контактные данные'),
 		array('name'=>'Шаг 3: Оплата'),
 	);
 
 	if(static_main::_prmUserCheck())
-		$subMenu[0]['href'] = $Chref.'.html?basketorder';
+		$subMenu[0]['href'] = $Chref.'/orderlist.html';
 
 	$subK = 1;
 	$html = '';
-_new_class('pay', $PAY);
+	_new_class('pay', $PAY);
+	$uid = $SHOPBASKET->userId();
+	$DATA = array();
 
-	if(isset($_GET['basketorder']) and $SHOPBASKET->userId()) {
-		$subMenu[1]['href'] = $Chref.'.html';
+	if(isset($this->pageParam[0]) and $this->pageParam[0]=='orderlist' and static_main::_prmUserCheck()) {
+		if(isset($this->pageParam[1])) {
+			$SHOPBASKET->id = (int)$this->pageParam[1];
+			$DATA['#item#'] = $SHOPBASKET->displayItem($SHOPBASKET->id);
+			$DATA['messages'][] = array('info','Информация о заказе №'.$DATA['#item#']['id']);
+		}
+		else {
+			$DATA['#list#'] = $SHOPBASKET->fBasketList();
+		}
+
 		$subK = 0;
 		// STEP 1 
-		$DATA = $SHOPBASKET->fBasketList();
-		$DATA['#page#'] = $Chref;
+
+		$DATA['#page#'] = $Chref.'/orderlist';
 		$DATA['#curr#'] = $PAY->config['curr'];
+		$DATA['#pageUser#'] = $this->getHref($FUNCPARAM[4]);
+
 		$html = $HTML->transformPHP($DATA,$FUNCPARAM[0]);
-		/*
-		$DATA = $PAY->displayListKey('shop'.$SHOPBASKET->getPayKey());
-		if(count($DATA['#list#'])) {
-			$DATA['#title#'] = 'Список выставленных счетов за услуги по данному объявлению';
-			$html = $HTML->transformPHP($DATA,'#pay#list');
-		}
-		*/
+
 	}
-	elseif(isset($_GET['basketpay'])) {
+	elseif(isset($_GET['basketpay']) and static_main::_prmUserCheck()) 
+	{
 		$subK = 3;
 		// Выписывать счёт
 		$SHOPBASKET->id = (int)$_GET['basketpay'];
@@ -98,7 +106,7 @@ _new_class('pay', $PAY);
 	}
 	elseif(isset($_GET['typedelivery']) and $SHOPBASKET->getSummOrder()) {
 		$subK = 2;
-		$uid = $SHOPBASKET->userId();
+		
 		if($uid) {
 			_new_class('ugroup',$UGROUP);
 			if($uid<0) {

@@ -170,9 +170,10 @@
 						if(is_array($r['listname']) and isset($r['listname']['idThis']) and $this->id) {
 							$r['value'] = $this->data[$this->id][$r['listname']['idThis']];
 						}
-						if($r['value']) {
+						if(isset($r['value']) and $r['value']!='') {
 							$tval = $r['value'];
 							$ltemp = $this->_getCashedList($r['listname'],$tval);
+
 							if(is_array($ltemp)) {
 								$r['value'] = implode(',',$ltemp);
 							}
@@ -214,8 +215,8 @@
 		unset($r);
 		if(count($fields)) {
 			if(!isset($fields['_*features*_']))
-				$fields['_*features*_'] = array('name' => 'f'.$this->_cl, 'method'=>'GET', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
+				$fields['_*features*_'] = array('name' => 'f'.$this->_cl, 'method'=>$method, 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
 			elseif(is_string($fields['_*features*_']))
-				$fields['_*features*_'] = array('name' => $fields['_*features*_'], 'method'=>'GET', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
+				$fields['_*features*_'] = array('name' => $fields['_*features*_'], 'method'=>$method, 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
 		}
 		return true;

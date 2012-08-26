@@ -46,7 +46,7 @@ table.schet td {
 <p><strong>Поставщик:</strong> '.$data['#config#']['bank_namefirm'].'<br/>
 '.$data['#config#']['bank_firmaddress'].'<br/>
 '.$data['#config#']['bank_firmcontact'].'<br/>
-<strong>Реквезиты поставщика:</strong>
+<strong>Реквизиты поставщика:</strong>
 ИНН '.$data['#config#']['bank_INN'].', 
 КПП '.$data['#config#']['bank_KPP'].', 
 р/с № '.$data['#config#']['bank_nomer'].', <br/>
