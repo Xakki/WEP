@@ -43,13 +43,29 @@
 	$DATA = array('#moder#'=>true);
 	$DATA['#page#'] = $Chref;
 	$DATA['#curr#'] = $PAY->config['curr'];
-	$DATA['#pageCatalog#'] = $this->getHref($FUNCPARAM[1]);
-	$DATA['#pageUser#'] = $this->getHref($FUNCPARAM[2]);
+	$DATA['#pageCatalog#'] = $this->getHref($FUNCPARAM[2]);
+	$DATA['#pageUser#'] = $this->getHref($FUNCPARAM[3]);
 
 	if(isset($this->pageParam[0])) {
 		$DATA['#item#'] = $SHOPBASKET->displayItem((int)$this->pageParam[0]);
 		$this->pageinfo['path'][] = 'Информация о заказе №'.$DATA['#item#']['id'];
 
+		$status = 0;
+		if($_POST['status3'])
+			$status = 3;
+		elseif($_POST['status4'])
+			$status = 4;
+		elseif($_POST['status5'])
+			$status = 5;
+		elseif($_POST['status7'])
+			$status = 7;
+		
+		if($status) {
+			if($SHOPBASKET->setStatus($SHOPBASKET->id,$status))
+				$DATA['messages'][] = array('ok','Статус успешно изменён!');
+			else
+				$DATA['messages'][] = array('error','Ошибка смены статуса');
+		}
 		/*if(count($DATA['#item#'])) {
 			_new_class('users', $USERS);
 			$DATA['#user_list#'] = $USERS->displayList($DATA['#item#'],array('menuitem_cid','creater_id'));

@@ -408,8 +408,30 @@ class shopbasket_class extends kernel_extends {
 		$this->childs['shopbasketstatus']->_add(array('status'=>$status));
 	}
 
-	public function moderStatus($id,$stat) {
+	public function setStatus($id,$status) {
+		$this->id = $id;
+		$data = $this->_select();
+		if(!count($data)) return false;
 
+		if($status==3) {
+			if($data[$this->id]['status']<3) {
+				_new_class('pay', $PAY);
+				$PAY->PayTransaction(1, $data[$this->id]['summ'], $data[$this->id]['pay_id']);
+			}
+			else
+			 	false;
+		}
+		elseif($status>=6) {
+			if($data[$this->id]['status']<3) {
+				_new_class('pay', $PAY);
+				$PAY->PayTransaction(($status==6?2:3), $data[$this->id]['summ'], $data[$this->id]['pay_id']);
+			}
+			else
+			 	false;
+		}
+		else
+			$this->payStatus($id,$status);
+		return true;
 	}
 }
 

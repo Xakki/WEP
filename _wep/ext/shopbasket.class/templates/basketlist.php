@@ -61,13 +61,23 @@
 				<tr> <td>Метод оплаты <td><b>'.$itemB['#paytype#'].'</b>
 				<tr> <td>Доставка <td><b>'.$itemB['#delivery#']['name'].'</b>
 				<tr> <td>Статус <td><b>'.$itemB['#laststatus#'].'</b>
-			</table>
-			<h3>Покупки</h3>
+			</table>';
+			if(isset($data['#moder#']) and $data['#moder#']){
+				$html .= '
+				<form method="POST">
+					<input type="submit" name="status3" value="Оплачено" '.($itemB['status']<=3?'':' disable="disable"').'/>
+					<input type="submit" name="status4" value="Отправлено"/>
+					<input type="submit" name="status5" value="Доставлено"/>
+					<input type="submit" name="status7" value="Отменить" onclick="if(!confirm(\'Подтвердите удаление\')) return false;"/>
+				</form>
+				'; 
+			}
+			$html .= '<h3>Покупки</h3>
 			<div class="basketItems">
 				<table>
-					<tr><th>Код <th>Наименование <th>Цена '.$data['#curr#'].'<th>Кол-во <th>Сумма '.$data['#curr#'].'';
+					<tr><th>Наименование <th>Цена '.$data['#curr#'].'<th>Кол-во <th>Сумма '.$data['#curr#'].'';
 				foreach($itemB['#shopbasketitem#'] as $r) {
-					$html .= '<tr> <td>'.$r['product_id'].' <td>'.$r['product_name'].'<td>'.$r['cost_item'].'<td>'.$r['count'].'<td>'.($r['count']*$r['cost_item']);
+					$html .= '<tr> <td><a href="'.$data['#pageCatalog#'].'/cataloglist/product_'.$r['product_id'].'.html" target="_blank">'.$r['product_name'].'</a> <td>'.$r['cost_item'].'<td>'.$r['count'].'<td>'.($r['count']*$r['cost_item']);
 				}
 				$html .= '</table>
 			</div>';
