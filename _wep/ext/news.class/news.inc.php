@@ -15,7 +15,7 @@
 	if(!isset($FUNCPARAM[2])) $FUNCPARAM[2] = 3;
 	if(!isset($FUNCPARAM[3])) $FUNCPARAM[3] = '';
 
-	_new_class('news',$NEWS);
+	if(!_new_class('news',$NEWS)) return 'Модуль "Новости" отключен.';
 
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 		$this->_enum['newscategory'] = $NEWS->config['category'];

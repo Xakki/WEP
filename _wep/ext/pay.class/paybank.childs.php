@@ -134,12 +134,12 @@ class paybank_class extends kernel_extends {
 		//$_tpl['onload'] .= '$("#form_paymethod").submit();';
 		$DATA = array('messages'=>array());
 
-		if($status) {
+		/*if($status) {
 			if(count($data))
 				$DATA['messages'][] = array('ok','Счёт успешно сформирован.');
 			else
 				$DATA['messages'][] = array('error','Ошибка выставление счёта!');
-		}
+		}*/
 
 		if(count($data)) {
 			$DATA['messages'][] = array('payselect-comm',$data['name']);

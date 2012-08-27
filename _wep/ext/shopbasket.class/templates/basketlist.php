@@ -65,10 +65,10 @@
 			if(isset($data['#moder#']) and $data['#moder#']){
 				$html .= '
 				<form method="POST">
-					<input type="submit" name="status3" value="Оплачено" '.($itemB['status']<=3?'':' disable="disable"').'/>
-					<input type="submit" name="status4" value="Отправлено"/>
-					<input type="submit" name="status5" value="Доставлено"/>
-					<input type="submit" name="status7" value="Отменить" onclick="if(!confirm(\'Подтвердите удаление\')) return false;"/>
+					'.($itemB['laststatus']<3?'<input type="submit" name="status3" value="Оплачено"/>':'').'
+					'.($itemB['laststatus']==3?'<input type="submit" name="status4" value="Отправлено"/>':'').'
+					'.($itemB['laststatus']==4?'<input type="submit" name="status5" value="Доставлено"/>':'').'					
+					'.($itemB['laststatus']<3?'<input type="submit" name="status7" value="Отменить" onclick="if(!confirm(\'Подтвердите удаление\')) return false;"/>':'').'
 				</form>
 				'; 
 			}

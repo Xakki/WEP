@@ -106,15 +106,18 @@ class pay_class extends kernel_extends {
 					$from_user = $this->checkPayUsers($_POST['paymethod']); // User плат. системы
 					if($this->payAdd($from_user,1,$summ, $key, $comm,0,$_POST['paymethod'],$eval)) {
 						$CHILD->_update(array('owner_id'=>$this->id));
-						$data['#title#'] = 'Счёт выставлен успешно!';
+						//$data['#title#'] = 'Счёт выставлен успешно!';
+						$data['messages'][] = array('ok','Счёт успешно сформирован.');
 						// Открыть окно системы в новом окне
-						$data['#foot#'] = '<span class="paySpanMess" onclick="window.location.reload();">Обновите страницу, чтобы узнать состояния счёта.</span>';
+						//$data['#foot#'] = '<span class="paySpanMess" onclick="window.location.reload();">Обновите страницу, чтобы узнать состояния счёта.</span>';
 					} 
 					else
-						$data['#title#'] = 'Ошибка';
+						$data['messages'][] = array('error','Ошибка выставление счёта!');
+						//$data['#title#'] = 'Ошибка';
 				}
 				else {
-					$data['#title#'] = 'Укажите необходимые данные';
+					$data['messages'][] = array('alert','Укажите необходимые данные.');
+					//$data['#title#'] = 'Укажите необходимые данные';
 				}
 			}
 			$data['#resFlag#'] = $resFlag;
@@ -125,7 +128,8 @@ class pay_class extends kernel_extends {
 					$data['child'][$child->_cl] = array('_cl'=>$child->_cl,'caption'=>$child->caption);
 				}
 			}
-			$data['#title#'] = 'Выберите вариант оплаты';
+			$data['messages'][] = array('info','Выберите вариант оплаты.');
+			//$data['#title#'] = 'Выберите вариант оплаты';
 		}
 
 		$data['summ'] = $summ;
