@@ -1,0 +1,17 @@
+code {
+    background: url(/_design/_img/code.gif) #F8F8F8;
+    padding: 5px;
+    margin: 5px;
+    border: 1px solid #DCE6F0;
+    color: #444;
+    font-size: 14px;
+    display: block;
+    white-space: pre;
+    line-height: 16px
+}
+
+code.php {
+}
+
+code.html {
+}

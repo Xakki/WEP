@@ -12,11 +12,10 @@
 		{#meta#}
 		<link rel="SHORTCUT ICON" href="/favicon.ico"/>
 		{#styles#}
-		{#tplstyles#}
 		{#script#}
-		{#tplscript#}
 	</head>
 	<body onload="{#onload#}">
+		<!--[if lte IE 8]><script src="http://phpbbex.com/oldies/oldies.js" charset="utf-8"></script><![endif]-->
 		{#logs#}
 		<div class="header" data-tpl="head">
 			{#head#}
