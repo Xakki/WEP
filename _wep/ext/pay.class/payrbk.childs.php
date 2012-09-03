@@ -97,22 +97,22 @@ class payrbk_class extends kernel_extends {
 		$this->config_form['lifetime'] = array('type' => 'text', 'caption' => 'Таймаут','comment'=>'Время жизни счёта по умолчанию. Задается в часах. Максимум 1080 часов (45 суток)', 'style'=>'background-color:#F60;');
 	}
 
-	protected function _create() {
+	function _create() {
 		parent::_create();
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL'); // наименование услуги
 		$this->fields['email'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL');
 		$this->fields['amount'] = array('type' => 'float', 'width' => '11,2','attr' => 'NOT NULL');
-		$this->fields['userName '] = array('type' => 'varchar', 'width' => 20,'attr' => 'NOT NULL','default'=>''); // № плательщика в системе
+		$this->fields['username'] = array('type' => 'varchar', 'width' => 20, 'attr' => 'NOT NULL', 'default'=>''); // № плательщика в системе
 		//Статус операции
-		$this->fields['paymentStatus'] = array('type' => 'varchar', 'width' => 63,'attr' => 'NOT NULL', 'default'=>'');
+		$this->fields['paymentstatus'] = array('type' => 'varchar', 'width' => 63,'attr' => 'NOT NULL', 'default'=>'');
 		//Дата и время исполнения операции в Системе RBK Money в формате " YYYY - MM - DD HH : MM : SS ".
-		$this->fields['paymentData'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL', 'default'=>'');
+		$this->fields['paymentdata'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL', 'default'=>'');
 		// Контрольная подпись оповещения об исполнении операции, которая используется для проверки целостности полученной информации и однозначной идентификации отправителя.Алгоритм формирования описан в разделе " Контрольная подпись данных ".
 		$this->fields['hash'] = array('type' => 'varchar', 'width' => 63,'attr' => 'NOT NULL', 'default'=>''); 
 		//В этом поле передается идентификатор операции в Системе RBK Money.
-		$this->fields['paymentId'] = array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL', 'default'=>0);
+		$this->fields['paymentid'] = array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL', 'default'=>0);
 		//Идентификатор учетной записи Участника в Системе RBK Money . Является уникальным в Системе RBK Money .
-		$this->fields['eshopAccount'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL', 'default'=>'');
+		$this->fields['eshopaccount'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL', 'default'=>'');
 	}
 
 	/*function getButton($summ,$comm) {
@@ -154,7 +154,7 @@ class payrbk_class extends kernel_extends {
 
 	function payFormBilling($data) {
 		global $_tpl;
-		$_tpl['onload'] .= '$("#form_paymethod").submit();';
+		//$_tpl['onload'] .= '$("#form_paymethod").submit();';
 		$DATA = array();
 		$DATA['messages'] = array(
 			array('alert','Выполняется открытие страницы оплаты на RBK.Money.'),
@@ -162,14 +162,14 @@ class payrbk_class extends kernel_extends {
 			array('txt','После оплаты обновите <a href="javascript:window.location.reload();">страницу</a>, чтобы узнать состояние счёта.'),
 		);
 		$DATA['form'] = array(
-			'_*features*_' => array('name'=>'paymethod','action'=>$this->config['actionURL'].'"  target="_blank')
+			'_*features*_' => array('name'=>'paymethod','action'=>$this->config['actionURL'].'"  target="_blank'),
 			'eshopId'=>array('type'=>'hidden','value'=>$this->config['eshopId']),
 			'orderId'=>array('type'=>'hidden','value'=>$data['id']), // заголовок у отправителя
 			'serviceName'=>array('type'=>'hidden','value'=>$data['name']), // Комментарий у отправителя
 			'recipientAmount'=>array('type'=>'hidden','value'=>$data['amount']),
 			'recipientCurrency'=>array('type'=>'hidden','value'=>$this->config['recipientCurrency']),
-			'successUrl'=>array('type'=>'hidden','value'=>'false'),****
-			'failUrl'=>array('type'=>'hidden','value'=>'true'),****
+			'successUrl'=>array('type'=>'hidden','value'=>$this->owner->successUrl),
+			'failUrl'=>array('type'=>'hidden','value'=>$this->owner->failUrl),
 			'user_email'=>array('type'=>'hidden','value'=>$data['email']),
 			'language'=>array('type'=>'hidden','value'=>$this->config['language']),
 		);

@@ -56,6 +56,7 @@ class shopdeliver_class extends kernel_extends {
 		$data = array();
 		if ($listname == 'paylist') {
 			_new_class('pay',$PAY);
+			$data[''] = 'Все включенные ПС';
 			foreach($PAY->childs as &$child) {
 				if (isset($child->pay_systems)) {
 					$data[$child->_cl] = $child->caption;

@@ -339,7 +339,7 @@ class pg_class extends kernel_extends {
 		}
 		$HTML->_templates = $this->pageinfo['template'];
 		if($this->_CFG['returnFormat'] == 'html') {
-			$_tpl['script']['wepSet'] = 'if(typeof wep !== "undefined") {
+			$_tpl['script'][] = 'if(typeof wep !== "undefined") {
 	wep.pgId = ' . $this->id . ';
 	wep.pgParam =' . $pageParamEncode . ';
 	wep.pgGet =' . $getEncode . ';

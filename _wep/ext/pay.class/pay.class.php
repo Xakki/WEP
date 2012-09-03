@@ -49,6 +49,9 @@ class pay_class extends kernel_extends {
 			3 => 'Отменено магазином',
 			4 => 'Истекло время ожидания',
 		);
+		// TODO !!!!
+		$this->successUrl = $_SERVER['REQUEST_URI'];
+		$this->failUrl = $_SERVER['REQUEST_URI'];
 
 	}
 

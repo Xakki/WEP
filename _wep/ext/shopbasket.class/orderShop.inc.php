@@ -133,8 +133,9 @@
 					$FORM['phone']['value'] = $_SESSION['user']['cf1'];
 					$FORM['address']['value'] = $_SESSION['user']['cf2'];
 					$FORM['fio']['value'] = $_SESSION['user']['name'];
-					$SHOPBASKET->allowedPay = $deliveryData['paylist'];
-					$SHOPBASKET->allowedPay = explode('|',trim($SHOPBASKET->allowedPay,'|'));
+					$deliveryData['paylist'] = trim($deliveryData['paylist'],'|');
+					if($deliveryData['paylist'])
+						$SHOPBASKET->allowedPay = explode('|',$deliveryData['paylist']);
 					// Убираем ненужные поля
 					$norequere = $deliveryData['norequere'];
 					$norequere = explode('|',trim($norequere,'|'));

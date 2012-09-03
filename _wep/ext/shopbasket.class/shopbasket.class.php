@@ -100,7 +100,7 @@ class shopbasket_class extends kernel_extends {
 		elseif ($listname == 'delivertype') {
 			_new_class('shopdeliver',$MODUL);
 			$dataTemp = $MODUL->qs('id,name,paylist','WHERE active=1','id');
-			if($value) {
+			if($value and trim($dataTemp[$value]['paylist'],'|')) {
 				$this->allowedPay = explode('|',trim($dataTemp[$value]['paylist'],'|'));
 			}
 

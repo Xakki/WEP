@@ -564,10 +564,13 @@ var wep = {
 		--wep._loadCount;
 		if(typeof script == 'object') {
 			for(var i in script) {
+				if(typeof script[i] == 'string' && (script[i].substr(0,4)=='http' || script[i].substr(0,1)=='<'))
+					alert('Error script include');
+
 				var src = '';
-				if (i.substr(0, 4) == 'http' || i.substr(0, 2) == '//')
+				if (i.substr(0, 4) == 'http' || i.substr(0, 5) == 'https' || i.substr(0, 2) == '//')
 					var src = i;
-				else if(typeof i == 'string' && typeof script[i] == 'number')
+				else if(typeof i == 'string')
 					var src = wep.BH+wep.HREF_script+i+'.js';
 
 				
@@ -586,6 +589,8 @@ var wep = {
 			}
 		} 
 		else {
+			/*console.log('*** eval');
+			console.log(script);*/
 			eval(script);
 		}
 		++wep._loadCount;
