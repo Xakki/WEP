@@ -1417,8 +1417,8 @@ $simple = true;
 	 * @param array $oid 
 	 * @return array
 	 */
-	public function staticStatsmodul($oid = '') {
-		return static_tools::_staticStatsmodul($this, $oid);
+	public function toolsStatsmodul($oid = '') {
+		return static_tools::toolsStatsmodul($this, $oid);
 	}
 	
 	/*public function toolsReindex(){
@@ -1595,7 +1595,11 @@ $simple = true;
 							$cl[$k] = 't1.' . $k . ' ' . ($tempex ? 'NOT' : '') . 'IN ("' . implode('","', $_FILTR[$k]) . '")';
 						}
 						else {
-							if ($r['type'] == 'int' or $r['type'] == 'date') {
+							if ($r['type'] == 'checkbox') 
+							{
+								$cl[$k] = 't1.' . $k . '="' . (int)$_FILTR[$k] . '"';
+							}
+							elseif ($r['type'] == 'int' or $r['type'] == 'date') {
 								$_FILTR[$k] = (int)$_FILTR[$k];
 								$_FILTR[$k . '_2'] = (int)$_FILTR[$k . '_2'];
 								$tmp = array();
@@ -1603,8 +1607,8 @@ $simple = true;
 									$tmp[] = 't1.' . $k . ($tempex?'<':'>') . $_FILTR[$k];
 								if (isset($_FILTR[$k . '_2']) and $_FILTR[$k . '_2']!='')
 									$tmp[] = 't1.' . $k . ($tempex?'>':'<') . $_FILTR[$k . '_2'];
-
-								$cl[$k] = '(' . implode(($tempex?' or ':' and '),$tmp) . ')';
+								if(count($tmp))
+									$cl[$k] = '(' . implode(($tempex?' or ':' and '),$tmp) . ')';
 							}
 							elseif ($r['type'] == 'list') {
 								if ($_FILTR[$k]!='') {

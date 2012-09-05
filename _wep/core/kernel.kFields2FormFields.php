@@ -72,7 +72,7 @@
 				elseif($r['type']=='ajaxlist') {
 					if(!$r['label'])
 						$r['label'] = 'Введите текст';
-					if($r['mask']['min'] and (!isset($r['value']) or $r['value']<$r['mask']['min']))
+					if(isset($r['mask']['min']) and $r['mask']['min'] and (!isset($r['value']) or $r['value']<$r['mask']['min']))
 						$r['value_2'] = '';
 
 					if((!isset($r['value_2']) or !$r['value_2']) and isset($r['value']) and $r['value']) {

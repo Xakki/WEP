@@ -88,10 +88,10 @@ class payrbk_class extends kernel_extends {
 		$this->config_form['actionURL'] = array('type' => 'text', 'caption' => 'actionURL', 'comment'=>'');
 		$this->config_form['eshopId'] = array('type' => 'text', 'caption' => 'eshopId');
 		$this->config_form['secretKey'] = array('type' => 'text', 'caption' => 'secretKey','comment'=>'');
-		$this->config_form['recipientCurrency'] = array('type' => 'list', 'listname'=>'recipientCurrency', 'caption' => 'Префикс в номере счёта','comment'=>'');
+		$this->config_form['recipientCurrency'] = array('type' => 'list', 'listname'=>'recipientCurrency', 'caption' => 'Валюта','comment'=>'');
 		$this->config_form['allow_ip'] = array('type' => 'text', 'caption' => 'Разрешенные IP','comment'=>'');
-		$this->config_form['preference'] = array('type' => 'list', 'list'=>'preference', 'caption' => 'Метод оплаты по умолчанию','comment'=>'Позволяет пропустить окно выбора оплаты');
-		$this->config_form['language'] = array('type' => 'list', 'list'=>'language', 'caption' => 'Локализация','comment'=>'язык');
+		$this->config_form['preference'] = array('type' => 'list', 'listname'=>'preference', 'caption' => 'Метод оплаты по умолчанию','comment'=>'Позволяет пропустить окно выбора оплаты');
+		$this->config_form['language'] = array('type' => 'list', 'listname'=>'language', 'caption' => 'Локализация','comment'=>'язык');
 		$this->config_form['minpay'] = array('type' => 'int', 'caption' => 'Миним. сумма','comment'=>'при пополнении счёта', 'style'=>'background-color:#F60;');
 		$this->config_form['maxpay'] = array('type' => 'int', 'caption' => 'Максим. сумма','comment'=>'при пополнении счёта', 'style'=>'background-color:#F60;');
 		$this->config_form['lifetime'] = array('type' => 'text', 'caption' => 'Таймаут','comment'=>'Время жизни счёта по умолчанию. Задается в часах. Максимум 1080 часов (45 суток)', 'style'=>'background-color:#F60;');
