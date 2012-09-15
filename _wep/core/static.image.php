@@ -56,8 +56,10 @@ class static_image {
 	}
 
 	// Меняет размер. пропорционально, до минимального соответсявия по стороне
+	// TODo - куму нужна вообще эта функция, которая менятет размер картинки без сохранения соотношения сторон?
 	static function _resizeImage($InFile, $OutFile, $WidthX, $HeightY)
 	{
+		trigger_error('_resizeImage', E_USER_WARNING);
 		$res = true;
 		if(!$WidthX and !$HeightY) 
 			return true;
@@ -146,40 +148,34 @@ class static_image {
 		$res = true;
 		if(!$WidthX and !$HeightY) 
 			return true;
-		// Если одна из сторон не указана - значит квадрат
-		if(!$WidthX) $WidthX=$HeightY;
-		if(!$HeightY) $HeightY=$WidthX;
+
+		$crop = true;
+		if(!$WidthX) {
+			$WidthX=$HeightY;
+			$crop = false;
+		}
+		if(!$HeightY) {
+			$HeightY=$WidthX;
+			$crop = false;
+		}
 
 		_chmod($InFile);
 
 		if(class_exists('Imagick',false)) {///// todo 
 			$thumb = new Imagick($InFile);
-			$thumb->cropThumbnailImage($WidthX,$HeightY);
+			if($crop)
+				$thumb->cropThumbnailImage($WidthX,$HeightY);
+			else
+				$thumb->thumbnailImage($WidthX,$HeightY, true);
 			$res = $thumb->writeImage($OutFile);
 			$thumb->destroy();
 		}
-		/*if(class_exists('Imagick',false)) {///// todo 
-			$thumb = new Imagick($InFile);
-			if(isset($GET['test'])) {
-				print_r('thumbnailImage fit');
-				$thumb->thumbnailImage($WidthX,$HeightY, true);
-			}
-			elseif(isset($GET['test2'])) {
-				print_r('thumbnailImage');
-				$thumb->thumbnailImage($WidthX,$HeightY);
-			}
-			else
-			{
-				print_r('cropThumbnailImage');
-				$thumb->cropThumbnailImage($WidthX,$HeightY);
-			}
-			$res = $thumb->writeImage($OutFile);
-			$thumb->destroy();
-		}*/
 		else 
 		{
-			//$cmd = 'convert '.$InFile.' -thumbnail "'.$WidthX.'x'.$HeightY.'" '.$OutFile;
-			$cmd = 'convert '.escapeshellarg($InFile).' -resize "'.$WidthX.'x'.$HeightY.'^" -gravity center -crop '.$WidthX.'x'.$HeightY.'+0+0 +repage  '.escapeshellarg($OutFile);
+			if($crop)
+				$cmd = 'convert '.escapeshellarg($InFile).' -resize "'.$WidthX.'x'.$HeightY.'^" -gravity center -crop '.$WidthX.'x'.$HeightY.'+0+0 +repage  '.escapeshellarg($OutFile);
+			else
+				$cmd = 'convert '.escapeshellarg($InFile).' -thumbnail "'.$WidthX.'x'.$HeightY.'" '.escapeshellarg($OutFile);
 			$out=array();$err = 0;$run = exec($cmd, $out, $err);
 			/*print_r('***-<pre>');
 			print_r($out);

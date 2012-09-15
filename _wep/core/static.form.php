@@ -175,9 +175,10 @@ class static_form {
 							$res = true;
 							if ($imod['type']=='crop')
 								$res = static_image::_cropImage($newname, $newname2, $imod['w'], $imod['h']);
-							elseif ($imod['type']=='resize')
-								$res = static_image::_resizeImage($newname, $newname2, $imod['w'], $imod['h']);
-							elseif ($imod['type']=='resizecrop' or $imod['type']=='thumb')
+							/*elseif ($imod['type']=='resize')
+								$res = static_image::_resizeImage($newname, $newname2, $imod['w'], $imod['h']);*/
+							// TODO - IMAGE OPTION normalize
+							elseif ($imod['type']=='resizecrop' or $imod['type']=='thumb' or $imod['type']=='resize')
 								$res = static_image::_thumbnailImage($newname, $newname2, $imod['w'], $imod['h']);
 							elseif ($imod['type']=='watermark')
 								$res = static_image::_waterMark($newname,$newname2, $imod['logo'], $imod['x'], $imod['y']);
