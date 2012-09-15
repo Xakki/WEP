@@ -141,8 +141,9 @@
 				}
 				elseif(isset($r['listname'])) {
 					if(!$r['readonly']) {
-						if (!isset($r['listname']['idThis'])) 
+						if (is_array($r['listname']) and !isset($r['listname']['idThis'])) {
 							$r['listname']['idThis'] = $k;
+						}
 													
 						$md= $this->_getCashedList($r['listname']);
 						if(!isset($r['value']))

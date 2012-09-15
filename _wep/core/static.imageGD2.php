@@ -215,6 +215,7 @@ class static_imageGD2 {
 
 	static function _image_to_file($im,$file,$q,$imtype)
 	{
+		static_tools::_checkdir(dirname($file));
 		if($imtype==1) imagegif($im, $file,$q);
 		elseif($imtype==2) imagejpeg($im, $file,$q);
 		elseif($imtype==3) imagepng($im, $file,8);

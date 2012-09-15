@@ -202,7 +202,8 @@ class product_class extends kernel_extends {
 	}
 
 	function allChangeData($type = '', $data = '') {
-		unlink($this->owner->YML_FILE);
+		if(file_exists($this->owner->YML_FILE))
+			unlink($this->owner->YML_FILE);
 		return parent::allChangeData($type, $data);
 	}
 

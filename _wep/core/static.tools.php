@@ -542,7 +542,8 @@ class static_tools {
 			if ($result->err)
 				return false;
 			// create list
-
+			return true;
+			// TODO: использовать готовые ф
 			while ($row = $result->fetch()) {
 				//$data[]= $row;
 				foreach ($MODUL->attaches as $key => $value) {
