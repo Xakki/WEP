@@ -102,8 +102,8 @@ class product_class extends kernel_extends {
 		$this->index_fields['name'] = 'name';
 
 
-		$thumb = array('type'=>'resize', 'w'=>'1024', 'h'=>'768');
-		$thumb2 = array('type'=>'resize', 'w'=>'250', 'h'=>'250', 'pref'=>'s_', 'path'=>'_content/img_product_thumb');
+		$thumb = array('type'=>'resizecrop', 'w'=>'1024', 'h'=>'768');
+		$thumb2 = array('type'=>'resizecrop', 'w'=>'250', 'h'=>'250', 'pref'=>'s_', 'path'=>'_content/img_product_thumb');
 		$maxsz = 3000;
 		$this->attaches['img_product'] = array('mime' => array('image'), 'toWebImg'=>true, 'thumb'=>array($thumb,$thumb2), 'maxsize'=>$maxsz, 'path'=>'');
 		// toWebImg - преобразует все рисунки не относящиеся к png,jpg,gif - в jpg по умолчанию(если toWebImg=true) или указать свой	 тип или false - отменяет преобразование

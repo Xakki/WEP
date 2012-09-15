@@ -154,6 +154,12 @@ class static_image {
 
 		if(class_exists('Imagick',false)) {///// todo 
 			$thumb = new Imagick($InFile);
+			$thumb->cropThumbnailImage($WidthX,$HeightY);
+			$res = $thumb->writeImage($OutFile);
+			$thumb->destroy();
+		}
+		/*if(class_exists('Imagick',false)) {///// todo 
+			$thumb = new Imagick($InFile);
 			if(isset($GET['test'])) {
 				print_r('thumbnailImage fit');
 				$thumb->thumbnailImage($WidthX,$HeightY, true);
@@ -169,7 +175,7 @@ class static_image {
 			}
 			$res = $thumb->writeImage($OutFile);
 			$thumb->destroy();
-		}
+		}*/
 		else 
 		{
 			//$cmd = 'convert '.$InFile.' -thumbnail "'.$WidthX.'x'.$HeightY.'" '.$OutFile;
