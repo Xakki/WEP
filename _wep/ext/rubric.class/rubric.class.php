@@ -223,7 +223,7 @@ class rubricparam_class extends kernel_extends {
 		elseif($type<80)
 			return 'text';
 		else
-			return 'float';
+			return 'decimal';
 	}
 
 	function _create() {

@@ -115,8 +115,8 @@ class payyandex_class extends kernel_extends {
 		$this->fields['phone'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL','default'=>'');
 		$this->fields['email'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL');
 		$this->fields['sender'] = array('type' => 'varchar', 'width' => 20,'attr' => 'NOT NULL','default'=>''); // № плательщика в системе
-		$this->fields['amount'] = array('type' => 'float', 'width' => '11,2','attr' => 'NOT NULL'); // в коппейках
-		$this->fields['tax'] = array('type' => 'float', 'width' => '11,2','attr' => 'NOT NULL'); // в коппейках
+		$this->fields['amount'] = array('type' => 'decimal', 'width' => '10,2','attr' => 'NOT NULL'); // в коппейках
+		$this->fields['tax'] = array('type' => 'decimal', 'width' => '10,2','attr' => 'NOT NULL'); // в коппейках
 		$this->fields['status'] = array('type' => 'varchar', 'width' => 63,'attr' => 'NOT NULL','default'=>'');
 		$this->fields['operation_id'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL','default'=>'');
 		//Код ошибки при проведении платежа (пояснение к полю status). Присутствует только при ошибках.
@@ -127,7 +127,7 @@ class payyandex_class extends kernel_extends {
 		//Идентификатор запроса платежа, сгенерированный системой. Присутствует только при успешном выполнении метода.
 		//$this->fields['request_id'] = array('type' => 'varchar', 'width' => 63,'attr' => 'NOT NULL','default'=>'');
 		//Остаток на счете пользователя. Присутствует только при успешном выполнении метода.
-		//$this->fields['balance'] = array('type' => 'float', 'width' => '11,2','attr' => 'NOT NULL','default'=>0);
+		//$this->fields['balance'] = array('type' => 'decimal', 'width' => '10,2','attr' => 'NOT NULL','default'=>0);
 	}
 
 	/*function getButton($summ,$comm) {
@@ -139,7 +139,7 @@ class payyandex_class extends kernel_extends {
 		$this->fields_form['sender'] = array('type' => 'text', 'caption' => 'Номер плательщика');
 		$this->fields_form['phone'] = array('type' => 'text', 'caption' => 'Номер телефона');
 		$this->fields_form['email'] = array('type' => 'text', 'caption' => 'Email');
-		$this->fields_form['amount'] = array('type' => 'int', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('minint'=>$this->config['minpay'],'maxint'=>$this->config['maxpay']));
+		$this->fields_form['amount'] = array('type' => 'decimal', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('minint'=>$this->config['minpay'],'maxint'=>$this->config['maxpay']));
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Комментарий', 'mask'=>array('name'=>'all'));
 		$this->fields_form['status'] = array('type' => 'list', 'listname'=>'status', 'readonly'=>1, 'caption' => 'Статус', 'mask'=>array());
 		$this->fields_form['error'] = array('type' => 'list', 'listname'=>'error', 'readonly'=>1, 'caption' => 'Ошибка', 'mask'=>array());

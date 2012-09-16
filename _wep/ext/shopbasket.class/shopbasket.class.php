@@ -54,7 +54,7 @@ class shopbasket_class extends kernel_extends {
 		$this->fields['fio'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'min' => 6);
 		$this->fields['address'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['phone'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'min' => 6);
-		$this->fields['summ'] = array('type' => 'float', 'width' => '8,2', 'attr' => 'NOT NULL', 'default'=>'0.00', 'min' => '1');
+		$this->fields['summ'] = array('type' => 'decimal', 'width' => '10,2', 'attr' => 'NOT NULL', 'default'=>'0.00', 'min' => '1');
 		$this->fields['paytype'] = array('type' => 'varchar', 'width' => 16, 'attr' => 'NOT NULL', 'min' => '1');
 		$this->fields['delivertype'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL', 'min' => '1');
 		$this->fields['laststatus'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL', 'default'=>0);
@@ -69,7 +69,7 @@ class shopbasket_class extends kernel_extends {
 		$this->fields_form['fio'] = array('type' => 'text', 'caption' => 'Ваша фамилия и имя', 'mask'=>array('min'=>6));
 		$this->fields_form['address'] = array('type' => 'text', 'caption' => 'Адрес доставки', 'mask'=>array('min'=>6));
 		$this->fields_form['phone'] = array('type' => 'phone', 'caption' => 'Телефон для связи и оповещения', 'mask'=>array('name'=>'phone3', 'min'=>6));
-		$this->fields_form['summ'] = array('type' => 'int', 'caption' => 'Сумма', 'mask'=>array());
+		$this->fields_form['summ'] = array('type' => 'decimal', 'caption' => 'Сумма', 'mask'=>array());
 		$this->fields_form['delivertype'] = array('type' => 'list', 'listname'=>'delivertype', 'caption' => 'Тип доставки', 'mask' =>array('min'=>1));
 		$this->fields_form['paytype'] = array('type' => 'list', 'listname' => 'paytype', 'caption' => 'Тип платежа', 'mask' =>array('min'=>1));
 		$this->fields_form['laststatus'] = array('type' => 'list', 'listname'=>'status', 'caption' => 'Статус', 'readonly'=>1, 'mask' =>array());
@@ -460,7 +460,7 @@ class shopbasketitem_class extends kernel_extends {
 		$this->fields['product_id'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'min'=>1);
 		$this->fields['product_name'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['count'] = array('type' => 'tinyint', 'width' => 3, 'attr' => 'NOT NULL', 'default'=>1, 'min'=>1);
-		$this->fields['cost_item'] = array('type' => 'float', 'width' => '8,2', 'attr' => 'NOT NULL', 'default' => '0.00');
+		$this->fields['cost_item'] = array('type' => 'decimal', 'width' => '10,2', 'attr' => 'NOT NULL', 'default' => '0.00');
 		$this->fields['shopsale_id'] = array('type' => 'int', 'width' => '11', 'attr' => 'NOT NULL', 'default' => 0);
 		$this->fields['checked'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default'=>1);
 
@@ -479,7 +479,7 @@ class shopbasketitem_class extends kernel_extends {
 		$this->fields_form['product_id'] = array('type' => 'int', 'caption' => 'ID Товара');
 		$this->fields_form['product_name'] = array('type' => 'text', 'caption' => 'Название Товара');
 		$this->fields_form['count'] = array('type' => 'int', 'caption' => 'Кол-во');
-		//$this->fields_form['cost_item'] = array('type' => 'text', 'caption' => 'Цена товара на момент заказа', 'comment'=>'без учета скидки', 'readonly' => 1);
+		//$this->fields_form['cost_item'] = array('type' => 'decimal', 'caption' => 'Цена товара на момент заказа', 'comment'=>'без учета скидки', 'readonly' => 1);
 		//$this->fields_form['shopsale_id'] = array('type' => 'list', 'listname'=>array('class'=>'shopsale',), 'caption' => 'Скидка', 'readonly' => 1);
 		$this->fields_form['checked'] = array('type' => 'checkbox', 'caption' => 'Отмечено', 'default'=>1);
 

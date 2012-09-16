@@ -50,20 +50,29 @@ class static_form {
 		return true;
 	}
 
+	/**
+	*
+	* flag_update - Если необходимо обновить существующее поле - true
+	*/
 	static function _add_fields(&$_this,$flag_update=false) {
 		if (!count($_this->fld_data)) return false;
 		// inserting
 		$data = array();
 		foreach($_this->fld_data as $key => &$value) {
 			if(!isset($_this->fields[$key]['noquote'])) {
+				// массив
 				if(is_array($value))
 					$value = '\''.$_this->SqlEsc(preg_replace('/\|+/', '|', '|'.implode('|',$value).'|')).'\'';
-				elseif($_this->fields[$key]['type']=='bool')
+				// логическое
+				elseif(self::isValBool($_this->fields[$key]['type']))
 					$value = (int)(bool)$value;
-				elseif(strpos($_this->fields[$key]['type'],'int')!==false)
+				// целое
+				elseif(self::isValInt($_this->fields[$key]['type']))
 					$value = str2int($value);
-				elseif(strpos($_this->fields[$key]['type'],'float')!==false)
+				// с запятой
+				elseif(self::isValFloat($_this->fields[$key]['type']))
 					$value = floatval($value);
+				// Шифрованное поле
 				elseif(isset($_this->fields[$key]['secure']))
 					$value = '\''.$_this->SqlEsc(static_main::EnDecryptString($value)).'\'';
 				else
@@ -986,7 +995,17 @@ class static_form {
 
 		if(isset($form['mask']['max']) && $form['mask']['max']>0)
 		{
-			if(_strlen($data[$key])>$form['mask']['max'])
+			if($form['type']=='float' or $form['type']=='decimal')
+			{
+				$maskFloat = explode(',', $form['mask']['max']);
+				if(!isset($maskFloat[1])) $maskFloat[1] = 2;
+				$valFloat = explode('.', $data[$key]);
+				if(_strlen($valFloat[0])>$maskFloat[0])
+					$error[] = 2;
+				elseif(_strlen($valFloat[1])>$maskFloat[1])
+					$error[] = 2;
+			}
+			elseif(_strlen($data[$key])>$form['mask']['max'])
 				$error[] = 2;
 		}
 		if(isset($form['mask']['min']) and $form['mask']['min']>0)
@@ -1000,6 +1019,7 @@ class static_form {
 		if(isset($form['mask']['maxint']) && $form['mask']['maxint']>0 && str2int($data[$key])>$form['mask']['maxint'])
 		{
 			$error[] = 22;
+			//для даты
 			if($form['type']=='date' and $FIELDS['type']=='int') {
 				$form['mask']['maxint'] = date($form['mask']['format'],$form['mask']['maxint']);
 			}
@@ -1252,5 +1272,36 @@ class static_form {
 		}
 
 		return $txt2;
+	}
+	// Проверка на тип поля Boolean
+	static function isValBool($type) {
+		$list = array(
+			'bool'=>true,
+			'boolean'=>true,
+		);
+		if(isset($list[$type]))
+			return true;
+		return false;
+	}
+	// Проверка на тип поля целое число
+	static function isValInt($type) {
+		$list = array(
+			'int'=>true,
+			'integer'=>true,
+		);
+		if(isset($list[$type]))
+			return true;
+		return false;
+	}
+	// Проверка на тип поля с запятой
+	static function isValFloat($type) {
+		$list = array(
+			'flaot'=>true,
+			'double'=>true,
+			'decimal'=>true
+		);
+		if(isset($list[$type]))
+			return true;
+		return false;
 	}
 }
