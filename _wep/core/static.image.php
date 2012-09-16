@@ -39,10 +39,6 @@ class static_image {
 			//$cmd = 'composite -compose bumpmap -gravity south '.escapeshellarg($InFile).' '.escapeshellarg($logoFile).' '.escapeshellarg($OutFile);
 			$cmd = 'convert '.escapeshellarg($InFile).' -gravity SouthWest -draw "image Over 0,0,0,0 '.escapeshellarg($logoFile).'" '.escapeshellarg($OutFile);
 			$out=array();$err = 0;$run = exec($cmd, $out, $err);
-			//print_r($cmd);
-			//echo implode ("<br>",$out);
-			//print_r($err);
-			//print_r($run);
 			if($err) {
 				return static_imageGD2::_waterMark($InFile, $OutFile,$logoFile,$posX,$posY);
 				static_main::log('error','Неверное выполнение команды "'.$cmd.'" , код ошибки - '.$err);
@@ -90,9 +86,6 @@ class static_image {
 			$out=array();
 			$err = 0;
 			$run = exec($cmd, $out, $err);
-			//echo implode ("<br>",$out);
-			//print_r($err);
-			//print_r($run);
 			if($err) {
 				return static_imageGD2::_resizeImage($InFile, $OutFile, $WidthX, $HeightY);
 				static_main::log('error','Неверное выполнение команды "'.$cmd.'" , код ошибки - '.$err);
@@ -127,9 +120,6 @@ class static_image {
 			$out=array();
 			$err = 0;
 			$run = exec($cmd, $out, $err);
-			//echo implode ("<br>",$out);
-			//print_r($err);
-			//print_r($run);
 			if($err) {
 				return static_imageGD2::_cropImage($InFile, $OutFile, $WidthX, $HeightY,$posX,$posY);
 				static_main::log('error','Неверное выполнение команды "'.$cmd.'" , код ошибки - '.$err);
@@ -177,10 +167,6 @@ class static_image {
 			else
 				$cmd = 'convert '.escapeshellarg($InFile).' -thumbnail "'.$WidthX.'x'.$HeightY.'" '.escapeshellarg($OutFile);
 			$out=array();$err = 0;$run = exec($cmd, $out, $err);
-			/*print_r('***-<pre>');
-			print_r($out);
-			print_r($err);
-			print_r($run);*/
 			if($err) {
 				return static_imageGD2::_thumbnailImage($InFile, $OutFile, $WidthX, $HeightY);
 				static_main::log('error','Неверное выполнение команды "'.$cmd.'" , код ошибки - '.$err);

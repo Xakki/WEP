@@ -78,8 +78,6 @@ class loginza_class extends kernel_extends
 				if(isset($dt['email']) and $dt['email'])
 					$q .= ' or t1.email="'.$this->SqlEsc($dt['email']).'"';
 				$data = $USERS->_query('t2.active as gact,t2.name as gname,t1.id,t1.active',$q);
-				//print_r($data);
-				//print_r('<pre>');print_r($regme);print_r($dt);exit();
 
 				if(count($data)) {
 					$data = $data[0];

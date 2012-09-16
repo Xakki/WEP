@@ -103,7 +103,7 @@ function tpl_form(&$data, $tabs = array()) {
 			$attribute = '';
 
 			$CAPTION = $r['caption'];
-			if((isset($r['mask']['min']) and $r['mask']['min']) or (isset($r['mask']['minint']) and $r['mask']['minint'])) {
+			if(isset($r['mask']['min']) and $r['mask']['min']) {
 				$CAPTION .= '<span class="form-requere">*</span>';
 				if($r['type']!='ckedit' and !($r['type']=='password' and isset($r['mask']['password']) and $r['mask']['password']=='re')) // в CKEDITORE глюк из за этого
 					$attribute .= ' required="required"';
@@ -684,14 +684,19 @@ function tpl_form(&$data, $tabs = array()) {
 			}
 			else 
 			{
-				if($r['type']=='float' or $r['type']=='decimal') 
+				if(isset($r['isFloat'])) 
 				{
 					$maskFloat = explode(',', $r['mask']['max']);
 					if(!isset($maskFloat[1])) $maskFloat[1] = 0;
 					$_tpl['script']['script.jquery/jquery.numberMask'] = 1;
-					$_tpl['onload'] .= '$("input[type='.$r['type'].']").numberMask({type:"float", beforePoint:'.$maskFloat[0].', afterPoint:'.$maskFloat[1].', defaultValueInput:"0", decimalMark:"."});';
+					$_tpl['onload'] .= '$("input[name='.$k.']").numberMask({type:"float", beforePoint:'.$maskFloat[0].', afterPoint:'.$maskFloat[1].', defaultValueInput:"0", decimalMark:"."});';
 				}
-				elseif(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
+				elseif(isset($r['isInt'])) 
+				{
+					$_tpl['onload'] .= '$("input[name='.$k.']").on("keyup change",function(event){return wep.form.checkInt(event);});';
+				}
+				
+				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
 
 				if($r['type']=='email') $attribute .=  ' x-autocompletetype="'.$r['type'].'"';
 				$texthtml .= '<div class="form-value"><input type="'.$r['type'].'" name="'.$k.'" value="'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'" '.$attribute.'/></div>';

@@ -646,8 +646,6 @@ $simple = true;
 			}
 		}
 
-//print_r('<pre>');print_r($data);
-
 		if (isset($this->id) and $this->id) {
 			if(count($data)==1)
 				$this->id = key($data);
@@ -1160,7 +1158,6 @@ $simple = true;
 						array($this, $r['relationForm']), 
 						array($r['value'], &$my_fieldsForm)
 					);//$r['relationForm']
-					//print_r('<pre>');print_r($my_fieldsForm);
 					//$f_fieldsForm = static_main::insertInArray($f_fieldsForm, $k, $my_fieldsForm);
 				} 
 				else 
@@ -1503,6 +1500,7 @@ $simple = true;
 					$fields_form['f_' . $k]['type'] = 'text';
 				if (isset($_FILTR['exc_' . $k]))
 					$fields_form['f_' . $k]['exc'] = 1;
+
 			//}
 		}
 		//фильтр	

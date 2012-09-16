@@ -151,7 +151,7 @@ class pg_class extends kernel_extends {
 
 		if ($this->_CFG['wep']['access'])
 			$this->fields_form['ugroup'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'ugroup', 'caption' => 'Доступ пользователю', 'default' => '0', 'mask' => array());
-		$this->fields_form['ordind'] = array('type' => 'int', 'caption' => 'ORD', 'mask' => array());
+		$this->fields_form['ordind'] = array('type' => 'number', 'caption' => 'ORD', 'mask' => array());
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
 
 		

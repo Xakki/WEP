@@ -207,7 +207,7 @@ class rubricparam_class extends kernel_extends {
 		$this->caption = 'Параметры';
 		$this->singleton = false;
 		$this->tablename = $this->owner->_cl.'_param';
-		//print_r("TODO : Доработать  проблему вызова подкласса 2 раза ".$this->tablename);
+		//TODO : Доработать  проблему вызова подкласса 2 раза ".$this->tablename
 		return true;
 	}
 

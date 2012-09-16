@@ -26,7 +26,7 @@ include_once(dirname(__FILE__).'/formSelect.php');
 
 		$html = '<div class="form-caption">'.$r['caption'].'</div>
 		<ul class="cffields">';
-		print_r('<pre>');print_r($r['value']);
+
 		foreach($r['value'] as $kf=>$rf) {
 			$html .= tpl_cffields_item($k, $kf, $rf);
 		}

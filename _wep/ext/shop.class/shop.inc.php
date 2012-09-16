@@ -131,7 +131,7 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 		$formparam = $PRODUCT->productFindForm($rid,$FUNCPARAM[3],$Chref);// форма поиска
 
 		if(count($formparam)) {
-			//print_r('<pre>');print_r($formparam);
+
 			$subCatHtml = '';
 			if($FUNCPARAM[3]==2 and isset($SHOP->data[$rid]) and count($SHOP->data[$rid])) {
 				$DATA2 = array();

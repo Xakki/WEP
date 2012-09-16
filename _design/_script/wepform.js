@@ -131,7 +131,11 @@ wep.form = {
 	// Для старых браузеров не поддерживающие input type=number
 	checkInt : function(event) {
 		var val = event.srcElement.value;
-		event.srcElement.value = val.replace(/[^0-9]+/g, '');
+		var sgn = '';
+		if(val.substring(0,1)=='-')
+			sgn = '-';
+		val = val.replace(/[^0-9]+/g, '');
+		event.srcElement.value = sgn+val;
 		return true;
 	},
 
@@ -155,10 +159,6 @@ wep.form = {
 
 function JSFR(n) {
 	wep.form.JSFR(n);
-}
-
-function keys_return(ev) {
-	return wep.form.keys_return(ev);
 }
 
 function textareaChange(obj,max) {
@@ -454,9 +454,6 @@ function SetWysiwyg(obj) {
 
 
 $(document).ready(function() {
-	$('form input[type=int]').on('keyup change',function(event){
-		return wep.form.checkInt(event);
-	});
 
 	$('form span.labelInput').click(function() {
 		$(this).next().focus();

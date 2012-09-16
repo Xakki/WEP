@@ -209,9 +209,21 @@
 					//	$r['comment'] = "";
 					//Допускается цифры, тире, пробел, запятые и скобки
 				}
+
 			}
 			if(isset($this->fields[$k]))
+			{
 				$r['fields_type'] = $this->fields[$k]['type'];
+				if(static_form::isTypeFloat($r['fields_type']))
+				{
+					$r['isFloat'] = true;
+				}
+				if(static_form::isTypeInt($r['fields_type']))
+				{
+					$r['isInt'] = true;
+				}
+			}
+
 		}
 		unset($r);
 		if(count($fields)) {

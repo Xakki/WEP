@@ -94,8 +94,8 @@
 			$solt = '?t='.time();
 
 		// include STYLE into HTML
-		if(isset($_tpl['styles']) and is_array($_tpl['styles'])) {
-			//print_r('<pre>');print_r($_tpl['styles']);
+		if(isset($_tpl['styles']) and is_array($_tpl['styles'])) 
+		{
 			$temp .= cssRecursive($_tpl['styles'], $solt);
 		}
 		$_tpl['styles'] = $temp;
@@ -123,7 +123,6 @@
 		foreach($script as $kk=>$rr) {
 			if(is_string($rr) and (substr($rr,0,4)=='http' or substr($rr,0,1)=='<')) {
 				trigger_error('Обнаружена не совместимость: ошибка загрузки скриптов `'.$kk.'` - `'.$rr.'`', E_USER_WARNING);
-				//print_r('<pre>');print_r($script);
 			}
 
 			$src = '';
@@ -151,7 +150,6 @@
 		foreach($css as $kk=>$rr) {
 			if(substr($rr,0,4)==='http' or substr($rr,0,1)==='<') {
 				trigger_error('Обнаружена не совместимость: ошибка загрузки стилей `'.$kk.'` - `'.$rr.'`', E_USER_WARNING);
-				//print_r('<pre>');print_r($css);
 			}
 
 			$src = '';

@@ -139,7 +139,7 @@ class payyandex_class extends kernel_extends {
 		$this->fields_form['sender'] = array('type' => 'text', 'caption' => 'Номер плательщика');
 		$this->fields_form['phone'] = array('type' => 'text', 'caption' => 'Номер телефона');
 		$this->fields_form['email'] = array('type' => 'text', 'caption' => 'Email');
-		$this->fields_form['amount'] = array('type' => 'decimal', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('minint'=>$this->config['minpay'],'maxint'=>$this->config['maxpay']));
+		$this->fields_form['amount'] = array('type' => 'decimal', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('min'=>$this->config['minpay'],'max'=>$this->config['maxpay']));
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Комментарий', 'mask'=>array('name'=>'all'));
 		$this->fields_form['status'] = array('type' => 'list', 'listname'=>'status', 'readonly'=>1, 'caption' => 'Статус', 'mask'=>array());
 		$this->fields_form['error'] = array('type' => 'list', 'listname'=>'error', 'readonly'=>1, 'caption' => 'Ошибка', 'mask'=>array());
@@ -223,9 +223,6 @@ class payyandex_class extends kernel_extends {
 		$param['COOKIEFILE'] = $param['COOKIEJAR'];
 		$param['redirect'] = true;
 		$html = static_tools::_http('http://passport.yandex.ru/passport?mode=auth&msg=money',$param);
-		//$html['text'] = htmlentities($html['text'],ENT_NOQUOTES,'UTF-8');
-		//print_r('<pre>');print_r($html);
-		//print_r(file_get_contents($param['COOKIEJAR']));
 		return $param['COOKIEJAR'];
 	}
 

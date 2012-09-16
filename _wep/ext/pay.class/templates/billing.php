@@ -6,7 +6,7 @@
 function tpl_billing($data)
 {
 	global $_tpl, $HTML;
-//print_r('<pre>');print_r($_POST);print_r($data);
+
 	// AJAX forma
 	$ID = 'form_paymethod';
 	$action = '';

@@ -16,8 +16,7 @@
 			if(!isset($r['value']))
 				$r['value'] = '';
 			$attribute = '';
-			if(isset($r['max']) and $r['max'])
-				$attribute = ' maxlength="'.$r['max'].'"';
+
 			if($r['type']=='submit') {
 				$html .= '<div class="f_submit"><input type="'.$r['type'].'" name="'.$k.'" value="'.$r['value'].'"/></div>';
 			}
@@ -145,26 +144,18 @@
 				<input type="hidden" name="srlz_'.$k.'" value="'.htmlspecialchars($serl,ENT_QUOTES,$_CFG['wep']['charset']).'"/>
 			  </div>	';
 			}
-			elseif($r['type']=='int') {
-				if(!isset($r['mask']['minint'])) $r['mask']['minint'] = 0;
-				if(!isset($r['mask']['maxint'])) $r['mask']['maxint'] = (int)$r['value_2']*10;
+			elseif($r['type']=='number') {
+				if(!isset($r['mask']['min'])) $r['mask']['min'] = 0;
+				if(!isset($r['mask']['max'])) $r['mask']['max'] = PHP_INT_MAX;
 				if(!isset($r['mask']['step']) or !$r['mask']['step']) $r['mask']['step'] = 1;
+				$attribute = ' maxlength="'.$r['mask']['max'].'"';
+
 				$html .= '<div class="f_item" id="tr_'.$k.'">
 				<div class="f_caption">'.$r['caption'].'</div>
 				<div class="f_value f_int">
-					<input type="text" name="'.$k.'" id="'.$k.'" value="'.$r['value'].'" onkeydown="return checkInt(event)" '.$attribute.'/> - <input type="text" name="'.$k.'_2" id="'.$k.'_2" value="'.$r['value_2'].'" onkeydown="return checkInt(event)" '.$attribute.'/>
+					<input type="number" name="'.$k.'" id="'.$k.'" value="'.$r['value'].'" '.$attribute.'/> - <input type="number" name="'.$k.'_2" id="'.$k.'_2" value="'.$r['value_2'].'" '.$attribute.'/>
 				</div></div>';//<div class="f_exc"><input type="checkbox" name="exc_'.$k.'" value="exc" '.($r['exc']==1?'checked="checked"':'').'/></div>
-				$_tpl['onload'] .= "wep.gSlide('tr_".$k."',".(int)$r['mask']['minint'].",".(int)$r['mask']['maxint'].",".(int)$r['value'].",".(int)$r['value_2'].",".(int)$r['mask']['step'].");";				
-				$_CFG['fileIncludeOption']['jquery-ui'] = true;
-			}
-			elseif($r['type']=='float') {
-				if(!isset($r['mask']['minint'])) $r['mask']['minint'] = 0;
-				$html .= '<div class="f_item" id="tr_'.$k.'">
-				<div class="f_caption">'.$r['caption'].'</div>
-				<div class="f_value f_int">
-					<input type="text" name="'.$k.'" id="'.$k.'" value="'.$r['value'].'" onkeydown="return checkInt(event)" '.$attribute.'/> - <input type="text" name="'.$k.'_2" id="'.$k.'_2" value="'.$r['value_2'].'" onkeydown="return checkInt(event)" '.$attribute.'/>
-				</div></div>';//<div class="f_exc"><input type="checkbox" name="exc_'.$k.'" value="exc" '.($r['exc']==1?'checked="checked"':'').'/></div>
-				$_tpl['onload'] .= "wep.gSlide('tr_".$k."',".(int)$r['mask']['minint'].",".(int)$r['mask']['maxint'].",".(int)$r['value'].",".(int)$r['value_2'].",".(int)$r['mask']['step'].");";	
+				$_tpl['onload'] .= "wep.gSlide('tr_".$k."',".(int)$r['mask']['min'].",".(int)$r['mask']['max'].",".(int)$r['value'].",".(int)$r['value_2'].",".(int)$r['mask']['step'].");";				
 				$_CFG['fileIncludeOption']['jquery-ui'] = true;
 			}
 			elseif($r['type']=='date') {
@@ -190,6 +181,8 @@
 				</div>';
 			}
 			else {
+				if(isset($r['max']) and $r['max'])
+					$attribute = ' maxlength="'.$r['max'].'"';
 				$html .= '<div class="f_item" id="tr_'.$k.'">
 					<div class="f_caption">'.$r['caption'].'</div>
 					<div class="f_value"><input type="'.$r['type'].'" name="'.$k.'" id="'.$k.'" value="'.$r['value'].'" '.$attribute.'/></div>

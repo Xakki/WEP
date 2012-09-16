@@ -90,7 +90,7 @@ class paybank_class extends kernel_extends {
 		$this->fields_form['fio'] = array('type' => 'text', 'caption' => 'ФИО плательщика');
 		$this->fields_form['address'] = array('type' => 'text', 'caption' => 'Адрес плательщика ');
 		$this->fields_form['phone'] = array('type' => 'text', 'caption' => 'Контактный телефон');
-		$this->fields_form['amount'] = array('type' => 'decimal', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('minint'=>$this->config['minpay'],'maxint'=>$this->config['maxpay']));
+		$this->fields_form['amount'] = array('type' => 'decimal', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('min'=>$this->config['minpay'],'max'=>$this->config['maxpay']));
 		if(isset($_GET['summ']))
 			$this->fields_form['amount']['default'] = ceil(floatval($_GET['summ']));
 		$this->fields_form['statuses'] = array('type' => 'list', 'listname'=>'statuses', 'readonly'=>1, 'caption' => 'Статус', 'mask'=>array());
