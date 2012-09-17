@@ -117,7 +117,7 @@ class ugroup_class extends kernel_extends
 		if($this->config['karma']) {
 			$this->fields['minkarma'] = array('type' => 'int', 'width' =>8, 'attr' => 'NOT NULL', 'default' => 0);
 			$this->fields['maxkarma'] = array('type' => 'int', 'width' =>8, 'attr' => 'NOT NULL', 'default' => 0);
-			$this->fields['defkratio'] = array('type' => 'float', 'width' => '8,2','attr' => 'NOT NULL', 'default'=>'0.00');
+			$this->fields['defkratio'] = array('type' => 'decimal', 'width' => '8,2','attr' => 'NOT NULL', 'default'=>'0.00');
 
 			$this->fields_form['minkarma'] = array('type' => 'text', 'caption' => 'Мин. карма', 'mask' =>array());
 			$this->fields_form['maxkarma'] = array('type' => 'text', 'caption' => 'Макс. карма', 'mask' =>array('fview'=>1));
@@ -303,10 +303,10 @@ class users_class extends kernel_extends {
 		// service field
 
 		$this->fields['reg_hash'] = array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL', 'default'=>'');
-		$this->fields['balance'] = array('type' => 'float', 'width' => '11,2', 'attr' => 'NOT NULL', 'default'=>'0.00');
+		$this->fields['balance'] = array('type' => 'decimal', 'width' => '10,2', 'attr' => 'NOT NULL', 'default'=>'0.00');
 		$this->fields['lastvisit'] =  array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL', 'default'=>0);
 		$this->fields['karma'] = array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL', 'default'=>0);
-		$this->fields['kratio'] = array('type' => 'float', 'width' => '8,2','attr' => 'NOT NULL', 'default'=>'0.00');
+		$this->fields['kratio'] = array('type' => 'decimal', 'width' => '8,2','attr' => 'NOT NULL', 'default'=>'0.00');
 
 		$this->attaches['userpic'] = array('mime' => array('image/pjpeg'=>'jpg', 'image/jpeg'=>'jpg', 'image/gif'=>'gif', 'image/png'=>'png'), 'thumb'=>array(array('type'=>'resize', 'w'=>'800', 'h'=>'600','pref'=>'orign_'),array('type'=>'resizecrop', 'w'=>85, 'h'=>85)),'maxsize'=>1000,'path'=>'');
 		if(static_main::_prmUserCheck() and isset($this->_CFG['modulprm_ext']) and !is_null($this->_CFG['modulprm_ext'])) {
@@ -370,7 +370,7 @@ class users_class extends kernel_extends {
 		$this->fields_form[$this->mf_namefields] = array('type' => 'text', 'caption' => 'Имя','mask'=>array('name'=>'name2')); // Вывод поля при редактировании
 		if($this->owner->config['karma']) {
 			$this->fields_form['karma'] = array('type' => 'text', 'caption' => 'Карма', 'readonly'=>true,'mask'=>array('usercheck'=>1));
-			$this->fields_form['kratio'] = array('type' => 'text', 'caption' => 'Коэф. значимости','readonly'=>true,'mask'=>array('usercheck'=>1));
+			$this->fields_form['kratio'] = array('type' => 'decimal', 'caption' => 'Коэф. значимости','readonly'=>true,'mask'=>array('usercheck'=>1));
 			if(static_main::_prmUserCheck(1)) {
 				unset($this->fields_form['karma']['readonly']);
 				unset($this->fields_form['kratio']['readonly']);

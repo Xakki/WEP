@@ -118,19 +118,24 @@ wep.form = {
 	13 интер
 	109 минус
 	*/
-	keys_return : function(ev) {
+	keys_return : function(ev) 
+	{
 		var keys=0;
-		if (navigator.appName == 'Netscape')
-			{keys=ev.which;}
-		else if(navigator.appName == 'Microsoft Internet Explorer')
-			{keys=window.event.keyCode;}
+		if (!ev) var ev = window.event;
+		if (ev.keyCode) keys = ev.keyCode;
+		else if (ev.which) keys = ev.which;
+		//
 		if(keys==8 || keys==46 || keys==13 || keys==39 || keys==37) keys=0;
 		return keys;
 	},
-	checkInt : function(ev) {
-		var keys = keys_return(ev);
-		if (keys!=0 && (keys<0x30 || keys>0x39) && (keys<96 || keys>105) && keys!=189 && keys!=109) 
-			return false;
+	// Для старых браузеров не поддерживающие input type=number
+	checkInt : function(event) {
+		var val = event.srcElement.value;
+		var sgn = '';
+		if(val.substring(0,1)=='-')
+			sgn = '-';
+		val = val.replace(/[^0-9]+/g, '');
+		event.srcElement.value = sgn+val;
 		return true;
 	},
 
@@ -154,14 +159,6 @@ wep.form = {
 
 function JSFR(n) {
 	wep.form.JSFR(n);
-}
-
-function keys_return(ev) {
-	return wep.form.keys_return(ev);
-}
-
-function checkInt(ev) {
-	return wep.form.checkInt(ev);
 }
 
 function textareaChange(obj,max) {
@@ -457,9 +454,6 @@ function SetWysiwyg(obj) {
 
 
 $(document).ready(function() {
-	$('form input[type=int]').keydown(function(event){
-		return checkInt(event);
-	});
 
 	$('form span.labelInput').click(function() {
 		$(this).next().focus();

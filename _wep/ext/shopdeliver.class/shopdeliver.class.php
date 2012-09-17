@@ -32,7 +32,7 @@ class shopdeliver_class extends kernel_extends {
 		parent::_create();
 
 		$this->fields['dscr'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'default'=>'');
-		$this->fields['cost'] = array('type' => 'float', 'width' => '8,2', 'attr' => 'NOT NULL', 'default'=>'0.00');
+		$this->fields['cost'] = array('type' => 'decimal', 'width' => '10,2', 'attr' => 'NOT NULL', 'default'=>'0.00');
 		$this->fields['minsumm'] = array('type' => 'int', 'width' => '11', 'attr' => 'NOT NULL', 'default'=>'0');
 		$this->fields['paylist'] = array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL');
 		$this->fields['norequere'] = array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL');

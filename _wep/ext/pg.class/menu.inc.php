@@ -47,7 +47,7 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 
 $DATA = array('#item#' => $PGLIST->getMap($FUNCPARAM[0], $FUNCPARAM[1], $FUNCPARAM[2]));
 $DATA['#title#'] = $Ctitle;
-$DATA = array($FUNCPARAM[3] => $DATA); //print_r('<pre>');print_r($DATA);
+$DATA = array($FUNCPARAM[3] => $DATA);
 $html .= $HTML->transformPHP($DATA, $FUNCPARAM[3]);
 
 return $html;

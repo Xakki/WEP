@@ -72,7 +72,7 @@
 				elseif($r['type']=='ajaxlist') {
 					if(!$r['label'])
 						$r['label'] = 'Введите текст';
-					if($r['mask']['min'] and (!isset($r['value']) or $r['value']<$r['mask']['min']))
+					if(isset($r['mask']['min']) and $r['mask']['min'] and (!isset($r['value']) or $r['value']<$r['mask']['min']))
 						$r['value_2'] = '';
 
 					if((!isset($r['value_2']) or !$r['value_2']) and isset($r['value']) and $r['value']) {
@@ -141,8 +141,9 @@
 				}
 				elseif(isset($r['listname'])) {
 					if(!$r['readonly']) {
-						if (!isset($r['listname']['idThis'])) 
+						if (is_array($r['listname']) and !isset($r['listname']['idThis'])) {
 							$r['listname']['idThis'] = $k;
+						}
 													
 						$md= $this->_getCashedList($r['listname']);
 						if(!isset($r['value']))
@@ -208,9 +209,21 @@
 					//	$r['comment'] = "";
 					//Допускается цифры, тире, пробел, запятые и скобки
 				}
+
 			}
 			if(isset($this->fields[$k]))
+			{
 				$r['fields_type'] = $this->fields[$k]['type'];
+				if(static_form::isTypeFloat($r['fields_type']))
+				{
+					$r['isFloat'] = true;
+				}
+				if(static_form::isTypeInt($r['fields_type']))
+				{
+					$r['isInt'] = true;
+				}
+			}
+
 		}
 		unset($r);
 		if(count($fields)) {

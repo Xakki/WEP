@@ -6,18 +6,26 @@
 
 		$html = '<div align="left" class="pagenum">';
 		if(isset($data['link']) and count($data['link'])) {
-			$html .= 'Страницы:';
-			$lastk = 0;
+			$html .= '';
+			if($data['_pn']==1)
+				$html .=  '<span>&lt;&lt;</span>';
+			elseif($data['_pn']==2)
+				$html .=  '<a href="'.$data['PP'][0].'" onclick="return wep.load_href(this)">&lt;&lt;</a>';
+			else
+				$html .=  '<a href="'.$data['PP'][1].($data['_pn']-1).$data['PP'][2].'" onclick="return wep.load_href(this)">&lt;&lt;</a>';
+
 			foreach($data['link'] as $k=>$r) {
 				if($k==$data['_pn'])
-					$html .=  '<b>['.$k.']</b>';
+					$html .=  '<b>'.$k.'</b>';
 				elseif(!$r)
-					$html .=  '<b>...</b>';
+					$html .=  '<span>...</span>';
 				else
 					$html .=  '<a href="'.$r.'" onclick="return wep.load_href(this)" title="Страница №'.$k.'">'.$k.'</a>';
-				$lastk = $k;
 			}
-
+			if($data['_pn']==$data['cntpage'])
+				$html .=  '<span>&gt;&gt;</span>';
+			else
+				$html .=  '<a href="'.$data['PP'][1].($data['_pn']+1).$data['PP'][2].'" onclick="return wep.load_href(this)">&gt;&gt;</a>';
 		}
 		$html .= '</div>';
 		return $html;

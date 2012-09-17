@@ -68,7 +68,7 @@ class product_class extends kernel_extends {
 					'default'=> '',
 					'unique' => true,
 					'caption' => 'Код',
-					'mask'=>array(),//'max'=>8,'maxint'=>20000000
+					'mask'=>array(),//'max'=>8,'max'=>20000000
 				),
 				'model' => array(
 					'type' => 'varchar',
@@ -102,8 +102,8 @@ class product_class extends kernel_extends {
 		$this->index_fields['name'] = 'name';
 
 
-		$thumb = array('type'=>'resize', 'w'=>'1024', 'h'=>'768');
-		$thumb2 = array('type'=>'resize', 'w'=>'250', 'h'=>'250', 'pref'=>'s_', 'path'=>'_content/img_product_thumb');
+		$thumb = array('type'=>'resizecrop', 'w'=>'1024', 'h'=>'768');
+		$thumb2 = array('type'=>'resizecrop', 'w'=>'250', 'h'=>'250', 'pref'=>'s_', 'path'=>'_content/img_product_thumb');
 		$maxsz = 3000;
 		$this->attaches['img_product'] = array('mime' => array('image'), 'toWebImg'=>true, 'thumb'=>array($thumb,$thumb2), 'maxsize'=>$maxsz, 'path'=>'');
 		// toWebImg - преобразует все рисунки не относящиеся к png,jpg,gif - в jpg по умолчанию(если toWebImg=true) или указать свой	 тип или false - отменяет преобразование
@@ -118,7 +118,7 @@ class product_class extends kernel_extends {
 		//$this->fields['code'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['descr'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['text'] = array('type' => 'text', 'attr' => 'NOT NULL');
-		$this->fields['cost'] = array('type' => 'float', 'width' => '8,2', 'attr' => 'NOT NULL', 'default'=>'0.00', 'min' => '1');
+		$this->fields['cost'] = array('type' => 'decimal', 'width' => '10,2', 'attr' => 'NOT NULL', 'default'=>'0.00', 'min' => '1');
 		$this->fields['statview'] = array('type' => 'int', 'width' => 9, 'attr' => 'NOT NULL','default'=>0);
 		$this->fields['path'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL','default'=>'');
 		$this->fields['available'] = array('type' => 'tinyint', 'width' => 1,'attr' => 'NOT NULL','default'=>0);
@@ -158,7 +158,7 @@ class product_class extends kernel_extends {
 				'height'=>250,
 				'toolbarStartupExpanded'=>'false',
 				'extraPlugins'=>"'cntlen'",));
-		$this->fields_form['cost'] = array('type' => 'int', 'caption' => 'Цена (руб.)', 'mask'=>array('max'=>8,'maxint'=>20000000));
+		$this->fields_form['cost'] = array('type' => 'number', 'caption' => 'Цена (руб.)', 'mask'=>array());
 		$this->fields_form['img_product'] = array('type'=>'file','caption'=>'Фотография №1','del'=>1, 'mask'=>array('fview'=>1,'width'=>80,'height'=>100), 'comment'=>static_main::m('_file_size').$this->attaches['img_product']['maxsize'].'Kb');
 		if($this->config['imageCnt']>0) {
 			$fcnt = $this->config['imageCnt'];
@@ -202,7 +202,8 @@ class product_class extends kernel_extends {
 	}
 
 	function allChangeData($type = '', $data = '') {
-		unlink($this->owner->YML_FILE);
+		if(file_exists($this->owner->YML_FILE))
+			unlink($this->owner->YML_FILE);
 		return parent::allChangeData($type, $data);
 	}
 
@@ -439,8 +440,8 @@ class product_class extends kernel_extends {
 
 				if($type=='int') {
 					$form['param_'.$k]['mask']=array(
-						'minint'=>$r['min'],
-						'maxint'=>$r['max']);
+						'min'=>$r['min'],
+						'max'=>$r['max']);
 					if(is_array($id))
 						$form['param_'.$k]['value_2']= (isset($id['param_'.$k.'_2'])?$id['param_'.$k.'_2']:'');
 
@@ -602,9 +603,9 @@ class product_class extends kernel_extends {
 					elseif($type=='int') {
 						$temparr=array();
 						$r = (int)$r;
-						if($r and (!$this->filter_form[$k]['mask']['minint'] or $this->filter_form[$k]['mask']['minint']<$r))
+						if($r and (!$this->filter_form[$k]['mask']['min'] or $this->filter_form[$k]['mask']['min']<$r))
 							$clauseF[$k] = 't4.name'.$nameK.'>='.(int)$r;
-						if((int)$filter[$k.'_2'] and (!$this->filter_form[$k]['mask']['maxint'] or $this->filter_form[$k]['mask']['maxint']>(int)$filter[$k.'_2'])) {
+						if((int)$filter[$k.'_2'] and (!$this->filter_form[$k]['mask']['max'] or $this->filter_form[$k]['mask']['max']>(int)$filter[$k.'_2'])) {
 							$clauseF[$k.'_2'] = 't4.name'.$nameK.'<='.(int)$filter[$k.'_2'];
 						}
 					}
@@ -633,9 +634,9 @@ class product_class extends kernel_extends {
 				elseif(isset($this->fields[$k]) and isset($this->fields_form[$k])) {
 					if(isset($filter[$k.'_2']) and $this->fields_form[$k]['type']=='int'){
 						$r = (int)$r;
-						if($r and (!$this->filter_form[$k]['mask']['minint'] or $this->filter_form[$k]['mask']['minint']<$r))
+						if($r and (!$this->filter_form[$k]['mask']['min'] or $this->filter_form[$k]['mask']['min']<$r))
 							$clauseF[$k] = 't1.'.$k.'>='.$r;
-						if((int)$filter[$k.'_2'] and (!$this->filter_form[$k]['mask']['maxint'] or $this->filter_form[$k]['mask']['maxint']>(int)$filter[$k.'_2']))
+						if((int)$filter[$k.'_2'] and (!$this->filter_form[$k]['mask']['max'] or $this->filter_form[$k]['mask']['max']>(int)$filter[$k.'_2']))
 							$clauseF[$k.'_2'] = 't1.'.$k.'<='.(int)$filter[$k.'_2'];
 					}
 					elseif($this->fields_form[$k]['type']=='list' or $this->fields_form[$k]['type']=='int'){
@@ -975,11 +976,11 @@ class product_class extends kernel_extends {
 
 		$this->filter_form['cost'] = $this->fields_form['cost'];
 
-			$temcls = ' WHERE t1.active=1 and t1.shop IN ('.implode(',',array_keys($datalist)).') ';
+		$temcls = ' WHERE t1.active=1 and t1.shop IN ('.implode(',',array_keys($datalist)).') ';
 
-			$result2 = $this->SQL->execSQL('SELECT min(t1.cost) as mincost,max(t1.cost) as maxcost FROM '.$this->tablename.' t1 '.$temcls);
-			if(!$result2 or !$minmax = $result2->fetch_array(MYSQL_NUM) or !$minmax[1])
-				$minmax = array(0,$this->filter_form['cost']['mask']['maxint']);
+		$result2 = $this->SQL->execSQL('SELECT min(t1.cost) as mincost,max(t1.cost) as maxcost FROM '.$this->tablename.' t1 '.$temcls);
+		$minmax = $result2->fetch_array();
+
 		$step=$minmax[1]/216;
 		if($step<5) $step=1;
 		elseif($step==5) $step=5;
@@ -992,8 +993,9 @@ class product_class extends kernel_extends {
 		elseif($step<=10000) $step=10000;
 		elseif($step<=50000) $step=50000;
 		else $step=100000;
-		if($minmax[1]>$this->filter_form['cost']['mask']['maxint'])
-			$minmax[1]= $this->filter_form['cost']['mask']['maxint'];
+		if(!$minmax[1])
+			$minmax[1]= PHP_INT_MAX;
+
 		if(isset($filter['cost'])) {
 			$this->filter_form['cost']['value']=$filter['cost'];
 			$this->filter_form['cost']['value_2']=$filter['cost_2'];
@@ -1001,8 +1003,8 @@ class product_class extends kernel_extends {
 			$this->filter_form['cost']['value']=$minmax[0];
 			$this->filter_form['cost']['value_2']=$minmax[1];
 		}
-		$this->filter_form['cost']['mask']['minint']=$minmax[0];
-		$this->filter_form['cost']['mask']['maxint']=$minmax[1];
+		$this->filter_form['cost']['mask']['min']=$minmax[0];
+		$this->filter_form['cost']['mask']['max']=$minmax[1];
 		$this->filter_form['cost']['mask']['step'] = $step;
 		$this->filter_form['text'] = array('type' => 'text','caption' => 'Ключевое слово','mask' =>array('max'=>128),'value'=>(isset($filter['text'])?$filter['text']:''));
 
@@ -1084,7 +1086,7 @@ class product_value_class extends kernel_extends {
 			elseif($k<80)
 				$this->fields['name'.$k] = array('type' => 'varchar', 'width' =>64, 'attr' => 'NOT NULL','default'=>'');
 			elseif($k<90)
-				$this->fields['name'.$k] = array('type' => 'float', 'width' =>'11,2', 'attr' => 'NOT NULL','default'=>'0.00');
+				$this->fields['name'.$k] = array('type' => 'decimal', 'width' =>'10,2', 'attr' => 'NOT NULL','default'=>'0.00');
 			else
 				$this->fields['name'.$k] = array('type' => 'text', 'width' =>64, 'attr' => 'NOT NULL');
 		}

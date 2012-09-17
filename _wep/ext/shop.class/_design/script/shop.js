@@ -22,7 +22,9 @@ function productshopExe(obj,id) {
 wep.shop = {
 	basketContenId : 0,
 	updateBasketBlock : function() {
-		wep.ajaxLoadContent(wep.shop.basketContenId,'#basketBlock');
+		wep.ajaxLoadContent(wep.shop.basketContenId, '#basketBlock', function() {
+			$("#basketBlock").css('margin-top', ($(window).scrollTop()+5)+'px');
+		});
 		/*var arr = '';
 		if(wep.pgParam) {
 			arr = wep.pgParam;
@@ -54,14 +56,31 @@ wep.shop = {
 $(document).ready(function() {
 	ajaxjob = false;
 
+	$('#basketBlock').live('click', function() {
+		window.location.href = wep.shop.pageBasket;
+		return false;
+	});
+	var offset = $("#basketBlock").offset();
+	var topPadding = 15;
+
+	if (offset)
+		$(window).scroll(function() {
+			if ($(window).scrollTop() > offset.top) {
+				$("#basketBlock").stop().animate({marginTop: $(window).scrollTop() - offset.top + topPadding});
+			}
+			else {
+				$("#basketBlock").stop().animate({marginTop: 0});
+			}
+		});
+
 	/*Табличный список - корзина*/
 	$('td.addbasket').each(function(i) {
 		$(this).find('a').click(function() {
 			if(ajaxjob) return false; // не выполнять пока незавершится работа АЯКС запроса
-			var nn = $(this).nextAll('input');
-			var pp = $(this).parent().parent();
-			ajaxjob = true;
 			if($(this).hasClass('addlink')) {
+				var nn = $(this).nextAll('input');
+				var pp = $(this).parent().parent();
+				ajaxjob = true;
 				JSWin({
 					'href':wep.siteJSON+'?_modul=shopbasket&_fn=jsAddBasket&product_id='+pp.attr('data-id')+'&count='+nn.val(), 'call':function(){
 						ajaxjob = false;
@@ -72,7 +91,8 @@ $(document).ready(function() {
 				});
 			}
 			else {
-				JSWin({
+				window.location.href = '/'+wep.shop.pageBasket;
+				/*JSWin({
 					'href':wep.siteJSON+'?_modul=shopbasket&_fn=jsAddBasket&product_id='+pp.attr('data-id')+'&count=0',
 					'call':function(){
 						ajaxjob = false;
@@ -80,14 +100,33 @@ $(document).ready(function() {
 						nn.removeAttr('disabled');
 						wep.shop.updateBasketBlock();
 					}
-				});
+				});*/
 			}
 			return false;
 		});
 	});
 
 	/*Подробная инфа о товаре - корзина*/
-	$('div.buybutton a').click(function() {
+	$('div.proditem .prodBlock .prodBlock-buy1').click(function() {
+		JSWin({'href':wep.siteJSON+'?_modul=shop&_fn=jsOrder&id='+$(this).attr('data-id')});
+		return false;
+	});
+	$('div.proditem .prodBlock .prodBlock-basket').click(function() {
+		if($(this).hasClass('inbasket'))
+			window.location.href = wep.shop.pageBasket;
+		else {
+			JSWin({
+				'href':wep.siteJSON+'?_modul=shopbasket&_fn=jsAddBasket&product_id='+$(this).attr('data-id')+'&count=1',
+				'call':function(){
+					wep.shop.updateBasketBlock();
+				}
+			});
+			
+			$(this).addClass('inbasket');
+		}
+		return false;
+	});
+	/*$('div.buybutton a').click(function() {
 		var nn = $(this).nextAll('input');
 		if(!nn.attr('disabled')) {
 			JSWin({'href':wep.siteJSON+'?_modul=shopbasket&_fn=jsAddBasket&product_id='+$(this).attr('data-id')+'&count='+nn.val()});
@@ -100,7 +139,7 @@ $(document).ready(function() {
 		}
 		wep.shop.updateBasketBlock();
 		return false;
-	});
+	});*/
 
 	/*В корзине - удаление*/
 	if($('.basket-list-item').size()) {

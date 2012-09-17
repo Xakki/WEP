@@ -22,7 +22,7 @@ function tpl_paylist($data)
 				<td>Баланс
 			</tr>';
 		$b  = 0;
-//print_r('<pre>');print_r($data);
+
 		foreach($data['#list#'] as $k=>$r) {
 			if(!$r['status']) {
 				if($r['#formType#']===true)

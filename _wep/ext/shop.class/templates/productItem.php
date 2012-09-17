@@ -1,7 +1,7 @@
 <?php
 	function tpl_productItem(&$data) {
 		$html = '';
-		//print_r('<pre>');print_r($data);
+
 		$html = '<div class="prodpage">';
 		if(!isset($data['#item#']) or !count($data['#item#'])) {
 			header("HTTP/1.0 404");

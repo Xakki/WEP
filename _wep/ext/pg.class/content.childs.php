@@ -124,7 +124,6 @@ class content_class extends kernel_extends {
 			} else
 				$vData[$k] = $r;
 		}
-		//print_r('<pre>');print_r($vData);
 		return $vData;
 	}
 
@@ -232,9 +231,9 @@ class content_class extends kernel_extends {
 			$this->addForm = $this->getContentIncParam($f_data);
 			if (count($this->addForm)) {
 				$this->formSort['Основное'] = array_merge($this->formSort['Основное'], array_keys($this->addForm));
-				//print_r($f_fieldsForm);print_r($this->addForm);
+
 				$f_fieldsForm = static_main::insertInArray($f_fieldsForm, 'pagetype', $this->addForm); // обработчик параметров рубрики
-				//print_r(' - ');print_r($f_fieldsForm['flexform_2']);
+
 				$f_fieldsForm['funcparam']['style'] = 'display:none;';
 			}
 		} else

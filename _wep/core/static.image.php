@@ -39,10 +39,6 @@ class static_image {
 			//$cmd = 'composite -compose bumpmap -gravity south '.escapeshellarg($InFile).' '.escapeshellarg($logoFile).' '.escapeshellarg($OutFile);
 			$cmd = 'convert '.escapeshellarg($InFile).' -gravity SouthWest -draw "image Over 0,0,0,0 '.escapeshellarg($logoFile).'" '.escapeshellarg($OutFile);
 			$out=array();$err = 0;$run = exec($cmd, $out, $err);
-			//print_r($cmd);
-			//echo implode ("<br>",$out);
-			//print_r($err);
-			//print_r($run);
 			if($err) {
 				return static_imageGD2::_waterMark($InFile, $OutFile,$logoFile,$posX,$posY);
 				static_main::log('error','Неверное выполнение команды "'.$cmd.'" , код ошибки - '.$err);
@@ -56,8 +52,10 @@ class static_image {
 	}
 
 	// Меняет размер. пропорционально, до минимального соответсявия по стороне
+	// TODo - куму нужна вообще эта функция, которая менятет размер картинки без сохранения соотношения сторон?
 	static function _resizeImage($InFile, $OutFile, $WidthX, $HeightY)
 	{
+		trigger_error('_resizeImage', E_USER_WARNING);
 		$res = true;
 		if(!$WidthX and !$HeightY) 
 			return true;
@@ -88,9 +86,6 @@ class static_image {
 			$out=array();
 			$err = 0;
 			$run = exec($cmd, $out, $err);
-			//echo implode ("<br>",$out);
-			//print_r($err);
-			//print_r($run);
 			if($err) {
 				return static_imageGD2::_resizeImage($InFile, $OutFile, $WidthX, $HeightY);
 				static_main::log('error','Неверное выполнение команды "'.$cmd.'" , код ошибки - '.$err);
@@ -125,9 +120,6 @@ class static_image {
 			$out=array();
 			$err = 0;
 			$run = exec($cmd, $out, $err);
-			//echo implode ("<br>",$out);
-			//print_r($err);
-			//print_r($run);
 			if($err) {
 				return static_imageGD2::_cropImage($InFile, $OutFile, $WidthX, $HeightY,$posX,$posY);
 				static_main::log('error','Неверное выполнение команды "'.$cmd.'" , код ошибки - '.$err);
@@ -146,26 +138,35 @@ class static_image {
 		$res = true;
 		if(!$WidthX and !$HeightY) 
 			return true;
-		// Если одна из сторон не указана - значит квадрат
-		if(!$WidthX) $WidthX=$HeightY;
-		if(!$HeightY) $HeightY=$WidthX;
+
+		$crop = true;
+		if(!$WidthX) {
+			$WidthX=$HeightY;
+			$crop = false;
+		}
+		if(!$HeightY) {
+			$HeightY=$WidthX;
+			$crop = false;
+		}
 
 		_chmod($InFile);
 
 		if(class_exists('Imagick',false)) {///// todo 
 			$thumb = new Imagick($InFile);
-			$thumb->cropThumbnailImage($WidthX,$HeightY);
+			if($crop)
+				$thumb->cropThumbnailImage($WidthX,$HeightY);
+			else
+				$thumb->thumbnailImage($WidthX,$HeightY, true);
 			$res = $thumb->writeImage($OutFile);
 			$thumb->destroy();
-		} 
-		else {
-			//$cmd = 'convert '.$InFile.' -thumbnail "'.$WidthX.'x'.$HeightY.'" '.$OutFile;
-			$cmd = 'convert '.escapeshellarg($InFile).' -resize "'.$WidthX.'x'.$HeightY.'^" -gravity center -crop '.$WidthX.'x'.$HeightY.'+0+0 +repage  '.escapeshellarg($OutFile);
+		}
+		else 
+		{
+			if($crop)
+				$cmd = 'convert '.escapeshellarg($InFile).' -resize "'.$WidthX.'x'.$HeightY.'^" -gravity center -crop '.$WidthX.'x'.$HeightY.'+0+0 +repage  '.escapeshellarg($OutFile);
+			else
+				$cmd = 'convert '.escapeshellarg($InFile).' -thumbnail "'.$WidthX.'x'.$HeightY.'" '.escapeshellarg($OutFile);
 			$out=array();$err = 0;$run = exec($cmd, $out, $err);
-			/*print_r('***-<pre>');
-			print_r($out);
-			print_r($err);
-			print_r($run);*/
 			if($err) {
 				return static_imageGD2::_thumbnailImage($InFile, $OutFile, $WidthX, $HeightY);
 				static_main::log('error','Неверное выполнение команды "'.$cmd.'" , код ошибки - '.$err);

@@ -50,20 +50,29 @@ class static_form {
 		return true;
 	}
 
+	/**
+	*
+	* flag_update - Если необходимо обновить существующее поле - true
+	*/
 	static function _add_fields(&$_this,$flag_update=false) {
 		if (!count($_this->fld_data)) return false;
 		// inserting
 		$data = array();
 		foreach($_this->fld_data as $key => &$value) {
 			if(!isset($_this->fields[$key]['noquote'])) {
+				// массив
 				if(is_array($value))
 					$value = '\''.$_this->SqlEsc(preg_replace('/\|+/', '|', '|'.implode('|',$value).'|')).'\'';
-				elseif($_this->fields[$key]['type']=='bool')
+				// логическое
+				elseif(self::isTypeBool($_this->fields[$key]['type']))
 					$value = (int)(bool)$value;
-				elseif(strpos($_this->fields[$key]['type'],'int')!==false)
+				// целое
+				elseif(self::isTypeInt($_this->fields[$key]['type']))
 					$value = str2int($value);
-				elseif(strpos($_this->fields[$key]['type'],'float')!==false)
+				// с запятой
+				elseif(self::isTypeFloat($_this->fields[$key]['type']))
 					$value = floatval($value);
+				// Шифрованное поле
 				elseif(isset($_this->fields[$key]['secure']))
 					$value = '\''.$_this->SqlEsc(static_main::EnDecryptString($value)).'\'';
 				else
@@ -142,10 +151,6 @@ class static_form {
 					continue;
 				}
 
-				/*if(!isset($_this->fields_form[$key]['mime'])) {
-					print_r('<pre>');print_r($value);exit();
-					//$_this->attaches[$key]['mime'] = array($value['type']=>);
-				}*/
 				if(isset($value['ext']) and $value['ext'])
 					$ext = $value['ext'];
 				else
@@ -175,9 +180,10 @@ class static_form {
 							$res = true;
 							if ($imod['type']=='crop')
 								$res = static_image::_cropImage($newname, $newname2, $imod['w'], $imod['h']);
-							elseif ($imod['type']=='resize')
-								$res = static_image::_resizeImage($newname, $newname2, $imod['w'], $imod['h']);
-							elseif ($imod['type']=='resizecrop' or $imod['type']=='thumb')
+							/*elseif ($imod['type']=='resize')
+								$res = static_image::_resizeImage($newname, $newname2, $imod['w'], $imod['h']);*/
+							// TODO - IMAGE OPTION normalize
+							elseif ($imod['type']=='resizecrop' or $imod['type']=='thumb' or $imod['type']=='resize')
 								$res = static_image::_thumbnailImage($newname, $newname2, $imod['w'], $imod['h']);
 							elseif ($imod['type']=='watermark')
 								$res = static_image::_waterMark($newname,$newname2, $imod['logo'], $imod['x'], $imod['y']);
@@ -512,7 +518,7 @@ class static_form {
 		$arr_err_name=array();
 		$textm = '';
 		$mess = array();
-		//print_r('<pre>');print_r($FORMS_FIELDS);
+
 		foreach($FORMS_FIELDS as $key=>&$form)
 		{
 			$error = array();
@@ -589,9 +595,9 @@ class static_form {
 				elseif($row==21) // min chars
 					$messages = static_main::m('_err_21',array($form['mask']['min'],($form['mask']['min']-_strlen($data[$key]))),$_this);
 				elseif($row==22) //max int
-					$messages = static_main::m('_err_22',$_this).$form['mask']['maxint'];
+					$messages = static_main::m('_err_22',$_this).$form['mask']['max'];
 				elseif($row==23) //min int
-					$messages = static_main::m('_err_23',$_this).$form['mask']['minint'];
+					$messages = static_main::m('_err_23',$_this).$form['mask']['min'];
 				elseif($row==24) // min chars
 					$messages = static_main::m('_err_22',$_this).$form['mask']['max'];
 				elseif($row==25) // max chars
@@ -665,19 +671,22 @@ class static_form {
 				$temp = $_this->qs($key,$q);
 				if(count($temp)) {
 					$messages = static_main::m('_err_34',$_this);
-					if(isset($param['errMess'])) {
+					if(isset($param['errMess'])) 
+					{
 						$mess[] = static_main::am('error',$FORMS_FIELDS[$key]['caption'].': '.$messages);
 					}
-					if(isset($param['ajax'])) {
+					if(isset($param['ajax'])) 
+					{
 						$_tpl['onload'] .= 'putEMF(\''.$key.'\',\''.$messages.'\');'; // запись в форму по ссылке
 					}
 					else
+					{
 						$form['error'][] = $messages; // запись в форму по ссылке
+					}
 				}
 			}
 		}
 
-		unset($form);
 		if(count($arr_err_name)>0 and !isset($param['errMess'])) {
 			$mess[] = static_main::am('error','Поля формы заполнены не верно.');
 		}
@@ -836,12 +845,8 @@ class static_form {
 		if(!isset($data[$key])) {
 			if(isset($form['mask']['min']) and $form['mask']['min'])
 				$error[] = 1;
-			elseif(isset($form['mask']['minint']) and $form['mask']['minint'])
-				$error[] = 1;
 			return true;
 		}
-
-		//print_r('<pre>');print_r($form);print_r('</pre>');print_r($data[$key]);
 		
 		/*Если тип данных ДАТА*/
 		if($form['type']=='date') 
@@ -985,29 +990,47 @@ class static_form {
 
 		if(isset($form['mask']['max']) && $form['mask']['max']>0)
 		{
-			if(_strlen($data[$key])>$form['mask']['max'])
-				$error[] = 2;
-		}
-		if(isset($form['mask']['min']) and $form['mask']['min']>0)
-		{
-			if(!$data[$key] or $data[$key]=='0')
-				$error[] = 1;
-			elseif(_strlen($data[$key])<$form['mask']['min'])
-				$error[] = 21;
-		}
-
-		if(isset($form['mask']['maxint']) && $form['mask']['maxint']>0 && str2int($data[$key])>$form['mask']['maxint'])
-		{
-			$error[] = 22;
-			if($form['type']=='date' and $FIELDS['type']=='int') {
-				$form['mask']['maxint'] = date($form['mask']['format'],$form['mask']['maxint']);
+			if(self::isTypeNumber($FIELDS['type']))
+			{
+				//для даты
+				// TODO ??????
+				/*if($form['type']=='date') {
+					$form['mask']['maxint'] = date($form['mask']['format'],$form['mask']['maxint']);
+				}*/
+				if(str2int($data[$key])>$form['mask']['max'])
+					$error[] = 22;
+			}
+			else
+			{
+				if(_strlen($data[$key])>$form['mask']['max'])
+					$error[] = 2;
 			}
 		}
-		if(isset($form['mask']['minint']) && $form['mask']['minint']>0 && str2int($data[$key])<$form['mask']['minint'])
+		/*
+			if(self::isTypeFloat($FIELDS['type']) and strpos($form['mask']['max'], ','))
+			{
+				$maskFloat = explode(',', $form['mask']['max']);
+				$valFloat = explode('.', $data[$key]);
+				if(_strlen($valFloat[0])>$maskFloat[0])
+					$error[] = 22;
+			}
+		*/
+		if(isset($form['mask']['min']) and $form['mask']['min']>0)
 		{
-			$error[] = 23;
-			if($form['type']=='date' and $FIELDS['type']=='int') {
-				$form['mask']['minint'] = date($form['mask']['format'],$form['mask']['minint']);
+			if(!$data[$key])
+				$error[] = 1;
+			elseif(self::isTypeNumber($FIELDS['type']))
+			{
+				/*if($form['type']=='date') {
+					$form['mask']['minint'] = date($form['mask']['format'],$form['mask']['minint']);
+				}*/
+				if(str2int($data[$key])<$form['mask']['min'])
+					$error[] = 23;
+			}
+			else
+			{
+				if(_strlen($data[$key])<$form['mask']['min'])
+					$error[] = 21;
 			}
 		}
 
@@ -1251,5 +1274,43 @@ class static_form {
 		}
 
 		return $txt2;
+	}
+	// Проверка на тип поля Boolean
+	static function isTypeBool($type) {
+		$list = array(
+			'bool'=>true,
+			'boolean'=>true,
+		);
+		if(isset($list[$type]))
+			return true;
+		return false;
+	}
+	// Проверка на тип поля целое число
+	static function isTypeInt($type) {
+		$list = array(
+			'int'=>true,
+			'integer'=>true,
+			'double'=>true,
+		);
+		if(isset($list[$type]))
+			return true;
+		return false;
+	}
+	// Проверка на тип поля с запятой
+	static function isTypeFloat($type) {
+		$list = array(
+			'float'=>true,
+			'double'=>true,
+			'decimal'=>true
+		);
+		if(isset($list[$type]))
+			return true;
+		return false;
+	}
+	// Проверка на тип поля с запятой
+	static function isTypeNumber($type) {
+		if(self::isTypeFloat($type) or self::isTypeInt($type))
+			return true;
+		return false;
 	}
 }

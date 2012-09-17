@@ -81,7 +81,6 @@
 				}
 				$html .= '</table>
 			</div>';
-			//print_r('<pre>');print_r($data);
 		}
 		else {
 			$html = '<div class="basket">'.static_render::message('Не верный адрес страницы либо данный заказ был удален').'</div>';

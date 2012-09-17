@@ -447,15 +447,22 @@ class static_tools {
 	  return true;
 	  }
 	 */
-	static function _staticStatsmodul(&$MODUL, $oid = '') {
+	static function toolsStatsmodul(&$MODUL, $oid = '') 
+	{
+		$html = '';
 		$clause = array();
 		if (!$oid and isset($_GET['_oid']))
 			$oid = (int) $_GET['_oid'];
 		if ($oid)
 			$clause[] = 't1.' . $MODUL->owner_name . '=' . $oid;
 		$filtr = $MODUL->_filter_clause();
-		if (count($filtr[0]))
-			$clause += $filtr[0];
+
+		if (isset($filtr) and count($filtr))
+		{
+			$clause += $filtr;
+			$html .= '<h3>Результат статистики выводится по фильтру</h3>';
+		}
+
 		if (count($clause))
 			$clause = 'WHERE ' . implode(' and ', $clause);
 		else
@@ -512,10 +519,7 @@ class static_tools {
 		/* $plugin = '';
 		  if(isset($MODUL->mf_statistic['plugin_date']))
 		  $plugin .= ''; */
-
-		$html = '';
-		if (count($filtr[0]))
-			$html .= 'Результат статистики выводится по фильтру<br/>';
+			
 		$html .= '
 	<div id="statschart1" data-height="380px" data-width="100%" style="margin-top:10px; margin-left:10px;min-width:1200px;width:100%;"></div>
 	<div id="statschart2" data-height="150px" data-width="100%" style="margin-top:10px; margin-left:10px;width:100%;"></div>
@@ -538,7 +542,8 @@ class static_tools {
 			if ($result->err)
 				return false;
 			// create list
-
+			return true;
+			// TODO: использовать готовые ф
 			while ($row = $result->fetch()) {
 				//$data[]= $row;
 				foreach ($MODUL->attaches as $key => $value) {

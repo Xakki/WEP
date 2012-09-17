@@ -1,7 +1,7 @@
 <?php
 	function tpl_basketitemlist(&$data) {
 		$html = '';
-		//print_r('<pre>');print_r($data);
+
 		if(isset($data['#list#']) and count($data['#list#'])) {
 			global $HTML;
 			$html .= '<table class="basket-list-item"><tr> 

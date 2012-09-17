@@ -646,8 +646,6 @@ $simple = true;
 			}
 		}
 
-//print_r('<pre>');print_r($data);
-
 		if (isset($this->id) and $this->id) {
 			if(count($data)==1)
 				$this->id = key($data);
@@ -1092,8 +1090,8 @@ $simple = true;
 				$r = $r + $this->memos[$k];
 
 			//на всякий
-			if (!isset($r['mask']['max']) and isset($this->fields[$k]['width']))
-				$r['mask']['max'] = $this->fields[$k]['width'];
+			if (!isset($r['mask']['width']) and isset($this->fields[$k]['width']))
+				$r['mask']['width'] = $this->fields[$k]['width'];
 			if (!isset($r['default']) and isset($this->fields[$k]['default']))
 				$r['default'] = $this->fields[$k]['default'];
 
@@ -1160,7 +1158,6 @@ $simple = true;
 						array($this, $r['relationForm']), 
 						array($r['value'], &$my_fieldsForm)
 					);//$r['relationForm']
-					//print_r('<pre>');print_r($my_fieldsForm);
 					//$f_fieldsForm = static_main::insertInArray($f_fieldsForm, $k, $my_fieldsForm);
 				} 
 				else 
@@ -1417,8 +1414,8 @@ $simple = true;
 	 * @param array $oid 
 	 * @return array
 	 */
-	public function staticStatsmodul($oid = '') {
-		return static_tools::_staticStatsmodul($this, $oid);
+	public function toolsStatsmodul($oid = '') {
+		return static_tools::toolsStatsmodul($this, $oid);
 	}
 	
 	/*public function toolsReindex(){
@@ -1503,6 +1500,7 @@ $simple = true;
 					$fields_form['f_' . $k]['type'] = 'text';
 				if (isset($_FILTR['exc_' . $k]))
 					$fields_form['f_' . $k]['exc'] = 1;
+
 			//}
 		}
 		//фильтр	
@@ -1595,7 +1593,11 @@ $simple = true;
 							$cl[$k] = 't1.' . $k . ' ' . ($tempex ? 'NOT' : '') . 'IN ("' . implode('","', $_FILTR[$k]) . '")';
 						}
 						else {
-							if ($r['type'] == 'int' or $r['type'] == 'date') {
+							if ($r['type'] == 'checkbox') 
+							{
+								$cl[$k] = 't1.' . $k . '="' . (int)$_FILTR[$k] . '"';
+							}
+							elseif ($r['type'] == 'int' or $r['type'] == 'date') {
 								$_FILTR[$k] = (int)$_FILTR[$k];
 								$_FILTR[$k . '_2'] = (int)$_FILTR[$k . '_2'];
 								$tmp = array();
@@ -1603,8 +1605,8 @@ $simple = true;
 									$tmp[] = 't1.' . $k . ($tempex?'<':'>') . $_FILTR[$k];
 								if (isset($_FILTR[$k . '_2']) and $_FILTR[$k . '_2']!='')
 									$tmp[] = 't1.' . $k . ($tempex?'>':'<') . $_FILTR[$k . '_2'];
-
-								$cl[$k] = '(' . implode(($tempex?' or ':' and '),$tmp) . ')';
+								if(count($tmp))
+									$cl[$k] = '(' . implode(($tempex?' or ':' and '),$tmp) . ')';
 							}
 							elseif ($r['type'] == 'list') {
 								if ($_FILTR[$k]!='') {

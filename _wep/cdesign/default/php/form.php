@@ -103,7 +103,7 @@ function tpl_form(&$data, $tabs = array()) {
 			$attribute = '';
 
 			$CAPTION = $r['caption'];
-			if((isset($r['mask']['min']) and $r['mask']['min']) or (isset($r['mask']['minint']) and $r['mask']['minint'])) {
+			if(isset($r['mask']['min']) and $r['mask']['min']) {
 				$CAPTION .= '<span class="form-requere">*</span>';
 				if($r['type']!='ckedit' and !($r['type']=='password' and isset($r['mask']['password']) and $r['mask']['password']=='re')) // в CKEDITORE глюк из за этого
 					$attribute .= ' required="required"';
@@ -176,8 +176,12 @@ function tpl_form(&$data, $tabs = array()) {
 					$ckedit['autoUpdateElement'] = 'true';
 
 					$fckscript = 'function cke_'.$k.'() { if(typeof CKEDITOR.instances.id_'.$k.' == \'object\'){CKEDITOR.instances.id_'.$k.'.destroy(true);} editor_'.$k.' = CKEDITOR.replace( \'id_'.$k.'\',{';
+
 					foreach($ckedit as $kc=>$rc)
-						$fckscript .= $kc.' : '.$rc.',';
+					{
+						if(!is_array($rc))
+							$fckscript .= $kc.' : '.$rc.',';
+					}
 					$fckscript .= '\'temp\' : \'temp\' });';
 
 					if(isset($ckedit['CKFinder'])) {
@@ -544,53 +548,6 @@ function tpl_form(&$data, $tabs = array()) {
 					</div>';
 				$_tpl['onload'] .= ' jQuery(\'form a.i-reload\').click(function(){reloadCaptcha(\''.$k.'\');}); jQuery(\'#tr_captcha input\').click(function(){wep.setCookie(\'testtest\',1);});';
 			}
-			elseif($r['type']=='file' and isset($r['mask']['async'])) {
-				
-				if(isset($r['default']) and $r['default']!='' and $r['value']=='') {
-					$r['value'] = $r['default'];
-					$r['att_type']='img';
-				}
-
-				if($r['caption']==1)
-					$texthtml .= '';
-				elseif(!is_array($r['value']) and $r['value']!='' and $r['att_type']=='img') {
-					$H = '50';
-					if(isset($r['mask']['height']))
-						$H = $r['mask']['height'];
-					$texthtml .= '<div class="wep_thumb">
-						<a rel="fancy" href="/'.$r['value'].'" target="_blank" class="fancyimg">
-							<img src="/'.$r['value'].'" alt="img" class="attach" style="height:'.$H.'px;"/>
-						</a>';
-					if(isset($r['img_size']))
-						$texthtml .= '<div class="wep_thumb_comment">Размер '.$r['img_size'][0].'x'.$r['img_size'][1].'</div>';
-					$texthtml .= '</div>';
-					if(isset($r['thumb']) and $r['mask']['thumb'])
-						foreach($r['thumb'] as $thumb) {
-							if(!$thumb['path']) continue;
-							$texthtml .= '<div class="wep_thumb">
-								<a rel="fancy" href="/'.$thumb['value'].'?size='.$thumb['filesize'].'" target="_blank" class="fancyimg">
-									<img src="/'.$thumb['value'].'?size='.$thumb['filesize'].'" alt="img" class="attach" style="height:'.$H.'px;"/>
-								</a>';
-							if($thumb['w']) $texthtml .= '<div class="wep_thumb_comment">Эскиз размером '.$thumb['w'].'x'.$thumb['h'].'</div>';
-							$texthtml .= '</div>';
-						}
-					$_CFG['fileIncludeOption']['fancybox'] = 1;
-				}
-				elseif(!is_array($r['value']) and $r['value']!='' and $r['att_type']=='swf')
-					$texthtml .= '<object type="application/x-shockwave-flash" data="/'.$r['value'].'" height="50" width="200"><param name="movie" value="/'.$r['value'].'" /><param name="allowScriptAccess" value="sameDomain" /><param name="quality" value="high" /><param name="scale" value="exactfit" /><param name="bgcolor" value="#ffffff" /><param name="wmode" value="transparent" /></object>';
-				elseif(!is_array($r['value']) and $r['value']!=''){
-					$texthtml .= '<span style="color:green"><a href="/'.$r['value'].'" target="_blank"> фаил загружен</a></span><br/>';
-				}
-
-				
-				$texthtml .= '<div class="form-value divinputfile">';
-				$texthtml .= '';
-				/*$texthtml .= '<input type="file" name="'.$k.'" '.$attribute.'/><span class="fileinfo"></span>';
-				if($r['del']==1 and $r['value']!='')
-					$texthtml .= '<div class="filedelete"><label for="'.$k.'_del">Удалить?&#160;</label><input type="checkbox" name="'.$k.'_del" id="'.$k.'_del" value="1"/></div>';*/
-
-				$texthtml .= '</div>';
-			}
 			elseif($r['type']=='file') {
 				
 				if(isset($r['default']) and $r['default']!='' and $r['value']=='') {
@@ -620,8 +577,8 @@ function tpl_form(&$data, $tabs = array()) {
 						foreach($r['thumb'] as $thumb) {
 							if(!$thumb['pref']) continue;
 							$texthtml .= '<div class="wep_thumb">
-								<a rel="fancy" href="/'.$thumb['value'].'?size='.$thumb['filesize'].'" target="_blank" class="fancyimg">
-									<img src="/'.$thumb['value'].'?size='.$thumb['filesize'].'" alt="img" class="attach" style="'.$css.'"/>
+								<a rel="fancy" href="/'.$thumb['value'].'" target="_blank" class="fancyimg">
+									<img src="/'.$thumb['value'].'" alt="img" class="attach" style="'.$css.'"/>
 								</a>';
 							if($thumb['w']) $texthtml .= '<div class="wep_thumb_comment">Эскиз размером '.$thumb['w'].'x'.$thumb['h'].'</div>';
 							$texthtml .= '</div>';
@@ -655,12 +612,8 @@ function tpl_form(&$data, $tabs = array()) {
 
 				$texthtml .= '</div>';
 			}
-			elseif($r['type']=='int' and !$r['readonly']) {
-				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
-				if(!isset($r['itype'])) $r['itype'] = 'int';//number
-				$texthtml .= '<div class="form-value"><input type="'.$r['itype'].'" name="'.$k.'" value="'.$r['value'].'" '.$attribute.'/></div>';
-			}
-			elseif($r['type']=='password' and isset($r['mask']['password']) and $r['mask']['password']=='re') {
+			elseif($r['type']=='password' and isset($r['mask']['password']) and $r['mask']['password']=='re') 
+			{
 				$texthtml .= '<div class="form-value">
 					<span class="labelInput">Введите пароль</span>
 					<input type="password" name="'.$k.'" value="" onkeyup="checkPass("'.$k.'")" class="password" '.$attribute.'/>
@@ -676,7 +629,8 @@ function tpl_form(&$data, $tabs = array()) {
 					<input type="password" name="'.$k.'" '.($attr['id']?'':'value="'.$r['value'].'"').' class="password"/>
 					<div class="passnewdesc" onclick="passwordShow(this)">Отобразить символы/скрыть</div></div>';
 			}	
-			elseif($r['type']=='password_new' or $r['type']=='password') {
+			elseif($r['type']=='password_new' or $r['type']=='password') 
+			{
 				$texthtml .= '<div class="form-value"><input type="password" name="'.$k.'" '.($attr['id']?'':'value="'.$r['value'].'"').' class="password" '.$attribute.'/>
 						<div class="passnewdesc" onclick="passwordShow(this)">Отобразить/скрыть символы</div></div>';
 			}
@@ -688,7 +642,8 @@ function tpl_form(&$data, $tabs = array()) {
 							</div></div>';
 				$_CFG['fileIncludeOption']['md5'] = 1;
 			}*/
-			elseif($r['type']=='color') {
+			elseif($r['type']=='color') 
+			{
 				$_tpl['styles']['../_script/script.jquery/colorpicker/css/colorpicker'] = 1;
 	//			$_tpl['styles']['colorpicker/css/layout'] = true;
 
@@ -731,8 +686,22 @@ function tpl_form(&$data, $tabs = array()) {
 					$texthtml .= '<span class="ilistmultiple" onclick="wep.form.iListCopy(this,\'#tr_'.$k.' div.ilist\','.$r['mask']['maxarr'].')" title="Добавить '.$r['caption'].'">'.($r['mask']['maxarr']-count($r['value'])).'</span>';
 				$texthtml .= '</div>';
 			}
-			else {
+			else 
+			{
+				if(isset($r['isFloat'])) 
+				{
+					$maskFloat = explode(',', $r['mask']['width']);
+					if(!isset($maskFloat[1])) $maskFloat[1] = 0;
+					$_tpl['script']['script.jquery/jquery.numberMask'] = 1;
+					$_tpl['onload'] .= '$("input[name='.$k.']").numberMask({type:"float", beforePoint:'.$maskFloat[0].', afterPoint:'.$maskFloat[1].', defaultValueInput:"0", decimalMark:"."});';
+				}
+				elseif(isset($r['isInt'])) 
+				{
+					$_tpl['onload'] .= '$("input[name='.$k.']").on("keyup change",function(event){return wep.form.checkInt(event);});';
+				}
+				
 				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
+
 				if($r['type']=='email') $attribute .=  ' x-autocompletetype="'.$r['type'].'"';
 				$texthtml .= '<div class="form-value"><input type="'.$r['type'].'" name="'.$k.'" value="'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'" '.$attribute.'/></div>';
 			}
