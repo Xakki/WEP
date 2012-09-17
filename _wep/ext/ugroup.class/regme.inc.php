@@ -63,7 +63,6 @@
 		list($DATA,$flag) = $UGROUP->regForm($param,$argForm);
 		unset($DATA['form']['_info']);
 		$html = $HTML->transformPHP($DATA,$FUNCPARAM[0]);
-
-		$_tpl['styles']['login']=1;
 	}
+	$_tpl['styles']['login']=1;
 	return $html;

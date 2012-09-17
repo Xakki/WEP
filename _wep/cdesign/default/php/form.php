@@ -176,8 +176,12 @@ function tpl_form(&$data, $tabs = array()) {
 					$ckedit['autoUpdateElement'] = 'true';
 
 					$fckscript = 'function cke_'.$k.'() { if(typeof CKEDITOR.instances.id_'.$k.' == \'object\'){CKEDITOR.instances.id_'.$k.'.destroy(true);} editor_'.$k.' = CKEDITOR.replace( \'id_'.$k.'\',{';
+
 					foreach($ckedit as $kc=>$rc)
-						$fckscript .= $kc.' : '.$rc.',';
+					{
+						if(!is_array($rc))
+							$fckscript .= $kc.' : '.$rc.',';
+					}
 					$fckscript .= '\'temp\' : \'temp\' });';
 
 					if(isset($ckedit['CKFinder'])) {
@@ -686,7 +690,7 @@ function tpl_form(&$data, $tabs = array()) {
 			{
 				if(isset($r['isFloat'])) 
 				{
-					$maskFloat = explode(',', $r['mask']['max']);
+					$maskFloat = explode(',', $r['mask']['width']);
 					if(!isset($maskFloat[1])) $maskFloat[1] = 0;
 					$_tpl['script']['script.jquery/jquery.numberMask'] = 1;
 					$_tpl['onload'] .= '$("input[name='.$k.']").numberMask({type:"float", beforePoint:'.$maskFloat[0].', afterPoint:'.$maskFloat[1].', defaultValueInput:"0", decimalMark:"."});';

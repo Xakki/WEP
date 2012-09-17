@@ -671,19 +671,22 @@ class static_form {
 				$temp = $_this->qs($key,$q);
 				if(count($temp)) {
 					$messages = static_main::m('_err_34',$_this);
-					if(isset($param['errMess'])) {
+					if(isset($param['errMess'])) 
+					{
 						$mess[] = static_main::am('error',$FORMS_FIELDS[$key]['caption'].': '.$messages);
 					}
-					if(isset($param['ajax'])) {
+					if(isset($param['ajax'])) 
+					{
 						$_tpl['onload'] .= 'putEMF(\''.$key.'\',\''.$messages.'\');'; // запись в форму по ссылке
 					}
 					else
+					{
 						$form['error'][] = $messages; // запись в форму по ссылке
+					}
 				}
 			}
 		}
 
-		unset($form);
 		if(count($arr_err_name)>0 and !isset($param['errMess'])) {
 			$mess[] = static_main::am('error','Поля формы заполнены не верно.');
 		}
@@ -994,19 +997,8 @@ class static_form {
 				/*if($form['type']=='date') {
 					$form['mask']['maxint'] = date($form['mask']['format'],$form['mask']['maxint']);
 				}*/
-
-				if(self::isTypeFloat() and strpos($form['mask']['max'], ','))
-				{
-					$maskFloat = explode(',', $form['mask']['max']);
-					$valFloat = explode('.', $data[$key]);
-					if(_strlen($valFloat[0])>$maskFloat[0])
-						$error[] = 22;
-				}
-				else
-				{
-					if(str2int($data[$key])>$form['mask']['max'])
-						$error[] = 22;
-				}
+				if(str2int($data[$key])>$form['mask']['max'])
+					$error[] = 22;
 			}
 			else
 			{
@@ -1014,7 +1006,15 @@ class static_form {
 					$error[] = 2;
 			}
 		}
-
+		/*
+			if(self::isTypeFloat($FIELDS['type']) and strpos($form['mask']['max'], ','))
+			{
+				$maskFloat = explode(',', $form['mask']['max']);
+				$valFloat = explode('.', $data[$key]);
+				if(_strlen($valFloat[0])>$maskFloat[0])
+					$error[] = 22;
+			}
+		*/
 		if(isset($form['mask']['min']) and $form['mask']['min']>0)
 		{
 			if(!$data[$key])

@@ -1090,8 +1090,8 @@ $simple = true;
 				$r = $r + $this->memos[$k];
 
 			//на всякий
-			if (!isset($r['mask']['max']) and isset($this->fields[$k]['width']))
-				$r['mask']['max'] = $this->fields[$k]['width'];
+			if (!isset($r['mask']['width']) and isset($this->fields[$k]['width']))
+				$r['mask']['width'] = $this->fields[$k]['width'];
 			if (!isset($r['default']) and isset($this->fields[$k]['default']))
 				$r['default'] = $this->fields[$k]['default'];
 
