@@ -2078,11 +2078,6 @@ $simple = true;
 		if ($flag == 1) {
 			$RESULT['onload'] .= 'clearTimeout(timerid2);fShowload (1,result.html2,0,0,\'location.href = location.href;\');';
 
-			/* $DATA2 = array('#board#boarditems'=>$this->fDisplay($this->id));
-			  $DATA2['#board#boarditems']['simple'] = true;
-			  $htmlb = $HTML->transformPHP($DATA2,'#board#boarditems').'<style>'.$_tpl['styles']['rnd'].'</style>';
-			  eval('$htmlb = "' . addcslashes($htmlb,'"\\') . '";'); */
-
 			$RESULT['html2'] = '<div class="blockhead ok">' . static_main::m('add', $this) . '</div><div class="hrb">&nbsp;</div>
 			<div class="divform"><div class="messages" style="text-align:justify;">
 			</div></div>';
