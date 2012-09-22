@@ -260,7 +260,7 @@ function tpl_form(&$data, $tabs = array()) {
 				// end checkbox
 			}
 			elseif($r['type']=='ajaxlist' and isset($r['multiple'])) {
-				global $_tpl;				
+				global $_tpl;
 
 				if(!is_array($r['value']))
 					$r['value'] = explode('|', trim($r['value'], '|'));
@@ -279,11 +279,12 @@ function tpl_form(&$data, $tabs = array()) {
 					if(isset($r['value_2'][$i])) $value_2 = strip_tags ($r['value_2'][$i]);
 					// TODO : Придумать форматированный вывод 
 					else $value_2 = '';
-					$r['labelstyle'] = ($value_2?'display: none;':'');
 					$r['csscheck'] = ($value_2?'accept':'reject');
 					$texthtml .= '<div class="form-value ajaxlist">
-						<span style="'.$r['labelstyle'].'">'.$r['label'].'</span>
-						<input type="text" name="'.$k.'_2['.$i.']" value="'.$value_2.'" onfocus="show_hide_label(this,\''.$k.'\',1,\''.$i.'\')" onblur="show_hide_label(this,\''.$k.'\',0,\''.$i.'\')" onkeyup="return ajaxlistOnKey(event,this,\''.$k.'\',\''.$i.'\')" class="'.$r['csscheck'].'" autocomplete="off"/>
+						<input type="text" name="'.$k.'_2['.$i.']" value="'.$value_2.'" placeholder="'.$r['placeholder'].'" class="'.$r['csscheck'].'" autocomplete="off" 
+							onfocus="show_hide_label(this,\''.$k.'\',1,\''.$i.'\')" 
+							onblur="show_hide_label(this,\''.$k.'\',0,\''.$i.'\')"
+							onkeyup="return ajaxlistOnKey(event,this,\''.$k.'\',\''.$i.'\')"/>
 						<div id="ajaxlist_'.$k.'_'.$i.'_" style="display:none;" onfocus="chFocusList(0)" onblur="chFocusList(1)">не найдено</div>
 
 						<input type="hidden" name="'.$k.'['.$i.']" value="'.$value.'" '.$attribute.'/>
@@ -296,10 +297,13 @@ function tpl_form(&$data, $tabs = array()) {
 				$r['comment'] .= '<div class="ajaxmultiple" onclick="jQuery(\'#tr_'.$k.' div.ajaxlist:hidden\').eq(0).show(); if (jQuery(\'#tr_'.$k.' div.ajaxlist:hidden\').size() == 0) jQuery(this).hide();">Добавить '.$r['caption'].'</div>';
 			}
 			elseif($r['type']=='ajaxlist') {
+				$r['csscheck'] = ($r['value_2']?'accept':'reject');		
 				$serl = serialize($r['listname']);
 				$texthtml .= '<div class="form-value ajaxlist">
-					<span style="'.$r['labelstyle'].'">'.$r['label'].'</span>
-					<input type="text" name="'.$k.'_2" value="'.strip_tags ($r['value_2']).'" onfocus="show_hide_label(this,\''.$k.'\',1)" onblur="show_hide_label(this,\''.$k.'\',0)" onkeydown="return ajaxlistOnKey(event,this,\''.$k.'\')" class="'.$r['csscheck'].'" autocomplete="off"/>
+					<input type="text" name="'.$k.'_2" value="'.strip_tags ($r['value_2']).'" placeholder="'.$r['placeholder'].'" class="'.$r['csscheck'].'" autocomplete="off" 
+						onfocus="show_hide_label(this,\''.$k.'\',1)" 
+						onblur="show_hide_label(this,\''.$k.'\',0)" 
+						onkeydown="return ajaxlistOnKey(event,this,\''.$k.'\')"/>
 					<div id="ajaxlist_'.$k.'" style="display:none;" onfocus="chFocusList(0)" onblur="chFocusList(1)">не найдено</div>
 
 					<input type="hidden" name="'.$k.'" value="'.$r['value'].'" '.$attribute.'/>

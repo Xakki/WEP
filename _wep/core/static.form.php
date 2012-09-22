@@ -658,22 +658,25 @@ class static_form {
 				//$form['caption'].': '.
 			}
 
-		}
+		} unset($form);
+		
 		// Проверка уник полей
 		if(count($_this->unique_fields)) {
 			foreach($_this->unique_fields as $uk=>$ur) {
 				//TODO: если массив данных вдруг
 				if(is_array($ur) or !isset($FORMS_FIELDS[$ur])) continue;
 				$key = $ur;
+				$form = &$FORMS_FIELDS[$key];
 				$q = 'WHERE '.$key.'="'.$_this->SqlEsc($data[$key]).'"';
 				if($_this->id)
 					$q .= ' and id!='.$_this->id;
 				$temp = $_this->qs($key,$q);
 				if(count($temp)) {
+					$arr_err_name[$key]=$key;
 					$messages = static_main::m('_err_34',$_this);
 					if(isset($param['errMess'])) 
 					{
-						$mess[] = static_main::am('error',$FORMS_FIELDS[$key]['caption'].': '.$messages);
+						$mess[] = static_main::am('error',$form['caption'].': '.$messages);
 					}
 					if(isset($param['ajax'])) 
 					{

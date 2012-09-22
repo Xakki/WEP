@@ -231,7 +231,6 @@ function show_hide_label(obj,view,flag,key) { // функция на событ�
 				setTimeout(function(){show_hide_label(obj,view,flag,key);},400);
 			}
 			else if(flag) {
-				jQuery(obj).prev().hide();
 				ajaxlist(obj,view,key);
 			}
 			else {
@@ -247,9 +246,6 @@ function show_hide_label(obj,view,flag,key) { // функция на событ�
 					ajaxlist_click(SEL,view,key);
 				else {
 					timerid5 = setTimeout(function(){ajaxlistClear(obj,view,key);},200);
-					if(!obj.value){
-						jQuery(obj).prev().show();
-					}
 				}
 			}
 		},200);
@@ -263,7 +259,6 @@ function ajaxlistClear(obj,view,key) { // функ очистки формы е�
 
 	if(jQuery(al+' + input').val()=='') {
 		jQuery(obj).val('');
-		jQuery(obj).prev().show();
 		clearTimeout(timerid4);timerid4=0;
 	}
 }

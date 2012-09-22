@@ -245,63 +245,47 @@ class content_class extends kernel_extends {
 		return $this->owner->getIncFile($typePG);
 	}
 
-	function getContentIncParam(&$data, $ajax = false) {
-		global $FUNCPARAM_FIX; // Фикс для совместимости со старыми версиями
-		$pagetype = $data['pagetype'];
-		$FUNCPARAM = $data['funcparam'];
+	function getContentIncParam(&$rowPG, $ajax = false) 
+	{
 		$formFlex = array();
-		$flagPG = false;
-		$flag_FIX = false;
-		if ($FUNCPARAM) {
-			$FUNCPARAM = explode('&', $FUNCPARAM);
-			foreach ($FUNCPARAM as $kf => &$rf) {
-				if (strpos($rf, '|') !== false) {
-					$rf = explode('|', $rf);
-					$rf = array_combine($rf, $rf);
-				} elseif (strpos($rf, '#ext#') !== false)
-					$FUNCPARAM_FIX[$kf] = &$rf;
+		$FUNCPARAM = $this->owner->parserFlexData($rowPG['funcparam'], $rowPG['pagetype']);
+
+		if ($flagPG = $this->getIncFile($rowPG['pagetype']))
+		{
+			if (count($_POST) != count($rowPG) or $ajax) {
+				$flagSetvalue = true;
 			}
-			unset($rf);
+			else
+				$flagSetvalue = false;
+			//Проверяем есть ли в коде флексформа
+			$fileDoc = $this->getDocFileInfo($flagPG);
+			if ($fileDoc['ShowFlexForm']) {
+				$ShowFlexForm = true;
+				$tempform = include($flagPG);
+				if (is_array($tempform) and count($tempform)) {
+					foreach ($tempform as $k => $r) {
+						if ($flagSetvalue) {
+							$r['value'] = $rowPG['flexform_' . $k] = $FUNCPARAM[$k];
+						}
+						$r['css'] = 'addparam flexform'; // Добавляем форме спец стиль (завязано на скриптах)
+						$formFlex['flexform_' . $k] = $r;
+					}
+				}
+				else
+				{
+					$formFlex['tr_flexform_0'] = array('type' => 'info', 'css' => 'addparam flexform', 'caption' => '<span class="error">Ошибка в коде. Обрботчик страниц "' . $flagPG . '" вернул не верные данные!</span>');
+				}
+			} else 
+			{
+				
+			}
 		}
-		else
-			$FUNCPARAM = array();
-		$typePG = explode(':', $pagetype);
-		if (count($typePG) == 2 and file_exists($this->owner->_enum['inc'][$typePG[0]]['path'] . $typePG[1] . '.inc.php'))
-			$flagPG = $this->owner->_enum['inc'][$typePG[0]]['path'] . $typePG[1] . '.inc.php';
 		elseif (!$pagetype)
-			return $formFlex;
-		/* elseif(file_exists($this->_CFG['_PATH']['inc'].$pagetype.'.inc.php'))
-		  $flagPG = $this->_CFG['_PATH']['inc'].$pagetype.'.inc.php';
-		  elseif(file_exists($this->_CFG['_PATH']['wep_inc'].$pagetype.'.inc.php'))
-		  $flagPG = $this->_CFG['_PATH']['wep_inc'].$pagetype.'.inc.php'; */
+		{}
 		else {
-			$formFlex['tr_flexform_0'] = array('type' => 'info', 'css' => 'addparam flexform', 'caption' => '<span class="error">Обрботчик страниц "' . $this->owner->_enum['inc'][$typePG[0]]['path'] . $typePG[1] . '.inc.php" не найден!</span>');
-			//trigger_error('Обрботчик страниц "'.$this->owner->_enum['inc'][$typePG[0]]['path'].$typePG[1].'.inc.php" не найден!', E_USER_WARNING);
-			return $formFlex;
+			$formFlex['tr_flexform_0'] = array('type' => 'info', 'css' => 'addparam flexform', 'caption' => '<span class="error">Ошибка выбра данных. Обрботчик страниц "' . $flagPG . '" не найден!</span>');
 		}
 
-		if (count($_POST) != count($data) or $ajax) {
-			$fl = true;
-		}
-		else
-			$fl = false;
-		//Проверяем есть ли в коде флексформа
-		$fi = $this->getDocFileInfo($flagPG);
-		if ($fi['ShowFlexForm']) {
-			$ShowFlexForm = true;
-			$tempform = include($flagPG);
-			if (is_array($tempform) and count($tempform)) {
-				foreach ($tempform as $k => $r) {
-					if ($fl) {
-						$r['value'] = $data['flexform_' . $k] = $FUNCPARAM[$k];
-					}
-					$r['css'] = 'addparam flexform'; // Добавляем форме спец стиль (завязано на скриптах)
-					$formFlex['flexform_' . $k] = $r;
-				}
-			}
-		} else {
-			
-		}
 		return $formFlex;
 	}
 

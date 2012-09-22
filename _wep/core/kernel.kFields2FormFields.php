@@ -70,8 +70,8 @@
 						$r['comment'] = static_main::m('_file_size').$this->attaches[$k]['maxsize'].'Kb';
 				}
 				elseif($r['type']=='ajaxlist') {
-					if(!$r['label'])
-						$r['label'] = 'Введите текст';
+					if(!isset($r['placeholder']) or !$r['placeholder'])
+						$r['placeholder'] = 'Введите текст';
 					if(isset($r['mask']['min']) and $r['mask']['min'] and (!isset($r['value']) or $r['value']<$r['mask']['min']))
 						$r['value_2'] = '';
 
@@ -87,8 +87,6 @@
 						else $r['value_2'] = $md[$r['value']];
 					}
 
-					$r['labelstyle'] = ($r['value_2']?'display: none;':'');
-					$r['csscheck'] = ($r['value_2']?'accept':'reject');
 				}
 				/*elseif(isset($r['listname']) and isset($r['multiple']) and $r['multiple']===2 and !$r['readonly']) {// and isset($this->fields[$k])
 					$this->_checkList($r['listname'],$r['value']);
@@ -119,14 +117,14 @@
 				}*/
 				elseif(isset($r['listname']) and isset($r['multiple']) and $r['multiple'] and !$r['readonly']) {
 					$md = $this->_getCashedList($r['listname']);
-					if(!isset($r['value']) or !is_array($r['value']))
+
+					if(!isset($r['value']))
 						$r['value'] = array();
-					if($r['multiple']!=3 and count($r['value'])) {
-						if(is_array($r['value']))
-							$r['value'] = array_combine($r['value'],$r['value']);
-						else
-							$r['value'] = array($r['value']=>$r['value']);
-					}
+					elseif(!is_array($r['value']))
+						$r['value'] = array($r['value']=>$r['value']);
+					elseif($r['multiple']!=3 and is_array($r['value']) and count($r['value']))
+						$r['value'] = array_combine($r['value'],$r['value']);
+
 					$temp = current($md);
 					if(is_array($temp) and !isset($temp['#name#'])) {
 						if(isset($r['mask']['begin']))

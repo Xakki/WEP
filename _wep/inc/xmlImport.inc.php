@@ -79,9 +79,9 @@
 						$name_group = 'Группа';
 
 						$data = simplexml_load_file($xml);
-						$result = parserXml($data);
+						$result = simplexml2array($data);
 						
-						print_r('<pre>');print_r($result);
+						//print_r('<pre>');print_r($result);
 					
 
 						//TODO - нарисовать таблицу для того чтобы задать соответствие полей из фаила, полям из БД
@@ -126,14 +126,22 @@
 
 	return $html;
 
-function parserXml($xml)
-{
-
-	$data = array();
-	foreach($xml->{'Группа'} as $item)
-	{
-		$attributes = $item->attributes();
-		$data[] = $item['Код'];
+function simplexml2array($xml) {
+	if (get_class($xml) == 'SimpleXMLElement') {
+		$attributes = $xml->attributes();
+		foreach($attributes as $k=>$v) {
+			if ($v) $a[$k] = (string) $v;
+		}
+		$x = $xml;
+		$xml = get_object_vars($xml);
 	}
-	return $data;
+	if (is_array($xml)) {
+		if (count($xml) == 0) return (string) $x; // for CDATA
+		foreach($xml as $key=>$value) {
+			$r[$key] = simplexml2array($value);
+		}
+		if (isset($a)) $r['@attributes'] = $a;    // Attributes
+		return $r;
+	}
+	return (string) $xml;
 }
