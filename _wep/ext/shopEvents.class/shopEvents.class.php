@@ -40,7 +40,7 @@ class shopEvents_class extends kernel_extends {
 		$result = array();
 		$DATA = $this->qs('*','WHERE date='.mktime(0, 0, 0, date('m'), date('d'), date('Y')));
 		if(count($DATA)) {
-			$result['#event#'] = $DATA[0];
+			$result['#event#'][$DATA[0]['product']] = $DATA[0];
 			_new_class('shop',$SHOP);
 			$result['#item#'] = $SHOP->childs['product']->fItem($DATA[0]['product']);
 		}

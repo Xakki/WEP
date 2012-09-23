@@ -31,4 +31,5 @@
 	$DATA = $SHOPEvents->getData();
 	$DATA['#page#'] = $this->getHref($FUNCPARAM[0]);
 	$DATA['#text#'] = $rowPG['pg'];
+	$DATA['#title#'] = $rowPG['name'];
 	return $HTML->transformPHP($DATA,$FUNCPARAM[1]);
