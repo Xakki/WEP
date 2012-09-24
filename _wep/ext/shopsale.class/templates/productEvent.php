@@ -23,17 +23,36 @@
 				if(isset($r['image']) and count($r['image']) and $r['image'][0][0]) {
 					$fimg = array_shift($r['image']);
 					$html .= '<a href="/'.$fimg[0].'" title="'.$r['name'].'" class="prodimg-first fancyimg" rel="fancy"><img src="/'.$fimg[1].'" alt="'.$r['name'].'"/></a>';
-				} else
-					$html .= '<br/><img src="_design/'.$HTML->_design.'/_shop/img/nofoto.gif" alt="'.$r['name'].'" class="prodimg-first"/>';
+				} 
+				else
+					$html .= '<img src="_design/'.$HTML->_design.'/_shop/img/nofoto.gif" alt="'.$r['name'].'" class="prodimg-first"/>';
+
+				$beginHour = 8;
+				$endhour = 20;
+				$temeLeft = mktime($endhour,0,0,date('m'),date('d'),date('Y')) - time();
+				$pp = floor(10*$temeLeft/( ($endhour-$beginHour)*3600 ) )*10;
+
+				$strTime = '';
+				if($temeLeft>3600)
+				{
+					$temp = floor($temeLeft/3600);
+					$temeLeft = ($temeLeft-$temp*3600);
+					$strTime .= $temp.' час. ';
+				}
+				$temp = floor($temeLeft/60);
+				$temeLeft = ($temeLeft-$temp*60);
+				$strTime .= $temp.' мин. ';
+				$strTime .= $temeLeft.' сек.';
+
 				$html .= '</div>
 				<div class="prodinfo-block">
 					<a href="'.$href.'" class="prodname">'.$r['name'].'</a>
 					<p class="proddescr">'.$r['descr'].'</p>
 					<div class="progress">
-						<span>Продано уже 60% товаров</span>
-						<div class="bar"></div>
+						<span>Продано уже '.(100-$pp).'% товаров</span>
+						<div class="bar" style="background-position:'.$pp.'% 0;"></div>
 						<span>До окончания продаж</span>
-						<div class="timer">07 час. 57 мин. 22 сек.</div>
+						<div class="timer">'.$strTime.'</div>
 					</div>
 				</div>
 				';
@@ -57,7 +76,7 @@
 						<div class="prodBlock-price">
 							<label>Цена:</label> <span class="cost">'.$r['cost'].'</span>
 						</div>
-						<div class="prodBlock-button prodBlock-buy1 ico" data-id="'.$r['id'].'"><i></i>Купить в 1 клик</div>
+						<div class="prodBlock-button"><a href="'.$href.'">Купить сейчас</a></div>
 					</div>
 				</div>';
 			}

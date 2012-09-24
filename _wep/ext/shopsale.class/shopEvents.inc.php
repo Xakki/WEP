@@ -12,7 +12,7 @@
 	if(!isset($FUNCPARAM[0]) or !$FUNCPARAM[0])
 		$FUNCPARAM[0] = '0';
 	if(!isset($FUNCPARAM[1]))
-		$FUNCPARAM[1] = '#shopEvents#productEvent';
+		$FUNCPARAM[1] = '#shopsale#productEvent';
 
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if (isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
@@ -25,10 +25,10 @@
 	}
 
 	if(!_new_class('shop',$SHOP)) return false;
-	if(!_new_class('shopEvents',$SHOPEvents)) return false;
+	if(!_new_class('shopsale',$SHOPSALE)) return false;
 
 
-	$DATA = $SHOPEvents->getData();
+	$DATA = $SHOPSALE->getData();
 	$DATA['#page#'] = $this->getHref($FUNCPARAM[0]);
 	$DATA['#text#'] = $rowPG['pg'];
 	$DATA['#title#'] = $rowPG['name'];

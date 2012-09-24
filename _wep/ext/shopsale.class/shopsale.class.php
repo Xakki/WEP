@@ -43,10 +43,9 @@ class shopsale_class extends kernel_extends {
 		$this->fields_form['saletype'] = array('type' => 'list', 'listname'=>'saletype','caption' => 'Тип скидки');
 		$this->fields_form['periods'] = array('type' => 'date', 'caption' => 'Период начала');
 		$this->fields_form['periode'] = array('type' => 'date', 'caption' => 'Период конца');
-		$this->fields_form['shop'] = array('type' => 'list', 'listname'=>array('class'=>'shop','is_tree'=>true), 'caption' => 'Каталог');
-		$this->fields_form['product'] = array('type' => 'ajaxlist', 'listname'=>array('class'=>'product'), 'caption' => 'Товар');
+		$this->fields_form['shop'] = array('type' => 'list', 'listname'=>array('class'=>'shop','is_tree'=>true), 'caption' => 'Каталог', 'comment' => 'Выбирите каталог ...');
+		$this->fields_form['product'] = array('type' => 'ajaxlist', 'listname'=>array('class'=>'product'), 'caption' => 'Товар', 'comment' => '...или товар');
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Отображать','default'=>1, 'mask' =>array());
-
 	}
 
 	function getData(&$prodList, $rid=0) {

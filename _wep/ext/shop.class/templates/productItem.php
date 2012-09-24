@@ -30,17 +30,6 @@
 					$html .= '<br/><img src="_design/'.$HTML->_design.'/_shop/img/nofoto.gif" alt="'.$r['name'].'" class="prodimg-first"/>';
 				$html .= '</div>';
 
-				if(count($data['#prodItem#'])) {
-					$html .= '<ul class="prodparam">';
-					foreach($data['#prodItem#'] as $kpi=>$rpi) {
-						if($r[$kpi] and $rpi) $html .= '<li>'.$rpi.' - '.$r[$kpi];
-					}
-					$html .= '</ul>';
-				}
-
-				if($r['descr'])
-					$html .= '<div class="proddescr">'.$r['descr'].'</div>';
-
 
 				if(!$r['cost'])
 					$r['cost'] = 'не указана';
@@ -70,7 +59,19 @@
 					if(isset($data['#shopconfig#']['orderset'][0]))
 						$html .= '<div class="prodBlock-button prodBlock-buy1 ico" data-id="'.$r['id'].'"><i></i>Купить в 1 клик</div>';
 
-				$html .= '</div>';
+				$html .= '</div>
+				<br/>';
+
+				if($r['descr'])
+					$html .= '<div class="proddescr">'.$r['descr'].'</div>';
+
+				if(count($data['#prodItem#'])) {
+					$html .= '<ul class="prodparam">';
+					foreach($data['#prodItem#'] as $kpi=>$rpi) {
+						if($r[$kpi] and $rpi) $html .= '<li>'.$rpi.' - '.$r[$kpi];
+					}
+					$html .= '</ul>';
+				}
 				/*PRICE BLOCK END*/ 
 				
 				/*if(isset($r['sale'])) {
