@@ -27,8 +27,8 @@
 	if(!_new_class('shop',$SHOP)) return false;
 	if(!_new_class('shopsale',$SHOPSALE)) return false;
 
-
-	$DATA = $SHOPSALE->getData();
+	$DATA = array();
+	$DATA['#item#'] = $SHOPSALE->getTodaySale($SHOP->childs['product']);
 	$DATA['#page#'] = $this->getHref($FUNCPARAM[0]);
 	$DATA['#text#'] = $rowPG['pg'];
 	$DATA['#title#'] = $rowPG['name'];

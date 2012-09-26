@@ -41,10 +41,10 @@ class shopsale_class extends kernel_extends {
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Описание');
 		$this->fields_form['sale'] = array('type' => 'int', 'caption' => 'Скидка');
 		$this->fields_form['saletype'] = array('type' => 'list', 'listname'=>'saletype','caption' => 'Тип скидки');
-		$this->fields_form['periods'] = array('type' => 'date', 'caption' => 'Период начала');
-		$this->fields_form['periode'] = array('type' => 'date', 'caption' => 'Период конца');
+		$this->fields_form['periods'] = array('type' => 'date', 'caption' => 'Период начала');//, 'mask'=>array('format'=>'Y-m-d', 'min'=>(time()-3600*20))
+		$this->fields_form['periode'] = array('type' => 'date', 'caption' => 'Период конца');//, 'mask'=>array('format'=>'Y-m-d', 'min'=>(time()-3600*20))
 		$this->fields_form['shop'] = array('type' => 'list', 'listname'=>array('class'=>'shop','is_tree'=>true), 'caption' => 'Каталог', 'comment' => 'Выбирите каталог ...');
-		$this->fields_form['product'] = array('type' => 'ajaxlist', 'listname'=>array('class'=>'product'), 'caption' => 'Товар', 'comment' => '...или товар');
+		$this->fields_form['product'] = array('type' => 'ajaxlist', 'listname'=>array('class'=>'product', 'nameField'=>'concat(tx.name," [",tx.cost,"]")'), 'caption' => 'Товар', 'comment' => '...или товар');
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Отображать','default'=>1, 'mask' =>array());
 	}
 
@@ -60,8 +60,13 @@ class shopsale_class extends kernel_extends {
 			$rid = array($rid=>$rid);
 		$prodKey = array_keys($prodList);
 
-		$saleProd = $saleShop = array();
 		$data = $this->qs('*','WHERE active=1 and periode>='.$this->_CFG['time'].' and periods<='.$this->_CFG['time'].' and (product in ('.implode(',',$prodKey).') or shop in ('.implode(',',$rid).'))');
+		$this->setNewCost($prodList, $data);
+	}
+
+	function setNewCost(&$prodList, &$data)
+	{
+		$saleProd = $saleShop = array();
 		foreach($data as $dr) {
 			if($dr['product'])
 				$saleProd[$dr['product']] = $dr;
@@ -89,6 +94,19 @@ class shopsale_class extends kernel_extends {
 			}
 			//trim(trim($r['old_cost'],'0'),'.')
 		}
+	}
+
+	function getTodaySale(&$PRODUCT)
+	{
+		$data = $this->qs('*','WHERE active=1 and periode>='.$this->_CFG['time'].' and periods<='.$this->_CFG['time'].' and product!=0 ORDER BY RAND() LIMIT 1');
+		if(count($data))
+		{
+			$prodList = $PRODUCT->fItem($data[0]['product']);
+			$this->setNewCost($prodList, $data);
+			return $prodList[$data[0]['product']];
+			
+		}
+		return array();
 	}
 
 }
