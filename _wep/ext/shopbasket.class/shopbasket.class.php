@@ -120,7 +120,7 @@ class shopbasket_class extends kernel_extends {
 	}
 
 	public function _UpdItemModul($param = array(), &$argForm = null) {
-		if($this->data[$_this->id]['laststatus']>=3) {
+		if($this->id and $this->data[$this->id]['laststatus']>=3) {
 			$this->prm_edit = false;
 		}
 		return parent::_UpdItemModul($param,$argForm);
@@ -385,7 +385,18 @@ class shopbasket_class extends kernel_extends {
 				$this->orderItem[$r['bid']] = array('cost_item'=>$r['cost'], 'shopsale_id'=>0);
 		}
 		if(!$deliveryData['minsumm'] or $deliveryData['minsumm']>=$summ)
+		{
+			$this->orderItem[] = array(
+				'product_id'=>$deliveryData['id'],
+				'product_name' => $deliveryData['name'],
+				'owner_id'=>0,
+				'count'=>0,
+				$this->mf_createrid=>$this->userId(),
+				'cost_item'=>$deliveryData['cost'], 
+				'shopsale_id'=>0
+			);
 			$summ += $deliveryData['cost'];
+		}
 		return $summ;
 	}
 

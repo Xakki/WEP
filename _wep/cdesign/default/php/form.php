@@ -28,6 +28,8 @@ function tpl_form(&$data, $tabs = array()) {
 		$flagTabs = 0;
 	}
 
+	$submitHtml = '';
+
 	$tagStatus = false;
 	foreach($data as $k=>$r) {
 		if(!isset($r['type'])) continue;
@@ -54,31 +56,31 @@ function tpl_form(&$data, $tabs = array()) {
 				((isset($r['readonly']) and $r['readonly'])?' readonly':'').'">';
 
 		if($r['type']=='submit' and is_array($r['value'])) {
-			$texthtml .= '<div class="form-submit">';
+			$submitHtml .= '<div class="form-submit">';
 			foreach($r['value'] as $ksubmit=>$rsubmit)
-				$texthtml .= '<input type="'.$r['type'].'" name="'.$k.''.$ksubmit.'" value="'.$rsubmit.'" class="sbmt"/>';
-			$texthtml .= '</div>';
+				$submitHtml .= '<input type="'.$r['type'].'" name="'.$k.''.$ksubmit.'" value="'.$rsubmit.'" class="sbmt"/>';
+			$submitHtml .= '</div>';
 		}
 		elseif($r['type']=='submit') {
-			$texthtml .= '<div class="form-submit">';
+			$submitHtml .= '<div class="form-submit">';
 			if(isset($r['value_save']) and $r['value_save']) {
-				$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'_save" value="'.$r['value_save'].'" class="sbmt"/>';
+				$submitHtml .= '<input type="'.$r['type'].'" name="'.$k.'_save" value="'.$r['value_save'].'" class="sbmt"/>';
 			}	
-			$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'" value="'.$r['value'].'"  class="sbmt" onclick="';
+			$submitHtml .= '<input type="'.$r['type'].'" name="'.$k.'" value="'.$r['value'].'"  class="sbmt" onclick="';
 			if(isset($r['confirm']) and $r['confirm'])
-				$texthtml .= 'if(!confirm(\''.$r['confirm'].'\')) return false;'.($r['onclick']?' else ':'');
+				$submitHtml .= 'if(!confirm(\''.$r['confirm'].'\')) return false;'.($r['onclick']?' else ':'');
 			if(isset($r['onclick']))
-				$texthtml .= htmlentities($r['onclick'],ENT_COMPAT,$_CFG['wep']['charset']);
-			$texthtml .= '"/>';
+				$submitHtml .= htmlentities($r['onclick'],ENT_COMPAT,$_CFG['wep']['charset']);
+			$submitHtml .= '"/>';
 
 			if(isset($r['value_del']) and $r['value_del']) {
-				$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'_del" value="'.$r['value_del'].'" class="sbmt" onclick="if(confirm(\''.$r['value_del'].'\')) return true; return false;"/>';
+				$submitHtml .= '<input type="'.$r['type'].'" name="'.$k.'_del" value="'.$r['value_del'].'" class="sbmt" onclick="if(confirm(\''.$r['value_del'].'\')) return true; return false;"/>';
 			}
 
 			if(isset($r['value_close']) and $r['value_close']) {
-				$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'_close" value="'.$r['value_close'].'" class="sbmt" onclick="window.location.href=\''.$attr['prevhref'].'\';return false;"/>';
+				$submitHtml .= '<input type="'.$r['type'].'" name="'.$k.'_close" value="'.$r['value_close'].'" class="sbmt" onclick="window.location.href=\''.$attr['prevhref'].'\';return false;"/>';
 			}
-			$texthtml .= '</div>';
+			$submitHtml .= '</div>';
 		}
 		elseif($r['type']=='infoinput') {
 			$texthtml .= '<div class="infoinput"><input type="hidden" name="'.$k.'" value="'.$r['value'].'"/>'.$r['caption'].'</div>';
@@ -715,6 +717,11 @@ function tpl_form(&$data, $tabs = array()) {
 			$texthtml .= '<div class="dscr">'.$r['comment'].'</div>';
 		if($r['type']!='hidden')
 			$texthtml .= '</div>';
+	}
+
+	if($submitHtml) {
+		$texthtml .= $submitHtml;
+		$submitHtml = '';
 	}
 
 	if(!is_null($flagTabs) and $tagStatus) { // TABS

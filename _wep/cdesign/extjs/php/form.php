@@ -48,7 +48,7 @@ function tpl_form(&$data) {
 				if($r['readonly']) $html .= ' readonly="readonly"';
 				$html .= '>'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
 			}
-			elseif($r['type']=='radio') {//print_r('<pre>');print_r($r);
+			elseif($r['type']=='radio') {
 				$html .= '<div class="form-value">';
 				if(!count($r['valuelist']))
 					$html .= '<font color="red">Нет элементов для отображения</font>';

@@ -76,6 +76,7 @@
 	}
 	elseif(isset($_GET['basketpay']) and static_main::_prmUserCheck()) 
 	{
+		// STEP 3
 		$subK = 3;
 		// Выписывать счёт
 		$SHOPBASKET->id = (int)$_GET['basketpay'];
@@ -104,7 +105,9 @@
 			}
 		}
 	}
-	elseif(isset($_GET['typedelivery']) and $SHOPBASKET->getSummOrder()) {
+	elseif(isset($_GET['typedelivery']) and $SHOPBASKET->getSummOrder()) 
+	{
+		// STEP 2
 		$subK = 2;
 		
 		if($uid) {
@@ -121,7 +124,8 @@
 			else {
 				$DATA = array();
 				$DATA['#delivery#'] = $SHOPDELIVER->qs('*','WHERE active=1','id');
-				if(isset($DATA['#delivery#'][$_GET['typedelivery']])) {
+				if(isset($DATA['#delivery#'][$_GET['typedelivery']])) 
+				{
 					$deliveryData = $DATA['#delivery#'][$_GET['typedelivery']];
 					//$SHOPBASKET->prm_edit = true;
 					$SHOPBASKET->prm_add = true;
@@ -141,8 +145,12 @@
 					$norequere = explode('|',trim($norequere,'|'));
 					$FORM = array_diff_key($FORM,array_flip($norequere));
 					$FORM['paytype']['type'] = 'radio' ;
+
+					$UGROUP->needApplyOfferta($FORM);
 	
 					list($DATA['formcreat'], $this->formFlag) = $SHOPBASKET->_UpdItemModul(array(),$FORM);
+
+					
 
 					if($SHOPBASKET->id) {
 						static_main::redirect($Chref.'.html?basketpay='.$SHOPBASKET->id);
@@ -152,6 +160,7 @@
 						$DATA['formcreat']['form']['sbmt']['value'] = 'Оформить заказ';
 						$DATA['formcreat']['messages'][] = static_main::am('alert','Заказа на сумму '.$_POST['cost'].' '.$PAY->config['curr']);
 						$DATA['formcreat']['messages'][] = static_main::am('ok','Заполните все необходимые данные');
+
 						$html .= $HTML->transformPHP($DATA,'#pg#formcreat');
 					}
 					// уже авторизованный пользователь
@@ -164,7 +173,7 @@
 		else {
 			$html = static_main::m('errdata').static_main::m('feedback');
 		}
-		// STEP 2
+		
 	} 
 	else {
 		// STEP 1 

@@ -1,7 +1,6 @@
 <?php
 	function tpl_productEvent(&$data) {
 		$html = '';
-		//print_r('<pre>');print_r($data);
 
 		if(!isset($data['#item#']) or !count($data['#item#'])) 
 		{

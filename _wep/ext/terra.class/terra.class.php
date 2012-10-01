@@ -104,8 +104,6 @@ class terra_class extends kernel_extends {
 		// TODO : импорт из друго	 базы, пок а нет необходимости
 		$data = $this->qs('*','WHERE socr IN ("г","пгт","кп")','parent_id','name');
 
-		print_r('<pre>');
-
 		foreach($data as $name=>$datarow) {
 			$result = $this->SQL->execSQL('SELECT * FROM ip_group_city WHERE city!="" and ru_name="'.$this->SqlEsc($name).'"');
 			$IP = array();

@@ -2,9 +2,6 @@
 
 function tpl_formcreat(&$data) {
 
-//	print_r($data);
-//	return '';
-
 	$fields = array();
 
 

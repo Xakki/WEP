@@ -1,12 +1,15 @@
 <?php
+function costFormat($amount)
+{
+	$rub = (int)$amount;
+	$kop = ($amount-$rub)/100;
+	$kop = ceil($kop);
+	if($kop<10) $kop = '0'.$kop;
+	return $rub.' руб. '.$kop.' коп.';
+}
 
 function tpl_paybankBill($data)
 {
-	$rub = (int)$data['#item#']['amount'];
-	$kop = ($data['#item#']['amount']-$rub)/100;
-	$kop = ceil($kop);
-	if($kop<10) $kop = '0'.$kop;
-
 	$html = '
 <style>
 body {
@@ -72,25 +75,45 @@ table.schet td {
 </tr>';
 $json = json_decode($data['#item#']['json_data'],true);
 $i =1;
+
+$servis = array();
+
 foreach($json['#list#'] as $v) {
-	$html .= '<tr>
-	    <td>'.$i.'
-	    <td>'.$v['product_id'].'
-	    <td align="left">'.$v['product_name'].'
-	    <td>'.$v['cost'].'
-	    <td>'.$v['count'].'
-	    <td>шт.
-	    <td>'.($v['cost']*$v['count']).'
-	</tr>';
+	if($v['count'])
+	{
+		$html .= '<tr>
+		    <td>'.$i.'
+		    <td>'.$v['product_id'].'
+		    <td align="left">'.$v['product_name'].'
+		    <td>'.$v['cost'].'
+		    <td>'.$v['count'].'
+		    <td>шт.
+		    <td>'.($v['cost']*$v['count']).'
+		</tr>';
+	}
+	else
+	{
+		$servis[] = $v;
+	}
 	$i++;
 }
+
 $html .= '</tbody></table>
 <div>
 </div>
 <table class="itogo" cellspacing="0" cellpadding="0"><tbody>
+	';
+	foreach ($servis as $value) {
+	$html .= '
+		<tr>
+		    <td class="frst">'.$value['product_name'].':
+		    <td>'.costFormat($value['cost']).'
+		</tr>';
+	}
+$html .= '
 	<tr>
 	    <td class="frst">Итого:
-	    <td>'.$rub.' руб. '.$kop.' коп.
+	    <td>'.costFormat($data['#item#']['amount']).'
 	</tr>
 	<tr>
 	    <td class="frst">В том числе НДС
