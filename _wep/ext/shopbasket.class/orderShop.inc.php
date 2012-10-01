@@ -18,6 +18,8 @@
 		$FUNCPARAM[2] = '';
 	if(!isset($FUNCPARAM[3]))
 		$FUNCPARAM[3] = '';
+	if(!isset($FUNCPARAM[4]))
+		$FUNCPARAM[4] = '';
 
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if (isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
@@ -100,9 +102,13 @@
 			$DATA['#contentID#'] = $PGLIST->contentID;
 			$html = $HTML->transformPHP($DATA,'#pay#billing');
 
-			if(!$BDATA[$SHOPBASKET->id]['pay_id']) {
+			if(!$BDATA[$SHOPBASKET->id]['pay_id'] and $PAY->id) {
 				$SHOPBASKET->_update(array('pay_id'=>$PAY->id));
 			}
+		} 
+		else
+		{
+			static_main::redirect($Chref.'.html');
 		}
 	}
 	elseif(isset($_GET['typedelivery']) and $SHOPBASKET->getSummOrder()) 
@@ -177,7 +183,8 @@
 	} 
 	else {
 		// STEP 1 
-		$DATA = $SHOPBASKET->fBasketListItem();
+		$DATA = array();
+		$DATA['#list#'] = $SHOPBASKET->fBasketListItem();
 		$DATA['#pageCat#'] = $this->getHref($FUNCPARAM[2]);
 		$DATA['#page#'] = $this->getHref();
 		$DATA['#delivery#'] = $SHOPDELIVER->qs('*','WHERE active=1','id');

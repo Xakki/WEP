@@ -60,7 +60,7 @@ class shopsale_class extends kernel_extends {
 			$rid = array($rid=>$rid);
 		$prodKey = array_keys($prodList);
 
-		$data = $this->qs('*','WHERE active=1 and periode>='.$this->_CFG['time'].' and periods<='.$this->_CFG['time'].' and (product in ('.implode(',',$prodKey).') or shop in ('.implode(',',$rid).'))');
+		$data = $this->qs('*','WHERE active=1 and periode>='.$this->_CFG['time'].' and periods<='.$this->_CFG['time'].' and (product in ('.trim(implode(',',$prodKey),',').') or shop in ('.implode(',',$rid).'))');
 		$this->setNewCost($prodList, $data);
 	}
 

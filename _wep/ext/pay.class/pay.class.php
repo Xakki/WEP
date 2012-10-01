@@ -28,7 +28,10 @@ class pay_class extends kernel_extends {
 		parent::_create_conf();
 
 		$this->config['curr'] = 'руб.';
+		$this->config['NDS'] = 13;
+
 		$this->config_form['curr'] = array('type' => 'text', 'caption'=>'Название валюты');
+		$this->config_form['NDS'] = array('type' => 'text', 'caption'=>'НДС %');
 
 	}
 

@@ -24,7 +24,10 @@
 			foreach($data['#list#'] as $r) {
 				$prod = '<ul>';
 				foreach($r['#shopbasketitem#'] as $p) {
-					$prod .= '<li>'.$p['product_name'].' ['.$p['count'].' шт. по '.$p['cost_item'].' '.$data['#curr#'].']';
+					if($p['count'])
+						$prod .= '<li>'.$p['product_name'].' ['.$p['count'].' шт. по '.$p['cost_item'].' '.$data['#curr#'].']';
+					else
+						$prod .= '<li>'.$p['product_name'].' ['.$p['cost_item'].' '.$data['#curr#'].']';
 				}
 				$prod .= '</ul>';
 				if($r['pay_id'])

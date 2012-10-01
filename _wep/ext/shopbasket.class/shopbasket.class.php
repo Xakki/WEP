@@ -298,11 +298,12 @@ class shopbasket_class extends kernel_extends {
 		_new_class('shop',$SHOP);
 
 		$this->childs['shopbasketitem']->attaches = $SHOP->childs['product']->attaches; // кастыль для загрузки изобр
-		$RESULT['#list#'] = $this->childs['shopbasketitem']->qs('t1.*, t2.id, t2.cost, t2.shop, t2.name, t2.img_product' ,'t1 JOIN '.$SHOP->childs['product']->tablename.' t2 ON t1.product_id=t2.id WHERE t1.owner_id='.$oid.' and t1.'.$this->mf_createrid.'='.$uId.' GROUP BY t1.id', 'id');
+		$RESULT = $this->childs['shopbasketitem']->qs('t1.*, t2.id, t2.cost, t2.shop, t2.name, t2.img_product' ,'t1 LEFT JOIN '.$SHOP->childs['product']->tablename.' t2 ON t1.count!=0 and t1.product_id=t2.id WHERE t1.owner_id='.$oid.' and t1.'.$this->mf_createrid.'='.$uId.' GROUP BY t1.id', 'id');
 		$this->childs['shopbasketitem']->attaches = array();
+		// Среди заказов в корзине также есть и опция доставки и любая другая опция
 
-		if(count($RESULT['#list#']) and _new_class('shopsale',$SHOPSALE)) {
-			$SHOPSALE->getData($RESULT['#list#']);
+		if(count($RESULT) and _new_class('shopsale',$SHOPSALE)) {
+			$SHOPSALE->getData($RESULT);
 		}
 
 		return $RESULT;
@@ -386,9 +387,9 @@ class shopbasket_class extends kernel_extends {
 		}
 		if(!$deliveryData['minsumm'] or $deliveryData['minsumm']>=$summ)
 		{
-			$this->orderItem[] = array(
+			$this->orderItem[0] = array(
 				'product_id'=>$deliveryData['id'],
-				'product_name' => $deliveryData['name'],
+				'product_name' => 'Доставка : '.$deliveryData['name'],
 				'owner_id'=>0,
 				'count'=>0,
 				$this->mf_createrid=>$this->userId(),
@@ -404,9 +405,17 @@ class shopbasket_class extends kernel_extends {
 	public function _add($data=array(),$flag_select=true) {
 		if($result = parent::_add($data,$flag_select)) {
 			foreach($this->orderItem as $k=>$r) {
-				$this->childs['shopbasketitem']->id = $k;
 				$r['owner_id'] = $this->id;
-				$result = $this->childs['shopbasketitem']->_update($r);
+				if($k)
+				{
+					$this->childs['shopbasketitem']->id = $k;
+					$this->childs['shopbasketitem']->_update($r);
+				}
+				else
+				{
+					$this->childs['shopbasketitem']->_addUp($r);
+				}
+
 			}
 			// Добавить статус
 			$this->childs['shopbasketstatus']->_add(array('status'=>0));
