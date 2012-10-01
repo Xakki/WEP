@@ -255,7 +255,7 @@ class ugroup_class extends kernel_extends
 				return $this->childs['users']->_update(array('offerta'=>1));
 			}
 			else
-				$form['user_offerta'] = array('type' => 'checkbox',  'caption' => $this->config['offerta'], 'mask'=>array('min'=>1));
+				$form['user_offerta'] = array('type' => 'checkbox',  'caption' => $this->config['offerta'], 'mask'=>array('min'=>1));//, 'comment'=>'Для продолжения, необходимо дать согласие, отметив данный пункт'
 			return true;
 		}
 		return false;
@@ -416,7 +416,9 @@ class users_class extends kernel_extends {
 				'caption' => 'Счет('.$this->owner->config['payon'].')',
 				'mask'=>array());
 		if($this->owner->config['offerta'])
-			$this->fields_form['offerta'] = array('type' => 'checkbox',  'caption' => $this->owner->config['offerta']);
+		{
+			$this->fields_form['offerta'] = array('type' => 'checkbox',  'caption' => $this->owner->config['offerta'], 'mask'=>array('min'=>1));// 'comment'=>'Для продолжения, необходимо дать согласие, отметив данный пункт'
+		}
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Пользователь активен', 'mask' =>array('usercheck'=>1));
 
 		/*if(static_main::_prmUserCheck() and !static_main::_prmUserCheck(1)) {  // Запрет поля на редактирование
