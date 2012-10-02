@@ -78,6 +78,15 @@
 		}*/
 	}
 	else {
+		$DATA['#filter#'] = $SHOPBASKET->toolsFormfilter();
+
+		$PARAM = array();
+		$PARAM['clause'] = $SHOPBASKET->_filter_clause();
+		if (count($PARAM['clause']) and isset($_SESSION['filter'][$_this->_cl]) and count($_SESSION['filter'][$_this->_cl])) {
+			$DATA['#filter-clause#'] = true;
+		} else
+			$DATA['#filter-clause#'] = false;
+
 		$DATA['#list#'] = $SHOPBASKET->fBasketList($DATA['#moder#'],$FUNCPARAM[1]);
 	}
 
