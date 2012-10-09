@@ -302,12 +302,11 @@ function tpl_form(&$data, $tabs = array()) {
 				$r['csscheck'] = ($r['value_2']?'accept':'reject');		
 				$serl = serialize($r['listname']);
 				$texthtml .= '<div class="form-value ajaxlist">
-					<input type="text" name="'.$k.'_2" value="'.strip_tags ($r['value_2']).'" placeholder="'.$r['placeholder'].'" class="'.$r['csscheck'].'" autocomplete="off" 
+					<input type="text" name="'.$k.'_2" value="'.strip_tags($r['value_2']).'" placeholder="'.$r['placeholder'].'" class="'.$r['csscheck'].'" autocomplete="off" 
 						onfocus="show_hide_label(this,\''.$k.'\',1)" 
 						onblur="show_hide_label(this,\''.$k.'\',0)" 
 						onkeydown="return ajaxlistOnKey(event,this,\''.$k.'\')"/>
 					<div id="ajaxlist_'.$k.'" style="display:none;" onfocus="chFocusList(0)" onblur="chFocusList(1)">не найдено</div>
-
 					<input type="hidden" name="'.$k.'" value="'.$r['value'].'" '.$attribute.'/>
 				</div>
 				<input type="hidden" name="hsh_'.$k.'" value="'.md5($serl.$_CFG['wep']['md5']).'"/>

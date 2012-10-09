@@ -1,6 +1,6 @@
 <?php
 	function tpl_basketlist(&$data) {
-		global $_tpl,$HTML;
+		global $_tpl,$HTML,$_CFG;
 		$_tpl['styles']['../'.$HTML->_design.'/_shop/style/shopBasket'] = 1;
 		global $_CFG, $HTML;
 		$html = '';
@@ -16,8 +16,34 @@
 		elseif(isset($data['#list#'])) {
 			if(isset($data['#filter#']))
 			{
-				//print_r('<pre>');print_r($data['#filter#']);
-				$html .= $HTML->transformPHP($data['#filter#'], '#pg#filter');
+				//print_r('<pre>');print_r($data);
+				$html .= '<div id="dialog-filter" title="Фильтр" style="display:none;">'.$HTML->transformPHP($data['#filter#'], '#pg#filter').'</div> <button id="open-filter">Показать фильтр</button>';
+				$_tpl['onload'] .= '
+					$("#dialog-filter .f_submit").hide();
+					$( "#dialog-filter" ).dialog({
+						autoOpen: false,
+						height: 350,
+						width: 620,
+						modal: true,
+						buttons: {
+							"Отфильтровать": function() {
+								$(this).find("form").append("<input name=\"sbmt\" value=\1\" type=\"hidden\"/>").submit();
+								$( this ).dialog( "close" );
+
+							},
+							"Очистить": function() {
+								$(this).find("form").append("<input name=\"f_clear_sbmt\" value=\1\" type=\"hidden\"/>").submit();
+								$( this ).dialog( "close" );
+							}
+						},
+						close: function() {
+						}
+					});
+					$( "#open-filter" ).button().click(function() { $( "#dialog-filter" ).dialog( "open" ); });
+				';
+				$_CFG['fileIncludeOption']['jquery-ui'] =true;
+				if(isset($data['#filter#']['filterEnabled']))
+					$html .= '<messages><info>Включен фильтр</info></messages>';
 			}
 
 			if(count($data['#list#']))
@@ -47,7 +73,7 @@
 						$link = 'Забронированно <a href="'.$url[0].'?basketpay='.$r['id'].'">Оформить заказ</a>';
 					$html .= '
 					<tr data-id="'.$r['id'].'">
-						<td><a href="'.$data['#page#'].'/'.$r['id'].'.html">'.$r['id'].'</a>
+						<td><a href="'.$data['#page#'].'/'.$r['id'].'.html">Заказ №'.$r['id'].'</a>
 						<td>'.static_main::_date($_CFG['wep']['timeformat'],$r['mf_timecr']).'
 						<td class="summ"><span>'.$r['summ'].'</span> '.$data['#curr#'].'
 						<td>'.$r['#paytype#'].'
@@ -58,11 +84,11 @@
 				$html .= '</table>';
 			}
 			else
-				$html = '<div class="basket">'.static_render::message('Заказы не найдены').'</div>';
+				$html .= '<div class="basket">'.static_render::message('Заказы не найдены').'</div>';
 			
 		} 
 		else
-			$html = '<div class="basket">'.static_render::message('Заказы не найдены').'</div>';
+			$html .= '<div class="basket">'.static_render::message('Заказы не найдены').'</div>';
 		
 		return $html;
 	}

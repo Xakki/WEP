@@ -23,7 +23,7 @@
 	if (isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 		$form = array(
 			'0' => array('type' => 'list', 'listname' => 'phptemplates', 'caption' => 'Шаблон "Заказы"', 'mask'=>array('min'=>1)),
-			'1'=>array('type'=>'text','caption'=>'Статус'),
+			'1'=>array('type'=>'text','caption'=>'************'),
 			'2'=>array('type'=>'list','listname'=>'ownerlist', 'caption'=>'Страница каталога', 'mask'=>array('min'=>1)),
 			'3'=>array('type'=>'list','listname'=>'ownerlist','caption'=>'Страница пользователей', 'mask'=>array('min'=>1)),
 		);
@@ -78,16 +78,25 @@
 		}*/
 	}
 	else {
-		$DATA['#filter#'] = $SHOPBASKET->toolsFormfilter();
+		if (isset($_REQUEST['f_clear_sbmt'])) {
+			unset($_SESSION['filter'][$SHOPBASKET->_cl]);
+			static_main::redirect($_SERVER['HTTP_REFERER']);
+		}
+		elseif (isset($_REQUEST['sbmt'])) {
+			$SHOPBASKET->setFilter();
+			static_main::redirect($_SERVER['HTTP_REFERER']);
+		}
+
+		$DATA['#filter#'] = $SHOPBASKET->Formfilter();
+		$DATA['#filter#']['f_fio']['caption'] = 'ФИО';
+		unset($DATA['#filter#']['filter']['f_mf_ipcreate']);
+		$DATA['#filter#']['f_creater_id']['caption'] = 'Пользователь';
+		$DATA['#filter#']['f_phone']['caption'] = 'Телефон';
 
 		$PARAM = array();
 		$PARAM['clause'] = $SHOPBASKET->_filter_clause();
-		if (count($PARAM['clause']) and isset($_SESSION['filter'][$_this->_cl]) and count($_SESSION['filter'][$_this->_cl])) {
-			$DATA['#filter-clause#'] = true;
-		} else
-			$DATA['#filter-clause#'] = false;
 
-		$DATA['#list#'] = $SHOPBASKET->fBasketList($DATA['#moder#'],$FUNCPARAM[1]);
+		$DATA['#list#'] = $SHOPBASKET->fBasketList($DATA['#moder#'],$PARAM);
 	}
 
 	$html = $HTML->transformPHP($DATA,$FUNCPARAM[0]);

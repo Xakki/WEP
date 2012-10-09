@@ -129,13 +129,16 @@
 			  </div>	';
 			}
 			elseif($r['type']=='ajaxlist') {
+				$r['csscheck'] = ($r['value_2']?'accept':'reject');	
 				$serl = serialize($r['listname']);
 				$html .= '<div class="f_item" id="tr_'.$k.'">
 				<div class="f_caption">'.$r['caption'].'</div>
 				<div class="f_value" style="position:relative;">
 					<div class="ajaxlist">
-						<span style="'.$r['labelstyle'].'">'.$r['label'].'</span>
-						<input type="text" name="'.$k.'_2" value="'.$r['value_2'].'" onfocus="show_hide_label(this,\''.$k.'\',1)" onblur="show_hide_label(this,\''.$k.'\',0)" onkeyup="ajaxlist(this,\''.$k.'\')" class="'.$r['csscheck'].'" autocomplete="off"/>
+						<input type="text" name="'.$k.'_2" value="'.strip_tags($r['value_2']).'" placeholder="'.$r['placeholder'].'" class="'.$r['csscheck'].'" autocomplete="off"
+							onfocus="show_hide_label(this,\''.$k.'\',1)" 
+							onblur="show_hide_label(this,\''.$k.'\',0)" 
+							onkeydown="return ajaxlistOnKey(event,this,\''.$k.'\')"/>
 						<div id="ajaxlist_'.$k.'" style="display:none;">не найдено</div>
 						<input type="hidden" name="'.$k.'" value="'.$r['value'].'"/>
 					</div>
@@ -160,13 +163,35 @@
 			}
 			elseif($r['type']=='date') {
 				$html .= '<div class="f_item" id="tr_'.$k.'">
-				<div class="f_caption">'.$r['caption'].'</div>
-				<div class="f_int">
-					с <input type="text" name="'.$k.'" id="'.$k.'" value="'.$r['value'].'" '.$attribute.'/> <span class="po">по</span>
-					<input type="text" name="'.$k.'_2" id="'.$k.'_2" value="'.$r['value_2'].'" '.$attribute.'/>
-				</div>
+					<div class="f_caption">'.$r['caption'].'</div>
+					<div class="f_int">
+						<input type="text" name="'.$k.'" id="'.$k.'" value="'.$r['value'].'" '.$attribute.'/>-<input type="text" name="'.$k.'_2" id="'.$k.'_2" value="'.$r['value_2'].'" '.$attribute.'/>
+					</div>
 				
-			  </div>';
+			  	</div>';
+
+				$_CFG['fileIncludeOption']['datepicker'] = 1;
+				$_tpl['script']['dp_'.$k] = 'function dpf_'.$k.'() { 
+					$( "input[name='.$k.']" ).datepicker({
+						defaultDate: "+1w",
+						changeMonth: true,
+						showButtonPanel: true,
+						dateFormat: "yy-mm-dd",
+						onSelect: function( selectedDate ) {
+							$( "input[name='.$k.'_2]" ).datepicker( "option", "minDate", selectedDate );
+						}
+					});
+					$( "input[name='.$k.'_2]" ).datepicker({
+						defaultDate: "+1w",
+						changeMonth: true,
+						showButtonPanel: true,
+						dateFormat: "yy-mm-dd",
+						onSelect: function( selectedDate ) {
+							$( "input[name='.$k.']" ).datepicker( "option", "maxDate", selectedDate );
+						}
+					});
+				}';
+				$_tpl['onload'] .= ' dpf_'.$k.'(); ';
 			}
 			elseif($r['type']=='file') {
 				$html .= '<div class="f_item" id="tr_'.$k.'">

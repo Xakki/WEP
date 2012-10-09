@@ -1144,6 +1144,8 @@ class static_form {
 		if (!$inp_date) {
 			return $result;
 		}
+		if(!$format)
+			$format = 'Y-m-d';
 		preg_match_all('/[A-Za-z]+/', $format, $matches);
 		$format = $matches[0];
 

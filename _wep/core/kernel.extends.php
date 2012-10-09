@@ -1486,9 +1486,17 @@ $simple = true;
 				$fields_form['f_' . $k]['value'] = '';
 				$fields_form['f_' . $k]['value_2'] = '';
 				if (isset($_FILTR[$k])) {
-					if (isset($_FILTR[$k . '_2']))
-						$fields_form['f_' . $k]['value_2'] = $_FILTR[$k . '_2'];
-					$fields_form['f_' . $k]['value'] = $_FILTR[$k];
+					if ($r['type'] == 'date') 
+					{
+						$fields_form['f_' . $k]['value_2'] = date('Y-m-d',$_FILTR[$k . '_2']);
+						$fields_form['f_' . $k]['value'] = date('Y-m-d',$_FILTR[$k]);
+					}
+					else
+					{
+						if (isset($_FILTR[$k . '_2']))
+							$fields_form['f_' . $k]['value_2'] = $_FILTR[$k . '_2'];
+						$fields_form['f_' . $k]['value'] = $_FILTR[$k];
+					}
 				}
 				if ($r['type'] == 'ajaxlist') {
 					if (!isset($fields_form['f_' . $k]['label']))
@@ -1516,6 +1524,10 @@ $simple = true;
 			$fields_form['f_clear_sbmt'] = array(
 				'type' => 'info',
 				'caption' => '<a href="' . $_SERVER['HTTP_REFERER'] . '" onclick="JSWin({\'insertObj\':\'#form_tools_f'.$this->_cl.'\',\'href\':$(\'#form_tools_f'.$this->_cl.'\').attr(\'action\'),\'data\':{ f_clear_sbmt:1}});return false;">Очистить</a>');
+		}
+		if(count($_FILTR))
+		{
+			$fields_form['filterEnabled'] = array('type'=>'hidden');
 		}
 		return $fields_form;
 	}

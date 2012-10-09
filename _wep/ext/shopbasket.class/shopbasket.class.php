@@ -74,7 +74,7 @@ class shopbasket_class extends kernel_extends {
 		$this->fields_form['paytype'] = array('type' => 'list', 'listname' => 'paytype', 'caption' => 'Тип платежа', 'mask' =>array('min'=>1));
 		$this->fields_form['laststatus'] = array('type' => 'list', 'listname'=>'status', 'caption' => 'Статус', 'readonly'=>1, 'mask' =>array());
 		//$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Отображать','default'=>1, 'readonly'=>1, 'mask' =>array());
-		$this->fields_form['mf_timecr'] = array('type' => 'date', 'readonly'=>1, 'caption' => 'Дата заказа', 'mask'=>array('fview'=>2));
+		$this->fields_form['mf_timecr'] = array('type' => 'date', 'readonly'=>1, 'caption' => 'Дата заказа', 'mask'=>array());
 		$this->fields_form['mf_ipcreate'] = array('type' => 'text', 'caption' => 'IP','readonly'=>1, 'mask'=>array('usercheck'=>1));
 		$this->fields_form[$this->mf_createrid] = array(
 			'type' => 'ajaxlist', 
@@ -229,20 +229,20 @@ class shopbasket_class extends kernel_extends {
 	*
 	*
 	*/
-	function fBasketList($showUser=false, $status=false) {
+	function fBasketList($showUser=false, $PARAM=array()) {
 		_new_class('pay', $PAY);
 		//_new_class('shop',$SHOP);
 
 		$RESULT = array();
 
 		if(!$uId = $this->userId()) return $RESULT;
-
-		if($status!==false) {
-			// TODO status select 
+		$where = '';
+		if(isset($PARAM['clause']) and count($PARAM['clause'])) {
+			$where = ' WHERE '.implode(' and ', $PARAM['clause']);
 		}
 
 		if($showUser)
-			$RESULT = $this->qs('t1.*, t2.name as uname' ,'t1 JOIN '.static_main::getTableNameOfClass('users').' t2 ON t1.creater_id=t2.id GROUP BY t1.id ORDER BY t1.mf_timecr DESC', 'id');
+			$RESULT = $this->qs('t1.*, t2.name as uname' ,'t1 JOIN '.static_main::getTableNameOfClass('users').' t2 ON t1.creater_id=t2.id '.$where.' GROUP BY t1.id ORDER BY t1.mf_timecr DESC', 'id');
 		else
 			$RESULT = $this->qs('t1.*' ,'t1 WHERE t1.'.$this->mf_createrid.'='.$uId.' GROUP BY t1.id ORDER BY t1.mf_timecr DESC', 'id');
 
