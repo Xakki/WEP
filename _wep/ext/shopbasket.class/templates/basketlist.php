@@ -131,10 +131,11 @@
 
 			$html .= '<br/><h3>История заказа</h3>
 				<table class="basketItems">
-					<tr><th>Статус <th>Дата<th>Оператор<th>IP';
+					<tr><th>Статус<th>Комментарии<th>Дата<th>Оператор<th>IP';
 				foreach($itemB['#history#'] as $r) {
 					$html .= '<tr> 
 					<td>'.$r['#status#'].'
+					<td>'.$r['name'].'
 					<td>'.static_main::_usabilityDate($r['mf_timecr']).'
 					<td>'.$r['#creater_id#'].'
 					<td>'.long2ip($r['mf_ipcreate']);
