@@ -608,8 +608,6 @@ abstract class kernel_extends {
 		if($result->err)
 			return $data;
 
-$simple = true;
-
 		if(!$simple) {
 			$listAr = array();
 			$fields = $result->fetch_fields();
@@ -632,11 +630,13 @@ $simple = true;
 		}
 
 		if(!$simple) {
-			foreach($listAr as $k=>$r) {
+			foreach($listAr as $k=>&$r) {
 				if(count($r)) {
-					$listAr[$k] = $this->_getCashedList($this->fields_form[$fr->name]['listname'], $r);
+					$r = $this->_getCashedList($this->fields_form[$k]['listname'], $r);
 				}
-			}
+			} unset($r);
+
+
 
 			foreach($data as &$row) {
 				foreach($listAr as $k=>$r) {
@@ -647,6 +647,7 @@ $simple = true;
 		}
 
 		if (isset($this->id) and $this->id) {
+			reset($data);
 			if(count($data)==1)
 				$this->id = key($data);
 			elseif(count($data)>1)

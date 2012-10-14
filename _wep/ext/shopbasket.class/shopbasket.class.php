@@ -100,8 +100,8 @@ class shopbasket_class extends kernel_extends {
 		elseif ($listname == 'delivertype') {
 			_new_class('shopdeliver',$MODUL);
 			$dataTemp = $MODUL->qs('id,name,paylist','WHERE active=1','id');
-			if($value and trim($dataTemp[$value]['paylist'],'|')) {
-				$this->allowedPay = explode('|',trim($dataTemp[$value]['paylist'],'|'));
+			if($value and is_string($value) and $value = trim($dataTemp[$value]['paylist'],'|')) {
+				$this->allowedPay = explode('|',$value);
 			}
 
 			foreach($dataTemp as $r)
@@ -281,6 +281,7 @@ class shopbasket_class extends kernel_extends {
 		$RESULT = $data[$this->id];
 
 		$RESULT['#shopbasketitem#'] = $this->childs['shopbasketitem']->_select();
+		$RESULT['#history#'] = $this->childs['shopbasketstatus']->_select();
 
 		list($RESULT['#delivery#']) = $SHOPDELIVER->qs('*','WHERE id='.$data[$this->id]['delivertype']);
 
@@ -534,19 +535,19 @@ class shopbasketstatus_class extends kernel_extends {
 	public function setFieldsForm($form=0) {
 		parent::setFieldsForm($form);
 
-		$this->fields_form['status'] = array('type' => 'int', 'listname'=>'status', 'caption' => 'Статус', 'default'=>1);
+		$this->fields_form['status'] = array('type' => 'list', 'listname'=>array('owner', 'status'), 'caption' => 'Статус', 'default'=>1);
 		//$this->fields_form['comment'] = array('type' => 'text', 'caption' => 'Комментарий');
 
 		//$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Отображать','default'=>1, 'mask' =>array());
 		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата заказа', 'mask'=>array('fview'=>2,'sort'=>1,'filter'=>1));
 		$this->fields_form['mf_ipcreate'] = array('type' => 'text', 'caption' => 'IP','readonly'=>1, 'css'=>'boardparam formparam', 'mask'=>array('usercheck'=>1,'filter'=>1,'sort'=>1));
-		/*$this->fields_form[$this->mf_createrid] = array(
-			'type' => 'ajaxlist', 
-			'listname'=>array('class'=>'users','nameField'=>'concat(tx.name," [",tx.id,"]")'),
-			'caption' => 'Заказчик',
+		$this->fields_form[$this->mf_createrid] = array(
+			'type' => 'list', 
+			'listname'=>array('class'=>'users','nameField+'=>'concat(tx.name," [",tx.email,"]")'),
+			'caption' => 'Оператор',
 			'readonly'=>1,
-			'mask' =>array('usercheck'=>1, 'filter'=>1)
-		);*/
+			'mask' =>array('usercheck'=>1)
+		);
 	}
 
 

@@ -980,6 +980,8 @@ class product_class extends kernel_extends {
 
 		$result2 = $this->SQL->execSQL('SELECT min(t1.cost) as mincost,max(t1.cost) as maxcost FROM '.$this->tablename.' t1 '.$temcls);
 		$minmax = $result2->fetch_array();
+		$minmax[0] = (int)$minmax[0];
+		$minmax[1] = (int)$minmax[1];
 
 		$step=$minmax[1]/216;
 		if($step<5) $step=1;
