@@ -34,7 +34,7 @@ $data = $TERRA->geoIP();
 		}
 		else {
 			$html .= '
-				<li>Выш IP в базе не обнаружен</li>
+				<li>Ваш IP в базе не обнаружен</li>
 				<li>IP - '.$_SERVER['REMOTE_ADDR'].'</li>
 			';
 			$jfunct = '

@@ -162,10 +162,14 @@ class terra_class extends kernel_extends {
 	* Download from http://ipgeobase.ru/cgi-bin/Archive.cgi
 	*/
 	function _importGeoIP_geo_files() {
-		$ipath = __DIR__.'/import/';
+		$ipath = $this->_CFG['_PATH']['temp'];
 		$zipFile = file_get_contents('http://ipgeobase.ru/files/db/Main/geo_files.zip');
 		if($zipFile) {
-			file_put_contents($ipath.'geo_files.zip',$zipFile);
+			if(!file_put_contents($ipath.'geo_files.zip',$zipFile))
+			{
+				trigger_error('Ошибка записи фаила', E_USER_WARNING);
+				return false;
+			}
 			static_tools::extractZip($ipath.'geo_files.zip',$ipath.'geo_files/');
 		}
 
@@ -177,7 +181,7 @@ class terra_class extends kernel_extends {
 		$data = array();
 		foreach($file as $r) {
 			$t = preg_split("/[\t]+/",mb_convert_encoding($r, "UTF-8", "CP-1251"),-1,PREG_SPLIT_NO_EMPTY);
-			if(strpos($t[3],'Украина')===false)
+			if(stripos($t[3],'Украина')===false)
 				$data[$t[1]][] = $t;
 		}
 
@@ -267,7 +271,11 @@ class terra_class extends kernel_extends {
 		$_COOKIE[$this->_CFG['wep']['_showallinfo']] = 1;
 		$this->_CFG['wep']['debugmode'] = 2;
 
-		$data = file(__DIR__.'/import/kladr/socrbase');
+		$data = file($this->_CFG['_PATH']['temp'].'kladr/socrbase');
+		if(!$data)
+		{
+			return false;
+		}
 		$socrbase = array();
 		foreach($data as $r) {
 			$r = preg_split("/[\t]+/",$r,-1,PREG_SPLIT_NO_EMPTY);
@@ -283,7 +291,7 @@ class terra_class extends kernel_extends {
 			$socrbase[$upd['level']][$upd['socr']] = $upd;
 		}
 
-		$data = file(__DIR__.'/import/kladr/kladr');
+		$data = file($this->_CFG['_PATH']['temp'].'kladr/kladr');
 		
 		$new = array();
 		foreach($data as $k=>$r) {
