@@ -1036,7 +1036,7 @@ deny from all
 						 $tmp = '';
 						 foreach (explode('/', $completePath) as $k) {
 							  $tmp .= $k . '/';
-							  if (!file_exists(trim($tmp,'/'))) {
+							  if (!file_exists(rtrim($tmp,'/'))) {
 									@mkdir($tmp, 0777);
 							  }
 						 }
@@ -1048,7 +1048,7 @@ deny from all
 									fwrite($fd, zip_entry_read($zip_entry, zip_entry_filesize($zip_entry)));
 									fclose($fd);
 							  } else {
-									if (!file_exists(trim($completeName,'/')))
+									if (!file_exists(rtrim($completeName,'/')))
 										mkdir($completeName, 0777);
 							  }
 							  
