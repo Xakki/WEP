@@ -28,6 +28,8 @@ function tpl_form(&$data, $tabs = array()) {
 		$flagTabs = 0;
 	}
 
+	$submitHtml = '';
+
 	$tagStatus = false;
 	foreach($data as $k=>$r) {
 		if(!isset($r['type'])) continue;
@@ -54,31 +56,31 @@ function tpl_form(&$data, $tabs = array()) {
 				((isset($r['readonly']) and $r['readonly'])?' readonly':'').'">';
 
 		if($r['type']=='submit' and is_array($r['value'])) {
-			$texthtml .= '<div class="form-submit">';
+			$submitHtml .= '<div class="form-submit">';
 			foreach($r['value'] as $ksubmit=>$rsubmit)
-				$texthtml .= '<input type="'.$r['type'].'" name="'.$k.''.$ksubmit.'" value="'.$rsubmit.'" class="sbmt"/>';
-			$texthtml .= '</div>';
+				$submitHtml .= '<input type="'.$r['type'].'" name="'.$k.''.$ksubmit.'" value="'.$rsubmit.'" class="sbmt"/>';
+			$submitHtml .= '</div>';
 		}
 		elseif($r['type']=='submit') {
-			$texthtml .= '<div class="form-submit">';
+			$submitHtml .= '<div class="form-submit">';
 			if(isset($r['value_save']) and $r['value_save']) {
-				$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'_save" value="'.$r['value_save'].'" class="sbmt"/>';
+				$submitHtml .= '<input type="'.$r['type'].'" name="'.$k.'_save" value="'.$r['value_save'].'" class="sbmt"/>';
 			}	
-			$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'" value="'.$r['value'].'"  class="sbmt" onclick="';
+			$submitHtml .= '<input type="'.$r['type'].'" name="'.$k.'" value="'.$r['value'].'"  class="sbmt" onclick="';
 			if(isset($r['confirm']) and $r['confirm'])
-				$texthtml .= 'if(!confirm(\''.$r['confirm'].'\')) return false;'.($r['onclick']?' else ':'');
+				$submitHtml .= 'if(!confirm(\''.$r['confirm'].'\')) return false;'.($r['onclick']?' else ':'');
 			if(isset($r['onclick']))
-				$texthtml .= htmlentities($r['onclick'],ENT_COMPAT,$_CFG['wep']['charset']);
-			$texthtml .= '"/>';
+				$submitHtml .= htmlentities($r['onclick'],ENT_COMPAT,$_CFG['wep']['charset']);
+			$submitHtml .= '"/>';
 
 			if(isset($r['value_del']) and $r['value_del']) {
-				$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'_del" value="'.$r['value_del'].'" class="sbmt" onclick="if(confirm(\''.$r['value_del'].'\')) return true; return false;"/>';
+				$submitHtml .= '<input type="'.$r['type'].'" name="'.$k.'_del" value="'.$r['value_del'].'" class="sbmt" onclick="if(confirm(\''.$r['value_del'].'\')) return true; return false;"/>';
 			}
 
 			if(isset($r['value_close']) and $r['value_close']) {
-				$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'_close" value="'.$r['value_close'].'" class="sbmt" onclick="window.location.href=\''.$attr['prevhref'].'\';return false;"/>';
+				$submitHtml .= '<input type="'.$r['type'].'" name="'.$k.'_close" value="'.$r['value_close'].'" class="sbmt" onclick="window.location.href=\''.$attr['prevhref'].'\';return false;"/>';
 			}
-			$texthtml .= '</div>';
+			$submitHtml .= '</div>';
 		}
 		elseif($r['type']=='infoinput') {
 			$texthtml .= '<div class="infoinput"><input type="hidden" name="'.$k.'" value="'.$r['value'].'"/>'.$r['caption'].'</div>';
@@ -260,7 +262,7 @@ function tpl_form(&$data, $tabs = array()) {
 				// end checkbox
 			}
 			elseif($r['type']=='ajaxlist' and isset($r['multiple'])) {
-				global $_tpl;				
+				global $_tpl;
 
 				if(!is_array($r['value']))
 					$r['value'] = explode('|', trim($r['value'], '|'));
@@ -279,11 +281,12 @@ function tpl_form(&$data, $tabs = array()) {
 					if(isset($r['value_2'][$i])) $value_2 = strip_tags ($r['value_2'][$i]);
 					// TODO : Придумать форматированный вывод 
 					else $value_2 = '';
-					$r['labelstyle'] = ($value_2?'display: none;':'');
 					$r['csscheck'] = ($value_2?'accept':'reject');
 					$texthtml .= '<div class="form-value ajaxlist">
-						<span style="'.$r['labelstyle'].'">'.$r['label'].'</span>
-						<input type="text" name="'.$k.'_2['.$i.']" value="'.$value_2.'" onfocus="show_hide_label(this,\''.$k.'\',1,\''.$i.'\')" onblur="show_hide_label(this,\''.$k.'\',0,\''.$i.'\')" onkeyup="return ajaxlistOnKey(event,this,\''.$k.'\',\''.$i.'\')" class="'.$r['csscheck'].'" autocomplete="off"/>
+						<input type="text" name="'.$k.'_2['.$i.']" value="'.$value_2.'" placeholder="'.$r['placeholder'].'" class="'.$r['csscheck'].'" autocomplete="off" 
+							onfocus="show_hide_label(this,\''.$k.'\',1,\''.$i.'\')" 
+							onblur="show_hide_label(this,\''.$k.'\',0,\''.$i.'\')"
+							onkeyup="return ajaxlistOnKey(event,this,\''.$k.'\',\''.$i.'\')"/>
 						<div id="ajaxlist_'.$k.'_'.$i.'_" style="display:none;" onfocus="chFocusList(0)" onblur="chFocusList(1)">не найдено</div>
 
 						<input type="hidden" name="'.$k.'['.$i.']" value="'.$value.'" '.$attribute.'/>
@@ -296,12 +299,14 @@ function tpl_form(&$data, $tabs = array()) {
 				$r['comment'] .= '<div class="ajaxmultiple" onclick="jQuery(\'#tr_'.$k.' div.ajaxlist:hidden\').eq(0).show(); if (jQuery(\'#tr_'.$k.' div.ajaxlist:hidden\').size() == 0) jQuery(this).hide();">Добавить '.$r['caption'].'</div>';
 			}
 			elseif($r['type']=='ajaxlist') {
+				$r['csscheck'] = ($r['value_2']?'accept':'reject');		
 				$serl = serialize($r['listname']);
 				$texthtml .= '<div class="form-value ajaxlist">
-					<span style="'.$r['labelstyle'].'">'.$r['label'].'</span>
-					<input type="text" name="'.$k.'_2" value="'.strip_tags ($r['value_2']).'" onfocus="show_hide_label(this,\''.$k.'\',1)" onblur="show_hide_label(this,\''.$k.'\',0)" onkeydown="return ajaxlistOnKey(event,this,\''.$k.'\')" class="'.$r['csscheck'].'" autocomplete="off"/>
+					<input type="text" name="'.$k.'_2" value="'.strip_tags($r['value_2']).'" placeholder="'.$r['placeholder'].'" class="'.$r['csscheck'].'" autocomplete="off" 
+						onfocus="show_hide_label(this,\''.$k.'\',1)" 
+						onblur="show_hide_label(this,\''.$k.'\',0)" 
+						onkeydown="return ajaxlistOnKey(event,this,\''.$k.'\')"/>
 					<div id="ajaxlist_'.$k.'" style="display:none;" onfocus="chFocusList(0)" onblur="chFocusList(1)">не найдено</div>
-
 					<input type="hidden" name="'.$k.'" value="'.$r['value'].'" '.$attribute.'/>
 				</div>
 				<input type="hidden" name="hsh_'.$k.'" value="'.md5($serl.$_CFG['wep']['md5']).'"/>
@@ -711,6 +716,11 @@ function tpl_form(&$data, $tabs = array()) {
 			$texthtml .= '<div class="dscr">'.$r['comment'].'</div>';
 		if($r['type']!='hidden')
 			$texthtml .= '</div>';
+	}
+
+	if($submitHtml) {
+		$texthtml .= $submitHtml;
+		$submitHtml = '';
 	}
 
 	if(!is_null($flagTabs) and $tagStatus) { // TABS

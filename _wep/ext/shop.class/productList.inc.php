@@ -25,11 +25,17 @@
 
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if (isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
+		$this->_enum['sortprod'] = array(
+			't1.mf_timecr'=>'По новизне',
+			't1.name'=>'По названию',
+			't1.cost'=>'По цене',
+			'RAND()'=>'Случайный выбор (Кеширование*)',
+		);
 		$form = array(
 			'0' => array('type' => 'list', 'listname' => 'phptemplates', 'caption' => 'Шаблон'),
 			'1' => array('type' => 'list', 'listname' => array('class'=>'shop','is_tree'=>true), 'caption' => 'Рубрика'),
 			'2' => array('type' => 'checkbox', 'caption' => 'RSS'),
-			'3' => array('type' => 'text', 'caption' => 'сортировка'),
+			'3' => array('type' => 'list', 'listname' => 'sortprod', 'multiple'=>2, 'caption' => 'Cортировка', 'comment'=>'Порядок вывода товаров'),
 			'4' => array('type' => 'int', 'caption' => 'LIMIT'),
 			'5'=>array('type'=>'list','listname'=>'ownerlist', 'caption'=>'Страница каталога'),
 		);
@@ -40,6 +46,7 @@
 	$filter = array();
 
 	$SHOP->simplefCache();
+	if(is_array($FUNCPARAM[3])) $FUNCPARAM[3] = implode(', ',$FUNCPARAM[3]);
 	$DATA = $SHOP->childs['product']->fList($FUNCPARAM[1],$filter,$FUNCPARAM[2],$FUNCPARAM[3],$FUNCPARAM[4]);
 	$DATA['#page#'] = $this->getHref($FUNCPARAM[5]);
 	return $HTML->transformPHP($DATA,$FUNCPARAM[0]);

@@ -25,7 +25,7 @@
 					$href = $data['#page#'].'/'.$r['rpath'].'/'.$r['path'].'_'.$r['id'].'.html';
 					if(isset($data['atarget']))
 						$href .= '" target="'.$data['atarget'].'"';
-					$html .= '<a href="'.$href.'" class="prodname">'.$r['name'].'</a>';
+					$html .= '<a href="'.$href.'" title="'.$r['name'].'" class="prodname">'.$r['name'].'</a>';
 					$html .= '<a href="'.$href.'" title="'.$r['name'].'" class="prodimg">';
 					if(isset($r['image']) and count($r['image']) and $r['image'][0][1]) {
 						$html .= '<img src="/'.$r['image'][0][1].'" alt="'.$r['name'].'"/>';

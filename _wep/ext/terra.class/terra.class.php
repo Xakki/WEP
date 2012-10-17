@@ -79,7 +79,7 @@ class terra_class extends kernel_extends {
 		if(is_null($ip2)) $ip2 = $_SERVER['REMOTE_ADDR'];
 		$ip = ip2long($ip2);
 		// TODO усов. запрос
-		$data = $this->childs['terraip']->qs('owner_id','WHERE '.$ip.'>`ip` and '.$ip.'<`ip2` LIMIT 1');
+		$data = $this->childs['terraip']->qs('owner_id','WHERE '.$ip.'>=`ip` and '.$ip.'<=`ip2` LIMIT 1');
 		if(count($data)) {
 			$data = $this->qs('*','WHERE id='.$data[0]['owner_id']);
 			$data[0]['ip'] =  $ip2;
@@ -103,8 +103,6 @@ class terra_class extends kernel_extends {
 	function _importIPCity() {
 		// TODO : импорт из друго	 базы, пок а нет необходимости
 		$data = $this->qs('*','WHERE socr IN ("г","пгт","кп")','parent_id','name');
-
-		print_r('<pre>');
 
 		foreach($data as $name=>$datarow) {
 			$result = $this->SQL->execSQL('SELECT * FROM ip_group_city WHERE city!="" and ru_name="'.$this->SqlEsc($name).'"');
@@ -164,10 +162,14 @@ class terra_class extends kernel_extends {
 	* Download from http://ipgeobase.ru/cgi-bin/Archive.cgi
 	*/
 	function _importGeoIP_geo_files() {
-		$ipath = __DIR__.'/import/';
+		$ipath = $this->_CFG['_PATH']['temp'];
 		$zipFile = file_get_contents('http://ipgeobase.ru/files/db/Main/geo_files.zip');
 		if($zipFile) {
-			file_put_contents($ipath.'geo_files.zip',$zipFile);
+			if(!file_put_contents($ipath.'geo_files.zip',$zipFile))
+			{
+				trigger_error('Ошибка записи фаила', E_USER_WARNING);
+				return false;
+			}
 			static_tools::extractZip($ipath.'geo_files.zip',$ipath.'geo_files/');
 		}
 
@@ -179,7 +181,7 @@ class terra_class extends kernel_extends {
 		$data = array();
 		foreach($file as $r) {
 			$t = preg_split("/[\t]+/",mb_convert_encoding($r, "UTF-8", "CP-1251"),-1,PREG_SPLIT_NO_EMPTY);
-			if(strpos($t[3],'Украина')===false)
+			if(stripos($t[3],'Украина')===false)
 				$data[$t[1]][] = $t;
 		}
 
@@ -269,7 +271,11 @@ class terra_class extends kernel_extends {
 		$_COOKIE[$this->_CFG['wep']['_showallinfo']] = 1;
 		$this->_CFG['wep']['debugmode'] = 2;
 
-		$data = file(__DIR__.'/import/kladr/socrbase');
+		$data = file($this->_CFG['_PATH']['temp'].'kladr/socrbase');
+		if(!$data)
+		{
+			return false;
+		}
 		$socrbase = array();
 		foreach($data as $r) {
 			$r = preg_split("/[\t]+/",$r,-1,PREG_SPLIT_NO_EMPTY);
@@ -285,7 +291,7 @@ class terra_class extends kernel_extends {
 			$socrbase[$upd['level']][$upd['socr']] = $upd;
 		}
 
-		$data = file(__DIR__.'/import/kladr/kladr');
+		$data = file($this->_CFG['_PATH']['temp'].'kladr/kladr');
 		
 		$new = array();
 		foreach($data as $k=>$r) {

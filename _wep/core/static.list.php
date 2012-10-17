@@ -159,7 +159,7 @@ class static_list {
 				$odir->close();
 			}
 		}
-		elseif($listname == 'phptemplates') {
+		elseif($templistname == 'phptemplates') {
 			$data[''] = ' - ';
 
 			// Системные модули
@@ -271,7 +271,7 @@ class static_list {
 			if(count($afterSubDir))
 				$data[''] = $data['']+$afterSubDir;
 		}
-		elseif ($listname == "script") {
+		elseif ($templistname == "script") {
 			$mdesign = 'mdesign';
 			$mdesign = $_this->_getlist($mdesign);
 			foreach($mdesign as $k=>$r) {

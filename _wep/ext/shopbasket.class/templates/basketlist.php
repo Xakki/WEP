@@ -1,5 +1,7 @@
 <?php
 	function tpl_basketlist(&$data) {
+		global $_tpl,$HTML,$_CFG;
+		$_tpl['styles']['../'.$HTML->_design.'/_shop/style/shopBasket'] = 1;
 		global $_CFG, $HTML;
 		$html = '';
 		$url = explode('?',$_SERVER['REQUEST_URI']);
@@ -11,40 +13,82 @@
 		if(isset($data['#item#'])) {
 			$html .= tpl_basketlist_item($data);
 		}
-		elseif(isset($data['#list#']) and count($data['#list#'])) {
-			$html .= '<table class="basketlist"><tr> 
-				<th>№
-				<th>Дата
-				<th>Сумма
-				<th>Метод оплаты
-				<th>Товары
-				<th>Статус
-			</tr>';
-			$summ = 0;
-			foreach($data['#list#'] as $r) {
-				$prod = '<ul>';
-				foreach($r['#shopbasketitem#'] as $p) {
-					$prod .= '<li>'.$p['product_name'].' ['.$p['count'].' шт. по '.$p['cost_item'].' '.$data['#curr#'].']';
-				}
-				$prod .= '</ul>';
-				if($r['pay_id'])
-					$link = '<a href="/_js.php?_modul=pay&_fn=showPayInfo&id='.$r['pay_id'].'" onclick="return wep.JSWin({type:this});" target="_blank">'.$r['#laststatus#'].'</a>';
-				else
-					$link = 'Забронированно <a href="'.$url[0].'?basketpay='.$r['id'].'">Оформить заказ</a>';
-				$html .= '
-				<tr data-id="'.$r['id'].'">
-					<td><a href="'.$data['#page#'].'/'.$r['id'].'.html">'.$r['id'].'</a>
-					<td>'.static_main::_date($_CFG['wep']['timeformat'],$r['mf_timecr']).'
-					<td class="summ"><span>'.$r['summ'].'</span> '.$data['#curr#'].'
-					<td>'.$r['#paytype#'].'
-					<td class="basketlist-basketitem">'.$prod.'
-					<td>'.$link.'
-				</tr>';
+		elseif(isset($data['#list#'])) {
+			if(isset($data['#filter#']))
+			{
+				//print_r('<pre>');print_r($data);
+				$html .= '<div id="dialog-filter" title="Фильтр" style="display:none;">'.$HTML->transformPHP($data['#filter#'], '#pg#filter').'</div> <button id="open-filter">Показать фильтр</button>';
+				$_tpl['onload'] .= '
+					$("#dialog-filter .f_submit").hide();
+					$( "#dialog-filter" ).dialog({
+						autoOpen: false,
+						height: 350,
+						width: 620,
+						modal: true,
+						buttons: {
+							"Отфильтровать": function() {
+								$(this).find("form").append("<input name=\"sbmt\" value=\1\" type=\"hidden\"/>").submit();
+								$( this ).dialog( "close" );
+
+							},
+							"Очистить": function() {
+								$(this).find("form").append("<input name=\"f_clear_sbmt\" value=\1\" type=\"hidden\"/>").submit();
+								$( this ).dialog( "close" );
+							}
+						},
+						close: function() {
+						}
+					});
+					$( "#open-filter" ).button().click(function() { $( "#dialog-filter" ).dialog( "open" ); });
+				';
+				$_CFG['fileIncludeOption']['jquery-ui'] =true;
+				if(isset($data['#filter#']['filterEnabled']))
+					$html .= '<messages><info>Включен фильтр</info></messages>';
 			}
-			$html .= '</table>';
+
+			if(count($data['#list#']))
+			{
+				$html .= '
+				<table class="basketlist"><tr> 
+					<th>№
+					<th>Дата
+					<th>Сумма
+					<th>Метод оплаты
+					<th>Товары
+					<th>Статус
+				</tr>';
+				$summ = 0;
+				foreach($data['#list#'] as $r) {
+					$prod = '<ul>';
+					foreach($r['#shopbasketitem#'] as $p) {
+						if($p['count'])
+							$prod .= '<li>'.$p['product_name'].' ['.$p['count'].' шт. по '.$p['cost_item'].' '.$data['#curr#'].']';
+						else
+							$prod .= '<li>'.$p['product_name'].' ['.$p['cost_item'].' '.$data['#curr#'].']';
+					}
+					$prod .= '</ul>';
+					if($r['pay_id'])
+						$link = '<a href="/_js.php?_modul=pay&_fn=showPayInfo&id='.$r['pay_id'].'" onclick="return wep.JSWin({type:this});" target="_blank">'.$r['#laststatus#'].'</a>';
+					else
+						$link = 'Забронированно <a href="'.$url[0].'?basketpay='.$r['id'].'">Оформить заказ</a>';
+					$html .= '
+					<tr data-id="'.$r['id'].'">
+						<td><a href="'.$data['#page#'].'/'.$r['id'].'.html">Заказ №'.$r['id'].'</a>
+						<td>'.static_main::_date($_CFG['wep']['timeformat'],$r['mf_timecr']).'
+						<td class="summ"><span>'.$r['summ'].'</span> '.$data['#curr#'].'
+						<td>'.$r['#paytype#'].'
+						<td class="basketlist-basketitem">'.$prod.'
+						<td>'.$link.'
+					</tr>';
+				}
+				$html .= '</table>';
+			}
+			else
+				$html .= '<div class="basket">'.static_render::message('Заказы не найдены').'</div>';
+			
 		} 
 		else
-			$html = '<div class="basket">'.static_render::message('Корзина пуста').'</div>';
+			$html .= '<div class="basket">'.static_render::message('Заказы не найдены').'</div>';
 		
 		return $html;
 	}
@@ -72,15 +116,31 @@
 				</form>
 				'; 
 			}
+
 			$html .= '<h3>Покупки</h3>
-			<div class="basketItems">
-				<table>
+				<table class="basketItems">
 					<tr><th>Наименование <th>Цена '.$data['#curr#'].'<th>Кол-во <th>Сумма '.$data['#curr#'].'';
 				foreach($itemB['#shopbasketitem#'] as $r) {
-					$html .= '<tr> <td><a href="'.$data['#pageCatalog#'].'/cataloglist/product_'.$r['product_id'].'.html" target="_blank">'.$r['product_name'].'</a> <td>'.$r['cost_item'].'<td>'.$r['count'].'<td>'.($r['count']*$r['cost_item']);
+					$html .= '<tr> 
+					<td><a href="'.$data['#pageCatalog#'].'/cataloglist/product_'.$r['product_id'].'.html" target="_blank">'.$r['product_name'].'</a> 
+					<td>'.$r['cost_item'].'
+					<td>'.($r['count']?$r['count']:'').'
+					<td>'.($r['count']?($r['count']*$r['cost_item']):$r['cost_item']);
 				}
-				$html .= '</table>
-			</div>';
+				$html .= '</table>';
+
+			$html .= '<br/><h3>История заказа</h3>
+				<table class="basketItems">
+					<tr><th>Статус<th>Комментарии<th>Дата<th>Оператор<th>IP';
+				foreach($itemB['#history#'] as $r) {
+					$html .= '<tr> 
+					<td>'.$r['#status#'].'
+					<td>'.$r['name'].'
+					<td>'.static_main::_usabilityDate($r['mf_timecr']).'
+					<td>'.$r['#creater_id#'].'
+					<td>'.long2ip($r['mf_ipcreate']);
+				}
+				$html .= '</table>';
 		}
 		else {
 			$html = '<div class="basket">'.static_render::message('Не верный адрес страницы либо данный заказ был удален').'</div>';

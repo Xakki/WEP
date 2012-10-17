@@ -440,8 +440,6 @@
 	}
 	.ajaxlist input{
 		background:none repeat scroll 0 0 transparent;
-		position:relative;
-		z-index:1;
 	}
 	.ajaxlist span {
 		left:5px;

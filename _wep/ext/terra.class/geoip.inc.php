@@ -34,7 +34,7 @@ $data = $TERRA->geoIP();
 		}
 		else {
 			$html .= '
-				<li>Выш IP в базе не обнаружен</li>
+				<li>Ваш IP в базе не обнаружен</li>
 				<li>IP - '.$_SERVER['REMOTE_ADDR'].'</li>
 			';
 			$jfunct = '
@@ -66,7 +66,7 @@ jQuery.each(jQuery.browser, function(i, val) {
 
 
 	*/
-	if($data['latitude'] or $data['longitude'])
+	if(count($data))
 		$LatLng = 'var defLatLng = new google.maps.LatLng('.$data['latitude'].', '.$data['longitude'].');';
 	else
 		$LatLng = 'var defLatLng = new google.maps.LatLng(40.69847032728747, -73.9514422416687);';

@@ -23,6 +23,7 @@ class ugroup_class extends kernel_extends
 		$this->config['invite'] = 0;
 		$this->config['uniq_email'] = 1;
 		$this->config['istree'] = 0;
+		$this->config['offerta'] = '';//Я принимаю Условия использования.
 
 		$this->config_form['mail_to'] = array('type' => 'text', 'mask' =>array('min'=>1,'name'=>'email'), 'caption' => 'Адрес службы поддержки');
 		$this->config_form['mailrobot'] = array('type' => 'text', 'mask' =>array('min'=>1,'name'=>'email'), 'caption' => 'Адрес Робота');
@@ -62,6 +63,14 @@ class ugroup_class extends kernel_extends
 		$this->config_form['invite'] = array('type' => 'checkbox', 'caption' => 'Включить систему инвайтов?','style'=>'background:gray;');
 		$this->config_form['uniq_email'] = array('type' => 'checkbox', 'caption' => 'Уникальный Email?');
 		$this->config_form['istree'] = array('type' => 'checkbox', 'caption' => 'Включить подгруппы?');
+		$this->config_form['offerta'] = array(
+			'type' => 'ckedit', 
+			'caption' => 'Пользовательское соглашение', 
+			'comment' => 'Чтобы включить эту опцию, нужно прописать в этом поле короткий текст который будет в профиле пользователя напротив чекбокса. текст может содержать ссылки. Пример "Я принимаю Условия использования."',
+			'paramedit'=>array(
+				'height'=>80,
+				//'fullPage'=>'true',
+				'toolbarStartupExpanded'=>'false'));
 
 	}
 
@@ -232,6 +241,25 @@ class ugroup_class extends kernel_extends
 		}
 		return $mess;
 	}
+
+	/**
+	*
+	*/
+	public function needApplyOfferta(&$form)
+	{
+		if( $this->config['offerta'] and static_main::_prmUserCheck() and !$_SESSION['user']['offerta'] )
+		{
+			if(isset($_POST['user_offerta']) and $_POST['user_offerta'])
+			{
+				$this->childs['users']->id = $_SESSION['user']['id'];
+				return $this->childs['users']->_update(array('offerta'=>1));
+			}
+			else
+				$form['user_offerta'] = array('type' => 'checkbox',  'caption' => $this->config['offerta'], 'mask'=>array('min'=>1));//, 'comment'=>'Для продолжения, необходимо дать согласие, отметив данный пункт'
+			return true;
+		}
+		return false;
+	}
 	
 }
 
@@ -307,6 +335,7 @@ class users_class extends kernel_extends {
 		$this->fields['lastvisit'] =  array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL', 'default'=>0);
 		$this->fields['karma'] = array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL', 'default'=>0);
 		$this->fields['kratio'] = array('type' => 'decimal', 'width' => '8,2','attr' => 'NOT NULL', 'default'=>'0.00');
+		$this->fields['offerta'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default'=>0);
 
 		$this->attaches['userpic'] = array('mime' => array('image/pjpeg'=>'jpg', 'image/jpeg'=>'jpg', 'image/gif'=>'gif', 'image/png'=>'png'), 'thumb'=>array(array('type'=>'resize', 'w'=>'800', 'h'=>'600','pref'=>'orign_'),array('type'=>'resizecrop', 'w'=>85, 'h'=>85)),'maxsize'=>1000,'path'=>'');
 		if(static_main::_prmUserCheck() and isset($this->_CFG['modulprm_ext']) and !is_null($this->_CFG['modulprm_ext'])) {
@@ -386,6 +415,10 @@ class users_class extends kernel_extends {
 				'readonly' => true, 
 				'caption' => 'Счет('.$this->owner->config['payon'].')',
 				'mask'=>array());
+		if($this->owner->config['offerta'])
+		{
+			$this->fields_form['offerta'] = array('type' => 'checkbox',  'caption' => $this->owner->config['offerta'], 'mask'=>array('min'=>1));// 'comment'=>'Для продолжения, необходимо дать согласие, отметив данный пункт'
+		}
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Пользователь активен', 'mask' =>array('usercheck'=>1));
 
 		/*if(static_main::_prmUserCheck() and !static_main::_prmUserCheck(1)) {  // Запрет поля на редактирование

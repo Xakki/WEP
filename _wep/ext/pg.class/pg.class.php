@@ -331,7 +331,7 @@ class pg_class extends kernel_extends {
 		} else {
 			reset($this->pageinfo['path']);
 			$temp = current($this->pageinfo['path']);
-			$_tpl['name'] = $temp['name'];
+			$_tpl['name'] = (is_string($temp)?$temp:$temp['name']);
 		}
 
 		if (!$this->pageinfo['template']) {
