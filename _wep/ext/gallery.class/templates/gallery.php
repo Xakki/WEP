@@ -1,7 +1,7 @@
 <?php
 	function tpl_gallery(&$data) {
 		global $_tpl, $HTML, $_CFG;
-		$_tpl['styles']['../'.$HTML->_design.'/_gallery/style/gallery'] = 1;
+		$_tpl['styles']['/_gallery/style/gallery'] = 1;
 		$html = '';
 		if(isset($data['#list-gallitem#']) and count($data['#list-gallitem#'])) {
 			$_CFG['fileIncludeOption']['fancybox']=1;

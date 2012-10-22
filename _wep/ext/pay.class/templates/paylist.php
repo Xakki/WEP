@@ -3,7 +3,7 @@
 function tpl_paylist($data)
 {
 	global $_tpl;
-	$_tpl['styles']['../default/_pay/pay'] = 1;
+	$_tpl['styles']['/_pay/pay'] = 1;
 	$html = '';
 	if(count($data['#list#'])) {
 		$html .= '<h3>Начальный баланс 0 руб.</h3>';

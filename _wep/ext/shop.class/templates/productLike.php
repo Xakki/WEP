@@ -3,7 +3,7 @@
 		$html = '';
 		if(isset($data) and count($data)) {
 			global $_tpl,$HTML;
-			$_tpl['styles']['../'.$HTML->_design.'/_shop/style/product'] = 1;
+			$_tpl['styles']['/_shop/style/product'] = 1;
 
 			if(!isset($data['#item#']) or !count($data['#item#'])) {
 

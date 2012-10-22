@@ -785,6 +785,7 @@ var wep = {
 
 	iSortable : function() {// сортировка
 		$.include('/_design/_script/script.jquery/jquery-ui.js',function() {
+			return true;// TODO new include plugin ???
 			$('table.superlist>tbody').sortable({
 				items: '>tr.tritem',
 				axis:	'y',

@@ -1,7 +1,7 @@
 <?php
 	function tpl_basketlist(&$data) {
 		global $_tpl,$HTML,$_CFG;
-		$_tpl['styles']['../'.$HTML->_design.'/_shop/style/shopBasket'] = 1;
+		$_tpl['styles']['/_shop/style/shopBasket'] = 1;
 		global $_CFG, $HTML;
 		$html = '';
 		$url = explode('?',$_SERVER['REQUEST_URI']);

@@ -16,7 +16,7 @@ function tpl_billing($data)
 	//$_CFG['fileIncludeOption']['form'] = 1;
 
 	$_tpl['onload'] .= 'wep.form.ajaxForm(\'#'.$ID.'\','.$data['#contentID#'].');';
-	$_tpl['styles']['../default/_pay/pay'] = 1;
+	$_tpl['styles']['/_pay/pay'] = 1;
 
 	$html = '<div class="payselect" style="width:340px;margin:10px auto;">
 		<h2>'.$data['#title#'].'</h2>

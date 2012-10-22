@@ -1,6 +1,7 @@
 <?php
 function tpl_form(&$data, $tabs = array()) {
 	global $_CFG, $_tpl;
+	$_tpl['onload'] .= 'wep.form.initForm();';
 
 	$attr = array();
 	if(isset($data['_*features*_'])) {
@@ -174,7 +175,7 @@ function tpl_form(&$data, $tabs = array()) {
 					if(!isset($ckedit['shiftEnterMode']))
 						$ckedit['shiftEnterMode'] = 'CKEDITOR.ENTER_P';
 					if(!isset($ckedit['contentsCss']))
-						$ckedit['contentsCss'] = '"/_design/default/style/style.css"';
+						$ckedit['contentsCss'] = '"/_design/default/style/main.css"';
 					$ckedit['autoUpdateElement'] = 'true';
 
 					$fckscript = 'function cke_'.$k.'() { if(typeof CKEDITOR.instances.id_'.$k.' == \'object\'){CKEDITOR.instances.id_'.$k.'.destroy(true);} editor_'.$k.' = CKEDITOR.replace( \'id_'.$k.'\',{';
@@ -348,7 +349,7 @@ function tpl_form(&$data, $tabs = array()) {
 					}
 					$texthtml .= '<span class="ilistmultiple" onclick="wep.form.iListCopy(this,\'#tr_'.$k.' div.ilist\','.$r['mask']['maxarr'].')" title="Добавить '.$r['caption'].'">'.($r['mask']['maxarr']-count($r['value'])).'</span>';
 					$_tpl['onload'] .= 'wep.form.iListsort("#tr_'.$k.' .form-value");';
-					$_CFG['fileIncludeOption']['jquery-ui'] = 1;
+					$_CFG['fileIncludeOption']['jquery-ui'] = true;
 				}
 				elseif(isset($r['multiple']) and $r['multiple']) {
 					

@@ -100,12 +100,13 @@ class shopbasket_class extends kernel_extends {
 		elseif ($listname == 'delivertype') {
 			_new_class('shopdeliver',$MODUL);
 			$dataTemp = $MODUL->qs('id,name,paylist','WHERE active=1','id');
+
 			if($value and is_string($value) and $value = trim($dataTemp[$value]['paylist'],'|')) {
 				$this->allowedPay = explode('|',$value);
 			}
 
 			foreach($dataTemp as $r)
-				$data[$r['id']] = $r['name'];
+				$data[$r['id']] = array('#name#'=>$r['name'], '#img#'=>'/_design/_img/avatar/default3.jpg', );
 
 			return $data;
 		} 

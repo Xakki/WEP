@@ -8,8 +8,8 @@
 		} 
 		else {
 			global $_CFG, $_tpl,$HTML;
-			$_tpl['styles']['../'.$HTML->_design.'/_shop/style/shopEvents'] = 1;
-			//$_tpl['script']['../'.$HTML->_design.'/_shop/script/shopEvents'] = 1;
+			$_tpl['styles']['/_shop/style/shopEvents'] = 1;
+			//$_tpl['script']['/_shop/script/shopEvents'] = 1;
 
 			$html = '<div class="productEvent">
 				<h3>'.$data['#title#'].'</h3>';

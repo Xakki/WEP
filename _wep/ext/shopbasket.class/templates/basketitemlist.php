@@ -1,5 +1,6 @@
 <?php
 	function tpl_basketitemlist(&$data) {
+		global $_tpl, $_CFG;
 		$html = '';
 
 		if(isset($data['#list#']) and count($data['#list#'])) {
@@ -36,12 +37,16 @@
 					$summ += ($r['cost']*$r['count']);
 			}
 			if(count($data['#delivery#'])>1) {
-				$sitem = '<select name="typedelivery">';
+				$sitem = '<div id="typedelivery">';
 				foreach($data['#delivery#'] as $rd) {
 					if(!isset($valD)) $valD = $rd['id'];
-					$sitem .= '<option value="'.$rd['id'].'" data-cost="'.$rd['cost'].'" data-minsumm="'.$rd['minsumm'].'">'.$rd['name'].' - '.$rd['cost'].' '.$data['#curr#'].($rd['minsumm']?', бесплатная доставка от '.$rd['minsumm'].' '.$data['#curr#']:'');
+					$sitem .= '
+						<input type="radio" id="typedeliveryradio3"  name="typedelivery" value="'.$rd['id'].'" data-cost="'.$rd['cost'].'" data-minsumm="'.$rd['minsumm'].'"/>
+						<label for="typedeliveryradio3">'.$rd['name'].' - '.$rd['cost'].' '.$data['#curr#'].($rd['minsumm']?', бесплатная доставка от '.$rd['minsumm'].' '.$data['#curr#']:'').'</label>';
 				}
-				$sitem .= '</select>';
+				$sitem .= '</div>';
+				//$_tpl['onload'] .= '$( "#typedelivery" ).buttonset();';
+				//$_CFG['fileIncludeOption']['jquery-ui'] = true;
 			}else {
 				$temp = current($data['#delivery#']);
 				$valD = $temp['id'];

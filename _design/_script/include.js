@@ -1,4 +1,4 @@
-
+jQuery(document).ready(function() {
 /*Проверять загружен ли или нет*/
 /**
  * $.include - script inclusion jQuery plugin
@@ -10,12 +10,13 @@
 // overload jquery's onDomReady
 var jslist = new Array();
 var csslist = new Array();
-if ( jQuery.browser.mozilla || jQuery.browser.opera ) {
+/*if ( jQuery.browser.mozilla || jQuery.browser.opera ) {
 	document.removeEventListener( "DOMContentLoaded", jQuery.ready, false );
 	document.addEventListener( "DOMContentLoaded", function(){ jQuery.ready(); }, false );
 }
 jQuery.event.remove( window, "load", jQuery.ready );
 jQuery.event.add( window, "load", function(){ jQuery.ready(); } );
+*/
 jQuery.extend({
 	includeStates: {},
 	include: function(url, callback, dependency) {
@@ -196,3 +197,4 @@ var dtt = new Date();
 var dtt2 = new Date();
 console.log((dtt2.getTime()-dtt.getTime()));
 */
+});

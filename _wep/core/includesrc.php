@@ -9,7 +9,7 @@
 			$_tpl['script'] = array();
 
 		if(!isset($gfi['uiStyle']))
-			$gfi['uiStyle'] = 'ui-smoothness';
+			$gfi['uiStyle'] = 'smoothness';
 		
 		if(isset($gfi['multiple'])) {
 			if($gfi['multiple']==2) {
@@ -88,6 +88,7 @@
 	}
 
 	function arraySrcToStr() {
+		// TODO : сделать все преобрзования на сервере, а скрипту передать готовые массивы
 		global $_tpl,$_CFG;
 		$temp = $solt = '';
 		if($_CFG['wep']['debugmode'])
@@ -118,7 +119,11 @@
 	}
 
 	function scriptRecursive($script, $solt='') {
-		global $_CFG;
+		global $_CFG, $HTML;
+		if(!isset($HTML->_design)) {
+			trigger_error('Название дизайна ГДЕ???', E_USER_WARNING);
+			$HTML->_design = 'default';
+		}
 		$temp = '';
 		foreach($script as $kk=>$rr) {
 			if(is_string($rr) and (substr($rr,0,4)=='http' or substr($rr,0,1)=='<')) {
@@ -130,7 +135,13 @@
 			if (strpos($kk, '//')===0 or strpos($kk, 'http:')===0 or strpos($kk, 'https:')===0)
 				$src = str_replace(array('http:','https:'), '', $kk);
 			elseif(is_string($kk))
-				$src = '//'.$_CFG['_HREF']['_BH'].$_CFG['_HREF']['_script'].$kk.'.js'.$solt;
+			{
+				if(strpos($kk,'/')===0)
+					$path = '_design/'.$HTML->_design.'/';
+				else
+					$path = $_CFG['_HREF']['_script'];
+				$src = '//'.$_CFG['_HREF']['_BH'].$path.$kk.'.js'.$solt;
+			}
 
 			if($src)
 				$temp .= '<script src="'.$src.'"></script>'."\n";
@@ -144,7 +155,7 @@
 	}
 
 	function cssRecursive($css, $solt='') {
-		global $_CFG;
+		global $_CFG, $HTML;
 		$temp = '';
 
 		foreach($css as $kk=>$rr) {
@@ -155,8 +166,13 @@
 			$src = '';
 			if (strpos($kk, '//')!==false)
 				$src = str_replace(array('http:','https:'), '', $kk);
-			elseif(is_string($kk))
-				$src = '//'.$_CFG['_HREF']['_BH'].$_CFG['_HREF']['_style'].$kk.'.css'.$solt;
+			elseif(is_string($kk)) {
+				if(strpos($kk,'/')===0)
+					$path = '_design/'.$HTML->_design.'/';
+				else
+					$path = $_CFG['_HREF']['_style'];
+				$src = '//'.$_CFG['_HREF']['_BH'].$path.$kk.'.css'.$solt;
+			}
 
 			if($src)
 				$temp .= '<link rel="stylesheet" href="'.$src.'"></link>'."\n";

@@ -1,7 +1,7 @@
 <?php
 	function tpl_news(&$data) {
 		global $_tpl;
-		$_tpl['styles']['../default/style/news'] = 1;
+		$_tpl['styles']['/style/news'] = 1;
 		$html = '';
 		if(isset($data['#list#']) and count($data['#list#'])) {
 			$html .= '<div class="news">';

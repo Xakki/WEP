@@ -3,7 +3,7 @@
 		$html = '';
 		if(isset($data) and count($data)) {
 			global $_tpl, $HTML, $_CFG;
-			$_tpl['styles']['../'.$HTML->_design.'/_shop/style/product'] = 1;
+			$_tpl['styles']['/_shop/style/product'] = 1;
 
 			$html = '<div class="prodListTable">';
 			if(!isset($data['#item#']) or !count($data['#item#'])) {
@@ -68,7 +68,7 @@
 								<img src="/_design/'.$HTML->_design.'/_shop/img/basket-del.png" alt="Удалить из корзины"/>
 							</a>
 							*/
-							$_tpl['script']['../'.$HTML->_design.'/_shop/script/shop'] = 1;
+							$_tpl['script']['/_shop/script/shop'] = 1;
 						}
 					}
 					$html .= '</tr>';					

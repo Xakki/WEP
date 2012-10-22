@@ -10,9 +10,9 @@
 
 			global $_CFG, $_tpl,$HTML;
 			$_CFG['fileIncludeOption']['fancybox'] = true;
-			$_tpl['styles']['../'.$HTML->_design.'/_shop/style/product'] = 1;
+			$_tpl['styles']['/_shop/style/product'] = 1;
 			$_tpl['styles']['form'] = 1;
-			$_tpl['script']['../'.$HTML->_design.'/_shop/script/shop'] = 1;
+			$_tpl['script']['/_shop/script/shop'] = 1;
 
 			foreach($data['#item#'] as $r) {
 				$href = $data['#page#'].'/'.$r['rpath'].'/'.$r['path'].'_'.$r['id'].'.html';

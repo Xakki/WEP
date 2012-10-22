@@ -4,6 +4,25 @@ var timerid2 = 0;
 var ajaxComplite = 1;
 
 wep.form = {
+	initForm: function() {
+
+		$('form span.labelInput').click(function() {
+			$(this).next().focus();
+		});
+		$('form span.labelInput+input').focus(function() {
+			$(this).prev().hide();
+		});
+		$('form span.labelInput+input').focusout(function() {
+			if(this.value=='')
+				$(this).prev().show();
+		});
+
+		$('form span.form-requere').click(function() {
+			var tx = $(this).attr('data-text');
+			if(!tx) tx = 'Данное поле обязательно для заполнения!';
+			wep.showHelp(this,tx,2000,1)
+		});
+	},
 	// Делаем форму на странице аяксовой
 	ajaxForm : function(id,contentID) {
 		var arr = '';
@@ -447,26 +466,6 @@ function SetWysiwyg(obj) {
 	}
 }
 
-
-$(document).ready(function() {
-
-	$('form span.labelInput').click(function() {
-		$(this).next().focus();
-	});
-	$('form span.labelInput+input').focus(function() {
-		$(this).prev().hide();
-	});
-	$('form span.labelInput+input').focusout(function() {
-		if(this.value=='')
-			$(this).prev().show();
-	});
-
-	$('form span.form-requere').click(function() {
-		var tx = $(this).attr('data-text');
-		if(!tx) tx = 'Данное поле обязательно для заполнения!';
-		wep.showHelp(this,tx,2000,1)
-	});
-});
 
 /////////////////////////////
 ///////////swfuploader/////////
