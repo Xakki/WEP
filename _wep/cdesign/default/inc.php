@@ -1,7 +1,6 @@
 <?php
-
+//<base href="'.$_CFG['_HREF']['BH'].'/"/>
 	$_tpl['meta'] = '
-		<base href="'.$_CFG['_HREF']['BH'].'"/>
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 		<meta http-equiv="Pragma" content="no-cache"/>
 		<meta name="keywords" content="WEP"/> 

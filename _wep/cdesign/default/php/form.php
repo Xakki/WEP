@@ -174,8 +174,8 @@ function tpl_form(&$data, $tabs = array()) {
 						$ckedit['enterMode'] = 'CKEDITOR.ENTER_BR';
 					if(!isset($ckedit['shiftEnterMode']))
 						$ckedit['shiftEnterMode'] = 'CKEDITOR.ENTER_P';
-					/*if(!isset($ckedit['contentsCss']))
-						$ckedit['contentsCss'] = '"/_design/default/style/main.css"';*/
+					if(!isset($ckedit['contentsCss']))
+						$ckedit['contentsCss'] = '"/_design/default/style/main.css"';
 					$ckedit['autoUpdateElement'] = 'true';
 
 					$fckscript = 'function cke_'.$k.'() { if(typeof CKEDITOR.instances.id_'.$k.' == \'object\'){CKEDITOR.instances.id_'.$k.'.destroy(true);} editor_'.$k.' = CKEDITOR.replace( \'id_'.$k.'\',{';

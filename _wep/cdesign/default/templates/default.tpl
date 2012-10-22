@@ -2,11 +2,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru">
 	<head>
 		<title>WEP - {#BH#}</title>
-		<base href="{#BH#}"/>
-		<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
-		<meta http-equiv="Pragma" content="no-cache"/>
-		<meta name="keywords" content="WEP"/> 
-		<meta name="description" content="CMS"/>
 		<link rel="SHORTCUT ICON" href="{#design#}img/favicon.ico"/>
 		{#meta#}
 		{#styles#}
