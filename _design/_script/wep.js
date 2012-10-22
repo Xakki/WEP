@@ -222,7 +222,7 @@ var wep = {
 		if(!objid || objid===true) objid = 'ajaxload';
 		if(!txt) txt = '';
 
-		objid = trim(objid, '#\s');
+		objid = wep.trim(objid, '#\s');
 		if(!show) {
 			jQuery(body+'> #'+objid).hide();
 			showBG(body);
@@ -367,8 +367,8 @@ var wep = {
 			jQuery("#bugmain").prepend(txt);
 		else {
 			jQuery("body").prepend("<div id=\"bugmain\">"+txt+"</div>");
-			$.includeCSS('/_design/_style/bug.css');
-			$.include('/_design/_script/bug.js');
+			wep.includeCSS('/_design/_style/bug.css');
+			wep.include('/_design/_script/bug.js');
 		}
 		if(flag==1) wep.fShowHide('bugmain',1);
 	},
@@ -457,7 +457,7 @@ var wep = {
 	},
 	fSpoiler: function(txt,nm) {
 		//initSpoilers();
-		$.includeCSS('/_design/_style/bug.css');
+		wep.includeCSS('/_design/_style/bug.css');
 		if(!nm) nm ='Скрытый текст';
 		return '<div class="bspoiler-wrap folded clickable"><div onclick="var obj=this.parentNode;if(obj.className.indexOf(\'unfolded\')>=0) obj.className = obj.className.replace(\'unfolded\',\'\'); else obj.className = obj.className+\' unfolded\';" class="spoiler-head">'+nm+'</div><div class="spoiler-body">'+txt+'</div></div>';
 	},
@@ -542,10 +542,10 @@ var wep = {
 
 			
 			if(typeof css[i] == 'object') {
-				$.includeCSS(src, function(){ wep.cssLoad(css[i]); });
+				wep.includeCSS(src, function(){ wep.cssLoad(css[i]); });
 			}
 			else if(src) {
-				$.includeCSS(src);
+				wep.includeCSS(src);
 			}
 
 			if(typeof css[i] == 'string') {
@@ -555,6 +555,60 @@ var wep = {
 				// TODO прочие виды загрузок
 			}
 		}
+	},
+	includeCSSlist: {},
+	includeCSS: function(css, onComplete) 
+	{
+		if(typeof(css)=='string')
+			css = [css];
+		var i = 1;
+		var ii = css.length; 
+		var onCssLoaded = function() 
+		{ console.log('Css ready');
+			if (i++ == ii && onComplete) 
+				onComplete.call();
+		} ; 
+		for(var s in css) {
+			var validSrc = wep.checkCSSInclude(css[s]);
+			if(validSrc)
+			{
+				var styleCss = document.createElement('link');
+				//styleCss.type = 'text/css';
+				styleCss.rel = 'stylesheet';
+				styleCss.href = validSrc;
+				$(styleCss).ready(onCssLoaded);
+				document.getElementsByTagName('head')[0].appendChild(styleCss);
+			}
+			else if ( onComplete )
+				onComplete.call(this);
+		};
+		return true;
+	},
+	checkCSSInclude: function(url) {
+		url = wep.absPath(url);
+		if(jQuery.isEmptyObject(wep.includeCSSlist)) 
+		{// проверка на уникальность подключаемого стиля
+			wep.includeCSSlist[url] = 1;
+			var flag = 0;
+			jQuery('script[src!=""]').each(function(){
+				var href = wep.absPath(this.src);
+				wep.includeCSSlist[href] = 1;
+				if(href==url) flag = 1;
+			});
+			if(flag == 1) {
+				wep.includeCSSlist[url]=2;
+				return false;
+			}
+		} 
+		else 
+		{
+			if(wep.includeCSSlist[url]) {
+				wep.includeCSSlist[url]++;
+				return false;
+			}
+			else wep.includeCSSlist[url] = 1;
+		}
+		return url;
 	},
 
 	_onLoad: false,
@@ -576,11 +630,11 @@ var wep = {
 				
 				if(typeof script[i] == 'object') {
 					--wep._loadCount;
-					$.include(src, function(){ wep.scriptLoad(script[i]); ++wep._loadCount;});
+					wep.include(src, function(){ wep.scriptLoad(script[i]); ++wep._loadCount;});
 				}
 				else if(src) {
 					--wep._loadCount;
-					$.include(src, function(){++wep._loadCount;});
+					wep.include(src, function(){++wep._loadCount;});
 				} 
 
 				if(typeof script[i] == 'string') {
@@ -594,6 +648,81 @@ var wep = {
 			eval(script);
 		}
 		++wep._loadCount;
+	},
+	
+	includejslist: {},
+	include: function(scripts, onComplete) 
+	{
+		if(typeof(scripts)=='string')
+			scripts = [scripts];
+		var i = 1;
+		var ii = scripts.length; 
+		var onScriptLoaded = function(data, response) { if (i++ == ii) onComplete(); } ; 
+		for(var s in scripts) {
+			var validSrc = wep.checkJsInclude(scripts[s]);
+			if(validSrc)
+			{
+				//$.getScript(scripts[s], onScriptLoaded);
+				$.ajax({
+					url: validSrc,
+					dataType: "script",
+					cache: true,
+					success: onScriptLoaded
+				});
+			}
+			else if ( onComplete )
+				onComplete.call(this);
+		};
+		return true;
+	},
+	checkJsInclude: function(url) {
+		url = wep.absPath(url);
+		if(jQuery.isEmptyObject(wep.includejslist)) 
+		{// проверка на уникальность подключаемого стиля
+			wep.includejslist[url] = 1;
+			var flag = 0;
+			jQuery('script[src!=""]').each(function(){
+				var href = wep.absPath(this.src);
+				wep.includejslist[href] = 1;
+				if(href==url) flag = 1;
+			});
+			if(flag == 1) {
+				wep.includejslist[url]=2;
+				return false;
+			}
+		} 
+		else 
+		{
+			if(wep.includejslist[url]) {
+				wep.includejslist[url]++;
+				return false;
+			}
+			else wep.includejslist[url] = 1;
+		}
+		return url;
+	},
+
+	baseHref : '',
+	absPath: function(url) {
+		if(url.substr(0,4)!='http' && url.substr(0,2)!='//') {
+			if(wep.baseHref=='') {
+				wep.baseHref = jQuery('base').attr('href');
+				if(wep.baseHref=='')
+					wep.baseHref = '//'+window.location.host;
+				else {
+					wep.baseHref = wep.trim(wep.baseHref,'/');
+				}
+			}
+			url = wep.baseHref+'/'+wep.trim(url,'/');
+		}else {
+			var i = url.indexOf('../');
+			while(i>-1){
+				url = url.replace(RegExp("[^\/]+\/\.\.\/","g"), '');
+				i = url.indexOf('../');
+			}
+		}
+		url = url.replace(/\?.+/, '');
+		return url;
 	},
 
 	ShowTools: function(hrf,id) {
@@ -662,7 +791,7 @@ var wep = {
 	pagenum_super: function(total,pageCur,cl,order) {
 		if(!order) order = false;
 		if(total>20) {
-			$.includeCSS('/_design/_style/style.jquery/paginator.css');
+			wep.includeCSS('/_design/_style/style.jquery/paginator.css');
 			pg = 1;
 			reg = new RegExp('\&*'+cl+'_pn=([0-9]*)', 'i');
 			tmp = reg.exec(lochref);
@@ -682,7 +811,7 @@ var wep = {
 				param += '?';
 			param += cl+'_pn='; // строка которую вставляем в состав адреса для перехода по страницам
 
-			$.include('/_design/_script/script.jquery/paginator.js',function() {
+			wep.include('/_design/_script/script.jquery/paginator.js',function() {
 				var s_left = jQuery('.pagenum').position();
 				var s_width = jQuery('.pagenum').parent().width();
 				jQuery('div.pagenum').after('<div class="ppagenum">Загрузка...</div>');
@@ -716,7 +845,7 @@ var wep = {
 	pagenum: function(total,order) {
 		if(!order) order = false;
 		if(total>10) {
-			$.includeCSS('/_design/_style/style.jquery/paginator.css');
+			wep.includeCSS('/_design/_style/style.jquery/paginator.css');
 			pg = 1;
 			reg = /_p([0-9]*)/;
 			tmp = reg.exec(lochref);
@@ -730,7 +859,7 @@ var wep = {
 				reg = /(.*)_p[0-9]*\.html(.*)/g;
 			tmp = reg.exec(lochref);
 			//alert(dump(tmp));
-			$.include('/_design/_script/script.jquery/paginator.js',function(){
+			wep.include('/_design/_script/script.jquery/paginator.js',function(){
 				var s_left = jQuery('.pagenum').position();
 				var s_width = jQuery('.pagenum').parent().width();
 				jQuery('div.pagenum').after('<div class="ppagenum">Загрузка...</div>');
@@ -763,7 +892,7 @@ var wep = {
 	},
 
 	ZeroClipboard: function(obj,txt) {
-		$.include('_design/_script/zeroclipboard/ZeroClipboard.js',function() {
+		wep.include('_design/_script/zeroclipboard/ZeroClipboard.js',function() {
 			clip = new ZeroClipboard.Client();
 			clip.setHandCursor( true );
 			
@@ -784,7 +913,7 @@ var wep = {
 	},
 
 	iSortable : function() {// сортировка
-		$.include('/_design/_script/script.jquery/jquery-ui.js',function() {
+		wep.include('/_design/_script/script.jquery/jquery-ui.js',function() {
 			return true;// TODO new include plugin ???
 			$('table.superlist>tbody').sortable({
 				items: '>tr.tritem',
@@ -958,8 +1087,13 @@ var wep = {
 				wep.winResize[item]();
 			}
 		}
-	}
+	},
 
+	trim: function( str, charlist ) {	// Strip whitespace (or other characters) from the beginning and end of a string
+		charlist = !charlist ? ' \s\xA0' : charlist.replace(/([\[\]\(\)\.\?\/\*\{\}\+\$\^\:])/g, '\$1');
+		var re = new RegExp('^[' + charlist + ']+|[' + charlist + ']+$', 'g');
+		return str.replace(re, '');
+	}
 };
 
 
@@ -1133,11 +1267,7 @@ function substr( f_string, f_start, f_length ) {	// Return part of a string
 
 	return f_string.substring(f_start, f_length);
 }
-function trim( str, charlist ) {
-    charlist = !charlist ? ' \\s\xA0' : charlist.replace(/([\[\]\(\)\.\?\/\*\{\}\+\$\^\:])/g, '\$1');
-    var re = new RegExp('^[' + charlist + ']+|[' + charlist + ']+$', 'g');
-    return str.replace(re, '');
-}
+
 
 
 function show_fblock(obj,selector) {

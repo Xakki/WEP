@@ -67,7 +67,6 @@
 			$_tpl['script'] = array('wepform'=>1)+$_tpl['script'];
 
 		$_tpl['script'] = array('wep'=>1)+$_tpl['script'];
-		$_tpl['script'] = array('include'=>1)+$_tpl['script'];
 		$_tpl['script'] = array('jquery'=>1)+$_tpl['script'];
 
 

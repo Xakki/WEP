@@ -37,10 +37,10 @@ $(function(){
 		'vb vbnet               @shBrushVb.js',
 		'xml xhtml xslt html    @shBrushXml.js'
 	);
-	$.include('/_design/_script/syntaxhighlighter/scripts/shCore.js');
-	$.includeCSS('/_design/_script/syntaxhighlighter/styles/shCore.css');
-	$.includeCSS('/_design/_script/syntaxhighlighter/styles/shCoreDefault.css');
-	$.include('/_design/_script/syntaxhighlighter/scripts/shAutoloader.js',function() {
+	wep.include('/_design/_script/syntaxhighlighter/scripts/shCore.js');
+	wep.includeCSS('/_design/_script/syntaxhighlighter/styles/shCore.css');
+	wep.includeCSS('/_design/_script/syntaxhighlighter/styles/shCoreDefault.css');
+	wep.include('/_design/_script/syntaxhighlighter/scripts/shAutoloader.js',function() {
 		SyntaxHighlighter.autoloader.apply(null, data);
 		SyntaxHighlighter.all();
 	});

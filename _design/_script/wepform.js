@@ -42,7 +42,7 @@ wep.form = {
 	// Аякс отправка формы
 	JSFR: function(n) {
 		// NEED INCLUDE jquery.form
-		$.include(wep.HREF_script+'script.jquery/form.js', function() {
+		wep.include(wep.HREF_script+'script.jquery/form.js', function() {
 			jQuery(n).ajaxForm({
 				beforeSubmit: 
 					function(a,f,o) {
@@ -111,7 +111,7 @@ wep.form = {
 	},
 
 	iListsort : function(id) {// сортировка
-		$.include('/_design/_script/script.jquery/jquery-ui.js', function() {
+		wep.include('/_design/_script/script.jquery/jquery-ui.js', function() {
 			$(id).sortable({
 				items: '>div.ilist',
 				axis:	'y',

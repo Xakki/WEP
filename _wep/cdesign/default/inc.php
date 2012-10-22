@@ -10,7 +10,6 @@
 		//<!--<link rel="SHORTCUT ICON" href="{$_tpl['design']}img/favicon.ico"/>-->
 
 	$_tpl['script']['jquery'] = 1;
-	$_tpl['script']['include'] = 1;
 	$_tpl['script']['wep'] = 1;
 	$_tpl['script']['script.jquery/form'] = 1;
 

@@ -40,8 +40,10 @@
 
 			if(isset($data['formSort']) and count($data['formSort']) and is_array(current($data['formSort']))) {
 				$_CFG['fileIncludeOption']['jquery-ui']= true;
-				$_tpl['onload'] .= '$("#'.$ID.'").tabs();';
+				
 				$texthtml .= tpl_form($data['form'], $data['formSort']);
+
+				$_tpl['onload'] .= '$("#'.$ID.'").tabs();';
 			}
 			else
 				$texthtml .= tpl_form($data['form']);
