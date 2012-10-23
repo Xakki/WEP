@@ -431,6 +431,7 @@ if(tmp==false){
 		$this->current_path = $this->getHref($this->pageinfo['id'], true);
 		$parent_id = $this->pageinfo['parent_id'];
 		$id = $this->pageinfo['id'];
+		$this->pageinfo['title'] = array();
 		$this->pageinfo['path'] = array($this->pageinfo['id'] => $this->pageinfo);
 		$this->selected[$this->pageinfo['id']] = $this->pageinfo['id'];
 
@@ -449,8 +450,12 @@ if(tmp==false){
 
 	function get_caption() {
 		$path = '';
-		if ($this->pageinfo['path'] and is_array($this->pageinfo['path']))
-			foreach ($this->pageinfo['path'] as $row) {
+		if(count($this->pageinfo['title']))
+			$titleList = $this->pageinfo['title'];
+		else
+			$titleList = $this->pageinfo['path'];
+		if ($titleList and is_array($titleList))
+			foreach ($titleList as $row) {
 				if (!is_array($row) or !isset($row['onpath']) or $row['onpath']) {
 					if (is_array($row))
 						$name = $row['name'];

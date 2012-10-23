@@ -114,8 +114,9 @@ function tpl_form(&$data, $tabs = array()) {
 			elseif(isset($r['mask']['min2']) and $r['mask']['min2']) {
 				$CAPTION .= '<span  class="form-requere" data-text="'.$r['mask']['min2'].'">**</span>';
 			}
-			if($r['type']=='ckedit' and static_main::_prmUserCheck(1))
-				$CAPTION .= '<input type="checkbox" onchange="SetWysiwyg(this)" name="'.$k.'_ckedit" style="width:13px;vertical-align: bottom;margin: 0 0 0 5px;"/>';
+
+			//if($r['type']=='ckedit' and static_main::_prmUserCheck(1))
+			//	$CAPTION .= '<input type="checkbox" onchange="SetWysiwyg(this)" name="'.$k.'_ckedit" style="width:13px;vertical-align: bottom;margin: 0 0 0 5px;"/>';
 
 			if($r['type']!='checkbox') {
 				$texthtml .= '<div class="form-caption">'.$CAPTION.'</div>';
@@ -643,7 +644,7 @@ function tpl_form(&$data, $tabs = array()) {
 			/*elseif($r['type']=='password' and !$r['readonly']) {
 				$texthtml .= '<div class="form-value"><input type="text" id="'.$k.'" name="'.$k.'" value="'.$r['value'].'" style="width:55%;float:left;background:#E1E1A1;" readonly="readonly"/>
 							<div style="width:40%;float:right;">
-								<img src="_wep/cdesign/default/img/aprm.gif" style="width:18px;cursor:pointer;" onclick="if(confirm(\'Вы действительно хотите изменить пароль?\')) $(\'#'.$k.'\').val(hex_md5(\''.$r['md5'].'\'+$(\'#a_'.$k.'\').val()));" alt="Сгенерировать пароль в формате MD5" title="Сгенерировать пароль в формате MD5"/>
+								<img src="/_wep/cdesign/default/img/aprm.gif" style="width:18px;cursor:pointer;" onclick="if(confirm(\'Вы действительно хотите изменить пароль?\')) $(\'#'.$k.'\').val(hex_md5(\''.$r['md5'].'\'+$(\'#a_'.$k.'\').val()));" alt="Сгенерировать пароль в формате MD5" title="Сгенерировать пароль в формате MD5"/>
 								<input type="text" id="a_'.$k.'" name="a_'.$k.'" value="" style="width:80%;vertical-align:top;"/>
 							</div></div>';
 				$_CFG['fileIncludeOption']['md5'] = 1;

@@ -18,7 +18,7 @@
 	</head>
 	<body onload="{$_tpl['onload']}">
 		<div class="leftblock">
-			<a class="logo" title="Главная" href="_wep"></a>
+			<a class="logo" title="Главная" href="/_wep/"></a>
 			<div style="overflow:auto; height:80%; padding-bottom:30px;">
 				{$_tpl['adminmenu']}
 			</div>

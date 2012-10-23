@@ -120,11 +120,11 @@
 				}
 				$html .= '<th>';
 				if(isset($r['href']) and $r['href']!='') {
-					$html .= '<a class="'.($r['sel']==1?'buttonimg_sel':'buttonimg').' imgup" title="[SORT]" href="'.$firstpath.'sort='.$r['href'].'" onclick="return wep.load_href(this)"></a>';
+					$html .= '<a class="'.($r['sel']==1?'buttonimg_sel':'buttonimg').' imgup" title="[SORT]" href="'.$firstpath.'sort='.$r['href'].'"></a>';
 				}
 				$html .= $r['value'];
 				if(isset($r['href']) and $r['href']!='') {
-					$html .= '<a class="'.($r['sel']==2?'buttonimg_sel':'buttonimg').' imgdown" title="[SORT]" href="'.$firstpath.'dsort='.$r['href'].'" onclick="return wep.load_href(this)"></a>';
+					$html .= '<a class="'.($r['sel']==2?'buttonimg_sel':'buttonimg').' imgdown" title="[SORT]" href="'.$firstpath.'dsort='.$r['href'].'"></a>';
 				}
 				$html .= '</th>';
 			}
@@ -161,9 +161,9 @@
 				/////
 				if(isset($data['mf_ordctrl']) and $ktd==$data['mf_ordctrl']) {
 					$html .= '<a class="buttonimg imgdragdrop" href="'.$hrefpref.'&_type=ordup" onclick="return false;" title="'.$r['tditem'][$data['mf_ordctrl']]['value'].'"></a>';
-					/*$html .= '<a class="buttonimg imgup" href="'.$hrefpref.'&_type=ordup" onclick="return wep.load_href(this)" title="[-1]"></a>'
+					/*$html .= '<a class="buttonimg imgup" href="'.$hrefpref.'&_type=ordup" title="[-1]"></a>'
 						.$tditem['value']
-						.'<a class="buttonimg imgdown" href="'.$hrefpref.'&_type=orddown" onclick="return wep.load_href(this)" title="[+1]"></a>';*/
+						.'<a class="buttonimg imgdown" href="'.$hrefpref.'&_type=orddown" title="[+1]"></a>';*/
 				}
 				elseif(isset($tditem['value']) and $tditem['value']!='') {
 					if($tdflag)
@@ -212,13 +212,13 @@
 			
 			if(isset($r['active'])) {
 				if($r['act'])
-					$html .= '<a class="buttonimg img'.$r['active'].'" href="'.$hrefpref.'&_type='.($r['active']==1?'dis':'act').'" onclick="return wep.load_href(this)" title="['.static_main::m('act'.$r['active']).']"></a>';
+					$html .= '<a class="buttonimg img'.$r['active'].'" href="'.$hrefpref.'&_type='.($r['active']==1?'dis':'act').'" title="['.static_main::m('act'.$r['active']).']"></a>';
 				else
 					$html .= '<a class="buttonimg img'.$r['active'].'" title="Изменение данного своиства вам не доступна."></a>';
 			}
 			
 			if($r['edit'])
-				$html .= '<a class="buttonimg imgedit" href="'.$hrefpref.'&_type=edit" onclick="return wep.load_href(this)" title="['.static_main::m('_EDIT_TITLE').']"></a>';
+				$html .= '<a class="buttonimg imgedit" href="'.$hrefpref.'&_type=edit" title="['.static_main::m('_EDIT_TITLE').']"></a>';
 			
 			if($r['del'])
 				$html .= '<a class="buttonimg imgdel" href="'.$hrefpref.'&_type=del" onclick="return wep.hrefConfirm(this,\'del\')" title="['.static_main::m('_DEL_TITLE').']"></a>';
@@ -227,10 +227,10 @@
 				$html .= '<input type="checkbox" name="SuperGroup['.$data['cl'].']['.$r['id'].']" onclick="wep.SuperGroup(this)" title="Групповая операция" '.((isset($_COOKIE['SuperGroup'][$data['cl']][$r['id']]) and $_COOKIE['SuperGroup'][$data['cl']][$r['id']])?' checked="checked"':'').'>';
 
 			if(isset($r['istree']))
-				$html .= '<br/><a href="'.$hrefpref.'" onclick="return wep.load_href(this)">'.$r['istree']['value'].' ('.$r['istree']['cnt'].')</a>';
+				$html .= '<br/><a href="'.$hrefpref.'" >'.$r['istree']['value'].' ('.$r['istree']['cnt'].')</a>';
 			
 			if(isset($r['child'])) foreach($r['child'] as $ck=>$cn)
-				$html .= '<br/><a href="'.$hrefpref.'&'.$data['cl'].'_ch='.$ck.'" onclick="return wep.load_href(this)">'.$cn['value'].' ('.$cn['cnt'].')</a>';
+				$html .= '<br/><a href="'.$hrefpref.'&'.$data['cl'].'_ch='.$ck.'">'.$cn['value'].' ('.$cn['cnt'].')</a>';
 
 
 			$html .= '</td></tr>';

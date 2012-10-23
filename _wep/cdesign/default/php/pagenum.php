@@ -7,14 +7,14 @@
 		if(isset($data['link']) and count($data['link'])) {
 			$_tpl['onload'] .='pagenum_super('.$data['cntpage'].','.$data['_pn'].',\''.$data['modul'].'\','.($data['reverse']?'true':'false').');';
 			$html .= '<div class="pagenum">';
-			$html .=  '<a href="'.$r.'" onclick="return wep.load_href(this)">'.$k.'</a>';
+			$html .=  '<a href="'.$r.'">'.$k.'</a>';
 			foreach($data['link'] as $k=>$r) {
 				if($k==$data['_pn'])
 					$html .=  '<b>'.$k.'</b>';
 				else
-					$html .=  '<a href="'.$r.'" onclick="return wep.load_href(this)">'.$k.'</a>';
+					$html .=  '<a href="'.$r.'">'.$k.'</a>';
 			}
-			$html .=  '<a href="'.$r.'" onclick="return wep.load_href(this)">'.$k.'</a>';
+			$html .=  '<a href="'.$r.'">'.$k.'</a>';
 			$html .= '</div>';
 		}
 		$html .= '<select class="mopselect" onchange="setCookie(\''.$data['modul'].'_mop\',this.value,20);window.location.reload();">';

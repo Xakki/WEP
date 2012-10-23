@@ -9,9 +9,9 @@
 			<xsl:if test="position()!=last()">
 				
 				<xsl:if test="href=''"><xsl:value-of select="name"/></xsl:if>
-				<xsl:if test="href!=''"><a href="{href}" onclick="return wep.load_href(this)"><xsl:value-of select="name"/></a></xsl:if>
+				<xsl:if test="href!=''"><a href="{href}"><xsl:value-of select="name"/></a></xsl:if>
 			</xsl:if>
-			<xsl:if test="position()=last()"><xsl:value-of disable-output-escaping="yes" select="name"/>&#160;<a class="buttonimg imgf5" href="{href}" onclick="return wep.load_href(this)"></a></xsl:if>
+			<xsl:if test="position()=last()"><xsl:value-of disable-output-escaping="yes" select="name"/>&#160;<a class="buttonimg imgf5" href="{href}"></a></xsl:if>
 		</xsl:for-each>
 		</div>
 	</xsl:if>

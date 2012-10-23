@@ -57,11 +57,11 @@
 				}
 				$html .= '<th>';
 				if($r['href']!='') {
-					$html .= '<a class="'.($r['sel']==1?'buttonimg_sel':'buttonimg').' imgup" title="[SORT]" href="'.$firstpath.'sort='.$r['href'].'" onclick="return wep.load_href(this)"></a>';
+					$html .= '<a class="'.($r['sel']==1?'buttonimg_sel':'buttonimg').' imgup" title="[SORT]" href="'.$firstpath.'sort='.$r['href'].'"></a>';
 				}
 				$html .= $r['value'];
 				if($r['href']!='') {
-					$html .= '<a class="'.($r['sel']==2?'buttonimg_sel':'buttonimg').' imgdown" title="[SORT]" href="'.$firstpath.'dsort='.$r['href'].'" onclick="return wep.load_href(this)"></a>';
+					$html .= '<a class="'.($r['sel']==2?'buttonimg_sel':'buttonimg').' imgdown" title="[SORT]" href="'.$firstpath.'dsort='.$r['href'].'"></a>';
 				}
 				$html .= '</th>';
 			}
@@ -114,15 +114,15 @@
 			$html .= '<td class="ic" style="vertical-align:top;white-space:nowrap;">';
 
 			if($r['act'])
-				$html .= '<a class="buttonimg img'.$r['active'].'" href="'.$firstpath.$data['cl'].'_id='.$r['id'].'&amp;_type='.($r['active']==1?'dis':'act').'" onclick="return wep.load_href(this)" title="['.$_CFG['_ACT_TITLE'][$r['active']].']"></a>';
+				$html .= '<a class="buttonimg img'.$r['active'].'" href="'.$firstpath.$data['cl'].'_id='.$r['id'].'&amp;_type='.($r['active']==1?'dis':'act').'" title="['.$_CFG['_ACT_TITLE'][$r['active']].']"></a>';
 			if($r['edit'])
-				$html .= '<a class="buttonimg imgedit" href="'.$firstpath.$data['cl'].'_id='.$r['id'].'&amp;_type=edit" onclick="return wep.load_href(this)" title="['.$_CFG['_EDIT_TITLE'].']"></a>';
+				$html .= '<a class="buttonimg imgedit" href="'.$firstpath.$data['cl'].'_id='.$r['id'].'&amp;_type=edit" title="['.$_CFG['_EDIT_TITLE'].']"></a>';
 			if($r['del'])
 				$html .= '<a class="buttonimg imgdel" href="'.$firstpath.$data['cl'].'_id='.$r['id'].'&amp;_type=del" onclick="return hrefConfirm(this,\'del\')" title="['.$_CFG['_DEL_TITLE'].']"></a>';
 			if(isset($r['istree']))
-				$html .= '<br/><a href="'.$firstpath.$data['cl'].'_id='.$r['id'].'" onclick="return wep.load_href(this)">'.$r['istree']['value'].' ('.$r['istree']['cnt'].')</a>';
+				$html .= '<br/><a href="'.$firstpath.$data['cl'].'_id='.$r['id'].'">'.$r['istree']['value'].' ('.$r['istree']['cnt'].')</a>';
 			if(isset($r['child'])) foreach($r['child'] as $ck=>$cn)
-				$html .= '<br/><a href="'.$firstpath.$data['cl'].'_id='.$r['id'].'&amp;'.$data['cl'].'_ch='.$ck.'" onclick="return wep.load_href(this)">'.$cn['value'].' ('.$cn['cnt'].')</a>';
+				$html .= '<br/><a href="'.$firstpath.$data['cl'].'_id='.$r['id'].'&amp;'.$data['cl'].'_ch='.$ck.'">'.$cn['value'].' ('.$cn['cnt'].')</a>';
 
 
 			$html .= '</td></tr>';
@@ -145,7 +145,7 @@
 				elseif($r['href']=='select_page')
 					$html .=  '<b>['.$r['value'].']</b>';
 				else
-					$html .=  '<a href="'.$r['href'].'" onclick="return wep.load_href(this)">'.$r['value'].'</a>';
+					$html .=  '<a href="'.$r['href'].'">'.$r['value'].'</a>';
 			}
 			$html .= '&#160;</div><div class="ppagenum"></div>';
 		}
