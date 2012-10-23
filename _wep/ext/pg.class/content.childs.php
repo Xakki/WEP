@@ -45,14 +45,14 @@ class content_class extends kernel_extends {
 	public function setFieldsForm($form = 0) {
 		parent::setFieldsForm($form);
 		# fields
-		$this->fields_form['owner_id'] = array('type' => 'list', 'listname' => 'ownerlist', 'caption' => 'На странице');
-		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Подзаголовок');
-		$this->fields_form['marker'] = array('type' => 'list', 'listname' => 'marker', 'caption' => 'Маркер', 'mask' => array());
-		$this->fields_form['global'] = array('type' => 'checkbox', 'caption' => 'Глобально?', 'mask' => array());
-		$this->fields_form['pagetype'] = array('type' => 'list', 'listname' => 'pagetype', 'caption' => 'INC', 'mask' => array('onetd' => 'INC'));
+		$this->fields_form['owner_id'] = array('type' => 'list', 'listname' => 'ownerlist', 'caption' => 'Родительская страница');
+		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Подзаголовок', 'comment'=>'Используется некоторыми контроллерами при выводе контента или просто для обозначение данного контента в списке');
+		$this->fields_form['marker'] = array('type' => 'list', 'listname' => 'marker', 'caption' => 'Маркер', 'comment'=>'Специальные позиции в HTML шаблоне', 'mask' => array());
+		$this->fields_form['global'] = array('type' => 'checkbox', 'caption' => 'Сквозное', 'comment'=>'Отображать данный контент на всех страницах ниже уровнем?', 'mask' => array());
+		$this->fields_form['pagetype'] = array('type' => 'list', 'listname' => 'pagetype', 'caption' => 'Контроллеры', 'mask' => array('onetd' => 'INC'));
 		$this->fields_form['funcparam'] = array('type' => 'text', 'caption' => 'Опции', 'mask' => array('name' => 'all', 'onetd' => 'Опции'), 'comment' => 'Значения разделять символом &', 'css' => 'addparam');
-		$this->fields_form['href'] = array('type' => 'text', 'caption' => 'Redirect', 'mask' => array('onetd' => 'close'));
-		$this->fields_form['pg'] = array('type' => 'ckedit', 'caption' => 'Text',
+		$this->fields_form['href'] = array('type' => 'text', 'caption' => 'Redirect', 'comment'=>'Принудительно перенапрявляет пользователя по указанному URL, если данный `контент` будет доступен пользователю', 'mask' => array('onetd' => 'close'));
+		$this->fields_form['pg'] = array('type' => 'ckedit', 'caption' => 'Текст',
 			'mask' => array('fview' => 1, 'max' => 500000),
 			'paramedit' => array(
 				'CKFinder' => array('allowedExtensions'=>''), // разрешаем загрузку любых фаилов
@@ -64,22 +64,22 @@ class content_class extends kernel_extends {
 			//$this->fields_form['pg']['paramedit']['contentsCss'] = "['/_design/default/style/main.css', '/_design/_style/main.css']";
 		}
 		if ($this->_CFG['wep']['access'])
-			$this->fields_form['ugroup'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'ugroup', 'caption' => 'Доступ', 'def
+			$this->fields_form['ugroup'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'ugroup', 'caption' => 'Доступ', 'comment'=>'Если выбранны группы пользователей, то только им будет отображаться данный контент', 'def
 		ault' => '0'); //'css'=>'minform'
 		$this->fields_form['styles'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'style', 'caption' => 'CSS', 'mask' => array('onetd' => 'Дизайн')); //, 'css'=>'minform'
 		$this->fields_form['script'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'script', 'caption' => 'SCRIPT', 'mask' => array('onetd' => 'none')); //, 'css'=>'minform'
-		$this->fields_form['keywords'] = array('type' => 'text', 'caption' => 'META-keywords', 'mask' => array('onetd' => 'none'));
-		$this->fields_form['description'] = array('type' => 'text', 'caption' => 'META-description', 'mask' => array('onetd' => 'close', 'name' => 'all'));
+		$this->fields_form['keywords'] = array('type' => 'text', 'caption' => 'SEO - ключевые слова', 'mask' => array('onetd' => 'none'));
+		$this->fields_form['description'] = array('type' => 'text', 'caption' => 'SEO - описание', 'mask' => array('onetd' => 'close', 'name' => 'all'));
 		$this->fields_form['memcache'] = array('type' => 'int', 'caption' => 'Memcache time', 'comment' => '-1 - отключает кеш полностью,0 - откл кеширование,1> - кеширование в сек.', 'mask' => array('fview' => 1));
 		$this->fields_form['memcache_solt'] = array('type' => 'list', 'listname' => 'memcache_solt', 'caption' => 'Memcache соль', 'mask' => array('fview' => 1));
-		$this->fields_form['ordind'] = array('type' => 'int', 'caption' => 'ORD');
+		$this->fields_form['ordind'] = array('type' => 'int', 'caption' => 'ORD', 'comment'=>'Сортировка');
 		$this->fields_form['access_flag'] = array('type' => 'checkbox', 'caption' => 'Не отображать на спец. страницах', 'comment'=>'Если скрипт на странице сгенерировал спец.флаг ($this->access_flag=true;) или выполняется AJAX запрос - данный контент не будет выполняться!', 'mask' => array('fview' => 1));
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
 		
 		$this->formSort = array(
-			'Основное'=>array('marker','global','pagetype','funcparam'),
+			'Основное'=>array('marker','pagetype','funcparam'),
 			'Контент'=>array('pg','keywords','description'),
-			'Дополнительно'=>array('owner_id','name','href','ugroup','styles','script','memcache','memcache_solt','ordind','access_flag'),
+			'Дополнительно'=>array('owner_id','name','href','ugroup','styles','script','memcache','memcache_solt','ordind','access_flag','global'),
 			'active',
 		);
 

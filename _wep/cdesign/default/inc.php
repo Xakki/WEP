@@ -1,8 +1,9 @@
 <?php
 //<base href="'.$_CFG['_HREF']['BH'].'/"/>
 	$_tpl['meta'] = '
-		<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
-		<meta http-equiv="Pragma" content="no-cache"/>
+		<title>{#title#}</title>
+		<link rel="SHORTCUT ICON" href="{#design#}img/favicon.ico"/>
+		<meta charset="utf-8">
 		<meta name="keywords" content="WEP"/> 
 		<meta name="description" content="CMS"/>
 		';
@@ -19,6 +20,7 @@
 	$_tpl['styles'][$_tpl['design'].'style/main.css'] = 1;
 
 	$_tpl['modulstree']=$eval='';
+	$_tpl['title'] = 'WEP';
 
 	$DATA = array('adminmenu'=>fAdminMenu($_GET['_modul'])); $_tpl['adminmenu'] = $HTML->transformPHP($DATA,'adminmenu');
 

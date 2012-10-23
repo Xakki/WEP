@@ -128,18 +128,18 @@ class pg_class extends kernel_extends {
 		# fields
 		$this->fields_form = array();
 //if(!$this->parent_id)
-		$this->fields_form['alias'] = array('type' => 'text', 'caption' => 'Алиас', 'comment' => 'Если не указвать, то адрес будет цыфрой', 'mask' => array());
+		$this->fields_form['alias'] = array('type' => 'text', 'caption' => 'Алиас', 'comment' => 'Название страницы в адресной строке (http://xakki.ru/ALIAS.html). Если не указвать, то адрес будет цыфрой (http://xakki.ru/45.html)', 'mask' => array());
 		$this->fields_form['parent_id'] = array('type' => 'list', 'listname' => 'parentlist', 'caption' => 'Родительская страница', 'mask' => array('fview' => 1));
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название', 'mask' => array('min' => 1, 'onetd' => 'Название'));
 		$this->fields_form['name_in_menu'] = array('type' => 'text', 'caption' => 'Название в меню', 'mask' => array('onetd' => 'close'));
 
-		$this->fields_form['href'] = array('type' => 'text', 'caption' => 'Ссылка', 'comment'=>'Перенаправление по другому адресу (/ или http://)', 'mask' => array('onetd' => 'Содержимое'));
+		$this->fields_form['href'] = array('type' => 'text', 'caption' => 'Redirect', 'comment'=>'Принудительное перенаправление по указанному адресу. Если написать например `/moveToHere.html`, то перенаправление будет на этом же сайте', 'mask' => array('onetd' => 'Содержимое'));
 
-		$this->fields_form['design'] = array('type' => 'list', 'listname' => 'mdesign', 'caption' => 'Дизайн', 'mask' => array());
-		$this->fields_form['template'] = array('type' => 'list', 'listname' => 'templates', 'caption' => 'Шаблон', 'mask' => array('onetd' => 'close'));
+		$this->fields_form['design'] = array('type' => 'list', 'listname' => 'mdesign', 'caption' => 'Дизайн', 'mask' => array(), 'style' => 'background-color:#5884AC;');
+		$this->fields_form['template'] = array('type' => 'list', 'listname' => 'templates', 'caption' => 'Шаблон', 'comment' => '', 'mask' => array('onetd' => 'close'), 'style' => 'background-color:#5884AC;');
 
 		$this->fields_form['onmenu'] = array('type' => 'list', 'listname' => 'menu', 'multiple' => 2, 'caption' => 'Меню', 'mask' => array('onetd' => 'Опции'));
-		$this->fields_form['menuajax'] = array('type' => 'checkbox', 'caption' => 'AJAX', 'comment' => 'Загружать контент аяксом при клике в меню', 'default' => 0, 'style' => 'background-color:#33D142;');
+		$this->fields_form['menuajax'] = array('type' => 'checkbox', 'caption' => 'AJAX', 'comment' => 'Загружать контент аяксом при клике в меню', 'default' => 0);
 
 		$this->fields_form['onmap'] = array('type' => 'checkbox', 'caption' => 'Карта', 'comment' => 'Отображать эту страницу на карте сайта', 'default' => 1, 'style' => 'background-color:#B3D142;');
 		$this->fields_form['pagemap'] = array('type' => 'list', 'listname' => 'pagemap', 'caption' => 'Карта-php', 'comment' => 'Отображать на карте сайта, карту сгенерированную php', 'mask' => array('fview' => 1), 'style' => 'background-color:#B3D142;');
@@ -156,8 +156,8 @@ class pg_class extends kernel_extends {
 
 		
 		$this->formSort = array(
-			'Основное'=>array('alias','name','href','template','onmenu','ugroup','active'),
-			'Дополнительно'=>array('parent_id','name_in_menu','menuajax','design','onmap','pagemap','pagemenu','onpath','attr','aparam','ordind'),
+			'Основное'=>array('name','alias','onmenu','ugroup','active'),
+			'Дополнительно'=>array('parent_id','name_in_menu','design','template','href','menuajax','onmap','pagemap','pagemenu','onpath','attr','aparam','ordind'),
 		);
 
 	}

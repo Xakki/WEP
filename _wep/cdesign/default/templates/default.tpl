@@ -1,8 +1,6 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru">
+<!DOCTYPE html>
+<html>
 	<head>
-		<title>WEP - {#BH#}</title>
-		<link rel="SHORTCUT ICON" href="{#design#}img/favicon.ico"/>
 		{#meta#}
 		{#styles#}
 		{#script#}
@@ -22,7 +20,7 @@
 		</div>
 		<div id="cmsinfo">
 			<div class="infname">
-				<a href="http://xakki.ru">WebEngineOnPHP {#wep_ver#}</a>
+				<a href="http://xakki.ru/portfolio/wep.html">WebEngineOnPHP {#wep_ver#}</a>
 			</div>
 			<div id="inftime">{#time#}</div>
 			<div class="infc">{#contact#}</div>
