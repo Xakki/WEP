@@ -403,6 +403,25 @@
 		cursor: pointer;
 	}
 
+	/* radiolist */
+	.divform .radiolist {
+
+	}
+	.divform .radiolist label {
+		display: block;
+		border: 1px solid transparent;
+		vertical-align: top;
+		padding: 2px 0;
+	}
+	.divform .radiolist label:hover {
+		border-color:#e1e1e1;
+	}
+	.divform .radiolist label input {
+		margin: 0px 4px;
+	}
+
+
+
 	/*MESSAGE*/
 	.messages, messages {
 		font-size:1em;

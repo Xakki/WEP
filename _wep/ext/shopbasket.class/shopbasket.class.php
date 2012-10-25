@@ -403,6 +403,15 @@ class shopbasket_class extends kernel_extends {
 		return $summ;
 	}
 
+	function orderDeliveryCost()
+	{
+		if(isset($this->orderItem[0]))
+		{
+			return $this->orderItem[0]['cost_item'];
+		}
+		return 0;
+	}
+
 
 	public function _add($data=array(),$flag_select=true) {
 		if($result = parent::_add($data,$flag_select)) {

@@ -204,15 +204,15 @@ function tpl_form(&$data, $tabs = array()) {
 				$texthtml .= '<div class="form-value ckedit-value"><textarea id="id_'.$k.'" name="'.$k.'" rows="10" cols="80" '.$attribute.'>'.htmlspecialchars((string)$r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
 			}
 			elseif($r['type']=='radio') {
-				$texthtml .= '<div class="form-value">';
+				$texthtml .= '<div class="form-value radiolist">';
 				if(!count($r['valuelist']))
 					$texthtml .= '<font color="red">Нет элементов для отображения</font>';
 				else {
 					foreach($r['valuelist'] as $row) {
-						$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'" value="'.$row['#id#'].'" class="radio" '.$attribute;
+						$texthtml .= '<label><input type="'.$r['type'].'" name="'.$k.'" value="'.$row['#id#'].'" class="radio" '.$attribute;
 						if($row['#sel#'])
 							$texthtml .= ' checked="checked"';
-						$texthtml .= '/>'.$row['#name#'].' &#160;&#160;';
+						$texthtml .= '/>'.$row['#name#'].'</label>';
 					}
 				}
 				$texthtml .= '</div>';

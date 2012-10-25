@@ -164,7 +164,10 @@
 					else {
 						unset($DATA['formcreat']['form']['_info']);
 						$DATA['formcreat']['form']['sbmt']['value'] = 'Оформить заказ';
-						$DATA['formcreat']['messages'][] = static_main::am('alert','Заказа на сумму '.$_POST['cost'].' '.$PAY->config['curr']);
+						$DATA['formcreat']['messages'][] = static_main::am('alert','Заказ на сумму '.$_POST['cost'].' '.$PAY->config['curr']);
+						$DATA['formcreat']['messages'][] = static_main::am('alert','Доставка - '.$deliveryData['name']);
+						//$deliveryCost = $SHOPBASKET->orderDeliveryCost();
+						//$DATA['formcreat']['messages'][] = static_main::am('alert','Доставка - '.$deliveryData['name'].($deliveryCost>0?', в т.ч. '.$deliveryCost.' '.$PAY->config['curr'].' за доставку':''));
 						$DATA['formcreat']['messages'][] = static_main::am('ok','Заполните все необходимые данные');
 
 						$html .= $HTML->transformPHP($DATA,'#pg#formcreat');
@@ -188,6 +191,7 @@
 		$DATA['#pageCat#'] = $this->getHref($FUNCPARAM[2]);
 		$DATA['#page#'] = $this->getHref();
 		$DATA['#delivery#'] = $SHOPDELIVER->qs('*','WHERE active=1','id');
+
 		$DATA['#curr#'] = $PAY->config['curr'];
 		$html = $HTML->transformPHP($DATA,$FUNCPARAM[1]);
 	}

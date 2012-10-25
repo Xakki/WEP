@@ -36,13 +36,20 @@
 				if($r['checked'])
 					$summ += ($r['cost']*$r['count']);
 			}
+
 			if(count($data['#delivery#'])>1) {
 				$sitem = '<div id="typedelivery">';
 				foreach($data['#delivery#'] as $rd) {
-					if(!isset($valD)) $valD = $rd['id'];
+					if($rd['selected'] or !isset($valD))
+						$valD = $rd['id'];
+					$costText = '';
+					if($rd['cost']>0)
+						$costText = ' - '.$rd['cost'].' '.$data['#curr#'].($rd['minsumm']?', бесплатная доставка от '.$rd['minsumm'].' '.$data['#curr#']:'').'';
 					$sitem .= '
-						<input type="radio" id="typedeliveryradio3"  name="typedelivery" value="'.$rd['id'].'" data-cost="'.$rd['cost'].'" data-minsumm="'.$rd['minsumm'].'"/>
-						<label for="typedeliveryradio3">'.$rd['name'].' - '.$rd['cost'].' '.$data['#curr#'].($rd['minsumm']?', бесплатная доставка от '.$rd['minsumm'].' '.$data['#curr#']:'').'</label>';
+						<label '.($rd['selected']?'class="select"':'').'>
+							<i>'.$rd['name'].$costText.'</i>
+							<input required="required" type="radio" id="typedeliveryradio'.$rd['id'].'"  name="typedelivery" value="'.$rd['id'].'" data-cost="'.$rd['cost'].'" data-minsumm="'.$rd['minsumm'].'" '.($rd['selected']?'checked="checked"':'').'/>
+						</label>';
 				}
 				$sitem .= '</div>';
 				//$_tpl['onload'] .= '$( "#typedelivery" ).buttonset();';
@@ -57,8 +64,8 @@
 
 			$html .= '</table>
 			<form type="GET">
-				<div class="basketdiv">Тип доставки '.$sitem.'</div>
-				<div class="basketdiv">Итого: <span id="basketitogo">'.$summ.'</span> '.$data['#curr#'].'</div>
+				<div class="basketdiv"><div class="caption">Тип доставки</div> '.$sitem.'</div>
+				<div class="basketdiv"><div class="caption">Итого:</div> <span id="basketitogo">'.$summ.'</span> '.$data['#curr#'].'</div>
 				<div class="basketdiv"><input type="submit" class="sbmt" value="Оформить заказ"></div>
 			</form>
 			';

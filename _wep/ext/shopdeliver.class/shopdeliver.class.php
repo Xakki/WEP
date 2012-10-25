@@ -36,6 +36,7 @@ class shopdeliver_class extends kernel_extends {
 		$this->fields['minsumm'] = array('type' => 'int', 'width' => '11', 'attr' => 'NOT NULL', 'default'=>'0');
 		$this->fields['paylist'] = array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL');
 		$this->fields['norequere'] = array('type' => 'varchar', 'width' => 32, 'attr' => 'NOT NULL');
+		$this->fields['selected'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default'=>'0');
 
 	}
 
@@ -48,6 +49,7 @@ class shopdeliver_class extends kernel_extends {
 		$this->fields_form['minsumm'] = array('type' => 'int', 'caption' => 'Бесплатная доставка', 'comment'=>'Минимальная сумма заказа для бесплатной доставки, 0 - отключить эту функцию');
 		$this->fields_form['paylist'] = array('type' => 'list', 'listname'=>'paylist', 'multiple'=>2, 'caption' => 'Разрешённые платежи');
 		$this->fields_form['norequere'] = array('type' => 'list', 'listname'=>'norequere', 'multiple'=>2, 'caption' => 'Отключенные  поля');
+		$this->fields_form['selected'] = array('type' => 'checkbox', 'caption' => 'По умолчанию', 'comment'=>'Доставка выбранная по умолчанию', 'mask' =>array());
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Отображать','default'=>1, 'mask' =>array());
 
 	}

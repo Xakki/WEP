@@ -1,10 +1,10 @@
 wep.apply(wep, {
 	load_href: function(hrf) {
-		var base_href = $('base').attr('href');
+		/*var base_href = $('base').attr('href');
 		if(typeof hrf=='object')
 			hrf = $(hrf).attr('href');
 		if (hrf.substr(0, 7) != 'http://')
-			hrf = base_href+hrf;
+			hrf = base_href+hrf;*/
 		window.location.href = hrf;
 		return false;
 	},

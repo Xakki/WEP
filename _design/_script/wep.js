@@ -8,8 +8,8 @@ var wep = {
 	version: '0.1.2',/*Версия скрипта*/
 	BH:'',
 	DOMAIN:'',
-	HREF_style:'_design/_style/',
-	HREF_script:'_design/_script/',
+	HREF_style:'/_design/_style/',
+	HREF_script:'/_design/_script/',
 	pgId:0,/* ID текущей страницы (загружается из onLOAD)*/
 	pgParam: {},/* параметры текущей страницы (загружается из onLOAD)*/
 	pgGet : {}, // GET параметры
@@ -235,7 +235,7 @@ var wep = {
 			if(jQuery(body+'> #'+objid).size()==0)
 				jQuery(body).append("<div id='"+objid+"'>&#160;</div>");
 			if(!txt || txt==''){
-				txt = "<div class='layerloader'><img src='_design/_img/load.gif' alt=' '/><br/>Подождите. Идёт загрузка</div>";
+				txt = "<div class='layerloader'><img src='/_design/_img/load.gif' alt=' '/><br/>Подождите. Идёт загрузка</div>";
 				jQuery(body+' div.layerblock').hide();
 			}
 			else {
@@ -707,7 +707,7 @@ var wep = {
 		if(url.substr(0,4)!='http' && url.substr(0,2)!='//') {
 			if(wep.baseHref=='') {
 				wep.baseHref = jQuery('base').attr('href');
-				if(wep.baseHref=='')
+				if(!wep.baseHref)
 					wep.baseHref = '//'+window.location.host;
 				else {
 					wep.baseHref = wep.trim(wep.baseHref,'/');
@@ -892,7 +892,7 @@ var wep = {
 	},
 
 	ZeroClipboard: function(obj,txt) {
-		wep.include('_design/_script/zeroclipboard/ZeroClipboard.js',function() {
+		wep.include('/_design/_script/zeroclipboard/ZeroClipboard.js',function() {
 			clip = new ZeroClipboard.Client();
 			clip.setHandCursor( true );
 			
@@ -1003,11 +1003,11 @@ var wep = {
 	},
 
 	load_href: function(hrf) {
-		var base_href = $('base').attr('href');
+		/*var base_href = $('base').attr('href');
 		if(typeof hrf=='object')
 			hrf = $(hrf).attr('href');
 		if (hrf.substr(0, 7) != 'http://')
-			hrf = base_href+hrf;
+			hrf = base_href+hrf;*/
 		window.location.href = hrf;
 		return false;
 	},

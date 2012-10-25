@@ -37,7 +37,7 @@ function tpl_paymove($data)
 		<div>Коментарий</div> <input type="text" value="" name="name"/>
 		 <input type="hidden" value="'.$data['#id#'].'" name="paymove"/>
 		<div>
-			<input type="submit" value="Пополнить" name="plus">
+			<input type="submit" value="Пополнить счет" name="plus">
 			<input type="submit" value="Снять со счёта" name="minus">
 		</div>
 		</form>';
