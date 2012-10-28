@@ -209,7 +209,7 @@ function tpl_form(&$data, $tabs = array()) {
 					$texthtml .= '<font color="red">Нет элементов для отображения</font>';
 				else {
 					foreach($r['valuelist'] as $row) {
-						$texthtml .= '<label><input type="'.$r['type'].'" name="'.$k.'" value="'.$row['#id#'].'" class="radio" '.$attribute;
+						$texthtml .= '<label class="'.$row['#css#'].'"><input type="'.$r['type'].'" name="'.$k.'" value="'.$row['#id#'].'" class="radio" '.$attribute;
 						if($row['#sel#'])
 							$texthtml .= ' checked="checked"';
 						$texthtml .= '/>'.$row['#name#'].'</label>';

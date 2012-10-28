@@ -92,7 +92,7 @@ class shopbasket_class extends kernel_extends {
 			_new_class('pay',$PAY);
 			foreach($PAY->childs as &$child) {
 				if (isset($child->pay_systems) and (!count($this->allowedPay) or in_array($child->_cl,$this->allowedPay))) {
-					$data[$child->_cl] = $child->caption;
+					$data[$child->_cl] = array('#name#'=>$child->caption, '#css#'=>'ico_'.$child->_cl, );
 				}
 			}
 			return $data;
