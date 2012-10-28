@@ -126,21 +126,10 @@ class paybank_class extends kernel_extends {
 	}
 
 
-	function payFormBilling($data,$status=0) {
+	function payFormBilling($data) 
+	{
 
-		//TODO : сообщение об успешном оформлении и с предложением распечатать (или открытие окна с распечаткой) квитанцию и счет. 
-		//TODO : оповещение в платежной системе о процессах (у родителя этого класса)
-		//global $_tpl;
-		//$_tpl['onload'] .= '$("#form_paymethod").submit();';
 		$DATA = array('messages'=>array());
-
-		/*if($status) {
-			if(count($data))
-				$DATA['messages'][] = array('ok','Счёт успешно сформирован.');
-			else
-				$DATA['messages'][] = array('error','Ошибка выставление счёта!');
-		}*/
-
 		if(count($data)) {
 			$DATA['messages'][] = array('payselect-comm',$data['name']);
 			$DATA['messages'][] = array('payselect-summ','Сумма : <span>'.number_format($data['amount'], 2, ',', ' ').' '.$this->owner->config['curr'].'');

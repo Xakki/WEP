@@ -176,6 +176,7 @@ var wep = {
 				 // подключение скриптов
 				if(typeof result.script != 'undefined')  {
 					//console.log(result.script);
+					wep._loadCount = 0;
 					wep.scriptLoad(result.script);
 				}
 				
@@ -188,7 +189,7 @@ var wep = {
 	},
 
 	timerExecLoadFunction: function (param, result) {
-		if(wep._loadCount<0){
+		if(wep._loadCount!=0){
 			setTimeout(function(){wep.timerExecLoadFunction(param, result);},500);
 			console.log('--in process--'+wep._loadCount);
 		}
@@ -564,7 +565,7 @@ var wep = {
 		var i = 1;
 		var ii = css.length; 
 		var onCssLoaded = function() 
-		{ console.log('Css ready');
+		{
 			if (i++ == ii && onComplete) 
 				onComplete.call();
 		} ; 
@@ -614,7 +615,7 @@ var wep = {
 	_onLoad: false,
 	_loadCount:0,
 	scriptLoad: function(script) {
-		//console.log(script);
+		var thisObj = this;
 		--wep._loadCount;
 		if(typeof script == 'object') {
 			for(var i in script) {
@@ -629,13 +630,13 @@ var wep = {
 
 				
 				if(typeof script[i] == 'object') {
-					--wep._loadCount;
-					wep.include(src, function(){ wep.scriptLoad(script[i]); ++wep._loadCount;});
+					--wep._loadCount; 
+					wep.include(src, function(){ thisObj.scriptLoad(script[i]); ++thisObj._loadCount; });
 				}
 				else if(src) {
-					--wep._loadCount;
-					wep.include(src, function(){++wep._loadCount;});
-				} 
+					--wep._loadCount; 
+					wep.include(src, function(){++thisObj._loadCount;});
+				}
 
 				if(typeof script[i] == 'string') {
 					eval(script[i]);
@@ -643,8 +644,6 @@ var wep = {
 			}
 		} 
 		else {
-			/*console.log('*** eval');
-			console.log(script);*/
 			eval(script);
 		}
 		++wep._loadCount;
@@ -663,12 +662,28 @@ var wep = {
 			if(validSrc)
 			{
 				//$.getScript(scripts[s], onScriptLoaded);
-				$.ajax({
+				/*$.ajax({
 					url: validSrc,
 					dataType: "script",
 					cache: true,
 					success: onScriptLoaded
-				});
+				});*/
+				var scriptElement = document.createElement('script');
+				//styleCss.type = 'text/javascript';
+				scriptElement.src = validSrc;
+				// SET READY 
+				scriptElement.onload = function () {
+					if ( onScriptLoaded )
+						onScriptLoaded.call(this);
+				};
+				scriptElement.onreadystatechange = function () {
+					if ( this.readyState != "complete" && this.readyState != "loaded" ) return;
+					if ( onScriptLoaded )
+						onScriptLoaded.call(this);
+				};
+				//$(scriptElement).ready(onScriptLoaded);
+
+				document.getElementsByTagName('head')[0].appendChild(scriptElement);
 			}
 			else if ( onComplete )
 				onComplete.call(this);

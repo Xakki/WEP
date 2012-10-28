@@ -4,7 +4,6 @@
 		$_tpl['styles']['/_shop/style/shopBasket'] = 1;
 		global $_CFG, $HTML;
 		$html = '';
-		$url = explode('?',$_SERVER['REQUEST_URI']);
 
 		if(isset($data['messages'])) {
 			$html .= $HTML->transformPHP($data['messages'], '#pg#messages');
@@ -70,7 +69,7 @@
 					if($r['pay_id'])
 						$link = '<a href="/_js.php?_modul=pay&_fn=showPayInfo&id='.$r['pay_id'].'" onclick="return wep.JSWin({type:this});" target="_blank">'.$r['#laststatus#'].'</a>';
 					else
-						$link = 'Забронированно <a href="'.$url[0].'?basketpay='.$r['id'].'">Оформить заказ</a>';
+						$link = 'Забронированно <a href="'.$data['#orderPage#'].'.html?basketpay='.$r['id'].'">Оформить заказ</a>';
 					$html .= '
 					<tr data-id="'.$r['id'].'">
 						<td><a href="'.$data['#page#'].'/'.$r['id'].'.html">Заказ №'.$r['id'].'</a>

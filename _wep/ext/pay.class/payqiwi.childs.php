@@ -118,6 +118,22 @@ Cчета со статусом большим или равным 100 трак�
 	}
 
 
+	// INFO
+	function payFormBilling($data,$status=0) 
+	{
+
+		$DATA = array('messages'=>array());
+
+		if(count($data)) {
+			$DATA['messages'][] = array('payselect-comm',$data['name']);
+			$DATA['messages'][] = array('payselect-summ','Сумма : <span>'.number_format($data['cost'], 2, ',', ' ').' '.$this->owner->config['curr'].'');
+
+			$DATA['messages'][] = array('alert','Чтобы оплатить счёт, перейдите на сайт <a href="'.$this->pay_formType.'" target="_blank">QIWI</a>');
+		}
+
+		return $DATA;
+	}
+	
 	/*
 	* При добавлении делаем запрос XML
 	*/
@@ -148,7 +164,8 @@ Cчета со статусом большим или равным 100 трак�
 
 		$result = parent::_add($data2,true);
 		if($result) {
-			$data['name'] .= ' (Счёт №'.$this->config['qiwi_txn-prefix'].$this->id.')';
+			if(!$data['name'])
+				$data['name'] = 'Счёт №'.$this->config['qiwi_txn-prefix'].$this->id;
 			$options = array(
 				'phone'=>$this->data[$this->id]['phone'],
 				'amount'=>$this->data[$this->id]['cost'],

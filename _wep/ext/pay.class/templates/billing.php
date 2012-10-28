@@ -6,21 +6,30 @@
 function tpl_billing($data)
 {
 	global $_tpl, $HTML;
-
-	// AJAX forma
-	$ID = 'form_paymethod';
-	$action = '';
-	if(isset($data['form']['_*features*_']['action']))
-		$action = $data['form']['_*features*_']['action'];
-
 	//$_CFG['fileIncludeOption']['form'] = 1;
-
-	$_tpl['onload'] .= 'wep.form.ajaxForm(\'#'.$ID.'\','.$data['#contentID#'].');';
 	$_tpl['styles']['/_pay/pay'] = 1;
 
-	$html = '<div class="payselect" style="width:340px;margin:10px auto;">
-		<h2>'.$data['#title#'].'</h2>
-		<form action="'.$action.'" enctype="multipart/form-data" method="post" id="'.$ID.'">';
+	$messages = array(
+		array('ok', $data['comm']),
+		array('ok', 'Сумма - '.$data['summ'].' '.$data['#currency#']),
+	);
+
+	$html = '<div class="payselect" style="width:340px;margin:10px auto;">';
+	if($data['#title#'])
+		$html .= '<h2>'.$data['#title#'].'</h2>';
+	// выводим форму выбора плат системы ии форму для выбранной плат системы
+	if(isset($data['child']) or isset($data['form'])) 
+	{
+		$html .= $HTML->transformPHP($messages, '#pg#messages');
+		// AJAX forma
+		$ID = 'form_paymethod';
+		$action = '';
+		if(isset($data['form']['_*features*_']['action']))
+			$action = $data['form']['_*features*_']['action'];
+		else
+			$_tpl['onload'] .= 'wep.form.ajaxForm(\'#'.$ID.'\','.$data['#contentID#'].');';
+
+		$html .= '<form action="'.$action.'" enctype="multipart/form-data" method="post" id="'.$ID.'">';
 		foreach($_POST as $k=>$r) {
 			if(!is_array($r))
 				$html .= '<input type="hidden" value="'.$r.'" name="'.$k.'">';
@@ -36,7 +45,8 @@ function tpl_billing($data)
 
 		if(isset($data['child'])) {
 			$html .= '<div class="paymethod">';
-			foreach($data['child'] as $r) {
+			foreach($data['child'] as $r) 
+			{
 				/*if(isset($r['_button']))
 					$html .= '<span>'.$r['_button'].'</span>';
 				else*/
@@ -45,17 +55,31 @@ function tpl_billing($data)
 			}
 			$html .= '</div>';
 		}
-		elseif(isset($data['form'])) {
-			global $HTML;
+		elseif(isset($data['form'])) 
+		{
 			$html .= '<div class="divform">';
 			unset($data['form']['_info']);
 			$html .= $HTML->transformPHP($data['form'], '#pg#form');
 			$html .= '</div>';
 		}
-		else {
+		else 
+		{
 			$html .= '';
 		}
 		$html .= '</form>';
+	}
+	// Вывводим статус платежа
+	else
+	{
+
+		$html .= '<h1><a id="gotopay" href="'.$data['#payLink#'].'" target="_blank">Оплатить</a></h1>';
+
+		$messages[] = array('ok', 'Статус - '.$data['#status#']);
+		$html .= $HTML->transformPHP($messages, '#pg#messages');
+		$html .= '<br/><div class="paySpanMess" onclick="window.location.reload();">Обновите страницу, чтобы узнать состояния счёта.</div>';
+		//$_tpl['onload'] .= '$("#gotopay").click();';
+	}
+
 	if(isset($data['#foot#']))
 		$html .= '<div class="payselect-foot">'.$data['#foot#'].'</div>';
 	$html .= '</div>';

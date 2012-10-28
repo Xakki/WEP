@@ -154,34 +154,51 @@ class payrbk_class extends kernel_extends {
 		return $result;
 	}
 
-	function payFormBilling($data) {
-		global $_tpl;
-		//$_tpl['onload'] .= '$("#form_paymethod").submit();';
+	function payFormBilling($data) 
+	{
 		$DATA = array();
-		$DATA['messages'] = array(
-			array('alert','Выполняется открытие страницы оплаты на RBK.Money.'),
-			array('notice','<small>Если у вас не открылось окно оплаты, возможно ваш браузер заблокировал открытие окна (Ваш браузер должен был выдать предупреждение об этом, кликните на всплывшее сообщение и разрешите данную операцию)</small>'),
-			array('txt','После оплаты обновите <a href="javascript:window.location.reload();">страницу</a>, чтобы узнать состояние счёта.'),
-		);
-		$DATA['form'] = array(
-			'_*features*_' => array('name'=>'paymethod','action'=>$this->config['actionURL'].'"  target="_blank'),
-			'eshopId'=>array('type'=>'hidden','value'=>$this->config['eshopId']),
-			'orderId'=>array('type'=>'hidden','value'=>$data['id']), // заголовок у отправителя
-			'serviceName'=>array('type'=>'hidden','value'=>$data['name']), // Комментарий у отправителя
-			'recipientAmount'=>array('type'=>'hidden','value'=>$data['amount']),
-			'recipientCurrency'=>array('type'=>'hidden','value'=>$this->config['recipientCurrency']),
-			'successUrl'=>array('type'=>'hidden','value'=>$this->owner->successUrl),
-			'failUrl'=>array('type'=>'hidden','value'=>$this->owner->failUrl),
-			'user_email'=>array('type'=>'hidden','value'=>$data['email']),
-			'language'=>array('type'=>'hidden','value'=>$this->config['language']),
-		);
-		if ($this->config['preference'] != 'all') {
-			$form['preference'] = array(
-				'#type' => 'hidden',
-				'#value' => $this->config['preference'],
-			);
+		if(isset($data['paymentStatus']) and $data['paymentStatus']==self::$STATUS_SUCCESS)
+		{
+			$DATA = array('messages'=>array());
+
+			$DATA['messages'][] = array('payselect-comm',$data['name']);
+			$DATA['messages'][] = array('payselect-summ','Сумма : <span>'.number_format($data['amount'], 2, ',', ' ').' '.$this->owner->config['curr'].'');
+
+			$DATA['messages'][] = array('ok','Оплачено');
+
 		}
-		$DATA['form']['sbmt'] = array('type'=>'submit','value'=>'Перейти на RBK.Money');
+		else
+		{
+
+			$DATA = array();
+			$DATA['messages'] = array(
+				array('alert','Выполняется открытие страницы оплаты на RBK.Money.'),
+				array('notice','<small>Если у вас не открылось окно оплаты, возможно ваш браузер заблокировал открытие окна (Ваш браузер должен был выдать предупреждение об этом, кликните на всплывшее сообщение и разрешите данную операцию)</small>'),
+				array('txt','После оплаты обновите <a href="javascript:window.location.reload();">страницу</a>, чтобы узнать состояние счёта.'),
+			);
+			$DATA['form'] = array(
+				'_*features*_' => array('name'=>'paymethod','action'=>$this->config['actionURL'].'"  target="_blank'),
+				'eshopId'=>array('type'=>'hidden','value'=>$this->config['eshopId']),
+				'orderId'=>array('type'=>'hidden','value'=>$data['id']), // заголовок у отправителя
+				'serviceName'=>array('type'=>'hidden','value'=>$data['name']), // Комментарий у отправителя
+				'recipientAmount'=>array('type'=>'hidden','value'=>$data['amount']),
+				'recipientCurrency'=>array('type'=>'hidden','value'=>$this->config['recipientCurrency']),
+				'successUrl'=>array('type'=>'hidden','value'=>$this->owner->successUrl),
+				'failUrl'=>array('type'=>'hidden','value'=>$this->owner->failUrl),
+				'user_email'=>array('type'=>'hidden','value'=>$data['email']),
+				'language'=>array('type'=>'hidden','value'=>$this->config['language']),
+			);
+			if ($this->config['preference'] != 'all') {
+				$form['preference'] = array(
+					'#type' => 'hidden',
+					'#value' => $this->config['preference'],
+				);
+			}
+			$DATA['form']['sbmt'] = array('type'=>'submit','value'=>'Перейти на RBK.Money');
+			global $_tpl;
+			$_tpl['onload'] .= '$("#form_paymethod").submit();';
+		}
+
 		return $DATA;
 	}
 

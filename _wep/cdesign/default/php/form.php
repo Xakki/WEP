@@ -144,7 +144,7 @@ function tpl_form(&$data, $tabs = array()) {
 				$texthtml .= '<div class="form-value"><textarea name="'.$k.'" onkeyup="textareaChange(this)" rows="10" cols="80" '.$attribute.'>'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
 			}
 			elseif($r['type']=='ckedit') {
-				$_tpl['script'][$_CFG['_HREF']['WSWG'].'ckeditor/ckeditor.js'] = 1;
+				$_tpl['script'][$_CFG['_HREF']['WSWG'].'ckeditor3/ckeditor.js'] = 1;
 
 				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
 

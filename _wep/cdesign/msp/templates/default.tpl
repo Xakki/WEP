@@ -13,7 +13,6 @@
 		<script type="text/javascript" src="/script/jquery.form.js"></script>
 		<!--<script type="text/javascript" src="/script/jquery.fancybox.js"></script><link rel="stylesheet" href="/style/jquery.fancybox.css" type="text/css"/>-->
 		<script type="text/javascript" src="/script/utils.js"></script>
-		<script type="text/javascript" src="/ckeditor/ckeditor.js"></script>
 		{$_tpl['script']}
 		{$_tpl['styles']}
 	</head>

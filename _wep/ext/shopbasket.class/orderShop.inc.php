@@ -68,7 +68,7 @@
 
 		$subK = 0;
 		// STEP 1 
-
+		$DATA['#orderPage#'] = $Chref;
 		$DATA['#page#'] = $Chref.'/orderlist';
 		$DATA['#curr#'] = $PAY->config['curr'];
 		$DATA['#pageUser#'] = $this->getHref($FUNCPARAM[4]);
@@ -196,16 +196,19 @@
 		$html = $HTML->transformPHP($DATA,$FUNCPARAM[1]);
 	}
 
-	$subHtml = '<ul class="stepMenu">';
-	foreach($subMenu as $k=>$r) {
-		$subHtml .= '<li class="'.(isset($r['href'])?'allow':'').($k==$subK?' sel':'').'">';
-		if(isset($r['href']) and $r['href'])
-			$subHtml .= '<a href="'.$r['href'].'">'.$r['name'].'</a>';
-		else
-			$subHtml .= $r['name'];
-	}
-	$subHtml .= '</ul>';
+	if(!$this->ajaxRequest)
+	{
+		$subHtml = '<ul class="stepMenu">';
+		foreach($subMenu as $k=>$r) {
+			$subHtml .= '<li class="'.(isset($r['href'])?'allow':'').($k==$subK?' sel':'').'">';
+			if(isset($r['href']) and $r['href'])
+				$subHtml .= '<a href="'.$r['href'].'">'.$r['name'].'</a>';
+			else
+				$subHtml .= $r['name'];
+		}
+		$subHtml .= '</ul>';
 
-	$_tpl['text'] = $subHtml.$_tpl['text'];
+		$_tpl['text'] = $subHtml.$_tpl['text'];
+	}
 
 	return $html;

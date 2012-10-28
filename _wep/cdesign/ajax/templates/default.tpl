@@ -16,8 +16,6 @@
 		<script type="text/javascript" src="/script/utils.js"></script>
 		<script type="text/javascript" src="/script/md5.js"></script>
 		<script type="text/javascript" src="/script/spirr.js"></script>
-		<script type="text/javascript" src="/ckeditor/ckeditor.js"></script>
-		<script type="text/javascript" src="/ckfinder/ckfinder.js"></script>
 		{$_tpl['script']}
 		{$_tpl['styles']}
 		<link type="text/css" href="/style/jquery-ui-redmond.css" rel="stylesheet">
