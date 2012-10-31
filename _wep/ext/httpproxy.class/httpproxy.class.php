@@ -3,7 +3,7 @@
 class httpproxy_class extends kernel_extends {
 
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->ver = '0.0.2';
 		$this->mf_actctrl = true;
 		$this->mf_timecr = true;
@@ -20,7 +20,6 @@ class httpproxy_class extends kernel_extends {
 		$this->cf_tools[] = array('func'=>'loadList','name'=>'Загрузка списка прокси');
 		$this->cf_tools[] = array('func'=>'clearUse','name'=>'Очистка счётчиков');
 		$this->cf_tools[] = array('func'=>'CheckSite','name'=>'Проверка xakki.ru');
-		return true;
 	}
 
 	function _create() {
@@ -278,7 +277,7 @@ class httpproxy_class extends kernel_extends {
 class httpproxycheck_class extends kernel_extends {
 
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->mf_timecr = false;
 		$this->mf_timeup = false;
 		$this->mf_actctrl = false;

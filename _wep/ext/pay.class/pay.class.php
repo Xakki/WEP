@@ -2,7 +2,7 @@
 class pay_class extends kernel_extends {
 
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->caption = 'Pay System';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';
 		$this->mf_timecr = true; // создать поле хранящее время создания поля
@@ -21,7 +21,6 @@ class pay_class extends kernel_extends {
 		$this->index_fields['status'] = 'status';
 		$this->_AllowAjaxFn['showPayInfo'] = true;
 		$this->ordfield = 'id DESC';
-		return true;
 	}
 
 	protected function _create_conf() {/*CONFIG*/
@@ -68,8 +67,10 @@ class pay_class extends kernel_extends {
 		$this->fields_form['pay_modul'] = array('type' => 'list', 'listname'=>'pay_modul', 'readonly'=>1,'caption' => 'Платежный модуль', 'mask'=>array());
 		$this->fields_form['status'] = array('type' => 'list', 'listname'=>'status', 'readonly'=>1,'caption' => 'Статус', 'mask'=>array());
 		
-		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата', 'mask'=>array());
-		$this->fields_form['mf_ipcreate'] = array('type' => 'text','readonly'=>1, 'caption' => 'IP', 'mask'=>array('fview'=>2));
+		$this->fields_form[$this->mf_timecr] = array('type' => 'date','readonly'=>1, 'caption' => 'Создание', 'mask'=>array('onetd' => 'Дата'));
+		$this->fields_form[$this->mf_timestamp] = array('type' => 'date','readonly'=>1, 'caption' => 'Обновление', 'mask'=>array('onetd' => 'close'));
+
+		$this->fields_form['mf_ipcreate'] = array('type' => 'text','readonly'=>1, 'caption' => 'IP', 'mask'=>array());
 
 	}
 

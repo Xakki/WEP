@@ -33,7 +33,7 @@ class paywebmoney_class extends kernel_extends {
 	}
 
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->default_access = '|9|';
 		$this->mf_timecr = true; // создать поле хранящее время создания поля
 		$this->mf_actctrl = true;
@@ -46,7 +46,7 @@ class paywebmoney_class extends kernel_extends {
 		$this->caption = 'Платежи WebMoney';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';
 		$this->ver = '0.1';
-		return true;
+
 	}
 
 	protected function _create() {

@@ -9,7 +9,7 @@
  * 3 - Номер ревизии , исправленны ошибки
  */
 $_CFG['info'] = array(//информация о СМС
-	'version' => '2.14.38',
+	'version' => '2.14.39',
 	'email' => 'wep@xakki.ru',
 	'icq' => '222392984'
 );
@@ -131,7 +131,6 @@ $_CFG['_FILE']['cron'] = $_CFG['_PATH']['config'] . 'configcron.php';
 $_CFG['_FILE']['HASH_KEY'] = $_CFG['_PATH']['config'] . 'hash.key';
 
 $_CFG['_PATH']['locallang'] = $_CFG['_PATH']['wepconf'] . 'locallang/'; // язык
-$_CFG['_PATH']['cron'] = $_CFG['_PATH']['wepconf'] . 'cron/'; // кроны
 $_CFG['_PATH']['weptemp'] = $_CFG['_PATH']['wepconf'] . 'temp/'; // путь к папке для хранения временных файлов
 $_CFG['_PATH']['temp'] = $_CFG['_PATH']['path'] . '_content/temp/'; // путь к папке для хранения временных файлов системы
 $_CFG['_PATH']['content'] = $_CFG['_PATH']['path'] . '_content/'; // путь к папке для хранения  файлов системы

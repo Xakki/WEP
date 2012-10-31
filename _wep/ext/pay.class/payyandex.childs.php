@@ -2,7 +2,7 @@
 class payyandex_class extends kernel_extends {
 	
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->caption = 'Яндекс.Деньги';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';
 		/*$this->lang['add_name'] = 'Пополнение кошелька из QIWI';
@@ -57,7 +57,6 @@ class payyandex_class extends kernel_extends {
 		//$this->SCOPE = array('account-info','operation-history','operation-details','payment','payment-shop','payment-p2p','money-source("wallet","card")');
 		$this->SCOPE = array('account-info','operation-history','operation-details');
 
-		return true;
 	}
 
 	function _create_conf() {/*CONFIG*/

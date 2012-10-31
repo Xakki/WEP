@@ -2,7 +2,7 @@
 class product_class extends kernel_extends {
 
 	protected function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->ver = '0.0.1';
 		$this->caption = 'Продкция';
 		//$this->mf_statistic = array('Y'=>'count(id)','X'=>'FROM_UNIXTIME(mf_timecr,"%Y-%m")','Yname'=>'Кол','Xname'=>'Дата');//-%d
@@ -29,7 +29,6 @@ class product_class extends kernel_extends {
 
 		$this->_AllowAjaxFn['AjaxShopParam'] = true;
 
-		return true;
 	}
 
 	protected function _create_conf() {/*CONFIG*/
@@ -1062,12 +1061,11 @@ class product_class extends kernel_extends {
 
 class product_value_class extends kernel_extends {
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->showinowner=false;// не показывать
 		$this->mf_createrid = false;
 		$this->owner_unique = true; // уникальная запис для одного объявления
 		$this->tablename = $this->owner->_cl.'_value';
-		return true;
 	}
 
 	function _create() {
@@ -1099,11 +1097,10 @@ class product_value_class extends kernel_extends {
 
 class product_like_class extends kernel_extends {
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		//$this->showinowner=false;// не показывать
 		$this->mf_createrid = false;
 		$this->tablename = $this->owner->_cl.'_like';
-		return true;
 	}
 
 	function _create() {

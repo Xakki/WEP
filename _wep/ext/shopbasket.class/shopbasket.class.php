@@ -15,7 +15,7 @@ class shopbasket_class extends kernel_extends {
 	}*/
 
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 
 		$this->ver = '0.0.1';
 		$this->caption = 'Магазин - Корзина';
@@ -44,8 +44,6 @@ class shopbasket_class extends kernel_extends {
 			6=>'Отменено пользователем',
 			7=>'Отменено магазином',
 		);
-
-		return true;
 	}
 
 	protected function _create() {
@@ -469,7 +467,7 @@ class shopbasket_class extends kernel_extends {
 class shopbasketitem_class extends kernel_extends {
 
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 
 		$this->ver = '0.0.1';
 		$this->caption = 'Товары заказа';
@@ -482,7 +480,6 @@ class shopbasketitem_class extends kernel_extends {
 			0=>'Письмом',
 			1=>'Онлайн оплата');*/
 
-		return true;
 	}
 
 	protected function _create() {
@@ -520,7 +517,7 @@ class shopbasketitem_class extends kernel_extends {
 class shopbasketstatus_class extends kernel_extends {
 
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 
 		$this->ver = '0.0.1';
 		$this->caption = 'Статусы';

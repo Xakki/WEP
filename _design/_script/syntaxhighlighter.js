@@ -11,7 +11,7 @@ function path_syntaxhighlighter()
 };
 
 $(function(){
-	data = path_syntaxhighlighter(
+	dataSL = path_syntaxhighlighter(
 		'applescript            @shBrushAppleScript.js',
 		'actionscript3 as3      @shBrushAS3.js',
 		'bash shell             @shBrushBash.js',
@@ -41,7 +41,7 @@ $(function(){
 	wep.includeCSS('/_design/_script/syntaxhighlighter/styles/shCore.css');
 	wep.includeCSS('/_design/_script/syntaxhighlighter/styles/shCoreDefault.css');
 	wep.include('/_design/_script/syntaxhighlighter/scripts/shAutoloader.js',function() {
-		SyntaxHighlighter.autoloader.apply(null, data);
+		SyntaxHighlighter.autoloader.apply(null, dataSL);
 		SyntaxHighlighter.all();
 	});
 });

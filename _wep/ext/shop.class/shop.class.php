@@ -23,7 +23,7 @@ class shop_class extends rubric_class {
 	}
 
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->ver = '0.1.4';
 		$this->caption = 'Магазин - Каталог';
 		$this->_AllowAjaxFn['jsOrder'] = true;
@@ -35,7 +35,6 @@ class shop_class extends rubric_class {
 			0=>'Заказ письмом',
 			1=>'В корзину');
 
-		return true;
 	}
 
 	/*function _create() {

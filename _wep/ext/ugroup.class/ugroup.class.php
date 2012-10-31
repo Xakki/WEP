@@ -85,7 +85,6 @@ class ugroup_class extends kernel_extends
 		$this->tablename = 'ugroup';
 		$this->ver = '0.2.3';
 		$this->default_access = '|0|';
-		return true;
 	}
 
 	protected function _create() {
@@ -267,7 +266,7 @@ class ugroup_class extends kernel_extends
 class users_class extends kernel_extends {
 
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->mf_actctrl = true;
 		$this->fn_login = 'email';//login or email
 		$this->fn_pass = 'pass';
@@ -284,7 +283,6 @@ class users_class extends kernel_extends {
 		$this->default_access = '|0|';
 		$this->userCach = array();
 		$this->tablename = 'users';
-		return true;
 	}
 
 	protected function _create_conf() {/*CONFIG*/

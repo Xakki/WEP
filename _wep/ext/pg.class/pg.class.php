@@ -61,8 +61,7 @@ class pg_class extends kernel_extends {
 	}
 
 	function _set_features() {
-		if (!parent::_set_features())
-			return false;
+		parent::_set_features();
 		$this->mf_istree = true;
 		$this->mf_ordctrl = true;
 		$this->mf_actctrl = true;
@@ -82,7 +81,6 @@ class pg_class extends kernel_extends {
 		$this->current_path = '';
 		$this->ajaxRequest = false; // ставится метка об аякс запросе
 		$this->access_flag = false; // Если значение выставить true, то каждое "Содержимое" будет проверяться на допуск к отображению на "Спец страницах" (отмеченные галочкой не выполнятся)
-		return true;
 	}
 
 	function _create() {

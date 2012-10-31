@@ -4,7 +4,7 @@ class payrbk_class extends kernel_extends {
 	static $STATUS_SUCCESS = 5;
 	
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->caption = 'RBK.Money';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';
 		$this->default_access = '|9|';
@@ -69,7 +69,6 @@ class payrbk_class extends kernel_extends {
 		$this->SSL = dirname(__FILE__).'/lib/ym.crt'; 
 		$this->SCOPE = array('account-info','operation-history','operation-details');*/
 
-		return true;
 	}
 
 	function _create_conf() {/*CONFIG*/

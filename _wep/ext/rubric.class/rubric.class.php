@@ -2,7 +2,7 @@
 class rubric_class extends kernel_extends {
 
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->ver = '0.0.1';
 		$this->mf_istree = true;
 		$this->mf_ordctrl = true;
@@ -18,7 +18,7 @@ class rubric_class extends kernel_extends {
 			'resizecrop'=>'resizecrop',
 			'resize'=>'resize'
 		);
-		return true;
+
 	}
 
 	protected function _create_conf() {/*CONFIG*/
@@ -201,14 +201,13 @@ class rubric_class extends kernel_extends {
 class rubricparam_class extends kernel_extends {
 
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->mf_ordctrl = true;
 		$this->mf_actctrl = true;
 		$this->caption = 'Параметры';
 		$this->singleton = false;
 		$this->tablename = $this->owner->_cl.'_param';
 		//TODO : Доработать  проблему вызова подкласса 2 раза ".$this->tablename
-		return true;
 	}
 
 	function getTypeForm($type) {

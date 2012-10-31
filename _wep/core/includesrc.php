@@ -18,7 +18,7 @@
 
 				$_tpl['script']['script.jquery/jquery-ui'] = array(
 					'script.jquery/ui-multiselect' => 1,
-					'jquery.localisation/ui-multiselect-ru' => 1,
+					'script.jquery/jquery.localisation/ui-multiselect-ru' => 1,
 				);
 	
 				$_tpl['onload'] .= 'jQuery(\'select.multiple\').multiselect();';
@@ -55,7 +55,7 @@
 		if(isset($gfi['datepicker']) and $gfi['datepicker']) {
 			if(!isset($_tpl['script']['script.jquery/jquery-ui']))
 				$_tpl['script']['script.jquery/jquery-ui'] = 1;
-			$_tpl['script']['jquery.localisation/jquery.ui.datepicker-ru'] = 1;
+			$_tpl['script']['script.jquery/jquery.localisation/jquery.ui.datepicker-ru'] = 1;
 			if($gfi['datepicker']==2) {
 				$_tpl['script']['script.jquery/ui-timepicker-addon'] = 1;
 				$_tpl['styles']['style.jquery/ui-timepicker-addon'] = 1;

@@ -4,7 +4,7 @@
 class paybank_class extends kernel_extends {
 
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->default_access = '|9|';
 		$this->mf_timecr = true; // создать поле хранящее время создания поля
 		$this->mf_actctrl = true;
@@ -33,7 +33,7 @@ class paybank_class extends kernel_extends {
 			31 => 'Отменено продавцом',
 			32 => 'Отменен (Истекло время)',
 		);
-		return true;
+
 	}
 
 	function _create_conf() {/*CONFIG*/

@@ -113,7 +113,7 @@
 	}
 	$_tpl['modulsforms'] = $html;
 
-	//$_tpl['script']['script.localisation/jquery.localisation-min'] = 1;
+	//$_tpl['script']['script.jquery/jquery.localisation/jquery.localisation-min'] = 1;
 
 //$_CFG['fileIncludeOption']['fancybox']
 

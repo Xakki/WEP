@@ -104,7 +104,7 @@
 	$_tpl['script']['script.jquery/form'] = 1;
 	$_tpl['script']['utils'] = 1;
 	$_tpl['script']['script'] = 1;
-	//$_tpl['script']['script.localisation/jquery.localisation-min'] = 1;
+	//$_tpl['script']['script.jquery/jquery.localisation/jquery.ui.datepicker-ru'] = 1;
 	include($_CFG['_PATH']['core'].'/includesrc.php');
 	fileInclude($_CFG['fileIncludeOption']);
 	arraySrcToStr();

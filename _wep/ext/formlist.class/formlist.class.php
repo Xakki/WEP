@@ -2,12 +2,11 @@
 class formlist_class extends kernel_extends {
 
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->mf_actctrl = true;
 		$this->_AllowAjaxFn = array(
 			'AjaxMCBox'=>true,
 		);
-		return true;
 	}
 
 	function _create() {
@@ -68,12 +67,11 @@ class formlist_class extends kernel_extends {
 class formlistitems_class extends kernel_extends {
 
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->mf_actctrl = true;
 		$this->mf_istree = true;
 		$this->mf_ordctrl = true;
 		$this->caption = 'Элементы';
-		return true;
 	}
 
 	function _create() {

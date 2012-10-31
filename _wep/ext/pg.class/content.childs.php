@@ -7,14 +7,13 @@
 class content_class extends kernel_extends {
 
 	function _set_features() {
-		if (!parent::_set_features())
-			return false;
+		parent::_set_features();
 		$this->mf_ordctrl = true;
 		$this->mf_actctrl = true;
 		$this->caption = 'Содержимое';
 		$this->tablename = 'pg_content';
 		$this->addForm = array();
-		return true;
+
 	}
 
 	function _create() {

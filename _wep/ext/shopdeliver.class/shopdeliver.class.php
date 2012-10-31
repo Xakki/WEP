@@ -12,7 +12,7 @@ class shopdeliver_class extends kernel_extends {
 	}*/
 
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 
 		$this->ver = '0.0.1';
 		$this->caption = 'Магазин - Доставка';
@@ -24,8 +24,6 @@ class shopdeliver_class extends kernel_extends {
 			'address' => 'Адрес',
 			'phone' => 'Телефон',
 		);
-
-		return true;
 	}
 
 	protected function _create() {

@@ -27,7 +27,7 @@ class payqiwi_class extends kernel_extends {
 	}
 
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->caption = 'QIWI';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';
 		$this->lang['add_name'] = 'Пополнение кошелька из QIWI';
@@ -86,7 +86,6 @@ Cчета со статусом большим или равным 100 трак�
 
 		$this->cron[] = array('modul'=>$this->_cl,'function'=>'checkBill()','active'=>1,'time'=>300);
 
-		return true;
 	}
 
 	protected function _create() {
