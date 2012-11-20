@@ -411,8 +411,8 @@ class shopbasket_class extends kernel_extends {
 	}
 
 
-	public function _add($data=array(),$flag_select=true) {
-		if($result = parent::_add($data,$flag_select)) {
+	public function _add($data = array(), $flag_select = true, $flag_update=false) {
+		if($result = parent::_add($data, $flag_select, $flag_update)) {
 			foreach($this->orderItem as $k=>$r) {
 				$r['owner_id'] = $this->id;
 				if($k)
@@ -558,8 +558,8 @@ class shopbasketstatus_class extends kernel_extends {
 	}
 
 
-	public function _add($data=array(),$flag_select=true) {
-		if($result = parent::_add($data,$flag_select)) {
+	public function _add($data = array(), $flag_select = true, $flag_update=false) {
+		if($result = parent::_add($data, $flag_select, $flag_update)) {
 			$result = $this->owner->_update(array('laststatus'=>$data['status']));
 		}
 		return $result;

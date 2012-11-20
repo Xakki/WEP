@@ -18,7 +18,7 @@
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if (isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 		$form = array(
-			'0' => array('type' => 'list', 'listname' => 'phptemplates', 'caption' => 'Шаблон плавающей корзины'),
+			'0' => array('type' => 'list', 'listname' => array('phptemplates', 'tags'=>'basket'), 'caption' => 'Шаблон плавающей корзины'),
 			'1'=>array('type'=>'list','listname'=>'ownerlist', 'caption'=>'Страница корзины'),
 		);
 		return $form;

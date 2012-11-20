@@ -35,7 +35,7 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 	$form = array(
 		'0' => array('type' => 'list', 'listname' => 'typemenuinc', 'caption' => 'Тип вывода карты'),
 		'1' => array('type' => 'list', 'listname' => 'levelmenuinc', 'caption' => 'Уровень вывода данных'),
-		'2' => array('type' => 'list', 'listname' => 'phptemplates', 'caption' => 'Шаблон'),
+		'2' => array('type' => 'list', 'listname' => array('phptemplates', 'tags'=>'pgmenu'), 'caption' => 'Шаблон'),
 	);
 	return $form;
 }

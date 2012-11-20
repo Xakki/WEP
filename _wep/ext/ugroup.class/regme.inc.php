@@ -19,7 +19,7 @@
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 		//$temp = 'ownerlist';
 		$form = array(
-			'0'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон'),
+			'0'=>array('type'=>'list','listname'=>array('phptemplates', 'tags'=>'form'),'caption'=>'Шаблон'),
 			'1'=>array('type'=>'list','listname'=>array('class'=>'ugroup'), 'caption'=>'Регистрировать в указанную группу'),
 			'2'=>array('type'=>'list','listname'=>'userfieldlist', 'multiple'=>2, 'caption'=>'Выводимые поля'),
 		);

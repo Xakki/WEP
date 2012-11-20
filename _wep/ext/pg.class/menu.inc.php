@@ -40,7 +40,7 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 		'0' => array('type' => 'list', 'listname' => array('owner', 'menu'), 'caption' => 'Меню'),
 		'1' => array('type' => 'list', 'listname' => 'typemenuinc', 'caption' => 'Тип вывода меню'),
 		'2' => array('type' => 'list', 'listname' => 'levelmenuinc', 'caption' => 'Уровень вывода данных'),
-		'3' => array('type' => 'list', 'listname' => 'phptemplates', 'caption' => 'Шаблон'),
+		'3' => array('type' => 'list', 'listname' => array('phptemplates', 'tags'=>'pgmenu'), 'caption' => 'Шаблон'),
 	);
 	return $form;
 }

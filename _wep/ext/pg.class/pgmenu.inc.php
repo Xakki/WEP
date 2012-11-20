@@ -20,7 +20,7 @@ if (!isset($FUNCPARAM[1]))
 // рисуем форму для админки чтобы удобно задавать параметры
 if (isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 	$form = array(
-		0 => array('type' => 'list', 'listname' => 'phptemplates', 'caption' => 'Шаблон'),
+		0 => array('type' => 'list', 'listname' => array('phptemplates', 'tags'=>'pgmenu'), 'caption' => 'Шаблон'),
 		1 => array('type' => 'list', 'multiple'=>2, 'listname' => 'ownerlist', 'caption' => 'Элементы меню'),
 		
 	);

@@ -128,21 +128,30 @@ abstract class kernel_extends {
 
 
 	  -------------------------------------- */
-
+/**
+* инициалия основных настроек модуля для подключения к БД и связи
+* а также определение основных атрибутов 
+* префикс mf_ - атрибуты создающие спец поля в бд
+* prm_ - атрибуты определяющие права доступа
+* cf_ - атрибуты настроики конфига для модуля
+* 
+**/
 	protected function _set_features() {// initalization of modul features
 		//$this->mf_issimple = false;
 		//$this->mf_typectrl = false;
 		//$this->mf_struct_readonly = false;
-		$this->id = NULL;
-		$this->_file_cfg = NULL;
+		// по умол. false - главный индекс хранится в бд как число, иначе как текст
 		$this->mf_use_charid = false; //if true - id varchar
+          // true - добавляется поле в бд , хранящий наименование записи, и это поле будет фигурировать в списках,  (можно вписать свое наименование) [bool,string]
 		$this->mf_namefields = true; //добавлять поле name
+          // создаст поле хранящий id пользователя создавший данную запись (можно вписать свое наименование) [bool,string]
 		$this->mf_createrid = true; //польз владелец
+           // true - создаст поле parent_id и записи могут храниться в виде дерева, (можно вписать свое наименование) [bool,string]
 		$this->mf_istree = false; // древовидная структура?
 		$this->mf_treelevel = 0; // разрешенное число уровней в дереве , 0 - безлимита, 1 - разрешить 1 подуровень
-		$this->mf_ordctrl = false; // поле ordind для сортировки
-		$this->mf_actctrl = false; // поле active
-		$this->mf_timestamp = false; // создать поле  типа timestamp
+		$this->mf_ordctrl = false; // создаст поле ordind для сортировки (можно вписать свое наименование) [bool,string]
+		$this->mf_actctrl = false; // создаст поле active, (можно вписать свое наименование) [bool,string]
+		$this->mf_timestamp = false; // создать поле  типа timestamp, (можно вписать свое наименование) [bool,string]
 		$this->mf_timecr = false; // создать поле хранящще время создания поля
 		$this->mf_timeup = false; // создать поле хранящще время обновления поля
 		$this->mf_timeoff = false; // создать поле хранящще время отключения поля (active=0)
@@ -152,8 +161,11 @@ abstract class kernel_extends {
 		$this->prm_add = true; // добавить в модуле
 		$this->prm_del = true; // удалять в модуле
 		$this->prm_edit = true; // редактировать в модуле
+          // если это дочерний модуль,то false запретит доступ к этому модулю через админку
 		$this->showinowner = true; // показывать под родителем
+          // для дочерних модулей, true разрешит создавать только одну запись для каждого элемента родителя
 		$this->owner_unique = false; // поле owner_id не уникально
+          // записи выводятся постранично
 		$this->mf_mop = true; // выключить постраничное отображение
 		$this->reversePageN = false; // обратный отчет для постраничного отображения
 		$this->messages_on_page = 20; //число эл-ов на странице
@@ -210,7 +222,8 @@ abstract class kernel_extends {
 		$this->data = array();
 		$this->parent_id = NULL;
 		$this->null = NULL;
-
+          $this->id = NULL;
+		$this->_file_cfg = NULL;
 		$this->grant_sql = false;
 		return true;
 	}
@@ -373,7 +386,7 @@ abstract class kernel_extends {
 		return true;
 	}
 
-	function _childs() {
+	public function _childs() {
 		//$dir = dir($this->_CFG['_PATH']['ext'].$this->_cl.'.class');
 		//while (false !== ($entry = $dir->read())) {
 		//}
@@ -739,7 +752,7 @@ abstract class kernel_extends {
 	 *
 	 * @return bool
 	 */
-	public function _add($data = array(), $flag_select = true) {
+	public function _add($data = array(), $flag_select = true, $flag_update=false) {
 		if (is_bool($data)) {
 			$flag_select = $data;
 			trigger_error('Устаревший вариант вызова функция _add', E_USER_WARNING);
@@ -755,7 +768,7 @@ abstract class kernel_extends {
 				}
 			}
 		}
-		$result = static_form::_add($this, $flag_select);
+		$result = static_form::_add($this, $flag_select, $flag_update);
 		if ($result)
 			$this->allChangeData('add');
 		return $result;
@@ -768,20 +781,7 @@ abstract class kernel_extends {
 	 * @return bool
 	 */
 	public function _addUp($data, $flag_select = true) {
-		$this->fld_data = $this->att_data = $this->mmo_data = array();
-		foreach ($data as $k => $r) {
-			if (isset($this->memos[$k]))
-				$this->mmo_data[$k] = $r;
-			elseif (isset($this->attaches[$k]))
-				$this->att_data[$k] = $r;
-			elseif (isset($this->fields[$k])) {
-				$this->fld_data[$k] = $r;
-			}
-		}
-		$result = static_form::_add($this, $flag_select, true);
-		if ($result)
-			$this->allChangeData('add');
-		return $result;
+		return $this->_add($data, $flag_select, true);
 	}
 
 	/**

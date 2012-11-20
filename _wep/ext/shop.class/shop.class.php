@@ -22,7 +22,7 @@ class shop_class extends rubric_class {
 
 	}
 
-	function _set_features() {
+	protected function _set_features() {
 		parent::_set_features();
 		$this->ver = '0.1.4';
 		$this->caption = 'Магазин - Каталог';
@@ -37,13 +37,19 @@ class shop_class extends rubric_class {
 
 	}
 
-	/*function _create() {
+	protected function _create() {
 		parent::_create();
+		$this->fields['uiname'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
+		$this->fields['code'] = array('type' => 'varchar', 'width' => 11, 'attr' => 'NOT NULL');
+
+		$this->selFields .= ',t1.uiname';
 	}
 
 	public function setFieldsForm($form=0) {
 		parent::setFieldsForm($form);
-	}*/
+		$this->fields_form['uiname'] = array('type' => 'text', 'caption' => 'Полное наименование');
+		$this->fields_form['code'] = array('type' => 'text', 'caption' => 'Код');
+	}
 
 	function _childs() {
 		parent::_childs();
@@ -58,6 +64,43 @@ class shop_class extends rubric_class {
 		$MAIL->fields_form['p_addr'] = array('type'=>'text','caption'=>'Адрес доставки', 'mask'=>array('min' => '10'),'default'=>'Уфа, ');
 		$MAIL->fields_form['p_phone'] = array('type'=>'text','caption'=>'Телефон', 'mask'=>array('min' => '5'),'default'=>'+7','comment'=>'Пример: +7-987-254-00-28, +7-347-298-23-88');
 		$MAIL->fields_form['p_comment'] = array('type'=>'textarea','caption'=>'Дополнительная информация', 'mask'=>array('max' => '500'));
+	}
+
+	public function _add($data = array(), $flag_select = true, $flag_update=false) {
+
+		if(isset($data['name']) and $data['name'] and !isset($data['uiname']))
+			$data['uiname'] = $this->fixNameCat($data['parent_id'], $data['name']);
+
+		if($ret = parent::_add($data, $flag_select, $flag_update)) {
+			// Here can be u code...
+		}
+		return $ret;
+	}
+
+	public function _update($data=array(), $where=null, $flag_select=true) {
+
+		if(isset($data['name']) and $data['name'] and !isset($data['uiname']) and isset($data['parent_id']))
+			$data['uiname'] = $this->fixNameCat($data['parent_id'], $data['name']);
+
+		if($ret = parent::_update($data, $where, $flag_select)) {
+			// Here can be u code...
+		}
+		return $ret;
+	}
+
+	// убираем дублирование каталога, и сохраняем в новом поле, если что можно выводить в новом шаблоне
+	private function fixNameCat($id, $name)
+	{
+		if($id)
+		{
+			list($data) = $this->qs('name','WHERE id='.$id);
+			$fn = _substr($name, 0, _strlen($data['name']));
+			if($fn===$data['name'])
+				$name = trim(_substr($name, _strlen($data['name'])));
+		}
+
+		return $name;
+
 	}
 
 	function allChangeData($type = '', $data = '') {

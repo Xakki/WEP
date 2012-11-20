@@ -24,8 +24,8 @@
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if (isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 		$form = array(
-			'0' => array('type' => 'list', 'listname' => 'phptemplates', 'caption' => 'Шаблон корзины-заказы', 'mask'=>array('min'=>1)),
-			'1' => array('type' => 'list', 'listname' => 'phptemplates', 'caption' => 'Шаблон корзины-список', 'mask'=>array('min'=>1)),
+			'0' => array('type' => 'list', 'listname' => array('phptemplates', 'tags'=>'basketlist'), 'caption' => 'Шаблон корзины-заказы', 'mask'=>array('min'=>1)),
+			'1' => array('type' => 'list', 'listname' => array('phptemplates', 'tags'=>'basketitemlist'), 'caption' => 'Шаблон корзины-список', 'mask'=>array('min'=>1)),
 			'2'=>array('type'=>'list','listname'=>'ownerlist', 'caption'=>'Страница каталога', 'mask'=>array('min'=>1)),
 			'3'=>array('type'=>'list','listname'=>'content','caption'=>'Блок Авторизации', 'mask'=>array('min'=>1)),
 			'4'=>array('type'=>'list','listname'=>'ownerlist','caption'=>'Страница пользователей', 'mask'=>array('min'=>1)),

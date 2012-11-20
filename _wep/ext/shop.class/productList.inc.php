@@ -32,7 +32,7 @@
 			'RAND()'=>'Случайный выбор (Кеширование*)',
 		);
 		$form = array(
-			'0' => array('type' => 'list', 'listname' => 'phptemplates', 'caption' => 'Шаблон'),
+			'0' => array('type' => 'list', 'listname' => array('phptemplates', 'tags'=>'shopprodlist'), 'caption' => 'Шаблон'),
 			'1' => array('type' => 'list', 'listname' => array('class'=>'shop','is_tree'=>true), 'caption' => 'Рубрика'),
 			'2' => array('type' => 'checkbox', 'caption' => 'RSS'),
 			'3' => array('type' => 'list', 'listname' => 'sortprod', 'multiple'=>2, 'caption' => 'Cортировка', 'comment'=>'Порядок вывода товаров'),

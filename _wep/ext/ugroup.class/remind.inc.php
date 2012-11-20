@@ -15,7 +15,7 @@
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 		$form = array(
-			'0'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон для сообщений'),
+			'0'=>array('type'=>'list','listname'=>array('phptemplates', 'tags'=>'messages'),'caption'=>'Шаблон для сообщений'),
 			'1'=>array('type'=>'int','caption'=>'Время действия ссылки', 'comment'=>'В часах'),
 		);
 		return $form;

@@ -1214,8 +1214,8 @@ if(tmp==false){
 		}
 		return $ret;
 	}
-	public function _add($data=array(),$flag_select=true) {
-		if($ret = parent::_add($data,$flag_select)) {
+	public function _add($data = array(), $flag_select = true, $flag_update=false) {
+		if($ret = parent::_add($data, $flag_select, $flag_update)) {
 		}
 		return $ret;
 	}*/

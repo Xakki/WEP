@@ -19,7 +19,7 @@
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 		$form = array(
-			'0'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон'),
+			'0'=>array('type'=>'list','listname'=>array('phptemplates', 'tags'=>'login'),'caption'=>'Шаблон'),
 			'1'=>array('type'=>'list','listname'=>'ownerlist', 'caption'=>'Страница напоминания пароля'),
 			'2'=>array('type'=>'list','listname'=>'ownerlist', 'caption'=>'Страница регистрации'),
 			'3'=>array('type'=>'checkbox', 'caption'=>'Авторизация по кукам?'),

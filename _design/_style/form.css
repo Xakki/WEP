@@ -270,6 +270,27 @@
 		top:-10000px;
 	}
 
+	.divform select .support {
+		color:#40C900;
+	}
+
+	.divform select .nosupport {
+		color:#FFB3B3;
+	}
+
+	.divform select .notags {
+	}
+
+	.divform .dscr .support {
+		color:#40C900;
+	}
+
+	.divform .dscr .nosupport {
+		color:#FFB3B3;
+	}
+
+	.divform .dscr .notags {
+	}
 
 	.divform div.no{font-size:11px;color:#000;padding:0;}
 	.divform div.inline {

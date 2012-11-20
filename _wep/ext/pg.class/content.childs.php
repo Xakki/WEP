@@ -152,7 +152,7 @@ class content_class extends kernel_extends {
 
 									$temp = substr($entry2, 0, strpos($entry2, $pref));
 
-									$fi = $this->getDocFileInfo($rDir . $entry.'/'.$entry2);
+									$fi = static_tools::getDocFileInfo($rDir . $entry.'/'.$entry2);
 									if(!$fi['type']) $fi['type'] = $this->owner->_enum['inc'][$kDir]['name'];
 									if(!$fi['name']) $fi['name'] = $entry.'/'.$temp;
 
@@ -172,7 +172,7 @@ class content_class extends kernel_extends {
 
 						$temp = substr($entry, 0, strpos($entry, $pref));
 
-						$fi = $this->getDocFileInfo($rDir . '/'.$entry);
+						$fi = static_tools::getDocFileInfo($rDir . '/'.$entry);
 						if(!$fi['type']) $fi['type'] = $this->owner->_enum['inc'][$kDir]['name'];
 						if(!$fi['name']) $fi['name'] = $temp;
 
@@ -192,39 +192,10 @@ class content_class extends kernel_extends {
 		return $data;
 	}
 
-	private function getDocFileInfo($file,$param=false) {
-		$fi = array('name'=>'', 'desc'=>'', 'ShowFlexForm'=>false, 'type'=>'', 'ico'=>'defaul.png', 'author'=>'', 'version'=>'', 'return'=>'');
-		$fcontent = file_get_contents($file);
-		if($p1 = mb_strpos($fcontent,'/**')) {
-			$fcontent = mb_substr($fcontent,($p1+3),(mb_strpos($fcontent,'*/')-($p1+3)));
-			$fcontent = explode('*',$fcontent);
-			foreach($fcontent as $r) {
-				$r = trim($r);
-				if($r) {
-					$temp = explode(' ', $r);
-					if($temp[0] and $temp[0][0]=='@') {
-						$nm = substr($temp[0],1);
-						array_shift($temp);
-						$fi[$nm] = implode(' ',$temp);
-						if($fi[$nm]==='true')
-							$fi[$nm] = true;
-						elseif($fi[$nm]==='false')
-							$fi[$nm] = false;
-					} 
-					elseif(!$fi['name'])
-						$fi['name'] = $r;
-					else
-						$fi['desc'] .= $r;
-				}
-			}
-		}
-		return $fi;
-	}
-
 	public function kPreFields(&$f_data, &$f_param = array(), &$f_fieldsForm = null) {
 		$mess = parent::kPreFields($f_data, $f_param, $f_fieldsForm );
 		$this->addForm = array();
-		$f_fieldsForm['pagetype']['onchange'] = 'contentIncParam(this,\'' . $this->_CFG['PATH']['wepname'] . '\',\'' . (isset($f_data['funcparam']) ? htmlspecialchars($f_data['funcparam']) : '') . '\');';
+		$f_fieldsForm['pagetype']['onchange'] = 'contentIncParam(this,\'/' . $this->_CFG['PATH']['wepname'] . '\',\'' . (isset($f_data['funcparam']) ? htmlspecialchars($f_data['funcparam']) : '') . '\');';
 
 		if (isset($f_data['pagetype']) and $f_data['pagetype']) {
 			$this->addForm = $this->getContentIncParam($f_data);
@@ -257,7 +228,7 @@ class content_class extends kernel_extends {
 			else
 				$flagSetvalue = false;
 			//Проверяем есть ли в коде флексформа
-			$fileDoc = $this->getDocFileInfo($flagPG);
+			$fileDoc = static_tools::getDocFileInfo($flagPG);
 			if ($fileDoc['ShowFlexForm']) {
 				$ShowFlexForm = true;
 				$tempform = include($flagPG);
@@ -298,9 +269,9 @@ class content_class extends kernel_extends {
 		return $ret;
 	}
 
-	public function _add($vars = array(), $flag_select = true) {
-		$vars = $this->SetFuncparam($vars);
-		if ($ret = parent::_add($vars, $flag_select)) {
+	public function _add($data = array(), $flag_select = true, $flag_update=false) {
+		$data = $this->SetFuncparam($data);
+		if ($ret = parent::_add($data, $flag_select, $flag_update)) {
 			// в форме для вывода обрабатываем данные
 			if($flag_select and isset($this->data[$this->id]['funcparam']))
 				$this->data[$this->id] += $this->owner->parserFlexData($this->data[$this->id]['funcparam'], $this->data[$this->id]['pagetype'], true);

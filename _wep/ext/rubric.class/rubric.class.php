@@ -1,7 +1,7 @@
 <?php
 class rubric_class extends kernel_extends {
 
-	function _set_features() {
+	protected function _set_features() {
 		parent::_set_features();
 		$this->ver = '0.0.1';
 		$this->mf_istree = true;
@@ -35,7 +35,7 @@ class rubric_class extends kernel_extends {
 		$this->config_form['imgsize'] = array('type' => 'int', 'caption' => 'Максим. размер загружаемых изображений');
 	}
 
-	public function _create() {
+	protected function _create() {
 		parent::_create();
 
 		$this->attaches[$this->v_img] = array(
@@ -177,12 +177,12 @@ class rubric_class extends kernel_extends {
 		return true;	
 	}
 
-	public function _add($data=array(), $flag_select=true) {
+	public function _add($data = array(), $flag_select = true, $flag_update=false) {
 
 		if(!isset($data['lname']) or !$data['lname'])
 			$data['lname'] = $this->transliteRuToLat($data['name']);
 
-		if($ret = parent::_add($data, $flag_select)) {
+		if($ret = parent::_add($data, $flag_select, $flag_update)) {
 		}
 		return $ret;
 	}

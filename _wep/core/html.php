@@ -146,7 +146,7 @@ class html {
 		elseif(strpos($transform,'#')!==false) {
 			$marker = $transform;
 			$temp = explode('#',substr($transform,1));
-			$temp[0] = dirname($_CFG['modulprm'][$temp[0]]['path']).'/templates/';
+			$temp[0] = dirname($_CFG['modulprm'][$temp[0]]['path']).'/_design/php/';
 			$transformPath = $temp[0];
 			$transform = $temp[1];
 			if(isset($data[$transform]))

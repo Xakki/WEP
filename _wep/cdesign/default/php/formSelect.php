@@ -57,6 +57,8 @@ function formSelectGenerator($data,$val=NULL,$flag=0,&$openG=false) {
 					if($r['#sel#'])
 						$sel = 'selected="selected"';
 				}
+				if(isset($r['#css#']))
+					$sel .= ' class="'.$r['#css#'].'"';
 					
 				$texthtml .= "\t".'<option value="'.$r['#id#'].'" '.$sel.'>'.$r['#name#'].'</option>'."\n";
 			}

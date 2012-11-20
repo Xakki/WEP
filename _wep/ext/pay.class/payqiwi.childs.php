@@ -154,14 +154,14 @@ Cчета со статусом большим или равным 100 трак�
 		$result = parent::_update($data,$where,$flag_select);
 		return $result;
 	}*/
-	function _add($data=array(),$flag_select=true) {
+	public function _add($data = array(), $flag_select = true, $flag_update=false) {
 		$data2 = array(
 			'phone'=>$data['phone'],
 			'cost'=>$data['cost'],
 			'statuses'=>50
 		);
 
-		$result = parent::_add($data2,true);
+		$result = parent::_add($data2, true, $flag_update);
 		if($result) {
 			if(!$data['name'])
 				$data['name'] = 'Счёт №'.$this->config['qiwi_txn-prefix'].$this->id;
