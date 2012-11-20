@@ -40,67 +40,12 @@
 		$mess[] = static_main::am('error', 'Не верный код. Код в настройках данного контролера ,в поле `Текст`');
 	else
 	{
-		if (isset($_POST['sbmt']) and isset($_FILES['filexml']))
+		if (isset($_POST['sbmt']))
 		{
-			if(!$_FILES['filexml']['error'])
-			{
-				$T1 = time();
-				ini_set("max_execution_time", "10000");
-				set_time_limit (10000);
-
-				$file = 'xmlimport'.$_SESSION['user']['id'].time();
-				$_SESSION['user']['xmlimport'] = $file;
-				$file = $_CFG['_PATH']['temp'].$file;
-				//$imgDir = array();
-				$xml = $zipDir = '';
-
-				$const_img_dir = $_CFG['_PATH']['content'].'Tovar';
-
-				// Если загружен фаил
-				if(move_uploaded_file($_FILES['filexml']['tmp_name'],$file)) {
-					if(stripos($_FILES['filexml']['name'],'.zip')!==false) {
-						$zipDir = static_tools::extractZip($file);
-						$DIR = scandir($zipDir);
-						foreach($DIR as $dfile) {
-							if($dfile!='.' and $dfile!='..') {
-								if(stripos($dfile,'.xml'))
-									$xml = $zipDir.'/'.$dfile;
-								/*else
-									$imgDir[$dfile] = $zipDir.'/'.$dfile;*/
-							}
-						}
-					}
-					else
-						$xml = $file;
-
-					// ИМпорт XML
-					if($xml) {
-						$result = array();
-						simplexml2array(simplexml_load_file($xml), $result);
-						
-						//file_put_contents(dirname($xml).'/out.txt', print_r($result, true));
-
-						saveDataToBase($result);
-					
-
-						//TODO - нарисовать таблицу для того чтобы задать соответствие полей из фаила, полям из БД
-						//TODO - СПИСОК доступных полей БД здается в настройках INC , проблемка в том что поля мы задаем позже
-						$mess[] = static_main::am('ok', "Готово");
-					}
-					else
-						$mess[] = static_main::am('error', "XML фаил не найден");
-				}
-				else
-					$mess[] = static_main::am('error', 'Error in move_uploaded_file'); // TODO Trigerr
-			}
-			else
-				$mess[] = static_main::am('error', '_err_4'.$_FILES['filexml']['error'], array($_FILES['filexml']['name']));
+			$mess = procesedPostDataImport1C();
 		}
-		elseif (isset($_POST['sbmt']))
-		{
-			$mess[] = static_main::am('alert', 'TODO');
-		}
-		else
+
+		if(!count($mess))
 		{
 			if($rowPG['name'])
 				$fields_form['_info'] = array(
@@ -109,11 +54,13 @@
 
 			$fields_form['offCat'] = array(
 				'type' => 'checkbox',
-				'caption' => 'Отключить категории отсутствующие в XML',
+				'caption' => 'Отключить все категории',
+				'comment' => 'При загрузке XML, все категории из XML будут включены. Таким образом отключаться те категории которых не было в XML',
 			);
 			$fields_form['offProd'] = array(
 				'type' => 'checkbox',
-				'caption' => 'Отключить товары отсутствующие в XML',
+				'caption' => 'Отключить все товары.',
+				'comment' => 'При загрузке XML, все товары из XML будут включены. Таким образом отключаться те товары которых не было в XML',
 			);
 			$fields_form['fixCatName'] = array(
 				'type' => 'checkbox',
@@ -165,35 +112,96 @@ function simplexml2array($obj, &$result) {
     }
 }
 
-function saveDataToBase($data)
+function procesedPostDataImport1C()
 {
+	_new_class('shop',$SHOP);
+	$mess = array();
+
 	if(isset($_POST['offCat']))
 	{
-		_new_class('shop',$MODULE);
-		$MODULE->_update(array('active'=>0), 'where 1', false);
+		if($SHOP->_update(array('active'=>0), 'where 1', false))
+			$mess[] = static_main::am('ok', "Успешно отключины все категории");
 	}
 	
 	if(isset($_POST['offProd']))
 	{
 		_new_class('product',$MODULE);
-		$MODULE->_update(array('active'=>0), 'where 1', false);
+		if($MODULE->_update(array('active'=>0), 'where 1', false))
+			$mess[] = static_main::am('ok', "Успешно отключины все товары");
 	}
 	if(isset($_POST['fixCatName']))
 	{
-		_new_class('shop',$MODEL);
-		$data = $MODEL->qs('id,name, parent_id', 'WHERE !uiname');
+		
+		$data = $SHOP->qs('id,name, parent_id', 'WHERE !uiname');
 		foreach($data as $row)
 		{
-			$MODEL->id = $row['id'];
-			$MODEL->_update($row);
+			$SHOP->id = $row['id'];
+			$SHOP->_update($row);
 		}
+		$mess[] = static_main::am('ok', "Названия у категорий исправленны!");
 	}
 
-	helper1C($data);
+	if (isset($_FILES['filexml']) and $_FILES['filexml']['name'])
+	{
+		if(!$_FILES['filexml']['error'])
+		{
+			$T1 = time();
+			ini_set("max_execution_time", "10000");
+			set_time_limit (10000);
 
+			$file = 'xmlimport'.$_SESSION['user']['id'].time();
+			$_SESSION['user']['xmlimport'] = $file;
+			$file = $_CFG['_PATH']['temp'].$file;
+			//$imgDir = array();
+			$xml = $zipDir = '';
+
+			$const_img_dir = $_CFG['_PATH']['content'].'Tovar';
+
+			// Если загружен фаил
+			if(move_uploaded_file($_FILES['filexml']['tmp_name'],$file)) {
+				if(stripos($_FILES['filexml']['name'],'.zip')!==false) {
+					$zipDir = static_tools::extractZip($file);
+					$DIR = scandir($zipDir);
+					foreach($DIR as $dfile) {
+						if($dfile!='.' and $dfile!='..') {
+							if(stripos($dfile,'.xml'))
+								$xml = $zipDir.'/'.$dfile;
+							/*else
+								$imgDir[$dfile] = $zipDir.'/'.$dfile;*/
+						}
+					}
+				}
+				else
+					$xml = $file;
+
+				// ИМпорт XML
+				if($xml) {
+					$result = array();
+					simplexml2array(simplexml_load_file($xml), $result);
+					
+					//file_put_contents(dirname($xml).'/out.txt', print_r($result, true));
+
+					helperImport1C($result);
+				
+
+					//TODO - нарисовать таблицу для того чтобы задать соответствие полей из фаила, полям из БД
+					//TODO - СПИСОК доступных полей БД здается в настройках INC , проблемка в том что поля мы задаем позже
+					$mess[] = static_main::am('ok', "Готово");
+				}
+				else
+					$mess[] = static_main::am('error', "XML фаил не найден");
+			}
+			else
+				$mess[] = static_main::am('error', 'Error in move_uploaded_file'); // TODO Trigerr
+		}
+		else
+			$mess[] = static_main::am('error', '_err_4'.$_FILES['filexml']['error'], array($_FILES['filexml']['name']));
+	}
+
+	return $mess;
 }
 
-function helper1C($data, $owner=0)
+function helperImport1C($data, $owner=0)
 {
 	$info = array(
 		'Группа' => array(
@@ -276,7 +284,7 @@ function helper1C($data, $owner=0)
 
 
 				if($insertData['id'])
-					helper1C($row, $insertData['id']);
+					helperImport1C($row, $insertData['id']);
 			}
 
 		}
