@@ -179,7 +179,7 @@ class rubric_class extends kernel_extends {
 
 	public function _add($data = array(), $flag_select = true, $flag_update=false) {
 
-		if(!isset($data['lname']) or !$data['lname'])
+		if((!isset($data['lname']) or !$data['lname']) and isset($data['name']) and $data['name'] )
 			$data['lname'] = $this->transliteRuToLat($data['name']);
 
 		if($ret = parent::_add($data, $flag_select, $flag_update)) {
@@ -189,7 +189,7 @@ class rubric_class extends kernel_extends {
 
 	public function _update($data=array(), $where=null, $flag_select=true) {
 
-		if(!isset($data['lname']) or !$data['lname'])
+		if((!isset($data['lname']) or !$data['lname']) and isset($data['name']) and $data['name'] )
 			$data['lname'] = $this->transliteRuToLat($data['name']);
 
 		if($ret = parent::_update($data, $where, $flag_select)) {

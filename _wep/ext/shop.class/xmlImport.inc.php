@@ -171,20 +171,19 @@ function simplexml2array($obj, &$result) {
 
 function saveDataToBase($data)
 {
-	print_r('<pre>');print_r($_GET);
-	if(isset($_GET['offCat']))
+	if(isset($_POST['offCat']))
 	{
 		_new_class('shop',$MODULE);
-		$MODULE->_update(array('active'=>0), 'where 1');
+		$MODULE->_update(array('active'=>0), 'where 1', false);
 	}
 	
-	if(isset($_GET['offProd']))
+	if(isset($_POST['offProd']))
 	{
 		_new_class('product',$MODULE);
-		$MODULE->_update(array('active'=>0), 'where 1');
+		$MODULE->_update(array('active'=>0), 'where 1', false);
 	}
 
-	//helper1C($data);
+	helper1C($data);
 
 }
 
@@ -200,7 +199,7 @@ function helper1C($data, $owner=0)
 				'Код' => 'code',
 				'Наименование' => 'name'
 			),
-			'forUpdate'=> false
+			'forUpdate'=> array('active')
 		),
 		'Товар'=> array(
 			'class'=>'product',
@@ -216,7 +215,7 @@ function helper1C($data, $owner=0)
 		        'Цена' => 'cost'
 		    ),
 		    'forUpdate'=> array(
-		    	'cost', 'remainder'
+		    	'cost', 'remainder', 'active'
 		    )
 		)
 	);
@@ -253,7 +252,8 @@ function helper1C($data, $owner=0)
 					$insertData['id'] = $result[0]['id'];
 					if($r['forUpdate']!==false)
 					{
-						$MODEL->_update($insertData, false);
+						$MODEL->id = $insertData['id'];
+						$MODEL->_update(array_intersect_key($insertData, array_flip($r['forUpdate'])), NULL, false);
 					}
 				}
 				else

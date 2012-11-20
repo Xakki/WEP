@@ -701,6 +701,7 @@ var wep = {
 				wep.includejslist[href] = 1;
 				if(href==url) flag = 1;
 			});
+
 			if(flag == 1) {
 				wep.includejslist[url]=2;
 				return false;
@@ -737,6 +738,7 @@ var wep = {
 			}
 		}
 		url = url.replace(/\?.+/, '');
+		url = url.replace(/^http:/, '');
 		return url;
 	},
 

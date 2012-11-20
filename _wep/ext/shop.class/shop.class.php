@@ -47,7 +47,7 @@ class shop_class extends rubric_class {
 
 	public function setFieldsForm($form=0) {
 		parent::setFieldsForm($form);
-		$this->fields_form['uiname'] = array('type' => 'text', 'caption' => 'Полное наименование');
+		$this->fields_form['uiname'] = array('type' => 'text', 'caption' => 'Краткое наименование');
 		$this->fields_form['code'] = array('type' => 'text', 'caption' => 'Код');
 	}
 
