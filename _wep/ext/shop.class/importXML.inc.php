@@ -247,9 +247,9 @@ function helper1C($data, $owner=0)
 				}
 
 				// проверяем, есть ли в базе такая же запись
-				$q = 'WHERE '.$r['key'].'="'.$this->SqlEsc($insertData[$r['key']]).'"';
+				$q = 'WHERE '.$r['key'].'="'.$MODEL->SqlEsc($insertData[$r['key']]).'"';
 				if(isset($r['key2']))
-					$q .= ' or '.$r['key2'].'="'.$this->SqlEsc($insertData[$r['key2']]).'"';
+					$q .= ' or '.$r['key2'].'="'.$MODEL->SqlEsc($insertData[$r['key2']]).'"';
 
 				$result = $MODEL->qs('id',$q);
 
