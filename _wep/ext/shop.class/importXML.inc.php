@@ -258,7 +258,7 @@ function helper1C($data, $owner=0)
 				}
 				else
 				{
-					$MODEL->_add($insertData, false);
+					$MODEL->_addUp($insertData, false);
 					$insertData['id'] = $MODEL->id;
 				}
 
