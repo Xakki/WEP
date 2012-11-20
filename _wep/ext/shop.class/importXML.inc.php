@@ -194,6 +194,7 @@ function helper1C($data, $owner=0)
 			'class'=>'shop',
 			'setowner' => 'parent_id',
 			'key' => 'code',
+			'key2' => 'name',
 			'setActive' => 1,
 			'field' => array(
 				'Код' => 'code',
@@ -246,7 +247,12 @@ function helper1C($data, $owner=0)
 				}
 
 				// проверяем, есть ли в базе такая же запись
-				$result = $MODEL->qs('id','WHERE '.$r['key'].'="'.$insertData[$r['key']].'"');
+				$q = 'WHERE '.$r['key'].'="'.$this->SqlEsc($insertData[$r['key']]).'"';
+				if(isset($r['key2']))
+					$q .= ' or '.$r['key2'].'="'.$this->SqlEsc($insertData[$r['key2']]).'"';
+
+				$result = $MODEL->qs('id',$q);
+
 				if(count($result))
 				{
 					$insertData['id'] = $result[0]['id'];
@@ -258,7 +264,7 @@ function helper1C($data, $owner=0)
 				}
 				else
 				{
-					$MODEL->_addUp($insertData, false);
+					$MODEL->_add($insertData, false);
 					$insertData['id'] = $MODEL->id;
 				}
 
