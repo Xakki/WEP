@@ -17,7 +17,7 @@ class product_class extends kernel_extends {
 		$this->mf_actctrl = true;
 		$this->owner_name = 'shop';
 		$this->cf_fields = true; // Разрешить добавлять добавлять дополнительные поля в таблицу
-		$this->ver = '0.3.4';
+		$this->ver = '0.3.5';
 
 
 		$this->_enum['available']=array(

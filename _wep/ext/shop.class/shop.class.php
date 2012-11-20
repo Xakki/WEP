@@ -24,7 +24,7 @@ class shop_class extends rubric_class {
 
 	protected function _set_features() {
 		parent::_set_features();
-		$this->ver = '0.1.4';
+		$this->ver = '0.1.5';
 		$this->caption = 'Магазин - Каталог';
 		$this->_AllowAjaxFn['jsOrder'] = true;
 		//$this->cf_tools[] = array('func'=>'ImportXls','name'=>'Загрузка прайса');

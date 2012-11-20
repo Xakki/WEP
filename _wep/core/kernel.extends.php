@@ -1085,6 +1085,14 @@ abstract class kernel_extends {
 				unset($eval);
 			}
 
+			if(!isset($r['fields_type']))
+			{
+				if(isset($this->fields[$k]))
+					$r['fields_type'] = $this->fields[$k]['type'];
+				else
+					$r['fields_type'] = $r['type'];
+			}
+
 			if (isset($this->attaches[$k]))
 				$r = $r + $this->attaches[$k];
 			if (isset($this->memos[$k]))

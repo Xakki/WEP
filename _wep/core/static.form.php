@@ -792,7 +792,6 @@ class static_form {
 	 */
  	static function check_formfield(&$_this,&$form,&$error,&$data,$key) {
 		$MASK = &$_this->_CFG['_MASK'];
-		$FIELDS = &$_this->fields[$key];
 
 		//*********** CHECKBOX
 		if($form['type']=='checkbox')
@@ -854,7 +853,7 @@ class static_form {
 		/*Если тип данных ДАТА*/
 		if($form['type']=='date') 
 		{
-			$data[$key] = self::_get_fdate($data[$key], $form['mask']['format'], $FIELDS['type']);
+			$data[$key] = self::_get_fdate($data[$key], $form['mask']['format'], $form['fields_type']);
 		}
 
 		/*Редактор*/
@@ -993,12 +992,12 @@ class static_form {
 
 		if(isset($form['mask']['max']) && $form['mask']['max']>0)
 		{
-			if(self::isTypeNumber($FIELDS['type']))
+			if(self::isTypeNumber($form['fields_type']))
 			{
 				//для даты
 				// TODO ??????
 				/*if($form['type']=='date') {
-					$form['mask']['maxint'] = date($form['mask']['format'],$form['mask']['maxint']);
+					$form['mask']['max'] = date($form['mask']['format'],$form['mask']['max']);
 				}*/
 				if(str2int($data[$key])>$form['mask']['max'])
 					$error[] = 22;
@@ -1010,7 +1009,7 @@ class static_form {
 			}
 		}
 		/*
-			if(self::isTypeFloat($FIELDS['type']) and strpos($form['mask']['max'], ','))
+			if(self::isTypeFloat($form['fields_type']) and strpos($form['mask']['max'], ','))
 			{
 				$maskFloat = explode(',', $form['mask']['max']);
 				$valFloat = explode('.', $data[$key]);
@@ -1022,7 +1021,7 @@ class static_form {
 		{
 			if(!$data[$key])
 				$error[] = 1;
-			elseif(self::isTypeNumber($FIELDS['type']))
+			elseif(self::isTypeNumber($form['fields_type']))
 			{
 				/*if($form['type']=='date') {
 					$form['mask']['minint'] = date($form['mask']['format'],$form['mask']['minint']);

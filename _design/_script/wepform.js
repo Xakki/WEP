@@ -158,6 +158,19 @@ wep.form = {
 		return true;
 	},
 
+	checkFloat : function(ev, param) {
+		var myObj = $(ev.target);
+		if(myObj.data('checkFloat'))
+			return true;
+		// todo use extend dafault seting for `param`
+		param = {type:"float", beforePoint: myObj.data('data-width0'), afterPoint: myObj.data('data-width1'), defaultValueInput:"0", decimalMark:"."};
+
+		myObj.data('checkFloat',true);
+		wep.include('/_design/_script/script.jquery/jquery.numberMask.js',function() {
+			myObj.numberMask(param);
+		});
+	},
+
 	/* Утилита для подсчёта кол сиволов в форме, автоматически создаёт необходимые поля*/
 	textareaChange : function(obj,max) {
 		if(!max) max = $(obj).attr('maxlength');

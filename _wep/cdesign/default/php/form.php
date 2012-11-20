@@ -126,8 +126,13 @@ function tpl_form(&$data, $tabs = array()) {
 				$attribute .= ' readonly="readonly" class="ronly"';
 			else
 				$r['readonly'] = false;
+
 			if(isset($r['disabled']) and $r['disabled'])
 				$attribute .= ' disabled="disabled" class="ronly"';
+
+			if(isset($r['maxlength']) and $r['maxlength']) 
+				$attribute .= ' maxlength="'.$r['maxlength'].'"';
+
 			if($r['type']=='file') {
 				if(!isset($r['onchange']))
 					$r['onchange'] = '';
@@ -140,13 +145,11 @@ function tpl_form(&$data, $tabs = array()) {
 				$texthtml .= '<div class="caption_error">['.implode(' ',$r['error']).']</div>';
 
 			if($r['type']=='textarea') {
-				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
+				
 				$texthtml .= '<div class="form-value"><textarea name="'.$k.'" onkeyup="textareaChange(this)" rows="10" cols="80" '.$attribute.'>'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
 			}
 			elseif($r['type']=='ckedit') {
 				$_tpl['script'][$_CFG['_HREF']['WSWG'].'ckeditor3/ckeditor.js'] = 1;
-
-				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
 
 				//http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.config.html
 					$ckedit = $r['paramedit'];
@@ -677,7 +680,6 @@ function tpl_form(&$data, $tabs = array()) {
 			}*/
 			elseif(isset($r['multiple']) AND $r['multiple'] and !$r['readonly']) {
 				if(!is_array($r['value']) or !count($r['value'])) $r['value'] = array('');
-				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
 				if(!isset($r['mask']['maxarr'])) $r['mask']['maxarr'] = 10;
 				if(!isset($r['keytype'])) $r['keytype'] = 'text';
 				$cnt = 0;
@@ -699,17 +701,15 @@ function tpl_form(&$data, $tabs = array()) {
 				{
 					$maskFloat = explode(',', $r['mask']['width']);
 					if(!isset($maskFloat[1])) $maskFloat[1] = 0;
-					$_tpl['script']['script.jquery/jquery.numberMask'] = 1;
-					$_tpl['onload'] .= '$("input[name='.$k.']").numberMask({type:"float", beforePoint:'.$maskFloat[0].', afterPoint:'.$maskFloat[1].', defaultValueInput:"0", decimalMark:"."});';
+					$attribute .=  ' data-width0="'.$maskFloat[0].'" data-width1="'.$maskFloat[1].'"';
 				}
-				elseif(isset($r['isInt'])) 
+				/*elseif(isset($r['isInt'])) 
 				{
-					$_tpl['onload'] .= '$("input[name='.$k.']").on("keyup change",function(event){return wep.form.checkInt(event);});';
-				}
+				}*/
 				
-				if(isset($r['mask']['max']) and $r['mask']['max']) $attribute .= ' maxlength="'.$r['mask']['max'].'"';
+				if($r['type']=='email') 
+					$attribute .=  ' x-autocompletetype="'.$r['type'].'"';
 
-				if($r['type']=='email') $attribute .=  ' x-autocompletetype="'.$r['type'].'"';
 				$texthtml .= '<div class="form-value"><input type="'.$r['type'].'" name="'.$k.'" value="'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'" '.$attribute.'/></div>';
 			}
 		}
@@ -719,6 +719,9 @@ function tpl_form(&$data, $tabs = array()) {
 		if($r['type']!='hidden')
 			$texthtml .= '</div>';
 	}
+
+	$_tpl['onload'] .= '$("form").on("keyup change", "input[type=int]", function(event){return wep.form.checkInt(event);});';
+	$_tpl['onload'] .= '$("form").on("focus.float", "input[data-width0]", function(event){return wep.form.checkFloat(event);});';
 
 	if($submitHtml) {
 		$texthtml .= $submitHtml;
