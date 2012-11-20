@@ -21,7 +21,7 @@
 		$this->_enum['newscategory'] = $NEWS->config['category'];
 
 		$form = array(
-			'0'=>array('type'=>'list', 'listname'=>'phptemplates', 'caption'=>'Шаблон'),
+			'0'=>array('type'=>'list', 'listname'=>array('phptemplates', 'tags'=>'newslast'), 'caption'=>'Шаблон', 'comment'=>$_CFG['lang']['tplComment']),
 			'1'=>array('type'=>'list','listname'=>'ownerlist', 'caption'=>'Основная страница'),
 			'2'=>array('type'=>'int', 'caption'=>'Лимит'),
 			'3'=>array('type'=>'list','listname'=>'newscategory', 'caption'=>'Категория'),

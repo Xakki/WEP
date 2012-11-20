@@ -2,6 +2,7 @@
 /**
  * новости
  * @type Новости
+ * @tags news
  * @ico default.png
  * @author Xakki
  * @version 0.1

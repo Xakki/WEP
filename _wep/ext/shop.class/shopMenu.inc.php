@@ -19,7 +19,7 @@ if (!isset($FUNCPARAM[2]))
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if (isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 		$form = array(
-			'0' => array('type' => 'list', 'listname' => array('phptemplates', 'tags'=>'shopmenu'), 'caption' => 'Шаблон', 'comment'=>'<i class="support">Совместимые шаблоны</i> <i class="nosupport">Несовместимые</i> <i class="notags">Совместимость не указанна</i>'),
+			'0' => array('type' => 'list', 'listname' => array('phptemplates', 'tags'=>'shopmenu'), 'caption' => 'Шаблон', 'comment'=>$_CFG['lang']['tplComment']),
 			'1'=>array('type'=>'list','listname'=>'ownerlist', 'caption'=>'На какую страницу указывать'),
 			'2' => array('type' => 'list', 'listname' => array('class'=>'shop','is_tree'=>true), 'caption' => 'Начало каталога'),
 		);

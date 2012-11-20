@@ -2,6 +2,7 @@
 /**
  * Свежие новости
  * @type Новости
+ * @tags newslast
  * @ico default.png
  * @author Xakki
  * @version 0.1

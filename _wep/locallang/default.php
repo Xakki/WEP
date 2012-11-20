@@ -1,4 +1,7 @@
 <?php
+
+$_CFG['lang']['tplComment'] = '<i class="support">Совместимые шаблоны</i> <i class="nosupport">Несовместимые</i> <i class="notags">Совместимость не указанна</i>';
+
 $_CFG['lang']['feedback'] = 'Обратитесь к администратору сайта. ';
 $_CFG['lang']['Can`t connect to SQL server'] = 'Ошибка при подключении к БД. Нет связи с БД! ';
 $_CFG['lang']['Cant`t connect to database'] = 'БД недоступна! Проверьте существование БД! ';
