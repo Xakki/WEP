@@ -115,7 +115,10 @@
 				'type' => 'checkbox',
 				'caption' => 'Отключить товары отсутствующие в XML',
 			);
-
+			$fields_form['fixCatName'] = array(
+				'type' => 'checkbox',
+				'caption' => 'Убрать дублирование названия в каталоге у прочих',
+			);
 
 			$fields_form['filexml'] = array(
 				'type' => 'file',
@@ -140,13 +143,6 @@
 ///////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////
 
-/*_new_class('shop',$MODEL);
-$data = $MODEL->qs('id,name, parent_id', 'WHERE !uiname');
-foreach($data as $row)
-{
-	$MODEL->id = $row['id'];
-	$MODEL->_update($row);
-}*/
 
 
 function simplexml2array($obj, &$result) {
@@ -181,6 +177,16 @@ function saveDataToBase($data)
 	{
 		_new_class('product',$MODULE);
 		$MODULE->_update(array('active'=>0), 'where 1', false);
+	}
+	if(isset($_POST['fixCatName']))
+	{
+		_new_class('shop',$MODEL);
+		$data = $MODEL->qs('id,name, parent_id', 'WHERE !uiname');
+		foreach($data as $row)
+		{
+			$MODEL->id = $row['id'];
+			$MODEL->_update($row);
+		}
 	}
 
 	helper1C($data);
