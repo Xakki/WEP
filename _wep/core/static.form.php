@@ -877,7 +877,7 @@ class static_form {
 
 
 		/*Целое число*/
-		elseif($form['type']=='int' and (!isset($form['mask']['toint']) or !$form['mask']['toint'])) 
+		elseif($form['type']=='int' and (!isset($form['mask']['toint']) or $form['mask']['toint'])) 
 			$data[$key]= str2int($data[$key]);
 
 		/*Список*/

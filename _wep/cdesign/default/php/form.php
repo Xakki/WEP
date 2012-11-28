@@ -54,6 +54,7 @@ function tpl_form(&$data, $tabs = array()) {
 		if($r['type']!='hidden')
 			$texthtml .= '<div id="tr_'.$k.'" style="'.(isset($r['style'])?$r['style']:'').'" class="div-tr'.
 				((isset($r['css']) and $r['css'])?' '.$r['css']:'').
+				((isset($r['mask']['min']) and $r['mask']['min'])?' required':'').
 				((isset($r['readonly']) and $r['readonly'])?' readonly':'').'">';
 
 		if($r['type']=='submit' and is_array($r['value'])) {
