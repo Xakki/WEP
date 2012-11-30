@@ -821,9 +821,9 @@ class static_tools {
 		if (!$dir)
 			return false;
 		if (!file_exists($dir)) {
-			/*if (!file_exists(dirname($dir))) {
+			if (!file_exists(dirname($dir))) {
 				self::_checkdir(dirname($dir));
-			}*/
+			}
 			if (!mkdir($dir, $_CFG['wep']['chmod'], true))
 				return static_main::log('error', 'Cannot create directory <b>' . $dir . '</b>');
 		}

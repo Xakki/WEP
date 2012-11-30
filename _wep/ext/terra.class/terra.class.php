@@ -79,7 +79,7 @@ class terra_class extends kernel_extends {
 		if(is_null($ip2)) $ip2 = $_SERVER['REMOTE_ADDR'];
 		$ip = ip2long($ip2);
 		// TODO усов. запрос
-		$data = $this->childs['terraip']->qs('owner_id','WHERE '.$ip.'>=`ip` and '.$ip.'<=`ip2` LIMIT 1');
+		$data = $this->childs['terraip']->qs('owner_id','WHERE inet_aton('.$ip.')>=`ip` and inet_aton('.$ip.')<=`ip2` LIMIT 1');
 		if(count($data)) {
 			$data = $this->qs('*','WHERE id='.$data[0]['owner_id']);
 			$data[0]['ip'] =  $ip2;
