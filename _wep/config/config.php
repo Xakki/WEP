@@ -352,7 +352,7 @@ include $_CFG['_PATH']['core'] . 'static.main.php';
 if(file_exists($_CFG['_FILE']['config']))
 	include($_CFG['_FILE']['config']);
 elseif(!isset($INSTALL)) {
-	static_main::redirect('/'.$_CFG['PATH']['wepname'].'/install.php');
+	static_main::redirect($_CFG['PATH']['admin'].'/install/');
 }
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -379,7 +379,7 @@ if (!$PHP_SELF[0])
 array_pop($PHP_SELF);
 $addpath = '';
 $k = 0;
-while (isset($PHP_SELF[$k]) and $PHP_SELF[$k] != $_CFG['PATH']['wepname']) {
+while (isset($PHP_SELF[$k]) and $PHP_SELF[$k] != $_CFG['PATH']['admin']) {
 	$addpath .= $PHP_SELF[$k] . '/';
 	$k++;
 }
