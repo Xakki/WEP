@@ -4,10 +4,6 @@
 	require_once($_CFG['_PATH']['core'].'html.php');
 	$result = static_main::userAuth(); // запскает сессию и проверяет авторизацию
 
-	if(!$result[1]) {
-		static_main::redirect('login.php?ref='.base64encode($_SERVER['REQUEST_URI']));
-	}
-
 	if(isset($_COOKIE['cdesign']) and $_COOKIE['cdesign'])
 		$_design = $_COOKIE['cdesign'];
 	elseif($_SESSION['user']['design'])
@@ -18,6 +14,62 @@
 		
 	$HTML = new html($_CFG['PATH']['cdesign'],$_design);
 	if(!isset($_GET['_modul'])) $_GET['_modul'] = '';
+
+	if($_GET['pageParam']=='logout')
+	{
+		static_main::userExit();
+		$ref = $_CFG['_HREF']['BH'].'index.html';
+		static_main::redirect($ref);
+		exit();
+	}
+
+	if($_GET['pageParam']=='login')
+	{
+		$result = array('','');
+		$delay =4;
+		$variant = "";
+		$ref= $_CFG['_HREF']['BH'].$_CFG['PATH']['admin'];
+		if(isset($_REQUEST['ref']) and $_REQUEST['ref']!='') {
+			if(substr($_REQUEST['ref'],0,1)!='/' and !strstr($_REQUEST['ref'],'.'))
+				$ref = base64decode($_REQUEST['ref']);
+			else
+				$ref = $_REQUEST['ref'];
+			if(strstr($ref,'login') or strstr($ref,'install'))
+				$ref = $_CFG['_HREF']['BH'].$_CFG['PATH']['admin'];
+		}
+		elseif(isset($_SERVER['HTTP_REFERER']) and $_SERVER['HTTP_REFERER']!='' and !strstr($_SERVER['HTTP_REFERER'],'login'))
+			$ref= $_SERVER['HTTP_REFERER'];
+
+		if(count($_POST) and isset($_POST['login'])) {
+			static_main::userExit();
+			$result = static_main::userAuth($_POST['login'],$_POST['pass']);
+			if($result[1]) {
+				static_main::redirect($ref);//STOP
+			}
+		}
+		elseif(isset($_GET['mess']))
+			$result[0] = static_main::m($_GET['mess']);
+		elseif(isset($_COOKIE['remember']) and $result = static_main::userAuth() and $result[1]) {
+			static_main::redirect($ref);//STOP
+		}
+
+		$HTML->_templates = 'login';
+	
+		$_tpl['login'] = 'Логин(Email)';
+		$_tpl['ref'] = $ref;
+		$_tpl['action'] = $_CFG['_HREF']['BH'].$_CFG['PATH']['admin'].'/login'.(isset($_GET['install'])?'?install':'');
+		if($result[0])
+			$result[0] = '<div style="color:red;">'.$result[0].'</div>';
+		$_tpl['mess'] = '<div class="messhead">'.$result[0].'</div>';
+
+		exit();
+	}
+
+	if(!$result[1]) {
+		static_main::redirect($_CFG['PATH']['admin'].'login?ref='.base64encode($_SERVER['REQUEST_URI']));
+	}
+
+
 /*ADMIN*/
 	function fAdminMenu($_modul='') {
 		global $_CFG;
@@ -97,7 +149,7 @@
 		if(static_main::_prmUserCheck(2)) {
 			if(!isset($_COOKIE[$_CFG['wep']['_showerror']]))
 				$_COOKIE[$_CFG['wep']['_showerror']] = 0;
-			$_tpl['debug'] = '<span class="seldebug"><select onchange="window.location.href=\'/'.$_CFG['PATH']['wepname'].'/index.php?'.$_CFG['wep']['_showerror'].'=\'+this.value;">
+			$_tpl['debug'] = '<span class="seldebug"><select onchange="window.location.href=\''.$_CFG['PATH']['admin'].'?'.$_CFG['wep']['_showerror'].'=\'+this.value;">
 	<option '.(!$_COOKIE[$_CFG['wep']['_showerror']]?'selected="selected"':'').' value="0">не показывать ошибки</option>
 	<option '.($_COOKIE[$_CFG['wep']['_showerror']]==1?'selected="selected"':'').' value="1">сообщение об ошибке</option>
 	<option '.($_COOKIE[$_CFG['wep']['_showerror']]==2?'selected="selected"':'').' value="2">Показать все ошибки</option>
@@ -106,14 +158,14 @@
 
 			if(!isset($_COOKIE[$_CFG['wep']['_showallinfo']]))
 				$_COOKIE[$_CFG['wep']['_showallinfo']] = 0;
-			$_tpl['debug'] .= '<span class="seldebug"><select onchange="window.location.href=\'/'.$_CFG['PATH']['wepname'].'/index.php?'.$_CFG['wep']['_showallinfo'].'=\'+this.value;">
+			$_tpl['debug'] .= '<span class="seldebug"><select onchange="window.location.href=\''.$_CFG['PATH']['admin'].'?'.$_CFG['wep']['_showallinfo'].'=\'+this.value;">
 	<option '.(!$_COOKIE[$_CFG['wep']['_showallinfo']]?'selected="selected"':'').' value="0">Скрыть инфу</option>
 	<option '.($_COOKIE[$_CFG['wep']['_showallinfo']]==1?'selected="selected"':'').' value="1">Показать инфу</option>
 	<option '.($_COOKIE[$_CFG['wep']['_showallinfo']]==2?'selected="selected"':'').' value="2">Показать SQL запросы</option>
 	<option '.($_COOKIE[$_CFG['wep']['_showallinfo']]==3?'selected="selected"':'').' value="3">Показать все логи</option>
 	</select></span>';
 
-			/*$_tpl['debug'] .= '<span class="seldebug"><select onchange="setCookie(\'cdesign\',this.value);window.location.href=\''.$_CFG['PATH']['wepname'].'/index.php\';">
+			/*$_tpl['debug'] .= '<span class="seldebug"><select onchange="setCookie(\'cdesign\',this.value);window.location.href=\''.$_CFG['PATH']['admin'].'\';">
 	<option '.($_design=='default'?'selected="selected"':'').' value="default">Default</option>
 	<option '.($_design=='extjs'?'selected="selected"':'').' value="extjs">ExtJS</option>
 	</select></span>';*/

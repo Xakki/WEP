@@ -153,7 +153,6 @@ $_CFG['PATH']['WSWG'] = '_wysiwyg/';
 $_CFG['PATH']['themes'] = '_themes/';
 $_CFG['PATH']['content'] = '_content/';
 $_CFG['PATH']['userfile'] = $_CFG['PATH']['content'].'_userfile/'; // файлы пользователя
-$_CFG['PATH']['wepname'] = basename($_CFG['_PATH']['wep']); // базовое имя админки
 $_CFG['PATH']['wepconfname'] = basename($_CFG['_PATH']['wepconf']); // базовое имя пользовательских файлов
 $_CFG['PATH']['cdesign'] = '_design/'; // дизайн админки
 $_CFG['FILE']['HASH_KEY'] = $_CFG['PATH']['wepconfname'] . '/config/hash.key';
@@ -402,7 +401,7 @@ if($_CFG['site']['redirectPlugin'])
 	$_CFG['require_modul']['redirect'] = true;
 
 
-$_CFG['_HREF']['wepJS'] = $_CFG['_HREF']['BH'] . $_CFG['PATH']['wepname'] . '/js.php';
+//$_CFG['_HREF']['wepJS'] = $_CFG['_HREF']['BH'] . $_CFG['PATH']['admin'] . '/js/';
 $_CFG['_HREF']['siteJS'] = $_CFG['_HREF']['BH'] . '_js.php';
 $_CFG['_HREF']['siteAJAX'] = $_CFG['_HREF']['BH'] . '_json.php';
 $_CFG['_HREF']['captcha'] = $_CFG['_HREF']['BH'] . '_captcha.php';
@@ -411,7 +410,7 @@ $_CFG['_HREF']['_style'] = '_design/_style/'; // дизайн стили
 $_CFG['_HREF']['_script'] = '_design/_script/'; // дизайн стили
 $_CFG['_HREF']['arrayHOST'] = array_reverse(explode('.', $_SERVER['HTTP_HOST']));
 
-if (strstr($_SERVER['PHP_SELF'], '/' . $_CFG['PATH']['wepname'] . '/'))
+if (strstr($_SERVER['PHP_SELF'], '/' . $_CFG['PATH']['admin'] . '/'))
 	$_CFG['_F']['adminpage'] = true;
 else
 	$_CFG['_F']['adminpage'] = false;

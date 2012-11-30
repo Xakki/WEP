@@ -5,7 +5,7 @@
 if(isset($_POST['sbmt'])) {
 	if(isset($_POST['query_pg']['Обновление@newquery'])) {
 
-		$this->SQL->execSQL('UPDATE ' . $this->childs['content']->tablename . ' SET styles=replace(styles, \'../default/style/\', \'#themes#\'), script=replace(script, \'../default/script/\', \'#themes#\')');
+		$MODUL->SQL->execSQL('UPDATE ' . $MODUL->childs['content']->tablename . ' SET styles=replace(styles, \'../default/style/\', \'#themes#\'), script=replace(script, \'../default/script/\', \'#themes#\')');
 	}
 }
 else {

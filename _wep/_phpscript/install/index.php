@@ -61,12 +61,12 @@ if ($flag) {
 	elseif($_SESSION['step']>3 and $_GET['step']==$_SESSION['step']) {
 		$_tpl['text'] = '<h2>Установка завершена</h2><br/>
 			<a href="/index.html">Перейти на сайт</a><br/>
-			<a href="'.$_CFG['PATH']['wepname'].'/login.php">Перейти в админку</a>';
+			<a href="'.$_CFG['PATH']['admin'].'/login">Перейти в админку</a>';
 	} 
 	else {
 		$_tpl['text'] = '<h2>Ошибка.</h2><br/>
-			<a href="'.$_CFG['PATH']['admin'].'/install/">Перейти на начало установки</a><br/>
-			<a href="'.$_CFG['PATH']['admin'].'/login/">Перейти в админку</a>';
+			<a href="'.$_CFG['PATH']['admin'].'/install">Перейти на начало установки</a><br/>
+			<a href="'.$_CFG['PATH']['admin'].'/login">Перейти в админку</a>';
 	}
 
 	$_tpl['step'] = '';
