@@ -33,7 +33,7 @@
 				$html .= '<a href="/'.$fimg[0].'" title="'.$r['name'].'" class="prodimg-first fancyimg" rel="fancy"><img src="/'.$fimg[1].'" alt="'.$r['name'].'"/></a>';
 			} 
 			else
-				$html .= '<img src="/_design/'.$HTML->_design.'/_shop/img/nofoto.gif" alt="'.$r['name'].'" class="prodimg-first"/>';
+				$html .= '<img src="/'.$_CFG['PATH']['themes'].$HTML->_design.'/_shop/img/nofoto.gif" alt="'.$r['name'].'" class="prodimg-first"/>';
 
 			/*$beginHour = 8;
 			$endhour = 20;

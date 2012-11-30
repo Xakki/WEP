@@ -46,7 +46,7 @@ class pg_class extends kernel_extends {
 		$this->config_form['sitename'] = array('type' => 'text', 'caption' => 'Название сайта', 'mask' => array('max' => 1000));
 		$this->config_form['keywords'] = array('type' => 'textarea', 'caption' => 'Ключевые слова по умолчанию', 'mask' => array('max' => 1000));
 		$this->config_form['description'] = array('type' => 'textarea', 'caption' => 'Описание страницы по умолчанию', 'mask' => array('max' => 1000));
-		$this->config_form['design'] = array('type' => 'list', 'listname' => 'mdesign', 'caption' => 'Дизаин по умолчанию');
+		$this->config_form['design'] = array('type' => 'list', 'listname' => 'themes', 'caption' => 'Дизаин по умолчанию');
 		$this->config_form['memcache'] = array('type' => 'int', 'caption' => 'Memcache time по умолчанию', 'comment' => '-1 - отключить полностью, 0 - кеширование определяется в контенте, 1> - кеширование в сек. для всех по умолчанию');
 		$this->config_form['memcachezip'] = array('type' => 'checkbox', 'caption' => 'Memcache сжатие кеша');
 		$this->config_form['sitemap'] = array('type' => 'checkbox', 'caption' => 'SiteMap XML', 'comment' => 'создавать в корне сайта xml файл карты сайта для поисковиков');
@@ -69,7 +69,7 @@ class pg_class extends kernel_extends {
 		$this->caption = 'Страницы';
 		$this->selected = array();
 		$this->messages_on_page = 50;
-		$this->ver = '0.5.8';
+		$this->ver = '0.6.9';
 		$this->pageinfo =
 				$this->dataCash = $this->dataCashTree = $this->dataCashTreeAlias = array();
 		$this->pageParam = $this->pageParamId = array();
@@ -133,7 +133,7 @@ class pg_class extends kernel_extends {
 
 		$this->fields_form['href'] = array('type' => 'text', 'caption' => 'Redirect', 'comment'=>'Принудительное перенаправление по указанному адресу. Если написать например `/moveToHere.html`, то перенаправление будет на этом же сайте', 'mask' => array('onetd' => 'Содержимое'));
 
-		$this->fields_form['design'] = array('type' => 'list', 'listname' => 'mdesign', 'caption' => 'Дизайн', 'mask' => array(), 'style' => 'background-color:#5884AC;');
+		$this->fields_form['design'] = array('type' => 'list', 'listname' => 'themes', 'caption' => 'Дизайн', 'mask' => array(), 'style' => 'background-color:#5884AC;');
 		$this->fields_form['template'] = array('type' => 'list', 'listname' => 'templates', 'caption' => 'Шаблон', 'comment' => '', 'mask' => array('onetd' => 'close'), 'style' => 'background-color:#5884AC;');
 
 		$this->fields_form['onmenu'] = array('type' => 'list', 'listname' => 'menu', 'multiple' => 2, 'caption' => 'Меню', 'mask' => array('onetd' => 'Опции'));
@@ -175,23 +175,19 @@ class pg_class extends kernel_extends {
 		} 
 		elseif ($listname == 'templates') {
 			$data[''] = ' - По умолчанию -';
-			$temp = 'mdesign';
-			$temp = $this->_getlist($temp);
-			foreach ($temp as $kt => $rt) {
-				if ($kt) {
-					$dir = dir($this->_CFG['_PATH']['design'] . $kt . '/templates');
-					while (false !== ($entry = $dir->read())) {
-						if (strstr($entry, '.tpl')) {
-							$entry = substr($entry, 0, strpos($entry, '.tpl'));
-							if (isset($data[$entry]))
-								$data[$entry] = $entry;
-							else
-								$data[$entry] = strtoupper($rt) . ' - ' . $entry;
-						}
-					}
-					$dir->close();
+
+			$dir = dir($this->_CFG['_PATH']['themes'] . 'default/templates');
+			while (false !== ($entry = $dir->read())) {
+				if (strstr($entry, '.tpl')) {
+					$entry = substr($entry, 0, strpos($entry, '.tpl'));
+					if (isset($data[$entry]))
+						$data[$entry] = $entry;
+					else
+						$data[$entry] = $entry;
 				}
 			}
+			$dir->close();
+
 			return $data;
 		}
 		elseif ($listname == 'pagemap') {
@@ -275,7 +271,7 @@ class pg_class extends kernel_extends {
 				$this->config['design'] = $this->pageinfo['design'];
 			elseif (!$this->config['design'])
 				$this->config['design'] = 'default';
-			$HTML = new html('_design/', $this->config['design'], $templ); //отправляет header и печатает страничку
+			$HTML = new html($this->_CFG['PATH']['themes'], $this->config['design'], $templ); //отправляет header и печатает страничку
 		}
 		return true;
 	}
@@ -530,7 +526,7 @@ if(tmp==false){
 			if (!$design)
 				$design = $this->config['design'];
 			require_once($this->_CFG['_PATH']['core'] . '/html.php');
-			$HTML = new html('_design/', $design, false); //отправляет header и печатает страничку
+			$HTML = new html($this->_CFG['PATH']['themes'], $design, false); //отправляет header и печатает страничку
 		}
 		$Cdata = array();
 		$cls = 'SELECT * FROM ' . $this->SQL_CFG['dbpref'] . 'pg_content WHERE active=1 and marker IN ("' . $marker . '")';
@@ -616,7 +612,11 @@ if(tmp==false){
 				if (count($rowPG['script'])) {
 					foreach ($rowPG['script'] as $r)
 						if ($r)
+						{
+							if(strpos($r, '#themes#')!==false) 
+								$r = str_replace('#themes#', $_tpl['design'].'script/', $r).'.js';
 							$_tpl['script'][$r] = 1;
+						}
 				}
 			}
 			if ($rowPG['styles']) {
@@ -624,7 +624,11 @@ if(tmp==false){
 				if (count($rowPG['styles'])) {
 					foreach ($rowPG['styles'] as $r)
 						if ($r)
+						{
+							if(strpos($r, '#themes#')!==false) 
+								$r = str_replace('#themes#', $_tpl['design'].'style/', $r).'.css';
 							$_tpl['styles'][$r] = 1;
+						}
 				}
 			}
 			if($rowPG['keywords']) {

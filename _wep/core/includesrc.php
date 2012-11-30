@@ -136,7 +136,7 @@
 			elseif(is_string($kk))
 			{
 				if(strpos($kk,'/')===0)
-					$path = '_design/'.$HTML->_design.'/';
+					$path = $_CFG['PATH']['themes'].$HTML->_design.'/';
 				else
 					$path = $_CFG['_HREF']['_script'];
 				$src = '//'.$_CFG['_HREF']['_BH'].$path.$kk.'.js'.$solt;
@@ -167,7 +167,7 @@
 				$src = str_replace(array('http:','https:'), '', $kk);
 			elseif(is_string($kk)) {
 				if(strpos($kk,'/')===0)
-					$path = '_design/'.$HTML->_design.'/';
+					$path = $_CFG['PATH']['themes'].$HTML->_design.'/';
 				else
 					$path = $_CFG['_HREF']['_style'];
 				$src = '//'.$_CFG['_HREF']['_BH'].$path.$kk.'.css'.$solt;

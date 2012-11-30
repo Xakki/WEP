@@ -104,7 +104,7 @@ class shopbasket_class extends kernel_extends {
 			}
 
 			foreach($dataTemp as $r)
-				$data[$r['id']] = array('#name#'=>$r['name'], '#img#'=>'/_design/_img/avatar/default3.jpg', );
+				$data[$r['id']] = array('#name#'=>$r['name'], '#img#'=>'/'.$this->_CFG['PATH']['themes'].'_img/avatar/default3.jpg', );
 
 			return $data;
 		} 

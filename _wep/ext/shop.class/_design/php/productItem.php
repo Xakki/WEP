@@ -36,7 +36,7 @@
 						$html .= '<a href="/'.$img[0].'" title="'.$r['name'].'" class="prodimg-over fancyimg" rel="fancy"><img src="/'.$img[1].'" alt="'.$r['name'].'"/></a>';
 					}
 				} else
-					$html .= '<br/><img src="/_design/'.$HTML->_design.'/_shop/img/nofoto.gif" alt="'.$r['name'].'" class="prodimg-first"/>';
+					$html .= '<br/><img src="/'.$_CFG['PATH']['themes'].$HTML->_design.'/_shop/img/nofoto.gif" alt="'.$r['name'].'" class="prodimg-first"/>';
 				$html .= '</div>';
 
 

@@ -58,7 +58,7 @@
 		$DATA['button'] = array(
 			'config' => 1,
 			'topmenu' => static_super::modulMenu($this),
-			'firstpath' => '/_wep/index.php?_view=list&',
+			'firstpath' => $_CFG['PATH']['admin'].'?_view=list&',
 			'_clp' => Array(
 				'_modul' => 'pg',
 				'pg_id' => 1,
@@ -71,7 +71,7 @@
 				'sel' => 0,
 				'type' => 'button',
 				'css' => 'button-admin',
-				'link' => '/_wep/index.php',
+				'link' => $_CFG['PATH']['admin'],
 			),
 			'wepsplit' => array('type' => 'split')
 		);

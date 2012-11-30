@@ -306,33 +306,31 @@ class static_list {
 				unset($rff);
 			}
 		}
-		elseif($listname == 'mdesign') {
+		elseif($listname == 'themes') {
 			// вызов только для PG
 			$data[''] = ' - По умолчанию -';
-			$dir = dir($_this->_CFG['_PATH']['design']);
-			while (false !== ($entry = $dir->read())) {
-				if ($entry[0]!='.' && $entry[0]!='..' && $entry{0}!='_') {
-					$data[$entry] = $entry;
+			$dir = dir($_this->_CFG['_PATH']['themes']);
+			if($dir)
+			{
+				while (false !== ($entry = $dir->read())) {
+					if ($entry[0]!='.' && $entry[0]!='..' && $entry{0}!='_') {
+						$data[$entry] = $entry;
+					}
 				}
+				$dir->close();
 			}
-			$dir->close();
 		}
 		elseif ($listname == 'style') {
 			// вызов только для PG
-			$mdesign = 'mdesign';
-			$mdesign = $_this->_getlist($mdesign);
-			foreach($mdesign as $k=>$r) {
-				if($k) {
-					$dir = dir($_this->_CFG['_PATH']['design'].$k.'/style');
-					while (false !== ($entry = $dir->read())) {
-						if (strpos($entry,'.css')) {
-							$entry = substr($entry, 0, -4);
-							$data['']['../'.$k.'/style/'.$entry] = strtoupper($r).' - '.$entry;
-						}
-					}
-					$dir->close();
+			$dir = dir($_this->_CFG['_PATH']['themes'].'default/style');
+			while (false !== ($entry = $dir->read())) {
+				if (strpos($entry,'.css')) {
+					$entry = substr($entry, 0, -4);
+					$data['']['#themes#'.$entry] = '*'.$entry;
 				}
 			}
+			$dir->close();
+
 			$afterSubDir = array();
 			$dir = dir($_this->_CFG['_PATH']['_style']);
 			while (false !== ($entry = $dir->read())) {
@@ -357,20 +355,15 @@ class static_list {
 		}
 		elseif ($templistname == "script") {
 			// вызов только для PG
-			$mdesign = 'mdesign';
-			$mdesign = $_this->_getlist($mdesign);
-			foreach($mdesign as $k=>$r) {
-				if($k) {
-					$dir = dir($_this->_CFG['_PATH']['design'].$k.'/script');
-					while (false !== ($entry = $dir->read())) {
-						if (strpos($entry,'.js')) {
-							$entry = substr($entry, 0, -3);
-							$data['']['../'.$k.'/script/'.$entry] = strtoupper($r).' - '.$entry;
-						}
-					}
-					$dir->close();
+			$dir = dir($_this->_CFG['_PATH']['themes'].'default/script');
+			while (false !== ($entry = $dir->read())) {
+				if (strpos($entry,'.js')) {
+					$entry = substr($entry, 0, -3);
+					$data['']['#themes#'.$entry] = '*'.$entry;
 				}
 			}
+			$dir->close();
+
 			$afterSubDir = array();
 			$dir = dir($_this->_CFG['_PATH']['_script']);
 			while (false !== ($entry = $dir->read())) {

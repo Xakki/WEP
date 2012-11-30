@@ -28,7 +28,7 @@
 				if(isset($r['s_img_product']) and $r['s_img_product']) {
 					$img = $r['s_img_product'];
 				} else
-					$img = '_design/'.$HTML->_design.'/_shop/img/nofoto.gif';
+					$img = $_CFG['PATH']['themes'].$HTML->_design.'/_shop/img/nofoto.gif';
 				$html .= '<tr data-id="'.$r['product_id'].'" class="'.($r['checked']?'checked':'').'">
 					<td><input type="checkbox" '.($r['checked']?'checked="checked"':'').'>
 					<td><img src="/'.$img.'" alt="'.$r['name'].'"/>
@@ -39,7 +39,7 @@
 					<td class="summ"><span>'.($r['cost']*$r['count']).'</span> '.$data['#curr#'].'
 					<td class="dellink">
 						<a href="##vkorziny" title="Удалить из корзины">
-							<img src="/_design/'.$HTML->_design.'/_shop/img/basket-del.png" alt="Удалить из корзины"/>
+							<img src="/'.$_CFG['PATH']['themes'].$HTML->_design.'/_shop/img/basket-del.png" alt="Удалить из корзины"/>
 						</a>
 				</tr>';
 				if($r['checked'])
