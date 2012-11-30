@@ -4,6 +4,25 @@ var timerid2 = 0;
 var ajaxComplite = 1;
 
 wep.form = {
+	initForm: function() {
+
+		$('form span.labelInput').click(function() {
+			$(this).next().focus();
+		});
+		$('form span.labelInput+input').focus(function() {
+			$(this).prev().hide();
+		});
+		$('form span.labelInput+input').focusout(function() {
+			if(this.value=='')
+				$(this).prev().show();
+		});
+
+		$('form span.form-requere').click(function() {
+			var tx = $(this).attr('data-text');
+			if(!tx) tx = 'Данное поле обязательно для заполнения!';
+			wep.showHelp(this,tx,2000,1)
+		});
+	},
 	// Делаем форму на странице аяксовой
 	ajaxForm : function(id,contentID) {
 		var arr = '';
@@ -23,7 +42,7 @@ wep.form = {
 	// Аякс отправка формы
 	JSFR: function(n) {
 		// NEED INCLUDE jquery.form
-		$.include(wep.HREF_script+'script.jquery/form.js', function() {
+		wep.include(wep.HREF_script+'script.jquery/form.js', function() {
 			jQuery(n).ajaxForm({
 				beforeSubmit: 
 					function(a,f,o) {
@@ -92,7 +111,7 @@ wep.form = {
 	},
 
 	iListsort : function(id) {// сортировка
-		$.include('/_design/_script/script.jquery/jquery-ui.js', function() {
+		wep.include('/_design/_script/script.jquery/jquery-ui.js', function() {
 			$(id).sortable({
 				items: '>div.ilist',
 				axis:	'y',
@@ -137,6 +156,19 @@ wep.form = {
 		val = val.replace(/[^0-9]+/g, '');
 		event.srcElement.value = sgn+val;
 		return true;
+	},
+
+	checkFloat : function(ev, param) {
+		var myObj = $(ev.target);
+		if(myObj.data('checkFloat'))
+			return true;
+		// todo use extend dafault seting for `param`
+		param = {type:"float", beforePoint: myObj.data('data-width0'), afterPoint: myObj.data('data-width1'), defaultValueInput:"0", decimalMark:"."};
+
+		myObj.data('checkFloat',true);
+		wep.include('/_design/_script/script.jquery/jquery.numberMask.js',function() {
+			myObj.numberMask(param);
+		});
 	},
 
 	/* Утилита для подсчёта кол сиволов в форме, автоматически создаёт необходимые поля*/
@@ -447,26 +479,6 @@ function SetWysiwyg(obj) {
 	}
 }
 
-
-$(document).ready(function() {
-
-	$('form span.labelInput').click(function() {
-		$(this).next().focus();
-	});
-	$('form span.labelInput+input').focus(function() {
-		$(this).prev().hide();
-	});
-	$('form span.labelInput+input').focusout(function() {
-		if(this.value=='')
-			$(this).prev().show();
-	});
-
-	$('form span.form-requere').click(function() {
-		var tx = $(this).attr('data-text');
-		if(!tx) tx = 'Данное поле обязательно для заполнения!';
-		wep.showHelp(this,tx,2000,1)
-	});
-});
 
 /////////////////////////////
 ///////////swfuploader/////////

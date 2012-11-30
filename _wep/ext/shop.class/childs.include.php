@@ -3,13 +3,12 @@
 
 class prodvote_class extends kernel_extends {
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->showinowner=false;// не показывать
 		$this->mf_ipcreate = true;
 		$this->mf_timecr = true;
 		$this->mf_namefields=false;
 		$this->caption = 'Голосование';
-		return true;
 	}
 	function _create() {
 		parent::_create();

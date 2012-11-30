@@ -12,7 +12,7 @@
 	if(!isset($FUNCPARAM[0]) or !$FUNCPARAM[0]) $FUNCPARAM[0] = '#ugroup#userChange';
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 		$form = array(
-			'0'=>array('type'=>'list', 'listname'=>'phptemplates', 'caption'=>'Шаблон Списка'),
+			'0'=>array('type'=>'list', 'listname'=>array('phptemplates', 'tags'=>'userswap'), 'caption'=>'Шаблон Списка', 'comment'=>$_CFG['lang']['tplComment']),
 		);
 		return $form;
 	}

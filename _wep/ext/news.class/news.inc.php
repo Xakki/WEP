@@ -21,7 +21,7 @@
 		$this->_enum['newscategory'] = $NEWS->config['category'];
 
 		$form = array(
-			'0'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон', 'comment'=>'Подключаемый шаблон для отображения новостей'),
+			'0'=>array('type'=>'list','listname'=>array('phptemplates', 'tags'=>'news'),'caption'=>'Шаблон', 'comment'=>$_CFG['lang']['tplComment']),
 			'1'=>array('type'=>'int','caption'=>'Новостей на одну страницу','comment'=>'Максимальное кол-во новостей на одной странице'),
 			'2'=>array('type'=>'int','caption'=>'Кол-во страниц для пролистывания','comment'=>'Для постраничной навигации, указываем кол-во ссылок на следующие страницы, от текущей страницы'),
 			'3'=>array('type'=>'list','listname'=>'newscategory', 'caption'=>'Категория','comment'=>'Выбирите категорию новости, которая будет отображаться'),

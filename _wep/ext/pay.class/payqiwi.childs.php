@@ -27,7 +27,7 @@ class payqiwi_class extends kernel_extends {
 	}
 
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->caption = 'QIWI';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';
 		$this->lang['add_name'] = 'Пополнение кошелька из QIWI';
@@ -86,7 +86,6 @@ Cчета со статусом большим или равным 100 трак�
 
 		$this->cron[] = array('modul'=>$this->_cl,'function'=>'checkBill()','active'=>1,'time'=>300);
 
-		return true;
 	}
 
 	protected function _create() {
@@ -118,6 +117,22 @@ Cчета со статусом большим или равным 100 трак�
 	}
 
 
+	// INFO
+	function payFormBilling($data,$status=0) 
+	{
+
+		$DATA = array('messages'=>array());
+
+		if(count($data)) {
+			$DATA['messages'][] = array('payselect-comm',$data['name']);
+			$DATA['messages'][] = array('payselect-summ','Сумма : <span>'.number_format($data['cost'], 2, ',', ' ').' '.$this->owner->config['curr'].'');
+
+			$DATA['messages'][] = array('alert','Чтобы оплатить счёт, перейдите на сайт <a href="'.$this->pay_formType.'" target="_blank">QIWI</a>');
+		}
+
+		return $DATA;
+	}
+	
 	/*
 	* При добавлении делаем запрос XML
 	*/
@@ -139,16 +154,17 @@ Cчета со статусом большим или равным 100 трак�
 		$result = parent::_update($data,$where,$flag_select);
 		return $result;
 	}*/
-	function _add($data=array(),$flag_select=true) {
+	public function _add($data = array(), $flag_select = true, $flag_update=false) {
 		$data2 = array(
 			'phone'=>$data['phone'],
 			'cost'=>$data['cost'],
 			'statuses'=>50
 		);
 
-		$result = parent::_add($data2,true);
+		$result = parent::_add($data2, true, $flag_update);
 		if($result) {
-			$data['name'] .= ' (Счёт №'.$this->config['qiwi_txn-prefix'].$this->id.')';
+			if(!$data['name'])
+				$data['name'] = 'Счёт №'.$this->config['qiwi_txn-prefix'].$this->id;
 			$options = array(
 				'phone'=>$this->data[$this->id]['phone'],
 				'amount'=>$this->data[$this->id]['cost'],

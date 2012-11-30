@@ -122,12 +122,17 @@ class static_list {
 		$data = array();
 		$templistname = $listname;
 		if(is_array($listname))
-			$templistname = implode(',',$listname);
+		{
+			if(isset($listname[0]))
+				$templistname = $listname[0];
+			else
+				$templistname = implode(',',$listname);
+		}
 
 		if (isset($_this->_enum[$templistname])) {
 			return $_this->_enum[$templistname];
 		}
-		elseif(is_array($listname) and isset($listname[0]) and $listname[0] == 'count') {
+		elseif($templistname == 'count') {
 			if(!$listname[1]) $listname[1] = 1;
 			if(!$listname[2]) $listname[2] = 20;
 			for($i=$listname[1];$i<=$listname[2];$i++) {
@@ -160,22 +165,49 @@ class static_list {
 			}
 		}
 		elseif($templistname == 'phptemplates') {
-			$data[''] = ' - ';
+			// вызов только для PG
+			$data[''][''] = ' - ';
 
 			// Системные модули
 			$dir = dir($_this->_CFG['_PATH']['wep_ext']);
 			while (false !== ($entry = $dir->read())) {
-				if ($entry[0]!='.' && $entry[0]!='..' && strpos($entry,'.class')!==false) {
-					$key = substr($entry,0,-6);
-					$dir2 = $_this->_CFG['_PATH']['wep_ext'].$entry.'/templates';
+				if (_strpos($entry,'.class')!==false) {
+					$key = _substr($entry,0,-6);
+					$dir2 = $_this->_CFG['_PATH']['wep_ext'].$entry.'/_design/php';
 					if(file_exists($dir2) and is_dir($dir2)) {
-						$dir2 = dir($dir2);
-						while (false !== ($entry2 = $dir2->read())) {
-							if ($entry2[0]!='.' && $entry2[0]!='..' && strstr($entry2,'.php')) {
-								$data['#'.$key.'#'.substr($entry2,0,-4)] = $entry.' : '.$entry2;
+						$dir2Obj = dir($dir2);
+						while (false !== ($entry2 = $dir2Obj->read())) 
+						{
+							if (mb_strstr($entry2,'.php')) 
+							{
+								$docs = static_tools::getDocFileInfo($dir2.'/'.$entry2);
+
+								if(!$docs['type'])
+									$docs['type'] = $entry;
+								if(!$docs['name'])
+									$docs['name'] = $entry2;
+
+								if(!isset($data[$docs['type']]))
+									$data[''][$docs['type']] = array('#name#'=>$docs['type'], '#checked#'=>0);
+
+								// Определяем совместимость шаблонов
+								if(isset($listname['tags']))
+								{
+									// todo - suport multiple tag
+									if(!$docs['tags'])
+										$docs['#css#'] = 'notags';
+									elseif($docs['tags']!=$listname['tags'])
+										$docs['#css#'] = 'nosupport';
+									else
+										$docs['#css#'] = 'support';
+								}
+								$docs['#name#'] = $docs['name'];
+
+								$data[$docs['type']] ['#'.$key.'#'._substr($entry2,0,-4)] = $docs;
+
 							}
 						}
-						$dir2->close();
+						$dir2Obj->close();
 					}
 				}
 			}
@@ -184,14 +216,38 @@ class static_list {
 			// Пользовательские модули
 			$dir = dir($_this->_CFG['_PATH']['ext']);
 			while (false !== ($entry = $dir->read())) {
-				if ($entry[0]!='.' && $entry[0]!='..' && strpos($entry,'.class')!==false) {
+				if (strpos($entry,'.class')!==false) {
 					$key = substr($entry,0,-6);
-					$dir2 = $_this->_CFG['_PATH']['ext'].$entry.'/templates';
+					$dir2 = $_this->_CFG['_PATH']['ext'].$entry.'/_design/php';
 					if(file_exists($dir2) and is_dir($dir2)) {
 						$dir2 = dir($dir2);
 						while (false !== ($entry2 = $dir2->read())) {
-							if ($entry2[0]!='.' && $entry2[0]!='..' && strstr($entry2,'.php')) {
-								$data['#'.$key.'#'.substr($entry2,0,-4)] = $entry.' : '.$entry2;
+							if (strstr($entry2,'.php')) 
+							{
+								$docs = static_tools::getDocFileInfo($dir2.'/'.$entry2);
+
+								if(!$docs['type'])
+									$docs['type'] = $entry;
+								if(!$docs['name'])
+									$docs['name'] = $entry2;
+
+								if(!isset($data[$docs['type']]))
+									$data[''][$docs['type']] = array('#name#'=>$docs['type'], '#checked#'=>0);
+
+								// Определяем совместимость шаблонов
+								if(isset($listname['tags']))
+								{
+									// todo - suport multiple tag
+									if(!$docs['tags'])
+										$docs['#css#'] = 'notags';
+									elseif($docs['tags']!=$listname['tags'])
+										$docs['#css#'] = 'nosupport';
+									else
+										$docs['#css#'] = 'support';
+								}
+								$docs['#name#'] = $docs['name'];
+
+								$data[$docs['type']] ['#'.$key.'#'._substr($entry2,0,-4)] = $docs;
 							}
 						}
 						$dir2->close();
@@ -203,16 +259,42 @@ class static_list {
 			// Дизайн шаблоны
 			_new_class('pg',$PGLIST);
 			if(file_exists($PGLIST->_CFG['_PATH']['design'].$PGLIST->config['design'].'/php')) {
-				$dir = dir($PGLIST->_CFG['_PATH']['design'].$PGLIST->config['design'].'/php');
-				while (false !== ($entry = $dir->read())) {
-					if ($entry[0]!='.' && $entry[0]!='..' && strstr($entry,'.php')) {
-						$data[substr($entry,0,-4)] = ' '.$entry;
+				$dir = $PGLIST->_CFG['_PATH']['design'].$PGLIST->config['design'].'/php';
+				$dirObj = dir($dir);
+				while (false !== ($entry = $dirObj->read())) {
+					if (strstr($entry,'.php')) {
+
+						$docs = static_tools::getDocFileInfo($dir.'/'.$entry);
+
+						if(!$docs['type'])
+							$docs['type'] = $PGLIST->config['design'];
+						if(!$docs['name'])
+							$docs['name'] = $entry;
+
+						if(!isset($data[$docs['type']]))
+							$data[''][$docs['type']] = array('#name#'=>$docs['type'], '#checked#'=>0);
+
+						// Определяем совместимость шаблонов
+						if(isset($listname['tags']))
+						{
+							// todo - suport multiple tag
+							if(!$docs['tags'])
+								$docs['#css#'] = 'notags';
+							elseif($docs['tags']!=$listname['tags'])
+								$docs['#css#'] = 'nosupport';
+							else
+								$docs['#css#'] = 'support';
+						}
+						$docs['#name#'] = $docs['name'];
+
+						$data[$docs['type']] [substr($entry,0,-4)] = $docs;
 					}
 				}
-				$dir->close();
+				$dirObj->close();
 			}
 
 			// Совместимость со старой версией
+			// TODO - clear this code
 			global $FUNCPARAM_FIX;
 			$f = $value . '/templates';
 			if($FUNCPARAM_FIX and count($FUNCPARAM_FIX) and file_exists($f)) {
@@ -224,31 +306,31 @@ class static_list {
 				unset($rff);
 			}
 		}
-		elseif($listname == 'mdesign') {
+		elseif($listname == 'themes') {
+			// вызов только для PG
 			$data[''] = ' - По умолчанию -';
-			$dir = dir($_this->_CFG['_PATH']['design']);
+			$dir = dir($_this->_CFG['_PATH']['themes']);
+			if($dir)
+			{
+				while (false !== ($entry = $dir->read())) {
+					if ($entry[0]!='.' && $entry[0]!='..' && $entry{0}!='_') {
+						$data[$entry] = $entry;
+					}
+				}
+				$dir->close();
+			}
+		}
+		elseif ($listname == 'style') {
+			// вызов только для PG
+			$dir = dir($_this->_CFG['_PATH']['themes'].'default/style');
 			while (false !== ($entry = $dir->read())) {
-				if ($entry[0]!='.' && $entry[0]!='..' && $entry{0}!='_') {
-					$data[$entry] = $entry;
+				if (strpos($entry,'.css')) {
+					$entry = substr($entry, 0, -4);
+					$data['']['#themes#'.$entry] = '*'.$entry;
 				}
 			}
 			$dir->close();
-		}
-		elseif ($listname == 'style') {
-			$mdesign = 'mdesign';
-			$mdesign = $_this->_getlist($mdesign);
-			foreach($mdesign as $k=>$r) {
-				if($k) {
-					$dir = dir($_this->_CFG['_PATH']['design'].$k.'/style');
-					while (false !== ($entry = $dir->read())) {
-						if (strpos($entry,'.css')) {
-							$entry = substr($entry, 0, -4);
-							$data['']['../'.$k.'/style/'.$entry] = strtoupper($r).' - '.$entry;
-						}
-					}
-					$dir->close();
-				}
-			}
+
 			$afterSubDir = array();
 			$dir = dir($_this->_CFG['_PATH']['_style']);
 			while (false !== ($entry = $dir->read())) {
@@ -272,20 +354,16 @@ class static_list {
 				$data[''] = $data['']+$afterSubDir;
 		}
 		elseif ($templistname == "script") {
-			$mdesign = 'mdesign';
-			$mdesign = $_this->_getlist($mdesign);
-			foreach($mdesign as $k=>$r) {
-				if($k) {
-					$dir = dir($_this->_CFG['_PATH']['design'].$k.'/script');
-					while (false !== ($entry = $dir->read())) {
-						if (strpos($entry,'.js')) {
-							$entry = substr($entry, 0, -3);
-							$data['']['../'.$k.'/script/'.$entry] = strtoupper($r).' - '.$entry;
-						}
-					}
-					$dir->close();
+			// вызов только для PG
+			$dir = dir($_this->_CFG['_PATH']['themes'].'default/script');
+			while (false !== ($entry = $dir->read())) {
+				if (strpos($entry,'.js')) {
+					$entry = substr($entry, 0, -3);
+					$data['']['#themes#'.$entry] = '*'.$entry;
 				}
 			}
+			$dir->close();
+
 			$afterSubDir = array();
 			$dir = dir($_this->_CFG['_PATH']['_script']);
 			while (false !== ($entry = $dir->read())) {

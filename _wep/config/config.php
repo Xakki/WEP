@@ -9,7 +9,7 @@
  * 3 - Номер ревизии , исправленны ошибки
  */
 $_CFG['info'] = array(//информация о СМС
-	'version' => '2.14.38',
+	'version' => '2.15.41',
 	'email' => 'wep@xakki.ru',
 	'icq' => '222392984'
 );
@@ -109,12 +109,14 @@ if(!isset($_CFG['_PATH']['path']))
 if(!isset($_CFG['_PATH']['wepconf'])) //если  путь не был задан
 	$_CFG['_PATH']['wepconf'] = $_CFG['_PATH']['path'] . '_wepconf/'; // файл-путь  к конфигу
 
-$_SERVER['_DR_'] = $_CFG['_PATH']['path'] = $_CFG['_PATH']['path']; // корень сайта, основной путь к проекту
+$_SERVER['_DR_'] = $_CFG['_PATH']['path']; // корень сайта, основной путь к проекту
 $_CFG['_PATH']['_path'] = dirname(dirname(dirname(__FILE__))). '/';
 $_CFG['_PATH']['core'] = $_CFG['_PATH']['wep'] . 'core/'; // путь к ядру
-$_CFG['_PATH']['cdesign'] = $_CFG['_PATH']['wep'] . 'cdesign/'; // backend админки (контролеры и шаблоны)
+$_CFG['_PATH']['cdesign'] = $_CFG['_PATH']['path'] . '_design/'; // backend админки (контролеры и шаблоны)
 $_CFG['_PATH']['wep_ext'] = $_CFG['_PATH']['wep'] . 'ext/'; // путь к системным модулям
 $_CFG['_PATH']['wep_phpscript'] = $_CFG['_PATH']['wep'] . '_phpscript/';
+$_CFG['_PATH']['backend'] = $_CFG['_PATH']['wep'] . '_phpscript/backend/';
+$_CFG['_PATH']['frontend'] = $_CFG['_PATH']['wep'] . '_phpscript/frontend/';
 $_CFG['_PATH']['wep_inc'] = $_CFG['_PATH']['wep'] . 'inc/'; // путь к обработчикам блоков страниц
 $_CFG['_PATH']['wep_locallang'] = $_CFG['_PATH']['wep'] . 'locallang/'; // язык
 $_CFG['_PATH']['wep_config'] = $_CFG['_PATH']['wep'] . 'config/'; // конфиги
@@ -131,27 +133,28 @@ $_CFG['_FILE']['cron'] = $_CFG['_PATH']['config'] . 'configcron.php';
 $_CFG['_FILE']['HASH_KEY'] = $_CFG['_PATH']['config'] . 'hash.key';
 
 $_CFG['_PATH']['locallang'] = $_CFG['_PATH']['wepconf'] . 'locallang/'; // язык
-$_CFG['_PATH']['cron'] = $_CFG['_PATH']['wepconf'] . 'cron/'; // кроны
 $_CFG['_PATH']['weptemp'] = $_CFG['_PATH']['wepconf'] . 'temp/'; // путь к папке для хранения временных файлов
 $_CFG['_PATH']['temp'] = $_CFG['_PATH']['path'] . '_content/temp/'; // путь к папке для хранения временных файлов системы
 $_CFG['_PATH']['content'] = $_CFG['_PATH']['path'] . '_content/'; // путь к папке для хранения  файлов системы
 $_CFG['_PATH']['log'] = $_CFG['_PATH']['wepconf'] . 'log/';
 
 /* пути для файлов дизайна страниц */
-$_CFG['_PATH']['design'] = $_CFG['_PATH']['path'] . '_design/'; // дизайн сайта
-$_CFG['_PATH']['_style'] = $_CFG['_PATH']['path'] . '_design/_style/'; // дизайн стили
-$_CFG['_PATH']['_script'] = $_CFG['_PATH']['path'] . '_design/_script/'; // дизайн стили
+$_CFG['_PATH']['_design'] = $_CFG['_PATH']['path'] . '_design/'; //  дизайн ядра
+$_CFG['_PATH']['_style'] = $_CFG['_PATH']['path'] . '_design/_style/'; // дизайн стили ядра
+$_CFG['_PATH']['_script'] = $_CFG['_PATH']['path'] . '_design/_script/'; // дизайн стили ядра
 
+$_CFG['_PATH']['themes'] = $_CFG['_PATH']['path'] . '_themes/'; // дизайн сайта
 /* * ************* */
 /* $_CFG['PATH'] */
 /* * ************* */
 // относительные пути
+$_CFG['PATH']['admin'] = '/_wepadmin/';
 $_CFG['PATH']['WSWG'] = '_wysiwyg/';
+$_CFG['PATH']['themes'] = '_themes/';
 $_CFG['PATH']['content'] = '_content/';
 $_CFG['PATH']['userfile'] = $_CFG['PATH']['content'].'_userfile/'; // файлы пользователя
-$_CFG['PATH']['wepname'] = basename($_CFG['_PATH']['wep']); // базовое имя админки
 $_CFG['PATH']['wepconfname'] = basename($_CFG['_PATH']['wepconf']); // базовое имя пользовательских файлов
-$_CFG['PATH']['cdesign'] = $_CFG['PATH']['wepname'] . '/cdesign/'; // дизайн админки
+$_CFG['PATH']['cdesign'] = '_design/'; // дизайн админки
 $_CFG['FILE']['HASH_KEY'] = $_CFG['PATH']['wepconfname'] . '/config/hash.key';
 $_CFG['PATH']['weptemp'] = $_CFG['PATH']['wepconfname'] . '/temp/'; // путь к папке для хранения временных файлов
 $_CFG['PATH']['temp'] = $_CFG['PATH']['content'].'temp/'; // путь к папке для хранения временных файлов
@@ -348,7 +351,7 @@ include $_CFG['_PATH']['core'] . 'static.main.php';
 if(file_exists($_CFG['_FILE']['config']))
 	include($_CFG['_FILE']['config']);
 elseif(!isset($INSTALL)) {
-	static_main::redirect('/'.$_CFG['PATH']['wepname'].'/install.php');
+	static_main::redirect($_CFG['PATH']['admin'].'/install/');
 }
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -375,7 +378,7 @@ if (!$PHP_SELF[0])
 array_pop($PHP_SELF);
 $addpath = '';
 $k = 0;
-while (isset($PHP_SELF[$k]) and $PHP_SELF[$k] != $_CFG['PATH']['wepname']) {
+while (isset($PHP_SELF[$k]) and $PHP_SELF[$k] != $_CFG['PATH']['admin']) {
 	$addpath .= $PHP_SELF[$k] . '/';
 	$k++;
 }
@@ -398,7 +401,7 @@ if($_CFG['site']['redirectPlugin'])
 	$_CFG['require_modul']['redirect'] = true;
 
 
-$_CFG['_HREF']['wepJS'] = $_CFG['_HREF']['BH'] . $_CFG['PATH']['wepname'] . '/js.php';
+//$_CFG['_HREF']['wepJS'] = $_CFG['_HREF']['BH'] . $_CFG['PATH']['admin'] . '/js/';
 $_CFG['_HREF']['siteJS'] = $_CFG['_HREF']['BH'] . '_js.php';
 $_CFG['_HREF']['siteAJAX'] = $_CFG['_HREF']['BH'] . '_json.php';
 $_CFG['_HREF']['captcha'] = $_CFG['_HREF']['BH'] . '_captcha.php';
@@ -407,7 +410,7 @@ $_CFG['_HREF']['_style'] = '_design/_style/'; // дизайн стили
 $_CFG['_HREF']['_script'] = '_design/_script/'; // дизайн стили
 $_CFG['_HREF']['arrayHOST'] = array_reverse(explode('.', $_SERVER['HTTP_HOST']));
 
-if (strstr($_SERVER['PHP_SELF'], '/' . $_CFG['PATH']['wepname'] . '/'))
+if (strstr($_SERVER['PHP_SELF'], '/' . $_CFG['PATH']['admin'] . '/'))
 	$_CFG['_F']['adminpage'] = true;
 else
 	$_CFG['_F']['adminpage'] = false;

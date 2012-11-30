@@ -9,7 +9,7 @@
 			$_tpl['script'] = array();
 
 		if(!isset($gfi['uiStyle']))
-			$gfi['uiStyle'] = 'ui-smoothness';
+			$gfi['uiStyle'] = 'smoothness';
 		
 		if(isset($gfi['multiple'])) {
 			if($gfi['multiple']==2) {
@@ -18,7 +18,7 @@
 
 				$_tpl['script']['script.jquery/jquery-ui'] = array(
 					'script.jquery/ui-multiselect' => 1,
-					'jquery.localisation/ui-multiselect-ru' => 1,
+					'script.jquery/jquery.localisation/ui-multiselect-ru' => 1,
 				);
 	
 				$_tpl['onload'] .= 'jQuery(\'select.multiple\').multiselect();';
@@ -55,7 +55,7 @@
 		if(isset($gfi['datepicker']) and $gfi['datepicker']) {
 			if(!isset($_tpl['script']['script.jquery/jquery-ui']))
 				$_tpl['script']['script.jquery/jquery-ui'] = 1;
-			$_tpl['script']['jquery.localisation/jquery.ui.datepicker-ru'] = 1;
+			$_tpl['script']['script.jquery/jquery.localisation/jquery.ui.datepicker-ru'] = 1;
 			if($gfi['datepicker']==2) {
 				$_tpl['script']['script.jquery/ui-timepicker-addon'] = 1;
 				$_tpl['styles']['style.jquery/ui-timepicker-addon'] = 1;
@@ -67,7 +67,6 @@
 			$_tpl['script'] = array('wepform'=>1)+$_tpl['script'];
 
 		$_tpl['script'] = array('wep'=>1)+$_tpl['script'];
-		$_tpl['script'] = array('include'=>1)+$_tpl['script'];
 		$_tpl['script'] = array('jquery'=>1)+$_tpl['script'];
 
 
@@ -88,6 +87,7 @@
 	}
 
 	function arraySrcToStr() {
+		// TODO : сделать все преобрзования на сервере, а скрипту передать готовые массивы
 		global $_tpl,$_CFG;
 		$temp = $solt = '';
 		if($_CFG['wep']['debugmode'])
@@ -118,7 +118,11 @@
 	}
 
 	function scriptRecursive($script, $solt='') {
-		global $_CFG;
+		global $_CFG, $HTML;
+		if(!isset($HTML->_design)) {
+			trigger_error('Название дизайна ГДЕ???', E_USER_WARNING);
+			$HTML->_design = 'default';
+		}
 		$temp = '';
 		foreach($script as $kk=>$rr) {
 			if(is_string($rr) and (substr($rr,0,4)=='http' or substr($rr,0,1)=='<')) {
@@ -130,7 +134,13 @@
 			if (strpos($kk, '//')===0 or strpos($kk, 'http:')===0 or strpos($kk, 'https:')===0)
 				$src = str_replace(array('http:','https:'), '', $kk);
 			elseif(is_string($kk))
-				$src = '//'.$_CFG['_HREF']['_BH'].$_CFG['_HREF']['_script'].$kk.'.js'.$solt;
+			{
+				if(strpos($kk,'/')===0)
+					$path = $_CFG['PATH']['themes'].$HTML->_design.'/';
+				else
+					$path = $_CFG['_HREF']['_script'];
+				$src = '//'.$_CFG['_HREF']['_BH'].$path.$kk.'.js'.$solt;
+			}
 
 			if($src)
 				$temp .= '<script src="'.$src.'"></script>'."\n";
@@ -144,7 +154,7 @@
 	}
 
 	function cssRecursive($css, $solt='') {
-		global $_CFG;
+		global $_CFG, $HTML;
 		$temp = '';
 
 		foreach($css as $kk=>$rr) {
@@ -155,8 +165,13 @@
 			$src = '';
 			if (strpos($kk, '//')!==false)
 				$src = str_replace(array('http:','https:'), '', $kk);
-			elseif(is_string($kk))
-				$src = '//'.$_CFG['_HREF']['_BH'].$_CFG['_HREF']['_style'].$kk.'.css'.$solt;
+			elseif(is_string($kk)) {
+				if(strpos($kk,'/')===0)
+					$path = $_CFG['PATH']['themes'].$HTML->_design.'/';
+				else
+					$path = $_CFG['_HREF']['_style'];
+				$src = '//'.$_CFG['_HREF']['_BH'].$path.$kk.'.css'.$solt;
+			}
 
 			if($src)
 				$temp .= '<link rel="stylesheet" href="'.$src.'"></link>'."\n";

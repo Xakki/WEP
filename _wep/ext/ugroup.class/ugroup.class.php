@@ -85,7 +85,6 @@ class ugroup_class extends kernel_extends
 		$this->tablename = 'ugroup';
 		$this->ver = '0.2.3';
 		$this->default_access = '|0|';
-		return true;
 	}
 
 	protected function _create() {
@@ -119,7 +118,7 @@ class ugroup_class extends kernel_extends
 		$this->fields_form[$this->mf_namefields] = array('type' => 'text', 'mask' =>array('min'=>1), 'caption' => 'Название группы');
 		$this->fields_form['wep'] = array('type' => 'checkbox', 'caption'=>'Админка', 'comment' => 'Разрешить вход в админку?');
 		$this->fields_form['level'] = array('type' => 'list', 'listname'=>'level', 'caption' => 'Доступ в CMS', 'default'=>2);
-		$this->fields_form['design'] = array('type' => 'list', 'listname'=>'mdesign', 'caption'=>'Дизайн', 'comment' => 'Дизаин личного кабинета', 'default'=>'default');
+		$this->fields_form['design'] = array('type' => 'list', 'listname'=>'cdesign', 'caption'=>'Дизайн', 'comment' => 'Дизаин личного кабинета', 'default'=>'default');
 		$this->fields_form['filesize'] = array('type' => 'int', 'caption' => 'Share', 'comment' => 'Доступный размер диска. Значение в мегабайтах, 0 - запрет','mask'=>array('max'=>1000));
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Активность');
 
@@ -166,10 +165,10 @@ class ugroup_class extends kernel_extends
 					$data[$row['id']] = $row[$this->mf_namefields];
 			return $data;
 		}
-		elseif ($listname == 'mdesign') {
+		elseif ($listname == 'cdesign') {
 			$dir = dir($this->_CFG['_PATH']['cdesign']);
 			while ($entry = $dir->read()) {
-				if ($entry!= '.' and $entry!= '..') {
+				if ($entry!= '.' and $entry!= '..' && $entry{0}!='_') {
 					$data[$entry] = $entry;
 				}
 			}
@@ -217,7 +216,7 @@ class ugroup_class extends kernel_extends
 				$txt = '<table border="1"><tr><td>ID</td><td>Name</td><td>email</td></tr>';
 				foreach($data as $k=>$r) {
 					$txt .= '<tr>
-						<td><a href="http://'.$_SERVER['HTTP_HOST'].'/'.$this->_CFG['PATH']['wepname'].'/index.php?_view=list&_modul=ugroupom&ugroupom_id='.$this->config['modergroup'].'&ugroupom_ch=usersom&usersom_id='.$r['id'].'&_type=edit">'.$r['id'].'</a></td>
+						<td><a href="http://'.$_SERVER['HTTP_HOST'].''.$this->_CFG['PATH']['admin'].'?_view=list&_modul=ugroupom&ugroupom_id='.$this->config['modergroup'].'&ugroupom_ch=usersom&usersom_id='.$r['id'].'&_type=edit">'.$r['id'].'</a></td>
 						<td>'.$r['name'].'</td>
 						<td>'.$r['email'].'</td></tr>';
 				}
@@ -267,7 +266,7 @@ class ugroup_class extends kernel_extends
 class users_class extends kernel_extends {
 
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->mf_actctrl = true;
 		$this->fn_login = 'email';//login or email
 		$this->fn_pass = 'pass';
@@ -284,7 +283,6 @@ class users_class extends kernel_extends {
 		$this->default_access = '|0|';
 		$this->userCach = array();
 		$this->tablename = 'users';
-		return true;
 	}
 
 	protected function _create_conf() {/*CONFIG*/

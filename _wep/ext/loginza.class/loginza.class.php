@@ -3,10 +3,9 @@
 class loginza_class extends kernel_extends
 {
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->caption = 'Loginza';
 		$this->tablename = '';
-		return true;
 	}
 
 	function _setHook() {

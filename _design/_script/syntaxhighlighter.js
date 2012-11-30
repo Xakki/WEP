@@ -11,7 +11,7 @@ function path_syntaxhighlighter()
 };
 
 $(function(){
-	data = path_syntaxhighlighter(
+	dataSL = path_syntaxhighlighter(
 		'applescript            @shBrushAppleScript.js',
 		'actionscript3 as3      @shBrushAS3.js',
 		'bash shell             @shBrushBash.js',
@@ -37,11 +37,11 @@ $(function(){
 		'vb vbnet               @shBrushVb.js',
 		'xml xhtml xslt html    @shBrushXml.js'
 	);
-	$.include('/_design/_script/syntaxhighlighter/scripts/shCore.js');
-	$.includeCSS('/_design/_script/syntaxhighlighter/styles/shCore.css');
-	$.includeCSS('/_design/_script/syntaxhighlighter/styles/shCoreDefault.css');
-	$.include('/_design/_script/syntaxhighlighter/scripts/shAutoloader.js',function() {
-		SyntaxHighlighter.autoloader.apply(null, data);
+	wep.include('/_design/_script/syntaxhighlighter/scripts/shCore.js');
+	wep.includeCSS('/_design/_script/syntaxhighlighter/styles/shCore.css');
+	wep.includeCSS('/_design/_script/syntaxhighlighter/styles/shCoreDefault.css');
+	wep.include('/_design/_script/syntaxhighlighter/scripts/shAutoloader.js',function() {
+		SyntaxHighlighter.autoloader.apply(null, dataSL);
 		SyntaxHighlighter.all();
 	});
 });

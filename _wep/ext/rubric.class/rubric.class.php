@@ -1,8 +1,8 @@
 <?php
 class rubric_class extends kernel_extends {
 
-	function _set_features() {
-		if (!parent::_set_features()) return false;
+	protected function _set_features() {
+		parent::_set_features();
 		$this->ver = '0.0.1';
 		$this->mf_istree = true;
 		$this->mf_ordctrl = true;
@@ -18,7 +18,7 @@ class rubric_class extends kernel_extends {
 			'resizecrop'=>'resizecrop',
 			'resize'=>'resize'
 		);
-		return true;
+
 	}
 
 	protected function _create_conf() {/*CONFIG*/
@@ -35,7 +35,7 @@ class rubric_class extends kernel_extends {
 		$this->config_form['imgsize'] = array('type' => 'int', 'caption' => 'Максим. размер загружаемых изображений');
 	}
 
-	public function _create() {
+	protected function _create() {
 		parent::_create();
 
 		$this->attaches[$this->v_img] = array(
@@ -177,19 +177,19 @@ class rubric_class extends kernel_extends {
 		return true;	
 	}
 
-	public function _add($data=array(), $flag_select=true) {
+	public function _add($data = array(), $flag_select = true, $flag_update=false) {
 
-		if(!isset($data['lname']) or !$data['lname'])
+		if((!isset($data['lname']) or !$data['lname']) and isset($data['name']) and $data['name'] )
 			$data['lname'] = $this->transliteRuToLat($data['name']);
 
-		if($ret = parent::_add($data, $flag_select)) {
+		if($ret = parent::_add($data, $flag_select, $flag_update)) {
 		}
 		return $ret;
 	}
 
 	public function _update($data=array(), $where=null, $flag_select=true) {
 
-		if(!isset($data['lname']) or !$data['lname'])
+		if((!isset($data['lname']) or !$data['lname']) and isset($data['name']) and $data['name'] )
 			$data['lname'] = $this->transliteRuToLat($data['name']);
 
 		if($ret = parent::_update($data, $where, $flag_select)) {
@@ -201,14 +201,13 @@ class rubric_class extends kernel_extends {
 class rubricparam_class extends kernel_extends {
 
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->mf_ordctrl = true;
 		$this->mf_actctrl = true;
 		$this->caption = 'Параметры';
 		$this->singleton = false;
 		$this->tablename = $this->owner->_cl.'_param';
 		//TODO : Доработать  проблему вызова подкласса 2 раза ".$this->tablename
-		return true;
 	}
 
 	function getTypeForm($type) {

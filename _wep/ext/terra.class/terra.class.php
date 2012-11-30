@@ -2,7 +2,7 @@
 class terra_class extends kernel_extends {
 
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->mf_istree = true;
 		$this->mf_actctrl = true;
 		$this->mf_createrid = false;
@@ -14,8 +14,6 @@ class terra_class extends kernel_extends {
 		$this->cron[] = array('modul'=>$this->_cl,'function'=>'_importKLADR()','active'=>0,'time'=>864000);
 		$this->cron[] = array('modul'=>$this->_cl,'function'=>'_updateDomenName()','active'=>0,'time'=>864000);
 		$this->cron[] = array('modul'=>$this->_cl,'function'=>'_importGeoIP()','active'=>0,'time'=>864000);
-
-		return true;
 	}
 
 	function _create() {
@@ -392,7 +390,7 @@ class terra_class extends kernel_extends {
 
 class terrasocr_class extends kernel_extends {
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->showinowner=false;// не показывать
 		$this->mf_ipcreate = false;
 		$this->mf_timecr = false;
@@ -412,7 +410,7 @@ class terrasocr_class extends kernel_extends {
 
 class terraip_class extends kernel_extends {
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->mf_namefields = false;
 		$this->mf_createrid = false;
 		//$this->showinowner=false;// не показывать

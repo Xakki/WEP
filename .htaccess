@@ -22,6 +22,9 @@ Options -Indexes
 #mod_gzip_item_exclude rspheader ^Content-Encoding:.*gzip.*
 #</IfModule>
 
+# Админка
+RewriteRule ^_wepadmin/(.*)? index.php?_php=admin&pageParam=$1&%{QUERY_STRING} [L,NC,NS]
+
 #СравниваемаяСтрока считается путем, проверяется существование этого пути и то что этот путь является обычным файлом.
 RewriteCond %{REQUEST_FILENAME} !-f 
 #Сравниваемая Строка считается путем, проверяется существование этого пути и то что этот путь является каталогом.

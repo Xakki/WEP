@@ -22,7 +22,7 @@
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if (isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 		$form = array(
-			'0' => array('type' => 'list', 'listname' => 'phptemplates', 'caption' => 'Шаблон'),
+			'0' => array('type' => 'list', 'listname' => array('phptemplates', 'tags'=>'shopprodlist'), 'caption' => 'Шаблон', 'comment'=>$_CFG['lang']['tplComment']),
 			'1' => array('type' => 'text', 'caption' => 'сортировка'),
 			'2' => array('type' => 'int', 'caption' => 'LIMIT'),
 			'3'=>array('type'=>'list','listname'=>'ownerlist', 'caption'=>'Страница каталога'),

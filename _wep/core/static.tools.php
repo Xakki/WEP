@@ -1212,5 +1212,35 @@ deny from all
 		return strlen($str);
 	}
 
+	static function getDocFileInfo($file,$param=false) {
+		$fi = array('name'=>'', 'desc'=>'', 'ShowFlexForm'=>false, 'type'=>'', 'tags'=>'', 'ico'=>'defaul.png', 'author'=>'', 'version'=>'', 'return'=>'');
+		$fcontent = file_get_contents($file);
+		if($p1 = mb_strpos($fcontent,'/**')) {
+			$fcontent = mb_substr($fcontent,($p1+3),(mb_strpos($fcontent,'*/')-($p1+3)));
+			$fcontent = explode('*',$fcontent);
+			foreach($fcontent as $r) {
+				$r = trim($r);
+				if($r) {
+					$temp = explode(' ', $r);
+					if($temp[0] and $temp[0][0]=='@') {
+						$nm = substr($temp[0],1);
+						array_shift($temp);
+						$fi[$nm] = implode(' ',$temp);
+						if($fi[$nm]==='true')
+							$fi[$nm] = true;
+						elseif($fi[$nm]==='false')
+							$fi[$nm] = false;
+					} 
+					elseif(!$fi['name'])
+						$fi['name'] = $r;
+					else
+						$fi['desc'] .= $r;
+				}
+			}
+		}
+		return $fi;
+	}
+
+
 // END static class
 }

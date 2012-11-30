@@ -2,7 +2,7 @@
 class pay_class extends kernel_extends {
 
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->caption = 'Pay System';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';
 		$this->mf_timecr = true; // создать поле хранящее время создания поля
@@ -21,7 +21,6 @@ class pay_class extends kernel_extends {
 		$this->index_fields['status'] = 'status';
 		$this->_AllowAjaxFn['showPayInfo'] = true;
 		$this->ordfield = 'id DESC';
-		return true;
 	}
 
 	protected function _create_conf() {/*CONFIG*/
@@ -68,8 +67,10 @@ class pay_class extends kernel_extends {
 		$this->fields_form['pay_modul'] = array('type' => 'list', 'listname'=>'pay_modul', 'readonly'=>1,'caption' => 'Платежный модуль', 'mask'=>array());
 		$this->fields_form['status'] = array('type' => 'list', 'listname'=>'status', 'readonly'=>1,'caption' => 'Статус', 'mask'=>array());
 		
-		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата', 'mask'=>array());
-		$this->fields_form['mf_ipcreate'] = array('type' => 'text','readonly'=>1, 'caption' => 'IP', 'mask'=>array('fview'=>2));
+		$this->fields_form[$this->mf_timecr] = array('type' => 'date','readonly'=>1, 'caption' => 'Создание', 'mask'=>array('onetd' => 'Дата'));
+		$this->fields_form[$this->mf_timestamp] = array('type' => 'date','readonly'=>1, 'caption' => 'Обновление', 'mask'=>array('onetd' => 'close'));
+
+		$this->fields_form['mf_ipcreate'] = array('type' => 'text','readonly'=>1, 'caption' => 'IP', 'mask'=>array());
 
 	}
 
@@ -95,16 +96,17 @@ class pay_class extends kernel_extends {
 
 			$CHILD = &$this->childs[$_POST['paymethod']];
 
-			$temp = $this->qs('id','WHERE status=0 and _key="'.$this->SqlEsc($key).'" and name="'.$this->SqlEsc($comm).'"');
+			$temp = $this->qs('id,status','WHERE status=0 and _key="'.$this->SqlEsc($key).'" and name="'.$this->SqlEsc($comm).'"');
 			if(count($temp)) {
+				//покажем статус платежа
 				$data['#title#'] = '';//Счёт на оплату выставлен.
 				if($CHILD->pay_formType===true)
-					$data['#title#'] .= '<a id="gotopay" href="/_js.php?_modul=pay&_fn=showPayInfo&id='.$temp[0]['id'].'" onclick="return wep.JSWin({type:this,onclk:\'reload\'});" target="_blank">Оплатить</a>';
+					$data['#payLink#'] = '/_js.php?_modul=pay&_fn=showPayInfo&id='.$temp[0]['id'].'" onclick="return wep.JSWin({type:this,onclk:\'reload\'});';
 				elseif($CHILD->pay_formType)
-					$data['#title#'] .= '<a id="gotopay" href="'.$CHILD->pay_formType.'" target="_blank">Оплатить</a>';
+					$data['#payLink#'] = $CHILD->pay_formType;
 				$resFlag = 1;
-				$data['#foot#'] = '<div class="paySpanMess" onclick="window.location.reload();">Обновите страницу, чтобы узнать состояния счёта.</div>';
-				$_tpl['onload'] .= '$("#gotopay").click();';
+				//$data['#item#'] = $temp;
+				$data['#status#'] = $this->_enum['status'][$temp[0]['status']];
 			} 
 			else {
 				list($data,$resFlag) = $CHILD->billingFrom($summ,$comm,$addInfo);
@@ -113,7 +115,8 @@ class pay_class extends kernel_extends {
 					if($this->payAdd($from_user,1,$summ, $key, $comm,0,$_POST['paymethod'],$eval)) {
 						$CHILD->_update(array('owner_id'=>$this->id));
 						//$data['#title#'] = 'Счёт выставлен успешно!';
-						$data['messages'][] = array('ok','Счёт успешно сформирован.');
+						if(!count($data['messages']))
+							$data['messages'][] = array('ok','Счёт успешно сформирован.');
 						// Открыть окно системы в новом окне
 						//$data['#foot#'] = '<span class="paySpanMess" onclick="window.location.reload();">Обновите страницу, чтобы узнать состояния счёта.</span>';
 					} 
@@ -153,7 +156,8 @@ class pay_class extends kernel_extends {
 		if($pData['id']) {
 			$this->childs[$pData['pay_modul']]->id = NULL;
 			$pcData = current($this->childs[$pData['pay_modul']]->_select());
-			if($pcData['id']) {
+			if($pcData['id']) 
+			{
 				$DATA = $this->childs[$pData['pay_modul']]->payFormBilling($pcData);
 				$res = array('html'=>$HTML->transformPHP($DATA,'#pg#formcreat'), 'onload' => $_tpl['onload']);
 			}

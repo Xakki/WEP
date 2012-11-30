@@ -14,8 +14,8 @@
 
 	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 		$form = array(
-			'0'=>array('type'=>'list', 'listname'=>'phptemplates', 'caption'=>'Шаблон Списка'),
-			'1'=>array('type'=>'list', 'listname'=>'phptemplates', 'caption'=>'Шаблон Инфы о пользователе'),
+			'0'=>array('type'=>'list', 'listname'=>array('phptemplates', 'tags'=>'userlist'), 'caption'=>'Шаблон Списка', 'comment'=>$_CFG['lang']['tplComment']),
+			'1'=>array('type'=>'list', 'listname'=>array('phptemplates', 'tags'=>'userinfo'), 'caption'=>'Шаблон Инфы о пользователе', 'comment'=>$_CFG['lang']['tplComment']),
 		);
 		return $form;
 	}

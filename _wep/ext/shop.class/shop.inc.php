@@ -35,16 +35,16 @@ if(!isset($FUNCPARAM[9]))
 if (isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 	$this->_enum['shopsubdir'] = array('AJAX подкаталог', 'Выводить все подкаталоги в поиске', 'Выводить подкаталоги сверху по шаблону');
 	$form = array(
-		'0' => array('type' => 'list', 'listname' => 'phptemplates', 'caption' => 'Шаблон списка товаров'),
-		'1' => array('type' => 'list', 'listname' =>'phptemplates', 'caption' => 'Шаблон подкаталога'),
+		'0' => array('type' => 'list', 'listname' =>array('phptemplates', 'tags'=>'shopprodlist'), 'caption' => 'Шаблон `Список товаров`', 'comment'=>$_CFG['lang']['tplComment']),
+		'1' => array('type' => 'list', 'listname' =>array('phptemplates', 'tags'=>'shopmenu'), 'caption' => 'Шаблон подкаталога', 'comment'=>$_CFG['lang']['tplComment']),
 		'2' => array('type' => 'list', 'listname' => array('class'=>'shop','is_tree'=>true), 'caption' => 'Начало каталога'),
 		'3' => array('type' => 'list', 'listname' =>'shopsubdir', 'caption' => 'Поиск:подуровневый каталог'),
 		'4' => array('type' => 'int', 'caption' => 'Limit'),
 		'5' => array('type' => 'checkbox', 'caption' => 'Постраничная навигация'),
 		'6' => array('type' => 'text', 'caption' => 'Сортировка'),
 		'7' => array('type' => 'checkbox', 'caption' => 'Выводить список товаров подкатегории, если есть подкатегории'),
-		'8' => array('type' => 'list', 'listname' => 'phptemplates', 'caption' => 'Шаблон Продукта'),
-		'9' => array('type' => 'list', 'listname' => 'phptemplates', 'caption' => 'Шаблон Сопутствующие товары'),
+		'8' => array('type' => 'list', 'listname' => array('phptemplates', 'tags'=>'shopproditem'), 'caption' => 'Шаблон `Страница товара`', 'comment'=>$_CFG['lang']['tplComment']),
+		'9' => array('type' => 'list', 'listname' => array('phptemplates', 'tags'=>'shoplike'), 'caption' => 'Шаблон `Сопутствующие товары`', 'comment'=>$_CFG['lang']['tplComment']),
 		// ,'style'=>($FUNCPARAM[3]!=2?'display:none;':'')
 		// , 'onchange'=>'if(this.value==2) $("#tr_flexform_4").slideDown("slow"); else $("#tr_flexform_4").slideUp("slow"); '
 	);

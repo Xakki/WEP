@@ -6,7 +6,7 @@
 class shopsale_class extends kernel_extends {
 
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 
 		$this->ver = '0.0.1';
 		$this->caption = 'Магазин - Скидки';
@@ -19,7 +19,6 @@ class shopsale_class extends kernel_extends {
 			1=>'руб.',
 		);
 
-		return true;
 	}
 
 	protected function _create() {

@@ -2,7 +2,7 @@
 class mail_class extends kernel_extends {
 
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->ver = '0.0.2';
 		$this->reply=1;
 		$this->contenttype= 'text/html';
@@ -21,7 +21,6 @@ class mail_class extends kernel_extends {
 		$this->lang['add'] = 'Письмо успешно отправлено!';
 		$this->lang['add_err'] = 'Ошибка отправки письма! Информация о данной ошибке уже сообщена авминистратору и проблема разрешится в течении суток.';
 
-		return true;
 	}
 
 	protected function _create_conf() {/*CONFIG*/

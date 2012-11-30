@@ -7,14 +7,13 @@
 class content_class extends kernel_extends {
 
 	function _set_features() {
-		if (!parent::_set_features())
-			return false;
+		parent::_set_features();
 		$this->mf_ordctrl = true;
 		$this->mf_actctrl = true;
 		$this->caption = 'Содержимое';
 		$this->tablename = 'pg_content';
 		$this->addForm = array();
-		return true;
+
 	}
 
 	function _create() {
@@ -45,14 +44,14 @@ class content_class extends kernel_extends {
 	public function setFieldsForm($form = 0) {
 		parent::setFieldsForm($form);
 		# fields
-		$this->fields_form['owner_id'] = array('type' => 'list', 'listname' => 'ownerlist', 'caption' => 'На странице');
-		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Подзаголовок');
-		$this->fields_form['marker'] = array('type' => 'list', 'listname' => 'marker', 'caption' => 'Маркер', 'mask' => array());
-		$this->fields_form['global'] = array('type' => 'checkbox', 'caption' => 'Глобально?', 'mask' => array());
-		$this->fields_form['pagetype'] = array('type' => 'list', 'listname' => 'pagetype', 'caption' => 'INC', 'mask' => array('onetd' => 'INC'));
+		$this->fields_form['owner_id'] = array('type' => 'list', 'listname' => 'ownerlist', 'caption' => 'Родительская страница');
+		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Подзаголовок', 'comment'=>'Используется некоторыми контроллерами при выводе контента или просто для обозначение данного контента в списке');
+		$this->fields_form['marker'] = array('type' => 'list', 'listname' => 'marker', 'caption' => 'Маркер', 'comment'=>'Специальные позиции в HTML шаблоне', 'mask' => array());
+		$this->fields_form['global'] = array('type' => 'checkbox', 'caption' => 'Сквозное', 'comment'=>'Отображать данный контент на всех страницах ниже уровнем?', 'mask' => array());
+		$this->fields_form['pagetype'] = array('type' => 'list', 'listname' => 'pagetype', 'caption' => 'Контроллеры', 'mask' => array('onetd' => 'INC'));
 		$this->fields_form['funcparam'] = array('type' => 'text', 'caption' => 'Опции', 'mask' => array('name' => 'all', 'onetd' => 'Опции'), 'comment' => 'Значения разделять символом &', 'css' => 'addparam');
-		$this->fields_form['href'] = array('type' => 'text', 'caption' => 'Redirect', 'mask' => array('onetd' => 'close'));
-		$this->fields_form['pg'] = array('type' => 'ckedit', 'caption' => 'Text',
+		$this->fields_form['href'] = array('type' => 'text', 'caption' => 'Redirect', 'comment'=>'Принудительно перенапрявляет пользователя по указанному URL, если данный `контент` будет доступен пользователю', 'mask' => array('onetd' => 'close'));
+		$this->fields_form['pg'] = array('type' => 'ckedit', 'caption' => 'Текст',
 			'mask' => array('fview' => 1, 'max' => 500000),
 			'paramedit' => array(
 				'CKFinder' => array('allowedExtensions'=>''), // разрешаем загрузку любых фаилов
@@ -64,22 +63,22 @@ class content_class extends kernel_extends {
 			//$this->fields_form['pg']['paramedit']['contentsCss'] = "['/_design/default/style/main.css', '/_design/_style/main.css']";
 		}
 		if ($this->_CFG['wep']['access'])
-			$this->fields_form['ugroup'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'ugroup', 'caption' => 'Доступ', 'def
+			$this->fields_form['ugroup'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'ugroup', 'caption' => 'Доступ', 'comment'=>'Если выбранны группы пользователей, то только им будет отображаться данный контент', 'def
 		ault' => '0'); //'css'=>'minform'
 		$this->fields_form['styles'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'style', 'caption' => 'CSS', 'mask' => array('onetd' => 'Дизайн')); //, 'css'=>'minform'
 		$this->fields_form['script'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'script', 'caption' => 'SCRIPT', 'mask' => array('onetd' => 'none')); //, 'css'=>'minform'
-		$this->fields_form['keywords'] = array('type' => 'text', 'caption' => 'META-keywords', 'mask' => array('onetd' => 'none'));
-		$this->fields_form['description'] = array('type' => 'text', 'caption' => 'META-description', 'mask' => array('onetd' => 'close', 'name' => 'all'));
+		$this->fields_form['keywords'] = array('type' => 'text', 'caption' => 'SEO - ключевые слова', 'mask' => array('onetd' => 'none'));
+		$this->fields_form['description'] = array('type' => 'text', 'caption' => 'SEO - описание', 'mask' => array('onetd' => 'close', 'name' => 'all'));
 		$this->fields_form['memcache'] = array('type' => 'int', 'caption' => 'Memcache time', 'comment' => '-1 - отключает кеш полностью,0 - откл кеширование,1> - кеширование в сек.', 'mask' => array('fview' => 1));
 		$this->fields_form['memcache_solt'] = array('type' => 'list', 'listname' => 'memcache_solt', 'caption' => 'Memcache соль', 'mask' => array('fview' => 1));
-		$this->fields_form['ordind'] = array('type' => 'int', 'caption' => 'ORD');
+		$this->fields_form['ordind'] = array('type' => 'int', 'caption' => 'ORD', 'comment'=>'Сортировка');
 		$this->fields_form['access_flag'] = array('type' => 'checkbox', 'caption' => 'Не отображать на спец. страницах', 'comment'=>'Если скрипт на странице сгенерировал спец.флаг ($this->access_flag=true;) или выполняется AJAX запрос - данный контент не будет выполняться!', 'mask' => array('fview' => 1));
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
 		
 		$this->formSort = array(
-			'Основное'=>array('marker','global','pagetype','funcparam'),
+			'Основное'=>array('marker','pagetype','funcparam'),
 			'Контент'=>array('pg','keywords','description'),
-			'Дополнительно'=>array('owner_id','name','href','ugroup','styles','script','memcache','memcache_solt','ordind','access_flag'),
+			'Дополнительно'=>array('owner_id','name','href','ugroup','styles','script','memcache','memcache_solt','ordind','access_flag','global'),
 			'active',
 		);
 
@@ -153,7 +152,7 @@ class content_class extends kernel_extends {
 
 									$temp = substr($entry2, 0, strpos($entry2, $pref));
 
-									$fi = $this->getDocFileInfo($rDir . $entry.'/'.$entry2);
+									$fi = static_tools::getDocFileInfo($rDir . $entry.'/'.$entry2);
 									if(!$fi['type']) $fi['type'] = $this->owner->_enum['inc'][$kDir]['name'];
 									if(!$fi['name']) $fi['name'] = $entry.'/'.$temp;
 
@@ -173,7 +172,7 @@ class content_class extends kernel_extends {
 
 						$temp = substr($entry, 0, strpos($entry, $pref));
 
-						$fi = $this->getDocFileInfo($rDir . '/'.$entry);
+						$fi = static_tools::getDocFileInfo($rDir . '/'.$entry);
 						if(!$fi['type']) $fi['type'] = $this->owner->_enum['inc'][$kDir]['name'];
 						if(!$fi['name']) $fi['name'] = $temp;
 
@@ -193,39 +192,10 @@ class content_class extends kernel_extends {
 		return $data;
 	}
 
-	private function getDocFileInfo($file,$param=false) {
-		$fi = array('name'=>'', 'desc'=>'', 'ShowFlexForm'=>false, 'type'=>'', 'ico'=>'defaul.png', 'author'=>'', 'version'=>'', 'return'=>'');
-		$fcontent = file_get_contents($file);
-		if($p1 = mb_strpos($fcontent,'/**')) {
-			$fcontent = mb_substr($fcontent,($p1+3),(mb_strpos($fcontent,'*/')-($p1+3)));
-			$fcontent = explode('*',$fcontent);
-			foreach($fcontent as $r) {
-				$r = trim($r);
-				if($r) {
-					$temp = explode(' ', $r);
-					if($temp[0] and $temp[0][0]=='@') {
-						$nm = substr($temp[0],1);
-						array_shift($temp);
-						$fi[$nm] = implode(' ',$temp);
-						if($fi[$nm]==='true')
-							$fi[$nm] = true;
-						elseif($fi[$nm]==='false')
-							$fi[$nm] = false;
-					} 
-					elseif(!$fi['name'])
-						$fi['name'] = $r;
-					else
-						$fi['desc'] .= $r;
-				}
-			}
-		}
-		return $fi;
-	}
-
 	public function kPreFields(&$f_data, &$f_param = array(), &$f_fieldsForm = null) {
 		$mess = parent::kPreFields($f_data, $f_param, $f_fieldsForm );
 		$this->addForm = array();
-		$f_fieldsForm['pagetype']['onchange'] = 'contentIncParam(this,\'' . $this->_CFG['PATH']['wepname'] . '\',\'' . (isset($f_data['funcparam']) ? htmlspecialchars($f_data['funcparam']) : '') . '\');';
+		$f_fieldsForm['pagetype']['onchange'] = 'contentIncParam(this,\'' . $this->_CFG['PATH']['admin'] . '\',\'' . (isset($f_data['funcparam']) ? htmlspecialchars($f_data['funcparam']) : '') . '\');';
 
 		if (isset($f_data['pagetype']) and $f_data['pagetype']) {
 			$this->addForm = $this->getContentIncParam($f_data);
@@ -258,7 +228,7 @@ class content_class extends kernel_extends {
 			else
 				$flagSetvalue = false;
 			//Проверяем есть ли в коде флексформа
-			$fileDoc = $this->getDocFileInfo($flagPG);
+			$fileDoc = static_tools::getDocFileInfo($flagPG);
 			if ($fileDoc['ShowFlexForm']) {
 				$ShowFlexForm = true;
 				$tempform = include($flagPG);
@@ -299,9 +269,9 @@ class content_class extends kernel_extends {
 		return $ret;
 	}
 
-	public function _add($vars = array(), $flag_select = true) {
-		$vars = $this->SetFuncparam($vars);
-		if ($ret = parent::_add($vars, $flag_select)) {
+	public function _add($data = array(), $flag_select = true, $flag_update=false) {
+		$data = $this->SetFuncparam($data);
+		if ($ret = parent::_add($data, $flag_select, $flag_update)) {
 			// в форме для вывода обрабатываем данные
 			if($flag_select and isset($this->data[$this->id]['funcparam']))
 				$this->data[$this->id] += $this->owner->parserFlexData($this->data[$this->id]['funcparam'], $this->data[$this->id]['pagetype'], true);

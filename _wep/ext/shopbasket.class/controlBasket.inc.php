@@ -22,7 +22,7 @@
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if (isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 		$form = array(
-			'0' => array('type' => 'list', 'listname' => 'phptemplates', 'caption' => 'Шаблон "Заказы"', 'mask'=>array('min'=>1)),
+			'0' => array('type' => 'list', 'listname' => array('phptemplates', 'tags'=>'basketlist'), 'caption' => 'Шаблон "Заказы"', 'mask'=>array('min'=>1)),
 			'1'=>array('type'=>'text','caption'=>'************'),
 			'2'=>array('type'=>'list','listname'=>'ownerlist', 'caption'=>'Страница каталога', 'mask'=>array('min'=>1)),
 			'3'=>array('type'=>'list','listname'=>'ownerlist','caption'=>'Страница пользователей', 'mask'=>array('min'=>1)),
@@ -35,7 +35,7 @@
 	if(!_new_class('pay', $PAY)) return false;
 	_new_class('pay', $PAY);
 
-	$_tpl['styles']['../'.$HTML->_design.'/_shop/style/shopBasket'] = 1;
+	$_tpl['styles']['/_shop/style/shopBasket'] = 1;
 	$_CFG['fileIncludeOption']['form'] = 1;
 
 	$html = '';

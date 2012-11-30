@@ -24,8 +24,8 @@
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if (isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 		$form = array(
-			'0' => array('type' => 'list', 'listname' => 'phptemplates', 'caption' => 'Шаблон корзины-заказы', 'mask'=>array('min'=>1)),
-			'1' => array('type' => 'list', 'listname' => 'phptemplates', 'caption' => 'Шаблон корзины-список', 'mask'=>array('min'=>1)),
+			'0' => array('type' => 'list', 'listname' => array('phptemplates', 'tags'=>'basketlist'), 'caption' => 'Шаблон корзины-заказы', 'mask'=>array('min'=>1)),
+			'1' => array('type' => 'list', 'listname' => array('phptemplates', 'tags'=>'basketitemlist'), 'caption' => 'Шаблон корзины-список', 'mask'=>array('min'=>1)),
 			'2'=>array('type'=>'list','listname'=>'ownerlist', 'caption'=>'Страница каталога', 'mask'=>array('min'=>1)),
 			'3'=>array('type'=>'list','listname'=>'content','caption'=>'Блок Авторизации', 'mask'=>array('min'=>1)),
 			'4'=>array('type'=>'list','listname'=>'ownerlist','caption'=>'Страница пользователей', 'mask'=>array('min'=>1)),
@@ -37,7 +37,7 @@
 	if(!_new_class('shopdeliver',$SHOPDELIVER)) return false;
 	if(!_new_class('pay', $PAY)) return false;
 
-	$_tpl['styles']['../'.$HTML->_design.'/_shop/style/shopBasket'] = 1;
+	$_tpl['styles']['/_shop/style/shopBasket'] = 1;
 	$_CFG['fileIncludeOption']['form'] = 1;
 
 	$subMenu = array(
@@ -68,7 +68,7 @@
 
 		$subK = 0;
 		// STEP 1 
-
+		$DATA['#orderPage#'] = $Chref;
 		$DATA['#page#'] = $Chref.'/orderlist';
 		$DATA['#curr#'] = $PAY->config['curr'];
 		$DATA['#pageUser#'] = $this->getHref($FUNCPARAM[4]);
@@ -164,7 +164,10 @@
 					else {
 						unset($DATA['formcreat']['form']['_info']);
 						$DATA['formcreat']['form']['sbmt']['value'] = 'Оформить заказ';
-						$DATA['formcreat']['messages'][] = static_main::am('alert','Заказа на сумму '.$_POST['cost'].' '.$PAY->config['curr']);
+						$DATA['formcreat']['messages'][] = static_main::am('alert','Заказ на сумму '.$_POST['cost'].' '.$PAY->config['curr']);
+						$DATA['formcreat']['messages'][] = static_main::am('alert','Доставка - '.$deliveryData['name']);
+						//$deliveryCost = $SHOPBASKET->orderDeliveryCost();
+						//$DATA['formcreat']['messages'][] = static_main::am('alert','Доставка - '.$deliveryData['name'].($deliveryCost>0?', в т.ч. '.$deliveryCost.' '.$PAY->config['curr'].' за доставку':''));
 						$DATA['formcreat']['messages'][] = static_main::am('ok','Заполните все необходимые данные');
 
 						$html .= $HTML->transformPHP($DATA,'#pg#formcreat');
@@ -188,20 +191,24 @@
 		$DATA['#pageCat#'] = $this->getHref($FUNCPARAM[2]);
 		$DATA['#page#'] = $this->getHref();
 		$DATA['#delivery#'] = $SHOPDELIVER->qs('*','WHERE active=1','id');
+
 		$DATA['#curr#'] = $PAY->config['curr'];
 		$html = $HTML->transformPHP($DATA,$FUNCPARAM[1]);
 	}
 
-	$subHtml = '<ul class="stepMenu">';
-	foreach($subMenu as $k=>$r) {
-		$subHtml .= '<li class="'.(isset($r['href'])?'allow':'').($k==$subK?' sel':'').'">';
-		if(isset($r['href']) and $r['href'])
-			$subHtml .= '<a href="'.$r['href'].'">'.$r['name'].'</a>';
-		else
-			$subHtml .= $r['name'];
-	}
-	$subHtml .= '</ul>';
+	if(!$this->ajaxRequest)
+	{
+		$subHtml = '<ul class="stepMenu">';
+		foreach($subMenu as $k=>$r) {
+			$subHtml .= '<li class="'.(isset($r['href'])?'allow':'').($k==$subK?' sel':'').'">';
+			if(isset($r['href']) and $r['href'])
+				$subHtml .= '<a href="'.$r['href'].'">'.$r['name'].'</a>';
+			else
+				$subHtml .= $r['name'];
+		}
+		$subHtml .= '</ul>';
 
-	$_tpl['text'] = $subHtml.$_tpl['text'];
+		$_tpl['text'] = $subHtml.$_tpl['text'];
+	}
 
 	return $html;

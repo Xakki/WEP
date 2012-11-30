@@ -2,7 +2,7 @@
 class product_class extends kernel_extends {
 
 	protected function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->ver = '0.0.1';
 		$this->caption = 'Продкция';
 		//$this->mf_statistic = array('Y'=>'count(id)','X'=>'FROM_UNIXTIME(mf_timecr,"%Y-%m")','Yname'=>'Кол','Xname'=>'Дата');//-%d
@@ -17,7 +17,7 @@ class product_class extends kernel_extends {
 		$this->mf_actctrl = true;
 		$this->owner_name = 'shop';
 		$this->cf_fields = true; // Разрешить добавлять добавлять дополнительные поля в таблицу
-		$this->ver = '0.3.4';
+		$this->ver = '0.3.5';
 
 
 		$this->_enum['available']=array(
@@ -29,7 +29,6 @@ class product_class extends kernel_extends {
 
 		$this->_AllowAjaxFn['AjaxShopParam'] = true;
 
-		return true;
 	}
 
 	protected function _create_conf() {/*CONFIG*/
@@ -122,6 +121,7 @@ class product_class extends kernel_extends {
 		$this->fields['statview'] = array('type' => 'int', 'width' => 9, 'attr' => 'NOT NULL','default'=>0);
 		$this->fields['path'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL','default'=>'');
 		$this->fields['available'] = array('type' => 'tinyint', 'width' => 1,'attr' => 'NOT NULL','default'=>0);
+		$this->fields['remainder'] = array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL','default'=>-1);
 /*YML*/
 //vendor Производитель. Не отображается в названии предложения. Необязательный элемент.
 //vendorCode Код товара (указывается код производителя).Необязательный элемент.
@@ -137,7 +137,7 @@ class product_class extends kernel_extends {
 		parent::setFieldsForm($form);
 		global $_tpl, $HTML;
 		if($form)
-			$_tpl['script']['../'.$HTML->_design.'/_shop/script/shop']=1;
+			$_tpl['script']['/_shop/script/shop']=1;
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название товара');
 		$this->fields_form['shop'] = array(
 			'type' => 'list', 
@@ -187,6 +187,7 @@ class product_class extends kernel_extends {
 		}
 
 		$this->fields_form['available'] = array('type' => 'list', 'listname'=>'available', 'caption' => 'Наличие','default'=>1, 'mask' =>array());
+		$this->fields_form['remainder'] = array('type' => 'int', 'caption' => 'Остаток товаров','default'=>-1, 'comment'=>'-1 не ограниченное количество','mask' =>array());
 
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Отображать','default'=>1, 'mask' =>array());
 
@@ -301,7 +302,7 @@ class product_class extends kernel_extends {
 		return $ret;
 	}
 
-	public function _add($data=array(),$flag_select=true) {
+	public function _add($data = array(), $flag_select = true, $flag_update=false) {
 		$PARAM = &$this->owner->childs['rubricparam'];
 		$cls=array();
 		$tmp = array();
@@ -338,7 +339,7 @@ class product_class extends kernel_extends {
 		if(!isset($data['path']) or !$data['path'])
 			$data['path'] = $this->transliteRuToLat($data['name']);
 
-		if($ret = parent::_add($data,$flag_select)) {
+		if($ret = parent::_add($data, $flag_select, $flag_update)) {
 			$temp = $this->childs['product_value']->qs('id', 'WHERE owner_id='.$this->id);
 			$tn = $this->childs['product_value']->tablename;
 			if(count($cls)) {
@@ -1062,12 +1063,11 @@ class product_class extends kernel_extends {
 
 class product_value_class extends kernel_extends {
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->showinowner=false;// не показывать
 		$this->mf_createrid = false;
 		$this->owner_unique = true; // уникальная запис для одного объявления
 		$this->tablename = $this->owner->_cl.'_value';
-		return true;
 	}
 
 	function _create() {
@@ -1099,11 +1099,10 @@ class product_value_class extends kernel_extends {
 
 class product_like_class extends kernel_extends {
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		//$this->showinowner=false;// не показывать
 		$this->mf_createrid = false;
 		$this->tablename = $this->owner->_cl.'_like';
-		return true;
 	}
 
 	function _create() {

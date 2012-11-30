@@ -20,7 +20,7 @@
 		//$temp = 'ownerlist';
 		//$this->_enum['pagelist'] = $this->_getCashedList($temp);
 		$form = array(
-			'0'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон'),
+			'0'=>array('type'=>'list','listname'=>'phptemplates','caption'=>'Шаблон', 'comment'=>$_CFG['lang']['tplComment']),
 			//'1'=>array('type'=>'list','listname'=>'ownerlist','caption'=>'Страница меню'),
 		);
 		return $form;

@@ -208,10 +208,20 @@
 					//Допускается цифры, тире, пробел, запятые и скобки
 				}
 
+				if(!isset($r['maxlength']) and isset($r['mask']['max']) && $r['mask']['max']>0)
+				{
+					if(static_form::isTypeNumber($r['type']))
+					{
+						$r['maxlength'] = _strlen($r['mask']['max']);
+					}
+					else
+						$r['maxlength'] = $r['mask']['max'];
+
+				}
+
 			}
-			if(isset($this->fields[$k]))
+			if(isset($r['fields_type']))
 			{
-				$r['fields_type'] = $this->fields[$k]['type'];
 				if(static_form::isTypeFloat($r['fields_type']))
 				{
 					$r['isFloat'] = true;
@@ -223,6 +233,7 @@
 			}
 
 		}
+		//print_r('<pre>');print_r($fields);
 		unset($r);
 		if(count($fields)) {
 			if(!isset($fields['_*features*_']))

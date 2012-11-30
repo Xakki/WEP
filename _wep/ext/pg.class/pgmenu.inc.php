@@ -1,7 +1,7 @@
 <?php
 /**
- * Меню (Д)
  * Статическое меню страниц
+ * Строго задются страницы отображаемые в меню
  * @ShowFlexForm true
  * @type Элементы страниц
  * @ico form.png
@@ -20,7 +20,7 @@ if (!isset($FUNCPARAM[1]))
 // рисуем форму для админки чтобы удобно задавать параметры
 if (isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 	$form = array(
-		0 => array('type' => 'list', 'listname' => 'phptemplates', 'caption' => 'Шаблон'),
+		0 => array('type' => 'list', 'listname' => array('phptemplates', 'tags'=>'pgmenu'), 'caption' => 'Шаблон', 'comment'=>$_CFG['lang']['tplComment']),
 		1 => array('type' => 'list', 'multiple'=>2, 'listname' => 'ownerlist', 'caption' => 'Элементы меню'),
 		
 	);

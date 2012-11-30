@@ -3,7 +3,7 @@
 class gallery_class extends kernel_extends {
 
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->mf_actctrl = true;
 		//$this->mf_indexing = true;
 		$this->ordfield = 'ndate DESC';
@@ -12,7 +12,7 @@ class gallery_class extends kernel_extends {
 		$this->messages_on_page = 10;
 		$this->numlist = 10;
 		//$this->reversePageN = true;
-		return true;
+
 	}
 
 	/*protected function _create_conf() {
@@ -86,7 +86,7 @@ class gallery_class extends kernel_extends {
 class gallitem_class extends kernel_extends {
 
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 		$this->mf_actctrl = true;
 		//$this->mf_indexing = true;
 		//$this->ordfield = 'ndate DESC';

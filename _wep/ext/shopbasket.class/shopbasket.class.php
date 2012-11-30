@@ -15,7 +15,7 @@ class shopbasket_class extends kernel_extends {
 	}*/
 
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 
 		$this->ver = '0.0.1';
 		$this->caption = 'Магазин - Корзина';
@@ -44,8 +44,6 @@ class shopbasket_class extends kernel_extends {
 			6=>'Отменено пользователем',
 			7=>'Отменено магазином',
 		);
-
-		return true;
 	}
 
 	protected function _create() {
@@ -92,7 +90,7 @@ class shopbasket_class extends kernel_extends {
 			_new_class('pay',$PAY);
 			foreach($PAY->childs as &$child) {
 				if (isset($child->pay_systems) and (!count($this->allowedPay) or in_array($child->_cl,$this->allowedPay))) {
-					$data[$child->_cl] = $child->caption;
+					$data[$child->_cl] = array('#name#'=>$child->caption, '#css#'=>'ico_'.$child->_cl, );
 				}
 			}
 			return $data;
@@ -100,12 +98,13 @@ class shopbasket_class extends kernel_extends {
 		elseif ($listname == 'delivertype') {
 			_new_class('shopdeliver',$MODUL);
 			$dataTemp = $MODUL->qs('id,name,paylist','WHERE active=1','id');
+
 			if($value and is_string($value) and $value = trim($dataTemp[$value]['paylist'],'|')) {
 				$this->allowedPay = explode('|',$value);
 			}
 
 			foreach($dataTemp as $r)
-				$data[$r['id']] = $r['name'];
+				$data[$r['id']] = array('#name#'=>$r['name'], '#img#'=>'/'.$this->_CFG['PATH']['themes'].'_img/avatar/default3.jpg', );
 
 			return $data;
 		} 
@@ -402,9 +401,18 @@ class shopbasket_class extends kernel_extends {
 		return $summ;
 	}
 
+	function orderDeliveryCost()
+	{
+		if(isset($this->orderItem[0]))
+		{
+			return $this->orderItem[0]['cost_item'];
+		}
+		return 0;
+	}
 
-	public function _add($data=array(),$flag_select=true) {
-		if($result = parent::_add($data,$flag_select)) {
+
+	public function _add($data = array(), $flag_select = true, $flag_update=false) {
+		if($result = parent::_add($data, $flag_select, $flag_update)) {
 			foreach($this->orderItem as $k=>$r) {
 				$r['owner_id'] = $this->id;
 				if($k)
@@ -459,7 +467,7 @@ class shopbasket_class extends kernel_extends {
 class shopbasketitem_class extends kernel_extends {
 
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 
 		$this->ver = '0.0.1';
 		$this->caption = 'Товары заказа';
@@ -472,7 +480,6 @@ class shopbasketitem_class extends kernel_extends {
 			0=>'Письмом',
 			1=>'Онлайн оплата');*/
 
-		return true;
 	}
 
 	protected function _create() {
@@ -510,7 +517,7 @@ class shopbasketitem_class extends kernel_extends {
 class shopbasketstatus_class extends kernel_extends {
 
 	function _set_features() {
-		if (!parent::_set_features()) return false;
+		parent::_set_features();
 
 		$this->ver = '0.0.1';
 		$this->caption = 'Статусы';
@@ -551,8 +558,8 @@ class shopbasketstatus_class extends kernel_extends {
 	}
 
 
-	public function _add($data=array(),$flag_select=true) {
-		if($result = parent::_add($data,$flag_select)) {
+	public function _add($data = array(), $flag_select = true, $flag_update=false) {
+		if($result = parent::_add($data, $flag_select, $flag_update)) {
 			$result = $this->owner->_update(array('laststatus'=>$data['status']));
 		}
 		return $result;

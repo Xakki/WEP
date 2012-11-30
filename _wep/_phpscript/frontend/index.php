@@ -2,8 +2,14 @@
 	if(!$_CFG['_PATH']['wep']) die('ERROR');
 	require_once($_CFG['_PATH']['wep'].'config/config.php');
 
+
 	$_tpl = array();
 	$_tpl['meta'] = $_tpl['logs']=$_tpl['onload']=$_tpl['title']=$_tpl['text']='';
+
+	if(isset($_GET['_php']) and $_GET['_php']=='admin') {
+		require_once($_CFG['_PATH']['backend'].'index.php');
+		exit();
+	}
 
 	if($_CFG['site']['worktime'] and !isset($_COOKIE[$_CFG['wep']['_showallinfo']]) and !isset($_GET[$_CFG['wep']['_showallinfo']])) {
 		static_main::downSite(); // Exit()
