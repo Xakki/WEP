@@ -9,7 +9,7 @@
  * 3 - Номер ревизии , исправленны ошибки
  */
 $_CFG['info'] = array(//информация о СМС
-	'version' => '2.15.41',
+	'version' => '2.15.42',
 	'email' => 'wep@xakki.ru',
 	'icq' => '222392984'
 );
@@ -31,8 +31,8 @@ $_CFG['sql'] = array(// SQL
 );
 $_CFG['wep'] = array(// для ядра и админки
 	'access' => 1, // 1 - вкл доступ по модулю пользователей, 0 - вкл доступ по дефолтному паролю
-	'login' => 'root',
-	'password' => 'root',
+	'login' => 'root', // дефолтны логин (для запуска инициализации сайта)
+	'password' => 'root', // дефолтный пароль (для запуска инициализации сайта)
 	'charset' => 'utf-8',
 	'setlocale'=>'ru_RU.UTF-8',
 	'locale' => 'default',
@@ -348,10 +348,11 @@ include $_CFG['_PATH']['core'] . 'static.main.php';
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 /* INCLUDE USER CONF */
+$_NEED_INSTALL = false;
 if(file_exists($_CFG['_FILE']['config']))
 	include($_CFG['_FILE']['config']);
-elseif(!isset($INSTALL)) {
-	static_main::redirect($_CFG['PATH']['admin'].'/install/');
+else {
+	$_NEED_INSTALL = true;
 }
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////

@@ -345,6 +345,7 @@ class static_main {
 		if (!self::_prmUserCheck() or $login) {
 			if ($_CFG['wep']['access']) {
 				if ($login) {
+					$result = array(static_main::m('autherr'), 0);
 					if(_new_class('ugroup', $UGROUP))
 						$result = $UGROUP->authorization($login, $pass);
 					else
@@ -368,8 +369,13 @@ class static_main {
 					if($_CFG['wep']['login'] == substr($_COOKIE['remember'], ($pos + 1)) and md5($_CFG['wep']['md5'].$_CFG['wep']['password']) == substr($_COOKIE['remember'], 0, $pos))
 						$flag = 1;
 				}
-				elseif ($login and $pass and $_CFG['wep']['login'] == $login and $_CFG['wep']['password'] == $pass)
-					$flag = 1;
+				elseif ($login and $pass)
+				{
+					$result = array(static_main::m('autherr'), 0);
+					if($_CFG['wep']['login'] == $login and $_CFG['wep']['password'] == $pass)
+						$flag = 1;
+				}
+					
 				if ($flag) {
 					session_go(true);// принудительный запуск сессия для пользователя
 					$_SESSION['user']['id'] = 1;

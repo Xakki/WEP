@@ -1,6 +1,5 @@
 <?php
 
-	require_once($_CFG['_PATH']['wep'].'config/config.php');
 	require_once($_CFG['_PATH']['core'].'html.php');
 	$result = static_main::userAuth(); // запскает сессию и проверяет авторизацию
 

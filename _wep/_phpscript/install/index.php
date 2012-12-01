@@ -1,7 +1,5 @@
 <?php
 
-$INSTALL = true;
-require_once($_CFG['_PATH']['wep'] . '/config/config.php');
 require_once($_CFG['_PATH']['core'] . 'html.php');
 //require_once($_CFG['_PATH']['core'] . 'sql.php');
 $TEMP_CFG= array();
@@ -16,9 +14,16 @@ session_go();
 $HTML = new html($_CFG['PATH']['cdesign']);
 
 $_tpl['title'] = 'Установка WEP';
-
+$mess = '';
 $flag = false;
-$mess = '<div style="color:green;">Введите ROOT-логин и ROOT-пароль для запуска установки.</div>';
+
+if($_NEED_INSTALL)
+	$mess .= '<div style="color:gray;">Фаил конфигурации сайта не обнаружен! Если хотите запустить сайт, необходимо авторизоваться с дефолтным логином и паролем и пройдти процедуру установки сайта.</div>';
+//\_wep\config\config.php
+else
+	$mess .= '<div style="color:green;">Введите ROOT-логин и ROOT-пароль для запуска установки.</div>';
+
+
 if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] === 0) {
 	//проверяем если уже автоизовался
 	$flag = true;
@@ -28,7 +33,7 @@ if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] === 0) {
 		//успешная авторизация
 		$flag = true;
 	}else
-		$mess = '<div style="color:red;">' . $result[0] . '</div>';
+		$mess .= '<div style="color:red;">' . $result[0] . '</div>';
 }
 
 if ($flag) {

@@ -6,6 +6,12 @@
 	$_tpl = array();
 	$_tpl['meta'] = $_tpl['logs']=$_tpl['onload']=$_tpl['title']=$_tpl['text']='';
 
+	if($_NEED_INSTALL)
+	{
+		require_once($_CFG['_PATH']['wep'].'_phpscript/install/index.php');
+		exit();
+	}
+
 	if(isset($_GET['_php']) and $_GET['_php']=='admin') {
 		require_once($_CFG['_PATH']['backend'].'index.php');
 		exit();
