@@ -39,7 +39,7 @@
 					if(isset($r['image']) and count($r['image']) and $r['image'][0][1]) {
 						$html .= '<img src="/'.$r['image'][0][1].'" alt="'.$r['name'].'"/>';
 					} else
-						$html .= '<img src="/_design/'.$HTML->_design.'/_shop/img/nofoto.gif" alt="'.$r['name'].'"/>';
+						$html .= '<img src="/'.$_CFG['PATH']['themes'].$HTML->_design.'/_shop/img/nofoto.gif" alt="'.$r['name'].'"/>';
 					$html .= '</a><div class="proddescr">'.$r['descr'].'</div><br/>';
 					//$html .= '';
 					if(!$r['cost'])
