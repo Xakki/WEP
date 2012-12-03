@@ -11,7 +11,7 @@
 	function tpl_productList(&$data) {
 		$html = '';
 		if(isset($data) and count($data)) {
-			global $_tpl,$HTML;
+			global $_tpl,$HTML, $_CFG;
 			$_tpl['styles']['/_shop/style/product'] = 1;
 
 			$html = '<div class="prodlist">';
