@@ -9,7 +9,7 @@ class shopsale_class extends kernel_extends {
 		parent::_set_features();
 
 		$this->ver = '0.0.1';
-		$this->caption = 'Магазин - Скидки';
+		$this->caption = 'Магазин - Акции';
 		$this->_dependClass = array('shop');
 		$this->mf_actctrl = true;
 		$this->index_fields['selkey'] = array('active','periode','periods');
@@ -20,6 +20,17 @@ class shopsale_class extends kernel_extends {
 		);
 
 	}
+	protected function _create_conf() {/*CONFIG*/
+		parent::_create_conf();
+
+		$this->config['shopField'] = 'id';
+		$this->config['productField'] = 'id';
+
+
+		//$this->config_form['shopField'] = array('type' => 'text', 'caption' => 'Связь поля `Каталог`', 'comment'=>'id или code');
+		//$this->config_form['productField'] = array('type' => 'text', 'caption' => 'Связь поля `Товар`', 'comment'=>'id или code');
+	}
+
 
 	protected function _create() {
 		parent::_create();
@@ -48,6 +59,7 @@ class shopsale_class extends kernel_extends {
 	}
 
 	function getData(&$prodList, $rid=0) {
+		// TODO - почемуто корзина вызывает эту ф каждый раз???
 		if(!$rid) {
 			$rid = array();
 			foreach($prodList as $r) {
@@ -100,7 +112,7 @@ class shopsale_class extends kernel_extends {
 		$data = $this->qs('*','WHERE active=1 and periode>='.$this->_CFG['time'].' and periods<='.$this->_CFG['time'].' and product!=0 ORDER BY RAND() LIMIT 1');
 		if(count($data))
 		{
-			$prodList = $PRODUCT->fItem($data[0]['product']);
+			$prodList = $PRODUCT->fItem($data[0]['product'], $this->config['productField']);
 			$this->setNewCost($prodList, $data);
 			return $prodList[$data[0]['product']];
 			

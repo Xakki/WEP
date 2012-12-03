@@ -14,14 +14,14 @@ session_go();
 $HTML = new html($_CFG['PATH']['cdesign']);
 
 $_tpl['title'] = 'Установка WEP';
-$mess = '';
+$mess = array();
 $flag = false;
 
 if($_NEED_INSTALL)
-	$mess .= '<div style="color:gray;">Фаил конфигурации сайта не обнаружен! Если хотите запустить сайт, необходимо авторизоваться с дефолтным логином и паролем и пройдти процедуру установки сайта.</div>';
+	$mess[] = array('alert','Фаил конфигурации сайта не обнаружен! Если хотите запустить сайт, необходимо авторизоваться с дефолтным логином и паролем и пройдти процедуру установки сайта.');
 //\_wep\config\config.php
 else
-	$mess .= '<div style="color:green;">Введите ROOT-логин и ROOT-пароль для запуска установки.</div>';
+	$mess[] = array('notice', 'Введите ROOT-логин и ROOT-пароль для запуска установки.');
 
 
 if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] === 0) {
@@ -33,7 +33,7 @@ if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] === 0) {
 		//успешная авторизация
 		$flag = true;
 	}else
-		$mess .= '<div style="color:red;">' . $result[0] . '</div>';
+		$mess[] = array('err', $result[0]);
 }
 
 if ($flag) {
@@ -95,5 +95,5 @@ if ($flag) {
 	$HTML->_templates = 'login';
 	$_tpl['text'] = '';
 	$_tpl['login'] = 'Логин(Email)';
-	$_tpl['mess'] = '<div class="messhead">' . $mess . '</div>';
+	$_tpl['mess'] = '<div class="messhead">' . $HTML->transformPHP($mess,'messages') . '</div>';
 }

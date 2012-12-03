@@ -40,7 +40,10 @@ class shop_class extends rubric_class {
 	protected function _create() {
 		parent::_create();
 		$this->fields['uiname'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
-		$this->fields['code'] = array('type' => 'varchar', 'width' => 11, 'attr' => 'NOT NULL');
+
+		// @TODO cf_fields
+		$this->fields['code'] = array('type' => 'varchar', 'width' => 11, 'attr' => 'NOT NULL', 'index' => true);
+		$this->index_fields['code'] = 'code';
 
 		$this->selFields .= ',t1.uiname';
 	}
@@ -57,6 +60,7 @@ class shop_class extends rubric_class {
 	}
 
 	//HOOK
+	// TODO - это не очень красывый код
 	function sdfs($MAIL) {
 		$MAIL->fields_form['from']['caption'] = 'Ваш Email';
 

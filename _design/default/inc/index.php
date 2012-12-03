@@ -72,7 +72,7 @@
 						$html = 'Версия модуля '.$MODUL->caption.'['.$MODUL->_cl.'] ('.$MODUL->ver.') отличается от версии ('.$_CFG['modulprm'][$MODUL->_cl]['ver'].') сконфигурированного для этого сайта. Обновите здесь поля таблицы.';
 					}
 					end($DATA['path']);prev($DATA['path']);
-					$prevhref = $_CFG['_HREF']['BH'].str_replace('&amp;', '&', key($DATA['path']));
+					$prevhref = str_replace('&amp;', '&', key($DATA['path']));
 					if(isset($DATA['formcreat']['form']['_*features*_'])) {
 						$DATA['formcreat']['form']['_*features*_']['prevhref'] = $prevhref;
 					}

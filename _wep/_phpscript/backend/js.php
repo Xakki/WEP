@@ -3,8 +3,6 @@
 	$GLOBALS['_RESULT']	= $DATA = array();
 	$_tpl['onload']=$html=$html2='';
 
-	$_CFG['_PATH']['wep'] = dirname($_SERVER['SCRIPT_FILENAME']).'/';
-	require_once($_CFG['_PATH']['wep'].'config/config.php');
 	if(!isset($_GET['noajax']))
 		require($_CFG['_PATH']['wep_phpscript'].'lib/jquery_getjson.php');
 
@@ -61,7 +59,7 @@
 	if(isset($_GET['_id']) and $_GET['_id']!='') $MODUL->id = $_GET['_id'];
 
 	//if($_SESSION['user']['wep'])
-		include($_CFG['_PATH']['cdesign'].$_design.'/js.php');
+		include($_CFG['_PATH']['cdesign'].$_design.'/inc/js.php');
 	/*else {
 		exit(static_main::m('denied'));
 	}*/

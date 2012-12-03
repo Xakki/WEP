@@ -1,4 +1,10 @@
 <?php
+	if($_GET['pageParam']=='js.php')
+	{
+		include('js.php');
+		exit();
+	}
+
 
 	require_once($_CFG['_PATH']['core'].'html.php');
 	$result = static_main::userAuth(); // запскает сессию и проверяет авторизацию

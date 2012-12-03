@@ -32,4 +32,5 @@
 	$DATA['#page#'] = $this->getHref($FUNCPARAM[0]);
 	$DATA['#text#'] = $rowPG['pg'];
 	$DATA['#title#'] = $rowPG['name'];
+	$DATA['#shopconfig#'] = $SHOP->config;
 	return $HTML->transformPHP($DATA,$FUNCPARAM[1]);

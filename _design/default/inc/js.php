@@ -3,7 +3,7 @@
 	$DATA = array();
 	if($_GET['_view']=='list') {
 		$MODUL->_clp = '_view=list&amp;_modul='.$MODUL->_cl.'&amp;';
-		$param = array('ajax'=>1, 'firstpath'=> '/'.$_CFG['PATH']['wepname'] . '/index.php?_view=list&');
+		$param = array('ajax'=>1, 'firstpath'=> '/'.$_CFG['PATH']['admin'] . '?_view=list&');
 		list($DATA,$flag) = $MODUL->super_inc($param,$_GET['_type']);
 		$mess = '';
 			if(isset($DATA['formcreat']) and count($DATA['formcreat'])) {

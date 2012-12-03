@@ -656,7 +656,10 @@ var wep = {
 			scripts = [scripts];
 		var i = 1;
 		var ii = scripts.length; 
-		var onScriptLoaded = function(data, response) { if (i++ == ii) onComplete(); } ; 
+		var onScriptLoaded = function(data, response) { 
+			if (i++ == ii && onComplete) 
+				onComplete.call(); 
+		}; 
 		for(var s in scripts) {
 			var validSrc = wep.checkJsInclude(scripts[s]);
 			if(validSrc)
@@ -1109,6 +1112,38 @@ var wep = {
 		charlist = !charlist ? ' \s\xA0' : charlist.replace(/([\[\]\(\)\.\?\/\*\{\}\+\$\^\:])/g, '\$1');
 		var re = new RegExp('^[' + charlist + ']+|[' + charlist + ']+$', 'g');
 		return str.replace(re, '');
+	},
+
+	/*таймер обратного отчета*/
+	timer: function(selector)
+	{
+		var timerobj = jQuery(selector);
+		setInterval(function() {
+			var timeEnd = timerobj.attr('data-time');
+			var strTime = '';
+			var D = new Date();
+			var temeLeft = timeEnd - Math.floor(D.getTime()/1000);
+			var temp;
+
+			if(temeLeft<=0)
+			{
+				window.location.reload();return false;
+			}
+
+			if(temeLeft>3600)
+			{
+				temp = Math.floor(temeLeft/3600);
+				temeLeft = (temeLeft-temp*3600);
+				strTime += temp+' час. ';
+			}
+			temp = Math.floor(temeLeft/60);
+			temeLeft = (temeLeft-temp*60);
+			strTime += temp+' мин. ';
+			strTime += temeLeft+' сек.';
+
+			timerobj.html(strTime);
+			
+		},1000);
 	}
 };
 

@@ -148,7 +148,7 @@ $_CFG['_PATH']['themes'] = $_CFG['_PATH']['path'] . '_themes/'; // дизайн 
 /* $_CFG['PATH'] */
 /* * ************* */
 // относительные пути
-$_CFG['PATH']['admin'] = '/_wepadmin/';
+$_CFG['PATH']['admin'] = '_wepadmin/';
 $_CFG['PATH']['WSWG'] = '_wysiwyg/';
 $_CFG['PATH']['themes'] = '_themes/';
 $_CFG['PATH']['content'] = '_content/';
@@ -401,8 +401,8 @@ $_CFG['_HREF']['BH'] = $_SERVER['HTTP_PROTO'] . $_CFG['_HREF']['_BH'];
 if($_CFG['site']['redirectPlugin'])
 	$_CFG['require_modul']['redirect'] = true;
 
-
-//$_CFG['_HREF']['wepJS'] = $_CFG['_HREF']['BH'] . $_CFG['PATH']['admin'] . '/js/';
+$_CFG['PATH']['admin'] = $_CFG['_HREF']['BH'] . $_CFG['PATH']['admin'];
+$_CFG['_HREF']['wepJS'] = $_CFG['PATH']['admin'] . 'js.php';
 $_CFG['_HREF']['siteJS'] = $_CFG['_HREF']['BH'] . '_js.php';
 $_CFG['_HREF']['siteAJAX'] = $_CFG['_HREF']['BH'] . '_json.php';
 $_CFG['_HREF']['captcha'] = $_CFG['_HREF']['BH'] . '_captcha.php';

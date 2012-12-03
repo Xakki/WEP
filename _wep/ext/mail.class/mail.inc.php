@@ -44,7 +44,7 @@
 
 	if($flag==1) {
 		$HTML->_templates = "waction";
-		$html = $HTML->transformPHP($DATA[$FUNCPARAM[0]],'messages');
+		$html = $HTML->transformPHP($DATA[$FUNCPARAM[0]],'#pg#messages');
 	}
 	else
 		$html = $HTML->transformPHP($DATA,$FUNCPARAM[0]);

@@ -367,6 +367,9 @@ abstract class kernel_extends {
 				if(isset($fr['unique']) and $fr['unique']) {
 					$this->unique_fields[$fk] = $fk;
 				}
+				if(isset($fr['index']) and $fr['index']) {
+					$this->index_fields[$fk] = $fk;
+				}
 			}
 		}
 
@@ -451,6 +454,18 @@ abstract class kernel_extends {
 
 		return $where;
 	}
+
+	// Простой запрос к БД
+	public function exec($query, $debug=false)
+	{
+		if ($debug)
+			echo(' * '.htmlentities($query) . ' * <br>');
+		$result = $this->SQL->execSQL($query);
+		if ($result->err)
+			return false; //todo exeption
+		return $result;
+	}
+
 	/**
 	 * принимает данные для запроса в виде параметров и возвращает рез-тат 
 	 * Функция аналогична _select(), только он принемает и передает данные непосредственно
@@ -477,13 +492,12 @@ abstract class kernel_extends {
 			//	$query .= 'WHERE '.$cls;
 		}
 
-		if ($debug)
-			echo(' * '.htmlentities($query) . ' * <br>');
-		$result = $this->SQL->execSQL($query);
-		if ($result->err)
-			return false;
-
 		$data = array();
+
+		$result = $this->exec($query, $debug);
+		if ($result===false)
+			return $data;
+
 		foreach($this->fields as $kf=>$rf) {
 			if(isset($rf['secure']))
 				$secureKey[] = $kf;
@@ -617,8 +631,9 @@ abstract class kernel_extends {
 		if($q_order)
 			$q_order = ' ORDER BY '.$q_order;
 
-		$result = $this->SQL->execSQL('SELECT '.$q_select.' FROM `' . $this->tablename . '` '.$q_where.$q_order);
-		if($result->err)
+		$result = $this->exec('SELECT '.$q_select.' FROM `' . $this->tablename . '` '.$q_where.$q_order);
+
+		if($result===false)
 			return $data;
 
 		if(!$simple) {
@@ -719,7 +734,11 @@ abstract class kernel_extends {
 	public function _select_id_tree(array $id, $format='simple') { // TODO const
 		$list = array();
 		if(!$this->mf_istree or !count($id)) return $list;
-		$result = $this->SQL->execSQL('SELECT id FROM `' . $this->tablename . '` WHERE  '.$this->mf_istree.' IN ('.implode(',',$id).')');
+		$result = $this->exec('SELECT id FROM `' . $this->tablename . '` WHERE  '.$this->mf_istree.' IN ('.implode(',',$id).')');
+
+		if($result===false)
+			return $list;
+
 		while ($row = $result->fetch()) {
 			$list[] = $row['id'];
 		}
@@ -912,8 +931,8 @@ abstract class kernel_extends {
 				. ') FROM `' . $this->tablename . '`';
 		if ($this->mf_istree and $this->parent_id and !$this->fld_data[$this->mf_istree])
 			$query .= ' WHERE ' . $this->mf_istree . '=' . $this->parent_id;
-		$result = $this->SQL->execSQL($query);
-		if ($result->err)
+		$result = $this->exec($query);
+		if ($result===false)
 			return 0;
 		list($ordind) = $result->fetch_row();
 		if ($ordind = (int) $ordind)
@@ -2059,7 +2078,7 @@ abstract class kernel_extends {
 			$MAIL->reply = 0;
 			$MAIL->config['mailcron'] = 1;
 			$MAIL->Send($datamail);
-			$result = $this->SQL->execSQL('UPDATE `' . $this->tablename . '` SET '.$this->mf_notif.'=1 WHERE id IN (' . implode(',',array_keys($DATA['data']['item'])).')');
+			$result = $this->exec('UPDATE `' . $this->tablename . '` SET '.$this->mf_notif.'=1 WHERE id IN (' . implode(',',array_keys($DATA['data']['item'])).')');
 			return '   -sendNotif-  ';
 		}
 		return '';

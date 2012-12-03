@@ -400,7 +400,7 @@ class static_tools {
 				$_tpl['onload'] .= '$("#tools_block").hide();';
 			}
 		} else {
-			$fields_form['_*features*_'] = array('name' => 'SuperGroup', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
+			$fields_form['_*features*_'] = array('name' => 'f'.$_this->_cl, 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
 			$fields_form['_info'] = array(
 				'type' => 'info',
 				'caption' => '<h2 style="text-align:center;">' . $_this->caption . '</h2><h3 style="text-align:center;">Выбранно элементов : ' . count($_COOKIE['SuperGroup'][$_this->_cl]) . '</h3>');
@@ -1241,6 +1241,121 @@ deny from all
 		return $fi;
 	}
 
+	static function simplexml2array(&$obj, &$result) 
+	{
+	    $data = $obj;
+	    if (is_object($data)) {
+	        $data = get_object_vars($data);
+	    }
+	    if (is_array($data)) {
+	        foreach ($data as $key => $value) {
+	            $res = null;
+	            self::simplexml2array($value, $res);
+	            if (($key == '@attributes') && ($key)) {
+	                $result = $res;
+	            } else {
+	                $result[$key] = $res;
+	            }
+	        }
+	    } else {
+	        $result = $data;
+	    }
+	}
+
+	static function helperImport1C(&$info, &$data, $owner=0)
+	{
+		foreach($info as $k=>$r)
+		{
+			if(isset($data[$k]) and _new_class($r['class'],$MODEL))
+			{
+				foreach($data[$k] as $row)
+				{
+					$insertData = array();
+					/**
+					* $r['field'] - список полей связи входных данных и БД
+					* $key - исходный ключ в входнных данных
+					* $value - ключ (поле) в БД
+					* $row[$key] - значение которое сохраняем в БД
+					*/
+					foreach ($r['field'] as $key => $value) {
+						// по умол
+						if(isset($r['default'][$value]) and (!isset($row[$key]) or $row[$key]===''))
+						{
+							$row[$key] = $r['default'][$value];
+						}
+						// Eval
+						if(isset($r['eval'][$value]) and isset($row[$key]))
+						{
+							$eval = '$row[$key] = '.str_replace('%%', $row[$key], $r['eval'][$value]).';';
+							eval($eval);
+						}
+						// import from BD
+						if(isset($r['importId'][$value]) and isset($row[$key]))
+						{
+							$q = str_replace('%%', $MODEL->SqlEsc($row[$key]), $r['importId'][$value]);
+							// получаем ID по спец запросу
+							$resultSQL = $MODEL->exec($q);
+							if($resultSQL===false)
+							{
+								exit('Ошибка в запросе! '.$q);
+							}
+							$dataSQL = $resultSQL->fetch_row();
+							$row[$key] = $dataSQL[0];
+						}
+						//////////////////
+						if(isset($row[$key]))
+						{
+							$insertData[$value] = $row[$key];
+						}
+					}
+					if(isset($r['setowner']))
+						$insertData[$r['setowner']] = $owner;
+
+					if(isset($r['setActive']))
+						$insertData['active'] = 1;
+					else
+					{
+						$insertData['active'] = 1;
+						// available
+						// remainder
+					}
+
+					// проверяем, есть ли в базе такая же запись
+					if(isset($r['key']))
+					{
+						$q = 'WHERE '.$r['key'].'="'.$MODEL->SqlEsc($insertData[$r['key']]).'"';
+						if(isset($r['key2']))
+							$q .= ' or '.$r['key2'].'="'.$MODEL->SqlEsc($insertData[$r['key2']]).'"';
+
+						$result = $MODEL->qs('id',$q);
+					}
+					else
+						$result = array();
+
+
+					if(count($result))
+					{
+						$insertData['id'] = $result[0]['id'];
+						if($r['forUpdate']!==false)
+						{
+							$MODEL->id = $insertData['id'];
+							$MODEL->_update(array_intersect_key($insertData, array_flip($r['forUpdate'])), NULL, false);
+						}
+					}
+					else
+					{
+						$MODEL->_add($insertData, false);
+						$insertData['id'] = $MODEL->id;
+					}
+
+
+					if($insertData['id'])
+						self::helperImport1C($info, $row, $insertData['id']);
+				}
+
+			}
+		}
+	}
 
 // END static class
 }

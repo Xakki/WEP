@@ -1,6 +1,6 @@
 <?php
 /**
- * Импорт Товаров из 1С XML
+ * Импорт Акций-Товаров из 1С XML
  * @ShowFlexForm false
  * @type Магазин
  * @ico default.png
@@ -52,22 +52,17 @@
 					'type' => 'info',
 					'caption' => '<h2 style="text-align:center;">'.$rowPG['name'].'</h2>');
 
-			$fields_form['offCat'] = array(
+			/*$fields_form['offCat'] = array(
 				'type' => 'checkbox',
 				'caption' => 'Отключить все категории',
 				'comment' => 'При загрузке XML, все категории из XML будут включены. Таким образом отключаться те категории которых не было в XML',
-			);
-			$fields_form['offProd'] = array(
-				'type' => 'checkbox',
-				'caption' => 'Отключить все товары.',
-				'comment' => 'При загрузке XML, все товары из XML будут включены. Таким образом отключаться те товары которых не было в XML',
-			);
-			$fields_form['fixCatName'] = array(
-				'type' => 'checkbox',
-				'caption' => 'Убирать дублирование в названии в подкатегориях [ВАЗ->Двигатели]',
-			);
+			);*/
+			if($rowPG['pg'])
+				$fields_form['help'] = array(
+						'type' => 'info',
+						'caption' => $rowPG['pg']);
 
-			$fields_form['filexml'] = array(
+			$fields_form['filexmlEvent'] = array(
 				'type' => 'file',
 				'caption' => '',
 				'comment'=>'фаил в формате xml , можно в zip архиве',
@@ -93,34 +88,17 @@
 
 function procesedPostDataImport1C()
 {
-	$fieldFile = 'filexml';
 	global $_CFG;
 	_new_class('shop',$SHOP);
 	$mess = array();
+	$fieldFile = 'filexmlEvent';
 
-	if(isset($_POST['offCat']))
+	/*if(isset($_POST['offCat']))
 	{
 		if($SHOP->_update(array('active'=>0), 'where 1', false))
 			$mess[] = static_main::am('ok', "Успешно отключены все категории");
-	}
-	
-	if(isset($_POST['offProd']))
-	{
-		_new_class('product',$MODULE);
-		if($MODULE->_update(array('active'=>0), 'where 1', false))
-			$mess[] = static_main::am('ok', "Успешно отключены все товары");
-	}
-	if(isset($_POST['fixCatName']))
-	{
-		
-		$data = $SHOP->qs('id,name, parent_id', 'WHERE !uiname');
-		foreach($data as $row)
-		{
-			$SHOP->id = $row['id'];
-			$SHOP->_update($row);
-		}
-		$mess[] = static_main::am('ok', "Названия у категорий исправленны!");
-	}
+	}*/
+
 
 	if (isset($_FILES[$fieldFile]) and $_FILES[$fieldFile]['name'])
 	{
@@ -154,48 +132,51 @@ function procesedPostDataImport1C()
 				if($xml) {
 					$result = array();
 					$xmlData = simplexml_load_file($xml);
+
 					static_tools::simplexml2array($xmlData, $result);
 					
 					//file_put_contents(dirname($xml).'/out.txt', print_r($result, true));
 
 					$info = array(
-						'Группа' => array(
-							'class'=>'shop',
-							'setowner' => 'parent_id',
-							'key' => 'code',
-							'key2' => 'name',
-							'setActive' => 1,
-							'field' => array(
-								'Код' => 'code',
-								'Наименование' => 'name'
-							),
-							'forUpdate'=> array('active')
-						),
 						'Товар'=> array(
-							'class'=>'product',
-							'setowner' => 'owner_id',
-							'key' => 'code',
+							'class'=>'shopsale',
 							'field' => array(
-								'Код' => 'code',
-						        'Наименование' => 'name',
-						        'Модель' => 'model',
-						        'Артикул' => 'articul',
-						        'Изготовитель' => 'madein',
-						        'Запас' => 'remainder',
-						        'Цена' => 'cost'
+						        'Текст' => 'name',
+						        'Скидка' => 'sale',
+						        'Тип' => 'saletype',
+						        'Начало' => 'periods',
+						        'Конец' => 'periode',
+						        'Код' => 'product',
 						    ),
-						    'forUpdate'=> array(
-						    	'cost', 'remainder', 'active'
+						    'default'=> array(
+						    	'name' => 'Товар дня',
+						    ),
+						    'eval'=> array(
+						    	'periods' => 'strtotime("%%")',
+						    	'periode' => '(strtotime("%%")+86399)', // конец дня
+						    	'Тип' => '("%%"=="руб."?1:0)',
+						    ),
+						    'importId'=>array(
+						    	'product' => 'SELECT id FROM product WHERE code="%%"',
 						    )
+
 						)
 					);
 
-					static_tools::helperImport1C($info, $result);
+					if($result and is_array($result) and count($result))
+					{
+						static_tools::helperImport1C($info, $result);
+						$mess[] = static_main::am('ok', "Готово");
+					}
+					else
+					{
+						$mess[] = static_main::am('err', "Ошибка при обработке фаила");
+					}
 				
 
 					//TODO - нарисовать таблицу для того чтобы задать соответствие полей из фаила, полям из БД
 					//TODO - СПИСОК доступных полей БД здается в настройках INC , проблемка в том что поля мы задаем позже
-					$mess[] = static_main::am('ok', "Готово");
+					
 				}
 				else
 					$mess[] = static_main::am('error', "XML фаил не найден");

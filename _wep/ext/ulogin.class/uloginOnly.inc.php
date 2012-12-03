@@ -40,7 +40,7 @@
 		}
 
 		//$_tpl['onload'] .= 'fShowload(1,jQuery("#LoginzaMess").html(),0,0,"window.location.href=window.location.href;");';
-		return '<div id="LoginzaMess">'.$HTML->transformPHP($mess,'messages').'</div>';
+		return '<div id="LoginzaMess">'.$HTML->transformPHP($mess,'#pg#messages').'</div>';
 	}
 	// ULOGIN registration
 	elseif(isset($_GET['regme']) and isset($_SESSION['ulogin']) and count($_SESSION['ulogin'])) {
@@ -56,7 +56,7 @@
 		}
 
 		//$_tpl['onload'] .= 'fShowload(1,jQuery("#LoginzaMess").html(),0,0,"window.location.href=window.location.href;");';
-		return '<div id="LoginzaMess">'.$HTML->transformPHP($mess,'messages').'</div>';
+		return '<div id="LoginzaMess">'.$HTML->transformPHP($mess,'#pg#messages').'</div>';
 	}
 
 	if(isset($_SESSION['ulogin'])) unset($_SESSION['ulogin']); // Очистка

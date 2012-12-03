@@ -59,6 +59,7 @@ class product_class extends kernel_extends {
 	protected function _create() {
 
 		if($this->config['temp_olden'])
+		{
 			$this->config['cf_fields'] = array(
 				'code' => array(
 					'type' => 'varchar',
@@ -94,6 +95,7 @@ class product_class extends kernel_extends {
 					'caption' => 'Страна изготовитель',
 				),
 			);
+		}
 
 		parent::_create();
 
@@ -113,7 +115,7 @@ class product_class extends kernel_extends {
 			}
 		}
 
-		$this->fields['name'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
+		$this->fields['name'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'index'=>true);
 		//$this->fields['code'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['descr'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['text'] = array('type' => 'text', 'attr' => 'NOT NULL');
@@ -792,7 +794,7 @@ class product_class extends kernel_extends {
 		return $xml;
 	}*/
 
-	public function fItem($id) {//$id - число либо массив
+	public function fItem($id, $key='id') {//$id - число либо массив
 		$idt= explode(',',$id);
 		$arr_stat=$id=array();
 		foreach($idt as $r)//сохр тока уник знач
@@ -801,7 +803,7 @@ class product_class extends kernel_extends {
 		$clause = 'SELECT t3.*, t1.*, GROUP_CONCAT(t2.id,":",t2.name,":",t2.type,":",t2.formlist,":",t2.edi ORDER BY t2.ordind SEPARATOR "|") as param FROM '.$this->tablename.' t1
 		LEFT JOIN product_value t3 ON t1.id=t3.owner_id  
 		LEFT JOIN '.$PARAM->tablename.' t2 ON t1.shop=t2.owner_id and t2.active 
-		WHERE t1.active=1 and t1.id IN ('.implode(',',$id).') 
+		WHERE t1.active=1 and t1.'.$key.' IN ('.implode(',',$id).') 
 		GROUP BY t1.id ORDER BY t1.mf_timecr DESC';
 		
 		$this->fGetParamproduct($clause);
