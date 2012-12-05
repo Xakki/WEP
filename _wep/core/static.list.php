@@ -220,8 +220,8 @@ class static_list {
 					$key = substr($entry,0,-6);
 					$dir2 = $_this->_CFG['_PATH']['ext'].$entry.'/_design/php';
 					if(file_exists($dir2) and is_dir($dir2)) {
-						$dir2 = dir($dir2);
-						while (false !== ($entry2 = $dir2->read())) {
+						$dir2Obj = dir($dir2);
+						while (false !== ($entry2 = $dir2Obj->read())) {
 							if (strstr($entry2,'.php')) 
 							{
 								$docs = static_tools::getDocFileInfo($dir2.'/'.$entry2);
@@ -250,7 +250,7 @@ class static_list {
 								$data[$docs['type']] ['#'.$key.'#'._substr($entry2,0,-4)] = $docs;
 							}
 						}
-						$dir2->close();
+						$dir2Obj->close();
 					}
 				}
 			}
