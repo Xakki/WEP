@@ -109,6 +109,9 @@ class ugroup_class extends kernel_extends
 		$this->fields['negative'] = array('type' => 'int', 'width' =>11, 'attr' => 'NOT NULL',  'default' => 0);
 		$this->fields['filesize'] = array('type' => 'int', 'width' =>5, 'attr' => 'NOT NULL', 'default' => 0);
 		$this->fields['design'] = array('type' => 'varchar', 'width' =>128, 'attr' => 'NOT NULL', 'default' => '');
+		$this->fields['minkarma'] = array('type' => 'int', 'width' =>8, 'attr' => 'NOT NULL', 'default' => 0);
+		$this->fields['maxkarma'] = array('type' => 'int', 'width' =>8, 'attr' => 'NOT NULL', 'default' => 0);
+		$this->fields['defkratio'] = array('type' => 'decimal', 'width' => '8,2','attr' => 'NOT NULL', 'default'=>'0.00');
 
 	}
 
@@ -123,10 +126,6 @@ class ugroup_class extends kernel_extends
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Активность');
 
 		if($this->config['karma']) {
-			$this->fields['minkarma'] = array('type' => 'int', 'width' =>8, 'attr' => 'NOT NULL', 'default' => 0);
-			$this->fields['maxkarma'] = array('type' => 'int', 'width' =>8, 'attr' => 'NOT NULL', 'default' => 0);
-			$this->fields['defkratio'] = array('type' => 'decimal', 'width' => '8,2','attr' => 'NOT NULL', 'default'=>'0.00');
-
 			$this->fields_form['minkarma'] = array('type' => 'text', 'caption' => 'Мин. карма', 'mask' =>array());
 			$this->fields_form['maxkarma'] = array('type' => 'text', 'caption' => 'Макс. карма', 'mask' =>array('fview'=>1));
 			$this->fields_form['defkratio'] = array('type' => 'text', 'caption' => 'Коэфициент по умол.', 'mask' =>array('fview'=>1));

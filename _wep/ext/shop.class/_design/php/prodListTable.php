@@ -43,7 +43,7 @@
 					if(isset($r['image']) and count($r['image']) and $r['image'][0][1]) {
 						$img = $r['image'][0][1];
 					} else
-						$img = $_CFG['PATH']['themes'].$HTML->_design.'/_shop/img/nofoto.gif';
+						$img = MY_THEME.'_shop/img/nofoto.gif';
 					$html .= '<tr data-id="'.$r['id'].'" class="'.(isset($data['#basket#'][$r['id']])?'sel':'').'">';
 					if(isset($data['#prodListTable#'])) {
 						foreach($data['#prodListTable#'] as $cf_k=>$cf_r) {
@@ -65,16 +65,16 @@
 						if(isset($data['#basket#'])) {
 							$html .= '<td class="addbasket">
 							<a href="##vkorziny" title="В корзину" class="addlink">
-								<img src="/'.$_CFG['PATH']['themes'].$HTML->_design.'/_shop/img/basket-add.png" alt="В корзину"/>
+								<img src="'.MY_THEME.'_shop/img/basket-add.png" alt="В корзину"/>
 							</a>
 							<a href="##vkorziny" title="Перейти в корзину" class="gotobasket">
-								<img src="/'.$_CFG['PATH']['themes'].$HTML->_design.'/_shop/img/basket-go.png" alt="В корзину"/>
+								<img src="'.MY_THEME.'_shop/img/basket-go.png" alt="В корзину"/>
 							</a>
 							<input type="hidden" min="1" max="50" value="'.(isset($data['#basket#'][$r['id']])?$data['#basket#'][$r['id']]['count'].'" disabled="disabled':1).'"/>
 							';
 							/*
 							<a href="##vkorziny" title="Удалить из корзины" class="dellink">
-								<img src="/'.$_CFG['PATH']['themes'].$HTML->_design.'/_shop/img/basket-del.png" alt="Удалить из корзины"/>
+								<img src="'.MY_THEME.'_shop/img/basket-del.png" alt="Удалить из корзины"/>
 							</a>
 							*/
 							$_tpl['script']['/_shop/script/shop'] = 1;

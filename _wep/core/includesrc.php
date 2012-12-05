@@ -118,11 +118,8 @@
 	}
 
 	function scriptRecursive($script, $solt='') {
-		global $_CFG, $HTML;
-		if(!isset($HTML->_design)) {
-			trigger_error('Название дизайна ГДЕ???', E_USER_WARNING);
-			$HTML->_design = 'default';
-		}
+		global $_CFG;
+
 		$temp = '';
 		foreach($script as $kk=>$rr) {
 			if(is_string($rr) and (substr($rr,0,4)=='http' or substr($rr,0,1)=='<')) {
@@ -136,7 +133,7 @@
 			elseif(is_string($kk))
 			{
 				if(strpos($kk,'/')===0)
-					$path = $_CFG['PATH']['themes'].$HTML->_design.'/';
+					$path = MY_THEME;
 				else
 					$path = $_CFG['_HREF']['_script'];
 				$src = '//'.$_CFG['_HREF']['_BH'].$path.$kk.'.js'.$solt;
@@ -154,7 +151,7 @@
 	}
 
 	function cssRecursive($css, $solt='') {
-		global $_CFG, $HTML;
+		global $_CFG;
 		$temp = '';
 
 		foreach($css as $kk=>$rr) {
@@ -167,7 +164,7 @@
 				$src = str_replace(array('http:','https:'), '', $kk);
 			elseif(is_string($kk)) {
 				if(strpos($kk,'/')===0)
-					$path = $_CFG['PATH']['themes'].$HTML->_design.'/';
+					$path = MY_THEME;
 				else
 					$path = $_CFG['_HREF']['_style'];
 				$src = '//'.$_CFG['_HREF']['_BH'].$path.$kk.'.css'.$solt;

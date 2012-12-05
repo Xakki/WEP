@@ -1040,9 +1040,6 @@ function SpiderDetect($USER_AGENT='') {
 	return '';
 }
 
-$_CFG['robot'] = SpiderDetect();
-
-
 /*
   Используем эту ф вместо стандартной, для совместимости с UTF-8
  */

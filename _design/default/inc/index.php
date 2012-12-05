@@ -68,6 +68,8 @@
 					}
 					$DATA['path'] = $path;
 
+					$_tpl['title'] .= strip_tags(' : '.implode(' - ', $DATA['path']));
+
 					if($MODUL->ver!=$_CFG['modulprm'][$MODUL->_cl]['ver']) {
 						$html = 'Версия модуля '.$MODUL->caption.'['.$MODUL->_cl.'] ('.$MODUL->ver.') отличается от версии ('.$_CFG['modulprm'][$MODUL->_cl]['ver'].') сконфигурированного для этого сайта. Обновите здесь поля таблицы.';
 					}

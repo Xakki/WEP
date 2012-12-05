@@ -334,19 +334,20 @@ class pg_class extends kernel_extends {
 		$HTML->_templates = $this->pageinfo['template'];
 		if($this->_CFG['returnFormat'] == 'html') {
 			$_tpl['script'][] = 'if(typeof wep !== "undefined") {
-	wep.pgId = ' . $this->id . ';
-	wep.pgParam =' . $pageParamEncode . ';
-	wep.pgGet =' . $getEncode . ';
-	wep.siteJS = "' . $this->_CFG['_HREF']['siteJS'] . '";
-	wep.BH = "' . $this->_CFG['_HREF']['BH'] . '";
-	wep.DOMAIN = "' . $_SERVER['HTTP_HOST2'] . '";
-}
+				wep.pgId = ' . $this->id . ';
+				wep.pgParam =' . $pageParamEncode . ';
+				wep.pgGet =' . $getEncode . ';
+				wep.siteJS = "' . $this->_CFG['_HREF']['siteJS'] . '";
+				wep.BH = "' . $this->_CFG['_HREF']['BH'] . '";
+				wep.DOMAIN = "' . $_SERVER['HTTP_HOST2'] . '";
+			}
 
-var tmp = wep.getCookie(\'wepjs123456\');
-if(tmp==false){
-	wep.setCookie(\'wepjs123456\',document.referrer);
-}
-';
+			MY_THEME = "'.MY_THEME.'";
+
+			var tmp = wep.getCookie(\'wepjs'.$this->_CFG['info']['version'].'\');
+			if(tmp==false){
+				wep.setCookie(\'wepjs'.$this->_CFG['info']['version'].'\', document.referrer);
+			} ';
 		}
 		return true;
 	}

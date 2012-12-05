@@ -258,8 +258,8 @@ class static_list {
 
 			// Дизайн шаблоны
 			_new_class('pg',$PGLIST);
-			if(file_exists($PGLIST->_CFG['_PATH']['themes'].$PGLIST->config['design'].'/php')) {
-				$dir = $PGLIST->_CFG['_PATH']['themes'].$PGLIST->config['design'].'/php';
+			if(file_exists($PGLIST->_CFG['_PATH']['themes'].'default/php')) {
+				$dir = $PGLIST->_CFG['_PATH']['themes'].'default/php';
 				$dirObj = dir($dir);
 				while (false !== ($entry = $dirObj->read())) {
 					if (strstr($entry,'.php')) {

@@ -792,6 +792,8 @@ class static_form {
 	 */
  	static function check_formfield(&$_this,&$form,&$error,&$data,$key) {
 		$MASK = &$_this->_CFG['_MASK'];
+		if(!isset($form['fields_type']))
+			$form['fields_type'] = $form['type'];
 
 		//*********** CHECKBOX
 		if($form['type']=='checkbox')

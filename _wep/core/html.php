@@ -81,11 +81,24 @@ class html {
 		$_tpl['script'] = $_tpl['styles'] = array();
 		$_tpl['YEAR'] = date('Y');
 
+		$this->setMyTheme($this->_design);
+
 		$params = array(
 			'obj' => &$this,
 			'func' => 'createTemplate',
 		);
 		observer::register_observer($params, 'shutdown_function');
+	}
+
+	public function setMyTheme($theme)
+	{
+		global $_CFG;
+		// дизайн на переправе не меняют
+		if (!defined('MY_THEME'))
+		{
+			define('MY_THEME', $_CFG['PATH']['themes'].$theme.'/');
+			define('_MY_THEME', $_SERVER['_DR_'] . $_CFG['PATH']['themes'].$theme.'/');
+		}
 	}
 
 	function createTemplate() {

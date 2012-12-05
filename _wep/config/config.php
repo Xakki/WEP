@@ -345,6 +345,9 @@ $_CFG['_error'] = array(
 
 include $_CFG['_PATH']['core'] . 'static.main.php';
 
+$_CFG['robot'] = SpiderDetect();
+
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 /* INCLUDE USER CONF */
@@ -479,4 +482,3 @@ if(!isset($_COOKIE['wep123456'])) {
 		$_SERVER['HTTP_REFERER'] = '';
 	_setcookie('wep123456',base64encode($_SERVER['HTTP_REFERER']),(time() + 86400));
 }
-
