@@ -400,6 +400,7 @@ if (strpos($_SERVER['HTTP_HOST'], 'xn--') !== false) {
 }
 $_CFG['_HREF']['_BH'] = $_SERVER['HTTP_HOST'] . '/' . $addpath; // www-путь сайта
 $_CFG['_HREF']['BH'] = $_SERVER['HTTP_PROTO'] . $_CFG['_HREF']['_BH']; 
+define('MY_BH', $_CFG['_HREF']['BH']);
 
 if($_CFG['site']['redirectPlugin'])
 	$_CFG['require_modul']['redirect'] = true;

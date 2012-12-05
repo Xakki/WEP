@@ -73,15 +73,17 @@ class html {
 		$this->_templates = 'default';
 		$this->_PATHd = $_SERVER['_DR_'] . $_PATHd . $_design . '/';
 		$this->flag = $flag;
-		$_tpl['BH'] = rtrim($_CFG['_HREF']['BH'],'/');
+
+		$this->setMyTheme($this->_design);
+
+		$_tpl['BH'] = rtrim(MY_BH,'/');// OLD
+		$_tpl['THEME'] = MY_THEME;
 		$_tpl['REQUEST_URI'] = $_SERVER['REQUEST_URI'];
 		$_tpl['design'] = $_CFG['_HREF']['BH'] . $_PATHd . $_design . '/';
 		$_tpl['title'] = $_tpl['time'] = $_tpl['onload'] = $_tpl['logs'] = '';
 		$_tpl['onload2'] = array();
 		$_tpl['script'] = $_tpl['styles'] = array();
 		$_tpl['YEAR'] = date('Y');
-
-		$this->setMyTheme($this->_design);
 
 		$params = array(
 			'obj' => &$this,
