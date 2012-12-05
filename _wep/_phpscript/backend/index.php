@@ -1,5 +1,10 @@
 <?php
-	if($_GET['pageParam']=='js.php')
+
+	$pageParam = trim($_GET['pageParam'],'/');
+	$pageParam  = explode('/', $pageParam);
+	$mainPage = array_shift($pageParam);
+
+	if($mainPage=='js.php')
 	{
 		include('js.php');
 		exit();
@@ -11,7 +16,7 @@
 
 	if(isset($_COOKIE['cdesign']) and $_COOKIE['cdesign'])
 		$_design = $_COOKIE['cdesign'];
-	elseif($_SESSION['user']['design'])
+	elseif(isset($_SESSION['user']['design']) and $_SESSION['user']['design'])
 		$_design = $_SESSION['user']['design'];
 	else 
 		$_design = $_CFG['wep']['design'];
@@ -20,15 +25,15 @@
 	$HTML = new html($_CFG['PATH']['cdesign'],$_design);
 	if(!isset($_GET['_modul'])) $_GET['_modul'] = '';
 
-	if($_GET['pageParam']=='logout')
+	if($mainPage=='logout')
 	{
 		static_main::userExit();
-		$ref = $_CFG['_HREF']['BH'].'index.html';
+		$ref = MY_BH.'index.html';
 		static_main::redirect($ref);
 		exit();
 	}
 
-	if($_GET['pageParam']=='login')
+	if($mainPage=='login')
 	{
 		$result = array('','');
 		$delay =4;
@@ -40,7 +45,7 @@
 			else
 				$ref = $_REQUEST['ref'];
 			if(strstr($ref,'login') or strstr($ref,'install'))
-				$ref = $_CFG['_HREF']['BH'].$_CFG['PATH']['admin'];
+				$ref = $_CFG['PATH']['admin'];
 		}
 		elseif(isset($_SERVER['HTTP_REFERER']) and $_SERVER['HTTP_REFERER']!='' and !strstr($_SERVER['HTTP_REFERER'],'login'))
 			$ref= $_SERVER['HTTP_REFERER'];
@@ -62,7 +67,7 @@
 	
 		$_tpl['login'] = 'Логин(Email)';
 		$_tpl['ref'] = $ref;
-		$_tpl['action'] = $_CFG['_HREF']['BH'].$_CFG['PATH']['admin'].'/login'.(isset($_GET['install'])?'?install':'');
+		$_tpl['action'] = $_CFG['PATH']['admin'].'login'.(isset($_GET['install'])?'?install':'');
 		if($result[0])
 			$result[0] = '<div style="color:red;">'.$result[0].'</div>';
 		$_tpl['mess'] = '<div class="messhead">'.$result[0].'</div>';
