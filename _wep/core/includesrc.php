@@ -87,7 +87,6 @@
 	}
 
 	function arraySrcToStr() {
-		// TODO : сделать все преобрзования на сервере, а скрипту передать готовые массивы
 		global $_tpl,$_CFG;
 		$temp = $solt = '';
 		if($_CFG['wep']['debugmode'])
@@ -127,7 +126,6 @@
 			}
 
 			$src = '';
-			// TODO - учесть и преобразовывать, возможен косяк, когда внутри урла есть "http:"
 			if (strpos($kk, '//')===0 or strpos($kk, 'http:')===0 or strpos($kk, 'https:')===0)
 				$src = str_replace(array('http:','https:'), '', $kk);
 			elseif(is_string($kk))

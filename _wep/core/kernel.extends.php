@@ -438,13 +438,13 @@ abstract class kernel_extends {
 					$where2[$k] = '`'.$k.'`="'.$this->SqlEsc($r).'"';
 			}
 			if(count($where2))
-				$where = 'WHERE '.implode(' '.$union.' ',$where2);
+				$where = implode(' '.$union.' ',$where2);
 			else
 				$where = '';
 		}
 		elseif(isint($where)) {
 			if((int)$where>0)
-				$where = 'WHERE `id`="'.(int)$where.'"';
+				$where = '`id`="'.(int)$where.'"';
 			else
 				$where = '';
 		}
@@ -484,12 +484,11 @@ abstract class kernel_extends {
 		else
 			$query .= '*';
 		$query .= ' FROM `' . $this->tablename . '` ';
-
-		if($cls = $this->queryEscape($cls)) {
-			//if (stripos($cls,'WHERE')!==false)
-				$query .= $cls;
-			//else
-			//	$query .= 'WHERE '.$cls;
+		$cls = $this->queryEscape($cls);
+		if($cls) {
+			if(stripos($cls, 'where')===false)
+				$cls = 'WHERE '.$cls;
+			$query .= $cls;
 		}
 
 		$data = array();
@@ -554,10 +553,9 @@ abstract class kernel_extends {
 	 */
 	public function _isset($where=NULL) {
 		if(!is_null($where) and $where!==false) {
-			
-			if($where = $this->queryEscape($where)) {
-				if (stripos($where,'WHERE')===false)
-					$where = 'WHERE '.$where;
+			$where = $this->queryEscape($where);
+			if($where) {
+				$where = 'WHERE '.$where;
 			} else {
 				trigger_error('Ошибка! Условие запроса пустое!', E_USER_WARNING);
 				return false; // TODO : need error reporting
