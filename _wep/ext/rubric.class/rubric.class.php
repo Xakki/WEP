@@ -307,7 +307,7 @@ class rubricparam_class extends kernel_extends {
 		# fields
 		$this->fields_form['owner_id'] = array('type' => 'list', 'listname'=>'ownerlist', 'caption' => 'Рубрика','mask' =>array('fview'=>1));
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название', 'mask' =>array('min'=>1));
-		$this->fields_form["type"] = array("type" => "list", "listname"=>"type", "caption" => "Тип параметра", 'mask'=>array('sort'=>1), 'onchange'=>'if(this.value>=50 &amp;&amp; this.value&lt;60) jQuery(\'#tr_formlist, #tr_typelist\').show(); else jQuery(\'#tr_formlist, #tr_typelist\').hide();');
+		$this->fields_form["type"] = array("type" => "list", "listname"=>"type", "caption" => "Тип параметра", 'mask'=>array('sort'=>1), 'onchange'=>'if(this.value>=50 && this.value<60) jQuery(\'#tr_formlist, #tr_typelist\').show(); else jQuery(\'#tr_formlist, #tr_typelist\').hide();');
 		$this->fields_form['typelist'] = array('type' => 'list', 'listname'=>'typelist', 'caption' => 'Вид списка', 'style'=>'background:#e1e1e1;');
 		$this->fields_form['formlist'] = array("type" => "list",'listname'=>array('tablename'=>'formlist'), 'caption' => 'Список', 'style'=>'background:#e1e1e1;');
 		$this->fields_form['constrn'] = array('type' => 'checkbox', 'caption' => 'В имени');
