@@ -438,20 +438,21 @@ abstract class kernel_extends {
 					$where2[$k] = '`'.$k.'`="'.$this->SqlEsc($r).'"';
 			}
 			if(count($where2))
-				$where = implode(' '.$union.' ',$where2);
+				$where = 'WHERE '.implode(' '.$union.' ',$where2);
 			else
 				$where = '';
 		}
 		elseif(isint($where)) {
 			if((int)$where>0)
-				$where = '`id`="'.(int)$where.'"';
+				$where = 'WHERE `id`="'.(int)$where.'"';
 			else
 				$where = '';
 		}
 		else {
 			//TODO : экранировать запрос от инъекций
 		}
-
+		/*if(stripos($where, 'where')===false)
+				$where = 'WHERE '.$where;*/
 		return $where;
 	}
 
@@ -484,12 +485,7 @@ abstract class kernel_extends {
 		else
 			$query .= '*';
 		$query .= ' FROM `' . $this->tablename . '` ';
-		$cls = $this->queryEscape($cls);
-		if($cls) {
-			if(stripos($cls, 'where')===false)
-				$cls = 'WHERE '.$cls;
-			$query .= $cls;
-		}
+		$query .= $this->queryEscape($cls);
 
 		$data = array();
 
@@ -554,9 +550,7 @@ abstract class kernel_extends {
 	public function _isset($where=NULL) {
 		if(!is_null($where) and $where!==false) {
 			$where = $this->queryEscape($where);
-			if($where) {
-				$where = 'WHERE '.$where;
-			} else {
+			if(!$where)  {
 				trigger_error('Ошибка! Условие запроса пустое!', E_USER_WARNING);
 				return false; // TODO : need error reporting
 			}
