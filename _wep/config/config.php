@@ -375,17 +375,21 @@ if (isset($_SERVER['HTTP_X_REAL_PORT']) and $_SERVER['HTTP_X_REAL_PORT'])
 $port = '';
 if (isset($_SERVER['SERVER_PORT']) and $_SERVER['SERVER_PORT'] != 80)
 	$port = ':' . $_SERVER['SERVER_PORT'];
+
 //addpath
+$addpath = '';
+/*
 $PHP_SELF = explode('/', $_SERVER['PHP_SELF']);
 if (!$PHP_SELF[0])
 	array_shift($PHP_SELF);
 array_pop($PHP_SELF);
-$addpath = '';
+
 $k = 0;
 while (isset($PHP_SELF[$k]) and $PHP_SELF[$k] != $_CFG['PATH']['admin']) {
 	$addpath .= $PHP_SELF[$k] . '/';
 	$k++;
 }
+*/
 
 $_SERVER['HTTP_PROTO'] = 'http://'; // TODO - определение протокола
 
@@ -415,10 +419,7 @@ $_CFG['_HREF']['_style'] = '_design/_style/'; // дизайн стили
 $_CFG['_HREF']['_script'] = '_design/_script/'; // дизайн стили
 $_CFG['_HREF']['arrayHOST'] = array_reverse(explode('.', $_SERVER['HTTP_HOST']));
 
-if (strstr($_SERVER['PHP_SELF'], '/' . $_CFG['PATH']['admin'] . '/'))
-	$_CFG['_F']['adminpage'] = true;
-else
-	$_CFG['_F']['adminpage'] = false;
+$_CFG['_F']['adminpage'] = false;
 
 
 

@@ -1,5 +1,6 @@
 <?php
-
+	$_CFG['_F']['adminpage'] = true;
+	
 	$pageParam = trim($_GET['pageParam'],'/');
 	$pageParam  = explode('/', $pageParam);
 	$mainPage = array_shift($pageParam);
