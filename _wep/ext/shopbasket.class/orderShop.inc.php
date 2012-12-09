@@ -70,6 +70,7 @@
 		// STEP 1 
 		$DATA['#orderPage#'] = $Chref;
 		$DATA['#page#'] = $Chref.'/orderlist';
+		$DATA['#pageCatalog#'] = $this->getHref($FUNCPARAM[2]);
 		$DATA['#curr#'] = $PAY->config['curr'];
 		$DATA['#pageUser#'] = $this->getHref($FUNCPARAM[4]);
 
@@ -188,7 +189,7 @@
 		// STEP 1 
 		$DATA = array();
 		$DATA['#list#'] = $SHOPBASKET->fBasketListItem();
-		$DATA['#pageCat#'] = $this->getHref($FUNCPARAM[2]);
+		$DATA['#pageCatalog#'] = $this->getHref($FUNCPARAM[2]);
 		$DATA['#page#'] = $this->getHref();
 		$DATA['#delivery#'] = $SHOPDELIVER->qs('*','WHERE active=1','id');
 

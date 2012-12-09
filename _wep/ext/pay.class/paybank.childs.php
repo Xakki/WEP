@@ -13,6 +13,7 @@ class paybank_class extends kernel_extends {
 		$this->prm_edit = false; // редактировать в модуле
 		$this->pay_systems = true; // Это модуль платёжной системы
 		//$this->showinowner = false;
+		$this->pay_formType = true; // Оплата производится по форме
 
 		$this->caption = 'Безналичный расчёт';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';

@@ -2,6 +2,7 @@
 .payselect {
 	margin:0;padding:0;
 	text-align: center;
+	width:340px;margin:10px auto;
 }
 .payselect h2 {
 	text-align: center;
@@ -44,6 +45,11 @@
 }
 .payselect .paySpanMess:hover {
 	color:blue;
+}
+.payselect .payLink {
+	font-size: 16px;
+	font-weight: bold;
+	color: #444;
 }
 
 

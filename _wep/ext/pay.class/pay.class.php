@@ -46,7 +46,7 @@ class pay_class extends kernel_extends {
 
 		$this->_enum['status'] = array(
 			0 => 'Неоплачено',
-			1 => 'Успешно',
+			1 => 'Оплачено',
 			2 => 'Отменено пользователем',
 			3 => 'Отменено магазином',
 			4 => 'Истекло время ожидания',
@@ -91,22 +91,28 @@ class pay_class extends kernel_extends {
 		global $_tpl;
 		$data = array();
 
+		$resFlag = 0; 
+		// 0 : выводим варианты оплаты
+		// -1 :нет правд доступа
+		// -2 : ошибка в запросе
+		// -3 : прочие ошибки
+
 		//eval($eval);
 		if(isset($_POST['paymethod']) and isset($this->childs[$_POST['paymethod']]) and isset($this->childs[$_POST['paymethod']]->pay_systems)) {
 
 			$CHILD = &$this->childs[$_POST['paymethod']];
 
-			$temp = $this->qs('id,status','WHERE status=0 and _key="'.$this->SqlEsc($key).'" and name="'.$this->SqlEsc($comm).'"');
-			if(count($temp)) {
-				//покажем статус платежа
-				$data['#title#'] = '';//Счёт на оплату выставлен.
-				if($CHILD->pay_formType===true)
-					$data['#payLink#'] = '/_js.php?_modul=pay&_fn=showPayInfo&id='.$temp[0]['id'].'" onclick="return wep.JSWin({type:this,onclk:\'reload\'});';
-				elseif($CHILD->pay_formType)
-					$data['#payLink#'] = $CHILD->pay_formType;
-				$resFlag = 1;
-				//$data['#item#'] = $temp;
-				$data['#status#'] = $this->_enum['status'][$temp[0]['status']];
+			$payData = $this->qs('id,status,user_id','WHERE _key="'.$this->SqlEsc($key).'" and name="'.$this->SqlEsc($comm).'"');// status=0 and - один платеж
+
+			if(count($payData)) {
+				// Если уже есть в базе заказ с таким же ключом, то выводим ему информацию о заказе
+				if($payData[0]['user_id'] == $_SESSION['user']['id'])
+				{
+					$data = $this->billingFromHelper($payData[0], $CHILD);
+					$resFlag = 1;
+				}
+				else
+					$resFlag = -1;
 			} 
 			else {
 				list($data,$resFlag) = $CHILD->billingFrom($summ,$comm,$addInfo);
@@ -114,22 +120,17 @@ class pay_class extends kernel_extends {
 					$from_user = $this->checkPayUsers($_POST['paymethod']); // User плат. системы
 					if($this->payAdd($from_user,1,$summ, $key, $comm,0,$_POST['paymethod'],$eval)) {
 						$CHILD->_update(array('owner_id'=>$this->id));
-						//$data['#title#'] = 'Счёт выставлен успешно!';
-						if(!count($data['messages']))
-							$data['messages'][] = array('ok','Счёт успешно сформирован.');
-						// Открыть окно системы в новом окне
-						//$data['#foot#'] = '<span class="paySpanMess" onclick="window.location.reload();">Обновите страницу, чтобы узнать состояния счёта.</span>';
+						$data += $this->billingFromHelper($this->data[$this->id], $CHILD);
 					} 
 					else
-						$data['messages'][] = array('error','Ошибка выставление счёта!');
-						//$data['#title#'] = 'Ошибка';
+						$resFlag = -3;
+
 				}
 				else {
-					$data['messages'][] = array('alert','Укажите необходимые данные.');
-					//$data['#title#'] = 'Укажите необходимые данные';
+					$resFlag = -2;
 				}
 			}
-			$data['#resFlag#'] = $resFlag;
+			
 		} else {
 			// ADD pay
 			foreach($this->childs as &$child) {
@@ -137,13 +138,28 @@ class pay_class extends kernel_extends {
 					$data['child'][$child->_cl] = array('_cl'=>$child->_cl,'caption'=>$child->caption);
 				}
 			}
-			$data['messages'][] = array('info','Выберите вариант оплаты.');
-			//$data['#title#'] = 'Выберите вариант оплаты';
+			//$data['messages'][] = array('info','Выберите вариант оплаты.');
 		}
 
+		$data['#resFlag#'] = $resFlag;
 		$data['summ'] = $summ;
 		$data['comm'] = $comm;
 		$data['#currency#'] = $this->config['curr'];
+		return $data;
+	}
+
+	function billingFromHelper(&$payData, &$CHILD)
+	{
+		$data = array();
+		$data['#title#'] = '';//Счёт на оплату выставлен.
+		if($CHILD->pay_formType===true)
+			$data['#payLink#'] = '/_js.php?_modul=pay&_fn=showPayInfo&id='.$payData['id'].'" onclick="return wep.JSWin({type:this,onclk:\'reload\'});';
+		elseif($CHILD->pay_formType)
+			$data['#payLink#'] = $CHILD->pay_formType;
+		
+		//$data['#item#'] = $payData;
+		$data['#status#'] = $this->_enum['status'][$payData['status']];
+		$data['status'] = $payData['status'];
 		return $data;
 	}
 

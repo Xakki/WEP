@@ -12,19 +12,39 @@ function tpl_billing($data)
 	global $_tpl, $HTML;
 	//$_CFG['fileIncludeOption']['form'] = 1;
 	$_tpl['styles']['/_pay/pay'] = 1;
+	$html = '<div class="payselect">';
 
-	$messages = array(
-		array('ok', $data['comm']),
-		array('ok', 'Сумма - '.$data['summ'].' '.$data['#currency#']),
-	);
-
-	$html = '<div class="payselect" style="width:340px;margin:10px auto;">';
-	if($data['#title#'])
+	if(isset($data['#title#']) and $data['#title#'])
 		$html .= '<h2>'.$data['#title#'].'</h2>';
+
+	if($data['#resFlag#']===-1)
+		$data['messages'][] = array('error', 'Ошибка! У вас не достаточно прав доступа, для просмотра этого счета!');
+
+	if($data['#resFlag#']===-2)
+		$data['messages'][] = array('error', 'Ошибка! Не коректно введенные данные!');
+
+	if($data['#resFlag#']===-3)
+		$data['messages'][] = array('error', 'Произошла ошибка! Обратитесь к администрации за помощью!');
+
+	if(isset($data['comm']) and $data['comm'])
+		$data['messages'][] = array('alert', $data['comm']);
+
+	if(isset($data['summ']) and $data['summ'])
+		$data['messages'][] = array('alert', 'Сумма - '.$data['summ'].' '.$data['#currency#']);
+
+	if(isset($data['#status#']) and $data['#status#'])
+		$data['messages'][] = array('alert', 'Статус - '.$data['#status#']);
+
+	if(isset($data['#payLink#']) and $data['#payLink#'])
+		$data['messages'][] = array('payLink', '<a href="'.$data['#payLink#'].'" target="_blank">Оплатить</a>');
+
+	if(isset($data['messages']) and count($data['messages'])) {
+		$html .= $HTML->transformPHP($data['messages'], '#pg#messages');
+	}
+
 	// выводим форму выбора плат системы ии форму для выбранной плат системы
-	if(isset($data['child']) or isset($data['form'])) 
+	if(isset($data['child']) or isset($data['form'])) //#resFlag#==0
 	{
-		$html .= $HTML->transformPHP($messages, '#pg#messages');
 		// AJAX forma
 		$ID = 'form_paymethod';
 		$action = '';
@@ -41,10 +61,6 @@ function tpl_billing($data)
 				foreach($r as $ki=>$i)
 					$html .= '<input type="hidden" value="'.$i.'" name="'.$k.'['.$ki.']">';
 			}
-		}
-
-		if(isset($data['messages'])) {
-			$html .= $HTML->transformPHP($data['messages'], '#pg#messages');
 		}
 
 		if(isset($data['child'])) {
@@ -75,14 +91,11 @@ function tpl_billing($data)
 	// Вывводим статус платежа
 	else
 	{
-
-		$html .= '<h1><a id="gotopay" href="'.$data['#payLink#'].'" target="_blank">Оплатить</a></h1>';
-
-		$messages[] = array('ok', 'Статус - '.$data['#status#']);
-		$html .= $HTML->transformPHP($messages, '#pg#messages');
 		$html .= '<br/><div class="paySpanMess" onclick="window.location.reload();">Обновите страницу, чтобы узнать состояния счёта.</div>';
-		//$_tpl['onload'] .= '$("#gotopay").click();';
+
 	}
+
+	print_r('<pre>+++++++++++');print_r($data);
 
 	if(isset($data['#foot#']))
 		$html .= '<div class="payselect-foot">'.$data['#foot#'].'</div>';

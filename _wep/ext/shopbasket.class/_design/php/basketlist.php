@@ -129,11 +129,18 @@
 				<table class="basketItems">
 					<tr><th>Наименование <th>Цена '.$data['#curr#'].'<th>Кол-во <th>Сумма '.$data['#curr#'].'';
 				foreach($itemB['#shopbasketitem#'] as $r) {
-					$html .= '<tr> 
-					<td><a href="'.$data['#pageCatalog#'].'/cataloglist/product_'.$r['product_id'].'.html" target="_blank">'.$r['product_name'].'</a> 
-					<td>'.$r['cost_item'].'
-					<td>'.($r['count']?$r['count']:'').'
-					<td>'.($r['count']?($r['count']*$r['cost_item']):$r['cost_item']);
+					if($r['count'])
+						$html .= '<tr> 
+							<td><a href="'.$data['#pageCatalog#'].'/cataloglist/product_'.$r['product_id'].'.html" target="_blank">'.$r['product_name'].'</a> 
+							<td>'.$r['cost_item'].'
+							<td>'.$r['count'].'
+							<td>'.$r['count']*$r['cost_item'];
+					else
+						$html .= '<tr> 
+							<td>'.$r['product_name'].'
+							<td>'.$r['cost_item'].'
+							<td> - 
+							<td>'.$r['cost_item'];
 				}
 				$html .= '</table>';
 
