@@ -95,8 +95,6 @@ function tpl_billing($data)
 
 	}
 
-	print_r('<pre>+++++++++++');print_r($data);
-
 	if(isset($data['#foot#']))
 		$html .= '<div class="payselect-foot">'.$data['#foot#'].'</div>';
 	$html .= '</div>';
