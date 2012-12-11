@@ -98,7 +98,11 @@ class paybank_class extends kernel_extends {
 		$this->fields_form['json_data'] = array('type' => 'textarea', 'caption' => 'JSON DATA', 'mask'=>array('fview'=>1));
 	}
 
-	function billingFrom($summ, $comm, $data=array()) {
+	/**
+	* Форма создания счета
+	*
+	*/
+	function billingForm($summ, $comm, $data=array()) {
 		$ADD = array('amount'=>$summ,'name'=>$comm);
 
 		if(isset($_SESSION['user']['fio']))
@@ -120,20 +124,20 @@ class paybank_class extends kernel_extends {
 			$ADD['json_data'] = $data['json_data'];
 		// TODO : Если нету fio и address - то выводить форму сначала для их заполнения
 
-		$st = $this->_add($ADD);
-
-		$DATA = $this->payFormBilling($this->data[$this->id], 1);
-		return array($DATA, $st);// 1
+		return $this->_add($ADD);
 	}
 
-
-	function payFormBilling($data) 
+	/**
+	* Форма вывода информации о счете
+	*
+	*/
+	function billingStatusForm($data) 
 	{
 
 		$DATA = array('messages'=>array());
 		if(count($data)) {
-			$DATA['messages'][] = array('payselect-comm',$data['name']);
-			$DATA['messages'][] = array('payselect-summ','Сумма : <span>'.number_format($data['amount'], 2, ',', ' ').' '.$this->owner->config['curr'].'');
+			//$DATA['messages'][] = array('payselect-comm',$data['name']);
+			//$DATA['messages'][] = array('payselect-summ','Сумма : <span>'.number_format($data['amount'], 2, ',', ' ').' '.$this->owner->config['curr'].'');
 
 			$DATA['messages'][] = array('txt','Распечатайте квитанцию и оплатите по нему в ближайшем банке');
 			$DATA['messages'][] = array('alert payselect-kvit','<a href="'.$this->_CFG['_HREF']['siteJS'].'?_modul='.$this->_cl.'&_fn=printBill&blank=kvit&id='.$data['id'].'&_template=print&noajax=1" target="_blank">Распечатать квитанцию</a>');

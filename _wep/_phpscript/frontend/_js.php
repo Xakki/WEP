@@ -19,7 +19,7 @@
 		if(!isset($_GET['_design']))
 			$_GET['_design'] = $_CFG['wep']['design'];
 
-		$HTML = new html('_design/',$_GET['_design'],(isset($_GET['_template'])?true:false));// упрощённый режим
+		$HTML = new html($_CFG['PATH']['themes'],$_GET['_design'],(isset($_GET['_template'])?true:false));// упрощённый режим
 
 		if(_new_class($_GET['_modul'],$MODUL) and isset($MODUL->_AllowAjaxFn[$_GET['_fn']])) {
 			eval('$GLOBALS["_RESULT"]=$MODUL->'.$_GET['_fn'].'();');

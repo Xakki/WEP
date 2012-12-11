@@ -86,8 +86,33 @@ class pay_class extends kernel_extends {
 			return parent::_getlist($listname, $value);
 	}
 
+	// Получить информацию о счете
+	public function getBillStatusInfo($id)
+	{
+		$data = $this->qs('*','WHERE id="'.(int)$id.'"');
+		return $data[0];
+	}
+
 	// Формы выставления счёта пользователю
-	function billingFrom($summ, $key, $comm='',$eval='',$addInfo=array()) {
+	public function getBillForm()
+	{
+
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+	// Формы выставления счёта пользователю
+	function billingForm($summ, $key, $comm='',$eval='',$addInfo=array()) {
 		global $_tpl;
 		$data = array();
 
@@ -102,25 +127,25 @@ class pay_class extends kernel_extends {
 
 			$CHILD = &$this->childs[$_POST['paymethod']];
 
-			$payData = $this->qs('id,status,user_id','WHERE _key="'.$this->SqlEsc($key).'" and name="'.$this->SqlEsc($comm).'"');// status=0 and - один платеж
+			$payData = $this->qs('*','WHERE _key="'.$this->SqlEsc($key).'" and name="'.$this->SqlEsc($comm).'"');// status=0 and - один платеж
 
 			if(count($payData)) {
 				// Если уже есть в базе заказ с таким же ключом, то выводим ему информацию о заказе
 				if($payData[0]['user_id'] == $_SESSION['user']['id'])
 				{
-					$data = $this->billingFromHelper($payData[0], $CHILD);
+					$data = $this->billingStatusForm($payData[0], $CHILD);
 					$resFlag = 1;
 				}
 				else
 					$resFlag = -1;
 			} 
 			else {
-				list($data,$resFlag) = $CHILD->billingFrom($summ,$comm,$addInfo);
+				$resFlag = $CHILD->billingForm($summ,$comm,$addInfo);
 				if($resFlag==1) {
 					$from_user = $this->checkPayUsers($_POST['paymethod']); // User плат. системы
 					if($this->payAdd($from_user,1,$summ, $key, $comm,0,$_POST['paymethod'],$eval)) {
 						$CHILD->_update(array('owner_id'=>$this->id));
-						$data += $this->billingFromHelper($this->data[$this->id], $CHILD);
+						$data = $this->billingStatusForm($this->data[$this->id], $CHILD);
 					} 
 					else
 						$resFlag = -3;
@@ -148,10 +173,12 @@ class pay_class extends kernel_extends {
 		return $data;
 	}
 
-	function billingFromHelper(&$payData, &$CHILD)
+	function billingStatusForm(&$payData, &$CHILD)
 	{
 		$data = array();
+		$data = $CHILD->billingStatusForm($payData);
 		$data['#title#'] = '';//Счёт на оплату выставлен.
+
 		if($CHILD->pay_formType===true)
 			$data['#payLink#'] = '/_js.php?_modul=pay&_fn=showPayInfo&id='.$payData['id'].'" onclick="return wep.JSWin({type:this,onclk:\'reload\'});';
 		elseif($CHILD->pay_formType)
@@ -180,13 +207,6 @@ class pay_class extends kernel_extends {
 		}
 		return $res;
 	}
-
-	// Функция вызова формы оплаты для систем работающих только через форму оплаты (не выставляя счёт)
-	/*function payFormBilling($pcData, $pay_modul) {
-		$DATA = $this->childs[$pay_modul]->payFormBilling($pcData);
-		array_unshift($DATA['messages'],);
-		return $DATA;
-	}*/
 
 
 	/**
