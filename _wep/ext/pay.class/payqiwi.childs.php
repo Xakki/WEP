@@ -118,7 +118,7 @@ Cчета со статусом большим или равным 100 трак�
 
 
 	// INFO
-	function payFormBilling($data,$status=0) 
+	public function statusForm($data) 
 	{
 
 		$DATA = array('messages'=>array());
@@ -136,7 +136,7 @@ Cчета со статусом большим или равным 100 трак�
 	/*
 	* При добавлении делаем запрос XML
 	*/
-	function billingFrom($summ, $comm, $data=array()) {
+	function billingForm($summ, $comm, $data=array()) {
 		$this->prm_add = true;
 		$this->getFieldsForm(1);
 		$argForm = $this->fields_form;
@@ -252,13 +252,14 @@ Cчета со статусом большим или равным 100 трак�
 					$this->_update($upd);
 
 					if($upd['statuses']==60)
-						$status = 1;
+						$status = PAY_PAID;
 					elseif($upd['statuses']>=100)
-						$status = 2;
+						$status = PAY_USERCANCEL;
 					else
-						$status = 0;
+						$status = PAY_NOPAID;
+					
 					if($this->id and $this->data[$this->id])
-						$this->owner->PayTransaction($status,$this->data[$this->id]['cost'],$this->data[$this->id]['owner_id']);
+						$this->owner->payTransaction($this->data[$this->id]['owner_id'], $status);
 					else {
 						$err = 501;
 						trigger_error('Ошибка проверки оплаты qiwi: счёт '.$bill['id'].' не найден в базе', E_USER_WARNING);

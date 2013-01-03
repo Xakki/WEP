@@ -643,11 +643,14 @@ class product_class extends kernel_extends {
 							$clauseF[$k.'_2'] = 't1.'.$k.'<='.(int)$filter[$k.'_2'];
 					}
 					elseif($this->fields_form[$k]['type']=='list' or $this->fields_form[$k]['type']=='int'){
-						if(is_array($r) and count($r)) {
-							foreach($r as &$ar)
-								$ar = $this->SqlEsc($ar);
-							unset($ar);
-							$clauseF[$k] = 't1.'.$k.' IN ("'.implode('","',$r).'")';
+						if(is_array($r)) {
+							if(count($r))
+							{
+								foreach($r as &$ar)
+									$ar = $this->SqlEsc($ar);
+								unset($ar);
+								$clauseF[$k] = 't1.'.$k.' IN ("'.implode('","',$r).'")';
+							}
 						}
 						elseif($r!='')
 							$clauseF[$k] = 't1.'.$k.'="'.$this->SqlEsc($r).'"';

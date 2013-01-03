@@ -1,4 +1,11 @@
 <?php
+
+define('PAY_NOPAID',0);
+define('PAY_PAID',1);
+define('PAY_USERCANCEL',2);
+define('PAY_CANCEL',3);
+define('PAY_TIMEOUT',4);
+
 class pay_class extends kernel_extends {
 
 	function _set_features() {
@@ -19,7 +26,7 @@ class pay_class extends kernel_extends {
 		$this->index_fields['_key'] = '_key';
 		$this->index_fields['user_id'] = 'user_id';
 		$this->index_fields['status'] = 'status';
-		$this->_AllowAjaxFn['showPayInfo'] = true;
+		$this->_AllowAjaxFn['statusForm'] = true;
 		$this->ordfield = 'id DESC';
 	}
 
@@ -41,15 +48,15 @@ class pay_class extends kernel_extends {
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['status'] = array('type' => 'tinyint', 'width' => 1,'attr' => 'NOT NULL','default'=>1);
 		$this->fields['pay_modul'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL','default'=>'');
-		$this->fields['_key'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL','default'=>'');
+		$this->fields['_key'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL','default'=>''); // product1234 = название модуля + ID
 		$this->fields['_eval'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL','default'=>'');
 
 		$this->_enum['status'] = array(
-			0 => 'Неоплачено',
-			1 => 'Оплачено',
-			2 => 'Отменено пользователем',
-			3 => 'Отменено магазином',
-			4 => 'Истекло время ожидания',
+			PAY_NOPAID => 'Неоплачено',
+			PAY_PAID => 'Оплачено',
+			PAY_USERCANCEL => 'Отменено пользователем',
+			PAY_CANCEL => 'Отменено магазином',
+			PAY_TIMEOUT => 'Истекло время ожидания',
 		);
 		// TODO !!!!
 		$this->successUrl = $_SERVER['REQUEST_URI'];
@@ -74,7 +81,8 @@ class pay_class extends kernel_extends {
 
 	}
 
-	function _getlist($listname, $value = 0) {
+	function _getlist($listname, $value = 0) 
+	{
 		$data = array();
 		if ($listname == 'pay_modul') {
 			foreach ($this->childs as $key => &$value) {
@@ -86,101 +94,197 @@ class pay_class extends kernel_extends {
 			return parent::_getlist($listname, $value);
 	}
 
-	// Получить информацию о счете
-	public function getBillStatusInfo($id)
+	/**
+	* Список счетов вывод по ключу
+	* @param $key string ключ для вывода счетов определенного товара(услуги)
+	* @param $user int фильтр по пользователю
+	* @param $status array фильтр по статусам 
+	*/
+	public function getList($key=NULL, $user=NULL, $status=array()) 
 	{
-		$data = $this->qs('*','WHERE id="'.(int)$id.'"');
-		return $data[0];
+		$data = array('#config#' => $this->config['curr']);
+		$q = 't1 WHERE 1=1 ';
+
+		if(!is_null($key))
+			$q .= ' and t1._key LIKE "'.$key.'"';
+
+		if(!is_null($user))
+			$q .= ' and (t1.`'.$this->mf_createrid.'` = '.$user.' or t1.`user_id` = '.$user.')';
+
+		if(count($status) and $status=implode(',',$status))
+			$q .= ' and t1.status IN ('.$status.')';
+
+		$data['#list#'] = $this->qs('t1.*', $q.' ORDER BY t1.id DESC');
+
+		$userlist = array();
+		foreach($data['#list#'] as &$r) 
+		{
+			$r['#sign#'] = ($user==$r['user_id']?true:false);
+			if(!isset($userlist[$r['user_id']]))
+				$userlist[$r['user_id']] = $r['user_id'];
+			if(!isset($userlist[$r[$this->mf_createrid]]))
+				$userlist[$r[$this->mf_createrid]] = $r[$this->mf_createrid];
+
+			$r['#status#'] = $this->_enum['status'][$r['status']];
+			if(isset($this->childs[$r['pay_modul']])) 
+			{
+				$r['#pay_modul#'] = $this->childs[$r['pay_modul']]->caption;
+				$r['#lifetime#'] = $this->childs[$r['pay_modul']]->config['lifetime'];
+				$r['#formType#'] = $this->childs[$r['pay_modul']]->pay_formType;
+			}
+		}
+
+		if(count($userlist))
+		{
+			_new_class('ugroup', $UGROUP);
+			$data['#users#'] = $UGROUP->childs['users']->_query('t1.*,t2.level,t2.name as gname','t1 JOIN '.$UGROUP->tablename.' t2 ON t1.owner_id=t2.id WHERE t1.id IN ('.implode(',',$userlist).')','id');
+		}
+		return $data;
 	}
 
-	// Формы выставления счёта пользователю
-	public function getBillForm()
+
+	/**
+	* Формы выставления счёта пользователю
+	*
+	*/
+	public function billingForm($summ, $key, $comm='', $eval='', $addInfo=array()) 
 	{
-
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-	// Формы выставления счёта пользователю
-	function billingForm($summ, $key, $comm='',$eval='',$addInfo=array()) {
 		global $_tpl;
 		$data = array();
 
 		$resFlag = 0; 
 		// 0 : выводим варианты оплаты
-		// -1 :нет правд доступа
+		// -1 : нет прав доступа
 		// -2 : ошибка в запросе
 		// -3 : прочие ошибки
 
 		//eval($eval);
-		if(isset($_POST['paymethod']) and isset($this->childs[$_POST['paymethod']]) and isset($this->childs[$_POST['paymethod']]->pay_systems)) {
-
-			$CHILD = &$this->childs[$_POST['paymethod']];
-
-			$payData = $this->qs('*','WHERE _key="'.$this->SqlEsc($key).'" and name="'.$this->SqlEsc($comm).'"');// status=0 and - один платеж
-
-			if(count($payData)) {
-				// Если уже есть в базе заказ с таким же ключом, то выводим ему информацию о заказе
-				if($payData[0]['user_id'] == $_SESSION['user']['id'])
-				{
-					$data = $this->billingStatusForm($payData[0], $CHILD);
-					$resFlag = 1;
-				}
-				else
-					$resFlag = -1;
+		if( $this->isPayModul($_POST['paymethod']) ) 
+		{
+			// Если есть уже такой счет и он еще не оплачен, то информацию/форму для оплаты счета
+			if($id = $this->getIdBill($summ, $key, $comm)) 
+			{
+				$data = $this->showPayForm($id);
+				$resFlag = 1;
 			} 
-			else {
-				$resFlag = $CHILD->billingForm($summ,$comm,$addInfo);
-				if($resFlag==1) {
+			else 
+			{
+				$CHILD = &$this->childs[$_POST['paymethod']];
+				list($data, $resFlag) = $CHILD->billingForm($summ,$comm,$addInfo);
+				if($resFlag==1) 
+				{
 					$from_user = $this->checkPayUsers($_POST['paymethod']); // User плат. системы
-					if($this->payAdd($from_user,1,$summ, $key, $comm,0,$_POST['paymethod'],$eval)) {
-						$CHILD->_update(array('owner_id'=>$this->id));
-						$data = $this->billingStatusForm($this->data[$this->id], $CHILD);
+					if($this->payAdd($from_user,1,$summ, $key, $comm,0,$_POST['paymethod'],$eval)) 
+					{
+						return $this->statusForm($this->id);
 					} 
 					else
 						$resFlag = -3;
 
 				}
-				else {
+				else 
+				{
 					$resFlag = -2;
 				}
 			}
 			
-		} else {
+		}
+		else 
+		{
 			// ADD pay
-			foreach($this->childs as &$child) {
-				if (isset($child->pay_systems)) {
+			foreach($this->childs as &$child) 
+			{
+				if (isset($child->pay_systems)) 
+				{
 					$data['child'][$child->_cl] = array('_cl'=>$child->_cl,'caption'=>$child->caption);
 				}
 			}
+			$data['#summ#'] = $summ;
+			$data['#comm#'] = $comm;
 			//$data['messages'][] = array('info','Выберите вариант оплаты.');
 		}
-
+		
 		$data['#resFlag#'] = $resFlag;
-		$data['summ'] = $summ;
-		$data['comm'] = $comm;
-		$data['#currency#'] = $this->config['curr'];
+		$data['#config#'] = $this->config;
+		$data['tpl'] = '#pay#billingForm';
+		print_r('<pre>');print_r($data);
 		return $data;
 	}
+	
+	/**
+	* Получить информацию
+	*
+	*/
+	function statusForm($id=null) 
+	{
+		$result = array('#resFlag#'=>-1);
+		if(is_null($id))
+			$id = (int)$_GET['id'];
 
-	function billingStatusForm(&$payData, &$CHILD)
+		$data = $this->getItem($id);
+
+		if(count($data))
+		{
+			$CHILD = &$this->childs[$data['pay_modul']];
+			$result = $CHILD->statusForm($data);
+			if(isset($result['showStatus']) and $result['showStatus']===true)
+			{
+				$result['showStatus'] = $data;
+			}
+			$result['#config#'] = $this->config;
+			$result['#resFlag#'] = 0;
+		}
+		$result['tpl'] = '#pay#statusForm';
+		return $result;
+	}
+
+	/**
+	* Получить данные 
+	*
+	*/
+	public function getItem($id, $checkPermition=true)
+	{
+		if(!$id) return array();
+
+		$sql = 'WHERE id="'.(int)$id.'"';
+		if($checkPermition)
+		{
+			if($checkPermition===true)
+				$checkPermition = $_SESSION['user']['id'];
+			$sql .= ' and (`'.$this->mf_createrid.'` = '.$checkPermition.' or `user_id` = '.$checkPermition.')';
+		}
+		$data = $this->qs('*',$sql);
+
+		if(count($data))
+		{
+			$data = $data[0];
+			$data['#status#'] = $this->_enum['status'][$data['status']];
+			$CHILD = $this->childs[$data['pay_modul']];
+
+			if($CHILD->pay_formType===true)
+				$data['#payLink#'] = '/_js.php?_modul=pay&_fn=statusForm&id='.$payData['id'].'" onclick="return wep.JSWin({type:this,onclk:\'reload\'});';
+			elseif($CHILD->pay_formType)
+				$data['#payLink#'] = $CHILD->pay_formType;
+
+			$child = $CHILD->qs('*','WHERE owner_id="'.(int)$id.'"');
+			$data['child'] = $child[0];
+			return $data;
+		}
+
+		return array();
+	}
+
+	/*********************************************/
+	/********************************************/
+
+	/*function billingStatusForm(&$payData, &$CHILD)
 	{
 		$data = array();
 		$data = $CHILD->billingStatusForm($payData);
 		$data['#title#'] = '';//Счёт на оплату выставлен.
 
 		if($CHILD->pay_formType===true)
-			$data['#payLink#'] = '/_js.php?_modul=pay&_fn=showPayInfo&id='.$payData['id'].'" onclick="return wep.JSWin({type:this,onclk:\'reload\'});';
+			$data['#payLink#'] = '/_js.php?_modul=pay&_fn=statusForm&id='.$payData['id'].'" onclick="return wep.JSWin({type:this,onclk:\'reload\'});';
 		elseif($CHILD->pay_formType)
 			$data['#payLink#'] = $CHILD->pay_formType;
 		
@@ -189,6 +293,7 @@ class pay_class extends kernel_extends {
 		$data['status'] = $payData['status'];
 		return $data;
 	}
+
 
 	// Функция вызова формы оплаты для систем работающих только через форму оплаты (не выставляя счёт)
 	function showPayInfo() {
@@ -206,6 +311,28 @@ class pay_class extends kernel_extends {
 			}
 		}
 		return $res;
+	}*/
+
+
+
+	// Проверяем, включен ли указанный платежный модуль
+	public function isPayModul($paymethod)
+	{
+		if($paymethod and isset($this->childs[$paymethod]) and isset($this->childs[$paymethod]->pay_systems)) 
+			return true;
+		return false;
+	}
+
+	// Если есть уже такой счет и он еще не оплачен, то выводим информацю о нем
+	public function getIdBill($summ, $key, $comm)
+	{
+		$sql = 'WHERE _key="'.$this->SqlEsc($key).'" and name="'.$this->SqlEsc($comm).'" and status=0';
+		/*if(isset($_SESSION['user']['id']))
+			$sql .= ' AND user_id='.$_SESSION['user']['id'];*/
+		$payData = $this->qs('id', $sql);// status=0 and - один платеж
+		if(!count($payData))
+			return 0;
+		return $payData[0]['id'];
 	}
 
 
@@ -237,7 +364,12 @@ class pay_class extends kernel_extends {
 			'_eval'=>$eval,
 		);
 
-		return $this->_add($data);
+		$res = $this->_add($data, false);
+
+		/*if($res)
+			$CHILD->_update(array('owner_id'=>$this->id));*/
+
+		return $res;
 	}
 
 
@@ -302,25 +434,29 @@ class pay_class extends kernel_extends {
 	/**
 	* В случае успешной оплаты, переводим средва му пользователями, ставим соотв. статус, выполняем необходимые операции
 	*/
-	function PayTransaction($status,$cost,$id) {
+	function payTransaction($id, $status) 
+	{
 		$this->id = $id;
+		$data = current($this->_select());
+
+		if(!count($data)) return false;
+
 		if($status==1) {
-			$data = current($this->_select());
-			if(!count($data)) return false;
+			
 			_new_class('ugroup', $UGROUP);
-			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance-'.$cost.' WHERE id='.$data[$this->mf_createrid]);
-			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance+'.$cost.' WHERE id='.$data['user_id']);
+			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance-'.$data['cost'].' WHERE id='.$data[$this->mf_createrid]);
+			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance+'.$data['cost'].' WHERE id='.$data['user_id']);
 			if($data['_eval']) {
 				eval($data['_eval']);
 			}
-		} else {
-		}
+		} 
+		/*else 
+		{
+		}*/
 		$upd = array(
-			'cost'=>$cost,
 			'status'=>$status
 		);
-		$this->_update($upd);
-		return true;
+		return $this->_update($upd);
 	}
 
 /********************************************/
@@ -574,54 +710,6 @@ class pay_class extends kernel_extends {
 	function clearOldData($M, $leftTime) {
 		$this->_update(array('status'=>'4'), 'status=0 and '.$this->mf_timecr.'<"'.(time()-$leftTime).'" and pay_modul="'.$M.'"');
 	}
-
-
-	function displayListKey($key=NULL, $status=array()) {
-		$data = array();
-		$data['#curr#'] = $this->config['curr'];
-		$q = 't1 WHERE id ';
-		if(!is_null($key))
-			$q .= 'and t1._key LIKE "'.$key.'"';
-		if(count($status) and $status=implode(',',$status))
-			$q .= 'and t1.status IN ('.$status.')';
-		$data['#list#'] = $this->qs('t1.*', $q.' ORDER BY id DESC');
-		foreach($data['#list#'] as &$r) {
-			$r['#status#'] = $this->_enum['status'][$r['status']];
-			$r['#pay_modul#'] = $this->childs[$r['pay_modul']]->caption;
-			$cl = $this->childs[$r['pay_modul']]->_cl;
-			$r['#lifetime#'] = $this->childs[$r['pay_modul']]->config['lifetime'];
-			$r['#formType#'] = $this->childs[$r['pay_modul']]->pay_formType;
-		}
-		return $data;
-	}
-
-	// Список операций
-	function displayListUser($user=false) {
-		$data = array();
-		$data['#curr#'] = $this->config['curr'];
-		$where = 'WHERE (`'.$this->mf_createrid.'` = '.$user.' or `user_id` = '.$user.')';
-		$data['#list#'] = $this->_query('*',$where);
-		if(count($data['#list#'])) {
-			$userlist = array();
-			foreach($data['#list#'] as &$r) {
-				$r['#sign#'] = ($user==$r['user_id']?true:false);
-				if(!isset($userlist[$r['user_id']]))
-					$userlist[$r['user_id']] = $r['user_id'];
-				if(!isset($userlist[$r[$this->mf_createrid]]))
-					$userlist[$r[$this->mf_createrid]] = $r[$this->mf_createrid];
-				$r['#status#'] = $this->_enum['status'][$r['status']];
-				if(isset($this->childs[$r['pay_modul']])) {
-					$r['#pay_modul#'] = $this->childs[$r['pay_modul']]->caption;
-					$r['#lifetime#'] = $this->childs[$r['pay_modul']]->config['lifetime'];
-					$r['#formType#'] = $this->childs[$r['pay_modul']]->pay_formType;
-				}
-			}
-			_new_class('ugroup', $UGROUP);
-			$data['#users#'] = $UGROUP->childs['users']->_query('t1.*,t2.level,t2.name as gname','t1 JOIN '.$UGROUP->tablename.' t2 ON t1.owner_id=t2.id WHERE t1.id IN ('.implode(',',$userlist).')','id');
-		}
-		return $data;
-	}
-
 
 
 }

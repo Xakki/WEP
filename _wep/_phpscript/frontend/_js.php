@@ -21,9 +21,18 @@
 
 		$HTML = new html($_CFG['PATH']['themes'],$_GET['_design'],(isset($_GET['_template'])?true:false));// упрощённый режим
 
-		if(_new_class($_GET['_modul'],$MODUL) and isset($MODUL->_AllowAjaxFn[$_GET['_fn']])) {
+		if(_new_class($_GET['_modul'],$MODUL) and isset($MODUL->_AllowAjaxFn[$_GET['_fn']])) 
+		{
 			eval('$GLOBALS["_RESULT"]=$MODUL->'.$_GET['_fn'].'();');
-		} else
+			if( !isset($GLOBALS["_RESULT"]['html']) and is_array($GLOBALS["_RESULT"]) )
+			{
+				if(!isset($GLOBALS["_RESULT"]['tpl']) or !$GLOBALS["_RESULT"]['tpl'])
+					$GLOBALS["_RESULT"]['tpl'] = '#pg#formcreat';
+				$GLOBALS["_RESULT"] = array('html'=>$HTML->transformPHP($GLOBALS["_RESULT"], $GLOBALS["_RESULT"]['tpl'] ), 'onload' => $_tpl['onload']);
+			}
+			//$GLOBALS['_RESULT'] = array("html" => $html,"html2" => $html2,'onload'=>$_tpl['onload']);
+		} 
+		else
 			$GLOBALS['_RESULT']['text'] = 'Вызов функции не разрешён модулем.';
 
 

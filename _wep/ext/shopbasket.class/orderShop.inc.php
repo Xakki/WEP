@@ -92,11 +92,12 @@
 			_new_class('pay', $PAY);
 			$_POST['paymethod'] = $BDATA[$SHOPBASKET->id]['paytype'];
 
-			$DATA = $PAY->billingFrom(
+			$DATA = $PAY->billingForm(
 				$BDATA[$SHOPBASKET->id]['summ'], // К оплате
 				$SHOPBASKET->getPayKey(), // Ключ
 				'Оформление заказа по счёту №'.$SHOPBASKET->id, // Коммент
-				'if(_new_class(\'shopbasket\',$M)){$M->payStatus('.$SHOPBASKET->id.',3);}', // Исполняемая команда
+				//'if(_new_class(\'shopbasket\',$M)){$M->payStatus('.$SHOPBASKET->id.',3);}', // Исполняемая команда
+				'shopbasket:payStatus('.$SHOPBASKET->id.',3)', // Исполняемая команда
 				$BDATA[$SHOPBASKET->id] // Дополнительные данные (email, phone итп)
 			);
 			$this->formFlag = $DATA['#resFlag#'];
@@ -109,6 +110,7 @@
 		} 
 		else
 		{
+			// Заказа с номером № не найден
 			static_main::redirect($Chref.'.html');
 		}
 	}

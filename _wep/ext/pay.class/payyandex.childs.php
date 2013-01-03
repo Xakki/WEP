@@ -149,7 +149,7 @@ class payyandex_class extends kernel_extends {
 	/*
 	* При добавлении делаем запрос XML
 	*/
-	function billingFrom($summ, $comm, $data=array()) {
+	function billingForm($summ, $comm, $data=array()) {
 		$ADD = array('amount'=>$summ,'name'=>$comm);
 
 		if(isset($_SESSION['user']['phone']))
@@ -202,6 +202,27 @@ class payyandex_class extends kernel_extends {
 		return $DATA;
 	}
 	
+	/*
+	* INFO status
+	*/
+	public function statusForm($data) 
+	{
+
+		$DATA = array('messages'=>array());
+
+		if(count($data)) {
+			$DATA['messages'][] = array('payselect-comm',$data['name']);
+			$DATA['messages'][] = array('payselect-summ','Сумма : <span>'.number_format($data['cost'], 2, ',', ' ').' '.$this->owner->config['curr'].'');
+
+			$DATA['messages'][] = array('alert','Чтобы оплатить счёт, перейдите на сайт <a href="'.$this->pay_formType.'" target="_blank">Яндекс</a>');
+		}
+
+		return $DATA;
+	}
+
+	/***************************************************/
+	/***************************************************/
+
 	//http://unidoski.ru
 	function redirectFromYa() {
 		if(!isset($_GET['code'])) {
@@ -471,7 +492,7 @@ class payyandex_class extends kernel_extends {
 					$upd['operation_id'] = $r['operation_id'];
 					//$upd['money_source'] = 'wallet';
 					$this->_update($upd);
-					$this->owner->PayTransaction(1,$DATA[$key]['amount'],$this->data[$this->id]['owner_id']);				
+					$this->owner->payTransaction($this->data[$this->id]['owner_id'], PAY_PAID);				
 				} else {
 					$upd['status'] = 'refused';
 					$upd['error'] = 'small_money';

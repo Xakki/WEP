@@ -50,17 +50,11 @@
 		$SHOPBASKET->id = (int)$this->pageParam[0];
 
 		$status = 0;
-		if(isset($_POST['status3']))
-			$status = 3;
-		elseif(isset($_POST['status4']))
-			$status = 4;
-		elseif(isset($_POST['status5']))
-			$status = 5;
-		elseif(isset($_POST['status7']))
-			$status = 7;
+		if(isset($_POST['status']))
+			$status = (int)$_POST['status'];
 
 		if($status) {
-			if($SHOPBASKET->setStatus($SHOPBASKET->id,$status))
+			if($SHOPBASKET->setStatus($SHOPBASKET->id,$status, $_POST['comment']))
 				$DATA['messages'][] = array('ok','Статус успешно изменён!');
 			else
 				$DATA['messages'][] = array('error','Ошибка смены статуса');

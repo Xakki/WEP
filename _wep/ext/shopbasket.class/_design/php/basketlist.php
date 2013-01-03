@@ -11,7 +11,6 @@
 	function tpl_basketlist(&$data) {
 		global $_tpl,$HTML,$_CFG;
 		$_tpl['styles']['/_shop/style/shopBasket'] = 1;
-		global $_CFG, $HTML;
 		$html = '';
 
 		if(isset($data['messages'])) {
@@ -76,7 +75,7 @@
 					}
 					$prod .= '</ul>';
 					if($r['pay_id'])
-						$link = '<a href="/_js.php?_modul=pay&_fn=showPayInfo&id='.$r['pay_id'].'" onclick="return wep.JSWin({type:this});" target="_blank">'.$r['#laststatus#'].'</a>';
+						$link = '<a href="/_js.php?_modul=pay&_fn=statusForm&id='.$r['pay_id'].'" onclick="return wep.JSWin({type:this});" target="_blank">'.$r['#laststatus#'].'</a>';
 					else
 						$link = 'Забронированно <a href="'.$data['#orderPage#'].'.html?basketpay='.$r['id'].'">Оформить заказ</a>';
 					$html .= '
@@ -101,7 +100,12 @@
 		return $html;
 	}
 
-	function tpl_basketlist_item(&$data) {
+	function tpl_basketlist_item(&$data)
+	{
+		global $_tpl, $HTML, $_CFG;
+
+		$_tpl['styles']['form'] = 1;
+
 		if(count($data['#item#'])) {
 			$itemB = &$data['#item#'];
 			$html = '
@@ -114,14 +118,55 @@
 				<tr> <td>Доставка <td><b>'.$itemB['#delivery#']['name'].'</b>
 				<tr> <td>Статус <td><b>'.$itemB['#laststatus#'].'</b>
 			</table>';
-			if(isset($data['#moder#']) and $data['#moder#']){
+			if(isset($data['#moder#']) and $data['#moder#'] and $itemB['laststatus']<5)
+			{
+				$_tpl['onload'] .= '
+
+					$( "#dialog-confirm" ).dialog({
+						autoOpen: false,
+			            resizable: false,
+			            modal: true,
+			            buttons: {
+			                "Подтверждаю": function() {
+			                	var comm = $( this ).find("textarea").val();
+			                	if(comm)
+			                    {
+			                    	$("#formOrderComment").val(comm);
+			                    	$("#formOrder").submit();
+			                    }
+			                },
+			                "Нет": function() {
+			                    $( this ).dialog( "close" );
+			                }
+			            }
+			        });
+
+					$( "button.statusOrder" ).button().click(function() {
+						$( "#dialog-confirm b").text($(this).text());
+						if($(this).attr("data-comment"))
+							$( "#dialog-confirm textarea" ).val("").show();
+						else
+							$( "#dialog-confirm textarea" ).val("default").hide();
+						$("#formOrderStatus").val($(this).attr("data-val"));
+						$( "#dialog-confirm" ).dialog( "open" ); 
+						return false;
+					});
+				';
+				$_CFG['fileIncludeOption']['jquery-ui'] =true;
 				$html .= '
-				<form method="POST">
-					'.($itemB['laststatus']<3?'<input type="submit" name="status3" value="Оплачено"/>':'').'
-					'.($itemB['laststatus']==3?'<input type="submit" name="status4" value="Отправлено"/>':'').'
-					'.($itemB['laststatus']==4?'<input type="submit" name="status5" value="Доставлено"/>':'').'					
-					'.($itemB['laststatus']<3?'<input type="submit" name="status7" value="Отменить" onclick="if(!confirm(\'Подтвердите удаление\')) return false;"/>':'').'
+				<form method="POST" id="formOrder">
+					<input type="hidden" name="status" id="formOrderStatus">
+					<input type="hidden" name="comment" id="formOrderComment">
 				</form>
+				'.($itemB['laststatus']<3?'<button data-val="3" class="statusOrder">Оплачено</button>':'').'
+				'.($itemB['laststatus']==3?'<button data-val="4" class="statusOrder">Отправлено</button>':'').'
+				'.($itemB['laststatus']==4?'<button data-val="5" class="statusOrder">Доставлено</button>':'').'					
+				'.($itemB['laststatus']<3?'<button data-val="7" class="statusOrder cancelOrder" data-comment="true">Отменить</button>':'').'
+
+				<div id="dialog-confirm" title="Подтвердите действие" style="display:none;">
+					<textarea placeholder="Напишите причину" style="width:260px;height:60px;display:none;" maxlength="250" onkeyup="textareaChange(this)"></textarea>
+				    <div>Приминить статус "<b></b>" ?</div>
+				</div>
 				'; 
 			}
 

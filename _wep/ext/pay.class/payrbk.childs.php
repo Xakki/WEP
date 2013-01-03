@@ -135,7 +135,7 @@ class payrbk_class extends kernel_extends {
 	/*
 	* При добавлении делаем запрос XML
 	*/
-	function billingFrom($summ, $comm, $data=array()) {
+	function billingForm($summ, $comm, $data=array()) {
 		$ADD = array('amount'=>$summ,'name'=>$comm);
 
 		if(isset($_SESSION['user']['email']))
@@ -152,6 +152,7 @@ class payrbk_class extends kernel_extends {
 		}
 		return $result;
 	}
+
 
 	function payFormBilling($data) 
 	{
@@ -201,6 +202,23 @@ class payrbk_class extends kernel_extends {
 		return $DATA;
 	}
 
+	/*
+	* INFO status
+	*/
+	public function statusForm($data) 
+	{
+
+		$DATA = array('messages'=>array());
+
+		if(count($data)) {
+			$DATA['messages'][] = array('payselect-comm',$data['name']);
+			$DATA['messages'][] = array('payselect-summ','Сумма : <span>'.number_format($data['cost'], 2, ',', ' ').' '.$this->owner->config['curr'].'');
+
+			$DATA['messages'][] = array('alert','Чтобы оплатить счёт, перейдите на сайт <a href="'.$this->pay_formType.'" target="_blank">QIWI</a>');
+		}
+
+		return $DATA;
+	}
 
 	///////////////////////////////////////
 	//////////////////////////////////////////

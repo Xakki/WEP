@@ -13,7 +13,7 @@ function tpl_billing($data)
 	//$_CFG['fileIncludeOption']['form'] = 1;
 	$_tpl['styles']['/_pay/pay'] = 1;
 	$html = '<div class="payselect">';
-print_r('<pre>');print_r($data);
+
 	if(isset($data['#title#']) and $data['#title#'])
 		$html .= '<h2>'.$data['#title#'].'</h2>';
 

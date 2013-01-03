@@ -1,4 +1,5 @@
 <?php
+
 /** Корзина для интеренет магазина
 *
 * Для включения "Корзины" достаточно подключить INC basket(Корзина)
@@ -6,6 +7,16 @@
 *
 *
 */
+
+define('SHOPBASKET_NOPAID',0);
+define('SHOPBASKET_WAITAPPROVED',1);
+define('SHOPBASKET_TIMEOUT',2);
+define('SHOPBASKET_PAID',3);
+define('SHOPBASKET_SENT',4);
+define('SHOPBASKET_DELIVERED',5);
+define('SHOPBASKET_USERCANCEL',6);
+define('SHOPBASKET_CANCEL',7);
+
 class shopbasket_class extends kernel_extends {
 
 	/*protected function _create_conf() {
@@ -17,7 +28,7 @@ class shopbasket_class extends kernel_extends {
 	function _set_features() {
 		parent::_set_features();
 
-		$this->ver = '0.0.1';
+		$this->ver = '0.0.2';
 		$this->caption = 'Магазин - Корзина';
 		$this->_AllowAjaxFn['jsAddBasket'] = true;
 		$this->_AllowAjaxFn['jsCheckedBasket'] = true;
@@ -35,14 +46,14 @@ class shopbasket_class extends kernel_extends {
 		$this->allowedPay = array();
 
 		$this->_enum['status'] =array(
-			0=>'Ожидание оплаты',
-			1=>'Ожидание подтверждения менеджером',
-			2=>' * ',
-			3=>'Оплачено',
-			4=>'Отправлено',
-			5=>'Доставлено',
-			6=>'Отменено пользователем',
-			7=>'Отменено магазином',
+			SHOPBASKET_NOPAID=>'Ожидание оплаты',
+			SHOPBASKET_WAITAPPROVED=>'Ожидание подтверждения менеджером',
+			SHOPBASKET_TIMEOUT=>'Истекло время ожидания',
+			SHOPBASKET_PAID=>'Оплачено',
+			SHOPBASKET_SENT=>'Отправлено',
+			SHOPBASKET_DELIVERED=>'Доставлено',
+			SHOPBASKET_USERCANCEL=>'Отменено пользователем',
+			SHOPBASKET_CANCEL=>'Отменено магазином',
 		);
 	}
 
@@ -119,7 +130,7 @@ class shopbasket_class extends kernel_extends {
 	}
 
 	public function _UpdItemModul($param = array(), &$argForm = null) {
-		if($this->id and $this->data[$this->id]['laststatus']>=3) {
+		if($this->id and $this->data[$this->id]['laststatus']>=SHOPBASKET_TIMEOUT) {
 			$this->prm_edit = false;
 		}
 		return parent::_UpdItemModul($param,$argForm);
@@ -278,8 +289,9 @@ class shopbasket_class extends kernel_extends {
 		$data[$this->id]['#laststatus#'] = $this->_enum['status'][$data[$this->id]['laststatus']];
 
 		$RESULT = $data[$this->id];
-
+		$this->childs['shopbasketitem']->id = null;
 		$RESULT['#shopbasketitem#'] = $this->childs['shopbasketitem']->_select();
+		$this->childs['shopbasketstatus']->id = null;
 		$RESULT['#history#'] = $this->childs['shopbasketstatus']->_select();
 
 		list($RESULT['#delivery#']) = $SHOPDELIVER->qs('*','WHERE id='.$data[$this->id]['delivertype']);
@@ -357,9 +369,6 @@ class shopbasket_class extends kernel_extends {
 		return rand(1,999999);
 	}
 
-	function getPayKey($force=false) {
-		return 'shop'.$this->userId($force);
-	}
 	/**
 	* Сумма текущего заказа
 	*/
@@ -427,40 +436,40 @@ class shopbasket_class extends kernel_extends {
 
 			}
 			// Добавить статус
-			$this->childs['shopbasketstatus']->_add(array('status'=>0));
+			$this->childs['shopbasketstatus']->_add(array('status'=>SHOPBASKET_NOPAID));
 		}
 		return $result;
 	}
 
-	function payStatus($id,$status) {
+	function payStatus($id,$status, $comment='') {
 		$this->id = $id;
-		$this->childs['shopbasketstatus']->_add(array('status'=>$status));
+		$this->childs['shopbasketstatus']->_add(array('status'=>$status, 'comment'=>$comment));
 	}
 
-	public function setStatus($id,$status) {
+	public function setStatus($id,$status, $comment='') {
 		$this->id = $id;
 		$data = $this->_select();
 		if(!count($data)) return false;
 
-		if($status==3) {
-			if($data[$this->id]['laststatus']<3) {
+		$result = false;
+
+		if($status==SHOPBASKET_PAID) {
+			if($data[$this->id]['laststatus']<SHOPBASKET_TIMEOUT) {
 				_new_class('pay', $PAY);
-				$PAY->PayTransaction(1, $data[$this->id]['summ'], $data[$this->id]['pay_id']);
+				$result = $PAY->payTransaction($data[$this->id]['pay_id'], PAY_PAID);
 			}
 			else
 			 	false;
 		}
-		elseif($status>=6) {
-			if($data[$this->id]['laststatus']<3) {
+		elseif($status>=SHOPBASKET_USERCANCEL) {
+			if($data[$this->id]['laststatus']<SHOPBASKET_TIMEOUT) {
 				_new_class('pay', $PAY);
-				$PAY->PayTransaction(($status==6?2:3), $data[$this->id]['summ'], $data[$this->id]['pay_id']);
+				$result = $PAY->payTransaction($data[$this->id]['pay_id'], ($status==SHOPBASKET_USERCANCEL ? PAY_USERCANCEL : PAY_CANCEL));
 			}
-			else
-			 	false;
 		}
-		else
-			$this->payStatus($id,$status);
-		return true;
+		
+		$this->payStatus($id, $status, $comment);
+		return $result;
 	}
 }
 
@@ -536,14 +545,13 @@ class shopbasketstatus_class extends kernel_extends {
 	protected function _create() {
 		parent::_create();
 		$this->fields['status'] = array('type' => 'tinyint', 'width' => 1, 'default'=>0);
-		//$this->fields['comment'] = array('type' => 'varchar', 'width' => 255);
 	}
 
 	public function setFieldsForm($form=0) {
 		parent::setFieldsForm($form);
 
+		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Комментарий');
 		$this->fields_form['status'] = array('type' => 'list', 'listname'=>array('owner', 'status'), 'caption' => 'Статус', 'default'=>1);
-		//$this->fields_form['comment'] = array('type' => 'text', 'caption' => 'Комментарий');
 
 		//$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Отображать','default'=>1, 'mask' =>array());
 		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата заказа', 'mask'=>array('fview'=>2,'sort'=>1,'filter'=>1));

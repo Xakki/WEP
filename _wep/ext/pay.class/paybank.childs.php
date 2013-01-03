@@ -98,10 +98,24 @@ class paybank_class extends kernel_extends {
 		$this->fields_form['json_data'] = array('type' => 'textarea', 'caption' => 'JSON DATA', 'mask'=>array('fview'=>1));
 	}
 
-	/**
-	* Форма создания счета
-	*
+	/*
+	* При добавлении делаем запрос XML
 	*/
+	/*
+	function billingForm($summ, $comm, $data=array()) {
+		$this->prm_add = true;
+		$this->getFieldsForm(1);
+		$argForm = $this->fields_form;
+		$argForm['cost']['mask']['evala'] = $summ;
+		$argForm['cost']['readonly'] = true;
+		$argForm['name']['mask']['evala'] = '"'.addcslashes($comm,'"').'"';
+		$argForm['name']['readonly'] = true;
+		return $this->_UpdItemModul(array('showform'=>1),$argForm);
+	}
+	*/
+
+
+
 	function billingForm($summ, $comm, $data=array()) {
 		$ADD = array('amount'=>$summ,'name'=>$comm);
 
@@ -123,18 +137,14 @@ class paybank_class extends kernel_extends {
 		if(isset($data['json_data']))
 			$ADD['json_data'] = $data['json_data'];
 		// TODO : Если нету fio и address - то выводить форму сначала для их заполнения
-
-		return $this->_add($ADD);
+		$this->_add($ADD, false);
+		return $ADD;
 	}
 
-	/**
-	* Форма вывода информации о счете
-	*
-	*/
-	function billingStatusForm($data) 
+	public function statusForm($data)
 	{
-
-		$DATA = array('messages'=>array());
+		//$data['child']
+		$DATA = array('showStatus'=>true,'messages'=>array());
 		if(count($data)) {
 			//$DATA['messages'][] = array('payselect-comm',$data['name']);
 			//$DATA['messages'][] = array('payselect-summ','Сумма : <span>'.number_format($data['amount'], 2, ',', ' ').' '.$this->owner->config['curr'].'');
@@ -146,6 +156,12 @@ class paybank_class extends kernel_extends {
 
 		return $DATA;
 	}
+
+	/**
+	* Форма вывода информации о счете
+	*
+	*/
+
 	
 	function printBill() {
 		global $HTML;

@@ -177,7 +177,7 @@ wep.form = {
 		if(!max) max = 5000;
 		if(!jQuery('#'+obj.name+'t2').size()){
 			val = document.createElement('span');
-			val.className = "dscr";
+			val.className = "dscr txtCounter";
 			val.innerHTML = 'Cимволов:<input type="text" id="'+obj.name+'t2" maxlength="4" readonly="false" class="textcount" style="text-align:right;"/>/<input type="text" id="'+obj.name+'t1" maxlength="4" readonly="false" class="textcount" value="'+max+'"/>';
 			jQuery(obj).after(val);
 		}

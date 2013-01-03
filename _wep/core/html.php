@@ -1,6 +1,6 @@
 <?php
 
-/*
+/* df7drJDk349dmf
   начальные установки
  */
  global $_CFG;
