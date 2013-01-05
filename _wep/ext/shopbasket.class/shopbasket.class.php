@@ -25,7 +25,7 @@ class shopbasket_class extends kernel_extends {
 		$this->config_form['orderset'] = array('type' => 'list', 'listname'=>'orderset', 'multiple'=>1, 'caption'=>'Варианты заказа товара');
 	}*/
 
-	function _set_features() {
+	protected function _set_features() {
 		parent::_set_features();
 
 		$this->ver = '0.0.2';

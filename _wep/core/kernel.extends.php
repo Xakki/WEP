@@ -1047,7 +1047,7 @@ abstract class kernel_extends {
 	 * - showform
 	 * @return array
 	 */
-	public function _UpdItemModul($param = array(),&$argForm = null) {
+	public function _UpdItemModul($param = array(), &$argForm = null) {
 		if(is_null($argForm)) {
 			$this->getFieldsForm(1);
 			$argForm = $this->fields_form;
@@ -1074,27 +1074,28 @@ abstract class kernel_extends {
 			if (isset($r['readonly']) and $r['readonly'] and $this->id) // если поле "только чтение" и редактируется , то значение берем из БД,
 				$f_data[$k] = (isset($this->data[$this->id][$k]) ? $this->data[$this->id][$k] : '');
 
-			if (isset($r['mask']['eval']))
-				$eval = $r['mask']['eval'];
-			elseif (isset($r['mask']['evala']) and !$this->id)
-				$eval = $r['mask']['evala'];
-			elseif (isset($r['mask']['evalu']) and $this->id)
-				$eval = $r['mask']['evalu'];
-			elseif ((isset($r['mask']['fview']) and $r['mask']['fview'] == 2) or (isset($r['mask']['usercheck']) and !static_main::_prmGroupCheck($r['mask']['usercheck']))) {
-				$r['mask']['fview'] = 2;
-				unset($f_data[$k]);
-				continue;
-			}
-			if (isset($eval)) {
+			$eval = static_form::getEvalForm($this, $r);
+
+			if ($eval!=='') 
+			{
 				if (isset($f_data[$k]))
 					$val = $f_data[$k]; // Переменная используемая в eval
 				else
 					$val = '';
-				$eval = '$f_data[$k]=' . $eval;
+				
 				if (substr($eval, -1) != ';')
-					$eval .= ';';
+				{
+					$eval = '"'.addcslashes($eval, '"').'";';
+				}
+				$eval = '$f_data[$k]=' . $eval;
 				eval($eval);
 				unset($eval);
+			}
+			elseif ((isset($r['mask']['fview']) and $r['mask']['fview'] == 2) or (isset($r['mask']['usercheck']) and !static_main::_prmGroupCheck($r['mask']['usercheck']))) 
+			{
+				$r['mask']['fview'] = 2;
+				unset($f_data[$k]);
+				continue;
 			}
 
 			if(!isset($r['fields_type']))

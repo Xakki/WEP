@@ -4,9 +4,17 @@
 	$GLOBALS['_RESULT'] = array('html' => '','html2' => '','onload'=>'');
 	$html=$html2='';
 
+	$is_ajax = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') ? true : false;
+	if($is_ajax)
+		unset($_GET['noajax']);
+	else
+		$_GET['noajax'] = true;
+
 	if(!isset($_GET['noajax']))
 		require_once($_CFG['_PATH']['wep_phpscript'].'lib/jquery_getjson.php');
+
 	require_once($_CFG['_PATH']['core'].'html.php');
+
 	if(isset($_GET['noajax']))
 		headerssent();
 
@@ -19,7 +27,7 @@
 		if(!isset($_GET['_design']))
 			$_GET['_design'] = $_CFG['wep']['design'];
 
-		$HTML = new html($_CFG['PATH']['themes'],$_GET['_design'],(isset($_GET['_template'])?true:false));// упрощённый режим
+		$HTML = new html($_CFG['PATH']['themes'],$_GET['_design'],(isset($_GET['noajax'])?true:false));// упрощённый режим
 
 		if(_new_class($_GET['_modul'],$MODUL) and isset($MODUL->_AllowAjaxFn[$_GET['_fn']])) 
 		{
@@ -33,11 +41,11 @@
 			//$GLOBALS['_RESULT'] = array("html" => $html,"html2" => $html2,'onload'=>$_tpl['onload']);
 		} 
 		else
-			$GLOBALS['_RESULT']['text'] = 'Вызов функции не разрешён модулем.';
+			$GLOBALS['_RESULT']['html'] = 'Вызов функции не разрешён модулем.';
 
 
 		if(isset($_GET['_template'])) {
-			$_tpl = $GLOBALS['_RESULT'];
+			$_tpl = $GLOBALS['_RESULT']+$_tpl;
 			$HTML->_templates = $_GET['_template'];
 		}
 

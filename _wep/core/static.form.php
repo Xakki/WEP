@@ -501,6 +501,17 @@ class static_form {
 		return true;
 	}
 
+	static function getEvalForm(&$_this, $ff)
+	{
+		$eval = '';
+		if (isset($ff['mask']['eval']))
+			$eval = $ff['mask']['eval'];
+		elseif (isset($ff['mask']['evala']) and !$_this->id)
+			$eval = $ff['mask']['evala'];
+		elseif (isset($ff['mask']['evalu']) and $_this->id)
+			$eval = $ff['mask']['evalu'];
+		return $eval;
+	}
 
 	/**
 	* Проверка формы
@@ -517,7 +528,8 @@ class static_form {
 		$messages='';
 		$arr_err_name=array();
 		$textm = '';
-		$mess = array();
+		$mess = 
+		$vars = array();
 
 		foreach($FORMS_FIELDS as $key=>&$form)
 		{
@@ -530,9 +542,15 @@ class static_form {
 			if(isset($arr_nochek[$form['type']])) continue;
 
 			/*Поля которые недоступны пользователю не проверяем, дефолтные значения прописываются в kPreFields()*/
-			if((isset($form['readonly']) and $form['readonly']) or 
+			$eval = self::getEvalForm($_this, $form);
+			if ($eval!=='') 
+			{
+				// **************
+			}
+			elseif((isset($form['readonly']) and $form['readonly']) or 
 				(isset($form['mask']['fview']) and $form['mask']['fview']==2) or 
-				(isset($form['mask']['usercheck']) and !static_main::_prmGroupCheck($form['mask']['usercheck']))) {
+				(isset($form['mask']['usercheck']) and !static_main::_prmGroupCheck($form['mask']['usercheck']))) 
+			{
 				continue;
 			}
 
@@ -658,6 +676,8 @@ class static_form {
 				//$form['caption'].': '.
 			}
 
+			$vars[$key] = $data[$key];
+
 		} unset($form);
 		
 		// Проверка уник полей
@@ -698,7 +718,7 @@ class static_form {
 							  toolbar : \'basic\',
 							  uiColor : \'# 9AB8F3\'
 						 });';*/
-		return array('mess'=>$mess,'vars'=>$data);
+		return array('mess'=>$mess,'vars'=>$vars);
 	}
 	
 	/// Проверяет только загрузку фаилов

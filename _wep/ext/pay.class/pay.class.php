@@ -8,7 +8,7 @@ define('PAY_TIMEOUT',4);
 
 class pay_class extends kernel_extends {
 
-	function _set_features() {
+	protected function _set_features() {
 		parent::_set_features();
 		$this->caption = 'Pay System';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';
@@ -50,6 +50,7 @@ class pay_class extends kernel_extends {
 		$this->fields['pay_modul'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL','default'=>'');
 		$this->fields['_key'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL','default'=>''); // product1234 = название модуля + ID
 		$this->fields['_eval'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL','default'=>'');
+		$this->fields['json_data'] = array('type' => 'text', 'attr' => 'NOT NULL');
 
 		$this->_enum['status'] = array(
 			PAY_NOPAID => 'Неоплачено',
@@ -78,6 +79,7 @@ class pay_class extends kernel_extends {
 		$this->fields_form[$this->mf_timestamp] = array('type' => 'date','readonly'=>1, 'caption' => 'Обновление', 'mask'=>array('onetd' => 'close'));
 
 		$this->fields_form['mf_ipcreate'] = array('type' => 'text','readonly'=>1, 'caption' => 'IP', 'mask'=>array());
+		$this->fields_form['json_data'] = array('type' => 'textarea', 'readonly'=>1, 'caption' => 'JSON DATA', 'mask'=>array('fview'=>1));
 
 	}
 
@@ -164,8 +166,7 @@ class pay_class extends kernel_extends {
 			// Если есть уже такой счет и он еще не оплачен, то информацию/форму для оплаты счета
 			if($id = $this->getIdBill($summ, $key, $comm)) 
 			{
-				$data = $this->showPayForm($id);
-				$resFlag = 1;
+				return $this->statusForm($id);
 			} 
 			else 
 			{
@@ -174,7 +175,7 @@ class pay_class extends kernel_extends {
 				if($resFlag==1) 
 				{
 					$from_user = $this->checkPayUsers($_POST['paymethod']); // User плат. системы
-					if($this->payAdd($from_user,1,$summ, $key, $comm,0,$_POST['paymethod'],$eval)) 
+					if($this->payAdd($from_user, 1, $summ, $key, $comm, PAY_NOPAID, $_POST['paymethod'],$eval, $addInfo)) 
 					{
 						return $this->statusForm($this->id);
 					} 
@@ -182,31 +183,30 @@ class pay_class extends kernel_extends {
 						$resFlag = -3;
 
 				}
-				else 
-				{
-					$resFlag = -2;
-				}
 			}
 			
 		}
 		else 
 		{
+			$data['paymethod'] = array();
 			// ADD pay
 			foreach($this->childs as &$child) 
 			{
 				if (isset($child->pay_systems)) 
 				{
-					$data['child'][$child->_cl] = array('_cl'=>$child->_cl,'caption'=>$child->caption);
+					$data['paymethod'][$child->_cl] = array('_cl'=>$child->_cl,'caption'=>$child->caption);
 				}
 			}
-			$data['#summ#'] = $summ;
-			$data['#comm#'] = $comm;
+
 			//$data['messages'][] = array('info','Выберите вариант оплаты.');
 		}
-		
+		$data['#summ#'] = $summ;
+		$data['#comm#'] = $comm;
 		$data['#resFlag#'] = $resFlag;
 		$data['#config#'] = $this->config;
-		$data['tpl'] = '#pay#billingForm';
+		$data['tpl'] = '#pay#billingForm';//'#pay#billing'
+		global $PGLIST;
+		$DATA['#contentID#'] = $PGLIST->contentID;
 		print_r('<pre>');print_r($data);
 		return $data;
 	}
@@ -262,7 +262,7 @@ class pay_class extends kernel_extends {
 			$CHILD = $this->childs[$data['pay_modul']];
 
 			if($CHILD->pay_formType===true)
-				$data['#payLink#'] = '/_js.php?_modul=pay&_fn=statusForm&id='.$payData['id'].'" onclick="return wep.JSWin({type:this,onclk:\'reload\'});';
+				$data['#payLink#'] = '/_js.php?_modul=pay&_fn=statusForm&id='.$data['id'].'" onclick="return wep.JSWin({type:this,onclk:\'reload\'});';
 			elseif($CHILD->pay_formType)
 				$data['#payLink#'] = $CHILD->pay_formType;
 
@@ -273,7 +273,20 @@ class pay_class extends kernel_extends {
 
 		return array();
 	}
-
+	/**
+	* Предназначено для ф billingForm() у платежной системы
+	*  Передает полученные данные в POST
+	*/
+	public function setPostData($name, $data=array() )
+	{
+		if(!isset($_POST[$name]) or !$_POST[$name])
+		{		
+			if(isset($data[$name]) AND $data[$name])
+				$_POST[$name] = $data[$name];
+			elseif(isset($_SESSION['user'][$name]))
+				$_POST[$name] = $_SESSION['user'][$name];
+		}
+	}
 	/*********************************************/
 	/********************************************/
 
@@ -347,12 +360,13 @@ class pay_class extends kernel_extends {
 	* return 1 - Успешно
 	* return 0 - ошибка данных
 	*/
-	function payAdd($from_user,$to_user,$summ,$key,$mess='',$status=1,$pay_modul='',$eval='') {
+	function payAdd($from_user, $to_user, $summ, $key, $mess='', $status=PAY_PAID, $pay_modul='', $eval='', $addInfo=array()) {
 		if($status==1) {
 			_new_class('ugroup', $UGROUP);
 			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance-'.$summ.' WHERE id='.$from_user);
 			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance+'.$summ.' WHERE id='.$to_user);
 		}
+		
 		$data = array(
 			$this->mf_createrid=>$from_user,
 			'user_id'=>$to_user,
@@ -363,11 +377,15 @@ class pay_class extends kernel_extends {
 			'_key'=>$key,
 			'_eval'=>$eval,
 		);
+		if(isset($addInfo['json_data']))
+			$data['json_data'] = $addInfo['json_data'];
 
 		$res = $this->_add($data, false);
 
-		/*if($res)
-			$CHILD->_update(array('owner_id'=>$this->id));*/
+		if($res and $this->isPayModul($pay_modul) and $this->childs[$pay_modul]->id)
+		{
+			$this->childs[$pay_modul]->_update(array('owner_id'=>$this->id));
+		}
 
 		return $res;
 	}

@@ -81,7 +81,7 @@ function tpl_paybankBill($data)
 	    <td>Ед.
 	    <td>Сумма
 	</tr>';
-	$json = json_decode($data['#item#']['json_data'],true);
+	$json = json_decode($data['#payData#']['json_data'],true);
 	$i =1;
 
 	$servis = array();

@@ -1,9 +1,10 @@
 <?php
 
 
-class paybank_class extends kernel_extends {
-
-	function _set_features() {
+class paybank_class extends kernel_extends 
+{
+	protected function _set_features() 
+	{
 		parent::_set_features();
 		$this->default_access = '|9|';
 		$this->mf_timecr = true; // создать поле хранящее время создания поля
@@ -25,19 +26,9 @@ class paybank_class extends kernel_extends {
 		$this->lang['Save and close'] = 'Выписать счёт';
 		$this->lang['add_err'] = 'Ошибка выставление счёта. Обратитесь к администратору сайта.';
 		$this->lang['add'] = 'Счёт на оплату сформировано<br/> Распечатайте квитанцию и оплатите его в ближайшем отделении банка.';
-
-		$this->_enum['statuses'] = array(
-			0 => 'Неоплаченный счёт',
-			10 => 'Проводится',
-			20 => 'Оплаченный счёт',
-			30 => 'Отменен клиентом',
-			31 => 'Отменено продавцом',
-			32 => 'Отменен (Истекло время)',
-		);
-
 	}
 
-	function _create_conf() {/*CONFIG*/
+	protected function _create_conf() {/*CONFIG*/
 		parent::_create_conf();
 
 		$this->config['bank_prefix'] = 'НФ-';
@@ -75,86 +66,59 @@ class paybank_class extends kernel_extends {
 
 	protected function _create() {
 		parent::_create();
-		$this->fields['name'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
+		//$this->fields['name'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['fio'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['phone'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['address'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
-		$this->fields['amount'] = array('type' => 'decimal', 'width' => '10,2','attr' => 'NOT NULL'); // в коппейках
-		$this->fields['statuses'] = array('type' => 'tinyint', 'width' => 1,'attr' => 'NOT NULL');
-		$this->fields['json_data'] = array('type' => 'text', 'attr' => 'NOT NULL');
+		$this->fields['amount'] = array('type' => 'decimal', 'width' => '10,2','attr' => 'NOT NULL');
+		
 	}
 
 	public function setFieldsForm($form=0) {
 		parent::setFieldsForm($form);
 		$this->fields_form[$this->mf_createrid] = array('type' => 'list', 'listname'=>array('class'=>'users','nameField'=>'concat("№",tx.id," ",tx.name)'), 'readonly'=>1, 'caption' => 'Пользователь', 'comment'=>'', 'mask'=>array());
-		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Назначение платежа');
-		$this->fields_form['fio'] = array('type' => 'text', 'caption' => 'ФИО плательщика');
-		$this->fields_form['address'] = array('type' => 'text', 'caption' => 'Адрес плательщика ');
-		$this->fields_form['phone'] = array('type' => 'text', 'caption' => 'Контактный телефон');
-		$this->fields_form['amount'] = array('type' => 'decimal', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('min'=>$this->config['minpay'],'max'=>$this->config['maxpay']));
-		if(isset($_GET['summ']))
-			$this->fields_form['amount']['default'] = ceil(floatval($_GET['summ']));
-		$this->fields_form['statuses'] = array('type' => 'list', 'listname'=>'statuses', 'readonly'=>1, 'caption' => 'Статус', 'mask'=>array());
-		$this->fields_form['json_data'] = array('type' => 'textarea', 'caption' => 'JSON DATA', 'mask'=>array('fview'=>1));
+		//$this->fields_form['name'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Назначение платежа');
+		$this->fields_form['fio'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'ФИО плательщика');
+		$this->fields_form['address'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Адрес плательщика ');
+		$this->fields_form['phone'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Контактный телефон');
+		$this->fields_form['amount'] = array('type' => 'decimal', 'readonly'=>1, 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('min'=>$this->config['minpay'],'max'=>$this->config['maxpay']));
 	}
 
 	/*
 	* При добавлении делаем запрос XML
 	*/
-	/*
-	function billingForm($summ, $comm, $data=array()) {
-		$this->prm_add = true;
-		$this->getFieldsForm(1);
-		$argForm = $this->fields_form;
-		$argForm['cost']['mask']['evala'] = $summ;
-		$argForm['cost']['readonly'] = true;
-		$argForm['name']['mask']['evala'] = '"'.addcslashes($comm,'"').'"';
-		$argForm['name']['readonly'] = true;
-		return $this->_UpdItemModul(array('showform'=>1),$argForm);
-	}
-	*/
+	public function billingForm($summ, $comm, $data=array()) 
+	{
+		//print_r('<pre>');print_r($data);print_r($_POST);
+		//exit();
+		$this->owner->setPostData('fio', $data);
+		$this->owner->setPostData('address', $data);
+		$this->owner->setPostData('phone', $data);
 
+		$argForm = array();
+		$argForm['fio'] = array('type' => 'text', 'caption' => 'ФИО плательщика', 'mask' => array('min' => 6));
+		$argForm['address'] = array('type' => 'text', 'caption' => 'Адрес плательщика ', 'mask' => array('min' => 6));
+		$argForm['phone'] = array('type' => 'text', 'caption' => 'Контактный телефон', 'mask'=>array('name'=>'phone3', 'min'=>6));
+		//$argForm['name'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $comm));
+		$argForm['amount'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $summ));
 
-
-	function billingForm($summ, $comm, $data=array()) {
-		$ADD = array('amount'=>$summ,'name'=>$comm);
-
-		if(isset($_SESSION['user']['fio']))
-			$ADD['fio'] = $data['fio'] = $_SESSION['user']['fio'];
-		elseif(isset($data['fio']))
-			$ADD['fio'] = $data['fio'];
-
-		if(isset($_SESSION['user']['address']))
-			$ADD['address'] = $data['address'] = $_SESSION['user']['address'];
-		elseif(isset($data['address']))
-			$ADD['address'] = $data['address'];
-
-		if(isset($_SESSION['user']['phone']))
-			$ADD['phone'] = $data['phone'] = $_SESSION['user']['phone'];
-		elseif(isset($data['phone']))
-			$ADD['phone'] = $data['phone'];
-
-		if(isset($data['json_data']))
-			$ADD['json_data'] = $data['json_data'];
-		// TODO : Если нету fio и address - то выводить форму сначала для их заполнения
-		$this->_add($ADD, false);
-		return $ADD;
+		$_POST['sbmt'] = true;
+		$this->prm_add = true; 
+		return $this->_UpdItemModul(array(), $argForm);
 	}
 
 	public function statusForm($data)
 	{
 		//$data['child']
-		$DATA = array('showStatus'=>true,'messages'=>array());
-		if(count($data)) {
-			//$DATA['messages'][] = array('payselect-comm',$data['name']);
-			//$DATA['messages'][] = array('payselect-summ','Сумма : <span>'.number_format($data['amount'], 2, ',', ' ').' '.$this->owner->config['curr'].'');
-
-			$DATA['messages'][] = array('txt','Распечатайте квитанцию и оплатите по нему в ближайшем банке');
-			$DATA['messages'][] = array('alert payselect-kvit','<a href="'.$this->_CFG['_HREF']['siteJS'].'?_modul='.$this->_cl.'&_fn=printBill&blank=kvit&id='.$data['id'].'&_template=print&noajax=1" target="_blank">Распечатать квитанцию</a>');
-			$DATA['messages'][] = array('alert payselect-schet','<a href="'.$this->_CFG['_HREF']['siteJS'].'?_modul='.$this->_cl.'&_fn=printBill&blank=schet&id='.$data['id'].'&_template=print&noajax=1" target="_blank">Распечатать счёт</a>');
+		$result = array('showStatus'=>true,'messages'=>array());
+		if(count($data) and $data['status']<2) 
+		{
+			$result['messages'][] = array('txt','Распечатайте квитанцию и оплатите по нему в ближайшем банке');
+			$result['messages'][] = array('alert payselect-kvit','<a href="'.$this->_CFG['_HREF']['siteJS'].'?_modul='.$this->_cl.'&_fn=printBill&blank=kvit&id='.$data['child']['id'].'&_template=print&noajax=1" target="_blank">Распечатать квитанцию</a>');
+			$result['messages'][] = array('alert payselect-schet','<a href="'.$this->_CFG['_HREF']['siteJS'].'?_modul='.$this->_cl.'&_fn=printBill&blank=schet&id='.$data['child']['id'].'&_template=print&noajax=1" target="_blank">Распечатать счёт</a>');
 		}
 
-		return $DATA;
+		return $result;
 	}
 
 	/**
@@ -166,26 +130,35 @@ class paybank_class extends kernel_extends {
 	function printBill() {
 		global $HTML;
 		$result = array(
-			'text' => 'Ошибка. Нет данных.',
+			'html' => 'Ошибка. Нет данных.',
 			'title' => 'Ошибка',
 		);
 		$this->id = (int)$_GET['id'];
 		if(!$this->id) return $result;
+
 		$item = $this->_select();
-		if(!count($item)) return $result;
+		if(!count($item) or !$item[$this->id]['owner_id']) return $result;
+
+		$this->owner->id = $item[$this->id]['owner_id'];
+		$itemOwner = $this->owner->_select();
+		if(!count($itemOwner)) return $result;
 
 		$DATA = array(
 			'#config#' => ($this->owner->config + $this->config),
-			'#item#' => $item[$this->id]
+			'#item#' => $item[$this->id],
+			'#payData#' => $itemOwner[$this->owner->id]
 		);
-		if($_GET['blank']=='kvit') {
+		if($_GET['blank']=='kvit') 
+		{
 			$result = array(
-				'text' => $HTML->transformPHP($DATA,'#pay#paybankReceipt'),
+				'html' => $HTML->transformPHP($DATA,'#pay#paybankReceipt'),
 				'title' => 'Квитанция',
 			);
-		} else {
+		} 
+		else 
+		{
 			$result = array(
-				'text' => $HTML->transformPHP($DATA,'#pay#paybankBill'),
+				'html' => $HTML->transformPHP($DATA,'#pay#paybankBill'),
 				'title' => 'Счёт',
 			);
 		}

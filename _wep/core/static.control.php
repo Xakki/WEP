@@ -12,7 +12,8 @@ class static_control {
 	 * @return array
 	 */
 
-	static function _UpdItemModul($_this, $param, $argForm) {
+	static function _UpdItemModul($_this, $param, $argForm) 
+	{
 /* _UpdItemModul($param = array(),&$argForm = null) */
 	//update modul item
 
@@ -28,19 +29,24 @@ class static_control {
 
 		if(!empty($_this->id) and $_this->id) { //EDIT
 			$flag=-1;
-			if(!isset($_this->data[$_this->id]) or count($_this->data[$_this->id])<count($_this->fields)) {
+			if(!isset($_this->data[$_this->id]) or count($_this->data[$_this->id])<count($_this->fields)) 
+			{
 				$listfields = array('*');
 				$clause = ' WHERE id IN ('.$_this->_id_as_string().')';
 				$_this->data = $_this->_query($listfields,$clause,'id');
 			}
 			//print($_this->SQL->query);
-			if(count($_this->data)==1) {
-				if(!$_this->_prmModulShow($_this->data,$param)) {
+			if(count($_this->data)==1) 
+			{
+				if(!$_this->_prmModulShow($_this->data,$param)) 
+				{
 					$arr['mess'][] = static_main::am('error','denied',$_this);
 					$formflag=0;
 				}
-				elseif(count($_POST) and (isset($_POST['sbmt']) or isset($_POST['sbmt_save']))) {
-					if(!$_this->_prmModulEdit($_this->data,$param)) {
+				elseif(count($_POST) and (isset($_POST['sbmt']) or isset($_POST['sbmt_save']))) 
+				{
+					if(!$_this->_prmModulEdit($_this->data,$param)) 
+					{
 						$arr['mess'][] = static_main::am('error','denied_up',$_this);
 						$formflag=0;
 					}
@@ -60,7 +66,8 @@ class static_control {
 						}
 					}
 				}
-				else {
+				else 
+				{
 					$flag=0;
 					$tempdata = $_this->data[$_this->id];
 					$mess = $_this->kPreFields($tempdata,$param,$argForm);
@@ -72,19 +79,26 @@ class static_control {
 				$flag=-1;
 			}
 		} 
-		else { //ADD
-			if(!$_this->_prmModulAdd()){
+		else 
+		{ 
+			//ADD
+			if(!$_this->_prmModulAdd())
+			{
 				$arr['mess'][] = static_main::am('error','denied_add',$_this);
 				$formflag=0;
 				$flag=-1;
 			}
-			elseif(count($_POST) and (isset($_POST['sbmt']) or isset($_POST['sbmt_save']))) {
+			elseif(count($_POST) and (isset($_POST['sbmt']) or isset($_POST['sbmt_save']))) 
+			{
 				$DATA = $_POST;
 				$_this->kPreFields($DATA,$param,$argForm);
 				$arr = $_this->fFormCheck($DATA,$param,$argForm);
 				$flag=-1;
-				if(!count($arr['mess'])) {
-					if($rm = $_this->_add($arr['vars'])) {
+				if(!count($arr['mess'])) 
+				{
+					//print_r('<pre>');print_r($arr);exit();
+					if($rm = $_this->_add($arr['vars'])) 
+					{
 						$flag=1;
 						$arr['mess'][] = static_main::am('ok','add',array($_this->tablename),$_this);
 					} else

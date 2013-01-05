@@ -15,8 +15,6 @@ function tpl_statusForm($data)
 	$html = '';
 	$currency = $data['#config#']['curr'];
 
-	print_r('<pre>');print_r($data);
-
 	if($data['#resFlag#']===-1)
 	{
 		$data['messages'][] = array('error', 'Ошибка! У вас не достаточно прав доступа, для просмотра этого счета!');
@@ -27,7 +25,7 @@ function tpl_statusForm($data)
 
 			$data['messages'][] = array('alert', $pd['name']);
 
-			$data['messages'][] = array('alert', 'Сумма - '.$pd['cost'].' '.$currency);
+			$data['messages'][] = array('alert', 'Сумма - '.number_format($pd['cost'], 2, ',', ' ').' '.$currency);
 
 			$data['messages'][] = array('alert', 'Статус - '.$pd['#status#']);
 
