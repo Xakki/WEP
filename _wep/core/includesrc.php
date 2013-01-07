@@ -169,7 +169,7 @@
 			}
 
 			if($src)
-				$temp .= '<link rel="stylesheet" href="'.$src.'"></link>'."\n";
+				$temp .= '<link rel="stylesheet" href="'.$src.'"/>'."\n";
 
 			if(is_array($rr)) {
 				$temp .= cssRecursive($rr, $solt);

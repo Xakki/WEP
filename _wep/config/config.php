@@ -343,6 +343,8 @@ $_CFG['_error'] = array(
 	),
 );
 
+$_CFG['shutdown_function_flag'] = false;
+
 include $_CFG['_PATH']['core'] . 'static.main.php';
 
 $_CFG['robot'] = SpiderDetect();

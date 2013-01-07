@@ -67,7 +67,9 @@
 			}
 		}*/
 	}
-	elseif(isset($_REQUEST['_view']) && $_REQUEST['_view']=='loadpage') {
+	elseif(isset($_REQUEST['_view']) && $_REQUEST['_view']=='loadpage') 
+	{
+
 		require_once($_CFG['_PATH']['core'].'/html.php');
 
 		$DATA  = array();
@@ -112,13 +114,16 @@
 			/////////////////////////////////////
 		}
 		elseif(isset($_REQUEST['_ctId'])) {
-			$PGLIST->display_inc((int)$_REQUEST['_ctId'],$_GET['_design']);
+			$PGLIST->display_inc((int)$_REQUEST['_ctId'], $_GET['_design']);
 			$GLOBALS['_RESULT']['html'] = '';
 			foreach($_tpl as $k=>$r) {
-				if($k!='styles' and $k!='script' and $k!='onload')
+				if($k!='styles' and $k!='script' and $k!='onload' and !is_array($r))
+				{
 					$GLOBALS['_RESULT']['html'] .= $r;
+				}
 			}
 		};
+		
 	}
 	elseif (isset($_REQUEST['fileupload'])) {
 		if (isset($_FILES['Filedata']) && $_FILES['Filedata']['error'] == 0) {

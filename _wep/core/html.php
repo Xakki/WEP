@@ -22,6 +22,7 @@ ini_set('display_errors', -1);
 
 set_error_handler('_myErrorHandler');
 ob_start('_obHandler');
+
 $sai = $_CFG['wep']['_showallinfo'];
 if (!isset($_COOKIE[$sai]))
 	$_COOKIE[$sai] = 0;
@@ -261,7 +262,7 @@ class html {
  */
 
 function _myErrorHandler($errno, $errstr, $errfile, $errline) {//, $errcontext,$cont
-	global $_CFG,$BUG,$SQL;
+	global $_CFG,$BUG,$SQL, $_tpl;
 	if ($_CFG['wep']['catch_bug']) {
 
 		// Debuger
@@ -281,8 +282,10 @@ function _myErrorHandler($errno, $errstr, $errfile, $errline) {//, $errcontext,$
 			'debug'=>$debug,
 			'errtype' => $_CFG['_error'][$errno]['type'],
 		);
+
 		// Инициальзация ловца-ошибок
-		if (is_array($_CFG['wep']['bug_hunter']) and count($_CFG['wep']['bug_hunter']) and $SQL and $SQL->ready and !$BUG) {
+		if (is_array($_CFG['wep']['bug_hunter']) and count($_CFG['wep']['bug_hunter']) and $SQL and $SQL->ready and !$BUG and !$_CFG['shutdown_function_flag']) 
+		{
 			_new_class('bug', $BUG);
 		}
 		//остановка на фатальной ошибке
@@ -332,7 +335,6 @@ function _obHandler($buffer) {
 	global $_tpl, $_html, $_mctime_start, $_CFG;
 
 	$htmlinfo = '';
-	$buffer .= static_main::showErr();
 
 	/*Вывд логов и инфы*/
 	if ((isset($_COOKIE[$_CFG['wep']['_showallinfo']]) and $_COOKIE[$_CFG['wep']['_showallinfo']]) or $_CFG['_F']['adminpage']) {
@@ -345,13 +347,15 @@ function _obHandler($buffer) {
 			$buffer .= static_main::spoilerWrap('FILE INCLUDE',implode(';<br/>', $included_files));
 		}
 	}
+	
+
 
 	if ($_CFG['_F']['adminpage']) {
 		$_tpl['time'] .= $htmlinfo;
 	}else
 		$buffer = $htmlinfo . $buffer;
 	
-	$buffer = trim($buffer);
+	$buffer = trim($buffer.static_main::showErr());
 
 	if ($_html != '') {
 		if ($buffer)

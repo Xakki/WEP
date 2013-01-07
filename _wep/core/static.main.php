@@ -3,9 +3,14 @@
   Функция завершения работы скрипта
  */
 include $_CFG['_PATH']['core'] . 'observer.php';
-function shutdown_function() {
+
+function shutdown_function() 
+{
+	global $_CFG;
+	$_CFG['shutdown_function_flag'] = true;
 	observer::notify_observers('shutdown_function');
 }
+
 register_shutdown_function('shutdown_function'); // Запускается первым при завершении скрипта
 
 		ini_set("max_execution_time", "10");

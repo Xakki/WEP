@@ -46,14 +46,16 @@
 						$img = MY_THEME.'_shop/img/nofoto.gif';
 					$html .= '<tr data-id="'.$r['id'].'" class="'.(isset($data['#basket#'][$r['id']])?'sel':'').'">';
 					if(isset($data['#prodListTable#'])) {
-						foreach($data['#prodListTable#'] as $cf_k=>$cf_r) {
+						foreach($data['#prodListTable#'] as $cf_k=>$cf_r) 
+						{
+							$alt = str_replace('"', '', $r['name']);
 							if($cf_k=='cost') {
 								$html .= '<td>'.($r['cost']?round($r['cost'],2):'&#160;');
 							} 
 							elseif(strpos($cf_k,'img_product')!==false)
-								$html .= '<td><img src="/'.$img.'" alt="'.$r['name'].'"/>';
+								$html .= '<td><img src="/'.$img.'" alt="'.$alt.'"/>';
 							elseif($cf_k=='name') {
-								$html .= '<td><a href="'.$href.'" title="'.$r['name'].'">'.$r['name'].'</a>';
+								$html .= '<td><a href="'.$href.'" title="'.$alt.'">'.$r['name'].'</a>';
 								if(isset($r['sale']))
 									$html .= '<span class="prodlable sale" title="'.$r['sale']['name'].'">&#160;</span>';
 							}

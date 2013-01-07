@@ -9,7 +9,7 @@
 		<meta name="description" content="CMS"/>
 		<link rel="SHORTCUT ICON" href="{#BH#}/_design/favicon.ico"/>
 
-        <link rel="stylesheet" href="{#BH#}/_design/_style/login.css" type="text/css">
+        <link rel="stylesheet" href="{#BH#}/_design/_style/loginTpl.css" type="text/css">
 
 		<script src="{#BH#}/_design/_script/jquery.js"></script>
 		<script src="{#BH#}/_design/_script/login.js"></script>

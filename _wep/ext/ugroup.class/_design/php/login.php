@@ -11,7 +11,7 @@
 function tpl_login($data) {
 
 	global $_tpl;
-	$_tpl['styles']['login']=1;
+	//$_tpl['styles']['login']=1;
 	$form = '';
 	if($data['result']<1)
 		$form = '<div class="cform" style="">
