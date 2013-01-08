@@ -62,6 +62,7 @@ class payyandex_class extends kernel_extends {
 	function _create_conf() {/*CONFIG*/
 
 		//parent::_create_conf();
+		$this->config['actionURL'] = 'https://money.yandex.ru/quickpay/confirm.xml';
 		$this->config['yandex_cid'] = '';
 		$this->config['yandex_token'] = '';
 		$this->config['yandex_id'] = '';
@@ -73,6 +74,7 @@ class payyandex_class extends kernel_extends {
 		$this->config['lifetime'] = 336; // 14 дней
 
 		$this->config_form['yandex_info'] = array('type' => 'info', 'caption'=>'<h3>Яндекс.Деньги</h3>');
+		$this->config_form['actionURL'] = array('type' => 'text', 'caption'=>'Платежная ссылка');
 		$this->config_form['yandex_id'] = array('type' => 'text', 'caption'=>'Номер счёта');
 		$this->config_form['yandex_cid'] = array('type' => 'text', 'caption'=>'Идентификатор приложения','comment'=>'Получить его можно <a href="https://sp-money.yandex.ru/myservices/new.xml" target="_blank">тут</a> и <a href="https://sp-money.yandex.ru/myservices/admin.xml" target="_blank">настраивать</a><br>Redirect URI: <b>'.$this->REDIRECT_URI.'</b> ');
 		$this->config_form['yandex_token'] = array('type' => 'text', 'caption'=>'TOKEN');
@@ -139,86 +141,77 @@ class payyandex_class extends kernel_extends {
 		$this->fields_form['phone'] = array('type' => 'text', 'caption' => 'Номер телефона');
 		$this->fields_form['email'] = array('type' => 'text', 'caption' => 'Email');
 		$this->fields_form['amount'] = array('type' => 'decimal', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('min'=>$this->config['minpay'],'max'=>$this->config['maxpay']));
-		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Комментарий', 'mask'=>array('name'=>'all'));
+		//$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Комментарий', 'mask'=>array('name'=>'all'));
 		$this->fields_form['status'] = array('type' => 'list', 'listname'=>'status', 'readonly'=>1, 'caption' => 'Статус', 'mask'=>array());
 		$this->fields_form['error'] = array('type' => 'list', 'listname'=>'error', 'readonly'=>1, 'caption' => 'Ошибка', 'mask'=>array());
 		$this->fields_form['mf_timecr'] = array('type' => 'date', 'readonly'=>1, 'caption' => 'Дата', 'mask'=>array());
 	}
 
 
+
 	/*
-	* При добавлении делаем запрос XML
+	* Создание счёта
 	*/
-	function billingForm($summ, $comm, $data=array()) {
-		$ADD = array('amount'=>$summ,'name'=>$comm);
-
-		if(isset($_SESSION['user']['phone']))
-			$ADD['phone'] = $data['phone'] = $_SESSION['user']['phone'];
-		elseif(isset($data['phone']))
-			$ADD['phone'] = $data['phone'];
-
-		if(isset($_SESSION['user']['email']))
-			$ADD['email'] = $data['email'] = $_SESSION['user']['email'];
-		elseif(isset($data['email']))
-			$ADD['email'] = $data['email'];
-
-		$this->_add($ADD);
-
-		$DATA = $this->payFormBilling($this->data[$this->id]);
-		return array($DATA,1);// 1
-	}
-
-	function payFormBilling($data) {
-		global $_tpl;
-		$_tpl['onload'] .= '$("#form_paymethod").submit();';
-		$DATA = array();
-		$DATA['messages'] = array(
-			array('alert','Выполняется открытие страницы оплаты на Яндекс.Деньги.'),
-			array('notice','<small>Если у вас не открылось окно оплаты, возможно ваш браузер заблокировал открытие окна (Ваш браузер должен был выдать предупреждение об этом, кликните на всплывшее сообщение и разрешите данную операцию)</small>'),
-			array('txt','После оплаты обновите <a href="javascript:window.location.reload();">страницу</a>, чтобы узнать состояние счёта.'),
-		);
-		$DATA['form'] = array(
-			'receiver'=>array('type'=>'hidden','value'=>$this->config['yandex_id']),
-			'FormComment'=>array('type'=>'hidden','value'=>'Счёт№'.$data['id'].'; '.$data['name']), // заголовок у отправителя
-			'short-dest'=>array('type'=>'hidden','value'=>$data['name']), // Комментарий у отправителя
-			'writable-targets'=>array('type'=>'hidden','value'=>'false'),
-			'writable-sum'=>array('type'=>'hidden','value'=>'false'),
-			'comment-needed'=>array('type'=>'hidden','value'=>'true'),
-			'quickpay-form'=>array('type'=>'hidden','value'=>'small'),
-			'targets'=>array('type'=>'hidden','value'=>'Счёт№'.$data['id']), // Сообщение получателю
-			'sum'=>array('type'=>'hidden','value'=>$data['amount']),
-			'mail'=>array('type'=>'hidden','value'=>'true'),
-			//'p2payment'=>array('type'=>'hidden','value'=>$this->id),
-			//'destination'=>array('type'=>'hidden','value'=>$this->id),
-			//'codepro'=>array('type'=>'hidden','value'=>$this->id),
-		);
-		if(isset($data['email']))
-			$DATA['form']['address_email'] = array('type'=>'hidden','value'=>$data['email']);
-		$DATA['form']['sbmt'] = array('type'=>'submit','value'=>'Перейти на Яндекс.Деньги');
-		$DATA['form']['_*features*_'] = array(
-			'name'=>'paymethod',
-			'action'=>'https://money.yandex.ru/quickpay/confirm.xml"  target="_blank'
-		);
-		return $DATA;
-	}
-	
-	/*
-	* INFO status
-	*/
-	public function statusForm($data) 
+	public function billingForm($summ, $comm, $data=array()) 
 	{
+		$this->owner->setPostData('email', $data);
+		$this->owner->setPostData('phone', $data);
 
-		$DATA = array('messages'=>array());
+		$argForm = array();
+		$argForm['email'] = array('type' => 'text', 'caption' => 'Email', 'mask'=>array('name'=>'email', 'min'=>5));
+		$argForm['phone'] = array('type' => 'text', 'caption' => 'Телефон', 'mask'=>array('name'=>'phone3'));
+		//$argForm['name'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $comm));
+		$argForm['amount'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $summ));
 
-		if(count($data)) {
-			$DATA['messages'][] = array('payselect-comm',$data['name']);
-			$DATA['messages'][] = array('payselect-summ','Сумма : <span>'.number_format($data['cost'], 2, ',', ' ').' '.$this->owner->config['curr'].'');
+		$_POST['sbmt'] = true;
+		$this->prm_add = true; 
+		return $this->_UpdItemModul(array('showform'=>1), $argForm);
+	}
 
-			$DATA['messages'][] = array('alert','Чтобы оплатить счёт, перейдите на сайт <a href="'.$this->pay_formType.'" target="_blank">Яндекс</a>');
+	/**
+	* Статус платежа
+	*/
+	public function statusForm($data)
+	{
+		//print_r('<pre>');print_r($data);
+		//$data['child']
+		$result = array('showStatus'=>true,'messages'=>array());
+
+		if(count($data) and $data['status']<2) 
+		{
+			$result['messages'] = array(
+				array('alert','Выполняется открытие страницы оплаты на '.$this->caption),
+				array('notice','<small>Если у вас не открылось окно оплаты, возможно ваш браузер заблокировал открытие окна (Ваш браузер должен был выдать предупреждение об этом, кликните на всплывшее сообщение и разрешите данную операцию)</small>'),
+			);
+			$result['form'] = array(
+				'_*features*_' => array('name'=>'paymethod','action'=>$this->config['actionURL'].'"  target="_blank'),
+				'FormComment'=>array('type'=>'hidden','value'=>'Счёт№'.$data['child']['id']), // заголовок у отправителя
+				'comment-needed'=>array('type'=>'hidden','value'=>'false'), // не нужны коменты, ТОДУЖ брать опцию из конфига
+				'label'=>array('type'=>'hidden','value'=>'true'),//
+				'mail'=>array('type'=>'hidden','value'=>'1'),
+				'quickpay-form'=>array('type'=>'hidden','value'=>'shop'),
+				'receiver'=>array('type'=>'hidden','value'=>$this->config['yandex_id']),
+				'short-dest'=>array('type'=>'hidden','value'=>$data['name']), // Комментарий у отправителя
+				'submit-button'=>array('type'=>'hidden','value'=>'Оплатить'),
+				'sum'=>array('type'=>'hidden','value'=>$data['child']['amount']),
+				'targets'=>array('type'=>'hidden','value'=>'Счёт№'.$data['child']['id']), // Сообщение получателю
+				'writable-targets'=>array('type'=>'hidden','value'=>'false'),
+				'writable-sum'=>array('type'=>'hidden','value'=>'true'),
+				'writable-targets'=>array('type'=>'hidden','value'=>'false'),
+				
+				//'p2payment'=>array('type'=>'hidden','value'=>$this->id),
+				//'destination'=>array('type'=>'hidden','value'=>$this->id),
+				//'codepro'=>array('type'=>'hidden','value'=>$this->id),
+			);
+
+			$result['form']['sbmt'] = array('type'=>'submit','value'=>'Перейти на '.$this->caption.' для оплаты счета');
+			global $_tpl;
+			$_tpl['onload'] .= '$("#form_paymethod").submit();';
 		}
 
-		return $DATA;
+		return $result;
 	}
+	
 
 	/***************************************************/
 	/***************************************************/
@@ -487,17 +480,21 @@ class payyandex_class extends kernel_extends {
 
 				$this->id = $DATA[$key]['id'];
 				$upd = array('amount'=>$INFO2['amount'], 'tax'=>($DATA[$key]['amount']-$INFO2['amount']), 'sender'=>$INFO2['sender']);
-				if($INFO2['amount']>=($DATA[$key]['amount']*0.95)) {
+				if($INFO2['amount']>=($DATA[$key]['amount']*0.95)) 
+				{
 					$upd['status'] = 'success';
 					$upd['operation_id'] = $r['operation_id'];
 					//$upd['money_source'] = 'wallet';
 					$this->_update($upd);
 					$this->owner->payTransaction($this->data[$this->id]['owner_id'], PAY_PAID);				
-				} else {
-					$upd['status'] = 'refused';
+				} else 
+				{
+					$upd = array();
+					$upd['status'] = '';
 					$upd['error'] = 'small_money';
 					//$upd['operation_id'] = $r['operation_id'];
 					$this->_update($upd);
+					trigger_error('Оплата услуг через яндекс - поступило мало денег [Поступило на счет '.$INFO2['amount'].', Выписано '.$DATA[$key]['amount'].', с учетом пошлины '.($DATA[$key]['amount']*0.95).', payYandex ID='.$this->id.']', E_USER_WARNING);
 				}
 
 				$i++;
@@ -518,7 +515,7 @@ class payyandex_class extends kernel_extends {
 	*/
 	function clearOldData() {
 		$leftTime = ($this->config['lifetime']*3600);
-		$this->_update(array('status'=>'timeout', $this->mf_actctrl=>0), 'status="" and '.$this->mf_timecr.'<"'.(time()-$leftTime).'"');
+		$this->_update(array('status'=>'timeout', $this->mf_actctrl=>0), 'WHERE status="" and '.$this->mf_timecr.'<"'.(time()-$leftTime).'"');
 		$this->owner->clearOldData($this->_cl, $leftTime);
 	}
 }

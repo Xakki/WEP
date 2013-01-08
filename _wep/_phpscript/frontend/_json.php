@@ -3,8 +3,11 @@
 
 	$GLOBALS['_RESULT']	= array('html'=>'','onload'=>'');
 	$_tpl['onload']=$html=$html2='';
+	
+	if(!isset($_GET['noajax']))
+		$_GET['noajax'] = false;
 
-	if (!isset($_GET['html']) and !isset($_GET['noajax']))
+	if(!$_GET['noajax'])
 		require_once($_CFG['_PATH']['wep_phpscript'].'/lib/jquery_getjson.php');
 
 	if(isset($_GET['_fn']) and $_GET['_fn']) {

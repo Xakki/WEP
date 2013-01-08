@@ -46,8 +46,12 @@ wep.form = {
 			jQuery(n).ajaxForm({
 				beforeSubmit: 
 					function(a,f,o) {
+						
 						//var formElement = f[0];
 						o.dataType = 'json';
+						//a.push({name:'HTTP_X_REQUESTED_WITH', value:'xmlhttprequest'});
+						//a.push({name:'isAjax', value:'true'});
+						//console.log(a,f,o);
 						//wep.preSubmitAJAX (f);
 					},
 				error: 

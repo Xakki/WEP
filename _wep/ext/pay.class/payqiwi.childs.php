@@ -90,61 +90,59 @@ Cчета со статусом большим или равным 100 трак�
 
 	protected function _create() {
 		parent::_create();
-		$this->fields['name'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL','default'=>'');
+		//$this->fields['name'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL','default'=>'');
 		$this->fields['phone'] = array('type' => 'bigint', 'width' => 13,'attr' => 'unsigned NOT NULL');
 		$this->fields['cost'] = array('type' => 'decimal', 'width' => '10,2','attr' => 'NOT NULL'); // в коппейках
-		$this->fields['statuses'] = array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL');
+		$this->fields['statuses'] = array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL','default'=>0);
 		$this->fields['errors'] = array('type' => 'int', 'width' => 11,'attr' => 'NOT NULL','default'=>0);
 	}
 
 	public function setFieldsForm($form=0) {
 		parent::setFieldsForm($form);
 		$this->fields_form['phone'] = array('type' => 'int', 'caption' => 'Номер телефона', 'comment'=>'10 значный номер мобильного, <b>без 8ки</b>. <br/>Пример: 9271234567', 'mask'=>array('min'=>10,'max'=>10));
-		if($form and !$this->id and isset($_SESSION['user']['phone'])) {
-			$tmp = preg_replace('/[^0-9]/','',$_SESSION['user']['phone']);
-			if($tmp[0]!='9'){
-				$tmp = mb_substr($tmp,1);
-			}
-			if($tmp and strlen($tmp)==10)
-				$this->fields_form['phone']['default'] = $tmp;
-		}
 		$this->fields_form['cost'] = array('type' => 'decimal', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('min'=>$this->config['minpay'],'max'=>$this->config['maxpay']));
-		if(isset($_GET['summ']))
-			$this->fields_form['cost']['default'] = ceil(floatval($_GET['summ']));
-		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Комментарий', 'mask'=>array('name'=>'all'));
+		//$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Комментарий', 'mask'=>array('name'=>'all'));
 		$this->fields_form['statuses'] = array('type' => 'list', 'listname'=>'statuses', 'readonly'=>1, 'caption' => 'Статус', 'mask'=>array());
 		$this->fields_form['errors'] = array('type' => 'list', 'listname'=>'errors', 'readonly'=>1, 'caption' => 'Ошибка', 'mask'=>array());
 	}
 
-
-	// INFO
-	public function statusForm($data) 
+	/*
+	* Создание счёта
+	*/
+	public function billingForm($summ, $comm, $data=array()) 
 	{
+		$this->owner->setPostData('phone', $data);
 
-		$DATA = array('messages'=>array());
-
-		if(count($data)) {
-			$DATA['messages'][] = array('payselect-comm',$data['name']);
-			$DATA['messages'][] = array('payselect-summ','Сумма : <span>'.number_format($data['cost'], 2, ',', ' ').' '.$this->owner->config['curr'].'');
-
-			$DATA['messages'][] = array('alert','Чтобы оплатить счёт, перейдите на сайт <a href="'.$this->pay_formType.'" target="_blank">QIWI</a>');
+		$argForm = array();
+		$argForm['phone'] = array('type' => 'int', 'caption' => 'Номер телефона', 'comment'=>'10 значный номер мобильного, <b>без 8ки</b>. <br/>Пример: 9271234567', 'mask'=>array('min'=>10,'max'=>10));
+		if(isset($_POST['phone']) and $_POST['phone']) {
+			$tmp = preg_replace('/[^0-9]/','',$_POST['phone']);
+			if($tmp[0]!='9'){
+				$tmp = mb_substr($tmp,1);
+			}
+			if($tmp and strlen($tmp)==10)
+				$_POST['phone'] = $tmp;
 		}
+		//$argForm['name'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $comm));
+		$argForm['cost'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $summ));
 
-		return $DATA;
+		$_POST['sbmt'] = true;
+		$this->prm_add = true; 
+		return $this->_UpdItemModul(array('showform'=>1), $argForm);
 	}
 	
-	/*
-	* При добавлении делаем запрос XML
-	*/
-	function billingForm($summ, $comm, $data=array()) {
-		$this->prm_add = true;
-		$this->getFieldsForm(1);
-		$argForm = $this->fields_form;
-		$argForm['cost']['mask']['evala'] = $summ;
-		$argForm['cost']['readonly'] = true;
-		$argForm['name']['mask']['evala'] = '"'.addcslashes($comm,'"').'"';
-		$argForm['name']['readonly'] = true;
-		return $this->_UpdItemModul(array('showform'=>1),$argForm);
+
+	// INFO
+	public function statusForm($data)
+	{
+		//$data['child']
+		$result = array('showStatus'=>true,'messages'=>array());
+		if(count($data) and $data['status']<2) 
+		{
+			$result['messages'][] = array('logoPayStatus qiwiPayStatus','<div>Чтобы оплатить счёт, перейдите на сайт</div><a href="'.$this->pay_formType.'" target="_blank" title="QIWI">QIWI</a>');
+		}
+
+		return $result;
 	}
 
 	/**

@@ -88,26 +88,10 @@ class static_list {
 			$templistname = implode(',', $listname);
 		$templistname = $_this->_cl.'_'.$templistname;
 
-		if (!is_null($value)) { // не кешируем если задано $value и $listname - выборка из таблиц(задается массивом)
+		if (!is_null($value)) 
+		{ // не кешируем если задано $value и $listname - выборка из таблиц(задается массивом)
 			$data = $_this->_getlist($listname, $value);
-
-			// VALUE
-			if (!is_array($value))
-				$tvalue = array($value => $value);
-			else
-				$tvalue = array_combine($value, $value);
-
-			$new = array();
-			if (!is_array(current($data)))
-				$data = array_intersect_key($data, $tvalue);
-			else {
-				$tdata = array();
-				foreach ($data as $r) {
-					$tdata += array_intersect_key($r, $tvalue);
-				}
-				$data = $tdata;
-			}
-			return $data;
+			return self::uarray_intersect_key($data, $value);
 		}
 		elseif (!isset($_this->_CFG['enum'][$templistname]))
 			$_this->_CFG['enum'][$templistname] = $_this->_getlist($listname, $value);
@@ -115,6 +99,35 @@ class static_list {
 		return $_this->_CFG['enum'][$templistname];
 	}
 
+	/**
+	* Выводит массив из элеменов первой переменной, по совпавшим ключам из второй переменной
+	*/
+	static function uarray_intersect_key(array $data, $value)
+	{
+		// VALUE
+		if (!is_array($value))
+			$tvalue = array($value => $value);
+		else
+			$tvalue = array_combine($value, $value);
+
+		$temp = current($data);
+		if (!is_array($temp) or isset($temp['#name#']))
+		{
+			return array_intersect_key($data, $tvalue);
+		}
+		else {
+			$tdata = array();
+			foreach ($data as $r) 
+			{
+				$tdata += array_intersect_key($r, $tvalue);
+			}
+			return $tdata;
+		}
+	}
+
+	/**
+	* фОРМИРУЕТ стандартные списки и списки по заднанным параметрам
+	*/
 	static function &_getlist($_this, &$listname, $value=NULL) /*LIST SELECTOR*/
 	{
 		/*Выдает 1 уровневый массив, либо 2х уровневый для структуры типа дерева*/

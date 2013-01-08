@@ -40,7 +40,7 @@ function tpl_list($data)
 			$html .= '<tr>
 				<td>'.$r['id'].'</td>
 				<td>'.$r['name'].' '.(!$r['status']?'[действителен до '.date('Y-m-d H:i',($r['mf_timecr']+($r['#lifetime#']*3600))).']':'').'</td>
-				<td>'.round($r['cost'],2).' '.$data['curr'].'</td>
+				<td>'.round($r['cost'],2).' '.$data['#config#']['curr'].'</td>
 				<td style="color:'.$color[$r['status']].';">'.$r['#status#'].'</td>
 				<td>'.$r['#pay_modul#'].'</td>
 				<td>'.$r['mf_timestamp'].'</td>

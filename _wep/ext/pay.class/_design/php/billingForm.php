@@ -68,7 +68,8 @@ function tpl_billingForm($data)
 			$_CFG['fileIncludeOption']['form'] = 1;
 			$html .= '<div class="divform">';
 			unset($data['form']['_info']);
-			$html .= $HTML->transformPHP($data['form'], '#pg#form');
+			unset($data['messages']);
+			$html .= $HTML->transformPHP($data, '#pg#formcreat');
 			$html .= '</div>';
 		}
 		$html .= '</form>';

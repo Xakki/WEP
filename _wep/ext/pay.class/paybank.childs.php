@@ -104,7 +104,7 @@ class paybank_class extends kernel_extends
 
 		$_POST['sbmt'] = true;
 		$this->prm_add = true; 
-		return $this->_UpdItemModul(array(), $argForm);
+		return $this->_UpdItemModul(array('showform'=>1), $argForm);
 	}
 
 	public function statusForm($data)

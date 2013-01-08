@@ -31,8 +31,17 @@ function tpl_statusForm($data)
 
 			if(isset($data['#payLink#']) and $data['#payLink#'] and $pd['status']<2)
 				$data['messages'][] = array('payLink', '<a href="'.$data['#payLink#'].'" target="_blank">Оплатить</a>');
+			if(isset($data['form']))
+			{
+				$html .= '<div class="divform">';
+				//unset($data['form']['_info']);
+				$html .= $HTML->transformPHP($data, '#pg#formcreat');
+				unset($data['messages']);
+				$html .= '</div>';
+			}
 
 	}
+	//После оплаты обновите <a href="javascript:window.location.reload();">страницу</a>, чтобы узнать состояние счёта.
 
 	if(isset($data['messages']) and count($data['messages'])) {
 		$html .= $HTML->transformPHP($data['messages'], '#pg#messages');

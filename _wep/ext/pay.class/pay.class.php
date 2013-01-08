@@ -104,7 +104,7 @@ class pay_class extends kernel_extends {
 	*/
 	public function getList($key=NULL, $user=NULL, $status=array()) 
 	{
-		$data = array('#config#' => $this->config['curr']);
+		$data = array('#config#' => $this->config);
 		$q = 't1 WHERE 1=1 ';
 
 		if(!is_null($key))
@@ -726,7 +726,7 @@ class pay_class extends kernel_extends {
 	* @param $leftTime - в секундах
 	*/
 	function clearOldData($M, $leftTime) {
-		$this->_update(array('status'=>'4'), 'status=0 and '.$this->mf_timecr.'<"'.(time()-$leftTime).'" and pay_modul="'.$M.'"');
+		$this->_update(array('status'=>'4'), 'WHERE status=0 and '.$this->mf_timecr.'<"'.(time()-$leftTime).'" and pay_modul="'.$M.'"');
 	}
 
 

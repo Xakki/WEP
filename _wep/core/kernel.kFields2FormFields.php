@@ -165,19 +165,30 @@
 							$r['valuelist'] = $this->_forlist($md,$key,$val);
 						}
 					}
-					else {
+					else // Форма списка  только для чтения, выводится в виде текста
+					{
 						if(is_array($r['listname']) and isset($r['listname']['idThis']) and $this->id) {
 							$r['value'] = $this->data[$this->id][$r['listname']['idThis']];
 						}
-						if(isset($r['value']) and $r['value']!='') {
-							$tval = $r['value'];
-							$ltemp = $this->_getCashedList($r['listname'],$tval);
-
-							if(is_array($ltemp)) {
-								$r['value'] = implode(',',$ltemp);
+						if(isset($r['value']) and $r['value']!='') 
+						{
+							$selectedData = $this->_getCashedList($r['listname'], $r['value']);
+							// переводим полученный массив в строку
+							if(is_array($selectedData)) 
+							{
+								$temp = current($selectedData);
+								if (isset($temp['#name#']))
+								{
+									$r['value'] = array();
+									foreach($selectedData as $listname)
+										$r['value'][] = $listname['#name#'];
+									$r['value'] = implode(',',$r['value']);
+								}
+								else
+									$r['value'] = implode(',',$selectedData);
 							}
 							else
-								$r['value'] = $ltemp;
+								$r['value'] = $selectedData;
 						}
 					}
 				}

@@ -77,6 +77,47 @@
 		$html = $HTML->transformPHP($DATA,$FUNCPARAM[0]);
 
 	}
+	elseif(isset($_GET['shopBasket']))
+	{
+		// Редактирование для заказов, если ещё не был выставлен счет
+
+		$SHOPBASKET->prm_edit = true;
+		$SHOPBASKET->id = (int)$_GET['shopBasket'];
+		$shopbasketData = $SHOPBASKET->_select();
+		$DATA = array();
+
+		if(count($shopbasketData) and count($shopbasketData[$SHOPBASKET->id]) and !$shopbasketData[$SHOPBASKET->id]['pay_id'])
+		{
+			$FORM = array();
+			$FORM['fio'] = array('type' => 'text', 'caption' => 'Ваша фамилия и имя', 'mask'=>array('min'=>6));
+			$FORM['address'] = array('type' => 'text', 'caption' => 'Адрес доставки', 'mask'=>array('min'=>6));
+			$FORM['phone'] = array('type' => 'phone', 'caption' => 'Телефон для связи и оповещения', 'mask'=>array('name'=>'phone3', 'min'=>6));
+			$FORM['summ'] = array('type' => 'decimal', 'caption' => 'Сумма', 'readonly'=>1, 'mask'=>array());
+			$FORM['delivertype'] = array('type' => 'list', 'listname'=>'delivertype', 'readonly'=>1, 'caption' => 'Тип доставки', 'mask' =>array('min'=>1));
+			$FORM['paytype'] = array('type' => 'radio', 'listname' => 'paytype', 'caption' => 'Тип платежа', 'mask' =>array('min'=>1));
+
+			$deliveryData = $SHOPDELIVER->qs('*','WHERE active=1 and id='.$shopbasketData[$SHOPBASKET->id]['delivertype'],'id');
+			$deliveryData['paylist'] = trim($deliveryData['paylist'],'|');
+			if($deliveryData['paylist'])
+				$SHOPBASKET->allowedPay = explode('|',$deliveryData['paylist']);
+			// Убираем ненужные поля
+			$norequere = $deliveryData['norequere'];
+			$norequere = explode('|',trim($norequere,'|'));
+			$FORM = array_diff_key($FORM,array_flip($norequere));
+			$SHOPBASKET->lang['Save and close'] = 'Сохранить и перейти к оплате';
+			$SHOPBASKET->lang['update_name'] = 'Редактирование заказа';
+			list($DATA['formcreat'], $this->formFlag) = $SHOPBASKET->_UpdItemModul(array(),$FORM);
+			if($this->formFlag===1)
+			{
+				static_main::redirect($Chref.'.html?basketpay='.$SHOPBASKET->id);
+			}
+		}
+		
+		if(!isset($DATA['formcreat']))
+			$DATA['messages'][] = static_main::am('error','Не верно заданны параметры.');
+
+		$html .= $HTML->transformPHP($DATA,'#pg#formcreat');
+	}
 	elseif(isset($_GET['basketpay']) and static_main::_prmUserCheck()) 
 	{
 		// STEP 3
@@ -101,6 +142,10 @@
 				$BDATA[$SHOPBASKET->id] // Дополнительные данные (email, phone итп)
 			);
 			$this->formFlag = $DATA['#resFlag#'];
+
+			if($this->formFlag<0)
+				$DATA['messages'][] = array('notice','<a href="'.$Chref.'.html?shopBasket='.$SHOPBASKET->id.'">Изменить данные заказа</a>');
+
 			$html = $HTML->transformPHP($DATA, $DATA['tpl']);
 
 			if(!$BDATA[$SHOPBASKET->id]['pay_id'] and $PAY->id) {
@@ -135,16 +180,20 @@
 				if(isset($DATA['#delivery#'][$_GET['typedelivery']])) 
 				{
 					$deliveryData = $DATA['#delivery#'][$_GET['typedelivery']];
-					//$SHOPBASKET->prm_edit = true;
 					$SHOPBASKET->prm_add = true;
-					$FORM = $SHOPBASKET->fields_form;
-					$FORM['summ']['type'] = 'hidden';
-					$FORM['summ']['value'] = $_POST['cost'] = $SHOPBASKET->getSummOrder($deliveryData);
-					$FORM['delivertype']['type'] = 'hidden';
-					$FORM['delivertype']['value'] = $_POST['delivertype'] = $_GET['typedelivery'];
-					$FORM['phone']['value'] = $_SESSION['user']['cf1'];
-					$FORM['address']['value'] = $_SESSION['user']['cf2'];
-					$FORM['fio']['value'] = $_SESSION['user']['name'];
+					$FORM = array();
+					$_POST['cost'] = $SHOPBASKET->getSummOrder($deliveryData);
+					$FORM['fio'] = array('type' => 'text', 'caption' => 'Ваша фамилия и имя', 'mask'=>array('min'=>6));
+					$FORM['address'] = array('type' => 'text', 'caption' => 'Адрес доставки', 'mask'=>array('min'=>6));
+					$FORM['phone'] = array('type' => 'phone', 'caption' => 'Телефон для связи и оповещения', 'mask'=>array('name'=>'phone3', 'min'=>6));
+					$FORM['summ'] = array('type' => 'hidden', 'readonly'=>1, 'mask'=>array('eval'=>$_POST['cost']));
+					$FORM['delivertype'] = array('type' => 'hidden', 'readonly'=>1, 'mask' =>array('min'=>1, 'eval'=>$_GET['typedelivery']));
+					$FORM['paytype'] = array('type' => 'radio', 'listname' => 'paytype', 'caption' => 'Тип платежа', 'mask' =>array('min'=>1));
+					
+					$FORM['phone']['value'] = (isset($_COOKIE['phone'])? $_COOKIE['phone'] : $_SESSION['user']['cf1']);
+					$FORM['address']['value'] = (isset($_COOKIE['address'])? $_COOKIE['address'] : $_SESSION['user']['cf2']);
+					$FORM['fio']['value'] = (isset($_COOKIE['fio'])? $_COOKIE['fio'] : $_SESSION['user']['name']);
+
 					$deliveryData['paylist'] = trim($deliveryData['paylist'],'|');
 					if($deliveryData['paylist'])
 						$SHOPBASKET->allowedPay = explode('|',$deliveryData['paylist']);
@@ -152,7 +201,6 @@
 					$norequere = $deliveryData['norequere'];
 					$norequere = explode('|',trim($norequere,'|'));
 					$FORM = array_diff_key($FORM,array_flip($norequere));
-					$FORM['paytype']['type'] = 'radio' ;
 
 					$UGROUP->needApplyOfferta($FORM);
 	
@@ -160,7 +208,11 @@
 
 					
 
-					if($SHOPBASKET->id) {
+					if($SHOPBASKET->id) 
+					{
+						_setcookie('fio', $_POST['fio']);
+						_setcookie('address', $_POST['address']);
+						_setcookie('phone', $_POST['phone']);
 						static_main::redirect($Chref.'.html?basketpay='.$SHOPBASKET->id);
 					}
 					else {

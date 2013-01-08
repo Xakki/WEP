@@ -128,7 +128,7 @@
 			$src = '';
 			if (strpos($kk, '//')===0 or strpos($kk, 'http:')===0 or strpos($kk, 'https:')===0)
 				$src = str_replace(array('http:','https:'), '', $kk);
-			elseif(is_string($kk))
+			elseif(is_string($kk) and !is_string($rr))
 			{
 				if(strpos($kk,'/')===0)
 					$path = MY_THEME;
@@ -160,7 +160,7 @@
 			$src = '';
 			if (strpos($kk, '//')!==false)
 				$src = str_replace(array('http:','https:'), '', $kk);
-			elseif(is_string($kk)) {
+			elseif(is_string($kk) and !is_string($rr)) {
 				if(strpos($kk,'/')===0)
 					$path = MY_THEME;
 				else

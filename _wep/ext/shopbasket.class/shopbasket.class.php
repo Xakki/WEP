@@ -78,8 +78,8 @@ class shopbasket_class extends kernel_extends {
 		$this->fields_form['fio'] = array('type' => 'text', 'caption' => 'Ваша фамилия и имя', 'mask'=>array('min'=>6));
 		$this->fields_form['address'] = array('type' => 'text', 'caption' => 'Адрес доставки', 'mask'=>array('min'=>6));
 		$this->fields_form['phone'] = array('type' => 'phone', 'caption' => 'Телефон для связи и оповещения', 'mask'=>array('name'=>'phone3', 'min'=>6));
-		$this->fields_form['summ'] = array('type' => 'decimal', 'caption' => 'Сумма', 'mask'=>array());
-		$this->fields_form['delivertype'] = array('type' => 'list', 'listname'=>'delivertype', 'caption' => 'Тип доставки', 'mask' =>array('min'=>1));
+		$this->fields_form['summ'] = array('type' => 'decimal', 'caption' => 'Сумма', 'readonly'=>1, 'mask'=>array());
+		$this->fields_form['delivertype'] = array('type' => 'list', 'listname'=>'delivertype', 'readonly'=>1, 'caption' => 'Тип доставки', 'mask' =>array('min'=>1));
 		$this->fields_form['paytype'] = array('type' => 'list', 'listname' => 'paytype', 'caption' => 'Тип платежа', 'mask' =>array('min'=>1));
 		$this->fields_form['laststatus'] = array('type' => 'list', 'listname'=>'status', 'caption' => 'Статус', 'readonly'=>1, 'mask' =>array());
 		//$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Отображать','default'=>1, 'readonly'=>1, 'mask' =>array());
@@ -94,6 +94,7 @@ class shopbasket_class extends kernel_extends {
 		);
 
 	}
+
 
 	function _getlist($listname, $value = 0) {
 		$data = array();

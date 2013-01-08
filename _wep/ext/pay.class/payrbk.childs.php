@@ -125,7 +125,7 @@ class payrbk_class extends kernel_extends {
 		//$this->fields_form['sender'] = array('type' => 'text', 'caption' => 'Номер плательщика');
 		$this->fields_form['email'] = array('type' => 'text', 'caption' => 'Email');
 		$this->fields_form['amount'] = array('type' => 'decimal', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('min'=>$this->config['minpay'],'max'=>$this->config['maxpay']));
-		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Комментарий', 'mask'=>array('name'=>'all'));
+		//$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Комментарий', 'mask'=>array('name'=>'all'));
 		$this->fields_form['paymentStatus'] = array('type' => 'list', 'listname'=>'paymentStatus', 'readonly'=>1, 'caption' => 'Статус', 'mask'=>array());
 		//$this->fields_form['error'] = array('type' => 'list', 'listname'=>'error', 'readonly'=>1, 'caption' => 'Ошибка', 'mask'=>array());
 		$this->fields_form['mf_timecr'] = array('type' => 'date', 'readonly'=>1, 'caption' => 'Дата', 'mask'=>array());
@@ -133,91 +133,62 @@ class payrbk_class extends kernel_extends {
 
 
 	/*
-	* При добавлении делаем запрос XML
+	* Создание счёта
 	*/
-	function billingForm($summ, $comm, $data=array()) {
-		$ADD = array('amount'=>$summ,'name'=>$comm);
+	public function billingForm($summ, $comm, $data=array()) 
+	{
+		$this->owner->setPostData('email', $data);
 
-		if(isset($_SESSION['user']['email']))
-			$ADD['email'] = $data['email'] = $_SESSION['user']['email'];
-		elseif(isset($data['email']))
-			$ADD['email'] = $data['email'];
+		$argForm = array();
+		$argForm['email'] = array('type' => 'email', 'caption' => 'Email', 'mask'=>array('name'=>'email'));
+		//$argForm['name'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $comm));
+		$argForm['amount'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $summ));
 
-		$result = array(
-			array(),0
-		);
-		if($this->_add($ADD)) {
-			$DATA = $this->payFormBilling($this->data[$this->id]);
-			$result = array($DATA, 1);
-		}
-		return $result;
+		$_POST['sbmt'] = true;
+		$this->prm_add = true; 
+		return $this->_UpdItemModul(array('showform'=>1), $argForm);
 	}
 
 
-	function payFormBilling($data) 
+	/**
+	* Статус платежа
+	*/
+	public function statusForm($data)
 	{
-		$DATA = array();
-		if(isset($data['paymentStatus']) and $data['paymentStatus']==self::$STATUS_SUCCESS)
+		//print_r('<pre>');print_r($data);
+		//$data['child']
+		$result = array('showStatus'=>true,'messages'=>array());
+		//if(isset($data['paymentStatus']) and $data['paymentStatus']==self::$STATUS_SUCCESS)
+		if(count($data) and $data['status']<2) 
 		{
-			$DATA = array('messages'=>array());
-
-			$DATA['messages'][] = array('payselect-comm',$data['name']);
-			$DATA['messages'][] = array('payselect-summ','Сумма : <span>'.number_format($data['amount'], 2, ',', ' ').' '.$this->owner->config['curr'].'');
-
-			$DATA['messages'][] = array('ok','Оплачено');
-
-		}
-		else
-		{
-
-			$DATA = array();
-			$DATA['messages'] = array(
-				array('alert','Выполняется открытие страницы оплаты на RBK.Money.'),
+			$result['messages'] = array(
+				array('alert','Выполняется открытие страницы оплаты на '.$this->caption),
 				array('notice','<small>Если у вас не открылось окно оплаты, возможно ваш браузер заблокировал открытие окна (Ваш браузер должен был выдать предупреждение об этом, кликните на всплывшее сообщение и разрешите данную операцию)</small>'),
-				array('txt','После оплаты обновите <a href="javascript:window.location.reload();">страницу</a>, чтобы узнать состояние счёта.'),
 			);
-			$DATA['form'] = array(
+			$result['form'] = array(
 				'_*features*_' => array('name'=>'paymethod','action'=>$this->config['actionURL'].'"  target="_blank'),
 				'eshopId'=>array('type'=>'hidden','value'=>$this->config['eshopId']),
-				'orderId'=>array('type'=>'hidden','value'=>$data['id']), // заголовок у отправителя
+				'orderId'=>array('type'=>'hidden','value'=>$data['child']['id']), // заголовок у отправителя
 				'serviceName'=>array('type'=>'hidden','value'=>$data['name']), // Комментарий у отправителя
-				'recipientAmount'=>array('type'=>'hidden','value'=>$data['amount']),
+				'recipientAmount'=>array('type'=>'hidden','value'=>$data['child']['amount']),
 				'recipientCurrency'=>array('type'=>'hidden','value'=>$this->config['recipientCurrency']),
 				'successUrl'=>array('type'=>'hidden','value'=>$this->owner->successUrl),
 				'failUrl'=>array('type'=>'hidden','value'=>$this->owner->failUrl),
-				'user_email'=>array('type'=>'hidden','value'=>$data['email']),
+				'user_email'=>array('type'=>'hidden','value'=>$data['child']['email']),
 				'language'=>array('type'=>'hidden','value'=>$this->config['language']),
 			);
 			if ($this->config['preference'] != 'all') {
-				$form['preference'] = array(
-					'#type' => 'hidden',
-					'#value' => $this->config['preference'],
+				$result['form']['preference'] = array(
+					'type' => 'hidden',
+					'value' => $this->config['preference'],
 				);
 			}
-			$DATA['form']['sbmt'] = array('type'=>'submit','value'=>'Перейти на RBK.Money');
+			$result['form']['sbmt'] = array('type'=>'submit','value'=>'Перейти на '.$this->caption.' для оплаты счета');
 			global $_tpl;
 			$_tpl['onload'] .= '$("#form_paymethod").submit();';
 		}
 
-		return $DATA;
-	}
-
-	/*
-	* INFO status
-	*/
-	public function statusForm($data) 
-	{
-
-		$DATA = array('messages'=>array());
-
-		if(count($data)) {
-			$DATA['messages'][] = array('payselect-comm',$data['name']);
-			$DATA['messages'][] = array('payselect-summ','Сумма : <span>'.number_format($data['cost'], 2, ',', ' ').' '.$this->owner->config['curr'].'');
-
-			$DATA['messages'][] = array('alert','Чтобы оплатить счёт, перейдите на сайт <a href="'.$this->pay_formType.'" target="_blank">QIWI</a>');
-		}
-
-		return $DATA;
+		return $result;
 	}
 
 	///////////////////////////////////////
