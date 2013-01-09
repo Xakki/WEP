@@ -675,8 +675,8 @@ class static_form {
 				}
 				//$form['caption'].': '.
 			}
-
-			$vars[$key] = $data[$key];
+			if(isset($data[$key]))
+				$vars[$key] = $data[$key];
 
 		} unset($form);
 		
@@ -806,6 +806,15 @@ class static_form {
 		return true;
 	}
 
+	static function passwordHash($val, $form)
+	{
+		global $_CFG;
+
+		if(isset($form['md5']) and !$form['md5'])
+			return $val;
+		return md5($_CFG['wep']['md5'].$val);
+	}
+
 	/**
 	 * Проверяющий форму по отдельному полю
 	 *
@@ -829,14 +838,14 @@ class static_form {
 					if($data[$key]!=$data['re_'.$key])
 						$error[] = 32;
 					else
-						$data[$key] = md5($_this->_CFG['wep']['md5'].$data[$key]);
+						$data[$key] = passwordHash($data[$key], $form);
 				}else
 					unset($data[$key]);
 			}
 			elseif(isset($form['mask']['password']) and $form['mask']['password']=='confirm')
 			{
 				if(isset($_this->data[$_this->id][$key]) and $data[$key]) {
-					if($_this->data[$_this->id][$key]!=md5($_this->_CFG['wep']['md5'].$data[$key]))
+					if($_this->data[$_this->id][$key]!= passwordHash($data[$key], $form) )
 						$error[] = 322;
 					unset($data[$key]);
 				}
@@ -844,10 +853,10 @@ class static_form {
 			elseif(isset($form['mask']['password']) and $form['mask']['password']=='change')
 			{
 				if(isset($_this->data[$_this->id][$key]) and $data[$key] or $data[$key.'_old']) {
-					if($_this->data[$_this->id][$key]!=md5($_this->_CFG['wep']['md5'].$data[$key.'_old']))
+					if($_this->data[$_this->id][$key]!=passwordHash($data[$key.'_old'], $form))
 						$error[] = 321;
 					else
-						$data[$key] = md5($_this->_CFG['wep']['md5'].$data[$key]);
+						$data[$key] = passwordHash($data[$key], $form);
 				}
 			} 
 			else {
@@ -860,8 +869,7 @@ class static_form {
 					elseif(_strlen($data[$key])<$form['mask']['min'])
 						$error[] = 21;
 				}
-				if(!isset($form['md5']) or $form['md5'])
-					$data[$key] = md5($_this->_CFG['wep']['md5'].$data[$key]);
+				$data[$key] = passwordHash($data[$key], $form);
 			}
 			return true;
 		}

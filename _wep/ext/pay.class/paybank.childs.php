@@ -33,17 +33,17 @@ class paybank_class extends kernel_extends
 
 		$this->config['bank_prefix'] = 'НФ-';
 		$this->config['bank_namefirm'] = 'ООО "Рога и Копыта"';
-		$this->config['bank_INN'] = '';
-		$this->config['bank_KPP'] = '';
-		$this->config['bank_nomer'] = '';
-		$this->config['bank_namebank'] = '';
-		$this->config['bank_BIK'] = '';
-		$this->config['bank_KC'] = '';
-		$this->config['bank_info'] = '';
-		$this->config['bank_firmaddress'] = '';
-		$this->config['bank_firmcontact'] = '';
-		$this->config['minpay'] = '';
-		$this->config['maxpay'] = '';
+		$this->config['bank_INN'] = '1234567890';
+		$this->config['bank_KPP'] = '123456789';
+		$this->config['bank_nomer'] = '12345678901234567890';
+		$this->config['bank_namebank'] = 'БАНК РОССИИ';
+		$this->config['bank_BIK'] = '044525181';
+		$this->config['bank_KC'] = '30101810900000000181';
+		$this->config['bank_info'] = '<h1 style="color: rgb(0, 0, 0); font-family: \'Times New Roman\'; line-height: normal; ">	Внимание! Ваш банк может взимать комиссию.</h1><h1 style="color: rgb(0, 0, 0); font-family: \'Times New Roman\'; line-height: normal; ">	<b>Метод оплаты:</b></h1><ol style="color: rgb(0, 0, 0); font-family: \'Times New Roman\'; font-size: medium; line-height: normal; ">	<li>		Распечатайте квитанцию. Если у вас нет принтера, перепишите верхнюю часть квитанции и заполните по этому образцу стандартный бланк квитанции в вашем банке.</li>	<li>		Вырежьте по контуру квитанцию.</li>	<li>		Оплатите квитанцию в любом отделении банка, принимающего платежи от частных лиц.&nbsp;<span style="color: red; "><b>*</b></span></li>	<li>		Сохраните квитанцию до подтверждения исполнения заказа.</li>	<li>		Срок резерва товара - 5 дней.</li></ol><h1 style="color: rgb(0, 0, 0); font-family: \'Times New Roman\'; line-height: normal; ">	<b>Условия поставки:</b></h1><ul style="color: rgb(0, 0, 0); font-family: \'Times New Roman\'; font-size: medium; line-height: normal; ">	<li>		Отгрузка оплаченного товара производится после подтверждения факта платежа.</li>	<li>		Идентификация платежа производится по квитанции, поступившей в наш банк.</li></ul><p style="color: rgb(0, 0, 0); line-height: normal; font-family: \'Times New Roman\'; font-size: medium; ">	<b>Примечание:</b>&nbsp;ООО &quot;Рога и копыта&quot; не может гарантировать конкретные сроки проведения вашего платежа. За дополнительной информацией о сроках поступления денежных средств в банк получателя, обращайтесь в свой банк.</p><p style="color: rgb(0, 0, 0); line-height: normal; font-family: \'Times New Roman\'; font-size: medium; ">	<b><span style="color: red; ">*</span>&nbsp;Помните, что банки за проведение платежа взимают небольшую комиссию</b><br />	&nbsp;</p>';
+		$this->config['bank_firmaddress'] = '123456, Россия, Москва, Арбат, 1';
+		$this->config['bank_firmcontact'] = '(917) 123 45 67';
+		$this->config['minpay'] = '0';
+		$this->config['maxpay'] = '10000000';
 		$this->config['lifetime'] = 720;
 
 		$this->config_form['i'] = array('type' => 'info', 'caption'=>'<h3>Оплата безналичным расчетом</h3>');
@@ -104,7 +104,7 @@ class paybank_class extends kernel_extends
 
 		$_POST['sbmt'] = true;
 		$this->prm_add = true; 
-		return $this->_UpdItemModul(array('showform'=>1), $argForm);
+		return $this->_UpdItemModul(array('showform'=>1, 'savePost'=>true), $argForm);
 	}
 
 	public function statusForm($data)

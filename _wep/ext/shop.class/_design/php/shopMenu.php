@@ -1,13 +1,4 @@
 <?php
-/**
- * Меню каталога
- * @type Магазин
- * @tags shopmenu
- * @ico default.png
- * @author Xakki
- * @version 0.1
- * @return string html
- */
 	function tpl_shopMenu(&$data) {
 		$html = '';
 		if(isset($data) and count($data)) {
@@ -35,7 +26,7 @@
 				$html .= '<li>';
 				$sub = '';
 			}
-			$html .= '<a href="/'.$pgid.'/'.$r['path'].'.html" class="'.($r['#sel#']?'selected':'').'">'.$r['name'].'</a>'.$sub.'</li>';
+			$html .= '<a href="/'.$pgid.'/'.$r['path'].'.html" class="'.($r['#sel#']?'selected':'').'">'.$r['uiname'].'</a>'.$sub.'</li>';
 		}
 		$html .= '</ul>';
 		return $html;

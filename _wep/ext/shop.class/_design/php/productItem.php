@@ -1,13 +1,4 @@
 <?php
-/**
- * Страница о товаре
- * @type Магазин
- * @tags shopproditem
- * @ico default.png
- * @author Xakki
- * @version 0.1
- * @return string html
- */
 	function tpl_productItem(&$data) {
 		$html = '';
 

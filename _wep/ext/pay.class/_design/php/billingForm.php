@@ -12,7 +12,7 @@ function tpl_billingForm($data)
 	global $_tpl, $HTML;
 	$_tpl['styles']['/_pay/pay'] = 1;
 	$currency = $data['#config#']['curr'];
-	$html = '<div class="payselect">';
+	$html = '<div class="billingForm">';
 
 	if(isset($data['#title#']) and $data['#title#'])
 		$html .= '<h2>'.$data['#title#'].'</h2>';
@@ -31,48 +31,11 @@ function tpl_billingForm($data)
 	}
 
 	// выводим форму выбора плат системы ии форму для выбранной плат системы
-	if(isset($data['paymethod']) or isset($data['form'])) //#resFlag#==0
+	if(isset($data['form'])) //#resFlag#==0
 	{
-		// AJAX forma
-		$ID = 'form_paymethod';
-		$action = '';
-		if(isset($data['form']['_*features*_']['action']))
-			$action = $data['form']['_*features*_']['action'];
-		else
-			$_tpl['onload'] .= 'wep.form.ajaxForm(\'#'.$ID.'\','.$data['#contentID#'].');';
-
-		$html .= '<form action="'.$action.'" enctype="multipart/form-data" method="post" id="'.$ID.'">';
-		foreach($_POST as $k=>$r) {
-			if(!is_array($r))
-				$html .= '<input type="hidden" value="'.$r.'" name="'.$k.'">';
-			else {
-				foreach($r as $ki=>$i)
-					$html .= '<input type="hidden" value="'.$i.'" name="'.$k.'['.$ki.']">';
-			}
-		}
-
-		if(isset($data['paymethod'])) {
-			$html .= '<div class="paymethod">';
-			foreach($data['paymethod'] as $r) 
-			{
-				/*if(isset($r['_button']))
-					$html .= '<span>'.$r['_button'].'</span>';
-				else*/
-				$html .= '<input class="pay-'.$r['_cl'].'" type="submit" value="'.$r['_cl'].'" name="paymethod" title="'.$r['caption'].'">';
-
-			}
-			$html .= '</div>';
-		}
-		else
-		{
-			$_CFG['fileIncludeOption']['form'] = 1;
-			$html .= '<div class="divform">';
-			unset($data['form']['_info']);
-			unset($data['messages']);
-			$html .= $HTML->transformPHP($data, '#pg#formcreat');
-			$html .= '</div>';
-		}
-		$html .= '</form>';
+		unset($data['form']['_info']);
+		unset($data['messages']);
+		$html .= $HTML->transformPHP($data, '#pg#formcreat');
 	}
 	// Вывводим статус платежа
 	else

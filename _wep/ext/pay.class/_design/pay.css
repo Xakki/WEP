@@ -1,55 +1,14 @@
 /*payselect*/
-.payselect {
+.billingForm {
 	margin:0;padding:0;
 	text-align: center;
-	width:340px;margin:10px auto;
 }
-.payselect h2 {
+.billingForm h2 {
 	text-align: center;
-}
-.payselect .paymethod input {
-	vertical-align:top;
-	text-align: center;
-	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
-	font-size:14px;
-	height:50px;
-	width:100px;
-	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
-	border:1px #e1e1e1 solid;
-	background: url(payuser.png) no-repeat scroll 50% 0 transparent;
-	margin:5px;
-	padding:5px;
-	vertical-align:bottom;
-	text-align: center;
-	color: transparent;
-	cursor:pointer;
-}
-.payselect .paymethod input:hover {
-	border:1px gray solid;
-}
-.payselect .paymethod .pay-users {
-}
-.payselect .paymethod .pay-payqiwi {
-	background-image: url(qiwi/logo.png);
-}
-.payselect .paymethod .pay-payyandex {
-	background-image: url(yandex/logo.png);
-}
-.payselect div.divform {
-	width: auto;
 }
 
-.payselect .paySpanMess {
-	color:gray;
-	cursor:pointer;
-}
-.payselect .paySpanMess:hover {
-	color:blue;
-}
-.payselect .payLink {
-	font-size: 16px;
-	font-weight: bold;
-	color: #444;
+.billingForm div.divform {
+	width: auto;
 }
 
 
@@ -92,4 +51,139 @@
 }
 .payselect-summ span {
 	font-size: 1.6em;
+}
+
+/*****************/
+
+
+.logoPayStatus
+{
+	text-align: center;
+}
+.logoPayStatus a {
+	color: transparent !important;
+	display: block;
+	height:50px;
+	width:100px;
+	background: url(qiwi/logo.png) no-repeat scroll 50% 0 transparent;
+	opacity: 0.7;
+	margin: 0 auto;
+}
+.logoPayStatus a:hover {
+	opacity: 1;
+}
+
+.qiwiPayStatus a {
+	background: url(qiwi/logo.png) no-repeat scroll 50% 0 transparent;
+}
+.rbkPayStatus a {
+	background: url(rbk/50.jpg) no-repeat scroll 50% 0 transparent;
+}
+
+
+/************************************/
+.payModulList {
+	text-align: center;
+}
+.payModulList li {
+	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
+}
+
+.payModulList li a {
+	width:100px;
+	border:1px transparent solid;
+	background: url(payuser.png) no-repeat scroll 50% 0 transparent;
+	margin:5px 20px;
+	padding:60px 5px 5px;
+	vertical-align: bottom;
+	cursor:pointer;
+	font-size:12px;
+	vertical-align: bottom;
+	white-space: nowrap;
+	color:#444;
+	display: block;
+}
+.payModulList li a:hover {
+	border:1px #e1e1e1 solid;
+}
+
+.payModulList li.pay-payqiwi a {
+	background: url(qiwi/logo.png) no-repeat scroll 50% 0 transparent;
+}
+
+.payModulList li.pay-payyandex a {
+	background: url(yandex/logo.png) no-repeat scroll 50% 0 transparent;
+}
+
+
+/******************************************/
+/*
+$FORM['paytype'] = array('type' => 'radio', 'listname' => 'paytype', 'css'=>'paytype', 'caption' => 'Тип платежа', 'mask' =>array('min'=>1));
+*/
+/* Для формы и списка выбора*/
+
+.paytype label, .paytype a, .paytype button {
+	line-height: 35px;
+	cursor: pointer;
+	position: relative;
+	border: 0 none;
+}
+	.paytype a {
+		display: block;
+		padding:0 0 0 55px;
+		margin:5px 10px;
+		vertical-align: middle;
+	}
+	.paytype button {
+		display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
+		padding:0;
+		margin: 5px;
+		width: 50px;
+		height: 30px;
+	}
+	.paytype button:active {
+		border:1px solid #616161;
+	}
+	.paytype label input {
+		margin:0 60px 0 0 !important;
+		position: relative !important;
+	    top: 4px !important;
+	    height: 1em !important;
+	}
+
+.paytype label::after, .paytype a::after, .paytype button::after {
+	left: 23px;top: 5px;
+	position: absolute;
+	content: " ";
+	display: block;
+	width: 50px;
+	height: 30px;
+	background: transparent url(allpay.jpg) no-repeat -486px -158px;\
+	cursor: pointer;
+}
+	.paytype a::after {
+		left: 0px;
+	}
+	.paytype button::after {
+		left: 0px;
+		top:0;
+	}
+/*Список  платежных систем кнопкой */
+
+/**/
+
+.paytype .ico_payusers::after {
+	background-position:0 -260px;
+}
+.paytype .ico_paybank::after {
+	background-position:-486px -158px;
+}
+.paytype .ico_payqiwi::after {
+	background-position:-486px -328px;
+}
+.paytype .ico_payrbk::after {
+	background-position:-378px -260px;
+}
+.paytype .ico_payyandex::after {
+	background-position:-216px -294px;
 }

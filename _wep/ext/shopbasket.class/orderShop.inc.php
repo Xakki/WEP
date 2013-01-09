@@ -38,6 +38,7 @@
 	if(!_new_class('pay', $PAY)) return false;
 
 	$_tpl['styles']['/_shop/style/shopBasket'] = 1;
+	$_tpl['styles']['/_pay/pay'] = 1;
 	$_CFG['fileIncludeOption']['form'] = 1;
 
 	$subMenu = array(
@@ -94,7 +95,7 @@
 			$FORM['phone'] = array('type' => 'phone', 'caption' => 'Телефон для связи и оповещения', 'mask'=>array('name'=>'phone3', 'min'=>6));
 			$FORM['summ'] = array('type' => 'decimal', 'caption' => 'Сумма', 'readonly'=>1, 'mask'=>array());
 			$FORM['delivertype'] = array('type' => 'list', 'listname'=>'delivertype', 'readonly'=>1, 'caption' => 'Тип доставки', 'mask' =>array('min'=>1));
-			$FORM['paytype'] = array('type' => 'radio', 'listname' => 'paytype', 'caption' => 'Тип платежа', 'mask' =>array('min'=>1));
+			$FORM['paytype'] = array('type' => 'radio', 'listname' => 'paytype', 'css'=>'paytype', 'caption' => 'Тип платежа', 'mask' =>array('min'=>1));
 
 			$deliveryData = $SHOPDELIVER->qs('*','WHERE active=1 and id='.$shopbasketData[$SHOPBASKET->id]['delivertype'],'id');
 			$deliveryData['paylist'] = trim($deliveryData['paylist'],'|');
@@ -131,7 +132,7 @@
 			$BDATA[$SHOPBASKET->id]['json_data'] = json_encode($IDATA);
 
 			_new_class('pay', $PAY);
-			$_POST['paymethod'] = $BDATA[$SHOPBASKET->id]['paytype'];
+			$_POST['pay_modul'] = $BDATA[$SHOPBASKET->id]['paytype'];
 
 			$DATA = $PAY->billingForm(
 				$BDATA[$SHOPBASKET->id]['summ'], // К оплате
@@ -188,7 +189,7 @@
 					$FORM['phone'] = array('type' => 'phone', 'caption' => 'Телефон для связи и оповещения', 'mask'=>array('name'=>'phone3', 'min'=>6));
 					$FORM['summ'] = array('type' => 'hidden', 'readonly'=>1, 'mask'=>array('eval'=>$_POST['cost']));
 					$FORM['delivertype'] = array('type' => 'hidden', 'readonly'=>1, 'mask' =>array('min'=>1, 'eval'=>$_GET['typedelivery']));
-					$FORM['paytype'] = array('type' => 'radio', 'listname' => 'paytype', 'caption' => 'Тип платежа', 'mask' =>array('min'=>1));
+					$FORM['paytype'] = array('type' => 'radio', 'listname' => 'paytype', 'css'=>'paytype', 'caption' => 'Тип платежа', 'mask' =>array('min'=>1));
 					
 					$FORM['phone']['value'] = (isset($_COOKIE['phone'])? $_COOKIE['phone'] : $_SESSION['user']['cf1']);
 					$FORM['address']['value'] = (isset($_COOKIE['address'])? $_COOKIE['address'] : $_SESSION['user']['cf2']);

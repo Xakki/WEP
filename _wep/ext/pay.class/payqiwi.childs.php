@@ -16,7 +16,7 @@ class payqiwi_class extends kernel_extends {
 
 		$this->config_form['qiwi_info'] = array('type' => 'info', 'caption'=>'<h3>QIWI</h3><p>На сайте необходимо разместить логотип и описание(<a href="http://ishopnew.qiwi.ru/docs.html" target="_blank">материалы QIWI для сайта</a>)</p>');
 		$this->config_form['qiwi_login'] = array('type' => 'text', 'caption' => 'Логин', 'comment'=>'');
-		$this->config_form['qiwi_password'] = array('type' => 'password', 'md5'=>false, 'caption' => 'Пароль');
+		$this->config_form['qiwi_password'] = array('type' => 'password', 'md5'=>false, 'caption' => 'Пароль', 'mask'=>array('password'=>'change'));
 		$this->config_form['qiwi_txn-prefix'] = array('type' => 'text', 'caption' => 'Префикс в номере счёта','comment'=>'');
 		$this->config_form['qiwi_create-agt'] = array('type' => 'checkbox', 'caption' => 'Разрешать не клиентам QIWI','comment'=>'Если вкл. то при выставлении счёта создается пользователь в системе QIWI. При этом оплатить счёт можно в терминале наличными без ввода ПИН-кода.');
 		$this->config_form['qiwi_alarm-sms'] = array('type' => 'text', 'caption' => 'alarm-sms','comment'=>'1 - включит СМС оповещение (СМС платно)');
@@ -128,7 +128,7 @@ Cчета со статусом большим или равным 100 трак�
 
 		$_POST['sbmt'] = true;
 		$this->prm_add = true; 
-		return $this->_UpdItemModul(array('showform'=>1), $argForm);
+		return $this->_UpdItemModul(array('showform'=>1, 'savePost'=>true), $argForm);
 	}
 	
 

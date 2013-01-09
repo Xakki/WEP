@@ -1,17 +1,8 @@
 <?php
-/**
- * Список товаров
- * @type Магазин
- * @tags shopprodlist
- * @ico default.png
- * @author Xakki
- * @version 0.1
- * @return string html
- */
 	function tpl_productList(&$data) {
 		$html = '';
 		if(isset($data) and count($data)) {
-			global $_tpl,$HTML, $_CFG;
+			global $_tpl,$HTML;
 			$_tpl['styles']['/_shop/style/product'] = 1;
 
 			$html = '<div class="prodlist">';

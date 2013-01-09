@@ -4,24 +4,28 @@ var timerid2 = 0;
 var ajaxComplite = 1;
 
 wep.form = {
-	initForm: function() {
+	initForm: function(selector) {
 
-		$('form span.labelInput').click(function() {
+		$(selector+' span.labelInput').unbind('click').click(function() {
 			$(this).next().focus();
 		});
-		$('form span.labelInput+input').focus(function() {
+		$(selector+' span.labelInput+input').unbind('focus').focus(function() {
 			$(this).prev().hide();
 		});
-		$('form span.labelInput+input').focusout(function() {
+		$(selector+' span.labelInput+input').unbind('focusout').focusout(function() {
 			if(this.value=='')
 				$(this).prev().show();
 		});
 
-		$('form span.form-requere').click(function() {
+		$(selector+' span.form-requere').unbind('click').click(function() {
 			var tx = $(this).attr('data-text');
 			if(!tx) tx = 'Данное поле обязательно для заполнения!';
 			wep.showHelp(this,tx,2000,1)
 		});
+
+		$(selector).off("keyup change").on("keyup change", "input[type=int]", function(e){return wep.form.checkInt(e);});
+
+		$(selector).off("focus.float").on("focus.float", "input[data-width0]", function(e){return wep.form.checkFloat(e);});
 	},
 	// Делаем форму на странице аяксовой
 	ajaxForm : function(id,contentID) {

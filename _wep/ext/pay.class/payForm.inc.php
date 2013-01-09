@@ -1,6 +1,6 @@
 <?php
 /**
- * Список платежей
+ * Список платежей (Все)
  * @ShowFlexForm true
  * @type Pay
  * @ico default.png

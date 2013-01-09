@@ -88,7 +88,7 @@ class payrbk_class extends kernel_extends {
 		$this->config_form['info'] = array('type' => 'info', 'caption'=>'<input value="http://'.$_SERVER['HTTP_HOST'].'/_js.php?_modul='.$this->_cl.'&_fn=successpayment&noajax=1" readonly="true"/>');
 		$this->config_form['actionURL'] = array('type' => 'text', 'caption' => 'actionURL', 'comment'=>'');
 		$this->config_form['eshopId'] = array('type' => 'text', 'caption' => 'eshopId');
-		$this->config_form['secretKey'] = array('type' => 'text', 'caption' => 'secretKey','comment'=>'');
+		$this->config_form['secretKey'] = array('type' => 'password', 'caption' => 'secretKey','comment'=>'', 'mask'=>array('password'=>'change'));
 		$this->config_form['recipientCurrency'] = array('type' => 'list', 'listname'=>'recipientCurrency', 'caption' => 'Валюта','comment'=>'');
 		$this->config_form['allow_ip'] = array('type' => 'text', 'caption' => 'Разрешенные IP', 'default'=>'89.111.188.128, 46.38.182.208, 46.38.182.209, 46.38.182.210');
 		$this->config_form['preference'] = array('type' => 'list', 'listname'=>'preference', 'caption' => 'Метод оплаты по умолчанию','comment'=>'Позволяет пропустить окно выбора оплаты');
@@ -166,7 +166,7 @@ class payrbk_class extends kernel_extends {
 				array('notice','<small>Если у вас не открылось окно оплаты, возможно ваш браузер заблокировал открытие окна (Ваш браузер должен был выдать предупреждение об этом, кликните на всплывшее сообщение и разрешите данную операцию)</small>'),
 			);
 			$result['form'] = array(
-				'_*features*_' => array('name'=>'paymethod','action'=>$this->config['actionURL'].'"  target="_blank'),
+				'_*features*_' => array('name'=>'rbk','action'=>$this->config['actionURL'].'"  target="_blank'),
 				'eshopId'=>array('type'=>'hidden','value'=>$this->config['eshopId']),
 				'orderId'=>array('type'=>'hidden','value'=>$data['child']['id']), // заголовок у отправителя
 				'serviceName'=>array('type'=>'hidden','value'=>$data['name']), // Комментарий у отправителя
@@ -185,7 +185,7 @@ class payrbk_class extends kernel_extends {
 			}
 			$result['form']['sbmt'] = array('type'=>'submit','value'=>'Перейти на '.$this->caption.' для оплаты счета');
 			global $_tpl;
-			$_tpl['onload'] .= '$("#form_paymethod").submit();';
+			$_tpl['onload'] .= '$("#form_rbk").submit();';
 		}
 
 		return $result;
