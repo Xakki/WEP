@@ -77,7 +77,7 @@ class payyandex_class extends kernel_extends {
 		$this->config_form['actionURL'] = array('type' => 'text', 'caption'=>'Платежная ссылка');
 		$this->config_form['yandex_id'] = array('type' => 'text', 'caption'=>'Номер счёта');
 		$this->config_form['yandex_cid'] = array('type' => 'text', 'caption'=>'Идентификатор приложения','comment'=>'Получить его можно <a href="https://sp-money.yandex.ru/myservices/new.xml" target="_blank">тут</a> и <a href="https://sp-money.yandex.ru/myservices/admin.xml" target="_blank">настраивать</a><br>Redirect URI: <b>'.$this->REDIRECT_URI.'</b> ');
-		$this->config_form['yandex_token'] = array('type' => 'text', 'caption'=>'TOKEN');
+		$this->config_form['yandex_token'] = array('type' => 'password', 'caption'=>'TOKEN', 'mask'=>array('password'=>'change'));
 		/*$this->config_form['yandex_token'] = array('type' => 'hidden');
 		$this->config_form['yandex_newtoken'] = array('type' => 'checkbox','caption'=>'Установить новый токен', 'onchange'=>'if(this.checked) $(\'.yandex_newtoken\').show(); else $(\'.yandex_newtoken\').hide();', 'style'=>'background-color:#F60;');
 		$this->config_form['yandex_login'] = array('type' => 'text', 'caption'=>'Логин авторизации', 'css'=>'yandex_newtoken','style'=>'background-color:#F65;');
@@ -165,7 +165,7 @@ class payyandex_class extends kernel_extends {
 
 		$_POST['sbmt'] = true;
 		$this->prm_add = true; 
-		return $this->_UpdItemModul(array('showform'=>1), $argForm);
+		return $this->_UpdItemModul(array('showform'=>1, 'savePost'=>true), $argForm);
 	}
 
 	/**
@@ -184,7 +184,7 @@ class payyandex_class extends kernel_extends {
 				array('notice','<small>Если у вас не открылось окно оплаты, возможно ваш браузер заблокировал открытие окна (Ваш браузер должен был выдать предупреждение об этом, кликните на всплывшее сообщение и разрешите данную операцию)</small>'),
 			);
 			$result['form'] = array(
-				'_*features*_' => array('name'=>'paymethod','action'=>$this->config['actionURL'].'"  target="_blank'),
+				'_*features*_' => array('name'=>'yandex','action'=>$this->config['actionURL'].'"  target="_blank'),
 				'FormComment'=>array('type'=>'hidden','value'=>'Счёт№'.$data['child']['id']), // заголовок у отправителя
 				'comment-needed'=>array('type'=>'hidden','value'=>'false'), // не нужны коменты, ТОДУЖ брать опцию из конфига
 				'label'=>array('type'=>'hidden','value'=>'true'),//
@@ -206,7 +206,7 @@ class payyandex_class extends kernel_extends {
 
 			$result['form']['sbmt'] = array('type'=>'submit','value'=>'Перейти на '.$this->caption.' для оплаты счета');
 			global $_tpl;
-			$_tpl['onload'] .= '$("#form_paymethod").submit();';
+			$_tpl['onload'] .= '$("#form_yandex").submit();';
 		}
 
 		return $result;

@@ -18,7 +18,7 @@ class pay_class extends kernel_extends {
 		$this->cf_childs = true;
 		$this->mf_notif = true;
 
-		$this->ver = '0.6.6';
+		$this->ver = '0.6.7';
 		$this->default_access = '|0|';
 		$this->prm_add = false; // добавить в модуле
 		$this->prm_del = false; // удалять в модуле
@@ -88,7 +88,8 @@ class pay_class extends kernel_extends {
 		$data = array();
 		if ($listname == 'pay_modul') {
 			foreach ($this->childs as $key => &$value) {
-				$data[$key] = $value->caption;
+				if (isset($value->pay_systems))
+					$data[$key] =  array('css'=>'ico_'.$key, '#name#'=>$value->caption, '#id#'=>$key);
 			}
 			return $data;
 		} 
@@ -161,7 +162,7 @@ class pay_class extends kernel_extends {
 		// -3 : прочие ошибки
 
 		//eval($eval);
-		if( $this->isPayModul($_POST['paymethod']) ) 
+		if(isset($_POST['pay_modul']) and $this->isPayModul($_POST['pay_modul']) ) 
 		{
 			// Если есть уже такой счет и он еще не оплачен, то информацию/форму для оплаты счета
 			if($id = $this->getIdBill($summ, $key, $comm)) 
@@ -170,12 +171,12 @@ class pay_class extends kernel_extends {
 			} 
 			else 
 			{
-				$CHILD = &$this->childs[$_POST['paymethod']];
+				$CHILD = &$this->childs[$_POST['pay_modul']];
 				list($data, $resFlag) = $CHILD->billingForm($summ,$comm,$addInfo);
 				if($resFlag==1) 
 				{
-					$from_user = $this->checkPayUsers($_POST['paymethod']); // User плат. системы
-					if($this->payAdd($from_user, 1, $summ, $key, $comm, PAY_NOPAID, $_POST['paymethod'],$eval, $addInfo)) 
+					$from_user = $this->checkPayUsers($_POST['pay_modul']); // User плат. системы
+					if($this->payAdd($from_user, 1, $summ, $key, $comm, PAY_NOPAID, $_POST['pay_modul'],$eval, $addInfo)) 
 					{
 						return $this->statusForm($this->id);
 					} 
@@ -188,15 +189,12 @@ class pay_class extends kernel_extends {
 		}
 		else 
 		{
-			$data['paymethod'] = array();
-			// ADD pay
-			foreach($this->childs as &$child) 
-			{
-				if (isset($child->pay_systems)) 
-				{
-					$data['paymethod'][$child->_cl] = array('_cl'=>$child->_cl,'caption'=>$child->caption);
-				}
-			}
+			$argForm = array();
+			$argForm['pay_modul'] = array('type' => 'list', 'listname' => 'pay_modul', 'viewType'=>'button', 'css'=>'paytype', 'caption' => 'Выбирите метод оплаты', 'mask' =>array('min'=>1));
+			$argForm['sbmt'] = array('type' => 'submit', 'value' => array() );
+			$this->prm_add = true;
+			$this->id = null;
+			list($data, $resFlag) = $this->_UpdItemModul(array('showform'=>1, 'savePost'=>true), $argForm);
 
 			//$data['messages'][] = array('info','Выберите вариант оплаты.');
 		}
@@ -205,9 +203,10 @@ class pay_class extends kernel_extends {
 		$data['#resFlag#'] = $resFlag;
 		$data['#config#'] = $this->config;
 		$data['tpl'] = '#pay#billingForm';//'#pay#billing'
-		global $PGLIST;
-		$DATA['#contentID#'] = $PGLIST->contentID;
-		print_r('<pre>');print_r($data);
+		/*global $PGLIST;
+		if($PGLIST)
+			$DATA['#contentID#'] = $PGLIST->contentID;*/
+
 		return $data;
 	}
 	
@@ -329,9 +328,9 @@ class pay_class extends kernel_extends {
 
 
 	// Проверяем, включен ли указанный платежный модуль
-	public function isPayModul($paymethod)
+	public function isPayModul($pay_modul)
 	{
-		if($paymethod and isset($this->childs[$paymethod]) and isset($this->childs[$paymethod]->pay_systems)) 
+		if($pay_modul and isset($this->childs[$pay_modul]) and isset($this->childs[$pay_modul]->pay_systems)) 
 			return true;
 		return false;
 	}
@@ -464,8 +463,16 @@ class pay_class extends kernel_extends {
 			_new_class('ugroup', $UGROUP);
 			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance-'.$data['cost'].' WHERE id='.$data[$this->mf_createrid]);
 			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance+'.$data['cost'].' WHERE id='.$data['user_id']);
-			if($data['_eval']) {
+			if($data['_eval']) 
+			{
+				if(substr($data['_eval'], 0,3)!='if(') // для совместимости со старым форматом
+				{
+					$temp = explode('::', $data['_eval']);
+					$data['_eval'] = 'if(_new_class("'.$temp[0].'",$M)){$M->'.$temp[1].';}';
+
+				}
 				eval($data['_eval']);
+
 			}
 		} 
 		/*else 

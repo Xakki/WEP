@@ -1164,7 +1164,12 @@ class pg_class extends kernel_extends {
 	* Обработка АЯКС запросов с страницы содержащий форму
 	*/
 	public function AjaxForm() {
-		global $HTML,$_tpl;
+		global $HTML,$_tpl, $PGLIST;
+		$PGLIST = $this;
+		$this->contentID = (int)$_GET['contentID'];
+		if(isset($_GET['pageParam']))
+			$this->pageParam = $_GET['pageParam'];
+
 		$RESULT = array('html'=>'Не верные данные', 'html2'=>'', 'text'=>'','onload'=>'');
 		$DATA  = array();
 		$htmlb = '';
@@ -1172,10 +1177,9 @@ class pg_class extends kernel_extends {
 		//if(count($_POST)) $_POST['sbmt'] = 1;
 
 		$Cdata = array();
-		if(isset($_GET['pageParam']))
-			$this->pageParam = $_GET['pageParam'];
+
 		// TODO : проверка правд доступа
-		$cls = 'SELECT * FROM ' . $this->SQL_CFG['dbpref'] . 'pg_content WHERE active=1 and id=' . (int)$_GET['contentID'];
+		$cls = 'SELECT * FROM ' . $this->SQL_CFG['dbpref'] . 'pg_content WHERE active=1 and id=' . $this->contentID;
 		$resultPG = $this->SQL->execSQL($cls);
 		if (!$resultPG->err)
 			while ($rowPG = $resultPG->fetch()) {

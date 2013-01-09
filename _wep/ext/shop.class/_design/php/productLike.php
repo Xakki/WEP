@@ -1,13 +1,4 @@
 <?php
-/**
- * Сопутствующие товары
- * @type Магазин
- * @tags shoplike
- * @ico default.png
- * @author Xakki
- * @version 0.1
- * @return string html
- */
 	function tpl_productLike(&$data) {
 		$html = '';
 		if(isset($data) and count($data)) {

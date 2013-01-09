@@ -1,12 +1,17 @@
 <?php
 function tpl_form(&$data, $tabs = array()) {
 	global $_CFG, $_tpl;
-	$_tpl['onload'] .= 'wep.form.initForm();';
+	
 
 	$attr = array();
-	if(isset($data['_*features*_'])) {
+	if(isset($data['_*features*_'])) 
+	{
 		$attr = $data['_*features*_'];
+		$_tpl['onload'] .= 'wep.form.initForm(\'#form_'.$attr['name'].'\');';
 	}
+	else
+		$_tpl['onload'] .= 'wep.form.initForm(\'form\');';
+
 	if(!isset($attr['id']))
 		$attr['id'] = 0;
 	$texthtml = '';
@@ -32,7 +37,8 @@ function tpl_form(&$data, $tabs = array()) {
 	$submitHtml = '';
 
 	$tagStatus = false;
-	foreach($data as $k=>$r) {
+	foreach($data as $k=>$r) 
+	{
 		if(!isset($r['type'])) continue;
 
 		if(!is_null($flagTabs)) {
@@ -51,59 +57,79 @@ function tpl_form(&$data, $tabs = array()) {
 		}
 
 		if(!isset($r['value'])) $r['value'] = '';
-		if($r['type']!='hidden')
-			$texthtml .= '<div id="tr_'.$k.'" style="'.(isset($r['style'])?$r['style']:'').'" class="div-tr'.
-				((isset($r['css']) and $r['css'])?' '.$r['css']:'').
-				((isset($r['mask']['min']) and $r['mask']['min'])?' required':'').
-				((isset($r['readonly']) and $r['readonly'])?' readonly':'').'">';
 
-		if($r['type']=='submit' and is_array($r['value'])) {
+		if($r['type']=='hidden') {
+			if(is_array($r['value']))
+				$r['value'] = implode('|',$r['value']);
+			$r['value'] = htmlentities($r['value'],ENT_QUOTES,$_CFG['wep']['charset']);
+			$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'" value="'.$r['value'].'" id="'.((isset($r['id']) and $r['id'])?$r['id']:$k).'"/>';
+			continue;
+		}
+		/*if($r['type']=='submit' and is_array($r['value'])) {
 			$submitHtml .= '<div class="form-submit">';
 			foreach($r['value'] as $ksubmit=>$rsubmit)
 				$submitHtml .= '<input type="'.$r['type'].'" name="'.$k.''.$ksubmit.'" value="'.$rsubmit.'" class="sbmt"/>';
 			$submitHtml .= '</div>';
 		}
-		elseif($r['type']=='submit') {
+		else*/
+		if($r['type']=='submit') // TODO сделать через списки
+		{
 			$submitHtml .= '<div class="form-submit">';
-			if(isset($r['value_save']) and $r['value_save']) {
-				$submitHtml .= '<input type="'.$r['type'].'" name="'.$k.'_save" value="'.$r['value_save'].'" class="sbmt"/>';
-			}	
-			$submitHtml .= '<input type="'.$r['type'].'" name="'.$k.'" value="'.$r['value'].'"  class="sbmt" onclick="';
-			if(isset($r['confirm']) and $r['confirm'])
-				$submitHtml .= 'if(!confirm(\''.$r['confirm'].'\')) return false;'.($r['onclick']?' else ':'');
-			if(isset($r['onclick']))
-				$submitHtml .= htmlentities($r['onclick'],ENT_COMPAT,$_CFG['wep']['charset']);
-			$submitHtml .= '"/>';
 
-			if(isset($r['value_del']) and $r['value_del']) {
-				$submitHtml .= '<input type="'.$r['type'].'" name="'.$k.'_del" value="'.$r['value_del'].'" class="sbmt" onclick="if(confirm(\''.$r['value_del'].'\')) return true; return false;"/>';
+			if(is_array($r['value'])) 
+			{
+				foreach($r['value'] as $ki=>$ri)
+				{
+					if(!is_array($ri)) // временный фикс
+						$ri = array('#name#'=>$ri);
+					$submitHtml .= '<input type="'.$r['type'].'" name="'.$ki.'" value="'.$ri['#name#'].'"  class="sbmt" onclick="';
+					if(isset($ri['confirm']) and $ri['confirm'])
+						$submitHtml .= 'if(!confirm(\''.$ri['confirm'].'\')) return false;';
+					if(isset($ri['onclick']))
+						$submitHtml .= htmlentities($ri['onclick'],ENT_COMPAT,$_CFG['wep']['charset']);
+					$submitHtml .= '"/>';
+				}
+
+			}
+			else
+			{
+				$submitHtml .= '<input type="'.$r['type'].'" name="'.$k.'" value="'.$r['value'].'"  class="sbmt" onclick="';
+				if(isset($r['confirm']) and $r['confirm'])
+					$submitHtml .= 'if(!confirm(\''.$r['confirm'].'\')) return false;';
+				if(isset($r['onclick']))
+					$submitHtml .= htmlentities($r['onclick'],ENT_COMPAT,$_CFG['wep']['charset']);
+				$submitHtml .= '"/>';
 			}
 
-			if(isset($r['value_close']) and $r['value_close']) {
-				$submitHtml .= '<input type="'.$r['type'].'" name="'.$k.'_close" value="'.$r['value_close'].'" class="sbmt" onclick="window.location.href=\''.$attr['prevhref'].'\';return false;"/>';
-			}
 			$submitHtml .= '</div>';
+			continue;
 		}
-		elseif($r['type']=='infoinput') {
+
+		$texthtml .= '<div id="tr_'.$k.'" style="'.(isset($r['style'])?$r['style']:'').'" class="div-tr'.
+				((isset($r['css']) and $r['css'])?' '.$r['css']:'').
+				((isset($r['mask']['min']) and $r['mask']['min'])?' required':'').
+				((isset($r['readonly']) and $r['readonly'])?' readonly':'').'">';
+
+
+		if($r['type']=='infoinput') 
+		{
 			$texthtml .= '<div class="infoinput"><input type="hidden" name="'.$k.'" value="'.$r['value'].'"/>'.$r['caption'].'</div>';
 		}
-		elseif($r['type']=='info') {
+		elseif($r['type']=='info') 
+		{
 			$texthtml .= '<div class="form-info">'.$r['caption'].'</div>';
 		}
-		elseif($r['type']=='html') {
+		elseif($r['type']=='html') 
+		{
 			$texthtml .= '<div class="form-value">'.$r['value'].'</div>';
 		}
-		elseif($r['type']=='cf_fields') {
+		elseif($r['type']=='cf_fields') 
+		{
 			include_once(dirname(__FILE__).'/cffields.php');
 			$texthtml .= '<div class="form-value">'.tpl_cffields($k,$r).'</div>';
 		}
-		elseif($r['type']=='hidden') {
-			if(is_array($r['value']))
-				$r['value'] = implode('|',$r['value']);
-			$r['value'] = htmlentities($r['value'],ENT_QUOTES,$_CFG['wep']['charset']);
-			$texthtml .= '<input type="'.$r['type'].'" name="'.$k.'" value="'.$r['value'].'" id="'.((isset($r['id']) and $r['id'])?$r['id']:$k).'"/>';
-		}
-		else {
+		else 
+		{
 			$attribute = '';
 
 			$CAPTION = $r['caption'];
@@ -304,7 +330,8 @@ function tpl_form(&$data, $tabs = array()) {
 					$r['comment'] = '';
 				$r['comment'] .= '<div class="ajaxmultiple" onclick="jQuery(\'#tr_'.$k.' div.ajaxlist:hidden\').eq(0).show(); if (jQuery(\'#tr_'.$k.' div.ajaxlist:hidden\').size() == 0) jQuery(this).hide();">Добавить '.$r['caption'].'</div>';
 			}
-			elseif($r['type']=='ajaxlist') {
+			elseif($r['type']=='ajaxlist') 
+			{
 				$r['csscheck'] = ($r['value_2']?'accept':'reject');		
 				$serl = serialize($r['listname']);
 				$texthtml .= '<div class="form-value ajaxlist">
@@ -318,7 +345,8 @@ function tpl_form(&$data, $tabs = array()) {
 				<input type="hidden" name="hsh_'.$k.'" value="'.md5($serl.$_CFG['wep']['md5']).'"/>
 				<input type="hidden" name="srlz_'.$k.'" value="'.htmlspecialchars($serl,ENT_QUOTES,$_CFG['wep']['charset']).'"/>';
 			}
-			elseif($r['type']=='list' and !$r['readonly']) {
+			elseif($r['type']=='list' and !$r['readonly']) 
+			{
 				include_once(dirname(__FILE__).'/formSelect.php');
 
 				$texthtml .= '<div class="form-value">';
@@ -361,6 +389,28 @@ function tpl_form(&$data, $tabs = array()) {
 					$texthtml .= '<select multiple="multiple" name="'.$k.'[]" class="small" size="'.$r['mask']['size'].'" '.$attribute;
 					$texthtml .= '>'.tpl_formSelect($r['valuelist'],$r['value']).'</select>';
 				} 
+				/*
+				НА  стадии разработки
+				* решить что делать с сабмитом,
+				* списки для всех?
+				*/
+				elseif(isset($r['viewType']) and $r['viewType']=='button') 
+				{
+					foreach($r['valuelist'] as $ik=>$ir)
+					{
+						if(!isset($ir['css']))
+							$ir['css'] = '';
+						if(isset($r['#sel#']))
+							$ir['css'] .= ' selected';
+						$attr = ' type="submit" class="'.$ir['css'].'"';
+						if(isset($ir['#id#']))
+							$attr .= ' value="'.$ir['#id#'].'"';
+						if(isset($ir['#name#']))
+							$attr .= ' title="'.$ir['#name#'].'"';
+	
+						$texthtml .= '<button name="'.$k.'" '.$attr.'/>';
+					}
+				}
 				else {
 					$texthtml .= '<select name="'.$k.'" '.$attribute;
 					$texthtml .= '>'.tpl_formSelect($r['valuelist'],$r['value']).'</select>';
@@ -635,9 +685,9 @@ function tpl_form(&$data, $tabs = array()) {
 			elseif($r['type']=='password' and isset($r['mask']['password']) and $r['mask']['password']=='change') {
 				$texthtml .= '<div class="form-value">
 					<span class="labelInput">Введите старый пароль</span>
-					<input type="password" name="'.$k.'_old" value="" class="password"/>
+					<input type="password" name="'.$k.'_old" class="password"/>
 					<span class="labelInput">Введите новый пароль</span>
-					<input type="password" name="'.$k.'" '.($attr['id']?'':'value="'.$r['value'].'"').' class="password"/>
+					<input type="password" name="'.$k.'" class="password"/>
 					<div class="passnewdesc" onclick="passwordShow(this)">Отобразить символы/скрыть</div></div>';
 			}	
 			elseif($r['type']=='password_new' or $r['type']=='password') 
@@ -717,12 +767,9 @@ function tpl_form(&$data, $tabs = array()) {
 
 		if(isset($r['comment']) and $r['comment']!='')
 			$texthtml .= '<div class="dscr">'.$r['comment'].'</div>';
-		if($r['type']!='hidden')
-			$texthtml .= '</div>';
-	}
 
-	$_tpl['onload'] .= '$("form").on("keyup change", "input[type=int]", function(event){return wep.form.checkInt(event);});';
-	$_tpl['onload'] .= '$("form").on("focus.float", "input[data-width0]", function(event){return wep.form.checkFloat(event);});';
+		$texthtml .= '</div>';
+	}
 
 	if($submitHtml) {
 		$texthtml .= $submitHtml;

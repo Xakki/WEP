@@ -91,7 +91,8 @@ class static_list {
 		if (!is_null($value)) 
 		{ // не кешируем если задано $value и $listname - выборка из таблиц(задается массивом)
 			$data = $_this->_getlist($listname, $value);
-			return self::uarray_intersect_key($data, $value);
+			$data = self::uarray_intersect_key($data, $value);
+			return $data;
 		}
 		elseif (!isset($_this->_CFG['enum'][$templistname]))
 			$_this->_CFG['enum'][$templistname] = $_this->_getlist($listname, $value);

@@ -1333,23 +1333,53 @@ abstract class kernel_extends {
 		}
 		if (!is_array($fields_form) or !count($fields_form))
 			return false;
-		$fields_form['_*features*_'] = array('name' => $this->_cl, 'method' => 'post', 'id' => $this->id, 'action' => $_SERVER['REQUEST_URI']);
-		$fields_form = array('_info'=>array('type' => 'info', 'css' => 'caption')) + $fields_form;
-		if ($this->id)
-			$fields_form['_info']['caption'] = static_main::m('update_name', array($this->caption), $this);
-		else
-			$fields_form['_info']['caption'] = static_main::m('add_name', array($this->caption), $this);
+
+		if(!isset($fields_form['_*features*_']))
+			$fields_form['_*features*_'] = array('name' => $this->_cl, 'method' => 'post', 'id' => $this->id, 'action' => $_SERVER['REQUEST_URI']);
+
+		if(!isset($fields_form['_info']))
+		{
+			$fields_form = array('_info'=>array('type' => 'info', 'css' => 'caption')) + $fields_form;
+			if ($this->id)
+				$fields_form['_info']['caption'] = static_main::m('update_name', array($this->caption), $this);
+			else
+				$fields_form['_info']['caption'] = static_main::m('add_name', array($this->caption), $this);
+		}
 
 		$this->kFields2FormFields($fields_form);
-		if (!$this->id or (isset($this->data[$this->id]) and $this->_prmModulEdit($this->data, $param))) {
+
+		if (
+			!isset($fields_form['sbmt']) 
+			and (!$this->id 
+				or (isset($this->data[$this->id]) 
+					and $this->_prmModulEdit($this->data, $param)) )
+		)
+		{
+			$sbmtList = array(
+				'sbmt' => static_main::m('Save and close', $this)
+			);
+			if(isset($param['sbmt_save']) and $this->id)
+				$sbmtList['sbmt_save'] = static_main::m('Save', $this);
+			if(isset($param['sbmt_close']))
+				$sbmtList['sbmt_close'] = static_main::m('Close', $this);
+			if ($this->id and $this->_prmModulDel($this->data, $param) and isset($param['sbmt_del']))
+				$sbmtList['sbmt_del'] = array('#name#'=>static_main::m('Delete', $this), 'confirm'=>'Подтвердите удаление!');
 			$fields_form['sbmt'] = array(
 				'type' => 'submit',
-				'value_save' => ((isset($param['sbmt_save']) and $this->id) ? static_main::m('Save', $this) : ''),
-				'value_close' => (isset($param['sbmt_close']) ? static_main::m('Close', $this) : ''),
-				'value' => static_main::m('Save and close', $this)
+				'value' => $sbmtList
 			);
-			if ($this->id and $this->_prmModulDel($this->data, $param) and isset($param['sbmt_del']))
-				$fields_form['sbmt']['value_del'] = static_main::m('Delete', $this);
+		}
+
+		
+		if(isset($param['savePost']) and $param['savePost'] and count($_POST))
+		{
+			foreach($_POST as $ki=>$ri)
+			{
+				if(!isset($fields_form[$ki]))
+				{
+					$fields_form[$ki] = array('type'=>'hidden', 'value'=>$ri);
+				}
+			}
 		}
 		return true;
 	}

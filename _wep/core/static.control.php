@@ -112,16 +112,19 @@ class static_control {
 				static_form::setCaptcha();
 		}
 
-		if(isset($param['formflag']))
-			$formflag = $param['formflag'];
-		elseif($flag==0)
+		if(isset($param['showform']) and $param['showform'] and $flag<0)  // Если стоит флаг showform, то отображаем форму если ошибка
 			$formflag = 1;
-		elseif(isset($_POST['sbmt']) and $flag==1)
-			$formflag = 0;
+		elseif(isset($param['formflag'])) // если стоит флаг formflag, то всегда покажем форму
+			$formflag = $param['formflag'];
+		elseif($flag==0) // по умолчанию сразу показываем форму
+			$formflag = 1;
+		elseif(isset($_POST['sbmt']) and $flag==1) // если успешно выполненно и нажата кнопка "Сохранить"
+			$formflag = 0; 
 		elseif(isset($_POST['sbmt_save']))
 			$formflag = 1;
-		elseif(isset($param['ajax']))
+		elseif(isset($param['ajax'])) // если флаг ajax , то не показывать форму
 			$formflag = 0;
+
 		if($formflag) // показывать форму
 			$formflag = $_this->kFields2Form($param,$argForm);
 

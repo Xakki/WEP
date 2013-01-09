@@ -1,13 +1,4 @@
 <?php
-/**
- * Список товаров в табличном ввиде
- * @type Магазин
- * @tags shopprodlist
- * @ico default.png
- * @author Xakki
- * @version 0.1
- * @return string html
- */
 	function tpl_prodListTable(&$data) {
 		$html = '';
 		if(isset($data) and count($data)) {
@@ -46,16 +37,14 @@
 						$img = MY_THEME.'_shop/img/nofoto.gif';
 					$html .= '<tr data-id="'.$r['id'].'" class="'.(isset($data['#basket#'][$r['id']])?'sel':'').'">';
 					if(isset($data['#prodListTable#'])) {
-						foreach($data['#prodListTable#'] as $cf_k=>$cf_r) 
-						{
-							$alt = str_replace('"', '', $r['name']);
+						foreach($data['#prodListTable#'] as $cf_k=>$cf_r) {
 							if($cf_k=='cost') {
 								$html .= '<td>'.($r['cost']?round($r['cost'],2):'&#160;');
 							} 
 							elseif(strpos($cf_k,'img_product')!==false)
-								$html .= '<td><img src="/'.$img.'" alt="'.$alt.'"/>';
+								$html .= '<td><img src="/'.$img.'" alt="'.$r['name'].'"/>';
 							elseif($cf_k=='name') {
-								$html .= '<td><a href="'.$href.'" title="'.$alt.'">'.$r['name'].'</a>';
+								$html .= '<td><a href="'.$href.'" title="'.$r['name'].'">'.$r['name'].'</a>';
 								if(isset($r['sale']))
 									$html .= '<span class="prodlable sale" title="'.$r['sale']['name'].'">&#160;</span>';
 							}
