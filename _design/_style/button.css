@@ -3,7 +3,7 @@
 .button {
 	background-color:#A1E177;
 	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
-	margin:0 2px;
+	margin:0 3px;
 	padding:7px;
 	border:1px solid #AAAAAA;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
 	vertical-align: top;
@@ -24,7 +24,8 @@
 	width:16px;
 	margin:0;
 	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
-	font-size:0.6em;
+	font-size:0em;
+	vertical-align: top;
 }
 .button:hover span, .button.selected span{
 	background-image:url(../_img/button.png);

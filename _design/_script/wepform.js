@@ -23,7 +23,7 @@ wep.form = {
 			wep.showHelp(this,tx,2000,1)
 		});
 
-		$(selector).off("keyup change").on("keyup change", "input[type=int]", function(e){return wep.form.checkInt(e);});
+		$(selector).off("keydown change").on("keydown change", "input[type=int]", function(e){return wep.form.checkInt(e);});
 
 		$(selector).off("focus.float").on("focus.float", "input[data-width0]", function(e){return wep.form.checkFloat(e);});
 	},
@@ -138,31 +138,85 @@ wep.form = {
 		});
 	},
 
-	/*
-	39 37 стрелки
-	46 делете
-	8 удал
-	13 интер
-	109 минус
-	*/
-	keys_return : function(ev) 
-	{
-		var keys=0;
-		if (!ev) var ev = window.event;
-		if (ev.keyCode) keys = ev.keyCode;
-		else if (ev.which) keys = ev.which;
-		//
-		if(keys==8 || keys==46 || keys==13 || keys==39 || keys==37) keys=0;
-		return keys;
-	},
 	// Для старых браузеров не поддерживающие input type=number
-	checkInt : function(event) {
-		var val = event.srcElement.value;
-		var sgn = '';
-		if(val.substring(0,1)=='-')
-			sgn = '-';
-		val = val.replace(/[^0-9]+/g, '');
-		event.srcElement.value = sgn+val;
+	checkInt : function(e) 
+	{
+
+		var isUnsigned = false;
+		var step = 1;
+		var min = 0;
+		if(!isUnsigned)
+			min = -99999999;
+		var max = 99999999;
+		var valNegative = '-';
+		var val = e.target.value;
+		var keyCode = keys_return(e);
+
+		console.log(keyCode, e);
+
+		if(e.originalEvent && (e.originalEvent.type=='keyup' || e.originalEvent.type=='keydown') )
+		{
+			// TODO : доработать условия для спец нажатий
+			if(keyCode==KEY.UP || keyCode==KEY.DOWN ) // вверх и вверх
+            {
+                var intValue = toInt(val, isUnsigned);
+
+                if(keyCode==KEY.DOWN)
+                {
+                    if(intValue<=min)
+                        return false;
+                    if(min>(intValue-step))
+                        step = (intValue-min);
+                    step = -step;
+                    console.log('STEP', step, intValue);
+                }
+                else 
+                {
+                    if(intValue>=max)
+                        return false;
+                    if(intValue>(max-step))
+                        step = (max-intValue);
+                }
+
+                e.target.value =  intValue + step;
+
+                jQuery(e.target).change();
+
+                return false;
+            }
+            if(keyCode>=96 && keyCode<=105) // ОТ 96 ДО 105 - NUMLOCK
+	            return true;
+	        if(keyCode<=46) // спец КЛАВИШИ
+	            return true;
+	        if(keyCode>=112 && keyCode<=123) // ФУНКЦИОНАЛЬНЫЕ КЛАВИШИ
+	            return true;
+
+			var сhar = getKeyChar(e);
+			if(!isUnsigned && val===сhar && val===valNegative)
+			{
+				return true;
+			}
+	        intValue = '';
+	        
+	        if(e.originalEvent.type=='keyup')
+	        	e.target.value = toInt(val, isUnsigned);
+	        else
+	        {
+	        	if(сhar!='')
+	            intValue = сhar.replace(/[^0-9]+/g, '');
+		        else // Если это спец символ
+		        	return true;
+		        console.log('++', сhar, typeof(сhar) );
+		        if(!intValue && intValue!==0)
+		            return false;
+	        }
+	        
+		}
+		else
+		{
+			e.target.value = toInt(val, isUnsigned);
+		}
+
 		return true;
 	},
 
@@ -303,15 +357,17 @@ function ajaxlistClear(obj,view,key) { // функ очистки формы е�
 	}
 }
 
-function ajaxlistOnKey(event,obj,view,key) {
-	if (event.keyCode == '40' || event.keyCode == '38') { // вниз
+function ajaxlistOnKey(e,obj,view,key) 
+{
+	var keyCode = keys_return(e);
+	if (keyCode == '40' || keyCode == '38') { // вниз
 		var W = 290;
 		var PARENT = $(obj).next('div');
 		var SEL = PARENT.find('.selected');
 		if(!SEL.size()) {
 			SEL = PARENT.find('label:first').addClass('selected');
 		}
-		if(event.keyCode == '40')
+		if(keyCode == '40')
 			var NEXT = SEL.next();
 		else
 			var NEXT = SEL.prev();
@@ -321,7 +377,7 @@ function ajaxlistOnKey(event,obj,view,key) {
 
 			var stop = PARENT.scrollTop();
 			var h = NEXT.outerHeight();
-			if(event.keyCode == '40') {
+			if(keyCode == '40') {
 				if(NEXT.position().top>W)
 					PARENT.scrollTop(stop+h);
 			}
@@ -332,7 +388,7 @@ function ajaxlistOnKey(event,obj,view,key) {
 		}
 		return false;
 	}
-	else if (event.keyCode == '13') {
+	else if (keyCode == '13') {
 		var SEL = $(obj).next('div').find('.selected');
 		if(!SEL.size())
 			SEL = $(obj).next('div').find('label:first');

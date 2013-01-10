@@ -3,6 +3,20 @@
 /***************************/
 /*  Главный набор скриптов */
 /***************************/
+KEY = {
+    UP: 38,
+    DOWN: 40,
+    DEL: 46,
+    TAB: 9,
+    RETURN: 13,
+    ESC: 27,
+    COMMA: 188,
+    PAGEUP: 33,
+    PAGEDOWN: 34,
+    BACKSPACE: 8,
+    LEFT: 37,
+    RIGHT: 39
+};
 
 var wep = {
 	version: '0.1.2',/*Версия скрипта*/
@@ -1320,6 +1334,71 @@ function substr( f_string, f_start, f_length ) {	// Return part of a string
 	return f_string.substring(f_start, f_length);
 }
 
+function getKeyChar(e) 
+{
+    return String.fromCharCode(keys_return(e));
+}
+/*
+39 37 стрелки
+46 делете
+8 удал
+13 интер
+109 минус
+*/
+function keys_return(e) 
+{
+	var keys=0;
+	if (!e) var e = window.event;
+	if (e.keyCode) keys = e.keyCode;
+	else if (e.which) keys = e.which;
+	//
+	if(keys==8 || keys==46 || keys==13 || keys==39 || keys==37) keys=0;
+	return keys;
+}
+
+function trim( str, charlist ) {
+    charlist = !charlist ? ' \\s\xA0' : charlist.replace(/([\[\]\(\)\.\?\/\*\{\}\+\$\^\:])/g, '\$1');
+    var re = new RegExp('^[' + charlist + ']+|[' + charlist + ']+$', 'g');
+    return str.replace(re, '');
+}
+
+function ltrim( str, charlist ) {
+    charlist = !charlist ? ' \\s\xA0' : charlist.replace(/([\[\]\(\)\.\?\/\*\{\}\+\$\^\:])/g, '\$1');
+    var re = new RegExp('^[' + charlist + ']', 'g');
+    return str.replace(re, '');
+}
+
+function rtrim( str, charlist ) {
+    charlist = !charlist ? ' \\s\xA0' : charlist.replace(/([\[\]\(\)\.\?\/\*\{\}\+\$\^\:])/g, '\$1');
+    var re = new RegExp('[' + charlist + ']+$', 'g');
+    return str.replace(re, '');
+}
+
+
+function toInt(val, unsigned)
+{
+	var valNegative = '-';
+    if(typeof(val)=='string')
+    {
+    	var sgn = '';
+        if(unsigned)
+            val = val.replace(/[^0-9]+/g, '');
+        else
+        {
+			if(val.substring(0,1)===valNegative)
+				sgn = '-';
+            val = val.replace(/[^0-9]+/g, '');
+        }
+        val = ltrim( val , '0' );
+        val = sgn+val;
+    }
+
+    val = parseInt(val);
+    if(isNaN(val))
+        val = 0;
+
+    return val;
+}
 
 
 function show_fblock(obj,selector) {
