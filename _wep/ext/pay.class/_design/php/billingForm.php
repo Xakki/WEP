@@ -24,7 +24,8 @@ function tpl_billingForm($data)
 		$data['messages'][] = array('error', 'Произошла ошибка! Обратитесь к администрации за помощью!');
 
 	$data['messages'][] = array('alert', $data['#comm#']);
-	$data['messages'][] = array('alert', 'Сумма - '.number_format($data['#summ#'], 2, ',', ' ').' '.$currency);
+	if($data['#summ#']>0)
+		$data['messages'][] = array('alert', 'Сумма - '.number_format($data['#summ#'], 2, ',', ' ').' '.$currency);
 
 	if(isset($data['messages']) and count($data['messages'])) {
 		$html .= $HTML->transformPHP($data['messages'], '#pg#messages');

@@ -116,7 +116,7 @@ class payyandex_class extends kernel_extends {
 		$this->fields['phone'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL','default'=>'');
 		$this->fields['email'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL');
 		$this->fields['sender'] = array('type' => 'varchar', 'width' => 20,'attr' => 'NOT NULL','default'=>''); // № плательщика в системе
-		$this->fields['amount'] = array('type' => 'decimal', 'width' => '10,2','attr' => 'NOT NULL'); // в коппейках
+		$this->fields['cost'] = array('type' => 'decimal', 'width' => '10,2','attr' => 'NOT NULL'); // в коппейках
 		$this->fields['tax'] = array('type' => 'decimal', 'width' => '10,2','attr' => 'NOT NULL'); // в коппейках
 		$this->fields['status'] = array('type' => 'varchar', 'width' => 63,'attr' => 'NOT NULL','default'=>'');
 		$this->fields['operation_id'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL','default'=>'');
@@ -140,7 +140,7 @@ class payyandex_class extends kernel_extends {
 		$this->fields_form['sender'] = array('type' => 'text', 'caption' => 'Номер плательщика');
 		$this->fields_form['phone'] = array('type' => 'text', 'caption' => 'Номер телефона');
 		$this->fields_form['email'] = array('type' => 'text', 'caption' => 'Email');
-		$this->fields_form['amount'] = array('type' => 'decimal', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('min'=>$this->config['minpay'],'max'=>$this->config['maxpay']));
+		$this->fields_form['cost'] = array('type' => 'decimal', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('min'=>$this->config['minpay'],'max'=>$this->config['maxpay']));
 		//$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Комментарий', 'mask'=>array('name'=>'all'));
 		$this->fields_form['status'] = array('type' => 'list', 'listname'=>'status', 'readonly'=>1, 'caption' => 'Статус', 'mask'=>array());
 		$this->fields_form['error'] = array('type' => 'list', 'listname'=>'error', 'readonly'=>1, 'caption' => 'Ошибка', 'mask'=>array());
@@ -154,18 +154,22 @@ class payyandex_class extends kernel_extends {
 	*/
 	public function billingForm($summ, $comm, $data=array()) 
 	{
+		$this->prm_add = true; 
+		$param = array('showform'=>1, 'savePost'=>true, 'setAutoSubmit'=>true);
+
 		$this->owner->setPostData('email', $data);
 		$this->owner->setPostData('phone', $data);
 
 		$argForm = array();
-		$argForm['email'] = array('type' => 'text', 'caption' => 'Email', 'mask'=>array('name'=>'email', 'min'=>5));
+		$argForm['email'] = array('type' => 'email', 'caption' => 'Email', 'mask'=>array('min'=>5)); // 'name'=>'email', 
 		$argForm['phone'] = array('type' => 'text', 'caption' => 'Телефон', 'mask'=>array('name'=>'phone3'));
 		//$argForm['name'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $comm));
-		$argForm['amount'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $summ));
-
-		$_POST['sbmt'] = true;
-		$this->prm_add = true; 
-		return $this->_UpdItemModul(array('showform'=>1, 'savePost'=>true), $argForm);
+		if($summ>0)
+			$argForm['cost'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $summ, 'min'=>$this->config['minpay'],'max'=>$this->config['maxpay']));
+		else
+			$argForm['cost'] = array('type' => 'int', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('min'=>$this->config['minpay'],'max'=>$this->config['maxpay']));
+		
+		return $this->_UpdItemModul($param, $argForm);
 	}
 
 	/**
@@ -193,7 +197,7 @@ class payyandex_class extends kernel_extends {
 				'receiver'=>array('type'=>'hidden','value'=>$this->config['yandex_id']),
 				'short-dest'=>array('type'=>'hidden','value'=>$data['name']), // Комментарий у отправителя
 				'submit-button'=>array('type'=>'hidden','value'=>'Оплатить'),
-				'sum'=>array('type'=>'hidden','value'=>$data['child']['amount']),
+				'sum'=>array('type'=>'hidden','value'=>$data['child']['cost']),
 				'targets'=>array('type'=>'hidden','value'=>'Счёт№'.$data['child']['id']), // Сообщение получателю
 				'writable-targets'=>array('type'=>'hidden','value'=>'false'),
 				'writable-sum'=>array('type'=>'hidden','value'=>'true'),
@@ -479,8 +483,8 @@ class payyandex_class extends kernel_extends {
 			if(isset($DATA[$key])) {
 
 				$this->id = $DATA[$key]['id'];
-				$upd = array('amount'=>$INFO2['amount'], 'tax'=>($DATA[$key]['amount']-$INFO2['amount']), 'sender'=>$INFO2['sender']);
-				if($INFO2['amount']>=($DATA[$key]['amount']*0.95)) 
+				$upd = array('cost'=>$INFO2['amount'], 'tax'=>($DATA[$key]['cost']-$INFO2['amount']), 'sender'=>$INFO2['sender']);
+				if($INFO2['amount']>=($DATA[$key]['cost']*0.95))
 				{
 					$upd['status'] = 'success';
 					$upd['operation_id'] = $r['operation_id'];
@@ -494,7 +498,7 @@ class payyandex_class extends kernel_extends {
 					$upd['error'] = 'small_money';
 					//$upd['operation_id'] = $r['operation_id'];
 					$this->_update($upd);
-					trigger_error('Оплата услуг через яндекс - поступило мало денег [Поступило на счет '.$INFO2['amount'].', Выписано '.$DATA[$key]['amount'].', с учетом пошлины '.($DATA[$key]['amount']*0.95).', payYandex ID='.$this->id.']', E_USER_WARNING);
+					trigger_error('Оплата услуг через яндекс - поступило мало денег [Поступило на счет '.$INFO2['amount'].', Выписано '.$DATA[$key]['cost'].', с учетом пошлины '.($DATA[$key]['cost']*0.95).', payYandex ID='.$this->id.']', E_USER_WARNING);
 				}
 
 				$i++;

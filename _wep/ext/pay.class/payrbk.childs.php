@@ -102,7 +102,7 @@ class payrbk_class extends kernel_extends {
 		parent::_create();
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL'); // наименование услуги
 		$this->fields['email'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL');
-		$this->fields['amount'] = array('type' => 'decimal', 'width' => '10,2','attr' => 'NOT NULL');
+		$this->fields['cost'] = array('type' => 'decimal', 'width' => '10,2','attr' => 'NOT NULL');
 		$this->fields['username'] = array('type' => 'varchar', 'width' => 20, 'attr' => 'NOT NULL', 'default'=>''); // № плательщика в системе
 		//Статус операции
 		$this->fields['paymentstatus'] = array('type' => 'varchar', 'width' => 63,'attr' => 'NOT NULL', 'default'=>'');
@@ -124,7 +124,7 @@ class payrbk_class extends kernel_extends {
 		parent::setFieldsForm($form);
 		//$this->fields_form['sender'] = array('type' => 'text', 'caption' => 'Номер плательщика');
 		$this->fields_form['email'] = array('type' => 'text', 'caption' => 'Email');
-		$this->fields_form['amount'] = array('type' => 'decimal', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('min'=>$this->config['minpay'],'max'=>$this->config['maxpay']));
+		$this->fields_form['cost'] = array('type' => 'decimal', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('min'=>$this->config['minpay'],'max'=>$this->config['maxpay']));
 		//$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Комментарий', 'mask'=>array('name'=>'all'));
 		$this->fields_form['paymentStatus'] = array('type' => 'list', 'listname'=>'paymentStatus', 'readonly'=>1, 'caption' => 'Статус', 'mask'=>array());
 		//$this->fields_form['error'] = array('type' => 'list', 'listname'=>'error', 'readonly'=>1, 'caption' => 'Ошибка', 'mask'=>array());
@@ -137,16 +137,21 @@ class payrbk_class extends kernel_extends {
 	*/
 	public function billingForm($summ, $comm, $data=array()) 
 	{
+		$this->prm_add = true; 
+		$param = array('showform'=>1, 'savePost'=>true, 'setAutoSubmit'=>true);
+
 		$this->owner->setPostData('email', $data);
 
 		$argForm = array();
-		$argForm['email'] = array('type' => 'email', 'caption' => 'Email', 'mask'=>array('name'=>'email'));
+		$argForm['email'] = array('type' => 'email', 'caption' => 'Email', 'mask'=>array('min'=>5)); // 'name'=>'email', 
 		//$argForm['name'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $comm));
-		$argForm['amount'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $summ));
+		if($summ>0)
+			$argForm['cost'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $summ, 'min'=>$this->config['minpay'],'max'=>$this->config['maxpay']));
+		else
+			$argForm['cost'] = array('type' => 'int', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('min'=>$this->config['minpay'],'max'=>$this->config['maxpay']) );
 
-		$_POST['sbmt'] = true;
-		$this->prm_add = true; 
-		return $this->_UpdItemModul(array('showform'=>1), $argForm);
+
+		return $this->_UpdItemModul($param, $argForm);
 	}
 
 
@@ -170,7 +175,7 @@ class payrbk_class extends kernel_extends {
 				'eshopId'=>array('type'=>'hidden','value'=>$this->config['eshopId']),
 				'orderId'=>array('type'=>'hidden','value'=>$data['child']['id']), // заголовок у отправителя
 				'serviceName'=>array('type'=>'hidden','value'=>$data['name']), // Комментарий у отправителя
-				'recipientAmount'=>array('type'=>'hidden','value'=>$data['child']['amount']),
+				'recipientAmount'=>array('type'=>'hidden','value'=>$data['child']['cost']),
 				'recipientCurrency'=>array('type'=>'hidden','value'=>$this->config['recipientCurrency']),
 				'successUrl'=>array('type'=>'hidden','value'=>$this->owner->successUrl),
 				'failUrl'=>array('type'=>'hidden','value'=>$this->owner->failUrl),

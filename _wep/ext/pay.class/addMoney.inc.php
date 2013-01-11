@@ -36,9 +36,7 @@
 			$this->pageinfo['path'][$Chref.'/cash'] = 'Заявка на пополнение счета';
 			_new_class('mail', $MAIL);
 			$res = '';
-			if(count($_POST) and $_POST['plus'] and $_POST['pay']) {
 
-			}
 			if(!$res) {
 				if(!isset($_REQUEST['pay']))
 					$_REQUEST['pay'] = '';
@@ -73,11 +71,11 @@
 								<li>Email - '.$_SESSION['user']['email'].'</li>
 								<li>Текущий баланс - '.round($_SESSION['user']['balance'],2).' руб.</li>
 							</ul>
-							<p>Заявка на '.(int)$_POST['pay'].' руб.</p>
-							<p>Комментарий пользователя: <hr/> <b>'.$_POST['name'].'</b> <hr/> </p>
+							<p>Заявка на '.(int)$arr['vars']['summ'].' руб.</p>
+							<p>Комментарий пользователя: <hr/> <b>'.$arr['vars']['comment'].'</b> <hr/> </p>
 							<p>Дата заявки '.date('Y-m-d H:i:s').'</p>
 							';
-						$res = $MAIL->Send($data);
+						$res = $MAIL->Send($data, MCAT_PAY);
 
 						if($res) 
 						{
@@ -96,7 +94,7 @@
 
 				$htmlData = array(
 					'messages'=>array_merge($mess,$arr['mess']),
-					'form'=>($formflag?$argForm:array())
+					'form'=>($flag===1 	? array() : $argForm)
 				);
 				$html .= $HTML->transformPHP($htmlData,'#pg#formcreat');
 			}
@@ -104,13 +102,13 @@
 		elseif(isset($PAY->childs[$this->pageParam[0]])) 
 		{
 			$this->pageinfo['path'][$Chref.'/'.$this->pageParam[0]] = $PAY->childs[$this->pageParam[0]]->caption;
-			$comm = 'Пополнение кошелька '.$_SESSION['user']['name'].'['.$_SESSION['user']['email'].'], '.$_CFG['site']['www'];
-			list($htmlData,$flag) = $PAY->addMoney($this->pageParam[0],$comm);
-			/*if($flag==1)
-				$this->pageinfo['path'][$Chref.'/'.$this->pageParam[0].'/ok'] = 'Успешно';*/
-			$htmlData = array('formcreat'=>$htmlData);
-			$html .= $HTML->transformPHP($htmlData,'#pg#formcreat');
+			$comm = 'Пополнение счёта пользователя "'.$_SESSION['user']['name'].'['.$_SESSION['user']['email'].']" на сайте '.$_CFG['site']['www'];
 
+			$_POST['pay_modul'] = $this->pageParam[0];
+
+			$DATA = $PAY->billingForm(null, 'addMoney'.$_SESSION['user']['id'], $comm );
+			$this->formFlag = $DATA['#resFlag#'];
+			$html = $HTML->transformPHP($DATA, $DATA['tpl']);
 		}
 		////
 	}

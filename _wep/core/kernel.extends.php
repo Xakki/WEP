@@ -1370,7 +1370,7 @@ abstract class kernel_extends {
 			);
 		}
 
-		
+
 		if(isset($param['savePost']) and $param['savePost'] and count($_POST))
 		{
 			foreach($_POST as $ki=>$ri)

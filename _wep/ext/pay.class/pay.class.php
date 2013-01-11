@@ -165,7 +165,7 @@ class pay_class extends kernel_extends {
 		if(isset($_POST['pay_modul']) and $this->isPayModul($_POST['pay_modul']) ) 
 		{
 			// Если есть уже такой счет и он еще не оплачен, то информацию/форму для оплаты счета
-			if($id = $this->getIdBill($summ, $key, $comm)) 
+			if($id = $this->getIdBill($summ, $key, $comm, $_POST['pay_modul'])) 
 			{
 				return $this->statusForm($id);
 			} 
@@ -176,7 +176,7 @@ class pay_class extends kernel_extends {
 				if($resFlag==1) 
 				{
 					$from_user = $this->checkPayUsers($_POST['pay_modul']); // User плат. системы
-					if($this->payAdd($from_user, 1, $summ, $key, $comm, PAY_NOPAID, $_POST['pay_modul'],$eval, $addInfo)) 
+					if($this->payAdd($from_user, 1, $CHILD->data[$CHILD->id]['cost'], $key, $comm, PAY_NOPAID, $_POST['pay_modul'],$eval, $addInfo)) 
 					{
 						return $this->statusForm($this->id);
 					} 
@@ -336,9 +336,11 @@ class pay_class extends kernel_extends {
 	}
 
 	// Если есть уже такой счет и он еще не оплачен, то выводим информацю о нем
-	public function getIdBill($summ, $key, $comm)
+	public function getIdBill($summ, $key, $comm, $pay_modul)
 	{
-		$sql = 'WHERE _key="'.$this->SqlEsc($key).'" and name="'.$this->SqlEsc($comm).'" and status=0';
+		$sql = 'WHERE _key="'.$this->SqlEsc($key).'" and name="'.$this->SqlEsc($comm).'" and pay_modul="'.$this->SqlEsc($pay_modul).'" and status=0';
+		if($summ>0)
+			$sql .= ' AND cost="'.(int)$summ.'" ';
 		/*if(isset($_SESSION['user']['id']))
 			$sql .= ' AND user_id='.$_SESSION['user']['id'];*/
 		$payData = $this->qs('id', $sql);// status=0 and - один платеж
@@ -698,33 +700,6 @@ class pay_class extends kernel_extends {
 		}
 			
 	}
-
-	
-	/*
-	*
-	*
-	*/
-	function addMoney($paychild,$comment) {
-		$param = array('errMess'=>true);
-		$this->childs[$paychild]->prm_add = true;
-		$this->id = 0;
-		$_POST['name'] = $comment;
-		list($DATA,$flag) = $this->childs[$paychild]->_UpdItemModul($param);
-		unset($DATA['form']['name']);
-		if($flag==1) {
-			$from_user = $this->checkPayUsers($paychild);
-			$childData = $this->childs[$paychild]->data[$this->childs[$paychild]->id];
-			$flag = $this->payAdd($from_user,$_SESSION['user']['id'],$childData['cost'],'addMoney',$childData['name'],0,$paychild);
-			if(!$flag) {
-				$this->childs[$paychild]->_delete();
-				$DATA['messages'] = static_main::am('error','Ошибка БД, платёж '.$this->childs[$paychild]->id.' анулирован.'); 
-			} else {
-				$this->childs[$paychild]->_update(array('owner_id'=>$this->id));
-			}
-		}
-		return array($DATA,$flag);
-	}
-
 
 	/**
 	* Сервис служба очистки данных

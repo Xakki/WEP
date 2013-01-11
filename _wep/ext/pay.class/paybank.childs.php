@@ -70,7 +70,7 @@ class paybank_class extends kernel_extends
 		$this->fields['fio'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['phone'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['address'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
-		$this->fields['amount'] = array('type' => 'decimal', 'width' => '10,2','attr' => 'NOT NULL');
+		$this->fields['cost'] = array('type' => 'decimal', 'width' => '10,2','attr' => 'NOT NULL');
 		
 	}
 
@@ -81,7 +81,7 @@ class paybank_class extends kernel_extends
 		$this->fields_form['fio'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'ФИО плательщика');
 		$this->fields_form['address'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Адрес плательщика ');
 		$this->fields_form['phone'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Контактный телефон');
-		$this->fields_form['amount'] = array('type' => 'decimal', 'readonly'=>1, 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('min'=>$this->config['minpay'],'max'=>$this->config['maxpay']));
+		$this->fields_form['cost'] = array('type' => 'decimal', 'readonly'=>1, 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('min'=>$this->config['minpay'],'max'=>$this->config['maxpay']));
 	}
 
 	/*
@@ -89,22 +89,23 @@ class paybank_class extends kernel_extends
 	*/
 	public function billingForm($summ, $comm, $data=array()) 
 	{
-		//print_r('<pre>');print_r($data);print_r($_POST);
-		//exit();
+		$this->prm_add = true; 
+		$param = array('showform'=>1, 'savePost'=>true, 'setAutoSubmit'=>true);
+
 		$this->owner->setPostData('fio', $data);
 		$this->owner->setPostData('address', $data);
 		$this->owner->setPostData('phone', $data);
+		$this->owner->setPostData('email', $data);
 
 		$argForm = array();
 		$argForm['fio'] = array('type' => 'text', 'caption' => 'ФИО плательщика', 'mask' => array('min' => 6));
 		$argForm['address'] = array('type' => 'text', 'caption' => 'Адрес плательщика ', 'mask' => array('min' => 6));
 		$argForm['phone'] = array('type' => 'text', 'caption' => 'Контактный телефон', 'mask'=>array('name'=>'phone3', 'min'=>6));
+		$argForm['email'] = array('type' => 'email', 'caption' => 'Email', 'mask'=>array('min'=>5)); // 'name'=>'email', 
 		//$argForm['name'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $comm));
-		$argForm['amount'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $summ));
+		$argForm['cost'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $summ));
 
-		$_POST['sbmt'] = true;
-		$this->prm_add = true; 
-		return $this->_UpdItemModul(array('showform'=>1, 'savePost'=>true), $argForm);
+		return $this->_UpdItemModul($param, $argForm);
 	}
 
 	public function statusForm($data)

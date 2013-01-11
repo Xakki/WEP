@@ -9,6 +9,8 @@ class static_control {
 	 * - ajax
 	 * - errMess
 	 * - showform
+	 * - setAutoSubmit Позволяет автоматический сохранять/добавлять записи, если нет ошибок
+	 * - savePost Сохряняет прочие POST данные
 	 * @return array
 	 */
 
@@ -27,6 +29,13 @@ class static_control {
 		$arr = array('mess'=>array(),'vars'=>array());
 		$mess = array();
 
+		// Флаг - запускает процесс сохранения или добавления записи
+		$submitFlag = 0;
+		if(count($_POST) and (isset($_POST['sbmt']) or isset($_POST['sbmt_save'])))
+			$submitFlag = $param['setAutoSubmit'] = 1;
+		elseif(isset($param['setAutoSubmit']) and $param['setAutoSubmit'])
+			$submitFlag = $param['setAutoSubmit'] = 2;
+
 		if(!empty($_this->id) and $_this->id) { //EDIT
 			$flag=-1;
 			if(!isset($_this->data[$_this->id]) or count($_this->data[$_this->id])<count($_this->fields)) 
@@ -38,12 +47,13 @@ class static_control {
 			//print($_this->SQL->query);
 			if(count($_this->data)==1) 
 			{
+				// Проверка привелегий доступа
 				if(!$_this->_prmModulShow($_this->data,$param)) 
 				{
 					$arr['mess'][] = static_main::am('error','denied',$_this);
 					$formflag=0;
 				}
-				elseif(count($_POST) and (isset($_POST['sbmt']) or isset($_POST['sbmt_save']))) 
+				elseif($submitFlag) 
 				{
 					if(!$_this->_prmModulEdit($_this->data,$param)) 
 					{
@@ -52,9 +62,10 @@ class static_control {
 					}
 					else {
 						$DATA = $_POST;
-						$mess = $_this->kPreFields($DATA,$param,$argForm);
-						$arr = $_this->fFormCheck($DATA,$param,$argForm);
-						if(!count($arr['mess'])) {
+						$mess = $_this->kPreFields($DATA,$param,$argForm); // заполнение формы данными
+						$arr = $_this->fFormCheck($DATA,$param,$argForm); // валидация
+						if(!count($arr['mess'])) // Если нет сообщений/ошибок то сохраняем обработанные значения
+						{
 							if($rm = $_this->_update($arr['vars'])) {
 								$flag=1;
 								$arr['mess'][] = static_main::am('ok','update',array($_this->tablename),$_this);
@@ -63,6 +74,10 @@ class static_control {
 							} else {
 								$arr['mess'][] = static_main::am('error','update_err',$_this);
 							}
+						}
+						elseif($submitFlag===2) //Если в результате автосабмита данные оказались не валидными, то не выводим сообщения
+						{
+							$arr['mess'] = array();
 						}
 					}
 				}
@@ -81,20 +96,20 @@ class static_control {
 		} 
 		else 
 		{ 
-			//ADD
+			// Проверка привелегий доступа
 			if(!$_this->_prmModulAdd())
 			{
 				$arr['mess'][] = static_main::am('error','denied_add',$_this);
 				$formflag=0;
 				$flag=-1;
 			}
-			elseif(count($_POST) and (isset($_POST['sbmt']) or isset($_POST['sbmt_save']))) 
+			elseif($submitFlag) 
 			{
 				$DATA = $_POST;
 				$_this->kPreFields($DATA,$param,$argForm);
 				$arr = $_this->fFormCheck($DATA,$param,$argForm);
 				$flag=-1;
-				if(!count($arr['mess'])) 
+				if(!count($arr['mess']))  // Если нет сообщений/ошибок то сохраняем обработанные значения
 				{
 					//print_r('<pre>');print_r($arr);exit();
 					if($rm = $_this->_add($arr['vars'])) 
@@ -104,6 +119,10 @@ class static_control {
 					} else
 						$arr['mess'][] = static_main::am('error','add_err',$_this);
 
+				}
+				elseif($submitFlag===2) //Если в результате автосабмита данные оказались не валидными, то не выводим сообщения
+				{
+					$arr['mess'] = array();
 				}
 			}
 			else 
@@ -135,4 +154,5 @@ class static_control {
 				'formSort'=> $_this->formSort
 			), $flag);
 	}
+
 }

@@ -99,8 +99,8 @@ Cчета со статусом большим или равным 100 трак�
 
 	public function setFieldsForm($form=0) {
 		parent::setFieldsForm($form);
-		$this->fields_form['phone'] = array('type' => 'int', 'caption' => 'Номер телефона', 'comment'=>'10 значный номер мобильного, <b>без 8ки</b>. <br/>Пример: 9271234567', 'mask'=>array('min'=>10,'max'=>10));
-		$this->fields_form['cost'] = array('type' => 'decimal', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('min'=>$this->config['minpay'],'max'=>$this->config['maxpay']));
+		$this->fields_form['phone'] = array('type' => 'int', 'caption' => 'Номер телефона', 'readonly'=>1, 'comment'=>'10 значный номер мобильного, <b>без 8ки</b>. <br/>Пример: 9271234567', 'mask'=>array('min'=>10,'max'=>10));
+		$this->fields_form['cost'] = array('type' => 'decimal', 'caption' => 'Сумма (руб)', 'readonly'=>1, 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('min'=>$this->config['minpay'],'max'=>$this->config['maxpay']));
 		//$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Комментарий', 'mask'=>array('name'=>'all'));
 		$this->fields_form['statuses'] = array('type' => 'list', 'listname'=>'statuses', 'readonly'=>1, 'caption' => 'Статус', 'mask'=>array());
 		$this->fields_form['errors'] = array('type' => 'list', 'listname'=>'errors', 'readonly'=>1, 'caption' => 'Ошибка', 'mask'=>array());
@@ -111,9 +111,14 @@ Cчета со статусом большим или равным 100 трак�
 	*/
 	public function billingForm($summ, $comm, $data=array()) 
 	{
+		$this->prm_add = true; 
+		$param = array('showform'=>1, 'savePost'=>true, 'setAutoSubmit'=>true);
+
 		$this->owner->setPostData('phone', $data);
+		// $this->owner->setPostData('email', $data);
 
 		$argForm = array();
+		//$argForm['email'] = array('type' => 'email', 'caption' => 'Email', 'mask'=>array('min'=>5));
 		$argForm['phone'] = array('type' => 'int', 'caption' => 'Номер телефона', 'comment'=>'10 значный номер мобильного, <b>без 8ки</b>. <br/>Пример: 9271234567', 'mask'=>array('min'=>10,'max'=>10));
 		if(isset($_POST['phone']) and $_POST['phone']) {
 			$tmp = preg_replace('/[^0-9]/','',$_POST['phone']);
@@ -124,11 +129,12 @@ Cчета со статусом большим или равным 100 трак�
 				$_POST['phone'] = $tmp;
 		}
 		//$argForm['name'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $comm));
-		$argForm['cost'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $summ));
+		if($summ>0)
+			$argForm['cost'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $summ, 'min'=>$this->config['minpay'],'max'=>$this->config['maxpay']));
+		else
+			$argForm['cost'] = array('type' => 'int', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('min'=>$this->config['minpay'],'max'=>$this->config['maxpay']) );
 
-		$_POST['sbmt'] = true;
-		$this->prm_add = true; 
-		return $this->_UpdItemModul(array('showform'=>1, 'savePost'=>true), $argForm);
+		return $this->_UpdItemModul($param, $argForm);
 	}
 	
 
@@ -144,6 +150,7 @@ Cчета со статусом большим или равным 100 трак�
 
 		return $result;
 	}
+
 
 	/**
 	* При обновлении статуса
@@ -161,14 +168,14 @@ Cчета со статусом большим или равным 100 трак�
 
 		$result = parent::_add($data2, true, $flag_update);
 		if($result) {
-			if(!$data['name'])
+			if(!isset($data['name']) or !$data['name'])
 				$data['name'] = 'Счёт №'.$this->config['qiwi_txn-prefix'].$this->id;
 			$options = array(
 				'phone'=>$this->data[$this->id]['phone'],
 				'amount'=>$this->data[$this->id]['cost'],
 				'comment'=>$data['name']
 			);
-			$_SESSION['user']['phone'] = $this->data[$this->id]['phone'];
+			$_SESSION['user']['phone'] = $this->data[$this->id]['phone']; // @WTF - сомнительно
 			$err = $this->createBill($options);
 			if($err===0) {
 				$this->_update(array('name'=>$data['name']));

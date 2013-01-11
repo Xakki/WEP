@@ -668,7 +668,7 @@ class static_form {
 						$mess[] = static_main::am('error', 'err');
 						trigger_error('Ошибка в элементе hidden, формы модуля '.$_this->_cl.' : `'.$form['caption'].'` '.$messages, E_USER_WARNING);
 					} 
-					else
+					elseif(!isset($param['setAutoSubmit']) or $param['setAutoSubmit']!==2) // Если это не AutoSubmit
 					{
 						$form['error'][] = $messages; // запись в форму по ссылке
 					}
@@ -702,7 +702,7 @@ class static_form {
 					{
 						$_tpl['onload'] .= 'putEMF(\''.$key.'\',\''.$messages.'\');'; // запись в форму по ссылке
 					}
-					else
+					elseif(!isset($param['setAutoSubmit']) or $param['setAutoSubmit']!==2) // Если это не AutoSubmit
 					{
 						$form['error'][] = $messages; // запись в форму по ссылке
 					}

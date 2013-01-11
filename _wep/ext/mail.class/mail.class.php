@@ -1,4 +1,11 @@
 <?php
+define('MCAT_DEFAULT',0);
+define('MCAT_BUGS',1);
+define('MCAT_FEEDBACK',2);
+define('MCAT_PAY',3);
+define('MCAT_USER',4);
+define('MCAT_OVER',10);
+
 class mail_class extends kernel_extends {
 
 	function _set_features() {
@@ -108,10 +115,12 @@ class mail_class extends kernel_extends {
 		);
 
 		$this->_enum['category'] = array(
-			0 => '--',
-			1 => 'iBug',
-			2 => 'feedback',
-			3 => 'over',
+			MCAT_DEFAULT => '--',
+			MCAT_BUGS => 'Bugs',
+			MCAT_FEEDBACK => 'Обратная связь',
+			MCAT_PAY => 'Платежное уведомление',
+			MCAT_USER => 'Служба пользователей',
+			MCAT_OVER => 'Прочее',
 		);
 
 		$this->lang['Save and close'] = 'Отправить письмо';
@@ -170,7 +179,7 @@ class mail_class extends kernel_extends {
 	*
 	*
 	*/
-	function Send($data) {
+	function Send($data, $category=0) {
 		$send_result = false;
 		$this->__do_hook('Send', $data);
 		if(!isset($data['from']) or !$data['from']) {
@@ -205,6 +214,7 @@ class mail_class extends kernel_extends {
 			}else
 				$send_result = true;
 		}
+		$data['category'] = $category;
 
 		$this->_add($data);
 		return $send_result;
