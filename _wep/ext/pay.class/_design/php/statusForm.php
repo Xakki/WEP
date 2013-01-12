@@ -9,6 +9,7 @@
  */
 function tpl_statusForm($data)
 {
+	print_r('<pre>');print_r($data);
 	global $_tpl, $HTML;
 	//$_CFG['fileIncludeOption']['form'] = 1;
 	$_tpl['styles']['/_pay/pay'] = 1;
@@ -39,6 +40,9 @@ function tpl_statusForm($data)
 				unset($data['messages']);
 				$html .= '</div>';
 			}
+
+		$data['messages'][] = array('alert', '<a data-send="canselpay='.$pd['id'].'" data-confirm="Вы подтверждаете отмену счета?" class="cancelpay ajaxlink">Отменить счет</a>');
+		$_tpl['onload'] .= 'wep.click(\'.cancelpay\');';
 
 	}
 	//После оплаты обновите <a href="javascript:window.location.reload();">страницу</a>, чтобы узнать состояние счёта.

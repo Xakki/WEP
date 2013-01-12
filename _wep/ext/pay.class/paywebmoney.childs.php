@@ -40,7 +40,7 @@ class paywebmoney_class extends kernel_extends {
 		$this->prm_add = false; // добавить в модуле
 		$this->prm_del = false; // удалять в модуле
 		$this->prm_edit = false; // редактировать в модуле
-		$this->pay_systems = true; // Это модуль платёжной системы
+		//$this->pay_systems = true; // Это модуль платёжной системы
 		$this->showinowner = false;
 
 		$this->caption = 'Платежи WebMoney';

@@ -141,11 +141,13 @@ Cчета со статусом большим или равным 100 трак�
 	// INFO
 	public function statusForm($data)
 	{
+		global $_tpl;
 		//$data['child']
 		$result = array('showStatus'=>true,'messages'=>array());
 		if(count($data) and $data['status']<2) 
 		{
 			$result['messages'][] = array('logoPayStatus qiwiPayStatus','<div>Чтобы оплатить счёт, перейдите на сайт</div><a href="'.$this->pay_formType.'" target="_blank" title="QIWI">QIWI</a>');
+			$_tpl['onload'] .= 'window.open($(\'.qiwiPayStatus a\').attr(\'href\'), \'_blank\');';
 		}
 
 		return $result;

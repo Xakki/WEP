@@ -67,11 +67,14 @@ var wep = {
 	JSWin: function(param) {
 		if(typeof param['type']=='object') {
 			var OBJ = jQuery(param['type']);
-			if(OBJ.get(0).tagName=='A') {
-				param['href'] = OBJ.attr('href');
+			if(OBJ.get(0).tagName=='A') 
+			{
+				if(!param['href'])
+					param['href'] = OBJ.attr('href');
 				param['type'] = 'GET';
 			}
-			else {
+			else 
+			{
 				wep.preSubmitAJAX(param['type']);
 				param['href'] = OBJ.attr('action');
 				param['data'] = OBJ.serialize();
@@ -201,6 +204,27 @@ var wep = {
 			}
 		});
 		return false;
+	},
+
+	click: function(selector)
+	{
+		$(selector).click(function() {
+			var data = $(this).attr('data-send');
+			var href = $(this).attr('href');
+			var confirmMess = $(this).attr('data-confirm');
+			
+			if(!confirmMess || confirm(confirmMess))
+			{
+				if(!href)
+					href = location.href;
+				if(!strpos(href, '?'))
+					href += '?';
+				else
+					href += '&';
+				href += data;
+				location.href = href;
+			}
+		});
 	},
 
 	timerExecLoadFunction: function (param, result) {
@@ -1432,5 +1456,89 @@ function noWeekendsOrHolidays(date) {
 	return noWeekend[0] ? nationalDays(date) : noWeekend;
 }
 
+
+function urlDecode( str )
+{
+    str = decodeURIComponent(str);
+    var arr = str.split('#');
+ 
+    var result = new Array();
+    var ctr=0;
+    for( var part in arr )
+    {
+        part = arr[part];
+        var qindex = part.indexOf('?');
+        result[ctr] = {};
+        if( qindex==-1 )
+        {
+            result[ctr].mid=part;
+            result[ctr].args = [];
+            ctr++;
+            continue;
+        }
+        result[ctr].mid = part.substring(0,qindex);
+        var args = part.substring(qindex+1);
+        args = args.split('&');
+        
+        result[ctr].args = {};
+        for( var val in args )
+        {
+            val = args[val];
+            var keyval = val.split('=');
+            var localctr = keyval[0];
+            var i = localctr.indexOf('[]');
+            if(i>0)
+            {
+                localctr = localctr.substr(0, i);
+                if(!result[ctr].args[localctr])
+                    result[ctr].args[localctr] = [];
+                result[ctr].args[localctr].push(keyval[1]);
+            }
+            else
+            {
+                result[ctr].args[localctr] = keyval[1];
+            }
+        }
+        ctr++;
+    }
+    return result;
+}
+
+function urlEncode( objUrl )
+{
+    var result = '';
+
+    for(var i in objUrl)
+    {
+        var param = [];
+        for(var k in objUrl[i].args)
+        {
+            var temp;
+            if(typeof(objUrl[i].args[k])=='object')
+            {
+                for(var l in objUrl[i].args[k])
+                {
+                    temp = k+'[]='+objUrl[i].args[k][l];
+                    param.push(temp);
+                }
+
+            }
+            else
+            {
+                temp = k+'='+objUrl[i].args[k];
+                if(k)
+                    param.push(temp);
+            }
+            
+        }
+        param = param.join('&');
+
+        objUrl[i] = objUrl[i].mid;
+        if(param)
+           objUrl[i] += '?'+param;
+    }
+    result = objUrl.join('#');
+    return result;
+}
 
 _Browser = getBrowserInfo();

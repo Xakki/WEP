@@ -167,7 +167,10 @@ class pay_class extends kernel_extends {
 			// Если есть уже такой счет и он еще не оплачен, то информацию/форму для оплаты счета
 			if($id = $this->getIdBill($summ, $key, $comm, $_POST['pay_modul'])) 
 			{
-				return $this->statusForm($id);
+				if(isset($_GET['canselpay']))
+					return $this->canselPay($id);
+				else
+					return $this->statusForm($id);
 			} 
 			else 
 			{
@@ -236,6 +239,35 @@ class pay_class extends kernel_extends {
 		$result['tpl'] = '#pay#statusForm';
 		return $result;
 	}
+	
+	/**
+	* Отменить счет
+	*
+	*/
+	function canselPay($id=null) 
+	{
+		$result = array('#resFlag#'=>-1);
+		if(is_null($id))
+			$id = (int)$_GET['id'];
+
+		$data = $this->getItem($id);
+
+		if(count($data))
+		{
+			$CHILD = &$this->childs[$data['pay_modul']];
+			$this->id = $id;
+			$upd = array('status'=>PAY_USERCANCEL);
+			if(1) // $this->updete($upd)
+				$result['messages'][] = array('ok', 'Счет успешно отменен!');
+			else
+				$result['messages'][] = array('error', 'Ошибка при отмене счета!');
+			$result['#config#'] = $this->config;
+			$result['#resFlag#'] = 0;
+		}
+		$result['tpl'] = '#pay#statusForm';
+		return $result;
+	}
+
 
 	/**
 	* Получить данные 
