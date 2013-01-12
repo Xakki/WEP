@@ -9,7 +9,7 @@
  */
 function tpl_statusForm($data)
 {
-	print_r('<pre>');print_r($data);
+	//print_r('<pre>');print_r($data);
 	global $_tpl, $HTML;
 	//$_CFG['fileIncludeOption']['form'] = 1;
 	$_tpl['styles']['/_pay/pay'] = 1;
@@ -24,31 +24,38 @@ function tpl_statusForm($data)
 	{
 		$pd = $data['showStatus'];
 
-			$data['messages'][] = array('alert', $pd['name']);
+		$data['messages'][] = array('alert', $pd['name']);
 
-			$data['messages'][] = array('alert', 'Сумма - '.number_format($pd['cost'], 2, ',', ' ').' '.$currency);
+		$data['messages'][] = array('alert', 'Счёт <b>№'.$pd['id'].'</b>');
 
-			$data['messages'][] = array('alert', 'Статус - '.$pd['#status#']);
+		$data['messages'][] = array('alert', 'Сумма - <b>'.number_format($pd['cost'], 2, ',', ' ').' '.$currency.'</b>');
 
-			if(isset($data['#payLink#']) and $data['#payLink#'] and $pd['status']<2)
-				$data['messages'][] = array('payLink', '<a href="'.$data['#payLink#'].'" target="_blank">Оплатить</a>');
-			if(isset($data['form']))
-			{
-				$html .= '<div class="divform">';
-				//unset($data['form']['_info']);
-				$html .= $HTML->transformPHP($data, '#pg#formcreat');
-				unset($data['messages']);
-				$html .= '</div>';
-			}
+		$data['messages'][] = array('alert', 'Статус - <b>'.$pd['#status#'].'</b>');
 
-		$data['messages'][] = array('alert', '<a data-send="canselpay='.$pd['id'].'" data-confirm="Вы подтверждаете отмену счета?" class="cancelpay ajaxlink">Отменить счет</a>');
-		$_tpl['onload'] .= 'wep.click(\'.cancelpay\');';
+		if(isset($data['#payLink#']) and $data['#payLink#'] and $pd['status']<2)
+			$data['messages'][] = array('payLink', '<a href="'.$data['#payLink#'].'" target="_blank">Оплатить</a>');
 
 	}
+
+	if(isset($data['confirmCancel']) and $data['confirmFlag']<1)
+	{
+		$data['messages'][] = array('confirmCancel'.($data['confirmFlag']<0?' mustShowBlock':''), '<a class="ajaxlink" onclick="$(\'.confirmCancel .divform\').toggle();return false;">Отменить счет</a>
+		'.$HTML->transformPHP($data['confirmCancel'], '#pg#formcreat'));
+	}
+
 	//После оплаты обновите <a href="javascript:window.location.reload();">страницу</a>, чтобы узнать состояние счёта.
 
-	if(isset($data['messages']) and count($data['messages'])) {
-		$html .= $HTML->transformPHP($data['messages'], '#pg#messages');
+	if(isset($data['messages']) and count($data['messages'])) 
+	{
+		$html .= '<div class="divform">'.$HTML->transformPHP($data['messages'], '#pg#messages').'</div>';
+	}
+
+
+	if(isset($data['showFrom']))
+	{
+		//unset($data['form']['_info']);
+		$html .= $HTML->transformPHP($data['showFrom'], '#pg#formcreat');
+
 	}
 
 	return $html;

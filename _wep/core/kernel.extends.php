@@ -1492,6 +1492,54 @@ abstract class kernel_extends {
 	}
 
 	/**
+	 * Форма подтверждения
+	 */
+	public function confirmForm($param=array())
+	{
+		if(!isset($param['lang']['sbmt']))
+			$param['lang']['sbmt'] = 'Подтверждаю';
+		if(!isset($param['lang']['_info']))
+			$param['lang']['_info'] = '';
+		if(!isset($param['confirmValue']))
+			$param['confirmValue'] = '1';
+
+		$flag=0;
+		$arr = array('mess'=>array(),'vars'=>array());
+		$argForm = array(
+			'_info' => array('type' => 'info', 'css' => 'caption', 'caption'=>$param['lang']['_info']),
+			'helper' => array('type' => 'hidden', 'value' => $param['confirmValue']),
+			'sbmt' => array('type' => 'submit', 'value'=>$param['lang']['sbmt'])
+		);
+
+		if(count($_POST) and isset($_POST['sbmt']) and isset($_POST['helper']) and $_POST['helper']==$param['confirmValue'])
+		{
+			$DATA = $_POST;
+			$this->kPreFields($DATA,$param,$argForm);
+			$arr = $this->fFormCheck($DATA,$param,$argForm);
+			$flag=-1;
+			if(!count($arr['mess']))  // Если нет сообщений/ошибок то сохраняем обработанные значения
+			{
+				$flag=1;
+			}
+		}
+		else
+		{
+			$mess = $this->kPreFields($_POST,$param,$argForm);
+		}
+
+		if(isset($argForm['captcha']))
+			static_form::setCaptcha();
+
+		$formflag = $this->kFields2Form($param,$argForm);
+
+		return Array(
+			Array(
+				'messages'=>$arr['mess'],
+				'form'=>($formflag?$argForm:array()),
+			), $flag);
+	}
+
+	/**
 	 * инструмент Фильтра super_inc
 	 * @return array
 	 */

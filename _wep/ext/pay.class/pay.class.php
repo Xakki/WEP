@@ -167,10 +167,7 @@ class pay_class extends kernel_extends {
 			// Если есть уже такой счет и он еще не оплачен, то информацию/форму для оплаты счета
 			if($id = $this->getIdBill($summ, $key, $comm, $_POST['pay_modul'])) 
 			{
-				if(isset($_GET['canselpay']))
-					return $this->canselPay($id);
-				else
-					return $this->statusForm($id);
+				return $this->statusForm($id);
 			} 
 			else 
 			{
@@ -215,9 +212,9 @@ class pay_class extends kernel_extends {
 	
 	/**
 	* Получить информацию
-	*
+	* AJAX Allow
 	*/
-	function statusForm($id=null) 
+	public function statusForm($id=null) 
 	{
 		$result = array('#resFlag#'=>-1);
 		if(is_null($id))
@@ -228,10 +225,21 @@ class pay_class extends kernel_extends {
 		if(count($data))
 		{
 			$CHILD = &$this->childs[$data['pay_modul']];
-			$result = $CHILD->statusForm($data);
-			if(isset($result['showStatus']) and $result['showStatus']===true)
+			$result['showFrom'] = $CHILD->statusForm($data);
+			if(isset($result['showFrom']['showStatus']) and $result['showFrom']['showStatus']===true)
 			{
-				$result['showStatus'] = $data;
+				
+				$param = array('captchaOn' => true, 'confirmValue'=>$id,'lang'=>array('sbmt'=>'Подтверждаю отмену счета'));
+				list($result['confirmCancel'], $result['confirmFlag']) = $this->confirmForm($param);
+				if($result['confirmFlag']==1)
+				{
+					unset($result['showFrom']);
+					$result['messages'] = $this->canselPay($id);
+					// $result['messages'] = array_merge($result['messages'], $this->canselPay($id));
+				}
+				else
+					$result['showStatus'] = $data;
+				
 			}
 			$result['#config#'] = $this->config;
 			$result['#resFlag#'] = 0;
@@ -244,28 +252,16 @@ class pay_class extends kernel_extends {
 	* Отменить счет
 	*
 	*/
-	function canselPay($id=null) 
+	protected function canselPay($id, $status=PAY_USERCANCEL) 
 	{
-		$result = array('#resFlag#'=>-1);
-		if(is_null($id))
-			$id = (int)$_GET['id'];
-
-		$data = $this->getItem($id);
-
-		if(count($data))
-		{
-			$CHILD = &$this->childs[$data['pay_modul']];
-			$this->id = $id;
-			$upd = array('status'=>PAY_USERCANCEL);
-			if(1) // $this->updete($upd)
-				$result['messages'][] = array('ok', 'Счет успешно отменен!');
-			else
-				$result['messages'][] = array('error', 'Ошибка при отмене счета!');
-			$result['#config#'] = $this->config;
-			$result['#resFlag#'] = 0;
-		}
-		$result['tpl'] = '#pay#statusForm';
-		return $result;
+		$messages = array();
+		$this->id = $id;
+		$upd = array('status'=>$status);
+		if($this->_update($upd))
+			$messages[] = array('ok', 'Счет #'.$id.' успешно отменен!');
+		else
+			$messages[] = array('error', 'Ошибка при отмене счета #'.$id.'! '.static_main::m('feedback'));
+		return $messages;
 	}
 
 

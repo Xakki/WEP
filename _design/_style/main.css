@@ -1,6 +1,7 @@
 .ajaxlink {
 	border-bottom:1px dashed #101796;
 	text-decoration:none;
+	cursor: pointer;
 }
 .ajaxlink:hover {
 	border-bottom:1px dashed transparent;
