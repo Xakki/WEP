@@ -26,9 +26,16 @@
 				//$_tpl['onload'] .= '$.localise(\'ui-multiselect\', {language: \'ru\', path: \''.$_CFG['_HREF']['_script'].'script.localisation/\'});';
 			}
 		}
-		if(isset($gfi['form']) and $gfi['form']) {
+		if(isset($gfi['form']) and $gfi['form']) 
+		{
 			$_tpl['styles']['form'] = 1;
 			$_tpl['script']['wepform'] = 1;
+		}
+		if(isset($gfi['ajaxForm']) and $gfi['ajaxForm']) 
+		{
+			$_tpl['styles']['form'] = 1;
+			$_tpl['script']['wepform'] = 1;
+			$_tpl['script']['script.jquery/form'] = 1;
 		}
 		if(isset($gfi['fcontrol']) and $gfi['fcontrol']) {
 			$_tpl['styles']['fcontrol'] = 1;

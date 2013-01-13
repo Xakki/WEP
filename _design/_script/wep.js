@@ -697,12 +697,24 @@ var wep = {
 		var ii = scripts.length; 
 		var onScriptLoaded = function(data, response) { 
 			if (i++ == ii && onComplete) 
+			{
+				for(var s in scripts) 
+				{
+					wep.includejslist[scripts[s]]=true;
+				}
 				onComplete.call(); 
+			}
 		}; 
 		for(var s in scripts) {
 			var validSrc = wep.checkJsInclude(scripts[s]);
-			if(validSrc)
+			if(validSrc===false)
 			{
+				setTimeout(function(){ wep.include(scripts, onComplete); }, 300);
+				return;
+			}
+			else if(validSrc!==true)
+			{
+				scripts[s] = validSrc;
 				//$.getScript(scripts[s], onScriptLoaded);
 				/*$.ajax({
 					url: validSrc,
@@ -730,13 +742,13 @@ var wep = {
 			else if ( onComplete )
 				onComplete.call(this);
 		};
-		return true;
+		return;
 	},
 	checkJsInclude: function(url) {
 		url = wep.absPath(url);
 		if(jQuery.isEmptyObject(wep.includejslist)) 
-		{// проверка на уникальность подключаемого стиля
-			wep.includejslist[url] = 1;
+		{// проверка на уникальность подключаемого 
+			wep.includejslist[url] = 0;
 			var flag = 0;
 			jQuery('script[src!=""]').each(function(){
 				var href = wep.absPath(this.src);
@@ -745,17 +757,18 @@ var wep = {
 			});
 
 			if(flag == 1) {
-				wep.includejslist[url]=2;
-				return false;
+				wep.includejslist[url]=true;
+				return true;
 			}
 		} 
 		else 
 		{
-			if(wep.includejslist[url]) {
-				wep.includejslist[url]++;
-				return false;
+			if(typeof(wep.includejslist[url])!='undefined') 
+			{
+				return wep.includejslist[url];
 			}
-			else wep.includejslist[url] = 1;
+			else 
+				wep.includejslist[url] = false;
 		}
 		return url;
 	},

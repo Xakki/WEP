@@ -11,7 +11,6 @@
  */
 	if(!isset($FUNCPARAM[0]) or $FUNCPARAM[0] == '') $FUNCPARAM[0] = '';
 	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = array();
-	if(!isset($FUNCPARAM[2])) $FUNCPARAM[2] = 0;
 	//$FUNCPARAM[0] - модуль
 	//$FUNCPARAM[1] - включить AJAX
 
@@ -34,7 +33,6 @@
 		$form = array(
 			'0'=>array('type'=>'list','listname'=>'modullist', 'caption'=>'Модуль'),
 			'1'=>array('type'=>'list','listname'=>'userfieldlist', 'multiple'=>2, 'caption'=>'Выводимые поля'),
-			'2'=>array('type'=>'checkbox', 'caption'=>'Включить AJAX форму?'),
 		);
 		return $form;
 	}
@@ -53,10 +51,6 @@
 		list($DATA['#pg#formcreat'],$this->formFlag) = $MODUL->_UpdItemModul(array('showform'=>1), $argForm);
 
 		$html = $HTML->transformPHP($DATA,'#pg#formcreat');
-		
-		if($FUNCPARAM[2])
-			$_CFG['fileIncludeOption']['jqueryform'] = 1;
-
 	}
 	else 
 		$html = '<error>Ошибка подключения модуля</error>';

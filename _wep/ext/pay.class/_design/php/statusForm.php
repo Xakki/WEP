@@ -54,6 +54,7 @@ function tpl_statusForm($data)
 	if(isset($data['showFrom']))
 	{
 		//unset($data['form']['_info']);
+		$data['showFrom']['ajaxForm'] = false;
 		$html .= $HTML->transformPHP($data['showFrom'], '#pg#formcreat');
 
 	}

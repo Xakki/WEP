@@ -1502,6 +1502,8 @@ abstract class kernel_extends {
 			$param['lang']['_info'] = '';
 		if(!isset($param['confirmValue']))
 			$param['confirmValue'] = '1';
+		if(!isset($param['savePost']))
+			$param['savePost'] = true;
 
 		$flag=0;
 		$arr = array('mess'=>array(),'vars'=>array());

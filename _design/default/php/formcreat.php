@@ -15,11 +15,21 @@
 			$texthtml .= tpl_messages($data['messages']);// messages
 		}
 		$flag = 0;
-		if(isset($data['form']) and count($data['form'])) {
+		if(isset($data['form']) and count($data['form'])) 
+		{
 			$attr = $data['form']['_*features*_'];
 			$ID = 'form_'.$attr['name'];
-			if((isset($_tpl['script']['script.jquery/form']) or isset($_CFG['fileIncludeOption']['jqueryform']) ) and isset($PGLIST->contentID))
+
+			$ajaxForm = false;
+			if(isset($data['ajaxForm']))
+				$ajaxForm = $data['ajaxForm'];
+			elseif(isset($_CFG['fileIncludeOption']['ajaxForm']))
+				$ajaxForm = true;
+
+			if( $ajaxForm and isset($PGLIST->contentID) )
+			{
 				$_tpl['onload'] .= 'wep.form.ajaxForm(\'#'.$ID.'\','.$PGLIST->contentID.');';
+			}
 
 			include_once($data['DIR'].'/form.php');
 			if (isset($attr['enctype']))

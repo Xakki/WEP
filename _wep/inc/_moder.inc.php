@@ -41,9 +41,8 @@
 	if(!$FUNCPARAM[0] or !_new_class($FUNCPARAM[0],$MODUL)) {
 		$html = '<div style="color:red;">'.date('H:i:s').' : Модуль '.$FUNCPARAM[0].' не установлен</div>';
 	}
-	else {
-		$_CFG['fileIncludeOption']['jqueryform'] = 1;
-
+	else 
+	{
 		if(!$FUNCPARAM[1]) $FUNCPARAM[1] = 'superlist';
 		if(isset($_GET['_oid']) and $_GET['_oid']!='') $MODUL->owner_id = $_GET['_oid'];
 		if(isset($_GET['_pid']) and $_GET['_pid']!='') $MODUL->parent_id = $_GET['_pid'];

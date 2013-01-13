@@ -109,7 +109,7 @@ class pay_class extends kernel_extends {
 		$q = 't1 WHERE 1=1 ';
 
 		if(!is_null($key))
-			$q .= ' and t1._key LIKE "'.$key.'"';
+			$q .= ' and t1._key = "'.$this->SqlEsc($key).'"';
 
 		if(!is_null($user))
 			$q .= ' and (t1.`'.$this->mf_createrid.'` = '.$user.' or t1.`user_id` = '.$user.')';
@@ -214,13 +214,16 @@ class pay_class extends kernel_extends {
 	* Получить информацию
 	* AJAX Allow
 	*/
-	public function statusForm($id=null) 
+	public function statusForm($id=null, $checkPermition=null) 
 	{
 		$result = array('#resFlag#'=>-1);
 		if(is_null($id))
 			$id = (int)$_GET['id'];
+		else
+			$id = (int)$id;
+		if(!$id) return $result;
 
-		$data = $this->getItem($id);
+		$data = $this->getItem($id, $checkPermition);
 
 		if(count($data))
 		{
@@ -269,17 +272,25 @@ class pay_class extends kernel_extends {
 	* Получить данные 
 	*
 	*/
-	public function getItem($id, $checkPermition=true)
+	public function getItem($id, $checkPermition=null)
 	{
 		if(!$id) return array();
 
 		$sql = 'WHERE id="'.(int)$id.'"';
-		if($checkPermition)
+		if(!is_null($checkPermition))
 		{
-			if($checkPermition===true)
-				$checkPermition = $_SESSION['user']['id'];
-			$sql .= ' and (`'.$this->mf_createrid.'` = '.$checkPermition.' or `user_id` = '.$checkPermition.')';
+			if(is_string($checkPermition))
+			{
+				$sql .= ' and _key="'.$this->SqlEsc($checkPermition).'"';
+			}
+			else
+			{
+				if($checkPermition===true)
+					$checkPermition = $_SESSION['user']['id'];
+				$sql .= ' and (`'.$this->mf_createrid.'` = '.$checkPermition.' or `user_id` = '.$checkPermition.')';
+			}
 		}
+
 		$data = $this->qs('*',$sql);
 
 		if(count($data))

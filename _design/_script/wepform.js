@@ -47,10 +47,11 @@ wep.form = {
 	JSFR: function(n) {
 		// NEED INCLUDE jquery.form
 		wep.include(wep.HREF_script+'script.jquery/form.js', function() {
+
 			jQuery(n).ajaxForm({
 				beforeSubmit: 
-					function(a,f,o) {
-						
+					function(a,f,o) 
+					{
 						//var formElement = f[0];
 						o.dataType = 'json';
 						//a.push({name:'HTTP_X_REQUESTED_WITH', value:'xmlhttprequest'});
@@ -59,12 +60,14 @@ wep.form = {
 						//wep.preSubmitAJAX (f);
 					},
 				error: 
-					function(d,statusText) {
+					function(d,statusText) 
+					{
 						alert(statusText+' - form notsuccess (may be wrong json data, see console log)');
 						console.log(d);console.log(d.responseText);
 					},
 				success: 
-					function(result) {
+					function(result) 
+					{
 						//console.log(result);
 						clearTimeout(timerid);
 						if(result.html!= undefined && result.html!='') {
@@ -77,6 +80,7 @@ wep.form = {
 					}
 			});
 		});
+		
 	},
 
 	// Мультисписок

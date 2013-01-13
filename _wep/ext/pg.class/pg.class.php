@@ -599,6 +599,12 @@ class pg_class extends kernel_extends {
 				continue;
 			}
 
+			// Включить AJAX FORM
+			if($rowPG['onajaxform'])
+			{
+				$_CFG['fileIncludeOption']['ajaxForm'] = 1;
+			}
+
 			if ($rowPG['href']) {
 				$temp = $this->_cl . '_' . preg_replace($this->_CFG['_repl']['alphaint'], '', $rowPG['href']);
 				if (!isset($_COOKIE[$temp])) {
