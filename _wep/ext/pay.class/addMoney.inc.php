@@ -102,11 +102,17 @@
 		elseif(isset($PAY->childs[$this->pageParam[0]])) 
 		{
 			$this->pageinfo['path'][$Chref.'/'.$this->pageParam[0]] = $PAY->childs[$this->pageParam[0]]->caption;
-			$comm = 'Пополнение счёта пользователя "'.$_SESSION['user']['name'].'['.$_SESSION['user']['email'].']" на сайте '.$_CFG['site']['www'];
+			$comm = 'Пополнение счёта пользователя "'.$_SESSION['user']['name'].'['.$_SESSION['user']['email'].']"';
 
 			$_POST['pay_modul'] = $this->pageParam[0];
 
-			$DATA = $PAY->billingForm(null, 'addMoney'.$_SESSION['user']['id'], $comm );
+			$DATA = $PAY->billingForm(null, , 
+				array(
+					'_key' => 'addMoney'.$_SESSION['user']['id'], // Ключ
+					'name' => $comm, // Коммент
+					'paylink' => '',
+				)
+			);
 			$this->formFlag = $DATA['#resFlag#'];
 			$html = $HTML->transformPHP($DATA, $DATA['tpl']);
 		}

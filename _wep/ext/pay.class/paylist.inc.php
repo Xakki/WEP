@@ -28,7 +28,7 @@
 	}
 
 	_new_class('pay', $PAY);
-	$DATA = $PAY->getList(null, $_SESSION['user']['id']);
+	$DATA = $PAY->getPayList(null, $_SESSION['user']['id']);
 	$DATA['#title#'] = $Ctitle;// Заголовок контента
 	$DATA['#pagemenu#'] = $this->getHref();// Адрес тек страницы
 	$DATA['#noUser#'] = true;

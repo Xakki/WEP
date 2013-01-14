@@ -18,7 +18,7 @@ class pay_class extends kernel_extends {
 		$this->cf_childs = true;
 		$this->mf_notif = true;
 
-		$this->ver = '0.6.7';
+		$this->ver = '0.7.8';
 		$this->default_access = '|0|';
 		$this->prm_add = false; // добавить в модуле
 		$this->prm_del = false; // удалять в модуле
@@ -28,6 +28,8 @@ class pay_class extends kernel_extends {
 		$this->index_fields['status'] = 'status';
 		$this->_AllowAjaxFn['statusForm'] = true;
 		$this->ordfield = 'id DESC';
+
+		$this->cron[] = array('modul'=>$this->_cl,'function'=>'sendNotifPay()','active'=>1,'time'=>300);
 	}
 
 	protected function _create_conf() {/*CONFIG*/
@@ -38,7 +40,6 @@ class pay_class extends kernel_extends {
 
 		$this->config_form['curr'] = array('type' => 'text', 'caption'=>'Название валюты');
 		$this->config_form['NDS'] = array('type' => 'text', 'caption'=>'НДС %');
-
 	}
 
 	protected function _create() {
@@ -51,6 +52,9 @@ class pay_class extends kernel_extends {
 		$this->fields['_key'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL','default'=>''); // product1234 = название модуля + ID
 		$this->fields['_eval'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL','default'=>'');
 		$this->fields['json_data'] = array('type' => 'text', 'attr' => 'NOT NULL');
+		$this->fields['mailnotif'] = array('type' => 'tinyint', 'width' => 1,'attr' => 'NOT NULL','default'=>0);
+		$this->fields['paylink'] = array('type' => 'text', 'width' => 250,'attr' => 'NOT NULL','default'=>'');
+		$this->fields['email'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL','default'=>'');
 
 		$this->_enum['status'] = array(
 			PAY_NOPAID => 'Неоплачено',
@@ -65,6 +69,12 @@ class pay_class extends kernel_extends {
 
 	}
 
+	public function _childs() 
+	{
+		parent::_childs();
+		$this->create_child('payhistory');
+	}
+
 	public function setFieldsForm($form=0) {
 		parent::setFieldsForm($form);
 
@@ -73,6 +83,7 @@ class pay_class extends kernel_extends {
 		$this->fields_form['cost'] = array('type' => 'decimal', 'readonly'=>1, 'caption' => 'Сумма', 'mask'=>array());
 		$this->fields_form['name'] = array('type' => 'text', 'readonly'=>1,'caption' => 'Комментарий', 'mask'=>array());
 		$this->fields_form['pay_modul'] = array('type' => 'list', 'listname'=>'pay_modul', 'readonly'=>1,'caption' => 'Платежный модуль', 'mask'=>array());
+		$this->fields_form['email'] = array('type' => 'text', 'readonly'=>1,  'caption' => 'Email');
 		$this->fields_form['status'] = array('type' => 'list', 'listname'=>'status', 'readonly'=>1,'caption' => 'Статус', 'mask'=>array());
 		
 		$this->fields_form[$this->mf_timecr] = array('type' => 'date','readonly'=>1, 'caption' => 'Создание', 'mask'=>array('onetd' => 'Дата'));
@@ -103,7 +114,7 @@ class pay_class extends kernel_extends {
 	* @param $user int фильтр по пользователю
 	* @param $status array фильтр по статусам 
 	*/
-	public function getList($key=NULL, $user=NULL, $status=array()) 
+	public function getPayList($key=NULL, $user=NULL, $status=array()) 
 	{
 		$data = array('#config#' => $this->config);
 		$q = 't1 WHERE 1=1 ';
@@ -150,8 +161,9 @@ class pay_class extends kernel_extends {
 	* Формы выставления счёта пользователю
 	*
 	*/
-	public function billingForm($summ, $key, $comm='', $eval='', $addInfo=array()) 
+	public function billingForm($payData, $addInfo=array()) 
 	{
+		//$summ, $key, $comm='', $eval=''
 		global $_tpl;
 		$data = array();
 
@@ -162,22 +174,35 @@ class pay_class extends kernel_extends {
 		// -3 : прочие ошибки
 
 		//eval($eval);
-		if(isset($_POST['pay_modul']) and $this->isPayModul($_POST['pay_modul']) ) 
+		if(!isset($payData['cost']))
+			return $payData['cost'] = null;
+		if(!isset($payData['pay_modul']) and isset($_POST['pay_modul']))
+			$payData['pay_modul'] = $_POST['pay_modul'];
+		if(!isset($payData['_key']) or !$payData['_key'])
+			return $data;
+		if(!isset($payData['name']) or !$payData['name'])
+			return $data;
+
+		if(isset($payData['pay_modul']) and $this->isPayModul($payData['pay_modul']) ) 
 		{
 			// Если есть уже такой счет и он еще не оплачен, то информацию/форму для оплаты счета
-			if($id = $this->getIdBill($summ, $key, $comm, $_POST['pay_modul'])) 
+			if($id = $this->getIdBill($payData['cost'], $payData['_key'], $payData['name'], $payData['pay_modul'])) 
 			{
 				return $this->statusForm($id);
 			} 
 			else 
 			{
-				$CHILD = &$this->childs[$_POST['pay_modul']];
-				list($data, $resFlag) = $CHILD->billingForm($summ,$comm,$addInfo);
+				$CHILD = &$this->childs[$payData['pay_modul']];
+				list($data, $resFlag) = $CHILD->billingForm($payData['cost'], $payData['name'], $addInfo);
 				if($resFlag==1) 
 				{
-					$from_user = $this->checkPayUsers($_POST['pay_modul']); // User плат. системы
-					if($this->payAdd($from_user, 1, $CHILD->data[$CHILD->id]['cost'], $key, $comm, PAY_NOPAID, $_POST['pay_modul'],$eval, $addInfo)) 
+					$payData['status'] = PAY_NOPAID;
+					$payData['from_user'] = $this->checkPayUsers($payData['pay_modul']); // User плат. системы
+					$payData['to_user'] = 1;
+
+					if($this->payAdd($payData, $addInfo)) 
 					{
+						$this->saveLog($this->id, $payData['name']);
 						return $this->statusForm($this->id);
 					} 
 					else
@@ -189,6 +214,7 @@ class pay_class extends kernel_extends {
 		}
 		else 
 		{
+			// TODO : возможность оплты со своего счета
 			$argForm = array();
 			$argForm['pay_modul'] = array('type' => 'list', 'listname' => 'pay_modul', 'viewType'=>'button', 'css'=>'paytype', 'caption' => 'Выбирите метод оплаты', 'mask' =>array('min'=>1));
 			$argForm['sbmt'] = array('type' => 'submit', 'value' => array() );
@@ -198,8 +224,8 @@ class pay_class extends kernel_extends {
 
 			//$data['messages'][] = array('info','Выберите вариант оплаты.');
 		}
-		$data['#summ#'] = $summ;
-		$data['#comm#'] = $comm;
+		$data['#summ#'] = $payData['cost'];
+		$data['#comm#'] = $payData['name'];
 		$data['#resFlag#'] = $resFlag;
 		$data['#config#'] = $this->config;
 		$data['tpl'] = '#pay#billingForm';//'#pay#billing'
@@ -261,7 +287,13 @@ class pay_class extends kernel_extends {
 		$this->id = $id;
 		$upd = array('status'=>$status);
 		if($this->_update($upd))
+		{
 			$messages[] = array('ok', 'Счет #'.$id.' успешно отменен!');
+			if($status==PAY_USERCANCEL)
+				$this->saveLog($id, 'Счет #'.$id.' отменен пользователем!');
+			else
+				$this->saveLog($id, 'Счет #'.$id.' отменен!');
+		}
 		else
 			$messages[] = array('error', 'Ошибка при отмене счета #'.$id.'! '.static_main::m('feedback'));
 		return $messages;
@@ -324,6 +356,7 @@ class pay_class extends kernel_extends {
 			elseif(isset($_SESSION['user'][$name]))
 				$_POST[$name] = $_SESSION['user'][$name];
 		}
+		return $_POST[$name];
 	}
 	/*********************************************/
 	/********************************************/
@@ -400,31 +433,35 @@ class pay_class extends kernel_extends {
 	* return 1 - Успешно
 	* return 0 - ошибка данных
 	*/
-	function payAdd($from_user, $to_user, $summ, $key, $mess='', $status=PAY_PAID, $pay_modul='', $eval='', $addInfo=array()) {
-		if($status==1) {
+	function payAdd($data, $addInfo=array()) 
+	{
+		if(isset($data['from_user']))
+			$data[$this->mf_createrid] = $data['from_user'];
+
+		if(isset($data['to_user']))
+			$data['user_id'] = $data['to_user'];
+
+		if(!isset($data['status']))
+			$data['status'] = PAY_PAID;
+
+		if(!isset($data['email']))
+			$data['email'] = $this->setPostData('email', $addInfo);
+
+		if($data['status']==PAY_PAID) {
 			_new_class('ugroup', $UGROUP);
-			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance-'.$summ.' WHERE id='.$from_user);
-			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance+'.$summ.' WHERE id='.$to_user);
+			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance-'.$data['cost'].' WHERE id='.$data[$this->mf_createrid]);
+			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance+'.$data['cost'].' WHERE id='.$data['user_id']);
 		}
-		
-		$data = array(
-			$this->mf_createrid=>$from_user,
-			'user_id'=>$to_user,
-			'cost'=>$summ,
-			'name'=>$mess,
-			'status'=>$status,
-			'pay_modul'=>$pay_modul,
-			'_key'=>$key,
-			'_eval'=>$eval,
-		);
-		if(isset($addInfo['json_data']))
+
+
+		if(!isset($data['json_data']) and isset($addInfo['json_data']))
 			$data['json_data'] = $addInfo['json_data'];
 
 		$res = $this->_add($data, false);
 
-		if($res and $this->isPayModul($pay_modul) and $this->childs[$pay_modul]->id)
+		if($res and $this->isPayModul($data['pay_modul']) and $this->childs[$data['pay_modul']]->id)
 		{
-			$this->childs[$pay_modul]->_update(array('owner_id'=>$this->id));
+			$this->childs[$data['pay_modul']]->_update(array('owner_id'=>$this->id));
 		}
 
 		return $res;
@@ -561,8 +598,17 @@ class pay_class extends kernel_extends {
 				$summ = (int)$param['POST']['pay'];
 				$flag = 0;
 				list($mess,$balance) = $this->checkBalance($u1,$summ);
-				if(!$mess) {
-					$flag = $this->payAdd($u1,$u2,$summ,'move',$txt);
+				if(!$mess) 
+				{
+					$payData = array(
+						'cost' => $summ,
+						'_key' => 'move',
+						'name' => $txt,
+						'from_user' => $u1,
+						'to_user' => $u2,
+						'status' => PAY_PAID
+					);
+					$flag = $this->payAdd($payData);
 				}
 				$data['respost'] = array('flag'=>$flag,'mess'=>$mess,'balance'=>$balance);
 			}
@@ -592,8 +638,18 @@ class pay_class extends kernel_extends {
 			//Действие
 			unset($_SESSION[$n]);
 			list($mess,$balance) = $this->checkBalance($from_user,$summ);
-			if($mess=='') {
-				if($this->payAdd($from_user,$to_user,$summ,'refill')) {
+			if($mess=='') 
+			{
+				$payData = array(
+					'cost' => $summ,
+					'_key' => 'refill',
+					'name' => 'tempo',
+					'from_user' => $from_user,
+					'to_user' => $to_user,
+					'status' => PAY_PAID
+				);
+				if($this->payAdd($payData))
+				{
 					$flag = 1;//Оплата
 					// Выполняем пользовательскую функцию при успешной оплате
 					if(!is_null($functOK)) {
@@ -740,6 +796,12 @@ class pay_class extends kernel_extends {
 			
 	}
 
+	private function sendMailInfo($id)
+	{
+		$data = $this->getItem($id);
+		return;
+	}
+
 	/**
 	* Сервис служба очистки данных
 	* Отключает неоплаченные платежи 
@@ -750,6 +812,85 @@ class pay_class extends kernel_extends {
 		$this->_update(array('status'=>'4'), 'WHERE status=0 and '.$this->mf_timecr.'<"'.(time()-$leftTime).'" and pay_modul="'.$M.'"');
 	}
 
+	function sendNotifPay()
+	{
+		if(!_new_class('mail',$MAIL)) return '-Ошибка Почтовой службы-';
+
+		$list = $this->_query('*','WHERE mailnotif=0 and status='.PAY_NOPAID);
+		foreach($list as $row)
+		{
+			if(!$row['email']) continue;
+			$CHILD = &$this->childs[$row['pay_modul']];
+			$payLink = '';
+			if(is_string($CHILD->pay_formType))
+				$payLink .= '<p>Вы можете сразу оплатить выставленный счет в '.$CHILD->caption.' перейдя по <a href="'.$CHILD->pay_formType.'" target="_blank">ссылке</a></p>';
+			if($row['paylink'])
+				$payLink .= '<p><a href="'.str_replace('#id#', $row['id'], $row['paylink']).'" target="_blank">Просмотреть статус счета</a></p>';
+			else
+				$payLink .= '<p><a href="http://'.$this->_CFG['site']['www'].'" target="_blank">Cтатус счета смотреть на сайте</a></p>';
+
+			$datamail = array(
+				'creater_id' => -1,
+				'mail_to' => $row['email'],
+				'subject' => strtoupper($this->_CFG['site']['www']).' : Не оплаченный счет на сумму '.$row['cost'],
+				'text' => '<ul>
+					<li>#name#
+					<li>Счёт № #id#
+					<li>Сумма #cost#
+					<li>Оплата с помощью #payCaption#
+					<li>Счет создан #payDate#
+					</ul><hr/>'.$payLink
+				);
+
+			$datamail['text'] = str_replace(
+				array('#id#', '#name#', '#cost#', '#payCaption#', '#payDate#'), 
+				array($row['id'], $row['name'], $row['cost'], $CHILD->caption, date('Y-m-d H-i-s', $row['mf_timecr'])), 
+				$datamail['text']
+			);
+
+			$MAIL->reply = 0;
+			$MAIL->config['mailcron'] = 0;
+			if(!$MAIL->Send($datamail)) {
+				trigger_error('Оповещение - '.static_main::m('mailerr',$this), E_USER_WARNING);
+			}
+
+		}
+		return '-Успешно-';
+	}
+
+	private function saveLog($id, $name)
+	{
+		return $this->childs['payhistory']->_add(array('owner_id'=>$id, 'name'=>$name), false);
+	}
+}
+
+class payhistory_class extends kernel_extends {
+
+	protected function _set_features() 
+	{
+		parent::_set_features();
+		$this->default_access = '|0|';
+		$this->mf_timecr = true; // создать поле хранящее время создания поля
+		$this->mf_ipcreate = true;//IP адрес пользователя с котрого была добавлена запись		
+		$this->prm_add = false; // добавить в модуле
+		$this->prm_del = false; // удалять в модуле
+		$this->prm_edit = false; // редактировать в модуле
+		$this->caption = 'История';
+		$this->ver = '0.1';
+	}
+
+	/*protected function _create() 
+	{
+		parent::_create();
+	}*/
+
+	public function setFieldsForm($form=0) 
+	{
+		parent::setFieldsForm($form);
+		$this->fields_form['name'] = array('type' => 'text', 'readonly'=>1,'caption' => 'Описание', 'mask'=>array());
+		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата', 'mask'=>array());
+		$this->fields_form['mf_ipcreate'] = array('type' => 'text','readonly'=>1, 'caption' => 'Дата', 'mask'=>array('fview'=>2));
+	}
 
 }
 

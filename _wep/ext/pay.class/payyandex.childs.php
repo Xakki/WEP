@@ -210,7 +210,7 @@ class payyandex_class extends kernel_extends {
 
 			$result['form']['sbmt'] = array('type'=>'submit','value'=>'Перейти на '.$this->caption.' для оплаты счета');
 			global $_tpl;
-			//$_tpl['onload'] .= '$("#form_yandex").submit();';
+			$_tpl['onload'] .= '$("#form_yandex").submit();';
 		}
 
 		return $result;
