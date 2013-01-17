@@ -1010,7 +1010,7 @@ class pg_class extends kernel_extends {
 					$this->dataCashTreeAlias[$row['parent_id']][$row['alias']] = &$this->dataCash[$row['id']];
 				}
 			} else {
-				static_main::redirect($this->_CFG['_HREF']['BH'] . $this->_CFG['PATH']['admin'] . '/install');
+				static_main::redirect($this->_CFG['PATH']['admin'] . '/install');
 			}
 		}
 		return true;

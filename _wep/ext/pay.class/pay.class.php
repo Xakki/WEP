@@ -29,7 +29,8 @@ class pay_class extends kernel_extends {
 		$this->_AllowAjaxFn['statusForm'] = true;
 		$this->ordfield = 'id DESC';
 
-		$this->cron[] = array('modul'=>$this->_cl,'function'=>'sendNotifPay()','active'=>1,'time'=>300);
+		$this->cron[] = array('modul'=>$this->_cl,'function'=>'sendNotifPay()','active'=>1,'time'=>300, 'caption' =>'Оповещение по успешной оплате');
+		$this->cron[] = array('modul'=>$this->_cl,'function'=>'sendNotifNoPay()','active'=>1,'time'=>300, 'caption' =>'Оповещение по не уплаченным счетам');
 	}
 
 	protected function _create_conf() {/*CONFIG*/
@@ -37,9 +38,23 @@ class pay_class extends kernel_extends {
 
 		$this->config['curr'] = 'руб.';
 		$this->config['NDS'] = 13;
+		//$this->config['notifPeriod'] = 13;
+		$this->config['subjectNoPay'] = 'Не оплаченный счет на сумму #cost#';
+		$this->config['notifNoPay'] = '<ul><li>#name#<li>Счёт № #id#<li>Сумма #cost#<li>Оплата с помощью #payCaption#<li>Счет создан #payDate#</ul><hr/>';
+		$this->config['subjectPay'] = 'Cчет #name# оплачен';
+		$this->config['notifPay'] = '<p>Спасибо , за пользование нашими услугами.</p><ul><li>#name#<li>Счёт № #id#<li>Сумма #cost#<li>Оплата с помощью #payCaption#<li>Счет создан #payDate#</ul><hr/>';
 
 		$this->config_form['curr'] = array('type' => 'text', 'caption'=>'Название валюты');
 		$this->config_form['NDS'] = array('type' => 'text', 'caption'=>'НДС %');
+		$this->config_form['subjectNoPay'] = array('type' => 'text', 'caption'=>'Тема в письме оповещения');
+		$this->config_form['notifNoPay'] = array(
+			'type' => 'ckedit', 
+			'caption' => 'Оповещение о неоплаченном счете', 
+			'paramedit'=>array(
+				'CKFinder'=>1,
+				'height'=>350,
+				'fullPage'=>'true',
+				'toolbarStartupExpanded'=>'false'));
 	}
 
 	protected function _create() {
@@ -52,7 +67,7 @@ class pay_class extends kernel_extends {
 		$this->fields['_key'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL','default'=>''); // product1234 = название модуля + ID
 		$this->fields['_eval'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL','default'=>'');
 		$this->fields['json_data'] = array('type' => 'text', 'attr' => 'NOT NULL');
-		$this->fields['mailnotif'] = array('type' => 'tinyint', 'width' => 1,'attr' => 'NOT NULL','default'=>0);
+		$this->fields['mailnotif'] = array('type' => 'int', 'width' => 1,'attr' => 'NOT NULL','default'=>0);
 		$this->fields['paylink'] = array('type' => 'text', 'width' => 250,'attr' => 'NOT NULL','default'=>'');
 		$this->fields['email'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL','default'=>'');
 
@@ -557,7 +572,8 @@ class pay_class extends kernel_extends {
 		{
 		}*/
 		$upd = array(
-			'status'=>$status
+			'status' => $status,
+			'mailnotif' => 0
 		);
 		return $this->_update($upd);
 	}
@@ -812,44 +828,91 @@ class pay_class extends kernel_extends {
 		$this->_update(array('status'=>'4'), 'WHERE status=0 and '.$this->mf_timecr.'<"'.(time()-$leftTime).'" and pay_modul="'.$M.'"');
 	}
 
+	/**
+	* Оповещение об успешной оплате улуги
+	*/
 	function sendNotifPay()
 	{
 		if(!_new_class('mail',$MAIL)) return '-Ошибка Почтовой службы-';
 
-		$list = $this->_query('*','WHERE mailnotif=0 and status='.PAY_NOPAID);
+		$list = $this->_query('*','WHERE mailnotif=0 and status='.PAY_PAID, 'id');
+
+		if(count($list))
+		{
+			$this->id = array_keys($list);
+			$this->_update(array('mailnotif'=>time()), null, false);
+		}
+
+		foreach($list as $row)
+		{
+			if(!$row['email']) continue;
+			$CHILD = &$this->childs[$row['pay_modul']];
+
+			$datamail = array(
+				'subject' => $this->config['subjectPay'],
+				'text' => $this->config['notifPay']
+				);
+			$datamail = str_replace(
+				array('#id#', '#name#', '#cost#', '#payCaption#', '#payDate#'), 
+				array($row['id'], $row['name'], $row['cost'], $CHILD->caption, date('Y-m-d H-i-s', $row['mf_timecr'])), 
+				$datamail
+			);
+			$datamail['creater_id'] = -1;
+			$datamail['mail_to'] = $row['email'];
+
+			$MAIL->reply = 0;
+			//$MAIL->config['mailcron'] = 0;// немедленная отправка письма
+			if(!$MAIL->Send($datamail)) {
+				trigger_error('Оповещение - '.static_main::m('mailerr',$this), E_USER_WARNING);
+			}
+
+		}
+		return '-Успешно-';
+	}
+
+	/**
+	* оповещение о неоплаченном счете
+	*/
+	function sendNotifNoPay()
+	{
+		if(!_new_class('mail',$MAIL)) return '-Ошибка Почтовой службы-';
+
+		$list = $this->_query('*','WHERE mailnotif=0 and status='.PAY_NOPAID.' and mf_timecr<'.(time()-600), 'id');
+		
+		/*if(count($list))
+		{
+			$this->id = array_keys($list);
+			$this->_update(array('mailnotif'=>time()), null, false);
+		}*/
 		foreach($list as $row)
 		{
 			if(!$row['email']) continue;
 			$CHILD = &$this->childs[$row['pay_modul']];
 			$payLink = '';
+			$caption = 'Просмотреть статус счета';
 			if(is_string($CHILD->pay_formType))
 				$payLink .= '<p>Вы можете сразу оплатить выставленный счет в '.$CHILD->caption.' перейдя по <a href="'.$CHILD->pay_formType.'" target="_blank">ссылке</a></p>';
+			else
+				$caption = 'Просмотреть статус и оплатить счет';
 			if($row['paylink'])
-				$payLink .= '<p><a href="'.str_replace('#id#', $row['id'], $row['paylink']).'" target="_blank">Просмотреть статус счета</a></p>';
+				$payLink .= '<p><a href="'.$row['paylink'].'" target="_blank">'.$caption.'</a></p>';
 			else
 				$payLink .= '<p><a href="http://'.$this->_CFG['site']['www'].'" target="_blank">Cтатус счета смотреть на сайте</a></p>';
 
 			$datamail = array(
-				'creater_id' => -1,
-				'mail_to' => $row['email'],
-				'subject' => strtoupper($this->_CFG['site']['www']).' : Не оплаченный счет на сумму '.$row['cost'],
-				'text' => '<ul>
-					<li>#name#
-					<li>Счёт № #id#
-					<li>Сумма #cost#
-					<li>Оплата с помощью #payCaption#
-					<li>Счет создан #payDate#
-					</ul><hr/>'.$payLink
+				'subject' => $this->config['subjectNoPay'],
+				'text' => $this->config['notifNoPay'].$payLink
 				);
-
-			$datamail['text'] = str_replace(
+			$datamail = str_replace(
 				array('#id#', '#name#', '#cost#', '#payCaption#', '#payDate#'), 
 				array($row['id'], $row['name'], $row['cost'], $CHILD->caption, date('Y-m-d H-i-s', $row['mf_timecr'])), 
-				$datamail['text']
+				$datamail
 			);
+			$datamail['creater_id'] = -1;
+			$datamail['mail_to'] = $row['email'];
 
 			$MAIL->reply = 0;
-			$MAIL->config['mailcron'] = 0;
+			//$MAIL->config['mailcron'] = 0;// немедленная отправка письма
 			if(!$MAIL->Send($datamail)) {
 				trigger_error('Оповещение - '.static_main::m('mailerr',$this), E_USER_WARNING);
 			}
