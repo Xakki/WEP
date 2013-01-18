@@ -695,7 +695,7 @@ var wep = {
 			scripts = [scripts];
 		var i = 1;
 		var ii = scripts.length; 
-		var onScriptLoaded = function(data, response) { 
+		var onScriptLoaded = function() { 
 			if (i++ == ii && onComplete) 
 			{
 				for(var s in scripts) 
@@ -703,8 +703,10 @@ var wep = {
 					wep.includejslist[scripts[s]]=true;
 				}
 				onComplete.call(); 
+				i++;
 			}
 		}; 
+
 		for(var s in scripts) {
 			var validSrc = wep.checkJsInclude(scripts[s]);
 			if(validSrc===false)
@@ -727,20 +729,18 @@ var wep = {
 				scriptElement.src = validSrc;
 				// SET READY 
 				scriptElement.onload = function () {
-					if ( onScriptLoaded )
-						onScriptLoaded.call(this);
+					onScriptLoaded.call(this);
 				};
 				scriptElement.onreadystatechange = function () {
 					if ( this.readyState != "complete" && this.readyState != "loaded" ) return;
-					if ( onScriptLoaded )
-						onScriptLoaded.call(this);
+					onScriptLoaded.call(this);
 				};
 				//$(scriptElement).ready(onScriptLoaded);
 
 				document.getElementsByTagName('head')[0].appendChild(scriptElement);
 			}
-			else if ( onComplete )
-				onComplete.call(this);
+			else
+				onScriptLoaded.call(this);
 		};
 		return;
 	},
@@ -748,18 +748,16 @@ var wep = {
 		url = wep.absPath(url);
 		if(jQuery.isEmptyObject(wep.includejslist)) 
 		{// проверка на уникальность подключаемого 
-			wep.includejslist[url] = 0;
+			wep.includejslist[url] = url;
 			var flag = 0;
 			jQuery('script[src!=""]').each(function(){
 				var href = wep.absPath(this.src);
-				wep.includejslist[href] = 1;
+				wep.includejslist[href] = true;
 				if(href==url) flag = 1;
 			});
 
-			if(flag == 1) {
-				wep.includejslist[url]=true;
+			if(flag == 1)
 				return true;
-			}
 		} 
 		else 
 		{

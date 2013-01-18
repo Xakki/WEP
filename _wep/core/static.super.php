@@ -144,21 +144,13 @@ class static_super {
 		}
 		else {
 			global $_tpl;
-			if ($_this->includeCSStoWEP and $_this->config['cssIncludeToWEP']) {
-				if (!is_array($_this->config['cssIncludeToWEP']))
-					$_this->config['cssIncludeToWEP'] = explode('|', $_this->config['cssIncludeToWEP']);
-				if (count($_this->config['cssIncludeToWEP'])) {
-					foreach ($_this->config['cssIncludeToWEP'] as $sr)
-						$_tpl['styles'][$sr] = 1;
-				}
+			if ($_this->includeCSStoWEP and $_this->config['cssIncludeToWEP']) 
+			{
+				static_main::setCss($_this->config['cssIncludeToWEP']);
 			}
-			if ($_this->includeJStoWEP and $_this->config['jsIncludeToWEP']) {
-				if (!is_array($_this->config['jsIncludeToWEP']))
-					$_this->config['jsIncludeToWEP'] = explode('|', $_this->config['jsIncludeToWEP']);
-				if (count($_this->config['jsIncludeToWEP'])) {
-					foreach ($_this->config['jsIncludeToWEP'] as $sr)
-						$_tpl['script'][$sr] = 1;
-				}
+			if ($_this->includeJStoWEP and $_this->config['jsIncludeToWEP']) 
+			{
+				static_main::setScript($_this->config['jsIncludeToWEP']);
 			}
 
 			if (!isset($PARAM['filter']) or $PARAM['filter'] == true) {

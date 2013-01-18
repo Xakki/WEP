@@ -615,28 +615,10 @@ class pg_class extends kernel_extends {
 				}
 			}
 			if ($rowPG['script']) {
-				$rowPG['script'] = explode('|', trim($rowPG['script'], '|'));
-				if (count($rowPG['script'])) {
-					foreach ($rowPG['script'] as $r)
-						if ($r)
-						{
-							if(strpos($r, '#themes#')!==false) 
-								$r = str_replace('#themes#', $_tpl['design'].'script/', $r).'.js';
-							$_tpl['script'][$r] = 1;
-						}
-				}
+				static_main::setScript($rowPG['script']);
 			}
 			if ($rowPG['styles']) {
-				$rowPG['styles'] = explode('|', trim($rowPG['styles'], '|'));
-				if (count($rowPG['styles'])) {
-					foreach ($rowPG['styles'] as $r)
-						if ($r)
-						{
-							if(strpos($r, '#themes#')!==false) 
-								$r = str_replace('#themes#', $_tpl['design'].'style/', $r).'.css';
-							$_tpl['styles'][$r] = 1;
-						}
-				}
+				static_main::setCss($rowPG['styles']);
 			}
 			if($rowPG['keywords']) {
 				if (!isset($_tpl['keywords']))
