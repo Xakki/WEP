@@ -720,9 +720,11 @@ class static_main {
 		exit();
 	}
 
-	static function setCss($styles)
-	{print_r($styles);
+	static function setCss($styles, $customTheme=null)
+	{
 		global $_tpl;
+		if(!$customTheme) $customTheme = $_tpl['design'];
+
 		if(is_string($styles))
 			$styles = explode('|', trim($styles, '|'));
 		if (is_array($styles)) {
@@ -730,15 +732,17 @@ class static_main {
 				if ($r)
 				{
 					if(strpos($r, '#themes#')!==false) 
-						$r = str_replace('#themes#', $_tpl['design'].'style/', $r).'.css';
+						$r = str_replace('#themes#', $customTheme.'style/', $r).'.css';
 					$_tpl['styles'][$r] = 1;
 				}
 		}
 	}
 
-	static function setScript($script)
+	static function setScript($script, $customTheme=null)
 	{
 		global $_tpl;
+		if(!$customTheme) $customTheme = $_tpl['design'];
+		
 		if(is_string($script))
 			$script = explode('|', trim($script, '|'));
 		if (is_array($script)) {
@@ -746,7 +750,7 @@ class static_main {
 				if ($r)
 				{
 					if(strpos($r, '#themes#')!==false) 
-						$r = str_replace('#themes#', $_tpl['design'].'script/', $r).'.js';
+						$r = str_replace('#themes#', $customTheme.'script/', $r).'.js';
 					$_tpl['script'][$r] = 1;
 				}
 		}

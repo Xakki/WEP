@@ -176,8 +176,8 @@ abstract class kernel_extends {
 		$this->cf_reinstall = false; // TOOLS
 		$this->cf_filter = true;
 		$this->cf_tools = array(); // TOOLS button, function
-		$this->includeJStoWEP = false; // подключать ли скрипты для формы через настройки
-		$this->includeCSStoWEP = false; // подключать ли стили для формы через настройки
+		//$this->includeJStoWEP = false; // подключать ли скрипты для формы через настройки
+		//$this->includeCSStoWEP = false; // подключать ли стили для формы через настройки
 		$this->singleton = true; // класс-одиночка
 		$this->ver = '0.1.1'; // версия модуля
 		$this->verCore = $this->_CFG['info']['version'];
@@ -233,14 +233,14 @@ abstract class kernel_extends {
 			$this->config['childs'] = '';
 			$this->config_form['childs'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'child.class', 'caption' => 'Подмодули');
 		}
-		if ($this->includeJStoWEP) {
+		/*if ($this->includeJStoWEP) {
 			$this->config['jsIncludeToWEP'] = '';
 			$this->config_form['jsIncludeToWEP'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'script', 'caption' => 'Script модуля');
 		}
 		if ($this->includeCSStoWEP) {
 			$this->config['cssIncludeToWEP'] = '';
 			$this->config_form['cssIncludeToWEP'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'style', 'caption' => 'CSS модуля');
-		}
+		}*/
 		if($this->cf_fields) {
 			$this->config['cf_fields'] = array();
 			$this->config_form['cf_fields'] = array('type' => 'cf_fields', 'caption' => 'Дополнительные поля формы');

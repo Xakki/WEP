@@ -1194,6 +1194,29 @@ var wep = {
 			timerobj.html(strTime);
 			
 		},1000);
+	},
+
+	timerFunction: function(func, selectorMess)
+	{
+		var timerID =0;
+		var maxTime = parseInt(jQuery(selectorMess+' i').text()); 
+		// Отменить
+		jQuery(selectorMess).click(function(){
+			jQuery(selectorMess).hide();
+			clearInterval(timerID);
+		});
+		timerID = setInterval(function() {
+			if(maxTime<1) 
+				return false
+			else if(maxTime==1) 
+			{
+				func.call();
+				jQuery(selectorMess).hide();
+				clearInterval(timerID);
+				return false
+			}
+			jQuery(selectorMess+' i').text(--maxTime);
+		},1000);
 	}
 };
 

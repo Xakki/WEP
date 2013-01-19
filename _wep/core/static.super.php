@@ -144,14 +144,14 @@ class static_super {
 		}
 		else {
 			global $_tpl;
-			if ($_this->includeCSStoWEP and $_this->config['cssIncludeToWEP']) 
+			/*if ($_this->includeCSStoWEP and $_this->config['cssIncludeToWEP']) 
 			{
-				static_main::setCss($_this->config['cssIncludeToWEP']);
+				static_main::setCss($_this->config['cssIncludeToWEP'], $_this->_CFG['PATH']['themes'].'/default');
 			}
 			if ($_this->includeJStoWEP and $_this->config['jsIncludeToWEP']) 
 			{
-				static_main::setScript($_this->config['jsIncludeToWEP']);
-			}
+				static_main::setScript($_this->config['jsIncludeToWEP'], $_this->_CFG['PATH']['themes'].'/default');
+			}*/
 
 			if (!isset($PARAM['filter']) or $PARAM['filter'] == true) {
 				$PARAM['clause'] += $_this->_filter_clause();

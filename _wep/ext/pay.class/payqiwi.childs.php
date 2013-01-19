@@ -149,9 +149,9 @@ Cчета со статусом большим или равным 100 трак�
 		if(count($data) and $data['status']<2) 
 		{
 			$result['messages'][] = array('logoPayStatus qiwiPayStatus','<div>Чтобы оплатить счёт, перейдите на сайт</div><a href="'.$this->pay_formType.'" target="_blank" title="QIWI">QIWI</a>');
-			$_tpl['onload'] .= 'window.open($(\'.qiwiPayStatus a\').attr(\'href\'), \'_blank\');';
+			$result['messages'][] = array('autoClick','<a title="Отменить" id="autoClick">Автоматический переход через <i>5</i> сек.</a>');
+			$_tpl['onload'] .= 'wep.timerFunction(function(){window.open($(\'.qiwiPayStatus a\').attr(\'href\'), \'_blank\');}, \'#autoClick\');';
 		}
-
 		return $result;
 	}
 

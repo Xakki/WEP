@@ -1,3 +1,7 @@
+a {
+	cursor: pointer;
+}
+
 .ajaxlink {
 	border-bottom:1px dashed #101796;
 	text-decoration:none;

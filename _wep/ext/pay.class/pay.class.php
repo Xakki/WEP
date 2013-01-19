@@ -6,6 +6,11 @@ define('PAY_USERCANCEL',2);
 define('PAY_CANCEL',3);
 define('PAY_TIMEOUT',4);
 
+define('PAYCASH',0); // оплата услуг
+define('ADDCASH',1); // пополнение счета
+define('MOVECASH',2); // перевод средств другому пользователю
+define('OVERCASH',3); // прочее
+
 class pay_class extends kernel_extends {
 
 	protected function _set_features() {
@@ -63,6 +68,7 @@ class pay_class extends kernel_extends {
 		$this->fields['cost'] = array('type' => 'decimal', 'width' => '10,2', 'attr' => 'NOT NULL');
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['status'] = array('type' => 'tinyint', 'width' => 1,'attr' => 'NOT NULL','default'=>1);
+		$this->fields['paytype'] = array('type' => 'tinyint', 'width' => 32,'attr' => 'NOT NULL','default'=>PAYCASH);
 		$this->fields['pay_modul'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL','default'=>'');
 		$this->fields['_key'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL','default'=>''); // product1234 = название модуля + ID
 		$this->fields['_eval'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL','default'=>'');
@@ -77,6 +83,12 @@ class pay_class extends kernel_extends {
 			PAY_USERCANCEL => 'Отменено пользователем',
 			PAY_CANCEL => 'Отменено магазином',
 			PAY_TIMEOUT => 'Истекло время ожидания',
+		);
+		$this->_enum['paytype'] = array(
+			PAYCASH => 'Услуга',
+			ADDCASH => 'Пополнение',
+			MOVECASH => 'Перевод',
+			OVERCASH => 'Прочее',
 		);
 		// TODO !!!!
 		$this->successUrl = $_SERVER['REQUEST_URI'];
@@ -100,6 +112,7 @@ class pay_class extends kernel_extends {
 		$this->fields_form['pay_modul'] = array('type' => 'list', 'listname'=>'pay_modul', 'readonly'=>1,'caption' => 'Платежный модуль', 'mask'=>array());
 		$this->fields_form['email'] = array('type' => 'text', 'readonly'=>1,  'caption' => 'Email');
 		$this->fields_form['status'] = array('type' => 'list', 'listname'=>'status', 'readonly'=>1,'caption' => 'Статус', 'mask'=>array());
+		$this->fields_form['paytype'] = array('type' => 'list', 'listname'=>'paytype', 'readonly'=>1,'caption' => 'Тип', 'mask'=>array());
 		
 		$this->fields_form[$this->mf_timecr] = array('type' => 'date','readonly'=>1, 'caption' => 'Создание', 'mask'=>array('onetd' => 'Дата'));
 		$this->fields_form[$this->mf_timestamp] = array('type' => 'date','readonly'=>1, 'caption' => 'Обновление', 'mask'=>array('onetd' => 'close'));
@@ -207,13 +220,20 @@ class pay_class extends kernel_extends {
 			} 
 			else 
 			{
+				if(isset($payData['paytype']))
+					$payData['paytype'] = PAYCASH;
+
 				$CHILD = &$this->childs[$payData['pay_modul']];
 				list($data, $resFlag) = $CHILD->billingForm($payData['cost'], $payData['name'], $addInfo);
 				if($resFlag==1) 
 				{
 					$payData['status'] = PAY_NOPAID;
 					$payData['from_user'] = $this->checkPayUsers($payData['pay_modul']); // User плат. системы
-					$payData['to_user'] = 1;
+					
+					if($payData['paytype']==ADDCASH)
+						$payData['to_user'] = $_SESSION['user']['id'];
+					else
+						$payData['to_user'] = 1;
 
 					if($this->payAdd($payData, $addInfo)) 
 					{
@@ -622,7 +642,8 @@ class pay_class extends kernel_extends {
 						'name' => $txt,
 						'from_user' => $u1,
 						'to_user' => $u2,
-						'status' => PAY_PAID
+						'status' => PAY_PAID,
+						'paytype' => MOVECASH
 					);
 					$flag = $this->payAdd($payData);
 				}
@@ -662,7 +683,8 @@ class pay_class extends kernel_extends {
 					'name' => 'tempo',
 					'from_user' => $from_user,
 					'to_user' => $to_user,
-					'status' => PAY_PAID
+					'status' => PAY_PAID,
+					//'paytype' => MOVECASH
 				);
 				if($this->payAdd($payData))
 				{
