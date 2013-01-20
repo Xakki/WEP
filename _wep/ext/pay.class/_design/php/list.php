@@ -1,6 +1,6 @@
 <?php
 /**
- * Список счетов
+ * OLD - Список счетов 
  * @type Платежная система
  * @ico default.png
  * @author Xakki

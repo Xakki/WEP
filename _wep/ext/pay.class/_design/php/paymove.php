@@ -1,6 +1,6 @@
 <?php
 /**
- * Перевод баланса
+ * OLD - Перевод баланса
  * @type Платежная система
  * @ico default.png
  * @author Xakki

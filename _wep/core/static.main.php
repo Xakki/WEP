@@ -755,6 +755,14 @@ class static_main {
 				}
 		}
 	}
+
+	/**
+	* Формат для вывода сообщения в шаблон
+	*/
+	static function tplMess($mess = 'errdata', $type='error')
+	{
+		return array('tpl' =>'#pg#messages', 'messages'=>array(static_main::am($type, $mess)));
+	}
 }
 
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * statusForm
+ * OLD - statusForm
  * @type Платежная система
  * @ico default.png
  * @author Xakki

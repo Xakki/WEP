@@ -566,6 +566,12 @@ class pg_class extends kernel_extends {
 		return $this->getContent($Cdata);
 	}
 
+	/**
+	*
+	* $Chref - текущий адрес 
+	* $Ctitle - текущий заголовок контента
+	* $Ctext - текущий статичный текст контента
+	*/
 	function getContent(&$Cdata) {
 		global $SQL, $PGLIST, $HTML, $_CFG, $_tpl;
 		$flagPG = 0;
@@ -579,6 +585,7 @@ class pg_class extends kernel_extends {
 			if (!$rowPG['active'])
 				continue;
 			$Ctitle = $rowPG['name'];
+			$Ctext = $rowPG['pg'];
 
 			if (!isset($_tpl[$rowPG['marker']])) {
 				$_tpl[$rowPG['marker']] = '';

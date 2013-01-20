@@ -168,7 +168,7 @@ class payyandex_class extends kernel_extends {
 			$argForm['cost'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $summ, 'min'=>$this->config['minpay'],'max'=>$this->config['maxpay']));
 		else
 			$argForm['cost'] = array('type' => 'int', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('min'=>$this->config['minpay'],'max'=>$this->config['maxpay']));
-		
+		$this->lang['Save and close'] = 'Перейти на '.$this->caption;
 		return $this->_UpdItemModul($param, $argForm);
 	}
 

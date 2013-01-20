@@ -23,13 +23,14 @@ class pay_class extends kernel_extends {
 		$this->cf_childs = true;
 		$this->mf_notif = true;
 
-		$this->ver = '0.7.8';
+		$this->ver = '0.8.94';
 		$this->default_access = '|0|';
 		$this->prm_add = false; // добавить в модуле
 		$this->prm_del = false; // удалять в модуле
 		$this->prm_edit = false; // редактировать в модуле
 		$this->index_fields['_key'] = '_key';
-		$this->index_fields['user_id'] = 'user_id';
+		$this->index_fields['from_user'] = 'from_user';
+		$this->index_fields['to_user'] = 'to_user';
 		$this->index_fields['status'] = 'status';
 		$this->_AllowAjaxFn['statusForm'] = true;
 		$this->ordfield = 'id DESC';
@@ -64,7 +65,8 @@ class pay_class extends kernel_extends {
 
 	protected function _create() {
 		parent::_create();
-		$this->fields['user_id'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL');
+		$this->fields['to_user'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL');
+		$this->fields['from_user'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL');
 		$this->fields['cost'] = array('type' => 'decimal', 'width' => '10,2', 'attr' => 'NOT NULL');
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['status'] = array('type' => 'tinyint', 'width' => 1,'attr' => 'NOT NULL','default'=>1);
@@ -105,8 +107,9 @@ class pay_class extends kernel_extends {
 	public function setFieldsForm($form=0) {
 		parent::setFieldsForm($form);
 
-		$this->fields_form[$this->mf_createrid] = array('type' => 'list', 'listname'=>array('class'=>'users','nameField'=>'concat("№",tx.id," ",tx.name)'), 'readonly'=>1, 'caption' => 'От кого', 'comment'=>'От кого переведены средства', 'mask'=>array());
-		$this->fields_form['user_id'] = array('type' => 'list', 'listname'=>array('class'=>'users','nameField'=>'concat("№",tx.id," ",tx.name)'), 'readonly'=>1, 'caption' => 'Кому', 'comment'=>'Кому переведены средства', 'mask'=>array());
+		$this->fields_form[$this->mf_createrid] = array('type' => 'list', 'listname'=>array('class'=>'users','nameField'=>'concat("№",tx.id," ",tx.name)'), 'readonly'=>1, 'caption' => 'Создатель', 'mask'=>array());
+		$this->fields_form['from_user'] = array('type' => 'list', 'listname'=>array('class'=>'users','nameField'=>'concat("№",tx.id," ",tx.name)'), 'readonly'=>1, 'caption' => 'От кого', 'comment'=>'От кого переведены средства', 'mask'=>array());
+		$this->fields_form['to_user'] = array('type' => 'list', 'listname'=>array('class'=>'users','nameField'=>'concat("№",tx.id," ",tx.name)'), 'readonly'=>1, 'caption' => 'Кому', 'comment'=>'Кому переведены средства', 'mask'=>array());
 		$this->fields_form['cost'] = array('type' => 'decimal', 'readonly'=>1, 'caption' => 'Сумма', 'mask'=>array());
 		$this->fields_form['name'] = array('type' => 'text', 'readonly'=>1,'caption' => 'Комментарий', 'mask'=>array());
 		$this->fields_form['pay_modul'] = array('type' => 'list', 'listname'=>'pay_modul', 'readonly'=>1,'caption' => 'Платежный модуль', 'mask'=>array());
@@ -151,7 +154,7 @@ class pay_class extends kernel_extends {
 			$q .= ' and t1._key = "'.$this->SqlEsc($key).'"';
 
 		if(!is_null($user))
-			$q .= ' and (t1.`'.$this->mf_createrid.'` = '.$user.' or t1.`user_id` = '.$user.')';
+			$q .= ' and (t1.`'.$this->mf_createrid.'` = '.$user.' or t1.`to_user` = '.$user.' or t1.`from_user` = '.$user.')';
 
 		if(count($status) and $status=implode(',',$status))
 			$q .= ' and t1.status IN ('.$status.')';
@@ -159,15 +162,22 @@ class pay_class extends kernel_extends {
 		$data['#list#'] = $this->qs('t1.*', $q.' ORDER BY t1.id DESC');
 
 		$userlist = array();
+		$data['userId'] = $user;
 		foreach($data['#list#'] as &$r) 
 		{
-			$r['#sign#'] = ($user==$r['user_id']?true:false);
-			if(!isset($userlist[$r['user_id']]))
-				$userlist[$r['user_id']] = $r['user_id'];
+			$r['#sign#'] = false;
+			if($user && $user==$r['to_user'])
+				$r['#sign#'] = true;
+			if(!isset($userlist[$r['from_user']]))
+				$userlist[$r['from_user']] = $r['from_user'];
+			if(!isset($userlist[$r['to_user']]))
+				$userlist[$r['to_user']] = $r['to_user'];
 			if(!isset($userlist[$r[$this->mf_createrid]]))
 				$userlist[$r[$this->mf_createrid]] = $r[$this->mf_createrid];
 
 			$r['#status#'] = $this->_enum['status'][$r['status']];
+			$r['#paytype#'] = $this->_enum['paytype'][$r['paytype']];
+
 			if(isset($this->childs[$r['pay_modul']])) 
 			{
 				$r['#pay_modul#'] = $this->childs[$r['pay_modul']]->caption;
@@ -193,7 +203,7 @@ class pay_class extends kernel_extends {
 	{
 		//$summ, $key, $comm='', $eval=''
 		global $_tpl;
-		$data = array();
+		$data = static_main::tplMess();
 
 		$resFlag = 0; 
 		// 0 : выводим варианты оплаты
@@ -203,7 +213,7 @@ class pay_class extends kernel_extends {
 
 		//eval($eval);
 		if(!isset($payData['cost']))
-			return $payData['cost'] = null;
+			$payData['cost'] = null;
 		if(!isset($payData['pay_modul']) and isset($_POST['pay_modul']))
 			$payData['pay_modul'] = $_POST['pay_modul'];
 		if(!isset($payData['_key']) or !$payData['_key'])
@@ -217,7 +227,7 @@ class pay_class extends kernel_extends {
 			if($id = $this->getIdBill($payData['cost'], $payData['_key'], $payData['name'], $payData['pay_modul'])) 
 			{
 				return $this->statusForm($id);
-			} 
+			}
 			else 
 			{
 				if(isset($payData['paytype']))
@@ -230,10 +240,15 @@ class pay_class extends kernel_extends {
 					$payData['status'] = PAY_NOPAID;
 					$payData['from_user'] = $this->checkPayUsers($payData['pay_modul']); // User плат. системы
 					
-					if($payData['paytype']==ADDCASH)
-						$payData['to_user'] = $_SESSION['user']['id'];
-					else
-						$payData['to_user'] = 1;
+
+					if(!isset($payData['to_user']) and !$payData['to_user'])
+					{
+						// пополнение или оплата услуги
+						if($payData['paytype']==ADDCASH)
+							$payData['to_user'] = $_SESSION['user']['id'];
+						else
+							$payData['to_user'] = 1;
+					}
 
 					if($this->payAdd($payData, $addInfo)) 
 					{
@@ -256,9 +271,9 @@ class pay_class extends kernel_extends {
 			$this->prm_add = true;
 			$this->id = null;
 			list($data, $resFlag) = $this->_UpdItemModul(array('showform'=>1, 'savePost'=>true), $argForm);
-
 			//$data['messages'][] = array('info','Выберите вариант оплаты.');
 		}
+
 		$data['#summ#'] = $payData['cost'];
 		$data['#comm#'] = $payData['name'];
 		$data['#resFlag#'] = $resFlag;
@@ -354,7 +369,7 @@ class pay_class extends kernel_extends {
 			{
 				if($checkPermition===true)
 					$checkPermition = $_SESSION['user']['id'];
-				$sql .= ' and (`'.$this->mf_createrid.'` = '.$checkPermition.' or `user_id` = '.$checkPermition.')';
+				$sql .= ' and `'.$this->mf_createrid.'` = '.$checkPermition.'';
 			}
 		}
 
@@ -448,8 +463,6 @@ class pay_class extends kernel_extends {
 		$sql = 'WHERE _key="'.$this->SqlEsc($key).'" and name="'.$this->SqlEsc($comm).'" and pay_modul="'.$this->SqlEsc($pay_modul).'" and status=0';
 		if($summ>0)
 			$sql .= ' AND cost="'.(int)$summ.'" ';
-		/*if(isset($_SESSION['user']['id']))
-			$sql .= ' AND user_id='.$_SESSION['user']['id'];*/
 		$payData = $this->qs('id', $sql);// status=0 and - один платеж
 		if(!count($payData))
 			return 0;
@@ -471,10 +484,10 @@ class pay_class extends kernel_extends {
 	function payAdd($data, $addInfo=array()) 
 	{
 		if(isset($data['from_user']))
-			$data[$this->mf_createrid] = $data['from_user'];
+			$data['from_user'] = $data['from_user'];
 
 		if(isset($data['to_user']))
-			$data['user_id'] = $data['to_user'];
+			$data['to_user'] = $data['to_user'];
 
 		if(!isset($data['status']))
 			$data['status'] = PAY_PAID;
@@ -484,8 +497,8 @@ class pay_class extends kernel_extends {
 
 		if($data['status']==PAY_PAID) {
 			_new_class('ugroup', $UGROUP);
-			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance-'.$data['cost'].' WHERE id='.$data[$this->mf_createrid]);
-			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance+'.$data['cost'].' WHERE id='.$data['user_id']);
+			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance-'.$data['cost'].' WHERE id='.$data['from_user']);
+			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance+'.$data['cost'].' WHERE id='.$data['to_user']);
 		}
 
 
@@ -574,8 +587,8 @@ class pay_class extends kernel_extends {
 		if($status==1) {
 			
 			_new_class('ugroup', $UGROUP);
-			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance-'.$data['cost'].' WHERE id='.$data[$this->mf_createrid]);
-			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance+'.$data['cost'].' WHERE id='.$data['user_id']);
+			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance-'.$data['cost'].' WHERE id='.$data['from_user']);
+			$this->SQL->execSQL('UPDATE '.$UGROUP->childs['users']->tablename.' SET balance=balance+'.$data['cost'].' WHERE id='.$data['to_user']);
 			if($data['_eval']) 
 			{
 				if(substr($data['_eval'], 0,3)!='if(') // для совместимости со старым форматом
@@ -806,7 +819,7 @@ class pay_class extends kernel_extends {
 		{
 			case 0:
 				$data = array(
-					'user_id' => $_SESSION['user']['id'],
+					'to_user' => $_SESSION['user']['id'],
 					'cost' => $amount,
 					'pay_modul' => $pay_modul,
 					'status' => 0,
@@ -917,7 +930,10 @@ class pay_class extends kernel_extends {
 			else
 				$caption = 'Просмотреть статус и оплатить счет';
 			if($row['paylink'])
+			{
+				$row['paylink'] .= '&payhash='.$this->getPayHash($row);
 				$payLink .= '<p><a href="'.$row['paylink'].'" target="_blank">'.$caption.'</a></p>';
+			}
 			else
 				$payLink .= '<p><a href="http://'.$this->_CFG['site']['www'].'" target="_blank">Cтатус счета смотреть на сайте</a></p>';
 
@@ -946,6 +962,16 @@ class pay_class extends kernel_extends {
 	private function saveLog($id, $name)
 	{
 		return $this->childs['payhistory']->_add(array('owner_id'=>$id, 'name'=>$name), false);
+	}
+
+	private function getPayHash($payData)
+	{
+		return md5($payData['id'].$payData['email'].$payData['mf_timecr']);
+	}
+
+	private function checkPayHash($hash, $payData)
+	{
+		return $hash==md5($payData['id'].$payData['email'].$payData['mf_timecr']);
 	}
 }
 

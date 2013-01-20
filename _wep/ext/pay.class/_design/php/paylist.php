@@ -1,6 +1,6 @@
 <?php
 /**
- * Список счетов 2
+ * Список счетов
  * @type Платежная система
  * @ico default.png
  * @author Xakki
@@ -22,8 +22,9 @@ function tpl_paylist($data)
 		$html .= '<table class="pay_list">
 			<tr>
 				<td>#
-				<td>Операция
-				'.($data['#noUser#']?'':'<td>Плательщик / Получатель').'
+				<td>Название
+				<td>Тип
+				'.($data['#showUser#']?'':'<td>Плательщик <td>Получатель').'
 				<td>Статус
 				<td>Сумма<br/>'.$data['#curr#'].'
 				<td>Дата
@@ -31,35 +32,39 @@ function tpl_paylist($data)
 			</tr>';
 		$b  = 0;
 
-		foreach($data['#list#'] as $k=>$r) {
-			if(!$r['status']) {
-				if($r['#formType#']===true)
-					$r['#status#'] .= ' [<a href="/_js.php?_modul=pay&_fn=statusForm&id='.$r['id'].'" onclick="return wep.JSWin({\'type\':this});" target="_blank">Оплатить</a>]';
-				elseif($r['#formType#'])
-					$r['#status#'] .= ' [<a href="'.$r['#formType#'].'" target="_blank">Оплатить</a>]';
-				$r['#status#'] .= '<br/><i>[до '.date('Y-m-d H:i',($r['mf_timecr']+($r['#lifetime#']*3600))).']</i>';
+		foreach($data['#list#'] as $k=>$r) 
+		{
+			if(!$r['status']) 
+			{
+				$r['#status#'] .= ' [<a href="?payid='.$r['id'].'" onclick="return wep.JSWin({\'type\':this});" target="_blank">Оплатить</a>]
+				<br/><i>[до '.date('Y-m-d H:i',($r['mf_timecr']+($r['#lifetime#']*3600))).']</i>';
 			}
-			elseif($r['status']==1) {
-				if($_SESSION['user']['id']==$r['creater_id'])
+			elseif($r['status']==1) 
+			{
+				if($data['userId']==$r['creater_id'])
 					$b = bcsub($b, $r['cost'],2);
 				else
 					$b = bcadd($b, $r['cost'],2);
 			}
 
-			if(isset($_SESSION['user']['id'])) {
-				if($_SESSION['user']['id']==$r['creater_id'])
-					$nm = 'user_id';
+			if($data['#showUser#'] && $data['userId']) 
+			{
+				if($data['userId']==$r['from_user'])
+					$from_user = 'Вы';
 				else
-					$nm = 'creater_id';
-				$fromuser = $data['#users#'][$r[$nm]]['name'];
-				if($data['#users#'][$r[$nm]]['level']<10 and $data['#users#'][$r[$nm]]['level']>0)
-					$fromuser = $data['#users#'][$r[$nm]]['gname'].' №'.$data['#users#'][$r[$nm]]['id'].' '.$fromuser;
+					$from_user = $data['#users#'][$r['from_user']]['name'].' ['.$data['#users#'][$r['from_user']]['id'].','.$data['#users#'][$r['from_user']]['gname'].']';
+				
+				if($data['userId']==$r['to_user'])
+					$to_user = 'Вы';
+				else
+					$to_user = $data['#users#'][$r['to_user']]['name'].' ['.$data['#users#'][$r['to_user']]['id'].','.$data['#users#'][$r['to_user']]['gname'].']';
 			}
 				
 			$html .= '<tr class="paylist'.$r['status'].'">
 				<td>'.$r['id'].'
 				<td>'.$r['name'].'
-				'.($data['#noUser#']?'':'<td>'.$fromuser).'
+				<td>'.$r['#paytype#'].'
+				'.($data['#showUser#']?'':'<td>'.$from_user.'<td>'.$to_user).'
 				<td>'.$r['#status#'].'
 				<td class="'.($r['#sign#']?'plus':'minus').'">'.round($r['cost'],2).'
 				<td>'.$r['mf_timestamp'].'
@@ -67,7 +72,7 @@ function tpl_paylist($data)
 			</tr>';
 		}//long2ip($r['mf_ipcreate'])
 		$html .= '</table>
-		<div>Баланс : '.round($data['#users#'][$_SESSION['user']['id']]['balance'],2).' руб.</div>';
+		<div>Баланс : '.round($data['#users#'][$data['userId']]['balance'],2).' руб.</div>';
 	} else
 		$html .= '<div class="error">Операций по счету нет.</div>';
 	return $html;

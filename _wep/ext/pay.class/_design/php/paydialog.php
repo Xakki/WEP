@@ -1,6 +1,6 @@
 <?php
 /**
- * Диалог оплаты
+ * OLD - Диалог оплаты
  * @type Платежная система
  * @ico default.png
  * @author Xakki
