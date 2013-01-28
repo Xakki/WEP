@@ -25,10 +25,9 @@ var wep = {
 	HREF_style:'/_design/_style/',
 	HREF_script:'/_design/_script/',
 	pgId:0,/* ID текущей страницы (загружается из onLOAD)*/
-	pgParam: {},/* параметры текущей страницы (загружается из onLOAD)*/
+	pgParam: [],/* параметры текущей страницы (загружается из onLOAD)*/
 	pgGet : {}, // GET параметры
 	siteJS: "/_js.php",
-	siteJSON: "/_json.php",
 	form: {},/*Функции работы с формой*/
 	isDef: function(v) {
 		return typeof v !== 'undefined';
@@ -88,7 +87,7 @@ var wep = {
 			}
 		}
 		else if(!param['type']) param['type'] = 'GET';
-		if(!param['href'])		param['href'] = wep.siteJSON;
+		if(!param['href'])		param['href'] = wep.siteJS;
 		if(param['onclk']=='reload')		param['onclk'] = 'window.location.reload();';
 		if(!param['data']) 		param['data'] = '';
 		if(!param['dataType'])	param['dataType'] = 'json';
@@ -241,7 +240,8 @@ var wep = {
 	// Выполнение функции при полной загрузке
 	execLoadFunction: function (param, result) {
 		//Запуск функции пользователя
-		if(typeof param['call'] != 'undefined' && typeof param['call'] == 'function') {
+		if(typeof param['call'] != 'undefined' && typeof param['call'] == 'function') 
+		{
 			param['call'].call(result);
 		}
 		
@@ -343,7 +343,7 @@ var wep = {
 		marker['script']=1;
 		// TODO marker = wep.pgGet + marker;
 		param = {
-			'href':wep.siteJSON,
+			'href':wep.siteJS,
 			'type':'GET',
 			'data': marker
 		};
@@ -373,7 +373,7 @@ var wep = {
 	ajaxLoadContent: function(ctId,selector,callFunc) {
 		if(!ctId) return false;
 		param = {
-			'href' : wep.siteJSON,
+			'href' : wep.siteJS,
 			'type' : 'GET',
 			'data' : {'_view':'loadpage', '_ctId':ctId, '_slc':selector, 'pageParam':wep.pgParam },
 			'insertObj' : selector,
@@ -689,84 +689,70 @@ var wep = {
 	},
 	
 	includejslist: {},
-	include: function(scripts, onComplete) 
-	{
-		if(typeof(scripts)=='string')
-			scripts = [scripts];
-		var i = 1;
-		var ii = scripts.length; 
-		var onScriptLoaded = function() { 
-			if (i++ == ii && onComplete) 
-			{
-				for(var s in scripts) 
-				{
-					wep.includejslist[scripts[s]]=true;
-				}
-				onComplete.call(); 
-				i++;
-			}
-		}; 
+    // загружаем скрипт
+    include: function(scripts, onComplete) 
+    {
+        if(typeof(scripts)=='string')
+            scripts = [scripts];
+        var i = 1;
+        var ii = scripts.length; 
+        var onScriptLoaded = function() { 
+            if (i++ == ii && onComplete) 
+            {
+                onComplete.call(); i++;
+            }
+        }; 
+        for(var s in scripts) {
+            var validSrc = wep.checkJsInclude(scripts[s]);
+            if(validSrc)
+            {
+                var scriptElement = document.createElement('script');
+                //styleCss.type = 'text/javascript';
+                scriptElement.src = validSrc;
+                // SET READY 
+                scriptElement.onload = function () {
+                    onScriptLoaded.call();
+                };
+                scriptElement.onreadystatechange = function () {
+                    if ( this.readyState != "complete" && this.readyState != "loaded" ) return;
+                    onScriptLoaded.call();
+                };
+                //$(scriptElement).ready(onScriptLoaded);
+                document.getElementsByTagName('head')[0].appendChild(scriptElement);
+            }
+            else
+            {
+                onScriptLoaded.call();
+            }
+        };
 
-		for(var s in scripts) {
-			var validSrc = wep.checkJsInclude(scripts[s]);
-			if(validSrc===false)
-			{
-				setTimeout(function(){ wep.include(scripts, onComplete); }, 300);
-				return;
-			}
-			else if(validSrc!==true)
-			{
-				scripts[s] = validSrc;
-				//$.getScript(scripts[s], onScriptLoaded);
-				/*$.ajax({
-					url: validSrc,
-					dataType: "script",
-					cache: true,
-					success: onScriptLoaded
-				});*/
-				var scriptElement = document.createElement('script');
-				//styleCss.type = 'text/javascript';
-				scriptElement.src = validSrc;
-				// SET READY 
-				scriptElement.onload = function () {
-					onScriptLoaded.call(this);
-				};
-				scriptElement.onreadystatechange = function () {
-					if ( this.readyState != "complete" && this.readyState != "loaded" ) return;
-					onScriptLoaded.call(this);
-				};
-				//$(scriptElement).ready(onScriptLoaded);
+        return;
+    },
 
-				document.getElementsByTagName('head')[0].appendChild(scriptElement);
-			}
-			else
-				onScriptLoaded.call(this);
-		};
-		return;
-	},
 	checkJsInclude: function(url) {
 		url = wep.absPath(url);
 		if(jQuery.isEmptyObject(wep.includejslist)) 
 		{// проверка на уникальность подключаемого 
-			wep.includejslist[url] = url;
+			wep.includejslist[url] = 1;
 			var flag = 0;
 			jQuery('script[src!=""]').each(function(){
 				var href = wep.absPath(this.src);
-				wep.includejslist[href] = true;
+				wep.includejslist[href] = 1;
 				if(href==url) flag = 1;
 			});
 
-			if(flag == 1)
-				return true;
+			if(flag == 1) {
+                wep.includejslist[url]=2;
+                return false;
+            }
 		} 
 		else 
 		{
-			if(typeof(wep.includejslist[url])!='undefined') 
-			{
-				return wep.includejslist[url];
-			}
-			else 
-				wep.includejslist[url] = false;
+			if(wep.includejslist[url]) {
+                wep.includejslist[url]++;
+                return false;
+            }
+            else wep.includejslist[url] = 1;
 		}
 		return url;
 	},
@@ -1067,7 +1053,7 @@ var wep = {
 
 	exit: function(){
 		if(confirm('Вы действительно хотите выйти?'))
-			JSWin({'href':wep.siteJSON+'?_view=exit'});
+			JSWin({'href':wep.siteJS+'?_view=exit'});
 		return false;
 	},
 

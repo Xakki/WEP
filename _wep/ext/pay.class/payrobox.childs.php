@@ -98,14 +98,6 @@ class payrobox_class extends kernel_extends {
 		return $data;
 	}
 	
-	
-	// записывает в базу информацию о платеже
-	// status=0 - платеж не осуществлен
-	// status=1 - платеж осуществлен
-	function add_payment($amount, $status) {
-		return $this->owner->add_payment($amount, $status, $this->_cl);
-	}
-	
 
 }
 

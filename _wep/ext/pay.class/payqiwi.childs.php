@@ -31,7 +31,6 @@ class payqiwi_class extends kernel_extends {
 		$this->caption = 'QIWI';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';
 		$this->lang['add_name'] = 'Пополнение кошелька из QIWI';
-		$this->lang['Save and close'] = 'Выписать счёт';
 		$this->lang['add_err'] = 'Ошибка выставление счёта. Обратитесь к администратору сайта.';
 		// TODO - ввывод сообщения реализовать через конфиг
 		$this->lang['add'] = 'Счёт на оплату отправлено в систему QIWI.<br/> Чтобы оплатить его перейдите на сайт <a href="https://w.qiwi.ru/orders.action" target="_blank" id="tempoQiwi">QIWI</a> в раздел "Счета".<script>$("#tempoQiwi").click();</script>';
@@ -135,7 +134,7 @@ Cчета со статусом большим или равным 100 трак�
 			$argForm['cost'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $summ, 'min'=>$this->config['minpay'],'max'=>$this->config['maxpay']));
 		else
 			$argForm['cost'] = array('type' => 'int', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('min'=>$this->config['minpay'],'max'=>$this->config['maxpay']) );
-
+		$this->lang['Save and close'] = 'Оплатить через '.$this->caption;
 		return $this->_UpdItemModul($param, $argForm);
 	}
 	

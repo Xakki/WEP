@@ -8,14 +8,20 @@
  * @version 0.1
  * @return string html
  */
-function tpl_login($data) {
-
-	global $_tpl;
-	//$_tpl['styles']['login']=1;
+function tpl_login($data) 
+{
+	global $_tpl, $_CFG, $PGLIST;
 	$form = '';
+
+	if( isset($_CFG['fileIncludeOption']['ajaxForm']) and isset($PGLIST->contentID) )
+	{
+		$_tpl['onload'] .= ' wep.form.ajaxForm(\'#loginf\','.$PGLIST->contentID.'); ';
+	}
+
+	
 	if($data['result']<1)
-		$form = '<div class="cform" style="">
-				<form action="'.$_SERVER['REQUEST_URI'].'" method="post">
+		$form .= '<div class="cform" style="">
+				<form action="'.$_SERVER['REQUEST_URI'].'" method="post" id="loginf">
 						<input type="hidden" name="ref" value="'.$data['ref'].'"/>
 						<div>'.$data['#fn_login#'].':</div><input type="text" name="login" tabindex="1"/>
 						<div>Пароль:</div><input type="password" name="pass" tabindex="2"/>

@@ -9,7 +9,7 @@ $param = array(
 	'width'=>160, // Высота картинки
 	'height'=>40, // Ширина
 	'dX'=>7, // Смещение по -X+ 
-	'dY'=>7, // Смещение по -Y+
+	'dY'=>5, // Смещение по -Y+
 	'fonts'=>array('arial', 'times', 'verdana','verdanab','georgiai','academy-italic','dejavuserifitalic'),// ,'hiline'
 	'k'=>1, // Коэффициент увеличения/уменьшения картинки
 );
@@ -99,8 +99,19 @@ $k =(int)$step/2;
 for($i=0; $i<$l;$i++) {
 	$cl=imagecolorallocate($im, rand(0,128), rand(0,128), rand(0,128));
 	$fsize = rand($param['sizemin'],$param['sizemax']);
-	$posX = (int)($k-($fsize/3))+rand(-$param['dX'], $param['dX']);
-	$posY = (int)($center+($fsize/2))+rand(-$param['dY'], $param['dY']); // Позиция по Y
+
+	if($fsize<($param['sizemin']+$param['sizemax'])/2)
+	{
+		$posX = (int)($k-($fsize/3))+rand(0, $param['dX']);
+		$posY = (int)($center+($fsize/2))+rand(0, $param['dY']); // Позиция по Y
+	}
+	else
+	{
+		$posX = (int)($k-($fsize/3))+rand(-$param['dX'], 0);
+		$posY = (int)($center+($fsize/2))+rand(-$param['dY'], 0); // Позиция по Y
+	}
+
+	
 	$font = $path.$param['fonts'][rand(0,$cntFonts)].'.ttf';
 	imagettftext($im, $fsize, rand(-$param['angle'], $param['angle']), $posX, $posY, $cl, $font, mb_substr($data, $i, 1) );
 	$k+=$step;

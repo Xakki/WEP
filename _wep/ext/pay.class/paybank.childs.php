@@ -23,7 +23,7 @@ class paybank_class extends kernel_extends
 		$this->_AllowAjaxFn['printBill'] = true;
 
 		$this->lang['add_name'] = 'Пополнение кошелька безналичным расчетом';
-		$this->lang['Save and close'] = 'Выписать счёт';
+
 		$this->lang['add_err'] = 'Ошибка выставление счёта. Обратитесь к администратору сайта.';
 		$this->lang['add'] = 'Счёт на оплату сформировано<br/> Распечатайте квитанцию и оплатите его в ближайшем отделении банка.';
 	}
@@ -104,7 +104,7 @@ class paybank_class extends kernel_extends
 		$argForm['email'] = array('type' => 'email', 'caption' => 'Email', 'mask'=>array('min'=>5)); // 'name'=>'email', 
 		//$argForm['name'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $comm));
 		$argForm['cost'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $summ));
-
+		$this->lang['Save and close'] = 'Выписать счёт';
 		return $this->_UpdItemModul($param, $argForm);
 	}
 

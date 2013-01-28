@@ -28,7 +28,7 @@
 		return $form;
 	}
 
-	$result = array();
+	$result = array('', 0);
 	$mess = array();
 
 	if($FUNCPARAM[1])
@@ -60,6 +60,7 @@
 		static_main::redirect($ref);
 		//$mess=$result[0];
 	}
+	$this->formFlag = $result[1];
 
 	$DATA = array(
 		'mess'=>'',

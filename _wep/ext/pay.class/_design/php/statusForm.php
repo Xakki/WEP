@@ -14,7 +14,7 @@ function tpl_statusForm($data)
 	//$_CFG['fileIncludeOption']['form'] = 1;
 	$_tpl['styles']['/_pay/pay'] = 1;
 	$html = '';
-	$currency = $data['#config#']['curr'];
+	
 
 	if($data['#resFlag#']===-1)
 	{
@@ -22,6 +22,7 @@ function tpl_statusForm($data)
 	}
 	elseif(isset($data['showStatus']) and is_array($data['showStatus']))
 	{
+		$currency = $data['#config#']['curr'];
 		$pd = $data['showStatus'];
 
 		$data['messages'][] = array('alert', $pd['name']);

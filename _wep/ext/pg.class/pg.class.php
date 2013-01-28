@@ -291,10 +291,15 @@ class pg_class extends kernel_extends {
 		$_tpl['description'] = $this->config['description'];
 		$temp_tpl = $_tpl;
 
-		if(version_compare(phpversion(),'5.3.0','>'))
-			$pageParamEncode = json_encode($this->pageParam, JSON_HEX_TAG);
+		if(count($this->pageParam))
+		{
+			if(version_compare(phpversion(),'5.3.0','>'))
+				$pageParamEncode = json_encode($this->pageParam, JSON_HEX_TAG);
+			else
+				$pageParamEncode = json_encode($this->pageParam);
+		}
 		else
-			$pageParamEncode = json_encode($this->pageParam);
+			$pageParamEncode = '[]';
 
 		$getEncode = $_GET;unset($getEncode['pageParam']);
 		if(version_compare(phpversion(),'5.3.0','>')) 
@@ -633,7 +638,7 @@ class pg_class extends kernel_extends {
 				else
 					$_tpl['keywords'] .= ', ' . $rowPG['keywords'];
 			}
-
+			
 			if($rowPG['description']) {
 				if (!isset($_tpl['description']))
 					$_tpl['description'] = $rowPG['description'];

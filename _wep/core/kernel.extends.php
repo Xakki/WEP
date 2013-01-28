@@ -1508,7 +1508,7 @@ abstract class kernel_extends {
 		$flag=0;
 		$arr = array('mess'=>array(),'vars'=>array());
 		$argForm = array(
-			'_info' => array('type' => 'info', 'css' => 'caption', 'caption'=>$param['lang']['_info']),
+			'info' => array('type' => 'info', 'css' => 'caption', 'caption'=>$param['lang']['_info']),
 			'helper' => array('type' => 'hidden', 'value' => $param['confirmValue']),
 			'sbmt' => array('type' => 'submit', 'value'=>$param['lang']['sbmt'])
 		);

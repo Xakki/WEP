@@ -1,8 +1,8 @@
 <?php
 	if(!$_CFG['_PATH']['wep'] or !$_CFG['_PATH']['path']) die('ERROR');
 	global $_tpl;
-	$GLOBALS['_RESULT'] = array('html' => '','html2' => '','onload'=>'');
-	$html=$html2='';
+	$GLOBALS['_RESULT'] = array('html' => '','onload'=>'');
+	$html = '';
 
 	/*$is_ajax = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') ? true : false;
 
@@ -25,6 +25,7 @@
 // TODO - избавиться от _json.php , а если подумать хорошенько то можно избавиться от этого и сделать единую точку входа
 	$DATA  = array();
 
+	///////////////////////////////////////////////////
 	if(isset($_GET['_fn']) and $_GET['_fn']) {
 
 		if(!isset($_GET['_design']))
@@ -41,7 +42,6 @@
 					$GLOBALS["_RESULT"]['tpl'] = '#pg#formcreat';
 				$GLOBALS["_RESULT"] = array('html'=>$HTML->transformPHP($GLOBALS["_RESULT"], $GLOBALS["_RESULT"]['tpl'] ), 'onload' => $_tpl['onload']);
 			}
-			//$GLOBALS['_RESULT'] = array("html" => $html,"html2" => $html2,'onload'=>$_tpl['onload']);
 		} 
 		else
 			$GLOBALS['_RESULT']['html'] = 'Вызов функции не разрешён модулем.';
@@ -74,8 +74,8 @@
 			}
 			if(!$res[1]) {
 				if(count($_POST)) {
-					$html2 = '<div style="width:200px;font-size:12px;color:red;white-space:normal;">'.$res[0].'</div>';
-					$_tpl['onload'] = 'clearTimeout(timerid2);fShowload(1,result.html2,0,"loginblock .messlogin");$("#loginblock>div.layerblock").show();'.$_tpl['onload'];
+					$html = '<div style="width:200px;font-size:12px;color:red;white-space:normal;">'.$res[0].'</div>';
+					$_tpl['onload'] = 'clearTimeout(timerid2);fShowload(1,result.html,0,"loginblock .messlogin");$("#loginblock>div.layerblock").show();'.$_tpl['onload'];
 					$html='';
 				}
 			}
@@ -87,7 +87,7 @@
 		}else
 			$html='ERrOR';
 
-		$GLOBALS['_RESULT'] = array("html" => $html,"html2" => $html2,'onload'=>$_tpl['onload']);
+		$GLOBALS['_RESULT'] = array("html" => $html,'onload'=>$_tpl['onload']);
 	}
 
 	if($_GET['noajax'] and !isset($_GET['_template'])) {

@@ -30,6 +30,7 @@ wep.form = {
 	// Делаем форму на странице аяксовой
 	ajaxForm : function(id,contentID) {
 		var arr = '';
+		console.log('! wep.pgParam = ', wep.pgParam); 
 		if(wep.pgParam) {
 			arr = wep.pgParam;
 			arr = arr.join("&pageParam[]=");

@@ -124,10 +124,6 @@ class paywebmoney_class extends kernel_extends {
 		return $data;
 	}
 	
-	function add_payment($amount, $status) {
-		return $this->owner->add_payment($amount, $status, $this->_cl);
-	}
-	
 	
 }
 

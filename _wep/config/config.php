@@ -414,7 +414,6 @@ if($_CFG['site']['redirectPlugin'])
 $_CFG['PATH']['admin'] = $_CFG['_HREF']['BH'] . $_CFG['PATH']['admin'];
 $_CFG['_HREF']['wepJS'] = $_CFG['PATH']['admin'] . 'js.php';
 $_CFG['_HREF']['siteJS'] = $_CFG['_HREF']['BH'] . '_js.php';
-$_CFG['_HREF']['siteAJAX'] = $_CFG['_HREF']['BH'] . '_json.php';
 $_CFG['_HREF']['captcha'] = $_CFG['_HREF']['BH'] . '_captcha.php';
 $_CFG['_HREF']['WSWG'] = $_CFG['_HREF']['BH'] . $_CFG['PATH']['WSWG'];
 $_CFG['_HREF']['_style'] = '_design/_style/'; // дизайн стили

@@ -150,7 +150,7 @@ class payrbk_class extends kernel_extends {
 		else
 			$argForm['cost'] = array('type' => 'int', 'caption' => 'Сумма (руб)', 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('min'=>$this->config['minpay'],'max'=>$this->config['maxpay']) );
 
-
+		$this->lang['Save and close'] = 'Оплатить через '.$this->caption;
 		return $this->_UpdItemModul($param, $argForm);
 	}
 

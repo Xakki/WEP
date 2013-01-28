@@ -13,8 +13,9 @@ function tpl_paylist($data)
 	global $_tpl;
 	$_tpl['styles']['/_pay/pay'] = 1;
 	$html = '';
-	if(count($data['#list#'])) {
-		$html .= '<h3>Начальный баланс 0 руб.</h3>';
+	if(count($data['#list#'])) 
+	{
+		$currentBalance = $data['#users#'][$data['userId']]['balance'];
 		global $PGLIST;
 		//if(isset($data['#users#'][1]) and isset($PGLIST->config['sitename'])) {
 		//	$data['#users#'][1]['name'] = $PGLIST->config['sitename'];
@@ -22,11 +23,11 @@ function tpl_paylist($data)
 		$html .= '<table class="pay_list">
 			<tr>
 				<td>#
-				<td>Название
 				<td>Тип
+				<td>Название
 				'.($data['#showUser#']?'':'<td>Плательщик <td>Получатель').'
 				<td>Статус
-				<td>Сумма<br/>'.$data['#curr#'].'
+				<td>Сумма<br/>'.$data['#config#']['curr'].'
 				<td>Дата
 				<td>Баланс
 			</tr>';
@@ -36,12 +37,12 @@ function tpl_paylist($data)
 		{
 			if(!$r['status']) 
 			{
-				$r['#status#'] .= ' [<a href="?payid='.$r['id'].'" onclick="return wep.JSWin({\'type\':this});" target="_blank">Оплатить</a>]
-				<br/><i>[до '.date('Y-m-d H:i',($r['mf_timecr']+($r['#lifetime#']*3600))).']</i>';
+				// onclick="return wep.JSWin({\'type\':this});" 
+				$r['#status#'] = '<a href="'.$data['#page#'].'.html?payinfo='.$r['id'].'" title="Оплатите до '.date('Y-m-d H:i',$r['#leftTime#']).'">'.$r['#status#'].'</a>';
 			}
-			elseif($r['status']==1) 
+			elseif($r['status']==1 && $r['from_user']!=$r['to_user']) 
 			{
-				if($data['userId']==$r['creater_id'])
+				if($data['userId']==$r['from_user'])
 					$b = bcsub($b, $r['cost'],2);
 				else
 					$b = bcadd($b, $r['cost'],2);
@@ -62,17 +63,19 @@ function tpl_paylist($data)
 				
 			$html .= '<tr class="paylist'.$r['status'].'">
 				<td>'.$r['id'].'
-				<td>'.$r['name'].'
 				<td>'.$r['#paytype#'].'
+				<td>'.$r['name'].'
 				'.($data['#showUser#']?'':'<td>'.$from_user.'<td>'.$to_user).'
 				<td>'.$r['#status#'].'
 				<td class="'.($r['#sign#']?'plus':'minus').'">'.round($r['cost'],2).'
 				<td>'.$r['mf_timestamp'].'
-				<td>'.($r['status']==1?$b:'').'
+				<td>'.($r['status']==1 && $r['from_user']!=$r['to_user']?$b:' - ').'
 			</tr>';
 		}//long2ip($r['mf_ipcreate'])
 		$html .= '</table>
-		<div>Баланс : '.round($data['#users#'][$data['userId']]['balance'],2).' руб.</div>';
+		<h3>Итоговый баланс : '.round($currentBalance,2).' руб.</h3>';
+
+		$html = '<h3>Начальный баланс '.round(($currentBalance-$b),2).' руб.</h3>'.$html;
 	} else
 		$html .= '<div class="error">Операций по счету нет.</div>';
 	return $html;

@@ -84,12 +84,7 @@ class payzpayment_class extends kernel_extends {
 		
 		return $html;
 	}	
-	
-	function add_payment($amount, $status) {
-		return $this->owner->add_payment($amount, $status, $this->_cl);
-	}
-	
-	
+
 }
 
 
