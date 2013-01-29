@@ -1043,7 +1043,7 @@ class product_class extends kernel_extends {
 
 	public function AjaxShopParam() {
 		global $HTML,$_tpl;
-		$RESULT = array('html'=>'', 'html2'=>'', 'text'=>'','onload'=>'');
+		$RESULT = array('html'=>'', 'text'=>'','onload'=>'');
 		$DATA  = array();
 		$this->fields_form = array();
 		$_GET['_rid']=(int)$_GET['_rid'];

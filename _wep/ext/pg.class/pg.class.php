@@ -1170,7 +1170,7 @@ class pg_class extends kernel_extends {
 		if(isset($_GET['pageParam']))
 			$this->pageParam = $_GET['pageParam'];
 
-		$RESULT = array('html'=>'Не верные данные', 'html2'=>'', 'text'=>'','onload'=>'');
+		$RESULT = array('html'=>'Не верные данные', 'text'=>'','onload'=>'');
 		$DATA  = array();
 		$htmlb = '';
 		$this->ajaxRequest = true;
@@ -1198,18 +1198,16 @@ class pg_class extends kernel_extends {
 		$RESULT['html'] = $_tpl['text'];
 
 		if($this->formFlag==1) {
-			$RESULT['onload'] .= 'clearTimeout(timerid2);wep.fShowload (1,false,result.html2,0,\'location.href = location.href;\');';
+			$RESULT['onload'] .= 'clearTimeout(timerid2);wep.fShowload (1,false,result.html,0,\'location.href = location.href;\');';
 		}
 		elseif($this->formFlag==-1) {
-			//$RESULT['onload'] = 'GetId("messages").innerHTML=result.html2;'.$RESULT['onload'];
-			$RESULT['onload'] = 'jQuery(\'.caption_error\').remove();'.$RESULT['onload'].'clearTimeout(timerid2);wep.fShowload(1,false,result.html2);';
+			//$RESULT['onload'] = 'GetId("messages").innerHTML=result.html;'.$RESULT['onload'];
+			$RESULT['onload'] = 'jQuery(\'.caption_error\').remove();'.$RESULT['onload'].'clearTimeout(timerid2);wep.fShowload(1,false,result.html);';
 			$RESULT['html']="<div class='blockhead'>Внимание. Некоректно заполнены поля.</div><div class='hrb'>&#160;</div>".$RESULT['html'];
 		}
 		else{
-			$RESULT['onload'] .= 'clearTimeout(timerid2);wep.fShowload(1,false,result.html2);';
+			$RESULT['onload'] .= 'clearTimeout(timerid2);wep.fShowload(1,false,result.html);';
 		}
-		$RESULT['html2']=$RESULT['html'];
-		$RESULT['html']='';
 		if(!isset($_SESSION['user']['id']))
 			$RESULT['onload'] .= 'reloadCaptcha(\'captcha\');';
 		$RESULT['onload'] .= $_tpl['onload'];

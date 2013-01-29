@@ -326,7 +326,7 @@ var wep = {
 		wep.fShowload(1,false,resData['pg_text']);
 
 		wep.paramTemp = {'call':function() {wep.ajaxMenuCall(this)}};
-		if(typeof resData.styles.login != 'undefined' || typeof resData.script.wepform != 'undefined') {
+		if(typeof resData.styles != 'undefined' && (typeof resData.styles.login != 'undefined' || typeof resData.script.wepform != 'undefined') ) {
 			$('#ajaxload form').one('submit',function() {wep.paramTemp['type'] = $(this); JSWin(wep.paramTemp); return false;});
 		}
 

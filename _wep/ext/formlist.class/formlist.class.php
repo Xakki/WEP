@@ -33,7 +33,7 @@ class formlist_class extends kernel_extends {
 	public function AjaxMCBox() {
 		//_modul=formlist&_fn=AjaxMCBox
 		global $HTML,$_tpl;
-		$RESULT = array('html'=>'', 'html2'=>'', 'text'=>'','onload'=>'');
+		$RESULT = array('html'=>'', 'text'=>'','onload'=>'');
 
 			$DATA = array();
 			$enumlist = array();
