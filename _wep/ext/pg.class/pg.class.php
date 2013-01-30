@@ -260,30 +260,36 @@ class pg_class extends kernel_extends {
 	 * frontend display controller
 	 * @return bool
 	 */
-	function initHTML($templ) {
+	function initHTML($templ=false) {
 		global $HTML;
 		if (!$HTML) {
 			// TODO : смена дизайна и получение инфы о странице в аяксе
 			/*if (isset($_GET['_design']))
 				$this->config['design'] = $_GET['_design'];
 			else*/
+
 			if ($this->pageinfo['design'])
 				$this->config['design'] = $this->pageinfo['design'];
 			elseif (!$this->config['design'])
 				$this->config['design'] = 'default';
+			if(isset($this->templ))
+				$templ = $this->templ;
 			$HTML = new html($this->_CFG['PATH']['themes'], $this->config['design'], $templ); //отправляет header и печатает страничку
 		}
 		return true;
 	}
 	
-	function display($templ = true) {
+	function display($templ = true) 
+	{
 		global $_tpl, $HTML;
+		$this->templ = $templ;
 
 		$flag_content = $this->can_show();
-		$this->initHTML($templ);
+		
 
 		foreach ($this->config['marker'] as $km => $rm)
 			$_tpl[$km] = '';
+
 		$_tpl['onload'] = '';
 		$_tpl['title'] = '';
 		$_tpl['name'] = '';
@@ -445,6 +451,9 @@ class pg_class extends kernel_extends {
 		}
 		$this->main_category = $id;
 		$this->pageinfo['path'] = array_reverse($this->pageinfo['path'], true);
+
+		$this->initHTML();
+
 		return true;
 	}
 
@@ -562,7 +571,7 @@ class pg_class extends kernel_extends {
 			$data = $this->qs('*','WHERE id IN ('.implode(',',$oId).') LIMIT 1');
 			$this->pageinfo = $data[0];
 
-			$this->initHTML(false);
+			$this->initHTML();
 
 			global $_tpl;
 			$_tpl = array();
