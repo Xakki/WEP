@@ -3,6 +3,42 @@
 /***************************/
 /*  Главный набор скриптов */
 /***************************/
+// true - чтобы отключить все логи
+isProduction = true;
+
+/**
+* Проверяем существование необходимых консольных функции в браузере
+*/
+if(typeof(console)=='undefined')
+    console = {};
+
+if(isProduction)
+{
+    console.log = function() {};
+    console.error = function() {};
+    console.assert = function() {};
+    console.timeEnd = function() {};
+    console.time = function() {};
+}
+else if(typeof(opera)!="undefined" && !console.log)
+{
+    // для старой оперы 
+    console.log = function() {opera.postError(arguments);};//opera.postError(comm);
+    console.error = function() {opera.postError(arguments);};
+    console.assert = function() {if(!arguments[0]) opera.postError(arguments);};
+    console.timeEnd = function() {};
+    console.time = function() {};
+}
+else
+{
+    console.log = console.log || function() {};
+    console.error = console.error || function() {alert(arguments);};
+    console.assert = console.assert || console.error;
+    console.timeEnd = console.timeEnd || function() {};
+    console.time = console.time || function() {};
+}
+
+
 KEY = {
     UP: 38,
     DOWN: 40,

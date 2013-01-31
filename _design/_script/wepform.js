@@ -28,9 +28,9 @@ wep.form = {
 		$(selector).off("focus.float").on("focus.float", "input[data-width0]", function(e){return wep.form.checkFloat(e);});
 	},
 	// Делаем форму на странице аяксовой
-	ajaxForm : function(id,contentID) {
+	ajaxForm : function(id,contentID) 
+	{
 		var arr = '';
-		console.log('! wep.pgParam = ', wep.pgParam); 
 		if(wep.pgParam) {
 			arr = wep.pgParam;
 			arr = arr.join("&pageParam[]=");
