@@ -1170,7 +1170,7 @@ function _chmod($file,$mode=null) {
 function assertion($rule,$mess) 
 {
 	if(version_compare(PHP_VERSION, '5.4.8', '>='))
-		assertion($rule,$mess);
+		assert($rule,$mess);
 	else
-		assertion($rule);
+		assert($rule);
 }
