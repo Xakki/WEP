@@ -327,22 +327,14 @@
 	    text-align: center;
 	}
 
-	.divform div.secretimg {padding:3px 0 0 5px;}
-	.divform .secretinfo {width:30px;}
-	.divform .secretinfo a {
-		display:block;
-		width:15px;
-		height:15px;
-		margin:5px;
-		background: transparent url(../_img/jquery.ui/ui-icons_2e83ff_256x240.png) no-repeat scroll -32px -129px;
-		opacity:0;
-		cursor:pointer;
-		font-size:0;
-		white-space:nowrap;
+	.divform div.secretimg {
+		padding:3px 0 0 5px;
 	}
-	a.i-reload {background-position:-65px -81px !important;}
-	a.i-help {background-position:-48px -145px !important; display:none !important;}
-		
+
+	.divform .i-reload {
+		cursor: pointer;
+	}
+
 	.divform input.ronly{
 		background:none repeat scroll 0 0 #E6E6E6;
 		color:#666666;}

@@ -266,7 +266,7 @@ function textareaChange(obj,max) {
 
 function reloadCaptcha(id)
 {
-	jQuery('#'+id).attr('src',"/_captcha.php?"+ Math.random());
+	jQuery('#'+id).attr('src',"/_captcha.php?"+ toInt(Math.random()*100));
 	jQuery('input.secret').attr('value','');
 }
 

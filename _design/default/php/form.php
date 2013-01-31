@@ -587,27 +587,28 @@ function tpl_form(&$data, $tabs = array()) {
 				$texthtml .= '</div>';
 			}
 			elseif($r['type']=='captcha') {
-				$texthtml .= '<div class="form-value secret">
+				$help = 'Нажмите чтобы обновить картинку / ';
+				switch ($r['mask']['dif']) {
+					case 0:
+						$help .= 'Только цифры';
+					break;
+					case 1:
+						$help .= 'Только цифры и заглавные карилицы';
+					break;
+					case 2:
+						$help .= 'Только цифры и карилица';
+					break;
+					default:
+						$help .= 'Только цифры и буквы';
+				}
+				$texthtml .= '
+					<div class="form-value secret">
 						<div class="inline"><input type="text" name="'.$k.'" value="'.$r['value'].'" maxlength="5" size="10" class="secret" autocomplete="off"/></div>
-						<div class="secretimg inline"><img src="'.$r['src'].'" class="i_secret" id="captcha" alt="CARTHA"/></div>
-						<div class="secretinfo inline">
-							<a class="i-reload" title="Обновить картинку">&#160;</a>';
-						switch ($r['mask']['dif']) {
-							case 0:
-								$texthtml .= '<a class="i-help">&#160;Только цифры</a>';
-							break;
-							case 1:
-								$texthtml .= '<a class="i-help">&#160;Только цифры и заглавные карилица</a>';
-							break;
-							case 2:
-								$texthtml .= '<a class="i-help">&#160;Только цифры и карилица</a>';
-							break;
-							default:
-								$texthtml .= '<a class="i-help">&#160;Только цифры, буквы</a>';
-						}
-				$texthtml .= '</div>
+						<div class="secretimg inline">
+							<img src="'.$r['src'].'" class="i_secret i-reload" id="captcha" alt="CARTHA" title="'.$help.'"/>
+						</div>
 					</div>';
-				$_tpl['onload'] .= ' jQuery(\'form a.i-reload\').click(function(){reloadCaptcha(\''.$k.'\');}); jQuery(\'#tr_captcha input\').click(function(){wep.setCookie(\'testtest\',1);});';
+				$_tpl['onload'] .= ' jQuery(\'.i-reload\').click(function(){reloadCaptcha(\''.$k.'\');}); jQuery(\'#tr_captcha input\').click(function(){wep.setCookie(\'testtest\',1);});';
 			}
 			elseif($r['type']=='file') {
 				

@@ -319,7 +319,7 @@ class pay_class extends kernel_extends {
 			$argForm['sbmt'] = array('type' => 'submit', 'value' => array() );
 			$this->prm_add = true;
 			$this->id = null;
-			list($data, $resFlag) = $this->_UpdItemModul(array('showform'=>1, 'savePost'=>true), $argForm);
+			list($data, $resFlag) = $this->_UpdItemModul(array('showform'=>1, 'savePost'=>true, 'captchaOn'=>false), $argForm);
 			//$data['messages'][] = array('info','Выберите вариант оплаты.');
 		}
 
@@ -991,7 +991,10 @@ class pay_class extends kernel_extends {
 	*/
 	private function saveLog($id, $name)
 	{
-		return $this->childs['payhistory']->_add(array('owner_id'=>$id, 'name'=>$name), false);
+		$data = array('owner_id'=>$id, 'name'=>$name);
+		$data['refer'] = $_SERVER['HTTP_REFERER'];
+		$data['url'] = $_SERVER['REQUEST_URI'];
+		return $this->childs['payhistory']->_add($data, false);
 	}
 
 	/**
@@ -1033,17 +1036,21 @@ class payhistory_class extends kernel_extends {
 		$this->ver = '0.1';
 	}
 
-	/*protected function _create() 
+	protected function _create() 
 	{
 		parent::_create();
-	}*/
+		$this->fields['url'] = 
+		$this->fields['refer'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'default'=>'');
+	}
 
 	public function setFieldsForm($form=0) 
 	{
 		parent::setFieldsForm($form);
 		$this->fields_form['name'] = array('type' => 'text', 'readonly'=>1,'caption' => 'Описание', 'mask'=>array());
+		$this->fields_form['url'] = array('type' => 'text', 'readonly'=>1,'caption' => 'Ссылка', 'mask'=>array());
+		$this->fields_form['refer'] = array('type' => 'text', 'readonly'=>1,'caption' => 'Переход', 'mask'=>array());
 		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата', 'mask'=>array());
-		$this->fields_form['mf_ipcreate'] = array('type' => 'text','readonly'=>1, 'caption' => 'Дата', 'mask'=>array('fview'=>2));
+		$this->fields_form['mf_ipcreate'] = array('type' => 'text','readonly'=>1, 'caption' => 'IP', 'mask'=>array('fview'=>2));
 	}
 
 }
