@@ -578,7 +578,7 @@ class static_super {
 								$s = explode(':', $fs[1]);
 								$temp = mktime($s[0], $s[1], $s[2], $f[1], $f[2], $f[0]);
 								
-								if($r['mask']['time'])
+								if(isset($r['mask']['time']) and $r['mask']['time'])
 									$r['mask']['format'] = $r['mask']['format'].' '.$r['mask']['time'];
 								
 								$temp = date($r['mask']['format'],$temp);
