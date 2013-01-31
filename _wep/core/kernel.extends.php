@@ -427,7 +427,7 @@ abstract class kernel_extends {
 	 * Экранирует специальные символы в строках для использования в выражениях SQL
 	 */
 	public function SqlEsc($val) {
-		assert('!is_array($val)', ' * '.print_r($val, true));
+		assertion('!is_array($val)', ' * '.print_r($val, true));
 		return $this->SQL->escape((string)$val);
 	}
 
@@ -2226,7 +2226,7 @@ abstract class kernel_extends {
 	* Ключ для платежной системы
 	*/
 	public function getPayKey() {
-		assert($this->id);
+		assertion($this->id);
 		return $this->_cl.':'.$this->id;
 	}
 }
