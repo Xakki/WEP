@@ -1166,11 +1166,3 @@ function _chmod($file,$mode=null) {
 	if(is_null($mode)) $mode = $_CFG['wep']['chmod'];
 	chmod($file, $mode);
 }
-
-function assertion($rule,$mess) 
-{
-	if(version_compare(PHP_VERSION, '5.4.8', '>='))
-		assert($rule,$mess);
-	else
-		assert($rule);
-}
