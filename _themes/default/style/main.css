@@ -34,7 +34,9 @@ a:hover {
 }
 .jshref:hover {border-bottom:1px dashed transparent;}
 .sdsd{display:none;}/*скрывать*/
-
+.bold {
+	font-weight: bold;
+}
 
 	.header{
 		margin:0 10px;

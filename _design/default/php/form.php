@@ -588,18 +588,27 @@ function tpl_form(&$data, $tabs = array()) {
 			}
 			elseif($r['type']=='captcha') {
 				$help = 'Нажмите чтобы обновить картинку / ';
-				switch ($r['mask']['dif']) {
-					case 0:
-						$help .= 'Только цифры';
-					break;
+				switch ($r['mask']['difficult']) {
 					case 1:
-						$help .= 'Только цифры и заглавные карилицы';
+						$help .= 'Только цифры и карилица';
 					break;
 					case 2:
 						$help .= 'Только цифры и карилица';
 					break;
+					case 3:
+						$help .= 'Только цифры и латиница';
+					break;
+					case 4:
+						$help .= 'Только цифры и латиница';
+					break;
+					case 5:
+						$help .= 'Только цифры и карилица';
+					break;
+					case 6:
+						$help .= 'Только цифры и латиница';
+					break;
 					default:
-						$help .= 'Только цифры и буквы';
+						$help .= 'Только цифры';
 				}
 				$texthtml .= '
 					<div class="form-value secret">

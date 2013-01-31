@@ -1197,23 +1197,24 @@ abstract class kernel_extends {
 			else
 				$f_param['captchaOn'] = false;
 		}
-		if (count($f_fieldsForm) and $f_param['captchaOn']) {
+		if (count($f_fieldsForm) and $f_param['captchaOn']) 
+		{
 			$LEN = 5;
-			$DIF = 1;
+			$difficult = 1;
 			if (is_array($f_param['captchaOn'])) {
 				if (isset($f_param['captchaOn']['len']))
 					$LEN = $f_param['captchaOn']['len'];
-				if (isset($f_param['captchaOn']['dif']))
-					$DIF = $f_param['captchaOn']['dif'];
+				if (isset($f_param['captchaOn']['difficult']))
+					$difficult = $f_param['captchaOn']['difficult'];
 			}
-			//$LEN,$DIF
+			//$LEN,$difficult
 			$f_fieldsForm['captcha'] = array(
 				'type' => 'captcha',
 				'caption' => static_main::m('_captcha', $this),
 				'captcha' => static_form::getCaptcha(),
 				'src' => $this->_CFG['_HREF']['captcha'] . '?' . rand(0, 9999),
 				'value' => (isset($f_data['captcha']) ? $f_data['captcha'] : ''),
-				'mask' => array('min' => 1, 'max' => $LEN, 'dif' => $DIF));
+				'mask' => array('min' => $LEN, 'max' => $LEN, 'difficult' => $difficult));
 			if (0) {// TODO /
 				$f_fieldsForm['captcha']['error'] = array('У вас отключены Куки');
 			}
@@ -1222,8 +1223,10 @@ abstract class kernel_extends {
 		$mess = array();
 		if (isset($this->mess_form) and count($this->mess_form))
 			$mess = $this->mess_form;
+		
 		if (!count($f_fieldsForm))
 			$mess[] = array('name' => 'error', 'value' => static_main::m('nodata', $this));
+
 		if (isset($this->_CFG['hook']['kPreFields']))
 			$this->__do_hook('kPreFields', func_num_args());
 		return $mess;
@@ -1530,7 +1533,7 @@ abstract class kernel_extends {
 		}
 
 		if(isset($argForm['captcha']))
-			static_form::setCaptcha();
+			static_form::setCaptcha($argForm['captcha']['mask']);
 
 		$formflag = $this->kFields2Form($param,$argForm);
 

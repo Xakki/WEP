@@ -631,7 +631,9 @@ class users_class extends kernel_extends {
 			$mess = $this->kPreFields($DATA,$param,$argForm);
 		}
 
-		static_form::setCaptcha();
+		if(isset($argForm['captcha']))
+			static_form::setCaptcha($argForm['captcha']['mask']);
+
 		if(isset($param['formflag']))
 			$formflag = $param['formflag'];
 		elseif($flag==0)

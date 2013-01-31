@@ -88,7 +88,7 @@ class static_control {
 					$mess = $_this->kPreFields($tempdata,$param,$argForm);
 				}
 				if(isset($argForm['captcha']))
-					static_form::setCaptcha();
+					static_form::setCaptcha($argForm['captcha']['mask']);
 			} else {
 				$arr['mess'][] = static_main::am('error','nodata',$_this);
 				$flag=-1;
@@ -128,7 +128,7 @@ class static_control {
 			else 
 				$mess = $_this->kPreFields($_POST,$param,$argForm);
 			if(isset($argForm['captcha']))
-				static_form::setCaptcha();
+				static_form::setCaptcha($argForm['captcha']['mask']);
 		}
 
 		if(isset($param['showform']) and $param['showform'] and $flag<0)  // Если стоит флаг showform, то отображаем форму если ошибка
