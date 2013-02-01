@@ -404,9 +404,8 @@ function parseTemplate(&$TEXT,&$TPL) {
 
 function headerssent() {
 	global $_CFG;
-	if (!headers_sent()) {
-		setlocale(LC_ALL, $_CFG['wep']['setlocale']);
-		//date_default_timezone_set('Asia/Yekaterinburg');
+	if (!headers_sent()) 
+	{
 		header("Pragma: no-cache");
 		header("Content-type: text/html; charset=utf-8");
 		header("Cache-Control: public, no-store, no-cache, must-revalidate, post-check=0, pre-check=0");// no-store, no-cache,

@@ -120,7 +120,22 @@ $_CFG['lang']['rumonth'] = array(
 	'September ' => 'сентября',
 	'October' => 'октября',
 	'November' => 'ноября',
-	'December' => 'декабря');
+	'December' => 'декабря'
+);
+$_CFG['lang']['rumon'] = array(
+	'January' => 'янв.',
+	'February' => 'фев.',
+	'March' => 'мар.',
+	'April' => 'апр.',
+	'May' => 'мая',
+	'June' => 'июня',
+	'July' => 'июля',
+	'August' => 'авг.',
+	'September ' => 'сент.',
+	'October' => 'окт.',
+	'November' => 'нояб.',
+	'December' => 'дек.'
+);
 
 $_CFG['lang']['week'] = array(
 	'0' => 'Пн',

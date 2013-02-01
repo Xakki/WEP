@@ -677,7 +677,7 @@ class static_main {
 		elseif ($_CFG['getdate']['year'] == $date['year'] and $_CFG['getdate']['yday'] - $date['yday'] == 1)
 			$date = 'Вчера ' . date('H:i', $time);
 		else
-			$date = date($format, $time);
+			$date = self::_date($format, $time);
 		return $date;
 	}
 
@@ -688,6 +688,8 @@ class static_main {
 		$date = date($format, $time);
 		if(strpos($format,'F')!==false)
 			$date = str_replace(array_keys($_CFG['lang']['rumonth']),$_CFG['lang']['rumonth'],$date);
+		if(strpos($format,'M')!==false)
+			$date = str_replace(array_keys($_CFG['lang']['rumon']),$_CFG['lang']['rumon'],$date);
 		return $date;
 	}
 
