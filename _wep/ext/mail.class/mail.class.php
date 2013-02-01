@@ -138,11 +138,13 @@ class mail_class extends kernel_extends {
 	public function setFieldsForm($form=0) {
 		parent::setFieldsForm($form);
 		$this->fields_form['from']= array('type'=>'text','caption'=>'Обратный email адрес','mask'=>array('name'=>'email', 'min' => '4'));
-		$this->fields_form[$this->mf_createrid] = array(
+		/*$this->fields_form[$this->mf_createrid] = array(
 			'type' => 'list',
 			'readonly'=>true,
 			'listname'=>array('class'=>'users','nameField'=>'concat(tx.name," [",tx.id,"]")'),
-			'caption' => 'От кого', 'mask' => array('usercheck'=>1));
+			'caption' => 'От кого', 'mask' => array('usercheck'=>1));*/
+		$this->fields_form[$this->mf_createrid] = array('type' => 'text', 'readonly'=>1, 'caption' => 'От кого', 'mask'=>array('usercheck'=>1));
+		
 		$this->fields_form['subject']= array('type'=>'text','caption'=>'Тема письма', 'mask'=>array('min' => '4'));
 		$this->fields_form['text'] = array(
 			'type' => 'ckedit', 
@@ -163,12 +165,13 @@ class mail_class extends kernel_extends {
 			);
 		}
 		$this->fields_form['mail_to'] = array('type' => 'text', 'caption' => 'Кому email', 'mask' => array('name'=>'email','usercheck'=>1));
-		$this->fields_form['user_to'] = array(
+		/*$this->fields_form['user_to'] = array(
 			'type' => 'list', 
 			'readonly'=>true,
 			'listname'=>array('class'=>'users','nameField'=>'concat(tx.name," [",tx.id,"]")'),
-			'caption' => 'Кому', 'mask' => array('usercheck'=>1));
-
+			'caption' => 'Кому', 'mask' => array('usercheck'=>1));*/
+		$this->fields_form['user_to'] = array('type' => 'text', 'readonly'=>1, 'caption' => 'Кому', 'mask'=>array('usercheck'=>1));
+		
 		$this->fields_form['mf_timecr'] = array('type' => 'date','readonly'=>1, 'caption' => 'Дата создания', 'mask'=>array('usercheck'=>1,'fview'=>2,'sort'=>1));
 		$this->fields_form['status'] = array('type' => 'list', 'listname'=>'status', 'caption' => 'Статус', 'mask' => array('usercheck'=>1));
 		$this->fields_form['category'] = array('type' => 'list', 'listname'=>'category', 'caption' => 'Категория', 'mask' => array('usercheck'=>1));

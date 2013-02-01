@@ -407,6 +407,7 @@ select.pagenum option[selected='selected']{
 }
 
 div.pagenum {
+	font-size: 14px;
 	height:27px;
 	padding:5px 0 0;
 	color: #4B4B4B;
