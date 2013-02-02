@@ -2054,13 +2054,17 @@ abstract class kernel_extends {
 					$PP[1] = $PP[0];
 				}
 				$PP[1] .= $this->_pa . '=';
-			} else {
-				$pregreplPage = '/(.*)_p[0-9]*(.*)/';
-				if (!preg_match($pregreplPage, $param['firstpath'], $matches)) {
+			} 
+			else 
+			{
+				$pregreplPage = '/(.*)_p[0-9]+(.*)/';
+				if (!preg_match($pregreplPage, $param['firstpath'], $matches))
+				 {
 					$temp = explode('.html', $param['firstpath']);
 					$PP[1] = $temp[0] . '_p';
 					$PP[2] = '.html' . $temp[1];
-				} else {
+				} else 
+				{
 					$PP[0] = $matches[1] . $matches[2];
 					$PP[1] = $matches[1] . '_p';
 					$PP[2] = $matches[2];

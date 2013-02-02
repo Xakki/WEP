@@ -676,8 +676,11 @@ class static_main {
 			$date = 'Сегодня ' . date('H:i', $time);
 		elseif ($_CFG['getdate']['year'] == $date['year'] and $_CFG['getdate']['yday'] - $date['yday'] == 1)
 			$date = 'Вчера ' . date('H:i', $time);
+		elseif(strpos($format,'%')!==false)
+			$date = strftime($format,$time); // "%d %B(%b) %A(%a) %Y"
 		else
 			$date = self::_date($format, $time);
+		
 		return $date;
 	}
 
@@ -687,9 +690,9 @@ class static_main {
 		if(is_null($time)) $time = time();
 		$date = date($format, $time);
 		if(strpos($format,'F')!==false)
-			$date = str_replace(array_keys($_CFG['lang']['rumonth']),$_CFG['lang']['rumonth'],$date);
+			$date = str_replace(array_keys($_CFG['lang']['dateF']),$_CFG['lang']['dateF'],$date);
 		if(strpos($format,'M')!==false)
-			$date = str_replace(array_keys($_CFG['lang']['rumon']),$_CFG['lang']['rumon'],$date);
+			$date = str_replace(array_keys($_CFG['lang']['dateM']),$_CFG['lang']['dateM'],$date);
 		return $date;
 	}
 

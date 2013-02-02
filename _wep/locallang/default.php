@@ -106,9 +106,10 @@ $_CFG['lang']['month2'] = array(
 	'09' => 'сентября',
 	'10' => 'октября',
 	'11' => 'ноября',
-	'12' => 'декабря');
+	'12' => 'декабря'
+);
 
-$_CFG['lang']['rumonth'] = array(
+$_CFG['lang']['dateF'] = array(
 	'January' => 'января',
 	'February' => 'февраля',
 	'March' => 'марта',
@@ -117,24 +118,24 @@ $_CFG['lang']['rumonth'] = array(
 	'June' => 'июня',
 	'July' => 'июля',
 	'August' => 'августа',
-	'September ' => 'сентября',
+	'September' => 'сентября',
 	'October' => 'октября',
 	'November' => 'ноября',
 	'December' => 'декабря'
 );
-$_CFG['lang']['rumon'] = array(
-	'January' => 'янв.',
-	'February' => 'фев.',
-	'March' => 'мар.',
-	'April' => 'апр.',
+$_CFG['lang']['dateM'] = array(
+	'Jan' => 'янв.',
+	'Feb' => 'фев.',
+	'Mar' => 'мар.',
+	'Apr' => 'апр.',
 	'May' => 'мая',
-	'June' => 'июня',
-	'July' => 'июля',
-	'August' => 'авг.',
-	'September ' => 'сент.',
-	'October' => 'окт.',
-	'November' => 'нояб.',
-	'December' => 'дек.'
+	'Jun' => 'июня',
+	'Jul' => 'июля',
+	'Aug' => 'авг.',
+	'Sep' => 'сент.',
+	'Oct' => 'окт.',
+	'Nov' => 'нояб.',
+	'Dec' => 'дек.'
 );
 
 $_CFG['lang']['week'] = array(

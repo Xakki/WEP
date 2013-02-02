@@ -463,7 +463,10 @@ if (file_exists($_CFG['_PATH']['locallang'] . $_CFG['wep']['lang'] . '.php'))
 error_reporting($_CFG['wep']['error_reporting']);
 mb_internal_encoding($_CFG["wep"]["charset"]);
 date_default_timezone_set($_CFG['wep']['timezone']);
-setlocale(LC_CTYPE, $_CFG['wep']['locale']);
+
+setlocale(LC_ALL, $_CFG['wep']['locale']);
+//setlocale(LC_ALL, 'ru_RU.UTF-8', 'rus_RUS.UTF-8', 'Russian_Russia.UTF-8');
+
 $_CFG['modulinc'] = array(
 	0 => array('path' => $_CFG['_PATH']['wep_ext'], 'name' => 'Ядро - '),
 	3 => array('path' => $_CFG['_PATH']['ext'], 'name' => 'Плагины - ')
