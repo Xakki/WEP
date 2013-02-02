@@ -940,11 +940,11 @@ class pay_class extends kernel_extends {
 
 		$list = $this->_query('*','WHERE mailnotif=0 and status='.PAY_NOPAID.' and mf_timecr<'.(time()-600), 'id');
 		
-		/*if(count($list))
+		if(count($list))
 		{
 			$this->id = array_keys($list);
 			$this->_update(array('mailnotif'=>time()), null, false);
-		}*/
+		}
 		foreach($list as $row)
 		{
 			if(!$row['email']) continue;
