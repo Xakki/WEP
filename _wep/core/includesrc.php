@@ -44,10 +44,16 @@
 		if(isset($gfi['md5']) and $gfi['md5']) {
 			$_tpl['script']['md5'] = 1;
 		}
-		if(isset($gfi['fancybox']) and $gfi['fancybox']) {
-			$_tpl['script']['script.jquery/fancybox'] = 1;
-			$_tpl['styles']['style.jquery/fancybox'] = 1;
-			$_tpl['onload'] .= "jQuery('.fancyimg').fancybox();";
+		if(isset($gfi['fancybox'])) 
+		{
+			$_tpl['script']['fancybox/jquery.fancybox.pack'] = 1;
+			$_tpl['styles']['../_script/fancybox/jquery.fancybox'] = 1;
+			if($gfi['fancybox'])
+			{
+				if(!is_string($gfi['fancybox']))
+					$gfi['fancybox'] = '.fancyimg';
+				$_tpl['onload'] .= "jQuery('".$gfi['fancybox']."').fancybox();";
+			}
 		}
 		if(isset($gfi['qrtip']) and $gfi['qrtip']) {
 			$_tpl['script']['script.jquery/qrtip'] = 1;
