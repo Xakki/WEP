@@ -407,11 +407,11 @@ class static_tools {
 			$fields_form['sbmt'] = array(
 				'type' => 'submit',
 				'value' => array(
-					'_off' => static_main::m('Отключить', $_this),
-					'_on' => static_main::m('Включить', $_this),
-					'_del' => static_main::m('Delete', $_this),
-					'_clear' => static_main::m('Отменить выбранные элементы.', $_this),
-					'' => static_main::m('Отмена', $_this),
+					'sbmt_off' => static_main::m('Отключить', $_this),
+					'sbmt_on' => static_main::m('Включить', $_this),
+					'sbmt_del' => static_main::m('Delete', $_this),
+					'sbmt_clear' => static_main::m('Отменить выбранные элементы.', $_this),
+					'sbmt' => static_main::m('Отмена', $_this),
 				)
 			);
 		}
