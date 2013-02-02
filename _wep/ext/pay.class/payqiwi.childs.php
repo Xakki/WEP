@@ -322,7 +322,7 @@ Cчета со статусом большим или равным 100 трак�
 		if(!$this->config['lifetime']) $this->config['lifetime'] = 1080;
 		$leftTime = ($this->config['lifetime']*3600);
 
-		$this->_update(array('statuses'=>'161', $this->mf_actctrl=>0), 'statuses<60 and '.$this->mf_timecr.'<"'.(time()-$leftTime).'"');
+		$this->_update(array('statuses'=>'161', $this->mf_actctrl=>0), 'WHERE statuses<60 and '.$this->mf_timecr.'<"'.(time()-$leftTime).'"');
 
 		$this->owner->clearOldData($this->_cl, $leftTime);
 	}
