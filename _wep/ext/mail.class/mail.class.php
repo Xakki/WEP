@@ -6,6 +6,11 @@ define('MCAT_PAY',3);
 define('MCAT_USER',4);
 define('MCAT_OVER',10);
 
+define('MAIL_NEW',0);
+define('MAIL_OK',1);
+define('MAIL_ERROR',2);
+define('MAIL_ERROR2',3);
+
 class mail_class extends kernel_extends {
 
 	function _set_features() {
@@ -106,12 +111,10 @@ class mail_class extends kernel_extends {
 		$this->fields['comment'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'default'=>'');
 
 		$this->_enum['status'] = array(
-			0 => 'Новое',
-			1 => 'ОК',
-			2 => 'Ошибка при отправке',
-			21 => 'Ошибка при отправке повторно',
-			3 => 'ОК: прочитано на сайте',
-			4 => 'Удалено пользователем',
+			MAIL_NEW => 'NEW',
+			MAIL_OK => 'ОК',
+			MAIL_ERROR => 'Ошибка при отправке',
+			MAIL_ERROR2 => 'Ошибка при отправке повторно',
 		);
 
 		$this->_enum['category'] = array(
@@ -126,9 +129,9 @@ class mail_class extends kernel_extends {
 		$this->lang['Save and close'] = 'Отправить письмо';
 		$this->ordfield = 'mf_timecr DESC';
 
-		$this->cron[$this->_cl] = array('modul'=>$this->_cl,'function'=>'cronSend()','active'=>0,'time'=>300);
-		if($this->config['mailcron'])
-			$this->cron[$this->_cl]['active'] = 1;
+		$this->cron['cronSend'] = array('modul'=>$this->_cl,'function'=>'cronSend()','active'=>0,'time'=>300);
+			if($this->config['mailcron']) $this->cron[$this->_cl]['active'] = 1;
+		$this->cron['cronSendRepeate'] = array('modul'=>$this->_cl,'function'=>'cronSendRepeate()','active'=>0,'time'=>3000);
 
 		$this->index_fields['status'] = 'status';
 		$this->index_fields['category'] = 'category';
@@ -751,25 +754,43 @@ class mail_class extends kernel_extends {
 		return $result;
 	}
 
-	function cronSend() {
-		$DAT_LIST = $this->_query('*','WHERE status IN (0,2) LIMIT '.$this->config['mailcronlimit']);
-		foreach($DAT_LIST as $data) {
-			if(method_exists($this, 'mailengine'.$this->config['mailengine'])) {
+	function cronSend() 
+	{
+		$DAT_LIST = $this->_query('*','WHERE status='.MAIL_NEW.' LIMIT '.$this->config['mailcronlimit'], 'id');
+		$this->_update(array('status'=>MAIL_ERROR),'id in ('.implode(',', array_keys($DAT_LIST)).')');
+		foreach($DAT_LIST as $data) 
+		{
+			if(method_exists($this, 'mailengine'.$this->config['mailengine'])) 
+			{
 				$send_result = call_user_func(array($this, 'mailengine'.$this->config['mailengine']),$data);
-				if ($send_result) {
-					$status = 1;
+				if ($send_result) 
+				{
+					$this->_update(array('status'=>MAIL_OK),'id='.$data['id']);
 				}
-				elseif($data['status'] == 2)
-					$status = 21;
-				else
-					$status = 2;
-				$this->_update(array('status'=>$status),'id='.$data['id']);
 			}
 
 		}
 		return true;
 	}
 
+
+	function cronSendRepeate() 
+	{
+		$DAT_LIST = $this->_query('*','WHERE status = '.MAIL_ERROR.' LIMIT '.$this->config['mailcronlimit'], 'id');
+		$this->_update(array('status'=>MAIL_ERROR2), 'id in ('.implode(',', array_keys($DAT_LIST)).')');
+		foreach($DAT_LIST as $data) 
+		{
+			if(method_exists($this, 'mailengine'.$this->config['mailengine'])) {
+				$send_result = call_user_func(array($this, 'mailengine'.$this->config['mailengine']),$data);
+				if ($send_result) 
+				{
+					$this->_update(array('status'=>MAIL_OK),'id='.$data['id']);
+				}
+			}
+
+		}
+		return true;
+	}
 
 
 
