@@ -771,7 +771,7 @@ class mail_class extends kernel_extends {
 			}
 
 		}
-		return array_keys($DAT_LIST);
+		return implode(',', array_keys($DAT_LIST));
 	}
 
 
@@ -791,7 +791,7 @@ class mail_class extends kernel_extends {
 			}
 
 		}
-		return array_keys($DAT_LIST);
+		return implode(',', array_keys($DAT_LIST));
 	}
 
 
