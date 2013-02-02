@@ -757,7 +757,8 @@ class mail_class extends kernel_extends {
 	function cronSend() 
 	{
 		$DAT_LIST = $this->_query('*','WHERE status='.MAIL_NEW.' LIMIT '.$this->config['mailcronlimit'], 'id');
-		$this->_update(array('status'=>MAIL_ERROR),'id in ('.implode(',', array_keys($DAT_LIST)).')');
+		if(!count($DAT_LIST)) return ' - ';
+		$this->_update(array('status'=>MAIL_ERROR),'id in ('.implode(',', array_keys($DAT_LIST)).')', false);
 		foreach($DAT_LIST as $data) 
 		{
 			if(method_exists($this, 'mailengine'.$this->config['mailengine'])) 
@@ -770,14 +771,15 @@ class mail_class extends kernel_extends {
 			}
 
 		}
-		return true;
+		return array_keys($DAT_LIST);
 	}
 
 
 	function cronSendRepeate() 
 	{
 		$DAT_LIST = $this->_query('*','WHERE status = '.MAIL_ERROR.' LIMIT '.$this->config['mailcronlimit'], 'id');
-		$this->_update(array('status'=>MAIL_ERROR2), 'id in ('.implode(',', array_keys($DAT_LIST)).')');
+		if(!count($DAT_LIST)) return ' - ';
+		$this->_update(array('status'=>MAIL_ERROR2), 'id in ('.implode(',', array_keys($DAT_LIST)).')', false);
 		foreach($DAT_LIST as $data) 
 		{
 			if(method_exists($this, 'mailengine'.$this->config['mailengine'])) {
@@ -789,7 +791,7 @@ class mail_class extends kernel_extends {
 			}
 
 		}
-		return true;
+		return array_keys($DAT_LIST);
 	}
 
 
