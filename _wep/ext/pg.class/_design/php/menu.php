@@ -22,7 +22,12 @@
 					$html .= tpl_menu($r);
 					$class[] = 'hassub';
 				}
-				$html .= '<a href="'.$r['href'].'" '.(count($class)?' class="'.implode(' ',$class).'"':'').' '.$r['attr'].' '.($r['menuajax']?' onclick="return wep.ajaxMenu('.$r['pgid'].');"':'').'>'.$r['name'].'</a>';
+				if($r['menuajax'])
+				{
+					$class[] = 'isAjaxLink';
+					$r['attr'] .= ' data-ajax="popup"';
+				}
+				$html .= '<a href="'.$r['href'].'" '.(count($class)?' class="'.implode(' ',$class).'"':'').' '.$r['attr'].'>'.$r['name'].'</a>';
 				/*if(strpos($r['attr'],'style="'))
 					$r['attr'] = str_replace('style="','style="width:'.$prs.'%;',$r['attr']);
 				else

@@ -121,11 +121,10 @@
 		if(isset($_tpl['onload2']) and count($_tpl['onload2'])) // WTF?
 				$_tpl['onload'] .= implode(' ',$_tpl['onload2']);
 
-		if(isset($_tpl['onload']) and $_tpl['onload']) {
-			$temp .= "<script>\n//<!--\nfunction readyF() {".(string)$_tpl['onload']."}\n//-->\n</script>\n";
-			$_tpl['onload'] = 'readyF();';
-		} else
-			$_tpl['onload'] = '';
+		$temp .= "<script>\n//<!--\n function readyF() {".(string)$_tpl['onload']." wep.init(); \n}\n//-->\n</script>\n";
+
+		$_tpl['onload'] = 'readyF();';
+
 		$_tpl['script'] = $temp;
 	}
 

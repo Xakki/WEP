@@ -29,11 +29,6 @@
 			require_once($_CFG['_PATH']['wep'].'_phpscript/frontend/robotstxt.php');
 		exit();
 	}
-	elseif(isset($_GET['_php']) and $_GET['_php']=='json') {
-		$_CFG['returnFormat'] = 'json';
-		require_once($_CFG['_PATH']['wep'].'_phpscript/frontend/_json.php');
-		exit();
-	}
 	elseif(isset($_GET['_php']) and $_GET['_php']=='js') {
 		$_CFG['returnFormat'] = 'json';
 		if(file_exists($_CFG['_PATH']['wepconf'].'_phpscript/_js.php'))

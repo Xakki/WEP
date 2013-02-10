@@ -1,5 +1,5 @@
 
-
+alert(3);
 /***************************/
 /*  Главный набор скриптов */
 /***************************/
@@ -67,6 +67,20 @@ var wep = {
 	form: {},/*Функции работы с формой*/
 	isDef: function(v) {
 		return typeof v !== 'undefined';
+	},
+	// START DOM
+	init: function()
+	{
+		var tmp = wep.getCookie(wep.wepVer);
+		if(tmp==false){
+			wep.setCookie(wep.wepVer, document.referrer);
+		}
+		console.log('!!!!!');
+		jQuery('body').on('click', 'a.isAjaxLink', function()
+		{
+			console.log('++++');return false;
+			return wep.ajaxMenu(this);
+		});
 	},
 	/*
 	* Аякс отправка формы с примитивными полями
@@ -188,7 +202,7 @@ var wep = {
 				//console.log(result);
 				//функц. предзапуска пользователя, возвращает результат
 				if(typeof(param['precall']) != 'undefined' && typeof (param['precall']) == 'function') 
-					result = param['precall'].call(result);
+					result = param['precall'].call(result, param);
 
 				if(typeof (result.html) != 'undefined' && result.html!='') {
 					if(param['insertObj']) {
@@ -278,13 +292,13 @@ var wep = {
 		//Запуск функции пользователя
 		if(typeof param['call'] != 'undefined' && typeof param['call'] == 'function') 
 		{
-			param['call'].call(result);
+			param['call'].call(result, param);
 		}
 		
 		 // запуск onload функции
 		if(typeof result.onload != 'undefined')  {
 			if(typeof result.onload == 'function')
-				result.onload.call(result);
+				result.onload.call(result, param);
 			else if(result.onload!='') {
 				eval(result.onload);
 			}
@@ -348,20 +362,45 @@ var wep = {
 		}
 	},
 
-	ajaxMenu: function(pg) {
-		wep.fShowload(1,false,false,true);
-		var marker = {'text':1};
-		var call = function() {wep.ajaxMenuCall(this);};
-		wep.ajaxLoadPage(marker,pg,call);
-		return false;
+	ajaxMenu: function(obj) {
+		var jobj = $(this);
+		var dataMarker = jobj.attr('data-marker');
+		var marker = {};
+		if(dataMarker)
+			marker = {dataMarker:1};
+		else
+			marker = {'text' : 1};
+
+		if(jobj.attr('data-ajax')=='popup')
+		{
+			wep.fShowload(1,false,false,true);
+
+			marker['onload']=1;
+			marker['styles']=1;
+			marker['script']=1;
+
+			param = {
+				'type':jobj,
+				'data': marker,
+				'call' : wep.ajaxPopupLoad
+			};
+
+			return JSWin(param);
+		}
+		else
+		{
+			// alert('TODO');
+		}
+		return true;
 	},
 
-	ajaxMenuCall: function(resData) {
+	ajaxPopupLoad: function(resData, param) {
 		// Функция обратного вызова при получении данных от аякса
+		// - hardcode
 		resData['pg_text'] = '<div class="blockhead">'+resData['title']+'</div><hr/>'+resData['pg_text'];
 		wep.fShowload(1,false,resData['pg_text']);
 
-		wep.paramTemp = {'call':function() {wep.ajaxMenuCall(this)}};
+		wep.paramTemp = {'call':wep.ajaxPopupLoad(this)};
 		if(typeof resData.styles != 'undefined' && (typeof resData.styles.login != 'undefined' || typeof resData.script.wepform != 'undefined') ) {
 			$('#ajaxload form').one('submit',function() {wep.paramTemp['type'] = $(this); JSWin(wep.paramTemp); return false;});
 		}
@@ -369,7 +408,7 @@ var wep = {
 	},
 
 
-	ajaxLoadPage: function(marker,pg,call) {
+	ajaxLoadPage: function(obj, marker, call) {
 		if(!pg) pg = this.pgId;
 		marker['_view'] = 'loadpage';
 		marker['_pgId'] = pg;
@@ -387,12 +426,14 @@ var wep = {
 		if(call)
 			param['call'] = call;
 		else
-			param['call'] = function() {wep.ajaxLoadPageCall(this,marker)};
+			param['call'] = wep.ajaxLoadPageCall;
+
 		JSWin(param);
 		return false;
 	},
 
-	ajaxLoadPageCall: function(resData, marker) {
+	ajaxLoadPageCall: function(resData, param) {
+		var marker = param['data'];
 		// Функция обратного вызова при получении данных от аякса
 		for(var item in marker) {
 			if(resData['pg_'+item]) {
@@ -400,7 +441,7 @@ var wep = {
 			}
 		}
 
-		wep.paramTemp = {'call':function() {wep.ajaxLoadPageCall(this);}};
+		wep.paramTemp = {'call':wep.ajaxLoadPageCall};
 		if(resData.styles.login || resData.script.wepform) {
 			$('#ajaxload form').one('submit',function() {wep.paramTemp['type'] = $(this); JSWin(wep.paramTemp); return false;});
 		}
@@ -417,9 +458,7 @@ var wep = {
 		};
 		
 		if(callFunc)
-			param['call'] = function(){callFunc.call();};
-		/*else
-			param['call'] = function(){};*/
+			param['call'] = callFunc;
 		JSWin(param);
 		return false;
 	},
