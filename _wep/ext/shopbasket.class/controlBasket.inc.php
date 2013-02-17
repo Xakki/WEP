@@ -35,7 +35,7 @@
 	if(!_new_class('pay', $PAY)) return false;
 	_new_class('pay', $PAY);
 
-	$_tpl['styles']['/_shop/style/shopBasket'] = 1;
+	setCss('/_shop/style/shopBasket');
 	$_CFG['fileIncludeOption']['form'] = 1;
 
 	$html = '';

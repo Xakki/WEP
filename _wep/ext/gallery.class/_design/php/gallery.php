@@ -9,7 +9,7 @@
  */
 	function tpl_gallery(&$data) {
 		global $_tpl, $_CFG;
-		$_tpl['styles']['/_gallery/style/gallery'] = 1;
+		setCss('/_gallery/style/gallery');
 		$html = '';
 		if(isset($data['#list-gallitem#']) and count($data['#list-gallitem#'])) {
 			$_CFG['fileIncludeOption']['fancybox']=1;

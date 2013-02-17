@@ -8,9 +8,10 @@
  * @version 0.1
  * @return string html
  */
-	function tpl_news(&$data) {
+	function tpl_news(&$data) 
+	{
 		global $_tpl;
-		$_tpl['styles']['/style/news'] = 1;
+		setCss('/style/news');
 		$html = '';
 		if(isset($data['#list#']) and count($data['#list#'])) {
 			$html .= '<div class="news">';

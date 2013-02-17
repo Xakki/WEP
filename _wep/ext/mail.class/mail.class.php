@@ -354,6 +354,10 @@ class mail_class extends kernel_extends {
 			$PHPMailer->AddAddress($data['mail_to'], "Subscriber");
 
 		$this->config['mailbottom'] = str_replace(array('%host%','%year%'),array($_SERVER['HTTP_HOST'],date('Y')),$this->config['mailbottom']);
+
+		if(static_main::_prmUserCheck(1) && $data['comment'])
+			$this->config['mailbottom'] = '<h2>Дополнительно</h2>'.$data['comment'].'<hr/>'.$this->config['mailbottom'];
+
 		$PHPMailer->Body = $PHPMailer->AltBody = str_replace(array('%SUBJECT%','%TEXT%','%MAILBOTTOM%'), array($data['subject'],trim($data['text']),$this->config['mailbottom']), $this->config['mailtemplate']);
 		//$PHPMailer->Body    = iconv('cp1251','koi8-r//TRANSLIT',$html);
 		//$PHPMailer->AltBody = iconv('cp1251','koi8-r//TRANSLIT',$txt);

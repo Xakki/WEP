@@ -65,7 +65,7 @@
 			<iframe src="http://loginza.ru/api/widget?overlay=loginza&token_url='.rawurlencode('http://'.$_SERVER['HTTP_HOST'].'/'.$Chref.'.html').'&providers_set='.$FUNCPARAM[0].'" scrolling="no" frameborder="no"></iframe>
 		</div>';
 
-	$_tpl['script']['http://loginza.ru/js/widget.js'] = 1;
+	setScript('http://loginza.ru/js/widget.js');
 
 	return $html;
 

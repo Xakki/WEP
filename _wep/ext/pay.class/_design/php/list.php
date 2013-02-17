@@ -10,7 +10,7 @@
 function tpl_list($data)
 {
 	global $_tpl;
-	$_tpl['styles']['/_pay/pay'] = 1;
+	setCss('/_pay/pay');
 	$html = '';
 	if(count($data['#list#'])) {
 		$html .= '<h3>'.$data['#title#'].'</h3>

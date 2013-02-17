@@ -1,9 +1,11 @@
 <?php
-	function tpl_productLike(&$data) {
+	function tpl_productLike(&$data) 
+	{
 		$html = '';
-		if(isset($data) and count($data)) {
+		if(isset($data) and count($data)) 
+		{
 			global $_tpl;
-			$_tpl['styles']['/_shop/style/product'] = 1;
+			setCss('/_shop/style/product');
 
 			if(!isset($data['#item#']) or !count($data['#item#'])) {
 

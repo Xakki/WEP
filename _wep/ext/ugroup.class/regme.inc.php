@@ -64,5 +64,5 @@
 		unset($DATA['form']['_info']);
 		$html = transformPHP($DATA,$FUNCPARAM[0]);
 	}
-	$_tpl['styles']['login']=1;
+	setCss('login');
 	return $html;

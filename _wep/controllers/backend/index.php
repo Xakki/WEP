@@ -26,64 +26,7 @@
 
 	if($mainPage=='login')
 	{
-		$result = array('','');
-		$delay =4;
-		$variant = "";
-		$ref= $_CFG['PATH']['admin'];
-		if(isset($_REQUEST['ref']) and $_REQUEST['ref']!='') {
-			if(substr($_REQUEST['ref'],0,1)!='/' and !strstr($_REQUEST['ref'],'.'))
-				$ref = base64decode($_REQUEST['ref']);
-			else
-				$ref = $_REQUEST['ref'];
-			if(strstr($ref,'login') or strstr($ref,'install'))
-				$ref = $_CFG['PATH']['admin'];
-		}
-		elseif(isset($_SERVER['HTTP_REFERER']) and $_SERVER['HTTP_REFERER']!='' and !strstr($_SERVER['HTTP_REFERER'],'login'))
-			$ref= $_SERVER['HTTP_REFERER'];
-
-		$messBlock = 'popMess';
-		if(isset($_GET['recover']))
-		{
-			$result = array('На стадии разработки', '');
-			$_tpl['flipped'] = 'flipped';
-			$messBlock = 'popMessFlip';
-		}
-		else
-		{
-			if(count($_POST) and isset($_POST['login'])) {
-				static_main::userExit();
-				$result = static_main::userAuth($_POST['login'],$_POST['pass']);
-				if($result[1]) {
-					static_main::redirect($ref);//STOP
-				}
-			}
-			elseif(isset($_GET['mess']))
-				$result[0] = static_main::m($_GET['mess']);
-			elseif(isset($_COOKIE['remember']) and $result = static_main::userAuth() and $result[1]) {
-				static_main::redirect($ref);//STOP
-			}
-		}
-
-		setTemplate('login');
-
-		$_tpl['forgot'] = 'Забыли?';
-		$_tpl['loginLabel'] = 'Логин / Email';
-		$_tpl['passLabel'] = 'Пароль';
-		$_tpl['rememberLabel'] = 'Запомнить на 20 дней';
-		$_tpl['loginSubmit'] = 'Войти';
-
-		$_tpl['forgotLabel'] = 'Ваш Email';
-		$_tpl['forgotSubmit'] = 'Восстановить';
-
-		$_tpl['ref'] = $ref;
-		$_tpl['actionLogin'] = $_CFG['PATH']['admin'].'login'.(isset($_GET['install'])?'?install':'');
-		$_tpl['actionRecover'] = $_CFG['PATH']['admin'].'login?recover=true';
-		if($result[0])
-		{
-			$result[0] = '<div class="err">'.$result[0].'</div>';
-			$_tpl[$messBlock] = '<div class="messhead">'.$result[0].'</div>';
-		}
-		
+		include($_CFG['_PATH']['wep_controllers'].'login.php');
 		exit();
 	}
 

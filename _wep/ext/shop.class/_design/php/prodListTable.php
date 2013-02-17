@@ -1,9 +1,11 @@
 <?php
-	function tpl_prodListTable(&$data) {
+	function tpl_prodListTable(&$data) 
+	{
 		$html = '';
-		if(isset($data) and count($data)) {
+		if(isset($data) and count($data)) 
+		{
 			global $_tpl, $_CFG;
-			$_tpl['styles']['/_shop/style/product'] = 1;
+			setCss('/_shop/style/product');
 
 			$html = '<div class="prodListTable">';
 			if(!isset($data['#item#']) or !count($data['#item#'])) {
@@ -68,7 +70,7 @@
 								<img src="'.getUrlTheme().'_shop/img/basket-del.png" alt="Удалить из корзины"/>
 							</a>
 							*/
-							$_tpl['script']['/_shop/script/shop'] = 1;
+							setScript('/_shop/script/shop');
 						}
 					}
 					$html .= '</tr>';					

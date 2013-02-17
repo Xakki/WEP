@@ -139,7 +139,7 @@ class product_class extends kernel_extends {
 		parent::setFieldsForm($form);
 		global $_tpl;
 		if($form)
-			$_tpl['script']['/_shop/script/shop']=1;
+			setScript('/_shop/script/shop');
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название товара');
 		$this->fields_form['shop'] = array(
 			'type' => 'list', 

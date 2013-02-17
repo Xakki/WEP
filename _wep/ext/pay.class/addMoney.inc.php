@@ -30,7 +30,7 @@
 	}
 	// $FUNCPARAM[0] = (int)$FUNCPARAM[0]; // TODO
 
-	$_tpl['styles']['/_pay/pay'] = 1;
+	setCss('/_pay/pay');
 	$html = '';
 
 	if(!$Ctext)

@@ -65,7 +65,7 @@
 			<iframe src="http://ulogin.ru/api/widget?overlay=ulogin&token_url='.rawurlencode('http://'.$_SERVER['HTTP_HOST'].'/'.$Chref.'.html').'&providers_set='.$FUNCPARAM[0].'" scrolling="no" frameborder="no"></iframe>
 		</div>';
 
-	$_tpl['script']['http://ulogin.ru/js/widget.js'] = 1;
+	setScript('http://ulogin.ru/js/widget.js');
 
 	return $html;
 

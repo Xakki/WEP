@@ -2,7 +2,7 @@
 function tools_step1() {
 	global $_CFG,$_tpl;
 	$TEMP_CFG= array();
-	$_tpl['styles']['install']=1;
+	setCss('install');
 	$file = $_CFG['_PATH']['wep_controllers'] . '/install/step1.php';
 	if(static_main::_prmUserCheck(1))
 		return require($file);
@@ -14,7 +14,7 @@ function tools_step2() {
 	global $_CFG,$_tpl;
 	if(!static_main::_prmUserCheck(1))
 		return static_main::m('denied');
-	$_tpl['styles']['install']=1;
+	setCss('install');
 	$file = $_CFG['_PATH']['wep_controllers'] . '/install/step2.php';
 	return require($file);
 }
@@ -23,7 +23,7 @@ function tools_step3() {
 	global $_CFG,$_tpl;
 	if(!static_main::_prmUserCheck(1))
 		return static_main::m('denied');
-	$_tpl['styles']['install']=1;
+	setCss('install');
 	$file = $_CFG['_PATH']['wep_controllers'] . '/install/step3.php';
 	return require($file);
 }
@@ -74,7 +74,7 @@ function tools_cron() {
 		$ini_arr= array();
 	}
 	$FP = $_CFG['PATH']['admin'].'?_view=list&_modul=_tools&tfunc=tools_cron&';
-	$_tpl['styles']['form']=1;
+	setCss('form');
 	$DATA = array('firstpath'=>$FP);
 	$DATA['path'] = array(
 		$FP=>'Задания'
@@ -277,7 +277,7 @@ function tools_worktime() {
 	if(!static_main::_prmUserCheck(1))
 		return static_main::m('denied');
 	$result = '';
-	$_tpl['styles']['form']=1;
+	setCss('form');
 	if(count($_POST)) {
 		if($_CFG['site']['worktime']) {
 			$NEWDATA['site']['worktime']=false;

@@ -74,7 +74,7 @@
 			'.$importInc.'
 		</div>';
 
-		$_tpl['script']['http://ulogin.ru/js/widget.js'] = 1;
+		setScript('http://ulogin.ru/js/widget.js');
 	}
 
 	return $html;

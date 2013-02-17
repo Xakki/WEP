@@ -1,20 +1,22 @@
 <?php
-	function tpl_productItem(&$data) {
+	function tpl_productItem(&$data) 
+	{
 		$html = '';
 
 		$html = '<div class="prodpage">';
-		if(!isset($data['#item#']) or !count($data['#item#'])) {
+		if(!isset($data['#item#']) or !count($data['#item#'])) 
+		{
 			header("HTTP/1.0 404");
 			$html .= 'Не верная ссылка, либо товара удален';
 		} else {
 
 			global $_CFG, $_tpl;
 			$_CFG['fileIncludeOption']['fancybox'] = true;
-			$_tpl['styles']['/_shop/style/product'] = 1;
-			$_tpl['styles']['form'] = 1;
-			$_tpl['script']['/_shop/script/shop'] = 1;
+			setCss('/_shop/style/product|form');
+			setScript('/_shop/script/shop');
 
-			foreach($data['#item#'] as $r) {
+			foreach($data['#item#'] as $r) 
+			{
 				$href = $data['#page#'].'/'.$r['rpath'].'/'.$r['path'].'_'.$r['id'].'.html';
 				//<a href="'.$href.'" class="prodname">'.$r['name'].'</a>
 				$html .= '<div class="proditem">

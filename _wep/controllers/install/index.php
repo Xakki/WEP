@@ -1,6 +1,5 @@
 <?php
 
-isBackend(true);
 
 $TEMP_CFG= array();
 $TEMP_CFG['wep']['access'] = $_CFG['wep']['access'] = 0; // авторизация только по главному паролю
@@ -9,33 +8,16 @@ $TEMP_CFG['site']['bug_hunter'] = $_CFG['site']['bug_hunter'] = array(); // от
 $TEMP_CFG['sql']['log'] = $_CFG['sql']['log'] = 0;
 $TEMP_CFG['wep']['debugmode'] = $_CFG['wep']['debugmode'] = 2;
 error_reporting(-1);
+header('HTTP/1.1 503 Service Unavailable');
+isBackend(true);
 
 session_go();
 
 $_tpl['title'] = 'Установка WEP';
-$mess = array();
-$flag = false;
 
-if($_NEED_INSTALL)
-	$mess[] = array('alert','Фаил конфигурации сайта не обнаружен! Если хотите запустить сайт, необходимо авторизоваться с дефолтным логином и паролем и пройдти процедуру установки сайта.');
-//\_wep\config\config.php
-else
-	$mess[] = array('notice', 'Введите ROOT-логин и ROOT-пароль для запуска установки.');
+if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] === 0) 
+{
 
-
-if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] === 0) {
-	//проверяем если уже автоизовался
-	$flag = true;
-} elseif (count($_POST) and isset($_POST['login']) and $_POST['pass']) {
-	$result = static_main::userAuth($_POST['login'], $_POST['pass']);
-	if ($result[1]) {
-		//успешная авторизация
-		$flag = true;
-	}else
-		$mess[] = array('err', $result[0]);
-}
-
-if ($flag) {
 	if(!isset($_SESSION['step']))
 		$_SESSION['step'] = 1;
 
@@ -91,11 +73,16 @@ if ($flag) {
 	  if($result[0]) $result[0] = '<div style="color:red;">'.$result[0].'</div>';
 	  elseif(isset($_GET['install'])) $result[0] = '<div style="color:red;">Установка недостающих данных</div>';
 	  $_tpl['mess'] = '<div class="messhead">'.$result[0].'</div>'; */
-} else 
+} 
+else 
 {
-	setTemplate('login');
+	$_REQUEST['ref'] = $_SERVER['REQUEST_URI'];
 
-	$_tpl['text'] = '';
-	$_tpl['login'] = 'Логин(Email)';
-	$_tpl['mess'] = '<div class="messhead">' . transformPHP($mess,'messages') . '</div>';
+	if($_NEED_INSTALL)
+		$_GET['mess'] = array('alert','Фаил конфигурации сайта не обнаружен! Если хотите запустить сайт, необходимо авторизоваться с дефолтным логином и паролем и пройдти процедуру установки сайта.');
+	else
+		$_GET['mess'] = array('notice', 'Введите ROOT логин и пароль для запуска установки.');
+
+	include($_CFG['_PATH']['wep_controllers'].'login.php');
+	exit();
 }

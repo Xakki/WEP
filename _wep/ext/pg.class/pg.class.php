@@ -262,8 +262,8 @@ class pg_class extends kernel_extends {
 	 */
 	function initHTML() 
 	{
-		if ($this->pageinfo['design'])
-			setTheme($this->pageinfo['design']);
+		if ($this->pageinfo['design'] and !setTheme($this->pageinfo['design']))
+			trigger_error('Ошибка запуска темы "'.$this->pageinfo['design'].'"', E_USER_WARNING);
 
 		if ($this->pageinfo['template'])
 			setTemplate($this->pageinfo['template']);
@@ -276,6 +276,7 @@ class pg_class extends kernel_extends {
 		$this->templ = $templ;
 
 		$flag_content = $this->can_show();
+		$this->initHTML();
 		
 
 		foreach ($this->config['marker'] as $km => $rm)
@@ -329,8 +330,6 @@ class pg_class extends kernel_extends {
 			$temp = current($this->pageinfo['path']);
 			$_tpl['name'] = (is_string($temp)?$temp:$temp['name']);
 		}
-
-		$this->initHTML();
 	
 		if($this->_CFG['returnFormat'] == 'html') {
 			$_tpl['onload'] .= '
@@ -341,7 +340,7 @@ class pg_class extends kernel_extends {
 			wep.BH = "' . $this->_CFG['_HREF']['BH'] . '";
 			wep.DOMAIN = "' . $_SERVER['HTTP_HOST2'] . '";
 			wep.wepVer = "wepjs'.$this->_CFG['info']['version'].'";
-			window.MY_THEME = "'.getUrlTheme()().'";
+			window.MY_THEME = "'.getUrlTheme().'";
 			wep.init();
 			';
 
@@ -614,10 +613,10 @@ class pg_class extends kernel_extends {
 				}
 			}
 			if ($rowPG['script']) {
-				static_main::setScript($rowPG['script']);
+				setScript($rowPG['script']);
 			}
 			if ($rowPG['styles']) {
-				static_main::setCss($rowPG['styles']);
+				setCss($rowPG['styles']);
 			}
 			if($rowPG['keywords']) {
 				if (!isset($_tpl['keywords']))

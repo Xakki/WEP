@@ -12,8 +12,8 @@
 		$html = '';
 		if(isset($data) and count($data)) {
 			global $_tpl,$PGLIST;
-			$_tpl['styles']['/_shop/style/shopMain'] = 1;
-			$_tpl['script']['/_shop/script/shop'] = 1;
+			setCss('/_shop/style/shopMain');
+			setScript('/_shop/script/shop');
 			if(!isset($_tpl['onload'])) $_tpl['onload'] = '';
 			$_tpl['onload'] .= ' wep.shop.basketContenId = '.$PGLIST->contentID.'; wep.shop.pageBasket="'.$data['#page#'].'.html";';
 

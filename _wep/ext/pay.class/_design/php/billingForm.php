@@ -10,7 +10,7 @@
 function tpl_billingForm($data)
 {
 	global $_tpl;
-	$_tpl['styles']['/_pay/pay'] = 1;
+	setCss('/_pay/pay');
 	$currency = $data['#config#']['curr'];
 	$html = '<div class="billingForm">';
 

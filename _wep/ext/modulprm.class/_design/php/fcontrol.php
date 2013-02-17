@@ -21,8 +21,9 @@
 		global $_CFG, $_tpl;
 		$_tpl['onload'] .= 'wep.hTopPos=100;';
 		$temp_topmenu = '';
-		if(count($data)) { //MENU
-			$_tpl['styles']['button'] = 1;
+		if(count($data)) 
+		{ //MENU
+			setCss('button');
 			include_once(getPathTheme(true).'php/formSelect.php');
 			foreach($data as $r) {
 				if($r['type']=='split') {

@@ -19,7 +19,6 @@
     </head>
     
     <body>
-    	{#logs#}
 		<div id="formContainer" class="{#flipped#}">
 			<form id="login" method="post" action="{#actionLogin#}">
 				<input type="hidden" name="ref" value="{#ref#}"/>
@@ -43,6 +42,7 @@
 	        <h2>Powered on WEP</h2>
 	        <h2><a href="http://red.xakki.ru/projects/wep/wiki" target="_blank">Help & Wiki</a></h2>
             <h2><a href="https://github.com/Xakki/WEP" target="_blank">WEP on GITHUB</a></h2>
+            {#logs#}
         </footer>
            
     </body>

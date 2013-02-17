@@ -1,9 +1,10 @@
 <?php
-	function tpl_shopMenuImg(&$data) {
+	function tpl_shopMenuImg(&$data) 
+	{
 		$html = '';
-		if(isset($data) and count($data)) {
-			global $_tpl;
-			$_tpl['styles']['/_shop/style/shopMenu'] = 1;
+		if(isset($data) and count($data)) 
+		{
+			setCss('/_shop/style/shopMenu');
 
 			$html = '<div class="shop-menu">
 			'.($data['#title#']?'<h3>'.$data['#title#'].'</h3>':'').'

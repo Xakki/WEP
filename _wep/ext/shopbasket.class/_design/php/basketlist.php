@@ -10,7 +10,7 @@
  */
 	function tpl_basketlist(&$data) {
 		global $_tpl,$_CFG;
-		$_tpl['styles']['/_shop/style/shopBasket'] = 1;
+		setCss('/_shop/style/shopBasket');
 		$html = '';
 
 		if(isset($data['messages'])) {
@@ -104,7 +104,7 @@
 	{
 		global $_tpl, $_CFG;
 
-		$_tpl['styles']['form'] = 1;
+		setCss('form');
 
 		if(count($data['#item#'])) {
 			$itemB = &$data['#item#'];

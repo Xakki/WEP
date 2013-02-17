@@ -3,7 +3,7 @@
 		$html = '';
 		if(isset($data) and count($data)) {
 			global $_tpl;
-			$_tpl['styles']['/_shop/style/product'] = 1;
+			setCss('/_shop/style/product');
 
 			$html = '<div class="prodlist">';
 			if(!isset($data['#item#']) or !count($data['#item#'])) {

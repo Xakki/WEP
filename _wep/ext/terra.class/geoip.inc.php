@@ -71,7 +71,7 @@ jQuery.each(jQuery.browser, function(i, val) {
 	else
 		$LatLng = 'var defLatLng = new google.maps.LatLng(40.69847032728747, -73.9514422416687);';
 
-	$_tpl['script']['http://maps.google.com/maps/api/js?sensor=false'] = 1;
+	setScript('http://maps.google.com/maps/api/js?sensor=false');
 	$_tpl['script']['initialize'] = '
 function initialize() {
 	var initialLocation;

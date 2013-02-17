@@ -347,8 +347,10 @@ class static_main {
 		global $_CFG;
 		session_go();// запускаем сессию, чтоб проверить авторизован ли пользователь
 		$result = array('', 0);
-		if (!self::_prmUserCheck() or $login) {
-			if ($_CFG['wep']['access']) {
+		if (!self::_prmUserCheck() or $login) 
+		{
+			if ($_CFG['wep']['access']) 
+			{
 				if ($login) {
 					$result = array(static_main::m('autherr'), 0);
 					if(_new_class('ugroup', $UGROUP))
@@ -365,7 +367,8 @@ class static_main {
 					}
 				}
 			}
-			elseif ($_CFG['wep']['login'] and $_CFG['wep']['password']) {
+			elseif ($_CFG['wep']['login'] and $_CFG['wep']['password']) 
+			{
 				// Авторизация без использования БД , логин и пароль берутся из конфига
 				$flag = 0;
 				
@@ -374,7 +377,7 @@ class static_main {
 					if($_CFG['wep']['login'] == substr($_COOKIE['remember'], ($pos + 1)) and md5($_CFG['wep']['md5'].$_CFG['wep']['password']) == substr($_COOKIE['remember'], 0, $pos))
 						$flag = 1;
 				}
-				elseif ($login and $pass)
+				elseif ($login or $pass)
 				{
 					$result = array(static_main::m('autherr'), 0);
 					if($_CFG['wep']['login'] == $login and $_CFG['wep']['password'] == $pass)
@@ -725,41 +728,6 @@ class static_main {
 		exit();
 	}
 
-	static function setCss($styles, $customTheme=null)
-	{
-		global $_tpl;
-		if(!$customTheme) $customTheme = $_tpl['design'];
-
-		if(is_string($styles))
-			$styles = explode('|', trim($styles, '|'));
-		if (is_array($styles)) {
-			foreach ($styles as $r)
-				if ($r)
-				{
-					if(strpos($r, '#themes#')!==false) 
-						$r = str_replace('#themes#', $customTheme.'style/', $r).'.css';
-					$_tpl['styles'][$r] = 1;
-				}
-		}
-	}
-
-	static function setScript($script, $customTheme=null)
-	{
-		global $_tpl;
-		if(!$customTheme) $customTheme = $_tpl['design'];
-		
-		if(is_string($script))
-			$script = explode('|', trim($script, '|'));
-		if (is_array($script)) {
-			foreach ($script as $r)
-				if ($r)
-				{
-					if(strpos($r, '#themes#')!==false) 
-						$r = str_replace('#themes#', $customTheme.'script/', $r).'.js';
-					$_tpl['script'][$r] = 1;
-				}
-		}
-	}
 
 	/**
 	* Формат для вывода сообщения в шаблон
@@ -1145,24 +1113,38 @@ function getTheme()
 * $type = true  return Backend path
 * $type = false  return frontend path
 */
+
+
 function getPathTheme($type=null)
+{
+	return getPathThemes($type).getTheme().'/';
+}
+
+function getPathThemes($type=null)
 {
 	global $_CFG;
 	if(is_null($type))
 		$type = isBackend();
 	if($type)
-		return $_CFG['_PATH']['cdesign'].getTheme().'/';
+		return $_CFG['_PATH']['cdesign'];
 	else
-		return $_CFG['_PATH']['themes'].getTheme().'/';
+		return $_CFG['_PATH']['themes'];
 }
 
-function getUrlTheme()
+function getUrlTheme($type=null)
+{
+	return getUrlThemes($type).getTheme().'/';
+}
+
+function getUrlThemes($type=null)
 {
 	global $_CFG;
-	if(isBackend())
-		return $_CFG['PATH']['cdesign'].getTheme().'/';
+	if(is_null($type))
+		$type = isBackend();
+	if($type)
+		return $_CFG['PATH']['cdesign'];
 	else
-		return $_CFG['PATH']['themes'].getTheme().'/';
+		return $_CFG['PATH']['themes'];
 }
 
 /********************/
@@ -1198,6 +1180,65 @@ function isBackend($val=null)
 	return $_CFG['_F']['adminpage'];
 }
 
+/********************/
+
+function setCss($styles, $customTheme=null)
+{
+	global $_tpl,$_CFG;
+	if(!$customTheme) $customTheme = getUrlTheme();
+
+	if(is_string($styles))
+		$styles = explode('|', trim($styles, '| '));
+
+	if (is_array($styles)) {
+		foreach ($styles as $r)
+			if ($r)
+			{
+				if(strpos($r, '#themes#')!==false) 
+					$r = str_replace('#themes#', $customTheme.'style/', $r).'.css';
+				elseif(strpos($r, '/')===0) 
+					$r = $customTheme.'style/'.$r.'.css';
+				else
+					$r = $_CFG['_HREF']['_style'].$r.'.css';
+
+				$_tpl['styles']['//'.$_CFG['_HREF']['_BH'].$r] = 1;
+			}
+	}
+}
+
+function setScript($script, $customTheme=null)
+{
+	global $_tpl,$_CFG;
+	if(!$customTheme) $customTheme = getUrlTheme();
+	
+	if(is_string($script))
+		$script = explode('|', trim($script, '|'));
+
+	if (is_array($script)) {
+		foreach ($script as $r)
+			if ($r)
+			{
+				$_tpl['script'][getUrlScript($r, $customTheme)] = 1;
+			}
+	}
+}
+/**
+* Helper for setScript
+*/
+function getUrlScript($r, $customTheme=null)
+{
+	global $_CFG;
+	if(!$customTheme) $customTheme = getUrlTheme();
+	if(strpos($r, '#themes#')!==false) 
+		$r = str_replace('#themes#', $customTheme.'script/', $r).'.js';
+	elseif(strpos($r, '/')===0) 
+		$r = $customTheme.'script/'.$r.'.js';
+	else
+		$r = $_CFG['_HREF']['_script'].$r.'.js';
+
+	return '//'.$_CFG['_HREF']['_BH'].$r;
+}
+/********************/
 
 /*
   Используем эту ф вместо стандартной, для совместимости с UTF-8

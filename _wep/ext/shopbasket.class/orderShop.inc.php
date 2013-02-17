@@ -37,8 +37,7 @@
 	if(!_new_class('shopdeliver',$SHOPDELIVER)) return false;
 	if(!_new_class('pay', $PAY)) return false;
 
-	$_tpl['styles']['/_shop/style/shopBasket'] = 1;
-	$_tpl['styles']['/_pay/pay'] = 1;
+	setCss('/_shop/style/shopBasket|/_pay/pay');
 	$_CFG['fileIncludeOption']['form'] = 1;
 
 	$subMenu = array(

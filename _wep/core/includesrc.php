@@ -11,14 +11,15 @@
 		if(!isset($gfi['uiStyle']))
 			$gfi['uiStyle'] = 'smoothness';
 		
-		if(isset($gfi['multiple'])) {
-			if($gfi['multiple']==2) {
-				$_tpl['styles']['style.jquery/'.$gfi['uiStyle'].'/jquery-ui'] = 1;
-				$_tpl['styles']['style.jquery/ui-multiselect'] = 1;
+		if(isset($gfi['multiple'])) 
+		{
+			if($gfi['multiple']==2) 
+			{
+				setCss('style.jquery/'.$gfi['uiStyle'].'/jquery-ui|style.jquery/ui-multiselect');
 
-				$_tpl['script']['script.jquery/jquery-ui'] = array(
-					'script.jquery/ui-multiselect' => 1,
-					'script.jquery/jquery.localisation/ui-multiselect-ru' => 1,
+				$_tpl['script'][getUrlScript('script.jquery/jquery-ui')] = array(
+					getUrlScript('script.jquery/ui-multiselect') => 1,
+					getUrlScript('script.jquery/jquery.localisation/ui-multiselect-ru') => 1,
 				);
 	
 				$_tpl['onload'] .= 'jQuery(\'select.multiple\').multiselect();';
@@ -28,26 +29,25 @@
 		}
 		if(isset($gfi['form']) and $gfi['form']) 
 		{
-			$_tpl['styles']['form'] = 1;
-			$_tpl['script']['wepform'] = 1;
+			setCss('form|wepform');
 		}
 		if(isset($gfi['ajaxForm']) and $gfi['ajaxForm']) 
 		{
-			$_tpl['styles']['form'] = 1;
-			$_tpl['script']['wepform'] = 1;
-			$_tpl['script']['script.jquery/form'] = 1;
+			setCss('form');
+			setScript('wepform|script.jquery/form');
 		}
 		if(isset($gfi['fcontrol']) and $gfi['fcontrol']) {
-			$_tpl['styles']['fcontrol'] = 1;
-			$_tpl['script']['fcontrol'] = 1;
+			setCss('fcontrol');
+			setScript('fcontrol');
 		}
-		if(isset($gfi['md5']) and $gfi['md5']) {
-			$_tpl['script']['md5'] = 1;
+		if(isset($gfi['md5']) and $gfi['md5']) 
+		{
+			setScript('md5');
 		}
 		if(isset($gfi['fancybox'])) 
 		{
-			$_tpl['script']['fancybox/jquery.fancybox.pack'] = 1;
-			$_tpl['styles']['../_script/fancybox/jquery.fancybox'] = 1;
+			setScript('fancybox/jquery.fancybox.pack');
+			setCss('../_script/fancybox/jquery.fancybox');
 			if($gfi['fancybox'])
 			{
 				if(!is_string($gfi['fancybox']))
@@ -55,45 +55,38 @@
 				$_tpl['onload'] .= "jQuery('".$gfi['fancybox']."').fancybox();";
 			}
 		}
-		if(isset($gfi['qrtip']) and $gfi['qrtip']) {
-			$_tpl['script']['script.jquery/qrtip'] = 1;
-			$_tpl['styles']['style.jquery/qrtip'] = 1;
+		if(isset($gfi['qrtip']) and $gfi['qrtip']) 
+		{
+			setScript('script.jquery/qrtip');
+			setCss('style.jquery/qrtip');
 			$_tpl['onload'] .= 'jQuery(\'a\').qr();';
 		}
-		if(isset($gfi['jquery-ui']) and $gfi['jquery-ui']) {
-			if(!isset($_tpl['script']['script.jquery/jquery-ui']))
-				$_tpl['script']['script.jquery/jquery-ui'] = 1;
-			$_tpl['styles']['style.jquery/'.$gfi['uiStyle'].'/jquery-ui'] = 1;
+		if(isset($gfi['jquery-ui']) and $gfi['jquery-ui']) 
+		{
+			setScript('script.jquery/jquery-ui');
+			setCss('style.jquery/'.$gfi['uiStyle'].'/jquery-ui');
 		}
-		if(isset($gfi['datepicker']) and $gfi['datepicker']) {
-			if(!isset($_tpl['script']['script.jquery/jquery-ui']))
-				$_tpl['script']['script.jquery/jquery-ui'] = 1;
-			$_tpl['script']['script.jquery/jquery.localisation/jquery.ui.datepicker-ru'] = 1;
-			if($gfi['datepicker']==2) {
-				$_tpl['script']['script.jquery/ui-timepicker-addon'] = 1;
-				$_tpl['styles']['style.jquery/ui-timepicker-addon'] = 1;
+		if(isset($gfi['datepicker']) and $gfi['datepicker']) 
+		{
+			setScript('script.jquery/jquery-ui|script.jquery/jquery.localisation/jquery.ui.datepicker-ru');
+			if($gfi['datepicker']==2) 
+			{
+				setScript('script.jquery/ui-timepicker-addon');
+				setCss('style.jquery/ui-timepicker-addon');
 			}
-			$_tpl['styles']['style.jquery/'.$gfi['uiStyle'].'/jquery-ui'] = 1;
+			setCss('style.jquery/'.$gfi['uiStyle'].'/jquery-ui');
 		}
 
-		if(isset($_tpl['script']['wepform']))
-			$_tpl['script'] = array('wepform'=>1)+$_tpl['script'];
+		if(isset($_tpl['script'][getUrlScript('wepform')]))
+			$_tpl['script'] = array(getUrlScript('wepform')=>1)+$_tpl['script'];
 
-		$_tpl['script'] = array('wep'=>1)+$_tpl['script'];
-		$_tpl['script'] = array('jquery'=>1)+$_tpl['script'];
+		$_tpl['script'] = array(getUrlScript('wep')=>1)+$_tpl['script'];
+		$_tpl['script'] = array(getUrlScript('jquery')=>1)+$_tpl['script'];
 
 
 		/*if(isset($_tpl['script']['syntaxhighlighter'])) {
 			$_tpl['onload'] .= '';
 		}*/
-
-		// UPDATE FIX
-		if(isset($_tpl['script']['utils'])) {
-			unset($_tpl['script']['utils']);
-		}
-		if(isset($_tpl['script']['form'])) {
-			unset($_tpl['script']['form']);
-		}
 
 		/////////////////////
 		return true;
@@ -111,6 +104,7 @@
 			$temp .= cssRecursive($_tpl['styles'], $solt);
 		}
 		$_tpl['styles'] = $temp;
+
 
 		// include SCRIPT into HTML
 		$temp = '';
@@ -138,19 +132,11 @@
 			}
 
 			$src = '';
-			if (strpos($kk, '//')===0 or strpos($kk, 'http:')===0 or strpos($kk, 'https:')===0)
-				$src = str_replace(array('http:','https:'), '', $kk);
-			elseif(is_string($kk) and !is_string($rr))
+			if (is_string($kk) and strpos($kk, '//')!==false)
 			{
-				if(strpos($kk,'/')===0)
-					$path = getUrlTheme();
-				else
-					$path = $_CFG['_HREF']['_script'];
-				$src = '//'.$_CFG['_HREF']['_BH'].$path.$kk.'.js'.$solt;
-			}
-
-			if($src)
+				$src = str_replace(array('http:','https:'), '', $kk).$solt;
 				$temp .= '<script src="'.$src.'"></script>'."\n";
+			}
 
 			if(is_array($rr))
 				$temp .= scriptRecursive($rr, $solt);
@@ -170,23 +156,15 @@
 			}
 
 			$src = '';
-			if (strpos($kk, '//')!==false)
-				$src = str_replace(array('http:','https:'), '', $kk);
-			elseif(is_string($kk) and !is_string($rr)) {
-				if(strpos($kk,'/')===0)
-					$path = getUrlTheme();
-				else
-					$path = $_CFG['_HREF']['_style'];
-				$src = '//'.$_CFG['_HREF']['_BH'].$path.$kk.'.css'.$solt;
-			}
-
-			if($src)
+			if (is_string($kk) and strpos($kk, '//')!==false)
+			{
+				$src = str_replace(array('http:','https:'), '', $kk).$solt;
 				$temp .= '<link rel="stylesheet" href="'.$src.'"/>'."\n";
-
-			if(is_array($rr)) {
-				$temp .= cssRecursive($rr, $solt);
 			}
-			elseif(is_string($rr))
+
+			if(is_array($rr))
+				$temp .= cssRecursive($rr, $solt);
+			elseif(is_string($rr) and _strlen($rr)>5)
 				$temp .= "<style>".$rr."</style>\n";
 		}
 		return $temp;
