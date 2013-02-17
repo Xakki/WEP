@@ -9,23 +9,17 @@
 		';
 		//<!--<link rel="SHORTCUT ICON" href="{$_tpl['design']}img/favicon.ico"/>-->
 
-	$_tpl['script']['jquery'] = 1;
-	$_tpl['script']['wep'] = 1;
-	$_tpl['script']['script.jquery/form'] = 1;
 
-	$_tpl['script'][$_tpl['design'].'script/main.js'] = 1;
-
-	$_tpl['styles']['button'] = 1;
-	$_tpl['styles']['main'] = 1;
-	$_tpl['styles'][$_tpl['design'].'style/main.css'] = 1;
+	setScript('jquery|wep|script.jquery/form|||/main');
+	setCss('button|main|/main');
 
 	$_tpl['modulstree']=$eval='';
 	$_tpl['title'] = 'WEP';
 
-	$DATA = array('adminmenu'=>fAdminMenu($_GET['_modul'])); $_tpl['adminmenu'] = $HTML->transformPHP($DATA,'adminmenu');
+	$DATA = array('adminmenu'=>fAdminMenu($_GET['_modul'])); $_tpl['adminmenu'] = transformPHP($DATA,'adminmenu');
 
 	if(!$_GET['_modul'] or !(isset($_GET['_view']) or isset($_GET['_type']))) {
-		$html = '<div style="position:absolute;top:50%;left:50%;"><div style="width:200px;height:100px;position:absolute;top:-50px;left:-100px;"><img src="'.$_tpl['design'].'img/login.gif" width="250" alt="LOGO"/></div></div>';
+		$html = '<div style="position:absolute;top:50%;left:50%;"><div style="width:200px;height:100px;position:absolute;top:-50px;left:-100px;"><img src="'.getUrlTheme().'img/login.gif" width="250" alt="LOGO"/></div></div>';
 	}
 	else {
 		/*if(count($_GET)==2)
@@ -101,7 +95,7 @@
 						elseif(count($_SESSION['mess']))
 							$DATA['messages'] += $_SESSION['mess'];
 						$DATA = array('superlist'=>$DATA);
-						$html = $HTML->transformPHP($DATA,'superlist');
+						$html = transformPHP($DATA,'superlist');
 						$_SESSION['mess'] = array();
 					}
 

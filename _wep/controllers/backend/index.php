@@ -110,7 +110,7 @@
 /*---------------ADMIN*/
 
 	if($_SESSION['user']['wep']) {
-		include($_CFG['_PATH']['cdesign'].$_design.'/inc/index.php');
+		include(getPathTheme().'/inc/index.php');
 		if(static_main::_prmUserCheck(2)) {
 			if(!isset($_COOKIE[$_CFG['wep']['_showerror']]))
 				$_COOKIE[$_CFG['wep']['_showerror']] = 0;
