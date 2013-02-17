@@ -9,12 +9,12 @@
  * @return string html
  */
 	function tpl_basketlist(&$data) {
-		global $_tpl,$HTML,$_CFG;
+		global $_tpl,$_CFG;
 		$_tpl['styles']['/_shop/style/shopBasket'] = 1;
 		$html = '';
 
 		if(isset($data['messages'])) {
-			$html .= $HTML->transformPHP($data['messages'], '#pg#messages');
+			$html .= transformPHP($data['messages'], '#pg#messages');
 		}
 
 		if(isset($data['#item#'])) {
@@ -24,7 +24,7 @@
 			if(isset($data['#filter#']))
 			{
 				//print_r('<pre>');print_r($data);
-				$html .= '<div id="dialog-filter" title="Фильтр" style="display:none;">'.$HTML->transformPHP($data['#filter#'], '#pg#filter').'</div> <button id="open-filter">Показать фильтр</button>';
+				$html .= '<div id="dialog-filter" title="Фильтр" style="display:none;">'.transformPHP($data['#filter#'], '#pg#filter').'</div> <button id="open-filter">Показать фильтр</button>';
 				$_tpl['onload'] .= '
 					$("#dialog-filter .f_submit").hide();
 					$( "#dialog-filter" ).dialog({
@@ -102,7 +102,7 @@
 
 	function tpl_basketlist_item(&$data)
 	{
-		global $_tpl, $HTML, $_CFG;
+		global $_tpl, $_CFG;
 
 		$_tpl['styles']['form'] = 1;
 

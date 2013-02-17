@@ -1,10 +1,10 @@
 
-alert(3);
+
 /***************************/
 /*  Главный набор скриптов */
 /***************************/
 // true - чтобы отключить все логи
-isProduction = true;
+window.isProduction = false;
 
 /**
 * Проверяем существование необходимых консольных функции в браузере
@@ -39,7 +39,7 @@ else
 }
 
 
-KEY = {
+window.KEY = {
     UP: 38,
     DOWN: 40,
     DEL: 46,
@@ -54,7 +54,7 @@ KEY = {
     RIGHT: 39
 };
 
-var wep = {
+window.wep = {
 	version: '0.1.2',/*Версия скрипта*/
 	BH:'',
 	DOMAIN:'',
@@ -71,14 +71,14 @@ var wep = {
 	// START DOM
 	init: function()
 	{
+		
 		var tmp = wep.getCookie(wep.wepVer);
 		if(tmp==false){
 			wep.setCookie(wep.wepVer, document.referrer);
 		}
-		console.log('!!!!!');
+
 		jQuery('body').on('click', 'a.isAjaxLink', function()
 		{
-			console.log('++++');return false;
 			return wep.ajaxMenu(this);
 		});
 	},
@@ -363,7 +363,7 @@ var wep = {
 	},
 
 	ajaxMenu: function(obj) {
-		var jobj = $(this);
+		var jobj = $(obj);
 		var dataMarker = jobj.attr('data-marker');
 		var marker = {};
 		if(dataMarker)
@@ -389,7 +389,7 @@ var wep = {
 		}
 		else
 		{
-			// alert('TODO');
+			//alert(jobj.attr('data-ajax'));
 		}
 		return true;
 	},
@@ -577,7 +577,7 @@ var wep = {
 		return '<div class="bspoiler-wrap folded clickable"><div onclick="var obj=this.parentNode;if(obj.className.indexOf(\'unfolded\')>=0) obj.className = obj.className.replace(\'unfolded\',\'\'); else obj.className = obj.className+\' unfolded\';" class="spoiler-head">'+nm+'</div><div class="spoiler-body">'+txt+'</div></div>';
 	},
 	initSpoilers: function(context){
-		var context = context || 'body';
+		context = context || 'body';
 		jQuery('div.spoiler-head', jQuery(context))
 			.click(function(){
 				jQuery(this).toggleClass('unfolded');
@@ -1253,7 +1253,7 @@ var wep = {
 			strTime += temeLeft+' сек.';
 
 			timerobj.html(strTime);
-			
+			return;
 		},1000);
 	},
 
@@ -1311,10 +1311,6 @@ function OnJSWin(obj,param) {
 	return false;
 }
 
-
-function getBrowserInfo() {
-	return wep.getBrowserInfo();
-}
 
 function fLog(txt,flag) {
 	return wep.fLog(txt,flag);
@@ -1532,7 +1528,7 @@ function show_fblock(obj,selector) {
 
 }
 
-/ * вспомогательные функции для DatePicker* /
+/* вспомогательные функции для DatePicker*/
 var disabledDays = [];
 function nationalDays(date) {
 	var m = date.getMonth(), d = date.getDate(), y = date.getFullYear();
@@ -1636,4 +1632,4 @@ function urlEncode( objUrl )
     return result;
 }
 
-_Browser = getBrowserInfo();
+window._Browser = wep.getBrowserInfo();

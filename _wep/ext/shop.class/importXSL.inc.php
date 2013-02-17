@@ -240,7 +240,7 @@
 			$SHOP->kFields2FormFields($fields_form, 'POST');
 		}
 		$DATA = Array('form' => $fields_form, 'messages' => $mess);
-		$html = $HTML->transformPHP($DATA,'#pg#formcreat');
+		$html = transformPHP($DATA,'#pg#formcreat');
 
 
 	function dumpXlsData($file, $sheet=0) {

@@ -33,4 +33,4 @@
 	$DATA['#text#'] = $rowPG['pg'];
 	$DATA['#title#'] = $rowPG['name'];
 	$DATA['#shopconfig#'] = $SHOP->config;
-	return $HTML->transformPHP($DATA,$FUNCPARAM[1]);
+	return transformPHP($DATA,$FUNCPARAM[1]);

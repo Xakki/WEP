@@ -17,7 +17,7 @@ function tpl_paymove($data)
 		if($data['#pay#']['respost']['flag']==1) {
 			//global $PGLIST;
 			//$PGLIST->pageinfo['template'] = 'waction';
-			//$html = $HTML->transformPHP($DATA['formcreat'],'messages');
+			//$html = transformPHP($DATA['formcreat'],'messages');
 			if(isset($_POST['plus']))
 				$res = 'Счёт пользователя `'.$data['#pay#']['users'][$_POST['users']]['name'].'` пополнен!';
 			else

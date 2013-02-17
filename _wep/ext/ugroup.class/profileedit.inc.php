@@ -43,6 +43,6 @@
 	$UGROUP->childs['users']->id = (int)$_SESSION['user']['id'];
 
 	list($DATA[$FUNCPARAM[0]],$flag) = $UGROUP->regForm($param,$argForm);
-	$html = $HTML->transformPHP($DATA,$FUNCPARAM[0]);
+	$html = transformPHP($DATA,$FUNCPARAM[0]);
 
 	return $html;

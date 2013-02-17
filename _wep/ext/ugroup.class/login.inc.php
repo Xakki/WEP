@@ -86,10 +86,10 @@
 			$mess['messages'][0][0] = 'error';
 			$DATA['result'] = -1;
 		}
-		$DATA['mess'] = $HTML->transformPHP($mess,'#pg#messages');
+		$DATA['mess'] = transformPHP($mess,'#pg#messages');
 	}
 
-	$html = $HTML->transformPHP($DATA,$FUNCPARAM[0]);
+	$html = transformPHP($DATA,$FUNCPARAM[0]);
 
 	return $html;
 

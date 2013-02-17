@@ -21,7 +21,7 @@
 		return $form;
 	}
 
-	global $UGROUP,$USERS, $HTML;
+	global $UGROUP,$USERS;
 	$_tpl['styles']['login']=1;
 	$_tpl['script']['wepform'] =  1;
 
@@ -38,7 +38,7 @@
 		$PARAM['re_pass'] = (isset($_POST['re_fpass'])?$_POST['re_fpass']:'');
 		list($flag,$DATA) = $USERS->remindSET($PARAM);
 		$DATA = array($FUNCPARAM[0]=>$DATA);
-		$html .= $HTML->transformPHP($DATA,$FUNCPARAM[0]);
+		$html .= transformPHP($DATA,$FUNCPARAM[0]);
 		if(!$flag) {
 			$html .= '<br/>
 			<div class="cform" style="width:540px;"><form action="" method="post" name="newpass">
@@ -54,7 +54,7 @@
 			$PARAM['post'] = $_POST;
 			list($flag,$DATA) = $USERS->remindSEND($PARAM);
 			$DATA = array($FUNCPARAM[0]=>$DATA);
-			$html .= $HTML->transformPHP($DATA,$FUNCPARAM[0]);
+			$html .= transformPHP($DATA,$FUNCPARAM[0]);
 		}
 
 		if($flag<1) {

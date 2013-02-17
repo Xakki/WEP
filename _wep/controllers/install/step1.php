@@ -74,7 +74,7 @@ if (isset($_POST['sbmt']) and $flag) {
 		$mess[] = $var_const['mess'];
 		$DATA['messages'] = $mess;
 		$_SESSION['step'] = 2;
-		return $html = $HTML->transformPHP($DATA, 'messages');
+		return $html = transformPHP($DATA, 'messages');
 		//@header('Location: install.php?step=' . ($_GET['step'] + 1));
 		//die('<a href="install.php?step=' . ($_GET['step'] + 1) . '">Следующий шаг</a>');
 	}
@@ -93,5 +93,5 @@ if($flag) {
 
 $DATA['formcreat'] = array('form' => $DATA);
 $DATA['formcreat']['messages'] = $mess;
-$html = $HTML->transformPHP($DATA, 'formcreat');
+$html = transformPHP($DATA, 'formcreat');
 return $html;

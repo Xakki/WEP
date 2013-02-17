@@ -9,7 +9,7 @@
  * 3 - Номер ревизии , исправленны ошибки
  */
 $_CFG['info'] = array(//информация о СМС
-	'version' => '2.15.43',
+	'version' => '2.16.44',
 	'email' => 'wep@xakki.ru',
 	'icq' => '222392984'
 );
@@ -62,6 +62,8 @@ $_CFG['site'] = array(// для сайта
 	'work_title' => 'Технический перерыв',
 	'work_text' => 'Технический перерыв',
 	'redirectPlugin' => 0,
+	'themes' => 'default',
+	'template' => 'default'
 );
 $_CFG['memcache'] = array(
 	'host' => '127.0.0.1',
@@ -102,21 +104,17 @@ $_CFG['header'] = array(
 /* * PATH_CFG* */
 
 /* Полные пути по файловым системам для ядра */
-if(!isset($_CFG['_PATH']['wep'])) //если  путь не был задан
-	$_CFG['_PATH']['wep'] = dirname(dirname(__FILE__)).'/'; // файл-путь к ядру, Корень админки
-if(!isset($_CFG['_PATH']['path']))
-	$_CFG['_PATH']['path'] = dirname($_CFG['_PATH']['wep']).'/'; // корень сайта
-if(!isset($_CFG['_PATH']['wepconf'])) //если  путь не был задан
-	$_CFG['_PATH']['wepconf'] = $_CFG['_PATH']['path'] . '_wepconf/'; // файл-путь  к конфигу
+$_CFG['_PATH']['wep'] = WEP; // файл-путь к ядру, Корень админки
+$_CFG['_PATH']['path'] = dirname(WEP).'/'; // корень сайта
 
 $_SERVER['_DR_'] = $_CFG['_PATH']['path']; // корень сайта, основной путь к проекту
-$_CFG['_PATH']['_path'] = dirname(dirname(dirname(__FILE__))). '/';
+//$_CFG['_PATH']['_path'] = dirname(dirname(dirname(__FILE__))). '/';
 $_CFG['_PATH']['core'] = $_CFG['_PATH']['wep'] . 'core/'; // путь к ядру
-$_CFG['_PATH']['cdesign'] = $_CFG['_PATH']['path'] . '_design/'; // backend админки (контролеры и шаблоны)
+$_CFG['_PATH']['cdesign'] = $_CFG['_PATH']['path'] . '_design/'; // backend админки (шаблоны, скрипты, стили)
 $_CFG['_PATH']['wep_ext'] = $_CFG['_PATH']['wep'] . 'ext/'; // путь к системным модулям
-$_CFG['_PATH']['wep_phpscript'] = $_CFG['_PATH']['wep'] . '_phpscript/';
-$_CFG['_PATH']['backend'] = $_CFG['_PATH']['wep'] . '_phpscript/backend/';
-$_CFG['_PATH']['frontend'] = $_CFG['_PATH']['wep'] . '_phpscript/frontend/';
+$_CFG['_PATH']['wep_controllers'] = $_CFG['_PATH']['wep'] . 'controllers/';
+$_CFG['_PATH']['backend'] = $_CFG['_PATH']['wep'] . 'controllers/backend/';
+$_CFG['_PATH']['frontend'] = $_CFG['_PATH']['wep'] . 'controllers/frontend/';
 $_CFG['_PATH']['wep_inc'] = $_CFG['_PATH']['wep'] . 'inc/'; // путь к обработчикам блоков страниц
 $_CFG['_PATH']['wep_locallang'] = $_CFG['_PATH']['wep'] . 'locallang/'; // язык
 $_CFG['_PATH']['wep_config'] = $_CFG['_PATH']['wep'] . 'config/'; // конфиги
@@ -124,11 +122,14 @@ $_CFG['_FILE']['wep_config'] = $_CFG['_PATH']['wep'].'config/config.php';
 $_CFG['_FILE']['wep_config_form'] = $_CFG['_PATH']['wep'].'config/config_form.php';
 
 /* пути для файлов пользовательских модулей */
-$_CFG['_PATH']['phpscript'] = $_CFG['_PATH']['wepconf'] . '_phpscript/';
+$_CFG['_FILE']['config'] = WEP_CONFIG;
+$_CFG['_PATH']['config'] = dirname(WEP_CONFIG).'/'; // конфиги
+$_CFG['_PATH']['wepconf'] = dirname($_CFG['_PATH']['config']).'/';
+$_CFG['_PATH']['phpscript'] = $_CFG['_PATH']['wepconf'] . 'controllers/';
 $_CFG['_PATH']['inc'] = $_CFG['_PATH']['wepconf'] . 'inc/'; // путь к обработчикам блоков страниц
 $_CFG['_PATH']['ext'] = $_CFG['_PATH']['wepconf'] . 'ext/'; // путь к пользовательским модулям
-$_CFG['_PATH']['config'] = $_CFG['_PATH']['wepconf'] . 'config/'; // конфиги
-$_CFG['_FILE']['config'] = $_CFG['_PATH']['config'].'config.php';
+
+
 $_CFG['_FILE']['cron'] = $_CFG['_PATH']['config'] . 'configcron.php';
 $_CFG['_FILE']['HASH_KEY'] = $_CFG['_PATH']['config'] . 'hash.key';
 
@@ -236,22 +237,6 @@ $_CFG['form'] = array(
 );
 
 
-if (isset($_POST) && count($_POST) && get_magic_quotes_gpc()) {
-	stripSlashesOnArray($_POST);
-}
-
-function stripSlashesOnArray(array &$theArray) {
-	foreach ($theArray as &$value) {
-		if (is_array($value)) {
-			stripSlashesOnArray($value);
-		} else {
-			$value = stripslashes($value);
-		}
-	}
-	unset($value);
-	reset($theArray);
-}
-
 //ERRORS
 $_CFG['_error'] = array(
 	0 => array(
@@ -343,6 +328,23 @@ $_CFG['_error'] = array(
 	),
 );
 
+
+if (isset($_POST) && count($_POST) && get_magic_quotes_gpc()) {
+	stripSlashesOnArray($_POST);
+}
+
+function stripSlashesOnArray(array &$theArray) {
+	foreach ($theArray as &$value) {
+		if (is_array($value)) {
+			stripSlashesOnArray($value);
+		} else {
+			$value = stripslashes($value);
+		}
+	}
+	unset($value);
+	reset($theArray);
+}
+
 $_CFG['shutdown_function_flag'] = false;
 
 include $_CFG['_PATH']['core'] . 'static.main.php';
@@ -399,7 +401,7 @@ $_SERVER['HTTP_PROTO'] = 'http://'; // TODO - определение прото�
 if(!isset($_SERVER['HTTP_HOST'])) $_SERVER['HTTP_HOST'] = $_CFG['site']['www'];
 
 if (strpos($_SERVER['HTTP_HOST'], 'xn--') !== false) {
-	require_once($_CFG['_PATH']['wep_phpscript'] . '/lib/idna_convert.class.php');
+	require_once($_CFG['_PATH']['wep_controllers'] . '/lib/idna_convert.class.php');
 	$IDN = new idna_convert();
 	$_SERVER['HTTP_HOST'] = $IDN->decode($_SERVER['HTTP_HOST']);
 	$_CFG['site']['rf'] = 1;
@@ -488,3 +490,34 @@ if(!isset($_COOKIE['wep123456'])) {
 		$_SERVER['HTTP_REFERER'] = '';
 	_setcookie('wep123456',base64encode($_SERVER['HTTP_REFERER']),(time() + 86400));
 }
+
+
+// логи 
+$sai = $_CFG['wep']['_showallinfo'];
+if (!isset($_COOKIE[$sai]))
+	$_COOKIE[$sai] = 0;
+if (isset($_GET[$sai]) and !$_CFG['robot']) {// and !isset($_COOKIE[$sai])
+	if ($_GET[$sai])
+		_setcookie($sai, $_GET[$sai]);
+	else
+		_setcookie($sai, $_GET[$sai], (time() - 5000));
+	$_COOKIE[$sai] = $_GET[$sai];
+}
+
+// Показ ошибок
+// or $_CFG['_F']['adminpage']
+if(!$_CFG['robot']) {
+	$se = $_CFG['wep']['_showerror'];
+	if (isset($_GET[$se])) {
+		$_COOKIE[$se] = (int)$_GET[$se];
+		_setcookie($se, $_COOKIE[$se]);
+	}
+	/*elseif($_CFG['wep']['debugmode'] and !isset($_COOKIE[$se])) { // для localhost
+		$_COOKIE[$se] = 1;
+		_setcookie($se, 1);
+	}*/
+	if(isset($_COOKIE[$se])) {
+		$_CFG['wep']['debugmode'] = $_COOKIE[$se];
+	}
+}
+//else _setcookie($se, '', (time()-5000));

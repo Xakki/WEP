@@ -50,7 +50,7 @@
 
 		list($DATA['#pg#formcreat'],$this->formFlag) = $MODUL->_UpdItemModul(array('showform'=>1), $argForm);
 
-		$html = $HTML->transformPHP($DATA,'#pg#formcreat');
+		$html = transformPHP($DATA,'#pg#formcreat');
 	}
 	else 
 		$html = '<error>Ошибка подключения модуля</error>';

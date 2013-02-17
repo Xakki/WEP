@@ -121,9 +121,6 @@ class shop_class extends rubric_class {
 		if($PRODUCT->id) {
 			$data = $PRODUCT->_select();
 			if(count($data)) {
-				require_once($this->_CFG['_PATH']['core'].'/html.php');
-				global $HTML;
-				if(!$HTML) $HTML = new html($this->_CFG['PATH']['themes'],'default',false);
 
 				_new_class('mail', $MAIL);
 				_new_class('ugroup',$UGROUP);
@@ -159,12 +156,12 @@ class shop_class extends rubric_class {
 
 				if($flag==1) {
 					$DATA['formcreat']['messages'][0]['value'] = 'Ваш заказ принят на расмотрение. В дальнейшем с вами свяжется наш менеджер.';
-					//$HTML->_templates = "waction";
+					//setTemplate("waction");
 					if(isset($DATA['formcreat']['messages']))
-						$html = $HTML->transformPHP($DATA['formcreat'],'#pg#messages');
+						$html = transformPHP($DATA['formcreat'],'#pg#messages');
 				}
 				else {
-					$html = $HTML->transformPHP($DATA,'#pg#formcreat');
+					$html = transformPHP($DATA,'#pg#formcreat');
 					$res['onload'] = '$(\'#form_mail\').submit(function(){ JSWin({\'type\':this}); return false;});';
 				}
 			}

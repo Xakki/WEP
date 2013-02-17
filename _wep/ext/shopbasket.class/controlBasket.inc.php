@@ -93,7 +93,7 @@
 		$DATA['#list#'] = $SHOPBASKET->fBasketList($DATA['#moder#'],$PARAM);
 	}
 
-	$html = $HTML->transformPHP($DATA,$FUNCPARAM[0]);
+	$html = transformPHP($DATA,$FUNCPARAM[0]);
 
 
 	return $html;

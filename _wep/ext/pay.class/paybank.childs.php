@@ -128,8 +128,8 @@ class paybank_class extends kernel_extends
 	*/
 
 	
-	function printBill() {
-		global $HTML;
+	function printBill() 
+	{
 		$result = array(
 			'html' => 'Ошибка. Нет данных.',
 			'title' => 'Ошибка',
@@ -152,14 +152,14 @@ class paybank_class extends kernel_extends
 		if($_GET['blank']=='kvit') 
 		{
 			$result = array(
-				'html' => $HTML->transformPHP($DATA,'#pay#paybankReceipt'),
+				'html' => transformPHP($DATA,'#pay#paybankReceipt'),
 				'title' => 'Квитанция',
 			);
 		} 
 		else 
 		{
 			$result = array(
-				'html' => $HTML->transformPHP($DATA,'#pay#paybankBill'),
+				'html' => transformPHP($DATA,'#pay#paybankBill'),
 				'title' => 'Счёт',
 			);
 		}

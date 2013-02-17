@@ -116,7 +116,7 @@ class shopbasket_class extends kernel_extends {
 			}
 
 			foreach($dataTemp as $r)
-				$data[$r['id']] = array('#name#'=>$r['name'], '#img#'=>MY_THEME.'_img/avatar/default3.jpg', );
+				$data[$r['id']] = array('#name#'=>$r['name'], '#img#'=>getUrlTheme().'_img/avatar/default3.jpg', );
 
 			return $data;
 		} 
@@ -208,7 +208,7 @@ class shopbasket_class extends kernel_extends {
 		}
 		if(isset($mess[0]))
 			$html = '<div class="messages"><div class="'.$mess[0].'">'.$mess[1].'</div></div>';
-		//$html = $HTML->transformPHP($DATA['formcreat'],'#pg#messages');
+		//$html = transformPHP($DATA['formcreat'],'#pg#messages');
 		$res['html'] = $html;
 		return $res;
 	}

@@ -121,7 +121,7 @@
 		if(isset($_tpl['onload2']) and count($_tpl['onload2'])) // WTF?
 				$_tpl['onload'] .= implode(' ',$_tpl['onload2']);
 
-		$temp .= "<script>\n//<!--\n function readyF() {".(string)$_tpl['onload']." wep.init(); \n}\n//-->\n</script>\n";
+		$temp .= "<script>\n//<!--\n function readyF() {".(string)$_tpl['onload']."\n}\n//-->\n</script>\n";
 
 		$_tpl['onload'] = 'readyF();';
 
@@ -143,7 +143,7 @@
 			elseif(is_string($kk) and !is_string($rr))
 			{
 				if(strpos($kk,'/')===0)
-					$path = MY_THEME;
+					$path = getUrlTheme();
 				else
 					$path = $_CFG['_HREF']['_script'];
 				$src = '//'.$_CFG['_HREF']['_BH'].$path.$kk.'.js'.$solt;
@@ -174,7 +174,7 @@
 				$src = str_replace(array('http:','https:'), '', $kk);
 			elseif(is_string($kk) and !is_string($rr)) {
 				if(strpos($kk,'/')===0)
-					$path = MY_THEME;
+					$path = getUrlTheme();
 				else
 					$path = $_CFG['_HREF']['_style'];
 				$src = '//'.$_CFG['_HREF']['_BH'].$path.$kk.'.css'.$solt;

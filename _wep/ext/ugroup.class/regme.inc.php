@@ -39,7 +39,7 @@
 			<div onclick="window.location=\'/index.html\'" class="blockclose"></div>
 				<div class="blockhead"><a href="/index.html">'.($flag?'Вы успешно авторизованы. ':'').'Обновите страницу</a></div>
 					<div class="hrb">&nbsp;</div>
-					'.$HTML->transformPHP($DATA,'#pg#messages').'
+					'.transformPHP($DATA,'#pg#messages').'
 					<div class="clear">&nbsp;</div>
 				</div>
 			</div>
@@ -62,7 +62,7 @@
 
 		list($DATA,$flag) = $UGROUP->regForm($param,$argForm);
 		unset($DATA['form']['_info']);
-		$html = $HTML->transformPHP($DATA,$FUNCPARAM[0]);
+		$html = transformPHP($DATA,$FUNCPARAM[0]);
 	}
 	$_tpl['styles']['login']=1;
 	return $html;

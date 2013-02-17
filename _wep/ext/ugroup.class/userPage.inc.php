@@ -40,7 +40,7 @@
 				'#title#' => $Ctitle,
 			)
 		);
-	$html = $HTML->transformPHP($DATA,$FUNCPARAM[1]);
+	$html = transformPHP($DATA,$FUNCPARAM[1]);
 	//TODO : информация о пользователе
 
 	return $html;

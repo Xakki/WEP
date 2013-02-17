@@ -33,7 +33,7 @@ if(isset($this->pageParam[0])) {
 $DATA = $GALLERY->mainList();
 $DATA['#title#'] = $Ctitle;
 $DATA['#page#'] = $Chref;
-$html .= $HTML->transformPHP($DATA, $FUNCPARAM[0]);
+$html .= transformPHP($DATA, $FUNCPARAM[0]);
 
 if($GALLERY->id)
 	$this->pageinfo['path'][] = $DATA['#info-gallery#']['name'];

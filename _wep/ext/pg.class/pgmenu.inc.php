@@ -29,6 +29,6 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 
 $DATA = array('#item#' => $PGLIST->getPGMap($FUNCPARAM[1]));
 $DATA['#title#'] = $Ctitle;
-$html .= $HTML->transformPHP($DATA, $FUNCPARAM[0]);
+$html .= transformPHP($DATA, $FUNCPARAM[0]);
 
 return $html;

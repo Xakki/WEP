@@ -1,9 +1,9 @@
 <?php
 function tools_step1() {
-	global $_CFG,$HTML,$_tpl;
+	global $_CFG,$_tpl;
 	$TEMP_CFG= array();
 	$_tpl['styles']['install']=1;
-	$file = $_CFG['_PATH']['wep_phpscript'] . '/install/step1.php';
+	$file = $_CFG['_PATH']['wep_controllers'] . '/install/step1.php';
 	if(static_main::_prmUserCheck(1))
 		return require($file);
 	else
@@ -11,20 +11,20 @@ function tools_step1() {
 }
 
 function tools_step2() {
-	global $_CFG,$HTML,$_tpl;
+	global $_CFG,$_tpl;
 	if(!static_main::_prmUserCheck(1))
 		return static_main::m('denied');
 	$_tpl['styles']['install']=1;
-	$file = $_CFG['_PATH']['wep_phpscript'] . '/install/step2.php';
+	$file = $_CFG['_PATH']['wep_controllers'] . '/install/step2.php';
 	return require($file);
 }
 
 function tools_step3() {
-	global $_CFG,$HTML,$_tpl;
+	global $_CFG,$_tpl;
 	if(!static_main::_prmUserCheck(1))
 		return static_main::m('denied');
 	$_tpl['styles']['install']=1;
-	$file = $_CFG['_PATH']['wep_phpscript'] . '/install/step3.php';
+	$file = $_CFG['_PATH']['wep_controllers'] . '/install/step3.php';
 	return require($file);
 }
 
@@ -203,9 +203,8 @@ function tools_cron() {
 
 		$FORM['formcreat'] = array('form' => $FORM);
 		//$FORM['formcreat']['messages'] = $mess;
-		global $HTML;
-		$result = $HTML->transformPHP($DATA, 'path');
-		$result .= $HTML->transformPHP($FORM, 'formcreat');
+		$result = transformPHP($DATA, 'path');
+		$result .= transformPHP($FORM, 'formcreat');
 	}
 	elseif(isset($_GET['_id']) and $_GET['_type'] == 'del') {
 		$NEWDATA = array();
@@ -261,13 +260,13 @@ function tools_cron() {
 				$DATA['data']['item'][$k]['id'] = $k;
 			}
 		}
-		global $HTML;
+
 		if(isset($_SESSION['messtool'])) {
 			$DATA['messages'][] = $_SESSION['messtool'];
 			unset($_SESSION['messtool']);
 		}
 		$DATA = array('superlist'=>$DATA);
-		$result = $HTML->transformPHP($DATA, 'superlist');
+		$result = transformPHP($DATA, 'superlist');
 	}
 	return $result;
 }
@@ -322,8 +321,8 @@ function tools_worktime() {
 
 		$DATA['formcreat'] = array('form' => $DATA);
 		$DATA['formcreat']['messages'] = $mess;
-		global $HTML;
-		$result .= $HTML->transformPHP($DATA, 'formcreat');
+
+		$result .= transformPHP($DATA, 'formcreat');
 	return $result;
 }
 
@@ -549,7 +548,7 @@ foreach($dataF as $kk=>$rr) {
 		$html .= '<li><a href="'.$_CFG['PATH']['admin'].'/?_view=list&_modul=_tools&tfunc='.$kk.'">'.$rr.'</a></li>';
 }
 $html .= '</ul>';
-$HTML->_templates = 'nologs';
+setTemplate('nologs');
 
 if(!isset($_GET['tfunc'])) {
 	_new_class('session',$SESSION);

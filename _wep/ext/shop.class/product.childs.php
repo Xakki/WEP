@@ -137,7 +137,7 @@ class product_class extends kernel_extends {
 
 	public function setFieldsForm($form=0) {
 		parent::setFieldsForm($form);
-		global $_tpl, $HTML;
+		global $_tpl;
 		if($form)
 			$_tpl['script']['/_shop/script/shop']=1;
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название товара');
@@ -1042,7 +1042,7 @@ class product_class extends kernel_extends {
 	}
 
 	public function AjaxShopParam() {
-		global $HTML,$_tpl;
+		global $_tpl;
 		$RESULT = array('html'=>'', 'text'=>'','onload'=>'');
 		$DATA  = array();
 		$this->fields_form = array();
@@ -1053,7 +1053,7 @@ class product_class extends kernel_extends {
 		if($_GET['_rid'] and $form = $this->ParamFieldsForm($_GET['_id'],$_GET['_rid'])) {
 			if(count($form) and $this->kFields2FormFields($form)) {
 				$DATA['form'] = &$this->form;
-				$RESULT['html'] = $HTML->transformPHP($DATA,'#pg#form');
+				$RESULT['html'] = transformPHP($DATA,'#pg#form');
 			}
 			//$RESULT['onload'] .= 'rclaim(\'type\');';
 		}

@@ -9,7 +9,7 @@
  */
 
 	function tpl_fcontrol(&$data) {
-		//include_once($HTML->_bDesignPath.'/php/superlist.php');
+		//include_once(getPathTheme(true).'/php/superlist.php');
 		$html = '<div class="superMenu">';
 		$html .= tpl_topmenuFE($data['button']['topmenu'], $data['button']['firstpath'], $data['button']['_clp']);
 		$html .= '</div>';
@@ -18,12 +18,12 @@
 
 
 	function tpl_topmenuFE(&$data, $firstpath, $httpQuery=array()) {
-		global $_CFG, $HTML, $_tpl;
+		global $_CFG, $_tpl;
 		$_tpl['onload'] .= 'wep.hTopPos=100;';
 		$temp_topmenu = '';
 		if(count($data)) { //MENU
 			$_tpl['styles']['button'] = 1;
-			include_once($HTML->_bDesignPath.'/php/formSelect.php');
+			include_once(getPathTheme(true).'php/formSelect.php');
 			foreach($data as $r) {
 				if($r['type']=='split') {
 					$temp_topmenu .= '<div class="split">&#160;</div>';

@@ -49,4 +49,4 @@
 	if(is_array($FUNCPARAM[3])) $FUNCPARAM[3] = implode(', ',$FUNCPARAM[3]);
 	$DATA = $SHOP->childs['product']->fList($FUNCPARAM[1],$filter,$FUNCPARAM[2],$FUNCPARAM[3],$FUNCPARAM[4]);
 	$DATA['#page#'] = $this->getHref($FUNCPARAM[5]);
-	return $HTML->transformPHP($DATA,$FUNCPARAM[0]);
+	return transformPHP($DATA,$FUNCPARAM[0]);

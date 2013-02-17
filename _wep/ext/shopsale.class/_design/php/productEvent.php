@@ -15,7 +15,7 @@
 			$html = $data['#text#']; // Товаров дня нет
 		} 
 		else {
-			global $_CFG, $_tpl,$HTML;
+			global $_CFG, $_tpl;
 			$_tpl['styles']['/_shop/style/shopEvents'] = 1;
 			//$_tpl['script']['/_shop/script/shopEvents'] = 1;
 
@@ -33,7 +33,7 @@
 				$html .= '<a href="/'.$fimg[0].'" title="'.$r['name'].'" class="prodimg-first fancyimg" rel="fancy"><img src="/'.$fimg[1].'" alt="'.$r['name'].'"/></a>';
 			} 
 			else
-				$html .= '<img src="'.MY_THEME.'_shop/img/nofoto.gif" alt="'.$r['name'].'" class="prodimg-first"/>';
+				$html .= '<img src="'.getUrlTheme().'_shop/img/nofoto.gif" alt="'.$r['name'].'" class="prodimg-first"/>';
 
 			/*$beginHour = 8;
 			$endhour = 20;

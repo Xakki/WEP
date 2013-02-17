@@ -43,10 +43,10 @@
 		$DATA[$FUNCPARAM[0]]['form']['_info']['caption'] = $Ctitle;
 
 	if($flag==1) {
-		$HTML->_templates = "waction";
-		$html = $HTML->transformPHP($DATA[$FUNCPARAM[0]],'#pg#messages');
+		setTemplate("waction");
+		$html = transformPHP($DATA[$FUNCPARAM[0]],'#pg#messages');
 	}
 	else
-		$html = $HTML->transformPHP($DATA,$FUNCPARAM[0]);
+		$html = transformPHP($DATA,$FUNCPARAM[0]);
 	return $html;
 

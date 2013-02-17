@@ -884,7 +884,7 @@ deny from all
 		if (!file_exists($_CFG['_PATH']['phpscript'] . 'cron.php')) {
 			file_put_contents($_CFG['_PATH']['phpscript'] . 'cron.php', '<?php
 	$_CFG[\'_PATH\'][\'wep\'] = dirname(dirname(dirname(__FILE__))).\'/_wep/\';
-	include($_CFG[\'_PATH\'][\'wep\'].\'_phpscript/cron.php\');');
+	include($_CFG[\'_PATH\'][\'wep_controllers\'].\'cron.php\');');
 		}
 
 		if (!file_exists($_CFG['_PATH']['content'] . '.htaccess')) {
@@ -895,8 +895,9 @@ deny from all
 
 	/* STEP2 функция */
 
-	static function _toolsCheckmodul(&$MODUL) {
-		global $HTML;
+	static function _toolsCheckmodul(&$MODUL) 
+	{
+
 		$flag = 0;
 		$MODUL->form = $mess = array();
 		if (!static_main::_prmModul($MODUL->_cl, array(14)))
@@ -989,7 +990,7 @@ deny from all
 									'caption' => 'Модуль ' . $_cl,
 									'type' => 'checkbox',
 									'valuelist' => $valuelist,
-									'comment' => $HTML->transformPHP($message, 'messages'),
+									'comment' => transformPHP($message, 'messages'),
 									'style' => 'border-bottom:solid 1px #e1e1e1;margin:3px 0;'
 								);
 								if ($value)
@@ -997,7 +998,7 @@ deny from all
 							} elseif (count($message)) {
 								$MODUL->form['query_' . $_cl] = array(
 									'type' => 'html',
-									'value' => 'Модуль ' . $_cl.' : '.$HTML->transformPHP($message, 'messages'),
+									'value' => 'Модуль ' . $_cl.' : '.transformPHP($message, 'messages'),
 									'style' => 'border-bottom:solid 1px gray;margin:3px 0;'
 								);
 								//$mess = array_merge($mess, $message);

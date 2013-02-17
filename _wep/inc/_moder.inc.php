@@ -50,8 +50,8 @@
 		if(!isset($_GET['_type'])) $_GET['_type'] = '';
 		$_GET['_modul'] = $FUNCPARAM[0];
 
-		if(static_main::_prmModul($FUNCPARAM[0],array(1,2))) {
-			global $HTML;
+		if(static_main::_prmModul($FUNCPARAM[0],array(1,2))) 
+		{
 
 			$param = array('phptemplate'=>$FUNCPARAM[1]);
 			if($FUNCPARAM[2])
@@ -104,13 +104,13 @@
 						$DATA['messages'] += $_SESSION['mess'];
 					unset($DATA['path']);
 					$DATA = array($FUNCPARAM[1]=>$DATA);
-					$html = $HTML->transformPHP($DATA,$FUNCPARAM[1]);
+					$html = transformPHP($DATA,$FUNCPARAM[1]);
 					$_SESSION['mess'] = array();
 				}
 			} else {
 				if(count($DATA['formcreat']['messages']))
 					$DATA = $DATA['formcreat'];
-				$html = $HTML->transformPHP($DATA,'#pg#messages');
+				$html = transformPHP($DATA,'#pg#messages');
 			}
 
 		}

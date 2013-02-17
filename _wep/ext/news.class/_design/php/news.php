@@ -24,8 +24,7 @@
 					</div>';
 			}
 			if(isset($data['pagenum']) and count($data['pagenum'])) {
-				global $HTML;
-				$html .= $HTML->transformPHP($data['pagenum'],'#pg#pagenum');// pagenum
+				$html .= transformPHP($data['pagenum'],'#pg#pagenum');// pagenum
 			}
 			$html .= '</div>';
 		}

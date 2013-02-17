@@ -2,7 +2,7 @@
 	function tpl_shopMain(&$data) {
 		$html = '';
 		if(isset($data) and count($data)) {
-			global $_tpl,$HTML;
+			global $_tpl;
 			$_tpl['styles']['/_shop/style/shopMain'] = 1;
 
 			$html = '<div class="shopmain">';

@@ -1,18 +1,13 @@
 <?php
-	if(!$_CFG['_PATH']['wep']) die('ERROR');
-	require_once($_CFG['_PATH']['wep'].'config/config.php');
-
-
-	$_tpl = array();
-	$_tpl['meta'] = $_tpl['logs']=$_tpl['onload']=$_tpl['title']=$_tpl['text']='';
 
 	if($_NEED_INSTALL)
 	{
-		require_once($_CFG['_PATH']['wep'].'_phpscript/install/index.php');
+		require_once($_CFG['_PATH']['wep_controllers'].'install/index.php');
 		exit();
 	}
 
-	if(isset($_GET['_php']) and $_GET['_php']=='admin') {
+	if(isset($_GET['_php']) and $_GET['_php']=='admin') 
+	{
 		require_once($_CFG['_PATH']['backend'].'index.php');
 		exit();
 	}
@@ -21,12 +16,12 @@
 		static_main::downSite(); // Exit()
 	}
 
-	// эти html.php не подключаем, если что сами подключат
+	// эти wep.php не подключаем, если что сами подключат
 	if(isset($_GET['_php']) and $_GET['_php']=='robotstxt') {
 		if(file_exists($_CFG['_PATH']['wepconf'].'_phpscript/robotstxt.php'))
 			require_once($_CFG['_PATH']['wepconf'].'_phpscript/robotstxt.php');
 		else
-			require_once($_CFG['_PATH']['wep'].'_phpscript/frontend/robotstxt.php');
+			require_once($_CFG['_PATH']['wep_controllers'].'frontend/robotstxt.php');
 		exit();
 	}
 	elseif(isset($_GET['_php']) and $_GET['_php']=='js') {
@@ -34,28 +29,28 @@
 		if(file_exists($_CFG['_PATH']['wepconf'].'_phpscript/_js.php'))
 			require_once($_CFG['_PATH']['wepconf'].'_phpscript/_js.php');
 		else
-			require_once($_CFG['_PATH']['wep'].'_phpscript/frontend/_js.php');
+			require_once($_CFG['_PATH']['wep_controllers'].'frontend/_js.php');
 		exit();
 	}
 	elseif(isset($_GET['_php']) and $_GET['_php']=='redirect') {
 		if(file_exists($_CFG['_PATH']['wepconf'].'_phpscript/_redirect.php'))
 			require_once($_CFG['_PATH']['wepconf'].'_phpscript/_redirect.php');
 		else
-			require_once($_CFG['_PATH']['wep'].'_phpscript/frontend/_redirect.php');
+			require_once($_CFG['_PATH']['wep_controllers'].'frontend/_redirect.php');
 		exit();
 	}
 	elseif(isset($_GET['_php']) and $_GET['_php']=='captcha') {
 		if(file_exists($_CFG['_PATH']['wepconf'].'_phpscript/_captcha.php'))
 			require_once($_CFG['_PATH']['wepconf'].'_phpscript/_captcha.php');
 		else
-			require_once($_CFG['_PATH']['wep'].'_phpscript/frontend/_captcha.php');
+			require_once($_CFG['_PATH']['wep_controllers'].'frontend/_captcha.php');
 		exit();
 	}
 	elseif(isset($_GET['_php']) and $_GET['_php']=='rss') {
 		if(file_exists($_CFG['_PATH']['wepconf'].'_phpscript/rss.php'))
 			require_once($_CFG['_PATH']['wepconf'].'_phpscript/rss.php');
 		else
-			require_once($_CFG['_PATH']['wep'].'_phpscript/frontend/rss.php');
+			require_once($_CFG['_PATH']['wep_controllers'].'frontend/rss.php');
 		exit();
 	}
 	elseif(isset($_GET['_php']) and $_GET['_php']=='sitemap') {
@@ -63,7 +58,7 @@
 		header("Last-Modified: " . gmdate("D, d M Y H:i:s", $_CFG['time']) . " GMT");
 		header("Expires: " . gmdate("D, d M Y H:i:s", $_CFG['time']) . " GMT");
 		header("Content-type:text/xml;charset=utf-8");
-		require_once($_CFG['_PATH']['core'].'html.php');
+		require_once($_CFG['_PATH']['core'].'wep.php');
 		$_COOKIE['_showerror'] = 0;
 		$SITEMAP = TRUE;
 		_new_class('pg',$PGLIST);
@@ -73,7 +68,7 @@
 	elseif(isset($_GET['_php']) and $_GET['_php']=='config') {
 		$_GET[$_CFG['wep']['_showallinfo']] = 0;
 		//Применяется для CKFinder для авторизации по сессии
-		require_once($_CFG['_PATH']['core'].'html.php');	/**отправляет header и печатает страничку*/
+		require_once($_CFG['_PATH']['core'].'wep.php');	/**отправляет header и печатает страничку*/
 		session_go();
 		return true;
 	}
@@ -81,16 +76,15 @@
 		if(file_exists($_CFG['_PATH']['wepconf'].'_phpscript/'.$_GET['_php'].'.xml.php'))
 			require_once($_CFG['_PATH']['wepconf'].'_phpscript/'.$_GET['_php'].'.xml.php');
 		else
-			require_once($_CFG['_PATH']['wep'].'_phpscript/frontend/'.$_GET['_php'].'.xml.php');
+			require_once($_CFG['_PATH']['wep_controllers'].'frontend/'.$_GET['_php'].'.xml.php');
 		exit();
 	}
 
-	require_once($_CFG['_PATH']['core'].'html.php');	/**отправляет header и печатает страничку*/
 
-	$rid = 0;
+	//*****************
 
-//INCLUDE*****************
-	if(_new_class('pg',$PGLIST)) {
+	if(_new_class('pg',$PGLIST)) 
+	{
 		if (!isset($_REQUEST['pageParam'])) 
 			$_REQUEST['pageParam'] = "index";
 		if(is_array($_REQUEST['pageParam'])) $_REQUEST['pageParam'] = implode('/',$_REQUEST['pageParam']);
@@ -109,7 +103,7 @@
 				$_CFG['fileIncludeOption'] = null; // чтобы автоматом не подключались стили и скрптыв
 		/*
 			if(!isset($_SESSION['showIEwarning'])) $_SESSION['showIEwarning']=0;
-			if($HTML->_fTestIE('MSIE 6') and $_SESSION['showIEwarning']<3) {
+			if(_fTestIE('MSIE 6') and $_SESSION['showIEwarning']<3) {
 				$_SESSION['showIEwarning']++;
 				//$_tpl['meta'] .='<!--[if IE 6]><script type="text/javascript"></script><![endif]-->';
 			}

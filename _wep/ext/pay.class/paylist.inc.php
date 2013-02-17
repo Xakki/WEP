@@ -55,6 +55,6 @@
 	if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0)
 		$DATA['#showUser#'] = true;
 
-	$html .= $HTML->transformPHP($DATA,$DATA['tpl']);
+	$html .= transformPHP($DATA,$DATA['tpl']);
 
 	return $html;

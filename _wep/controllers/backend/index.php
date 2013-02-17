@@ -1,5 +1,5 @@
 <?php
-	$_CFG['_F']['adminpage'] = true;
+	isBackend(true);
 	
 	$pageParam = trim($_GET['pageParam'],'/');
 	$pageParam  = explode('/', $pageParam);
@@ -11,19 +11,8 @@
 		exit();
 	}
 
-
-	require_once($_CFG['_PATH']['core'].'html.php');
 	$result = static_main::userAuth(); // запскает сессию и проверяет авторизацию
-
-	if(isset($_COOKIE['cdesign']) and $_COOKIE['cdesign'])
-		$_design = $_COOKIE['cdesign'];
-	elseif(isset($_SESSION['user']['design']) and $_SESSION['user']['design'])
-		$_design = $_SESSION['user']['design'];
-	else 
-		$_design = $_CFG['wep']['design'];
-	$_design = 'default';////////////////////////////
-		
-	$HTML = new html($_CFG['PATH']['cdesign'],$_design);
+	
 	if(!isset($_GET['_modul'])) $_GET['_modul'] = '';
 
 	if($mainPage=='logout')
@@ -75,7 +64,7 @@
 			}
 		}
 
-		$HTML->_templates = 'login';
+		setTemplate('login');
 
 		$_tpl['forgot'] = 'Забыли?';
 		$_tpl['loginLabel'] = 'Логин / Email';

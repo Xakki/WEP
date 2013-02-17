@@ -29,6 +29,6 @@ if (count($DATA[$FUNCPARAM[0]]) > 1) {
 		$_tpl['description'] = $temp['name'];
 }
 
-$html = $HTML->transformPHP($DATA, $FUNCPARAM[0]);
+$html = transformPHP($DATA, $FUNCPARAM[0]);
 /* 	PATH */
 return $html;

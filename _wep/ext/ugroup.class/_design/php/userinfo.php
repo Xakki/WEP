@@ -14,7 +14,7 @@
 
 			$size = @filesize($_CFG['_PATH']['path'].$data['data']['userpic']);
 			if(!$data['data']['userpic'] or !$size)
-				$data['data']['userpic'] = MY_THEME.'_img/avatar/default.gif';
+				$data['data']['userpic'] = getUrlTheme().'_img/avatar/default.gif';
 			else
 				$data['data']['userpic'] .= '?'.$size;
 			$html = '

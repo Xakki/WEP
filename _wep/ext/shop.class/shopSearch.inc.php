@@ -51,4 +51,4 @@
 	//$ppath = parse_url($_SERVER['REQUEST_URI']);//'.$ppath['path'].'
 	$DATA['req'] = $req;
 	$DATA['atarget'] = '_blank';
-	return $HTML->transformPHP($DATA,$FUNCPARAM[0]);
+	return transformPHP($DATA,$FUNCPARAM[0]);

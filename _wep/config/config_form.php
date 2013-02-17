@@ -66,6 +66,7 @@ $_CFGFORM['site'] = array(// для сайта
 	'work_title' => array('type'=>'text','caption'=>'Заголовок для режима "Технический перерыв"', 'css' => 'fblock hsite', 'style' => 'display:none;'),
 	'work_text' => array('type'=>'text','caption'=>'Текст для режима "Технический перерыв"', 'css' => 'fblock hsite', 'style' => 'display:none;'),
 	'redirectPlugin' => array('type'=>'checkbox','caption'=>'Регистрировать переходы по ссылкам?', 'css' => 'fblock hsite', 'style' => 'display:none;'),
+	'themes' => array('type'=>'list','caption'=>'Дизайн сайта', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 );
 
 $_CFGFORM['memcache'] = array(
@@ -120,6 +121,8 @@ $_CFGFORM['memcache'] = array(
 			$_CFGFORM['wep']['design']['valuelist'][] = array('#id#' => $entry, '#name#' => $entry);
 		}
 	}
+
+	$_CFGFORM['site']['themes']['listname'] = 'themes';
 
 	$_CFGFORM['wep']['sessiontype']['valuelist'] = array(
 		array('#id#' => 0, '#name#' => 'Стандартное'),

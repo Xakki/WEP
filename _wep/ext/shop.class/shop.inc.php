@@ -79,7 +79,7 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 		if(count($DATA['#item#']) and _new_class('shopsale',$SHOPSALE)) {
 			$SHOPSALE->getData($DATA['#item#']);
 		}
-		$html .= $HTML->transformPHP($DATA,$FUNCPARAM[8]);
+		$html .= transformPHP($DATA,$FUNCPARAM[8]);
 		if(isset($PRODUCT->data[$PRODUCT->id]) and count($PRODUCT->data[$PRODUCT->id])) {
 			array_pop($PGLIST->pageinfo['path']);
 			$fPATH = $SHOP->getPath($PRODUCT->data[$PRODUCT->id][$PRODUCT->owner_name],$Chref,$FUNCPARAM[2]);// прописываем путь
@@ -112,7 +112,7 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 			$DATA = $PRODUCT->childs['product_like']->fLike($PRODUCT->id);
 			$DATA['#page#'] = $Chref;
 			$DATA['#shopconfig#'] = $SHOP->config;
-			$html .= $HTML->transformPHP($DATA,$FUNCPARAM[9]);
+			$html .= transformPHP($DATA,$FUNCPARAM[9]);
 		}
 	}
 	elseif(isset($_GET['shop']) and $rid = (int)$_GET['shop']) {
@@ -140,13 +140,13 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 				if($SHOP->basketEnabled) 
 					$DATA2['#basket#'] = $SHOP->fBasketData();
 				//$DATA2['#title#'] = $Ctitle;
-				$subCatHtml = $HTML->transformPHP($DATA2,$FUNCPARAM[1]);
+				$subCatHtml = transformPHP($DATA2,$FUNCPARAM[1]);
 			}
 
 			$searchHtml = '';
 			if(count($formparam)) {
 				//<div class="blockhead searchslide shhide" onclick="slideBlock(this,\'#form_tools_paramselect\');">Поиск</div><div class="hrb"></div>
-				$searchHtml = $HTML->transformPHP($formparam,'#pg#filter').'<br/>';
+				$searchHtml = transformPHP($formparam,'#pg#filter').'<br/>';
 				if(isset($_GET['sbmt']) and $_GET['sbmt']=='Поиск')
 					$_tpl['onload'] .= 'jQuery(\'div.searchslide\').click();';//$("#form_tools_paramselect").hide(); 
 				//$_tpl['onload'] .= "$('#tr_shopl').insertBefore('.searchslide');";
@@ -186,7 +186,7 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 				if($subCatHtml or isset($DATA['#item#']) or isset($DATA['#filter#']))
 					$html .= $searchHtml;
 				//$DATA['#fields#'] = &$PRODUCT->fields;
-				$html .= $HTML->transformPHP($DATA, $FUNCPARAM[0]);
+				$html .= transformPHP($DATA, $FUNCPARAM[0]);
 			}
 		}
 	} 
@@ -198,7 +198,7 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 			if($SHOP->basketEnabled)
 				$DATA2['#basket#'] = $SHOP->fBasketData();
 			//$DATA2['#title#'] = $Ctitle;
-			$html .= $HTML->transformPHP($DATA2,$FUNCPARAM[1]);
+			$html .= transformPHP($DATA2,$FUNCPARAM[1]);
 		}
 	}
 

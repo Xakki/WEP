@@ -44,6 +44,6 @@ $DATA = array('#item#' => $PGLIST->getMap(-1, $FUNCPARAM[0], $FUNCPARAM[1]));
 $DATA['#title#'] = $Ctitle;
 
 $DATA = array($FUNCPARAM[2] => $DATA);
-$html .= $HTML->transformPHP($DATA, $FUNCPARAM[2]);
+$html .= transformPHP($DATA, $FUNCPARAM[2]);
 
 return $html;

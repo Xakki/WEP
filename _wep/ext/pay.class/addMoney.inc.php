@@ -61,7 +61,7 @@
 	$DATA = $PAY->billingForm($payData);
 
 	$this->formFlag = $DATA['#resFlag#'];
-	$html .= $HTML->transformPHP($DATA, $DATA['tpl']);
+	$html .= transformPHP($DATA, $DATA['tpl']);
 
 	return $html;
 

@@ -49,7 +49,7 @@
 			$DATA = $UGROUP->childs['users']->_query('*','WHERE active=1 and id!='.$noid.' and pass!="" ORDER BY owner_id, name','id');
 			$DATA2 = $UGROUP->_query('*','WHERE active=1 and level<10','id');
 			$DATA = array($FUNCPARAM[0]=>array('list'=>$DATA,'owner'=>$DATA2,'href'=>$this->getHref(),'userpic'=>$UGROUP->config['userpic']));
-			$html .= $HTML->transformPHP($DATA,$FUNCPARAM[0]);
+			$html .= transformPHP($DATA,$FUNCPARAM[0]);
 		}
 	}
 

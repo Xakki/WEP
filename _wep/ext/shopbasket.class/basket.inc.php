@@ -33,4 +33,4 @@
 	$DATA['#page#'] = $this->getHref($FUNCPARAM[1]);
 	$DATA['#curr#'] = $PAY->config['curr'];
 	
-	return $HTML->transformPHP($DATA,$FUNCPARAM[0]);
+	return transformPHP($DATA,$FUNCPARAM[0]);

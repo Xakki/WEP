@@ -2,7 +2,7 @@
 	function tpl_productLike(&$data) {
 		$html = '';
 		if(isset($data) and count($data)) {
-			global $_tpl,$HTML;
+			global $_tpl;
 			$_tpl['styles']['/_shop/style/product'] = 1;
 
 			if(!isset($data['#item#']) or !count($data['#item#'])) {
@@ -13,7 +13,7 @@
 				<h3>Сопутствующие товары</h3>';
 				$PGnum = '';
 				if(isset($data['pagenum']) and count($data['pagenum'])) {
-					$PGnum = $HTML->transformPHP($data['pagenum'],'#pg#pagenum');
+					$PGnum = transformPHP($data['pagenum'],'#pg#pagenum');
 					$html .= $PGnum;
 				}
 
@@ -27,7 +27,7 @@
 					if(isset($r['image']) and count($r['image']) and $r['image'][0][1]) {
 						$html .= '<img src="/'.$r['image'][0][1].'" alt="'.$r['name'].'"/>';
 					} else
-						$html .= '<img src="'.MY_THEME.'_shop/img/nofoto.gif" alt="'.$r['name'].'"/>';
+						$html .= '<img src="'.getUrlTheme().'_shop/img/nofoto.gif" alt="'.$r['name'].'"/>';
 					$html .= '</a>';
 					//<div class="proddescr">'.$r['descr'].'</div>
 					//$html .= '';

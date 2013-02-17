@@ -8,7 +8,7 @@
 			$html .= 'Не верная ссылка, либо товара удален';
 		} else {
 
-			global $_CFG, $_tpl,$HTML;
+			global $_CFG, $_tpl;
 			$_CFG['fileIncludeOption']['fancybox'] = true;
 			$_tpl['styles']['/_shop/style/product'] = 1;
 			$_tpl['styles']['form'] = 1;
@@ -27,7 +27,7 @@
 						$html .= '<a href="/'.$img[0].'" title="'.$r['name'].'" class="prodimg-over fancyimg" rel="fancy"><img src="/'.$img[1].'" alt="'.$r['name'].'"/></a>';
 					}
 				} else
-					$html .= '<br/><img src="'.MY_THEME.'_shop/img/nofoto.gif" alt="'.$r['name'].'" class="prodimg-first"/>';
+					$html .= '<br/><img src="'.getUrlTheme().'_shop/img/nofoto.gif" alt="'.$r['name'].'" class="prodimg-first"/>';
 				$html .= '</div>';
 
 

@@ -2134,8 +2134,8 @@ abstract class kernel_extends {
 	/**
 	* Генератор сообщений на мыло
 	*/
-	function sendNotif($email='') {
-		global $HTML;
+	function sendNotif($email='') 
+	{
 		$param = array(
 			'clause'=>array('t1.'.$this->mf_notif=>'t1.'.$this->mf_notif.'=0'),
 			'hide_topmenu' => true,
@@ -2153,7 +2153,7 @@ abstract class kernel_extends {
 				'creater_id' => -1,
 				'mail_to' => ($email?$email:$MAIL->config['mailrobot']),
 				'subject' => strtoupper($_SERVER['HTTP_HOST']).' - Оформленно заказов '.$cnt.'шт.',
-				'text' => '<p>Список заказов</p>'. $HTML->transformPHP($DATA,'#pg#superlist'),
+				'text' => '<p>Список заказов</p>'. transformPHP($DATA,'#pg#superlist'),
 
 			);
 			$MAIL->reply = 0;
@@ -2188,7 +2188,7 @@ abstract class kernel_extends {
 	 * TODO : вынести в отдельный "модуль-контролер"
 	 */
 	public function AjaxAdd() {
-		global $HTML, $_tpl;
+		global $_tpl;
 		$RESULT = array('html' => '', 'html2' => '', 'text' => '', 'onload' => '');
 		$DATA = array();
 		//$htmlb = '';
@@ -2196,7 +2196,7 @@ abstract class kernel_extends {
 		if (count($_POST))
 			$_POST['sbmt'] = 1;
 		list($DATA['formcreat'], $flag) = $this->_UpdItemModul(array('ajax' => 1, 'errMess' => 1));
-		$RESULT['html'] = $HTML->transformPHP($DATA, 'formcreat');
+		$RESULT['html'] = transformPHP($DATA, 'formcreat');
 
 		if ($flag == 1) {
 			$RESULT['onload'] .= 'clearTimeout(timerid2);fShowload (1,result.html2,0,0,\'location.href = location.href;\');';

@@ -221,7 +221,7 @@
 
 		public function _tableExists($tablename) {
 			$result = $this->query('SHOW TABLES LIKE "' . $tablename . '"');
-			if (!$result->err && $result) {
+			if ($result && !$result->err && $result) {
 				if($result->num_rows())
 					return true;
 				else

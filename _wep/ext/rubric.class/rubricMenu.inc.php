@@ -43,6 +43,6 @@ if (!isset($FUNCPARAM[2]))
 	$DATA['#page#'] = $this->getHref($FUNCPARAM[1]);
 	$DATA['#title#'] = $Ctitle;
 
-	$html = $HTML->transformPHP($DATA,$FUNCPARAM[0]);
+	$html = transformPHP($DATA,$FUNCPARAM[0]);
 
 	return $html;

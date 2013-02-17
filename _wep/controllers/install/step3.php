@@ -7,7 +7,7 @@
  * @version 0.1
  * @return Вывод HTML кода процесса установки шага №2
  */
-global $HTML;
+
 if(!isset($var_const))
 	$var_const = array(
 		'mess'=>array(),
@@ -29,10 +29,10 @@ if(_new_class('modulprm', $MODULPRM)) {
 if ($res == 1) {
 	$_SESSION['step'] = $_GET['step']+1;
 	$DATA['messages'][] = $var_const['mess'];
-	$html = $HTML->transformPHP($DATA, 'messages');
+	$html = transformPHP($DATA, 'messages');
 } else {
 	$DATA = array('formcreat' => $DATA);
-	$html = $HTML->transformPHP($DATA, 'formcreat');
+	$html = transformPHP($DATA, 'formcreat');
 }
 
 return $html;

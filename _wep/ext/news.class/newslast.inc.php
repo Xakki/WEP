@@ -40,6 +40,6 @@
 	if($FUNCPARAM[2])
 		$DATA['#page#'] = $this->getHref($FUNCPARAM[1]);
 	$DATA = array($FUNCPARAM[0]=>$DATA);
-	$html = $HTML->transformPHP($DATA,$FUNCPARAM[0]);
+	$html = transformPHP($DATA,$FUNCPARAM[0]);
 
 	return $html;

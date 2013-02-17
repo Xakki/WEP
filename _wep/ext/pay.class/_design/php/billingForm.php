@@ -9,7 +9,7 @@
  */
 function tpl_billingForm($data)
 {
-	global $_tpl, $HTML;
+	global $_tpl;
 	$_tpl['styles']['/_pay/pay'] = 1;
 	$currency = $data['#config#']['curr'];
 	$html = '<div class="billingForm">';
@@ -28,7 +28,7 @@ function tpl_billingForm($data)
 		$data['messages'][] = array('alert', 'Сумма - '.number_format($data['#summ#'], 2, ',', ' ').' '.$currency);
 
 	if(isset($data['messages']) and count($data['messages'])) {
-		$html .= $HTML->transformPHP($data['messages'], '#pg#messages');
+		$html .= transformPHP($data['messages'], '#pg#messages');
 	}
 
 	// выводим форму выбора плат системы ии форму для выбранной плат системы
@@ -36,7 +36,7 @@ function tpl_billingForm($data)
 	{
 		unset($data['form']['_info']);
 		unset($data['messages']);
-		$html .= $HTML->transformPHP($data, '#pg#formcreat');
+		$html .= transformPHP($data, '#pg#formcreat');
 	}
 	// Вывводим статус платежа
 	else

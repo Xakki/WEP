@@ -4,7 +4,7 @@
 	$_tpl['onload']=$html=$html2='';
 
 	if(!isset($_GET['noajax']))
-		require($_CFG['_PATH']['wep_phpscript'].'lib/jquery_getjson.php');
+		require($_CFG['_PATH']['wep_controllers'].'lib/jquery_getjson.php');
 
 
 	if($_CFG['robot']) {
@@ -32,7 +32,6 @@
 	else 
 		$_design = $_CFG['wep']['design'];
 
-	$HTML = new html($_CFG['PATH']['cdesign'],$_design,false);// упрощённый режим
 
 	if($_CFG['wep']['access'] and (!isset($_SESSION['user']['id']) or $_SESSION['user']['level']>=5)) {
 		$GLOBALS['_RESULT']['html'] = static_main::m('denied');

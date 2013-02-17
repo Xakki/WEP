@@ -50,6 +50,6 @@
 	$DATA['#id#'] = $rowPG['id'];
 	$DATA['#pagemenu#'] = $this->getHref();// Адрес тек страницы
 	$DATA = array($FUNCPARAM[0]=>$DATA);
-	$html .= $HTML->transformPHP($DATA,$FUNCPARAM[0]);
+	$html .= transformPHP($DATA,$FUNCPARAM[0]);
 
 	return $html;

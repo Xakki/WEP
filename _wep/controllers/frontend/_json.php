@@ -8,7 +8,7 @@
 		$_GET['noajax'] = false;
 
 	if(!$_GET['noajax'])
-		require_once($_CFG['_PATH']['wep_phpscript'].'/lib/jquery_getjson.php');
+		require_once($_CFG['_PATH']['wep_controllers'].'/lib/jquery_getjson.php');
 
 	if(isset($_GET['_fn']) and $_GET['_fn']) {
 		require_once($_CFG['_PATH']['core'].'html.php');

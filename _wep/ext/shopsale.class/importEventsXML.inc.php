@@ -78,7 +78,7 @@
 	}
 
 	$DATA = array('form' => $fields_form, 'messages' => $mess);
-	$html = $HTML->transformPHP($DATA,'#pg#formcreat');
+	$html = transformPHP($DATA,'#pg#formcreat');
 
 
 ///////////////////////////////////////////////////////////////

@@ -10,7 +10,7 @@
 function tpl_statusForm($data)
 {
 	//print_r('<pre>');print_r($data);
-	global $_tpl, $HTML;
+	global $_tpl;
 	//$_CFG['fileIncludeOption']['form'] = 1;
 	$_tpl['styles']['/_pay/pay'] = 1;
 	$html = '';
@@ -41,14 +41,14 @@ function tpl_statusForm($data)
 	if(isset($data['confirmCancel']) and $data['confirmFlag']<1)
 	{
 		$data['messages'][] = array('confirmCancel'.($data['confirmFlag']<0?' mustShowBlock':''), '<a class="ajaxlink" onclick="$(\'.confirmCancel .divform\').toggle();return false;">Отменить счет</a>
-		'.$HTML->transformPHP($data['confirmCancel'], '#pg#formcreat'));
+		'.transformPHP($data['confirmCancel'], '#pg#formcreat'));
 	}
 
 	//После оплаты обновите <a href="javascript:window.location.reload();">страницу</a>, чтобы узнать состояние счёта.
 
 	if(isset($data['messages']) and count($data['messages'])) 
 	{
-		$html .= '<div class="divform">'.$HTML->transformPHP($data['messages'], '#pg#messages').'</div>';
+		$html .= '<div class="divform">'.transformPHP($data['messages'], '#pg#messages').'</div>';
 	}
 
 
@@ -56,7 +56,7 @@ function tpl_statusForm($data)
 	{
 		//unset($data['form']['_info']);
 		$data['showFrom']['ajaxForm'] = false;
-		$html .= $HTML->transformPHP($data['showFrom'], '#pg#formcreat');
+		$html .= transformPHP($data['showFrom'], '#pg#formcreat');
 
 	}
 

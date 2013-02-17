@@ -40,7 +40,7 @@
 
 		list($DATA['#pg#formcreat'],$this->formFlag) = $MODUL->_UpdItemModul(array('showform'=>1), $argForm);
 
-		$html = $HTML->transformPHP($DATA,'#pg#formcreat');
+		$html = transformPHP($DATA,'#pg#formcreat');
 
 	}**/
 
@@ -73,7 +73,7 @@
 			'wepsplit' => array('type' => 'split')
 		);
 		$DATA['button']['topmenu'] = $linkWep + $DATA['button']['topmenu'];
-		$html = $HTML->transformPHP($DATA, '#modulprm#fcontrol');
+		$html = transformPHP($DATA, '#modulprm#fcontrol');
 	}
 
 	if($_CFG['returnFormat'] == 'json') {

@@ -8,7 +8,7 @@
  * @return string html
  */
 	function tpl_gallery(&$data) {
-		global $_tpl, $HTML, $_CFG;
+		global $_tpl, $_CFG;
 		$_tpl['styles']['/_gallery/style/gallery'] = 1;
 		$html = '';
 		if(isset($data['#list-gallitem#']) and count($data['#list-gallitem#'])) {

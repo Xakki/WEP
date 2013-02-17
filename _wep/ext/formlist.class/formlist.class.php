@@ -32,7 +32,7 @@ class formlist_class extends kernel_extends {
 
 	public function AjaxMCBox() {
 		//_modul=formlist&_fn=AjaxMCBox
-		global $HTML,$_tpl;
+		global $_tpl;
 		$RESULT = array('html'=>'', 'text'=>'','onload'=>'');
 
 			$DATA = array();
@@ -58,7 +58,7 @@ class formlist_class extends kernel_extends {
 				)
 			);
 			//$_tpl['onload'] .= 'mCBoxVis(\''.$rr.'_'.$rrr.'\');';
-			$RESULT['html'] = $HTML->transformPHP($DATA,'#pg#filter');
+			$RESULT['html'] = transformPHP($DATA,'#pg#filter');
 
 		return $RESULT;
 	}

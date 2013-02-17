@@ -718,7 +718,7 @@ class static_main {
 		if(file_exists($_CFG['_PATH']['phpscript'].'/frontend/work.html'))
 			$html = file_get_contents($_CFG['_PATH']['phpscript'].'/work.html');
 		else
-			$html = file_get_contents($_CFG['_PATH']['wep_phpscript'].'/frontend/work.html');
+			$html = file_get_contents($_CFG['_PATH']['wep_controllers'].'/frontend/work.html');
 		$html = str_replace('"', '\"', $html);
 		eval('$html = "' .$html . '";');
 		echo $html;
@@ -1027,7 +1027,7 @@ function _modulExists($class_name, &$OWNER=NULL) {
 		$file = $_CFG['_PATH']['phpscript'].'lib/'.$name.'.php';
 		if(file_exists($file))
 			return $file;
-		return $_CFG['_PATH']['wep_phpscript'].'lib/'.$name.'.php';
+		return $_CFG['_PATH']['wep_controllers'].'lib/'.$name.'.php';
 	}
 
 if (!defined('PHP_VERSION_ID')) {
@@ -1092,6 +1092,112 @@ function SpiderDetect($USER_AGENT='') {
 
 	return '';
 }
+
+function _fTestIE() {
+	/* Доп функция проверки типа браузера клиента */
+	$user_agent = $_SERVER['HTTP_USER_AGENT'];
+	$browserIE = false;
+	if (stristr($user_agent, 'MSIE'))
+		$browserIE = true; // IE
+		return $browserIE;
+}
+
+/********************/
+
+function setTheme($theme)
+{
+	global $_CFG;
+	if(isBackend())
+	{
+		if(!file_exists($_CFG['_PATH']['cdesign'].$theme))
+			return false;
+		$_CFG['wep']['design'] = $theme;
+	}
+	else
+	{
+		if(!file_exists($_CFG['_PATH']['themes'].$theme))
+			return false;
+		$_CFG['site']['themes'] = $theme;
+	}
+
+	return true;
+}
+
+function getTheme()
+{
+	/*if(isset($_COOKIE['cdesign']) and $_COOKIE['cdesign'])
+		$_design = $_COOKIE['cdesign'];
+	elseif(isset($_SESSION['user']['design']) and $_SESSION['user']['design'])
+		$_design = $_SESSION['user']['design'];
+	else 
+		$_design = $_CFG['wep']['design'];
+	$_design = 'default';*/
+
+	global $_CFG;
+	if(isBackend())
+		return $_CFG['wep']['design'];
+	else
+		return $_CFG['site']['themes'];
+}
+
+/**
+* $type = null  return auto path
+* $type = true  return Backend path
+* $type = false  return frontend path
+*/
+function getPathTheme($type=null)
+{
+	global $_CFG;
+	if(is_null($type))
+		$type = isBackend();
+	if($type)
+		return $_CFG['_PATH']['cdesign'].getTheme().'/';
+	else
+		return $_CFG['_PATH']['themes'].getTheme().'/';
+}
+
+function getUrlTheme()
+{
+	global $_CFG;
+	if(isBackend())
+		return $_CFG['PATH']['cdesign'].getTheme().'/';
+	else
+		return $_CFG['PATH']['themes'].getTheme().'/';
+}
+
+/********************/
+
+function setTemplate($template)
+{
+	global $_CFG;
+	if(!file_exists(getPathTheme().'templates/'.$template.'.tpl'))
+		return false;
+	$_CFG['site']['template'] = $template;
+	return true;
+}
+
+function getTemplate()
+{
+	global $_CFG;
+	return $_CFG['site']['template'];
+}
+
+function getPathTemplate()
+{
+	global $_CFG;
+	return getPathTheme().'templates/'.getTemplate().'.tpl';
+}
+
+/********************/
+
+function isBackend($val=null)
+{
+	global $_CFG;
+	if($val===true)
+		$_CFG['_F']['adminpage'] = true;
+	return $_CFG['_F']['adminpage'];
+}
+
 
 /*
   Используем эту ф вместо стандартной, для совместимости с UTF-8

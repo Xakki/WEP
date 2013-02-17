@@ -1,7 +1,7 @@
 <?php
 
-require_once($_CFG['_PATH']['core'] . 'html.php');
-//require_once($_CFG['_PATH']['core'] . 'sql.php');
+isBackend(true);
+
 $TEMP_CFG= array();
 $TEMP_CFG['wep']['access'] = $_CFG['wep']['access'] = 0; // авторизация только по главному паролю
 $TEMP_CFG['wep']['sessiontype'] = $_CFG['wep']['sessiontype'] = 0; // запускаем сессию стандартно
@@ -11,7 +11,6 @@ $TEMP_CFG['wep']['debugmode'] = $_CFG['wep']['debugmode'] = 2;
 error_reporting(-1);
 
 session_go();
-$HTML = new html($_CFG['PATH']['cdesign']);
 
 $_tpl['title'] = 'Установка WEP';
 $mess = array();
@@ -40,7 +39,8 @@ if ($flag) {
 	if(!isset($_SESSION['step']))
 		$_SESSION['step'] = 1;
 
-	$HTML->_templates = 'install';
+	setTemplate('install');
+
 	$stp = array(
 		1 => array('name' => 'Шаг первый', 'css' => '', 'comment' => 'Подключение к БД и настройка дополнительных параметров'),
 		2 => array('name' => 'Шаг второй', 'css' => '', 'comment' => 'Проверка структуры сайта'),
@@ -52,7 +52,7 @@ if ($flag) {
 	else
 		$_GET['step'] = (int) $_GET['step'];
 
-	$file = $_CFG['_PATH']['wep_phpscript'] . '/install/step' . $_GET['step'] . '.php';
+	$file = $_CFG['_PATH']['wep_controllers'] . '/install/step' . $_GET['step'] . '.php';
 	if (file_exists($file)) {
 		$var_const = array(
 			'mess'=>array('name' => 'ok', 'value' => 'Пора перейти к <a href="'.$_CFG['PATH']['admin'].'/install/?step=' . ($_GET['step'] + 1) . '">следующему шагу №' . ($_GET['step'] + 1) . '</a>'),
@@ -91,9 +91,11 @@ if ($flag) {
 	  if($result[0]) $result[0] = '<div style="color:red;">'.$result[0].'</div>';
 	  elseif(isset($_GET['install'])) $result[0] = '<div style="color:red;">Установка недостающих данных</div>';
 	  $_tpl['mess'] = '<div class="messhead">'.$result[0].'</div>'; */
-} else {
-	$HTML->_templates = 'login';
+} else 
+{
+	setTemplate('login');
+
 	$_tpl['text'] = '';
 	$_tpl['login'] = 'Логин(Email)';
-	$_tpl['mess'] = '<div class="messhead">' . $HTML->transformPHP($mess,'messages') . '</div>';
+	$_tpl['mess'] = '<div class="messhead">' . transformPHP($mess,'messages') . '</div>';
 }

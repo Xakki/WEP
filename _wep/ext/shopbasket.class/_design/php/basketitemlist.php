@@ -13,7 +13,6 @@
 		$html = '';
 
 		if(isset($data['#list#']) and count($data['#list#'])) {
-			global $HTML;
 			$html .= '<table class="basket-list-item"><tr> 
 				<th>Заказать
 				<th>Фото
@@ -28,7 +27,7 @@
 				if(isset($r['s_img_product']) and $r['s_img_product']) {
 					$img = $r['s_img_product'];
 				} else
-					$img = MY_THEME.'_shop/img/nofoto.gif';
+					$img = getUrlTheme().'_shop/img/nofoto.gif';
 				$html .= '<tr data-id="'.$r['product_id'].'" class="'.($r['checked']?'checked':'').'">
 					<td><input type="checkbox" '.($r['checked']?'checked="checked"':'').'>
 					<td><img src="/'.$img.'" alt="'.$r['name'].'"/>
@@ -39,7 +38,7 @@
 					<td class="summ"><span>'.($r['cost']*$r['count']).'</span> '.$data['#curr#'].'
 					<td class="dellink">
 						<a href="##vkorziny" title="Удалить из корзины">
-							<img src="'.MY_THEME.'_shop/img/basket-del.png" alt="Удалить из корзины"/>
+							<img src="'.getUrlTheme().'_shop/img/basket-del.png" alt="Удалить из корзины"/>
 						</a>
 				</tr>';
 				if($r['checked'])

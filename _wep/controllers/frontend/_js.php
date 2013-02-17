@@ -14,7 +14,7 @@
 		$_GET['noajax'] = false;
 
 	if(!$_GET['noajax'])
-		require_once($_CFG['_PATH']['wep_phpscript'].'lib/jquery_getjson.php');
+		require_once($_CFG['_PATH']['wep_controllers'].'lib/jquery_getjson.php');
 
 	require_once($_CFG['_PATH']['core'].'html.php');
 
@@ -33,8 +33,6 @@
 		if(!isset($_GET['_design']))
 			$_GET['_design'] = $_CFG['wep']['design'];
 
-		$HTML = new html($_CFG['PATH']['themes'],$_GET['_design'],(bool)$_GET['noajax'] );// упрощённый режим
-
 		if(_new_class($_GET['_modul'],$MODUL) and isset($MODUL->_AllowAjaxFn[$_GET['_fn']])) 
 		{
 			eval('$GLOBALS["_RESULT"]=$MODUL->'.$_GET['_fn'].'();');
@@ -42,7 +40,7 @@
 			{
 				if(!isset($GLOBALS["_RESULT"]['tpl']) or !$GLOBALS["_RESULT"]['tpl'])
 					$GLOBALS["_RESULT"]['tpl'] = '#pg#formcreat';
-				$GLOBALS["_RESULT"] = array('html'=>$HTML->transformPHP($GLOBALS["_RESULT"], $GLOBALS["_RESULT"]['tpl'] ), 'onload' => $_tpl['onload']);
+				$GLOBALS["_RESULT"] = array('html'=>transformPHP($GLOBALS["_RESULT"], $GLOBALS["_RESULT"]['tpl'] ), 'onload' => $_tpl['onload']);
 			}
 		} 
 		else
@@ -51,7 +49,7 @@
 
 		if(isset($_GET['_template'])) {
 			$_tpl = $GLOBALS['_RESULT']+$_tpl;
-			$HTML->_templates = $_GET['_template'];
+			setTemplate($_GET['_template']);
 		}
 
 	}

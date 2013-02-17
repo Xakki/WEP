@@ -260,28 +260,19 @@ class pg_class extends kernel_extends {
 	 * frontend display controller
 	 * @return bool
 	 */
-	function initHTML($templ=false) {
-		global $HTML;
-		if (!$HTML) {
-			// TODO : смена дизайна и получение инфы о странице в аяксе
-			/*if (isset($_GET['_design']))
-				$this->config['design'] = $_GET['_design'];
-			else*/
+	function initHTML() 
+	{
+		if ($this->pageinfo['design'])
+			setTheme($this->pageinfo['design']);
 
-			if ($this->pageinfo['design'])
-				$this->config['design'] = $this->pageinfo['design'];
-			elseif (!$this->config['design'])
-				$this->config['design'] = 'default';
-			if(isset($this->templ))
-				$templ = $this->templ;
-			$HTML = new html($this->_CFG['PATH']['themes'], $this->config['design'], $templ); //отправляет header и печатает страничку
-		}
+		if ($this->pageinfo['template'])
+			setTemplate($this->pageinfo['template']);
 		return true;
 	}
 	
 	function display($templ = true) 
 	{
-		global $_tpl, $HTML;
+		global $_tpl;
 		$this->templ = $templ;
 
 		$flag_content = $this->can_show();
@@ -339,10 +330,8 @@ class pg_class extends kernel_extends {
 			$_tpl['name'] = (is_string($temp)?$temp:$temp['name']);
 		}
 
-		if (!$this->pageinfo['template']) {
-			$this->pageinfo['template'] = 'default';
-		}
-		$HTML->_templates = $this->pageinfo['template'];
+		$this->initHTML();
+	
 		if($this->_CFG['returnFormat'] == 'html') {
 			$_tpl['onload'] .= '
 			wep.pgId = ' . $this->id . ';
@@ -352,7 +341,8 @@ class pg_class extends kernel_extends {
 			wep.BH = "' . $this->_CFG['_HREF']['BH'] . '";
 			wep.DOMAIN = "' . $_SERVER['HTTP_HOST2'] . '";
 			wep.wepVer = "wepjs'.$this->_CFG['info']['version'].'";
-			MY_THEME = "'.MY_THEME.'";
+			window.MY_THEME = "'.getUrlTheme()().'";
+			wep.init();
 			';
 
 		}
@@ -448,8 +438,6 @@ class pg_class extends kernel_extends {
 		$this->main_category = $id;
 		$this->pageinfo['path'] = array_reverse($this->pageinfo['path'], true);
 
-		$this->initHTML();
-
 		return true;
 	}
 
@@ -531,14 +519,8 @@ class pg_class extends kernel_extends {
 		return $this->getContent($Cdata);
 	}
 
-	function display_content($marker, $design = 'default') {
-		global $HTML;
-		if (!$HTML) {
-			if (!$design)
-				$design = $this->config['design'];
-			require_once($this->_CFG['_PATH']['core'] . '/html.php');
-			$HTML = new html($this->_CFG['PATH']['themes'], $design, false); //отправляет header и печатает страничку
-		}
+	function display_content($marker) 
+	{
 		$Cdata = array();
 		$cls = 'SELECT * FROM ' . $this->SQL_CFG['dbpref'] . 'pg_content WHERE active=1 and marker IN ("' . $marker . '")';
 		$resultPG = $this->SQL->execSQL($cls);
@@ -554,7 +536,7 @@ class pg_class extends kernel_extends {
 		return $this->getContent($Cdata);
 	}
 
-	public function display_inc($id, $design = 'default') {
+	public function display_inc($id) {
 		$Cdata = $oId = array();
 		$cls = 'SELECT * FROM ' . $this->SQL_CFG['dbpref'] . 'pg_content WHERE active=1 and id IN ("' . $id . '")';
 		$resultPG = $this->SQL->execSQL($cls);
@@ -583,7 +565,7 @@ class pg_class extends kernel_extends {
 	* $Ctext - текущий статичный текст контента
 	*/
 	function getContent(&$Cdata) {
-		global $SQL, $PGLIST, $HTML, $_CFG, $_tpl;
+		global $SQL, $PGLIST, $_CFG, $_tpl;
 		$flagPG = 0;
 
 		$PGLIST = &$this;
@@ -1169,7 +1151,7 @@ class pg_class extends kernel_extends {
 	* Обработка АЯКС запросов с страницы содержащий форму
 	*/
 	public function AjaxForm() {
-		global $HTML,$_tpl, $PGLIST;
+		global $_tpl, $PGLIST;
 		$PGLIST = $this;
 		$this->contentID = (int)$_GET['contentID'];
 		if(isset($_GET['pageParam']))

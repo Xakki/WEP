@@ -75,7 +75,7 @@
 		$DATA['#curr#'] = $PAY->config['curr'];
 		$DATA['#pageUser#'] = $this->getHref($FUNCPARAM[4]);
 
-		$html = $HTML->transformPHP($DATA,$FUNCPARAM[0]);
+		$html = transformPHP($DATA,$FUNCPARAM[0]);
 
 	}
 	elseif(isset($_GET['shopBasket']))
@@ -117,7 +117,7 @@
 		if(!isset($DATA['formcreat']))
 			$DATA['messages'][] = static_main::am('error','Не верно заданны параметры.');
 
-		$html .= $HTML->transformPHP($DATA,'#pg#formcreat');
+		$html .= transformPHP($DATA,'#pg#formcreat');
 	}
 	elseif(isset($_GET['basketpay']) and static_main::_prmUserCheck()) 
 	{
@@ -149,7 +149,7 @@
 			if($this->formFlag<0)
 				$DATA['messages'][] = array('notice','<a href="'.$Chref.'.html?shopBasket='.$SHOPBASKET->id.'">Изменить данные заказа</a>');
 
-			$html = $HTML->transformPHP($DATA, $DATA['tpl']);
+			$html = transformPHP($DATA, $DATA['tpl']);
 
 			if(!$BDATA[$SHOPBASKET->id]['pay_id'] and $PAY->id) {
 				$SHOPBASKET->_update(array('pay_id'=>$PAY->id));
@@ -227,7 +227,7 @@
 						//$DATA['formcreat']['messages'][] = static_main::am('alert','Доставка - '.$deliveryData['name'].($deliveryCost>0?', в т.ч. '.$deliveryCost.' '.$PAY->config['curr'].' за доставку':''));
 						$DATA['formcreat']['messages'][] = static_main::am('ok','Заполните все необходимые данные');
 
-						$html .= $HTML->transformPHP($DATA,'#pg#formcreat');
+						$html .= transformPHP($DATA,'#pg#formcreat');
 					}
 					// уже авторизованный пользователь
 				} else {
@@ -250,7 +250,7 @@
 		$DATA['#delivery#'] = $SHOPDELIVER->qs('*','WHERE active=1','id');
 
 		$DATA['#curr#'] = $PAY->config['curr'];
-		$html = $HTML->transformPHP($DATA,$FUNCPARAM[1]);
+		$html = transformPHP($DATA,$FUNCPARAM[1]);
 	}
 
 	if(!$this->ajaxRequest)
