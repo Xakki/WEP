@@ -187,6 +187,7 @@ window.wep = {
 			success: function(result, textStatus, XMLHttpRequest) 
 			{
 				console.log(result);
+				return false;
 				 // подключение Стилей
 				if(typeof(result.styles) != 'undefined')  {
 					wep.cssLoad(result.styles);

@@ -427,9 +427,9 @@ $_CFG['_F']['adminpage'] = false;
 
 
 
-/* * *************** */
+/********************/
 /* $_CFG['session'] */
-/* * *************** */
+/********************/
 
 $_CFG['session']['name'] = 'wepID';
 $_CFG['session']['path'] = '/';
@@ -453,13 +453,18 @@ if ($hostcnt==1 or ($hostcnt == 4 and ip2long($_SERVER['HTTP_HOST'])!==false) ) 
 		$_CFG['session']['domain'] = $_SERVER['HTTP_HOST2'];
 }
 
+/********************/
 /* INCLUDE LANG */
+/********************/
+
 include_once($_CFG['_PATH']['wep_locallang'] . $_CFG['wep']['lang'] . '.php');
 if (file_exists($_CFG['_PATH']['locallang'] . $_CFG['wep']['lang'] . '.php'))
 	include_once($_CFG['_PATH']['locallang'] . $_CFG['wep']['lang'] . '.php');
 
 
+/********************/
 /* Acept config */
+/********************/
 
 //error_reporting(E_ALL ^ E_NOTICE);
 //ini_set('display_errors',-1);
@@ -492,8 +497,10 @@ if(!isset($_COOKIE['wep123456'])) {
 	_setcookie('wep123456',base64encode($_SERVER['HTTP_REFERER']),(time() + 86400));
 }
 
+/********************/
+/***** ЛОГИ ********/
+/********************/
 
-// логи 
 $sai = $_CFG['wep']['_showallinfo'];
 if (!isset($_COOKIE[$sai]))
 	$_COOKIE[$sai] = 0;
@@ -505,7 +512,10 @@ if (isset($_GET[$sai]) and !$_CFG['robot']) {// and !isset($_COOKIE[$sai])
 	$_COOKIE[$sai] = $_GET[$sai];
 }
 
-// Показ ошибок
+/*****************************/
+/******* Показ ошибок ********/
+/*****************************/
+
 // or $_CFG['_F']['adminpage']
 if(!$_CFG['robot']) {
 	$se = $_CFG['wep']['_showerror'];
@@ -522,3 +532,16 @@ if(!$_CFG['robot']) {
 	}
 }
 //else _setcookie($se, '', (time()-5000));
+
+
+/*********************/
+/******* _tpl ********/
+/*********************/
+
+$_tpl = array();
+$_tpl['meta'] = $_tpl['logs'] = $_tpl['onload'] = $_tpl['title'] = $_tpl['text'] = $_tpl['time'] = $_tpl['onload'] = '';
+$_tpl['script'] = $_tpl['styles'] = array();
+$_tpl['YEAR'] = date('Y');
+$_tpl['BH'] = rtrim(MY_BH,'/');// OLD
+$_tpl['THEME'] = getUrlTheme();
+$_tpl['REQUEST_URI'] = $_SERVER['REQUEST_URI'];
