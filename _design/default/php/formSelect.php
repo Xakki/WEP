@@ -1,7 +1,7 @@
 <?php
 
 function tpl_formSelect(&$data,$val=NULL) {
-	//global $HTML,$_tpl,$PGLIST,$_CFG;
+	//global $_tpl,$PGLIST,$_CFG;
 	if(!is_null($val)) {
 		if(!is_array($val)) 
 			$val = array($val=>true);

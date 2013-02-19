@@ -1197,7 +1197,7 @@ function setCss($styles, $customTheme=null)
 				if(strpos($r, '#themes#')!==false) 
 					$r = str_replace('#themes#', $customTheme.'style/', $r).'.css';
 				elseif(strpos($r, '/')===0) 
-					$r = $customTheme.'style/'.$r.'.css';
+					$r = $customTheme.'style'.$r.'.css';
 				else
 					$r = $_CFG['_HREF']['_style'].$r.'.css';
 
@@ -1232,7 +1232,7 @@ function getUrlScript($r, $customTheme=null)
 	if(strpos($r, '#themes#')!==false) 
 		$r = str_replace('#themes#', $customTheme.'script/', $r).'.js';
 	elseif(strpos($r, '/')===0) 
-		$r = $customTheme.'script/'.$r.'.js';
+		$r = $customTheme.'script'.$r.'.js';
 	else
 		$r = $_CFG['_HREF']['_script'].$r.'.js';
 

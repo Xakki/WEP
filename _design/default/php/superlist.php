@@ -1,6 +1,6 @@
 <?php
 	function tpl_superlist(&$data) {
-		global $_CFG, $HTML;
+		global $_CFG;
 		$html = '';
 
 		if(!isset($data['_clp'])) {

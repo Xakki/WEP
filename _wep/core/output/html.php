@@ -50,7 +50,7 @@ class wephtml
 	public function obHandler($buffer) 
 	{
 		global $_tpl, $_CFG;
-
+		$_tpl['THEME'] = getUrlTheme();
 		/*Вывд логов и инфы*/
 		if ((isset($_COOKIE[$_CFG['wep']['_showallinfo']]) and $_COOKIE[$_CFG['wep']['_showallinfo']]) or $_CFG['_F']['adminpage']) 
 		{

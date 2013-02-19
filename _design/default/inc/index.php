@@ -19,7 +19,7 @@
 	$DATA = array('adminmenu'=>fAdminMenu($_GET['_modul'])); $_tpl['adminmenu'] = transformPHP($DATA,'adminmenu');
 
 	if(!$_GET['_modul'] or !(isset($_GET['_view']) or isset($_GET['_type']))) {
-		$html = '<div style="position:absolute;top:50%;left:50%;"><div style="width:200px;height:100px;position:absolute;top:-50px;left:-100px;"><img src="'.getUrlTheme().'img/login.gif" width="250" alt="LOGO"/></div></div>';
+		$html = '<div style="position:absolute;top:50%;left:50%;"><div style="width:200px;height:100px;position:absolute;top:-50px;left:-100px;"><img src="/'.getUrlTheme().'img/login.gif" width="250" alt="LOGO"/></div></div>';
 	}
 	else {
 		/*if(count($_GET)==2)

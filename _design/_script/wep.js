@@ -187,7 +187,7 @@ window.wep = {
 			success: function(result, textStatus, XMLHttpRequest) 
 			{
 				console.log(result);
-				return false;
+				//return false;
 				 // подключение Стилей
 				if(typeof(result.styles) != 'undefined')  {
 					wep.cssLoad(result.styles);
@@ -205,16 +205,16 @@ window.wep = {
 				if(typeof(param['precall']) != 'undefined' && typeof (param['precall']) == 'function') 
 					result = param['precall'].call(result, param);
 
-				if(typeof (result.html) != 'undefined' && result.html!='') {
+				if(typeof (result.text) != 'undefined' && result.text!='') {
 					if(param['insertObj']) {
 						if(param['insertType']=='after') // вставка до
-							jQuery(param['insertObj']).after(result.html);
+							jQuery(param['insertObj']).after(result.text);
 						else if(param['insertType']=='before') // Вставка после
-							jQuery(param['insertObj']).before(result.html);
+							jQuery(param['insertObj']).before(result.text);
 						else if(param['insertType']=='replace') // Замена
-							jQuery(param['insertObj']).replaceWith(result.html);
+							jQuery(param['insertObj']).replaceWith(result.text);
 						else //Внутрь контейнера
-							jQuery(param['insertObj']).html(result.html);
+							jQuery(param['insertObj']).html(result.text);
 					}
 					else {
 						//param['fadeOff'] = true;
@@ -232,14 +232,14 @@ window.wep = {
 					}
 				}
 				/// Может тут убрать условие else ? TODO
-				else if(typeof (result.html) != 'undefined' && result.html!='' && !param['insertObj']) {
+				else if(typeof (result.text) != 'undefined' && result.text!='' && !param['insertObj']) {
 					clearTimeout(param['timeBG']);// Чистим таймер и тем самым затеменение не отобразиться
-					wep.fShowload(1,param['body'],result.html,param['fade'],param['onclk']);
+					wep.fShowload(1,param['body'],result.text,param['fade'],param['onclk']);
 				}
 
 
-				if(typeof (result.text) != 'undefined' && result.text!='') // Вывод ошибок и прочего текста
-					fLog(fSpoiler(result.text,'AJAX text result'),1);
+				if(typeof (result.logs) != 'undefined' && result.logs!='') // Вывод ошибок и прочего текста
+					fLog(fSpoiler(result.logs,'AJAX text result'),1);
 
 				 // подключение скриптов
 				if(typeof (result.script) != 'undefined')  {

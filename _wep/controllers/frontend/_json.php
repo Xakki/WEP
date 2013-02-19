@@ -3,15 +3,9 @@
 
 	$GLOBALS['_RESULT']	= array('html'=>'','onload'=>'');
 	$_tpl['onload']=$html=$html2='';
-	
-	if(!isset($_GET['noajax']))
-		$_GET['noajax'] = false;
 
-	if(!$_GET['noajax'])
-		require_once($_CFG['_PATH']['wep_controllers'].'/lib/jquery_getjson.php');
 
 	if(isset($_GET['_fn']) and $_GET['_fn']) {
-		require_once($_CFG['_PATH']['core'].'html.php');
 		session_go();
 		if(_new_class($_GET['_modul'],$MODUL) and isset($MODUL->_AllowAjaxFn[$_GET['_fn']])) {
 			eval('$GLOBALS[\'_RESULT\']=$MODUL->'.$_GET['_fn'].'();');
@@ -73,8 +67,6 @@
 	elseif(isset($_REQUEST['_view']) && $_REQUEST['_view']=='loadpage') 
 	{
 
-		require_once($_CFG['_PATH']['core'].'/html.php');
-
 		$DATA  = array();
 		session_go();
 		_new_class('pg',$PGLIST);
@@ -118,11 +110,11 @@
 		}
 		elseif(isset($_REQUEST['_ctId'])) {
 			$PGLIST->display_inc((int)$_REQUEST['_ctId'], $_GET['_design']);
-			$GLOBALS['_RESULT']['html'] = '';
+			$_tpl['text'] = '';
 			foreach($_tpl as $k=>$r) {
 				if($k!='styles' and $k!='script' and $k!='onload' and !is_array($r))
 				{
-					$GLOBALS['_RESULT']['html'] .= $r;
+					$_tpl['text'] .= $r;
 				}
 			}
 		};

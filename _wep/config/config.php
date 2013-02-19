@@ -543,5 +543,4 @@ $_tpl['meta'] = $_tpl['logs'] = $_tpl['onload'] = $_tpl['title'] = $_tpl['text']
 $_tpl['script'] = $_tpl['styles'] = array();
 $_tpl['YEAR'] = date('Y');
 $_tpl['BH'] = rtrim(MY_BH,'/');// OLD
-$_tpl['THEME'] = getUrlTheme();
 $_tpl['REQUEST_URI'] = $_SERVER['REQUEST_URI'];

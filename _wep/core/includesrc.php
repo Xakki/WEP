@@ -29,7 +29,7 @@
 		}
 		if(isset($gfi['form']) and $gfi['form']) 
 		{
-			setCss('form|wepform');
+			setCss('form');
 		}
 		if(isset($gfi['ajaxForm']) and $gfi['ajaxForm']) 
 		{

@@ -1,6 +1,6 @@
 <?php
 	function tpl_formcreat(&$data) {
-		global $HTML,$_tpl,$PGLIST,$_CFG;
+		global $_tpl,$PGLIST,$_CFG;
 		$texthtml = '';
 		$texthtml .= '<div class="divform'.((isset($data['css']) and $data['css'])?' '.$data['css']:'').'"';
 		if(isset($data['style']) and $data['style'])

@@ -4,26 +4,8 @@
 	$GLOBALS['_RESULT'] = array('html' => '','onload'=>'');
 	$html = '';
 
-	/*$is_ajax = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') ? true : false;
-
-	if($is_ajax)
-		unset($_GET['noajax']);
-	else
-		$_GET['noajax'] = true;*/
-	if(!isset($_GET['noajax']))
-		$_GET['noajax'] = false;
-
-	if(!$_GET['noajax'])
-		require_once($_CFG['_PATH']['wep_controllers'].'lib/jquery_getjson.php');
-
-	require_once($_CFG['_PATH']['core'].'html.php');
-
-	if($_GET['noajax'])
-		headerssent();
-
 	session_go();
 	$DATA  = array();
-
 	
 	/**
 	*
@@ -44,7 +26,7 @@
 			}
 		} 
 		else
-			$GLOBALS['_RESULT']['html'] = 'Вызов функции не разрешён модулем.';
+			$_tpl['text'] = 'Вызов функции не разрешён модулем.';
 
 
 		if(isset($_GET['_template'])) {
@@ -113,8 +95,6 @@
 	elseif(isset($_REQUEST['_view']) && $_REQUEST['_view']=='loadpage') 
 	{
 
-		require_once($_CFG['_PATH']['core'].'/html.php');
-
 		$DATA  = array();
 		session_go();
 		_new_class('pg',$PGLIST);
@@ -158,11 +138,11 @@
 		}
 		elseif(isset($_REQUEST['_ctId'])) {
 			$PGLIST->display_inc((int)$_REQUEST['_ctId'], $_GET['_design']);
-			$GLOBALS['_RESULT']['html'] = '';
+			$_tpl['text'] = '';
 			foreach($_tpl as $k=>$r) {
 				if($k!='styles' and $k!='script' and $k!='onload' and !is_array($r))
 				{
-					$GLOBALS['_RESULT']['html'] .= $r;
+					$_tpl['text'] .= $r;
 				}
 			}
 		};
@@ -223,7 +203,7 @@
 			}
 			if(!$res[1]) {
 				if(count($_POST)) {
-					$GLOBALS['_RESULT']['html'] = '<div style="font-size:12px;color:red;white-space:normal;">'.$res[0].'</div>';
+					$_tpl['text'] = '<div style="font-size:12px;color:red;white-space:normal;">'.$res[0].'</div>';
 					//$_tpl['onload'] = 'clearTimeout(timerid2); fShowload(1,result.html,0,"loginblock"); jQuery("#loginblock>div.layerblock").show(); '.$_tpl['onload'];
 					$GLOBALS['_RESULT']['onload'] = 'clearTimeout(timerid2);jQuery(\'div.messlogin\').hide().html(result.html).show(\'slow\');'.$_tpl['onload'];
 					$html='';

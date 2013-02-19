@@ -3,7 +3,6 @@ $html='';
 $_CFG['wep']['_showallinfo'] =0;
 $_CFG['wep']['_showerror'] = 0;
 
-require_once($_CFG['_PATH']['core'].'html.php');	/**отправляет header и печатает страничку*/
 $_COOKIE[$_CFG['wep']['_showallinfo']] = 0;
 ini_set("max_execution_time", "1000");
 set_time_limit (1000);
