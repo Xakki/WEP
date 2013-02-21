@@ -15,12 +15,13 @@
 
 		if(_new_class($_GET['_modul'],$MODUL) and isset($MODUL->_AllowAjaxFn[$_GET['_fn']])) 
 		{
-			eval('$GLOBALS["_RESULT"]=$MODUL->'.$_GET['_fn'].'();');
-			if( !isset($GLOBALS["_RESULT"]['html']) and is_array($GLOBALS["_RESULT"]) )
+			eval('$data=$MODUL->'.$_GET['_fn'].'();');
+			if( is_array($data) )
 			{
-				if(!isset($GLOBALS["_RESULT"]['tpl']) or !$GLOBALS["_RESULT"]['tpl'])
-					$GLOBALS["_RESULT"]['tpl'] = '#pg#formcreat';
-				$GLOBALS["_RESULT"] = array('html'=>transformPHP($GLOBALS["_RESULT"], $GLOBALS["_RESULT"]['tpl'] ), 'onload' => $_tpl['onload']);
+				if(!isset($data['tpl']) or !$data['tpl'])
+					$data['tpl'] = '#pg#formcreat';
+				$_tpl['text'] = transformPHP($data, $data['tpl'] );
+				$_tpl['onload'] = $_tpl['onload'];
 			}
 		} 
 		else

@@ -50,6 +50,7 @@ wep.form = {
 		wep.include(wep.HREF_script+'script.jquery/form.js', function() {
 
 			jQuery(n).ajaxForm({
+				debug: 1,
 				beforeSubmit: 
 					function(a,f,o) 
 					{
@@ -71,12 +72,12 @@ wep.form = {
 					{
 						//console.log(result);
 						clearTimeout(timerid);
-						if(result.html!= undefined && result.html!='') {
-							wep.fShowload(1,false,result.html);
+						if(result.text!= undefined && result.text!='') {
+							wep.fShowload(1,false,result.text);
 						} else
 							timerid2 = setTimeout(function(){wep.fShowload(0);},200);
 						if(result.onload!= undefined && result.onload!='') eval(result.onload);
-						if(result.text!= undefined && result.text!='') fLog(fSpoiler(result.text,'AJAX text result'),1);
+						if(result.log!= undefined && result.log!='') fLog(fSpoiler(result.log,'AJAX log'),1);
 
 					}
 			});
@@ -442,7 +443,7 @@ function getAjaxListData(value,view,key) { // загрузка списка
 		ajaxComplite = 0;
 		$.ajax({
 			type: "GET",
-			url: '/_json.php',
+			url: '/_js.php',
 			data: {'_view':'ajaxlist', '_srlz':jQuery('input[name="srlz_'+view+'"]').val(),'_value':value, '_hsh':jQuery('input[name="hsh_'+view+'"]').val()},
 			dataType: "json",
 			cache:true,
@@ -680,7 +681,7 @@ wep.swfuploader = {
 				file_types_description: "JPG, PNG, GIF",
 				file_upload_limit: "1",
 				flash_url: "/_design/_script/SWFUpload/swfupload_fp10/swfupload.swf",
-				upload_url: "/_json.php",
+				upload_url: "/_js.php",
 				post_params: {
 					//"wepID": SESSID
 					'fileupload':'1'
