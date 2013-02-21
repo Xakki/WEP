@@ -1085,7 +1085,7 @@ function setTheme($theme)
 	{
 		if(!file_exists($_CFG['_PATH']['themes'].$theme))
 			return false;
-		$_CFG['site']['themes'] = $theme;
+		$_CFG['site']['theme'] = $theme;
 	}
 
 	return true;
@@ -1105,7 +1105,7 @@ function getTheme()
 	if(isBackend())
 		return $_CFG['wep']['design'];
 	else
-		return $_CFG['site']['themes'];
+		return $_CFG['site']['theme'];
 }
 
 /**

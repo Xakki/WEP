@@ -1,16 +1,12 @@
 <?php
 	if(!$_CFG['_PATH']['wep']) die('ERROR');
 
-	$GLOBALS['_RESULT']	= array('html'=>'','onload'=>'');
-	$_tpl['onload']=$html=$html2='';
-
-
 	if(isset($_GET['_fn']) and $_GET['_fn']) {
 		session_go();
 		if(_new_class($_GET['_modul'],$MODUL) and isset($MODUL->_AllowAjaxFn[$_GET['_fn']])) {
 			eval('$GLOBALS[\'_RESULT\']=$MODUL->'.$_GET['_fn'].'();');
 		} else
-			$GLOBALS['_RESULT']['text'] = 'Вызов функции не разрешён модулем.';
+			$_tpl['text'] = 'Вызов функции не разрешён модулем.';
 		
 	} 
 	elseif(isset($_GET['_view']) && $_GET['_view']=='ajaxlist' and $_GET['_srlz']=stripslashes($_GET['_srlz']) and $_GET['_hsh']==md5($_GET['_srlz'].$_CFG['wep']['md5'])) {
@@ -48,9 +44,9 @@
 			$clause .= ' LIMIT 25';
 		$result = $SQL->execSQL($clause);
 		if(!$result->err) {
-			$GLOBALS['_RESULT']['data'] = array();
+			$_tpl['data'] = array();
 			while($row = $result->fetch())
-				$GLOBALS['_RESULT']['data'][] = array($row['id'],$row['name']);
+				$_tpl['data'][] = array($row['id'],$row['name']);
 		}else
 			print('NO VALID DATA');
 		/*
@@ -60,7 +56,7 @@
 			$md= $MODUL->_getCashedList($field['listname']);
 			unset($md[0]);
 			foreach ($md as $k=>$r) {
-				$GLOBALS['_RESULT']['data'][$k] = $r;
+				$_tpl['data'][$k] = $r;
 			}
 		}*/
 	}
@@ -79,33 +75,22 @@
 			$PGLIST->id = (int)$_REQUEST['_pgId'];
 			$PGLIST->display(false);
 
-			$GLOBALS['_RESULT']['title'] = $PGLIST->pageinfo['name'];
+			$_tpl['title'] = $PGLIST->pageinfo['name'];
 
-			// Подключение функциональных скриптов
-			include($_CFG['_PATH']['core'].'/includesrc.php');
-			fileInclude($_CFG['fileIncludeOption']);
-
-			foreach($_REQUEST as $k=>$r) {
+			/*foreach($_REQUEST as $k=>$r) {
 				if($k=='onload') {
-					$GLOBALS['_RESULT']['onload'] .= $_tpl[$k];
+					$_tpl['onload'] .= $_tpl[$k];
 				}
 				else if($k=='styles') {
-					$GLOBALS['_RESULT']['styles'] = $_tpl[$k];
+					$_tpl['styles'] = $_tpl[$k];
 				}
 				else if($k=='script') {
-					$GLOBALS['_RESULT']['script'] = $_tpl[$k];
+					$_tpl['script'] = $_tpl[$k];
 				}
 				else if(isset($_tpl[$k])) {
-					$GLOBALS['_RESULT']['pg_'.$k] = $_tpl[$k];
-					/*if(!isset($_REQUEST['onlyget'])) {
-						if(is_array($r)) {
-							foreach($r as $vk=>$vr)
-								$GLOBALS['_RESULT']['onload'] = 'jQuery(\''.$vr.'\').'.$vk.'(result.pg_'.$k.');'.$GLOBALS['_RESULT']['onload'];
-						} else//replaceWith
-							$GLOBALS['_RESULT']['onload'] = 'jQuery(\''.$r.'\').html(result.pg_'.$k.');'.$GLOBALS['_RESULT']['onload'];
-					}*/
+					$_tpl['pg_'.$k] = $_tpl[$k];
 				}
-			};
+			};*/
 			/////////////////////////////////////
 		}
 		elseif(isset($_REQUEST['_ctId'])) {
@@ -137,7 +122,7 @@
 				static_tools::_checkdir($_CFG['_PATH']['temp']);
 				if (move_uploaded_file($_FILES['Filedata']['tmp_name'], $temp_path)){
 					$_FILES['Filedata']['tmp_name']= $temp_name;
-					$GLOBALS['_RESULT']['swf_uploader'] = array(
+					$_tpl['swf_uploader'] = array(
 						'name' => $temp_name,
 						'path' => $_CFG['PATH']['temp'],
 						'mime_type' => $ext_list[$ext],
@@ -145,14 +130,14 @@
 				}
 			}
 			else {
-				$GLOBALS['_RESULT']['error'] = 'Неверный тип файла';
+				$_tpl['error'] = 'Неверный тип файла';
 			}
 			
 		}
 	}
 	elseif($_GET['_view']=='exit') {
 		static_main::userExit();
-		$GLOBALS['_RESULT']['onload'] = 'window.location.href=window.location.href;';
+		$_tpl['onload'] = 'window.location.href=window.location.href;';
 	}
 	elseif($_GET['_view']=='login') {
 		$res=array('',0);
@@ -160,14 +145,14 @@
 		{
 			$res = static_main::userAuth($_POST['login'],$_POST['pass']);// повесить обработчик xml
 			if($res[1]) {
-				$GLOBALS['_RESULT']['onload'] .= "window.location.reload();";
+				$_tpl['onload'] .= "window.location.reload();";
 			}
 		}
 		if(!$res[1]) {
 			if(count($_POST)) {
-				$GLOBALS['_RESULT']['html2'] = '<div style="font-size:12px;color:red;white-space:normal;">'.$res[0].'</div>';
+				$_tpl['text'] = '<div style="font-size:12px;color:red;white-space:normal;">'.$res[0].'</div>';
 				//$_tpl['onload'] = 'clearTimeout(timerid2); fShowload(1,result.html2,0,"loginblock"); jQuery("#loginblock>div.layerblock").show(); '.$_tpl['onload'];
-				$GLOBALS['_RESULT']['onload'] = 'clearTimeout(timerid2);jQuery(\'div.messlogin\').hide().html(result.html2).show(\'slow\');'.$_tpl['onload'];
+				$_tpl['onload'] = 'clearTimeout(timerid2);jQuery(\'div.messlogin\').hide().html(result.html2).show(\'slow\');'.$_tpl['onload'];
 				$html='';
 			}
 		}

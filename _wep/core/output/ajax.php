@@ -8,23 +8,36 @@
 
 		function __construct() 
 		{
-			header('Content-type: text/html; charset=utf-8');
-			//header('Content-type: application/json; charset=utf-8');
+			$this->headerssent();
+
+			$this->_mctime_start = getmicrotime();
+
 			ob_start(array(&$this, "obHandler"));
+
 			ini_set('display_errors', $this->_errn);
 			//$_REQUEST = utf2win_recursive($_REQUEST);
 		}
 
-		function __destruct() {
+		function __destruct() 
+		{
+			global $_CFG;
+			include_once($_CFG['_PATH']['core'] . '/includesrc.php');
+			fileInclude($_CFG['fileIncludeOption']);
 			ob_end_flush();
 		}
 
 		function obHandler($buf) {
 			global $_tpl;
 			if($buf) $_tpl['text'] = $buf;
-			if(isset($_tpl['time']) and $_tpl['time'])  $_tpl['onload'] .= '$(\'#inftime\').html(\''.$_tpl['time'].'\');';
+
+			/*Вывд логов и инфы*/
+			if ((isset($_COOKIE[$_CFG['wep']['_showallinfo']]) and $_COOKIE[$_CFG['wep']['_showallinfo']]) or $_CFG['_F']['adminpage']) 
+			{
+				$_tpl['logs'] .= $this->getLogInfo();
+			}
 			
-			if(version_compare(phpversion(),'5.3.0','>')) {
+			if(version_compare(phpversion(),'5.3.0','>')) 
+			{
 				//$GLOBALS['_RESULT'] = $this->allreplace($GLOBALS['_RESULT']);
 				//return var_export($GLOBALS['_RESULT'],true);
 				//$GLOBALS['_RESULT']['onload'] = str_replace(array('\\r','\\n','\\t'),'', $GLOBALS['_RESULT']['onload']);
@@ -34,6 +47,42 @@
 			}
 			else
 				return $this->jsonencode($_tpl);
+		}
+
+		public function getLogInfo()
+		{
+			global $_CFG;
+
+			$htmlinfo = '';
+			$included_files = get_included_files();
+			$htmlinfo .= ' time=' . substr((getmicrotime() - $this->_mctime_start), 0, 6) . ' | memory=' . (int) (memory_get_usage() / 1024) . 'Kb | maxmemory=' . (int) (memory_get_peak_usage() / 1024) . 'Kb | query=' . count($_CFG['logs']['sql']) . ' | file include=' . count($included_files).' <br/> ';
+
+			if ($_COOKIE[$_CFG['wep']['_showallinfo']] > 1 and count($_CFG['logs']['sql']) > 0)
+				$htmlinfo .= static_main::spoilerWrap('SQL QUERY',implode(';<br/>', $_CFG['logs']['sql']));
+			if ($_COOKIE[$_CFG['wep']['_showallinfo']] > 2) {
+				$htmlinfo .= static_main::spoilerWrap('FILE INCLUDE',implode(';<br/>', $included_files));
+			}
+			return $htmlinfo;
+		}
+
+		/*
+		  Ф. вывода заголовков
+		 */
+		function headerssent() {
+			global $_CFG;
+			if (!headers_sent()) 
+			{
+				header("Pragma: no-cache");
+				//header('Content-type: text/html; charset=utf-8');
+				header('Content-type: application/json; charset=utf-8');
+				header("Cache-Control: public, no-store, no-cache, must-revalidate, post-check=0, pre-check=0");// no-store, no-cache,
+				header("Last-Modified: " . gmdate("D, d M Y H:i:s", $_CFG['header']['modif']) . " GMT");
+				header("Expires: " . gmdate("D, d M Y H:i:s", $_CFG['header']['expires']) . " GMT");
+				if($_CFG['site']['origin'])
+					header("Access-Control-Allow-Origin: ".$_CFG['site']['origin']);
+				return true;
+			}
+			return false;
 		}
 
 		function allreplace($arr) {

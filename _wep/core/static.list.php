@@ -334,6 +334,20 @@ class static_list {
 				$dir->close();
 			}
 		}
+		elseif ($listname == 'templates') {
+			$data[''] = ' - По умолчанию -';
+			$dir = dir($_this->_CFG['_PATH']['themes'] . 'default/templates');
+			while (false !== ($entry = $dir->read())) {
+				if (strstr($entry, '.tpl')) {
+					$entry = substr($entry, 0, strpos($entry, '.tpl'));
+					if (isset($data[$entry]))
+						$data[$entry] = $entry;
+					else
+						$data[$entry] = $entry;
+				}
+			}
+			$dir->close();
+		}
 		elseif ($listname == 'style') {
 			// вызов только для PG
 			$dir = dir($_this->_CFG['_PATH']['themes'].'default/style');

@@ -63,8 +63,9 @@ $_CFG['site'] = array(// для сайта
 	'work_title' => 'Технический перерыв',
 	'work_text' => 'Технический перерыв',
 	'redirectPlugin' => 0,
-	'themes' => 'default',
-	'template' => 'default'
+	'theme' => 'default',
+	'template' => 'default',
+	'origin' => ''
 );
 $_CFG['memcache'] = array(
 	'host' => '127.0.0.1',
@@ -540,7 +541,7 @@ if(!$_CFG['robot']) {
 
 $_tpl = array();
 $_tpl['meta'] = $_tpl['logs'] = $_tpl['onload'] = $_tpl['title'] = $_tpl['text'] = $_tpl['time'] = $_tpl['onload'] = '';
-$_tpl['script'] = $_tpl['styles'] = array();
+$_tpl['script'] = $_tpl['styles'] = $_tpl['onloadArray'] = array();
 $_tpl['YEAR'] = date('Y');
 $_tpl['BH'] = rtrim(MY_BH,'/');// OLD
 $_tpl['REQUEST_URI'] = $_SERVER['REQUEST_URI'];

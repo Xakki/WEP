@@ -87,7 +87,10 @@
 		/*if(isset($_tpl['script']['syntaxhighlighter'])) {
 			$_tpl['onload'] .= '';
 		}*/
-
+		
+		if(isset($_tpl['onloadArray']) and count($_tpl['onloadArray'])) // Для скриптов задающихся через массив, дабы не повторялись
+			$_tpl['onload'] .= implode(' ',$_tpl['onloadArray']);
+		unset($_tpl['onloadArray']);
 		/////////////////////
 		return true;
 	}
@@ -111,9 +114,6 @@
 		if(isset($_tpl['script']) and is_array($_tpl['script'])) {
 			$temp .= scriptRecursive($_tpl['script'], $solt);
 		}
-		
-		if(isset($_tpl['onload2']) and count($_tpl['onload2'])) // WTF?
-				$_tpl['onload'] .= implode(' ',$_tpl['onload2']);
 
 		$temp .= "<script>\n//<!--\n function readyF() {".(string)$_tpl['onload']."\n}\n//-->\n</script>\n";
 

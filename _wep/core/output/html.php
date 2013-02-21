@@ -8,9 +8,10 @@ class wephtml
 	private $_mctime_start;
 	function __construct() 
 	{
+		$this->headerssent();
+
 		$this->_mctime_start = getmicrotime();
-		header('Content-type: text/html; charset=utf-8');
-		//header('Content-type: application/json; charset=utf-8');
+
 		ob_start(array(&$this, "obHandler"));
 
 		/*$params = array(
@@ -41,20 +42,20 @@ class wephtml
 		else
 			$this->_html = 'ERROR: Mising templates file ' . $this->_templates . ' - ' . $file;
 
-		$this->headerssent();
+		
 	}
 
 	/*
 	  Функция вывода на экран
 	 */
-	public function obHandler($buffer) 
+	public function obHandler($buffer)
 	{
 		global $_tpl, $_CFG;
 		$_tpl['THEME'] = getUrlTheme();
 		/*Вывд логов и инфы*/
 		if ((isset($_COOKIE[$_CFG['wep']['_showallinfo']]) and $_COOKIE[$_CFG['wep']['_showallinfo']]) or $_CFG['_F']['adminpage']) 
 		{
-			$buffer = $this->getLogInfo().$buffer;
+			$buffer .= $this->getLogInfo().$buffer;
 		}
 		
 		$buffer = trim($buffer.static_main::showErr());
@@ -91,7 +92,6 @@ class wephtml
 	/*
 	  Ф. вывода заголовков
 	 */
-
 	function headerssent() {
 		global $_CFG;
 		if (!headers_sent()) 
@@ -101,7 +101,8 @@ class wephtml
 			header("Cache-Control: public, no-store, no-cache, must-revalidate, post-check=0, pre-check=0");// no-store, no-cache,
 			header("Last-Modified: " . gmdate("D, d M Y H:i:s", $_CFG['header']['modif']) . " GMT");
 			header("Expires: " . gmdate("D, d M Y H:i:s", $_CFG['header']['expires']) . " GMT");
-			header("Access-Control-Allow-Origin: *");
+			if($_CFG['site']['origin'])
+				header("Access-Control-Allow-Origin: ".$_CFG['site']['origin']);
 			return true;
 		}
 		return false;
