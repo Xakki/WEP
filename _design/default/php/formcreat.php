@@ -74,12 +74,10 @@
 		{
 			if($data['flag']==1) {
 				$_tpl['onload'] .= '$("#'.$attr['name'].'").trigger(\'success\');';
-				//$_tpl['onload'] .= 'clearTimeout(timerid2);wep.fShowload(1,false,result.html,0,\'location.href = location.href;\');';
 			}
 			elseif($data['flag']==-1) {
 				//$_tpl['onload'] = 'GetId("messages").innerHTML=result.html;'.$_tpl['onload'];
 				$_tpl['onload'] = 'clearErrorForm("#'.$attr['name'].'"); $("#'.$attr['name'].'").trigger(\'error\'); '.$_tpl['onload'];
-				//.'clearTimeout(timerid2);wep.fShowload(1,false,result.html);'
 				$texthtml = "<div class='blockhead'>Внимание. Некоректно заполнены поля.</div><div class='hrb'>&#160;</div>".$texthtml;
 			}
 			else
@@ -87,7 +85,6 @@
 				plugAjaxForm();
 				$_tpl['onload'] .= 'wep.form.initForm(\'#'.$attr['name'].'\');';
 				//$_tpl['onload'] .= 'wep.form.JSFR("form");';
-				//$_tpl['onload'] .= 'clearTimeout(timerid2);wep.fShowload(1,false,result.html);';
 			}
 			/*if(!isset($_SESSION['user']['id']))
 				$_tpl['onload'] .= 'reloadCaptcha(\'captcha\');';*/

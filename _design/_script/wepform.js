@@ -99,9 +99,9 @@ wep.form = {
 						//console.log(result);
 						clearTimeout(timerid);
 						if(result.text!= undefined && result.text!='') {
-							wep.fShowload(1,false,result.text);
+							wep.fShowload(false,result.text);
 						} else
-							timerid2 = setTimeout(function(){wep.fShowload(0);},200);
+							timerid2 = setTimeout(function(){wep.fHideLoad();},200);
 						if(result.onload!= undefined && result.onload!='') eval(result.onload);
 						if(result.log!= undefined && result.log!='') fLog(fSpoiler(result.log,'AJAX log'),1);
 

@@ -10,7 +10,6 @@
 				if($flag==1) {
 					//end($HTML->path);prev($HTML->path);
 					$_tpl['text'] = transformPHP($DATA['formcreat'],'messages');
-					//$_tpl['onload'] .= 'wep.fShowload(1,0,result.html);';
 				}
 				else {
 					//$DATA['formcreat']['path'] = $HTML->path;
@@ -39,7 +38,6 @@
 			elseif($flag!=3) {
 				//end($HTML->path);
 				$_tpl['text'] = transformPHP($DATA['superlist'],'messages');
-				//$_tpl['onload'] .= 'wep.fShowload(1,0,result.html);';
 				$_tpl['onload'] = 'wep.load_href("'.str_replace('&amp;','&',key($HTML->path)).'");';
 			}
 			else {
