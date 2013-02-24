@@ -1026,7 +1026,7 @@ deny from all
 		$DATA = array(
 			'form' => $MODUL->form,
 			'messages' => $mess,
-			'options' => $_this->getFormOptions('Checkmodul')
+			'options' => $MODUL->getFormOptions('Checkmodul')
 		);
 		return Array($flag, $DATA);
 	}
