@@ -26,7 +26,7 @@ function boardOnMap(tp) {
 	}
 	jQuery('#boardOnMap').show().css('height','auto');
 	showBG(0,1);
-	fMessPos(0,'#boardOnMap');
+	fMessPos('#boardOnMap');
 	if(!setMap) {
 		YMaps.load(initMap);
 	}
@@ -102,7 +102,7 @@ function initMap() {
 					height: newHeight || ""
 				});
 				setMap.redraw();
-				fMessPos(0,' #boardOnMap');jQuery('#boardOnMap').css('height','auto');
+				fMessPos(' #boardOnMap');jQuery('#boardOnMap').css('height','auto');
 			}
 			setToolbar.add(button2);
 			

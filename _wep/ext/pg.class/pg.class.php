@@ -244,11 +244,13 @@ class pg_class extends kernel_extends {
 	function initHTML() 
 	{
 		$theme = $this->get_page_attr('design');
-		if($theme && !setTheme($theme))
-			trigger_error('Ошибка запуска темы "'.$this->pageinfo['design'].'"', E_USER_WARNING);
+		if($theme)
+			setTheme($theme);
+			//trigger_error('Ошибка запуска темы "'.$this->pageinfo['design'].'"', E_USER_WARNING);
 
-		if ($this->pageinfo['template'])
-			setTemplate($this->pageinfo['template']);
+		$template = $this->get_page_attr('template');
+		if ($template)
+			setTemplate($template);
 		return true;
 	}
 	
@@ -258,9 +260,8 @@ class pg_class extends kernel_extends {
 		$this->templ = $templ;
 
 		$flag_content = $this->can_show();
-		$this->initHTML();
 		
-
+		
 		foreach ($this->config['marker'] as $km => $rm)
 			$_tpl[$km] = '';
 
@@ -288,7 +289,9 @@ class pg_class extends kernel_extends {
 			$getEncode = json_encode($getEncode);
 
 		
-		if ($flag_content == 1) {
+		if ($flag_content == 1) 
+		{
+			$this->initHTML();
 			$flag_content = $this->display_page($this->id,true);
 			$_tpl['title'] = $this->get_caption();
 		}
@@ -415,6 +418,9 @@ class pg_class extends kernel_extends {
 				$this->pageinfo['path'][$id] = $this->dataCash[$parent_id];
 				$parent_id = $this->dataCash[$parent_id]['parent_id'];
 			}
+			else
+				break;
+
 		}
 		$this->main_category = $id;
 		$this->pageinfo['path'] = array_reverse($this->pageinfo['path'], true);
@@ -461,8 +467,10 @@ class pg_class extends kernel_extends {
 
 	function get_page_attr($attr) 
 	{
+		if(!$this->pageinfo['id']) return null;
+		//print_r($this->pageinfo);exit();
 		$id = $this->pageinfo['id'];
-		while (!$this->dataCash[$id][$attr]) {
+		while (isset($this->dataCash[$id][$attr]) and !$this->dataCash[$id][$attr]) {
 			if (isset($this->dataCash[$id])) {
 				$id = $this->dataCash[$id]['parent_id'];
 			}
@@ -483,6 +491,7 @@ class pg_class extends kernel_extends {
 		}
 		// Мог бы  использовать $this->can_show() , но поведение этой функции не предсказуемо
 		$this->pageinfo = $this->dataCash[$this->id];
+		$this->initHTML();
 		$this->get_pageinfo();
 		$this->display_page($this->id,$full);
 		if (isset($text)) {

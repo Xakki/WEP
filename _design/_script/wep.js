@@ -271,7 +271,7 @@ window.wep = {
 		///alert(dump(param));
 		if(param['fade']) // Вешаем затемнение
 			param['timeBG'] = setTimeout(function(){
-				wep.fShowload(1,false,false,param['fade']); param['timeBG'] = 0;
+				wep.fShowload(param['fade']); param['timeBG'] = 0;
 			},200);
 
 		$.ajax({
@@ -329,7 +329,7 @@ window.wep = {
 					var htmlOut = result.text;
 					if(result.title)
 						htmlOut = '<div class="blockhead">'+result.title.substr(0,strpos(result.title,' -') )+'</div><hr/>'+htmlOut;
-					wep.fShowload(1, param['body'], htmlOut, param['fade'], param['onclk']);
+					wep.fShowload(param['fade'], htmlOut, param['body'], param['onclk']);
 				}
 				else if(param['insertobj']) 
 				{
@@ -419,49 +419,52 @@ window.wep = {
 				if(param['timeBG'])
 					clearTimeout(param['timeBG']); // Чистим таймер и тем самым затеменение не отобразиться
 				else 
-					wep.fShowload(0,false,false,param['fade']); // иначе убираем его сами
+					wep.fHideLoad(param['fade']); // иначе убираем его сами
 			}
 		}
 	},
-
-	fShowload: function(show,body,txt,objid,onclk) 
+	/*Блок анимации загрузки*/
+	fHideLoad: function(objid, body)
 	{
-		//alert('* '+show+'+'+body+'+'+txt+'+'+objid+'+'+onclk);
 		if(!body || body===true) body='body';
-		if(!onclk) onclk = 'wep.fShowload(0,\''+body+'\',\'\')';
-		if(!objid || objid===true) objid = 'ajaxload';
+		if(!objid || typeof(objid)!='string' ) objid = '#ajaxload';
+		jQuery(objid).hide();
+		showBG(body);
+		if (_Browser.type == 'IE' && 8 > _Browser.version)
+			jQuery('select').toggleClass('hideselectforie7',false);
+	},
+
+	fShowload: function(objid, txt, body, onclk) 
+	{
+		if(!body || body===true) body='body';
+		if(!objid || typeof(objid)!='string' ) objid = '#ajaxload';
+		if(!onclk) onclk = 'wep.fHideLoad(\''+objid+'\')';
 		if(!txt) txt = '';
 
-		objid = wep.trim(objid, '#.\s');
-		if(!show) {
-			jQuery(body+'> #'+objid).hide();
-			showBG(body);
-			if (_Browser.type == 'IE' && 8 > _Browser.version)
-				jQuery('select').toggleClass('hideselectforie7',false);
-		} else {
-			if (_Browser.type == 'IE' && 8 > _Browser.version)
-				jQuery('select').toggleClass('hideselectforie7',true);
+		if (_Browser.type == 'IE' && 8 > _Browser.version)
+			jQuery('select').toggleClass('hideselectforie7',true);
 
-			if(jQuery(body+'> #'+objid).size()==0)
-				jQuery(body).append("<div id='"+objid+"'>&#160;</div>");
-			if(!txt || txt==''){
-				txt = "<div class='layerloader'><img src='/_design/_img/load.gif' alt=' '/><br/>Подождите. Идёт загрузка</div>";
-				jQuery(body+' div.layerblock').hide();
-			}
-			else {
-				jQuery(body+' div.layerloader').hide();
-				if(objid == 'ajaxload') 
-					txt = '<div class="layerblock"><div class="blockclose" onClick="'+onclk+'"></div>'+txt+'</div>';
-			}		
-			showBG(body,1);
-			if(txt && txt!='') {
-				jQuery(body+' > #'+objid).html(txt);
-			}
-			jQuery(body+' > #'+objid).show();
-			//if(body=='body') // Нах это?
-			wep.fMessPos(body,' #'+objid);
-			setTimeout(function(){wep.fMessPos(body,' #'+objid);},1000);
+		if(jQuery(objid).size()==0)
+		{
+			if(objid != '#ajaxload') alert('Ошибка. Сообщите одминистратору сайта!');
+			jQuery(body).append("<div id='ajaxload'>&#160;</div>");
 		}
+		if(!txt || txt==''){
+			txt = "<div class='layerloader'><img src='/_design/_img/load.gif' alt=' '/><br/>Подождите. Идёт загрузка</div>";
+			jQuery(body+' div.layerblock').hide();
+		}
+		else {
+			jQuery(body+' div.layerloader').hide();
+			if(objid == '#ajaxload') 
+				txt = '<div class="layerblock"><div class="blockclose" onClick="'+onclk+'"></div>'+txt+'</div>';
+		}		
+		showBG(body,1);
+		if(txt && txt!='') {
+			jQuery(objid).html(txt);
+		}
+		jQuery(objid).show();
+		setTimeout(function(){wep.fMessPos(objid);},500);
+
 		return false;
 	},
 
@@ -511,12 +514,10 @@ window.wep = {
 
 	hTopPos: 20, 
 	// Позициоонирует блок по центру
-	fMessPos: function(body2,obj) {
-		var body = '';
-		if(body2) body=body2+'>';
+	fMessPos: function(obj) {
 		if(!obj) obj='#ajaxload';
-		jQuery(body+obj).css('width','auto');
-		var FC = jQuery(body+obj+' :first');
+		jQuery(obj).css('width','auto');
+		var FC = jQuery(obj+' :first');
 		//alert(FC.text());
 
 		var H=document.documentElement.clientHeight;
@@ -530,20 +531,20 @@ window.wep = {
 		var ww=Math.round((W-Wblock)/2);
 		if(ww<10) ww=10;
 
-		jQuery(body+obj).css({'top':hh+'px','left':ww+'px'});
+		jQuery(obj).css({'top':hh+'px','left':ww+'px'});
 
 		if(Hblock>(H-hh)) {
 			Hblock = H-hh;
-			jQuery(body+obj).css({'height':(Hblock)+'px'});
+			jQuery(obj).css({'height':(Hblock)+'px'});
 		}
 	
 		if(Wblock>(W-20)) 
 			Wblock = W;
-		jQuery(body+obj).css({'width':(Wblock+22)+'px'});
+		jQuery(obj).css({'width':(Wblock+22)+'px'});
 
 		wep.setResize('fMessPos#'+obj, function() {
-			if(jQuery(body+obj).size())
-				wep.fMessPos(body2,obj);
+			if(jQuery(obj).size())
+				wep.fMessPos(obj);
 		});
 	},
 
@@ -1356,8 +1357,8 @@ function fLog(txt,flag) {
 	return wep.fLog(txt,flag);
 }
 
-function fMessPos(body,obj) {
-	return wep.fMessPos(body,obj);
+function fMessPos(obj) {
+	return wep.fMessPos(obj);
 }
 
 /*Показ тултип*/
@@ -1370,8 +1371,8 @@ function miga(obj,opc1,opc2){
 }
 
 /*Bacground*/
-function fShowload (show,txt,body,objid,onclk) {
-	return wep.fShowload (show,body,txt,objid,onclk);
+function fShowload(objid,txt,body,onclk) {
+	return wep.fShowload (objid,txt,body,onclk);
 }
 
 function showBG(body,show,k) {

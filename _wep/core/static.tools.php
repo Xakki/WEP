@@ -271,7 +271,7 @@ class static_tools {
 		}
 		$_this->kFields2FormFields($fields_form);
 		$RESULT['form'] = $fields_form;
-		$RESULT['options'] = $this->getFormOptions();//'Reinstall'
+		$RESULT['options'] = $_this->getFormOptions();//'Reinstall'
 		return $RESULT;
 	}
 
