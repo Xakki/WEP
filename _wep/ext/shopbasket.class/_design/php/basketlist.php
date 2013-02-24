@@ -48,7 +48,7 @@
 					});
 					$( "#open-filter" ).button().click(function() { $( "#dialog-filter" ).dialog( "open" ); });
 				';
-				$_CFG['fileIncludeOption']['jquery-ui'] =true;
+				plugJQueryUI();
 				if(isset($data['#filter#']['filterEnabled']))
 					$html .= '<messages><info>Включен фильтр</info></messages>';
 			}
@@ -152,7 +152,7 @@
 						return false;
 					});
 				';
-				$_CFG['fileIncludeOption']['jquery-ui'] =true;
+				plugJQueryUI();
 				$html .= '
 				<form method="POST" id="formOrder">
 					<input type="hidden" name="status" id="formOrderStatus">

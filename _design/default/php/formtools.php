@@ -6,7 +6,7 @@
 			return $data;
 		global $_CFG;
 		$html = '';
-		$_CFG['fileIncludeOption']['form'] = 1;
+		plugForm();
 		if(isset($data['path']) and count($data['path'])) {
 			include_once(getPathTheme(true).'/php/path.php');
 			$html = tpl_path($data['path']);// PATH

@@ -92,7 +92,8 @@ $_CFG['logs'] = array(
 ); // - массив SQL запросов
 $GLOBALS['_ERR'] = array(); //текс ошибок
 
-$_CFG['fileIncludeOption'] = array(); //автоподключение SCRIPT & STYLE
+$_CFG['allowAutoIncludeCss'] = true; // Разрешаем автоподключение стилей
+$_CFG['allowAutoIncludeScript'] = true; // Разрешаем автоподключение скриптов
 $_CFG['returnFormat'] = 'html';
 //json
 //''

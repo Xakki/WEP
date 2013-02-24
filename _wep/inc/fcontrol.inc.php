@@ -24,7 +24,7 @@
 	}*/
 	if(!static_main::_prmUserCheck(1)) return '';
 
-	$_CFG['fileIncludeOption']['fcontrol'] = 1;
+	plugControl();
 
 	/*if(0) {
 		_new_class($FUNCPARAM[0],$MODUL);

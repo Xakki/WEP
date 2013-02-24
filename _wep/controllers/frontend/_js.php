@@ -87,54 +87,7 @@
 			}
 		}*/
 	}
-	/**
-	*
-	*/
-	elseif(isset($_REQUEST['_view']) && $_REQUEST['_view']=='loadpage') 
-	{
 
-		$DATA  = array();
-		session_go();
-		_new_class('pg',$PGLIST);
-
-		if(!isset($_GET['_design']))
-			$_GET['_design'] = $_CFG['wep']['design'];
-
-		if(isset($_REQUEST['_pgId'])) {
-			$PGLIST->ajaxRequest = true;
-			$PGLIST->id = (int)$_REQUEST['_pgId'];
-			$PGLIST->display(false);
-
-			$_tpl['title'] = $PGLIST->pageinfo['name'];
-
-			/*foreach($_REQUEST as $k=>$r) {
-				if($k=='onload') {
-					$_tpl['onload'] .= $_tpl[$k];
-				}
-				else if($k=='styles') {
-					$_tpl['styles'] = $_tpl[$k];
-				}
-				else if($k=='script') {
-					$_tpl['script'] = $_tpl[$k];
-				}
-				else if(isset($_tpl[$k])) {
-					$_tpl['pg_'.$k] = $_tpl[$k];
-				}
-			};*/
-			/////////////////////////////////////
-		}
-		elseif(isset($_REQUEST['_ctId'])) {
-			$PGLIST->display_inc((int)$_REQUEST['_ctId'], $_GET['_design']);
-			$_tpl['text'] = '';
-			foreach($_tpl as $k=>$r) {
-				if($k!='styles' and $k!='script' and $k!='onload' and !is_array($r))
-				{
-					$_tpl['text'] .= $r;
-				}
-			}
-		};
-		
-	}
 	/**
 	*
 	*/

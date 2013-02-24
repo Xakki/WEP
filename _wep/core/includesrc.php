@@ -1,99 +1,23 @@
 <?php
 
-	function fileInclude($gfi) {
-		//$gfi -> $_CFG['fileIncludeOption']
-		if(is_null($gfi)) return true;
-		global $_tpl,$_CFG;
-
-		if(!isset($_tpl['script']))
-			$_tpl['script'] = array();
-
-		if(!isset($gfi['uiStyle']))
-			$gfi['uiStyle'] = 'smoothness';
-		
-		if(isset($gfi['multiple'])) 
-		{
-			if($gfi['multiple']==2) 
-			{
-				setCss('style.jquery/'.$gfi['uiStyle'].'/jquery-ui|style.jquery/ui-multiselect');
-
-				$_tpl['script'][getUrlScript('script.jquery/jquery-ui')] = array(
-					getUrlScript('script.jquery/ui-multiselect') => 1,
-					getUrlScript('script.jquery/jquery.localisation/ui-multiselect-ru') => 1,
-				);
-	
-				$_tpl['onload'] .= 'jQuery(\'select.multiple\').multiselect();';
-				##
-				//$_tpl['onload'] .= '$.localise(\'ui-multiselect\', {language: \'ru\', path: \''.$_CFG['_HREF']['_script'].'script.localisation/\'});';
-			}
-		}
-		if(isset($gfi['form']) and $gfi['form']) 
-		{
-			setCss('form');
-		}
-		if(isset($gfi['ajaxForm']) and $gfi['ajaxForm']) 
-		{
-			setCss('form');
-			setScript('wepform|script.jquery/form');
-		}
-		if(isset($gfi['fcontrol']) and $gfi['fcontrol']) {
-			setCss('fcontrol');
-			setScript('fcontrol');
-		}
-		if(isset($gfi['md5']) and $gfi['md5']) 
-		{
-			setScript('md5');
-		}
-		if(isset($gfi['fancybox'])) 
-		{
-			setScript('fancybox/jquery.fancybox.pack');
-			setCss('../_script/fancybox/jquery.fancybox');
-			if($gfi['fancybox'])
-			{
-				if(!is_string($gfi['fancybox']))
-					$gfi['fancybox'] = '.fancyimg';
-				$_tpl['onload'] .= "jQuery('".$gfi['fancybox']."').fancybox();";
-			}
-		}
-		if(isset($gfi['qrtip']) and $gfi['qrtip']) 
-		{
-			setScript('script.jquery/qrtip');
-			setCss('style.jquery/qrtip');
-			$_tpl['onload'] .= 'jQuery(\'a\').qr();';
-		}
-		if(isset($gfi['jquery-ui']) and $gfi['jquery-ui']) 
-		{
-			setScript('script.jquery/jquery-ui');
-			setCss('style.jquery/'.$gfi['uiStyle'].'/jquery-ui');
-		}
-		if(isset($gfi['datepicker']) and $gfi['datepicker']) 
-		{
-			setScript('script.jquery/jquery-ui|script.jquery/jquery.localisation/jquery.ui.datepicker-ru');
-			if($gfi['datepicker']==2) 
-			{
-				setScript('script.jquery/ui-timepicker-addon');
-				setCss('style.jquery/ui-timepicker-addon');
-			}
-			setCss('style.jquery/'.$gfi['uiStyle'].'/jquery-ui');
-		}
+	function fileInclude() 
+	{
+		global $_tpl;
 
 		if(isset($_tpl['script'][getUrlScript('wepform')]))
 			$_tpl['script'] = array(getUrlScript('wepform')=>1)+$_tpl['script'];
 
 		$_tpl['script'] = array(getUrlScript('wep')=>1)+$_tpl['script'];
 		$_tpl['script'] = array(getUrlScript('jquery')=>1)+$_tpl['script'];
-
-
-		/*if(isset($_tpl['script']['syntaxhighlighter'])) {
-			$_tpl['onload'] .= '';
-		}*/
 		
 		if(isset($_tpl['onloadArray']) and count($_tpl['onloadArray'])) // Для скриптов задающихся через массив, дабы не повторялись
 			$_tpl['onload'] .= implode(' ',$_tpl['onloadArray']);
 		unset($_tpl['onloadArray']);
 		/////////////////////
+
 		return true;
 	}
+
 
 	function arraySrcToStr() {
 		global $_tpl,$_CFG;

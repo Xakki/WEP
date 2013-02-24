@@ -36,7 +36,7 @@
 	_new_class('pay', $PAY);
 
 	setCss('/_shop/style/shopBasket');
-	$_CFG['fileIncludeOption']['form'] = 1;
+	plugForm();
 
 	$html = '';
 	

@@ -13,13 +13,8 @@ function tpl_login($data)
 	global $_tpl, $_CFG, $PGLIST;
 	$form = '';
 
-	if( isset($_CFG['fileIncludeOption']['ajaxForm']) and isset($PGLIST->contentID) )
-	{
-		$_tpl['onload'] .= ' wep.form.ajaxForm(\'#loginf\','.$PGLIST->contentID.'); ';
-	}
-
-	
 	if($data['result']<1)
+	{
 		$form .= '<div class="cform" style="">
 				<form action="'.$_SERVER['REQUEST_URI'].'" method="post" id="loginf">
 						<input type="hidden" name="ref" value="'.$data['ref'].'"/>
@@ -33,6 +28,7 @@ function tpl_login($data)
 					'.($data['regpage']?'<div><a href="'.$data['regpage'].'">Не зарегистрированы?</a></div>':'').'
 				 <div style="clear:both;"></div>
 			 </div>';
+	}
 	$html = '<div class="loginForm"> '.$data['mess'].' '.$form.' </div>';
 	return $html;
 }

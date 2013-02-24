@@ -540,12 +540,12 @@ if(file_exists($_CFG['_PATH']['phpscript'].'/tools.php'))
 $html = '<div>Выбирите функцию для запуска</div><hr><ul>';
 foreach($dataF as $kk=>$rr) {
 	if(isset($_GET['tfunc']) and $_GET['tfunc']==$kk) {
-		$html .= '<li><a style="font-weight:bold;" href="'.$_CFG['PATH']['admin'].'/?_view=list&_modul=_tools&tfunc='.$kk.'">'.$rr.'</a>';
+		$html .= '<li><a style="font-weight:bold;" href="'.$_CFG['PATH']['admin'].'?_view=list&_modul=_tools&tfunc='.$kk.'">'.$rr.'</a>';
 		$html .= ' <fieldset><legend>Результат выполнения функции '.$kk.'()</legend>';
 		eval('$html .= '.$kk.'();');
 		$html .= '</fieldset></li>';
 	} else
-		$html .= '<li><a href="'.$_CFG['PATH']['admin'].'/?_view=list&_modul=_tools&tfunc='.$kk.'">'.$rr.'</a></li>';
+		$html .= '<li><a href="'.$_CFG['PATH']['admin'].'?_view=list&_modul=_tools&tfunc='.$kk.'">'.$rr.'</a></li>';
 }
 $html .= '</ul>';
 setTemplate('nologs');

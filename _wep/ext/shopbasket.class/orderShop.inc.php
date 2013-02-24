@@ -38,7 +38,7 @@
 	if(!_new_class('pay', $PAY)) return false;
 
 	setCss('/_shop/style/shopBasket|/_pay/pay');
-	$_CFG['fileIncludeOption']['form'] = 1;
+	plugForm();
 
 	$subMenu = array(
 		array('name'=>'Список заказов'),

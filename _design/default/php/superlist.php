@@ -171,7 +171,7 @@
 					if($tdflag)
 						$html .= '<b>'.$data['thitem'][$ktd]['value'].'</b>: ';
 					if(isset($tditem['fileType']) and $tditem['fileType']=='img') {
-						$_CFG['fileIncludeOption']['fancybox'] = 1;
+						plugFancybox();
 						$html .= '<a rel="fancy" title="рисунок" class="fancyimg" href="'.MY_BH.$tditem['value'].'"><img src="'.MY_BH.$tditem['value'].'" alt="" width="50"/></a>&#160;';
 					}
 					elseif(isset($tditem['fileType']) and $tditem['fileType']=='swf') {

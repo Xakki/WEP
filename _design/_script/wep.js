@@ -55,6 +55,7 @@ window.KEY = {
 };
 
 window.wep = {
+	ready: false,
 	version: '0.1.2',/*Версия скрипта*/
 	BH:'',
 	DOMAIN:'',
@@ -71,7 +72,8 @@ window.wep = {
 	// START DOM
 	init: function()
 	{
-		
+		if(this.ready)
+			return false;
 		var tmp = wep.getCookie(wep.wepVer);
 		if(tmp==false){
 			wep.setCookie(wep.wepVer, document.referrer);
@@ -82,6 +84,106 @@ window.wep = {
 			return wep.ajaxMenu(this);
 		});
 	},
+	/**
+	* Ссылка с подтверждением
+	*/
+	click: function(selector)
+	{
+		$(selector).click(function() {
+			var data = $(this).attr('data-send');
+			var href = $(this).attr('href');
+			var confirmMess = $(this).attr('data-confirm');
+			
+			if(!confirmMess || confirm(confirmMess))
+			{
+				if(!href)
+					href = location.href;
+				if(!strpos(href, '?'))
+					href += '?';
+				else
+					href += '&';
+				href += data;
+				location.href = href;
+			}
+		});
+	},
+
+	/**
+	* Аякс загрузка любой страницы
+	* атрибут у ссылки 
+	* * data-marker - указывает какой маркер загружать, по умолчанию 'text'
+	* * data-ajax - по умолчанию 'popup' , загружает в popup окошко, и затемняет фон ; иначе этот атрибут используется как селектор
+	*/
+	ajaxMenu: function(obj) 
+	{
+		var jobj = $(obj);
+		
+		var marker = {};
+		var dataMarker = jobj.attr('data-marker');
+		if(dataMarker)
+			marker = {dataMarker:1};
+		else
+			marker = {'text' : 1};
+		marker['onload']=1;
+		marker['styles']=1;
+		marker['script']=1;
+
+		var param = {};
+		var attr = jobj[0].attributes;
+		for (var i = 0; i < attr.length; i++)
+		{
+			param[attr[i].name] = attr[i].value;
+		}
+
+		param['type'] = jobj;
+		param['data'] = marker;
+
+		JSWin(param);
+		//console.log(param);
+		return false;
+	},
+
+	/**
+	* Загрузка(обновление) определенных контейнеров АЯКСОМ на текущей страницы
+	*/
+	ajaxLoadPage: function(obj, marker, call) 
+	{
+		marker['onload']=1;
+		marker['styles']=1;
+		marker['script']=1;
+		// TODO marker = wep.pgGet + marker;
+		param = {
+			'href':location.href,
+			'type':'GET',
+			'data': marker
+		};
+
+		if(call)
+			param['call'] = call;
+
+		JSWin(param);
+		return false;
+	},
+
+	/**
+	* Загрузка(обновление) определенного контента АЯКСОМ на текущей страницы
+	*/
+	ajaxLoadContent: function(ctId,selector,callFunc) {
+		if(!ctId) return false;
+		param = {
+			'href' : location.href,
+			'type' : 'GET',
+			'data' : {'_ctId':ctId},
+			'insertobj' : selector,
+			'inserttype' : 'replace'
+		};
+		
+		if(callFunc)
+			param['call'] = callFunc;
+		JSWin(param);
+		return false;
+	},
+
 	/*
 	* Аякс отправка формы с примитивными полями
 	* @param obj - объект формы 
@@ -113,16 +215,17 @@ window.wep = {
 	*
 	*
 	*/
-	JSWin: function(param) {
+	JSWin: function(param) 
+	{
 		if(typeof param['type']=='object') {
 			var OBJ = jQuery(param['type']);
 			if(OBJ.get(0).tagName=='A') 
 			{
 				if(!param['href'])
 					param['href'] = OBJ.attr('href');
-				param['type'] = 'GET';
+				param['type'] = 'GET'; // always GET
 			}
-			else 
+			else // FORM
 			{
 				wep.preSubmitAJAX(param['type']);
 				param['href'] = OBJ.attr('action');
@@ -133,27 +236,28 @@ window.wep = {
 				else
 					param['data'] += '&'+param['sbmt']
 				param['type'] = OBJ.attr('method');
-				if(!param['type']) param['type'] = 'POST';
+				if(!param['type']) param['type'] = 'POST'; // default
 			}
 		}
 		else if(!param['type']) param['type'] = 'GET';
 		if(!param['href'])		param['href'] = wep.siteJS;
 		if(param['onclk']=='reload')		param['onclk'] = 'window.location.reload();';
 		if(!param['data']) 		param['data'] = '';
+		if(!param['isPupup']) 		param['isPupup'] = false;
 		if(!param['dataType'])	param['dataType'] = 'json';
-		if(!param['insertObj']) // объект в который(в зависимости от param['insertType']) будут вставляться result.html
-			param['insertObj'] = false;
-		if(!param['insertType']) // Каким образом будут замещаться данные
-			param['insertType'] = false;
+		if(!param['insertobj']) // объект в который(в зависимости от param['inserttype']) будут вставляться result.html
+			param['insertobj'] = false;
+		if(!param['inserttype']) // Каким образом будут замещаться данные
+			param['inserttype'] = false;
 		if(!param['body'])		param['body'] = 'body';
 		if(typeof param['fade'] == 'undefined') {//Затемнение обоасти [false,true,object]
-			if(!param['insertObj'])
+			if(!param['insertobj'])
 				param['fade'] = true;
 			else
-				param['fade'] = param['insertObj'];
+				param['fade'] = param['insertobj'];
 		}
 		if(typeof param['fadeOff'] == 'undefined') { // зНачение по умолчанию
-			if(!param['insertObj']) //Если обект для вставки не задан, то будет всплывающее окно и затемнение не убираем
+			if(!param['insertobj']) //Если обект для вставки не задан, то будет всплывающее окно и затемнение не убираем
 				param['fadeOff'] = false; 
 			else // иначе после выполнения убираем затемнение
 				param['fadeOff'] = true;
@@ -163,7 +267,8 @@ window.wep = {
 		if(timerid2)// Чистим тамер загрузки, если в это время уже выполняется скрипт
 			clearTimeout(timerid2);
 		timerid2 = 0;
-///alert(dump(param));
+		
+		///alert(dump(param));
 		if(param['fade']) // Вешаем затемнение
 			param['timeBG'] = setTimeout(function(){
 				wep.fShowload(1,false,false,param['fade']); param['timeBG'] = 0;
@@ -177,7 +282,17 @@ window.wep = {
 			/*beforeSend: function(XMLHttpRequest) {
 				return true;
 			},*/
-			error: function(XMLHttpRequest, textStatus, errorThrown) {
+			error: function(XMLHttpRequest, textStatus, errorThrown) 
+			{
+				if(XMLHttpRequest.responseText)
+				{
+					var response = JSON.parse(XMLHttpRequest.responseText);
+					if(response['text'])
+					{
+						this.success(response, textStatus, XMLHttpRequest);
+						return true;
+					}
+				}
 				alert('ajaxerror : '+textStatus);
 				console.log(XMLHttpRequest);console.log(textStatus);console.log(errorThrown);
 			},
@@ -203,42 +318,49 @@ window.wep = {
 				//console.log(result);
 				//функц. предзапуска пользователя, возвращает результат
 				if(typeof(param['precall']) != 'undefined' && typeof (param['precall']) == 'function') 
-					result = param['precall'].call(result, param);
+					param['precall'].call(this, result, param); // result = 
 
-				if(typeof (result.text) != 'undefined' && result.text!='') {
-					if(param['insertObj']) {
-						if(param['insertType']=='after') // вставка до
-							jQuery(param['insertObj']).after(result.text);
-						else if(param['insertType']=='before') // Вставка после
-							jQuery(param['insertObj']).before(result.text);
-						else if(param['insertType']=='replace') // Замена
-							jQuery(param['insertObj']).replaceWith(result.text);
-						else //Внутрь контейнера
-							jQuery(param['insertObj']).html(result.text);
+				if(param['isPupup'])
+				{
+					// Вывод в POPup 
+					//param['fadeOff'] = true;
+					param['fade'] = false;
+					clearTimeout(param['timeBG']);// Чистим таймер и тем самым затеменение не отобразиться
+					var htmlOut = result.text;
+					if(result.title)
+						htmlOut = '<div class="blockhead">'+result.title.substr(0,strpos(result.title,' -') )+'</div><hr/>'+htmlOut;
+					wep.fShowload(1, param['body'], htmlOut, param['fade'], param['onclk']);
+				}
+				else if(param['insertobj']) 
+				{
+					// if(typeof (result.text) != 'undefined' && result.text!='')
+					if(param['inserttype']=='after') // вставка до
+						jQuery(param['insertobj']).after(result.text);
+					else if(param['inserttype']=='before') // Вставка после
+						jQuery(param['insertobj']).before(result.text);
+					else if(param['inserttype']=='replace') // Замена
+						jQuery(param['insertobj']).replaceWith(result.text);
+					else //Внутрь контейнера
+						jQuery(param['insertobj']).html(result.text);
+				}
+				else if (typeof(param['data'])=='object')
+				{
+					// Функция обратного вызова при получении данных от аякса
+					for(var i in param['data']) {
+						if(result[i] && param['data'][i] && typeof(param['data'][i])=='string') {
+							jQuery(param['data'][i]).html(result[i]);
+						}
 					}
-					else {
-						//param['fadeOff'] = true;
-						param['fade'] = false;
-					}
-				}else
+				}
+				else
 					param['fadeOff'] = true;
 
-				if(param['fade']) { //Если включено затемнение
-					if(param['fadeOff']) { // Убираем затемнение
-						if(param['timeBG'])// Если  таймер затемения ещё не сработал, то откл таймер
-							clearTimeout(param['timeBG']);// Чистим таймер и тем самым затеменение не отобразиться
-						else // иначе убираем его сами
-							wep.fShowload(0,false,false,param['fade']);
-					}
-				}
-				/// Может тут убрать условие else ? TODO
-				else if(typeof (result.text) != 'undefined' && result.text!='' && !param['insertObj']) {
-					clearTimeout(param['timeBG']);// Чистим таймер и тем самым затеменение не отобразиться
-					wep.fShowload(1,param['body'],result.text,param['fade'],param['onclk']);
-				}
+				
+				
 
 
-				if(typeof (result.logs) != 'undefined' && result.logs!='') // Вывод ошибок и прочего текста
+				// Вывод ошибок и прочего текста
+				if(typeof (result.logs) != 'undefined' && result.logs!='') 
 					fLog(fSpoiler(result.logs,'AJAX text result'),1);
 
 				 // подключение скриптов
@@ -247,37 +369,15 @@ window.wep = {
 					wep._loadCount = 0;
 					wep.scriptLoad(result.script);
 				}
-				
-					
-				wep.timerExecLoadFunction(param, result);
 
+				wep.timerExecLoadFunction(param, result);
 			}
 		});
 		return false;
 	},
 
-	click: function(selector)
+	timerExecLoadFunction: function (param, result) 
 	{
-		$(selector).click(function() {
-			var data = $(this).attr('data-send');
-			var href = $(this).attr('href');
-			var confirmMess = $(this).attr('data-confirm');
-			
-			if(!confirmMess || confirm(confirmMess))
-			{
-				if(!href)
-					href = location.href;
-				if(!strpos(href, '?'))
-					href += '?';
-				else
-					href += '&';
-				href += data;
-				location.href = href;
-			}
-		});
-	},
-
-	timerExecLoadFunction: function (param, result) {
 		if(wep._loadCount!=0){
 			setTimeout(function(){wep.timerExecLoadFunction(param, result);},500);
 			console.log('--in process--'+wep._loadCount);
@@ -289,31 +389,50 @@ window.wep = {
 	},
 
 	// Выполнение функции при полной загрузке
-	execLoadFunction: function (param, result) {
+	execLoadFunction: function (param, result) 
+	{
 		//Запуск функции пользователя
-		if(typeof param['call'] != 'undefined' && typeof param['call'] == 'function') 
+		if(typeof param['call'] != 'undefined') 
 		{
-			param['call'].call(result, param);
+			if(typeof param['call'] == 'function')
+				param['call'].call(this, result, param);
+			else if(typeof param['call'] == 'string')
+				eval(param['call']+'(result, param);');
 		}
 		
 		 // запуск onload функции
 		if(typeof result.onload != 'undefined')  {
 			if(typeof result.onload == 'function')
-				result.onload.call(result, param);
+				result.onload.call(this, result, param);
 			else if(result.onload!='') {
 				eval(result.onload);
 			}
 		}
+
+		//Если включено затемнение
+		if(param['fade']) 
+		{
+			// Если нужно отключить затемнение после завершения
+			if(param['fadeOff']) 
+			{
+				// Если  таймер затемения ещё не сработал, то откл таймер
+				if(param['timeBG'])
+					clearTimeout(param['timeBG']); // Чистим таймер и тем самым затеменение не отобразиться
+				else 
+					wep.fShowload(0,false,false,param['fade']); // иначе убираем его сами
+			}
+		}
 	},
 
-	fShowload: function(show,body,txt,objid,onclk) {
-//alert('* '+show+'+'+body+'+'+txt+'+'+objid+'+'+onclk);
+	fShowload: function(show,body,txt,objid,onclk) 
+	{
+		//alert('* '+show+'+'+body+'+'+txt+'+'+objid+'+'+onclk);
 		if(!body || body===true) body='body';
 		if(!onclk) onclk = 'wep.fShowload(0,\''+body+'\',\'\')';
 		if(!objid || objid===true) objid = 'ajaxload';
 		if(!txt) txt = '';
 
-		objid = wep.trim(objid, '#\s');
+		objid = wep.trim(objid, '#.\s');
 		if(!show) {
 			jQuery(body+'> #'+objid).hide();
 			showBG(body);
@@ -363,106 +482,7 @@ window.wep = {
 		}
 	},
 
-	ajaxMenu: function(obj) {
-		var jobj = $(obj);
-		var dataMarker = jobj.attr('data-marker');
-		var marker = {};
-		if(dataMarker)
-			marker = {dataMarker:1};
-		else
-			marker = {'text' : 1};
-
-		if(jobj.attr('data-ajax')=='popup')
-		{
-			wep.fShowload(1,false,false,true);
-
-			marker['onload']=1;
-			marker['styles']=1;
-			marker['script']=1;
-
-			param = {
-				'type':jobj,
-				'data': marker,
-				'call' : wep.ajaxPopupLoad
-			};
-
-			return JSWin(param);
-		}
-		else
-		{
-			//alert(jobj.attr('data-ajax'));
-		}
-		return true;
-	},
-
-	ajaxPopupLoad: function(resData, param) {
-		// Функция обратного вызова при получении данных от аякса
-		// - hardcode
-		resData['pg_text'] = '<div class="blockhead">'+resData['title']+'</div><hr/>'+resData['pg_text'];
-		wep.fShowload(1,false,resData['pg_text']);
-
-		wep.paramTemp = {'call':wep.ajaxPopupLoad(this)};
-		if(typeof resData.styles != 'undefined' && (typeof resData.styles.login != 'undefined' || typeof resData.script.wepform != 'undefined') ) {
-			$('#ajaxload form').one('submit',function() {wep.paramTemp['type'] = $(this); JSWin(wep.paramTemp); return false;});
-		}
-
-	},
-
-
-	ajaxLoadPage: function(obj, marker, call) {
-		if(!pg) pg = this.pgId;
-		marker['_view'] = 'loadpage';
-		marker['_pgId'] = pg;
-		marker['pageParam'] = wep.pgParam;
-		marker['onload']=1;
-		marker['styles']=1;
-		marker['script']=1;
-		// TODO marker = wep.pgGet + marker;
-		param = {
-			'href':wep.siteJS,
-			'type':'GET',
-			'data': marker
-		};
-
-		if(call)
-			param['call'] = call;
-		else
-			param['call'] = wep.ajaxLoadPageCall;
-
-		JSWin(param);
-		return false;
-	},
-
-	ajaxLoadPageCall: function(resData, param) {
-		var marker = param['data'];
-		// Функция обратного вызова при получении данных от аякса
-		for(var item in marker) {
-			if(resData['pg_'+item]) {
-				jQuery(marker[item]).html(resData['pg_'+item]);
-			}
-		}
-
-		wep.paramTemp = {'call':wep.ajaxLoadPageCall};
-		if(resData.styles.login || resData.script.wepform) {
-			$('#ajaxload form').one('submit',function() {wep.paramTemp['type'] = $(this); JSWin(wep.paramTemp); return false;});
-		}
-	},
-
-	ajaxLoadContent: function(ctId,selector,callFunc) {
-		if(!ctId) return false;
-		param = {
-			'href' : wep.siteJS,
-			'type' : 'GET',
-			'data' : {'_view':'loadpage', '_ctId':ctId, '_slc':selector, 'pageParam':wep.pgParam },
-			'insertObj' : selector,
-			'insertType' : 'replace'
-		};
-		
-		if(callFunc)
-			param['call'] = callFunc;
-		JSWin(param);
-		return false;
-	},
+	/**********************************/
 
 	getBrowserInfo: function() {
 		var t,v = undefined;
@@ -686,6 +706,7 @@ window.wep = {
 		} ; 
 		for(var s in css) {
 			var validSrc = wep.checkCSSInclude(css[s]);
+
 			if(validSrc)
 			{
 				var styleCss = document.createElement('link');
@@ -706,8 +727,8 @@ window.wep = {
 		{// проверка на уникальность подключаемого стиля
 			wep.includeCSSlist[url] = 1;
 			var flag = 0;
-			jQuery('script[src!=""]').each(function(){
-				var href = wep.absPath(this.src);
+			jQuery('link[href!=""]').each(function(){
+				var href = wep.absPath(this.href);
 				wep.includeCSSlist[href] = 1;
 				if(href==url) flag = 1;
 			});
@@ -834,7 +855,13 @@ window.wep = {
 	},
 
 	baseHref : '',
-	absPath: function(url) {
+	absPath: function(url) 
+	{
+		var pos = strpos(url, '?t=');
+		if(pos)
+		{
+			url = url.substr(0,pos);
+		}
 		if(url.substr(0,4)!='http' && url.substr(0,2)!='//') {
 			if(wep.baseHref=='') {
 				wep.baseHref = jQuery('base').attr('href');
@@ -864,7 +891,7 @@ window.wep = {
 		var param = {'href':hrf};
 		if(typeof id !== 'undefined') {
 			jQuery('#'+id).show();
-			param['insertObj']  = '#'+id;
+			param['insertobj']  = '#'+id;
 		}
 		/* else
 			param['onclk']='reload';	*/

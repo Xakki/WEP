@@ -151,7 +151,8 @@ class static_control {
 			Array(
 				'messages'=>array_merge($mess,$arr['mess']),
 				'form'=>($formflag?$argForm:array()),
-				'formSort'=> $_this->formSort
+				'formSort'=> $_this->formSort,
+				'flag' => $flag
 			), $flag);
 	}
 

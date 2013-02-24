@@ -1,6 +1,7 @@
 <?php
 
 	$WEPOUT = new wepajax();
+	$isAjax = true;
 
 	class wepajax
 	{
@@ -22,7 +23,7 @@
 		{
 			global $_CFG;
 			include_once($_CFG['_PATH']['core'] . '/includesrc.php');
-			fileInclude($_CFG['fileIncludeOption']);
+			fileInclude();
 			ob_end_flush();
 		}
 

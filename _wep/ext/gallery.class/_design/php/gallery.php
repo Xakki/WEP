@@ -12,7 +12,7 @@
 		setCss('/_gallery/style/gallery');
 		$html = '';
 		if(isset($data['#list-gallitem#']) and count($data['#list-gallitem#'])) {
-			$_CFG['fileIncludeOption']['fancybox']=1;
+			plugFancybox();
 			$html .= '
 				<div class="dscr">'.$data['#info-gallery#']['dscr'].'</div>
 				'.($data['#info-gallery#']['tags']?'<div>Теги: '.$data['#info-gallery#']['tags'].'</div>':'').'

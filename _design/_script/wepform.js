@@ -4,7 +4,27 @@ var timerid2 = 0;
 var ajaxComplite = 1;
 
 wep.form = {
-	initForm: function(selector) {
+	initForm: function(selector) 
+	{
+		var captcha = $(selector).find('#tr_captcha');
+
+		if($(selector).data('initform'))
+		{
+			reloadCaptcha('captcha');
+			return false;
+		}
+
+		$(selector).data('initform', true);
+
+		if(captcha.size())
+		{
+			$(selector).off('click', '.i-reload').on('click', '.i-reload', function(){
+				reloadCaptcha('captcha', true);
+			});
+			$(selector).off('click', '#tr_captcha input').one('click', '#tr_captcha input', function(){
+				wep.setCookie('testtest',1);
+			});
+		}
 
 		$(selector+' span.labelInput').unbind('click').click(function() {
 			$(this).next().focus();
@@ -26,10 +46,15 @@ wep.form = {
 		$(selector).off("keydown change").on("keydown change", "input[type=int]", function(e){return wep.form.checkInt(e);});
 
 		$(selector).off("focus.float").on("focus.float", "input[data-width0]", function(e){return wep.form.checkFloat(e);});
+
+		wep.form.ajaxForm(selector);
 	},
 	// Делаем форму на странице аяксовой
-	ajaxForm : function(id,contentID) 
+	ajaxForm : function(id) 
 	{
+		var contentID = $(id).attr('data-cid');
+		if(!contentID) return false;
+
 		var arr = '';
 		if(wep.pgParam) {
 			arr = wep.pgParam;
@@ -40,6 +65,7 @@ wep.form = {
 		{
 			hrf += key+'='+wep.pgGet[key]+'&';
 		}
+		
 		$(id).attr('action',hrf+'_modul=pg&_fn=AjaxForm&contentID='+contentID+'&pageParam[]='+arr);
 		JSFR(id);
 	},
@@ -246,7 +272,7 @@ wep.form = {
 		if(!jQuery('#'+obj.name+'t2').size()){
 			val = document.createElement('span');
 			val.className = "dscr txtCounter";
-			val.innerHTML = 'Cимволов:<input type="text" id="'+obj.name+'t2" maxlength="4" readonly="false" class="textcount" style="text-align:right;"/>/<input type="text" id="'+obj.name+'t1" maxlength="4" readonly="false" class="textcount" value="'+max+'"/>';
+			val.innerHTML = '<span>Cимволов:</span><input type="text" id="'+obj.name+'t2" maxlength="4" readonly="false" class="textcount" style="text-align:right;"/><i>/</i><input type="text" id="'+obj.name+'t1" maxlength="4" readonly="false" class="textcount" value="'+max+'"/>';
 			jQuery(obj).after(val);
 		}
 		if(obj.value.length>max)
@@ -265,10 +291,12 @@ function textareaChange(obj,max) {
 	wep.form.textareaChange(obj,max);
 }
 
-function reloadCaptcha(id)
+function reloadCaptcha(id, noclear)
 {
+	if(!jQuery('#'+id).size()) return false;
 	jQuery('#'+id).attr('src',"/_captcha.php?"+ toInt(Math.random()*100));
-	jQuery('input.secret').attr('value','');
+	if(!noclear)
+		jQuery('input.secret').attr('value','');
 }
 
 /*PASS FORM*/
@@ -527,8 +555,15 @@ function input_file(obj) {
 
 function putEMF(id,txt) {
 	jQuery('#tr_'+id+' .form-caption').after('<div class="caption_error">['+txt+']</div>');
+	jQuery('#tr_'+id).addClass('error');
 }
 
+function clearErrorForm(formSelector) 
+{
+	reloadCaptcha('captcha');
+
+	jQuery(formSelector).find('.div-tr.error').removeClass('error').find('.caption_error').remove();
+}
 
 function invert_select(selector)
 {

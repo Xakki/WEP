@@ -60,8 +60,6 @@
 						</label>';
 				}
 				$sitem .= '</div>';
-				//$_tpl['onload'] .= '$( "#typedelivery" ).buttonset();';
-				//$_CFG['fileIncludeOption']['jquery-ui'] = true;
 			}else {
 				$temp = current($data['#delivery#']);
 				$valD = $temp['id'];

@@ -2,7 +2,7 @@
 /**
  * Дочерний модуль "Контент страниц"
  * @author Xakki
- * @version 0.4.6 
+ * @version 0.4.7
  */
 class content_class extends kernel_extends {
 
@@ -34,6 +34,8 @@ class content_class extends kernel_extends {
 		$this->fields['memcache'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0);
 		$this->fields['memcache_solt'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL', 'default' => 0);
 		$this->fields['access_flag'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => '0');
+		$this->fields['autocss'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => '1');
+		$this->fields['autoscript'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => '1');
 
 		# memo
 		//$this->memos['pg'] = array('max' => 50000);
@@ -76,11 +78,13 @@ class content_class extends kernel_extends {
 		$this->fields_form['onajaxform'] = array('type' => 'checkbox', 'caption' => 'Вкл. AjaxForm');
 		$this->fields_form['access_flag'] = array('type' => 'checkbox', 'caption' => 'Не отображать на спец. страницах', 'comment'=>'Если скрипт на странице сгенерировал спец.флаг ($this->access_flag=true;) или выполняется AJAX запрос - данный контент не будет выполняться!', 'mask' => array('fview' => 1));
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
+		$this->fields_form['autocss'] = array('type' => 'checkbox', 'caption' => 'Подключать CSS автоматический?');
+		$this->fields_form['autoscript'] = array('type' => 'checkbox', 'caption' => 'Подключать SCRIPTы автоматический?');
 		
 		$this->formSort = array(
 			'Основное'=>array('marker','pagetype','funcparam'),
 			'Контент'=>array('pg','keywords','description'),
-			'Дополнительно'=>array('owner_id','name','href','ugroup','styles','script','memcache','memcache_solt','ordind','onajaxform','access_flag','global'),
+			'Дополнительно'=>array('owner_id','name','href','ugroup','styles','script','memcache','memcache_solt','ordind','onajaxform','access_flag','global', 'autocss', 'autoscript'),
 			'active',
 		);
 

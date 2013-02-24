@@ -11,7 +11,6 @@ function tpl_statusForm($data)
 {
 	//print_r('<pre>');print_r($data);
 	global $_tpl;
-	//$_CFG['fileIncludeOption']['form'] = 1;
 	setCss('/_pay/pay');
 	$html = '';
 	

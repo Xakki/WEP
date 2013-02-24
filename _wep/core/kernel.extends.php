@@ -1628,7 +1628,7 @@ abstract class kernel_extends {
 
 			$fields_form['f_clear_sbmt'] = array(
 				'type' => 'info',
-				'caption' => '<a href="' . $_SERVER['HTTP_REFERER'] . '" onclick="JSWin({\'insertObj\':\'#form_tools_f'.$this->_cl.'\',\'href\':$(\'#form_tools_f'.$this->_cl.'\').attr(\'action\'),\'data\':{ f_clear_sbmt:1}});return false;">Очистить</a>');
+				'caption' => '<a href="' . $_SERVER['HTTP_REFERER'] . '" onclick="JSWin({\'insertobj\':\'#form_tools_f'.$this->_cl.'\',\'href\':$(\'#form_tools_f'.$this->_cl.'\').attr(\'action\'),\'data\':{ f_clear_sbmt:1}});return false;">Очистить</a>');
 		}
 		if(count($_FILTR))
 		{

@@ -15,7 +15,7 @@ function productshopExe(obj,id) {
 
 	if(!id) id='';
 	jQuery('.addparam').remove();
-	JSWin({'href':'/_js.php?_modul=product&_fn=AjaxShopParam&_id='+id+'&_rid='+jQuery(obj).val(),'insertObj':objAfter,'body':objAfter,'insertType':'after'});
+	JSWin({'href':'/_js.php?_modul=product&_fn=AjaxShopParam&_id='+id+'&_rid='+jQuery(obj).val(),'insertobj':objAfter,'body':objAfter,'inserttype':'after'});
 	return true;
 }
 

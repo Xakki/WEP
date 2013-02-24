@@ -159,7 +159,7 @@
 					<input type="number" name="'.$k.'" id="'.$k.'" value="'.$r['value'].'" '.$attribute.'/> - <input type="number" name="'.$k.'_2" id="'.$k.'_2" value="'.$r['value_2'].'" '.$attribute.'/>
 				</div></div>';//<div class="f_exc"><input type="checkbox" name="exc_'.$k.'" value="exc" '.($r['exc']==1?'checked="checked"':'').'/></div>
 				$_tpl['onload'] .= "wep.gSlide('tr_".$k."',".(int)$r['mask']['min'].",".(int)$r['mask']['max'].",".(int)$r['value'].",".(int)$r['value_2'].",".(int)$r['mask']['step'].");";				
-				$_CFG['fileIncludeOption']['jquery-ui'] = true;
+				plugJQueryUI();
 			}
 			elseif($r['type']=='date') {
 				$html .= '<div class="f_item" id="tr_'.$k.'">
@@ -170,7 +170,7 @@
 				
 			  	</div>';
 
-				$_CFG['fileIncludeOption']['datepicker'] = 1;
+				plugJQueryUI_datepicker();
 				$_tpl['script']['dp_'.$k] = 'function dpf_'.$k.'() { 
 					$( "input[name='.$k.']" ).datepicker({
 						defaultDate: "+1w",

@@ -2,7 +2,7 @@
 /**
  * Модуль страниц для frontend
  * @author Xakki
- * @version 0.5.7 
+ * @version 0.6.10
  */
 class pg_class extends kernel_extends {
 
@@ -36,7 +36,6 @@ class pg_class extends kernel_extends {
 			'path' => 'Хлебные крошки',
 			'logs' => 'Логи',
 			'foot' => 'Подвал');
-		$this->config['auto_include'] = true;
 		$this->config['auto_auth'] = true;
 		$this->config['rf_on'] = false;
 		$this->config['newadmin_on'] = true;
@@ -54,7 +53,6 @@ class pg_class extends kernel_extends {
 		$this->config_form['rootPage'] = array('type' => 'list', 'keytype' => 'text', 'listname' => array('class' => 'pg', 'where' => 'parent_id=0'), 'multiple' => 3, 'caption' => 'Мульти-домен', 'comment' => 'Укажите страницу для каждого домена, по умолчанию для ненайденного домена будет загружаться первая позиция', 'mask' => array('maxarr' => 20));
 		$this->config_form['menu'] = array('type' => 'text', 'keytype' => 'int', 'multiple' => 3, 'caption' => 'Блоки меню', 'mask' => array('maxarr' => 30));
 		$this->config_form['marker'] = array('type' => 'text', 'keytype' => 'text', 'multiple' => 3, 'caption' => 'Маркеры', 'mask' => array('maxarr' => 50));
-		$this->config_form['auto_include'] = array('type' => 'checkbox', 'caption' => 'Подключать скрипты автоиматически');
 		$this->config_form['auto_auth'] = array('type' => 'checkbox', 'caption' => 'Автоматическая авторизация');
 		$this->config_form['rf_on'] = array('type' => 'checkbox', 'caption' => 'Для руского домена использовать НАЗВАНИЕ страницы');
 		$this->config_form['newadmin_on'] = array('type' => 'checkbox', 'caption' => 'Включить "Новую админку"', 'comment'=>'В последствии к каждому контенту будет создаваться div обертка');
@@ -69,7 +67,7 @@ class pg_class extends kernel_extends {
 		$this->caption = 'Страницы';
 		$this->selected = array();
 		$this->messages_on_page = 50;
-		$this->ver = '0.6.9';
+		$this->ver = '0.6.10';
 		$this->pageinfo =
 				$this->dataCash = $this->dataCashTree = $this->dataCashTreeAlias = array();
 		$this->pageParam = $this->pageParamId = array();
@@ -245,7 +243,8 @@ class pg_class extends kernel_extends {
 	 */
 	function initHTML() 
 	{
-		if ($this->pageinfo['design'] and !setTheme($this->pageinfo['design']))
+		$theme = $this->get_page_attr('design');
+		if($theme && !setTheme($theme))
 			trigger_error('Ошибка запуска темы "'.$this->pageinfo['design'].'"', E_USER_WARNING);
 
 		if ($this->pageinfo['template'])
@@ -315,7 +314,7 @@ class pg_class extends kernel_extends {
 		}
 	
 		if($this->_CFG['returnFormat'] == 'html') {
-			$_tpl['onload'] .= '
+			$_tpl['onload'] = '
 			wep.pgId = ' . $this->id . ';
 			wep.pgParam =' . $pageParamEncode . ';
 			wep.pgGet =' . $getEncode . ';
@@ -325,7 +324,7 @@ class pg_class extends kernel_extends {
 			wep.wepVer = "wepjs'.$this->_CFG['info']['version'].'";
 			window.MY_THEME = "'.getUrlTheme().'";
 			wep.init();
-			';
+			'.$_tpl['onload'];
 
 		}
 		return true;
@@ -460,6 +459,19 @@ class pg_class extends kernel_extends {
 		return $data;
 	}
 
+	function get_page_attr($attr) 
+	{
+		$id = $this->pageinfo['id'];
+		while (!$this->dataCash[$id][$attr]) {
+			if (isset($this->dataCash[$id])) {
+				$id = $this->dataCash[$id]['parent_id'];
+			}
+			else
+				breack;
+		}
+		return $this->dataCash[$id][$attr];
+	}
+
 	function displayHttpCode($a = 404,$full=false) {
 		header("HTTP/1.0 ".$a);
 		if (isset($this->dataCashTreeAlias[$this->rootPage][$a])) {
@@ -583,7 +595,7 @@ class pg_class extends kernel_extends {
 			// Включить AJAX FORM
 			if($rowPG['onajaxform'])
 			{
-				$_CFG['fileIncludeOption']['ajaxForm'] = 1;
+				plugAjaxForm();
 			}
 
 			if ($rowPG['href']) {
@@ -596,10 +608,10 @@ class pg_class extends kernel_extends {
 				}
 			}
 			if ($rowPG['script']) {
-				setScript($rowPG['script']);
+				setScript($rowPG['script'], false);
 			}
 			if ($rowPG['styles']) {
-				setCss($rowPG['styles']);
+				setCss($rowPG['styles'], false);
 			}
 			if($rowPG['keywords']) {
 				if (!isset($_tpl['keywords']))
@@ -630,6 +642,17 @@ class pg_class extends kernel_extends {
 				else
 					$_tpl[$rowPG['marker']] .= $_tempMarker;
 			} else {
+				// Если отключено автоматическое подключение стилей, то ставим метку об этом
+				if(!$rowPG['autocss'])
+				{
+					$_CFG['allowAutoIncludeCss'] = false;
+				}
+				// Если отключено автоматическое подключение скриптов, то ставим метку об этом
+				if(!$rowPG['autoscript'])
+				{
+					$_CFG['allowAutoIncludeScript'] = false;
+				}
+
 				// Флаг проверки о включенном memcache
 				$flagMC = false;
 				// Вообще отключаем кеш
@@ -755,6 +778,17 @@ class pg_class extends kernel_extends {
 						}
 						$_tpl = $temp_tpl;
 					}
+				}
+
+				// Возвращаемся к нормальному состоянию
+				if(!$rowPG['autocss'])
+				{
+					$_CFG['allowAutoIncludeCss'] = true;
+				}
+
+				if(!$rowPG['autoscript'])
+				{
+					$_CFG['allowAutoIncludeScript'] = true;
 				}
 			}
 			//////////////////////
@@ -1132,20 +1166,21 @@ class pg_class extends kernel_extends {
 	/*
 	* Обработка АЯКС запросов с страницы содержащий форму
 	*/
-	public function AjaxForm() {
+	public function AjaxForm() 
+	{
 		global $_tpl, $PGLIST;
 		$PGLIST = $this;
 		$this->contentID = (int)$_GET['contentID'];
 		if(isset($_GET['pageParam']))
 			$this->pageParam = $_GET['pageParam'];
 
-		$RESULT = array('html'=>'Не верные данные', 'text'=>'','onload'=>'');
 		$DATA  = array();
 		$htmlb = '';
 		$this->ajaxRequest = true;
 		//if(count($_POST)) $_POST['sbmt'] = 1;
 
 		$Cdata = array();
+
 
 		// TODO : проверка правд доступа
 		$cls = 'SELECT * FROM ' . $this->SQL_CFG['dbpref'] . 'pg_content WHERE active=1 and id=' . $this->contentID;
@@ -1154,34 +1189,22 @@ class pg_class extends kernel_extends {
 			while ($rowPG = $resultPG->fetch()) {
 				$Cdata[$rowPG['id']] = $rowPG;
 			}
-		
+
 		$this->access_flag = false;
 		if(!count($Cdata) or !$this->getContent($Cdata))
-			return $RESULT;
+		{
+			$_tpl['text'] = 'Не верные данные!'.$_tpl['text'];
+			return true;
+		}
 
 		if(is_null($this->formFlag)) {
-			$RESULT['html'] = 'Не верные данные! Отсутствует параметр $this->formFlag';
-			return $RESULT;
+			$_tpl['text'] = 'Не верные данные! Отсутствует параметр $this->formFlag'.$_tpl['text'];
+			return true;
 		}
 
-		$RESULT['html'] = $_tpl['text'];
-
-		if($this->formFlag==1) {
-			$RESULT['onload'] .= 'clearTimeout(timerid2);wep.fShowload (1,false,result.html,0,\'location.href = location.href;\');';
-		}
-		elseif($this->formFlag==-1) {
-			//$RESULT['onload'] = 'GetId("messages").innerHTML=result.html;'.$RESULT['onload'];
-			$RESULT['onload'] = 'jQuery(\'.caption_error\').remove();'.$RESULT['onload'].'clearTimeout(timerid2);wep.fShowload(1,false,result.html);';
-			$RESULT['html']="<div class='blockhead'>Внимание. Некоректно заполнены поля.</div><div class='hrb'>&#160;</div>".$RESULT['html'];
-		}
-		else{
-			$RESULT['onload'] .= 'clearTimeout(timerid2);wep.fShowload(1,false,result.html);';
-		}
-		if(!isset($_SESSION['user']['id']))
-			$RESULT['onload'] .= 'reloadCaptcha(\'captcha\');';
-		$RESULT['onload'] .= $_tpl['onload'];
-
-		return $RESULT;
+		/*$_tpl['script'] = array();
+		$_tpl['styles'] = array();*/
+		return true;
 	}
 
 //////////

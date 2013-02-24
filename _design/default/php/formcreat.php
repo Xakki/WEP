@@ -20,17 +20,6 @@
 			$attr = $data['form']['_*features*_'];
 			$ID = 'form_'.$attr['name'];
 
-			$ajaxForm = false;
-			if(isset($data['ajaxForm']))
-				$ajaxForm = $data['ajaxForm'];
-			elseif(isset($_CFG['fileIncludeOption']['ajaxForm']))
-				$ajaxForm = true;
-
-			if( $ajaxForm and isset($PGLIST->contentID) )
-			{
-				$_tpl['onload'] .= 'wep.form.ajaxForm(\'#'.$ID.'\','.$PGLIST->contentID.');';
-			}
-
 			include_once($data['DIR'].'/form.php');
 			if (isset($attr['enctype']))
 				if ($attr['enctype'] == '')
@@ -43,13 +32,15 @@
 				$attr['action'] = '';
 			if(!isset($attr['method']) or !$attr['method'])
 				$attr['method'] = 'POST';
-			$texthtml .= '<form id="'.$ID.'" method="'.$attr['method'].'"'.$enctype.' action="'.$attr['action'].'" ';
+			$texthtml .= '<form id="'.$ID.'" method="'.$attr['method'].'"'.$enctype.' action="'.$attr['action'].'"';
 			if(isset($attr['onsubmit']))
-				$texthtml .= 'onsubmit="'.$attr['onsubmit'].'"';
+				$texthtml .= ' onsubmit="'.$attr['onsubmit'].'"';
+			if( isset($PGLIST->contentID) )
+				$texthtml .= ' data-cid="'.$PGLIST->contentID.'"';
 			$texthtml .= '>';
 
 			if(isset($data['formSort']) and count($data['formSort']) and is_array(current($data['formSort']))) {
-				$_CFG['fileIncludeOption']['jquery-ui']= true;
+				plugJQueryUI();
 				$_tpl['onload'] .= '$("#'.$ID.'").tabs();';
 				$texthtml .= tpl_form($data['form'], $data['formSort']);
 			}
@@ -67,6 +58,27 @@
 			$texthtml = tpl_path($data['path'],$flag).$texthtml;// PATH
 		}
 		$texthtml .= '</div>';
+
+
+		if(isset($data['flag']))
+		{
+			if($data['flag']==1) {
+				$_tpl['onload'] .= '$("#'.$ID.'").trigger(\'success\');';
+				//$_tpl['onload'] .= 'clearTimeout(timerid2);wep.fShowload(1,false,result.html,0,\'location.href = location.href;\');';
+			}
+			elseif($data['flag']==-1) {
+				//$_tpl['onload'] = 'GetId("messages").innerHTML=result.html;'.$_tpl['onload'];
+				$_tpl['onload'] = 'clearErrorForm("#'.$ID.'"); $("#'.$ID.'").trigger(\'error\'); '.$_tpl['onload'];
+				//.'clearTimeout(timerid2);wep.fShowload(1,false,result.html);'
+				$texthtml = "<div class='blockhead'>Внимание. Некоректно заполнены поля.</div><div class='hrb'>&#160;</div>".$texthtml;
+			}
+			else
+			{
+				//$_tpl['onload'] .= 'clearTimeout(timerid2);wep.fShowload(1,false,result.html);';
+			}
+			/*if(!isset($_SESSION['user']['id']))
+				$_tpl['onload'] .= 'reloadCaptcha(\'captcha\');';*/
+		}
 		return $texthtml;
 	}
 //<!--<div class="dscr"><span style="color:#F00">*</span> - обязательно для заполнения</div>

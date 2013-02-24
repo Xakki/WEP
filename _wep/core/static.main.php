@@ -1180,64 +1180,14 @@ function isBackend($val=null)
 	return $_CFG['_F']['adminpage'];
 }
 
-/********************/
 
-function setCss($styles, $customTheme=null)
+function isAjax()
 {
-	global $_tpl,$_CFG;
-	if(!$customTheme) $customTheme = getUrlTheme();
-
-	if(is_string($styles))
-		$styles = explode('|', trim($styles, '| '));
-
-	if (is_array($styles)) {
-		foreach ($styles as $r)
-			if ($r)
-			{
-				if(strpos($r, '#themes#')!==false) 
-					$r = str_replace('#themes#', $customTheme.'style/', $r).'.css';
-				elseif(strpos($r, '/')===0) 
-					$r = $customTheme.'style'.$r.'.css';
-				else
-					$r = $_CFG['_HREF']['_style'].$r.'.css';
-
-				$_tpl['styles']['//'.$_CFG['_HREF']['_BH'].$r] = 1;
-			}
-	}
+	global $isAjax;
+	return $isAjax;
 }
 
-function setScript($script, $customTheme=null)
-{
-	global $_tpl,$_CFG;
-	if(!$customTheme) $customTheme = getUrlTheme();
-	
-	if(is_string($script))
-		$script = explode('|', trim($script, '|'));
 
-	if (is_array($script)) {
-		foreach ($script as $r)
-			if ($r)
-			{
-				$_tpl['script'][getUrlScript($r, $customTheme)] = 1;
-			}
-	}
-}
-/**
-* Helper for setScript
-*/
-function getUrlScript($r, $customTheme=null)
-{
-	global $_CFG;
-	if(!$customTheme) $customTheme = getUrlTheme();
-	if(strpos($r, '#themes#')!==false) 
-		$r = str_replace('#themes#', $customTheme.'script/', $r).'.js';
-	elseif(strpos($r, '/')===0) 
-		$r = $customTheme.'script'.$r.'.js';
-	else
-		$r = $_CFG['_HREF']['_script'].$r.'.js';
-
-	return '//'.$_CFG['_HREF']['_BH'].$r;
-}
 /********************/
 
 /*
@@ -1317,4 +1267,221 @@ function _chmod($file,$mode=null) {
 	global $_CFG;
 	if(is_null($mode)) $mode = $_CFG['wep']['chmod'];
 	chmod($file, $mode);
+}
+/********************/
+
+function setCss($styles, $isAuto = true)
+{
+	global $_tpl,$_CFG;
+	if($isAuto and !$_CFG['allowAutoIncludeCss'])
+		return false;
+
+	$customTheme = getUrlTheme();
+
+	if(is_string($styles))
+		$styles = explode('|', trim($styles, '| '));
+
+	if (is_array($styles)) {
+		foreach ($styles as $r)
+			if ($r)
+			{
+				if(strpos($r, '#themes#')!==false) 
+					$r = str_replace('#themes#', $customTheme.'style/', $r).'.css';
+				elseif(strpos($r, '/')===0) 
+					$r = $customTheme.'style'.$r.'.css';
+				else
+					$r = $_CFG['_HREF']['_style'].$r.'.css';
+
+				$_tpl['styles']['//'.$_CFG['_HREF']['_BH'].$r] = 1;
+			}
+	}
+}
+
+function setScript($script, $isAuto = true)
+{
+	global $_tpl,$_CFG;
+	if($isAuto and !$_CFG['allowAutoIncludeScript'])
+		return false;
+	
+	$customTheme = getUrlTheme();
+	
+	if(is_string($script))
+		$script = explode('|', trim($script, '|'));
+
+	if (is_array($script)) {
+		foreach ($script as $r)
+			if ($r)
+			{
+				$_tpl['script'][getUrlScript($r, $customTheme)] = 1;
+			}
+	}
+}
+/**
+* Helper for setScript
+*/
+function getUrlScript($r, $customTheme=null)
+{
+	global $_CFG;
+	if(!$customTheme) $customTheme = getUrlTheme();
+	if(strpos($r, '#themes#')!==false) 
+		$r = str_replace('#themes#', $customTheme.'script/', $r).'.js';
+	elseif(strpos($r, '/')===0) 
+		$r = $customTheme.'script'.$r.'.js';
+	else
+		$r = $_CFG['_HREF']['_script'].$r.'.js';
+
+	return '//'.$_CFG['_HREF']['_BH'].$r;
+}
+
+/************************/
+// TODO CLASS 
+/*************************/
+
+$_CFG['fileIncludeOption'] = array();
+function plugFancybox($init = true)
+{
+	global $_tpl, $_CFG;
+	if(isset($_CFG['fileIncludeOption']['fancybox']))
+		return false;
+
+	$_CFG['fileIncludeOption']['fancybox'] = true;
+	setScript('fancybox/jquery.fancybox.pack');
+	setCss('../_script/fancybox/jquery.fancybox');
+	if($init)
+	{
+		if(!is_string($init))
+			$init = '.fancyimg';
+		$_tpl['onloadArray']['fancybox'] = "jQuery('".$init."').fancybox();";
+	}
+}
+
+function plugControl()
+{
+	global $_CFG;
+	if(isset($_CFG['fileIncludeOption']['fancybox']))
+		return false;
+	$_CFG['fileIncludeOption']['fancybox'] = true;
+
+	setCss('fcontrol');
+	setScript('fcontrol');
+}
+
+function plugForm()
+{
+	global $_CFG;
+	if(isset($_CFG['fileIncludeOption']['form']))
+		return false;
+	$_CFG['fileIncludeOption']['form'] = true;
+
+	setCss('form');
+	setScript('wepform');
+}
+
+function plugAjaxForm()
+{
+	global $_CFG;
+	if(isset($_CFG['fileIncludeOption']['ajaxForm']))
+		return false;
+	$_CFG['fileIncludeOption']['ajaxForm'] = true;
+
+	setCss('form');
+	setScript('wepform|script.jquery/form');
+}
+
+
+function plugJQueryUI($uiTheme='smoothness')
+{
+	global $_tpl,$_CFG;
+
+	if(isset($_CFG['fileIncludeOption']['jquery-ui']))
+		return false;
+	$_CFG['fileIncludeOption']['jquery-ui'] = true;
+
+	$ui = getUrlScript('script.jquery/jquery-ui');
+
+	if(!isset($_tpl['script'][$ui])) 
+	{
+		$_tpl['script'][$ui] = array();
+		setCss('style.jquery/'.$uiTheme.'/jquery-ui');
+	}
+
+}
+
+function plugJQueryUI_datepicker($time=false)
+{
+	global $_tpl,$_CFG;
+
+	if(isset($_CFG['fileIncludeOption']['datepicker']))
+		return false;
+	$_CFG['fileIncludeOption']['datepicker'] = true;
+
+	$ui = getUrlScript('script.jquery/jquery-ui');
+
+	plugJQueryUI();
+
+	$_tpl['script'][$ui][getUrlScript('script.jquery/jquery.localisation/jquery.ui.datepicker-ru')] = 1;
+	if($time) 
+	{
+		$_tpl['script'][$ui][getUrlScript('script.jquery/ui-timepicker-addon')] = 1;
+		setCss('style.jquery/ui-timepicker-addon');
+	}
+}
+
+function plugJQueryUI_multiselect($init = true)
+{
+	global $_tpl,$_CFG;
+
+	if(isset($_CFG['fileIncludeOption']['multiselect']))
+		return false;
+	$_CFG['fileIncludeOption']['multiselect'] = true;
+
+	$ui = getUrlScript('script.jquery/jquery-ui');
+
+	plugJQueryUI();
+
+	setCss('style.jquery/ui-multiselect');
+
+	$_tpl['script'][$ui][getUrlScript('script.jquery/ui-multiselect')] = 1;
+	$_tpl['script'][$ui][getUrlScript('script.jquery/jquery.localisation/ui-multiselect-ru')] = 1;
+	
+	if($init)
+		$_tpl['onloadArray']['multiselect'] = 'jQuery(\'select.multiple\').multiselect();';
+	##
+	//$_tpl['onload'] .= '$.localise(\'ui-multiselect\', {language: \'ru\', path: \''.$_CFG['_HREF']['_script'].'script.localisation/\'});';
+}
+
+function plugQRtip($init = true)
+{
+	global $_CFG;
+	if(isset($_CFG['fileIncludeOption']['qrtip']))
+		return false;
+	$_CFG['fileIncludeOption']['qrtip'] = true;
+
+	setScript('script.jquery/qrtip');
+	setCss('style.jquery/qrtip');
+	if($init)
+	{
+		global $_tpl;
+		$_tpl['onloadArray']['qrtip'] = 'jQuery(\'a\').qr();';
+	}
+}
+
+function plugMD5()
+{
+	global $_CFG;
+	if(isset($_CFG['fileIncludeOption']['md5']))
+		return false;
+	$_CFG['fileIncludeOption']['md5'] = true;
+
+	setScript('md5');
+}
+
+function plugSHL()
+{
+	global $_CFG;
+	if(isset($_CFG['fileIncludeOption']['shl']))
+		return false;
+	$_CFG['fileIncludeOption']['shl'] = true;
+
+	setScript('syntaxhighlighter');
 }

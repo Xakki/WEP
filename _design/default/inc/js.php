@@ -16,7 +16,7 @@
 					//$DATA['formcreat']['path'] = $HTML->path;
 					$_tpl['text'] = transformPHP($DATA,'formcreat');
 					$_tpl['onload'] .= 'wep.form.JSFR("form");';
-					$_CFG['fileIncludeOption']['ajaxForm'] = 1;
+					plugAjaxForm();
 				}
 			}
 			elseif(isset($DATA['static']) and $DATA['static']) {
@@ -30,9 +30,9 @@
 					$DATA['formtools'] = $DATA['formtools'][1]; // WTF?
 				
 				if((isset($DATA['formtools']['form']) and count($DATA['formtools']['form'])) or isset($DATA['formtools']['filter']) and count($DATA['formtools']['filter'])) {
-					//$_tpl['onload'] .= 'wep.jsForm(\'#form_tools_'.$_REQUEST['_func'].'\',{\'insertObj\':\'#tools_block\'});';
+					//$_tpl['onload'] .= 'wep.jsForm(\'#form_tools_'.$_REQUEST['_func'].'\',{\'insertobj\':\'#tools_block\'});';
 					$_tpl['onload'] .= 'wep.form.JSFR(\'#form_tools_f'.$MODUL->_cl.'\');';
-					$_CFG['fileIncludeOption']['ajaxForm'] = 1;
+					plugAjaxForm();
 				}
 
 				if(isset($DATA['formtools']['reloadPage']) and $DATA['formtools']['reloadPage'])
@@ -70,8 +70,4 @@
 	else
 		$_tpl['onload']='fLog(\'<div style="color:red;">'.date('H:i:s').' : Параметры заданны неверно!</div>\',1);';
 
-
-	include_once($_CFG['_PATH']['core'].'/includesrc.php');
-	fileInclude($_CFG['fileIncludeOption']);
-	
 

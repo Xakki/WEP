@@ -39,13 +39,6 @@
 			require_once($_CFG['_PATH']['wep_controllers'].'frontend/_redirect.php');
 		exit();
 	}
-	elseif(isset($_GET['_php']) and $_GET['_php']=='captcha') {
-		if(file_exists($_CFG['_PATH']['wepconf'].'_phpscript/_captcha.php'))
-			require_once($_CFG['_PATH']['wepconf'].'_phpscript/_captcha.php');
-		else
-			require_once($_CFG['_PATH']['wep_controllers'].'frontend/_captcha.php');
-		exit();
-	}
 	elseif(isset($_GET['_php']) and $_GET['_php']=='rss') {
 		if(file_exists($_CFG['_PATH']['wepconf'].'_phpscript/rss.php'))
 			require_once($_CFG['_PATH']['wepconf'].'_phpscript/rss.php');
@@ -98,9 +91,7 @@
 			$PGLIST->display();
 
 		//if($_SESSION['_showallinfo']) print('main = '.(getmicrotime()-$main2time).'<hr/>'); // для отладки
-				  
-			if (!$PGLIST->config['auto_include'])
-				$_CFG['fileIncludeOption'] = null; // чтобы автоматом не подключались стили и скрптыв
+
 		/*
 			if(!isset($_SESSION['showIEwarning'])) $_SESSION['showIEwarning']=0;
 			if(_fTestIE('MSIE 6') and $_SESSION['showIEwarning']<3) {

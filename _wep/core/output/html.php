@@ -1,6 +1,7 @@
 <?php
 
 $WEPOUT = new wephtml();
+$isAjax = false;
 
 class wephtml 
 {
@@ -36,7 +37,7 @@ class wephtml
 			$this->_html = file_get_contents($file);
 			//$this->_html = addcslashes($this->_html,'"\\');
 			include_once($_CFG['_PATH']['core'] . '/includesrc.php');
-			fileInclude($_CFG['fileIncludeOption']);
+			fileInclude();
 			arraySrcToStr();
 		}
 		else
@@ -55,7 +56,7 @@ class wephtml
 		/*Вывд логов и инфы*/
 		if ((isset($_COOKIE[$_CFG['wep']['_showallinfo']]) and $_COOKIE[$_CFG['wep']['_showallinfo']]) or $_CFG['_F']['adminpage']) 
 		{
-			$buffer .= $this->getLogInfo().$buffer;
+			$buffer = $this->getLogInfo().$buffer;
 		}
 		
 		$buffer = trim($buffer.static_main::showErr());

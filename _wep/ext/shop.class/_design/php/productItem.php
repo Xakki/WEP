@@ -11,7 +11,7 @@
 		} else {
 
 			global $_CFG, $_tpl;
-			$_CFG['fileIncludeOption']['fancybox'] = true;
+			plugFancybox();
 			setCss('/_shop/style/product|form');
 			setScript('/_shop/script/shop');
 

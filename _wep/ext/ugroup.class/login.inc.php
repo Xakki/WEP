@@ -47,6 +47,7 @@
 
 	if(count($_POST) and isset($_POST['login'])) {
 		$result = static_main::userAuth($_POST['login'],$_POST['pass']);
+		//print_r($result);exit();
 		if($result[1]) {
 			//static_main::redirect($ref);
 			//$mess=$result[0];
@@ -73,14 +74,16 @@
 		'#fn_login#' => $FUNCPARAM[4],
 	);
 
-	if(count($result) and $result[0]) {
+	if(count($result) and $result[0]) 
+	{
+		$mess['messages'] = array();
 		$mess['messages'][0][1] = $result[0];
 		if($result[1]) {
 			$mess['messages'][0][0] = 'ok';
 			$DATA['result'] = 1;
 			$this->pageinfo['template'] = 'waction';
 			$_tpl['REQUEST_URI'] = $ref;
-			$_tpl['onload'] .= '$(\'#ajaxload .blockclose\').click(function(){window.location.href=\''.$ref.'\';}); setTimeout(function() {window.location.href=\''.$ref.'\';}, 3000);';
+			$_tpl['onload'] .= '$(\'#ajaxload .blockclose\').click(function(){window.location.href=\''.$ref.'\';}); setTimeout(function() {window.location.href=\''.$ref.'\';}, 4000);';
 		}
 		else {
 			$mess['messages'][0][0] = 'error';

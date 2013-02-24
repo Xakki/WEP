@@ -4,6 +4,8 @@ function tpl_form(&$data, $tabs = array()) {
 	
 
 	$attr = array();
+	//setScript('wepform');
+	plugAjaxForm();
 	if(isset($data['_*features*_'])) 
 	{
 		$attr = $data['_*features*_'];
@@ -15,7 +17,7 @@ function tpl_form(&$data, $tabs = array()) {
 	if(!isset($attr['id']))
 		$attr['id'] = 0;
 	$texthtml = '';
-	$_CFG['fileIncludeOption']['form'] = 1;
+	plugForm();
 
 	// TABS
 	$flagTabs = null;
@@ -74,7 +76,7 @@ function tpl_form(&$data, $tabs = array()) {
 		else*/
 		if($r['type']=='submit') // TODO сделать через списки
 		{
-			$submitHtml .= '<div class="form-submit">';
+			$submitHtml .= '<div class="div-tr form-submit">';
 
 			if(is_array($r['value'])) 
 			{
@@ -146,7 +148,7 @@ function tpl_form(&$data, $tabs = array()) {
 			//	$CAPTION .= '<input type="checkbox" onchange="SetWysiwyg(this)" name="'.$k.'_ckedit" style="width:13px;vertical-align: bottom;margin: 0 0 0 5px;"/>';
 
 			if($r['type']!='checkbox') {
-				$texthtml .= '<div class="form-caption">'.$CAPTION.'</div>';
+				$texthtml .= '<label class="form-caption">'.$CAPTION.'</label>';
 			}
 
 			if(isset($r['readonly']) and $r['readonly'])
@@ -168,12 +170,15 @@ function tpl_form(&$data, $tabs = array()) {
 			if(isset($r['onchange']) and $r['onchange'])
 				$attribute .= ' onchange="'.htmlentities($r['onchange'],ENT_COMPAT,$_CFG['wep']['charset']).'"';
 
+			if(isset($r['placeholder']) and $r['placeholder'])
+				$attribute .= ' placeholder="'.$r['placeholder'].'"';
+
 			if(isset($r['error']) and is_array($r['error']) and count($r['error']))
 				$texthtml .= '<div class="caption_error">['.implode(' ',$r['error']).']</div>';
 
 			if($r['type']=='textarea') {
 				
-				$texthtml .= '<div class="form-value"><textarea name="'.$k.'" onkeyup="textareaChange(this)" rows="10" cols="80" '.$attribute.'>'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
+				$texthtml .= '<div class="form-value textarea"><textarea name="'.$k.'" onkeyup="textareaChange(this)" rows="10" cols="80" '.$attribute.'>'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
 			}
 			elseif($r['type']=='ckedit') {
 				$_tpl['script'][$_CFG['_HREF']['WSWG'].'ckeditor3/ckeditor.js'] = 1;
@@ -254,11 +259,11 @@ function tpl_form(&$data, $tabs = array()) {
 						$attribute .= ' checked="checked"';
 					$texthtml .= '<label class="form-value checkbox-value">
 						<input type="'.$r['type'].'" name="'.$k.'" value="1" '.$attribute.'/>
-						<div class="form-caption">'.$CAPTION.'</div>
+						<label class="form-caption">'.$CAPTION.'</label>
 					</label>';
 				}
 				else {
-					$texthtml .= '<div class="form-caption">'.$CAPTION.'</div>
+					$texthtml .= '<label class="form-caption">'.$CAPTION.'</label>
 						<div class="form-value checkbox-value checkbox-valuelist">';
 					foreach($r['valuelist'] as $kv=>$rv) {
 						$sel = false;
@@ -359,7 +364,7 @@ function tpl_form(&$data, $tabs = array()) {
 				if(isset($r['multiple']) and $r['multiple']==2) {
 					$texthtml .= '<select multiple="multiple" name="'.$k.'[]" class="multiple" size="'.$r['mask']['size'].'" '.$attribute;
 					$texthtml .= '>'.tpl_formSelect($r['valuelist'],$r['value']).'</select>';
-					$_CFG['fileIncludeOption']['multiple'] = 2;
+					plugJQueryUI_multiselect();
 				}
 				elseif(isset($r['multiple']) and $r['multiple']==3) {
 					if(!is_array($r['value']) or !count($r['value'])) $r['value'] = array('');
@@ -382,7 +387,7 @@ function tpl_form(&$data, $tabs = array()) {
 					}
 					$texthtml .= '<span class="ilistmultiple" onclick="wep.form.iListCopy(this,\'#tr_'.$k.' div.ilist\','.$r['mask']['maxarr'].')" title="Добавить '.$r['caption'].'">'.($r['mask']['maxarr']-count($r['value'])).'</span>';
 					$_tpl['onload'] .= 'wep.form.iListsort("#tr_'.$k.' .form-value");';
-					$_CFG['fileIncludeOption']['jquery-ui'] = true;
+					plugJQueryUI();
 				}
 				elseif(isset($r['multiple']) and $r['multiple']) {
 					
@@ -571,11 +576,11 @@ function tpl_form(&$data, $tabs = array()) {
 						}
 						$prop = '{'.implode(',',$prop).'}';
 						if($r['mask']['datepicker']['timeFormat']) {
-							$_CFG['fileIncludeOption']['datepicker'] = 2;
+							plugJQueryUI_datepicker(true);
 							$_tpl['script']['dp_'.$k] = 'function dp_'.$k.'() { $("input[name='.$k.']").datetimepicker('.$prop.')}';
 						}
 						else {
-							$_CFG['fileIncludeOption']['datepicker'] = 1;
+							plugJQueryUI_datepicker();
 							$_tpl['script']['dp_'.$k] = 'function dp_'.$k.'() { $("input[name='.$k.']").datepicker('.$prop.')}';
 						}
 						$_tpl['onload'] .= ' dp_'.$k.'(); ';
@@ -617,7 +622,7 @@ function tpl_form(&$data, $tabs = array()) {
 							<img src="'.$r['src'].'" class="i_secret i-reload" id="captcha" alt="CARTHA" title="'.$help.'"/>
 						</div>
 					</div>';
-				$_tpl['onload'] .= ' jQuery(\'.i-reload\').click(function(){reloadCaptcha(\''.$k.'\');}); jQuery(\'#tr_captcha input\').click(function(){wep.setCookie(\'testtest\',1);});';
+				//$_tpl['onload'] .= ' jQuery(\'.i-reload\').click(function(){reloadCaptcha(\''.$k.'\');}); jQuery(\'#tr_captcha input\').click(function(){wep.setCookie(\'testtest\',1);});';
 			}
 			elseif($r['type']=='file') {
 				
@@ -654,7 +659,7 @@ function tpl_form(&$data, $tabs = array()) {
 							if($thumb['w']) $texthtml .= '<div class="wep_thumb_comment">Эскиз размером '.$thumb['w'].'x'.$thumb['h'].'</div>';
 							$texthtml .= '</div>';
 						}
-					$_CFG['fileIncludeOption']['fancybox'] = 1;
+					plugFancybox();
 				}
 				elseif(!is_array($r['value']) and $r['value']!='' and $r['att_type']=='swf')
 					$texthtml .= '<object type="application/x-shockwave-flash" data="/'.$r['value'].'" height="50" width="200"><param name="movie" value="/'.$r['value'].'" /><param name="allowScriptAccess" value="sameDomain" /><param name="quality" value="high" /><param name="scale" value="exactfit" /><param name="bgcolor" value="#ffffff" /><param name="wmode" value="transparent" /></object>';
@@ -711,7 +716,7 @@ function tpl_form(&$data, $tabs = array()) {
 								<img src="/_wep/cdesign/default/img/aprm.gif" style="width:18px;cursor:pointer;" onclick="if(confirm(\'Вы действительно хотите изменить пароль?\')) $(\'#'.$k.'\').val(hex_md5(\''.$r['md5'].'\'+$(\'#a_'.$k.'\').val()));" alt="Сгенерировать пароль в формате MD5" title="Сгенерировать пароль в формате MD5"/>
 								<input type="text" id="a_'.$k.'" name="a_'.$k.'" value="" style="width:80%;vertical-align:top;"/>
 							</div></div>';
-				$_CFG['fileIncludeOption']['md5'] = 1;
+				plugMD5();
 			}*/
 			elseif($r['type']=='color') 
 			{
