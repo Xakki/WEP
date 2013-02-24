@@ -45,7 +45,7 @@ function tools_docron() {
 	global $_CFG;
 	if(isset($_POST['sbmt'])) {
 		$ttw  = getmicrotime();
-		include($_CFG['_PATH']['phpscript'].'/cron.php');
+		include($_CFG['_PATH']['controllers'].'/cron.php');
 		return '--Крон выполнен, время обработки задач =  '.(getmicrotime()-$ttw).'mc -----';
 	} else {
 		return '<form method="post"><input type="submit" name="sbmt" value="Выполнить"/></form>';
@@ -234,7 +234,7 @@ function tools_cron() {
 		static_main::redirect(key($DATA['path']));
 	}
 	else {
-		$DATA['messages'][] = static_main::am('info','Пропишите в cron <div>*/1 * * * *&#160;&#160;&#160;www-data&#160;&#160;&#160;php '.$_CFG['_PATH']['phpscript'].'cron.php</div>');
+		$DATA['messages'][] = static_main::am('info','Пропишите в cron <div>*/1 * * * *&#160;&#160;&#160;www-data&#160;&#160;&#160;php '.$_CFG['_PATH']['controllers'].'cron.php</div>');
 		$DATA['data'] = array(
 			'thitem'=>array(
 				'time'=>array('value'=>'Период'),
@@ -426,6 +426,17 @@ function data_to_html($data,$thdata=false) {
 
 function memcachstatus() {
 	global $_CFG;
+	$mc_load = false;
+	if (!extension_loaded('memcache')) {
+		$prefix = (PHP_SHLIB_SUFFIX === 'dll') ? 'php_' : '';
+		if (function_exists('dl') and dl($prefix . 'memcache.' . PHP_SHLIB_SUFFIX))
+			$mc_load = true;
+	}else
+		$mc_load = true;
+
+	if (!$mc_load) 
+		return '<h2>MEMCACHe Lib not include!</h2>';
+
 	$memcache_obj = new Memcache; 
 	$memcache_obj->addServer($_CFG['memcache']['host'],$_CFG['memcache']['port']); 
 	$status = $memcache_obj->getStats();
@@ -541,8 +552,8 @@ $dataF = array(
 	'allinfos'=> '<span class="tools_item">Выввод глобальных переменных</span>',
 );
 
-if(file_exists($_CFG['_PATH']['phpscript'].'/tools.php'))
-	include($_CFG['_PATH']['phpscript'].'/tools.php');
+if(file_exists($_CFG['_PATH']['controllers'].'/tools.php'))
+	include($_CFG['_PATH']['controllers'].'/tools.php');
 
 $html = '<div>Выбирите функцию для запуска</div><hr><ul>';
 foreach($dataF as $kk=>$rr) {

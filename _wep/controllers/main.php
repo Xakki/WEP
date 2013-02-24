@@ -18,30 +18,30 @@
 
 	// эти wep.php не подключаем, если что сами подключат
 	if(isset($_GET['_php']) and $_GET['_php']=='robotstxt') {
-		if(file_exists($_CFG['_PATH']['wepconf'].'_phpscript/robotstxt.php'))
-			require_once($_CFG['_PATH']['wepconf'].'_phpscript/robotstxt.php');
+		if(file_exists($_CFG['_PATH']['wepconf'].'controllers/robotstxt.php'))
+			require_once($_CFG['_PATH']['wepconf'].'controllers/robotstxt.php');
 		else
 			require_once($_CFG['_PATH']['wep_controllers'].'frontend/robotstxt.php');
 		exit();
 	}
 	elseif(isset($_GET['_php']) and $_GET['_php']=='js') {
 		$_CFG['returnFormat'] = 'json';
-		if(file_exists($_CFG['_PATH']['wepconf'].'_phpscript/_js.php'))
-			require_once($_CFG['_PATH']['wepconf'].'_phpscript/_js.php');
+		if(file_exists($_CFG['_PATH']['wepconf'].'controllers/_js.php'))
+			require_once($_CFG['_PATH']['wepconf'].'controllers/_js.php');
 		else
 			require_once($_CFG['_PATH']['wep_controllers'].'frontend/_js.php');
 		exit();
 	}
 	elseif(isset($_GET['_php']) and $_GET['_php']=='redirect') {
-		if(file_exists($_CFG['_PATH']['wepconf'].'_phpscript/_redirect.php'))
-			require_once($_CFG['_PATH']['wepconf'].'_phpscript/_redirect.php');
+		if(file_exists($_CFG['_PATH']['wepconf'].'controllers/_redirect.php'))
+			require_once($_CFG['_PATH']['wepconf'].'controllers/_redirect.php');
 		else
 			require_once($_CFG['_PATH']['wep_controllers'].'frontend/_redirect.php');
 		exit();
 	}
 	elseif(isset($_GET['_php']) and $_GET['_php']=='rss') {
-		if(file_exists($_CFG['_PATH']['wepconf'].'_phpscript/rss.php'))
-			require_once($_CFG['_PATH']['wepconf'].'_phpscript/rss.php');
+		if(file_exists($_CFG['_PATH']['wepconf'].'controllers/rss.php'))
+			require_once($_CFG['_PATH']['wepconf'].'controllers/rss.php');
 		else
 			require_once($_CFG['_PATH']['wep_controllers'].'frontend/rss.php');
 		exit();
@@ -66,8 +66,8 @@
 		return true;
 	}
 	elseif(isset($_GET['_php']) and $_GET['_type']=='xml') {
-		if(file_exists($_CFG['_PATH']['wepconf'].'_phpscript/'.$_GET['_php'].'.xml.php'))
-			require_once($_CFG['_PATH']['wepconf'].'_phpscript/'.$_GET['_php'].'.xml.php');
+		if(file_exists($_CFG['_PATH']['wepconf'].'controllers/'.$_GET['_php'].'.xml.php'))
+			require_once($_CFG['_PATH']['wepconf'].'controllers/'.$_GET['_php'].'.xml.php');
 		else
 			require_once($_CFG['_PATH']['wep_controllers'].'frontend/'.$_GET['_php'].'.xml.php');
 		exit();

@@ -128,7 +128,7 @@ $_CFG['_FILE']['wep_config_form'] = $_CFG['_PATH']['wep'].'config/config_form.ph
 $_CFG['_FILE']['config'] = WEP_CONFIG;
 $_CFG['_PATH']['config'] = dirname(WEP_CONFIG).'/'; // конфиги
 $_CFG['_PATH']['wepconf'] = dirname($_CFG['_PATH']['config']).'/';
-$_CFG['_PATH']['phpscript'] = $_CFG['_PATH']['wepconf'] . 'controllers/';
+$_CFG['_PATH']['controllers'] = $_CFG['_PATH']['wepconf'] . 'controllers/';
 $_CFG['_PATH']['inc'] = $_CFG['_PATH']['wepconf'] . 'inc/'; // путь к обработчикам блоков страниц
 $_CFG['_PATH']['ext'] = $_CFG['_PATH']['wepconf'] . 'ext/'; // путь к пользовательским модулям
 
