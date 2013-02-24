@@ -146,13 +146,13 @@ class static_control {
 
 		if($formflag) // показывать форму
 			$formflag = $_this->kFields2Form($param,$argForm);
-
 		return Array(
 			Array(
 				'messages'=>array_merge($mess,$arr['mess']),
 				'form'=>($formflag?$argForm:array()),
 				'formSort'=> $_this->formSort,
-				'flag' => $flag
+				'flag' => $flag,
+				'options' => $_this->getFormOptions()
 			), $flag);
 	}
 

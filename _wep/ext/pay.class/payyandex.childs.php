@@ -187,8 +187,8 @@ class payyandex_class extends kernel_extends {
 				array('alert','Выполняется открытие страницы оплаты на '.$this->caption),
 				array('notice','<small>Если у вас не открылось окно оплаты, возможно ваш браузер заблокировал открытие окна (Ваш браузер должен был выдать предупреждение об этом, кликните на всплывшее сообщение и разрешите данную операцию)</small>'),
 			);
+			$result['options'] = array('name'=>'yandex','action'=>$this->config['actionURL'].'"  target="_blank');
 			$result['form'] = array(
-				'_*features*_' => array('name'=>'yandex','action'=>$this->config['actionURL'].'"  target="_blank'),
 				'FormComment'=>array('type'=>'hidden','value'=>'Счёт№'.$data['child']['id']), // заголовок у отправителя
 				'comment-needed'=>array('type'=>'hidden','value'=>'false'), // не нужны коменты, ТОДУЖ брать опцию из конфига
 				'label'=>array('type'=>'hidden','value'=>'true'),//

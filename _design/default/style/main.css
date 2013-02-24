@@ -446,6 +446,7 @@ form table.form {
 		font-size:1em;
 		text-align:center;
 		position:relative;
+		width: 635px;
 	}
 
 	form.filter select {

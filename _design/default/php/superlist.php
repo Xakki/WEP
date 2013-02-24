@@ -10,12 +10,12 @@
 		if(!isset($data['DIR']))
 			$data['DIR'] = dirname(__FILE__);
 
-		$flag = 0;
+		$hasIdData = 0;
 		if(isset($data['formcreat']) and count($data['formcreat'])) {
-			if(isset($data['formcreat']['form']['_*features*_']['id']) and $data['formcreat']['form']['_*features*_']['id'])
-				$flag = 2;
+			if(isset($data['formcreat']['options']['id']) and $data['formcreat']['options']['id'])
+				$hasIdData = 2;
 			else
-				$flag = 1;
+				$hasIdData = 1;
 		}
 
 		$temp_topmenu = '<div class="superMenu">';
@@ -30,7 +30,7 @@
 
 		if(isset($data['path']) and count($data['path'])) {
 			include_once($data['DIR'].'/path.php');
-			$html .= tpl_path($data['path'],$flag);// PATH
+			$html .= tpl_path($data['path'],$hasIdData);// PATH
 		}
 
 		$html .= '<div id="tools_block" style="display:none;"></div>';

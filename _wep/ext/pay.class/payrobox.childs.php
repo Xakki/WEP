@@ -54,13 +54,12 @@ class payrobox_class extends kernel_extends {
 		
 		$data['text_before'] = 'Пополнение баланса через Робокассу<br/>После оплаты, на Ваш счет поступит '.$amount.' рублей.';
 		$data['text_after'] = '';
-		
-		$data['formcreat']['form'] = array(
-			'_*features*_' => array(
+		$data['options'] = array(
 				'method' => 'post',
 				'name' => 'pay',
 				'action' => 'http://test.robokassa.ru/Index.aspx',
-			),
+			);
+		$data['form'] = array(
 			'MrchLogin' => array(
 				'value' => $this->config['mrh_login'],
 				'type' => 'hidden',

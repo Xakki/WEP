@@ -79,6 +79,7 @@ function tools_cron() {
 	$DATA['path'] = array(
 		$FP=>'Задания'
 	);
+	$mess = array();
 
 	$DATA['topmenu']['add'] = array(
 		'href' => array('_type'=>'add'),
@@ -89,7 +90,7 @@ function tools_cron() {
 	);
 	if (isset($_GET['_type']) and ($_GET['_type'] == 'add' or ($_GET['_type'] == 'edit' and isset($_GET['_id']))) ) {
 
-		$FORM = array('_*features*_' => array('method' => 'POST', 'name' => 'cron'));
+		$FORM = array();
 
 		if (isset($_POST['sbmt'])) {
 
@@ -201,8 +202,11 @@ function tools_cron() {
 			'type' => 'submit',
 			'value' => 'Сохранить');
 
-		$FORM['formcreat'] = array('form' => $FORM);
-		//$FORM['formcreat']['messages'] = $mess;
+		$FORM = array(
+			'form' => $FORM,
+			'options' => array('method' => 'POST', 'name' => 'cron'),
+			'messages' => $mess
+		);
 		$result = transformPHP($DATA, 'path');
 		$result .= transformPHP($FORM, 'formcreat');
 	}
@@ -297,7 +301,7 @@ function tools_worktime() {
 		} else {
 			$result = 'Включить режим';
 		}
-		$DATA = array('_*features*_' => array('method' => 'POST', 'name' => 'step0'));
+		$DATA = array();
 		$DATA['info'] = array('type'=>'info', 'caption'=>'<div>По этой <a href="/index.html?_showallinfo=1">ссылке</a> вы можете видить страницы, в режиме "Технические работы".</div>');
 		$DATA['work_title'] = array(
 			'caption' => 'Заголовок',
@@ -319,8 +323,11 @@ function tools_worktime() {
 			'type' => 'submit',
 			'value' => $result);
 
-		$DATA['formcreat'] = array('form' => $DATA);
-		$DATA['formcreat']['messages'] = $mess;
+		$DATA = array(
+			'form' => $DATA,
+			'messages' => $mess,
+			'options' => array('method' => 'POST', 'name' => 'step0')
+		);
 
 		$result .= transformPHP($DATA, 'formcreat');
 	return $result;

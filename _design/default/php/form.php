@@ -1,23 +1,15 @@
 <?php
-function tpl_form(&$data, $tabs = array()) {
+function tpl_form(&$data, $tabs = array()) 
+{
 	global $_CFG, $_tpl;
-	
-
-	$attr = array();
-	//setScript('wepform');
-	plugAjaxForm();
-	if(isset($data['_*features*_'])) 
-	{
-		$attr = $data['_*features*_'];
-		$_tpl['onload'] .= 'wep.form.initForm(\'#form_'.$attr['name'].'\');';
-	}
-	else
-		$_tpl['onload'] .= 'wep.form.initForm(\'form\');';
-
-	if(!isset($attr['id']))
-		$attr['id'] = 0;
-	$texthtml = '';
 	plugForm();
+	$texthtml = '';
+
+	if(isset($data['_*features*_']))
+	{
+		trigger_error('Ошибка. Старый формат данных. Атрибут _*features*_ не поддерживается.', E_USER_WARNING);
+		return '';
+	}
 
 	// TABS
 	$flagTabs = null;
@@ -407,13 +399,13 @@ function tpl_form(&$data, $tabs = array()) {
 							$ir['css'] = '';
 						if(isset($r['#sel#']))
 							$ir['css'] .= ' selected';
-						$attr = ' type="submit" class="'.$ir['css'].'"';
+						$attribute = ' type="submit" class="'.$ir['css'].'"';
 						if(isset($ir['#id#']))
-							$attr .= ' value="'.$ir['#id#'].'"';
+							$attribute .= ' value="'.$ir['#id#'].'"';
 						if(isset($ir['#name#']))
-							$attr .= ' title="'.$ir['#name#'].'"';
+							$attribute .= ' title="'.$ir['#name#'].'"';
 	
-						$texthtml .= '<button name="'.$k.'" '.$attr.'/>';
+						$texthtml .= '<button name="'.$k.'" '.$attribute.'/>';
 					}
 				}
 				else {
@@ -707,7 +699,7 @@ function tpl_form(&$data, $tabs = array()) {
 			}	
 			elseif($r['type']=='password_new' or $r['type']=='password') 
 			{
-				$texthtml .= '<div class="form-value"><input type="password" name="'.$k.'" '.($attr['id']?'':'value="'.$r['value'].'"').' class="password" '.$attribute.'/>
+				$texthtml .= '<div class="form-value"><input type="password" name="'.$k.'" value="'.$r['value'].'" class="password" '.$attribute.'/>
 						<div class="passnewdesc" onclick="passwordShow(this)">Отобразить/скрыть символы</div></div>';
 			}
 			/*elseif($r['type']=='password' and !$r['readonly']) {

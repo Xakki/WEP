@@ -85,12 +85,12 @@
 
 				if(isset($DATA['formcreat'])) {
 					end($DATA['path']);prev($DATA['path']);
-					$DATA['formcreat']['form']['_*features*_']['prevhref'] = str_replace('&amp;', '&', key($DATA['path']));
+					$DATA['formcreat']['options']['prevhref'] = str_replace('&amp;', '&', key($DATA['path']));
 				}
 				
 				if(isset($DATA['formcreat']) and $this->formFlag==1) {
 					 $_SESSION['mess']=$DATA['formcreat']['messages'];
-					static_main::redirect($DATA['formcreat']['form']['_*features*_']['prevhref']);
+					static_main::redirect($DATA['formcreat']['options']['prevhref']);
 				}
 				elseif(!isset($DATA['formcreat']) and $this->formFlag!=3) {
 					$_SESSION['mess']=$DATA['messages'];

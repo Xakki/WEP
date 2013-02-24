@@ -1028,17 +1028,20 @@ class product_class extends kernel_extends {
 				'listname'=>'_MOP',
 				'caption' => 'Объявлений на странице',
 				'value'=>$this->messages_on_page);*/
-			$this->filter_form['_*features*_']=array('name'=>'paramselect','action'=>'','method'=>'get');
+			$options=array('name'=>'paramselect','action'=>'','method'=>'GET');
 			$this->filter_form['sbmt'] = array('type'=>'submit','value'=>'Поиск');
 		}
 		else {
-			$this->filter_form['_*features*_']=array('name'=>'paramselect','action'=>'','method'=>'GET','onsubmit'=>'return getToText(this)');
+			$options=array('name'=>'paramselect','action'=>'','method'=>'GET','onsubmit'=>'return getToText(this)');
 			$this->filter_form['sbmt'] = array('type'=>'submit','value'=>'задать параметры');
 		}
 		$this->kFields2FormFields($this->filter_form);
 		/*if($flag)
-			$_tpl['onload'] .= '$(\'#form_tools_paramselect div.multiplebox input\').live(\'click\',multiCheckBox); $(\'#form_tools_paramselect input\').live(\'change\',filterChange);';*/
-		return $this->filter_form;
+			$_tpl['onload'] .= '$(\'#filter_paramselect div.multiplebox input\').live(\'click\',multiCheckBox); $(\'#form_tools_paramselect input\').live(\'change\',filterChange);';*/
+		return array(
+			'form' => $this->filter_form,
+			'options' => $options
+		);
 	}
 
 	public function AjaxShopParam() {
@@ -1053,8 +1056,10 @@ class product_class extends kernel_extends {
 		if($_GET['_rid'] and $form = $this->ParamFieldsForm($_GET['_id'],$_GET['_rid'])) {
 			if(count($form) and $this->kFields2FormFields($form)) {
 				$DATA['form'] = &$this->form;
+				$DATA['options'] = $this->getFormOptions();
 				$RESULT['html'] = transformPHP($DATA,'#pg#form');
 			}
+
 			//$RESULT['onload'] .= 'rclaim(\'type\');';
 		}
 		else {

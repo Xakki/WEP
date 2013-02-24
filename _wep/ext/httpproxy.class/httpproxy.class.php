@@ -217,7 +217,11 @@ class httpproxy_class extends kernel_extends {
 			);
 			self::kFields2FormFields($fields_form);
 		}
-		return Array('form' => $fields_form, 'messages' => $mess);
+		return Array(
+			'form' => $fields_form, 
+			'messages' => $mess,
+			'options' => $this->getFormOptions()
+		);
 	}
 
 	function toolsclearUse() {
@@ -243,7 +247,11 @@ class httpproxy_class extends kernel_extends {
 			);
 			self::kFields2FormFields($fields_form);
 		}
-		return Array('form' => $fields_form, 'messages' => $mess);
+		return Array(
+			'form' => $fields_form, 
+			'messages' => $mess,
+			'options' => $this->getFormOptions()
+		);
 	}
 
 	function toolsCheckSite() {

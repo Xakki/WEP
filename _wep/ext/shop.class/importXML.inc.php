@@ -78,11 +78,15 @@
 				'type' => 'submit',
 				'value' => 'Импортировать',
 			);
-			$this->kFields2FormFields($fields_form, 'POST');
+			$SHOP->kFields2FormFields($fields_form, 'POST');
 		}
 	}
 
-	$DATA = array('form' => $fields_form, 'messages' => $mess);
+	$DATA = array(
+		'form' => $fields_form, 
+		'messages' => $mess,
+		'options' => $SHOP->getFormOptions()
+	);
 	$html = transformPHP($DATA,'#pg#formcreat');
 
 

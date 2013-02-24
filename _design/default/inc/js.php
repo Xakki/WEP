@@ -15,8 +15,6 @@
 				else {
 					//$DATA['formcreat']['path'] = $HTML->path;
 					$_tpl['text'] = transformPHP($DATA,'formcreat');
-					$_tpl['onload'] .= 'wep.form.JSFR("form");';
-					plugAjaxForm();
 				}
 			}
 			elseif(isset($DATA['static']) and $DATA['static']) {
@@ -27,12 +25,9 @@
 			}
 			elseif(isset($DATA['formtools']) and count($DATA['formtools'])) {
 				if(isset($DATA['formtools'][1]['form']))
-					$DATA['formtools'] = $DATA['formtools'][1]; // WTF?
-				
-				if((isset($DATA['formtools']['form']) and count($DATA['formtools']['form'])) or isset($DATA['formtools']['filter']) and count($DATA['formtools']['filter'])) {
-					//$_tpl['onload'] .= 'wep.jsForm(\'#form_tools_'.$_REQUEST['_func'].'\',{\'insertobj\':\'#tools_block\'});';
-					$_tpl['onload'] .= 'wep.form.JSFR(\'#form_tools_f'.$MODUL->_cl.'\');';
-					plugAjaxForm();
+				{
+					$DATA['formtools'] = $DATA['formtools'][1]; // 
+					trigger_error('WTF is it?', E_USER_WARNING);
 				}
 
 				if(isset($DATA['formtools']['reloadPage']) and $DATA['formtools']['reloadPage'])

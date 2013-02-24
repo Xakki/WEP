@@ -84,14 +84,16 @@ else {
 	$mess[] = array('name' => 'ok', 'value' => 'Будте осторожны при вводе этих настроек.');
 }
 
-$DATA['_*features*_'] = array('method' => 'POST', 'name' => 'step0');
 if($flag) {
 	$DATA['sbmt'] = array(
 		'type' => 'submit',
 		'value' => $var_const['sbmt']);
 }
 
-$DATA['formcreat'] = array('form' => $DATA);
-$DATA['formcreat']['messages'] = $mess;
+$DATA = array(
+	'form' => $DATA,
+	'options' => array('method' => 'POST', 'name' => 'step0'),
+	'messages' => $mess
+);
 $html = transformPHP($DATA, 'formcreat');
 return $html;

@@ -1,18 +1,17 @@
 <?php
-	function tpl_filter(&$data) {
+	function tpl_filter(&$data) 
+	{
 		global $_CFG, $_tpl;
 		$html = '';
-		if(isset($data['_*features*_'])) {
-			$attr = $data['_*features*_'];
-			unset($data['_*features*_']);
-			$html .= '<form id="form_tools_'.$attr['name'].'" class="'.(isset($attr['css'])?$attr['css']:'filter').'" method="'.$attr['method'].'" action="'.$attr['action'].'"';
-			if(isset($attr['onsubmit']))
-				$html .= ' onsubmit="'.$attr['onsubmit'].'"';
+		if(isset($data['options'])) {
+			$html .= '<form id="'.$data['options']['name'].'" class="'.(isset($data['options']['css'])?$data['options']['css']:'filter').'" method="'.$data['options']['method'].'" action="'.$data['options']['action'].'"';
+			if(isset($data['options']['onsubmit']))
+				$html .= ' onsubmit="'.$data['options']['onsubmit'].'"';
 			$html .= '>';
 		}
 		
 		$html .= '<!--BEGIN_FILTER-->';
-		foreach($data as $k=>$r) {
+		foreach($data['form'] as $k=>$r) {
 			if(!isset($r['value']))
 				$r['value'] = '';
 			$attribute = '';

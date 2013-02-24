@@ -262,7 +262,6 @@ class static_tools {
 			$RESULT['reloadPage'] = true;
 		} 
 		else {
-			//$fields_form['_*features*_'] = array('name' => 'Reinstall', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']));
 			$fields_form['_info'] = array(
 				'type' => 'info',
 				'caption' => static_main::m('_reinstall_info', $_this));
@@ -272,6 +271,7 @@ class static_tools {
 		}
 		$_this->kFields2FormFields($fields_form);
 		$RESULT['form'] = $fields_form;
+		$RESULT['options'] = $this->getFormOptions();//'Reinstall'
 		return $RESULT;
 	}
 
@@ -352,6 +352,7 @@ class static_tools {
 		}
 		$_this->kFields2FormFields($fields_form);
 		$RESULT['form'] = $fields_form;
+		$RESULT['options'] = $_this->getFormOptions();
 		return $RESULT;
 	}
 
@@ -400,7 +401,6 @@ class static_tools {
 				$_tpl['onload'] .= '$("#tools_block").hide();';
 			}
 		} else {
-			$fields_form['_*features*_'] = array('name' => 'f'.$_this->_cl, 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
 			$fields_form['_info'] = array(
 				'type' => 'info',
 				'caption' => '<h2 style="text-align:center;">' . $_this->caption . '</h2><h3 style="text-align:center;">Выбранно элементов : ' . count($_COOKIE['SuperGroup'][$_this->_cl]) . '</h3>');
@@ -416,7 +416,12 @@ class static_tools {
 			);
 		}
 		$_this->kFields2FormFields($fields_form);
-		return Array('form' => $fields_form, 'messages' => $mess);
+		return Array(
+			'form' => $fields_form, 
+			'messages' => $mess,
+			'options' => $_this->getFormOptions()
+			//'options' => array('name' => 'f'.$_this->_cl, 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
+		);
 	}
 
 	/*
@@ -430,7 +435,6 @@ class static_tools {
 	  else
 	  $mess[] = array('name'=>'error', 'value'=>static_main::m('_reindex_err',$_this));
 	  }else{
-	  $fields_form['_*features*_'] = array('name'=>'reindex','action'=>str_replace('&','&amp;',$_SERVER['REQUEST_URI']));
 	  $fields_form['_info'] = array(
 	  'type'=>'info',
 	  'caption'=>static_main::m('_reindex_info',$_this));
@@ -439,7 +443,11 @@ class static_tools {
 	  'value'=>static_main::m('Submit',$_this));
 	  }
 	  $_this->kFields2FormFields($fields_form);
-	  return Array('form'=>$fields_form, 'messages'=>$mess);
+	  return Array(
+	  'form'=>$fields_form, 
+	  'messages'=>$mess,
+	  'options' => array('name'=>'reindex','action'=>str_replace('&','&amp;',$_SERVER['REQUEST_URI']));
+	  );
 	  }
 
 	  private function _reindex()
@@ -944,7 +952,6 @@ deny from all
 				//'  <a href="" onclick="window.location.reload();return false;">Обновите страницу.</a>'
 			}
 			else {
-				$MODUL->form['_*features*_'] = array('name' => 'Checkmodul', 'method' => 'POST', 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']));
 				if (count($check_result)) {
 					$MODUL->form['_info'] = array(
 						'type' => 'info',
@@ -1016,7 +1023,11 @@ deny from all
 					$mess[] = static_main::am('ok', '_recheck_have_nothing', $MODUL);
 			}
 		}
-		$DATA = array('form' => $MODUL->form, 'messages' => $mess);
+		$DATA = array(
+			'form' => $MODUL->form,
+			'messages' => $mess,
+			'options' => $_this->getFormOptions('Checkmodul')
+		);
 		return Array($flag, $DATA);
 	}
 

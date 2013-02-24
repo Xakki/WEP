@@ -272,7 +272,7 @@ wep.form = {
 		if(!jQuery('#'+obj.name+'t2').size()){
 			val = document.createElement('span');
 			val.className = "dscr txtCounter";
-			val.innerHTML = '<span>Cимволов:</span><input type="text" id="'+obj.name+'t2" maxlength="4" readonly="false" class="textcount" style="text-align:right;"/><i>/</i><input type="text" id="'+obj.name+'t1" maxlength="4" readonly="false" class="textcount" value="'+max+'"/>';
+			val.innerHTML = '<span>Cимволов:</span><input type="text" id="'+obj.name+'t2" maxlength="4" disabled class="textcount" style="text-align:right;"/><i>/</i><input type="text" id="'+obj.name+'t1" maxlength="4" disabled class="textcount" value="'+max+'"/>';
 			jQuery(obj).after(val);
 		}
 		if(obj.value.length>max)

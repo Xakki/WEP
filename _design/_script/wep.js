@@ -548,13 +548,15 @@ window.wep = {
 	},
 
 	// всплывающая подсказка
-	showHelp: function(obj,mess,time,nomiga) {
+	showHelp: function(obj,mess,time,nomiga) 
+	{
 		if(!obj || !mess || !jQuery(obj).size() || jQuery(obj).next().attr('class')=='helpmess') return false;
 		jQuery('div.helpmess').remove();
 		var pos = jQuery(obj).offset();
 		pos.top = parseInt(pos.top);
 		pos.left = parseInt(pos.left);
-		if(!time) time = 5000;
+		if(!time) 
+			time = 5000;
 		jQuery(obj).after('<div class="helpmess">'+mess+'<div class="trgl trgl_d"> </div></div>');//Вставляем всплыв блок
 		var slct = jQuery(obj).next();// бурем ссылку на добавленный блок
 		var H = jQuery(slct).height(); // Определяем его высоту
@@ -579,7 +581,8 @@ window.wep = {
 				jQuery(slct).stop().fadeOut(300,function(){jQuery(slct).remove()});
 			});
 	},
-	miga: function(obj,opc1,opc2){
+	miga: function(obj,opc1,opc2)
+	{
 		if(jQuery(obj).size()==0)
 			return false;
 		var opc = jQuery(obj).css('opacity');
@@ -893,8 +896,11 @@ window.wep = {
 			jQuery('#'+id).show();
 			param['insertobj']  = '#'+id;
 		}
-		/* else
-			param['onclk']='reload';	*/
+		else
+		{
+			//param['onclk']='reload';
+			param['isPupup']=true;
+		}
 		JSWin(param);
 		return false;
 	},
@@ -1166,6 +1172,12 @@ window.wep = {
 			hrf = $(hrf).attr('href');
 		if (hrf.substr(0, 7) != 'http://')
 			hrf = base_href+hrf;*/
+		if(!hrf)
+		{
+			window.location.reload();
+			return false;
+		}
+
 		window.location.href = hrf;
 		return false;
 	},

@@ -1312,6 +1312,21 @@ abstract class kernel_extends {
 	}
 
 	/**
+	* Опции для формы
+	*
+	*/
+	public function getFormOptions($name=null, $method=null) 
+	{
+		//'f'.$this->_cl
+		if(!$name)
+			$name = 'form_'.$this->_cl;
+		if(!$method)
+			$method = 'POST';
+		$option = array('name' => $name, 'method'=>$method, 'id' => $this->id, 'action' => $_SERVER['REQUEST_URI'], 'prevhref' => $_SERVER['HTTP_REFERER']);
+		return $option;
+	}
+
+	/**
 	 * Создание данных для формы
 	 * @param mixed $param - параметры
 	 * @return array
@@ -1336,9 +1351,6 @@ abstract class kernel_extends {
 		}
 		if (!is_array($fields_form) or !count($fields_form))
 			return false;
-
-		if(!isset($fields_form['_*features*_']))
-			$fields_form['_*features*_'] = array('name' => $this->_cl, 'method' => 'post', 'id' => $this->id, 'action' => $_SERVER['REQUEST_URI']);
 
 		if(!isset($fields_form['_info']))
 		{
@@ -1392,8 +1404,8 @@ abstract class kernel_extends {
 	 * @param mixed $fields - название списока или массив данных для списка
 	 * @return array
 	 */
-	public function kFields2FormFields(&$fields, $method='GET') {
-		return include($this->_CFG['_PATH']['core'] . 'kernel.kFields2FormFields.php');
+	public function kFields2FormFields(&$fields) {
+		return static_form::kFields2FormFields($this, $fields);
 	}
 
 	/**
@@ -1541,7 +1553,10 @@ abstract class kernel_extends {
 			Array(
 				'messages'=>$arr['mess'],
 				'form'=>($formflag?$argForm:array()),
-			), $flag);
+				'options' => $this->getFormOptions()
+			), 
+			$flag
+		);
 	}
 
 	/**
@@ -1550,23 +1565,27 @@ abstract class kernel_extends {
 	 */
 	public function toolsFormfilter() {
 		global $_tpl;
-		$fields_form = array();
 		/**
 		 * очистка фильтра
 		 * */
-		if (isset($_REQUEST['f_clear_sbmt'])) {
+
+		if (isset($_REQUEST['f_clear_sbmt'])) 
+		{
 			unset($_SESSION['filter'][$this->_cl]);
 			$_tpl['onload'] .= 'window.location.href = \'' . $_SERVER['HTTP_REFERER'] . '\';';
 		}
 		/**
 		 * задаются параметры фильтра
-		 * */ elseif (isset($_REQUEST['sbmt'])) {
+		 * */ 
+		elseif (isset($_REQUEST['sbmt'])) 
+		{
 			$this->setFilter();
 			$_tpl['onload'] .= 'window.location.href = \'' . $_SERVER['HTTP_REFERER'] . '\';';
 		}
 		else
-			$fields_form = $this->Formfilter();
-		return Array('filter' => $fields_form, 'messages' => array());
+			$resuslt = $this->Formfilter();
+
+		return $resuslt;
 	}
 
 	/**
@@ -1616,9 +1635,10 @@ abstract class kernel_extends {
 
 			//}
 		}
+		$name = 'filter_'.$this->_cl;
 		//фильтр	
-		if (count($fields_form)) {
-			//$fields_form['_*features*_'] = array('name' => 'Formfilter', 'action' => '', 'method' => 'post');
+		if (count($fields_form)) 
+		{
 			$fields_form['sbmt'] = array(
 				'type' => 'submit',
 				'value' => 'Отфильтровать'
@@ -1628,13 +1648,19 @@ abstract class kernel_extends {
 
 			$fields_form['f_clear_sbmt'] = array(
 				'type' => 'info',
-				'caption' => '<a href="' . $_SERVER['HTTP_REFERER'] . '" onclick="JSWin({\'insertobj\':\'#form_tools_f'.$this->_cl.'\',\'href\':$(\'#form_tools_f'.$this->_cl.'\').attr(\'action\'),\'data\':{ f_clear_sbmt:1}});return false;">Очистить</a>');
+				'caption' => '<a href="' . $_SERVER['HTTP_REFERER'] . '" onclick="JSWin({\'insertobj\':\'#'.$name.'\',\'href\':$(\'#'.$name.'\').attr(\'action\'),\'data\':{ f_clear_sbmt:1}});return false;">Очистить</a>');
 		}
+
 		if(count($_FILTR))
 		{
 			$fields_form['filterEnabled'] = array('type'=>'hidden');
 		}
-		return $fields_form;
+
+		return array(
+			'isFilter' => true,
+			'form' => $fields_form,
+			'options' => $this->getFormOptions($name, 'GET')
+		);
 	}
 
 	/**

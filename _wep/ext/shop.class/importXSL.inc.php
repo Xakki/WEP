@@ -239,7 +239,11 @@
 			);
 			$SHOP->kFields2FormFields($fields_form, 'POST');
 		}
-		$DATA = Array('form' => $fields_form, 'messages' => $mess);
+		$DATA = Array(
+			'form' => $fields_form, 
+			'messages' => $mess,
+			'options' => $SHOP->getFormOptions()
+		);
 		$html = transformPHP($DATA,'#pg#formcreat');
 
 

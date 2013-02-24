@@ -69,8 +69,8 @@
 					}
 					end($DATA['path']);prev($DATA['path']);
 					$prevhref = str_replace('&amp;', '&', key($DATA['path']));
-					if(isset($DATA['formcreat']['form']['_*features*_'])) {
-						$DATA['formcreat']['form']['_*features*_']['prevhref'] = $prevhref;
+					if(isset($DATA['formcreat']['options'])) {
+						$DATA['formcreat']['options']['prevhref'] = $prevhref;
 					}
 
 					if(isset($DATA['formcreat']['form']) and $flag==1 and !count($DATA['formcreat']['form'])) {

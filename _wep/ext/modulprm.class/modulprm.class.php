@@ -249,9 +249,11 @@ final class modulprm_class extends kernel_extends {
 			'type' => 'submit',
 			'value' => 'Сохранить');
 
-		$DATA['_*features*_'] = array('method' => 'POST', 'name' => 'step1');
-
-		$DATA = array('form' => $DATA, 'messages' => $mess);
+		$DATA = array(
+			'form' => $DATA, 
+			'messages' => $mess,
+			'options' => array('method' => 'POST', 'name' => 'step1')
+		);
 
 		return array($res, $DATA);
 	}

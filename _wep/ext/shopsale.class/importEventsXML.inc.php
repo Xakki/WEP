@@ -77,7 +77,11 @@
 		}
 	}
 
-	$DATA = array('form' => $fields_form, 'messages' => $mess);
+	$DATA = array(
+		'form' => $fields_form,
+		'messages' => $mess,
+		'options' => $this->getFormOptions()
+	);
 	$html = transformPHP($DATA,'#pg#formcreat');
 
 

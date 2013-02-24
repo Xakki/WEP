@@ -652,7 +652,15 @@ class users_class extends kernel_extends {
 		else
 			$argForm['_info']= array('type'=>'info','caption'=>static_main::m('title_regme',$this),'css'=>'caption');
 
-		return Array(Array('messages'=>($mess+$arr['mess']), 'form'=>($formflag?$argForm:array()), 'class'=>'regform'), $flag);
+		return Array(
+			Array(
+				'messages'=>($mess+$arr['mess']), 
+				'form'=>($formflag?$argForm:array()), 
+				'class'=>'regform',
+				'options' => $this->getFormOptions()
+			), 
+			$flag
+		);
 	}
 
 	function sendRegMail($vars,$pass='',$subject='',$flaInfo=false) {

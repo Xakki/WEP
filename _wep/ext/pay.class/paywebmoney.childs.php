@@ -86,14 +86,13 @@ class paywebmoney_class extends kernel_extends {
 		$data['text_before'] = 'Пополнение баланса через систему '.$caption.'<br/>После оплаты, на Ваш счет поступит '.$amount.' рублей.';
 		$data['text_after'] = '';
 	
-	
-		$data['formcreat']['form'] = array(
-			'_*features*_' => array(
+		$data['options'] = array(
 				'method' => 'post',
 				'name' => 'pay',
 				'action' => 'https://merchant.webmoney.ru/lmi/payment.asp',
 				'enctype' => '',
-			),
+			);
+		$data['form'] = array(
 			'LMI_PAYMENT_AMOUNT' => array(
 				'value' => $amount,
 				'type' => 'hidden',
