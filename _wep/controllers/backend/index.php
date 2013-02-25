@@ -32,8 +32,10 @@
 		if($result[0])
 			$mess[] = array( ($result[1]==1?'ok':'error'), $result[0]);
 		*/
+		if($mainPage=='login')
+			$setRedirect = true;
 		$result = include($_CFG['_PATH']['wep_controllers'].'login.php');
-		if(!$result)
+		if($result===false)
 			exit();
 	}
 
