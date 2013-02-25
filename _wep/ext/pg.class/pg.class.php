@@ -261,7 +261,6 @@ class pg_class extends kernel_extends {
 
 		$flag_content = $this->can_show();
 		
-		
 		foreach ($this->config['marker'] as $km => $rm)
 			$_tpl[$km] = '';
 
@@ -292,6 +291,7 @@ class pg_class extends kernel_extends {
 		if ($flag_content == 1) 
 		{
 			$this->initHTML();
+
 			$flag_content = $this->display_page($this->id,true);
 			$_tpl['title'] = $this->get_caption();
 		}

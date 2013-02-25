@@ -16,7 +16,21 @@ a {
 	position:fixed;
 	top:50%;
 	left:50%;
-	display:none;}
+	display:none;
+
+}
+#ajaxload.loadAnimation {
+	background: url('/_design/_img/load.gif') no-repeat 0 0 transparent; 
+	height: 20px;
+	width: 20px;
+}
+#ajaxload.loadAnimation::after {
+	content: 'Загружаю...';
+	position: relative;
+	top: 11px;
+	left: -30px;
+	color: #fff;
+}
 
 	.layerloader {
 		white-space:nowrap;

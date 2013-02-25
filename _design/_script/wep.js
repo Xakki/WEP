@@ -243,7 +243,7 @@ window.wep = {
 		if(!param['href'])		param['href'] = wep.siteJS;
 		if(param['onclk']=='reload')		param['onclk'] = 'window.location.reload();';
 		if(!param['data']) 		param['data'] = '';
-		if(!param['isPupup']) 		param['isPupup'] = false;
+		if(!param['ispupup']) 		param['ispupup'] = false;
 		if(!param['dataType'])	param['dataType'] = 'json';
 		if(!param['insertobj']) // объект в который(в зависимости от param['inserttype']) будут вставляться result.html
 			param['insertobj'] = false;
@@ -320,12 +320,13 @@ window.wep = {
 				if(typeof(param['precall']) != 'undefined' && typeof (param['precall']) == 'function') 
 					param['precall'].call(this, result, param); // result = 
 
-				if(param['isPupup'])
+				//clearTimeout(param['timeBG']);// Чистим таймер и тем самым затеменение не отобразиться
+
+				if(param['ispupup'])
 				{
 					// Вывод в POPup 
 					//param['fadeOff'] = true;
 					param['fade'] = false;
-					clearTimeout(param['timeBG']);// Чистим таймер и тем самым затеменение не отобразиться
 					var htmlOut = result.text;
 					if(result.title)
 						htmlOut = '<div class="blockhead">'+result.title.substr(0,strpos(result.title,' -') )+'</div><hr/>'+htmlOut;
@@ -342,6 +343,7 @@ window.wep = {
 						jQuery(param['insertobj']).replaceWith(result.text);
 					else //Внутрь контейнера
 						jQuery(param['insertobj']).html(result.text);
+					//param['fade'] = false;
 				}
 				else if (typeof(param['data'])=='object')
 				{
@@ -432,6 +434,7 @@ window.wep = {
 		showBG(body);
 		if (_Browser.type == 'IE' && 8 > _Browser.version)
 			jQuery('select').toggleClass('hideselectforie7',false);
+		//jQuery(objid).removeClass('loadAnimation');
 	},
 
 	fShowload: function(objid, txt, body, onclk) 
@@ -446,23 +449,30 @@ window.wep = {
 
 		if(jQuery(objid).size()==0)
 		{
-			if(objid != '#ajaxload') alert('Ошибка. Сообщите одминистратору сайта!');
+			if(objid !== '#ajaxload') alert('Ошибка. Сообщите одминистратору сайта!');
 			jQuery(body).append("<div id='ajaxload'>&#160;</div>");
 		}
-		if(!txt || txt==''){
-			txt = "<div class='layerloader'><img src='/_design/_img/load.gif' alt=' '/><br/>Подождите. Идёт загрузка</div>";
-			jQuery(body+' div.layerblock').hide();
+		if(!txt || txt=='')
+		{
+			//jQuery(body+' div.layerblock').hide();
+			jQuery(objid).addClass('loadAnimation');
 		}
-		else {
-			jQuery(body+' div.layerloader').hide();
-			if(objid == '#ajaxload') 
+		else
+		{
+			//jQuery(body+' div.layerloader').hide();
+			if(objid === '#ajaxload') 
 				txt = '<div class="layerblock"><div class="blockclose" onClick="'+onclk+'"></div>'+txt+'</div>';
 		}		
+
 		showBG(body,1);
-		if(txt && txt!='') {
+
+		if(txt && txt!='') 
+		{
 			jQuery(objid).html(txt);
 		}
+
 		jQuery(objid).show();
+		wep.fMessPos(objid);
 		setTimeout(function(){wep.fMessPos(objid);},500);
 
 		return false;
@@ -475,13 +485,13 @@ window.wep = {
 	showBG: function(body,show,k) {
 		if(!body) body='body';
 		if(!show){
-			jQuery(body+' > #ajaxbg').hide();
+			jQuery('#ajaxbg').hide();
 		}
 		else {
 			if(!k) k= 0.5;
-			if(jQuery(body+' > #ajaxbg').size()==0)
+			if(jQuery('#ajaxbg').size()==0)
 				jQuery(body).append("<div id='ajaxbg'>&#160;</div>");
-			jQuery(body+' > #ajaxbg').css('opacity', k).show();
+			jQuery('#ajaxbg').css('opacity', k).show();
 		}
 	},
 
@@ -516,9 +526,10 @@ window.wep = {
 	// Позициоонирует блок по центру
 	fMessPos: function(obj) {
 		if(!obj) obj='#ajaxload';
-		jQuery(obj).css('width','auto');
 		var FC = jQuery(obj+' :first');
-		//alert(FC.text());
+		if(!FC[0]) return false;
+
+		jQuery(obj).css('width','auto');
 
 		var H=document.documentElement.clientHeight;
 		var Hblock= FC[0].scrollHeight;
@@ -900,7 +911,7 @@ window.wep = {
 		else
 		{
 			//param['onclk']='reload';
-			param['isPupup']=true;
+			param['ispupup']=true;
 		}
 		JSWin(param);
 		return false;
