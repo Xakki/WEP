@@ -430,11 +430,11 @@ window.wep = {
 	{
 		if(!body || body===true) body='body';
 		if(!objid || typeof(objid)!='string' ) objid = '#ajaxload';
-		jQuery(objid).hide();
+
 		showBG(body);
 		if (_Browser.type == 'IE' && 8 > _Browser.version)
 			jQuery('select').toggleClass('hideselectforie7',false);
-		//jQuery(objid).removeClass('loadAnimation');
+		jQuery(objid).removeClass('loadAnimation');
 	},
 
 	fShowload: function(objid, txt, body, onclk) 

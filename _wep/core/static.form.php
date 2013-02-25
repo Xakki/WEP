@@ -1102,14 +1102,14 @@ class static_form {
 					if($data[$key]!=$data['re_'.$key])
 						$error[] = 32;
 					else
-						$data[$key] = passwordHash($data[$key], $form);
+						$data[$key] = self::passwordHash($data[$key], $form);
 				}else
 					unset($data[$key]);
 			}
 			elseif(isset($form['mask']['password']) and $form['mask']['password']=='confirm')
 			{
 				if(isset($_this->data[$_this->id][$key]) and $data[$key]) {
-					if($_this->data[$_this->id][$key]!= passwordHash($data[$key], $form) )
+					if($_this->data[$_this->id][$key]!= self::passwordHash($data[$key], $form) )
 						$error[] = 322;
 					unset($data[$key]);
 				}
@@ -1117,10 +1117,10 @@ class static_form {
 			elseif(isset($form['mask']['password']) and $form['mask']['password']=='change')
 			{
 				if(isset($_this->data[$_this->id][$key]) and $data[$key] or $data[$key.'_old']) {
-					if($_this->data[$_this->id][$key]!=passwordHash($data[$key.'_old'], $form))
+					if($_this->data[$_this->id][$key]!=self::passwordHash($data[$key.'_old'], $form))
 						$error[] = 321;
 					else
-						$data[$key] = passwordHash($data[$key], $form);
+						$data[$key] = self::passwordHash($data[$key], $form);
 				}
 			} 
 			else {
@@ -1133,7 +1133,7 @@ class static_form {
 					elseif(_strlen($data[$key])<$form['mask']['min'])
 						$error[] = 21;
 				}
-				$data[$key] = passwordHash($data[$key], $form);
+				$data[$key] = self::passwordHash($data[$key], $form);
 			}
 			return true;
 		}
