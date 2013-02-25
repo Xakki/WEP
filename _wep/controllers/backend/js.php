@@ -13,7 +13,7 @@
 
 	$result = static_main::userAuth(); // запскает сессию и проверяет авторизацию
 	if(!$result[1]) {
-		//header('login.php?ref='.base64encode($_SERVER['REQUEST_URI']));
+		//header('login?ref='.base64encode($_SERVER['REQUEST_URI']));
 		$_tpl['text'] = 'Вы не авторизованы , либо доступ закрыт.';
 		exit($_tpl['text']);
 	}
@@ -29,7 +29,7 @@
 	if($_CFG['wep']['access'] and (!isset($_SESSION['user']['id']) or $_SESSION['user']['level']>=5)) {
 		$_tpl['text'] = static_main::m('denied');
 		exit(static_main::m('denied'));
-		//$_tpl['onload']='window.location="login.php?mess=Недостаточно прав доступа."';
+		//$_tpl['onload']='window.location="login?mess=Недостаточно прав доступа."';
 	}
 	elseif(!$_GET['_modul']) {// or !$_SESSION['user']['wep']
 		$_tpl['text'] = static_main::m('errdata');

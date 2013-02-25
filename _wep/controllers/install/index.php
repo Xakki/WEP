@@ -69,7 +69,7 @@ if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] === 0)
 		$_tpl['step'] .= '<div class="stepcomment">' . $stp[$_GET['step']]['comment'] . '</div>';
 	$_tpl['onload'] = '';
 	/* 	$_tpl['ref'] = $ref;
-	  $_tpl['action'] = $_CFG['_HREF']['BH'].$_CFG['PATH']['admin'].'/login.php'.(isset($_GET['install'])?'?install':'');
+	  $_tpl['action'] = $_CFG['_HREF']['BH'].$_CFG['PATH']['admin'].'/login'.(isset($_GET['install'])?'?install':'');
 	  if($result[0]) $result[0] = '<div style="color:red;">'.$result[0].'</div>';
 	  elseif(isset($_GET['install'])) $result[0] = '<div style="color:red;">Установка недостающих данных</div>';
 	  $_tpl['mess'] = '<div class="messhead">'.$result[0].'</div>'; */

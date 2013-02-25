@@ -47,7 +47,7 @@
 		}
 		$m_ug = $name = _getExtMod('ugroup');
 		$m_u = $name = _getExtMod('users');
-		$html .= '<a class="am_user" href="/'.$_CFG['PATH']['admin'].'/index.php?_view=list&_modul='.$m_ug.'&'.$m_ug.'_id='.$data['user']['gid'].'&'.$m_ug.'_ch='.$m_u.'&'.$m_u.'_id='.$data['user']['id'].'&_type=edit">'.$data['user']['name'].' ['.$data['user']['gname'].']</a>';
+		$html .= '<a class="am_user" href="'.$_CFG['PATH']['admin'].'index.php?_view=list&_modul='.$m_ug.'&'.$m_ug.'_id='.$data['user']['gid'].'&'.$m_ug.'_ch='.$m_u.'&'.$m_u.'_id='.$data['user']['id'].'&_type=edit">'.$data['user']['name'].' ['.$data['user']['gname'].']</a>';
 
 		return $html.'<div class="clk"></div>';
 	}

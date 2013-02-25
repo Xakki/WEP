@@ -346,19 +346,21 @@ class static_main {
 	static function userAuth($login='', $pass='') {
 		global $_CFG;
 		session_go();// запускаем сессию, чтоб проверить авторизован ли пользователь
-		$result = array('', 0);
+		$result = array('', -1);
 		if (!self::_prmUserCheck() or $login) 
 		{
 			if ($_CFG['wep']['access']) 
 			{
-				if ($login) {
+				if ($login) 
+				{
 					$result = array(static_main::m('autherr'), 0);
 					if(_new_class('ugroup', $UGROUP))
 						$result = $UGROUP->authorization($login, $pass);
 					else
 						$result[0] = 'Ugroup modul is off';
 				}
-				elseif(!self::_prmUserCheck() and isset($_COOKIE['remember'])) {
+				elseif(!self::_prmUserCheck() and isset($_COOKIE['remember'])) 
+				{
 					if (preg_match("/^[0-9A-Za-z\_]+$/",$_COOKIE['remember'])) {
 						if(_new_class('ugroup', $UGROUP))
 							$result = $UGROUP->cookieAuthorization();

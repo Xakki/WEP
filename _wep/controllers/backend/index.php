@@ -23,17 +23,19 @@
 		exit();
 	}
 
-
-	if($mainPage=='login')
+	if($mainPage=='login' or $result[1]<1 or !$_SESSION['user']['wep']) 
 	{
-		include($_CFG['_PATH']['wep_controllers'].'login.php');
-		exit();
+		/*
+		$_REQUEST['ref'] = $_SERVER['REQUEST_URI'];
+		$setRedirect = false;
+		$mess = array();
+		if($result[0])
+			$mess[] = array( ($result[1]==1?'ok':'error'), $result[0]);
+		*/
+		$result = include($_CFG['_PATH']['wep_controllers'].'login.php');
+		if(!$result)
+			exit();
 	}
-
-	if(!$result[1]) {
-		static_main::redirect($_CFG['PATH']['admin'].'login?ref='.base64encode($_SERVER['REQUEST_URI']));
-	}
-
 
 /*ADMIN*/
 	function fAdminMenu($_modul='') {
@@ -109,7 +111,6 @@
 	}
 /*---------------ADMIN*/
 
-	if($_SESSION['user']['wep']) {
 		include(getPathTheme().'/inc/index.php');
 		if(static_main::_prmUserCheck(2)) {
 			if(!isset($_COOKIE[$_CFG['wep']['_showerror']]))
@@ -150,7 +151,3 @@
 			$_tpl['contact'] .= '<div class="ctd1">телефон:</div><div class="ctd2">'.$_CFG['info']['phone'].'</div>';
 
 		$_tpl['wep_ver'] = $_CFG['info']['version'];
-	}
-	else {
-		static_main::redirect('login.php?mess=denied&ref='.base64encode($_SERVER['REQUEST_URI']));
-	}
