@@ -99,7 +99,7 @@ a {
 		}
 
 
-	#ajaxbg {
+	.ajaxbg {
 		position: fixed;
 		top: 0;
 		left: 0;
@@ -109,7 +109,7 @@ a {
 		display: none;
 		z-index: 20;
 	}
-	* html #ajaxbg {
+	* html .ajaxbg {
 		position: absolute;
 		height: expression(document.body.scrollHeight > document.body.offsetHeight ? document.body.scrollHeight : document.body.offsetHeight + 'px');
 	}

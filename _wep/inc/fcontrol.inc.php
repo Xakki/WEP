@@ -76,7 +76,7 @@
 		$html = transformPHP($DATA, '#modulprm#fcontrol');
 	}
 
-	if($_CFG['returnFormat'] == 'json') {
+	if(isAjax()) {
 		if($html)
 			$html = '<div class="fcontrol-text">'.$html.'</div>';
 		return $html;

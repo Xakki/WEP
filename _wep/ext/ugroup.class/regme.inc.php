@@ -44,7 +44,7 @@
 				</div>
 			</div>
 		</div>
-		<div id="ajaxbg" style="opacity: 0.5; display: block;">&nbsp;</div>';
+		<div class="ajaxbg" style="opacity: 0.5; display: block;">&nbsp;</div>';
 		$_tpl['onload'] .= 'fMessPos();';
 	} else {
 		$param = array();

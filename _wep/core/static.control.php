@@ -20,7 +20,7 @@ class static_control {
 	//update modul item
 
 		//$param
-		if($_this->_CFG['returnFormat'] == 'json') {
+		if(isAjax()) {
 			$param['ajax'] = 1;
 			$param['errMess'] = 1;
 		}

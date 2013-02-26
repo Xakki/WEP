@@ -94,7 +94,6 @@ $GLOBALS['_ERR'] = array(); //текс ошибок
 
 $_CFG['allowAutoIncludeCss'] = true; // Разрешаем автоподключение стилей
 $_CFG['allowAutoIncludeScript'] = true; // Разрешаем автоподключение скриптов
-$_CFG['returnFormat'] = 'html';
 //json
 //''
 

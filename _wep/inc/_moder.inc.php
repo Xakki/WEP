@@ -69,7 +69,7 @@
 
 			list($DATA,$this->formFlag) = $MODUL->super_inc($param,$_GET['_type']);
 
-			if($this->_CFG['returnFormat'] == 'html' or $this->formFlag==3) {
+			if(!isAjax() or $this->formFlag==3) {
 				// Adept path
 				$path = array();
 				$temp = $DATA['firstpath'];

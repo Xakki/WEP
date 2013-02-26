@@ -245,7 +245,7 @@ class mail_class extends kernel_extends {
 		if(
 				!isset($_COOKIE['ref'.$uri_hash]) 
 			or 
-				($this->_CFG['returnFormat'] == 'html' and $_SERVER['HTTP_REFERER']  and $_COOKIE['ref'.$uri_hash]!=$_SERVER['HTTP_REFERER'] and strpos($_SERVER['HTTP_REFERER'],$_SERVER['REQUEST_URI'])===false) 
+				(!isAjax() and $_SERVER['HTTP_REFERER']  and $_COOKIE['ref'.$uri_hash]!=$_SERVER['HTTP_REFERER'] and strpos($_SERVER['HTTP_REFERER'],$_SERVER['REQUEST_URI'])===false) 
 			) {
 			_setcookie('ref'.$uri_hash, $_SERVER['HTTP_REFERER'], ($this->_CFG['time']+3600));
 		}

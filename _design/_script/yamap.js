@@ -25,7 +25,7 @@ function boardOnMap(tp) {
 		jQuery('body').append('<div id="boardOnMap" style="display:none;"><div class="layerblock"><div onclick="delMap()" class="blockclose">&#160;</div><div id="YMapsID" style="width:700px;height:500px;background-color: white;"></div></div></div>');
 	}
 	jQuery('#boardOnMap').show().css('height','auto');
-	showBG(0,1);
+	showBG();
 	fMessPos('#boardOnMap');
 	if(!setMap) {
 		YMaps.load(initMap);
@@ -167,6 +167,6 @@ function showAddress (value) {
 
 function delMap() {
 	jQuery('#boardOnMap').hide();
-	showBG();
+	hideBG();
 	//setMap.destructor();
 }

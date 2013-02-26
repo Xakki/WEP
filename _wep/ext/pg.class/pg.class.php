@@ -316,7 +316,7 @@ class pg_class extends kernel_extends {
 			$_tpl['name'] = (is_string($temp)?$temp:$temp['name']);
 		}
 	
-		if($this->_CFG['returnFormat'] == 'html') {
+		if(!isAjax()) {
 			$_tpl['onload'] = '
 			wep.pgId = ' . $this->id . ';
 			wep.pgParam =' . $pageParamEncode . ';
@@ -516,7 +516,7 @@ class pg_class extends kernel_extends {
 			}
 		
 		$this->access_flag = false;
-		if($this->_CFG['returnFormat'] != 'html')
+		if(isAjax())
 			$this->access_flag = true;
 
 		return $this->getContent($Cdata);
@@ -533,7 +533,7 @@ class pg_class extends kernel_extends {
 			}
 		
 		$this->access_flag = false;
-		if($this->_CFG['returnFormat'] != 'html')
+		if(isAjax())
 			$this->access_flag = true;
 
 		return $this->getContent($Cdata);

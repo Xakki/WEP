@@ -4,16 +4,15 @@ var timerid2 = 0;
 var ajaxComplite = 1;
 
 wep.form = {
-	initForm: function(selector) 
+	initForm: function(selector, param) 
 	{
 		var captcha = $(selector).find('#tr_captcha');
 
-		if($(selector).data('initform'))
+		if($(selector).data('initform')) // если уже фрма была ранее инициализирована
 		{
 			reloadCaptcha('captcha');
 			return false;
 		}
-
 		$(selector).data('initform', true);
 
 		if(captcha.size())
@@ -47,10 +46,10 @@ wep.form = {
 
 		$(selector).off("focus.float").on("focus.float", "input[data-width0]", function(e){return wep.form.checkFloat(e);});
 
-		wep.form.ajaxForm(selector);
+		wep.form.ajaxForm(selector, param);
 	},
 	// Делаем форму на странице аяксовой
-	ajaxForm : function(id) 
+	ajaxForm : function(id, param) 
 	{
 		var contentID = $(id).attr('data-cid');
 		if(!contentID) return false;
@@ -65,21 +64,21 @@ wep.form = {
 		{
 			hrf += key+'='+wep.pgGet[key]+'&';
 		}
-		
+
 		$(id).attr('action',hrf+'_modul=pg&_fn=AjaxForm&contentID='+contentID+'&pageParam[]='+arr);
-		JSFR(id);
+		wep.form.JSFR(id, param);
 	},
 
 	// Аякс отправка формы
-	JSFR: function(n) {
+	JSFR: function(n, param) {
 		// NEED INCLUDE jquery.form
 		wep.include(wep.HREF_script+'script.jquery/form.js', function() {
-
 			jQuery(n).ajaxForm({
 				debug: 1,
 				beforeSubmit: 
 					function(a,f,o) 
 					{
+						wep.loadAnimationOnAjax(param);
 						//var formElement = f[0];
 						o.dataType = 'json';
 						//a.push({name:'HTTP_X_REQUESTED_WITH', value:'xmlhttprequest'});
@@ -93,19 +92,9 @@ wep.form = {
 						alert(statusText+' - form notsuccess (may be wrong json data, see console log)');
 						console.log(d);console.log(d.responseText);
 					},
-				success: 
-					function(result) 
-					{
-						//console.log(result);
-						clearTimeout(timerid);
-						if(result.text!= undefined && result.text!='') {
-							wep.fShowload(false,result.text);
-						} else
-							timerid2 = setTimeout(function(){wep.fHideLoad();},200);
-						if(result.onload!= undefined && result.onload!='') eval(result.onload);
-						if(result.log!= undefined && result.log!='') fLog(fSpoiler(result.log,'AJAX log'),1);
-
-					}
+				success: function(result){
+					wep.ajaxSuccess(result, param);
+				}
 			});
 		});
 		
@@ -283,8 +272,8 @@ wep.form = {
 
 /*********** FORMa ********/
 
-function JSFR(n) {
-	wep.form.JSFR(n);
+function JSFR(n, param) {
+	wep.form.JSFR(n, param);
 }
 
 function textareaChange(obj,max) {

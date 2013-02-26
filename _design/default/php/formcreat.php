@@ -83,7 +83,7 @@
 			else
 			{
 				plugAjaxForm();
-				$_tpl['onload'] .= 'wep.form.initForm(\'#'.$attr['name'].'\');';
+				$_tpl['onload'] .= 'wep.form.initForm(\'#'.$attr['name'].'\', formParam);';
 				//$_tpl['onload'] .= 'wep.form.JSFR("form");';
 			}
 			/*if(!isset($_SESSION['user']['id']))

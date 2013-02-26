@@ -25,7 +25,6 @@
 		exit();
 	}
 	elseif(isset($_GET['_php']) and $_GET['_php']=='js') {
-		$_CFG['returnFormat'] = 'json';
 		if(file_exists($_CFG['_PATH']['wepconf'].'controllers/_js.php'))
 			require_once($_CFG['_PATH']['wepconf'].'controllers/_js.php');
 		else
