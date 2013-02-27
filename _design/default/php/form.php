@@ -759,7 +759,7 @@ function tpl_form(&$data, $tabs = array())
 				{
 					$maskFloat = explode(',', $r['mask']['width']);
 					if(!isset($maskFloat[1])) $maskFloat[1] = 0;
-					$attribute .=  ' data-width0="'.$maskFloat[0].'" data-width1="'.$maskFloat[1].'"';
+					$attribute .=  ' class="floatval" data-width0="'.$maskFloat[0].'" data-width1="'.$maskFloat[1].'"';
 				}
 				/*elseif(isset($r['isInt'])) 
 				{

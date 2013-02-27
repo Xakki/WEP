@@ -326,6 +326,7 @@ class pg_class extends kernel_extends {
 			wep.DOMAIN = "' . $_SERVER['HTTP_HOST2'] . '";
 			wep.wepVer = "wepjs'.$this->_CFG['info']['version'].'";
 			window.MY_THEME = "'.getUrlTheme().'";
+			formParam = [];
 			wep.init();
 			'.$_tpl['onload'];
 

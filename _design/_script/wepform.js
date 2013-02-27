@@ -6,25 +6,33 @@ var ajaxComplite = 1;
 wep.form = {
 	initForm: function(selector, param) 
 	{
-		var captcha = $(selector).find('#tr_captcha');
+		var jform = $(selector);
 
-		if($(selector).data('initform')) // если уже фрма была ранее инициализирована
+		
+
+		if(jform.data('initform')) // если уже фрма была ранее инициализирована
 		{
 			reloadCaptcha('captcha');
 			return false;
 		}
-		$(selector).data('initform', true);
+		jform.data('initform', true);
 
+		// Инициальзация аякса для формы
+		wep.form.ajaxForm(jform, param);
+
+		// Если есть капча
+		var captcha = jform.find('#tr_captcha');
 		if(captcha.size())
 		{
-			$(selector).off('click', '.i-reload').on('click', '.i-reload', function(){
+			jform.off('click', '.i-reload').on('click', '.i-reload', function(){
 				reloadCaptcha('captcha', true);
 			});
-			$(selector).off('click', '#tr_captcha input').one('click', '#tr_captcha input', function(){
+			jform.off('click', '#tr_captcha input').one('click', '#tr_captcha input', function(){
 				wep.setCookie('testtest',1);
 			});
 		}
 
+		// WTH?
 		$(selector+' span.labelInput').unbind('click').click(function() {
 			$(this).next().focus();
 		});
@@ -36,22 +44,31 @@ wep.form = {
 				$(this).prev().show();
 		});
 
+		// Обязательные поля
 		$(selector+' span.form-requere').unbind('click').click(function() {
 			var tx = $(this).attr('data-text');
 			if(!tx) tx = 'Данное поле обязательно для заполнения!';
 			wep.showHelp(this,tx,2000,1)
 		});
 
-		$(selector).off("keydown change").on("keydown change", "input[type=int]", function(e){return wep.form.checkInt(e);});
+		// Целочисленные поля
+		jform.off("keydown.ini change.ini").on("keydown.ini change.ini", "input[type=int]", function(e){return wep.form.checkInt(e);});
+		// Дробные поля
+		jform.off("focus.float").on("focus.float", "input.floatval", function(e){return wep.form.checkFloat(e);});
 
-		$(selector).off("focus.float").on("focus.float", "input[data-width0]", function(e){return wep.form.checkFloat(e);});
+		// Активный элемент формы
 
-		wep.form.ajaxForm(selector, param);
+		jform.find('.div-tr').off('focusin').on('focusin', function() {
+			$(this).addClass('active');
+		}).off('focusout').on('focusout', function() {
+			$(this).removeClass('active');
+		});
+
 	},
 	// Делаем форму на странице аяксовой
-	ajaxForm : function(id, param) 
+	ajaxForm : function(jSelector, param) 
 	{
-		var contentID = $(id).attr('data-cid');
+		var contentID = $(jSelector).attr('data-cid');
 		if(!contentID) return false;
 
 		var arr = '';
@@ -65,15 +82,15 @@ wep.form = {
 			hrf += key+'='+wep.pgGet[key]+'&';
 		}
 
-		$(id).attr('action',hrf+'_modul=pg&_fn=AjaxForm&contentID='+contentID+'&pageParam[]='+arr);
-		wep.form.JSFR(id, param);
+		$(jSelector).attr('action',hrf+'_modul=pg&_fn=AjaxForm&contentID='+contentID+'&pageParam[]='+arr);
+		wep.form.JSFR(jSelector, param);
 	},
 
 	// Аякс отправка формы
-	JSFR: function(n, param) {
+	JSFR: function(jSelector, param) {
 		// NEED INCLUDE jquery.form
 		wep.include(wep.HREF_script+'script.jquery/form.js', function() {
-			jQuery(n).ajaxForm({
+			jQuery(jSelector).ajaxForm({
 				debug: 1,
 				beforeSubmit: 
 					function(a,f,o) 
