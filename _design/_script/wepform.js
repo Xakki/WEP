@@ -99,7 +99,7 @@ wep.form = {
 						//console.log(a,f,o);
 						//wep.preSubmitAJAX (f);
 					},
-					
+
 				error: 
 					function(d,statusText) 
 					{
@@ -110,10 +110,19 @@ wep.form = {
 				success: function(result)
 				{
 					// AJAX форма ничего не выводит, а все делается через onload
+
 					if(result.formFlag==-1)
+					{
+						$(jSelector).trigger('errorForm', [result, param]); // Ошибка валидации
 						result.text = null;
+					}
+					else if(result.formFlag==0)
+						$(jSelector).trigger('showForm', [result, param]); // Обычная загрузка формы
+					else if(result.formFlag==1)
+						$(jSelector).trigger('successForm', [result, param]); // Успешно 
 
 					wep.ajaxSuccess(result, param);
+
 				}
 
 			});

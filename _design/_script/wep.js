@@ -213,6 +213,11 @@ window.wep = {
 	*    1) - передача объекта ФОРМЫ (тип запроса указанный в атриб. method  по ссылке указанный в атрибуте action, и передаются данные из элеменотов форм )
 	*    1) - передача строки GET либо POST (по умолчанию GET)
 	*
+	* trigger
+	* * ajaxSuccess - Получен ответ по аяксу, выполняем самым первым
+	* * fShowloadContent - Если отрисован полученный контент
+	* * execLoadFunction - После получения ответа, загружаются скрипты и тогда выполняется
+	*
 	*
 	*/
 	JSWin: function(param) 
@@ -308,10 +313,11 @@ window.wep = {
 			{
 				if(XMLHttpRequest.responseText)
 				{
-					var response = JSON.parse(XMLHttpRequest.responseText);
-					if(response['text'])
+					var result = JSON.parse(XMLHttpRequest.responseText);
+					if(result['text'])
 					{
-						this.success(response, textStatus, XMLHttpRequest);
+						// this.success(response, textStatus, XMLHttpRequest);
+						wep.ajaxSuccess(result, param);
 						return true;
 					}
 				}
@@ -332,7 +338,7 @@ window.wep = {
 	{
 		console.log(result);
 
-		jQuery(param['insertobj']).trigger('ajaxSuccess', result, param);
+		jQuery(param['insertobj']).trigger('ajaxSuccess', [result, param]);
 
 		//return false;
 		 // подключение Стилей
@@ -389,7 +395,7 @@ window.wep = {
 	// Выполнение функции при полной загрузке
 	execLoadFunction: function (result, formParam) 
 	{
-		jQuery(param['insertobj']).trigger('execLoadFunction', result, formParam);
+		jQuery(formParam['insertobj']).trigger('execLoadFunction', [result, formParam]);
 
 		//Запуск функции пользователя
 		if(typeof formParam['call'] != 'undefined') 
@@ -432,6 +438,9 @@ window.wep = {
 		else if(param['onclk']==='reload')
 			param['onclk'] = 'window.location.reload();';
 
+		if(param['insertobj'])
+			jQuery(param['insertobj']).trigger('fShowloadContent', [result, param]);
+
 		var htmlOut = result.text;
 
 		if(param['wrapTitle'])
@@ -463,8 +472,7 @@ window.wep = {
 				wep.fMessPos(param['insertobj']);
 				setTimeout(function(){wep.fMessPos(param['insertobj']);},500);
 			}
-		
-			jQuery(param['insertobj']).trigger('contentReady');
+			///////////////////////////////
 		}
 		/*else if (typeof(param['data'])=='object')
 		{
