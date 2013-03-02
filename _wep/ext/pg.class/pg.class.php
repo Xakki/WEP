@@ -575,8 +575,11 @@ class pg_class extends kernel_extends {
 		$PGLIST = &$this;
 		$SQL = &$this->SQL;
 		$Chref = $this->getHref();
+		//$this->formFlag = null;// Флаг состояния формы
 
-		foreach ($Cdata as &$rowPG) {
+		foreach ($Cdata as &$rowPG) 
+		{
+
 			$this->contentID = $rowPG['id'];
 			if (!$rowPG['active'])
 				continue;
@@ -751,6 +754,11 @@ class pg_class extends kernel_extends {
 						trigger_error('Обрботчик страниц "' . $rowPG['pagetype'] . '" не найден!', E_USER_WARNING);
 						continue;
 					}
+					/*if(is_null($this->formFlag)) {
+						$_tpl['text'] = 'Не верные данные! Отсутствует параметр $this->formFlag'.$_tpl['text'];
+						return true;
+					}*/
+
 
 					// если не булевое значение то выводим содержимое
 					if (is_string($flagPG)) {
@@ -1171,50 +1179,6 @@ class pg_class extends kernel_extends {
 		}
 
 		return $FUNCPARAM;
-	}
-
-	/*
-	* Обработка АЯКС запросов с страницы содержащий форму
-	*/
-	public function AjaxForm() 
-	{
-		global $_tpl, $PGLIST;
-		$PGLIST = $this;
-		$this->contentID = (int)$_GET['contentID'];
-		if(isset($_GET['pageParam']))
-			$this->pageParam = $_GET['pageParam'];
-
-		$DATA  = array();
-		$htmlb = '';
-		$this->ajaxRequest = true;
-		//if(count($_POST)) $_POST['sbmt'] = 1;
-
-		$Cdata = array();
-
-
-		// TODO : проверка правд доступа
-		$cls = 'SELECT * FROM ' . $this->SQL_CFG['dbpref'] . 'pg_content WHERE active=1 and id=' . $this->contentID;
-		$resultPG = $this->SQL->execSQL($cls);
-		if (!$resultPG->err)
-			while ($rowPG = $resultPG->fetch()) {
-				$Cdata[$rowPG['id']] = $rowPG;
-			}
-
-		$this->access_flag = false;
-		if(!count($Cdata) or !$this->getContent($Cdata))
-		{
-			$_tpl['text'] = 'Не верные данные!'.$_tpl['text'];
-			return true;
-		}
-
-		if(is_null($this->formFlag)) {
-			$_tpl['text'] = 'Не верные данные! Отсутствует параметр $this->formFlag'.$_tpl['text'];
-			return true;
-		}
-
-		/*$_tpl['script'] = array();
-		$_tpl['styles'] = array();*/
-		return true;
 	}
 
 //////////

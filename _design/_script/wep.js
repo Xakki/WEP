@@ -249,8 +249,8 @@ window.wep = {
 			param['data'] = '';
 
 		// Это попап окно?
-		if(!param['ispupup']) 		
-			param['ispupup'] = false;
+		if(typeof(param['wrapTitle'])=='undefined') 		
+			param['wrapTitle'] = 0;
 
 		// Тип получаемых данных
 		if(!param['dataType'])	
@@ -331,12 +331,16 @@ window.wep = {
 	ajaxSuccess: function(result, param) 
 	{
 		console.log(result);
+
+		jQuery(param['insertobj']).trigger('ajaxSuccess', result, param);
+
 		//return false;
 		 // подключение Стилей
 		if(typeof(result.styles) != 'undefined')  {
 			wep.cssLoad(result.styles);
 		}
 
+		// WTF?
 		if(typeof(result.param) == 'object')  {
 			for(var i in result.param) {
 				param[i] = result.param[i];
@@ -353,6 +357,7 @@ window.wep = {
 				eval(param['precall']+'(result, param);');
 		}
 
+		// Show content
 		wep.fShowloadContent(result, param);
 
 		// Вывод ошибок и прочего текста
@@ -384,6 +389,8 @@ window.wep = {
 	// Выполнение функции при полной загрузке
 	execLoadFunction: function (result, formParam) 
 	{
+		jQuery(param['insertobj']).trigger('execLoadFunction', result, formParam);
+
 		//Запуск функции пользователя
 		if(typeof formParam['call'] != 'undefined') 
 		{
@@ -410,6 +417,9 @@ window.wep = {
 	*/
 	fShowloadContent: function(result, param) 
 	{
+		if(!result.text)
+			return;
+
 		//objid, txt, body, onclk
 		/*if(!param['fadeobj'] || param['fadeobj']===true) 
 			param['fadeobj']='body';
@@ -419,16 +429,12 @@ window.wep = {
 
 		if(!param['onclk']) 
 			param['onclk'] = 'wep.fHideLoad(\''+param['insertobj']+'\')';
-
-		/*if(!param['onclk'])
-			param['onclk'] = 'window.location.reload();';*/
-
-		if (_Browser.type == 'IE' && 8 > _Browser.version)
-			jQuery('select').toggleClass('hideselectforie7',true);
+		else if(param['onclk']==='reload')
+			param['onclk'] = 'window.location.reload();';
 
 		var htmlOut = result.text;
 
-		if(param['ispupup'])
+		if(param['wrapTitle'])
 		{
 			// Обертка для попапа
 			if(result.title)
@@ -450,6 +456,15 @@ window.wep = {
 			else //Внутрь контейнера
 				jQuery(param['insertobj']).html(htmlOut);
 			//param['fadeobj'] = false;
+
+			//jQuery(param['insertobj']).show();
+			if(param['set_content_position'])
+			{
+				wep.fMessPos(param['insertobj']);
+				setTimeout(function(){wep.fMessPos(param['insertobj']);},500);
+			}
+		
+			jQuery(param['insertobj']).trigger('contentReady');
 		}
 		/*else if (typeof(param['data'])=='object')
 		{
@@ -463,12 +478,6 @@ window.wep = {
 		else
 			param['fadeoff'] = true;*/
 
-		//jQuery(param['insertobj']).show();
-		if(param['set_content_position'])
-		{
-			wep.fMessPos(param['insertobj']);
-			setTimeout(function(){wep.fMessPos(param['insertobj']);},500);
-		}
 		return false;
 	},
 
@@ -477,12 +486,13 @@ window.wep = {
 		if(param['fadeobj']) // Вешаем затемнение
 			param['timeBG'] = setTimeout(function(){
 				wep.loadAnimationOn(param['fadeobj']);
-				param['timeBG'] = 0;
+				param['timeBG'] = null;
 			},200);
 	},
 
 	loadAnimationOffAjax: function(param)
 	{
+		console.log(param);
 		//Если включено затемнение
 		if(param['fadeobj']) 
 		{
@@ -514,7 +524,10 @@ window.wep = {
 	},
 
 	/**********************************/
-
+/*
+	if (_Browser.type == 'IE' && 8 > _Browser.version)
+		jQuery('select').toggleClass('hideselectforie7',true);
+*/
 	/*Блок анимации загрузки*/
 	fHideLoad: function(param)
 	{
@@ -955,7 +968,7 @@ window.wep = {
 		else
 		{
 			//param['onclk']='reload';
-			param['ispupup']=true;
+			param['wrapTitle']=true;
 		}
 		JSWin(param);
 		return false;

@@ -72,8 +72,9 @@
 
 		if(isset($data['flag']))
 		{
+			$_tpl['formFlag'] = $data['flag'];
 			if($data['flag']==1) {
-				$_tpl['onload'] .= '$("#'.$attr['name'].'").trigger(\'success\');';
+				//$_tpl['onload'] .= '$("#'.$attr['name'].'").trigger(\'success\');';
 			}
 			elseif($data['flag']==-1) {
 				//$_tpl['onload'] = 'GetId("messages").innerHTML=result.html;'.$_tpl['onload'];

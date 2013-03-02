@@ -18,7 +18,7 @@ wep.form = {
 		jform.data('initform', true);
 
 		// Инициальзация аякса для формы
-		wep.form.ajaxForm(jform, param);
+		wep.form.JSFR(jform, param);
 
 		// Если есть капча
 		var captcha = jform.find('#tr_captcha');
@@ -65,29 +65,16 @@ wep.form = {
 		});
 
 	},
+
 	// Делаем форму на странице аяксовой
 	ajaxForm : function(jSelector, param) 
-	{
-		var contentID = $(jSelector).attr('data-cid');
-		if(!contentID) return false;
-
-		var arr = '';
-		if(wep.pgParam) {
-			arr = wep.pgParam;
-			arr = arr.join("&pageParam[]=");
-		}
-		var hrf = wep.siteJS+'?';
-		for (var key in wep.pgGet)
-		{
-			hrf += key+'='+wep.pgGet[key]+'&';
-		}
-
-		$(jSelector).attr('action',hrf+'_modul=pg&_fn=AjaxForm&contentID='+contentID+'&pageParam[]='+arr);
+	{// OLD
 		wep.form.JSFR(jSelector, param);
 	},
 
 	// Аякс отправка формы
-	JSFR: function(jSelector, param) {
+	JSFR: function(jSelector, param) 
+	{
 		// NEED INCLUDE jquery.form
 		wep.include(wep.HREF_script+'script.jquery/form.js', function() {
 			jQuery(jSelector).ajaxForm({
@@ -95,6 +82,15 @@ wep.form = {
 				beforeSubmit: 
 					function(a,f,o) 
 					{
+						if(typeof(param['type'])=='undefined')
+							param['type'] = jQuery(jSelector);
+
+						if(typeof(param['wrapTitle'])=='undefined')
+							param['wrapTitle'] = 1;
+
+						// Вешаем затемнение на саму форму
+						param['fadeobj'] = jSelector;
+
 						wep.loadAnimationOnAjax(param);
 						//var formElement = f[0];
 						o.dataType = 'json';
@@ -103,15 +99,23 @@ wep.form = {
 						//console.log(a,f,o);
 						//wep.preSubmitAJAX (f);
 					},
+					
 				error: 
 					function(d,statusText) 
 					{
 						alert(statusText+' - form notsuccess (may be wrong json data, see console log)');
 						console.log(d);console.log(d.responseText);
 					},
-				success: function(result){
+
+				success: function(result)
+				{
+					// AJAX форма ничего не выводит, а все делается через onload
+					if(result.formFlag==-1)
+						result.text = null;
+
 					wep.ajaxSuccess(result, param);
 				}
+
 			});
 		});
 		
@@ -284,6 +288,11 @@ wep.form = {
 		if(obj.value.length>max)
 			obj.value=obj.value.substr(0,max);
 		jQuery('#'+obj.name+'t2').val(obj.value.length);
+	},
+
+	putEMF: function(id,txt) {
+		jQuery('#tr_'+id+' .form-caption').after('<div class="caption_error">['+txt+']</div>');
+		jQuery('#tr_'+id).addClass('error');
 	}
 }
 
@@ -557,11 +566,6 @@ function input_file(obj) {
 	var myRe=/.+\.([A-Za-z]{3,4})/i;
 	var myArray = myRe.exec(jQuery(obj).val());
 	jQuery(obj).parent().find('span.fileinfo').html(myArray[1]);
-}
-
-function putEMF(id,txt) {
-	jQuery('#tr_'+id+' .form-caption').after('<div class="caption_error">['+txt+']</div>');
-	jQuery('#tr_'+id).addClass('error');
 }
 
 function clearErrorForm(formSelector) 

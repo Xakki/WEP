@@ -923,7 +923,7 @@ class static_form {
 					$mess[] = static_main::am('error',$form['caption'].': '.$messages);
 				}
 				if(isset($param['ajax'])) {
-					$_tpl['onload'] .= 'putEMF(\''.$key.'\',\''.$messages.'\');'; // запись в форму по ссылке
+					$_tpl['onload'] .= 'wep.form.putEMF(\''.$key.'\',\''.$messages.'\');'; // запись в форму по ссылке
 				}
 				else
 				{
@@ -964,7 +964,7 @@ class static_form {
 					}
 					if(isset($param['ajax'])) 
 					{
-						$_tpl['onload'] .= 'putEMF(\''.$key.'\',\''.$messages.'\');'; // запись в форму по ссылке
+						$_tpl['onload'] .= 'wep.form.putEMF(\''.$key.'\',\''.$messages.'\');'; // запись в форму по ссылке
 					}
 					elseif(!isset($param['setAutoSubmit']) or $param['setAutoSubmit']!==2) // Если это не AutoSubmit
 					{
