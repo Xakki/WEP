@@ -1322,7 +1322,7 @@ abstract class kernel_extends {
 			$name = 'form_'.$this->_cl;
 		if(!$method)
 			$method = 'POST';
-		$option = array('name' => $name, 'method'=>$method, 'id' => $this->id, 'action' => $_SERVER['REQUEST_URI'], 'prevhref' => $_SERVER['HTTP_REFERER']);
+		$option = array('name' => $name, 'method'=>$method, 'id' => $this->id, 'action' => $_SERVER['REQUEST_URI'], 'prevhref' => (isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:'') );
 		return $option;
 	}
 

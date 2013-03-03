@@ -43,7 +43,7 @@
 					$temp_topmenu .= '<div class="'.$r['type'].($r['sel']?' selected':'').'" style="'.$r['style'].'"';
 					$temp_topmenu .= ' onclick="return false;"><span class="caption">'.$r['caption'].'</span> <select class="'.$r['css'].'" title="'.$r['title'].'"';
 					if(count($r)>2)
-						$temp_topmenu .= 'if(this.options[this.selectedIndex].value) onchange="return ShowTools(\''.$_CFG['_HREF']['wepJS'].'?_view=list&'.$href.'&_type=edit&content_id=\'+this.options[this.selectedIndex].value);"';
+						$temp_topmenu .= 'if(this.options[this.selectedIndex].value) onchange="return wep.ShowTools(\''.$_CFG['_HREF']['wepJS'].'?_view=list&'.$href.'&_type=edit&content_id=\'+this.options[this.selectedIndex].value);"';
 					else
 						$temp_topmenu .= ' onchange="if(this.options[this.selectedIndex].value) return wep.load_href(\'/\'+this.options[this.selectedIndex].value+\'.html\');"';
 					$temp_topmenu .= '>'.tpl_formSelect($r['list']).'</select>';
@@ -59,7 +59,7 @@
 					}
 					else {
 						$temp_topmenu .= ' href="'.$firstpath.$href.'"';
-						$temp_topmenu .= ' onclick="return ShowTools(\''.$_CFG['_HREF']['wepJS'].'?_view=list&'.$href.'\');"';//, \'tools_block\'
+						$temp_topmenu .= ' onclick="return wep.ShowTools(\''.$_CFG['_HREF']['wepJS'].'?_view=list&'.$href.'\');"';//, \'tools_block\'
 					}
 					$temp_topmenu .= '><span class="'.$r['css'].'" title="'.$r['title'].'"';
 					$temp_topmenu .= '>'.$r['caption'].'</span>';

@@ -11,7 +11,7 @@ a {
 	border-bottom:1px dashed transparent;
 	text-decoration:none;
 }
-#ajaxload {
+.ajaxload {
 	z-index:30;
 	position:fixed;
 	top:50%;
@@ -19,12 +19,12 @@ a {
 	display:none;
 
 }
-#ajaxload.loadAnimation {
+.ajaxload.loadAnimation {
 	background: url('/_design/_img/load.gif') no-repeat 0 0 transparent; 
 	height: 20px;
 	width: 20px;
 }
-#ajaxload.loadAnimation::after {
+.ajaxload.loadAnimation::after {
 	content: 'Загружаю...';
 	position: relative;
 	top: 11px;
@@ -86,13 +86,13 @@ a {
 	}
 
 /*form*/
-	#ajaxload .block-tl, #ajaxload .block-tr, #ajaxload .block-bl, #ajaxload .block-br {
+	.ajaxload .block-tl, .ajaxload .block-tr, .ajaxload .block-bl, .ajaxload .block-br {
 		background-image:none;
 	}
 
-	#ajaxload .layerloader img {}
+	.ajaxload .layerloader img {}
 
-		#ajaxload .messages{
+		.ajaxload .messages{
 			border:none;
 			background:none;
 			padding:10px;

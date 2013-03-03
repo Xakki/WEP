@@ -79,7 +79,7 @@
 			elseif($data['flag']==-1) {
 				//$_tpl['onload'] = 'GetId("messages").innerHTML=result.html;'.$_tpl['onload'];
 				$_tpl['onload'] = 'clearErrorForm("#'.$attr['name'].'"); $("#'.$attr['name'].'").trigger(\'error\'); '.$_tpl['onload'];
-				$texthtml = "<div class='blockhead'>Внимание. Некоректно заполнены поля.</div><div class='hrb'>&#160;</div>".$texthtml;
+				//$texthtml = "<div class='blockhead'>Внимание. Некоректно заполнены поля.</div><div class='hrb'>&#160;</div>".$texthtml;
 			}
 			else
 			{

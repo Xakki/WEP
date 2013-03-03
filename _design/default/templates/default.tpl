@@ -28,5 +28,8 @@
 		<div id="debug_view" style="">{#logs#}</div>
 		
 		<div class="debug_view_img">{#debug#}<img src="/{#THEME#}img/debug_view.png" onclick="fShowHide('debug_view');" alt="DEBUG"/></div>
+
+		<div class="ajaxload">
+		</div>
 	</body>
 </html>

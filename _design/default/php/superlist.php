@@ -88,7 +88,7 @@
 					//$temp_topmenu .= ' onclick="return wep.load_href(\''.$firstpath.$href.'\')"';
 					
 					if(isset($r['is_popup']) and $r['is_popup'])
-						$temp_topmenu .= ' onclick="return ShowTools(\''.$_CFG['_HREF']['wepJS'].'?_view=list&'.$href.'\')"';//, \'tools_block\'
+						$temp_topmenu .= ' onclick="return wep.ShowTools(\''.$_CFG['_HREF']['wepJS'].'?_view=list&'.$href.'\')"';//, \'tools_block\'
 					else
 						$temp_topmenu .= ' href="'.$firstpath.$href.'"';
 					$temp_topmenu .= '> <span class="'.$r['css'].'">'.$r['caption'].'</span>';

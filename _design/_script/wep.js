@@ -298,7 +298,7 @@ window.wep = {
 		timerid2 = 0;*/
 		
 		///alert(dump(param));
-
+console.log(param);
 		wep.loadAnimationOnAjax(param);
 
 		$.ajax({
@@ -336,7 +336,6 @@ window.wep = {
 
 	ajaxSuccess: function(result, param) 
 	{
-		console.log(result);
 
 		jQuery(param['insertobj']).trigger('ajaxSuccess', [result, param]);
 
@@ -497,22 +496,18 @@ window.wep = {
 				param['timeBG'] = null;
 			},200);
 	},
-
+			// Если нужно отключить затемнение после завершения
+			//if(param['fadeoff']) 
 	loadAnimationOffAjax: function(param)
 	{
-		console.log(param);
 		//Если включено затемнение
 		if(param['fadeobj']) 
 		{
-			// Если нужно отключить затемнение после завершения
-			if(param['fadeoff']) 
-			{
-				// Если  таймер затемения ещё не сработал, то откл таймер
-				if(param['timeBG'])
-					clearTimeout(param['timeBG']); // Чистим таймер и тем самым затеменение не отобразиться
-				else 
-					wep.loadAnimationOff(param['fadeobj']); // иначе убираем его сами
-			}
+			// Если  таймер затемения ещё не сработал, то откл таймер
+			if(param['timeBG'])
+				clearTimeout(param['timeBG']); // Чистим таймер и тем самым затеменение не отобразиться
+			else 
+				wep.loadAnimationOff(param['fadeobj']); // иначе убираем его сами
 		}
 	},
 
@@ -1481,10 +1476,6 @@ function getCookie(name) {
 
 /************************/
 /****************/
-
-function ShowTools(id,hrf) {
-	return wep.ShowTools(id,hrf);
-}
 
 function readyPlot(cap,Xname,Yname,stepY) {
 	return wep.readyPlot(cap,Xname,Yname,stepY);

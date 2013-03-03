@@ -88,6 +88,9 @@ wep.form = {
 						if(typeof(param['wrapTitle'])=='undefined')
 							param['wrapTitle'] = 1;
 
+						if(typeof(param['fadeoff'])=='undefined')
+							param['fadeoff'] = 1;
+
 						// Вешаем затемнение на саму форму
 						param['fadeobj'] = jSelector;
 

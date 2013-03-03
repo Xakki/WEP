@@ -38,7 +38,7 @@
 		position: absolute;
 		border:1px solid gray;-moz-border-radius:4px;-webkit-border-radius:4px;border-radius:4px;
 	}
-	div.divform #ajaxload {
+	div.divform .ajaxload {
 		position:relative;
 		left:0;
 		top:0;
