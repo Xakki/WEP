@@ -471,12 +471,16 @@ class pg_class extends kernel_extends {
 		if(!$this->pageinfo['id']) return null;
 		//print_r($this->pageinfo);exit();
 		$id = $this->pageinfo['id'];
-		while (isset($this->dataCash[$id][$attr]) and !$this->dataCash[$id][$attr]) {
-			if (isset($this->dataCash[$id])) {
+		while (isset($this->dataCash[$id][$attr]) and !$this->dataCash[$id][$attr]) 
+		{
+			if (isset($this->dataCash[$id]))
+			{
+				if(!$this->dataCash[$id]['parent_id'])
+					break;
 				$id = $this->dataCash[$id]['parent_id'];
 			}
 			else
-				breack;
+				break;
 		}
 		return $this->dataCash[$id][$attr];
 	}

@@ -29,7 +29,10 @@
 		
 		<div class="debug_view_img">{#debug#}<img src="/{#THEME#}img/debug_view.png" onclick="fShowHide('debug_view');" alt="DEBUG"/></div>
 
-		<div class="ajaxload">
+		<div class="PopUp">
+			<div class="PopUpBackgound CloseTarget"></div>
+			<div class="PopUpLoading">Загружаю...</div>
+			<div class="PopUpContent"></div>
 		</div>
 	</body>
 </html>

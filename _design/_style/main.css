@@ -32,25 +32,92 @@ a {
 	color: #fff;
 }
 
-	.layerloader {
-		white-space:nowrap;
-		color:#555;
-		font-weight:bold;
-		text-align:center;
-		padding:5px 17px 10px;
-		background-color:white;
-		overflow:auto;
-		max-height:90%;
-		border:2px solid gray;-moz-border-radius:8px;-webkit-border-radius:8px;border-radius:8px;
-	}
+/****************************/
 
-.layerblock{
+.PopUp {
+	position: fixed;
+	z-index: 20;
+	width: 100%;
+	height: 100%;
+	top: 0; 
+	left: 0;
+	display: none;
+}
+.PopUp.popupActive {
+	display: block;
+}
+
+.PopUp .PopUpBackgound {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 21;
+	width: 100%;
+	height: 100%;
+	background-color: #666;
+	opacity: 0.8;
+	cursor: not-allowed;
+}
+* html .PopUp .PopUpBackgound {
+	position: absolute;
+	height: expression(document.body.scrollHeight > document.body.offsetHeight ? document.body.scrollHeight : document.body.offsetHeight + 'px');
+}
+
+/* Блок отображающийся пока идет анимация */
+.PopUp .PopUpLoading {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	z-index: 22;
+	white-space:nowrap;
+	color:#555;
+	font-weight:bold;
+	text-align:center;
+	padding:10px;
+	background-color:white;
+	border:2px solid gray;-moz-border-radius:8px;-webkit-border-radius:8px;border-radius:8px;
+	visibility: hidden;
+
+}
+.PopUp.ajaxProccess .PopUpLoading {
+	visibility: visible;
+}
+
+.PopUp .PopUpContent {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	z-index: 23;
+	white-space:nowrap;
+	color:#555;
+	font-weight:bold;
+	text-align:center;
 	padding:5px 17px 10px;
 	background-color:white;
 	overflow:auto;
-	max-height:95%;
+	max-height:90%;
 	border:2px solid gray;-moz-border-radius:8px;-webkit-border-radius:8px;border-radius:8px;
+	
 }
+.PopUp.ajaxProccess .PopUpContent {
+	visibility: hidden;
+}
+
+.PopUp .PopUpContent .layerblock{
+	padding:10px;
+}
+/*CLOSE LAYER*/
+.PopUp .PopUpContent .blockclose {
+	cursor:pointer;
+	position:fixed;
+	z-index: 30;
+	height:30px;
+	width:30px;
+	background: url("../_img/close30.png") repeat scroll 0 0 transparent;
+}
+/****************************/
+
+
 
 	.blockhead{
 		padding:3px 0;
@@ -64,17 +131,6 @@ a {
 		font-size:1px;
 		height:1px;}
 
-	
-	/*CLOSE LAYER*/
-	.blockclose {
-		cursor:pointer;
-		position:absolute;
-		right:-21px;
-		top:-21px;
-		height:30px;
-		width:30px;
-		background: url("../_img/close30.png") repeat scroll 0 0 transparent;
-	}
 
 	.uiicons {
 		width: 16px; 
@@ -98,21 +154,6 @@ a {
 			padding:10px;
 		}
 
-
-	.ajaxbg {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background-color: #666;
-		display: none;
-		z-index: 20;
-	}
-	* html .ajaxbg {
-		position: absolute;
-		height: expression(document.body.scrollHeight > document.body.offsetHeight ? document.body.scrollHeight : document.body.offsetHeight + 'px');
-	}
 
 
 /*SPOILER*/

@@ -11,7 +11,7 @@
 
 	// сначала задаем значения по умолчанию
 	if(!isset($FUNCPARAM[0]) or !$FUNCPARAM[0]) $FUNCPARAM[0] = '#ugroup#login';
-	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = '';
+	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = 0;
 	if(!isset($FUNCPARAM[2])) $FUNCPARAM[2] = 0;
 	if(!isset($FUNCPARAM[3])) $FUNCPARAM[3] = '';
 	if(!isset($FUNCPARAM[4])) $FUNCPARAM[4] = 'E-mail';
@@ -48,7 +48,7 @@
 	if(count($_POST) and isset($_POST['login'])) {
 		$result = static_main::userAuth($_POST['login'],$_POST['pass']);
 		//print_r($result);exit();
-		if($result[1]) {
+		if($result[1]>0) {
 			//static_main::redirect($ref);
 			//$mess=$result[0];
 		}
@@ -57,7 +57,7 @@
 		static_main::userExit();
 		$result = array(static_main::m('exitok'),1);
 	}
-	elseif($FUNCPARAM[3] and $result = static_main::userAuth() and $result[1]) {
+	elseif($FUNCPARAM[3] and $result = static_main::userAuth() and $result[1]>0) {
 		static_main::redirect($ref);
 		//$mess=$result[0];
 	}

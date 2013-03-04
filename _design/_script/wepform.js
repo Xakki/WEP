@@ -76,8 +76,12 @@ wep.form = {
 	JSFR: function(jSelector, param) 
 	{
 		// NEED INCLUDE jquery.form
-		wep.include(wep.HREF_script+'script.jquery/form.js', function() {
-			jQuery(jSelector).ajaxForm({
+		if(!param) param = {};
+
+		wep.include(wep.HREF_script+'script.jquery/form.js', function() 
+		{
+			jQuery(jSelector).ajaxForm(
+			{
 				debug: 1,
 				beforeSubmit: 
 					function(a,f,o) 
@@ -92,7 +96,8 @@ wep.form = {
 							param['fadeoff'] = 1;
 
 						// Вешаем затемнение на саму форму
-						param['fadeobj'] = jSelector;
+						if(!param['fadeobj'])
+							param['fadeobj'] = jSelector;
 
 						wep.loadAnimationOnAjax(param);
 						//var formElement = f[0];

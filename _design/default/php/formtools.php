@@ -35,7 +35,7 @@
 			//$data['filter']['options']['action'] = str_replace('&','&amp;',$_SERVER['REQUEST_URI']);
 			$html .= tpl_filter($data);
 			//$_tpl['onload'] .= 'wep.jsForm(\'#form_tools_'.$_REQUEST['_func'].'\',{\'insertobj\':\'#tools_block\'});';
-			$_tpl['onload'] .= 'wep.form.JSFR(\'#'.$attr['name'].'\');';
+			$_tpl['onload'] .= 'wep.form.initForm(\'#'.$attr['name'].'\', formParam);';
 			plugAjaxForm();
 		}
 		elseif(isset($data['form']) and count($data['form'])) 
@@ -45,7 +45,7 @@
 			include_once(getPathTheme(true).'/php/form.php');
 			$html .= '<form id="'.$attr['name'].'" method="post" enctype="multipart/form-data" action="'.$attr['action'].'" class="'.(isset($attr['css'])?$attr['css']:'divform').'">';
 			$html .= tpl_form($data['form']).'</form>';
-			$_tpl['onload'] .= 'wep.form.JSFR(\'#'.$attr['name'].'\');';
+			$_tpl['onload'] .= 'wep.form.initForm(\'#'.$attr['name'].'\', formParam);';
 			plugAjaxForm();
 		}
 
