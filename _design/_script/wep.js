@@ -263,8 +263,8 @@ window.wep = {
 			param['wrapTitle'] = 0;
 
 		// Тип получаемых данных
-		if(!param['dataType'])	
-			param['dataType'] = 'json';
+		if(!param['datatype'])	
+			param['datatype'] = 'json';
 
 		// Если нужно отключить затемнение после завершения
 		if(typeof param['fadeoff'] == 'undefined') 
@@ -312,7 +312,7 @@ window.wep = {
 			type: param['type'],
 			url: param['href'],
 			data: param['data'],
-			dataType: param['dataType'],
+			datatype: param['datatype'],
 			/*beforeSend: function(XMLHttpRequest) {
 				return true;
 			},*/
