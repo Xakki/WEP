@@ -1,36 +1,25 @@
 <?php
-//<base href="'.$_CFG['_HREF']['BH'].'/"/>
-	$_tpl['meta'] = '
-		<title>{#title#}</title>
-		<link rel="SHORTCUT ICON" href="{#design#}img/favicon.ico"/>
-		<meta charset="utf-8">
-		<meta name="keywords" content="WEP"/> 
-		<meta name="description" content="CMS"/>
-		';
-		//<!--<link rel="SHORTCUT ICON" href="{$_tpl['design']}img/favicon.ico"/>-->
-
-
-	setScript('jquery|wep|script.jquery/form|||/main');
-	setCss('button|main|/main');
 
 	$_tpl['modulstree']=$eval='';
 	$_tpl['title'] = 'WEP';
 
-	$DATA = array('adminmenu'=>fAdminMenu($_GET['_modul'])); $_tpl['adminmenu'] = transformPHP($DATA,'adminmenu');
 
-	if(!$_GET['_modul'] or !(isset($_GET['_view']) or isset($_GET['_type']))) {
+	if(!$_GET['_modul'] or !(isset($_GET['_view']) or isset($_GET['_type']))) 
+	{
 		$html = '<div style="position:absolute;top:50%;left:50%;"><div style="width:200px;height:100px;position:absolute;top:-50px;left:-100px;"><img src="/'.getUrlTheme().'img/login.gif" width="250" alt="LOGO"/></div></div>';
 	}
 	else {
 		/*if(count($_GET)==2)
 			$SQL->_iFlag = TRUE;*/
-		if($_GET['_view']=='list' and $_GET['_modul']=='_tools') {
+		if($_GET['_view']=='list' and $_GET['_modul']=='_tools') 
+		{
 			if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0)
 				$html = include($_CFG['_PATH']['wep_controllers'].'/tools.php');
 			else
-				$html = '<div style="color:red;">Доступ только ОДМИНУ</div>';
+				$html = '<div style="color:red;">Доступ только АДмиму</div>';
 		}
-		elseif(!_new_class($_GET['_modul'],$MODUL)) {
+		elseif(!_new_class($_GET['_modul'],$MODUL)) 
+		{
 			$html = '<div style="color:red;">'.date('H:i:s').' : Модуль '.$_GET['_modul'].' не установлен</div>';
 		}
 		else {
@@ -80,14 +69,19 @@
 						else*/
 							static_main::redirect($prevhref);
 					}
+					//TODO
 					elseif(!isset($DATA['formcreat']) and $flag!=3) {
 						// После успешного удаления
 						$_SESSION['mess']=$DATA['messages'];
 						end($DATA['path']);
-						if($_SERVER['HTTP_REFERER'])
-							static_main::redirect($_SERVER['HTTP_REFERER']);
-						else
-							static_main::redirect($_CFG['_HREF']['BH'].str_replace("&amp;", "&", key($DATA['path'])));
+						print_r($flag); print_r($DATA); //formtools
+						// if($_SERVER['HTTP_REFERER'])
+						// 	static_main::redirect($_SERVER['HTTP_REFERER']);
+						// else
+						// 	static_main::redirect($_CFG['_HREF']['BH'].str_replace("&amp;", "&", key($DATA['path'])));
+					}
+					elseif(isset($DATA['formcreat']) and $flag===-1 and isAjax()) {
+						$html = transformPHP($DATA['formcreat']['messages'],'messages');
 					}
 					else {
 						if(!isset($_SESSION['mess']) or !is_array($_SESSION['mess']))
@@ -107,5 +101,30 @@
 				$html ='<div style="color:red;">'.date('H:i:s').' : Доступ к модулю '.$_GET['_modul'].' запрещён администратором</div>';
 		}
 	}
-	$_tpl['modulsforms'] = $html;
+
+	$_tpl['text'] = $html;
+
+	if(!isAjax())
+	{
+		//<base href="'.$_CFG['_HREF']['BH'].'/"/>
+		$_tpl['meta'] = '
+			<title>{#title#}</title>
+			<link rel="SHORTCUT ICON" href="{#design#}img/favicon.ico"/>
+			<meta charset="utf-8">
+			<meta name="keywords" content="WEP"/> 
+			<meta name="description" content="CMS"/>
+			';
+			//<!--<link rel="SHORTCUT ICON" href="{$_tpl['design']}img/favicon.ico"/>-->
+
+
+		setScript('jquery|wep|script.jquery/form|/main');
+		setCss('button|main|/main');
+
+		$DATA = array('adminmenu'=>fAdminMenu($_GET['_modul'])); 
+		$_tpl['adminmenu'] = transformPHP($DATA,'adminmenu');
+
+		selectDebugMode();
+		showCmsInfo();
+	}
+
 

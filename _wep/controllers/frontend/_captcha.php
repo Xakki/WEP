@@ -100,7 +100,7 @@ for($i=0; $i<$l;$i++) {
 	$cl=imagecolorallocate($im, rand(0,128), rand(0,128), rand(0,128));
 	$fsize = rand($param['sizemin'],$param['sizemax']);
 
-	if($fsize<($param['sizemin']+$param['sizemax'])/2)
+	/*if($fsize<($param['sizemin']+$param['sizemax'])/2)
 	{
 		$posX = (int)($k-($fsize/3))+rand(0, $param['dX']);
 		$posY = (int)($center+($fsize/2))+rand(0, $param['dY']); // Позиция по Y
@@ -109,7 +109,10 @@ for($i=0; $i<$l;$i++) {
 	{
 		$posX = (int)($k-($fsize/3))+rand(-$param['dX'], 0);
 		$posY = (int)($center+($fsize/2))+rand(-$param['dY'], 0); // Позиция по Y
-	}
+	}*/
+	$posX = (int)($k-($fsize/3))+rand(-$param['dX']/2, $param['dX']/2);
+
+	$posY = (int)($center+($fsize/2)); // Позиция по Y
 
 	
 	$font = $path.$param['fonts'][rand(0,$cntFonts)].'.ttf';

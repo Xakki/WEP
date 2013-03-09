@@ -227,6 +227,51 @@ window.wep = {
 	*/
 	JSWin: function(param) 
 	{
+		wep.setDefaultParam(param);
+		
+		wep.loadAnimationOnAjax(param);
+
+		$.ajax({
+			type: param['type'],
+			url: param['href'],
+			data: param['data'],
+			datatype: param['datatype'],
+			/*beforeSend: function(XMLHttpRequest) {
+				return true;
+			},*/
+			404: function() {
+		      alert("page not found");
+		    },
+			error: function(XMLHttpRequest, textStatus, errorThrown) 
+			{
+				if(XMLHttpRequest.responseText)
+				{
+					var result = JSON.parse(XMLHttpRequest.responseText);
+					if(result['text'])
+					{
+						// this.success(response, textStatus, XMLHttpRequest);
+						wep.ajaxSuccess(result, param);
+						return true;
+					}
+				}
+				alert('ajaxerror : '+textStatus);
+				console.log(XMLHttpRequest);console.log(textStatus);console.log(errorThrown);
+			},
+			/*dataFilter: function(data, type) {
+				return data;
+			},*/
+			success: function(result, textStatus, XMLHttpRequest){
+				wep.ajaxSuccess(result, param);
+			}
+		});
+		return false;
+	},
+
+	/**
+	* Задаем параметры по умолчанию для АЯКС ЗАГРУЗКИ
+	*/
+	setDefaultParam: function(param)
+	{
 		if(typeof param['type']=='object') {
 			var OBJ = jQuery(param['type']);
 			if(OBJ.get(0).tagName=='A') 
@@ -251,9 +296,11 @@ window.wep = {
 		}
 		else if(!param['type']) 
 			param['type'] = 'GET';
+
 		// Линк
 		if(!param['href'])		
-			param['href'] = wep.siteJS;
+			param['href'] = location.href;
+		
 		// данные для передачи в зарпрос
 		if(!param['data']) 		
 			param['data'] = '';
@@ -305,44 +352,26 @@ window.wep = {
 		}
 
 		param['timeBG'] = 0; // таймер
-
-		wep.loadAnimationOnAjax(param);
-
-		$.ajax({
-			type: param['type'],
-			url: param['href'],
-			data: param['data'],
-			datatype: param['datatype'],
-			/*beforeSend: function(XMLHttpRequest) {
-				return true;
-			},*/
-			error: function(XMLHttpRequest, textStatus, errorThrown) 
-			{
-				if(XMLHttpRequest.responseText)
-				{
-					var result = JSON.parse(XMLHttpRequest.responseText);
-					if(result['text'])
-					{
-						// this.success(response, textStatus, XMLHttpRequest);
-						wep.ajaxSuccess(result, param);
-						return true;
-					}
-				}
-				alert('ajaxerror : '+textStatus);
-				console.log(XMLHttpRequest);console.log(textStatus);console.log(errorThrown);
-			},
-			/*dataFilter: function(data, type) {
-				return data;
-			},*/
-			success: function(result, textStatus, XMLHttpRequest){
-				wep.ajaxSuccess(result, param);
-			}
-		});
-		return false;
 	},
 
+	/**
+	*
+	*/
 	ajaxSuccess: function(result, param) 
 	{
+		console.error(' *ajaxSuccess* ', result, param);
+
+		if(result.redirect) 
+		{
+			window.location.href = result.redirect;
+			return false;
+		}
+		else if(result.redirectConfirm) 
+		{
+			if(confirm('Редирект на '+result.redirectConfirm))
+				window.location.href = result.redirectConfirm;
+			return false;
+		}
 
 		jQuery(param['insertobj']).trigger('ajaxSuccess', [result, param]);
 
@@ -510,10 +539,10 @@ window.wep = {
 				clearTimeout(param['timeBG']); // Чистим таймер и тем самым затеменение не отобразиться
 			else
 				jQuery(param['fadeobj']).removeClass('loadAnimation');
-			// Если нужно отключить затемнение после завершения
 
+			// Если нужно отключить затемнение после завершения
 			if(param['fadeoff']) 
-				jQuery(param['fadeobj']).removeClass('fadeBackgraund');
+				jQuery(param['fadeobj']).removeClass('fadeBackgraund popupActive');
 
 			wep.setEventClosePopUp(param);
 
@@ -1412,6 +1441,95 @@ window.wep = {
 			}
 			jQuery(selectorMess+' i').text(--maxTime);
 		},1000);
+	},
+    
+	/**
+	*
+	*/
+    convertRelativePathToAbsolute: function(url) 
+    {
+    	if(!url)
+    	{
+    		alert('Ошибка скрипта. Функция convertRelativePathToAbsolute не получила нужные данные');
+    		return false;
+    	}
+        if(url.substr(0,4)!='http' && url.substr(0,2)!='//') {
+            url = this.getBaseHref()+'/'+trim(url,'/');
+        }else {
+            var i = url.indexOf('../');
+            while(i>-1){
+                url = url.replace(RegExp("[^\/]+\/\.\.\/","g"), '');
+                i = url.indexOf('../');
+            }
+        }
+        //url = url.replace(/\?.+/, '');
+        url = url.replace(/^http:/, '');
+        return url;
+    },
+
+    /**
+    *
+    */
+    convertAbsolutePathToRelative: function(link)
+    {
+        if(!link)
+            link = document.location.href;
+
+        link = link.replace(/^http:/, '');
+
+        link = decodeURIComponent(link);
+
+        // var bh = this.getBaseHref();
+        // var i = link.lastIndexOf(bh);
+
+        // if(i!==-1)
+        // {
+        //     i += bh.length;
+        //     link = link.substr(i);
+        // }
+
+        return link;
+    },
+
+    /**
+    *
+    */
+    getBaseHref: function()
+    {
+        return '//'+document.location.host;
+    },
+
+    /**
+    *
+    */
+    getCurrentPath: function()
+    {
+        var link = this.convertAbsolutePathToRelative();
+        var i = link.indexOf('?');
+        if(i>0)
+            link = link.substr(0, i);
+        return link;
+    },
+
+    /**
+    * Получить урл с нужными параметрами
+    * param - обект {param1:123, param2: 'abcd'}
+    * url - не обязательно, берется текущий адрес
+    * replace - true удалит все предыдущие параметры
+    */
+	getUrlWithNewParam: function(param, url, replace)
+	{
+	    if(!url)
+	        url = this.convertAbsolutePathToRelative();
+
+	    var parsedUrl = urlDecode(url);
+
+	    if(replace)
+	        parsedUrl[0].args = param;
+	    else
+	        $.extend(parsedUrl[0].args, param);
+
+	    return urlEncode(parsedUrl);
 	}
 };
 

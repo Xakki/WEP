@@ -325,7 +325,7 @@ class pg_class extends kernel_extends {
 			wep.BH = "' . $this->_CFG['_HREF']['BH'] . '";
 			wep.DOMAIN = "' . $_SERVER['HTTP_HOST2'] . '";
 			wep.wepVer = "wepjs'.$this->_CFG['info']['version'].'";
-			window.MY_THEME = "'.getUrlTheme().'";
+			window.THEME = "'.getUrlTheme().'";
 			formParam = [];
 			wep.init();
 			'.$_tpl['onload'];
@@ -507,6 +507,9 @@ class pg_class extends kernel_extends {
 		return true;
 	}
 
+	/**
+	* Вывод по ID страницы - устаревшее
+	*/
 	function display_page($id,$full=false) {
 		$Cdata = array();
 		$cls = 'SELECT * FROM ' . $this->SQL_CFG['dbpref'] . 'pg_content WHERE active=1 and (owner_id="' . $id . '"';
@@ -527,10 +530,27 @@ class pg_class extends kernel_extends {
 		return $this->getContent($Cdata);
 	}
 
+	/**
+	* Вывод по маркеру
+	*/
 	function display_content($marker) 
 	{
+		if(!is_array($marker))
+			$marker = explode(',', $marker);
+		$escMarker = array();
+		foreach($marker as $item)
+		{
+			$escMarker[] = $this->SqlEsc(substr($item, 0, 25));
+		}
+
+		if(!count($escMarker) or count($escMarker)>10) 
+		{
+			trigger_error('Ошибка запроса / превышен лимит - '.$marker, E_USER_WARNING);
+			return false;
+		}
+
 		$Cdata = array();
-		$cls = 'SELECT * FROM ' . $this->SQL_CFG['dbpref'] . 'pg_content WHERE active=1 and marker IN ("' . $marker . '")';
+		$cls = 'SELECT * FROM ' . $this->SQL_CFG['dbpref'] . 'pg_content WHERE active=1 and marker IN ("' . implode('", "', $escMarker) . '")';
 		$resultPG = $this->SQL->execSQL($cls);
 		if (!$resultPG->err)
 			while ($rowPG = $resultPG->fetch()) {
@@ -544,9 +564,12 @@ class pg_class extends kernel_extends {
 		return $this->getContent($Cdata);
 	}
 
+	/**
+	* Вывод по ID контента
+	*/
 	public function display_inc($id) {
 		$Cdata = $oId = array();
-		$cls = 'SELECT * FROM ' . $this->SQL_CFG['dbpref'] . 'pg_content WHERE active=1 and id IN ("' . $id . '")';
+		$cls = 'SELECT * FROM ' . $this->SQL_CFG['dbpref'] . 'pg_content WHERE active=1 and id IN ("' . (int) $id . '")';
 		$resultPG = $this->SQL->execSQL($cls);
 		if (!$resultPG->err)
 			while ($rowPG = $resultPG->fetch()) {
@@ -1199,8 +1222,10 @@ class pg_class extends kernel_extends {
 
 	public function fFormCheck(&$DATA, &$param, &$argForm) {
 		$RESULT = parent::fFormCheck($DATA,$param,$argForm);
+
 		if(isset($DATA['alias']) and $DATA['alias']!=='') {
-			$resdata = $this->qs('id','WHERE parent_id='.(int)$DATA['parent_id'].' and alias="'.$this->SqlEsc($DATA['alias']).'" '.($this->id?' and id!='.$this->id:''));
+			$resdata = $this->qs('id, alias','WHERE parent_id='.(int)$DATA['parent_id'].' and alias="'.$this->SqlEsc($DATA['alias']).'" '.($this->id?' and id!='.$this->id:''));
+			print_r('<pre>');print_r($DATA);print_r($resdata);
 			if(count($resdata))
 				$RESULT['mess'][] = static_main::am('error', 'Запрещено дублировать страницы (Алиас) на одном подуровне');
 		}

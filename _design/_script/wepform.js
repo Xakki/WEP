@@ -66,10 +66,25 @@ wep.form = {
 
 	},
 
-	// Делаем форму на странице аяксовой
-	ajaxForm : function(jSelector, param) 
-	{// OLD
-		wep.form.JSFR(jSelector, param);
+
+	/**
+	* Задаем параметры по умолчанию для АЯКС 
+	*/
+	setDefaultParamForm: function(param, jSelector)
+	{
+		param['type'] = 'non';
+
+		// Вешаем затемнение на саму форму
+		if(!param['fadeobj'])
+			param['fadeobj'] = jSelector;
+
+		if(typeof(param['wrapTitle'])=='undefined')
+			param['wrapTitle'] = 1;
+
+		//if(typeof(param['fadeoff'])=='undefined')
+		//	param['fadeoff'] = 1;
+
+		wep.setDefaultParam(param);
 	},
 
 	// Аякс отправка формы
@@ -83,60 +98,53 @@ wep.form = {
 			jQuery(jSelector).ajaxForm(
 			{
 				debug: 1,
-				beforeSubmit: 
-					function(a,f,o) 
-					{
-						if(typeof(param['type'])=='undefined')
-							param['type'] = jQuery(jSelector);
+				beforeSubmit:function(a,f,o) 
+				{
+					wep.form.setDefaultParamForm(param, jSelector);
+		
+					wep.loadAnimationOnAjax(param);
+					//var formElement = f[0];
+					o.dataType = 'json';
+					//a.push({name:'HTTP_X_REQUESTED_WITH', value:'xmlhttprequest'});
+					var cid = jQuery(jSelector).attr('data-cid');
+					if(cid)
+						a.push({name:'PGCID', value:cid});
+					//console.log(a,f,o);
+					//wep.preSubmitAJAX (f);
+					//console.error('**beforeSubmit', param, o);
+				},
 
-						if(typeof(param['wrapTitle'])=='undefined')
-							param['wrapTitle'] = 1;
-
-						if(typeof(param['fadeoff'])=='undefined')
-							param['fadeoff'] = 1;
-
-						// Вешаем затемнение на саму форму
-						if(!param['fadeobj'])
-							param['fadeobj'] = jSelector;
-
-						wep.loadAnimationOnAjax(param);
-						//var formElement = f[0];
-						o.dataType = 'json';
-						//a.push({name:'HTTP_X_REQUESTED_WITH', value:'xmlhttprequest'});
-						//a.push({name:'isAjax', value:'true'});
-						//console.log(a,f,o);
-						//wep.preSubmitAJAX (f);
-					},
-
-				error: 
-					function(d,statusText) 
-					{
-						alert(statusText+' - form notsuccess (may be wrong json data, see console log)');
-						console.log(d);console.log(d.responseText);
-					},
+				error: function(d,statusText) 
+				{
+					console.error('!!!!!!!!!!!!!!!', d,statusText);
+					alert(statusText+' - form notsuccess (may be wrong json data, see console log)');
+					console.log(d);console.log(d.responseText);
+				},
 
 				success: function(result)
 				{
 					// AJAX форма ничего не выводит, а все делается через onload
-
 					if(result.formFlag==-1)
-					{
 						$(jSelector).trigger('errorForm', [result, param]); // Ошибка валидации
-						result.text = null;
-					}
 					else if(result.formFlag==0)
 						$(jSelector).trigger('showForm', [result, param]); // Обычная загрузка формы
 					else if(result.formFlag==1)
 						$(jSelector).trigger('successForm', [result, param]); // Успешно 
 
 					wep.ajaxSuccess(result, param);
-
 				}
 
 			});
 		});
 		
 	},
+
+	// Делаем форму на странице аяксовой
+	ajaxForm : function(jSelector, param) 
+	{// OLD
+		wep.form.JSFR(jSelector, param);
+	},
+	/*************************/
 
 	// Мультисписок
 	iList : function(obj,k) {
@@ -210,8 +218,6 @@ wep.form = {
 		var valNegative = '-';
 		var val = e.target.value;
 		var keyCode = keys_return(e);
-
-		console.log(keyCode, e);
 
 		if(e.originalEvent && (e.originalEvent.type=='keyup' || e.originalEvent.type=='keydown') )
 		{

@@ -15,7 +15,7 @@
 	<body onload="{#onload#}">
 		<div id='wepmain'>
 			<div id="adminmenu">{#adminmenu#}</div>
-			<div id="modulsforms">{#modulsforms#}</div>
+			<div id="modulsforms">{#text#}</div>
 			<div class='spacer'></div>
 		</div>
 		<div id="cmsinfo">

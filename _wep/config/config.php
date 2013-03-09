@@ -498,6 +498,11 @@ if(!isset($_COOKIE['wep123456'])) {
 	_setcookie('wep123456',base64encode($_SERVER['HTTP_REFERER']),(time() + 86400));
 }
 
+
+if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')
+	$_CFG['requestType'] = 'ajax';
+else
+	$_CFG['requestType'] = 'default';
 /********************/
 /***** ЛОГИ ********/
 /********************/

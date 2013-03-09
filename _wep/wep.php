@@ -12,7 +12,7 @@ if(isset($_GET['_php']) and $_GET['_php']=='captcha') {
 
 require_once($_CFG['_PATH']['core'].'weperr.php');
 
-if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')
+if(isAjax())
     require_once($_CFG['_PATH']['core'].'output/ajax.php');
 else
 	require_once($_CFG['_PATH']['core'].'output/html.php');

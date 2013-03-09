@@ -1,7 +1,6 @@
 <?php
 
 	$WEPOUT = new wepajax();
-	$isAjax = true;
 
 	class wepajax
 	{

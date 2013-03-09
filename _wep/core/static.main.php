@@ -572,7 +572,7 @@ class static_main {
 	}
 
 	static function redirect($link=true,$NO=false) {
-		global $_CFG;
+		global $_CFG,$_tpl;
 		// TODO : Проверка на зацикленный редирект
 		//301 - перемещение на посточнную основу
 		/*if($_SERVER['HTTP_REFERER']==$link) {
@@ -583,15 +583,27 @@ class static_main {
 		else*/
 		if($link===true)
 			$link = $_SERVER['HTTP_PROTO'].$_SERVER['HTTP_HOST'].'/'.$_SERVER['REQUEST_URI'];
-		
-		if($_CFG['wep']['debugmode']<3) {
-			if($NO!==false)
-				header('HTTP/1.1 '.$NO);
-			header("Location: ".$link);
-			die($link);
-		} else {
-			die('Redirect to <a href="'.$link.'">'.$link.'</a>');
+
+		if(isAjax())
+		{
+			if($_CFG['wep']['debugmode']<3)
+				$_tpl['redirect'] = $link;
+			else
+				$_tpl['redirectConfirm'] = $link;
 		}
+		else
+		{
+			if($_CFG['wep']['debugmode']<3) {
+				if($NO!==false)
+					header('HTTP/1.1 '.$NO);
+				header("Location: ".$link);
+				die($link);
+
+			} else {
+				die('Redirect to <a href="'.$link.'">'.$link.'</a>');
+			}
+		}
+
 	}
 
 	static function urlAppend($query, $url=false) {
@@ -1133,11 +1145,13 @@ function getPathThemes($type=null)
 		return $_CFG['_PATH']['themes'];
 }
 
+// путь внешний к теме
 function getUrlTheme($type=null)
 {
 	return getUrlThemes($type).getTheme().'/';
 }
 
+// путь внешний к папке с темами
 function getUrlThemes($type=null)
 {
 	global $_CFG;
@@ -1185,8 +1199,8 @@ function isBackend($val=null)
 
 function isAjax()
 {
-	global $isAjax;
-	return $isAjax;
+	global $_CFG;
+	return $_CFG['requestType']==='ajax';
 }
 
 

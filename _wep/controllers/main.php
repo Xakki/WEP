@@ -18,29 +18,29 @@
 
 	// эти wep.php не подключаем, если что сами подключат
 	if(isset($_GET['_php']) and $_GET['_php']=='robotstxt') {
-		if(file_exists($_CFG['_PATH']['wepconf'].'controllers/robotstxt.php'))
-			require_once($_CFG['_PATH']['wepconf'].'controllers/robotstxt.php');
+		if(file_exists($_CFG['_PATH']['controllers'].'robotstxt.php'))
+			require_once($_CFG['_PATH']['controllers'].'robotstxt.php');
 		else
 			require_once($_CFG['_PATH']['wep_controllers'].'frontend/robotstxt.php');
 		exit();
 	}
 	elseif(isset($_GET['_php']) and $_GET['_php']=='js') {
-		if(file_exists($_CFG['_PATH']['wepconf'].'controllers/_js.php'))
-			require_once($_CFG['_PATH']['wepconf'].'controllers/_js.php');
+		if(file_exists($_CFG['_PATH']['controllers'].'_js.php'))
+			require_once($_CFG['_PATH']['controllers'].'_js.php');
 		else
 			require_once($_CFG['_PATH']['wep_controllers'].'frontend/_js.php');
 		exit();
 	}
 	elseif(isset($_GET['_php']) and $_GET['_php']=='redirect') {
-		if(file_exists($_CFG['_PATH']['wepconf'].'controllers/_redirect.php'))
-			require_once($_CFG['_PATH']['wepconf'].'controllers/_redirect.php');
+		if(file_exists($_CFG['_PATH']['controllers'].'_redirect.php'))
+			require_once($_CFG['_PATH']['controllers'].'_redirect.php');
 		else
 			require_once($_CFG['_PATH']['wep_controllers'].'frontend/_redirect.php');
 		exit();
 	}
 	elseif(isset($_GET['_php']) and $_GET['_php']=='rss') {
-		if(file_exists($_CFG['_PATH']['wepconf'].'controllers/rss.php'))
-			require_once($_CFG['_PATH']['wepconf'].'controllers/rss.php');
+		if(file_exists($_CFG['_PATH']['controllers'].'rss.php'))
+			require_once($_CFG['_PATH']['controllers'].'rss.php');
 		else
 			require_once($_CFG['_PATH']['wep_controllers'].'frontend/rss.php');
 		exit();
@@ -65,8 +65,8 @@
 		return true;
 	}
 	elseif(isset($_GET['_php']) and $_GET['_type']=='xml') {
-		if(file_exists($_CFG['_PATH']['wepconf'].'controllers/'.$_GET['_php'].'.xml.php'))
-			require_once($_CFG['_PATH']['wepconf'].'controllers/'.$_GET['_php'].'.xml.php');
+		if(file_exists($_CFG['_PATH']['controllers'].$_GET['_php'].'.xml.php'))
+			require_once($_CFG['_PATH']['controllers'].$_GET['_php'].'.xml.php');
 		else
 			require_once($_CFG['_PATH']['wep_controllers'].'frontend/'.$_GET['_php'].'.xml.php');
 		exit();
@@ -87,7 +87,12 @@
 				static_main::userAuth();
 			}
 
-			$PGLIST->display();
+			if(isset($_REQUEST['PGCID']) and $id = (int)$_REQUEST['PGCID'])
+				$PGLIST->display_inc($id);
+			elseif(isset($_REQUEST['PGMARKER']))
+				$PGLIST->display_content($_REQUEST['PGMARKER']);
+			else
+				$PGLIST->display();
 
 		//if($_SESSION['_showallinfo']) print('main = '.(getmicrotime()-$main2time).'<hr/>'); // для отладки
 

@@ -5,15 +5,13 @@
 	$pageParam  = explode('/', $pageParam);
 	$mainPage = array_shift($pageParam);
 
-	if($mainPage=='js.php')
-	{
-		include('js.php');
-		exit();
-	}
+	// if($mainPage=='js.php')
+	// {
+	// 	include('js.php');
+	// 	exit();
+	// }
 
 	$result = static_main::userAuth(); // запскает сессию и проверяет авторизацию
-	
-	if(!isset($_GET['_modul'])) $_GET['_modul'] = '';
 
 	if($mainPage=='logout')
 	{
@@ -38,6 +36,9 @@
 		if($result===false)
 			exit();
 	}
+
+	
+	if(!isset($_GET['_modul'])) $_GET['_modul'] = '';
 
 /*ADMIN*/
 	function fAdminMenu($_modul='') {
@@ -111,33 +112,54 @@
 
 		return $data;
 	}
-/*---------------ADMIN*/
 
-		include(getPathTheme().'/inc/index.php');
-		if(static_main::_prmUserCheck(2)) {
+	function selectDebugMode()
+	{
+		global $_tpl, $_CFG;
+		$listDebug = array(
+			0 => 'не показывать ошибки',
+			1 => 'сообщение об ошибке',
+			2 => 'Показать все ошибки',
+			3 => 'DEBUG MODE',
+			//4 => 'не показывать ошибки',
+		);
+		$listInfo = array(
+			0 => 'Скрыть инфу',
+			1 => 'Показать инфу',
+			2 => 'Показать SQL запросы',
+			3 => 'Показать все логи',
+			//4 => 'не показывать ошибки',
+		);
+		if(static_main::_prmUserCheck(2)) 
+		{
 			if(!isset($_COOKIE[$_CFG['wep']['_showerror']]))
 				$_COOKIE[$_CFG['wep']['_showerror']] = 0;
-			$_tpl['debug'] = '<span class="seldebug"><select onchange="window.location.href=\''.$_CFG['PATH']['admin'].'?'.$_CFG['wep']['_showerror'].'=\'+this.value;">
-	<option '.(!$_COOKIE[$_CFG['wep']['_showerror']]?'selected="selected"':'').' value="0">не показывать ошибки</option>
-	<option '.($_COOKIE[$_CFG['wep']['_showerror']]==1?'selected="selected"':'').' value="1">сообщение об ошибке</option>
-	<option '.($_COOKIE[$_CFG['wep']['_showerror']]==2?'selected="selected"':'').' value="2">Показать все ошибки</option>
-	<option '.($_COOKIE[$_CFG['wep']['_showerror']]==3?'selected="selected"':'').' value="3">DEBUG MODE</option>
-	</select></span>';
+
+			$_tpl['debug'] = '<span class="seldebug"><select onchange="window.location.href=wep.getUrlWithNewParam({'.$_CFG['wep']['_showerror'].':this.value});">';
+			foreach($listDebug as $k=>$r)
+				$_tpl['debug'] .= '<option '.($_COOKIE[$_CFG['wep']['_showerror']]==$k?'selected="selected"':'').' value="'.$k.'">'.$r.'</option>';
+			$_tpl['debug'] .= '</select></span>';
+
 
 			if(!isset($_COOKIE[$_CFG['wep']['_showallinfo']]))
 				$_COOKIE[$_CFG['wep']['_showallinfo']] = 0;
-			$_tpl['debug'] .= '<span class="seldebug"><select onchange="window.location.href=\''.$_CFG['PATH']['admin'].'?'.$_CFG['wep']['_showallinfo'].'=\'+this.value;">
-	<option '.(!$_COOKIE[$_CFG['wep']['_showallinfo']]?'selected="selected"':'').' value="0">Скрыть инфу</option>
-	<option '.($_COOKIE[$_CFG['wep']['_showallinfo']]==1?'selected="selected"':'').' value="1">Показать инфу</option>
-	<option '.($_COOKIE[$_CFG['wep']['_showallinfo']]==2?'selected="selected"':'').' value="2">Показать SQL запросы</option>
-	<option '.($_COOKIE[$_CFG['wep']['_showallinfo']]==3?'selected="selected"':'').' value="3">Показать все логи</option>
-	</select></span>';
+
+			$_tpl['debug'] .= '<span class="seldebug"><select onchange="window.location.href=wep.getUrlWithNewParam({'.$_CFG['wep']['_showallinfo'].':this.value});">';
+			foreach($listInfo as $k=>$r)
+				$_tpl['debug'] .= '<option '.($_COOKIE[$_CFG['wep']['_showallinfo']]==$k?'selected="selected"':'').' value="'.$k.'">'.$r.'</option>';
+			$_tpl['debug'] .= '</select></span>';
 
 			/*$_tpl['debug'] .= '<span class="seldebug"><select onchange="setCookie(\'cdesign\',this.value);window.location.href=\''.$_CFG['PATH']['admin'].'\';">
 	<option '.($_design=='default'?'selected="selected"':'').' value="default">Default</option>
 	<option '.($_design=='extjs'?'selected="selected"':'').' value="extjs">ExtJS</option>
 	</select></span>';*/
 		}
+	}
+
+	function showCmsInfo()
+	{
+		global $_tpl, $SQL, $_CFG;
+
 		if(!isset($_SESSION['wep_info'])) {
 			if(!$SQL) $SQL = new $_CFG['sql']['type']($_CFG['sql']);
 			$info = $SQL->_info();
@@ -153,3 +175,9 @@
 			$_tpl['contact'] .= '<div class="ctd1">телефон:</div><div class="ctd2">'.$_CFG['info']['phone'].'</div>';
 
 		$_tpl['wep_ver'] = $_CFG['info']['version'];
+	}
+
+	/*---------------ADMIN*/
+
+	include(getPathTheme().'/inc/index.php');
+
