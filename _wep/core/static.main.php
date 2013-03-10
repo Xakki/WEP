@@ -1092,16 +1092,21 @@ function setTheme($theme)
 	if(isBackend())
 	{
 		if(!file_exists($_CFG['_PATH']['cdesign'].$theme))
+		{
+			trigger_error('Theme '.$_CFG['_PATH']['cdesign'].$theme.' not found', E_USER_WARNING);
 			return false;
+		}
 		$_CFG['wep']['design'] = $theme;
 	}
 	else
 	{
 		if(!file_exists($_CFG['_PATH']['themes'].$theme))
+		{
+			trigger_error('Theme '.$_CFG['_PATH']['themes'].$theme.' not found', E_USER_WARNING);
 			return false;
+		}
 		$_CFG['site']['theme'] = $theme;
 	}
-
 	return true;
 }
 
@@ -1168,8 +1173,12 @@ function getUrlThemes($type=null)
 function setTemplate($template)
 {
 	global $_CFG;
-	if(!file_exists(getPathTheme().'templates/'.$template.'.tpl'))
+	$file = getPathTheme().'templates/'.$template.'.tpl';
+	if(!file_exists($file))
+	{
+		trigger_error('Template '.$file.' not found', E_USER_WARNING);
 		return false;
+	}
 	$_CFG['site']['template'] = $template;
 	return true;
 }
