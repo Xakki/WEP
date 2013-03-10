@@ -16,7 +16,6 @@
 		static_main::downSite(); // Exit()
 	}
 
-	// эти wep.php не подключаем, если что сами подключат
 	if(isset($_GET['_php']) and $_GET['_php']=='robotstxt') {
 		if(file_exists($_CFG['_PATH']['controllers'].'robotstxt.php'))
 			require_once($_CFG['_PATH']['controllers'].'robotstxt.php');
@@ -50,17 +49,16 @@
 		header("Last-Modified: " . gmdate("D, d M Y H:i:s", $_CFG['time']) . " GMT");
 		header("Expires: " . gmdate("D, d M Y H:i:s", $_CFG['time']) . " GMT");
 		header("Content-type:text/xml;charset=utf-8");
-		require_once($_CFG['_PATH']['core'].'wep.php');
+
 		$_COOKIE['_showerror'] = 0;
 		$SITEMAP = TRUE;
 		_new_class('pg',$PGLIST);
-		echo $PGLIST->creatSiteMaps();
+		$_tpl['text'] = $PGLIST->creatSiteMaps();
 		exit();
 	}
 	elseif(isset($_GET['_php']) and $_GET['_php']=='config') {
 		$_GET[$_CFG['wep']['_showallinfo']] = 0;
 		//Применяется для CKFinder для авторизации по сессии
-		require_once($_CFG['_PATH']['core'].'wep.php');	/**отправляет header и печатает страничку*/
 		session_go();
 		return true;
 	}

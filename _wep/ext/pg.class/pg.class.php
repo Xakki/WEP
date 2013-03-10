@@ -1130,11 +1130,18 @@ class pg_class extends kernel_extends {
 	* XML карта сайта
 	*
 	*/
-	function creatSiteMaps() {
+	function creatSiteMaps() 
+	{
 		$data = $this->getMap(-1);
 		$xml = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 		$xml .= $this->reverseDataMap($data);
 		$xml .= '</urlset>';
+		setTemplate('text');
+
+		$this->_CFG['wep']['_showallinfo'] =0;
+		$this->_CFG['wep']['_showerror'] = 0;
+		$_COOKIE[$this->_CFG['wep']['_showallinfo']] = 0;
+
 		return $xml;
 	}
 
