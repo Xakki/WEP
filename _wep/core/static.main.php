@@ -1301,17 +1301,29 @@ function setCss($styles, $isAuto = true)
 		foreach ($styles as $r)
 			if ($r)
 			{
-				if(strpos($r, '#themes#')!==false) 
-					$r = str_replace('#themes#', $customTheme.'style/', $r).'.css';
-				elseif(strpos($r, '/')===0) 
-					$r = $customTheme.'style'.$r.'.css';
-				else
-					$r = $_CFG['_HREF']['_style'].$r.'.css';
-
-				$_tpl['styles']['//'.$_CFG['_HREF']['_BH'].$r] = 1;
+				$_tpl['script'][getUrlCss($r, $customTheme)] = 1;
 			}
 	}
 }
+/**
+* Helper for setScript
+*/
+function getUrlCss($r, $customTheme=null)
+{
+	global $_CFG;
+	if(!$customTheme) $customTheme = getUrlTheme();
+	if(strpos($r, '#themes#')!==false) 
+		$r = str_replace('#themes#', $customTheme.'style/', $r).'.css';
+	elseif(strpos($r, '//')!==false) 
+		return $r;
+	elseif(strpos($r, '/')===0) 
+		$r = $customTheme.'style'.$r.'.css';
+	else
+		$r = $_CFG['_HREF']['_style'].$r.'.css';
+
+	return '//'.$_CFG['_HREF']['_BH'].$r;
+}
+
 
 function setScript($script, $isAuto = true)
 {
