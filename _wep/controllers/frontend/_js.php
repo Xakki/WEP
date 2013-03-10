@@ -20,8 +20,7 @@
 			{
 				if(!isset($data['tpl']) or !$data['tpl'])
 					$data['tpl'] = '#pg#formcreat';
-				$_tpl['text'] = transformPHP($data, $data['tpl'] );
-				$_tpl['onload'] = $_tpl['onload'];
+				$_tpl['text'] .= transformPHP($data, $data['tpl'] );
 			}
 		} 
 		else
