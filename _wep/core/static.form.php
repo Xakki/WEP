@@ -1590,6 +1590,7 @@ class static_form {
 			'int'=>true,
 			'integer'=>true,
 			'double'=>true,
+			'number'=>true,
 		);
 		if(isset($list[$type]))
 			return true;

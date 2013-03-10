@@ -6,7 +6,7 @@
 
 		if(isset($_tpl['script'][getUrlScript('wepform')]))
 			$_tpl['script'] = array(getUrlScript('wepform')=>1)+$_tpl['script'];
-		$_tpl['AAAA'] = $_tpl['script'];
+
 		$_tpl['script'] = array(getUrlScript('wep')=>1)+$_tpl['script'];
 		$_tpl['script'] = array(getUrlScript('jquery')=>1)+$_tpl['script'];
 		

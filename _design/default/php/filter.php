@@ -3,13 +3,21 @@
 	{
 		global $_CFG, $_tpl;
 		$html = '';
-		if(isset($data['options'])) {
+
+		if(isset($data['_*features*_']))
+		{
+			trigger_error('Ошибка. Старый формат данных. Отсутствуют опции для формы', E_USER_WARNING);
+			return '';
+		}
+
+		if(isset($data['options'])) 
+		{
 			$html .= '<form id="'.$data['options']['name'].'" class="'.(isset($data['options']['css'])?$data['options']['css']:'filter').'" method="'.$data['options']['method'].'" action="'.$data['options']['action'].'"';
 			if(isset($data['options']['onsubmit']))
 				$html .= ' onsubmit="'.$data['options']['onsubmit'].'"';
 			$html .= '>';
 		}
-		
+
 		$html .= '<!--BEGIN_FILTER-->';
 		foreach($data['form'] as $k=>$r) {
 			if(!isset($r['value']))
@@ -146,7 +154,7 @@
 				<input type="hidden" name="srlz_'.$k.'" value="'.htmlspecialchars($serl,ENT_QUOTES,$_CFG['wep']['charset']).'"/>
 			  </div>	';
 			}
-			elseif($r['type']=='number') {
+			elseif($r['type']=='number' or $r['type']=='int') {
 				if(!isset($r['mask']['min'])) $r['mask']['min'] = 0;
 				if(!isset($r['mask']['max'])) $r['mask']['max'] = PHP_INT_MAX;
 				if(!isset($r['mask']['step']) or !$r['mask']['step']) $r['mask']['step'] = 1;
