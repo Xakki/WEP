@@ -581,9 +581,6 @@ class pg_class extends kernel_extends {
 			$this->pageinfo = $data[0];
 
 			$this->initHTML();
-
-			global $_tpl;
-			$_tpl = array();
 		}
 		$this->access_flag = false;
 		return $this->getContent($Cdata);
