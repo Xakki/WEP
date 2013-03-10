@@ -1371,17 +1371,17 @@ deny from all
 	
 	static function runc($cmd)
 	{
-	        $html = '';
-	        $last_line = exec($cmd, $output, $retval);
-	        if(!count($output))
-	                $html .= '<div style="color:blue;">'.$last_line.'</div>';
-	        else
-	                foreach($output as $row)
-	                        $html .= '<div style="color:gray;">'.$row.'</div>';
-	        if($retval)
-	                $html .= '<h4>exec status = '.$retval.'</h4>';
+		$html = '';
+		$last_line = exec($cmd, $output, $retval);
+		if(!count($output))
+		        $html .= '<div style="color:blue;">'.$last_line.'</div>';
+		else
+		        foreach($output as $row)
+		                $html .= '<div style="color:gray;">'.$row.'</div>';
+		if($retval)
+		        $html .= '<h4>exec status = '.$retval.'</h4>';
 
-	        return $html.'<hr/>';
+		return $html.'<hr/>';
 	}
 
 // END static class

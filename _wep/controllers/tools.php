@@ -555,6 +555,8 @@ $dataF = array(
 if(file_exists($_CFG['_PATH']['controllers'].'/tools.php'))
 	include($_CFG['_PATH']['controllers'].'/tools.php');
 
+setTemplate('nologs');
+
 $html = '<div>Выбирите функцию для запуска</div><hr><ul>';
 foreach($dataF as $kk=>$rr) {
 	if(isset($_GET['tfunc']) and $_GET['tfunc']==$kk) {
@@ -566,7 +568,7 @@ foreach($dataF as $kk=>$rr) {
 		$html .= '<li><a href="'.$_CFG['PATH']['admin'].'?_view=list&_modul=_tools&tfunc='.$kk.'">'.$rr.'</a></li>';
 }
 $html .= '</ul>';
-setTemplate('nologs');
+
 
 if(!isset($_GET['tfunc'])) {
 	_new_class('session',$SESSION);
