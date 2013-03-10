@@ -1301,7 +1301,7 @@ function setCss($styles, $isAuto = true)
 		foreach ($styles as $r)
 			if ($r)
 			{
-				$_tpl['script'][getUrlCss($r, $customTheme)] = 1;
+				$_tpl['styles'][getUrlCss($r, $customTheme)] = 1;
 			}
 	}
 }
