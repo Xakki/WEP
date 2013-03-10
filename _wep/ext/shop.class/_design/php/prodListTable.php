@@ -5,7 +5,7 @@
 		if(isset($data) and count($data)) 
 		{
 			global $_tpl, $_CFG;
-			setCss('/_shop/style/product');
+			setCss('/../_shop/style/product');
 
 			$html = '<div class="prodListTable">';
 			if(!isset($data['#item#']) or !count($data['#item#'])) {
@@ -70,7 +70,7 @@
 								<img src="'.getUrlTheme().'_shop/img/basket-del.png" alt="Удалить из корзины"/>
 							</a>
 							*/
-							setScript('/_shop/script/shop');
+							setScript('/../_shop/script/shop');
 						}
 					}
 					$html .= '</tr>';					

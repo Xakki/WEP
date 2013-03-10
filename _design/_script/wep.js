@@ -95,22 +95,27 @@ window.wep = {
 	click: function(selector)
 	{
 		$(selector).click(function() {
-			var data = $(this).attr('data-send');
-			var href = $(this).attr('href');
-			var confirmMess = $(this).attr('data-confirm');
-			
-			if(!confirmMess || confirm(confirmMess))
-			{
-				if(!href)
-					href = location.href;
-				if(!strpos(href, '?'))
-					href += '?';
-				else
-					href += '&';
-				href += data;
-				location.href = href;
-			}
+			wep.clickConfirm($(this));
 		});
+	},
+	clickConfirm: function(obj)
+	{
+		var data = obj.attr('data-send');
+		var href = obj.attr('href');
+		var confirmMess = obj.attr('data-confirm');
+		
+		if(!confirmMess || confirm(confirmMess))
+		{
+			if(!href)
+				href = location.href;
+			if(!strpos(href, '?'))
+				href += '?';
+			else
+				href += '&';
+			if(data)
+				href += data;
+			location.href = href;
+		}
 	},
 
 	/**
@@ -246,7 +251,13 @@ window.wep = {
 			{
 				if(XMLHttpRequest.responseText)
 				{
-					var result = JSON.parse(XMLHttpRequest.responseText);
+					var result = {};
+					if(XMLHttpRequest.responseText.substr(0, 1)=='{')
+						result = JSON.parse(XMLHttpRequest.responseText);
+					else
+					{
+						result['text'] = XMLHttpRequest.responseText;
+					}
 					if(result['text'])
 					{
 						// this.success(response, textStatus, XMLHttpRequest);
@@ -369,8 +380,10 @@ window.wep = {
 		else if(result.redirectConfirm) 
 		{
 			if(confirm('Редирект на '+result.redirectConfirm))
+			{
 				window.location.href = result.redirectConfirm;
-			return false;
+				return false;
+			}
 		}
 
 		jQuery(param['insertobj']).trigger('ajaxSuccess', [result, param]);

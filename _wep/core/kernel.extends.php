@@ -1373,10 +1373,10 @@ abstract class kernel_extends {
 			$sbmtList = array(
 				'sbmt' => static_main::m('Save and close', $this)
 			);
-			if(isset($param['sbmt_save']) and $this->id)
-				$sbmtList['sbmt_save'] = static_main::m('Save', $this);
+			if(isset($param['sbmt_save']))
+				$sbmtList['sbmt_save'] = static_main::m( ($this->id?'Save':'Save and add'), $this);
 			if(isset($param['sbmt_close']))
-				$sbmtList['sbmt_close'] = static_main::m('Close', $this);
+				$sbmtList['sbmt_close'] = array('#name#'=>static_main::m('Close', $this));
 			if ($this->id and $this->_prmModulDel($this->data, $param) and isset($param['sbmt_del']))
 				$sbmtList['sbmt_del'] = array('#name#'=>static_main::m('Delete', $this), 'confirm'=>'Подтвердите удаление!');
 			$fields_form['sbmt'] = array(
@@ -1776,7 +1776,7 @@ abstract class kernel_extends {
 	 * @return array
 	 */
 	public function _Act($act, &$param) {
-		$flag = 1;
+		$flag = -1;
 		$DATA = array();
 		if (isset($param['mess']))
 			$DATA = $param['mess'];
@@ -1809,7 +1809,7 @@ abstract class kernel_extends {
 					$DATA[] = static_main::am('ok', 'act1', $this);
 				else
 					$DATA[] = static_main::am('ok', 'act0', $this);
-				$flag = 0;
+				$flag = 1;
 			}
 			else
 				$DATA[] = static_main::am('error', 'update_err', $this);
@@ -1825,7 +1825,7 @@ abstract class kernel_extends {
 	 * @return array
 	 */
 	public function _Del($param) {
-		$flag = 1;
+		$flag = -1;
 		$DATA = array();
 		if (isset($param['mess']))
 			$DATA = $param['mess'];
@@ -1835,13 +1835,13 @@ abstract class kernel_extends {
 				$data[$this->mf_actctrl] = 4;
 				if ($this->_update($data)) {
 					$DATA[] = static_main::am('ok', 'deleted', $this);
-					$flag = 0;
+					$flag = 1;
 				}else
 					$DATA[] = static_main::am('error', 'del_err', $this);
 			}else {
 				if ($this->_delete()) {
 					$DATA[] = static_main::am('ok', 'deleted', $this);
-					$flag = 0;
+					$flag = 1;
 				}else
 					$DATA[] = static_main::am('error', 'del_err', $this);
 			}
@@ -1858,7 +1858,7 @@ abstract class kernel_extends {
 	 * @return array
 	 */
 	public function _ORD($ord, &$param) {
-		$flag = 1;
+		$flag = -1;
 		$DATA = array();
 		if ($param['mess'])
 			$DATA = $param['mess'];
@@ -1872,7 +1872,7 @@ abstract class kernel_extends {
 					$DATA[] = array('value' => 'UP', 'name' => 'ok');
 				else
 					$DATA[] = array('value' => 'DOWN', 'name' => 'ok');
-				$flag = 0;
+				$flag = 1;
 			}
 			else
 				$DATA[] = static_main::am('error', 'update_err', $this);

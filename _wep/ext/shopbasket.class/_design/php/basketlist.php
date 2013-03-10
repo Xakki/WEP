@@ -10,7 +10,7 @@
  */
 	function tpl_basketlist(&$data) {
 		global $_tpl,$_CFG;
-		setCss('/_shop/style/shopBasket');
+		setCss('/../_shop/style/shopBasket');
 		$html = '';
 
 		if(isset($data['messages'])) {

@@ -112,10 +112,11 @@ class shop_class extends rubric_class {
 		return parent::allChangeData($type, $data);
 	}
 
-	function jsOrder() {
+	function jsOrder() 
+	{
+		global $_tpl;
 		$html = '';
 		$mess = array('error','Ошибка данных!');
-		$res = array('html'=>'');
 		$PRODUCT = &$this->childs['product'];
 		$PRODUCT->id = (int)$_GET['id'];
 		if($PRODUCT->id) {
@@ -162,14 +163,15 @@ class shop_class extends rubric_class {
 				}
 				else {
 					$html = transformPHP($DATA,'#pg#formcreat');
-					$res['onload'] = '$(\'#form_mail\').submit(function(){ JSWin({\'type\':this}); return false;});';
+					//$_tpl['onload'] .= '$(\'#form_mail\').submit(function(){ JSWin({\'type\':this}); return false;});';
 				}
 			}
 		}
 		if(!$html)
 			$html = '<div class="messages"><div class="'.$mess[0].'">'.$mess[1].'</div></div>';
-		$res['html'] = $html;
-		return $res;
+
+		$_tpl['text'] .= $html;
+		return true;
 	}
 
 	function getPath($id, $page, $startId=0) {

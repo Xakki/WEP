@@ -5,7 +5,7 @@
 		if(isset($data) and count($data)) 
 		{
 			//$_tpl['styles']['shop'] = array('/'.static_main::relativePath(dirname(dirname(__FILE__))).'/style/menu.css');
-			setCss('/_shop/style/shopMenu');
+			setCss('/../_shop/style/shopMenu');
 
 			$html = '<div class="shop-menu">
 			'.($data['#title#']?'<h3>'.$data['#title#'].'</h3>':'').'

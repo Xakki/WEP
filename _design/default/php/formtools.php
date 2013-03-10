@@ -16,6 +16,9 @@
 		global $_CFG, $_tpl;
 		$html = '';
 
+		if(isset($data['reloadPage']) and $data['reloadPage'])
+			$_tpl['onload'] .= 'wep.fShowloadReload();';
+
 		if(isset($data['path']) and count($data['path'])) 
 		{
 			include_once(getPathTheme(true).'/php/path.php');

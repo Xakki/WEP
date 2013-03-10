@@ -17,8 +17,8 @@ class static_super {
 	 */
 	static function super_inc(&$_this, $PARAM = array(), $ftype = '') {
 		// Результат работы скрипта
-		// $flag = 3; - вывод данных
-		$flag = 1;
+		// $statusFlag = 3; - вывод данных
+		$statusFlag = 0;
 		if(!isset($PARAM['clause']))
 			$PARAM['clause'] = array();
 		
@@ -65,7 +65,7 @@ class static_super {
 				$name = '<i>Список подуровня</i>';//'.$_this->caption.'
 				while ($parent_id) {
 					$clause = 'WHERE id="' . $parent_id . '"';
-					$_this->data = $_this->_query($listfields, $clause, 'id');
+					$_this->data = $_this->_query($listfields, $clause, 'id');//print_r($_this->data);exit($clause);
 					if (count($_this->data)) {
 						if (!count($first_data))
 							$first_data = $_this->data;
@@ -136,7 +136,7 @@ class static_super {
 				/*				 * **** CHILD ************************** */
 				/*				 * ************************************* */
 				$PARAM['_clp'][$_this->_cl . '_ch'] = $_GET[$_this->_cl . '_ch'];
-				list($PARAM, $flag) = $_this->childs[$_GET[$_this->_cl . '_ch']]->super_inc($PARAM, $ftype);
+				list($PARAM, $statusFlag) = $_this->childs[$_GET[$_this->_cl . '_ch']]->super_inc($PARAM, $ftype);
 				/*				 * ************************************* */
 				/*				 * **** CHILD ************************** */
 				/*				 * ************************************* */
@@ -168,143 +168,190 @@ class static_super {
 				}
 			}
 
-			// Удаление через форму
-			if (isset($_POST['sbmt_del']) and $_this->id and $ftype=='edit') {
+			// FIX - Удаление через форму
+			if (isset($_POST['sbmt_del']) and $_this->id and $ftype=='update') {
 				$ftype = 'del';
 			}
 
 			if(!isset($PARAM['hide_topmenu']))
 				$PARAM['topmenu'] = static_super::modulMenu($_this, $PARAM);
 
-			if ($ftype == 'add') {
-				if ($_this->mf_istree and $_this->id)
-					$_this->parent_id = $_this->id;
-				$_this->id = NULL;
-				list($PARAM['formcreat'], $flag) = $_this->_UpdItemModul($PARAM);
-				if ($flag == 1 and isset($_this->parent_id) and $_this->parent_id)
-					$_this->id = $_this->parent_id;
-				//else
-				$tmp = $PARAM['_clp'] + array('_type' => 'add');
-				if ($_this->parent_id)
-					$tmp[$_this->_cl . '_id'] = $_this->parent_id;
-				$PARAM['path']['add'] = array(
-					'path' => $tmp,
-					'name' => 'Добавление'
-				);
-			}
-			elseif ($ftype == 'edit' && $_this->id) {
-				if ($_this->mf_istree)
-					array_pop($PARAM['path']);
-				$PARAM['path']['edit'] = array(
-					'path' => $PARAM['_clp'] + array($_this->_cl . '_id' => $_this->id, '_type' => 'edit'),
-					'name' => 'Редактирование'
-				);
-				list($PARAM['formcreat'], $flag) = $_this->_UpdItemModul($PARAM);
-				if ($flag == 1) {
-					if (isset($_this->parent_id) and $_this->parent_id)
+
+
+			$path = $PARAM['_clp'];
+			if($ftype)
+				$path['_type'] = $ftype;
+			if($_this->id)
+				$path[$_this->_cl . '_id'] = $_this->id;
+
+			$messages = array();
+			switch ($ftype) {
+				case 'add':
+					if ($_this->mf_istree and $_this->id)
+						$_this->parent_id = $_this->id;
+
+					if ($_this->parent_id)
+						$path[$_this->_cl . '_id'] = $_this->parent_id;
+
+					$_this->id = NULL;
+					list($PARAM['formcreat'], $statusFlag) = $_this->_UpdItemModul($PARAM);
+					if ($statusFlag == 1 and $_this->parent_id)
 						$_this->id = $_this->parent_id;
-					$PARAM['_clp'][$_this->_cl . '_id'] = $_this->id;
-				}
-			}
-			elseif ($ftype == 'act' && $_this->id) {
-				if ($_this->mf_istree)
-					array_pop($PARAM['path']);
-				list($messages, $flag) = $_this->_Act(1, $PARAM);
-				$PARAM['messages'] = array_merge($PARAM['messages'], $messages);
-				if ($_this->mf_istree)
-					$_this->id = $_this->data[$_this->id][$_this->mf_istree];
-				else
-					$_this->id = NULL;
-			}
-			elseif ($ftype == 'dis' && $_this->id) {
-				if ($_this->mf_istree)
-					array_pop($PARAM['path']);
-				list($messages, $flag) = $_this->_Act(0, $PARAM);
-				$PARAM['messages'] = array_merge($PARAM['messages'], $messages);
-				if ($_this->mf_istree)
-					$_this->id = $_this->tree_data[$_this->id][$_this->mf_istree];
-				else
-					$_this->id = NULL;
-			}
-			elseif ($ftype == 'ordup' && $_this->id && $_this->mf_ordctrl) {
-				if ($_this->mf_istree)
-					array_pop($PARAM['path']);
-				list($messages, $flag) = $_this->_ORD(-1, $PARAM);
-				$PARAM['messages'] = array_merge($PARAM['messages'], $messages);
-				if ($_this->mf_istree)
-					$_this->id = $_this->data[$_this->id][$_this->mf_istree];
-				else
-					$_this->id = NULL;
-			}
-			elseif ($ftype == 'orddown' && $_this->id && $_this->mf_ordctrl) {
-				if ($_this->mf_istree)
-					array_pop($PARAM['path']);
-				list($messages, $flag) = $_this->_ORD(1, $PARAM);
-				$PARAM['messages'] = array_merge($PARAM['messages'], $messages);
-				if ($_this->mf_istree)
-					$_this->id = $_this->tree_data[$_this->id][$_this->mf_istree];
-				else
-					$_this->id = NULL;
-			}
-			elseif ($ftype == 'del' && $_this->id) {
-				if ($_this->mf_istree)
-					array_pop($PARAM['path']);
-				list($messages, $flag) = $_this->_Del($PARAM);
-				$PARAM['messages'] = array_merge($PARAM['messages'], $messages);
-				if ($_this->mf_istree and isset($_this->tree_data[$_this->id]))
-					$_this->id = $_this->tree_data[$_this->id][$_this->mf_istree];
-				else
-					$_this->id = NULL;
-			}
-			elseif ($ftype == 'tools') {
-				if ($_this->mf_istree and $_this->id)
-					$_this->parent_id = $_this->id;
-				$PARAM['formtools'] = array();
-				if (!isset($PARAM['topmenu'][$_REQUEST['_func']]) or !$PARAM['topmenu'][$_REQUEST['_func']]['function'])
-					$PARAM['messages'] = array(array('value' => 'Опция инструмента не найдена.', 'name' => 'error'));
-				else {
-					$method = $PARAM['topmenu'][$_REQUEST['_func']]['function'];
-					if(!is_array($method))
-						$method = array($_this,$method,array());
-					if(!method_exists($method[0],$method[1]))
-						$PARAM['messages'] = array(array('value' => 'Функция инструмента не найдена.', 'name' => 'error'));
-					else {
-						$PARAM['formtools'] = call_user_func_array(array($method[0],$method[1]), $method[2]);
+					$messages = $PARAM['formcreat']['messages']; unset($PARAM['formcreat']['messages']);
+					break;
+				
+				case 'update':
+					//if ($_this->mf_istree)
+					//	array_pop($PARAM['path']);
+					if(!$_this->id)
+						$messages[] = static_main::am('error', 'Id is requare');
+					else
+					{
+						list($PARAM['formcreat'], $statusFlag) = $_this->_UpdItemModul($PARAM);
+						if ($statusFlag == 1) {
+							if (isset($_this->parent_id) and $_this->parent_id)
+								$_this->id = $_this->parent_id;
+							$PARAM['_clp'][$_this->_cl . '_id'] = $_this->id;
+						}
+						$messages = $PARAM['formcreat']['messages']; unset($PARAM['formcreat']['messages']);
 					}
-				}
+					break;
+				
+				case 'act':
+					// if ($_this->mf_istree)
+					// 	array_pop($PARAM['path']);
+					if(!$_this->id)
+						$messages[] = static_main::am('error', 'Id is requare');
+					else
+					{
+						list($messages, $statusFlag) = $_this->_Act(1, $PARAM);
+						if ($_this->mf_istree)
+							$_this->id = $_this->data[$_this->id][$_this->mf_istree];
+						else
+							$_this->id = NULL;
+					}
+					break;
+
+				case 'dis':
+					// if ($_this->mf_istree)
+					// 	array_pop($PARAM['path']);
+					if(!$_this->id)
+						$messages[] = static_main::am('error', 'Id is requare');
+					else
+					{
+						list($messages, $statusFlag) = $_this->_Act(0, $PARAM);
+						if ($_this->mf_istree)
+							$_this->id = $_this->tree_data[$_this->id][$_this->mf_istree];
+						else
+							$_this->id = NULL;
+					}
+					break;
+				
+				case 'ordup':
+					// if ($_this->mf_istree)
+					// 	array_pop($PARAM['path']);
+					if(!$_this->id || !$_this->mf_ordctrl)
+						$messages[] = static_main::am('error', 'Id & Order is requare');
+					else
+					{
+						list($messages, $statusFlag) = $_this->_ORD(-1, $PARAM);
+						if ($_this->mf_istree)
+							$_this->id = $_this->data[$_this->id][$_this->mf_istree];
+						else
+							$_this->id = NULL;
+					}
+					break;
+					
+				case 'orddown':
+					if(!$_this->id || !$_this->mf_ordctrl)
+						$messages[] = static_main::am('error', 'Id & Order is requare');
+					else
+					{
+						// if ($_this->mf_istree)
+						// 	array_pop($PARAM['path']);
+						list($messages, $statusFlag) = $_this->_ORD(1, $PARAM);
+						if ($_this->mf_istree)
+							$_this->id = $_this->tree_data[$_this->id][$_this->mf_istree];
+						else
+							$_this->id = NULL;
+					}
+				break;
+				
+				case 'del':
+					if(!$_this->id)
+						$messages[] = static_main::am('error', 'Id is requare');
+					else
+					{
+						// if ($_this->mf_istree)
+						// 	array_pop($PARAM['path']);
+						list($messages, $statusFlag) = $_this->_Del($PARAM);
+						if ($_this->mf_istree and isset($_this->tree_data[$_this->id]))
+							$_this->id = $_this->tree_data[$_this->id][$_this->mf_istree];
+						else
+							$_this->id = NULL;
+					}
+				break;
+
+				case 'tools':
+					if ($_this->mf_istree and $_this->id)
+						$_this->parent_id = $_this->id;
+					$PARAM['formtools'] = array();
+					if (!isset($PARAM['topmenu'][$_REQUEST['_func']]) or !$PARAM['topmenu'][$_REQUEST['_func']]['function'])
+						$messages[] = static_main::am('error', 'Function for servise not found');
+					else {
+						$method = $PARAM['topmenu'][$_REQUEST['_func']]['function'];
+						if(!is_array($method))
+							$method = array($_this,$method,array());
+						if(!method_exists($method[0],$method[1]))
+							$messages = static_main::am('error', 'Function for servise not found');
+						else {
+							$PARAM['formtools'] = call_user_func_array(array($method[0],$method[1]), $method[2]);
+						}
+					}
+				break;
+
+				case 'static':
+					exit('ТОДО');
+					/*
+					if ($_this->mf_istree and $_this->id)
+						$_this->parent_id = $_this->id;
+					$PARAM['static'] = array();
+					if (!isset($PARAM['topmenu'][$_REQUEST['_func']]))
+						$messages[] = array('value' => 'Опция статики не найдена.', 'name' => 'error');
+					elseif (!method_exists($_this, 'static' . $PARAM['topmenu'][$_REQUEST['_func']]['function']))
+						$messages[] = array('value' => 'Функция статики не найдена.', 'name' => 'error');
+					else {
+						eval('$PARAM[\'static\'] = $_this->static' . $_REQUEST['_func'] . '();');
+					}*/
+				break;
+
+				default:
+					if ($_this->mf_istree and $_this->id)
+						$_this->parent_id = $_this->id;
+					$statusFlag = 3;
+					$PARAM['data'] = $_this->_displayXML($PARAM);
+					$messages = $PARAM['data']['messages']; unset($PARAM['data']['messages']);
+					break;
 			}
-			elseif ($ftype == 'static') {
-				exit('ТОДО');
-				/*
-				if ($_this->mf_istree and $_this->id)
-					$_this->parent_id = $_this->id;
-				$PARAM['static'] = array();
-				if (!isset($PARAM['topmenu'][$_REQUEST['_func']]))
-					$PARAM['messages'] = array(array('value' => 'Опция статики не найдена.', 'name' => 'error'));
-				elseif (!method_exists($_this, 'static' . $PARAM['topmenu'][$_REQUEST['_func']]['function']))
-					$PARAM['messages'] = array(array('value' => 'Функция статики не найдена.', 'name' => 'error'));
-				else {
-					eval('$PARAM[\'static\'] = $_this->static' . $_REQUEST['_func'] . '();');
-				}*/
-			} 
-			else {
-				if ($_this->mf_istree and $_this->id)
-					$_this->parent_id = $_this->id;
-				$flag = 3;
-				$PARAM['data'] = $_this->_displayXML($PARAM);
-				if (count($PARAM['data']['messages']))
-					$PARAM['messages'] = array_merge($PARAM['messages'], $PARAM['data']['messages']);
-				unset($PARAM['data']['messages']);
-			}
+
+			if (count($messages))
+				$PARAM['messages'] = array_merge($PARAM['messages'], $messages);
+
+			if($ftype)		
+				$PARAM['path'][$ftype] = array(
+					'path' => $path,
+					'name' => static_main::m($ftype.'_name')
+				);
 			/* elseif ($_this->id) { //Просмотр данных
-			  $flag = 3;
+			  $statusFlag = 3;
 			  $PARAM['item'] = $_this->data;
 			  } */
 
 		}
 		$PARAM['_cl'] = $_this->_cl;
+		$PARAM['statusFlag'] = $statusFlag;
 
-		return array($PARAM, $flag);
+		return array($PARAM, $statusFlag);
 	}
 
 	/**
@@ -657,9 +704,9 @@ class static_super {
 	static function _tr_attribute(&$_this, &$row, &$param) {
 		$DATA = array();
 		if ($_this->_prmModulEdit(array($row), $param))
-			$DATA['edit'] = true;
+			$DATA['update'] = true;
 		else
-			$DATA['edit'] = false;
+			$DATA['update'] = false;
 		if ($_this->_prmModulDel(array($row), $param))
 			$DATA['del'] = true;
 		else
@@ -738,7 +785,7 @@ class static_super {
 		if ($_this->mf_istree) {
 			$t = array($_this->_cl . '_id' => '');
 			//if (!$_this->mf_istree)
-			//	$t['_type'] = 'edit';
+			//	$t['_type'] = 'update';
 			$topmenu['select_'.$_this->_cl ] = array(
 				'href' => $t,
 				'caption' => $_this->caption,
@@ -757,12 +804,12 @@ class static_super {
 			//	$data = $_this->_select();
 
 			if($_this->_prmModulEdit($data))
-				$topmenu['edit'] = array(
-					'href' => array('_type' => 'edit', $_this->_cl . '_id' => $_this->id),
+				$topmenu['update'] = array(
+					'href' => array('_type' => 'update', $_this->_cl . '_id' => $_this->id),
 					'caption' => 'Редактировать - ' . $data[$_this->id]['name'],
 					'sel' => 0,
 					'type' => 'button',
-					'css' => 'button-edit',
+					'css' => 'button-update',
 					//'is_popup' => true,
 				);
 
@@ -913,7 +960,7 @@ class static_super {
 
 
 					$topmenu['child' . $ck] = array(
-						'href' => $t + array('_type' => 'edit', $ck . '_id' => ''),
+						'href' => $t + array('_type' => 'update', $ck . '_id' => ''),
 						'caption' => $cn->caption ,
 						'sel' => 0,
 						'list' => $cn->_forlist($cn->_getCashedList('list'), 0),

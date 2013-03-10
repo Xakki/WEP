@@ -49,10 +49,12 @@
 			if(!isset($attr['method']) or !$attr['method'])
 				$attr['method'] = 'POST';
 			$texthtml .= '<form id="'.$attr['name'].'" method="'.$attr['method'].'"'.$enctype.' action="'.$attr['action'].'"';
-			if(isset($attr['onsubmit']))
-				$texthtml .= ' onsubmit="'.$attr['onsubmit'].'"';
-			if( isset($PGLIST->contentID) )
-				$texthtml .= ' data-cid="'.$PGLIST->contentID.'"';
+				if(isset($attr['onsubmit']))
+					$texthtml .= ' onsubmit="'.$attr['onsubmit'].'"';
+				if(isset($attr['prevhref']))
+					$texthtml .= ' data-prevhref="'.$attr['prevhref'].'"';
+				if( isset($PGLIST->contentID) )
+					$texthtml .= ' data-cid="'.$PGLIST->contentID.'"';
 			$texthtml .= '>';
 
 			include_once($data['DIR'].'/form.php');

@@ -9,3 +9,5 @@ error.txt
 _design/_script/old
 nbproject
 _wepconf/config
+/sftp-config.json
+/newLinkProject.cmd

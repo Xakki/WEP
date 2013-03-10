@@ -32,7 +32,7 @@ wep.form = {
 			});
 		}
 
-		// WTH?
+		// AC
 		$(selector+' span.labelInput').unbind('click').click(function() {
 			$(this).next().focus();
 		});
@@ -62,6 +62,22 @@ wep.form = {
 			$(this).addClass('active');
 		}).off('focusout').on('focusout', function() {
 			$(this).removeClass('active');
+		});
+
+		// SUBMIT
+		jform.off('click', 'input[type=submit]').on('click', 'input[type=submit]', function(){
+			var jObj = $(this);
+			if(jObj.attr('name')=='sbmt_close' && jform.attr('data-prevhref'))
+			{
+				location.href = jform.attr('data-prevhref');
+				return false;
+			}
+			else if(jObj.attr('name')=='sbmt_del')
+			{
+				// TODO - удаление без отправки кучи лишних данных
+				//sbmt_del = true;
+				//return false;
+			}
 		});
 
 	},
@@ -303,7 +319,7 @@ wep.form = {
 		if(!max) max = $(obj).attr('maxlength');
 		if(!max) max = 5000;
 		if(!jQuery('#'+obj.name+'t2').size()){
-			val = document.createElement('span');
+			val = document.createElement('div');
 			val.className = "dscr txtCounter";
 			val.innerHTML = '<span>Cимволов:</span><input type="text" id="'+obj.name+'t2" maxlength="4" disabled class="textcount" style="text-align:right;"/><i>/</i><input type="text" id="'+obj.name+'t1" maxlength="4" disabled class="textcount" value="'+max+'"/>';
 			jQuery(obj).after(val);

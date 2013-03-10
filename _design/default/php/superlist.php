@@ -1,7 +1,7 @@
 <?php
 	function tpl_superlist(&$data) {
 		global $_CFG;
-		$html = '';
+		$html = $temp_topmenu = '';
 
 		if(!isset($data['_clp'])) {
 			$data['_clp'] = array();
@@ -10,41 +10,58 @@
 		if(!isset($data['DIR']))
 			$data['DIR'] = dirname(__FILE__);
 
-		$hasIdData = 0;
-		if(isset($data['formcreat']) and count($data['formcreat'])) {
-			if(isset($data['formcreat']['options']['id']) and $data['formcreat']['options']['id'])
-				$hasIdData = 2;
-			else
-				$hasIdData = 1;
+		// Меню и прочее
+		if(!isAjax())
+		{
+			$hasIdData = 0;
+			if(isset($data['formcreat']) and count($data['formcreat'])) {
+				if(isset($data['formcreat']['options']['id']) and $data['formcreat']['options']['id'])
+					$hasIdData = 2;
+				else
+					$hasIdData = 1;
+			}
+
+			$temp_topmenu = '<div class="superMenu">';
+				$temp_topmenu .= tpl_topmenu($data['topmenu'], $data['firstpath'], $data['_clp']);
+
+				include_once($data['DIR'].'/pagenum.php');
+				$temp_topmenu .= tpl_pagenum($data['data']['pagenum']);// pagenum
+			$temp_topmenu .= '</div>';
+
+			$html .= $temp_topmenu;
+
+
+			if(isset($data['path']) and count($data['path'])) {
+				include_once($data['DIR'].'/path.php');
+				$html .= tpl_path($data['path'],$hasIdData);// PATH
+			}
+
+			$html .= '<div id="tools_block" style="display:none;"></div>';
 		}
 
-		$temp_topmenu = '<div class="superMenu">';
-			$temp_topmenu .= tpl_topmenu($data['topmenu'], $data['firstpath'], $data['_clp']);
-
-			include_once($data['DIR'].'/pagenum.php');
-			$temp_topmenu .= tpl_pagenum($data['data']['pagenum']);// pagenum
-		$temp_topmenu .= '</div>';
-
-		$html .= $temp_topmenu;
-
-
-		if(isset($data['path']) and count($data['path'])) {
-			include_once($data['DIR'].'/path.php');
-			$html .= tpl_path($data['path'],$hasIdData);// PATH
-		}
-
-		$html .= '<div id="tools_block" style="display:none;"></div>';
-
+		// Сообщения
 		if(isset($data['messages']) and count($data['messages'])) {
 			include_once($data['DIR'].'/messages.php');
 			$html .= tpl_messages($data['messages']);// messages
 		}
 
-		if(isset($data['formcreat']) and count($data['formcreat'])) {
-			include_once($data['DIR'].'/formcreat.php');
-			$html .= tpl_formcreat($data['formcreat']);// PATH
+		// Форма
+		if(isset($data['formcreat']) and count($data['formcreat'])) 
+		{
+			$html .= transformPHP($data,'formcreat');
 		}
-		else {
+		// Статичный, сгенерированный ХТМЛ
+		elseif(isset($data['static']) and $data['static']) {
+			$html .= $data['static'];
+		}
+		// инструменты
+		elseif(isset($data['formtools']) and count($data['formtools'])) 
+		{
+			$html .= transformPHP($data,'formtools');
+		}
+		else 
+		{
+			// XML
 			$html .= tpl_data($data['data'], $data['firstpath'].http_build_query($data['_clp']).'&');// messages
 			if(!isset($data['data']['item']) or count($data['data']['item'])<8)
 				$temp_topmenu = '';
@@ -219,8 +236,8 @@
 					$html .= '<a class="buttonimg img'.$r['active'].'" title="Изменение данного своиства вам не доступна."></a>';
 			}
 			
-			if($r['edit'])
-				$html .= '<a class="buttonimg imgedit" href="'.$hrefpref.'&_type=edit" title="['.static_main::m('_EDIT_TITLE').']"></a>';
+			if($r['update'])
+				$html .= '<a class="buttonimg imgupdate" href="'.$hrefpref.'&_type=update" title="['.static_main::m('_EDIT_TITLE').']"></a>';
 			
 			if($r['del'])
 				$html .= '<a class="buttonimg imgdel" href="'.$hrefpref.'&_type=del" onclick="return wep.hrefConfirm(this,\'del\')" title="['.static_main::m('_DEL_TITLE').']"></a>';

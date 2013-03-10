@@ -28,7 +28,7 @@
 
 		function obHandler($buf) {
 			global $_tpl;
-			if($buf) $_tpl['text'] = $buf;
+			if($buf) $_tpl['logs'] .= $buf;
 
 			/*Вывд логов и инфы*/
 			if ((isset($_COOKIE[$_CFG['wep']['_showallinfo']]) and $_COOKIE[$_CFG['wep']['_showallinfo']]) or $_CFG['_F']['adminpage']) 

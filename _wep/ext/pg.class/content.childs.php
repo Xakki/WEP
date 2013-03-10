@@ -237,6 +237,7 @@ class content_class extends kernel_extends {
 			$fileDoc = static_tools::getDocFileInfo($flagPG);
 			if ($fileDoc['ShowFlexForm']) {
 				$ShowFlexForm = true;
+				global $_CFG, $_tpl;
 				$tempform = include($flagPG);
 				if (is_array($tempform) and count($tempform)) {
 					foreach ($tempform as $k => $r) {

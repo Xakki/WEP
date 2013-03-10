@@ -1223,9 +1223,9 @@ class pg_class extends kernel_extends {
 	public function fFormCheck(&$DATA, &$param, &$argForm) {
 		$RESULT = parent::fFormCheck($DATA,$param,$argForm);
 
-		if(isset($DATA['alias']) and $DATA['alias']!=='') {
+		if(isset($DATA['alias']) and $DATA['alias']!=='') 
+		{
 			$resdata = $this->qs('id, alias','WHERE parent_id='.(int)$DATA['parent_id'].' and alias="'.$this->SqlEsc($DATA['alias']).'" '.($this->id?' and id!='.$this->id:''));
-			print_r('<pre>');print_r($DATA);print_r($resdata);
 			if(count($resdata))
 				$RESULT['mess'][] = static_main::am('error', 'Запрещено дублировать страницы (Алиас) на одном подуровне');
 		}

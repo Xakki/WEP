@@ -4,7 +4,7 @@
 		$html = '';
 		if(isset($data) and count($data)) 
 		{
-			setCss('/_shop/style/shopMenu');
+			setCss('/../_shop/style/shopMenu');
 
 			$html = '<div class="shop-menu">
 			'.($data['#title#']?'<h3>'.$data['#title#'].'</h3>':'').'

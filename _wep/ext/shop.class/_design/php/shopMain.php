@@ -3,7 +3,7 @@
 		$html = '';
 		if(isset($data) and count($data)) 
 		{
-			setCss('/_shop/style/shopMain');
+			setCss('/../_shop/style/shopMain');
 
 			$html = '<div class="shopmain">';
 			$html .= tpl_shopmain_rev($data['#item#'],'',$data['#page#']);

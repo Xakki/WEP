@@ -27,14 +27,15 @@ var MESS = {
 };
 
 
-function contentIncParam(obj,path,funcparam) {
+function contentIncParam(obj,path,funcparam) 
+{
 	var pagetype = obj.options[obj.selectedIndex].value;
 	if(pagetype) {
 		param = {
-			'href':path+'/js.php?_view=contentIncParam&_modul=pg',
+			'href':path+'js.php?_view=contentIncParam&_modul=pg',
 			'type':'POST',
 			'data': {'pagetype':pagetype,'funcparam':funcparam},
-			'precall': function () {jQuery('form div.flexform').remove();},
+			'precall': function (result, param) {jQuery('form div.flexform').remove();},
 			'insertobj': '#tr_pagetype',
 			'inserttype': 'after',
 		};

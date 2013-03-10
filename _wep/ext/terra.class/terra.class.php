@@ -367,7 +367,7 @@ class terra_class extends kernel_extends {
 					);
 					$upd['domen_rf'] = $var;
 					if(!$upd['domen'] or !$upd['domen_rf']) {
-						print_r('<pre>');print_r($r);print_r($upd);
+						//print_r('<pre>');print_r($r);print_r($upd);
 						$res['text'] = '*err*';
 						return $res;
 					}

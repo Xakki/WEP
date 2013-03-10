@@ -35,7 +35,7 @@
 	if(!_new_class('pay', $PAY)) return false;
 	_new_class('pay', $PAY);
 
-	setCss('/_shop/style/shopBasket');
+	setCss('/../_shop/style/shopBasket');
 	plugForm();
 
 	$html = '';

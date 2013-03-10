@@ -6,7 +6,7 @@
 
 	if(!$_GET['_modul'] or !(isset($_GET['_view']) or isset($_GET['_type']))) 
 	{
-		$html = '<div style="position:absolute;top:50%;left:50%;"><div style="width:200px;height:100px;position:absolute;top:-50px;left:-100px;"><img src="/'.getUrlTheme().'img/login.gif" width="250" alt="LOGO"/></div></div>';
+		$_tpl['text'] .= '<div style="position:absolute;top:50%;left:50%;"><div style="width:200px;height:100px;position:absolute;top:-50px;left:-100px;"><img src="/'.getUrlTheme().'img/login.gif" width="250" alt="LOGO"/></div></div>';
 	}
 	else {
 		/*if(count($_GET)==2)
@@ -14,16 +14,33 @@
 		if($_GET['_view']=='list' and $_GET['_modul']=='_tools') 
 		{
 			if(isset($_SESSION['user']['level']) and $_SESSION['user']['level']==0)
-				$html = include($_CFG['_PATH']['wep_controllers'].'/tools.php');
+				$_tpl['text'] .= include($_CFG['_PATH']['wep_controllers'].'/tools.php');
 			else
-				$html = '<div style="color:red;">Доступ только АДмиму</div>';
+				$_tpl['text'] .= '<div style="color:red;">Доступ только АДмиму</div>';
 		}
 		elseif(!_new_class($_GET['_modul'],$MODUL)) 
 		{
-			$html = '<div style="color:red;">'.date('H:i:s').' : Модуль '.$_GET['_modul'].' не установлен</div>';
+			$_tpl['text'] .= '<div style="color:red;">'.date('H:i:s').' : Модуль '.$_GET['_modul'].' не установлен</div>';
 		}
-		else {
-
+		elseif($_GET['_view']=='contentIncParam') 
+		{
+			$CT = &$MODUL->childs['content'];
+			$CT->fields_form = array();
+			$_POST['funcparam'] = htmlspecialchars_decode($_POST['funcparam']);
+			if($form = $CT->getContentIncParam($_POST,true) and count($form)) {
+				if($CT->kFields2FormFields($form)) {
+					$data['form'] = &$form;
+					$_tpl['text'] = transformPHP($data,'form');
+				}
+				$_tpl['onload'] .= 'jQuery(\'#tr_funcparam\').hide();';
+			}
+			else {
+				$_tpl['onload'] .= 'jQuery(\'#tr_funcparam\').show();';
+			}
+		}
+		else 
+		{
+			$html='';
 			if(isset($_GET['_oid']) and $_GET['_oid']!='') $MODUL->owner_id = $_GET['_oid'];
 			if(isset($_GET['_pid']) and $_GET['_pid']!='') $MODUL->parent_id = $_GET['_pid'];
 			if(isset($_GET['_id']) and $_GET['_id']!='') $MODUL->id = $_GET['_id'];
@@ -50,47 +67,47 @@
 						$path[$temp] = $r['name'];
 					}
 					$DATA['path'] = $path;
-
-					$_tpl['title'] .= strip_tags(' : '.implode(' - ', $DATA['path']));
-
-					if($MODUL->ver!=$_CFG['modulprm'][$MODUL->_cl]['ver']) {
-						$html = 'Версия модуля '.$MODUL->caption.'['.$MODUL->_cl.'] ('.$MODUL->ver.') отличается от версии ('.$_CFG['modulprm'][$MODUL->_cl]['ver'].') сконфигурированного для этого сайта. Обновите здесь поля таблицы.';
-					}
-					end($DATA['path']);prev($DATA['path']);
+					end($DATA['path']);
+					$curhref = str_replace('&amp;', '&', key($DATA['path']));
+					prev($DATA['path']);
 					$prevhref = str_replace('&amp;', '&', key($DATA['path']));
-					if(isset($DATA['formcreat']['options'])) {
-						$DATA['formcreat']['options']['prevhref'] = $prevhref;
-					}
 
-					if(isset($DATA['formcreat']['form']) and $flag==1 and !count($DATA['formcreat']['form'])) {
-						$_SESSION['mess']=$DATA['formcreat']['messages'];
-						/*if($_SERVER['HTTP_REFERER'])
-							static_main::redirect($_SERVER['HTTP_REFERER']);
-						else*/
+					$_tpl['mulog'] = $DATA;
+					$_tpl['muflag'] = $flag;
+
+					if($flag===1)
+					{
+						//if(isAjax())
+						$_SESSION['mess']=$DATA['messages'];
+						$html .= transformPHP($DATA,'messages');
+						//$_tpl['mylog'] = $DATA;
+						if(isset($_POST['sbmt_save']))
+							static_main::redirect($curhref);
+						else
 							static_main::redirect($prevhref);
 					}
-					//TODO
-					elseif(!isset($DATA['formcreat']) and $flag!=3) {
-						// После успешного удаления
-						$_SESSION['mess']=$DATA['messages'];
-						end($DATA['path']);
-						print_r($flag); print_r($DATA); //formtools
-						// if($_SERVER['HTTP_REFERER'])
-						// 	static_main::redirect($_SERVER['HTTP_REFERER']);
-						// else
-						// 	static_main::redirect($_CFG['_HREF']['BH'].str_replace("&amp;", "&", key($DATA['path'])));
+					elseif($flag===-1)
+					{
+						$html .= transformPHP($DATA,'messages');
 					}
-					elseif(isset($DATA['formcreat']) and $flag===-1 and isAjax()) {
-						$html = transformPHP($DATA['formcreat']['messages'],'messages');
-					}
-					else {
+					else
+					{
+						$_tpl['title'] .= strip_tags(' : '.implode(' - ', $DATA['path']));
+
+						if($MODUL->ver!=$_CFG['modulprm'][$MODUL->_cl]['ver']) {
+							$html .= 'Версия модуля '.$MODUL->caption.'['.$MODUL->_cl.'] ('.$MODUL->ver.') отличается от версии ('.$_CFG['modulprm'][$MODUL->_cl]['ver'].') сконфигурированного для этого сайта. Обновите здесь поля таблицы.';
+						}
+
 						if(!isset($_SESSION['mess']) or !is_array($_SESSION['mess']))
 							$_SESSION['mess']= array();
 						elseif(count($_SESSION['mess']))
 							$DATA['messages'] += $_SESSION['mess'];
-						$DATA = array('superlist'=>$DATA);
-						$html = transformPHP($DATA,'superlist');
 						$_SESSION['mess'] = array();
+
+						if(isset($DATA['formcreat']['options']))
+							$DATA['formcreat']['options']['prevhref'] = $prevhref;
+
+						$html .= transformPHP($DATA,'superlist');
 					}
 
 //} $tt[$j] = getmicrotime()-$tt[$j]; $summ += $tt[$j]; } echo 'Среднее время = "'.($summ/5).'" ';echo $tt;
@@ -99,10 +116,11 @@
 			}
 			else
 				$html ='<div style="color:red;">'.date('H:i:s').' : Доступ к модулю '.$_GET['_modul'].' запрещён администратором</div>';
+			$_tpl['text'] .= $html;
 		}
 	}
 
-	$_tpl['text'] = $html;
+	
 
 	if(!isAjax())
 	{

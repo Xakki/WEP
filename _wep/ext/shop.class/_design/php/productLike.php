@@ -5,7 +5,7 @@
 		if(isset($data) and count($data)) 
 		{
 			global $_tpl;
-			setCss('/_shop/style/product');
+			setCss('/../_shop/style/product');
 
 			if(!isset($data['#item#']) or !count($data['#item#'])) {
 

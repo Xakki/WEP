@@ -88,7 +88,7 @@ function tools_cron() {
 		'type' => '',
 		'css' => 'add',
 	);
-	if (isset($_GET['_type']) and ($_GET['_type'] == 'add' or ($_GET['_type'] == 'edit' and isset($_GET['_id']))) ) {
+	if (isset($_GET['_type']) and ($_GET['_type'] == 'add' or ($_GET['_type'] == 'update' and isset($_GET['_id']))) ) {
 
 		$FORM = array();
 
@@ -129,7 +129,7 @@ function tools_cron() {
 			}
 		}
 		$DATA['path'][$FP.'_type=add'] = 'Добавить';
-		if($_GET['_type'] == 'edit' and isset($_GET['_id']) and isset($_CFG['cron'][$_GET['_id']])) {
+		if($_GET['_type'] == 'update' and isset($_GET['_id']) and isset($_CFG['cron'][$_GET['_id']])) {
 			$VAL = $_CFG['cron'][$_GET['_id']];
 			$VAL['last_time'] = $ini_arr['last_time'.$_GET['_id']];
 			$DATA['path'][$FP.'_type=add'] = 'Правка';
@@ -259,7 +259,7 @@ function tools_cron() {
 				);
 				$DATA['data']['item'][$k]['active'] = (!isset($r['active'])?1:(int)$r['active']);
 				$DATA['data']['item'][$k]['act'] = 1;
-				$DATA['data']['item'][$k]['edit'] = 1;
+				$DATA['data']['item'][$k]['update'] = 1;
 				$DATA['data']['item'][$k]['del'] = 1;
 				$DATA['data']['item'][$k]['id'] = $k;
 			}

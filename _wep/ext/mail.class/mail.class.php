@@ -253,8 +253,8 @@ class mail_class extends kernel_extends {
 			$argForm['comment']['mask']['evala'] = '"'.$this->SqlEsc($_COOKIE['ref'.$uri_hash]).'";';
 
 		if(isset($_SESSION['user']['email']) and $_SESSION['user']['email']) {
-			$argForm['from']['mask']['evala'] = '"'.$_SESSION['user']['email'].'";';
-			$argForm['from']['readonly'] = true;
+			$argForm['from']['default'] = $_SESSION['user']['email'];
+			//$argForm['from']['readonly'] = true;
 		}
 		if(isset($_GET['subject']) and !count($_POST)) {
 			$_POST['subject'] = $_GET['subject']; 

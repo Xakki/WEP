@@ -12,8 +12,8 @@
 
 			global $_CFG, $_tpl;
 			plugFancybox();
-			setCss('/_shop/style/product|form');
-			setScript('/_shop/script/shop');
+			setCss('/../_shop/style/product|form');
+			setScript('/../_shop/script/shop');
 
 			foreach($data['#item#'] as $r) 
 			{

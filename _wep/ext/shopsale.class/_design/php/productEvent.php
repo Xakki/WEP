@@ -16,8 +16,8 @@
 		} 
 		else {
 			global $_CFG, $_tpl;
-			setCss('/_shop/style/shopEvents');
-			//setScript('/_shop/script/shopEvents');
+			setCss('/../_shop/style/shopEvents');
+			//setScript('/../_shop/script/shopEvents');
 
 			$html = '<div class="productEvent">
 				<h3>'.$data['#title#'].'</h3>';

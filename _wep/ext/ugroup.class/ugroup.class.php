@@ -215,7 +215,7 @@ class ugroup_class extends kernel_extends
 				$txt = '<table border="1"><tr><td>ID</td><td>Name</td><td>email</td></tr>';
 				foreach($data as $k=>$r) {
 					$txt .= '<tr>
-						<td><a href="'.$this->_CFG['PATH']['admin'].'?_view=list&_modul=ugroupom&ugroupom_id='.$this->config['modergroup'].'&ugroupom_ch=usersom&usersom_id='.$r['id'].'&_type=edit">'.$r['id'].'</a></td>
+						<td><a href="'.$this->_CFG['PATH']['admin'].'?_view=list&_modul=ugroupom&ugroupom_id='.$this->config['modergroup'].'&ugroupom_ch=usersom&usersom_id='.$r['id'].'&_type=update">'.$r['id'].'</a></td>
 						<td>'.$r['name'].'</td>
 						<td>'.$r['email'].'</td></tr>';
 				}
