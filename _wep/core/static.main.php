@@ -1341,6 +1341,8 @@ function getUrlScript($r, $customTheme=null)
 	if(!$customTheme) $customTheme = getUrlTheme();
 	if(strpos($r, '#themes#')!==false) 
 		$r = str_replace('#themes#', $customTheme.'script/', $r).'.js';
+	elseif(strpos($r, '//')!==false) 
+		return $r;
 	elseif(strpos($r, '/')===0) 
 		$r = $customTheme.'script'.$r.'.js';
 	else
