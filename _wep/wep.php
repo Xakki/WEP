@@ -18,5 +18,6 @@ else
 	require_once($_CFG['_PATH']['core'].'output/html.php');
 
 require_once($_CFG['_PATH']['core'].'transform/transformPHP.php');
+require_once($_CFG['_PATH']['core'].'transform/transformXSL.php');
 
 require_once($_CFG['_PATH']['wep_controllers'].'main.php');
