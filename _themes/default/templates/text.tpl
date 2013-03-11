@@ -1,2 +1,1 @@
-{#logs#}
-{#text#}
+{#text#}{#logs#}

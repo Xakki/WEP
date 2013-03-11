@@ -349,7 +349,7 @@ function stripSlashesOnArray(array &$theArray) {
 
 $_CFG['shutdown_function_flag'] = false;
 
-include $_CFG['_PATH']['core'] . 'static.main.php';
+require($_CFG['_PATH']['core'] . 'static.main.php');
 
 $_CFG['robot'] = SpiderDetect();
 
@@ -549,4 +549,5 @@ $_tpl['meta'] = $_tpl['logs'] = $_tpl['onload'] = $_tpl['title'] = $_tpl['text']
 $_tpl['script'] = $_tpl['styles'] = $_tpl['onloadArray'] = array();
 $_tpl['YEAR'] = date('Y');
 $_tpl['BH'] = rtrim(MY_BH,'/');// OLD
-$_tpl['REQUEST_URI'] = $_SERVER['REQUEST_URI'];
+if(isset($_SERVER['REQUEST_URI']))
+	$_tpl['REQUEST_URI'] = $_SERVER['REQUEST_URI'];

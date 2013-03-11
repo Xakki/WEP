@@ -1,8 +1,6 @@
 <?php
 	header('Content-Type: text/html; charset=utf-8');
 
-	if(!isset($_CFG['_PATH']['wep'])) exit('Ошибка конфигурации.');
-	require_once($_CFG['_PATH']['wep'].'/config/config.php');
 	require_once($_CFG['_FILE']['cron']);
 	
 	if(!isset($_CFG['cron']) or !count($_CFG['cron'])) {
