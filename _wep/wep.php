@@ -12,9 +12,10 @@ if(isset($_GET['_php']) and $_GET['_php']=='captcha') {
 
 require_once($_CFG['_PATH']['core'].'weperr.php');
 
-if(isset($_SERVER['argv']) and $_SERVER['argv'][1]=='cron' and $_SERVER['SHELL']) 
+if(isset($_SERVER['argv']) and $_SERVER['argv'][1]==='cron' and $_SERVER['SHELL'] )
 {
 	require_once(WEP.'controllers/cron.php');
+	exit();
 }
 
 if(isAjax())
