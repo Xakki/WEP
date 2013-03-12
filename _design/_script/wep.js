@@ -901,7 +901,11 @@ window.wep = {
 	scriptLoad: function(script) {
 		var thisObj = this;
 		--wep._loadCount;
-		if(typeof script == 'object') {
+
+		console.log('script', script);
+
+		if(typeof script == 'object') 
+		{
 			for(var i in script) {
 				if(typeof script[i] == 'string' && (script[i].substr(0,4)=='http' || script[i].substr(0,1)=='<'))
 					alert('Error script include');
@@ -923,12 +927,13 @@ window.wep = {
 				}
 
 				if(typeof script[i] == 'string') {
-					eval(script[i]);
+					console.warn('eval-', script[i]);
+					globalEval(script[i]);
 				}
 			}
 		} 
 		else {
-			eval(script);
+			globalEval(script);
 		}
 		++wep._loadCount;
 	},
@@ -937,6 +942,7 @@ window.wep = {
     // загружаем скрипт
     include: function(scripts, onComplete) 
     {
+    	console.warn(scripts);
         if(typeof(scripts)=='string')
             scripts = [scripts];
         var i = 1;
@@ -1882,5 +1888,20 @@ function urlEncode( objUrl )
     result = objUrl.join('#');
     return result;
 }
+
+// Функция запуска eval в глобальном контексте
+var globalEval = function globalEval(src) {
+	if (src == undefined || src == '') {
+		return;
+	}
+    if (window.execScript) {
+        window.execScript(src);
+        return;
+    }
+    var fn = function() {
+        window.eval.call(window,src);
+    };
+    fn();
+};
 
 window._Browser = wep.getBrowserInfo();

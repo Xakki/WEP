@@ -40,8 +40,10 @@
 	elseif(isset($_GET['_php']) and $_GET['_php']=='rss') {
 		if(file_exists($_CFG['_PATH']['controllers'].'rss.php'))
 			require_once($_CFG['_PATH']['controllers'].'rss.php');
-		else
+		elseif(file_exists($_CFG['_PATH']['wep_controllers'].'frontend/rss.php'))
 			require_once($_CFG['_PATH']['wep_controllers'].'frontend/rss.php');
+		else
+			echo 'no RSS';
 		exit();
 	}
 	elseif(isset($_GET['_php']) and $_GET['_php']=='sitemap') {
@@ -65,8 +67,10 @@
 	elseif(isset($_GET['_php']) and $_GET['_type']=='xml') {
 		if(file_exists($_CFG['_PATH']['controllers'].$_GET['_php'].'.xml.php'))
 			require_once($_CFG['_PATH']['controllers'].$_GET['_php'].'.xml.php');
-		else
+		elseif(file_exists($_CFG['_PATH']['wep_controllers'].'frontend/'.$_GET['_php'].'.xml.php'))
 			require_once($_CFG['_PATH']['wep_controllers'].'frontend/'.$_GET['_php'].'.xml.php');
+		else
+			echo 'Ашипка!';
 		exit();
 	}
 
