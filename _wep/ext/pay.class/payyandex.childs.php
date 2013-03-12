@@ -416,7 +416,7 @@ class payyandex_class extends kernel_extends {
 		$param['USERAGENT'] = $this->YM_USER_AGENT;
 		$html = static_tools::_http($this->URI_YM_API. '/operation-history',$param);
 		if(!$html['text'] or $html['info']['http_code']!=200)
-			trigger_error('Ошибка запроса к Яндекс API', E_USER_WARNING);
+			trigger_error('Ошибка запроса к Яндекс API <pre>'.print_r($html, true).'</pre>', E_USER_WARNING);
 		$response = json_decode($html['text'], TRUE);
 		return $response;
 	}
