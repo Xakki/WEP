@@ -37,7 +37,7 @@
 	if(!_new_class('shopdeliver',$SHOPDELIVER)) return false;
 	if(!_new_class('pay', $PAY)) return false;
 
-	setCss('/_shop/style/shopBasket|/_pay/pay');
+	setCss('/../_shop/style/shopBasket|/../_pay/pay');
 	plugForm();
 
 	$subMenu = array(

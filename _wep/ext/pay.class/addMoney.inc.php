@@ -30,7 +30,7 @@
 	}
 	// $FUNCPARAM[0] = (int)$FUNCPARAM[0]; // TODO
 
-	setCss('/_pay/pay');
+	setCss('/../_pay/pay');
 	$html = '';
 
 	if(!$Ctext)

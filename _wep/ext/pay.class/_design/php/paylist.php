@@ -11,7 +11,7 @@ function tpl_paylist($data)
 {
 	//TODO **************
 	global $_tpl;
-	setCss('/_pay/pay');
+	setCss('/../_pay/pay');
 	$html = '';
 	if(count($data['#list#'])) 
 	{
