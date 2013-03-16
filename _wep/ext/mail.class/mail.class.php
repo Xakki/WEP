@@ -135,6 +135,7 @@ class mail_class extends kernel_extends {
 
 		$this->index_fields['status'] = 'status';
 		$this->index_fields['category'] = 'category';
+		$this->index_fields['mf_timecr'] = 'mf_timecr';
 	}
 
 

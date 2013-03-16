@@ -127,9 +127,19 @@ class bug_class extends kernel_extends {
 			}
 			if(count($query_val)) {
 				$keys = array_keys($bugs);
+
+				if(isset($_COOKIE[$this->_CFG['wep']['_showallinfo']]))
+				{
+					$_showallinfo = $_COOKIE[$this->_CFG['wep']['_showallinfo']];
+					$_COOKIE[$this->_CFG['wep']['_showallinfo']] = 1;
+				}
+
 				$result = $this->SQL->execSQL('INSERT INTO `'.$this->tablename.'` 
 					('.implode(',', $keys).') VALUES '.implode(',', $query_val).'
 					ON DUPLICATE KEY UPDATE cnt = cnt+1, active=1');
+				
+				if(isset($_showallinfo))
+					$_COOKIE[$this->_CFG['wep']['_showallinfo']] = $_showallinfo;
 			}
 		}
 		return true;

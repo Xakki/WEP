@@ -422,8 +422,14 @@
 		var $affected;
 		var $err;
 
-		function __construct(&$db, $sql) {
+		function __construct(&$db, $sql) 
+		{
+			global $_CFG;
 			$ttt = getmicrotime();
+			
+			if($_CFG['wep']['debugmode']>=3 and strpos($sql,'SELECT ')===0)
+				$sql = preg_replace('/SELECT /i', 'SELECT SQL_NO_CACHE ', $sql, 1);
+
 			$this->handle = mysqli_query($db->hlink, $sql);
 			$this->db = &$db;
 			$this->query = $db->query = $sql;

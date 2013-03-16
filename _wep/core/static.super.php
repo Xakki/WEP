@@ -366,7 +366,7 @@ class static_super {
 		/**END  костыли**/
 
 		$DATA = array('cl'=>$_this->_cl, 'caption'=>$_this->caption, 'messages'=>array());
-		$listfields = array('count(t1.id) as cnt');
+		$listfields = array('count(*) as cnt');
 		$moder_clause = self::_moder_clause($_this, $param);
 		if(is_array($moder_clause) and count($moder_clause))
 			$clause =' t1 WHERE '.(implode(' and ',$moder_clause)); 
@@ -425,7 +425,7 @@ class static_super {
 		if(count($_this->childs)) foreach($_this->childs as $ck=>$cn) {
 			if($cn->tablename and $cn->owner_name and $cn->showinowner) {
 				$arrno[$ck.'_cnt'] = 1;
-				$cls[0][] = '(SELECT count(t'.$t.'.id) FROM `'.$cn->tablename.'` t'.$t.' WHERE t'.$t.'.'.$cn->owner_name.'=t1.id) as '.$ck.'_cnt';
+				$cls[0][] = '(SELECT count(*) FROM `'.$cn->tablename.'` t'.$t.' WHERE t'.$t.'.'.$cn->owner_name.'=t1.id) as '.$ck.'_cnt';
 				/*$temp = self::_moder_clause($cn, $param);// сырая и недоработана
 				if(count($temp)) $cls[1] .= ' and '.str_replace('t1.','t'.$t.'.',implode(' and ',$temp));
 				//if($cn->_join_check==TRUE)
@@ -450,7 +450,7 @@ class static_super {
 			$arrno['istree_cnt']=1;
 			//SET listfields
 			$cls[0][$_this->mf_istree] = 't1.'.$_this->mf_istree;
-			$cls[0][] = '(SELECT count(t'.$t.'.id) FROM `'.$_this->tablename.'` t'.$t.' WHERE t'.$t.'.'.$_this->mf_istree.'=t1.id) as istree_cnt';
+			$cls[0][] = '(SELECT count(*) FROM `'.$_this->tablename.'` t'.$t.' WHERE t'.$t.'.'.$_this->mf_istree.'=t1.id) as istree_cnt';
 			$t++;
 		}
 		//SСортировка
@@ -483,44 +483,104 @@ class static_super {
 				$arrno[$k]=1; 
 			elseif(!isset($arrno[$k])) {
 				//Списки
-				if(isset($r['listname']) and is_array($r['listname']) and (isset($r['listname']['class']) or isset($r['listname']['tablename']))) {
+				if(isset($r['listname']) and is_array($r['listname']) and (isset($r['listname']['class']) or isset($r['listname']['tablename']))) 
+				{
 					$tmpsort = true;
 					$lsn = $r['listname'];
 					if(!isset($lsn['nameField']) or !$lsn['nameField'])
 						$lsn['nameField'] = 't'.$t.'.name';
 					else 
 						$lsn['nameField'] = str_replace('tx.','t'.$t.'.',$lsn['nameField']);
+
+
 					//if (isset($lsn['include']))
 					//	require_once($_this->_CFG['_PATH']['ext'].$lsn['include'].'.class.php');
-					if(isset($r['multiple']) and $r['multiple'])
-						$cls[0][] = 'group_concat('.$lsn['nameField'].' SEPARATOR " | ") as name_'.$k;
-					else
-						$cls[0][] = $lsn['nameField'].' as name_'.$k;
+					if(1)
+					{
+						$subQuery = 'SELECT ';
+						if(isset($r['multiple']) and $r['multiple'])
+							$subQuery .= 'group_concat('.$lsn['nameField'].' SEPARATOR " | ")';
+						else
+							$subQuery .= $lsn['nameField'];
 
-					if(!isset($lsn['join'])) 
-						$cls[1] .= ' LEFT';
+						$subQuery .= ' FROM `'.(isset($lsn['class'])?static_main::getTableNameOfClass($lsn['class']):$lsn['tablename']).'` t'.$t;
 
-					$cls[1] .= ' JOIN `'.((isset($lsn['class']))?static_main::getTableNameOfClass($lsn['class']):$lsn['tablename']).'` t'.$t.' ON ';
-
-					if(!isset($lsn['idField']) or !$lsn['idField']) 
-						$lsn['idField'] = 't'.$t.'.id';
-					else 
-						$lsn['idField'] = str_replace('tx.','t'.$t.'.',$lsn['idField']);
-
-					if(isset($lsn['join']) or isset($lsn['leftJoin'])) {
+						$subQuery .= ' WHERE ';
+						// Поле  в связанной таблице для связи		
+						if(!isset($lsn['idField']) or !$lsn['idField']) 
+							$lsn['idField'] = 't'.$t.'.id';
+						else 
+							$lsn['idField'] = str_replace('tx.','t'.$t.'.',$lsn['idField']);
+						// поля в текущей таблице для связи
 						if(!isset($lsn['idThis'])) 
 							$lsn['idThis'] = $k;
-						$cls[1] .= ' '.$lsn['idField'].'=t1.'.$lsn['idThis'].' '.str_replace('tx.','t'.$t.'.',($lsn['leftJoin'].$lsn['join']));
+						$lsn['idThis'] = 't1.'.$lsn['idThis'];
+						// Условие для множественных списков
+						if(isset($r['multiple']) and $r['multiple'])
+						{
+							$subQuery .= $lsn['idThis'].' LIKE concat("%|",'.$lsn['idField'].',"|%") ';
+						}
+						else
+						{
+							$subQuery .= ' '.$lsn['idThis'].' = '.$lsn['idField'];
+							if(isset($lsn['join']) or isset($lsn['leftJoin'])) // доп условия связи
+								$subQuery .= ' '.str_replace('tx.','t'.$t.'.',($lsn['leftJoin'].$lsn['join']));
+						}
+
+						//$arrno[$ck.'_cnt'] = 1;
+						//(SELECT count(*) FROM `'.$cn->tablename.'` t'.$t.' WHERE t'.$t.'.'.$cn->owner_name.'=t1.id)
+						// по умолчанию LEFT JOIN 
+						if(isset($lsn['join']))
+						{
+							// отметать результаты без совпадений
+							$moder_clause['t'.$t] = 'name_'.$k.' IS NOT NULL';
+						}
+
+						$cls[0][] = '('.$subQuery.') as name_'.$k;
 					}
-					elseif(isset($r['multiple']) and $r['multiple'])
-						$cls[1] .= 't1.'.$k.' LIKE concat("%|",'.$lsn['idField'].',"|%") ';
 					else
-						$cls[1] .= 't1.'.$k.'='.$lsn['idField'].' ';
+					{
+						// Старые Left join тормозят
+						if(isset($r['multiple']) and $r['multiple'])
+							$cls[0][] = 'group_concat('.$lsn['nameField'].' SEPARATOR " | ") as name_'.$k;
+						else
+							$cls[0][] = $lsn['nameField'].' as name_'.$k;
+
+						if(!isset($lsn['join'])) 
+							$cls[1] .= ' LEFT';
+
+						$cls[1] .= ' JOIN `'.((isset($lsn['class']))?static_main::getTableNameOfClass($lsn['class']):$lsn['tablename']).'` t'.$t.' ON ';
+
+						if(!isset($lsn['idField']) or !$lsn['idField']) 
+							$lsn['idField'] = 't'.$t.'.id';
+						else 
+							$lsn['idField'] = str_replace('tx.','t'.$t.'.',$lsn['idField']);
+
+						// JOIN WHERE
+						if(isset($r['multiple']) and $r['multiple'])
+						{
+							$cls[1] .= 't1.'.$k.' LIKE concat("%|",'.$lsn['idField'].',"|%") ';
+						}
+						elseif(isset($lsn['join']) or isset($lsn['leftJoin'])) 
+						{
+							if(!isset($lsn['idThis'])) 
+								$lsn['idThis'] = $k;
+							$cls[1] .= ' '.$lsn['idField'].'=t1.'.$lsn['idThis'].' '.str_replace('tx.','t'.$t.'.',($lsn['leftJoin'].$lsn['join']));
+						}
+						else
+						{
+							$cls[1] .= 't1.'.$k.'='.$lsn['idField'].' ';
+						}
+					}
+
 					$t++;
-				}elseif(isset($r['listname']) and !is_array($r['listname'])) {
+				}
+				elseif(isset($r['listname']) and !is_array($r['listname'])) 
+				{
 					$_this->_checkList($r['listname']);
 				}
-				elseif(isset($r['concat']) and $r['concat']) {
+				elseif(isset($r['concat']) and $r['concat']) 
+				{
 					$cls[0][] = $r['concat'].' as '.$k;
 					$r['mask']['sort'] = '';
 				}
