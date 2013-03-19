@@ -401,12 +401,12 @@
 			//if(strstr(strtolower($sql),'insert into'))
 			//	$this->id = $this->sql_id();
 			if(isset($_COOKIE[$_CFG['wep']['_showallinfo']]) and $_COOKIE[$_CFG['wep']['_showallinfo']]>1) {
-				if($ttt>0.5) $ttt = '<span style="color:#FF0000;">'.$ttt.'</span>';
-				elseif($ttt>0.1) $ttt = '<span style="color:#FF6633;">'.$ttt.'</span>';
-				elseif($ttt>0.05) $ttt = '<span style="color:#006699;">'.$ttt.'</span>';
-				elseif($ttt>0.01) $ttt = '<span style="color:#66CCCC;">'.$ttt.'</span>';
-				elseif($ttt>0.005) $ttt = '<span style="color:#006600">'.$ttt.'</span>';
-				else $ttt = '<span style="color:#00FF00;">'.$ttt.'</span>';
+				if($ttt>0.5) $ttt = '<span style="color:rgb(255, 0, 0);font-size:1.4em;">'.$ttt.'</span>';
+				elseif($ttt>0.1) $ttt = '<span style="color:#FF6633;font-size:1.2em;">'.$ttt.'</span>';
+				elseif($ttt>0.05) $ttt = '<span style="color:rgb(255, 155, 63);font-size:1.1em;">'.$ttt.'</span>';
+				elseif($ttt>0.01) $ttt = '<span style="color:rgb(226, 172, 0);">'.$ttt.'</span>';
+				elseif($ttt>0.005) $ttt = '<span style="color:rgb(247, 255, 155);">'.$ttt.'</span>';
+				else $ttt = '<span style="color:#FFF;">'.$ttt.'</span>';
 				$_CFG['logs']['sql'][] = htmlentities($sql,ENT_NOQUOTES,$_CFG['wep']['charset']).'  TIME='.$ttt;
 			}
 			elseif($_CFG['_F']['adminpage'] or isset($_COOKIE[$_CFG['wep']['_showallinfo']]))

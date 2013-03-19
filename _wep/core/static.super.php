@@ -368,6 +368,7 @@ class static_super {
 		$DATA = array('cl'=>$_this->_cl, 'caption'=>$_this->caption, 'messages'=>array());
 		$listfields = array('count(*) as cnt');
 		$moder_clause = self::_moder_clause($_this, $param);
+		$moder_clause_having = array();
 		if(is_array($moder_clause) and count($moder_clause))
 			$clause =' t1 WHERE '.(implode(' and ',$moder_clause)); 
 		else 
@@ -533,7 +534,7 @@ class static_super {
 						if(isset($lsn['join']))
 						{
 							// отметать результаты без совпадений
-							$moder_clause['t'.$t] = 'name_'.$k.' IS NOT NULL';
+							$moder_clause_having['t'.$t] = 'name_'.$k.' IS NOT NULL';
 						}
 
 						$cls[0][] = '('.$subQuery.') as name_'.$k;
@@ -624,6 +625,10 @@ class static_super {
 
 		$listfields = $cls[0];
 		$clause = 't1 '.$cls[1].' GROUP BY t1.id';
+
+		if(count($moder_clause_having))
+			$clause .=' HAVING '.implode(' AND ',$moder_clause_having);
+
 		if($order!='') $clause .= ' ORDER BY '.$order;
 		$DATA['order'] = $order;
 		//if(!$_this->mf_istree)

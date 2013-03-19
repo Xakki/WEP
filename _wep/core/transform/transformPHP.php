@@ -42,15 +42,25 @@ function transformPHP($data, $transform=NULL, $marker='',$theme=null)
 		$marker = '$data["' . $marker . '"]';
 
 	$transformpath =  $transformPath. $transform . '.php';
-	if (!file_exists($transformpath)) {
-		trigger_error('Отсутствует файл шаблона `' . $transformpath . '`', E_USER_WARNING);
-		return '';
+
+	if (!file_exists($transformpath)) 
+	{
+		$transformpath =  getPathTheme(true) . 'php/'. $transform . '.php';
+		if (!file_exists($transformpath)) 
+		{
+			trigger_error('Отсутствует файл шаблона `' . $transformpath . '`', E_USER_WARNING);
+			return '';
+		}
 	}
+
 	include_once($transformpath);
-	if (!function_exists('tpl_' . $transform)) {
+
+	if (!function_exists('tpl_' . $transform)) 
+	{
 		trigger_error('Функция `tpl_' . $transform . '` в шаблоне `' . $transformpath . '` не найдена', E_USER_WARNING);
 		return '';
 	}
+
 	eval('$html =  tpl_' . $transform . '(' . $marker . ');');
 	return $html;
 }
