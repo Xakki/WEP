@@ -72,15 +72,17 @@ class content_class extends kernel_extends {
 		$this->fields_form['script'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'script', 'caption' => 'SCRIPT', 'mask' => array('onetd' => 'none')); //, 'css'=>'minform'
 		$this->fields_form['keywords'] = array('type' => 'text', 'caption' => 'SEO - ключевые слова', 'mask' => array('onetd' => 'none'));
 		$this->fields_form['description'] = array('type' => 'text', 'caption' => 'SEO - описание', 'mask' => array('onetd' => 'close', 'name' => 'all'));
-		$this->fields_form['memcache'] = array('type' => 'int', 'caption' => 'Memcache time', 'comment' => '-1 - отключает кеш полностью,0 - откл кеширование,1> - кеширование в сек.', 'mask' => array('fview' => 1));
+
+		$this->fields_form['onajaxform'] = array('type' => 'checkbox', 'caption' => 'Вкл. AjaxForm', 'mask' => array('onetd' => 'Опции'));
+		$this->fields_form['access_flag'] = array('type' => 'checkbox', 'caption' => 'Не отображать на спец. страницах', 'comment'=>'Если скрипт на странице сгенерировал спец.флаг ($this->access_flag=true;) или выполняется AJAX запрос - данный контент не будет выполняться!', 'mask' => array('onetd' => 'none', 'fview' => 1));
+		$this->fields_form['autocss'] = array('type' => 'checkbox', 'caption' => 'Auto Css', 'comment' => 'Подключать CSS автоматический?', 'mask' => array('onetd' => 'none'));
+		$this->fields_form['autoscript'] = array('type' => 'checkbox', 'caption' => 'Auto Script', 'comment' => 'Подключать SCRIPTы автоматический?', 'mask' => array('onetd' => 'none'));
+		$this->fields_form['memcache'] = array('type' => 'int', 'caption' => 'Memcache', 'comment' => 'Время кеширования , в сек. ; -1 - отключает кеш полностью, 0 - откл кеширование,1> - кеширование в сек.', 'mask' => array('onetd' => 'close'));
 		$this->fields_form['memcache_solt'] = array('type' => 'list', 'listname' => 'memcache_solt', 'caption' => 'Memcache соль', 'mask' => array('fview' => 1));
+
 		$this->fields_form['ordind'] = array('type' => 'int', 'caption' => 'ORD', 'comment'=>'Сортировка');
-		$this->fields_form['onajaxform'] = array('type' => 'checkbox', 'caption' => 'Вкл. AjaxForm');
-		$this->fields_form['access_flag'] = array('type' => 'checkbox', 'caption' => 'Не отображать на спец. страницах', 'comment'=>'Если скрипт на странице сгенерировал спец.флаг ($this->access_flag=true;) или выполняется AJAX запрос - данный контент не будет выполняться!', 'mask' => array('fview' => 1));
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
-		$this->fields_form['autocss'] = array('type' => 'checkbox', 'caption' => 'Подключать CSS автоматический?');
-		$this->fields_form['autoscript'] = array('type' => 'checkbox', 'caption' => 'Подключать SCRIPTы автоматический?');
-		
+
 		$this->formSort = array(
 			'Основное'=>array('marker','pagetype','funcparam'),
 			'Контент'=>array('pg','keywords','description'),

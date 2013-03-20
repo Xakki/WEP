@@ -428,6 +428,11 @@ abstract class kernel_extends {
 	 */
 	public function SqlEsc($val) {
 		assert('!is_array($val)');
+		if(!$this->SQL)
+		{
+			trigger_error('No sql in ' . $this->_cl, E_USER_WARNING);
+			exit();
+		}
 		return $this->SQL->escape((string)$val);
 	}
 

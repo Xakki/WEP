@@ -732,8 +732,8 @@ class static_main {
 		elseif(!isset($_CFG["site"]["work_text"]) or !$_CFG["site"]["work_text"])
 			$_CFG["site"]["work_text"] = 'Ушёл на базу.';
 
-		if(file_exists($_CFG['_PATH']['phpscript'].'/frontend/work.html'))
-			$html = file_get_contents($_CFG['_PATH']['phpscript'].'/work.html');
+		if(file_exists($_CFG['_PATH']['controllers'].'/frontend/work.html'))
+			$html = file_get_contents($_CFG['_PATH']['controllers'].'/work.html');
 		else
 			$html = file_get_contents($_CFG['_PATH']['wep_controllers'].'/frontend/work.html');
 		$html = str_replace('"', '\"', $html);
@@ -1006,7 +1006,7 @@ function _modulExists($class_name, &$OWNER=NULL) {
 	// получить путь к PHP фаилам сторонних библиотек
 	function getLib($name) {
 		global $_CFG;
-		$file = $_CFG['_PATH']['phpscript'].'lib/'.$name.'.php';
+		$file = $_CFG['_PATH']['controllers'].'lib/'.$name.'.php';
 		if(file_exists($file))
 			return $file;
 		return $_CFG['_PATH']['wep_controllers'].'lib/'.$name.'.php';

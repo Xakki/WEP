@@ -889,8 +889,8 @@ deny from all
 </FilesMatch>');
 		}
 
-		if (!file_exists($_CFG['_PATH']['phpscript'] . 'cron.php')) {
-			file_put_contents($_CFG['_PATH']['phpscript'] . 'cron.php', '<?php
+		if (!file_exists($_CFG['_PATH']['controllers'] . 'cron.php')) {
+			file_put_contents($_CFG['_PATH']['controllers'] . 'cron.php', '<?php
 	$_CFG[\'_PATH\'][\'wep\'] = dirname(dirname(dirname(__FILE__))).\'/_wep/\';
 	include($_CFG[\'_PATH\'][\'wep_controllers\'].\'cron.php\');');
 		}
