@@ -315,7 +315,7 @@ abstract class kernel_extends {
 		}
 
 		if ($this->mf_createrid) {
-			$this->fields[$this->mf_createrid] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0);
+			$this->fields[$this->mf_createrid] = array('type' => 'int', 'width' => 11, 'attr' => 'unsigned NOT NULL', 'default' => 0);
 			$this->index_fields[$this->mf_createrid] = $this->mf_createrid;
 		}
 

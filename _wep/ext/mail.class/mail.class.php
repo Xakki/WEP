@@ -190,7 +190,7 @@ class mail_class extends kernel_extends {
 		$send_result = false;
 		$this->__do_hook('Send', $data);
 		if(!isset($data['from']) or !$data['from']) {
-			if(isset($data['creater_id']) && $data['creater_id'] == -1)
+			if(isset($data['creater_id']) && $data['creater_id'] == 1)
 				$data['from']=$this->config['mailrobot'];
 			elseif (isset($_SESSION['user']['email']) && $_SESSION['user']['email'])
 				$data['from'] = $_SESSION['user']['email'];
@@ -394,7 +394,7 @@ class mail_class extends kernel_extends {
 		
 		$result = $this->SQL->execSQL('
 			select count(id) as cnt from `'.$this->tablename.'`
-			where `creater_id`="-1" and user_to="'.$_SESSION['user']['id'].' and status!=4"
+			where `creater_id`="1" and user_to="'.$_SESSION['user']['id'].' and status!=4"
 		');
 		
 		if ($row = $result->fetch()) {
@@ -403,7 +403,7 @@ class mail_class extends kernel_extends {
 		
 		$result = $this->SQL->execSQL('
 			select count(id) as cnt from `'.$this->tablename.'`
-			where `creater_id`!="-1" and user_to="'.$_SESSION['user']['id'].' and status!=4"
+			where `creater_id`!="1" and user_to="'.$_SESSION['user']['id'].' and status!=4"
 		');
 		
 		if ($row = $result->fetch())
@@ -440,14 +440,14 @@ class mail_class extends kernel_extends {
 			case 'private':
 			{
 				$where[] = '`user_to`="'.$_SESSION['user']['id'].'"';				
-				$where[] = '`creater_id`!="-1"';
+				$where[] = '`creater_id`!="1"';
 			}
 			break;
 		
 			case 'system':
 			{
 				$where[] = '`user_to`="'.$_SESSION['user']['id'].'"';
-				$where[] = '`creater_id`="-1"';
+				$where[] = '`creater_id`="1"';
 			}
 			break;
 		
@@ -503,7 +503,7 @@ class mail_class extends kernel_extends {
 		while ($row = $result->fetch())
 		{
 			$data['rows'][] = $row;
-			if ($row['creater_id'] != -1)
+			if ($row['creater_id'] != 1)
 			{
 				if ($row['creater_id'] == $_SESSION['user']['id'])
 				{
@@ -517,7 +517,7 @@ class mail_class extends kernel_extends {
 		}
 		
 		$data['users'] = array(
-			-1 => array(
+			1 => array(
 				'name' => 'Системное сообщение',
 				'userpic' => 'png',
 			),
