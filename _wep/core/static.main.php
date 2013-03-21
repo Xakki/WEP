@@ -1359,6 +1359,10 @@ function setScript($script, $isAuto = true)
 function getUrlScript($r, $customTheme=null)
 {
 	global $_CFG;
+
+	if(isset($_CFG['site']['CDN'][$r]))
+		return $_CFG['site']['CDN'][$r];
+
 	if(!$customTheme) $customTheme = getUrlTheme();
 	if(strpos($r, '#themes#')!==false) 
 		$r = str_replace('#themes#', $customTheme.'script/', $r).'.js';

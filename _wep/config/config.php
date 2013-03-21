@@ -65,7 +65,10 @@ $_CFG['site'] = array(// для сайта
 	'redirectPlugin' => 0,
 	'theme' => 'default',
 	'template' => 'default',
-	'origin' => ''
+	'origin' => '',
+	'CDN' => array(
+		'jquery' => '//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js'
+	)
 );
 $_CFG['memcache'] = array(
 	'host' => '127.0.0.1',

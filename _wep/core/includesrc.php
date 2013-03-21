@@ -19,7 +19,8 @@
 	}
 
 
-	function arraySrcToStr() {
+	function arraySrcToStr() 
+	{
 		global $_tpl,$_CFG;
 		$temp = $solt = '';
 		if($_CFG['wep']['debugmode'])
@@ -35,7 +36,8 @@
 
 		// include SCRIPT into HTML
 		$temp = '';
-		if(isset($_tpl['script']) and is_array($_tpl['script'])) {
+		if(isset($_tpl['script']) and is_array($_tpl['script'])) 
+		{
 			$temp .= scriptRecursive($_tpl['script'], $solt);
 		}
 
@@ -51,21 +53,25 @@
 
 		$temp = '';
 		foreach($script as $kk=>$rr) {
-			if(is_string($rr) and (substr($rr,0,4)=='http' or substr($rr,0,1)=='<')) {
+			if(is_string($rr) and substr($rr,0,1)=='<') {
 				trigger_error('Обнаружена не совместимость: ошибка загрузки скриптов `'.$kk.'` - `'.$rr.'`', E_USER_WARNING);
 			}
 
-			$src = '';
-			if (is_string($kk) and strpos($kk, '//')!==false)
+			if (is_string($kk) and isUrl($kk))
 			{
-				$src = str_replace(array('http:','https:'), '', $kk).$solt;
-				$temp .= '<script src="'.$src.'"></script>'."\n";
+				$temp .= '<script src="'.$kk.$solt.'"></script>'."\n";
 			}
 
-			if(is_array($rr))
+			if (is_string($rr) and $rr)
+			{
+				if(isUrl($rr))
+					$temp .= '<script src="'.$rr.$solt.'"></script>'."\n";
+				else
+					$temp .= "<script>\n//<!--\n".$rr."\n//-->\n</script>\n";
+			}
+			elseif(is_array($rr))
 				$temp .= scriptRecursive($rr, $solt);
-			elseif(is_string($rr))
-				$temp .= "<script>\n//<!--\n".$rr."\n//-->\n</script>\n";
+				
 		}
 		return $temp;
 	}
@@ -75,21 +81,36 @@
 		$temp = '';
 
 		foreach($css as $kk=>$rr) {
-			if(substr($rr,0,4)==='http' or substr($rr,0,1)==='<') {
+			if(is_string($rr) and substr($rr,0,1)==='<') {
 				trigger_error('Обнаружена не совместимость: ошибка загрузки стилей `'.$kk.'` - `'.$rr.'`', E_USER_WARNING);
 			}
 
-			$src = '';
-			if (is_string($kk) and strpos($kk, '//')!==false)
+			if (is_string($kk) and isUrl($kk))
 			{
-				$src = str_replace(array('http:','https:'), '', $kk).$solt;
-				$temp .= '<link rel="stylesheet" href="'.$src.'"/>'."\n";
+				$temp .= '<link rel="stylesheet" href="'.$kk.$solt.'"/>'."\n";
 			}
 
-			if(is_array($rr))
+			if (is_string($rr) and $rr)
+			{
+				if(isUrl($rr))
+					$temp .= '<link rel="stylesheet" href="'.$rr.$solt.'"/>'."\n";
+				else
+					$temp .= "<style>".$rr."</style>\n";
+			}
+			elseif(is_array($rr))
 				$temp .= cssRecursive($rr, $solt);
-			elseif(is_string($rr) and _strlen($rr)>5)
-				$temp .= "<style>".$rr."</style>\n";
+			
 		}
 		return $temp;
+	}
+
+	function isUrl($str)
+	{
+		if(
+			strpos($str, '//')===0 or 
+			strpos($str, 'https://')===0 or 
+			strpos($str, 'http://')===0
+		)
+			return true;
+		return false;
 	}

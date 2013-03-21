@@ -816,28 +816,35 @@ window.wep = {
 	},
 
 	cssLoad: function(css) {
-		for(var i in css) {
-			//if(is_string($rr) and $rr[0]=='<')
-			var src = '';
-			if (i.substr(0, 4) == 'http' || i.substr(0, 2) == '//')
-				src = i;
-			else if(typeof i == 'string' && typeof css[i] != 'string')
-				src = wep.BH+wep.HREF_style+i+'.css';
+		for(var i in css) 
+		{
+			if(typeof css[i] == 'string' && css[i].substr(0,1)=='<')
+				alert('Error css include');
 
-			
-			if(typeof css[i] == 'object') {
-				wep.includeCSS(src, function(){ wep.cssLoad(css[i]); });
-			}
-			else if(src) {
-				wep.includeCSS(src);
+			if (typeof i == 'string' && wep.isUrl(i))
+			{
+				wep.includeCSS(i);
 			}
 
-			if(typeof css[i] == 'string') {
-				var style = document.createElement('style');
-				style.innerHTML = css[i];
-				document.getElementsByTagName('head')[0].appendChild(style);
-				// TODO прочие виды загрузок
+			if (typeof css[i] == 'string' && css[i])
+			{
+				if(wep.isUrl(css[i]))
+				{
+					wep.includeCSS(css[i]);
+				}
+				else
+				{
+					console.warn('CSS - ', css[i]);
+					var style = document.createElement('style');
+					style.innerHTML = css[i];
+					document.getElementsByTagName('head')[0].appendChild(style);
+				}
 			}
+			else if(typeof css[i] == 'object')
+			{
+				wep.cssLoad(css[i]);
+			}
+
 		}
 	},
 	includeCSSlist: {},
@@ -906,43 +913,64 @@ window.wep = {
 
 		if(typeof script == 'object') 
 		{
-			for(var i in script) {
-				if(typeof script[i] == 'string' && (script[i].substr(0,4)=='http' || script[i].substr(0,1)=='<'))
+			for(var i in script) 
+			{
+				if(typeof script[i] == 'string' && script[i].substr(0,1)=='<')
 					alert('Error script include');
 
+				if (typeof script[i] == 'string' && script[i])
+				{
+					if(wep.isUrl(script[i]))
+					{
+						--wep._loadCount; 
+						wep.include(script[i], function(){++thisObj._loadCount;});
+					}
+					else
+					{
+						console.warn('eval - ', script[i]);
+						globalEval(script[i]);
+					}
+				}
+
 				var src = '';
-				if (i.substr(0, 4) == 'http' || i.substr(0, 5) == 'https' || i.substr(0, 2) == '//')
-					var src = i;
-				else if(typeof i == 'string' && typeof script[i] != 'string')
-					var src = wep.BH+wep.HREF_script+i+'.js';
+				if (typeof i == 'string' && wep.isUrl(i))
+				{
+					
+					if(typeof script[i] == 'object')
+					{
+						--wep._loadCount; 
+						wep.include(i, function(){ thisObj.scriptLoad(script[i]); ++thisObj._loadCount; });
+					}
+					else
+					{
+						--wep._loadCount; 
+						wep.include(i, function(){++thisObj._loadCount;});
+					}
+				}
 
-				
-				if(typeof script[i] == 'object') {
-					--wep._loadCount; 
-					wep.include(src, function(){ thisObj.scriptLoad(script[i]); ++thisObj._loadCount; });
-				}
-				else if(src) {
-					--wep._loadCount; 
-					wep.include(src, function(){++thisObj._loadCount;});
-				}
-
-				if(typeof script[i] == 'string') {
-					console.warn('eval-', script[i]);
-					globalEval(script[i]);
-				}
 			}
-		} 
+		}
 		else {
 			globalEval(script);
 		}
 		++wep._loadCount;
+	},
+
+	isUrl: function(str)
+	{
+		if(
+			strpos(str, '//')===0 || 
+			strpos(str, 'https://')===0 || 
+			strpos(str, 'http://')===0
+		)
+			return true;
+		return false;
 	},
 	
 	includejslist: {},
     // загружаем скрипт
     include: function(scripts, onComplete) 
     {
-    	console.warn(scripts);
         if(typeof(scripts)=='string')
             scripts = [scripts];
         var i = 1;
