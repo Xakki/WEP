@@ -67,8 +67,10 @@ $_CFG['site'] = array(// для сайта
 	'template' => 'default',
 	'origin' => '',
 	'CDN' => array(
-		'jquery' => '//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js',
-		'jquery-ui' => 'http://code.jquery.com/ui/1.10.2/jquery-ui.js'
+		'jquery' => '//yandex.st/jquery/1.9.1/jquery.min.js',
+		'script.jquery/jquery-ui' => '//yandex.st/jquery-ui/1.10.2/jquery-ui.min.js',
+		'highlight' => '//yandex.st/highlightjs/7.3/highlight.min.js',
+		'bootstrap' => '//yandex.st/bootstrap/2.3.1/js/bootstrap.min.js'
 	)
 );
 $_CFG['memcache'] = array(
