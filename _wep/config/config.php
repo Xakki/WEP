@@ -67,7 +67,8 @@ $_CFG['site'] = array(// для сайта
 	'template' => 'default',
 	'origin' => '',
 	'CDN' => array(
-		'jquery' => '//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js'
+		'jquery' => '//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js',
+		'jquery-ui' => 'http://code.jquery.com/ui/1.10.2/jquery-ui.js'
 	)
 );
 $_CFG['memcache'] = array(
