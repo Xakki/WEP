@@ -34,7 +34,7 @@ class bug_class extends kernel_extends {
 		$this->fields['line'] = array('type' => 'int', 'width' => 8, 'attr' => 'NOT NULL');
 		$this->fields['debug'] = array('type' => 'text', 'attr' => 'NOT NULL');
 		$this->fields['href'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
-		$this->fields['page_id'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
+		$this->fields['page_id'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'default'=>0);
 		$this->fields['hash'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
 		$this->fields['cnt'] = array('type' => 'int', 'width' => 8, 'attr' => 'NOT NULL');
 		$this->fields['notif'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL', 'default'=>0);
@@ -116,7 +116,7 @@ class bug_class extends kernel_extends {
 							'href' => $href,
 							'cnt' => 1,
 						);
-						if($this->_CFG['_F']['adminpage'])
+						if(isBackend())
 							$bugs['page_id'] = ' -Админка- ';
 						elseif(isset($PGLIST->id))
 							$bugs['page_id'] = $PGLIST->id;
@@ -195,7 +195,7 @@ class bug_class extends kernel_extends {
 				'cnt' => 1,
 				'page_id'=>''
 			);
-			if($this->_CFG['_F']['adminpage'])
+			if(isBackend())
 				$this->bugs[$hash]['page_id'] = ' -Админка- ';
 			elseif(isset($PGLIST->id))
 				$this->bugs[$hash]['page_id'] = $PGLIST->id;

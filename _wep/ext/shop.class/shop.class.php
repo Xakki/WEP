@@ -59,17 +59,6 @@ class shop_class extends rubric_class {
 		$this->create_child('product');
 	}
 
-	//HOOK
-	// TODO - это не очень красывый код
-	function sdfs($MAIL) {
-		$MAIL->fields_form['from']['caption'] = 'Ваш Email';
-
-		$MAIL->fields_form['p_count'] = array('type'=>'list', 'listname'=>array('count',1,10), 'caption'=>'Количество', 'mask'=>array('min' => '1','max'=>10),'default'=>'1');
-		$MAIL->fields_form['p_addr'] = array('type'=>'text','caption'=>'Адрес доставки', 'mask'=>array('min' => '10'),'default'=>'Уфа, ');
-		$MAIL->fields_form['p_phone'] = array('type'=>'text','caption'=>'Телефон', 'mask'=>array('min' => '5'),'default'=>'+7','comment'=>'Пример: +7-987-254-00-28, +7-347-298-23-88');
-		$MAIL->fields_form['p_comment'] = array('type'=>'textarea','caption'=>'Дополнительная информация', 'mask'=>array('max' => '500'));
-	}
-
 	public function _add($data = array(), $flag_select = true, $flag_update=false) {
 
 		if(isset($data['name']) and $data['name'] and !isset($data['uiname']))
@@ -112,17 +101,31 @@ class shop_class extends rubric_class {
 		return parent::allChangeData($type, $data);
 	}
 
+	//HOOK
+	// TODO - это не очень красывый код
+	function sdfs($MAIL) {
+		$MAIL->fields_form['from']['caption'] = 'Ваш Email';
+		$MAIL->fields_form['from']['mask']['min'] = 0;
+		$MAIL->fields_form['from']['placeholder'] = 'Отправим вам письмо с подробной информацией о заказе.';
+		$MAIL->fields_form['p_phone'] = array('type'=>'text','caption'=>'Телефон', 'mask'=>array('min' => '5', 'name' => 'phone2'), 'placeholder'=>'Мы перезвоним вам');
+		$MAIL->fields_form['p_addr'] = array('type'=>'text','caption'=>'Адрес доставки', 'mask'=>array('min' => '10'),'placeholder'=>'Адрес доставки в пределах Уфимского района');
+		$MAIL->fields_form['p_count'] = array('type'=>'list', 'listname'=>array('count',1,10), 'caption'=>'Количество', 'mask'=>array('min' => '1','max'=>10),'default'=>'1');
+		$MAIL->fields_form['p_comment'] = array('type'=>'textarea','caption'=>'Дополнительная информация', 'mask'=>array('max' => '500'), 'placeholder'=>'Укажите ополнительные требования и пожелания');
+	}
+
 	function jsOrder() 
 	{
 		global $_tpl;
-		$html = '';
-		$mess = array('error','Ошибка данных!');
+		$html = '<div class="messages"><div class="error">Ошибка данных!</div></div>';
+		$flag = -1;
+
 		$PRODUCT = &$this->childs['product'];
 		$PRODUCT->id = (int)$_GET['id'];
+
 		if($PRODUCT->id) {
 			$data = $PRODUCT->_select();
-			if(count($data)) {
-
+			if(count($data)) 
+			{
 				_new_class('mail', $MAIL);
 				_new_class('ugroup',$UGROUP);
 
@@ -130,7 +133,8 @@ class shop_class extends rubric_class {
 
 				$DATA = array();
 				$cap = 'Заказ товара №'.$_GET['id'].' ('.$data[$PRODUCT->id]['name'].')';
-				if(count($_POST)) {
+				if(count($_POST)) 
+				{
 					$_POST['text'] = 'Товар: '.$data[$PRODUCT->id]['name'].' , #'.$PRODUCT->id.' <br/> 
 					Адрес доставки: '.$_POST['p_addr'].' <br/> 
 					Телефон: '.$_POST['p_phone'].' <br/> 
@@ -138,39 +142,46 @@ class shop_class extends rubric_class {
 					Email: '.(isset($_SESSION['user']['email'])?$_SESSION['user']['email']:$_POST['from']).' <br/> 
 					Дополнительно: '.$_POST['p_comment'];
 					$_POST['subject'] = $cap;
-				}else {
+				}
+				else 
+				{
 				}
 
-				list($DATA['formcreat'],$flag) = $MAIL->mailForm($UGROUP->config['mail_to']);
-				if(isset($DATA['formcreat']['form']['text'])) {
-					if(isset($DATA['formcreat']['form']['from']))
-						$DATA['formcreat']['form']['from']['caption'] = 'Ваш Email';
-					unset($DATA['formcreat']['form']['text']);
-					unset($DATA['formcreat']['form']['subject']);
-					unset($DATA['formcreat']['form']['text_ckedit']);
-					unset($DATA['formcreat']['form']['status']);
-					unset($DATA['formcreat']['form']['mail_to']);
-					unset($DATA['formcreat']['form']['creater_id']);
-					unset($DATA['formcreat']['form']['user_to']);
-					$DATA['formcreat']['form']['_info']['caption'] = $cap;
+				list($DATA,$flag) = $MAIL->mailForm($UGROUP->config['mail_to']);
+				if(isset($DATA['form']['text'])) {
+					unset($DATA['form']['text']);
+					unset($DATA['form']['subject']);
+					unset($DATA['form']['text_ckedit']);
+					unset($DATA['form']['status']);
+					unset($DATA['form']['mail_to']);
+					unset($DATA['form']['creater_id']);
+					unset($DATA['form']['user_to']);
+					$DATA['form']['_info']['caption'] = $cap;
 				}
 
-				if($flag==1) {
-					$DATA['formcreat']['messages'][0]['value'] = 'Ваш заказ принят на расмотрение. В дальнейшем с вами свяжется наш менеджер.';
+				$_tpl['DATA'] = $DATA;
+				$_tpl['flag'] = $flag;
+				$html = '';
+				if($flag==1)
+				{
+					$DATA['messages'][0]['value'] = 'Ваш заказ принят на расмотрение. В дальнейшем с вами свяжется наш менеджер.';
 					//setTemplate("waction");
-					if(isset($DATA['formcreat']['messages']))
-						$html = transformPHP($DATA['formcreat'],'#pg#messages');
+					$html = transformPHP($DATA,'#pg#messages');
 				}
-				else {
+				elseif($flag==-1)
+				{
+					if(!$_tpl['onload'])
+						$html = transformPHP($DATA,'#pg#messages');
+				}
+				else 
+				{
 					$html = transformPHP($DATA,'#pg#formcreat');
 					//$_tpl['onload'] .= '$(\'#form_mail\').submit(function(){ JSWin({\'type\':this}); return false;});';
 				}
 			}
 		}
-		if(!$html)
-			$html = '<div class="messages"><div class="'.$mess[0].'">'.$mess[1].'</div></div>';
 
-		$_tpl['text'] .= $html;
+		$_tpl['text'] = $html;
 		return true;
 	}
 

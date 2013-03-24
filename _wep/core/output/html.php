@@ -28,24 +28,6 @@ class wephtml
 		ob_end_flush();
 	}
 
-	public function createTemplate() 
-	{
-		global $_CFG;
-		$file = getPathTemplate();
-		if (file_exists($file)) 
-		{
-			$this->_html = file_get_contents($file);
-			//$this->_html = addcslashes($this->_html,'"\\');
-			include_once($_CFG['_PATH']['core'] . '/includesrc.php');
-			fileInclude();
-			arraySrcToStr();
-		}
-		else
-			$this->_html = 'ERROR: Mising templates file ' . $this->_templates . ' - ' . $file;
-
-		
-	}
-
 	/*
 	  Функция вывода на экран
 	 */
@@ -54,7 +36,7 @@ class wephtml
 		global $_tpl, $_CFG;
 		$_tpl['THEME'] = getUrlTheme();
 		/*Вывд логов и инфы*/
-		if ((isset($_COOKIE[$_CFG['wep']['_showallinfo']]) and $_COOKIE[$_CFG['wep']['_showallinfo']]) or $_CFG['_F']['adminpage']) 
+		if ((isset($_COOKIE[$_CFG['wep']['_showallinfo']]) and $_COOKIE[$_CFG['wep']['_showallinfo']]) or isBackend()) 
 		{
 			$buffer = $this->getLogInfo().$buffer;
 		}
@@ -72,6 +54,24 @@ class wephtml
 			$this->_html = $_tpl['logs'].$buffer;
 		}
 		return $this->_html;
+	}
+
+	public function createTemplate() 
+	{
+		global $_CFG;
+		$file = getPathTemplate();
+		if (file_exists($file)) 
+		{
+			$this->_html = file_get_contents($file);
+			//$this->_html = addcslashes($this->_html,'"\\');
+			include_once($_CFG['_PATH']['core'] . '/includesrc.php');
+			fileInclude();
+			arraySrcToStr();
+		}
+		else
+			$this->_html = 'ERROR: Mising templates file ' . $this->_templates . ' - ' . $file;
+
+		
 	}
 
 	public function getLogInfo()

@@ -34,6 +34,7 @@ class content_class extends kernel_extends {
 		$this->fields['memcache'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0);
 		$this->fields['memcache_solt'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL', 'default' => 0);
 		$this->fields['access_flag'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => '0');
+		$this->fields['only_production'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => '0');
 		$this->fields['autocss'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => '1');
 		$this->fields['autoscript'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => '1');
 
@@ -75,6 +76,7 @@ class content_class extends kernel_extends {
 
 		$this->fields_form['onajaxform'] = array('type' => 'checkbox', 'caption' => 'Вкл. AjaxForm', 'mask' => array('onetd' => 'Опции'));
 		$this->fields_form['access_flag'] = array('type' => 'checkbox', 'caption' => 'Не отображать на спец. страницах', 'comment'=>'Если скрипт на странице сгенерировал спец.флаг ($this->access_flag=true;) или выполняется AJAX запрос - данный контент не будет выполняться!', 'mask' => array('onetd' => 'none', 'fview' => 1));
+		$this->fields_form['only_production'] = array('type' => 'checkbox', 'caption' => 'Production Only', 'comment'=>'Если вкл., то будет отображаться только если в настройках сайта "Production mode" включен', 'mask' => array('onetd' => 'none', 'fview' => 1));
 		$this->fields_form['autocss'] = array('type' => 'checkbox', 'caption' => 'Auto Css', 'comment' => 'Подключать CSS автоматический?', 'mask' => array('onetd' => 'none'));
 		$this->fields_form['autoscript'] = array('type' => 'checkbox', 'caption' => 'Auto Script', 'comment' => 'Подключать SCRIPTы автоматический?', 'mask' => array('onetd' => 'none'));
 		$this->fields_form['memcache'] = array('type' => 'int', 'caption' => 'Memcache', 'comment' => 'Время кеширования , в сек. ; -1 - отключает кеш полностью, 0 - откл кеширование,1> - кеширование в сек.', 'mask' => array('onetd' => 'close'));
@@ -86,7 +88,7 @@ class content_class extends kernel_extends {
 		$this->formSort = array(
 			'Основное'=>array('marker','pagetype','funcparam'),
 			'Контент'=>array('pg','keywords','description'),
-			'Дополнительно'=>array('owner_id','name','href','ugroup','styles','script','memcache','memcache_solt','ordind','onajaxform','access_flag','global', 'autocss', 'autoscript'),
+			'Дополнительно'=>array('owner_id','name','href','ugroup','styles','script','memcache','memcache_solt','ordind','onajaxform','access_flag','only_production','global', 'autocss', 'autoscript'),
 			'active',
 		);
 

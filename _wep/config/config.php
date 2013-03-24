@@ -9,7 +9,7 @@
  * 3 - Номер ревизии , исправленны ошибки
  */
 $_CFG['info'] = array(//информация о СМС
-	'version' => '2.16.44',
+	'version' => '2.17.44',
 	'email' => 'wep@xakki.ru',
 	'icq' => '222392984'
 );
@@ -65,6 +65,7 @@ $_CFG['site'] = array(// для сайта
 	'redirectPlugin' => 0,
 	'theme' => 'default',
 	'template' => 'default',
+	'production' => false,
 	'origin' => '',
 	'CDN' => array(
 		'jquery' => '//yandex.st/jquery/1.9.1/jquery.min.js',

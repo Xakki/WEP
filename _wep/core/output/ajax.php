@@ -14,7 +14,7 @@
 
 			ob_start(array(&$this, "obHandler"));
 
-			ini_set('display_errors', $this->_errn);
+			//ini_set('display_errors', $this->_errn);
 			//$_REQUEST = utf2win_recursive($_REQUEST);
 		}
 
@@ -26,15 +26,16 @@
 			ob_end_flush();
 		}
 
-		function obHandler($buf) {
-			global $_tpl;
-			if($buf) $_tpl['logs'] .= $buf;
+		function obHandler($buffer) {
+			global $_tpl, $_CFG;
+			if($buffer) $_tpl['logs'] .= $buffer;
 
 			/*Вывд логов и инфы*/
-			if ((isset($_COOKIE[$_CFG['wep']['_showallinfo']]) and $_COOKIE[$_CFG['wep']['_showallinfo']]) or $_CFG['_F']['adminpage']) 
+			if ((isset($_COOKIE[$_CFG['wep']['_showallinfo']]) and $_COOKIE[$_CFG['wep']['_showallinfo']]) or isBackend()) 
 			{
 				$_tpl['logs'] .= $this->getLogInfo();
 			}
+			$_tpl['logs'] .= static_main::showErr();
 			
 			if(version_compare(phpversion(),'5.3.0','>')) 
 			{

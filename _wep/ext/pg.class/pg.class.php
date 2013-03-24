@@ -625,7 +625,12 @@ class pg_class extends kernel_extends {
 			}
 			if ($this->access_flag and $rowPG['access_flag']) {
 				if ($this->_CFG['wep']['debugmode'] > 2)
-					$_tpl[$rowPG['marker']] .= '<!--content' . $rowPG['id'] . ' ACCESS2 DENIED -->';
+					$_tpl[$rowPG['marker']] .= '<!--content' . $rowPG['id'] . ' SPECIAL DENIED -->';
+				continue;
+			}
+
+			if ($rowPG['only_production'] && !$_CFG['site']['production']) {
+				$_tpl[$rowPG['marker']] .= '<!--content' . $rowPG['id'] . ' ACCESS ONLY ON PRODUCTION -->';
 				continue;
 			}
 

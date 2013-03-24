@@ -69,6 +69,7 @@ $_CFGFORM['site'] = array(// для сайта
 	'theme' => array('type'=>'list','caption'=>'Дизайн сайта', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'template' => array('type'=>'list','caption'=>'Шаблон по умолчанию', 'css' => 'fblock hwep', 'style' => 'display:none;'),
 	'origin' => array('type'=>'text','caption'=>'Access-Control-Allow-Origin', 'css' => 'fblock hwep', 'style' => 'display:none;'),
+	'production' => array('type'=>'checkbox','caption'=>'Production mode', 'css' => 'fblock hsite', 'style' => 'display:none;'),
 );
 
 $_CFGFORM['memcache'] = array(

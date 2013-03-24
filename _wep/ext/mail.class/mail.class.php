@@ -31,7 +31,7 @@ class mail_class extends kernel_extends {
 
 		$this->default_access = '|0|';
 		$this->lang['add'] = 'Письмо успешно отправлено!';
-		$this->lang['add_err'] = 'Ошибка отправки письма! Информация о данной ошибке уже сообщена авминистратору и проблема разрешится в течении суток.';
+		$this->lang['add_err'] = 'Ошибка отправки письма! Информация о данной ошибке уже сообщена администратору и проблема разрешится в течении суток.';
 
 	}
 
@@ -100,14 +100,14 @@ class mail_class extends kernel_extends {
 	function _create() {
 		parent::_create();
 
-		$this->fields['from'] = array('type' => 'varchar', 'width' =>64, 'attr' => 'NOT NULL');
-		$this->fields['subject'] = array('type' => 'varchar', 'width' =>255, 'attr' => 'NOT NULL');
+		$this->fields['from'] = array('type' => 'varchar', 'width' =>64, 'attr' => 'NOT NULL', 'default'=>'');
+		$this->fields['subject'] = array('type' => 'varchar', 'width' =>255, 'attr' => 'NOT NULL', 'default'=>'');
 		$this->fields['text'] = array('type' => 'text','attr' => 'NOT NULL');
-		$this->fields['user_to'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
-		$this->fields['mail_to'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
-		$this->fields['status'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL');
-		$this->fields['category'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL','default'=>0);
-		$this->fields['bcc'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL','default'=>'');
+		$this->fields['user_to'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'default'=>'');
+		$this->fields['mail_to'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'default'=>'');
+		$this->fields['status'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL', 'default'=>MAIL_NEW);
+		$this->fields['category'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL', 'default'=>0);
+		$this->fields['bcc'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'default'=>'');
 		$this->fields['comment'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'default'=>'');
 
 		$this->_enum['status'] = array(
@@ -260,7 +260,7 @@ class mail_class extends kernel_extends {
 		if(isset($_GET['subject']) and !count($_POST)) {
 			$_POST['subject'] = $_GET['subject']; 
 		}
-		return $this->_UpdItemModul(array('capthaOn'=>1),$argForm);
+		return $this->_UpdItemModul(array('capthaOn'=>array('difficult'=>0 , 'len'=>4) ),$argForm);
 	}
 
 	function mailengine0 ($data) {

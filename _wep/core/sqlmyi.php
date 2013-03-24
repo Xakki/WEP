@@ -409,7 +409,7 @@
 				else $ttt = '<span style="color:#FFF;">'.$ttt.'</span>';
 				$_CFG['logs']['sql'][] = htmlentities($sql,ENT_NOQUOTES,$_CFG['wep']['charset']).'  TIME='.$ttt;
 			}
-			elseif($_CFG['_F']['adminpage'] or isset($_COOKIE[$_CFG['wep']['_showallinfo']]))
+			elseif(isBackend() or isset($_COOKIE[$_CFG['wep']['_showallinfo']]))
 				$_CFG['logs']['sql'][] = true;
 		}
 

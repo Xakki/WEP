@@ -145,7 +145,7 @@ class ugroup_class extends kernel_extends
 
 	function _childs() {
 		$this->create_child('users');
-		if($this->_CFG['_F']['adminpage']) { // для админки , чтобы удобно можно было задавать права доступа
+		if(isBackend()) { // для админки , чтобы удобно можно было задавать права доступа
 			/*$this->create_child('modulgrp');
 			$this->childs['modulgrp']->owner_name = 'ugroup_id';//теперь родитель в этом поле привязан
 			unset($this->childs['modulgrp']->fields_form['ugroup_id']);//отклю список групп

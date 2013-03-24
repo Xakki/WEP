@@ -3,8 +3,18 @@
 /***************************/
 /*  Главный набор скриптов */
 /***************************/
+
+
 // true - чтобы отключить все логи
-window.isProduction = false;
+if(typeof(isProduction)=='undefined')
+	isProduction = false;
+
+if(!isProduction) {
+	var hash = location.hash;
+	if(hash.indexOf('#console')!=-1) {
+		isProduction = true;
+	}
+}
 
 /**
 * Проверяем существование необходимых консольных функции в браузере
@@ -20,23 +30,23 @@ if(isProduction)
     console.timeEnd = function() {};
     console.time = function() {};
 }
-else if(typeof(opera)!="undefined" && !console.log)
+else if(typeof(opera)!="undefined")
 {
-    // для старой оперы 
-    console.log = function() {opera.postError(arguments);};//opera.postError(comm);
-    console.error = function() {opera.postError(arguments);};
-    console.assert = function() {if(!arguments[0]) opera.postError(arguments);};
-    console.timeEnd = function() {};
-    console.time = function() {};
+    console.log = console.log || function() {opera.postError(arguments);};//opera.postError(comm);
+    console.error = console.error || function() {opera.postError(arguments);};
+    console.assert = console.assert || function() {if(!arguments[0]) opera.postError(arguments);};
+    console.timeEnd = console.timeEnd || function() {};
+    console.time = console.time || function() {};
 }
 else
 {
     console.log = console.log || function() {};
-    console.error = console.error || function() {alert(arguments);};
-    console.assert = console.assert || console.error;
+    console.error = console.error || function() {/*TODO send error mess to server*/};
+    console.assert = console.assert || function() {};
     console.timeEnd = console.timeEnd || function() {};
     console.time = console.time || function() {};
 }
+
 
 
 window.KEY = {

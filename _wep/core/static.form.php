@@ -24,23 +24,28 @@ class static_form {
 			$_this->fld_data[$_this->owner_name] = $_this->owner->id;
 
 		if (!isset($_this->fld_data) && !count($_this->fld_data))
+		{
 			return static_main::log('error',static_main::m('add_empty'));
+		}
 
-		if (!self::_add_fields($_this,$flag_update)) return false;
+		if (!self::_add_fields($_this,$flag_update)) 
+		{
+			return static_main::log('error',static_main::m('add_error_add_fields'));
+		}
 
 		//umask($_this->_CFG['wep']['chmod']);
 		if (isset($_this->att_data) && count($_this->att_data)) {
 			if (!self::_add_attaches($_this)) {
 				$_this->_delete();
 				$_this->id = NULL;
-				return false;
+				return static_main::log('error',static_main::m('add_error_att_data'));
 			}
 		}
 		if (isset($_this->mmo_data) && count($_this->mmo_data)) {
 			if (!self::_add_memos($_this)) {
 				$_this->_delete();
 				$_this->id = NULL;
-				return false;
+				return static_main::log('error',static_main::m('add_error_mmo_data'));
 			}
 		}
 		if($_this->id and $flag_select)

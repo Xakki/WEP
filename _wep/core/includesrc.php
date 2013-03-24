@@ -41,6 +41,9 @@
 			$temp .= scriptRecursive($_tpl['script'], $solt);
 		}
 
+		if($_CFG['site']['production'])
+			$_tpl['onload'] = ' window.isProduction = true; '.$_tpl['onload'];
+
 		$temp .= "<script>\n//<!--\n function readyF() {".(string)$_tpl['onload']."\n}\n//-->\n</script>\n";
 
 		$_tpl['onload'] = 'readyF();';

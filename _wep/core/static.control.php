@@ -117,7 +117,10 @@ class static_control {
 						$flag=1;
 						$arr['mess'][] = static_main::am('ok','add',array($_this->tablename),$_this);
 					} else
+					{
+						trigger_error('Ошибка добавления в модуле `' . $_this->_cl . '`, параметры <pre>'.print_r($arr, true).'</pre>', E_USER_WARNING);
 						$arr['mess'][] = static_main::am('error','add_err',$_this);
+					}
 
 				}
 				elseif($submitFlag===2) //Если в результате автосабмита данные оказались не валидными, то не выводим сообщения
