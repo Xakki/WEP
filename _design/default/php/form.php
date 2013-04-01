@@ -206,7 +206,7 @@ function tpl_form(&$data, $tabs = array())
 					$ckedit['autoUpdateElement'] = 'true';
 					$ckedit['pasteFromWordPromptCleanup'] = 'true';
 					$ckedit['allowedContent'] = 'true';
-					unset($ckedit['extraPlugins']);
+					//unset($ckedit['extraPlugins']);
 
 					$fckscript = 'function cke_'.$k.'() { if(typeof CKEDITOR.instances.id_'.$k.' == \'object\'){CKEDITOR.instances.id_'.$k.'.destroy(true);} editor_'.$k.' = CKEDITOR.replace( \'id_'.$k.'\',{';
 

@@ -29,7 +29,7 @@
 				return spaceElement;
 			};
 
-			editor.on( 'themeSpace', function( event )
+			editor.on( 'uiSpace', function( event )
 			{
 				if ( event.data.space == 'bottom' )
 					event.data.html += '<div id="' + spaceId + '" class="cke_path">' + emptyHtml + '</div>';
