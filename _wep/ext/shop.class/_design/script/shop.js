@@ -56,7 +56,7 @@ wep.shop = {
 jQuery(document).ready(function() {
 	ajaxjob = false;
 
-	jQuery('#basketBlock').live('click', function() {
+	jQuery('#basketBlock').on('click', function() {
 		window.location.href = '/'+wep.shop.pageBasket;
 		return false;
 	});

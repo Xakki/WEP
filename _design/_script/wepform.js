@@ -119,6 +119,7 @@ wep.form = {
 					wep.form.setDefaultParamForm(param, jSelector);
 		
 					wep.loadAnimationOnAjax(param);
+
 					//var formElement = f[0];
 					o.dataType = 'json';
 					//a.push({name:'HTTP_X_REQUESTED_WITH', value:'xmlhttprequest'});
@@ -126,7 +127,6 @@ wep.form = {
 					if(cid)
 						a.push({name:'PGCID', value:cid});
 					//console.log(a,f,o);
-					//wep.preSubmitAJAX (f);
 					//console.error('**beforeSubmit', param, o);
 				},
 
@@ -150,6 +150,12 @@ wep.form = {
 					wep.ajaxSuccess(result, param);
 				}
 
+			});
+			jQuery(jSelector).off('submit', 'sbmt').on('submit', 'sbmt', function(){
+				wep.preSubmitAJAX ();
+			});
+			jQuery(jSelector).off('click', '[type=submit],[type=image]','sbmt').on('click', '[type=submit],[type=image]', 'sbmt', function(){
+				wep.preSubmitAJAX ();
 			});
 		});
 		

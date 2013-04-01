@@ -173,18 +173,17 @@ function tpl_form(&$data, $tabs = array())
 				$texthtml .= '<div class="form-value textarea"><textarea name="'.$k.'" onkeyup="textareaChange(this)" rows="10" cols="80" '.$attribute.'>'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
 			}
 			elseif($r['type']=='ckedit') {
-				$_tpl['script'][$_CFG['_HREF']['WSWG'].'ckeditor3/ckeditor.js'] = 1;
-
+				$_tpl['script'][$_CFG['_HREF']['WSWG'].'ckeditor4/ckeditor.js'] = 1;
+				// http://docs.ckeditor.com/#!/api/CKEDITOR.config
 				//http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.config.html
 					$ckedit = $r['paramedit'];
-					if(!isset($ckedit['skin']))
-						$ckedit['skin']='\'kama\'';
+					// if(!isset($ckedit['skin']))
+					// 	$ckedit['skin']='\'kama\'';
 					if(!isset($ckedit['width']))
 						$ckedit['width'] = '\'100%\'';
 					if(!isset($ckedit['height']))
 						$ckedit['height'] = '450';
-					if(!isset($ckedit['toolbarStartupExpanded']))
-						$ckedit['toolbarStartupExpanded']='true';
+					$ckedit['toolbarCanCollapse ']='true';
 					if(!isset($ckedit['baseHref']))
 						$ckedit['baseHref'] = '\''.$_CFG['_HREF']['BH'].'\'';
 					if(isset($ckedit['toolbar'])) {
@@ -205,6 +204,9 @@ function tpl_form(&$data, $tabs = array())
 					if(!isset($ckedit['contentsCss']))
 						$ckedit['contentsCss'] = '"/_design/default/style/main.css"';
 					$ckedit['autoUpdateElement'] = 'true';
+					$ckedit['pasteFromWordPromptCleanup'] = 'true';
+					$ckedit['allowedContent'] = 'true';
+					unset($ckedit['extraPlugins']);
 
 					$fckscript = 'function cke_'.$k.'() { if(typeof CKEDITOR.instances.id_'.$k.' == \'object\'){CKEDITOR.instances.id_'.$k.'.destroy(true);} editor_'.$k.' = CKEDITOR.replace( \'id_'.$k.'\',{';
 
@@ -215,15 +217,16 @@ function tpl_form(&$data, $tabs = array())
 					}
 					$fckscript .= '\'temp\' : \'temp\' });';
 
-					if(isset($ckedit['CKFinder'])) {
-						$_tpl['script'][$_CFG['_HREF']['WSWG'].'ckfinder/ckfinder.js'] = 1;
+					// if(isset($ckedit['CKFinder'])) {
+					// 	$_tpl['script'][$_CFG['_HREF']['WSWG'].'ckfinder/ckfinder.js'] = 1;
 
-						$fckscript = ' function ckf_'.$k.'() { CKFinder.setupCKEditor(editor_'.$k.',\'/'.$_CFG['PATH']['WSWG'].'ckfinder/\');} '.$fckscript;
-						$fckscript .= ' ckf_'.$k.'();';
+					// 	$fckscript = ' function ckf_'.$k.'() { CKFinder.setupCKEditor(editor_'.$k.',\'/'.$_CFG['PATH']['WSWG'].'ckfinder/\');} '.$fckscript;
+					// 	$fckscript .= ' ckf_'.$k.'();';
 						
-						if(isset($ckedit['CKFinder']['allowedExtensions']) and $_SESSION)
-							$_SESSION['wswg']['AE'] = $ckedit['CKFinder']['allowedExtensions'];
-					}
+					// 	if(isset($ckedit['CKFinder']['allowedExtensions']) and $_SESSION)
+					// 		$_SESSION['wswg']['AE'] = $ckedit['CKFinder']['allowedExtensions'];
+					// }
+
 					$fckscript .= '}';
 					//if(!isset($fields[$k.'_ckedit']['value']) or $fields[$k.'_ckedit']['value']=='' or $fields[$k.'_ckedit']['value']=='1')
 						$_tpl['onload'] .= $fckscript.' cke_'.$k.'();';
@@ -680,27 +683,35 @@ function tpl_form(&$data, $tabs = array())
 
 				$texthtml .= '</div>';
 			}
-			elseif($r['type']=='password' and isset($r['mask']['password']) and $r['mask']['password']=='re') 
+			elseif($r['type']=='password')
 			{
-				$texthtml .= '<div class="form-value">
-					<span class="labelInput">Введите пароль</span>
-					<input type="password" name="'.$k.'" value="" onkeyup="checkPass("'.$k.'")" class="password" '.$attribute.'/>
-					<span class="labelInput">Повторите ввод пароля</span>
-					<input type="password" name="re_'.$k.'" value="" onkeyup="checkPass("'.$k.'")" class="password" '.$attribute.'/>
-					</div>';
-			}
-			elseif($r['type']=='password' and isset($r['mask']['password']) and $r['mask']['password']=='change') {
-				$texthtml .= '<div class="form-value">
-					<span class="labelInput">Введите старый пароль</span>
-					<input type="password" name="'.$k.'_old" class="password"/>
-					<span class="labelInput">Введите новый пароль</span>
-					<input type="password" name="'.$k.'" class="password"/>
-					<div class="passnewdesc" onclick="passwordShow(this)">Отобразить символы/скрыть</div></div>';
-			}	
-			elseif($r['type']=='password_new' or $r['type']=='password') 
-			{
-				$texthtml .= '<div class="form-value"><input type="password" name="'.$k.'" value="'.$r['value'].'" class="password" '.$attribute.'/>
+				if(isset($r['mask']['password']) and $r['mask']['password']=='re') 
+				{
+					$texthtml .= '<div class="form-value">
+						<span class="labelInput">Введите пароль</span>
+						<input type="password" name="'.$k.'" value="" onkeyup="checkPass("'.$k.'")" class="password" '.$attribute.'/>
+						<span class="labelInput">Повторите ввод пароля</span>
+						<input type="password" name="re_'.$k.'" value="" onkeyup="checkPass("'.$k.'")" class="password" '.$attribute.'/>
+						</div>';
+				}
+				elseif(isset($r['mask']['password']) and $r['mask']['password']=='change') 
+				{
+					$texthtml .= '<div class="form-value">
+						<span class="labelInput">Введите старый пароль</span>
+						<input type="password" name="'.$k.'_old" class="password"/>
+						<span class="labelInput">Введите новый пароль</span>
+						<input type="password" name="'.$k.'" class="password"/>
 						<div class="passnewdesc" onclick="passwordShow(this)">Отобразить/скрыть символы</div></div>';
+				}
+				else 
+				{
+					$texthtml .= '<div class="form-value"><input type="password" name="'.$k.'" value="'.$r['value'].'" class="password" '.$attribute.'/>
+						<div class="passnewdesc" onclick="passwordShow(this)">Отобразить/скрыть символы</div></div>';
+				}
+			}
+			elseif($r['type']=='password_new') 
+			{
+				trigger_error('Ошибка. Старый формат данных. password_new не поддерживается', E_USER_WARNING);
 			}
 			/*elseif($r['type']=='password' and !$r['readonly']) {
 				$texthtml .= '<div class="form-value"><input type="text" id="'.$k.'" name="'.$k.'" value="'.$r['value'].'" style="width:55%;float:left;background:#E1E1A1;" readonly="readonly"/>

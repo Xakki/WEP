@@ -1074,7 +1074,7 @@ abstract class kernel_extends {
 
 		$my_fieldsForm = array();
 
-		foreach ($f_fieldsForm as $k => $r) {
+		foreach ($f_fieldsForm as $k => &$r) {
 			if(!isset($r['type'])) continue;
 			if (isset($r['readonly']) and $r['readonly'] and $this->id) // если поле "только чтение" и редактируется , то значение берем из БД,
 				$f_data[$k] = (isset($this->data[$this->id][$k]) ? $this->data[$this->id][$k] : '');
@@ -1129,7 +1129,8 @@ abstract class kernel_extends {
 					$this->owner->id = 0;
 				$r['value'] = $this->owner->id;
 			}
-			elseif ($k == $this->mf_istree and !isset($f_data[$k])) {
+			elseif ($k == $this->mf_istree and !isset($f_data[$k])) 
+			{
 				if (isset($this->parent_id) and $this->parent_id)
 					$r['value'] = $this->parent_id;
 				elseif (!isset($this->parent_id) and $this->mf_use_charid)
@@ -1137,13 +1138,15 @@ abstract class kernel_extends {
 				elseif (!isset($this->parent_id))
 					$this->parent_id = 0;
 			}
-			elseif ($r['type'] == 'ckedit') {
+			elseif ($r['type'] == 'ckedit') 
+			{
 				if (isset($this->memos[$k]) and !count($_POST) and file_exists($f_data[$k]))
 					$r['value'] = file_get_contents($f_data[$k]);
 				elseif (isset($f_data[$k]))
 					$r['value'] = $f_data[$k];
 			}
-			elseif (isset($r['multiple']) and $r['multiple'] > 0 and $r['type'] == 'list') {
+			elseif (isset($r['multiple']) and $r['multiple'] > 0 and $r['type'] == 'list') 
+			{
 				if (isset($f_data[$k])) {
 					if (!is_array($f_data[$k])) {
 						$f_data[$k] = trim($f_data[$k], '|');
@@ -1153,9 +1156,24 @@ abstract class kernel_extends {
 					$r['value'] = array_combine($r['value'],$r['value']); // На всякий, иногда эта функция может самостоятельно работать
 				}
 			}
-			elseif ($r['type'] == 'date') {
+			elseif ($r['type'] == 'date') 
+			{
 				if (!isset($r['mask']['format']) or !$r['mask']['format'])
 					$r['mask']['format'] = 'Y-m-d H:i:s';
+			}
+			elseif ($r['type'] == 'password') 
+			{
+				if($this->id)
+				{
+					if(!isset($r['mask']['password']))
+						$r['mask']['password'] = 'change';
+					$r['value'] = '';
+				}
+
+				// if(!$param['is_submit'])
+				// {
+				// 	$r['value'] = '';
+				// }
 			}
 			/* elseif ($r['type'] == 'checkbox') {
 			  $f_data[$k] = $r['value'] = ((isset($f_data[$k]) and $f_data[$k])?1:0);

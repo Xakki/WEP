@@ -8,7 +8,7 @@ if(!isset($var_const))
 //Подключение к БД и доп параметры
 
 $DEF_CFG = static_tools::getFdata($_CFG['_PATH']['wep'] . '/config/config.php', '/* MAIN_CFG */', '/* END_MAIN_CFG */');
-$USER_CFG = static_tools::getFdata($_CFG['_PATH']['wepconf'] . '/config/config.php', '', '', $DEF_CFG);// Текущая полная конфигурация
+$USER_CFG = static_tools::getFdata($_CFG['_PATH']['wepconf'] . '/config/main.php', '', '', $DEF_CFG);// Текущая полная конфигурация
 //print_r('<pre>');print_r($USER_CFG);exit();
 $DATA = array();
 $DATA['rootlogin'] =  array('type'=>'text','caption'=>'Login БД с правами суперпользователя','style'=>'background-color:#ff9966;');
@@ -19,6 +19,7 @@ if(isset($_POST['rootpass']))
 	$DATA['rootpass']['value'] = $_POST['rootpass'];
 
 include_once($_CFG['_PATH']['wep'] . '/config/config_form.php');
+
 foreach($_CFGFORM as $kt=>$rb) {
 	foreach($rb as $k=>$r) {
 		if(isset($USER_CFG[$kt][$k])) {
@@ -65,7 +66,14 @@ if (isset($_POST['sbmt']) and $flag) {
 			$txt = 'Не верный логин-пароль суперпользователя. Не удалось подключиться к БД.';
 	}
 	if($sqlfl)
+	{
+		if(strpos($_POST['sql']['password'], '***')!==false)
+			$_POST['sql']['password'] = $USER_CFG['sql']['password'];
+		if(strpos($_POST['wep']['password'], '***')!==false)
+			$_POST['wep']['password'] = $USER_CFG['wep']['password'];
+
 		list($sqlfl,$mess) = static_tools::saveUserCFG($_POST,$TEMP_CFG);
+	}
 	else
 		$mess[] = array('error',$txt);
 	//Записать в конфиг все данные которые отличаются от данных по умолчанию
@@ -83,6 +91,11 @@ if (isset($_POST['sbmt']) and $flag) {
 else {
 	$mess[] = array('name' => 'ok', 'value' => 'Будте осторожны при вводе этих настроек.');
 }
+
+if(isset($DATA['sql[password]']['value']))
+	$DATA['sql[password]']['value'] = '************';
+if(isset($DATA['wep[password]']['value']))
+	$DATA['wep[password]']['value'] = '************';
 
 if($flag) {
 	$DATA['sbmt'] = array(

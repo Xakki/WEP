@@ -303,7 +303,6 @@ window.wep = {
 			}
 			else // FORM
 			{
-				wep.preSubmitAJAX(param['type']);
 				param['href'] = OBJ.attr('action');
 				param['data'] = OBJ.serialize();
 
@@ -1373,15 +1372,9 @@ window.wep = {
 		return false;
 	},
 
-	preSubmitAJAX : function(obj) {
-		if(typeof CKEDITOR !== 'undefined') {
-			jQuery.each(jQuery(obj).find("textarea"),function() {
-				nm=jQuery(this).attr('name');
-				if(nm) {
-					eval("if(typeof CKEDITOR.instances.id_"+nm+" == 'object') {CKEDITOR.instances.id_"+nm+".updateElement();}");
-				}
-			});
-		}
+	preSubmitAJAX : function() {
+		for ( instance in CKEDITOR.instances )
+	    	CKEDITOR.instances[instance].updateElement();
 		return true;
 	},
 

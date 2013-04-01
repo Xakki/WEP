@@ -18,7 +18,7 @@ class static_control {
 	{
 /* _UpdItemModul($param = array(),&$argForm = null) */
 	//update modul item
-
+		$param['is_submit'] = false;
 		//$param
 		if(isAjax()) {
 			$param['ajax'] = 1;
@@ -47,7 +47,7 @@ class static_control {
 			//print($_this->SQL->query);
 			if(count($_this->data)==1) 
 			{
-				// Проверка привелегий доступа
+				// Проверка привелегий доступа на просмотр
 				if(!$_this->_prmModulShow($_this->data,$param)) 
 				{
 					$arr['mess'][] = static_main::am('error','denied',$_this);
@@ -55,6 +55,7 @@ class static_control {
 				}
 				elseif($submitFlag) 
 				{
+					// Проверка привелегий доступа на редактирование
 					if(!$_this->_prmModulEdit($_this->data,$param)) 
 					{
 						$arr['mess'][] = static_main::am('error','denied_up',$_this);
@@ -62,6 +63,7 @@ class static_control {
 					}
 					else {
 						$DATA = $_POST;
+						$param['is_submit'] = true;
 						$mess = $_this->kPreFields($DATA,$param,$argForm); // заполнение формы данными
 						$arr = $_this->fFormCheck($DATA,$param,$argForm); // валидация
 						if(!count($arr['mess'])) // Если нет сообщений/ошибок то сохраняем обработанные значения
@@ -70,7 +72,10 @@ class static_control {
 								$flag=1;
 								$arr['mess'][] = static_main::am('ok','update',array($_this->tablename),$_this);
 								if($formflag)// кастыль
+								{
+									$param['is_submit'] = false;
 									$mess = $_this->kPreFields($_this->data[$_this->id],$param,$argForm);
+								}
 							} else {
 								$arr['mess'][] = static_main::am('error','update_err',$_this);
 							}
@@ -83,20 +88,23 @@ class static_control {
 				}
 				else 
 				{
+					// Вывод формы с данными из БД
 					$flag=0;
 					$tempdata = $_this->data[$_this->id];
 					$mess = $_this->kPreFields($tempdata,$param,$argForm);
 				}
 				if(isset($argForm['captcha']))
 					static_form::setCaptcha($argForm['captcha']['mask']);
-			} else {
+			} else 
+			{
+				// Ошибка. Нет данных
 				$arr['mess'][] = static_main::am('error','nodata',$_this);
 				$flag=-1;
 			}
 		} 
 		else 
 		{ 
-			// Проверка привелегий доступа
+			// Проверка привелегий доступа на добавление
 			if(!$_this->_prmModulAdd())
 			{
 				$arr['mess'][] = static_main::am('error','denied_add',$_this);
@@ -106,6 +114,7 @@ class static_control {
 			elseif($submitFlag) 
 			{
 				$DATA = $_POST;
+				$param['is_submit'] = true;
 				$_this->kPreFields($DATA,$param,$argForm);
 				$arr = $_this->fFormCheck($DATA,$param,$argForm);
 				$flag=-1;

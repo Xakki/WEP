@@ -79,7 +79,7 @@ class pay_class extends kernel_extends {
 		$this->fields['_eval'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL','default'=>'');
 		$this->fields['json_data'] = array('type' => 'text', 'attr' => 'NOT NULL');
 		$this->fields['mailnotif'] = array('type' => 'int', 'width' => 1,'attr' => 'NOT NULL','default'=>0);
-		$this->fields['paylink'] = array('type' => 'text', 'width' => 250,'attr' => 'NOT NULL','default'=>'');
+		$this->fields['paylink'] = array('type' => 'text', 'attr' => 'NOT NULL');
 		$this->fields['email'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL','default'=>'');
 
 		$this->_enum['status'] = array(

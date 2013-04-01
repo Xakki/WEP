@@ -377,20 +377,20 @@ class users_class extends kernel_extends {
 		$this->fields_form['owner_id'] = array('type' => 'list', 'listname'=>'ownerlist', 'caption' => 'Группа', 'mask' =>array('usercheck'=>1,'fview'=>1));
 		$this->fields_form[$this->fn_login] =	array('type' => 'text', 'caption' => 'Логин','mask'=>array('name'=>'login','min' => '4','sort'=>1),'comment'=>'Логин должен состоять только из латинских букв и цифр.');
 
-		if($this->id) {
+		// if($this->id) {
 			/*Такое лучше не открывать не кому , лучше пользоваться востановлением пароля*/
-			if(static_main::_prmUserCheck(1)) // Вывод поля генерации пароля если админ
-				$this->fields_form[$this->fn_pass] = array('type' => 'password', 'caption' => 'Пароль', 'mask'=>array('password'=>'re', 'min' => '6','fview'=>1));
+			// if(static_main::_prmUserCheck(1)) // Вывод поля генерации пароля если админ
+				// $this->fields_form[$this->fn_pass] = array('type' => 'password', 'caption' => 'Пароль', 'mask'=>array('password'=>'re', 'min' => '6','fview'=>1));
 				//$this->fields_form[$this->fn_pass] = array('type' => 'password', 'caption' => 'Пароль','md5'=>$this->_CFG['wep']['md5'], 'mask'=>array('password'=>'hash', 'min' => '6','fview'=>1));
 			//else
 			/*if(isset($_POST[$this->fn_pass]) and !$_POST[$this->fn_pass])
 				unset($this->fields_form[$this->fn_pass]);unset($_POST[$this->fn_pass]);
 			$this->fields_form[$this->fn_login]['readonly']=true;*/
-		} else {
+		// } else {
 			$this->fields_form[$this->fn_pass] = array('type' => 'password', 'caption' => 'Пароль','mask'=>array('min' => '6','fview'=>1));
 			//$this->fields_form[$this->fn_login]['readonly']=false;
 			//$this->fields_form[$this->fn_pass] = array('type' => 'password', 'caption' => 'Пароль','mask'=>array('min' => '6','fview'=>1));
-		}
+		// }
 
 		$this->fields_form['email'] = array('type' => 'email', 'caption' => 'E-mail', 'mask'=>array('name'=>'email','min' => '7'));
 		$this->fields_form[$this->mf_namefields] = array('type' => 'text', 'caption' => 'Имя','mask'=>array('name'=>'name2')); // Вывод поля при редактировании

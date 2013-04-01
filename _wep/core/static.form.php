@@ -525,7 +525,8 @@ class static_form {
 	 */
 	static function kFields2FormFields(&$_this, &$fields)
 	{
-		foreach($fields as $k=>&$r) {
+		foreach($fields as $k=>&$r) 
+		{
 			if(!is_array($r)) continue;
 			if(!isset($r['readonly']))
 				$r['readonly'] = false;
@@ -535,8 +536,10 @@ class static_form {
 				unset($fields[$k]);
 				continue;
 			}
-			if(isset($r['type']) and $r['type']!='info') {
-				if(!isset($r['value']) and isset($r['default']) and !isset($_POST[$k])) {// and !$_this->id
+			if(isset($r['type']) and $r['type']!='info') 
+			{
+				if(!isset($r['value']) and isset($r['default']) and !isset($_POST[$k])) 
+				{// and !$_this->id
 					$r['value']= $r['default'];
 					if(isset($r['default_2']))
 						$r['value_2']= $r['default_2'];
@@ -544,35 +547,47 @@ class static_form {
 				if(isset($_POST[$k.'_2']))
 					$r['value_2']= $_POST[$k.'_2'];
 
-				if($r['type']=='file') {
+				if($r['type']=='file') 
+				{
 					// Процесс загрузки фаила
-					if(isset($r['value']) and is_array($r['value']) and isset($r['value']['tmp_name']) and $r['value']['tmp_name']) {
+					if(isset($r['value']) and is_array($r['value']) and isset($r['value']['tmp_name']) and $r['value']['tmp_name']) 
+					{
 						$r['value'] = $_CFG['PATH']['temp'].$r['value']['name'];
 					}
 					// Редактирование формы - отображаем фаил 
-					elseif(isset($r['ext']) and $_this->id) {
+					elseif(isset($r['ext']) and $_this->id) 
+					{
 						$r['value'] = $_this->_get_file($_this->id,$k);// TODO
 					}
 
-					if(isset($r['value']) and $r['value'] and file_exists($_this->_CFG['_PATH']['path'].$r['value'])) {
+					if(isset($r['value']) and $r['value'] and file_exists($_this->_CFG['_PATH']['path'].$r['value'])) 
+					{
 						$_is_image = static_image::_is_image($_this->_CFG['_PATH']['path'].$r['value']); // Проверяем , является ли фаил изображением
-						if($_is_image) {// Если это изображение
+						if($_is_image) 
+						{// Если это изображение
 							$r['att_type'] = 'img'; // Маркер для рисования формы
 							$r['img_size'] = getimagesize($_this->_CFG['_PATH']['path'].$r['value']);
 							$r['value'] = $_this->_getPathSize($r['value']);
 
-							if(count($_this->attaches[$k]['thumb'])) {
-								foreach($_this->attaches[$k]['thumb'] as $modkey=>$mr) {
-									if(isset($mr['display']) and !$mr['display']) {
+							if(count($_this->attaches[$k]['thumb'])) 
+							{
+								foreach($_this->attaches[$k]['thumb'] as $modkey=>$mr) 
+								{
+									if(isset($mr['display']) and !$mr['display']) 
+									{
 										unset($r['thumb'][$modkey]);
 										continue;
 									}
 									if(!isset($mr['pref'])) $mr['pref'] = '';
 									if(!isset($mr['path'])) $mr['path'] = '';
 									if((!$mr['pref'] and !$mr['path']) or (!$mr['pref'] and $mr['path']==$_this->attaches[$key]['path']))
-										{unset($r['thumb'][$modkey]);continue;}
+									{
+										unset($r['thumb'][$modkey]);
+										continue;
+									}
 									$_file = $_this->_get_file($_this->id,$k,'',$modkey);
-									if(file_exists($_this->_CFG['_PATH']['path'].$_file)) {
+									if(file_exists($_this->_CFG['_PATH']['path'].$_file)) 
+									{
 										$mr['value'] = $_this->_getPathSize($_file);
 										$mr['filesize'] = filesize($_this->_CFG['_PATH']['path'].$_file);
 										$r['thumb'][$modkey] = $mr;
@@ -580,7 +595,8 @@ class static_form {
 								}
 							}
 						} 
-						elseif(isset($_this->_CFG['form']['flashFormat'][$r['ext']]) and $_this->id) {
+						elseif(isset($_this->_CFG['form']['flashFormat'][$r['ext']]) and $_this->id) 
+						{
 							$r['att_type'] = 'swf'; // Флешки
 						} 
 						else
@@ -1100,7 +1116,8 @@ class static_form {
 			return true;
 		}
 		/*пароль*/
-		if($form['type']=='password') {
+		if($form['type']=='password') 
+		{
 			if(isset($form['mask']['password']) and $form['mask']['password']=='re')
 			{
 				if($data[$key] or $data['re_'.$key]) {
@@ -1128,7 +1145,8 @@ class static_form {
 						$data[$key] = self::passwordHash($data[$key], $form);
 				}
 			} 
-			else {
+			else 
+			{
 				if(isset($form['mask']['max']) && $form['mask']['max']>0 && _strlen($data[$key])>$form['mask']['max'])
 					$error[] = 2;
 				if(isset($form['mask']['min']) and $form['mask']['min']>0)
@@ -1140,6 +1158,7 @@ class static_form {
 				}
 				$data[$key] = self::passwordHash($data[$key], $form);
 			}
+
 			return true;
 		}
 
