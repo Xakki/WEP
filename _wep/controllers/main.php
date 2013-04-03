@@ -12,6 +12,9 @@
 		exit();
 	}
 
+	ini_set("max_execution_time", "10");
+	set_time_limit(10);
+
 	if($_CFG['site']['worktime'] and !isset($_COOKIE[$_CFG['wep']['_showallinfo']]) and !isset($_GET[$_CFG['wep']['_showallinfo']])) {
 		static_main::downSite(); // Exit()
 	}

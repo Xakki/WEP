@@ -13,8 +13,6 @@ function shutdown_function()
 
 register_shutdown_function('shutdown_function'); // Запускается первым при завершении скрипта
 
-		ini_set("max_execution_time", "10");
-		set_time_limit(10);
 
 class static_main {
 
