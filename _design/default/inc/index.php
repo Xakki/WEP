@@ -72,9 +72,6 @@
 					prev($DATA['path']);
 					$prevhref = str_replace('&amp;', '&', key($DATA['path']));
 
-					$_tpl['mulog'] = $DATA;
-					$_tpl['muflag'] = $flag;
-
 					if($flag===1)
 					{
 						//if(isAjax())

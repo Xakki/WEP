@@ -501,6 +501,17 @@ class static_tools {
 
 		$stepY = round($maxY, -1) / 10;
 		$eval= ' 
+			var plotScript = {
+				\''.MY_BH.$MODUL->_CFG['_HREF']['_script'].'script.jquery/jqplot/jquery.jqplot.min.js\' : {
+					\''.MY_BH.$MODUL->_CFG['_HREF']['_script'].'script.jquery/jqplot/plugins/jqplot.cursor.min.js\' : {
+						\''.MY_BH.$MODUL->_CFG['_HREF']['_script'].'script.jquery/jqplot/plugins/jqplot.dateAxisRenderer.min.js\': {
+							\''.MY_BH.$MODUL->_CFG['_HREF']['_script'].'script.jquery/jqplot/plugins/jqplot.highlighter.min.js\': {
+								\''.MY_BH.$MODUL->_CFG['_HREF']['_script'].'script.jquery/jqplot/plugins/jqplot.ohlcRenderer.min.js\': \'jqplot();\'
+							}
+						}
+					}
+				}
+			};
 			jqplot = function() {
 				line1 = [' . implode(',', $data) . '];
 				var option = {
@@ -511,17 +522,6 @@ class static_tools {
 				};
 				readyPlot(option);
 			}
-			var plotScript = {
-				\'script.jquery/jqplot/jquery.jqplot.min\' : {
-					\'script.jquery/jqplot/plugins/jqplot.cursor.min\' : {
-						\'script.jquery/jqplot/plugins/jqplot.dateAxisRenderer.min\': {
-							\'script.jquery/jqplot/plugins/jqplot.highlighter.min\': {
-								\'script.jquery/jqplot/plugins/jqplot.ohlcRenderer.min\': {\'onload\':\'jqplot();\'}
-							}
-						}
-					}
-				}
-			};
 			wep.scriptLoad(plotScript);
 		';
 		/* $plugin = '';
@@ -532,8 +532,8 @@ class static_tools {
 	<div id="statschart1" data-height="380px" data-width="100%" style="margin-top:10px; margin-left:10px;min-width:1200px;width:100%;"></div>
 	<div id="statschart2" data-height="150px" data-width="100%" style="margin-top:10px; margin-left:10px;width:100%;"></div>
 	<style>
-	@import "' . $MODUL->_CFG['_HREF']['_style'] . 'style.jquery/ui.css";
-	@import "' . $MODUL->_CFG['_HREF']['_script'] . 'script.jquery/jqplot/jquery.jqplot.min.css";
+	@import "/' . $MODUL->_CFG['_HREF']['_style'] . 'style.jquery/ui.css";
+	@import "/' . $MODUL->_CFG['_HREF']['_script'] . 'script.jquery/jqplot/jquery.jqplot.min.css";
 	</style>
 	';
 		//$html = '<span class="buttonimg imgdel" style="float: right;" onclick="$(this).parent().hide();">EXIT</span>' . $html;
