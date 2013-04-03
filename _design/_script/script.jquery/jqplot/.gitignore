@@ -1,0 +1,13 @@
+.svn
+.bzr
+*.tmp
+error_log
+*/temp/*
+test*
+_content
+error.txt
+_design/_script/old
+nbproject
+_wepconf/config
+/sftp-config.json
+/newLinkProject.cmd
