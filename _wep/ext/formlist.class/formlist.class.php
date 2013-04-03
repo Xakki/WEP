@@ -33,7 +33,6 @@ class formlist_class extends kernel_extends {
 	public function AjaxMCBox() {
 		//_modul=formlist&_fn=AjaxMCBox
 		global $_tpl;
-		$RESULT = array('html'=>'', 'text'=>'','onload'=>'');
 
 			$DATA = array();
 			$enumlist = array();
@@ -47,7 +46,7 @@ class formlist_class extends kernel_extends {
 					$enumlist[$row['id']] = array('#id#'=>$row['id'],'#name#'=>$row['name'],'#checked#'=>$row['checked']);
 				}
 			}
-			$DATA['filter'] = array(
+			$DATA['form'] = array(
 				substr($_GET['tname'],0,-2).'_'.$_GET['tval'] => array(
 					'caption'=>$_GET['tcap'],
 					'type'=>'checkbox',
@@ -58,9 +57,9 @@ class formlist_class extends kernel_extends {
 				)
 			);
 			//$_tpl['onload'] .= 'mCBoxVis(\''.$rr.'_'.$rrr.'\');';
-			$RESULT['html'] = transformPHP($DATA,'#pg#filter');
+			$_tpl['text'] = transformPHP($DATA,'#pg#filter');
 
-		return $RESULT;
+		return true;
 	}
 }
 
