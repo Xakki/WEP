@@ -1373,8 +1373,11 @@ window.wep = {
 	},
 
 	preSubmitAJAX : function() {
-		for ( instance in CKEDITOR.instances )
-	    	CKEDITOR.instances[instance].updateElement();
+		if(typeof(CKEDITOR)!=='undefined') 
+		{
+			for ( instance in CKEDITOR.instances )
+	    		CKEDITOR.instances[instance].updateElement();
+		}
 		return true;
 	},
 

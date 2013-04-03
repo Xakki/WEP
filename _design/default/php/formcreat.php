@@ -1,8 +1,9 @@
 <?php
 	function tpl_formcreat(&$data) 
 	{
-		if(!isset($data['form']) or !count($data['form']))
-			return '';
+		// Форма может содержать сообщения
+		// if(!isset($data['form']) or !count($data['form']))
+		// 	return '';
 
 		global $_tpl,$PGLIST,$_CFG;
 		$texthtml = '';
