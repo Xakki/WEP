@@ -236,7 +236,7 @@ $_CFG['ckedit']['toolbar']['Board'] = "[
 	['PasteText'], ['Undo','Redo','-','RemoveFormat'], ['Bold','Italic','Underline','Superscript'], 
 	['NumberedList','BulletedList'], ['JustifyLeft','JustifyCenter','JustifyBlock'] ]";
 
-$_CFG['_imgquality'] = 80; // качество картинки
+$_CFG['_imgquality'] = 85; // качество картинки
 $_CFG['_imgwater'] = '_design/_img/watermark.png'; //водяной знак
 
 $_CFG['form'] = array(
