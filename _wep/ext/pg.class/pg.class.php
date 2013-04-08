@@ -468,6 +468,9 @@ class pg_class extends kernel_extends {
 
 	function get_page_attr($attr) 
 	{
+		if (empty($this->dataCashTree))
+			$this->sqlCashPG();
+
 		if(!$this->pageinfo['id']) return null;
 		//print_r($this->pageinfo);exit();
 		$id = $this->pageinfo['id'];

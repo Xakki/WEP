@@ -5,6 +5,10 @@ if(isset($_GET['url']) and $_GET['url']!=''){
 		$url = base64decode($_GET['url']);
 	else
 		$url = str_replace("&amp;" , "&", $_GET['url']);
+
+	if(preg_match('/[^A-Za-z0-9\.\-\_]/',$url))
+		exit($url);
+	
 	if(mb_substr($url,0,7)!='http://')
 		$url = 'http://'.$url;
 }

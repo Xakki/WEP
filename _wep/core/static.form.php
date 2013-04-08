@@ -62,7 +62,7 @@ class static_form {
 	static function _add_fields(&$_this,$flag_update=false) {
 		if (!count($_this->fld_data)) return false;
 		// inserting
-		$data = array();
+		$keyData = array();
 		foreach($_this->fld_data as $key => &$value) {
 			if(!isset($_this->fields[$key]['noquote'])) {
 				// массив
@@ -85,9 +85,9 @@ class static_form {
 			}
 			if($flag_update) {
 				if(!isset($_this->fields[$key]['noquote']))
-					$data[$key] = '`'.$key.'` = VALUES(`'.$key.'`)';
+					$keyData[$key] = '`'.$key.'` = VALUES(`'.$key.'`)';
 				else
-					$data[$key] = '`'.$key.'` = '.$_this->fld_data[$key];
+					$keyData[$key] = '`'.$key.'` = '.$value;
 			}
 		}
 		if ($_this->mf_timecr) 
@@ -105,7 +105,7 @@ class static_form {
 
 		$q = 'INSERT INTO `'.$_this->tablename.'` (`'.implode('`,`', array_keys($_this->fld_data)).'`) VALUES ('.implode(',', $_this->fld_data).')';
 		if($flag_update) { // параметр передается в ф. _addUp() - обновление данных если найдена конфликтная запись
-			$q .= ' ON DUPLICATE KEY UPDATE '.implode(', ',$data);
+			$q .= ' ON DUPLICATE KEY UPDATE '.implode(', ',$keyData);
 		}
 
 		$result=$_this->SQL->execSQL($q);
@@ -1144,6 +1144,7 @@ class static_form {
 					else
 						$data[$key] = self::passwordHash($data[$key], $form);
 				}
+				unset($data[$key]);
 			} 
 			else 
 			{

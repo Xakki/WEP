@@ -9,8 +9,6 @@ class wephtml
 	private $_mctime_start;
 	function __construct() 
 	{
-		$this->headerssent();
-
 		$this->_mctime_start = getmicrotime();
 
 		ob_start(array(&$this, "obHandler"));
@@ -24,6 +22,7 @@ class wephtml
 
 	function __destruct() 
 	{
+		$this->headerssent();
 		$this->createTemplate();
 		ob_end_flush();
 	}

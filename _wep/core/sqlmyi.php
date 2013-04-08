@@ -8,24 +8,30 @@
 		var $sql_res;
 		/**Если тру - то проверка таблиц и папок*/
 
-		function __construct(&$SQL_CFG) {
+		function __construct(&$SQL_CFG) 
+		{
 			global $_CFG;
 			$this->SQL_CFG = &$SQL_CFG;
 			$this->_iFlag= false;
 			$this->ready = false;
 			$this->logFile = false;
-			if(isset($_CFG['log']) and (int)$_CFG['log'] and $_CFG['_PATH']['wep']) {
+
+			if(isset($_CFG['log']) and (int)$_CFG['log'] and $_CFG['_PATH']['wep']) 
+			{
 				$this->logFile = array();
 			}
 			if(function_exists('mysqli_connect'))
 				$this->ready = $this->_connect();
-			else {
-				$_CFG["site"]["work_text"] = '<err>'.static_main::m('Need MySQL php driver').'</err>';
+
+			if(!$this->ready) 
+			{
+				$_CFG["site"]["work_text"] = '<err>'.static_main::m('MySQL is down!').'</err>';
 				static_main::downSite();
 			}
 		}
 
-		function __destruct() {
+		function __destruct() 
+		{
 			global $_CFG;
 			$this->sql_close();
 			if($this->logFile!==false and count($this->logFile)) {
@@ -33,14 +39,17 @@
 			}
 		}
 
-		private function _connect() {
-			if($this->sql_connect()) {
+		private function _connect() 
+		{
+			if($this->sql_connect()) 
+			{
 				return $this->_connectDB();
 			}
 			return false;
 		}
 
-		private function sql_connect() {
+		private function sql_connect() 
+		{
 			global $_CFG;
 
 			$temp = $_CFG['wep']['catch_bug'];
@@ -61,7 +70,8 @@
 			return true;
 		}
 
-		private function _connectDB() {
+		private function _connectDB() 
+		{
 			global $_CFG;
 			if(isset($this->SQL_CFG['setnames']) and $this->SQL_CFG['setnames'])
 				mysqli_query($this->hlink,'SET NAMES '.$this->SQL_CFG['setnames']);
