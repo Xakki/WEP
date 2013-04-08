@@ -779,7 +779,7 @@ function tpl_form(&$data, $tabs = array())
 				if($r['type']=='email') 
 					$attribute .=  ' x-autocompletetype="'.$r['type'].'"';
 				
-				$texthtml .= '<div class="form-value"><input type="'.$r['type'].'" name="'.$k.'" value="'.htmlspecialchars($r['value'], ENT_QUOTES | ENT_SUBSTITUTE | ENT_DISALLOWED | ENT_HTML5 , $_CFG['wep']['charset']).'" '.$attribute.'/></div>';
+				$texthtml .= '<div class="form-value"><input type="'.$r['type'].'" name="'.$k.'" value="'.htmlspecialchars($r['value'], ENT_QUOTES , $_CFG['wep']['charset']).'" '.$attribute.'/></div>';
 			}
 		}
 

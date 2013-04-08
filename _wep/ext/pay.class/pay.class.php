@@ -77,7 +77,7 @@ class pay_class extends kernel_extends {
 		$this->fields['pay_modul'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL','default'=>'');
 		$this->fields['_key'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL','default'=>''); // product1234 = название модуля + ID
 		$this->fields['_eval'] = array('type' => 'varchar', 'width' => 255,'attr' => 'NOT NULL','default'=>'');
-		$this->fields['json_data'] = array('type' => 'text', 'attr' => 'NOT NULL');
+		$this->fields['json_data'] = array('type' => 'text', 'attr' => 'NULL');
 		$this->fields['mailnotif'] = array('type' => 'int', 'width' => 1,'attr' => 'NOT NULL','default'=>0);
 		$this->fields['paylink'] = array('type' => 'text', 'attr' => 'NOT NULL');
 		$this->fields['email'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL','default'=>'');
@@ -650,6 +650,7 @@ class pay_class extends kernel_extends {
 						'name'=>$childs->caption,
 						'owner_id'=>$UGROUP->id,
 						'parent_id'=>0,
+						'pass' => ''
 					));
 					$data2[$email] = current($UGROUP->childs['users']->data);
 				}

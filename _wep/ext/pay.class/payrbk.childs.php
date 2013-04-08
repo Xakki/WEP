@@ -170,7 +170,7 @@ class payrbk_class extends kernel_extends {
 				array('alert','Выполняется открытие страницы оплаты на '.$this->caption),
 				array('notice','<small>Если у вас не открылось окно оплаты, возможно ваш браузер заблокировал открытие окна (Ваш браузер должен был выдать предупреждение об этом, кликните на всплывшее сообщение и разрешите данную операцию)</small>'),
 			);
-			$result['options'] = array('name'=>'rbk','action'=>$this->config['actionURL'].'"  target="_blank');
+			$result['options'] = array('name'=>'form_rbk','action'=>$this->config['actionURL'].'"  target="_blank');
 			$result['form'] = array(
 				'eshopId'=>array('type'=>'hidden','value'=>$this->config['eshopId']),
 				'orderId'=>array('type'=>'hidden','value'=>$data['child']['id']), // заголовок у отправителя

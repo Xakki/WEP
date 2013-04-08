@@ -312,6 +312,11 @@ abstract class kernel_extends {
 				$this->unique_fields[$this->owner_name] = $this->owner_name;
 			else
 				$this->index_fields[$this->owner_name] = $this->owner_name;
+
+			if (stripos($this->fields[$this->owner_name]['type'], 'int') !== false)
+				$this->fields[$this->owner_name]['default'] = 0;
+			else
+				$this->fields[$this->owner_name]['default'] = '';
 		}
 
 		if ($this->mf_createrid) {
@@ -542,6 +547,13 @@ abstract class kernel_extends {
 	 */
 	public function qs($list = '', $cls = '', $ord = '', $ord2 = '', $debug = false) {
 		return $this->_query($list, $cls, $ord, $ord2, $debug);
+	}
+	public function count($cls = '', $debug = false) {
+		$result = $this->_query('count(*) as cnt', $cls, '', '', $debug);
+		if(count($result))
+			return $result[0]['cnt'];
+		else
+			return 0;
 	}
 	protected function _tableClear() {
 		$this->SQL->_tableClear($this->tablename);
