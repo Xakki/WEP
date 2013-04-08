@@ -731,8 +731,10 @@ abstract class kernel_extends {
 
 	public function _select_id_tree(array $id, $format='simple') { // TODO const
 		$list = array();
-		if(!$this->mf_istree or !count($id)) return $list;
-		$result = $this->exec('SELECT id FROM `' . $this->tablename . '` WHERE  '.$this->mf_istree.' IN ('.implode(',',$id).')');
+		if(!$this->mf_istree or !count($id)) 
+			return $list;
+		$id = array_map(array($this, 'SqlEsc'), $id);
+		$result = $this->exec('SELECT id FROM `' . $this->tablename . '` WHERE  '.$this->mf_istree.' IN ("'.implode('","',$id).'")');
 
 		if($result===false)
 			return $list;
