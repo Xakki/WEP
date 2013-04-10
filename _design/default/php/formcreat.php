@@ -8,14 +8,7 @@
 		global $_tpl,$PGLIST,$_CFG;
 		$texthtml = '';
 
-		if(!isset($data['options']))
-		{
-			trigger_error('Ошибка. Старый формат данных. Отсутствуют опции для формы', E_USER_WARNING);
-			return '';
-		}
-		$attr = $data['options'];
-
-		if(isset($attr['id']) and $attr['id'])
+		if(isset($data['options']['id']) and $data['options']['id'])
 			$hasIdData = 2;
 		else
 			$hasIdData = 1;
@@ -41,6 +34,13 @@
 
 		if(isset($data['form']) and count($data['form'])) 
 		{
+			if(!isset($data['options']))
+			{
+				trigger_error('Ошибка. Старый формат данных. Отсутствуют опции для формы', E_USER_WARNING);
+				return '';
+			}
+			$attr = $data['options'];
+		
 			if (isset($attr['enctype']))
 				if ($attr['enctype'] == '')
 					$enctype = '';
@@ -71,35 +71,34 @@
 				$texthtml .= tpl_form($data['form']);
 			$texthtml .= '</form>';
 
-		}
-
-		$texthtml .= '</div>';
-
-
-		if(isset($data['flag']))
-		{
-			$_tpl['formFlag'] = $data['flag'];
-			if($data['flag']==1) {
-				//$_tpl['onload'] .= '$("#'.$attr['name'].'").trigger(\'success\');';
-			}
-			elseif($data['flag']==-1) {
-				//$_tpl['onload'] = 'GetId("messages").innerHTML=result.html;'.$_tpl['onload'];
-				$_tpl['onload'] = 'clearErrorForm("#'.$attr['name'].'"); $("#'.$attr['name'].'").trigger(\'error\'); '.$_tpl['onload'];
-				//$texthtml = "<div class='blockhead'>Внимание. Некоректно заполнены поля.</div><div class='hrb'>&#160;</div>".$texthtml;
+			if(isset($data['flag']))
+			{
+				$_tpl['formFlag'] = $data['flag'];
+				if($data['flag']==1) {
+					//$_tpl['onload'] .= '$("#'.$attr['name'].'").trigger(\'success\');';
+				}
+				elseif($data['flag']==-1) {
+					//$_tpl['onload'] = 'GetId("messages").innerHTML=result.html;'.$_tpl['onload'];
+					$_tpl['onload'] = 'clearErrorForm("#'.$attr['name'].'"); $("#'.$attr['name'].'").trigger(\'error\'); '.$_tpl['onload'];
+					//$texthtml = "<div class='blockhead'>Внимание. Некоректно заполнены поля.</div><div class='hrb'>&#160;</div>".$texthtml;
+				}
+				else
+				{
+					plugAjaxForm();
+					$_tpl['onload'] .= 'if(typeof(formParam)=="undefined") formParam = {}; wep.form.initForm(\'#'.$attr['name'].'\', formParam);';
+					//$_tpl['onload'] .= 'wep.form.JSFR("form");';
+				}
+				/*if(!isset($_SESSION['user']['id']))
+					$_tpl['onload'] .= 'reloadCaptcha(\'captcha\');';*/
 			}
 			else
 			{
-				plugAjaxForm();
-				$_tpl['onload'] .= 'if(typeof(formParam)=="undefined") formParam = {}; wep.form.initForm(\'#'.$attr['name'].'\', formParam);';
-				//$_tpl['onload'] .= 'wep.form.JSFR("form");';
+				setScript('wepform');
 			}
-			/*if(!isset($_SESSION['user']['id']))
-				$_tpl['onload'] .= 'reloadCaptcha(\'captcha\');';*/
+		
 		}
-		else
-		{
-			setScript('wepform');
-		}
+
+		$texthtml .= '</div>';
 
 		return $texthtml;
 	}

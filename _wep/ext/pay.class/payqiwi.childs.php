@@ -1,6 +1,15 @@
 <?php
 class payqiwi_class extends kernel_extends {
 
+	const STATUS_NOYET = 50;
+	const STATUS_ONWAY = 52;
+	const STATUS_OK = 60;
+	const STATUS_CANCEL = 100;
+	const STATUS_ERROR_SYS = 150;
+	const STATUS_NOMONEY = 151;
+	const STATUS_CANCE_BY_USER = 160;
+	const STATUS_CANCEL_BY_TIMEOUT = 161;
+
 	function _create_conf() {/*CONFIG*/
 		//parent::_create_conf();
 
@@ -49,13 +58,13 @@ class payqiwi_class extends kernel_extends {
 		$this->pay_formType = 'https://w.qiwi.ru/orders.action';
 
 		$this->_enum['statuses'] = array(
-			50 => 'Неоплаченный счёт',
-			52 => 'Проводится',
-			60 => 'Оплаченный счёт',
-			150 => 'Отменен (ошибка на терминале)',
-			151 => 'Отменен (ошибка авторизации: недостаточно средств на балансе, отклонен абонентом при оплате с лицевого счета оператора сотовой связи и т.п.).',
-			160 => 'Отменен',
-			161 => 'Отменен (Истекло время)',
+			self::STATUS_NOYET => 'Неоплаченный счёт',
+			self::STATUS_ONWAY => 'Проводится',
+			self::STATUS_OK => 'Оплаченный счёт',
+			self::STATUS_ERROR_SYS => 'Отменен (ошибка на терминале)',
+			self::STATUS_NOMONEY => 'Отменен (ошибка авторизации: недостаточно средств на балансе, отклонен абонентом при оплате с лицевого счета оператора сотовой связи и т.п.).',
+			self::STATUS_CANCE_BY_USER => 'Отменен',
+			self::STATUS_CANCEL_BY_TIMEOUT => 'Отменен (Истекло время)',
 		);
 /*
 Возможны иные статусы счетов.
@@ -147,9 +156,9 @@ Cчета со статусом большим или равным 100 трак�
 		$result = array('showStatus'=>true,'messages'=>array());
 		if(count($data) and $data['status']<2) 
 		{
-			$result['messages'][] = array('logoPayStatus qiwiPayStatus','<div>Чтобы оплатить счёт, перейдите на сайт</div><a href="'.$this->pay_formType.'" target="_blank" title="QIWI">QIWI</a>');
+			$result['messages'][] = array('logoPayStatus qiwiPayStatus','<div>Чтобы оплатить счёт, перейдите на сайт</div><a href="'.$this->pay_formType.'" target="_blank" title="QIWI" id="goQiwiClick">QIWI</a>');
 			$result['messages'][] = array('autoClick','<a title="Отменить" id="autoClick">Автоматический переход через <i>5</i> сек.</a>');
-			$_tpl['onload'] .= 'wep.timerFunction(function(){window.open($(\'.qiwiPayStatus a\').attr(\'href\'), \'_blank\');}, \'#autoClick\');';
+			$_tpl['onload'] .= 'wep.timerFunction(function(){window.open($(\'.qiwiPayStatus a\').attr(\'href\'), \'_blank\');}, \'#autoClick\', \'#goQiwiClick\');';
 		}
 		return $result;
 	}
@@ -165,8 +174,9 @@ Cчета со статусом большим или равным 100 трак�
 	public function _add($data = array(), $flag_select = true, $flag_update=false) {
 		$data2 = array(
 			'phone'=>$data['phone'],
+			'email'=>$data['email'],
 			'cost'=>$data['cost'],
-			'statuses'=>50
+			'statuses'=>self::STATUS_NOYET
 		);
 
 		$result = parent::_add($data2, true, $flag_update);
@@ -231,35 +241,41 @@ Cчета со статусом большим или равным 100 трак�
 		return $err;
 	}
 
-	function check_response($xml,$flag='send') {
+	function check_response($xml,$flag='send') 
+	{
 		if(!$xml) return 520;
 		$xml = simplexml_load_string('<?xml version="1.0" encoding="utf-8"?>'.$xml);
 		$rc = $xml->{'result-code'};
 		$fatality = $rc['fatal'];
 		$err = (int)$rc;
-		if($err!==0) {
+		if($err!==0) 
+		{
 			if($this->id)
 				$this->_update(array('errors'=>$rc),false,false);
 		}
-		if($fatality=='true') {
+		if($fatality=='true') 
+		{
 			return $err;
 		}
-		if($flag=='check') {
+		if($flag=='check') 
+		{
 			$billlist = $xml->{'bills-list'};
-			if($billlist) {
-				foreach ($billlist->children() as $bill) {
+			if($billlist) 
+			{
+				foreach ($billlist->children() as $bill) 
+				{
 					$upd = array(
 						'statuses' => (int)$bill['status'],
 						'cost' => floatval($bill['sum'])
 					);
-					/////$upd['statuses']=60; //TEST - успешная оплата
+					// *$upd['statuses']=self::STATUS_OK; //TEST - успешная оплата
 					if($this->config['qiwi_txn-prefix'])
 						$this->id = (int)str_replace($this->config['qiwi_txn-prefix'],'',$bill['id']);
 					else
 						$this->id = (int)$bill['id'];
 					$this->_update($upd);
 
-					if($upd['statuses']==60)
+					if($upd['statuses']==self::STATUS_OK)
 						$status = PAY_PAID;
 					elseif($upd['statuses']>=100)
 						$status = PAY_USERCANCEL;
@@ -268,7 +284,8 @@ Cчета со статусом большим или равным 100 трак�
 					
 					if($this->id and $this->data[$this->id])
 						$this->owner->payTransaction($this->data[$this->id]['owner_id'], $status);
-					else {
+					else 
+					{
 						$err = 501;
 						trigger_error('Ошибка проверки оплаты qiwi: счёт '.$bill['id'].' не найден в базе', E_USER_WARNING);
 					}
@@ -303,11 +320,12 @@ Cчета со статусом большим или равным 100 трак�
 		);
 
 		$result = static_tools::_http($this->API_HREF,$param);
+
 		$err = $this->check_response($result['text'],'check');
 		if($err===0)
 			return '-Успешно-';
 		else{
-			trigger_error('Ошибка запроса QIWI `'.$this->_enum['errors'][$err].'`', E_USER_WARNING);
+			trigger_error('Ошибка запроса QIWI `'.$this->_enum['errors'][$err].'` <pre>'.htmlspecialchars(var_dump($result, true)).'</pre>', E_USER_WARNING);
 			return '-Ошибка-'.$this->_enum['errors'][$err];
 		}
 	}

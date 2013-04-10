@@ -189,8 +189,9 @@ class payrbk_class extends kernel_extends {
 				);
 			}
 			$result['form']['sbmt'] = array('type'=>'submit','value'=>'Перейти на '.$this->caption.' для оплаты счета');
+			$result['messages'][] = array('autoClick','<a title="Отменить" id="autoClick">Автоматический переход через <i>5</i> сек.</a>');
 			global $_tpl;
-			$_tpl['onload'] .= '$("#form_rbk").submit();';
+			$_tpl['onload'] .= 'wep.timerFunction(function(){$("#form_rbk").submit();}, \'#autoClick\', \'#form_rbk .sbmt\');';
 		}
 
 		return $result;

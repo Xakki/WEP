@@ -33,9 +33,9 @@ function tpl_list($data)
 		foreach($data['#list#'] as $k=>$r) {
 			if(!$r['status']) {
 				if($r['#formType#']===true)
-					$r['#status#'] .= ' [<a data-send="payinfo='.$r['id'].'" class="goClick ajaxlink">Оплатить</a>]';
+					$r['#status#'] .= ' [<a data-data="payinfo='.$r['id'].'" class="goClick ajaxlink">Оплатить</a>]';
 				elseif($r['#formType#'])
-					$r['#status#'] .= ' [<a data-send="payinfo='.$r['id'].'" class="goClick ajaxlink">Оплатить</a>]';
+					$r['#status#'] .= ' [<a data-data="payinfo='.$r['id'].'" class="goClick ajaxlink">Оплатить</a>]';
 			}
 			$html .= '<tr>
 				<td>'.$r['id'].'</td>
@@ -47,7 +47,7 @@ function tpl_list($data)
 			</tr>';
 		}
 		$html .= '</table>';
-		$_tpl['onload'] .= 'wep.click(\'.goClick \');';
+		$_tpl['onload'] .= 'wep.clickAjax(\'.goClick\');';
 	} else
 		$html .= '<messages><notice>Операций по счёту нет.</notice></messages>';
 	return $html.'<br/>';

@@ -128,6 +128,12 @@ window.wep = {
 		}
 	},
 
+	clickAjax: function(selector)
+	{
+		$(selector).off('click').on('click', function() {
+			wep.ajaxMenu($(this));
+		});
+	},
 	/**
 	* Аякс загрузка любой страницы
 	* атрибут у ссылки 
@@ -139,11 +145,24 @@ window.wep = {
 		var jobj = $(obj);
 		
 		var marker = {};
+
+		var dataData = jobj.attr('data-data');
+		if(dataData)
+		{
+			dataData = dataData.toString().split ( '&' );
+			for(var i in dataData)
+			{
+				var temp = dataData[i].toString().split ( '=' );
+				marker[temp[0]] = temp[1];
+			}
+		}
+
 		var dataMarker = jobj.attr('data-marker');
 		if(dataMarker)
-			marker = {dataMarker:1};
+			marker[dataMarker] = 1;
 		else
-			marker = {'text' : 1};
+			marker['text'] = 1;
+
 		marker['onload']=1;
 		marker['styles']=1;
 		marker['script']=1;
@@ -158,7 +177,7 @@ window.wep = {
 		param['type'] = jobj;
 		param['data'] = marker;
 
-		JSWin(param);
+		wep.JSWin(param);
 		//console.log(param);
 		return false;
 	},
@@ -181,7 +200,7 @@ window.wep = {
 		if(call)
 			param['call'] = call;
 
-		JSWin(param);
+		wep.JSWin(param);
 		return false;
 	},
 
@@ -200,7 +219,7 @@ window.wep = {
 		
 		if(callFunc)
 			param['call'] = callFunc;
-		JSWin(param);
+		wep.JSWin(param);
 		return false;
 	},
 
@@ -936,7 +955,7 @@ window.wep = {
 					}
 					else
 					{
-						console.warn('eval - ', script[i]);
+						//console.warn('eval - ', script[i]);
 						globalEval(script[i]);
 					}
 				}
@@ -1473,12 +1492,16 @@ window.wep = {
 		},1000);
 	},
 
-	timerFunction: function(func, selectorMess)
+	timerFunction: function(func, selectorMess, addSelector)
 	{
 		var timerID =0;
 		var maxTime = parseInt(jQuery(selectorMess+' i').text()); 
 		// Отменить
-		jQuery(selectorMess).click(function(){
+		if(addSelector)
+			addSelector = ','+addSelector;
+		else
+			addSelector = '';
+		jQuery(selectorMess+addSelector).click(function(){
 			jQuery(selectorMess).hide();
 			clearInterval(timerID);
 		});

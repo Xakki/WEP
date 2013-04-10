@@ -252,7 +252,8 @@ class pay_class extends kernel_extends {
 			<div>После оплаты останется '.$last.' '.$this->config['curr'].'</div>';
 			$param['lang']['sbmt'] = 'Оплатить';
 
-			list($data, $resFlag) = $this->confirmForm($param);
+			$data = $this->confirmForm($param);
+			$resFlag = $data['flag'];
 
 			if($resFlag==1) 
 			{
@@ -372,7 +373,8 @@ class pay_class extends kernel_extends {
 				{
 					
 					$param = array('captchaOn' => true, 'confirmValue'=>$id,'lang'=>array('sbmt'=>'Подтверждаю отмену счета'));
-					list($result['confirmCancel'], $result['confirmFlag']) = $this->confirmForm($param);
+					$result['confirmCancel'] = $this->confirmForm($param);
+					$result['confirmFlag'] = $result['confirmCancel']['flag'];
 					if($result['confirmFlag']==1)
 					{
 						unset($result['showFrom']);

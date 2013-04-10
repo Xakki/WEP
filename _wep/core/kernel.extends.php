@@ -1586,13 +1586,11 @@ abstract class kernel_extends {
 
 		$formflag = $this->kFields2Form($param,$argForm);
 
-		return Array(
-			Array(
-				'messages'=>$arr['mess'],
-				'form'=>($formflag?$argForm:array()),
-				'options' => $this->getFormOptions()
-			), 
-			$flag
+		return array(
+			'messages'=>$arr['mess'],
+			'form'=>($formflag?$argForm:array()),
+			'options' => $this->getFormOptions(),
+			'flag'=>$flag
 		);
 	}
 
