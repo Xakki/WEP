@@ -217,7 +217,7 @@ class pay_class extends kernel_extends {
 	{
 		//$summ, $key, $comm='', $eval=''
 		global $_tpl;
-		$data = static_main::tplMess();
+		$data = static_main::tplMess('errdata'); // Формат для вывода сообщения в шаблон
 
 		$resFlag = 0; 
 		// 0 : выводим варианты оплаты

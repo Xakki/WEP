@@ -102,7 +102,7 @@ class paybank_class extends kernel_extends
 		$argForm['address'] = array('type' => 'text', 'caption' => 'Адрес плательщика ', 'mask' => array('min' => 6));
 		$argForm['phone'] = array('type' => 'text', 'caption' => 'Контактный телефон', 'mask'=>array('name'=>'phone3', 'min'=>6));
 		$argForm['email'] = array('type' => 'email', 'caption' => 'Email', 'mask'=>array('min'=>5)); // 'name'=>'email', 
-		//$argForm['name'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $comm));
+		$argForm['name'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $comm)); // иначе name не попадает в БД
 		$argForm['cost'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $summ));
 		$this->lang['Save and close'] = 'Выписать счёт';
 		return $this->_UpdItemModul($param, $argForm);

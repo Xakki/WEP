@@ -129,7 +129,7 @@ Cчета со статусом большим или равным 100 трак�
 			if($tmp and strlen($tmp)==10)
 				$_POST['phone'] = $tmp;
 		}
-		//$argForm['name'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $comm));
+		$argForm['name'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $comm)); // иначе name не попадает в БД
 		if($summ>0)
 			$argForm['cost'] = array('type' => 'hidden', 'readonly'=>1, 'mask' => array('eval' => $summ, 'min'=>$this->config['minpay'],'max'=>$this->config['maxpay']));
 		else
