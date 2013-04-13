@@ -1,24 +1,24 @@
-[submodule "_weplib/PHP-Yandex.Money-API-SDK"]
-	path = _weplib/PHP-Yandex.Money-API-SDK
+[submodule "_vendors/PHP-Yandex.Money-API-SDK"]
+	path = _vendors/PHP-Yandex.Money-API-SDK
 	url = https://github.com/melnikovdv/PHP-Yandex.Money-API-SDK.git
-[submodule "_weplib/QIWI-PHP-XML"]
-	path = _weplib/QIWI-PHP-XML
+[submodule "_vendors/QIWI-PHP-XML"]
+	path = _vendors/QIWI-PHP-XML
 	url = https://github.com/the-dan/QIWI-PHP-XML.git
-[submodule "_weplib/PHPMailer"]
-	path = _weplib/PHPMailer
+[submodule "_vendors/PHPMailer"]
+	path = _vendors/PHPMailer
 	url = https://github.com/PHPMailer/PHPMailer.git
-[submodule "_weplib/SyntaxHighlighter"]
-	path = _weplib/SyntaxHighlighter
+[submodule "_vendors/SyntaxHighlighter"]
+	path = _vendors/SyntaxHighlighter
 	url = https://github.com/alexgorbatchev/SyntaxHighlighter.git
-[submodule "_weplib/fancyBox"]
-	path = _weplib/fancyBox
+[submodule "_vendors/fancyBox"]
+	path = _vendors/fancyBox
 	url = https://github.com/fancyapps/fancyBox.git
-[submodule "_weplib/jQuery-File-Upload"]
-	path = _weplib/jQuery-File-Upload
+[submodule "_vendors/jQuery-File-Upload"]
+	path = _vendors/jQuery-File-Upload
 	url = https://github.com/blueimp/jQuery-File-Upload.git
-[submodule "_weplib/jqplot"]
-	path = _weplib/jqplot
+[submodule "_vendors/jqplot"]
+	path = _vendors/jqplot
 	url = https://github.com/Xakki/jqplot.git
-[submodule "_weplib/ckeditor4"]
-	path = _weplib/ckeditor4
+[submodule "_vendors/ckeditor4"]
+	path = _vendors/ckeditor4
 	url = https://github.com/Xakki/ckeditor-releases.git

@@ -118,6 +118,7 @@ $_CFG['_PATH']['path'] = dirname(WEP).'/'; // корень сайта
 
 $_SERVER['_DR_'] = $_CFG['_PATH']['path']; // корень сайта, основной путь к проекту
 //$_CFG['_PATH']['_path'] = dirname(dirname(dirname(__FILE__))). '/';
+$_CFG['_PATH']['lib'] = $_CFG['_PATH']['path'] . '_vendors/';
 $_CFG['_PATH']['core'] = $_CFG['_PATH']['wep'] . 'core/'; // путь к ядру
 $_CFG['_PATH']['cdesign'] = $_CFG['_PATH']['path'] . '_design/'; // backend админки (шаблоны, скрипты, стили)
 $_CFG['_PATH']['wep_ext'] = $_CFG['_PATH']['wep'] . 'ext/'; // путь к системным модулям
@@ -158,6 +159,7 @@ $_CFG['_PATH']['themes'] = $_CFG['_PATH']['path'] . '_themes/'; // дизайн 
 /* $_CFG['PATH'] */
 /* * ************* */
 // относительные пути
+$_CFG['PATH']['lib'] = '_vendors/';
 $_CFG['PATH']['admin'] = '_wepadmin/';
 $_CFG['PATH']['WSWG'] = '_wysiwyg/';
 $_CFG['PATH']['themes'] = '_themes/';

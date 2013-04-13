@@ -314,7 +314,7 @@ class mail_class extends kernel_extends {
 	* Отправка писем с помощью PHPMailer
 	*/
 	function mailengine1 ($data) {
-		include_once($this->_CFG['_PATH']['wep_controllers'] . '/lib/phpMailer/class.phpmailer.php');
+		include_once($this->_CFG['_PATH']['lib'] . 'PHPMailer/class.phpmailer.php');
 		$data['subject'] = substr(htmlspecialchars(trim($data['subject']), ENT_QUOTES, $MODUL->_CFG['wep']['charset']), 0, 1000);
 		
 		$PHPMailer = new PHPMailer();

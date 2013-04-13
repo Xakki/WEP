@@ -2,7 +2,7 @@ function path_syntaxhighlighter()
 {
   var args = arguments,
       result = [],
-      path = '/_weplib/SyntaxHighlighter/';
+      path = '/_vendors/SyntaxHighlighter/';
        
   for(var i = 0; i < args.length; i++)
       result.push(args[i].replace('@', path+'scripts/'));
