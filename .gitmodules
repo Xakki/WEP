@@ -1,3 +1,24 @@
 [submodule "_weplib/PHP-Yandex.Money-API-SDK"]
 	path = _weplib/PHP-Yandex.Money-API-SDK
 	url = https://github.com/melnikovdv/PHP-Yandex.Money-API-SDK.git
+[submodule "_weplib/QIWI-PHP-XML"]
+	path = _weplib/QIWI-PHP-XML
+	url = https://github.com/the-dan/QIWI-PHP-XML.git
+[submodule "_weplib/PHPMailer"]
+	path = _weplib/PHPMailer
+	url = https://github.com/PHPMailer/PHPMailer.git
+[submodule "_weplib/SyntaxHighlighter"]
+	path = _weplib/SyntaxHighlighter
+	url = https://github.com/alexgorbatchev/SyntaxHighlighter.git
+[submodule "_weplib/fancyBox"]
+	path = _weplib/fancyBox
+	url = https://github.com/fancyapps/fancyBox.git
+[submodule "_weplib/jQuery-File-Upload"]
+	path = _weplib/jQuery-File-Upload
+	url = https://github.com/blueimp/jQuery-File-Upload.git
+[submodule "_weplib/jqplot"]
+	path = _weplib/jqplot
+	url = https://github.com/Xakki/jqplot.git
+[submodule "_weplib/ckeditor4"]
+	path = _weplib/ckeditor4
+	url = https://github.com/Xakki/ckeditor-releases.git
