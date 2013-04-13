@@ -1,11 +1,11 @@
 function path_syntaxhighlighter()
 {
   var args = arguments,
-      result = []
-      ;
+      result = [],
+      path = '/_weplib/SyntaxHighlighter/';
        
   for(var i = 0; i < args.length; i++)
-      result.push(args[i].replace('@', '/_design/_script/syntaxhighlighter/scripts/'));
+      result.push(args[i].replace('@', path+'scripts/'));
        
   return result
 };
@@ -37,10 +37,10 @@ $(function(){
 		'vb vbnet               @shBrushVb.js',
 		'xml xhtml xslt html    @shBrushXml.js'
 	);
-	wep.include('/_design/_script/syntaxhighlighter/scripts/shCore.js');
-	wep.includeCSS('/_design/_script/syntaxhighlighter/styles/shCore.css');
-	wep.includeCSS('/_design/_script/syntaxhighlighter/styles/shCoreDefault.css');
-	wep.include('/_design/_script/syntaxhighlighter/scripts/shAutoloader.js',function() {
+	wep.include(path+'scripts/shCore.js');
+	wep.includeCSS(path+'styles/shCore.css');
+	wep.includeCSS(path+'styles/shCoreDefault.css');
+	wep.include(path+'scripts/shAutoloader.js',function() {
 		SyntaxHighlighter.autoloader.apply(null, dataSL);
 		SyntaxHighlighter.all();
 	});
