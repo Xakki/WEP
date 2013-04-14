@@ -22,3 +22,6 @@
 [submodule "_vendors/ckeditor4"]
 	path = _vendors/ckeditor4
 	url = https://github.com/Xakki/ckeditor-releases.git
+[submodule "_vendors/ckeditor-dev"]
+	path = _vendors/ckeditor-dev
+	url = git@github.com:Xakki/ckeditor-dev.git
