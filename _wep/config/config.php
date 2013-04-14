@@ -118,7 +118,7 @@ $_CFG['_PATH']['path'] = dirname(WEP).'/'; // корень сайта
 
 $_SERVER['_DR_'] = $_CFG['_PATH']['path']; // корень сайта, основной путь к проекту
 //$_CFG['_PATH']['_path'] = dirname(dirname(dirname(__FILE__))). '/';
-$_CFG['_PATH']['lib'] = $_CFG['_PATH']['path'] . '_vendors/';
+$_CFG['_PATH']['vendors'] = $_CFG['_PATH']['path'] . '_vendors/';
 $_CFG['_PATH']['core'] = $_CFG['_PATH']['wep'] . 'core/'; // путь к ядру
 $_CFG['_PATH']['cdesign'] = $_CFG['_PATH']['path'] . '_design/'; // backend админки (шаблоны, скрипты, стили)
 $_CFG['_PATH']['wep_ext'] = $_CFG['_PATH']['wep'] . 'ext/'; // путь к системным модулям
@@ -159,15 +159,13 @@ $_CFG['_PATH']['themes'] = $_CFG['_PATH']['path'] . '_themes/'; // дизайн 
 /* $_CFG['PATH'] */
 /* * ************* */
 // относительные пути
-$_CFG['PATH']['lib'] = '_vendors/';
+$_CFG['PATH']['vendors'] = '_vendors/';
 $_CFG['PATH']['admin'] = '_wepadmin/';
-$_CFG['PATH']['WSWG'] = '_wysiwyg/';
 $_CFG['PATH']['themes'] = '_themes/';
 $_CFG['PATH']['content'] = '_content/';
 $_CFG['PATH']['userfile'] = $_CFG['PATH']['content'].'_userfile/'; // файлы пользователя
 $_CFG['PATH']['wepconfname'] = basename($_CFG['_PATH']['wepconf']); // базовое имя пользовательских файлов
 $_CFG['PATH']['cdesign'] = '_design/'; // дизайн админки
-$_CFG['FILE']['HASH_KEY'] = $_CFG['PATH']['wepconfname'] . '/config/hash.key';
 $_CFG['PATH']['weptemp'] = $_CFG['PATH']['wepconfname'] . '/temp/'; // путь к папке для хранения временных файлов
 $_CFG['PATH']['temp'] = $_CFG['PATH']['content'].'temp/'; // путь к папке для хранения временных файлов
 
@@ -428,10 +426,10 @@ $_CFG['PATH']['admin'] = $_CFG['_HREF']['BH'] . $_CFG['PATH']['admin'];
 $_CFG['_HREF']['wepJS'] = $_CFG['PATH']['admin'] . 'js.php';
 $_CFG['_HREF']['siteJS'] = $_CFG['_HREF']['BH'] . '_js.php';
 $_CFG['_HREF']['captcha'] = $_CFG['_HREF']['BH'] . '_captcha.php';
-$_CFG['_HREF']['WSWG'] = $_CFG['_HREF']['BH'] . $_CFG['PATH']['WSWG'];
 $_CFG['_HREF']['_style'] = '_design/_style/'; // дизайн стили
 $_CFG['_HREF']['_script'] = '_design/_script/'; // дизайн стили
 $_CFG['_HREF']['arrayHOST'] = array_reverse(explode('.', $_SERVER['HTTP_HOST']));
+$_CFG['_HREF']['vendors'] = $_CFG['_HREF']['BH'] . '_vendors/';
 
 $_CFG['_F']['adminpage'] = false;
 
