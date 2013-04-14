@@ -25,3 +25,6 @@
 [submodule "_vendors/twitteroauth"]
 	path = _vendors/twitteroauth
 	url = https://github.com/abraham/twitteroauth.git
+[submodule "_vendors/kcfinder-wep"]
+	path = _vendors/kcfinder-wep
+	url = git://github.com/Xakki/kcfinder-wep.git
