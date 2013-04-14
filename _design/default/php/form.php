@@ -173,7 +173,7 @@ function tpl_form(&$data, $tabs = array())
 				$texthtml .= '<div class="form-value textarea"><textarea name="'.$k.'" onkeyup="textareaChange(this)" rows="10" cols="80" '.$attribute.'>'.htmlspecialchars($r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
 			}
 			elseif($r['type']=='ckedit') {
-				$_tpl['script'][$_CFG['_HREF']['WSWG'].'ckeditor4/ckeditor.js'] = 1;
+				$_tpl['script'][$_CFG['_HREF']['vendors'].'ckeditor4/ckeditor.js'] = 1;
 				// http://docs.ckeditor.com/#!/api/CKEDITOR.config
 				//http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.config.html
 					$ckedit = $r['paramedit'];
@@ -218,7 +218,7 @@ function tpl_form(&$data, $tabs = array())
 					$fckscript .= '\'temp\' : \'temp\' });';
 
 					// if(isset($ckedit['CKFinder'])) {
-					// 	$_tpl['script'][$_CFG['_HREF']['WSWG'].'ckfinder/ckfinder.js'] = 1;
+					// 	$_tpl['script'][$_CFG['PATH']['vendors'].'ckfinder/ckfinder.js'] = 1;
 
 					// 	$fckscript = ' function ckf_'.$k.'() { CKFinder.setupCKEditor(editor_'.$k.',\'/'.$_CFG['PATH']['WSWG'].'ckfinder/\');} '.$fckscript;
 					// 	$fckscript .= ' ckf_'.$k.'();';
