@@ -13,16 +13,59 @@ function shutdown_function()
 
 register_shutdown_function('shutdown_function'); // Запускается первым при завершении скрипта
 
-
+/**
+* MAIN STATIC CLASS
+*/
 class static_main {
+
+	/**
+	* Регистрация автозагрузки
+	*/
+	public static function autoload_register() 
+	{
+		spl_autoload_register(array('static_main','autoload'));
+	}
+
+	/**
+	* Отмена автозагрузки
+	*/
+	public static function autoload_unregister() 
+	{
+		spl_autoload_unregister(array('static_main','autoload'));
+		spl_autoload_register(function($name){
+			if(function_exists('__autoload'))
+				return __autoload($name);
+			return false;
+		});
+	}
+
+	/*
+	  Автозагрузка модулей
+	 */
+	public static function autoload($class_name) 
+	{
+		if ($file = _modulExists($class_name)) {
+			require_once($file);
+		}
+		if(!class_exists($class_name,false)) {
+			trigger_error('Can`t init `'.$class_name.'` modul ', E_USER_WARNING);
+			//throw new Exception('Can`t init `' . $class_name . '` modul ');
+		}
+	}
 
 	/**
 	* В формат выода сообщения 
 	*/
-	static function am($type,$msg, $replace=array(), $obj=NULL) {
+	public static function am($type,$msg, $replace=array(), $obj=NULL) 
+	{
 		return  array($type,self::m($msg, $replace, $obj));
 	}
-	static function m($msg, $replace=array(), $obj=NULL) {
+
+	/**
+	* Текст сообщения
+	*/
+	public static function m($msg, $replace=array(), $obj=NULL) 
+	{
 		global $_CFG;
 		if(is_object($replace)) {
 			$obj = $replace;
@@ -40,7 +83,8 @@ class static_main {
 		return $msg;
 	}
 
-	/* Запись сообщения в лог вывода
+	/**
+	* Запись сообщения в лог вывода
 	*/
 	static function log($type,$msg,$cl='') {
 		global $_CFG;
@@ -756,6 +800,18 @@ class static_main {
 	{
 		return array('tpl' =>'#pg#messages', 'messages'=>array(static_main::am($type, $mess)));
 	}
+
+	/**
+	* Проверка разрешенных ПХП для вендор
+	*/
+	static public function phpAllowVendors($name)
+	{
+		global $_CFG;
+		$name = substr($name, 9);
+		if(isset($_CFG['vendors'][$name]))
+			return true;
+		return false;
+	}
 }
 
 
@@ -914,19 +970,7 @@ function _getExtMod($name) {
 		$name = $_CFG['modulprm_ext'][$name][0];
 	return $name;
 }
-/*
-  Автозагрузка модулей
- */
 
-function __autoload($class_name) { //автозагрузка модулей
-	if ($file = _modulExists($class_name)) {
-		require_once($file);
-	}
-	if(!class_exists($class_name,false)) {
-		trigger_error('Can`t init `'.$class_name.'` modul ', E_USER_WARNING);
-		//throw new Exception('Can`t init `' . $class_name . '` modul ');
-	}
-}
 
 /**
  * Проверка существ модуля
@@ -1534,3 +1578,6 @@ function plugSHL()
 
 	setScript('syntaxhighlighter');
 }
+
+
+static_main::autoload_register();

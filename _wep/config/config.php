@@ -246,6 +246,11 @@ $_CFG['form'] = array(
 );
 
 
+$_CFG['vendors'] = array(
+	'ckfinder/core/connector/php/connector.php' => array('2'),
+);
+
+
 //ERRORS
 $_CFG['_error'] = array(
 	0 => array(

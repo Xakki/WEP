@@ -210,6 +210,32 @@ function tpl_form(&$data, $tabs = array())
 
 					$fckscript = 'function cke_'.$k.'() { if(typeof CKEDITOR.instances.id_'.$k.' == \'object\'){CKEDITOR.instances.id_'.$k.'.destroy(true);} editor_'.$k.' = CKEDITOR.replace( \'id_'.$k.'\',{';
 
+					/**
+					* FILE brauser
+					*/
+					// KCFinder
+					if(isset($ckedit['CKFinder'])) {
+
+						$CKFinder = '/'.$_CFG['PATH']['vendors'].'ckfinder/';
+						$ckedit['filebrowserBrowseUrl'] = '"'.$CKFinder.'ckfinder.html"';
+						$ckedit['filebrowserImageBrowseUrl'] = '"'.$CKFinder.'ckfinder.html?type=Images"';
+						$ckedit['filebrowserFlashBrowseUrl'] = '"'.$CKFinder.'ckfinder.html?type=Flash"';
+						$ckedit['filebrowserUploadUrl'] = '"'.$CKFinder.'core/connector/php/connector.php?command=QuickUpload&type=Files"';
+						$ckedit['filebrowserImageUploadUrl'] = '"'.$CKFinder.'core/connector/php/connector.php?command=QuickUpload&type=Images"';
+						$ckedit['filebrowserFlashUploadUrl'] = '"'.$CKFinder.'core/connector/php/connector.php?command=QuickUpload&type=Flash"';	
+						
+						// $kcfinder = '/'.$_CFG['PATH']['vendors'].'kcfinder-wep/';
+						// $ckedit['filebrowserBrowseUrl'] = '"'.$kcfinder.'browse.php?type=files"';
+						// $ckedit['filebrowserImageBrowseUrl'] = '"'.$kcfinder.'browse.php?type=images"';
+						// $ckedit['filebrowserFlashBrowseUrl'] = '"'.$kcfinder.'browse.php?type=flash"';
+						// $ckedit['filebrowserUploadUrl'] = '"'.$kcfinder.'upload.php?type=files"';
+						// $ckedit['filebrowserImageUploadUrl'] = '"'.$kcfinder.'upload.php?type=images"';
+						// $ckedit['filebrowserFlashUploadUrl'] = '"'.$kcfinder.'upload.php?type=flash"';	
+
+						// if(isset($ckedit['CKFinder']['allowedExtensions']) and $_SESSION)
+						// 	$_SESSION['wswg']['AE'] = $ckedit['CKFinder']['allowedExtensions'];
+					}
+
 					foreach($ckedit as $kc=>$rc)
 					{
 						if(!is_array($rc))
@@ -226,6 +252,8 @@ function tpl_form(&$data, $tabs = array())
 					// 	if(isset($ckedit['CKFinder']['allowedExtensions']) and $_SESSION)
 					// 		$_SESSION['wswg']['AE'] = $ckedit['CKFinder']['allowedExtensions'];
 					// }
+					
+
 
 					$fckscript .= '}';
 					//if(!isset($fields[$k.'_ckedit']['value']) or $fields[$k.'_ckedit']['value']=='' or $fields[$k.'_ckedit']['value']=='1')

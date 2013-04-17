@@ -26,14 +26,14 @@
 			require_once($_CFG['_PATH']['wep_controllers'].'frontend/robotstxt.php');
 		exit();
 	}
-	elseif(isset($_GET['_php']) and $_GET['_php']=='js') {
+	elseif(isset($_GET['_php']) and $_GET['_php']=='_js') {
 		if(file_exists($_CFG['_PATH']['controllers'].'_js.php'))
 			require_once($_CFG['_PATH']['controllers'].'_js.php');
 		else
 			require_once($_CFG['_PATH']['wep_controllers'].'frontend/_js.php');
 		exit();
 	}
-	elseif(isset($_GET['_php']) and $_GET['_php']=='redirect') {
+	elseif(isset($_GET['_php']) and $_GET['_php']=='_redirect') {
 		if(file_exists($_CFG['_PATH']['controllers'].'_redirect.php'))
 			require_once($_CFG['_PATH']['controllers'].'_redirect.php');
 		else
@@ -49,7 +49,8 @@
 			echo 'no RSS';
 		exit();
 	}
-	elseif(isset($_GET['_php']) and $_GET['_php']=='sitemap') {
+	elseif(isset($_GET['_php']) and $_GET['_php']=='sitemap') 
+	{
 		header("Cache-Control: max-age=0, must-revalidate");
 		header("Last-Modified: " . gmdate("D, d M Y H:i:s", $_CFG['time']) . " GMT");
 		header("Expires: " . gmdate("D, d M Y H:i:s", $_CFG['time']) . " GMT");
@@ -61,13 +62,8 @@
 		$_tpl['text'] = $PGLIST->creatSiteMaps();
 		exit();
 	}
-	elseif(isset($_GET['_php']) and $_GET['_php']=='config') {
-		$_GET[$_CFG['wep']['_showallinfo']] = 0;
-		//Применяется для CKFinder для авторизации по сессии
-		session_go();
-		return true;
-	}
-	elseif(isset($_GET['_php']) and $_GET['_type']=='xml') {
+	elseif(isset($_GET['_php']) and isset($_GET['_type']) and $_GET['_type']=='xml') 
+	{
 		if(file_exists($_CFG['_PATH']['controllers'].$_GET['_php'].'.xml.php'))
 			require_once($_CFG['_PATH']['controllers'].$_GET['_php'].'.xml.php');
 		elseif(file_exists($_CFG['_PATH']['wep_controllers'].'frontend/'.$_GET['_php'].'.xml.php'))
@@ -75,6 +71,12 @@
 		else
 			echo 'Ашипка!';
 		exit();
+	}
+	elseif(isset($_GET['_php']) and $_GET['_php']=='config') {
+		$_GET[$_CFG['wep']['_showallinfo']] = 0;
+		//Применяется для CKFinder для авторизации по сессии
+		session_go();
+		return true;
 	}
 
 
