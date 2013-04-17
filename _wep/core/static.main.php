@@ -812,6 +812,28 @@ class static_main {
 			return true;
 		return false;
 	}
+	/**
+	* Проверка разрешенных ПХП для вендор и запуск сессии
+	*/
+	static public function phpAllowVendorsSession($name)
+	{
+		global $_CFG;
+		$name = substr($name, 9);
+		if(isset($_CFG['vendors'][$name]['session']) and $_CFG['vendors'][$name]['session'])
+			return true;
+		return false;
+	}
+	/**
+	* Проверка разрешенных ПХП для вендор и запуск сессии
+	*/
+	static public function phpAllowVendorsUnregisterAutoload($name)
+	{
+		global $_CFG;
+		$name = substr($name, 9);
+		if(isset($_CFG['vendors'][$name]['unregisterAutoload']) and $_CFG['vendors'][$name]['unregisterAutoload'])
+			return true;
+		return false;
+	}
 }
 
 

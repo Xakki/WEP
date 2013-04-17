@@ -247,7 +247,10 @@ $_CFG['form'] = array(
 
 
 $_CFG['vendors'] = array(
-	'ckfinder/core/connector/php/connector.php' => array('2'),
+	'ckfinder/core/connector/php/connector.php' => array(
+		'session'=>true,
+		//'unregisterAutoload' => true,
+	),
 );
 
 

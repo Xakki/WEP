@@ -9,17 +9,29 @@
 			require_once($_CFG['_PATH']['wep_controllers'].'frontend/_captcha.php');
 		exit();
 	}
+	/**
+	* Загрузка пхп фаилов
+	*/
 	elseif(isset($_GET['_php']) and static_main::phpAllowVendors($_GET['_php'].'.php')) 
 	{
 		$_GET[$_CFG['wep']['_showallinfo']] = 0;
-		//Применяется для CKFinder для авторизации по сессии
-		session_go();
-		//static_main::autoload_unregister();
+
+		if(static_main::phpAllowVendorsSession($_GET['_php'].'.php'))
+		{
+			session_go();
+		}
+
+		if(static_main::phpAllowVendorsUnregisterAutoload($_GET['_php'].'.php'))
+		{
+			static_main::autoload_unregister();
+		}
+
 		set_include_path(get_include_path()
         	.PATH_SEPARATOR
         	.dirname($_SERVER['_DR_'].$_GET['_php'].'.php') );
 
 		require $_SERVER['_DR_'].$_GET['_php'].'.php';
+
 		return true;
 	}
 
