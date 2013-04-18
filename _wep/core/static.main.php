@@ -1458,10 +1458,11 @@ function plugFancybox($init = true)
 	global $_tpl, $_CFG;
 	if(isset($_CFG['fileIncludeOption']['fancybox']))
 		return false;
+	$url = MY_BH.$_CFG['PATH']['vendors'].'fancyBox/source';
 
 	$_CFG['fileIncludeOption']['fancybox'] = true;
-	setScript('fancybox/jquery.fancybox.pack');
-	setCss('../_script/fancybox/jquery.fancybox');
+	setScript($url.'/jquery.fancybox.pack.js');
+	setCss($url.'/jquery.fancybox.css');
 	if($init)
 	{
 		if(!is_string($init))

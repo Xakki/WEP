@@ -844,7 +844,8 @@ class static_form {
 				// TODO : проверка правильности форм
 			}
 			/*Капча*/
-			elseif($form['type']=='captcha') {
+			elseif($form['type']=='captcha') 
+			{
 				if(mb_strtolower($data[$key])!==mb_strtolower($form['captcha']) )
 					$error[] = 31;
 				//strcmp 

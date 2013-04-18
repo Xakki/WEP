@@ -457,6 +457,7 @@ class static_tools {
 	 */
 	static function toolsStatsmodul(&$MODUL, $oid = '') 
 	{
+		global $_CFG;
 		$html = '';
 		$clause = array();
 		if (!$oid and isset($_GET['_oid']))
@@ -500,13 +501,14 @@ class static_tools {
 			return array($result->err, '');
 
 		$stepY = round($maxY, -1) / 10;
+		$jqplot = MY_BH.$_CFG['PATH']['vendors'].'jqplot/';
 		$eval= ' 
 			var plotScript = {
-				\''.MY_BH.$MODUL->_CFG['_HREF']['_script'].'script.jquery/jqplot/jquery.jqplot.min.js\' : {
-					\''.MY_BH.$MODUL->_CFG['_HREF']['_script'].'script.jquery/jqplot/plugins/jqplot.cursor.min.js\' : {
-						\''.MY_BH.$MODUL->_CFG['_HREF']['_script'].'script.jquery/jqplot/plugins/jqplot.dateAxisRenderer.min.js\': {
-							\''.MY_BH.$MODUL->_CFG['_HREF']['_script'].'script.jquery/jqplot/plugins/jqplot.highlighter.min.js\': {
-								\''.MY_BH.$MODUL->_CFG['_HREF']['_script'].'script.jquery/jqplot/plugins/jqplot.ohlcRenderer.min.js\': \'jqplot();\'
+				\''.$jqplot.'jquery.jqplot.min.js\' : {
+					\''.$jqplot.'plugins/jqplot.cursor.min.js\' : {
+						\''.$jqplot.'plugins/jqplot.dateAxisRenderer.min.js\': {
+							\''.$jqplot.'plugins/jqplot.highlighter.min.js\': {
+								\''.$jqplot.'plugins/jqplot.ohlcRenderer.min.js\': \'jqplot();\'
 							}
 						}
 					}
@@ -533,7 +535,7 @@ class static_tools {
 	<div id="statschart2" data-height="150px" data-width="100%" style="margin-top:10px; margin-left:10px;width:100%;"></div>
 	<style>
 	@import "/' . $MODUL->_CFG['_HREF']['_style'] . 'style.jquery/ui.css";
-	@import "/' . $MODUL->_CFG['_HREF']['_script'] . 'script.jquery/jqplot/jquery.jqplot.min.css";
+	@import "' . $jqplot . 'jquery.jqplot.min.css";
 	</style>
 	';
 		//$html = '<span class="buttonimg imgdel" style="float: right;" onclick="$(this).parent().hide();">EXIT</span>' . $html;
