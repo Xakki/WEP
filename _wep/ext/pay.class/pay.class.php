@@ -494,6 +494,8 @@ class pay_class extends kernel_extends {
 				$_POST[$name] = $data[$name];
 			elseif(isset($_SESSION['user'][$name]))
 				$_POST[$name] = $_SESSION['user'][$name];
+			elseif(isset($_COOKIE['field_'.$name]))
+				$_POST[$name] = $_COOKIE['field_'.$name];
 		}
 		return $_POST[$name];
 	}

@@ -1054,4 +1054,51 @@ class static_super {
 				self::modulMenuConfig($cn, $topmenu);
 			}
 	}
+
+	/**
+	 * Сортировка 
+	 * @return array
+	 */
+	static public function _sorting($_this) {
+		$res = array('html' => '', 'eval' => '');
+		$_this->id = $id = (int) $_GET['id'];
+		$pid = (isset($_GET['pid']) ? (int) $_GET['pid'] : 0);
+		$t1 = (isset($_GET['t1']) ? (int) $_GET['t1'] : 0);
+		$t2 = (isset($_GET['t2']) ? (int) $_GET['t2'] : 0);
+		$data = $_this->_select();
+
+		if (!$_this->mf_ordctrl or !$_this->_prmModulEdit($data)) {//!static_main::_prmModul($_this->_cl,array(10))
+			$res['html'] = static_main::m('Sorting denied!');
+			return $res;
+		}
+		$res['html'] = static_main::m('Sorting error');
+
+
+		if ($t2) {
+			$data = $_this->qs($_this->mf_ordctrl, 'WHERE id=' . $t2);
+			$neword = $data[0][$_this->mf_ordctrl];
+
+			$qr = '`' . $_this->mf_ordctrl . '`>=\'' . $neword . '\'';
+			if ($_this->mf_istree and $pid)
+				$qr .= ' and `' . $_this->mf_istree . '`=' . $pid;
+			$_this->fields[$_this->mf_ordctrl]['noquote'] = true;
+			if (!$_this->_update(array($_this->mf_ordctrl => '`' . $_this->mf_ordctrl . '`+1'), $qr, false))
+				return $res;
+			$_this->id = $id;
+			if (!$_this->_update(array($_this->mf_ordctrl => $neword)))
+				return $res;
+		}else {
+			$qr = '';
+			if ($_this->mf_istree and $pid)
+				$qr .= ' WHERE `' . $_this->mf_istree . '`=' . $pid;
+
+			$data = $_this->qs('max(' . $_this->mf_ordctrl . ') as mx', $qr);
+			$neword = $data[0]['mx'] + 1;
+			$_this->id = $id;
+			if (!$_this->_update(array($_this->mf_ordctrl => $neword)))
+				return $res;
+		}
+		$res['html'] = ''; //static_main::m('Sorting successful.')
+		return $res;
+	}
 }

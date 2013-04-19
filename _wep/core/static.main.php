@@ -792,6 +792,153 @@ class static_main {
 		exit();
 	}
 
+	/**
+	 * Постраничная навигация
+	 */
+	static public function fPageNav2($_this, $countfield, $param = array()) {
+		//$countfield - бщее число элем-ов
+		//$$param - массив данных
+		//$_this->messages_on_page - число эл-ов на странице
+		//$_this->_pn - № текущей страницы
+		$numlist = $_this->numlist; // кличество числе по бокам максимум
+		$DATA = array('cnt' => $countfield, 'messages_on_page' => $_this->messages_on_page, 'cntpage' => 0, 'modul' => $_this->_cl, 'reverse' => $_this->reversePageN);
+
+		//pagenum
+		if (isset($_GET[$_this->_cl . '_mop'])) {
+			$_this->messages_on_page = (int) $_GET[$_this->_cl . '_mop'];
+			if ($_COOKIE[$_this->_cl . '_mop'] != $_this->messages_on_page)
+				_setcookie($_this->_cl . '_mop', $_this->messages_on_page, $_this->_CFG['remember_expire']);
+		}
+		elseif (isset($_COOKIE[$_this->_cl . '_mop']))
+			$_this->messages_on_page = (int) $_COOKIE[$_this->_cl . '_mop'];
+		if (!$_this->messages_on_page)
+			$_this->messages_on_page = 20;
+
+		/*		 * * PAGE NUM REVERSE ** */
+		if ($_this->reversePageN) {
+			if ($_this->_pn == 0)
+				$_this->_pn = 1;
+			else
+				$_this->_pn = floor($countfield / $_this->messages_on_page) - $_this->_pn + 1;
+			$DATA['cntpage'] = floor($countfield / $_this->messages_on_page);
+			$temp_pn = $_this->_pn;
+			$_this->_pn = $DATA['cntpage'] - $_this->_pn + 1;
+		}
+		else {
+			$DATA['cntpage'] = ceil($countfield / $_this->messages_on_page);
+		}
+
+		// Приводим к правильным числам
+		if ($_this->_pn > $DATA['cntpage'])
+			$_this->_pn = $DATA['cntpage'];
+		if ($_this->_pn < 1)
+			$_this->_pn = 1;
+		$DATA['_pn'] = $_this->_pn;
+
+		foreach ($_this->_CFG['enum']['_MOP'] as $k => $r)
+			$DATA['mop'][$k] = array('value' => $r, 'sel' => 0);
+		$DATA['mop'][$_this->messages_on_page]['sel'] = 1;
+
+		$flag = false;
+		if ($countfield) {
+			if ($_this->reversePageN and $countfield >= ($_this->messages_on_page * 2))
+				$flag = true;
+			elseif (!$_this->reversePageN and $countfield > $_this->messages_on_page)
+				$flag = true;
+		}
+
+		if ($flag) {
+			//$PP[0] - страница не выбрана
+			//$PP[1] - первая часть 
+			//$PP[2] - вторая часть
+			if (!isset($param['firstpath']) or !$param['firstpath'])
+				$param['firstpath'] = $_SERVER['REQUEST_URI'];
+			$PP = array(0 => $param['firstpath'], 1 => $param['firstpath'], 2 => '');
+			if (isset($param['_clp'])) {
+				if (count($param['_clp'])) {
+					$temp = $param['_clp'];
+					unset($temp[$_this->_pa]);
+					$PP[0] .= http_build_query($temp) . '&';
+					$PP[1] = $PP[0];
+				}
+				$PP[1] .= $_this->_pa . '=';
+			} 
+			else 
+			{
+				$pregreplPage = '/(.*)_p[0-9]+(.*)/';
+				if (!preg_match($pregreplPage, $param['firstpath'], $matches))
+				 {
+					$temp = explode('.html', $param['firstpath']);
+					$PP[1] = $temp[0] . '_p';
+					$PP[2] = '.html' . $temp[1];
+				} else 
+				{
+					$PP[0] = $matches[1] . $matches[2];
+					$PP[1] = $matches[1] . '_p';
+					$PP[2] = $matches[2];
+				}
+			}
+
+			$DATA['PP'] = $PP;
+
+			if ($_this->reversePageN) {// обратная нумирация
+				/* Собираем массив ссылок */
+				$DATA['link'][$DATA['cntpage']] = $PP[0];
+				if (($_this->_pn + $numlist) < $DATA['cntpage'] - 1) {
+					$j = $_this->_pn + $numlist;
+				} else
+					$j = $DATA['cntpage'] - 1;
+				$vl = $_this->_pn - $numlist;
+				if ($vl < 2)
+					$vl = 2;
+				for ($i = $j; $i >= $vl; $i--) {
+					$DATA['link'][$i] = $PP[1] . $i . $PP[2];
+				}
+				$DATA['link'][1] = $PP[1] . '1' . $PP[2];
+			} else {
+				$DATA['link'][1] = $PP[0];
+
+				if (($_this->_pn - $numlist) > 3) {
+					$j = $_this->_pn - $numlist;
+					$DATA['link'][' ...'] = false;
+				} else {
+					$j = 2;
+				}
+
+				$vl = $_this->_pn + $numlist;
+				if ($vl >= ($DATA['cntpage'] - 2))
+					$vl = $DATA['cntpage'] - 1;
+				for ($i = $j; $i <= $vl; $i++) {
+					$DATA['link'][$i] = $PP[1] . $i . $PP[2];
+				}
+				if ($vl < $DATA['cntpage'] - 1)
+					$DATA['link']['... '] = false;
+				$DATA['link'][$DATA['cntpage']] = $PP[1] . $DATA['cntpage'] . $PP[2];
+
+				/* $DATA['link'][1] = $PP[0];
+				  for ($i = 2; $i <= $DATA['cntpage']; $i++) {
+				  $DATA['link'][$i] = $PP[1].$i.$PP[2];
+				  } */
+			}
+			//////////////////
+		}
+
+		$DATA['start'] = 0;
+		if ($_this->reversePageN) {
+			if ($_this->_pn == floor($countfield / $_this->messages_on_page)) {
+				$_this->messages_on_page = $countfield - $_this->messages_on_page * ($_this->_pn - 1); // правдивый
+				//$_this->messages_on_page = $_this->messages_on_page*$_this->_pn-$countfield; // полная запись
+			}
+			else
+				$DATA['start'] = $countfield - $_this->messages_on_page * $_this->_pn; // начало отсчета
+		}
+		else
+			$DATA['start'] = $_this->messages_on_page * ($_this->_pn - 1); // начало отсчета
+		if ($DATA['start'] < 0)
+			$DATA['start'] = 0;
+		return $DATA;
+	}
+
 
 	/**
 	* Формат для вывода сообщения в шаблон
@@ -813,7 +960,7 @@ class static_main {
 		return false;
 	}
 	/**
-	* Проверка разрешенных ПХП для вендор и запуск сессии
+	* Проверка для вендор запуск сессии
 	*/
 	static public function phpAllowVendorsSession($name)
 	{
@@ -824,7 +971,7 @@ class static_main {
 		return false;
 	}
 	/**
-	* Проверка разрешенных ПХП для вендор и запуск сессии
+	* Проверка для вендор отключения автозагрузчика
 	*/
 	static public function phpAllowVendorsUnregisterAutoload($name)
 	{
@@ -987,7 +1134,6 @@ function _getChildModul($name, &$MODUL) {
 
 function _getExtMod($name) {
 	global $_CFG;
-	//$this->mf_actctrl
 	if (isset($_CFG['modulprm_ext'][$name]) && isset($_CFG['modulprm'][$name]) && !$_CFG['modulprm'][$name]['active'])
 		$name = $_CFG['modulprm_ext'][$name][0];
 	return $name;

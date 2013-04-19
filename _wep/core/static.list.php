@@ -600,4 +600,72 @@ class static_list {
 		return $data;
 	}
 
+	/**
+	 * Преобразование списка в шаблонный список для формы
+	 * @param array $path - путь
+	 * @return string XML
+	 */
+	static function _forlist(&$data, $id=0, $select = '', $multiple = 0) /*LIST SELECTOR*/
+	{
+		/*
+		  array('name'=>'NAME','id'=>1 [, 'sel'=>0, 'checked'=>0])
+		 */
+		//$select - array(значение=>1)
+		$s = array();
+		if(!is_array($data) or !count($data)) return $s;
+
+		if ($multiple == 2 and is_array($select) and count($select)) {
+			foreach ($select as $sr) {
+				foreach ($data as $kk => $kd) {
+					if (isset($kd[$sr])) {
+						$s[$sr] = array('#id#' => $sr, '#sel#' => 1);
+						if (is_array($kd[$sr]) and isset($kd[$sr]['#name#']))
+							$s[$sr]['#name#'] = $kd[$sr]['#name#'];
+						else
+							$s[$sr]['#name#'] = $kd[$sr];
+						break;
+					}
+				}
+			}
+			$multiple = 22;
+		}
+
+		if (isset($data[$id]) and is_array($data[$id]) and count($data[$id]))
+			$temp = &$data[$id];
+		else
+			$temp = &$data;
+
+		foreach ($temp as $key => $value) {
+			if ($select != '' and is_array($select)) {
+				if (isset($select[$key])) {
+					if ($multiple == 22)
+						continue;
+					$sel = 1;
+				}
+				else
+					$sel = 0;
+			}
+			elseif ($select != '' and $select == $key)
+				$sel = 1;
+			else
+				$sel = 0;
+			$s[$key] = array('#id#' => $key, '#sel#' => $sel);
+			if (is_array($value)) {
+				foreach ($value as $k => $r)
+					if ($k != '#name#' and $k != '#id#')
+						$s[$key][$k] = $r;
+				if (!isset($value['#name#']))
+					$s[$key]['#name#'] = $key;
+				else
+					$s[$key]['#name#'] = $value['#name#']; //_substr($value['name'],0,60).(_strlen($value['name'])>60?'...':'')
+			}else
+				$s[$key]['#name#'] = $value;
+			if ($key != $id and isset($data[$key]) and count($data[$key]) and is_array($data[$key]))
+				$s[$key]['#item#'] = self::_forlist($data, $key, $select, $multiple);
+			/*Если это использовать то проверка данных сломается*/
+			//if (isset($value['#item#']) and is_array($value['#item#']) and count($value['#item#']))
+			//	$s[$key]['#item#'] = $value['#item#']+$s[$key]['#item#'];
+		}
+		return $s;
+	}
 }

@@ -1467,7 +1467,14 @@ abstract class kernel_extends {
 	}
 
 	/**
-	 * Получение списка из кеша если он там есть
+	 * ПОлучение списка
+	 */
+	public function _getlist($listname, $value = NULL) {/* LIST SELECTOR */
+		return static_list::_getlist($this, $listname, $value);
+	}
+
+	/**
+	 * HELPER - Получение списка из кеша если он там есть
 	 * @param mixed $listname - название списока или массив данных для списка
 	 * @param mixed $value - значение
 	 * @return array Список
@@ -1475,17 +1482,25 @@ abstract class kernel_extends {
 	public function &_getCashedList($listname, $value = NULL) {
 		return static_list::_getCashedList($this, $listname, $value);
 	}
-
-	public function _getlist($listname, $value = NULL) {/* LIST SELECTOR */
-		return static_list::_getlist($this, $listname, $value);
+	/**
+	 * HELPER - Преобразование списка в шаблонный список для формы
+	 * @param array $path - путь
+	 * @return string XML
+	 */
+	public function _forlist(&$data, $id=0, $select = '', $multiple = 0) {
+		return static_list::_forlist($data, $id, $select, $multiple);
 	}
 
-	//Универсальный обработчик вывода данных
+	/**
+	 * Универсальный обработчик вывода данных
+	 */
 	public function super_inc($PARAM = array(), $ftype = '') {
 		return static_super::super_inc($this, $PARAM , $ftype);
 	}
 
-	// вывод данных
+	/**
+	 * вывод данных
+	 */
 	public function _displayXML(&$param) {
 		return static_super::_displayXML($this, $param);
 	}
@@ -1500,6 +1515,9 @@ abstract class kernel_extends {
 		return static_tools::toolsReinstall($this);
 	}
 
+	/**
+	 *	КОнфиг модуля
+	 */
 	public function toolsConfigmodul() {
 		return static_tools::toolsConfigmodul($this);
 	}
@@ -1922,46 +1940,7 @@ abstract class kernel_extends {
 	 * @return array
 	 */
 	public function _sorting() {
-		$res = array('html' => '', 'eval' => '');
-		$this->id = $id = (int) $_GET['id'];
-		$pid = (isset($_GET['pid']) ? (int) $_GET['pid'] : 0);
-		$t1 = (isset($_GET['t1']) ? (int) $_GET['t1'] : 0);
-		$t2 = (isset($_GET['t2']) ? (int) $_GET['t2'] : 0);
-		$data = $this->_select();
-
-		if (!$this->mf_ordctrl or !$this->_prmModulEdit($data)) {//!static_main::_prmModul($this->_cl,array(10))
-			$res['html'] = static_main::m('Sorting denied!');
-			return $res;
-		}
-		$res['html'] = static_main::m('Sorting error');
-
-
-		if ($t2) {
-			$data = $this->qs($this->mf_ordctrl, 'WHERE id=' . $t2);
-			$neword = $data[0][$this->mf_ordctrl];
-
-			$qr = '`' . $this->mf_ordctrl . '`>=\'' . $neword . '\'';
-			if ($this->mf_istree and $pid)
-				$qr .= ' and `' . $this->mf_istree . '`=' . $pid;
-			$this->fields[$this->mf_ordctrl]['noquote'] = true;
-			if (!$this->_update(array($this->mf_ordctrl => '`' . $this->mf_ordctrl . '`+1'), $qr, false))
-				return $res;
-			$this->id = $id;
-			if (!$this->_update(array($this->mf_ordctrl => $neword)))
-				return $res;
-		}else {
-			$qr = '';
-			if ($this->mf_istree and $pid)
-				$qr .= ' WHERE `' . $this->mf_istree . '`=' . $pid;
-
-			$data = $this->qs('max(' . $this->mf_ordctrl . ') as mx', $qr);
-			$neword = $data[0]['mx'] + 1;
-			$this->id = $id;
-			if (!$this->_update(array($this->mf_ordctrl => $neword)))
-				return $res;
-		}
-		$res['html'] = ''; //static_main::m('Sorting successful.')
-		return $res;
+		return static_super::_sorting($this);
 	}
 
 	/**
@@ -1974,222 +1953,41 @@ abstract class kernel_extends {
 		return true;
 	}
 
+	// путь к фаилам
+	public function getPathForAtt($key) {
+		if (isset($this->attaches[$key]['path']) and $this->attaches[$key]['path'])
+			$pathimg = $this->attaches[$key]['path'];
+		else
+			$pathimg = $this->_CFG['PATH']['content'] . $key;
+		return $pathimg;
+	}
+
+	// путь к фаилам MEMO данных
+	public function getPathForMemo($key) {
+		if (isset($this->memos[$key]['path']) and $this->memos[$key]['path'])
+			$pathimg = $this->memos[$key]['path'];
+		else
+			$pathimg = $this->_CFG['PATH']['content'] . $key;
+		return $pathimg;
+	}
+
+	/////////////////////////////////////////
+	/////////////////////////////////////////
+	//////////////////////////////////////////
+
 	/**
-	 * Преобразование списка в шаблонный список для формы
-	 * @param array $path - путь
-	 * @return string XML
+	 * Постраничная навигация
+	 * DEPRICATED
 	 */
-	public function _forlist(&$data, $id=0, $select = '', $multiple = 0) {
-		/*
-		  array('name'=>'NAME','id'=>1 [, 'sel'=>0, 'checked'=>0])
-		 */
-		//$select - array(значение=>1)
-		$s = array();
-		if(!is_array($data) or !count($data)) return $s;
-
-		if ($multiple == 2 and is_array($select) and count($select)) {
-			foreach ($select as $sr) {
-				foreach ($data as $kk => $kd) {
-					if (isset($kd[$sr])) {
-						$s[$sr] = array('#id#' => $sr, '#sel#' => 1);
-						if (is_array($kd[$sr]) and isset($kd[$sr]['#name#']))
-							$s[$sr]['#name#'] = $kd[$sr]['#name#'];
-						else
-							$s[$sr]['#name#'] = $kd[$sr];
-						break;
-					}
-				}
-			}
-			$multiple = 22;
-		}
-
-		if (isset($data[$id]) and is_array($data[$id]) and count($data[$id]))
-			$temp = &$data[$id];
-		else
-			$temp = &$data;
-
-		foreach ($temp as $key => $value) {
-			if ($select != '' and is_array($select)) {
-				if (isset($select[$key])) {
-					if ($multiple == 22)
-						continue;
-					$sel = 1;
-				}
-				else
-					$sel = 0;
-			}
-			elseif ($select != '' and $select == $key)
-				$sel = 1;
-			else
-				$sel = 0;
-			$s[$key] = array('#id#' => $key, '#sel#' => $sel);
-			if (is_array($value)) {
-				foreach ($value as $k => $r)
-					if ($k != '#name#' and $k != '#id#')
-						$s[$key][$k] = $r;
-				if (!isset($value['#name#']))
-					$s[$key]['#name#'] = $key;
-				else
-					$s[$key]['#name#'] = $value['#name#']; //_substr($value['name'],0,60).(_strlen($value['name'])>60?'...':'')
-			}else
-				$s[$key]['#name#'] = $value;
-			if ($key != $id and isset($data[$key]) and count($data[$key]) and is_array($data[$key]))
-				$s[$key]['#item#'] = $this->_forlist($data, $key, $select, $multiple);
-			/*Если это использовать то проверка данных сломается*/
-			//if (isset($value['#item#']) and is_array($value['#item#']) and count($value['#item#']))
-			//	$s[$key]['#item#'] = $value['#item#']+$s[$key]['#item#'];
-		}
-		return $s;
-	}
-
-	// Постраничная навигация
 	public function fPageNav($countfield, $thisPage = '') {
-		return $this->fPageNav2($countfield, array('firstpath' => $thisPage));
+		return static_main::fPageNav2($this, $countfield, array('firstpath' => $thisPage));
 	}
 
-	// Постраничная навигация
+	/**
+	 * Постраничная навигация
+	 */
 	public function fPageNav2($countfield, $param = array()) {
-		//$countfield - бщее число элем-ов
-		//$$param - массив данных
-		//$this->messages_on_page - число эл-ов на странице
-		//$this->_pn - № текущей страницы
-		$numlist = $this->numlist; // кличество числе по бокам максимум
-		$DATA = array('cnt' => $countfield, 'messages_on_page' => $this->messages_on_page, 'cntpage' => 0, 'modul' => $this->_cl, 'reverse' => $this->reversePageN);
-
-		//pagenum
-		if (isset($_GET[$this->_cl . '_mop'])) {
-			$this->messages_on_page = (int) $_GET[$this->_cl . '_mop'];
-			if ($_COOKIE[$this->_cl . '_mop'] != $this->messages_on_page)
-				_setcookie($this->_cl . '_mop', $this->messages_on_page, $this->_CFG['remember_expire']);
-		}
-		elseif (isset($_COOKIE[$this->_cl . '_mop']))
-			$this->messages_on_page = (int) $_COOKIE[$this->_cl . '_mop'];
-		if (!$this->messages_on_page)
-			$this->messages_on_page = 20;
-
-		/*		 * * PAGE NUM REVERSE ** */
-		if ($this->reversePageN) {
-			if ($this->_pn == 0)
-				$this->_pn = 1;
-			else
-				$this->_pn = floor($countfield / $this->messages_on_page) - $this->_pn + 1;
-			$DATA['cntpage'] = floor($countfield / $this->messages_on_page);
-			$temp_pn = $this->_pn;
-			$this->_pn = $DATA['cntpage'] - $this->_pn + 1;
-		}
-		else {
-			$DATA['cntpage'] = ceil($countfield / $this->messages_on_page);
-		}
-
-		// Приводим к правильным числам
-		if ($this->_pn > $DATA['cntpage'])
-			$this->_pn = $DATA['cntpage'];
-		if ($this->_pn < 1)
-			$this->_pn = 1;
-		$DATA['_pn'] = $this->_pn;
-
-		foreach ($this->_CFG['enum']['_MOP'] as $k => $r)
-			$DATA['mop'][$k] = array('value' => $r, 'sel' => 0);
-		$DATA['mop'][$this->messages_on_page]['sel'] = 1;
-
-		$flag = false;
-		if ($countfield) {
-			if ($this->reversePageN and $countfield >= ($this->messages_on_page * 2))
-				$flag = true;
-			elseif (!$this->reversePageN and $countfield > $this->messages_on_page)
-				$flag = true;
-		}
-
-		if ($flag) {
-			//$PP[0] - страница не выбрана
-			//$PP[1] - первая часть 
-			//$PP[2] - вторая часть
-			if (!isset($param['firstpath']) or !$param['firstpath'])
-				$param['firstpath'] = $_SERVER['REQUEST_URI'];
-			$PP = array(0 => $param['firstpath'], 1 => $param['firstpath'], 2 => '');
-			if (isset($param['_clp'])) {
-				if (count($param['_clp'])) {
-					$temp = $param['_clp'];
-					unset($temp[$this->_pa]);
-					$PP[0] .= http_build_query($temp) . '&';
-					$PP[1] = $PP[0];
-				}
-				$PP[1] .= $this->_pa . '=';
-			} 
-			else 
-			{
-				$pregreplPage = '/(.*)_p[0-9]+(.*)/';
-				if (!preg_match($pregreplPage, $param['firstpath'], $matches))
-				 {
-					$temp = explode('.html', $param['firstpath']);
-					$PP[1] = $temp[0] . '_p';
-					$PP[2] = '.html' . $temp[1];
-				} else 
-				{
-					$PP[0] = $matches[1] . $matches[2];
-					$PP[1] = $matches[1] . '_p';
-					$PP[2] = $matches[2];
-				}
-			}
-
-			$DATA['PP'] = $PP;
-
-			if ($this->reversePageN) {// обратная нумирация
-				/* Собираем массив ссылок */
-				$DATA['link'][$DATA['cntpage']] = $PP[0];
-				if (($this->_pn + $numlist) < $DATA['cntpage'] - 1) {
-					$j = $this->_pn + $numlist;
-				} else
-					$j = $DATA['cntpage'] - 1;
-				$vl = $this->_pn - $numlist;
-				if ($vl < 2)
-					$vl = 2;
-				for ($i = $j; $i >= $vl; $i--) {
-					$DATA['link'][$i] = $PP[1] . $i . $PP[2];
-				}
-				$DATA['link'][1] = $PP[1] . '1' . $PP[2];
-			} else {
-				$DATA['link'][1] = $PP[0];
-
-				if (($this->_pn - $numlist) > 3) {
-					$j = $this->_pn - $numlist;
-					$DATA['link'][' ...'] = false;
-				} else {
-					$j = 2;
-				}
-
-				$vl = $this->_pn + $numlist;
-				if ($vl >= ($DATA['cntpage'] - 2))
-					$vl = $DATA['cntpage'] - 1;
-				for ($i = $j; $i <= $vl; $i++) {
-					$DATA['link'][$i] = $PP[1] . $i . $PP[2];
-				}
-				if ($vl < $DATA['cntpage'] - 1)
-					$DATA['link']['... '] = false;
-				$DATA['link'][$DATA['cntpage']] = $PP[1] . $DATA['cntpage'] . $PP[2];
-
-				/* $DATA['link'][1] = $PP[0];
-				  for ($i = 2; $i <= $DATA['cntpage']; $i++) {
-				  $DATA['link'][$i] = $PP[1].$i.$PP[2];
-				  } */
-			}
-			//////////////////
-		}
-
-		$DATA['start'] = 0;
-		if ($this->reversePageN) {
-			if ($this->_pn == floor($countfield / $this->messages_on_page)) {
-				$this->messages_on_page = $countfield - $this->messages_on_page * ($this->_pn - 1); // правдивый
-				//$this->messages_on_page = $this->messages_on_page*$this->_pn-$countfield; // полная запись
-			}
-			else
-				$DATA['start'] = $countfield - $this->messages_on_page * $this->_pn; // начало отсчета
-		}
-		else
-			$DATA['start'] = $this->messages_on_page * ($this->_pn - 1); // начало отсчета
-		if ($DATA['start'] < 0)
-			$DATA['start'] = 0;
-		return $DATA;
+		return static_main::fPageNav2($this, $countfield, $param);
 	}
 
 	/**
@@ -2226,59 +2024,42 @@ abstract class kernel_extends {
 		return '';
 	}
 
-	// путь к фаилам
-	public function getPathForAtt($key) {
-		if (isset($this->attaches[$key]['path']) and $this->attaches[$key]['path'])
-			$pathimg = $this->attaches[$key]['path'];
-		else
-			$pathimg = $this->_CFG['PATH']['content'] . $key;
-		return $pathimg;
-	}
-
-	// путь к фаилам MEMO данных
-	public function getPathForMemo($key) {
-		if (isset($this->memos[$key]['path']) and $this->memos[$key]['path'])
-			$pathimg = $this->memos[$key]['path'];
-		else
-			$pathimg = $this->_CFG['PATH']['content'] . $key;
-		return $pathimg;
-	}
-
 	/**
 	 * AJAX add data function
 	 * TODO : вынести в отдельный "модуль-контролер"
 	 */
 	public function AjaxAdd() {
-		global $_tpl;
-		$RESULT = array('html' => '', 'html2' => '', 'text' => '', 'onload' => '');
-		$DATA = array();
-		//$htmlb = '';
+		exit('AjaxAdd is DEPRICATED');
+		// global $_tpl;
+		// $RESULT = array('html' => '', 'html2' => '', 'text' => '', 'onload' => '');
+		// $DATA = array();
+		// //$htmlb = '';
 
-		if (count($_POST))
-			$_POST['sbmt'] = 1;
-		list($DATA['formcreat'], $flag) = $this->_UpdItemModul(array('ajax' => 1, 'errMess' => 1));
-		$RESULT['html'] = transformPHP($DATA, 'formcreat');
+		// if (count($_POST))
+		// 	$_POST['sbmt'] = 1;
+		// list($DATA['formcreat'], $flag) = $this->_UpdItemModul(array('ajax' => 1, 'errMess' => 1));
+		// $RESULT['html'] = transformPHP($DATA, 'formcreat');
 
-		if ($flag == 1) {
-			$RESULT['onload'] .= 'clearTimeout(timerid2);fShowload (1,result.html2,0,0,\'location.href = location.href;\');';
+		// if ($flag == 1) {
+		// 	$RESULT['onload'] .= 'clearTimeout(timerid2);fShowload (1,result.html2,0,0,\'location.href = location.href;\');';
 
-			$RESULT['html2'] = '<div class="blockhead ok">' . static_main::m('add', $this) . '</div><div class="hrb">&nbsp;</div>
-			<div class="divform"><div class="messages" style="text-align:justify;">
-			</div></div>';
-			$RESULT['html'] = '';
-		} elseif ($flag == -1) {
-			//$RESULT['onload'] = 'GetId("messages").innerHTML=result.html2;'.$RESULT['onload'];
-			$RESULT['onload'] = 'jQuery(\'.caption_error\').remove();' . $RESULT['onload'] . 'clearTimeout(timerid2);fShowload(1,result.html2);';
-			$RESULT['html2'] = "<div class='blockhead'>Внимание. Некоректно заполнены поля.</div><div class='hrb'>&#160;</div>" . $RESULT['html'];
-			$RESULT['html'] = '';
-		} else {
-			$RESULT['onload'] .= 'clearTimeout(timerid2);fShowload(1,result.html2);';
-			$RESULT['html2'] = $RESULT['html'];
-			$RESULT['html'] = '';
-		}
-		if (!isset($_SESSION['user']['id']))
-			$RESULT['onload'] .= 'reloadCaptcha(\'captcha\');jQuery(\'input.secret\').attr(\'value\',\'\');';
-		$RESULT['onload'] .= $_tpl['onload'];
+		// 	$RESULT['html2'] = '<div class="blockhead ok">' . static_main::m('add', $this) . '</div><div class="hrb">&nbsp;</div>
+		// 	<div class="divform"><div class="messages" style="text-align:justify;">
+		// 	</div></div>';
+		// 	$RESULT['html'] = '';
+		// } elseif ($flag == -1) {
+		// 	//$RESULT['onload'] = 'GetId("messages").innerHTML=result.html2;'.$RESULT['onload'];
+		// 	$RESULT['onload'] = 'jQuery(\'.caption_error\').remove();' . $RESULT['onload'] . 'clearTimeout(timerid2);fShowload(1,result.html2);';
+		// 	$RESULT['html2'] = "<div class='blockhead'>Внимание. Некоректно заполнены поля.</div><div class='hrb'>&#160;</div>" . $RESULT['html'];
+		// 	$RESULT['html'] = '';
+		// } else {
+		// 	$RESULT['onload'] .= 'clearTimeout(timerid2);fShowload(1,result.html2);';
+		// 	$RESULT['html2'] = $RESULT['html'];
+		// 	$RESULT['html'] = '';
+		// }
+		// if (!isset($_SESSION['user']['id']))
+		// 	$RESULT['onload'] .= 'reloadCaptcha(\'captcha\');jQuery(\'input.secret\').attr(\'value\',\'\');';
+		// $RESULT['onload'] .= $_tpl['onload'];
 
 		return $RESULT;
 	}

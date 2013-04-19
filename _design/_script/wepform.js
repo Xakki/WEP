@@ -8,7 +8,6 @@ wep.form = {
 	{
 		var jform = $(selector);
 
-		
 
 		if(jform.data('initform')) // если уже фрма была ранее инициализирована
 		{
@@ -353,6 +352,7 @@ function textareaChange(obj,max) {
 
 function reloadCaptcha(id, noclear)
 {
+	console.error('reloadCaptcha', id, noclear);
 	if(!jQuery('#'+id).size()) return false;
 	jQuery('#'+id).attr('src',"/_captcha.php?"+ toInt(Math.random()*100));
 	if(!noclear)
@@ -615,8 +615,7 @@ function input_file(obj) {
 
 function clearErrorForm(formSelector) 
 {
-	reloadCaptcha('captcha');
-
+	//reloadCaptcha('captcha');
 	jQuery(formSelector).find('.div-tr.error').removeClass('error').find('.caption_error').remove();
 }
 

@@ -73,29 +73,35 @@
 
 			if(isset($data['flag']))
 			{
-				$_tpl['formFlag'] = $data['flag'];
 				if($data['flag']==1) {
-					//$_tpl['onload'] .= '$("#'.$attr['name'].'").trigger(\'success\');';
 				}
 				elseif($data['flag']==-1) {
-					//$_tpl['onload'] = 'GetId("messages").innerHTML=result.html;'.$_tpl['onload'];
-					$_tpl['onload'] = 'clearErrorForm("#'.$attr['name'].'"); $("#'.$attr['name'].'").trigger(\'error\'); '.$_tpl['onload'];
-					//$texthtml = "<div class='blockhead'>Внимание. Некоректно заполнены поля.</div><div class='hrb'>&#160;</div>".$texthtml;
 				}
 				else
 				{
 					plugAjaxForm();
 					$_tpl['onload'] .= 'if(typeof(formParam)=="undefined") formParam = {}; wep.form.initForm(\'#'.$attr['name'].'\', formParam);';
-					//$_tpl['onload'] .= 'wep.form.JSFR("form");';
 				}
-				/*if(!isset($_SESSION['user']['id']))
-					$_tpl['onload'] .= 'reloadCaptcha(\'captcha\');';*/
 			}
 			else
 			{
 				setScript('wepform');
 			}
 		
+		}
+		else
+		{
+			if(!isset($_SESSION['user']['id']))
+				$_tpl['onload'] .= 'reloadCaptcha(\'captcha\');';
+		}
+		
+		if(isset($data['flag']) and isset($data['options']))
+		{
+			$_tpl['formFlag'] = $data['flag'];
+			if($data['flag']==-1) {
+				$_tpl['onload'] = '$("#'.$data['options']['name'].'").trigger(\'error\'); '.$_tpl['onload'];
+			}
+			$_tpl['onload'] = 'clearErrorForm("#'.$data['options']['name'].'"); '.$_tpl['onload'];
 		}
 
 		$texthtml .= '</div>';

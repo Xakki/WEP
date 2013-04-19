@@ -37,7 +37,8 @@ function tpl_statusForm($data)
 
 	}
 
-	if(isset($data['confirmCancel']) and $data['confirmFlag']<1)
+	// TODO  - азобраться со статусом, хотяб константы запилить надо
+	if(isset($data['confirmCancel']) and $data['confirmFlag']<1 and $pd['status']<2)
 	{
 		$data['messages'][] = array('confirmCancel'.($data['confirmFlag']<0?' mustShowBlock':''), '<a class="ajaxlink" onclick="$(\'.confirmCancel .divform\').toggle();return false;">Отменить счет</a>
 		'.transformPHP($data['confirmCancel'], '#pg#formcreat'));

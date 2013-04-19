@@ -398,8 +398,6 @@ window.wep = {
 	*/
 	ajaxSuccess: function(result, param) 
 	{
-		console.error(' *ajaxSuccess* ', result, param);
-
 		if(result.redirect) 
 		{
 			window.location.href = result.redirect;
@@ -622,7 +620,6 @@ window.wep = {
 	{
 		if(param['onclk'])
 		{
-			console.log('setEventClosePopUp', param);
 			jQuery(param['insertobj']).off('click.close').on('click.close', '.CloseTarget', function(e){
 				wep.closePopUp(param);
 				return false;
@@ -936,9 +933,6 @@ window.wep = {
 	scriptLoad: function(script) {
 		var thisObj = this;
 		--wep._loadCount;
-
-		console.log('script', script);
-
 		if(typeof script == 'object') 
 		{
 			for(var i in script) 

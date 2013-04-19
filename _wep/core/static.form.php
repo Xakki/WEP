@@ -999,6 +999,7 @@ class static_form {
 		if(count($arr_err_name)>0 and !isset($param['errMess'])) {
 			$mess[] = static_main::am('error','Поля формы заполнены не верно.');
 		}
+		
 		/*$_tpl['onload'] .'CKEDITOR.replace( \'editor1\',
 						 {
 							  toolbar : \'basic\',
@@ -1538,6 +1539,7 @@ class static_form {
 		} 
 		else // если нет даже openssl значит и так сойдёт!
 			$crypttext = $word;
+
 		// Запись в куки зашифрованного кода
 		_setcookie('chash', $crypttext, (time() + 9999999)); // У некоторых косяк из-за разных часовых поясов
 		// Где хранится хэшкод (фаил доступен только на сервере)

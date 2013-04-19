@@ -24,7 +24,7 @@ class static_control {
 			$param['ajax'] = 1;
 			$param['errMess'] = 1;
 		}
-		$flag=0;// 1 - успешно, 0 - норм, -1  - ошибка
+		$flag = 0;// 1 - успешно, 0 - норм, -1  - ошибка
 		$formflag = 1;// 0 - показывает форму, 1 - не показывать форму
 		$arr = array('mess'=>array(),'vars'=>array());
 		$mess = array();
@@ -158,13 +158,25 @@ class static_control {
 
 		if($formflag) // показывать форму
 			$formflag = $_this->kFields2Form($param,$argForm);
+
+		$options = $_this->getFormOptions();
+
+		// КАСТЫЛЬ
+		// чтоб при автосабмите сразу не выдавал сообщения об ошибках
+		if($submitFlag===2 and !count($arr['mess']))
+		{
+			$flag = 0;
+			global $_tpl;
+			$_tpl['onload'] .= ' clearErrorForm("#'.$options['name'].'");/*КАСТЫЛЬ static_control:165*/ ';
+		}
+
 		return Array(
 			Array(
 				'messages'=>array_merge($mess,$arr['mess']),
 				'form'=>($formflag?$argForm:array()),
 				'formSort'=> $_this->formSort,
 				'flag' => $flag,
-				'options' => $_this->getFormOptions()
+				'options' => $options
 			), $flag);
 	}
 
