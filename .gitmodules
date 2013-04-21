@@ -3,7 +3,7 @@
 	url = https://github.com/Xakki/jqplot.git
 [submodule "_vendors/ckeditor"]
 	path = _vendors/ckeditor
-	url = git@github.com:Xakki/wep-ckeditor.git
+	url = https://github.com/Xakki/wep-ckeditor.git
 [submodule "_vendors/ckfinder"]
 	path = _vendors/ckfinder
 	url = https://github.com/Xakki/wep-ckfinder.git
@@ -28,6 +28,3 @@
 [submodule "_vendors/twitteroauth"]
 	path = _vendors/twitteroauth
 	url = https://github.com/abraham/twitteroauth.git
-[submodule "ckfinder"]
-	path = ckfinder
-	url = https://github.com/Xakki/wep-ckfinder.git
