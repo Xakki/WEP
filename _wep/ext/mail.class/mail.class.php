@@ -203,7 +203,7 @@ class mail_class extends kernel_extends {
 		}
 		else {
 			if(!$data['from'])
-				$data['from'] = 'anonim@'.$_SERVER['HTTP_HOST'];
+				$data['from'] = 'robot@'.$_SERVER['HTTP_HOST'];
 			if(!$this->config['mailcron']) {
 				if(method_exists($this, 'mailengine'.$this->config['mailengine'])) {
 					$send_result = call_user_func(array($this, 'mailengine'.$this->config['mailengine']),$data);
