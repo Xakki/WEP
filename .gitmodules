@@ -1,3 +1,12 @@
+[submodule "_vendors/jqplot"]
+	path = _vendors/jqplot
+	url = https://github.com/Xakki/jqplot.git
+[submodule "_vendors/ckeditor"]
+	path = _vendors/ckeditor
+	url = https://github.com/Xakki/wep-ckeditor.git
+[submodule "_vendors/ckfinder"]
+	path = _vendors/ckfinder
+	url = https://github.com/Xakki/wep-ckfinder.git
 [submodule "_vendors/PHP-Yandex.Money-API-SDK"]
 	path = _vendors/PHP-Yandex.Money-API-SDK
 	url = https://github.com/melnikovdv/PHP-Yandex.Money-API-SDK.git
@@ -16,15 +25,6 @@
 [submodule "_vendors/jQuery-File-Upload"]
 	path = _vendors/jQuery-File-Upload
 	url = https://github.com/blueimp/jQuery-File-Upload.git
-[submodule "_vendors/jqplot"]
-	path = _vendors/jqplot
-	url = https://github.com/Xakki/jqplot.git
-[submodule "_vendors/ckeditor-dev"]
-	path = _vendors/ckeditor-dev
-	url = git@github.com:Xakki/ckeditor-dev.git
 [submodule "_vendors/twitteroauth"]
 	path = _vendors/twitteroauth
 	url = https://github.com/abraham/twitteroauth.git
-[submodule "_vendors/kcfinder-wep"]
-	path = _vendors/kcfinder-wep
-	url = git://github.com/Xakki/kcfinder-wep.git

@@ -46,8 +46,9 @@ class formlist_class extends kernel_extends {
 					$enumlist[$row['id']] = array('#id#'=>$row['id'],'#name#'=>$row['name'],'#checked#'=>$row['checked']);
 				}
 			}
+			$key = substr($_GET['tname'],0,-2).'_'.$_GET['tval'];
 			$DATA['form'] = array(
-				substr($_GET['tname'],0,-2).'_'.$_GET['tval'] => array(
+				$key => array(
 					'caption'=>$_GET['tcap'],
 					'type'=>'checkbox',
 					'multiple'=>1,
@@ -56,7 +57,6 @@ class formlist_class extends kernel_extends {
 					'valuelist'=>$enumlist,
 				)
 			);
-			//$_tpl['onload'] .= 'mCBoxVis(\''.$rr.'_'.$rrr.'\');';
 			$_tpl['text'] = transformPHP($DATA,'#pg#filter');
 
 		return true;

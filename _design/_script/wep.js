@@ -429,16 +429,19 @@ window.wep = {
 		}
 
 		//функц. предзапуска 
-		if(typeof param['precall'] != 'undefined') 
-		{
-			if(typeof param['precall'] == 'function')
-				param['precall'].call(this, result, param);
-			else if(typeof param['precall'] == 'string')
-				eval(param['precall']+'(result, param);');
-		}
+		// if(typeof param['precall'] != 'undefined') 
+		// {
+		// 	if(typeof param['precall'] == 'function')
+		// 		param['precall'].call(this, result, param);
+		// 	else if(typeof param['precall'] == 'string')
+		// 		eval(param['precall']+'(result, param);');
+		// }
+		wep.helperCallBackFunction(param['precall'], result, param);
 
 		// Show content
 		wep.fShowloadContent(result, param);
+
+		wep.helperCallBackFunction(param['aftercall'], result, param);
 
 		// Вывод ошибок и прочего текста
 		if(typeof (result.logs) != 'undefined' && result.logs!='') 
@@ -472,13 +475,14 @@ window.wep = {
 		jQuery(formParam['insertobj']).trigger('execLoadFunction', [result, formParam]);
 
 		//Запуск функции пользователя
-		if(typeof formParam['call'] != 'undefined') 
-		{
-			if(typeof formParam['call'] == 'function')
-				formParam['call'].call(this, result, formParam);
-			else if(typeof formParam['call'] == 'string')
-				eval(formParam['call']+'(result, formParam);');
-		}
+		// if(typeof formParam['call'] != 'undefined') 
+		// {
+		// 	if(typeof formParam['call'] == 'function')
+		// 		formParam['call'].call(this, result, formParam);
+		// 	else if(typeof formParam['call'] == 'string')
+		// 		eval(formParam['call']+'(result, formParam);');
+		// }
+		wep.helperCallBackFunction(formParam['call'], result, formParam);
 		
 		 // запуск onload функции
 		if(typeof result.onload != 'undefined')  {
@@ -492,6 +496,18 @@ window.wep = {
 		wep.loadAnimationOffAjax(formParam);
 
 		jQuery(formParam['insertobj']).trigger('theend', [result, formParam]);
+	},
+
+	helperCallBackFunction: function(call, result, param)
+	{
+		//функц. предзапуска 
+		if(typeof call != 'undefined') 
+		{
+			if(typeof call == 'function')
+				call.call(this, result, param);
+			else if(typeof call == 'string')
+				eval(call+'(result, param);');
+		}
 	},
 
 	/**
