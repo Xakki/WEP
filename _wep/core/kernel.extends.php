@@ -2129,3 +2129,11 @@ class modul_child extends ArrayObject {
 
 }
 
+class wepForm extends kernel_extends 
+{
+	protected function _set_features() {
+		parent::_set_features();
+		$this->singleton = false;
+		$this->tablename = false;
+	}
+}

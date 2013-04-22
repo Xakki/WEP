@@ -48,7 +48,7 @@
 				$argForm[$r] = $MODUL->fields_form[$r];
 		}
 
-		list($DATA['#pg#formcreat'],$this->formFlag) = $MODUL->_UpdItemModul(array('showform'=>1), $argForm);
+		list($DATA,$this->formFlag) = $MODUL->_UpdItemModul(array('showform'=>1), $argForm);
 
 		$html = transformPHP($DATA,'#pg#formcreat');
 	}

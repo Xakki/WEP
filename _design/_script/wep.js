@@ -678,7 +678,8 @@ window.wep = {
 			t = 'IE';
 			var nv = navigator.appVersion;
 			var s = nv.indexOf('MSIE')+5;
-			v = nv.substring(s,s+1);
+			v = nv.substring(s,s+2);
+			v = wep.trim(v, ';.');
 		}
 		else if (navigator.appName) t = 'Netscape';
 		return {type:t,version:v};
@@ -1154,7 +1155,7 @@ window.wep = {
 				yaxis:{label:settings.yName, min:0, tickOptions:{formatString:'%d'} , useSeriesColor:true}
 			},
 			cursor:{showTooltip: false, zoom: true, constrainZoomTo: 'x'},
-			series:[{lineWidth:2}],
+			series:[{lineWidth:2}]
 		});
 
       

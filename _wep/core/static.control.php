@@ -30,11 +30,7 @@ class static_control {
 		$mess = array();
 
 		// Флаг - запускает процесс сохранения или добавления записи
-		$submitFlag = 0;
-		if(count($_POST) and (isset($_POST['sbmt']) or isset($_POST['sbmt_save'])))
-			$submitFlag = $param['setAutoSubmit'] = 1;
-		elseif(isset($param['setAutoSubmit']) and $param['setAutoSubmit'])
-			$submitFlag = $param['setAutoSubmit'] = 2;
+		$submitFlag = static_form::isSubmited($param);
 
 		if(!empty($_this->id) and $_this->id) { //EDIT
 			$flag=-1;
@@ -170,8 +166,8 @@ class static_control {
 			$_tpl['onload'] .= ' clearErrorForm("#'.$options['name'].'");/*КАСТЫЛЬ static_control:165*/ ';
 		}
 
-		return Array(
-			Array(
+		return array(
+			array(
 				'messages'=>array_merge($mess,$arr['mess']),
 				'form'=>($formflag?$argForm:array()),
 				'formSort'=> $_this->formSort,

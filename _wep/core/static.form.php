@@ -1,6 +1,17 @@
 <?php
 
 class static_form {
+
+	static function isSubmited($param)
+	{
+		// Флаг - запускает процесс сохранения или добавления записи
+		$submitFlag = 0;
+		if(count($_POST) and (isset($_POST['sbmt']) or isset($_POST['sbmt_save'])))
+			$submitFlag = $param['setAutoSubmit'] = 1;
+		elseif(isset($param['setAutoSubmit']) and $param['setAutoSubmit'])
+			$submitFlag = $param['setAutoSubmit'] = 2;
+		return $submitFlag;
+	}
 /*------------- ADD ADD ADD ADD ADD ------------------*/
 
 	// in:  id			opt

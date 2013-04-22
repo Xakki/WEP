@@ -129,11 +129,27 @@ wep.form = {
 					//console.error('**beforeSubmit', param, o);
 				},
 
-				error: function(d,statusText) 
+				error: function(XMLHttpRequest,statusText) 
 				{
-					console.error('!!!!!!!!!!!!!!!', d,statusText);
-					alert(statusText+' - form notsuccess (may be wrong json data, see console log)');
-					console.log(d);console.log(d.responseText);
+					if(XMLHttpRequest.responseText)
+					{
+						var result = {};
+						if(XMLHttpRequest.responseText.substr(0, 1)=='{')
+							result = JSON.parse(XMLHttpRequest.responseText);
+						else
+						{
+							result['text'] = XMLHttpRequest.responseText;
+						}
+						if(result['text'])
+						{
+							// this.success(response, textStatus, XMLHttpRequest);
+							this.success(result);
+							return true;
+						}
+					}
+					console.error('!!!!!!!!!!!!!!!', XMLHttpRequest,statusText);
+					alert(statusText+' - Произошла ошибка при получении данныйх от сервера. Обратитесь в службу поддержки саита.');
+					console.log(XMLHttpRequest);console.log(XMLHttpRequest.responseText);
 				},
 
 				success: function(result)
@@ -216,7 +232,7 @@ wep.form = {
 				revert: true,// плавное втыкание
 				//placeholder:'sortHelper',
 				handle: '.ilistsort',
-				tolerance: 'pointer',
+				tolerance: 'pointer'
 				/*start: function(event, ui) {
 					//console.log(ui.helper);
 				},*/
