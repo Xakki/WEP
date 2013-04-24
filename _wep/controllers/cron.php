@@ -31,7 +31,7 @@
 			$tt  = getmicrotime();
 			//'time' => '600', 'file' => '_wepconf/ext/exportboard.class/exportboard.cron.php', 'modul' => '', 'function' => ''
 			if(isset($r_cron['file']) and $r_cron['file']) {
-				$r_cron['file'] = $_CFG['_PATH']['path'].$r_cron['file'];
+				$r_cron['file'] = SITE.$r_cron['file'];
 				if(file_exists($r_cron['file'])) {
 					$result = include($r_cron['file']);
 				}else

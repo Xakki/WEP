@@ -105,6 +105,7 @@ a {
 
 .PopUp .PopUpContent .layerblock{
 	padding:10px;
+	white-space: normal;
 }
 /*CLOSE LAYER*/
 .PopUp .PopUpContent .blockclose {

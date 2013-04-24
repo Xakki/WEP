@@ -398,6 +398,7 @@ window.wep = {
 	*/
 	ajaxSuccess: function(result, param) 
 	{
+		console.log('ajaxSuccess !!!! ', [result, param]);
 		if(result.redirect) 
 		{
 			window.location.href = result.redirect;
@@ -459,13 +460,15 @@ window.wep = {
 
 	timerExecLoadFunction: function (result, param) 
 	{
-		if(wep._loadCount!=0){
-			setTimeout(function(){wep.timerExecLoadFunction(result, param);},500);
+		if(wep._loadCount!=0)
+		{
 			console.log('--in process--'+wep._loadCount);
+			setTimeout(function(){wep.timerExecLoadFunction(result, param);},500);
 		}
-		else {
-			wep.execLoadFunction(result, param);
+		else 
+		{
 			console.log('--READY--'+wep._loadCount);
+			wep.execLoadFunction(result, param);
 		}
 	},
 
@@ -961,8 +964,7 @@ window.wep = {
 				{
 					if(wep.isUrl(script[i]))
 					{
-						--wep._loadCount; 
-						wep.include(script[i], function(){++thisObj._loadCount;});
+						wep.includeHelper(i);
 					}
 					else
 					{
@@ -977,13 +979,11 @@ window.wep = {
 					
 					if(typeof script[i] == 'object')
 					{
-						--wep._loadCount; 
-						wep.include(i, function(){ thisObj.scriptLoad(script[i]); ++thisObj._loadCount; });
+						wep.includeHelper(i, script[i]);
 					}
 					else
 					{
-						--wep._loadCount; 
-						wep.include(i, function(){++thisObj._loadCount;});
+						wep.includeHelper(i);
 					}
 				}
 
@@ -993,6 +993,17 @@ window.wep = {
 			globalEval(script);
 		}
 		++wep._loadCount;
+	},
+	// Обертка для запуска функции include
+	includeHelper: function(src, subsrc)
+	{
+		var thisObj = this;
+		--wep._loadCount;
+		wep.include(src, function(){ 
+			if(subsrc) 
+				thisObj.scriptLoad(subsrc); 
+			++thisObj._loadCount; 
+		});
 	},
 
 	isUrl: function(str)
@@ -1007,6 +1018,7 @@ window.wep = {
 	},
 	
 	includejslist: {},
+
     // загружаем скрипт
     include: function(scripts, onComplete) 
     {

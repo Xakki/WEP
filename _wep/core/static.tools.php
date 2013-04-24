@@ -732,7 +732,7 @@ class static_tools {
 		if (count($mess))
 			return array($fl, $mess);
 
-		return self::saveCFG($SetDataCFG, $_CFG['_FILE']['config'], $DEF_CFG);
+		return self::saveCFG($SetDataCFG, WEP_CONFIG, $DEF_CFG);
 	}
 
 	static function saveCFG($SetDataCFG, $file, $DEF_CFG = array()) {

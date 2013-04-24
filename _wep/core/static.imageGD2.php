@@ -17,11 +17,11 @@ class static_imageGD2 {
 		if(!$logoFile)
 			$logoFile = $_CFG['_imgwater'];
 
-		if(!$imtypeIn = self::_is_image($InFile))// опред тип файла
+		if(!$imtypeIn = self::_get_type($InFile))// опред тип файла
 			return static_main::log('error','File '.$InFile.' is not image');
 		if($imtypeIn>3) return false;
 
-		if(!$imtypeLogo = self::_is_image($logoFile))// опред тип файла
+		if(!$imtypeLogo = self::_get_type($logoFile))// опред тип файла
 			return static_main::log('error','File '.$logoFile.' is not image');
 		if($imtypeLogo>3) return false;
 
@@ -29,16 +29,27 @@ class static_imageGD2 {
 		$foto_hw = getimagesize($InFile);
 
 		$znak = self::_imagecreatefrom($logoFile,$imtypeLogo);
-		$foto = self::_imagecreatefrom($InFile,$imtypeIn);
+		if(!$znak)
+   		{
+   	  		return static_main::log('error',"Unable to open image file");
+   		}
 
-		imagecopy ($foto,
-		$znak,
-		$foto_hw[0] - $znak_hw[0],
-		$foto_hw[1] - $znak_hw[1],
-		0,
-		0,
-		$znak_hw[0],
-		$znak_hw[1]);
+		$foto = self::_imagecreatefrom($InFile,$imtypeIn);
+		if(!$foto)
+   		{
+   	  		return static_main::log('error',"Unable to open image file");
+   		}
+
+		imagecopy(
+			$foto,
+			$znak,
+			$foto_hw[0] - $znak_hw[0],
+			$foto_hw[1] - $znak_hw[1],
+			0,
+			0,
+			$znak_hw[0],
+			$znak_hw[1]
+		);
 		if(file_exists($OutFile)) {
 			_chmod($OutFile);
 			unlink($OutFile);
@@ -83,14 +94,21 @@ class static_imageGD2 {
 		}
 
 		$thumb = imagecreatetruecolor($WidthX, $HeightY);//созд пустой рисунок
-		if(!$imtype = self::_is_image($InFile))// опред тип файла
+		if(!$imtype = self::_get_type($InFile))// опред тип файла
 			return static_main::log('error','File '.$InFile.' is not image');
+
 		if($imtype>3) {
 			static_main::log('alert','Данный тип изображения не поддерживается на данный момент, рекомендуем использовать JPEG, PNG или GIF');
 			copy($InFile, $OutFile);
 			return true;
 		}
+
 		$source = self::_imagecreatefrom($InFile,$imtype);//открываем рисунок
+		if(!$source)
+   		{
+   	  		return static_main::log('error',"Unable to open image file");
+   		}
+
 		imagecopyresized($thumb, $source, 0, 0, 0, 0, $WidthX, $HeightY, $width_orig, $height_orig);//меняем размер
 		self::_image_to_file($thumb, $OutFile,$_CFG['_imgquality'],$imtype);//сохраняем в файл
 		if(!file_exists($OutFile)) return static_main::log('error','Cant create file');
@@ -114,7 +132,7 @@ class static_imageGD2 {
 
 		// Resample
 		$thumb = imagecreatetruecolor($WidthX, $HeightY);//созд пустой рисунок
-		if(!$imtype = self::_is_image($InFile)) // опред тип файла
+		if(!$imtype = self::_get_type($InFile)) // опред тип файла
 			return static_main::log('error','File is not image');
 		if($imtype>3) {
 			static_main::log('alert','Данный тип изображения не поддерживается на данный момент, рекомендуем использовать JPEG, PNG или GIF');
@@ -122,6 +140,11 @@ class static_imageGD2 {
 			return true;
 		}
 		$source = self::_imagecreatefrom($InFile,$imtype);//открываем рисунок
+		if(!$source)
+   		{
+   	  		return static_main::log('error',"Unable to open image file");
+   		}
+
 		imagecopyresampled($thumb, $source, 0, 0, $width_orig/2-$WidthX/2, $height_orig/2-$HeightY/2, $WidthX, $HeightY, $WidthX, $HeightY);
 		self::_image_to_file($thumb, $OutFile,$_CFG['_imgquality'],$imtype);//сохраняем в файл
 		if(!file_exists($OutFile)) return static_main::log('error','Cant create img file ');
@@ -154,7 +177,7 @@ class static_imageGD2 {
 		if(!($thumb = @imagecreatetruecolor($WidthX, $HeightY)))
 			return static_main::log('error','Cannot Initialize new GD image stream');
 		/*Определяем тип рисунка*/
-		if(!$imtype = self::_is_image($InFile))// опред тип файла
+		if(!$imtype = self::_get_type($InFile))// опред тип файла
 			return static_main::log('error','File is not image');
 		/*Обработка только jpeg, gif, png*/
 		if($imtype>3) {
@@ -176,8 +199,12 @@ class static_imageGD2 {
 		return true;
 	}
 
-	static function _imagecreatefrom($im_file,$imtype)
+	static function _imagecreatefrom($im_file,$imtype=null)
 	{
+		if(is_null($imtype)) 
+		{
+			$imtype = self::_get_type($im_file);
+		}
 		/*
 Возвращаемое значение	Константа
 1	IMAGETYPE_GIF
@@ -223,11 +250,19 @@ class static_imageGD2 {
 		return true;
 	}
 
-	static function _is_image($file) {
+	static function _is_image($file) 
+	{
+		$res = exif_imagetype($file);
+		return ($res>0 && $res<4);
+	}
+
+	static function _get_type($file) 
+	{
 		return exif_imagetype($file);
 	}
 
-	static function _get_ext($file) {
+	static function _get_ext($file) 
+	{
 		return image_type_to_extension($file);
 	}
 }

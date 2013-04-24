@@ -1141,6 +1141,7 @@ class static_form {
 				}else
 					unset($data[$key]);
 			}
+			// Форма подтверждения пароля
 			elseif(isset($form['mask']['password']) and $form['mask']['password']=='confirm')
 			{
 				if(isset($_this->data[$_this->id][$key]) and $data[$key]) {
@@ -1149,6 +1150,7 @@ class static_form {
 					unset($data[$key]);
 				}
 			} 
+			// форма смены пароля
 			elseif(isset($form['mask']['password']) and $form['mask']['password']=='change')
 			{
 				if(isset($_this->data[$_this->id][$key]) and $data[$key] or $data[$key.'_old']) {

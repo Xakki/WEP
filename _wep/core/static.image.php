@@ -13,7 +13,7 @@ class static_image {
 		global $_CFG;
 		if(!$logoFile)
 			$logoFile = $_CFG['_imgwater'];
-		$logoFile = $_CFG['_PATH']['path'].$logoFile;
+		$logoFile = SITE.$logoFile;
 
 		if(!$imtypeIn = self::_is_image($InFile))// опред тип файла
 			return static_main::log('error','File '.$InFile.' is not image');
@@ -179,11 +179,95 @@ class static_image {
 		return $res;
 	}
 
-	static function _is_image($file) {
+	static function _is_image($file) 
+	{
 		return exif_imagetype($file);
 	}
 
-	static function _get_ext($file, $include_dot=false) {
+	static function _get_ext($file, $include_dot=false) 
+	{
 		return image_type_to_extension($file, $include_dot);
+	}
+
+	// get image color in RGB format function 
+	static function getImageColor($imageFile_URL, $numColors = 10, $image_granularity = 5)
+	{
+   		$image_granularity = max(1, abs((int)$image_granularity));
+   		$colors = array();
+   		//find image size
+   		$size = getimagesize($imageFile_URL);
+   		if($size === false)
+   		{
+      		trigger_error("Unable to get image size data", E_USER_ERROR);
+      		return false;
+   		}
+   		// open image
+   		//$img = @imagecreatefromjpeg($imageFile_URL);
+   		$img = static_imageGD2::_imagecreatefrom($imageFile_URL);
+   		if(!$img)
+   		{
+   	  		trigger_error("Unable to open image file", E_USER_ERROR);
+   		   return false;
+   		}
+   		
+   		// fetch color in RGB format
+   		for($x = 0; $x < $size[0]; $x += $image_granularity)
+   		{
+      		for($y = 0; $y < $size[1]; $y += $image_granularity)
+      		{
+         		$thisColor = imagecolorat($img, $x, $y);
+         		$rgb = imagecolorsforindex($img, $thisColor);
+        		$red = round(round(($rgb['red'] / 0x33)) * 0x33);
+         		$green = round(round(($rgb['green'] / 0x33)) * 0x33);
+         		$blue = round(round(($rgb['blue'] / 0x33)) * 0x33);
+         		$thisRGB = sprintf('%02X%02X%02X', $red, $green, $blue);
+         		if(array_key_exists($thisRGB, $colors))
+         		{
+           			 $colors[$thisRGB]++;
+         		}
+         		else
+         		{
+           			 $colors[$thisRGB] = 1;
+         		}
+      		}
+   		}
+   		arsort($colors);
+   		// returns maximum used color of image format like #C0C0C0.
+   		return array_slice(($colors), 0, $numColors,true);
+	}
+
+	/**
+	* RGB-Colorcodes(i.e: 255 0 255) to HEX-Colorcodes (i.e: FF00FF)
+	* example - print_r(rgb2hex(array(10,255,255)));
+	*/
+	static function rgb2hex($rgb)
+	{
+        if(strlen($hex = dechex($rgb)) == 1)
+        {
+            $hex = "0".$hex;
+        }
+	    return $hex;
+	}
+	/**
+	* html(HEX) color to convert in RGB format color like R(255) G(255) B(255)  
+	*/
+	static function getHtml2Rgb($str_color)
+	{
+    	if ($str_color[0] == '#')
+        	$str_color = substr($str_color, 1);
+
+  	  	if (strlen($str_color) == 6)
+        	list($r, $g, $b) = array($str_color[0].$str_color[1],
+                                 $str_color[2].$str_color[3],
+                                 $str_color[4].$str_color[5]);
+    	elseif (strlen($str_color) == 3)
+        	list($r, $g, $b) = array($str_color[0].$str_color[0], $str_color[1].$str_color[1], $str_color[2].$str_color[2]);
+    	else
+        	return false;
+
+    	$r = hexdec($r); $g = hexdec($g); $b = hexdec($b);
+    	$arr_rgb = array($r, $g, $b);
+		// Return colors format liek R(255) G(255) B(255)  
+    	return $arr_rgb;
 	}
 }

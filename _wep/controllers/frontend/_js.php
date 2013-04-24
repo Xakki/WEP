@@ -1,5 +1,5 @@
 <?php
-	if(!$_CFG['_PATH']['wep'] or !$_CFG['_PATH']['path']) die('ERROR');
+	if(!WEP or !SITE) die('ERROR');
 	global $_tpl;
 
 	session_go();

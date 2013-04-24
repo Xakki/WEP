@@ -12,7 +12,7 @@
 		global $_CFG;
 		if(isset($data['data']) and count($data['data'])) {
 
-			$size = @filesize($_CFG['_PATH']['path'].$data['data']['userpic']);
+			$size = @filesize(SITE.$data['data']['userpic']);
 			if(!$data['data']['userpic'] or !$size)
 				$data['data']['userpic'] = getUrlTheme().'_img/avatar/default.gif';
 			else

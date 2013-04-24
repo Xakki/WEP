@@ -1,5 +1,9 @@
 <?php
-	if(!defined('WEP') || !defined('WEP_CONFIG')) die('Not defined WEP && WEP_CONFIG');
+	if(!defined('SITE') || !defined('WEP') || !defined('WEPCONF') || !defined('WEP_CONFIG')) 
+	{
+		die('Not defined constants');
+	}
+
 	require_once(WEP.'config/config.php');
 
 	if(isset($_GET['_php']) and $_GET['_php']=='_captcha') {

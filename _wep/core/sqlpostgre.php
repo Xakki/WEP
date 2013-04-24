@@ -14,7 +14,7 @@
 			$this->_iFlag= false;
 			$this->ready = false;
 			$this->logFile = false;
-			if(isset($_CFG['log']) and (int)$_CFG['log'] and $_CFG['_PATH']['wep']) {
+			if(isset($_CFG['log']) and (int)$_CFG['log'] and WEP) {
 				$this->logFile = array();
 			}
 			if(function_exists('pg_connect'))

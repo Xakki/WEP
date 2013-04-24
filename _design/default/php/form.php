@@ -208,7 +208,13 @@ function tpl_form(&$data, $tabs = array())
 					$ckedit['allowedContent'] = 'true';
 					//unset($ckedit['extraPlugins']);
 
-					$fckscript = 'function cke_'.$k.'() { if(typeof CKEDITOR.instances.id_'.$k.' == \'object\'){CKEDITOR.instances.id_'.$k.'.destroy(true);} editor_'.$k.' = CKEDITOR.replace( \'id_'.$k.'\',{';
+					// if(typeof CKEDITOR.instances.id_'.$k.' == \'object\') 
+					// {
+					// 	CKEDITOR.instances.id_'.$k.'.destroy(true);
+					// } 
+					$fckscript = 'function cke_'.$k.'() { 
+						CKEDITOR.replace( \'id_'.$k.'\',
+							{';
 
 					/**
 					* FILE brauser
@@ -257,7 +263,7 @@ function tpl_form(&$data, $tabs = array())
 
 					$fckscript .= '}';
 					//if(!isset($fields[$k.'_ckedit']['value']) or $fields[$k.'_ckedit']['value']=='' or $fields[$k.'_ckedit']['value']=='1')
-						$_tpl['onload'] .= $fckscript.' cke_'.$k.'();';
+					$_tpl['onload'] .= $fckscript.' cke_'.$k.'();';
 
 				$texthtml .= '<div class="form-value ckedit-value"><textarea id="id_'.$k.'" name="'.$k.'" rows="10" cols="80" '.$attribute.'>'.htmlspecialchars((string)$r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
 			}
@@ -716,19 +722,20 @@ function tpl_form(&$data, $tabs = array())
 				if(isset($r['mask']['password']) and $r['mask']['password']=='re') 
 				{
 					$texthtml .= '<div class="form-value">
-						<span class="labelInput">Введите пароль</span>
-						<input type="password" name="'.$k.'" value="" onkeyup="checkPass("'.$k.'")" class="password" '.$attribute.'/>
-						<span class="labelInput">Повторите ввод пароля</span>
-						<input type="password" name="re_'.$k.'" value="" onkeyup="checkPass("'.$k.'")" class="password" '.$attribute.'/>
+						<input type="password" name="'.$k.'" placeholder="Введите пароль" value="" onkeyup="checkPass("'.$k.'")" class="password" '.$attribute.'/>
+						<input type="password" name="re_'.$k.'" placeholder="Повторите ввод пароля" value="" onkeyup="checkPass("'.$k.'")" class="password" '.$attribute.'/>
 						</div>';
 				}
 				elseif(isset($r['mask']['password']) and $r['mask']['password']=='change') 
 				{
 					$texthtml .= '<div class="form-value">
-						<span class="labelInput">Введите старый пароль</span>
-						<input type="password" name="'.$k.'_old" class="password"/>
-						<span class="labelInput">Введите новый пароль</span>
-						<input type="password" name="'.$k.'" class="password"/>
+						<input type="password" name="'.$k.'_old" placeholder="Введите старый пароль" class="password"/>
+						<input type="password" name="'.$k.'" placeholder="Введите новый пароль" class="password"/>
+						<div class="passnewdesc" onclick="passwordShow(this)">Отобразить/скрыть символы</div></div>';
+				}
+				elseif(isset($r['mask']['password']) and $r['mask']['password']=='confirm') 
+				{
+					$texthtml .= '<div class="form-value"><input type="password" name="'.$k.'" value="" class="password" placeholder="*********" '.$attribute.'/>
 						<div class="passnewdesc" onclick="passwordShow(this)">Отобразить/скрыть символы</div></div>';
 				}
 				else 

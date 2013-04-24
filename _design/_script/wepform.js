@@ -32,16 +32,17 @@ wep.form = {
 		}
 
 		// AC
-		$(selector+' span.labelInput').unbind('click').click(function() {
-			$(this).next().focus();
-		});
-		$(selector+' span.labelInput+input').unbind('focus').focus(function() {
-			$(this).prev().hide();
-		});
-		$(selector+' span.labelInput+input').unbind('focusout').focusout(function() {
-			if(this.value=='')
-				$(this).prev().show();
-		});
+		// !!!!!!!!!! Больше не поддерживаем старые браузеры
+		// $(selector+' span.labelInput').unbind('click').click(function() {
+		// 	$(this).next().focus();
+		// });
+		// $(selector+' span.labelInput+input').unbind('focus').focus(function() {
+		// 	$(this).prev().hide();
+		// });
+		// $(selector+' span.labelInput+input').unbind('focusout').focusout(function() {
+		// 	if(this.value=='')
+		// 		$(this).prev().show();
+		// });
 
 		// Обязательные поля
 		$(selector+' span.form-requere').unbind('click').click(function() {
@@ -398,13 +399,16 @@ function checkPass(name) {
 function passwordShow(obj) {
 	var type1 = 'password';
 	var type2 = 'text';
-	var inp = jQuery(obj).parent().find('input.password');
-	jQuery.each(inp, function(i,val) {
+	jQuery(obj).parent().find('input.password').each(function(i,val) {
+
 		if($(val).attr('type')!='password' ) {
 			type1 = 'text';
 			type2 = 'password';
 		}
-		$(val).after("<input name=\""+$(val).attr('name')+"\" type=\""+type2+"\" value=\""+$(val).attr('value')+"\" class=\"password\"/>");
+		var attr = ' type="'+type2+'" name="'+$(val).attr('name')+'" value="'+$(val).val()+'" class="'+$(val).attr('class')+'"';
+		if($(val).attr('placeholder'))
+			attr += ' placeholder="'+$(val).attr('placeholder')+'"';
+		$(val).after('<input '+attr+'/>');
 		$(val).remove();
 	});
 }

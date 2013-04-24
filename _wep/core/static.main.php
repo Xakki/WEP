@@ -447,7 +447,7 @@ class static_main {
 					$_SESSION['user']['design'] = $_CFG['wep']['design'];
 					$_SESSION['user']['filesize'] = $_CFG['wep']['def_filesize'];
 					$_SESSION['FckEditorUserFilesUrl'] = $_CFG['_HREF']['BH'] . $_CFG['PATH']['userfile'];
-					$_SESSION['FckEditorUserFilesPath'] = $_CFG['_PATH']['path'] . $_CFG['PATH']['userfile'];
+					$_SESSION['FckEditorUserFilesPath'] = SITE . $_CFG['PATH']['userfile'];
 					if (isset($_POST['remember']) and $_POST['remember'] == '1')
 						_setcookie('remember', md5($_CFG['wep']['md5'].$_CFG['wep']['password']) . '_' . $_CFG['wep']['login'], $_CFG['remember_expire']);
 					$result = array(static_main::m('authok'), 1);
@@ -550,7 +550,7 @@ class static_main {
 	static function relativePath($file) {
 		global $_CFG;
 		$file = str_replace(array('\\\\','\\'),'/',$file);
-		$cf = $_CFG['_PATH']['path'];
+		$cf = SITE;
 		$cf = str_replace(array('\\\\','\\'),'/',$cf);
 		$cf2 = $_CFG['_PATH']['_path'];
 		$cf2 = str_replace(array('\\\\','\\'),'/',$cf2);
@@ -980,6 +980,28 @@ class static_main {
 		if(isset($_CFG['vendors'][$name]['unregisterAutoload']) and $_CFG['vendors'][$name]['unregisterAutoload'])
 			return true;
 		return false;
+	}
+
+	/**
+	* Публикация статичных фаилов
+	*/
+	static public function publisher($file, $default = false)
+	{
+		global $_CFG;
+
+		if(strpos($file, $_CFG['_PATH']['content'])===false) 
+		{
+			$publish = $_CFG['_PATH']['temp'].basename($file);
+			if(!copy($file, $publish))
+				return $default;
+		}
+		else
+			$publish = $file;
+
+		if(strpos($publish, $_CFG['_PATH']['content'])!==false)
+			$publish = $_CFG['PATH']['content'].substr($publish, _strlen($_CFG['_PATH']['content']));
+
+		return $publish;
 	}
 }
 

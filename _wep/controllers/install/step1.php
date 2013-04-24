@@ -7,7 +7,7 @@ if(!isset($var_const))
 	);
 //Подключение к БД и доп параметры
 
-$DEF_CFG = static_tools::getFdata($_CFG['_PATH']['wep'] . '/config/config.php', '/* MAIN_CFG */', '/* END_MAIN_CFG */');
+$DEF_CFG = static_tools::getFdata(WEP . '/config/config.php', '/* MAIN_CFG */', '/* END_MAIN_CFG */');
 $USER_CFG = static_tools::getFdata($_CFG['_PATH']['wepconf'] . '/config/main.php', '', '', $DEF_CFG);// Текущая полная конфигурация
 //print_r('<pre>');print_r($USER_CFG);exit();
 $DATA = array();
@@ -18,7 +18,7 @@ if(isset($_POST['rootlogin']))
 if(isset($_POST['rootpass']))
 	$DATA['rootpass']['value'] = $_POST['rootpass'];
 
-include_once($_CFG['_PATH']['wep'] . '/config/config_form.php');
+include_once(WEP . '/config/config_form.php');
 
 foreach($_CFGFORM as $kt=>$rb) {
 	foreach($rb as $k=>$r) {

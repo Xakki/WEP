@@ -1,6 +1,9 @@
 <?php
 //namespace WEP;
-
+if(!defined('SITE') || !defined('WEP') || !defined('WEPCONF') || !defined('WEP_CONFIG')) 
+{
+	die('Not defined constants');
+}
 /*
  * версия ядра
  *  нумерация отличает от других версией
@@ -9,7 +12,7 @@
  * 3 - Номер ревизии , исправленны ошибки
  */
 $_CFG['info'] = array(//информация о СМС
-	'version' => '2.17.44',
+	'version' => '2.18.45',
 	'email' => 'wep@xakki.ru',
 	'icq' => '222392984'
 );
@@ -112,27 +115,24 @@ $_CFG['header'] = array(
 
 /* * PATH_CFG* */
 
-/* Полные пути по файловым системам для ядра */
-$_CFG['_PATH']['wep'] = WEP; // файл-путь к ядру, Корень админки
-$_CFG['_PATH']['path'] = dirname(WEP).'/'; // корень сайта
-
-$_SERVER['_DR_'] = $_CFG['_PATH']['path']; // корень сайта, основной путь к проекту
+ 
+$_SERVER['_DR_'] = SITE; // корень сайта, основной путь к проекту
 //$_CFG['_PATH']['_path'] = dirname(dirname(dirname(__FILE__))). '/';
-$_CFG['_PATH']['vendors'] = $_CFG['_PATH']['path'] . '_vendors/';
-$_CFG['_PATH']['core'] = $_CFG['_PATH']['wep'] . 'core/'; // путь к ядру
-$_CFG['_PATH']['cdesign'] = $_CFG['_PATH']['path'] . '_design/'; // backend админки (шаблоны, скрипты, стили)
-$_CFG['_PATH']['wep_ext'] = $_CFG['_PATH']['wep'] . 'ext/'; // путь к системным модулям
-$_CFG['_PATH']['wep_controllers'] = $_CFG['_PATH']['wep'] . 'controllers/';
-$_CFG['_PATH']['backend'] = $_CFG['_PATH']['wep'] . 'controllers/backend/';
-$_CFG['_PATH']['frontend'] = $_CFG['_PATH']['wep'] . 'controllers/frontend/';
-$_CFG['_PATH']['wep_inc'] = $_CFG['_PATH']['wep'] . 'inc/'; // путь к обработчикам блоков страниц
-$_CFG['_PATH']['wep_locallang'] = $_CFG['_PATH']['wep'] . 'locallang/'; // язык
-$_CFG['_PATH']['wep_config'] = $_CFG['_PATH']['wep'] . 'config/'; // конфиги
-$_CFG['_FILE']['wep_config'] = $_CFG['_PATH']['wep'].'config/config.php';
-$_CFG['_FILE']['wep_config_form'] = $_CFG['_PATH']['wep'].'config/config_form.php';
+$_CFG['_PATH']['vendors'] = SITE . '_vendors/';
+$_CFG['_PATH']['core'] = WEP . 'core/'; // путь к ядру
+$_CFG['_PATH']['cdesign'] = SITE . '_design/'; // backend админки (шаблоны, скрипты, стили)
+$_CFG['_PATH']['wep_ext'] = WEP . 'ext/'; // путь к системным модулям
+$_CFG['_PATH']['wep_controllers'] = WEP . 'controllers/';
+$_CFG['_PATH']['backend'] = WEP . 'controllers/backend/';
+$_CFG['_PATH']['frontend'] = WEP . 'controllers/frontend/';
+$_CFG['_PATH']['wep_inc'] = WEP . 'inc/'; // путь к обработчикам блоков страниц
+$_CFG['_PATH']['wep_locallang'] = WEP . 'locallang/'; // язык
+$_CFG['_PATH']['wep_config'] = WEP . 'config/'; // конфиги
+$_CFG['_FILE']['wep_config'] = WEP.'config/config.php';
+$_CFG['_FILE']['wep_config_form'] = WEP.'config/config_form.php';
 
 /* пути для файлов пользовательских модулей */
-$_CFG['_FILE']['config'] = WEP_CONFIG;
+// WEP_CONFIG - конфиг 
 $_CFG['_PATH']['config'] = dirname(WEP_CONFIG).'/'; // конфиги
 $_CFG['_PATH']['wepconf'] = dirname($_CFG['_PATH']['config']).'/';
 $_CFG['_PATH']['controllers'] = $_CFG['_PATH']['wepconf'] . 'controllers/';
@@ -145,16 +145,16 @@ $_CFG['_FILE']['HASH_KEY'] = $_CFG['_PATH']['config'] . 'hash.key';
 
 $_CFG['_PATH']['locallang'] = $_CFG['_PATH']['wepconf'] . 'locallang/'; // язык
 $_CFG['_PATH']['weptemp'] = $_CFG['_PATH']['wepconf'] . 'temp/'; // путь к папке для хранения временных файлов
-$_CFG['_PATH']['temp'] = $_CFG['_PATH']['path'] . '_content/temp/'; // путь к папке для хранения временных файлов системы
-$_CFG['_PATH']['content'] = $_CFG['_PATH']['path'] . '_content/'; // путь к папке для хранения  файлов системы
+$_CFG['_PATH']['temp'] = SITE . '_content/temp/'; // путь к папке для хранения временных файлов системы
+$_CFG['_PATH']['content'] = SITE . '_content/'; // путь к папке для хранения  файлов системы
 $_CFG['_PATH']['log'] = $_CFG['_PATH']['wepconf'] . 'log/';
 
 /* пути для файлов дизайна страниц */
-$_CFG['_PATH']['_design'] = $_CFG['_PATH']['path'] . '_design/'; //  дизайн ядра
-$_CFG['_PATH']['_style'] = $_CFG['_PATH']['path'] . '_design/_style/'; // дизайн стили ядра
-$_CFG['_PATH']['_script'] = $_CFG['_PATH']['path'] . '_design/_script/'; // дизайн стили ядра
+$_CFG['_PATH']['_design'] = SITE . '_design/'; //  дизайн ядра
+$_CFG['_PATH']['_style'] = SITE . '_design/_style/'; // дизайн стили ядра
+$_CFG['_PATH']['_script'] = SITE . '_design/_script/'; // дизайн стили ядра
 
-$_CFG['_PATH']['themes'] = $_CFG['_PATH']['path'] . '_themes/'; // дизайн сайта
+$_CFG['_PATH']['themes'] = SITE . '_themes/'; // дизайн сайта
 /* * ************* */
 /* $_CFG['PATH'] */
 /* * ************* */
@@ -376,8 +376,8 @@ $_CFG['robot'] = SpiderDetect();
 //////////////////////////////////////////////////////////////////
 /* INCLUDE USER CONF */
 $_NEED_INSTALL = false;
-if(file_exists($_CFG['_FILE']['config']))
-	include($_CFG['_FILE']['config']);
+if(file_exists(WEP_CONFIG))
+	include(WEP_CONFIG);
 else {
 	$_NEED_INSTALL = true;
 }
