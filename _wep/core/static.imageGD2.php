@@ -160,7 +160,7 @@ class static_imageGD2 {
 		list($width_orig, $height_orig) = getimagesize($InFile);
 
 		if(!$trueX and !$trueY) 
-			return true;
+			return false;
 		if(!$trueX)
 			$WidthX = $trueX = ($width_orig*$trueY)/$height_orig;
 		if(!$trueY) {
@@ -183,7 +183,7 @@ class static_imageGD2 {
 		if($imtype>3) {
 			static_main::log('alert','Данный тип изображения не поддерживается на данный момент, рекомендуем использовать JPEG, PNG или GIF');
 			copy($InFile, $OutFile);
-			return true;
+			return false;
 		}
 		/*Открываем исходный рисунок*/
 		if(!$source = self::_imagecreatefrom($InFile,$imtype))//открываем рисунок

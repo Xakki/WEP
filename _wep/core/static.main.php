@@ -1570,7 +1570,7 @@ function getUrlCss($r, $customTheme=null)
 	else
 		$r = $_CFG['_HREF']['_style'].$r.'.css';
 
-	return '//'.$_CFG['_HREF']['_BH'].$r;
+	return '//'.WEP_BH.$r;
 }
 
 
@@ -1613,7 +1613,7 @@ function getUrlScript($r, $customTheme=null)
 	else
 		$r = $_CFG['_HREF']['_script'].$r.'.js';
 
-	return '//'.$_CFG['_HREF']['_BH'].$r;
+	return '//'.WEP_BH.$r;
 }
 
 /************************/
@@ -1626,7 +1626,7 @@ function plugFancybox($init = true)
 	global $_tpl, $_CFG;
 	if(isset($_CFG['fileIncludeOption']['fancybox']))
 		return false;
-	$url = MY_BH.$_CFG['PATH']['vendors'].'fancyBox/source';
+	$url = '//'.WEP_BH.$_CFG['PATH']['vendors'].'fancyBox/source';
 
 	$_CFG['fileIncludeOption']['fancybox'] = true;
 	setScript($url.'/jquery.fancybox.pack.js');

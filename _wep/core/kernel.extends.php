@@ -252,7 +252,7 @@ abstract class kernel_extends {
 	protected function configParse() {
 		if (isset($this->config_form)) { // загрузка конфига из файла для модуля
 			if (is_null($this->_file_cfg))
-				$this->_file_cfg = $this->_CFG['_PATH']['config'] . get_class($this) . '.cfg';
+				$this->_file_cfg = $this->_CFG['_PATH']['configDir'] . get_class($this) . '.cfg';
 			if (file_exists($this->_file_cfg)) {
 				$cont = file_get_contents($this->_file_cfg);
 				if (substr($cont, 0, 5) == 'array')
@@ -468,6 +468,7 @@ abstract class kernel_extends {
 	}
 
 	// Простой запрос к БД
+	// В любом месчте можно вывести последний выполненный запрос [ $MODUL->SQL->query ] 
 	public function exec($query, $debug=false)
 	{
 		if ($debug)
@@ -610,7 +611,7 @@ abstract class kernel_extends {
 		$data = array();
 		$q_select = '*, ' . $this->_listname . ' as name';
 		$q_where = array();
-		$q_order = '';
+		$q_order = $q_limit = '';
 		
 		if ($this->ordfield)
 			$q_order = $this->ordfield;
@@ -628,6 +629,8 @@ abstract class kernel_extends {
 					$q_where[] = $sql['where'];
 				if(isset($sql['order']) and $sql['order'])
 					$q_order = $sql['order'];
+				if(isset($sql['limit']) and $sql['limit'])
+					$q_limit = $sql['limit'];
 			}
 			elseif($sql)
 				$q_where[] = $sql;
@@ -641,7 +644,11 @@ abstract class kernel_extends {
 		if($q_order)
 			$q_order = ' ORDER BY '.$q_order;
 
-		$result = $this->exec('SELECT '.$q_select.' FROM `' . $this->tablename . '` '.$q_where.$q_order);
+		if($q_limit)
+			$q_limit = ' LIMIT '.$q_limit;
+
+
+		$result = $this->exec('SELECT '.$q_select.' FROM `' . $this->tablename . '` '.$q_where.$q_order.$q_limit);
 
 		if($result===false)
 			return $data;
@@ -709,13 +716,13 @@ abstract class kernel_extends {
 					if (!$row[$key])
 						continue;
 					$row['_ext_' . $key] = $row[$key];
-					$row[$key] = $this->_get_file($row['id'], $key, $row[$key]);
-					//$row[$key] = $this->_get_file($row['id'], $key, $row[$key]);
+					$row[$key] = $this->getAttaches($key, $row['id'], $row['_ext_' . $key]);
+
 					if (isset($value['thumb'])) {
 						foreach ($value['thumb'] as $kk => $rr) {
 							if (isset($rr['pref']) and $rr['pref']) {
-								$row[$rr['pref'] . $key] = $this->_get_file($row['id'], $key, $row['_ext_' . $key], $kk);
-								$row['#' . $rr['pref'] . $key] = $rr;
+								$row[$rr['pref'] . $key] = $this->getThumb($rr, $key, $row['id'], $row['_ext_' . $key]);
+								//$row['#' . $rr['pref'] . $key] = $rr; is depricated (избыточность данных)
 							}
 						}
 					}
@@ -869,56 +876,6 @@ abstract class kernel_extends {
 		return $this->_update($data, $where, $flag_select);
 	}
 
-	/**
-	 * Возвращает путь с дополненным параметром size
-	 *
-	 * @param string $file - относительный путь
-	 * @return string - относительный путь
-	 */
-	public function _getPathSize($file) {
-		if ($file and file_exists($this->_CFG['_PATH']['path'] . $file) and $size = @filesize($this->_CFG['_PATH']['path'] . $file))
-			return $file . '?size=' . $size;
-		return '';
-	}
-
-	/**
-	 * Формирует путь к фаилу
-	 *
-	 * @param <type> $id
-	 * @param <type> $key
-	 * @param <type> $extValue
-	 * @param <type> $modkey
-	 * @return string
-	 */
-	public function _get_file($id, $key, $extValue = '', $modkey = -1) {
-		if (!$id)
-			$id = $this->id;
-		if (!$extValue and isset($this->data[$id]))
-			$extValue = $this->data[$id]['_ext_' . $key];
-		if (!$id or !$extValue or !$key)
-			return '';
-		$pref = '';
-		if (isset($this->attaches[$key]['thumb'][$modkey]['pref']) && $this->attaches[$key]['thumb'][$modkey]['pref'])
-			$pref = $this->attaches[$key]['thumb'][$modkey]['pref'];
-
-		if (isset($this->attaches[$key]['thumb'][$modkey]['path']) && $this->attaches[$key]['thumb'][$modkey]['path'])
-			$pathimg = $this->attaches[$key]['thumb'][$modkey]['path'] . '/' . $pref . $id . '.' . $extValue;
-		elseif (isset($this->attaches[$key]['path']) and $this->attaches[$key]['path'])
-			$pathimg = $this->attaches[$key]['path'] . '/' . $pref . $id . '.' . $extValue;
-		else
-			$pathimg = $this->getPathForAtt($key) . '/' . $pref . $id . '.' . $extValue;
-
-		return $pathimg;
-	}
-
-	public function _prefixImage($path, $pref) {
-		if (trim($path) != '') {
-			$img = _substr($path, 0, strrpos($path, '/') + 1) . $pref . _substr($path, strrpos($path, '/') + 2 - count($path));
-			if (file_exists($this->_CFG['_PATH']['path'] . _substr($img, 0, strrpos($img, '?'))))
-				return $img;
-		}
-		return $path;
-	}
 
 	public function _id_as_string() {
 		return $this->_as_string($this->id);
@@ -1953,16 +1910,126 @@ abstract class kernel_extends {
 		return true;
 	}
 
-	// путь к фаилам
-	public function getPathForAtt($key) {
-		if (isset($this->attaches[$key]['path']) and $this->attaches[$key]['path'])
-			$pathimg = $this->attaches[$key]['path'];
+
+
+
+	///////////////////////////
+	/******  Attaches ********/
+	///////////////////////////
+
+	/**
+	 * Возвращает путь с дополненным параметром size
+	 *
+	 * @param string $file - относительный путь
+	 * @return string - относительный путь
+	 */
+	public function _getPathSize($file) {
+		if ($file and file_exists($this->_CFG['_PATH']['path'] . $file) and $size = @filesize($this->_CFG['_PATH']['path'] . $file))
+			return $file . '?size=' . $size;
+		return '';
+	}
+
+	/**
+	 * Формирует путь к фаилу
+	 *
+	 * @param <type> $id
+	 * @param <type> $key
+	 * @param <type> $extValue
+	 * @param <type> $modkey
+	 * @return string
+	 */
+	public function _get_file($id, $key, $extValue = '', $modkey = -1) {
+		if (!$id)
+			$id = $this->id;
+		if (!$extValue and isset($this->data[$id]))
+			$extValue = $this->data[$id]['_ext_' . $key];
+		if (!$id or !$extValue or !$key)
+			return '';
+		$pref = '';
+		if (isset($this->attaches[$key]['thumb'][$modkey]['pref']) && $this->attaches[$key]['thumb'][$modkey]['pref'])
+			$pref = $this->attaches[$key]['thumb'][$modkey]['pref'];
+
+		if (isset($this->attaches[$key]['thumb'][$modkey]['path']) && $this->attaches[$key]['thumb'][$modkey]['path'])
+			$pathimg = $this->attaches[$key]['thumb'][$modkey]['path'] . '/' . $pref . $id . '.' . $extValue;
+		elseif (isset($this->attaches[$key]['path']) and $this->attaches[$key]['path'])
+			$pathimg = $this->attaches[$key]['path'] . '/' . $pref . $id . '.' . $extValue;
 		else
-			$pathimg = $this->_CFG['PATH']['content'] . $key;
+			$pathimg = $this->getPathForAtt($key) . $pref . $id . '.' . $extValue;
+
 		return $pathimg;
 	}
 
-	// путь к фаилам MEMO данных
+	public function _prefixImage($path, $pref) {
+		if (trim($path) != '') {
+			$img = _substr($path, 0, strrpos($path, '/') + 1) . $pref . _substr($path, strrpos($path, '/') + 2 - count($path));
+			if (file_exists($this->_CFG['_PATH']['path'] . _substr($img, 0, strrpos($img, '?'))))
+				return $img;
+		}
+		return $path;
+	}
+
+	/**
+	*  относительный путь к фаилам
+	*/
+	public function getPathForAtt($key) {
+		if (isset($this->attaches[$key]['path']) and $this->attaches[$key]['path'])
+			$pathimg = $this->attaches[$key]['path'] . '/';
+		else
+			$pathimg = $this->_CFG['PATH']['content'] . $key . '/';
+		return $pathimg;
+	}
+	/**
+	*  Полный путь к фаилу
+	*/
+	public function getLocalAttaches($key, $id, $ext)
+	{
+		return SITE . $this->getAttaches($key, $id, $ext);
+	}
+	/**
+	*  Относительный путь к фаилу
+	*/
+	public function getAttaches($key, $id, $ext)
+	{
+		$subPath = ceil($id / $this->_CFG['wep']['filedivider']);
+		return $this->getPathForAtt($key) . $subPath . '/' . $id . '.' . $ext;
+	}
+
+	/**
+	*  относительный Путь к миниатюрам
+	*/
+	public function getPathForThumb($imod, $key)
+	{
+		if(!isset($imod['pref']) or !$imod['pref'])
+			$imod['pref'] = '';// по умолчинию без префикса
+		else
+			$imod['pref'] .= 'thumb/';
+
+		if (isset($imod['path']) and $imod['path'])
+			$path = $imod['path'] . '/' ;
+		else
+			$path = $this->getPathForAtt($key) . $imod['pref'] ;
+		return $path;
+	}
+
+	/**
+	*  Полный путь к фаилу
+	*/
+	public function getLocalThumb($imod, $key, $id, $ext)
+	{
+		return SITE . $this->getThumb($imod, $key, $id, $ext);
+	}
+	/**
+	*  Относительный путь к миниатюре
+	*/
+	public function getThumb($imod, $key, $id, $ext)
+	{
+		$subPath = ceil($id / $this->_CFG['wep']['filedivider']);
+		return $this->getPathForThumb($imod, $key) . $subPath . '/' . $id . '.' . $ext;
+	}
+
+	/**
+	*  путь к фаилам MEMO данных
+	*/
 	public function getPathForMemo($key) {
 		if (isset($this->memos[$key]['path']) and $this->memos[$key]['path'])
 			$pathimg = $this->memos[$key]['path'];

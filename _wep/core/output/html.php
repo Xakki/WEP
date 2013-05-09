@@ -108,10 +108,11 @@ class wephtml
 		return false;
 	}
 
-	function parseTemplate(&$TEXT,&$TPL) 
+	function parseTemplate(&$TEXT,&$TPL, $i = 0) 
 	{
+		if($i>2) return true;
 		if(strpos($TEXT,'{#')!==false) { // NEW STANDART
-			preg_match_all('/\{\#([A-z0-9_]+)\#\}/u',$TEXT,$temp);
+			preg_match_all('/\{\#([A-z0-9_\-]+)\#\}/u',$TEXT,$temp);
 			//return '<pre>'.var_export($temp,true);
 			foreach($temp[1] as $k=>$r) {
 				if(!isset($TPL[$r]))
@@ -120,7 +121,7 @@ class wephtml
 			}
 		}
 		else {
-			preg_match_all('/\{\$_tpl\[\'([A-z0-9_]+)\'\]\}/ui',$TEXT,$temp);
+			preg_match_all('/\{\$_tpl\[\'([A-z0-9_\-]+)\'\]\}/ui',$TEXT,$temp);
 			foreach($temp[1] as $k=>$r) {
 				if(!isset($TPL[$r]))
 					$TPL[$r] = '';
@@ -128,7 +129,8 @@ class wephtml
 			}
 		}
 		if(strpos($TEXT,'{#')!==false or strpos($TEXT,'$_tpl')!==false) {
-			$this->parseTemplate($TEXT,$TPL);
+			$i++;
+			$this->parseTemplate($TEXT, $TPL, $i);
 		}
 		return true;
 	}

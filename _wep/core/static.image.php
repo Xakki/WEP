@@ -169,12 +169,12 @@ class static_image {
 			$out=array();$err = 0;$run = exec($cmd, $out, $err);
 			if($err) {
 				return static_imageGD2::_thumbnailImage($InFile, $OutFile, $WidthX, $HeightY);
-				static_main::log('error','Неверное выполнение команды "'.$cmd.'" , код ошибки - '.$err);
-				$res = false;
 			}
+			$res = static_main::log('error','Неверное выполнение команды "'.$cmd.'" , код ошибки - '.$err);
 		}
 
-		if($res) _chmod($OutFile);
+		if($res) 
+			_chmod($OutFile);
 
 		return $res;
 	}
@@ -190,7 +190,7 @@ class static_image {
 	}
 
 	// get image color in RGB format function 
-	static function getImageColor($imageFile_URL, $numColors = 10, $image_granularity = 5)
+	static function getImageColor($imageFile_URL, $numColors = 10, $image_granularity = 5, $round = 0x33)
 	{
    		$image_granularity = max(1, abs((int)$image_granularity));
    		$colors = array();
@@ -217,10 +217,14 @@ class static_image {
       		{
          		$thisColor = imagecolorat($img, $x, $y);
          		$rgb = imagecolorsforindex($img, $thisColor);
-        		$red = round(round(($rgb['red'] / 0x33)) * 0x33);
-         		$green = round(round(($rgb['green'] / 0x33)) * 0x33);
-         		$blue = round(round(($rgb['blue'] / 0x33)) * 0x33);
-         		$thisRGB = sprintf('%02X%02X%02X', $red, $green, $blue);
+
+         		if($round) {
+	        		$rgb['red'] = round(round(($rgb['red'] / $round)) * $round);
+	         		$rgb['green'] = round(round(($rgb['green'] / $round)) * $round);
+	         		$rgb['blue'] = round(round(($rgb['blue'] / $round)) * $round);
+	         	}
+
+         		$thisRGB = sprintf('%02X%02X%02X', $rgb['red'], $rgb['green'], $rgb['blue']);
          		if(array_key_exists($thisRGB, $colors))
          		{
            			 $colors[$thisRGB]++;
@@ -233,7 +237,22 @@ class static_image {
    		}
    		arsort($colors);
    		// returns maximum used color of image format like #C0C0C0.
-   		return array_slice(($colors), 0, $numColors,true);
+   		if($numColors<1) // Используем процентную выборку, относительно максимального цвета
+   		{
+   			reset($colors);
+   			$max = current($colors);
+   			$result = array();
+   			foreach($colors as $k=>$r) 
+   			{
+   				if( ($r/$max) < $numColors) break;
+   				$result[$k] = $r;
+   			}
+   			return $result;
+   		}
+   		else 
+   		{
+	   		return array_slice(($colors), 0, $numColors,true);
+	   	}
 	}
 
 	/**
@@ -251,8 +270,9 @@ class static_image {
 	/**
 	* html(HEX) color to convert in RGB format color like R(255) G(255) B(255)  
 	*/
-	static function getHtml2Rgb($str_color)
+	static function hex2rgb($str_color)
 	{
+		$str_color = (string) $str_color;
     	if ($str_color[0] == '#')
         	$str_color = substr($str_color, 1);
 
@@ -266,8 +286,138 @@ class static_image {
         	return false;
 
     	$r = hexdec($r); $g = hexdec($g); $b = hexdec($b);
-    	$arr_rgb = array($r, $g, $b);
-		// Return colors format liek R(255) G(255) B(255)  
-    	return $arr_rgb;
+    	return array('r' => $r, 'g' => $g, 'b' => $b);
 	}
+
+	static function rgb2hsv( $rgb )
+	{
+		list($r, $g, $b) = array_values($rgb);
+		$min = MIN( $r, $g, $b );
+		$max = MAX( $r, $g, $b );
+		$v = $max;				// v
+		$delta = $max - $min;
+		if( $max != 0 )
+			$s = $delta / $max;		// s
+		else {
+			// r = g = b = 0		// s = 0, v is undefined
+			$s = 0;
+			$h = -1;
+			return array('h' => $h, 's' => $s, 'v' => $v);
+		}
+		if( $r == $max )
+			$h = ( $g - $b ) / $delta;		// between yellow & magenta
+		else if( $g == $max )
+			$h = 2 + ( $b - $r ) / $delta;	// between cyan & yellow
+		else
+			$h = 4 + ( $r - $g ) / $delta;	// between magenta & cyan
+		$h *= 60;				// degrees
+		if( $h < 0 )
+			$h += 360;
+		return array('h' => $h, 's' => $s, 'v' => $v);
+	}
+
+	static function hex2hsv($str_color)
+	{
+		return self::rgb2hsv(self::hex2rgb($str_color));
+	}
+
+	// Y'UV444 to RGB888 conversion
+	// NTSC standard
+	static function RGBtoYUV( $rgb )
+	{
+		$Y = 0.299*$rgb['r'] + 0.587*$rgb['g'] + 0.114*$rgb['b'];
+		$U = - 0.147*$rgb['r'] - 0.289*$rgb['g'] + 0.436 *$rgb['b'];
+		$V = 0.615*$rgb['r'] - 0.515*$rgb['g'] - 0.1 *$rgb['b'];
+		return array('y' => $Y, 'u' => $U, 'v' => $V);
+	}
+	
+	// Y'UV444 to RGB888 conversion
+	// The ITU-R version:
+	static function RGBtoYUV2( $rgb )
+	{
+		$Y = 0.299*$rgb['r'] + 0.587*$rgb['g'] + 0.114*$rgb['b'];
+		$U = - 0.169*$rgb['r'] - 0.331*$rgb['g'] + 0.499 *$rgb['b'] + 128;
+		$V = 0.499*$rgb['r'] - 0.418*$rgb['g'] - 0.0813 *$rgb['b'] + 128;
+		return array('y' => $Y, 'u' => $U, 'v' => $V);
+	}
+
+
+	static function deferenceColorHEX($hex1, $hex2)
+	{
+		return self::deferenceColorRGB(self::hex2rgb($hex1), self::hex2rgb($hex2));
+	}
+	static function deferenceColorRGB($rgb1, $rgb2)
+	{
+		return 30*pow($rgb1['r']-$rgb2['r'], 2)+59*pow($rgb1['g']-$rgb2['g'], 2)+11*pow($rgb1['b']-$rgb2['b'], 2);
+	}
+
+
+
+	static function getTrueColor($imageColors, $trueColors)
+	{
+		$min = 360;
+		$color = 0;
+		$resultColor = '';
+		foreach($imageColors as $imageColor) {
+			$imageColorRGB = self::hex2rgb($imageColor);
+
+			foreach($trueColors as $k=>$r) {
+				$tempMin = self::deferenceColorRGB3($r['rgb'], $imageColorRGB);
+				if($tempMin<50 && $tempMin<$min) {
+					$color = $imageColor;
+					$min = $tempMin;
+					$resultColor = $k;
+				}
+			}
+			
+		}
+		$trueColors[$resultColor]['min'] = $min;
+		$trueColors[$resultColor]['color'] = $color;
+		$trueColors[$resultColor]['key'] = $resultColor;
+		return $trueColors[$resultColor];
+	}
+
+	static function rgbColorList($enumsColors)
+	{
+		$trueColors = array();
+
+		foreach($enumsColors as $k=>$r) {
+			$trueColors[$k] = array('rgb' => static_image::hex2rgb($r), 'hex' => $r);
+		}
+		return $trueColors;
+	}
+
+	////////////////////////////////////
+
+
+	static function deferenceColorHEX2($hex1, $hex2)
+	{
+		return self::deferenceColorRGB2(self::hex2rgb($hex1), self::hex2rgb($hex2));
+	}
+	static function deferenceColorRGB2($rgb1, $rgb2)
+	{
+		$dR = $rgb1['r'] - $rgb2['r'];
+		$dG = $rgb1['g'] - $rgb2['g'];
+		$dB = $rgb1['b'] - $rgb2['b'];
+		$result = sqrt(pow($dR, 2)*0.2126 + pow($dG, 2)*0.7152 + pow($dB, 2)*0.0722);
+		return  $result;
+	}	
+
+	static function deferenceColorHEX3($hex1, $hex2)
+	{
+		return self::deferenceColorRGB3(self::hex2rgb($hex1), self::hex2rgb($hex2));
+	}
+	static function deferenceColorRGB3($rgb1, $rgb2)
+	{
+		$HSV1 = self::rgb2hsv($rgb1);
+		$HSV2 = self::rgb2hsv($rgb2);
+		// if($HSV1['v']<22 && $HSV2['v']<22) {
+		// 	return 0;
+		// }
+		// if($HSV1['s']<17 || $HSV2['s']<17) {
+		// 	return 0;
+		// }
+		return abs($HSV1['h']-$HSV2['h']);
+	}	
+
 }

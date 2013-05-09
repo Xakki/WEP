@@ -28,7 +28,9 @@ function tools_step3() {
 	return require($file);
 }
 
-function tools_updater() {
+function tools_updater() 
+{
+
 	$href = 'http://xakki.ru/_js.php?_modul=wepcontrol&_fn=GetNewVersion';
 	$JSON = file_get_contents($href);
 	$JSON = json_decode($JSON,true);
@@ -39,6 +41,42 @@ function tools_updater() {
 		return $JSON['html'];
 	}
 	return 'NO info';
+}
+
+function tools_localUpdate() 
+{
+	global $_CFG;
+	$html = '<h4>Системные</h4>';
+	$html .= helperLocalUpdate($_CFG['_PATH']['wep_update']);
+	$html .= '<h4>Пользовательские</h4>';
+	$html .= helperLocalUpdate($_CFG['_PATH']['update']);
+
+	return $html;
+}
+
+function helperLocalUpdate($path, $style='')
+{
+	if(!file_exists($path)) return '';
+
+	$dir = dir($path);
+	$html = '<ul>';
+	while (false !== ($entry = $dir->read())) {
+		$fileExplode = explode('.', $entry);
+		if ($fileExplode[1]=='php')
+		{
+			$hash = md5($path.$entry);
+			$html .= '<li><a href="'.static_main::urlAppend('localfile='.$hash).'">'.$fileExplode[0].'</a>';
+			if(isset($_GET['localfile']) and $_GET['localfile']===$hash) 
+			{
+				$html .= '<fieldset>';
+				$html .= include($path.$entry);
+				$html .= '</fieldset>';
+			}
+		}
+	}
+	$dir->close();
+	$html .= '</ul>';
+	return $html;
 }
 
 function tools_docron() {
@@ -63,7 +101,7 @@ function tools_cron() {
 		foreach($_CFG['wep']['cron'] as $k=>$r)
 			$NEWDATA['cron'][md5($r['file'].$r['modul'].$r['function'])] = $r;
 		static_tools::saveCFG($NEWDATA,$_CFG['_FILE']['cron']);
-		rename($_CFG['_PATH']['weptemp'].'cron.ini',$_CFG['_PATH']['config'].'cron.ini');
+		rename($_CFG['_PATH']['weptemp'].'cron.ini',$_CFG['_FILE']['cronTask']);
 	}
 	include($_CFG['_FILE']['cron']);// Загружаем конфиг крона
 
@@ -541,6 +579,7 @@ $dataF = array(
 	'tools_step2'=>'<span class="tools_item">Проверка структуры сайта</span>',
 	'tools_step3'=>'<span class="tools_item">Установка модулей и удаление.</span>',
 	'tools_updater'=>'<span class="tools_item" style="color:red;">Обновление</span>',
+	'tools_localUpdate'=>'<span class="tools_item" style="color:red;">Локальные обновление</span>',
 	'tools_cron'=>'<span class="tools_item">Настройка Крона</span>',
 	'tools_docron'=>'<span class="tools_item">Выполнить Крон вручную</span>',
 	'tools_sendMail'=>'<span class="tools_item">Отправка почты</span>',

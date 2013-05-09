@@ -812,8 +812,9 @@ window.wep = {
 		if (!path) path = '/';
 
 		var str = name + '=' + encodeURIComponent(value);
-
-		if (typeof expiredays!='undefined' && expiredays!=0) {
+		if(typeof expiredays=='undefined')
+			expiredays = 999999;
+		if (expiredays!=0) {
 			var exdate=new Date();
 			exdate.setDate(exdate.getDate()+expiredays);
 			if (exdate) str += '; expires=' + exdate.toGMTString();

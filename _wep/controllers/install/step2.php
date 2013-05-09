@@ -9,6 +9,9 @@
  * @return Вывод HTML кода процесса установки шага №2
  */
 
+ini_set("max_execution_time", "100000");
+set_time_limit (100000);
+
 if(!isset($var_const))
 	$var_const = array(
 		'mess'=>array(),

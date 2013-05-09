@@ -190,7 +190,8 @@ class pg_class extends kernel_extends {
 			return parent::_getlist($listname, $value);
 	}
 
-	function toolsConfigmodul() {
+	function toolsConfigmodul() 
+	{
 		$data = parent::toolsConfigmodul();
 		if (!$this->incMemcach())
 			$data['messages'][] = array('error', 'Модуль PHP Memcach отсутствует либо не верная конфигурия подключения');
@@ -201,8 +202,15 @@ class pg_class extends kernel_extends {
 	 * Включение MEMCACHE 
 	 * @return bool - true если успешно
 	 */
-	function incMemcach() {
-		if (!$this->MEMCACHE) {
+	function incMemcach() 
+	{
+		if(!$this->_CFG['memcache']['host'] || !$this->_CFG['memcache']['port'])
+		{
+			return false;
+		}
+
+		if (!$this->MEMCACHE) 
+		{
 			$mc_load = false;
 			if (!extension_loaded('memcache')) {
 				$prefix = (PHP_SHLIB_SUFFIX === 'dll') ? 'php_' : '';
@@ -281,7 +289,9 @@ class pg_class extends kernel_extends {
 		else
 			$pageParamEncode = '[]';
 
-		$getEncode = $_GET;unset($getEncode['pageParam']);
+		$getEncode = $_GET;
+		unset($getEncode['pageParam']);
+		unset($getEncode['_php']);
 		if(version_compare(phpversion(),'5.3.0','>')) 
 			$getEncode = json_encode($getEncode, JSON_HEX_TAG);
 		else
@@ -1232,17 +1242,17 @@ class pg_class extends kernel_extends {
 		return $ret;
 	}*/
 
-	public function fFormCheck(&$DATA, &$param, &$argForm) {
-		$RESULT = parent::fFormCheck($DATA,$param,$argForm);
+	// public function fFormCheck(&$DATA, &$param, &$argForm) {
+	// 	$RESULT = parent::fFormCheck($DATA,$param,$argForm);
 
-		if(isset($DATA['alias']) and $DATA['alias']!=='') 
-		{
-			$resdata = $this->qs('id, alias','WHERE parent_id='.(int)$DATA['parent_id'].' and alias="'.$this->SqlEsc($DATA['alias']).'" '.($this->id?' and id!='.$this->id:''));
-			if(count($resdata))
-				$RESULT['mess'][] = static_main::am('error', 'Запрещено дублировать страницы (Алиас) на одном подуровне');
-		}
-		return $RESULT;
-	}
+	// 	// if(isset($DATA['alias']) and $DATA['alias']!=='') 
+	// 	// {
+	// 	// 	$resdata = $this->qs('id, alias','WHERE parent_id='.(int)$DATA['parent_id'].' and alias="'.$this->SqlEsc($DATA['alias']).'" '.($this->id?' and id!='.$this->id:''));
+	// 	// 	if(count($resdata))
+	// 	// 		$RESULT['mess'][] = static_main::am('error', 'Запрещено дублировать страницы (Алиас) на одном подуровне');
+	// 	// }
+	// 	return $RESULT;
+	// }
 
 
 	/*

@@ -132,47 +132,55 @@ class static_form {
 		return true;
 	}
 
-	static function _add_attaches(&$_this) {
+	static function getFileExtension(&$value)
+	{
+		if(isset($value['ext']) and $value['ext'])
+			return $value['ext'];
+		else
+			return $value['ext'] = strtolower(array_pop(explode('.',$value['name'])));
+	}
+
+	static function _add_attaches(&$_this) 
+	{
 		if (!count($_this->attaches) or !count($_this->att_data)) return true;
 		$result=$_this->SQL->execSQL('SELECT id, '.implode(',', array_keys($_this->attaches)).' FROM `'.$_this->tablename.'` WHERE id IN ('.$_this->_id_as_string().')');
 		if($result->err) return false;
-		while ($row = $result->fetch()) {
+		while ($row = $result->fetch()) 
+		{
 			$prop = array();
 			foreach($_this->att_data as $key => $value) 
 			{
 				// Пропускаем если нету данных ("вероятно" фаил не загружали или не меняли)
 				if (!is_array($value) or $value['tmp_name'] == 'none' or $value['tmp_name'] == '') continue;
 				
-				// Путь к папке фаила
-				$pathimg = $_this->_CFG['_PATH']['path'].$_this->getPathForAtt($key);
-				
 				// старый фаил, для удаления, может имет другое расширение
-				$oldname =$pathimg.'/'. $row['id']. '.'.$row[$key];
-				if ($row[$key] and file_exists($oldname)) {
+				$oldname = $_this->getLocalAttaches($key, $row['id'], $row[$key]);
+				if ($row[$key] and file_exists($oldname)) 
+				{
 					_chmod($oldname);
 					unlink($oldname);
 					if (count($_this->attaches[$key]['thumb']))
-						foreach($_this->attaches[$key]['thumb'] as $imod) {
-							if(!isset($imod['pref'])) $imod['pref'] = '';
-							$oldname =$pathimg.'/'. $imod['pref'].$row['id']. '.'.$row[$key];
+					{
+						foreach($_this->attaches[$key]['thumb'] as $imod) 
+						{
+							$oldname = $_this->getLocalThumb($imod, $key, $row['id'], $row[$key]);
 							if (file_exists($oldname))
 								unlink($oldname);
 						}
-
+					}
 				}
 
 				// Удаление фаила 
-				if ($value['tmp_name'] == ':delete:') {
+				if ($value['tmp_name'] == ':delete:') 
+				{
 					$prop[] = '`'.$key.'` = \'\'';
-					continue;
+					continue; // дело сделали
 				}
 
-				if(isset($value['ext']) and $value['ext'])
-					$ext = $value['ext'];
-				else
-					$ext = $value['ext'] = strtolower(array_pop(explode('.',$value['name'])));
+				$ext = self::getFileExtension($value);
 
-				$newname = $pathimg.'/'.$row['id'].'.'.$ext;
+				$newname = $_this->getLocalAttaches($key, $row['id'], $ext);
+
 				if (file_exists($newname)) { // Удаляем старое
 					_chmod($newname);
 					unlink($newname);
@@ -180,35 +188,18 @@ class static_form {
 				_chmod($value['tmp_name']);
 				if (!rename($value['tmp_name'], $newname))
 					return static_main::log('error', static_main::m('Error rename file',array($value['tmp_name'],$newname)));
+
 				// Дополнительные изображения
-				if (isset($_this->attaches[$key]['thumb'])) {
+				if (isset($_this->attaches[$key]['thumb'])) 
+				{
 					if(isset($value['att_type']) and $value['att_type']!='img') // если это не рисунок, то thumb не приминим
 						return static_main::log('error', static_main::m('File is not image',array($newname)));
-					$prefix = $pathimg.'/';
+
 					if (count($_this->attaches[$key]['thumb']))
-						foreach($_this->attaches[$key]['thumb'] as $imod) {
-							if(!isset($imod['pref']) or !$imod['pref'])
-								$imod['pref'] = '';// по умолчинию без префикса
-							if(isset($imod['path']) and $imod['path'])
-								$newname2 = $_this->_CFG['_PATH']['path'].$imod['path'].'/'.$imod['pref'].$row['id'].'.'.$ext;
-							else
-								$newname2 = $prefix.$imod['pref'].$row['id'].'.'.$ext;
-							$res = true;
-							if ($imod['type']=='crop')
-								$res = static_image::_cropImage($newname, $newname2, $imod['w'], $imod['h']);
-							/*elseif ($imod['type']=='resize')
-								$res = static_image::_resizeImage($newname, $newname2, $imod['w'], $imod['h']);*/
-							// TODO - IMAGE OPTION normalize
-							elseif ($imod['type']=='resizecrop' or $imod['type']=='thumb' or $imod['type']=='resize')
-								$res = static_image::_thumbnailImage($newname, $newname2, $imod['w'], $imod['h']);
-							elseif ($imod['type']=='watermark')
-								$res = static_image::_waterMark($newname,$newname2, $imod['logo'], $imod['x'], $imod['y']);
-							elseif($newname!=$newname2)
-								$res = copy($newname,$newname2);
-							if($res)
-								_chmod($newname2);
-							else
-								return false;
+						foreach($_this->attaches[$key]['thumb'] as $imod) 
+						{
+							$newThumb = $_this->getLocalThumb($imod, $key, $row['id'], $ext);
+							self::imageThumbCreator($newname, $newThumb, $imod);
 						}
 				}
 				$prop[] = '`'.$key.'` = \''.$ext.'\'';
@@ -221,11 +212,35 @@ class static_form {
 		return true;
 	}
 
+	static function imageThumbCreator($source, $thumb, $imod)
+	{
+		$res = true;
+		if ($imod['type']=='crop')
+			$res = static_image::_cropImage($source, $thumb, $imod['w'], $imod['h']);
+		/*elseif ($imod['type']=='resize')
+			$res = static_image::_resizeImage($source, $thumb, $imod['w'], $imod['h']);*/
+		// TODO - IMAGE OPTION normalize
+		elseif ($imod['type']=='resizecrop' or $imod['type']=='thumb' or $imod['type']=='resize')
+			$res = static_image::_thumbnailImage($source, $thumb, $imod['w'], $imod['h']);
+		elseif ($imod['type']=='watermark')
+			$res = static_image::_waterMark($source, $thumb, $imod['logo'], $imod['x'], $imod['y']);
+		elseif($source!=$thumb)
+			$res = copy($source,$thumb);
+
+		if($res)
+			_chmod($thumb);
+		else
+			trigger_error('Error chmod: for file '.$thumb, E_USER_WARNING);
+
+		return $res;
+	}
+
+	// depricated
 	static function _add_memos(&$_this) {
 		if (!count($_this->memos) or !count($_this->mmo_data)) return true;
 		foreach($_this->mmo_data as $key => $value)
 		{
-			$pathimg = $_this->_CFG['_PATH']['path'].$_this->getPathForMemo($key);
+			$pathimg = SITE.$_this->getPathForMemo($key);
 			if(!isset($_this->memos[$key])) 
 				return static_main::log('error', static_main::m('Error add memo', array($key,$_this->caption)));
 			$name = $pathimg.'/'.$_this->id.$_this->text_ext;
@@ -365,10 +380,10 @@ class static_form {
 		$row = $result->fetch();
 		if ($row) {
 			foreach($_this->attaches as $key => $value) {
-				$pathimg = $_this->_CFG['_PATH']['path'].$_this->getPathForAtt($key);
-				$f = $pathimg.'/'. $row['id'].'.'.$value['exts'][$row[$key]];
+				$pathimg = SITE.$_this->getPathForAtt($key);
+				$f = $pathimg . $row['id'].'.'.$value['exts'][$row[$key]];
 				if (file_exists($f))
-					rename($f,$pathimg.'/'. $_this->fld_data['id'].'.'. $value['exts'][$row[$key]]);
+					rename($f,$pathimg . $_this->fld_data['id'].'.'. $value['exts'][$row[$key]]);
 			}
 		}
 		return true;
@@ -381,7 +396,7 @@ class static_form {
 	static function _rename_memos(&$_this) {
 		if(!count($_this->memos)) return true;
 		foreach($_this->memos as $key => $value) {
-			$pathimg = $_this->_CFG['_PATH']['path'].$_this->getPathForMemo($key);
+			$pathimg = SITE.$_this->getPathForMemo($key);
 			$f = $pathimg.'/'.$_this->id.$_this->text_ext;
 			if (file_exists($f)) rename($f, $pathimg.'/'.$_this->fld_data['id'].$_this->text_ext);
 		}
@@ -470,28 +485,32 @@ class static_form {
 	 * Удаление фаилов 
 	 * Вспомогательная функция
 	 */
-	private static function _delete_attaches(&$_this, array $id) {
+	private static function _delete_attaches(&$_this, array $id) 
+	{
 		if (!count($_this->attaches)) return true;
 		$result=$_this->SQL->execSQL('SELECT `id`, `'.implode('`,`', array_keys($_this->attaches)).'` FROM `'. $_this->tablename.'` WHERE `id` IN ('.$_this->_as_string($id).')');
 		if($result->err) return false;
 
-		while ($row = $result->fetch()) {
-			foreach($_this->attaches as $key => $att) {
-				$pathimg = $_this->_CFG['_PATH']['path'].$_this->getPathForAtt($key);
-				$oldname =$pathimg.'/'. $row['id']. '.'.$row[$key];
-				if ($row[$key]) {
-					if(file_exists($oldname)) {
+		while ($row = $result->fetch()) 
+		{
+			foreach($_this->attaches as $key => $att) 
+			{
+				$oldname = $_this->getLocalAttaches($key, $row['id'], $row[$key]);
+				if ($row[$key]) 
+				{
+					if(file_exists($oldname)) 
+					{
 						_chmod($oldname);
 						if (!unlink($oldname)) 
 							return static_main::log('error','Cannot delete file `'.$oldname.'`');
 					}
 					if (count($att['thumb']))
-						foreach($att['thumb'] as $imod) {
-							if(!isset($imod['pref'])) $imod['pref'] = '';
-							$oldname =$pathimg.'/'. $imod['pref'].$row['id']. '.'.$row[$key];
+						foreach($att['thumb'] as $imod) 
+						{
+							$oldname = $_this->getLocalThumb($imod, $key, $row['id'], $row[$key]);
 							if (file_exists($oldname))
 								if (!unlink($oldname)) 
-								return static_main::log('error','Cannot delete file `'.$oldname.'`');
+									return static_main::log('error','Cannot delete file `'.$oldname.'`');
 						}
 
 				}
@@ -571,13 +590,13 @@ class static_form {
 						$r['value'] = $_this->_get_file($_this->id,$k);// TODO
 					}
 
-					if(isset($r['value']) and $r['value'] and file_exists($_this->_CFG['_PATH']['path'].$r['value'])) 
+					if(isset($r['value']) and $r['value'] and file_exists(SITE.$r['value'])) 
 					{
-						$_is_image = static_image::_is_image($_this->_CFG['_PATH']['path'].$r['value']); // Проверяем , является ли фаил изображением
+						$_is_image = static_image::_is_image(SITE.$r['value']); // Проверяем , является ли фаил изображением
 						if($_is_image) 
 						{// Если это изображение
 							$r['att_type'] = 'img'; // Маркер для рисования формы
-							$r['img_size'] = getimagesize($_this->_CFG['_PATH']['path'].$r['value']);
+							$r['img_size'] = getimagesize(SITE.$r['value']);
 							$r['value'] = $_this->_getPathSize($r['value']);
 
 							if(count($_this->attaches[$k]['thumb'])) 
@@ -597,10 +616,10 @@ class static_form {
 										continue;
 									}
 									$_file = $_this->_get_file($_this->id,$k,'',$modkey);
-									if(file_exists($_this->_CFG['_PATH']['path'].$_file)) 
+									if(file_exists(SITE.$_file)) 
 									{
 										$mr['value'] = $_this->_getPathSize($_file);
-										$mr['filesize'] = filesize($_this->_CFG['_PATH']['path'].$_file);
+										$mr['filesize'] = filesize(SITE.$_file);
 										$r['thumb'][$modkey] = $mr;
 									}
 								}

@@ -116,8 +116,8 @@ class payyandex_class extends kernel_extends {
 		$this->fields['phone'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL','default'=>'');
 		$this->fields['email'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL','default'=>'');
 		$this->fields['sender'] = array('type' => 'varchar', 'width' => 20,'attr' => 'NOT NULL','default'=>''); // № плательщика в системе
-		$this->fields['cost'] = array('type' => 'decimal', 'width' => '10,2','attr' => 'NOT NULL','default'=>0); // в коппейках
-		$this->fields['tax'] = array('type' => 'decimal', 'width' => '10,2','attr' => 'NOT NULL','default'=>0); // в коппейках
+		$this->fields['cost'] = array('type' => 'decimal', 'width' => '10,2','attr' => 'NOT NULL','default'=>'0.00'); // в коппейках
+		$this->fields['tax'] = array('type' => 'decimal', 'width' => '10,2','attr' => 'NOT NULL','default'=>'0.00'); // в коппейках
 		$this->fields['status'] = array('type' => 'varchar', 'width' => 63,'attr' => 'NOT NULL','default'=>'');
 		$this->fields['operation_id'] = array('type' => 'varchar', 'width' => 32,'attr' => 'NOT NULL','default'=>'');
 		//Код ошибки при проведении платежа (пояснение к полю status). Присутствует только при ошибках.

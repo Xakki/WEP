@@ -8,7 +8,7 @@ if(!isset($var_const))
 //Подключение к БД и доп параметры
 
 $DEF_CFG = static_tools::getFdata(WEP . '/config/config.php', '/* MAIN_CFG */', '/* END_MAIN_CFG */');
-$USER_CFG = static_tools::getFdata($_CFG['_PATH']['wepconf'] . '/config/main.php', '', '', $DEF_CFG);// Текущая полная конфигурация
+$USER_CFG = static_tools::getFdata(WEP_CONFIG, '', '', $DEF_CFG);// Текущая полная конфигурация
 //print_r('<pre>');print_r($USER_CFG);exit();
 $DATA = array();
 $DATA['rootlogin'] =  array('type'=>'text','caption'=>'Login БД с правами суперпользователя','style'=>'background-color:#ff9966;');
@@ -78,7 +78,7 @@ if (isset($_POST['sbmt']) and $flag) {
 		$mess[] = array('error',$txt);
 	//Записать в конфиг все данные которые отличаются от данных по умолчанию
 	if ($sqlfl) {
-		file_put_contents($_CFG['_PATH']['config']. 'hash.key',(md5(time()).md5($_CFG['wep']['md5'])));
+		file_put_contents($_CFG['_FILE']['HASH_KEY'],(md5(time()).md5($_CFG['wep']['md5'])));
 		$mess[] = $var_const['mess'];
 		$DATA['messages'] = $mess;
 		$_SESSION['step'] = 2;

@@ -2,11 +2,13 @@
 
 class static_tools {
 
-	private function ___construct() {
+	private function ___construct() 
+	{
 		
 	}
 
-	static function _reinstall(&$MODUL) {
+	static function _reinstall(&$MODUL) 
+	{
 		$MODUL->SQL->_tableDelete($MODUL->tablename);
 		self::_installTable($MODUL);
 	}
@@ -16,7 +18,8 @@ class static_tools {
 	 *
 	 * @return bool Результат
 	 */
-	static function _installTable(&$MODUL) {
+	static function _installTable(&$MODUL) 
+	{
 		if (!$MODUL->tablename) {
 			static_main::log('notice', 'Для модуля ' . $MODUL->caption . ' таблица не требуется.', $MODUL->_cl);
 			return true;
@@ -49,7 +52,8 @@ class static_tools {
 		return $flag;
 	}
 
-	static function _checkTableRev(&$MODUL) {
+	static function _checkTableRev(&$MODUL) 
+	{
 		$rDATA = array();
 		$rDATA = self::_checkTable($MODUL);
 		if (count($rDATA))
@@ -132,7 +136,7 @@ class static_tools {
 					list($temp, $rDATA[$key]['@mess']) = $MODUL->SQL->_fldformer($key, $MODUL->attprm);
 					$rDATA[$key]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD ' . $temp;
 				}
-				if (!self::_checkdir($MODUL->_CFG['_PATH']['path'] . $MODUL->getPathForAtt($key))) {
+				if (!self::_checkdir(SITE . $MODUL->getPathForAtt($key))) {
 					$rDATA[$key]['@mess'][] = static_main::am('error', '_checkdir_error', array($MODUL->getPathForAtt($key)), $MODUL);
 				}
 				$rDATA['@reattach'] = true;
@@ -140,7 +144,7 @@ class static_tools {
 
 		if (isset($MODUL->memos))
 			foreach ($MODUL->memos as $key => $param) {
-				if (!self::_checkdir($MODUL->_CFG['_PATH']['path'] . $MODUL->getPathForMemo($key))) {
+				if (!self::_checkdir(SITE . $MODUL->getPathForMemo($key))) {
 					$rDATA[$key]['@mess'][] = static_main::am('error', '_recheck_err', $MODUL);
 				}
 			}
@@ -393,6 +397,14 @@ class static_tools {
 				$type = 'clear';
 				$mess[] = static_main::am('ok', 'Список чист', $_this);
 			}
+			elseif (isset($_POST['sbmt_copy'])) {
+				$type = 'copy';
+				$prevId = $_this->id;
+				$_this->id = array_keys($_COOKIE['SuperGroup'][$_this->_cl]);
+				if(self::copyModuleDataByID($_this))
+					$mess[] = static_main::am('ok', 'Скопировано', $_this);
+				$_this->id = $prevId;
+			}
 
 			if (count($mess)) {
 				foreach ($_COOKIE['SuperGroup'][$_this->_cl] as $ck => $ck)
@@ -407,6 +419,7 @@ class static_tools {
 			$fields_form['sbmt'] = array(
 				'type' => 'submit',
 				'value' => array(
+					'sbmt_copy' => static_main::m('Копировать', $_this),
 					'sbmt_off' => static_main::m('Отключить', $_this),
 					'sbmt_on' => static_main::m('Включить', $_this),
 					'sbmt_del' => static_main::m('Delete', $_this),
@@ -422,6 +435,90 @@ class static_tools {
 			'options' => $_this->getFormOptions()
 			//'options' => array('name' => 'f'.$_this->_cl, 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
 		);
+	}
+
+	static private function copyModuleDataByID($MODUL) 
+	{
+		if(!$MODUL->id) return false;
+		$data = $MODUL->_select();
+		if(!count($data)) return false;
+		foreach($data as $item)
+		{
+			if($MODUL->mf_namefields)
+			{
+				$item['name'] = $item['name'] .' - Копия';
+			}
+			self::saveCopyModuleData($MODUL, $item);
+		}
+		// $MODUL
+		return true;
+	}
+
+	static private function saveCopyModuleData($MODUL, $data) 
+	{
+		$copyId = $data['id'];
+		$data = self::fixCopyData($MODUL, $data);
+		if(!count($data))
+			return false;
+		if(!$MODUL->_add($data, false))
+			return false;
+		$newId = $MODUL->id;
+		if($newId && count($MODUL->childs))
+		{
+			foreach($MODUL->childs as $CHILDS)
+			{
+				$CHILDS->id = null;
+				$MODUL->id = $copyId;
+				$childData = $CHILDS->_select();
+				
+				foreach($childData as $item)
+				{
+					$MODUL->id = $newId;
+					self::saveCopyModuleData($CHILDS, $item);
+				}
+			}
+		}
+
+		if($newId && $MODUL->mf_istree)
+		{
+			$MODUL->parent_id = $copyId;
+			$MODUL->id = null;
+			$treeData = $MODUL->_select($MODUL->mf_istree . '=' . $MODUL->parent_id);
+			
+			foreach($treeData as $item)
+			{
+				$MODUL->parent_id = $newId;
+				self::saveCopyModuleData($MODUL, $item);
+			}
+		}
+
+		return true;
+	}
+
+	static private function fixCopyData($MODUL, $data)
+	{
+		$newData = array();
+		foreach($data as $k=>$r)
+		{
+			if($k=='id') continue;
+			if(!count($MODUL->unique_fields))
+			{
+				$newData[$k] = $r;
+			}
+			
+		}
+
+		if($MODUL->owner && $MODUL->owner->id)
+		{
+			$newData[$MODUL->owner_name] = $MODUL->owner->id;
+		}
+
+		if($MODUL->parent_id && $MODUL->mf_istree)
+		{
+			$newData[$MODUL->mf_istree] = $MODUL->parent_id;
+		}
+
+		return $newData;
 	}
 
 	/*
@@ -544,68 +641,63 @@ class static_tools {
 		return $html;
 	}
 
-	static function _reattaches(&$MODUL) {
-		if (count($MODUL->attaches)) {
-			$data = array();
+	/**
+	* Обновление миниатюр
+	*/
+	static function _reattaches(&$MODUL) 
+	{
+		if (count($MODUL->attaches)) 
+		{
+			$keyAtt = array_keys($MODUL->attaches);
+			$criteria = array();
+			foreach($keyAtt as $key)
+				$criteria[] = $key.'!=""';
+			$emptyId = array();
 			// select record ids to delete
-			$result = $MODUL->SQL->execSQL('select id FROM ' . $MODUL->tablename);
+			$result = $MODUL->SQL->execSQL('select id,'.implode(',',$keyAtt).' FROM ' . $MODUL->tablename. ' WHERE '.implode(' OR ', $criteria));
 			if ($result->err)
 				return false;
-			// create list
-			return true;
-			// TODO: использовать готовые ф
-			while ($row = $result->fetch()) {
-				//$data[]= $row;
-				foreach ($MODUL->attaches as $key => $value) {
-					$pathimg = $MODUL->_CFG['_PATH']['path'] . $MODUL->getPathForAtt($key);
-					$MIME = $value['mime'];
-					if(isset($MIME['image'])) {
-						unset($MIME['image']);
-						$MIME = array_merge($MIME, array('gif','jpeg','jpg','png','swf','psd','bmp','tiff','jpc','jp2','jpx','jb2','swc','iff','wbmp','xbm','ico'));
-					}
-					foreach ($MIME as $k => $ext) {
-						$newname = $pathimg . '/' . $row['id'] . '.' . $ext;
-						if (file_exists($newname)) {
-							if (isset($value['thumb']) and count($value['thumb'])) { // проверка на наличие модифицированных изображений
-								if (!static_image::_is_image($newname)) // опред тип файла
-									break;
-								foreach ($value['thumb'] as $imod) {
-									if (!isset($imod['pref']) or !$imod['pref'])
-										$imod['pref'] = ''; // по умолчинию без префикса
-									if (isset($imod['path']) and $imod['path'])
-										$newname2 = $MODUL->_CFG['_PATH']['path'] . $imod['path'] . '/' . $imod['pref'] . $row['id'] . '.' . $ext;
-									else
-										$newname2 = $pathimg . '/' . $imod['pref'] . $row['id'] . '.' . $ext;
-									if ($newname != $newname2 and !file_exists($newname2)) {
-										if ($imod['type'] == 'crop')
-											static_image::_cropImage($MODUL, $newname, $newname2, $imod['w'], $imod['h']);
-										elseif ($imod['type'] == 'resize')
-											static_image::_resizeImage($MODUL, $newname, $newname2, $imod['w'], $imod['h']);
-										elseif ($imod['type'] == 'resizecrop')
-											static_image::_resizecropImage($MODUL, $newname, $newname2, $imod['w'], $imod['h']);
-										elseif ($imod['type'] == 'water')
-											static_image::_waterMark($MODUL, $newname, $newname2, $imod['w'], $imod['h']);
-									}
+
+			while ($row = $result->fetch()) 
+			{
+
+				foreach ($MODUL->attaches as $key => $value) 
+				{
+					$ext = $row[$key];
+					if(!$ext) continue;
+					$filename = $MODUL->getLocalAttaches($key, $row['id'], $ext);
+
+					if (file_exists($filename)) 
+					{
+						if (isset($value['thumb']) and count($value['thumb'])) 
+						{ 
+							// проверка на наличие мминиатюр
+							if (!static_image::_is_image($filename)) // опред тип файла
+							{
+								unset($filename);
+								$emptyId[$key][] = $row['id'];
+								continue;
+							}
+							foreach ($value['thumb'] as $imod) 
+							{
+								$newThumb = $MODUL->getLocalThumb($imod, $key, $row['id'], $ext);
+								// Фаил который не существет и отличается от исходного (иначе откуда взять исходный материал)
+								if ($filename != $newThumb and !file_exists($newThumb)) 
+								{
+									static_form::imageThumbCreator($filename, $newThumb, $imod);
 								}
 							}
-							$data[$key][$ext][] = $row['id'];
-							break;
 						}
+					}
+					else
+					{
+						$emptyId[$key][] = $row['id'];
 					}
 				}
 			}
-			foreach ($MODUL->attaches as $key => $value) {
-				$result = $MODUL->SQL->execSQL('UPDATE ' . $MODUL->tablename . ' SET ' . $key . '=\'\' ');
-				if ($result->err)
-					return false;
-			}
-			foreach ($data as $key1 => $row1) {
 
-				foreach ($row1 as $key2 => $row2) {
-					$result = $MODUL->SQL->execSQL('UPDATE ' . $MODUL->tablename . ' SET ' . $key1 . '=\'' . $key2 . '\' WHERE id IN (' . implode(',', $row2) . ')');
-					if ($result->err)
-						return false;
-				}
+			foreach ($emptyId as $key => $row) {
+				$result = $MODUL->SQL->execSQL('UPDATE ' . $MODUL->tablename . ' SET ' . $key . '=\'\' WHERE id IN (' . implode(',', $row) . ')');
 			}
 		}
 		return true;
@@ -618,7 +710,8 @@ class static_tools {
 	 * @param object $MODUL Текущий объект класса
 	 * @return array
 	 */
-	static function _checkmodstruct($Mid, &$OWN = NULL) {
+	static function _checkmodstruct($Mid, &$OWN = NULL) 
+	{
 		$rDATA = array();
 		//'mess'=>array(),
 		//'oldquery'=>array(),
@@ -883,8 +976,8 @@ class static_tools {
 			}
 		}
 
-		if (!file_exists($_CFG['_PATH']['wepconf'] . '.htaccess')) {
-			file_put_contents($_CFG['_PATH']['wepconf'] . '.htaccess', 'php_flag engine 0
+		if (!file_exists(WEPCONF . '.htaccess')) {
+			file_put_contents(WEPCONF . '.htaccess', 'php_flag engine 0
 <FilesMatch "\.(php|inc|cfg|key|htaccess|cmd)$">
 order allow,deny
 deny from all
@@ -910,15 +1003,19 @@ deny from all
 
 		$flag = 0;
 		$MODUL->form = $mess = array();
+
 		if (!static_main::_prmModul($MODUL->_cl, array(14)))
 			$mess[] = array('error', 'Access denied');
 		else {
 			$check_result = $MODUL->_checkmodstruct();
 
-			if (isset($_POST['sbmt'])) {
+			if (isset($_POST['sbmt'])) 
+			{
 				$flag = 1;
-				foreach ($check_result as $_cl => $row) {
-					if (isset($row['@reattach']) and isset($_POST['query_' . $_cl]['reattach'])) {
+				foreach ($check_result as $_cl => $row) 
+				{
+					if (isset($row['@reattach']) and isset($_POST['query_' . $_cl]['reattach'])) 
+					{
 						_new_class($_cl, $MODUL_R);
 						if (self::_reattaches($MODUL_R))
 							$mess[] = array('ok', '<b>' . $_cl . '</b> - ' . static_main::m('_file_ok', $MODUL));
@@ -928,7 +1025,8 @@ deny from all
 						}
 						unset($row['@reattach']);
 					}
-					foreach ($row as $kk => $rr) {
+					foreach ($row as $kk => $rr) 
+					{
 						if (is_array($rr)) {
 							if (isset($rr['@newquery']) and isset($_POST['query_' . $_cl][$kk . '@newquery'])) {
 								$result = $MODUL->SQL->execSQL($rr['@newquery']);
@@ -947,6 +1045,7 @@ deny from all
 						}
 					}//end foreach
 				}
+
 				if (count($_POST) <= 1)
 					$mess[] = static_main::am('alert', '_recheck_have_nothing', $MODUL);
 				if ($flag)
@@ -954,74 +1053,12 @@ deny from all
 				//'  <a href="" onclick="window.location.reload();return false;">Обновите страницу.</a>'
 			}
 			else {
-				if (count($check_result)) {
-					$MODUL->form['_info'] = array(
-						'type' => 'info',
-						'caption' => static_main::m('_recheck', $MODUL),
-					);
-					$MODUL->form['invert'] = array(
-						'type' => 'info',
-						'caption' => '<a href="#" onclick="return invert_select(\'form\');">Инвертировать выделение</a>',
-					);
-
-					foreach ($check_result as $_cl => $row) {
-						$valuelist = $message = array();
-						if (is_array($row) and count($row)) {
-							if (isset($row['@reattach'])) {
-								$valuelist['reattach'] = '<span style="color:blue;">Обновить файлы</span>';
-								unset($row['@reattach']);
-							}
-							$value = '';
-							if (isset($row['@value'])) {
-								$value = $row['@value'];
-								unset($row['@value']);
-							}
-							foreach ($row as $kk => $rr) {
-								if (isset($rr['@mess'])) {
-									$message = array_merge($message, $rr['@mess']);
-								}
-								if (!is_array($rr))
-									$desc = $rr;
-								elseif (isset($rr['@newquery']) and isset($rr['@oldquery']))
-									$desc = 'Было: ' . htmlspecialchars($rr['@oldquery'], ENT_QUOTES, $MODUL->_CFG['wep']['charset']) . '<br/>Будет: ' . htmlspecialchars($rr['@newquery'], ENT_QUOTES, $MODUL->_CFG['wep']['charset']);
-								elseif (isset($rr['@newquery']))
-									$desc = htmlspecialchars($rr['@newquery'], ENT_QUOTES, $MODUL->_CFG['wep']['charset']);
-								else
-									$desc = '';
-								if ($desc)
-									$valuelist[$kk . '@newquery'] = '<i>' . $kk . '</i> - ' . $desc;
-
-								if (is_array($rr) and isset($rr['@index']))
-									$valuelist[$kk . '@index'] = '<i>' . $kk . '</i> - ' . $rr['@index'];
-							}
-							if (count($valuelist)) {
-								$MODUL->form['query_' . $_cl] = array(
-									'caption' => 'Модуль ' . $_cl,
-									'type' => 'checkbox',
-									'valuelist' => $valuelist,
-									'comment' => transformPHP($message, 'messages'),
-									'style' => 'border-bottom:solid 1px #e1e1e1;margin:3px 0;'
-								);
-								if ($value)
-									$MODUL->form['query_' . $_cl]['value'] = $value;
-							} elseif (count($message)) {
-								$MODUL->form['query_' . $_cl] = array(
-									'type' => 'html',
-									'value' => 'Модуль ' . $_cl.' : '.transformPHP($message, 'messages'),
-									'style' => 'border-bottom:solid 1px gray;margin:3px 0;'
-								);
-								//$mess = array_merge($mess, $message);
-							}
-						}
-						else
-							$mess[] = array('error', 'Error data (' . $_cl . ' - ' . print_r($row, true) . ')');
-					}
-
-					$MODUL->form['sbmt'] = array(
-						'type' => 'submit',
-						'value' => static_main::m('Submit', $MODUL)
-					);
-				} else
+				if (count($check_result)) 
+				{
+					// set form
+					$mess = array_merge($mess, self::_toolsCheckmodulForm($MODUL, $check_result));
+				} 
+				else
 					$mess[] = static_main::am('ok', '_recheck_have_nothing', $MODUL);
 			}
 		}
@@ -1032,6 +1069,90 @@ deny from all
 		);
 		return Array($flag, $DATA);
 	}
+
+	static private function _toolsCheckmodulForm(&$MODUL, $check_result) 
+	{
+		$mess = array();
+		$MODUL->form['_info'] = array(
+			'type' => 'info',
+			'caption' => static_main::m('_recheck', $MODUL),
+		);
+		$MODUL->form['invert'] = array(
+			'type' => 'info',
+			'caption' => '<a href="#" onclick="return invert_select(\'form\');">Инвертировать выделение</a>',
+		);
+
+		foreach ($check_result as $_cl => $row) 
+		{
+			$valuelist = $message = array();
+			if (is_array($row) and count($row)) 
+			{
+				if (isset($row['@reattach'])) {
+					$valuelist['reattach'] = '<span style="color:blue;">Обновить файлы</span>';
+					unset($row['@reattach']);
+				}
+
+				$value = '';
+				if (isset($row['@value'])) 
+				{
+					$value = $row['@value'];
+					unset($row['@value']);
+				}
+
+				foreach ($row as $kk => $rr) 
+				{
+					if (isset($rr['@mess'])) {
+						$message = array_merge($message, $rr['@mess']);
+					}
+					if (!is_array($rr))
+						$desc = $rr;
+					elseif (isset($rr['@newquery']) and isset($rr['@oldquery']))
+						$desc = 'Было: ' . htmlspecialchars($rr['@oldquery'], ENT_QUOTES, $MODUL->_CFG['wep']['charset']) . '<br/>Будет: ' . htmlspecialchars($rr['@newquery'], ENT_QUOTES, $MODUL->_CFG['wep']['charset']);
+					elseif (isset($rr['@newquery']))
+						$desc = htmlspecialchars($rr['@newquery'], ENT_QUOTES, $MODUL->_CFG['wep']['charset']);
+					else
+						$desc = '';
+					if ($desc)
+						$valuelist[$kk . '@newquery'] = '<i>' . $kk . '</i> - ' . $desc;
+
+					if (is_array($rr) and isset($rr['@index']))
+						$valuelist[$kk . '@index'] = '<i>' . $kk . '</i> - ' . $rr['@index'];
+				}
+				
+				if (count($valuelist)) 
+				{
+					$MODUL->form['query_' . $_cl] = array(
+						'caption' => 'Модуль ' . $_cl,
+						'type' => 'checkbox',
+						'valuelist' => $valuelist,
+						'comment' => transformPHP($message, 'messages'),
+						'style' => 'border-bottom:solid 1px #e1e1e1;margin:3px 0;'
+					);
+					if ($value)
+						$MODUL->form['query_' . $_cl]['value'] = $value;
+				} 
+				elseif (count($message)) 
+				{
+					$MODUL->form['query_' . $_cl] = array(
+						'type' => 'html',
+						'value' => 'Модуль ' . $_cl.' : '.transformPHP($message, 'messages'),
+						'style' => 'border-bottom:solid 1px gray;margin:3px 0;'
+					);
+					//$mess = array_merge($mess, $message);
+				}
+			}
+			else
+				$mess[] = array('error', 'Error data (' . $_cl . ' - ' . print_r($row, true) . ')');
+		}
+
+		$MODUL->form['sbmt'] = array(
+			'type' => 'submit',
+			'value' => static_main::m('Submit', $MODUL)
+		);
+		return $mess;
+	}
+
+	/********************/
 
 	static function extractZip($zipFile = '', $zipDir = '', $dirFromZip = '') {
 		 // $zipDir Папка для распаковки.

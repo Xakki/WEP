@@ -7,7 +7,8 @@
  */
 final class modulprm_class extends kernel_extends {
 
-	function _set_features() {
+	function _set_features() 
+	{
 		if (!parent::_set_features())
 			return false;
 		$this->mf_ordctrl = true;
@@ -23,7 +24,8 @@ final class modulprm_class extends kernel_extends {
 		return true;
 	}
 
-	function _create() {
+	function _create() 
+	{
 		parent::_create();
 		$this->ordfield = 'typemodul,name';
 
@@ -41,11 +43,13 @@ final class modulprm_class extends kernel_extends {
 			5 => 'Дочерние модули');
 	}
 
-	function _childs() {
+	function _childs() 
+	{
 		$this->create_child('modulgrp');
 	}
 
-	public function setFieldsForm($form=0) {
+	public function setFieldsForm($form=0) 
+	{
 		parent::setFieldsForm($form);
 
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название');
@@ -65,7 +69,8 @@ final class modulprm_class extends kernel_extends {
 	 * @param int $ugroup_id
 	 * @return array
 	 */
-	function userPrm($ugroup_id=0) {
+	function userPrm($ugroup_id=0) 
+	{
 		$result = $this->SQL->execSQL('SELECT t1.*,t2.access, t2.mname FROM ' . $this->tablename . ' t1 LEFT Join ' . $this->childs['modulgrp']->tablename . ' t2 on t2.owner_id=t1.id and t2.ugroup_id=' . $ugroup_id . ' where t1.active=1 ORDER BY ' . $this->ordfield);
 		if ($result->err)
 			static_main::log($result->err);
@@ -558,7 +563,8 @@ final class modulprm_class extends kernel_extends {
 	}
 
 
-	protected function mDump() {
+	public function mDump() 
+	{
 		if (!isset($this->pdata) or !count($this->pdata) or !count($this->data)) {
 			$this->data = $this->pdata = array();
 			$result = $this->SQL->execSQL('SELECT * FROM ' . $this->tablename);
@@ -576,7 +582,8 @@ final class modulprm_class extends kernel_extends {
 		return true;
 	}
 
-	function modulgrpDump() {
+	function modulgrpDump() 
+	{
 		if(!isset($this->_CFG['modulprm_ext']) and isset($this->_CFG['temp_modulprm_ext'])) // Нужно
 			$this->_CFG['modulprm_ext'] = $this->_CFG['temp_modulprm_ext'];
 

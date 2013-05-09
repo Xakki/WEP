@@ -478,7 +478,7 @@ class static_list {
 				$data[0][0] = static_main::m('_zeroname',$_this);
 
 			$q = 'SELECT `id`, `name`, `parent_id` FROM `'.$_this->tablename.'`';
-			if($_this->id) $q .=' WHERE `id`!="'.$_this->id.'"';
+			if($_this->id) $q .=' WHERE `id`!="'.$_this->_id_as_string().'"';
 			if($_this->mf_ordctrl) $q .= ' ORDER BY '.$_this->mf_ordctrl;
 			$result = $_this->SQL->execSQL($q);
 			if(!$result->err)
