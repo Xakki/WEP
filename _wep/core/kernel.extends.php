@@ -225,6 +225,13 @@ abstract class kernel_extends {
           $this->id = NULL;
 		$this->_file_cfg = NULL;
 		$this->grant_sql = false;
+
+		// конфиг для Дерево каталогов NESTED SETS
+		$this->ns_config = array(
+			'left' => 'left_key',
+			'right' => 'right_key',
+			'level' => 'level_key',
+		);
 		return true;
 	}
 
@@ -331,7 +338,13 @@ abstract class kernel_extends {
 				$this->fields[$this->mf_istree]['default'] = '';
 			else
 				$this->fields[$this->mf_istree]['default'] = '0';
+
+			$this->fields[$this->ns_config['left']] = array('type' => 'int', 'width' => 11, 'attr' => 'unsigned NOT NULL', 'default' => 0);
+			$this->fields[$this->ns_config['right']] = array('type' => 'int', 'width' => 11, 'attr' => 'unsigned NOT NULL', 'default' => 0);
+			$this->fields[$this->ns_config['level']] = array('type' => 'int', 'width' => 11, 'attr' => 'unsigned NOT NULL', 'default' => 0);
+
 			$this->index_fields[$this->mf_istree] = $this->mf_istree;
+			$this->index_fields[$this->ns_config['left']] = array($this->ns_config['left'], $this->ns_config['right'], $this->ns_config['level']);
 		}
 
 		if ($this->mf_actctrl) {

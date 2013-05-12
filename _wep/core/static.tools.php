@@ -52,6 +52,9 @@ class static_tools {
 		return $flag;
 	}
 
+	/**
+	* Рекурсивная Проверка корректности модуля/таблицы 
+	*/
 	static function _checkTableRev(&$MODUL) 
 	{
 		$rDATA = array();
@@ -67,6 +70,9 @@ class static_tools {
 		return $rDATA;
 	}
 
+	/**
+	* Проверка корректности модуля/таблицы 
+	*/
 	static function _checkTable(&$MODUL) {
 		$rDATA = array();
 		if (!$MODUL->tablename) {
@@ -97,7 +103,6 @@ class static_tools {
 		}
 
 		$dataTable = $MODUL->SQL->_getSQLTableInfo($MODUL->tablename);
-//exit('TODO');
 
 		foreach ($dataTable as $fldname => $fp) {
 			if (isset($MODUL->fields[$fldname])) {
@@ -126,26 +131,6 @@ class static_tools {
 				if (!isset($param['inst'])) {
 					list($temp, $rDATA[$key]['@mess']) = $MODUL->SQL->_fldformer($key, $param);
 					$rDATA[$key]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD ' . $temp;
-				}
-			}
-
-		// Проверка фаилов
-		if (isset($MODUL->attaches))
-			foreach ($MODUL->attaches as $key => $param) {
-				if (!isset($param['inst'])) {
-					list($temp, $rDATA[$key]['@mess']) = $MODUL->SQL->_fldformer($key, $MODUL->attprm);
-					$rDATA[$key]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD ' . $temp;
-				}
-				if (!self::_checkdir(SITE . $MODUL->getPathForAtt($key))) {
-					$rDATA[$key]['@mess'][] = static_main::am('error', '_checkdir_error', array($MODUL->getPathForAtt($key)), $MODUL);
-				}
-				$rDATA['@reattach'] = true;
-			}
-
-		if (isset($MODUL->memos))
-			foreach ($MODUL->memos as $key => $param) {
-				if (!self::_checkdir(SITE . $MODUL->getPathForMemo($key))) {
-					$rDATA[$key]['@mess'][] = static_main::am('error', '_recheck_err', $MODUL);
 				}
 			}
 
@@ -228,6 +213,44 @@ class static_tools {
 				$rDATA[$k]['@index'] .= ' drop key `' . $k . '` ';
 			}
 		}
+
+
+		// Проверка фаилов
+		if (isset($MODUL->attaches)) {
+			foreach ($MODUL->attaches as $key => $param) {
+				if (!isset($param['inst'])) {
+					list($temp, $rDATA[$key]['@mess']) = $MODUL->SQL->_fldformer($key, $MODUL->attprm);
+					$rDATA[$key]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD ' . $temp;
+				}
+				if (!self::_checkdir(SITE . $MODUL->getPathForAtt($key))) {
+					$rDATA[$key]['@mess'][] = static_main::am('error', '_checkdir_error', array($MODUL->getPathForAtt($key)), $MODUL);
+				}
+				$rDATA['@reattach'] = true;
+			}
+		}
+
+		// Проверяем структуру дереа
+		if ($MODUL->mf_istree) {
+			$isCorrect = $isset = true;
+			if(!isset($dataTable[$MODUL->ns_config['left']]))
+				$isset = false;
+			if($isset)
+				$isCorrect = self::_nestedSets_isCorrect(&$MODUL);
+			$rDATA['@nestedSets'] = array(
+				'isset' => $isset,
+				'correct' => $isCorrect, 
+				'modul' => $MODUL
+			);
+		}
+
+		if (isset($MODUL->memos)) {
+			foreach ($MODUL->memos as $key => $param) {
+				if (!self::_checkdir(SITE . $MODUL->getPathForMemo($key))) {
+					$rDATA[$key]['@mess'][] = static_main::am('error', '_recheck_err', $MODUL);
+				}
+			}
+		}
+
 		//TODO : перенести в отдельный раздел - Обслуживание БД
 		//$rDATA['Оптимизация']['@newquery'] = 'OPTIMIZE TABLE `' . $MODUL->tablename . '`';
 		return $rDATA;
@@ -1002,7 +1025,7 @@ deny from all
 	{
 
 		$flag = 0;
-		$MODUL->form = $mess = array();
+		$form = $mess = array();
 
 		if (!static_main::_prmModul($MODUL->_cl, array(14)))
 			$mess[] = array('error', 'Access denied');
@@ -1011,73 +1034,38 @@ deny from all
 
 			if (isset($_POST['sbmt'])) 
 			{
-				$flag = 1;
-				foreach ($check_result as $_cl => $row) 
-				{
-					if (isset($row['@reattach']) and isset($_POST['query_' . $_cl]['reattach'])) 
-					{
-						_new_class($_cl, $MODUL_R);
-						if (self::_reattaches($MODUL_R))
-							$mess[] = array('ok', '<b>' . $_cl . '</b> - ' . static_main::m('_file_ok', $MODUL));
-						else {
-							$mess[] = array('error', '<b>' . $_cl . '</b> - ' . static_main::m('_file_err', $MODUL));
-							$flag = -1;
-						}
-						unset($row['@reattach']);
-					}
-					foreach ($row as $kk => $rr) 
-					{
-						if (is_array($rr)) {
-							if (isset($rr['@newquery']) and isset($_POST['query_' . $_cl][$kk . '@newquery'])) {
-								$result = $MODUL->SQL->execSQL($rr['@newquery']);
-								if ($result->err) {
-									$mess[] = array('error', 'Error new query(' . $rr['@newquery'] . ')');
-									$flag = -1;
-								}
-							}
-							if (isset($rr['@index']) and isset($_POST['query_' . $_cl][$kk . '@index'])) {
-								$result = $MODUL->SQL->execSQL($rr['@index']);
-								if ($result->err) {
-									$mess[] = array('error', 'Error index query(' . $rr['@index'] . ')');
-									$flag = -1;
-								}
-							}
-						}
-					}//end foreach
-				}
-
-				if (count($_POST) <= 1)
-					$mess[] = static_main::am('alert', '_recheck_have_nothing', $MODUL);
-				if ($flag)
-					$mess[] = static_main::am('ok', '_recheck_ok', $MODUL);
-				//'  <a href="" onclick="window.location.reload();return false;">Обновите страницу.</a>'
+				$flag = self::_toolsCheckmodulFormPost($MODUL, $check_result, $mess);
 			}
 			else {
 				if (count($check_result)) 
 				{
 					// set form
-					$mess = array_merge($mess, self::_toolsCheckmodulForm($MODUL, $check_result));
+					$form = self::_toolsCheckmodulForm($check_result);
 				} 
 				else
 					$mess[] = static_main::am('ok', '_recheck_have_nothing', $MODUL);
 			}
 		}
 		$DATA = array(
-			'form' => $MODUL->form,
+			'form' => $form,
 			'messages' => $mess,
 			'options' => $MODUL->getFormOptions('Checkmodul')
 		);
 		return Array($flag, $DATA);
 	}
 
-	static private function _toolsCheckmodulForm(&$MODUL, $check_result) 
+	/**
+	* Вывод в форме заданий для выполнения
+	*/
+	static private function _toolsCheckmodulForm($check_result) 
 	{
-		$mess = array();
-		$MODUL->form['_info'] = array(
+		global $_CFG;
+		$form = array();
+		$form['_info'] = array(
 			'type' => 'info',
-			'caption' => static_main::m('_recheck', $MODUL),
+			'caption' => static_main::m('_recheck'),
 		);
-		$MODUL->form['invert'] = array(
+		$form['invert'] = array(
 			'type' => 'info',
 			'caption' => '<a href="#" onclick="return invert_select(\'form\');">Инвертировать выделение</a>',
 		);
@@ -1090,6 +1078,12 @@ deny from all
 				if (isset($row['@reattach'])) {
 					$valuelist['reattach'] = '<span style="color:blue;">Обновить файлы</span>';
 					unset($row['@reattach']);
+				}
+
+				if (isset($row['@nestedSets'])) {
+					if($row['@nestedSets']['isset'])
+						$valuelist['nestedSets'] = '<span style="color:blue;">Обновить дерев NestedSets'.(!$row['@nestedSets']['correct'] ? ' - ошибка в структуре дерева.' : '').'</span>';
+					unset($row['@nestedSets']);
 				}
 
 				$value = '';
@@ -1107,9 +1101,9 @@ deny from all
 					if (!is_array($rr))
 						$desc = $rr;
 					elseif (isset($rr['@newquery']) and isset($rr['@oldquery']))
-						$desc = 'Было: ' . htmlspecialchars($rr['@oldquery'], ENT_QUOTES, $MODUL->_CFG['wep']['charset']) . '<br/>Будет: ' . htmlspecialchars($rr['@newquery'], ENT_QUOTES, $MODUL->_CFG['wep']['charset']);
+						$desc = 'Было: ' . htmlspecialchars($rr['@oldquery'], ENT_QUOTES, $_CFG['wep']['charset']) . '<br/>Будет: ' . htmlspecialchars($rr['@newquery'], ENT_QUOTES, $_CFG['wep']['charset']);
 					elseif (isset($rr['@newquery']))
-						$desc = htmlspecialchars($rr['@newquery'], ENT_QUOTES, $MODUL->_CFG['wep']['charset']);
+						$desc = htmlspecialchars($rr['@newquery'], ENT_QUOTES, $_CFG['wep']['charset']);
 					else
 						$desc = '';
 					if ($desc)
@@ -1121,7 +1115,7 @@ deny from all
 				
 				if (count($valuelist)) 
 				{
-					$MODUL->form['query_' . $_cl] = array(
+					$form['query_' . $_cl] = array(
 						'caption' => 'Модуль ' . $_cl,
 						'type' => 'checkbox',
 						'valuelist' => $valuelist,
@@ -1129,11 +1123,11 @@ deny from all
 						'style' => 'border-bottom:solid 1px #e1e1e1;margin:3px 0;'
 					);
 					if ($value)
-						$MODUL->form['query_' . $_cl]['value'] = $value;
+						$form['query_' . $_cl]['value'] = $value;
 				} 
 				elseif (count($message)) 
 				{
-					$MODUL->form['query_' . $_cl] = array(
+					$form['query_' . $_cl] = array(
 						'type' => 'html',
 						'value' => 'Модуль ' . $_cl.' : '.transformPHP($message, 'messages'),
 						'style' => 'border-bottom:solid 1px gray;margin:3px 0;'
@@ -1141,15 +1135,112 @@ deny from all
 					//$mess = array_merge($mess, $message);
 				}
 			}
-			else
-				$mess[] = array('error', 'Error data (' . $_cl . ' - ' . print_r($row, true) . ')');
+			else {
+				trigger_error('`_toolsCheckmodulForm` - in func Error data (' . $_cl . ' - ' . print_r($row, true) . ')', E_USER_WARNING);
+			}
 		}
 
-		$MODUL->form['sbmt'] = array(
+		$form['sbmt'] = array(
 			'type' => 'submit',
-			'value' => static_main::m('Submit', $MODUL)
+			'value' => static_main::m('Submit')
 		);
-		return $mess;
+		return $form;
+	}
+
+	/**
+	* Выполнение отмеченных заданий
+	*/
+	static private function _toolsCheckmodulFormPost(&$MODUL, &$check_result, &$mess) 
+	{
+		$flag = 1;
+		foreach ($check_result as $_cl => $row) 
+		{
+			if (isset($row['@reattach']) and isset($_POST['query_' . $_cl]['reattach'])) 
+			{
+				_new_class($_cl, $MODUL_R);
+				if (self::_reattaches($MODUL_R))
+					$mess[] = array('ok', '<b>' . $_cl . '</b> - ' . static_main::m('_file_ok', $MODUL));
+				else {
+					$mess[] = array('error', '<b>' . $_cl . '</b> - ' . static_main::m('_file_err', $MODUL));
+					$flag = -1;
+				}
+				unset($row['@reattach']);
+			}
+
+			if (isset($row['@nestedSets']) and (isset($_POST['query_' . $_cl]['nestedSets']) || !$row['@nestedSets']['isset']) )
+			{
+				_new_class($_cl, $MODUL_R);
+				if (self::_nestedSets_fullUpdate($MODUL_R, $mess))
+					$mess[] = array('ok', '<b>' . $_cl . '</b> - ' . static_main::m('_nestedSets_fullUpdate ok', $MODUL));
+				else {
+					$mess[] = array('error', '<b>' . $_cl . '</b> - ' . static_main::m('_nestedSets_fullUpdate err', $MODUL));
+					$flag = -1;
+				}
+				unset($row['@nestedSets']);
+			}
+
+			foreach ($row as $kk => $rr) 
+			{
+				if (is_array($rr)) {
+					if (isset($rr['@newquery']) and isset($_POST['query_' . $_cl][$kk . '@newquery'])) {
+						$result = $MODUL->SQL->execSQL($rr['@newquery']);
+						if ($result->err) {
+							$mess[] = array('error', 'Error new query(' . $rr['@newquery'] . ')');
+							$flag = -1;
+						}
+					}
+					if (isset($rr['@index']) and isset($_POST['query_' . $_cl][$kk . '@index'])) {
+						$result = $MODUL->SQL->execSQL($rr['@index']);
+						if ($result->err) {
+							$mess[] = array('error', 'Error index query(' . $rr['@index'] . ')');
+							$flag = -1;
+						}
+					}
+				}
+			}//end foreach
+		}
+
+		if (count($_POST) <= 1)
+			$mess[] = static_main::am('alert', '_recheck_have_nothing', $MODUL);
+		if ($flag)
+			$mess[] = static_main::am('ok', '_recheck_ok', $MODUL);
+		//'  <a href="" onclick="window.location.reload();return false;">Обновите страницу.</a>'
+		return $flag;
+	}
+
+	/*****     nestedSets      ****/
+	// $MODUL->ns_config['left']
+	// $MODUL->ns_config['right']
+	// $MODUL->ns_config['level']
+	/**
+	* nestedSets Full update all keys
+	*
+	*/
+	static function _nestedSets_fullUpdate(&$MODUL, &$mess)
+	{
+		// TODO
+		$q = '';
+		$result = $MODUL->SQL->execSQL($q);
+		if ($result->err) {
+			$mess[] = array('error', 'Error nestedSets query(' . $rr['@newquery'] . ')');
+			return false;
+		}
+		return true;
+	}
+
+	static function _nestedSets_isCorrect(&$MODUL)
+	{
+		$result = $MODUL->qs('count(id)', 'WHERE '.$MODUL->ns_config['left'].' >= '.$MODUL->ns_config['right']);
+		if(count($result)) return false;
+
+		$result = $MODUL->qs('count(id) as cnt, MIN('.$MODUL->ns_config['left'].') as min, MAX('.$MODUL->ns_config['right'].') as max');
+		if(count($result)) {
+			if ($result[0]['cnt'] != ($result[0]['max']-$result[0]['min']) ) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/********************/

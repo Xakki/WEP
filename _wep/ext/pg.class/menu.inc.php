@@ -28,14 +28,14 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 	);
 	$temp = 'ownerlist';
 	$this->_enum['levelmenuinc'] = $this->_getCashedList($temp);
-	$this->_enum['levelmenuinc'][0] = array_merge(array(
+	$this->_enum['levelmenuinc'][0] = array(
 		'' => '---',
 		'#' => '# выводить меню только на текущем уровне страницы',
 		'#0' => '# первый уровнь адреса',
 		'#1' => '# второй уровнь адреса',
 		'#2' => '# третий уровнь адреса',
 		'#3' => '# четвертый уровнь адреса',
-		'#4' => '# пятый уровнь адреса'), $this->_enum['levelmenuinc'][0]);
+		'#4' => '# пятый уровнь адреса') + $this->_enum['levelmenuinc'][0];
 	$form = array(
 		'0' => array('type' => 'list', 'listname' => array('owner', 'menu'), 'caption' => 'Меню'),
 		'1' => array('type' => 'list', 'listname' => 'typemenuinc', 'caption' => 'Тип вывода меню'),

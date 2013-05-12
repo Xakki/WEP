@@ -807,7 +807,7 @@ class pg_class extends kernel_extends {
 						if (!isset($_tpl[$rowPG['marker']]))
 							$_tpl[$rowPG['marker']] = '';
 						
-						if ($this->config['newadmin_on'] and strpos($flagPG,'<')===0)
+						if ($this->config['newadmin_on'])
 							$_tpl[$rowPG['marker']] .= '<div class="wep-pgc" id="pgc' . $rowPG['id'] . '">' . $flagPG . '</div>';
 						else
 							$_tpl[$rowPG['marker']] .= $flagPG;

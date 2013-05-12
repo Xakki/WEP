@@ -36,10 +36,9 @@
 				'.$r['name'].'
 			</div><ul>';
 			foreach($r['#item#'] as $rr) {
-				$html .= '<li>'.($rr['cnt']>0?
-					'<a href="/'.$rr['path'].'/'.$pgid.'.html" class="'.($rr['#sel#']?' selected':'').'">'.$rr['name'].'</a> <span class="minicount">('.$rr['cnt'].')</span>':
-					'<a href="/'.$rr['path'].'/'.$pgid.'.html" class="'.($rr['#sel#']?' selected':'').'">'.$rr['name'].'</a>')
-				.'</li>';
+				$html .= '<li><a href="/'.$rr['path'].'/'.$pgid.'.html" class="'.($rr['#sel#']?' selected':'').'">'.$rr['name'].''.
+					($rr['cnt']>0 ? '<span class="minicount">('.$rr['cnt'].')</span>' : '')
+					.'</a></li>';
 			}
 			$html .= '</ul>';
 		}
