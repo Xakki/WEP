@@ -1047,13 +1047,13 @@ class pg_class extends kernel_extends {
 			} else
 				$this->rootPage = $this->config['rootPage'];
 
-			$cls = 'SELECT *';
-			/* if(isset($_SESSION['user']['id']))
-			  $cls .= ',if((ugroup="" or ugroup="|0|" or ugroup="|user|" or ugroup LIKE "%|'.$_SESSION['user']['owner_id'].'|%"),1,0) as prm';
-			  else
-			  $cls .= ',if((ugroup="" or ugroup="|0|" or ugroup="|anonim|"),1,0) as prm'; */
-			$cls .= ' FROM ' . $this->tablename . ' WHERE active=1';
-			$result = $this->SQL->execSQL($cls . ' ORDER BY ordind');
+			$q = '';
+			$result = $this->qs('left_key ,right_key', 'WHERE id = '.$this->rootPage);
+			if(count($result)) {
+				$q = ' and left_key >= '.$result[0]['left_key'].'  and right_key <= '.$result[0]['right_key'];
+			}
+			$q = 'SELECT * FROM ' . $this->tablename . ' WHERE active=1 '.$q.' ORDER BY ordind';
+			$result = $this->SQL->execSQL($q);
 
 			if (!$result->err) {
 				while ($row = $result->fetch()) {

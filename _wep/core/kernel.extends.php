@@ -339,9 +339,9 @@ abstract class kernel_extends {
 			else
 				$this->fields[$this->mf_istree]['default'] = '0';
 
-			$this->fields[$this->ns_config['left']] = array('type' => 'int', 'width' => 11, 'attr' => 'unsigned NOT NULL', 'default' => 0);
 			$this->fields[$this->ns_config['right']] = array('type' => 'int', 'width' => 11, 'attr' => 'unsigned NOT NULL', 'default' => 0);
 			$this->fields[$this->ns_config['level']] = array('type' => 'int', 'width' => 11, 'attr' => 'unsigned NOT NULL', 'default' => 0);
+			$this->fields[$this->ns_config['left']] = array('type' => 'int', 'width' => 11, 'attr' => 'unsigned NOT NULL', 'default' => 0);
 
 			$this->index_fields[$this->mf_istree] = $this->mf_istree;
 			$this->index_fields[$this->ns_config['left']] = array($this->ns_config['left'], $this->ns_config['right'], $this->ns_config['level']);

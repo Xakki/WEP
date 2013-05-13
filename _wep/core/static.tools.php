@@ -235,7 +235,7 @@ class static_tools {
 			if(!isset($dataTable[$MODUL->ns_config['left']]))
 				$isset = false;
 			if($isset)
-				$isCorrect = self::_nestedSets_isCorrect(&$MODUL);
+				$isCorrect = self::_nestedSets_isCorrect($MODUL);
 			$rDATA['@nestedSets'] = array(
 				'isset' => $isset,
 				'correct' => $isCorrect, 
@@ -1072,7 +1072,7 @@ deny from all
 
 		foreach ($check_result as $_cl => $row) 
 		{
-			$valuelist = $message = array();
+			$select = $valuelist = $message = array();
 			if (is_array($row) and count($row)) 
 			{
 				if (isset($row['@reattach'])) {
@@ -1081,8 +1081,11 @@ deny from all
 				}
 
 				if (isset($row['@nestedSets'])) {
-					if($row['@nestedSets']['isset'])
+					if($row['@nestedSets']['isset']) {
 						$valuelist['nestedSets'] = '<span style="color:blue;">Обновить дерев NestedSets'.(!$row['@nestedSets']['correct'] ? ' - ошибка в структуре дерева.' : '').'</span>';
+						if(!$row['@nestedSets']['correct'])
+							$select['nestedSets'] = true;
+					}
 					unset($row['@nestedSets']);
 				}
 
@@ -1120,7 +1123,8 @@ deny from all
 						'type' => 'checkbox',
 						'valuelist' => $valuelist,
 						'comment' => transformPHP($message, 'messages'),
-						'style' => 'border-bottom:solid 1px #e1e1e1;margin:3px 0;'
+						'style' => 'border-bottom:solid 1px #e1e1e1;margin:3px 0;',
+						'value' => $select
 					);
 					if ($value)
 						$form['query_' . $_cl]['value'] = $value;
@@ -1167,7 +1171,7 @@ deny from all
 				unset($row['@reattach']);
 			}
 
-			if (isset($row['@nestedSets']) and (isset($_POST['query_' . $_cl]['nestedSets']) || !$row['@nestedSets']['isset']) )
+			if (isset($row['@nestedSets']) and isset($_POST['query_' . $_cl]['nestedSets']) )
 			{
 				_new_class($_cl, $MODUL_R);
 				if (self::_nestedSets_fullUpdate($MODUL_R, $mess))
@@ -1218,14 +1222,40 @@ deny from all
 	*/
 	static function _nestedSets_fullUpdate(&$MODUL, &$mess)
 	{
-		// TODO
-		$q = '';
-		$result = $MODUL->SQL->execSQL($q);
-		if ($result->err) {
-			$mess[] = array('error', 'Error nestedSets query(' . $rr['@newquery'] . ')');
-			return false;
-		}
+		if($MODUL->mf_ordctrl)
+			$result = $MODUL->qs('id,'.$MODUL->mf_istree.','.$MODUL->mf_ordctrl, 'ORDER BY '.$MODUL->mf_ordctrl, 'id', $MODUL->mf_istree);
+		else
+			$result = $MODUL->qs('id,'.$MODUL->mf_istree,'', 'id', $MODUL->mf_istree);
+		if(!count($result)) return true;
+		$cnt = count($result);
+		$max = $cnt*2;
+
+
+		self::_nestedSets_fullUpdate_recursive($MODUL, $result);
+
+		// $q = 'UPDATE '.$MODUL->tablename.' set '.$MODUL->ns_config['left'].' = ';
+		// $result = $MODUL->SQL->execSQL($q);
+		// if ($result->err) {
+		// 	$mess[] = array('error', 'Error nestedSets query(' . $rr['@newquery'] . ')');
+		// 	return false;
+		// }
 		return true;
+	}
+
+	static function _nestedSets_fullUpdate_recursive(&$MODUL, &$data, $key=0, $left=1, $level = 1) 
+	{
+		if(!isset($data[$key])) return $left;
+
+		foreach($data[$key] as $id => $row) {
+			$rkey = self::_nestedSets_fullUpdate_recursive($MODUL, $data, $id, ($left+1), ($level+1) );
+
+			$q = 'UPDATE '.$MODUL->tablename.' set '.$MODUL->ns_config['left'].' = '.$left.', '.$MODUL->ns_config['right'].' = '.$rkey . ', '.$MODUL->ns_config['level'].' = '.$level . ' WHERE id = '.$id;
+			$MODUL->SQL->execSQL($q);
+
+			$left = $rkey + 1; // На след цикл отдаю правй +1
+		}
+		
+		return $left;
 	}
 
 	static function _nestedSets_isCorrect(&$MODUL)
