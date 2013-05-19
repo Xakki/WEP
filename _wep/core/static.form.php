@@ -659,7 +659,7 @@ class static_form {
 					}
 
 				}
-				/*elseif(isset($r['listname']) and isset($r['multiple']) and $r['multiple']===2 and !$r['readonly']) {// and isset($_this->fields[$k])
+				/*elseif(isset($r['listname']) and isset($r['multiple']) and $r['multiple']===FORM_MULTIPLE_JQUERY and !$r['readonly']) {// and isset($_this->fields[$k])
 					$_this->_checkList($r['listname'],$r['value']);
 					$templistname = $r['listname'];
 					if(is_array($r['listname']))
@@ -686,7 +686,7 @@ class static_form {
 						}
 					}
 				}*/
-				elseif(isset($r['listname']) and isset($r['multiple']) and $r['multiple'] and !$r['readonly']) {
+				/*elseif(isset($r['listname']) and isset($r['multiple']) and $r['multiple'] and !$r['readonly']) {
 					$md = $_this->_getCashedList($r['listname']);
 
 					if(!isset($r['value']))
@@ -696,32 +696,37 @@ class static_form {
 					elseif($r['multiple']!=3 and is_array($r['value']) and count($r['value']))
 						$r['value'] = array_combine($r['value'],$r['value']);
 
-					$temp = current($md);
-					if(is_array($temp) and !isset($temp['#name#'])) {
-						if(isset($r['mask']['begin']))
-							$key = $r['mask']['begin'];//стартовый ID массива
-						else
-							$key = key($md);
-					} else{
-						$md = array($md);
-						$key = 0;
+					if(is_array($md) and count($md)) {
+						$temp = current($md);
+						if(is_array($temp) and !isset($temp['#name#'])) {
+							if(isset($r['mask']['begin']))
+								$key = $r['mask']['begin'];//стартовый ID массива
+							else
+								$key = key($md);
+						} else{
+							$md = array($md);
+							$key = 0;
+						}
+						$r['valuelist'] = $_this->_forlist($md, $key, $r['value'], $r['multiple']);
 					}
-					$r['valuelist'] = $_this->_forlist($md ,$key,$r['value'],$r['multiple']);
-				}
+				}*/
 				elseif(isset($r['listname'])) {
 					if(!$r['readonly']) {
 						if (is_array($r['listname']) and !isset($r['listname']['idThis'])) {
 							$r['listname']['idThis'] = $k;
 						}
+						if(!isset($r['multiple']))
+							$r['multiple'] = 0;
 													
 						$md= $_this->_getCashedList($r['listname']);
+
 						if(!isset($r['value']))
-							$r['value'] = '';
-						if(is_array($r['value']))
-							$val = array_combine($r['value'],$r['value']);
-						else
-							$val = array($r['value']=>$r['value']);
-						$r['value'] = $val;
+							$r['value'] = array();
+						elseif(!is_array($r['value']))
+							$r['value'] = array($r['value']=>$r['value']);
+						elseif(is_array($r['value']) and count($r['value']) and $r['multiple']!=FORM_MULTIPLE_KEY )
+							$r['value'] = array_combine($r['value'],$r['value']);
+
 						if(is_array($md) and count($md)) {
 							$temp = current($md);
 							if(is_array($temp) and !isset($temp['#name#'])) {
@@ -733,7 +738,7 @@ class static_form {
 								$md = array($md);
 								$key = 0;
 							}
-							$r['valuelist'] = $_this->_forlist($md,$key,$val);
+							$r['valuelist'] = $_this->_forlist($md, $key, $r['value'], $r['multiple'] );
 						}
 					}
 					else // Форма списка  только для чтения, выводится в виде текста
@@ -799,6 +804,10 @@ class static_form {
 					else
 						$r['maxlength'] = $r['mask']['max'];
 
+				}
+
+				if(isset($r['multiple']) && $r['multiple']==FORM_MULTIPLE_KEY && isset($r['keyListName'])) {
+					$r['keyValueList'] = $_this->_forlist($_this->_getCashedList($r['keyListName']));
 				}
 
 			}
@@ -901,7 +910,7 @@ class static_form {
 								$error[] = 27;
 						}
 
-						if($form['multiple']<=2) {
+						if($form['multiple']!=FORM_MULTIPLE_KEY) {
 							$data[$key] = array_combine($data[$key],$data[$key]);
 						}
 
@@ -1227,30 +1236,33 @@ class static_form {
 		if(($form['type']=='ckedit' or $form['type']=='text' or $form['type']=='textarea') and strpos($data[$key],'(#')!==false) {
 			$data[$key] = str_replace(array('(#','#)'),array('{#','#}'),$data[$key]);
 		}
-
-
 		/*Целое число*/
-		elseif($form['type']=='int' and (!isset($form['mask']['toint']) or $form['mask']['toint'])) 
+		elseif($form['type']=='int' and (!isset($form['mask']['toint']) or $form['mask']['toint'])) {
 			$data[$key]= str2int($data[$key]);
-
+		}
 		/*Список*/
 		elseif(($form['type']=='list' or $form['type']=='ajaxlist'))
 		{
-			if(isset($form['mask']['keylist']) and $form['mask']['keylist']) {
-				if($data[$key] and $_this->_checkList($form['listname'],$key)===false)
-					$error[] = 33;
-			} 
-			else {
-				if($data[$key] and $_this->_checkList($form['listname'],$data[$key])===false)
-					$error[] = 33;
+			if($data[$key] and $_this->_checkList($form['listname'],$data[$key])===false) {
+				$error[] = 33;
+				print_r('<pre>');print_r($data);print_r($form); exit($data[$key]);
+			}
+
+		}
+
+		//keyValueList
+		if(isset($form['keytype']) && $form['keytype']=='list' and isset($form['keyListName']) ) {
+			if($data[$key] and $_this->_checkList($form['keyListName'],$key)===false) {
+				$error[] = 35;
+				print_r('<pre>');print_r($form); exit($key);
 			}
 		}
 
 
-
 		/*Преоразуем HTML сущности*/
-		if(isset($form['mask']['entities']) and $form['mask']['entities']==1) 
+		if(isset($form['mask']['entities']) and $form['mask']['entities']==1) {
 			$data[$key]= htmlspecialchars($data[$key],ENT_QUOTES,$_this->_CFG['wep']['charset']);
+		}
 
 		/*Замена по регулярному выражению*/
 		if(isset($form['mask']['replace']))

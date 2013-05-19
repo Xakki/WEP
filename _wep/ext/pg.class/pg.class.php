@@ -16,8 +16,8 @@ class pg_class extends kernel_extends {
 		$this->config['memcache'] = 0;
 		$this->config['memcachezip'] = 0;
 		$this->config['sitemap'] = 1;
-		$this->config['IfDontHavePage'] = '';
-		$this->config['rootPage'] =  array (0 => 1);
+		$this->config['rootPage'] =  array('default' => 1);
+		$this->config['IfDontHavePage'] = array();
 		$this->config['menu'] = array(
 			0 => '',
 			1 => 'Меню TOP',
@@ -49,10 +49,14 @@ class pg_class extends kernel_extends {
 		$this->config_form['memcache'] = array('type' => 'int', 'caption' => 'Memcache time по умолчанию', 'comment' => '-1 - отключить полностью, 0 - кеширование определяется в контенте, 1> - кеширование в сек. для всех по умолчанию');
 		$this->config_form['memcachezip'] = array('type' => 'checkbox', 'caption' => 'Memcache сжатие кеша');
 		$this->config_form['sitemap'] = array('type' => 'checkbox', 'caption' => 'SiteMap XML', 'comment' => 'создавать в корне сайта xml файл карты сайта для поисковиков');
-		$this->config_form['IfDontHavePage'] = array('type' => 'list', 'listname' => 'list', 'caption' => 'Если нету совпадений , то по умолчанию будет следующая страница');
-		$this->config_form['rootPage'] = array('type' => 'list', 'keytype' => 'text', 'listname' => array('class' => 'pg', 'where' => 'parent_id=0'), 'multiple' => 3, 'caption' => 'Мульти-домен', 'comment' => 'Укажите страницу для каждого домена, по умолчанию для ненайденного домена будет загружаться первая позиция', 'mask' => array('maxarr' => 20));
-		$this->config_form['menu'] = array('type' => 'text', 'keytype' => 'int', 'multiple' => 3, 'caption' => 'Блоки меню', 'mask' => array('maxarr' => 30));
-		$this->config_form['marker'] = array('type' => 'text', 'keytype' => 'text', 'multiple' => 3, 'caption' => 'Маркеры', 'mask' => array('maxarr' => 50));
+		$this->config_form['rootPage'] = array('type' => 'list', 'listname' => array('class' => 'pg', 'where' => 'parent_id=0'), 'keytype' => 'text', 'multiple' => FORM_MULTIPLE_KEY, 'mask' => array('maxarr' => 20), 
+			'caption' => 'Мульти-домен', 'comment' => 'Укажите страницу для каждого домена, по умолчанию для ненайденного домена будет загружаться первая позиция');
+		$this->config_form['IfDontHavePage'] = array('type' => 'list', 'listname' => 'list', 'multiple' => FORM_MULTIPLE_KEY, 'mask' => array('maxarr' => 20),
+			'keytype' => 'list', 'keyListName' =>  array('class' => 'pg', 'where' => 'parent_id=0'), 
+			'caption' => 'Если нету совпадений , то по умолчанию будет следующая страница');
+		//$this->config_form['IfDontHavePage'] = array('type' => 'list', 'listname' => 'list', 'caption' => 'Если нету совпадений , то по умолчанию будет следующая страница');
+		$this->config_form['menu'] = array('type' => 'text', 'keytype' => 'int', 'multiple' => FORM_MULTIPLE_KEY, 'mask' => array('maxarr' => 30), 'caption' => 'Блоки меню');
+		$this->config_form['marker'] = array('type' => 'text', 'keytype' => 'text', 'multiple' => FORM_MULTIPLE_KEY, 'mask' => array('maxarr' => 50), 'caption' => 'Маркеры');
 		$this->config_form['auto_auth'] = array('type' => 'checkbox', 'caption' => 'Автоматическая авторизация');
 		$this->config_form['rf_on'] = array('type' => 'checkbox', 'caption' => 'Для руского домена использовать НАЗВАНИЕ страницы');
 		$this->config_form['newadmin_on'] = array('type' => 'checkbox', 'caption' => 'Включить "Новую админку"', 'comment'=>'В последствии к каждому контенту будет создаваться div обертка');
@@ -74,6 +78,7 @@ class pg_class extends kernel_extends {
 		$this->default_access = '|1|'; // По умолчанию ставим доступ на чтений всем пользователям
 		$this->MEMCACHE = null;
 		$this->rootPage = null;
+		$this->IfDontHavePage = null;
 		$this->_AllowAjaxFn['AjaxForm'] = true;
 		$this->formFlag = null; // Для Аякс формы, 
 		$this->current_path = '';
@@ -134,7 +139,7 @@ class pg_class extends kernel_extends {
 		$this->fields_form['design'] = array('type' => 'list', 'listname' => 'themes', 'caption' => 'Дизайн', 'mask' => array(), 'style' => 'background-color:#5884AC;');
 		$this->fields_form['template'] = array('type' => 'list', 'listname' => 'templates', 'caption' => 'Шаблон', 'comment' => '', 'mask' => array('onetd' => 'close'), 'style' => 'background-color:#5884AC;');
 
-		$this->fields_form['onmenu'] = array('type' => 'list', 'listname' => 'menu', 'multiple' => 2, 'caption' => 'Меню', 'mask' => array('onetd' => 'Опции'));
+		$this->fields_form['onmenu'] = array('type' => 'list', 'listname' => 'menu', 'multiple' => FORM_MULTIPLE_JQUERY, 'caption' => 'Меню', 'mask' => array('onetd' => 'Опции'));
 		$this->fields_form['menuajax'] = array('type' => 'checkbox', 'caption' => 'AJAX', 'comment' => 'Загружать контент аяксом при клике в меню', 'default' => 0);
 
 		$this->fields_form['onmap'] = array('type' => 'checkbox', 'caption' => 'Карта', 'comment' => 'Отображать эту страницу на карте сайта', 'default' => 1, 'style' => 'background-color:#B3D142;');
@@ -146,7 +151,7 @@ class pg_class extends kernel_extends {
 		$this->fields_form['aparam'] = array('type' => 'text', 'caption' => 'Параметры для ссылки в меню', 'comment' => 'Например если прописать: var=1&var2=3 ,дополняет путь в меню alias.html?var=1&var2=3', 'mask' => array('name' => 'all', 'fview' => 1));
 
 		if ($this->_CFG['wep']['access'])
-			$this->fields_form['ugroup'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'ugroup', 'caption' => 'Доступ пользователю', 'default' => '0', 'mask' => array());
+			$this->fields_form['ugroup'] = array('type' => 'list', 'multiple' => FORM_MULTIPLE_JQUERY, 'listname' => 'ugroup', 'caption' => 'Доступ пользователю', 'default' => '0', 'mask' => array());
 		$this->fields_form['ordind'] = array('type' => 'number', 'caption' => 'ORD', 'mask' => array());
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
 
@@ -402,7 +407,7 @@ class pg_class extends kernel_extends {
 				$this->display_inc(implode(',',$this->config['IfDontHavePage']));
 			}
 			*/
-			$this->id = $this->config['IfDontHavePage'];
+			$this->id = $this->config['IfDontHavePage'][$this->rootPage];
 			$this->pageinfo = $this->dataCash[$this->id];
 			if ($this->pageinfo['href'])
 				static_main::redirect($this->pageinfo['href']);
@@ -581,8 +586,9 @@ class pg_class extends kernel_extends {
 	* Вывод по ID контента
 	*/
 	public function display_inc($id) {
+		$id = (int) $id;
 		$Cdata = $oId = array();
-		$cls = 'SELECT * FROM ' . $this->SQL_CFG['dbpref'] . 'pg_content WHERE active=1 and id IN ("' . (int) $id . '")';
+		$cls = 'SELECT * FROM ' . $this->SQL_CFG['dbpref'] . 'pg_content WHERE active=1 and id IN ("' . $id . '")';
 		$resultPG = $this->SQL->execSQL($cls);
 		if (!$resultPG->err)
 			while ($rowPG = $resultPG->fetch()) {
@@ -595,8 +601,12 @@ class pg_class extends kernel_extends {
 
 			$this->initHTML();
 		}
+		global $_tpl;
 		$this->access_flag = false;
-		return $this->getContent($Cdata);
+		$flag = $this->getContent($Cdata);
+		$_tpl['_CID'] = $_tpl[$Cdata[$id]['marker']];
+		$_tpl['text'] = $_tpl[$Cdata[$id]['marker']] = '';
+		return $flag;
 	}
 
 	/**
@@ -1042,8 +1052,9 @@ class pg_class extends kernel_extends {
 						break;
 					}
 				}
+				reset($this->config['rootPage']);
 				if (is_null($this->rootPage))
-					$this->rootPage = array_shift($this->config['rootPage']);
+					$this->rootPage = current($this->config['rootPage']);
 			} else
 				$this->rootPage = $this->config['rootPage'];
 

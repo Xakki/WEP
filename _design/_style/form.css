@@ -372,10 +372,9 @@
 
 	.divform .ilist select {
 		width:auto;
-		width-max: 40%;
+		max-width: 45%;
 	}
 	.ui-sortable {
-		position: relative;
 	}
 	.ui-sortable-placehelper {
 	}

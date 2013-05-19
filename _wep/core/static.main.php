@@ -569,8 +569,11 @@ class static_main {
 		if ($clearFormat) {
 			//temp
 			$text = html_entity_decode($text,ENT_QUOTES,'UTF-8');
-			if($clearFormat===2) // TEMP : 
+			if($clearFormat===2) // TODO  : для чего этот высер?
 				$text = str_replace(array('.<br />',',<br />','<br />'),array('. ',', ','. '),$text);
+			else
+				$text = str_replace(array('<br/>','<br/>','<hr>','<br>','><'), array(' ',' ',' ',' ','> <'),$text);
+
 			$text = trim(strip_tags($text),"\s\t\r\n\0\x0B");// \xA0 из за него кавычки и пробелы тупят
 		}
 		if (mb_strlen($text) > $col)
@@ -1560,6 +1563,10 @@ function setCss($styles, $isAuto = true)
 function getUrlCss($r, $customTheme=null)
 {
 	global $_CFG;
+
+	if($_CFG['site']['usecdn'] && isset($_CFG['site']['cdn'][$r]))
+		return $_CFG['site']['cdn'][$r];
+		
 	if(!$customTheme) $customTheme = getUrlTheme();
 	if(strpos($r, '#themes#')!==false) 
 		$r = str_replace('#themes#', $customTheme.'style/', $r).'.css';
@@ -1600,8 +1607,8 @@ function getUrlScript($r, $customTheme=null)
 {
 	global $_CFG;
 
-	if(isset($_CFG['site']['CDN'][$r]))
-		return $_CFG['site']['CDN'][$r];
+	if($_CFG['site']['usecdn'] && isset($_CFG['site']['cdn'][$r]))
+		return $_CFG['site']['cdn'][$r];
 
 	if(!$customTheme) $customTheme = getUrlTheme();
 	if(strpos($r, '#themes#')!==false) 

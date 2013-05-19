@@ -71,11 +71,14 @@ $_CFG['site'] = array(// для сайта
 	'template' => 'default',
 	'production' => false,
 	'origin' => '',
-	'CDN' => array(
+	'usecdn' => true,
+	'cdn' => array(
 		'jquery' => '//yandex.st/jquery/1.9.1/jquery.min.js',
-		'script.jquery/jquery-ui' => '//yandex.st/jquery-ui/1.10.2/jquery-ui.min.js',
+		'script.jquery/jquery-ui' => '//yandex.st/jquery-ui/1.10.3/jquery-ui.min.js',
 		'highlight' => '//yandex.st/highlightjs/7.3/highlight.min.js',
-		'bootstrap' => '//yandex.st/bootstrap/2.3.1/js/bootstrap.min.js'
+		'bootstrap' => '//yandex.st/bootstrap/2.3.1/js/bootstrap.min.js',
+
+		'style.jquery/smoothness/jquery-ui' => '//yandex.st/jquery-ui/1.10.3/themes/smoothness/jquery-ui.min.css',
 	),
 );
 $_CFG['memcache'] = array(
@@ -254,9 +257,10 @@ $_CFG['vendors'] = array(
 	),
 );
 
-define('FORM_MULTIPLE', 1);
-define('FORM_MULTIPLE_2', 2);
-define('FORM_MULTIPLE_3', 3);
+// Вид списка формы с множественной выборкой
+define('FORM_MULTIPLE_SIMPLE', 1);
+define('FORM_MULTIPLE_JQUERY', 2);
+define('FORM_MULTIPLE_KEY', 3);
 
 //ERRORS
 $_CFG['_error'] = array(

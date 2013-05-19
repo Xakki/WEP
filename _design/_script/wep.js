@@ -207,19 +207,36 @@ window.wep = {
 	/**
 	* Загрузка(обновление) определенного контента АЯКСОМ на текущей страницы
 	*/
-	ajaxLoadContent: function(ctId,selector,callFunc) {
+	ajaxLoadContent: function(domObject,callFunc) {
+
+		if(!$(domObject).hasClass('wep-pgc')) {
+			return false;
+		}
+		var ctId = substr($(domObject).attr('id'),3);
 		if(!ctId) return false;
+
+		wep.ajaxLoadContent(ctId, domObject, callFunc);
+		
 		param = {
 			'href' : location.href,
 			'type' : 'GET',
-			'data' : {'_ctId':ctId},
-			'insertobj' : selector,
+			'data' : {'PGCID':ctId},
+			'insertobj' : $(domObject),
 			'inserttype' : 'replace'
 		};
+
 		
-		if(callFunc)
+		if(callFunc) {
 			param['call'] = callFunc;
+		}
+		else {
+			param['call'] = function(result, param) {
+				$(domObject).replaceWith(result._CID);
+			};
+		}
+
 		wep.JSWin(param);
+
 		return false;
 	},
 
@@ -409,8 +426,8 @@ window.wep = {
 			if(confirm('Редирект на '+result.redirectConfirm))
 			{
 				window.location.href = result.redirectConfirm;
-				return false;
 			}
+			return false;
 		}
 
 		jQuery(param['insertobj']).trigger('ajaxSuccess', [result, param]);
@@ -429,14 +446,6 @@ window.wep = {
 			
 		}
 
-		//функц. предзапуска 
-		// if(typeof param['precall'] != 'undefined') 
-		// {
-		// 	if(typeof param['precall'] == 'function')
-		// 		param['precall'].call(this, result, param);
-		// 	else if(typeof param['precall'] == 'string')
-		// 		eval(param['precall']+'(result, param);');
-		// }
 		wep.helperCallBackFunction(param['precall'], result, param);
 
 		// Show content
@@ -1300,7 +1309,7 @@ window.wep = {
 	},
 
 	iSortable : function() {// сортировка
-		wep.include('/_design/_script/script.jquery/jquery-ui.js',function() {
+		// wep.include('/_design/_script/script.jquery/jquery-ui.js',function() {
 			$('table.superlist>tbody').sortable({
 				items: '>tr.tritem',
 				axis:	'y',
@@ -1328,7 +1337,7 @@ window.wep = {
 					JSWin(param);
 				}
 			});
-		});
+		// });
 	},
 
 	SuperGroup: function(obj) {

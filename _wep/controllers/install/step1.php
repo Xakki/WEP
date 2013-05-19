@@ -29,7 +29,7 @@ foreach($_CFGFORM as $kt=>$rb) {
 				$r['value'] = $USER_CFG[$kt][$k];
 			if(isset($_POST['sbmt'])) {
 				if(isset($_POST[$kt][$k])) {
-					if(isset($r['multiple']) and $r['multiple'] and count($_POST[$kt][$k]))
+					if(isset($r['multiple']) and $r['multiple']<=FORM_MULTIPLE_JQUERY and count($_POST[$kt][$k]))
 						$_POST[$kt][$k] = array_combine($_POST[$kt][$k],$_POST[$kt][$k]);
 					$r['value'] = $_POST[$kt][$k];
 				}
@@ -72,13 +72,13 @@ if (isset($_POST['sbmt']) and $flag) {
 		if(strpos($_POST['wep']['password'], '***')!==false)
 			$_POST['wep']['password'] = $USER_CFG['wep']['password'];
 
-		list($sqlfl,$mess) = static_tools::saveUserCFG($_POST,$TEMP_CFG);
+		list($sqlfl,$mess) = static_tools::saveUserCFG($_POST);
 	}
 	else
 		$mess[] = array('error',$txt);
 	//Записать в конфиг все данные которые отличаются от данных по умолчанию
 	if ($sqlfl) {
-		file_put_contents($_CFG['_FILE']['HASH_KEY'],(md5(time()).md5($_CFG['wep']['md5'])));
+		file_put_contents($_CFG['_FILE']['HASH_KEY'], (md5(time()).md5($_CFG['wep']['md5'])));
 		$mess[] = $var_const['mess'];
 		$DATA['messages'] = $mess;
 		$_SESSION['step'] = 2;

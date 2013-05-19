@@ -25,40 +25,17 @@ class static_list {
 			if (!is_array($data) or !count($data))
 				return false;
 
-			$temp2 = array();
-			$temp = current($data);
-
 			// Скорее всего вскоре этот блок будет лишним , 
-			// по идее _checkList всегжа жолжен иметь $value
+			// по идее _checkList всегжа должен иметь $value
 			// и _getCashedList выдает готовый рез-тат
-			if (is_array($temp) and !isset($temp['#name#'])) {
-				foreach ($data as $krow => $row) {
-					if (isset($temp2[$krow])) {
-						if (is_array($temp2[$krow]))
-							$adname = $temp2[$krow]['#name#'];
-						else
-							$adname = $temp2[$krow];
-						foreach ($row as $kk => $rr) {
-							if(is_array($rr)) {
-								if(isset($rr['#name#']))
-									$rr = $rr['#name#'];
-								else
-									$rr = implode(' / ',$rr);
-							}
-							$row[$kk] = $adname . ' - ' . $rr;
-						}
-						if (is_array($temp2[$krow]) and isset($temp2[$krow]['#checked#']))
-							unset($temp2[$krow]);
-					}
-					$temp2 += $row;
-				}
-				$temp = &$temp2;
-			}else
-				$temp = &$data;
+			$temp = self::fix_checklist($data);
+
 			if (is_null($value))// не кешируем если не задано значение и  or !is_array($listname) $listname - выборка из БД(в массиве)
 				$_this->_CFG['enum_check'][$templistname] = $temp;
-		}else
+		}
+		else {
 			$temp = &$_this->_CFG['enum_check'][$templistname];
+		}
 
 		if (is_array($value)) {
 			$return_value = array();
@@ -73,6 +50,40 @@ class static_list {
 			return $temp[$value];
 		}
 		return false;
+	}
+
+	// fix list data 
+	static function fix_checklist($data) 
+	{
+		$temp2 = array();
+		$temp = current($data);
+		if (is_array($temp) and !isset($temp['#name#'])) {
+			foreach ($data as $krow => $row) {
+				if (isset($temp2[$krow])) {
+					if (is_array($temp2[$krow]))
+						$adname = $temp2[$krow]['#name#'];
+					else
+						$adname = $temp2[$krow];
+					foreach ($row as $kk => $rr) {
+						if(is_array($rr)) {
+							if(isset($rr['#name#']))
+								$rr = $rr['#name#'];
+							else
+								$rr = implode(' / ',$rr);
+						}
+						$row[$kk] = $adname . ' - ' . $rr;
+					}
+					if (is_array($temp2[$krow]) and isset($temp2[$krow]['#checked#']))
+						unset($temp2[$krow]);
+				}
+				$temp2 += $row;
+			}
+			$temp = &$temp2;
+		} 
+		else {
+			$temp = &$data;
+		}
+		return $temp;
 	}
 
 	/**
@@ -614,7 +625,7 @@ class static_list {
 		$s = array();
 		if(!is_array($data) or !count($data)) return $s;
 
-		if ($multiple == 2 and is_array($select) and count($select)) {
+		if ($multiple == FORM_MULTIPLE_JQUERY and is_array($select) and count($select)) {
 			foreach ($select as $sr) {
 				foreach ($data as $kk => $kd) {
 					if (isset($kd[$sr])) {
@@ -627,7 +638,7 @@ class static_list {
 					}
 				}
 			}
-			$multiple = 22;
+			$multiple = 'is temp key';
 		}
 
 		if (isset($data[$id]) and is_array($data[$id]) and count($data[$id]))
@@ -638,7 +649,7 @@ class static_list {
 		foreach ($temp as $key => $value) {
 			if ($select != '' and is_array($select)) {
 				if (isset($select[$key])) {
-					if ($multiple == 22)
+					if ($multiple === 'is temp key')
 						continue;
 					$sel = 1;
 				}

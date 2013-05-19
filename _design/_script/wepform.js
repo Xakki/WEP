@@ -193,9 +193,10 @@ wep.form = {
 		$(obj).parent().find('.ilist-val').attr('name',k+'['+$(obj).val()+']');
 	},
 	iListCopy : function(ths,obj,max) {
-		var sz = $(obj).size();
+		jObj = $(obj);
+		var sz = jObj.size();
 		if(sz<max || !max) {
-			var clon = $(obj+':last').clone();
+			var clon = jObj.clone();
 			var in1 = clon.find('.ilist-key');
 			var defval = '';
 			if(in1.attr('type')=='int')
@@ -224,23 +225,23 @@ wep.form = {
 	},
 
 	iListsort : function(id) {// сортировка
-		wep.include('/_design/_script/script.jquery/jquery-ui.js', function() {
+		// wep.include('/_design/_script/script.jquery/jquery-ui.js', function() {
 			$(id).sortable({
-				items: '>div.ilist',
+				items: '>.ilist',
 				axis:	'y',
 				helper: 'original',
 				opacity:'false',
-				revert: true,// плавное втыкание
+				revert: 100,// плавное втыкание
 				//placeholder:'sortHelper',
 				handle: '.ilistsort',
 				tolerance: 'pointer'
 				/*start: function(event, ui) {
 					//console.log(ui.helper);
 				},*/
-				//sort: function(event, ui) { ... },
+				//`: function(event, ui) { ... },
 				//change: function(event, ui) {console.log('*change');console.log(ui);},
 			});
-		});
+		// });
 	},
 
 	// Для старых браузеров не поддерживающие input type=number
@@ -294,6 +295,9 @@ wep.form = {
 	        if(keyCode>=112 && keyCode<=123) // ФУНКЦИОНАЛЬНЫЕ КЛАВИШИ
 	            return true;
 
+	        if(keyCode==109 || keyCode==189) // знак минус
+	            return true;
+
 			var сhar = getKeyChar(e);
 			if(!isUnsigned && val===сhar && val===valNegative)
 			{
@@ -309,7 +313,8 @@ wep.form = {
 	            intValue = сhar.replace(/[^0-9]+/g, '');
 		        else // Если это спец символ
 		        	return true;
-		        console.log('++', сhar, typeof(сhar) );
+		        console.log(keyCode, '++', сhar, typeof(сhar) ); 
+
 		        if(!intValue && intValue!==0)
 		            return false;
 	        }

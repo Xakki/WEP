@@ -52,8 +52,10 @@ class product_class extends kernel_extends {
 
 		$this->config_form['temp_olden'] = array('type' => 'checkbox', 'caption' => 'Включить дополнительные поля');
 		$this->config_form['imageCnt'] = array('type' => 'int', 'caption' => 'Число фотографий');
-		$this->config_form['prodListTable'] = array('type' => 'list', 'keytype' => 'text', 'listname' => 'fieldslist', 'multiple' => 3, 'caption' => 'Формат вывода шаблона табличного списка', 'mask' => array('maxarr' => 15,'keylist'=>true));
-		$this->config_form['prodItem'] = array('type' => 'list', 'keytype' => 'text', 'listname' => 'fieldslist', 'multiple' => 3, 'caption' => 'Данные для вывода в информации о товаре', 'mask' => array('maxarr' => 15,'keylist'=>true));
+		$this->config_form['prodListTable'] = array('type' => 'text', 'multiple' => 3, 'mask' => array('maxarr' => 15),
+			'keytype' => 'list', 'keyListName' => 'fieldslist',  'caption' => 'Формат вывода шаблона табличного списка');
+		$this->config_form['prodItem'] = array('type' => 'text', 'multiple' => 3, 'mask' => array('maxarr' => 15),
+			'keytype' => 'list', 'keyListName' => 'fieldslist', 'caption' => 'Данные для вывода в информации о товаре' );
 	}
 
 	protected function _create() {

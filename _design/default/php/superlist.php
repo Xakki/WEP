@@ -126,10 +126,13 @@
 			$html .= '<th>№</th>';
 		// Сортировка
 		if(isset($data['mf_ordctrl'])) {
-			if($data['order']=='t1.'.$data['mf_ordctrl'])
+			if($data['order']=='t1.'.$data['mf_ordctrl']) {
 				$_tpl['onload'] .= 'wep.iSortable();';
-			else
+				plugJQueryUI();
+			}
+			else {
 				unset($data['mf_ordctrl']);
+			}
 		}
 		foreach($data['thitem'] as $r) {
 			if(!$tdflag) {

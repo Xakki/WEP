@@ -853,6 +853,7 @@ class static_tools {
 
 	static function saveCFG($SetDataCFG, $file, $DEF_CFG = array()) {
 		global $_CFG;
+
 		$fl = false;
 		$mess = array();
 		$putFile = array();
@@ -865,22 +866,25 @@ class static_tools {
 		}
 		foreach ($DEF_CFG as $k => $r) {
 			foreach ($r as $kk => $defr) {
+				$newr = '';
+				$flag = false;
 				if (isset($SetDataCFG[$k][$kk]))
 					$newr = $SetDataCFG[$k][$kk];
 				elseif (isset($USER_CFG[$k][$kk]))
 					$newr = $USER_CFG[$k][$kk];
 
-				$flag = false;
 				if (is_string($newr)) {
-					if ($fl or $newr != $defr)
+					if ($fl or $newr != $defr) {
 						$flag = true;
-					$newr = '\'' . addcslashes($newr, '\'') . '\'';
+						$newr = '\'' . addcslashes($newr, '\'') . '\'';
+					}
 				}
 				elseif (is_array($newr)) {
-					if ($fl or !is_array($defr) or count(array_diff($defr, $newr))){
+					if ($fl or $newr!==$defr ) { // or !is_array($defr)
 						$flag = true;
+						$newr = str_replace(array("\n", "\t", "\r", '   ', '  '), array('', '', '', ' ', ' '), var_export($newr, true));
 					}
-					$newr = str_replace(array("\n", "\t", "\r", '   ', '  '), array('', '', '', ' ', ' '), var_export($newr, true));
+					
 				} else {
 					$newr = (int) $newr;
 					if ($fl or $newr != $defr)

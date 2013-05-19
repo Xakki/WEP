@@ -20,8 +20,8 @@ if (!isset($FUNCPARAM[2]))
 	// рисуем форму для админки чтобы удобно задавать параметры
 	if (isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 		$form = array(
-			'0' => array('type' => 'list', 'listname' => 'phptemplates', 'caption' => 'Шаблон'),
-			'1'=>array('type'=>'list','listname'=>'ownerlist', 'caption'=>'На какую страницу указывать'),
+			'0' => array('type' => 'list', 'listname' => array('phptemplates', 'tags'=>'rubric_class'), 'caption' => 'Шаблон'),
+			'1'=>array('type'=>'list','listname'=>'ownerlist', 'caption'=>'Основная страница рубрикатора'),
 			'2' => array('type' => 'list', 'listname' => array('class'=>'rubric','is_tree'=>true), 'caption' => 'Начало рубрики'),
 		);
 		return $form;

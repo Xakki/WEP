@@ -99,7 +99,9 @@ function tpl_form(&$data, $tabs = array())
 			continue;
 		}
 
-		$texthtml .= '<div id="tr_'.$k.'" style="'.(isset($r['style'])?$r['style']:'').'" class="div-tr'.
+		$ID = $r['ID'] =  str_replace(array('[',']'), '_', $k);
+
+		$texthtml .= '<div id="tr_'.$r['ID'].'" style="'.(isset($r['style'])?$r['style']:'').'" class="div-tr'.
 				((isset($r['css']) and $r['css'])?' '.$r['css']:'').
 				((isset($r['mask']['min']) and $r['mask']['min'])?' required':'').
 				((isset($r['readonly']) and $r['readonly'])?' readonly':'').'">';
@@ -208,12 +210,12 @@ function tpl_form(&$data, $tabs = array())
 					$ckedit['allowedContent'] = 'true';
 					//unset($ckedit['extraPlugins']);
 
-					// if(typeof CKEDITOR.instances.id_'.$k.' == \'object\') 
+					// if(typeof CKEDITOR.instances.id_'.$ID.' == \'object\') 
 					// {
-					// 	CKEDITOR.instances.id_'.$k.'.destroy(true);
+					// 	CKEDITOR.instances.id_'.$ID.'.destroy(true);
 					// } 
-					$fckscript = 'function cke_'.$k.'() { 
-						CKEDITOR.replace( \'id_'.$k.'\',
+					$fckscript = 'function cke_'.$ID.'() { 
+						CKEDITOR.replace( \'id_'.$ID.'\',
 							{';
 
 					/**
@@ -252,8 +254,8 @@ function tpl_form(&$data, $tabs = array())
 					// if(isset($ckedit['CKFinder'])) {
 					// 	$_tpl['script'][$_CFG['PATH']['vendors'].'ckfinder/ckfinder.js'] = 1;
 
-					// 	$fckscript = ' function ckf_'.$k.'() { CKFinder.setupCKEditor(editor_'.$k.',\'/'.$_CFG['PATH']['WSWG'].'ckfinder/\');} '.$fckscript;
-					// 	$fckscript .= ' ckf_'.$k.'();';
+					// 	$fckscript = ' function ckf_'.$ID.'() { CKFinder.setupCKEditor(editor_'.$ID.',\'/'.$_CFG['PATH']['WSWG'].'ckfinder/\');} '.$fckscript;
+					// 	$fckscript .= ' ckf_'.$ID.'();';
 						
 					// 	if(isset($ckedit['CKFinder']['allowedExtensions']) and $_SESSION)
 					// 		$_SESSION['wswg']['AE'] = $ckedit['CKFinder']['allowedExtensions'];
@@ -262,10 +264,10 @@ function tpl_form(&$data, $tabs = array())
 
 
 					$fckscript .= '}';
-					//if(!isset($fields[$k.'_ckedit']['value']) or $fields[$k.'_ckedit']['value']=='' or $fields[$k.'_ckedit']['value']=='1')
-					$_tpl['onload'] .= $fckscript.' cke_'.$k.'();';
+					//if(!isset($fields[$ID.'_ckedit']['value']) or $fields[$ID.'_ckedit']['value']=='' or $fields[$ID.'_ckedit']['value']=='1')
+					$_tpl['onload'] .= $fckscript.' cke_'.$ID.'();';
 
-				$texthtml .= '<div class="form-value ckedit-value"><textarea id="id_'.$k.'" name="'.$k.'" rows="10" cols="80" '.$attribute.'>'.htmlspecialchars((string)$r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
+				$texthtml .= '<div class="form-value ckedit-value"><textarea id="id_'.$ID.'" name="'.$k.'" rows="10" cols="80" '.$attribute.'>'.htmlspecialchars((string)$r['value'],ENT_QUOTES,$_CFG['wep']['charset']).'</textarea></div>';
 			}
 			elseif($r['type']=='radio') {
 				$texthtml .= '<div class="form-value radiolist">';
@@ -327,7 +329,7 @@ function tpl_form(&$data, $tabs = array())
 				}
 				// end checkbox
 			}
-			elseif($r['type']=='ajaxlist' and isset($r['multiple'])) {
+			elseif($r['type']=='ajaxlist' and isset($r['multiple']) and $r['multiple']) {
 				global $_tpl;
 
 				if(!is_array($r['value']))
@@ -342,7 +344,7 @@ function tpl_form(&$data, $tabs = array())
 					}
 					else {
 						$value = '';
-						$_tpl['onload'] .= ' jQuery(\'#tr_'.$k.' div.ajaxlist\').eq('.$i.').hide(); ';
+						$_tpl['onload'] .= ' jQuery(\'#tr_'.$ID.' div.ajaxlist\').eq('.$i.').hide(); ';
 					}
 					if(isset($r['value_2'][$i])) $value_2 = strip_tags ($r['value_2'][$i]);
 					// TODO : Придумать форматированный вывод 
@@ -350,10 +352,10 @@ function tpl_form(&$data, $tabs = array())
 					$r['csscheck'] = ($value_2?'accept':'reject');
 					$texthtml .= '<div class="form-value ajaxlist">
 						<input type="text" name="'.$k.'_2['.$i.']" value="'.$value_2.'" placeholder="'.$r['placeholder'].'" class="'.$r['csscheck'].'" autocomplete="off" 
-							onfocus="show_hide_label(this,\''.$k.'\',1,\''.$i.'\')" 
-							onblur="show_hide_label(this,\''.$k.'\',0,\''.$i.'\')"
-							onkeyup="return ajaxlistOnKey(event,this,\''.$k.'\',\''.$i.'\')"/>
-						<div id="ajaxlist_'.$k.'_'.$i.'_" style="display:none;" onfocus="chFocusList(0)" onblur="chFocusList(1)">не найдено</div>
+							onfocus="show_hide_label(this,\''.$ID.'\',1,\''.$i.'\')" 
+							onblur="show_hide_label(this,\''.$ID.'\',0,\''.$i.'\')"
+							onkeyup="return ajaxlistOnKey(event,this,\''.$ID.'\',\''.$i.'\')"/>
+						<div id="ajaxlist_'.$ID.'_'.$i.'_" style="display:none;" onfocus="chFocusList(0)" onblur="chFocusList(1)">не найдено</div>
 
 						<input type="hidden" name="'.$k.'['.$i.']" value="'.$value.'" '.$attribute.'/>
 					</div>';
@@ -362,7 +364,7 @@ function tpl_form(&$data, $tabs = array())
 					<input type="hidden" name="srlz_'.$k.'" value="'.htmlspecialchars($serl,ENT_QUOTES,$_CFG['wep']['charset']).'"/>';
 				if(!isset($r['comment']))
 					$r['comment'] = '';
-				$r['comment'] .= '<div class="ajaxmultiple" onclick="jQuery(\'#tr_'.$k.' div.ajaxlist:hidden\').eq(0).show(); if (jQuery(\'#tr_'.$k.' div.ajaxlist:hidden\').size() == 0) jQuery(this).hide();">Добавить '.$r['caption'].'</div>';
+				$r['comment'] .= '<div class="ajaxmultiple" onclick="jQuery(\'#tr_'.$ID.' div.ajaxlist:hidden\').eq(0).show(); if (jQuery(\'#tr_'.$ID.' div.ajaxlist:hidden\').size() == 0) jQuery(this).hide();">Добавить '.$r['caption'].'</div>';
 			}
 			elseif($r['type']=='ajaxlist') 
 			{
@@ -370,10 +372,10 @@ function tpl_form(&$data, $tabs = array())
 				$serl = serialize($r['listname']);
 				$texthtml .= '<div class="form-value ajaxlist">
 					<input type="text" name="'.$k.'_2" value="'.strip_tags($r['value_2']).'" placeholder="'.$r['placeholder'].'" class="'.$r['csscheck'].'" autocomplete="off" 
-						onfocus="show_hide_label(this,\''.$k.'\',1)" 
-						onblur="show_hide_label(this,\''.$k.'\',0)" 
-						onkeydown="return ajaxlistOnKey(event,this,\''.$k.'\')"/>
-					<div id="ajaxlist_'.$k.'" style="display:none;" onfocus="chFocusList(0)" onblur="chFocusList(1)">не найдено</div>
+						onfocus="show_hide_label(this,\''.$ID.'\',1)" 
+						onblur="show_hide_label(this,\''.$ID.'\',0)" 
+						onkeydown="return ajaxlistOnKey(event,this,\''.$ID.'\')"/>
+					<div id="ajaxlist_'.$ID.'" style="display:none;" onfocus="chFocusList(0)" onblur="chFocusList(1)">не найдено</div>
 					<input type="hidden" name="'.$k.'" value="'.$r['value'].'" '.$attribute.'/>
 				</div>
 				<input type="hidden" name="hsh_'.$k.'" value="'.md5($serl.$_CFG['wep']['md5']).'"/>
@@ -384,39 +386,19 @@ function tpl_form(&$data, $tabs = array())
 				include_once(dirname(__FILE__).'/formSelect.php');
 
 				$texthtml .= '<div class="form-value">';
-				if(isset($r['multiple'])) {
+				if(isset($r['multiple']) && $r['multiple']) {
 					if(!isset($r['mask']['size'])) $r['mask']['size'] = 10;
 					if(!isset($r['mask']['maxarr'])) $r['mask']['maxarr'] = 0;
 					if(!isset($r['mask']['minarr'])) $r['mask']['minarr'] = 0;
 				}
 
-				if(isset($r['multiple']) and $r['multiple']==2) {
+				if(isset($r['multiple']) and $r['multiple']==FORM_MULTIPLE_JQUERY) {
 					$texthtml .= '<select multiple="multiple" name="'.$k.'[]" class="multiple" size="'.$r['mask']['size'].'" '.$attribute;
 					$texthtml .= '>'.tpl_formSelect($r['valuelist'],$r['value']).'</select>';
 					plugJQueryUI_multiselect();
 				}
-				elseif(isset($r['multiple']) and $r['multiple']==3) {
-					if(!is_array($r['value']) or !count($r['value'])) $r['value'] = array('');
-					$cnt = 0;
-					foreach($r['value'] as $kval=>$rval) {
-						$cnt++;
-						$text2 = '';
-						if(isset($r['mask']['keylist']) and $r['mask']['keylist'])
-							$text2 = '<select class="ilist-val" onchange="wep.form.iListRev(this,\''.$k.'\')">'.tpl_formSelect($r['valuelist'],$kval).'</select>
-								<input class="ilist-key" type="text" value="'.$rval.'" name="'.$k.'['.$kval.']"/>';
-						else
-							$text2 = '<input class="ilist-key" type="text" value="'.$kval.'" onkeyup="wep.form.iList(this,\''.$k.'\')"/>
-								<select class="ilist-val" name="'.$k.'['.$kval.']" '.$attribute.'>'.tpl_formSelect($r['valuelist'],$rval).'</select>';
-						$texthtml .= '<div class="ilist">
-							'.$text2.'
-							<span class="ilistsort" title="Переместить"></span>
-							<span class="ilistdel" title="Удалить"'.(($cnt==1 and $r['mask']['minarr'])?' style="display:none;"':'').' onclick="wep.form.iListdel(this);"></span>
-						</div>';
-						if($r['mask']['maxarr'] and $cnt==$r['mask']['maxarr']) break;
-					}
-					$texthtml .= '<span class="ilistmultiple" onclick="wep.form.iListCopy(this,\'#tr_'.$k.' div.ilist\','.$r['mask']['maxarr'].')" title="Добавить '.$r['caption'].'">'.($r['mask']['maxarr']-count($r['value'])).'</span>';
-					$_tpl['onload'] .= 'wep.form.iListsort("#tr_'.$k.' .form-value");';
-					plugJQueryUI();
+				elseif(isset($r['multiple']) and $r['multiple']==FORM_MULTIPLE_KEY) {
+					$texthtml .= helper_form_multiple($k,$r, $attribute);
 				}
 				elseif(isset($r['multiple']) and $r['multiple']) {
 					
@@ -606,13 +588,13 @@ function tpl_form(&$data, $tabs = array())
 						$prop = '{'.implode(',',$prop).'}';
 						if($r['mask']['datepicker']['timeFormat']) {
 							plugJQueryUI_datepicker(true);
-							$_tpl['script']['dp_'.$k] = 'function dp_'.$k.'() { $("input[name='.$k.']").datetimepicker('.$prop.')}';
+							$_tpl['script']['dp_'.$ID] = 'function dp_'.$ID.'() { $("input[name='.$k.']").datetimepicker('.$prop.')}';
 						}
 						else {
 							plugJQueryUI_datepicker();
-							$_tpl['script']['dp_'.$k] = 'function dp_'.$k.'() { $("input[name='.$k.']").datepicker('.$prop.')}';
+							$_tpl['script']['dp_'.$ID] = 'function dp_'.$ID.'() { $("input[name='.$k.']").datepicker('.$prop.')}';
 						}
-						$_tpl['onload'] .= ' dp_'.$k.'(); ';
+						$_tpl['onload'] .= ' dp_'.$ID.'(); ';
 					}
 					
 					$texthtml .= '<input type="text" name="'.$k.'" value="'.$temp.'"/>';
@@ -673,7 +655,7 @@ function tpl_form(&$data, $tabs = array())
 
 					$texthtml .= '<div class="wep_thumb">
 						<a rel="fancy" href="/'.$r['value'].'" target="_blank" class="fancyimg">
-							<img src="/'.$r['value'].'" alt="img" class="attach" style="'.$css.'" id="'.$k.'_temp_upload_img"/>
+							<img src="/'.$r['value'].'" alt="img" class="attach" style="'.$css.'" id="'.$ID.'_temp_upload_img"/>
 						</a>';
 					if(isset($r['img_size']))
 						$texthtml .= '<div class="wep_thumb_comment">Размер '.$r['img_size'][0].'x'.$r['img_size'][1].'</div>';
@@ -700,11 +682,11 @@ function tpl_form(&$data, $tabs = array())
 				
 				if(isset($r['mask']['swf_uploader'])) {
 					$texthtml .= '
-						<div class="fuploader">Загрузка фаила<input type="file" name="'.$k.'" id="'.$k.'_uploader" '.$attribute.'/></div><span class="fileinfo"></span>
-						<div id="'.$k.'_notice_swf_uploader"></div>';
+						<div class="fuploader">Загрузка фаила<input type="file" name="'.$k.'" id="'.$ID.'_uploader" '.$attribute.'/></div><span class="fileinfo"></span>
+						<div id="'.$ID.'_notice_swf_uploader"></div>';
 
 					$_tpl['script']['SWFUpload/swfupload_fp10/swfupload'] = 1;
-					$_tpl['onload'] .= 'wep.swfuploader.bindSWFUpload({button_placeholder_id:"'.$k.'_uploader", field_name:"'.$k.'"});';
+					$_tpl['onload'] .= 'wep.swfuploader.bindSWFUpload({button_placeholder_id:"'.$ID.'_uploader", field_name:"'.$k.'"});';
 					//SESSID = "'.session_id().'"; 
 				}
 				else {
@@ -765,7 +747,7 @@ function tpl_form(&$data, $tabs = array())
 				$_tpl['script']['script.jquery/colorpicker/js/eye'] = 1;
 				$_tpl['script']['script.jquery/colorpicker/js/utils'] = 1;
 				$_tpl['script']['script.jquery/colorpicker/js/layout'] = 1;
-				$_tpl['onload'] .= ' jQuery(\'#tr_'.$k.' div.colorPicker input\').ColorPicker({
+				$_tpl['onload'] .= ' jQuery(\'#tr_'.$ID.' div.colorPicker input\').ColorPicker({
 					onSubmit: function(hsb, hex, rgb, el) {
 						$(el).val(\'#\'+hex);
 						$(el).ColorPickerHide();
@@ -783,21 +765,7 @@ function tpl_form(&$data, $tabs = array())
 
 			}*/
 			elseif(isset($r['multiple']) AND $r['multiple'] and !$r['readonly']) {
-				if(!is_array($r['value']) or !count($r['value'])) $r['value'] = array('');
-				if(!isset($r['mask']['maxarr'])) $r['mask']['maxarr'] = 10;
-				if(!isset($r['keytype'])) $r['keytype'] = 'text';
-				$cnt = 0;
-				$texthtml .= '<div class="form-value">';
-					foreach($r['value'] as $kval=>$rval) {
-						$cnt++;
-						$texthtml .= '<div class="ilist">
-						<input class="ilist-key" type="'.$r['keytype'].'" value="'.htmlspecialchars($kval,ENT_QUOTES,$_CFG['wep']['charset']).'" maxlength="20" onkeyup="wep.form.iList(this,\''.$k.'\')"/>
-						<input class="ilist-val" type="text" name="'.$k.'['.$kval.']" value="'.htmlspecialchars($rval,ENT_QUOTES,$_CFG['wep']['charset']).'" '.$attribute.'/>
-						<span'.($cnt==1?' style="display:none;"':'').' class="ilistdel" onclick="wep.form.iListdel(this);" title="Удалить"></span></div>';
-						if($cnt==$r['mask']['maxarr']) break;
-					}
-					$texthtml .= '<span class="ilistmultiple" onclick="wep.form.iListCopy(this,\'#tr_'.$k.' div.ilist\','.$r['mask']['maxarr'].')" title="Добавить '.$r['caption'].'">'.($r['mask']['maxarr']-count($r['value'])).'</span>';
-				$texthtml .= '</div>';
+				$texthtml .= '<div class="form-value">'.helper_form_multiple($k, $r, $attribute).'</div>';				
 			}
 			else 
 			{
@@ -836,3 +804,60 @@ function tpl_form(&$data, $tabs = array())
 	return $texthtml;
 }
 
+
+function helper_form_multiple($k,$r, $attribute) 
+{
+	global $_tpl;
+	$texthtml = '';
+	if(!is_array($r['value']) or !count($r['value'])) $r['value'] = array('');
+	if(!isset($r['keytype'])) $r['keytype'] = 'text';
+	if(!isset($r['mask']['maxarr'])) $r['mask']['maxarr'] = 10;
+	if(!isset($r['mask']['minarr'])) $r['mask']['minarr'] = 0;
+	$cnt = 0;
+
+	foreach($r['value'] as $kval=>$rval) {
+		$cnt++;
+		$texthtml .= '<div class="ilist">
+			'.helper_form_keytype($k, $r, $kval).'
+			'.helper_form_valuetype($k, $r, $kval, $rval, $attribute).'
+			<span class="ilistsort" title="Переместить"></span>
+			<span class="ilistdel" title="Удалить"'.(($cnt==1 and $r['mask']['minarr'])?' style="display:none;"':'').' onclick="wep.form.iListdel(this);"></span>
+		</div>';
+		if($r['mask']['maxarr'] and $cnt==$r['mask']['maxarr']) break;
+	}
+	$texthtml .= '<span class="ilistmultiple" onclick="wep.form.iListCopy(this,$(this).prev(),'.$r['mask']['maxarr'].')" title="Добавить '.$r['caption'].'">'.($r['mask']['maxarr']-count($r['value'])).'</span>';
+	$_tpl['onload'] .= 'wep.form.iListsort($("#tr_'.$r['ID'].' .form-value"));';
+	plugJQueryUI();
+	return $texthtml;
+}
+
+function helper_form_keytype($k, $r, $kval) 
+{
+	global $_CFG;
+	if($r['keytype']=='list') {
+		$html = '<select class="ilist-key" onchange="wep.form.iListRev(this,\''.$k.'\')">'.tpl_formSelect($r['keyValueList'],$kval).'</select>';
+	}
+	// elseif(isset($r['mask']['keylist']) and $r['mask']['keylist']) {
+	// 	$text2 = '
+	// 		<select class="ilist-val" onchange="wep.form.iListRev(this,\''.$k.'\')">'.tpl_formSelect($r['valuelist'],$kval).'</select>
+	// 		<input class="ilist-key" type="'.$r['keytype'].'" value="'.$rval.'" name="'.$k.'['.$kval.']"/>';
+	// }
+
+	else {
+		$html = '<input class="ilist-key" type="'.$r['keytype'].'" value="'.htmlspecialchars($kval,ENT_QUOTES,$_CFG['wep']['charset']).'" onkeyup="wep.form.iList(this,\''.$k.'\')"/>';
+	}
+	return $html;
+}
+
+function helper_form_valuetype($k, $r, $kval, $rval, $attribute) 
+{
+	global $_CFG;
+	$html = '';
+	if($r['type']=='list') {
+		$html = '<select class="ilist-val" name="'.$k.'['.$kval.']" '.$attribute.'>'.tpl_formSelect($r['valuelist'],$rval).'</select>';
+	} 
+	else {
+		$html = '<input class="ilist-val" type="text" name="'.$k.'['.$kval.']" value="'.htmlspecialchars($rval, ENT_QUOTES, $_CFG['wep']['charset']).'" '.$attribute.'/>';
+	}
+	return $html;
+}

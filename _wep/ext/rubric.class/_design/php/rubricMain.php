@@ -3,6 +3,7 @@
  * Список рубрик
  * @type Рубрикатор
  * @ico default.png
+ * @tags rubric_class
  * @author Xakki
  * @version 0.1
  * @return string html
