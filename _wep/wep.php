@@ -4,7 +4,14 @@
 		die('Not defined constants');
 	}
 
+
 	require_once(WEP.'config/config.php');
+
+	//FIX URL
+	$REQUEST_URI = preg_replace('/\/+/', '/', $_SERVER['REQUEST_URI']);
+	if($REQUEST_URI!=$_SERVER['REQUEST_URI']) {
+		static_main::redirect($REQUEST_URI,301);
+	}
 
 	if(isset($_GET['_php']) and $_GET['_php']=='_captcha') {
 		if(file_exists($_CFG['_PATH']['controllers'].'_captcha.php'))

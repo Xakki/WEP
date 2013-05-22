@@ -604,6 +604,7 @@ class pg_class extends kernel_extends {
 		global $_tpl;
 		$this->access_flag = false;
 		$flag = $this->getContent($Cdata);
+		// TODO : надо хорошенько подумать тут
 		$_tpl['_CID'] = $_tpl[$Cdata[$id]['marker']];
 		$_tpl['text'] = $_tpl[$Cdata[$id]['marker']] = '';
 		return $flag;
