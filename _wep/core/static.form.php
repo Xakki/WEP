@@ -738,7 +738,7 @@ class static_form {
 								$md = array($md);
 								$key = 0;
 							}
-							$r['valuelist'] = $_this->_forlist($md, $key, $r['value'], $r['multiple'] );
+							list($r['valuelist'], $r['sel']) = $_this->_forlist($md, $key, $r['value'], $r['multiple'] );
 						}
 					}
 					else // Форма списка  только для чтения, выводится в виде текста
@@ -807,7 +807,7 @@ class static_form {
 				}
 
 				if(isset($r['multiple']) && $r['multiple']==FORM_MULTIPLE_KEY && isset($r['keyListName'])) {
-					$r['keyValueList'] = $_this->_forlist($_this->_getCashedList($r['keyListName']));
+					list($r['keyValueList'], $r['keysel']) = $_this->_forlist($_this->_getCashedList($r['keyListName']));
 				}
 
 			}

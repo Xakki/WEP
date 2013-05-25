@@ -618,6 +618,7 @@ class static_list {
 	 */
 	static function _forlist(&$data, $id=0, $select = '', $multiple = 0) /*LIST SELECTOR*/
 	{
+		$upsel = 0;
 		/*
 		  array('name'=>'NAME','id'=>1 [, 'sel'=>0, 'checked'=>0])
 		 */
@@ -669,14 +670,22 @@ class static_list {
 					$s[$key]['#name#'] = $key;
 				else
 					$s[$key]['#name#'] = $value['#name#']; //_substr($value['name'],0,60).(_strlen($value['name'])>60?'...':'')
-			}else
+			}
+			else {
 				$s[$key]['#name#'] = $value;
-			if ($key != $id and isset($data[$key]) and count($data[$key]) and is_array($data[$key]))
-				$s[$key]['#item#'] = self::_forlist($data, $key, $select, $multiple);
+			}
+
+			if ($key != $id and isset($data[$key]) and count($data[$key]) and is_array($data[$key])) {
+				list($s[$key]['#item#'], $s[$key]['#sel#']) = self::_forlist($data, $key, $select, $multiple);
+
+			}
+
+			if($s[$key]['#sel#'])
+				$upsel = $s[$key]['#sel#'];
 			/*Если это использовать то проверка данных сломается*/
 			//if (isset($value['#item#']) and is_array($value['#item#']) and count($value['#item#']))
 			//	$s[$key]['#item#'] = $value['#item#']+$s[$key]['#item#'];
 		}
-		return $s;
+		return array($s, $upsel);
 	}
 }

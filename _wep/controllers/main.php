@@ -94,12 +94,7 @@
 				static_main::userAuth();
 			}
 
-			if(isset($_REQUEST['PGCID']) and $id = (int)$_REQUEST['PGCID'])
-				$PGLIST->display_inc($id);
-			elseif(isset($_REQUEST['PGMARKER']))
-				$PGLIST->display_content($_REQUEST['PGMARKER']);
-			else
-				$PGLIST->display();
+			$PGLIST->display();
 
 		//if($_SESSION['_showallinfo']) print('main = '.(getmicrotime()-$main2time).'<hr/>'); // для отладки
 

@@ -39,7 +39,7 @@ if (!isset($FUNCPARAM[2]))
 		$select = 0;
 
 	$DATA = array();
-	$DATA['#item#'] = $MODUL->fDisplay($FUNCPARAM[2], $select);
+	list($DATA['#item#'], $DATA['#sel#']) = $MODUL->fDisplay($FUNCPARAM[2], $select);
 	$DATA['#page#'] = $this->getHref($FUNCPARAM[1]);
 	$DATA['#title#'] = $Ctitle;
 

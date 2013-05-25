@@ -851,13 +851,14 @@ class static_super {
 			$t = array($_this->_cl . '_id' => '');
 			//if (!$_this->mf_istree)
 			//	$t['_type'] = 'update';
+			$list = $_this->_forlist($_this->_getCashedList('list'), 0, $_this->id);
 			$topmenu['select_'.$_this->_cl ] = array(
 				'href' => $t,
 				'caption' => $_this->caption,
-				'sel' => 0,
+				'sel' => $list[1],
 				'type' => 'select',
 				'css' => '',
-				'list' => $_this->_forlist($_this->_getCashedList('list'), 0, $_this->id),
+				'list' => $list[0],
 			);
 			//$topmenu['select_'.$_this->_cl ]['caption'] .= ' ('.count($topmenu['select_'.$_this->_cl ]['list']).')';
 		}
@@ -1023,12 +1024,12 @@ class static_super {
 						);
 					}
 
-
+					$list = $cn->_forlist($cn->_getCashedList('list'), 0);
 					$topmenu['child' . $ck] = array(
 						'href' => $t + array('_type' => 'update', $ck . '_id' => ''),
 						'caption' => $cn->caption ,
-						'sel' => 0,
-						'list' => $cn->_forlist($cn->_getCashedList('list'), 0),
+						'sel' => $list[1],
+						'list' => $list[0],
 						'type' => 'select',
 					);
 					$topmenu['child' . $ck]['caption'] .= '(' . count($topmenu['child' . $ck]['list']) . ')';

@@ -307,7 +307,15 @@ class pg_class extends kernel_extends {
 		{
 			$this->initHTML();
 
-			$flag_content = $this->display_page($this->id,true);
+			if(isset($_REQUEST['PGCID']) and $id = (int)$_REQUEST['PGCID']) {
+				$flag_content = $this->display_inc($id);
+			}
+			elseif(isset($_REQUEST['PGMARKER'])) {
+				$flag_content = $this->display_content($_REQUEST['PGMARKER']);
+			}
+			else {
+				$flag_content = $this->display_page($this->id,true);
+			}
 			$_tpl['title'] = $this->get_caption();
 		}
 
@@ -576,8 +584,6 @@ class pg_class extends kernel_extends {
 			}
 		
 		$this->access_flag = false;
-		if(isAjax())
-			$this->access_flag = true;
 
 		return $this->getContent($Cdata);
 	}
@@ -603,9 +609,10 @@ class pg_class extends kernel_extends {
 		}
 		global $_tpl;
 		$this->access_flag = false;
+		$this->config['newadmin_on'] = false;
 		$flag = $this->getContent($Cdata);
 		// TODO : надо хорошенько подумать тут
-		$_tpl['_CID'] = $_tpl[$Cdata[$id]['marker']];
+		$_tpl['PGCID'] = $_tpl[$Cdata[$id]['marker']];
 		$_tpl['text'] = $_tpl[$Cdata[$id]['marker']] = '';
 		return $flag;
 	}

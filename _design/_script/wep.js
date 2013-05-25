@@ -215,12 +215,13 @@ window.wep = {
 		var ctId = substr($(domObject).attr('id'),3);
 		if(!ctId) return false;
 
-		wep.ajaxLoadContent(ctId, domObject, callFunc);
+		//wep.ajaxLoadContent(ctId, domObject, callFunc);
 		
 		param = {
 			'href' : location.href,
 			'type' : 'GET',
 			'data' : {'PGCID':ctId},
+			'marker' : 'PGCID',
 			'insertobj' : $(domObject),
 			'inserttype' : 'replace'
 		};
@@ -229,11 +230,11 @@ window.wep = {
 		if(callFunc) {
 			param['call'] = callFunc;
 		}
-		else {
-			param['call'] = function(result, param) {
-				$(domObject).replaceWith(result._CID);
-			};
-		}
+		// else {
+		// 	param['call'] = function(result, param) {
+		// 		$(domObject).replaceWith(result.PGCID);
+		// 	};
+		// }
 
 		wep.JSWin(param);
 
@@ -378,6 +379,12 @@ window.wep = {
 				param['fadeoff'] = true;
 		}
 
+		// маркер полученного содержимого из принятого массива
+		if(!param['marker']) 		
+			param['marker'] = 'text';
+		// Заголовок для Popup
+		if(!param['markerTitle']) 		
+			param['markerTitle'] = 'title';
 		// По умолчанию задаем обертку
 		/*if(typeof param['wraper'] == 'undefined')
 		{
@@ -527,19 +534,19 @@ window.wep = {
 	*/
 	fShowloadContent: function(result, param) 
 	{
-		if(!result.text)
+		if(!result[param['marker']])
 			return;
 
 		if(param['insertobj'])
 			jQuery(param['insertobj']).trigger('fShowloadContent', [result, param]);
 
-		var htmlOut = result.text;
+		var htmlOut = result[param['marker']];
 
 		if(param['wrapTitle'])
 		{
 			// Обертка для попапа
-			if(result.title)
-				htmlOut = '<div class="blockhead">'+result.title.substr(0,strpos(result.title,' -') )+'</div><hr/>'+htmlOut;
+			if(result[param['markerTitle']])
+				htmlOut = '<div class="blockhead">'+result[param['markerTitle']].substr(0,strpos(result[param['markerTitle']],' -') )+'</div><hr/>'+htmlOut;
 		}
 
 		if(param['wraper']) 
