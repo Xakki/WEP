@@ -28,3 +28,6 @@
 [submodule "_vendors/twitteroauth"]
 	path = _vendors/twitteroauth
 	url = https://github.com/abraham/twitteroauth.git
+[submodule "_vendors/bootstrap-multiselect"]
+	path = _vendors/bootstrap-multiselect
+	url = git://github.com/Xakki/bootstrap-multiselect.git
