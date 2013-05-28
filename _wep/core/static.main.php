@@ -1778,4 +1778,32 @@ function plugSHL()
 }
 
 
+function plugBootstrapMultiselect($init)
+{
+	global $_CFG, $_tpl;
+	if(isset($_CFG['fileIncludeOption']['BootstrapMultiselect']))
+		return false;
+	$_CFG['fileIncludeOption']['BootstrapMultiselect'] = true;
+
+	$url = '//'.WEP_BH.$_CFG['PATH']['vendors'].'bootstrap-multiselect/';
+
+	setCss($url.'css/bootstrap.min.css');
+	setCss($url.'css/bootstrap-responsive.min.css');
+	setCss($url.'css/bootstrap-multiselect.css');
+	setCss($url.'css/prettify.css');
+
+
+	setScript($url.'js/bootstrap.js');
+	setScript($url.'js/bootstrap-multiselect.js');
+	setScript($url.'js/prettify.js');
+	
+	if($init)
+	{
+		if(!is_string($init))
+			$init = '.multiselect';
+		$_tpl['onloadArray']['plugBootstrapMultiselect'] = 'wep.setEventFilterMultiselect("'.$init.'");';
+	}
+}
+
+
 static_main::autoload_register();

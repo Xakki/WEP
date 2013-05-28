@@ -114,6 +114,12 @@
 				$html .= '</div></div>';
 			}
 			elseif($r['type']=='list') {
+				$attr = '';
+				if(isset($r['onchange']) and $r['onchange'])
+					$attr .= ' onchange="'.$r['onchange'].'"';
+				if($r['value']!=0 and $r['value']!=1)
+					$attr .= ' readonly="readonly"';
+
 				if(!isset($r['valuelist']) or !is_array($r['valuelist']))
 					$r['valuelist'] = array(''=>array('#name#'=>'error','#id#'=>''));
 				else {
@@ -124,12 +130,20 @@
 					else
 						$r['valuelist'] = array(''=>array('#name#'=>'Все','#id#'=>''))+$r['valuelist'];
 				}
-				if(!isset($r['onchange']))
-					$r['onchange'] = '';
+
+				if(isset($r['multiple']) and $r['multiple']) {
+					$attr .= ' multiple="multiple" class="multiselectFilter"';
+					plugBootstrapMultiselect('select.multiselectFilter');
+					$attr .= ' name="'.$k.'[]"';
+				}
+				else {
+					$attr .= ' name="'.$k.'"';
+				}
+
 				$html .= '<div class="f_item" id="tr_'.$k.'">
 				<div class="f_caption">'.$r['caption'].'</div>
 				<div class="f_value">
-					<select name="'.$k.'" '.(($r['value']!=0 and $r['value']!=1)?'readonly="readonly"':'').' onchange="'.$r['onchange'].'">
+					<select '.$attr.'>
 						'.selectitem2($r['valuelist']).'
 					</select>
 				</div>

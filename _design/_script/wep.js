@@ -207,7 +207,7 @@ window.wep = {
 	/**
 	* Загрузка(обновление) определенного контента АЯКСОМ на текущей страницы
 	*/
-	ajaxLoadContent: function(domObject,callFunc) {
+	ajaxLoadContent: function(domObject,paramCustom) {
 
 		if(!$(domObject).hasClass('wep-pgc')) {
 			return false;
@@ -215,26 +215,16 @@ window.wep = {
 		var ctId = substr($(domObject).attr('id'),3);
 		if(!ctId) return false;
 
-		//wep.ajaxLoadContent(ctId, domObject, callFunc);
-		
 		param = {
-			'href' : location.href,
-			'type' : 'GET',
-			'data' : {'PGCID':ctId},
-			'marker' : 'PGCID',
-			'insertobj' : $(domObject),
-			'inserttype' : 'replace'
+			href : location.href,
+			type : 'GET',
+			data : {'PGCID':ctId},
+			marker : 'PGCID',
+			insertobj : $(domObject),
+			inserttype : 'replace'
 		};
 
-		
-		if(callFunc) {
-			param['call'] = callFunc;
-		}
-		// else {
-		// 	param['call'] = function(result, param) {
-		// 		$(domObject).replaceWith(result.PGCID);
-		// 	};
-		// }
+		$.extend(param, paramCustom);
 
 		wep.JSWin(param);
 
@@ -1345,6 +1335,35 @@ window.wep = {
 				}
 			});
 		// });
+	},
+
+	setEventFilterMultiselect: function(selector) {
+		// enableFiltering : true
+		// includeSelectAllOption: true
+		// selectAllText: true
+		//  selectAllValue: 'multiselect-all',
+		// filterPlaceholder: 'Search'
+		$(selector).multiselect({
+			buttonClass: 'btn',
+			buttonWidth: '',
+			buttonContainer: '<div class="btn-group" />',
+			maxHeight: 300,
+			buttonText: function(options) {
+				if (options.length == 0) {
+					return 'Все <b class="caret"></b>';
+				}
+				else if (options.length > 2) {
+					return options.length + ' выбрано  <b class="caret"></b>';
+				}
+				else {
+					var selected = '';
+					options.each(function() {
+						selected += $(this).text() + ', ';
+					});
+					return selected.substr(0, selected.length -2) + ' <b class="caret"></b>';
+				}
+			}
+		});
 	},
 
 	SuperGroup: function(obj) {
