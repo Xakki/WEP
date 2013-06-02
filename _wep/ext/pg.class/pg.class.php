@@ -311,10 +311,10 @@ class pg_class extends kernel_extends {
 				$flag_content = $this->display_inc($id);
 			}
 			elseif(isset($_REQUEST['PGMARKER'])) {
-				$flag_content = $this->display_content($_REQUEST['PGMARKER']);
+				$flag_content = $this->display_content($this->id, $_REQUEST['PGMARKER']);
 			}
 			else {
-				$flag_content = $this->display_page($this->id,true);
+				$flag_content = $this->display_page($this->id, true);
 			}
 			$_tpl['title'] = $this->get_caption();
 		}
@@ -559,7 +559,7 @@ class pg_class extends kernel_extends {
 	/**
 	* Вывод по маркеру
 	*/
-	function display_content($marker) 
+	function display_content($id, $marker) 
 	{
 		if(!is_array($marker))
 			$marker = explode(',', $marker);
@@ -576,16 +576,20 @@ class pg_class extends kernel_extends {
 		}
 
 		$Cdata = array();
-		$cls = 'SELECT * FROM ' . $this->SQL_CFG['dbpref'] . 'pg_content WHERE active=1 and marker IN ("' . implode('", "', $escMarker) . '")';
+		$cls = 'SELECT * FROM ' . $this->SQL_CFG['dbpref'] . 'pg_content WHERE active=1 and owner_id='.$id.' and marker IN ("' . implode('", "', $escMarker) . '")';
 		$resultPG = $this->SQL->execSQL($cls);
 		if (!$resultPG->err)
 			while ($rowPG = $resultPG->fetch()) {
 				$Cdata[$rowPG['id']] = $rowPG;
 			}
 		
+		global $_tpl;
 		$this->access_flag = false;
+		//$this->config['newadmin_on'] = false;
 
-		return $this->getContent($Cdata);
+		$flag = $this->getContent($Cdata);
+
+		return $flag;
 	}
 
 	/**
@@ -607,10 +611,13 @@ class pg_class extends kernel_extends {
 
 			$this->initHTML();
 		}
+
 		global $_tpl;
 		$this->access_flag = false;
 		$this->config['newadmin_on'] = false;
+
 		$flag = $this->getContent($Cdata);
+
 		// TODO : надо хорошенько подумать тут
 		$_tpl['PGCID'] = $_tpl[$Cdata[$id]['marker']];
 		$_tpl['text'] = $_tpl[$Cdata[$id]['marker']] = '';

@@ -31,9 +31,9 @@
 	$PARAM = array('timer'=>$FUNCPARAM[1]);
 
 	$html='';
-	if(count($_GET) and isset($_GET['id']) and $_GET['id'] and $_GET['t']!='' and $_GET['hash']!='') {
+	if(hasGet('id') and $_GET['t']!='' and $_GET['hash']!='') {
 		$PARAM['get'] = $_GET;
-		if(isset($_POST['fpass']))
+		if(hasPost('fpass'))
 			$PARAM['pass'] = $_POST['fpass'];
 		$PARAM['re_pass'] = (isset($_POST['re_fpass'])?$_POST['re_fpass']:'');
 		list($flag,$DATA) = $USERS->remindSET($PARAM);
@@ -50,7 +50,7 @@
 		}
 	} else {
 		$flag = 0;
-		if(count($_POST) and $_POST['mail']!='') {
+		if(hasPost('mail')) {
 			$PARAM['post'] = $_POST;
 			list($flag,$DATA) = $USERS->remindSEND($PARAM);
 			$DATA = array($FUNCPARAM[0]=>$DATA);

@@ -23,18 +23,21 @@
 			if(!isset($r['value']))
 				$r['value'] = '';
 			$attribute = '';
+			if(!isset($r['css']) || !$r['css']) {
+				$r['css'] = '';
+			}
 
 			if($r['type']=='submit') {
-				$html .= '<div class="f_submit"><input type="'.$r['type'].'" name="'.$k.'" value="'.$r['value'].'"/></div>';
+				$html .= '<div class="f_submit '.($r['css'] ? $r['css'] : '').'" id="tr_'.$k.'"><input type="'.$r['type'].'" name="'.$k.'" value="'.$r['value'].'"/></div>';
 			}
 			elseif($r['type']=='hidden') {
 				$html .= '<input type="'.$r['type'].'" name="'.$k.'" value="'.$r['value'].'" id="'.$k.'"/>';
 			}
 			elseif($r['type']=='infoinput') {
-				$html .= '<div class="infoinput"><input type="hidden" name="'.$k.'" value="'.$r['value'].'"/>'.$r['caption'].'</div>';
+				$html .= '<div class="infoinput" id="tr_'.$k.'"><input type="hidden" name="'.$k.'" value="'.$r['value'].'"/>'.$r['caption'].'</div>';
 			}
 			elseif($r['type']=='info') {
-				$html .= '<div class="f_submit">'.$r['caption'].'</div>';
+				$html .= '<div class="f_submit" id="tr_'.$k.'">'.$r['caption'].'</div>';
 			}
 			/*elseif($r['type']=='radio') {
 				$html .= '<div id="row_f_'.$k.'" style="'.$r['style'].'" class="cont2"><div class="cll1">'.$r['caption'].'</div><div class="cll2_2">';

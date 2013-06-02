@@ -1536,6 +1536,14 @@ function _chmod($file,$mode=null) {
 	if(is_null($mode)) $mode = $_CFG['wep']['chmod'];
 	chmod($file, $mode);
 }
+
+function hasPost($name) {
+	return (isset($_POST[$name]) && $_POST[$name]);
+}
+
+function hasGet($name) {
+	return (isset($_POST[$name]) && $_POST[$name]);
+}
 /********************/
 
 function setCss($styles, $isAuto = true)
@@ -1787,8 +1795,8 @@ function plugBootstrapMultiselect($init)
 
 	$url = '//'.WEP_BH.$_CFG['PATH']['vendors'].'bootstrap-multiselect/';
 
-	setCss($url.'css/bootstrap.min.css');
-	setCss($url.'css/bootstrap-responsive.min.css');
+	plugBootstrap();
+
 	setCss($url.'css/bootstrap-multiselect.css');
 	setCss($url.'css/prettify.css');
 
@@ -1805,5 +1813,17 @@ function plugBootstrapMultiselect($init)
 	}
 }
 
+function plugBootstrap()
+{
+	global $_CFG, $_tpl;
+	if(isset($_CFG['fileIncludeOption']['Bootstrap']))
+		return false;
+	$_CFG['fileIncludeOption']['Bootstrap'] = true;
+
+	$url = '//'.WEP_BH.$_CFG['PATH']['vendors'].'bootstrap-multiselect/';
+
+	setCss($url.'css/bootstrap.min.css');
+	setCss($url.'css/bootstrap-responsive.min.css');
+}
 
 static_main::autoload_register();

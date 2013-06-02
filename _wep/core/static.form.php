@@ -1245,7 +1245,6 @@ class static_form {
 		{
 			if($data[$key] and $_this->_checkList($form['listname'],$data[$key])===false) {
 				$error[] = 33;
-				print_r('<pre>');print_r($data);print_r($form); exit($data[$key]);
 			}
 
 		}
@@ -1254,7 +1253,6 @@ class static_form {
 		if(isset($form['keytype']) && $form['keytype']=='list' and isset($form['keyListName']) ) {
 			if($data[$key] and $_this->_checkList($form['keyListName'],$key)===false) {
 				$error[] = 35;
-				print_r('<pre>');print_r($form); exit($key);
 			}
 		}
 
