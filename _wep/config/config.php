@@ -262,6 +262,10 @@ define('FORM_MULTIPLE_SIMPLE', 1);
 define('FORM_MULTIPLE_JQUERY', 2);
 define('FORM_MULTIPLE_KEY', 3);
 
+// Source include position
+define('POS_END', 0);
+define('POS_BEGIN', 1);
+
 //ERRORS
 $_CFG['_error'] = array(
 	0 => array(

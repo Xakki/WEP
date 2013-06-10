@@ -352,7 +352,6 @@ class pg_class extends kernel_extends {
 			formParam = [];
 			wep.init();
 			'.$_tpl['onload'];
-
 		}
 		return true;
 	}
@@ -566,12 +565,13 @@ class pg_class extends kernel_extends {
 		$escMarker = array();
 		foreach($marker as $item)
 		{
-			$escMarker[] = $this->SqlEsc(substr($item, 0, 25));
+			if(isset($this->config['marker'][$item]))
+				$escMarker[] = $this->SqlEsc($item);
 		}
 
 		if(!count($escMarker) or count($escMarker)>10) 
 		{
-			trigger_error('Ошибка запроса / превышен лимит - '.$marker, E_USER_WARNING);
+			trigger_error('Ошибка запроса / превышен лимит - '.count($escMarker).'>10', E_USER_WARNING);
 			return false;
 		}
 
@@ -585,7 +585,7 @@ class pg_class extends kernel_extends {
 		
 		global $_tpl;
 		$this->access_flag = false;
-		//$this->config['newadmin_on'] = false;
+		$this->config['newadmin_on'] = false;
 
 		$flag = $this->getContent($Cdata);
 

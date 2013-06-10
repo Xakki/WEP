@@ -1546,7 +1546,7 @@ function hasGet($name) {
 }
 /********************/
 
-function setCss($styles, $isAuto = true)
+function setCss($styles, $isAuto = true, $pos = POS_END)
 {
 	global $_tpl,$_CFG;
 	if($isAuto and !$_CFG['allowAutoIncludeCss'])
@@ -1561,7 +1561,11 @@ function setCss($styles, $isAuto = true)
 		foreach ($styles as $r)
 			if ($r)
 			{
-				$_tpl['styles'][getUrlCss($r, $customTheme)] = 1;
+				if($pos == POS_BEGIN) {
+					$_tpl['styles'] = array(getUrlCss($r, $customTheme)=>1) + $_tpl['styles'];
+				} else {
+					$_tpl['styles'][getUrlCss($r, $customTheme)] = 1;
+				}
 			}
 	}
 }
@@ -1795,15 +1799,11 @@ function plugBootstrapMultiselect($init)
 
 	$url = '//'.WEP_BH.$_CFG['PATH']['vendors'].'bootstrap-multiselect/';
 
-	plugBootstrap();
+	plugBootstrapCss();
+	plugBootstrapJs();
 
 	setCss($url.'css/bootstrap-multiselect.css');
-	setCss($url.'css/prettify.css');
-
-
-	setScript($url.'js/bootstrap.js');
 	setScript($url.'js/bootstrap-multiselect.js');
-	setScript($url.'js/prettify.js');
 	
 	if($init)
 	{
@@ -1813,17 +1813,31 @@ function plugBootstrapMultiselect($init)
 	}
 }
 
-function plugBootstrap()
+function plugBootstrapCss()
 {
 	global $_CFG, $_tpl;
-	if(isset($_CFG['fileIncludeOption']['Bootstrap']))
+	if(isset($_CFG['fileIncludeOption']['BootstrapCss']))
 		return false;
-	$_CFG['fileIncludeOption']['Bootstrap'] = true;
+	$_CFG['fileIncludeOption']['BootstrapCss'] = true;
 
 	$url = '//'.WEP_BH.$_CFG['PATH']['vendors'].'bootstrap-multiselect/';
 
-	setCss($url.'css/bootstrap.min.css');
-	setCss($url.'css/bootstrap-responsive.min.css');
+	setCss($url.'css/bootstrap.min.css', true , POS_BEGIN);
+	setCss($url.'css/bootstrap-responsive.min.css', true , POS_BEGIN);
+	setCss($url.'css/prettify.css', true , POS_BEGIN);
+}
+
+function plugBootstrapJs()
+{
+	global $_CFG, $_tpl;
+	if(isset($_CFG['fileIncludeOption']['BootstrapJs']))
+		return false;
+	$_CFG['fileIncludeOption']['BootstrapJs'] = true;
+
+	$url = '//'.WEP_BH.$_CFG['PATH']['vendors'].'bootstrap-multiselect/';
+
+	setScript($url.'js/bootstrap.js');
+	setScript($url.'js/prettify.js');
 }
 
 static_main::autoload_register();

@@ -28,6 +28,8 @@ function tpl_login($data)
 					'.($data['regpage']?'<div><a href="'.$data['regpage'].'">Не зарегистрированы?</a></div>':'').'
 				 <div style="clear:both;"></div>
 			 </div>';
+		if(isset($_CFG['fileIncludeOption']['ajaxForm']))
+			$_tpl['onload'] .= 'if(typeof(formParam)=="undefined") formParam = {}; wep.form.initForm(\'#loginf\', formParam);';
 	}
 	$html = '<div class="loginForm"> '.$data['mess'].' '.$form.' </div>';
 	return $html;

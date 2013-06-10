@@ -109,7 +109,7 @@ class bug_class extends kernel_extends {
 							$this->mf_ipcreate => $mf_ipcreate,
 							$this->mf_timecr => $this->_CFG['time'],
 							'err_type' => $r['errno'],
-							'name' => $this->SqlEsc($r['errstr']),
+							'name' => $this->SqlEsc( mb_substr($r['errstr'], 0, 255) ),
 							'file' => $this->SqlEsc($r['errfile']),
 							'line' => $this->SqlEsc($r['errline']),
 							'debug' => $this->SqlEsc($r['debug']),
@@ -134,7 +134,7 @@ class bug_class extends kernel_extends {
 					$_COOKIE[$this->_CFG['wep']['_showallinfo']] = 1;
 				}
 
-				$result = $this->SQL->execSQL('INSERT INTO `'.$this->tablename.'` 
+				$this->SQL->execSQL('INSERT INTO `'.$this->tablename.'`
 					('.implode(',', $keys).') VALUES '.implode(',', $query_val).'
 					ON DUPLICATE KEY UPDATE cnt = cnt+1, active=1');
 				
@@ -171,7 +171,7 @@ class bug_class extends kernel_extends {
 				if(!$keys)
 					$keys = array_keys($r);
 			}
-			$result = $this->SQL->execSQL('INSERT INTO `'.$this->tablename.'` 
+			$this->SQL->execSQL('INSERT INTO `'.$this->tablename.'`
 			('.implode(',', $keys).') VALUES '.implode(',', $query_val).'
 			ON DUPLICATE KEY UPDATE cnt = cnt+1, active=1');
 		}

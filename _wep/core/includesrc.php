@@ -82,7 +82,6 @@
 	function cssRecursive($css, $solt='') {
 		global $_CFG;
 		$temp = '';
-
 		foreach($css as $kk=>$rr) {
 			if(is_string($rr) and substr($rr,0,1)==='<') {
 				trigger_error('Обнаружена не совместимость: ошибка загрузки стилей `'.$kk.'` - `'.$rr.'`', E_USER_WARNING);

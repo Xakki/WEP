@@ -490,15 +490,15 @@
 		white-space: nowrap;
 	}
 	.ajaxlist div {
-		left:0;
-		top:20px;
+        left: 2px;
+        top: 1.7em;
 		position:absolute;
 		z-index:10;
 		color:#000;
 		border:1px solid gray;
 		border-radius:0 0 4px 4px;-moz-border-radius:0 0 4px 4px;-webkit-border-radius:0 0 4px 4px;
 		background:none repeat scroll 0 0 #A1B1C1;
-		padding:5px 0;
+		padding:5px 4px;
 		width: 100%;
 		overflow: auto;
 		max-height:300px;
@@ -514,19 +514,23 @@
 	.ajaxlist div label.selected {
 		color:#FFF;
 		background:none repeat scroll 0 0 #111111;
+    }
+
+    /*Значок в форме ввода*/
+    .ajaxlist::before {
+        content: ' ';
+        display: block;
+        width: 16px; height: 16px;
+        position: absolute;
+        top: 5px; right: -9px;
+        background-image:url(../_img/x16.png);
+        background-repeat:no-repeat;
+        background-position:100% 0px;
+    }
+    .ajaxlist.reject::before {
+		background-position:100% -32px;
 	}
-	/*Значок в форме ввода*/
-	form input.accept{
-		background-image:url(../_img/x16.png);
-		background-repeat:no-repeat;
-		background-position:100% 2px;
-	}
-	form input.reject{
-		background-image:url(../_img/x16.png);
-		background-repeat:no-repeat;
-		background-position:100% -30px;
-	}
-	form input.load, select.load{
+    .ajaxlist.load::before {
 		background:transparent url(../_img/loader16.gif) no-repeat scroll 100% 2px;
 	}
 
