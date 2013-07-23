@@ -1455,7 +1455,11 @@ function isAjax()
 	return $_CFG['requestType']==='ajax';
 }
 
-
+function isProduction()
+{
+    global $_CFG;
+    return $_CFG['site']['production'];
+}
 /********************/
 
 /*
