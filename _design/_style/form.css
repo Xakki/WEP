@@ -517,21 +517,14 @@
     }
 
     /*Значок в форме ввода*/
-    .ajaxlist::before {
-        content: ' ';
-        display: block;
-        width: 16px; height: 16px;
-        position: absolute;
-        top: 5px; right: -9px;
-        background-image:url(../_img/x16.png);
-        background-repeat:no-repeat;
-        background-position:100% 0px;
+    .ajaxlist input {
+        color: green;
     }
-    .ajaxlist.reject::before {
-		background-position:100% -32px;
+    .ajaxlist.reject input {
+        color:red;
 	}
-    .ajaxlist.load::before {
-		background:transparent url(../_img/loader16.gif) no-repeat scroll 100% 2px;
+    .ajaxlist.load input {
+        text-decoration: blink;
 	}
 
 	/*Свернутый блок формы*/

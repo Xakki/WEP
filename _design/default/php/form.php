@@ -351,17 +351,17 @@ function tpl_form(&$data, $tabs = array())
 					else $value_2 = '';
 					$r['csscheck'] = ($value_2?'accept':'reject');
 					$texthtml .= '<div class="form-value ajaxlist '.$r['csscheck'].'">
-						<input type="text" name="'.$ID.'_2['.$i.']" value="'.$value_2.'" placeholder="'.$r['placeholder'].'" autocomplete="off"/>
-						<div id="ajaxlist_'.$ID.'_'.$i.'_" style="display:none;" onfocus="chFocusList(0)" onblur="chFocusList(1)">не найдено</div>
-						<input type="hidden" name="'.$ID.'['.$i.']" value="'.$value.'" '.$attribute.'/>
+						<input type="text" name="'.$ID.'_2['.$i.']" id="'.$ID.'_2_'.$i.'" value="'.$value_2.'" placeholder="'.$r['placeholder'].'" autocomplete="off"/>
+						<div id="ajaxlist_'.$ID.'_'.$i.'" style="display:none;" onfocus="chFocusList(0)" onblur="chFocusList(1)">не найдено</div>
+						<input type="hidden" name="'.$ID.'['.$i.']" id="'.$ID.'_'.$i.'" value="'.$value.'" '.$attribute.'/>
 					</div>';
-                    $_tpl['onload'] .= 'setEventAjaxList("#tr_'.$ID.' input:first", "#ajaxlist_'.$ID.'_'.$i.'_");';
+                    $_tpl['onload'] .= 'setEventAjaxList("#'.$ID.'_2_'.$i.'", "#'.$ID.'_'.$i.'","#ajaxlist_'.$ID.'_'.$i.'");';
 //                  onfocus="show_hide_label(this,\''.$ID.'\',1,\''.$i.'\')"
 //					onblur="show_hide_label(this,\''.$ID.'\',0,\''.$i.'\')"
 //					onkeyup="return ajaxlistOnKey(event,this,\''.$ID.'\',\''.$i.'\')"
 				}
-				$texthtml .= '<input type="hidden" name="hsh_'.$k.'" value="'.md5($serl.$_CFG['wep']['md5']).'"/>
-					<input type="hidden" name="srlz_'.$k.'" value="'.htmlspecialchars($serl,ENT_QUOTES,$_CFG['wep']['charset']).'"/>';
+				$texthtml .= '<input type="hidden" id="hsh_'.$k.'" value="'.md5($serl.$_CFG['wep']['md5']).'"/>
+					<input type="hidden" id="srlz_'.$k.'" value="'.htmlspecialchars($serl,ENT_QUOTES,$_CFG['wep']['charset']).'"/>';
 				if(!isset($r['comment']))
 					$r['comment'] = '';
 				$r['comment'] .= '<div class="ajaxmultiple" onclick="jQuery(\'#tr_'.$ID.' div.ajaxlist:hidden\').eq(0).show(); if (jQuery(\'#tr_'.$ID.' div.ajaxlist:hidden\').size() == 0) jQuery(this).hide();">Добавить '.$r['caption'].'</div>';
@@ -371,13 +371,13 @@ function tpl_form(&$data, $tabs = array())
 				$r['csscheck'] = ($r['value_2']?'':'reject');
 				$serl = serialize($r['listname']);
 				$texthtml .= '<div class="form-value ajaxlist '.$r['csscheck'].'">
-					<input type="text" name="'.$k.'_2" value="'.strip_tags($r['value_2']).'" placeholder="'.$r['placeholder'].'" autocomplete="off"/>
+					<input type="text" name="'.$k.'_2" id="'.$ID.'_2" value="'.strip_tags($r['value_2']).'" placeholder="'.$r['placeholder'].'" autocomplete="off"/>
 					<div id="ajaxlist_'.$ID.'" style="display:none;" onfocus="chFocusList(0)" onblur="chFocusList(1)">не найдено</div>
-					<input type="hidden" name="'.$k.'" value="'.$r['value'].'" '.$attribute.'/>
+					<input type="hidden" name="'.$k.'" id="'.$ID.'" value="'.$r['value'].'" '.$attribute.'/>
 				</div>
 				<input type="hidden" id="hsh_'.$k.'" value="'.md5($serl.$_CFG['wep']['md5']).'"/>
 				<input type="hidden" id="srlz_'.$k.'" value="'.htmlspecialchars($serl,ENT_QUOTES,$_CFG['wep']['charset']).'"/>';
-                $_tpl['onload'] .= 'setEventAjaxList("#tr_'.$ID.' input[type=text]", "#tr_'.$ID.' input[type=hidden]", "#ajaxlist_'.$ID.'");';
+                $_tpl['onload'] .= 'setEventAjaxList("#'.$ID.'_2", "#'.$ID.'", "#ajaxlist_'.$ID.'");';
 			}
 			elseif($r['type']=='list' and !$r['readonly']) 
 			{

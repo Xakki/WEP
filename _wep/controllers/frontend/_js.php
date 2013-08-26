@@ -35,46 +35,52 @@
 	/**
 	*
 	*/
-	elseif(isset($_GET['_view']) && $_GET['_view']=='ajaxlist' and $_GET['_srlz']=stripslashes($_GET['_srlz']) and $_GET['_hsh']==md5($_GET['_srlz'].$_CFG['wep']['md5'])) {
-		$SQL = new $_CFG['sql']['type']($_CFG['sql']);
+	elseif(isset($_GET['_view']) && $_GET['_view']=='ajaxlist') {
+        if($_GET['_srlz']=stripslashes($_GET['_srlz']) and $_GET['_hsh']==md5($_GET['_srlz'].$_CFG['wep']['md5'])) {
 
-		$listname = unserialize($_GET['_srlz']);
-		if(!isset($listname['tablename']) and isset($listname['class']) and $listname['class'])
-			$listname['tablename'] = $_CFG['sql']['dbpref'].$listname['class'];
-		
+            $SQL = new $_CFG['sql']['type']($_CFG['sql']);
 
-		if(!isset($listname['idField'])) 
-			$listname['idField'] = 'tx.id';
-		if(!isset($listname['nameField'])) 
-			$listname['nameField'] = 'tx.name';
+            $listname = unserialize($_GET['_srlz']);
+            if(!isset($listname['tablename']) and isset($listname['class']) and $listname['class'])
+                $listname['tablename'] = $_CFG['sql']['dbpref'].$listname['class'];
 
-		$clause = 'SELECT '.$listname['idField'].' as id,'.$listname['nameField'].' as name';
-		$clause .= ' FROM `'.$listname['tablename'].'` tx ';
-		if(isset($listname['join'])) {
-			$clause .= $listname['join'];
-		}
-		$clause .= ' WHERE '.$listname['nameField'].' LIKE "%'.$SQL->SqlEsc($_GET['_value']).'%" ';
-		if(isset($listname['where']) and is_array($listname['where']))
-			$clause .= ' and '.implode(' and ',$listname['where']);
-		elseif(isset($listname['where']) and $listname['where']!='')
-			$clause .= ' and '.$listname['where'];
 
-		if ($listname['ordfield'])
-			$clause .= ' ORDER BY '.$listname['ordfield'];
-		else
-			$clause .= ' ORDER BY name';
+            if(!isset($listname['idField']))
+                $listname['idField'] = 'tx.id';
+            if(!isset($listname['nameField']))
+                $listname['nameField'] = 'tx.name';
 
-		if (isset($listname['limit']))
-			$clause .= ' LIMIT '.$listname['limit'];
-		else
-			$clause .= ' LIMIT 25';
-		$result = $SQL->execSQL($clause);
-		if(!$result->err) {
-			$_tpl['data'] = array();
-			while($row = $result->fetch())
-				$_tpl['data'][] = array($row['id'],$row['name']);
-		}else
-			print('NO VALID DATA');
+            $clause = 'SELECT '.$listname['idField'].' as id,'.$listname['nameField'].' as name';
+            $clause .= ' FROM `'.$listname['tablename'].'` tx ';
+            if(isset($listname['join'])) {
+                $clause .= $listname['join'];
+            }
+            $clause .= ' WHERE '.$listname['nameField'].' LIKE "%'.$SQL->SqlEsc($_GET['_value']).'%" ';
+            if(isset($listname['where']) and is_array($listname['where']))
+                $clause .= ' and '.implode(' and ',$listname['where']);
+            elseif(isset($listname['where']) and $listname['where']!='')
+                $clause .= ' and '.$listname['where'];
+
+            if ($listname['ordfield'])
+                $clause .= ' ORDER BY '.$listname['ordfield'];
+            else
+                $clause .= ' ORDER BY name';
+
+            if (isset($listname['limit']))
+                $clause .= ' LIMIT '.$listname['limit'];
+            else
+                $clause .= ' LIMIT 25';
+            $result = $SQL->execSQL($clause);
+            if(!$result->err) {
+                $_tpl['data'] = array();
+                while($row = $result->fetch())
+                    $_tpl['data'][] = array($row['id'],$row['name']);
+            }else
+                print('NO VALID DATA');
+        }
+        else {
+            print('NO VALID URL DATA');
+        }
 		/*
 		if($field['type']=='ajaxlist') {
 			if($field['listname']['where']) $field['listname']['where'] .= ' and '.$_GET['nameField'].' LIKE "%'.$SQL->SqlEsc($_GET['_value']).'%"';

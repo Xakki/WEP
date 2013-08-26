@@ -336,8 +336,8 @@ window.wep = {
 						return true;
 					}
 				}
-				alert('ajaxerror : '+textStatus);
-				console.log(result);
+                console.error(result);
+                console.log(param);
 				console.log(XMLHttpRequest);
 				console.log(textStatus);
 				console.log(errorThrown);
@@ -456,7 +456,7 @@ window.wep = {
 	*/
 	ajaxSuccess: function(result, param) 
 	{
-		console.log('ajaxSuccess !!!! ', [result, param]);
+		console.error('ajaxSuccess !!!! ', [result, param]);
 		if(result.redirect) 
 		{
 			window.location.href = result.redirect;
@@ -2231,10 +2231,12 @@ function ajaxlist(input, hidden, list) { // функция контроля по
 console.error($(input)[0].value.length, ajaxComplite);
 	if($(input)[0].value.length>2) {
 		clearTimeout(timerid4);timerid4=0;
-		if(ajaxComplite==1)
-			timerid4 = setTimeout(function(){getAjaxListData(input.value, input,  hidden, list);},400);
-		else
+		if(ajaxComplite==1) {
+			timerid4 = setTimeout(function(){getAjaxListData($(input)[0].value, input,  hidden, list);},400);
+        }
+		else {
 			timerid4 = setTimeout(function(){ajaxlist(input, hidden, list);},600);
+        }
 	} else {
 		clearTimeout(timerid4);timerid4=0;
 		jQuery(hidden).val('');
@@ -2247,6 +2249,7 @@ console.error($(input)[0].value.length, ajaxComplite);
 //jQuery('#tr_city .td1').append('+')
 
 function getAjaxListData(value, input, hidden, list) { // загрузка списка
+    timerid4=0;
     var listObj = $(list);
 	if(listObj.attr('val')==value) {
         listObj.show();
@@ -2257,10 +2260,12 @@ function getAjaxListData(value, input, hidden, list) { // загрузка сп�
         var parentObj = listObj.parent();
         parentObj.addClass('load');
         var key = $(hidden).attr('name');
+        var dt = {'_view':'ajaxlist', '_srlz':jQuery('#srlz_'+key).val(), '_value':value, '_hsh':jQuery('#hsh_'+key).val()};
+        console.log('#srlz_'+key, jQuery('#srlz_'+key), dt);
 		$.ajax({
 			type: "GET",
 			url: '/_js.php',
-			data: {'_view':'ajaxlist', '_srlz':jQuery('#srlz_'+key).val(),'_value':value, '_hsh':jQuery('#hsh_'+key).val()},
+			data: dt,
 			dataType: "json",
 			cache:true,
 			error: function(XMLHttpRequest, textStatus, errorThrown) {
