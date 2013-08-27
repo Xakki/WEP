@@ -17,16 +17,22 @@ var setMap;//объект карты
 var setPlacemark; // Метка
 var setToolbar;
 var viewMap=0;
+
 function boardOnMap(tp) {
 	Yamap.option.draggable=true;
 	Yamap.tools.Search = true
 	if(tp) Yamap.viewMap = tp;
-	if(jQuery('#boardOnMap').size()==0) {
-		jQuery('body').append('<div id="boardOnMap" style="display:none;"><div class="layerblock"><div onclick="delMap()" class="blockclose">&#160;</div><div id="YMapsID" style="width:700px;height:500px;background-color: white;"></div></div></div>');
-	}
-	jQuery('#boardOnMap').show().css('height','auto');
-	showBG();
-	fMessPos('#boardOnMap');
+//	if(jQuery('#boardOnMap').size()==0) {
+//		jQuery('body').append('<div id="boardOnMap" style="display:none;"><div id="YMapsID" style="width:700px;height:500px;background-color: white;"></div></div>');
+//	}
+//	jQuery('#boardOnMap').show().css('height','auto');
+    if(jQuery('#YMapsID').size()==0) {
+	    wep.staticPopUp('<div id="YMapsID" style="width:700px;height:500px;background-color: white;"></div>');
+    }
+    else {
+        wep.staticOpenPopUp();
+    }
+
 	if(!setMap) {
 		YMaps.load(initMap);
 	}

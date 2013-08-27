@@ -352,7 +352,7 @@ function tpl_form(&$data, $tabs = array())
 					$r['csscheck'] = ($value_2?'accept':'reject');
 					$texthtml .= '<div class="form-value ajaxlist '.$r['csscheck'].'">
 						<input type="text" name="'.$ID.'_2['.$i.']" id="'.$ID.'_2_'.$i.'" value="'.$value_2.'" placeholder="'.$r['placeholder'].'" autocomplete="off"/>
-						<div id="ajaxlist_'.$ID.'_'.$i.'" style="display:none;" onfocus="chFocusList(0)" onblur="chFocusList(1)">не найдено</div>
+						<div id="ajaxlist_'.$ID.'_'.$i.'" style="display:none;">не найдено</div>
 						<input type="hidden" name="'.$ID.'['.$i.']" id="'.$ID.'_'.$i.'" value="'.$value.'" '.$attribute.'/>
 					</div>';
                     $_tpl['onload'] .= 'setEventAjaxList("#'.$ID.'_2_'.$i.'", "#'.$ID.'_'.$i.'","#ajaxlist_'.$ID.'_'.$i.'");';
@@ -372,7 +372,7 @@ function tpl_form(&$data, $tabs = array())
 				$serl = serialize($r['listname']);
 				$texthtml .= '<div class="form-value ajaxlist '.$r['csscheck'].'">
 					<input type="text" name="'.$k.'_2" id="'.$ID.'_2" value="'.strip_tags($r['value_2']).'" placeholder="'.$r['placeholder'].'" autocomplete="off"/>
-					<div id="ajaxlist_'.$ID.'" style="display:none;" onfocus="chFocusList(0)" onblur="chFocusList(1)">не найдено</div>
+					<div id="ajaxlist_'.$ID.'" style="display:none;">не найдено</div>
 					<input type="hidden" name="'.$k.'" id="'.$ID.'" value="'.$r['value'].'" '.$attribute.'/>
 				</div>
 				<input type="hidden" id="hsh_'.$k.'" value="'.md5($serl.$_CFG['wep']['md5']).'"/>

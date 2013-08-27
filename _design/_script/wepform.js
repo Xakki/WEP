@@ -123,8 +123,10 @@ wep.form = {
 					o.dataType = 'json';
 					//a.push({name:'HTTP_X_REQUESTED_WITH', value:'xmlhttprequest'});
 					var cid = jQuery(jSelector).attr('data-cid');
-					if(cid)
+					if(cid) {
 						a.push({name:'PGCID', value:cid});
+                        param.marker = 'PGCID';
+                    }
 					//console.log(a,f,o);
 					//console.error('**beforeSubmit', param, o);
 				},
@@ -153,7 +155,7 @@ wep.form = {
 				},
 
 				success: function(result)
-				{
+				{console.error(param);
 					// AJAX форма ничего не выводит, а все делается через onload
 					if(result.formFlag==-1)
 						$(jSelector).trigger('errorForm', [result, param]); // Ошибка валидации

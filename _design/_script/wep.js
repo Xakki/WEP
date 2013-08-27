@@ -113,6 +113,7 @@ window.wep = {
 	siteJS: "/_js.php",
 	form: {},/*Функции работы с формой*/
 	popUp: {
+        onclk: true,
 		fadeobj: '.PopUp',
 		insertobj: '.PopUp .PopUpContent',
 		template: '<div class="PopUp"><div class="PopUpBackgound CloseTarget"></div><div class="PopUpLoading">Загружаю...</div><div class="PopUpContent"></div></div>'
@@ -760,7 +761,7 @@ window.wep = {
 	// Позициоонирует блок по центру
 	fMessPos: function(obj) {
 		if(!obj) obj='.ajaxload';
-		var FC = jQuery(obj+' :first');
+		var FC = jQuery(obj);
 		if(!FC[0]) return false;
 
 		jQuery(obj).css( {'width':'auto', 'height':'auto'} );
@@ -860,6 +861,21 @@ window.wep = {
 		else
 			jQuery('#'+id).animate({ opacity: "show" }, "slow");
 	},
+
+    /***/
+
+    staticPopUp: function(content)
+    {
+        wep.createPopUp();
+        $(wep.popUp.insertobj).html(wep.wraperLayerBlock(content));
+        wep.staticOpenPopUp();
+    },
+    staticOpenPopUp: function()
+    {
+        wep.openPopUp(wep.popUp);
+        wep.setEventClosePopUp(wep.popUp);
+        wep.fMessPos(wep.popUp['insertobj']);
+    },
 
 	setCookie: function(name, value, expiredays, domain, path, secure) {
 
@@ -2099,6 +2115,23 @@ var globalEval = function globalEval(src) {
     fn();
 };
 
+/**
+ *  Запуск и обрыв действия
+ * @param input
+ * @param func
+ */
+function timeAction(selector, func, tm)
+{
+    var timer = $(selector).data('timer');
+    if(timer) {
+        clearTimeout(timer);
+    }
+    if(func) {
+        if(!tm) tm = 200;
+        $(selector).data('timer', setTimeout(func, tm) );
+    }
+}
+
 window._Browser = wep.getBrowserInfo();
 
 
@@ -2113,76 +2146,87 @@ var timerbagIE=0;// таймер для слоя списка
 var ajaxlistover = 0; // флаг активности слоя списка
 function setEventAjaxList(input, hidden, list)
 {
-    $(input).on('focus', function(){
-        show_hide_label(input, hidden, list, 1)
+    var ajaxlist = $(input).parent();
+    $(ajaxlist).on('focusin', function() {
+        console.log('focus+++++++++');
+        ajaxListControl(input, hidden, list);
     });
-    $(input).on('blur', function(){
-        show_hide_label(input, hidden, list, 0)
+    $(ajaxlist).on('focusout', function(){
+        console.log('focus---------');
+        if(!$(list).data('mousedown')) {
+            ajaxListHide(input, hidden, list);
+        }
     });
+
+    $(list).on('mousedown', function() {
+        console.log('focus!!!!!+++++++++');
+        $(this).data('mousedown', true);
+    });
+    $(list).on('mouseup', function(){
+        console.log('focus!!!!!---------');
+        $(this).data('mousedown', false);
+        $(input).focus();
+    });
+
     $(input).on('keydown', function(){
         ajaxlistOnKey(event, input, hidden, list)
     });
-    $(list).on('click', 'label', function(){
-        ajaxlist_click(this, input, hidden, list);
+    $(list).on('click', 'label', function() {
+        ajaxListHide(input, hidden, list, $(this));
     });
-    $(list).on('hover', 'label', function () {
+    $(list).on('mouseover', 'label', function () {
         $(this).siblings().removeClass('selected');
         $(this).addClass('selected');
     });
-//                onfocus="show_hide_label(this,\''.$ID.'\',1)"
-//				onblur="show_hide_label(this,\''.$ID.'\',0)"
-//				onkeydown="return ajaxlistOnKey(event,this,\''.$ID.'\')"
+}
+
+function ajaxListStop(input)
+{
+    $(input).data('value', '');
 }
 
 
-function chFocusList(f) {// это баг решает проблему когда мышкой передвигаешь скрул, то срабатывает onblur формы списка (в Хроме - тык на скрол не вызывает события фокуса для этого элемента,в FF только нормально)
-	if(f)
-		timerbagIE = setTimeout(function(){ajaxlistover=0;},500);
-	else {
-		clearTimeout(timerbagIE);
-		ajaxlistover = 1;
-	}
+/**
+ * Скрываем список и выбираем значение выделенное
+ * @param input
+ * @param hidden
+ * @param list
+ */
+
+function ajaxListHide(input, hidden, list, SEL)
+{
+    console.log('ajaxListHide');
+    ajaxListStop(input);
+    jQuery(list).hide();
+    // Fix для IE
+    if (_Browser.type == 'IE' && 8 > _Browser.version)
+        jQuery('select').toggleClass('hideselectforie7',false);
+
+    if(!SEL) {
+        SEL = $(list).find('.selected');
+    }
+    if(SEL.size())
+        ajaxListSelect(SEL, input, hidden, list);
+    else {
+        ajaxListClear(input, hidden, list);
+    }
 }
 
-function show_hide_label(input, hidden, list, flag)
-{ // функция на событие активности формы
-	clearTimeout(timerid5);
-	if(ajaxComplite==0 || timerid4) {
-		setTimeout(function(){show_hide_label(input, hidden, list, flag);},400);
-	}else {
-		setTimeout(function(){
-			if(ajaxlistover) {
-				setTimeout(function(){show_hide_label(input, hidden, list, flag);},400);
-			}
-			else if(flag) {
-				ajaxlist(input, hidden, list);
-			}
-			else {
-				jQuery(list).hide();
-                // Fix для IE
-				if (_Browser.type == 'IE' && 8 > _Browser.version)
-					jQuery('select').toggleClass('hideselectforie7',false);
-
-				var SEL = $(list).find('.selected');
-				if(SEL.size())
-					ajaxlist_click(SEL, input, hidden, list);
-				else {
-					timerid5 = setTimeout(function(){ajaxlistClear(input, hidden, list);},200);
-				}
-			}
-		},200);
-	}
-
-}
-function ajaxlistClear(input, hidden, list) { // функ очистки формы если не верное значение выбранно
-	if(jQuery(hidden).val()=='') {
-		jQuery(input).val('');
-		clearTimeout(timerid4);timerid4=0;
-	}
+/**
+ * функ очистки формы если не верное значение выбранно
+ * @param input
+ * @param hidden
+ * @param list
+ */
+function ajaxListClear(input, hidden, list) {
+    if(jQuery(hidden).val()=='') {
+        jQuery(input).val('');
+    }
 }
 
 function ajaxlistOnKey(e, input, hidden, list)
 {
+    console.log('ajaxlistOnKey');
 	var keyCode = keys_return(e);
 	if (keyCode == '40' || keyCode == '38') { // вниз
 		var W = 290;
@@ -2217,96 +2261,90 @@ function ajaxlistOnKey(e, input, hidden, list)
 		var SEL = listObj.find('.selected');
 		if(!SEL.size())
 			SEL = listObj.find('label:first');
-		ajaxlist_click(SEL, input, hidden, list);
+        ajaxListHide(input, hidden, list, SEL);
 		return false;
-		// выбор
 	} else {
-		clearTimeout(timerid4);timerid4=0;
-		timerid4 = setTimeout(function(){ajaxlist(input, hidden, list);},100);
+        ajaxListStop(input);
+        timeAction(input, function(){ajaxListControl(input, hidden, list);}, 100);
 	}
 	return true;
 }
 
-function ajaxlist(input, hidden, list) { // функция контроля подгрузки слоя списка
-console.error($(input)[0].value.length, ajaxComplite);
-	if($(input)[0].value.length>2) {
-		clearTimeout(timerid4);timerid4=0;
-		if(ajaxComplite==1) {
-			timerid4 = setTimeout(function(){getAjaxListData($(input)[0].value, input,  hidden, list);},400);
+
+/**
+ * функция контроля подгрузки слоя списка
+ * @param input
+ * @param hidden
+ * @param list
+ */
+function ajaxListControl(input, hidden, list)
+{
+    console.log('ajaxListControl');
+    var value = $(input)[0].value;
+    if(value.length>2) {
+        var listObj = $(list);
+        if(listObj.attr('val')==value) {
+            listObj.show();
+            listObj.find('label:first').addClass('selected');
         }
-		else {
-			timerid4 = setTimeout(function(){ajaxlist(input, hidden, list);},600);
+        else {
+            $(input).data('value', value);
+            var parentObj = listObj.parent();
+            parentObj.addClass('load');
+            var key = $(hidden).attr('name');
+            var dt = {'_view':'ajaxlist', '_srlz':jQuery('#srlz_'+key).val(), '_value':value, '_hsh':jQuery('#hsh_'+key).val()};
+            $.ajax({
+                type: "GET",
+                url: '/_js.php',
+                data: dt,
+                dataType: "json",
+                cache:true,
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert('error: '+textStatus);
+                },
+                success: function(result, textStatus, XMLHttpRequest) {
+                    if($(input).data('value')!=value) {
+                        return;
+                    }
+                    console.log('ajaxListControl - !!!!!!!!!!!!!!');
+
+                    if (_Browser.type == 'IE' && 8 > _Browser.version) {
+                        jQuery('select').toggleClass('hideselectforie7',true);
+                        parentObj.css('z-index','10');
+                    }
+                    var txt = '';
+                    if(result && result.data && jQuery(result.data).size()>0) {
+                        var c = 0;var temp = 0;
+                        for(k in result.data) {
+                            txt += '<label data-id="'+result.data[k][0]+'"';
+                            if(k==0)
+                                txt += ' class="selected"';
+                            txt += '>'+result.data[k][1]+'</label>';
+                            if(result.data[k][1]==value){
+                                temp = result.data[k][0];
+                                c++;
+                            }
+                        }
+                        if(c==1){
+                            jQuery(hidden).val(temp);
+                            jQuery(list).find('[data-id='+temp+']').addClass('selected');
+                            parentObj.removeClass('reject');
+                        }
+                    }else
+                        txt = 'не найдено';
+
+                    jQuery(list).html(txt).show();
+                    jQuery(list).attr('val',value);
+                    parentObj.removeClass('load');
+                }
+            });
         }
-	} else {
-		clearTimeout(timerid4);timerid4=0;
-		jQuery(hidden).val('');
-		jQuery(input).parent().addClass('reject');
-		jQuery(list).hide();
-		jQuery(list).find('.selected').removeClass('selected');
-		ajaxComplite=1;
-	}
-}
-//jQuery('#tr_city .td1').append('+')
-
-function getAjaxListData(value, input, hidden, list) { // загрузка списка
-    timerid4=0;
-    var listObj = $(list);
-	if(listObj.attr('val')==value) {
-        listObj.show();
-        listObj.find('label:first').addClass('selected');
-	}
-	else {
-        ajaxComplite = 0;
-        var parentObj = listObj.parent();
-        parentObj.addClass('load');
-        var key = $(hidden).attr('name');
-        var dt = {'_view':'ajaxlist', '_srlz':jQuery('#srlz_'+key).val(), '_value':value, '_hsh':jQuery('#hsh_'+key).val()};
-        console.log('#srlz_'+key, jQuery('#srlz_'+key), dt);
-		$.ajax({
-			type: "GET",
-			url: '/_js.php',
-			data: dt,
-			dataType: "json",
-			cache:true,
-			error: function(XMLHttpRequest, textStatus, errorThrown) {
-				alert('error: '+textStatus);
-			},
-			success: function(result, textStatus, XMLHttpRequest) {
-                if(timerid4) return false;
-
-				if (_Browser.type == 'IE' && 8 > _Browser.version) {
-					jQuery('select').toggleClass('hideselectforie7',true);
-                    parentObj.css('z-index','10');
-				}
-				var txt = '';
-				if(result && result.data && jQuery(result.data).size()>0) {
-					var c = 0;var temp = 0;
-					for(k in result.data) {
-						txt += '<label data-id="'+result.data[k][0]+'"';
-						if(k==0)
-							txt += ' class="selected"';
-						txt += '>'+result.data[k][1]+'</label>';
-						if(result.data[k][1]==value){
-							temp = result.data[k][0];
-							c++;								
-						}
-					}
-					if(c==1){
-						jQuery(hidden).val(temp);
-						jQuery(list).find('[data-id='+temp+']').addClass('selected');
-                        parentObj.removeClass('reject');
-					}
-				}else
-					txt = 'не найдено';
-
-				jQuery(list).html(txt).show();
-				jQuery(list).attr('val',value);
-
-				ajaxComplite = 1;
-                parentObj.removeClass('load');
-			}
-		});
-	}
+    } else {
+        jQuery(hidden).val('');
+        jQuery(input).parent().addClass('reject');
+        jQuery(list).hide();
+        jQuery(list).find('.selected').removeClass('selected');
+    }
 }
 
 /**
@@ -2316,7 +2354,8 @@ function getAjaxListData(value, input, hidden, list) { // загрузка сп�
  * @param hidden - скрытый элемент формы в котором записывается ID выбранного значения
  * @param list - выпадающий список
  */
-function ajaxlist_click(OBJ, input, hidden, list) { // событие на клик на элементе списка
+function ajaxListSelect(OBJ, input, hidden, list) { // событие на клик на элементе списка
+    console.log('ajaxListSelect');
     OBJ = $(OBJ);
 	var ID = OBJ.attr('data-id');
 	jQuery(hidden).val(ID).change(); // Сохраняем ID
@@ -2329,6 +2368,5 @@ function ajaxlist_click(OBJ, input, hidden, list) { // событие на кл�
 		if (_Browser.type == 'IE' && 8 > _Browser.version)
 			jQuery('select').toggleClass('hideselectforie7',false);
 	}
-	chFocusList(1);
-	show_hide_label(input, hidden, list, 0);
 }
+
