@@ -468,7 +468,7 @@ class pay_class extends kernel_extends {
 			{
 				$CHILD = $this->childs[$data['pay_modul']];
 				if($CHILD->pay_formType===true)
-					$data['#payLink#'] = '/_js.php?_modul=pay&_fn=statusForm&id='.$data['id'].'" onclick="return wep.JSWin({type:this,onclk:\'reload\'});';
+					$data['#payLink#'] = '/_js.php?_modul=pay&_func=statusForm&id='.$data['id'].'" onclick="return wep.JSWin({type:this,onclk:\'reload\'});';
 				elseif($CHILD->pay_formType)
 					$data['#payLink#'] = $CHILD->pay_formType;
 

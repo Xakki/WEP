@@ -48,7 +48,7 @@ class payyandex_class extends kernel_extends {
 		);
 		$this->_Button = true;
 
-		$this->REDIRECT_URI = 'http://'.$_SERVER['HTTP_HOST2'].'/_js.php?_modul='.$this->_cl.'&_fn=redirectFromYa&noajax=1';
+		$this->REDIRECT_URI = 'http://'.$_SERVER['HTTP_HOST2'].'/_js.php?_modul='.$this->_cl.'&_func=redirectFromYa&noajax=1';
 		$this->URI_YM_API = 'https://money.yandex.ru/api';
 		$this->URI_YM_AUTH = 'https://sp-money.yandex.ru/oauth/authorize';
 		$this->URI_YM_TOKEN = 'https://sp-money.yandex.ru/oauth/token';

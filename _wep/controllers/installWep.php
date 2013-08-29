@@ -6,7 +6,7 @@ header('Content-type: text/html; charset=utf-8');
 
 $w_host = 'http://xakki.ru/';
 
-$file = $w_host.'_js.php?_modul=wepcontrol&_fn=getlastfile';
+$file = $w_host.'_js.php?_modul=wepcontrol&_func=getlastfile';
 
 $ajax_data = file_get_contents($file);
 $ajax_data = json_decode($ajax_data);

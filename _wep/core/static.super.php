@@ -296,7 +296,12 @@ class static_super {
 					if ($_this->mf_istree and $_this->id)
 						$_this->parent_id = $_this->id;
 					$PARAM['formtools'] = array();
-					if (!isset($PARAM['topmenu'][$_REQUEST['_func']]) or !$PARAM['topmenu'][$_REQUEST['_func']]['function'])
+
+                    if(isset($_this->_AllowAjaxFn[$_REQUEST['_func']])) {
+//                        eval('$data=$_this->'.$_GET['_func'].'();');
+                        $PARAM['formtools'] = call_user_func_array(array($_this,$_GET['_func']), array());
+                    }
+					elseif (!isset($PARAM['topmenu'][$_REQUEST['_func']]) or !$PARAM['topmenu'][$_REQUEST['_func']]['function'])
 						$messages[] = static_main::am('error', 'Function for servise not found');
 					else {
 						$method = $PARAM['topmenu'][$_REQUEST['_func']]['function'];
@@ -1060,8 +1065,8 @@ class static_super {
 	 * Сортировка 
 	 * @return array
 	 */
-	static public function _sorting($_this) {
-		$res = array('html' => '', 'eval' => '');
+	static public function _sorting($_this)
+    {
 		$_this->id = $id = (int) $_GET['id'];
 		$pid = (isset($_GET['pid']) ? (int) $_GET['pid'] : 0);
 		$t1 = (isset($_GET['t1']) ? (int) $_GET['t1'] : 0);
@@ -1069,25 +1074,28 @@ class static_super {
 		$data = $_this->_select();
 
 		if (!$_this->mf_ordctrl or !$_this->_prmModulEdit($data)) {//!static_main::_prmModul($_this->_cl,array(10))
-			$res['html'] = static_main::m('Sorting denied!');
-			return $res;
+            $RESULT['messages'][] = static_main::am('error', 'Sorting denied', $_this);
+			return $RESULT;
 		}
-		$res['html'] = static_main::m('Sorting error');
-
 
 		if ($t2) {
 			$data = $_this->qs($_this->mf_ordctrl, 'WHERE id=' . $t2);
 			$neword = $data[0][$_this->mf_ordctrl];
 
-			$qr = '`' . $_this->mf_ordctrl . '`>=\'' . $neword . '\'';
+			$qr = 'WHERE `' . $_this->mf_ordctrl . '`>=\'' . $neword . '\'';
 			if ($_this->mf_istree and $pid)
 				$qr .= ' and `' . $_this->mf_istree . '`=' . $pid;
 			$_this->fields[$_this->mf_ordctrl]['noquote'] = true;
-			if (!$_this->_update(array($_this->mf_ordctrl => '`' . $_this->mf_ordctrl . '`+1'), $qr, false))
-				return $res;
+			if (!$_this->_update(array($_this->mf_ordctrl => '`' . $_this->mf_ordctrl . '`+1'), $qr, false)) {
+                $RESULT['messages'][] = static_main::am('error', 'Sorting error', $_this);
+                return $RESULT;
+            }
+
 			$_this->id = $id;
-			if (!$_this->_update(array($_this->mf_ordctrl => $neword)))
-				return $res;
+			if (!$_this->_update(array($_this->mf_ordctrl => $neword))) {
+                $RESULT['messages'][] = static_main::am('error', 'Sorting error', $_this);
+                return $RESULT;
+            }
 		}else {
 			$qr = '';
 			if ($_this->mf_istree and $pid)
@@ -1096,10 +1104,12 @@ class static_super {
 			$data = $_this->qs('max(' . $_this->mf_ordctrl . ') as mx', $qr);
 			$neword = $data[0]['mx'] + 1;
 			$_this->id = $id;
-			if (!$_this->_update(array($_this->mf_ordctrl => $neword)))
-				return $res;
+			if (!$_this->_update(array($_this->mf_ordctrl => $neword))) {
+                $RESULT['messages'][] = static_main::am('error', 'Sorting error', $_this);
+                return $RESULT;
+            }
 		}
-		$res['html'] = ''; //static_main::m('Sorting successful.')
-		return $res;
+        $RESULT['messages'][] = static_main::am('ok', 'Sorting ok', $_this);
+		return $RESULT;
 	}
 }

@@ -85,7 +85,7 @@
 
 				/*if(isset($data['#shopconfig#']['orderset'][0]))
 					$html .= '<div class="buybutton">
-						<a href="##zakaz" alt="Оформить заказ" onclick="return JSWin({\'href\':\''.$_CFG['_HREF']['siteJS'].'?_modul=shop&_fn=jsOrder&id='.$r['id'].'\'});">Оформить заказ</a>
+						<a href="##zakaz" alt="Оформить заказ" onclick="return JSWin({\'href\':\''.$_CFG['_HREF']['siteJS'].'?_modul=shop&_func=jsOrder&id='.$r['id'].'\'});">Оформить заказ</a>
 					</div>';*/
 
 				/*if(isset($data['#basket#']) and isset($data['#shopconfig#']['orderset'][1])) {

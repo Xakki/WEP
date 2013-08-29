@@ -1395,7 +1395,7 @@ window.wep = {
 					var t1 = Obj.prev('tr.tritem').attr('data-id');
 					var t2 = Obj.next('tr.tritem').attr('data-id');
 					var param = {
-						'data' : {'_modul':modul,'_fn':'_sorting','id':id,'t1':t1,'t2':t2,'pid':pid}
+						'data' : {'_modul':modul, '_type' : 'tools', '_func':'_sorting','id':id,'t1':t1,'t2':t2,'pid':pid}
 					};
 					JSWin(param);
 				}

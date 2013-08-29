@@ -31,7 +31,7 @@ class formlist_class extends kernel_extends {
 	}
 
 	public function AjaxMCBox() {
-		//_modul=formlist&_fn=AjaxMCBox
+		//_modul=formlist&_func=AjaxMCBox
 		global $_tpl;
 
 			$DATA = array();

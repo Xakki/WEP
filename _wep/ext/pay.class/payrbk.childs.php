@@ -61,7 +61,7 @@ class payrbk_class extends kernel_extends {
 		$this->_AllowAjaxFn['successpayment'] = true;
 		$this->_Button = true;
 
-		/*$this->REDIRECT_URI = 'http://'.$_SERVER['HTTP_HOST2'].'/_js.php?_modul='.$this->_cl.'&_fn=redirectFromYa&noajax=1';
+		/*$this->REDIRECT_URI = 'http://'.$_SERVER['HTTP_HOST2'].'/_js.php?_modul='.$this->_cl.'&_func=redirectFromYa&noajax=1';
 		$this->URI_YM_API = 'https://money.yandex.ru/api';
 		$this->URI_YM_AUTH = 'https://sp-money.yandex.ru/oauth/authorize';
 		$this->URI_YM_TOKEN = 'https://sp-money.yandex.ru/oauth/token';
@@ -85,7 +85,7 @@ class payrbk_class extends kernel_extends {
 		$this->config['maxpay'] = 15000;
 		$this->config['lifetime'] = 1080;
 
-		$this->config_form['info'] = array('type' => 'info', 'caption'=>'<input value="http://'.$_SERVER['HTTP_HOST'].'/_js.php?_modul='.$this->_cl.'&_fn=successpayment&noajax=1" readonly="true"/>');
+		$this->config_form['info'] = array('type' => 'info', 'caption'=>'<input value="http://'.$_SERVER['HTTP_HOST'].'/_js.php?_modul='.$this->_cl.'&_func=successpayment&noajax=1" readonly="true"/>');
 		$this->config_form['actionURL'] = array('type' => 'text', 'caption' => 'actionURL', 'comment'=>'');
 		$this->config_form['eshopId'] = array('type' => 'text', 'caption' => 'eshopId');
 		$this->config_form['secretKey'] = array('type' => 'password', 'caption' => 'secretKey','comment'=>'', 'mask'=>array('password'=>'change'));

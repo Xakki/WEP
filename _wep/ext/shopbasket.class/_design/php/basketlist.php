@@ -75,7 +75,7 @@
 					}
 					$prod .= '</ul>';
 					if($r['pay_id'])
-						$link = '<a href="/_js.php?_modul=pay&_fn=statusForm&id='.$r['pay_id'].'" onclick="return wep.JSWin({type:this});" target="_blank">'.$r['#laststatus#'].'</a>';
+						$link = '<a href="/_js.php?_modul=pay&_func=statusForm&id='.$r['pay_id'].'" onclick="return wep.JSWin({type:this});" target="_blank">'.$r['#laststatus#'].'</a>';
 					else
 						$link = 'Забронированно <a href="'.$data['#orderPage#'].'.html?basketpay='.$r['id'].'">Оформить заказ</a>';
 					$html .= '

@@ -115,8 +115,8 @@ class paybank_class extends kernel_extends
 		if(count($data) and $data['status']<2) 
 		{
 			$result['messages'][] = array('txt','Распечатайте квитанцию и оплатите по нему в ближайшем банке');
-			$result['messages'][] = array('alert payselect-kvit','<a href="'.$this->_CFG['_HREF']['siteJS'].'?_modul='.$this->_cl.'&_fn=printBill&blank=kvit&id='.$data['child']['id'].'&_template=print&noajax=1" target="_blank">Распечатать квитанцию</a>');
-			$result['messages'][] = array('alert payselect-schet','<a href="'.$this->_CFG['_HREF']['siteJS'].'?_modul='.$this->_cl.'&_fn=printBill&blank=schet&id='.$data['child']['id'].'&_template=print&noajax=1" target="_blank">Распечатать счёт</a>');
+			$result['messages'][] = array('alert payselect-kvit','<a href="'.$this->_CFG['_HREF']['siteJS'].'?_modul='.$this->_cl.'&_func=printBill&blank=kvit&id='.$data['child']['id'].'&_template=print&noajax=1" target="_blank">Распечатать квитанцию</a>');
+			$result['messages'][] = array('alert payselect-schet','<a href="'.$this->_CFG['_HREF']['siteJS'].'?_modul='.$this->_cl.'&_func=printBill&blank=schet&id='.$data['child']['id'].'&_template=print&noajax=1" target="_blank">Распечатать счёт</a>');
 		}
 
 		return $result;

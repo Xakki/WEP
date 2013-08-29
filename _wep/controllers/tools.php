@@ -31,7 +31,7 @@ function tools_step3() {
 function tools_updater() 
 {
 
-	$href = 'http://xakki.ru/_js.php?_modul=wepcontrol&_fn=GetNewVersion';
+	$href = 'http://xakki.ru/_js.php?_modul=wepcontrol&_func=GetNewVersion';
 	$JSON = file_get_contents($href);
 	$JSON = json_decode($JSON,true);
 	if(isset($JSON['html']) and $JSON['html']) {

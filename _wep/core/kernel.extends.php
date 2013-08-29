@@ -1588,6 +1588,7 @@ abstract class kernel_extends {
 	 */
 	public function toolsFormfilter() {
 		global $_tpl;
+        $resuslt = array();
 		/**
 		 * очистка фильтра
 		 * */

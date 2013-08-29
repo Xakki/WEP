@@ -8,14 +8,14 @@
 	/**
 	*
 	*/
-	if(isset($_GET['_fn']) and $_GET['_fn']) {
+	if(isset($_GET['_func']) and $_GET['_func']) {
 
 		if(!isset($_GET['_design']))
 			$_GET['_design'] = $_CFG['wep']['design'];
 
-		if(_new_class($_GET['_modul'],$MODUL) and isset($MODUL->_AllowAjaxFn[$_GET['_fn']])) 
+		if(_new_class($_GET['_modul'],$MODUL) and isset($MODUL->_AllowAjaxFn[$_GET['_func']]))
 		{
-			eval('$data=$MODUL->'.$_GET['_fn'].'();');
+			eval('$data=$MODUL->'.$_GET['_func'].'();');
 			if( is_array($data) )
 			{
 				if(!isset($data['tpl']) or !$data['tpl'])
