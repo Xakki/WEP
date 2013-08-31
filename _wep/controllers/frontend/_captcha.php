@@ -27,6 +27,8 @@ $dafault_read = array(
 	'k'=>1, // Коэффициент увеличения/уменьшения картинки
 );
 $data = 0;
+
+
 if(isset($_COOKIE['chash']) and $_COOKIE['chash'] and $_COOKIE['pkey']) {
 	$hash_key = base64_decode(str_replace(array('-','_'),array('+','/'),$_COOKIE['pkey']));
 	$hash_key = file_get_contents($hash_key).$_SERVER['REMOTE_ADDR'];

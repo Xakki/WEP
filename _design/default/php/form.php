@@ -806,7 +806,7 @@ function tpl_form(&$data, $tabs = array())
 				
 				if($r['type']=='email') 
 					$attribute .=  ' x-autocompletetype="'.$r['type'].'"';
-				
+				print_r('<!--');print_r($k.' ----- ');print_r($r);print_r('-->');
 				$texthtml .= '<div class="form-value"><input type="'.$r['type'].'" name="'.$k.'" value="'.htmlspecialchars($r['value'], ENT_QUOTES , $_CFG['wep']['charset']).'" '.$attribute.'/></div>';
 			}
 		}
