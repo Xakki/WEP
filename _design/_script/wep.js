@@ -165,7 +165,7 @@ window.wep = {
 	clickAjax: function(selector)
 	{
 		$('body').off('click', selector).on('click', selector, function() {
-			wep.ajaxMenu($(this));
+			wep.ajaxMenu(this);
 			return false;
 		});
 	},
@@ -178,9 +178,9 @@ window.wep = {
 	ajaxMenu: function(obj) 
 	{
 		var jobj = $(obj);
-		
-		var marker = [];
 
+
+        var data = {};
 		var dataData = jobj.attr('data-data');
 		if(dataData)
 		{
@@ -188,15 +188,14 @@ window.wep = {
 			for(var i in dataData)
 			{
 				var temp = dataData[i].toString().split ( '=' );
-				marker[temp[0]] = temp[1];
+                data[temp[0]] = temp[1];
 			}
 		}
-
 		var dataMarker = jobj.attr('data-marker');
 		if(dataMarker)
-			marker.push(dataMarker);
+            data['PGMARKER'] = dataMarker;
 		else
-			marker.push('text');
+            data['PGMARKER'] = 'text';
 
 		// marker.push('onload');
 		// marker.push('styles');
@@ -204,16 +203,17 @@ window.wep = {
 
 		var param = {};
 		var attr = jobj[0].attributes;
+
 		for (var i = 0; i < attr.length; i++)
 		{
-			param[attr[i].name] = attr[i].value;
+            if(attr[i].name!='data-marker' && attr[i].name!='data-data' && attr[i].name!='class') {
+			    param[attr[i].name] = attr[i].value;
+            }
 		}
 
 		param['type'] = jobj;
-		param['data'] = { PGMARKER : marker };
-
+		param['data'] = data;
 		wep.JSWin(param);
-		//console.log(param);
 		return false;
 	},
 
@@ -457,7 +457,7 @@ window.wep = {
 	*/
 	ajaxSuccess: function(result, param) 
 	{
-		console.error('ajaxSuccess !!!! ', [result, param]);
+		console.error('!!!! ajaxSuccess ', [result, param]);
 		if(result.redirect) 
 		{
 			window.location.href = result.redirect;

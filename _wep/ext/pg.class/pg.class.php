@@ -471,7 +471,7 @@ class pg_class extends kernel_extends {
 						$path = $name . ' - ' . $path;
 				}
 			}
-		return $path;
+        return filter_var($path, FILTER_SANITIZE_STRING);
 	}
 
 	function get_path() {
@@ -595,7 +595,7 @@ class pg_class extends kernel_extends {
 	/**
 	* Вывод по ID контента
 	*/
-	public function display_inc($id) {
+	public function display_inc($id, $return = false) {
 		$id = (int) $id;
 		$Cdata = $oId = array();
 		$cls = 'SELECT * FROM ' . $this->SQL_CFG['dbpref'] . 'pg_content WHERE active=1 and id IN ("' . $id . '")';
@@ -612,13 +612,17 @@ class pg_class extends kernel_extends {
 			$this->initHTML();
 		}
 
-		global $_tpl;
 		$this->access_flag = false;
 		$this->config['newadmin_on'] = false;
 
 		$flag = $this->getContent($Cdata);
 
+        if($return) {
+            return $flag;
+        }
+
 		// TODO : надо хорошенько подумать тут
+        global $_tpl;
 		$_tpl['PGCID'] = $_tpl[$Cdata[$id]['marker']];
 		$_tpl['text'] = $_tpl[$Cdata[$id]['marker']] = '';
 		return $flag;

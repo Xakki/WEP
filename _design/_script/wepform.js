@@ -155,7 +155,8 @@ wep.form = {
 				},
 
 				success: function(result)
-				{console.error(param);
+				{
+                    console.error('!!!! JSFR success', param);
 					// AJAX форма ничего не выводит, а все делается через onload
 					if(result.formFlag==-1)
 						$(jSelector).trigger('errorForm', [result, param]); // Ошибка валидации
