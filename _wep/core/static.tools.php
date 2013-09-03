@@ -579,6 +579,26 @@ class static_tools {
 	{
 		global $_CFG;
 		$html = '';
+
+
+        if (is_array($MODUL->mf_statistic['X'])) {
+            if (!isset($_GET['xtype']) || !isset($MODUL->mf_statistic['X'][$_GET['xtype']]) ) {
+                $html .= '<select onchange="wep.ShowTools(wep.getUrlWithNewParam({xtype:this.value}, \''.$_SERVER['REQUEST_URI'].'\'));"><option> -- </option>';
+                foreach($MODUL->mf_statistic['X'] as $k=>$r) {
+                    $html .= '<option value="'.$k.'">'.$k.'</option>';
+                }
+                $html .= '</select>';
+                return $html;
+            }
+            else {
+                $html .= '<h2>'.$_GET['xtype'].'</h2>';
+                $xList = $MODUL->mf_statistic['X'][$_GET['xtype']];
+            }
+        }
+        else {
+            $xList = $MODUL->mf_statistic['X'];
+        }
+
 		$clause = array();
 		if (!$oid and isset($_GET['_oid']))
 			$oid = (int) $_GET['_oid'];
@@ -589,18 +609,15 @@ class static_tools {
 		if (isset($filtr) and count($filtr))
 		{
 			$clause += $filtr;
-			$html .= '<h3>Результат статистики выводится по фильтру</h3>';
+			$html .= '<div>Результат статистики выводится по фильтру</div>';
 		}
 
 		if (count($clause))
 			$clause = 'WHERE ' . implode(' and ', $clause);
 		else
 			$clause = '';
-		if (is_array($MODUL->mf_statistic['X'])) {
-			$X = current($MODUL->mf_statistic['X']);
-		}else
-			$X = $MODUL->mf_statistic['X'];
-		$clause = 'SELECT ' . $X . ' as `X`, ' . $MODUL->mf_statistic['Y'] . ' as `Y` FROM `' . $MODUL->tablename . '` t1 ' . $clause . ' GROUP BY X ORDER BY X';
+
+		$clause = 'SELECT ' . $xList . ' as `X`, ' . $MODUL->mf_statistic['Y'] . ' as `Y` FROM `' . $MODUL->tablename . '` t1 ' . $clause . ' GROUP BY X ORDER BY X';
 		$result = $MODUL->SQL->execSQL($clause);
 		$data = array();
 		$maxY = 0;
