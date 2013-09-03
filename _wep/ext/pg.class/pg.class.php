@@ -721,7 +721,7 @@ class pg_class extends kernel_extends {
 				$_tempMarker .= $rowPG['pg'];
 				$flagPG = 1;
 				//$_tpl[$rowPG['marker']] .= '<div id="pg_'.$rowPG['id'].'">'.$_tempMarker.'</div>';
-				if (isset($_SESSION['_showallinfo']) && $_SESSION['_showallinfo'])
+				if (canShowAllInfo())
 					$_tpl[$rowPG['marker']] .= '<!--content' . $rowPG['id'] . ' begin-->' . $_tempMarker . '<!--content' . $rowPG['id'] . ' end-->';
 				else
 					$_tpl[$rowPG['marker']] .= $_tempMarker;
@@ -1186,10 +1186,8 @@ class pg_class extends kernel_extends {
 		$xml .= '</urlset>';
 		setTemplate('text');
 
-		$this->_CFG['wep']['_showallinfo'] =0;
+        setNeverShowAllInfo();
 		$this->_CFG['wep']['_showerror'] = 0;
-		$_COOKIE[$this->_CFG['wep']['_showallinfo']] = 0;
-
 		return $xml;
 	}
 

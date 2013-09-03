@@ -25,7 +25,7 @@
 	*/
 	elseif(isset($_GET['_php']) and static_main::phpAllowVendors($_GET['_php'].'.php')) 
 	{
-		$_GET[$_CFG['wep']['_showallinfo']] = 0;
+        setNeverShowAllInfo();
 
 		if(static_main::phpAllowVendorsSession($_GET['_php'].'.php'))
 		{

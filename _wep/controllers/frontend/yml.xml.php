@@ -1,9 +1,8 @@
 <?php
 $html='';
-$_CFG['wep']['_showallinfo'] =0;
+setNeverShowAllInfo();
 $_CFG['wep']['_showerror'] = 0;
 
-$_COOKIE[$_CFG['wep']['_showallinfo']] = 0;
 ini_set("max_execution_time", "1000");
 set_time_limit (1000);
 header("Content-type: text/xml; charset=utf-8");

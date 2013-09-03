@@ -1032,8 +1032,10 @@ function session_go($force=false) { //$force=true - открывает сеси�
 
 function _setcookie($name, $value='', $expire='', $path='', $domain='', $secure='') {
 	global $_CFG;
-	if ($expire == '')
+	if ($expire == '') {
 		$expire = $_CFG['session']['expire'];
+    }
+
 	if ($path == '')
 		$path = $_CFG['session']['path'];
 	if ($domain == '')
@@ -1041,7 +1043,13 @@ function _setcookie($name, $value='', $expire='', $path='', $domain='', $secure=
 	if ($secure == '')
 		$secure = $_CFG['session']['secure'];
 	setcookie($name, $value, $expire, $path, $domain, $secure);
-	$_COOKIE[$name] = $value;
+
+    if($expire>time()) {
+	    $_COOKIE[$name] = $value;
+    }
+    else {
+        unset($_COOKIE[$name]);
+    }
 }
 
 /**
@@ -1459,6 +1467,36 @@ function isProduction()
 {
     global $_CFG;
     return $_CFG['site']['production'];
+}
+
+function canShowAllInfo()
+{
+    global $_CFG;
+    if($_CFG['wep']['_showallinfo']===false) {
+        return 0;
+    }
+    if(isset($_COOKIE[$_CFG['wep']['_showallinfo']]) and $_COOKIE[$_CFG['wep']['_showallinfo']]) {
+        return $_COOKIE[$_CFG['wep']['_showallinfo']];
+    }
+    return 0;
+}
+
+function setNeverShowAllInfo()
+{
+    global $_CFG;
+    $_CFG['wep']['_showallinfo'] = false;
+}
+
+function initShowAllInfo()
+{
+    global $_CFG;
+    $sai = $_CFG['wep']['_showallinfo'];
+    if (isset($_GET[$sai]) and !$_CFG['robot']) {// and !isset($_COOKIE[$sai])
+        if ($_GET[$sai])
+            _setcookie($sai, $_GET[$sai]);
+        else
+            _setcookie($sai, $_GET[$sai], (time() - 5000));
+    }
 }
 /********************/
 

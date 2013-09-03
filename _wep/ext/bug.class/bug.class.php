@@ -128,7 +128,7 @@ class bug_class extends kernel_extends {
 			if(count($query_val)) {
 				$keys = array_keys($bugs);
 
-				if(isset($_COOKIE[$this->_CFG['wep']['_showallinfo']]))
+				if(canShowAllInfo())
 				{
 					$_showallinfo = $_COOKIE[$this->_CFG['wep']['_showallinfo']];
 					$_COOKIE[$this->_CFG['wep']['_showallinfo']] = 1;

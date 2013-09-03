@@ -266,7 +266,6 @@ class terra_class extends kernel_extends {
 		$this->SQL->_tableClear($this->childs['terrasocr']->tablename);
 
 		//http://xakki.i/_js.php?_template=text&noajax=1&_template=text&_func=KladrImport&_modul=terra
-		$_COOKIE[$this->_CFG['wep']['_showallinfo']] = 1;
 		$this->_CFG['wep']['debugmode'] = 2;
 
 		$data = file($this->_CFG['_PATH']['temp'].'kladr/socrbase');

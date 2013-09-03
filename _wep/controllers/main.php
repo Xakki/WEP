@@ -15,7 +15,7 @@
 	ini_set("max_execution_time", "10");
 	set_time_limit(10);
 
-	if($_CFG['site']['worktime'] and !isset($_COOKIE[$_CFG['wep']['_showallinfo']]) and !isset($_GET[$_CFG['wep']['_showallinfo']])) {
+	if($_CFG['site']['worktime'] and !canShowAllInfo() ) {
 		static_main::downSite(); // Exit()
 	}
 
@@ -73,7 +73,7 @@
 		exit();
 	}
 	elseif(isset($_GET['_php']) and $_GET['_php']=='config') {
-		$_GET[$_CFG['wep']['_showallinfo']] = 0;
+        setNeverShowAllInfo();
 		//Применяется для CKFinder для авторизации по сессии
 		session_go();
 		return true;

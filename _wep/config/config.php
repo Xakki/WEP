@@ -534,16 +534,7 @@ else
 /***** ЛОГИ ********/
 /********************/
 
-$sai = $_CFG['wep']['_showallinfo'];
-if (!isset($_COOKIE[$sai]))
-	$_COOKIE[$sai] = 0;
-if (isset($_GET[$sai]) and !$_CFG['robot']) {// and !isset($_COOKIE[$sai])
-	if ($_GET[$sai])
-		_setcookie($sai, $_GET[$sai]);
-	else
-		_setcookie($sai, $_GET[$sai], (time() - 5000));
-	$_COOKIE[$sai] = $_GET[$sai];
-}
+initShowAllInfo();
 
 /*****************************/
 /******* Показ ошибок ********/

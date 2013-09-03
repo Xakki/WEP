@@ -410,7 +410,7 @@
 			}
 			//if(strstr(strtolower($sql),'insert into'))
 			//	$this->id = $this->sql_id();
-			if(isset($_COOKIE[$_CFG['wep']['_showallinfo']]) and $_COOKIE[$_CFG['wep']['_showallinfo']]>1) {
+			if(canShowAllInfo()>1) {
 				if($ttt>0.5) $ttt = '<span style="color:rgb(255, 0, 0);font-size:1.4em;">'.$ttt.'</span>';
 				elseif($ttt>0.1) $ttt = '<span style="color:#FF6633;font-size:1.2em;">'.$ttt.'</span>';
 				elseif($ttt>0.05) $ttt = '<span style="color:rgb(255, 155, 63);font-size:1.1em;">'.$ttt.'</span>';
@@ -419,7 +419,7 @@
 				else $ttt = '<span style="color:#FFF;">'.$ttt.'</span>';
 				$_CFG['logs']['sql'][] = htmlentities($sql,ENT_NOQUOTES,$_CFG['wep']['charset']).'  TIME='.$ttt;
 			}
-			elseif(isBackend() or isset($_COOKIE[$_CFG['wep']['_showallinfo']]))
+			elseif(isBackend() or canShowAllInfo())
 				$_CFG['logs']['sql'][] = true;
 		}
 

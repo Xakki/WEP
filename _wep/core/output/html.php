@@ -35,7 +35,7 @@ class wephtml
 		global $_tpl, $_CFG;
 		$_tpl['THEME'] = getUrlTheme();
 		/*Вывд логов и инфы*/
-		if ((isset($_COOKIE[$_CFG['wep']['_showallinfo']]) and $_COOKIE[$_CFG['wep']['_showallinfo']]) or isBackend()) 
+		if (canShowAllInfo() or isBackend())
 		{
 			$buffer = $this->getLogInfo().$buffer;
 		}
@@ -81,9 +81,9 @@ class wephtml
 		$included_files = get_included_files();
 		$htmlinfo .= ' time=' . substr((getmicrotime() - $this->_mctime_start), 0, 6) . ' | memory=' . (int) (memory_get_usage() / 1024) . 'Kb | maxmemory=' . (int) (memory_get_peak_usage() / 1024) . 'Kb | query=' . count($_CFG['logs']['sql']) . ' | file include=' . count($included_files).' <br/> ';
 
-		if ($_COOKIE[$_CFG['wep']['_showallinfo']] > 1 and count($_CFG['logs']['sql']) > 0)
+		if (canShowAllInfo() > 1 and count($_CFG['logs']['sql']) > 0)
 			$htmlinfo .= static_main::spoilerWrap('SQL QUERY',implode(';<br/>', $_CFG['logs']['sql']));
-		if ($_COOKIE[$_CFG['wep']['_showallinfo']] > 2) {
+		if (canShowAllInfo() > 2) {
 			$htmlinfo .= static_main::spoilerWrap('FILE INCLUDE',implode(';<br/>', $included_files));
 		}
 		return $htmlinfo;

@@ -383,7 +383,7 @@
 					$this->logFile[] = '['.date('Y-m-d H:i:s').'] LONG QUERY ['.$ttt.' sec.] ('.$sql.')';
 			}
 
-			if(isset($_COOKIE[$_CFG['wep']['_showallinfo']]) and $_COOKIE[$_CFG['wep']['_showallinfo']]>1) {
+			if(canShowAllInfo()>1) {
 				if($ttt>0.5) $ttt = '<span style="color:#FF0000;">'.$ttt.'</span>';
 				elseif($ttt>0.1) $ttt = '<span style="color:#FF6633;">'.$ttt.'</span>';
 				elseif($ttt>0.05) $ttt = '<span style="color:#006699;">'.$ttt.'</span>';
@@ -392,7 +392,7 @@
 				else $ttt = '<span style="color:#00FF00;">'.$ttt.'</span>';
 				$_CFG['logs']['sql'][] = htmlentities($sql,ENT_NOQUOTES,$_CFG['wep']['charset']).'  TIME='.$ttt;
 			}
-			elseif(isBackend() or isset($_COOKIE[$_CFG['wep']['_showallinfo']]))
+			elseif(isBackend() or canShowAllInfo())
 				$_CFG['logs']['sql'][] = true;
 		}
 
