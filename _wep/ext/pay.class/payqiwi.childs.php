@@ -251,14 +251,15 @@ Cчета со статусом большим или равным 100 трак�
 		$err = (int)$rc;
 		if($err!==0) 
 		{
+            trigger_error('Ошибка создания счета QIWI. - ['.$err.']'.$this->_enum['errors'][$err], E_USER_WARNING);
 			if($this->id)
 				$this->_update(array('errors'=>$rc),false,false);
 		}
 		if($fatality=='true') 
 		{
-            trigger_error('Ошибка создания счета. - ['.$err.']'.$this->_enum['errors'][$err], E_USER_WARNING);
 			return $err;
 		}
+
 		if($flag=='check') 
 		{
 			$billlist = $xml->{'bills-list'};
