@@ -109,7 +109,7 @@ Cчета со статусом большим или равным 100 трак�
 
 	public function setFieldsForm($form=0) {
 		parent::setFieldsForm($form);
-		$this->fields_form['phone'] = array('type' => 'int', 'caption' => 'Номер телефона', 'readonly'=>1, 'comment'=>'10 значный номер мобильного, <b>без 8ки</b>. <br/>Пример: 9271234567', 'mask'=>array('min'=>10,'max'=>10));
+		$this->fields_form['phone'] = array('type' => 'int', 'caption' => 'Номер телефона', 'readonly'=>1, 'comment'=>'10 значный номер мобильного, <b>без 8ки</b>. <br/>Пример: 9271234567', 'mask'=>array('min'=>10,'max'=>10), 'maxlength' => 10);
 		$this->fields_form['email'] = array('type' => 'text', 'caption' => 'Email');
 		$this->fields_form['cost'] = array('type' => 'decimal', 'caption' => 'Сумма (руб)', 'readonly'=>1, 'comment'=>'Минимум '.$this->config['minpay'].'р, максимум '.$this->config['maxpay'].'р', 'default'=>100, 'mask'=>array('min'=>$this->config['minpay'],'max'=>$this->config['maxpay']));
 		//$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Комментарий', 'mask'=>array('name'=>'all'));
@@ -130,7 +130,7 @@ Cчета со статусом большим или равным 100 трак�
 
 		$argForm = array();
 		$argForm['email'] = array('type' => 'email', 'caption' => 'Email', 'mask'=>array('min'=>5));
-		$argForm['phone'] = array('type' => 'int', 'caption' => 'Номер телефона', 'comment'=>'10 значный номер мобильного, <b>без 8ки</b>. <br/>Пример: 9271234567', 'mask'=>array('min'=>10,'max'=>10));
+		$argForm['phone'] = array('type' => 'int', 'caption' => 'Номер телефона', 'comment'=>'10 значный номер мобильного, <b>без 8ки</b>. <br/>Пример: 9271234567', 'mask'=>array('min'=>10,'max'=>10), 'maxlength' => 10);
 		if(isset($_POST['phone']) and $_POST['phone']) {
 			$tmp = preg_replace('/[^0-9]/','',$_POST['phone']);
 			if($tmp[0]!='9'){
