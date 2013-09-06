@@ -225,7 +225,7 @@ class static_tools {
 				if (!self::_checkdir(SITE . $MODUL->getPathForAtt($key))) {
 					$rDATA[$key]['@mess'][] = static_main::am('error', '_checkdir_error', array($MODUL->getPathForAtt($key)), $MODUL);
 				}
-				$rDATA['@reattach'] = true;
+				$rDATA['@reattach'] = false;
 			}
 		}
 
@@ -694,13 +694,13 @@ class static_tools {
 				$criteria[] = $key.'!=""';
 			$emptyId = array();
 			// select record ids to delete
-			$result = $MODUL->SQL->execSQL('select id,'.implode(',',$keyAtt).' FROM ' . $MODUL->tablename. ' WHERE '.implode(' OR ', $criteria));
+            $sql = 'select id,'.implode(',',$keyAtt).' FROM ' . $MODUL->tablename. ' WHERE '.implode(' OR ', $criteria).' ORDER BY id DESC';
+			$result = $MODUL->SQL->execSQL($sql);
 			if ($result->err)
 				return false;
 
 			while ($row = $result->fetch()) 
 			{
-
 				foreach ($MODUL->attaches as $key => $value) 
 				{
 					$ext = $row[$key];
@@ -1104,8 +1104,8 @@ deny from all
 				if (isset($row['@nestedSets'])) {
 					if($row['@nestedSets']['isset']) {
 						$valuelist['nestedSets'] = '<span style="color:blue;">Обновить дерев NestedSets'.(!$row['@nestedSets']['correct'] ? ' - ошибка в структуре дерева.' : '').'</span>';
-						if(!$row['@nestedSets']['correct'])
-							$select['nestedSets'] = true;
+//						if(!$row['@nestedSets']['correct'])
+//							$select['nestedSets'] = true;
 					}
 					unset($row['@nestedSets']);
 				}
@@ -1248,8 +1248,8 @@ deny from all
 		else
 			$result = $MODUL->qs('id,'.$MODUL->mf_istree,'', 'id', $MODUL->mf_istree);
 		if(!count($result)) return true;
-		$cnt = count($result);
-		$max = $cnt*2;
+//		$cnt = count($result);
+//		$max = $cnt*2;
 
 
 		self::_nestedSets_fullUpdate_recursive($MODUL, $result);

@@ -226,15 +226,15 @@ class static_imageGD2 {
 		*/
 		if($imtype==1) {
 			if(!($image=@imagecreatefromgif($im_file)))
-				static_main::log('error','Can not create a new image from file');
+                return static_main::log('error','Can not create a new image from file');
 		}
 		elseif($imtype==2) {
 			if(!($image=imagecreatefromjpeg($im_file)))
-				static_main::log('error','Can not create a new image from file');
+                return static_main::log('error','Can not create a new image from file');
 		}
 		elseif($imtype==3) {
 			if(!($image=imagecreatefrompng($im_file)))
-				static_main::log('error','Can not create a new image from file');
+                return static_main::log('error','Can not create a new image from file');
 		}
 		else return false;
 		return $image;
