@@ -24,7 +24,7 @@
 		global $_tpl,$_CFG;
 		$temp = $solt = '';
 		if($_CFG['wep']['debugmode'])
-			$solt = '?t='.time();
+			$solt = 't='.time();
 
 		// include STYLE into HTML
 		if(isset($_tpl['styles']) and is_array($_tpl['styles'])) 
@@ -62,13 +62,14 @@
 
 			if (is_string($kk) and isUrl($kk))
 			{
-				$temp .= '<script src="'.$kk.$solt.'"></script>'."\n";
+                if($solt)
+				$temp .= '<script src="'.soltAppend($solt, $kk).'"></script>'."\n";
 			}
 
 			if (is_string($rr) and $rr)
 			{
 				if(isUrl($rr))
-					$temp .= '<script src="'.$rr.$solt.'"></script>'."\n";
+					$temp .= '<script src="'.soltAppend($solt, $rr).'"></script>'."\n";
 				else
 					$temp .= "<script>\n//<!--\n".$rr."\n//-->\n</script>\n";
 			}
@@ -89,13 +90,13 @@
 
 			if (is_string($kk) and isUrl($kk))
 			{
-				$temp .= '<link rel="stylesheet" href="'.$kk.$solt.'"/>'."\n";
+				$temp .= '<link rel="stylesheet" href="'.soltAppend($solt, $kk).'"/>'."\n";
 			}
 
 			if (is_string($rr) and $rr)
 			{
 				if(isUrl($rr))
-					$temp .= '<link rel="stylesheet" href="'.$rr.$solt.'"/>'."\n";
+					$temp .= '<link rel="stylesheet" href="'.soltAppend($solt, $rr).'"/>'."\n";
 				else
 					$temp .= "<style>".$rr."</style>\n";
 			}
@@ -105,6 +106,20 @@
 		}
 		return $temp;
 	}
+
+    function soltAppend($solt, $url)
+    {
+        if($solt) {
+            if(strpos($url, '?')===false) {
+                $solt = '?'.$solt;
+            }
+            else {
+                $solt = '&'.$solt;
+            }
+            return $url.$solt;
+        }
+        return $url;
+    }
 
 	function isUrl($str)
 	{
