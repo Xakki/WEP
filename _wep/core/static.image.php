@@ -4,6 +4,12 @@
 	Реализованно для GD2 , Imagick PHP и ImageMagick
 */
 class static_image {
+
+    static function hasMagick()
+    {
+        return false;
+        return (bool)(class_exists('Imagick',false));
+    }
 	/**
 	 * Наложение водяного знака (маркера)
 	 *
@@ -22,7 +28,7 @@ class static_image {
 		_chmod($InFile);
 		list($width_orig, $height_orig) = getimagesize($InFile);// опред размер
 
-		if(class_exists('Imagick',false)) {
+		if(self::hasMagick()) {
 			if(strpos($posX,'%')!==false)
 				$posX = $width_orig*substr($posX,0,-1)/100;
 			if(strpos($posY,'%')!==false)
@@ -40,9 +46,8 @@ class static_image {
 			$cmd = 'convert '.escapeshellarg($InFile).' -gravity SouthWest -draw "image Over 0,0,0,0 '.escapeshellarg($logoFile).'" '.escapeshellarg($OutFile);
 			$out=array();$err = 0;$run = exec($cmd, $out, $err);
 			if($err) {
+                trigger_error('Ошибка ['.$err.']: '.$cmd, E_USER_WARNING);
 				return static_imageGD2::_waterMark($InFile, $OutFile,$logoFile,$posX,$posY);
-				static_main::log('error','Неверное выполнение команды "'.$cmd.'" , код ошибки - '.$err);
-				$res = false;
 			}
 		}
 
@@ -51,9 +56,16 @@ class static_image {
 		return $res;
 	}
 
-	// Меняет размер. пропорционально, до минимального соответсявия по стороне
-	// TODo - куму нужна вообще эта функция, которая менятет размер картинки без сохранения соотношения сторон?
-	static function _resizeImage($InFile, $OutFile, $WidthX, $HeightY)
+    /**
+     * Меняет размер. пропорционально, до минимального соответсявия по стороне
+     * @deprecated  куму нужна вообще эта функция, которая менятет размер картинки без сохранения соотношения сторон?
+     * @param $InFile
+     * @param $OutFile
+     * @param $WidthX
+     * @param $HeightY
+     * @return bool
+     */
+    static function _resizeImage($InFile, $OutFile, $WidthX, $HeightY)
 	{
 		trigger_error('_resizeImage', E_USER_WARNING);
 		$res = true;
@@ -75,7 +87,7 @@ class static_image {
 			return true;
 		}
 
-		if(class_exists('Imagick',false)) {
+		if(self::hasMagick()) {
 			$thumb = new Imagick($InFile);
 			$thumb->resizeImage($WidthX,$HeightY,Imagick::FILTER_LANCZOS,1);
 			$res = $thumb->writeImage($OutFile);
@@ -87,9 +99,8 @@ class static_image {
 			$err = 0;
 			$run = exec($cmd, $out, $err);
 			if($err) {
+                trigger_error('Ошибка ['.$err.']: '.$cmd, E_USER_WARNING);
 				return static_imageGD2::_resizeImage($InFile, $OutFile, $WidthX, $HeightY);
-				static_main::log('error','Неверное выполнение команды "'.$cmd.'" , код ошибки - '.$err);
-				$res = false;
 			}
 		}
 
@@ -109,7 +120,7 @@ class static_image {
 
 		_chmod($InFile);
 
-		if(class_exists('Imagick',false)) {
+		if(self::hasMagick()) {
 			$thumb = new Imagick($InFile);
 			$thumb->cropImage($WidthX,$HeightY,$posX,$posY);
 			$res = $thumb->writeImage($OutFile);
@@ -121,9 +132,8 @@ class static_image {
 			$err = 0;
 			$run = exec($cmd, $out, $err);
 			if($err) {
+                trigger_error('Ошибка ['.$err.']: '.$cmd, E_USER_WARNING);
 				return static_imageGD2::_cropImage($InFile, $OutFile, $WidthX, $HeightY,$posX,$posY);
-				static_main::log('error','Неверное выполнение команды "'.$cmd.'" , код ошибки - '.$err);
-				$res = false;
 			}
 		}
 
@@ -151,7 +161,7 @@ class static_image {
 
 		_chmod($InFile);
 
-		if(class_exists('Imagick',false)) {///// todo 
+		if(self::hasMagick()) {///// todo
 			$thumb = new Imagick($InFile);
 			if($crop)
 				$thumb->cropThumbnailImage($WidthX,$HeightY);
@@ -168,9 +178,9 @@ class static_image {
 				$cmd = 'convert '.escapeshellarg($InFile).' -thumbnail "'.$WidthX.'x'.$HeightY.'" '.escapeshellarg($OutFile);
 			$out=array();$err = 0;$run = exec($cmd, $out, $err);
 			if($err) {
+                trigger_error('Ошибка ['.$err.']: '.$cmd, E_USER_WARNING);
 				return static_imageGD2::_thumbnailImage($InFile, $OutFile, $WidthX, $HeightY);
-			}
-			$res = static_main::log('error','Неверное выполнение команды "'.$cmd.'" , код ошибки - '.$err);
+            }
 		}
 
 		if($res) 

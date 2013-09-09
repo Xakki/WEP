@@ -258,7 +258,7 @@
 		/*****************************/
 
 		public function _info() {
-			return $this->q('show variables',0,MYSQLI_NUM);
+			return $this->q('show variables');
 		}
 
 		public function _proc() {
