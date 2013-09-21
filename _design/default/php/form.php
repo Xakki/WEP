@@ -187,7 +187,7 @@ function tpl_form(&$data, $tabs = array())
 						$ckedit['height'] = '450';
 					$ckedit['toolbarCanCollapse ']='true';
 					if(!isset($ckedit['baseHref']))
-						$ckedit['baseHref'] = '\''.$_CFG['_HREF']['BH'].'\'';
+						$ckedit['baseHref'] = '\''.MY_BH.'\'';
 					if(isset($ckedit['toolbar'])) {
 						if(isset($_CFG['ckedit']['toolbar'][$ckedit['toolbar']]))
 							$ckedit['toolbar'] = $_CFG['ckedit']['toolbar'][$ckedit['toolbar']];
@@ -640,41 +640,48 @@ function tpl_form(&$data, $tabs = array())
 					$r['att_type']='img';
 				}
 
-				if($r['caption']==1)
+				if($r['caption']==1) {
 					$texthtml .= '';
-				elseif(!is_array($r['value']) and $r['value']!='' and $r['att_type']=='img') {
-					$css = '';
-					if(isset($r['mask']['width']) and $r['mask']['width'])
-						$css .= 'width:'.$r['mask']['width'].'px;';
-					if(isset($r['mask']['height']) and $r['mask']['height'])
-						$css = 'height:'.$r['mask']['height'].'px;';
-					else
-						$css = 'height:50px;';
+                }
+                elseif(!is_array($r['value']) and $r['value']!='') {
+                    /* Картинки */
+                    if($r['att_type']=='img') {
+                        $css = '';
+                        if(isset($r['mask']['width']) and $r['mask']['width'])
+                            $css .= 'width:'.$r['mask']['width'].'px;';
+                        if(isset($r['mask']['height']) and $r['mask']['height'])
+                            $css = 'height:'.$r['mask']['height'].'px;';
+                        else
+                            $css = 'height:50px;';
 
-					$texthtml .= '<div class="wep_thumb">
-						<a rel="fancy" href="/'.$r['value'].'" target="_blank" class="fancyimg">
-							<img src="/'.$r['value'].'" alt="img" class="attach" style="'.$css.'" id="'.$ID.'_temp_upload_img"/>
-						</a>';
-					if(isset($r['img_size']))
-						$texthtml .= '<div class="wep_thumb_comment">Размер '.$r['img_size'][0].'x'.$r['img_size'][1].'</div>';
-					$texthtml .= '</div>';
-					if(isset($r['thumb']) and $r['thumb'])
-						foreach($r['thumb'] as $thumb) {
-							if(!$thumb['pref']) continue;
-							$texthtml .= '<div class="wep_thumb">
-								<a rel="fancy" href="/'.$thumb['value'].'" target="_blank" class="fancyimg">
-									<img src="/'.$thumb['value'].'" alt="img" class="attach" style="'.$css.'"/>
-								</a>';
-							if($thumb['w']) $texthtml .= '<div class="wep_thumb_comment">Эскиз размером '.$thumb['w'].'x'.$thumb['h'].'</div>';
-							$texthtml .= '</div>';
-						}
-					plugFancybox();
-				}
-				elseif(!is_array($r['value']) and $r['value']!='' and $r['att_type']=='swf')
-					$texthtml .= '<object type="application/x-shockwave-flash" data="/'.$r['value'].'" height="50" width="200"><param name="movie" value="/'.$r['value'].'" /><param name="allowScriptAccess" value="sameDomain" /><param name="quality" value="high" /><param name="scale" value="exactfit" /><param name="bgcolor" value="#ffffff" /><param name="wmode" value="transparent" /></object>';
-				elseif(!is_array($r['value']) and $r['value']!=''){
-					$texthtml .= '<span style="color:green"><a href="/'.$r['value'].'" target="_blank"> фаил загружен</a></span><br/>';
-				}
+                        $texthtml .= '<div class="wep_thumb">
+                            <a rel="fancy" href="/'.$r['value'].'" target="_blank" class="fancyimg">
+                                <img src="/'.$r['value'].'" alt="img" class="attach" style="'.$css.'" id="'.$ID.'_temp_upload_img"/>
+                            </a>';
+                        if(isset($r['img_size']))
+                            $texthtml .= '<div class="wep_thumb_comment">Размер '.$r['img_size'][0].'x'.$r['img_size'][1].'</div>';
+                        $texthtml .= '</div>';
+                        if(isset($r['thumb']) and $r['thumb'])
+                            foreach($r['thumb'] as $thumb) {
+                                if(!$thumb['pref']) continue;
+                                $texthtml .= '<div class="wep_thumb">
+                                    <a rel="fancy" href="/'.$thumb['value'].'" target="_blank" class="fancyimg">
+                                        <img src="/'.$thumb['value'].'" alt="img" class="attach" style="'.$css.'"/>
+                                    </a>';
+                                if($thumb['w']) $texthtml .= '<div class="wep_thumb_comment">Эскиз размером '.$thumb['w'].'x'.$thumb['h'].'</div>';
+                                $texthtml .= '</div>';
+                            }
+                        plugFancybox();
+                    }
+                    /* Флешка*/
+                    elseif($r['att_type']=='swf') {
+                        $texthtml .= '<object type="application/x-shockwave-flash" data="/'.$r['value'].'" height="50" width="200"><param name="movie" value="/'.$r['value'].'" /><param name="allowScriptAccess" value="sameDomain" /><param name="quality" value="high" /><param name="scale" value="exactfit" /><param name="bgcolor" value="#ffffff" /><param name="wmode" value="transparent" /></object>';
+                    }
+                    /* прочее */
+                    else {
+                        $texthtml .= '<span style="color:green"><a href="/'.$r['value'].'" target="_blank"> фаил загружен</a></span><br/>';
+                    }
+                }
 
 				$texthtml .= '<div class="form-value divinputfile">';
 				

@@ -446,7 +446,7 @@ class static_main {
 					$_SESSION['user']['gid'] = 1;
 					$_SESSION['user']['design'] = $_CFG['wep']['design'];
 					$_SESSION['user']['filesize'] = $_CFG['wep']['def_filesize'];
-					$_SESSION['FckEditorUserFilesUrl'] = $_CFG['_HREF']['BH'] . $_CFG['PATH']['userfile'];
+					$_SESSION['FckEditorUserFilesUrl'] = MY_BH . $_CFG['PATH']['userfile'];
 					$_SESSION['FckEditorUserFilesPath'] = SITE . $_CFG['PATH']['userfile'];
 					if (isset($_POST['remember']) and $_POST['remember'] == '1')
 						_setcookie('remember', md5($_CFG['wep']['md5'].$_CFG['wep']['password']) . '_' . $_CFG['wep']['login'], $_CFG['remember_expire']);
@@ -608,16 +608,16 @@ class static_main {
 				}
 				
 				if(mb_strpos($rc,'href="')!==false)
-					$temp[] = 'rel="nofollow" target="_blank" href="'.$_CFG['_HREF']['BH'].'_redirect.php?url='.base64encode(str_replace('href="','',$rc));
+					$temp[] = 'rel="nofollow" target="_blank" href="'.MY_BH.'_redirect.php?url='.base64encode(str_replace('href="','',$rc));
 				elseif($dolink==0) {
 					if(!$name)
 						$tn = trim(str_replace(array('href="','http://','https://','www.'),'',$rc),' /');
 					else
 						$tn = $name;
-					$temp[] = '<a href="'.$_CFG['_HREF']['BH'].'_redirect.php?url='.(base64encode($rc)).'" rel="nofollow" target="_blank">'.$tn.'</a>';
+					$temp[] = '<a href="'.MY_BH.'_redirect.php?url='.(base64encode($rc)).'" rel="nofollow" target="_blank">'.$tn.'</a>';
 				}
 				else
-					$temp[] = $_CFG['_HREF']['BH'].'_redirect.php?url='.(base64encode($rc));
+					$temp[] = MY_BH.'_redirect.php?url='.(base64encode($rc));
 			}
 			$text = str_replace($cont[0],$temp,$text);
 		}

@@ -37,23 +37,23 @@ if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] === 0)
 	$file = $_CFG['_PATH']['wep_controllers'] . '/install/step' . $_GET['step'] . '.php';
 	if (file_exists($file)) {
 		$var_const = array(
-			'mess'=>array('name' => 'ok', 'value' => 'Пора перейти к <a href="'.$_CFG['PATH']['admin'].'/install/?step=' . ($_GET['step'] + 1) . '">следующему шагу №' . ($_GET['step'] + 1) . '</a>'),
+			'mess'=>array('name' => 'ok', 'value' => 'Пора перейти к <a href="'.ADMIN_BH.'/install/?step=' . ($_GET['step'] + 1) . '">следующему шагу №' . ($_GET['step'] + 1) . '</a>'),
 			'sbmt'=>'Сохранить и перейти на следующий шаг'
 		);
 		if($_SESSION['step']<$_GET['step'])
-			$_tpl['text'] =  'Как ты попал сюда? Вернитесь на <a href="'.$_CFG['PATH']['admin'].'/install/?step=' . $_SESSION['step'] . '">Шаг №'.$_SESSION['step'].'</a>.';
+			$_tpl['text'] =  'Как ты попал сюда? Вернитесь на <a href="'.ADMIN_BH.'/install/?step=' . $_SESSION['step'] . '">Шаг №'.$_SESSION['step'].'</a>.';
 		else
 			$_tpl['text'] = require($file);
 	} 
 	elseif($_SESSION['step']>3 and $_GET['step']==$_SESSION['step']) {
 		$_tpl['text'] = '<h2>Установка завершена</h2><br/>
 			<a href="/index.html">Перейти на сайт</a><br/>
-			<a href="'.$_CFG['PATH']['admin'].'/login">Перейти в админку</a>';
+			<a href="'.ADMIN_BH.'/login">Перейти в админку</a>';
 	} 
 	else {
 		$_tpl['text'] = '<h2>Ошибка.</h2><br/>
-			<a href="'.$_CFG['PATH']['admin'].'/install">Перейти на начало установки</a><br/>
-			<a href="'.$_CFG['PATH']['admin'].'/login">Перейти в админку</a>';
+			<a href="'.ADMIN_BH.'/install">Перейти на начало установки</a><br/>
+			<a href="'.ADMIN_BH.'/login">Перейти в админку</a>';
 	}
 
 	$_tpl['step'] = '';
@@ -62,14 +62,14 @@ if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] === 0)
 	foreach ($stp as $k => $r) {
 		$_tpl['step'] .= '<a ';
 		if($k<=$_GET['step'])
-			$_tpl['step'] .= ' href="'.$_CFG['PATH']['admin'].'/install/?step='.$k.'"';
+			$_tpl['step'] .= ' href="'.ADMIN_BH.'/install/?step='.$k.'"';
 		$_tpl['step'] .= 'class="stepitem' . $r['css'] . '"><div class="name">' . $r['name'] . '</div></a>';
 	}
 	if(isset($stp[$_GET['step']]['comment']))
 		$_tpl['step'] .= '<div class="stepcomment">' . $stp[$_GET['step']]['comment'] . '</div>';
 	$_tpl['onload'] = '';
 	/* 	$_tpl['ref'] = $ref;
-	  $_tpl['action'] = $_CFG['_HREF']['BH'].$_CFG['PATH']['admin'].'/login'.(isset($_GET['install'])?'?install':'');
+	  $_tpl['action'] = ADMIN_BH.'/login'.(isset($_GET['install'])?'?install':'');
 	  if($result[0]) $result[0] = '<div style="color:red;">'.$result[0].'</div>';
 	  elseif(isset($_GET['install'])) $result[0] = '<div style="color:red;">Установка недостающих данных</div>';
 	  $_tpl['mess'] = '<div class="messhead">'.$result[0].'</div>'; */

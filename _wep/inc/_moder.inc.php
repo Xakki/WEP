@@ -65,7 +65,7 @@
 			else
 				$param['filter'] = false;
 
-			$param['firstpath'] = $PGLIST->_CFG['_HREF']['BH'].$PGLIST->current_path;
+			$param['firstpath'] = MY_BH.$PGLIST->current_path;
 
 			list($DATA,$this->formFlag) = $MODUL->super_inc($param,$_GET['_type']);
 

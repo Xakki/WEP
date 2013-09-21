@@ -105,7 +105,7 @@ abstract class kernel_extends {
 							$r = '$TEMP->' . $r;
 						}
 					} elseif (!function_exists($r)) {
-						$file = $this->_CFG['_PATH']['path'] . $k;
+						$file = SITE . $k;
 						if (file_exists($file)) {
 							include_once($file);
 						}
@@ -752,7 +752,7 @@ abstract class kernel_extends {
 				return true;
 			foreach ($data as $ri => &$row) {
 				foreach ($this->memos as $key => $value) {
-					$f = $this->_CFG['_PATH']['path'] . $this->getPathForMemo($key) . '/' . $row['id'] . $this->text_ext;
+					$f = SITE . $this->getPathForMemo($key) . '/' . $row['id'] . $this->text_ext;
 					if (file_exists($f))
 						$row[$key] = $f;
 				}
@@ -1938,14 +1938,14 @@ abstract class kernel_extends {
 	 * @return string - относительный путь
 	 */
 	public function _getPathSize($file) {
-		if ($file and file_exists($this->_CFG['_PATH']['path'] . $file) and $size = @filesize($this->_CFG['_PATH']['path'] . $file))
+		if ($file and file_exists(SITE . $file) and $size = @filesize(SITE . $file))
 			return $file . '?size=' . $size;
 		return '';
 	}
 
 	/**
 	 * Формирует путь к фаилу
-	 *
+	 * @deprecated Забыли про эту функцию
 	 * @param <type> $id
 	 * @param <type> $key
 	 * @param <type> $extValue
@@ -1976,7 +1976,7 @@ abstract class kernel_extends {
 	public function _prefixImage($path, $pref) {
 		if (trim($path) != '') {
 			$img = _substr($path, 0, strrpos($path, '/') + 1) . $pref . _substr($path, strrpos($path, '/') + 2 - count($path));
-			if (file_exists($this->_CFG['_PATH']['path'] . _substr($img, 0, strrpos($img, '?'))))
+			if (file_exists(SITE . _substr($img, 0, strrpos($img, '?'))))
 				return $img;
 		}
 		return $path;
@@ -2004,8 +2004,7 @@ abstract class kernel_extends {
 	*/
 	public function getAttaches($key, $id, $ext)
 	{
-		$subPath = ceil($id / $this->_CFG['wep']['filedivider']);
-		return $this->getPathForAtt($key) . $subPath . '/' . $id . '.' . $ext;
+		return $this->getPathForAtt($key) . $this->getSubPath($id) . '/' . $id . '.' . $ext;
 	}
 
 	/**
@@ -2037,8 +2036,7 @@ abstract class kernel_extends {
 	*/
 	public function getThumb($imod, $key, $id, $ext)
 	{
-		$subPath = ceil($id / $this->_CFG['wep']['filedivider']);
-		return $this->getPathForThumb($imod, $key) . $subPath . '/' . $id . '.' . $ext;
+		return $this->getPathForThumb($imod, $key) . $this->getSubPath($id) . '/' . $id . '.' . $ext;
 	}
 
 	/**
@@ -2052,6 +2050,10 @@ abstract class kernel_extends {
 		return $pathimg;
 	}
 
+    public function getSubPath($id)
+    {
+        return ceil($id / $this->_CFG['wep']['filedivider']);
+    }
 	/////////////////////////////////////////
 	/////////////////////////////////////////
 	//////////////////////////////////////////

@@ -244,7 +244,7 @@ class pg_class extends kernel_extends {
 	  parent::allChangeData($type);
 	  if($this->config['sitemap']) {
 	  $xml = $this->creatSiteMaps();
-	  file_put_contents($this->_CFG['_PATH']['path'].'sitemap.xml',$xml);
+	  file_put_contents(SITE.'sitemap.xml',$xml);
 
 	  }
 	  return true;
@@ -345,7 +345,7 @@ class pg_class extends kernel_extends {
 			wep.pgParam =' . $pageParamEncode . ';
 			wep.pgGet =' . $getEncode . ';
 			wep.siteJS = "' . $this->_CFG['_HREF']['siteJS'] . '";
-			wep.BH = "' . $this->_CFG['_HREF']['BH'] . '";
+			wep.BH = "' . MY_BH . '";
 			wep.DOMAIN = "' . $_SERVER['HTTP_HOST2'] . '";
 			wep.wepVer = "wepjs'.$this->_CFG['info']['version'].'";
 			window.THEME = "'.getUrlTheme().'";
@@ -713,7 +713,7 @@ class pg_class extends kernel_extends {
 
 			/* Статика */
 			if ($rowPG['pagetype'] == '') {
-				/* $text = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['content'].'pg/'.$rowPG['id'].$this->text_ext;
+				/* $text = SITE.$this->_CFG['PATH']['content'].'pg/'.$rowPG['id'].$this->text_ext;
 				  if (file_exists($text)) {
 				  $flagPG = 1;
 				  $_tempMarker .= file_get_contents($text);
@@ -935,7 +935,7 @@ class pg_class extends kernel_extends {
 					continue;
 				}
 
-				$href = $this->_CFG['_HREF']['BH'] . $this->getHref($keyPG, true);
+				$href = MY_BH . $this->getHref($keyPG, true);
 
 				if ($this->id == $keyPG)
 					$selPG = 2;
@@ -1009,7 +1009,7 @@ class pg_class extends kernel_extends {
 					continue;
 				}
 
-				$href = $this->_CFG['_HREF']['BH'] . $this->getHref($keyPG, true);
+				$href = MY_BH . $this->getHref($keyPG, true);
 
 				if ($this->id == $keyPG)
 					$selPG = 2;
@@ -1097,7 +1097,7 @@ class pg_class extends kernel_extends {
 					$this->dataCashTreeAlias[$row['parent_id']][$row['alias']] = &$this->dataCash[$row['id']];
 				}
 			} else {
-				static_main::redirect($this->_CFG['PATH']['admin'] . '/install');
+				static_main::redirect(ADMIN_BH . '/install');
 			}
 		}
 		return true;

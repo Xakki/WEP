@@ -749,10 +749,12 @@ class product_class extends kernel_extends {
 				if(count($rname)) 
 					$tempData['rname'] = $rname;
 
-				foreach($this->attaches as $tk=>$tr)
-					if($r[$tk]!='')
-						if($r[$tk]!='' and $file=$this->_get_file($r['id'],$tk,$r[$tk]))
-							$tempData['image'][] = array($file, $this->_get_file($r['id'],$tk,$r[$tk],1));
+				foreach($this->attaches as $tk=>$tr) {
+                    $file = $this->getAttaches($tk, $r['id'], $r[$tk]);
+                    if($file) {
+                        $tempData['image'][] = array($file, $this->getThumb($tr['thumb'][1], $tk, $r['id'], $r[$tk]));
+                    }
+                }
 
 				$xml['#item#'][$tempData['id']] = $tempData;
 			}
@@ -850,10 +852,12 @@ class product_class extends kernel_extends {
 			$r['rpath']=$this->owner->data2[$r['shop']]['path'];
 			$r['#available#']= $this->_enum['available'][$r['available']];
 
-			foreach($this->attaches as $tk=>$tr)
-				if($r[$tk]!='')
-					if($r[$tk]!='' and $file=$this->_get_file($r['id'],$tk,$r[$tk]))
-						$r['image'][] = array($file, $this->_get_file($r['id'],$tk,$r[$tk],1));
+            foreach($this->attaches as $tk=>$tr) {
+                $file = $this->getAttaches($tk, $r['id'], $r[$tk]);
+                if($file) {
+                    $r['image'][] = array($file, $this->getThumb($tr['thumb'][1], $tk, $r['id'], $r[$tk]));
+                }
+            }
 
 			if(count($r['param']))
 				foreach($r['param'] as $pk=>&$pr){

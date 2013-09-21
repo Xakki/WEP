@@ -43,7 +43,7 @@
 		$ref= $_SERVER['HTTP_REFERER'];
 	}
 	else 
-		$ref= $_CFG['_HREF']['BH'];
+		$ref= MY_BH;
 
 	if(count($_POST) and isset($_POST['login'])) {
 		$result = static_main::userAuth($_POST['login'],$_POST['pass']);

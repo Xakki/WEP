@@ -205,7 +205,7 @@ class content_class extends kernel_extends {
 	public function kPreFields(&$f_data, &$f_param = array(), &$f_fieldsForm = null) {
 		$mess = parent::kPreFields($f_data, $f_param, $f_fieldsForm );
 		$this->addForm = array();
-		$f_fieldsForm['pagetype']['onchange'] = 'contentIncParam(this,\'' . $this->_CFG['PATH']['admin'] . '\',\'' . (isset($f_data['funcparam']) ? htmlspecialchars($f_data['funcparam']) : '') . '\');';
+		$f_fieldsForm['pagetype']['onchange'] = 'contentIncParam(this,\'' . ADMIN_BH . '\',\'' . (isset($f_data['funcparam']) ? htmlspecialchars($f_data['funcparam']) : '') . '\');';
 
 		if (isset($f_data['pagetype']) and $f_data['pagetype']) {
 			$this->addForm = $this->getContentIncParam($f_data);

@@ -10,6 +10,11 @@ class static_image {
         return false;
         return (bool)(class_exists('Imagick',false));
     }
+
+    static function hasConsoleMagick()
+    {
+        return false;
+    }
 	/**
 	 * Наложение водяного знака (маркера)
 	 *
@@ -56,59 +61,6 @@ class static_image {
 		return $res;
 	}
 
-    /**
-     * Меняет размер. пропорционально, до минимального соответсявия по стороне
-     * @deprecated  куму нужна вообще эта функция, которая менятет размер картинки без сохранения соотношения сторон?
-     * @param $InFile
-     * @param $OutFile
-     * @param $WidthX
-     * @param $HeightY
-     * @return bool
-     */
-    static function _resizeImage($InFile, $OutFile, $WidthX, $HeightY)
-	{
-		trigger_error('_resizeImage', E_USER_WARNING);
-		$res = true;
-		if(!$WidthX and !$HeightY) 
-			return true;
-		if(!$WidthX) $WidthX='';
-		if(!$HeightY) $HeightY='';
-
-		_chmod($InFile);
-
-		list($width_orig, $height_orig) = getimagesize($InFile);// опред размер
-
-		// Если исходный меньше заданных размеров , то не меняем его и просто дублируем
-		if($width_orig<$WidthX and $height_orig<$HeightY) { 
-			if($InFile!=$OutFile) {
-				copy($InFile,$OutFile);
-				_chmod($OutFile);
-			}
-			return true;
-		}
-
-		if(self::hasMagick()) {
-			$thumb = new Imagick($InFile);
-			$thumb->resizeImage($WidthX,$HeightY,Imagick::FILTER_LANCZOS,1);
-			$res = $thumb->writeImage($OutFile);
-			$thumb->destroy();
-		} 
-		else {
-			$cmd = 'convert '.escapeshellarg($InFile).' -resize '.$WidthX.'x'.$HeightY.' '.escapeshellarg($OutFile);
-			$out=array();
-			$err = 0;
-			$run = exec($cmd, $out, $err);
-			if($err) {
-                trigger_error('Ошибка ['.$err.']: '.$cmd, E_USER_WARNING);
-				return static_imageGD2::_resizeImage($InFile, $OutFile, $WidthX, $HeightY);
-			}
-		}
-
-		if($res) _chmod($OutFile);
-
-		return $res;
-	}
-	
 	// обрезает
 	static function _cropImage($InFile, $OutFile, $WidthX, $HeightY,$posX=0,$posY=0)
 	{
@@ -142,52 +94,156 @@ class static_image {
 		return $res;
 	}
 
+    /**
+     * Меняет размер. пропорционально, до минимального соответсявия по стороне
+     * @param $InFile
+     * @param $OutFile
+     * @param $WidthX
+     * @param $HeightY
+     * @return bool
+     */
+    static function _resizeImage($InFile, $OutFile, $WidthX, $HeightY)
+    {
+        if(!$WidthX and !$HeightY)
+            return true;
+
+        list($WidthX, $HeightY) = self::getActiualSize($InFile, $WidthX, $HeightY, true);
+
+        return self::convertImage($InFile, $OutFile, $WidthX, $HeightY);
+    }
+
 	// Меняет размер обрезая
 	static function _thumbnailImage($InFile, $OutFile, $WidthX, $HeightY)
 	{
-		$res = true;
 		if(!$WidthX and !$HeightY) 
 			return true;
 
-		$crop = true;
-		if(!$WidthX) {
-			$WidthX=$HeightY;
-			$crop = false;
-		}
-		if(!$HeightY) {
-			$HeightY=$WidthX;
-			$crop = false;
-		}
+        list($WidthX, $HeightY) = self::getActiualSize($InFile, $WidthX, $HeightY);
 
-		_chmod($InFile);
-
-		if(self::hasMagick()) {///// todo
-			$thumb = new Imagick($InFile);
-			if($crop)
-				$thumb->cropThumbnailImage($WidthX,$HeightY);
-			else
-				$thumb->thumbnailImage($WidthX,$HeightY, true);
-			$res = $thumb->writeImage($OutFile);
-			$thumb->destroy();
-		}
-		else 
-		{
-			if($crop)
-				$cmd = 'convert '.escapeshellarg($InFile).' -resize "'.$WidthX.'x'.$HeightY.'^" -gravity center -crop '.$WidthX.'x'.$HeightY.'+0+0 +repage  '.escapeshellarg($OutFile);
-			else
-				$cmd = 'convert '.escapeshellarg($InFile).' -thumbnail "'.$WidthX.'x'.$HeightY.'" '.escapeshellarg($OutFile);
-			$out=array();$err = 0;$run = exec($cmd, $out, $err);
-			if($err) {
-                trigger_error('Ошибка ['.$err.']: '.$cmd, E_USER_WARNING);
-				return static_imageGD2::_thumbnailImage($InFile, $OutFile, $WidthX, $HeightY);
-            }
-		}
-
-		if($res) 
-			_chmod($OutFile);
-
-		return $res;
+		return self::convertImage($InFile, $OutFile, $WidthX, $HeightY);
 	}
+
+    static function convertImage($InFile, $OutFile, $WidthX, $HeightY)
+    {
+        $res = true;
+
+        if(self::hasMagick()) {///// todo not work yet
+            _chmod($InFile);
+            $crop = true;
+            $thumb = new Imagick($InFile);
+            if($crop)
+                $thumb->cropThumbnailImage($WidthX,$HeightY);
+            else
+                $thumb->thumbnailImage($WidthX,$HeightY, true);
+            $res = $thumb->writeImage($OutFile);
+            $thumb->destroy();
+        }
+        elseif(self::hasConsoleMagick()) {
+            _chmod($InFile);
+            $crop = true;
+            if($crop)
+                $cmd = 'convert '.escapeshellarg($InFile).' -resize "'.$WidthX.'x'.$HeightY.'^" -gravity center -crop '.$WidthX.'x'.$HeightY.'+0+0 +repage  '.escapeshellarg($OutFile);
+            else
+                $cmd = 'convert '.escapeshellarg($InFile).' -thumbnail "'.$WidthX.'x'.$HeightY.'" '.escapeshellarg($OutFile);
+            $out=array();$err = 0;$run = exec($cmd, $out, $err);
+
+            if($err) {
+                trigger_error('Ошибка ['.$err.']: '.$cmd, E_USER_WARNING);
+                $res = false;
+            }
+        }
+        else
+        {
+            $res = static_imageGD2::_thumbnailImage($InFile, $OutFile, $WidthX, $HeightY);
+        }
+
+        if($res)
+            _chmod($OutFile);
+
+        return $res;
+    }
+
+    /**
+     * ПОлучить пропорциональный размер даже если картинка меньше заданных размеров
+     * @param $InFile
+     * @param $Width X
+     * @param $Height Y
+     * @return array|bool
+     */
+    static function getActiualSize($InFile, $Width, $Height, $saveOrigin = false)
+    {
+        $Width = (int) $Width;
+        $Height = (int) $Height;
+        $ZeroWidth = $Width;
+        $ZeroHeight = $Height;
+
+        list($width_orig, $height_orig) = getimagesize($InFile);
+        $width_orig = (int) $width_orig;
+        $height_orig = (int) $height_orig;
+
+        if(!$Width)
+            $Width = (int) ($width_orig*$Height/$height_orig);
+        if(!$Height)
+            $Height = (int) ($height_orig*$Width/$width_orig);
+
+        $k1 = $width_orig/$Width;
+        $k2 = $height_orig/$Height;
+
+        if($saveOrigin) {
+            if ($k1<=1 && $k2<=1) {
+                $Width = $width_orig;
+                $Height = $height_orig;
+            }
+            elseif($width_orig/$height_orig < $Width/$Height) {
+                $Width = $Height * $width_orig/$height_orig;
+            }
+            else {
+                $Height = $Width * $height_orig/$width_orig;
+            }
+        }
+        elseif ($k1!==1 && $k2!==1) {
+            if ($k1<=1 && $k2<=1) {
+                // Каринка меньше чем заданные размеры
+                // ТО пропорционально выбираем меньший размер
+                if($k1 < $k2) {
+                    $Width = $width_orig;
+                }
+                else {
+                    $Height = $height_orig;
+                }
+            }
+            else {
+                // картинка больше
+                if($k1 < $k2) {
+                    $Height = $height_orig;
+                }
+                else {
+                    $Width = $width_orig;
+                }
+            }
+
+            if($k1 < $k2) {
+                $Height = (int) ($Width*$ZeroHeight/$ZeroWidth);
+            }
+            else {
+                $Width = (int) ($Height*$ZeroWidth/$ZeroHeight);
+            }
+        }
+//
+//        print_r('<pre>');
+//        var_export(array(
+//            '$ZeroWidth' => $ZeroWidth,
+//            '$ZeroHeight' => $ZeroHeight,
+//            '$k1' => $k1,
+//            '$k2' => $k2,
+//            '$width_orig' => $width_orig,
+//            '$height_orig' => $height_orig,
+//            '$Width' => $Width,
+//            '$Height' => $Height
+//        ));
+
+        return array($Width, $Height);
+    }
 
 	static function _is_image($file) 
 	{

@@ -8,14 +8,14 @@
 	// редирект
 	if($setRedirect) 
 	{
-		$ref= $_CFG['PATH']['admin'];
+		$ref= ADMIN_BH;
 		if(isset($_REQUEST['ref']) and $_REQUEST['ref']!='') {
 			if(substr($_REQUEST['ref'],0,1)!='/' and !strstr($_REQUEST['ref'],'.'))
 				$ref = base64decode($_REQUEST['ref']);
 			else
 				$ref = $_REQUEST['ref'];
 			if(strstr($ref,'login') or strstr($ref,'install'))
-				$ref = $_CFG['PATH']['admin'];
+				$ref = ADMIN_BH;
 		}
 		elseif(isset($_SERVER['HTTP_REFERER']) and $_SERVER['HTTP_REFERER']!='' and !strstr($_SERVER['HTTP_REFERER'],'login'))
 			$ref= $_SERVER['HTTP_REFERER'];
@@ -76,8 +76,8 @@
 	$_tpl['forgotLabel'] = 'Ваш Email';
 	$_tpl['forgotSubmit'] = 'Восстановить';
 
-	//$_tpl['actionLogin'] = $_CFG['PATH']['admin'].'login'.(isset($_GET['install'])?'?install':'');
-	//$_tpl['actionRecover'] = $_CFG['PATH']['admin'].'login?recover=true';
+	//$_tpl['actionLogin'] = ADMIN_BH.'login'.(isset($_GET['install'])?'?install':'');
+	//$_tpl['actionRecover'] = ADMIN_BH.'login?recover=true';
 	$_tpl['actionLogin'] = $_SERVER['REQUEST_URI'];
 	$_tpl['actionRecover'] = $_SERVER['REQUEST_URI'].'?recover=true';
 

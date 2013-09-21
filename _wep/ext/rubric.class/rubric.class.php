@@ -97,9 +97,6 @@ class rubric_class extends kernel_extends {
 		if(!$result->err) {
 			$ar_last = array();
 			while ($row = $result->fetch()){
-				// $row['img'] = $this->_get_file($row['id'],$this->v_img,$row['img']);
-				// $row['orig_img'] = $this->_get_file($row['id'],$this->v_img,$row['img'],1);
-				
 				$this->data2[$row['id']] = $row;
 				$this->data[$row['parent_id']][$row['id']] = $row['name'];
 				$this->data3[$row['parent_id']][$row['id']] = &$this->data2[$row['id']];

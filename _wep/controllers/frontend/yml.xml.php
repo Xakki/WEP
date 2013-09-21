@@ -27,14 +27,14 @@ $DATA = $SHOP->childs['product']->qs('*','WHERE active=1');
 foreach($DATA as $r) {
 	$offer .= '
 			<offer id="'.$r['id'].'" available="'.(!$r['available']?'true':'false').'">
-				 <url>'.$_CFG['_HREF']['BH'].$SHOP->data2[$r['shop']]['path'].'/'.$r['path'].'_'.$r['id'].'.html</url>
+				 <url>'.MY_BH.$SHOP->data2[$r['shop']]['path'].'/'.$r['path'].'_'.$r['id'].'.html</url>
 				 <price>'.$r['cost'].'</price>
 				 <currencyId>RUR</currencyId>
 				 <categoryId>'.$r['shop'].'</categoryId>';
 
 	if($r['img_product'])
 		$offer .= '
-				<picture>'. $_CFG['_HREF']['BH'].$r['img_product']. '</picture>';
+				<picture>'. MY_BH.$r['img_product']. '</picture>';
 	$offer .= '
 				<name>'.htmlspecialchars($r['name'], ENT_QUOTES, $_CFG['wep']['charset']).'</name>
 				<description>'.htmlspecialchars($r['descr'], ENT_QUOTES, $_CFG['wep']['charset']).'</description>';
@@ -61,7 +61,7 @@ $XML = '<?xml version="1.0" encoding="utf-8"?>
 	<shop>
 		<name>'.$PGLIST->config['sitename'].'</name>
 		<company>'.$PGLIST->config['sitename'].'</company>
-		<url>'.$_CFG['_HREF']['BH'].'</url>
+		<url>'.MY_BH.'</url>
 		<platform>WEP</platform>
 		<version>'.$_CFG['info']['version'].'</version>
 		<agency>Xakki</agency>

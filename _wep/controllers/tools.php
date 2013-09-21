@@ -111,7 +111,7 @@ function tools_cron() {
 	else {
 		$ini_arr= array();
 	}
-	$FP = $_CFG['PATH']['admin'].'?_view=list&_modul=_tools&tfunc=tools_cron&';
+	$FP = ADMIN_BH.'?_view=list&_modul=_tools&tfunc=tools_cron&';
 	setCss('form');
 	$DATA = array('firstpath'=>$FP);
 	$DATA['path'] = array(
@@ -599,12 +599,12 @@ setTemplate('nologs');
 $html = '<div>Выбирите функцию для запуска</div><hr><ul>';
 foreach($dataF as $kk=>$rr) {
 	if(isset($_GET['tfunc']) and $_GET['tfunc']==$kk) {
-		$html .= '<li><a style="font-weight:bold;" href="'.$_CFG['PATH']['admin'].'?_view=list&_modul=_tools&tfunc='.$kk.'">'.$rr.'</a>';
+		$html .= '<li><a style="font-weight:bold;" href="'.ADMIN_BH.'?_view=list&_modul=_tools&tfunc='.$kk.'">'.$rr.'</a>';
 		$html .= ' <fieldset><legend>Результат выполнения функции '.$kk.'()</legend>';
 		eval('$html .= '.$kk.'();');
 		$html .= '</fieldset></li>';
 	} else
-		$html .= '<li><a href="'.$_CFG['PATH']['admin'].'?_view=list&_modul=_tools&tfunc='.$kk.'">'.$rr.'</a></li>';
+		$html .= '<li><a href="'.ADMIN_BH.'?_view=list&_modul=_tools&tfunc='.$kk.'">'.$rr.'</a></li>';
 }
 $html .= '</ul>';
 

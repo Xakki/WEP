@@ -202,8 +202,8 @@ class ugroup_class extends kernel_extends
 			trigger_error('Not found data for user id='.$id, E_USER_WARNING);
 			return array();
 		}
-		$this->data[0]['FckEditorUserFilesUrl'] = $this->_CFG['_HREF']['BH'].$this->_CFG['PATH']['userfile'].$id.'/';
-		$this->data[0]['FckEditorUserFilesPath'] = $this->_CFG['_PATH']['path'].$this->_CFG['PATH']['userfile'].$id.'/';
+		$this->data[0]['FckEditorUserFilesUrl'] = MY_BH . $this->_CFG['PATH']['userfile'].$id.'/';
+		$this->data[0]['FckEditorUserFilesPath'] = SITE . $this->_CFG['PATH']['userfile'].$id.'/';
 		return $this->data[0];
 	}
 
@@ -215,7 +215,7 @@ class ugroup_class extends kernel_extends
 				$txt = '<table border="1"><tr><td>ID</td><td>Name</td><td>email</td></tr>';
 				foreach($data as $k=>$r) {
 					$txt .= '<tr>
-						<td><a href="'.$this->_CFG['PATH']['admin'].'?_view=list&_modul=ugroupom&ugroupom_id='.$this->config['modergroup'].'&ugroupom_ch=usersom&usersom_id='.$r['id'].'&_type=update">'.$r['id'].'</a></td>
+						<td><a href="'.ADMIN_BH.'?_view=list&_modul=ugroupom&ugroupom_id='.$this->config['modergroup'].'&ugroupom_ch=usersom&usersom_id='.$r['id'].'&_type=update">'.$r['id'].'</a></td>
 						<td>'.$r['name'].'</td>
 						<td>'.$r['email'].'</td></tr>';
 				}

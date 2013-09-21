@@ -442,14 +442,16 @@ define('MY_BH', $_CFG['_HREF']['BH']);
 if($_CFG['site']['redirectPlugin'])
 	$_CFG['require_modul']['redirect'] = true;
 
-$_CFG['PATH']['admin'] = $_CFG['_HREF']['BH'] . $_CFG['PATH']['admin'];
-$_CFG['_HREF']['wepJS'] = $_CFG['PATH']['admin'] . 'js.php';
-$_CFG['_HREF']['siteJS'] = $_CFG['_HREF']['BH'] . '_js.php';
-$_CFG['_HREF']['captcha'] = $_CFG['_HREF']['BH'] . '_captcha.php';
+$_CFG['_HREF']['admin'] = MY_BH . $_CFG['PATH']['admin'];
+define('ADMIN_BH', $_CFG['_HREF']['admin']);
+
+$_CFG['_HREF']['wepJS'] = ADMIN_BH . 'js.php';
+$_CFG['_HREF']['siteJS'] = MY_BH . '_js.php';
+$_CFG['_HREF']['captcha'] = MY_BH . '_captcha.php';
 $_CFG['_HREF']['_style'] = '_design/_style/'; // дизайн стили
 $_CFG['_HREF']['_script'] = '_design/_script/'; // дизайн стили
 $_CFG['_HREF']['arrayHOST'] = array_reverse(explode('.', $_SERVER['HTTP_HOST']));
-$_CFG['_HREF']['vendors'] = $_CFG['_HREF']['BH'] . '_vendors/';
+$_CFG['_HREF']['vendors'] = MY_BH . '_vendors/';
 
 $_CFG['_F']['adminpage'] = false;
 

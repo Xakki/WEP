@@ -185,9 +185,14 @@ class static_form {
 					_chmod($newname);
 					unlink($newname);
 				}
+                else {
+                    static_tools::_checkdir(dirname($newname));
+                }
+
+
 				_chmod($value['tmp_name']);
 				if (!rename($value['tmp_name'], $newname))
-					return static_main::log('error', static_main::m('Error rename file',array($value['tmp_name'],$newname)));
+					return false;
 
 				// Дополнительные изображения
 				if (isset($_this->attaches[$key]['thumb'])) 
@@ -217,8 +222,8 @@ class static_form {
 		$res = true;
 		if ($imod['type']=='crop')
 			$res = static_image::_cropImage($source, $thumb, $imod['w'], $imod['h']);
-		/*elseif ($imod['type']=='resize')
-			$res = static_image::_resizeImage($source, $thumb, $imod['w'], $imod['h']);*/
+		elseif ($imod['type']=='resize')
+			$res = static_image::_resizeImage($source, $thumb, $imod['w'], $imod['h']);
 		// TODO - IMAGE OPTION normalize
 		elseif ($imod['type']=='resizecrop' or $imod['type']=='thumb' or $imod['type']=='resize')
 			$res = static_image::_thumbnailImage($source, $thumb, $imod['w'], $imod['h']);
@@ -582,13 +587,16 @@ class static_form {
 					// Процесс загрузки фаила
 					if(isset($r['value']) and is_array($r['value']) and isset($r['value']['tmp_name']) and $r['value']['tmp_name']) 
 					{
+                        // TODO -  ?
 						$r['value'] = $_CFG['PATH']['temp'].$r['value']['name'];
 					}
 					// Редактирование формы - отображаем фаил 
-					elseif(isset($r['ext']) and $_this->id) 
+					elseif(isset($r['ext']) and $_this->id and !$r['value'])
 					{
-						$r['value'] = $_this->_get_file($_this->id,$k);// TODO
+                        exit('++++++!!');// TODO
+                        $r['value'] = $_this->getAttaches($k, $_this->id, '');
 					}
+
 
 					if(isset($r['value']) and $r['value'] and file_exists(SITE.$r['value'])) 
 					{
@@ -599,10 +607,13 @@ class static_form {
 							$r['img_size'] = getimagesize(SITE.$r['value']);
 							$r['value'] = $_this->_getPathSize($r['value']);
 
-							if(count($_this->attaches[$k]['thumb'])) 
-							{
+							if(count($_this->attaches[$k]['thumb'])) {
 								foreach($_this->attaches[$k]['thumb'] as $modkey=>$mr) 
 								{
+                                    if(!$_this->data[$_this->id]['_ext_' . $k]) {
+                                        continue;
+                                    }
+
 									if(isset($mr['display']) and !$mr['display']) 
 									{
 										unset($r['thumb'][$modkey]);
@@ -615,24 +626,28 @@ class static_form {
 										unset($r['thumb'][$modkey]);
 										continue;
 									}
-									$_file = $_this->_get_file($_this->id,$k,'',$modkey);
-									if(file_exists(SITE.$_file)) 
-									{
+									$_file = $_this->getThumb($mr, $k, $_this->id, $_this->data[$_this->id]['_ext_' . $k]);
+
+//									if(file_exists(SITE.$_file))
+//									{
 										$mr['value'] = $_this->_getPathSize($_file);
-										$mr['filesize'] = filesize(SITE.$_file);
+//										$mr['filesize'] = filesize(SITE.$_file);
 										$r['thumb'][$modkey] = $mr;
-									}
+//									}
 								}
 							}
 						} 
-						elseif(isset($_this->_CFG['form']['flashFormat'][$r['ext']]) and $_this->id) 
-						{
+						elseif(isset($_this->_CFG['form']['flashFormat'][$r['ext']]) and $_this->id) {
 							$r['att_type'] = 'swf'; // Флешки
 						} 
-						else
+						else {
 							$r['value'] = '';
-						// TODO : можно описать ещё какиенибудь специфические типы
+						    // TODO : можно описать ещё какиенибудь специфические типы
+                        }
 					}
+                    else {
+                        $r['value'] = '';
+                    }
 
 					if(!isset($r['value']) or !is_string($r['value']) or !$r['value'])
 						$r['value'] = '';
@@ -824,7 +839,7 @@ class static_form {
 			}
 
 		}
-		//print_r('<pre>');print_r($fields);
+
 		unset($r);
 
 		return true;
@@ -1107,7 +1122,6 @@ class static_form {
 					else {
 						static_tools::_checkdir($_this->_CFG['_PATH']['temp']);
 						$temp = $_this->_CFG['_PATH']['temp'].substr(md5(getmicrotime().rand(0,50)),16).'.'.$value['ext'];
-						static_tools::_checkdir($_this->_CFG['_PATH']['temp']);
 						if (move_uploaded_file($value['tmp_name'], $temp)){
 							$value['tmp_name']= $temp;
 							$data[$key] = $value;

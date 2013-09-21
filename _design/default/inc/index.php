@@ -121,7 +121,7 @@
 
 	if(!isAjax())
 	{
-		//<base href="'.$_CFG['_HREF']['BH'].'/"/>
+		//<base href="'.MY_BH.'/"/>
 		$_tpl['meta'] = '
 			<title>{#title#}</title>
 			<link rel="SHORTCUT ICON" href="{#design#}img/favicon.ico"/>

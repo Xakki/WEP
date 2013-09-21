@@ -149,7 +149,7 @@
 				$_tpl['debug'] .= '<option '.($_COOKIE[$_CFG['wep']['_showallinfo']]==$k?'selected="selected"':'').' value="'.$k.'">'.$r.'</option>';
 			$_tpl['debug'] .= '</select></span>';
 
-			/*$_tpl['debug'] .= '<span class="seldebug"><select onchange="setCookie(\'cdesign\',this.value);window.location.href=\''.$_CFG['PATH']['admin'].'\';">
+			/*$_tpl['debug'] .= '<span class="seldebug"><select onchange="setCookie(\'cdesign\',this.value);window.location.href=\''.ADMIN_BH.'\';">
 	<option '.($_design=='default'?'selected="selected"':'').' value="default">Default</option>
 	<option '.($_design=='extjs'?'selected="selected"':'').' value="extjs">ExtJS</option>
 	</select></span>';*/

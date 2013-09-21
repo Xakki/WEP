@@ -70,10 +70,12 @@ class static_imageGD2 {
 		_chmod($InFile);
 		list($width_orig, $height_orig) = getimagesize($InFile);// опред размер
 
-		if(!$WidthX and !$HeightY) 
+		if(!$WidthX and !$HeightY) {
 			return true;
-		if(!$WidthX)
+        }
+		if(!$WidthX) {
 			$WidthX = ($width_orig*$HeightY)/$height_orig;
+        }
 		if(!$HeightY) {
 			$HeightY = ($height_orig*$WidthX)/$width_orig;
 		}
@@ -155,46 +157,56 @@ class static_imageGD2 {
 	static function _thumbnailImage($InFile, $OutFile, $WidthX, $HeightY)
 	{
 		global $_CFG;
-		$trueX=$WidthX;$trueY=$HeightY;
 		_chmod($InFile);
+
 		list($width_orig, $height_orig) = getimagesize($InFile);
 
-		if(!$trueX and !$trueY) 
-			return false;
-		if(!$trueX)
-			$WidthX = $trueX = ($width_orig*$trueY)/$height_orig;
-		if(!$trueY) {
-			$HeightY = $trueY = ($height_orig*$trueX)/$width_orig;
-		}
+        $src_width = $width_orig;
+        $src_height = $height_orig;
+        $src_x = $src_y = 0;
+        $ratio_orig = $width_orig/$height_orig; // пропорции исходной картинки
+        $ratio_dist = $WidthX/$HeightY; // пропорции заданного размера
+        if($ratio_dist != $ratio_orig) {
+            if ($ratio_dist > $ratio_orig) {
+                $src_height = $src_width/$ratio_dist;
+                $src_y = abs(($src_height - $height_orig)/2);
+            } else {
+                $src_width = $src_height*$ratio_dist;
+                $src_x = abs(($src_width - $width_orig)/2);
+            }
+        }
 
-		$ratio_orig = $width_orig/$height_orig;
-		if ($WidthX/$HeightY > $ratio_orig) {
-		   $HeightY = $WidthX/$ratio_orig;
-		} else {
-		   $WidthX = $HeightY*$ratio_orig;
-		}
-		/*Создаем пустое изображение на вывод*/
-		if(!($thumb = @imagecreatetruecolor($WidthX, $HeightY)))
-			return static_main::log('error','Cannot Initialize new GD image stream');
+//        $src_x = $WidthX/2 - $trueX/2;
+//        $src_y = $HeightY/2 - $trueY/2;
+
 		/*Определяем тип рисунка*/
 		if(!$imtype = self::_get_type($InFile))// опред тип файла
 			return static_main::log('error','File is not image');
+
 		/*Обработка только jpeg, gif, png*/
 		if($imtype>3) {
 			static_main::log('alert','Данный тип изображения не поддерживается на данный момент, рекомендуем использовать JPEG, PNG или GIF');
 			copy($InFile, $OutFile);
 			return false;
 		}
+        /*Создаем пустое изображение на вывод*/
+        if(!($thumb = imagecreatetruecolor($WidthX, $HeightY)))
+            return static_main::log('error','Cannot Initialize new GD image stream');
+
 		/*Открываем исходный рисунок*/
 		if(!$source = self::_imagecreatefrom($InFile,$imtype))//открываем рисунок
 			return static_main::log('error','File '.$InFile.' is not image');
-		if(!imagecopyresampled($thumb, $source, 0, 0, 0, 0, $WidthX, $HeightY, $width_orig, $height_orig))
+
+		if(!imagecopyresampled($thumb, $source, 0, 0, $src_x, $src_y, $WidthX, $HeightY, $src_width, $src_height))
 			return static_main::log('error','Error imagecopyresampled');
-		if(!($thumb2 = @imagecreatetruecolor($trueX, $trueY)))
-			return static_main::log('error','Cannot Initialize new GD image stream');
-		if(!imagecopyresampled($thumb2, $thumb, 0, 0, $WidthX/2-$trueX/2, $HeightY/2-$trueY/2, $trueX, $trueY, $trueX, $trueY)) 
-			return static_main::log('error','Error imagecopyresampled');
-		self::_image_to_file($thumb2, $OutFile,$_CFG['_imgquality'],$imtype);//сохраняем в файл
+
+//		if(!($thumb2 = imagecreatetruecolor($WidthX, $HeightY)))
+//			return static_main::log('error','Cannot Initialize new GD image stream');
+//
+//        if(!imagecopyresampled($thumb2, $thumb, 0, 0, $src_x, $src_y , $WidthX, $HeightY, $trueX, $trueY))
+//            return static_main::log('error','Error imagecopyresampled');
+
+		self::_image_to_file($thumb, $OutFile,$_CFG['_imgquality'],$imtype);//сохраняем в файл
 		if(!file_exists($OutFile)) return static_main::log('error','Cant create file');
 		return true;
 	}
