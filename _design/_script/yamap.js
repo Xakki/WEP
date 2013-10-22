@@ -18,16 +18,16 @@ var setPlacemark; // Метка
 var setToolbar;
 var viewMap=0;
 
-function boardOnMap(tp) {
+function positionOnMap(tp) {
 	Yamap.option.draggable=true;
 	Yamap.tools.Search = true
 	if(tp) Yamap.viewMap = tp;
-//	if(jQuery('#boardOnMap').size()==0) {
-//		jQuery('body').append('<div id="boardOnMap" style="display:none;"><div id="YMapsID" style="width:700px;height:500px;background-color: white;"></div></div>');
+//	if(jQuery('#positionOnMap').size()==0) {
+//		jQuery('body').append('<div id="positionOnMap" style="display:none;"><div id="YMapsID" style="width:700px;height:500px;background-color: white;"></div></div>');
 //	}
-//	jQuery('#boardOnMap').show().css('height','auto');
+//	jQuery('#positionOnMap').show().css('height','auto');
     if(jQuery('#YMapsID').size()==0) {
-	    wep.staticPopUp('<div id="YMapsID" style="width:700px;height:500px;background-color: white;"></div>');
+	    wep.staticPopUp('<div id="YMapsID" style="width:700px;height:500px;background-color: white;"></div><div id="YMapsName" class="map-info"></div>');
     }
     else {
         wep.staticOpenPopUp();
@@ -39,7 +39,7 @@ function boardOnMap(tp) {
 }
 
 function initMap() {
-	//jQuery('body').append('<div id="boardOnMap"><div class="layerblock"><div id="YMapsID" style="width:600px;height:400px;background-color: white;"></div></div></div>');
+	//jQuery('body').append('<div id="positionOnMap"><div class="layerblock"><div id="YMapsID" style="width:600px;height:400px;background-color: white;"></div></div></div>');
 	// Создает обработчик события window.onLoad
 	YMaps.jQuery(function () {
 		// Создает экземпляр карты и привязывает его к созданному контейнеру
@@ -71,7 +71,10 @@ function initMap() {
 			setPlacemark.name = "Метка";
 			if(Yamap.option.draggable) {
 				YMaps.Events.observe(setPlacemark, setPlacemark.Events.PositionChange, function (obj,Point) {
-					jQuery('#mapx').val(Point.newPoint.__lng);jQuery('#mapy').val(Point.newPoint.__lat);
+					jQuery('#mapx').val(Point.newPoint.__lng);
+                    jQuery('#mapy').val(Point.newPoint.__lat);
+                    // Отправим запрос на геокодирование.
+                    showAddress(Point.newPoint, setMap);
 				}, setMap);
 			}
 		}
@@ -108,7 +111,7 @@ function initMap() {
 					height: newHeight || ""
 				});
 				setMap.redraw();
-				fMessPos(' #boardOnMap');jQuery('#boardOnMap').css('height','auto');
+				fMessPos(' #positionOnMap');jQuery('#positionOnMap').css('height','auto');
 			}
 			setToolbar.add(button2);
 			
@@ -121,7 +124,11 @@ function initMap() {
 				YMaps.Events.observe(button, button.Events.Select, function () {
 					//button.setContent('Удалить метку');
 					var center = setMap.getCenter();
-					jQuery('#mapx').val(center.__lng);jQuery('#mapy').val(center.__lat);
+					jQuery('#mapx').val(center.__lng);
+                    jQuery('#mapy').val(center.__lat);
+                    // Отправим запрос на геокодирование.
+                    showAddress(center, setMap);
+
 					setPlacemark.setGeoPoint(center);
 					this.addOverlay(setPlacemark);
 				}, setMap);
@@ -147,11 +154,11 @@ function initMap() {
 }
 // Функция для отображения результата геокодирования
 // Параметр value - адрес объекта для поиска
-function showAddress (value) {
+function showAddress (value, setMap) {
 	// Удаление предыдущего результата поиска
-	map.removeOverlay(geoResult);
+//    YMaps.removeOverlay(geoResult);
 	// Запуск процесса геокодирования
-	var geocoder = new YMaps.Geocoder(value, {results: 1, boundedBy: map.getBounds()});
+	var geocoder = new YMaps.Geocoder(value, {results: 1, boundedBy: setMap.getBounds()});
 	// Создание обработчика для успешного завершения геокодирования
 	YMaps.Events.observe(geocoder, geocoder.Events.Load, function () {
 		// Если объект был найден, то добавляем его на карту
@@ -159,20 +166,32 @@ function showAddress (value) {
 		if (this.length()) {
 			geoResult = this.get(0);
 			//map.addOverlay(geoResult);
-			map.setBounds(geoResult.getBounds());
+//			map.setBounds(geoResult.getBounds());
+//            console.log(geoResult.text, this);
+            jQuery('#field_map').val(geoResult.text);
+            jQuery('#YMapsName,.mapselect').html(geoResult.text);
 		}else {
-			alert("Ничего не найдено")
+			console.error("Ничего не найдено")
 		}
 	});
 
 	// Процесс геокодирования завершен неудачно
 	YMaps.Events.observe(geocoder, geocoder.Events.Fault, function (geocoder, error) {
-		alert("Произошла ошибка: " + error);
+        console.error("Произошла ошибка: " , error);
 	})
+//                    YMaps.geocode(center).then(function (res) {
+//                        var names = [];
+//                        // Переберём все найденные результаты и
+//                        // запишем имена найденный объектов в массив names.
+//                        res.geoObjects.each(function (obj) {
+//                            names.push(obj.properties.get('name'));
+//                        });
+//                        console.log('! ', names);
+//                    });
 }
 
 function delMap() {
-	jQuery('#boardOnMap').hide();
+	jQuery('#positionOnMap').hide();
 	hideBG();
 	//setMap.destructor();
 }

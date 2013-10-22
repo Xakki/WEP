@@ -657,7 +657,7 @@ class modulgrp_class extends kernel_extends {
 		$this->fields_form['owner_id'] = array('type' => 'hidden', 'readonly' => 1);
 		$this->fields_form['ugroup_id'] = array('type' => 'list', 'readonly' => 1, 'listname' => array('class' => 'ugroup'), 'caption' => 'Группа');
 		$this->fields_form['mname'] = array('type' => 'text', 'caption' => 'СпецНазвание модуля');
-		$this->fields_form['access'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'access', 'caption' => 'Права доступа');
+		$this->fields_form['access'] = array('type' => 'list', 'multiple' => FORM_MULTIPLE_JQUERY, 'listname' => 'access', 'caption' => 'Права доступа');
 
 	}
 }

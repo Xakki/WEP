@@ -67,10 +67,10 @@ class content_class extends kernel_extends {
 			//$this->fields_form['pg']['paramedit']['contentsCss'] = "['/_design/default/style/main.css', '/_design/_style/main.css']";
 		}
 		if ($this->_CFG['wep']['access'])
-			$this->fields_form['ugroup'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'ugroup', 'caption' => 'Доступ', 'comment'=>'Если выбранны группы пользователей, то только им будет отображаться данный контент', 'def
+			$this->fields_form['ugroup'] = array('type' => 'list', 'multiple' => FORM_MULTIPLE_JQUERY, 'listname' => 'ugroup', 'caption' => 'Доступ', 'comment'=>'Если выбранны группы пользователей, то только им будет отображаться данный контент', 'def
 		ault' => '0'); //'css'=>'minform'
-		$this->fields_form['styles'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'style', 'caption' => 'CSS', 'mask' => array('onetd' => 'Дизайн')); //, 'css'=>'minform'
-		$this->fields_form['script'] = array('type' => 'list', 'multiple' => 2, 'listname' => 'script', 'caption' => 'SCRIPT', 'mask' => array('onetd' => 'none')); //, 'css'=>'minform'
+		$this->fields_form['styles'] = array('type' => 'list', 'multiple' => FORM_MULTIPLE_JQUERY, 'listname' => 'style', 'caption' => 'CSS', 'mask' => array('onetd' => 'Дизайн')); //, 'css'=>'minform'
+		$this->fields_form['script'] = array('type' => 'list', 'multiple' => FORM_MULTIPLE_JQUERY, 'listname' => 'script', 'caption' => 'SCRIPT', 'mask' => array('onetd' => 'none')); //, 'css'=>'minform'
 		$this->fields_form['keywords'] = array('type' => 'text', 'caption' => 'SEO - ключевые слова', 'mask' => array('onetd' => 'none'));
 		$this->fields_form['description'] = array('type' => 'text', 'caption' => 'SEO - описание', 'mask' => array('onetd' => 'close', 'name' => 'all'));
 

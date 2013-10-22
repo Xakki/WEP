@@ -22,7 +22,7 @@ class shopbasket_class extends kernel_extends {
 	/*protected function _create_conf() {
 		parent::_create_conf();
 		$this->config['orderset'] = array(0 => '0');
-		$this->config_form['orderset'] = array('type' => 'list', 'listname'=>'orderset', 'multiple'=>1, 'caption'=>'Варианты заказа товара');
+		$this->config_form['orderset'] = array('type' => 'list', 'listname'=>'orderset', 'multiple'=> FORM_MULTIPLE_SIMPLE, 'caption'=>'Варианты заказа товара');
 	}*/
 
 	protected function _set_features() {

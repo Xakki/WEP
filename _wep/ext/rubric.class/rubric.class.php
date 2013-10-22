@@ -30,7 +30,7 @@ class rubric_class extends kernel_extends {
 		// );
 		// $this->config['imgsize'] = 3000;
 
-		// $this->config_form['thumbs'] = array('type' => 'list', 'listname'=>'thumb', 'multiple'=>3, 'caption' => 'Модификации изображений','mask'=>array('maxarr'=>10));
+		// $this->config_form['thumbs'] = array('type' => 'list', 'listname'=>'thumb', 'multiple'=> FORM_MULTIPLE_KEY, 'caption' => 'Модификации изображений','mask'=>array('maxarr'=>10));
 		// $this->config_form['imgsize'] = array('type' => 'int', 'caption' => 'Максим. размер загружаемых изображений');
 	}
 

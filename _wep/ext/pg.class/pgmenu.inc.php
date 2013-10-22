@@ -21,7 +21,7 @@ if (!isset($FUNCPARAM[1]))
 if (isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
 	$form = array(
 		0 => array('type' => 'list', 'listname' => array('phptemplates', 'tags'=>'pgmenu'), 'caption' => 'Шаблон', 'comment'=>$_CFG['lang']['tplComment']),
-		1 => array('type' => 'list', 'multiple'=>2, 'listname' => 'ownerlist', 'caption' => 'Элементы меню'),
+		1 => array('type' => 'list', 'multiple'=> FORM_MULTIPLE_JQUERY, 'listname' => 'ownerlist', 'caption' => 'Элементы меню'),
 		
 	);
 	return $form;

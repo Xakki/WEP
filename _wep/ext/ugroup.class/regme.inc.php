@@ -21,7 +21,7 @@
 		$form = array(
 			'0'=>array('type'=>'list','listname'=>array('phptemplates', 'tags'=>'form'),'caption'=>'Шаблон', 'comment'=>$_CFG['lang']['tplComment']),
 			'1'=>array('type'=>'list','listname'=>array('class'=>'ugroup'), 'caption'=>'Регистрировать в указанную группу'),
-			'2'=>array('type'=>'list','listname'=>'userfieldlist', 'multiple'=>2, 'caption'=>'Выводимые поля'),
+			'2'=>array('type'=>'list','listname'=>'userfieldlist', 'multiple'=> FORM_MULTIPLE_JQUERY, 'caption'=>'Выводимые поля'),
 		);
 		$this->_enum['userfieldlist'] = array();
 		foreach($UGROUP->childs['users']->fields_form as $k=>$r) {

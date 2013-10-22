@@ -35,7 +35,7 @@
 			'0' => array('type' => 'list', 'listname' => array('phptemplates', 'tags'=>'shopprodlist'), 'caption' => 'Шаблон'),
 			'1' => array('type' => 'list', 'listname' => array('class'=>'shop','is_tree'=>true), 'caption' => 'Рубрика'),
 			'2' => array('type' => 'checkbox', 'caption' => 'RSS'),
-			'3' => array('type' => 'list', 'listname' => 'sortprod', 'multiple'=>2, 'caption' => 'Cортировка', 'comment'=>'Порядок вывода товаров'),
+			'3' => array('type' => 'list', 'listname' => 'sortprod', 'multiple'=> FORM_MULTIPLE_JQUERY, 'caption' => 'Cортировка', 'comment'=>'Порядок вывода товаров'),
 			'4' => array('type' => 'int', 'caption' => 'LIMIT'),
 			'5'=>array('type'=>'list','listname'=>'ownerlist', 'caption'=>'Страница каталога'),
 		);

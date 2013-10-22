@@ -258,7 +258,8 @@ window.wep = {
 			insertobj : $(domObject),
 			inserttype : 'replace'
 		};
-
+        if(paramCustom.data)
+            $.extend(paramCustom.data, param.data);
 		$.extend(param, paramCustom);
 
 		wep.JSWin(param);

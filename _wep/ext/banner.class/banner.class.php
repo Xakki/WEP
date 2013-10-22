@@ -41,7 +41,7 @@ class banner_class extends kernel_extends {
 			'listname'=>array('class'=>'city','where'=>'tx.active=1 and tx.parent_id=0','nameField'=>'concat(tx.name,"*")'), 
 			'mask' =>array('filter'=>1));
 		$this->fields_form['page'] = array(
-			'caption' => 'Страницы','type' => 'list', 'multiple'=>1,
+			'caption' => 'Страницы','type' => 'list', 'multiple'=>FORM_MULTIPLE_SIMPLE,
 			'listname'=>array('class'=>'pg', 'where'=>'tx.active=1'));
 		$this->fields_form['dataon'] = array('type' => 'date', 'caption' => 'Дата вкл.');
 		$this->fields_form['dataoff'] = array('type' => 'date', 'caption' => 'Дата выкл.');

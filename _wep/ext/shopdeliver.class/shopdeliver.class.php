@@ -8,7 +8,7 @@ class shopdeliver_class extends kernel_extends {
 	/*protected function _create_conf() {
 		parent::_create_conf();
 		$this->config['orderset'] = array(0 => '0');
-		$this->config_form['orderset'] = array('type' => 'list', 'listname'=>'orderset', 'multiple'=>1, 'caption'=>'Варианты заказа товара');
+		$this->config_form['orderset'] = array('type' => 'list', 'listname'=>'orderset', 'multiple'=> FORM_MULTIPLE_SIMPLE, 'caption'=>'Варианты заказа товара');
 	}*/
 
 	function _set_features() {
@@ -45,8 +45,8 @@ class shopdeliver_class extends kernel_extends {
 		$this->fields_form['dscr'] = array('type' => 'textarea', 'caption' => 'Описание');
 		$this->fields_form['cost'] = array('type' => 'text', 'caption' => 'Стоимость');
 		$this->fields_form['minsumm'] = array('type' => 'int', 'caption' => 'Бесплатная доставка', 'comment'=>'Минимальная сумма заказа для бесплатной доставки, 0 - отключить эту функцию');
-		$this->fields_form['paylist'] = array('type' => 'list', 'listname'=>'paylist', 'multiple'=>2, 'caption' => 'Разрешённые платежи');
-		$this->fields_form['norequere'] = array('type' => 'list', 'listname'=>'norequere', 'multiple'=>2, 'caption' => 'Отключенные  поля');
+		$this->fields_form['paylist'] = array('type' => 'list', 'listname'=>'paylist', 'multiple'=> FORM_MULTIPLE_JQUERY, 'caption' => 'Разрешённые платежи');
+		$this->fields_form['norequere'] = array('type' => 'list', 'listname'=>'norequere', 'multiple'=> FORM_MULTIPLE_JQUERY, 'caption' => 'Отключенные  поля');
 		$this->fields_form['selected'] = array('type' => 'checkbox', 'caption' => 'По умолчанию', 'comment'=>'Доставка выбранная по умолчанию', 'mask' =>array());
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Отображать','default'=>1, 'mask' =>array());
 

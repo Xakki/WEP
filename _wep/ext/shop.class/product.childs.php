@@ -52,9 +52,9 @@ class product_class extends kernel_extends {
 
 		$this->config_form['temp_olden'] = array('type' => 'checkbox', 'caption' => 'Включить дополнительные поля');
 		$this->config_form['imageCnt'] = array('type' => 'int', 'caption' => 'Число фотографий');
-		$this->config_form['prodListTable'] = array('type' => 'text', 'multiple' => 3, 'mask' => array('maxarr' => 15),
+		$this->config_form['prodListTable'] = array('type' => 'text', 'multiple' => FORM_MULTIPLE_KEY, 'mask' => array('maxarr' => 15),
 			'keytype' => 'list', 'keyListName' => 'fieldslist',  'caption' => 'Формат вывода шаблона табличного списка');
-		$this->config_form['prodItem'] = array('type' => 'text', 'multiple' => 3, 'mask' => array('maxarr' => 15),
+		$this->config_form['prodItem'] = array('type' => 'text', 'multiple' => FORM_MULTIPLE_KEY, 'mask' => array('maxarr' => 15),
 			'keytype' => 'list', 'keyListName' => 'fieldslist', 'caption' => 'Данные для вывода в информации о товаре' );
 	}
 
@@ -424,7 +424,7 @@ class product_class extends kernel_extends {
 						$type = 'ajaxlist';
 					elseif($r['typelist']==2 and $flagNew) {
 						$type = 'checkbox';
-						$multiple = 1;
+						$multiple = FORM_MULTIPLE_SIMPLE;
 					}
 				}
 
@@ -542,7 +542,7 @@ class product_class extends kernel_extends {
 									$form['param_'.$rr.'_'.$rrr] = array(
 										'caption'=>$this->_enum[$form['param_'.$rr]['listname']][0][$rrr]['#name#'],//$PARAM->data[$rr]['name'],
 										'type'=>'checkbox',
-										'multiple'=>1,
+										'multiple'=> FORM_MULTIPLE_SIMPLE,
 										'type2'=>$PARAM->data[$rr]['type'],
 										'value'=>(isset($id['param_'.$rr.'_'.$rrr])?$id['param_'.$rr.'_'.$rrr]:''),
 										'css'=>'addparam',

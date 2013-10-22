@@ -124,6 +124,12 @@ function tpl_form(&$data, $tabs = array())
 			include_once(dirname(__FILE__).'/cffields.php');
 			$texthtml .= '<div class="form-value">'.tpl_cffields($k,$r).'</div>';
 		}
+        elseif($r['type']=='map')
+        {
+            setScript('yamap');
+            $texthtml .= '<div class="mapselect'.($r['value'] ? ' setvalue' : '').'" onclick="positionOnMap()">'.($r['value'] ? $r['value'] : $r['caption']).'</div>
+                <input type="hidden" name="'.$k.'" id="field_'.$k.'" value="'.$r['value'].'"/>';
+        }
 		else 
 		{
 			$attribute = '';

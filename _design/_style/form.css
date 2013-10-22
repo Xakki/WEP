@@ -752,14 +752,14 @@ span.labelInput {
 }
 
 /* YA MAP*/
-#boardOnMap {
+#positionOnMap {
     position: fixed;
     z-index: 30;
     top: 50%;
     left: 50%;
 }
 
-#boardOnMap div.layerblock {
+#positionOnMap div.layerblock {
     padding: 5px;
     background-color: white;
     overflow: auto;
@@ -771,14 +771,22 @@ span.labelInput {
 
 }
 
-#tr_map .form-info {
-    background: transparent url('../_img/onmap.png') no-repeat scroll 10px 0;
-    padding: 2px 0 0 48px;
-    text-align: left;
-}
-
-#tr_map .form-info .jshref {
+.mapselect {
     font-size: 20px;
+    background: transparent url('../_img/onmap.png') no-repeat scroll 10px -2px;
+    padding: 1px 0 1px 48px;
+    text-align: left;
+    display: block;
+    color: #0088cc;
+    cursor: pointer;
+}
+.mapselect input {
+    color: #ffffff;
+    border: none;
+    background: transparent;
+}
+#tr_map {
+    padding: 10px 0;
 }
 
 /*Всплывающая информация showHelp(obj,mess,time,nomiga)*/

@@ -51,7 +51,7 @@ class formlist_class extends kernel_extends {
 				$key => array(
 					'caption'=>$_GET['tcap'],
 					'type'=>'checkbox',
-					'multiple'=>1,
+					'multiple'=>FORM_MULTIPLE_SIMPLE,
 					'value'=>0,
 					'css'=>'addparam',
 					'valuelist'=>$enumlist,

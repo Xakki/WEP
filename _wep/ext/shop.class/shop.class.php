@@ -15,7 +15,7 @@ class shop_class extends rubric_class {
 		$this->config['orderset'] = array(0 => '0');
 		$this->config['available'] = 1;
 
-		$this->config_form['orderset'] = array('type' => 'list', 'listname'=>'orderset', 'multiple'=>1, 'caption'=>'Варианты заказа товара');
+		$this->config_form['orderset'] = array('type' => 'list', 'listname'=>'orderset', 'multiple'=> FORM_MULTIPLE_SIMPLE, 'caption'=>'Варианты заказа товара');
 		$this->config_form['yml_info'] = array('type' => 'html', 'value'=>'Ссылка на XML Яндекс.Маркета <b><a href="'.MY_BH.'yml.xml" target="_blank">'.MY_BH.'yml.xml</a></b>');
 		//http://help.yandex.ru/partnermarket/?id=1111425
 		$this->config_form['available'] = array('type' => 'checkbox', 'caption' => 'Отображать статус НАЛИЧИЯ товара');

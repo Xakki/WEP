@@ -32,7 +32,7 @@
 
 		$form = array(
 			'0'=>array('type'=>'list','listname'=>'modullist', 'caption'=>'Модуль'),
-			'1'=>array('type'=>'list','listname'=>'userfieldlist', 'multiple'=>2, 'caption'=>'Выводимые поля'),
+			'1'=>array('type'=>'list','listname'=>'userfieldlist', 'multiple'=>FORM_MULTIPLE_JQUERY, 'caption'=>'Выводимые поля'),
 		);
 		return $form;
 	}
