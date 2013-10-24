@@ -9,40 +9,40 @@
  * @return string html
  */
 
-	if(!isset($FUNCPARAM[0]) or !$FUNCPARAM[0]) $FUNCPARAM[0] = '#pg#formcreat';
-	if(!isset($FUNCPARAM[1])) $FUNCPARAM[1] = '';
-	_new_class('ugroup', $UGROUP);
+if (!isset($FUNCPARAM[0]) or !$FUNCPARAM[0]) $FUNCPARAM[0] = '#pg#formcreat';
+if (!isset($FUNCPARAM[1])) $FUNCPARAM[1] = '';
+_new_class('ugroup', $UGROUP);
 
-	// рисуем форму для админки чтобы удобно задавать параметры
-	if(isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
-		//$temp = 'ownerlist';
-		$form = array(
-			'0'=>array('type'=>'list','listname'=>array('phptemplates', 'tags'=>'form'),'caption'=>'Шаблон формы', 'comment'=>$_CFG['lang']['tplComment']),
-			'1'=>array('type'=>'list','listname'=>'userfieldlist', 'multiple'=> FORM_MULTIPLE_JQUERY, 'caption'=>'Выводимые поля'),
-		);
-		$this->_enum['userfieldlist'] = array();
-		foreach($UGROUP->childs['users']->fields_form as $k=>$r) {
-			$this->_enum['userfieldlist'][$k] = $r['caption'];
-		}
-		return $form;
-	}
+// рисуем форму для админки чтобы удобно задавать параметры
+if (isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
+    //$temp = 'ownerlist';
+    $form = array(
+        '0' => array('type' => 'list', 'listname' => array('phptemplates', 'tags' => 'form'), 'caption' => 'Шаблон формы', 'comment' => $_CFG['lang']['tplComment']),
+        '1' => array('type' => 'list', 'listname' => 'userfieldlist', 'multiple' => FORM_MULTIPLE_JQUERY, 'caption' => 'Выводимые поля'),
+    );
+    $this->_enum['userfieldlist'] = array();
+    foreach ($UGROUP->childs['users']->fields_form as $k => $r) {
+        $this->_enum['userfieldlist'][$k] = $r['caption'];
+    }
+    return $form;
+}
 
-	if(!static_main::_prmUserCheck()) return false;
+if (!static_main::_prmUserCheck()) return false;
 
-	$UGROUP->childs['users']->lang['Save and close'] = 'Сохранить';
+$UGROUP->childs['users']->lang['Save and close'] = 'Сохранить';
 
-	$DATA = array();
-	$param = array('formflag'=>1);
-	$argForm = array();
-	foreach($FUNCPARAM[1] as $r) {
-		if(isset($UGROUP->childs['users']->fields_form[$r]))
-			$argForm[$r] = $UGROUP->childs['users']->fields_form[$r];
-	}
-	$argForm[$UGROUP->childs['users']->fn_pass] = array('type' => 'password', 'caption' => 'Для подтверждения введите пароль','mask'=>array('min' => '6','fview'=>1, 'password'=>'confirm'));
+$DATA = array();
+$param = array('formflag' => 1);
+$argForm = array();
+foreach ($FUNCPARAM[1] as $r) {
+    if (isset($UGROUP->childs['users']->fields_form[$r]))
+        $argForm[$r] = $UGROUP->childs['users']->fields_form[$r];
+}
+$argForm[$UGROUP->childs['users']->fn_pass] = array('type' => 'password', 'caption' => 'Для подтверждения введите пароль', 'mask' => array('min' => '6', 'fview' => 1, 'password' => 'confirm'));
 
-	$UGROUP->childs['users']->id = (int)$_SESSION['user']['id'];
+$UGROUP->childs['users']->id = (int)$_SESSION['user']['id'];
 
-	list($DATA[$FUNCPARAM[0]],$flag) = $UGROUP->regForm($param,$argForm);
-	$html = transformPHP($DATA,$FUNCPARAM[0]);
+list($DATA[$FUNCPARAM[0]], $flag) = $UGROUP->regForm($param, $argForm);
+$html = transformPHP($DATA, $FUNCPARAM[0]);
 
-	return $html;
+return $html;

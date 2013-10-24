@@ -10,21 +10,21 @@
 
 function tpl_paybankReceipt($data)
 {
-$rub = (int)$data['#item#']['amount'];
-$kop = ($data['#item#']['amount']-$rub)/100;
-$kop = ceil($kop);
-if($kop<10) $kop = '0'.$kop;
-$kop = '<span class="decor">&nbsp;'.$kop.'&nbsp;</span>';
-$rub = '<span class="decor">&nbsp;'.$rub.'&nbsp;</span>';
+    $rub = (int)$data['#item#']['amount'];
+    $kop = ($data['#item#']['amount'] - $rub) / 100;
+    $kop = ceil($kop);
+    if ($kop < 10) $kop = '0' . $kop;
+    $kop = '<span class="decor">&nbsp;' . $kop . '&nbsp;</span>';
+    $rub = '<span class="decor">&nbsp;' . $rub . '&nbsp;</span>';
 
-$blankHtml = '
+    $blankHtml = '
 		<table border="0" cellspacing="0" cellpadding="0" style="width:122mm; margin-top:3pt;">
 			<tbody><tr>
 				<td align="right"><small><i>Форма № ПД-4</i></small></td>
 			</tr>
 
 			<tr>
-				<td align="center" style="border-bottom:1pt solid #000000;">'.$data['#config#']['bank_namefirm'].'</td>
+				<td align="center" style="border-bottom:1pt solid #000000;">' . $data['#config#']['bank_namefirm'] . '</td>
 			</tr>
 			<tr>
 				<td align="center"><small>(наименование получателя платежа)</small></td>
@@ -34,9 +34,9 @@ $blankHtml = '
 		<table border="0" cellspacing="0" cellpadding="0" style="width:122mm; margin-top:3pt;">
 			<tbody>
 			<tr>
-				<td align="center" style="width:37mm; border-bottom:1pt solid #000000;">'.$data['#config#']['bank_INN'].'/'.$data['#config#']['bank_KPP'].'</td>
+				<td align="center" style="width:37mm; border-bottom:1pt solid #000000;">' . $data['#config#']['bank_INN'] . '/' . $data['#config#']['bank_KPP'] . '</td>
 				<td style="width:9mm;">&nbsp;</td>
-				<td align="center" style="border-bottom:1pt solid #000000;">№ '.$data['#config#']['bank_nomer'].'</td>
+				<td align="center" style="border-bottom:1pt solid #000000;">№ ' . $data['#config#']['bank_nomer'] . '</td>
 			</tr>
 			<tr>
 
@@ -50,7 +50,7 @@ $blankHtml = '
 			<tbody>
 			<tr>
 				<td  style="width:3mm;">в&nbsp;</td>
-				<td align="center" style="width:73mm; border-bottom:1pt solid #000000;">'.$data['#config#']['bank_namebank'].'</td>
+				<td align="center" style="width:73mm; border-bottom:1pt solid #000000;">' . $data['#config#']['bank_namebank'] . '</td>
 			</tr>
 			<tr>
 
@@ -62,9 +62,9 @@ $blankHtml = '
 		<table border="0" cellspacing="0" cellpadding="0" style="width:122mm; margin-top:3pt;">
 			<tbody>
 			<tr>
-				<td align="center" style="width:37mm; border-bottom:1pt solid #000000;">БИК&nbsp;&nbsp;'.$data['#config#']['bank_BIK'].'</td>
+				<td align="center" style="width:37mm; border-bottom:1pt solid #000000;">БИК&nbsp;&nbsp;' . $data['#config#']['bank_BIK'] . '</td>
 				<td style="width:9mm;">&nbsp;</td>
-				<td align="center" style="border-bottom:1pt solid #000000;">№ '.$data['#config#']['bank_KC'].'</td>
+				<td align="center" style="border-bottom:1pt solid #000000;">№ ' . $data['#config#']['bank_KC'] . '</td>
 			</tr>
 			<tr>
 
@@ -76,7 +76,7 @@ $blankHtml = '
 
 		<table border="0" cellspacing="0" cellpadding="0" style="width:122mm; margin-top:3pt;">
 			<tbody><tr>
-				<td align="center" style="border-bottom:1pt solid #000000;">Оплата заказа № '.$data['#config#']['bank_prefix'].$data['#item#']['owner_id'].' от '.static_main::_date('d F Y', $data['#item#']['mf_timecr']).' г.</td>
+				<td align="center" style="border-bottom:1pt solid #000000;">Оплата заказа № ' . $data['#config#']['bank_prefix'] . $data['#item#']['owner_id'] . ' от ' . static_main::_date('d F Y', $data['#item#']['mf_timecr']) . ' г.</td>
 			</tr>                                         
 			<tr>
 				<td align="center"><small>(наименование платежа)</small></td>
@@ -86,25 +86,25 @@ $blankHtml = '
 		<table border="0" cellspacing="0" cellpadding="0" style="width:122mm; margin-top:3pt;">
 			<tbody><tr>
 				<td width="1%" nowrap="">Ф.И.О. плательщика&nbsp;&nbsp;</td>
-				<td align="center" width="100%" style="border-bottom:1pt solid #000000;">'.$data['#item#']['fio'].'</td>
+				<td align="center" width="100%" style="border-bottom:1pt solid #000000;">' . $data['#item#']['fio'] . '</td>
 			</tr>
 		</tbody></table>
 		<table border="0" cellspacing="0" cellpadding="0" style="width:122mm; margin-top:3pt;">
 
 			<tbody><tr>
 				<td width="1%" nowrap="">Адрес плательщика&nbsp;&nbsp;</td>
-				<td align="center" width="100%" style="border-bottom:1pt solid #000000;">'.$data['#item#']['address'].'</td>
+				<td align="center" width="100%" style="border-bottom:1pt solid #000000;">' . $data['#item#']['address'] . '</td>
 			</tr>
 		</tbody></table>
 		<table border="0" cellspacing="0" cellpadding="0" style="width:122mm; margin-top:3pt;">
 			<tbody><tr>
-				<td>Сумма платежа '.$rub.' руб. '.$kop.' коп., без НДС</td>
+				<td>Сумма платежа ' . $rub . ' руб. ' . $kop . ' коп., без НДС</td>
 			</tr>
 		</tbody></table>
 		<table border="0" cellspacing="0" cellpadding="0" style="width:122mm; margin-top:3pt;">
 			<tbody><tr>
-				<td>Итого&nbsp;&nbsp;'.$rub.' руб. '.$kop.' коп.</td>
-				<td align="right">&nbsp;&nbsp;«______»____________ '.date('Y').' г.</td>
+				<td>Итого&nbsp;&nbsp;' . $rub . ' руб. ' . $kop . ' коп.</td>
+				<td align="right">&nbsp;&nbsp;«______»____________ ' . date('Y') . ' г.</td>
 			</tr>
 		</tbody></table>
 		<table border="0" cellspacing="0" cellpadding="0" style="width:122mm; margin-top:3pt;">
@@ -117,10 +117,10 @@ $blankHtml = '
 	</td>
 ';
 
-if($data['#config#']['bank_info'])
-	$infoText = $data['#config#']['bank_info'];
-else
-	$infoText = '
+    if ($data['#config#']['bank_info'])
+        $infoText = $data['#config#']['bank_info'];
+    else
+        $infoText = '
 	<br>
 	<h1>Внимание! Ваш банк может взимать комиссию.</h1>
 
@@ -142,7 +142,7 @@ else
 
 
 	<p><b>Примечание:</b>
-	'.$data['#config#']['bank_namefirm'].'  не может гарантировать конкретные сроки проведения вашего платежа. За дополнительной информацией о сроках поступления денежных средств в банк получателя, обращайтесь в свой банк.</p>
+	' . $data['#config#']['bank_namefirm'] . '  не может гарантировать конкретные сроки проведения вашего платежа. За дополнительной информацией о сроках поступления денежных средств в банк получателя, обращайтесь в свой банк.</p>
 	  
 	<p>
 		<b>
@@ -152,7 +152,7 @@ else
 ';
 
 
-$html = '
+    $html = '
 <style>
 	table {
 		font-size:4mm;
@@ -181,7 +181,7 @@ $html = '
 		</td>
 
 		<td style="border:1pt solid #000000; border-bottom:none;" align="center">
-			'.$blankHtml.'
+			' . $blankHtml . '
 		</td>
 	</tr>
 
@@ -194,15 +194,15 @@ $html = '
 		</td>
 
 		<td style="border:1pt solid #000000; " align="center">
-			'.$blankHtml.'
+			' . $blankHtml . '
 		</td>
 	</tr>
 </tbody></table>
 
 <div class="infotext">
-	'.$infoText.'
+	' . $infoText . '
 </div>
 	';
 
-	return $html;
+    return $html;
 }

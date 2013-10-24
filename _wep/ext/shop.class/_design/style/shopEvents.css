@@ -4,46 +4,53 @@
 * version 0.1
 */
 .productEvent {
-	width:100%;
-	text-align: center;
-	padding: 0 0 20px 0;
+    width: 100%;
+    text-align: center;
+    padding: 0 0 20px 0;
 }
-	.productEvent h3 {
-		text-transform:uppercase;
-		color:red;
-		margin: 5px 0;
-	}
-	.productEvent .proditem {
-		padding: 10px 10px 20px;
-		display: inline-block;
-		border:1px solid #77aad2;
-		-moz-border-radius:4px 4px 0 0;-webkit-border-radius:4px 4px 0 0;border-radius:4px 4px 0 0;
-	}
-		.productEvent .prodimg-block {
-			display: inline-block;
-			vertical-align: top;
-			padding: 0 10px 0 0;
-		}
-			.productEvent .prodimg-block img {
-				width:140px;
-			}
 
-		.productEvent .prodinfo-block {
-			display: inline-block;
-			vertical-align: top;
-		}
+.productEvent h3 {
+    text-transform: uppercase;
+    color: red;
+    margin: 5px 0;
+}
 
-		.productEvent .prodBlock {
-			display: inline-block;
-			vertical-align: top;
-		}
+.productEvent .proditem {
+    padding: 10px 10px 20px;
+    display: inline-block;
+    border: 1px solid #77aad2;
+    -moz-border-radius: 4px 4px 0 0;
+    -webkit-border-radius: 4px 4px 0 0;
+    border-radius: 4px 4px 0 0;
+}
 
-		.productEvent .prodBlock .prodBlock-price .cost .save {
-			font-size: 0.9em;
-			color: blue;
-		}
-		.productEvent .prodBlock-button a {
-			color:#eee;
-		}
+.productEvent .prodimg-block {
+    display: inline-block;
+    vertical-align: top;
+    padding: 0 10px 0 0;
+}
+
+.productEvent .prodimg-block img {
+    width: 140px;
+}
+
+.productEvent .prodinfo-block {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.productEvent .prodBlock {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.productEvent .prodBlock .prodBlock-price .cost .save {
+    font-size: 0.9em;
+    color: blue;
+}
+
+.productEvent .prodBlock-button a {
+    color: #eee;
+}
 
 

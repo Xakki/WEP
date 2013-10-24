@@ -7,4 +7,4 @@
  * @version 0.1
  * @return string html
  */
-include_once($_CFG['_PATH']['cdesign'].'default/php/path.php');
+include_once($_CFG['_PATH']['cdesign'] . 'default/php/path.php');

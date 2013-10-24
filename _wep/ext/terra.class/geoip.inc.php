@@ -9,41 +9,40 @@
  */
 
 $jfunct = false;
-_new_class('terra',$TERRA);
+_new_class('terra', $TERRA);
 $data = $TERRA->geoIP();
 
-	$html = '
+$html = '
 	<div id="map_canvas" style="width:500px; height:500px;float:right;"></div>
 	<div style="height:520px;" id="infoIP">
 		<h3>Информация по IP</h3>
 		<ul>';
-		if(count($data)) {
-			$html .= '
-				<li>IP - '.$data['ip'].'</li>
-				<li>'.$data['socr_name'].' - '.$data['name'].'</li>';
-				foreach($data['parent'] as $row) {
-					$html .= '<li>'.$row['socr_name'].' - '.$row['name'].'</li>';
-					if($row['temp_okryg'])
-						$html .= '<li>'.$row['temp_okryg'].'</li>';
-				}
-				$html .= '
-				<li>Индекс - '.$data['index'].'</li>
-				<li>Широта - '.$data['latitude'].'</li>
-				<li>Долгота - '.$data['longitude'].'</li>
+if (count($data)) {
+    $html .= '
+				<li>IP - ' . $data['ip'] . '</li>
+				<li>' . $data['socr_name'] . ' - ' . $data['name'] . '</li>';
+    foreach ($data['parent'] as $row) {
+        $html .= '<li>' . $row['socr_name'] . ' - ' . $row['name'] . '</li>';
+        if ($row['temp_okryg'])
+            $html .= '<li>' . $row['temp_okryg'] . '</li>';
+    }
+    $html .= '
+				<li>Индекс - ' . $data['index'] . '</li>
+				<li>Широта - ' . $data['latitude'] . '</li>
+				<li>Долгота - ' . $data['longitude'] . '</li>
 			';
-		}
-		else {
-			$html .= '
+} else {
+    $html .= '
 				<li>Ваш IP в базе не обнаружен</li>
-				<li>IP - '.$_SERVER['REMOTE_ADDR'].'</li>
+				<li>IP - ' . $_SERVER['REMOTE_ADDR'] . '</li>
 			';
-			$jfunct = '
+    $jfunct = '
 				function setCenter(loc) {
 					map.setCenter(loc);
 					/// TODO console.log(loc);
 				}';
-		}
-		$html .= '
+}
+$html .= '
 		</ul>
 		<h3>Информация о браузере</h3>
 		<ul>
@@ -58,24 +57,24 @@ $data = $TERRA->geoIP();
 	</div>
 
 	';
-	/*
+/*
 jQuery.each(jQuery.browser, function(i, val) {
-	$("<div>" + i + " : <span>" + val + "</span>").appendTo(document.body);
+$("<div>" + i + " : <span>" + val + "</span>").appendTo(document.body);
 });
 
 
 
-	*/
-	if(count($data))
-		$LatLng = 'var defLatLng = new google.maps.LatLng('.$data['latitude'].', '.$data['longitude'].');';
-	else
-		$LatLng = 'var defLatLng = new google.maps.LatLng(40.69847032728747, -73.9514422416687);';
+*/
+if (count($data))
+    $LatLng = 'var defLatLng = new google.maps.LatLng(' . $data['latitude'] . ', ' . $data['longitude'] . ');';
+else
+    $LatLng = 'var defLatLng = new google.maps.LatLng(40.69847032728747, -73.9514422416687);';
 
-	setScript('http://maps.google.com/maps/api/js?sensor=false');
-	$_tpl['script']['initialize'] = '
+setScript('http://maps.google.com/maps/api/js?sensor=false');
+$_tpl['script']['initialize'] = '
 function initialize() {
 	var initialLocation;
-	'.$LatLng.'
+	' . $LatLng . '
 	var browserSupportFlag =  new Boolean();
 
 	var myOptions = {
@@ -118,13 +117,13 @@ function initialize() {
 		initialLocation = defLatLng;
 		map.setCenter(initialLocation);
 	}
-	'.($jfunct?$jfunct:'
+	' . ($jfunct ? $jfunct : '
 		function setCenter(loc) {
 			map.setCenter(loc);
 		}
-	').'
+	') . '
 }
   ';
-	$_tpl['onload'] .= 'initialize();';
+$_tpl['onload'] .= 'initialize();';
 
 return $html;

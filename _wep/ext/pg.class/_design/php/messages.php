@@ -8,4 +8,4 @@
  * @version 0.1
  * @return string html
  */
-include_once($_CFG['_PATH']['cdesign'].'default/php/messages.php');
+include_once($_CFG['_PATH']['cdesign'] . 'default/php/messages.php');

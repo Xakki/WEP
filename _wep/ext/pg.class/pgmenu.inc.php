@@ -12,19 +12,19 @@
 
 // сначала задаем значения по умолчанию
 if (!isset($FUNCPARAM[0]) or $FUNCPARAM[0] == '')
-	$FUNCPARAM[0] = '#pg#menu';
+    $FUNCPARAM[0] = '#pg#menu';
 if (!isset($FUNCPARAM[1]))
-	$FUNCPARAM[1] = array();
+    $FUNCPARAM[1] = array();
 
 
 // рисуем форму для админки чтобы удобно задавать параметры
 if (isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
-	$form = array(
-		0 => array('type' => 'list', 'listname' => array('phptemplates', 'tags'=>'pgmenu'), 'caption' => 'Шаблон', 'comment'=>$_CFG['lang']['tplComment']),
-		1 => array('type' => 'list', 'multiple'=> FORM_MULTIPLE_JQUERY, 'listname' => 'ownerlist', 'caption' => 'Элементы меню'),
-		
-	);
-	return $form;
+    $form = array(
+        0 => array('type' => 'list', 'listname' => array('phptemplates', 'tags' => 'pgmenu'), 'caption' => 'Шаблон', 'comment' => $_CFG['lang']['tplComment']),
+        1 => array('type' => 'list', 'multiple' => FORM_MULTIPLE_JQUERY, 'listname' => 'ownerlist', 'caption' => 'Элементы меню'),
+
+    );
+    return $form;
 }
 
 $DATA = array('#item#' => $PGLIST->getPGMap($FUNCPARAM[1]));
