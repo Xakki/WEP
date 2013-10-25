@@ -159,6 +159,7 @@ class pg_class extends kernel_extends
 
         if ($this->_CFG['wep']['access'])
             $this->fields_form['ugroup'] = array('type' => 'list', 'multiple' => FORM_MULTIPLE_JQUERY, 'listname' => 'ugroup', 'caption' => 'Доступ пользователю', 'default' => '0', 'mask' => array());
+        $this->fields_form['ordind'] = array('type' => 'number', 'caption' => 'ORD', 'mask' => array());
         $this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
 
 
@@ -166,6 +167,7 @@ class pg_class extends kernel_extends
             'Основное' => array('name', 'alias', 'onmenu', 'ugroup', 'active'),
             'Дополнительно' => array('parent_id', 'name_in_menu', 'design', 'template', 'href', 'menuajax', 'onmap', 'pagemap', 'pagemenu', 'onpath', 'attr', 'aparam'),
         );
+
 
     }
 
@@ -1062,7 +1064,7 @@ class pg_class extends kernel_extends
 //			if(count($result)) {
 //				$q = ' and left_key >= '.$result[0]['left_key'].'  and right_key <= '.$result[0]['right_key'];
 //			}
-            $q = 'SELECT * FROM ' . $this->tablename . ' WHERE active=1 ' . $q . ' ORDER BY ' . $this->ns_config['left'];
+            $q = 'SELECT * FROM ' . $this->tablename . ' WHERE active=1 ' . $q . ' ORDER BY ordind';
             $result = $this->SQL->execSQL($q);
 
             if (!$result->err) {
