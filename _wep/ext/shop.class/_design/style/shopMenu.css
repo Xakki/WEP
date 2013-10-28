@@ -1,159 +1,159 @@
 /*leftblock*/
 .shop-menu {
-    font-family: arial, sans-serif;
-    height: auto;
-    position: relative;
-    margin: 0;
-    font-size: 12px;
-    margin: 0;
-    z-index: 20;
+	font-family: arial, sans-serif;
+	height: auto;
+	position: relative;
+	margin: 0;
+	font-size: 12px;
+	margin: 0;
+	z-index: 20;
 }
 
 .shop-menu h3 {
-    padding: 0;
-    margin: 0;
-    font-size: 1.4em;
+	padding: 0;
+	margin: 0;
+	font-size: 1.4em;
 }
 
 .shop-menu ul {
-    padding: 0;
-    margin: 0;
-    list-style-type: none;
+	padding: 0;
+	margin: 0;
+	list-style-type: none;
 }
 
 .shop-menu ul li a {
-    text-decoration: none;
-    color: #487292;
-    font-size: 1em;
-    font-weight: bold;
-    width: 190px;
-    border: 1px solid #fff;
-    border-width: 0 1px 1px 0;
-    border-bottom: 1px solid #e1e1e1;
-    line-height: 1.2em;
-    vertical-align: middle;
-    text-align: left;
-    display: table-cell;
-    padding: 1px 0 1px 7px;
-    height: 2em;
+	text-decoration: none;
+	color: #487292;
+	font-size: 1em;
+	font-weight: bold;
+	width: 190px;
+	border: 1px solid #fff;
+	border-width: 0 1px 1px 0;
+	border-bottom: 1px solid #e1e1e1;
+	line-height: 1.2em;
+	vertical-align: middle;
+	text-align: left;
+	display: table-cell;
+	padding: 1px 0 1px 7px;
+	height: 2em;
 }
 
 .shop-menu ul li.sub>a {
-    background: transparent url(../img/bullet.gif) no-repeat scroll 0 50%;
+	background: transparent url(../img/bullet.gif) no-repeat scroll 0 50%;
 }
 
 .shop-menu ul li:hover a {
-    border-color: #e1e1e1;
+	border-color: #e1e1e1;
 }
 
 .shop-menu a.selected {
-    font-weight: bold;
-    color: #E85302;
+	font-weight: bold;
+	color: #E85302;
 }
 
 .shop-menu ul img {
-    width: 60px;
-    height: 60px;
-    float: left;
+	width: 60px;
+	height: 60px;
+	float: left;
 }
 
 .shop-menu ul li {
-    margin: 0;
-    position: relative;
-    z-index: 21;
+	margin: 0;
+	position: relative;
+	z-index: 21;
 }
 
 .shop-menu ul li ul {
-    display: none;
+	display: none;
 }
 
 /* for IE browsers */
 .shop-menu ul li:hover, .shop-menu ul li:hover li {
-    color: #fff;
-    background: #7bbfd0;
-    background: linear-gradient(top, #b2dae4, #7bbfd0, #b2dae4);
-    background: -webkit-gradient(linear, left top, left bottom, from(#b2dae4), color-stop(0.5, #7bbfd0), to(#b2dae4));
-    background: -webkit-linear-gradient(top, #b2dae4, #7bbfd0, #b2dae4);
-    background: -moz-linear-gradient(top, #b2dae4, #7bbfd0, #b2dae4);
-    background: -o-linear-gradient(top, #b2dae4, #7bbfd0, #b2dae4);
-    filter: progid:DXImageTransform.Microsoft.gradient(enabled='true', startColorstr=#b2dae4, endColorstr=#7bbfd0, GradientType=0);
-    zoom: 1;
+	color: #fff;
+	background: #7bbfd0;
+	background: linear-gradient(top, #b2dae4, #7bbfd0, #b2dae4);
+	background: -webkit-gradient(linear, left top, left bottom, from(#b2dae4), color-stop(0.5, #7bbfd0), to(#b2dae4));
+	background: -webkit-linear-gradient(top, #b2dae4, #7bbfd0, #b2dae4);
+	background: -moz-linear-gradient(top, #b2dae4, #7bbfd0, #b2dae4);
+	background: -o-linear-gradient(top, #b2dae4, #7bbfd0, #b2dae4);
+	filter: progid:DXImageTransform.Microsoft.gradient(enabled='true', startColorstr=#b2dae4, endColorstr=#7bbfd0, GradientType=0);
+	zoom: 1;
 }
 
 .shop-menu ul li:hover ul {
-    display: block;
-    position: absolute;
-    z-index: 22;
-    top: 0;
-    left: 190px;
-    width: 190px;
+	display: block;
+	position: absolute;
+	z-index: 22;
+	top: 0;
+	left: 190px;
+	width: 190px;
 }
 
 .shop-menu ul li:hover ul li a {
-    height: 2em;
-    color: #000;
-    border-color: #e1e1e1;
+	height: 2em;
+	color: #000;
+	border-color: #e1e1e1;
 }
 
 .shop-menu ul li:hover ul li a.hide {
-    color: #000;
+	color: #000;
 }
 
 .shop-menu ul li:hover ul li a:hover {
-    color: #fff;
+	color: #fff;
 }
 
 .shop-menu ul li:hover ul li ul {
-    display: none;
+	display: none;
 }
 
 .shop-menu ul li:hover ul li:hover>a {
-    color: #fff;
+	color: #fff;
 }
 
 .shop-menu ul li:hover ul li:hover ul {
-    display: block;
-    position: absolute;
-    z-index: 23;
-    left: 190px;
-    top: 0;
-    color: #000;
+	display: block;
+	position: absolute;
+	z-index: 23;
+	left: 190px;
+	top: 0;
+	color: #000;
 }
 
 .shop-menu ul li:hover ul li:hover ul li a {
 }
 
 .shop-menu ul li:hover ul li:hover a.hide {
-    width: 190px;
+	width: 190px;
 }
 
 .shop-menu ul li:hover ul li:hover ul li a:hover {
-    color: #fff;
+	color: #fff;
 }
 
 /*product NEW*/
 
 .productnew {
-    width: 225px;
-    font-size: 0.71em;
-    margin: 0;
-    padding: 0 0 8px 12px;
+	width: 225px;
+	font-size: 0.71em;
+	margin: 0;
+	padding: 0 0 8px 12px;
 }
 
 .productnew li {
-    margin: 5px 0 5px;
-    text-align: left;
-    padding: 0 0 0 0px;
+	margin: 5px 0 5px;
+	text-align: left;
+	padding: 0 0 0 0px;
 }
 
 .productnew li:hover {
-    background: #EAFAEA;
+	background: #EAFAEA;
 }
 
 .productnew .name {
-    font-weight: bold;
+	font-weight: bold;
 }
 
 .productnew .text {
-    overflow: hidden;
+	overflow: hidden;
 }

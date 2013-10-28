@@ -48,38 +48,38 @@ $cssClass = 'hidden';
 $html = '';
 
 if (isset($_COOKIE['wepfcontrol']) and $_COOKIE['wepfcontrol'] == 2) {
-    $this->data = $this->dataCash;
+	$this->data = $this->dataCash;
 //$this->id
-    $cssClass = '';
-    $DATA = array();
-    $DATA['button'] = array(
-        'config' => 1,
-        'topmenu' => static_super::modulMenu($this),
-        'firstpath' => ADMIN_BH . '?_view=list&',
-        '_clp' => Array(
-            '_modul' => 'pg',
-            'pg_id' => 1,
-        )
-    );
-    $linkWep = array(
-        'wep' => array(
-            'href' => array(),
-            'caption' => 'АДМИНКА',
-            'sel' => 0,
-            'type' => 'button',
-            'css' => 'button-admin',
-            'link' => ADMIN_BH,
-        ),
-        'wepsplit' => array('type' => 'split')
-    );
-    $DATA['button']['topmenu'] = $linkWep + $DATA['button']['topmenu'];
-    $html = transformPHP($DATA, '#modulprm#fcontrol');
+	$cssClass = '';
+	$DATA = array();
+	$DATA['button'] = array(
+		'config' => 1,
+		'topmenu' => static_super::modulMenu($this),
+		'firstpath' => ADMIN_BH . '?_view=list&',
+		'_clp' => Array(
+			'_modul' => 'pg',
+			'pg_id' => 1,
+		)
+	);
+	$linkWep = array(
+		'wep' => array(
+			'href' => array(),
+			'caption' => 'АДМИНКА',
+			'sel' => 0,
+			'type' => 'button',
+			'css' => 'button-admin',
+			'link' => ADMIN_BH,
+		),
+		'wepsplit' => array('type' => 'split')
+	);
+	$DATA['button']['topmenu'] = $linkWep + $DATA['button']['topmenu'];
+	$html = transformPHP($DATA, '#modulprm#fcontrol');
 }
 
 if (isAjax()) {
-    if ($html)
-        $html = '<div class="fcontrol-text">' . $html . '</div>';
-    return $html;
+	if ($html)
+		$html = '<div class="fcontrol-text">' . $html . '</div>';
+	return $html;
 }
 
 $html = '<div id="fcontrol" class="' . $cssClass . '">

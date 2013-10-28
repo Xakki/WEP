@@ -1,95 +1,178 @@
 /* IMAGE BUTTON*/
 
 .button {
-	background-color:#A1E177;
-	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
-	margin:0 3px;
-	padding:7px;
-	border:1px solid #AAAAAA;-moz-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;
+	background-color: #A1E177;
+	display: -moz-inline-stack;
+	display: inline-block;
+	_overflow: hidden;
+	*zoom: 1;
+	*display: inline;
+	margin: 0 3px;
+	padding: 7px;
+	border: 1px solid #AAAAAA;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
 	vertical-align: top;
-	text-decoration:none;
-	cursor:pointer;
+	text-decoration: none;
+	cursor: pointer;
 }
 
-.button:hover{
-	border:1px solid #63A6CC;
+.button:hover {
+	border: 1px solid #63A6CC;
 }
 
 .button span {
-	color:transparent;
-	background-image:url(../_img/buttonh.png);
-	background-position:0 -284px;
-	background-repeat:no-repeat;
-	height:16px;
-	width:16px;
-	margin:0;
-	display:-moz-inline-stack;display:inline-block;_overflow:hidden;*zoom:1;*display:inline;
-	font-size:0em;
+	color: transparent;
+	background-image: url(../_img/buttonh.png);
+	background-position: 0 -284px;
+	background-repeat: no-repeat;
+	height: 16px;
+	width: 16px;
+	margin: 0;
+	display: -moz-inline-stack;
+	display: inline-block;
+	_overflow: hidden;
+	*zoom: 1;
+	*display: inline;
+	font-size: 0em;
 	vertical-align: top;
 }
-.button:hover span, .button.selected span{
-	background-image:url(../_img/button.png);
+
+.button:hover span, .button.selected span {
+	background-image: url(../_img/button.png);
 }
 
-	.button-filter {
-		background-position:0 -306px !important;
-	}
-	.button-checktable {
-		background-position:0 -262px !important;
-	}
-	.button-stats {
-		background-position:0 -370px !important;
-	}
-	.button-config {
-		background-position:0 -329px !important;
-	}
-	.button-reattaches {
-		background-position:0 -284px !important;
-	}
-	.button-reindex {
-		background-position:0 -215px !important;
-	}
-	.button-reinstall {
-		background-position:0 -284px !important;
-	}
-	.button-SuperGroup {
-		background-position:0 -350px !important;
-	}
+.button-filter {
+	background-position: 0 -306px !important;
+}
 
-	.button-SuperGroup {
-		position: relative;
-	}
-	.button-SuperGroup i {
-		color: blue;
-		font-size: 12px;
-		left: -9px;
-		top: -10px;
-		padding: 0 3px;
-		position: absolute;
-	}
-	.button-admin {
-		background-position:0 -285px !important;
-	}
+.button-checktable {
+	background-position: 0 -262px !important;
+}
 
-	.imglist {background-position:0 -192px !important;}
-	.imgadd, .button-add {background-position:0 0 !important;}
-	.imgdel, .button-del {background-position:0 -16px !important;}
-	.imgupdate, .button-update {background-position:0 -32px !important;}
-	.imgplus, .button-plus {background-position:0 -96px !important;}
-	.imgminus, .button-minus {background-position:0 -112px !important;}
-	.imgup, .button-up {background-position:0 -64px !important;}
-	.imgdown, .button-down {background-position:0 -80px !important;}
-	.imgf5, .button-f5 {background-position:0 -48px !important;}
-	.imgf6, .button-f6 {background-position:-1px -411px !important;}
-	.imgf7, .button-f7 {background-position:-1px -391px !important;}
-	.imgconf, .button-conf {background-position:0 -224px !important;}
-	.imgdragdrop, .button-dragdrop {background-position:0 -430px !important;cursor:move;}
+.button-stats {
+	background-position: 0 -370px !important;
+}
 
-	.img0, .button-0 {background-position:0 -144px !important;}
-	.img1, .button-1 {background-position:0 -128px !important;}
-	.img2, .button-2 {background-position:0 -176px !important;}
-	.img3, .button-3 {background-position:0 -160px !important;}
-	.img4, .button-4 {background-position:0 -176px !important;}
-	.img5, .button-5 {background-position:0 -160px !important;}
-	.img6, .button-6 {background-position:0 -144px !important;}
-	.img-1, .button-7 {background-position:0 -176px !important;}
+.button-config {
+	background-position: 0 -329px !important;
+}
+
+.button-reattaches {
+	background-position: 0 -284px !important;
+}
+
+.button-reindex {
+	background-position: 0 -215px !important;
+}
+
+.button-reinstall {
+	background-position: 0 -284px !important;
+}
+
+.button-SuperGroup {
+	background-position: 0 -350px !important;
+}
+
+.button-SuperGroup {
+	position: relative;
+}
+
+.button-SuperGroup i {
+	color: blue;
+	font-size: 12px;
+	left: -9px;
+	top: -10px;
+	padding: 0 3px;
+	position: absolute;
+}
+
+.button-admin {
+	background-position: 0 -285px !important;
+}
+
+.imglist {
+	background-position: 0 -192px !important;
+}
+
+.imgadd, .button-add {
+	background-position: 0 0 !important;
+}
+
+.imgdel, .button-del {
+	background-position: 0 -16px !important;
+}
+
+.imgupdate, .button-update {
+	background-position: 0 -32px !important;
+}
+
+.imgplus, .button-plus {
+	background-position: 0 -96px !important;
+}
+
+.imgminus, .button-minus {
+	background-position: 0 -112px !important;
+}
+
+.imgup, .button-up {
+	background-position: 0 -64px !important;
+}
+
+.imgdown, .button-down {
+	background-position: 0 -80px !important;
+}
+
+.imgf5, .button-f5 {
+	background-position: 0 -48px !important;
+}
+
+.imgf6, .button-f6 {
+	background-position: -1px -411px !important;
+}
+
+.imgf7, .button-f7 {
+	background-position: -1px -391px !important;
+}
+
+.imgconf, .button-conf {
+	background-position: 0 -224px !important;
+}
+
+.imgdragdrop, .button-dragdrop {
+	background-position: 0 -430px !important;
+	cursor: move;
+}
+
+.img0, .button-0 {
+	background-position: 0 -144px !important;
+}
+
+.img1, .button-1 {
+	background-position: 0 -128px !important;
+}
+
+.img2, .button-2 {
+	background-position: 0 -176px !important;
+}
+
+.img3, .button-3 {
+	background-position: 0 -160px !important;
+}
+
+.img4, .button-4 {
+	background-position: 0 -176px !important;
+}
+
+.img5, .button-5 {
+	background-position: 0 -160px !important;
+}
+
+.img6, .button-6 {
+	background-position: 0 -144px !important;
+}
+
+.img-1, .button-7 {
+	background-position: 0 -176px !important;
+}

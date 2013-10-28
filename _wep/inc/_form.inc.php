@@ -16,42 +16,42 @@ if (!isset($FUNCPARAM[1])) $FUNCPARAM[1] = array();
 
 // рисуем форму для админки чтобы удобно задавать параметры
 if (isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
-    global $_CFG;
-    $this->_enum['modullist'] = array();
-    foreach ($_CFG['modulprm'] as $k => $r) {
-        if ($r['active'])
-            $this->_enum['modullist'][$r['pid']][$k] = $r['name'];
-    }
+	global $_CFG;
+	$this->_enum['modullist'] = array();
+	foreach ($_CFG['modulprm'] as $k => $r) {
+		if ($r['active'])
+			$this->_enum['modullist'][$r['pid']][$k] = $r['name'];
+	}
 
-    $this->_enum['userfieldlist'] = array();
-    if ($FUNCPARAM[0] and _new_class($FUNCPARAM[0], $MODUL)) {
-        foreach ($MODUL->fields_form as $k => $r) {
-            $this->_enum['userfieldlist'][$k] = $r['caption'];
-        }
-    }
+	$this->_enum['userfieldlist'] = array();
+	if ($FUNCPARAM[0] and _new_class($FUNCPARAM[0], $MODUL)) {
+		foreach ($MODUL->fields_form as $k => $r) {
+			$this->_enum['userfieldlist'][$k] = $r['caption'];
+		}
+	}
 
-    $form = array(
-        '0' => array('type' => 'list', 'listname' => 'modullist', 'caption' => 'Модуль'),
-        '1' => array('type' => 'list', 'listname' => 'userfieldlist', 'multiple' => FORM_MULTIPLE_JQUERY, 'caption' => 'Выводимые поля'),
-    );
-    return $form;
+	$form = array(
+		'0' => array('type' => 'list', 'listname' => 'modullist', 'caption' => 'Модуль'),
+		'1' => array('type' => 'list', 'listname' => 'userfieldlist', 'multiple' => FORM_MULTIPLE_JQUERY, 'caption' => 'Выводимые поля'),
+	);
+	return $form;
 }
 
 if (_new_class($FUNCPARAM[0], $MODUL)) {
-    $DATA = array();
-    if ($Ctitle != '')
-        $MODUL->lang['add_name'] = ($Ctitle ? $Ctitle : '');
+	$DATA = array();
+	if ($Ctitle != '')
+		$MODUL->lang['add_name'] = ($Ctitle ? $Ctitle : '');
 
-    $argForm = array();
-    foreach ($FUNCPARAM[1] as $r) {
-        if (isset($MODUL->fields_form[$r]))
-            $argForm[$r] = $MODUL->fields_form[$r];
-    }
+	$argForm = array();
+	foreach ($FUNCPARAM[1] as $r) {
+		if (isset($MODUL->fields_form[$r]))
+			$argForm[$r] = $MODUL->fields_form[$r];
+	}
 
-    list($DATA, $this->formFlag) = $MODUL->_UpdItemModul(array('showform' => 1), $argForm);
+	list($DATA, $this->formFlag) = $MODUL->_UpdItemModul(array('showform' => 1), $argForm);
 
-    $html = transformPHP($DATA, '#pg#formcreat');
+	$html = transformPHP($DATA, '#pg#formcreat');
 } else
-    $html = '<error>Ошибка подключения модуля</error>';
+	$html = '<error>Ошибка подключения модуля</error>';
 
 return $html;

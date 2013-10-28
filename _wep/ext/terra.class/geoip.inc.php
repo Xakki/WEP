@@ -18,25 +18,25 @@ $html = '
 		<h3>Информация по IP</h3>
 		<ul>';
 if (count($data)) {
-    $html .= '
+	$html .= '
 				<li>IP - ' . $data['ip'] . '</li>
 				<li>' . $data['socr_name'] . ' - ' . $data['name'] . '</li>';
-    foreach ($data['parent'] as $row) {
-        $html .= '<li>' . $row['socr_name'] . ' - ' . $row['name'] . '</li>';
-        if ($row['temp_okryg'])
-            $html .= '<li>' . $row['temp_okryg'] . '</li>';
-    }
-    $html .= '
+	foreach ($data['parent'] as $row) {
+		$html .= '<li>' . $row['socr_name'] . ' - ' . $row['name'] . '</li>';
+		if ($row['temp_okryg'])
+			$html .= '<li>' . $row['temp_okryg'] . '</li>';
+	}
+	$html .= '
 				<li>Индекс - ' . $data['index'] . '</li>
 				<li>Широта - ' . $data['latitude'] . '</li>
 				<li>Долгота - ' . $data['longitude'] . '</li>
 			';
 } else {
-    $html .= '
+	$html .= '
 				<li>Ваш IP в базе не обнаружен</li>
 				<li>IP - ' . $_SERVER['REMOTE_ADDR'] . '</li>
 			';
-    $jfunct = '
+	$jfunct = '
 				function setCenter(loc) {
 					map.setCenter(loc);
 					/// TODO console.log(loc);
@@ -66,9 +66,9 @@ $("<div>" + i + " : <span>" + val + "</span>").appendTo(document.body);
 
 */
 if (count($data))
-    $LatLng = 'var defLatLng = new google.maps.LatLng(' . $data['latitude'] . ', ' . $data['longitude'] . ');';
+	$LatLng = 'var defLatLng = new google.maps.LatLng(' . $data['latitude'] . ', ' . $data['longitude'] . ');';
 else
-    $LatLng = 'var defLatLng = new google.maps.LatLng(40.69847032728747, -73.9514422416687);';
+	$LatLng = 'var defLatLng = new google.maps.LatLng(40.69847032728747, -73.9514422416687);';
 
 setScript('http://maps.google.com/maps/api/js?sensor=false');
 $_tpl['script']['initialize'] = '

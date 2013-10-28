@@ -1,66 +1,73 @@
-
 #fcontrol {
-	position:relative;
+	position: relative;
 	z-index: 1000;
-	font-size:14px;
+	font-size: 14px;
 }
 
 #fcontrol .fcontrol-button {
-	position:absolute;
-	top:100%;
-	left:30%;
-	width:auto;
-	padding:3px 10px;
-	height:auto;
+	position: absolute;
+	top: 100%;
+	left: 30%;
+	width: auto;
+	padding: 3px 10px;
+	height: auto;
 	background-color: #e1e1e1;
 	border: solid gray 1px;
-	font-size:1.2em;
+	font-size: 1.2em;
 	font-weight: bold;
 	cursor: pointer;
-	-moz-border-radius:0 0 7px 7px;-webkit-border-radius:0 0 7px 7px;border-radius:0 0 7px 7px;
+	-moz-border-radius: 0 0 7px 7px;
+	-webkit-border-radius: 0 0 7px 7px;
+	border-radius: 0 0 7px 7px;
 }
+
 #fcontrol .fcontrol-button:hover {
-	color:green;
-	padding:4px 10px 3px 10px;
+	color: green;
+	padding: 4px 10px 3px 10px;
 }
+
 #fcontrol .fcontrol-button i::before {
-	 content: "Скрыть админку";
+	content: "Скрыть админку";
 }
+
 #fcontrol.hidden .fcontrol-button i::before {
-	 content: "Показать админку";
+	content: "Показать админку";
 }
 
 #fcontrol .fcontrol-text {
 	display: block;
-	padding:3px 0px 5px;;
+	padding: 3px 0px 5px;;
 	background-color: #e1e1e1;
 	border: solid gray 1px;
-	width:100%;
+	width: 100%;
 }
+
 #fcontrol.hidden .fcontrol-text {
 	display: none;
 }
 
- /*MENU*/
+/*MENU*/
 div.superMenu {
-	padding: 5px 0 0 0;margin: 0;
-	font-size:1.2em;
+	padding: 5px 0 0 0;
+	margin: 0;
+	font-size: 1.2em;
 	vertical-align: middle;
 }
+
 div.superMenu .button {
 	padding: 9px;
 	margin: 0 4px;
 }
+
 div.superMenu .select {
-	display:inline-block;
+	display: inline-block;
 }
 
-
 div.superMenu .split {
-	display:inline-block;
-	margin:0 10px;
+	display: inline-block;
+	margin: 0 10px;
 	border-left: 1px solid gray;
-	width:1px;
+	width: 1px;
 	height: 32px;
 	vertical-align: top;
 }
@@ -80,4 +87,5 @@ div.superMenu .select select {
 	font-size: 11px;
 	margin: 0;
 }
+
 /**************/

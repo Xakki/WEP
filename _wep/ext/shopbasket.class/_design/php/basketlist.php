@@ -10,21 +10,21 @@
  */
 function tpl_basketlist(&$data)
 {
-    global $_tpl, $_CFG;
-    setCss('/../_shop/style/shopBasket');
-    $html = '';
+	global $_tpl, $_CFG;
+	setCss('/../_shop/style/shopBasket');
+	$html = '';
 
-    if (isset($data['messages'])) {
-        $html .= transformPHP($data['messages'], '#pg#messages');
-    }
+	if (isset($data['messages'])) {
+		$html .= transformPHP($data['messages'], '#pg#messages');
+	}
 
-    if (isset($data['#item#'])) {
-        $html .= tpl_basketlist_item($data);
-    } elseif (isset($data['#list#'])) {
-        if (isset($data['#filter#'])) {
-            //print_r('<pre>');print_r($data);
-            $html .= '<div id="dialog-filter" title="Фильтр" style="display:none;">' . transformPHP($data['#filter#'], '#pg#filter') . '</div> <button id="open-filter">Показать фильтр</button>';
-            $_tpl['onload'] .= '
+	if (isset($data['#item#'])) {
+		$html .= tpl_basketlist_item($data);
+	} elseif (isset($data['#list#'])) {
+		if (isset($data['#filter#'])) {
+			//print_r('<pre>');print_r($data);
+			$html .= '<div id="dialog-filter" title="Фильтр" style="display:none;">' . transformPHP($data['#filter#'], '#pg#filter') . '</div> <button id="open-filter">Показать фильтр</button>';
+			$_tpl['onload'] .= '
 					$("#dialog-filter .f_submit").hide();
 					$( "#dialog-filter" ).dialog({
 						autoOpen: false,
@@ -47,13 +47,13 @@ function tpl_basketlist(&$data)
 					});
 					$( "#open-filter" ).button().click(function() { $( "#dialog-filter" ).dialog( "open" ); });
 				';
-            plugJQueryUI();
-            if (isset($data['#filter#']['filterEnabled']))
-                $html .= '<messages><info>Включен фильтр</info></messages>';
-        }
+			plugJQueryUI();
+			if (isset($data['#filter#']['filterEnabled']))
+				$html .= '<messages><info>Включен фильтр</info></messages>';
+		}
 
-        if (count($data['#list#'])) {
-            $html .= '
+		if (count($data['#list#'])) {
+			$html .= '
 				<table class="basketlist"><tr> 
 					<th>№
 					<th>Дата
@@ -62,21 +62,21 @@ function tpl_basketlist(&$data)
 					<th>Товары
 					<th>Статус
 				</tr>';
-            $summ = 0;
-            foreach ($data['#list#'] as $r) {
-                $prod = '<ul>';
-                foreach ($r['#shopbasketitem#'] as $p) {
-                    if ($p['count'])
-                        $prod .= '<li>' . $p['product_name'] . ' [' . $p['count'] . ' шт. по ' . $p['cost_item'] . ' ' . $data['#curr#'] . ']';
-                    else
-                        $prod .= '<li>' . $p['product_name'] . ' [' . $p['cost_item'] . ' ' . $data['#curr#'] . ']';
-                }
-                $prod .= '</ul>';
-                if ($r['pay_id'])
-                    $link = '<a href="/_js.php?_modul=pay&_func=statusForm&id=' . $r['pay_id'] . '" onclick="return wep.JSWin({type:this});" target="_blank">' . $r['#laststatus#'] . '</a>';
-                else
-                    $link = 'Забронированно <a href="' . $data['#orderPage#'] . '.html?basketpay=' . $r['id'] . '">Оформить заказ</a>';
-                $html .= '
+			$summ = 0;
+			foreach ($data['#list#'] as $r) {
+				$prod = '<ul>';
+				foreach ($r['#shopbasketitem#'] as $p) {
+					if ($p['count'])
+						$prod .= '<li>' . $p['product_name'] . ' [' . $p['count'] . ' шт. по ' . $p['cost_item'] . ' ' . $data['#curr#'] . ']';
+					else
+						$prod .= '<li>' . $p['product_name'] . ' [' . $p['cost_item'] . ' ' . $data['#curr#'] . ']';
+				}
+				$prod .= '</ul>';
+				if ($r['pay_id'])
+					$link = '<a href="/_js.php?_modul=pay&_func=statusForm&id=' . $r['pay_id'] . '" onclick="return wep.JSWin({type:this});" target="_blank">' . $r['#laststatus#'] . '</a>';
+				else
+					$link = 'Забронированно <a href="' . $data['#orderPage#'] . '.html?basketpay=' . $r['id'] . '">Оформить заказ</a>';
+				$html .= '
 					<tr data-id="' . $r['id'] . '">
 						<td><a href="' . $data['#page#'] . '/' . $r['id'] . '.html">Заказ №' . $r['id'] . '</a>
 						<td>' . static_main::_date($_CFG['wep']['timeformat'], $r['mf_timecr']) . '
@@ -85,26 +85,26 @@ function tpl_basketlist(&$data)
 						<td class="basketlist-basketitem">' . $prod . '
 						<td>' . $link . '
 					</tr>';
-            }
-            $html .= '</table>';
-        } else
-            $html .= '<div class="basket">' . static_render::message('Заказы не найдены') . '</div>';
+			}
+			$html .= '</table>';
+		} else
+			$html .= '<div class="basket">' . static_render::message('Заказы не найдены') . '</div>';
 
-    } else
-        $html .= '<div class="basket">' . static_render::message('Заказы не найдены') . '</div>';
+	} else
+		$html .= '<div class="basket">' . static_render::message('Заказы не найдены') . '</div>';
 
-    return $html;
+	return $html;
 }
 
 function tpl_basketlist_item(&$data)
 {
-    global $_tpl, $_CFG;
+	global $_tpl, $_CFG;
 
-    setCss('form');
+	setCss('form');
 
-    if (count($data['#item#'])) {
-        $itemB = & $data['#item#'];
-        $html = '
+	if (count($data['#item#'])) {
+		$itemB = & $data['#item#'];
+		$html = '
 			<table class="basketInfo">
 				<tr> <td>ФИО <td><b>' . $itemB['fio'] . '</b>
 				<tr> <td>Адрес доставки <td><b>' . $itemB['address'] . '</b>
@@ -114,8 +114,8 @@ function tpl_basketlist_item(&$data)
 				<tr> <td>Доставка <td><b>' . $itemB['#delivery#']['name'] . '</b>
 				<tr> <td>Статус <td><b>' . $itemB['#laststatus#'] . '</b>
 			</table>';
-        if (isset($data['#moder#']) and $data['#moder#'] and $itemB['laststatus'] < 5) {
-            $_tpl['onload'] .= '
+		if (isset($data['#moder#']) and $data['#moder#'] and $itemB['laststatus'] < 5) {
+			$_tpl['onload'] .= '
 
 					$( "#dialog-confirm" ).dialog({
 						autoOpen: false,
@@ -147,8 +147,8 @@ function tpl_basketlist_item(&$data)
 						return false;
 					});
 				';
-            plugJQueryUI();
-            $html .= '
+			plugJQueryUI();
+			$html .= '
 				<form method="POST" id="formOrder">
 					<input type="hidden" name="status" id="formOrderStatus">
 					<input type="hidden" name="comment" id="formOrderComment">
@@ -163,42 +163,42 @@ function tpl_basketlist_item(&$data)
 				    <div>Приминить статус "<b></b>" ?</div>
 				</div>
 				';
-        }
+		}
 
-        $html .= '<h3>Покупки</h3>
+		$html .= '<h3>Покупки</h3>
 				<table class="basketItems">
 					<tr><th>Наименование <th>Цена ' . $data['#curr#'] . '<th>Кол-во <th>Сумма ' . $data['#curr#'] . '';
-        foreach ($itemB['#shopbasketitem#'] as $r) {
-            if ($r['count'])
-                $html .= '<tr>
+		foreach ($itemB['#shopbasketitem#'] as $r) {
+			if ($r['count'])
+				$html .= '<tr>
 							<td><a href="' . $data['#pageCatalog#'] . '/cataloglist/product_' . $r['product_id'] . '.html" target="_blank">' . $r['product_name'] . '</a>
 							<td>' . $r['cost_item'] . '
 							<td>' . $r['count'] . '
 							<td>' . $r['count'] * $r['cost_item'];
-            else
-                $html .= '<tr>
+			else
+				$html .= '<tr>
 							<td>' . $r['product_name'] . '
 							<td>' . $r['cost_item'] . '
 							<td> - 
 							<td>' . $r['cost_item'];
-        }
-        $html .= '</table>';
+		}
+		$html .= '</table>';
 
-        $html .= '<br/><h3>История заказа</h3>
+		$html .= '<br/><h3>История заказа</h3>
 				<table class="basketItems">
 					<tr><th>Статус<th>Комментарии<th>Дата<th>Оператор<th>IP';
-        foreach ($itemB['#history#'] as $r) {
-            $html .= '<tr>
+		foreach ($itemB['#history#'] as $r) {
+			$html .= '<tr>
 					<td>' . $r['#status#'] . '
 					<td>' . $r['name'] . '
 					<td>' . static_main::_usabilityDate($r['mf_timecr']) . '
 					<td>' . $r['#creater_id#'] . '
 					<td>' . long2ip($r['mf_ipcreate']);
-        }
-        $html .= '</table>';
-    } else {
-        $html = '<div class="basket">' . static_render::message('Не верный адрес страницы либо данный заказ был удален') . '</div>';
-    }
-    return $html;
+		}
+		$html .= '</table>';
+	} else {
+		$html = '<div class="basket">' . static_render::message('Не верный адрес страницы либо данный заказ был удален') . '</div>';
+	}
+	return $html;
 }
 //'.($data['#moder#']?'<td><a href="'.$data['#pageUser#'].'/'.$r['creater_id'].'.html" target="_blank">'.$r['uname'].'</a>':'').'
