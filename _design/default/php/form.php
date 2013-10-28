@@ -374,11 +374,20 @@ function tpl_form(&$data, $tabs = array())
 			}
 			elseif($r['type']=='ajaxlist') 
 			{
+                $defaultList = '';
+                if(isset($r['defaultList'])) {
+                    $defaultList = '<div id="ajaxlist_'.$ID.'_default" style="display:none;">';
+                    foreach($r['defaultList'] as $dlK=>$dlR) {
+                        $defaultList .= '<label data-id="'.$dlK.'">'.$dlR.'</label>';
+                    }
+                    $defaultList .= '</div>';
+                }
 				$r['csscheck'] = ($r['value_2']?'':'reject');
 				$serl = serialize($r['listname']);
 				$texthtml .= '<div class="form-value ajaxlist '.$r['csscheck'].'">
 					<input type="text" name="'.$k.'_2" id="'.$ID.'_2" value="'.strip_tags($r['value_2']).'" placeholder="'.$r['placeholder'].'" autocomplete="off"/>
 					<div id="ajaxlist_'.$ID.'" style="display:none;">не найдено</div>
+					'.$defaultList.'
 					<input type="hidden" name="'.$k.'" id="'.$ID.'" value="'.$r['value'].'" '.$attribute.'/>
 				</div>
 				<input type="hidden" id="hsh_'.$k.'" value="'.md5($serl.$_CFG['wep']['md5']).'"/>

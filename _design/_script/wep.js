@@ -2149,22 +2149,19 @@ function setEventAjaxList(input, hidden, list)
 {
     var ajaxlist = $(input).parent();
     $(ajaxlist).on('focusin', function() {
-        console.log('focus+++++++++');
+        console.log('++', list);
         ajaxListControl(input, hidden, list);
     });
     $(ajaxlist).on('focusout', function(){
-        console.log('focus---------');
         if(!$(list).data('mousedown')) {
             ajaxListHide(input, hidden, list);
         }
     });
 
     $(list).on('mousedown', function() {
-        console.log('focus!!!!!+++++++++');
         $(this).data('mousedown', true);
     });
     $(list).on('mouseup', function(){
-        console.log('focus!!!!!---------');
         $(this).data('mousedown', false);
         $(input).focus();
     });
@@ -2172,6 +2169,7 @@ function setEventAjaxList(input, hidden, list)
     $(input).on('keydown', function(){
         ajaxlistOnKey(event, input, hidden, list)
     });
+    // Клик по выбранному элементу
     $(list).on('click', 'label', function() {
         ajaxListHide(input, hidden, list, $(this));
     });
@@ -2179,6 +2177,17 @@ function setEventAjaxList(input, hidden, list)
         $(this).siblings().removeClass('selected');
         $(this).addClass('selected');
     });
+
+    var defaultListObj = $(list+'_default');
+    if (defaultListObj.size()) {
+        defaultListObj.on('click', 'label', function() {
+            ajaxListHide(input, hidden, list+'_default', $(this));
+        });
+        defaultListObj.on('mouseover', 'label', function () {
+            $(this).siblings().removeClass('selected');
+            $(this).addClass('selected');
+        });
+    }
 }
 
 function ajaxListStop(input)
@@ -2196,7 +2205,6 @@ function ajaxListStop(input)
 
 function ajaxListHide(input, hidden, list, SEL)
 {
-    console.log('ajaxListHide');
     ajaxListStop(input);
     jQuery(list).hide();
     // Fix для IE
@@ -2211,6 +2219,7 @@ function ajaxListHide(input, hidden, list, SEL)
     else {
         ajaxListClear(input, hidden, list);
     }
+
 }
 
 /**
@@ -2283,7 +2292,10 @@ function ajaxListControl(input, hidden, list)
     console.log('ajaxListControl');
     var value = $(input)[0].value;
     if(value.length>2) {
+
+        jQuery(list+'_default').hide();
         var listObj = $(list);
+
         if(listObj.attr('val')==value) {
             listObj.show();
             listObj.find('label:first').addClass('selected');
@@ -2345,6 +2357,7 @@ function ajaxListControl(input, hidden, list)
         jQuery(input).parent().addClass('reject');
         jQuery(list).hide();
         jQuery(list).find('.selected').removeClass('selected');
+        jQuery(list+'_default').show();
     }
 }
 
@@ -2356,9 +2369,12 @@ function ajaxListControl(input, hidden, list)
  * @param list - выпадающий список
  */
 function ajaxListSelect(OBJ, input, hidden, list) { // событие на клик на элементе списка
-    console.log('ajaxListSelect');
     OBJ = $(OBJ);
 	var ID = OBJ.attr('data-id');
+    if(jQuery(hidden).val()==ID) {
+        return;
+    }
+    console.error('ajaxListSelect');
 	jQuery(hidden).val(ID).change(); // Сохраняем ID
 	$(input).val(OBJ.text()); // Выводим текст
     $(input).parent().removeClass('reject'); // Удаляем стиль "не верного значения"
