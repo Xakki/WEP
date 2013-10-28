@@ -1875,7 +1875,7 @@ function keys_return(e) {
     if (e.keyCode) keys = e.keyCode;
     else if (e.which) keys = e.which;
     //
-    if (keys == 8 || keys == 46 || keys == 13 || keys == 39 || keys == 37) keys = 0;
+//    if (keys == 8 || keys == 46 || keys == 13 || keys == 39 || keys == 37) keys = 0;
     return keys;
 }
 
@@ -2078,46 +2078,42 @@ var timerbagIE = 0;// таймер для слоя списка
 var ajaxlistover = 0; // флаг активности слоя списка
 function setEventAjaxList(input, hidden, list) {
     var ajaxlist = $(input).parent();
-    $(ajaxlist).on('focusin', function () {
-        console.log('++', list);
+    var listObj = $(list);
+
+    ajaxlist.on('focusin', function () {
         ajaxListControl(input, hidden, list);
+        return false;
     });
-    $(ajaxlist).on('focusout', function () {
-        if (!$(list).data('mousedown')) {
+    ajaxlist.on('focusout', function () {
+        if (!listObj.data('mousedown')) {
             ajaxListHide(input, hidden, list);
         }
+        return false;
     });
 
-    $(list).on('mousedown', function () {
+
+    listObj.on('mousedown', function () {
         $(this).data('mousedown', true);
+        return true;
     });
-    $(list).on('mouseup', function () {
+    listObj.on('mouseup', function () {
         $(this).data('mousedown', false);
-        $(input).focus();
+//        $(input).focus();
+        return true;
     });
 
     $(input).on('keydown', function () {
-        ajaxlistOnKey(event, input, hidden, list)
+        return ajaxlistOnKey(event, input, hidden, list);
     });
     // Клик по выбранному элементу
-    $(list).on('click', 'label', function () {
-        ajaxListHide(input, hidden, list, $(this));
+    listObj.on('click', 'label', function () {
+        console.log('*****click Event');
+        return ajaxListHide(input, hidden, list, $(list).find('.selected'));
     });
-    $(list).on('mouseover', 'label', function () {
+    listObj.on('mouseover', 'label', function () {
         $(this).siblings().removeClass('selected');
         $(this).addClass('selected');
     });
-
-    var defaultListObj = $(list + '_default');
-    if (defaultListObj.size()) {
-        defaultListObj.on('click', 'label', function () {
-            ajaxListHide(input, hidden, list + '_default', $(this));
-        });
-        defaultListObj.on('mouseover', 'label', function () {
-            $(this).siblings().removeClass('selected');
-            $(this).addClass('selected');
-        });
-    }
 }
 
 function ajaxListStop(input) {
@@ -2139,15 +2135,12 @@ function ajaxListHide(input, hidden, list, SEL) {
     if (_Browser.type == 'IE' && 8 > _Browser.version)
         jQuery('select').toggleClass('hideselectforie7', false);
 
-    if (!SEL) {
-        SEL = $(list).find('.selected');
-    }
     if (SEL.size())
         ajaxListSelect(SEL, input, hidden, list);
     else {
         ajaxListClear(input, hidden, list);
     }
-
+    return false;
 }
 
 /**
@@ -2163,9 +2156,18 @@ function ajaxListClear(input, hidden, list) {
 }
 
 function ajaxlistOnKey(e, input, hidden, list) {
-    console.log('ajaxlistOnKey');
+
     var keyCode = keys_return(e);
+    console.log('ajaxlistOnKey', keyCode);
+
+    var flag = $(list).is(':hidden');
+
     if (keyCode == '40' || keyCode == '38') { // вниз
+        if(flag) {
+            // Если скрыт показываем список
+            ajaxListControl(input, hidden, list);
+            return false;
+        }
         var W = 290;
         var listObj = $(list);
         var SEL = listObj.find('.selected');
@@ -2194,13 +2196,21 @@ function ajaxlistOnKey(e, input, hidden, list) {
         return false;
     }
     else if (keyCode == '13') {
+        if(flag) return false;
         var listObj = $(list);
         var SEL = listObj.find('.selected');
         if (!SEL.size())
             SEL = listObj.find('label:first');
         ajaxListHide(input, hidden, list, SEL);
         return false;
-    } else {
+    }
+    else if (keyCode == '27') { // esc
+        ajaxListHide(input, hidden, list);
+        return false;
+    }
+    else
+    {
+        console.log('=',getKeyChar(keyCode));
         ajaxListStop(input);
         timeAction(input, function () {
             ajaxListControl(input, hidden, list);
@@ -2216,19 +2226,23 @@ function ajaxlistOnKey(e, input, hidden, list) {
  * @param hidden
  * @param list
  */
-function ajaxListControl(input, hidden, list) {
+function ajaxListControl(input, hidden, list)
+{
     console.log('ajaxListControl');
+    var defaultListObj = $(list + '_default');
+    var listObj = $(list);
     var value = $(input)[0].value;
+
     if (value.length > 2) {
-
-        jQuery(list + '_default').hide();
-        var listObj = $(list);
-
         if (listObj.attr('val') == value) {
-            listObj.show();
+            if (defaultListObj.size()) {
+                listObj.html(defaultListObj.html());
+            }
             listObj.find('label:first').addClass('selected');
+            listObj.show();
         }
         else {
+            console.error(listObj.attr('val'), value);
             $(input).data('value', value);
             var parentObj = listObj.parent();
             parentObj.addClass('load');
@@ -2272,8 +2286,10 @@ function ajaxListControl(input, hidden, list) {
                             jQuery(list).find('[data-id=' + temp + ']').addClass('selected');
                             parentObj.removeClass('reject');
                         }
-                    } else
+                    }
+                    else {
                         txt = 'не найдено';
+                    }
 
                     jQuery(list).html(txt).show();
                     jQuery(list).attr('val', value);
@@ -2284,9 +2300,11 @@ function ajaxListControl(input, hidden, list) {
     } else {
         jQuery(hidden).val('');
         jQuery(input).parent().addClass('reject');
-        jQuery(list).hide();
-        jQuery(list).find('.selected').removeClass('selected');
-        jQuery(list + '_default').show();
+        if (defaultListObj.size()) {
+            listObj.html(defaultListObj.html());
+        }
+        listObj.find('.selected').removeClass('selected');
+        listObj.show();
     }
 }
 
@@ -2300,12 +2318,16 @@ function ajaxListControl(input, hidden, list) {
 function ajaxListSelect(OBJ, input, hidden, list) { // событие на клик на элементе списка
     OBJ = $(OBJ);
     var ID = OBJ.attr('data-id');
+    var valueText = OBJ.text();
     if (jQuery(hidden).val() == ID) {
         return;
     }
     console.error('ajaxListSelect');
     jQuery(hidden).val(ID).change(); // Сохраняем ID
-    $(input).val(OBJ.text()); // Выводим текст
+    $(input).val(valueText); // Выводим текст
+    if(jQuery(list).attr('val') != valueText) {
+        jQuery(list).attr('val', valueText);
+    }
     $(input).parent().removeClass('reject'); // Удаляем стиль "не верного значения"
     $(list).find('[data-id]').removeClass('selected'); // удаляем выбор у всех
     $(list).find('[data-id=' + ID + ']').addClass('selected'); // ставим выбор у кликнутого
