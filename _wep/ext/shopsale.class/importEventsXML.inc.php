@@ -131,8 +131,6 @@ function procesedPostDataImport1C()
 
 					static_tools::simplexml2array($xmlData, $result);
 
-					//file_put_contents(dirname($xml).'/out.txt', print_r($result, true));
-
 					$info = array(
 						'Товар' => array(
 							'class' => 'shopsale',

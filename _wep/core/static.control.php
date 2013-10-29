@@ -101,7 +101,6 @@ class static_control
 				$flag = -1;
 				if (!count($arr['mess'])) // Если нет сообщений/ошибок то сохраняем обработанные значения
 				{
-					//print_r('<pre>');print_r($arr);exit();
 					if ($rm = $_this->_add($arr['vars'])) {
 						$flag = 1;
 						$arr['mess'][] = static_main::am('ok', 'add', array($_this->tablename), $_this);

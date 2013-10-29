@@ -223,18 +223,6 @@ class static_image
 				$Width = (int)($Height * $ZeroWidth / $ZeroHeight);
 			}
 		}
-//
-//        print_r('<pre>');
-//        var_export(array(
-//            '$ZeroWidth' => $ZeroWidth,
-//            '$ZeroHeight' => $ZeroHeight,
-//            '$k1' => $k1,
-//            '$k2' => $k2,
-//            '$width_orig' => $width_orig,
-//            '$height_orig' => $height_orig,
-//            '$Width' => $Width,
-//            '$Height' => $Height
-//        ));
 
 		return array($Width, $Height);
 	}

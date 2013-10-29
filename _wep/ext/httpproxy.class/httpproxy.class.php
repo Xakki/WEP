@@ -79,8 +79,6 @@ class httpproxy_class extends kernel_extends
 		//print_r(' * '.time().' * ');
 		//,t1.`timeout`
 
-		//print_r('<pre>');print_r($this->data);//exit();
-
 		if (count($this->data)) {
 			$this->id = $this->data[0]['id'];
 			$this->childs['httpproxycheck']->id = $this->data[0]['domenid'];

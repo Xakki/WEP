@@ -787,10 +787,6 @@ span.labelInput {
 	background: transparent;
 }
 
-#tr_map {
-	padding: 10px 0;
-}
-
 /*Всплывающая информация showHelp(obj,mess,time,nomiga)*/
 .helpmess {
 	position: absolute;

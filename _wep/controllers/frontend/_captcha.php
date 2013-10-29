@@ -95,7 +95,7 @@ for ($i = 0; $i < $param['height']; $i += $lstep2)
 
 // Выводим каждую цифру по отдельности, немного смещая случайным образом
 $k = (int)$step / 2;
-//print_r('$param["width"]='.$param['width'].'  ,$step='.$step.'  ,  $k='.$k);
+
 for ($i = 0; $i < $l; $i++) {
 	$cl = imagecolorallocate($im, rand(0, 128), rand(0, 128), rand(0, 128));
 	$fsize = rand($param['sizemin'], $param['sizemax']);

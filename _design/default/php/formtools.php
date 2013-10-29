@@ -3,7 +3,6 @@
 
 function tpl_formtools(&$data)
 {
-	//print_r($data);exit();
 	if (isset($data['_*features*_']) and isset($data['form']['_*features*_'])) {
 		trigger_error('Ошибка. Старый формат данных. Атрибут _*features*_ не поддерживается.', E_USER_WARNING);
 		return '';

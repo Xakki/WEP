@@ -9,7 +9,7 @@ if (!isset($var_const))
 
 $DEF_CFG = static_tools::getFdata(WEP . '/config/config.php', '/* MAIN_CFG */', '/* END_MAIN_CFG */');
 $USER_CFG = static_tools::getFdata(WEP_CONFIG, '', '', $DEF_CFG); // Текущая полная конфигурация
-//print_r('<pre>');print_r($USER_CFG);exit();
+
 $DATA = array();
 $DATA['rootlogin'] = array('type' => 'text', 'caption' => 'Login БД с правами суперпользователя', 'style' => 'background-color:#ff9966;');
 $DATA['rootpass'] = array('type' => 'password', 'caption' => 'Пароль БД с правами суперпользователя', 'style' => 'background-color:#ff9966;');

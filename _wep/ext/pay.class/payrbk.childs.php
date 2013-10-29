@@ -164,7 +164,6 @@ class payrbk_class extends kernel_extends
 	 */
 	public function statusForm($data)
 	{
-		//print_r('<pre>');print_r($data);
 		//$data['child']
 		$result = array('showStatus' => true, 'messages' => array());
 		//if(isset($data['paymentStatus']) and $data['paymentStatus']==self::$STATUS_SUCCESS)

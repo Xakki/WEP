@@ -45,7 +45,6 @@ if (isset($_REQUEST['ref']) and $_REQUEST['ref'] != '' and mb_strpos($_SERVER['H
 
 if (count($_POST) and isset($_POST['login'])) {
 	$result = static_main::userAuth($_POST['login'], $_POST['pass']);
-	//print_r($result);exit();
 	if ($result[1] > 0) {
 		//static_main::redirect($ref);
 		//$mess=$result[0];

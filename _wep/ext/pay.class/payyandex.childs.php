@@ -181,7 +181,6 @@ class payyandex_class extends kernel_extends
 	 */
 	public function statusForm($data)
 	{
-		//print_r('<pre>');print_r($data);
 		//$data['child']
 		$result = array('showStatus' => true, 'messages' => array());
 
@@ -322,8 +321,6 @@ class payyandex_class extends kernel_extends
 
 		unlink($CF);
 		//$html['text'] = htmlentities($html['text'],ENT_NOQUOTES,'windows-1251');//,'windows-1251' 'UTF-8'
-		//print_r('<pre>');print_r($POST);print_r($html);
-		//print_r(file_get_contents($param['COOKIEJAR']));
 		if (strpos($html['info']['redirect_url'], $this->REDIRECT_URI) !== false) {
 			$result = parse_url($html['info']['redirect_url']);
 			$result = explode('=', $result['query']);

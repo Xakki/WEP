@@ -9,7 +9,6 @@
  */
 function tpl_statusForm($data)
 {
-	//print_r('<pre>');print_r($data);
 	global $_tpl;
 	setCss('/../_pay/pay');
 	$html = '';

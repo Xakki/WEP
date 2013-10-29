@@ -610,7 +610,6 @@ class simple_html_dom_node
 
 		$selectors = array();
 		$result = array();
-		//print_r($matches);
 
 		foreach ($matches as $m) {
 			$m[0] = trim($m[0]);

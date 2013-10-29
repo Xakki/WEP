@@ -22,7 +22,7 @@ function tpl_basketlist(&$data)
 		$html .= tpl_basketlist_item($data);
 	} elseif (isset($data['#list#'])) {
 		if (isset($data['#filter#'])) {
-			//print_r('<pre>');print_r($data);
+
 			$html .= '<div id="dialog-filter" title="Фильтр" style="display:none;">' . transformPHP($data['#filter#'], '#pg#filter') . '</div> <button id="open-filter">Показать фильтр</button>';
 			$_tpl['onload'] .= '
 					$("#dialog-filter .f_submit").hide();
