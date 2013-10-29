@@ -297,9 +297,9 @@ class pg_class extends kernel_extends
 		unset($getEncode['pageParam']);
 		unset($getEncode['_php']);
 		if (version_compare(phpversion(), '5.3.0', '>'))
-			$getEncode = json_encode($getEncode, JSON_HEX_TAG);
+			$getEncode = @json_encode($getEncode, JSON_HEX_TAG);
 		else
-			$getEncode = json_encode($getEncode);
+			$getEncode = @json_encode($getEncode);
 
 
 		if ($flag_content == 1) {
