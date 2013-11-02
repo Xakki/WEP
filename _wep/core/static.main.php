@@ -591,7 +591,7 @@ class static_main
 	/**
 	 * Замена в тексте ссылок на редирект
 	 * @param string $text - текст в котором будет производится поиск
-	 * @param int $name - подстановочное название ссылок, если $name==false - то название будет как самы ссылка только без http:// и www
+	 * @param int $name - подстановочное название ссылок, если $name==false - то название будет как самы ссылка только без http:// и www, если $name===true - то только домен в названии останется xakki.ru
 	 * @param int $dolink - 0 - замена всех http на редирект и превращение в ссылки; 1- замена всех http на редирект; 2- замена всех http на редирект в ссылках
 	 * @return string текст
 	 */
@@ -618,6 +618,11 @@ class static_main
 				elseif ($dolink == 0) {
 					if (!$name)
 						$tn = trim(str_replace(array('href="', 'http://', 'https://', 'www.'), '', $rc), ' /');
+					elseif ($name===true) {
+						$tn = trim(str_replace(array('href="'), '', $rc), ' /');
+						$tn = parse_url($tn);
+						$tn = $tn['host'];
+					}
 					else
 						$tn = $name;
 					$temp[] = '<a href="' . MY_BH . '_redirect.php?url=' . (base64encode($rc)) . '" rel="nofollow" target="_blank">' . $tn . '</a>';
