@@ -16,10 +16,18 @@ function tpl_filter(&$data)
 		$html .= '>';
 	}
 
+	if(!isset($data['noLabel'])) {
+		$data['noLabel'] = false;
+	}
+
 	$html .= '<!--BEGIN_FILTER-->';
 	foreach ($data['form'] as $k => $r) {
-		if (!isset($r['value']))
+		if(!isset($r['noLabel'])) {
+			$r['noLabel'] = $data['noLabel'];
+		}
+		if (!isset($r['value'])) {
 			$r['value'] = '';
+		}
 		$attribute = '';
 		if (!isset($r['css']) || !$r['css']) {
 			$r['css'] = '';
@@ -42,8 +50,11 @@ function tpl_filter(&$data)
 				$html .= '</div></div>';
 			}*/
 		elseif ($r['type'] == 'checkbox') {
-			$html .= '<div class="f_item" id="tr_' . $k . '"> <div class="f_caption">' . $r['caption'] . '</div>';
+			$r['noLabel'] = false;
+			$html .= '<div class="f_item" id="tr_' . $k . '">';
+
 			if (isset($r['multiple']) and $r['multiple']) {
+				$html .= filterCaptionRender($r);
 				$html .= '<div class="f_value multiplebox">';
 				if (!isset($r['valuelist']) or !is_array($r['valuelist']))
 					$r['valuelist'] = array('' => array('#name#' => 'error', '#id#' => ''));
@@ -67,27 +78,31 @@ function tpl_filter(&$data)
 				if (isset($r['value']['']) or !count($r['value'])) {
 					$html .= 'checked="checked"';
 				}
-				$html .= '/>Все</label>';
+				$html .= '/>'.filterAllRender($r).'</label>';
 				foreach ($r['valuelist'] as $rk => $rr) {
 					$html .= '<label><input type="' . $type . '" name="' . $k . '[]" value="' . $rk . '" ' . (isset($r['value'][$rk]) ? 'checked="checked"' : '') . '/>' . $rr['#name#'] . '</label>';
 				}
 				$html .= '</div>';
 			} else {
 				if (isset($r['param']) and $r['param'] == 'checkbox') {
-					$html .= '<div class="f_value checkbox">';
+					$html .= '<label class="f_value checkbox">';
 					$html .= '<input type="checkbox" name="' . $k . '" value="1" ' . ($r['value'] == 1 ? 'checked="checked"' : '') . '/>';
-					$html .= '</div>';
-				} elseif (isset($r['valuelist']) and is_array($r['valuelist'])) {
+					$html .= filterCaptionRender($r).'</label>';
+				}
+				elseif (isset($r['valuelist']) and is_array($r['valuelist'])) {
+					$html .= filterCaptionRender($r);
 					$html .= '<div class="f_value multiplebox">';
-					$html .= '<label><input type="radio" name="' . $k . '" value="" ' . ($r['value'] == '' ? 'checked="checked"' : '') . '/>Все</label>';
+					$html .= '<label><input type="radio" name="' . $k . '" value="" ' . ($r['value'] == '' ? 'checked="checked"' : '') . '/>'.filterAllRender($r).'</label>';
 					foreach ($r['valuelist'] as $rk => $rr) {
 						$html .= '<label><input type="radio" name="' . $k . '" value="' . $rk . '" ' . ($r['value'] == $rk ? 'checked="checked"' : '') . '/>' . $rr['#name#'] . '</label>';
 					}
 					$html .= '</div>';
-				} else {
+				}
+				else {
+					$html .= filterCaptionRender($r);
 					$html .= '<div class="f_value multiplebox">';
 					$html .= '
-							<label><input type="radio" name="' . $k . '" value="" class="radio" ' . ($r['value'] == '' ? 'checked="checked"' : '') . '/>Все</label>
+							<label><input type="radio" name="' . $k . '" value="" class="radio" ' . ($r['value'] == '' ? 'checked="checked"' : '') . '/>'.filterAllRender($r).'</label>
 							<label><input type="radio" name="' . $k . '" value="0" class="radio" ' . ($r['value'] == '0' ? 'checked="checked"' : '') . '/>Нет</label>
 							<label><input type="radio" name="' . $k . '" value="1" class="radio" ' . ($r['value'] == '1' ? 'checked="checked"' : '') . '/>Да</label>
 							';
@@ -96,7 +111,10 @@ function tpl_filter(&$data)
 			}
 			$html .= '</div>';
 		} elseif ($r['type'] == 'linklist') {
-			$html .= '<div class="f_item linklist" id="tr_' . $k . '"><div class="f_caption">' . $r['caption'] . '</div><div class="f_value">';
+			$r['noLabel'] = false;
+			$html .= '<div class="f_item linklist" id="tr_' . $k . '">';
+			$html .= filterCaptionRender($r);
+			$html .= '<div class="f_value">';
 			foreach ($r['valuelist'] as $rk => $rr) {
 				$html .= '<div><a href="' . $rr['#href#'] . '">' . $rr['#name#'] . '</a></div>';
 				if (isset($rr['#item#']) and is_array($rr['#item#'])) {
@@ -105,45 +123,52 @@ function tpl_filter(&$data)
 				}
 			}
 			$html .= '</div></div>';
-		} elseif ($r['type'] == 'list') {
+		}
+		elseif ($r['type'] == 'list') {
 			$attr = '';
-			if (isset($r['onchange']) and $r['onchange'])
+			if (isset($r['onchange']) and $r['onchange']) {
 				$attr .= ' onchange="' . $r['onchange'] . '"';
-			if ($r['value'] != 0 and $r['value'] != 1)
-				$attr .= ' readonly="readonly"';
+			}
 
-			if (!isset($r['valuelist']) or !is_array($r['valuelist']))
+			if ($r['value'] != 0 and $r['value'] != 1) {
+				$attr .= ' readonly="readonly"';
+			}
+
+			if (!isset($r['valuelist']) or !is_array($r['valuelist'])) {
 				$r['valuelist'] = array('' => array('#name#' => 'error', '#id#' => ''));
+			}
 			else {
 				if (isset($r['valuelist'][0]) and $r['valuelist'][0]['#name#'] == ' --- ')
 					unset($r['valuelist'][0]);
 				if (isset($r['valuelist']['']) and $r['valuelist']['']['#name#'] == ' --- ')
-					$r['valuelist']['']['#name#'] = 'Все';
+					$r['valuelist']['']['#name#'] = filterAllRender($r);
 				else
-					$r['valuelist'] = array('' => array('#name#' => 'Все', '#id#' => '')) + $r['valuelist'];
+					$r['valuelist'] = array('' => array('#name#' => filterAllRender($r), '#id#' => '')) + $r['valuelist'];
 			}
 
 			if (isset($r['multiple']) and $r['multiple']) {
 				$attr .= ' multiple="multiple" class="multiselectFilter"';
 				plugBootstrapMultiselect('select.multiselectFilter');
 				$attr .= ' name="' . $k . '[]"';
-			} else {
+			}
+			else {
 				$attr .= ' name="' . $k . '"';
 			}
 
 			$html .= '<div class="f_item" id="tr_' . $k . '">
-				<div class="f_caption">' . $r['caption'] . '</div>
+				'.filterCaptionRender($r).'
 				<div class="f_value">
 					<select ' . $attr . '>
-						' . selectitem2($r['valuelist']) . '
+						' . filterSelectOptionsRender($r['valuelist']) . '
 					</select>
 				</div>
 			  </div>	';
-		} elseif ($r['type'] == 'ajaxlist') {
+		}
+		elseif ($r['type'] == 'ajaxlist') {
 			$r['csscheck'] = ($r['value_2'] ? 'accept' : 'reject');
 			$serl = serialize($r['listname']);
 			$html .= '<div class="f_item" id="tr_' . $k . '">
-				<div class="f_caption">' . $r['caption'] . '</div>
+				'.filterCaptionRender($r).'
 				<div class="f_value" style="position:relative;">
 					<div class="ajaxlist">
 						<input type="text" name="' . $k . '_2" value="' . strip_tags($r['value_2']) . '" placeholder="' . $r['placeholder'] . '" class="' . $r['csscheck'] . '" autocomplete="off"
@@ -164,16 +189,17 @@ function tpl_filter(&$data)
 			$attribute = ' maxlength="' . $r['mask']['max'] . '"';
 
 			$html .= '<div class="f_item" id="tr_' . $k . '">
-				<div class="f_caption">' . $r['caption'] . '</div>
+				'.filterCaptionRender($r).'
 				<div class="f_value f_int">
-					<input type="number" name="' . $k . '" id="' . $k . '" value="' . $r['value'] . '" ' . $attribute . '/> - <input type="number" name="' . $k . '_2" id="' . $k . '_2" value="' . $r['value_2'] . '" ' . $attribute . '/>
+					<input type="number" class="form-control" name="' . $k . '" id="' . $k . '" value="' . $r['value'] . '" ' . $attribute . '/> - <input type="number" class="form-control" name="' . $k . '_2" id="' . $k . '_2" value="' . $r['value_2'] . '" ' . $attribute . '/>
 				</div></div>';
 			//<div class="f_exc"><input type="checkbox" name="exc_'.$k.'" value="exc" '.($r['exc']==1?'checked="checked"':'').'/></div>
 			$_tpl['onload'] .= "wep.gSlide('tr_" . $k . "'," . (int)$r['mask']['min'] . "," . (int)$r['mask']['max'] . "," . (int)$r['value'] . "," . (int)$r['value_2'] . "," . (int)$r['mask']['step'] . ");";
 			plugJQueryUI();
 		} elseif ($r['type'] == 'date') {
+			$r['noLabel'] = false;
 			$html .= '<div class="f_item" id="tr_' . $k . '">
-					<div class="f_caption">' . $r['caption'] . '</div>
+					'.filterCaptionRender($r).'
 					<div class="f_int">
 						<input type="text" name="' . $k . '" id="' . $k . '" value="' . $r['value'] . '" ' . $attribute . '/>-<input type="text" name="' . $k . '_2" id="' . $k . '_2" value="' . $r['value_2'] . '" ' . $attribute . '/>
 					</div>
@@ -202,24 +228,25 @@ function tpl_filter(&$data)
 					});
 				}';
 			$_tpl['onload'] .= ' dpf_' . $k . '(); ';
-		} elseif ($r['type'] == 'file') {
+		}
+		elseif ($r['type'] == 'file') {
 			$html .= '<div class="f_item" id="tr_' . $k . '">
-					<div class="f_caption">' . $r['caption'] . '</div>
+					'.filterCaptionRender($r).'
 					<div class="f_value">
 						<select name="' . $k . '">
-							<option value="">Все</option>
+							<option value="">'.filterAllRender($r).'</option>
 							<option value="!0" ' . ($r['value'] == '!0' ? 'selected="selected"' : '') . '>Есть файл</option>
 							<option value="!1" ' . ($r['value'] == '!1' ? 'selected="selected"' : '') . '>Нету файла</option>
 						</select>
 					</div>
 				</div>';
-		} else {
+		}
+		else {
 			if (isset($r['max']) and $r['max'])
 				$attribute = ' maxlength="' . $r['max'] . '"';
 			$html .= '<div class="f_item" id="tr_' . $k . '">
-					<div class="f_caption">' . $r['caption'] . '</div>
+					'.filterCaptionRender($r).'
 					<div class="f_value"><input type="' . $r['type'] . '" name="' . $k . '" id="' . $k . '" value="' . $r['value'] . '" ' . $attribute . '/></div>
-					
 				</div>';
 			//<div class="f_exc"><input type="checkbox" name="exc_'.$k.'" value="exc"></input></div>
 		}
@@ -230,7 +257,7 @@ function tpl_filter(&$data)
 	return $html;
 }
 
-function selectitem2($data, $flag = 0)
+function filterSelectOptionsRender($data, $flag = 0)
 {
 	$html = '';
 	if (is_array($data) and count($data))
@@ -241,9 +268,21 @@ function selectitem2($data, $flag = 0)
 			else
 				$html .= '<option value="' . $k . '" ' . ((isset($r['#sel#']) and $r['#sel#']) ? 'selected="selected"' : '') . ' class="selpad' . $flag . '">' . $r['#name#'] . '</option>';
 			if (isset($r['#item#']) and count($r['#item#']))
-				$html .= selectitem2($r['#item#'], ($flag + 1));
+				$html .= filterSelectOptionsRender($r['#item#'], ($flag + 1));
 			//.'&#160;--'
 		}
 	return $html;
 }
 
+
+function filterCaptionRender($field)
+{
+	if ($field['noLabel']) return '';
+	return '<div class="f_caption">' . $field['caption'] . '</div>';
+}
+
+function filterAllRender($field)
+{
+	if ($field['noLabel']) return $field['caption'];
+	return 'Все';
+}

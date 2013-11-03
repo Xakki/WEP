@@ -1362,47 +1362,78 @@ window.wep = {
     },
 
     setEventFilterMultiselect: function (selector) {
+
         // enableFiltering : true
         // includeSelectAllOption: true
         // selectAllText: true
         //  selectAllValue: 'multiselect-all',
         // filterPlaceholder: 'Search'
-        $(selector).multiselect({
+        $(selector).each(function() {
+            var first = $(this).find('option:first');
+            $(this).attr('placeholder', first.text());
+            first.remove();
+
+            var cnt = $(this).find('option');
+            var options = {};
+            if( cnt.length > 10) {
+                options.enableCaseInsensitiveFiltering = true;
+            }
+            wep.filterMultiselect(this, options);
+        });
+    },
+
+    /**
+     * Мультиселект для фильтра
+     * @param options
+     */
+    filterMultiselect: function(selector, options)
+    {
+        var defaultOptions = {
             buttonClass: 'btn',
             buttonWidth: '',
             buttonContainer: '<div class="btn-group" />',
             maxHeight: 300,
-            buttonText: function (options, select) {
-                //console.log(options, select, this);
-                if (options.length == 0) {
-                    return 'Все <b class="caret"></b>';
-                }
-                else if (options.length > 2) {
-                    return options.length + ' выбрано  <b class="caret"></b>';
-                }
-                else {
-                    var selected = '';
-                    options.each(function () {
-                        selected += $(this).text() + ', ';
-                    });
-                    return selected.substr(0, selected.length - 2) + ' <b class="caret"></b>';
-                }
-            },
-            onChange: function (element, checked) {
-                var selectObj = $(element).parent();
-                if ($(element).val() === '') {
-                    if (checked) {
-                        $('option', selectObj).each(function (element) {
-                            if ($(this).val() !== '')
-                                selectObj.multiselect('deselect', $(this).val());
-                        });
-                    }
-                }
-                else {
-                    selectObj.multiselect('deselect', '');
-                }
+            buttonText: wep.filterMultiselect_buttonText,
+            onChange: wep.filterMultiselect_onChange,
+            filterPlaceholder: 'Фильтр',
+            filterOptgroup: true
+        };
+        $.extend(defaultOptions, options);
+        $(selector).multiselect(defaultOptions);
+    },
+
+    filterMultiselect_buttonText: function(options, select) {
+        if (options.length == 0) {
+            var defaultText = select.attr('placeholder');
+            if(!defaultText) {
+                defaultText = 'Все';
             }
-        });
+            return defaultText+' <b class="caret"></b>';
+        }
+        else if (options.length > 2) {
+            return options.length + ' выбрано  <b class="caret"></b>';
+        }
+        else {
+            var selected = '';
+            options.each(function () {
+                selected += $(this).text() + ', ';
+            });
+            return selected.substr(0, selected.length - 2) + ' <b class="caret"></b>';
+        }
+    },
+    filterMultiselect_onChange: function(element, checked) {
+        var selectObj = $(element).parent();
+        if ($(element).val() === '') {
+            if (checked) {
+                $('option', selectObj).each(function (element) {
+                    if ($(this).val() !== '')
+                        selectObj.multiselect('deselect', $(this).val());
+                });
+            }
+        }
+        else {
+            selectObj.multiselect('deselect', '');
+        }
     },
 
 

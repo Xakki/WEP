@@ -1858,8 +1858,7 @@ function plugBootstrapCss()
 
 	$url = '//' . WEP_BH . $_CFG['PATH']['vendors'] . 'bootstrap-multiselect/';
 
-	setCss($url . 'css/bootstrap.min.css', true, POS_BEGIN);
-	setCss($url . 'css/bootstrap-responsive.min.css', true, POS_BEGIN);
+	setCss($url . 'css/bootstrap-3.0.0.min.css', true, POS_BEGIN);
 	setCss($url . 'css/prettify.css', true, POS_BEGIN);
 }
 
@@ -1872,7 +1871,7 @@ function plugBootstrapJs()
 
 	$url = '//' . WEP_BH . $_CFG['PATH']['vendors'] . 'bootstrap-multiselect/';
 
-	setScript($url . 'js/bootstrap.js');
+	setScript($url . 'js/bootstrap-3.0.0.min.js');
 	setScript($url . 'js/prettify.js');
 }
 
