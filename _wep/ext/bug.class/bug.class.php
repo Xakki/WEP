@@ -38,6 +38,7 @@ class bug_class extends kernel_extends
 		$this->fields['line'] = array('type' => 'int', 'width' => 8, 'attr' => 'NOT NULL');
 		$this->fields['debug'] = array('type' => 'text', 'attr' => 'NOT NULL');
 		$this->fields['href'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
+		$this->fields['ref'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['page_id'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'default' => 0);
 		$this->fields['hash'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
 		$this->fields['cnt'] = array('type' => 'int', 'width' => 8, 'attr' => 'NOT NULL');
@@ -68,6 +69,7 @@ class bug_class extends kernel_extends
 
 		$this->fields_form['name'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Ошибка', 'mask' => array('filter' => 1, 'onetd' => 'Ошибка'));
 		$this->fields_form['href'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Страница', 'mask' => array('filter' => 1));
+		$this->fields_form['ref'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Referer', 'mask' => array('fview' => 1, 'filter' => 1));
 		$this->fields_form['file'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Файл', 'mask' => array('filter' => 1));
 		$this->fields_form['line'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Строка', 'mask' => array('filter' => 1, 'onetd' => 'close'));
 		$this->fields_form['debug'] = array('type' => 'ckedit', 'caption' => 'Текст ошибки',
@@ -120,6 +122,7 @@ class bug_class extends kernel_extends
 							'line' => $this->SqlEsc($r['errline']),
 							'debug' => $this->SqlEsc($r['debug']),
 							'href' => $href,
+							'ref' => $_SERVER['HTTP_REFERER'],
 							'cnt' => 1,
 						);
 						if (isBackend())
@@ -172,6 +175,7 @@ class bug_class extends kernel_extends
 				$r['line'] = $this->SqlEsc($r['line']);
 				$r['debug'] = $this->SqlEsc($r['debug']);
 				$r['href'] = $this->SqlEsc($r['href']);
+				$r['ref'] = $this->SqlEsc($r['ref']);
 				$query_val[] = '("' . implode('","', $r) . '")';
 				if (!$keys)
 					$keys = array_keys($r);
@@ -197,6 +201,7 @@ class bug_class extends kernel_extends
 				'line' => $errline,
 				'debug' => $debug,
 				'href' => $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
+				'ref' => $_SERVER['HTTP_REFERER'],
 				'hash' => $hash,
 				'cnt' => 1,
 				'page_id' => ''
@@ -220,13 +225,14 @@ class bug_class extends kernel_extends
 				$txt .= '<tr>
 					<td style="vertical-align:top;"><b>Ошибка</b> ' . $r['name'] . '<br/>
 						<b>Кол-во</b> ' . $r['cnt'] . '<br/>
-						<b>Страница</b> ' . $r['href'] . '<br/>
 						<b>PageID</b> ' . $r['page_id'] . '<br/>
 						<b>Файл</b> ' . $r['file'] . '<br/>
 						<b>Строка</b> ' . $r['line'] . '<br/>
 						<b>Время</b> ' . date('Y-m-d H:i:s', $r['mf_timecr']) . '<br/>
 						<b>UserID</b> ' . $r[$this->mf_createrid] . '<br/>
 						<b>IP</b> ' . long2ip($r['mf_ipcreate']) . '</td>
+						<b>Страница</b> ' . $r['href'] . '<br/>
+						<b>Referer</b> ' . $r['ref'] . '<br/>
 					<td style="vertical-align:top;">' . $r['debug'] . '</td>
 				</tr>';
 			}

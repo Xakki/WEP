@@ -1530,6 +1530,9 @@ window.wep = {
     /*FILTER*/
     /*Слайдер для фильтра, возможность установки чесловых пределов*/
     gSlide: function (id, _min, _max, val0, val1, stp) {
+        if($(id).find('#slide' + id).length > 0 ) {
+            return;
+        }
         if (!_max && val1) _max = val1 * 3;
         else if (!_max) _max = 100;
         if (!val1) val1 = _max;

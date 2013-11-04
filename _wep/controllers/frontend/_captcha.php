@@ -65,7 +65,7 @@ function mt()
 $l = mb_strlen($data, 'UTF-8');
 if (!(int)$l) $l = 1;
 
-$path = '_design/_ttf/';
+$path = '_design/fonts/';
 
 $center = (int)$param['height'] / 2; // Центральная позиция
 $step = (int)$param['width'] / $l; // Шаг для букв

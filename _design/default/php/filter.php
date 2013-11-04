@@ -85,7 +85,7 @@ function tpl_filter(&$data)
 				$html .= '</div>';
 			} else {
 				if (isset($r['param']) and $r['param'] == 'checkbox') {
-					$html .= '<label class="f_value checkbox">';
+					$html .= '<label class="f_value checkbox-label">';
 					$html .= '<input type="checkbox" name="' . $k . '" value="1" ' . ($r['value'] == 1 ? 'checked="checked"' : '') . '/>';
 					$html .= filterCaptionRender($r).'</label>';
 				}

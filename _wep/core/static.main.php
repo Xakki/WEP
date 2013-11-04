@@ -618,12 +618,11 @@ class static_main
 				elseif ($dolink == 0) {
 					if (!$name)
 						$tn = trim(str_replace(array('href="', 'http://', 'https://', 'www.'), '', $rc), ' /');
-					elseif ($name===true) {
+					elseif ($name === true) {
 						$tn = trim(str_replace(array('href="'), '', $rc), ' /');
 						$tn = parse_url($tn);
 						$tn = $tn['host'];
-					}
-					else
+					} else
 						$tn = $name;
 					$temp[] = '<a href="' . MY_BH . '_redirect.php?url=' . (base64encode($rc)) . '" rel="nofollow" target="_blank">' . $tn . '</a>';
 				} else
@@ -1625,12 +1624,22 @@ function getUrlCss($r, $customTheme = null)
 		return $_CFG['site']['cdn'][$r];
 
 	if (!$customTheme) $customTheme = getUrlTheme();
-	if (strpos($r, '#themes#') !== false)
-		$r = str_replace('#themes#', $customTheme . 'style/', $r) . '.css';
-	elseif (strpos($r, '//') !== false)
-		return $r; elseif (strpos($r, '/') === 0)
-		$r = $customTheme . 'style' . $r . '.css'; else
-		$r = $_CFG['_HREF']['_style'] . $r . '.css';
+	if (strpos($r, '#themes#') !== false) {
+		$r = str_replace('#themes#', $customTheme . 'style/', $r);
+	}
+	elseif (strpos($r, '//') !== false) {
+		return $r;
+	}
+	elseif (strpos($r, '/') === 0) {
+		$r = $customTheme . 'style' . $r ;
+	}
+	else {
+		$r = $_CFG['_HREF']['_style'] . $r ;
+	}
+
+	if (substr($r, -4)!=='.css') {
+		$r .= '.css';
+	}
 
 	return '//' . WEP_BH . $r;
 }
@@ -1819,11 +1828,11 @@ function plugMD5()
 function plugSHL()
 {
 	global $_CFG;
-	if (isset($_CFG['fileIncludeOption']['shl']))
+	if (isset($_CFG['fileIncludeOption']['highlight']))
 		return false;
-	$_CFG['fileIncludeOption']['shl'] = true;
+	$_CFG['fileIncludeOption']['highlight'] = true;
 
-	setScript('syntaxhighlighter');
+	setScript('highlight');
 }
 
 
@@ -1836,8 +1845,7 @@ function plugBootstrapMultiselect($init)
 
 	$url = '//' . WEP_BH . $_CFG['PATH']['vendors'] . 'bootstrap-multiselect/';
 
-	plugBootstrapCss();
-	plugBootstrapJs();
+	plugBootstrap();
 
 	setCss($url . 'css/bootstrap-multiselect.css');
 	setScript($url . 'js/bootstrap-multiselect.js');
@@ -1849,30 +1857,18 @@ function plugBootstrapMultiselect($init)
 	}
 }
 
-function plugBootstrapCss()
+function plugBootstrap()
 {
-	global $_CFG, $_tpl;
-	if (isset($_CFG['fileIncludeOption']['BootstrapCss']))
+	global $_CFG;
+	if (isset($_CFG['fileIncludeOption']['Bootstrap']))
 		return false;
-	$_CFG['fileIncludeOption']['BootstrapCss'] = true;
+	$_CFG['fileIncludeOption']['Bootstrap'] = true;
 
-	$url = '//' . WEP_BH . $_CFG['PATH']['vendors'] . 'bootstrap-multiselect/';
-
-	setCss($url . 'css/bootstrap-3.0.0.min.css', true, POS_BEGIN);
-	setCss($url . 'css/prettify.css', true, POS_BEGIN);
+	setCss('bootstrap.css', true, POS_BEGIN);
+	setCss('prettify.css', true, POS_BEGIN);
+	setScript('bootstrap');
+	setScript('prettify');
 }
 
-function plugBootstrapJs()
-{
-	global $_CFG, $_tpl;
-	if (isset($_CFG['fileIncludeOption']['BootstrapJs']))
-		return false;
-	$_CFG['fileIncludeOption']['BootstrapJs'] = true;
-
-	$url = '//' . WEP_BH . $_CFG['PATH']['vendors'] . 'bootstrap-multiselect/';
-
-	setScript($url . 'js/bootstrap-3.0.0.min.js');
-	setScript($url . 'js/prettify.js');
-}
 
 static_main::autoload_register();
