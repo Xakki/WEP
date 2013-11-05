@@ -1528,34 +1528,36 @@ window.wep = {
     },
 
     /*FILTER*/
-    /*Слайдер для фильтра, возможность установки чесловых пределов*/
+    /*Слайдер для фильтра, возможность установки числовых пределов*/
     gSlide: function (id, _min, _max, val0, val1, stp) {
-        if($(id).find('#slide' + id).length > 0 ) {
+        var selector = '#' + id + ' .slide' + id;
+        if($(selector).length > 0 ) {
             return;
         }
         if (!_max && val1) _max = val1 * 3;
         else if (!_max) _max = 100;
         if (!val1) val1 = _max;
-        jQuery('#' + id + ' .f_value').after("<div id='slide" + id + "'></div>");
-        jQuery('#slide' + id).slider({
+        $('#' + id + ' .f_value').after("<div class='slide" + id + "'></div>");
+
+        $(selector).slider({
             range: true,
             step: stp,
             min: _min,
             max: _max,
             values: [val0, val1],
             slide: function (event, ui) {
-                jQuery('#' + id + ' input:eq(0)').val(ui.values[0]);
-                jQuery('#' + id + ' input:eq(1)').val(ui.values[1]);
+                jQuery('#' + id  + ' input:eq(0)').val(ui.values[0]);
+                jQuery('#' + id  + ' input:eq(1)').val(ui.values[1]);
             },
             stop: function (event, ui) {
-                jQuery('#' + id + ' input:eq(0)').change();
+                jQuery('#' + id  + ' input:eq(0)').change();
             }
         });
-        jQuery('#' + id + ' input:eq(0)').bind('change', function () {
-            jQuery('#slide' + id).slider('values', 0, this.value)
+        jQuery('#' + id  + ' input:eq(0)').off('change.slider').on('change.slider', function () {
+            jQuery(selector).slider('values', 0, this.value)
         });
-        jQuery('#' + id + ' input:eq(1)').bind('change', function () {
-            jQuery('#slide' + id).slider('values', 1, this.value)
+        jQuery('#' + id  + ' input:eq(1)').off('change.slider').on('change.slider', function () {
+            jQuery(selector).slider('values', 1, this.value)
         });
     },
 
