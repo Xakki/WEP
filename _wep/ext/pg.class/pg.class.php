@@ -162,10 +162,9 @@ class pg_class extends kernel_extends
 		$this->fields_form['ordind'] = array('type' => 'number', 'caption' => 'ORD', 'mask' => array());
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
 
-
 		$this->formSort = array(
 			'Основное' => array('name', 'alias', 'onmenu', 'ugroup', 'active'),
-			'Дополнительно' => array('parent_id', 'name_in_menu', 'design', 'template', 'href', 'menuajax', 'onmap', 'pagemap', 'pagemenu', 'onpath', 'attr', 'aparam'),
+			'Дополнительно' => array('parent_id', 'name_in_menu', 'design', 'template', 'href', 'menuajax', 'onmap', 'pagemap', 'pagemenu', 'onpath', 'attr', 'aparam', 'ordind'),
 		);
 
 

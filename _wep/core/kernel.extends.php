@@ -226,7 +226,8 @@ abstract class kernel_extends
 		$this->childs = new modul_child($this);
 		$this->ordfield = '';
 		$this->_clp = array();
-		$this->data = array();
+		$this->data =
+        $this->allKeyData = array();
 		$this->parent_id = NULL;
 		$this->null = NULL;
 		$this->id = NULL;

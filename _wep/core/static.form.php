@@ -25,25 +25,42 @@ class static_form
 
 	static function _add(&$_this, $flag_select = true, $flag_update = false)
 	{
-		// add ordind field
-		if ($_this->mf_ordctrl and (!isset($_this->fld_data[$_this->mf_ordctrl]) or $_this->fld_data[$_this->mf_ordctrl] == 0)) {
-			if ($ordind = $_this->_get_new_ord())
-				$_this->fld_data[$_this->mf_ordctrl] = $ordind;
-		}
-		// add parent_id field
-		if ($_this->mf_istree and $_this->parent_id and !$_this->fld_data[$_this->mf_istree])
-			$_this->fld_data[$_this->mf_istree] = $_this->parent_id;
-		// add owner_id field
-		if ($_this->owner and $_this->owner->id and (!isset($_this->fld_data[$_this->owner_name]) or !$_this->fld_data[$_this->owner_name]))
-			$_this->fld_data[$_this->owner_name] = $_this->owner->id;
-
 		if (!isset($_this->fld_data) && !count($_this->fld_data)) {
 			return static_main::log('error', static_main::m('add_empty'));
 		}
 
+        // add ordind field
+        if ($_this->mf_ordctrl and (!isset($_this->fld_data[$_this->mf_ordctrl]) or $_this->fld_data[$_this->mf_ordctrl] == 0)) {
+            if ($ordind = $_this->_get_new_ord())
+                $_this->fld_data[$_this->mf_ordctrl] = $ordind;
+        }
+        // add parent_id field
+        if ($_this->mf_istree and $_this->parent_id and !$_this->fld_data[$_this->mf_istree]) {
+            $_this->fld_data[$_this->mf_istree] = $_this->parent_id;
+
+        }
+
+        // fix tree root
+        if ($_this->mf_istree_root && $_this->parent_id) {
+            $_this->fld_data[$_this->ns_config['root']] = $_this->tree_data[$_this->parent_id][$_this->ns_config['root']];
+        }
+
+        // add owner_id field
+        if ($_this->owner and $_this->owner->id and (!isset($_this->fld_data[$_this->owner_name]) or !$_this->fld_data[$_this->owner_name]))
+            $_this->fld_data[$_this->owner_name] = $_this->owner->id;
+
+
+
 		if (!self::_add_fields($_this, $flag_update)) {
 			return static_main::log('error', static_main::m('add_error_add_fields'));
 		}
+
+        // FIX tree root
+        if ($_this->mf_istree_root && !$_this->parent_id) {
+            $where = $_this->_id_as_string();
+            $_this->fld_data = array($_this->ns_config['root'] => $_this->id);
+            self::_update_fields($_this, $where);
+        }
 
 		//umask($_this->_CFG['wep']['chmod']);
 		if (isset($_this->att_data) && count($_this->att_data)) {
@@ -286,6 +303,14 @@ class static_form
 		if ($_this->mf_ipcreate) {
 			unset($_this->fld_data['mf_ipcreate']);
 		}
+        if ($_this->mf_istree_root) {
+            if($_this->fld_data[$_this->mf_istree]) {
+                $_this->fld_data[$_this->ns_config['root']] = $_this->tree_data[$_this->fld_data[$_this->mf_istree]][$_this->ns_config['root']];
+            }
+            else {
+                $_this->fld_data[$_this->ns_config['root']] = $_this->id;
+            }
+        }
 
 		// rename attaches & memos
 		if (!is_array($_this->id) and isset($_this->fld_data['id']) && $_this->fld_data['id'] != $_this->id && $_this->id) {
