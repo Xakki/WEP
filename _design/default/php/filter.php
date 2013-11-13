@@ -244,6 +244,9 @@ function tpl_filter(&$data)
 		else {
 			if (isset($r['max']) and $r['max'])
 				$attribute = ' maxlength="' . $r['max'] . '"';
+			if($r['noLabel']) {
+				$attribute = ' placeholder="'.$r['caption'].'"';
+			}
 			$html .= '<div class="f_item" id="tr_' . $k . '">
 					'.filterCaptionRender($r).'
 					<div class="f_value"><input type="' . $r['type'] . '" name="' . $k . '" id="' . $k . '" value="' . $r['value'] . '" ' . $attribute . '/></div>

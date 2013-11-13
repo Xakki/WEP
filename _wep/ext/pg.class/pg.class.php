@@ -1046,7 +1046,10 @@ class pg_class extends kernel_extends
 	function sqlCashPG()
 	{
 		if (empty($this->dataCash)) {
-			if (is_array($this->config['rootPage'])) {
+            if (isset($_COOKIE['rootPage']) && isset($this->config['rootPage'][$_COOKIE['rootPage']])) {
+                $this->rootPage = $this->config['rootPage'][$_COOKIE['rootPage']];
+            }
+			elseif (is_array($this->config['rootPage'])) {
 				foreach ($this->config['rootPage'] as $k => $r) {
 					if (strpos($_SERVER['HTTP_HOST'], $k) !== false) {
 						$this->rootPage = $r;
@@ -1054,10 +1057,13 @@ class pg_class extends kernel_extends
 					}
 				}
 				reset($this->config['rootPage']);
-				if (is_null($this->rootPage))
+				if (is_null($this->rootPage)) {
 					$this->rootPage = current($this->config['rootPage']);
-			} else
+                }
+			}
+            else {
 				$this->rootPage = $this->config['rootPage'];
+            }
 
 			$q = 'and ' . $this->ns_config['root'] . '=' . $this->rootPage;
 //			$result = $this->qs('left_key ,right_key', 'WHERE id = '.$this->rootPage);
