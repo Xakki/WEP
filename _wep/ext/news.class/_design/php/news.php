@@ -28,7 +28,8 @@ function tpl_news(&$data)
 			$html .= transformPHP($data['pagenum'], '#pg#pagenum'); // pagenum
 		}
 		$html .= '</div>';
-	} elseif (isset($data[0]) and count($data[0])) {
+	}
+	elseif (isset($data[0]) and count($data[0])) {
 		$r = $data[0];
 		$html .= '<div class="news-item">
 						' . ($r['i_news'] ? '<img src="' . $r['i_news'] . '" class="news-img" alt="' . $r['name'] . '"/>' : '') . '

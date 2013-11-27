@@ -36,7 +36,8 @@ function tpl_paylist($data)
 			if (!$r['status']) {
 				// onclick="return wep.JSWin({\'type\':this});"
 				$r['#status#'] = '<a href="' . $data['#page#'] . '.html?payinfo=' . $r['id'] . '" title="Оплатите до ' . date('Y-m-d H:i', $r['#leftTime#']) . '">' . $r['#status#'] . '</a>';
-			} elseif ($r['status'] == 1 && $r['from_user'] != $r['to_user']) {
+			}
+			elseif ($r['status'] == 1 && $r['from_user'] != $r['to_user']) {
 				if ($data['userId'] == $r['from_user'])
 					$b = bcsub($b, $r['cost'], 2);
 				else
@@ -71,7 +72,8 @@ function tpl_paylist($data)
 		<h3>Итоговый баланс : ' . round($currentBalance, 2) . ' руб.</h3>';
 
 		$html = '<h3>Начальный баланс ' . round(($currentBalance - $b), 2) . ' руб.</h3>' . $html;
-	} else
+	}
+	else
 		$html .= '<div class="error">Операций по счету нет.</div>';
 	return $html;
 }

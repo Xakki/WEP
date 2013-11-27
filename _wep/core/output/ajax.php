@@ -44,7 +44,8 @@ class wepajax
 			$result = json_encode($_tpl, JSON_HEX_QUOT | JSON_HEX_TAG);
 			//JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_FORCE_OBJECT | JSON_UNESCAPED_UNICODE
 			return $result;
-		} else
+		}
+		else
 			return $this->jsonencode($_tpl);
 	}
 
@@ -106,7 +107,8 @@ class wepajax
 	{
 		if (is_int($value)) {
 			return (string)$value;
-		} elseif (is_string($value)) {
+		}
+		elseif (is_string($value)) {
 			$value = str_replace(array('\\', '/', '"', "\r", "\n", "\b", "\f", "\t", '/\"\"/', '<', '>'),
 				array('\\\\', '\/', '\"', '', '', '', '', '', '""', "\\u003C", "\\u003E"), $value);
 			$convmap = array(0x80, 0xFFFF, 0, 0xFFFF);
@@ -115,18 +117,23 @@ class wepajax
 				$mb_char = mb_substr($value, $i, 1);
 				if (mb_ereg("&#(\\d+);", mb_encode_numericentity($mb_char, $convmap, "UTF-8"), $match)) {
 					$result = sprintf("\\u%04x", $match[1]) . $result;
-				} else {
+				}
+				else {
 					$result = $mb_char . $result;
 				}
 			}
 			return '"' . $result . '"';
-		} elseif (is_float($value)) {
+		}
+		elseif (is_float($value)) {
 			return str_replace(",", ".", $value);
-		} elseif (is_null($value)) {
+		}
+		elseif (is_null($value)) {
 			return 'null';
-		} elseif (is_bool($value)) {
+		}
+		elseif (is_bool($value)) {
 			return $value ? 'true' : 'false';
-		} elseif (is_array($value)) {
+		}
+		elseif (is_array($value)) {
 			$with_keys = false;
 			$n = count($value);
 			for ($i = 0, reset($value); $i < $n; $i++, next($value)) {
@@ -135,9 +142,11 @@ class wepajax
 					break;
 				}
 			}
-		} elseif (is_object($value)) {
+		}
+		elseif (is_object($value)) {
 			$with_keys = true;
-		} else {
+		}
+		else {
 			return '';
 		}
 		$result = array();
@@ -146,7 +155,8 @@ class wepajax
 				$result[] = $this->jsonencode((string)$key) . ':' . $this->jsonencode($v);
 			}
 			return '{' . implode(',', $result) . '}';
-		} else {
+		}
+		else {
 			foreach ($value as $key => $v) {
 				$result[] = $this->jsonencode($v);
 			}

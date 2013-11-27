@@ -26,7 +26,8 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 
 if (!_new_class('news', $MODUL)) {
 	$html = '<div style="color:red;">' . date('H:i:s') . ' : Модуль news не установлен</div>';
-} else {
+}
+else {
 	$DATA = array();
 	$DATA[$FUNCPARAM[1]] = $NEWS->fMenu($FUNCPARAM[0]);
 	$html = transformPHP($DATA, $FUNCPARAM[1]);

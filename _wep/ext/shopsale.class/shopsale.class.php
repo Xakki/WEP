@@ -73,7 +73,8 @@ class shopsale_class extends kernel_extends
 				if (isset($r['shop']))
 					$rid[$r['shop']] = $r['shop'];
 			}
-		} elseif (!is_array($rid))
+		}
+		elseif (!is_array($rid))
 			$rid = array($rid => $rid);
 		$prodKey = array_keys($prodList);
 
@@ -88,7 +89,8 @@ class shopsale_class extends kernel_extends
 			if ($dr['product'])
 				$saleProd[$dr['product']] = $dr;
 			elseif ($dr['shop'])
-				$saleShop[$dr['shop']] = $dr; else {
+				$saleShop[$dr['shop']] = $dr;
+			else {
 				$saleDefault = $dr;
 			}
 		}
@@ -97,7 +99,8 @@ class shopsale_class extends kernel_extends
 			if (isset($saleProd[$r['id']]))
 				$r['sale'] = $saleProd[$r['id']];
 			elseif (isset($saleShop[$r['shop']]))
-				$r['sale'] = $saleShop[$r['shop']]; elseif (isset($saleDefault))
+				$r['sale'] = $saleShop[$r['shop']];
+			elseif (isset($saleDefault))
 				$r['sale'] = $saleDefault;
 			if (isset($r['sale'])) {
 				$r['old_cost'] = round($r['cost'], 2);

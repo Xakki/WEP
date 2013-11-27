@@ -38,7 +38,7 @@
 	height: 2em;
 }
 
-.shop-menu ul li.sub>a {
+.shop-menu ul li.sub > a {
 	background: transparent url(../img/bullet.gif) no-repeat scroll 0 50%;
 }
 
@@ -107,7 +107,7 @@
 	display: none;
 }
 
-.shop-menu ul li:hover ul li:hover>a {
+.shop-menu ul li:hover ul li:hover > a {
 	color: #fff;
 }
 

@@ -133,13 +133,15 @@ class session_class extends kernel_extends
 				if ($this->_hash != $tempMD5)
 					$query .= ' ,`data` = "' . $sess_data . '"';
 				$result = $this->SQL->execSQL($query . ' WHERE `sid`="' . $this->SqlEsc($sid) . '"');
-			} else {
+			}
+			else {
 				$result = $this->SQL->execSQL('INSERT INTO ' . $this->tablename . '
 (`sid`,`created`,`modified`,`expired`,`data`,`users_id`,`mf_ipcreate`,`useragent`,`lastpage`,`host`,`host2`) values
 ("' . $sid . '","' . $this->_time . '","' . $this->_time . '","' . $this->expired . '","' . $sess_data . '","' . $userId . '","' . sprintf("%u", ip2long($_SERVER['REMOTE_ADDR'])) . '","' . $this->SqlEsc(substr($_SERVER['HTTP_USER_AGENT'], 0, 250)) . '","' . $lastPage . '","' . $host . '","' . $host2 . '")');
 			}
 
-		} else
+		}
+		else
 			$this->destroy($sid);
 		return (true);
 	}

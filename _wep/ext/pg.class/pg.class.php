@@ -183,17 +183,23 @@ class pg_class extends kernel_extends
 					$data[$row['id']] = $row['name'];
 			}
 			return $data;
-		} elseif ($listname == 'pagemap') {
+		}
+		elseif ($listname == 'pagemap') {
 			return $this->childs['content']->getInc('.map.php', ' --- ');
-		} elseif ($listname == 'realurl') {
+		}
+		elseif ($listname == 'realurl') {
 			return $this->childs['content']->getInc('.realurl.php', ' --- ');
-		} elseif ($listname == 'pagetype') {
+		}
+		elseif ($listname == 'pagetype') {
 			return $this->childs['content']->getInc();
-		} elseif ($listname == 'menu') {
+		}
+		elseif ($listname == 'menu') {
 			return $this->config['menu'];
-		} elseif ($listname == 'content') {
+		}
+		elseif ($listname == 'content') {
 			return $this->childs['content']->getContentList();
-		} else
+		}
+		else
 			return parent::_getlist($listname, $value);
 	}
 
@@ -221,7 +227,8 @@ class pg_class extends kernel_extends
 				$prefix = (PHP_SHLIB_SUFFIX === 'dll') ? 'php_' : '';
 				if (function_exists('dl') and dl($prefix . 'memcache.' . PHP_SHLIB_SUFFIX))
 					$mc_load = true;
-			} else
+			}
+			else
 				$mc_load = true;
 			if ($mc_load) {
 				$this->MEMCACHE = new Memcache;
@@ -230,12 +237,14 @@ class pg_class extends kernel_extends
 				$memstatus = @$this->MEMCACHE->connect($this->_CFG['memcache']['host'], $this->_CFG['memcache']['port']);
 				if ($memstatus) {
 					$this->config['memcachezip'] = ($this->config['memcachezip'] ? MEMCACHE_COMPRESSED : 0);
-				} else {
+				}
+				else {
 					$this->config['memcache'] = -1;
 					$this->MEMCACHE = false;
 				}
 			}
-		} else
+		}
+		else
 			$mc_load = true;
 		return $mc_load;
 	}
@@ -289,26 +298,20 @@ class pg_class extends kernel_extends
 				$pageParamEncode = json_encode($this->pageParam, JSON_HEX_TAG);
 			else
 				$pageParamEncode = json_encode($this->pageParam);
-		} else
-			$pageParamEncode = '[]';
-
-		$getEncode = $_GET;
-		unset($getEncode['pageParam']);
-		unset($getEncode['_php']);
-		if (version_compare(phpversion(), '5.3.0', '>'))
-			$getEncode = @json_encode($getEncode, JSON_HEX_TAG);
+		}
 		else
-			$getEncode = @json_encode($getEncode);
-
+			$pageParamEncode = '[]';
 
 		if ($flag_content == 1) {
 			$this->initHTML();
 
 			if (isset($_REQUEST['PGCID']) and $id = (int)$_REQUEST['PGCID']) {
 				$flag_content = $this->display_inc($id);
-			} elseif (isset($_REQUEST['PGMARKER'])) {
+			}
+			elseif (isset($_REQUEST['PGMARKER'])) {
 				$flag_content = $this->display_content($this->id, $_REQUEST['PGMARKER']);
-			} else {
+			}
+			else {
 				$flag_content = $this->display_page($this->id, true);
 			}
 			$_tpl['title'] = $this->get_caption();
@@ -328,7 +331,8 @@ class pg_class extends kernel_extends
 			if ($_tpl['title'])
 				$_tpl['title'] .= ' - ';
 			$_tpl['title'] .= $this->config['sitename']; //$_SERVER['SERVER_NAME']
-		} else {
+		}
+		else {
 			reset($this->pageinfo['path']);
 			$temp = current($this->pageinfo['path']);
 			$_tpl['name'] = (is_string($temp) ? $temp : $temp['name']);
@@ -338,7 +342,6 @@ class pg_class extends kernel_extends
 			$_tpl['onload'] = '
 			wep.pgId = ' . $this->id . ';
 			wep.pgParam =' . $pageParamEncode . ';
-			wep.pgGet =' . $getEncode . ';
 			wep.siteJS = "' . $this->_CFG['_HREF']['siteJS'] . '";
 			wep.BH = "' . MY_BH . '";
 			wep.DOMAIN = "' . $_SERVER['HTTP_HOST2'] . '";
@@ -367,13 +370,16 @@ class pg_class extends kernel_extends
 				elseif (isset($this->dataCashTree[$fid][$r]) and !$this->dataCashTree[$fid][$r]['alias'] and !$this->id) {
 					$fid = $this->dataCashTree[$fid][$r]['id'];
 					$this->pageParamId[$k] = $fid;
-				} elseif ($this->dataCash[$fid]['alias'] == $r) {
+				}
+				elseif ($this->dataCash[$fid]['alias'] == $r) {
 					$this->IfrootPage = true;
-				} elseif (count($_REQUEST['pageParam']) == 1 and isset($this->dataCash[(int)$r])) {
+				}
+				elseif (count($_REQUEST['pageParam']) == 1 and isset($this->dataCash[(int)$r])) {
 					$href = $this->getHref((int)$r, true);
 					if ($_SERVER['HTTP_REQUEST'] != $href)
 						static_main::redirect($href);
-				} else
+				}
+				else
 					$this->pageParam[] = $r;
 			}
 		}
@@ -394,13 +400,15 @@ class pg_class extends kernel_extends
 			$this->pageinfo = $this->dataCash[$this->id];
 			$this->get_pageinfo();
 			return 401;
-		} elseif ($this->id and isset($this->dataCash[$this->id])) {
+		}
+		elseif ($this->id and isset($this->dataCash[$this->id])) {
 			$this->pageinfo = $this->dataCash[$this->id];
 			if ($this->pageinfo['href'])
 				static_main::redirect($this->pageinfo['href']);
 			$this->get_pageinfo(); //$this->pageinfo['path']
 			return 1;
-		} elseif ($this->config['IfDontHavePage'] and !isset($this->IfDontHavePage)) {
+		}
+		elseif ($this->config['IfDontHavePage'] and !isset($this->IfDontHavePage)) {
 			/*if(is_array($this->config['IfDontHavePage'])) {
 				$this->display_inc(implode(',',$this->config['IfDontHavePage']));
 			}
@@ -432,7 +440,8 @@ class pg_class extends kernel_extends
 				$this->selected[$id] = $id;
 				$this->pageinfo['path'][$id] = $this->dataCash[$parent_id];
 				$parent_id = $this->dataCash[$parent_id]['parent_id'];
-			} else
+			}
+			else
 				break;
 
 		}
@@ -494,7 +503,8 @@ class pg_class extends kernel_extends
 				if (!$this->dataCash[$id]['parent_id'])
 					break;
 				$id = $this->dataCash[$id]['parent_id'];
-			} else
+			}
+			else
 				break;
 		}
 		return $this->dataCash[$id][$attr];
@@ -505,7 +515,8 @@ class pg_class extends kernel_extends
 		header("HTTP/1.0 " . $a);
 		if (isset($this->dataCashTreeAlias[$this->rootPage][$a])) {
 			$this->id = $this->dataCashTreeAlias[$this->rootPage][$a]['id'];
-		} else {
+		}
+		else {
 			$this->id = $this->rootPage;
 			$text = '<h2>' . static_main::m($a) . '</h2>';
 		}
@@ -676,7 +687,8 @@ class pg_class extends kernel_extends
 				if (!isset($_COOKIE[$temp])) {
 					_setcookie($temp, 1, time() + 1);
 					static_main::redirect($rowPG['href']);
-				} else {
+				}
+				else {
 					trigger_error('На этой странице ' . $this->id . '[' . $rowPG['id'] . '] обнаружена циклическая переадресация.Веб-страница привела к избыточному количеству переадресаций.', E_USER_WARNING);
 				}
 			}
@@ -714,7 +726,8 @@ class pg_class extends kernel_extends
 					$_tpl[$rowPG['marker']] .= '<!--content' . $rowPG['id'] . ' begin-->' . $_tempMarker . '<!--content' . $rowPG['id'] . ' end-->';
 				else
 					$_tpl[$rowPG['marker']] .= $_tempMarker;
-			} else {
+			}
+			else {
 				// Если отключено автоматическое подключение стилей, то ставим метку об этом
 				if (!$rowPG['autocss']) {
 					$_CFG['allowAutoIncludeCss'] = false;
@@ -731,7 +744,8 @@ class pg_class extends kernel_extends
 					$rowPG['memcache'] = 0;
 				// Если в контене 0, и есть в конфиг-кеш
 				elseif ($rowPG['memcache'] == 0 and $this->config['memcache'] > 0)
-					$rowPG['memcache'] = $this->config['memcache']; elseif ($rowPG['memcache'] < 0)
+					$rowPG['memcache'] = $this->config['memcache'];
+				elseif ($rowPG['memcache'] < 0)
 					$rowPG['memcache'] = 0;
 
 				$MemFlag = false;
@@ -742,14 +756,17 @@ class pg_class extends kernel_extends
 					if ($rowPG['memcache_solt'] == 1) {
 						if (isset($_SESSION['user']['id']))
 							$hashkeyPG = $_SESSION['user']['id'];
-					} elseif ($rowPG['memcache_solt'] == 2)
-						$hashkeyPG = session_id(); elseif ($rowPG['memcache_solt'] == 3) {
+					}
+					elseif ($rowPG['memcache_solt'] == 2)
+						$hashkeyPG = session_id();
+					elseif ($rowPG['memcache_solt'] == 3) {
 						$tc = '';
 						if (count($_COOKIE))
 							foreach ($_COOKIE as $ck => $cr)
 								$tc .= $cr;
 						$hashkeyPG = md5($tc);
-					} elseif ($rowPG['memcache_solt'] == 4)
+					}
+					elseif ($rowPG['memcache_solt'] == 4)
 						$hashkeyPG = $_SERVER['REMOTE_ADDR'];
 					$hashkeyPG .= '@' . $rowPG['id'] . '@' . $_SERVER['QUERY_STRING'] . $_SERVER['HTTP_HOST'];
 					if (_strlen($hashkeyPG) > 255)
@@ -774,7 +791,8 @@ class pg_class extends kernel_extends
 										$_tpl[$tk] = $tr;
 									else
 										$_tpl[$tk] += $tr;
-								} else {
+								}
+								else {
 									if (!isset($_tpl[$tk]))
 										$_tpl[$tk] = '';
 									$_tpl[$tk] .= $tr;
@@ -824,7 +842,8 @@ class pg_class extends kernel_extends
 						else
 							$_tpl[$rowPG['marker']] .= $flagPG;
 						$flagPG = 1;
-					} elseif (is_int($flagPG) and  $flagPG >= 100 and $flagPG < 600) {
+					}
+					elseif (is_int($flagPG) and  $flagPG >= 100 and $flagPG < 600) {
 						// Если INC возвращает число - то выводим HTTP код ошибки
 						$this->displayHttpCode($flagPG);
 						$MemFlag = false;
@@ -840,7 +859,8 @@ class pg_class extends kernel_extends
 										$temp_tpl[$tk] = $tr;
 									else
 										$temp_tpl[$tk] += $tr;
-								} else {
+								}
+								else {
 									if (!isset($temp_tpl[$tk]))
 										$temp_tpl[$tk] = '';
 									$temp_tpl[$tk] .= $tr;
@@ -885,7 +905,8 @@ class pg_class extends kernel_extends
 		$DATA_PG = array();
 		if ($flagPG == 1) {
 			$tempPG = & $this->dataCash;
-		} else {
+		}
+		else {
 			if (!$startPG)
 				$startPG = $this->rootPage;
 			elseif (strpos($startPG, '#') !== false) {
@@ -912,7 +933,8 @@ class pg_class extends kernel_extends
 					if (!$rowPG['onmap']) {
 						continue;
 					}
-				} elseif ($onmenuPG != '' and !isset($rowPG['onmenu'][$onmenuPG])) {
+				}
+				elseif ($onmenuPG != '' and !isset($rowPG['onmenu'][$onmenuPG])) {
 					continue;
 				}
 
@@ -921,12 +943,14 @@ class pg_class extends kernel_extends
 				if ($this->id == $keyPG)
 					$selPG = 2;
 				elseif (is_array($this->selected) and isset($this->selected[$keyPG]))
-					$selPG = 1; else
+					$selPG = 1;
+				else
 					$selPG = 0;
 
 				if ($rowPG['name_in_menu'] == '') {
 					$name = $rowPG['name'];
-				} else {
+				}
+				else {
 					$name = $rowPG['name_in_menu'];
 				}
 
@@ -952,7 +976,8 @@ class pg_class extends kernel_extends
 						else
 							$DATA_PG[$keyPG]['#item#'] = $tempinc;
 					}
-				} elseif ($rowPG['pagemenu']) {
+				}
+				elseif ($rowPG['pagemenu']) {
 					$mapPG = explode(':', $rowPG['pagemenu']);
 					if (count($mapPG) == 2 and file_exists($this->_enum['inc'][$mapPG[0]]['path'] . $mapPG[1] . '.map.php')) {
 						$tempinc = include($this->_enum['inc'][$mapPG[0]]['path'] . $mapPG[1] . '.map.php');
@@ -995,12 +1020,14 @@ class pg_class extends kernel_extends
 				if ($this->id == $keyPG)
 					$selPG = 2;
 				elseif (is_array($this->selected) and isset($this->selected[$keyPG]))
-					$selPG = 1; else
+					$selPG = 1;
+				else
 					$selPG = 0;
 
 				if ($rowPG['name_in_menu'] == '') {
 					$name = $rowPG['name'];
-				} else {
+				}
+				else {
 					$name = $rowPG['name_in_menu'];
 				}
 
@@ -1045,9 +1072,9 @@ class pg_class extends kernel_extends
 	function sqlCashPG()
 	{
 		if (empty($this->dataCash)) {
-            if (isset($_COOKIE['rootPage']) && isset($this->config['rootPage'][$_COOKIE['rootPage']])) {
-                $this->rootPage = $this->config['rootPage'][$_COOKIE['rootPage']];
-            }
+			if (isset($_COOKIE['rootPage']) && isset($this->config['rootPage'][$_COOKIE['rootPage']])) {
+				$this->rootPage = $this->config['rootPage'][$_COOKIE['rootPage']];
+			}
 			elseif (is_array($this->config['rootPage'])) {
 				foreach ($this->config['rootPage'] as $k => $r) {
 					if (strpos($_SERVER['HTTP_HOST'], $k) !== false) {
@@ -1058,11 +1085,11 @@ class pg_class extends kernel_extends
 				reset($this->config['rootPage']);
 				if (is_null($this->rootPage)) {
 					$this->rootPage = current($this->config['rootPage']);
-                }
+				}
 			}
-            else {
+			else {
 				$this->rootPage = $this->config['rootPage'];
-            }
+			}
 
 			$q = 'and ' . $this->ns_config['root'] . '=' . $this->rootPage;
 //			$result = $this->qs('left_key ,right_key', 'WHERE id = '.$this->rootPage);
@@ -1083,7 +1110,8 @@ class pg_class extends kernel_extends
 					$this->dataCashTree[$row['parent_id']][$row['id']] = & $this->dataCash[$row['id']];
 					$this->dataCashTreeAlias[$row['parent_id']][$row['alias']] = & $this->dataCash[$row['id']];
 				}
-			} else {
+			}
+			else {
 				static_main::redirect(ADMIN_BH . '/install');
 			}
 		}
@@ -1115,7 +1143,8 @@ class pg_class extends kernel_extends
 			$href = $this->dataCash[$id]['href'];
 			if (strstr($href, 'http://'))
 				$href = '_redirect.php?url=' . base64encode($href);
-		} else {
+		}
+		else {
 			$href = $id;
 			if (isset($this->dataCash[$id])) {
 				if ($this->dataCash[$id]['alias'])
@@ -1155,7 +1184,8 @@ class pg_class extends kernel_extends
 					if (!isset($ugroup['user']) and !isset($ugroup[$_SESSION['user']['owner_id']])) {
 						return false;
 					}
-				} elseif (!isset($ugroup['anonim'])) {
+				}
+				elseif (!isset($ugroup['anonim'])) {
 					return false;
 				}
 			}
@@ -1208,7 +1238,8 @@ class pg_class extends kernel_extends
 		$inc = explode(':', $typePG);
 		if (count($inc) == 2) {
 			$file = $this->_enum['inc'][$inc[0]]['path'] . $inc[1] . '.inc.php';
-		} else {
+		}
+		else {
 			$file = $this->_CFG['_PATH']['inc'] . $typePG . '.inc.php';
 			if (!file_exists($file))
 				$file = $this->_CFG['_PATH']['wep_inc'] . $typePG . '.inc.php';
@@ -1282,7 +1313,8 @@ class pg_class extends kernel_extends
 		if (strpos($tpl, '#ext#') !== false and $dir) {
 			$tpl = str_replace('#ext#', '', $tpl);
 			$tpl2 = array($tpl, $dir . '/templates/');
-		} else
+		}
+		else
 			$tpl2 = $tpl;
 		return $tpl2;
 	}

@@ -45,7 +45,8 @@ if (isset($DATA[$FUNCPARAM[0]]['form']['_info']))
 if ($flag == 1) {
 	setTemplate("waction");
 	$html = transformPHP($DATA[$FUNCPARAM[0]], '#pg#messages');
-} else
+}
+else
 	$html = transformPHP($DATA, $FUNCPARAM[0]);
 return $html;
 

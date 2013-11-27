@@ -325,7 +325,8 @@ class payyandex_class extends kernel_extends
 			$result = parse_url($html['info']['redirect_url']);
 			$result = explode('=', $result['query']);
 			return array_pop($result);
-		} else {
+		}
+		else {
 			// triger errror
 			return false;
 		}
@@ -502,7 +503,8 @@ class payyandex_class extends kernel_extends
 					//$upd['money_source'] = 'wallet';
 					$this->_update($upd);
 					$this->owner->payTransaction($this->data[$this->id]['owner_id'], PAY_PAID);
-				} else {
+				}
+				else {
 					$upd = array();
 					$upd['status'] = '';
 					$upd['error'] = 'small_money';

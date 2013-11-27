@@ -214,7 +214,7 @@
 	margin: 0 10px;
 }
 
-.proditem .prodBlock>div:last-child {
+.proditem .prodBlock > div:last-child {
 	border: 0 solid #A6A6A6;
 	-moz-border-radius: 0 0 5px 5px;
 	-webkit-border-radius: 0 0 5px 5px;
@@ -662,7 +662,7 @@ form.filter .f_int input {
 	width: 4.7em;
 }
 
-form.filter .f_value  input:hover {
+form.filter .f_value input:hover {
 	border: 1px solid green;
 }
 

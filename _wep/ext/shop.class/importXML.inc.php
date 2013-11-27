@@ -35,8 +35,10 @@ $fields_form = $mess = array();
 if (!_new_class('shop', $SHOP))
 	$mess[] = static_main::am('error', 'Ошибка подключения модуля');
 elseif (!static_main::_prmModul($SHOP->_cl, array(5, 7)) and !isset($_GET['secret']))
-	$mess[] = static_main::am('error', 'denied', $SHOP); elseif (isset($_GET['secret']) and ($_GET['secret'] != $rowPG['pg'] or !$rowPG['pg']))
-	$mess[] = static_main::am('error', 'Не верный код. Код в настройках данного контролера ,в поле `Текст`'); else {
+	$mess[] = static_main::am('error', 'denied', $SHOP);
+elseif (isset($_GET['secret']) and ($_GET['secret'] != $rowPG['pg'] or !$rowPG['pg']))
+	$mess[] = static_main::am('error', 'Не верный код. Код в настройках данного контролера ,в поле `Текст`');
+else {
 	if (isset($_POST['sbmt'])) {
 		$mess = procesedPostDataImport1C();
 	}
@@ -139,7 +141,8 @@ function procesedPostDataImport1C()
 								$xml = $zipDir . '/' . $dfile;
 						}
 					}
-				} else
+				}
+				else
 					$xml = $file;
 
 				// ИМпорт XML
@@ -188,11 +191,14 @@ function procesedPostDataImport1C()
 					//TODO - нарисовать таблицу для того чтобы задать соответствие полей из фаила, полям из БД
 					//TODO - СПИСОК доступных полей БД здается в настройках INC , проблемка в том что поля мы задаем позже
 					$mess[] = static_main::am('ok', "Готово");
-				} else
+				}
+				else
 					$mess[] = static_main::am('error', "XML фаил не найден");
-			} else
+			}
+			else
 				$mess[] = static_main::am('error', 'Error in move_uploaded_file'); // TODO Trigerr
-		} else
+		}
+		else
 			$mess[] = static_main::am('error', '_err_4' . $_FILES[$fieldFile]['error'], array($_FILES[$fieldFile]['name']));
 	}
 

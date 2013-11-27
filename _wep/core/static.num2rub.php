@@ -43,7 +43,7 @@ class static_num2rub
 		$word[] = self::dvig($kop, 'k', false);
 		foreach ($rub as $key => $value) {
 			if (intval($value) > 0 || $key == 0) //подсказал skrabus
-			$word[] = self::dvig($value, $key);
+				$word[] = self::dvig($value, $key);
 		}
 
 		$word = array_reverse($word);
@@ -69,7 +69,8 @@ class static_num2rub
 		if (1 == $dig[1]) {
 			$num_word = ($do_word) ? $words[$dig[0]][1] : $dig[1] . $dig[0];
 			$word = $rank[2];
-		} else {
+		}
+		else {
 			//$rank[3] - famale
 			if ($dig[0] != 1 && $dig[0] != 2) $rank['f'] = '';
 			$num_word = ($do_word)

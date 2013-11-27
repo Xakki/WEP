@@ -40,7 +40,8 @@ class loginza_class extends kernel_extends
 		$authdata = json_decode($authdata, TRUE);
 		if (isset($authdata['error_type'])) {
 			$mess[] = array('name' => 'error', 'value' => $authdata['error_type'] . ':' . $authdata['error_message']);
-		} else {
+		}
+		else {
 			$dt['loginza_token'] = $_POST['token'];
 			$dt['loginza_provider'] = $authdata['provider'];
 			$dt['loginza_login'] = md5($authdata['identity']);
@@ -48,7 +49,8 @@ class loginza_class extends kernel_extends
 			if ($authdata['provider'] == 'http://openid.yandex.ru/server/') {
 				$dt[$USERS->mf_namefields] = substr(substr($authdata['identity'], 24), 0, -1);
 				$dt['email'] = substr(substr($authdata['identity'], 24), 0, -1) . '@ya.ru';
-			} elseif ($authdata['provider'] == 'http://mail.ru/') {
+			}
+			elseif ($authdata['provider'] == 'http://mail.ru/') {
 				$dt[$USERS->mf_namefields] = $authdata['name']['first_name'];
 				$temp = substr(substr($authdata['identity'], 18), 0, -1);
 				$temp = explode('/', $temp);
@@ -65,7 +67,8 @@ class loginza_class extends kernel_extends
 						$dt[$USERS->mf_namefields] = $authdata['name']['full_name'];
 					elseif (isset($authdata['name']['first_name']) and $authdata['name']['first_name'])
 						$dt[$USERS->mf_namefields] = $authdata['name']['first_name'];
-				} else
+				}
+				else
 					$dt[$USERS->mf_namefields] = $authdata['name'];
 			}
 		}
@@ -84,17 +87,21 @@ class loginza_class extends kernel_extends
 				$data = $data[0];
 				if (!$data['active']) {
 					$mess[] = array('name' => 'error', 'value' => 'Ваш аккуант отключён администратором.');
-				} elseif (!$data['gact']) {
+				}
+				elseif (!$data['gact']) {
 					$mess[] = array('name' => 'error', 'value' => 'Ваша группа отключена администратором.');
-				} else {
+				}
+				else {
 					$flag = true;
 					$USERS->id = $data['id'];
 				}
-			} elseif (!$regmeIdGroup and !isset($_GET['regme'])) {
+			}
+			elseif (!$regmeIdGroup and !isset($_GET['regme'])) {
 				global $PGLIST;
 				session_go(1);
 				$_SESSION['loginza'] = $dt;
-			} else {
+			}
+			else {
 				if (!$dt[$USERS->mf_namefields]) $dt[$USERS->mf_namefields] = $dt['email'];
 				$dt['owner_id'] = $regmeIdGroup;
 				list($flag, $mess) = $this->loginzaReg($dt);
@@ -127,10 +134,12 @@ class loginza_class extends kernel_extends
 			$identity = '';
 			if (isset($temp['nickname'])) {
 				$identity = preg_replace("/[^0-9A-Za-z]+/", '', $temp['nickname']);
-			} elseif ($data['email']) {
+			}
+			elseif ($data['email']) {
 				$identity = explode('@', $data['email']);
 				$identity = preg_replace("/[^0-9A-Za-z]+/", '', $identity[0]);
-			} else
+			}
+			else
 				$identity = preg_replace("/[^0-9A-Za-z]+/", '', $temp['identity']);
 			$dataquery = $USERS->_query('id', 'Where ' . $USERS->fn_login . ' LIKE "' . $identity . '%"', $USERS->fn_login);
 			if (count($dataquery)) {
@@ -168,7 +177,8 @@ class loginza_class extends kernel_extends
 			if (!$MAIL->Send($datamail)) {
 				$mess[] = static_main::am('error', 'mailerr');
 			}
-		} else
+		}
+		else
 			$mess[] = static_main::am('error', 'regerr');
 		return array($flag, $mess);
 	}

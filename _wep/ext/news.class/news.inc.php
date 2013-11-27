@@ -35,10 +35,12 @@ if (isset($this->pageParam[0]) and $this->pageParam[0] == 'tags') {
 	// TODO : теги
 	$DATA = $NEWS->fItem((int)$this->pageParam[0]);
 	$this->pageinfo['path'][] = 'Теги';
-} elseif (isset($this->pageParam[0])) {
+}
+elseif (isset($this->pageParam[0])) {
 	$DATA = $NEWS->fItem((int)$this->pageParam[0]);
 	$this->pageinfo['path'][] = $DATA[0]['name'];
-} else {
+}
+else {
 	$NEWS->messages_on_page = $FUNCPARAM[1];
 	$NEWS->numlist = $FUNCPARAM[2];
 	$DATA = $NEWS->fList(array('category' => $FUNCPARAM[3]));

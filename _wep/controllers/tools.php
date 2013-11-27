@@ -87,7 +87,8 @@ function tools_docron()
 		$ttw = getmicrotime();
 		include($_CFG['_PATH']['controllers'] . '/cron.php');
 		return '--Крон выполнен, время обработки задач =  ' . (getmicrotime() - $ttw) . 'mc -----';
-	} else {
+	}
+	else {
 		return '<form method="post"><input type="submit" name="sbmt" value="Выполнить"/></form>';
 	}
 }
@@ -174,8 +175,10 @@ function tools_cron()
 			$VAL = $_CFG['cron'][$_GET['_id']];
 			$VAL['last_time'] = $ini_arr['last_time' . $_GET['_id']];
 			$DATA['path'][$FP . '_type=add'] = 'Правка';
-		} elseif (isset($_POST))
-			$VAL = $_POST; else
+		}
+		elseif (isset($_POST))
+			$VAL = $_POST;
+		else
 			$VAL = array();
 
 		$FORM['time'] = array(
@@ -248,7 +251,8 @@ function tools_cron()
 		);
 		$result = transformPHP($DATA, 'path');
 		$result .= transformPHP($FORM, 'formcreat');
-	} elseif (isset($_GET['_id']) and $_GET['_type'] == 'del') {
+	}
+	elseif (isset($_GET['_id']) and $_GET['_type'] == 'del') {
 		$NEWDATA = array();
 		$NEWDATA['cron'] = $_CFG['cron'];
 		unset($NEWDATA['cron'][$_GET['_id']]);
@@ -258,7 +262,8 @@ function tools_cron()
 		else
 			$_SESSION['messtool'] = array('name' => 'ok', 'value' => 'Задание успешно Удалено.');
 		static_main::redirect(key($DATA['path']));
-	} elseif (isset($_GET['_id']) and ($_GET['_type'] == 'act' or $_GET['_type'] == 'dis')) {
+	}
+	elseif (isset($_GET['_id']) and ($_GET['_type'] == 'act' or $_GET['_type'] == 'dis')) {
 		$act = ($_GET['_type'] == 'act' ? 1 : 0);
 		$NEWDATA = array();
 		$NEWDATA['cron'] = $_CFG['cron'];
@@ -269,7 +274,8 @@ function tools_cron()
 		else
 			$_SESSION['messtool'] = array('name' => 'ok', 'value' => 'Задание успешно ' . ($act ? 'включено' : 'отключено') . '.');
 		static_main::redirect(key($DATA['path']));
-	} else {
+	}
+	else {
 		$DATA['messages'][] = static_main::am('info', 'Пропишите в cron <div>*/1 * * * *&#160;&#160;&#160;www-data&#160;&#160;&#160;php ' . $_CFG['_PATH']['controllers'] . 'cron.php</div>');
 		$DATA['data'] = array(
 			'thitem' => array(
@@ -323,7 +329,8 @@ function tools_worktime()
 		if ($_CFG['site']['worktime']) {
 			$NEWDATA['site']['worktime'] = false;
 			$result = '<h3 style="color:gray;">Режим "технические работы" - отключён</h3>';
-		} else {
+		}
+		else {
 			$NEWDATA['site']['worktime'] = true;
 			$NEWDATA['site']['work_title'] = $_POST['work_title'];
 			$NEWDATA['site']['work_text'] = $_POST['work_text'];
@@ -335,7 +342,8 @@ function tools_worktime()
 	}
 	if ($_CFG['site']['worktime'] or (count($_POST) and $fl and !$_CFG['site']['worktime'])) {
 		$result = 'Отключить режим';
-	} else {
+	}
+	else {
 		$result = 'Включить режим';
 	}
 	$DATA = array();
@@ -399,7 +407,8 @@ function tools_sendReg()
 				if ($MAIL->Send($datamail)) {
 					$flag = 1;
 					$arr['mess'] = $_MESS['regok'];
-				} else {
+				}
+				else {
 					$UGROUP->child['user']->_delete();
 					$arr['mess'] = $_MESS['mailerr'] . $_MESS['regerr'];
 				}
@@ -475,7 +484,8 @@ function memcachstatus()
 		$prefix = (PHP_SHLIB_SUFFIX === 'dll') ? 'php_' : '';
 		if (function_exists('dl') and dl($prefix . 'memcache.' . PHP_SHLIB_SUFFIX))
 			$mc_load = true;
-	} else
+	}
+	else
 		$mc_load = true;
 
 	if (!$mc_load)
@@ -515,7 +525,8 @@ function memcachstatus()
 		$html .= "<tr><td>Number of bytes this server is allowed to use for storage.</td><td>" . $MBSize . " Mega Bytes</td></tr>";
 		$html .= "<tr><td>Number of valid items removed from cache to free memory for new items.</td><td>" . $status["evictions"] . "</td></tr>";
 		$html .= "</table>";
-	} else
+	}
+	else
 		$html .= '<h2>MEMCACHe serve is down!</h2>';
 	return $html;
 }
@@ -611,7 +622,8 @@ foreach ($dataF as $kk => $rr) {
 		$html .= ' <fieldset><legend>Результат выполнения функции ' . $kk . '()</legend>';
 		eval('$html .= ' . $kk . '();');
 		$html .= '</fieldset></li>';
-	} else
+	}
+	else
 		$html .= '<li><a href="' . ADMIN_BH . '?_view=list&_modul=_tools&tfunc=' . $kk . '">' . $rr . '</a></li>';
 }
 $html .= '</ul>';

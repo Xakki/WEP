@@ -51,7 +51,8 @@ if (_new_class($FUNCPARAM[0], $MODUL)) {
 	list($DATA, $this->formFlag) = $MODUL->_UpdItemModul(array('showform' => 1), $argForm);
 
 	$html = transformPHP($DATA, '#pg#formcreat');
-} else
+}
+else
 	$html = '<error>Ошибка подключения модуля</error>';
 
 return $html;

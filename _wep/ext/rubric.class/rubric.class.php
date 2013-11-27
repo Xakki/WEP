@@ -111,7 +111,8 @@ class rubric_class extends kernel_extends
 					if (isset($this->data2[$row['parent_id']])) {
 						$tempid = $this->data2[$row['parent_id']]['parent_id'];
 						$this->data3[$tempid] [$row['parent_id']] ['cnt'] += (int)$row['cnt'];
-					} else
+					}
+					else
 						$ar_last[] = $row;
 				}
 				$this->data_path[$row['path']] = $row['id'];
@@ -155,7 +156,8 @@ class rubric_class extends kernel_extends
 			if (count($data))
 				return $data[0][$field];
 			return '';
-		} else {
+		}
+		else {
 			if (count($data))
 				return $data[0];
 			return array();
@@ -223,10 +225,14 @@ class rubricparam_class extends kernel_extends
 		if ($type < 10)
 			return 'checkbox';
 		elseif ($type < 30)
-			return 'int'; elseif ($type < 50)
-			return 'int'; elseif ($type < 70)
-			return 'list'; elseif ($type < 80)
-			return 'text'; else
+			return 'int';
+		elseif ($type < 50)
+			return 'int';
+		elseif ($type < 70)
+			return 'list';
+		elseif ($type < 80)
+			return 'text';
+		else
 			return 'decimal';
 	}
 

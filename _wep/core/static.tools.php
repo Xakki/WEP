@@ -90,14 +90,17 @@ class static_tools
 			if (isset($_POST['sbmt'])) {
 				if (!$MODUL->SQL->_tableCreate($MODUL)) {
 					$rDATA['Создание таблицы']['@mess'][] = array('error', 'Для модуля `' . $MODUL->caption . '` не удалось создать таблицу.');
-				} else {
+				}
+				else {
 					if (!self::_insertDefault($MODUL)) {
 						$MODUL->SQL->_tableDelete($MODUL->tablename);
 						$rDATA['Создание таблицы']['@mess'][] = array('error', 'Для модуля `' . $MODUL->caption . '` не удалось записать дефолтные данные, и поэтому таблица не будет создана.');
-					} else
+					}
+					else
 						$rDATA['Создание таблицы']['@mess'][] = array('notice', 'Для модуля `' . $MODUL->caption . '` успешно создана таблица.');
 				}
-			} else {
+			}
+			else {
 				$rDATA['Создание таблицы']['@mess'][] = static_main::am('alert', '_install_info', array($MODUL->_cl . '[' . $MODUL->tablename . ']'), $MODUL);
 			}
 			return $rDATA;
@@ -119,9 +122,12 @@ class static_tools
 					$rDATA[$fldname]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` CHANGE `' . $fldname . '` ' . $newFields;
 					$rDATA[$fldname]['@oldquery'] = $currentFields;
 				}
-			} elseif (isset($MODUL->attaches[$fldname]))
-				$MODUL->attaches[$fldname]['inst'] = '1'; elseif (isset($MODUL->memos[$fldname]))
-				$MODUL->memos[$fldname]['inst'] = '1'; else
+			}
+			elseif (isset($MODUL->attaches[$fldname]))
+				$MODUL->attaches[$fldname]['inst'] = '1';
+			elseif (isset($MODUL->memos[$fldname]))
+				$MODUL->memos[$fldname]['inst'] = '1';
+			else
 				$rDATA[$fldname]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` DROP `' . $fldname . '`';
 		}
 
@@ -165,7 +171,8 @@ class static_tools
 						$rDATA[$k]['@index'] .= ', ';
 					if (is_array($r)) $r = implode('`,`', $r);
 					$rDATA[$k]['@index'] .= ' ' . $tmp . ' ADD UNIQUE KEY `' . $k . '` (`' . $r . '`)';
-				} else {
+				}
+				else {
 					unset($uniqlist[$k]);
 				}
 			}
@@ -199,7 +206,8 @@ class static_tools
 						$rDATA[$k]['@index'] .= ', ';
 					if (is_array($r)) $r = implode('`,`', $r);
 					$rDATA[$k]['@index'] .= ' add index `' . $k . '` (`' . $r . '`)';
-				} else {
+				}
+				else {
 					unset($indexlist[$k]);
 				}
 			}
@@ -289,7 +297,8 @@ class static_tools
 			static_tools::_reinstall($_this);
 			$RESULT['messages'][] = static_main::am('ok', '_reinstall_ok', $_this);
 			$RESULT['reloadPage'] = true;
-		} else {
+		}
+		else {
 			$fields_form['_info'] = array(
 				'type' => 'info',
 				'caption' => static_main::m('_reinstall_info', $_this));
@@ -313,11 +322,13 @@ class static_tools
 
 		if (!static_main::_prmModul($_this->_cl, array(13))) {
 			$RESULT['messages'][] = static_main::am('error', 'denied', $_this);
-		} elseif (!count($_this->config_form)) {
+		}
+		elseif (!count($_this->config_form)) {
 			$fields_form['_info'] = array(
 				'type' => 'info',
 				'caption' => static_main::m('_configno', $_this));
-		} else {
+		}
+		else {
 			foreach ($_this->config as $k => &$r) {
 				if (is_array($r) and isset($_this->config_form[$k]) and !isset($_this->config_form[$k]['multiple'])) {
 					/*$temp = array();
@@ -348,9 +359,11 @@ class static_tools
 					$RESULT['messages'][] = static_main::am('ok', 'update', $_this);
 					static_tools::_save_config($config, $_this->_file_cfg);
 					$RESULT['reloadPage'] = true; // Это явный костыль, но включать мозг у меня нет времени, когда нибудь что нибудь придумаю
-				} else
+				}
+				else
 					$RESULT['messages'] = array_merge($RESULT['messages'], $arr['mess']);
-			} else {
+			}
+			else {
 				$fields_form['_info'] = array('type' => 'info', 'css' => 'caption', 'caption' => static_main::m('_config'));
 				foreach ($_this->config_form as $k => $r) {
 					if (isset($_this->config[$k])) {
@@ -384,7 +397,8 @@ class static_tools
 		if (!static_main::_prmModul($_this->_cl, array(5, 7)))
 			$mess[] = static_main::am('error', 'denied', $_this);
 		elseif (!isset($_COOKIE['SuperGroup'][$_this->_cl]) or !count($_COOKIE['SuperGroup'][$_this->_cl]))
-			$mess[] = static_main::am('alert', 'Нет выбранных элементов', $_this); elseif (count($_POST)) {
+			$mess[] = static_main::am('alert', 'Нет выбранных элементов', $_this);
+		elseif (count($_POST)) {
 
 			$type = '';
 			if (isset($_POST['sbmt_on'])) {
@@ -392,20 +406,24 @@ class static_tools
 				$_this->id = array_keys($_COOKIE['SuperGroup'][$_this->_cl]);
 				$_this->_update(array('active' => 1));
 				$mess[] = static_main::am('ok', 'Успешно включено', $_this);
-			} elseif (isset($_POST['sbmt_off'])) {
+			}
+			elseif (isset($_POST['sbmt_off'])) {
 				$type = 'off';
 				$_this->id = array_keys($_COOKIE['SuperGroup'][$_this->_cl]);
 				$_this->_update(array('active' => 0));
 				$mess[] = static_main::am('ok', 'Успешно отключено', $_this);
-			} elseif (isset($_POST['sbmt_del'])) {
+			}
+			elseif (isset($_POST['sbmt_del'])) {
 				$type = 'del';
 				$_this->id = array_keys($_COOKIE['SuperGroup'][$_this->_cl]);
 				$_this->_delete();
 				$mess[] = static_main::am('ok', 'Успешно удалено', $_this);
-			} elseif (isset($_POST['sbmt_clear'])) {
+			}
+			elseif (isset($_POST['sbmt_clear'])) {
 				$type = 'clear';
 				$mess[] = static_main::am('ok', 'Список чист', $_this);
-			} elseif (isset($_POST['sbmt_copy'])) {
+			}
+			elseif (isset($_POST['sbmt_copy'])) {
 				$type = 'copy';
 				$prevId = $_this->id;
 				$_this->id = array_keys($_COOKIE['SuperGroup'][$_this->_cl]);
@@ -420,7 +438,8 @@ class static_tools
 				$_tpl['onload'] .= '$("span.wepSuperGroupCount").text(0).parent().hide("slow");wep.SuperGroupClear("' . $type . '");';
 				$_tpl['onload'] .= '$("#tools_block").hide();';
 			}
-		} else {
+		}
+		else {
 			$fields_form['_info'] = array(
 				'type' => 'info',
 				'caption' => '<h2 style="text-align:center;">' . $_this->caption . '</h2><h3 style="text-align:center;">Выбранно элементов : ' . count($_COOKIE['SuperGroup'][$_this->_cl]) . '</h3>');
@@ -563,11 +582,13 @@ class static_tools
 				}
 				$html .= '</select>';
 				return $html;
-			} else {
+			}
+			else {
 				$html .= '<h2>' . $_GET['xtype'] . '</h2>';
 				$xList = $MODUL->mf_statistic['X'][$_GET['xtype']];
 			}
-		} else {
+		}
+		else {
 			$xList = $MODUL->mf_statistic['X'];
 		}
 
@@ -604,7 +625,8 @@ class static_tools
 				if ($minX == 0 or $row['X'] < $minX)
 					$minX = $row['X'];
 			}
-		} else
+		}
+		else
 			return array($result->err, '');
 
 		$stepY = round($maxY, -1) / 10;
@@ -691,7 +713,8 @@ class static_tools
 								}
 							}
 						}
-					} else {
+					}
+					else {
 						$emptyId[$key][] = $row['id'];
 					}
 				}
@@ -727,10 +750,12 @@ class static_tools
 		if ($MODUL === false) {
 			$rDATA['Ошибка']['@mess'][] = array('error', 'Ошибка инициализации модуля `' . $Mid . '`');
 			return array($Mid => $rDATA);
-		} elseif (!$MODUL->tablename) {
+		}
+		elseif (!$MODUL->tablename) {
 			$rDATA['Ахтунг']['@mess'][] = array('alert', 'Модуль `' . $MODUL->caption . '`[' . $Mid . '] не использует базу данных.');
 			return array($Mid => $rDATA);
-		} elseif (!isset($MODULPRM->data[$Mid]) or $MODULPRM->data[$Mid][$MODULPRM->mf_actctrl]) {
+		}
+		elseif (!isset($MODULPRM->data[$Mid]) or $MODULPRM->data[$Mid][$MODULPRM->mf_actctrl]) {
 			// синонимы для типов полей
 			$temp = self::_checkTable($MODUL);
 			if ($temp and count($temp))
@@ -775,7 +800,8 @@ class static_tools
 		$fc = '';
 		if ($start == '' and $end == '') {
 			$fc = file_get_contents($file);
-		} else {
+		}
+		else {
 			$fc = false;
 			$file = file($file);
 			foreach ($file as $k => $r) {
@@ -859,13 +885,15 @@ class static_tools
 						$flag = true;
 						$newr = '\'' . addcslashes($newr, '\'') . '\'';
 					}
-				} elseif (is_array($newr)) {
+				}
+				elseif (is_array($newr)) {
 					if ($fl or $newr !== $defr) { // or !is_array($defr)
 						$flag = true;
 						$newr = str_replace(array("\n", "\t", "\r", '   ', '  '), array('', '', '', ' ', ' '), var_export($newr, true));
 					}
 
-				} else {
+				}
+				else {
 					$newr = (int)$newr;
 					if ($fl or $newr != $defr)
 						$flag = true;
@@ -880,7 +908,8 @@ class static_tools
 		//Записать в конфиг все данные которые отличаются от данных по умолчанию
 		if (!file_put_contents($file, $putFile)) {
 			$mess[] = array('error', 'Ошибка записи настроек. Нет доступа к фаилу');
-		} else {
+		}
+		else {
 			$fl = true;
 			if (isset($SetDataCFG['sql']))
 				$mess[] = array('ok', 'Подключение к БД успешно.');
@@ -938,7 +967,8 @@ class static_tools
 			}
 			if (!mkdir($dir, $_CFG['wep']['chmod'], true))
 				return static_main::log('error', 'Cannot create directory <b>' . $dir . '</b>');
-		} else {
+		}
+		else {
 			_chmod($dir);
 			$f = fopen($dir . '/test.file', 'w');
 			if (!$f)
@@ -1021,11 +1051,13 @@ deny from all
 
 			if (isset($_POST['sbmt'])) {
 				$flag = self::_toolsCheckmodulFormPost($MODUL, $check_result, $mess);
-			} else {
+			}
+			else {
 				if (count($check_result)) {
 					// set form
 					$form = self::_toolsCheckmodulForm($check_result);
-				} else
+				}
+				else
 					$mess[] = static_main::am('ok', '_recheck_have_nothing', $MODUL);
 			}
 		}
@@ -1083,8 +1115,10 @@ deny from all
 					if (!is_array($rr))
 						$desc = $rr;
 					elseif (isset($rr['@newquery']) and isset($rr['@oldquery']))
-						$desc = 'Было: ' . htmlspecialchars($rr['@oldquery'], ENT_QUOTES, $_CFG['wep']['charset']) . '<br/>Будет: ' . htmlspecialchars($rr['@newquery'], ENT_QUOTES, $_CFG['wep']['charset']); elseif (isset($rr['@newquery']))
-						$desc = htmlspecialchars($rr['@newquery'], ENT_QUOTES, $_CFG['wep']['charset']); else
+						$desc = 'Было: ' . htmlspecialchars($rr['@oldquery'], ENT_QUOTES, $_CFG['wep']['charset']) . '<br/>Будет: ' . htmlspecialchars($rr['@newquery'], ENT_QUOTES, $_CFG['wep']['charset']);
+					elseif (isset($rr['@newquery']))
+						$desc = htmlspecialchars($rr['@newquery'], ENT_QUOTES, $_CFG['wep']['charset']);
+					else
 						$desc = '';
 					if ($desc)
 						$valuelist[$kk . '@newquery'] = '<i>' . $kk . '</i> - ' . $desc;
@@ -1104,7 +1138,8 @@ deny from all
 					);
 					if ($value)
 						$form['query_' . $_cl]['value'] = $value;
-				} elseif (count($message)) {
+				}
+				elseif (count($message)) {
 					$form['query_' . $_cl] = array(
 						'type' => 'html',
 						'value' => 'Модуль ' . $_cl . ' : ' . transformPHP($message, 'messages'),
@@ -1112,7 +1147,8 @@ deny from all
 					);
 					//$mess = array_merge($mess, $message);
 				}
-			} else {
+			}
+			else {
 				trigger_error('`_toolsCheckmodulForm` - in func Error data (' . $_cl . ' - ' . print_r($row, true) . ')', E_USER_WARNING);
 			}
 		}
@@ -1281,7 +1317,8 @@ deny from all
 						if (substr($completeName, -1) != '/' and $fd = @fopen($completeName, 'w+')) {
 							fwrite($fd, zip_entry_read($zip_entry, zip_entry_filesize($zip_entry)));
 							fclose($fd);
-						} else {
+						}
+						else {
 							if (!file_exists(rtrim($completeName, '/')))
 								mkdir($completeName, 0777);
 						}
@@ -1358,10 +1395,10 @@ deny from all
 			curl_setopt($ch, CURLOPT_COOKIE, $param['COOKIE']);
 
 		if (isset($param['COOKIEFILE'])) // Считываем из фаила
-		curl_setopt($ch, CURLOPT_COOKIEFILE, $param['COOKIEFILE']);
+			curl_setopt($ch, CURLOPT_COOKIEFILE, $param['COOKIEFILE']);
 
 		if (isset($param['COOKIEJAR'])) // Записываем куки в фаил
-		curl_setopt($ch, CURLOPT_COOKIEJAR, $param['COOKIEJAR']);
+			curl_setopt($ch, CURLOPT_COOKIEJAR, $param['COOKIEJAR']);
 
 		curl_setopt($ch, CURLOPT_USERAGENT, $param['USERAGENT']); //подделываем юзер-агента
 
@@ -1380,7 +1417,8 @@ deny from all
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, TRUE);
 			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 1);
 			curl_setopt($ch, CURLOPT_CAINFO, $param['SSL']);
-		} else {
+		}
+		else {
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
 		}
@@ -1416,7 +1454,8 @@ deny from all
 			if (is_array($prox)) {
 				$CURLOPT_PROXY = $prox[0];
 				$CURLOPT_PROXYUSERPWD = $prox[1];
-			} else
+			}
+			else
 				$CURLOPT_PROXY = $prox;
 			curl_setopt($ch, CURLOPT_PROXY, $CURLOPT_PROXY);
 			if ($_CFG['wep']['debugmode'] > 1)
@@ -1436,7 +1475,8 @@ deny from all
 		if ($err = curl_errno($ch))
 			$flag = false;
 		elseif ($PageInfo['http_code'] == 200)
-			$flag = true; else
+			$flag = true;
+		else
 			$flag = false;
 		curl_close($ch);
 		return array('text' => $text, 'info' => $PageInfo, 'err' => $err, 'flag' => $flag);
@@ -1467,8 +1507,10 @@ deny from all
 							$fi[$nm] = true;
 						elseif ($fi[$nm] === 'false')
 							$fi[$nm] = false;
-					} elseif (!$fi['name'])
-						$fi['name'] = $r; else
+					}
+					elseif (!$fi['name'])
+						$fi['name'] = $r;
+					else
 						$fi['desc'] .= $r;
 				}
 			}
@@ -1488,11 +1530,13 @@ deny from all
 				self::simplexml2array($value, $res);
 				if (($key == '@attributes') && ($key)) {
 					$result = $res;
-				} else {
+				}
+				else {
 					$result[$key] = $res;
 				}
 			}
-		} else {
+		}
+		else {
 			$result = $data;
 		}
 	}
@@ -1553,7 +1597,8 @@ deny from all
 							$q .= ' or ' . $r['key2'] . '="' . $MODEL->SqlEsc($insertData[$r['key2']]) . '"';
 
 						$result = $MODEL->qs('id', $q);
-					} else
+					}
+					else
 						$result = array();
 
 
@@ -1563,7 +1608,8 @@ deny from all
 							$MODEL->id = $insertData['id'];
 							$MODEL->_update(array_intersect_key($insertData, array_flip($r['forUpdate'])), NULL, false);
 						}
-					} else {
+					}
+					else {
 						$MODEL->_add($insertData, false);
 						$insertData['id'] = $MODEL->id;
 					}

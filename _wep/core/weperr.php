@@ -69,7 +69,8 @@ function getCatchError($param = 2)
 		$return = static_main::showErr(); //static_main::showErr() //$GLOBALS['_ERR'][$param];
 		unset($temp[$param]);
 		$GLOBALS['_ERR'] = $temp;
-	} else
+	}
+	else
 		$return = '';
 	return $return;
 }

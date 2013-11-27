@@ -35,15 +35,18 @@ if (isset($_COOKIE['chash']) and $_COOKIE['chash'] and $_COOKIE['pkey']) {
 	$hash_key = md5($hash_key);
 	if (function_exists('openssl_encrypt')) {
 		$data = openssl_decrypt($_COOKIE['chash'], 'aes-128-cbc', $hash_key, false, "1234567812345678");
-	} elseif (function_exists('mcrypt_encrypt')) {
+	}
+	elseif (function_exists('mcrypt_encrypt')) {
 		$data = base64_decode(str_replace(array('-', '_'), array('+', '/'), $_COOKIE['chash']));
 		//$ivsize = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
 		//$iv = mcrypt_create_iv($ivsize, MCRYPT_RAND);
 		$data = mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $hash_key, $data, MCRYPT_MODE_ECB);
 		$data = trim($data); // Без него mb_strlen будет возвращать фиг знает какое число
-	} else
+	}
+	else
 		$data = $_COOKIE['chash'];
-} else {
+}
+else {
 	$data = 'ОШИБКА';
 	//$param = $dafault_read;
 	/*session_start();
@@ -135,7 +138,8 @@ if ($k !== 1) {
 	imagedestroy($im2);
 	imagedestroy($im1);
 
-} else
+}
+else
 	$im2 = $im;
 
 // Генерируем изображение

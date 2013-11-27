@@ -49,7 +49,8 @@ class wephtml
 
 			$this->parseTemplate($this->_html, $_tpl); // PARSE
 
-		} else {
+		}
+		else {
 			$this->_html = $_tpl['logs'] . $buffer;
 		}
 		return $this->_html;
@@ -65,7 +66,8 @@ class wephtml
 			include_once($_CFG['_PATH']['core'] . '/includesrc.php');
 			fileInclude();
 			arraySrcToStr();
-		} else
+		}
+		else
 			$this->_html = 'ERROR: Mising templates file ' . $this->_templates . ' - ' . $file;
 
 
@@ -117,7 +119,8 @@ class wephtml
 					$TPL[$r] = '';
 				$TEXT = str_replace($temp[0][$k], $TPL[$r], $TEXT);
 			}
-		} else {
+		}
+		else {
 			preg_match_all('/\{\$_tpl\[\'([A-z0-9_\-]+)\'\]\}/ui', $TEXT, $temp);
 			foreach ($temp[1] as $k => $r) {
 				if (!isset($TPL[$r]))

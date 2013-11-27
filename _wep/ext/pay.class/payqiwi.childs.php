@@ -198,7 +198,8 @@ class payqiwi_class extends kernel_extends
 			$err = $this->createBill($options);
 			if ($err === 0) {
 				$this->_update(array('name' => $data['name']));
-			} else {
+			}
+			else {
 				$this->_delete();
 				$this->lang['add_err'] = $this->_enum['errors'][$err];
 				$result = false;
@@ -281,7 +282,8 @@ class payqiwi_class extends kernel_extends
 					if ($upd['statuses'] == self::STATUS_OK)
 						$status = PAY_PAID;
 					elseif ($upd['statuses'] >= 100)
-						$status = PAY_USERCANCEL; else
+						$status = PAY_USERCANCEL;
+					else
 						$status = PAY_NOPAID;
 
 					if ($this->id and $this->data[$this->id])

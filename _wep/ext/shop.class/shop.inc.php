@@ -105,7 +105,8 @@ if ($PRODUCT->id) {
 			}
 			$c++;
 		}*/
-	} else {
+	}
+	else {
 		return 404;
 	}
 	if ($FUNCPARAM[9]) {
@@ -114,7 +115,8 @@ if ($PRODUCT->id) {
 		$DATA['#shopconfig#'] = $SHOP->config;
 		$html .= transformPHP($DATA, $FUNCPARAM[9]);
 	}
-} elseif (isset($_GET['shop']) and $rid = (int)$_GET['shop']) {
+}
+elseif (isset($_GET['shop']) and $rid = (int)$_GET['shop']) {
 
 	// Путь рубрики
 	//$href = '';
@@ -189,7 +191,8 @@ if ($PRODUCT->id) {
 			$html .= transformPHP($DATA, $FUNCPARAM[0]);
 		}
 	}
-} else {
+}
+else {
 	if (isset($SHOP->data[$FUNCPARAM[2]]) and count($SHOP->data[$FUNCPARAM[2]])) {
 		$DATA2 = array();
 		$DATA2['#item#'] = $SHOP->fDisplay($FUNCPARAM[2]);

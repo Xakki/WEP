@@ -61,7 +61,8 @@ if (isset($this->pageParam[0]) and $this->pageParam[0] == 'orderlist' and static
 		$SHOPBASKET->id = (int)$this->pageParam[1];
 		$DATA['#item#'] = $SHOPBASKET->displayItem($SHOPBASKET->id);
 		$DATA['messages'][] = array('info', 'Информация о заказе №' . $DATA['#item#']['id']);
-	} else {
+	}
+	else {
 		$DATA['#list#'] = $SHOPBASKET->fBasketList();
 	}
 
@@ -75,7 +76,8 @@ if (isset($this->pageParam[0]) and $this->pageParam[0] == 'orderlist' and static
 
 	$html = transformPHP($DATA, $FUNCPARAM[0]);
 
-} elseif (isset($_GET['shopBasket'])) {
+}
+elseif (isset($_GET['shopBasket'])) {
 	// Редактирование для заказов, если ещё не был выставлен счет
 
 	$SHOPBASKET->prm_edit = true;
@@ -112,7 +114,8 @@ if (isset($this->pageParam[0]) and $this->pageParam[0] == 'orderlist' and static
 		$DATA['messages'][] = static_main::am('error', 'Не верно заданны параметры.');
 
 	$html .= transformPHP($DATA, '#pg#formcreat');
-} elseif (isset($_GET['basketpay']) and static_main::_prmUserCheck()) {
+}
+elseif (isset($_GET['basketpay']) and static_main::_prmUserCheck()) {
 	// STEP 3
 	$subK = 3;
 	// Выписывать счёт
@@ -146,11 +149,13 @@ if (isset($this->pageParam[0]) and $this->pageParam[0] == 'orderlist' and static
 		if (!$BDATA[$SHOPBASKET->id]['pay_id'] and $PAY->id) {
 			$SHOPBASKET->_update(array('pay_id' => $PAY->id));
 		}
-	} else {
+	}
+	else {
 		// Заказа с номером № не найден
 		static_main::redirect($Chref . '.html');
 	}
-} elseif (isset($_GET['typedelivery']) and $SHOPBASKET->getSummOrder()) {
+}
+elseif (isset($_GET['typedelivery']) and $SHOPBASKET->getSummOrder()) {
 	// STEP 2
 	$subK = 2;
 
@@ -164,7 +169,8 @@ if (isset($this->pageParam[0]) and $this->pageParam[0] == 'orderlist' and static
 			if ($uid > 0)
 				static_main::redirect();
 			// Новый пользователь, нужно его зарегить или авторизовать
-		} else {
+		}
+		else {
 			$DATA = array();
 			$DATA['#delivery#'] = $SHOPDELIVER->qs('*', 'WHERE active=1', 'id');
 			if (isset($DATA['#delivery#'][$_GET['typedelivery']])) {
@@ -201,7 +207,8 @@ if (isset($this->pageParam[0]) and $this->pageParam[0] == 'orderlist' and static
 					_setcookie('address', $_POST['address']);
 					_setcookie('phone', $_POST['phone']);
 					static_main::redirect($Chref . '.html?basketpay=' . $SHOPBASKET->id);
-				} else {
+				}
+				else {
 					unset($DATA['formcreat']['form']['_info']);
 					$DATA['formcreat']['form']['sbmt']['value'] = 'Оформить заказ';
 					$DATA['formcreat']['messages'][] = static_main::am('alert', 'Заказ на сумму ' . $_POST['cost'] . ' ' . $PAY->config['curr']);
@@ -213,16 +220,19 @@ if (isset($this->pageParam[0]) and $this->pageParam[0] == 'orderlist' and static
 					$html .= transformPHP($DATA, '#pg#formcreat');
 				}
 				// уже авторизованный пользователь
-			} else {
+			}
+			else {
 				$html = static_main::m('errdata') . static_main::m('feedback');
 			}
 		}
 
-	} else {
+	}
+	else {
 		$html = static_main::m('errdata') . static_main::m('feedback');
 	}
 
-} else {
+}
+else {
 	// STEP 1
 	$DATA = array();
 	$DATA['#list#'] = $SHOPBASKET->fBasketListItem();

@@ -54,24 +54,29 @@ abstract class kernel_extends
 					}
 					$this->SQL = & $PSQL;
 					return $PSQL;
-				} else {
+				}
+				else {
 					if (!isset($SQL) or !$SQL->ready) {
 						$SQL = new $this->SQL_CFG['type']($this->SQL_CFG);
 					}
 					$this->SQL = & $SQL;
 					return $SQL;
 				}
-			} else {
+			}
+			else {
 				return new $this->SQL_CFG['type']($this->SQL_CFG);
 			}
-		} elseif ($name == 'setHook') {
+		}
+		elseif ($name == 'setHook') {
 			$this->_setHook();
 			return $this->setHook;
-		} elseif ($name == 'def_records') {
+		}
+		elseif ($name == 'def_records') {
 			$this->def_records = array();
 			$this->_setDefaultRecords();
 			return $this->def_records;
-		} elseif ($name == 'fields_form') {
+		}
+		elseif ($name == 'fields_form') {
 			$this->getFieldsForm(1);
 			return $this->fields_form;
 		}
@@ -85,7 +90,7 @@ abstract class kernel_extends
 	function __do_hook($f, $arg = array())
 	{
 		if (!isset($this->_CFG['hook'][$f])) // проверка на всякий случай
-		return false;
+			return false;
 		///static_main::_prmModulLoad();
 		$modul = array($this->_cl);
 
@@ -105,11 +110,13 @@ abstract class kernel_extends
 								include_once($file);
 							}
 						}
-					} elseif (isset($this->_CFG['modulprm'][$k])) {
+					}
+					elseif (isset($this->_CFG['modulprm'][$k])) {
 						if (_new_class($k, $TEMP)) {
 							$r = '$TEMP->' . $r;
 						}
-					} elseif (!function_exists($r)) {
+					}
+					elseif (!function_exists($r)) {
 						$file = SITE . $k;
 						if (file_exists($file)) {
 							include_once($file);
@@ -118,7 +125,8 @@ abstract class kernel_extends
 
 					if ($file === NULL or function_exists($r)) {
 						eval('return ' . $r . '($this,$arg);');
-					} else
+					}
+					else
 						trigger_error('Для модуля `' . $this->_cl . '`, функция хука `' . $r . '` не определена', E_USER_WARNING);
 				}
 			}
@@ -227,7 +235,7 @@ abstract class kernel_extends
 		$this->ordfield = '';
 		$this->_clp = array();
 		$this->data =
-        $this->allKeyData = array();
+		$this->allKeyData = array();
 		$this->parent_id = NULL;
 		$this->null = NULL;
 		$this->id = NULL;
@@ -314,7 +322,8 @@ abstract class kernel_extends
 			if (is_bool($this->mf_use_charid))
 				$this->mf_use_charid = 63; // длина поля ID
 			$this->fields['id'] = array('type' => 'varchar', 'width' => $this->mf_use_charid, 'attr' => 'NOT NULL');
-		} else
+		}
+		else
 			$this->fields['id'] = array('type' => 'int', 'width' => 11, 'attr' => 'UNSIGNED NOT NULL AUTO_INCREMENT');
 
 		if ($this->mf_namefields)
@@ -338,7 +347,9 @@ abstract class kernel_extends
 		}
 
 		if ($this->mf_createrid) {
-			$this->fields[$this->mf_createrid] = array('type' => 'int', 'width' => 11, 'attr' => 'unsigned NOT NULL', 'default' => 0);
+			if (!isset($this->fields[$this->mf_createrid])) {
+				$this->fields[$this->mf_createrid] = array('type' => 'int', 'width' => 11, 'attr' => 'unsigned NOT NULL', 'default' => 0);
+			}
 			$this->index_fields[$this->mf_createrid] = $this->mf_createrid;
 		}
 
@@ -413,8 +424,10 @@ abstract class kernel_extends
 		if (isset($_REQUEST[$this->_pa]) && (int)$_REQUEST[$this->_pa])
 			$this->_pn = (int)$_REQUEST[$this->_pa];
 		elseif (isset($_REQUEST['_pn']) && (int)$_REQUEST['_pn'])
-			$this->_pn = (int)$_REQUEST['_pn']; elseif ($this->reversePageN)
-			$this->_pn = 0; else
+			$this->_pn = (int)$_REQUEST['_pn'];
+		elseif ($this->reversePageN)
+			$this->_pn = 0;
+		else
 			$this->_pn = 1;
 
 		return true;
@@ -483,12 +496,14 @@ abstract class kernel_extends
 				$where = 'WHERE ' . implode(' ' . $union . ' ', $where2);
 			else
 				$where = '';
-		} elseif (isint($where)) {
+		}
+		elseif (isint($where)) {
 			if ((int)$where > 0)
 				$where = 'WHERE `id`="' . (int)$where . '"';
 			else
 				$where = '';
-		} else {
+		}
+		else {
 			//TODO : экранировать запрос от инъекций
 		}
 		/*if(stripos($where, 'where')===false)
@@ -523,7 +538,8 @@ abstract class kernel_extends
 		if (is_array($list))
 			$query .= implode(', ', $list);
 		elseif ($list)
-			$query .= $list; else
+			$query .= $list;
+		else
 			$query .= '*';
 		$query .= ' FROM `' . $this->tablename . '` ';
 		$query .= $this->queryEscape($cls);
@@ -546,7 +562,8 @@ abstract class kernel_extends
 				}
 				$data[$row[$ord2]][$row[$ord]] = $row;
 			}
-		} elseif ($ord != '') {
+		}
+		elseif ($ord != '') {
 			while ($row = $result->fetch()) {
 				if (isset($secureKey)) {
 					foreach ($secureKey as $sk)
@@ -554,7 +571,8 @@ abstract class kernel_extends
 				}
 				$data[$row[$ord]] = $row;
 			}
-		} else {
+		}
+		else {
 			while ($row = $result->fetch()) {
 				if (isset($secureKey)) {
 					foreach ($secureKey as $sk)
@@ -616,7 +634,8 @@ abstract class kernel_extends
 				$this->id = array_combine($this->id, $this->id);
 				return true;
 			}
-		} else {
+		}
+		else {
 			return $this->SQL->_tableExists($this->tablename);
 		}
 		return false;
@@ -653,9 +672,9 @@ abstract class kernel_extends
 			$q_order = $this->ordfield;
 
 		if (isset($this->id) and $this->id) // либо по ID
-		$q_where[] = 'id IN (' . $this->_id_as_string() . ')';
+			$q_where[] = 'id IN (' . $this->_id_as_string() . ')';
 		elseif (isset($this->owner->id) and $this->owner->id) // либо по owner id
-		$q_where[] = $this->owner_name . ' IN (' . $this->owner->_id_as_string() . ')';
+			$q_where[] = $this->owner_name . ' IN (' . $this->owner->_id_as_string() . ')';
 
 		if (!is_null($sql)) {
 			if (is_array($sql)) {
@@ -667,7 +686,8 @@ abstract class kernel_extends
 					$q_order = $sql['order'];
 				if (isset($sql['limit']) and $sql['limit'])
 					$q_limit = $sql['limit'];
-			} elseif ($sql)
+			}
+			elseif ($sql)
 				$q_where[] = $sql;
 		}
 
@@ -731,7 +751,8 @@ abstract class kernel_extends
 			if (count($data) == 1)
 				$this->id = key($data);
 			elseif (count($data) > 1)
-				$this->id = array_keys($data); else
+				$this->id = array_keys($data);
+			else
 				$this->id = NULL;
 		}
 		return $data;
@@ -834,13 +855,15 @@ abstract class kernel_extends
 		if (is_bool($data)) {
 			$flag_select = $data;
 			trigger_error('Устаревший вариант вызова функция _add', E_USER_WARNING);
-		} else {
+		}
+		else {
 			$this->fld_data = $this->att_data = $this->mmo_data = array();
 			foreach ($data as $k => $r) {
 				if (isset($this->memos[$k]))
 					$this->mmo_data[$k] = $r;
 				elseif (isset($this->attaches[$k]))
-					$this->att_data[$k] = $r; elseif (isset($this->fields[$k])) {
+					$this->att_data[$k] = $r;
+				elseif (isset($this->fields[$k])) {
 					$this->fld_data[$k] = $r;
 				}
 			}
@@ -881,7 +904,8 @@ abstract class kernel_extends
 			if (isset($this->memos[$k]))
 				$this->mmo_data[$k] = $r;
 			elseif (isset($this->attaches[$k]))
-				$this->att_data[$k] = $r; elseif (isset($this->fields[$k]))
+				$this->att_data[$k] = $r;
+			elseif (isset($this->fields[$k]))
 				$this->fld_data[$k] = $r;
 		}
 
@@ -930,7 +954,8 @@ abstract class kernel_extends
 			foreach ($list as &$value)
 				$value = $this->SqlEsc($value);
 			return '\'' . implode('\',\'', $list) . '\'';
-		} else {
+		}
+		else {
 			if (!$list) return 0;
 			return '\'' . $this->SqlEsc($list) . '\'';
 		}
@@ -1096,7 +1121,7 @@ abstract class kernel_extends
 		foreach ($f_fieldsForm as $k => &$r) {
 			if (!isset($r['type'])) continue;
 			if (isset($r['readonly']) and $r['readonly'] and $this->id) // если поле "только чтение" и редактируется , то значение берем из БД,
-			$f_data[$k] = (isset($this->data[$this->id][$k]) ? $this->data[$this->id][$k] : '');
+				$f_data[$k] = (isset($this->data[$this->id][$k]) ? $this->data[$this->id][$k] : '');
 
 			$eval = static_form::getEvalForm($this, $r);
 
@@ -1112,7 +1137,8 @@ abstract class kernel_extends
 				$eval = '$f_data[$k]=' . $eval;
 				eval($eval);
 				unset($eval);
-			} elseif ((isset($r['mask']['fview']) and $r['mask']['fview'] == 2) or (isset($r['mask']['usercheck']) and !static_main::_prmGroupCheck($r['mask']['usercheck']))) {
+			}
+			elseif ((isset($r['mask']['fview']) and $r['mask']['fview'] == 2) or (isset($r['mask']['usercheck']) and !static_main::_prmGroupCheck($r['mask']['usercheck']))) {
 				$r['mask']['fview'] = 2;
 				unset($f_data[$k]);
 				continue;
@@ -1142,30 +1168,37 @@ abstract class kernel_extends
 				elseif (!isset($this->owner->id))
 					$this->owner->id = 0;
 				$r['value'] = $this->owner->id;
-			} elseif ($k == $this->mf_istree and !isset($f_data[$k])) {
+			}
+			elseif ($k == $this->mf_istree and !isset($f_data[$k])) {
 				if (isset($this->parent_id) and $this->parent_id)
 					$r['value'] = $this->parent_id;
 				elseif (!isset($this->parent_id) and $this->mf_use_charid)
-					$this->parent_id = ''; elseif (!isset($this->parent_id))
+					$this->parent_id = '';
+				elseif (!isset($this->parent_id))
 					$this->parent_id = 0;
-			} elseif ($r['type'] == 'ckedit') {
+			}
+			elseif ($r['type'] == 'ckedit') {
 				if (isset($this->memos[$k]) and !count($_POST) and file_exists($f_data[$k]))
 					$r['value'] = file_get_contents($f_data[$k]);
 				elseif (isset($f_data[$k]))
 					$r['value'] = $f_data[$k];
-			} elseif (isset($r['multiple']) and $r['multiple'] > 0 and $r['type'] == 'list') {
+			}
+			elseif (isset($r['multiple']) and $r['multiple'] > 0 and $r['type'] == 'list') {
 				if (isset($f_data[$k])) {
 					if (!is_array($f_data[$k])) {
 						$f_data[$k] = trim($f_data[$k], '|');
 						$r['value'] = explode('|', $f_data[$k]);
-					} else
+					}
+					else
 						$r['value'] = $f_data[$k];
 					$r['value'] = array_combine($r['value'], $r['value']); // На всякий, иногда эта функция может самостоятельно работать
 				}
-			} elseif ($r['type'] == 'date') {
+			}
+			elseif ($r['type'] == 'date') {
 				if (!isset($r['mask']['format']) or !$r['mask']['format'])
 					$r['mask']['format'] = 'Y-m-d H:i:s';
-			} elseif ($r['type'] == 'password') {
+			}
+			elseif ($r['type'] == 'password') {
 				if ($this->id) {
 					if (!isset($r['mask']['password']))
 						$r['mask']['password'] = 'change';
@@ -1181,7 +1214,7 @@ abstract class kernel_extends
 			  $f_data[$k] = $r['value'] = ((isset($f_data[$k]) and $f_data[$k])?1:0);
 			  } */
 			if (isset($f_data[$k]) and !isset($r['value'])) //  and $f_data[$k]
-			$r['value'] = $f_data[$k];
+				$r['value'] = $f_data[$k];
 
 			if (isset($this->id) and isset($this->data[$this->id]['_ext_' . $k]))
 				$r['ext'] = $this->data[$this->id]['_ext_' . $k];
@@ -1196,7 +1229,7 @@ abstract class kernel_extends
 			if (isset($r['relationForm'])) {
 				//TODO - change script
 				if ($r['relationForm'] === true) // default function
-				$r['relationForm'] = 'relationForm';
+					$r['relationForm'] = 'relationForm';
 
 				if (method_exists($this, $r['relationForm'])) {
 					call_user_func_array(
@@ -1205,7 +1238,8 @@ abstract class kernel_extends
 					);
 					//$r['relationForm']
 					//$f_fieldsForm = static_main::insertInArray($f_fieldsForm, $k, $my_fieldsForm);
-				} else {
+				}
+				else {
 					trigger_error('Метод `' . $r['relationForm'] . '` не определен в модуле ' . $this->_cl, E_USER_WARNING);
 				}
 			}
@@ -1291,11 +1325,13 @@ abstract class kernel_extends
 				if ($rr == '#over#') {
 					$diffForm = array_diff_key($temp, array_keys($this->formdSort));
 					$this->fields_form = $diffForm + $this->fields_form;
-				} elseif (isset($temp[$rr])) {
+				}
+				elseif (isset($temp[$rr])) {
 					$this->fields_form[$rr] = $temp[$rr];
 				}
 			}
-		} elseif ($form == 1 and count($this->formSort)) {
+		}
+		elseif ($form == 1 and count($this->formSort)) {
 			$formSort = array();
 			if (is_array(current($this->formSort))) {
 				foreach ($this->formSort as $tr) {
@@ -1304,7 +1340,8 @@ abstract class kernel_extends
 					else
 						$formSort[] = $tr;
 				}
-			} else
+			}
+			else
 				$formSort = $this->formSort;
 			$temp = $this->fields_form;
 			$this->key_formSort = array_flip($formSort);
@@ -1315,7 +1352,8 @@ abstract class kernel_extends
 			foreach ($formSort as $rr) {
 				if ($rr == '#over#') {
 					$this->fields_form = $over + $this->fields_form;
-				} elseif (isset($temp[$rr])) {
+				}
+				elseif (isset($temp[$rr])) {
 					$this->fields_form[$rr] = $temp[$rr];
 				}
 			}
@@ -1588,7 +1626,8 @@ abstract class kernel_extends
 			{
 				$flag = 1;
 			}
-		} else {
+		}
+		else {
 			$mess = $this->kPreFields($_POST, $param, $argForm);
 		}
 
@@ -1620,13 +1659,15 @@ abstract class kernel_extends
 		if (isset($_REQUEST['f_clear_sbmt'])) {
 			unset($_SESSION['filter'][$this->_cl]);
 			$_tpl['onload'] .= 'window.location.href = \'' . $_SERVER['HTTP_REFERER'] . '\';';
-		} /**
+		}
+		/**
 		 * задаются параметры фильтра
 		 * */
 		elseif (isset($_REQUEST['sbmt'])) {
 			$this->setFilter();
 			$_tpl['onload'] .= 'window.location.href = \'' . $_SERVER['HTTP_REFERER'] . '\';';
-		} else
+		}
+		else
 			$resuslt = $this->Formfilter();
 
 		return $resuslt;
@@ -1658,7 +1699,8 @@ abstract class kernel_extends
 				if ($r['type'] == 'date') {
 					$fields_form['f_' . $k]['value_2'] = date('Y-m-d', $_FILTR[$k . '_2']);
 					$fields_form['f_' . $k]['value'] = date('Y-m-d', $_FILTR[$k]);
-				} else {
+				}
+				else {
 					if (isset($_FILTR[$k . '_2']))
 						$fields_form['f_' . $k]['value_2'] = $_FILTR[$k . '_2'];
 					$fields_form['f_' . $k]['value'] = $_FILTR[$k];
@@ -1669,7 +1711,8 @@ abstract class kernel_extends
 					$fields_form['f_' . $k]['label'] = 'Введите текст';
 				$fields_form['f_' . $k]['labelstyle'] = ((isset($_FILTR[$k]) and $_FILTR[$k]) ? 'display: none;' : '');
 				$fields_form['f_' . $k]['csscheck'] = ((isset($_FILTR[$k]) and $_FILTR[$k]) ? 'accept' : 'reject');
-			} elseif ($r['type'] != 'radio' and $r['type'] != 'checkbox' and $r['type'] != 'list' and $r['type'] != 'int' and $r['type'] != 'file' and $r['type'] != 'ajaxlist' and $r['type'] != 'date')
+			}
+			elseif ($r['type'] != 'radio' and $r['type'] != 'checkbox' and $r['type'] != 'list' and $r['type'] != 'int' and $r['type'] != 'file' and $r['type'] != 'ajaxlist' and $r['type'] != 'date')
 				$fields_form['f_' . $k]['type'] = 'text';
 			if (isset($_FILTR['exc_' . $k]))
 				$fields_form['f_' . $k]['exc'] = 1;
@@ -1711,7 +1754,8 @@ abstract class kernel_extends
 	{
 		if (isset($_REQUEST['f_clear_sbmt'])) {
 			unset($_SESSION['filter'][$this->_cl]);
-		} else {
+		}
+		else {
 			foreach ($this->fields_form as $k => $row) {
 				if (isset($_REQUEST['f_' . $k]) && $_REQUEST['f_' . $k] != '') { // && isset($this->fields_form[$k]['mask']['filter'])
 					$is_int = 0;
@@ -1727,7 +1771,8 @@ abstract class kernel_extends
 						$_SESSION['filter'][$this->_cl][$k] = $this->SqlEsc($_REQUEST['f_' . $k]);
 						if (isset($_REQUEST['f_' . $k . '_2']))
 							$_SESSION['filter'][$this->_cl][$k . '_2'] = $this->SqlEsc($_REQUEST['f_' . $k . '_2']);
-					} else {
+					}
+					else {
 						$_SESSION['filter'][$this->_cl][$k] = array();
 						if ($is_int)
 							foreach ($_REQUEST['f_' . $k] as $row)
@@ -1740,7 +1785,8 @@ abstract class kernel_extends
 						$_SESSION['filter'][$this->_cl]['exc_' . $k] = 1;
 					else
 						unset($_SESSION['filter'][$this->_cl]['exc_' . $k]);
-				} else if (!$flag)
+				}
+				else if (!$flag)
 					unset($_SESSION['filter'][$this->_cl][$k]);
 			}
 		}
@@ -1760,7 +1806,8 @@ abstract class kernel_extends
 				unset($_SESSION['filter'][$this->_cl]);
 			else
 				$_FILTR = $_REQUEST['filter_' . $this->_cl];
-		} elseif (isset($_SESSION['filter'][$this->_cl]))
+		}
+		elseif (isset($_SESSION['filter'][$this->_cl]))
 			$_FILTR = $_SESSION['filter'][$this->_cl];
 
 		if (count($_FILTR)) {
@@ -1774,10 +1821,12 @@ abstract class kernel_extends
 					if (isset($_FILTR[$k]) and is_array($_FILTR[$k])) {
 						array_map(array($this, 'SqlEsc'), $_FILTR[$k]);
 						$cl[$k] = 't1.' . $k . ' ' . ($tempex ? 'NOT' : '') . 'IN ("' . implode('","', $_FILTR[$k]) . '")';
-					} else {
+					}
+					else {
 						if ($r['type'] == 'checkbox') {
 							$cl[$k] = 't1.' . $k . '="' . (int)$_FILTR[$k] . '"';
-						} elseif ($r['type'] == 'int' or $r['type'] == 'date') {
+						}
+						elseif ($r['type'] == 'int' or $r['type'] == 'date') {
 							$_FILTR[$k] = (int)$_FILTR[$k];
 							$_FILTR[$k . '_2'] = (int)$_FILTR[$k . '_2'];
 							$tmp = array();
@@ -1787,13 +1836,17 @@ abstract class kernel_extends
 								$tmp[] = 't1.' . $k . ($tempex ? '>' : '<') . $_FILTR[$k . '_2'];
 							if (count($tmp))
 								$cl[$k] = '(' . implode(($tempex ? ' or ' : ' and '), $tmp) . ')';
-						} elseif ($r['type'] == 'list') {
+						}
+						elseif ($r['type'] == 'list') {
 							if ($_FILTR[$k] != '') {
 								$cl[$k] = 't1.' . $k . '="' . $this->SqlEsc($_FILTR[$k]) . '"';
 							}
-						} elseif ($_FILTR[$k] == '!0')
-							$cl[$k] = 't1.' . $k . '!=""'; elseif ($_FILTR[$k] == '!1')
-							$cl[$k] = 't1.' . $k . '=""'; else
+						}
+						elseif ($_FILTR[$k] == '!0')
+							$cl[$k] = 't1.' . $k . '!=""';
+						elseif ($_FILTR[$k] == '!1')
+							$cl[$k] = 't1.' . $k . '=""';
+						else
 							$cl[$k] = 't1.' . $k . ' ' . ($tempex ? 'NOT ' : '') . 'LIKE "' . $this->SqlEsc($_FILTR[$k]) . '"';
 					}
 				}
@@ -1828,8 +1881,10 @@ abstract class kernel_extends
 						$data[$this->mf_actctrl] = 6;
 					else
 						$data[$this->mf_actctrl] = 1;
-				} elseif ($act == 1)
-					$data[$this->mf_actctrl] = 5; else
+				}
+				elseif ($act == 1)
+					$data[$this->mf_actctrl] = 5;
+				else
 					$data[$this->mf_actctrl] = 2;
 			}
 
@@ -1839,12 +1894,15 @@ abstract class kernel_extends
 				if ($data[$this->mf_actctrl] == 6)
 					$DATA[] = static_main::am('ok', 'act6', $this);
 				elseif ($act)
-					$DATA[] = static_main::am('ok', 'act1', $this); else
+					$DATA[] = static_main::am('ok', 'act1', $this);
+				else
 					$DATA[] = static_main::am('ok', 'act0', $this);
 				$flag = 1;
-			} else
+			}
+			else
 				$DATA[] = static_main::am('error', 'update_err', $this);
-		} else
+		}
+		else
 			$DATA[] = static_main::am('error', 'denied', $this);
 		return array($DATA, $flag);
 	}
@@ -1867,16 +1925,20 @@ abstract class kernel_extends
 				if ($this->_update($data)) {
 					$DATA[] = static_main::am('ok', 'deleted', $this);
 					$flag = 1;
-				} else
+				}
+				else
 					$DATA[] = static_main::am('error', 'del_err', $this);
-			} else {
+			}
+			else {
 				if ($this->_delete()) {
 					$DATA[] = static_main::am('ok', 'deleted', $this);
 					$flag = 1;
-				} else
+				}
+				else
 					$DATA[] = static_main::am('error', 'del_err', $this);
 			}
-		} else
+		}
+		else
 			$DATA[] = static_main::am('error', 'denied', $this);
 		return array($DATA, $flag);
 	}
@@ -1904,9 +1966,11 @@ abstract class kernel_extends
 				else
 					$DATA[] = array('value' => 'DOWN', 'name' => 'ok');
 				$flag = 1;
-			} else
+			}
+			else
 				$DATA[] = static_main::am('error', 'update_err', $this);
-		} else
+		}
+		else
 			$DATA[] = static_main::am('error', 'denied', $this);
 		return array($DATA, $flag);
 	}
@@ -1973,7 +2037,8 @@ abstract class kernel_extends
 		if (isset($this->attaches[$key]['thumb'][$modkey]['path']) && $this->attaches[$key]['thumb'][$modkey]['path'])
 			$pathimg = $this->attaches[$key]['thumb'][$modkey]['path'] . '/' . $pref . $id . '.' . $extValue;
 		elseif (isset($this->attaches[$key]['path']) and $this->attaches[$key]['path'])
-			$pathimg = $this->attaches[$key]['path'] . '/' . $pref . $id . '.' . $extValue; else
+			$pathimg = $this->attaches[$key]['path'] . '/' . $pref . $id . '.' . $extValue;
+		else
 			$pathimg = $this->getPathForAtt($key) . $pref . $id . '.' . $extValue;
 
 		return $pathimg;
@@ -2224,7 +2289,8 @@ class modul_child extends ArrayObject
 			$this->modul_obj->childs[$index] = $modul_child; // Исправил ошибку, когнда для несинглтона, каждый вызов подмодуля приводит к созданию объекта
 			//$this->childs_obj[$index] = $modul_child;
 			return $modul_child;
-		} else {
+		}
+		else {
 			//если один и тот же клас исползуется в как ребенок в других классах, то $this->singleton = false; вам в помощь, иначе сюда будут выдаваться ссылки на класс созданный в первы раз для другого модуля
 		}
 

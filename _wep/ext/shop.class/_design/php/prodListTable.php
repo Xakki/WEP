@@ -12,7 +12,8 @@ function tpl_prodListTable(&$data)
 				$html .= '<h3>К сожалению, по вашему запросу товары не найдены</h3>';
 			else
 				$html .= '<h3>В данной категории товары ещё не добавлены!</h3>';
-		} else {
+		}
+		else {
 
 			$PGnum = '';
 			if (isset($data['pagenum']) and count($data['pagenum'])) {
@@ -33,20 +34,25 @@ function tpl_prodListTable(&$data)
 					$href .= '" target="' . $data['atarget'] . '"';
 				if (isset($r['image']) and count($r['image']) and $r['image'][0][1]) {
 					$img = $r['image'][0][1];
-				} else
+				}
+				else
 					$img = getUrlTheme() . '_shop/img/nofoto.gif';
 				$html .= '<tr data-id="' . $r['id'] . '" class="' . (isset($data['#basket#'][$r['id']]) ? 'sel' : '') . '">';
 				if (isset($data['#prodListTable#'])) {
 					foreach ($data['#prodListTable#'] as $cf_k => $cf_r) {
 						if ($cf_k == 'cost') {
 							$html .= '<td>' . ($r['cost'] ? round($r['cost'], 2) : '&#160;');
-						} elseif (strpos($cf_k, 'img_product') !== false)
-							$html .= '<td><img src="/' . $img . '" alt="' . $r['name'] . '"/>'; elseif ($cf_k == 'name') {
+						}
+						elseif (strpos($cf_k, 'img_product') !== false)
+							$html .= '<td><img src="/' . $img . '" alt="' . $r['name'] . '"/>';
+						elseif ($cf_k == 'name') {
 							$html .= '<td><a href="' . $href . '" title="' . $r['name'] . '">' . $r['name'] . '</a>';
 							if (isset($r['sale']))
 								$html .= '<span class="prodlable sale" title="' . $r['sale']['name'] . '">&#160;</span>';
-						} elseif (isset($r[$cf_k]) and $r[$cf_k])
-							$html .= '<td>' . $r[$cf_k]; else
+						}
+						elseif (isset($r[$cf_k]) and $r[$cf_k])
+							$html .= '<td>' . $r[$cf_k];
+						else
 							$html .= '<td> - ';
 					}
 					if (isset($data['#basket#'])) {

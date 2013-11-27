@@ -5,7 +5,7 @@
  */
 
 $.extend($.ui.multiselect.locale, {
-	addAll:'+ВСЕ',
-	removeAll:'-ВСЕ',
-	itemsCount:'выбранно'
+    addAll: '+ВСЕ',
+    removeAll: '-ВСЕ',
+    itemsCount: 'выбранно'
 });

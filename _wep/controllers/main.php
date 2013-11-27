@@ -23,26 +23,31 @@ if (isset($_GET['_php']) and $_GET['_php'] == 'robotstxt') {
 	else
 		require_once($_CFG['_PATH']['wep_controllers'] . 'frontend/robotstxt.php');
 	exit();
-} elseif (isset($_GET['_php']) and $_GET['_php'] == '_js') {
+}
+elseif (isset($_GET['_php']) and $_GET['_php'] == '_js') {
 	if (file_exists($_CFG['_PATH']['controllers'] . '_js.php'))
 		require_once($_CFG['_PATH']['controllers'] . '_js.php');
 	else
 		require_once($_CFG['_PATH']['wep_controllers'] . 'frontend/_js.php');
 	exit();
-} elseif (isset($_GET['_php']) and $_GET['_php'] == '_redirect') {
+}
+elseif (isset($_GET['_php']) and $_GET['_php'] == '_redirect') {
 	if (file_exists($_CFG['_PATH']['controllers'] . '_redirect.php'))
 		require_once($_CFG['_PATH']['controllers'] . '_redirect.php');
 	else
 		require_once($_CFG['_PATH']['wep_controllers'] . 'frontend/_redirect.php');
 	exit();
-} elseif (isset($_GET['_php']) and $_GET['_php'] == 'rss') {
+}
+elseif (isset($_GET['_php']) and $_GET['_php'] == 'rss') {
 	if (file_exists($_CFG['_PATH']['controllers'] . 'rss.php'))
 		require_once($_CFG['_PATH']['controllers'] . 'rss.php');
 	elseif (file_exists($_CFG['_PATH']['wep_controllers'] . 'frontend/rss.php'))
-		require_once($_CFG['_PATH']['wep_controllers'] . 'frontend/rss.php'); else
+		require_once($_CFG['_PATH']['wep_controllers'] . 'frontend/rss.php');
+	else
 		echo 'no RSS';
 	exit();
-} elseif (isset($_GET['_php']) and $_GET['_php'] == 'sitemap') {
+}
+elseif (isset($_GET['_php']) and $_GET['_php'] == 'sitemap') {
 	header("Cache-Control: max-age=0, must-revalidate");
 	header("Last-Modified: " . gmdate("D, d M Y H:i:s", $_CFG['time']) . " GMT");
 	header("Expires: " . gmdate("D, d M Y H:i:s", $_CFG['time']) . " GMT");
@@ -53,14 +58,17 @@ if (isset($_GET['_php']) and $_GET['_php'] == 'robotstxt') {
 	_new_class('pg', $PGLIST);
 	$_tpl['text'] = $PGLIST->creatSiteMaps();
 	exit();
-} elseif (isset($_GET['_php']) and isset($_GET['_type']) and $_GET['_type'] == 'xml') {
+}
+elseif (isset($_GET['_php']) and isset($_GET['_type']) and $_GET['_type'] == 'xml') {
 	if (file_exists($_CFG['_PATH']['controllers'] . $_GET['_php'] . '.xml.php'))
 		require_once($_CFG['_PATH']['controllers'] . $_GET['_php'] . '.xml.php');
 	elseif (file_exists($_CFG['_PATH']['wep_controllers'] . 'frontend/' . $_GET['_php'] . '.xml.php'))
-		require_once($_CFG['_PATH']['wep_controllers'] . 'frontend/' . $_GET['_php'] . '.xml.php'); else
+		require_once($_CFG['_PATH']['wep_controllers'] . 'frontend/' . $_GET['_php'] . '.xml.php');
+	else
 		echo 'Ашипка!';
 	exit();
-} elseif (isset($_GET['_php']) and $_GET['_php'] == 'config') {
+}
+elseif (isset($_GET['_php']) and $_GET['_php'] == 'config') {
 	setNeverShowAllInfo();
 	//Применяется для CKFinder для авторизации по сессии
 	session_go();
@@ -92,5 +100,6 @@ if (_new_class('pg', $PGLIST)) {
 			//$_tpl['meta'] .='<!--[if IE 6]><script type="text/javascript"></script><![endif]-->';
 		}
 	*/
-} else
+}
+else
 	static_main::downSite('Система ещё не установлена', 'Модуль "Страницы" не установлен или отключен.');

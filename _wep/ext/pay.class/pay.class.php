@@ -144,7 +144,8 @@ class pay_class extends kernel_extends
 					$data[$key] = array('css' => 'ico_' . $key, '#name#' => $value->caption, '#id#' => $key);
 			}
 			return $data;
-		} else
+		}
+		else
 			return parent::_getlist($listname, $value);
 	}
 
@@ -194,7 +195,8 @@ class pay_class extends kernel_extends
 				$r['#lifetime#'] = $this->childs[$r['pay_modul']]->config['lifetime'];
 				$r['#formType#'] = $this->childs[$r['pay_modul']]->pay_formType;
 				$r['#leftTime#'] = ($r['mf_timecr'] + ($r['#lifetime#'] * 3600));
-			} else {
+			}
+			else {
 				$r['#pay_modul#'] = static_main::m('lk_name', array(), $this);
 			}
 		}
@@ -257,16 +259,19 @@ class pay_class extends kernel_extends
 				if ($this->payAdd($payData, $addInfo)) {
 					$this->saveLog($this->id, $payData['name']);
 					return $this->statusForm($this->id);
-				} else
+				}
+				else
 					$resFlag = -3;
 			}
 
 
-		} elseif (isset($payData['pay_modul']) and $this->isPayModul($payData['pay_modul'])) {
+		}
+		elseif (isset($payData['pay_modul']) and $this->isPayModul($payData['pay_modul'])) {
 			// Если есть уже такой счет и он еще не оплачен, то информацию/форму для оплаты счета
 			if ($id = $this->getIdBill($payData['cost'], $payData['_key'], $payData['name'], $payData['pay_modul'])) {
 				return $this->statusForm($id);
-			} else {
+			}
+			else {
 				$CHILD = & $this->childs[$payData['pay_modul']];
 				list($data, $resFlag) = $CHILD->billingForm($payData['cost'], $payData['name'], $addInfo);
 				if ($resFlag == 1) {
@@ -285,13 +290,15 @@ class pay_class extends kernel_extends
 					if ($this->payAdd($payData, $addInfo)) {
 						$this->saveLog($this->id, $payData['name']);
 						return $this->statusForm($this->id);
-					} else
+					}
+					else
 						$resFlag = -3;
 
 				}
 			}
 
-		} else {
+		}
+		else {
 			// TODO : возможность оплты со своего счета
 
 			$argForm = array();
@@ -360,11 +367,13 @@ class pay_class extends kernel_extends
 						unset($result['showFrom']);
 						$result['messages'] = $this->canselPay($id);
 						// $result['messages'] = array_merge($result['messages'], $this->canselPay($id));
-					} else
+					}
+					else
 						$result['showStatus'] = $data;
 
 				}
-			} else
+			}
+			else
 				$result['showStatus'] = $data;
 
 			$result['#config#'] = $this->config;
@@ -389,7 +398,8 @@ class pay_class extends kernel_extends
 				$this->saveLog($id, 'Счет #' . $id . ' отменен пользователем!');
 			else
 				$this->saveLog($id, 'Счет #' . $id . ' отменен!');
-		} else
+		}
+		else
 			$messages[] = array('error', 'Ошибка при отмене счета #' . $id . '! ' . static_main::m('feedback'));
 		return $messages;
 	}
@@ -409,7 +419,8 @@ class pay_class extends kernel_extends
 		if (!is_null($checkPermition)) {
 			if (is_string($checkPermition)) {
 				$sqlPermission[] = '_key="' . $this->SqlEsc($checkPermition) . '"';
-			} else {
+			}
+			else {
 				if ($checkPermition === true) {
 					if (isset($_SESSION['user']['id']))
 						$checkPermition = $_SESSION['user']['id'];
@@ -461,7 +472,8 @@ class pay_class extends kernel_extends
 			if (isset($data[$name]) AND $data[$name])
 				$_POST[$name] = $data[$name];
 			elseif (isset($_SESSION['user'][$name]))
-				$_POST[$name] = $_SESSION['user'][$name]; elseif (isset($_COOKIE['field_' . $name]))
+				$_POST[$name] = $_SESSION['user'][$name];
+			elseif (isset($_COOKIE['field_' . $name]))
 				$_POST[$name] = $_COOKIE['field_' . $name];
 		}
 		return $_POST[$name];
@@ -592,7 +604,8 @@ class pay_class extends kernel_extends
 				'wep' => '0',
 				'negative' => '-1000000000',
 			));
-		} else
+		}
+		else
 			$UGROUP->id = $data1[0]['id'];
 
 		// Юзеры Платежные системы
@@ -608,7 +621,8 @@ class pay_class extends kernel_extends
 				'parent_id' => 0,
 			));
 			$id = $UGROUP->childs['users']->id;
-		} else
+		}
+		else
 			$id = $data2[$email]['id'];
 
 		if (count($this->childs)) {
@@ -655,12 +669,14 @@ class pay_class extends kernel_extends
 			$param['POST']['users'] = (int)$param['POST']['users'];
 			if (!$param['POST']['pay']) {
 				$data['respost'] = array('flag' => 0, 'mess' => 'Неверные данные.');
-			} else {
+			}
+			else {
 				if (isset($param['POST']['plus'])) {
 					$u1 = $_SESSION['user']['id'];
 					$u2 = (int)$param['POST']['users'];
 					$txt = 'Пополнение баланса';
-				} else {
+				}
+				else {
 					$u2 = $_SESSION['user']['id'];
 					$u1 = (int)$param['POST']['users'];
 					$txt = 'Снятие со счёта';
@@ -728,14 +744,17 @@ class pay_class extends kernel_extends
 						list($flag, $mess, $refer) = call_user_func_array($functOK, $paramOK);
 						if ($flag == 1) {
 							$this->addPayMess($mess);
-						} else {
+						}
+						else {
 							$this->payBack($from_user, $to_user, $summ);
 						}
 					}
-				} else
+				}
+				else
 					$mess = static_main::m('pay_err', $this);
 			}
-		} else {
+		}
+		else {
 			$flag = -1; //Выводим форму подтверждения
 			$_SESSION[$n] = true;
 		}
@@ -774,7 +793,8 @@ class pay_class extends kernel_extends
 			$def = ($temp[0]['negative'] + $d);
 			if ($def < 0)
 				$mess = static_main::m('pay_nomonney', array($def . ' ' . $UGROUP->config['payon']), $this);
-		} elseif ($d < 0)
+		}
+		elseif ($d < 0)
 			$mess = static_main::m('pay_nomonney', array(abs($d) . ' ' . $UGROUP->config['payon']), $this);
 		return array($mess, $temp[0]['balance']);
 	}
@@ -834,10 +854,12 @@ class pay_class extends kernel_extends
 					return true;
 				else
 					return false;
-			} else {
+			}
+			else {
 				return true;
 			}
-		} else {
+		}
+		else {
 			return false;
 		}
 	}
@@ -921,7 +943,8 @@ class pay_class extends kernel_extends
 			if ($row['paylink']) {
 				$row['paylink'] .= '&payhash=' . $this->getPayHash($row);
 				$payLink .= '<p><a href="' . $row['paylink'] . '" target="_blank">' . $caption . '</a></p>';
-			} else
+			}
+			else
 				$payLink .= '<p><a href="http://' . $this->_CFG['site']['www'] . '" target="_blank">Cтатус счета смотреть на сайте</a></p>';
 
 			$datamail = array(

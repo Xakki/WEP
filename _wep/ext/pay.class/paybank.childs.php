@@ -156,7 +156,8 @@ class paybank_class extends kernel_extends
 				'html' => transformPHP($DATA, '#pay#paybankReceipt'),
 				'title' => 'Квитанция',
 			);
-		} else {
+		}
+		else {
 			$result = array(
 				'html' => transformPHP($DATA, '#pay#paybankBill'),
 				'title' => 'Счёт',

@@ -48,7 +48,8 @@ function tpl_list($data)
 		}
 		$html .= '</table>';
 		$_tpl['onload'] .= 'wep.clickAjax(\'.goClick\');';
-	} else
+	}
+	else
 		$html .= '<messages><notice>Операций по счёту нет.</notice></messages>';
 	return $html . '<br/>';
 }

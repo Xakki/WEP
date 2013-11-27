@@ -16,7 +16,8 @@ function tpl_statusForm($data)
 
 	if ($data['#resFlag#'] === -1) {
 		$data['messages'][] = array('error', 'Ошибка! У вас не достаточно прав доступа, для просмотра этого счета!');
-	} elseif (isset($data['showStatus']) and is_array($data['showStatus'])) {
+	}
+	elseif (isset($data['showStatus']) and is_array($data['showStatus'])) {
 		$currency = $data['#config#']['curr'];
 		$pd = $data['showStatus'];
 

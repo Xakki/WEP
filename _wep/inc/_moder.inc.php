@@ -40,7 +40,8 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 //$FUNCPARAM[1] - php template
 if (!$FUNCPARAM[0] or !_new_class($FUNCPARAM[0], $MODUL)) {
 	$html = '<div style="color:red;">' . date('H:i:s') . ' : Модуль ' . $FUNCPARAM[0] . ' не установлен</div>';
-} else {
+}
+else {
 	if (!$FUNCPARAM[1]) $FUNCPARAM[1] = 'superlist';
 	if (isset($_GET['_oid']) and $_GET['_oid'] != '') $MODUL->owner_id = $_GET['_oid'];
 	if (isset($_GET['_pid']) and $_GET['_pid'] != '') $MODUL->parent_id = $_GET['_pid'];
@@ -89,11 +90,13 @@ if (!$FUNCPARAM[0] or !_new_class($FUNCPARAM[0], $MODUL)) {
 			if (isset($DATA['formcreat']) and $this->formFlag == 1) {
 				$_SESSION['mess'] = $DATA['formcreat']['messages'];
 				static_main::redirect($DATA['formcreat']['options']['prevhref']);
-			} elseif (!isset($DATA['formcreat']) and $this->formFlag != 3) {
+			}
+			elseif (!isset($DATA['formcreat']) and $this->formFlag != 3) {
 				$_SESSION['mess'] = $DATA['messages'];
 				end($DATA['path']);
 				static_main::redirect(str_replace("&amp;", "&", key($DATA['path'])));
-			} else {
+			}
+			else {
 				if (!isset($_SESSION['mess']) or !is_array($_SESSION['mess']))
 					$_SESSION['mess'] = array();
 				elseif (count($_SESSION['mess']))
@@ -103,13 +106,15 @@ if (!$FUNCPARAM[0] or !_new_class($FUNCPARAM[0], $MODUL)) {
 				$html = transformPHP($DATA, $FUNCPARAM[1]);
 				$_SESSION['mess'] = array();
 			}
-		} else {
+		}
+		else {
 			if (count($DATA['formcreat']['messages']))
 				$DATA = $DATA['formcreat'];
 			$html = transformPHP($DATA, '#pg#messages');
 		}
 
-	} else
+	}
+	else
 		$html = '<div style="color:red;">' . date('H:i:s') . ' : Доступ к модулю ' . $FUNCPARAM[0] . ' запрещён администратором</div>';
 }
 return $html;

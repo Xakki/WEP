@@ -43,11 +43,13 @@ if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] === 0) {
 			$_tpl['text'] = 'Как ты попал сюда? Вернитесь на <a href="' . ADMIN_BH . '/install/?step=' . $_SESSION['step'] . '">Шаг №' . $_SESSION['step'] . '</a>.';
 		else
 			$_tpl['text'] = require($file);
-	} elseif ($_SESSION['step'] > 3 and $_GET['step'] == $_SESSION['step']) {
+	}
+	elseif ($_SESSION['step'] > 3 and $_GET['step'] == $_SESSION['step']) {
 		$_tpl['text'] = '<h2>Установка завершена</h2><br/>
 			<a href="/index.html">Перейти на сайт</a><br/>
 			<a href="' . ADMIN_BH . '/login">Перейти в админку</a>';
-	} else {
+	}
+	else {
 		$_tpl['text'] = '<h2>Ошибка.</h2><br/>
 			<a href="' . ADMIN_BH . '/install">Перейти на начало установки</a><br/>
 			<a href="' . ADMIN_BH . '/login">Перейти в админку</a>';
@@ -70,7 +72,8 @@ if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] === 0) {
 	  if($result[0]) $result[0] = '<div style="color:red;">'.$result[0].'</div>';
 	  elseif(isset($_GET['install'])) $result[0] = '<div style="color:red;">Установка недостающих данных</div>';
 	  $_tpl['mess'] = '<div class="messhead">'.$result[0].'</div>'; */
-} else {
+}
+else {
 	$_REQUEST['ref'] = $_SERVER['REQUEST_URI'];
 
 	if ($_NEED_INSTALL)

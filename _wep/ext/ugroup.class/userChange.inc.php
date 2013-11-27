@@ -29,22 +29,27 @@ if (isset($_SESSION['superuser']) or $_SESSION['user']['level'] == 0) {
 		if ($id == 0 and isset($_SESSION['superuser'])) {
 			if ($UGROUP->childs['users']->setUserSession($_SESSION['superuser'])) {
 				$html .= 'Вы успешно переключились на пользователя ' . $_SESSION['user']['name'];
-			} else
+			}
+			else
 				$html .= 'Ошибка. Выбранный пользователь не существует.';
 			unset($_SESSION['superuser']);
-		} else {
+		}
+		else {
 			if (!isset($_SESSION['superuser']))
 				$_SESSION['superuser'] = $_SESSION['user']['id'];
 			if ($UGROUP->childs['users']->setUserSession($id)) {
 				$html .= 'Вы успешно переключились на пользователя ' . $_SESSION['user']['name'];
-			} else
+			}
+			else
 				$html .= 'Ошибка. Выбранный пользователь не существует.';
 		}
-	} else {
+	}
+	else {
 		if (isset($_SESSION['superuser'])) {
 			$html .= '<h3><a href="' . $this->getHref() . '/0.html">Переключиться на свои аккаунт</a></h3>';
 			$noid = $_SESSION['superuser']['id'];
-		} else
+		}
+		else
 			$noid = $_SESSION['user']['id'];
 		$DATA = $UGROUP->childs['users']->_query('*', 'WHERE active=1 and id!=' . $noid . ' and pass!="" ORDER BY owner_id, name', 'id');
 		$DATA2 = $UGROUP->_query('*', 'WHERE active=1 and level<10', 'id');

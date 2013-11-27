@@ -103,7 +103,8 @@ class static_super
 							}
 							unset($tp);
 						}
-					} else
+					}
+					else
 						$parent_id = 0;
 				}
 				//$path[$_this->_cl . $parent_id]['name'] = $_this->caption.': '.$path[$_this->_cl . $parent_id]['name'];
@@ -113,7 +114,8 @@ class static_super
 
 				$PARAM['path'] += array_reverse($path); //Переворачиваем
 				$PARAM['path'][$_this->_cl]['name'] .= ' : ' . $name;
-			} else {
+			}
+			else {
 				$_this->data = $_this->_select();
 				//********* Path ************
 				if ($_this->data[$_this->id][$_this->_listname])
@@ -144,7 +146,8 @@ class static_super
 				/*				 * **** CHILD ************************** */
 				/*				 * ************************************* */
 			}
-		} else {
+		}
+		else {
 			global $_tpl;
 			/*if ($_this->includeCSStoWEP and $_this->config['cssIncludeToWEP'])
 			{
@@ -297,8 +300,10 @@ class static_super
 					if (isset($_this->_AllowAjaxFn[$_REQUEST['_func']])) {
 //                        eval('$data=$_this->'.$_GET['_func'].'();');
 						$PARAM['formtools'] = call_user_func_array(array($_this, $_GET['_func']), array());
-					} elseif (!isset($PARAM['topmenu'][$_REQUEST['_func']]) or !$PARAM['topmenu'][$_REQUEST['_func']]['function'])
-						$messages[] = static_main::am('error', 'Function for servise not found'); else {
+					}
+					elseif (!isset($PARAM['topmenu'][$_REQUEST['_func']]) or !$PARAM['topmenu'][$_REQUEST['_func']]['function'])
+						$messages[] = static_main::am('error', 'Function for servise not found');
+					else {
 						$method = $PARAM['topmenu'][$_REQUEST['_func']]['function'];
 						if (!is_array($method))
 							$method = array($_this, $method, array());
@@ -521,10 +526,11 @@ class static_super
 						// Условие для множественных списков
 						if (isset($r['multiple']) and $r['multiple']) {
 							$subQuery .= $lsn['idThis'] . ' LIKE concat("%|",' . $lsn['idField'] . ',"|%") ';
-						} else {
+						}
+						else {
 							$subQuery .= ' ' . $lsn['idThis'] . ' = ' . $lsn['idField'];
 							if (isset($lsn['join']) or isset($lsn['leftJoin'])) // доп условия связи
-							$subQuery .= ' ' . str_replace('tx.', 't' . $t . '.', ($lsn['leftJoin'] . $lsn['join']));
+								$subQuery .= ' ' . str_replace('tx.', 't' . $t . '.', ($lsn['leftJoin'] . $lsn['join']));
 						}
 
 						//$arrno[$ck.'_cnt'] = 1;
@@ -536,7 +542,8 @@ class static_super
 						}
 
 						$cls[0][] = '(' . $subQuery . ') as name_' . $k;
-					} else {
+					}
+					else {
 						// Старые Left join тормозят
 						if (isset($r['multiple']) and $r['multiple'])
 							$cls[0][] = 'group_concat(' . $lsn['nameField'] . ' SEPARATOR " | ") as name_' . $k;
@@ -556,19 +563,23 @@ class static_super
 						// JOIN WHERE
 						if (isset($r['multiple']) and $r['multiple']) {
 							$cls[1] .= 't1.' . $k . ' LIKE concat("%|",' . $lsn['idField'] . ',"|%") ';
-						} elseif (isset($lsn['join']) or isset($lsn['leftJoin'])) {
+						}
+						elseif (isset($lsn['join']) or isset($lsn['leftJoin'])) {
 							if (!isset($lsn['idThis']))
 								$lsn['idThis'] = $k;
 							$cls[1] .= ' ' . $lsn['idField'] . '=t1.' . $lsn['idThis'] . ' ' . str_replace('tx.', 't' . $t . '.', ($lsn['leftJoin'] . $lsn['join']));
-						} else {
+						}
+						else {
 							$cls[1] .= 't1.' . $k . '=' . $lsn['idField'] . ' ';
 						}
 					}
 
 					$t++;
-				} elseif (isset($r['listname']) and !is_array($r['listname'])) {
+				}
+				elseif (isset($r['listname']) and !is_array($r['listname'])) {
 					$_this->_checkList($r['listname']);
-				} elseif (isset($r['concat']) and $r['concat']) {
+				}
+				elseif (isset($r['concat']) and $r['concat']) {
 					$cls[0][] = $r['concat'] . ' as ' . $k;
 					$r['mask']['sort'] = '';
 				}
@@ -576,7 +587,8 @@ class static_super
 				$act = 0;
 				//if($_this->_prmSortField($k)) {
 				if (isset($_GET['sort']) and $_GET['sort'] == $k) $act = 1;
-				elseif (isset($_GET['dsort']) and $_GET['dsort'] == $k) $act = 2; elseif (strpos($order, 't1.' . $k) !== false) {
+				elseif (isset($_GET['dsort']) and $_GET['dsort'] == $k) $act = 2;
+				elseif (strpos($order, 't1.' . $k) !== false) {
 					if ($order == 't1.' . $k)
 						$act = 1;
 					else
@@ -595,7 +607,8 @@ class static_super
 				if ($tmpsort)
 					$order = 'name_' . $k;
 				elseif (isset($r['mask']['sort']) and is_string($r['mask']['sort']))
-					$order = $r['mask']['sort'] . $k; else
+					$order = $r['mask']['sort'] . $k;
+				else
 					$order = 't1.' . $k;
 				if (isset($_GET['dsort']) and $k == $_GET['dsort'])
 					$order .= ' DESC';
@@ -644,7 +657,8 @@ class static_super
 						if (isset($row['_ext_' . $k])) {
 							if (isset($_this->_CFG['form']['flashFormat'][$row['_ext_' . $k]])) $tditem['fileType'] = 'swf';
 							elseif (isset($_this->_CFG['form']['imgFormat'][$row['_ext_' . $k]])) $tditem['fileType'] = 'img';
-						} else
+						}
+						else
 							$tditem['fileType'] = 'file';
 					}
 
@@ -667,7 +681,8 @@ class static_super
 							// Тип поля
 							if ($_this->fields[$k]['type'] == 'int'  and $row[$k]) {
 								$temp = date($r['mask']['format'], $row[$k]);
-							} elseif ($_this->fields[$k]['type'] == 'timestamp' and $row[$k]) {
+							}
+							elseif ($_this->fields[$k]['type'] == 'timestamp' and $row[$k]) {
 								$fs = explode(' ', $row[$k]);
 								$f = explode('-', $fs[0]);
 								$s = explode(':', $fs[1]);
@@ -681,14 +696,18 @@ class static_super
 
 							$tditem['value'] .= $temp;
 
-						} elseif ($k == 'mf_ipcreate')
-							$tditem['value'] .= long2ip($row[$k]); elseif ($r['type'] == 'checkbox')
-							$tditem['value'] .= $_this->_CFG['enum']['yesno'][$row[$k]]; elseif (isset($r['listname']) and is_array($r['listname'])) { //isset($row['name_'.$k])
+						}
+						elseif ($k == 'mf_ipcreate')
+							$tditem['value'] .= long2ip($row[$k]);
+						elseif ($r['type'] == 'checkbox')
+							$tditem['value'] .= $_this->_CFG['enum']['yesno'][$row[$k]];
+						elseif (isset($r['listname']) and is_array($r['listname'])) { //isset($row['name_'.$k])
 							if (isset($r['multiple']) and $r['multiple'])
 								$tditem['value'] = str_replace('|', ', ', trim($row['name_' . $k], '|'));
 							else
 								$tditem['value'] = $row['name_' . $k];
-						} elseif (isset($r['listname']) and $r['listname']) { // and !is_array($r['listname'])
+						}
+						elseif (isset($r['listname']) and $r['listname']) { // and !is_array($r['listname'])
 							if (isset($r['multiple']) and $r['multiple'])
 								$row[$k] = explode('|', trim($row[$k], '|'));
 							else
@@ -700,17 +719,22 @@ class static_super
 									$templist = $_this->_CFG['enum_check'][$_this->_cl . '_' . $r['listname']][$er];
 									if (!is_array($templist)) {
 										$temp[] = $templist;
-									} elseif (isset($templist['#name#'])) {
+									}
+									elseif (isset($templist['#name#'])) {
 										$temp[] = $templist['#name#'];
-									} else
+									}
+									else
 										$temp[] = '#unknown_data#';
-								} elseif ($er)
+								}
+								elseif ($er)
 									$temp[] = '<span style="color:gray;">' . $er . '</span>';
 							}
 							$tditem['value'] = implode(', ', $temp);
-						} elseif (isset($r['mask']['substr']) and $r['mask']['substr'] > 0)
-							$tditem['value'] = _substr(strip_tags(htmlspecialchars_decode($row[$k])), 0, $r['mask']['substr']); else //if($r['type']!='file')
-						$tditem['value'] = $row[$k];
+						}
+						elseif (isset($r['mask']['substr']) and $r['mask']['substr'] > 0)
+							$tditem['value'] = _substr(strip_tags(htmlspecialchars_decode($row[$k])), 0, $r['mask']['substr']);
+						else //if($r['type']!='file')
+							$tditem['value'] = $row[$k];
 
 						if (isset($r['mask']['sformat'])) {
 							if (method_exists($_this, $r['mask']['sformat']))
@@ -782,9 +806,12 @@ class static_super
 			if ($_this->id)
 				$param['clause']['t1.' . $_this->mf_istree] = 't1.' . $_this->mf_istree . '="' . $_this->id . '"';
 			elseif (isset($param['first_id']))
-				$param['clause']['t1.' . $_this->mf_istree] = 't1.id="' . $param['first_id'] . '"'; elseif (isset($param['first_pid']))
-				$param['clause']['t1.' . $_this->mf_istree] = 't1.' . $_this->mf_istree . '="' . $param['first_id'] . '"'; elseif ($_this->mf_use_charid)
-				$param['clause']['t1.' . $_this->mf_istree] = 't1.' . $_this->mf_istree . '=""'; else
+				$param['clause']['t1.' . $_this->mf_istree] = 't1.id="' . $param['first_id'] . '"';
+			elseif (isset($param['first_pid']))
+				$param['clause']['t1.' . $_this->mf_istree] = 't1.' . $_this->mf_istree . '="' . $param['first_id'] . '"';
+			elseif ($_this->mf_use_charid)
+				$param['clause']['t1.' . $_this->mf_istree] = 't1.' . $_this->mf_istree . '=""';
+			else
 				$param['clause']['t1.' . $_this->mf_istree] = 't1.' . $_this->mf_istree . '=0';
 
 			if ($_this->owner and $_this->owner->id and ($_this->id or (isset($param['first_pid']) and $param['first_pid'])))
@@ -1069,7 +1096,8 @@ class static_super
 				$RESULT['messages'][] = static_main::am('error', 'Sorting error', $_this);
 				return $RESULT;
 			}
-		} else {
+		}
+		else {
 			$qr = '';
 			if ($_this->mf_istree and $pid)
 				$qr .= ' WHERE `' . $_this->mf_istree . '`=' . $pid;

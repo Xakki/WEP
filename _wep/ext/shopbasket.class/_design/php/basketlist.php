@@ -20,7 +20,8 @@ function tpl_basketlist(&$data)
 
 	if (isset($data['#item#'])) {
 		$html .= tpl_basketlist_item($data);
-	} elseif (isset($data['#list#'])) {
+	}
+	elseif (isset($data['#list#'])) {
 		if (isset($data['#filter#'])) {
 
 			$html .= '<div id="dialog-filter" title="Фильтр" style="display:none;">' . transformPHP($data['#filter#'], '#pg#filter') . '</div> <button id="open-filter">Показать фильтр</button>';
@@ -87,10 +88,12 @@ function tpl_basketlist(&$data)
 					</tr>';
 			}
 			$html .= '</table>';
-		} else
+		}
+		else
 			$html .= '<div class="basket">' . static_render::message('Заказы не найдены') . '</div>';
 
-	} else
+	}
+	else
 		$html .= '<div class="basket">' . static_render::message('Заказы не найдены') . '</div>';
 
 	return $html;
@@ -196,7 +199,8 @@ function tpl_basketlist_item(&$data)
 					<td>' . long2ip($r['mf_ipcreate']);
 		}
 		$html .= '</table>';
-	} else {
+	}
+	else {
 		$html = '<div class="basket">' . static_render::message('Не верный адрес страницы либо данный заказ был удален') . '</div>';
 	}
 	return $html;

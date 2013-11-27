@@ -31,7 +31,8 @@ foreach ($data as $key => $row) {
 							$subPath = ceil($id / $mod);
 							$newFile = $path . $imod['pref'] . 'thumb/' . $subPath . '/' . $id . '.' . $explodeFile[1];
 							static_tools::_checkdir($path . $imod['pref'] . 'thumb/' . $subPath);
-						} else {
+						}
+						else {
 							$id = (int)$explodeFile[0];
 							$subPath = ceil($id / $mod);
 							$newFile = $path . $subPath . '/' . $entry;

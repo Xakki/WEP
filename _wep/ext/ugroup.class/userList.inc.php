@@ -28,7 +28,8 @@ if (isset($this->pageParam[0])) {
 	$this->pageinfo['path'][''] = $DATA[0]['name'];
 	$DATA = array($FUNCPARAM[1] => array('data' => $DATA[0], 'href' => $this->getHref()));
 	$html = transformPHP($DATA, $FUNCPARAM[1]);
-} else {
+}
+else {
 	$DATA = $UGROUP->childs['users']->_query('*', 'WHERE active=1 ORDER BY name');
 	$DATA = array($FUNCPARAM[0] => array('list' => $DATA, 'href' => $this->getHref(), 'userpic' => $UGROUP->config['userpic']));
 	$html = transformPHP($DATA, $FUNCPARAM[0]);

@@ -46,14 +46,16 @@ function formSelectGenerator($data, $val = NULL, $flag = 0, &$openG = false)
 					$texthtml .= '</optgroup>' . "\n";
 				$texthtml .= '<optgroup label="' . $r['#name#'] . '">' . "\n";
 				$openG = true;
-			} else {
+			}
+			else {
 				if ($flag > 0 and !$openG)
 					$r['#name#'] = str_repeat("&#160;&#160;", $flag) . ' ' . $r['#name#'];
 				$sel = '';
 				if (!is_null($val)) {
 					if (isset($val[$r['#id#']]))
 						$sel = 'selected="selected"';
-				} elseif (isset($r['#sel#'])) {
+				}
+				elseif (isset($r['#sel#'])) {
 					if ($r['#sel#'])
 						$sel = 'selected="selected"';
 				}

@@ -19,7 +19,8 @@ function tpl_pathPage(&$data, $form = 0)
 			if ($i > 1) $html .= ' / ';
 			if ($i != $last) {
 				$html .= '<a href="' . $r['href'] . '">' . $r['name'] . '</a>';
-			} elseif ($i == $last) $html .= '<h1>' . $r['name'] . '</h1>';
+			}
+			elseif ($i == $last) $html .= '<h1>' . $r['name'] . '</h1>';
 			$i++;
 		}
 		$html .= '</div>';

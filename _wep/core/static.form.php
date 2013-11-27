@@ -29,38 +29,37 @@ class static_form
 			return static_main::log('error', static_main::m('add_empty'));
 		}
 
-        // add ordind field
-        if ($_this->mf_ordctrl and (!isset($_this->fld_data[$_this->mf_ordctrl]) or $_this->fld_data[$_this->mf_ordctrl] == 0)) {
-            if ($ordind = $_this->_get_new_ord())
-                $_this->fld_data[$_this->mf_ordctrl] = $ordind;
-        }
-        // add parent_id field
-        if ($_this->mf_istree and $_this->parent_id and !$_this->fld_data[$_this->mf_istree]) {
-            $_this->fld_data[$_this->mf_istree] = $_this->parent_id;
+		// add ordind field
+		if ($_this->mf_ordctrl and (!isset($_this->fld_data[$_this->mf_ordctrl]) or $_this->fld_data[$_this->mf_ordctrl] == 0)) {
+			if ($ordind = $_this->_get_new_ord())
+				$_this->fld_data[$_this->mf_ordctrl] = $ordind;
+		}
+		// add parent_id field
+		if ($_this->mf_istree and $_this->parent_id and !$_this->fld_data[$_this->mf_istree]) {
+			$_this->fld_data[$_this->mf_istree] = $_this->parent_id;
 
-        }
+		}
 
-        // fix tree root
-        if ($_this->mf_istree_root && $_this->parent_id) {
-            $_this->fld_data[$_this->ns_config['root']] = $_this->tree_data[$_this->parent_id][$_this->ns_config['root']];
-        }
+		// fix tree root
+		if ($_this->mf_istree_root && $_this->parent_id) {
+			$_this->fld_data[$_this->ns_config['root']] = $_this->tree_data[$_this->parent_id][$_this->ns_config['root']];
+		}
 
-        // add owner_id field
-        if ($_this->owner and $_this->owner->id and (!isset($_this->fld_data[$_this->owner_name]) or !$_this->fld_data[$_this->owner_name]))
-            $_this->fld_data[$_this->owner_name] = $_this->owner->id;
-
+		// add owner_id field
+		if ($_this->owner and $_this->owner->id and (!isset($_this->fld_data[$_this->owner_name]) or !$_this->fld_data[$_this->owner_name]))
+			$_this->fld_data[$_this->owner_name] = $_this->owner->id;
 
 
 		if (!self::_add_fields($_this, $flag_update)) {
 			return static_main::log('error', static_main::m('add_error_add_fields'));
 		}
 
-        // FIX tree root
-        if ($_this->mf_istree_root && !$_this->parent_id) {
-            $where = $_this->_id_as_string();
-            $_this->fld_data = array($_this->ns_config['root'] => $_this->id);
-            self::_update_fields($_this, $where);
-        }
+		// FIX tree root
+		if ($_this->mf_istree_root && !$_this->parent_id) {
+			$where = $_this->_id_as_string();
+			$_this->fld_data = array($_this->ns_config['root'] => $_this->id);
+			self::_update_fields($_this, $where);
+		}
 
 		//umask($_this->_CFG['wep']['chmod']);
 		if (isset($_this->att_data) && count($_this->att_data)) {
@@ -106,7 +105,8 @@ class static_form
 				elseif (self::isTypeFloat($_this->fields[$key]['type']))
 					$value = floatval($value); // Шифрованное поле
 				elseif (isset($_this->fields[$key]['secure']))
-					$value = '\'' . $_this->SqlEsc(static_main::EnDecryptString($value)) . '\''; else
+					$value = '\'' . $_this->SqlEsc(static_main::EnDecryptString($value)) . '\'';
+				else
 					$value = '\'' . $_this->SqlEsc($value) . '\'';
 			}
 			if ($flag_update) {
@@ -141,7 +141,8 @@ class static_form
 		if (!$_this->mf_use_charid && !isset($_this->fld_data['id']))
 			$_this->id = (int)$result->lastId();
 		elseif ($_this->fld_data['id'])
-			$_this->id = $_this->fld_data['id']; else $_this->id = NULL;
+			$_this->id = $_this->fld_data['id'];
+		else $_this->id = NULL;
 
 		return true;
 	}
@@ -192,7 +193,8 @@ class static_form
 				if (file_exists($newname)) { // Удаляем старое
 					_chmod($newname);
 					unlink($newname);
-				} else {
+				}
+				else {
 					static_tools::_checkdir(dirname($newname));
 				}
 
@@ -204,7 +206,7 @@ class static_form
 				// Дополнительные изображения
 				if (isset($_this->attaches[$key]['thumb'])) {
 					if (isset($value['att_type']) and $value['att_type'] != 'img') // если это не рисунок, то thumb не приминим
-					return static_main::log('error', static_main::m('File is not image', array($newname)));
+						return static_main::log('error', static_main::m('File is not image', array($newname)));
 
 					if (count($_this->attaches[$key]['thumb']))
 						foreach ($_this->attaches[$key]['thumb'] as $imod) {
@@ -230,8 +232,10 @@ class static_form
 		elseif ($imod['type'] == 'resize')
 			$res = static_image::_resizeImage($source, $thumb, $imod['w'], $imod['h']); // TODO - IMAGE OPTION normalize
 		elseif ($imod['type'] == 'resizecrop' or $imod['type'] == 'thumb' or $imod['type'] == 'resize')
-			$res = static_image::_thumbnailImage($source, $thumb, $imod['w'], $imod['h']); elseif ($imod['type'] == 'watermark')
-			$res = static_image::_waterMark($source, $thumb, $imod['logo'], $imod['x'], $imod['y']); elseif ($source != $thumb)
+			$res = static_image::_thumbnailImage($source, $thumb, $imod['w'], $imod['h']);
+		elseif ($imod['type'] == 'watermark')
+			$res = static_image::_waterMark($source, $thumb, $imod['logo'], $imod['x'], $imod['y']);
+		elseif ($source != $thumb)
 			$res = copy($source, $thumb);
 
 		if ($res)
@@ -303,14 +307,14 @@ class static_form
 		if ($_this->mf_ipcreate) {
 			unset($_this->fld_data['mf_ipcreate']);
 		}
-        if ($_this->mf_istree_root) {
-            if($_this->fld_data[$_this->mf_istree]) {
-                $_this->fld_data[$_this->ns_config['root']] = $_this->tree_data[$_this->fld_data[$_this->mf_istree]][$_this->ns_config['root']];
-            }
-            else {
-                $_this->fld_data[$_this->ns_config['root']] = $_this->id;
-            }
-        }
+		if ($_this->mf_istree_root) {
+			if ($_this->fld_data[$_this->mf_istree]) {
+				$_this->fld_data[$_this->ns_config['root']] = $_this->tree_data[$_this->fld_data[$_this->mf_istree]][$_this->ns_config['root']];
+			}
+			else {
+				$_this->fld_data[$_this->ns_config['root']] = $_this->id;
+			}
+		}
 
 		// rename attaches & memos
 		if (!is_array($_this->id) and isset($_this->fld_data['id']) && $_this->fld_data['id'] != $_this->id && $_this->id) {
@@ -346,11 +350,16 @@ class static_form
 			if (!isset($_this->fields[$key]['noquote'])) {
 				if (is_array($value)) {
 					$value = '\'' . $_this->SqlEsc(preg_replace('/\|+/', '|', '|' . implode('|', $value) . '|')) . '\'';
-				} elseif ($_this->fields[$key]['type'] == 'bool')
-					$value = (int)(bool)$value; elseif (strpos($_this->fields[$key]['type'], 'int') !== false)
-					$value = str2int($value); elseif (strpos($_this->fields[$key]['type'], 'float') !== false)
-					$value = floatval($value); elseif (isset($_this->fields[$key]['secure']))
-					$value = '\'' . $_this->SqlEsc(static_main::EnDecryptString($value)) . '\''; else
+				}
+				elseif ($_this->fields[$key]['type'] == 'bool')
+					$value = (int)(bool)$value;
+				elseif (strpos($_this->fields[$key]['type'], 'int') !== false)
+					$value = str2int($value);
+				elseif (strpos($_this->fields[$key]['type'], 'float') !== false)
+					$value = floatval($value);
+				elseif (isset($_this->fields[$key]['secure']))
+					$value = '\'' . $_this->SqlEsc(static_main::EnDecryptString($value)) . '\'';
+				else
 					$value = '\'' . $_this->SqlEsc($value) . '\'';
 			}
 
@@ -560,7 +569,8 @@ class static_form
 		if (isset($ff['mask']['eval']))
 			$eval = $ff['mask']['eval'];
 		elseif (isset($ff['mask']['evala']) and !$_this->id)
-			$eval = $ff['mask']['evala']; elseif (isset($ff['mask']['evalu']) and $_this->id)
+			$eval = $ff['mask']['evala'];
+		elseif (isset($ff['mask']['evalu']) and $_this->id)
 			$eval = $ff['mask']['evalu'];
 		return $eval;
 	}
@@ -637,13 +647,16 @@ class static_form
 //									}
 								}
 							}
-						} elseif (isset($_this->_CFG['form']['flashFormat'][$r['ext']]) and $_this->id) {
+						}
+						elseif (isset($_this->_CFG['form']['flashFormat'][$r['ext']]) and $_this->id) {
 							$r['att_type'] = 'swf'; // Флешки
-						} else {
+						}
+						else {
 							$r['value'] = '';
 							// TODO : можно описать ещё какиенибудь специфические типы
 						}
-					} else {
+					}
+					else {
 						$r['value'] = '';
 					}
 
@@ -652,7 +665,8 @@ class static_form
 
 					if (!isset($r['comment']))
 						$r['comment'] = static_main::m('_file_size') . $_this->attaches[$k]['maxsize'] . 'Kb';
-				} elseif ($r['type'] == 'ajaxlist') {
+				}
+				elseif ($r['type'] == 'ajaxlist') {
 					if (!isset($r['placeholder']) or !$r['placeholder'])
 						$r['placeholder'] = 'Введите текст';
 					if (isset($r['mask']['min']) and $r['mask']['min'] and (!isset($r['value']) or $r['value'] < $r['mask']['min']))
@@ -666,7 +680,8 @@ class static_form
 						if (isset($r['multiple'])) {
 							foreach ($r['value'] as $kv => $rv)
 								$r['value_2'][$kv] = (isset($md[$rv]) ? $md[$rv] : '');
-						} else $r['value_2'] = $md[$r['value']];
+						}
+						else $r['value_2'] = $md[$r['value']];
 					}
 
 				} /*elseif(isset($r['listname']) and isset($r['multiple']) and $r['multiple']===FORM_MULTIPLE_JQUERY and !$r['readonly']) {// and isset($_this->fields[$k])
@@ -733,7 +748,8 @@ class static_form
 						if (!isset($r['value']))
 							$r['value'] = array();
 						elseif (!is_array($r['value']))
-							$r['value'] = array($r['value'] => $r['value']); elseif (is_array($r['value']) and count($r['value']) and $r['multiple'] != FORM_MULTIPLE_KEY)
+							$r['value'] = array($r['value'] => $r['value']);
+						elseif (is_array($r['value']) and count($r['value']) and $r['multiple'] != FORM_MULTIPLE_KEY)
 							$r['value'] = array_combine($r['value'], $r['value']);
 
 						if (is_array($md) and count($md)) {
@@ -743,13 +759,15 @@ class static_form
 									$key = $r['mask']['begin']; //стартовый ID массива
 								else
 									$key = key($md);
-							} else {
+							}
+							else {
 								$md = array($md);
 								$key = 0;
 							}
 							list($r['valuelist'], $r['sel']) = $_this->_forlist($md, $key, $r['value'], $r['multiple']);
 						}
-					} else // Форма списка  только для чтения, выводится в виде текста
+					}
+					else // Форма списка  только для чтения, выводится в виде текста
 					{
 						if (is_array($r['listname']) and isset($r['listname']['idThis']) and $_this->id) {
 							$r['value'] = $_this->data[$_this->id][$r['listname']['idThis']];
@@ -764,16 +782,20 @@ class static_form
 									foreach ($selectedData as $listname)
 										$r['value'][] = $listname['#name#'];
 									$r['value'] = implode(',', $r['value']);
-								} else
+								}
+								else
 									$r['value'] = implode(',', $selectedData);
-							} else
+							}
+							else
 								$r['value'] = $selectedData;
 						}
 					}
-				} elseif ($r['type'] == 'ckedit') {
+				}
+				elseif ($r['type'] == 'ckedit') {
 					if (!isset($r['paramedit']))
 						$r['paramedit'] = array();
-				} elseif ($k == 'mf_ipcreate') {
+				}
+				elseif ($k == 'mf_ipcreate') {
 					$r['value'] = long2ip($r['value']);
 				}
 
@@ -798,7 +820,8 @@ class static_form
 				if (!isset($r['maxlength']) and isset($r['mask']['max']) && $r['mask']['max'] > 0) {
 					if (static_form::isTypeNumber($r['type'])) {
 						$r['maxlength'] = _strlen($r['mask']['max']);
-					} else
+					}
+					else
 						$r['maxlength'] = $r['mask']['max'];
 
 				}
@@ -860,7 +883,8 @@ class static_form
 			$eval = self::getEvalForm($_this, $form);
 			if ($eval !== '') {
 				// **************
-			} elseif ((isset($form['readonly']) and $form['readonly']) or
+			}
+			elseif ((isset($form['readonly']) and $form['readonly']) or
 				(isset($form['mask']['fview']) and $form['mask']['fview'] == 2) or
 				(isset($form['mask']['usercheck']) and !static_main::_prmGroupCheck($form['mask']['usercheck']))
 			) {
@@ -869,7 +893,8 @@ class static_form
 
 			if ($form['type'] == 'file') {
 				self::check_file_field($_this, $form, $error, $data, $key);
-			} elseif ($form['type'] == 'cf_fields') {
+			}
+			elseif ($form['type'] == 'cf_fields') {
 				// TODO : проверка правильности форм
 			} /*Капча*/
 			elseif ($form['type'] == 'captcha') {
@@ -879,7 +904,8 @@ class static_form
 				/*if($data[$key]!=$form['captcha']) {
 					$error[] = 31;
 				}*/
-			} elseif (isset($form['multiple']) and $form['multiple']) {
+			}
+			elseif (isset($form['multiple']) and $form['multiple']) {
 				if (isset($form['mask']['minarr']) and $form['mask']['minarr'] > 0 and (!isset($data[$key]) or !count($data[$key])))
 					$error[] = 1;
 				elseif (isset($data[$key])) {
@@ -904,14 +930,17 @@ class static_form
 						foreach ($data[$key] as $tk => $tv) {
 							self::check_formfield($_this, $form, $error, $data[$key], $tk);
 						}
-					} else {
+					}
+					else {
 						$error[] = 51;
 					}
 				}
-			} else {
+			}
+			else {
 				if (isset($data[$key]) and is_array($data[$key])) {
 					$error[] = 5;
-				} else {
+				}
+				else {
 					self::check_formfield($_this, $form, $error, $data, $key);
 				}
 			}
@@ -919,16 +948,24 @@ class static_form
 			foreach ($error as $row) {
 				$messages = '';
 				if ($row == 2) //max chars
-				$messages = static_main::m('_err_2', array($form['mask']['max'], (_strlen($data[$key]) - $form['mask']['max'])), $_this);
+					$messages = static_main::m('_err_2', array($form['mask']['max'], (_strlen($data[$key]) - $form['mask']['max'])), $_this);
 				elseif ($row == 21) // min chars
-				$messages = static_main::m('_err_21', array($form['mask']['min'], ($form['mask']['min'] - _strlen($data[$key]))), $_this); elseif ($row == 22) //max int
-				$messages = static_main::m('_err_22', $_this) . $form['mask']['max']; elseif ($row == 23) //min int
-				$messages = static_main::m('_err_23', $_this) . $form['mask']['min']; elseif ($row == 24) // min chars
-				$messages = static_main::m('_err_22', $_this) . $form['mask']['max']; elseif ($row == 25) // max chars
-				$messages = static_main::m('_err_23', $_this) . $form['mask']['min']; elseif ($row == 26) // min Array count
-				$messages = static_main::m('_err_22', $_this) . $form['mask']['maxarr']; elseif ($row == 27) // max Array count
-				$messages = static_main::m('_err_23', $_this) . $form['mask']['minarr']; elseif ($row == 29) //limit file size
-				$messages = static_main::m('_err_29', array($_FILES[$key]['name']), $_this) . $form['maxsize'] . 'Kb'; elseif ($row == 3) { //wrong data
+					$messages = static_main::m('_err_21', array($form['mask']['min'], ($form['mask']['min'] - _strlen($data[$key]))), $_this);
+				elseif ($row == 22) //max int
+					$messages = static_main::m('_err_22', $_this) . $form['mask']['max'];
+				elseif ($row == 23) //min int
+					$messages = static_main::m('_err_23', $_this) . $form['mask']['min'];
+				elseif ($row == 24) // min chars
+					$messages = static_main::m('_err_22', $_this) . $form['mask']['max'];
+				elseif ($row == 25) // max chars
+					$messages = static_main::m('_err_23', $_this) . $form['mask']['min'];
+				elseif ($row == 26) // min Array count
+					$messages = static_main::m('_err_22', $_this) . $form['mask']['maxarr'];
+				elseif ($row == 27) // max Array count
+					$messages = static_main::m('_err_23', $_this) . $form['mask']['minarr'];
+				elseif ($row == 29) //limit file size
+					$messages = static_main::m('_err_29', array($_FILES[$key]['name']), $_this) . $form['maxsize'] . 'Kb';
+				elseif ($row == 3) { //wrong data
 					if (isset($form['matches_err']) and count($form['matches_err'][0])) {
 						$textm = 'Обнаружены следующие недопустимые символы - ';
 						foreach ($form['matches_err'][0] as $mk => $mr) {
@@ -943,11 +980,16 @@ class static_form
 						//$FORMS_FIELDS[$key.'_rplf'] = array('type'=>'hidden','value'=>'del');
 					}
 					$messages = static_main::m('_err_3', array($textm), $_this);
-				} elseif ($row == 39) //wrong file type
-				$messages = static_main::m('_err_39', array($_FILES[$key]['name']), $_this) . '- ' . implode(',', array_unique($form['mime'])) . '.'; elseif ($row >= 40 and $row < 50) //error load file
-				$messages = static_main::m('_err_' . $row, array($_FILES[$key]['name']), $_this); elseif ($row == 5)
-					$messages = 'Множественные значения не допустимы!'; elseif ($row == 51)
-					$messages = 'Множественные значения не обнаружены!'; else
+				}
+				elseif ($row == 39) //wrong file type
+					$messages = static_main::m('_err_39', array($_FILES[$key]['name']), $_this) . '- ' . implode(',', array_unique($form['mime'])) . '.';
+				elseif ($row >= 40 and $row < 50) //error load file
+					$messages = static_main::m('_err_' . $row, array($_FILES[$key]['name']), $_this);
+				elseif ($row == 5)
+					$messages = 'Множественные значения не допустимы!';
+				elseif ($row == 51)
+					$messages = 'Множественные значения не обнаружены!';
+				else
 					$messages = static_main::m('_err_' . $row, $_this);
 
 				$arr_err_name[$key] = $key;
@@ -957,11 +999,13 @@ class static_form
 				}
 				if (isset($param['ajax'])) {
 					$_tpl['onload'] .= 'wep.form.putEMF(\'' . $key . '\',\'' . $messages . '\');'; // запись в форму по ссылке
-				} else {
+				}
+				else {
 					if ($form['type'] == 'hidden') {
 						$mess[] = static_main::am('error', 'err');
 						trigger_error('Ошибка в элементе hidden, формы модуля ' . $_this->_cl . ' : `' . $form['caption'] . '` ' . $messages, E_USER_WARNING);
-					} elseif (!isset($param['setAutoSubmit']) or $param['setAutoSubmit'] !== 2) // Если это не AutoSubmit
+					}
+					elseif (!isset($param['setAutoSubmit']) or $param['setAutoSubmit'] !== 2) // Если это не AutoSubmit
 					{
 						$form['error'][] = $messages; // запись в форму по ссылке
 					}
@@ -993,7 +1037,8 @@ class static_form
 					}
 					if (isset($param['ajax'])) {
 						$_tpl['onload'] .= 'wep.form.putEMF(\'' . $key . '\',\'' . $messages . '\');'; // запись в форму по ссылке
-					} elseif (!isset($param['setAutoSubmit']) or $param['setAutoSubmit'] !== 2) // Если это не AutoSubmit
+					}
+					elseif (!isset($param['setAutoSubmit']) or $param['setAutoSubmit'] !== 2) // Если это не AutoSubmit
 					{
 						$form['error'][] = $messages; // запись в форму по ссылке
 					}
@@ -1021,18 +1066,22 @@ class static_form
 			//TODO: multiple
 			if (isset($data[$key . '_del']) and (int)$data[$key . '_del'] == 1) {
 				$_FILES[$key] = $data[$key] = array('name' => ':delete:', 'tmp_name' => ':delete:');
-			} elseif (isset($_FILES[$key]['name']) and $_FILES[$key]['name'] != '') {
+			}
+			elseif (isset($_FILES[$key]['name']) and $_FILES[$key]['name'] != '') {
 				$value = & $_FILES[$key];
 				if ($value['error'] != 0) {
 					$error[] = (int)'4' . $value['error'];
 					return false;
-				} elseif (isset($form['maxsize']) and $value['size'] > ($form['maxsize'] * 1024)) {
+				}
+				elseif (isset($form['maxsize']) and $value['size'] > ($form['maxsize'] * 1024)) {
 					$error[] = 29;
 					return false;
-				} elseif (!$value['tmp_name']) {
+				}
+				elseif (!$value['tmp_name']) {
 					$error[] = 40;
 					return false;
-				} else {
+				}
+				else {
 					$is_image = static_image::_is_image($value['tmp_name']);
 					$form['att_type'] = '';
 					if ($is_image) {
@@ -1041,7 +1090,8 @@ class static_form
 							$value['ext'] = (is_string($form['toWebImg']) ? $form['toWebImg'] : 'jpg');
 						else
 							$value['ext'] = static_image::_get_ext($is_image, false);
-					} else {
+					}
+					else {
 						if ($value['name'])
 							$value['ext'] = strtolower(array_pop(explode('.', (string)$value['name'])));
 						if (!$value['ext'] or preg_match('/[^A-Za-z0-9]/', $value['ext'])) { // Кривое расширение фаила
@@ -1053,29 +1103,34 @@ class static_form
 					if (isset($form['mime'])) {
 						$flag = false;
 						if (in_array('image', $form['mime']) and $form['att_type'] == 'img') // Для любых изображений
-						$flag = true;
-						elseif (in_array($value['ext'], $form['mime']))
-							$flag = true; elseif ($value['type'] and isset($form['mime'][$value['type']]))
 							$flag = true;
-					} else
+						elseif (in_array($value['ext'], $form['mime']))
+							$flag = true;
+						elseif ($value['type'] and isset($form['mime'][$value['type']]))
+							$flag = true;
+					}
+					else
 						$flag = true;
 
 					if (!$flag) { //Не верный тип фаилы
 						$error[] = 39;
 						return false;
-					} else {
+					}
+					else {
 						static_tools::_checkdir($_this->_CFG['_PATH']['temp']);
 						$temp = $_this->_CFG['_PATH']['temp'] . substr(md5(getmicrotime() . rand(0, 50)), 16) . '.' . $value['ext'];
 						if (move_uploaded_file($value['tmp_name'], $temp)) {
 							$value['tmp_name'] = $temp;
 							$data[$key] = $value;
-						} else {
+						}
+						else {
 							$error[] = 40;
 							return false;
 						}
 					}
 				}
-			} elseif (isset($data[$key . '_temp_upload']) && is_array($data[$key . '_temp_upload']) && $data[$key . '_temp_upload']['name'] && $data[$key . '_temp_upload']['type']) {
+			}
+			elseif (isset($data[$key . '_temp_upload']) && is_array($data[$key . '_temp_upload']) && $data[$key . '_temp_upload']['name'] && $data[$key . '_temp_upload']['type']) {
 				$data[$key] = $data[$key . '_temp_upload'];
 				$data[$key]['tmp_name'] = $_this->_CFG['_PATH']['temp'] . $data[$key . '_temp_upload']['name'];
 				$_FILES[$key] = $data[$key];
@@ -1121,7 +1176,8 @@ class static_form
 						$error[] = 32;
 					else
 						$data[$key] = self::passwordHash($data[$key], $form);
-				} else
+				}
+				else
 					unset($data[$key]);
 			} // Форма подтверждения пароля
 			elseif (isset($form['mask']['password']) and $form['mask']['password'] == 'confirm') {
@@ -1139,7 +1195,8 @@ class static_form
 						$data[$key] = self::passwordHash($data[$key], $form);
 				}
 				unset($data[$key]);
-			} else {
+			}
+			else {
 				if (isset($form['mask']['max']) && $form['mask']['max'] > 0 && _strlen($data[$key]) > $form['mask']['max'])
 					$error[] = 2;
 				if (isset($form['mask']['min']) and $form['mask']['min'] > 0) {
@@ -1215,7 +1272,8 @@ class static_form
 			if ($form['mask']['striptags'] == 'all')
 				$data[$key] = strip_tags($data[$key]);
 			elseif ($form['mask']['striptags'] == '')
-				$data[$key] = strip_tags($data[$key], $_this->_CFG['_striptag']); else
+				$data[$key] = strip_tags($data[$key], $_this->_CFG['_striptag']);
+			else
 				$data[$key] = strip_tags($data[$key], $form['mask']['striptags']);
 		}
 
@@ -1239,15 +1297,16 @@ class static_form
 		if (isset($form['mask']['patterns']))
 			$preg_mask = $form['mask']['patterns'];
 		elseif (isset($form['mask']['name']) and isset($MASK[$form['mask']['name']]))
-			$preg_mask = $MASK[$form['mask']['name']]; elseif (isset($MASK[$form['type']]))
+			$preg_mask = $MASK[$form['mask']['name']];
+		elseif (isset($MASK[$form['type']]))
 			$preg_mask = $MASK[$form['type']];
 
 		if ($preg_mask AND $data[$key]) {
 			$nomatch = '';
 			$data[$key] = trim($data[$key]);
 			if (is_array($preg_mask)) {
-				$value = $data[$key];
 				if (isset($preg_mask['eval'])) {
+					$value = $data[$key]; // for eval
 					eval('$data[$key] = ' . $preg_mask['eval'] . ';');
 				}
 				if (isset($preg_mask['match'])) {
@@ -1260,7 +1319,8 @@ class static_form
 					$nomatch = $preg_mask['nomatch'];
 				if (isset($preg_mask['comment']))
 					$form['comment'] .= $preg_mask['comment'];
-			} else
+			}
+			else
 				$nomatch = $preg_mask;
 
 			/*CHECK MASK*/
@@ -1272,7 +1332,8 @@ class static_form
 						$textm = 'Не корректный номер телефона.';
 					}
 				}
-			} elseif ($nomatch) {
+			}
+			elseif ($nomatch) {
 				if (isset($data[$key . '_rplf'])) {
 					$data[$key] = preg_replace($nomatch, '', $data[$key]);
 					unset($error[$key . 'mask']);
@@ -1280,7 +1341,8 @@ class static_form
 				$matches = preg_match_all($nomatch, $data[$key], $form['matches_err'], PREG_OFFSET_CAPTURE);
 				if ($matches) {
 					$error[$key . 'mask'] = 3;
-				} elseif (isset($form['mask']['checkwww']) and $form['mask']['checkwww'] and !fopen('http://' . str_replace('http://', '', $data[$key]), 'r'))
+				}
+				elseif (isset($form['mask']['checkwww']) and $form['mask']['checkwww'] and !fopen('http://' . str_replace('http://', '', $data[$key]), 'r'))
 					$error[] = 4;
 			}
 
@@ -1295,7 +1357,8 @@ class static_form
 				}*/
 				if (str2int($data[$key]) > $form['mask']['max'])
 					$error[] = 22;
-			} else {
+			}
+			else {
 				if (_strlen($data[$key]) > $form['mask']['max'])
 					$error[] = 2;
 			}
@@ -1318,7 +1381,8 @@ class static_form
 				}*/
 				if (str2int($data[$key]) < $form['mask']['min'])
 					$error[] = 23;
-			} else {
+			}
+			else {
 				if (_strlen($data[$key]) < $form['mask']['min'])
 					$error[] = 21;
 			}
@@ -1382,38 +1446,44 @@ class static_form
 		// час
 		if (isset($arrdate['H']) and $arrdate['H']) {
 			$date_str[0] = $arrdate['H'];
-		} else {
+		}
+		else {
 			$date_str[0] = '0';
 		}
 		// минуты
 		if (isset($arrdate['i']) and $arrdate['i']) {
 			$date_str[1] = $arrdate['i'];
-		} else {
+		}
+		else {
 			$date_str[1] = '0';
 		}
 		// секунды
 		if (isset($arrdate['s']) and $arrdate['s']) {
 			$date_str[2] = $arrdate['s'];
-		} else {
+		}
+		else {
 			$date_str[2] = '0';
 		}
 
 		// месяц
 		if ($arrdate['m']) {
 			$date_str[3] = $arrdate['m'];
-		} else {
+		}
+		else {
 			$date_str[3] = '0';
 		}
 		// день
 		if ($arrdate['d']) {
 			$date_str[4] = $arrdate['d'];
-		} else {
+		}
+		else {
 			$date_str[4] = '0';
 		}
 		//год
 		if ($arrdate['Y']) {
 			$date_str[5] = $arrdate['Y'];
-		} else {
+		}
+		else {
 			$date_str[5] = '0';
 		}
 		return $date_str;
@@ -1421,7 +1491,7 @@ class static_form
 
 	/**
 	 * возвращает форматированную дату в зависимости от типа поля в fields_form, для добавления записи в БД
-	 * @param string[array,int] $inp_date - Дата в различных форматах
+	 * @param string [array,int] $inp_date - Дата в различных форматах
 	 * @param string $format - ФОрмат даты
 	 * @param string $field_type - тип в БД (int,timestamp)
 	 * @return string[array,int] date
@@ -1448,9 +1518,10 @@ class static_form
 			if ($field_type == 'int')
 				return $inp_date[0];
 			$date_str = explode('-', date('H-i-s-m-d-Y', $inp_date[0])); //1998-08-24 13:00:00
-		} else {
+		}
+		else {
 			if ($cf > $ci) //если расхождения в массиве данных
-			$inp_date = array_pad($inp_date, $cf, 0);
+				$inp_date = array_pad($inp_date, $cf, 0);
 			elseif ($cf < $ci)
 				$inp_date = array_slice($inp_date, 0, $cf);
 
@@ -1460,7 +1531,8 @@ class static_form
 
 		if ($field_type == 'int') {
 			$result = mktime($date_str[0], $date_str[1], $date_str[2], $date_str[3], $date_str[4], $date_str[5]);
-		} elseif ($field_type == 'timestamp') {
+		}
+		elseif ($field_type == 'timestamp') {
 			$result = $date_str[5] . '-' . $date_str[3] . '-' . $date_str[4] . ' ' . $date_str[0] . ':' . $date_str[1] . ':' . $date_str[2];
 		}
 
@@ -1500,13 +1572,15 @@ class static_form
 		$hash_key = md5($hash_key); // получаем хешкод
 		if (function_exists('openssl_encrypt')) { // если есть openssl
 			$crypttext = openssl_encrypt($word, 'aes-128-cbc', $hash_key, false, "1234567812345678");
-		} elseif (function_exists('mcrypt_encrypt')) { // будем надеяться что есть mcrypt
+		}
+		elseif (function_exists('mcrypt_encrypt')) { // будем надеяться что есть mcrypt
 			//$ivsize = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
 			//$iv = mcrypt_create_iv($ivsize, MCRYPT_RAND);
 			$crypttext = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $hash_key, $word, MCRYPT_MODE_ECB);
 			$crypttext = base64encode($crypttext);
-		} else // если нет даже openssl значит и так сойдёт!
-		$crypttext = $word;
+		}
+		else // если нет даже openssl значит и так сойдёт!
+			$crypttext = $word;
 
 		// Запись в куки зашифрованного кода
 		_setcookie('chash', $crypttext, (time() + 9999999)); // У некоторых косяк из-за разных часовых поясов
@@ -1526,11 +1600,13 @@ class static_form
 			$hash_key = md5($hash_key);
 			if (function_exists('openssl_encrypt')) {
 				$word = openssl_decrypt($_COOKIE['chash'], 'aes-128-cbc', $hash_key, false, "1234567812345678");
-			} elseif (function_exists('mcrypt_encrypt')) {
+			}
+			elseif (function_exists('mcrypt_encrypt')) {
 				$word = base64decode($_COOKIE['chash']);
 				$word = mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $hash_key, base64decode($_COOKIE['chash']), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND));
 				$word = trim($word);
-			} else
+			}
+			else
 				$word = $_COOKIE['chash'];
 			return $word;
 		}

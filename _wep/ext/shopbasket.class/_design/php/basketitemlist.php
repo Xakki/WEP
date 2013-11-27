@@ -27,7 +27,8 @@ function tpl_basketitemlist(&$data)
 		foreach ($data['#list#'] as $r) {
 			if (isset($r['s_img_product']) and $r['s_img_product']) {
 				$img = $r['s_img_product'];
-			} else
+			}
+			else
 				$img = getUrlTheme() . '_shop/img/nofoto.gif';
 			$html .= '<tr data-id="' . $r['product_id'] . '" class="' . ($r['checked'] ? 'checked' : '') . '">
 					<td><input type="checkbox" ' . ($r['checked'] ? 'checked="checked"' : '') . '>
@@ -61,7 +62,8 @@ function tpl_basketitemlist(&$data)
 						</label>';
 			}
 			$sitem .= '</div>';
-		} else {
+		}
+		else {
 			$temp = current($data['#delivery#']);
 			$valD = $temp['id'];
 			$sitem .= '<span>' . $temp['name'] . ' - ' . $temp['cost'] . ' ' . $data['#curr#'] . '</span>';
@@ -76,7 +78,8 @@ function tpl_basketitemlist(&$data)
 				<div class="basketdiv"><input type="submit" class="sbmt" value="Оформить заказ"></div>
 			</form>
 			';
-	} else
+	}
+	else
 		$html = '<div class="basket">' . static_render::message('Корзина пуста') . '</div>';
 	return $html;
 }

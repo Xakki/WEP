@@ -35,7 +35,8 @@ function tpl_formtools(&$data)
 		//$_tpl['onload'] .= 'wep.jsForm(\'#form_tools_'.$_REQUEST['_func'].'\',{\'insertobj\':\'#tools_block\'});';
 		$_tpl['onload'] .= 'wep.form.initForm(\'#' . $attr['name'] . '\', formParam);';
 		plugAjaxForm();
-	} elseif (isset($data['form']) and count($data['form'])) {
+	}
+	elseif (isset($data['form']) and count($data['form'])) {
 		$attr = $data['options'];
 		//$html = '<span class="buttonimg imgdel" style="float: right;" onclick="$(this).parent().hide();">EXIT</span>'.$html;
 		include_once(getPathTheme(true) . '/php/form.php');

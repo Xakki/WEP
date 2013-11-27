@@ -70,11 +70,13 @@ if (isset($this->pageParam[0])) {
 		$DATA['#orderitem_list#'] = $ORDER->childs['orderitem']->displayList(implode(',',$list_id));
 		$this->pageinfo['path'][$Chref.'/'.$ORDER->id] = 'Заказ №'.$DATA['#item#'][$ORDER->id]['id'];
 	}*/
-} else {
+}
+else {
 	if (isset($_REQUEST['f_clear_sbmt'])) {
 		unset($_SESSION['filter'][$SHOPBASKET->_cl]);
 		static_main::redirect($_SERVER['HTTP_REFERER']);
-	} elseif (isset($_REQUEST['sbmt'])) {
+	}
+	elseif (isset($_REQUEST['sbmt'])) {
 		$SHOPBASKET->setFilter();
 		static_main::redirect($_SERVER['HTTP_REFERER']);
 	}

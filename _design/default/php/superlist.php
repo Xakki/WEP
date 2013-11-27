@@ -54,7 +54,8 @@ function tpl_superlist(&$data)
 	} // инструменты
 	elseif (isset($data['formtools']) and count($data['formtools'])) {
 		$html .= transformPHP($data, 'formtools');
-	} else {
+	}
+	else {
 		// XML
 		$html .= tpl_data($data['data'], $data['firstpath'] . http_build_query($data['_clp']) . '&'); // messages
 		if (!isset($data['data']['item']) or count($data['data']['item']) < 8)
@@ -94,7 +95,8 @@ function tpl_topmenu(&$data, $firstpath, $httpQuery = array())
 				$temp_topmenu .= ' onchange="return wep.load_href(\'' . $firstpath . $href . '\'+this.options[this.selectedIndex].value)"';
 				$temp_topmenu .= '>' . tpl_formSelect($r['list']) . '</select>';
 				$temp_topmenu .= '</div>';
-			} else {
+			}
+			else {
 				$temp_topmenu .= '<a class="' . $r['type'] . ($r['sel'] ? ' selected' : '') . '" style="' . $r['style'] . '" title="' . $r['title'] . '" ';
 				//$temp_topmenu .= ' onclick="return wep.load_href(\''.$firstpath.$href.'\')"';
 
@@ -124,7 +126,8 @@ function tpl_data(&$data, $firstpath = '')
 		if ($data['order'] == 't1.' . $data['mf_ordctrl']) {
 			$_tpl['onload'] .= 'wep.iSortable();';
 			plugJQueryUI();
-		} else {
+		}
+		else {
 			unset($data['mf_ordctrl']);
 		}
 	}
@@ -180,21 +183,26 @@ function tpl_data(&$data, $firstpath = '')
 				/*$html .= '<a class="buttonimg imgup" href="'.$hrefpref.'&_type=ordup" title="[-1]"></a>'
 					.$tditem['value']
 					.'<a class="buttonimg imgdown" href="'.$hrefpref.'&_type=orddown" title="[+1]"></a>';*/
-			} elseif (isset($tditem['value']) and $tditem['value'] != '') {
+			}
+			elseif (isset($tditem['value']) and $tditem['value'] != '') {
 				if ($tdflag)
 					$html .= '<b>' . $data['thitem'][$ktd]['value'] . '</b>: ';
 				if (isset($tditem['fileType']) and $tditem['fileType'] == 'img') {
 					plugFancybox();
 					$html .= '<a rel="fancy" title="рисунок" class="fancyimg" href="' . MY_BH . $tditem['value'] . '"><img src="' . MY_BH . $tditem['value'] . '" alt="" width="50"/></a>&#160;';
-				} elseif (isset($tditem['fileType']) and $tditem['fileType'] == 'swf') {
+				}
+				elseif (isset($tditem['fileType']) and $tditem['fileType'] == 'swf') {
 					if ($tditem['value'] != '')
 						$html .= $tditem['value'] . '&#160;<object type="application/x-shockwave-flash" data="' . MY_BH . $tditem['value'] . '" height="60" width="200"><param name="movie" value="' . MY_BH . $tditem['value'] . '" /><param name="allowScriptAccess" value="sameDomain" /><param name="quality" value="high" /><param name="scale" value="exactfit" /><param name="bgcolor" value="#ffffff" /><param name="wmode" value="transparent" /></object>';
-				} elseif (isset($tditem['fileType']) and $tditem['fileType'] == 'file') {
+				}
+				elseif (isset($tditem['fileType']) and $tditem['fileType'] == 'file') {
 					if ($tditem['value'] != '')
 						$html .= '<a href="' . $tditem['value'] . '" target="_blank">Файл</a>&#160;';
-				} elseif (isset($tditem['href']) and $tditem['href'] != '') {
+				}
+				elseif (isset($tditem['href']) and $tditem['href'] != '') {
 					$html .= '<a href="' . $tditem['href'] . '" target="_blank">' . $tditem['value'] . '</a>&#160;';
-				} else {
+				}
+				else {
 					$html .= $tditem['value'];
 				}
 			}

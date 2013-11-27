@@ -366,7 +366,8 @@ function stripSlashesOnArray(array &$theArray)
 	foreach ($theArray as &$value) {
 		if (is_array($value)) {
 			stripSlashesOnArray($value);
-		} else {
+		}
+		else {
 			$value = stripslashes($value);
 		}
 	}
@@ -470,7 +471,8 @@ $hostcnt = count($_CFG['_HREF']['arrayHOST']);
 if ($hostcnt == 1 or ($hostcnt == 4 and ip2long($_SERVER['HTTP_HOST']) !== false)) { //учитываем localhost и ИПИ
 	$_SERVER['HTTP_HOST2'] = $_SERVER['HTTP_HOST'];
 	//$_CFG['session']['domain'] = '';//$_SERVER['HTTP_HOST2'];
-} else {
+}
+else {
 	$temp = strpos($_CFG['_HREF']['arrayHOST'][0], ':');
 	if ($temp !== false) {
 		$_CFG['_HREF']['arrayHOST'][0] = substr($_CFG['_HREF']['arrayHOST'][0], 0, $temp);

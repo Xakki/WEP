@@ -6,7 +6,8 @@ $_tpl['title'] = 'WEP';
 
 if (!$_GET['_modul'] or !(isset($_GET['_view']) or isset($_GET['_type']))) {
 	$_tpl['text'] .= '<div style="position:absolute;top:50%;left:50%;"><div style="width:200px;height:100px;position:absolute;top:-50px;left:-100px;"><img src="/' . getUrlTheme() . 'img/login.gif" width="250" alt="LOGO"/></div></div>';
-} else {
+}
+else {
 	/*if(count($_GET)==2)
 		$SQL->_iFlag = TRUE;*/
 	if ($_GET['_view'] == 'list' and $_GET['_modul'] == '_tools') {
@@ -14,9 +15,11 @@ if (!$_GET['_modul'] or !(isset($_GET['_view']) or isset($_GET['_type']))) {
 			$_tpl['text'] .= include($_CFG['_PATH']['wep_controllers'] . '/tools.php');
 		else
 			$_tpl['text'] .= '<div style="color:red;">Доступ только АДмиму</div>';
-	} elseif (!_new_class($_GET['_modul'], $MODUL)) {
+	}
+	elseif (!_new_class($_GET['_modul'], $MODUL)) {
 		$_tpl['text'] .= '<div style="color:red;">' . date('H:i:s') . ' : Модуль ' . $_GET['_modul'] . ' не установлен</div>';
-	} elseif ($_GET['_view'] == 'contentIncParam') {
+	}
+	elseif ($_GET['_view'] == 'contentIncParam') {
 		$CT = & $MODUL->childs['content'];
 		$CT->fields_form = array();
 		$_POST['funcparam'] = htmlspecialchars_decode($_POST['funcparam']);
@@ -26,10 +29,12 @@ if (!$_GET['_modul'] or !(isset($_GET['_view']) or isset($_GET['_type']))) {
 				$_tpl['text'] = transformPHP($data, 'form');
 			}
 			$_tpl['onload'] .= 'jQuery(\'#tr_funcparam\').hide();';
-		} else {
+		}
+		else {
 			$_tpl['onload'] .= 'jQuery(\'#tr_funcparam\').show();';
 		}
-	} else {
+	}
+	else {
 		$html = '';
 		if (isset($_GET['_oid']) and $_GET['_oid'] != '') $MODUL->owner_id = $_GET['_oid'];
 		if (isset($_GET['_pid']) and $_GET['_pid'] != '') $MODUL->parent_id = $_GET['_pid'];
@@ -71,9 +76,11 @@ if (!$_GET['_modul'] or !(isset($_GET['_view']) or isset($_GET['_type']))) {
 						static_main::redirect($curhref);
 					else
 						static_main::redirect($prevhref);
-				} elseif ($flag === -1) {
+				}
+				elseif ($flag === -1) {
 					$html .= transformPHP($DATA, 'messages');
-				} else {
+				}
+				else {
 					$_tpl['title'] .= strip_tags(' : ' . implode(' - ', $DATA['path']));
 
 					if ($MODUL->ver != $_CFG['modulprm'][$MODUL->_cl]['ver']) {
@@ -95,7 +102,8 @@ if (!$_GET['_modul'] or !(isset($_GET['_view']) or isset($_GET['_type']))) {
 //} $tt[$j] = getmicrotime()-$tt[$j]; $summ += $tt[$j]; } echo 'Среднее время = "'.($summ/5).'" ';echo $tt;
 			}
 
-		} else
+		}
+		else
 			$html = '<div style="color:red;">' . date('H:i:s') . ' : Доступ к модулю ' . $_GET['_modul'] . ' запрещён администратором</div>';
 		$_tpl['text'] .= $html;
 	}

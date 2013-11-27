@@ -20,7 +20,8 @@ if (!isset($var_const))
 if (_new_class('modulprm', $MODULPRM)) {
 	//Форма установки модулей
 	list($res, $DATA) = $MODULPRM->instalModulForm();
-} else {
+}
+else {
 	$res = 0;
 	$DATA['messages'][] = array('ok', 'Ошибка инициализации модуля `modulprm`');
 }
@@ -30,7 +31,8 @@ if ($res == 1) {
 	$_SESSION['step'] = $_GET['step'] + 1;
 	$DATA['messages'][] = $var_const['mess'];
 	$html = transformPHP($DATA, 'messages');
-} else {
+}
+else {
 	$DATA = array('formcreat' => $DATA);
 	$html = transformPHP($DATA, 'formcreat');
 }

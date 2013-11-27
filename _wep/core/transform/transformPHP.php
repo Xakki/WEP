@@ -22,7 +22,8 @@ function transformPHP($data, $transform = NULL, $marker = '', $theme = null)
 		$transform = $temp[1];
 		if (isset($data[$transform]))
 			$marker = $transform;
-	} else {
+	}
+	else {
 		if ($theme)
 			setTheme($theme);
 		$transformPath = getPathTheme() . 'php/';
@@ -36,7 +37,8 @@ function transformPHP($data, $transform = NULL, $marker = '', $theme = null)
 	if (!isset($data[$marker])) {
 		//trigger_error('Внимание! В входных данных шаблона не найден маркер "$data[' . $marker . ']"', E_USER_NOTICE);
 		$marker = '$data';
-	} else
+	}
+	else
 		$marker = '$data["' . $marker . '"]';
 
 	$transformpath = $transformPath . $transform . '.php';

@@ -23,7 +23,8 @@ function tpl_shop_rev(&$data, $pref = '', $pgid = 0)
 			$html .= '<li class="sub">';
 			//$pref .= ' - ';
 			$sub = tpl_shop_rev($r['#item#'], $pref, $pgid);
-		} else {
+		}
+		else {
 			$html .= '<li>';
 			$sub = '';
 		}

@@ -120,7 +120,6 @@ window.wep = {
     HREF_script: '/_design/_script/',
     pgId: 0, /* ID текущей страницы (загружается из onLOAD)*/
     pgParam: [], /* параметры текущей страницы (загружается из onLOAD)*/
-    pgGet: {}, // GET параметры
     siteJS: "/_js.php",
     form: {}, /*Функции работы с формой*/
     popUp: {
@@ -226,7 +225,6 @@ window.wep = {
         marker['onload'] = 1;
         marker['styles'] = 1;
         marker['script'] = 1;
-        // TODO marker = wep.pgGet + marker;
         param = {
             'href': location.href,
             'type': 'GET',
@@ -1368,14 +1366,14 @@ window.wep = {
         // selectAllText: true
         //  selectAllValue: 'multiselect-all',
         // filterPlaceholder: 'Search'
-        $(selector).each(function() {
+        $(selector).each(function () {
             var first = $(this).find('option:first');
             $(this).attr('placeholder', first.text());
             first.remove();
 
             var cnt = $(this).find('option');
             var options = {};
-            if( cnt.length > 10) {
+            if (cnt.length > 10) {
                 options.enableCaseInsensitiveFiltering = true;
             }
             wep.filterMultiselect(this, options);
@@ -1386,8 +1384,7 @@ window.wep = {
      * Мультиселект для фильтра
      * @param options
      */
-    filterMultiselect: function(selector, options)
-    {
+    filterMultiselect: function (selector, options) {
         var defaultOptions = {
             buttonClass: 'btn',
             buttonWidth: '',
@@ -1402,13 +1399,13 @@ window.wep = {
         $(selector).multiselect(defaultOptions);
     },
 
-    filterMultiselect_buttonText: function(options, select) {
+    filterMultiselect_buttonText: function (options, select) {
         if (options.length == 0) {
             var defaultText = select.attr('placeholder');
-            if(!defaultText) {
+            if (!defaultText) {
                 defaultText = 'Все';
             }
-            return defaultText+' <b class="caret"></b>';
+            return defaultText + ' <b class="caret"></b>';
         }
         else if (options.length > 2) {
             return options.length + ' выбрано  <b class="caret"></b>';
@@ -1421,7 +1418,7 @@ window.wep = {
             return selected.substr(0, selected.length - 2) + ' <b class="caret"></b>';
         }
     },
-    filterMultiselect_onChange: function(element, checked) {
+    filterMultiselect_onChange: function (element, checked) {
         var selectObj = $(element).parent();
         if ($(element).val() === '') {
             if (checked) {
@@ -1531,7 +1528,7 @@ window.wep = {
     /*Слайдер для фильтра, возможность установки числовых пределов*/
     gSlide: function (id, _min, _max, val0, val1, stp) {
         var selector = '#' + id + ' .slide' + id;
-        if($(selector).length > 0 ) {
+        if ($(selector).length > 0) {
             return;
         }
         if (!_max && val1) _max = val1 * 3;
@@ -1546,17 +1543,24 @@ window.wep = {
             max: _max,
             values: [val0, val1],
             slide: function (event, ui) {
-                jQuery('#' + id  + ' input:eq(0)').val(ui.values[0]);
-                jQuery('#' + id  + ' input:eq(1)').val(ui.values[1]);
+                if (ui.values[0] == _min) {
+                    ui.values[0] = '';
+                }
+                jQuery('#' + id + ' input:eq(0)').val(ui.values[0]);
+
+                if (ui.values[1] == _max) {
+                    ui.values[1] = '';
+                }
+                jQuery('#' + id + ' input:eq(1)').val(ui.values[1]);
             },
             stop: function (event, ui) {
-                jQuery('#' + id  + ' input:eq(0)').change();
+                jQuery('#' + id + ' input:eq(0)').change();
             }
         });
-        jQuery('#' + id  + ' input:eq(0)').off('change.slider').on('change.slider', function () {
+        jQuery('#' + id + ' input:eq(0)').off('change.slider').on('change.slider', function () {
             jQuery(selector).slider('values', 0, this.value)
         });
-        jQuery('#' + id  + ' input:eq(1)').off('change.slider').on('change.slider', function () {
+        jQuery('#' + id + ' input:eq(1)').off('change.slider').on('change.slider', function () {
             jQuery(selector).slider('values', 1, this.value)
         });
     },
@@ -2116,11 +2120,11 @@ function setEventAjaxList(input, hidden, list) {
     var ajaxlist = $(input).parent();
     var listObj = $(list);
 
-    ajaxlist.on('focusin', function () {
+    ajaxlist.off('focusin').on('focusin', function () {
         ajaxListControl(input, hidden, list);
         return false;
     });
-    ajaxlist.on('focusout', function () {
+    ajaxlist.off('focusout').on('focusout', function () {
         if (!listObj.data('mousedown')) {
             ajaxListHide(input, hidden, list);
         }
@@ -2128,25 +2132,24 @@ function setEventAjaxList(input, hidden, list) {
     });
 
 
-    listObj.on('mousedown', function () {
+    listObj.off('mousedown').on('mousedown', function () {
         $(this).data('mousedown', true);
         return true;
     });
-    listObj.on('mouseup', function () {
+    listObj.off('mouseup').on('mouseup', function () {
         $(this).data('mousedown', false);
 //        $(input).focus();
         return true;
     });
 
-    $(input).on('keydown', function () {
+    $(input).off('keydown').on('keydown', function () {
         return ajaxlistOnKey(event, input, hidden, list);
     });
     // Клик по выбранному элементу
-    listObj.on('click', 'label', function () {
-        console.log('*****click Event');
+    listObj.off('click', 'label').on('click', 'label', function () {
         return ajaxListHide(input, hidden, list, $(list).find('.selected'));
     });
-    listObj.on('mouseover', 'label', function () {
+    listObj.off('mouseover', 'label').on('mouseover', 'label', function () {
         $(this).siblings().removeClass('selected');
         $(this).addClass('selected');
     });
@@ -2171,7 +2174,7 @@ function ajaxListHide(input, hidden, list, SEL) {
     if (_Browser.type == 'IE' && 8 > _Browser.version)
         jQuery('select').toggleClass('hideselectforie7', false);
 
-    if (SEL.size())
+    if (SEL && SEL.size())
         ajaxListSelect(SEL, input, hidden, list);
     else {
         ajaxListClear(input, hidden, list);
@@ -2199,7 +2202,7 @@ function ajaxlistOnKey(e, input, hidden, list) {
     var flag = $(list).is(':hidden');
 
     if (keyCode == '40' || keyCode == '38') { // вниз
-        if(flag) {
+        if (flag) {
             // Если скрыт показываем список
             ajaxListControl(input, hidden, list);
             return false;
@@ -2232,7 +2235,7 @@ function ajaxlistOnKey(e, input, hidden, list) {
         return false;
     }
     else if (keyCode == '13') {
-        if(flag) return false;
+        if (flag) return false;
         var listObj = $(list);
         var SEL = listObj.find('.selected');
         if (!SEL.size())
@@ -2244,9 +2247,8 @@ function ajaxlistOnKey(e, input, hidden, list) {
         ajaxListHide(input, hidden, list);
         return false;
     }
-    else
-    {
-        console.log('=',getKeyChar(keyCode));
+    else {
+        console.log('=', getKeyChar(keyCode));
         ajaxListStop(input);
         timeAction(input, function () {
             ajaxListControl(input, hidden, list);
@@ -2262,8 +2264,7 @@ function ajaxlistOnKey(e, input, hidden, list) {
  * @param hidden
  * @param list
  */
-function ajaxListControl(input, hidden, list)
-{
+function ajaxListControl(input, hidden, list) {
     console.log('ajaxListControl');
     var defaultListObj = $(list + '_default');
     var listObj = $(list);
@@ -2361,7 +2362,7 @@ function ajaxListSelect(OBJ, input, hidden, list) { // событие на кл�
     console.error('ajaxListSelect');
     jQuery(hidden).val(ID).change(); // Сохраняем ID
     $(input).val(valueText); // Выводим текст
-    if(jQuery(list).attr('val') != valueText) {
+    if (jQuery(list).attr('val') != valueText) {
         jQuery(list).attr('val', valueText);
     }
     $(input).parent().removeClass('reject'); // Удаляем стиль "не верного значения"

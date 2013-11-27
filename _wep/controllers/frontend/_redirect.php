@@ -11,7 +11,8 @@ if (isset($_GET['url']) and $_GET['url'] != '') {
 
 	if (mb_substr($url, 0, 7) != 'http://')
 		$url = 'http://' . $url;
-} else
+}
+else
 	$url = 'http://' . $_SERVER['HTTP_HOST'];
 
 if ($_CFG['site']['redirectPlugin'] and !$_CFG['robot']) {

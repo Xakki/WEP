@@ -94,11 +94,14 @@ class confighistory_class extends kernel_extends
 					$mess[] = static_main::am('ok', 'update', $Modul);
 					$mess[] = static_main::am('txt', $configPrint);
 					static_tools::_save_config($config, $Modul->_file_cfg);
-				} else
+				}
+				else
 					$mess = $arr['mess'];
-			} else
+			}
+			else
 				$mess[] = static_main::am('error', 'Ошибка модуля ' . $data['modul']);
-		} else
+		}
+		else
 			$mess[] = static_main::am('error', 'Данные по вашему запросы отсутствуют.');
 
 		return $mess;

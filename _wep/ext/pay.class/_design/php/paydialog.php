@@ -28,7 +28,8 @@ function tpl_paydialog($data)
 						$html .= '<input type="hidden" value="' . $r . '" name="' . $k . '"/>';
 				}
 				$html .= '<div class="offlinepay"><input type="submit" value="Оплата при получении наличными ' . $d . ' ' . $data['m'] . '" title="При получении заказа, максимум ' . $max . ' ' . $data['m'] . '" name="' . $data['code'] . '" class="acept"/><br/>Максимальная сумма к оплате наличными ' . $max . ' ' . $data['m'] . '</div><br/>';
-			} else
+			}
+			else
 				$html .= '<div class="offlinepay"><input type="submit" value="Оплата при получении наличными ' . $d . ' ' . $data['m'] . '" title="При получении заказа, максимум ' . $max . ' ' . $data['m'] . '" disabled="disabled"/><br/>Вы не можете оплатить наличными так как сумма вашего заказа превышает  ' . $max . ' ' . $data['m'] . '</div><br/>';
 		}
 
@@ -38,7 +39,8 @@ function tpl_paydialog($data)
 		$html .= '<br/><input type="submit" value="Вернуться" onclick="location.href=\'' . $_SERVER['HTTP_REFERER'] . '\';return false;" class="cancel"/>
 		</div></form>
 		';
-	} elseif ($data['flag'] == -1) {
+	}
+	elseif ($data['flag'] == -1) {
 		$html .= '<div>На вашем счету ' . round($data['balance'], 2) . ' ' . $data['m'] . '</div>';
 		$html .= '<div>после оплаты останется ' . round(($data['balance'] - $data['summ']), 2) . ' ' . $data['m'] . '</div>';
 		$html .= '<div class="ok">' . $data['mess'] . '</div>
@@ -51,14 +53,16 @@ function tpl_paydialog($data)
 		$html .= '<input type="submit" value="Вернуться" onclick="location.href=\'' . $_SERVER['HTTP_REFERER'] . '\';return false;" class="cancel"/>
 		</div></form>
 		';
-	} elseif ($data['flag'] == 0) {
+	}
+	elseif ($data['flag'] == 0) {
 		$html .= '<h2 class="messhead error">Ошибка</h2>';
 		$html .= '<div class="' . $t . '">' . $data['mess'] . '</div>
 		<form method="post"><div class="form">';
 		$html .= '<input type="submit" value="Вернуться" onclick="location.href=\'' . $_SERVER['HTTP_REFERER'] . '\';return false;" class="cancel"/>
 		</div></form>
 		';
-	} elseif ($data['flag'] == 1) {
+	}
+	elseif ($data['flag'] == 1) {
 		$html .= '<div>Ваш баланс: ' . round(($data['balance'] - $data['summ']), 2) . ' ' . $data['m'] . '</div>';
 		$html .= '<h2 class="messhead">Оплата прошла успешно</h2>';
 		$html .= '<div class="ok">' . $data['mess'] . '</div>

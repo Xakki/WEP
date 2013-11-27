@@ -46,7 +46,8 @@ if (isset($_GET['confirm'])) {
 		</div>
 		<div class="ajaxbg" style="opacity: 0.5; display: block;">&nbsp;</div>';
 	$_tpl['onload'] .= 'fMessPos();';
-} else {
+}
+else {
 	$param = array();
 	if ((int)$FUNCPARAM[1])
 		$param['owner_id'] = (int)$FUNCPARAM[1];

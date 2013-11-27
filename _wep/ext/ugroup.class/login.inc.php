@@ -38,9 +38,11 @@ if ($FUNCPARAM[2])
 
 if (isset($_REQUEST['ref']) and $_REQUEST['ref'] != '' and mb_strpos($_SERVER['HTTP_REFERER'], $_REQUEST['ref']) === false) {
 	$ref = $_REQUEST['ref'];
-} elseif (isset($_SERVER['HTTP_REFERER']) and $_SERVER['HTTP_REFERER'] != '' and mb_strpos($_SERVER['HTTP_REFERER'], $_SERVER['REQUEST_URI']) === false) {
+}
+elseif (isset($_SERVER['HTTP_REFERER']) and $_SERVER['HTTP_REFERER'] != '' and mb_strpos($_SERVER['HTTP_REFERER'], $_SERVER['REQUEST_URI']) === false) {
 	$ref = $_SERVER['HTTP_REFERER'];
-} else
+}
+else
 	$ref = MY_BH;
 
 if (count($_POST) and isset($_POST['login'])) {
@@ -49,10 +51,12 @@ if (count($_POST) and isset($_POST['login'])) {
 		//static_main::redirect($ref);
 		//$mess=$result[0];
 	}
-} elseif (isset($_REQUEST['exit']) && $_REQUEST['exit'] == "ok") {
+}
+elseif (isset($_REQUEST['exit']) && $_REQUEST['exit'] == "ok") {
 	static_main::userExit();
 	$result = array(static_main::m('exitok'), 1);
-} elseif ($FUNCPARAM[3] and $result = static_main::userAuth() and $result[1] > 0) {
+}
+elseif ($FUNCPARAM[3] and $result = static_main::userAuth() and $result[1] > 0) {
 	static_main::redirect($ref);
 	//$mess=$result[0];
 }
@@ -78,7 +82,8 @@ if (count($result) and $result[0]) {
 		$this->pageinfo['template'] = 'waction';
 		$_tpl['REQUEST_URI'] = $ref;
 		$_tpl['onload'] .= '$(\'#ajaxload .blockclose\').click(function(){window.location.href=\'' . $ref . '\';}); setTimeout(function() {window.location.href=\'' . $ref . '\';}, 4000);';
-	} else {
+	}
+	else {
 		$mess['messages'][0][0] = 'error';
 		$DATA['result'] = -1;
 	}

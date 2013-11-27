@@ -121,8 +121,10 @@ final class modulprm_class extends kernel_extends
 								$val = true;
 							else
 								$val = false;
-						} elseif (isset($this->data[$entry]))
-							$val = true; else
+						}
+						elseif (isset($this->data[$entry]))
+							$val = true;
+						else
 							$val = false;
 						$DATA[$k . '_' . $entry] = array(
 							'caption' => $this->_enum['typemodul'][$k] . ' <b>' . (isset($this->data[$entry]) ? $this->data[$entry]['name'] . ' [' . $entry . ']' : $entry) . '</b>',
@@ -138,7 +140,8 @@ final class modulprm_class extends kernel_extends
 						$resData = array();
 						if (class_exists($entry . '_class', false)) {
 							$resData = $this->checkClassStruct($entry);
-						} else
+						}
+						else
 							$DATA[$k . '_' . $entry]['comment'] .= 'Не возможно подключить модуль. Класс `' . $entry . '_class` не найден.';
 
 						if ($resData['parent']) {
@@ -206,9 +209,11 @@ final class modulprm_class extends kernel_extends
 						if (!$flag) {
 							$mess[] = array('error', 'Ошибка установки модуля `' . $r['_entry'] . '`');
 							$res = -1;
-						} else
+						}
+						else
 							$mess[] = array('ok', 'Модуль `' . $r['_entry'] . '` установлен.');
-					} else {
+					}
+					else {
 						if (isset($r['_depend']) and count($r['_depend']) and $this->data[$r['_entry']]['active']) {
 							foreach ($r['_depend'] as $dep) {
 								if (!isset($_POST['0_' . $dep]) and !isset($_POST['3_' . $dep]) and !isset($this->data[$dep])) {
@@ -219,7 +224,8 @@ final class modulprm_class extends kernel_extends
 							}
 						}
 					}
-				} elseif (isset($this->data[$r['_entry']]) and !isset($r['disabled'])) {
+				}
+				elseif (isset($this->data[$r['_entry']]) and !isset($r['disabled'])) {
 					if (!_new_class($r['_entry'], $MODUL, $this->null, true)) {
 						$mess[] = array('error', 'Ошибка запуска модуля `' . $r['_entry'] . '`');
 						$res = -1;
@@ -229,7 +235,8 @@ final class modulprm_class extends kernel_extends
 					if (!$this->Mdelete($MODUL)) {
 						$mess[] = array('error', 'Ошибка удаления модуля `' . $r['_entry'] . '`');
 						$res = -1;
-					} else
+					}
+					else
 						$mess[] = array('ok', 'Модуль `' . $r['_entry'] . '` удалён!');
 				}
 			}
@@ -407,7 +414,7 @@ final class modulprm_class extends kernel_extends
 					if ($OWN and (!isset($this->data[$Mid]) or $this->data[$Mid]['parent_id'] != $OWN->_cl))
 						$this->fld_data['parent_id'] = $OWN->_cl;
 					if (!isset($this->data[$Mid]) or !$this->data[$Mid]['name']) // or $this->data[$Mid]['name'] != $MODUL->caption
-					$this->fld_data['name'] = $MODUL->caption;
+						$this->fld_data['name'] = $MODUL->caption;
 					if (!isset($this->data[$Mid]) or $this->data[$Mid]['tablename'] != $MODUL->tablename)
 						$this->fld_data['tablename'] = $MODUL->tablename;
 					if (!isset($this->data[$Mid]) or $this->data[$Mid]['path'] != $path)
@@ -453,7 +460,8 @@ final class modulprm_class extends kernel_extends
 							if (isset($_POST['sbmt'])) {
 								list($cfl, $cmess) = static_tools::saveCFG($CRON, $this->_CFG['_FILE']['cron']);
 								$MESS = array_merge($MESS, $cmess);
-							} else
+							}
+							else
 								$MESS[] = array('notice', 'Будет добавленно задание в CRON');
 						}
 					}
@@ -480,7 +488,8 @@ final class modulprm_class extends kernel_extends
 									$MESS[] = array('error', 'Ошибка записи данных для модуля `' . $Mid . '`[' . $path . '].' . var_export($this->fld_data, true));
 									$flag = false;
 								}
-							} else
+							}
+							else
 								$MESS[] = array('alert', 'Информация о модуле `' . $Mid . '`[' . $path . '] будет добавлена.');
 						} // Если существует обновляем данные
 						else {
@@ -491,7 +500,8 @@ final class modulprm_class extends kernel_extends
 									$MESS[] = array('error', 'Ошибка обновления данных для модуля `' . $Mid . '`[' . $path . '].');
 									$flag = false;
 								}
-							} else
+							}
+							else
 								$MESS[] = array('alert', 'Информация о модуле `' . $Mid . '`[' . $path . '] будет обновленна.');
 						}
 					}
@@ -506,7 +516,8 @@ final class modulprm_class extends kernel_extends
 										$result = $this->SQL->execSQL($q);
 										if ($result->err)
 											exit();
-									} else
+									}
+									else
 										$MESS[] = array('alert', 'Будет удалена группа ' . $mr['name'] . '[' . $mr['id'] . ']');
 								}
 							}
@@ -527,27 +538,32 @@ final class modulprm_class extends kernel_extends
 										$result = $this->SQL->execSQL($q);
 										if ($result->err)
 											exit();
-									} else
+									}
+									else
 										$MESS[] = array('alert', 'Будет добавлена группа ' . $gr['name'] . '[' . $gk . ']');
 								}
 							}
 					}
-				} else {
+				}
+				else {
 					if (isset($_POST['sbmt'])) {
 						$MESS[] = array('alert', 'Ошибка при инициализации модуля `' . $Mid . '`[' . $path . ']. Модуль отключен.');
 						$this->fld_data['active'] = 0;
 						$this->id = $Mid;
 						$this->_update($this->fld_data, false, false);
-					} else
+					}
+					else
 						$MESS[] = array('error', 'Ошибка при инициализации модуля `' . $Mid . '`[' . $path . ']. Модуль будет отключен.');
 				}
 
-			} else {
+			}
+			else {
 				if (isset($_POST['sbmt'])) {
 					$MESS[] = array('alert', 'Фаилы модуля `' . $Mid . '`[' . $path . '] отсутствуют и этот модуль удален из базы данных.');
 					$this->id = $Mid;
 					$this->_delete();
-				} else
+				}
+				else
 					$MESS[] = array('error', 'Фаилы модуля `' . $Mid . '`[' . $path . '] отсутствуют и этот модуль будет удален из базы данных.');
 
 			}
@@ -558,7 +574,8 @@ final class modulprm_class extends kernel_extends
 				$this->fld_data['active'] = 0;
 				$this->id = $Mid;
 				$this->_update($this->fld_data, false, false);
-			} else
+			}
+			else
 				$MESS[] = array('error', 'Ошибка при инициализации модуля `' . $Mid . '`[' . $path . ']. Модуль будет отключен.');
 		}
 
@@ -588,7 +605,7 @@ final class modulprm_class extends kernel_extends
 	function modulgrpDump()
 	{
 		if (!isset($this->_CFG['modulprm_ext']) and isset($this->_CFG['temp_modulprm_ext'])) // Нужно
-		$this->_CFG['modulprm_ext'] = $this->_CFG['temp_modulprm_ext'];
+			$this->_CFG['modulprm_ext'] = $this->_CFG['temp_modulprm_ext'];
 
 		if (!isset($this->guserData)) {
 			$this->guserData = array();

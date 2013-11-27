@@ -10,7 +10,8 @@ function tpl_path(&$data, $form = 0)
 			if ($i > 1) $html .= ' / ';
 			if ($i != $last) {
 				$html .= '<a href="' . $k . '">' . $r . '</a>';
-			} elseif ($i == $last) $html .= $r . '&#160;<a class="buttonimg imgf5" href="' . $k . '"></a>';
+			}
+			elseif ($i == $last) $html .= $r . '&#160;<a class="buttonimg imgf5" href="' . $k . '"></a>';
 			$i++;
 		}
 		if ($form == 2)

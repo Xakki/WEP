@@ -64,22 +64,27 @@ function tpl_formcreat(&$data)
 			plugJQueryUI();
 			$_tpl['onload'] .= '$("#' . $attr['name'] . '").tabs();';
 			$texthtml .= tpl_form($data['form'], $data['formSort']);
-		} else
+		}
+		else
 			$texthtml .= tpl_form($data['form']);
 		$texthtml .= '</form>';
 
 		if (isset($data['flag'])) {
 			if ($data['flag'] == 1) {
-			} elseif ($data['flag'] == -1) {
-			} else {
+			}
+			elseif ($data['flag'] == -1) {
+			}
+			else {
 				plugAjaxForm();
 				$_tpl['onload'] .= 'if(typeof(formParam)=="undefined") formParam = {}; wep.form.initForm(\'#' . $attr['name'] . '\', formParam);';
 			}
-		} else {
+		}
+		else {
 			setScript('wepform');
 		}
 
-	} else {
+	}
+	else {
 		if (!isset($_SESSION['user']['id']))
 			$_tpl['onload'] .= 'reloadCaptcha(\'captcha\');';
 	}

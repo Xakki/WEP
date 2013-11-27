@@ -49,6 +49,9 @@ function tpl_form(&$data, $tabs = array())
 		}
 
 		if (!isset($r['value'])) $r['value'] = '';
+		if (isset($r['field_key'])) {
+			$k = $r['field_key'];
+		}
 
 		if ($r['type'] == 'hidden') {
 			if (is_array($r['value']))
@@ -71,7 +74,7 @@ function tpl_form(&$data, $tabs = array())
 			if (is_array($r['value'])) {
 				foreach ($r['value'] as $ki => $ri) {
 					if (!is_array($ri)) // временный фикс
-					$ri = array('#name#' => $ri);
+						$ri = array('#name#' => $ri);
 					$submitHtml .= '<input type="' . $r['type'] . '" name="' . $ki . '" value="' . $ri['#name#'] . '"  class="sbmt" onclick="';
 					if (isset($ri['confirm']) and $ri['confirm'])
 						$submitHtml .= 'if(!confirm(\'' . $ri['confirm'] . '\')) return false;';
@@ -80,7 +83,8 @@ function tpl_form(&$data, $tabs = array())
 					$submitHtml .= '"/>';
 				}
 
-			} else {
+			}
+			else {
 				$submitHtml .= '<input type="' . $r['type'] . '" name="' . $k . '" value="' . $r['value'] . '"  class="sbmt" onclick="';
 				if (isset($r['confirm']) and $r['confirm'])
 					$submitHtml .= 'if(!confirm(\'' . $r['confirm'] . '\')) return false;';
@@ -103,26 +107,33 @@ function tpl_form(&$data, $tabs = array())
 
 		if ($r['type'] == 'infoinput') {
 			$texthtml .= '<div class="infoinput"><input type="hidden" name="' . $k . '" value="' . $r['value'] . '"/>' . $r['caption'] . '</div>';
-		} elseif ($r['type'] == 'info') {
+		}
+		elseif ($r['type'] == 'info') {
 			$texthtml .= '<div class="form-info">' . $r['caption'] . '</div>';
-		} elseif ($r['type'] == 'html') {
+		}
+		elseif ($r['type'] == 'html') {
 			$texthtml .= '<div class="form-value">' . $r['value'] . '</div>';
-		} elseif ($r['type'] == 'cf_fields') {
+		}
+		elseif ($r['type'] == 'cf_fields') {
 			include_once(dirname(__FILE__) . '/cffields.php');
 			$texthtml .= '<div class="form-value">' . tpl_cffields($k, $r) . '</div>';
-		} elseif ($r['type'] == 'map') {
+		}
+		elseif ($r['type'] == 'map') {
 			setScript('yamap');
-			$texthtml .= '<div class="mapselect' . ($r['value'] ? ' setvalue' : '') . '" onclick="positionOnMap()">' . ($r['value'] ? $r['value'] : $r['caption']) . '</div>
-                <input type="hidden" name="' . $k . '" id="field_' . $k . '" value="' . $r['value'] . '"/>';
-		} else {
+			$texthtml .= '<div class="mapselect' . ($r['value'] ? ' setvalue' : '') . '" onclick="positionOnMap()"  placeholder="' . $r['caption'] . '">' . ($r['value'] ? $r['value'] : $r['caption']) . '</div>
+			    <div class="mapClear' . ($r['value'] ? ' setvalue' : '') . '" onclick="clearMap(\'#tr_' . $r['ID'] . '\')">Удалить</div>
+			    <input type="hidden" value="' . $r['value'] . '" name="' . $k . '" id="field_' . $k . '"/>';
+		}
+		else {
 			$attribute = '';
 
 			$CAPTION = $r['caption'];
 			if (isset($r['mask']['min']) and $r['mask']['min']) {
 				$CAPTION .= '<span class="form-requere">*</span>';
 				if ($r['type'] != 'ckedit' and !($r['type'] == 'password' and isset($r['mask']['password']) and $r['mask']['password'] == 're')) // в CKEDITORE глюк из за этого
-				$attribute .= ' required="required"';
-			} elseif (isset($r['mask']['min2']) and $r['mask']['min2']) {
+					$attribute .= ' required="required"';
+			}
+			elseif (isset($r['mask']['min2']) and $r['mask']['min2']) {
 				$CAPTION .= '<span  class="form-requere" data-text="' . $r['mask']['min2'] . '">**</span>';
 			}
 
@@ -161,7 +172,8 @@ function tpl_form(&$data, $tabs = array())
 			if ($r['type'] == 'textarea') {
 
 				$texthtml .= '<div class="form-value textarea"><textarea name="' . $k . '" onkeyup="textareaChange(this)" rows="10" cols="80" ' . $attribute . '>' . @htmlspecialchars($r['value'], ENT_QUOTES, $_CFG['wep']['charset']) . '</textarea></div>';
-			} elseif ($r['type'] == 'ckedit') {
+			}
+			elseif ($r['type'] == 'ckedit') {
 				$_tpl['script'][$_CFG['_HREF']['vendors'] . 'ckeditor/ckeditor.js'] = 1;
 				// http://docs.ckeditor.com/#!/api/CKEDITOR.config
 				//http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.config.html
@@ -180,7 +192,8 @@ function tpl_form(&$data, $tabs = array())
 						$ckedit['toolbar'] = $_CFG['ckedit']['toolbar'][$ckedit['toolbar']];
 					else
 						$ckedit['toolbar'] = '\'' . $ckedit['toolbar'] . '\'';
-				} else
+				}
+				else
 					$ckedit['toolbar'] = $_CFG['ckedit']['toolbar']['Full'];
 				if (!isset($ckedit['uiColor']))
 					$ckedit['uiColor'] = '\'#9AB8F3\'';
@@ -253,7 +266,8 @@ function tpl_form(&$data, $tabs = array())
 				$_tpl['onload'] .= $fckscript . ' cke_' . $ID . '();';
 
 				$texthtml .= '<div class="form-value ckedit-value"><textarea id="id_' . $ID . '" name="' . $k . '" rows="10" cols="80" ' . $attribute . '>' . @htmlspecialchars((string)$r['value'], ENT_QUOTES, $_CFG['wep']['charset']) . '</textarea></div>';
-			} elseif ($r['type'] == 'radio') {
+			}
+			elseif ($r['type'] == 'radio') {
 				$texthtml .= '<div class="form-value radiolist">';
 				if (!count($r['valuelist']))
 					$texthtml .= '<font color="red">Нет элементов для отображения</font>';
@@ -266,7 +280,8 @@ function tpl_form(&$data, $tabs = array())
 					}
 				}
 				$texthtml .= '</div>';
-			} elseif ($r['type'] == 'checkbox') {
+			}
+			elseif ($r['type'] == 'checkbox') {
 
 				if (!isset($r['valuelist']) or !count($r['valuelist'])) {
 					if ($r['value'])
@@ -275,31 +290,34 @@ function tpl_form(&$data, $tabs = array())
 						<input type="' . $r['type'] . '" name="' . $k . '" value="1" ' . $attribute . '/>
 						<label class="form-caption">' . $CAPTION . '</label>
 					</label>';
-				} else {
+				}
+				else {
 					$texthtml .= '<label class="form-caption">' . $CAPTION . '</label>
 						<div class="form-value checkbox-value checkbox-valuelist">';
 					foreach ($r['valuelist'] as $kv => $rv) {
 						$sel = false;
 						$readonly = false;
 						if (is_array($rv) and isset($rv['#id#'])) {
-							$id = $rv['#id#'];
+							$idK = $rv['#id#'];
 							$name = $rv['#name#'];
 							if ($rv['#readonly#'])
 								$readonly = true;
 							if (isset($rv['#sel#']) and $rv['#sel#'])
 								$sel = true;
-						} else {
-							$id = $kv;
+						}
+						else {
+							$idK = $kv;
 							$name = $rv;
 							if (isset($r['value'])) {
 								if (is_array($r['value'])) {
-									if (isset($r['value'][$id]))
+									if (isset($r['value'][$idK]))
 										$sel = true;
-								} elseif ($r['value'] == $id)
+								}
+								elseif ($r['value'] == $idK)
 									$sel = true;
 							}
 						}
-						$texthtml .= '<label class="boxtitle"><input type="' . $r['type'] . '" name="' . $k . '[' . $id . ']" value="' . $id . '" class="radio" ' . $attribute;
+						$texthtml .= '<label class="boxtitle"><input type="' . $r['type'] . '" name="' . $k . '[' . $idK . ']" value="' . $idK . '" class="radio" ' . $attribute;
 						if ($sel)
 							$texthtml .= ' checked="checked"';
 						if ($readonly)
@@ -309,7 +327,8 @@ function tpl_form(&$data, $tabs = array())
 					$texthtml .= '</div>';
 				}
 				// end checkbox
-			} elseif ($r['type'] == 'ajaxlist' and isset($r['multiple']) and $r['multiple']) {
+			}
+			elseif ($r['type'] == 'ajaxlist' and isset($r['multiple']) and $r['multiple']) {
 				global $_tpl;
 
 				if (!is_array($r['value']))
@@ -321,7 +340,8 @@ function tpl_form(&$data, $tabs = array())
 				for ($i = 0; $i < $max; $i++) {
 					if (isset($r['value'][$i])) {
 						$value = $r['value'][$i];
-					} else {
+					}
+					else {
 						$value = '';
 						$_tpl['onload'] .= ' jQuery(\'#tr_' . $ID . ' div.ajaxlist\').eq(' . $i . ').hide(); ';
 					}
@@ -344,7 +364,8 @@ function tpl_form(&$data, $tabs = array())
 				if (!isset($r['comment']))
 					$r['comment'] = '';
 				$r['comment'] .= '<div class="ajaxmultiple" onclick="jQuery(\'#tr_' . $ID . ' div.ajaxlist:hidden\').eq(0).show(); if (jQuery(\'#tr_' . $ID . ' div.ajaxlist:hidden\').size() == 0) jQuery(this).hide();">Добавить ' . $r['caption'] . '</div>';
-			} elseif ($r['type'] == 'ajaxlist') {
+			}
+			elseif ($r['type'] == 'ajaxlist') {
 				$defaultList = '';
 				if (isset($r['defaultList'])) {
 					$defaultList = '<div id="ajaxlist_' . $ID . '_default" style="display:none;">';
@@ -364,7 +385,8 @@ function tpl_form(&$data, $tabs = array())
 				<input type="hidden" id="hsh_' . $k . '" value="' . md5($serl . $_CFG['wep']['md5']) . '"/>
 				<input type="hidden" id="srlz_' . $k . '" value="' . @htmlspecialchars($serl, ENT_QUOTES, $_CFG['wep']['charset']) . '"/>';
 				$_tpl['onload'] .= 'setEventAjaxList("#' . $ID . '_2", "#' . $ID . '", "#ajaxlist_' . $ID . '");';
-			} elseif ($r['type'] == 'list' and !$r['readonly']) {
+			}
+			elseif ($r['type'] == 'list' and !$r['readonly']) {
 				include_once(dirname(__FILE__) . '/formSelect.php');
 
 				$texthtml .= '<div class="form-value">';
@@ -378,9 +400,11 @@ function tpl_form(&$data, $tabs = array())
 					$texthtml .= '<select multiple="multiple" name="' . $k . '[]" class="multiple" size="' . $r['mask']['size'] . '" ' . $attribute;
 					$texthtml .= '>' . tpl_formSelect($r['valuelist'], $r['value']) . '</select>';
 					plugJQueryUI_multiselect();
-				} elseif (isset($r['multiple']) and $r['multiple'] == FORM_MULTIPLE_KEY) {
+				}
+				elseif (isset($r['multiple']) and $r['multiple'] == FORM_MULTIPLE_KEY) {
 					$texthtml .= helper_form_multiple($k, $r, $attribute);
-				} elseif (isset($r['multiple']) and $r['multiple']) {
+				}
+				elseif (isset($r['multiple']) and $r['multiple']) {
 
 					$texthtml .= '<select multiple="multiple" name="' . $k . '[]" class="small" size="' . $r['mask']['size'] . '" ' . $attribute;
 					$texthtml .= '>' . tpl_formSelect($r['valuelist'], $r['value']) . '</select>';
@@ -403,26 +427,32 @@ function tpl_form(&$data, $tabs = array())
 
 						$texthtml .= '<button name="' . $k . '" ' . $attribute . '/>';
 					}
-				} else {
+				}
+				else {
 					$texthtml .= '<select name="' . $k . '" ' . $attribute;
 					$texthtml .= '>' . tpl_formSelect($r['valuelist'], $r['value']) . '</select>';
 				}
 				$texthtml .= '</div>';
-			} elseif ($r['type'] == 'date' and $r['readonly']) {
+			}
+			elseif ($r['type'] == 'date' and $r['readonly']) {
 				$temp = '';
 				if ($r['fields_type'] == 'int' and $r['value']) {
 					if (isset($r['mask']['format']) and $r['mask']['format']) {
 						$temp = date($r['mask']['format'], $r['value']);
-					} else {
+					}
+					else {
 						$temp = date('Y-m-d H:i:s', $r['value']);
 					}
-				} elseif ($r['fields_type'] == 'timestamp' and $r['value']) {
+				}
+				elseif ($r['fields_type'] == 'timestamp' and $r['value']) {
 					$temp = $r['value']; //2007-09-11 10:16:15
-				} else {
+				}
+				else {
 					$temp = date("Y-m-d H:i:s");
 				}
 				$texthtml .= '<div class="form-value"><input type="text" name="' . $k . '" value="' . $temp . '" ' . $attribute . '/></div>';
-			} elseif ($r['type'] == 'date' and !$r['readonly']) {
+			}
+			elseif ($r['type'] == 'date' and !$r['readonly']) {
 				$texthtml .= '<div class="form-value dateinput">';
 				$temp = '';
 				if (isset($r['mask']['view']) and $r['mask']['view'] == 'split') {
@@ -431,13 +461,16 @@ function tpl_form(&$data, $tabs = array())
 					if (!is_array($r['value'])) {
 						if ($r['fields_type'] == 'int' and $r['value']) {
 							$temp = explode('-', date('Y-m-d-H-i-s', $r['value']));
-						} elseif ($r['fields_type'] == 'timestamp' and $r['value'] and is_string($r['value'])) {
+						}
+						elseif ($r['fields_type'] == 'timestamp' and $r['value'] and is_string($r['value'])) {
 							$temp = sscanf($r['value'], "%d-%d-%d %d:%d:%d"); //2007-09-11 10:16:15
-						} else {
+						}
+						else {
 							$temp = array_fill(0, 6, 0);
 							//$temp = array(date('Y'),date('n'),date('d'),date('H'));
 						}
-					} else
+					}
+					else
 						$temp = $r['value'];
 					$r['value'] = array();
 
@@ -496,14 +529,16 @@ function tpl_form(&$data, $tabs = array())
 					foreach ($r['value'] as $row) {
 						$texthtml .= '<div class="dateselect ' . $row['css'] . '"><span class="name">' . $row['name'] . '</span><select name="' . $k . '[]" ' . $attribute . '>' . tpl_formSelect($row['item'], $row['value']) . '</select></div>';
 					}
-				} else {
+				}
+				else {
 					$time = NULL;
 					// Тип поля
 					if ($r['value']) {
 						if ($r['fields_type'] == 'int') {
 							$time = $r['value'];
 							$temp = date($r['mask']['format'], $r['value']);
-						} else { //$r['fields_type'] =='timestamp'
+						}
+						else { //$r['fields_type'] =='timestamp'
 							$fs = explode(' ', $r['value']);
 							$f = explode('-', $fs[0]);
 							$s = explode(':', $fs[1]);
@@ -549,7 +584,8 @@ function tpl_form(&$data, $tabs = array())
 						if ($r['mask']['datepicker']['timeFormat']) {
 							plugJQueryUI_datepicker(true);
 							$_tpl['script']['dp_' . $ID] = 'function dp_' . $ID . '() { $("input[name=' . $k . ']").datetimepicker(' . $prop . ')}';
-						} else {
+						}
+						else {
 							plugJQueryUI_datepicker();
 							$_tpl['script']['dp_' . $ID] = 'function dp_' . $ID . '() { $("input[name=' . $k . ']").datepicker(' . $prop . ')}';
 						}
@@ -560,7 +596,8 @@ function tpl_form(&$data, $tabs = array())
 				}
 
 				$texthtml .= '</div>';
-			} elseif ($r['type'] == 'captcha') {
+			}
+			elseif ($r['type'] == 'captcha') {
 				$help = 'Нажмите чтобы обновить картинку / ';
 				switch ($r['mask']['difficult']) {
 					case 1:
@@ -592,7 +629,8 @@ function tpl_form(&$data, $tabs = array())
 						</div>
 					</div>';
 				//$_tpl['onload'] .= ' jQuery(\'.i-reload\').click(function(){reloadCaptcha(\''.$k.'\');}); jQuery(\'#tr_captcha input\').click(function(){wep.setCookie(\'testtest\',1);});';
-			} elseif ($r['type'] == 'file') {
+			}
+			elseif ($r['type'] == 'file') {
 
 				if (isset($r['default']) and $r['default'] != '' and $r['value'] == '') {
 					$r['value'] = $r['default'];
@@ -601,7 +639,8 @@ function tpl_form(&$data, $tabs = array())
 
 				if ($r['caption'] == 1) {
 					$texthtml .= '';
-				} elseif (!is_array($r['value']) and $r['value'] != '') {
+				}
+				elseif (!is_array($r['value']) and $r['value'] != '') {
 					/* Картинки */
 					if ($r['att_type'] == 'img') {
 						$css = '';
@@ -640,6 +679,8 @@ function tpl_form(&$data, $tabs = array())
 				}
 
 				$texthtml .= '<div class="form-value divinputfile">';
+				if (isset($r['accept']) and $r['accept'])
+					$attribute .= ' accept="' . $r['accept'] . '"';
 
 				if (isset($r['mask']['swf_uploader'])) {
 					$texthtml .= '
@@ -649,7 +690,8 @@ function tpl_form(&$data, $tabs = array())
 					$_tpl['script']['SWFUpload/swfupload_fp10/swfupload'] = 1;
 					$_tpl['onload'] .= 'wep.swfuploader.bindSWFUpload({button_placeholder_id:"' . $ID . '_uploader", field_name:"' . $k . '"});';
 					//SESSID = "'.session_id().'";
-				} else {
+				}
+				else {
 					$texthtml .= '<input type="file" name="' . $k . '" ' . $attribute . '/><span class="fileinfo"></span>';
 				}
 
@@ -658,25 +700,30 @@ function tpl_form(&$data, $tabs = array())
 					$texthtml .= '<label class="filedelete">Удалить?&#160;<input type="checkbox" name="' . $k . '_del" value="1"/></label>';
 
 				$texthtml .= '</div>';
-			} elseif ($r['type'] == 'password') {
+			}
+			elseif ($r['type'] == 'password') {
 				if (isset($r['mask']['password']) and $r['mask']['password'] == 're') {
 					$texthtml .= '<div class="form-value">
 						<input type="password" name="' . $k . '" placeholder="Введите пароль" value="" onkeyup="checkPass("' . $k . '")" class="password" ' . $attribute . '/>
 						<input type="password" name="re_' . $k . '" placeholder="Повторите ввод пароля" value="" onkeyup="checkPass("' . $k . '")" class="password" ' . $attribute . '/>
 						</div>';
-				} elseif (isset($r['mask']['password']) and $r['mask']['password'] == 'change') {
+				}
+				elseif (isset($r['mask']['password']) and $r['mask']['password'] == 'change') {
 					$texthtml .= '<div class="form-value">
 						<input type="password" name="' . $k . '_old" placeholder="Введите старый пароль" class="password"/>
 						<input type="password" name="' . $k . '" placeholder="Введите новый пароль" class="password"/>
 						<div class="passnewdesc" onclick="passwordShow(this)">Отобразить/скрыть символы</div></div>';
-				} elseif (isset($r['mask']['password']) and $r['mask']['password'] == 'confirm') {
+				}
+				elseif (isset($r['mask']['password']) and $r['mask']['password'] == 'confirm') {
 					$texthtml .= '<div class="form-value"><input type="password" name="' . $k . '" value="" class="password" placeholder="*********" ' . $attribute . '/>
 						<div class="passnewdesc" onclick="passwordShow(this)">Отобразить/скрыть символы</div></div>';
-				} else {
+				}
+				else {
 					$texthtml .= '<div class="form-value"><input type="password" name="' . $k . '" value="' . $r['value'] . '" class="password" ' . $attribute . '/>
 						<div class="passnewdesc" onclick="passwordShow(this)">Отобразить/скрыть символы</div></div>';
 				}
-			} elseif ($r['type'] == 'password_new') {
+			}
+			elseif ($r['type'] == 'password_new') {
 				trigger_error('Ошибка. Старый формат данных. password_new не поддерживается', E_USER_WARNING);
 			} /*elseif($r['type']=='password' and !$r['readonly']) {
 				$texthtml .= '<div class="form-value"><input type="text" id="'.$k.'" name="'.$k.'" value="'.$r['value'].'" style="width:55%;float:left;background:#E1E1A1;" readonly="readonly"/>
@@ -712,7 +759,8 @@ function tpl_form(&$data, $tabs = array())
 			}*/
 			elseif (isset($r['multiple']) AND $r['multiple'] and !$r['readonly']) {
 				$texthtml .= '<div class="form-value">' . helper_form_multiple($k, $r, $attribute) . '</div>';
-			} else {
+			}
+			else {
 				if (isset($r['isFloat'])) {
 					$maskFloat = explode(',', $r['mask']['width']);
 					if (!isset($maskFloat[1])) $maskFloat[1] = 0;
@@ -796,7 +844,8 @@ function helper_form_valuetype($k, $r, $kval, $rval, $attribute)
 	$html = '';
 	if ($r['type'] == 'list') {
 		$html = '<select class="ilist-val" name="' . $k . '[' . $kval . ']" ' . $attribute . '>' . tpl_formSelect($r['valuelist'], $rval) . '</select>';
-	} else {
+	}
+	else {
 		$html = '<input class="ilist-val" type="text" name="' . $k . '[' . $kval . ']" value="' . @htmlspecialchars($rval, ENT_QUOTES, $_CFG['wep']['charset']) . '" ' . $attribute . '/>';
 	}
 	return $html;

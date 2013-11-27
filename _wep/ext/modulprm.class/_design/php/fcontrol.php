@@ -49,14 +49,16 @@ function tpl_topmenuFE(&$data, $firstpath, $httpQuery = array())
 					$temp_topmenu .= ' onchange="if(this.options[this.selectedIndex].value) return wep.load_href(\'/\'+this.options[this.selectedIndex].value+\'.html\');"';
 				$temp_topmenu .= '>' . tpl_formSelect($r['list']) . '</select>';
 				$temp_topmenu .= '</div>';
-			} else {
+			}
+			else {
 				$temp_topmenu .= '<a class="' . $r['type'] . ($r['sel'] ? ' selected' : '') . '" style="' . $r['style'] . '"';
 				//$temp_topmenu .= ' onclick="return wep.load_href(\''.$firstpath.$href.'\')"';
 
 				//if(isset($r['is_popup']) and $r['is_popup'])
 				if (isset($r['link'])) {
 					$temp_topmenu .= ' target="_blank" href="' . $r['link'] . '"';
-				} else {
+				}
+				else {
 					$temp_topmenu .= ' href="' . $firstpath . $href . '"';
 					$temp_topmenu .= ' onclick="return wep.ShowTools(\'' . $_CFG['_HREF']['wepJS'] . '?_view=list&' . $href . '\');"'; //, \'tools_block\'
 				}

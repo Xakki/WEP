@@ -39,7 +39,8 @@ elseif (isset($_POST['sbmt']) or isset($_SESSION['temp_shop_dir'])) {
 						$imgDir[$dfile] = $zipDir . '/' . $dfile;
 				}
 			}
-		} else
+		}
+		else
 			$xls = $file;
 
 		// ИМпорт XLS
@@ -53,7 +54,7 @@ elseif (isset($_POST['sbmt']) or isset($_SESSION['temp_shop_dir'])) {
 
 			foreach ($DT['dataCat'] as $r) {
 				if (isset($dataCatChange[$r['parent_id']])) // если поменялся Id, то меняем родителя
-				$r['parent_id'] = $dataCatChange[$r['parent_id']];
+					$r['parent_id'] = $dataCatChange[$r['parent_id']];
 
 				$dt = $SHOP->qs('id,parent_id,name', 'WHERE id=' . $r['id']); //name="'.$SHOP->SqlEsc($r['name']).'" or
 
@@ -67,7 +68,8 @@ elseif (isset($_POST['sbmt']) or isset($_SESSION['temp_shop_dir'])) {
 						if (count($dt))
 							$dataCatChange[$tmpId] = $SHOP->id;
 					}
-				} elseif ($dt[0]['id'] != $r['name']) {
+				}
+				elseif ($dt[0]['id'] != $r['name']) {
 					$i2++;
 					$SHOP->id = $r['id'];
 					$SHOP->_update(array('name' => $r['name']));
@@ -146,7 +148,8 @@ elseif (isset($_POST['sbmt']) or isset($_SESSION['temp_shop_dir'])) {
 		if (isset($_SESSION['temp_shop_dir'])) {
 			$zipDir = $_SESSION['temp_shop_dir'];
 			unset($_SESSION['temp_shop_dir']);
-		} else
+		}
+		else
 			$zipDir = $_CFG['_PATH']['temp'] . $_POST['img'];
 
 		$DIR = scandir($zipDir);
@@ -184,7 +187,8 @@ elseif (isset($_POST['sbmt']) or isset($_SESSION['temp_shop_dir'])) {
 					$where = array('code' => $code);
 					if ($SHOP->childs['product']->_update($upd, $where, false)) {
 						$i++;
-					} else {
+					}
+					else {
 						$i2++;
 						//$mess[] = static_main::am('error', 'Код товара `'.$code.'` не найден [папка '.$kD.' : фаил '.$rImg.']');
 					}
@@ -202,13 +206,16 @@ elseif (isset($_POST['sbmt']) or isset($_SESSION['temp_shop_dir'])) {
 			$_SESSION['temp_shop'] = $flag_repeat;
 			$_SESSION['temp_shop_dir'] = $zipDir;
 			$_tpl['onload'] .= 'setTimeout(function(){window.location.reload();},10000);';
-		} else
+		}
+		else
 			unset($_SESSION['temp_shop']);
-	} elseif (!$xls)
+	}
+	elseif (!$xls)
 		$mess[] = static_main::am('notice', 'Загрузите архив, xls фаил либо укажите путь к директории с картинками');
 
 
-} else {
+}
+else {
 	$fields_form['_info'] = array(
 		'type' => 'info',
 		'caption' => '<h2 style="text-align:center;">Импорт товаров из XLS</h2>');
@@ -319,7 +326,8 @@ function dumpXlsData($file, $sheet = 0)
 							'id' => $idCat,
 							'parent_id' => $pid
 						);
-					} else {
+					}
+					else {
 						if (isset($out['dataCat'][$name1])) {
 							$name1 .= ' (' . $randi . ')';
 							$randi++;
@@ -330,15 +338,19 @@ function dumpXlsData($file, $sheet = 0)
 							'parent_id' => 0
 						);
 					}
-				} else {
+				}
+				else {
 					$out['info'][] = current($tmp);
 				}
-			} elseif (isset($tmp[1]) and isset($out['field'])) {
+			}
+			elseif (isset($tmp[1]) and isset($out['field'])) {
 				$tmp['shop'] = $idCat;
 				$out['dataProd'][(int)$tmp[1]] = $tmp;
-			} elseif (isset($tmp[1])) {
+			}
+			elseif (isset($tmp[1])) {
 				$out['field'] = $tmp;
-			} else
+			}
+			else
 				$out['info'][] = $tmp;
 		}
 		//if($row>4) return $out;

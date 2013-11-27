@@ -149,18 +149,19 @@ class static_main
 		if (count($GLOBALS['_ERR'])) {
 			if ($_CFG['wep']['debugmode'] == 5) {
 				return var_export($GLOBALS['_ERR'], true);
-			} else {
+			}
+			else {
 				foreach ($GLOBALS['_ERR'] as $err) foreach ($err as $r) {
 					$var = $r['errtype'] . ' ' . $r['errstr'] . ' , in line ' . $r['errline'] . ' of file <i>' . $r['errfile'] . '</i>';
 					if ($r['debug']) //$r['errcontext']
-					$var = self::spoilerWrap($var, $r['debug'], 'bug_' . $r['errno']);
+						$var = self::spoilerWrap($var, $r['debug'], 'bug_' . $r['errno']);
 					else
 						$var = '<div class="bug_' . $r['errno'] . '">' . $var . '</div>';
 					$var .= "\n";
 					if ($_CFG['_error'][$r['errno']]['prior'] <= 3)
 						$htmlerr .= $var;
 					else //нотисы отдельно
-					$notice .= $var;
+						$notice .= $var;
 				}
 			}
 		}
@@ -171,9 +172,11 @@ class static_main
 			if ($temp[0])
 				$htmlerr .= $temp[0];
 			//self::spoilerWrap('MESSAGES',$temp[0]);
-		} elseif ($_CFG['wep']['debugmode'] == 1 and ($htmlerr != '' or !$temp[1])) {
+		}
+		elseif ($_CFG['wep']['debugmode'] == 1 and ($htmlerr != '' or !$temp[1])) {
 			$htmlerr = 'На странице возникла ошибка! Приносим свои извинения за временные неудобства! Неполадки будут исправлены в ближайшее время.';
-		} else {
+		}
+		else {
 			$htmlerr = '';
 		}
 		return $htmlerr;
@@ -201,7 +204,8 @@ class static_main
 				$dest = "\$data";
 				foreach ($group as $key => $grp)
 					$dest .= "[\$group[$key]]";
-			} else {
+			}
+			else {
 				if (preg_match("/^(\\\"[^\\\"]*\\\"|[^=]*) *= *(\\\"[^\\\"]*\\\"|.*)$/", $line, $regs)) {
 					$regs[1] = trim($regs[1], '"');
 					$regs[2] = trim($regs[2], '"');
@@ -307,7 +311,8 @@ class static_main
 			if ($MODULPRM->SQL->_tableExists($MODULPRM->tablename)) {
 				if (isset($_SESSION['user']['parent_id']) and $_SESSION['user']['parent_id']) {
 					$ugroup_id = ' and t2.ugroup_id IN (' . $_SESSION['user']['parent_id'] . ',' . $ugroup_id . ')';
-				} else
+				}
+				else
 					$ugroup_id = ' and t2.ugroup_id=' . $ugroup_id;
 				$q = 'SELECT t1.*,t2.access, t2.mname FROM `' . $MODULPRM->tablename . '` t1 LEFT Join `' . $MODULPRM->childs['modulgrp']->tablename . '` t2 on t2.owner_id=t1.id' . $ugroup_id . ' ORDER BY t1.typemodul,t1.name';
 				$result = $MODULPRM->SQL->execSQL($q);
@@ -339,7 +344,8 @@ class static_main
 							$_CFG['hook'] = self::MergeArrays($_CFG['hook'], $hook);
 					}
 				}
-			} else {
+			}
+			else {
 				// TODO
 			}
 			/* if (_new_class('modulprm', $MODULs))
@@ -416,7 +422,8 @@ class static_main
 						$result = $UGROUP->authorization($login, $pass);
 					else
 						$result[0] = 'Ugroup modul is off';
-				} elseif (!self::_prmUserCheck() and isset($_COOKIE['remember'])) {
+				}
+				elseif (!self::_prmUserCheck() and isset($_COOKIE['remember'])) {
 					if (preg_match("/^[0-9A-Za-z\_]+$/", $_COOKIE['remember'])) {
 						if (_new_class('ugroup', $UGROUP))
 							$result = $UGROUP->cookieAuthorization();
@@ -424,7 +431,8 @@ class static_main
 							$result[0] = 'Ugroup modul is off';
 					}
 				}
-			} elseif ($_CFG['wep']['login'] and $_CFG['wep']['password']) {
+			}
+			elseif ($_CFG['wep']['login'] and $_CFG['wep']['password']) {
 				// Авторизация без использования БД , логин и пароль берутся из конфига
 				$flag = 0;
 
@@ -432,7 +440,8 @@ class static_main
 					$pos = strpos($_COOKIE['remember'], '_');
 					if ($_CFG['wep']['login'] == substr($_COOKIE['remember'], ($pos + 1)) and md5($_CFG['wep']['md5'] . $_CFG['wep']['password']) == substr($_COOKIE['remember'], 0, $pos))
 						$flag = 1;
-				} elseif ($login or $pass) {
+				}
+				elseif ($login or $pass) {
 					$result = array(static_main::m('autherr'), 0);
 					if ($_CFG['wep']['login'] == $login and $_CFG['wep']['password'] == $pass)
 						$flag = 1;
@@ -457,7 +466,8 @@ class static_main
 					//$_COOKIE['_showerror']=1;
 				}
 			}
-		} else {
+		}
+		else {
 			//if (!$UGROUP)
 			//	_new_class('ugroup', $UGROUP);
 			$result = array(static_main::m('authok'), 1);
@@ -515,7 +525,8 @@ class static_main
 		if (!is_array($insert_data)) {
 			trigger_error('Не верный переданный 3тий аргумент $insert_data, должен быть массив.', E_USER_WARNING);
 			return $data;
-		} elseif (count($data)) {
+		}
+		elseif (count($data)) {
 			foreach ($data as $k => $r) {
 				$output[$k] = $r;
 				if ($k == $afterkey) {
@@ -539,7 +550,8 @@ class static_main
 		foreach ($Arr2 as $key => $Value) {
 			if (array_key_exists($key, $Arr1) && is_array($Value) && is_array($Arr1[$key])) {
 				$Arr1[$key] = self::MergeArrays($Arr1[$key], $Value);
-			} else
+			}
+			else
 				$Arr1[$key] = $Value;
 		}
 		return $Arr1;
@@ -575,7 +587,7 @@ class static_main
 			//temp
 			$text = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
 			if ($clearFormat === 2) // TODO  : для чего этот высер?
-			$text = str_replace(array('.<br />', ',<br />', '<br />'), array('. ', ', ', '. '), $text);
+				$text = str_replace(array('.<br />', ',<br />', '<br />'), array('. ', ', ', '. '), $text);
 			else
 				$text = str_replace(array('<br/>', '<br/>', '<hr>', '<br>', '><'), array(' ', ' ', ' ', ' ', '> <'), $text);
 
@@ -622,10 +634,12 @@ class static_main
 						$tn = trim(str_replace(array('href="'), '', $rc), ' /');
 						$tn = parse_url($tn);
 						$tn = $tn['host'];
-					} else
+					}
+					else
 						$tn = $name;
 					$temp[] = '<a href="' . MY_BH . '_redirect.php?url=' . (base64encode($rc)) . '" rel="nofollow" target="_blank">' . $tn . '</a>';
-				} else
+				}
+				else
 					$temp[] = MY_BH . '_redirect.php?url=' . (base64encode($rc));
 			}
 			$text = str_replace($cont[0], $temp, $text);
@@ -652,14 +666,16 @@ class static_main
 				$_tpl['redirect'] = $link;
 			else
 				$_tpl['redirectConfirm'] = $link;
-		} else {
+		}
+		else {
 			if ($_CFG['wep']['debugmode'] < 3) {
 				if ($NO !== false)
 					header('HTTP/1.1 ' . $NO);
 				header("Location: " . $link);
 				die($link);
 
-			} else {
+			}
+			else {
 				die('Redirect to <a href="' . $link . '">' . $link . '</a>');
 			}
 		}
@@ -700,22 +716,29 @@ class static_main
 								if (is_array($d))
 									$value .= self::kData2xml($d, $m);
 								elseif ($m == 'value')
-									$value .= $d; elseif ($m == 'name')
-									$value .= '<name><![CDATA[' . $d . ']]></name>'; else
+									$value .= $d;
+								elseif ($m == 'name')
+									$value .= '<name><![CDATA[' . $d . ']]></name>';
+								else
 									$attr .= ' ' . str_replace('#', '', $m) . '="' . $d . '"';
 							}
-						} else
+						}
+						else
 							$value = $r;
 						$XML .= '<' . $f . $attr . '>' . $value . '</' . $f . ">\n";
 					}
 					//$XML = '<'.$f.$attr.'>'.$value.'</'.$f.'>';
-				} else {
+				}
+				else {
 					foreach ($DATA as $k => $r) {
 						if (is_array($r)) {
 							$value .= self::kData2xml($r, $k);
-						} elseif ($k == 'value')
-							$value .= $r; elseif ($k == 'name')
-							$value .= '<name><![CDATA[' . $r . ']]></name>'; else
+						}
+						elseif ($k == 'value')
+							$value .= $r;
+						elseif ($k == 'name')
+							$value .= '<name><![CDATA[' . $r . ']]></name>';
+						else
 							$attr .= ' ' . str_replace('#', '', $k) . '="' . $r . '"';
 					}
 					$XML = '<' . $f . $attr . '>' . $value . '</' . $f . '>';
@@ -743,11 +766,15 @@ class static_main
 					$date = 'Минуту назад';
 				else
 					$date = ceil($de / 60) . ' минуты назад';
-			} else
+			}
+			else
 				$date = ceil($de / 60) . ' минут назад';
-		} elseif ($_CFG['getdate']['year'] == $date['year'] and $_CFG['getdate']['yday'] == $date['yday'])
-			$date = 'Сегодня ' . date('H:i', $time); elseif ($_CFG['getdate']['year'] == $date['year'] and $_CFG['getdate']['yday'] - $date['yday'] == 1)
-			$date = 'Вчера ' . date('H:i', $time); elseif (strpos($format, '%') !== false)
+		}
+		elseif ($_CFG['getdate']['year'] == $date['year'] and $_CFG['getdate']['yday'] == $date['yday'])
+			$date = 'Сегодня ' . date('H:i', $time);
+		elseif ($_CFG['getdate']['year'] == $date['year'] and $_CFG['getdate']['yday'] - $date['yday'] == 1)
+			$date = 'Вчера ' . date('H:i', $time);
+		elseif (strpos($format, '%') !== false)
 			$date = strftime($format, $time); // "%d %B(%b) %A(%a) %Y"
 		else
 			$date = self::_date($format, $time);
@@ -816,7 +843,8 @@ class static_main
 			$_this->messages_on_page = (int)$_GET[$_this->_cl . '_mop'];
 			if ($_COOKIE[$_this->_cl . '_mop'] != $_this->messages_on_page)
 				_setcookie($_this->_cl . '_mop', $_this->messages_on_page, $_this->_CFG['remember_expire']);
-		} elseif (isset($_COOKIE[$_this->_cl . '_mop']))
+		}
+		elseif (isset($_COOKIE[$_this->_cl . '_mop']))
 			$_this->messages_on_page = (int)$_COOKIE[$_this->_cl . '_mop'];
 		if (!$_this->messages_on_page)
 			$_this->messages_on_page = 20;
@@ -830,7 +858,8 @@ class static_main
 			$DATA['cntpage'] = floor($countfield / $_this->messages_on_page);
 			$temp_pn = $_this->_pn;
 			$_this->_pn = $DATA['cntpage'] - $_this->_pn + 1;
-		} else {
+		}
+		else {
 			$DATA['cntpage'] = ceil($countfield / $_this->messages_on_page);
 		}
 
@@ -868,13 +897,15 @@ class static_main
 					$PP[1] = $PP[0];
 				}
 				$PP[1] .= $_this->_pa . '=';
-			} else {
+			}
+			else {
 				$pregreplPage = '/(.*)_p[0-9]+(.*)/';
 				if (!preg_match($pregreplPage, $param['firstpath'], $matches)) {
 					$temp = explode('.html', $param['firstpath']);
 					$PP[1] = $temp[0] . '_p';
 					$PP[2] = '.html' . $temp[1];
-				} else {
+				}
+				else {
 					$PP[0] = $matches[1] . $matches[2];
 					$PP[1] = $matches[1] . '_p';
 					$PP[2] = $matches[2];
@@ -888,7 +919,8 @@ class static_main
 				$DATA['link'][$DATA['cntpage']] = $PP[0];
 				if (($_this->_pn + $numlist) < $DATA['cntpage'] - 1) {
 					$j = $_this->_pn + $numlist;
-				} else
+				}
+				else
 					$j = $DATA['cntpage'] - 1;
 				$vl = $_this->_pn - $numlist;
 				if ($vl < 2)
@@ -897,13 +929,15 @@ class static_main
 					$DATA['link'][$i] = $PP[1] . $i . $PP[2];
 				}
 				$DATA['link'][1] = $PP[1] . '1' . $PP[2];
-			} else {
+			}
+			else {
 				$DATA['link'][1] = $PP[0];
 
 				if (($_this->_pn - $numlist) > 3) {
 					$j = $_this->_pn - $numlist;
 					$DATA['link'][' ...'] = false;
-				} else {
+				}
+				else {
 					$j = 2;
 				}
 
@@ -930,9 +964,11 @@ class static_main
 			if ($_this->_pn == floor($countfield / $_this->messages_on_page)) {
 				$_this->messages_on_page = $countfield - $_this->messages_on_page * ($_this->_pn - 1); // правдивый
 				//$_this->messages_on_page = $_this->messages_on_page*$_this->_pn-$countfield; // полная запись
-			} else
+			}
+			else
 				$DATA['start'] = $countfield - $_this->messages_on_page * $_this->_pn; // начало отсчета
-		} else
+		}
+		else
 			$DATA['start'] = $_this->messages_on_page * ($_this->_pn - 1); // начало отсчета
 		if ($DATA['start'] < 0)
 			$DATA['start'] = 0;
@@ -995,7 +1031,8 @@ class static_main
 			$publish = $_CFG['_PATH']['temp'] . basename($file);
 			if (!copy($file, $publish))
 				return $default;
-		} else
+		}
+		else
 			$publish = $file;
 
 		if (strpos($publish, $_CFG['_PATH']['content']) !== false)
@@ -1019,7 +1056,8 @@ function session_go($force = false)
 				$SESSION_GOGO = new session_class();
 			}
 			$SESSION_GOGO->start($force);
-		} else {
+		}
+		else {
 			session_start();
 		}
 		return true;
@@ -1044,7 +1082,8 @@ function _setcookie($name, $value = '', $expire = '', $path = '', $domain = '', 
 
 	if ($expire > time()) {
 		$_COOKIE[$name] = $value;
-	} else {
+	}
+	else {
 		unset($_COOKIE[$name]);
 	}
 }
@@ -1066,12 +1105,14 @@ function _new_class($name, &$MODUL, $OWNER = NULL, $_forceLoad = false)
 	if (isset($_CFG['singleton'][$name])) {
 		$MODUL = $_CFG['singleton'][$name];
 		return true;
-	} elseif (is_null($OWNER) and isset($_CFG['modulprm'][$name]) and $_CFG['modulprm'][$name]['pid']) {
+	}
+	elseif (is_null($OWNER) and isset($_CFG['modulprm'][$name]) and $_CFG['modulprm'][$name]['pid']) {
 		// кастыль: при обращении к дочерним классам , находяться родители и от него дается ссылка на класс.
 		_new_class($_CFG['modulprm'][$name]['pid'], $MODUL2);
 		$MODUL = $MODUL2->childs[$name];
 		return true;
-	} else {
+	}
+	else {
 		$class_name = $name . "_class";
 
 		if (!class_exists($class_name, false)) {
@@ -1102,8 +1143,10 @@ function _new_class($name, &$MODUL, $OWNER = NULL, $_forceLoad = false)
 			}
 			if ($MODUL and is_object($MODUL))
 				return true;
-		} elseif (!isset($_CFG['modulprm'][$name]) or !$_CFG['modulprm'][$name]['active'])
-			return false; elseif (isset($_CFG['modulprm'][$name]) and $_CFG['modulprm'][$name]['pid']) {
+		}
+		elseif (!isset($_CFG['modulprm'][$name]) or !$_CFG['modulprm'][$name]['active'])
+			return false;
+		elseif (isset($_CFG['modulprm'][$name]) and $_CFG['modulprm'][$name]['pid']) {
 
 			$moduls = array($name);
 			while ($_CFG['modulprm'][$name]['pid']) {
@@ -1120,7 +1163,8 @@ function _new_class($name, &$MODUL, $OWNER = NULL, $_forceLoad = false)
 				$MODUL = $MODUL->childs[$moduls[$i]];
 			}
 			return true;
-		} else {
+		}
+		else {
 			trigger_error('Can`t init `' . $class_name . '` modul ', E_USER_WARNING);
 		}
 	}
@@ -1145,7 +1189,8 @@ function _getChildModul($name, &$MODUL)
 		for ($i = $cnt - 2; $i >= 0; $i--) {
 			$MODUL = $MODUL->childs[$moduls[$i]];
 		}
-	} else {
+	}
+	else {
 		_new_class($name, $MODUL);
 	}
 	if ($MODUL)
@@ -1340,7 +1385,8 @@ function setTheme($theme)
 			return false;
 		}
 		$_CFG['wep']['design'] = $theme;
-	} else {
+	}
+	else {
 		if (!file_exists($_CFG['_PATH']['themes'] . $theme)) {
 			trigger_error('Theme ' . $_CFG['_PATH']['themes'] . $theme . ' not found', E_USER_WARNING);
 			return false;
@@ -1510,7 +1556,8 @@ function _substr($s, $offset, $len = NULL)
 			return mb_substr($s, $offset);
 		else
 			return substr($s, $offset);
-	} else {
+	}
+	else {
 		if (function_exists('mb_substr'))
 			return mb_substr($s, $offset, $len);
 		else
@@ -1606,7 +1653,8 @@ function setCss($styles, $isAuto = true, $pos = POS_END)
 			if ($r) {
 				if ($pos == POS_BEGIN) {
 					$_tpl['styles'] = array(getUrlCss($r, $customTheme) => 1) + $_tpl['styles'];
-				} else {
+				}
+				else {
 					$_tpl['styles'][getUrlCss($r, $customTheme)] = 1;
 				}
 			}
@@ -1631,13 +1679,13 @@ function getUrlCss($r, $customTheme = null)
 		return $r;
 	}
 	elseif (strpos($r, '/') === 0) {
-		$r = $customTheme . 'style' . $r ;
+		$r = $customTheme . 'style' . $r;
 	}
 	else {
-		$r = $_CFG['_HREF']['_style'] . $r ;
+		$r = $_CFG['_HREF']['_style'] . $r;
 	}
 
-	if (substr($r, -4)!=='.css') {
+	if (substr($r, -4) !== '.css') {
 		$r .= '.css';
 	}
 
@@ -1678,8 +1726,10 @@ function getUrlScript($r, $customTheme = null)
 	if (strpos($r, '#themes#') !== false)
 		$r = str_replace('#themes#', $customTheme . 'script/', $r) . '.js';
 	elseif (strpos($r, '//') !== false)
-		return $r; elseif (strpos($r, '/') === 0)
-		$r = $customTheme . 'script' . $r . '.js'; else
+		return $r;
+	elseif (strpos($r, '/') === 0)
+		$r = $customTheme . 'script' . $r . '.js';
+	else
 		$r = $_CFG['_HREF']['_script'] . $r . '.js';
 
 	return '//' . WEP_BH . $r;

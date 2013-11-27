@@ -55,7 +55,8 @@ function extractZip($zipFile = '', $zipDir = '', $dirFromZip = '')
 					if (substr($completeName, -1) != '/' and $fd = @fopen($completeName, 'w+')) {
 						fwrite($fd, zip_entry_read($zip_entry, zip_entry_filesize($zip_entry)));
 						fclose($fd);
-					} else {
+					}
+					else {
 						if (!file_exists(trim($completeName, '/')))
 							mkdir($completeName, 0777);
 					}

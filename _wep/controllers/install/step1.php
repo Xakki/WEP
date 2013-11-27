@@ -32,7 +32,8 @@ foreach ($_CFGFORM as $kt => $rb) {
 					if (isset($r['multiple']) and $r['multiple'] <= FORM_MULTIPLE_JQUERY and count($_POST[$kt][$k]))
 						$_POST[$kt][$k] = array_combine($_POST[$kt][$k], $_POST[$kt][$k]);
 					$r['value'] = $_POST[$kt][$k];
-				} elseif ($r['type'] == 'checkbox')
+				}
+				elseif ($r['type'] == 'checkbox')
 					$r['value'] = $_POST[$kt][$k] = 0;
 			}
 		}
@@ -72,7 +73,8 @@ if (isset($_POST['sbmt']) and $flag) {
 			$_POST['wep']['password'] = $USER_CFG['wep']['password'];
 
 		list($sqlfl, $mess) = static_tools::saveUserCFG($_POST);
-	} else
+	}
+	else
 		$mess[] = array('error', $txt);
 	//Записать в конфиг все данные которые отличаются от данных по умолчанию
 	if ($sqlfl) {
@@ -85,7 +87,8 @@ if (isset($_POST['sbmt']) and $flag) {
 		//die('<a href="install.php?step=' . ($_GET['step'] + 1) . '">Следующий шаг</a>');
 	}
 	$USER_CFG = $_POST;
-} else {
+}
+else {
 	$mess[] = array('name' => 'ok', 'value' => 'Будте осторожны при вводе этих настроек.');
 }
 

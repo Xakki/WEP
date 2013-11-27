@@ -46,12 +46,14 @@ class static_control
 				if (!$_this->_prmModulShow($_this->data, $param)) {
 					$arr['mess'][] = static_main::am('error', 'denied', $_this);
 					$formflag = 0;
-				} elseif ($submitFlag) {
+				}
+				elseif ($submitFlag) {
 					// Проверка привелегий доступа на редактирование
 					if (!$_this->_prmModulEdit($_this->data, $param)) {
 						$arr['mess'][] = static_main::am('error', 'denied_up', $_this);
 						$formflag = 0;
-					} else {
+					}
+					else {
 						$DATA = $_POST;
 						$param['is_submit'] = true;
 						$mess = $_this->kPreFields($DATA, $param, $argForm); // заполнение формы данными
@@ -66,15 +68,18 @@ class static_control
 									$param['is_submit'] = false;
 									$mess = $_this->kPreFields($_this->data[$_this->id], $param, $argForm);
 								}
-							} else {
+							}
+							else {
 								$arr['mess'][] = static_main::am('error', 'update_err', $_this);
 							}
-						} elseif ($submitFlag === 2) //Если в результате автосабмита данные оказались не валидными, то не выводим сообщения
+						}
+						elseif ($submitFlag === 2) //Если в результате автосабмита данные оказались не валидными, то не выводим сообщения
 						{
 							$arr['mess'] = array();
 						}
 					}
-				} else {
+				}
+				else {
 					// Вывод формы с данными из БД
 					$flag = 0;
 					$tempdata = $_this->data[$_this->id];
@@ -82,18 +87,21 @@ class static_control
 				}
 				if (isset($argForm['captcha']))
 					static_form::setCaptcha($argForm['captcha']['mask']);
-			} else {
+			}
+			else {
 				// Ошибка. Нет данных
 				$arr['mess'][] = static_main::am('error', 'nodata', $_this);
 				$flag = -1;
 			}
-		} else {
+		}
+		else {
 			// Проверка привелегий доступа на добавление
 			if (!$_this->_prmModulAdd()) {
 				$arr['mess'][] = static_main::am('error', 'denied_add', $_this);
 				$formflag = 0;
 				$flag = -1;
-			} elseif ($submitFlag) {
+			}
+			elseif ($submitFlag) {
 				$DATA = $_POST;
 				$param['is_submit'] = true;
 				$_this->kPreFields($DATA, $param, $argForm);
@@ -104,32 +112,39 @@ class static_control
 					if ($rm = $_this->_add($arr['vars'])) {
 						$flag = 1;
 						$arr['mess'][] = static_main::am('ok', 'add', array($_this->tablename), $_this);
-					} else {
+					}
+					else {
 						trigger_error('Ошибка добавления в модуле `' . $_this->_cl . '`, параметры <pre>' . print_r($arr, true) . '</pre>', E_USER_WARNING);
 						$arr['mess'][] = static_main::am('error', 'add_err', $_this);
 					}
 
-				} elseif ($submitFlag === 2) //Если в результате автосабмита данные оказались не валидными, то не выводим сообщения
+				}
+				elseif ($submitFlag === 2) //Если в результате автосабмита данные оказались не валидными, то не выводим сообщения
 				{
 					$arr['mess'] = array();
 				}
-			} else
+			}
+			else
 				$mess = $_this->kPreFields($_POST, $param, $argForm);
 			if (isset($argForm['captcha']))
 				static_form::setCaptcha($argForm['captcha']['mask']);
 		}
 
 		if (isset($param['showform']) and $param['showform'] and $flag < 0) // Если стоит флаг showform, то отображаем форму если ошибка
-		$formflag = 1;
+			$formflag = 1;
 		elseif (isset($param['formflag'])) // если стоит флаг formflag, то всегда покажем форму
-		$formflag = $param['formflag']; elseif ($flag == 0) // по умолчанию сразу показываем форму
-		$formflag = 1; elseif (isset($_POST['sbmt']) and $flag == 1) // если успешно выполненно и нажата кнопка "Сохранить"
-		$formflag = 0; elseif (isset($_POST['sbmt_save']))
-			$formflag = 1; elseif (isset($param['ajax'])) // если флаг ajax , то не показывать форму
-		$formflag = 0;
+			$formflag = $param['formflag'];
+		elseif ($flag == 0) // по умолчанию сразу показываем форму
+			$formflag = 1;
+		elseif (isset($_POST['sbmt']) and $flag == 1) // если успешно выполненно и нажата кнопка "Сохранить"
+			$formflag = 0;
+		elseif (isset($_POST['sbmt_save']))
+			$formflag = 1;
+		elseif (isset($param['ajax'])) // если флаг ajax , то не показывать форму
+			$formflag = 0;
 
 		if ($formflag) // показывать форму
-		$formflag = $_this->kFields2Form($param, $argForm);
+			$formflag = $_this->kFields2Form($param, $argForm);
 
 		$options = $_this->getFormOptions();
 

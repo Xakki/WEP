@@ -111,7 +111,8 @@ class shopbasket_class extends kernel_extends
 				}
 			}
 			return $data;
-		} elseif ($listname == 'delivertype') {
+		}
+		elseif ($listname == 'delivertype') {
 			_new_class('shopdeliver', $MODUL);
 			$dataTemp = $MODUL->qs('id,name,paylist', 'WHERE active=1', 'id');
 
@@ -123,7 +124,8 @@ class shopbasket_class extends kernel_extends
 				$data[$r['id']] = array('#name#' => $r['name'], '#img#' => getUrlTheme() . '_img/avatar/default3.jpg',);
 
 			return $data;
-		} else
+		}
+		else
 			return parent::_getlist($listname, $value);
 	}
 
@@ -201,11 +203,14 @@ class shopbasket_class extends kernel_extends
 				$mess = array();
 				if ($count and !$BASKETITEM->id and $BASKETITEM->_add($addData)) {
 					//$mess = array('ok','Товар добавлен в корзину');
-				} elseif ($count and $BASKETITEM->id  and $BASKETITEM->_update(array('count' => $count))) {
+				}
+				elseif ($count and $BASKETITEM->id  and $BASKETITEM->_update(array('count' => $count))) {
 					//$mess = array('ok','Количество товара в корзине обновлено');
-				} elseif (!$count and $BASKETITEM->id and $BASKETITEM->_delete()) {
+				}
+				elseif (!$count and $BASKETITEM->id and $BASKETITEM->_delete()) {
 					//$mess = array('ok','Товар удален из корзины');
-				} else {
+				}
+				else {
 					$mess = array('error', 'Ошибка корзины [' . $count . ',' . $BASKETITEM->id . ']- обратитесь к админу.');
 				}
 			}
@@ -351,7 +356,8 @@ class shopbasket_class extends kernel_extends
 		if (!$id) {
 			if (isset($_COOKIE['basketcid']) and $_COOKIE['basketcid']) {
 				$id = -(int)$_COOKIE['basketcid'];
-			} elseif ($force) {
+			}
+			elseif ($force) {
 				$id = $this->generateId();
 				$data = $this->childs['shopbasketitem']->qs('id', array($this->mf_createrid => -$id));
 				while (count($data)) {
@@ -362,7 +368,8 @@ class shopbasket_class extends kernel_extends
 				$id = -$id;
 			}
 
-		} elseif (isset($_COOKIE['basketcid']) and $_COOKIE['basketcid']) {
+		}
+		elseif (isset($_COOKIE['basketcid']) and $_COOKIE['basketcid']) {
 			$this->childs['shopbasketitem']->_update(array($this->mf_createrid => $id), array($this->mf_createrid => -(int)$_COOKIE['basketcid']));
 			_setcookie('basketcid', 0);
 			$res = $this->childs['shopbasketitem']->qs('id', 'WHERE ' . $this->mf_createrid . '=' . $id . ' GROUP BY product_id HAVING count(id)>1', 'id');
@@ -437,7 +444,8 @@ class shopbasket_class extends kernel_extends
 				if ($k) {
 					$this->childs['shopbasketitem']->id = $k;
 					$this->childs['shopbasketitem']->_update($r);
-				} else {
+				}
+				else {
 					$this->childs['shopbasketitem']->_addUp($r);
 				}
 
@@ -466,9 +474,11 @@ class shopbasket_class extends kernel_extends
 			if ($data[$this->id]['laststatus'] < SHOPBASKET_TIMEOUT) {
 				_new_class('pay', $PAY);
 				$result = $PAY->payTransaction($data[$this->id]['pay_id'], PAY_PAID);
-			} else
+			}
+			else
 				false;
-		} elseif ($status >= SHOPBASKET_USERCANCEL) {
+		}
+		elseif ($status >= SHOPBASKET_USERCANCEL) {
 			if ($data[$this->id]['laststatus'] < SHOPBASKET_TIMEOUT) {
 				_new_class('pay', $PAY);
 				$result = $PAY->payTransaction($data[$this->id]['pay_id'], ($status == SHOPBASKET_USERCANCEL ? PAY_USERCANCEL : PAY_CANCEL));

@@ -107,7 +107,8 @@ function tpl_paybankBill($data)
 			    <td>шт.
 			    <td>' . ($v['count'] * $v['cost_item']) . '
 			</tr>';
-		} else {
+		}
+		else {
 			$servis[] = $v;
 		}
 		$i++;

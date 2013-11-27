@@ -79,7 +79,8 @@ class gallery_class extends kernel_extends
 				$data['#info-gallery#'] = current($data['#info-gallery#']);
 				$data['#list-gallitem#'] = $this->childs['gallitem']->qs('*', 'WHERE owner_id = ' . $this->id . ' ');
 			}
-		} else {
+		}
+		else {
 			$data['#list-gallery#'] = $this->qs('*', 'WHERE active=1 ORDER BY name', 'id');
 			$data['#temp-gallitem#'] = $this->childs['gallitem']->qs('*', 'WHERE owner_id IN (' . implode(',', array_keys($data['#list-gallery#'])) . ') GROUP BY owner_id', 'owner_id');
 		}

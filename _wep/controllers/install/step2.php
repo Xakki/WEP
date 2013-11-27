@@ -28,7 +28,8 @@ if ($res == 1) {
 	if (count($var_const['mess']))
 		$DATA['messages'][] = $var_const['mess'];
 	$html = transformPHP($DATA, 'messages');
-} else {
+}
+else {
 	$DATA = array('formcreat' => $DATA);
 	$html = transformPHP($DATA, 'formcreat');
 }

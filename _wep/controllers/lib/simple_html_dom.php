@@ -179,7 +179,8 @@ class simple_html_dom_node
 						echo "[$k2]=>\"" . $v2 . '", ';
 					}
 					echo ")";
-				} else {
+				}
+				else {
 					echo "[$k]=>\"" . $v . '", ';
 				}
 			}
@@ -312,7 +313,8 @@ class simple_html_dom_node
 		// render begin tag
 		if ($this->dom && $this->dom->nodes[$this->_[HDOM_INFO_BEGIN]]) {
 			$ret = $this->dom->nodes[$this->_[HDOM_INFO_BEGIN]]->makeup();
-		} else {
+		}
+		else {
 			$ret = "";
 		}
 
@@ -322,7 +324,8 @@ class simple_html_dom_node
 			if ($this->tag != "br") {
 				$ret .= $this->_[HDOM_INFO_INNER];
 			}
-		} else {
+		}
+		else {
 			if ($this->nodes) {
 				foreach ($this->nodes as $n) {
 					$ret .= $this->convert_text($n->outertext());
@@ -510,7 +513,8 @@ class simple_html_dom_node
 			if ($pass && $key) {
 				if ($no_key) {
 					if (isset($node->attr[$key])) $pass = false;
-				} else {
+				}
+				else {
 					if (($key != "plaintext") && !isset($node->attr[$key])) $pass = false;
 				}
 			}
@@ -520,7 +524,8 @@ class simple_html_dom_node
 				if ($key == "plaintext") {
 					// $node->plaintext actually returns $node->text();
 					$nodeKeyValue = $node->text();
-				} else {
+				}
+				else {
 					// this is a normal search, we want the value of that attribute of the tag.
 					$nodeKeyValue = $node->attr[$key];
 				}
@@ -531,7 +536,8 @@ class simple_html_dom_node
 				//PaperG - If lowercase is set, do a case insensitive test of the value of the selector.
 				if ($lowercase) {
 					$check = $this->match($exp, strtolower($val), strtolower($nodeKeyValue));
-				} else {
+				}
+				else {
 					$check = $this->match($exp, $val, $nodeKeyValue);
 				}
 				if (is_object($debugObject)) {
@@ -545,7 +551,8 @@ class simple_html_dom_node
 						if (!empty($k)) {
 							if ($lowercase) {
 								$check = $this->match($exp, strtolower($val), strtolower($k));
-							} else {
+							}
+							else {
 								$check = $this->match($exp, $val, $k);
 							}
 							if ($check) break;
@@ -737,7 +744,8 @@ class simple_html_dom_node
 			// Check if the reported encoding could have been incorrect and the text is actually already UTF-8
 			if ((strcasecmp($targetCharset, 'UTF-8') == 0) && ($this->is_utf8($text))) {
 				$converted_text = $text;
-			} else {
+			}
+			else {
 				$converted_text = iconv($sourceCharset, $targetCharset, $text);
 			}
 		}
@@ -1072,7 +1080,8 @@ class simple_html_dom
 					$success = preg_match('/charset=(.+)/', $fullvalue, $matches);
 					if ($success) {
 						$charset = $matches[1];
-					} else {
+					}
+					else {
 						// If there is a meta tag, and they don't specify the character set, research says that it's typically ISO-8859-1
 						if (is_object($debugObject)) {
 							$debugObject->debugLog(2, 'meta content-type tag couldn\'t be parsed. using iso-8859 default.');
@@ -1154,7 +1163,8 @@ class simple_html_dom
 						$this->parent->_[HDOM_INFO_END] = $this->cursor;
 						return $this->as_text_node($tag);
 					}
-				} else if (($this->parent->parent) && isset($this->block_tags[$tag_lower])) {
+				}
+				else if (($this->parent->parent) && isset($this->block_tags[$tag_lower])) {
 					$this->parent->_[HDOM_INFO_END] = 0;
 					$org_parent = $this->parent;
 
@@ -1166,10 +1176,12 @@ class simple_html_dom
 						$this->parent->_[HDOM_INFO_END] = $this->cursor;
 						return $this->as_text_node($tag);
 					}
-				} else if (($this->parent->parent) && strtolower($this->parent->parent->tag) === $tag_lower) {
+				}
+				else if (($this->parent->parent) && strtolower($this->parent->parent->tag) === $tag_lower) {
 					$this->parent->_[HDOM_INFO_END] = 0;
 					$this->parent = $this->parent->parent;
-				} else
+				}
+				else
 					return $this->as_text_node($tag);
 			}
 
@@ -1193,7 +1205,8 @@ class simple_html_dom
 			if (isset($tag[2]) && $tag[1] === '-' && $tag[2] === '-') {
 				$node->nodetype = HDOM_TYPE_COMMENT;
 				$node->tag = 'comment';
-			} else {
+			}
+			else {
 				$node->nodetype = HDOM_TYPE_UNKNOWN;
 				$node->tag = 'unknown';
 			}
@@ -1282,7 +1295,8 @@ class simple_html_dom
 				if ($this->char === '=') {
 					$this->char = (++$this->pos < $this->size) ? $this->doc[$this->pos] : null; // next
 					$this->parse_attr($node, $name, $space);
-				} else {
+				}
+				else {
 					//no value attr: nowrap, checked selected...
 					$node->_[HDOM_INFO_QUOTE][] = HDOM_QUOTE_NO;
 					$node->attr[$name] = true;
@@ -1290,7 +1304,8 @@ class simple_html_dom
 				}
 				$node->_[HDOM_INFO_SPACE][] = $space;
 				$space = array($this->copy_skip($this->token_blank), '', '');
-			} else
+			}
+			else
 				break;
 		} while ($this->char !== '>' && $this->char !== '/');
 
@@ -1301,7 +1316,8 @@ class simple_html_dom
 		if ($this->copy_until_char_escape('>') === '/') {
 			$node->_[HDOM_INFO_ENDSPACE] .= '/';
 			$node->_[HDOM_INFO_END] = 0;
-		} else {
+		}
+		else {
 			// reset parent
 			if (!isset($this->self_closing_tags[strtolower($node->tag)])) $this->parent = $node;
 		}

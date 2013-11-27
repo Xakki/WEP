@@ -21,7 +21,8 @@ class static_list
 			if (!isset($_this->_CFG['enum'][$templistname])) {
 				$data = & $_this->_getCashedList($listname, $value); // , $value
 				//$_this->_CFG['enum'][$templistname]
-			} else
+			}
+			else
 				$data = & $_this->_CFG['enum'][$templistname];
 
 			if (!is_array($data) or !count($data))
@@ -33,8 +34,9 @@ class static_list
 			$temp = self::fix_checklist($data);
 
 			if (is_null($value)) // не кешируем если не задано значение и  or !is_array($listname) $listname - выборка из БД(в массиве)
-			$_this->_CFG['enum_check'][$templistname] = $temp;
-		} else {
+				$_this->_CFG['enum_check'][$templistname] = $temp;
+		}
+		else {
 			$temp = & $_this->_CFG['enum_check'][$templistname];
 		}
 
@@ -46,7 +48,8 @@ class static_list
 			}
 			if (count($return_value) == count($value))
 				return $return_value;
-		} elseif (isset($temp[$value])) {
+		}
+		elseif (isset($temp[$value])) {
 			return $temp[$value];
 		}
 		return false;
@@ -79,7 +82,8 @@ class static_list
 				$temp2 += $row;
 			}
 			$temp = & $temp2;
-		} else {
+		}
+		else {
 			$temp = & $data;
 		}
 		return $temp;
@@ -103,7 +107,8 @@ class static_list
 			$data = $_this->_getlist($listname, $value);
 			$data = self::uarray_intersect_key($data, $value);
 			return $data;
-		} elseif (!isset($_this->_CFG['enum'][$templistname]))
+		}
+		elseif (!isset($_this->_CFG['enum'][$templistname]))
 			$_this->_CFG['enum'][$templistname] = $_this->_getlist($listname, $value);
 
 		return $_this->_CFG['enum'][$templistname];
@@ -123,7 +128,8 @@ class static_list
 		$temp = current($data);
 		if (!is_array($temp) or isset($temp['#name#'])) {
 			return array_intersect_key($data, $tvalue);
-		} else {
+		}
+		else {
 			$tdata = array();
 			foreach ($data as $r) {
 				$tdata += array_intersect_key($r, $tvalue);
@@ -150,17 +156,20 @@ class static_list
 
 		if (isset($_this->_enum[$templistname])) {
 			return $_this->_enum[$templistname];
-		} elseif ($templistname == 'count') {
+		}
+		elseif ($templistname == 'count') {
 			if (!$listname[1]) $listname[1] = 1;
 			if (!$listname[2]) $listname[2] = 20;
 			for ($i = $listname[1]; $i <= $listname[2]; $i++) {
 				$data[$i] = $i;
 			}
-		} elseif ($templistname == 'classList') {
+		}
+		elseif ($templistname == 'classList') {
 			$data = array('' => ' --- ');
 			foreach ($_this->_CFG['modulprm'] as $k => $r)
 				$data[$k] = $r['name'];
-		} elseif ($templistname == 'child.class') {
+		}
+		elseif ($templistname == 'child.class') {
 			$dir = array();
 			if (file_exists($_this->_CFG['_PATH']['ext'] . $_this->_cl . '.class'))
 				$dir[''] = $_this->_CFG['_PATH']['ext'] . $_this->_cl . '.class';
@@ -177,7 +186,8 @@ class static_list
 				}
 				$odir->close();
 			}
-		} elseif ($templistname == 'phptemplates') {
+		}
+		elseif ($templistname == 'phptemplates') {
 			// вызов только для PG
 			$data[''][''] = ' - ';
 
@@ -207,7 +217,8 @@ class static_list
 									if (!$docs['tags'])
 										$docs['#css#'] = 'notags';
 									elseif ($docs['tags'] != $listname['tags'])
-										$docs['#css#'] = 'nosupport'; else
+										$docs['#css#'] = 'nosupport';
+									else
 										$docs['#css#'] = 'support';
 								}
 								$docs['#name#'] = $docs['name'];
@@ -248,7 +259,8 @@ class static_list
 									if (!$docs['tags'])
 										$docs['#css#'] = 'notags';
 									elseif ($docs['tags'] != $listname['tags'])
-										$docs['#css#'] = 'nosupport'; else
+										$docs['#css#'] = 'nosupport';
+									else
 										$docs['#css#'] = 'support';
 								}
 								$docs['#name#'] = $docs['name'];
@@ -286,7 +298,8 @@ class static_list
 							if (!$docs['tags'])
 								$docs['#css#'] = 'notags';
 							elseif ($docs['tags'] != $listname['tags'])
-								$docs['#css#'] = 'nosupport'; else
+								$docs['#css#'] = 'nosupport';
+							else
 								$docs['#css#'] = 'support';
 						}
 						$docs['#name#'] = $docs['name'];
@@ -310,7 +323,8 @@ class static_list
 				}
 				unset($rff);
 			}
-		} elseif ($listname == 'themes') {
+		}
+		elseif ($listname == 'themes') {
 			// вызов только для PG
 			$data[''] = ' - По умолчанию -';
 			$dir = dir($_this->_CFG['_PATH']['themes']);
@@ -322,7 +336,8 @@ class static_list
 				}
 				$dir->close();
 			}
-		} elseif ($listname == 'templates') {
+		}
+		elseif ($listname == 'templates') {
 			$data[''] = ' - По умолчанию -';
 			$dir = dir($_this->_CFG['_PATH']['themes'] . 'default/templates');
 			while (false !== ($entry = $dir->read())) {
@@ -335,7 +350,8 @@ class static_list
 				}
 			}
 			$dir->close();
-		} elseif ($listname == 'style') {
+		}
+		elseif ($listname == 'style') {
 			// вызов только для PG
 			$dir = dir($_this->_CFG['_PATH']['themes'] . 'default/style');
 			while (false !== ($entry = $dir->read())) {
@@ -352,7 +368,8 @@ class static_list
 				if (strpos($entry, '.css')) {
 					$entry = substr($entry, 0, -4);
 					$data[''][$entry] = $entry;
-				} elseif (strpos($entry, 'style.') === 0) {
+				}
+				elseif (strpos($entry, 'style.') === 0) {
 					$afterSubDir[$entry] = array('#name#' => $entry, '#checked#' => 0);
 					$dir2 = dir($_this->_CFG['_PATH']['_style'] . '/' . $entry);
 					while (false !== ($entry2 = $dir2->read())) {
@@ -367,7 +384,8 @@ class static_list
 			$dir->close();
 			if (count($afterSubDir))
 				$data[''] = $data[''] + $afterSubDir;
-		} elseif ($templistname == "script") {
+		}
+		elseif ($templistname == "script") {
 			// вызов только для PG
 			$dir = dir($_this->_CFG['_PATH']['themes'] . 'default/script');
 			while (false !== ($entry = $dir->read())) {
@@ -384,7 +402,8 @@ class static_list
 				if (strpos($entry, '.js')) {
 					$entry = substr($entry, 0, -3);
 					$data[''][$entry] = $entry;
-				} elseif (strpos($entry, 'script.') === 0) {
+				}
+				elseif (strpos($entry, 'script.') === 0) {
 					$afterSubDir[$entry] = array('#name#' => $entry, '#checked#' => 0);
 					$dir2 = dir($_this->_CFG['_PATH']['_script'] . '/' . $entry);
 					while (false !== ($entry2 = $dir2->read())) {
@@ -399,13 +418,15 @@ class static_list
 			$dir->close();
 			if (count($afterSubDir))
 				$data[''] = $data[''] + $afterSubDir;
-		} elseif ('fieldslist' == $templistname) {
+		}
+		elseif ('fieldslist' == $templistname) {
 			$data['id'] = '№';
 			foreach ($_this->fields_form as $k => $r) {
 				if ($_this->fields_form[$k]['caption'])
 					$data[$k] = $_this->fields_form[$k]['caption'];
 			}
-		} elseif ('list' == $templistname) {
+		}
+		elseif ('list' == $templistname) {
 
 			$q_where = array();
 			$q_order = '';
@@ -418,7 +439,8 @@ class static_list
 						if (isset($_this->data[$_this->id])) {
 							trigger_error('Ошибка в БД. Отсутствует необходимый параметр "root_key"', E_USER_WARNING);
 						}
-					} else {
+					}
+					else {
 						$q_where[] = $_this->ns_config['root'] . '=' . (int)$_this->data[$_this->id][$_this->ns_config['root']];
 					}
 				}
@@ -428,7 +450,7 @@ class static_list
 				$q_order = ' ORDER BY ' . $_this->ordfield;
 
 			if (isset($_this->owner->id) and $_this->owner->id) // либо по owner id
-			$q_where[] = $_this->owner_name . ' IN (' . $_this->owner->_id_as_string() . ')';
+				$q_where[] = $_this->owner_name . ' IN (' . $_this->owner->_id_as_string() . ')';
 
 
 			if (count($q_where))
@@ -449,7 +471,8 @@ class static_list
 					while (list($id, $name, $pid) = $result->fetch_row()) {
 						$data[$pid][$id] = ($name ? $name : $_this->caption . ' #' . $id);
 					}
-				} else {
+				}
+				else {
 					if ($_this->mf_use_charid)
 						$data[''] = static_main::m('_zeroname', $_this);
 					else
@@ -459,10 +482,12 @@ class static_list
 						$data[$id] = ($name ? $name : $_this->caption . ' #' . $id);
 				}
 			}
-		} elseif ('select' == $templistname) {
+		}
+		elseif ('select' == $templistname) {
 			trigger_error('Использование списка `select` переделать на `list`', E_USER_WARNING);
 			$data = $_this->_select();
-		} elseif ('parentlist' == $templistname and $_this->mf_istree) {
+		}
+		elseif ('parentlist' == $templistname and $_this->mf_istree) {
 
 			$data = array();
 			if ($_this->mf_use_charid)
@@ -478,15 +503,18 @@ class static_list
 				while (list($id, $name, $pid) = $result->fetch_row()) {
 					$data[$pid][$id] = $name;
 				}
-		} elseif (is_array($listname) and isset($listname[0]) and isset($listname[1]) and 'owner' == $listname[0]) {
+		}
+		elseif (is_array($listname) and isset($listname[0]) and isset($listname[1]) and 'owner' == $listname[0]) {
 			$data = $_this->owner->_getlist($listname[1], $value);
-		} elseif ('ownerlist' == $templistname) {
+		}
+		elseif ('ownerlist' == $templistname) {
 			// TODO : это Кастыль совместимости
 			if ($_this->owner)
 				$data = $_this->owner->_getlist('list', $value);
 			else
 				$data = array('Ошибка - список ownerlist не может быть создан, так как родитель не доступен');
-		} elseif (is_array($listname) and (isset($listname['class']) or isset($listname['tablename']))) {
+		}
+		elseif (is_array($listname) and (isset($listname['class']) or isset($listname['tablename']))) {
 			$clause = array();
 			if (isset($listname['class'])) {
 				$listname['tablename'] = static_main::getTableNameOfClass($listname['class']);
@@ -500,10 +528,12 @@ class static_list
 			if (isset($listname['leftJoin'])) {
 				$clause['from'] = ' FROM `' . $_this->tablename . '` t1 LEFT JOIN `' . $listname['tablename'] . '` tx ON ' . $listname['idField'] . '=t1.' . $listname['idThis'];
 				$clause['field'] = 'SELECT t1.' . $listname['idThis'] . ' as id,' . $listname['nameField'] . ' as name';
-			} elseif (isset($listname['join'])) {
+			}
+			elseif (isset($listname['join'])) {
 				$clause['from'] = ' FROM `' . $_this->tablename . '` t1 JOIN `' . $listname['tablename'] . '` tx ON ' . $listname['idField'] . '=t1.' . $listname['idThis'] . ' ' . $listname['join'];
 				$clause['field'] = 'SELECT t1.' . $listname['idThis'] . ' as id,' . $listname['nameField'] . ' as name';
-			} else {
+			}
+			else {
 				$clause['from'] = ' FROM `' . $listname['tablename'] . '` tx ';
 				$clause['field'] = 'SELECT ' . $listname['idField'] . ' as id,' . $listname['nameField'] . ' as name';
 			}
@@ -552,10 +582,12 @@ class static_list
 				if (!is_null($value) and is_array($value) and count($value)) {
 					while ($row = $result->fetch())
 						$data[$row['id']] = $row['name'];
-				} elseif (!is_null($value)) {
+				}
+				elseif (!is_null($value)) {
 					if ($row = $result->fetch())
 						$data[$row['id']] = $row['name'];
-				} elseif (isset($listname['is_tree']) and $listname['is_tree']) {
+				}
+				elseif (isset($listname['is_tree']) and $listname['is_tree']) {
 					while ($row = $result->fetch()) {
 						if (!isset($row['checked'])) $row['checked'] = true;
 						$data[$row['parent_id']][$row['id']] = array('#name#' => $row['name'], '#checked#' => $row['checked']);
@@ -566,7 +598,8 @@ class static_list
 						$def = '';
 					if ($_zeroname)
 						$data[$def] = static_main::MergeArrays(array($def => $_zeroname), $data[$def]);
-				} else {
+				}
+				else {
 					if ($_zeroname)
 						$data[''] = $_zeroname;
 					while ($row = $result->fetch())
@@ -574,9 +607,11 @@ class static_list
 				}
 			}
 			return $data; // Потому что тут уже обрабатывается $value
-		} elseif (!is_array($listname)) {
+		}
+		elseif (!is_array($listname)) {
 			static_main::log('error', 'List data `' . $listname . '` not found');
-		} else {
+		}
+		else {
 			static_main::log('error', 'List ' . current($listname) . ' not found');
 		}
 
@@ -620,16 +655,22 @@ class static_list
 			$temp = & $data;
 
 		foreach ($temp as $key => $value) {
-			if ($select != '' and is_array($select)) {
-				if (isset($select[$key])) {
-					if ($multiple === 'is temp key')
-						continue;
+			$sel = 0;
+			if ($select != '') {
+				if (is_array($select)) {
+					if (isset($select[$key])) {
+						if ($multiple === 'is temp key')
+							continue;
+						$sel = 1;
+					}
+					else
+						$sel = 0;
+				}
+				elseif ($select == $key) {
 					$sel = 1;
-				} else
-					$sel = 0;
-			} elseif ($select != '' and $select == $key)
-				$sel = 1; else
-				$sel = 0;
+				}
+			}
+
 			$s[$key] = array('#id#' => $key, '#sel#' => $sel);
 			if (is_array($value)) {
 				foreach ($value as $k => $r)
@@ -639,17 +680,21 @@ class static_list
 					$s[$key]['#name#'] = $key;
 				else
 					$s[$key]['#name#'] = $value['#name#']; //_substr($value['name'],0,60).(_strlen($value['name'])>60?'...':'')
-			} else {
+			}
+			else {
 				$s[$key]['#name#'] = $value;
 			}
 
 			if ($key != $id and isset($data[$key]) and count($data[$key]) and is_array($data[$key])) {
-				list($s[$key]['#item#'], $s[$key]['#sel#']) = self::_forlist($data, $key, $select, $multiple);
-
+				list($s[$key]['#item#'], $sel2) = self::_forlist($data, $key, $select, $multiple);
+				if ($sel2) {
+					$s[$key]['#sel#'] = $sel2;
+				}
 			}
 
-			if ($s[$key]['#sel#'])
+			if ($s[$key]['#sel#']) {
 				$upsel = $s[$key]['#sel#'];
+			}
 			/*Если это использовать то проверка данных сломается*/
 			//if (isset($value['#item#']) and is_array($value['#item#']) and count($value['#item#']))
 			//	$s[$key]['#item#'] = $value['#item#']+$s[$key]['#item#'];

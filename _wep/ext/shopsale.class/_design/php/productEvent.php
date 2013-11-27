@@ -13,7 +13,8 @@ function tpl_productEvent(&$data)
 
 	if (!isset($data['#item#']) or !count($data['#item#'])) {
 		$html = $data['#text#']; // Товаров дня нет
-	} else {
+	}
+	else {
 		global $_CFG, $_tpl;
 		setCss('/../_shop/style/shopEvents');
 		//setScript('/../_shop/script/shopEvents');
@@ -30,7 +31,8 @@ function tpl_productEvent(&$data)
 		if (isset($r['image']) and count($r['image']) and $r['image'][0][0]) {
 			$fimg = array_shift($r['image']);
 			$html .= '<a href="/' . $fimg[0] . '" title="' . $r['name'] . '" class="prodimg-first fancyimg" rel="fancy"><img src="/' . $fimg[1] . '" alt="' . $r['name'] . '"/></a>';
-		} else
+		}
+		else
 			$html .= '<img src="' . getUrlTheme() . '_shop/img/nofoto.gif" alt="' . $r['name'] . '" class="prodimg-first"/>';
 
 		/*$beginHour = 8;

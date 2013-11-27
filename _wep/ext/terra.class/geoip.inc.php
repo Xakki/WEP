@@ -31,7 +31,8 @@ if (count($data)) {
 				<li>Широта - ' . $data['latitude'] . '</li>
 				<li>Долгота - ' . $data['longitude'] . '</li>
 			';
-} else {
+}
+else {
 	$html .= '
 				<li>Ваш IP в базе не обнаружен</li>
 				<li>IP - ' . $_SERVER['REMOTE_ADDR'] . '</li>

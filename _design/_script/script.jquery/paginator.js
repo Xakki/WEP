@@ -1,52 +1,49 @@
 /*
-  jQuery paginator plugin v 1.0
-  - based on Paginator 3000  
-  - coded by Radik special for Syber Engine
-  - (c) Лаборатория разработки web сайтов
-  
-  Exampel:
-    $('.class').paginator(options);
-	 options = {
-	   pagesTotal  : 100, //all pages count
-	   pagesSpan   : 10,  //display pages count
-	   pageCurrent : 50,  //current page number
-	   baseUrl     : './page/', //may be link "http://www.youwebsite.ru/index.php?page="
-	                              or function 
-								  function (page_number){
-								  	
-								  }
-	   returnOrder : false, //if true display return order pages false display normal order pages
-	   lang        : {next  : "Следующая", //language next
-	                  last  : "Последняя", //language last
-	    		      prior : "Предыдущая",//language prior
-					  first : "Первая",    //language first
-					  arrowRight : String.fromCharCode(8594), //language left arrow 
-					  arrowLeft  : String.fromCharCode(8592)} //language right arrow
-     };
-*/
-jQuery(function ($)
-{
-    $.fn.paginator = function (s)
-    {
-        var options = 
+ jQuery paginator plugin v 1.0
+ - based on Paginator 3000
+ - coded by Radik special for Syber Engine
+ - (c) Лаборатория разработки web сайтов
+
+ Exampel:
+ $('.class').paginator(options);
+ options = {
+ pagesTotal  : 100, //all pages count
+ pagesSpan   : 10,  //display pages count
+ pageCurrent : 50,  //current page number
+ baseUrl     : './page/', //may be link "http://www.youwebsite.ru/index.php?page="
+ or function
+ function (page_number){
+
+ }
+ returnOrder : false, //if true display return order pages false display normal order pages
+ lang        : {next  : "Следующая", //language next
+ last  : "Последняя", //language last
+ prior : "Предыдущая",//language prior
+ first : "Первая",    //language first
+ arrowRight : String.fromCharCode(8594), //language left arrow
+ arrowLeft  : String.fromCharCode(8592)} //language right arrow
+ };
+ */
+jQuery(function ($) {
+    $.fn.paginator = function (s) {
+        var options =
         {
-            pagesTotal : 1, pagesSpan : 10, pageCurrent : 50, baseUrl : './page/', returnOrder : false, 
-            lang : 
-            {
-                next : "Следующая", last : "Последняя", prior : "Предыдущая", first : "Первая", arrowRight : String.fromCharCode(8594), 
-                arrowLeft : String.fromCharCode(8592)
+            pagesTotal: 1, pagesSpan: 10, pageCurrent: 50, baseUrl: './page/', returnOrder: false,
+            lang: {
+                next: "Следующая", last: "Последняя", prior: "Предыдущая", first: "Первая", arrowRight: String.fromCharCode(8594),
+                arrowLeft: String.fromCharCode(8592)
             }
         };
         $.extend(options, s);
         options.pagesSpan = options.pagesSpan < options.pagesTotal ? options.pagesSpan : options.pagesTotal;
         options.pageCurrent = options.pagesTotal < options.pageCurrent ? options.pagesTotal : options.pageCurrent;
-        var html = 
+        var html =
         {
-            holder : null, table : null, trPages : null, trScrollBar : null, tdsPages : null, scrollBar : null, 
-            scrollThumb : null, pageCurrentMark : null
+            holder: null, table: null, trPages: null, trScrollBar: null, tdsPages: null, scrollBar: null,
+            scrollThumb: null, pageCurrentMark: null
         };
-        function prepareHtml(el)
-        {
+
+        function prepareHtml(el) {
             html.holder = el;
             $(html.holder).html(makePagesTableHtml());
             html.table = $(html.holder).find('table:last');
@@ -57,10 +54,10 @@ jQuery(function ($)
             html.pageCurrentMark = $(html.holder).find('div.current_page_mark');
             if (options.pagesTotal == options.pagesSpan) {
                 $(html.holder).addClass('fulsize');
-            };
+            }
+            ;
         };
-        function makePagesTableHtml()
-        {
+        function makePagesTableHtml() {
             var tdWidth = (100 / (options.pagesSpan + 2)) + '%';
             var isFunc = $.isFunction(options.baseUrl);
             var next_page = (parseInt(options.pageCurrent) < parseInt(options.pagesTotal)) ? parseInt(options.pageCurrent) + 1 : options.pagesTotal;
@@ -77,66 +74,63 @@ jQuery(function ($)
             var first = '<a href="';
             isFunc ? first += 'javascript:void(0)' : first += options.baseUrl + 1;
             first += '" rel="' + 1 + '">%first%</a>';
-            if (options.returnOrder)
-            {
+            if (options.returnOrder) {
                 var top_left = options.lang.arrowLeft + ' ' + options.lang.next;
                 var bottom_left = options.lang.last;
                 var top_right = options.lang.prior + ' ' + options.lang.arrowRight;
                 var bottom_right = options.lang.first;
-                if (options.pageCurrent !== options.pagesTotal)
-                {
+                if (options.pageCurrent !== options.pagesTotal) {
                     var top_left = next.replace(/%next%/, top_left);
                     var bottom_left = last.replace(/%last%/, bottom_left);
-                };
-                if (options.pageCurrent !== 1)
-                {
+                }
+                ;
+                if (options.pageCurrent !== 1) {
                     var top_right = prior.replace(/%prior%/, top_right);
                     var bottom_right = first.replace(/%first%/, bottom_right);
-                };
+                }
+                ;
             }
-            else
-            {
+            else {
                 var bottom_right = options.lang.last;
                 var top_right = options.lang.next + ' ' + options.lang.arrowRight;
                 var top_left = options.lang.arrowLeft + ' ' + options.lang.prior;
                 var bottom_left = options.lang.first;
-                if (options.pageCurrent !== options.pagesTotal)
-                {
+                if (options.pageCurrent !== options.pagesTotal) {
                     var top_right = next.replace(/%next%/, top_right);
                     var bottom_right = last.replace(/%last%/, bottom_right);
-                };
-                if (options.pageCurrent !== 1)
-                {
+                }
+                ;
+                if (options.pageCurrent !== 1) {
                     var top_left = prior.replace(/%prior%/, top_left);
                     var bottom_left = first.replace(/%first%/, bottom_left);
-                };
-            };
+                }
+                ;
+            }
+            ;
             var html = '' + '<table width="100%">' + '<tr>' + '<td class="left top">' + top_left + '</td>' + '<td class="spaser"></td>' + '<td rowspan="2" align="center">' + '<table>' + '<tr>';
-				for (var i = 1;i <= options.pagesSpan;i++) {
+            for (var i = 1; i <= options.pagesSpan; i++) {
                 html += '<td width="' + tdWidth + '"></td>';
             }
             html += '' + '</tr>' + '<tr>' + '<td colspan="' + options.pagesSpan + '">' + '<div class="scroll_bar">' + '<div class="scroll_trough"></div>' + '<div class="scroll_thumb">' + '<div class="scroll_knob"></div>' + '</div>' + '<div class="current_page_mark"></div>' + '</div>' + '</td>' + '</tr>' + '</table>' + '</td>' + '<td class="spaser"></td>' + '<td class="right top">' + top_right + '</td>' + '</tr>' + '<tr>' + '<td class="left bottom">' + bottom_left + '</td>' + '<td class="spaser"></td>' + '<td class="spaser"></td>' + '<td class="right bottom">' + bottom_right + '</td>' + '</tr>' + '</table>';
             return html;
         };
-        function initScrollThumb()
-        {
+        function initScrollThumb() {
             html.scrollThumb.widthMin = '8';
             html.scrollThumb.widthPercent = options.pagesSpan / options.pagesTotal * 100;
             html.scrollThumb.xPosPageCurrent = (options.pageCurrent - Math.round(options.pagesSpan / 2)) / options.pagesTotal * $(html.table).width();
-            if (options.returnOrder)
-            {
+            if (options.returnOrder) {
                 html.scrollThumb.xPosPageCurrent = $(html.table).width() - (html.scrollThumb.xPosPageCurrent + Math.round(options.pagesSpan / 2) / options.pagesTotal * $(html.table).width());
-            };
+            }
+            ;
             html.scrollThumb.xPos = html.scrollThumb.xPosPageCurrent;
             html.scrollThumb.xPosMin = 0;
             html.scrollThumb.xPosMax;
             html.scrollThumb.widthActual;
             setScrollThumbWidth();
         };
-        function setScrollThumbWidth()
-        {
+        function setScrollThumbWidth() {
             $(html.scrollThumb).css({
-                width : html.scrollThumb.widthPercent + "%"
+                width: html.scrollThumb.widthPercent + "%"
             });
             html.scrollThumb.widthActual = $(html.scrollThumb).width();
             if (html.scrollThumb.widthActual < html.scrollThumb.widthMin) {
@@ -144,92 +138,83 @@ jQuery(function ($)
             }
             html.scrollThumb.xPosMax = $(html.table).width - html.scrollThumb.widthActual;
         };
-        function moveScrollThumb()
-        {
+        function moveScrollThumb() {
             $(html.scrollThumb).css({
-                left : html.scrollThumb.xPos + "px"
+                left: html.scrollThumb.xPos + "px"
             });
         }
-        function initPageCurrentMark()
-        {
+
+        function initPageCurrentMark() {
             html.pageCurrentMark.widthMin = '3';
             html.pageCurrentMark.widthPercent = 100 / options.pagesTotal;
             html.pageCurrentMark.widthActual;
             setPageCurrentPointWidth();
             movePageCurrentPoint();
         };
-        function setPageCurrentPointWidth()
-        {
+        function setPageCurrentPointWidth() {
             $(html.pageCurrentMark).css({
-                width : html.pageCurrentMark.widthPercent + '%'
+                width: html.pageCurrentMark.widthPercent + '%'
             });
             html.pageCurrentMark.widthActual = $(html.pageCurrentMark).width();
             if (html.pageCurrentMark.widthActual < html.pageCurrentMark.widthMin) {
                 $(html.pageCurrentMark).css("width", html.pageCurrentMark.widthMin + 'px');
             }
         };
-        function movePageCurrentPoint()
-        {
+        function movePageCurrentPoint() {
             var pos = 0;
-            if (html.pageCurrentMark.widthActual < $(html.pageCurrentMark).width())
-            {
+            if (html.pageCurrentMark.widthActual < $(html.pageCurrentMark).width()) {
                 pos = (options.pageCurrent - 1) / options.pagesTotal * $(html.table).width() - $(html.pageCurrentMark).width() / 2;
             }
             else {
                 pos = (options.pageCurrent - 1) / options.pagesTotal * $(html.table).width();
-            };
+            }
+            ;
             if (options.returnOrder) {
                 pos = $(html.table).width() - pos - $(html.pageCurrentMark).width();
             }
             $(html.pageCurrentMark).css({
-                left : pos + 'px'
+                left: pos + 'px'
             });
         };
-        function initEvents()
-        {
+        function initEvents() {
             moveScrollThumb();
             options.returnOrder ? drawReturn() : drawPages();
-            $(html.scrollThumb).bind('mousedown', function (e)
-            {
+            $(html.scrollThumb).bind('mousedown', function (e) {
                 var dx = e.pageX - html.scrollThumb.xPos;
-                $(document).bind('mousemove', function (e)
-                {
+                $(document).bind('mousemove', function (e) {
                     html.scrollThumb.xPos = e.pageX - dx;
                     moveScrollThumb();
                     options.returnOrder ? drawReturn() : drawPages();
                 });
-                $(document).bind('mouseup', function ()
-                {
+                $(document).bind('mouseup', function () {
                     $(document).unbind('mousemove');
                     enableSelection();
                 });
                 disableSelection();
             });
-				if ($.isFunction(options.baseUrl)) {
-					$(html.holder).find('a').bind('click', function (e)
-					{
-						var n = parseInt($(this).attr('rel'));
-						if(n) options.baseUrl(n);
-						else options.baseUrl($(this).text());
-					});
-				}
-            /*if ($.isFunction(options.baseUrl))
-            {
-                $(html.holder).find('a[rel!=""]').bind('click', function (e)
-                {
+            if ($.isFunction(options.baseUrl)) {
+                $(html.holder).find('a').bind('click', function (e) {
                     var n = parseInt($(this).attr('rel'));
-                    options.baseUrl(n);
+                    if (n) options.baseUrl(n);
+                    else options.baseUrl($(this).text());
                 });
-            };*/
-				/*$(window).resize(function ()
-            {
-                setPageCurrentPointWidth();
-                movePageCurrentPoint();
-                setScrollThumbWidth();
-            });*/
+            }
+            /*if ($.isFunction(options.baseUrl))
+             {
+             $(html.holder).find('a[rel!=""]').bind('click', function (e)
+             {
+             var n = parseInt($(this).attr('rel'));
+             options.baseUrl(n);
+             });
+             };*/
+            /*$(window).resize(function ()
+             {
+             setPageCurrentPointWidth();
+             movePageCurrentPoint();
+             setScrollThumbWidth();
+             });*/
         };
-        function drawPages()
-        {
+        function drawPages() {
             var percentFromLeft = html.scrollThumb.xPos / $(html.table).width();
             var cellFirstValue = Math.round(percentFromLeft * options.pagesTotal);
             var data = "";
@@ -238,42 +223,40 @@ jQuery(function ($)
                 html.scrollThumb.xPos = 0;
                 moveScrollThumb();
             }
-            else if (cellFirstValue >= options.pagesTotal - options.pagesSpan)
-            {
+            else if (cellFirstValue >= options.pagesTotal - options.pagesSpan) {
                 cellFirstValue = options.pagesTotal - options.pagesSpan + 1;
                 html.scrollThumb.xPos = $(html.table).width() - $(html.scrollThumb).width();
                 moveScrollThumb();
-            };
+            }
+            ;
             var isFunc = $.isFunction(options.baseUrl);
-            for (var i = 0; i < html.tdsPages.length; i++)
-            {
+            for (var i = 0; i < html.tdsPages.length; i++) {
                 var cellCurrentValue = cellFirstValue + i;
                 if (cellCurrentValue == options.pageCurrent) {
                     data = '<span> <strong>' + cellCurrentValue + '</strong> </span>';
                 }
-                else
-                {
+                else {
                     data = '<span> <a href="';
                     isFunc ? data += 'javascript:void(0)' : data += options.baseUrl + cellCurrentValue;
                     data += '">' + cellCurrentValue + '</a> </span>';
-                };
+                }
+                ;
                 $(html.tdsPages[i]).html(data);
                 /*if (isFunc)
-                {
-                    $(html.tdsPages[i]).find('a').bind('click', function ()
-                    {
-                        options.baseUrl($(this).text());
-                    });
-                }*/
-            };
+                 {
+                 $(html.tdsPages[i]).find('a').bind('click', function ()
+                 {
+                 options.baseUrl($(this).text());
+                 });
+                 }*/
+            }
+            ;
         };
-        function drawReturn()
-        {
+        function drawReturn() {
             var percentFromLeft = html.scrollThumb.xPos / $(html.table).width();
             var cellFirstValue = options.pagesTotal - Math.round(percentFromLeft * options.pagesTotal);
             var data = "";
-            if (cellFirstValue < options.pagesSpan)
-            {
+            if (cellFirstValue < options.pagesSpan) {
                 cellFirstValue = options.pagesSpan;
                 html.scrollThumb.xPos = $(html.table).width() - $(html.scrollThumb).width();
                 moveScrollThumb();
@@ -282,41 +265,38 @@ jQuery(function ($)
                 cellFirstValue = options.pagesTotal;
                 html.scrollThumb.xPos = 0;
                 moveScrollThumb();
-            };
+            }
+            ;
             var isFunc = $.isFunction(options.baseUrl);
-            for (var i = 0; i < html.tdsPages.length; i++)
-            {
+            for (var i = 0; i < html.tdsPages.length; i++) {
                 var cellCurrentValue = cellFirstValue - i;
                 if (cellCurrentValue == options.pageCurrent) {
                     data = '<span> <strong>' + cellCurrentValue + '</strong> </span>';
                 }
-                else
-                {
+                else {
                     data = '<span> <a href="';
                     isFunc ? data += 'javascript:void(0)' : data += options.baseUrl + cellCurrentValue;
                     data += '">' + cellCurrentValue + '</a> </span>';
-                };
+                }
+                ;
                 $(html.tdsPages[i]).html(data);
                 /*if (isFunc)
-                {
-                    $(html.tdsPages[i]).find('a').bind('click', function ()
-                    {
-                        options.baseUrl($(this).text());
-                    });
-                }*/
-            };
+                 {
+                 $(html.tdsPages[i]).find('a').bind('click', function ()
+                 {
+                 options.baseUrl($(this).text());
+                 });
+                 }*/
+            }
+            ;
         };
-        function enableSelection()
-        {
-            document.onselectstart = function ()
-            {
+        function enableSelection() {
+            document.onselectstart = function () {
                 return true;
             };
         };
-        function disableSelection()
-        {
-            document.onselectstart = function ()
-            {
+        function disableSelection() {
+            document.onselectstart = function () {
                 return false;
             };
             $(html.scrollThumb).focus();

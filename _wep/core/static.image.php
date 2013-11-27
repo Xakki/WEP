@@ -29,7 +29,7 @@ class static_image
 		$logoFile = SITE . $logoFile;
 
 		if (!$imtypeIn = self::_is_image($InFile)) // опред тип файла
-		return static_main::log('error', 'File ' . $InFile . ' is not image');
+			return static_main::log('error', 'File ' . $InFile . ' is not image');
 		$res = true;
 
 		_chmod($InFile);
@@ -46,7 +46,8 @@ class static_image
 			$thumb->compositeImage($logo, imagick::COMPOSITE_DEFAULT, $posX, $posY);
 			$res = $thumb->writeImage($OutFile);
 			$thumb->destroy();
-		} else {
+		}
+		else {
 			//southeast //center
 			//$cmd = 'composite -compose bumpmap -gravity south '.escapeshellarg($InFile).' '.escapeshellarg($logoFile).' '.escapeshellarg($OutFile);
 			$cmd = 'convert ' . escapeshellarg($InFile) . ' -gravity SouthWest -draw "image Over 0,0,0,0 ' . escapeshellarg($logoFile) . '" ' . escapeshellarg($OutFile);
@@ -80,7 +81,8 @@ class static_image
 			$thumb->cropImage($WidthX, $HeightY, $posX, $posY);
 			$res = $thumb->writeImage($OutFile);
 			$thumb->destroy();
-		} else {
+		}
+		else {
 			$cmd = 'convert ' . escapeshellarg($InFile) . ' -gravity Center -crop ' . $WidthX . 'x' . $HeightY . '+0 ' . escapeshellarg($OutFile);
 			$out = array();
 			$err = 0;
@@ -139,7 +141,8 @@ class static_image
 				$thumb->thumbnailImage($WidthX, $HeightY, true);
 			$res = $thumb->writeImage($OutFile);
 			$thumb->destroy();
-		} elseif (self::hasConsoleMagick()) {
+		}
+		elseif (self::hasConsoleMagick()) {
 			_chmod($InFile);
 			$crop = true;
 			if ($crop)
@@ -154,7 +157,8 @@ class static_image
 				trigger_error('Ошибка [' . $err . ']: ' . $cmd, E_USER_WARNING);
 				$res = false;
 			}
-		} else {
+		}
+		else {
 			$res = static_imageGD2::_thumbnailImage($InFile, $OutFile, $WidthX, $HeightY);
 		}
 
@@ -194,32 +198,39 @@ class static_image
 			if ($k1 <= 1 && $k2 <= 1) {
 				$Width = $width_orig;
 				$Height = $height_orig;
-			} elseif ($width_orig / $height_orig < $Width / $Height) {
+			}
+			elseif ($width_orig / $height_orig < $Width / $Height) {
 				$Width = $Height * $width_orig / $height_orig;
-			} else {
+			}
+			else {
 				$Height = $Width * $height_orig / $width_orig;
 			}
-		} elseif ($k1 !== 1 && $k2 !== 1) {
+		}
+		elseif ($k1 !== 1 && $k2 !== 1) {
 			if ($k1 <= 1 && $k2 <= 1) {
 				// Каринка меньше чем заданные размеры
 				// ТО пропорционально выбираем меньший размер
 				if ($k1 < $k2) {
 					$Width = $width_orig;
-				} else {
+				}
+				else {
 					$Height = $height_orig;
 				}
-			} else {
+			}
+			else {
 				// картинка больше
 				if ($k1 < $k2) {
 					$Height = $height_orig;
-				} else {
+				}
+				else {
 					$Width = $width_orig;
 				}
 			}
 
 			if ($k1 < $k2) {
 				$Height = (int)($Width * $ZeroHeight / $ZeroWidth);
-			} else {
+			}
+			else {
 				$Width = (int)($Height * $ZeroWidth / $ZeroHeight);
 			}
 		}
@@ -271,7 +282,8 @@ class static_image
 				$thisRGB = sprintf('%02X%02X%02X', $rgb['red'], $rgb['green'], $rgb['blue']);
 				if (array_key_exists($thisRGB, $colors)) {
 					$colors[$thisRGB]++;
-				} else {
+				}
+				else {
 					$colors[$thisRGB] = 1;
 				}
 			}
@@ -288,7 +300,8 @@ class static_image
 				$result[$k] = $r;
 			}
 			return $result;
-		} else {
+		}
+		else {
 			return array_slice(($colors), 0, $numColors, true);
 		}
 	}
@@ -319,7 +332,8 @@ class static_image
 				$str_color[2] . $str_color[3],
 				$str_color[4] . $str_color[5]);
 		elseif (strlen($str_color) == 3)
-			list($r, $g, $b) = array($str_color[0] . $str_color[0], $str_color[1] . $str_color[1], $str_color[2] . $str_color[2]); else
+			list($r, $g, $b) = array($str_color[0] . $str_color[0], $str_color[1] . $str_color[1], $str_color[2] . $str_color[2]);
+		else
 			return false;
 
 		$r = hexdec($r);

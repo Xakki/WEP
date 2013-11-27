@@ -210,7 +210,8 @@ class bug_class extends kernel_extends
 				$this->bugs[$hash]['page_id'] = ' -Админка- ';
 			elseif (isset($PGLIST->id))
 				$this->bugs[$hash]['page_id'] = $PGLIST->id;
-		} else
+		}
+		else
 			$this->bugs[$hash]['cnt']++;
 	}
 

@@ -111,7 +111,8 @@ class httpproxy_class extends kernel_extends
 		if ($this->id) {
 			$this->_update($upd, false, false);
 			$this->childs['httpproxycheck']->_update($updCheck, false, false);
-		} else {
+		}
+		else {
 			$this->id = 1;
 			$this->_update($upd, false, false);
 		}
@@ -141,30 +142,37 @@ class httpproxy_class extends kernel_extends
 		if ($html['info']['http_code'] == 0) {
 			$err = 1;
 			$autoprior = 999;
-		} elseif ($html['info']['http_code'] == 403) {
+		}
+		elseif ($html['info']['http_code'] == 403) {
 			// or strpos($html['text'],'<td class="headCode">403</td>')!==false
 			$err = 1; // ограничение доступа
 			$autoprior = 403;
-		} elseif ($html['info']['http_code'] == 302) {
+		}
+		elseif ($html['info']['http_code'] == 302) {
 			$err = 1;
 			$autoprior = 302;
-		} elseif ($html['info']['http_code'] != 200) {
+		}
+		elseif ($html['info']['http_code'] != 200) {
 			$err = 1;
 			$autoprior = 200;
-		} elseif ($html['info']['redirect_url'] != '') {
+		}
+		elseif ($html['info']['redirect_url'] != '') {
 			$err = 1;
 			$autoprior = 70;
 			print_r('<p style="color:red;">Редирект <b>' . $html['info']['redirect_url'] . '</b></p>');
-		} elseif ($html['text'] == '') {
+		}
+		elseif ($html['text'] == '') {
 			$err = 1;
 			$autoprior = 90;
-		} else {
+		}
+		else {
 			preg_match_all('/[А-Яа-яЁё]/u', $html['text'], $matches);
 			if (count($matches[0]) < 5) {
 				$err = 1;
 				$autoprior = 140;
 				print_r('<p style="color:red;">Мало букв</p>');
-			} elseif (isset($param['find']) and mb_stripos($html['text'], $param['find']) === false) {
+			}
+			elseif (isset($param['find']) and mb_stripos($html['text'], $param['find']) === false) {
 				$err = 1;
 				$autoprior = 120;
 				print_r('<p style="color:red;">Не найден текст <b>' . $param['find'] . '</b></p>');
@@ -202,7 +210,8 @@ class httpproxy_class extends kernel_extends
 					$mess[] = static_main::am('error', 'Прокси ' . $temp[0] . ' уже есть в списке!', $this);
 			}
 			$mess[] = static_main::am('ok', 'Сделано', $this);
-		} else {
+		}
+		else {
 			$fields_form['_info'] = array(
 				'type' => 'info',
 				'caption' => '<h2 style="text-align:center;">' . $this->caption . '</h2>');
@@ -239,7 +248,8 @@ class httpproxy_class extends kernel_extends
 			//or autoprior!=0
 			$this->_update($upd, 'capture!=0', false);
 			$mess = array(static_main::am('ok', 'Сделано', $this));
-		} else {
+		}
+		else {
 			$fields_form['_info'] = array(
 				'type' => 'info',
 				'caption' => '<h2 style="text-align:center;">Обнулить данные?</h2>');

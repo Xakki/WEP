@@ -365,7 +365,8 @@ class product_class extends kernel_extends
 						$cls[$ck] = '`' . $ck . '`="' . $cr . '"';
 					$query .= ' ON DUPLICATE KEY UPDATE ' . implode(', ', $cls);
 				}
-			} else {
+			}
+			else {
 				/*$query = 'INSERT into '.$tn.' (owner_id) values ('.$this->id.')';
 				if(count($temp)) {
 					$cls = array();
@@ -398,7 +399,8 @@ class product_class extends kernel_extends
 				if ($row = $result->fetch()) {
 					$paramdata = $row;
 				}
-			} else {
+			}
+			else {
 				return array();
 			}
 		}
@@ -425,7 +427,8 @@ class product_class extends kernel_extends
 
 				if ($flagNew) {
 					$val = (isset($id['param_' . $k]) ? $id['param_' . $k] : '');
-				} elseif ($id)
+				}
+				elseif ($id)
 					$val = $paramdata['name' . $r['type']];
 
 				$type = $PARAM->getTypeForm($r['type']);
@@ -478,7 +481,8 @@ class product_class extends kernel_extends
 						$form['param_' . $k]['value_2'] = $r['max'];
 
 					$form['param_' . $k]['mask']['step'] = (int)$r['step'];
-				} else
+				}
+				else
 					$form['param_' . $k]['mask'] = array('min' => $r['min'], 'max' => $r['max']);
 
 				if ($r['mask']) $form['param_' . $k]['mask']['patterns'] = array('match' => $r['mask']);
@@ -489,11 +493,13 @@ class product_class extends kernel_extends
 				if ($type == 'ajaxlist') {
 					$form['param_' . $k]['listname'] = array('tablename' => 'formlistitems', 'where' => ' tx.checked=1 and tx.active=1 GROUP BY tx.id', 'ordfield' => 'tx.ordind');
 					$form['param_' . $k]['value_2'] = $id['param_' . $k . '_2'];
-				} elseif ($type == 'list') {
+				}
+				elseif ($type == 'list') {
 					$form['param_' . $k]['listname'] = 'fli' . $r['formlist'];
 					$form['param_' . $k]['mask']['begin'] = 0;
 					$FLI[] = $r['formlist'];
-				} elseif ($type == 'checkbox' and $multiple) {
+				}
+				elseif ($type == 'checkbox' and $multiple) {
 					$form['param_' . $k]['listname'] = 'fli' . $r['formlist'];
 					$form['param_' . $k]['mask']['begin'] = 0;
 					$FLI[] = $r['formlist'];
@@ -516,7 +522,7 @@ class product_class extends kernel_extends
 					$templ = array();
 					while ($row = $result->fetch()) {
 						if (!isset($this->_enum['fli' . $row['owner_id']][0][0])) //$flagNew and
-						$this->_enum['fli' . $row['owner_id']][0][0] = ' --- ';
+							$this->_enum['fli' . $row['owner_id']][0][0] = ' --- ';
 						$this->_enum['fli' . $row['owner_id']][$row['parent_id']][$row['id']] = array('#id#' => $row['id'], '#name#' => $row['name'], '#checked#' => $row['checked']);
 						if ($flagNew and !$row['parent_id'] and isset($FMCB[$row['owner_id']])) {
 							$templ[$row['owner_id']][$row['cntdec']][] = $row['id'];
@@ -532,7 +538,8 @@ class product_class extends kernel_extends
 								foreach ($rr as $rrr) {
 									$tempr = array_merge($tempr, $rrr);
 								}
-							} else
+							}
+							else
 								$tempr = current($rr);
 							if (count($tempr) > 12) {
 								$tempr = array_slice($tempr, 0, 10);
@@ -560,7 +567,8 @@ class product_class extends kernel_extends
 											'mask' => array('begin' => $rrr),
 										);
 										$_tpl['onload'] .= 'mCBoxVis(\'' . $rr . '_' . $rrr . '\');';
-									} else
+									}
+									else
 										unset($form['param_' . $rr . '_' . $rrr]);
 								}
 							}
@@ -570,7 +578,8 @@ class product_class extends kernel_extends
 
 					}
 
-				} else return array();
+				}
+				else return array();
 			}
 			return $form;
 		}
@@ -614,7 +623,8 @@ class product_class extends kernel_extends
 					if ($type == 'checkbox') {
 						if ($r != '')
 							$clauseF[$k] = 't4.name' . $nameK . '="' . (int)$r . '"';
-					} elseif ($type == 'int') {
+					}
+					elseif ($type == 'int') {
 						$temparr = array();
 						$r = (int)$r;
 						if ($r and (!$this->filter_form[$k]['mask']['min'] or $this->filter_form[$k]['mask']['min'] < $r))
@@ -622,20 +632,23 @@ class product_class extends kernel_extends
 						if ((int)$filter[$k . '_2'] and (!$this->filter_form[$k]['mask']['max'] or $this->filter_form[$k]['mask']['max'] > (int)$filter[$k . '_2'])) {
 							$clauseF[$k . '_2'] = 't4.name' . $nameK . '<=' . (int)$filter[$k . '_2'];
 						}
-					} elseif (is_array($r)) {
+					}
+					elseif (is_array($r)) {
 						if (count($r)) {
 							$t3mp = $r;
 							foreach ($r as $kk => $rr) {
 								if (isset($filter['param_' . $tempid . '_' . $rr]) and count($filter['param_' . $tempid . '_' . $rr])) {
 									$t3mp = array_merge($t3mp, $filter['param_' . $tempid . '_' . $rr]);
-								} elseif (isset($this->_enum[$this->filter_form[$k]['listname']][$rr]) and is_array($this->_enum[$this->filter_form[$k]['listname']][$rr])) {
+								}
+								elseif (isset($this->_enum[$this->filter_form[$k]['listname']][$rr]) and is_array($this->_enum[$this->filter_form[$k]['listname']][$rr])) {
 									foreach ($this->_enum[$this->filter_form[$k]['listname']][$rr] as $kkk => $rrr)
 										$t3mp[] = $rrr['#id#'];
 								}
 							}
 							$clauseF[$k] = 't4.name' . $nameK . ' IN ("' . implode('","', $t3mp) . '")';
 						}
-					} else {
+					}
+					else {
 						if ($r)
 							$clauseF[$k] = 't4.name' . $nameK . '="' . $this->SqlEsc($r) . '"';
 					}
@@ -648,7 +661,8 @@ class product_class extends kernel_extends
 							$clauseF[$k] = 't1.' . $k . '>=' . $r;
 						if ((int)$filter[$k . '_2'] and (!$this->filter_form[$k]['mask']['max'] or $this->filter_form[$k]['mask']['max'] > (int)$filter[$k . '_2']))
 							$clauseF[$k . '_2'] = 't1.' . $k . '<=' . (int)$filter[$k . '_2'];
-					} elseif ($this->fields_form[$k]['type'] == 'list' or $this->fields_form[$k]['type'] == 'int') {
+					}
+					elseif ($this->fields_form[$k]['type'] == 'list' or $this->fields_form[$k]['type'] == 'int') {
 						if (is_array($r)) {
 							if (count($r)) {
 								foreach ($r as &$ar)
@@ -656,26 +670,32 @@ class product_class extends kernel_extends
 								unset($ar);
 								$clauseF[$k] = 't1.' . $k . ' IN ("' . implode('","', $r) . '")';
 							}
-						} elseif ($r != '')
+						}
+						elseif ($r != '')
 							$clauseF[$k] = 't1.' . $k . '="' . $this->SqlEsc($r) . '"';
-					} elseif ($k == 'mf_timecr')
-						$clauseF[$k] = 't1.mf_timecr>"' . (int)$r . '"'; elseif ($k == 'text') {
+					}
+					elseif ($k == 'mf_timecr')
+						$clauseF[$k] = 't1.mf_timecr>"' . (int)$r . '"';
+					elseif ($k == 'text') {
 						$r = $this->SqlEsc(mb_strtolower($r));
 						if ($r) {
 							$clauseF[$k] = '(lower(t1.name) RLIKE "[[:<:]]' . $r . '[[:>:]]" or lower(t1.' . $k . ') RLIKE "[[:<:]]' . $r . '[[:>:]]")';
 							// TODO @match against@
 						}
-					} elseif ($k == 'name') {
+					}
+					elseif ($k == 'name') {
 						if ($r) {
 							$r = $this->SqlEsc(mb_strtolower($r));
 							$clauseF[$k] = 'lower(t1.name) RLIKE "[[:<:]]' . $r . '[[:>:]]"';
 						}
-					} else { //if($k=='text' or $k=='descr')
+					}
+					else { //if($k=='text' or $k=='descr')
 						if ($r) {
 							$clauseF[$k] = 't1.' . $k . ' LIKE "' . $this->SqlEsc($r) . '"';
 						}
 					}
-				} elseif ($r == '1' and $k == 'foto') {
+				}
+				elseif ($r == '1' and $k == 'foto') {
 					$temp = array();
 					foreach ($this->attaches as $tk => $tr)
 						$temp[] = 't1.' . $tk . '!=""';
@@ -683,7 +703,7 @@ class product_class extends kernel_extends
 				}
 			}
 			if (count($clauseF)) // Данные по фильтру отправим в шаблон на всякий
-			$xml['#filter#'] = $clauseF;
+				$xml['#filter#'] = $clauseF;
 		}
 
 		$clause['from'] = 'FROM ' . $this->tablename . ' t1 '; //1
@@ -698,7 +718,8 @@ class product_class extends kernel_extends
 				foreach ($this->owner->data[$rid] as $k => $r) {
 					if (isset($this->owner->data[$k])) {
 						$rlist = $this->owner->data[$k] + $rlist;
-					} else
+					}
+					else
 						$rlist[$k] = $r;
 				}
 			}
@@ -803,7 +824,7 @@ class product_class extends kernel_extends
 		$idt = explode(',', $id);
 		$arr_stat = $id = array();
 		foreach ($idt as $r) //сохр тока уник знач
-		$id[(int)$r] = (int)$r;
+			$id[(int)$r] = (int)$r;
 		$PARAM = & $this->owner->childs['rubricparam'];
 		$clause = 'SELECT t3.*, t1.*, GROUP_CONCAT(t2.id,":",t2.name,":",t2.type,":",t2.formlist,":",t2.edi ORDER BY t2.ordind SEPARATOR "|") as param FROM ' . $this->tablename . ' t1
 		LEFT JOIN product_value t3 ON t1.id=t3.owner_id  
@@ -898,7 +919,8 @@ class product_class extends kernel_extends
 							//записываем массив для выборки из списка
 							$idFL[(int)$row['name' . $r[2]]][] = array($row['id'], 'name' . $r[2]);
 							$row['name' . $r[2]] = ''; // чтобы не выводить отключенные
-						} elseif ($r[2] >= 70 and $r[2] < 80) {
+						}
+						elseif ($r[2] >= 70 and $r[2] < 80) {
 							$row['name' . $r[2]] = preg_replace("/^http:\/\/(www.)?([0-9A-Za-z\-\.]+)([\/0-9A-Za-z\.\_\=\?]*)$/", '<a href="/_redirect.php?url=\\0"  rel="nofollow">\\1\\2</a>', $row['name' . $r[2]]);
 						}
 					}
@@ -958,7 +980,8 @@ class product_class extends kernel_extends
 								$this->_enum['shops'][$k]['#item#'][$rk] = array('#name#' => $rr, '#href#' => $page . '/' . $this->owner->data2[$rk]['path'] . '.html');
 							}
 						}
-					} elseif ($flag == 1)
+					}
+					elseif ($flag == 1)
 						$this->_enum['shops'][$k] = array('#name#' => $r, '#href#' => $page . '/' . $this->owner->data2[$k]['path'] . '.html');
 				}
 				if ($flag == 1) {
@@ -972,7 +995,8 @@ class product_class extends kernel_extends
 				}
 			}
 			$this->filter_form['shop'] = array('type' => 'hidden', 'value' => $rid);
-		} else {
+		}
+		else {
 			$datalist[$rid] = (int)$filter['shop'];
 			$this->_enum['shops'] = & $this->owner->data;
 			//$this->_enum['shops'][0] = array(0=>'---')+$this->_enum['shops'][0];
@@ -996,14 +1020,24 @@ class product_class extends kernel_extends
 
 		$step = $minmax[1] / 216;
 		if ($step < 5) $step = 1;
-		elseif ($step == 5) $step = 5; elseif ($step <= 10) $step = 10; elseif ($step <= 50) $step = 50; elseif ($step <= 100) $step = 100; elseif ($step <= 500) $step = 500; elseif ($step <= 1000) $step = 1000; elseif ($step <= 5000) $step = 5000; elseif ($step <= 10000) $step = 10000; elseif ($step <= 50000) $step = 50000; else $step = 100000;
+		elseif ($step == 5) $step = 5;
+		elseif ($step <= 10) $step = 10;
+		elseif ($step <= 50) $step = 50;
+		elseif ($step <= 100) $step = 100;
+		elseif ($step <= 500) $step = 500;
+		elseif ($step <= 1000) $step = 1000;
+		elseif ($step <= 5000) $step = 5000;
+		elseif ($step <= 10000) $step = 10000;
+		elseif ($step <= 50000) $step = 50000;
+		else $step = 100000;
 		if (!$minmax[1])
 			$minmax[1] = PHP_INT_MAX;
 
 		if (isset($filter['cost'])) {
 			$this->filter_form['cost']['value'] = $filter['cost'];
 			$this->filter_form['cost']['value_2'] = $filter['cost_2'];
-		} else {
+		}
+		else {
 			$this->filter_form['cost']['value'] = $minmax[0];
 			$this->filter_form['cost']['value_2'] = $minmax[1];
 		}
@@ -1026,7 +1060,8 @@ class product_class extends kernel_extends
 				'value'=>$this->messages_on_page);*/
 			$options = array('name' => 'paramselect', 'action' => '', 'method' => 'GET');
 			$this->filter_form['sbmt'] = array('type' => 'submit', 'value' => 'Поиск');
-		} else {
+		}
+		else {
 			$options = array('name' => 'paramselect', 'action' => '', 'method' => 'GET', 'onsubmit' => 'return getToText(this)');
 			$this->filter_form['sbmt'] = array('type' => 'submit', 'value' => 'задать параметры');
 		}
@@ -1057,7 +1092,8 @@ class product_class extends kernel_extends
 			}
 
 			//$RESULT['onload'] .= 'rclaim(\'type\');';
-		} else {
+		}
+		else {
 			//$RESULT['onload'] .= '';
 		}
 		$RESULT['onload'] .= $_tpl['onload'];
@@ -1086,12 +1122,18 @@ class product_value_class extends kernel_extends
 			if ($k < 10)
 				$this->fields['name' . $k] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'UNSIGNED NOT NULL', 'default' => 0);
 			elseif ($k < 20)
-				$this->fields['name' . $k] = array('type' => 'smallint', 'width' => 4, 'attr' => 'UNSIGNED NOT NULL', 'default' => 0); elseif ($k < 70)
-				$this->fields['name' . $k] = array('type' => 'int', 'width' => 11, 'attr' => 'UNSIGNED NOT NULL', 'default' => 0); elseif ($k < 73)
-				$this->fields['name' . $k] = array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL', 'default' => ''); elseif ($k < 76)
-				$this->fields['name' . $k] = array('type' => 'varchar', 'width' => 128, 'attr' => 'NOT NULL', 'default' => ''); elseif ($k < 80)
-				$this->fields['name' . $k] = array('type' => 'varchar', 'width' => 64, 'attr' => 'NOT NULL', 'default' => ''); elseif ($k < 90)
-				$this->fields['name' . $k] = array('type' => 'decimal', 'width' => '10,2', 'attr' => 'NOT NULL', 'default' => '0.00'); else
+				$this->fields['name' . $k] = array('type' => 'smallint', 'width' => 4, 'attr' => 'UNSIGNED NOT NULL', 'default' => 0);
+			elseif ($k < 70)
+				$this->fields['name' . $k] = array('type' => 'int', 'width' => 11, 'attr' => 'UNSIGNED NOT NULL', 'default' => 0);
+			elseif ($k < 73)
+				$this->fields['name' . $k] = array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL', 'default' => '');
+			elseif ($k < 76)
+				$this->fields['name' . $k] = array('type' => 'varchar', 'width' => 128, 'attr' => 'NOT NULL', 'default' => '');
+			elseif ($k < 80)
+				$this->fields['name' . $k] = array('type' => 'varchar', 'width' => 64, 'attr' => 'NOT NULL', 'default' => '');
+			elseif ($k < 90)
+				$this->fields['name' . $k] = array('type' => 'decimal', 'width' => '10,2', 'attr' => 'NOT NULL', 'default' => '0.00');
+			else
 				$this->fields['name' . $k] = array('type' => 'text', 'width' => 64, 'attr' => 'NOT NULL');
 		}
 	}

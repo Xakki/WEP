@@ -22,7 +22,8 @@ function tpl_shopMenuImg_rev(&$data, $pref = '', $pgid = 0)
 			$html .= '<li class="sub">';
 			//$pref .= ' - ';
 			$sub = tpl_shopMenuImg_rev($r['#item#'], $pref, $pgid);
-		} else {
+		}
+		else {
 			$html .= '<li>';
 			$sub = '';
 		}

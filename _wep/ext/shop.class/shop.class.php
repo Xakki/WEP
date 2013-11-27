@@ -149,7 +149,8 @@ class shop_class extends rubric_class
 					Email: ' . (isset($_SESSION['user']['email']) ? $_SESSION['user']['email'] : $_POST['from']) . ' <br/>
 					Дополнительно: ' . $_POST['p_comment'];
 					$_POST['subject'] = $cap;
-				} else {
+				}
+				else {
 				}
 
 				list($DATA, $flag) = $MAIL->mailForm($UGROUP->config['mail_to']);
@@ -171,10 +172,12 @@ class shop_class extends rubric_class
 					$DATA['messages'][0]['value'] = 'Ваш заказ принят на расмотрение. В дальнейшем с вами свяжется наш менеджер.';
 					//setTemplate("waction");
 					$html = transformPHP($DATA, '#pg#messages');
-				} elseif ($flag == -1) {
+				}
+				elseif ($flag == -1) {
 					if (!$_tpl['onload'])
 						$html = transformPHP($DATA, '#pg#messages');
-				} else {
+				}
+				else {
 					$html = transformPHP($DATA, '#pg#formcreat');
 					//$_tpl['onload'] .= '$(\'#form_mail\').submit(function(){ JSWin({\'type\':this}); return false;});';
 				}

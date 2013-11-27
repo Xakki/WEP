@@ -254,7 +254,8 @@ class payrbk_class extends kernel_extends
 						uc_order_comment_save($response['orderId'], $order->uid, t('RBK Money: payment successful'), $type = 'admin', $status = 1, $notify = FALSE);*/
 						break;
 				}
-			} elseif ($response['hash'] !== $crc) {
+			}
+			elseif ($response['hash'] !== $crc) {
 				/*uc_order_update_status($response['orderId'], 'canceled');
 				uc_order_comment_save($response['orderId'], $order->uid, t('MD5 checksum fail, possible fraud. Order canceled'), $type = 'admin', $status = 1, $notify = FALSE);
 				watchdog('uc_rbkmoney', 'MD5 checksum fail, possible fraud. Order canceled');*/

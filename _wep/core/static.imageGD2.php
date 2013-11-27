@@ -19,11 +19,11 @@ class static_imageGD2
 			$logoFile = $_CFG['_imgwater'];
 
 		if (!$imtypeIn = self::_get_type($InFile)) // опред тип файла
-		return static_main::log('error', 'File ' . $InFile . ' is not image');
+			return static_main::log('error', 'File ' . $InFile . ' is not image');
 		if ($imtypeIn > 3) return false;
 
 		if (!$imtypeLogo = self::_get_type($logoFile)) // опред тип файла
-		return static_main::log('error', 'File ' . $logoFile . ' is not image');
+			return static_main::log('error', 'File ' . $logoFile . ' is not image');
 		if ($imtypeLogo > 3) return false;
 
 		$znak_hw = getimagesize($logoFile);
@@ -86,15 +86,17 @@ class static_imageGD2
 				_chmod($OutFile);
 			}
 			return true;
-		} elseif ($width_orig / $WidthX < $height_orig / $HeightY) {
+		}
+		elseif ($width_orig / $WidthX < $height_orig / $HeightY) {
 			$WidthX = round($HeightY * $width_orig / $height_orig);
-		} elseif ($width_orig / $WidthX > $height_orig / $HeightY) {
+		}
+		elseif ($width_orig / $WidthX > $height_orig / $HeightY) {
 			$HeightY = round($WidthX * $height_orig / $width_orig);
 		}
 
 		$thumb = imagecreatetruecolor($WidthX, $HeightY); //созд пустой рисунок
 		if (!$imtype = self::_get_type($InFile)) // опред тип файла
-		return static_main::log('error', 'File ' . $InFile . ' is not image');
+			return static_main::log('error', 'File ' . $InFile . ' is not image');
 
 		if ($imtype > 3) {
 			static_main::log('alert', 'Данный тип изображения не поддерживается на данный момент, рекомендуем использовать JPEG, PNG или GIF');
@@ -131,7 +133,7 @@ class static_imageGD2
 		// Resample
 		$thumb = imagecreatetruecolor($WidthX, $HeightY); //созд пустой рисунок
 		if (!$imtype = self::_get_type($InFile)) // опред тип файла
-		return static_main::log('error', 'File is not image');
+			return static_main::log('error', 'File is not image');
 		if ($imtype > 3) {
 			static_main::log('alert', 'Данный тип изображения не поддерживается на данный момент, рекомендуем использовать JPEG, PNG или GIF');
 			copy($InFile, $OutFile);
@@ -165,7 +167,8 @@ class static_imageGD2
 			if ($ratio_dist > $ratio_orig) {
 				$src_height = $src_width / $ratio_dist;
 				$src_y = abs(($src_height - $height_orig) / 2);
-			} else {
+			}
+			else {
 				$src_width = $src_height * $ratio_dist;
 				$src_x = abs(($src_width - $width_orig) / 2);
 			}
@@ -176,7 +179,7 @@ class static_imageGD2
 
 		/*Определяем тип рисунка*/
 		if (!$imtype = self::_get_type($InFile)) // опред тип файла
-		return static_main::log('error', 'File is not image');
+			return static_main::log('error', 'File is not image');
 
 		/*Обработка только jpeg, gif, png*/
 		if ($imtype > 3) {
@@ -190,7 +193,7 @@ class static_imageGD2
 
 		/*Открываем исходный рисунок*/
 		if (!$source = self::_imagecreatefrom($InFile, $imtype)) //открываем рисунок
-		return static_main::log('error', 'File ' . $InFile . ' is not image');
+			return static_main::log('error', 'File ' . $InFile . ' is not image');
 
 		if (!imagecopyresampled($thumb, $source, 0, 0, $src_x, $src_y, $WidthX, $HeightY, $src_width, $src_height))
 			return static_main::log('error', 'Error imagecopyresampled');
@@ -233,13 +236,16 @@ class static_imageGD2
 		if ($imtype == 1) {
 			if (!($image = @imagecreatefromgif($im_file)))
 				return static_main::log('error', 'Can not create a new image from file');
-		} elseif ($imtype == 2) {
+		}
+		elseif ($imtype == 2) {
 			if (!($image = imagecreatefromjpeg($im_file)))
 				return static_main::log('error', 'Can not create a new image from file');
-		} elseif ($imtype == 3) {
+		}
+		elseif ($imtype == 3) {
 			if (!($image = imagecreatefrompng($im_file)))
 				return static_main::log('error', 'Can not create a new image from file');
-		} else return false;
+		}
+		else return false;
 		return $image;
 	}
 
@@ -247,7 +253,9 @@ class static_imageGD2
 	{
 		static_tools::_checkdir(dirname($file));
 		if ($imtype == 1) imagegif($im, $file, $q);
-		elseif ($imtype == 2) imagejpeg($im, $file, $q); elseif ($imtype == 3) imagepng($im, $file, 8); else return false;
+		elseif ($imtype == 2) imagejpeg($im, $file, $q);
+		elseif ($imtype == 3) imagepng($im, $file, 8);
+		else return false;
 		return true;
 	}
 

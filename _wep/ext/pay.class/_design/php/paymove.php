@@ -23,7 +23,8 @@ function tpl_paymove($data)
 			else
 				$res = 'Со счёта пользователя успешно сняты средства.';
 			$html .= '<div class="messages"><div class="ok">' . $res . '</div></div>';
-		} else {
+		}
+		else {
 			if ($data['#pay#']['respost']['mess'])
 				$res = $data['#pay#']['respost']['mess'];
 			else

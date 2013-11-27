@@ -38,6 +38,12 @@ function positionOnMap(tp) {
     }
 }
 
+function clearMap(idTr) {
+    $(idTr + ' input').val('');
+    $(idTr + ' .mapselect').html($(idTr + ' .mapselect').attr('placeholder'));
+    $(idTr + ' div').removeClass('setvalue');
+}
+
 function initMap() {
     //jQuery('body').append('<div id="positionOnMap"><div class="layerblock"><div id="YMapsID" style="width:600px;height:400px;background-color: white;"></div></div></div>');
     // Создает обработчик события window.onLoad
@@ -73,6 +79,7 @@ function initMap() {
                 YMaps.Events.observe(setPlacemark, setPlacemark.Events.PositionChange, function (obj, Point) {
                     jQuery('#mapx').val(Point.newPoint.__lng);
                     jQuery('#mapy').val(Point.newPoint.__lat);
+                    $('#tr_map div').addClass('setvalue');
                     // Отправим запрос на геокодирование.
                     showAddress(Point.newPoint, setMap);
                 }, setMap);
@@ -128,6 +135,7 @@ function initMap() {
                     var center = setMap.getCenter();
                     jQuery('#mapx').val(center.__lng);
                     jQuery('#mapy').val(center.__lat);
+                    $('#tr_map div').addClass('setvalue');
                     // Отправим запрос на геокодирование.
                     showAddress(center, setMap);
 
@@ -171,7 +179,7 @@ function showAddress(value, setMap) {
 //			map.setBounds(geoResult.getBounds());
 //            console.log(geoResult.text, this);
             jQuery('#field_map').val(geoResult.text);
-            jQuery('#YMapsName,.mapselect').html(geoResult.text);
+            jQuery('#YMapsName, .mapselect').html(geoResult.text);
         } else {
             console.error("Ничего не найдено")
         }
@@ -180,16 +188,16 @@ function showAddress(value, setMap) {
     // Процесс геокодирования завершен неудачно
     YMaps.Events.observe(geocoder, geocoder.Events.Fault, function (geocoder, error) {
         console.error("Произошла ошибка: ", error);
-    })
-//                    YMaps.geocode(center).then(function (res) {
-//                        var names = [];
-//                        // Переберём все найденные результаты и
-//                        // запишем имена найденный объектов в массив names.
-//                        res.geoObjects.each(function (obj) {
-//                            names.push(obj.properties.get('name'));
-//                        });
-//                        console.log('! ', names);
-//                    });
+    });
+//    YMaps.geocode(center).then(function (res) {
+//        var names = [];
+//        // Переберём все найденные результаты и
+//        // запишем имена найденный объектов в массив names.
+//        res.geoObjects.each(function (obj) {
+//            names.push(obj.properties.get('name'));
+//        });
+//        console.log('! ', names);
+//    });
 }
 
 function delMap() {

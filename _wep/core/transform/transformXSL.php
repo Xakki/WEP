@@ -33,7 +33,8 @@ function transformXSL(&$xml, $transform, $_PATHd = false)
 				' . static_main::spoilerWrap('XSL', nl2br(htmlspecialchars($xsl, ENT_QUOTES, 'UTF-8'))), E_USER_WARNING);
 			return '';
 		}
-	} else {
+	}
+	else {
 		$xslt = domxml_xslt_stylesheet($xsl);
 		$xml = domxml_open_mem($xml);
 		$final = $xslt->process($xml);

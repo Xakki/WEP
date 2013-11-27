@@ -29,16 +29,17 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 
 if ($FUNCPARAM[0]) {
 	$FUNCPARAM[0] = $this->pageParam[(int)substr($FUNCPARAM[0], 1) - 1];
-} else
+}
+else
 	$FUNCPARAM[0] = $_SESSION['user']['id'];
 
 $DATA = $UGROUP->childs['users']->UserInfo($FUNCPARAM[0]);
 $DATA = array(
 	$FUNCPARAM[1] =>
-	array(
-		'data' => $DATA,
-		'#title#' => $Ctitle,
-	)
+		array(
+			'data' => $DATA,
+			'#title#' => $Ctitle,
+		)
 );
 $html = transformPHP($DATA, $FUNCPARAM[1]);
 //TODO : информация о пользователе

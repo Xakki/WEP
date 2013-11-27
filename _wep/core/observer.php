@@ -25,13 +25,15 @@ class observer
 			foreach (self::$observers[$event] as $r) {
 				if (isset($r['args']) && !empty($r['args'])) {
 					$str_args = '$r[\'args\'][' . implode('], $r[\'args\'][', array_keys($r['args'])) . ']';
-				} else {
+				}
+				else {
 					$str_args = '';
 				}
 
 				if (isset($r['obj'])) {
 					eval('$r["obj"]->' . $r['func'] . '(' . $str_args . ');');
-				} else {
+				}
+				else {
 					eval($r['func'] . '(' . $str_args . ');');
 				}
 			}
@@ -69,13 +71,15 @@ class observer
 		if (isset(self::$events[$event])) {
 			if (isset($params['args']) && !empty($params['args'])) {
 				$str_args = '$params[\'args\'][' . implode('], $params[\'args\'][', array_keys($params['args'])) . ']';
-			} else {
+			}
+			else {
 				$str_args = '';
 			}
 
 			if (isset($params['obj'])) {
 				eval('$params[\'obj\']->' . $params['func'] . '(' . $str_args . ');');
-			} else {
+			}
+			else {
 				eval($params['func'] . '(' . $str_args . ');');
 			}
 		}

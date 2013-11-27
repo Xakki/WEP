@@ -68,7 +68,8 @@ class shopdeliver_class extends kernel_extends
 				}
 			}
 			return $data;
-		} else
+		}
+		else
 			return parent::_getlist($listname, $value);
 	}
 }

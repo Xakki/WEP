@@ -20,7 +20,8 @@ if (isset($_GET['_func']) and $_GET['_func']) {
 				$data['tpl'] = '#pg#formcreat';
 			$_tpl['text'] .= transformPHP($data, $data['tpl']);
 		}
-	} else
+	}
+	else
 		$_tpl['text'] = 'Вызов функции не разрешён модулем.';
 
 
@@ -28,7 +29,8 @@ if (isset($_GET['_func']) and $_GET['_func']) {
 		setTemplate($_GET['_template']);
 	}
 
-} /**
+}
+/**
  *
  */
 elseif (isset($_GET['_view']) && $_GET['_view'] == 'ajaxlist') {
@@ -71,9 +73,11 @@ elseif (isset($_GET['_view']) && $_GET['_view'] == 'ajaxlist') {
 			$_tpl['data'] = array();
 			while ($row = $result->fetch())
 				$_tpl['data'][] = array($row['id'], $row['name']);
-		} else
+		}
+		else
 			print('NO VALID DATA');
-	} else {
+	}
+	else {
 		print('NO VALID URL DATA');
 	}
 	/*
@@ -86,7 +90,8 @@ elseif (isset($_GET['_view']) && $_GET['_view'] == 'ajaxlist') {
 			$_tpl['data'][$k] = $r;
 		}
 	}*/
-} /**
+}
+/**
  *
  */
 elseif (isset($_REQUEST['fileupload'])) {
@@ -112,12 +117,14 @@ elseif (isset($_REQUEST['fileupload'])) {
 					'mime_type' => $ext_list[$ext],
 				);
 			}
-		} else {
+		}
+		else {
 			$_tpl['error'] = 'Неверный тип файла';
 		}
 
 	}
-} /**
+}
+/**
  *
  */
 else {
@@ -127,7 +134,8 @@ else {
 	if ($_GET['_view'] == 'exit') {
 		static_main::userExit();
 		$_tpl['onload'] = 'window.location.href=window.location.href;';
-	} elseif ($_GET['_view'] == 'login') {
+	}
+	elseif ($_GET['_view'] == 'login') {
 		$res = array('', 0);
 		if (count($_POST) and isset($_POST['login'])) {
 			$res = static_main::userAuth($_POST['login'], $_POST['pass']); // повесить обработчик xml
@@ -144,11 +152,13 @@ else {
 			}
 		}
 
-	} elseif ($_GET['_view'] == 'rating') {
+	}
+	elseif ($_GET['_view'] == 'rating') {
 		$_tpl['onload'] = 'alert("TODO:Переделать!");';
 		_new_class('ugroup', $UGROUP);
 		$html = $UGROUP->setRating($_GET['_modul'], $_GET['mid'], $_GET['rating']);
-	} else
+	}
+	else
 		$html = 'ERrOR';
 
 }

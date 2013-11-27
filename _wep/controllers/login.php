@@ -15,7 +15,8 @@ if ($setRedirect) {
 			$ref = $_REQUEST['ref'];
 		if (strstr($ref, 'login') or strstr($ref, 'install'))
 			$ref = ADMIN_BH;
-	} elseif (isset($_SERVER['HTTP_REFERER']) and $_SERVER['HTTP_REFERER'] != '' and !strstr($_SERVER['HTTP_REFERER'], 'login'))
+	}
+	elseif (isset($_SERVER['HTTP_REFERER']) and $_SERVER['HTTP_REFERER'] != '' and !strstr($_SERVER['HTTP_REFERER'], 'login'))
 		$ref = $_SERVER['HTTP_REFERER'];
 	$_tpl['ref'] = $ref;
 }
@@ -25,7 +26,8 @@ if (isset($_GET['recover'])) {
 	$mess[] = array('alert', 'На стадии разработки');
 	$_tpl['flipped'] = 'flipped';
 	$messBlock = 'popMessFlip';
-} else {
+}
+else {
 	if (count($_POST) and isset($_POST['login'])) {
 		static_main::userExit();
 		$result = static_main::userAuth($_POST['login'], $_POST['pass']);
@@ -36,7 +38,8 @@ if (isset($_GET['recover'])) {
 				return $result;
 		}
 
-	} elseif (isset($_COOKIE['remember'])) {
+	}
+	elseif (isset($_COOKIE['remember'])) {
 		$result = static_main::userAuth();
 		if ($result[1]) {
 			if ($setRedirect)

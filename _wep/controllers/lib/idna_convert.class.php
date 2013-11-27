@@ -201,7 +201,8 @@ class idna_convert
 			}
 			$email_pref = join('.', $arr);
 			$return = $email_pref . '@' . $input;
-		} elseif (preg_match('![:\./]!', $input)) { // Or a complete domain name (with or without paths / parameters)
+		}
+		elseif (preg_match('![:\./]!', $input)) { // Or a complete domain name (with or without paths / parameters)
 			// No no in strict mode
 			if ($this->_strict_mode) {
 				$this->_error('Only simple domain name parts can be handled in strict mode');
@@ -223,7 +224,8 @@ class idna_convert
 					. (empty($parsed['path']) ? '' : $parsed['path'])
 					. (empty($parsed['query']) ? '' : '?' . $parsed['query'])
 					. (empty($parsed['fragment']) ? '' : '#' . $parsed['fragment']);
-			} else { // parse_url seems to have failed, try without it
+			}
+			else { // parse_url seems to have failed, try without it
 				$arr = explode('.', $input);
 				foreach ($arr as $k => $v) {
 					$conv = $this->_decode($v);
@@ -231,7 +233,8 @@ class idna_convert
 				}
 				$return = join('.', $arr);
 			}
-		} else { // Otherwise we consider it being a pure domain name string
+		}
+		else { // Otherwise we consider it being a pure domain name string
 			$return = $this->_decode($input);
 			if (!$return) $return = $input;
 		}
@@ -301,14 +304,16 @@ class idna_convert
 					if ($this->_strict_mode) {
 						$this->_error('Neither email addresses nor URLs are allowed in strict mode.');
 						return false;
-					} else {
+					}
+					else {
 						// Skip first char
 						if ($k) {
 							$encoded = '';
 							$encoded = $this->_encode(array_slice($decoded, $last_begin, (($k) - $last_begin)));
 							if ($encoded) {
 								$output .= $encoded;
-							} else {
+							}
+							else {
 								$output .= $this->_ucs4_to_utf8(array_slice($decoded, $last_begin, (($k) - $last_begin)));
 							}
 							$output .= chr($decoded[$k]);
@@ -324,14 +329,17 @@ class idna_convert
 			$encoded = $this->_encode(array_slice($decoded, $last_begin, (($inp_len) - $last_begin)));
 			if ($encoded) {
 				$output .= $encoded;
-			} else {
+			}
+			else {
 				$output .= $this->_ucs4_to_utf8(array_slice($decoded, $last_begin, (($inp_len) - $last_begin)));
 			}
 			return $output;
-		} else {
+		}
+		else {
 			if ($output = $this->_encode($decoded)) {
 				return $output;
-			} else {
+			}
+			else {
 				return $this->_ucs4_to_utf8($decoded);
 			}
 		}
@@ -340,7 +348,7 @@ class idna_convert
 	/**
 	 * Removes a weakness of encode(), which cannot properly handle URIs but instead encodes their
 	 * path or query components, too.
-	 * @param string $uri  Expects the URI as a UTF-8 (or ASCII) string
+	 * @param string $uri Expects the URI as a UTF-8 (or ASCII) string
 	 * @return  string  The URI encoded to Punycode, everything but the host component is left alone
 	 * @since 0.6.4
 	 */
@@ -507,7 +515,8 @@ class idna_convert
 			for ($i = 0; $i < $deco_len; $i++) {
 				if ($decoded[$i] < $cur_code) {
 					$delta++;
-				} elseif ($decoded[$i] == $cur_code) {
+				}
+				elseif ($decoded[$i] == $cur_code) {
 					for ($q = $delta, $k = $this->_base; 1; $k += $this->_base) {
 						$t = ($k <= $bias) ? $this->_tmin :
 							(($k >= $bias + $this->_tmax) ? $this->_tmax : $k - $bias);
@@ -607,11 +616,13 @@ class idna_convert
 			if (0xAC00 <= $v && $v <= 0xD7AF) {
 				foreach ($this->_hangul_decompose($v) as $out) $output[] = (int)$out;
 				// There's a decomposition mapping for that code point
-			} elseif (isset($this->NP['replacemaps'][$v])) {
+			}
+			elseif (isset($this->NP['replacemaps'][$v])) {
 				foreach ($this->_apply_cannonical_ordering($this->NP['replacemaps'][$v]) as $out) {
 					$output[] = (int)$out;
 				}
-			} else {
+			}
+			else {
 				$output[] = (int)$v;
 			}
 		}
@@ -654,7 +665,7 @@ class idna_convert
 	/**
 	 * Decomposes a Hangul syllable
 	 * (see http://www.unicode.org/unicode/reports/tr15/#Hangul
-	 * @param    integer  32bit UCS4 code point
+	 * @param    integer 32bit UCS4 code point
 	 * @return   array    Either Hangul Syllable decomposed or original 32bit value as one value array
 	 */
 	protected function _hangul_decompose($char)
@@ -769,7 +780,8 @@ class idna_convert
 			foreach ($input as $k2 => $v2) {
 				if ($v2 == $np_target[$k2]) {
 					$hit = true;
-				} else {
+				}
+				else {
 					$hit = false;
 					break;
 				}
@@ -804,7 +816,8 @@ class idna_convert
 		// Patch by Daniel Hahler; work around prolbem with mbstring.func_overload
 		if (function_exists('mb_strlen')) {
 			$inp_len = mb_strlen($input, '8bit');
-		} else {
+		}
+		else {
 			$inp_len = strlen($input);
 		}
 		$mode = 'next';
@@ -827,19 +840,24 @@ class idna_convert
 				if ($v >> 5 == 6) { // &110xxxxx 10xxxxx
 					$next_byte = 0; // Tells, how many times subsequent bitmasks must rotate 6bits to the left
 					$v = ($v - 192) << 6;
-				} elseif ($v >> 4 == 14) { // &1110xxxx 10xxxxxx 10xxxxxx
+				}
+				elseif ($v >> 4 == 14) { // &1110xxxx 10xxxxxx 10xxxxxx
 					$next_byte = 1;
 					$v = ($v - 224) << 12;
-				} elseif ($v >> 3 == 30) { // &11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+				}
+				elseif ($v >> 3 == 30) { // &11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
 					$next_byte = 2;
 					$v = ($v - 240) << 18;
-				} elseif ($v >> 2 == 62) { // &111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+				}
+				elseif ($v >> 2 == 62) { // &111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
 					$next_byte = 3;
 					$v = ($v - 248) << 24;
-				} elseif ($v >> 1 == 126) { // &1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+				}
+				elseif ($v >> 1 == 126) { // &1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
 					$next_byte = 4;
 					$v = ($v - 252) << 30;
-				} else {
+				}
+				else {
 					$this->_error('This might be UTF-8, but I don\'t understand it at byte ' . $k);
 					return false;
 				}
@@ -861,7 +879,8 @@ class idna_convert
 					$v = ($v - 128) << ($next_byte * 6);
 					$output[($out_len - 1)] += $v;
 					--$next_byte;
-				} else {
+				}
+				else {
 					$this->_error('Conversion from UTF-8 to UCS-4 failed: malformed input at byte ' . $k);
 					return false;
 				}
@@ -885,15 +904,20 @@ class idna_convert
 		foreach ($input as $k => $v) {
 			if ($v < 128) { // 7bit are transferred literally
 				$output .= chr($v);
-			} elseif ($v < (1 << 11)) { // 2 bytes
+			}
+			elseif ($v < (1 << 11)) { // 2 bytes
 				$output .= chr(192 + ($v >> 6)) . chr(128 + ($v & 63));
-			} elseif ($v < (1 << 16)) { // 3 bytes
+			}
+			elseif ($v < (1 << 16)) { // 3 bytes
 				$output .= chr(224 + ($v >> 12)) . chr(128 + (($v >> 6) & 63)) . chr(128 + ($v & 63));
-			} elseif ($v < (1 << 21)) { // 4 bytes
+			}
+			elseif ($v < (1 << 21)) { // 4 bytes
 				$output .= chr(240 + ($v >> 18)) . chr(128 + (($v >> 12) & 63)) . chr(128 + (($v >> 6) & 63)) . chr(128 + ($v & 63));
-			} elseif (self::$safe_mode) {
+			}
+			elseif (self::$safe_mode) {
 				$output .= self::$safe_char;
-			} else {
+			}
+			else {
 				$this->_error('Conversion from UCS-4 to UTF-8 failed: malformed input at byte ' . $k);
 				return false;
 			}

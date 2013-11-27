@@ -196,6 +196,10 @@ div.divform .div-tr {
 	display: inline-block;
 }
 
+.divform .divinputfile input {
+	display: inline-block;
+}
+
 .divform .fileinfo {
 	font-size: 0.8em;
 	color: gray;
@@ -785,6 +789,17 @@ span.labelInput {
 	color: #ffffff;
 	border: none;
 	background: transparent;
+}
+
+.mapClear {
+	cursor: pointer;
+	display: none;
+}
+
+.mapClear.setvalue {
+	display: inline-block;
+	margin: 0 0 0 15px;
+	color: red;
 }
 
 /*Всплывающая информация showHelp(obj,mess,time,nomiga)*/

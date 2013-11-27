@@ -8,7 +8,8 @@ function tpl_productLike(&$data)
 
 		if (!isset($data['#item#']) or !count($data['#item#'])) {
 
-		} else {
+		}
+		else {
 			$html = '<div class="prodLike">
 				<h3>Сопутствующие товары</h3>';
 			$PGnum = '';
@@ -26,7 +27,8 @@ function tpl_productLike(&$data)
 				$html .= '<a href="' . $href . '" title="' . $r['name'] . '" class="prodimg" target="_blank">';
 				if (isset($r['image']) and count($r['image']) and $r['image'][0][1]) {
 					$html .= '<img src="/' . $r['image'][0][1] . '" alt="' . $r['name'] . '"/>';
-				} else
+				}
+				else
 					$html .= '<img src="' . getUrlTheme() . '_shop/img/nofoto.gif" alt="' . $r['name'] . '"/>';
 				$html .= '</a>';
 				//<div class="proddescr">'.$r['descr'].'</div>

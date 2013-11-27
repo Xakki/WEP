@@ -16,14 +16,18 @@ function tpl_adminmenu(&$data)
 				$sel = ' msel';
 			if (isset($r['css']) and !isset($r['tablename'])) {
 				$over .= '<a class="' . $r['css'] . $sel . '" href="' . $_CFG['PATH']['admin'] . '?_view=list&amp;_modul=' . $k . '">' . $r['name'] . '</a>';
-			} elseif (!$r['tablename']) continue; elseif (
+			}
+			elseif (!$r['tablename']) continue;
+			elseif (
 				(isset($_CFG['require_modul'][$k]) and $_CFG['require_modul'][$k]) or
 				($r['extend'] and isset($_CFG['require_modul'][$r['extend']]) and $_CFG['require_modul'][$r['extend']])
 			) {
 				$sys_r .= '<li class="fly"><a class="main down' . $sel . '" href="' . $_CFG['PATH']['admin'] . '?_view=list&amp;_modul=' . $k . '">' . $r['name'] . '</a></li>';
-			} elseif ($r['typemodul'] == 0) {
+			}
+			elseif ($r['typemodul'] == 0) {
 				$sys_m .= '<li class="fly"><a class="main down' . $sel . '" href="' . $_CFG['PATH']['admin'] . '?_view=list&amp;_modul=' . $k . '">' . $r['name'] . '</a></li>';
-			} elseif ($r['typemodul'] == 3) {
+			}
+			elseif ($r['typemodul'] == 3) {
 				$over_m .= '<li class="fly"><a class="main down' . $sel . '" href="' . $_CFG['PATH']['admin'] . '?_view=list&amp;_modul=' . $k . '">' . $r['name'] . '</a></li>';
 			}
 		}

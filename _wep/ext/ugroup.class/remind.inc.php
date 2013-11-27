@@ -48,7 +48,8 @@ if (hasGet('id') and $_GET['t'] != '' and $_GET['hash'] != '') {
 			</form>
 			</div>';
 	}
-} else {
+}
+else {
 	$flag = 0;
 	if (hasPost('mail')) {
 		$PARAM['post'] = $_POST;

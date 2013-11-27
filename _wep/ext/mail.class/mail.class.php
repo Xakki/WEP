@@ -103,7 +103,7 @@ class mail_class extends kernel_extends
 	function _create()
 	{
 		parent::_create();
-
+		$this->fields[$this->mf_createrid] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0);
 		$this->fields['from'] = array('type' => 'varchar', 'width' => 64, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['subject'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['text'] = array('type' => 'text', 'attr' => 'NOT NULL');
@@ -206,22 +206,26 @@ class mail_class extends kernel_extends
 			unset($data['mail_to']);
 			$data['status'] = 0;
 			$send_result = true;
-		} else {
-			if (!$data['from'])
+		}
+		else {
+			if (!isset($data['from']) || !$data['from'])
 				$data['from'] = 'robot@' . $_SERVER['HTTP_HOST'];
 			if (!$this->config['mailcron']) {
 				if (method_exists($this, 'mailengine' . $this->config['mailengine'])) {
 					$send_result = call_user_func(array($this, 'mailengine' . $this->config['mailengine']), $data);
-				} else {
+				}
+				else {
 					trigger_error('Попытка вызвать не существующий метод `mailengine' . $this->config['mailengine'] . '` в модуле Mail!', E_USER_ERROR);
 				}
 
 				if ($send_result) {
 					$data['status'] = 1;
-				} else {
+				}
+				else {
 					$data['status'] = 2;
 				}
-			} else
+			}
+			else
 				$send_result = true;
 		}
 		$data['category'] = $category;
@@ -269,7 +273,7 @@ class mail_class extends kernel_extends
 
 	function mailengine0($data)
 	{
-		$data['subject'] = substr(htmlspecialchars(trim($data['subject']), ENT_QUOTES, $MODUL->_CFG['wep']['charset']), 0, 1000);
+		$data['subject'] = substr(htmlspecialchars(trim($data['subject']), ENT_QUOTES, $this->_CFG['wep']['charset']), 0, 1000);
 		$this->uid = strtoupper(md5(uniqid(time())));
 		$subject = '=?utf-8?B?' . base64_encode($data['subject']) . '?=';
 		$this->config['mailbottom'] = str_replace(array('%host%', '%year%'), array($_SERVER['HTTP_HOST'], date('Y')), $this->config['mailbottom']);
@@ -291,7 +295,8 @@ class mail_class extends kernel_extends
 		if (isset($data['att'])) {
 			$header .= "Content-Type: multipart/alternative; boundary={$this->uid}\r\n";
 			$header .= "--{$this->uid}\r\n";
-		} else {
+		}
+		else {
 			$header .= "Content-Type: " . $this->contenttype . "; charset=\"utf-8\"\r\n";
 		}
 		$header .= "Content-Transfer-Encoding: 8bit\r\n";
@@ -468,13 +473,15 @@ class mail_class extends kernel_extends
 
 		if ($items_on_page == 0) {
 			$limit_str = '';
-		} else {
+		}
+		else {
 			if (isset($_GET['_pn'])) {
 				$page = (int)$_GET['_pn'];
 				if ($page <= 0) {
 					$page = 1;
 				}
-			} else {
+			}
+			else {
 				$page = 1;
 			}
 			$limit_str = ' limit ' . ($page - 1) . ', ' . $items_on_page;
@@ -482,7 +489,8 @@ class mail_class extends kernel_extends
 
 		if (empty($where)) {
 			$where_str = '';
-		} else {
+		}
+		else {
 			$where_str = ' where ' . implode(' and ', $where);
 		}
 
@@ -496,7 +504,8 @@ class mail_class extends kernel_extends
 			if ($row['creater_id'] != 1) {
 				if ($row['creater_id'] == $_SESSION['user']['id']) {
 					$users[$row['user_to']] = true;
-				} else {
+				}
+				else {
 					$users[$row['creater_id']] = true;
 				}
 			}
@@ -529,7 +538,8 @@ class mail_class extends kernel_extends
 		);
 		if ($limit_str == '' || empty($data['rows'])) {
 			$data['page_nav']['count_pages'] = count($data['rows']);
-		} else {
+		}
+		else {
 			$result = $this->SQL->execSQL('select count(id) as cnt from `' . $this->tablename . '`' . $where_str);
 			if ($row = $result->fetch()) {
 				$data['page_nav']['count_pages'] = ceil($row['cnt'] / $items_on_page);
@@ -557,7 +567,8 @@ class mail_class extends kernel_extends
 			while ($row = $result->fetch()) {
 				$data['users'][] = $row;
 			}
-		} else {
+		}
+		else {
 			$data['error'] = 'Не переданы все необходимые параметры';
 		}
 		return $data;
@@ -574,7 +585,8 @@ class mail_class extends kernel_extends
 					'result' => 0,
 					'error' => 'Самому себе отправлять сообщения нельзя',
 				);
-			} else {
+			}
+			else {
 				_new_class('ugroup', $UGROUP);
 
 				$sql_result = $this->SQL->execSQL('
@@ -592,19 +604,22 @@ class mail_class extends kernel_extends
 
 						if ($this->_add($data)) {
 							$result = array('result' => 1);
-						} else {
+						}
+						else {
 							$result = array(
 								'result' => 0,
 								'error' => 'Во время отправки сообщения произошла ошибка, приносим извинения за неудобства',
 							);
 						}
-					} else {
+					}
+					else {
 						$result = array(
 							'result' => 0,
 							'error' => 'Пользователь не найден',
 						);
 					}
-				} else {
+				}
+				else {
 					$result = array(
 						'result' => 0,
 						'error' => 'Во время отправки сообщения произошла ошибка, приносим извинения за неудобства',
@@ -612,7 +627,8 @@ class mail_class extends kernel_extends
 				}
 			}
 
-		} else {
+		}
+		else {
 			$result = array(
 				'result' => 0,
 				'error' => 'Не переданы все необходимые параметры',
@@ -639,20 +655,23 @@ class mail_class extends kernel_extends
 
 					if ($this->_update($data)) {
 						$result = array('result' => 1);
-					} else {
+					}
+					else {
 						$result = array(
 							'result' => 0,
 							'error' => 'Во время удаления сообщения произошли ошибки, приносим извинения за неудобства',
 						);
 					}
-				} else {
+				}
+				else {
 					$result = array(
 						'result' => 0,
 						'error' => 'Сообщение не найдено',
 					);
 				}
 
-			} else {
+			}
+			else {
 				$result = array(
 					'result' => 0,
 					'error' => 'Во время удаления сообщения произошли ошибки, приносим извинения за неудобства',
@@ -660,7 +679,8 @@ class mail_class extends kernel_extends
 			}
 
 
-		} else {
+		}
+		else {
 			$result = array(
 				'result' => 0,
 				'error' => 'Не переданы все необходимые параметры',
@@ -689,13 +709,15 @@ class mail_class extends kernel_extends
 					'result' => 1,
 					'user_data' => $row,
 				);
-			} else {
+			}
+			else {
 				$result = array(
 					'result' => 0,
 					'error' => 'Пользователь не найден',
 				);
 			}
-		} else {
+		}
+		else {
 			$result = array(
 				'result' => 0,
 				'error' => 'Не переданы все необходимые параметры',

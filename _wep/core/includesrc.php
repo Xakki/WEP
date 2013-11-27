@@ -11,7 +11,7 @@ function fileInclude()
 	$_tpl['script'] = array(getUrlScript('jquery') => 1) + $_tpl['script'];
 
 	if (isset($_tpl['onloadArray']) and count($_tpl['onloadArray'])) // Для скриптов задающихся через массив, дабы не повторялись
-	$_tpl['onload'] .= implode(' ', $_tpl['onloadArray']);
+		$_tpl['onload'] .= implode(' ', $_tpl['onloadArray']);
 	unset($_tpl['onloadArray']);
 	/////////////////////
 
@@ -69,7 +69,8 @@ function scriptRecursive($script, $solt = '')
 				$temp .= '<script src="' . soltAppend($solt, $rr) . '"></script>' . "\n";
 			else
 				$temp .= "<script>\n//<!--\n" . $rr . "\n//-->\n</script>\n";
-		} elseif (is_array($rr))
+		}
+		elseif (is_array($rr))
 			$temp .= scriptRecursive($rr, $solt);
 
 	}
@@ -94,7 +95,8 @@ function cssRecursive($css, $solt = '')
 				$temp .= '<link rel="stylesheet" href="' . soltAppend($solt, $rr) . '"/>' . "\n";
 			else
 				$temp .= "<style>" . $rr . "</style>\n";
-		} elseif (is_array($rr))
+		}
+		elseif (is_array($rr))
 			$temp .= cssRecursive($rr, $solt);
 
 	}
@@ -106,7 +108,8 @@ function soltAppend($solt, $url)
 	if ($solt) {
 		if (strpos($url, '?') === false) {
 			$solt = '?' . $solt;
-		} else {
+		}
+		else {
 			$solt = '&' . $solt;
 		}
 		return $url . $solt;

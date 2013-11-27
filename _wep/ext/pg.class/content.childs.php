@@ -111,13 +111,17 @@ class content_class extends kernel_extends
 		$data = array();
 		if ($listname == 'pagetype') {
 			return $this->getInc();
-		} elseif ($listname == 'ugroup') {
+		}
+		elseif ($listname == 'ugroup') {
 			return $this->owner->_getlist($listname, $value);
-		} elseif ($listname == 'marker') {
+		}
+		elseif ($listname == 'marker') {
 			return $this->owner->config['marker'];
-		} elseif ($listname == 'content') {
+		}
+		elseif ($listname == 'content') {
 			return $this->getContentList();
-		} else
+		}
+		else
 			return parent::_getlist($listname, $value);
 		/* else {
 		  return $this->owner->_getlist($listname,$value);
@@ -132,7 +136,8 @@ class content_class extends kernel_extends
 		foreach ($contentData as $k => &$r) {
 			if (isset($vData[$k])) {
 				$vData[$k] = $r + $vData[$k];
-			} else
+			}
+			else
 				$vData[$k] = $r;
 		}
 		return $vData;
@@ -180,7 +185,8 @@ class content_class extends kernel_extends
 							}
 							$dir2->close();
 						}
-					} elseif (strstr($entry, $pref)) {
+					}
+					elseif (strstr($entry, $pref)) {
 
 						$temp = substr($entry, 0, strpos($entry, $pref));
 
@@ -219,7 +225,8 @@ class content_class extends kernel_extends
 
 				$f_fieldsForm['funcparam']['style'] = 'display:none;';
 			}
-		} else
+		}
+		else
 			$f_fieldsForm['funcparam']['style'] = 'display:none;';
 		return $mess;
 	}
@@ -237,7 +244,8 @@ class content_class extends kernel_extends
 		if ($flagPG = $this->getIncFile($rowPG['pagetype'])) {
 			if (count($_POST) != count($rowPG) or $ajax) {
 				$flagSetvalue = true;
-			} else
+			}
+			else
 				$flagSetvalue = false;
 			//Проверяем есть ли в коде флексформа
 			$fileDoc = static_tools::getDocFileInfo($flagPG);
@@ -253,14 +261,18 @@ class content_class extends kernel_extends
 						$r['css'] = 'addparam flexform'; // Добавляем форме спец стиль (завязано на скриптах)
 						$formFlex['flexform_' . $k] = $r;
 					}
-				} else {
+				}
+				else {
 					$formFlex['tr_flexform_0'] = array('type' => 'info', 'css' => 'addparam flexform', 'caption' => '<span class="error">Ошибка в коде. Обрботчик страниц "' . $flagPG . '" вернул не верные данные!</span>');
 				}
-			} else {
+			}
+			else {
 
 			}
-		} elseif (!$pagetype) {
-		} else {
+		}
+		elseif (!$pagetype) {
+		}
+		else {
 			$formFlex['tr_flexform_0'] = array('type' => 'info', 'css' => 'addparam flexform', 'caption' => '<span class="error">Ошибка выбра данных. Обрботчик страниц "' . $flagPG . '" не найден!</span>');
 		}
 

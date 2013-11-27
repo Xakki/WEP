@@ -7,7 +7,8 @@ function tpl_productItem(&$data)
 	if (!isset($data['#item#']) or !count($data['#item#'])) {
 		header("HTTP/1.0 404");
 		$html .= 'Не верная ссылка, либо товара удален';
-	} else {
+	}
+	else {
 
 		global $_CFG, $_tpl;
 		plugFancybox();
@@ -26,7 +27,8 @@ function tpl_productItem(&$data)
 				foreach ($r['image'] as $img) {
 					$html .= '<a href="/' . $img[0] . '" title="' . $r['name'] . '" class="prodimg-over fancyimg" rel="fancy"><img src="/' . $img[1] . '" alt="' . $r['name'] . '"/></a>';
 				}
-			} else
+			}
+			else
 				$html .= '<br/><img src="' . getUrlTheme() . '_shop/img/nofoto.gif" alt="' . $r['name'] . '" class="prodimg-first"/>';
 			$html .= '</div>';
 

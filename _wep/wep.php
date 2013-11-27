@@ -18,7 +18,8 @@ if (isset($_GET['_php']) and $_GET['_php'] == '_captcha') {
 	else
 		require_once($_CFG['_PATH']['wep_controllers'] . 'frontend/_captcha.php');
 	exit();
-} /**
+}
+/**
  * Загрузка пхп фаилов
  */
 elseif (isset($_GET['_php']) and static_main::phpAllowVendors($_GET['_php'] . '.php')) {
@@ -33,8 +34,8 @@ elseif (isset($_GET['_php']) and static_main::phpAllowVendors($_GET['_php'] . '.
 	}
 
 	set_include_path(get_include_path()
-	. PATH_SEPARATOR
-	. dirname($_SERVER['_DR_'] . $_GET['_php'] . '.php'));
+		. PATH_SEPARATOR
+		. dirname($_SERVER['_DR_'] . $_GET['_php'] . '.php'));
 
 	require $_SERVER['_DR_'] . $_GET['_php'] . '.php';
 

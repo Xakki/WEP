@@ -26,21 +26,24 @@ foreach ($_CFG['cron'] as $key_cron => $r_cron) {
 	$result = '';
 	if (isset($ini_arr['last_time' . $key_cron]) && ($ini_arr['last_time' . $key_cron] + $r_cron['time']) > $time) {
 		//$res_cron .= 'Рано импортировать файл '. $ini_arr['file'.$key_cron]. ', последний раз он импортировался '.date('d.m.Y H:i', $ini_arr['last_time'.$key_cron]). ', сейчас ' . date('d.m.Y H:i', $time) . '. (Установленный интервал: '.$ini_arr['int' . $key_cron].' минут, осталось ' . round((($ini_arr['last_time' . $key_cron] + ($ini_arr['int' . $key_cron] * 60) - $time) / 60), 1) . ' минут)' . "\n";
-	} elseif (!isset($r_cron['active']) or $r_cron['active']) {
+	}
+	elseif (!isset($r_cron['active']) or $r_cron['active']) {
 		$tt = getmicrotime();
 		//'time' => '600', 'file' => '_wepconf/ext/exportboard.class/exportboard.cron.php', 'modul' => '', 'function' => ''
 		if (isset($r_cron['file']) and $r_cron['file']) {
 			$r_cron['file'] = SITE . $r_cron['file'];
 			if (file_exists($r_cron['file'])) {
 				$result = include($r_cron['file']);
-			} else
+			}
+			else
 				$result = 'Can`t find file ' . $r_cron['file'] . ' . //';
 		}
 		if (isset($r_cron['function']) and $r_cron['function'] and $r_cron['modul']) {
 			_new_class($r_cron['modul'], $MODUL);
 			eval('$result = $MODUL->' . $r_cron['function'] . ';');
 			//function_exists
-		} elseif (isset($r_cron['function']) and $r_cron['function']) {
+		}
+		elseif (isset($r_cron['function']) and $r_cron['function']) {
 			eval('$result = ' . $r_cron['function'] . ';');
 		}
 

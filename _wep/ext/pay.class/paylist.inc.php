@@ -40,7 +40,8 @@ if (isset($_GET['payinfo']) and $_GET['payinfo']) {
 	$PGLIST->formFlag = $DATA['#resFlag#'];
 	if ($FUNCPARAM[1])
 		$DATA['tpl'] = $FUNCPARAM[1];
-} else {
+}
+else {
 	$DATA = $PAY->getPayList(null, $_SESSION['user']['id']);
 	if ($FUNCPARAM[0])
 		$DATA['tpl'] = $FUNCPARAM[0];

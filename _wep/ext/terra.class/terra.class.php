@@ -138,7 +138,8 @@ class terra_class extends kernel_extends
 						if (!$ru_rname and !$parent_id) {
 							$flag = true;
 							// ADD ip
-						} elseif ($ru_rname) {
+						}
+						elseif ($ru_rname) {
 							$ru_rname = preg_replace('/[^А-Яа-я ]+/u', '', $ru_rname);
 							if (mb_stripos($nm, $ru_rname) !== false) {
 								$flag = true;
@@ -157,7 +158,8 @@ class terra_class extends kernel_extends
 					//////////////////
 				}
 
-			} else {
+			}
+			else {
 				print_r('<fieldset><legend>Город не определён</legend>' . $name . ' / ');
 				print_r('</fieldset>');
 				//return true;
@@ -248,7 +250,8 @@ class terra_class extends kernel_extends
 					}
 				}
 				//return true;
-			} else {
+			}
+			else {
 				//print_r('<fieldset><legend>Нету совпадений в базе </legend>`'.$k.'`   ');print_r($r);print_r('</fieldset>');
 			}
 		}
@@ -316,13 +319,16 @@ class terra_class extends kernel_extends
 			if ($p5 > 0) {
 				$pid = $p1 . $p2 . $p3 . $p4 . '00';
 				$level = 5;
-			} elseif ($p4 > 0) {
+			}
+			elseif ($p4 > 0) {
 				$pid = $p1 . $p2 . $p3 . '00000';
 				$level = 4;
-			} elseif ($p3 > 0) {
+			}
+			elseif ($p3 > 0) {
 				$pid = $p1 . $p2 . '00000000';
 				$level = 3;
-			} elseif ($p2 > 0) {
+			}
+			elseif ($p2 > 0) {
 				$pid = $p1 . '00000000000';
 				$level = 2;
 			}
@@ -382,7 +388,8 @@ class terra_class extends kernel_extends
 					}
 					$this->_update($upd);
 				}
-			} else {
+			}
+			else {
 				$flag = 50;
 			}
 			$flag++;

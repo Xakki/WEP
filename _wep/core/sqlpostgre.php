@@ -73,7 +73,8 @@ class sqlpostgre
 						$_CFG["site"]["work_text"] = '<err>' . static_main::m('Cant`t connect to database') . '</err>';
 						static_main::downSite();
 					}
-				} else {
+				}
+				else {
 					$_CFG["site"]["work_text"] = '<err>' . static_main::m('Permission denied to create database') . '</err>';
 					static_main::downSite();
 				}
@@ -166,7 +167,8 @@ class sqlpostgre
 			if ($key !== false) {
 				while ($r = $result->fetch($type))
 					$data[$r[$key]] = $r;
-			} else {
+			}
+			else {
 				while ($r = $result->fetch($type))
 					$data[] = $r;
 			}
@@ -245,9 +247,10 @@ class sqlpostgre
 		$result = $this->query('SHOW KEYS FROM `' . $MODUL->tablename . '`');
 		while ($data = $result->fetch_row()) {
 			if ($data[2] == 'PRIMARY') //только 1 примарикей
-			$primary = $data[4];
+				$primary = $data[4];
 			elseif (!$data[1]) //!NON_unique
-			$uniqlist[$data[2]][$data[4]] = $data[4]; else
+				$uniqlist[$data[2]][$data[4]] = $data[4];
+			else
 				$indexlist[$data[2]][$data[4]] = $data[4];
 		}
 		return array($primary, $uniqlist, $indexlist);
@@ -350,7 +353,8 @@ class sqlpostgre
 		if (isset($param['width']) and isset($this->types_width[$param['type']]) && $this->types_width[$param['type']] === false) {
 			$mess[] = array('alert', 'Параметр `width` для поля `' . $key . '` указывать не обязательно.');
 			unset($param['width']);
-		} elseif (!isset($param['width']) and isset($this->types_width[$param['type']]) && $this->types_width[$param['type']] !== false) {
+		}
+		elseif (!isset($param['width']) and isset($this->types_width[$param['type']]) && $this->types_width[$param['type']] !== false) {
 			$mess[] = array('alert', 'Параметр `width` для поля `' . $key . '` необходим. По умолчанию будет установленно значение `' . $this->types_width[$param['type']] . '`');
 			$param['width'] = $this->types_width[$param['type']];
 		}
@@ -365,11 +369,13 @@ class sqlpostgre
 			$m .= ' ' . $param['attr'];
 			if (isset($param['default']))
 				$m .= ' DEFAULT \'' . $param['default'] . '\'';
-		} else {
+		}
+		else {
 			if (isset($param['width']) && is_array($param['width'])) {
 				if ($param['type'] == 'enum')
 					$m .= '("' . implode('","', array_keys($param['width'])) . '")';
-			} elseif (isset($param['width']) && $param['width'] != '')
+			}
+			elseif (isset($param['width']) && $param['width'] != '')
 				$m .= '(' . $param['width'] . ')';
 			if (isset($param['attr']))
 				$m .= ' ' . $param['attr'];
@@ -394,7 +400,8 @@ class sqlpostgre
 		$mess = static_main::m($mess);
 		if (!$_CFG['wep']['debugmode']) {
 			die($mess);
-		} else {
+		}
+		else {
 			//static_main::log('error',$mess);
 		}
 		return false;
@@ -411,9 +418,14 @@ class sqlpostgre
 
 		if (canShowAllInfo() > 1) {
 			if ($ttt > 0.5) $ttt = '<span style="color:#FF0000;">' . $ttt . '</span>';
-			elseif ($ttt > 0.1) $ttt = '<span style="color:#FF6633;">' . $ttt . '</span>'; elseif ($ttt > 0.05) $ttt = '<span style="color:#006699;">' . $ttt . '</span>'; elseif ($ttt > 0.01) $ttt = '<span style="color:#66CCCC;">' . $ttt . '</span>'; elseif ($ttt > 0.005) $ttt = '<span style="color:#006600">' . $ttt . '</span>'; else $ttt = '<span style="color:#00FF00;">' . $ttt . '</span>';
+			elseif ($ttt > 0.1) $ttt = '<span style="color:#FF6633;">' . $ttt . '</span>';
+			elseif ($ttt > 0.05) $ttt = '<span style="color:#006699;">' . $ttt . '</span>';
+			elseif ($ttt > 0.01) $ttt = '<span style="color:#66CCCC;">' . $ttt . '</span>';
+			elseif ($ttt > 0.005) $ttt = '<span style="color:#006600">' . $ttt . '</span>';
+			else $ttt = '<span style="color:#00FF00;">' . $ttt . '</span>';
 			$_CFG['logs']['sql'][] = htmlentities($sql, ENT_NOQUOTES, $_CFG['wep']['charset']) . '  TIME=' . $ttt;
-		} elseif (isBackend() or canShowAllInfo())
+		}
+		elseif (isBackend() or canShowAllInfo())
 			$_CFG['logs']['sql'][] = true;
 	}
 
@@ -441,7 +453,8 @@ class pquery
 			trigger_error($this->err .= ' (' . $sql . ');', E_USER_WARNING);
 			$this->errno = mysqli_errno($db->hlink);
 			//$db->fError($this->err);
-		} else {
+		}
+		else {
 			$db->longLog((getmicrotime() - $ttt), $sql);
 			if (stripos($sql, 'insert into') !== false)
 				$db->lastId = $this->sql_id();
@@ -471,8 +484,10 @@ class pquery
 		if ($type == 0)
 			return $this->fetch_assoc($this->handle);
 		elseif ($type == 1)
-			return $this->fetch_row($this->handle); elseif ($type == 2)
-			return $this->fetch_array($this->handle); else
+			return $this->fetch_row($this->handle);
+		elseif ($type == 2)
+			return $this->fetch_array($this->handle);
+		else
 			return $this->fetch_object($this->handle);
 	}
 
