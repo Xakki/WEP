@@ -1257,7 +1257,7 @@ class static_form
 
 		/*Преоразуем HTML сущности*/
 		if (isset($form['mask']['entities']) and $form['mask']['entities'] == 1) {
-			$data[$key] = htmlspecialchars($data[$key], ENT_QUOTES, $_this->_CFG['wep']['charset']);
+			$data[$key] = htmlspecialchars($data[$key], ENT_QUOTES, CHARSET);
 		}
 
 		/*Замена по регулярному выражению*/

@@ -127,7 +127,7 @@ class static_main
 								elseif ($type < 3)
 									$c = 'gray';
 								if ($c != '')*/
-				$text .= '<div class="messelem ' . $r[0] . '">' . htmlspecialchars($r[1], ENT_QUOTES, $_CFG['wep']['charset']) . '</div>';
+				$text .= '<div class="messelem ' . $r[0] . '">' . htmlspecialchars($r[1], ENT_QUOTES, CHARSET) . '</div>';
 			}
 			$_CFG['logs']['mess'] = array();
 		}
@@ -187,7 +187,7 @@ class static_main
 	{
 		global $_CFG;
 		$hash = md5($head);
-		return '<div class="bugspoiler-wrap ' . $css . '"><div class="spoiler-head" onclick="var obj=this.parentNode;if(obj.className.indexOf(\'unfolded\')>=0) obj.className = obj.className.replace(\'unfolded\',\'\'); else obj.className = obj.className+\' unfolded\';">' . $head . '</div><div class="spoiler-body">' . html_entity_decode($text, ENT_QUOTES, $_CFG['wep']['charset']) . '</div></div>';
+		return '<div class="bugspoiler-wrap ' . $css . '"><div class="spoiler-head" onclick="var obj=this.parentNode;if(obj.className.indexOf(\'unfolded\')>=0) obj.className = obj.className.replace(\'unfolded\',\'\'); else obj.className = obj.className+\' unfolded\';">' . $head . '</div><div class="spoiler-body">' . html_entity_decode($text, ENT_QUOTES, CHARSET) . '</div></div>';
 	}
 
 	/**
@@ -1534,12 +1534,6 @@ function initShowAllInfo()
 }
 
 /********************/
-
-/*
-  Используем эту ф вместо стандартной, для совместимости с UTF-8
- */
-if (function_exists('mb_internal_encoding'))
-	mb_internal_encoding($_CFG['wep']['charset']);
 
 function _strlen($val)
 {

@@ -36,8 +36,8 @@ foreach ($DATA as $r) {
 		$offer .= '
 				<picture>' . MY_BH . $r['img_product'] . '</picture>';
 	$offer .= '
-				<name>' . htmlspecialchars($r['name'], ENT_QUOTES, $_CFG['wep']['charset']) . '</name>
-				<description>' . htmlspecialchars($r['descr'], ENT_QUOTES, $_CFG['wep']['charset']) . '</description>';
+				<name>' . htmlspecialchars($r['name'], ENT_QUOTES, CHARSET) . '</name>
+				<description>' . htmlspecialchars($r['descr'], ENT_QUOTES, CHARSET) . '</description>';
 
 	/*$offer .= '<delivery>true</delivery>';
 	$offer .= '<local_delivery_cost>300</local_delivery_cost>';

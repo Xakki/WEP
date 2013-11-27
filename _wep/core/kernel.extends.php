@@ -516,7 +516,7 @@ abstract class kernel_extends
 	public function exec($query, $debug = false)
 	{
 		if ($debug)
-			echo(' * ' . htmlentities($query) . ' * <br>');
+			echo(' * ' . htmlentities($query, ENT_QUOTES, CHARSET) . ' * <br>');
 		$result = $this->SQL->execSQL($query);
 		if ($result->err)
 			return false; //todo exeption

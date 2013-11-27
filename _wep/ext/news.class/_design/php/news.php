@@ -18,7 +18,7 @@ function tpl_news(&$data)
 		foreach ($data['#list#'] as $k => $r) {
 			if (!$r['i_news']) $r['i_news'] = '';
 			$html .= '<div class="news-items">
-						' . ($r['i_news'] ? '<a class="news-read" href="' . $data['#page#'] . '/' . $r['id'] . '.html"><img src="' . $r['i_news'] . '" class="news-img" alt="' . htmlentities($r['name'], ENT_NOQUOTES, 'UTF-8') . '"/></a>' : '') . '
+						' . ($r['i_news'] ? '<a class="news-read" href="' . $data['#page#'] . '/' . $r['id'] . '.html"><img src="' . $r['i_news'] . '" class="news-img" alt="' . htmlentities($r['name'], ENT_NOQUOTES, CHARSET) . '"/></a>' : '') . '
 						<span class="news-date">' . static_main::_date('d F Yг.', $r['ndate']) . '/</span>
 						<span class="news-name"><a href="' . $data['#page#'] . '/' . $r['id'] . '.html">' . $r['name'] . '</a></span>
 						<p class="news-desc">' . $r['description'] . '</p>

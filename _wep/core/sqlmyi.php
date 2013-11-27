@@ -445,7 +445,7 @@ class sqlmyi
 			elseif ($ttt > 0.01) $ttt = '<span style="color:rgb(226, 172, 0);">' . $ttt . '</span>';
 			elseif ($ttt > 0.005) $ttt = '<span style="color:rgb(247, 255, 155);">' . $ttt . '</span>';
 			else $ttt = '<span style="color:#FFF;">' . $ttt . '</span>';
-			$_CFG['logs']['sql'][] = htmlentities($sql, ENT_NOQUOTES, $_CFG['wep']['charset']) . '  TIME=' . $ttt;
+			$_CFG['logs']['sql'][] = htmlentities($sql, ENT_NOQUOTES, CHARSET) . '  TIME=' . $ttt;
 		}
 		elseif (isBackend() or canShowAllInfo())
 			$_CFG['logs']['sql'][] = true;

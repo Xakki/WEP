@@ -1115,9 +1115,9 @@ deny from all
 					if (!is_array($rr))
 						$desc = $rr;
 					elseif (isset($rr['@newquery']) and isset($rr['@oldquery']))
-						$desc = 'Было: ' . htmlspecialchars($rr['@oldquery'], ENT_QUOTES, $_CFG['wep']['charset']) . '<br/>Будет: ' . htmlspecialchars($rr['@newquery'], ENT_QUOTES, $_CFG['wep']['charset']);
+						$desc = 'Было: ' . htmlspecialchars($rr['@oldquery'], ENT_QUOTES, CHARSET) . '<br/>Будет: ' . htmlspecialchars($rr['@newquery'], ENT_QUOTES, CHARSET);
 					elseif (isset($rr['@newquery']))
-						$desc = htmlspecialchars($rr['@newquery'], ENT_QUOTES, $_CFG['wep']['charset']);
+						$desc = htmlspecialchars($rr['@newquery'], ENT_QUOTES, CHARSET);
 					else
 						$desc = '';
 					if ($desc)

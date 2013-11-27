@@ -456,6 +456,13 @@ $_CFG['_HREF']['vendors'] = MY_BH . '_vendors/';
 
 $_CFG['_F']['adminpage'] = false;
 
+define('CHARSET', $_CFG['wep']['charset']);
+/*
+  Используем эту ф вместо стандартной, для совместимости с UTF-8
+ */
+if (function_exists('mb_internal_encoding')) {
+	mb_internal_encoding(CHARSET);
+}
 
 /********************/
 /* $_CFG['session'] */
