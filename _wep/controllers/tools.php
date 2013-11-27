@@ -109,7 +109,7 @@ function tools_cron()
 	}
 	include($_CFG['_FILE']['cron']); // Загружаем конфиг крона
 
-	$ini_file = $_CFG['_PATH']['config'] . 'cron.ini';
+	$ini_file = $_CFG['_FILE']['cronTask'];
 	if (file_exists($ini_file))
 		$ini_arr = parse_ini_file($ini_file);
 	else {
