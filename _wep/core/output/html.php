@@ -111,7 +111,7 @@ class wephtml
 	function parseTemplate(&$TEXT, &$TPL, $i = 0)
 	{
 		if ($i > 2) return true;
-		if (strpos($TEXT, '{#') !== false) { // NEW STANDART
+		if (_strpos($TEXT, '{#') !== false) { // NEW STANDART
 			preg_match_all('/\{\#([A-z0-9_\-]+)\#\}/u', $TEXT, $temp);
 			//return '<pre>'.var_export($temp,true);
 			foreach ($temp[1] as $k => $r) {
@@ -128,7 +128,7 @@ class wephtml
 				$TEXT = str_replace($temp[0][$k], $TPL[$r], $TEXT);
 			}
 		}
-		if (strpos($TEXT, '{#') !== false or strpos($TEXT, '$_tpl') !== false) {
+		if (_strpos($TEXT, '{#') !== false or _strpos($TEXT, '$_tpl') !== false) {
 			$i++;
 			$this->parseTemplate($TEXT, $TPL, $i);
 		}
