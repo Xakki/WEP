@@ -26,9 +26,9 @@ class shopbasket_class extends kernel_extends
 		$this->config_form['orderset'] = array('type' => 'list', 'listname'=>'orderset', 'multiple'=> FORM_MULTIPLE_SIMPLE, 'caption'=>'Варианты заказа товара');
 	}*/
 
-	protected function _set_features()
+	protected function init()
 	{
-		parent::_set_features();
+		parent::init();
 
 		$this->ver = '0.0.2';
 		$this->caption = 'Магазин - Корзина';
@@ -493,9 +493,9 @@ class shopbasket_class extends kernel_extends
 class shopbasketitem_class extends kernel_extends
 {
 
-	function _set_features()
+	function init()
 	{
-		parent::_set_features();
+		parent::init();
 
 		$this->ver = '0.0.1';
 		$this->caption = 'Товары заказа';
@@ -547,9 +547,9 @@ class shopbasketitem_class extends kernel_extends
 class shopbasketstatus_class extends kernel_extends
 {
 
-	function _set_features()
+	function init()
 	{
-		parent::_set_features();
+		parent::init();
 
 		$this->ver = '0.0.1';
 		$this->caption = 'Статусы';

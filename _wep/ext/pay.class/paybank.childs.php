@@ -3,9 +3,9 @@
 
 class paybank_class extends kernel_extends
 {
-	protected function _set_features()
+	protected function init()
 	{
-		parent::_set_features();
+		parent::init();
 		$this->default_access = '|9|';
 		$this->mf_timecr = true; // создать поле хранящее время создания поля
 		$this->mf_actctrl = true;

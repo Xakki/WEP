@@ -7,9 +7,9 @@ class bug_class extends kernel_extends
 		parent::_create_conf();
 	}
 
-	function _set_features()
+	function init()
 	{
-		parent::_set_features();
+		parent::init();
 //		$this->mf_use_charid = true;
 		$this->mf_timecr = true;
 		$this->mf_ipcreate = true;

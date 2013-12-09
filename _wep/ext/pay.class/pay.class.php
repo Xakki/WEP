@@ -14,9 +14,9 @@ define('OVERCASH', 3); // прочее
 class pay_class extends kernel_extends
 {
 
-	protected function _set_features()
+	protected function init()
 	{
-		parent::_set_features();
+		parent::init();
 		$this->caption = 'Pay System';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';
 
@@ -1008,9 +1008,9 @@ class pay_class extends kernel_extends
 class payhistory_class extends kernel_extends
 {
 
-	protected function _set_features()
+	protected function init()
 	{
-		parent::_set_features();
+		parent::init();
 		$this->default_access = '|0|';
 		$this->mf_timecr = true; // создать поле хранящее время создания поля
 		$this->mf_ipcreate = true; //IP адрес пользователя с котрого была добавлена запись

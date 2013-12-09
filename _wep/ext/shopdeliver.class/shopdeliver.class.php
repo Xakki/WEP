@@ -12,9 +12,9 @@ class shopdeliver_class extends kernel_extends
 		$this->config_form['orderset'] = array('type' => 'list', 'listname'=>'orderset', 'multiple'=> FORM_MULTIPLE_SIMPLE, 'caption'=>'Варианты заказа товара');
 	}*/
 
-	function _set_features()
+	function init()
 	{
-		parent::_set_features();
+		parent::init();
 
 		$this->ver = '0.0.1';
 		$this->caption = 'Магазин - Доставка';

@@ -4,9 +4,9 @@ class payrbk_class extends kernel_extends
 	static $STATUS_PROCESS = 3;
 	static $STATUS_SUCCESS = 5;
 
-	function _set_features()
+	function init()
 	{
-		parent::_set_features();
+		parent::init();
 		$this->caption = 'RBK.Money';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';
 		$this->default_access = '|9|';

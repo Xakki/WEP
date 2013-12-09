@@ -2,9 +2,9 @@
 
 class ulogin_class extends kernel_extends
 {
-	function _set_features()
+	function init()
 	{
-		parent::_set_features();
+		parent::init();
 		$this->caption = 'Ulogin';
 		$this->tablename = '';
 	}

@@ -2,9 +2,9 @@
 class payyandex_class extends kernel_extends
 {
 
-	function _set_features()
+	function init()
 	{
-		parent::_set_features();
+		parent::init();
 		$this->caption = 'Яндекс.Деньги';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';
 		/*$this->lang['add_name'] = 'Пополнение кошелька из QIWI';

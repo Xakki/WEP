@@ -5,22 +5,128 @@
  */
 abstract class kernel_extends
 {
+	//	public $mf_issimple = false;
+	//	public $mf_typectrl = false;
+	//	public $mf_struct_readonly = false;
+	// по умол. false - главный индекс хранится в бд как число, иначе как текст
+	public $mf_use_charid = false; //if true - id varchar
+	// true - добавляется поле в бд , хранящий наименование записи, и это поле будет фигурировать в списках,  (можно вписать свое наименование) [bool,string]
+	public $mf_namefields = true; //добавлять поле name
+	// создаст поле хранящий id пользователя создавший данную запись (можно вписать свое наименование) [bool,string]
+	public $mf_createrid = true; //польз владелец
+	// true - создаст поле parent_id и записи могут храниться в виде дерева, (можно вписать свое наименование) [bool,string]
+	public $mf_istree = false; // древовидная структура?
+	public $mf_istree_root = false; // несколько деревьев
+	public $mf_treelevel = 0; // разрешенное число уровней в дереве , 0 - безлимита, 1 - разрешить 1 подуровень
+	public $mf_ordctrl = false; // создаст поле ordind для сортировки (можно вписать свое наименование) [bool,string]
+	public $mf_actctrl = false; // создаст поле active, (можно вписать свое наименование) [bool,string]
+	public $mf_timestamp = false; // создать поле  типа timestamp, (можно вписать свое наименование) [bool,string]
+	public $mf_timecr = false; // создать поле хранящще время создания поля
+	public $mf_timeup = false; // создать поле хранящще время обновления поля
+	public $mf_timeoff = false; // создать поле хранящще время отключения поля (active=0)
+	public $mf_ipcreate = false; //IP адрес пользователя с котрого была добавлена запись
+	public $mf_notif = false; // Уведомления о добавлении записи в базу
+	public $cf_fields = false; // Возможность добавлять дополнительные поля в конфиге
+	public $prm_add = true; // добавить в модуле
+	public $prm_del = true; // удалять в модуле
+	public $prm_edit = true; // редактировать в модуле
+	// если это дочерний модуль,то false запретит доступ к этому модулю через админку
+	public $showinowner = true; // показывать под родителем
+	// для дочерних модулей, true разрешит создавать только одну запись для каждого элемента родителя
+	public $owner_unique = false; // поле owner_id не уникально
+	// записи выводятся постранично
+	public $mf_mop = true; // выключить постраничное отображение
+	public $reversePageN = false; // обратный отчет для постраничного отображения
+	public $messages_on_page = 20; //число эл-ов на странице
+	public $numlist = 10; //максим число страниц при котором отображ все номера страниц
+	public $mf_indexing = false; // TOOLS индексация
+	public $mf_statistic = false; // TOOLS показывать  статистику по дате добавления
+	public $cf_childs = false; // TOOLS true - включить управление подключение подмодулей в настройках модуля
+	public $cf_reinstall = false; // TOOLS
+	public $cf_filter = true;
+	public $cf_tools = array(); // TOOLS button, function
+	//	public $includeJStoWEP = false; // подключать ли скрипты для формы через настройки
+	//	public $includeCSStoWEP = false; // подключать ли стили для формы через настройки
+	public $singleton = true; // класс-одиночка
+	public $ver = '0.1.1'; // версия модуля
+
+	public $icon = 0; /* числа  означают отсуп для бэкграунда, а если будет задан текст то это сам рисунок */
+	public $default_access = '|0|';
+
+	public $text_ext = '.txt'; // расширение для memo фиаилов
+	public $owner_name = 'owner_id'; // название поля для родительской связи в БД
+
+	public $_listfields = array('name'); //select по умолч
+	public $_listname = false;
+	public $unique_fields,
+		$index_fields,
+		$_enum,
+		$update_records,
+		$fld_data,
+		$fields,
+		$form,
+		$formSort,
+		$formDSort,
+		$mess_form,
+		$attaches, $att_data,
+		$memos, $mmo_data,
+		$services,
+		$config,
+		$config_form,
+		$lang,
+		$enum,
+		$child_path,
+		$Achilds,
+		$HOOK, //перехватчик в реальном времени
+		$_AllowAjaxFn, // разрешённые функции для аякса, нужно прописывать в индекс
+		$cron, // Задания на кроне time,file,modul,function,active,
+		$_dependClass,
+		$_clp,
+		$allKeyData,
+		$data =
+		array();
+
+	public $ordfield = '';
+	public $grant_sql = false;
+	public $childs, // Дочерние модули
+		$SQL_CFG,
+		$_forceLoad,
+		$_file_cfg,
+		$parent_id,
+		$null,
+		$id
+		= NULL;
+
+	public $_CFG = true; // bug fix for link
+	public $owner = true; // bug fix  for link
+
+	// конфиг для Дерево каталогов NESTED SETS
+	public $ns_config = array(
+		'left' => 'left_key',
+		'right' => 'right_key',
+		'level' => 'level_key',
+		'root' => 'root_key',
+	);
 
 	function __construct($owner = NULL, $_forceLoad = false)
 	{
 		global $_CFG;
 		//FB::info($_CFG);
-		$this->_CFG = true; // bug fix for link
 		$this->_CFG = & $_CFG; //Config
 		$this->SQL_CFG = $this->_CFG['sql'];
 		$this->_forceLoad = $_forceLoad; // если true - Принудительная загрузка не подключенного класса
-		$this->owner = true; // bug fix  for link
 		if (is_object($owner) and isset($owner->fields))
 			$this->owner = & $owner; //link to owner class
 		else
 			$this->owner = NULL;
 
-		$this->_set_features(); // настройки модуля
+		$this->verCore = $this->_CFG['info']['version'];
+		$this->_cl = str_replace('_class', '', get_class($this)); //- символическое id модуля
+		$this->tablename = $this->_cl; // название таблицы
+		$this->caption = $this->_cl; // заголовок модуля
+		$this->childs = new modul_child($this);
+
+		$this->init(); // настройки модуля
 
 		if ($this->singleton == true)
 			$_CFG['singleton'][$this->_cl] = & $this;
@@ -38,6 +144,19 @@ abstract class kernel_extends
 		}
 	}
 
+	/**
+	 * инициалия основных настроек модуля для подключения к БД и связи
+	 * а также определение основных атрибутов
+	 * префикс mf_ - атрибуты создающие спец поля в бд
+	 * prm_ - атрибуты определяющие права доступа
+	 * cf_ - атрибуты настроики конфига для модуля
+	 *
+	 **/
+	protected function init()
+	{ // initalization of modul features
+		return true;
+	}
+
 	function __destruct()
 	{
 
@@ -45,7 +164,7 @@ abstract class kernel_extends
 
 	function __get($name)
 	{
-		global $SQL, $PSQL;
+		global $SQL, $PSQL, $SPHSQL;
 		if ($name == 'SQL') {
 			if (!$this->grant_sql) {
 				if ($this->SQL_CFG['type'] == 'sqlpostgre') {
@@ -54,6 +173,13 @@ abstract class kernel_extends
 					}
 					$this->SQL = & $PSQL;
 					return $PSQL;
+				}
+				elseif ($this->SQL_CFG['type'] == 'sphinx') {
+					if (!isset($SPHSQL) or !$SPHSQL->ready) {
+						$SPHSQL = new sqlmyi($this->SQL_CFG);
+					}
+					$this->SQL = & $SPHSQL;
+					return $SPHSQL;
 				}
 				else {
 					if (!isset($SQL) or !$SQL->ready) {
@@ -135,122 +261,13 @@ abstract class kernel_extends
 	}
 
 	/* -----------CMS---FUNCTION------------
-	  _set_features()
+	  init()
 	  _create()
 	  create_child($class_name)
 
 
 	  -------------------------------------- */
-	/**
-	 * инициалия основных настроек модуля для подключения к БД и связи
-	 * а также определение основных атрибутов
-	 * префикс mf_ - атрибуты создающие спец поля в бд
-	 * prm_ - атрибуты определяющие права доступа
-	 * cf_ - атрибуты настроики конфига для модуля
-	 *
-	 **/
-	protected function _set_features()
-	{ // initalization of modul features
-		//$this->mf_issimple = false;
-		//$this->mf_typectrl = false;
-		//$this->mf_struct_readonly = false;
-		// по умол. false - главный индекс хранится в бд как число, иначе как текст
-		$this->mf_use_charid = false; //if true - id varchar
-		// true - добавляется поле в бд , хранящий наименование записи, и это поле будет фигурировать в списках,  (можно вписать свое наименование) [bool,string]
-		$this->mf_namefields = true; //добавлять поле name
-		// создаст поле хранящий id пользователя создавший данную запись (можно вписать свое наименование) [bool,string]
-		$this->mf_createrid = true; //польз владелец
-		// true - создаст поле parent_id и записи могут храниться в виде дерева, (можно вписать свое наименование) [bool,string]
-		$this->mf_istree = false; // древовидная структура?
-		$this->mf_istree_root = false; // несколько деревьев
-		$this->mf_treelevel = 0; // разрешенное число уровней в дереве , 0 - безлимита, 1 - разрешить 1 подуровень
-		$this->mf_ordctrl = false; // создаст поле ordind для сортировки (можно вписать свое наименование) [bool,string]
-		$this->mf_actctrl = false; // создаст поле active, (можно вписать свое наименование) [bool,string]
-		$this->mf_timestamp = false; // создать поле  типа timestamp, (можно вписать свое наименование) [bool,string]
-		$this->mf_timecr = false; // создать поле хранящще время создания поля
-		$this->mf_timeup = false; // создать поле хранящще время обновления поля
-		$this->mf_timeoff = false; // создать поле хранящще время отключения поля (active=0)
-		$this->mf_ipcreate = false; //IP адрес пользователя с котрого была добавлена запись
-		$this->mf_notif = false; // Уведомления о добавлении записи в базу
-		$this->cf_fields = false; // Возможность добавлять дополнительные поля в конфиге
-		$this->prm_add = true; // добавить в модуле
-		$this->prm_del = true; // удалять в модуле
-		$this->prm_edit = true; // редактировать в модуле
-		// если это дочерний модуль,то false запретит доступ к этому модулю через админку
-		$this->showinowner = true; // показывать под родителем
-		// для дочерних модулей, true разрешит создавать только одну запись для каждого элемента родителя
-		$this->owner_unique = false; // поле owner_id не уникально
-		// записи выводятся постранично
-		$this->mf_mop = true; // выключить постраничное отображение
-		$this->reversePageN = false; // обратный отчет для постраничного отображения
-		$this->messages_on_page = 20; //число эл-ов на странице
-		$this->numlist = 10; //максим число страниц при котором отображ все номера страниц
-		$this->mf_indexing = false; // TOOLS индексация
-		$this->mf_statistic = false; // TOOLS показывать  статистику по дате добавления
-		$this->cf_childs = false; // TOOLS true - включить управление подключение подмодулей в настройках модуля
-		$this->cf_reinstall = false; // TOOLS
-		$this->cf_filter = true;
-		$this->cf_tools = array(); // TOOLS button, function
-		//$this->includeJStoWEP = false; // подключать ли скрипты для формы через настройки
-		//$this->includeCSStoWEP = false; // подключать ли стили для формы через настройки
-		$this->singleton = true; // класс-одиночка
-		$this->ver = '0.1.1'; // версия модуля
-		$this->verCore = $this->_CFG['info']['version'];
-		$this->icon = 0; /* числа  означают отсуп для бэкграунда, а если будет задан текст то это сам рисунок */
-		$this->default_access = '|0|';
 
-		$this->text_ext = '.txt'; // расширение для memo фиаилов
-
-		$this->_cl = str_replace('_class', '', get_class($this)); //- символическое id модуля
-		$this->owner_name = 'owner_id'; // название поля для родительской связи в БД
-		$this->tablename = $this->_cl; // название таблицы
-		$this->caption = $this->_cl; // заголовок модуля
-		$this->_listfields = array('name'); //select по умолч
-		$this->_listname = false;
-		$this->unique_fields =
-		$this->index_fields =
-		$this->_enum =
-		$this->update_records =
-		$this->fld_data =
-		$this->fields =
-		$this->form =
-		$this->formSort =
-		$this->formDSort =
-		$this->mess_form =
-		$this->attaches = $this->att_data =
-		$this->memos = $this->mmo_data =
-		$this->services =
-		$this->config =
-		$this->config_form =
-		$this->lang =
-		$this->enum =
-		$this->child_path =
-		$this->Achilds =
-		$this->HOOK = //перехватчик в реальном времени
-		$this->_AllowAjaxFn = // разрешённые функции для аякса, нужно прописывать в индекс
-		$this->cron = // Задания на кроне time,file,modul,function,active,
-		$this->_dependClass =
-			array();
-		$this->childs = new modul_child($this);
-		$this->ordfield = '';
-		$this->_clp = array();
-		$this->data =
-		$this->allKeyData = array();
-		$this->parent_id = NULL;
-		$this->null = NULL;
-		$this->id = NULL;
-		$this->_file_cfg = NULL;
-		$this->grant_sql = false;
-
-		// конфиг для Дерево каталогов NESTED SETS
-		$this->ns_config = array(
-			'left' => 'left_key',
-			'right' => 'right_key',
-			'level' => 'level_key',
-			'root' => 'root_key',
-		);
-		return true;
-	}
 
 	protected function _create_conf()
 	{ // Здесь можно установить стандартные настройки модулей
@@ -2282,7 +2299,7 @@ class modul_child extends ArrayObject
 			}
 			$modul_child = NULL;
 			if (!_new_class($clname, $modul_child, $this->modul_obj, $this->modul_obj->_forceLoad)) {
-				exit('Cant find child class');
+				exit('Cant find child class '.$clname);
 				return false;
 			}
 			//
@@ -2301,9 +2318,9 @@ class modul_child extends ArrayObject
 
 class wepForm extends kernel_extends
 {
-	protected function _set_features()
+	protected function init()
 	{
-		parent::_set_features();
+		parent::init();
 		$this->singleton = false;
 		$this->tablename = false;
 	}

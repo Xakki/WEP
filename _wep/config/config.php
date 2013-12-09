@@ -80,6 +80,7 @@ $_CFG['site'] = array( // для сайта
 		'style.jquery/smoothness/jquery-ui' => '//yandex.st/jquery-ui/1.10.3/themes/smoothness/jquery-ui.min.css',
 	),
 );
+
 $_CFG['memcache'] = array(
 	'host' => '127.0.0.1',
 	'port' => 11211,

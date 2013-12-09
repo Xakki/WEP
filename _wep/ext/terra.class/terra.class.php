@@ -2,9 +2,9 @@
 class terra_class extends kernel_extends
 {
 
-	function _set_features()
+	function init()
 	{
-		parent::_set_features();
+		parent::init();
 		$this->mf_istree = true;
 		$this->mf_actctrl = true;
 		$this->mf_createrid = false;
@@ -405,9 +405,9 @@ class terra_class extends kernel_extends
 
 class terrasocr_class extends kernel_extends
 {
-	function _set_features()
+	function init()
 	{
-		parent::_set_features();
+		parent::init();
 		$this->showinowner = false; // не показывать
 		$this->mf_ipcreate = false;
 		$this->mf_timecr = false;
@@ -429,9 +429,9 @@ class terrasocr_class extends kernel_extends
 
 class terraip_class extends kernel_extends
 {
-	function _set_features()
+	function init()
 	{
-		parent::_set_features();
+		parent::init();
 		$this->mf_namefields = false;
 		$this->mf_createrid = false;
 		//$this->showinowner=false;// не показывать

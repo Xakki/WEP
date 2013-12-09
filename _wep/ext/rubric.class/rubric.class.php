@@ -2,9 +2,9 @@
 class rubric_class extends kernel_extends
 {
 
-	protected function _set_features()
+	protected function init()
 	{
-		parent::_set_features();
+		parent::init();
 		$this->ver = '0.0.1';
 		$this->mf_istree = true;
 		$this->mf_ordctrl = true;
@@ -209,9 +209,9 @@ class rubric_class extends kernel_extends
 class rubricparam_class extends kernel_extends
 {
 
-	function _set_features()
+	function init()
 	{
-		parent::_set_features();
+		parent::init();
 		$this->mf_ordctrl = true;
 		$this->mf_actctrl = true;
 		$this->caption = 'Параметры';

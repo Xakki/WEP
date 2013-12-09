@@ -64,9 +64,9 @@ class pg_class extends kernel_extends
 		$this->config_form['newadmin_on'] = array('type' => 'checkbox', 'caption' => 'Включить "Новую админку"', 'comment' => 'В последствии к каждому контенту будет создаваться div обертка');
 	}
 
-	function _set_features()
+	function init()
 	{
-		parent::_set_features();
+		parent::init();
 		$this->mf_istree = true;
 		$this->mf_istree_root = true;
 		$this->mf_ordctrl = true;

@@ -2,9 +2,9 @@
 class confighistory_class extends kernel_extends
 {
 
-	function _set_features()
+	function init()
 	{
-		parent::_set_features();
+		parent::init();
 		$this->default_access = '|9|';
 		$this->mf_timecr = true; // создать поле хранящее время создания поля
 

@@ -75,9 +75,9 @@ class ugroup_class extends kernel_extends
 
 	}
 
-	protected function _set_features()
+	protected function init()
 	{
-		parent::_set_features();
+		parent::init();
 
 		$this->mf_actctrl = true;
 		$this->mf_istree = false;
@@ -281,9 +281,9 @@ class ugroup_class extends kernel_extends
 class users_class extends kernel_extends
 {
 
-	function _set_features()
+	function init()
 	{
-		parent::_set_features();
+		parent::init();
 		$this->mf_actctrl = true;
 		$this->fn_login = 'email'; //login or email
 		$this->fn_pass = 'pass';

@@ -14,9 +14,9 @@ define('MAIL_ERROR2', 3);
 class mail_class extends kernel_extends
 {
 
-	function _set_features()
+	function init()
 	{
-		parent::_set_features();
+		parent::init();
 		$this->ver = '0.0.2';
 		$this->reply = 1;
 		$this->contenttype = 'text/html';

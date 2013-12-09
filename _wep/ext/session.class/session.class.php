@@ -1,9 +1,9 @@
 <?php
 class session_class extends kernel_extends
 {
-	function _set_features()
+	function init()
 	{
-		parent::_set_features();
+		parent::init();
 		$this->mf_createrid = 'users_id';
 		$this->mf_ipcreate = true;
 		$this->prm_add = false;

@@ -3,9 +3,9 @@
 class httpproxy_class extends kernel_extends
 {
 
-	function _set_features()
+	function init()
 	{
-		parent::_set_features();
+		parent::init();
 		$this->ver = '0.0.2';
 		$this->mf_actctrl = true;
 		$this->mf_timecr = true;
@@ -298,9 +298,9 @@ class httpproxy_class extends kernel_extends
 class httpproxycheck_class extends kernel_extends
 {
 
-	function _set_features()
+	function init()
 	{
-		parent::_set_features();
+		parent::init();
 		$this->mf_timecr = false;
 		$this->mf_timeup = false;
 		$this->mf_actctrl = false;

@@ -140,10 +140,10 @@ wep.form = {
                                 return true;
                             }
                         }
+                        logResponseText = XMLHttpRequest.responseText;
                         console.error('!!!!!!!!!!!!!!!', XMLHttpRequest, statusText);
                         alert(statusText + ' - Произошла ошибка при получении данныйх от сервера. Обратитесь в службу поддержки саита.');
-                        console.log(XMLHttpRequest);
-                        console.log(XMLHttpRequest.responseText);
+                        // TODO : send log 2 server
                     },
 
                     success: function (result) {

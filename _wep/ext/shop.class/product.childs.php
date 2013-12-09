@@ -2,9 +2,9 @@
 class product_class extends kernel_extends
 {
 
-	protected function _set_features()
+	protected function init()
 	{
-		parent::_set_features();
+		parent::init();
 		$this->ver = '0.0.1';
 		$this->caption = 'Продкция';
 		//$this->mf_statistic = array('Y'=>'count(id)','X'=>'FROM_UNIXTIME(mf_timecr,"%Y-%m")','Yname'=>'Кол','Xname'=>'Дата');//-%d
@@ -1104,9 +1104,9 @@ class product_class extends kernel_extends
 
 class product_value_class extends kernel_extends
 {
-	function _set_features()
+	function init()
 	{
-		parent::_set_features();
+		parent::init();
 		$this->showinowner = false; // не показывать
 		$this->mf_createrid = false;
 		$this->owner_unique = true; // уникальная запис для одного объявления
@@ -1143,9 +1143,9 @@ class product_value_class extends kernel_extends
 
 class product_like_class extends kernel_extends
 {
-	function _set_features()
+	function init()
 	{
-		parent::_set_features();
+		parent::init();
 		//$this->showinowner=false;// не показывать
 		$this->mf_createrid = false;
 		$this->tablename = $this->owner->_cl . '_like';

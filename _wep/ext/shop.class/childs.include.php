@@ -3,9 +3,9 @@
 
 class prodvote_class extends kernel_extends
 {
-	function _set_features()
+	function init()
 	{
-		parent::_set_features();
+		parent::init();
 		$this->showinowner = false; // не показывать
 		$this->mf_ipcreate = true;
 		$this->mf_timecr = true;

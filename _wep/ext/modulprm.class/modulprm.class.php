@@ -8,9 +8,9 @@
 final class modulprm_class extends kernel_extends
 {
 
-	function _set_features()
+	function init()
 	{
-		if (!parent::_set_features())
+		if (!parent::init())
 			return false;
 		$this->mf_ordctrl = true;
 		$this->mf_actctrl = true;
@@ -628,9 +628,9 @@ final class modulprm_class extends kernel_extends
 class modulgrp_class extends kernel_extends
 {
 
-	function _set_features()
+	function init()
 	{
-		if (!parent::_set_features())
+		if (!parent::init())
 			return false;
 		$this->mf_timestamp = true;
 		$this->prm_add = false;

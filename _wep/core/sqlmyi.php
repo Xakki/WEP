@@ -54,7 +54,7 @@ class sqlmyi
 		$temp = $_CFG['wep']['catch_bug'];
 		$_CFG['wep']['catch_bug'] = 0;
 
-		$this->hlink = @mysqli_connect($this->SQL_CFG['host'], $this->SQL_CFG['login'], $this->SQL_CFG['password']);
+		$this->hlink = @mysqli_connect($this->SQL_CFG['host'], $this->SQL_CFG['login'], $this->SQL_CFG['password'], '', $this->SQL_CFG['port']);
 
 		if (!$this->hlink) return false;
 
