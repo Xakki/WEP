@@ -624,7 +624,7 @@ abstract class kernel_extends
 			return 0;
 	}
 
-	protected function _tableClear()
+	public function _tableClear()
 	{
 		$this->SQL->_tableClear($this->tablename);
 	}
