@@ -3,7 +3,7 @@ function tpl_adminmenu(&$data)
 {
 	global $_CFG;
 	$html = '';
-	$html .= '<a class="am_exit" href="' . $_CFG['PATH']['admin'] . 'logout">Выход</a>';
+	$html .= '<a class="am_exit" href="' . ADMIN_BH . 'logout">Выход</a>';
 	$html .= '<a class="am_home" href="/index.html" target="_blank">Главная страница</a>';
 	$sys_r = '';
 	$sys_m = '';
@@ -15,20 +15,20 @@ function tpl_adminmenu(&$data)
 			if ($r['sel'])
 				$sel = ' msel';
 			if (isset($r['css']) and !isset($r['tablename'])) {
-				$over .= '<a class="' . $r['css'] . $sel . '" href="' . $_CFG['PATH']['admin'] . '?_view=list&amp;_modul=' . $k . '">' . $r['name'] . '</a>';
+				$over .= '<a class="' . $r['css'] . $sel . '" href="' . ADMIN_BH . '?_view=list&amp;_modul=' . $k . '">' . $r['name'] . '</a>';
 			}
 			elseif (!$r['tablename']) continue;
 			elseif (
 				(isset($_CFG['require_modul'][$k]) and $_CFG['require_modul'][$k]) or
 				($r['extend'] and isset($_CFG['require_modul'][$r['extend']]) and $_CFG['require_modul'][$r['extend']])
 			) {
-				$sys_r .= '<li class="fly"><a class="main down' . $sel . '" href="' . $_CFG['PATH']['admin'] . '?_view=list&amp;_modul=' . $k . '">' . $r['name'] . '</a></li>';
+				$sys_r .= '<li class="fly"><a class="main down' . $sel . '" href="' . ADMIN_BH . '?_view=list&amp;_modul=' . $k . '">' . $r['name'] . '</a></li>';
 			}
 			elseif ($r['typemodul'] == 0) {
-				$sys_m .= '<li class="fly"><a class="main down' . $sel . '" href="' . $_CFG['PATH']['admin'] . '?_view=list&amp;_modul=' . $k . '">' . $r['name'] . '</a></li>';
+				$sys_m .= '<li class="fly"><a class="main down' . $sel . '" href="' . ADMIN_BH . '?_view=list&amp;_modul=' . $k . '">' . $r['name'] . '</a></li>';
 			}
 			elseif ($r['typemodul'] == 3) {
-				$over_m .= '<li class="fly"><a class="main down' . $sel . '" href="' . $_CFG['PATH']['admin'] . '?_view=list&amp;_modul=' . $k . '">' . $r['name'] . '</a></li>';
+				$over_m .= '<li class="fly"><a class="main down' . $sel . '" href="' . ADMIN_BH . '?_view=list&amp;_modul=' . $k . '">' . $r['name'] . '</a></li>';
 			}
 		}
 		unset($r);
@@ -50,7 +50,7 @@ function tpl_adminmenu(&$data)
 	}
 	$m_ug = $name = _getExtMod('ugroup');
 	$m_u = $name = _getExtMod('users');
-	$html .= '<a class="am_user" href="' . $_CFG['PATH']['admin'] . 'index.php?_view=list&_modul=' . $m_ug . '&' . $m_ug . '_id=' . $data['user']['gid'] . '&' . $m_ug . '_ch=' . $m_u . '&' . $m_u . '_id=' . $data['user']['id'] . '&_type=update">' . $data['user']['name'] . ' [' . $data['user']['gname'] . ']</a>';
+	$html .= '<a class="am_user" href="' . ADMIN_BH . 'index.php?_view=list&_modul=' . $m_ug . '&' . $m_ug . '_id=' . $data['user']['gid'] . '&' . $m_ug . '_ch=' . $m_u . '&' . $m_u . '_id=' . $data['user']['id'] . '&_type=update">' . $data['user']['name'] . ' [' . $data['user']['gname'] . ']</a>';
 
 	return $html . '<div class="clk"></div>';
 }

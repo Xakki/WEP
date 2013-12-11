@@ -47,7 +47,7 @@ else {
 					'sbmt_save' => true,
 					'sbmt_close' => true,
 					'sbmt_del' => true,
-					'firstpath' => MY_BH . $_CFG['PATH']['admin'] . '?_view=list&'
+					'firstpath' => ADMIN_BH . '?_view=list&'
 				);
 //$tt = array();$summ = 0;for($j = 1; $j <= 5; $j++) { $tt[$j] = getmicrotime(); for($i = 1; $i <= 20; $i++) {
 				$MODUL->setFilter(1);
