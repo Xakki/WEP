@@ -1228,25 +1228,16 @@ deny from all
 	 */
 	static function _nestedSets_fullUpdate(&$MODUL, &$mess)
 	{
-		$result = false;
 		if ($MODUL->mf_ordctrl) {
 			$result = $MODUL->qs('id,' . $MODUL->mf_istree . ',' . $MODUL->mf_ordctrl . ',' . $MODUL->ns_config['left'] . ',' . $MODUL->ns_config['root'], 'ORDER BY ' . $MODUL->mf_ordctrl, 'id', $MODUL->mf_istree);
-			$temp = current($result);
 		}
-		if ($result === false || $temp[$MODUL->ns_config['left']])
+		else {
 			$result = $MODUL->qs('id,' . $MODUL->mf_istree . ',' . $MODUL->ns_config['left'] . ',' . $MODUL->ns_config['root'], ' ORDER BY ' . $MODUL->ns_config['left'] . '', 'id', $MODUL->mf_istree);
+		}
 		if (!count($result)) return true;
-//		$cnt = count($result);
-//		$max = $cnt*2;
 
 		self::_nestedSets_fullUpdate_recursive($MODUL, $result);
 
-		// $q = 'UPDATE '.$MODUL->tablename.' set '.$MODUL->ns_config['left'].' = ';
-		// $result = $MODUL->SQL->execSQL($q);
-		// if ($result->err) {
-		// 	$mess[] = array('error', 'Error nestedSets query(' . $rr['@newquery'] . ')');
-		// 	return false;
-		// }
 		return true;
 	}
 

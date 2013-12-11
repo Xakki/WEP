@@ -14,12 +14,11 @@ class rubric_class extends kernel_extends
 		$this->data3 =
 		$this->data2 = array();
 		$this->_dependClass = array('formlist');
-		// $this->v_img = 'img_'.$this->_cl;
-		// $this->_enum['thumb'] = array(
-		// 	'original'=>'original',
-		// 	'resizecrop'=>'resizecrop',
-		// 	'resize'=>'resize'
-		// );
+		$this->v_img = 'img_' . $this->_cl;
+		$this->_enum['thumb'] = array(
+			'original' => 'original',
+			'resizecrop' => 'resizecrop',
+		);
 
 	}
 
@@ -27,34 +26,45 @@ class rubric_class extends kernel_extends
 	{ /*CONFIG*/
 		parent::_create_conf();
 
-		// $this->config['thumbs'] = array(
-		// 	'pref=org_'=> 'original',
-		// 	'w=60;h=;pref=;path='=> 'resizecrop',
-		// );
-		// $this->config['imgsize'] = 3000;
+		$this->config['enable_img'] = false;
 
-		// $this->config_form['thumbs'] = array('type' => 'list', 'listname'=>'thumb', 'multiple'=> FORM_MULTIPLE_KEY, 'caption' => 'Модификации изображений','mask'=>array('maxarr'=>10));
-		// $this->config_form['imgsize'] = array('type' => 'int', 'caption' => 'Максим. размер загружаемых изображений');
+		$this->config['thumbs'] = array(
+			'w=;pref=org_;path=;display=false' => 'original',
+			'w=60;h=;pref=;path=;display=false' => 'resizecrop',
+		);
+		$this->config['imgsize'] = 3000;
+
+		$this->config_form['enable_img'] = array('type' => 'checkbox', 'caption' => 'Разрешить загрузку изображений');
+		$this->config_form['thumbs'] = array('type' => 'list', 'listname' => 'thumb', 'multiple' => FORM_MULTIPLE_KEY, 'caption' => 'Модификации изображений', 'mask' => array('maxarr' => 10));
+		$this->config_form['imgsize'] = array('type' => 'int', 'caption' => 'Максим. размер загружаемых изображений');
 	}
 
 	protected function _create()
 	{
 		parent::_create();
 
-		// $this->attaches[$this->v_img] = array(
-		// 	'mime' => array('image'), 'thumb'=>array(),
-		// 	'maxsize'=>$this->config['imgsize'],
-		// 	'path'=>'');
+		$this->selFields = 't1.id,t1.name,t1.lname as path,t1.parent_id,t1.ordind,t1.checked,t1.active,t1.cnt';
 
-		// foreach($this->config['thumbs'] as $k=>$r) {
-		// 	$k = explode(';',$k);
-		// 	$new = array('type'=>$r);
-		// 	foreach($k as $p) {
-		// 		$p = explode('=',$p);
-		// 		$new[$p[0]] = $p[1];
-		// 	}
-		// 	$this->attaches[$this->v_img]['thumb'][] = $new;
-		// }
+		if ($this->config['enable_img']) {
+			$this->attaches[$this->v_img] = array(
+				'mime' => array('image'), 'thumb' => array(),
+				'maxsize' => $this->config['imgsize'],
+				'path' => '');
+
+			foreach ($this->config['thumbs'] as $k => $r) {
+				$k = explode(';', $k);
+				$new = array('type' => $r);
+				foreach ($k as $p) {
+					$p = explode('=', $p);
+					if ($p[1] != '') {
+						$new[$p[0]] = $p[1];
+					}
+				}
+				$this->attaches[$this->v_img]['thumb'][] = $new;
+			}
+			$this->index_fields[$this->v_img] = $this->v_img;
+			$this->selFields .= ',t1.'.$this->v_img.' as img';
+		}
 
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'min' => '1');
 		$this->fields['lname'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'min' => '1');
@@ -66,9 +76,8 @@ class rubric_class extends kernel_extends
 		$this->unique_fields['name'] = 'name';
 		$this->unique_fields['lname'] = 'lname';
 		$this->index_fields['checked'] = 'checked';
-		//$this->index_fields[$this->v_img] = $this->v_img;
 
-		$this->selFields = 't1.id,t1.name,t1.lname as path,t1.parent_id,t1.ordind,t1.checked,t1.active,t1.cnt'; //,t1.'.$this->v_img.' as img
+
 	}
 
 
@@ -79,7 +88,9 @@ class rubric_class extends kernel_extends
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название рубрики');
 		$this->fields_form['lname'] = array('type' => 'text', 'caption' => 'Название латиницей', 'mask' => array('name' => '/[^0-9A-Za-zА-Яа-яЁё_\- ]/u', 'min' => 2));
 		$this->fields_form['parent_id'] = array('type' => 'list', 'listname' => 'parentlist', 'caption' => 'Родительская рубрика', 'mask' => array('fview' => 1));
-		// $this->fields_form[$this->v_img] = array('type'=>'file','caption'=>'Картинка','del'=>1, 'mask'=>array('height'=>80), 'comment'=>static_main::m('_file_size').$this->attaches[$this->v_img]['maxsize'].'Kb');
+		if ($this->config['enable_img']) {
+			$this->fields_form[$this->v_img] = array('type' => 'file', 'caption' => 'Картинка', 'del' => 1, 'mask' => array('height' => 80), 'comment' => static_main::m('_file_size') . $this->attaches[$this->v_img]['maxsize'] . 'Kb');
+		}
 		$this->fields_form["dsc"] = array("type" => "textarea", "caption" => "Описание", 'mask' => array('name' => 'all'));
 		$this->fields_form["txt"] = array("type" => "ckedit", "caption" => "Полный текст", 'mask' => array('fview' => 1, 'name' => 'all'));
 		$this->fields_form['checked'] = array('type' => 'checkbox', 'caption' => 'Доступ', 'comment' => 'разрешить для выбора в списке');
@@ -132,7 +143,8 @@ class rubric_class extends kernel_extends
 	function fDisplay($start = 0, $select = 0)
 	{
 		$this->fCache();
-		return $this->_forlist($this->data3, $start, $select);
+		$data3 = $this->_forlist($this->data3, $start, $select);
+		return $data3;
 	}
 
 	function getPath($id, $page, $startId = 0)

@@ -6,7 +6,7 @@ function tpl_shopMain(&$data)
 		setCss('/../_shop/style/shopMain');
 
 		$html = '<div class="shopmain">';
-		$html .= tpl_shopmain_rev($data['#item#'], '', $data['#page#']);
+		$html .= tpl_shopmain_rev($data['#item#'][0], '', $data['#page#']);
 		$html .= '</div>';
 	}
 	return $html;

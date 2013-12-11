@@ -17,25 +17,11 @@ if ($_CFG['site']['worktime'] and !canShowAllInfo()) {
 	static_main::downSite(); // Exit()
 }
 
-if (isset($_GET['_php']) and $_GET['_php'] == 'robotstxt') {
-	if (file_exists($_CFG['_PATH']['controllers'] . 'robotstxt.php'))
-		require_once($_CFG['_PATH']['controllers'] . 'robotstxt.php');
-	else
-		require_once($_CFG['_PATH']['wep_controllers'] . 'frontend/robotstxt.php');
-	exit();
-}
-elseif (isset($_GET['_php']) and $_GET['_php'] == '_js') {
+if (isset($_GET['_php']) and $_GET['_php'] == '_js') {
 	if (file_exists($_CFG['_PATH']['controllers'] . '_js.php'))
 		require_once($_CFG['_PATH']['controllers'] . '_js.php');
 	else
 		require_once($_CFG['_PATH']['wep_controllers'] . 'frontend/_js.php');
-	exit();
-}
-elseif (isset($_GET['_php']) and $_GET['_php'] == '_redirect') {
-	if (file_exists($_CFG['_PATH']['controllers'] . '_redirect.php'))
-		require_once($_CFG['_PATH']['controllers'] . '_redirect.php');
-	else
-		require_once($_CFG['_PATH']['wep_controllers'] . 'frontend/_redirect.php');
 	exit();
 }
 elseif (isset($_GET['_php']) and $_GET['_php'] == 'rss') {

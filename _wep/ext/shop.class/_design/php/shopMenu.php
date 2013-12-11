@@ -6,10 +6,8 @@ function tpl_shopMenu(&$data)
 		//$_tpl['styles']['shop'] = array('/'.static_main::relativePath(dirname(dirname(__FILE__))).'/style/menu.css');
 		setCss('/../_shop/style/shopMenu');
 
-		$html = '<div class="shop-menu">
-			' . ($data['#title#'] ? '<h3>' . $data['#title#'] . '</h3>' : '') . '
-			';
-		$html .= tpl_shop_rev($data['#item#'], '', $data['#page#']);
+		$html = '<div class="shop-menu">' . ($data['#title#'] ? '<h3>' . $data['#title#'] . '</h3>' : '') . '';
+		$html .= tpl_shop_rev($data['#item#'][0], '', $data['#page#']);
 		$html .= '</div>';
 	}
 	return $html;

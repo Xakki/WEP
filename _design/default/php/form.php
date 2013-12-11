@@ -288,11 +288,11 @@ function tpl_form(&$data, $tabs = array())
 						$attribute .= ' checked="checked"';
 					$texthtml .= '<label class="form-value checkbox-value">
 						<input type="' . $r['type'] . '" name="' . $k . '" value="1" ' . $attribute . '/>
-						<label class="form-caption">' . $CAPTION . '</label>
+						<span class="form-caption">' . $CAPTION . '</span>
 					</label>';
 				}
 				else {
-					$texthtml .= '<label class="form-caption">' . $CAPTION . '</label>
+					$texthtml .= '<span class="form-caption">' . $CAPTION . '</span>
 						<div class="form-value checkbox-value checkbox-valuelist">';
 					foreach ($r['valuelist'] as $kv => $rv) {
 						$sel = false;

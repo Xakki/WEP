@@ -8,7 +8,7 @@ function tpl_shopMenuImg(&$data)
 		$html = '<div class="shop-menu">
 			' . ($data['#title#'] ? '<h3>' . $data['#title#'] . '</h3>' : '') . '
 			';
-		$html .= tpl_shopMenuImg_rev($data['#item#'], '', $data['#page#']);
+		$html .= tpl_shopMenuImg_rev($data['#item#'][0], '', $data['#page#']);
 		$html .= '</div>';
 	}
 	return $html;
