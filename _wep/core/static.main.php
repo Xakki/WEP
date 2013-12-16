@@ -1536,7 +1536,7 @@ function initShowAllInfo()
 /********************/
 
 function _e($value) {
-	return htmlspecialchars((string) $value, ENT_QUOTES, CHARSET);
+	return htmlspecialchars((string) $value, ENT_QUOTES|ENT_IGNORE, CHARSET);
 }
 
 function _strlen($val)
