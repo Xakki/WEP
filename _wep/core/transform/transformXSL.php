@@ -29,8 +29,8 @@ function transformXSL(&$xml, $transform, $_PATHd = false)
 		$result = xslt_process($_CFG['_xslt'], 'arg:/_xml', 'arg:/_xsl', NULL, $arguments);
 		if (!$result) {
 			trigger_error('Error in Template `' . $transform . '` E[' . xslt_errno($_CFG['_xslt']) . ']:' . xslt_error($_CFG['_xslt']) . '<br/>
-				' . static_main::spoilerWrap('XML', nl2br(htmlspecialchars($xml, ENT_QUOTES, 'UTF-8'))) . '
-				' . static_main::spoilerWrap('XSL', nl2br(htmlspecialchars($xsl, ENT_QUOTES, 'UTF-8'))), E_USER_WARNING);
+				' . static_main::spoilerWrap('XML', nl2br(_e($xml))) . '
+				' . static_main::spoilerWrap('XSL', nl2br(_e($xsl))), E_USER_WARNING);
 			return '';
 		}
 	}

@@ -562,7 +562,7 @@ function tools_sendMail()
 			<lable>Bcc</lable> <input type="text" name="bcc" value="' . $_POST['bcc'] . '"/><br/>
 			<lable>Reply-To</lable> <input type="text" name="Reply-To" value="' . $_POST['Reply-To'] . '"/><br/>
 			<lable>Тема</lable> <input type="text" name="subject" value="' . $_POST['subject'] . '"/><br/>
-			<lable>Текст</lable><br/><textarea name="text" rows="7" cols="50" >' . htmlspecialchars($_POST['text'], ENT_QUOTES, CHARSET) . '</textarea><br/>
+			<lable>Текст</lable><br/><textarea name="text" rows="7" cols="50" >' . _e($_POST['text']) . '</textarea><br/>
 			<br/><input type="submit" name="Пуск"/></form>';
 	return $html;
 }

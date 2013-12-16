@@ -329,7 +329,7 @@ class payqiwi_class extends kernel_extends
 		if ($err === 0)
 			return '-Успешно-';
 		else {
-			trigger_error('Ошибка запроса QIWI `' . $this->_enum['errors'][$err] . '` <pre>' . htmlspecialchars(var_dump($result, true)) . '</pre>', E_USER_WARNING);
+			trigger_error('Ошибка запроса QIWI `' . $this->_enum['errors'][$err] . '` <pre>' . _e(var_dump($result, true)) . '</pre>', E_USER_WARNING);
 			return '-Ошибка-' . $this->_enum['errors'][$err];
 		}
 	}

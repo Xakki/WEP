@@ -171,7 +171,7 @@ function tpl_form(&$data, $tabs = array())
 
 			if ($r['type'] == 'textarea') {
 
-				$texthtml .= '<div class="form-value textarea"><textarea name="' . $k . '" onkeyup="textareaChange(this)" rows="10" cols="80" ' . $attribute . '>' . @htmlspecialchars($r['value'], ENT_QUOTES, $_CFG['wep']['charset']) . '</textarea></div>';
+				$texthtml .= '<div class="form-value textarea"><textarea name="' . $k . '" onkeyup="textareaChange(this)" rows="10" cols="80" ' . $attribute . '>' . _e($r['value']) . '</textarea></div>';
 			}
 			elseif ($r['type'] == 'ckedit') {
 				$_tpl['script'][$_CFG['_HREF']['vendors'] . 'ckeditor/ckeditor.js'] = 1;
@@ -265,7 +265,7 @@ function tpl_form(&$data, $tabs = array())
 				//if(!isset($fields[$ID.'_ckedit']['value']) or $fields[$ID.'_ckedit']['value']=='' or $fields[$ID.'_ckedit']['value']=='1')
 				$_tpl['onload'] .= $fckscript . ' cke_' . $ID . '();';
 
-				$texthtml .= '<div class="form-value ckedit-value"><textarea id="id_' . $ID . '" name="' . $k . '" rows="10" cols="80" ' . $attribute . '>' . @htmlspecialchars((string)$r['value'], ENT_QUOTES, $_CFG['wep']['charset']) . '</textarea></div>';
+				$texthtml .= '<div class="form-value ckedit-value"><textarea id="id_' . $ID . '" name="' . $k . '" rows="10" cols="80" ' . $attribute . '>' . _e($r['value']) . '</textarea></div>';
 			}
 			elseif ($r['type'] == 'radio') {
 				$texthtml .= '<div class="form-value radiolist">';
@@ -360,7 +360,7 @@ function tpl_form(&$data, $tabs = array())
 //					onkeyup="return ajaxlistOnKey(event,this,\''.$ID.'\',\''.$i.'\')"
 				}
 				$texthtml .= '<input type="hidden" id="hsh_' . $k . '" value="' . md5($serl . $_CFG['wep']['md5']) . '"/>
-					<input type="hidden" id="srlz_' . $k . '" value="' . @htmlspecialchars($serl, ENT_QUOTES, $_CFG['wep']['charset']) . '"/>';
+					<input type="hidden" id="srlz_' . $k . '" value="' . _e($serl) . '"/>';
 				if (!isset($r['comment']))
 					$r['comment'] = '';
 				$r['comment'] .= '<div class="ajaxmultiple" onclick="jQuery(\'#tr_' . $ID . ' div.ajaxlist:hidden\').eq(0).show(); if (jQuery(\'#tr_' . $ID . ' div.ajaxlist:hidden\').size() == 0) jQuery(this).hide();">Добавить ' . $r['caption'] . '</div>';
@@ -383,7 +383,7 @@ function tpl_form(&$data, $tabs = array())
 					<input type="hidden" name="' . $k . '" id="' . $ID . '" value="' . $r['value'] . '" ' . $attribute . '/>
 				</div>
 				<input type="hidden" id="hsh_' . $k . '" value="' . md5($serl . $_CFG['wep']['md5']) . '"/>
-				<input type="hidden" id="srlz_' . $k . '" value="' . @htmlspecialchars($serl, ENT_QUOTES, $_CFG['wep']['charset']) . '"/>';
+				<input type="hidden" id="srlz_' . $k . '" value="' . _e($serl) . '"/>';
 				$_tpl['onload'] .= 'setEventAjaxList("#' . $ID . '_2", "#' . $ID . '", "#ajaxlist_' . $ID . '");';
 			}
 			elseif ($r['type'] == 'list' and !$r['readonly']) {
@@ -750,7 +750,7 @@ function tpl_form(&$data, $tabs = array())
 						$(this).ColorPickerSetColor(this.value.substring(1));
 					}
 				});';
-				$texthtml .= '<div class="form-value colorPicker"><input type="text" name="' . $k . '" value="' . @htmlspecialchars($r['value'], ENT_QUOTES, $_CFG['wep']['charset']) . '" ' . $attribute . '/></div>';
+				$texthtml .= '<div class="form-value colorPicker"><input type="text" name="' . $k . '" value="' . _e($r['value']) . '" ' . $attribute . '/></div>';
 			} /*elseif($r['type']=='phone') {
 				$texthtml .= '<div class="form-value" style="font-size:1.2em;">+7(<input type="int" name="'.$k.'[0]" value="" maxlength="3" style="width:27px;"/>) <input type="int" name="'.$k.'[1]" value="" maxlength="3" style="width:27px;"/>
 				<input type="int" name="'.$k.'[2]" value="" maxlength="4" style="width:40px;"/>
@@ -772,7 +772,7 @@ function tpl_form(&$data, $tabs = array())
 
 				if ($r['type'] == 'email')
 					$attribute .= ' x-autocompletetype="' . $r['type'] . '"';
-				$texthtml .= '<div class="form-value"><input type="' . $r['type'] . '" name="' . $k . '" value="' . @htmlspecialchars($r['value'], ENT_QUOTES, $_CFG['wep']['charset']) . '" ' . $attribute . '/></div>';
+				$texthtml .= '<div class="form-value"><input type="' . $r['type'] . '" name="' . $k . '" value="' . _e($r['value']) . '" ' . $attribute . '/></div>';
 			}
 		}
 
@@ -833,7 +833,7 @@ function helper_form_keytype($k, $r, $kval)
 	// }
 
 	else {
-		$html = '<input class="ilist-key" type="' . $r['keytype'] . '" value="' . @htmlspecialchars($kval, ENT_QUOTES, $_CFG['wep']['charset']) . '" onkeyup="wep.form.iList(this,\'' . $k . '\')"/>';
+		$html = '<input class="ilist-key" type="' . $r['keytype'] . '" value="' . _e($kval) . '" onkeyup="wep.form.iList(this,\'' . $k . '\')"/>';
 	}
 	return $html;
 }
@@ -846,7 +846,7 @@ function helper_form_valuetype($k, $r, $kval, $rval, $attribute)
 		$html = '<select class="ilist-val" name="' . $k . '[' . $kval . ']" ' . $attribute . '>' . tpl_formSelect($r['valuelist'], $rval) . '</select>';
 	}
 	else {
-		$html = '<input class="ilist-val" type="text" name="' . $k . '[' . $kval . ']" value="' . @htmlspecialchars($rval, ENT_QUOTES, $_CFG['wep']['charset']) . '" ' . $attribute . '/>';
+		$html = '<input class="ilist-val" type="text" name="' . $k . '[' . $kval . ']" value="' . _e($rval) . '" ' . $attribute . '/>';
 	}
 	return $html;
 }

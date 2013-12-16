@@ -127,7 +127,7 @@ class static_main
 								elseif ($type < 3)
 									$c = 'gray';
 								if ($c != '')*/
-				$text .= '<div class="messelem ' . $r[0] . '">' . htmlspecialchars($r[1], ENT_QUOTES, CHARSET) . '</div>';
+				$text .= '<div class="messelem ' . $r[0] . '">' . _e($r[1]) . '</div>';
 			}
 			$_CFG['logs']['mess'] = array();
 		}
@@ -1534,6 +1534,10 @@ function initShowAllInfo()
 }
 
 /********************/
+
+function _e($value) {
+	return htmlspecialchars((string) $value, ENT_QUOTES, CHARSET);
+}
 
 function _strlen($val)
 {

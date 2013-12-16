@@ -191,8 +191,8 @@ function tpl_filter(&$data)
 					</div>
 				</div>
 				<input type="hidden" name="hsh_' . $name . '" value="' . md5($serl . $_CFG['wep']['md5']) . '"/>
-				<input type="hidden" name="srlz_' . $name . '" value="' . htmlspecialchars($serl, ENT_QUOTES, $_CFG['wep']['charset']) . '"/>
-			  </div>	';
+				<input type="hidden" name="srlz_' . $name . '" value="' . _e($serl) . '"/>
+			  </div>';
 		}
 		elseif ($r['type'] == 'number' or $r['type'] == 'int') {
 			if (!isset($r['placeholder1'])) $r['placeholder1'] = 'от';

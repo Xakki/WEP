@@ -273,7 +273,7 @@ class mail_class extends kernel_extends
 
 	function mailengine0($data)
 	{
-		$data['subject'] = substr(htmlspecialchars(trim($data['subject']), ENT_QUOTES, CHARSET), 0, 1000);
+		$data['subject'] = substr(_e(trim($data['subject'])), 0, 1000);
 		$this->uid = strtoupper(md5(uniqid(time())));
 		$subject = '=?utf-8?B?' . base64_encode($data['subject']) . '?=';
 		$this->config['mailbottom'] = str_replace(array('%host%', '%year%'), array($_SERVER['HTTP_HOST'], date('Y')), $this->config['mailbottom']);
@@ -326,7 +326,7 @@ class mail_class extends kernel_extends
 	function mailengine1($data)
 	{
 		include_once($this->_CFG['_PATH']['vendors'] . 'PHPMailer/class.phpmailer.php');
-		$data['subject'] = substr(htmlspecialchars(trim($data['subject']), ENT_QUOTES, CHARSET), 0, 1000);
+		$data['subject'] = substr(_e(trim($data['subject'])), 0, 1000);
 
 		$PHPMailer = new PHPMailer();
 		$PHPMailer->IsSMTP();

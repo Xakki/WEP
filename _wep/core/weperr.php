@@ -107,7 +107,7 @@ function debugPrint($slice = 1)
 					$args[] = '<b>' . ($v ? 'true' : 'false') . '</b>';
 				else {
 					$v = (string)@$v;
-					$str = htmlspecialchars(substr($v, 0, $MAXSTRLEN));
+					$str = _e(substr($v, 0, $MAXSTRLEN));
 					if (strlen($v) > $MAXSTRLEN)
 						$str .= '...';
 					$args[] = $str;
