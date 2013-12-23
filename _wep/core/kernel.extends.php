@@ -108,6 +108,8 @@ abstract class kernel_extends
 		'root' => 'root_key',
 	);
 
+	public static $_flagcheckmodstruct = true;
+
 	function __construct($owner = NULL, $_forceLoad = false)
 	{
 		global $_CFG;

@@ -745,8 +745,17 @@ class static_tools
 			$rDATA['Ошибка']['@mess'][] = array('error', 'Ошибка инициализации модуля `modulprm`');
 			return array($Mid => $rDATA);
 		}
+
+		$className = $Mid.'_class';
+		if (!$className::$_flagcheckmodstruct) {
+			$rDATA['Ахтунг']['@mess'][] = array('alert', 'Модуль `'.$className.'`[' . $Mid . '] не требует проверки.');
+			return array($Mid => $rDATA);
+		}
+
 		unset($MODULPRM->_CFG['modulprm2'][$Mid]); // Потом Удаляем отсутствующие модули
+
 		list($MODUL, $rDATA['modulprm']['@mess']) = $MODULPRM->ForUpdateModulInfo($Mid, $OWN);
+
 		if ($MODUL === false) {
 			$rDATA['Ошибка']['@mess'][] = array('error', 'Ошибка инициализации модуля `' . $Mid . '`');
 			return array($Mid => $rDATA);

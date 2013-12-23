@@ -250,7 +250,7 @@ class sqlmyi
 
 	public function _tableExists($tablename)
 	{
-		$result = $this->query('SHOW TABLES LIKE "' . $tablename . '"');
+		$result = $this->query('SHOW TABLES LIKE \'' . $tablename . '\'');
 		if ($result && !$result->err && $result) {
 			if ($result->num_rows())
 				return true;
