@@ -2197,7 +2197,6 @@ function ajaxListClear(input, hidden, list) {
 function ajaxlistOnKey(e, input, hidden, list) {
 
     var keyCode = keys_return(e);
-    console.log('ajaxlistOnKey', keyCode);
 
     var flag = $(list).is(':hidden');
 
@@ -2248,7 +2247,6 @@ function ajaxlistOnKey(e, input, hidden, list) {
         return false;
     }
     else {
-        console.log('=', getKeyChar(keyCode));
         ajaxListStop(input);
         timeAction(input, function () {
             ajaxListControl(input, hidden, list);
@@ -2265,7 +2263,6 @@ function ajaxlistOnKey(e, input, hidden, list) {
  * @param list
  */
 function ajaxListControl(input, hidden, list) {
-    console.log('ajaxListControl');
     var defaultListObj = $(list + '_default');
     var listObj = $(list);
     var value = $(input)[0].value;
@@ -2298,7 +2295,6 @@ function ajaxListControl(input, hidden, list) {
                     if ($(input).data('value') != value) {
                         return;
                     }
-                    console.log('ajaxListControl - !!!!!!!!!!!!!!');
 
                     if (_Browser.type == 'IE' && 8 > _Browser.version) {
                         jQuery('select').toggleClass('hideselectforie7', true);
