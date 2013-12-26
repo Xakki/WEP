@@ -220,14 +220,14 @@ class rubric_class extends kernel_extends
 
 class rubricparam_class extends kernel_extends
 {
+	public $mf_ordctrl = true,
+		$mf_actctrl = true,
+		$caption = 'Параметры',
+		$singleton = false;
 
 	function init()
 	{
 		parent::init();
-		$this->mf_ordctrl = true;
-		$this->mf_actctrl = true;
-		$this->caption = 'Параметры';
-		$this->singleton = false;
 		$this->tablename = $this->owner->_cl . '_param';
 		//TODO : Доработать  проблему вызова подкласса 2 раза ".$this->tablename
 	}
@@ -320,7 +320,7 @@ class rubricparam_class extends kernel_extends
 		$this->fields['mask'] = array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['maskn'] = array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['comment'] = array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL', 'default' => '');
-
+		$this->fields["finder"] = array("type" => "tinyint", "width" => 4, "attr" => 'NOT NULL', 'default' => '1');
 		# attaches
 
 		# memo
@@ -345,10 +345,11 @@ class rubricparam_class extends kernel_extends
 		$this->fields_form['maskn'] = array('type' => 'text', 'caption' => 'NoMatch', 'comment' => '(поик не соответствия)', 'mask' => array('name' => 'all'), 'comment' => '/[^0-9A-Za-zЁёА-Яа-я:\/\.\-\_\=\?\&]/u');
 		$this->fields_form['comment'] = array('type' => 'text', 'caption' => 'Комменты', 'mask' => array('name' => 'all'));
 		$this->fields_form['ordind'] = array('type' => 'int', 'caption' => 'ORD', 'mask' => array());
+		$this->fields_form['finder'] = array('type' => 'checkbox', 'caption' => 'Вкл. поиск');
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Активность');
 
 		$this->formSort = array(
-			'Основное' => array('name', 'type', 'typelist', 'formlist', 'edi', 'active'),
+			'Основное' => array('name', 'type', 'typelist', 'formlist', 'edi', 'finder', 'active'),
 			'Дополнительно' => array('owner_id', 'constrn', 'def', 'min', 'max', 'step', 'mask', 'maskn', 'comment', 'ordind'),
 		);
 

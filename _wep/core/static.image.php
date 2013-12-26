@@ -342,13 +342,31 @@ class static_image
 		return array('r' => $r, 'g' => $g, 'b' => $b);
 	}
 
+	/**
+	 * @param $rgb
+	 * @return array
+	 * http://www.javascripter.net/faq/rgb2hsv.htm
+	 */
 	static function rgb2hsv($rgb)
 	{
+		$result = array('h' => 0, 's' => 0, 'v' => 0);
 		list($r, $g, $b) = array_values($rgb);
+
+		if ($r<0 || $g<0 || $b<0 || $r>255 || $g>255 || $b>255) {
+			trigger_error('RGB values must be in the range 0 to 255.', E_USER_NOTICE);
+			return $result;
+		}
+
 		$min = MIN($r, $g, $b);
 		$max = MAX($r, $g, $b);
 		$v = $max; // v
 		$delta = $max - $min;
+
+		if ($delta==0) {
+			$result['v'] = $min;
+			return $result;
+		}
+
 		if ($max != 0)
 			$s = $delta / $max; // s
 		else {
@@ -357,12 +375,14 @@ class static_image
 			$h = -1;
 			return array('h' => $h, 's' => $s, 'v' => $v);
 		}
+
 		if ($r == $max)
 			$h = ($g - $b) / $delta; // between yellow & magenta
 		else if ($g == $max)
 			$h = 2 + ($b - $r) / $delta; // between cyan & yellow
 		else
 			$h = 4 + ($r - $g) / $delta; // between magenta & cyan
+
 		$h *= 60; // degrees
 		if ($h < 0)
 			$h += 360;
