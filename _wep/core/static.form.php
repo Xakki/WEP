@@ -1666,6 +1666,7 @@ class static_form
 	{
 		$list = array(
 			'int' => true,
+            'tinyint' => true,
 			'integer' => true,
 			'double' => true,
 			'number' => true,

@@ -129,12 +129,12 @@ function tpl_form(&$data, $tabs = array())
 
 			$CAPTION = $r['caption'];
 			if (isset($r['mask']['min']) and $r['mask']['min']) {
-				$CAPTION .= '<span class="form-requere">*</span>';
+				$CAPTION .= '<span class="form-require">*</span>';
 				if ($r['type'] != 'ckedit' and !($r['type'] == 'password' and isset($r['mask']['password']) and $r['mask']['password'] == 're')) // в CKEDITORE глюк из за этого
 					$attribute .= ' required="required"';
 			}
 			elseif (isset($r['mask']['min2']) and $r['mask']['min2']) {
-				$CAPTION .= '<span  class="form-requere" data-text="' . $r['mask']['min2'] . '">**</span>';
+				$CAPTION .= '<span  class="form-require" data-text="' . $r['mask']['min2'] . '">**</span>';
 			}
 
 			//if($r['type']=='ckedit' and static_main::_prmUserCheck(1))

@@ -98,7 +98,7 @@ div.divform .div-tr {
 	padding: 0 0 0 5px;
 }
 
-.divform .form-caption .form-requere {
+.divform .form-caption .form-require {
 	color: #F00;
 	cursor: pointer;
 }
@@ -816,6 +816,7 @@ span.labelInput {
 	font-size: 15px;
 	color: #FFF;
 	font-weight: bold;
+    min-width: 50px;
 }
 
 .trgl {

@@ -308,6 +308,7 @@ class rubricparam_class extends kernel_extends
 
 		# fields
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL');
+		$this->fields['nick'] = array('type' => 'varchar', 'width' => 12, 'attr' => 'NOT NULL');
 		$this->fields["type"] = array("type" => "tinyint", "width" => 4, "attr" => 'NOT NULL', 'default' => '0');
 		$this->fields["typelist"] = array("type" => "tinyint", "width" => 4, "attr" => 'NOT NULL', 'default' => '0');
 		$this->fields["formlist"] = array("type" => "tinyint", "width" => 4, "attr" => 'NOT NULL', 'default' => '0');
@@ -321,6 +322,7 @@ class rubricparam_class extends kernel_extends
 		$this->fields['maskn'] = array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['comment'] = array('type' => 'varchar', 'width' => 254, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields["finder"] = array("type" => "tinyint", "width" => 4, "attr" => 'NOT NULL', 'default' => '1');
+		$this->fields["main_param"] = array("type" => "tinyint", "width" => 4, "attr" => 'NOT NULL', 'default' => '0');
 		# attaches
 
 		# memo
@@ -332,6 +334,7 @@ class rubricparam_class extends kernel_extends
 		# fields
 		$this->fields_form['owner_id'] = array('type' => 'list', 'listname' => 'ownerlist', 'caption' => 'Рубрика', 'mask' => array('fview' => 1));
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Название', 'mask' => array('min' => 1));
+		$this->fields_form['nick'] = array('type' => 'text', 'caption' => 'Краткое название', 'mask' => array());
 		$this->fields_form["type"] = array("type" => "list", "listname" => "type", "caption" => "Тип параметра", 'mask' => array('sort' => 1), 'onchange' => 'if(this.value>=50 && this.value<60) jQuery(\'#tr_formlist, #tr_typelist\').show(); else jQuery(\'#tr_formlist, #tr_typelist\').hide();');
 		$this->fields_form['typelist'] = array('type' => 'list', 'listname' => 'typelist', 'caption' => 'Вид списка', 'style' => 'background:#e1e1e1;');
 		$this->fields_form['formlist'] = array("type" => "list", 'listname' => array('tablename' => 'formlist'), 'caption' => 'Список', 'style' => 'background:#e1e1e1;');
@@ -346,10 +349,11 @@ class rubricparam_class extends kernel_extends
 		$this->fields_form['comment'] = array('type' => 'text', 'caption' => 'Комменты', 'mask' => array('name' => 'all'));
 		$this->fields_form['ordind'] = array('type' => 'int', 'caption' => 'ORD', 'mask' => array());
 		$this->fields_form['finder'] = array('type' => 'checkbox', 'caption' => 'Вкл. поиск');
+		$this->fields_form['main_param'] = array('type' => 'checkbox', 'caption' => 'Важный');
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Активность');
 
 		$this->formSort = array(
-			'Основное' => array('name', 'type', 'typelist', 'formlist', 'edi', 'finder', 'active'),
+			'Основное' => array('name', 'nick', 'type', 'typelist', 'formlist', 'edi', 'finder', 'main_param',  'active'),
 			'Дополнительно' => array('owner_id', 'constrn', 'def', 'min', 'max', 'step', 'mask', 'maskn', 'comment', 'ordind'),
 		);
 

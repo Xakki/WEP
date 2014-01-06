@@ -99,9 +99,9 @@ elseif (isset($_GET['shopBasket'])) {
 		if ($deliveryData['paylist'])
 			$SHOPBASKET->allowedPay = explode('|', $deliveryData['paylist']);
 		// Убираем ненужные поля
-		$norequere = $deliveryData['norequere'];
-		$norequere = explode('|', trim($norequere, '|'));
-		$FORM = array_diff_key($FORM, array_flip($norequere));
+		$norequire = $deliveryData['norequire'];
+		$norequire = explode('|', trim($norequire, '|'));
+		$FORM = array_diff_key($FORM, array_flip($norequire));
 		$SHOPBASKET->lang['Save and close'] = 'Сохранить и перейти к оплате';
 		$SHOPBASKET->lang['update_name'] = 'Редактирование заказа';
 		list($DATA['formcreat'], $this->formFlag) = $SHOPBASKET->_UpdItemModul(array(), $FORM);
@@ -193,9 +193,9 @@ elseif (isset($_GET['typedelivery']) and $SHOPBASKET->getSummOrder()) {
 				if ($deliveryData['paylist'])
 					$SHOPBASKET->allowedPay = explode('|', $deliveryData['paylist']);
 				// Убираем ненужные поля
-				$norequere = $deliveryData['norequere'];
-				$norequere = explode('|', trim($norequere, '|'));
-				$FORM = array_diff_key($FORM, array_flip($norequere));
+				$norequire = $deliveryData['norequire'];
+				$norequire = explode('|', trim($norequire, '|'));
+				$FORM = array_diff_key($FORM, array_flip($norequire));
 
 				$UGROUP->needApplyOfferta($FORM);
 

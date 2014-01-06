@@ -41,7 +41,7 @@ wep.form = {
         // });
 
         // Обязательные поля
-        $(selector + ' span.form-requere').unbind('click').click(function () {
+        $(selector + ' span.form-require').unbind('click').click(function () {
             var tx = $(this).attr('data-text');
             if (!tx) tx = 'Данное поле обязательно для заполнения!';
             wep.showHelp(this, tx, 2000, 1)
