@@ -28,7 +28,7 @@ function tpl_shopMenuImg_rev(&$data, $pref = '', $pgid = 0)
 			$sub = '';
 		}
 		if ($r['img']) {
-			$html .= '<img src="' . $r['img'] . '" alt="' . $r['uiname'] . '"/>';
+			$html .= '<img src="/' . $r['img'] . '" alt="' . $r['uiname'] . '"/>';
 		}
 		$html .= '<a href="/' . $pgid . '/' . $r['path'] . '.html" class="' . ($r['#sel#'] ? 'selected' : '') . '">' . $r['uiname'] . '</a>' . $sub . '</li>';
 	}

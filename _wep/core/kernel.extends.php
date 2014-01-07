@@ -2034,7 +2034,7 @@ abstract class kernel_extends
 
 	/**
 	 * Формирует путь к фаилу
-	 * @deprecated Забыли про эту функцию
+	 * @deprecated Забыли про эту функцию , getAttaches
 	 * @param <type> $id
 	 * @param <type> $key
 	 * @param <type> $extValue
@@ -2098,6 +2098,8 @@ abstract class kernel_extends
 	 */
 	public function getAttaches($key, $id, $ext)
 	{
+        if (!$ext)
+            return '';
 		return $this->getPathForAtt($key) . $this->getSubPath($id) . '/' . $id . '.' . $ext;
 	}
 
@@ -2123,6 +2125,8 @@ abstract class kernel_extends
 	 */
 	public function getLocalThumb($imod, $key, $id, $ext)
 	{
+        if (!$ext)
+            return '';
 		return SITE . $this->getThumb($imod, $key, $id, $ext);
 	}
 
@@ -2131,6 +2135,8 @@ abstract class kernel_extends
 	 */
 	public function getThumb($imod, $key, $id, $ext)
 	{
+        if (!$ext)
+            return '';
 		return $this->getPathForThumb($imod, $key) . $this->getSubPath($id) . '/' . $id . '.' . $ext;
 	}
 

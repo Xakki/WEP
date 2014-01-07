@@ -30,7 +30,7 @@ if (!_new_class('shop', $MODUL)) return false;
 
 $html = '';
 
-$MODUL->fCache();
+//$MODUL->fCache();
 
 if (isset($PGLIST->pageParam[0]) and $PGLIST->pageParam[0] and isset($MODUL->data_path[$PGLIST->pageParam[0]]))
 	$select = $MODUL->data_path[$PGLIST->pageParam[0]];

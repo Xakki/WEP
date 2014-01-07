@@ -115,6 +115,11 @@ class rubric_class extends kernel_extends
 		if (!$result->err) {
 			$ar_last = array();
 			while ($row = $result->fetch()) {
+                if ($this->config['enable_img']) {
+                    if ($row['img']) {
+                        $row['img'] = $this->getAttaches($this->v_img, $row['id'], $row['img']);
+                    }
+                }
 				$this->data2[$row['id']] = $row;
 				$this->data[$row['parent_id']][$row['id']] = $row['name'];
 				$this->data3[$row['parent_id']][$row['id']] = & $this->data2[$row['id']];
