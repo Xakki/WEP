@@ -18,7 +18,7 @@ function tpl_shopmain_rev(&$data, $pref = '', $pgid = 0)
 	foreach ($data as $k => $r) {
 		$html .= '<div class="shop_item">';
 		if ($r['img']) {
-			$html .= '<a href="/' . $pgid . '/' . $r['path'] . '.html" class="itemimg"><img src="' . $r['img'] . '" alt="' . $r['uiname'] . '"/></a>';
+			$html .= '<a href="/' . $pgid . '/' . $r['path'] . '.html" class="itemimg"><img src="/' . $r['img'] . '" alt="' . $r['uiname'] . '"/></a>';
 		}
 		$html .= '<a href="/' . $pgid . '/' . $r['path'] . '.html" class="itemname' . ($r['#sel#'] ? ' selected' : '') . '">' . $r['uiname'] . '</a>';
 		/*if(isset($r['#item#']) and count($r['#item#'])) {
