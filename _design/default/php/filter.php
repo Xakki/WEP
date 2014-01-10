@@ -285,7 +285,7 @@ function filterSelectOptionsRender($data, $flag = 0)
 			if (isset($r['#item#']) and count($r['#item#']) and (!isset($r['#checked#']) or $r['#checked#'] == 0))
 				$html .= '<optgroup label="' . $r['#name#'] . '" class="selpad' . $flag . '"></optgroup>';
 			else
-				$html .= '<option value="' . $k . '" ' . ((isset($r['#sel#']) and $r['#sel#']) ? 'selected="selected"' : '') . ' class="selpad' . $flag . '">' . $r['#name#'] . '</option>';
+				$html .= '<option value="' . (isset($r['#id#']) ? $r['#id#'] : $k) . '" ' . ((isset($r['#sel#']) and $r['#sel#']) ? 'selected="selected"' : '') . ' class="selpad' . $flag . '">' . $r['#name#'] . '</option>';
 			if (isset($r['#item#']) and count($r['#item#']))
 				$html .= filterSelectOptionsRender($r['#item#'], ($flag + 1));
 			//.'&#160;--'

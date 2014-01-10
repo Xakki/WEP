@@ -63,7 +63,7 @@ class static_list
 		if (is_array($temp) and !isset($temp['#name#'])) {
 			foreach ($data as $krow => $row) {
 				if (isset($temp2[$krow])) {
-					if (is_array($temp2[$krow]))
+					if (is_array($temp2[$krow]) and isset($temp2[$krow]['#name#']))
 						$adname = $temp2[$krow]['#name#'];
 					else
 						$adname = $temp2[$krow];
@@ -673,13 +673,16 @@ class static_list
 
 			$s[$key] = array('#id#' => $key, '#sel#' => $sel);
 			if (is_array($value)) {
-				foreach ($value as $k => $r)
-					if ($k != '#name#' and $k != '#id#')
+				foreach ($value as $k => $r) {
+                    // чтоб задавать ID
+//					if ($k != '#name#' and $k != '#id#') {
 						$s[$key][$k] = $r;
+//                    }
+                }
 				if (!isset($value['#name#']))
 					$s[$key]['#name#'] = $key;
-				else
-					$s[$key]['#name#'] = $value['#name#']; //_substr($value['name'],0,60).(_strlen($value['name'])>60?'...':'')
+//				else
+//					$s[$key]['#name#'] = $value['#name#']; //_substr($value['name'],0,60).(_strlen($value['name'])>60?'...':'')
 			}
 			else {
 				$s[$key]['#name#'] = $value;
