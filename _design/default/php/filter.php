@@ -160,7 +160,9 @@ function tpl_filter(&$data)
 			if (isset($r['multiple']) and $r['multiple']) {
 				$attr .= ' multiple="multiple" class="multiselectFilter"';
 				plugBootstrapMultiselect('select.multiselectFilter');
-				$attr .= ' name="' . $name . '[]"';
+                if ($name) {
+				    $attr .= ' name="' . $name . '[]"';
+                }
 			}
 			else {
 				$attr .= ' name="' . $name . '"';
