@@ -134,7 +134,7 @@ wep.form = {
                             else {
                                 result['text'] = XMLHttpRequest.responseText;
                             }
-                            if (result['text']) {
+                            if (typeof(result) == 'object') {
                                 // this.success(response, textStatus, XMLHttpRequest);
                                 this.success(result);
                                 return true;
