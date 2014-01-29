@@ -262,6 +262,10 @@ define('FORM_MULTIPLE_SIMPLE', 1);
 define('FORM_MULTIPLE_JQUERY', 2);
 define('FORM_MULTIPLE_KEY', 3);
 
+define('FORM_STATUS_DEFAULT', 0);
+define('FORM_STATUS_ERROR', -1);
+define('FORM_STATUS_OK', 1);
+
 // Source include position
 define('POS_END', 0);
 define('POS_BEGIN', 1);

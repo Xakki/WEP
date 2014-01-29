@@ -2212,44 +2212,11 @@ abstract class kernel_extends
 	}
 
 	/**
-	 * AJAX add data function
-	 * TODO : вынести в отдельный "модуль-контролер"
+	 * @deprecated
 	 */
 	public function AjaxAdd()
 	{
 		exit('AjaxAdd is DEPRICATED');
-		// global $_tpl;
-		// $RESULT = array('html' => '', 'html2' => '', 'text' => '', 'onload' => '');
-		// $DATA = array();
-		// //$htmlb = '';
-
-		// if (count($_POST))
-		// 	$_POST['sbmt'] = 1;
-		// list($DATA['formcreat'], $flag) = $this->_UpdItemModul(array('ajax' => 1, 'errMess' => 1));
-		// $RESULT['html'] = transformPHP($DATA, 'formcreat');
-
-		// if ($flag == 1) {
-		// 	$RESULT['onload'] .= 'clearTimeout(timerid2);fShowload (1,result.html2,0,0,\'location.href = location.href;\');';
-
-		// 	$RESULT['html2'] = '<div class="blockhead ok">' . static_main::m('add', $this) . '</div><div class="hrb">&nbsp;</div>
-		// 	<div class="divform"><div class="messages" style="text-align:justify;">
-		// 	</div></div>';
-		// 	$RESULT['html'] = '';
-		// } elseif ($flag == -1) {
-		// 	//$RESULT['onload'] = 'GetId("messages").innerHTML=result.html2;'.$RESULT['onload'];
-		// 	$RESULT['onload'] = 'jQuery(\'.caption_error\').remove();' . $RESULT['onload'] . 'clearTimeout(timerid2);fShowload(1,result.html2);';
-		// 	$RESULT['html2'] = "<div class='blockhead'>Внимание. Некоректно заполнены поля.</div><div class='hrb'>&#160;</div>" . $RESULT['html'];
-		// 	$RESULT['html'] = '';
-		// } else {
-		// 	$RESULT['onload'] .= 'clearTimeout(timerid2);fShowload(1,result.html2);';
-		// 	$RESULT['html2'] = $RESULT['html'];
-		// 	$RESULT['html'] = '';
-		// }
-		// if (!isset($_SESSION['user']['id']))
-		// 	$RESULT['onload'] .= 'reloadCaptcha(\'captcha\');jQuery(\'input.secret\').attr(\'value\',\'\');';
-		// $RESULT['onload'] .= $_tpl['onload'];
-
-		return $RESULT;
 	}
 
 	public function transliteRuToLat($var, $len = 0)

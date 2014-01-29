@@ -274,7 +274,8 @@ class pay_class extends kernel_extends
 			else {
 				$CHILD = & $this->childs[$payData['pay_modul']];
 				list($data, $resFlag) = $CHILD->billingForm($payData['cost'], $payData['name'], $addInfo);
-				if ($resFlag == 1) {
+
+				if ($resFlag == FORM_STATUS_OK) {
 					$payData['status'] = PAY_NOPAID;
 					$payData['from_user'] = $this->checkPayUsers($payData['pay_modul']); // User плат. системы
 
@@ -292,7 +293,7 @@ class pay_class extends kernel_extends
 						return $this->statusForm($this->id);
 					}
 					else
-						$resFlag = -3;
+						$resFlag = FORM_STATUS_ERROR;
 
 				}
 			}
@@ -345,7 +346,7 @@ class pay_class extends kernel_extends
 	 */
 	public function statusForm($id = null, $checkPermition = null)
 	{
-		$result = array('#resFlag#' => -1);
+		$result = array('#resFlag#' => FORM_STATUS_ERROR, 'flag' => FORM_STATUS_ERROR);
 		if (is_null($id))
 			$id = (int)$_GET['id'];
 		else
@@ -355,6 +356,7 @@ class pay_class extends kernel_extends
 		$data = $this->getItem($id, $checkPermition);
 
 		if (count($data)) {
+            $result['#resFlag#'] = FORM_STATUS_DEFAULT;
 			if (isset($this->childs[$data['pay_modul']])) {
 				$CHILD = & $this->childs[$data['pay_modul']];
 				$result['showFrom'] = $CHILD->statusForm($data);
@@ -362,22 +364,23 @@ class pay_class extends kernel_extends
 
 					$param = array('captchaOn' => true, 'confirmValue' => $id, 'lang' => array('sbmt' => 'Подтверждаю отмену счета'));
 					$result['confirmCancel'] = $this->confirmForm($param);
-					$result['confirmFlag'] = $result['confirmCancel']['flag'];
-					if ($result['confirmFlag'] == 1) {
+                    $result['#resFlag#'] = $result['confirmFlag'] = $result['confirmCancel']['flag'];
+
+                    if ($result['confirmFlag'] == FORM_STATUS_OK) {
 						unset($result['showFrom']);
 						$result['messages'] = $this->canselPay($id);
 						// $result['messages'] = array_merge($result['messages'], $this->canselPay($id));
 					}
-					else
+					else {
 						$result['showStatus'] = $data;
-
+                    }
 				}
 			}
 			else
 				$result['showStatus'] = $data;
 
 			$result['#config#'] = $this->config;
-			$result['#resFlag#'] = 0;
+
 		}
 		$result['tpl'] = '#pay#statusForm';
 		return $result;

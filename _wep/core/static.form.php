@@ -997,7 +997,11 @@ class static_form
 				if (isset($param['errMess'])) {
 					$mess[] = static_main::am('error', $form['caption'] . ': ' . $messages);
 				}
-				if (isset($param['ajax'])) {
+
+                if (static_form::isSubmited($param)==2) { //  если не автосабмит
+                    $mess[] = true; // кастыль , всеравно затиратся массив
+                }
+				elseif (isset($param['ajax'])) { // для аякса
 					$_tpl['onload'] .= 'wep.form.putEMF(\'' . $key . '\',\'' . $messages . '\');'; // запись в форму по ссылке
 				}
 				else {
@@ -1005,7 +1009,7 @@ class static_form
 						$mess[] = static_main::am('error', 'err');
 						trigger_error('Ошибка в элементе hidden, формы модуля ' . $_this->_cl . ' : `' . $form['caption'] . '` ' . $messages, E_USER_WARNING);
 					}
-					elseif (!isset($param['setAutoSubmit']) or $param['setAutoSubmit'] !== 2) // Если это не AutoSubmit
+					else
 					{
 						$form['error'][] = $messages; // запись в форму по ссылке
 					}

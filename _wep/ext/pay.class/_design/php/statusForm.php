@@ -35,7 +35,7 @@ function tpl_statusForm($data)
 	}
 
 	// TODO  - азобраться со статусом, хотяб константы запилить надо
-	if (isset($data['confirmCancel']) and $data['confirmFlag'] < 1 and $pd['status'] < 2) {
+	if (isset($data['confirmCancel']) and $data['confirmFlag'] < 1 and isset($pd) and $pd['status'] < 2) {
 		$data['messages'][] = array('confirmCancel' . ($data['confirmFlag'] < 0 ? ' mustShowBlock' : ''), '<a class="ajaxlink" onclick="$(\'.confirmCancel .divform\').toggle();return false;">Отменить счет</a>
 		' . transformPHP($data['confirmCancel'], '#pg#formcreat'));
 	}
@@ -50,6 +50,7 @@ function tpl_statusForm($data)
 	if (isset($data['showFrom'])) {
 		//unset($data['form']['_info']);
 		$data['showFrom']['ajaxForm'] = false;
+//		$data['showFrom']['flag'] = $data['confirmFlag']; // специально не прописал, чтобы события не вешались на эту форму
 		$html .= transformPHP($data['showFrom'], '#pg#formcreat');
 
 	}

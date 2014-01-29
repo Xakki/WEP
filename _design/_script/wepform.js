@@ -149,12 +149,15 @@ wep.form = {
                     success: function (result) {
                         console.error('!!!! JSFR success', param);
                         // AJAX форма ничего не выводит, а все делается через onload
-                        if (result.formFlag == -1)
+                        if (result.formFlag == -1) {
                             $(jSelector).trigger('errorForm', [result, param]); // Ошибка валидации
-                        else if (result.formFlag == 0)
+                        }
+                        else if (result.formFlag == 0) {
                             $(jSelector).trigger('showForm', [result, param]); // Обычная загрузка формы
-                        else if (result.formFlag == 1)
+                        }
+                        else if (result.formFlag == 1) {
                             $(jSelector).trigger('successForm', [result, param]); // Успешно
+                        }
 
                         wep.ajaxSuccess(result, param);
                     }

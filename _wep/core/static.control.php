@@ -25,7 +25,7 @@ class static_control
 			$param['ajax'] = 1;
 			$param['errMess'] = 1;
 		}
-		$flag = 0; // 1 - успешно, 0 - норм, -1  - ошибка
+		$flag = FORM_STATUS_DEFAULT; // 1 - успешно, 0 - норм, -1  - ошибка
 		$formflag = 1; // 0 - показывает форму, 1 - не показывать форму
 		$arr = array('mess' => array(), 'vars' => array());
 		$mess = array();
@@ -34,7 +34,7 @@ class static_control
 		$submitFlag = static_form::isSubmited($param);
 
 		if (!empty($_this->id) and $_this->id) { //EDIT
-			$flag = -1;
+			$flag = FORM_STATUS_ERROR;
 			if (!isset($_this->data[$_this->id]) or count($_this->data[$_this->id]) < count($_this->fields)) {
 				$listfields = array('*');
 				$clause = ' WHERE id IN (' . $_this->_id_as_string() . ')';
@@ -61,7 +61,7 @@ class static_control
 						if (!count($arr['mess'])) // Если нет сообщений/ошибок то сохраняем обработанные значения
 						{
 							if ($rm = $_this->_update($arr['vars'])) {
-								$flag = 1;
+								$flag = FORM_STATUS_OK;
 								$arr['mess'][] = static_main::am('ok', 'update', array($_this->tablename), $_this);
 								if ($formflag) // кастыль
 								{
@@ -77,11 +77,12 @@ class static_control
 						{
 							$arr['mess'] = array();
 						}
+                        var_dump($arr); exit();
 					}
 				}
 				else {
 					// Вывод формы с данными из БД
-					$flag = 0;
+					$flag = FORM_STATUS_DEFAULT;
 					$tempdata = $_this->data[$_this->id];
 					$mess = $_this->kPreFields($tempdata, $param, $argForm);
 				}
@@ -91,7 +92,7 @@ class static_control
 			else {
 				// Ошибка. Нет данных
 				$arr['mess'][] = static_main::am('error', 'nodata', $_this);
-				$flag = -1;
+				$flag = FORM_STATUS_ERROR;
 			}
 		}
 		else {
@@ -99,18 +100,18 @@ class static_control
 			if (!$_this->_prmModulAdd()) {
 				$arr['mess'][] = static_main::am('error', 'denied_add', $_this);
 				$formflag = 0;
-				$flag = -1;
+				$flag = FORM_STATUS_ERROR;
 			}
 			elseif ($submitFlag) {
 				$DATA = $_POST;
 				$param['is_submit'] = true;
 				$_this->kPreFields($DATA, $param, $argForm);
 				$arr = $_this->fFormCheck($DATA, $param, $argForm);
-				$flag = -1;
+				$flag = FORM_STATUS_ERROR;
 				if (!count($arr['mess'])) // Если нет сообщений/ошибок то сохраняем обработанные значения
 				{
 					if ($rm = $_this->_add($arr['vars'])) {
-						$flag = 1;
+						$flag = FORM_STATUS_OK;
 						$arr['mess'][] = static_main::am('ok', 'add', array($_this->tablename), $_this);
 					}
 					else {
@@ -130,13 +131,13 @@ class static_control
 				static_form::setCaptcha($argForm['captcha']['mask']);
 		}
 
-		if (isset($param['showform']) and $param['showform'] and $flag < 0) // Если стоит флаг showform, то отображаем форму если ошибка
+		if (isset($param['showform']) and $param['showform'] and $flag === FORM_STATUS_ERROR) // Если стоит флаг showform, то отображаем форму если ошибка
 			$formflag = 1;
 		elseif (isset($param['formflag'])) // если стоит флаг formflag, то всегда покажем форму
 			$formflag = $param['formflag'];
-		elseif ($flag == 0) // по умолчанию сразу показываем форму
+		elseif ($flag == FORM_STATUS_DEFAULT) // по умолчанию сразу показываем форму
 			$formflag = 1;
-		elseif (isset($_POST['sbmt']) and $flag == 1) // если успешно выполненно и нажата кнопка "Сохранить"
+		elseif (isset($_POST['sbmt']) and $flag === FORM_STATUS_OK) // если успешно выполненно и нажата кнопка "Сохранить"
 			$formflag = 0;
 		elseif (isset($_POST['sbmt_save']))
 			$formflag = 1;
@@ -147,14 +148,6 @@ class static_control
 			$formflag = $_this->kFields2Form($param, $argForm);
 
 		$options = $_this->getFormOptions();
-
-		// КАСТЫЛЬ
-		// чтоб при автосабмите сразу не выдавал сообщения об ошибках
-		if ($submitFlag === 2 and !count($arr['mess'])) {
-			$flag = 0;
-			global $_tpl;
-			$_tpl['onload'] .= ' clearErrorForm("#' . $options['name'] . '");/*КАСТЫЛЬ static_control:165*/ ';
-		}
 
 		return array(
 			array(

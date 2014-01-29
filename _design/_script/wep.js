@@ -468,12 +468,12 @@ window.wep = {
         }
 
         // WTF?
-        if (typeof(result.param) == 'object') {
-            for (var i in result.param) {
-                param[i] = result.param[i];
-            }
-
-        }
+//        if (typeof(result.param) == 'object') {
+//            for (var i in result.param) {
+//                param[i] = result.param[i];
+//            }
+//
+//        }
 
         wep.helperCallBackFunction(param['precall'], result, param);
 

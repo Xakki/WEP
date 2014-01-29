@@ -628,7 +628,6 @@ function tpl_form(&$data, $tabs = array())
 							<img src="' . $r['src'] . '" class="i_secret i-reload" id="captcha" alt="CARTHA" title="' . $help . '"/>
 						</div>
 					</div>';
-				//$_tpl['onload'] .= ' jQuery(\'.i-reload\').click(function(){reloadCaptcha(\''.$k.'\');}); jQuery(\'#tr_captcha input\').click(function(){wep.setCookie(\'testtest\',1);});';
 			}
 			elseif ($r['type'] == 'file') {
 

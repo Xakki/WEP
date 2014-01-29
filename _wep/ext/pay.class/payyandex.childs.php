@@ -65,6 +65,7 @@ class payyandex_class extends kernel_extends
 	{ /*CONFIG*/
 
 		//parent::_create_conf();
+        //
 		$this->config['actionURL'] = 'https://money.yandex.ru/quickpay/confirm.xml';
 		$this->config['yandex_cid'] = '';
 		$this->config['yandex_token'] = '';
@@ -190,30 +191,34 @@ class payyandex_class extends kernel_extends
 				array('notice', '<small>Если у вас не открылось окно оплаты, возможно ваш браузер заблокировал открытие окна (Ваш браузер должен был выдать предупреждение об этом, кликните на всплывшее сообщение и разрешите данную операцию)</small>'),
 			);
 			$result['options'] = array('name' => 'form_yandex', 'action' => $this->config['actionURL'] . '"  target="_blank');
+            // https://money.yandex.ru/embed/quickpay/shop.xml
 			$result['form'] = array(
-				'FormComment' => array('type' => 'hidden', 'value' => 'Счёт№' . $data['child']['id']), // заголовок у отправителя
+                'label' => array('type' => 'hidden', 'value' => ''),
+                'receiver' => array('type' => 'hidden', 'value' => $this->config['yandex_id']),
+                'quickpay-form' => array('type' => 'hidden', 'value' => 'shop'),
+                'referer' => array('type' => 'hidden', 'value' => ''),
+                'need-email' => array('type' => 'hidden', 'value' => 'true'),
+                'targets' => array('type' => 'hidden', 'value' => 'Счёт№' . $data['child']['owner_id']), // Сообщение получателю
+                'sum' => array('type' => 'hidden', 'value' => $data['child']['cost']),
+				'FormComment' => array('type' => 'hidden', 'value' => 'Unidoski.ru - Счёт №' . $data['child']['owner_id']), // заголовок у отправителя
+
 				'comment-needed' => array('type' => 'hidden', 'value' => 'false'), // не нужны коменты, ТОДУЖ брать опцию из конфига
-				'label' => array('type' => 'hidden', 'value' => 'true'), //
-				'mail' => array('type' => 'hidden', 'value' => '1'),
-				'quickpay-form' => array('type' => 'hidden', 'value' => 'shop'),
-				'receiver' => array('type' => 'hidden', 'value' => $this->config['yandex_id']),
-				'short-dest' => array('type' => 'hidden', 'value' => $data['name']), // Комментарий у отправителя
-				'submit-button' => array('type' => 'hidden', 'value' => 'Оплатить'),
-				'sum' => array('type' => 'hidden', 'value' => $data['child']['cost']),
-				'targets' => array('type' => 'hidden', 'value' => 'Счёт№' . $data['child']['id']), // Сообщение получателю
+//				'mail' => array('type' => 'hidden', 'value' => '1'), // требует подробные данные
+				'short-dest' => array('type' => 'hidden', 'value' => 'Unidoski - '.$data['name']), // Комментарий у отправителя
 				'writable-targets' => array('type' => 'hidden', 'value' => 'false'),
-				'writable-sum' => array('type' => 'hidden', 'value' => 'true'),
+				'writable-sum' => array('type' => 'hidden', 'value' => 'false'),
 				'writable-targets' => array('type' => 'hidden', 'value' => 'false'),
 
 				//'p2payment'=>array('type'=>'hidden','value'=>$this->id),
 				//'destination'=>array('type'=>'hidden','value'=>$this->id),
 				//'codepro'=>array('type'=>'hidden','value'=>$this->id),
+
+                'submit-button' => array('type' => 'hidden', 'value' => 'Оплатить'),
 			);
 
 			$result['form']['sbmt'] = array('type' => 'submit', 'value' => 'Перейти на ' . $this->caption . ' для оплаты счета');
-			$result['messages'][] = array('autoClick', '<a title="Отменить" id="autoClick">Автоматический переход через <i>5</i> сек.</a>');
-			global $_tpl;
-			$_tpl['onload'] .= 'wep.timerFunction(function(){$("#form_yandex").submit();}, \'#autoClick\', \'#form_yandex .sbmt\');';
+			$result['messages'][] = array('autoClick', '<a title="Отменить" id="autoClick">Автоматический переход через <i>3</i> сек.</a><script>wep.timerFunction(function(){$("#form_yandex").submit();}, "#autoClick", "#form_yandex .sbmt");</script>');
+			// $_tpl['onload'] - здесь нельзя использовать
 		}
 
 		return $result;
@@ -469,7 +474,7 @@ class payyandex_class extends kernel_extends
 		foreach ($temp as $r) {
 			//$key = preg_replace('/[^0-9A-zА-я\:\;\№]+/ui', '', 'Счёт№'.$r['id'].'; '.$r['name']);
 			//$key = trim($key,';:№,.\s');
-			$DATA[$r['id']] = $r;
+			$DATA[$r['owner_id']] = $r;
 		}
 
 		$CNT = count($DATA);
