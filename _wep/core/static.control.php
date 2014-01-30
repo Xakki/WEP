@@ -75,9 +75,9 @@ class static_control
 						}
 						elseif ($submitFlag === 2) //Если в результате автосабмита данные оказались не валидными, то не выводим сообщения
 						{
+                            $flag = FORM_STATUS_DEFAULT;
 							$arr['mess'] = array();
 						}
-                        var_dump($arr); exit();
 					}
 				}
 				else {
@@ -122,6 +122,7 @@ class static_control
 				}
 				elseif ($submitFlag === 2) //Если в результате автосабмита данные оказались не валидными, то не выводим сообщения
 				{
+                    $flag = FORM_STATUS_DEFAULT;
 					$arr['mess'] = array();
 				}
 			}

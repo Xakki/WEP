@@ -994,12 +994,12 @@ class static_form
 
 				$arr_err_name[$key] = $key;
 
-				if (isset($param['errMess'])) {
-					$mess[] = static_main::am('error', $form['caption'] . ': ' . $messages);
+				if (isset($param['errMess']) || static_form::isSubmited($param)==2) {
+					$mess[] = static_main::am('error', ($row == 31 ? '' : $form['caption'] . ': ') . $messages); // ошибка капчи без заголовка
 				}
 
                 if (static_form::isSubmited($param)==2) { //  если не автосабмит
-                    $mess[] = true; // кастыль , всеравно затиратся массив
+                    // todo - ужасный кастыль, убрать
                 }
 				elseif (isset($param['ajax'])) { // для аякса
 					$_tpl['onload'] .= 'wep.form.putEMF(\'' . $key . '\',\'' . $messages . '\');'; // запись в форму по ссылке

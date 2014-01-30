@@ -88,7 +88,7 @@ function tpl_formcreat(&$data)
 
 	}
 
-    if ($data['flag'] !== FORM_STATUS_DEFAULT and isset($data['form']['captcha'])) // !isset($_SESSION['user']['id'])
+    if ($data['flag'] !== FORM_STATUS_DEFAULT) // !isset($_SESSION['user']['id'])
         $_tpl['onload'] .= 'reloadCaptcha(\'captcha\');';
 
 	if (isset($data['flag']) and isset($data['options'])) {

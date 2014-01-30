@@ -361,7 +361,6 @@ function textareaChange(obj, max) {
 }
 
 function reloadCaptcha(id, noclear) {
-    console.error('reloadCaptcha', id, noclear);
     if (!jQuery('#' + id).size()) return false;
     jQuery('#' + id).attr('src', "/_captcha.php?" + toInt(Math.random() * 100));
     if (!noclear)
