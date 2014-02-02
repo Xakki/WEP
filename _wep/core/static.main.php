@@ -1623,14 +1623,14 @@ function _chmod($file, $mode = null)
 	chmod($file, $mode);
 }
 
-function hasPost($name)
+function _hasPost($name)
 {
 	return (isset($_POST[$name]) && $_POST[$name]);
 }
 
-function hasGet($name)
+function _hasGet($name)
 {
-	return (isset($_POST[$name]) && $_POST[$name]);
+	return (isset($_GET[$name]) && $_GET[$name]);
 }
 
 /********************/

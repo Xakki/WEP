@@ -31,9 +31,9 @@ if (!$USERS) $USERS = & $UGROUP->childs['users'];
 $PARAM = array('timer' => $FUNCPARAM[1]);
 
 $html = '';
-if (hasGet('id') and $_GET['t'] != '' and $_GET['hash'] != '') {
+if (_hasGet('id') and $_GET['t'] != '' and $_GET['hash'] != '') {
 	$PARAM['get'] = $_GET;
-	if (hasPost('fpass'))
+	if (_hasPost('fpass'))
 		$PARAM['pass'] = $_POST['fpass'];
 	$PARAM['re_pass'] = (isset($_POST['re_fpass']) ? $_POST['re_fpass'] : '');
 	list($flag, $DATA) = $USERS->remindSET($PARAM);
