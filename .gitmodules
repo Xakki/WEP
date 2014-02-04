@@ -31,3 +31,6 @@
 [submodule "_vendors/bootstrap-multiselect"]
 	path = _vendors/bootstrap-multiselect
 	url = https://github.com/Xakki/bootstrap-multiselect.git
+[submodule "_vendors/syntaxhighlighter"]
+	path = _vendors/syntaxhighlighter
+	url = https://github.com/alexgorbatchev/syntaxhighlighter.git
