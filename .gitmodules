@@ -16,8 +16,8 @@
 [submodule "_vendors/PHPMailer"]
 	path = _vendors/PHPMailer
 	url = https://github.com/PHPMailer/PHPMailer.git
-[submodule "_vendors/SyntaxHighlighter"]
-	path = _vendors/SyntaxHighlighter
+[submodule "_vendors/syntaxhighlighter"]
+	path = _vendors/syntaxhighlighter
 	url = https://github.com/alexgorbatchev/syntaxhighlighter.git
 [submodule "_vendors/fancyBox"]
 	path = _vendors/fancyBox
@@ -31,6 +31,3 @@
 [submodule "_vendors/bootstrap-multiselect"]
 	path = _vendors/bootstrap-multiselect
 	url = https://github.com/Xakki/bootstrap-multiselect.git
-[submodule "_vendors/syntaxhighlighter"]
-	path = _vendors/syntaxhighlighter
-	url = https://github.com/alexgorbatchev/syntaxhighlighter.git
