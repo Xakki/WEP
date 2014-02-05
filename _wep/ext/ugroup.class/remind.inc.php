@@ -51,7 +51,7 @@ if (_hasGet('id') and $_GET['t'] != '' and $_GET['hash'] != '') {
 }
 else {
 	$flag = 0;
-	if (hasPost('mail')) {
+	if (_hasPost('mail')) {
 		$PARAM['post'] = $_POST;
 		list($flag, $DATA) = $USERS->remindSEND($PARAM);
 		$DATA = array($FUNCPARAM[0] => $DATA);
