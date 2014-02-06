@@ -1151,7 +1151,7 @@ abstract class kernel_extends
 					$val = '';
 
 				if (substr($eval, -1) != ';') {
-					$eval = '"' . addcslashes($eval, '"') . '";';
+					$eval = '\'' . addcslashes($eval, '\'') . '\';';
 				}
 				$eval = '$f_data[$k]=' . $eval;
 				eval($eval);
