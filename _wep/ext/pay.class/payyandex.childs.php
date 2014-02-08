@@ -542,9 +542,9 @@ class payyandex_class extends kernel_extends
 		$this->owner->clearOldData($this->_cl, $leftTime);
 	}
 
-	function cancelPay()
+	function cancelPay($owner_id)
 	{
-		$this->_updateByOwner(array('status' => 'usercancel', $this->mf_actctrl => 0));
+		$this->_update(array('status' => 'usercancel', $this->mf_actctrl => 0), array('owner_id' => $owner_id));
 	}
 }
 

@@ -396,7 +396,7 @@ class pay_class extends kernel_extends
 		$this->id = $id;
 		$upd = array('status' => $status);
 		if ($this->_update($upd)) {
-			$CHILD->cancelPay();
+			$CHILD->cancelPay($id);
 			$messages[] = array('ok', 'Счет #' . $id . ' успешно отменен!');
 			if ($status == PAY_USERCANCEL)
 				$this->saveLog($id, 'Счет #' . $id . ' отменен пользователем!');
