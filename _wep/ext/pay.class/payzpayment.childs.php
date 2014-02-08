@@ -15,7 +15,7 @@ class payzpayment_class extends kernel_extends
 		//$this->pay_systems = true; // Это модуль платёжной системы
 		$this->showinowner = false;
 
-		$this->caption = 'Платежи Z-payment';
+		$this->caption = 'Платежи Z-payment - ALPHA';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';
 
 		$this->ver = '0.1';

@@ -368,8 +368,7 @@ class pay_class extends kernel_extends
 
                     if ($result['confirmFlag'] == FORM_STATUS_OK) {
 						unset($result['showFrom']);
-						$result['messages'] = $this->canselPay($id);
-						// $result['messages'] = array_merge($result['messages'], $this->canselPay($id));
+						$result['messages'] = $this->cancelPay($id, $CHILD);
 					}
 					else {
 						$result['showStatus'] = $data;
@@ -390,12 +389,14 @@ class pay_class extends kernel_extends
 	 * Отменить счет
 	 * status production
 	 */
-	protected function canselPay($id, $status = PAY_USERCANCEL)
+	protected function cancelPay($id, $CHILD)
 	{
+		$status = PAY_USERCANCEL;
 		$messages = array();
 		$this->id = $id;
 		$upd = array('status' => $status);
 		if ($this->_update($upd)) {
+			$CHILD->cancelPay();
 			$messages[] = array('ok', 'Счет #' . $id . ' успешно отменен!');
 			if ($status == PAY_USERCANCEL)
 				$this->saveLog($id, 'Счет #' . $id . ' отменен пользователем!');

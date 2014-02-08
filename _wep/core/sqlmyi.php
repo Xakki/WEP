@@ -224,7 +224,7 @@ class sqlmyi
 			foreach ($MODUL->index_fields as $k => $r) {
 				if (!isset($MODUL->unique_fields[$k])) {
 					if (is_array($r))
-						$r = implode(',', $r);
+						$r = implode('`,`', $r);
 					$fld[] = 'KEY `' . $k . '` (`' . $r . '`)';
 				}
 			}

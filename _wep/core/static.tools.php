@@ -747,7 +747,7 @@ class static_tools
 		}
 
 		$className = $Mid.'_class';
-		if (!$className::$_flagcheckmodstruct) {
+		if (class_exists($className, false) and !$className::$_flagcheckmodstruct) {
 			$rDATA['Ахтунг']['@mess'][] = array('alert', 'Модуль `'.$className.'`[' . $Mid . '] не требует проверки.');
 			return array($Mid => $rDATA);
 		}

@@ -28,6 +28,7 @@ class payyandex_class extends kernel_extends
 			'success' => 'Успешное выполнение.',
 			'refused' => 'Отказ в проведении платежа, объяснение причины отказа содержится в поле error. Это конечное состояние платежа.',
 			'timeout' => 'Время действия платежа истекло',
+			'usercancel' => 'Отклонено пользователем',
 		);
 
 		$this->_enum['error'] = array(
@@ -469,7 +470,7 @@ class payyandex_class extends kernel_extends
 	function checkBill()
 	{
 
-		$temp = $this->qs('*', 'WHERE status=""', 'name');
+		$temp = $this->qs('*', 'WHERE active=1 and status=""', 'name');
 		$DATA = array();
 		foreach ($temp as $r) {
 			//$key = preg_replace('/[^0-9A-zА-я\:\;\№]+/ui', '', 'Счёт№'.$r['id'].'; '.$r['name']);
@@ -539,6 +540,11 @@ class payyandex_class extends kernel_extends
 		$leftTime = ($this->config['lifetime'] * 3600);
 		$this->_update(array('status' => 'timeout', $this->mf_actctrl => 0), 'WHERE status="" and ' . $this->mf_timecr . '<"' . (time() - $leftTime) . '"');
 		$this->owner->clearOldData($this->_cl, $leftTime);
+	}
+
+	function cancelPay()
+	{
+		$this->_updateByOwner(array('status' => 'usercancel', $this->mf_actctrl => 0));
 	}
 }
 

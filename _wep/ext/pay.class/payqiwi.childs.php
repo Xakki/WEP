@@ -304,7 +304,7 @@ class payqiwi_class extends kernel_extends
 	{
 		$this->clearOldData();
 
-		$bills = $this->_query('*', 'WHERE statuses<60');
+		$bills = $this->_query('*', 'WHERE active=1 and statuses<60');
 		if (!count($bills)) return '-нет выставленных счетов-';
 
 		$x = '<?xml version="1.0" encoding="utf-8"?><request>';
@@ -348,6 +348,11 @@ class payqiwi_class extends kernel_extends
 		$this->_update(array('statuses' => '161', $this->mf_actctrl => 0), 'WHERE statuses<60 and ' . $this->mf_timecr . '<"' . (time() - $leftTime) . '"');
 
 		$this->owner->clearOldData($this->_cl, $leftTime);
+	}
+
+	function cancelPay()
+	{
+		$this->_updateByOwner(array('status' => self::STATUS_CANCE_BY_USER, $this->mf_actctrl => 0));
 	}
 }
 

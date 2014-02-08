@@ -16,7 +16,7 @@ class payrobox_class extends kernel_extends
 		//$this->pay_systems = true; // Это модуль платёжной системы
 		$this->showinowner = false;
 
-		$this->caption = 'Платежи Робо кассы';
+		$this->caption = 'Платежи Робо кассы - ALPHA';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';
 		$this->ver = '0.1';
 	}

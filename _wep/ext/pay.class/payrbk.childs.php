@@ -1,13 +1,15 @@
 <?php
 class payrbk_class extends kernel_extends
 {
-	static $STATUS_PROCESS = 3;
-	static $STATUS_SUCCESS = 5;
+	const STATUS_PROCESS = 3;
+	const STATUS_SUCCESS = 5;
+	const STATUS_CANCEL_BY_USER = 8;
+	const STATUS_CANCEL_BY_TIMEOUT = 9;
 
 	function init()
 	{
 		parent::init();
-		$this->caption = 'RBK.Money';
+		$this->caption = 'RBK.Money - BETA';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';
 		$this->default_access = '|9|';
 		$this->mf_timecr = true; // создать поле хранящее время создания поля
@@ -49,8 +51,9 @@ class payrbk_class extends kernel_extends
 		);
 
 		$this->_enum['paymentStatus'] = array(
-			self::$STATUS_PROCESS => 'Операция принята на обработку',
-			self::$STATUS_SUCCESS => 'Операция исполнена',
+			self::STATUS_PROCESS => 'Операция принята на обработку',
+			self::STATUS_SUCCESS => 'Операция исполнена',
+			self::STATUS_CANCEL_BY_USER => 'Операция отклонена пользователем',
 		);
 
 		$this->_enum['language'] = array(
@@ -243,12 +246,15 @@ class payrbk_class extends kernel_extends
 			$crc = md5($string);
 
 			if ($response['hash'] == $crc) {
+				list($dataBill) = $this->qs('*', array('id' => $response['orderId']));
 				switch ($response['paymentStatus']) {
-					case self::$STATUS_PROCESS:
+					case self::STATUS_PROCESS:
+						 $this->owner->payTransaction($dataBill['owner_id'], PAY_PAID);
 						/*uc_order_update_status($response['orderId'], 'processing');
 						uc_order_comment_save($response['orderId'], $order->uid, t('RBK Money: payment processing'), $type = 'admin', $status = 1, $notify = FALSE);*/
 						break;
-					case self::$STATUS_SUCCESS:
+					case self::STATUS_SUCCESS:
+						 $this->owner->payTransaction($dataBill['owner_id'], PAY_PAID);
 						/*uc_payment_enter($response['orderId'], 'RBK Money', $order->order_total, $order->uid, NULL, NULL);
 						uc_cart_complete_sale($order);
 						uc_order_comment_save($response['orderId'], $order->uid, t('RBK Money: payment successful'), $type = 'admin', $status = 1, $notify = FALSE);*/
@@ -273,8 +279,13 @@ class payrbk_class extends kernel_extends
 	function clearOldData()
 	{
 		$leftTime = ($this->config['lifetime'] * 3600);
-		$this->_update(array('status' => 'timeout', $this->mf_actctrl => 0), 'status="" and ' . $this->mf_timecr . '<"' . (time() - $leftTime) . '"');
+		$this->_update(array('status' => self::STATUS_CANCEL_BY_TIMEOUT, $this->mf_actctrl => 0), 'status="" and ' . $this->mf_timecr . '<"' . (time() - $leftTime) . '"');
 		$this->owner->clearOldData($this->_cl, $leftTime);
+	}
+
+	function cancelPay()
+	{
+		$this->_updateByOwner(array('status' => self::$STATUS_CANCEL_BY_USER, $this->mf_actctrl => 0));
 	}
 }
 
