@@ -1379,7 +1379,7 @@ deny from all
 			),
 			'HTTPHEADER' => array('Content-Type' => 'text/xml; encoding=utf-8'),
 			'redirect' => false,
-			'USERAGENT' => 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/' . rand(50, 190) . ' (KHTML, like Gecko) Chrome/' . rand(9, 16) . '.0.8' . rand(1, 99) . '.121 Safari/535.2',
+			'USERAGENT' => 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/' . rand(50, 190) . ' (KHTML, like Gecko) Chrome/' . rand(9, 32) . '.0.' . rand(10, 99) . '00.' . rand(1, 200) . '',
 			'TIMEOUT' => 20,
 			'REFERER' => false,
 			'POST' => false,

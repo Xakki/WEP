@@ -9,7 +9,6 @@ class paynxtcoin_class extends kernel_extends
 	const STATUS_CANCEL_BY_USER = 4;
 	const STATUS_CANCEL_BY_TIMEOUT = 5;
 
-
 	function _create_conf()
 	{
 		parent::_create_conf();
@@ -65,6 +64,7 @@ class paynxtcoin_class extends kernel_extends
 		);
 
 		$this->cron[] = array('modul' => $this->_cl, 'function' => 'checkBill()', 'active' => 1, 'time' => 300);
+		$this->cron[] = array('modul' => $this->_cl, 'function' => 'checkRateCron()', 'active' => 1, 'time' => 10000);
 
 	}
 
@@ -101,7 +101,7 @@ class paynxtcoin_class extends kernel_extends
 //		$this->owner->setPostData('email', $data);
 
 		$argForm = array();
-		$argForm['info'] = array('type' => 'info', 'caption' => 'По курсу 1руб. = '.$this->config['rate'].' Nxt <br/> Сумма к зачислению <b>'.($summ * $this->config['rate']).'</b> Nxt');
+		$argForm['info'] = array('type' => 'info', 'caption' => 'По курсу 1руб. = '.$this->config['rate'].' Nxt <br/> Сумма к зачислению <b>'.round(($summ * $this->config['rate']), 0, PHP_ROUND_HALF_UP).'</b> Nxt');
 		$argForm['from'] = array('type' => 'text', 'caption' => 'Номер кошелька', 'comment'=> 'С которого будет оплачен счет.', 'mask' => array('min' => 5));
 		$argForm['name'] = array('type' => 'hidden', 'readonly' => 1, 'mask' => array('eval' => $comm)); // иначе name не попадает в БД
 		if ($summ > 0)
@@ -126,7 +126,7 @@ class paynxtcoin_class extends kernel_extends
 
 	public function _add($data = array(), $flag_select = true, $flag_update = false)
 	{
-		$cost = $data['cost'] * $this->config['rate'];
+		$cost = round( ($data['cost'] * $this->config['rate']), 0, PHP_ROUND_HALF_UP);
 		$data2 = array(
 			'from' => $data['from'],
 			'cost' => $cost,
@@ -186,10 +186,6 @@ class paynxtcoin_class extends kernel_extends
 				$aList[$transaction->sender][$transactionId] = $transaction;
             }
         }
-
-//		print_r('<pre>');
-//		print_r($tList);
-//		exit();
 
 		foreach($bills as $dataBill) {
 			$idBill = $dataBill['id'];
@@ -278,6 +274,77 @@ class paynxtcoin_class extends kernel_extends
 	function cancelPay($owner_id)
 	{
 		$this->_update(array('status' => self::STATUS_CANCEL_BY_USER, $this->mf_actctrl => 0), array('owner_id' => $owner_id));
+	}
+
+
+	function checkRateCron()
+	{
+		$nxt_btc = $this->getRateNxtBtc();
+		$btc_rur = $this->getRateBtcRur();
+		$costRub = round(($nxt_btc*$btc_rur), 2, PHP_ROUND_HALF_DOWN);
+		$costNxt = round( (1.4/($costRub)), 1, PHP_ROUND_HALF_UP); //-40%
+		$dif = abs(($costNxt*10-$this->config['rate']*10));
+		$html = '<div>'.$nxt_btc.'btc</div> '.
+			'<div>'.$btc_rur.' руб</div>'.
+			'<div>1nxt -> '.$costRub.' руб</div>'.
+			'<div>1руб -> '.$costNxt.' nxt</div>'.
+			'<div>DIF '.($dif/10).'</div>';
+
+		if ( $dif >= 2 ) {
+			_new_class('mail', $MAIL);
+			$datamail['mail_to'] = $this->_CFG['info']['email'];
+			$datamail['subject'] = '**' . strtoupper($_SERVER['HTTP_HOST']).' - изменился курс';
+			$datamail['text'] = $html;
+			$MAIL->reply = 0;
+			$MAIL->Send($datamail);
+		}
+
+		return $html;
+	}
+
+	function getRateNxtBtc()
+	{
+		$result = $result_text = @file_get_contents('http://bter.com/api/1/ticker/nxt_btc/');
+
+		if (!$result) {
+			trigger_error($this->_cl.' - Ошибка получения информации о курсах - "'.$result.'"', E_USER_WARNING);
+			exit();
+		}
+
+		$result = json_decode($result);
+
+		if (!$result || !$result->result) {
+			trigger_error($this->_cl.' - Ошибка получения информации о транзакций - "'.$result_text.'"', E_USER_WARNING);
+			exit();
+		}
+
+		return $result->buy;
+	}
+
+	function getRateBtcRur()
+	{
+//		$url = 'https://api.bitcoinaverage.com/exchanges/RUB';
+		$url = 'https://btc-e.com/api/2/btc_rur/ticker';
+		$result = static_tools::_http($url);
+
+
+		if (!$result or $result['err']) {
+			trigger_error($this->_cl.' - Ошибка получения информации о курсах - "'.$result['err'].'"', E_USER_WARNING);
+			exit();
+		}
+
+		$data = json_decode($result['text']);
+
+		if (!$data || !$data->ticker) {
+			trigger_error($this->_cl.' - Ошибка получения информации о транзакций - "'.var_dump($result).'"', E_USER_WARNING);
+			exit();
+		}
+//
+//		print_r('<pre>');
+//		print_r($data);
+//		exit();
+
+		return $data->ticker->buy;
 	}
 }
 
