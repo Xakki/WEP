@@ -1391,8 +1391,16 @@ deny from all
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $link); //задаём url
 
-		if (isset($param['COOKIE']))
-			curl_setopt($ch, CURLOPT_COOKIE, $param['COOKIE']);
+		if (isset($param['COOKIE'])) {
+			if (is_array($param['COOKIE'])) {
+				foreach ($param['COOKIE'] as $cookie) {
+					curl_setopt($ch, CURLOPT_COOKIE, $cookie);
+				}
+			}
+			else {
+				curl_setopt($ch, CURLOPT_COOKIE, $param['COOKIE']);
+			}
+		}
 
 		if (isset($param['COOKIEFILE'])) // Считываем из фаила
 			curl_setopt($ch, CURLOPT_COOKIEFILE, $param['COOKIEFILE']);

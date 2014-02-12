@@ -1,5 +1,5 @@
 <?php
-class paybtccoin_class extends kernel_extends
+class paydogecoin_class extends kernel_extends
 {
 
 	const STATUS_NOYET = 0;
@@ -18,13 +18,13 @@ class paybtccoin_class extends kernel_extends
 		$this->config['account'] = '';
 		$this->config['API_GET_TRANSACTION_LIST'] = 'https://blockchain.info/address/{val}?format=json';
 		$this->config['API_GET_TRANSACTION_INFO'] = 'https://blockchain.info/ru/tx/{val}?format=json';
-        $this->config['minpay'] = 40000;
+        $this->config['minpay'] = 10;
         $this->config['maxpay'] = PHP_INT_MAX;
         $this->config['lifetime'] = 1080;
         $this->config['rate'] = 500;
 
 		$this->config_form['account'] = array('type' => 'text', 'caption' => 'Кошелек');
-		$this->config_form['rate'] = array('type' => 'text', 'caption' => 'Курс к рублю', 'comment' => 'в Satoshi , 0.000 000 01 BTC '); // 1nxt = 0.00007 btc = 1,75 руб
+		$this->config_form['rate'] = array('type' => 'text', 'caption' => 'Курс к рублю', 'comment' => 'в Doge');
 		$this->config_form['API_GET_TRANSACTION_LIST'] = array('type' => 'text', 'caption' => 'API транзакций ', 'comment' => '{val} - адрес');
 		$this->config_form['minpay'] = array('type' => 'int', 'caption' => 'Миним. сумма', 'comment' => 'при пополнении счёта', 'style' => 'background-color:#F60;');
 		$this->config_form['maxpay'] = array('type' => 'int', 'caption' => 'Максим. сумма', 'comment' => 'при пополнении счёта', 'style' => 'background-color:#F60;');
@@ -36,7 +36,7 @@ class paybtccoin_class extends kernel_extends
 		parent::init();
 		$this->caption = 'BitCoin';
 		$this->comment = 'Логи платежей и пополнения счетов пользователями';
-		$this->lang['add_name'] = 'Пополнение кошелька из BitCoin';
+		$this->lang['add_name'] = 'Пополнение кошелька из DogeCoin';
 		$this->lang['add_err'] = 'Ошибка выставление счёта. Обратитесь к администратору сайта.';
 		$this->lang['add'] = 'Счет успешно создан. Кошелек для оплаты <b>'.$this->config['account'].'<b>';
 		$this->default_access = '|9|';
@@ -85,7 +85,7 @@ class paybtccoin_class extends kernel_extends
 	{
 		parent::setFieldsForm($form);
 		$this->fields_form['from'] = array('type' => 'text', 'caption' => 'Номер кошелька отправителя');
-		$this->fields_form['cost'] = array('type' => 'int', 'caption' => 'Сумма (Satoshi)', 'readonly' => 1, 'comment' => 'Минимум ' . $this->config['minpay'] . ', максимум ' . $this->config['maxpay'] , 'default' => 100, 'mask' => array('min' => $this->config['minpay'], 'max' => $this->config['maxpay']));
+		$this->fields_form['cost'] = array('type' => 'int', 'caption' => 'Сумма (Doge)', 'readonly' => 1, 'comment' => 'Минимум ' . $this->config['minpay'] . ', максимум ' . $this->config['maxpay'] , 'default' => 100, 'mask' => array('min' => $this->config['minpay'], 'max' => $this->config['maxpay']));
 		$this->fields_form['status'] = array('type' => 'list', 'listname' => 'status', 'readonly' => 1, 'caption' => 'Статус', 'mask' => array());
 		$this->fields_form['transaction'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'transaction', 'mask' => array());
 	}
@@ -102,7 +102,7 @@ class paybtccoin_class extends kernel_extends
 //		$this->owner->setPostData('email', $data);
 
 		$argForm = array();
-		$argForm['info'] = array('type' => 'info', 'caption' => 'По курсу 1руб. = '.$this->config['rate'].' Satoshi (0.000 000 01 BTC)<br/> Сумма к зачислению <b>'.round(($summ * $this->config['rate']), 0, PHP_ROUND_HALF_UP).'</b> Satoshi');
+		$argForm['info'] = array('type' => 'info', 'caption' => 'По курсу 1руб. = '.$this->config['rate'].' Doge <br/> Сумма к зачислению <b>'.round(($summ * $this->config['rate']), 0, PHP_ROUND_HALF_UP).'</b> Satoshi');
 		$argForm['from'] = array('type' => 'text', 'caption' => 'Адресс кошелька', 'comment'=> 'С которого будет оплачен счет.', 'mask' => array('min' => 5));
 		$argForm['name'] = array('type' => 'hidden', 'readonly' => 1, 'mask' => array('eval' => $comm)); // иначе name не попадает в БД
 		if ($summ > 0)
@@ -119,7 +119,7 @@ class paybtccoin_class extends kernel_extends
 	{
 		$result = array('showStatus' => true, 'messages' => array());
 		if (count($data)) {
-			$result['messages'][] = array('logoPayStatus', 'Адресс для оплаты <b>'.$this->config['account'].'</b><br/>Сумма к зачислению <b>'.$data['child']['cost'].'</b> Satoshi или <b>'.($data['child']['cost']/self::MULTIPLIER).'</b> Btc'.
+			$result['messages'][] = array('logoPayStatus', 'Адресс для оплаты <b>'.$this->config['account'].'</b><br/>Сумма к зачислению <b>'.$data['child']['cost'].'</b> Doge'.
 				($data['child']['status'] == self::STATUS_ONWAY ? '<br/>Платеж ожидает подтверждения' : ''));
 		}
 		return $result;
