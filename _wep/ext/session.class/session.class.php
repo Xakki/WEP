@@ -68,11 +68,21 @@ class session_class extends kernel_extends
 	function start($force = false)
 	{
 		if (!isset($_SESSION)) {
-			if (isset($_COOKIE[$this->_CFG['session']['name']]) and $_COOKIE[$this->_CFG['session']['name']]) {
-				$_COOKIE[$this->_CFG['session']['name']] = $this->SqlEsc($_COOKIE[$this->_CFG['session']['name']]);
-				$this->qdata = $this->_query('*', 'WHERE `sid` = "' . $_COOKIE[$this->_CFG['session']['name']] . '" AND `modified` + `expired` > "' . $this->_time . '" LIMIT 1');
-				if (count($this->qdata))
-					$force = true;
+			if (isset($_COOKIE[$this->_CFG['session']['name']]) and $sid = $_COOKIE[$this->_CFG['session']['name']]) {
+				$this->qdata = $this->_query('*', 'WHERE `sid` = "' . $this->SqlEsc($sid) . '" AND `modified` + `expired` > "' . $this->_time . '" LIMIT 1');
+				if (count($this->qdata)) {
+					if ( ($this->qdata[0]['modified']+$this->qdata[0]['expired']) > $this->_time) {
+						$force = true;
+					}
+					else {
+						$this->destroy($sid);
+					}
+
+				}
+				else {
+					_setcookie($this->_CFG['session']['name'], '', 1);
+				}
+
 			}
 			if ($force) {
 				session_set_save_handler(array(&$this, "open"), array(&$this, "close"), array(&$this, "read"), array(&$this, "write"), array(&$this, "destroy"), array(&$this, "gc"));

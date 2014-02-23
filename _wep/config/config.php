@@ -111,10 +111,9 @@ $_CFG['allowAutoIncludeScript'] = true; // Разрешаем автоподкл
 //json
 //''
 
-
 $_CFG['header'] = array(
 	'modif' => time(),
-	'expires' => time() - 864000,
+	'expires' => 0,
 );
 
 /* * PATH_CFG* */

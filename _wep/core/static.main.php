@@ -1040,6 +1040,18 @@ class static_main
 
 		return $publish;
 	}
+
+	static public function setExpire($sec)
+	{
+		global $_CFG;
+		$_CFG['header']['expires'] = $sec;
+	}
+
+	static public function getExpire()
+	{
+		global $_CFG;
+		return $_CFG['header']['expires'];
+	}
 }
 
 
@@ -1068,15 +1080,15 @@ function session_go($force = false)
 function _setcookie($name, $value = '', $expire = '', $path = '', $domain = '', $secure = '')
 {
 	global $_CFG;
-	if ($expire == '') {
+	if ($expire === '') {
 		$expire = $_CFG['session']['expire'];
 	}
 
-	if ($path == '')
+	if ($path === '')
 		$path = $_CFG['session']['path'];
-	if ($domain == '')
+	if ($domain === '')
 		$domain = $_CFG['session']['domain'];
-	if ($secure == '')
+	if ($secure === '')
 		$secure = $_CFG['session']['secure'];
 	setcookie($name, $value, $expire, $path, $domain, $secure);
 

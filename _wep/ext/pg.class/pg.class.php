@@ -112,6 +112,7 @@ class pg_class extends kernel_extends
 		$this->fields['pagemap'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['pagemenu'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['onpath'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => 1);
+		$this->fields['expires'] = array('type' => 'int', 'width' => 1, 'attr' => 'NOT NULL', 'default' => 0);
 
 		# list
 		//$this->listform_items['id'] = 'ID';
@@ -156,6 +157,7 @@ class pg_class extends kernel_extends
 
 		$this->fields_form['attr'] = array('type' => 'text', 'caption' => 'Атрибуты для ссылки в меню', 'comment' => 'Например: `target="_blank" onclick=""` итп', 'mask' => array('name' => 'all', 'fview' => 1));
 		$this->fields_form['aparam'] = array('type' => 'text', 'caption' => 'Параметры для ссылки в меню', 'comment' => 'Например если прописать: var=1&var2=3 ,дополняет путь в меню alias.html?var=1&var2=3', 'mask' => array('name' => 'all', 'fview' => 1));
+		$this->fields_form['expires'] = array('type' => 'int', 'caption' => 'Expires', 'comment' => 'For Expires , X-Accel-Expires', 'mask' => array('fview' => 1));
 
 		if ($this->_CFG['wep']['access'])
 			$this->fields_form['ugroup'] = array('type' => 'list', 'multiple' => FORM_MULTIPLE_JQUERY, 'listname' => 'ugroup', 'caption' => 'Доступ пользователю', 'default' => '0', 'mask' => array());
@@ -164,7 +166,7 @@ class pg_class extends kernel_extends
 
 		$this->formSort = array(
 			'Основное' => array('name', 'alias', 'onmenu', 'ugroup', 'active'),
-			'Дополнительно' => array('parent_id', 'name_in_menu', 'design', 'template', 'href', 'menuajax', 'onmap', 'pagemap', 'pagemenu', 'onpath', 'attr', 'aparam', 'ordind'),
+			'Дополнительно' => array('parent_id', 'name_in_menu', 'design', 'template', 'href', 'menuajax', 'onmap', 'pagemap', 'pagemenu', 'onpath', 'attr', 'aparam', 'expires', 'ordind'),
 		);
 
 
@@ -337,6 +339,8 @@ class pg_class extends kernel_extends
 			$temp = current($this->pageinfo['path']);
 			$_tpl['name'] = (is_string($temp) ? $temp : $temp['name']);
 		}
+
+		static_main::setExpire($this->pageinfo['expires']);
 
 		if (!isAjax()) {
 			$_tpl['onload'] = '
