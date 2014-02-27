@@ -344,6 +344,7 @@ class pg_class extends kernel_extends
 
 		if (!isAjax()) {
 			$_tpl['onload'] = '
+			wep.uId = ' . (isset($_SESSION['user']) ? $_SESSION['user']['id'] : 0) . ';
 			wep.pgId = ' . $this->id . ';
 			wep.pgParam =' . $pageParamEncode . ';
 			wep.siteJS = "' . $this->_CFG['_HREF']['siteJS'] . '";
