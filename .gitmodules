@@ -31,3 +31,6 @@
 [submodule "_vendors/bootstrap-multiselect"]
 	path = _vendors/bootstrap-multiselect
 	url = https://github.com/Xakki/bootstrap-multiselect.git
+[submodule "_vendors/wep-ckeditor"]
+	path = _vendors/wep-ckeditor
+	url = https://github.com/Xakki/wep-ckeditor.git
