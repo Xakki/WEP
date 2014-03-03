@@ -221,10 +221,9 @@ $_CFG['_striptag'] = '<table><td><tr><p><span><center><div><a><b><strong><em><u>
 // WYSIWYG 
 $_CFG['ckedit']['toolbar']['Full'] = "'Full'";
 $_CFG['ckedit']['toolbar']['Page'] = "[
-	['Source','-','Preview','-','Templates'],
+	['Source','Maximize','Preview','Templates'],
 	['Cut','Copy','Paste','PasteText','PasteFromWord','-','Print', 'SpellChecker', 'Scayt'],
 	['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
-	['Maximize', 'ShowBlocks','-','About'],
 	['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'],
 	['Image','Flash','Table','HorizontalRule','Smiley','SpecialChar','PageBreak','Timestamp','Code'],
 	['Bold','Italic','Underline','Strike','-','Subscript','Superscript'],

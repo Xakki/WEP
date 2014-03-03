@@ -174,7 +174,7 @@ function tpl_form(&$data, $tabs = array())
 				$texthtml .= '<div class="form-value textarea"><textarea name="' . $k . '" onkeyup="textareaChange(this)" rows="10" cols="80" ' . $attribute . '>' . _e($r['value']) . '</textarea></div>';
 			}
 			elseif ($r['type'] == 'ckedit') {
-				$_tpl['script'][$_CFG['_HREF']['vendors'] . 'ckeditor/ckeditor.js'] = 1;
+				$_tpl['script'][$_CFG['_HREF']['vendors'] . 'wep-ckeditor/ckeditor.js'] = 1;
 				// http://docs.ckeditor.com/#!/api/CKEDITOR.config
 				//http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.config.html
 				$ckedit = $r['paramedit'];
