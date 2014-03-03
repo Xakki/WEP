@@ -214,9 +214,7 @@ function tpl_form(&$data, $tabs = array())
 				// {
 				// 	CKEDITOR.instances.id_'.$ID.'.destroy(true);
 				// }
-				$fckscript = 'function cke_' . $ID . '() {
-						CKEDITOR.replace( \'id_' . $ID . '\',
-							{';
+				$fckscript = PHP_EOL.'function cke_' . $ID . '() {'.PHP_EOL.'CKEDITOR.replace( \'id_' . $ID . '\', {'.PHP_EOL;
 
 				/**
 				 * FILE brauser
@@ -246,9 +244,9 @@ function tpl_form(&$data, $tabs = array())
 
 				foreach ($ckedit as $kc => $rc) {
 					if (!is_array($rc))
-						$fckscript .= $kc . ' : ' . $rc . ',';
+						$fckscript .= $kc . ' : ' . $rc . ','.PHP_EOL;
 				}
-				$fckscript .= '\'temp\' : \'temp\' });';
+				$fckscript .= '\'temp\' : \'temp\' });'.PHP_EOL;
 
 				// if(isset($ckedit['CKFinder'])) {
 				// 	$_tpl['script'][$_CFG['PATH']['vendors'].'ckfinder/ckfinder.js'] = 1;
@@ -261,9 +259,9 @@ function tpl_form(&$data, $tabs = array())
 				// }
 
 
-				$fckscript .= '}';
+				$fckscript .= '}'.PHP_EOL;
 				//if(!isset($fields[$ID.'_ckedit']['value']) or $fields[$ID.'_ckedit']['value']=='' or $fields[$ID.'_ckedit']['value']=='1')
-				$_tpl['onload'] .= $fckscript . ' cke_' . $ID . '();';
+				$_tpl['onload'] .= $fckscript . ' cke_' . $ID . '();'.PHP_EOL;
 
 				$texthtml .= '<div class="form-value ckedit-value"><textarea id="id_' . $ID . '" name="' . $k . '" rows="10" cols="80" ' . $attribute . '>' . _e($r['value']) . '</textarea></div>';
 			}
