@@ -44,6 +44,7 @@ class content_class extends kernel_extends
 		# memo
 		//$this->memos['pg'] = array('max' => 50000);
 		$this->fields['pg'] = array('type' => 'mediumtext', 'attr' => 'NOT NULL');
+		$this->fields['pg_wswg'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => '1');
 
 		$this->owner->_listname = 'name';
 	}
@@ -88,10 +89,11 @@ class content_class extends kernel_extends
 
 		$this->fields_form['ordind'] = array('type' => 'int', 'caption' => 'ORD', 'comment' => 'Сортировка');
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
+		$this->fields_form['pg_wswg'] = array('type' => 'checkbox', 'caption' => 'Вкл. редактор', 'onchange'=>'wep.form.editorToggle(this, "pg")');
 
 		$this->formSort = array(
 			'Основное' => array('marker', 'pagetype', 'funcparam'),
-			'Контент' => array('pg', 'keywords', 'description'),
+			'Контент' => array('pg_wswg', 'pg', 'keywords', 'description'),
 			'Дополнительно' => array('owner_id', 'name', 'href', 'ugroup', 'styles', 'script', 'memcache', 'memcache_solt', 'ordind', 'onajaxform', 'access_flag', 'only_production', 'global', 'autocss', 'autoscript'),
 			'active',
 		);

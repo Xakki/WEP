@@ -34,11 +34,6 @@ elseif (isset($_GET['_php']) and $_GET['_php'] == 'rss') {
 	exit();
 }
 elseif (isset($_GET['_php']) and $_GET['_php'] == 'sitemap') {
-	header("Cache-Control: max-age=0, must-revalidate");
-	header("Last-Modified: " . gmdate("D, d M Y H:i:s", $_CFG['time']) . " GMT");
-	header("Expires: " . gmdate("D, d M Y H:i:s", $_CFG['time']) . " GMT");
-	header("Content-type:text/xml;charset=utf-8");
-
 	$_COOKIE['_showerror'] = 0;
 	$SITEMAP = TRUE;
 	_new_class('pg', $PGLIST);

@@ -773,9 +773,11 @@ class pg_class extends kernel_extends
 					}
 					elseif ($rowPG['memcache_solt'] == 4)
 						$hashkeyPG = $_SERVER['REMOTE_ADDR'];
+
 					$hashkeyPG .= '@' . $rowPG['id'] . '@' . $_SERVER['QUERY_STRING'] . $_SERVER['HTTP_HOST'];
 					if (_strlen($hashkeyPG) > 255)
 						$hashkeyPG = md5($hashkeyPG);
+
 					// Включаем 1 раз MEMCACHE
 					if (!$this->MEMCACHE) {
 						$this->incMemcach();
@@ -1205,6 +1207,7 @@ class pg_class extends kernel_extends
 	function creatSiteMaps()
 	{
 		$data = $this->getMap(-1);
+		$this->_CFG['header']['expires'] = 36000;
 		$xml = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 		$xml .= $this->reverseDataMap($data);
 		$xml .= '</urlset>';

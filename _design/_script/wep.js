@@ -142,6 +142,7 @@ window.wep = {
 
         wep.clickAjax('a.isAjaxLink');
     },
+
     /**
      * Ссылка с подтверждением
      */
@@ -1740,6 +1741,7 @@ window.wep = {
 
         return urlEncode(parsedUrl);
     }
+
 };
 
 

@@ -347,6 +347,19 @@ wep.form = {
     putEMF: function (id, txt) {
         jQuery('#tr_' + id + ' .form-caption').after('<div class="caption_error">[' + txt + ']</div>');
         jQuery('#tr_' + id).addClass('error');
+    },
+
+    /**
+     * Переключатель - редактора
+     * @param ths
+     * @param id
+     */
+    editorToggle: function(ths, id) {
+        if (ths.checked) {
+            globalEval('cke_' + id + '();');
+        } else {
+            globalEval('CKEDITOR.instances.id_' + id + '.destroy(true);');
+        }
     }
 }
 
@@ -420,17 +433,6 @@ function invert_select(selector) {
         this.checked = !this.checked;
     });
     return false;
-}
-
-function SetWysiwyg(obj) {
-
-    var myRe = /([A-Za-z0-9]+)_.+/i;
-    var cid = myRe.exec(obj.name);
-    if (obj.checked) {
-        eval('CKEDITOR.instances.id_' + cid[1] + '.destroy(true);');
-    } else {
-        eval('cke_' + cid[1] + '();');
-    }
 }
 
 

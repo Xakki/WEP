@@ -137,9 +137,6 @@ function tpl_form(&$data, $tabs = array())
 				$CAPTION .= '<span  class="form-require" data-text="' . $r['mask']['min2'] . '">**</span>';
 			}
 
-			//if($r['type']=='ckedit' and static_main::_prmUserCheck(1))
-			//	$CAPTION .= '<input type="checkbox" onchange="SetWysiwyg(this)" name="'.$k.'_ckedit" style="width:13px;vertical-align: bottom;margin: 0 0 0 5px;"/>';
-
 			if ($r['type'] != 'checkbox') {
 				$texthtml .= '<label class="form-caption">' . $CAPTION . '</label>';
 			}
@@ -177,37 +174,32 @@ function tpl_form(&$data, $tabs = array())
 				$_tpl['script'][$_CFG['_HREF']['vendors'] . 'wep-ckeditor/ckeditor.js'] = 1;
 				// http://docs.ckeditor.com/#!/api/CKEDITOR.config
 				//http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.config.html
-				$ckedit = $r['paramedit'];
-				// if(!isset($ckedit['skin']))
-				// 	$ckedit['skin']='\'kama\'';
-				if (!isset($ckedit['width']))
-					$ckedit['width'] = '\'100%\'';
-				if (!isset($ckedit['height']))
-					$ckedit['height'] = '450';
-				$ckedit['toolbarCanCollapse '] = 'true';
-				if (!isset($ckedit['baseHref']))
-					$ckedit['baseHref'] = '\'' . MY_BH . '\'';
+				$ckedit = array(
+//					'skin' => '\'kama\'',
+					'width' => '\'100%\'',
+					'height' => '450',
+					'toolbarCanCollapse' => 'true',
+					'baseHref' => '\'' . MY_BH . '\'',
+					'uiColor' => '\'#9AB8F3\'',
+					'language' => '\'ru\'',
+					'enterMode' => 'CKEDITOR.ENTER_BR',
+					'shiftEnterMode' => 'CKEDITOR.ENTER_P',
+					'contentsCss' => '"/_design/default/style/main.css"',
+//					'autoUpdateElement' => 'true',
+					'pasteFromWordPromptCleanup' => 'true',
+//					'allowedContent' => 'true',
+//					'entities' => 'false',
+//					'htmlEncodeOutput' => 'false',
+					'toolbar' => 'Full',
+				);
+
+				$ckedit = array_merge($ckedit, $r['paramedit']);
 				if (isset($ckedit['toolbar'])) {
 					if (isset($_CFG['ckedit']['toolbar'][$ckedit['toolbar']]))
 						$ckedit['toolbar'] = $_CFG['ckedit']['toolbar'][$ckedit['toolbar']];
 					else
 						$ckedit['toolbar'] = '\'' . $ckedit['toolbar'] . '\'';
 				}
-				else
-					$ckedit['toolbar'] = $_CFG['ckedit']['toolbar']['Full'];
-				if (!isset($ckedit['uiColor']))
-					$ckedit['uiColor'] = '\'#9AB8F3\'';
-				if (!isset($ckedit['language']))
-					$ckedit['language'] = '\'ru\'';
-				if (!isset($ckedit['enterMode']))
-					$ckedit['enterMode'] = 'CKEDITOR.ENTER_BR';
-				if (!isset($ckedit['shiftEnterMode']))
-					$ckedit['shiftEnterMode'] = 'CKEDITOR.ENTER_P';
-				if (!isset($ckedit['contentsCss']))
-					$ckedit['contentsCss'] = '"/_design/default/style/main.css"';
-				$ckedit['autoUpdateElement'] = 'true';
-				$ckedit['pasteFromWordPromptCleanup'] = 'true';
-				$ckedit['allowedContent'] = 'true';
 				//unset($ckedit['extraPlugins']);
 
 				// if(typeof CKEDITOR.instances.id_'.$ID.' == \'object\')
@@ -260,8 +252,11 @@ function tpl_form(&$data, $tabs = array())
 
 
 				$fckscript .= '}'.PHP_EOL;
-				//if(!isset($fields[$ID.'_ckedit']['value']) or $fields[$ID.'_ckedit']['value']=='' or $fields[$ID.'_ckedit']['value']=='1')
-				$_tpl['onload'] .= $fckscript . ' cke_' . $ID . '();'.PHP_EOL;
+				$_tpl['script']['cke_' . $ID] = $fckscript;
+
+				if(!isset($data[$ID.'_wswg']['value']) or $data[$ID.'_wswg']['value']=='' or $data[$ID.'_wswg']['value']=='1') {
+					$_tpl['onload'] .= ' cke_' . $ID . '();'.PHP_EOL;
+				}
 
 				$texthtml .= '<div class="form-value ckedit-value"><textarea id="id_' . $ID . '" name="' . $k . '" rows="10" cols="80" ' . $attribute . '>' . _e($r['value']) . '</textarea></div>';
 			}
