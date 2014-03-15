@@ -64,7 +64,7 @@ class content_class extends kernel_extends
 			'mask' => array('fview' => 1, 'max' => 500000),
 			'paramedit' => array(
 				'CKFinder' => array('allowedExtensions' => ''), // разрешаем загрузку любых фаилов
-				'extraPlugins' => "'cntlen,syntaxhighlight,timestamp'",
+				'extraPlugins' => "'cntlen,syntaxhighlight,timestamp,wordcount,wsc,youtube,spoiler'",
 				'toolbar' => 'Page',
 			));
 		if ($form) {
