@@ -1930,5 +1930,10 @@ function plugBootstrap()
 	setScript('prettify');
 }
 
+function isDebugMode()
+{
+    global $_CFG;
+    return ($_CFG['wep']['debugmode']==3 ? true : false);
+}
 
 static_main::autoload_register();
