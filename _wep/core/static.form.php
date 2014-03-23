@@ -606,11 +606,14 @@ class static_form
 					// Процесс загрузки фаила
 					if (isset($r['value']) and is_array($r['value']) and isset($r['value']['tmp_name']) and $r['value']['tmp_name']) {
 						// TODO -  ?
-						$r['value'] = $_CFG['PATH']['temp'] . $r['value']['name'];
+						$r['value'] = $_this->_CFG['PATH']['temp'] . $r['value']['name'];
 					} // Редактирование формы - отображаем фаил
 					elseif (isset($r['ext']) and $_this->id and !$r['value']) {
-						exit('++++++!!'); // TODO
-						$r['value'] = $_this->getAttaches($k, $_this->id, '');
+//						print_r($r['value']);
+//						print_r('-----');
+//						print_r($_this->getAttaches($k, $_this->id, $r['value']));
+//						exit('++++++!!'); // TODO
+//						$r['value'] = $_this->getAttaches($k, $_this->id, $r['value']);
 					}
 
 
