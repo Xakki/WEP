@@ -23,7 +23,7 @@ function arraySrcToStr()
 {
 	global $_tpl, $_CFG;
 	$temp = $solt = '';
-	if ($_CFG['wep']['debugmode'])
+	if (isDebugMode())
 		$solt = 't=' . time();
 
 	// include STYLE into HTML
@@ -51,8 +51,6 @@ function arraySrcToStr()
 
 function scriptRecursive($script, $solt = '')
 {
-	global $_CFG;
-
 	$temp = '';
 	foreach ($script as $kk => $rr) {
 		if (is_string($rr) and substr($rr, 0, 1) == '<') {
@@ -60,8 +58,7 @@ function scriptRecursive($script, $solt = '')
 		}
 
 		if (is_string($kk) and isUrl($kk)) {
-			if ($solt)
-				$temp .= '<script src="' . soltAppend($solt, $kk) . '"></script>' . "\n";
+			$temp .= '<script src="' . soltAppend($solt, $kk) . '"></script>' . "\n";
 		}
 
 		if (is_string($rr) and $rr) {
@@ -79,7 +76,6 @@ function scriptRecursive($script, $solt = '')
 
 function cssRecursive($css, $solt = '')
 {
-	global $_CFG;
 	$temp = '';
 	foreach ($css as $kk => $rr) {
 		if (is_string($rr) and substr($rr, 0, 1) === '<') {

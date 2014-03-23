@@ -143,7 +143,8 @@ foreach ($_CFG['_error'] as $ke => $re) {
 $_CFGFORM['wep']['debugmode']['valuelist'] = array(
 	array('#id#' => 0, '#name#' => 'OFF (ошибки не показывать)'),
 	array('#id#' => 1, '#name#' => 'ON (только о том что была ошибка)'),
-	array('#id#' => 2, '#name#' => 'Full ON (все видят ошибки)')
+	array('#id#' => 2, '#name#' => 'Full ON (все видят ошибки)'),
+	array('#id#' =>3, '#name#' => 'DEBUG MODE'),
 );
 
 ?>

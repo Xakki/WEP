@@ -96,9 +96,16 @@ class wephtml
 	{
 		global $_CFG;
 		if (!headers_sent()) {
-			header('Pragma: no-cache');
+            if (isDebugMode()) {
+			    header('Pragma: no-cache');
+                header('Cache-Control: public, no-store, no-cache, must-revalidate, post-check=0, pre-check=0'); // no-store, no-cache,
+            }
+            else {
+                header('Pragma: cache');
+                header('Cache-Control: public, post-check=0, pre-check=0');
+            }
+
 			header('Content-type: text/html; charset=utf-8');
-			header('Cache-Control: public, no-store, no-cache, must-revalidate, post-check=0, pre-check=0'); // no-store, no-cache,
 			header("Last-Modified: " . gmdate("D, d M Y H:i:s", $_CFG['header']['modif']) . " GMT");
 			header("Expires: " . gmdate("D, d M Y H:i:s", (time()+$_CFG['header']['expires'])) . " GMT");
 			header('X-Accel-Expires: '.$_CFG['header']['expires']);
