@@ -367,6 +367,9 @@ function tpl_form(&$data, $tabs = array())
 					}
 					$defaultList .= '</div>';
 				}
+				if (!isset($r['value_2'])) {
+					$r['value_2'] = '';
+				}
 				$r['csscheck'] = ($r['value_2'] ? '' : 'reject');
 				$serl = serialize($r['listname']);
 				$texthtml .= '<div class="form-value ajaxlist ' . $r['csscheck'] . '">

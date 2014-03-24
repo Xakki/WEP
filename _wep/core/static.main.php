@@ -802,6 +802,11 @@ class static_main
 		return $txt;
 	}
 
+	static function numWord($num, $word)
+	{
+		return $num.' '.$word;
+	}
+
 	static function downSite($title = false, $text = false)
 	{
 		global $_CFG;
@@ -1746,7 +1751,7 @@ function getUrlScript($r, $customTheme = null)
 }
 
 /************************/
-// TODO CLASS 
+// TODO CLASS
 /*************************/
 
 $_CFG['fileIncludeOption'] = array();
@@ -1932,8 +1937,8 @@ function plugBootstrap()
 
 function isDebugMode()
 {
-    global $_CFG;
-    return ($_CFG['wep']['debugmode']==3 ? true : false);
+	global $_CFG;
+	return ($_CFG['wep']['debugmode']==3 ? true : false);
 }
 
 static_main::autoload_register();
