@@ -194,7 +194,10 @@ wep.form = {
             var clon = jObj.clone();
             var in1 = clon.find('.ilist-key');
             var defval = '';
-            if (in1.attr('type') == 'int')
+            if (!in1) {
+                defval = (parseInt(in1.val()) + 1);
+            }
+            else if (in1.attr('type') == 'int')
                 defval = (parseInt(in1.val()) + 1);
             in1.val(defval);
             clon.find('.ilist-val').val('');

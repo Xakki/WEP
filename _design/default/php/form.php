@@ -826,7 +826,8 @@ function helper_form_keytype($k, $r, $kval)
 	// 		<select class="ilist-val" onchange="wep.form.iListRev(this,\''.$k.'\')">'.tpl_formSelect($r['valuelist'],$kval).'</select>
 	// 		<input class="ilist-key" type="'.$r['keytype'].'" value="'.$rval.'" name="'.$k.'['.$kval.']"/>';
 	// }
-
+	elseif($r['keytype'] == 'none') {
+	}
 	else {
 		$html = '<input class="ilist-key" type="' . $r['keytype'] . '" value="' . _e($kval) . '" onkeyup="wep.form.iList(this,\'' . $k . '\')"/>';
 	}
@@ -837,11 +838,18 @@ function helper_form_valuetype($k, $r, $kval, $rval, $attribute)
 {
 	global $_CFG;
 	$html = '';
-	if ($r['type'] == 'list') {
-		$html = '<select class="ilist-val" name="' . $k . '[' . $kval . ']" ' . $attribute . '>' . tpl_formSelect($r['valuelist'], $rval) . '</select>';
+
+	if($r['keytype'] == 'none') {
+		$name = $k.'[]';
 	}
 	else {
-		$html = '<input class="ilist-val" type="text" name="' . $k . '[' . $kval . ']" value="' . _e($rval) . '" ' . $attribute . '/>';
+		$name = $k.'[' . $kval . ']';
+	}
+	if ($r['type'] == 'list') {
+		$html = '<select class="ilist-val" name="' . $name . '" ' . $attribute . '>' . tpl_formSelect($r['valuelist'], $rval) . '</select>';
+	}
+	else {
+		$html = '<input class="ilist-val" type="text" name="' . $name . '" value="' . _e($rval) . '" ' . $attribute . '/>';
 	}
 	return $html;
 }
