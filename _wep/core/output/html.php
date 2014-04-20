@@ -120,31 +120,41 @@ class wephtml
 		return false;
 	}
 
-	function parseTemplate(&$TEXT, &$TPL, $i = 0)
+	function parseTemplate(&$TEXT, &$TPL, $skip = array())
 	{
-		if ($i > 2) return true;
-		if (_strpos($TEXT, '{#') !== false) { // NEW STANDART
-			preg_match_all('/\{\#([A-z0-9_\-]+)\#\}/u', $TEXT, $temp);
-			//return '<pre>'.var_export($temp,true);
-			foreach ($temp[1] as $k => $r) {
-				if (!isset($TPL[$r]))
-					$TPL[$r] = '';
-				$TEXT = str_replace($temp[0][$k], $TPL[$r], $TEXT);
-			}
-		}
-		else {
-			preg_match_all('/\{\$_tpl\[\'([A-z0-9_\-]+)\'\]\}/ui', $TEXT, $temp);
-			foreach ($temp[1] as $k => $r) {
-				if (!isset($TPL[$r]))
-					$TPL[$r] = '';
-				$TEXT = str_replace($temp[0][$k], $TPL[$r], $TEXT);
-			}
-		}
-		if (_strpos($TEXT, '{#') !== false or _strpos($TEXT, '$_tpl') !== false) {
-			$i++;
-			$this->parseTemplate($TEXT, $TPL, $i);
+        $subSkip = $skip;
+        $temp = self::matchTmp($TEXT);
+        foreach ($temp[1] as $k => $r) {
+            if (isset($skip[$r])) {
+                trigger_error('Recursion in template ('.$r.')', E_USER_WARNING);
+                return true;
+            }
+            if (!isset($TPL[$r]))
+                $TPL[$r] = '';
+            $TEXT = str_replace($temp[0][$k], $TPL[$r], $TEXT);
+            $subSkip[$r] = true;
+        }
+
+		if (self::hasMatchTmp($TEXT)) {
+			$this->parseTemplate($TEXT, $TPL, $subSkip);
 		}
 		return true;
 	}
+
+    static function matchTmp($TEXT)
+    {
+        if (_strpos($TEXT, '{#') !== false) { // NEW STANDART
+            preg_match_all('/\{\#([A-z0-9_\-]+)\#\}/u', $TEXT, $temp);
+        }
+        else {
+            preg_match_all('/\{\#([A-z0-9_\-]+)\#\}/u', $TEXT, $temp);
+        }
+        return $temp;
+    }
+
+    static function hasMatchTmp($TEXT)
+    {
+        return (_strpos($TEXT, '{#') !== false or _strpos($TEXT, '$_tpl') !== false);
+    }
 
 }
