@@ -859,7 +859,7 @@ window.wep = {
         if (!domain) domain = wep.DOMAIN;
         if (!path) path = '/';
 
-        var str = name + '=' + encodeURIComponent(value);
+        var str = '';
         if (typeof expiredays == 'undefined')
             expiredays = 999999;
         if (expiredays != 0) {
@@ -871,7 +871,9 @@ window.wep = {
         if (path)    str += '; path=' + path;
         if (domain)  str += '; domain=' + domain;
         if (secure)  str += '; secure';
-        document.cookie = str;
+
+        document.cookie = name + '=' + encodeURIComponent(value) + str;
+        document.cookie = 'wepHash=' + (new Date().getTime()) + str;
         return true;
     },
 
