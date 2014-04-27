@@ -10,8 +10,8 @@ if (isset($_GET['_php']) and $_GET['_php'] == 'admin') {
 	exit();
 }
 
-ini_set("max_execution_time", "10");
-set_time_limit(10);
+//ini_set("max_execution_time", "10");
+//set_time_limit(10);
 
 if ($_CFG['site']['worktime'] and !canShowAllInfo()) {
 	static_main::downSite(); // Exit()

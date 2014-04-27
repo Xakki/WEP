@@ -20,6 +20,9 @@ if (isset($_GET['_func']) and $_GET['_func']) {
 				$data['tpl'] = '#pg#formcreat';
 			$_tpl['text'] .= transformPHP($data, $data['tpl']);
 		}
+        elseif (is_string($data)) {
+            $_tpl['text'] .= $data;
+        }
 	}
 	else
 		$_tpl['text'] = 'Вызов функции не разрешён модулем.';

@@ -1368,18 +1368,19 @@ deny from all
 			exit('ERROR - body не поддерживается');
 		}
 
+        $tmp = rand(400, 700) . '.' . rand(10, 99);
 		$default = array(
 			'proxy' => false,
 			'proxyList' => array(
 				//array('11.11.11.11:8080','user:pass'),
-				'82.200.55.142:3128',
+				//'82.200.55.142:3128',
 				//'115.78.135.30:80',
 				//'122.248.194.9:80',
 				/**/
 			),
 			'HTTPHEADER' => array('Content-Type' => 'text/xml; encoding=utf-8'),
 			'redirect' => false,
-			'USERAGENT' => 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/' . rand(50, 190) . ' (KHTML, like Gecko) Chrome/' . rand(9, 32) . '.0.' . rand(10, 99) . '00.' . rand(1, 200) . '',
+			'USERAGENT' => 'Mozilla/5.0 (Windows NT 6.' . rand(1, 3) . ') AppleWebKit/' . $tmp . ' (KHTML, like Gecko) Chrome/' . rand(9, 34) . '.0.' . rand(10, 99) . '00.' . rand(1, 200) . ' Safari/'.$tmp,
 			'TIMEOUT' => 20,
 			'REFERER' => false,
 			'POST' => false,

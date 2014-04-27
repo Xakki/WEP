@@ -16,12 +16,13 @@ class httpproxy_class extends kernel_extends
 		$this->unique_fields['name'] = 'name';
 
 		$this->index_fields['timeout'] = 'timeout';
-		$this->index_fields['autoprior'] = 'autoprior';
+		$this->index_fields['negative'] = 'negative';
+		$this->index_fields['positive'] = 'positive';
 		$this->index_fields['mf_timeup'] = 'mf_timeup';
 
-		$this->cf_tools[] = array('func' => 'loadList', 'name' => 'Загрузка списка прокси');
-		$this->cf_tools[] = array('func' => 'clearUse', 'name' => 'Очистка счётчиков');
-		$this->cf_tools[] = array('func' => 'CheckSite', 'name' => 'Проверка xakki.ru');
+		$this->cf_tools[] = array('func' => 'toolsLoadList', 'name' => 'Загрузка списка прокси');
+		$this->cf_tools[] = array('func' => 'toolsClearUse', 'name' => 'Очистка счётчиков');
+		$this->cf_tools[] = array('func' => 'toolsCheckSite', 'name' => 'Проверка xakki.ru');
 	}
 
 	function _create()
@@ -33,7 +34,8 @@ class httpproxy_class extends kernel_extends
 		$this->fields['port'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0);
 		$this->fields['desc'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['timeout'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 60, 'noquote' => true);
-		$this->fields['autoprior'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0, 'noquote' => true);
+		$this->fields['negative'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0, 'noquote' => true);
+		$this->fields['positive'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0, 'noquote' => true);
 		$this->fields['capture'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => 0);
 
 		//$this->cron[] = array('modul'=>$this->_cl,'function'=>'setRate()','active'=>1,'time'=>6);
@@ -48,7 +50,8 @@ class httpproxy_class extends kernel_extends
 		$this->fields_form['port'] = array('type' => 'int', 'caption' => 'Port', 'mask' => array());
 		$this->fields_form['desc'] = array('type' => 'textarea', 'caption' => 'Описание', 'mask' => array());
 		$this->fields_form['timeout'] = array('type' => 'int', 'caption' => 'Период(сек)', 'mask' => array());
-		$this->fields_form['autoprior'] = array('type' => 'int', 'caption' => 'Приоритет', 'mask' => array());
+		$this->fields_form['negative'] = array('type' => 'int', 'caption' => '-', 'mask' => array());
+		$this->fields_form['positive'] = array('type' => 'int', 'caption' => '+', 'mask' => array());
 		$this->fields_form['mf_timeup'] = array('type' => 'date', 'caption' => 'Дата', 'mask' => array());
 		$this->fields_form['capture'] = array('type' => 'checkbox', 'caption' => 'Занято', 'mask' => array());
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл', 'mask' => array());
@@ -67,14 +70,15 @@ class httpproxy_class extends kernel_extends
 		if (!isset($_GET['pos']))
 			$_GET['pos'] = rand(0, 3);
 		$res = '';
-		$this->data = $this->_query('t1.name,t1.port,t1.id,t2.id as domenid,if(t2.id,1,0) as fl',
+		$this->data = $this->_query('t1.name,t1.port,t1.id,t2.id as domenid,if(t2.id,(t2.err+1),0) as fl',
 			't1 LEFT JOIN ' . $this->childs['httpproxycheck']->tablename . ' t2
 				ON t2.name="' . $this->SqlEsc($this->domen) . '" and t2.owner_id=t1.id
-				WHERE t1.`active`=1 and t1.`capture`= 0 and t1.`mf_timeup`<(' . time() . '-t1.`timeout`)
-				ORDER BY fl, t1.`autoprior` DESC, t1.`mf_timeup`
-				LIMIT ' . (int)$_GET['pos'] . ',1');
+				WHERE t1.`active`=1 and t1.`capture`= 0 and t1.`mf_timeup`<(' . time() . '-t1.`timeout`)  and t1.`negative`-t1.`positive`<=2
+				ORDER BY t1.`negative`, fl, t1.`mf_timeup`
+				LIMIT ' . (int)$_GET['pos'] . ',1');// t1.`negative`
+//        print_r($this->SQL->query);
 		//,false,false,true
-		//`use`,`err`,`autoprior`,`mf_timeup`,`time`
+		//`use`,`err`,`negative`,`mf_timeup`,`time`
 		// and t1.`capture`= 0 and (t2.`err`<t2.`use` or t2.`use`<1)  and t1.`mf_timeup`<('.time().'-t1.`timeout`)
 		//print_r(' * '.time().' * ');
 		//,t1.`timeout`
@@ -101,12 +105,16 @@ class httpproxy_class extends kernel_extends
 	{
 
 		$updCheck = array('use' => '`use`+1', 'time' => (int)$time, 'lastcode' => (int)$lastcode);
-		$upd = array('capture' => 0, 'autoprior' => '`autoprior`+1');
+		$upd = array('capture' => 0);
 
 		if ($err) {
 			$updCheck['err'] = '`err`+' . $err;
-			$upd['autoprior'] = '`autoprior`-1';
+			$upd['negative'] = '`negative`+1';
 		}
+        else {
+
+            $upd['positive'] = '`positive`+1';
+        }
 
 		if ($this->id) {
 			$this->_update($upd, false, false);
@@ -129,6 +137,9 @@ class httpproxy_class extends kernel_extends
 		$param['TIMEOUT'] = 45;
 		$param['find'] = 'искомый обязательный текст';
 		*/
+        if (!isset($param['findRu'])) {
+            $param['findRu'] = false;
+        }
 		$temp = $this->getProxy($link);
 		if ($temp) {
 			$param['proxy'] = true;
@@ -166,33 +177,38 @@ class httpproxy_class extends kernel_extends
 			$autoprior = 90;
 		}
 		else {
-			preg_match_all('/[А-Яа-яЁё]/u', $html['text'], $matches);
-			if (count($matches[0]) < 5) {
-				$err = 1;
-				$autoprior = 140;
-				print_r('<p style="color:red;">Мало букв</p>');
-			}
-			elseif (isset($param['find']) and mb_stripos($html['text'], $param['find']) === false) {
-				$err = 1;
-				$autoprior = 120;
-				print_r('<p style="color:red;">Не найден текст <b>' . $param['find'] . '</b></p>');
-			}
+            if (isset($param['find']) and mb_stripos($html['text'], $param['find']) === false) {
+                $err = 1;
+                $autoprior = 120;
+                print_r('<p style="color:red;">Не найден текст <b>' . $param['find'] . '</b></p>');
+            }
+            elseif ($param['findRu']) {
+                preg_match_all('/[А-Яа-яЁё]/u', $html['text'], $matches);
+                if (count($matches[0]) < 5) {
+                    $err = 1;
+                    $autoprior = 140;
+                    print_r('<p style="color:red;">Мало русских букв</p>');
+                }
+            }
 		}
 
 		if ($err)
 			$html['flag'] = 0;
-		print_r('  |  err = ' . $err);
-		print_r('  |  autoprior = ' . $autoprior);
-		print_r('  |  redirect_url = ' . $html['info']['redirect_url']);
-		print_r('  |  http_code = ' . $html['info']['http_code']);
+        if ($this->_CFG['wep']['debugmode'] > 1) {
+            print_r('  |  err = ' . $err);
+            print_r('  |  autoprior = ' . $autoprior);
+            print_r('  |  redirect_url = ' . $html['info']['redirect_url']);
+            print_r('  |  http_code = ' . $html['info']['http_code'] . '<hr/>');
+        }
 
 		$this->upStatus($html['info']['total_time'], $err, $autoprior, $html['info']['http_code']);
 
+        $html['errorFlag'] = $err;
 		return $html;
 	}
 
 
-	function toolsloadList()
+	function toolsLoadList()
 	{
 		global $_tpl;
 		$fields_form = $mess = array();
@@ -227,14 +243,14 @@ class httpproxy_class extends kernel_extends
 			);
 			self::kFields2FormFields($fields_form);
 		}
-		return Array(
+		return array(
 			'form' => $fields_form,
 			'messages' => $mess,
 			'options' => $this->getFormOptions()
 		);
 	}
 
-	function toolsclearUse()
+	function toolsClearUse()
 	{
 		global $_tpl;
 		$fields_form = $mess = array();
@@ -242,10 +258,8 @@ class httpproxy_class extends kernel_extends
 			$mess[] = static_main::am('error', 'denied', $this);
 		elseif (count($_POST) and $_POST['dsbmt']) {
 			$upd = array(
-				//'autoprior'=>0,
 				'capture' => 0,
 			);
-			//or autoprior!=0
 			$this->_update($upd, 'capture!=0', false);
 			$mess = array(static_main::am('ok', 'Сделано', $this));
 		}
@@ -291,7 +305,7 @@ class httpproxy_class extends kernel_extends
 
 	}
 
-//UPDATE wep_httpproxy SET `use`=0,err=0,time=0,autoprior=0
+//UPDATE wep_httpproxy SET `use`=0,err=0,time=0
 }
 
 

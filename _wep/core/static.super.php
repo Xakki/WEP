@@ -301,14 +301,17 @@ class static_super
 //                        eval('$data=$_this->'.$_GET['_func'].'();');
 						$PARAM['formtools'] = call_user_func_array(array($_this, $_GET['_func']), array());
 					}
-					elseif (!isset($PARAM['topmenu'][$_REQUEST['_func']]) or !$PARAM['topmenu'][$_REQUEST['_func']]['function'])
+					elseif (!isset($PARAM['topmenu'][$_REQUEST['_func']]) or !$PARAM['topmenu'][$_REQUEST['_func']]['function']) {
 						$messages[] = static_main::am('error', 'Function for servise not found');
+                    }
 					else {
 						$method = $PARAM['topmenu'][$_REQUEST['_func']]['function'];
-						if (!is_array($method))
+
+                        if (!is_array($method))
 							$method = array($_this, $method, array());
+
 						if (!method_exists($method[0], $method[1]))
-							$messages = static_main::am('error', 'Function for servise not found');
+							$messages[] = static_main::am('error', 'Function for servise not found*');
 						else {
 							$PARAM['formtools'] = call_user_func_array(array($method[0], $method[1]), $method[2]);
 						}
