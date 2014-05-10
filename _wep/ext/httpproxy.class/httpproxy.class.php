@@ -73,7 +73,7 @@ class httpproxy_class extends kernel_extends
 		$this->data = $this->_query('t1.name,t1.port,t1.id,t2.id as domenid,if(t2.id,(t2.err+1),0) as fl',
 			't1 LEFT JOIN ' . $this->childs['httpproxycheck']->tablename . ' t2
 				ON t2.name="' . $this->SqlEsc($this->domen) . '" and t2.owner_id=t1.id
-				WHERE t1.`active`=1 and t1.`capture`= 0 and t1.`mf_timeup`<(' . time() . '-t1.`timeout`)  and t1.`negative`-t1.`positive`<=2
+				WHERE t1.`active`=1 and t1.`capture`= 0 and t1.`mf_timeup`<(' . time() . '-t1.`timeout`)  and t1.`negative`-t1.`positive`<=3
 				ORDER BY t1.`negative`, fl, t1.`mf_timeup`
 				LIMIT ' . (int)$_GET['pos'] . ',1');// t1.`negative`
 //        print_r($this->SQL->query);
@@ -150,10 +150,13 @@ class httpproxy_class extends kernel_extends
 		$err = 0;
 		$autoprior = 0;
 
-		if ($html['info']['http_code'] == 0) {
-			$err = 1;
-			$autoprior = 999;
+		if (!$html['text'] && $html['err']==7 && $html['info']['http_code']==0) {
+
 		}
+        elseif ($html['info']['http_code'] == 0) {
+            $err = 1;
+            $autoprior = 999;
+        }
 		elseif ($html['info']['http_code'] == 403) {
 			// or strpos($html['text'],'<td class="headCode">403</td>')!==false
 			$err = 1; // ограничение доступа
@@ -179,7 +182,6 @@ class httpproxy_class extends kernel_extends
 		else {
             if (isset($param['find']) and mb_stripos($html['text'], $param['find']) === false) {
                 $err = 1;
-                $autoprior = 120;
                 print_r('<p style="color:red;">Не найден текст <b>' . $param['find'] . '</b></p>');
             }
             elseif ($param['findRu']) {
@@ -193,17 +195,19 @@ class httpproxy_class extends kernel_extends
 		}
 
 		if ($err)
-			$html['flag'] = 0;
+			$html['flag'] = false;
         if ($this->_CFG['wep']['debugmode'] > 1) {
+            print_r('  |  link = ' . $link);
             print_r('  |  err = ' . $err);
-            print_r('  |  autoprior = ' . $autoprior);
             print_r('  |  redirect_url = ' . $html['info']['redirect_url']);
             print_r('  |  http_code = ' . $html['info']['http_code'] . '<hr/>');
         }
+        print_r('<pre>');
+        print_r($html);
+        exit();
 
 		$this->upStatus($html['info']['total_time'], $err, $autoprior, $html['info']['http_code']);
 
-        $html['errorFlag'] = $err;
 		return $html;
 	}
 

@@ -1483,8 +1483,9 @@ deny from all
 		$err = '';
 		if ($err = curl_errno($ch))
 			$flag = false;
-		elseif ($PageInfo['http_code'] == 200)
+		elseif ($PageInfo['http_code'] == 200) {
 			$flag = true;
+        }
 		else
 			$flag = false;
 		curl_close($ch);
