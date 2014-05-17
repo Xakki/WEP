@@ -1467,8 +1467,6 @@ deny from all
 			else
 				$CURLOPT_PROXY = $prox;
 			curl_setopt($ch, CURLOPT_PROXY, $CURLOPT_PROXY);
-			if ($_CFG['wep']['debugmode'] > 1)
-				echo ' * ' . $CURLOPT_PROXY . ' * ';
 			if ($CURLOPT_PROXYUSERPWD) {
 				// если необходимо предоставить имя пользователя и пароль
 				//curl_setopt($ch, CURLOPT_PROXYUSERPWD,$CURLOPT_PROXYUSERPWD);
