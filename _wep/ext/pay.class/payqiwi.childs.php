@@ -162,7 +162,7 @@ class payqiwi_class extends kernel_extends
 		$result = array('showStatus' => true, 'messages' => array());
 		if (count($data) and $data['status'] < 2) {
 			$result['messages'][] = array('logoPayStatus qiwiPayStatus', '<div>Чтобы оплатить счёт, перейдите на сайт</div><a href="' . $this->pay_formType . '" target="_blank" title="QIWI" id="goQiwiClick">QIWI</a>');
-			$result['messages'][] = array('autoClick', '<a title="Отменить" id="autoClick">Автоматический переход через <i>5</i> сек.</a><script>wep.timerFunction(function(){window.open($(".qiwiPayStatus a").attr("href"), "_blank");}, "#autoClick", "#goQiwiClick");</script>>');
+			$result['messages'][] = array('autoClick', '<a title="Отменить" id="autoClick">Автоматический переход через <i>5</i> сек.</a><script>wep.timerFunction(function(){window.open($(".qiwiPayStatus a").attr("href"), "_blank");}, "#autoClick", "#goQiwiClick");</script>');
 			// $_tpl['onload'] - deprecated
 		}
 		return $result;
