@@ -22,6 +22,7 @@ $i = 1;
 if (!isset($_SERVER['HTTP_HOST']) or !$_SERVER['HTTP_HOST'])
 	$_SERVER['HTTP_HOST2'] = $_SERVER['HTTP_HOST'] = $_CFG['site']['www'];
 $_SERVER['SERVER_PORT'] = 80;
+$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 $_SERVER['REQUEST_URI'] = '/index.html';
 $_SERVER['HTTP_USER_AGENT'] = $_CFG['site']['www'];
 
