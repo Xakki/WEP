@@ -110,8 +110,10 @@ function tools_cron()
 	include($_CFG['_FILE']['cron']); // Загружаем конфиг крона
 
 	$ini_file = $_CFG['_FILE']['cronTask'];
-	if (file_exists($ini_file))
-		$ini_arr = parse_ini_file($ini_file);
+	if (file_exists($ini_file)) {
+        $ini_arr = file_get_contents($ini_file);
+        $ini_arr = json_decode($ini_arr, true);
+    }
 	else {
 		$ini_arr = array();
 	}
@@ -156,15 +158,10 @@ function tools_cron()
 				$FORM['info'] = array('type' => 'info', 'caption' => '<h3 style="color:red;">Ошибка</h3>');
 			else {
 				if ($_POST['last_time']) {
-					$ini_arr['last_time' . $p] = strtotime($_POST['last_time']);
+					$ini_arr[$p]['last_time'] = strtotime($_POST['last_time']);
 					//mktime($_POST['last_time'][3],$_POST['last_time'][4],$_POST['last_time'][5],$_POST['last_time'][1],$_POST['last_time'][2],$_POST['last_time'][0]);
-					$conf = '';
-					foreach ($ini_arr as $k => $v) {
-						$conf .= $k . " = " . $v . "\n";
-					}
-					umask(0777);
-					file_put_contents($ini_file, $conf);
-					chmod($ini_file, 0777);
+                    file_put_contents($ini_file, json_encode($ini_arr));
+                    _chmod($ini_file);
 				}
 				$_SESSION['messtool'] = array('name' => 'ok', 'value' => 'Задание успешно добавлено.');
 				static_main::redirect(key($DATA['path']));
@@ -173,7 +170,7 @@ function tools_cron()
 		$DATA['path'][$FP . '_type=add'] = 'Добавить';
 		if ($_GET['_type'] == 'update' and isset($_GET['_id']) and isset($_CFG['cron'][$_GET['_id']])) {
 			$VAL = $_CFG['cron'][$_GET['_id']];
-			$VAL['last_time'] = $ini_arr['last_time' . $_GET['_id']];
+			$VAL['last_time'] = $ini_arr[$_GET['_id']]['last_time'];
 			$DATA['path'][$FP . '_type=add'] = 'Правка';
 		}
 		elseif (isset($_POST))
@@ -295,9 +292,9 @@ function tools_cron()
 					'file' => array('value' => $r['file']),
 					'modul' => array('value' => $r['modul']),
 					'function' => array('value' => $r['function']),
-					'lasttime' => array('value' => (isset($ini_arr['last_time' . $k]) ? date('Y-m-d H:i:s', $ini_arr['last_time' . $k]) : '')),
-					'do_time' => array('value' => (isset($ini_arr['do_time' . $k]) ? $ini_arr['do_time' . $k] : '')),
-					'res' => array('value' => (isset($ini_arr['res' . $k]) ? $ini_arr['res' . $k] : '')),
+					'lasttime' => array('value' => (isset($ini_arr[$k]['last_time']) ? date('Y-m-d H:i:s', $ini_arr[$k]['last_time']) : '')),
+					'do_time' => array('value' => (isset($ini_arr[$k]['do_time']) ? $ini_arr[$k]['do_time'] : '')),
+					'res' => array('value' => (isset($ini_arr[$k]['res']) ? $ini_arr[$k]['res'] : '')),
 				);
 				$DATA['data']['item'][$k]['active'] = (!isset($r['active']) ? 1 : (int)$r['active']);
 				$DATA['data']['item'][$k]['act'] = 1;

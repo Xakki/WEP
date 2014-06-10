@@ -8,10 +8,13 @@ if (!isset($_CFG['cron']) or !count($_CFG['cron'])) {
 }
 
 $ini_file = $_CFG['_FILE']['cronTask'];
-if (file_exists($ini_file))
-	$ini_arr = parse_ini_file($ini_file);
+if (file_exists($ini_file)) {
+	$dataJson = file_get_contents($ini_file);
+    $dataJson = json_decode($dataJson, true);
+    if (!$dataJson) $dataJson = array();
+}
 else
-	$ini_arr = array();
+    $dataJson = array();
 
 $time = time();
 $res_cron = '';
@@ -24,8 +27,8 @@ $_SERVER['HTTP_USER_AGENT'] = $_CFG['site']['www'];
 
 foreach ($_CFG['cron'] as $key_cron => $r_cron) {
 	$result = '';
-	if (isset($ini_arr['last_time' . $key_cron]) && ($ini_arr['last_time' . $key_cron] + $r_cron['time']) > $time) {
-		//$res_cron .= 'Рано импортировать файл '. $ini_arr['file'.$key_cron]. ', последний раз он импортировался '.date('d.m.Y H:i', $ini_arr['last_time'.$key_cron]). ', сейчас ' . date('d.m.Y H:i', $time) . '. (Установленный интервал: '.$ini_arr['int' . $key_cron].' минут, осталось ' . round((($ini_arr['last_time' . $key_cron] + ($ini_arr['int' . $key_cron] * 60) - $time) / 60), 1) . ' минут)' . "\n";
+	if (isset($dataJson[$key_cron]['last_time']) && ($dataJson[$key_cron]['last_time'] + $r_cron['time']) > $time) {
+		//$res_cron .= 'Рано импортировать файл '. $dataJson[$key_cron]['file']. ', последний раз он импортировался '.date('d.m.Y H:i', $dataJson[$key_cron]['last_time']). ', сейчас ' . date('d.m.Y H:i', $time) . '. (Установленный интервал: '.$dataJson['int' . $key_cron].' минут, осталось ' . round((($dataJson['last_time' . $key_cron] + ($dataJson['int' . $key_cron] * 60) - $time) / 60), 1) . ' минут)' . "\n";
 	}
 	elseif (!isset($r_cron['active']) or $r_cron['active']) {
 		$tt = getmicrotime();
@@ -47,20 +50,15 @@ foreach ($_CFG['cron'] as $key_cron => $r_cron) {
 			eval('$result = ' . $r_cron['function'] . ';');
 		}
 
-		$ini_arr['last_time' . $key_cron] = $time;
-		$ini_arr['do_time' . $key_cron] = getmicrotime() - $tt;
-		$ini_arr['res' . $key_cron] = '* ' . str_replace(array("\n", "\r"), '', addslashes((string)$result)) . '';
+		$dataJson[$key_cron]['last_time'] = $time;
+		$dataJson[$key_cron]['do_time'] = getmicrotime() - $tt;
+		$dataJson[$key_cron]['res' ] = '* ' . str_replace(array("\n", "\r"), array('<br/>', ''), addslashes((string)$result)) . '';
 		$res_cron .= $result;
 	}
 }
 
-$conf = '';
-foreach ($ini_arr as $k => $v) {
-	$conf .= $k . " = " . $v . "\r\n";
-}
-umask(0774);
-file_put_contents($ini_file, $conf);
-@chmod($ini_file, 0774);
+file_put_contents($ini_file, json_encode($dataJson));
+_chmod($ini_file);
 
 
 echo $res_cron;

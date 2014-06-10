@@ -1422,10 +1422,12 @@ deny from all
 			curl_setopt($ch, CURLOPT_REFERER, $param['REFERER']);
 		}
 
+//        curl_setopt($ch, CURLOPT_SSLVERSION, 3);
 		if ($param['SSL']) {
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, TRUE);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 1);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
 			curl_setopt($ch, CURLOPT_CAINFO, $param['SSL']);
+            // curl_setopt ($ch, CURLOPT_SSLCERT, "("/src/openssl-0.9.6/demos/sign/key.pem");
 		}
 		else {
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
@@ -1451,7 +1453,12 @@ deny from all
 		curl_setopt($ch, CURLOPT_HEADER, false);
 		//вернуть ответ сервера в виде строки
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        //
 		curl_setopt($ch, CURLOPT_TIMEOUT, $param['TIMEOUT']);
+
+        if ($_CFG['wep']['debugmode'] > 1) {
+            curl_setopt($ch, CURLOPT_VERBOSE, 1);
+        }
 
 		// ПРОКСИ
 		if ($param['proxy']) {
@@ -1464,13 +1471,17 @@ deny from all
 				$CURLOPT_PROXY = $prox[0];
 				$CURLOPT_PROXYUSERPWD = $prox[1];
 			}
-			else
+			else {
 				$CURLOPT_PROXY = $prox;
+            }
+
 			curl_setopt($ch, CURLOPT_PROXY, $CURLOPT_PROXY);
-			if ($CURLOPT_PROXYUSERPWD) {
+//            curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4);
+//            curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, 1);
+//			if ($CURLOPT_PROXYUSERPWD) {
 				// если необходимо предоставить имя пользователя и пароль
 				//curl_setopt($ch, CURLOPT_PROXYUSERPWD,$CURLOPT_PROXYUSERPWD);
-			}
+//			}
 		}
 		//Функции обратного вызова
 		//curl_setopt($ch, CURLOPT_WRITEFUNCTION,"progress_function");
@@ -1478,16 +1489,18 @@ deny from all
 		$text = curl_exec($ch);
 
 		$PageInfo = curl_getinfo($ch);
-		$err = '';
-		if ($err = curl_errno($ch))
+		$err = $errMess = '';
+		if ($err = curl_errno($ch)) {
 			$flag = false;
+            $errMess = curl_error( $ch );
+        }
 		elseif ($PageInfo['http_code'] == 200) {
 			$flag = true;
         }
 		else
 			$flag = false;
 		curl_close($ch);
-		return array('text' => $text, 'info' => $PageInfo, 'err' => $err, 'flag' => $flag);
+		return array('text' => $text, 'info' => $PageInfo, 'err' => $err, 'flag' => $flag, 'errMess'=>$errMess);
 	}
 
 	static function progress_function($ch, $str)
