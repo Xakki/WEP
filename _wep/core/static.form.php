@@ -96,7 +96,7 @@ class static_form
 			if (!isset($_this->fields[$key]['noquote'])) {
 				// массив
 				if (is_array($value))
-					$value = '\'' . $_this->SqlEsc(preg_replace('/\|+/', '|', '|' . implode('|', $value) . '|')) . '\'';
+					$value = '\'' . $_this->SqlEsc(preg_replace('/\|+/', '|', '|' . implode('|', $value) . '|')) . '\''; // todo json_encode
 				// логическое
 				elseif (self::isTypeBool($_this->fields[$key]['type']))
 					$value = (int)(bool)$value; // целое
@@ -138,7 +138,7 @@ class static_form
 
 		if ($result->err) return false;
 		// get last id if not used nick
-		if (!$_this->mf_use_charid && !isset($_this->fld_data['id']))
+		if (!$_this->mf_use_charid && (!isset($_this->fld_data['id']) || $flag_update) )
 			$_this->id = (int)$result->lastId();
 		elseif ($_this->fld_data['id'])
 			$_this->id = $_this->fld_data['id'];
@@ -574,6 +574,21 @@ class static_form
 			$eval = $ff['mask']['evalu'];
 		return $eval;
 	}
+
+    static function callEvalForm($eval, $val, $data)
+    {
+        if (is_string($eval)) {
+            if (substr($eval, -1) != ';') {
+                $eval = '\'' . addcslashes($eval, '\'') . '\';';
+            }
+            $eval = '$val=' . $eval;
+            eval($eval);
+        }
+        elseif (is_callable($eval)) {
+            $val = call_user_func_array($eval, array($val, $data));
+        }
+        return $val;
+    }
 
 	/**
 	 * Корректировака и обработка формы для вывода формы

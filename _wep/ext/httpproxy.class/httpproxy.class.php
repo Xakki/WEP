@@ -83,18 +83,21 @@ class httpproxy_class extends kernel_extends
         }
 		if (!isset($_GET['pos']))
 			$_GET['pos'] = rand(0, 3);
+
 		$res = '';
         $select = 't1.name,t1.port,t1.id';
-        $where = 'WHERE t1.`active`=1 and t1.`capture`= 0 and t1.`mf_timeup`<(' . time() . '-t1.`timeout`)  and '.($check ? 't1.`negative`-t1.`positive`<=3' : 't1.`negative`-t1.`positive`<0').'
-				ORDER BY '.($check ? 't1.`mf_timeup`' : ' t1.`negative`, fl, t1.`mf_timeup`' ).'
-				LIMIT ' . (int)$_GET['pos'] . ',1';
+        $where = ' WHERE t1.`active`=1 and t1.`capture`= 0 and t1.`mf_timeup`<(' . time() . '-t1.`timeout`)  and '.($check ? 't1.`negative`-t1.`positive`<=3' : 't1.`negative`-t1.`positive`<0');
+		$sort = ' ORDER BY ' . ( $check ? 't1.`mf_timeup`' : 'fl, t1.`mf_timeup`' );
+		$limit = ' LIMIT ' . (int)$_GET['pos'] . ',1';
 
         if ($domen) {
-            $select .= ',t2.id as domenid,if(t2.id,(t2.err+1),0) as fl';
-            $where = 't1 LEFT JOIN ' . $this->childs['httpproxycheck']->tablename . ' t2
+            //,
+            $select .= ',t2.id as domenid ,if( t2.id and t2.use < t2.err * 1.5 ,1 , 0) as fl'; //
+            $where = ' t1 LEFT JOIN ' . $this->childs['httpproxycheck']->tablename . ' t2
 				ON t2.name="' . $this->SqlEsc($this->domen) . '" and t2.owner_id=t1.id ' . $where;
         }
         else {
+            $where = ' t1 '.$where;
             $select .= ',1 as fl';
         }
         // t1.`negative`
@@ -105,7 +108,7 @@ class httpproxy_class extends kernel_extends
         //print_r(' * '.time().' * ');
         //,t1.`timeout`
 
-		$this->data = $this->_query($select,$where);
+		$this->data = $this->_query($select,$where.$sort.$limit, '' ,'', false);
 
 
 		if (count($this->data)) {
@@ -218,13 +221,18 @@ class httpproxy_class extends kernel_extends
 		else {
             if (isset($param['find']) and mb_stripos($html['text'], $param['find']) === false) {
                 $err = 1;
-                print_r('<p style="color:red;">Не найден текст <b>' . $param['find'] . '</b></p>');
+                if ($this->_CFG['wep']['debugmode'] > 1) {
+                    print_r('<p style="color:red;">Не найден текст <b>' . $param['find'] . '</b></p>');
+//                    print_r(htmlentities($html['text'], ENT_NOQUOTES, CHARSET));
+                }
             }
             elseif ($param['findRu']) {
                 preg_match_all('/[А-Яа-яЁё]/u', $html['text'], $matches);
                 if (count($matches[0]) < 5) {
                     $err = 1;
-                    print_r('<p style="color:red;">Мало русских букв</p>');
+                    if ($this->_CFG['wep']['debugmode'] > 1) {
+                        print_r('<p style="color:red;">Мало русских букв</p>');
+                    }
                 }
             }
 		}
@@ -235,6 +243,7 @@ class httpproxy_class extends kernel_extends
         if ($this->_CFG['wep']['debugmode'] > 1) {
             print_r(' | proxy  = ' . $temp .'  |  err = ' . $err.'  |  redirect_url = ' . $html['info']['redirect_url'].'  |  http_code = ' . $html['info']['http_code'].'  |  total_time = ' . $html['info']['total_time']);
         }
+
 //
 //        print_r('<pre>');
 //        print_r($html);
@@ -298,8 +307,6 @@ class httpproxy_class extends kernel_extends
 		elseif (count($_POST) and $_POST['dsbmt']) {
 			$upd = array(
 				'capture' => 0,
-				'negative' => 0,
-				'positive' => 0,
 			);
 			$this->_update($upd, 'WHERE 1=1', false);
 			$mess = array(static_main::am('ok', 'Сделано!!!!!', $this));

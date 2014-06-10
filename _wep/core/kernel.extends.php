@@ -1144,18 +1144,12 @@ abstract class kernel_extends
 
 			$eval = static_form::getEvalForm($this, $r);
 
-			if ($eval !== '') {
-				if (isset($f_data[$k]))
-					$val = $f_data[$k]; // Переменная используемая в eval
-				else
-					$val = '';
-
-				if (substr($eval, -1) != ';') {
-					$eval = '\'' . addcslashes($eval, '\'') . '\';';
-				}
-				$eval = '$f_data[$k]=' . $eval;
-				eval($eval);
-				unset($eval);
+			if ($eval) {
+                if (isset($f_data[$k]))
+                    $val = $f_data[$k]; // Переменная используемая в eval
+                else
+                    $val = '';
+                $f_data[$k] = static_form::callEvalForm($eval, $val, $f_data);
 			}
 			elseif ((isset($r['mask']['fview']) and $r['mask']['fview'] == 2) or (isset($r['mask']['usercheck']) and !static_main::_prmGroupCheck($r['mask']['usercheck']))) {
 				$r['mask']['fview'] = 2;
