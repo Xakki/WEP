@@ -88,8 +88,8 @@ class static_image
 			$err = 0;
 			$run = exec($cmd, $out, $err);
 			if ($err) {
-				//trigger_error('Ошибка [' . $err . ']: ' . $cmd, E_USER_WARNING);
-				return static_imageGD2::_cropImage($InFile, $OutFile, $WidthX, $HeightY, $posX, $posY);
+				trigger_error('Ошибка [' . $err . ']: ' . $cmd, E_USER_WARNING);
+                $res = static_imageGD2::_cropImage($InFile, $OutFile, $WidthX, $HeightY, $posX, $posY);
 			}
 		}
 
