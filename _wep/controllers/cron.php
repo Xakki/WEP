@@ -25,6 +25,7 @@ $_SERVER['SERVER_PORT'] = 80;
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 $_SERVER['REQUEST_URI'] = '/index.html';
 $_SERVER['HTTP_USER_AGENT'] = $_CFG['site']['www'];
+$_SERVER['IS_CRON'] = true;
 
 foreach ($_CFG['cron'] as $key_cron => $r_cron) {
 	$result = '';

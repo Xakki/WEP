@@ -58,7 +58,7 @@ class static_control
 						$param['is_submit'] = true;
 						$mess = $_this->kPreFields($DATA, $param, $argForm); // заполнение формы данными
 						$arr = $_this->fFormCheck($DATA, $param, $argForm); // валидация
-						if (!count($arr['mess'])) // Если нет сообщений/ошибок то сохраняем обработанные значения
+						if (!self::hasErrorMess($arr['mess'])) // Если нет сообщений/ошибок то сохраняем обработанные значения
 						{
 							if ($rm = $_this->_update($arr['vars'])) {
 								$flag = FORM_STATUS_OK;
@@ -108,7 +108,7 @@ class static_control
 				$_this->kPreFields($DATA, $param, $argForm);
 				$arr = $_this->fFormCheck($DATA, $param, $argForm);
 				$flag = FORM_STATUS_ERROR;
-				if (!count($arr['mess'])) // Если нет сообщений/ошибок то сохраняем обработанные значения
+				if (!self::hasErrorMess($arr['mess'])) // Если нет сообщений/ошибок то сохраняем обработанные значения
 				{
 					if ($rm = $_this->_add($arr['vars'])) {
 						$flag = FORM_STATUS_OK;
@@ -160,4 +160,13 @@ class static_control
 			), $flag);
 	}
 
+
+    function hasErrorMess($mess) {
+        foreach($mess as $r) {
+            if ($r['name']=='error') {
+                return true;
+            }
+        }
+        return false;
+    }
 }

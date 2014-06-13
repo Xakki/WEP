@@ -9,8 +9,10 @@ class static_form
 		$submitFlag = 0;
 		if (count($_POST) and (isset($_POST['sbmt']) or isset($_POST['sbmt_save'])))
 			$submitFlag = $param['setAutoSubmit'] = 1;
-		elseif (isset($param['setAutoSubmit']) and $param['setAutoSubmit'])
+		elseif (isset($param['setAutoSubmit']) and $param['setAutoSubmit']===true)
 			$submitFlag = $param['setAutoSubmit'] = 2;
+        elseif (isset($param['setAutoSubmit']))
+            $submitFlag = $param['setAutoSubmit'];
 		return $submitFlag;
 	}
 

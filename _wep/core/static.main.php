@@ -1941,4 +1941,8 @@ function isDebugMode()
 	return ($_CFG['wep']['debugmode']==3 ? true : false);
 }
 
+
+function is_cron() {
+    return (isset($_SERVER['IS_CRON']));
+}
 static_main::autoload_register();
