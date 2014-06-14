@@ -163,7 +163,10 @@ class static_control
 
     static function hasErrorMess($mess) {
         foreach($mess as $r) {
-            if ($r['name']=='error') {
+            if (isset($r['name']) && $r['name']=='error') {
+                return true;
+            }
+            elseif (isset($r[0]) && $r[0]=='error') {
                 return true;
             }
         }
