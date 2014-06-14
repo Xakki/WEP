@@ -709,8 +709,8 @@ class users_class extends kernel_extends
 		else {
 			trigger_error('Регистрация - ' . static_main::m('mailerr', $this), E_USER_WARNING);
 			//$this->_delete();
-			//$arr['mess'][] = array('name'=>'error', 'value'=>static_main::m('mailerr',$this));
-			//$arr['mess'][] = array('name'=>'error', 'value'=>static_main::m('regerr',$this));
+			//$arr['mess'][] = static_main::am('name'=>'error', 'value'=>static_main::m('mailerr',$this));
+			//$arr['mess'][] = static_main::am('name'=>'error', 'value'=>static_main::m('regerr',$this));
 			return false;
 		}
 	}

@@ -163,7 +163,7 @@ function tools_cron()
                     file_put_contents($ini_file, json_encode($ini_arr));
                     _chmod($ini_file);
 				}
-				$_SESSION['messtool'] = array('name' => 'ok', 'value' => 'Задание успешно добавлено.');
+				$_SESSION['messtool'] = static_main::am('ok', 'Задание успешно добавлено.');
 				static_main::redirect(key($DATA['path']));
 			}
 		}
@@ -255,9 +255,9 @@ function tools_cron()
 		unset($NEWDATA['cron'][$_GET['_id']]);
 		list($fl, $mess) = static_tools::saveCFG($NEWDATA, $_CFG['_FILE']['cron']);
 		if (!$fl)
-			$_SESSION['messtool'] = array('name' => 'error', 'value' => 'Ошибка.');
+			$_SESSION['messtool'] = static_main::am('error', 'Ошибка.');
 		else
-			$_SESSION['messtool'] = array('name' => 'ok', 'value' => 'Задание успешно Удалено.');
+			$_SESSION['messtool'] = static_main::am('ok', 'Задание успешно Удалено.');
 		static_main::redirect(key($DATA['path']));
 	}
 	elseif (isset($_GET['_id']) and ($_GET['_type'] == 'act' or $_GET['_type'] == 'dis')) {
@@ -267,9 +267,9 @@ function tools_cron()
 		$NEWDATA['cron'][$_GET['_id']]['active'] = $act;
 		list($fl, $mess) = static_tools::saveCFG($NEWDATA, $_CFG['_FILE']['cron']);
 		if (!$fl)
-			$_SESSION['messtool'] = array('name' => 'error', 'value' => 'Ошибка.');
+			$_SESSION['messtool'] = static_main::am('error', 'Ошибка.');
 		else
-			$_SESSION['messtool'] = array('name' => 'ok', 'value' => 'Задание успешно ' . ($act ? 'включено' : 'отключено') . '.');
+			$_SESSION['messtool'] = static_main::am('ok', 'Задание успешно ' . ($act ? 'включено' : 'отключено') . '.');
 		static_main::redirect(key($DATA['path']));
 	}
 	else {

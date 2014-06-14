@@ -1293,7 +1293,7 @@ abstract class kernel_extends
 			$mess = $this->mess_form;
 
 		if (!count($f_fieldsForm))
-			$mess[] = array('name' => 'error', 'value' => static_main::m('nodata', $this));
+			$mess[] = static_main::am('error', 'nodata', [],$this);
 
 		if (isset($this->_CFG['hook']['kPreFields']))
 			$this->__do_hook('kPreFields', func_num_args());
@@ -1975,9 +1975,9 @@ abstract class kernel_extends
 
 			if ($this->_update($data)) {
 				if ($ord < 0)
-					$DATA[] = array('value' => 'UP', 'name' => 'ok');
+					$DATA[] = static_main::am( 'UP', 'ok');
 				else
-					$DATA[] = array('value' => 'DOWN', 'name' => 'ok');
+					$DATA[] = static_main::am( 'DOWN', 'ok');
 				$flag = 1;
 			}
 			else

@@ -423,7 +423,7 @@ final class modulprm_class extends kernel_extends
 						$this->fld_data['ver'] = $MODUL->ver;
 					if ($MODUL->verCore) {
 						if (version_compare($MODUL->verCore, $this->_CFG['info']['version']) === -1)
-							$MESS[] = array('name' => 'error', 'value' => 'Модуль `' . $Mid . '` устарел. Текущая версия ядра `' . $this->_CFG['info']['version'] . '`! ');
+							$MESS[] = static_main::am('error', 'Модуль `' . $Mid . '` устарел. Текущая версия ядра `' . $this->_CFG['info']['version'] . '`! ');
 					}
 					if (!isset($this->data[$Mid]) or $this->data[$Mid]['typemodul'] != $typemodul)
 						$this->fld_data['typemodul'] = $typemodul;
