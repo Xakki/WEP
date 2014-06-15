@@ -1659,5 +1659,36 @@ deny from all
 		return $html . '<hr/>';
 	}
 
+    // Function to check response time
+    static function pingDomain($domain, $port=80, $timeout=10){
+        $starttime = getmicrotime();
+        $file      = fsockopen ($domain, $port, $errno, $errstr, $timeout);
+        $stoptime  = getmicrotime();
+        if (!$file) $status = -1;  // Site is down
+        else {
+            fclose($file);
+            $status = ($stoptime - $starttime) * 1000;
+            $status = floor($status);
+        }
+        return $status;
+    }
+
+    static function ping($host, $timeout = 1) {
+        // echo exec('ping -n 1 -w 1 72.10.169.28');
+        /* ICMP ping packet with a pre-calculated checksum */
+        $package = "\x08\x00\x7d\x4b\x00\x00\x00\x00PingHost";
+        $socket  = socket_create(AF_INET, SOCK_RAW, 1);
+        socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, array('sec' => $timeout, 'usec' => 0));
+        socket_connect($socket, $host, null);
+        $ts = microtime(true);
+        socket_send($socket, $package, strLen($package), 0);
+        if (socket_read($socket, 255)) {
+            $result = microtime(true) - $ts;
+        } else {
+            $result = false;
+        }
+        socket_close($socket);
+        return $result;
+    }
 // END static class
 }
