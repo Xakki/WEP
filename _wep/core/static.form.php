@@ -131,8 +131,8 @@ class static_form
 		if ($_this->mf_createrid and isset($_SESSION['user']['id']) and (!isset($_this->fld_data[$_this->mf_createrid]) or $_this->fld_data[$_this->mf_createrid] == ''))
 			$_this->fld_data[$_this->mf_createrid] = $_SESSION['user']['id'];
 
-		$q = 'INSERT INTO `' . $_this->tablename . '` (`' . implode('`,`', array_keys($_this->fld_data)) . '`) VALUES (' . implode(',', $_this->fld_data) . ')';
-		if ($flag_update) { // параметр передается в ф. _addUp() - обновление данных если найдена конфликтная запись
+		$q = ($_this->sql_replace ? 'REPLACE' : 'INSERT') . ' INTO `' . $_this->tablename . '` (`' . implode('`,`', array_keys($_this->fld_data)) . '`) VALUES (' . implode(',', $_this->fld_data) . ')';
+		if ($flag_update && !$_this->sql_replace) { // параметр передается в ф. _addUp() - обновление данных если найдена конфликтная запись
 			$q .= ' ON DUPLICATE KEY UPDATE ' . implode(', ', $keyData);
 		}
 
@@ -353,7 +353,7 @@ class static_form
 				if (is_array($value)) {
 					$value = '\'' . $_this->SqlEsc(preg_replace('/\|+/', '|', '|' . implode('|', $value) . '|')) . '\'';
 				}
-				elseif ($_this->fields[$key]['type'] == 'bool')
+				elseif (strpos($_this->fields[$key]['type'], 'bool') )
 					$value = (int)(bool)$value;
 				elseif (strpos($_this->fields[$key]['type'], 'int') !== false)
 					$value = str2int($value);
@@ -364,11 +364,13 @@ class static_form
 				else
 					$value = '\'' . $_this->SqlEsc($value) . '\'';
 			}
-
-			$data[$key] = '`' . $key . '` = ' . $value;
+            if ($_this->sql_quote) {
+                $key =  '`' . $key . '`';
+            }
+            $data[$key] = $key . ' = ' . $value;
 		}
 
-		$q = 'UPDATE `' . $_this->tablename . '` SET ' . implode(',', $data) . ' WHERE ' . $where;
+		$q = 'UPDATE ' . ($_this->sql_quote? '`' : ''). $_this->tablename .  ($_this->sql_quote? '`' : '') .' SET ' . implode(',', $data) . ' WHERE ' . $where;
 		$result = $_this->SQL->execSQL($q);
 		if ($result->err) return false;
 

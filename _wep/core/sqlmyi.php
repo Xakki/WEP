@@ -428,7 +428,7 @@ class sqlmyi
 		return false;
 	}
 
-	function longLog($ttt, $sql)
+	function longLog($ttt, $sql, $isError = false)
 	{
 		global $_CFG;
 		if (isset($this->SQL_CFG['longquery']) and $this->SQL_CFG['longquery'] > 0 and $ttt > $this->SQL_CFG['longquery']) {
@@ -445,7 +445,7 @@ class sqlmyi
 			elseif ($ttt > 0.01) $ttt = '<span style="color:rgb(226, 172, 0);">' . $ttt . '</span>';
 			elseif ($ttt > 0.005) $ttt = '<span style="color:rgb(247, 255, 155);">' . $ttt . '</span>';
 			else $ttt = '<span style="color:#FFF;">' . $ttt . '</span>';
-			$_CFG['logs']['sql'][] = htmlentities($sql, ENT_NOQUOTES, CHARSET) . '  TIME=' . $ttt;
+			$_CFG['logs']['sql'][] = htmlentities($sql, ENT_NOQUOTES, CHARSET) . '  TIME=' . $ttt. ($isError ? ' <span style="color:red;font-size:1.5em;">ERROR</span>' : '');
 		}
 		elseif (isBackend() or canShowAllInfo())
 			$_CFG['logs']['sql'][] = true;
@@ -479,6 +479,7 @@ class myiquery
 			trigger_error($this->err .= ' (' . $sql . ');', E_USER_WARNING);
 			$this->errno = mysqli_errno($db->hlink);
 			//$db->fError($this->err);
+            $db->longLog((getmicrotime() - $ttt), $sql, true);
 		}
 		else {
 			$db->longLog((getmicrotime() - $ttt), $sql);

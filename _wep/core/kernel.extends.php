@@ -108,6 +108,9 @@ abstract class kernel_extends
 		'root' => 'root_key',
 	);
 
+    public $sql_quote = true;
+    public $sql_replace = false;
+
 	public static $_flagcheckmodstruct = true;
 
 	function __construct($owner = NULL, $_forceLoad = false)
@@ -518,7 +521,7 @@ abstract class kernel_extends
 		}
 		elseif (isint($where)) {
 			if ((int)$where > 0)
-				$where = 'WHERE `id`="' . (int)$where . '"';
+				$where = 'WHERE `id`=' . (int)$where;
 			else
 				$where = '';
 		}
@@ -970,12 +973,18 @@ abstract class kernel_extends
 	{
 		if (is_array($list)) {
 			if (!count($list)) return 0;
-			foreach ($list as &$value)
-				$value = $this->SqlEsc($value);
-			return '\'' . implode('\',\'', $list) . '\'';
+			foreach ($list as &$value) {
+                if (!isint($value)) {
+				    $value = '\'' . $this->SqlEsc($value) . '\'';
+                }
+            }
+			return implode(',', $list);
 		}
 		else {
 			if (!$list) return 0;
+            if (isint($list)) {
+                return $list;
+            }
 			return '\'' . $this->SqlEsc($list) . '\'';
 		}
 	}
