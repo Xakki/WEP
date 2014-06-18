@@ -1948,4 +1948,9 @@ function isDebugMode()
 function is_cron() {
     return (isset($_SERVER['IS_CRON']));
 }
+
+function isWin() {
+    return DIRECTORY_SEPARATOR == '\\';
+}
+
 static_main::autoload_register();
