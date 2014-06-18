@@ -1064,7 +1064,9 @@ class static_main
 
 function session_go($force = false)
 { //$force=true - открывает сесиию для не авторизованного пользователя
-	if (isset($_SESSION)) return true;
+	if (static_main::_prmUserCheck()) {
+        return true;
+    }
 	global $_CFG, $SESSION_GOGO;
 	if (!$_CFG['robot'] and (isset($_COOKIE[$_CFG['session']['name']]) or $force)) {
 		if ($_CFG['wep']['sessiontype'] == 1) {

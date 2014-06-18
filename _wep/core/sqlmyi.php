@@ -466,7 +466,7 @@ class myiquery
 		global $_CFG;
 		$ttt = getmicrotime();
 
-		if ($_CFG['wep']['debugmode'] >= 3 and strpos($sql, 'SELECT ') === 0)
+		if ($_CFG['wep']['debugmode'] >= 3 and strpos($sql, 'SELECT ') === 0 && $db->SQL_CFG['engine']=='MyISAM')
 			$sql = preg_replace('/SELECT /i', 'SELECT SQL_NO_CACHE ', $sql, 1);
 
 		$this->handle = mysqli_query($db->hlink, $sql);
