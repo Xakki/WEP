@@ -431,6 +431,7 @@ class sqlmyi
 	function longLog($ttt, $sql, $isError = false)
 	{
 		global $_CFG;
+        $_CFG['logs']['sqlTime'] += $ttt;
 		if (isset($this->SQL_CFG['longquery']) and $this->SQL_CFG['longquery'] > 0 and $ttt > $this->SQL_CFG['longquery']) {
 			trigger_error('LONG QUERY [' . $ttt . ' sec. - мах ' . $this->SQL_CFG['longquery'] . '] (' . $sql . ')', E_USER_WARNING);
 			if ($this->logFile !== false)

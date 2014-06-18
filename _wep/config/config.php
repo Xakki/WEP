@@ -103,6 +103,7 @@ $_CFG['ReflectedClass'] = array(); // cron
 
 $_CFG['logs'] = array(
 	'sql' => array(),
+	'sqlTime' => 0,
 	'mess' => array(),
 ); // - массив SQL запросов
 $GLOBALS['_ERR'] = array(); //текс ошибок

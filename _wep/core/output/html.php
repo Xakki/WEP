@@ -79,7 +79,7 @@ class wephtml
 
 		$htmlinfo = '';
 		$included_files = get_included_files();
-		$htmlinfo .= ' time=' . substr((getmicrotime() - $this->_mctime_start), 0, 6) . ' | memory=' . (int)(memory_get_usage() / 1024) . 'Kb | maxmemory=' . (int)(memory_get_peak_usage() / 1024) . 'Kb | query=' . count($_CFG['logs']['sql']) . ' | file include=' . count($included_files) . ' <br/> ';
+		$htmlinfo .= ' time=' . substr((getmicrotime() - $this->_mctime_start), 0, 6) . ' | SQLtime=' . $_CFG['logs']['sqlTime'] . ' | memory=' . (int)(memory_get_usage() / 1024) . 'Kb | maxmemory=' . (int)(memory_get_peak_usage() / 1024) . 'Kb | query=' . count($_CFG['logs']['sql']) . ' | file include=' . count($included_files) . ' <br/> ';
 
 		if (canShowAllInfo() > 1 and count($_CFG['logs']['sql']) > 0)
 			$htmlinfo .= static_main::spoilerWrap('SQL QUERY', implode(';<br/>', $_CFG['logs']['sql']));
