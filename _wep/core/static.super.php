@@ -390,7 +390,7 @@ class static_super
 		$countfield = $_this->data[0]['cnt'];
 
 		if (!$countfield) {
-			$DATA['messages'][] = static_main::am('Пусто', 'alert');
+			$DATA['messages'][] = static_main::am('alert', 'Пусто');
 			return $DATA;
 		}
 
