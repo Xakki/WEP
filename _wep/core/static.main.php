@@ -93,7 +93,7 @@ class static_main
 		$ar_type = array('error' => false, 'alert' => true, 'notice' => true, 'ok' => true);
 		if (!$ar_type[$type]) {
 			trigger_error($msg, E_USER_WARNING);
-			if ($_CFG['wep']['debugmode'] > 2)
+			if (isDebugMode())
 				$_CFG['logs']['mess'][] = array($type, $msg, $cl);
 		}
 		return $ar_type[$type];
@@ -1941,7 +1941,7 @@ function plugBootstrap()
 function isDebugMode()
 {
 	global $_CFG;
-	return ($_CFG['wep']['debugmode']==3 ? true : false);
+	return ($_CFG['wep']['debugmode']>2 ? true : false);
 }
 
 

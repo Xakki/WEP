@@ -1,8 +1,5 @@
 <?php
 
-$WEPOUT = new wephtml();
-$isAjax = false;
-
 class wephtml
 {
 	private $_html = '';
@@ -47,7 +44,7 @@ class wephtml
 				$_tpl['logs'] .= '<link type="text/css" href="/_design/_style/bug.css" rel="stylesheet"/>
 					<div id="bugmain">' . $buffer . '</div>';
 
-			$this->parseTemplate($this->_html, $_tpl); // PARSE
+			self::parseTemplate($this->_html, $_tpl); // PARSE
 
 		}
 		else {
@@ -82,7 +79,9 @@ class wephtml
 		$htmlinfo .= ' time=' . substr((getmicrotime() - $this->_mctime_start), 0, 6) . ' | SQLtime=' . $_CFG['logs']['sqlTime'] . ' | memory=' . (int)(memory_get_usage() / 1024) . 'Kb | maxmemory=' . (int)(memory_get_peak_usage() / 1024) . 'Kb | query=' . count($_CFG['logs']['sql']) . ' | file include=' . count($included_files) . ' <br/> ';
 
 		if (canShowAllInfo() > 1 and count($_CFG['logs']['sql']) > 0)
-			$htmlinfo .= static_main::spoilerWrap('SQL QUERY', implode(';<br/>', $_CFG['logs']['sql']));
+			$htmlinfo .= static_main::spoilerWrap('SQL QUERY', static_render::sqlLog($_CFG['logs']['sql']));
+		if (canShowAllInfo() > 1 and count($_CFG['logs']['content']) > 0)
+			$htmlinfo .= static_main::spoilerWrap('CONTENT', static_render::sqlLog($_CFG['logs']['content']));
 		if (canShowAllInfo() > 2) {
 			$htmlinfo .= static_main::spoilerWrap('FILE INCLUDE', implode(';<br/>', $included_files));
 		}
@@ -120,7 +119,7 @@ class wephtml
 		return false;
 	}
 
-	function parseTemplate(&$TEXT, &$TPL, $skip = array())
+    static function parseTemplate(&$TEXT, &$TPL, $skip = array())
 	{
         $subSkip = $skip;
         $temp = self::matchTmp($TEXT);
@@ -136,7 +135,7 @@ class wephtml
         }
 
 		if (self::hasMatchTmp($TEXT)) {
-			$this->parseTemplate($TEXT, $TPL, $subSkip);
+            self::parseTemplate($TEXT, $TPL, $subSkip);
 		}
 		return true;
 	}

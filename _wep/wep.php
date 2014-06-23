@@ -66,10 +66,14 @@ if (isset($_SERVER['argv']) and $_SERVER['argv'][1] === 'cron' and $_SERVER['SHE
 	exit();
 }
 
-if (isAjax())
+if (isAjax()) {
 	require_once($_CFG['_PATH']['core'] . 'output/ajax.php');
-else
-	require_once($_CFG['_PATH']['core'] . 'output/html.php');
+    $WEPOUT = new wepajax();
+}
+else {
+    require_once($_CFG['_PATH']['core'] . 'output/html.php');
+    $WEPOUT = new wephtml();
+}
 
 require_once($_CFG['_PATH']['core'] . 'transform/transformPHP.php');
 require_once($_CFG['_PATH']['core'] . 'transform/transformXSL.php');

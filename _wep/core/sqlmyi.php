@@ -21,8 +21,19 @@ class sqlmyi
 		if (isset($_CFG['log']) and (int)$_CFG['log'] and WEP) {
 			$this->logFile = array();
 		}
-		if (function_exists('mysqli_connect'))
+		if (function_exists('mysqli_connect')) {
+            global $_CFG;
+            $time = microtime(true);
 			$this->ready = $this->_connect();
+            $ttt = (microtime(true)-$time);
+            $_CFG['logs']['sqlTime'] += $ttt;
+            if (canShowAllInfo() > 1) {
+                $_CFG['logs']['sql'][] = array('query' => '<b>CONNECT - '.$this->SQL_CFG['host'].':'.$this->SQL_CFG['port'].'</b>', 'time' => $ttt, 'hasError' => false);
+            }
+            elseif (isBackend() or canShowAllInfo()) {
+                $_CFG['logs']['sql'][] = true;
+            }
+        }
 
 		if (!$this->ready) {
 			$_CFG["site"]["work_text"] = '<err>' . static_main::m('MySQL is down!') . '</err>';
@@ -54,7 +65,7 @@ class sqlmyi
 		$temp = $_CFG['wep']['catch_bug'];
 		$_CFG['wep']['catch_bug'] = 0;
 
-		$this->hlink = @mysqli_connect($this->SQL_CFG['host'], $this->SQL_CFG['login'], $this->SQL_CFG['password'], '', $this->SQL_CFG['port']);
+		$this->hlink = mysqli_connect($this->SQL_CFG['host'], $this->SQL_CFG['login'], $this->SQL_CFG['password'], '', $this->SQL_CFG['port']);
 
 		if (!$this->hlink) return false;
 
@@ -66,7 +77,8 @@ class sqlmyi
 		$_CFG['wep']['catch_bug'] = $temp;
 		if ($this->hlink)
 			mysqli_query($this->hlink, "SET time_zone = '" . date_default_timezone_get() . "'");
-		return true;
+
+        return true;
 	}
 
 	private function _connectDB()
@@ -440,13 +452,7 @@ class sqlmyi
 		//if(strstr(strtolower($sql),'insert into'))
 		//	$this->id = $this->sql_id();
 		if (canShowAllInfo() > 1) {
-			if ($ttt > 0.5) $ttt = '<span style="color:rgb(255, 0, 0);font-size:1.4em;">' . $ttt . '</span>';
-			elseif ($ttt > 0.1) $ttt = '<span style="color:#FF6633;font-size:1.2em;">' . $ttt . '</span>';
-			elseif ($ttt > 0.05) $ttt = '<span style="color:rgb(255, 155, 63);font-size:1.1em;">' . $ttt . '</span>';
-			elseif ($ttt > 0.01) $ttt = '<span style="color:rgb(226, 172, 0);">' . $ttt . '</span>';
-			elseif ($ttt > 0.005) $ttt = '<span style="color:rgb(247, 255, 155);">' . $ttt . '</span>';
-			else $ttt = '<span style="color:#FFF;">' . $ttt . '</span>';
-			$_CFG['logs']['sql'][] = htmlentities($sql, ENT_NOQUOTES, CHARSET) . '  TIME=' . $ttt. ($isError ? ' <span style="color:red;font-size:1.5em;">ERROR</span>' : '');
+			$_CFG['logs']['sql'][] = array('query' => $sql, 'time' => $ttt, 'hasError' =>$isError);
 		}
 		elseif (isBackend() or canShowAllInfo())
 			$_CFG['logs']['sql'][] = true;

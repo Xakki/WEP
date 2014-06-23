@@ -311,7 +311,7 @@ class pg_class extends kernel_extends
 				$flag_content = $this->display_inc($id);
 			}
 			elseif (isset($_REQUEST['PGMARKER'])) {
-				$flag_content = $this->display_content($this->id, $_REQUEST['PGMARKER']);
+				$flag_content = $this->display_content($this->id);
 			}
 			else {
 				$flag_content = $this->display_page($this->id, true);
@@ -565,23 +565,10 @@ class pg_class extends kernel_extends
 	/**
 	 * Вывод по маркеру
 	 */
-	function display_content($id, $marker)
+	function display_content($id)
 	{
-		if (!is_array($marker))
-			$marker = explode(',', $marker);
-		$escMarker = array();
-		foreach ($marker as $item) {
-			if (isset($this->config['marker'][$item]))
-				$escMarker[] = $this->SqlEsc($item);
-		}
-
-		if (!count($escMarker) or count($escMarker) > 10) {
-			trigger_error('Ошибка запроса / превышен лимит - ' . count($escMarker) . '>10', E_USER_WARNING);
-			return false;
-		}
-
 		$Cdata = array();
-		$cls = 'SELECT * FROM ' . $this->SQL_CFG['dbpref'] . 'pg_content WHERE active=1 and owner_id=' . $id . ' and marker IN ("' . implode('", "', $escMarker) . '")';
+		$cls = 'SELECT * FROM ' . $this->SQL_CFG['dbpref'] . 'pg_content WHERE active=1 and owner_id=' . $id;
 		$resultPG = $this->SQL->execSQL($cls);
 		if (!$resultPG->err)
 			while ($rowPG = $resultPG->fetch()) {
@@ -810,6 +797,7 @@ class pg_class extends kernel_extends
 				}
 				//Если дынне из кеша не поступили, то запускаем обработчик
 				if (!$flagMC) {
+                    $time = microtime(true);
 					//Если флаг включен, то работаем с временными фаилами, чтобы потом их записать в кеш
 					if ($MemFlag) {
 						// обнуляем $_tpl
@@ -877,6 +865,9 @@ class pg_class extends kernel_extends
 						$_tpl = $temp_tpl;
 					}
 				}
+                if (isDebugMode()) {
+                    $_CFG['logs']['content'][] =  array('query' => $rowPG['id'], 'time' => (microtime(true)-$time), 'hasError' =>false);
+                }
 
 				// Возвращаемся к нормальному состоянию
 				if (!$rowPG['autocss']) {

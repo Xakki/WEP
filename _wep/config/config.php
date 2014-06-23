@@ -21,7 +21,7 @@ $_CFG['info'] = array( //информация о СМС
 
 $_CFG['sql'] = array( // SQL
 	'type' => 'sqlmyi',
-	'host' => 'localhost',
+	'host' => '127.0.0.1',
 	'login' => '',
 	'password' => '',
 	'port' => '3306',
@@ -102,9 +102,10 @@ $_CFG['cron'] = array(); // cron
 $_CFG['ReflectedClass'] = array(); // cron
 
 $_CFG['logs'] = array(
-	'sql' => array(),
+	'sql' => [],
+    'content' => [],
 	'sqlTime' => 0,
-	'mess' => array(),
+	'mess' => [],
 ); // - массив SQL запросов
 $GLOBALS['_ERR'] = array(); //текс ошибок
 
