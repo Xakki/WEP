@@ -271,6 +271,8 @@ define('FORM_STATUS_OK', 1);
 define('POS_END', 0);
 define('POS_BEGIN', 1);
 
+define('QUOTES', '"');
+
 //ERRORS
 $_CFG['_error'] = array(
 	0 => array(

@@ -151,17 +151,19 @@ class static_main
 				return var_export($GLOBALS['_ERR'], true);
 			}
 			else {
-				foreach ($GLOBALS['_ERR'] as $err) foreach ($err as $r) {
-					$var = $r['errtype'] . ' ' . $r['errstr'] . ' , in line ' . $r['errline'] . ' of file <i>' . $r['errfile'] . '</i>';
-					if ($r['debug']) //$r['errcontext']
-						$var = self::spoilerWrap($var, $r['debug'], 'bug_' . $r['errno']);
-					else
-						$var = '<div class="bug_' . $r['errno'] . '">' . $var . '</div>';
-					$var .= "\n";
-					if ($_CFG['_error'][$r['errno']]['prior'] <= 3)
-						$htmlerr .= $var;
-					else //нотисы отдельно
-						$notice .= $var;
+				foreach ($GLOBALS['_ERR'] as $err) {
+                    foreach ($err as $r) {
+                        $var = $r['errtype'] . ' ' . $r['errstr'] . ' , in line ' . $r['errline'] . ' of file <i>' . $r['errfile'] . '</i>';
+                        if ($r['debug']) //$r['errcontext']
+                            $var = self::spoilerWrap($var, $r['debug'], 'bug_' . $r['errno']);
+                        else
+                            $var = '<div class="bug_' . $r['errno'] . '">' . $var . '</div>';
+                        $var .= "\n";
+                        if ($_CFG['_error'][$r['errno']]['prior'] <= 3)
+                            $htmlerr .= $var;
+                        else //нотисы отдельно
+                            $notice .= $var;
+                    }
 				}
 			}
 		}
@@ -1622,6 +1624,8 @@ function str2int($string, $concat = true)
 
 function isint($val)
 {
+    if (!is_string($val) && !is_numeric($val))
+        return false;
 	$res = preg_match_all('/^[0-9]+$/', $val, $matches);
 	if ($res == 1)
 		return true;
@@ -1951,6 +1955,44 @@ function is_cron() {
 
 function isWin() {
     return DIRECTORY_SEPARATOR == '\\';
+}
+
+if(!function_exists('array_column')){
+    /*
+     * array_column() for PHP 5.4 and lower versions
+    */
+    function array_column($input,$column_key,$index_key=''){
+        if(!is_array($input)) return;
+        $results=array();
+        if($column_key===null){
+            if(!is_string($index_key)&&!is_int($index_key)) return false;
+            foreach($input as $_v){
+                if(array_key_exists($index_key,$_v)){
+                    $results[$_v[$index_key]]=$_v;
+                }
+            }
+            if(empty($results)) $results=$input;
+        }else if(!is_string($column_key)&&!is_int($column_key)){
+            return false;
+        }else{
+            if(!is_string($index_key)&&!is_int($index_key)) return false;
+            if($index_key===''){
+                foreach($input as $_v){
+                    if(is_array($_v)&&array_key_exists($column_key,$_v)){
+                        $results[]=$_v[$column_key];
+                    }
+                }
+            }else{
+                foreach($input as $_v){
+                    if(is_array($_v)&&array_key_exists($column_key,$_v)&&array_key_exists($index_key,$_v)){
+                        $results[$_v[$index_key]]=$_v[$column_key];
+                    }
+                }
+            }
+
+        }
+        return $results;
+    }
 }
 
 static_main::autoload_register();
