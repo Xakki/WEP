@@ -12,7 +12,7 @@ function tpl_pgmap(&$data, $attr = '')
 			$html .= '>';
 			if (isset($r['sel']) and $r['sel'])
 				$r['name'] = '<span>' . $r['name'] . '</span>';
-			if (isset($r['hidechild']))
+			if (isset($r['hidechild']) and isset($r['#item#']) and count($r['#item#']))
 				$html .= '<span class="foldedul clickable" onclick="ulToggle(this,\'unfoldedul\')"></span>';
 			$html .= '<a href="' . $r['href'] . '">' . $r['name'] . '</a>';
 			if (isset($r['#item#']) and count($r['#item#'])) {

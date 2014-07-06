@@ -723,4 +723,16 @@ class static_list
 		}
 		return array($s, $upsel);
 	}
+
+    static function getTreeData(&$data, $key = 0, $nm = '#item#')
+    {
+        $treeData = [];
+        foreach($data[$key] as $ki=>$ri) {
+            if (isset($data[$ki])) {
+                $ri[$nm] = self::getTreeData($data, $ki, $nm);
+            }
+            $treeData[$ki] = $ri;
+        }
+        return $treeData;
+    }
 }

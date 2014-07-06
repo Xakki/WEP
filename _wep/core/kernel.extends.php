@@ -2103,6 +2103,9 @@ abstract class kernel_extends
 	{
         if (!$ext)
             return '';
+        if (strlen($ext)>5) {
+            trigger_error('Wrong EXT in getAttaches - "'.$ext.'"', E_USER_WARNING);
+        }
 		return $this->getPathForAtt($key) . $this->getSubPath($id) . '/' . $id . '.' . $ext;
 	}
 
