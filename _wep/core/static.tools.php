@@ -604,30 +604,53 @@ class static_tools
 			$html .= '<div>Результат статистики выводится по фильтру</div>';
 		}
 
-		if (count($clause))
-			$clause = 'WHERE ' . implode(' and ', $clause);
-		else
-			$clause = '';
+        if (!isset($MODUL->mf_statistic['multiline'])) {
+            $multiline = [$MODUL->mf_statistic['Xname'] => ''];
+        }
+        elseif(is_callable($MODUL->mf_statistic['multiline'])) {
+            $multiline = call_user_func_array($MODUL->mf_statistic['multiline'], []);
+        }
+        else {
+            $multiline = $MODUL->mf_statistic['multiline'];
+        }
 
-		$clause = 'SELECT ' . $xList . ' as `X`, ' . $MODUL->mf_statistic['Y'] . ' as `Y` FROM `' . $MODUL->tablename . '` t1 ' . $clause . ' GROUP BY X ORDER BY X';
-		$result = $MODUL->SQL->execSQL($clause);
-		$data = array();
-		$maxY = 0;
-		$minX = 0;
-		$maxX = 0;
-		if (!$result->err) {
-			while ($row = $result->fetch()) {
-				$data[] = '[\'' . $row['X'] . '\',' . $row['Y'] . ']';
-				if ($row['Y'] > $maxY)
-					$maxY = $row['Y'];
-				if ($row['X'] > $maxX)
-					$maxX = $row['X'];
-				if ($minX == 0 or $row['X'] < $minX)
-					$minX = $row['X'];
-			}
-		}
-		else
-			return array($result->err, '');
+        $maxY = 0;
+        $minX = 0;
+        $maxX = 0;
+
+        $evalVar = '';
+        foreach($multiline as $kLine=>$rLine) {
+            $clauseTemp = $clause;
+            if ($rLine) {
+                $clauseTemp[] = $rLine;
+            }
+            if (count($clauseTemp))
+                $clauseTemp = 'WHERE ' . implode(' and ', $clauseTemp);
+            else
+                $clauseTemp = '';
+
+            $cls = 'SELECT ' . $xList . ' as `X`, ' . $MODUL->mf_statistic['Y'] . ' as `Y` FROM `' . $MODUL->tablename . '` t1 ' . $clauseTemp . ' GROUP BY X ORDER BY X';
+            $result = $MODUL->SQL->execSQL($cls);
+            $data = array();
+
+            if (!$result->err) {
+                while ($row = $result->fetch()) {
+                    $data[] = '[\'' . $row['X'] . '\',' . $row['Y'] . ']';
+                    if ($row['Y'] > $maxY)
+                        $maxY = $row['Y'];
+                    if ($row['X'] > $maxX)
+                        $maxX = $row['X'];
+                    if ($minX == 0 or $row['X'] < $minX)
+                        $minX = $row['X'];
+                }
+            }
+            else
+                return $result->err;
+            if (count($data)) {
+                $evalVar .= 'lines.push([' . implode(',', $data) . ']);'.PHP_EOL.'
+				series.push({lineWidth: 2, label: \'' . $kLine . '\'});';
+            }
+        }
 
 		$stepY = round($maxY, -1) / 10;
 		$jqplot = MY_BH . $_CFG['PATH']['vendors'] . 'jqplot/';
@@ -644,14 +667,17 @@ class static_tools
 				}
 			};
 			jqplot = function() {
-				line1 = [' . implode(',', $data) . '];
+			    var lines = [];
+			    var series = [];
+                '.$evalVar.'
 				var option = {
 					caption : \'' . $MODUL->caption . '\',
 					xName : \'' . $MODUL->mf_statistic['Xname'] . '\',
 					yName : \'' . $MODUL->mf_statistic['Yname'] . '\',
 					yStep : ' . $stepY . ',
 				};
-				readyPlot(option);
+				console.log(option, lines, series);
+				readyPlot(option, lines, series);
 			}
 			wep.scriptLoad(plotScript);
 		';
@@ -672,6 +698,7 @@ class static_tools
 		$_tpl['onload'] .= $eval;
 		return $html;
 	}
+
 
 	/**
 	 * Обновление миниатюр

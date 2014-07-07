@@ -1151,7 +1151,7 @@ window.wep = {
         return false;
     },
 
-    readyPlot: function (options) {
+    readyPlot: function (options, lines, series) {
         var settings = {
             idObj: 'statschart1',
             caption: 'Stats',
@@ -1167,7 +1167,7 @@ window.wep = {
 
         $.jqplot.config.enablePlugins = true;
 
-        plot1 = $.jqplot(settings.idObj, [line1], {
+        plot1 = $.jqplot(settings.idObj, lines, {
             title: settings.caption,
             // Turns on animatino for all series in this plot.
             animate: true,
@@ -1186,20 +1186,62 @@ window.wep = {
                 {lineWidth: 4, markerOptions: {style: 'square'}}
             ]
         });
-
-        plot2 = $.jqplot('statschart2', [line1], {
+//http://www.jqplot.com/docs/files/jqPlotOptions-txt.html
+        plot2 = $.jqplot('statschart2', lines, {
             title: settings.caption,
             animate: true,
             animateReplot: true,
-            seriesDefaults: {neighborThreshold: 0, showMarker: false},
+//            axesDefaults: {
+//                tickOptions: {
+//                    showMark: true,
+//                    showLabel: true,
+//                    show: true
+//                },
+//                showTicks: true
+//            },
             axes: {
-                xaxis: {label: settings.xName, renderer: $.jqplot.DateAxisRenderer},
+                xaxis: { renderer: $.jqplot.DateAxisRenderer},
                 yaxis: {label: settings.yName, min: 0, tickOptions: {formatString: '%d'}, useSeriesColor: true}
             },
-            cursor: {showTooltip: false, zoom: true, constrainZoomTo: 'x'},
-            series: [
-                {lineWidth: 2}
-            ]
+            cursor: {
+                showTooltip: true,
+                zoom: true,
+                constrainZoomTo: 'x'
+            },
+            legend: {
+                show: true,
+                placement: 'outsideGrid'
+            },
+//            seriesDefaults: {
+//                neighborThreshold: 0,
+//                showMarker: true,
+//                rendererOptions: {
+//                    highlightMouseOver: true,
+//                    highlightMouseDown: false,
+//                    highlightColor: null
+//                }
+//            },
+//            seriesDefaults:{
+//                show: true,
+//                renderer:$.jqplot.BarRenderer,
+//                rendererOptions: {fillToZero: true},
+//                markerRenderer: $.jqplot.MarkerRenderer,
+//                showLine: true,     // whether to render the line segments or not.
+//                showMarker: true,   // render the data point markers or not.
+//                markerOptions: {
+//                    show: true
+//                }
+//            },
+            series: series
+//            highlighter: {
+//                show:true,
+//                tooltipLocation: 'n',
+//                tooltipAxes: 'pieref', // exclusive to this version
+//                tooltipAxisX: 20, // exclusive to this version
+//                tooltipAxisY: 20, // exclusive to this version
+//                useAxesFormatters: false,
+//                formatString:'%s, %P',
+//            }
         });
 
 
