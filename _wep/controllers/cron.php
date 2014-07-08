@@ -27,6 +27,21 @@ $_SERVER['REQUEST_URI'] = '/index.html';
 $_SERVER['HTTP_USER_AGENT'] = $_CFG['site']['www'];
 $_SERVER['IS_CRON'] = true;
 
+$pidFile = $_CFG['_PATH']['weptemp'].'cron.pid';
+$lastTimeRun = '';
+file_exists($pidFile) && $lastTimeRun = file_get_contents($pidFile);
+if ($lastTimeRun) {
+    if ($lastTimeRun< (time() - 1800)) {
+        trigger_error('Завис крон или процесс сломался', E_USER_WARNING);
+    }
+    else {
+        echo '**wait**';
+        return ;
+    }
+}
+
+file_put_contents($pidFile, time());
+
 foreach ($_CFG['cron'] as $key_cron => $r_cron) {
 	$result = '';
 	if (isset($dataJson[$key_cron]['last_time']) && ($dataJson[$key_cron]['last_time'] + $r_cron['time']) > $time) {
@@ -58,7 +73,7 @@ foreach ($_CFG['cron'] as $key_cron => $r_cron) {
 		$res_cron .= $result;
 	}
 }
-
+file_put_contents($pidFile, '');
 file_put_contents($ini_file, json_encode($dataJson));
 _chmod($ini_file);
 
