@@ -707,7 +707,7 @@ class static_list
 				$s[$key]['#name#'] = $value;
 			}
 
-			if ($key != $id and isset($data[$key]) and count($data[$key]) and is_array($data[$key])) {
+			if ($key != $id and isset($data[$key]) and is_array($data[$key]) and count($data[$key])) {
 				list($s[$key]['#item#'], $sel2) = self::_forlist($data, $key, $select, $multiple);
 				if ($sel2) {
 					$s[$key]['#sel#'] = $sel2;

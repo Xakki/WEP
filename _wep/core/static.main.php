@@ -1,4 +1,11 @@
 <?php
+
+if (defined('WEP_PROF')) {
+    include_once "../xhprof/xhprof_lib/utils/xhprof_lib.php";
+    include_once "../xhprof/xhprof_lib/utils/xhprof_runs.php";
+    xhprof_enable(XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY);
+}
+
 /*
   Функция завершения работы скрипта
  */
@@ -9,6 +16,17 @@ function shutdown_function()
 	global $_CFG;
 	$_CFG['shutdown_function_flag'] = true;
 	observer::notify_observers('shutdown_function');
+
+    if (defined('WEP_PROF')) {
+        # Останавливаем профайлер
+        $xhprof_data = xhprof_disable();
+
+        # Сохраняем отчет и генерируем ссылку для его просмотра
+        $xhprof_runs = new XHProfRuns_Default();
+        $run_id = $xhprof_runs->save_run($xhprof_data, "xhprof_test");
+//        $listFile = '../xhprof/idlist.txt';
+//        file_put_contents($listFile, $_SERVER['HTTP_HOST'].'|'.$_SERVER['REQUEST_URI'].'|'.time().'|'.$run_id.PHP_EOL ,FILE_APPEND );
+    }
 }
 
 register_shutdown_function('shutdown_function'); // Запускается первым при завершении скрипта

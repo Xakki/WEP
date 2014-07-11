@@ -3,7 +3,7 @@
 if (!defined('SITE') || !defined('WEP') || !defined('WEPCONF') || !defined('WEP_CONFIG')) {
 	die('Not defined constants');
 }
-assert_options(ASSERT_ACTIVE,   true);
+
 /*
  * версия ядра
  *  нумерация отличает от других версией
