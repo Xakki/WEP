@@ -533,9 +533,9 @@ class pay_class extends kernel_extends
 			$data['json_data'] = $addInfo['json_data'];
 
 		$res = $this->_add($data, false);
-
+        $data['id'] = $this->id;
 		if ($res) {
-			$this->transaction($data, $data['status']);
+            $res = $this->transaction($data, $data['status']);
 			if ($this->isPayModul($data['pay_modul']) and $this->childs[$data['pay_modul']]->id)
 				$this->childs[$data['pay_modul']]->_update(array('owner_id' => $this->id));
 		}
@@ -561,7 +561,7 @@ class pay_class extends kernel_extends
 		$res = $this->_update($upd, false);
 
 		if ($res) {
-			$this->transaction($data, $status);
+            $res = $this->transaction($data, $status);
 		}
 
 		return $res;
@@ -578,16 +578,18 @@ class pay_class extends kernel_extends
 			$this->SQL->execSQL('UPDATE ' . $UGROUP->childs['users']->tablename . ' SET balance=balance-' . $data['cost'] . ' WHERE id=' . $data['from_user']);
 			$this->SQL->execSQL('UPDATE ' . $UGROUP->childs['users']->tablename . ' SET balance=balance+' . $data['cost'] . ' WHERE id=' . $data['to_user']);
 			if ($data['_eval']) {
-				if (substr($data['_eval'], 0, 3) != 'if(') // для совместимости со старым форматом
-				{
-					$temp = explode('::', $data['_eval']);
-					$data['_eval'] = 'if(_new_class("' . $temp[0] . '",$M)){$M->' . $temp[1] . ';}';
-
-				}
+                $temp = explode('::', $data['_eval']);
+                $data['_eval'] = '$flag = (_new_class("' . $temp[0] . '",$M) ? $M->' . $temp[1] . ' : false);';
+                $flag = false;
 				eval($data['_eval']);
+                if ($flag!==true) {
+                    trigger_error('Ошибка активации услуги '.$data['id'].' - '.$flag, E_USER_WARNING);
+                    return false;
+                }
 
 			}
 		}
+        return true;
 	}
 
 	/**
