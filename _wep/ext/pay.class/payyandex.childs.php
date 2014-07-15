@@ -171,7 +171,7 @@ class payyandex_class extends kernel_extends
 		$argForm['phone'] = array('type' => 'text', 'caption' => 'Телефон', 'mask' => array('name' => 'phone3'));
 		$argForm['name'] = array('type' => 'hidden', 'readonly' => 1, 'mask' => array('eval' => $comm)); // name не попадает в БД
 		if ($summ > 0)
-			$argForm['cost'] = array('type' => 'hidden', 'readonly' => 1, 'mask' => array('eval' => $summ, 'min' => $this->config['minpay'], 'max' => $this->config['maxpay']));
+			$argForm['cost'] = array('type' => 'hidden', 'caption' => 'Сумма (руб)', 'readonly' => 1, 'mask' => array('eval' => $summ, 'min' => $this->config['minpay'], 'max' => $this->config['maxpay']));
 		else
 			$argForm['cost'] = array('type' => 'int', 'caption' => 'Сумма (руб)', 'comment' => 'Минимум ' . $this->config['minpay'] . 'р, максимум ' . $this->config['maxpay'] . 'р', 'default' => 100, 'mask' => array('min' => $this->config['minpay'], 'max' => $this->config['maxpay']));
 		$this->lang['Save and close'] = 'Оплатить через ' . $this->caption;

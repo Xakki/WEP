@@ -591,6 +591,9 @@ class static_form
         elseif (is_callable($eval)) {
             $val = call_user_func_array($eval, array($val, $data));
         }
+        else {
+            $val = $eval;
+        }
         return $val;
     }
 
@@ -903,8 +906,9 @@ class static_form
 
 			/*Поля которые недоступны пользователю не проверяем, дефолтные значения прописываются в kPreFields()*/
 			$eval = self::getEvalForm($_this, $form);
+
 			if ($eval !== '') {
-				// **************
+                $data[$key] = self::callEvalForm($eval, $data[$key], $data);
 			}
 			elseif ((isset($form['readonly']) and $form['readonly']) or
 				(isset($form['mask']['fview']) and $form['mask']['fview'] == 2) or
@@ -1041,7 +1045,7 @@ class static_form
 			if (isset($data[$key]))
 				$vars[$key] = $data[$key];
 
-		}
+		};
 		unset($form);
 
 		// Проверка уник полей
