@@ -1174,78 +1174,83 @@ window.wep = {
             // Will animate plot on calls to plot1.replot({resetAxes:true})
             animateReplot: true,
             axes: {
-                xaxis: {label: settings.xName, renderer: $.jqplot.DateAxisRenderer},
-                yaxis: {label: settings.yName, min: 0, tickOptions: {formatString: '%d'}, autoscale: false, useSeriesColor: true }
+                xaxis: {renderer: $.jqplot.DateAxisRenderer},
+                yaxis: {label: settings.yName, min: 0}
             },
-            highlighter: {
-                show: true,
-                sizeAdjust: 7
-            },
-            cursor: {show: true, zoom: true},
-            series: [
-                {lineWidth: 4, markerOptions: {style: 'square'}}
-            ]
-        });
-//http://www.jqplot.com/docs/files/jqPlotOptions-txt.html
-        plot2 = $.jqplot('statschart2', lines, {
-            title: settings.caption,
-            animate: true,
-            animateReplot: true,
-//            axesDefaults: {
-//                tickOptions: {
-//                    showMark: true,
-//                    showLabel: true,
-//                    show: true
-//                },
-//                showTicks: true
-//            },
-            axes: {
-                xaxis: { renderer: $.jqplot.DateAxisRenderer},
-                yaxis: {label: settings.yName, min: 0, tickOptions: {formatString: '%d'}, useSeriesColor: true}
-            },
-            cursor: {
-                showTooltip: true,
-                zoom: true,
-                constrainZoomTo: 'x'
-            },
+            cursor: {showTooltip: true, show: true, zoom: true, looseZoom: true, showTooltipOutsideZoom: true, constrainOutsideZoom: false, followMouse: true},
+            series: series,
             legend: {
                 show: true,
                 placement: 'outsideGrid'
             },
-//            seriesDefaults: {
-//                neighborThreshold: 0,
-//                showMarker: true,
-//                rendererOptions: {
-//                    highlightMouseOver: true,
-//                    highlightMouseDown: false,
-//                    highlightColor: null
-//                }
-//            },
-//            seriesDefaults:{
-//                show: true,
-//                renderer:$.jqplot.BarRenderer,
-//                rendererOptions: {fillToZero: true},
-//                markerRenderer: $.jqplot.MarkerRenderer,
-//                showLine: true,     // whether to render the line segments or not.
-//                showMarker: true,   // render the data point markers or not.
-//                markerOptions: {
-//                    show: true
-//                }
-//            },
-            series: series
-//            highlighter: {
-//                show:true,
-//                tooltipLocation: 'n',
-//                tooltipAxes: 'pieref', // exclusive to this version
-//                tooltipAxisX: 20, // exclusive to this version
-//                tooltipAxisY: 20, // exclusive to this version
-//                useAxesFormatters: false,
-//                formatString:'%s, %P',
-//            }
+            highlighter: {
+                sizeAdjust: 10,
+                tooltipLocation: 'n',
+                tooltipAxes: 'xy',
+                useAxesFormatters: true,
+                tooltipContentEditor: function(str, seriesIndex, pointIndex, plot){
+                    return plot.series[seriesIndex].label + ': ' + str;
+                }
+            }
         });
 
+//http://www.jqplot.com/docs/files/jqPlotOptions-txt.html
+//        plot2 = $.jqplot('statschart2', lines, {
+//            title: settings.caption,
+//            animate: true,
+//            animateReplot: true,
+////            axesDefaults: {
+////                tickOptions: {
+////                    showMark: true,
+////                    showLabel: true,
+////                    show: true
+////                },
+////                showTicks: true
+////            },
+//            axes: {
+//                xaxis: { renderer: $.jqplot.DateAxisRenderer},
+//                yaxis: {label: settings.yName, min: 0, tickOptions: {formatString: '%d'}, useSeriesColor: true}
+//            },
+//            cursor: {
+//                showTooltip: true,
+//                zoom: true,
+//                constrainZoomTo: 'x'
+//            },
+//
+////            seriesDefaults: {
+////                neighborThreshold: 0,
+////                showMarker: true,
+////                rendererOptions: {
+////                    highlightMouseOver: true,
+////                    highlightMouseDown: false,
+////                    highlightColor: null
+////                }
+////            },
+////            seriesDefaults:{
+////                show: true,
+////                renderer:$.jqplot.BarRenderer,
+////                rendererOptions: {fillToZero: true},
+////                markerRenderer: $.jqplot.MarkerRenderer,
+////                showLine: true,     // whether to render the line segments or not.
+////                showMarker: true,   // render the data point markers or not.
+////                markerOptions: {
+////                    show: true
+////                }
+////            },
+//            series: series
+////            highlighter: {
+////                show:true,
+////                tooltipLocation: 'n',
+////                tooltipAxes: 'pieref', // exclusive to this version
+////                tooltipAxisX: 20, // exclusive to this version
+////                tooltipAxisY: 20, // exclusive to this version
+////                useAxesFormatters: false,
+////                formatString:'%s, %P',
+////            }
+//        });
 
-        $.jqplot.Cursor.zoomProxy(plot1, plot2);
+
+//        $.jqplot.Cursor.zoomProxy(plot1, plot2);
     },
 
     pagenum_super: function (total, pageCur, cl, order) {

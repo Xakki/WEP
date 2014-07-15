@@ -676,7 +676,6 @@ class static_tools
 					yName : \'' . $MODUL->mf_statistic['Yname'] . '\',
 					yStep : ' . $stepY . ',
 				};
-				console.log(option, lines, series);
 				readyPlot(option, lines, series);
 			}
 			wep.scriptLoad(plotScript);
