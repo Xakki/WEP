@@ -85,8 +85,6 @@ function tools_docron()
 	global $_CFG;
 	if (isset($_POST['sbmt'])) {
 		$ttw = getmicrotime();
-        $pidFile = $_CFG['_PATH']['weptemp'].'cron.pid';
-        file_put_contents($pidFile, '');
 		include($_CFG['_PATH']['controllers'] . '/cron.php');
 		return '--Крон выполнен, время обработки задач =  ' . (getmicrotime() - $ttw) . 'mc -----';
 	}

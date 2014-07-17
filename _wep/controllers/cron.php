@@ -6,17 +6,8 @@ set_time_limit(1200);
 require_once($_CFG['_FILE']['cron']);
 
 if (!isset($_CFG['cron']) or !count($_CFG['cron'])) {
-	exit();
+	exit('no cron');
 }
-
-$ini_file = $_CFG['_FILE']['cronTask'];
-if (file_exists($ini_file)) {
-	$dataJson = file_get_contents($ini_file);
-    $dataJson = json_decode($dataJson, true);
-    if (!$dataJson) $dataJson = array();
-}
-else
-    $dataJson = array();
 
 $time = time();
 $res_cron = '';
@@ -31,10 +22,14 @@ $_SERVER['IS_CRON'] = true;
 
 $pidFile = $_CFG['_PATH']['weptemp'].'cron.pid';
 $lastTimeRun = '';
-file_exists($pidFile) && $lastTimeRun = file_get_contents($pidFile);
+if (file_exists($pidFile))
+    $lastTimeRun = file_get_contents($pidFile);
+
 if ($lastTimeRun) {
-    if ($lastTimeRun< (time() - 1800)) {
-        trigger_error('Завис крон или процесс сломался', E_USER_WARNING);
+    $lastTimeRun = explode(PHP_EOL, $lastTimeRun);
+
+    if ($lastTimeRun[0]< (time() - 1800)) {
+        trigger_error('Завис крон или процесс сломался '.$lastTimeRun[1], E_USER_WARNING);
     }
     else {
         echo '**wait**';
@@ -42,14 +37,15 @@ if ($lastTimeRun) {
     }
 }
 
-file_put_contents($pidFile, time());
 
 foreach ($_CFG['cron'] as $key_cron => $r_cron) {
+    $dataJson = getCronData();
 	$result = '';
 	if (isset($dataJson[$key_cron]['last_time']) && ($dataJson[$key_cron]['last_time'] + $r_cron['time']) > $time) {
 		//$res_cron .= 'Рано импортировать файл '. $dataJson[$key_cron]['file']. ', последний раз он импортировался '.date('d.m.Y H:i', $dataJson[$key_cron]['last_time']). ', сейчас ' . date('d.m.Y H:i', $time) . '. (Установленный интервал: '.$dataJson['int' . $key_cron].' минут, осталось ' . round((($dataJson['last_time' . $key_cron] + ($dataJson['int' . $key_cron] * 60) - $time) / 60), 1) . ' минут)' . "\n";
 	}
 	elseif (!isset($r_cron['active']) or $r_cron['active']) {
+        file_put_contents($pidFile, time().PHP_EOL.$key_cron);
 		$tt = getmicrotime();
 		//'time' => '600', 'file' => '_wepconf/ext/exportboard.class/exportboard.cron.php', 'modul' => '', 'function' => ''
 		if (isset($r_cron['file']) and $r_cron['file']) {
@@ -74,10 +70,31 @@ foreach ($_CFG['cron'] as $key_cron => $r_cron) {
 		$dataJson[$key_cron]['res' ] = '* ' . str_replace(array("\n", "\r"), array('<br/>', ''), addslashes((string)$result)) . '';
 		$res_cron .= $result;
 	}
-}
-file_put_contents($pidFile, '');
-file_put_contents($ini_file, json_encode($dataJson));
-_chmod($ini_file);
 
+    setCronData($dataJson);
+}
+
+file_put_contents($pidFile, '++');
+
+//_chmod($ini_file);
+
+function getCronData() {
+    global $_CFG;
+    $ini_file = $_CFG['_FILE']['cronTask'];
+    if (file_exists($ini_file)) {
+        $dataJson = file_get_contents($ini_file);
+        $dataJson = json_decode($dataJson, true);
+        if (!$dataJson) $dataJson = array();
+    }
+    else
+        $dataJson = array();
+    return $dataJson;
+}
+
+function setCronData($dataJson) {
+    global $_CFG;
+    $ini_file = $_CFG['_FILE']['cronTask'];
+    file_put_contents($ini_file, json_encode($dataJson));
+}
 
 echo $res_cron;
