@@ -391,7 +391,7 @@ class httpproxy_class extends kernel_extends
 		$param['TIMEOUT'] = 20;
 		$param['find'] = $this->config['check_word'];
 
-		for ($i = 0; $i< 3; $i++) {
+		for ($i = 0; $i< 1; $i++) {
 
             $Page = $this->getContent($this->config['check_site'], $param, true);
             if (is_null($Page)) {
