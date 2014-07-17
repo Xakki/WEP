@@ -24,6 +24,8 @@ class httpproxy_class extends kernel_extends
 		$this->cf_tools[] = array('func' => 'toolsClearUse', 'name' => 'Очистка счётчиков');
 		$this->cf_tools[] = array('func' => 'toolsCheckSite', 'name' => 'Проверка');
 
+        $this->cron[] = array('modul' => $this->_cl, 'function' => 'cronCheckSite()', 'active' => 1, 'time' => 60);
+
         $this->_AllowAjaxFn['toolsCheckSite'] = true;
 	}
 
@@ -360,6 +362,16 @@ class httpproxy_class extends kernel_extends
             )
             , '', $html);
         return $html;
+    }
+
+    public function cronCheckSite($n=3) {
+        $param = array();
+        $param['TIMEOUT'] = 20;
+        $param['find'] = $this->config['check_word'];
+        for ($i = 0; $i< $n; $i++) {
+            $Page = $this->getContent($this->config['check_site'], $param, true);
+        }
+        return '-OK-';
     }
 
 	function toolsCheckSite()
