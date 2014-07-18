@@ -29,7 +29,7 @@ if ($lastTimeRun) {
     $lastTimeRun = explode(PHP_EOL, $lastTimeRun);
 
     if ($lastTimeRun[0]< (time() - 1800)) {
-        trigger_error('Завис крон или процесс сломался '.$lastTimeRun[1], E_USER_WARNING);
+        trigger_error('Завис крон или процесс сломался - '.$lastTimeRun[1], E_USER_WARNING);
     }
     else {
         echo '**wait**';
