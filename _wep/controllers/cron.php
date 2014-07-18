@@ -1,7 +1,8 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
-ini_set("max_execution_time", "1200");
-set_time_limit(1200);
+define('MAX_PHP_TIME', 600);
+ini_set("max_execution_time", MAX_PHP_TIME);
+set_time_limit(MAX_PHP_TIME);
 
 require_once($_CFG['_FILE']['cron']);
 
@@ -26,14 +27,15 @@ if (file_exists($pidFile))
     $lastTimeRun = file_get_contents($pidFile);
 
 if ($lastTimeRun) {
-    $lastTimeRun = explode(PHP_EOL, $lastTimeRun);
-
-    if ($lastTimeRun[0]< (time() - 1800)) {
-        trigger_error('Завис крон или процесс сломался - '.$lastTimeRun[1], E_USER_WARNING);
-    }
-    else {
-        echo '**wait**';
-        return ;
+    $lastTimeRun = preg_split("/".PHP_EOL."/", $lastTimeRun, -1, PREG_SPLIT_NO_EMPTY);
+    if (count($lastTimeRun)>1) {
+        if ($lastTimeRun[0]< (time() - 1800)) {
+            trigger_error('Завис крон или процесс сломался - '.$lastTimeRun[1], E_USER_WARNING);
+        }
+        else {
+            echo '**wait**';
+            return ;
+        }
     }
 }
 
@@ -41,10 +43,36 @@ if ($lastTimeRun) {
 foreach ($_CFG['cron'] as $key_cron => $r_cron) {
     $dataJson = getCronData();
 	$result = '';
-	if (isset($dataJson[$key_cron]['last_time']) && ($dataJson[$key_cron]['last_time'] + $r_cron['time']) > $time) {
-		//$res_cron .= 'Рано импортировать файл '. $dataJson[$key_cron]['file']. ', последний раз он импортировался '.date('d.m.Y H:i', $dataJson[$key_cron]['last_time']). ', сейчас ' . date('d.m.Y H:i', $time) . '. (Установленный интервал: '.$dataJson['int' . $key_cron].' минут, осталось ' . round((($dataJson['last_time' . $key_cron] + ($dataJson['int' . $key_cron] * 60) - $time) / 60), 1) . ' минут)' . "\n";
-	}
-	elseif (!isset($r_cron['active']) or $r_cron['active']) {
+
+    if (isset($r_cron['active']) and !$r_cron['active']) {
+        continue;
+    }
+
+    if (isset($dataJson[$key_cron]['last_time']) && ($dataJson[$key_cron]['last_time'] + $r_cron['time']) > $time)
+    {
+        //$res_cron .= 'Рано импортировать файл '. $dataJson[$key_cron]['file']. ', последний раз он импортировался '.date('d.m.Y H:i', $dataJson[$key_cron]['last_time']). ', сейчас ' . date('d.m.Y H:i', $time) . '. (Установленный интервал: '.$dataJson['int' . $key_cron].' минут, осталось ' . round((($dataJson['last_time' . $key_cron] + ($dataJson['int' . $key_cron] * 60) - $time) / 60), 1) . ' минут)' . "\n";
+        continue;
+    }
+
+    if (isset($dataJson[$key_cron]) and $dataJson[$key_cron]['res'] == '+RUN') {
+        var_dump(($time-$dataJson[$key_cron]['last_time']),MAX_PHP_TIME);
+        if (($time-$dataJson[$key_cron]['last_time'])>MAX_PHP_TIME)
+        {
+            trigger_error('Dead cron job ='.$key_cron, E_USER_WARNING);
+        }
+        else {
+            trigger_error('Zombe cron job ='.$key_cron, E_USER_WARNING);
+            continue;
+        }
+    }
+
+    if (!isset($r_cron['active']) or $r_cron['active'])
+    {
+        $dataJson[$key_cron]['last_time'] = time();
+        $dataJson[$key_cron]['do_time'] = 0;
+        $dataJson[$key_cron]['res' ] = '+RUN';
+        setCronData($dataJson);
+
         file_put_contents($pidFile, time().PHP_EOL.$key_cron);
 		$tt = getmicrotime();
 		//'time' => '600', 'file' => '_wepconf/ext/exportboard.class/exportboard.cron.php', 'modul' => '', 'function' => ''
@@ -65,16 +93,17 @@ foreach ($_CFG['cron'] as $key_cron => $r_cron) {
 			eval('$result = ' . $r_cron['function'] . ';');
 		}
 
-		$dataJson[$key_cron]['last_time'] = $time;
+		$dataJson[$key_cron]['last_time'] = time();
 		$dataJson[$key_cron]['do_time'] = getmicrotime() - $tt;
 		$dataJson[$key_cron]['res' ] = '* ' . str_replace(array("\n", "\r"), array('<br/>', ''), addslashes((string)$result)) . '';
+
 		$res_cron .= $result;
+        setCronData($dataJson);
 	}
 
-    setCronData($dataJson);
 }
 
-file_put_contents($pidFile, '++');
+file_put_contents($pidFile, '');
 
 //_chmod($ini_file);
 
