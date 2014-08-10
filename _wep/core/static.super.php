@@ -1043,15 +1043,18 @@ class static_super
 						);
 					}
 
-					$list = $cn->_forlist($cn->_getCashedList('list'), 0);
-					$topmenu['child' . $ck] = array(
-						'href' => $t + array('_type' => 'update', $ck . '_id' => ''),
-						'caption' => $cn->caption,
-						'sel' => $list[1],
-						'list' => $list[0],
-						'type' => 'select',
-					);
-					$topmenu['child' . $ck]['caption'] .= '(' . count($topmenu['child' . $ck]['list']) . ')';
+                    $list = $cn->_forlist($cn->_getCashedList('list'), 0);
+                    $cnt = count($list[0]);
+
+                    if ($cnt<500) {
+                        $topmenu['child' . $ck] = array(
+                            'href' => $t + array('_type' => 'update', $ck . '_id' => ''),
+                            'caption' => $cn->caption . '(' . $cnt . ')',
+                            'sel' => $list[1],
+                            'list' => $list[0],
+                            'type' => 'select',
+                        );
+                    }
 
 
 				}

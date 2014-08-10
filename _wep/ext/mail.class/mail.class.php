@@ -68,12 +68,22 @@ class mail_class extends kernel_extends
 		$this->config['mailtemplate'] = '<html><head><title>%SUBJECT%</title><meta content="text/html;charset=utf-8" http-equiv="Content-Type" /></head><body>%TEXT% %MAILBOTTOM%</body></html>';
 		$this->config['mailbottom'] = '<hr/>© ' . date('Y') . ' «' . $this->_CFG['site']['www'] . '»';
 		$this->config['phpmailer'] = '<h4>Email отправителя %MAILFROM%</h4> <span>Чтобы ответить пользователю, пользуйтесь кнопой "ответить" или копируйте адрес вручную.</span><hr/>';
+		$this->config['category'] = [
+            MCAT_DEFAULT => '--',
+            MCAT_BUGS => 'Bugs',
+            MCAT_FEEDBACK => 'Обратная связь',
+            MCAT_PAY => 'Платежное уведомление',
+            MCAT_USER => 'Служба пользователей',
+            MCAT_OVER => 'Прочее',
+        ];
+        $this->_enum['category'] = &$this->config['category'];
 
 		$this->config_form['mailcron'] = array('type' => 'checkbox', 'caption' => 'CRON - Отправалять почту');
 		$this->config_form['mailcronlimit'] = array('type' => 'text', 'caption' => 'CRON - Limit по отправке писем');
 		$this->config_form['mailengine'] = array('type' => 'list', 'listname' => 'mailengine', 'caption' => 'Обработчик почты');
 		$this->config_form['mailrobot'] = array('type' => 'text', 'mask' => array('min' => 1, 'name' => 'email'), 'caption' => 'Адрес Робота');
 		$this->config_form['fromName'] = array('type' => 'text', 'caption' => 'Имя отправителя (название сайта)');
+        $this->config_form['category'] = array('type' => 'list', 'listname' => 'category', 'caption' => 'Category');
 		$this->config_form['PHPMailer_Host'] = array('type' => 'text', 'caption' => 'PHPMailer_Host', 'comment' => 'ssl://smtp.gmail.com:465', 'mask' => array('name' => 'all'), 'style' => 'background:#30B120;');
 		$this->config_form['PHPMailer_Username'] = array('type' => 'text', 'caption' => 'PHPMailer_Username', 'comment' => 'usermail@gmail.com', 'mask' => array('name' => 'all'), 'style' => 'background:#30B120;');
 		$this->config_form['PHPMailer_Password'] = array('type' => 'text', 'caption' => 'PHPMailer_Password', 'mask' => array('name' => 'all'), 'style' => 'background:#30B120;');
@@ -119,15 +129,6 @@ class mail_class extends kernel_extends
 			MAIL_OK => 'ОК',
 			MAIL_ERROR => 'Ошибка при отправке',
 			MAIL_ERROR2 => 'Ошибка при отправке повторно',
-		);
-
-		$this->_enum['category'] = array(
-			MCAT_DEFAULT => '--',
-			MCAT_BUGS => 'Bugs',
-			MCAT_FEEDBACK => 'Обратная связь',
-			MCAT_PAY => 'Платежное уведомление',
-			MCAT_USER => 'Служба пользователей',
-			MCAT_OVER => 'Прочее',
 		);
 
 		$this->lang['Save and close'] = 'Отправить письмо';
@@ -291,6 +292,9 @@ class mail_class extends kernel_extends
 			$header .= 'Bcc: ' . $data['bcc'] . "\r\n";
 		if (isset($data['Reply-To']) and $data['Reply-To'])
 			$header .= 'Reply-To: ' . $data['reply'] . "\r\n";
+
+        if (isset($data['Reply-To']) and $data['Reply-To'])
+            $header .= 'List-Id: ' . $data['category'] . "\r\n";
 
 		if (isset($data['att'])) {
 			$header .= "Content-Type: multipart/alternative; boundary={$this->uid}\r\n";

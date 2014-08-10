@@ -539,6 +539,7 @@ abstract class kernel_extends
 	{
 		if ($debug)
 			echo(' * ' . htmlentities($query, ENT_QUOTES, CHARSET) . ' * <br>');
+        // todo cache
 		$result = $this->SQL->execSQL($query);
 		if ($result->err)
 			return false; //todo exeption

@@ -827,6 +827,7 @@ function helper_form_keytype($k, $r, $kval)
 	// 		<input class="ilist-key" type="'.$r['keytype'].'" value="'.$rval.'" name="'.$k.'['.$kval.']"/>';
 	// }
 	elseif($r['keytype'] == 'none') {
+        $html = '';
 	}
 	else {
 		$html = '<input class="ilist-key" type="' . $r['keytype'] . '" value="' . _e($kval) . '" onkeyup="wep.form.iList(this,\'' . $k . '\')"/>';
