@@ -3,6 +3,7 @@
 if (!defined('SITE') || !defined('WEP') || !defined('WEPCONF') || !defined('WEP_CONFIG')) {
 	die('Not defined constants');
 }
+
 /*
  * версия ядра
  *  нумерация отличает от других версией
@@ -20,7 +21,7 @@ $_CFG['info'] = array( //информация о СМС
 
 $_CFG['sql'] = array( // SQL
 	'type' => 'sqlmyi',
-	'host' => 'localhost',
+	'host' => '127.0.0.1',
 	'login' => '',
 	'password' => '',
 	'port' => '3306',
@@ -101,8 +102,10 @@ $_CFG['cron'] = array(); // cron
 $_CFG['ReflectedClass'] = array(); // cron
 
 $_CFG['logs'] = array(
-	'sql' => array(),
-	'mess' => array(),
+	'sql' => [],
+    'content' => [],
+	'sqlTime' => 0,
+	'mess' => [],
 ); // - массив SQL запросов
 $GLOBALS['_ERR'] = array(); //текс ошибок
 
@@ -267,6 +270,8 @@ define('FORM_STATUS_OK', 1);
 // Source include position
 define('POS_END', 0);
 define('POS_BEGIN', 1);
+
+define('QUOTES', '"');
 
 //ERRORS
 $_CFG['_error'] = array(

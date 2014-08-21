@@ -86,6 +86,7 @@ class formlistitems_class extends kernel_extends
 		parent::_create();
 		$this->index_fields['name'] = 'name';
 		$this->index_fields['checked'] = 'checked';
+		$this->index_fields['cntdec'] = 'cntdec';
 
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 63, 'attr' => 'NOT NULL', 'min' => '1');
 		$this->fields['checked'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL', 'default' => 0);

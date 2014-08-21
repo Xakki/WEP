@@ -2,16 +2,16 @@
 
 if ($_NEED_INSTALL) {
 	require_once($_CFG['_PATH']['wep_controllers'] . 'install/index.php');
-	exit();
+    return true;
 }
 
 if (isset($_GET['_php']) and $_GET['_php'] == 'admin') {
 	require_once($_CFG['_PATH']['backend'] . 'index.php');
-	exit();
+    return true;
 }
 
-ini_set("max_execution_time", "10");
-set_time_limit(10);
+//ini_set("max_execution_time", "10");
+//set_time_limit(10);
 
 if ($_CFG['site']['worktime'] and !canShowAllInfo()) {
 	static_main::downSite(); // Exit()
@@ -22,7 +22,7 @@ if (isset($_GET['_php']) and $_GET['_php'] == '_js') {
 		require_once($_CFG['_PATH']['controllers'] . '_js.php');
 	else
 		require_once($_CFG['_PATH']['wep_controllers'] . 'frontend/_js.php');
-	exit();
+    return true;
 }
 elseif (isset($_GET['_php']) and $_GET['_php'] == 'rss') {
 	if (file_exists($_CFG['_PATH']['controllers'] . 'rss.php'))
@@ -31,14 +31,14 @@ elseif (isset($_GET['_php']) and $_GET['_php'] == 'rss') {
 		require_once($_CFG['_PATH']['wep_controllers'] . 'frontend/rss.php');
 	else
 		echo 'no RSS';
-	exit();
+    return true;
 }
 elseif (isset($_GET['_php']) and $_GET['_php'] == 'sitemap') {
 	$_COOKIE['_showerror'] = 0;
 	$SITEMAP = TRUE;
 	_new_class('pg', $PGLIST);
 	$_tpl['text'] = $PGLIST->creatSiteMaps();
-	exit();
+    return true;
 }
 elseif (isset($_GET['_php']) and isset($_GET['_type']) and $_GET['_type'] == 'xml') {
 	if (file_exists($_CFG['_PATH']['controllers'] . $_GET['_php'] . '.xml.php'))
@@ -47,7 +47,7 @@ elseif (isset($_GET['_php']) and isset($_GET['_type']) and $_GET['_type'] == 'xm
 		require_once($_CFG['_PATH']['wep_controllers'] . 'frontend/' . $_GET['_php'] . '.xml.php');
 	else
 		echo 'Ашипка!';
-	exit();
+    return true;
 }
 elseif (isset($_GET['_php']) and $_GET['_php'] == 'config') {
 	setNeverShowAllInfo();

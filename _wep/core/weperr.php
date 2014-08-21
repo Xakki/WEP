@@ -12,6 +12,19 @@ function _myErrorHandler($errno, $errstr, $errfile, $errline)
 	global $_CFG, $BUG;
 	if ($_CFG['wep']['catch_bug']) {
 
+        if (isset($GLOBALS['_ERR'][$_CFG['wep']['catch_bug']]) && count($GLOBALS['_ERR'][$_CFG['wep']['catch_bug']])>100) {
+//            if (count($GLOBALS['_ERR'][$_CFG['wep']['catch_bug']])==101)
+//                $GLOBALS['_ERR'][$_CFG['wep']['catch_bug']][] = array(
+//                    'errno' => 0,
+//                    'errstr' => '************ Слишком много ошибок ****************',
+//                    'errfile' => '',
+//                    'errline' => '',
+//                    'debug' => '',
+//                    'errtype' => 0,
+//                );
+            return;
+        }
+
 		// Debuger
 		// для вывода отладчика для всех типов ошибок , можно отключить это условие
 		$debug = '';

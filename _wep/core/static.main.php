@@ -1,4 +1,11 @@
 <?php
+
+if (defined('WEP_PROF')) {
+    include_once "../xhprof/xhprof_lib/utils/xhprof_lib.php";
+    include_once "../xhprof/xhprof_lib/utils/xhprof_runs.php";
+    xhprof_enable(XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY);
+}
+
 /*
   Функция завершения работы скрипта
  */
@@ -9,6 +16,17 @@ function shutdown_function()
 	global $_CFG;
 	$_CFG['shutdown_function_flag'] = true;
 	observer::notify_observers('shutdown_function');
+
+    if (defined('WEP_PROF')) {
+        # Останавливаем профайлер
+        $xhprof_data = xhprof_disable();
+
+        # Сохраняем отчет и генерируем ссылку для его просмотра
+        $xhprof_runs = new XHProfRuns_Default();
+        $run_id = $xhprof_runs->save_run($xhprof_data, "xhprof_test");
+//        $listFile = '../xhprof/idlist.txt';
+//        file_put_contents($listFile, $_SERVER['HTTP_HOST'].'|'.$_SERVER['REQUEST_URI'].'|'.time().'|'.$run_id.PHP_EOL ,FILE_APPEND );
+    }
 }
 
 register_shutdown_function('shutdown_function'); // Запускается первым при завершении скрипта
@@ -93,7 +111,7 @@ class static_main
 		$ar_type = array('error' => false, 'alert' => true, 'notice' => true, 'ok' => true);
 		if (!$ar_type[$type]) {
 			trigger_error($msg, E_USER_WARNING);
-			if ($_CFG['wep']['debugmode'] > 2)
+			if (isDebugMode())
 				$_CFG['logs']['mess'][] = array($type, $msg, $cl);
 		}
 		return $ar_type[$type];
@@ -151,17 +169,19 @@ class static_main
 				return var_export($GLOBALS['_ERR'], true);
 			}
 			else {
-				foreach ($GLOBALS['_ERR'] as $err) foreach ($err as $r) {
-					$var = $r['errtype'] . ' ' . $r['errstr'] . ' , in line ' . $r['errline'] . ' of file <i>' . $r['errfile'] . '</i>';
-					if ($r['debug']) //$r['errcontext']
-						$var = self::spoilerWrap($var, $r['debug'], 'bug_' . $r['errno']);
-					else
-						$var = '<div class="bug_' . $r['errno'] . '">' . $var . '</div>';
-					$var .= "\n";
-					if ($_CFG['_error'][$r['errno']]['prior'] <= 3)
-						$htmlerr .= $var;
-					else //нотисы отдельно
-						$notice .= $var;
+				foreach ($GLOBALS['_ERR'] as $err) {
+                    foreach ($err as $r) {
+                        $var = $r['errtype'] . ' ' . $r['errstr'] . ' , in line ' . $r['errline'] . ' of file <i>' . $r['errfile'] . '</i>';
+                        if ($r['debug']) //$r['errcontext']
+                            $var = self::spoilerWrap($var, $r['debug'], 'bug_' . $r['errno']);
+                        else
+                            $var = '<div class="bug_' . $r['errno'] . '">' . $var . '</div>';
+                        $var .= "\n";
+                        if ($_CFG['_error'][$r['errno']]['prior'] <= 3)
+                            $htmlerr .= $var;
+                        else //нотисы отдельно
+                            $notice .= $var;
+                    }
 				}
 			}
 		}
@@ -1064,7 +1084,9 @@ class static_main
 
 function session_go($force = false)
 { //$force=true - открывает сесиию для не авторизованного пользователя
-	if (isset($_SESSION)) return true;
+	if (static_main::_prmUserCheck()) {
+        return true;
+    }
 	global $_CFG, $SESSION_GOGO;
 	if (!$_CFG['robot'] and (isset($_COOKIE[$_CFG['session']['name']]) or $force)) {
 		if ($_CFG['wep']['sessiontype'] == 1) {
@@ -1327,8 +1349,9 @@ if (!defined('PHP_VERSION_ID')) {
 
 function getmicrotime()
 {
-	list($usec, $sec) = explode(" ", microtime());
-	return ((float)$usec + (float)$sec);
+    return microtime(true);
+//	list($usec, $sec) = explode(" ", microtime());
+//	return ((float)$usec + (float)$sec);
 }
 
 /*
@@ -1619,6 +1642,8 @@ function str2int($string, $concat = true)
 
 function isint($val)
 {
+    if (!is_string($val) && !is_numeric($val))
+        return false;
 	$res = preg_match_all('/^[0-9]+$/', $val, $matches);
 	if ($res == 1)
 		return true;
@@ -1938,7 +1963,54 @@ function plugBootstrap()
 function isDebugMode()
 {
 	global $_CFG;
-	return ($_CFG['wep']['debugmode']==3 ? true : false);
+	return ($_CFG['wep']['debugmode']>2 ? true : false);
+}
+
+
+function is_cron() {
+    return (isset($_SERVER['IS_CRON']));
+}
+
+function isWin() {
+    return DIRECTORY_SEPARATOR == '\\';
+}
+
+if(!function_exists('array_column')){
+    /*
+     * array_column() for PHP 5.4 and lower versions
+    */
+    function array_column($input,$column_key,$index_key=''){
+        if(!is_array($input)) return;
+        $results=array();
+        if($column_key===null){
+            if(!is_string($index_key)&&!is_int($index_key)) return false;
+            foreach($input as $_v){
+                if(array_key_exists($index_key,$_v)){
+                    $results[$_v[$index_key]]=$_v;
+                }
+            }
+            if(empty($results)) $results=$input;
+        }else if(!is_string($column_key)&&!is_int($column_key)){
+            return false;
+        }else{
+            if(!is_string($index_key)&&!is_int($index_key)) return false;
+            if($index_key===''){
+                foreach($input as $_v){
+                    if(is_array($_v)&&array_key_exists($column_key,$_v)){
+                        $results[]=$_v[$column_key];
+                    }
+                }
+            }else{
+                foreach($input as $_v){
+                    if(is_array($_v)&&array_key_exists($column_key,$_v)&&array_key_exists($index_key,$_v)){
+                        $results[$_v[$index_key]]=$_v[$column_key];
+                    }
+                }
+            }
+
+        }
+        return $results;
+    }
 }
 
 static_main::autoload_register();

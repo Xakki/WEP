@@ -36,7 +36,7 @@ if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] === 0) {
 	$file = $_CFG['_PATH']['wep_controllers'] . '/install/step' . $_GET['step'] . '.php';
 	if (file_exists($file)) {
 		$var_const = array(
-			'mess' => array('name' => 'ok', 'value' => 'Пора перейти к <a href="' . ADMIN_BH . '/install/?step=' . ($_GET['step'] + 1) . '">следующему шагу №' . ($_GET['step'] + 1) . '</a>'),
+			'mess' => static_main::am('ok', 'Пора перейти к <a href="' . ADMIN_BH . '/install/?step=' . ($_GET['step'] + 1) . '">следующему шагу №' . ($_GET['step'] + 1) . '</a>'),
 			'sbmt' => 'Сохранить и перейти на следующий шаг'
 		);
 		if ($_SESSION['step'] < $_GET['step'])
@@ -77,9 +77,9 @@ else {
 	$_REQUEST['ref'] = $_SERVER['REQUEST_URI'];
 
 	if ($_NEED_INSTALL)
-		$_GET['mess'] = array('alert', 'Фаил конфигурации сайта не обнаружен! Если хотите запустить сайт, необходимо авторизоваться с дефолтным логином и паролем и пройдти процедуру установки сайта.');
+        $mess[] = static_main::am('alert', 'Фаил конфигурации сайта не обнаружен! Если хотите запустить сайт, необходимо авторизоваться с дефолтным логином и паролем и пройдти процедуру установки сайта.');
 	else
-		$_GET['mess'] = array('notice', 'Введите ROOT логин и пароль для запуска установки.');
+        $mess[] = static_main::am('notice', 'Введите ROOT логин и пароль для запуска установки.');
 
 	include($_CFG['_PATH']['wep_controllers'] . 'login.php');
 	exit();

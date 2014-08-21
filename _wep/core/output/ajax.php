@@ -1,6 +1,5 @@
 <?php
-
-$WEPOUT = new wepajax();
+include('html.php');
 
 class wepajax
 {
@@ -37,10 +36,17 @@ class wepajax
 		}
 		$_tpl['logs'] .= static_main::showErr();
 
+        foreach($_tpl as $k=>$r) {
+            wephtml::parseTemplate($_tpl[$k], $_tpl); // PARSE
+        }
+
+        self::sliceMarker($_tpl);
+
 		if (version_compare(phpversion(), '5.3.0', '>')) {
 			//$GLOBALS['_RESULT'] = $this->allreplace($GLOBALS['_RESULT']);
 			//return var_export($GLOBALS['_RESULT'],true);
 			//$GLOBALS['_RESULT']['onload'] = str_replace(array('\\r','\\n','\\t'),'', $GLOBALS['_RESULT']['onload']);
+
 			$result = json_encode($_tpl, JSON_HEX_QUOT | JSON_HEX_TAG);
 			//JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_FORCE_OBJECT | JSON_UNESCAPED_UNICODE
 			return $result;
@@ -55,10 +61,10 @@ class wepajax
 
 		$htmlinfo = '';
 		$included_files = get_included_files();
-		$htmlinfo .= ' time=' . substr((getmicrotime() - $this->_mctime_start), 0, 6) . ' | memory=' . (int)(memory_get_usage() / 1024) . 'Kb | maxmemory=' . (int)(memory_get_peak_usage() / 1024) . 'Kb | query=' . count($_CFG['logs']['sql']) . ' | file include=' . count($included_files) . ' <br/> ';
+		$htmlinfo .= ' time=' . substr((getmicrotime() - $this->_mctime_start), 0, 6) . ' | SQLtime=' . $_CFG['logs']['sqlTime'] . ' | memory=' . (int)(memory_get_usage() / 1024) . 'Kb | maxmemory=' . (int)(memory_get_peak_usage() / 1024) . 'Kb | query=' . count($_CFG['logs']['sql']) . ' | file include=' . count($included_files) . ' <br/> ';
 
 		if (canShowAllInfo() > 1 and count($_CFG['logs']['sql']) > 0)
-			$htmlinfo .= static_main::spoilerWrap('SQL QUERY', implode(';<br/>', $_CFG['logs']['sql']));
+            $htmlinfo .= static_main::spoilerWrap('SQL QUERY', static_render::sqlLog($_CFG['logs']['sql']));
 		if (canShowAllInfo() > 2) {
 			$htmlinfo .= static_main::spoilerWrap('FILE INCLUDE', implode(';<br/>', $included_files));
 		}
@@ -172,5 +178,23 @@ class wepajax
 		}
 	}
 
+    static function sliceMarker(&$tpl) {
+        if (isset($_REQUEST['PGMARKER'])) {
+            $marker = $_REQUEST['PGMARKER'];
+            if (!is_array($marker)) {
+                $marker = preg_split("/[\s\,]+/", $marker, 8, PREG_SPLIT_NO_EMPTY);
+            }
+            if (isset($tpl['logs']) && $tpl['logs']) {
+                $marker[] = 'logs';
+            }
+            $marker[] = 'onload';
+            $marker[] = 'script';
+            $marker[] = 'styles';
+            $marker[] = 'REQUEST_URI';
+            $marker[] = 'BH';
+            $marker[] = 'title';
+            $tpl = array_intersect_key($tpl, array_flip($marker));
+        }
+    }
 }
 

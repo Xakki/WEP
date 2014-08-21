@@ -1,8 +1,5 @@
 <?php
 
-$WEPOUT = new wephtml();
-$isAjax = false;
-
 class wephtml
 {
 	private $_html = '';
@@ -47,7 +44,7 @@ class wephtml
 				$_tpl['logs'] .= '<link type="text/css" href="/_design/_style/bug.css" rel="stylesheet"/>
 					<div id="bugmain">' . $buffer . '</div>';
 
-			$this->parseTemplate($this->_html, $_tpl); // PARSE
+			self::parseTemplate($this->_html, $_tpl); // PARSE
 
 		}
 		else {
@@ -79,10 +76,12 @@ class wephtml
 
 		$htmlinfo = '';
 		$included_files = get_included_files();
-		$htmlinfo .= ' time=' . substr((getmicrotime() - $this->_mctime_start), 0, 6) . ' | memory=' . (int)(memory_get_usage() / 1024) . 'Kb | maxmemory=' . (int)(memory_get_peak_usage() / 1024) . 'Kb | query=' . count($_CFG['logs']['sql']) . ' | file include=' . count($included_files) . ' <br/> ';
+		$htmlinfo .= ' time=' . substr((getmicrotime() - $this->_mctime_start), 0, 6) . ' | SQLtime=' . $_CFG['logs']['sqlTime'] . ' | memory=' . (int)(memory_get_usage() / 1024) . 'Kb | maxmemory=' . (int)(memory_get_peak_usage() / 1024) . 'Kb | query=' . count($_CFG['logs']['sql']) . ' | file include=' . count($included_files) . ' <br/> ';
 
 		if (canShowAllInfo() > 1 and count($_CFG['logs']['sql']) > 0)
-			$htmlinfo .= static_main::spoilerWrap('SQL QUERY', implode(';<br/>', $_CFG['logs']['sql']));
+			$htmlinfo .= static_main::spoilerWrap('SQL QUERY', static_render::sqlLog($_CFG['logs']['sql']));
+		if (canShowAllInfo() > 1 and count($_CFG['logs']['content']) > 0)
+			$htmlinfo .= static_main::spoilerWrap('CONTENT', static_render::sqlLog($_CFG['logs']['content']));
 		if (canShowAllInfo() > 2) {
 			$htmlinfo .= static_main::spoilerWrap('FILE INCLUDE', implode(';<br/>', $included_files));
 		}
@@ -120,31 +119,41 @@ class wephtml
 		return false;
 	}
 
-	function parseTemplate(&$TEXT, &$TPL, $i = 0)
+    static function parseTemplate(&$TEXT, &$TPL, $skip = array())
 	{
-		if ($i > 2) return true;
-		if (_strpos($TEXT, '{#') !== false) { // NEW STANDART
-			preg_match_all('/\{\#([A-z0-9_\-]+)\#\}/u', $TEXT, $temp);
-			//return '<pre>'.var_export($temp,true);
-			foreach ($temp[1] as $k => $r) {
-				if (!isset($TPL[$r]))
-					$TPL[$r] = '';
-				$TEXT = str_replace($temp[0][$k], $TPL[$r], $TEXT);
-			}
-		}
-		else {
-			preg_match_all('/\{\$_tpl\[\'([A-z0-9_\-]+)\'\]\}/ui', $TEXT, $temp);
-			foreach ($temp[1] as $k => $r) {
-				if (!isset($TPL[$r]))
-					$TPL[$r] = '';
-				$TEXT = str_replace($temp[0][$k], $TPL[$r], $TEXT);
-			}
-		}
-		if (_strpos($TEXT, '{#') !== false or _strpos($TEXT, '$_tpl') !== false) {
-			$i++;
-			$this->parseTemplate($TEXT, $TPL, $i);
+        $subSkip = $skip;
+        $temp = self::matchTmp($TEXT);
+        foreach ($temp[1] as $k => $r) {
+            if (isset($skip[$r])) {
+                trigger_error('Recursion in template ('.$r.')', E_USER_WARNING);
+                return true;
+            }
+            if (!isset($TPL[$r]))
+                $TPL[$r] = '';
+            $TEXT = str_replace($temp[0][$k], $TPL[$r], $TEXT);
+            $subSkip[$r] = true;
+        }
+
+		if (self::hasMatchTmp($TEXT)) {
+            self::parseTemplate($TEXT, $TPL, $subSkip);
 		}
 		return true;
 	}
+
+    static function matchTmp($TEXT)
+    {
+        if (_strpos($TEXT, '{#') !== false) { // NEW STANDART
+            preg_match_all('/\{\#([A-z0-9_\-]+)\#\}/u', $TEXT, $temp);
+        }
+        else {
+            preg_match_all('/\{\#([A-z0-9_\-]+)\#\}/u', $TEXT, $temp);
+        }
+        return $temp;
+    }
+
+    static function hasMatchTmp($TEXT)
+    {
+        return (_strpos($TEXT, '{#') !== false or _strpos($TEXT, '$_tpl') !== false);
+    }
 
 }

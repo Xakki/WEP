@@ -39,7 +39,7 @@ class loginza_class extends kernel_extends
 		$dt['loginza_data'] = $authdata;
 		$authdata = json_decode($authdata, TRUE);
 		if (isset($authdata['error_type'])) {
-			$mess[] = array('name' => 'error', 'value' => $authdata['error_type'] . ':' . $authdata['error_message']);
+			$mess[] = static_main::am('error', $authdata['error_type'] . ':' . $authdata['error_message']);
 		}
 		else {
 			$dt['loginza_token'] = $_POST['token'];
@@ -75,7 +75,7 @@ class loginza_class extends kernel_extends
 
 		if (!count($mess)) {
 			/*if(!$dt['email']) {
-				$mess[] = array('name'=>'error', 'value'=>'Данный провайдер не сообщил ваш Email, который необходим для авторизации на нашем сайте. Возможно в настройках провайдера вашего аккаунта есть опция позволяющая передавать Email. В любом случае вы можете воспользоваться стандартной регистрацие в нашем сайте , это не займет много времени.');
+				$mess[] = static_main::am('name'=>'error', 'value'=>'Данный провайдер не сообщил ваш Email, который необходим для авторизации на нашем сайте. Возможно в настройках провайдера вашего аккаунта есть опция позволяющая передавать Email. В любом случае вы можете воспользоваться стандартной регистрацие в нашем сайте , это не займет много времени.');
 			} else {*/
 
 			$q = 't1 Join ' . $USERS->owner->tablename . ' t2 on t1.' . $USERS->owner_name . '=t2.id where t1.loginza_login=\'' . $this->SqlEsc($dt['loginza_login']) . '\'';
@@ -86,10 +86,10 @@ class loginza_class extends kernel_extends
 			if (count($data)) {
 				$data = $data[0];
 				if (!$data['active']) {
-					$mess[] = array('name' => 'error', 'value' => 'Ваш аккуант отключён администратором.');
+					$mess[] = static_main::am('error', 'Ваш аккуант отключён администратором.');
 				}
 				elseif (!$data['gact']) {
-					$mess[] = array('name' => 'error', 'value' => 'Ваша группа отключена администратором.');
+					$mess[] = static_main::am('error', 'Ваша группа отключена администратором.');
 				}
 				else {
 					$flag = true;

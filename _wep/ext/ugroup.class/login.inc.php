@@ -81,7 +81,7 @@ if (count($result) and $result[0]) {
 		$DATA['result'] = 1;
 		$this->pageinfo['template'] = 'waction';
 		$_tpl['REQUEST_URI'] = $ref;
-		$_tpl['onload'] .= '$(\'#ajaxload .blockclose\').click(function(){window.location.href=\'' . $ref . '\';}); setTimeout(function() {window.location.href=\'' . $ref . '\';}, 4000);';
+		$_tpl['onload'] .= '$(\'.ajaxload .blockclose\').click(function(){window.location.href=\'' . $ref . '\';}); setTimeout(function() {window.location.href=\'' . $ref . '\';}, 4000);';
 	}
 	else {
 		$mess['messages'][0][0] = 'error';

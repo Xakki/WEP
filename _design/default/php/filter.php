@@ -39,6 +39,8 @@ function tpl_filter(&$data)
 			$r['css'] = '';
 		}
 
+        $ID = $r['ID'] = str_replace(array('[', ']'), '_', $k);
+
 		if ($r['type'] == 'submit') {
 			$html .= '<div class="f_submit ' . ($r['css'] ? $r['css'] : '') . '" id="tr_' . $k . '"><input type="' . $r['type'] . '" name="' . $name . '" value="' . $r['value'] . '"/></div>';
 		}
@@ -178,23 +180,33 @@ function tpl_filter(&$data)
 			  </div>	';
 		}
 		elseif ($r['type'] == 'ajaxlist') {
-			$r['csscheck'] = ($r['value_2'] ? 'accept' : 'reject');
-			$serl = serialize($r['listname']);
-			$html .= '<div class="f_item" id="tr_' . $k . '">
+            /////////////////////
+            $defaultList = '';
+            if (isset($r['defaultList'])) {
+                $defaultList = '<div id="ajaxlist_' . $ID . '_default" style="display:none;">';
+                foreach ($r['defaultList'] as $dlK => $dlR) {
+                    $defaultList .= '<label data-id="' . $dlK . '">' . $dlR . '</label>';
+                }
+                $defaultList .= '</div>';
+            }
+            if (!isset($r['value_2'])) {
+                $r['value_2'] = '';
+            }
+            $r['csscheck'] = ($r['value_2'] ? '' : 'reject');
+            $serl = serialize($r['listname']);
+
+            $html .= '<div class="f_item" id="tr_' . $k . '">
 				' . filterCaptionRender($r) . '
-				<div class="f_value" style="position:relative;">
-					<div class="ajaxlist">
-						<input type="text" name="' . $name . '_2" value="' . strip_tags($r['value_2']) . '" placeholder="' . $r['placeholder'] . '" class="' . $r['csscheck'] . '" autocomplete="off"
-							onfocus="show_hide_label(this,\'' . $k . '\',1)"
-							onblur="show_hide_label(this,\'' . $k . '\',0)"
-							onkeydown="return ajaxlistOnKey(event,this,\'' . $k . '\')"/>
-						<div id="ajaxlist_' . $k . '" style="display:none;">не найдено</div>
-						<input type="hidden" name="' . $name . '" value="' . $r['value'] . '"/>
-					</div>
+				<div class="f_value ajaxlist ' . $r['csscheck'] . '">
+					<input type="text" name="' . $k . '_2" id="' . $ID . '_2" value="' . _e($r['value_2']) . '" placeholder="' . $r['placeholder'] . '" autocomplete="off"/>
+					<div id="ajaxlist_' . $ID . '" style="display:none;" val="' . $r['value_2'] . '">не найдено</div>
+					' . $defaultList . '
+					<input type="hidden" name="' . $k . '" id="' . $ID . '" value="' . $r['value'] . '" ' . $attribute . '/>
 				</div>
-				<input type="hidden" name="hsh_' . $name . '" value="' . md5($serl . $_CFG['wep']['md5']) . '"/>
-				<input type="hidden" name="srlz_' . $name . '" value="' . _e($serl) . '"/>
-			  </div>';
+				<input type="hidden" id="hsh_' . $k . '" value="' . md5($serl . $_CFG['wep']['md5']) . '"/>
+				<input type="hidden" id="srlz_' . $k . '" value="' . _e($serl) . '"/>
+			</div>';
+            $_tpl['onload'] .= 'setEventAjaxList("#' . $ID . '_2", "#' . $ID . '", "#ajaxlist_' . $ID . '");';
 		}
 		elseif ($r['type'] == 'number' or $r['type'] == 'int') {
 			if (!isset($r['placeholder1'])) $r['placeholder1'] = 'от';

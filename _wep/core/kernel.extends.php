@@ -108,6 +108,9 @@ abstract class kernel_extends
 		'root' => 'root_key',
 	);
 
+    public $sql_quote = true;
+    public $sql_replace = false;
+
 	public static $_flagcheckmodstruct = true;
 
 	function __construct($owner = NULL, $_forceLoad = false)
@@ -518,7 +521,7 @@ abstract class kernel_extends
 		}
 		elseif (isint($where)) {
 			if ((int)$where > 0)
-				$where = 'WHERE `id`="' . (int)$where . '"';
+				$where = 'WHERE `id`=' . (int)$where;
 			else
 				$where = '';
 		}
@@ -970,12 +973,18 @@ abstract class kernel_extends
 	{
 		if (is_array($list)) {
 			if (!count($list)) return 0;
-			foreach ($list as &$value)
-				$value = $this->SqlEsc($value);
-			return '\'' . implode('\',\'', $list) . '\'';
+			foreach ($list as &$value) {
+                if (!isint($value)) {
+				    $value = '\'' . $this->SqlEsc($value) . '\'';
+                }
+            }
+			return implode(',', $list);
 		}
 		else {
 			if (!$list) return 0;
+            if (isint($list)) {
+                return $list;
+            }
 			return '\'' . $this->SqlEsc($list) . '\'';
 		}
 	}
@@ -1144,18 +1153,12 @@ abstract class kernel_extends
 
 			$eval = static_form::getEvalForm($this, $r);
 
-			if ($eval !== '') {
-				if (isset($f_data[$k]))
-					$val = $f_data[$k]; // Переменная используемая в eval
-				else
-					$val = '';
-
-				if (substr($eval, -1) != ';') {
-					$eval = '\'' . addcslashes($eval, '\'') . '\';';
-				}
-				$eval = '$f_data[$k]=' . $eval;
-				eval($eval);
-				unset($eval);
+			if ($eval) {
+                if (isset($f_data[$k]))
+                    $val = $f_data[$k]; // Переменная используемая в eval
+                else
+                    $val = '';
+                $f_data[$k] = static_form::callEvalForm($eval, $val, $f_data);
 			}
 			elseif ((isset($r['mask']['fview']) and $r['mask']['fview'] == 2) or (isset($r['mask']['usercheck']) and !static_main::_prmGroupCheck($r['mask']['usercheck']))) {
 				$r['mask']['fview'] = 2;
@@ -1299,7 +1302,7 @@ abstract class kernel_extends
 			$mess = $this->mess_form;
 
 		if (!count($f_fieldsForm))
-			$mess[] = array('name' => 'error', 'value' => static_main::m('nodata', $this));
+			$mess[] = static_main::am('error', 'nodata', [],$this);
 
 		if (isset($this->_CFG['hook']['kPreFields']))
 			$this->__do_hook('kPreFields', func_num_args());
@@ -1981,9 +1984,9 @@ abstract class kernel_extends
 
 			if ($this->_update($data)) {
 				if ($ord < 0)
-					$DATA[] = array('value' => 'UP', 'name' => 'ok');
+					$DATA[] = static_main::am( 'UP', 'ok');
 				else
-					$DATA[] = array('value' => 'DOWN', 'name' => 'ok');
+					$DATA[] = static_main::am( 'DOWN', 'ok');
 				$flag = 1;
 			}
 			else
@@ -2100,6 +2103,9 @@ abstract class kernel_extends
 	{
         if (!$ext)
             return '';
+        if (strlen($ext)>5) {
+            trigger_error('Wrong EXT in getAttaches - "'.$ext.'"', E_USER_WARNING);
+        }
 		return $this->getPathForAtt($key) . $this->getSubPath($id) . '/' . $id . '.' . $ext;
 	}
 

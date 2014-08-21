@@ -407,9 +407,10 @@ class sqlpostgre
 		return false;
 	}
 
-	function longLog($ttt, $sql)
+	function longLog($ttt, $sql, $isError = false)
 	{
 		global $_CFG;
+        $_CFG['logs']['sqlTime'] += $ttt;
 		if (isset($this->SQL_CFG['longquery']) and $this->SQL_CFG['longquery'] > 0 and $ttt > $this->SQL_CFG['longquery']) {
 			trigger_error('LONG QUERY [' . $ttt . ' sec. - мах ' . $this->SQL_CFG['longquery'] . '] (' . $sql . ')', E_USER_WARNING);
 			if ($this->logFile !== false)
@@ -417,13 +418,7 @@ class sqlpostgre
 		}
 
 		if (canShowAllInfo() > 1) {
-			if ($ttt > 0.5) $ttt = '<span style="color:#FF0000;">' . $ttt . '</span>';
-			elseif ($ttt > 0.1) $ttt = '<span style="color:#FF6633;">' . $ttt . '</span>';
-			elseif ($ttt > 0.05) $ttt = '<span style="color:#006699;">' . $ttt . '</span>';
-			elseif ($ttt > 0.01) $ttt = '<span style="color:#66CCCC;">' . $ttt . '</span>';
-			elseif ($ttt > 0.005) $ttt = '<span style="color:#006600">' . $ttt . '</span>';
-			else $ttt = '<span style="color:#00FF00;">' . $ttt . '</span>';
-			$_CFG['logs']['sql'][] = htmlentities($sql, ENT_NOQUOTES, CHARSET) . '  TIME=' . $ttt;
+            $_CFG['logs']['sql'][] = array($sql, $ttt, $isError);
 		}
 		elseif (isBackend() or canShowAllInfo())
 			$_CFG['logs']['sql'][] = true;

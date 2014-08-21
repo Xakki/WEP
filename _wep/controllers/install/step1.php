@@ -45,7 +45,7 @@ $mess = array();
 $txt = '';
 $flag = true;
 if (!function_exists('openssl_encrypt') and !function_exists('mcrypt_decrypt')) {
-	$mess[] = array('name' => 'error', 'value' => 'Необходимо подключить php модуль openssl либо mcrypt');
+	$mess[] = static_main::am('error', 'Необходимо подключить php модуль openssl либо mcrypt');
 	//$flag = false;
 }
 
@@ -89,7 +89,7 @@ if (isset($_POST['sbmt']) and $flag) {
 	$USER_CFG = $_POST;
 }
 else {
-	$mess[] = array('name' => 'ok', 'value' => 'Будте осторожны при вводе этих настроек.');
+	$mess[] = static_main::am('ok','Будте осторожны при вводе этих настроек.');
 }
 
 if (isset($DATA['sql[password]']['value']))

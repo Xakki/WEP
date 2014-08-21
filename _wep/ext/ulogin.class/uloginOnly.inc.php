@@ -34,9 +34,9 @@ if (isset($_POST['token']) and $_POST['token']) {
 	_new_class('ulogin', $ULOGIN);
 	list($flag, $mess) = $ULOGIN->uloginAuth($FUNCPARAM[1]);
 	if (!$flag and isset($_SESSION['ulogin']) and count($_SESSION['ulogin'])) {
-		$mess[] = array('name' => 'alert', 'value' => 'Авторизация через данного OpenID провайдера не возможна, поскольку вы не зарегистрированы на нашем сайте. Если вы уже регистрировались, то авторизация должна соответствовать методу регистрации.');
-		$mess[] = array('name' => 'ok', 'value' => 'Зарегистрировать Вас прямо сейчас?');
-		$mess[] = array('name' => 'ok', 'value' => '<a href="' . $HPATH . '?regme=yes" class="ok">ДА</a>  <a href="' . $HPATH . '" class="error">НЕТ</a>');
+		$mess[] = static_main::am('alert', 'Авторизация через данного OpenID провайдера не возможна, поскольку вы не зарегистрированы на нашем сайте. Если вы уже регистрировались, то авторизация должна соответствовать методу регистрации.');
+		$mess[] = static_main::am('ok', 'Зарегистрировать Вас прямо сейчас?');
+		$mess[] = static_main::am('ok', '<a href="' . $HPATH . '?regme=yes" class="ok">ДА</a>  <a href="' . $HPATH . '" class="error">НЕТ</a>');
 	}
 
 	//$_tpl['onload'] .= 'fShowload(1,jQuery("#LoginzaMess").html(),0,0,"window.location.href=window.location.href;");';

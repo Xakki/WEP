@@ -89,15 +89,15 @@ class static_list
 		return $temp;
 	}
 
-	/**
-	 * Получение списка из кеша если он там есть
-	 * @param mixed $listname - название списока или массив данных для списка
-	 * @param mixed $value - значение
-	 * @return array Список
-	 */
-	static function &_getCashedList($_this, $listname, $value = NULL)
+    /**
+     * Получение списка из кеша если он там есть
+     * @param $_this    kernel_extends
+     * @param $listname array   название списока или массив данных для списка
+     * @param null $value  mixed  значение
+     * @return array Список
+     */
+    static function &_getCashedList($_this, $listname, $value = NULL)
 	{
-		$data = array();
 		$templistname = $listname;
 		if (is_array($listname))
 			$templistname = implode(',', $listname);
@@ -138,13 +138,17 @@ class static_list
 		}
 	}
 
-	/**
-	 * фОРМИРУЕТ стандартные списки и списки по заднанным параметрам
-	 */
-	static function &_getlist($_this, &$listname, $value = NULL) /*LIST SELECTOR*/
+    /**
+     * фОРМИРУЕТ стандартные списки и списки по заднанным параметрам
+     * @param $_this kernel_extends
+     * @param $listname
+     * @param null $value
+     * @return array
+     */
+    static function &_getlist($_this, &$listname, $value = NULL) /*LIST SELECTOR*/
 	{
 		/*Выдает 1 уровневый массив, либо 2х уровневый для структуры типа дерева*/
-		/*Конечный уровень может быть с елемнтами массива #name# итп, этот уровень в счет не входит*/
+		/*Конечный уровень может быть с елементами массива #name# итп, этот уровень в счет не входит*/
 		$data = array();
 		$templistname = $listname;
 		if (is_array($listname)) {
@@ -496,9 +500,24 @@ class static_list
 				$data[0][0] = static_main::m('_zeroname', $_this);
 
 			$q = 'SELECT `id`, `name`, `parent_id` FROM `' . $_this->tablename . '`';
-			if ($_this->id) $q .= ' WHERE `id`!="' . $_this->_id_as_string() . '"';
-			if ($_this->mf_ordctrl) $q .= ' ORDER BY ' . $_this->mf_ordctrl;
-			$result = $_this->SQL->execSQL($q);
+            $w = [];
+			if ($_this->id)
+                $w[] = '`id`!="' . $_this->_id_as_string() . '"';
+
+            if (isset($_this->tree_data) and count($_this->tree_data)) {
+                $parents = implode(',', array_column($_this->tree_data, 'parent_id'));
+			    $w[] = '(`parent_id` in ('.$parents.') or id in ('.$parents.'))';
+            }
+            else {
+                $w[] = '(`parent_id`=' . ( $_this->parent_id ? $_this->parent_id : 0) . ' '.
+                    ($_this->data ? ' or (`left_key`<'.$_this->data[$_this->id][$_this->ns_config['left']].' and `right_key`>'.$_this->data[$_this->id][$_this->ns_config['right']].')' : '').')';
+            }
+
+            if (count($w)) {
+                $q .= 'WHERE '.implode(' and ', $w);
+            }
+            if ($_this->mf_ordctrl) $q .= ' ORDER BY ' . $_this->mf_ordctrl;
+            $result = $_this->SQL->execSQL($q);
 			if (!$result->err)
 				while (list($id, $name, $pid) = $result->fetch_row()) {
 					$data[$pid][$id] = $name;
@@ -688,7 +707,7 @@ class static_list
 				$s[$key]['#name#'] = $value;
 			}
 
-			if ($key != $id and isset($data[$key]) and count($data[$key]) and is_array($data[$key])) {
+			if ($key != $id and isset($data[$key]) and is_array($data[$key]) and count($data[$key])) {
 				list($s[$key]['#item#'], $sel2) = self::_forlist($data, $key, $select, $multiple);
 				if ($sel2) {
 					$s[$key]['#sel#'] = $sel2;
@@ -704,4 +723,16 @@ class static_list
 		}
 		return array($s, $upsel);
 	}
+
+    static function getTreeData(&$data, $key = 0, $nm = '#item#')
+    {
+        $treeData = [];
+        foreach($data[$key] as $ki=>$ri) {
+            if (isset($data[$ki])) {
+                $ri[$nm] = self::getTreeData($data, $ki, $nm);
+            }
+            $treeData[$ki] = $ri;
+        }
+        return $treeData;
+    }
 }

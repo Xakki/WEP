@@ -647,6 +647,7 @@ div.superMenu fieldset legend {
 .pagenumcnt {
 	vertical-align: top;
 	padding: 0 0 0 10px;
+    font-size: 14px;
 	display: -moz-inline-stack;
 	display: inline-block;
 	_overflow: hidden;

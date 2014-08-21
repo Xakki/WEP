@@ -23,7 +23,7 @@ if ($setRedirect) {
 
 $messBlock = 'popMess';
 if (isset($_GET['recover'])) {
-	$mess[] = array('alert', 'На стадии разработки');
+	$mess[] = static_main::am('alert', 'На стадии разработки');
 	$_tpl['flipped'] = 'flipped';
 	$messBlock = 'popMessFlip';
 }
@@ -50,13 +50,13 @@ else {
 	}
 
 	if ($result[0])
-		$mess[] = array(($result[1] == 1 ? 'ok' : 'error'), $result[0]);
+		$mess[] = static_main::am(($result[1] == 1 ? 'ok' : 'error'), $result[0]);
 	//if(isset($_GET['mess']) and is_array($_GET['mess']))
 	//	$mess[] = $_GET['mess']; // static_main::m()
 }
 
 if (isset($_SESSION['user']['wep']) && !$_SESSION['user']['wep'])
-	$mess[] = array('error', 'Доступ в админку закрыт для Вас!');
+	$mess[] = static_main::am('error', 'Доступ в админку закрыт для Вас!');
 
 setTemplate('login');
 

@@ -9,8 +9,10 @@ class static_form
 		$submitFlag = 0;
 		if (count($_POST) and (isset($_POST['sbmt']) or isset($_POST['sbmt_save'])))
 			$submitFlag = $param['setAutoSubmit'] = 1;
-		elseif (isset($param['setAutoSubmit']) and $param['setAutoSubmit'])
+		elseif (isset($param['setAutoSubmit']) and $param['setAutoSubmit']===true)
 			$submitFlag = $param['setAutoSubmit'] = 2;
+        elseif (isset($param['setAutoSubmit']))
+            $submitFlag = $param['setAutoSubmit'];
 		return $submitFlag;
 	}
 
@@ -96,7 +98,7 @@ class static_form
 			if (!isset($_this->fields[$key]['noquote'])) {
 				// массив
 				if (is_array($value))
-					$value = '\'' . $_this->SqlEsc(preg_replace('/\|+/', '|', '|' . implode('|', $value) . '|')) . '\'';
+					$value = '\'' . $_this->SqlEsc(preg_replace('/\|+/', '|', '|' . implode('|', $value) . '|')) . '\''; // todo json_encode
 				// логическое
 				elseif (self::isTypeBool($_this->fields[$key]['type']))
 					$value = (int)(bool)$value; // целое
@@ -129,8 +131,8 @@ class static_form
 		if ($_this->mf_createrid and isset($_SESSION['user']['id']) and (!isset($_this->fld_data[$_this->mf_createrid]) or $_this->fld_data[$_this->mf_createrid] == ''))
 			$_this->fld_data[$_this->mf_createrid] = $_SESSION['user']['id'];
 
-		$q = 'INSERT INTO `' . $_this->tablename . '` (`' . implode('`,`', array_keys($_this->fld_data)) . '`) VALUES (' . implode(',', $_this->fld_data) . ')';
-		if ($flag_update) { // параметр передается в ф. _addUp() - обновление данных если найдена конфликтная запись
+		$q = ($_this->sql_replace ? 'REPLACE' : 'INSERT') . ' INTO `' . $_this->tablename . '` (`' . implode('`,`', array_keys($_this->fld_data)) . '`) VALUES (' . implode(',', $_this->fld_data) . ')';
+		if ($flag_update && !$_this->sql_replace) { // параметр передается в ф. _addUp() - обновление данных если найдена конфликтная запись
 			$q .= ' ON DUPLICATE KEY UPDATE ' . implode(', ', $keyData);
 		}
 
@@ -138,7 +140,7 @@ class static_form
 
 		if ($result->err) return false;
 		// get last id if not used nick
-		if (!$_this->mf_use_charid && !isset($_this->fld_data['id']))
+		if (!$_this->mf_use_charid && (!isset($_this->fld_data['id']) || $flag_update) )
 			$_this->id = (int)$result->lastId();
 		elseif ($_this->fld_data['id'])
 			$_this->id = $_this->fld_data['id'];
@@ -351,7 +353,7 @@ class static_form
 				if (is_array($value)) {
 					$value = '\'' . $_this->SqlEsc(preg_replace('/\|+/', '|', '|' . implode('|', $value) . '|')) . '\'';
 				}
-				elseif ($_this->fields[$key]['type'] == 'bool')
+				elseif (strpos($_this->fields[$key]['type'], 'bool') )
 					$value = (int)(bool)$value;
 				elseif (strpos($_this->fields[$key]['type'], 'int') !== false)
 					$value = str2int($value);
@@ -362,11 +364,13 @@ class static_form
 				else
 					$value = '\'' . $_this->SqlEsc($value) . '\'';
 			}
-
-			$data[$key] = '`' . $key . '` = ' . $value;
+            if ($_this->sql_quote) {
+                $key =  '`' . $key . '`';
+            }
+            $data[$key] = $key . ' = ' . $value;
 		}
 
-		$q = 'UPDATE `' . $_this->tablename . '` SET ' . implode(',', $data) . ' WHERE ' . $where;
+		$q = 'UPDATE ' . ($_this->sql_quote? '`' : ''). $_this->tablename .  ($_this->sql_quote? '`' : '') .' SET ' . implode(',', $data) . ' WHERE ' . $where;
 		$result = $_this->SQL->execSQL($q);
 		if ($result->err) return false;
 
@@ -574,6 +578,24 @@ class static_form
 			$eval = $ff['mask']['evalu'];
 		return $eval;
 	}
+
+    static function callEvalForm($eval, $val, $data)
+    {
+        if (is_string($eval)) {
+            if (substr($eval, -1) != ';') {
+                $eval = '\'' . addcslashes($eval, '\'') . '\';';
+            }
+            $eval = '$val=' . $eval;
+            eval($eval);
+        }
+        elseif (is_callable($eval)) {
+            $val = call_user_func_array($eval, array($val, $data));
+        }
+        else {
+            $val = $eval;
+        }
+        return $val;
+    }
 
 	/**
 	 * Корректировака и обработка формы для вывода формы
@@ -884,8 +906,9 @@ class static_form
 
 			/*Поля которые недоступны пользователю не проверяем, дефолтные значения прописываются в kPreFields()*/
 			$eval = self::getEvalForm($_this, $form);
+
 			if ($eval !== '') {
-				// **************
+                $data[$key] = self::callEvalForm($eval, $data[$key], $data);
 			}
 			elseif ((isset($form['readonly']) and $form['readonly']) or
 				(isset($form['mask']['fview']) and $form['mask']['fview'] == 2) or
@@ -1022,7 +1045,7 @@ class static_form
 			if (isset($data[$key]))
 				$vars[$key] = $data[$key];
 
-		}
+		};
 		unset($form);
 
 		// Проверка уник полей
@@ -1626,7 +1649,8 @@ class static_form
 		$txt = html_entity_decode($txt, ENT_QUOTES, 'UTF-8');
 		$txt2 = preg_replace(
 			array(
-				'/(\s|\`|\~|\@|\#|\$|\%|\^|\&|\*|\(|\)|\_|\-|\+|\=|\[|\]|\{|\}|\"|\'|\/){3,}?/u', // прочие повторяющиеся не символы
+				//'/(\s|\`|\~|\@|\#|\$|\%|\^|\&|\*|\(|\)|\_|\-|\+|\=|\[|\]|\{|\}|\"|\'|\/){3,}?/u', // прочие повторяющиеся не символы
+				'#(.)(\\1){2,}#iu', // прочие повторяющиеся не символы
 				'/([\s]?)(\.|\,|\!|\?\:\;)+/u', // Убирает пробел перед знаками припинания
 				'/(\S)(\<br[ \/]+\>)/u', // ставим знак после до разрыва
 				'/([^\s]{1})(\.|\,|\!|\?\:\;\-)([^\d\s]{1})/u', // Если после знака нету цифры, то исправляем

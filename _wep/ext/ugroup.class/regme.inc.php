@@ -33,19 +33,7 @@ if (isset($ShowFlexForm)) { // все действия в этой части о
 $DATA = array();
 if (isset($_GET['confirm'])) {
 	list($DATA, $flag) = $UGROUP->regConfirm();
-	$html = '<a href="/index.html">Обновите страницу</a>';
-	$_tpl['logs'] .= '<div id="ajaxload" style="display: block; top: 20%; left: 35%; height: 290px;">
-		<div class="layerblock">
-			<div onclick="window.location=\'/index.html\'" class="blockclose"></div>
-				<div class="blockhead"><a href="/index.html">' . ($flag ? 'Вы успешно авторизованы. ' : '') . 'Обновите страницу</a></div>
-					<div class="hrb">&nbsp;</div>
-					' . transformPHP($DATA, '#pg#messages') . '
-					<div class="clear">&nbsp;</div>
-				</div>
-			</div>
-		</div>
-		<div class="ajaxbg" style="opacity: 0.5; display: block;">&nbsp;</div>';
-	$_tpl['onload'] .= 'fMessPos();';
+	$html =  transformPHP($DATA, '#pg#messages') . '<br/><a href="/index.html">' . ($flag ? 'Вы успешно авторизованы. ' : '') . 'Обновите страницу</a>';
 }
 else {
 	$param = array();

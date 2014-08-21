@@ -62,6 +62,9 @@ class static_super
 				$parent_id = $_this->id;
 				$_this->tree_data = $first_data = $path = array();
 				$listfields = 'id,' . $_this->mf_istree . ', ' . $_this->_listname . ' as name';
+                $listfields .= ',' . $_this->ns_config['right'];
+                $listfields .= ',' . $_this->ns_config['left'];
+                $listfields .= ',' . $_this->ns_config['level'];
 				if ($_this->mf_istree_root) {
 					$listfields .= ', ' . $_this->ns_config['root'];
 				}
@@ -301,14 +304,17 @@ class static_super
 //                        eval('$data=$_this->'.$_GET['_func'].'();');
 						$PARAM['formtools'] = call_user_func_array(array($_this, $_GET['_func']), array());
 					}
-					elseif (!isset($PARAM['topmenu'][$_REQUEST['_func']]) or !$PARAM['topmenu'][$_REQUEST['_func']]['function'])
+					elseif (!isset($PARAM['topmenu'][$_REQUEST['_func']]) or !$PARAM['topmenu'][$_REQUEST['_func']]['function']) {
 						$messages[] = static_main::am('error', 'Function for servise not found');
+                    }
 					else {
 						$method = $PARAM['topmenu'][$_REQUEST['_func']]['function'];
-						if (!is_array($method))
+
+                        if (!is_array($method))
 							$method = array($_this, $method, array());
+
 						if (!method_exists($method[0], $method[1]))
-							$messages = static_main::am('error', 'Function for servise not found');
+							$messages[] = static_main::am('error', 'Function for servise not found*');
 						else {
 							$PARAM['formtools'] = call_user_func_array(array($method[0], $method[1]), $method[2]);
 						}
@@ -360,12 +366,13 @@ class static_super
 		return array($PARAM, $statusFlag);
 	}
 
-	/**
-	 * вывод данных
-	 * @param array $param - параметры вывода данных
-	 * @return array
-	 */
-	static function _displayXML(&$_this, $param)
+    /**
+     * 	 * вывод данных
+     * @param $_this kernel_extends
+     * @param $param array- параметры вывода данных
+     * @return array
+     */
+    static function _displayXML(&$_this, $param)
 	{
 		/** КОСТЫЛИ **/
 		// Сделать механизм создания форм
@@ -387,7 +394,7 @@ class static_super
 		$countfield = $_this->data[0]['cnt'];
 
 		if (!$countfield) {
-			$DATA['messages'][] = array('value' => 'Пусто', 'name' => 'alert');
+			$DATA['messages'][] = static_main::am('alert', 'Пусто');
 			return $DATA;
 		}
 
@@ -458,6 +465,12 @@ class static_super
 			$arrno['istree_cnt'] = 1;
 			//SET listfields
 			$cls[0][$_this->mf_istree] = 't1.' . $_this->mf_istree;
+			$cls[0][$_this->ns_config['right']] = 't1.' . $_this->ns_config['right'];
+            $cls[0][$_this->ns_config['left']] = 't1.' . $_this->ns_config['left'];
+            $cls[0][$_this->ns_config['level']] = 't1.' . $_this->ns_config['level'];
+            if ($_this->mf_istree_root) {
+                $cls[0][$_this->ns_config['root']] = 't1.' . $_this->ns_config['root'];
+            }
 			$cls[0][] = '(SELECT count(*) FROM `' . $_this->tablename . '` t' . $t . ' WHERE t' . $t . '.' . $_this->mf_istree . '=t1.id) as istree_cnt';
 			$t++;
 		}
@@ -826,10 +839,13 @@ class static_super
 	}
 
 
-	/**
-	 * Менюшечка админки
-	 */
-	static function modulMenu(&$_this, $PARAM = array())
+    /**
+     * Менюшечка админки
+     * @param $_this kernel_extends
+     * @param array $PARAM
+     * @return array
+     */
+    static function modulMenu(&$_this, $PARAM = array())
 	{ //, $row=array()
 
 		$topmenu = array();
@@ -854,7 +870,7 @@ class static_super
 			$t = array($_this->_cl . '_id' => '');
 			//if (!$_this->mf_istree)
 			//	$t['_type'] = 'update';
-			$list = $_this->_forlist($_this->_getCashedList('list'), 0, $_this->id);
+			$list = $_this->_forlist($_this->_getCashedList('parentlist'), 0, $_this->id);
 			$topmenu['select_' . $_this->_cl] = array(
 				'href' => $t,
 				'caption' => $_this->caption,
@@ -1043,7 +1059,11 @@ class static_super
 		return $topmenu;
 	}
 
-	static function modulMenuConfig(&$_this, &$topmenu)
+    /**
+     * @param $_this kernel_extends
+     * @param $topmenu
+     */
+    static function modulMenuConfig(&$_this, &$topmenu)
 	{
 		if (isset($_this->config_form) and count($_this->config_form) and static_main::_prmModul($_this->_cl, array(13)))
 			$topmenu['Configmodul' . $_this->_cl] = array(
@@ -1061,11 +1081,12 @@ class static_super
 			}
 	}
 
-	/**
-	 * Сортировка
-	 * @return array
-	 */
-	static public function _sorting($_this)
+    /**
+     * Сортировка
+     * @param $_this kernel_extends
+     * @return mixed
+     */
+    static public function _sorting($_this)
 	{
 		$_this->id = $id = (int)$_GET['id'];
 		$pid = (isset($_GET['pid']) ? (int)$_GET['pid'] : 0);

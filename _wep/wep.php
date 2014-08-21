@@ -3,7 +3,6 @@ if (!defined('SITE') || !defined('WEP') || !defined('WEPCONF') || !defined('WEP_
 	die('Not defined constants');
 }
 
-
 require_once(WEP . 'config/config.php');
 
 //FIX URL
@@ -18,21 +17,21 @@ if (isset($_GET['_php'])) {
 			require_once($_CFG['_PATH']['controllers'] . 'robotstxt.php');
 		else
 			require_once($_CFG['_PATH']['wep_controllers'] . 'frontend/robotstxt.php');
-		exit();
+		return true;
 	}
 	elseif (isset($_GET['_php']) and $_GET['_php'] == '_redirect') {
 		if (file_exists($_CFG['_PATH']['controllers'] . '_redirect.php'))
 			require_once($_CFG['_PATH']['controllers'] . '_redirect.php');
 		else
 			require_once($_CFG['_PATH']['wep_controllers'] . 'frontend/_redirect.php');
-		exit();
+        return true;
 	}
 	elseif ($_GET['_php'] == '_captcha') {
 		if (file_exists($_CFG['_PATH']['controllers'] . '_captcha.php'))
 			require_once($_CFG['_PATH']['controllers'] . '_captcha.php');
 		else
 			require_once($_CFG['_PATH']['wep_controllers'] . 'frontend/_captcha.php');
-		exit();
+        return true;
 	}
 	/**
 	 * Загрузка пхп фаилов
@@ -63,13 +62,17 @@ require_once($_CFG['_PATH']['core'] . 'weperr.php');
 
 if (isset($_SERVER['argv']) and $_SERVER['argv'][1] === 'cron' and $_SERVER['SHELL']) {
 	require_once(WEP . 'controllers/cron.php');
-	exit();
+    return true;
 }
 
-if (isAjax())
+if (isAjax()) {
 	require_once($_CFG['_PATH']['core'] . 'output/ajax.php');
-else
-	require_once($_CFG['_PATH']['core'] . 'output/html.php');
+    $WEPOUT = new wepajax();
+}
+else {
+    require_once($_CFG['_PATH']['core'] . 'output/html.php');
+    $WEPOUT = new wephtml();
+}
 
 require_once($_CFG['_PATH']['core'] . 'transform/transformPHP.php');
 require_once($_CFG['_PATH']['core'] . 'transform/transformXSL.php');

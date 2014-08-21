@@ -604,30 +604,53 @@ class static_tools
 			$html .= '<div>Результат статистики выводится по фильтру</div>';
 		}
 
-		if (count($clause))
-			$clause = 'WHERE ' . implode(' and ', $clause);
-		else
-			$clause = '';
+        if (!isset($MODUL->mf_statistic['multiline'])) {
+            $multiline = [$MODUL->mf_statistic['Xname'] => ''];
+        }
+        elseif(is_callable($MODUL->mf_statistic['multiline'])) {
+            $multiline = call_user_func_array($MODUL->mf_statistic['multiline'], []);
+        }
+        else {
+            $multiline = $MODUL->mf_statistic['multiline'];
+        }
 
-		$clause = 'SELECT ' . $xList . ' as `X`, ' . $MODUL->mf_statistic['Y'] . ' as `Y` FROM `' . $MODUL->tablename . '` t1 ' . $clause . ' GROUP BY X ORDER BY X';
-		$result = $MODUL->SQL->execSQL($clause);
-		$data = array();
-		$maxY = 0;
-		$minX = 0;
-		$maxX = 0;
-		if (!$result->err) {
-			while ($row = $result->fetch()) {
-				$data[] = '[\'' . $row['X'] . '\',' . $row['Y'] . ']';
-				if ($row['Y'] > $maxY)
-					$maxY = $row['Y'];
-				if ($row['X'] > $maxX)
-					$maxX = $row['X'];
-				if ($minX == 0 or $row['X'] < $minX)
-					$minX = $row['X'];
-			}
-		}
-		else
-			return array($result->err, '');
+        $maxY = 0;
+        $minX = 0;
+        $maxX = 0;
+
+        $evalVar = '';
+        foreach($multiline as $kLine=>$rLine) {
+            $clauseTemp = $clause;
+            if ($rLine) {
+                $clauseTemp[] = $rLine;
+            }
+            if (count($clauseTemp))
+                $clauseTemp = 'WHERE ' . implode(' and ', $clauseTemp);
+            else
+                $clauseTemp = '';
+
+            $cls = 'SELECT ' . $xList . ' as `X`, ' . $MODUL->mf_statistic['Y'] . ' as `Y` FROM `' . $MODUL->tablename . '` t1 ' . $clauseTemp . ' GROUP BY X ORDER BY X';
+            $result = $MODUL->SQL->execSQL($cls);
+            $data = array();
+
+            if (!$result->err) {
+                while ($row = $result->fetch()) {
+                    $data[] = '[\'' . $row['X'] . '\',' . $row['Y'] . ']';
+                    if ($row['Y'] > $maxY)
+                        $maxY = $row['Y'];
+                    if ($row['X'] > $maxX)
+                        $maxX = $row['X'];
+                    if ($minX == 0 or $row['X'] < $minX)
+                        $minX = $row['X'];
+                }
+            }
+            else
+                return $result->err;
+            if (count($data)) {
+                $evalVar .= 'lines.push([' . implode(',', $data) . ']);'.PHP_EOL.'
+				series.push({lineWidth: 2, label: \'' . $kLine . '\'});';
+            }
+        }
 
 		$stepY = round($maxY, -1) / 10;
 		$jqplot = MY_BH . $_CFG['PATH']['vendors'] . 'jqplot/';
@@ -644,14 +667,16 @@ class static_tools
 				}
 			};
 			jqplot = function() {
-				line1 = [' . implode(',', $data) . '];
+			    var lines = [];
+			    var series = [];
+                '.$evalVar.'
 				var option = {
 					caption : \'' . $MODUL->caption . '\',
 					xName : \'' . $MODUL->mf_statistic['Xname'] . '\',
 					yName : \'' . $MODUL->mf_statistic['Yname'] . '\',
 					yStep : ' . $stepY . ',
 				};
-				readyPlot(option);
+				readyPlot(option, lines, series);
 			}
 			wep.scriptLoad(plotScript);
 		';
@@ -672,6 +697,7 @@ class static_tools
 		$_tpl['onload'] .= $eval;
 		return $html;
 	}
+
 
 	/**
 	 * Обновление миниатюр
@@ -1336,28 +1362,24 @@ deny from all
 
 	static function transliteRuToLat($var, $len = 0)
 	{
-
+        $slovar = array(
+            '<br />' => '-', ' ' => '-', '_' => '-', ',' => '-', '.' => '-', '+' => '-',
+            'а' => 'a', 'б' => 'b', 'в' => 'v', 'г' => 'g', 'д' => 'd', 'е' => 'e', 'ё' => 'e', 'з' => 'z', 'и' => 'i', 'й' => 'y', 'к' => 'k', 'л' => 'l', 'м' => 'm', 'н' => 'n', 'о' => 'o', 'п' => 'p', 'р' => 'r',
+            'с' => 's', 'т' => 't', 'у' => 'u', 'ф' => 'f', 'х' => 'h', 'ы' => 'i', 'э' => 'e',
+            'А' => 'A', 'Б' => 'B', 'В' => 'V', 'Г' => 'G', 'Д' => 'D', 'Е' => 'E', 'Ё' => 'E', 'З' => 'Z', 'И' => 'I', 'Й' => 'Y', 'К' => 'K', 'Л' => 'L', 'М' => 'M', 'Н' => 'N', 'О' => 'O', 'П' => 'P', 'Р' => 'R',
+            'С' => 'S', 'Т' => 'T', 'У' => 'U', 'Ф' => 'F', 'Х' => 'H', 'Ы' => 'I', 'Э' => 'E',
+            "ж" => "zh", "ц" => "ts", "ч" => "ch", "ш" => "sh", "щ" => "shch", "ю" => "yu", "я" => "ya",
+            "Ж" => "ZH", "Ц" => "TS", "Ч" => "CH", "Ш" => "SH", "Щ" => "SHCH", "Ю" => "YU", "Я" => "YA",
+            "ї" => "i", "Ї" => "Yi", "є" => "ie", "Є" => "Ye", "Ь" => "", "Ъ" => "", "ь" => "", "ъ" => ""
+        );
 		$var = strip_tags(html_entity_decode($var, ENT_QUOTES, 'UTF-8'));
-		$var = strtr($var,
-			array(
-				'<br />' => '-', ' ' => '-', '_' => '-', ',' => '-', '.' => '-', '+' => '-',
-				'а' => 'a', 'б' => 'b', 'в' => 'v', 'г' => 'g', 'д' => 'd', 'е' => 'e', 'ё' => 'e', 'з' => 'z', 'и' => 'i', 'й' => 'y', 'к' => 'k', 'л' => 'l', 'м' => 'm', 'н' => 'n', 'о' => 'o', 'п' => 'p', 'р' => 'r',
-				'с' => 's', 'т' => 't', 'у' => 'u', 'ф' => 'f', 'х' => 'h', 'ы' => 'i', 'э' => 'e',
-				'А' => 'A', 'Б' => 'B', 'В' => 'V', 'Г' => 'G', 'Д' => 'D', 'Е' => 'E', 'Ё' => 'E', 'З' => 'Z', 'И' => 'I', 'Й' => 'Y', 'К' => 'K', 'Л' => 'L', 'М' => 'M', 'Н' => 'N', 'О' => 'O', 'П' => 'P', 'Р' => 'R',
-				'С' => 'S', 'Т' => 'T', 'У' => 'U', 'Ф' => 'F', 'Х' => 'H', 'Ы' => 'I', 'Э' => 'E',
-				"ж" => "zh", "ц" => "ts", "ч" => "ch", "ш" => "sh",
-				"щ" => "shch", "ю" => "yu", "я" => "ya",
-				"Ж" => "ZH", "Ц" => "TS", "Ч" => "CH", "Ш" => "SH",
-				"Щ" => "SHCH", "Ю" => "YU", "Я" => "YA",
-				"ї" => "i", "Ї" => "Yi", "є" => "ie", "Є" => "Ye"
-			, "Ь" => "", "Ъ" => "", "ь" => "", "ъ" => ""
-			)
-		);
+		$var = str_replace(array_keys($slovar), $slovar, $var);
+
 		$var = preg_replace("/[^0-9A-Za-z\-]+/", '', $var);
 		$var = strtr($var, array('-----' => '-', '----' => '-', '---' => '-', '--' => '-'));
 		if ($len)
 			$var = mb_substr($var, 0, $len, 'UTF-8');
-		return trim($var, '-');
+		return trim($var, ",. -=");
 	}
 
 	static function _http($link, $param = array())
@@ -1368,18 +1390,19 @@ deny from all
 			exit('ERROR - body не поддерживается');
 		}
 
+        $tmp = rand(400, 700) . '.' . rand(10, 99);
 		$default = array(
 			'proxy' => false,
 			'proxyList' => array(
 				//array('11.11.11.11:8080','user:pass'),
-				'82.200.55.142:3128',
+				//'82.200.55.142:3128',
 				//'115.78.135.30:80',
 				//'122.248.194.9:80',
 				/**/
 			),
 			'HTTPHEADER' => array('Content-Type' => 'text/xml; encoding=utf-8'),
 			'redirect' => false,
-			'USERAGENT' => 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/' . rand(50, 190) . ' (KHTML, like Gecko) Chrome/' . rand(9, 32) . '.0.' . rand(10, 99) . '00.' . rand(1, 200) . '',
+			'USERAGENT' => 'Mozilla/5.0 (Windows NT 6.' . rand(1, 3) . ') AppleWebKit/' . $tmp . ' (KHTML, like Gecko) Chrome/' . rand(9, 34) . '.0.' . rand(10, 99) . '00.' . rand(1, 200) . ' Safari/'.$tmp,
 			'TIMEOUT' => 20,
 			'REFERER' => false,
 			'POST' => false,
@@ -1421,10 +1444,12 @@ deny from all
 			curl_setopt($ch, CURLOPT_REFERER, $param['REFERER']);
 		}
 
+//        curl_setopt($ch, CURLOPT_SSLVERSION, 3);
 		if ($param['SSL']) {
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, TRUE);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 1);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
 			curl_setopt($ch, CURLOPT_CAINFO, $param['SSL']);
+            // curl_setopt ($ch, CURLOPT_SSLCERT, "("/src/openssl-0.9.6/demos/sign/key.pem");
 		}
 		else {
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
@@ -1450,7 +1475,12 @@ deny from all
 		curl_setopt($ch, CURLOPT_HEADER, false);
 		//вернуть ответ сервера в виде строки
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        //
 		curl_setopt($ch, CURLOPT_TIMEOUT, $param['TIMEOUT']);
+
+        if ($_CFG['wep']['debugmode'] > 1) {
+            curl_setopt($ch, CURLOPT_VERBOSE, 1);
+        }
 
 		// ПРОКСИ
 		if ($param['proxy']) {
@@ -1463,15 +1493,17 @@ deny from all
 				$CURLOPT_PROXY = $prox[0];
 				$CURLOPT_PROXYUSERPWD = $prox[1];
 			}
-			else
+			else {
 				$CURLOPT_PROXY = $prox;
+            }
+
 			curl_setopt($ch, CURLOPT_PROXY, $CURLOPT_PROXY);
-			if ($_CFG['wep']['debugmode'] > 1)
-				echo ' * ' . $CURLOPT_PROXY . ' * ';
-			if ($CURLOPT_PROXYUSERPWD) {
+//            curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4);
+//            curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, 1);
+//			if ($CURLOPT_PROXYUSERPWD) {
 				// если необходимо предоставить имя пользователя и пароль
 				//curl_setopt($ch, CURLOPT_PROXYUSERPWD,$CURLOPT_PROXYUSERPWD);
-			}
+//			}
 		}
 		//Функции обратного вызова
 		//curl_setopt($ch, CURLOPT_WRITEFUNCTION,"progress_function");
@@ -1479,15 +1511,18 @@ deny from all
 		$text = curl_exec($ch);
 
 		$PageInfo = curl_getinfo($ch);
-		$err = '';
-		if ($err = curl_errno($ch))
+		$err = $errMess = '';
+		if ($err = curl_errno($ch)) {
 			$flag = false;
-		elseif ($PageInfo['http_code'] == 200)
+            $errMess = curl_error( $ch );
+        }
+		elseif ($PageInfo['http_code'] == 200) {
 			$flag = true;
+        }
 		else
 			$flag = false;
 		curl_close($ch);
-		return array('text' => $text, 'info' => $PageInfo, 'err' => $err, 'flag' => $flag);
+		return array('text' => $text, 'info' => $PageInfo, 'err' => $err, 'flag' => $flag, 'errMess'=>$errMess);
 	}
 
 	static function progress_function($ch, $str)
@@ -1646,5 +1681,36 @@ deny from all
 		return $html . '<hr/>';
 	}
 
+    // Function to check response time
+    static function pingDomain($domain, $port=80, $timeout=10){
+        $starttime = getmicrotime();
+        $file      = fsockopen ($domain, $port, $errno, $errstr, $timeout);
+        $stoptime  = getmicrotime();
+        if (!$file) $status = -1;  // Site is down
+        else {
+            fclose($file);
+            $status = ($stoptime - $starttime) * 1000;
+            $status = floor($status);
+        }
+        return $status;
+    }
+
+    static function ping($host, $timeout = 1) {
+        // echo exec('ping -n 1 -w 1 72.10.169.28');
+        /* ICMP ping packet with a pre-calculated checksum */
+        $package = "\x08\x00\x7d\x4b\x00\x00\x00\x00PingHost";
+        $socket  = socket_create(AF_INET, SOCK_RAW, 1);
+        socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, array('sec' => $timeout, 'usec' => 0));
+        socket_connect($socket, $host, null);
+        $ts = microtime(true);
+        socket_send($socket, $package, strLen($package), 0);
+        if (socket_read($socket, 255)) {
+            $result = microtime(true) - $ts;
+        } else {
+            $result = false;
+        }
+        socket_close($socket);
+        return $result;
+    }
 // END static class
 }

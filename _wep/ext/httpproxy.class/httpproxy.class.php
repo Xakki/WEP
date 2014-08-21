@@ -16,13 +16,28 @@ class httpproxy_class extends kernel_extends
 		$this->unique_fields['name'] = 'name';
 
 		$this->index_fields['timeout'] = 'timeout';
-		$this->index_fields['autoprior'] = 'autoprior';
+		$this->index_fields['negative'] = 'negative';
+		$this->index_fields['positive'] = 'positive';
 		$this->index_fields['mf_timeup'] = 'mf_timeup';
 
-		$this->cf_tools[] = array('func' => 'loadList', 'name' => 'Загрузка списка прокси');
-		$this->cf_tools[] = array('func' => 'clearUse', 'name' => 'Очистка счётчиков');
-		$this->cf_tools[] = array('func' => 'CheckSite', 'name' => 'Проверка xakki.ru');
+		$this->cf_tools[] = array('func' => 'toolsLoadList', 'name' => 'Загрузка списка прокси');
+		$this->cf_tools[] = array('func' => 'toolsClearUse', 'name' => 'Очистка счётчиков');
+		$this->cf_tools[] = array('func' => 'toolsCheckSite', 'name' => 'Проверка');
+
+        $this->cron[] = array('modul' => $this->_cl, 'function' => 'cronCheckSite()', 'active' => 1, 'time' => 60);
+
+        $this->_AllowAjaxFn['toolsCheckSite'] = true;
 	}
+
+    protected function _create_conf() {
+        parent::_create_conf();
+
+        $this->config['check_site'] = 'http://xakki.ru';
+        $this->config['check_word'] = 'Бортовой';
+
+        $this->config_form['check_site'] = array('type' => 'text', 'caption' => 'check_site');
+        $this->config_form['check_word'] = array('type' => 'text', 'caption' => 'check_word');
+    }
 
 	function _create()
 	{
@@ -33,7 +48,8 @@ class httpproxy_class extends kernel_extends
 		$this->fields['port'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0);
 		$this->fields['desc'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['timeout'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 60, 'noquote' => true);
-		$this->fields['autoprior'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0, 'noquote' => true);
+		$this->fields['negative'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0, 'noquote' => true);
+		$this->fields['positive'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0, 'noquote' => true);
 		$this->fields['capture'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => 0);
 
 		//$this->cron[] = array('modul'=>$this->_cl,'function'=>'setRate()','active'=>1,'time'=>6);
@@ -48,7 +64,8 @@ class httpproxy_class extends kernel_extends
 		$this->fields_form['port'] = array('type' => 'int', 'caption' => 'Port', 'mask' => array());
 		$this->fields_form['desc'] = array('type' => 'textarea', 'caption' => 'Описание', 'mask' => array());
 		$this->fields_form['timeout'] = array('type' => 'int', 'caption' => 'Период(сек)', 'mask' => array());
-		$this->fields_form['autoprior'] = array('type' => 'int', 'caption' => 'Приоритет', 'mask' => array());
+		$this->fields_form['negative'] = array('type' => 'int', 'caption' => '-', 'mask' => array());
+		$this->fields_form['positive'] = array('type' => 'int', 'caption' => '+', 'mask' => array());
 		$this->fields_form['mf_timeup'] = array('type' => 'date', 'caption' => 'Дата', 'mask' => array());
 		$this->fields_form['capture'] = array('type' => 'checkbox', 'caption' => 'Занято', 'mask' => array());
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл', 'mask' => array());
@@ -60,33 +77,58 @@ class httpproxy_class extends kernel_extends
 	}
 
 
-	function getProxy($domen = '')
+	function getProxy($domen = '', $check = false)
 	{
-		$domen = parse_url($domen);
-		$this->domen = $domen['host'];
+        if ($domen) {
+            $domen = parse_url($domen);
+            $this->domen = $domen['host'];
+        }
 		if (!isset($_GET['pos']))
 			$_GET['pos'] = rand(0, 3);
-		$res = '';
-		$this->data = $this->_query('t1.name,t1.port,t1.id,t2.id as domenid,if(t2.id,1,0) as fl',
-			't1 LEFT JOIN ' . $this->childs['httpproxycheck']->tablename . ' t2
-				ON t2.name="' . $this->SqlEsc($this->domen) . '" and t2.owner_id=t1.id
-				WHERE t1.`active`=1 and t1.`capture`= 0 and t1.`mf_timeup`<(' . time() . '-t1.`timeout`)
-				ORDER BY fl, t1.`autoprior` DESC, t1.`mf_timeup`
-				LIMIT ' . (int)$_GET['pos'] . ',1');
-		//,false,false,true
-		//`use`,`err`,`autoprior`,`mf_timeup`,`time`
-		// and t1.`capture`= 0 and (t2.`err`<t2.`use` or t2.`use`<1)  and t1.`mf_timeup`<('.time().'-t1.`timeout`)
-		//print_r(' * '.time().' * ');
-		//,t1.`timeout`
+
+        $proxyList = [];
+        $select = 't1.name,t1.port,t1.id';
+        $where = ' WHERE t1.`active`=1 and t1.`capture`= 0 and t1.`mf_timeup`<(' . time() . '-t1.`timeout`) ';
+        $sort = ' ORDER BY ';
+        if ($check) {
+            $where .= 'and t1.`negative`-t1.`positive`<=3';
+            $sort .= 't1.`mf_timeup`';
+        }
+        else {
+            $where .= 'and t1.`negative`-t1.`positive`<0';
+            $sort .= 'fl, t1.`mf_timeup`';
+        }
+		$limit = ' LIMIT ' . (int)$_GET['pos'] . ',1';
+
+        if ($domen) {
+            //,
+            $select .= ',t2.id as domenid ,if( t2.id and t2.use < t2.err * 1.5 ,1 , 0) as fl'; //
+            $where = ' t1 LEFT JOIN ' . $this->childs['httpproxycheck']->tablename . ' t2
+				ON t2.name="' . $this->SqlEsc($this->domen) . '" and t2.owner_id=t1.id ' . $where;
+        }
+        else {
+            $where = ' t1 '.$where;
+            $select .= ',1 as fl';
+        }
+        // t1.`negative`
+//        print_r($this->SQL->query);
+        //,false,false,true
+        //`use`,`err`,`negative`,`mf_timeup`,`time`
+        // and t1.`capture`= 0 and (t2.`err`<t2.`use` or t2.`use`<1)  and t1.`mf_timeup`<('.time().'-t1.`timeout`)
+        //print_r(' * '.time().' * ');
+        //,t1.`timeout`
+
+		$this->data = $this->_query($select,$where.$sort.$limit, '' ,'', false);
+
 
 		if (count($this->data)) {
 			$this->id = $this->data[0]['id'];
-			$this->childs['httpproxycheck']->id = $this->data[0]['domenid'];
+			$this->childs['httpproxycheck']->id = (int)$this->data[0]['domenid'];
 			if ($this->data[0]['name'] != 'localhost' and $this->data[0]['name']) {
 				if ($this->data[0]['name'] and $this->data[0]['port'])
-					$res = $this->data[0]['name'] . ':' . $this->data[0]['port'];
+                    $proxyList[] = $this->data[0]['name'] . ':' . $this->data[0]['port'];
 				elseif ($this->data[0]['name'])
-					$res = $this->data[0]['name'];
+                    $proxyList[] = $this->data[0]['name'];
 			}
 			$this->_update(array('capture' => 1), false, false);
 			if (!$this->childs['httpproxycheck']->id) {
@@ -94,19 +136,30 @@ class httpproxy_class extends kernel_extends
 				$this->childs['httpproxycheck']->_add($upd, false);
 			}
 		}
-		return $res;
+		return $proxyList;
 	}
 
-	function upStatus($time, $err = 0, $autoprior = 0, $lastcode = 200)
+	function upStatus($check, $err = 0, $info = array())
 	{
+        $lastcode = (int)$info['http_code'];
+        $time = (int)$info['total_time'];
+		$updCheck = array('use' => '`use`+1', 'time' => $time, 'lastcode' => $lastcode);
+		$upd = array('capture' => 0);
 
-		$updCheck = array('use' => '`use`+1', 'time' => (int)$time, 'lastcode' => (int)$lastcode);
-		$upd = array('capture' => 0, 'autoprior' => '`autoprior`+1');
+            if ($err===2) {
 
-		if ($err) {
-			$updCheck['err'] = '`err`+' . $err;
-			$upd['autoprior'] = '`autoprior`-1';
-		}
+            }
+            elseif ($err===1) {
+                $updCheck['err'] = '`err`+' . $err;
+                if ($check) {
+                    $upd['negative'] = '`negative`+1';
+                }
+            }
+            else {
+                if ($check) {
+                    $upd['positive'] = '`positive`+1';
+                }
+            }
 
 		if ($this->id) {
 			$this->_update($upd, false, false);
@@ -121,78 +174,103 @@ class httpproxy_class extends kernel_extends
 	}
 
 
-	function getContent($link, $param = array())
+	function getContent($link, $param = array(), $check = false)
 	{
-		/*$param= array();
-		$param['COOKIE'] = 'yandex_gid=213;yandexmarket=100,,1,USD,1,,1,0,0,;';
-		$param['redirect'] = true;
-		$param['TIMEOUT'] = 45;
-		$param['find'] = 'искомый обязательный текст';
-		*/
-		$temp = $this->getProxy($link);
-		if ($temp) {
+        if ($this->_CFG['wep']['debugmode'] > 1) {
+            print_r('<hr/>link = ' . $link);
+        }
+
+//		$param= array();
+//		$param['COOKIE'] = 'u=1sd8vo18.1dnuct3.ecjxmxedy5; sessid=7f0e8f17c54448f9e21c96c369261621.1401747983; dfp_group=16; _mlocation=653240; v=1401747983; __utmmobile=0xdebe13defcd60834';
+//		$param['redirect'] = true;
+//		$param['USERAGENT'] = 'Mozilla/5.0 (Linux; Android 4.2.1; en-us; Nexus 4 Build/JOP40D) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.166 Mobile Safari/535.19';
+//		$param['find'] = 'искомый обязательный текст';
+//        $param['TIMEOUT'] = 100;
+
+        if (!isset($param['findRu'])) {
+            $param['findRu'] = false;
+        }
+		$proxyList = $this->getProxy($link, $check);
+		if (count($proxyList)) {
 			$param['proxy'] = true;
-			$param['proxyList'] = array($temp);
+			$param['proxyList'] = $proxyList;
 		}
+        elseif ($check) {
+            return NULL;
+        }
 		$html = static_tools::_http($link, $param);
 
 		$err = 0;
-		$autoprior = 0;
 
-		if ($html['info']['http_code'] == 0) {
-			$err = 1;
-			$autoprior = 999;
+        if ($html['err']==7 and $html['info']['total_time']==0) {
+            $err = 2;
+            // если брыв инета
+        }
+        elseif ($html['err']==7) {
+            $err = 1;
+        }
+		elseif (!$html['text'] || $html['info']['http_code']==0) {
+            $err = 1;
 		}
+        elseif ($html['info']['http_code'] == 0) {
+            $err = 1;
+        }
 		elseif ($html['info']['http_code'] == 403) {
 			// or strpos($html['text'],'<td class="headCode">403</td>')!==false
 			$err = 1; // ограничение доступа
-			$autoprior = 403;
 		}
 		elseif ($html['info']['http_code'] == 302) {
 			$err = 1;
-			$autoprior = 302;
 		}
 		elseif ($html['info']['http_code'] != 200) {
 			$err = 1;
-			$autoprior = 200;
 		}
 		elseif ($html['info']['redirect_url'] != '') {
 			$err = 1;
-			$autoprior = 70;
 			print_r('<p style="color:red;">Редирект <b>' . $html['info']['redirect_url'] . '</b></p>');
 		}
 		elseif ($html['text'] == '') {
 			$err = 1;
-			$autoprior = 90;
 		}
 		else {
-			preg_match_all('/[А-Яа-яЁё]/u', $html['text'], $matches);
-			if (count($matches[0]) < 5) {
-				$err = 1;
-				$autoprior = 140;
-				print_r('<p style="color:red;">Мало букв</p>');
-			}
-			elseif (isset($param['find']) and mb_stripos($html['text'], $param['find']) === false) {
-				$err = 1;
-				$autoprior = 120;
-				print_r('<p style="color:red;">Не найден текст <b>' . $param['find'] . '</b></p>');
-			}
+            if (isset($param['find']) and mb_stripos($html['text'], $param['find']) === false) {
+                $err = 1;
+                if ($this->_CFG['wep']['debugmode'] > 1) {
+                    print_r('<p style="color:red;">Не найден текст <b>' . $param['find'] . '</b></p>');
+//                    print_r(htmlentities($html['text'], ENT_NOQUOTES, CHARSET));
+                }
+            }
+            elseif ($param['findRu']) {
+                preg_match_all('/[А-Яа-яЁё]/u', $html['text'], $matches);
+                if (count($matches[0]) < 5) {
+                    $err = 1;
+                    if ($this->_CFG['wep']['debugmode'] > 1) {
+                        print_r('<p style="color:red;">Мало русских букв</p>');
+                    }
+                }
+            }
 		}
 
 		if ($err)
-			$html['flag'] = 0;
-		print_r('  |  err = ' . $err);
-		print_r('  |  autoprior = ' . $autoprior);
-		print_r('  |  redirect_url = ' . $html['info']['redirect_url']);
-		print_r('  |  http_code = ' . $html['info']['http_code']);
+			$html['flag'] = false;
 
-		$this->upStatus($html['info']['total_time'], $err, $autoprior, $html['info']['http_code']);
+        if ($this->_CFG['wep']['debugmode'] > 1) {
+            print_r(' | proxy  = ' . implode(',',$proxyList ) .'  |  err = ' . $err.'  |  redirect_url = ' . $html['info']['redirect_url'].'  |  http_code = ' . $html['info']['http_code'].'  |  total_time = ' . $html['info']['total_time']);
+        }
+
+//
+//        print_r('<pre>');
+//        print_r($html);
+//        exit();
+
+		$this->upStatus($check, $err, $html['info']);
+
 
 		return $html;
 	}
 
 
-	function toolsloadList()
+	function toolsLoadList()
 	{
 		global $_tpl;
 		$fields_form = $mess = array();
@@ -227,14 +305,14 @@ class httpproxy_class extends kernel_extends
 			);
 			self::kFields2FormFields($fields_form);
 		}
-		return Array(
+		return array(
 			'form' => $fields_form,
 			'messages' => $mess,
 			'options' => $this->getFormOptions()
 		);
 	}
 
-	function toolsclearUse()
+	function toolsClearUse()
 	{
 		global $_tpl;
 		$fields_form = $mess = array();
@@ -242,12 +320,10 @@ class httpproxy_class extends kernel_extends
 			$mess[] = static_main::am('error', 'denied', $this);
 		elseif (count($_POST) and $_POST['dsbmt']) {
 			$upd = array(
-				//'autoprior'=>0,
 				'capture' => 0,
 			);
-			//or autoprior!=0
-			$this->_update($upd, 'capture!=0', false);
-			$mess = array(static_main::am('ok', 'Сделано', $this));
+			$this->_update($upd, 'WHERE 1=1', false);
+			$mess = array(static_main::am('ok', 'Сделано!!!!!', $this));
 		}
 		else {
 			$fields_form['_info'] = array(
@@ -259,17 +335,50 @@ class httpproxy_class extends kernel_extends
 			);
 			self::kFields2FormFields($fields_form);
 		}
-		return Array(
+		return [
 			'form' => $fields_form,
 			'messages' => $mess,
 			'options' => $this->getFormOptions()
-		);
+		];
 	}
+
+    static function clearHtml($html)
+    {
+        $p = mb_strpos($html,'<body');
+        if($p) {
+            $html = mb_substr($html, $p);
+            $p = mb_strpos($html,'</body>');
+            if($p) {
+                $html = mb_substr($html,0,$p);
+                $html = trim($html);
+            }
+        }
+        $html = preg_replace(
+            array("'<script[^>]*?>.*?</script>'si", "'<link[^>]*?>'si",
+                "'<noscript>.*?</noscript>'si",
+                "'<\!--noindex-->.*?<\!--\/noindex-->'si",
+                "'<form.*?</form>'si",
+                "'<body.*?>'si",
+            )
+            , '', $html);
+        return $html;
+    }
+
+    public function cronCheckSite($n=3) {
+        $param = array();
+        $param['TIMEOUT'] = 20;
+        $param['find'] = $this->config['check_word'];
+        for ($i = 0; $i< $n; $i++) {
+            $Page = $this->getContent($this->config['check_site'], $param, true);
+        }
+        return '-OK-';
+    }
 
 	function toolsCheckSite()
 	{
-		ini_set("max_execution_time", "3600");
+		ini_set("max_execution_time", "360000");
 		set_time_limit(3600 * 24);
+        $handtimer  = 200;
 		$param = array();
 		//yabs-sid=1752422071299616340
 		//fuid01=4d76925108fcb0e4.rBvCuQR8PRtqU2cm8eaIj544KRBAQW8cUD0k9yG2dNO2-djVIemWHc4uRIFM9hRcLTiT44tUrwm8hDYbtVhmeQi-p4M2cb698Ih3G-mnz1pHaMGhAR9g6sdmV_a-E8Zs
@@ -279,19 +388,57 @@ class httpproxy_class extends kernel_extends
 		//$param['COOKIE'] = 'yandex_gid=213;yandexmarket=100,,1,USD,1,,1,0,0,;';
 		//подделываем юзер-агента
 		//$param['redirect'] = true;
-		$param['TIMEOUT'] = 10;
-		$param['find'] = 'Бортовой';
+		$param['TIMEOUT'] = 20;
+		$param['find'] = $this->config['check_word'];
 
-		for ($i = 1; $i++; 100) {
-			$this->getContent('http://xakki.ru', $param);
+		for ($i = 0; $i< 1; $i++) {
+
+            $Page = $this->getContent($this->config['check_site'], $param, true);
+            if (is_null($Page)) {
+                $handtimer  = 20000;
+            }
+//
+//            $Page['text'] = self::clearHtml($Page['text']);
+//            print_r('<pre>');
+//            print_r($Page);
+//            print_r('</pre>');
+//            exit();
 		}
+
+        if ($_GET['noajax']) {
+
+            $rtn = '<h2>Перезагрузка страницы через '.$handtimer.'мсек ('.date('Y-m-d H:i:s').')</h2>';
+            $rtn .= '<script>
+				var tm = setTimeout(function() {window.location.href=location.href;},'.$handtimer.');
+				function start_stop(obj) {
+					console.log(tm);
+					if(tm) {
+						clearTimeout(tm);tm=0;
+						obj.value= "Start";
+					}
+					else {
+						tm = setTimeout(function() {window.location.href=location.href;},'.$handtimer.');
+						obj.value= "STOP";
+					}
+				}
+			</script>
+			<style>
+				h2 {font-size:20px;margin:18px 0 0;}
+				ok, .ok {color:green;font-size:12px;margin:0 5px;}
+				err, .err {color:red;margin:10px;font-size:20px;}
+			</style>
+			<input onclick="start_stop(this)" type="submit" value="STOP"/>
+			';
+            return $rtn;
+        }
+
 		$mess = array(static_main::am('ok', 'Сделано', $this));
 
-		return Array('form' => array(), 'messages' => $mess);
+		return ['form' => array(), 'messages' => $mess, 'options' => $this->getFormOptions()];
 
 	}
 
-//UPDATE wep_httpproxy SET `use`=0,err=0,time=0,autoprior=0
+//UPDATE wep_httpproxy SET `use`=0,err=0,time=0
 }
 
 
