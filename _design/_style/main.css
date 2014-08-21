@@ -14,38 +14,37 @@ a {
 }
 
 .ajaxload {
-	z-index: 30;
 	position: fixed;
 	top: 50%;
 	left: 50%;
+	z-index: 30;
 	display: none;
-
 }
 
 .ajaxload.loadAnimation {
-	background: url('/_design/_img/load.gif') no-repeat 0 0 transparent;
-	height: 20px;
 	width: 20px;
+	height: 20px;
+	background: url('/_design/_img/load.gif') no-repeat 0 0 transparent;
 }
 
 .ajaxload.loadAnimation::after {
-	content: 'Загружаю...';
 	position: relative;
 	top: 11px;
 	left: -30px;
 	color: #fff;
+	content: 'Загружаю...';
 }
 
 /****************************/
 
 .PopUp {
 	position: fixed;
-	z-index: 20;
-	width: 100%;
-	height: 100%;
 	top: 0;
 	left: 0;
+	z-index: 20;
 	display: none;
+	width: 100%;
+	height: 100%;
 }
 
 .PopUp.popupActive {
@@ -75,18 +74,17 @@ a {
 	top: 50%;
 	left: 50%;
 	z-index: 22;
-	white-space: nowrap;
-	color: #555;
-	font-weight: bold;
-	text-align: center;
-	padding: 10px;
-	background-color: white;
-	border: 2px solid gray;
-	-moz-border-radius: 8px;
-	-webkit-border-radius: 8px;
-	border-radius: 8px;
 	visibility: hidden;
-
+	padding: 10px;
+	border: 2px solid gray;
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+	background-color: white;
+	color: #555;
+	text-align: center;
+	white-space: nowrap;
+	font-weight: bold;
 }
 
 .PopUp.ajaxProccess .PopUpLoading {
@@ -98,17 +96,17 @@ a {
 	top: 50%;
 	left: 50%;
 	z-index: 23;
-	white-space: nowrap;
-	color: #555;
-	text-align: center;
-	padding: 5px 17px 10px;
-	background-color: white;
 	overflow: auto;
+	padding: 5px 17px 10px;
 	max-height: 90%;
 	border: 2px solid gray;
-	-moz-border-radius: 8px;
 	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
 	border-radius: 8px;
+	background-color: white;
+	color: #555;
+	text-align: center;
+	white-space: nowrap;
 }
 
 .PopUp.ajaxProccess .PopUpContent {
@@ -122,27 +120,27 @@ a {
 
 /*CLOSE LAYER*/
 .PopUp .PopUpContent .blockclose {
-	cursor: pointer;
 	position: fixed;
 	z-index: 30;
-	height: 30px;
 	width: 30px;
+	height: 30px;
 	background: url("../_img/close30.png") repeat scroll 0 0 transparent;
+	cursor: pointer;
 }
 
 /****************************/
 
 .blockhead {
 	padding: 3px 0;
-	font-size: 0.85em;
-	font-weight: bold;
 	text-align: center;
+	font-weight: bold;
+	font-size: 0.85em;
 }
 
 .cnone {
 	display: none;
-	font-size: 1px;
 	height: 1px;
+	font-size: 1px;
 }
 
 .uiicons {
@@ -160,68 +158,67 @@ a {
 	background-image: none;
 }
 
-.ajaxload .layerloader img {
-}
+
 
 .ajaxload .messages {
+	padding: 10px;
 	border: none;
 	background: none;
-	padding: 10px;
 }
 
 /*SPOILER*/
 .spoiler-wrap {
-	background: gray none repeat scroll 0% 0%;
-	border-color: #C3CBD1;
-	border-style: solid;
-	border-width: 1px 1px 1px 2px;
+	overflow: auto;
 	margin: 6px auto;
 	width: 99%;
-	overflow: auto;
+	border-width: 1px 1px 1px 2px;
+	border-style: solid;
+	border-color: #C3CBD1;
+	background: gray none repeat scroll 0% 0%;
 }
 
 .spoiler-wrap .spoiler-head {
+	margin-left: 6px;
+	padding: 0 0.9em;
 	color: black;
 	font-size: 11px;
 	line-height: 15px;
-	margin-left: 6px;
-	padding: 0 0.9em;
 }
 
 .spoiler-wrap .spoiler-body {
-	border-bottom: 1px dashed #C3CBD1;
+	display: none;
 	display: none;
 	padding: 0;
-	display: none;
+	border-bottom: 1px dashed #C3CBD1;
 }
 
 .spoiler-wrap .spoiler-body pre {
-	background: #F8F7F2 none repeat scroll 0 0;
-	border: medium none;
-	font-size: 0.9em;
-	color: black;
 	margin: 0;
+	border: medium none;
+	background: #F8F7F2 none repeat scroll 0 0;
+	color: black;
+	font-size: 0.9em;
 }
 
 .spoiler-wrap .spoiler-body pre code {
 	display: block;
 	overflow: auto;
-	white-space: pre;
 	padding: 5px 0;
+	white-space: pre;
 }
 
 .spoiler-wrap .folded {
-	background: transparent url(../_img/x16.png) no-repeat scroll 0 -16px;
 	display: block;
 	padding-left: 1.4em;
 	border-bottom: 1px dashed #C3CBD1;
+	background: transparent url(../_img/x16.png) no-repeat scroll 0 -16px;
 }
 
 .spoiler-wrap .unfolded {
-	background: transparent url(../_img/x16.png) no-repeat scroll 0 -48px;
 	display: block;
 	padding-left: 1.4em;
 	border-bottom: 1px dashed transparent;
+	background: transparent url(../_img/x16.png) no-repeat scroll 0 -48px;
 }
 
 .spoiler-wrap .clickable {
@@ -231,79 +228,77 @@ a {
 /*Всплывающая информация showHelp(obj,mess,time,nomiga)*/
 .helpmess {
 	position: absolute;
-	border: 2px solid #555;
-	-moz-border-radius: 4px;
-	-webkit-border-radius: 4px;
-	border-radius: 4px;
-	border-width: 2px !important;
-	background-color: #222;
 	z-index: 10;
 	padding: 2px 3px;
-	font-size: 15px;
+	border: 2px solid #555;
+	border-width: 2px !important;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	background-color: #222;
 	color: #FFF;
+	font-size: 15px;
 }
 
 .trgl {
-	border: 1px solid #555;
-	margin: 0;
-	background: none repeat scroll 0 0 transparent;
 	position: absolute;
-	height: 0;
-	width: 0;
 	right: auto;
+	margin: 0;
+	width: 0;
+	height: 0;
+	border: 1px solid #555;
+	background: none repeat scroll 0 0 transparent;
 }
 
 .trgl_d {
 	bottom: -14px;
 	left: 5px;
-	border-left: 0 none;
-	border-right: 15px dotted transparent;
 	border-top-width: 12px;
+	border-right: 15px dotted transparent;
 	border-bottom-width: 0;
+	border-left: 0 none;
 }
 
 .trgl_u {
 	top: -14px;
 	left: 5px;
-	border-left: 0 none;
-	border-right: 15px dotted transparent;
 	border-top-width: 0;
+	border-right: 15px dotted transparent;
 	border-bottom-width: 12px;
+	border-left: 0 none;
 }
 
 /*LOGIN FORM*/
 .spanor {
-	border-top: 1px solid #E1E1E1;
-	border-bottom: 1px solid #E1E1E1;
 	display: block;
+	clear: both;
 	margin: 0;
 	padding: 2px 160px;
-	clear: both;
+	border-top: 1px solid #E1E1E1;
+	border-bottom: 1px solid #E1E1E1;
 }
 
-div.layerblock {
 
-}
 
 div.layerblock div.cform {
-	padding: 10px;
 	float: right;
+	padding: 10px;
 	width: 200px;
 }
 
 div.layerblock div.cform form div {
-	font-size: 11px;
 	text-align: left;
+	font-size: 11px;
 }
 
 div.layerblock div.cform input {
-	width: 130px;
 	margin: 0 0 2px 0;
-	text-align: center;
+	width: 130px;
 	border: 2px #63A6CC solid;
-	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
 	border-radius: 3px;
+	text-align: center;
 }
 
 div.layerblock div.cform .submit {
@@ -313,16 +308,16 @@ div.layerblock div.cform .submit {
 }
 
 div.layerblock .messhead {
-	font-size: 19px;
 	color: #228B22;
 	font-weight: bold;
+	font-size: 19px;
 }
 
 div.layerblock .messelem {
+	color: gray;
+	text-align: center;
 	font-weight: bold;
 	font-size: 15px;
-	text-align: center;
-	color: gray;
 }
 
 div.layerblock .messelem a {
