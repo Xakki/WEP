@@ -21,10 +21,12 @@ class httpproxy_class extends kernel_extends
 		$this->index_fields['mf_timeup'] = 'mf_timeup';
 
 		$this->cf_tools[] = array('func' => 'toolsLoadList', 'name' => 'Загрузка списка прокси');
-		$this->cf_tools[] = array('func' => 'toolsClearUse', 'name' => 'Очистка счётчиков');
-		$this->cf_tools[] = array('func' => 'toolsCheckSite', 'name' => 'Проверка');
+		$this->cf_tools[] = array('func' => 'toolsClearUse', 'name' => 'Сброс захваченых прокси');
+		$this->cf_tools[] = array('func' => 'toolsClearOff', 'name' => 'Сброс счетчиков у отключенных прокси');
+		$this->cf_tools[] = array('func' => 'toolsCheckSite', 'name' => 'Ручная проверка');
 
-        $this->cron[] = array('modul' => $this->_cl, 'function' => 'cronCheckSite()', 'active' => 1, 'time' => 60);
+        $this->cron[] = array('modul' => $this->_cl, 'function' => 'cronCheckSite()', 'active' => 0, 'time' => 60);
+        $this->cron[] = array('modul' => $this->_cl, 'function' => 'cronReCheckSite()', 'active' => 0, 'time' => 60);
 
         $this->_AllowAjaxFn['toolsCheckSite'] = true;
 	}
@@ -34,9 +36,11 @@ class httpproxy_class extends kernel_extends
 
         $this->config['check_site'] = 'http://xakki.ru';
         $this->config['check_word'] = 'Бортовой';
+        $this->config['timeout'] = 20;
 
         $this->config_form['check_site'] = array('type' => 'text', 'caption' => 'check_site');
         $this->config_form['check_word'] = array('type' => 'text', 'caption' => 'check_word');
+        $this->config_form['timeout'] = array('type' => 'text', 'caption' => 'Timeout');
     }
 
 	function _create()
@@ -88,14 +92,18 @@ class httpproxy_class extends kernel_extends
 
         $proxyList = [];
         $select = 't1.name,t1.port,t1.id';
-        $where = ' WHERE t1.`active`=1 and t1.`capture`= 0 and t1.`mf_timeup`<(' . time() . '-t1.`timeout`) ';
+        $where = ' WHERE t1.`capture`= 0 and t1.`mf_timeup`<(' . time() . '-t1.`timeout`) ';
         $sort = ' ORDER BY ';
-        if ($check) {
-            $where .= 'and t1.`negative`-t1.`positive`<=3';
+        if ($check==='off') {
+            $where .= 'and t1.`active`=0 and t1.`negative`-t1.`positive`<=3';
+            $sort .= 't1.`mf_timeup`';
+        }
+        elseif ($check) {
+            $where .= 'and t1.`active`=1 and t1.`negative`-t1.`positive`<=3';
             $sort .= 't1.`mf_timeup`';
         }
         else {
-            $where .= 'and t1.`negative`-t1.`positive`<0';
+            $where .= 'and t1.`active`=1 and t1.`negative`-t1.`positive`<0';
             $sort .= 'fl, t1.`mf_timeup`';
         }
 		$limit = ' LIMIT ' . (int)$_GET['pos'] . ',1';
@@ -185,7 +193,7 @@ class httpproxy_class extends kernel_extends
 //		$param['redirect'] = true;
 //		$param['USERAGENT'] = 'Mozilla/5.0 (Linux; Android 4.2.1; en-us; Nexus 4 Build/JOP40D) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.166 Mobile Safari/535.19';
 //		$param['find'] = 'искомый обязательный текст';
-//        $param['TIMEOUT'] = 100;
+//        $param['TIMEOUT'] = $this->config['timeout'];
 
         if (!isset($param['findRu'])) {
             $param['findRu'] = false;
@@ -314,7 +322,6 @@ class httpproxy_class extends kernel_extends
 
 	function toolsClearUse()
 	{
-		global $_tpl;
 		$fields_form = $mess = array();
 		if (!static_main::_prmModul($this->_cl, array(5, 7)))
 			$mess[] = static_main::am('error', 'denied', $this);
@@ -322,13 +329,13 @@ class httpproxy_class extends kernel_extends
 			$upd = array(
 				'capture' => 0,
 			);
-			$this->_update($upd, 'WHERE 1=1', false);
+			$this->_update($upd, 'WHERE capture!=0', false);
 			$mess = array(static_main::am('ok', 'Сделано!!!!!', $this));
 		}
 		else {
 			$fields_form['_info'] = array(
 				'type' => 'info',
-				'caption' => '<h2 style="text-align:center;">Обнулить данные?</h2>');
+				'caption' => '<h2 style="text-align:center;">Обнулить захваченые прокси?</h2>');
 			$fields_form['dsbmt'] = array(
 				'type' => 'submit',
 				'value' => 'Выполнить',
@@ -342,6 +349,35 @@ class httpproxy_class extends kernel_extends
 		];
 	}
 
+    function toolsClearOff()
+    {
+        $fields_form = $mess = array();
+        if (!static_main::_prmModul($this->_cl, array(5, 7)))
+            $mess[] = static_main::am('error', 'denied', $this);
+        elseif (count($_POST) and $_POST['dsbmt']) {
+            $upd = array(
+                'negative' => 0,
+                'positive' => 0,
+            );
+            $this->_update($upd, 'WHERE active=0', false);
+            $mess = array(static_main::am('ok', 'Сделано!!!!!', $this));
+        }
+        else {
+            $fields_form['_info'] = array(
+                'type' => 'info',
+                'caption' => '<h2 style="text-align:center;">Обнулить данные отключенных прокси?</h2>');
+            $fields_form['dsbmt'] = array(
+                'type' => 'submit',
+                'value' => 'Выполнить',
+            );
+            self::kFields2FormFields($fields_form);
+        }
+        return [
+            'form' => $fields_form,
+            'messages' => $mess,
+            'options' => $this->getFormOptions()
+        ];
+    }
     static function clearHtml($html)
     {
         $p = mb_strpos($html,'<body');
@@ -366,10 +402,20 @@ class httpproxy_class extends kernel_extends
 
     public function cronCheckSite($n=3) {
         $param = array();
-        $param['TIMEOUT'] = 20;
+        $param['TIMEOUT'] = $this->config['timeout'];
         $param['find'] = $this->config['check_word'];
         for ($i = 0; $i< $n; $i++) {
             $Page = $this->getContent($this->config['check_site'], $param, true);
+        }
+        return '-OK-';
+    }
+
+    public function cronReCheckSite($n=3) {
+        $param = array();
+        $param['TIMEOUT'] = $this->config['timeout'];
+        $param['find'] = $this->config['check_word'];
+        for ($i = 0; $i< $n; $i++) {
+            $Page = $this->getContent($this->config['check_site'], $param, 'off');
         }
         return '-OK-';
     }
