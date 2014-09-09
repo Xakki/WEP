@@ -669,6 +669,13 @@ class pg_class extends kernel_extends
 				continue;
 			}
 
+            if ($rowPG['debugmode']) {
+                if ( (2===$rowPG['debugmode'] && !isDebugMode()) || (1===$rowPG['debugmode'] && isDebugMode()) ) {
+                    $_tpl[$rowPG['marker']] .= '<!--content' . $rowPG['id'] . ' Off for Debug -->';
+                    continue;
+                }
+			}
+
 			// Включить AJAX FORM
 			if ($rowPG['onajaxform']) {
 				plugAjaxForm();

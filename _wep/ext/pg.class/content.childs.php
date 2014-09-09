@@ -38,6 +38,7 @@ class content_class extends kernel_extends
 		$this->fields['memcache_solt'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL', 'default' => 0);
 		$this->fields['access_flag'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => '0');
 		$this->fields['only_production'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => '0');
+		$this->fields['debugmode'] = array('type' => 'tinyint', 'attr' => 'NOT NULL', 'default' => '0');
 		$this->fields['autocss'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => '1');
 		$this->fields['autoscript'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => '1');
 
@@ -90,11 +91,12 @@ class content_class extends kernel_extends
 		$this->fields_form['ordind'] = array('type' => 'int', 'caption' => 'ORD', 'comment' => 'Сортировка');
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
 		$this->fields_form['pg_wswg'] = array('type' => 'checkbox', 'caption' => 'Вкл. редактор', 'onchange'=>'wep.form.editorToggle(this, "pg")');
+        $this->fields_form['debugmode'] = array('type' => 'list', 'caption' => 'Показ при дебаге', 'mask' => array('fview' => 1));
 
 		$this->formSort = array(
 			'Основное' => array('marker', 'pagetype', 'funcparam'),
 			'Контент' => array('pg_wswg', 'pg', 'keywords', 'description'),
-			'Дополнительно' => array('owner_id', 'name', 'href', 'ugroup', 'styles', 'script', 'memcache', 'memcache_solt', 'ordind', 'onajaxform', 'access_flag', 'only_production', 'global', 'autocss', 'autoscript'),
+			'Дополнительно' => array('owner_id', 'name', 'href', 'ugroup', 'styles', 'script', 'memcache', 'memcache_solt', 'ordind', 'onajaxform', 'access_flag', 'only_production', 'ignore_in_debug', 'global', 'autocss', 'autoscript'),
 			'active',
 		);
 
@@ -104,6 +106,12 @@ class content_class extends kernel_extends
 			2 => 'SessionID',
 			3 => 'COOKIE',
 			4 => 'IP',
+		);
+
+		$this->_enum['debugmode'] = array(
+			0 => '---',
+			1 => 'Скрыть при дебаг режиме',
+			2 => 'Показать только при дебаг режиме',
 		);
 	}
 
