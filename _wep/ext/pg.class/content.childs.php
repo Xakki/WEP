@@ -96,7 +96,7 @@ class content_class extends kernel_extends
 		$this->formSort = array(
 			'Основное' => array('marker', 'pagetype', 'funcparam'),
 			'Контент' => array('pg_wswg', 'pg', 'keywords', 'description'),
-			'Дополнительно' => array('owner_id', 'name', 'href', 'ugroup', 'styles', 'script', 'memcache', 'memcache_solt', 'ordind', 'onajaxform', 'access_flag', 'only_production', 'ignore_in_debug', 'global', 'autocss', 'autoscript'),
+			'Дополнительно' => array('owner_id', 'name', 'href', 'ugroup', 'styles', 'script', 'memcache', 'memcache_solt', 'ordind', 'onajaxform', 'access_flag', 'only_production', 'debugmode', 'global', 'autocss', 'autoscript'),
 			'active',
 		);
 
