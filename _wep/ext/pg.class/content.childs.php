@@ -91,7 +91,7 @@ class content_class extends kernel_extends
 		$this->fields_form['ordind'] = array('type' => 'int', 'caption' => 'ORD', 'comment' => 'Сортировка');
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл');
 		$this->fields_form['pg_wswg'] = array('type' => 'checkbox', 'caption' => 'Вкл. редактор', 'onchange'=>'wep.form.editorToggle(this, "pg")');
-        $this->fields_form['debugmode'] = array('type' => 'list', 'caption' => 'Показ при дебаге', 'mask' => array('fview' => 1));
+        $this->fields_form['debugmode'] = array('type' => 'list', 'listname' => 'debugmode', 'caption' => 'Показ при дебаге', 'mask' => array('fview' => 1));
 
 		$this->formSort = array(
 			'Основное' => array('marker', 'pagetype', 'funcparam'),
