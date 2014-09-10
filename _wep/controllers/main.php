@@ -5,7 +5,9 @@ if ($_NEED_INSTALL) {
     return true;
 }
 
-if (strpos($_SERVER['REQUEST_URI'], '/'.WEP_ADMIN)===0) {
+$URI = $_GET['pageParam'];
+
+if (strpos($URI, WEP_ADMIN)===0) {
     $is_admin = true;
 }
 else {
@@ -20,8 +22,6 @@ if ($_CFG['site']['worktime'] and !canShowAllInfo() and !$is_admin) {
 
 /**********************************************/
 
-$temp = strpos($_SERVER['REQUEST_URI'], '?');
-$URI = ($temp ? substr($_SERVER['REQUEST_URI'], 0, $temp) : $_SERVER['REQUEST_URI']);
 if (substr($URI, -5) == '.html') {
     $URI = substr($URI, 0, -5);
 }
@@ -52,7 +52,7 @@ $_REQUEST['pageParam'] = $_GET['pageParam'] = $URI;
 
 // вход в админку
 if ($is_admin) {
-    $_REQUEST['pageParam'] = $_GET['pageParam'] = substr($URI, (strlen(WEP_ADMIN)+1) );
+    $_REQUEST['pageParam'] = $_GET['pageParam'] = substr($URI, strlen(WEP_ADMIN) );
     require_once($_CFG['_PATH']['backend'] . 'index.php');
     return true;
 }

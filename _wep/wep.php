@@ -12,10 +12,14 @@ if (isset($_SERVER['REQUEST_URI'])) {
         static_main::redirect($REQUEST_URI, 301);
     }
 }
+$temp = strpos($_SERVER['REQUEST_URI'], '?');
+$URI = ($temp ? substr($_SERVER['REQUEST_URI'], 0, $temp) : $_SERVER['REQUEST_URI']);
+$_REQUEST['pageParam'] = $_GET['pageParam'] = $URI = ltrim($URI, '/');
+
 $_GET['_php'] = '';
 //ROUTE
 // Тут роутинг для самостоятельных скриптов
-	if ($_SERVER['REQUEST_URI'] == 'robots.txt') {
+	if ($URI == 'robots.txt') {
         if (file_exists(SITE . 'robots.txt'))
             echo file_get_contents(SITE . 'robots.txt');
 		elseif (file_exists($_CFG['_PATH']['controllers'] . 'robotstxt.php'))
@@ -24,8 +28,8 @@ $_GET['_php'] = '';
 			require_once($_CFG['_PATH']['wep_controllers'] . 'frontend/robotstxt.php');
         return true;
     }
-    elseif(strpos($_SERVER['REQUEST_URI'], '.php')!==false) {
-        $php = $_GET['_php'] = mb_substr($_SERVER['REQUEST_URI'], 0, -4);
+    elseif(strpos($URI, '.php')!==false) {
+        $php = $_GET['_php'] = mb_substr($URI, 0, -4);
         if ($php == '_redirect') {
             if (file_exists($_CFG['_PATH']['controllers'] . '_redirect.php'))
                 require_once($_CFG['_PATH']['controllers'] . '_redirect.php');
