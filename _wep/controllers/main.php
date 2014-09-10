@@ -27,11 +27,11 @@ if (substr($URI, -5) == '.html') {
 }
 
 if (strpos($URI, '_')!==false) {
-    if (preg_match("/(.*)_p([0-9]+)/i", $URI, $regs)) {
+    if (preg_match("/^(.*)_p([0-9]+)$/i", $URI, $regs)) {
         $URI =  $regs[1];
         $_GET['_pn'] = $regs[2];
     }
-    if (preg_match("/(.*)_([0-9]+)/i", $URI, $regs)) {
+    if (preg_match("/^(.*)_([0-9]+)$/i", $URI, $regs)) {
         $URI =  $regs[1];
         $_GET['id'] = $regs[2];
     }
@@ -39,13 +39,6 @@ if (strpos($URI, '_')!==false) {
 if (file_exists($_CFG['_PATH']['controllers'] . 'route.php'))
     require_once($_CFG['_PATH']['controllers'] . 'route.php');
 
-if (isset($_COOKIE['_showerror'])) {
-    print_r('<pre>');
-    print_r($_GET);
-    print_r($_SERVER);
-    print_r($_COOKIE);
-    print_r($URI);
-}
 $_REQUEST['pageParam'] = $_GET['pageParam'] = $URI;
 
 /**********************************************/
