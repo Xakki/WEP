@@ -101,7 +101,7 @@ elseif (isset($_GET['_php']) and $_GET['_php'] == 'config') {
 //*****************
 
 if (_new_class('pg', $PGLIST)) {
-	if (!isset($_REQUEST['pageParam']))
+	if (!isset($_REQUEST['pageParam']) || !$_REQUEST['pageParam'])
 		$_REQUEST['pageParam'] = "index";
 	if (is_array($_REQUEST['pageParam']))
         $_REQUEST['pageParam'] = implode('/', $_REQUEST['pageParam']);
