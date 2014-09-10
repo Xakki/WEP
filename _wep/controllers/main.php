@@ -5,17 +5,56 @@ if ($_NEED_INSTALL) {
     return true;
 }
 
-if (strpos($_SERVER['REQUEST_URI'], WEP_CONFIG)===0) {
-    $_GET['pageParam'] = substr($_SERVER['REQUEST_URI'], strlen(WEP_CONFIG));
-	require_once($_CFG['_PATH']['backend'] . 'index.php');
-    return true;
+if (strpos($_SERVER['REQUEST_URI'], '/'.WEP_ADMIN)===0) {
+    $is_admin = true;
 }
-
+else {
+    $is_admin = false;
+}
 //ini_set("max_execution_time", "10");
 //set_time_limit(10);
 
-if ($_CFG['site']['worktime'] and !canShowAllInfo()) {
+if ($_CFG['site']['worktime'] and !canShowAllInfo() and !$is_admin) {
 	static_main::downSite(); // Exit()
+}
+
+/**********************************************/
+
+$temp = strpos($_SERVER['REQUEST_URI'], '?');
+$URI = ($temp ? substr($_SERVER['REQUEST_URI'], 0, $temp) : $_SERVER['REQUEST_URI']);
+if (substr($URI, -5) == '.html') {
+    $URI = substr($URI, 0, -5);
+}
+
+if (strpos($URI, '_')!==false) {
+    if (preg_match("/(.*)_p([0-9]+)/i", $URI, $regs)) {
+        $URI =  $regs[1];
+        $_GET['_pn'] = $regs[2];
+    }
+    if (preg_match("/(.*)_([0-9]+)/i", $URI, $regs)) {
+        $URI =  $regs[1];
+        $_GET['id'] = $regs[2];
+    }
+}
+if (file_exists($_CFG['_PATH']['controllers'] . 'route.php'))
+    require_once($_CFG['_PATH']['controllers'] . 'route.php');
+
+if (isset($_COOKIE['_showerror'])) {
+    print_r('<pre>');
+    print_r($_GET);
+    print_r($_SERVER);
+    print_r($_COOKIE);
+    print_r($URI);
+}
+$_REQUEST['pageParam'] = $_GET['pageParam'] = $URI;
+
+/**********************************************/
+
+// вход в админку
+if ($is_admin) {
+    $_REQUEST['pageParam'] = $_GET['pageParam'] = substr($URI, (strlen(WEP_ADMIN)+1) );
+    require_once($_CFG['_PATH']['backend'] . 'index.php');
+    return true;
 }
 
 if (isset($_GET['_php']) and $_GET['_php'] == '_js') {
