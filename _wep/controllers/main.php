@@ -5,7 +5,8 @@ if ($_NEED_INSTALL) {
     return true;
 }
 
-if (isset($_GET['_php']) and $_GET['_php'] == 'admin') {
+if (strpos($_SERVER['REQUEST_URI'], WEP_CONFIG)===0) {
+    $_GET['pageParam'] = substr($_SERVER['REQUEST_URI'], strlen(WEP_CONFIG));
 	require_once($_CFG['_PATH']['backend'] . 'index.php');
     return true;
 }
@@ -40,7 +41,8 @@ elseif (isset($_GET['_php']) and $_GET['_php'] == 'sitemap') {
 	$_tpl['text'] = $PGLIST->creatSiteMaps();
     return true;
 }
-elseif (isset($_GET['_php']) and isset($_GET['_type']) and $_GET['_type'] == 'xml') {
+elseif (strpos($_SERVER['REQUEST_URI'], '.xml')!==false) {
+    $php = $_GET['_php'] = mb_substr($_SERVER['REQUEST_URI'], 0, -4);
 	if (file_exists($_CFG['_PATH']['controllers'] . $_GET['_php'] . '.xml.php'))
 		require_once($_CFG['_PATH']['controllers'] . $_GET['_php'] . '.xml.php');
 	elseif (file_exists($_CFG['_PATH']['wep_controllers'] . 'frontend/' . $_GET['_php'] . '.xml.php'))
