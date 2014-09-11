@@ -653,13 +653,13 @@ class pg_class extends kernel_extends
 			$html = '';
 			if ($rowPG['ugroup']) {
 				if (!$this->pagePrmCheck($rowPG['ugroup'])) {
-					if ($this->_CFG['wep']['debugmode'] > 2)
+					if (isDebugMode())
 						$_tpl[$rowPG['marker']] .= '<!--content' . $rowPG['id'] . ' ACCESS DENIED -->';
 					continue;
 				}
 			}
 			if ($this->access_flag and $rowPG['access_flag']) {
-				if ($this->_CFG['wep']['debugmode'] > 2)
+				if (isDebugMode())
 					$_tpl[$rowPG['marker']] .= '<!--content' . $rowPG['id'] . ' SPECIAL DENIED -->';
 				continue;
 			}
@@ -670,7 +670,7 @@ class pg_class extends kernel_extends
 			}
 
             if ($rowPG['debugmode']) {
-                if ( (2===$rowPG['debugmode'] && !isDebugMode()) || (1===$rowPG['debugmode'] && isDebugMode()) ) {
+                if ( ('2'===$rowPG['debugmode'] && !isDebugMode()) || ('1'===$rowPG['debugmode'] && isDebugMode()) ) {
                     $_tpl[$rowPG['marker']] .= '<!--content' . $rowPG['id'] . ' Off for Debug -->';
                     continue;
                 }
