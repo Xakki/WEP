@@ -22,24 +22,16 @@ if ($_CFG['site']['worktime'] and !canShowAllInfo() and !$is_admin) {
 
 /**********************************************/
 
-if (substr($URI, -5) == '.html') {
-    $URI = substr($URI, 0, -5);
-}
-
 if (strpos($URI, '_')!==false) {
-    if (preg_match("/^(.*)_p([0-9]+)$/i", $URI, $regs)) {
-        $URI =  $regs[1];
+    if (preg_match("/^(.*)_p([0-9]+)\.html$/i", $URI, $regs)) {
+        $URI =  $regs[1].'.html';
         $_GET['_pn'] = $regs[2];
     }
-    if (preg_match("/^(.*)_([0-9]+)$/i", $URI, $regs)) {
-        $URI =  $regs[1];
+    if (preg_match("/^(.*)_([0-9]+)\.html$/i", $URI, $regs)) {
+        $URI =  $regs[1].'.html';
         $_GET['id'] = $regs[2];
     }
 }
-if (file_exists($_CFG['_PATH']['controllers'] . 'route.php'))
-    require_once($_CFG['_PATH']['controllers'] . 'route.php');
-
-$_REQUEST['pageParam'] = $_GET['pageParam'] = $URI;
 
 /**********************************************/
 
@@ -49,6 +41,19 @@ if ($is_admin) {
     require_once($_CFG['_PATH']['backend'] . 'index.php');
     return true;
 }
+
+if (file_exists($_CFG['_PATH']['controllers'] . 'route.php')) {
+    require_once($_CFG['_PATH']['controllers'] . 'route.php');
+}
+
+if (substr($URI, -5) == '.html') {
+    $_REQUEST['pageParam'] = $_GET['pageParam'] = substr($URI, 0, -5);
+}
+else {
+    $_REQUEST['pageParam'] = $_GET['pageParam'] = $URI;
+}
+
+/***********************************************/
 
 if (isset($_GET['_php']) and $_GET['_php'] == '_js') {
 	if (file_exists($_CFG['_PATH']['controllers'] . '_js.php'))
