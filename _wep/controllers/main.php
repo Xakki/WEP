@@ -5,17 +5,55 @@ if ($_NEED_INSTALL) {
     return true;
 }
 
-if (isset($_GET['_php']) and $_GET['_php'] == 'admin') {
-	require_once($_CFG['_PATH']['backend'] . 'index.php');
-    return true;
-}
+$URI = $_GET['pageParam'];
 
+if (strpos($URI, WEP_ADMIN)===0) {
+    $is_admin = true;
+}
+else {
+    $is_admin = false;
+}
 //ini_set("max_execution_time", "10");
 //set_time_limit(10);
 
-if ($_CFG['site']['worktime'] and !canShowAllInfo()) {
+if ($_CFG['site']['worktime'] and !canShowAllInfo() and !$is_admin) {
 	static_main::downSite(); // Exit()
 }
+
+/**********************************************/
+
+if (strpos($URI, '_')!==false) {
+    if (preg_match("/^(.*)_p([0-9]+)\.html$/i", $URI, $regs)) {
+        $URI =  $regs[1].'.html';
+        $_GET['_pn'] = $regs[2];
+    }
+    if (preg_match("/^(.*)_([0-9]+)\.html$/i", $URI, $regs)) {
+        $URI =  $regs[1].'.html';
+        $_GET['id'] = $regs[2];
+    }
+}
+
+/**********************************************/
+
+// вход в админку
+if ($is_admin) {
+    $_REQUEST['pageParam'] = $_GET['pageParam'] = substr($URI, strlen(WEP_ADMIN) );
+    require_once($_CFG['_PATH']['backend'] . 'index.php');
+    return true;
+}
+
+if (file_exists($_CFG['_PATH']['controllers'] . 'route.php')) {
+    require_once($_CFG['_PATH']['controllers'] . 'route.php');
+}
+
+if (substr($URI, -5) == '.html') {
+    $_REQUEST['pageParam'] = $_GET['pageParam'] = substr($URI, 0, -5);
+}
+else {
+    $_REQUEST['pageParam'] = $_GET['pageParam'] = $URI;
+}
+
+/***********************************************/
 
 if (isset($_GET['_php']) and $_GET['_php'] == '_js') {
 	if (file_exists($_CFG['_PATH']['controllers'] . '_js.php'))
@@ -40,7 +78,8 @@ elseif (isset($_GET['_php']) and $_GET['_php'] == 'sitemap') {
 	$_tpl['text'] = $PGLIST->creatSiteMaps();
     return true;
 }
-elseif (isset($_GET['_php']) and isset($_GET['_type']) and $_GET['_type'] == 'xml') {
+elseif (strpos($_SERVER['REQUEST_URI'], '.xml')!==false) {
+    $php = $_GET['_php'] = mb_substr($_SERVER['REQUEST_URI'], 0, -4);
 	if (file_exists($_CFG['_PATH']['controllers'] . $_GET['_php'] . '.xml.php'))
 		require_once($_CFG['_PATH']['controllers'] . $_GET['_php'] . '.xml.php');
 	elseif (file_exists($_CFG['_PATH']['wep_controllers'] . 'frontend/' . $_GET['_php'] . '.xml.php'))
@@ -60,11 +99,11 @@ elseif (isset($_GET['_php']) and $_GET['_php'] == 'config') {
 //*****************
 
 if (_new_class('pg', $PGLIST)) {
-	if (!isset($_REQUEST['pageParam']))
+	if (!isset($_REQUEST['pageParam']) || !$_REQUEST['pageParam'])
 		$_REQUEST['pageParam'] = "index";
-	if (is_array($_REQUEST['pageParam'])) $_REQUEST['pageParam'] = implode('/', $_REQUEST['pageParam']);
-	$_REQUEST['pageParam'] = explode('/', trim($_REQUEST['pageParam'], '/'));
-
+	if (is_array($_REQUEST['pageParam']))
+        $_REQUEST['pageParam'] = implode('/', $_REQUEST['pageParam']);
+	$_REQUEST['pageParam'] = preg_split('/\//', $_REQUEST['pageParam'], 0, PREG_SPLIT_NO_EMPTY);
 	//if($_SESSION['_showallinfo']) {print('main1 = '.(getmicrotime()-$main1time).'<hr/>');$main2time = getmicrotime();}
 	if ($PGLIST->config['auto_auth']) {
 		static_main::userAuth();

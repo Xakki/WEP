@@ -8,7 +8,7 @@
 	<meta http-equiv="Pragma" content="no-cache"/>
 	<meta name="keywords" content="WEP"/>
 	<meta name="description" content="CMS"/>
-	<link rel="SHORTCUT ICON" href="{#design#}img/favicon.ico"/>
+	<link rel="SHORTCUT ICON" href="/{#THEME#}img/favicon.ico"/>
 	{#meta#}
 	{#script#}
 	{#styles#}

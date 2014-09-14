@@ -106,8 +106,8 @@ class wephtml
 
 			header('Content-type: text/html; charset=utf-8');
 			header("Last-Modified: " . gmdate("D, d M Y H:i:s", $_CFG['header']['modif']) . " GMT");
-			header("Expires: " . gmdate("D, d M Y H:i:s", (time()+$_CFG['header']['expires'])) . " GMT");
-			header('X-Accel-Expires: '.$_CFG['header']['expires']);
+			header("Expires: " . gmdate("D, d M Y H:i:s", (time() + static_main::getExpire())) . " GMT");
+			header('X-Accel-Expires: '.static_main::getExpire());
 
 			if ($_CFG['site']['origin']) {
 				header("Access-Control-Allow-Origin: " . $_CFG['site']['origin']);

@@ -166,7 +166,6 @@ $_CFG['_PATH']['themes'] = SITE . '_themes/'; // дизайн сайта
 /* * ************* */
 // относительные пути
 $_CFG['PATH']['vendors'] = '_vendors/';
-$_CFG['PATH']['admin'] = '_wepadmin/';
 $_CFG['PATH']['themes'] = '_themes/';
 $_CFG['PATH']['content'] = '_content/';
 $_CFG['PATH']['userfile'] = $_CFG['PATH']['content'] . '_userfile/'; // файлы пользователя
@@ -425,7 +424,7 @@ if (!$PHP_SELF[0])
 array_pop($PHP_SELF);
 
 $k = 0;
-while (isset($PHP_SELF[$k]) and $PHP_SELF[$k] != $_CFG['PATH']['admin']) {
+while (isset($PHP_SELF[$k]) and $PHP_SELF[$k] != WEP_ADMIN) {
 	$addpath .= $PHP_SELF[$k] . '/';
 	$k++;
 }
@@ -451,7 +450,7 @@ define('MY_BH', $_CFG['_HREF']['BH']);
 if ($_CFG['site']['redirectPlugin'])
 	$_CFG['require_modul']['redirect'] = true;
 
-$_CFG['_HREF']['admin'] = MY_BH . $_CFG['PATH']['admin'];
+$_CFG['_HREF']['admin'] = MY_BH . WEP_ADMIN;
 define('ADMIN_BH', $_CFG['_HREF']['admin']);
 
 $_CFG['_HREF']['wepJS'] = ADMIN_BH . 'js.php';

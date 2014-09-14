@@ -114,7 +114,7 @@ if (!isAjax()) {
 	//<base href="'.MY_BH.'/"/>
 	$_tpl['meta'] = '
 			<title>{#title#}</title>
-			<link rel="SHORTCUT ICON" href="{#design#}img/favicon.ico"/>
+			<link rel="SHORTCUT ICON" href="/{#design#}{#THEME#}img/favicon.ico"/>
 			<meta charset="utf-8">
 			<meta name="keywords" content="WEP"/> 
 			<meta name="description" content="CMS"/>

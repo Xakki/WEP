@@ -1,941 +1,937 @@
 .sdsd {
-	display: none;
+    display: none;
 }
 
 div.noscript {
-	font-size: 0.9em;
-	text-align: justify;
-	background-color: #FFFF00;
-	padding: 5px 20px;
-	margin: 3px 0 0;
-	white-space: normal;
-	border: 1px solid #A6A6A6;
-	-moz-border-radius: 4px;
-	-webkit-border-radius: 4px;
-	border-radius: 4px;
+    margin: 3px 0 0;
+    padding: 5px 20px;
+    border: 1px solid #a6a6a6;
+    -webkit-border-radius: 4px;
+       -moz-border-radius: 4px;
+            border-radius: 4px;
+    background-color: #ff0;
+    text-align: justify;
+    white-space: normal;
+    font-size: .9em;
 }
 
 .jshref {
-	font-size: 11px;
-	color: #101796;
-	border-bottom: 1px dashed #CCCCCC;
-	cursor: pointer;
+    border-bottom: 1px dashed #ccc;
+    color: #101796;
+    font-size: 11px;
+    cursor: pointer;
 }
 
 .jshref:hover {
-	border-bottom: 1px dashed transparent;
+    border-bottom: 1px dashed transparent;
 }
 
 /*form*/
 /*AJAX MESS */
 div.divform .addparam {
-	width: 80%;
-	display: block;
-	margin: 0 auto;
-	background-color: #EDEDED;
+    display: block;
+    margin: 0 auto;
+    width: 80%;
+    background-color: #ededed;
 }
 
 div.addparam .addparam .form-info {
-	text-align: justify;
-	text-indent: 1em;
+    text-align: justify;
+    text-indent: 1em;
 }
 
 div.addparam .form-value {
-	width: auto;
+    width: auto;
 }
 
 div.divform .ajaxbg {
-	position: absolute;
-	border: 1px solid gray;
-	-moz-border-radius: 4px;
-	-webkit-border-radius: 4px;
-	border-radius: 4px;
+    position: absolute;
+    border: 1px solid gray;
+    -webkit-border-radius: 4px;
+       -moz-border-radius: 4px;
+            border-radius: 4px;
 }
 
 div.divform .ajaxload {
-	position: relative;
-	left: 0;
-	top: 0;
-	padding: 5px 0;
+    position: relative;
+    top: 0;
+    left: 0;
+    padding: 5px 0;
 }
 
 div.divform .div-tr {
-	position: relative;
+    position: relative;
 }
 
 /*form*/
 
 .divform {
-	border: none;
-	width: 550px;
-	background: transparent;
-	margin: 0 auto;
-	display: table;
+    display: table;
+    margin: 0 auto;
+    width: 550px;
+    border: none;
+    background: transparent;
 }
 
 .divform .div-tr {
-	padding: 3px 10px;
-	clear: both;
-	text-align: left;
+    clear: both;
+    padding: 3px 10px;
+    text-align: left;
 }
 
 .divform .caption div {
-	text-align: center;
-	font-size: 1.2em;
-	font-weight: bold;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.2em;
 }
 
 .divform .form-caption {
-	text-align: left;
-	display: inline;
-	font-size: 1.1em;
+    display: inline;
+    text-align: left;
+    font-size: 1.1em;
 }
 
 .divform .caption_error {
-	font-size: 0.8em;
-	color: red;
-	display: inline;
-	padding: 0 0 0 5px;
+    display: inline;
+    padding: 0 0 0 5px;
+    color: red;
+    font-size: .8em;
 }
 
 .divform .form-caption .form-require {
-	color: #F00;
-	cursor: pointer;
+    color: #f00;
+    cursor: pointer;
 }
 
-.divform .form-value {
-}
+
 
 .divform .ckedit-value {
-	width: 550px;
-	max-width: 750px;
-	width: auto;
+    max-width: 750px;
+    width: 550px;
+    width: auto;
 }
 
 .divform .checkbox-value {
-	margin: 0 10px 0 5px;
-	padding: 0 0 0;
+    margin: 0 10px 0 5px;
+    padding: 0 0 0;
 }
 
 .divform .checkbox-valuelist {
-	float: none;
+    float: none;
 }
 
 .divform .checkbox-value input {
-	float: left;
+    float: left;
 }
 
 .divform .checkbox-value .boxtitle {
-	margin-left: 10px;
-	margin-bottom: 5px;
-	min-height: 1.5em;
-	display: block;
+    display: block;
+    margin-bottom: 5px;
+    margin-left: 10px;
+    min-height: 1.5em;
 }
 
 .divform .form-submit {
-	text-align: center;
-	padding: 5px 0;
+    padding: 5px 0;
+    text-align: center;
 }
 
 .divform .infoinput {
-	font-size: 0.9em;
-	font-weight: bold;
-	text-align: center;
-	padding: 3px 0 4px;
-	border: 1px solid gray;
-	-moz-border-radius: 4px;
-	-webkit-border-radius: 4px;
-	border-radius: 4px;
+    padding: 3px 0 4px;
+    border: 1px solid gray;
+    -webkit-border-radius: 4px;
+       -moz-border-radius: 4px;
+            border-radius: 4px;
+    text-align: center;
+    font-weight: bold;
+    font-size: .9em;
 }
 
 .divform .dscr {
-	/*clear:both;*/
-	font-size: 0.8em;
-	color: #A1A1A1;
+    color: #a1a1a1;
+    /*clear:both;*/
+    font-size: .8em;
 }
 
 /* Счетчик TEXTAREA */
 .txtCounter {
-	font-size: 0.8em;
-	color: #A1A1A1;
+    color: #a1a1a1;
+    font-size: .8em;
 }
 
 .txtCounter .textcount {
-	width: 35px;
-	border: 0px;
-	background: transparent none repeat scroll 0 0;
+    width: 35px;
+    border: 0;
+    background: transparent none repeat scroll 0 0;
 }
 
 /*INPUT*/
 .divform input {
-	width: 100%;
-	height: 1.3em;
-	border: 1px solid #A6A6A6;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	border-radius: 3px;
+    width: 100%;
+    height: 1.3em;
+    border: 1px solid #a6a6a6;
+    -webkit-border-radius: 3px;
+       -moz-border-radius: 3px;
+            border-radius: 3px;
 }
 
 .divform input.password {
-	margin: 0 0 3px;
+    margin: 0 0 3px;
 }
 
 .divform input[type='checkbox'] {
-	border: medium none;
-	width: 17px;
-	margin: 0;
+    margin: 0;
+    width: 17px;
+    border: medium none;
 }
 
 .divform input[type='file'] {
-	height: 1.6em;
-	text-align: center;
-	width: auto;
+    width: auto;
+    height: 1.6em;
+    text-align: center;
 }
 
 .divform .divinputfile {
-	display: inline-block;
+    display: inline-block;
 }
 
 .divform .divinputfile input {
-	display: inline-block;
+    display: inline-block;
 }
 
 .divform .fileinfo {
-	font-size: 0.8em;
-	color: gray;
-	margin-left: 5px;
+    margin-left: 5px;
+    color: gray;
+    font-size: .8em;
 }
 
 /* BUTONS*/
 .divform input.sbmt {
-	cursor: pointer;
-	width: auto;
-	min-width: 100px;
-	height: auto;
-	background-color: #3BB3E0;
-	font-family: 'Open Sans', sans-serif;
-	font-size: 1.2em;
-	text-decoration: none;
-	color: white;
-	position: relative;
-	padding: 8px 10px;
-	margin: 4px 10px;
+    position: relative;
+    margin: 4px 10px;
+    padding: 8px 10px;
+    min-width: 100px;
+    width: auto;
+    height: auto;
+    border: solid 1px #2ab7ec;
+    border-bottom: 0;
+    -webkit-border-radius: 7px;
+       -moz-border-radius: 7px;
+            border-radius: 7px;
+    background-color: #3bb3e0;
+    background-image:         linear-gradient(bottom, rgb(44, 160, 202) 0%, rgb(62, 184, 229) 100%);
+    background-image:      -o-linear-gradient(bottom, rgb(44, 160, 202) 0%, rgb(62, 184, 229) 100%);
+    background-image:    -moz-linear-gradient(bottom, rgb(44, 160, 202) 0%, rgb(62, 184, 229) 100%);
+    background-image: -webkit-linear-gradient(bottom, rgb(44, 160, 202) 0%, rgb(62, 184, 229) 100%);
+    background-image:     -ms-linear-gradient(bottom, rgb(44, 160, 202) 0%, rgb(62, 184, 229) 100%);
+    background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, rgb(44, 160, 202)), color-stop(1, rgb(62, 184, 229)));
+    -webkit-box-shadow: inset 0 1px 0 #2ab7ec, 0 2px 0 0 #156785, 0 4px 4px #999;
+       -moz-box-shadow: inset 0 1px 0 #2ab7ec, 0 2px 0 0 #156785, 0 4px 4px #999;
+            box-shadow: inset 0 1px 0 #2ab7ec, 0 2px 0 0 #156785, 0 4px 4px #999;
+    color: white;
+    text-decoration: none;
+    font-size: 1.2em;
+    font-family: 'Open Sans', sans-serif;
+    cursor: pointer;
 
-	background-image: linear-gradient(bottom, rgb(44, 160, 202) 0%, rgb(62, 184, 229) 100%);
-	background-image: -o-linear-gradient(bottom, rgb(44, 160, 202) 0%, rgb(62, 184, 229) 100%);
-	background-image: -moz-linear-gradient(bottom, rgb(44, 160, 202) 0%, rgb(62, 184, 229) 100%);
-	background-image: -webkit-linear-gradient(bottom, rgb(44, 160, 202) 0%, rgb(62, 184, 229) 100%);
-	background-image: -ms-linear-gradient(bottom, rgb(44, 160, 202) 0%, rgb(62, 184, 229) 100%);
-	background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, rgb(44, 160, 202)), color-stop(1, rgb(62, 184, 229)));
-
-	border: solid 1px #2AB7EC;
-	border-bottom: 0px;
-	border-radius: 7px;
-	-webkit-border-radius: 7px;
-	-moz-border-radius: 7px;
-	-o-border-radius: 7px;
-
-	-webkit-box-shadow: inset 0px 1px 0px #2ab7ec, 0px 2px 0px 0px #156785, 0px 4px 4px #999;
-	-moz-box-shadow: inset 0px 1px 0px #2ab7ec, 0px 2px 0px 0px #156785, 0px 4px 4px #999;
-	-o-box-shadow: inset 0px 1px 0px #2ab7ec, 0px 2px 0px 0px #156785, 0px 4px 4px #999;
-	box-shadow: inset 0px 1px 0px #2ab7ec, 0px 2px 0px 0px #156785, 0px 4px 4px #999;
+         -o-border-radius: 7px;
+         -o-box-shadow: inset 0 1px 0 #2ab7ec, 0 2px 0 0 #156785, 0 4px 4px #999;
 }
 
 .divform input.sbmt:hover {
-	background-image: linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
-	background-image: -o-linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
-	background-image: -moz-linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
-	background-image: -webkit-linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
-	background-image: -ms-linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
-	background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, rgb(62, 184, 229)), color-stop(1, rgb(44, 160, 202)));
+    background-image:         linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
+    background-image:      -o-linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
+    background-image:    -moz-linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
+    background-image: -webkit-linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
+    background-image:     -ms-linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
+    background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, rgb(62, 184, 229)), color-stop(1, rgb(44, 160, 202)));
+    -webkit-box-shadow: inset 0 0 0 #2ab7ec, 0 2px 0 0 #156785, 0 4px 4px #999;
+       -moz-box-shadow: inset 0 0 0 #2ab7ec, 0 2px 0 0 #156785, 0 4px 4px #999;
+            box-shadow: inset 0 0 0 #2ab7ec, 0 2px 0 0 #156785, 0 4px 4px #999;
 
-	-webkit-box-shadow: inset 0px 0px 0px #2ab7ec, 0px 2px 0px 0px #156785, 0px 4px 4px #999;
-	-moz-box-shadow: inset 0px 0px 0px #2ab7ec, 0px 2px 0px 0px #156785, 0px 4px 4px #999;
-	-o-box-shadow: inset 0px 0px 0px #2ab7ec, 0px 2px 0px 0px #156785, 0px 4px 4px #999;
-	box-shadow: inset 0px 0px 0px #2ab7ec, 0px 2px 0px 0px #156785, 0px 4px 4px #999;
+         -o-box-shadow: inset 0 0 0 #2ab7ec, 0 2px 0 0 #156785, 0 4px 4px #999;
 }
 
 .divform input.sbmt:active {
-	top: 1px;
-	background-image: linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
-	background-image: -o-linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
-	background-image: -moz-linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
-	background-image: -webkit-linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
-	background-image: -ms-linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
-	background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, rgb(62, 184, 229)), color-stop(1, rgb(44, 160, 202)));
+    top: 1px;
+    background-image:         linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
+    background-image:      -o-linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
+    background-image:    -moz-linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
+    background-image: -webkit-linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
+    background-image:     -ms-linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
+    background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, rgb(62, 184, 229)), color-stop(1, rgb(44, 160, 202)));
+    -webkit-box-shadow: inset 0 0 0 #2ab7ec, 0 1px 0 0 #156785, 0 2px 2px #999;
+       -moz-box-shadow: inset 0 0 0 #2ab7ec, 0 1px 0 0 #156785, 0 2px 2px #999;
+            box-shadow: inset 0 0 0 #2ab7ec, 0 1px 0 0 #156785, 0 2px 2px #999;
 
-	-webkit-box-shadow: inset 0px 0px 0px #2ab7ec, 0px 1px 0px 0px #156785, 0px 2px 2px #999;
-	-moz-box-shadow: inset 0px 0px 0px #2ab7ec, 0px 1px 0px 0px #156785, 0px 2px 2px #999;
-	-o-box-shadow: inset 0px 0px 0px #2ab7ec, 0px 1px 0px 0px #156785, 0px 2px 2px #999;
-	box-shadow: inset 0px 0px 0px #2ab7ec, 0px 1px 0px 0px #156785, 0px 2px 2px #999;
+         -o-box-shadow: inset 0 0 0 #2ab7ec, 0 1px 0 0 #156785, 0 2px 2px #999;
 }
 
 .divform input.sbmt[disabled=disabled] {
-	border-color: gray;
-	background-color: #e1e1e1;
-	background-image: linear-gradient(bottom, gray 0%, #e1e1e1 100%);
-	background-image: -o-linear-gradient(bottom, gray 0%, #e1e1e1 100%);
-	background-image: -moz-linear-gradient(bottom, gray 0%, #e1e1e1 100%);
-	background-image: -webkit-linear-gradient(bottom, gray 0%, #e1e1e1 100%);
-	background-image: -ms-linear-gradient(bottom, gray 0%, #e1e1e1 100%);
-	background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, gray), color-stop(1, #e1e1e1));
-	-webkit-box-shadow: inset 0px 1px 0px #e1e1e1, 0px 2px 0px 0px #444, 0px 6px 5px gray;
-	-moz-box-shadow: inset 0px 1px 0px #e1e1e1, 0px 2px 0px 0px #444, 0px 6px 5px gray;
-	-o-box-shadow: inset 0px 1px 0px #e1e1e1, 0px 2px 0px 0px #444, 0px 6px 5px gray;
-	box-shadow: inset 0px 1px 0px #e1e1e1, 0px 2px 0px 0px #444, 0px 6px 5px gray;
+    border-color: gray;
+    background-color: #e1e1e1;
+    background-image:         linear-gradient(bottom, gray 0%, #e1e1e1 100%);
+    background-image:      -o-linear-gradient(bottom, gray 0%, #e1e1e1 100%);
+    background-image:    -moz-linear-gradient(bottom, gray 0%, #e1e1e1 100%);
+    background-image: -webkit-linear-gradient(bottom, gray 0%, #e1e1e1 100%);
+    background-image:     -ms-linear-gradient(bottom, gray 0%, #e1e1e1 100%);
+    background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, gray), color-stop(1, #e1e1e1));
+    -webkit-box-shadow: inset 0 1px 0 #e1e1e1, 0 2px 0 0 #444, 0 6px 5px gray;
+       -moz-box-shadow: inset 0 1px 0 #e1e1e1, 0 2px 0 0 #444, 0 6px 5px gray;
+            box-shadow: inset 0 1px 0 #e1e1e1, 0 2px 0 0 #444, 0 6px 5px gray;
+
+         -o-box-shadow: inset 0 1px 0 #e1e1e1, 0 2px 0 0 #444, 0 6px 5px gray;
 }
 
 .divform input.sbmt[disabled=disabled]:hover {
-	color: white;
+    color: white;
 }
 
 .divform input.sbmt[disabled=disabled]:active {
-	top: 0;
+    top: 0;
 }
 
 /* BUTONS*/
 
 .divform .shownextfoto {
-	background: transparent url(../_img/jquery.ui/ui-icons_2e83ff_256x240.png) no-repeat scroll -32px -129px;
-	color: green;
-	height: 15px;
-	padding: 0 0 0 15px;
-	white-space: nowrap;
-	width: 1px;
-	cursor: pointer;
+    padding: 0 0 0 15px;
+    width: 1px;
+    height: 15px;
+    background: transparent url(../_img/jquery.ui/ui-icons_2e83ff_256x240.png) no-repeat scroll -32px -129px;
+    color: green;
+    white-space: nowrap;
+    cursor: pointer;
 }
 
 .divform .passnewdesc {
-	font-size: 11px;
-	color: #101796;
-	border-bottom: 1px dashed #CCCCCC;
-	display: inline;
-	cursor: pointer;
+    display: inline;
+    border-bottom: 1px dashed #ccc;
+    color: #101796;
+    font-size: 11px;
+    cursor: pointer;
 }
 
 .divform .passnewdesc:hover {
-	border-bottom: 1px dashed transparent;
+    border-bottom: 1px dashed transparent;
 }
 
 /*Date*/
 .divform .dateselect {
-	margin: 0 20px 0 0;
-	float: left;
+    float: left;
+    margin: 0 20px 0 0;
 }
 
 .divform .dateselect span {
-	display: block;
+    display: block;
 }
 
 .divform .dateselect select {
-	width: auto;
+    width: auto;
 }
 
 .divform select {
-	border: 1px solid #A6A6A6;
-	width: 100%;
+    width: 100%;
+    border: 1px solid #a6a6a6;
 }
 
 .divform select.small {
-	border: 1px solid #A6A6A6;
-	height: 8em;
+    height: 8em;
+    border: 1px solid #a6a6a6;
 }
 
 .divform select.multiple {
-	border: 1px solid #A6A6A6;
-	height: 13em;
+    height: 13em;
+    border: 1px solid #a6a6a6;
 }
 
-.divform select optgroup {
-}
 
-.divform select option {
-}
+
+
 
 .divform select .selpad1:before {
-	content: "- ";
+    content: '- ';
 }
 
 .divform select .selpad2:before {
-	content: "- - ";
+    content: '- - ';
 }
 
 .divform select .selpad3:before {
-	content: "- - - ";
+    content: '- - - ';
 }
 
 .divform select.hideselectforie7 {
-	position: relative;
-	top: -10000px;
+    position: relative;
+    top: -10000px;
 }
 
 .divform select .support {
-	color: #40C900;
+    color: #40c900;
 }
 
 .divform select .nosupport {
-	color: #FFB3B3;
+    color: #ffb3b3;
 }
 
-.divform select .notags {
-}
+
 
 .divform .dscr .support {
-	color: #40C900;
+    color: #40c900;
 }
 
 .divform .dscr .nosupport {
-	color: #FFB3B3;
+    color: #ffb3b3;
 }
 
-.divform .dscr .notags {
-}
+
 
 .divform div.no {
-	font-size: 11px;
-	color: #000;
-	padding: 0;
+    padding: 0;
+    color: #000;
+    font-size: 11px;
 }
 
 .divform div.inline {
-	vertical-align: top;
-	display: -moz-inline-stack;
-	display: inline-block;
-	_overflow: hidden;
-	*zoom: 1;
-	*display: inline;
+    display: -moz-inline-stack;
+    display: inline-block;
+    vertical-align: top;
+
+    _overflow: hidden;
+    *zoom: 1;
+    *display: inline;
 }
 
 .divform div.left1 {
-	float: left;
-	padding-top: 4px;
+    float: left;
+    padding-top: 4px;
 }
 
 .divform div.clear {
-	clear: both;
+    clear: both;
 }
 
 .divform textarea {
-	width: 100%;
-	height: 100px;
-	border: 1px solid #A6A6A6;
-	-moz-border-radius: 4px;
-	-webkit-border-radius: 4px;
-	border-radius: 4px;
+    width: 100%;
+    height: 100px;
+    border: 1px solid #a6a6a6;
+    -webkit-border-radius: 4px;
+       -moz-border-radius: 4px;
+            border-radius: 4px;
 }
 
 .divform input.radio {
-	width: 20px;
-	border: 0;
+    width: 20px;
+    border: 0;
 }
 
 .divform input.secret {
-	width: 3.7em;
-	font-size: 2em;
-	height: 35px;
-	margin: 3px 0 0;
+    margin: 3px 0 0;
+    width: 3.7em;
+    height: 35px;
+    font-size: 2em;
 }
 
 .divform div.secret {
-	white-space: nowrap;
+    white-space: nowrap;
 }
 
 #tr_captcha {
-	text-align: center;
+    text-align: center;
 }
 
 .divform div.secretimg {
-	padding: 3px 0 0 5px;
+    padding: 3px 0 0 5px;
 }
 
 .divform .i-reload {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 .divform input.ronly {
-	background: none repeat scroll 0 0 #E6E6E6;
-	color: #666666;
+    background: none repeat scroll 0 0 #e6e6e6;
+    color: #666;
 }
 
 .divform .attach {
-	border: 1px solid #A6A6A6;
-	margin: 5px 5px 5px 0;
-	max-width: 160px;
+    margin: 5px 5px 5px 0;
+    max-width: 160px;
+    border: 1px solid #a6a6a6;
 }
 
 .divform .wep_thumb {
-	/*Эскиз рисунка в форме*/
-	float: right;
-	margin: 0 10px 0 0;
+    /*Эскиз рисунка в форме*/
+    float: right;
+    margin: 0 10px 0 0;
 }
 
 .divform .wep_thumb_comment {
-	/*Коммент эскиза рисунка в форме*/
-	font-size: 0.7em;
-	color: gray;
+    color: gray;
+    /*Коммент эскиза рисунка в форме*/
+    font-size: .7em;
 }
 
 .divform .filedelete {
-	color: red;
-	float: right;
-	white-space: nowrap;
+    float: right;
+    color: red;
+    white-space: nowrap;
 }
 
 .divform .filedelete input {
-	width: 20px;
-	vertical-align: middle;
+    width: 20px;
+    vertical-align: middle;
 }
 
 /*Select list c индекс Input*/
 
 .divform .ilist {
-	margin: 3px 0 0;
+    margin: 3px 0 0;
 }
 
 .divform .ilist input {
-	width: 40%;
-	margin: 0 5% 0 0;
+    margin: 0 5% 0 0;
+    width: 40%;
 }
 
 .divform .ilist select {
-	width: auto;
-	max-width: 45%;
+    max-width: 45%;
+    width: auto;
 }
 
-.ui-sortable {
-}
 
-.ui-sortable-placehelper {
-}
+
+
 
 .ui-sortable-helper {
-	left: 0;
-	border: 1px dashed #532;
-	background-color: rgb(144, 238, 144);
+    left: 0;
+    border: 1px dashed #532;
+    background-color: rgb(144, 238, 144);
 }
 
 .divform .ilistmultiple {
-	background: transparent url(../_img/jquery.ui/ui-icons_2e83ff_256x240.png) no-repeat scroll -32px -129px;
-	color: green;
-	height: 15px;
-	padding: 0 0 0 15px;
-	white-space: nowrap;
-	width: 1px;
-	cursor: pointer;
-	display: -moz-inline-stack;
-	display: inline-block;
-	_overflow: hidden;
-	*zoom: 1;
-	*display: inline;
+    display: -moz-inline-stack;
+    display: inline-block;
+    padding: 0 0 0 15px;
+    width: 1px;
+    height: 15px;
+    background: transparent url(../_img/jquery.ui/ui-icons_2e83ff_256x240.png) no-repeat scroll -32px -129px;
+    color: green;
+    white-space: nowrap;
+    cursor: pointer;
+
+    _overflow: hidden;
+    *zoom: 1;
+    *display: inline;
 }
 
 .divform .ilistdel {
-	background: transparent url(../_img/jquery.ui/ui-icons_2e83ff_256x240.png) no-repeat scroll -32px -193px;
-	color: red;
-	height: 15px;
-	padding: 0 0 0 15px;
-	white-space: nowrap;
-	width: 1px;
-	cursor: pointer;
-	display: -moz-inline-stack;
-	display: inline-block;
-	_overflow: hidden;
-	*zoom: 1;
-	*display: inline;
+    display: -moz-inline-stack;
+    display: inline-block;
+    padding: 0 0 0 15px;
+    width: 1px;
+    height: 15px;
+    background: transparent url(../_img/jquery.ui/ui-icons_2e83ff_256x240.png) no-repeat scroll -32px -193px;
+    color: red;
+    white-space: nowrap;
+    cursor: pointer;
+
+    _overflow: hidden;
+    *zoom: 1;
+    *display: inline;
 }
 
 .divform .ilistsort {
-	background: transparent url(../_img/jquery.ui/ui-icons_2e83ff_256x240.png) no-repeat scroll -129px -49px;
-	color: red;
-	height: 15px;
-	padding: 0 0 0 15px;
-	white-space: nowrap;
-	width: 1px;
-	cursor: move;
-	display: -moz-inline-stack;
-	display: inline-block;
-	_overflow: hidden;
-	*zoom: 1;
-	*display: inline;
+    display: -moz-inline-stack;
+    display: inline-block;
+    padding: 0 0 0 15px;
+    width: 1px;
+    height: 15px;
+    background: transparent url(../_img/jquery.ui/ui-icons_2e83ff_256x240.png) no-repeat scroll -129px -49px;
+    color: red;
+    white-space: nowrap;
+    cursor: move;
+
+    _overflow: hidden;
+    *zoom: 1;
+    *display: inline;
 }
 
 .divform .dateinput {
-	background: transparent url(../_img/jquery.ui/ui-icons_2e83ff_256x240.png) no-repeat scroll -32px -111px;
-	padding: 0 0 0 15px;
+    padding: 0 0 0 15px;
+    background: transparent url(../_img/jquery.ui/ui-icons_2e83ff_256x240.png) no-repeat scroll -32px -111px;
 }
 
 .divform .dateinput input {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 /* radiolist */
-.divform .radiolist {
 
-}
 
 .divform .radiolist label {
-	display: block;
-	border: 1px solid transparent;
-	vertical-align: top;
-	padding: 2px 0;
+    display: block;
+    padding: 2px 0;
+    border: 1px solid transparent;
+    vertical-align: top;
 }
 
 .divform .radiolist label:hover {
-	border-color: #e1e1e1;
+    border-color: #e1e1e1;
 }
 
 .divform .radiolist label input {
-	margin: 0px 4px;
+    margin: 0 4px;
 }
 
 /*MESSAGE*/
 .messages {
-	font-size: 1em;
-	text-align: center;
-	background: #F6F6F6;
-	padding: 5px 20px 10px;
-	margin: 15px 0 0;
-	white-space: normal;
-	display: block;
-	border: 1px solid #A6A6A6;
-	-moz-border-radius: 4px;
-	-webkit-border-radius: 4px;
-	border-radius: 4px;
+    display: block;
+    margin: 15px 0 0;
+    padding: 5px 20px 10px;
+    border: 1px solid #a6a6a6;
+    -webkit-border-radius: 4px;
+       -moz-border-radius: 4px;
+            border-radius: 4px;
+    background: #f6f6f6;
+    text-align: center;
+    white-space: normal;
+    font-size: 1em;
 }
 
-.messages .error, error {
-	font-size: 1.2em;
-	font-weight: normal;
-	margin: 0 0 3px 0;
-	color: #d93f36;
-	font-weight: bold;
+.messages .error,
+error {
+    margin: 0 0 3px 0;
+    color: #d93f36;
+    font-weight: normal;
+    font-weight: bold;
+    font-size: 1.2em;
 }
 
-.messages .ok, ok {
-	margin: 0 0 3px 0;
-	color: green;
+.messages .ok,
+ok {
+    margin: 0 0 3px 0;
+    color: green;
 }
 
-.messages .alert, alert {
-	margin: 0 0 3px 0;
-	color: blue;
+.messages .alert,
+alert {
+    margin: 0 0 3px 0;
+    color: blue;
 }
 
 /*FORM*/
 
 .ajaxlist {
-	position: relative;
-	border-radius: 3px;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	background-color: white;
+    position: relative;
+    -webkit-border-radius: 3px;
+       -moz-border-radius: 3px;
+            border-radius: 3px;
+    background-color: white;
 }
 
 .ajaxlist input {
-	background: none repeat scroll 0 0 transparent;
+    background: none repeat scroll 0 0 transparent;
 }
 
 .ajaxlist span {
-	left: 5px;
-	top: 0;
-	position: absolute;
-	z-index: 0;
-	color: #AAA;
-	white-space: nowrap;
+    position: absolute;
+    top: 0;
+    left: 5px;
+    z-index: 0;
+    color: #aaa;
+    white-space: nowrap;
 }
 
 .ajaxlist div {
-	left: 0;
-	top: 1.3em;
-	position: absolute;
-	z-index: 10;
-	color: #000;
-	border: 1px solid gray;
-	border-radius: 0 0 4px 4px;
-	-moz-border-radius: 0 0 4px 4px;
-	-webkit-border-radius: 0 0 4px 4px;
-	background: none repeat scroll 0 0 #A1B1C1;
-	padding: 5px 0;
-	width: 100%;
-	overflow: auto;
-	max-height: 300px;
+    position: absolute;
+    top: 1.3em;
+    left: 0;
+    z-index: 10;
+    overflow: auto;
+    padding: 5px 0;
+    max-height: 300px;
+    width: 100%;
+    border: 1px solid gray;
+    -webkit-border-radius: 0 0 4px 4px;
+       -moz-border-radius: 0 0 4px 4px;
+            border-radius: 0 0 4px 4px;
+    background: none repeat scroll 0 0 #a1b1c1;
+    color: #000;
 }
 
 .ajaxlist div label {
-	display: block;
-	cursor: pointer;
-	text-decoration: none;
-	padding: 1px 10px;
-	color: #000;
-	background: none repeat scroll 0 0 #A1B1C1;
+    display: block;
+    padding: 1px 10px;
+    background: none repeat scroll 0 0 #a1b1c1;
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 .ajaxlist div label.selected {
-	color: #FFF;
-	background: none repeat scroll 0 0 #111111;
+    background: none repeat scroll 0 0 #111;
+    color: #fff;
 }
 
 /*Значок в форме ввода*/
 .ajaxlist input {
-	color: green;
+    color: green;
 }
 
 .ajaxlist.reject input {
-	color: red;
+    color: red;
 }
 
 .ajaxlist.load input {
-	text-decoration: blink;
+    text-decoration: blink;
 }
 
 /*Свернутый блок формы*/
-form .minform {
-}
+
 
 form .minform .form-caption {
-	cursor: pointer;
-	border-bottom: 1px dashed #101796;
-	font-size: 12px;
-	color: #000;
-	display: inline;
-	padding: 0 0 0 11px;
-	background: transparent url(../_img/x16.png) no-repeat scroll 0 -17px;
+    display: inline;
+    padding: 0 0 0 11px;
+    border-bottom: 1px dashed #101796;
+    background: transparent url(../_img/x16.png) no-repeat scroll 0 -17px;
+    color: #000;
+    font-size: 12px;
+    cursor: pointer;
 }
 
 form .minform:hover .form-caption {
-	background: transparent url(../_img/x16.png) no-repeat scroll 0 -49px;
+    background: transparent url(../_img/x16.png) no-repeat scroll 0 -49px;
 }
 
 form .minform .form-value {
-	display: none;
+    display: none;
 }
 
 form .minform:hover .form-value {
-	display: block;
+    display: block;
 }
 
 /*ДОПОЛНИТЕЛЬНЫЕ ПАРАМЕТРЫ ДЛЯ ФОРМЫ*/
 .showparam {
-	cursor: pointer;
-	border-bottom: 1px dashed #101796;
-	font-size: 12px;
-	color: #000;
-	display: inline;
-	padding: 0 0 0 11px;
-	background: transparent url(../_img/x16.png) no-repeat scroll 0 -17px;
+    display: inline;
+    padding: 0 0 0 11px;
+    border-bottom: 1px dashed #101796;
+    background: transparent url(../_img/x16.png) no-repeat scroll 0 -17px;
+    color: #000;
+    font-size: 12px;
+    cursor: pointer;
 }
 
 .hideparam {
-	background: transparent url(../_img/x16.png) no-repeat scroll 0 -49px;
+    background: transparent url(../_img/x16.png) no-repeat scroll 0 -49px;
 }
 
 .showparam:hover {
-	border-bottom: 1px dashed transparent;
+    border-bottom: 1px dashed transparent;
 }
 
 .formparam {
-	background-color: rgb(237, 237, 237);
-	width: 60%;
-	margin-top: 0px;
-	margin-right: auto;
-	margin-bottom: 0px;
-	margin-left: auto;
+    margin-top: 0;
+    margin-right: auto;
+    margin-bottom: 0;
+    margin-left: auto;
+    width: 60%;
+    background-color: rgb(237, 237, 237);
 }
 
 span.labelInput {
-	position: absolute;
-	z-index: 0;
-	color: #BBB;
-	white-space: nowrap;
-	font-size: 1.3em;
-	margin-top: 0px;
-	margin-right: 0px;
-	margin-bottom: 0px;
-	margin-left: 5px;
-	display: block;
+    position: absolute;
+    z-index: 0;
+    display: block;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 5px;
+    color: #bbb;
+    white-space: nowrap;
+    font-size: 1.3em;
 }
 
 /* YA MAP*/
 #positionOnMap {
-	position: fixed;
-	z-index: 30;
-	top: 50%;
-	left: 50%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 30;
 }
 
 #positionOnMap div.layerblock {
-	padding: 5px;
-	background-color: white;
-	overflow: auto;
-	max-height: 90%;
-	border: 2px solid gray;
-	-moz-border-radius: 8px;
-	-webkit-border-radius: 8px;
-	border-radius: 8px;
-
+    overflow: auto;
+    padding: 5px;
+    max-height: 90%;
+    border: 2px solid gray;
+    -webkit-border-radius: 8px;
+       -moz-border-radius: 8px;
+            border-radius: 8px;
+    background-color: white;
 }
 
 .mapselect {
-	font-size: 20px;
-	background: transparent url('../_img/onmap.png') no-repeat scroll 10px -2px;
-	padding: 1px 0 1px 48px;
-	text-align: left;
-	display: block;
-	color: #0088cc;
-	cursor: pointer;
+    display: block;
+    padding: 1px 0 1px 48px;
+    background: transparent url('../_img/onmap.png') no-repeat scroll 10px -2px;
+    color: #08c;
+    text-align: left;
+    font-size: 20px;
+    cursor: pointer;
 }
 
 .mapselect input {
-	color: #ffffff;
-	border: none;
-	background: transparent;
+    border: none;
+    background: transparent;
+    color: #fff;
 }
 
 .mapClear {
-	cursor: pointer;
-	display: none;
+    display: none;
+    cursor: pointer;
 }
 
 .mapClear.setvalue {
-	display: inline-block;
-	margin: 0 0 0 15px;
-	color: red;
+    display: inline-block;
+    margin: 0 0 0 15px;
+    color: red;
 }
 
 /*Всплывающая информация showHelp(obj,mess,time,nomiga)*/
 .helpmess {
-	position: absolute;
-	border: 2px solid #555;
-	-moz-border-radius: 4px;
-	-webkit-border-radius: 4px;
-	border-radius: 4px;
-	border-width: 2px !important;
-	background-color: #222;
-	z-index: 10;
-	padding: 2px 3px;
-	font-size: 15px;
-	color: #FFF;
-	font-weight: bold;
+    position: absolute;
+    z-index: 10;
+    padding: 2px 3px;
     min-width: 50px;
+    border: 2px solid #555;
+    border-width: 2px !important;
+    -webkit-border-radius: 4px;
+       -moz-border-radius: 4px;
+            border-radius: 4px;
+    background-color: #222;
+    color: #fff;
+    font-weight: bold;
+    font-size: 15px;
 }
 
 .trgl {
-	border: 1px solid #555;
-	margin: 0;
-	background: none repeat scroll 0 0 transparent;
-	position: absolute;
-	height: 0;
-	width: 0;
-	right: auto;
+    position: absolute;
+    right: auto;
+    margin: 0;
+    width: 0;
+    height: 0;
+    border: 1px solid #555;
+    background: none repeat scroll 0 0 transparent;
 }
 
 .trgl_d {
-	bottom: -10px;
-	left: 3px;
-	border-left: 0 none;
-	border-right: 11px dotted transparent;
-	border-top-width: 9px;
-	border-bottom-width: 0;
+    bottom: -10px;
+    left: 3px;
+    border-top-width: 9px;
+    border-right: 11px dotted transparent;
+    border-bottom-width: 0;
+    border-left: 0 none;
 }
 
 .trgl_u {
-	top: -10px;
-	left: 3px;
-	border-left: 0 none;
-	border-right: 11px dotted transparent;
-	border-top-width: 0;
-	border-bottom-width: 9px;
+    top: -10px;
+    left: 3px;
+    border-top-width: 0;
+    border-right: 11px dotted transparent;
+    border-bottom-width: 9px;
+    border-left: 0 none;
 }
 
 /* swf uploader */
 
 .divinputfile .fuploader {
-	position: relative;
-	display: -moz-inline-stack;
-	display: inline-block;
-	_overflow: hidden;
-	*zoom: 1;
-	*display: inline;
-	cursor: pointer;
-	width: auto;
-	vertical-align: middle;
-	line-height: 1.8em;
-	height: 1.8em;
-	margin: 0 5px;
-	padding: 0 15px 0;
-	background-color: #3BB3E0;
-	font-family: 'Open Sans', sans-serif;
-	font-size: 1.2em;
-	font-weight: bold;
-	text-decoration: none;
-	color: white;
-	position: relative;
-	background-image: linear-gradient(bottom, rgb(44, 160, 202) 0%, rgb(62, 184, 229) 100%);
-	background-image: -o-linear-gradient(bottom, rgb(44, 160, 202) 0%, rgb(62, 184, 229) 100%);
-	background-image: -moz-linear-gradient(bottom, rgb(44, 160, 202) 0%, rgb(62, 184, 229) 100%);
-	background-image: -webkit-linear-gradient(bottom, rgb(44, 160, 202) 0%, rgb(62, 184, 229) 100%);
-	background-image: -ms-linear-gradient(bottom, rgb(44, 160, 202) 0%, rgb(62, 184, 229) 100%);
-	background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, rgb(44, 160, 202)), color-stop(1, rgb(62, 184, 229)));
+    position: relative;
+    position: relative;
+    display: -moz-inline-stack;
+    display: inline-block;
+    margin: 0 5px;
+    padding: 0 15px 0;
+    width: auto;
+    height: 1.8em;
+    border: solid 1px #2ab7ec;
+    -webkit-border-radius: 7px;
+       -moz-border-radius: 7px;
+            border-radius: 7px;
+    background-color: #3bb3e0;
+    background-image:         linear-gradient(bottom, rgb(44, 160, 202) 0%, rgb(62, 184, 229) 100%);
+    background-image:      -o-linear-gradient(bottom, rgb(44, 160, 202) 0%, rgb(62, 184, 229) 100%);
+    background-image:    -moz-linear-gradient(bottom, rgb(44, 160, 202) 0%, rgb(62, 184, 229) 100%);
+    background-image: -webkit-linear-gradient(bottom, rgb(44, 160, 202) 0%, rgb(62, 184, 229) 100%);
+    background-image:     -ms-linear-gradient(bottom, rgb(44, 160, 202) 0%, rgb(62, 184, 229) 100%);
+    background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, rgb(44, 160, 202)), color-stop(1, rgb(62, 184, 229)));
+    -webkit-box-shadow: inset 0 1px 0 #2ab7ec, 0 2px 0 0 #156785, 0 6px 5px #999;
+       -moz-box-shadow: inset 0 1px 0 #2ab7ec, 0 2px 0 0 #156785, 0 6px 5px #999;
+            box-shadow: inset 0 1px 0 #2ab7ec, 0 2px 0 0 #156785, 0 6px 5px #999;
+    color: white;
+    vertical-align: middle;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.2em;
+    font-family: 'Open Sans', sans-serif;
+    line-height: 1.8em;
+    cursor: pointer;
 
-	border: solid 1px #2AB7EC;
-	-webkit-border-radius: 7px;
-	-moz-border-radius: 7px;
-	-o-border-radius: 7px;
-	border-radius: 7px;
-
-	-webkit-box-shadow: inset 0px 1px 0px #2ab7ec, 0px 2px 0px 0px #156785, 0px 6px 5px #999;
-	-moz-box-shadow: inset 0px 1px 0px #2ab7ec, 0px 2px 0px 0px #156785, 0px 6px 5px #999;
-	-o-box-shadow: inset 0px 1px 0px #2ab7ec, 0px 2px 0px 0px #156785, 0px 6px 5px #999;
-	box-shadow: inset 0px 1px 0px #2ab7ec, 0px 2px 0px 0px #156785, 0px 6px 5px #999;
+    _overflow: hidden;
+    *zoom: 1;
+    *display: inline;
+         -o-border-radius: 7px;
+         -o-box-shadow: inset 0 1px 0 #2ab7ec, 0 2px 0 0 #156785, 0 6px 5px #999;
 }
 
 .divinputfile .fuploader:hover {
-	color: yellow;
+    color: yellow;
 }
 
 .divinputfile .fuploader:active {
-	top: 1px;
-	background-image: linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
-	background-image: -o-linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
-	background-image: -moz-linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
-	background-image: -webkit-linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
-	background-image: -ms-linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
-	background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, rgb(62, 184, 229)), color-stop(1, rgb(44, 160, 202)));
-	-webkit-box-shadow: inset 0px 0px 0px #2ab7ec, 0px 1px 0px 0px #156785, 0px 3px 3px #999;
-	-moz-box-shadow: inset 0px 0px 0px #2ab7ec, 0px 1px 0px 0px #156785, 0px 3px 3px #999;
-	-o-box-shadow: inset 0px 0px 0px #2ab7ec, 0px 1px 0px 0px #156785, 0px 3px 3px #999;
-	box-shadow: inset 0px 0px 0px #2ab7ec, 0px 1px 0px 0px #156785, 0px 3px 3px #999;
+    top: 1px;
+    background-image:         linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
+    background-image:      -o-linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
+    background-image:    -moz-linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
+    background-image: -webkit-linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
+    background-image:     -ms-linear-gradient(bottom, rgb(62, 184, 229) 0%, rgb(44, 160, 202) 100%);
+    background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, rgb(62, 184, 229)), color-stop(1, rgb(44, 160, 202)));
+    -webkit-box-shadow: inset 0 0 0 #2ab7ec, 0 1px 0 0 #156785, 0 3px 3px #999;
+       -moz-box-shadow: inset 0 0 0 #2ab7ec, 0 1px 0 0 #156785, 0 3px 3px #999;
+            box-shadow: inset 0 0 0 #2ab7ec, 0 1px 0 0 #156785, 0 3px 3px #999;
+
+         -o-box-shadow: inset 0 0 0 #2ab7ec, 0 1px 0 0 #156785, 0 3px 3px #999;
 }
 
 .divinputfile .fuploader .swfupload {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
 
 .progress_wrap {
-	display: -moz-inline-stack;
-	display: inline-block;
-	_overflow: hidden;
-	*zoom: 1;
-	*display: inline;
-	width: 100px;
-	height: 10px;
-	display: none;
-	background-color: #FFF;
-	border: 1px solid black;
-	padding: 0;
+    display: -moz-inline-stack;
+    display: inline-block;
+    display: none;
+    padding: 0;
+    width: 100px;
+    height: 10px;
+    border: 1px solid black;
+    background-color: #fff;
+
+    _overflow: hidden;
+    *zoom: 1;
+    *display: inline;
 }
 
 .progress_wrap .progress {
-	padding: 0;
-	margin: 0;
-	width: 0;
-	height: 10px;
-	border: none;
-	background-color: green;
+    margin: 0;
+    padding: 0;
+    width: 0;
+    height: 10px;
+    border: none;
+    background-color: green;
 }
 
 /* swf uploader */

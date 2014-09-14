@@ -7,8 +7,10 @@
 	defined('WEPCONF') or define('WEPCONF', SITE.'_wepconf/');
 	// фаил конфига проекта
 	defined('WEP_CONFIG') or define('WEP_CONFIG', WEPCONF.'config/main.php');
-	
-	// remove the following lines when in production mode
+
+    defined('WEP_ADMIN') or define('WEP_ADMIN', '_wepadmin/');
+
+// remove the following lines when in production mode
 	defined('WEP_DEBUG') or define('WEP_DEBUG',true);
 	// specify how many levels of call stack should be shown in each log message
 	defined('WEP_TRACE_LEVEL') or define('WEP_TRACE_LEVEL',2);
