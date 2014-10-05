@@ -1,9 +1,10 @@
 <?php
-	// Путь к корню сайта 
+ exit('Example');
+	// Путь к корню сайта
 	defined('SITE') or define('SITE', dirname(__FILE__).'/');
 	// путь к ядру движка
 	defined('WEP') or define('WEP', SITE.'_wep/');
-	// путь к папке проекта м конфигами 
+	// путь к папке проекта м конфигами
 	defined('WEPCONF') or define('WEPCONF', SITE.'_wepconf/');
 	// фаил конфига проекта
 	defined('WEP_CONFIG') or define('WEP_CONFIG', WEPCONF.'config/main.php');

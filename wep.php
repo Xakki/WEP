@@ -1,4 +1,5 @@
 <?php
+
 if (!defined('SITE') || !defined('WEP') || !defined('WEPCONF') || !defined('WEP_CONFIG') || !defined('WEP_ADMIN')) {
 	die('Not defined constants');
 }
