@@ -4,9 +4,7 @@
 ----------
 WEP - означает <b>Web Engine on PHP</b>
 
-https://github.com/Xakki/WEP -- Основная ветка разработки
-
-https://github.com/Xakki/WEP_PLUGIN -- дополнительные модули
+https://github.com/Xakki/WEP
 
 http://wep.xakki.ru -- сайт проекта
 
@@ -17,6 +15,9 @@ http://wep.xakki.ru -- сайт проекта
 * гибкость (модульная структура)
 * быстродействие
 * бесплатный
+* бесчисленное кол-во кАстылей
+* куча Ашибок
+* устаревшая и не полная документация
 
 Требования
 ----------
@@ -25,6 +26,8 @@ http://wep.xakki.ru -- сайт проекта
 * Apache 2 или(и) NGINX (с модуем php)
 * Apache модули [mod_rewrite, mod_mime_magic]
 * PHP модули [php_gd2, php_mbstring, php_exif, php_mysqli, php_openssl или php_mcrypt, php_xsl (не обязательно), php_curl (не обязательно), php_memcache (не обязательно)]
+* Терпение
+* Умение медетировать
 
 Установка
 ---------
