@@ -71,7 +71,7 @@ elseif ($_GET['_php'] == 'rss') {
 		echo 'no RSS';
     return true;
 }
-elseif ($_GET['_php'] == 'sitemap' || $_SERVER['REQUEST_URI']=='sitemap.xml') {
+elseif ($_GET['_php'] == 'sitemap' || $_GET['pageParam']=='sitemap.xml') {
 	$_COOKIE['_showerror'] = 0;
 	$SITEMAP = TRUE;
 	_new_class('pg', $PGLIST);
