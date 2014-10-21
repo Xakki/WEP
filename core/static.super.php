@@ -517,7 +517,7 @@ class static_super
 
 					//if (isset($lsn['include']))
 					//	require_once($_this->_CFG['_PATH']['ext'].$lsn['include'].'.class.php');
-					if (1) {
+//					if (1) {
 						$subQuery = 'SELECT ';
 						if (isset($r['multiple']) and $r['multiple'])
 							$subQuery .= 'group_concat(' . $lsn['nameField'] . ' SEPARATOR " | ")';
@@ -555,37 +555,37 @@ class static_super
 						}
 
 						$cls[0][] = '(' . $subQuery . ') as name_' . $k;
-					}
-					else {
-						// Старые Left join тормозят
-						if (isset($r['multiple']) and $r['multiple'])
-							$cls[0][] = 'group_concat(' . $lsn['nameField'] . ' SEPARATOR " | ") as name_' . $k;
-						else
-							$cls[0][] = $lsn['nameField'] . ' as name_' . $k;
-
-						if (!isset($lsn['join']))
-							$cls[1] .= ' LEFT';
-
-						$cls[1] .= ' JOIN `' . ((isset($lsn['class'])) ? static_main::getTableNameOfClass($lsn['class']) : $lsn['tablename']) . '` t' . $t . ' ON ';
-
-						if (!isset($lsn['idField']) or !$lsn['idField'])
-							$lsn['idField'] = 't' . $t . '.id';
-						else
-							$lsn['idField'] = str_replace('tx.', 't' . $t . '.', $lsn['idField']);
-
-						// JOIN WHERE
-						if (isset($r['multiple']) and $r['multiple']) {
-							$cls[1] .= 't1.' . $k . ' LIKE concat("%|",' . $lsn['idField'] . ',"|%") ';
-						}
-						elseif (isset($lsn['join']) or isset($lsn['leftJoin'])) {
-							if (!isset($lsn['idThis']))
-								$lsn['idThis'] = $k;
-							$cls[1] .= ' ' . $lsn['idField'] . '=t1.' . $lsn['idThis'] . ' ' . str_replace('tx.', 't' . $t . '.', ($lsn['leftJoin'] . $lsn['join']));
-						}
-						else {
-							$cls[1] .= 't1.' . $k . '=' . $lsn['idField'] . ' ';
-						}
-					}
+//					}
+//					else {
+//						// Старые Left join тормозят
+//						if (isset($r['multiple']) and $r['multiple'])
+//							$cls[0][] = 'group_concat(' . $lsn['nameField'] . ' SEPARATOR " | ") as name_' . $k;
+//						else
+//							$cls[0][] = $lsn['nameField'] . ' as name_' . $k;
+//
+//						if (!isset($lsn['join']))
+//							$cls[1] .= ' LEFT';
+//
+//						$cls[1] .= ' JOIN `' . ((isset($lsn['class'])) ? static_main::getTableNameOfClass($lsn['class']) : $lsn['tablename']) . '` t' . $t . ' ON ';
+//
+//						if (!isset($lsn['idField']) or !$lsn['idField'])
+//							$lsn['idField'] = 't' . $t . '.id';
+//						else
+//							$lsn['idField'] = str_replace('tx.', 't' . $t . '.', $lsn['idField']);
+//
+//						// JOIN WHERE
+//						if (isset($r['multiple']) and $r['multiple']) {
+//							$cls[1] .= 't1.' . $k . ' LIKE concat("%|",' . $lsn['idField'] . ',"|%") ';
+//						}
+//						elseif (isset($lsn['join']) or isset($lsn['leftJoin'])) {
+//							if (!isset($lsn['idThis']))
+//								$lsn['idThis'] = $k;
+//							$cls[1] .= ' ' . $lsn['idField'] . '=t1.' . $lsn['idThis'] . ' ' . str_replace('tx.', 't' . $t . '.', ($lsn['leftJoin'] . $lsn['join']));
+//						}
+//						else {
+//							$cls[1] .= 't1.' . $k . '=' . $lsn['idField'] . ' ';
+//						}
+//					}
 
 					$t++;
 				}
@@ -635,7 +635,7 @@ class static_super
 		if (count($cls[2]) > 0) $cls[1] .= ' WHERE ' . implode(' AND ', $cls[2]);
 
 		$listfields = $cls[0];
-		$clause = 't1 ' . $cls[1] . ' GROUP BY t1.id';
+		$clause = 't1 ' . $cls[1] /*. ' GROUP BY t1.id'*/;
 
 		if (count($moder_clause_having))
 			$clause .= ' HAVING ' . implode(' AND ', $moder_clause_having);
