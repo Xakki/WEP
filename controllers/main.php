@@ -55,14 +55,14 @@ else {
 
 /***********************************************/
 
-if (isset($_GET['_php']) and $_GET['_php'] == '_js') {
+if ($_GET['_php'] == '_js') {
 	if (file_exists($_CFG['_PATH']['controllers'] . '_js.php'))
 		require_once($_CFG['_PATH']['controllers'] . '_js.php');
 	else
 		require_once($_CFG['_PATH']['wep_controllers'] . 'frontend/_js.php');
     return true;
 }
-elseif (isset($_GET['_php']) and $_GET['_php'] == 'rss') {
+elseif ($_GET['_php'] == 'rss') {
 	if (file_exists($_CFG['_PATH']['controllers'] . 'rss.php'))
 		require_once($_CFG['_PATH']['controllers'] . 'rss.php');
 	elseif (file_exists($_CFG['_PATH']['wep_controllers'] . 'frontend/rss.php'))
@@ -71,7 +71,7 @@ elseif (isset($_GET['_php']) and $_GET['_php'] == 'rss') {
 		echo 'no RSS';
     return true;
 }
-elseif (isset($_GET['_php']) and $_GET['_php'] == 'sitemap') {
+elseif ($_GET['_php'] == 'sitemap' || $_SERVER['REQUEST_URI']=='sitemap.xml') {
 	$_COOKIE['_showerror'] = 0;
 	$SITEMAP = TRUE;
 	_new_class('pg', $PGLIST);
