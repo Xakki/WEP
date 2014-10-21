@@ -379,6 +379,7 @@ class static_super
 		$_this->getFieldsForm();
 		/**END  костыли**/
 
+        $has_join = false;
 		$DATA = array('cl' => $_this->_cl, 'caption' => $_this->caption, 'messages' => array());
 		$listfields = array('count(*) as cnt');
 		$moder_clause = self::_moder_clause($_this, $param);
@@ -557,6 +558,7 @@ class static_super
 						$cls[0][] = '(' . $subQuery . ') as name_' . $k;
 					}
 					else {
+                        $has_join = true;
 						// Старые Left join тормозят
 						if (isset($r['multiple']) and $r['multiple'])
 							$cls[0][] = 'group_concat(' . $lsn['nameField'] . ' SEPARATOR " | ") as name_' . $k;
@@ -635,7 +637,10 @@ class static_super
 		if (count($cls[2]) > 0) $cls[1] .= ' WHERE ' . implode(' AND ', $cls[2]);
 
 		$listfields = $cls[0];
-		$clause = 't1 ' . $cls[1] . ' GROUP BY t1.id';
+		$clause = 't1 ' . $cls[1];
+        if ($has_join) {
+            $clause .= ' GROUP BY t1.id';
+        }
 
 		if (count($moder_clause_having))
 			$clause .= ' HAVING ' . implode(' AND ', $moder_clause_having);
