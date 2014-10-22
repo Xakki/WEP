@@ -23,6 +23,7 @@ class httpproxy_class extends kernel_extends
 		$this->cf_tools[] = array('func' => 'toolsLoadList', 'name' => 'Загрузка списка прокси');
 		$this->cf_tools[] = array('func' => 'toolsClearUse', 'name' => 'Сброс захваченых прокси');
 		$this->cf_tools[] = array('func' => 'toolsClearOff', 'name' => 'Сброс счетчиков у отключенных прокси');
+		$this->cf_tools[] = array('func' => 'toolsFullClear', 'name' => 'Сброс полный');
 		$this->cf_tools[] = array('func' => 'toolsCheckSite', 'name' => 'Ручная проверка');
 
         $this->cron[] = array('modul' => $this->_cl, 'function' => 'cronCheckSite()', 'active' => 0, 'time' => 60);
@@ -55,6 +56,8 @@ class httpproxy_class extends kernel_extends
 		$this->fields['negative'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0, 'noquote' => true);
 		$this->fields['positive'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0, 'noquote' => true);
 		$this->fields['capture'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => 0);
+        $this->fields['last_time'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0);
+        $this->fields['last_code'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0);
 
 		//$this->cron[] = array('modul'=>$this->_cl,'function'=>'setRate()','active'=>1,'time'=>6);
 		$this->ordfield = 'mf_timeup DESC';
@@ -70,6 +73,8 @@ class httpproxy_class extends kernel_extends
 		$this->fields_form['timeout'] = array('type' => 'int', 'caption' => 'Период(сек)', 'mask' => array());
 		$this->fields_form['negative'] = array('type' => 'int', 'caption' => '-', 'mask' => array());
 		$this->fields_form['positive'] = array('type' => 'int', 'caption' => '+', 'mask' => array());
+		$this->fields_form['last_time'] = array('type' => 'int', 'caption' => 'last_time', 'mask' => array());
+		$this->fields_form['last_code'] = array('type' => 'int', 'caption' => 'last_code', 'mask' => array());
 		$this->fields_form['mf_timeup'] = array('type' => 'date', 'caption' => 'Дата', 'mask' => array());
 		$this->fields_form['capture'] = array('type' => 'checkbox', 'caption' => 'Занято', 'mask' => array());
 		$this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Вкл/Выкл', 'mask' => array());
@@ -108,16 +113,16 @@ class httpproxy_class extends kernel_extends
         }
 		$limit = ' LIMIT ' . (int)$_GET['pos'] . ',1';
 
-        if ($domen) {
+//        if ($domen) {
             //,
-            $select .= ',t2.id as domenid ,if( t2.id and t2.use < t2.err * 1.5 ,1 , 0) as fl'; //
-            $where = ' t1 LEFT JOIN ' . $this->childs['httpproxycheck']->tablename . ' t2
-				ON t2.name="' . $this->SqlEsc($this->domen) . '" and t2.owner_id=t1.id ' . $where;
-        }
-        else {
+//            $select .= ',t2.id as domenid ,if( t2.id and t2.use < t2.err * 1.5 ,1 , 0) as fl'; //
+//            $where = ' t1 LEFT JOIN ' . $this->childs['httpproxycheck']->tablename . ' t2
+//				ON t2.name="' . $this->SqlEsc($this->domen) . '" and t2.owner_id=t1.id ' . $where;
+//        }
+//        else {
             $where = ' t1 '.$where;
             $select .= ',1 as fl';
-        }
+//        }
         // t1.`negative`
 //        print_r($this->SQL->query);
         //,false,false,true
@@ -128,10 +133,8 @@ class httpproxy_class extends kernel_extends
 
 		$this->data = $this->_query($select,$where.$sort.$limit, '' ,'', false);
 
-
 		if (count($this->data)) {
 			$this->id = $this->data[0]['id'];
-			$this->childs['httpproxycheck']->id = (int)$this->data[0]['domenid'];
 			if ($this->data[0]['name'] != 'localhost' and $this->data[0]['name']) {
 				if ($this->data[0]['name'] and $this->data[0]['port'])
                     $proxyList[] = $this->data[0]['name'] . ':' . $this->data[0]['port'];
@@ -139,10 +142,6 @@ class httpproxy_class extends kernel_extends
                     $proxyList[] = $this->data[0]['name'];
 			}
 			$this->_update(array('capture' => 1), false, false);
-			if (!$this->childs['httpproxycheck']->id) {
-				$upd = array('name' => $this->domen, 'err' => 0, 'use' => 0);
-				$this->childs['httpproxycheck']->_add($upd, false);
-			}
 		}
 		return $proxyList;
 	}
@@ -151,14 +150,13 @@ class httpproxy_class extends kernel_extends
 	{
         $lastcode = (int)$info['http_code'];
         $time = (int)$info['total_time'];
-		$updCheck = array('use' => '`use`+1', 'time' => $time, 'lastcode' => $lastcode);
-		$upd = array('capture' => 0);
+		$addCheck = array('name' => $info['url'], 'total_time' => $time, 'http_code' => $lastcode, 'err' => $err, 'speed_download' => $info['speed_download'], 'size_download' => $info['size_download']);
+		$upd = array('capture' => 0, 'last_time' => $time , 'last_code' => $lastcode);
 
             if ($err===2) {
 
             }
             elseif ($err===1) {
-                $updCheck['err'] = '`err`+' . $err;
                 if ($check) {
                     $upd['negative'] = '`negative`+1';
                 }
@@ -171,12 +169,13 @@ class httpproxy_class extends kernel_extends
 
 		if ($this->id) {
 			$this->_update($upd, false, false);
-			$this->childs['httpproxycheck']->_update($updCheck, false, false);
 		}
 		else {
 			$this->id = 1;
 			$this->_update($upd, false, false);
 		}
+
+        $this->childs['httpproxycheck']->_add($addCheck, false);
 
 		//else $this->_update($upd,'`name`="localhost"',false);
 	}
@@ -378,6 +377,39 @@ class httpproxy_class extends kernel_extends
             'options' => $this->getFormOptions()
         ];
     }
+
+    function toolsFullClear()
+    {
+        $fields_form = $mess = array();
+        if (!static_main::_prmModul($this->_cl, array(5, 7)))
+            $mess[] = static_main::am('error', 'denied', $this);
+        elseif (count($_POST) and $_POST['dsbmt']) {
+            $upd = array(
+                'negative' => 0,
+                'positive' => 0,
+                'capture' => 0,
+            );
+            $this->_update($upd, 'WHERE 1=1', false);
+            $this->childs['httpproxycheck']->_tableClear();
+            $mess = array(static_main::am('ok', 'Сделано!!!!!', $this));
+        }
+        else {
+            $fields_form['_info'] = array(
+                'type' => 'info',
+                'caption' => '<h2 style="text-align:center;">Обнулить все данные?</h2>');
+            $fields_form['dsbmt'] = array(
+                'type' => 'submit',
+                'value' => 'Выполнить',
+            );
+            self::kFields2FormFields($fields_form);
+        }
+        return [
+            'form' => $fields_form,
+            'messages' => $mess,
+            'options' => $this->getFormOptions()
+        ];
+    }
+
     static function clearHtml($html)
     {
         $p = mb_strpos($html,'<body');
@@ -494,7 +526,7 @@ class httpproxycheck_class extends kernel_extends
 	function init()
 	{
 		parent::init();
-		$this->mf_timecr = false;
+		$this->mf_timecr = true;
 		$this->mf_timeup = false;
 		$this->mf_actctrl = false;
 		$this->default_access = '|0|';
@@ -509,22 +541,24 @@ class httpproxycheck_class extends kernel_extends
 		parent::_create();
 		$this->caption = 'Проверенные домены';
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 128, 'attr' => 'NOT NULL');
-		$this->fields['use'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0, 'noquote' => true);
-		$this->fields['err'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0, 'noquote' => true);
-		$this->fields['lastcode'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0);
-		$this->fields['time'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0, 'noquote' => true);
+        $this->fields['http_code'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0);
+        $this->fields['total_time'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0);
+        $this->fields['speed_download'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0);
+        $this->fields['size_download'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0);
+        $this->fields['err'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0);
 
 	}
 
 	public function setFieldsForm($form = 0)
 	{
 		parent::setFieldsForm($form);
-		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Domen', 'mask' => array('min' => 4));
-		$this->fields_form['use'] = array('type' => 'int', 'caption' => 'Использовано', 'mask' => array());
-		$this->fields_form['err'] = array('type' => 'int', 'caption' => 'Ошибки', 'mask' => array());
-		$this->fields_form['lastcode'] = array('type' => 'int', 'caption' => 'HTTP code', 'mask' => array());
-		$this->fields_form['time'] = array('type' => 'int', 'caption' => 'Время загрузки(сек)', 'mask' => array());
-
+		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'Url', 'mask' => array('min' => 4));
+		$this->fields_form['http_code'] = array('type' => 'int', 'caption' => 'HTTP code', 'mask' => array());
+		$this->fields_form['total_time'] = array('type' => 'int', 'caption' => 'Timeout', 'mask' => array());
+        $this->fields_form['speed_download'] = array('type' => 'int', 'caption' => 'speed_download', 'mask' => array());
+        $this->fields_form['size_download'] = array('type' => 'int', 'caption' => 'size_download', 'mask' => array());
+        $this->fields_form['err'] = array('type' => 'int', 'caption' => 'Ошибка?', 'mask' => array());
+        $this->fields_form['mf_timecr'] = array('type' => 'date', 'caption' => 'Дата', 'mask' => array());
 	}
 
 }
