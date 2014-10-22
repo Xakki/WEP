@@ -159,6 +159,7 @@ function tools_cron()
 			else {
 				if ($_POST['last_time']) {
 					$ini_arr[$p]['last_time'] = strtotime($_POST['last_time']);
+					$ini_arr[$p]['res'] = strtotime($_POST['res']);
 					//mktime($_POST['last_time'][3],$_POST['last_time'][4],$_POST['last_time'][5],$_POST['last_time'][1],$_POST['last_time'][2],$_POST['last_time'][0]);
                     file_put_contents($ini_file, json_encode($ini_arr));
                     _chmod($ini_file);
@@ -171,6 +172,7 @@ function tools_cron()
 		if ($_GET['_type'] == 'update' and isset($_GET['_id']) and isset($_CFG['cron'][$_GET['_id']])) {
 			$VAL = $_CFG['cron'][$_GET['_id']];
 			$VAL['last_time'] = $ini_arr[$_GET['_id']]['last_time'];
+			$VAL['res'] = $ini_arr[$_GET['_id']]['res'];
 			$DATA['path'][$FP . '_type=add'] = 'Правка';
 		}
 		elseif (isset($_POST))
@@ -231,16 +233,18 @@ function tools_cron()
 		$FORM['res'] = array(
 			'caption' => 'Сообщения',
 			'comment' => '',
-			'readonly' => true,
+//			'readonly' => true,
 			'type' => 'text',
 			'css' => '',
 			'style' => '',
-			'value' => $VAL['active'],
+			'value' => $VAL['res'],
 		);
 		$FORM['sbmt'] = array(
 			'type' => 'submit',
 			'value' => 'Сохранить');
-
+//print_r('<pre>');
+//print_r($VAL);
+//        exit();
 		$FORM = array(
 			'form' => $FORM,
 			'options' => array('method' => 'POST', 'name' => 'cron'),
