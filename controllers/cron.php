@@ -21,23 +21,24 @@ $_SERVER['REQUEST_URI'] = '/index.html';
 $_SERVER['HTTP_USER_AGENT'] = $_CFG['site']['www'];
 $_SERVER['IS_CRON'] = true;
 
-$pidFile = $_CFG['_PATH']['weptemp'].'cron.pid';
-$lastTimeRun = '';
-if (file_exists($pidFile))
-    $lastTimeRun = file_get_contents($pidFile);
+$pidFile = $_CFG['_PATH']['weptemp'].'cron_';
 
-if ($lastTimeRun) {
-    $lastTimeRun = preg_split("/".PHP_EOL."/", $lastTimeRun, -1, PREG_SPLIT_NO_EMPTY);
-    if (count($lastTimeRun)>1) {
-        if ($lastTimeRun[0]< (time() - 1800)) {
-            trigger_error('Завис крон или процесс сломался - '.$lastTimeRun[1], E_USER_WARNING);
-        }
-        else {
-            echo '**wait**';
-            return ;
-        }
-    }
-}
+//$lastTimeRun = '';
+//if (file_exists($pidFile))
+//    $lastTimeRun = file_get_contents($pidFile);
+//
+//if ($lastTimeRun) {
+//    $lastTimeRun = preg_split("/".PHP_EOL."/", $lastTimeRun, -1, PREG_SPLIT_NO_EMPTY);
+//    if (count($lastTimeRun)>1) {
+//        if ($lastTimeRun[0]< (time() - 1800)) {
+//            trigger_error('Завис крон или процесс сломался - '.$lastTimeRun[1], E_USER_WARNING);
+//        }
+//        else {
+//            echo '**wait**';
+//            return ;
+//        }
+//    }
+//}
 
 
 foreach ($_CFG['cron'] as $key_cron => $r_cron) {
@@ -55,55 +56,66 @@ foreach ($_CFG['cron'] as $key_cron => $r_cron) {
     }
 
     if (isset($dataJson[$key_cron]) and $dataJson[$key_cron]['res'] == '+RUN') {
-        var_dump(($time-$dataJson[$key_cron]['last_time']),MAX_PHP_TIME);
+        //var_dump(($time-$dataJson[$key_cron]['last_time']),MAX_PHP_TIME);
         if (($time-$dataJson[$key_cron]['last_time'])>MAX_PHP_TIME)
         {
             trigger_error('Dead cron job ='.$key_cron, E_USER_WARNING);
         }
         else {
-            trigger_error('Zombe cron job ='.$key_cron, E_USER_WARNING);
+            //trigger_error('Zombe cron job ='.$key_cron, E_USER_WARNING);
             continue;
         }
     }
 
     if (!isset($r_cron['active']) or $r_cron['active'])
     {
-        $dataJson[$key_cron]['last_time'] = time();
-        $dataJson[$key_cron]['do_time'] = 0;
-        $dataJson[$key_cron]['res' ] = '+RUN';
-        setCronData($dataJson);
+        $lastTimeRun = (file_exists($pidFile.$key_cron) ? file_get_contents($pidFile.$key_cron) : '');
 
-        file_put_contents($pidFile, time().PHP_EOL.$key_cron);
-		$tt = getmicrotime();
-		//'time' => '600', 'file' => '_wepconf/ext/exportboard.class/exportboard.cron.php', 'modul' => '', 'function' => ''
-		if (isset($r_cron['file']) and $r_cron['file']) {
-			$r_cron['file'] = SITE . $r_cron['file'];
-			if (file_exists($r_cron['file'])) {
-				$result = include($r_cron['file']);
-			}
-			else
-				$result = 'Can`t find file ' . $r_cron['file'] . ' . //';
-		}
-		if (isset($r_cron['function']) and $r_cron['function'] and $r_cron['modul']) {
-			_new_class($r_cron['modul'], $MODUL);
-			eval('$result = $MODUL->' . $r_cron['function'] . ';');
-			//function_exists
-		}
-		elseif (isset($r_cron['function']) and $r_cron['function']) {
-			eval('$result = ' . $r_cron['function'] . ';');
-		}
+        if (!$lastTimeRun) {
+            $dataJson[$key_cron]['last_time'] = time();
+            $dataJson[$key_cron]['do_time'] = 0;
+            $dataJson[$key_cron]['res'] = '+RUN';
+            setCronData($dataJson);
 
-		$dataJson[$key_cron]['last_time'] = time();
-		$dataJson[$key_cron]['do_time'] = getmicrotime() - $tt;
-		$dataJson[$key_cron]['res' ] = '* ' . str_replace(array("\n", "\r"), array('<br/>', ''), addslashes((string)$result)) . '';
+            file_put_contents($pidFile.$key_cron, time());
+            $tt = getmicrotime();
+            //'time' => '600', 'file' => '_wepconf/ext/exportboard.class/exportboard.cron.php', 'modul' => '', 'function' => ''
+            if (isset($r_cron['file']) and $r_cron['file']) {
+                $r_cron['file'] = SITE . $r_cron['file'];
+                if (file_exists($r_cron['file'])) {
+                    $result = include($r_cron['file']);
+                }
+                else
+                    $result = 'Can`t find file ' . $r_cron['file'] . ' . //';
+            }
+            if (isset($r_cron['function']) and $r_cron['function'] and $r_cron['modul']) {
+                _new_class($r_cron['modul'], $MODUL);
+                eval('$result = $MODUL->' . $r_cron['function'] . ';');
+                //function_exists
+            }
+            elseif (isset($r_cron['function']) and $r_cron['function']) {
+                eval('$result = ' . $r_cron['function'] . ';');
+            }
 
-		$res_cron .= $result;
-        setCronData($dataJson);
+            $dataJson[$key_cron]['last_time'] = time();
+            $dataJson[$key_cron]['do_time'] = getmicrotime() - $tt;
+            $dataJson[$key_cron]['res' ] = '* ' . str_replace(array("\n", "\r"), array('<br/>', ''), addslashes((string)$result)) . '';
+
+            $res_cron .= $result;
+            setCronData($dataJson);
+            file_put_contents($pidFile.$key_cron, '');
+        }
+        elseif ($lastTimeRun< (time() - 1800)) {
+            trigger_error('Завис крон или процесс сломался - '.$lastTimeRun[1], E_USER_WARNING);
+        }
+        else {
+//            echo '**wait**';
+//            return ;
+        }
 	}
 
 }
 
-file_put_contents($pidFile, '');
 
 //_chmod($ini_file);
 
