@@ -629,8 +629,6 @@ class static_main
 	 */
 	static function redirectLink($text, $name = 'Источник', $dolink = 0)
 	{
-		global $_CFG;
-
 		$cont = array();
 		if ($dolink == 2)
 			$match = '/(href=")(http:\/\/|https:\/\/|www\.)[0-9A-Za-zА-Яа-я\/\.\_\-\=\?\&\;]*/u';
@@ -648,15 +646,19 @@ class static_main
 				if (mb_strpos($rc, 'href="') !== false)
 					$temp[] = 'rel="nofollow" target="_blank" href="' . MY_BH . '_redirect.php?url=' . base64encode(str_replace('href="', '', $rc));
 				elseif ($dolink == 0) {
-					if (!$name)
+					if (!$name) {
 						$tn = trim(str_replace(array('href="', 'http://', 'https://', 'www.'), '', $rc), ' /');
+                    }
 					elseif ($name === true) {
 						$tn = trim(str_replace(array('href="'), '', $rc), ' /');
-						$tn = parse_url($tn);
-						$tn = $tn['host'];
+						$tmp = parse_url($tn);
+                        if ($tmp && isset($tmp['host'])) {
+						    $tn = $tmp['host'];
+                        }
 					}
-					else
+					else {
 						$tn = $name;
+                    }
 					$temp[] = '<a href="' . MY_BH . '_redirect.php?url=' . (base64encode($rc)) . '" rel="nofollow" target="_blank">' . $tn . '</a>';
 				}
 				else

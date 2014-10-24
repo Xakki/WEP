@@ -664,7 +664,7 @@ class pg_class extends kernel_extends
 				continue;
 			}
 
-			if ($rowPG['only_production'] && !$_CFG['site']['production']) {
+			if ($rowPG['only_production'] && !isProduction()) {
 				$_tpl[$rowPG['marker']] .= '<!--content' . $rowPG['id'] . ' ACCESS ONLY ON PRODUCTION -->';
 				continue;
 			}
