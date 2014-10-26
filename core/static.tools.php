@@ -1712,5 +1712,32 @@ deny from all
         socket_close($socket);
         return $result;
     }
+
+
+    static function exportInflect($name, $numForm, $param = [])
+    {
+        if (!isset($param['TIMEOUT'])) {
+            $param['TIMEOUT'] = 5;
+        }
+        $urlXml = "http://export.yandex.ru/inflect.xml?name=".urlencode($name);
+        $html = static_tools::_http($urlXml,$param);
+
+        if ($html['info']['http_code']==200 && $html['text']) {
+            $result = @simplexml_load_string($html['text']);
+            if($result) {
+                $arrData = array();
+                $i=1;
+                foreach ($result->inflection as $one) {
+                    $arrData[$i++] = (string) $one;
+                }
+                if (!isset($arrData[$numForm])) {
+                    return $name;
+//                    trigger_error('Error: for '.$urlXml.' , '.print_r($html, true), E_USER_WARNING);
+                }
+                return $arrData[$numForm];
+            }
+        }
+        return false;
+    }
 // END static class
 }

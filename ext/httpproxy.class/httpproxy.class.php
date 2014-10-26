@@ -530,9 +530,8 @@ class httpproxycheck_class extends kernel_extends
 		$this->mf_timeup = false;
 		$this->mf_actctrl = false;
 		$this->default_access = '|0|';
-		$this->index_fields['use'] = 'use';
+		$this->index_fields['http_code'] = 'http_code';
 		$this->index_fields['err'] = 'err';
-		$this->index_fields['time'] = 'time';
 		return true;
 	}
 
