@@ -388,7 +388,9 @@ abstract class kernel_extends
 			$this->fields[$this->ns_config['left']] = array('type' => 'int', 'width' => 11, 'attr' => 'unsigned NOT NULL', 'default' => 0);
 
 			$this->index_fields[$this->mf_istree] = $this->mf_istree;
-			$this->index_fields[$this->ns_config['left']] = array($this->ns_config['left'], $this->ns_config['right'], $this->ns_config['level']);
+			$this->index_fields['left'] = $this->ns_config['left'];
+			$this->index_fields['right'] = $this->ns_config['right'];
+			$this->index_fields['level'] = $this->ns_config['level'];
 
 			if ($this->mf_istree_root) {
 				$this->fields[$this->ns_config['root']] = array('type' => 'int', 'width' => 11, 'attr' => 'unsigned NOT NULL', 'default' => 0);
