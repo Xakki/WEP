@@ -545,7 +545,7 @@ class httpproxycheck_class extends kernel_extends
         $this->fields['speed_download'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0);
         $this->fields['size_download'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0);
         $this->fields['err'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0);
-
+        $this->ordfield = 'mf_timecr DESC';
 	}
 
 	public function setFieldsForm($form = 0)
