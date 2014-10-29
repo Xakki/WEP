@@ -672,14 +672,18 @@ class static_main
 	static function redirect($link = true, $NO = false)
 	{
 		global $_CFG, $_tpl;
-		// TODO : Проверка на зацикленный редирект
+        $cookieName = '_r'.md5($link);
+
 		//301 - перемещение на посточнную основу
-		/*if($_SERVER['HTTP_REFERER']==$link) {
-			header("HTTP/1.0 400 Bad Request");
-			//301 Moved Permanently
-			die('Warning!!! Self redirect for <a href="'.$link.'">'.$link.'</a>');
+        // header("HTTP/1.0 400 Bad Request");
+        //301 Moved Permanently
+		if(isset($_COOKIE[$cookieName]) && $_COOKIE[$cookieName]> (time()-5) ) {
+            trigger_error('Warning!!! Self redirect for '.$link, E_USER_WARNING);
+            return true;
 		}
-		else*/
+
+        _setcookie($cookieName, time(), (time()+500));
+
 		if ($link === true)
 			$link = $_SERVER['HTTP_PROTO'] . $_SERVER['HTTP_HOST'] . '/' . $_SERVER['REQUEST_URI'];
 
