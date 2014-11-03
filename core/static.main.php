@@ -682,7 +682,7 @@ class static_main
             return true;
 		}
 
-        _setcookie($cookieName, time(), (time()+500));
+        _setcookie($cookieName, time(), (time()+100));
 
 		if ($link === true)
 			$link = $_SERVER['HTTP_PROTO'] . $_SERVER['HTTP_HOST'] . '/' . $_SERVER['REQUEST_URI'];
