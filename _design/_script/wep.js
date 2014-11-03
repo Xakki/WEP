@@ -448,7 +448,7 @@ window.wep = {
      *
      */
     ajaxSuccess: function (result, param) {
-        console.error('!!!! ajaxSuccess ', [result, param]);
+        console.log('!!!! ajaxSuccess ', [result, param]);
         if (result.redirect) {
             window.location.href = result.redirect;
             return false;
@@ -2228,6 +2228,7 @@ function ajaxListHide(input, hidden, list, SEL) {
     if (SEL && SEL.size())
         ajaxListSelect(SEL, input, hidden, list);
     else {
+        jQuery(list).attr('val', '');
         ajaxListClear(input, hidden, list);
     }
     return false;
@@ -2320,14 +2321,15 @@ function ajaxListControl(input, hidden, list) {
 
     if (value.length > 2) {
         if (listObj.attr('val') == value) {
-            if (defaultListObj.size()) {
+            console.log('#1 ', listObj.attr('val') , value);
+            if (!listObj.size()) {
                 listObj.html(defaultListObj.html());
             }
             listObj.find('label:first').addClass('selected');
             listObj.show();
         }
         else {
-            console.error(listObj.attr('val'), value);
+            console.log('#2 ', listObj.attr('val'), value);
             $(input).data('value', value);
             var parentObj = listObj.parent();
             parentObj.addClass('load');
@@ -2366,7 +2368,7 @@ function ajaxListControl(input, hidden, list) {
                             }
                         }
                         if (c == 1) {
-                            jQuery(hidden).val(temp);
+                            jQuery(hidden).val(temp).change();
                             jQuery(list).find('[data-id=' + temp + ']').addClass('selected');
                             parentObj.removeClass('reject');
                         }
@@ -2382,10 +2384,14 @@ function ajaxListControl(input, hidden, list) {
             });
         }
     } else {
+        console.log('#3 ******');
         jQuery(hidden).val('');
         jQuery(input).parent().addClass('reject');
-        if (defaultListObj.size()) {
-            listObj.html(defaultListObj.html());
+
+        if (!value) {
+            if (defaultListObj.size()) {
+                listObj.html(defaultListObj.html());
+            }
         }
         listObj.find('.selected').removeClass('selected');
         listObj.show();
@@ -2406,7 +2412,7 @@ function ajaxListSelect(OBJ, input, hidden, list) { // событие на кл�
     if (jQuery(hidden).val() == ID) {
         return;
     }
-    console.error('ajaxListSelect');
+    console.log('ajaxListSelect');
     jQuery(hidden).val(ID).change(); // Сохраняем ID
     $(input).val(valueText); // Выводим текст
     if (jQuery(list).attr('val') != valueText) {
