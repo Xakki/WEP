@@ -677,7 +677,7 @@ class static_main
 		//301 - перемещение на посточнную основу
         // header("HTTP/1.0 400 Bad Request");
         //301 Moved Permanently
-		if(isset($_COOKIE[$cookieName]) && $_COOKIE[$cookieName]> (time()-5) ) {
+		if(isset($_COOKIE[$cookieName]) && $_COOKIE[$cookieName]> (time()-3) ) {
             trigger_error('Warning!!! Self redirect for '.$link, E_USER_WARNING);
             return true;
 		}
