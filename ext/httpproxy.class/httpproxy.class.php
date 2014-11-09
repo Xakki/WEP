@@ -38,10 +38,14 @@ class httpproxy_class extends kernel_extends
         $this->config['check_site'] = 'http://xakki.ru';
         $this->config['check_word'] = 'Бортовой';
         $this->config['timeout'] = 20;
+        $this->config['add_time_default'] = 60;
+        $this->config['add_time_check'] = 10;
 
         $this->config_form['check_site'] = array('type' => 'text', 'caption' => 'check_site');
         $this->config_form['check_word'] = array('type' => 'text', 'caption' => 'check_word');
         $this->config_form['timeout'] = array('type' => 'text', 'caption' => 'Timeout');
+        $this->config_form['add_time_default'] = array('type' => 'text', 'caption' => 'Add Error Timeout Default');
+        $this->config_form['add_time_check'] = array('type' => 'text', 'caption' => 'Add Error Timeout Check');
     }
 
 	function _create()
@@ -131,15 +135,16 @@ class httpproxy_class extends kernel_extends
         //print_r(' * '.time().' * ');
         //,t1.`timeout`
 
-		$this->data = $this->_query($select,$where.$sort.$limit, '' ,'', false);
+		$this->data = $this->_query($select,$where.$sort.$limit, 'id' ,'', false);
 
 		if (count($this->data)) {
-			$this->id = $this->data[0]['id'];
-			if ($this->data[0]['name'] != 'localhost' and $this->data[0]['name']) {
-				if ($this->data[0]['name'] and $this->data[0]['port'])
-                    $proxyList[] = $this->data[0]['name'] . ':' . $this->data[0]['port'];
-				elseif ($this->data[0]['name'])
-                    $proxyList[] = $this->data[0]['name'];
+            $data = current($this->data);
+			$this->id = $data['id'];
+			if ($data['name']) {
+				if ($data['name'] and $data['port'])
+                    $proxyList[] = $data['name'] . ':' . $data['port'];
+				elseif ($data['name'])
+                    $proxyList[] = $data['name'];
 			}
 			$this->_update(array('capture' => 1), false, false);
 		}
@@ -156,9 +161,17 @@ class httpproxy_class extends kernel_extends
             if ($err===2) {
 
             }
-            elseif ($err===1) {
+            elseif ($err===1) { 
+                $rate = 1;
+                if (isset($this->data[$this->id]) && $this->data[$this->id]['last_code']!==200) {
+                    $rate = 2;
+                }
                 if ($check) {
                     $upd['negative'] = '`negative`+1';
+                    $upd['timeout'] = '`timeout`+'.(int) $this->config['add_time_check'] * $rate;
+                }
+                else {
+                    $upd['timeout'] = '`timeout`+'.(int) $this->config['add_time_default'] * $rate;
                 }
             }
             else {
