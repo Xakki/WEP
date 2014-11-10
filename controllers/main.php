@@ -25,7 +25,7 @@ if ($_CFG['site']['worktime'] and !canShowAllInfo() and !$is_admin) {
 if (strpos($URI, '_')!==false) {
     if (preg_match("/^(.*)_p([0-9]+)\.html$/i", $URI, $regs)) {
         $URI =  $regs[1].'.html';
-        $_GET['_pn'] = $regs[2];
+        $_REQUEST['_pn'] = $_GET['_pn'] = $regs[2];
     }
     if (preg_match("/^(.*)_([0-9]+)\.html$/i", $URI, $regs)) {
         $URI =  $regs[1].'.html';
