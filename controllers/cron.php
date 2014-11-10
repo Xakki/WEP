@@ -71,7 +71,7 @@ foreach ($_CFG['cron'] as $key_cron => $r_cron) {
     {
         $lastTimeRun = (file_exists($pidFile.$key_cron) ? file_get_contents($pidFile.$key_cron) : '');
 
-        if (!$lastTimeRun) {
+        if (!$lastTimeRun || $lastTimeRun < (time() - 1200)) {
             $dataJson[$key_cron]['last_time'] = time();
             $dataJson[$key_cron]['do_time'] = 0;
             $dataJson[$key_cron]['res'] = '+RUN';
@@ -105,7 +105,7 @@ foreach ($_CFG['cron'] as $key_cron => $r_cron) {
             setCronData($dataJson);
             file_put_contents($pidFile.$key_cron, '');
         }
-        elseif ($lastTimeRun< (time() - 1800)) {
+        elseif ($lastTimeRun< (time() - 600)) {
             trigger_error('Завис крон или процесс сломался - '.$lastTimeRun[1], E_USER_WARNING);
         }
         else {
