@@ -104,36 +104,26 @@ class httpproxy_class extends kernel_extends
         $where = ' WHERE t1.`capture`= 0 and t1.`mf_timeup`<(' . time() . '-t1.`timeout`) ';
         $sort = ' ORDER BY ';
         if ($check==='off') {
-            $where .= 'and t1.`active`=0 and t1.`negative`-t1.`positive`<=3';
+            // проверка отключенных
+            $where .= 'and t1.`active`=0';
             $sort .= 't1.`mf_timeup`';
         }
         elseif ($check) {
-            $where .= 'and t1.`active`=1 and t1.`negative`-t1.`positive`<=3';
+            // проверка включенных
+            $where .= 'and t1.`active`=1';
             $sort .= 't1.`mf_timeup`';
         }
         else {
-            $where .= 'and t1.`active`=1 and t1.`negative`-t1.`positive`<0';
+            // Обычная выборка
+            $where .= 'and t1.`active`=1';
             $sort .= 'fl, t1.`mf_timeup`';
+            //
+
+            $select .= ',(t1.`negative`-t1.`positive`) as fl';
         }
 		$limit = ' LIMIT ' . (int)$_GET['pos'] . ',1';
+        $where = ' t1 '.$where;
 
-//        if ($domen) {
-            //,
-//            $select .= ',t2.id as domenid ,if( t2.id and t2.use < t2.err * 1.5 ,1 , 0) as fl'; //
-//            $where = ' t1 LEFT JOIN ' . $this->childs['httpproxycheck']->tablename . ' t2
-//				ON t2.name="' . $this->SqlEsc($this->domen) . '" and t2.owner_id=t1.id ' . $where;
-//        }
-//        else {
-            $where = ' t1 '.$where;
-            $select .= ',1 as fl';
-//        }
-        // t1.`negative`
-//        print_r($this->SQL->query);
-        //,false,false,true
-        //`use`,`err`,`negative`,`mf_timeup`,`time`
-        // and t1.`capture`= 0 and (t2.`err`<t2.`use` or t2.`use`<1)  and t1.`mf_timeup`<('.time().'-t1.`timeout`)
-        //print_r(' * '.time().' * ');
-        //,t1.`timeout`
 
 		$this->data = $this->_query($select,$where.$sort.$limit, 'id' ,'', false);
 
@@ -163,7 +153,7 @@ class httpproxy_class extends kernel_extends
             }
             elseif ($err===1) { 
                 $rate = 1;
-                if (isset($this->data[$this->id]) && $this->data[$this->id]['last_code']!==200) {
+                if (isset($this->data[$this->id]) && $this->data[$this->id]['last_code']!=200) {
                     $rate = 2;
                 }
                 if ($check) {
