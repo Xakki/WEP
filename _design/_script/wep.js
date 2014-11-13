@@ -999,7 +999,7 @@ window.wep = {
                 if (typeof script[i] == 'string' && script[i].substr(0, 1) == '<')
                     alert('Error script include');
 
-                if (typeof script[i] == 'string' && script[i]) {
+                if (typeof script[i] == 'string' && script[i] && script[i]!='async') {
                     if (wep.isUrl(script[i])) {
                         wep.includeHelper(i);
                     }
