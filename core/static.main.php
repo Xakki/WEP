@@ -669,7 +669,7 @@ class static_main
 		return $text;
 	}
 
-	static function redirect($link = true, $NO = false)
+	static function redirect($link = true, $NO = '301 Moved Permanently')
 	{
 		global $_CFG, $_tpl;
         $cookieName = '_r'.md5($link);
