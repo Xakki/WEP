@@ -537,8 +537,6 @@ ini_set('session.cookie_domain', $_CFG['session']['domain']);
 
 
 if (!isset($_COOKIE['wep123456'])) {
-	if (!isset($_SERVER['HTTP_REFERER']))
-		$_SERVER['HTTP_REFERER'] = '';
 	_setcookie('wep123456', base64encode($_SERVER['HTTP_REFERER']), (time() + 86400));
 }
 

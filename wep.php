@@ -4,6 +4,10 @@ if (!defined('SITE') || !defined('WEP') || !defined('WEPCONF') || !defined('WEP_
 	die('Not defined constants');
 }
 
+if (!isset($_SERVER['HTTP_REFERER'])) {
+    $_SERVER['HTTP_REFERER'] = '';
+}
+
 require_once(WEP . 'config/config.php');
 
 //FIX URL
