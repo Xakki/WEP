@@ -72,11 +72,13 @@ elseif ($_GET['_php'] == 'rss') {
     return true;
 }
 elseif ($_GET['_php'] == 'sitemap' || $_GET['pageParam']=='sitemap.xml') {
-	$_COOKIE['_showerror'] = 0;
-	$SITEMAP = TRUE;
-	_new_class('pg', $PGLIST);
-	$_tpl['text'] = $PGLIST->creatSiteMaps();
-    return true;
+    setTemplate('text');
+    setNeverShowAllInfo();
+    $_CFG['wep']['debugmode'] = 0;
+    _new_class('pg', $PGLIST);
+    $PGLIST->cronCreateSiteMap();
+    readfile(getSiteMapFile());
+    exit();
 }
 elseif (strpos($_SERVER['REQUEST_URI'], '.xml')!==false) {
     $php = $_GET['_php'] = mb_substr($_SERVER['REQUEST_URI'], 0, -4);

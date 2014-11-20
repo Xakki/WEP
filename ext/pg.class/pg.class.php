@@ -88,6 +88,8 @@ class pg_class extends kernel_extends
 		$this->current_path = '';
 		$this->ajaxRequest = false; // ставится метка об аякс запросе
 		$this->access_flag = false; // Если значение выставить true, то каждое "Содержимое" будет проверяться на допуск к отображению на "Спец страницах" (отмеченные галочкой не выполнятся)
+
+        $this->cron[] = array('modul' => $this->_cl, 'function' => 'cronCreateSiteMap()', 'active' => 0, 'time' => 864000);
 	}
 
 	function _create()
@@ -213,6 +215,13 @@ class pg_class extends kernel_extends
 		return $data;
 	}
 
+    public function cronCreateSiteMap()
+    {
+        global $IS_SITE_MAP_XML;
+        $IS_SITE_MAP_XML = TRUE;
+        file_put_contents(getSiteMapFile(), $this->createSiteMaps());
+    }
+
 	/**
 	 * Включение MEMCACHE
 	 * @return bool - true если успешно
@@ -254,7 +263,7 @@ class pg_class extends kernel_extends
 	/* function allChangeData($type='') {
 	  parent::allChangeData($type);
 	  if($this->config['sitemap']) {
-	  $xml = $this->creatSiteMaps();
+	  $xml = $this->createSiteMaps();
 	  file_put_contents(SITE.'sitemap.xml',$xml);
 
 	  }
@@ -1202,17 +1211,12 @@ class pg_class extends kernel_extends
 	* XML карта сайта
 	*
 	*/
-	function creatSiteMaps()
+	function createSiteMaps()
 	{
 		$data = $this->getMap(-1);
-		$this->_CFG['header']['expires'] = 36000;
 		$xml = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 		$xml .= $this->reverseDataMap($data);
 		$xml .= '</urlset>';
-		setTemplate('text');
-
-		setNeverShowAllInfo();
-		$this->_CFG['wep']['_showerror'] = 0;
 		return $xml;
 	}
 
@@ -1229,6 +1233,8 @@ class pg_class extends kernel_extends
 		<loc>' . $r['href'] . '</loc>
 		<changefreq>daily</changefreq>
 	</url>';
+            // <lastmod>2005-01-01</lastmod>
+            // <priority>0.8</priority>
 			if (isset($r['#item#']) and count($r['#item#']))
 				$xml .= $this->reverseDataMap($r['#item#']);
 		}

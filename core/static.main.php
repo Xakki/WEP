@@ -2019,4 +2019,13 @@ if(!function_exists('array_column')){
     }
 }
 
+function getSiteMapUrl() {
+    return $_SERVER['HTTP_PROTO'] . $_SERVER['HTTP_HOST'].'/sitemap.xml';
+}
+
+function getSiteMapFile() {
+    global $_CFG;
+    return $_CFG['_PATH']['content'].'sitemap.xml';
+}
+
 static_main::autoload_register();
