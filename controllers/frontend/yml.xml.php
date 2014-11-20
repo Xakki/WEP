@@ -1,7 +1,8 @@
 <?php
 $html = '';
 setNeverShowAllInfo();
-$_CFG['wep']['_showerror'] = 0;
+setNeverShowError();
+setOffDebug();
 
 ini_set("max_execution_time", "1000");
 set_time_limit(1000);

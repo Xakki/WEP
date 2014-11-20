@@ -40,7 +40,7 @@ class wephtml
 		$buffer = trim($buffer . static_main::showErr());
 
 		if ($this->_html != '') {
-			if ($buffer)
+			if ($buffer && $_CFG['wep']['debugmode'])
 				$_tpl['logs'] .= '<link type="text/css" href="/_design/_style/bug.css" rel="stylesheet"/>
 					<div id="bugmain">' . $buffer . '</div>';
 

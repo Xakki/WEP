@@ -1567,6 +1567,18 @@ function setNeverShowAllInfo()
 	$_CFG['wep']['_showallinfo'] = false;
 }
 
+function setNeverShowError()
+{
+    global $_CFG;
+    $_COOKIE[$_CFG['wep']['_showerror']] = 0;
+}
+
+function setOffDebug()
+{
+    global $_CFG;
+    $_CFG['wep']['debugmode'] = 0;
+}
+
 function initShowAllInfo()
 {
 	global $_CFG;

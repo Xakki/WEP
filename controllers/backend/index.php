@@ -133,7 +133,7 @@ function selectDebugMode()
 	);
 	if (static_main::_prmUserCheck(2)) {
 		if (!isset($_COOKIE[$_CFG['wep']['_showerror']]))
-			$_COOKIE[$_CFG['wep']['_showerror']] = 0;
+            setNeverShowError();
 
 		$_tpl['debug'] = '<span class="seldebug"><select onchange="window.location.href=wep.getUrlWithNewParam({' . $_CFG['wep']['_showerror'] . ':this.value});">';
 		foreach ($listDebug as $k => $r)

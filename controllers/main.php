@@ -74,11 +74,13 @@ elseif ($_GET['_php'] == 'rss') {
 elseif ($_GET['_php'] == 'sitemap' || $_GET['pageParam']=='sitemap.xml') {
     setTemplate('text');
     setNeverShowAllInfo();
-    $_CFG['wep']['debugmode'] = 0;
+    setNeverShowError();
+    setOffDebug();
+
     _new_class('pg', $PGLIST);
     $PGLIST->cronCreateSiteMap();
-    readfile(getSiteMapFile());
-    exit();
+    $_tpl['text'] = file_get_contents(getSiteMapFile());
+    return true;
 }
 elseif (strpos($_SERVER['REQUEST_URI'], '.xml')!==false) {
     $php = $_GET['_php'] = mb_substr($_SERVER['REQUEST_URI'], 0, -4);
