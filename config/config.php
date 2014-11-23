@@ -481,6 +481,7 @@ $_CFG['session']['secure'] = 0;
 $_CFG['session']['domain'] = '';
 $_CFG['session']['multidomain'] = 0;
 $hostcnt = count($_CFG['_HREF']['arrayHOST']);
+$_SERVER['HTTP_DOMAIN_3'] = '';
 // никто не будет использовать домен 4го уровня, а значит это IP
 if ($hostcnt == 1 or ($hostcnt == 4 and ip2long($_SERVER['HTTP_HOST']) !== false)) { //учитываем localhost и ИПИ
 	$_SERVER['HTTP_HOST2'] = $_SERVER['HTTP_HOST'];
@@ -496,6 +497,10 @@ else {
 		$_CFG['session']['domain'] = $IDN->encode($_SERVER['HTTP_HOST2']);
 	else
 		$_CFG['session']['domain'] = $_SERVER['HTTP_HOST2'];
+
+    if (isset($_CFG['_HREF']['arrayHOST'][2]) && $_CFG['_HREF']['arrayHOST'][2]) {
+        $_SERVER['HTTP_DOMAIN_3'] = $_CFG['_HREF']['arrayHOST'][2];
+    }
 }
 
 /********************/
