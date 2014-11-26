@@ -441,6 +441,7 @@ final class modulprm_class extends kernel_extends
 						$CRON = static_tools::getFdata($this->_CFG['_FILE']['cron']);
 						$cflag = false;
 						foreach ($MODUL->cron as $cr) {
+							if (!isset($cr['title'])) $cr['title'] = '';
 							if (!isset($cr['file'])) $cr['file'] = '';
 							if (!isset($cr['modul'])) $cr['modul'] = '';
 							if (!isset($cr['function'])) $cr['function'] = '';

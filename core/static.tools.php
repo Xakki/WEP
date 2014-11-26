@@ -1739,5 +1739,15 @@ deny from all
         }
         return false;
     }
+
+    static function setSiteMapXml($val = TRUE) {
+        global $IS_SITE_MAP_XML;
+        $IS_SITE_MAP_XML = $val;
+    }
+
+    static function isSiteMapXml() {
+        global $IS_SITE_MAP_XML;
+        return $IS_SITE_MAP_XML;
+    }
 // END static class
 }

@@ -147,6 +147,7 @@ function tools_cron()
 			$NEWDATA = array();
 			$NEWDATA['cron'] = $_CFG['cron'];
 			$NEWDATA['cron'][$p] = array(
+				'title' => $_POST['title'],
 				'time' => $_POST['time'],
 				'file' => $_POST['file'],
 				'modul' => $_POST['modul'],
@@ -180,6 +181,14 @@ function tools_cron()
 		else
 			$VAL = array();
 
+		$FORM['title'] = array(
+			'caption' => 'Title',
+			'comment' => '',
+			'type' => 'text',
+			'css' => '',
+			'style' => '',
+			'value' => $VAL['title'],
+		);
 		$FORM['time'] = array(
 			'caption' => 'Период запуска',
 			'comment' => 'сек.',
@@ -280,18 +289,20 @@ function tools_cron()
 		$DATA['messages'][] = static_main::am('info', 'Пропишите в cron <div>*/1 * * * *&#160;&#160;&#160;www-data&#160;&#160;&#160;php ' . $_CFG['_PATH']['controllers'] . 'cron.php</div>');
 		$DATA['data'] = array(
 			'thitem' => array(
+				'title' => array('value' => 'Название'),
 				'time' => array('value' => 'Период'),
 				'file' => array('value' => 'Фаил'),
 				'modul' => array('value' => 'Модуль'),
 				'function' => array('value' => 'Функция'),
-				'lasttime' => array('value' => 'Время прошлого выполнения'),
-				'do_time' => array('value' => 'Время выполнения задачи в мс.'),
+				'lasttime' => array('value' => 'Время запуск'),
+				'do_time' => array('value' => 'Время выпол. (мс.)'),
 				'res' => array('value' => 'Сообщение')
 			),
 		);
 		if (isset($_CFG['cron']) and count($_CFG['cron'])) {
 			foreach ($_CFG['cron'] as $k => $r) {
 				$DATA['data']['item'][$k]['tditem'] = array(
+					'title' => array('value' => $r['title']),
 					'time' => array('value' => $r['time']),
 					'file' => array('value' => $r['file']),
 					'modul' => array('value' => $r['modul']),

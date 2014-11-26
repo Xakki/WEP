@@ -215,13 +215,6 @@ class pg_class extends kernel_extends
 		return $data;
 	}
 
-    public function cronCreateSiteMap()
-    {
-        global $IS_SITE_MAP_XML;
-        $IS_SITE_MAP_XML = TRUE;
-        file_put_contents(getSiteMapFile(), $this->createSiteMaps());
-    }
-
 	/**
 	 * Включение MEMCACHE
 	 * @return bool - true если успешно
@@ -914,6 +907,7 @@ class pg_class extends kernel_extends
 
 	function getMap($onmenuPG = '', $flagPG = 0, $startPG = 0)
 	{
+        $isSiteMapXml = static_tools::isSiteMapXml();
 		if (empty($this->dataCashTree))
 			$this->sqlCashPG();
 		$DATA_PG = array();
@@ -972,33 +966,49 @@ class pg_class extends kernel_extends
 					'name' => $name,
 					'href' => $href,
 					'attr' => $rowPG['attr'],
+					'lastmod' => $rowPG['mf_timeup'],
 					'sel' => $selPG,
 					'pgid' => $keyPG,
 					'menuajax' => $rowPG['menuajax'],
 				);
 				if ($flagPG == 0 and isset($this->dataCashTree[$keyPG])) {
 					$temp = $this->getMap($onmenuPG, $flagPG, $keyPG);
-					$DATA_PG[$keyPG]['#item#'] = $temp;
+                    if ($isSiteMapXml) {
+                        $DATA_PG = array_merge($DATA_PG, $temp);
+                    }
+                    else {
+					    $DATA_PG[$keyPG]['#item#'] = $temp;
+                    }
 				}
 
 				if ($onmenuPG == -1 and $rowPG['pagemap']) {
 					$mapPG = explode(':', $rowPG['pagemap']);
 					if (count($mapPG) == 2 and file_exists($this->_enum['inc'][$mapPG[0]]['path'] . $mapPG[1] . '.map.php')) {
 						$tempinc = include($this->_enum['inc'][$mapPG[0]]['path'] . $mapPG[1] . '.map.php');
-						if (isset($DATA_PG[$keyPG]['#item#']) and is_array($DATA_PG[$keyPG]['#item#']))
-							$DATA_PG[$keyPG]['#item#'] += $tempinc;
-						else
-							$DATA_PG[$keyPG]['#item#'] = $tempinc;
+                        if ($isSiteMapXml) {
+                            $DATA_PG = array_merge($DATA_PG, $tempinc);
+                        }
+                        else {
+                            if (isset($DATA_PG[$keyPG]['#item#']) and is_array($DATA_PG[$keyPG]['#item#']))
+                                $DATA_PG[$keyPG]['#item#'] += $tempinc;
+                            else
+                                $DATA_PG[$keyPG]['#item#'] = $tempinc;
+                        }
 					}
 				}
 				elseif ($rowPG['pagemenu']) {
 					$mapPG = explode(':', $rowPG['pagemenu']);
 					if (count($mapPG) == 2 and file_exists($this->_enum['inc'][$mapPG[0]]['path'] . $mapPG[1] . '.map.php')) {
 						$tempinc = include($this->_enum['inc'][$mapPG[0]]['path'] . $mapPG[1] . '.map.php');
-						if (isset($DATA_PG[$keyPG]['#item#']) and is_array($DATA_PG[$keyPG]['items']))
-							$DATA_PG[$keyPG]['#item#'] += $tempinc;
-						else
-							$DATA_PG[$keyPG]['#item#'] = $tempinc;
+                        if ($isSiteMapXml) {
+                            $DATA_PG = array_merge($DATA_PG, $tempinc);
+                        }
+                        else {
+                            if (isset($DATA_PG[$keyPG]['#item#']) and is_array($DATA_PG[$keyPG]['items']))
+                                $DATA_PG[$keyPG]['#item#'] += $tempinc;
+                            else
+                                $DATA_PG[$keyPG]['#item#'] = $tempinc;
+                        }
 					}
 				}
 			}
@@ -1207,6 +1217,11 @@ class pg_class extends kernel_extends
 		return true;
 	}
 
+    public function cronCreateSiteMap()
+    {
+        static_tools::setSiteMapXml(true);
+        file_put_contents(getSiteMapFile(), $this->createSiteMaps());
+    }
 	/*
 	* XML карта сайта
 	*
@@ -1214,6 +1229,9 @@ class pg_class extends kernel_extends
 	function createSiteMaps()
 	{
 		$data = $this->getMap(-1);
+        $cnt = count($data);
+//        print_r($cnt); exit();
+
 		$xml = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 		$xml .= $this->reverseDataMap($data);
 		$xml .= '</urlset>';
@@ -1225,18 +1243,21 @@ class pg_class extends kernel_extends
 	*/
 	function reverseDataMap(&$data)
 	{
+        //monthly daily
 		$xml = '';
 		foreach ($data as $k => $r) {
 			if (isset($r['href']) and $r['href'])
 				$xml .= '
-	<url>
-		<loc>' . $r['href'] . '</loc>
-		<changefreq>daily</changefreq>
-	</url>';
-            // <lastmod>2005-01-01</lastmod>
-            // <priority>0.8</priority>
-			if (isset($r['#item#']) and count($r['#item#']))
-				$xml .= $this->reverseDataMap($r['#item#']);
+<url>
+    <loc>' . $r['href'] . '</loc>'.
+    ( isset($r['changefreq']) ? PHP_EOL.'    <changefreq>'.$r['changefreq'].'</changefreq>' : '').'
+    <lastmod>'.date('c', (isset($r['lastmod']) ? $r['lastmod'] : time())).'</lastmod>
+    <priority>'.( isset($r['priority']) ? $r['priority'] : '0.6').'</priority>
+</url>';
+			if (isset($r['#item#']) and count($r['#item#'])) {
+                trigger_error('Ошибка в sitexml - вложенный элемент в '.$r['href'], E_USER_WARNING);
+//				$xml .= $this->reverseDataMap($r['#item#']);
+            }
 		}
 		return $xml;
 	}
