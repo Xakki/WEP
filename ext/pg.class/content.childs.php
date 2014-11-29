@@ -38,7 +38,7 @@ class content_class extends kernel_extends
 		$this->fields['memcache_solt'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL', 'default' => 0);
 		$this->fields['access_flag'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => '0');
 		$this->fields['only_production'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => '0');
-		$this->fields['debugmode'] = array('type' => 'tinyint', 'attr' => 'NOT NULL', 'default' => '0');
+		$this->fields['debugmode'] = array('type' => 'tinyint', 'width' => 2, 'attr' => 'NOT NULL', 'default' => '0');
 		$this->fields['autocss'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => '1');
 		$this->fields['autoscript'] = array('type' => 'bool', 'attr' => 'NOT NULL', 'default' => '1');
 

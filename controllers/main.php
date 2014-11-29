@@ -78,8 +78,7 @@ elseif ($_GET['_php'] == 'sitemap' || $_GET['pageParam']=='sitemap.xml') {
     setOffDebug();
 
     _new_class('pg', $PGLIST);
-    $PGLIST->cronCreateSiteMap();
-    $_tpl['text'] = file_get_contents(getSiteMapFile());
+    $_tpl['text'] = $PGLIST->getSiteMaps();
     return true;
 }
 elseif (strpos($_SERVER['REQUEST_URI'], '.xml')!==false) {

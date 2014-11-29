@@ -1740,14 +1740,13 @@ deny from all
         return false;
     }
 
-    static function setSiteMapXml($val = TRUE) {
+    static function isSiteMapXml($val = null) {
         global $IS_SITE_MAP_XML;
-        $IS_SITE_MAP_XML = $val;
-    }
-
-    static function isSiteMapXml() {
-        global $IS_SITE_MAP_XML;
+        if (!is_null($val)) {
+            $IS_SITE_MAP_XML = $val;
+        }
         return $IS_SITE_MAP_XML;
     }
+
 // END static class
 }

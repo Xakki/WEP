@@ -2037,7 +2037,7 @@ function getSiteMapUrl() {
 
 function getSiteMapFile() {
     global $_CFG;
-    return $_CFG['_PATH']['content'].'sitemap.xml';
+    return $_CFG['_PATH']['content'].'sitemap_'.md5($_SERVER['HTTP_HOST']).'.xml';
 }
 
 static_main::autoload_register();

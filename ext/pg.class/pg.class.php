@@ -41,6 +41,7 @@ class pg_class extends kernel_extends
 		$this->config['auto_auth'] = true;
 		$this->config['rf_on'] = false;
 		$this->config['newadmin_on'] = true;
+		$this->config['sitemap-update'] = 86400;
 
 		// TODO : Сделать форму управления массивами данных и хранить в формате json
 
@@ -62,6 +63,7 @@ class pg_class extends kernel_extends
 		$this->config_form['auto_auth'] = array('type' => 'checkbox', 'caption' => 'Автоматическая авторизация');
 		$this->config_form['rf_on'] = array('type' => 'checkbox', 'caption' => 'Для руского домена использовать НАЗВАНИЕ страницы');
 		$this->config_form['newadmin_on'] = array('type' => 'checkbox', 'caption' => 'Включить "Новую админку"', 'comment' => 'В последствии к каждому контенту будет создаваться div обертка');
+		$this->config_form['sitemap-update'] = array('type' => 'int', 'caption' => 'Период обновления карты сайта', 'comment' => '/sitemap.xml');
 	}
 
 	function init()
@@ -71,6 +73,8 @@ class pg_class extends kernel_extends
 		$this->mf_istree_root = true;
 		$this->mf_ordctrl = true;
 		$this->mf_actctrl = true;
+		$this->mf_timecr = true;
+		$this->mf_timeup = true;
 		//$this->unique_fields['pages'] = array('alias','parent_id');
 		$this->caption = 'Страницы';
 		$this->selected = array();
@@ -966,7 +970,7 @@ class pg_class extends kernel_extends
 					'name' => $name,
 					'href' => $href,
 					'attr' => $rowPG['attr'],
-					'lastmod' => $rowPG['mf_timeup'],
+					'lastmod' => ($rowPG['mf_timeup'] ? $rowPG['mf_timeup'] : time()),
 					'sel' => $selPG,
 					'pgid' => $keyPG,
 					'menuajax' => $rowPG['menuajax'],
@@ -1217,24 +1221,36 @@ class pg_class extends kernel_extends
 		return true;
 	}
 
-    public function cronCreateSiteMap()
-    {
-        static_tools::setSiteMapXml(true);
-        file_put_contents(getSiteMapFile(), $this->createSiteMaps());
-    }
+
 	/*
 	* XML карта сайта
-	*
 	*/
-	function createSiteMaps()
+	function getSiteMaps()
 	{
-		$data = $this->getMap(-1);
-        $cnt = count($data);
-//        print_r($cnt); exit();
+        $file = getSiteMapFile();
 
-		$xml = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
-		$xml .= $this->reverseDataMap($data);
-		$xml .= '</urlset>';
+        $do = false;
+        if (file_exists($file)) {
+            $fileInfo = stat($file);
+            if ($fileInfo['mtime']< (time() - (int) $this->config['sitemap-update'])) {
+                $do = true;
+            }
+        }
+
+        if ($do) {
+            static_tools::isSiteMapXml(true);
+            $data = $this->getMap(-1);
+
+            $xml = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+            $xml .= $this->reverseDataMap($data);
+            $xml .= '</urlset>';
+
+            file_put_contents($file, $xml);
+        }
+        else {
+            return file_get_contents($file);
+        }
+
 		return $xml;
 	}
 
