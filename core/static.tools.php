@@ -1130,7 +1130,12 @@ deny from all
 
 				if (isset($row['@nestedSets'])) {
 					if ($row['@nestedSets']['isset']) {
-						$valuelist['nestedSets'] = '<span style="color:blue;">Обновить дерев NestedSets' . (!$row['@nestedSets']['correct'] ? ' - ошибка в структуре дерева.' : '') . '</span>';
+                        if (!$row['@nestedSets']['correct']) {
+                            $valuelist['nestedSets'] = '<span style="color:red;">Обновить дерев NestedSets - ошибка в структуре дерева.</span>';
+                        }
+                        else {
+						    $valuelist['nestedSets'] = '<span style="color:blue;">Обновить дерев NestedSets</span>';
+                        }
 //						if(!$row['@nestedSets']['correct'])
 //							$select['nestedSets'] = true;
 					}
@@ -1263,22 +1268,29 @@ deny from all
 	 */
 	static function _nestedSets_fullUpdate(&$MODUL, &$mess)
 	{
+        $rootKey = ($MODUL->mf_istree_root ? ',' . $MODUL->ns_config['root'] : '');
 		if ($MODUL->mf_ordctrl) {
-			$result = $MODUL->qs('id,' . $MODUL->mf_istree . ',' . $MODUL->mf_ordctrl . ',' . $MODUL->ns_config['left'] . ',' . $MODUL->ns_config['root'], 'ORDER BY ' . $MODUL->mf_ordctrl, 'id', $MODUL->mf_istree);
+			$result = $MODUL->qs('id,' . $MODUL->mf_istree . ',' . $MODUL->mf_ordctrl . ',' . $MODUL->ns_config['left'] . $rootKey, 'ORDER BY ' . $MODUL->mf_ordctrl, 'id', $MODUL->mf_istree);
 		}
 		else {
-			$result = $MODUL->qs('id,' . $MODUL->mf_istree . ',' . $MODUL->ns_config['left'] . ',' . $MODUL->ns_config['root'], ' ORDER BY ' . $MODUL->ns_config['left'] . '', 'id', $MODUL->mf_istree);
+			$result = $MODUL->qs('id,' . $MODUL->mf_istree . ',' . $MODUL->ns_config['left'] . $rootKey, ' ORDER BY ' . $MODUL->ns_config['left'] . '', 'id', $MODUL->mf_istree);
 		}
-		if (!count($result)) return true;
 
-		self::_nestedSets_fullUpdate_recursive($MODUL, $result);
+		if (!count($result)) return false;
+//print_r('<pre>');
+//        print_r($result);
+//        print_r('</pre>');
+        self::_nestedSets_fullUpdate_recursive($MODUL, $result);
 
 		return true;
 	}
 
 	static function _nestedSets_fullUpdate_recursive(&$MODUL, &$data, $key = 0, $left = 1, $level = 1, $root = 0)
 	{
-		if (!isset($data[$key])) return $left;
+        if ($key===0 && $MODUL->mf_use_charid) {
+            $key = '';
+        }
+        if (!isset($data[$key])) return $left;
 
 		foreach ($data[$key] as $id => $row) {
 			$rootId = ($root ? $root : $id);
@@ -1286,9 +1298,9 @@ deny from all
 
 			$q = 'UPDATE ' . $MODUL->tablename . ' set ' . $MODUL->ns_config['left'] . ' = ' . $left . ', ' . $MODUL->ns_config['right'] . ' = ' . $rkey . ', ' . $MODUL->ns_config['level'] . ' = ' . $level;
 			if ($MODUL->mf_istree_root) {
-				$q .= ', ' . $MODUL->ns_config['root'] . ' = ' . $rootId;
+				$q .= ', ' . $MODUL->ns_config['root'] . ' = "' . $rootId.'"';
 			}
-			$q .= ' WHERE id = ' . $id;
+			$q .= ' WHERE id = "' . $id.'"';
 			$MODUL->SQL->execSQL($q);
 
 			$left = $rkey + 1; // На след цикл отдаю правй +1
@@ -1299,15 +1311,23 @@ deny from all
 
 	static function _nestedSets_isCorrect(&$MODUL)
 	{
-		$result = $MODUL->qs('count(id)', 'WHERE ' . $MODUL->ns_config['left'] . ' >= ' . $MODUL->ns_config['right']);
-		if (count($result)) return false;
+		$result = $MODUL->qs('count(id) as cnt', 'WHERE ' . $MODUL->ns_config['left'] . ' >= ' . $MODUL->ns_config['right']);
+
+		if (!count($result) || $result[0]['cnt']>0) {
+            print_r('<pre>'.$MODUL->tablename);
+//            $result = $MODUL->qs('*', 'WHERE ' . $MODUL->ns_config['left'] . ' >= ' . $MODUL->ns_config['right']);
+            print_r($result);
+            print_r('</pre>');
+            return false;
+        }
 
 		$result = $MODUL->qs('count(id) as cnt, MIN(' . $MODUL->ns_config['left'] . ') as min, MAX(' . $MODUL->ns_config['right'] . ') as max');
-		if (count($result)) {
-			if ($result[0]['cnt'] != ($result[0]['max'] - $result[0]['min'])) {
-				return false;
-			}
-		}
+        if (!count($result) || $result[0]['max'] != ($result[0]['cnt'] * 2)) {
+            print_r('<pre>'.$MODUL->tablename);
+            print_r($result);
+            print_r('</pre>');
+            return false;
+        }
 
 		return true;
 	}
