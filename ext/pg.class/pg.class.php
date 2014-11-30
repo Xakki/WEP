@@ -1300,7 +1300,7 @@ class pg_class extends kernel_extends
 
     public static function createSiteMapXml(&$data)
     {
-        $xml = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'.PHP_EOL;
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>'.PHP_EOL.'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'.PHP_EOL;
         foreach ($data as $k => $r) {
             if (isset($r['href']) and $r['href']) {
                 $xml .= '<url>'.PHP_EOL.
@@ -1320,12 +1320,12 @@ class pg_class extends kernel_extends
 
     public static function createSiteMapIndexXml(&$data)
     {
-        $xml = '<?xml version="1.0" encoding="UTF-8"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'.PHP_EOL;
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>'.PHP_EOL.'<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'.PHP_EOL;
         foreach ($data as $r) {
-            $xml .= '<url>'.PHP_EOL.
+            $xml .= '<sitemap>'.PHP_EOL.
                 '    <loc>' . $r['loc'] . '</loc>'.PHP_EOL.
                 '    <lastmod>'.$r['lastmod'].'</lastmod>'.PHP_EOL.
-                '</url>'.PHP_EOL;
+                '</sitemap>'.PHP_EOL;
         }
         $xml .= '</sitemapindex>';
         return $xml;

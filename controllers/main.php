@@ -82,6 +82,9 @@ elseif ($_GET['_php'] == 'sitemap' || $_GET['pageParam']=='sitemap.xml') {
     if ($_tpl['text']=='') {
         header('HTTP/1.1 503 Service Unavailable');
     }
+    else {
+        header('Content-type: text/xml; charset=utf-8');
+    }
     return true;
 }
 elseif (strpos($_SERVER['REQUEST_URI'], '.xml')!==false) {
