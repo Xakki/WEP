@@ -92,9 +92,8 @@ class pg_class extends kernel_extends
 		$this->current_path = '';
 		$this->ajaxRequest = false; // ставится метка об аякс запросе
 		$this->access_flag = false; // Если значение выставить true, то каждое "Содержимое" будет проверяться на допуск к отображению на "Спец страницах" (отмеченные галочкой не выполнятся)
-
-        $this->cron[] = array('modul' => $this->_cl, 'function' => 'cronCreateSiteMap()', 'active' => 0, 'time' => 864000);
-	}
+        $this->cron[] = array('modul' => $this->_cl, 'function' => 'cronUpdateSiteMap()', 'active' => 0, 'time' => 86400, 'title' => 'cronUpdateSiteMap("www.example.ru/sitemap.xml")');
+    }
 
 	function _create()
 	{
@@ -911,7 +910,7 @@ class pg_class extends kernel_extends
 
 	function getMap($onmenuPG = '', $flagPG = 0, $startPG = 0)
 	{
-        $isSiteMapXml = static_tools::isSiteMapXml();
+        $isSiteMapXml = isSiteMapXml();
 		if (empty($this->dataCashTree))
 			$this->sqlCashPG();
 		$DATA_PG = array();
@@ -1221,6 +1220,31 @@ class pg_class extends kernel_extends
 		return true;
 	}
 
+    /**
+     * Обновление sitmap.xml
+     */
+    public function cronUpdateSiteMap()
+    {
+        if (!func_num_args()) {
+            return;
+        }
+        $urlList = func_get_args();
+
+        $param = [
+            'USERAGENT' => 'unidoski.ru bot',
+            'TIMEOUT' => 1200
+        ];
+        foreach ($urlList as $url) {
+            if ($url && filter_var($url, FILTER_VALIDATE_URL)) {
+                $p = static_tools::_http($url, $param);
+                print_r('<pre>');
+                print_r($p['info']);
+                print_r('</pre>');
+            }
+        }
+
+        return;
+    }
 
 	/*
 	* XML карта сайта
@@ -1229,21 +1253,41 @@ class pg_class extends kernel_extends
 	{
         $file = getSiteMapFile();
 
-        $do = false;
+        $do = true;
         if (file_exists($file)) {
             $fileInfo = stat($file);
-            if ($fileInfo['mtime']< (time() - (int) $this->config['sitemap-update'])) {
-                $do = true;
+            if ($fileInfo['mtime'] > (time() - (int) $this->config['sitemap-update'])) {
+                $do = false;
             }
         }
 
         if ($do) {
-            static_tools::isSiteMapXml(true);
+            static_tools::_checkdir($this->_CFG['_PATH']['content'].'sitemap');
+            file_put_contents($file, '');
+            isSiteMapXml(true);
             $data = $this->getMap(-1);
 
-            $xml = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
-            $xml .= $this->reverseDataMap($data);
-            $xml .= '</urlset>';
+            $limit = 30000;
+
+            if (count($data)>40000) {
+                $indexData = [];
+                $tempData = array_chunk($data, $limit);
+                foreach ($tempData as $k=>$chunkData) {
+                    $k = $k + 1;
+                    $fileChunk = $file.'.'.$k.'.gz'; // @see getSiteMapFile()
+                    $xmlChunk = self::createSiteMapXml($chunkData);
+                    file_put_contents($fileChunk, gzencode($xmlChunk, 7));
+                    $indexData[] = [
+                        'loc' => getSiteMapUrl($k),
+                        'lastmod' => date('c')
+                    ];
+                }
+                $xml = self::createSiteMapIndexXml($indexData);
+            }
+            else {
+                $xml = self::createSiteMapXml($data);
+            }
+
 
             file_put_contents($file, $xml);
         }
@@ -1254,29 +1298,38 @@ class pg_class extends kernel_extends
 		return $xml;
 	}
 
-	/*
-	* Вспомогательная (реверс) функ для XML карты
-	*/
-	function reverseDataMap(&$data)
-	{
-        //monthly daily
-		$xml = '';
-		foreach ($data as $k => $r) {
-			if (isset($r['href']) and $r['href'])
-				$xml .= '
-<url>
-    <loc>' . $r['href'] . '</loc>'.
-    ( isset($r['changefreq']) ? PHP_EOL.'    <changefreq>'.$r['changefreq'].'</changefreq>' : '').'
-    <lastmod>'.date('c', (isset($r['lastmod']) ? $r['lastmod'] : time())).'</lastmod>
-    <priority>'.( isset($r['priority']) ? $r['priority'] : '0.6').'</priority>
-</url>';
-			if (isset($r['#item#']) and count($r['#item#'])) {
-                trigger_error('Ошибка в sitexml - вложенный элемент в '.$r['href'], E_USER_WARNING);
-//				$xml .= $this->reverseDataMap($r['#item#']);
+    public static function createSiteMapXml(&$data)
+    {
+        $xml = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'.PHP_EOL;
+        foreach ($data as $k => $r) {
+            if (isset($r['href']) and $r['href']) {
+                $xml .= '<url>'.PHP_EOL.
+                    '    <loc>' . $r['href'] . '</loc>'.PHP_EOL.
+                    ( isset($r['changefreq']) ? '    <changefreq>'.$r['changefreq'].'</changefreq>'.PHP_EOL : '').
+                    '    <lastmod>'.date('c', (isset($r['lastmod']) ? $r['lastmod'] : time())).'</lastmod>'.PHP_EOL.
+                    '    <priority>'.( isset($r['priority']) ? $r['priority'] : '0.6').'</priority>'.PHP_EOL.
+                    '</url>'.PHP_EOL;
             }
-		}
-		return $xml;
-	}
+            if (isset($r['#item#']) and count($r['#item#'])) {
+                trigger_error('Ошибка в sitexml - вложенный элемент в '.$r['href'], E_USER_WARNING);
+            }
+        }
+        $xml .= '</urlset>';
+        return $xml;
+    }
+
+    public static function createSiteMapIndexXml(&$data)
+    {
+        $xml = '<?xml version="1.0" encoding="UTF-8"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'.PHP_EOL;
+        foreach ($data as $r) {
+            $xml .= '<url>'.PHP_EOL.
+                '    <loc>' . $r['loc'] . '</loc>'.PHP_EOL.
+                '    <lastmod>'.$r['lastmod'].'</lastmod>'.PHP_EOL.
+                '</url>'.PHP_EOL;
+        }
+        $xml .= '</sitemapindex>';
+        return $xml;
+    }
 
 	/**
 	 * Получаем путь к фаилу INC из строкового параметра (запись в виде 1:ugroup.class/login)

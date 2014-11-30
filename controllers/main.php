@@ -73,12 +73,15 @@ elseif ($_GET['_php'] == 'rss') {
 }
 elseif ($_GET['_php'] == 'sitemap' || $_GET['pageParam']=='sitemap.xml') {
     setTemplate('text');
-    setNeverShowAllInfo();
-    setNeverShowError();
-    setOffDebug();
+//    setNeverShowAllInfo();
+//    setNeverShowError();
+//    setOffDebug();
 
     _new_class('pg', $PGLIST);
     $_tpl['text'] = $PGLIST->getSiteMaps();
+    if ($_tpl['text']=='') {
+        header('HTTP/1.1 503 Service Unavailable');
+    }
     return true;
 }
 elseif (strpos($_SERVER['REQUEST_URI'], '.xml')!==false) {

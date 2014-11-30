@@ -1525,6 +1525,38 @@ deny from all
 		return array('text' => $text, 'info' => $PageInfo, 'err' => $err, 'flag' => $flag, 'errMess'=>$errMess);
 	}
 
+    static function _http_async($url, $postParams = null)
+    {
+        if ($postParams and is_array($postParams)) {
+            $postParams = http_build_query($postParams);
+        }
+
+        $parts=parse_url($url);
+
+        $fp = fsockopen($parts['host'],
+            isset($parts['port'])?$parts['port']:80,
+            $errno, $errstr, 30);
+
+        if ($postParams) {
+            $out = "POST ".$parts['path']." HTTP/1.1\r\n";
+        }
+        else {
+            $out = "GET ".$parts['path']." HTTP/1.1\r\n";
+        }
+        $out.= "Host: ".$parts['host']."\r\n";
+        $out.= "Content-Type: application/x-www-form-urlencoded\r\n";
+        if ($postParams) {
+            $out.= "Content-Length: ".strlen($postParams)."\r\n";
+        }
+        $out.= "Connection: Close\r\n\r\n";
+        if ($postParams) {
+            $out.= $postParams;
+        }
+
+        fwrite($fp, $out);
+        fclose($fp);
+    }
+
 	static function progress_function($ch, $str)
 	{
 		echo $str;
@@ -1740,13 +1772,6 @@ deny from all
         return false;
     }
 
-    static function isSiteMapXml($val = null) {
-        global $IS_SITE_MAP_XML;
-        if (!is_null($val)) {
-            $IS_SITE_MAP_XML = $val;
-        }
-        return $IS_SITE_MAP_XML;
-    }
 
 // END static class
 }

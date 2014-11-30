@@ -2031,13 +2031,25 @@ if(!function_exists('array_column')){
     }
 }
 
-function getSiteMapUrl() {
+function getSiteMapUrl($id = null) {
+    if ($id) {
+        global $_CFG;
+        return $_SERVER['HTTP_PROTO'] . $_SERVER['HTTP_HOST'].'/'.$_CFG['PATH']['content'].'sitemap/'.md5($_SERVER['HTTP_HOST']).'.xml.'.$id.'.gz';
+    }
     return $_SERVER['HTTP_PROTO'] . $_SERVER['HTTP_HOST'].'/sitemap.xml';
 }
 
-function getSiteMapFile() {
+function getSiteMapFile($id = null) {
     global $_CFG;
-    return $_CFG['_PATH']['content'].'sitemap_'.md5($_SERVER['HTTP_HOST']).'.xml';
+    return $_CFG['_PATH']['content'].'sitemap/'.md5($_SERVER['HTTP_HOST']).'.xml'.($id ? '.'.$id.'.gz' : '');
+}
+
+function isSiteMapXml($val = null) {
+    global $IS_SITE_MAP_XML;
+    if (!is_null($val)) {
+        $IS_SITE_MAP_XML = $val;
+    }
+    return $IS_SITE_MAP_XML;
 }
 
 static_main::autoload_register();
