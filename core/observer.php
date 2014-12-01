@@ -2,11 +2,10 @@
 
 class observer
 {
+    static private $events = array(); // массив с уже совешенными событиями
+    static private $observers = array(); // массив с функциями-наблюдателями
 
-	static private $events = array(); // массив с уже совешенными событиями
-	static private $observers = array(); // массив с функциями-наблюдателями
-
-	/**
+    /**
 	 * Сообщает наблюдателям о том, что произошло событие $event
 	 * при этом выполняются те фукции, которые зарегестрированы на получение этого события
 	 *
@@ -15,32 +14,30 @@ class observer
 	 * @param string $event
 	 */
 
-	static function notify_observers($event)
-	{
-		if (!isset(self::$events[$event])) {
-			self::$events[$event] = true;
-		}
+	    static function notify_observers($event)
+    {
+        if (!isset(self::$events[$event])) {
+            self::$events[$event] = true;
+        }
 
-		if (isset(self::$observers[$event])) {
-			foreach (self::$observers[$event] as $r) {
-				if (isset($r['args']) && !empty($r['args'])) {
-					$str_args = '$r[\'args\'][' . implode('], $r[\'args\'][', array_keys($r['args'])) . ']';
-				}
-				else {
-					$str_args = '';
-				}
+        if (isset(self::$observers[$event])) {
+            foreach (self::$observers[$event] as $r) {
+                if (isset($r['args']) && !empty($r['args'])) {
+                    $str_args = '$r[\'args\'][' . implode('], $r[\'args\'][', array_keys($r['args'])) . ']';
+                } else {
+                    $str_args = '';
+                }
 
-				if (isset($r['obj'])) {
-					eval('$r["obj"]->' . $r['func'] . '(' . $str_args . ');');
-				}
-				else {
-					eval($r['func'] . '(' . $str_args . ');');
-				}
-			}
-		}
-	}
+                if (isset($r['obj'])) {
+                    eval('$r["obj"]->' . $r['func'] . '(' . $str_args . ');');
+                } else {
+                    eval($r['func'] . '(' . $str_args . ');');
+                }
+            }
+        }
+    }
 
-	/**
+    /**
 	 * Регистрирует функцию-наблюдателя на получение события $event
 	 * При этом функция выполнится, когда произойдет событие $event,
 	 * или если на данный момент событие уже произошло, то функция выполнится сразу же
@@ -55,34 +52,37 @@ class observer
 	 * @param string $event
 	 * @return bool
 	 */
-	static function register_observer($params, $event)
-	{
-		if (!isset($params['func']) || !isset($event)) {
-			trigger_error('В функцию register_observer не переданы все необходимые параметры', E_USER_WARNING);
-			return false;
-		}
-		if (isset($params['args']) && !is_array($params['args'])) {
-			trigger_error('В функции register_observer переданный пар-р params[args] должен быть массивом', E_USER_WARNING);
-			return false;
-		}
+	    static function register_observer($params, $event)
+    {
+        if (!isset($params['func']) || !isset($event)) {
+            trigger_error(
+                'В функцию register_observer не переданы все необходимые параметры',
+                E_USER_WARNING
+            );
+            return false;
+        }
+        if (isset($params['args']) && !is_array($params['args'])) {
+            trigger_error(
+                'В функции register_observer переданный пар-р params[args] должен быть массивом',
+                E_USER_WARNING
+            );
+            return false;
+        }
 
-		self::$observers[$event][] = $params;
+        self::$observers[$event][] = $params;
 
-		if (isset(self::$events[$event])) {
-			if (isset($params['args']) && !empty($params['args'])) {
-				$str_args = '$params[\'args\'][' . implode('], $params[\'args\'][', array_keys($params['args'])) . ']';
-			}
-			else {
-				$str_args = '';
-			}
+        if (isset(self::$events[$event])) {
+            if (isset($params['args']) && !empty($params['args'])) {
+                $str_args = '$params[\'args\'][' . implode('], $params[\'args\'][', array_keys($params['args'])) . ']';
+            } else {
+                $str_args = '';
+            }
 
-			if (isset($params['obj'])) {
-				eval('$params[\'obj\']->' . $params['func'] . '(' . $str_args . ');');
-			}
-			else {
-				eval($params['func'] . '(' . $str_args . ');');
-			}
-		}
-	}
-
+            if (isset($params['obj'])) {
+                eval('$params[\'obj\']->' . $params['func'] . '(' . $str_args . ');');
+            } else {
+                eval($params['func'] . '(' . $str_args . ');');
+            }
+        }
+    }
 }
