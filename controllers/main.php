@@ -73,9 +73,10 @@ elseif ($_GET['_php'] == 'rss') {
 }
 elseif ($_GET['_php'] == 'sitemap' || $_GET['pageParam']=='sitemap.xml') {
     setTemplate('text');
-//    setNeverShowAllInfo();
-//    setNeverShowError();
-//    setOffDebug();
+    setNeverShowAllInfo();
+    setNeverShowError();
+    setOffDebug();
+
 
     _new_class('pg', $PGLIST);
     $_tpl['text'] = $PGLIST->getSiteMaps();
@@ -83,6 +84,7 @@ elseif ($_GET['_php'] == 'sitemap' || $_GET['pageParam']=='sitemap.xml') {
         header('HTTP/1.1 503 Service Unavailable');
     }
     else {
+        header('Pragma: no-cache');
         header('Content-type: text/xml; charset=utf-8');
     }
     return true;
