@@ -4,6 +4,9 @@ if (!defined('SITE') || !defined('WEP') || !defined('WEPCONF') || !defined('WEP_
 	die('Not defined constants');
 }
 
+if (!isset($_SERVER['REQUEST_URI'])) {
+    $_SERVER['REQUEST_URI'] = '';
+}
 if (!isset($_SERVER['HTTP_REFERER'])) {
     $_SERVER['HTTP_REFERER'] = '';
 }
