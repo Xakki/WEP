@@ -575,7 +575,7 @@ class static_main
 	 * @param int $dolink - 0 - замена всех http на редирект и превращение в ссылки; 1- замена всех http на редирект; 2- замена всех http на редирект в ссылках
 	 * @return string текст
 	 */
-	    static function redirectLink($text, $name = 'Источник', $dolink = 0)
+	static function redirectLink($text, $name = 'Источник', $dolink = 0)
     {
         $cont = array();
         if ($dolink == 2) $match = '/(href=")(http:\/\/|https:\/\/|www\.)[0-9A-Za-zА-Яа-я\/\.\_\-\=\?\&\;]*/u';
@@ -618,12 +618,12 @@ class static_main
 		//301 - перемещение на посточнную основу
         // header("HTTP/1.0 400 Bad Request");
         //301 Moved Permanently
-        if (isset($_COOKIE[$cookieName]) && $_COOKIE[$cookieName] > (time() - 3)) {
+        if (isset($_COOKIE[$cookieName]) && $_COOKIE[$cookieName] > (time() - 2)) {
             trigger_error('Warning!!! Self redirect for ' . $link, E_USER_WARNING);
-            return true;
+            die('Нажмите на ссылку, для перехода на страницу <a href="' . $link . '">' . $link . '</a>');
         }
 
-        _setcookie($cookieName, time(), (time() + 500));
+        _setcookie($cookieName, time(), (time() + 50));
 
         if ($link === true) $link = $_SERVER['HTTP_PROTO'] . $_SERVER['HTTP_HOST'] . '/' . $_SERVER['REQUEST_URI'];
 
