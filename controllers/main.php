@@ -114,7 +114,7 @@ if (_new_class('pg', $PGLIST)) {
 		$_REQUEST['pageParam'] = "index";
 	if (is_array($_REQUEST['pageParam']))
         $_REQUEST['pageParam'] = implode('/', $_REQUEST['pageParam']);
-	$_REQUEST['pageParam'] = preg_split('/\//', $_REQUEST['pageParam'], 0, PREG_SPLIT_NO_EMPTY);
+	$_REQUEST['pageParam'] = preg_split('/\//u', $_REQUEST['pageParam'], 0, PREG_SPLIT_NO_EMPTY);
 	//if($_SESSION['_showallinfo']) {print('main1 = '.(getmicrotime()-$main1time).'<hr/>');$main2time = getmicrotime();}
 	if ($PGLIST->config['auto_auth']) {
 		static_main::userAuth();

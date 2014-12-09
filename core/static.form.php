@@ -1274,7 +1274,7 @@ class static_form
     {
         $phone_2 = array();
         $phone_1 = preg_replace("/[^0-9\,\;\+]+/", '', $phone);
-        $phone_1 = preg_split("/[\,\;\+]+/", $phone_1, -1, PREG_SPLIT_NO_EMPTY);
+        $phone_1 = preg_split("/[\,\;\+]+/u", $phone_1, -1, PREG_SPLIT_NO_EMPTY);
         foreach ($phone_1 as $k => $p) {
             if (trim($p)) {
                 $phone_2[] = preg_replace(

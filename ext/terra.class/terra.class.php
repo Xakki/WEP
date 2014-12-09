@@ -115,7 +115,7 @@ class terra_class extends kernel_extends
 			$IP = array();
 			if (!$result->err) {
 				while ($row = $result->fetch()) {
-					$IP [array_shift(preg_split("/[\s]+/", $row['ru_rname'], -1, PREG_SPLIT_NO_EMPTY))] [] = $row;
+					$IP [array_shift(preg_split("/[\s]+/u", $row['ru_rname'], -1, PREG_SPLIT_NO_EMPTY))] [] = $row;
 				}
 
 			}
@@ -191,7 +191,7 @@ class terra_class extends kernel_extends
 		$file = file($ipath . 'geo_files/cities.txt');
 		$data = array();
 		foreach ($file as $r) {
-			$t = preg_split("/[\t]+/", mb_convert_encoding($r, "UTF-8", "CP-1251"), -1, PREG_SPLIT_NO_EMPTY);
+			$t = preg_split("/[\t]+/u", mb_convert_encoding($r, "UTF-8", "CP-1251"), -1, PREG_SPLIT_NO_EMPTY);
 			if (stripos($t[3], 'Украина') === false)
 				$data[$t[1]][] = $t;
 		}
@@ -199,7 +199,7 @@ class terra_class extends kernel_extends
 		$file = file($ipath . 'geo_files/cidr_optim.txt');
 		$dataIP = array();
 		foreach ($file as $r) {
-			$t = preg_split("/[\t]+/", mb_convert_encoding($r, "UTF-8", "CP-1251"), -1, PREG_SPLIT_NO_EMPTY);
+			$t = preg_split("/[\t]+/u", mb_convert_encoding($r, "UTF-8", "CP-1251"), -1, PREG_SPLIT_NO_EMPTY);
 			if ((int)$t[4]) {
 				$dataIP[(int)$t[4]][] = array($t[0], $t[1]);
 			}
@@ -290,7 +290,7 @@ class terra_class extends kernel_extends
 		}
 		$socrbase = array();
 		foreach ($data as $r) {
-			$r = preg_split("/[\t]+/", $r, -1, PREG_SPLIT_NO_EMPTY);
+			$r = preg_split("/[\t]+/u", $r, -1, PREG_SPLIT_NO_EMPTY);
 			$upd = array(
 				'name' => mb_convert_encoding($r[2], "UTF-8", "CP-1251"),
 				'socr' => mb_convert_encoding($r[1], "UTF-8", "CP-1251"),
@@ -307,7 +307,7 @@ class terra_class extends kernel_extends
 
 		$new = array();
 		foreach ($data as $k => $r) {
-			$r = preg_split("/[\t]+/", $r, -1, PREG_SPLIT_NO_EMPTY);
+			$r = preg_split("/[\t]+/u", $r, -1, PREG_SPLIT_NO_EMPTY);
 
 			$p1 = substr($r[2], 0, 2);
 			$p2 = substr($r[2], 2, 3);

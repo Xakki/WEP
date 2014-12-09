@@ -170,7 +170,7 @@ class wepajax
         if (isset($_REQUEST['PGMARKER'])) {
             $marker = $_REQUEST['PGMARKER'];
             if (!is_array($marker)) {
-                $marker = preg_split("/[\s\,]+/", $marker, 8, PREG_SPLIT_NO_EMPTY);
+                $marker = preg_split("/[\s\,]+/u", $marker, 8, PREG_SPLIT_NO_EMPTY);
             }
             if (isset($tpl['logs']) && $tpl['logs']) {
                 $marker[] = 'logs';

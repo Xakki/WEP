@@ -289,7 +289,7 @@ class httpproxy_class extends kernel_extends
 		elseif (count($_POST) and $_POST['txt']) {
 			$data = explode("\n", $_POST['txt']);
 			foreach ($data as $r) {
-				$temp = preg_split("/[\s\t\,\:\;]+/", $r, -1, PREG_SPLIT_NO_EMPTY);
+				$temp = preg_split("/[\s\t\,\:\;]+/u", $r, -1, PREG_SPLIT_NO_EMPTY);
 				if (!$temp[1]) $temp[1] = '80';
 				$AD = array('name' => $temp[0], 'port' => $temp[1]);
 				if (isset($temp[2]))
