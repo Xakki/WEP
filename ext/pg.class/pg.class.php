@@ -1264,6 +1264,14 @@ class pg_class extends kernel_extends
         if ($do) {
             static_tools::_checkdir($this->_CFG['_PATH']['content'].'sitemap');
             file_put_contents($file, '');
+
+            $params = array(
+                'obj' => $this,
+                'func' => 'clearSiteMapFiles',
+                'args' => [$file],
+            );
+            observer::register_observer($params, 'shutdown_function');
+
             isSiteMapXml(true);
             $data = $this->getMap(-1);
 
@@ -1297,6 +1305,13 @@ class pg_class extends kernel_extends
 
 		return $xml;
 	}
+
+    public function clearSiteMapFiles($file) {
+        $res = file_get_contents($file);
+        if (!$res) {
+            unlink($file);
+        }
+    }
 
     public static function createSiteMapXml(&$data)
     {
