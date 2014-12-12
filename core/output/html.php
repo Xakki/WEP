@@ -28,7 +28,7 @@ class wephtml
     /*
 	  Функция вывода на экран
 	 */
-	    public function obHandler($buffer)
+	public function obHandler($buffer)
     {
         global $_tpl, $_CFG;
         $_tpl['THEME'] = getUrlTheme();
@@ -40,11 +40,13 @@ class wephtml
         $buffer = trim($buffer . static_main::showErr());
 
         if ($this->_html != '') {
-            if ($buffer && $_CFG['wep']['debugmode']) $_tpl['logs'] .= '<link type="text/css" href="/_design/_style/bug.css" rel="stylesheet"/>
+            if ($buffer && $_CFG['wep']['debugmode']) {
+                $_tpl['logs'] .= '<link type="text/css" href="/_design/_style/bug.css" rel="stylesheet"/>
 					<div id="bugmain">' . $buffer . '</div>';
-
-            self::parseTemplate($this->_html, $_tpl); // PARSE
-
+            }
+            $temp = '';
+            self::parseTemplate($this->_html, $_tpl, $temp); // PARSE
+            $this->_html = $temp.PHP_EOL.' *********** '.PHP_EOL.$this->_html;
         } else {
             $this->_html = $_tpl['logs'] . $buffer;
         }
@@ -83,7 +85,7 @@ class wephtml
     /*
 	  Ф. вывода заголовков
 	 */
-	    function headerssent()
+	function headerssent()
     {
         global $_CFG;
         if (!headers_sent()) {
@@ -109,38 +111,38 @@ class wephtml
         return false;
     }
 
-    static function parseTemplate(&$TEXT, &$TPL, $skip = array())
+    static function parseTemplate(&$TEXT, &$TPL, &$tmp, $skip = array())
     {
         $subSkip = $skip;
         $temp = self::matchTmp($TEXT);
-        foreach ($temp[1] as $k => $r) {
-            if (isset($skip[$r])) {
-                trigger_error('Recursion in template (' . $r . ')', E_USER_WARNING);
-                return true;
-            }
-            if (!isset($TPL[$r])) $TPL[$r] = '';
-            $TEXT = str_replace($temp[0][$k], $TPL[$r], $TEXT);
-            $subSkip[$r] = true;
-        }
 
-        if (self::hasMatchTmp($TEXT)) {
-            self::parseTemplate($TEXT, $TPL, $subSkip);
+//        $tmp .= var_export($temp, true).PHP_EOL.' *********** '.PHP_EOL;
+        if ($temp && count($temp[1])) {
+            foreach ($temp[1] as $k => $r) {
+                if (isset($skip[$r])) {
+//                    trigger_error('Recursion in template (' . $r . ')', E_USER_WARNING);
+//                    return true;
+                }
+                if (!isset($TPL[$r])) $TPL[$r] = '';
+                $TEXT = mb_str_replace($temp[0][$k], $TPL[$r], $TEXT);
+                $subSkip[$r] = true;
+            }
+            self::parseTemplate($TEXT, $TPL, $tmp, $subSkip);
+
+            preg_match_all('/\{\#search\#\}/', $TEXT, $ssss);
+            $tmp .= var_export($ssss, true).PHP_EOL.' *********** '.PHP_EOL;
         }
         return true;
     }
 
     static function matchTmp($TEXT)
     {
-        if (_strpos($TEXT, '{#') !== false) { // NEW STANDART
-            preg_match_all('/\{\#([A-z0-9_\-]+)\#\}/u', $TEXT, $temp);
-        } else {
-            preg_match_all('/\{\#([A-z0-9_\-]+)\#\}/u', $TEXT, $temp);
-        }
+        $temp = [];
+        preg_match_all('/\{\#([A-Za-z0-9_\-]+)\#\}/u', $TEXT, $temp);
         return $temp;
     }
 
-    static function hasMatchTmp($TEXT)
-    {
-        return (_strpos($TEXT, '{#') !== false or _strpos($TEXT, '$_tpl') !== false);
-    }
+}
+function mb_str_replace($needle, $replacement, $haystack) {
+    return implode($replacement, mb_split($needle, $haystack));
 }
