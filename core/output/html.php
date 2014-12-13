@@ -44,9 +44,7 @@ class wephtml
                 $_tpl['logs'] .= '<link type="text/css" href="/_design/_style/bug.css" rel="stylesheet"/>
 					<div id="bugmain">' . $buffer . '</div>';
             }
-            $temp = '';
-            self::parseTemplate($this->_html, $_tpl, $temp); // PARSE
-            $this->_html = $temp.PHP_EOL.' *********** '.PHP_EOL.$this->_html;
+            self::parseTemplate($this->_html, $_tpl); // PARSE
         } else {
             $this->_html = $_tpl['logs'] . $buffer;
         }
@@ -111,12 +109,11 @@ class wephtml
         return false;
     }
 
-    static function parseTemplate(&$TEXT, &$TPL, &$tmp, $skip = array())
+    static function parseTemplate(&$TEXT, &$TPL, $skip = array())
     {
         $subSkip = $skip;
         $temp = self::matchTmp($TEXT);
 
-//        $tmp .= var_export($temp, true).PHP_EOL.' *********** '.PHP_EOL;
         if ($temp && count($temp[1])) {
             foreach ($temp[1] as $k => $r) {
                 if (isset($skip[$r])) {
@@ -127,10 +124,8 @@ class wephtml
                 $TEXT = mb_str_replace($temp[0][$k], $TPL[$r], $TEXT);
                 $subSkip[$r] = true;
             }
-            self::parseTemplate($TEXT, $TPL, $tmp, $subSkip);
+            self::parseTemplate($TEXT, $TPL, $subSkip);
 
-            preg_match_all('/\{\#search\#\}/', $TEXT, $ssss);
-            $tmp .= var_export($ssss, true).PHP_EOL.' *********** '.PHP_EOL;
         }
         return true;
     }
@@ -138,7 +133,7 @@ class wephtml
     static function matchTmp($TEXT)
     {
         $temp = [];
-        preg_match_all('/\{\#([A-Za-z0-9_\-]+)\#\}/u', $TEXT, $temp);
+        preg_match_all('/\{\#([A-Za-z0-9_\-]{2,64})\#\}/u', $TEXT, $temp);
         return $temp;
     }
 
