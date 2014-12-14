@@ -251,9 +251,7 @@ function tools_cron()
 		$FORM['sbmt'] = array(
 			'type' => 'submit',
 			'value' => 'Сохранить');
-//print_r('<pre>');
-//print_r($VAL);
-//        exit();
+
 		$FORM = array(
 			'form' => $FORM,
 			'options' => array('method' => 'POST', 'name' => 'cron'),

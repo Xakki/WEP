@@ -1227,18 +1227,11 @@ deny from all
         $result = $MODUL->qs('count(id) as cnt', 'WHERE ' . $MODUL->ns_config['left'] . ' >= ' . $MODUL->ns_config['right']);
 
         if (!count($result) || $result[0]['cnt'] > 0) {
-            print_r('<pre>' . $MODUL->tablename);
-//            $result = $MODUL->qs('*', 'WHERE ' . $MODUL->ns_config['left'] . ' >= ' . $MODUL->ns_config['right']);
-            print_r($result);
-            print_r('</pre>');
             return false;
         }
 
         $result = $MODUL->qs('count(id) as cnt, MIN(' . $MODUL->ns_config['left'] . ') as min, MAX(' . $MODUL->ns_config['right'] . ') as max');
         if (!count($result) || $result[0]['max'] != ($result[0]['cnt'] * 2)) {
-            print_r('<pre>' . $MODUL->tablename);
-            print_r($result);
-            print_r('</pre>');
             return false;
         }
 
@@ -1415,17 +1408,20 @@ deny from all
             $c = count($param['proxyList']) - 1;
             $prox = $param['proxyList'][rand(0, $c)];
 			// указываем адрес
-            $CURLOPT_PROXY = '';
-            $CURLOPT_PROXYUSERPWD = '';
+//            $CURLOPT_PROXY = '';
+//            $CURLOPT_PROXYUSERPWD = '';
             if (is_array($prox)) {
                 $CURLOPT_PROXY = $prox[0];
-                $CURLOPT_PROXYUSERPWD = $prox[1];
+//                $CURLOPT_PROXYUSERPWD = $prox[1];
             } else {
                 $CURLOPT_PROXY = $prox;
             }
 
             curl_setopt($ch, CURLOPT_PROXY, $CURLOPT_PROXY);
-//            curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4);
+
+            if (isset($param['CURLOPT_PROXYTYPE'])) {
+                curl_setopt($ch, CURLOPT_PROXYTYPE, $param['CURLOPT_PROXYTYPE']);
+            }
 //            curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, 1);
 //			if ($CURLOPT_PROXYUSERPWD) {
 				// если необходимо предоставить имя пользователя и пароль

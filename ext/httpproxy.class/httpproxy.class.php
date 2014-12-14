@@ -30,6 +30,12 @@ class httpproxy_class extends kernel_extends
         $this->cron[] = array('modul' => $this->_cl, 'function' => 'cronReCheckSite()', 'active' => 0, 'time' => 60);
 
         $this->_AllowAjaxFn['toolsCheckSite'] = true;
+
+        $this->_enum['type'] = array(
+            CURLPROXY_HTTP => 'HTTP',
+            CURLPROXY_SOCKS4 => 'SOCKS4',
+            CURLPROXY_SOCKS5 => 'SOCKS5',
+		);
 	}
 
     protected function _create_conf() {
@@ -55,6 +61,7 @@ class httpproxy_class extends kernel_extends
 
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 128, 'attr' => 'NOT NULL', 'min' => '1');
 		$this->fields['port'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0);
+		$this->fields['type'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0);
 		$this->fields['desc'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'default' => '');
 		$this->fields['timeout'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 60, 'noquote' => true);
 		$this->fields['negative'] = array('type' => 'int', 'width' => 11, 'attr' => 'NOT NULL', 'default' => 0, 'noquote' => true);
@@ -73,6 +80,7 @@ class httpproxy_class extends kernel_extends
 
 		$this->fields_form['name'] = array('type' => 'text', 'caption' => 'HTTP', 'comment' => 'значение localhost- не используется прокси', 'mask' => array());
 		$this->fields_form['port'] = array('type' => 'int', 'caption' => 'Port', 'mask' => array());
+		$this->fields_form['type'] = array('type' => 'list', 'listname' => 'type', 'caption' => 'Тип', 'mask' => array());
 		$this->fields_form['desc'] = array('type' => 'textarea', 'caption' => 'Описание', 'mask' => array());
 		$this->fields_form['timeout'] = array('type' => 'int', 'caption' => 'Период(сек)', 'mask' => array());
 		$this->fields_form['negative'] = array('type' => 'int', 'caption' => '-', 'mask' => array());
@@ -267,11 +275,6 @@ class httpproxy_class extends kernel_extends
         if ($this->_CFG['wep']['debugmode'] > 1) {
             print_r(' | proxy  = ' . implode(',',$proxyList ) .'  |  err = ' . $err.'  |  redirect_url = ' . $html['info']['redirect_url'].'  |  http_code = ' . $html['info']['http_code'].'  |  total_time = ' . $html['info']['total_time']);
         }
-
-//
-//        print_r('<pre>');
-//        print_r($html);
-//        exit();
 
 		$this->upStatus($check, $err, $html['info']);
 
