@@ -580,7 +580,6 @@ class pg_class extends kernel_extends
 				$Cdata[$rowPG['id']] = $rowPG;
 			}
 
-		global $_tpl;
 		$this->access_flag = false;
 		$this->config['newadmin_on'] = false;
 
