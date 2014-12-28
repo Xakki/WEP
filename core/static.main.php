@@ -479,6 +479,11 @@ class static_main
         return null;
     }
 
+    static public function addTaskManager($name, $func, $param)
+    {
+        _new_class('crontask', $CRONTASK);
+        return $CRONTASK->addCronTask($name, $func, $param);
+    }
     /*Функции вспомогательные*/
 
 	    /**
