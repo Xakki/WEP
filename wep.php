@@ -89,6 +89,11 @@ if (isset($_SERVER['argv']) and $_SERVER['argv'][1] === 'cron' and $_SERVER['SHE
     return true;
 }
 
+if (isset($_SERVER['argv']) and $_SERVER['argv'][1] === 'console' and $_SERVER['SHELL']) {
+    require_once(WEP . 'controllers/console.php');
+    return true;
+}
+
 if (isAjax()) {
 	require_once($_CFG['_PATH']['core'] . 'output/ajax.php');
     $WEPOUT = new wepajax();
