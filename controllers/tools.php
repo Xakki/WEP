@@ -486,8 +486,18 @@ function data_to_html($data, $thdata = false)
 	return $html;
 }
 
+function opcahestatus() {
+    include_once(__DIR__. '/../controllers/lib/opcacheinfo.php');
+    if (extension_loaded('Zend OPcache')) {
+        return OpCacheDataModel::printStats();
+    }
+    return '<div style="background-color: #F2DEDE; color: #B94A48; padding: 1em;">You do not have the Zend OPcache extension loaded, sample data is being shown instead.</div>';
+}
+
+
 function memcachstatus()
 {
+    $html = '';
 	global $_CFG;
 	$mc_load = false;
 	if (!extension_loaded('memcache')) {
@@ -617,6 +627,7 @@ $dataF = array(
 	'getphpinfo' => '<span class="tools_item">PHPINFO</span>',
 	'mysqlinfo' => '<span class="tools_item">MySQL info</span>',
 	'memcachstatus' => '<span class="tools_item">Memcach status</span>',
+	'opcahestatus' => '<span class="tools_item">OpCache status</span>',
 	'allinfos' => '<span class="tools_item">Выввод глобальных переменных</span>',
 );
 

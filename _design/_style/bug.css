@@ -151,11 +151,11 @@
 	font-size: 10px;
 }
 
-.bspoiler-wrap .spoiler-body div {
-	padding: 0 0 0 1em;
-	background-color: #858585;
-	color: white;
-}
+/*.bspoiler-wrap .spoiler-body div {*/
+	/*padding: 0 0 0 1em;*/
+	/*background-color: #858585;*/
+	/*color: white;*/
+/*}*/
 
 #bugmain pre {
 	margin: 0;

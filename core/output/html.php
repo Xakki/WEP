@@ -76,6 +76,11 @@ class wephtml
         if (canShowAllInfo() > 1 and count($_CFG['logs']['content']) > 0) $htmlinfo .= static_main::spoilerWrap('CONTENT', static_render::sqlLog($_CFG['logs']['content']));
         if (canShowAllInfo() > 2) {
             $htmlinfo .= static_main::spoilerWrap('FILE INCLUDE', implode(';<br/>', $included_files));
+//            if (function_exists('opcache_get_status')) {
+//                include_once(__DIR__. '/../../controllers/lib/opcacheinfo.php');
+//                $data = printOpCacheStats();
+//                $htmlinfo .= static_main::spoilerWrap('OpCahe STATUS', $data);
+//            }
         }
         return $htmlinfo;
     }
