@@ -618,19 +618,22 @@ class static_main
     static function redirect($link = true, $NO = '301 Moved Permanently')
     {
         global $_CFG, $_tpl;
-        $cookieName = '_r' . md5($link);
+        $cur = $_SERVER['HTTP_PROTO'] . $_SERVER['HTTP_HOST'] . '/' . $_SERVER['REQUEST_URI'];
+        $cookieName = '_r' . md5($link.$cur);
 
 		//301 - перемещение на посточнную основу
         // header("HTTP/1.0 400 Bad Request");
         //301 Moved Permanently
-        if (isset($_COOKIE[$cookieName]) && $_COOKIE[$cookieName] > (time() - 2)) {
-            trigger_error('Warning!!! Self redirect for ' . $link, E_USER_WARNING);
+        if (isset($_COOKIE[$cookieName]) && $_COOKIE[$cookieName] > (time() - 3)) {
+            trigger_error('Warning!!! Self redirect from ' . $cur. ', to '. $link, E_USER_WARNING);
             die('Нажмите на ссылку, для перехода на страницу <a href="' . $link . '">' . $link . '</a>');
         }
 
         _setcookie($cookieName, time(), (time() + 50));
 
-        if ($link === true) $link = $_SERVER['HTTP_PROTO'] . $_SERVER['HTTP_HOST'] . '/' . $_SERVER['REQUEST_URI'];
+        if ($link === true) {
+            $link = $cur;
+        }
 
         if (isAjax()) {
             if ($_CFG['wep']['debugmode'] < 3) $_tpl['redirect'] = $link;
