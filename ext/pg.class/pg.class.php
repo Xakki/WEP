@@ -1250,7 +1250,10 @@ class pg_class extends kernel_extends
 	*/
 	function getSiteMaps()
 	{
-        $file = getSiteMapFile();
+        $this->siteMapFile = $file = getSiteMapFile();
+        $this->siteMapIndexCount = 0;
+        $this->siteMapItemsCount = 0;
+        $this->siteMapIndexData = [];
 
         $do = true;
         if (file_exists($file)) {
@@ -1272,29 +1275,19 @@ class pg_class extends kernel_extends
             observer::register_observer($params, 'shutdown_function');
 
             isSiteMapXml(true);
+
             $data = $this->getMap(-1);
 
-            $limit = 30000;
-
-            if (count($data)>40000) {
-                $indexData = [];
-                $tempData = array_chunk($data, $limit);
-                foreach ($tempData as $k=>$chunkData) {
-                    $k = $k + 1;
-                    $fileChunk = $file.'.'.$k.'.gz'; // @see getSiteMapFile()
-                    $xmlChunk = self::createSiteMapXml($chunkData);
-                    file_put_contents($fileChunk, gzencode($xmlChunk, 7));
-                    $indexData[] = [
-                        'loc' => getSiteMapUrl($k),
-                        'lastmod' => date('c')
-                    ];
+            if (count($data)>SITE_MAP_LIMIT || $this->siteMapIndexCount>0) {
+                $tempData = array_chunk($data, SITE_MAP_LIMIT);
+                foreach ($tempData as $chunkData) {
+                    $this->putSiteMapContent($chunkData);
                 }
-                $xml = self::createSiteMapIndexXml($indexData);
+                $xml = self::createSiteMapIndexXml($this->siteMapIndexData);
             }
             else {
                 $xml = self::createSiteMapXml($data);
             }
-
 
             file_put_contents($file, $xml);
         }
@@ -1304,6 +1297,19 @@ class pg_class extends kernel_extends
 
 		return $xml;
 	}
+
+    public function putSiteMapContent($items) {
+        $this->siteMapItemsCount += count($items);
+        $this->siteMapIndexCount++;
+        $fileChunk = $this->siteMapFile .'.'.$this->siteMapIndexCount.'.gz'; // @see getSiteMapFile()
+        $xmlChunk = self::createSiteMapXml($items);
+        file_put_contents($fileChunk, gzencode($xmlChunk, 7));
+        $this->siteMapIndexData[] = [
+            'loc' => getSiteMapUrl($this->siteMapIndexCount),
+            'lastmod' => date('c')
+        ];
+    }
+
 
     public function clearSiteMapFiles($file) {
         $res = file_get_contents($file);
@@ -1344,6 +1350,9 @@ class pg_class extends kernel_extends
         $xml .= '</sitemapindex>';
         return $xml;
     }
+
+
+    /******************************/
 
 	/**
 	 * Получаем путь к фаилу INC из строкового параметра (запись в виде 1:ugroup.class/login)

@@ -89,7 +89,7 @@ abstract class kernel_extends
     {
         global $_CFG;
 		//FB::info($_CFG);
-        $this->_CFG = &$_CFG; //Config
+        $this->_CFG = $_CFG; //Config
         $this->SQL_CFG = $this->_CFG['sql'];
         $this->_forceLoad = $_forceLoad; // если true - Принудительная загрузка не подключенного класса
         if (is_object($owner) and isset($owner->fields)) $this->owner = &$owner; //link to owner class

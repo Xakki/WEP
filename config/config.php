@@ -272,6 +272,8 @@ define('POS_BEGIN', 1);
 
 define('QUOTES', '"');
 
+
+define('SITE_MAP_LIMIT', 45000);
 //ERRORS
 $_CFG['_error'] = array(
 	0 => array(
@@ -435,12 +437,16 @@ $_SERVER['HTTP_PROTO'] = 'http://'; // TODO - определение прото�
 /* $_CFG['_HREF'] */
 if (!isset($_SERVER['HTTP_HOST'])) $_SERVER['HTTP_HOST'] = $_CFG['site']['www'];
 
-if (strpos($_SERVER['HTTP_HOST'], 'xn--') !== false) {
+$_CFG['_HREF']['arrayHOST'] = array_reverse(explode('.', $_SERVER['HTTP_HOST']));
+
+if (strpos($_CFG['_HREF']['arrayHOST'][0], 'xn--') !== false) { // спец домен
 	require_once($_CFG['_PATH']['wep_controllers'] . '/lib/idna_convert.class.php');
 	$IDN = new idna_convert();
 	$_SERVER['HTTP_HOST'] = $IDN->decode($_SERVER['HTTP_HOST']);
 	$_CFG['site']['rf'] = 1;
+    $_CFG['_HREF']['arrayHOST'] = array_reverse(explode('.', $_SERVER['HTTP_HOST']));
 }
+
 $_CFG['_HREF']['_BH'] = $_SERVER['HTTP_HOST'] . '/' . $addpath; // www-путь сайта
 define('WEP_BH', $_CFG['_HREF']['_BH']);
 
@@ -458,7 +464,7 @@ $_CFG['_HREF']['siteJS'] = MY_BH . '_js.php';
 $_CFG['_HREF']['captcha'] = MY_BH . '_captcha.php';
 $_CFG['_HREF']['_style'] = '_design/_style/'; // дизайн стили
 $_CFG['_HREF']['_script'] = '_design/_script/'; // дизайн стили
-$_CFG['_HREF']['arrayHOST'] = array_reverse(explode('.', $_SERVER['HTTP_HOST']));
+
 $_CFG['_HREF']['vendors'] = MY_BH . '_vendors/';
 
 $_CFG['_F']['adminpage'] = false;

@@ -72,10 +72,12 @@ elseif ($_GET['_php'] == 'rss') {
     return true;
 }
 elseif ($_GET['_php'] == 'sitemap' || $_GET['pageParam']=='sitemap.xml') {
+    ini_set("max_execution_time", 3600);
+    ini_set("memory_limit", '256M');
     setTemplate('text');
-    setNeverShowAllInfo();
-    setNeverShowError();
-    setOffDebug();
+//    setNeverShowAllInfo();
+//    setNeverShowError();
+//    setOffDebug();
 
 
     _new_class('pg', $PGLIST);
