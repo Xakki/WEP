@@ -1290,12 +1290,12 @@ class pg_class extends kernel_extends
             }
 
             file_put_contents($file, $xml);
+            return $xml;
         }
         else {
             return file_get_contents($file);
         }
 
-		return $xml;
 	}
 
     public function putSiteMapContent($items) {
