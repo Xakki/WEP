@@ -159,12 +159,17 @@ class rubric_class extends kernel_extends
 		$tpath = array();
 		while (isset($this->data2[$temp])) {
 			$_tpl['keywords'] .= ', ' . $this->data2[$temp]['name'];
-			$tpath[$this->data2[$temp]['path'] . '/' . $page] = array('name' => $this->data2[$temp]['name']);
+			$tpath[$this->createUrl($temp, $page)] = array('name' => $this->data2[$temp]['name']);
 			$temp = $this->data2[$temp]['parent_id'];
 			if ($startId == $temp) break;
 		}
 		return array_reverse($tpath);
 	}
+
+    public function createUrl($key, $page)
+    {
+        return '/'.$this->data2[$key]['path'] . '/' . $page;
+    }
 
 	function fItem($id, $field = '*')
 	{
