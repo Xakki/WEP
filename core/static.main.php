@@ -644,7 +644,7 @@ class static_main
                 header("Location: " . $link);
                 die($link);
             } else {
-                die('Redirect to <a href="' . $link . '">' . $link . '</a>');
+                die('Redirect to <a href="' . $link . '">' . $link . '</a> ['.$NO.']');
             }
         }
     }

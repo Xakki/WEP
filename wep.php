@@ -21,7 +21,7 @@ require_once(WEP . 'config/config.php');
 if (isset($_SERVER['REQUEST_URI'])) {
     $REQUEST_URI = preg_replace('/\/+/', '/', $_SERVER['REQUEST_URI']);
     if ($REQUEST_URI != $_SERVER['REQUEST_URI']) {
-        static_main::redirect($REQUEST_URI, 301);
+        static_main::redirect($REQUEST_URI);
     }
 }
 $temp = strpos($_SERVER['REQUEST_URI'], '?');
