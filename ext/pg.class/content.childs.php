@@ -106,6 +106,7 @@ class content_class extends kernel_extends
 			2 => 'SessionID',
 			3 => 'COOKIE',
 			4 => 'IP',
+			5 => 'QUERY_STRING',
 		);
 
 		$this->_enum['debugmode'] = array(
