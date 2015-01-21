@@ -777,7 +777,7 @@ class pg_class extends kernel_extends
                     }
 
 					$hashkeyPG .= '@' . $rowPG['id'] . '@' .  $_SERVER['HTTP_HOST'] . '/' . implode('/', $_REQUEST['pageParam']);
-                    print_r('<br>'.$hashkeyPG);
+
 					if (_strlen($hashkeyPG) > 255)
 						$hashkeyPG = md5($hashkeyPG);
 
@@ -1241,9 +1241,6 @@ class pg_class extends kernel_extends
         foreach ($urlList as $url) {
             if ($url && filter_var($url, FILTER_VALIDATE_URL)) {
                 $p = static_tools::_http($url, $param);
-                print_r('<pre>');
-                print_r($p['info']);
-                print_r('</pre>');
             }
         }
 
