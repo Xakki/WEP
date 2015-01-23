@@ -621,15 +621,17 @@ class static_main
         $cur = $_SERVER['HTTP_PROTO'] . $_SERVER['HTTP_HOST'] . '/' . $_SERVER['REQUEST_URI'];
         $cookieName = '_r' . md5($link.$cur);
 
+        $cnt = (isset($_COOKIE[$cookieName]) ? (int) $_COOKIE[$cookieName] : 0);
 		//301 - перемещение на посточнную основу
         // header("HTTP/1.0 400 Bad Request");
         //301 Moved Permanently
-        if (isset($_COOKIE[$cookieName]) && $_COOKIE[$cookieName] > (time() - 3)) {
+        if ($cnt>4) {
             trigger_error('Warning!!! Self redirect from ' . $cur. ', to '. $link, E_USER_WARNING);
             die('Нажмите на ссылку, для перехода на страницу <a href="' . $link . '">' . $link . '</a>');
         }
 
-        _setcookie($cookieName, time(), (time() + 50));
+        $cnt++;
+        _setcookie($cookieName, $cnt, (time() + 50));
 
         if ($link === true) {
             $link = $cur;

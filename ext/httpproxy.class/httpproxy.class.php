@@ -363,6 +363,7 @@ class httpproxy_class extends kernel_extends
             $upd = array(
                 'negative' => 0,
                 'positive' => 0,
+                'timeout' => 0,
             );
             $this->_update($upd, 'WHERE active=0', false);
             $mess = array(static_main::am('ok', 'Сделано!!!!!', $this));
