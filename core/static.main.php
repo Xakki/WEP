@@ -618,6 +618,11 @@ class static_main
     static function redirect($link = true, $NO = '301 Moved Permanently')
     {
         global $_CFG, $_tpl;
+
+        if ($_SERVER['HTTP_REFERER']===$link) {
+            return;
+        }
+
         $cur = $_SERVER['HTTP_PROTO'] . $_SERVER['HTTP_HOST'] . '/' . $_SERVER['REQUEST_URI'];
         $cookieName = '_r' . md5($link.$cur);
 
