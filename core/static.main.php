@@ -620,6 +620,7 @@ class static_main
         global $_CFG, $_tpl;
 
         if ($_SERVER['HTTP_REFERER']===$link) {
+            trigger_error('Warning!!! Self redirect for '. $link, E_USER_WARNING);
             return;
         }
 
@@ -631,7 +632,7 @@ class static_main
         // header("HTTP/1.0 400 Bad Request");
         //301 Moved Permanently
         if ($cnt>4) {
-            trigger_error('Warning!!! Self redirect from ' . $cur. ', to '. $link, E_USER_WARNING);
+            trigger_error('Warning!!! Repeat(5) redirect from ' . $cur. ', to '. $link, E_USER_WARNING);
             die('Нажмите на ссылку, для перехода на страницу <a href="' . $link . '">' . $link . '</a>');
         }
 
