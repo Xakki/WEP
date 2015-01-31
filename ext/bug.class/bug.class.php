@@ -33,6 +33,7 @@ class bug_class extends kernel_extends
 
 		# fields
 		$this->fields['name'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'min' => '1');
+		$this->fields['mf_useragent'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'min' => '1');
 		$this->fields['err_type'] = array('type' => 'int', 'width' => 6, 'attr' => 'NOT NULL');
 		$this->fields['file'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL');
 		$this->fields['line'] = array('type' => 'int', 'width' => 8, 'attr' => 'NOT NULL');
@@ -80,6 +81,7 @@ class bug_class extends kernel_extends
 		$this->fields_form['mf_ipcreate'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'IP', 'mask' => array('sort' => 1, 'filter' => 1));
 		$this->fields_form[$this->mf_createrid] = array('type' => 'text', 'readonly' => 1, 'caption' => 'User', 'mask' => array('sort' => 1, 'filter' => 1));
 		$this->fields_form['cnt'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Повторы', 'mask' => array('sort' => 1));
+		$this->fields_form['mf_useragent'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'user agent', 'mask' => array('sort' => 1));
 		$this->fields_form['notif'] = array('type' => 'list', 'listname' => 'notif', 'readonly' => 1, 'caption' => 'Оповещение', 'mask' => array('sort' => 1));
 
 		foreach ($this->_CFG['_error'] as $k => $r) {
@@ -169,6 +171,7 @@ class bug_class extends kernel_extends
 			foreach ($this->bugs as $r) {
 				$r[$this->mf_createrid] = $creater_id;
 				$r['mf_ipcreate'] = $mf_ipcreate;
+				$r['mf_useragent'] = $this->SqlEsc($_SERVER['HTTP_USER_AGENT']);
 				$r['mf_timecr'] = $this->_CFG['time'];
 				$r['name'] = $this->SqlEsc($r['name']);
 				$r['file'] = $this->SqlEsc($r['file']);

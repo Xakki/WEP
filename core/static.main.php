@@ -619,7 +619,7 @@ class static_main
     {
         global $_CFG, $_tpl;
 
-        if ($_SERVER['HTTP_REFERER']===$link) {
+        if ($_SERVER['HTTP_REFERER']===$link && !count($_POST)) {
             trigger_error('Warning!!! Self redirect for '. $link, E_USER_WARNING);
             return;
         }
