@@ -97,18 +97,19 @@ class httpproxy_class extends kernel_extends
 		$this->create_child('httpproxycheck');
 	}
 
-
 	function getProxy($domen = '', $check = false)
 	{
         if ($domen) {
             $domen = parse_url($domen);
             $this->domen = $domen['host'];
         }
-		if (!isset($_GET['pos']))
+
+		if (!isset($_GET['pos'])) {
 			$_GET['pos'] = rand(0, 3);
+        }
 
         $proxyList = [];
-        $select = 't1.name,t1.port,t1.id';
+        $select = 't1.*';
         $where = ' WHERE t1.`capture`= 0 and t1.`mf_timeup`<(' . time() . '-t1.`timeout`) ';
         $sort = ' ORDER BY ';
         if ($check==='off') {
@@ -125,15 +126,13 @@ class httpproxy_class extends kernel_extends
             // Обычная выборка
             $where .= 'and t1.`active`=1';
             $sort .= 'fl, t1.`mf_timeup`';
-            //
-
             $select .= ',(t1.`negative`-t1.`positive`) as fl';
         }
 		$limit = ' LIMIT ' . (int)$_GET['pos'] . ',1';
         $where = ' t1 '.$where;
 
-
 		$this->data = $this->_query($select,$where.$sort.$limit, 'id' ,'', false);
+        $proxyType = CURLPROXY_HTTP;
 
 		if (count($this->data)) {
             $data = current($this->data);
@@ -144,39 +143,47 @@ class httpproxy_class extends kernel_extends
 				elseif ($data['name'])
                     $proxyList[] = $data['name'];
 			}
+            $proxyType = $data['type'];
 			$this->_update(array('capture' => 1), false, false);
 		}
-		return $proxyList;
+
+		return [$proxyList, $proxyType];
 	}
 
-	function upStatus($check, $err = 0, $info = array())
+    /**
+     * Обновление статуса прокси
+     * @param $check
+     * @param int $err
+     * @param array $info
+     */
+    function upStatus($check, $err = 0, $info = array())
 	{
         $lastcode = (int)$info['http_code'];
         $time = (int)$info['total_time'];
 		$addCheck = array('name' => $info['url'], 'total_time' => $time, 'http_code' => $lastcode, 'err' => $err, 'speed_download' => $info['speed_download'], 'size_download' => $info['size_download']);
 		$upd = array('capture' => 0, 'last_time' => $time , 'last_code' => $lastcode);
 
-            if ($err===2) {
+        if ($err===2) {
 
+        }
+        elseif ($err===1) {
+            $rate = 1;
+            if (isset($this->data[$this->id]) && $this->data[$this->id]['last_code']!=200) {
+                $rate = 2;
             }
-            elseif ($err===1) { 
-                $rate = 1;
-                if (isset($this->data[$this->id]) && $this->data[$this->id]['last_code']!=200) {
-                    $rate = 2;
-                }
-                if ($check) {
-                    $upd['negative'] = '`negative`+1';
-                    $upd['timeout'] = '`timeout`+'.(int) $this->config['add_time_check'] * $rate;
-                }
-                else {
-                    $upd['timeout'] = '`timeout`+'.(int) $this->config['add_time_default'] * $rate;
-                }
+            if ($check) {
+                $upd['negative'] = '`negative`+1';
+                $upd['timeout'] = '`timeout`+'.(int) $this->config['add_time_check'] * $rate;
             }
             else {
-                if ($check) {
-                    $upd['positive'] = '`positive`+1';
-                }
+                $upd['timeout'] = '`timeout`+'.(int) $this->config['add_time_default'] * $rate;
             }
+        }
+        else {
+            if ($check) {
+                $upd['positive'] = '`positive`+1';
+            }
+        }
 
 		if ($this->id) {
 			$this->_update($upd, false, false);
@@ -203,54 +210,102 @@ class httpproxy_class extends kernel_extends
 //		$param['redirect'] = true;
 //		$param['USERAGENT'] = 'Mozilla/5.0 (Linux; Android 4.2.1; en-us; Nexus 4 Build/JOP40D) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.166 Mobile Safari/535.19';
 //		$param['find'] = 'искомый обязательный текст';
-//        $param['TIMEOUT'] = $this->config['timeout'];
+//      $param['TIMEOUT'] = $this->config['timeout'];
 
         if (!isset($param['findRu'])) {
             $param['findRu'] = false;
         }
-		$proxyList = $this->getProxy($link, $check);
-		if (count($proxyList)) {
-			$param['proxy'] = true;
-			$param['proxyList'] = $proxyList;
-		}
+
+		list($proxyList, $proxyType) = $this->getProxy($link, $check);
+        if (count($proxyList)) {
+            $param['proxy'] = true;
+            $param['proxyList'] = $proxyList;
+            $param['CURLOPT_PROXYTYPE'] = $proxyType;
+        }
         elseif ($check) {
             return NULL;
         }
-		$html = static_tools::_http($link, $param);
 
-		$err = 0;
+        $html = $this->getContentHelper($link, $param);
+
+        if ($check===true && $html['errContent'] && $proxyType===CURLPROXY_HTTP) {
+            $param['CURLOPT_PROXYTYPE'] = CURLPROXY_SOCKS5;
+            $html = $this->getContentHelper($link, $param);
+            if ($html['errContent']) {
+                $param['CURLOPT_PROXYTYPE'] = CURLPROXY_SOCKS4;
+                $html = $this->getContentHelper($link, $param);
+
+                if ($html['errContent']) {
+                }
+                else {
+                    if ($this->id) {
+                        $this->_update(['type' => CURLPROXY_SOCKS4], false, false);
+                    }
+                }
+            }
+            else {
+                if ($this->id) {
+                    $this->_update(['type' => CURLPROXY_SOCKS5], false, false);
+                }
+            }
+        }
+        else {
+
+        }
+
+
+        if ($this->_CFG['wep']['debugmode'] > 1) {
+            print_r(' '.$param['CURLOPT_PROXYTYPE'].'| proxy  = ' . implode(',',$proxyList ) .
+                '  |  errContent = ' . $html['errContent'].
+                '  |  errMess = ' . $html['errMess'].
+                '  |  redirect_url = ' . $html['info']['redirect_url'].
+                '  |  http_code = ' . $html['info']['http_code'].
+                '  |  total_time = ' . $html['info']['total_time']);
+        }
+
+		$this->upStatus($check, $html['errContent'], $html['info']);
+
+
+		return $html;
+	}
+
+    private function getContentHelper($link, $param) {
+
+        $html = static_tools::_http($link, $param);
+
+        $err = 0;
 
         if ($html['err']==7 and $html['info']['total_time']==0) {
             $err = 2;
-            // если брыв инета
+            // если брыв инета или нет связи с проксисервером
         }
         elseif ($html['err']==7) {
             $err = 1;
         }
-		elseif (!$html['text'] || $html['info']['http_code']==0) {
+        elseif (!$html['text'] || $html['info']['http_code']==0) {
             $err = 1;
-		}
+        }
         elseif ($html['info']['http_code'] == 0) {
             $err = 1;
         }
-		elseif ($html['info']['http_code'] == 403) {
-			// or strpos($html['text'],'<td class="headCode">403</td>')!==false
-			$err = 1; // ограничение доступа
-		}
-		elseif ($html['info']['http_code'] == 302) {
-			$err = 1;
-		}
-		elseif ($html['info']['http_code'] != 200) {
-			$err = 1;
-		}
-		elseif ($html['info']['redirect_url'] != '') {
-			$err = 1;
-			print_r('<p style="color:red;">Редирект <b>' . $html['info']['redirect_url'] . '</b></p>');
-		}
-		elseif ($html['text'] == '') {
-			$err = 1;
-		}
-		else {
+        elseif ($html['info']['http_code'] == 403) {
+            // or strpos($html['text'],'<td class="headCode">403</td>')!==false
+            $err = 1; // ограничение доступа
+        }
+        elseif ($html['info']['http_code'] == 302) {
+            $err = 1;
+        }
+        elseif ($html['info']['http_code'] != 200) {
+            $err = 1;
+        }
+        elseif ($html['info']['redirect_url'] != '') {
+            $err = 1;
+            print_r('<p style="color:red;">Редирект <b>' . $html['info']['redirect_url'] . '</b></p>');
+        }
+        elseif ($html['text'] == '') {
+            $err = 1;
+        }
+        else {
             if (isset($param['find']) and mb_stripos($html['text'], $param['find']) === false) {
                 $err = 1;
                 if ($this->_CFG['wep']['debugmode'] > 1) {
@@ -267,20 +322,15 @@ class httpproxy_class extends kernel_extends
                     }
                 }
             }
-		}
-
-		if ($err)
-			$html['flag'] = false;
-
-        if ($this->_CFG['wep']['debugmode'] > 1) {
-            print_r(' | proxy  = ' . implode(',',$proxyList ) .'  |  err = ' . $err.'  |  redirect_url = ' . $html['info']['redirect_url'].'  |  http_code = ' . $html['info']['http_code'].'  |  total_time = ' . $html['info']['total_time']);
         }
 
-		$this->upStatus($check, $err, $html['info']);
+        if ($err)
+            $html['flag'] = false;
 
+        $html['errContent'] = $err;
 
-		return $html;
-	}
+        return $html;
+    }
 
 
 	function toolsLoadList()
@@ -439,7 +489,7 @@ class httpproxy_class extends kernel_extends
         return $html;
     }
 
-    public function cronCheckSite($n=3) {
+    public function cronCheckSite($n=5) {
         $param = array();
         $param['TIMEOUT'] = $this->config['timeout'];
         $param['find'] = $this->config['check_word'];
@@ -473,14 +523,14 @@ class httpproxy_class extends kernel_extends
 		//$param['COOKIE'] = 'yandex_gid=213;yandexmarket=100,,1,USD,1,,1,0,0,;';
 		//подделываем юзер-агента
 		//$param['redirect'] = true;
-		$param['TIMEOUT'] = 20;
+		$param['TIMEOUT'] = $this->config['timeout'];
 		$param['find'] = $this->config['check_word'];
 
-		for ($i = 0; $i< 1; $i++) {
+		for ($i = 0; $i< 5; $i++) {
 
             $Page = $this->getContent($this->config['check_site'], $param, true);
             if (is_null($Page)) {
-                $handtimer  = 20000;
+                $handtimer  = 60000;
             }
 //
 //            $Page['text'] = self::clearHtml($Page['text']);
@@ -490,7 +540,7 @@ class httpproxy_class extends kernel_extends
 //            exit();
 		}
 
-        if ($_GET['noajax']) {
+        if (isset($_GET['noajax'])) {
 
             $rtn = '<h2>Перезагрузка страницы через '.$handtimer.'мсек ('.date('Y-m-d H:i:s').')</h2>';
             $rtn .= '<script>

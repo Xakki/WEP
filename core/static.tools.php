@@ -1327,7 +1327,7 @@ deny from all
             'HTTPHEADER' => array('Content-Type' => 'text/xml; encoding=utf-8'),
             'redirect' => false,
             'USERAGENT' => 'Mozilla/5.0 (Windows NT 6.' . rand(1, 3) . ') AppleWebKit/' . $tmp . ' (KHTML, like Gecko) Chrome/' . rand(9, 34) . '.0.' . rand(10, 99) . '00.' . rand(1, 200) . ' Safari/' . $tmp,
-            'TIMEOUT' => 20,
+            'TIMEOUT' => 30,
             'REFERER' => false,
             'POST' => false,
             'SSL' => false,
@@ -1396,7 +1396,7 @@ deny from all
         curl_setopt($ch, CURLOPT_HEADER, false);
 		//вернуть ответ сервера в виде строки
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        //
+        // timeout
         curl_setopt($ch, CURLOPT_TIMEOUT, $param['TIMEOUT']);
 
         if ($_CFG['wep']['debugmode'] > 1) {
