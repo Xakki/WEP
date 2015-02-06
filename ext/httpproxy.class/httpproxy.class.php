@@ -133,10 +133,12 @@ class httpproxy_class extends kernel_extends
 
 		$this->data = $this->_query($select,$where.$sort.$limit, 'id' ,'', false);
         $proxyType = CURLPROXY_HTTP;
+        $proxyData = [];
 
 		if (count($this->data)) {
             $data = current($this->data);
 			$this->id = $data['id'];
+            $proxyData = $data;
 			if ($data['name']) {
 				if ($data['name'] and $data['port'])
                     $proxyList[] = $data['name'] . ':' . $data['port'];
@@ -147,7 +149,7 @@ class httpproxy_class extends kernel_extends
 			$this->_update(array('capture' => 1), false, false);
 		}
 
-		return [$proxyList, $proxyType];
+		return [$proxyList, (int) $proxyType, $proxyData];
 	}
 
     /**
@@ -216,7 +218,8 @@ class httpproxy_class extends kernel_extends
             $param['findRu'] = false;
         }
 
-		list($proxyList, $proxyType) = $this->getProxy($link, $check);
+		list($proxyList, $proxyType, $proxyData) = $this->getProxy($link, $check);
+
         if (count($proxyList)) {
             $param['proxy'] = true;
             $param['proxyList'] = $proxyList;
@@ -227,8 +230,9 @@ class httpproxy_class extends kernel_extends
         }
 
         $html = $this->getContentHelper($link, $param);
-
-        if ($check===true && $html['errContent'] && $proxyType===CURLPROXY_HTTP) {
+//var_dump($param);
+//print_r($proxyData);
+        if ($check===true && ($proxyData['negative']==0 && $proxyData['positive']==0) && $html['errContent'] && $proxyType===CURLPROXY_HTTP) {
             $param['CURLOPT_PROXYTYPE'] = CURLPROXY_SOCKS5;
             $html = $this->getContentHelper($link, $param);
             if ($html['errContent']) {
@@ -513,7 +517,8 @@ class httpproxy_class extends kernel_extends
 	{
 		ini_set("max_execution_time", "360000");
 		set_time_limit(3600 * 24);
-        $handtimer  = 200;
+        $handtimer  = 500000000;
+
 		$param = array();
 		//yabs-sid=1752422071299616340
 		//fuid01=4d76925108fcb0e4.rBvCuQR8PRtqU2cm8eaIj544KRBAQW8cUD0k9yG2dNO2-djVIemWHc4uRIFM9hRcLTiT44tUrwm8hDYbtVhmeQi-p4M2cb698Ih3G-mnz1pHaMGhAR9g6sdmV_a-E8Zs
@@ -529,6 +534,7 @@ class httpproxy_class extends kernel_extends
 		for ($i = 0; $i< 5; $i++) {
 
             $Page = $this->getContent($this->config['check_site'], $param, true);
+
             if (is_null($Page)) {
                 $handtimer  = 60000;
             }
