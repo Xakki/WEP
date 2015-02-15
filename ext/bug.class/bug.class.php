@@ -126,6 +126,7 @@ class bug_class extends kernel_extends
 							'href' => $href,
 							'ref' => $_SERVER['HTTP_REFERER'],
 							'cnt' => 1,
+							'mf_useragent' => $this->SqlEsc(_substr($_SERVER['HTTP_USER_AGENT'], 0, 254)),
 						);
 						if (isBackend())
 							$bugs['page_id'] = ' -Админка- ';
@@ -171,7 +172,7 @@ class bug_class extends kernel_extends
 			foreach ($this->bugs as $r) {
 				$r[$this->mf_createrid] = $creater_id;
 				$r['mf_ipcreate'] = $mf_ipcreate;
-				$r['mf_useragent'] = $this->SqlEsc($_SERVER['HTTP_USER_AGENT']);
+				$r['mf_useragent'] = $this->SqlEsc(_substr($_SERVER['HTTP_USER_AGENT'], 0, 254));
 				$r['mf_timecr'] = $this->_CFG['time'];
 				$r['name'] = $this->SqlEsc($r['name']);
 				$r['file'] = $this->SqlEsc($r['file']);
