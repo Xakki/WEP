@@ -438,7 +438,6 @@ class payyandex_class extends kernel_extends
 		return $response;
 	}
 
-
 	/**
 	 * Метод получения детальной информации по операции из истории.
 	 * @abstract
@@ -480,6 +479,11 @@ class payyandex_class extends kernel_extends
 
 		$CNT = count($DATA);
 		if (!$CNT) return '-нет выставленных счетов-';
+
+        if (!$this->checkInternet()) {
+            trigger_error('Интернет отключен', E_USER_WARNING);
+            return '-Inet off-';
+        }
 
 		//$INFO = $this->accountInfo($this->config['yandex_token']);
 		$INFO = $this->operationHistory($this->config['yandex_token'], NULL, NULL, 'deposition');
@@ -546,6 +550,12 @@ class payyandex_class extends kernel_extends
 	{
 		$this->_update(array('status' => 'usercancel', $this->mf_actctrl => 0), array('owner_id' => $owner_id));
 	}
+
+    private function checkInternet()
+    {
+        return (static_tools::pingDomain('ya.ru') > 0);
+    }
+
 }
 
 

@@ -11,7 +11,7 @@ class payqiwi_class extends kernel_extends
 	const STATUS_CANCE_BY_USER = 160;
 	const STATUS_CANCEL_BY_TIMEOUT = 161;
 
-	public $API_HREF = 'http://ishop.qiwi.ru/xml';
+        public $API_HREF = 'http://ishop.qiwi.ru/xml';
 
 	function _create_conf()
 	{ /*CONFIG*/
@@ -38,6 +38,11 @@ class payqiwi_class extends kernel_extends
 		$this->config_form['maxpay'] = array('type' => 'int', 'caption' => 'Максим. сумма', 'comment' => 'при пополнении счёта', 'style' => 'background-color:#F60;');
 		$this->config_form['lifetime'] = array('type' => 'text', 'caption' => 'Таймаут', 'comment' => 'Время жизни счёта по умолчанию. Задается в часах. Максимум 1080 часов (45 суток)', 'style' => 'background-color:#F60;');
 	}
+
+    private function checkInternet()
+    {
+        return (static_tools::pingDomain('ishop.qiwi.ru') > 0);
+    }
 
 	function init()
 	{
@@ -306,6 +311,11 @@ class payqiwi_class extends kernel_extends
 
 		$bills = $this->_query('*', 'WHERE active=1 and statuses<60');
 		if (!count($bills)) return '-нет выставленных счетов-';
+
+        if (!$this->checkInternet()) {
+            trigger_error('Интернет отключен', E_USER_WARNING);
+            return '-Inet off-';
+        }
 
 		$x = '<?xml version="1.0" encoding="utf-8"?><request>';
 		$x .= '<protocol-version>4.00</protocol-version>';

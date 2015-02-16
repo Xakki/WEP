@@ -119,7 +119,7 @@ class bug_class extends kernel_extends
 							$this->mf_ipcreate => $mf_ipcreate,
 							$this->mf_timecr => $this->_CFG['time'],
 							'err_type' => $r['errno'],
-							'name' => $this->SqlEsc(mb_substr($r['errstr'], 0, 255)),
+							'name' => $this->SqlEsc(mb_substr($r['errstr'], 0, 250)),
 							'file' => $this->SqlEsc($r['errfile']),
 							'line' => $this->SqlEsc($r['errline']),
 							'debug' => $this->SqlEsc($r['debug']),
