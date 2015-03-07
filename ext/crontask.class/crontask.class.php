@@ -84,16 +84,16 @@ class crontask_class extends kernel_extends
             //time break
             $data = $this->_select([ 'where' => 'active=1', 'limit' => 1]);
             if (!count($data)) {
-                break;
+                return;
             }
             $this->id = $data[0]['id'];
-            $this->_update(['active' => -1]);
+            $this->_update(['active' => -1], NULL, false);
             $err = $this->executeTask($data[0]);
             if(!$err) {
                 $this->_delete();
             }
             else {
-                $this->_update(['errors' => $err, 'active' => -2]);
+                $this->_update(['errors' => $err, 'active' => -2], NULL, false);
             }
         }
     }

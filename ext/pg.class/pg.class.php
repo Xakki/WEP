@@ -300,7 +300,7 @@ class pg_class extends kernel_extends
 		$_tpl['description'] = $this->config['description'];
 		$temp_tpl = $_tpl;
 
-		if (count($this->pageParam)) {
+		if (is_array($this->pageParam) && count($this->pageParam)) {
 			if (version_compare(phpversion(), '5.3.0', '>'))
 				$pageParamEncode = json_encode($this->pageParam, JSON_HEX_TAG);
 			else

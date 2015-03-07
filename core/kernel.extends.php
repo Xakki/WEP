@@ -774,7 +774,7 @@ abstract class kernel_extends
 	 * @param BOOL $flag_select - выборка данных после обновления ($this->data)
 	 * @return BOOL
 	 */
-	    public function _update($data = array(), $where = NULL, $flag_select = true)
+	public function _update($data = array(), $where = NULL, $flag_select = true)
     {
         if (!is_array($data) or !count($data)) {
             trigger_error('Устаревший метод вызова _save_item -> первый параметр $data', E_USER_WARNING);
