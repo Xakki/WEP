@@ -619,10 +619,10 @@ class static_main
     {
         global $_CFG, $_tpl;
 
-        if ($_SERVER['HTTP_REFERER']===$link && !count($_POST)) {
-            trigger_error('Warning!!! Self redirect for '. $link, E_USER_WARNING);
-            return;
-        }
+//        if ($_SERVER['HTTP_REFERER']===$link && !count($_POST)) {
+//            trigger_error('Warning!!! Self redirect for '. $link, E_USER_WARNING);
+//            return;
+//        }
 
         $cur = $_SERVER['HTTP_PROTO'] . $_SERVER['HTTP_HOST'] . '/' . $_SERVER['REQUEST_URI'];
         $cookieName = '_r' . md5($link.$cur);

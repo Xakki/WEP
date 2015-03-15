@@ -14,7 +14,7 @@ class crontask_class extends kernel_extends
 		$this->mf_timeup = true;
 //		$this->mf_ipcreate = true;
 		$this->prm_add = false;
-		$this->prm_del = false;
+		//$this->prm_del = false;
 		$this->mf_actctrl = true;
 		$this->mf_statistic = false;
 		$this->cf_reinstall = true;
@@ -33,6 +33,7 @@ class crontask_class extends kernel_extends
 		$this->fields['func'] = array('type' => 'varchar', 'width' => 255, 'attr' => 'NOT NULL', 'min' => '1');
 		$this->fields['param'] = array('type' => 'text');
 		$this->fields['errors'] = array('type' => 'text');
+		$this->fields['active'] = array('type' => 'tinyint', 'width' => 1, 'attr' => 'NOT NULL', 'default' => 1);
 
 		$this->ordfield = 'mf_timecr DESC';
 
@@ -60,7 +61,7 @@ class crontask_class extends kernel_extends
 		$this->fields_form['param'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Параметры', 'mask' => array());
 		$this->fields_form['errors'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'Ошибки', 'mask' => array());
 		$this->fields_form['mf_timecr'] = array('type' => 'date', 'readonly' => 1, 'caption' => 'Дата', 'mask' => array('sort' => 1, 'filter' => 1));
-        $this->fields_form['active'] = array('type' => 'checkbox', 'caption' => 'Активность');
+        $this->fields_form['active'] = array('type' => 'list', 'listname' => 'active', 'caption' => 'Активность');
 //		$this->fields_form['mf_ipcreate'] = array('type' => 'text', 'readonly' => 1, 'caption' => 'IP', 'mask' => array('sort' => 1, 'filter' => 1));
 	}
 
@@ -72,6 +73,7 @@ class crontask_class extends kernel_extends
      * @return bool
      */
     public function addCronTask($name, $func, $param) {
+        $param = json_encode($param);
         return $this->_add(['name' => $name, 'func' => $func, 'param' => $param]);
     }
 
@@ -82,19 +84,22 @@ class crontask_class extends kernel_extends
     {
         while(true) {
             //time break
-            $data = $this->_select([ 'where' => 'active=1', 'limit' => 1]);
+            $data = $this->_select([ 'where' => 'active=1', 'limit' => 1]); //
             if (!count($data)) {
                 return;
             }
-            $this->id = $data[0]['id'];
+            $data = current($data);
+            $this->id = $id = $data['id'];
             $this->_update(['active' => -1], NULL, false);
-            $err = $this->executeTask($data[0]);
-            if(!$err) {
+            $res = $this->executeTask($data);
+            $this->id = $id;
+            if($res===true) {
                 $this->_delete();
             }
             else {
-                $this->_update(['errors' => $err, 'active' => -2], NULL, false);
+                $this->_update(['errors' => $res, 'active' => -2], NULL, false);
             }
+            return;
         }
     }
 
@@ -106,7 +111,7 @@ class crontask_class extends kernel_extends
     private function executeTask($data)
     {
         _new_class($data['name'], $class);
-        if (!$class) return false;
+        if (!$class) return 'Класс `'.$data['name'].'` не найден';
 
         if (!$data['param']) {
             $data['param'] = [];
@@ -119,10 +124,9 @@ class crontask_class extends kernel_extends
         }
 
         if (is_callable([$class, $data['func']])) {
-            call_user_func_array([$class, $data['func']], $data['param']);
+            return call_user_func_array([$class, $data['func']], $data['param']);
         } else {
-            return false;
+            return 'Задача не найдена';
         }
-        return true;
     }
 }

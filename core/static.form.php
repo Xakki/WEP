@@ -455,7 +455,7 @@ class static_form
 	 * Удаление данных из БД
 	 * Вспомогательная функция
 	 */
-	    private static function _delete_fields(&$_this, array $id)
+	private static function _delete_fields(&$_this, array $id)
     {
 		// delete records
         $result = $_this->SQL->execSQL('DELETE FROM `' . $_this->tablename . '` WHERE `id` IN (' . $_this->_as_string($id) . ')');
