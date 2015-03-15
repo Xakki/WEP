@@ -15,16 +15,16 @@ _new_class('ugroup', $UGROUP);
 
 // рисуем форму для админки чтобы удобно задавать параметры
 if (isset($ShowFlexForm)) { // все действия в этой части относительно модуля content
-	//$temp = 'ownerlist';
-	$form = array(
-		'0' => array('type' => 'list', 'listname' => array('phptemplates', 'tags' => 'form'), 'caption' => 'Шаблон формы', 'comment' => $_CFG['lang']['tplComment']),
-		'1' => array('type' => 'list', 'listname' => 'userfieldlist', 'multiple' => FORM_MULTIPLE_JQUERY, 'caption' => 'Выводимые поля'),
-	);
-	$this->_enum['userfieldlist'] = array();
-	foreach ($UGROUP->childs['users']->fields_form as $k => $r) {
-		$this->_enum['userfieldlist'][$k] = $r['caption'];
-	}
-	return $form;
+    //$temp = 'ownerlist';
+    $form = array(
+        '0' => array('type' => 'list', 'listname' => array('phptemplates', 'tags' => 'form'), 'caption' => 'Шаблон формы', 'comment' => $_CFG['lang']['tplComment']),
+        '1' => array('type' => 'list', 'listname' => 'userfieldlist', 'multiple' => FORM_MULTIPLE_JQUERY, 'caption' => 'Выводимые поля'),
+    );
+    $this->_enum['userfieldlist'] = array();
+    foreach ($UGROUP->childs['users']->fields_form as $k => $r) {
+        $this->_enum['userfieldlist'][$k] = $r['caption'];
+    }
+    return $form;
 }
 
 if (!static_main::_prmUserCheck()) return false;
@@ -35,8 +35,8 @@ $DATA = array();
 $param = array('formflag' => 1);
 $argForm = array();
 foreach ($FUNCPARAM[1] as $r) {
-	if (isset($UGROUP->childs['users']->fields_form[$r]))
-		$argForm[$r] = $UGROUP->childs['users']->fields_form[$r];
+    if (isset($UGROUP->childs['users']->fields_form[$r]))
+        $argForm[$r] = $UGROUP->childs['users']->fields_form[$r];
 }
 $argForm[$UGROUP->childs['users']->fn_pass] = array('type' => 'password', 'caption' => 'Для подтверждения введите пароль', 'mask' => array('min' => '6', 'fview' => 1, 'password' => 'confirm'));
 

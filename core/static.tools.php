@@ -2,7 +2,9 @@
 
 class static_tools
 {
-    private function ___construct() {}
+    private function ___construct()
+    {
+    }
 
     static function _reinstall(&$MODUL)
     {
@@ -11,11 +13,11 @@ class static_tools
     }
 
     /**
-	 * Установка модуля
-	 *
-	 * @return bool Результат
-	 */
-	    static function _installTable(&$MODUL)
+     * Установка модуля
+     *
+     * @return bool Результат
+     */
+    static function _installTable(&$MODUL)
     {
         if (!$MODUL->tablename) {
             static_main::log('notice', 'Для модуля ' . $MODUL->caption . ' таблица не требуется.', $MODUL->_cl);
@@ -24,7 +26,7 @@ class static_tools
         $flag = $MODUL->SQL->_tableExists($MODUL->tablename); // checking table exist
 
         if (!$flag) {
-			// contruct of query
+            // contruct of query
             if (!$MODUL->SQL->_tableCreate($MODUL)) {
                 static_main::log(
                     'error',
@@ -57,25 +59,25 @@ class static_tools
     }
 
     /**
-	 * Рекурсивная Проверка корректности модуля/таблицы
-	 */
-	    static function _checkTableRev(&$MODUL)
+     * Рекурсивная Проверка корректности модуля/таблицы
+     */
+    static function _checkTableRev(&$MODUL)
     {
         $rDATA = array();
         $rDATA = self::_checkTable($MODUL);
         if (count($rDATA)) $rDATA = array($MODUL->_cl => $rDATA);
         if (count($MODUL->Achilds))
-        foreach ($MODUL->childs as $childs) {
-            $temp = self::_checkTableRev($childs);
-            if ($temp and count($temp)) $rDATA = array_merge($rDATA, $temp);
-        }
+            foreach ($MODUL->childs as $childs) {
+                $temp = self::_checkTableRev($childs);
+                if ($temp and count($temp)) $rDATA = array_merge($rDATA, $temp);
+            }
         return $rDATA;
     }
 
     /**
-	 * Проверка корректности модуля/таблицы
-	 */
-	    static function _checkTable(&$MODUL)
+     * Проверка корректности модуля/таблицы
+     */
+    static function _checkTable(&$MODUL)
     {
         $rDATA = array();
         if (!$MODUL->tablename) {
@@ -129,23 +131,23 @@ class static_tools
         }
 
         if (isset($MODUL->fields))
-        foreach ($MODUL->fields as $key => $param) {
-            if (!isset($param['inst'])) {
-                list($temp, $rDATA[$key]['@mess']) = $MODUL->SQL->_fldformer($key, $param);
-                $rDATA[$key]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD ' . $temp;
+            foreach ($MODUL->fields as $key => $param) {
+                if (!isset($param['inst'])) {
+                    list($temp, $rDATA[$key]['@mess']) = $MODUL->SQL->_fldformer($key, $param);
+                    $rDATA[$key]['@newquery'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD ' . $temp;
+                }
             }
-        }
 
         $indexlist = $uniqlistR = $uniqlist = array();
         $primary = '';
         list($primary, $uniqlist, $indexlist) = $MODUL->SQL->_tableKeys($MODUL);
 
-		// CREATE PRIMARY KEY
+        // CREATE PRIMARY KEY
         if (isset($MODUL->fields['id']) and !$primary) {
             $rDATA['id']['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '` ADD PRIMARY KEY(id)';
             $primary = 'id';
         }
-		// CREATE UNIQ KEY
+        // CREATE UNIQ KEY
         $uniqlistR = $uniqlist;
         if (isset($MODUL->unique_fields) and count($MODUL->unique_fields)) {
             foreach ($MODUL->unique_fields as $k => $r) {
@@ -175,23 +177,23 @@ class static_tools
                 unset($uniqlistR[$k]);
             }
         }
-		//$uniqlistR - Действующие уник ключи в итоге
-		// CREATE INDEX KEY
+        //$uniqlistR - Действующие уник ключи в итоге
+        // CREATE INDEX KEY
         if ($MODUL->owner) $MODUL->index_fields[$MODUL->owner_name] = $MODUL->owner_name;
         if ($MODUL->mf_istree) $MODUL->index_fields[$MODUL->mf_istree] = $MODUL->mf_istree;
         if ($MODUL->mf_actctrl) $MODUL->index_fields[$MODUL->mf_actctrl] = $MODUL->mf_actctrl;
         if ($MODUL->mf_ordctrl) $MODUL->index_fields[$MODUL->mf_ordctrl] = $MODUL->mf_ordctrl;
         if (count($MODUL->index_fields))
-        foreach ($MODUL->index_fields as $k => $r) {
-            if (!isset($indexlist[$k]) and !isset($uniqlistR[$k])) {
-                if (!isset($rDATA[$k]['@index'])) $rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
-                else $rDATA[$k]['@index'] .= ', ';
-                if (is_array($r)) $r = implode('`,`', $r);
-                $rDATA[$k]['@index'] .= ' add index `' . $k . '` (`' . $r . '`)';
-            } else {
-                unset($indexlist[$k]);
+            foreach ($MODUL->index_fields as $k => $r) {
+                if (!isset($indexlist[$k]) and !isset($uniqlistR[$k])) {
+                    if (!isset($rDATA[$k]['@index'])) $rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
+                    else $rDATA[$k]['@index'] .= ', ';
+                    if (is_array($r)) $r = implode('`,`', $r);
+                    $rDATA[$k]['@index'] .= ' add index `' . $k . '` (`' . $r . '`)';
+                } else {
+                    unset($indexlist[$k]);
+                }
             }
-        }
         if (count($indexlist)) {
             foreach ($indexlist as $k => $r) {
                 if (!isset($rDATA[$k]['@index'])) $rDATA[$k]['@index'] = 'ALTER TABLE `' . $MODUL->tablename . '`';
@@ -201,7 +203,7 @@ class static_tools
         }
 
 
-		// Проверка фаилов
+        // Проверка фаилов
         if (isset($MODUL->attaches)) {
             foreach ($MODUL->attaches as $key => $param) {
                 if (!isset($param['inst'])) {
@@ -215,7 +217,7 @@ class static_tools
             }
         }
 
-		// Проверяем структуру дереа
+        // Проверяем структуру дереа
         if ($MODUL->mf_istree) {
             $isCorrect = $isset = true;
             if (!isset($dataTable[$MODUL->ns_config['left']])) $isset = false;
@@ -235,8 +237,8 @@ class static_tools
             }
         }
 
-		//TODO : перенести в отдельный раздел - Обслуживание БД
-		//$rDATA['Оптимизация']['@newquery'] = 'OPTIMIZE TABLE `' . $MODUL->tablename . '`';
+        //TODO : перенести в отдельный раздел - Обслуживание БД
+        //$rDATA['Оптимизация']['@newquery'] = 'OPTIMIZE TABLE `' . $MODUL->tablename . '`';
         return $rDATA;
     }
 
@@ -259,10 +261,10 @@ class static_tools
     }
 
     /**
-	 * Переустановка БД модуля
-	 * @return array form
-	 */
-	    static public function toolsReinstall($_this)
+     * Переустановка БД модуля
+     * @return array form
+     */
+    static public function toolsReinstall($_this)
     {
         $RESULT = array('messages' => array(), 'form' => array());
         $fields_form = $mess = array();
@@ -288,9 +290,9 @@ class static_tools
     }
 
     /**
-	 * Tools для редактирования конфига у модуля
-	 */
-	    static public function toolsConfigmodul($_this)
+     * Tools для редактирования конфига у модуля
+     */
+    static public function toolsConfigmodul($_this)
     {
         $fields_form = array();
         $RESULT = array('messages' => array(), 'form' => array());
@@ -305,18 +307,19 @@ class static_tools
         } else {
             foreach ($_this->config as $k => &$r) {
                 if (is_array($r) and isset($_this->config_form[$k]) and !isset($_this->config_form[$k]['multiple'])) {
-					                /*$temp = array();
-					foreach ($r as $t => $d) {
-						if (strpos($d, ':=') === false)
-							$temp[] = trim($t) . ':=' . trim($d);
-						else
-							$temp[] = trim($d);
-					}
-					$r = implode(' :| ', $temp);*/}
+                    /*$temp = array();
+    foreach ($r as $t => $d) {
+        if (strpos($d, ':=') === false)
+            $temp[] = trim($t) . ':=' . trim($d);
+        else
+            $temp[] = trim($d);
+    }
+    $r = implode(' :| ', $temp);*/
+                }
             }
             unset($r);
 
-			// Сохраняемся
+            // Сохраняемся
             if (count($_POST)) {
                 $params = array();
                 $arr = $_this->fFormCheck($_POST, $params, $_this->config_form); // 2ой параметр просто так
@@ -355,11 +358,11 @@ class static_tools
     }
 
     /**
-	 * Групповые операции
-	 * TODO : это контрол - нужно его вынести из модуля
-	 * @return array form
-	 */
-	    static public function toolsSuperGroup(&$_this)
+     * Групповые операции
+     * TODO : это контрол - нужно его вынести из модуля
+     * @return array form
+     */
+    static public function toolsSuperGroup(&$_this)
     {
         global $_tpl;
         $fields_form = $mess = array();
@@ -420,7 +423,7 @@ class static_tools
             'form' => $fields_form,
             'messages' => $mess,
             'options' => $_this->getFormOptions()
-			//'options' => array('name' => 'f'.$_this->_cl, 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
+            //'options' => array('name' => 'f'.$_this->_cl, 'action' => str_replace('&', '&amp;', $_SERVER['REQUEST_URI']), 'prevhref' => $_SERVER['HTTP_REFERER']);
         );
     }
 
@@ -435,7 +438,7 @@ class static_tools
             }
             self::saveCopyModuleData($MODUL, $item);
         }
-		// $MODUL
+        // $MODUL
         return true;
     }
 
@@ -525,7 +528,7 @@ class static_tools
 	  return true;
 	  }
 	 */
-	    static function toolsStatsmodul(&$MODUL, $oid = '')
+    static function toolsStatsmodul(&$MODUL, $oid = '')
     {
         global $_CFG;
         $html = '';
@@ -627,7 +630,7 @@ class static_tools
 		  if(isset($MODUL->mf_statistic['plugin_date']))
 		  $plugin .= ''; */
 
-		        $html .= '
+        $html .= '
 	<div id="statschart1" data-height="380px" data-width="100%" style="margin-top:10px; margin-left:10px;min-width:1200px;width:100%;"></div>
 	<div id="statschart2" data-height="150px" data-width="100%" style="margin-top:10px; margin-left:10px;width:100%;"></div>
 	<style>
@@ -635,23 +638,23 @@ class static_tools
 	@import "' . $jqplot . 'jquery.jqplot.min.css";
 	</style>
 	';
-		//$html = '<span class="buttonimg imgdel" style="float: right;" onclick="$(this).parent().hide();">EXIT</span>' . $html;
+        //$html = '<span class="buttonimg imgdel" style="float: right;" onclick="$(this).parent().hide();">EXIT</span>' . $html;
         global $_tpl;
         $_tpl['onload'] .= $eval;
         return $html;
     }
 
     /**
-	 * Обновление миниатюр
-	 */
-	    static function _reattaches(&$MODUL)
+     * Обновление миниатюр
+     */
+    static function _reattaches(&$MODUL)
     {
         if (count($MODUL->attaches)) {
             $keyAtt = array_keys($MODUL->attaches);
             $criteria = array();
             foreach ($keyAtt as $key) $criteria[] = $key . '!=""';
             $emptyId = array();
-			// select record ids to delete
+            // select record ids to delete
             $sql = 'select id,' . implode(',', $keyAtt) . ' FROM ' . $MODUL->tablename . ' WHERE ' . implode(' OR ', $criteria) . ' ORDER BY id DESC';
             $result = $MODUL->SQL->execSQL($sql);
             if ($result->err) return false;
@@ -664,7 +667,7 @@ class static_tools
 
                     if (file_exists($filename)) {
                         if (isset($value['thumb']) and count($value['thumb'])) {
-							// проверка на наличие мминиатюр
+                            // проверка на наличие мминиатюр
                             if (!static_image::_is_image($filename)) // опред тип файла
                             {
                                 unset($filename);
@@ -673,7 +676,7 @@ class static_tools
                             }
                             foreach ($value['thumb'] as $imod) {
                                 $newThumb = $MODUL->getLocalThumb($imod, $key, $row['id'], $ext);
-								// Фаил который не существет и отличается от исходного (иначе откуда взять исходный материал)
+                                // Фаил который не существет и отличается от исходного (иначе откуда взять исходный материал)
                                 if ($filename != $newThumb and !file_exists($newThumb)) {
                                     static_form::imageThumbCreator($filename, $newThumb, $imod);
                                 }
@@ -693,18 +696,18 @@ class static_tools
     }
 
     /**
-	 * Проверка структуры модуля
-	 *
-	 *
-	 * @param object $MODUL Текущий объект класса
-	 * @return array
-	 */
-	    static function _checkmodstruct($Mid, &$OWN = NULL)
+     * Проверка структуры модуля
+     *
+     *
+     * @param object $MODUL Текущий объект класса
+     * @return array
+     */
+    static function _checkmodstruct($Mid, &$OWN = NULL)
     {
         $rDATA = array();
-		//'mess'=>array(),
-		//'oldquery'=>array(),
-		//'newquery'=>array()
+        //'mess'=>array(),
+        //'oldquery'=>array(),
+        //'newquery'=>array()
 
         if (!_new_class('modulprm', $MODULPRM)) {
             $rDATA['Ошибка']['@mess'][] = array('error', 'Ошибка инициализации модуля `modulprm`');
@@ -728,17 +731,17 @@ class static_tools
             $rDATA['Ахтунг']['@mess'][] = array('alert', 'Модуль `' . $MODUL->caption . '`[' . $Mid . '] не использует базу данных.');
             return array($Mid => $rDATA);
         } elseif (!isset($MODULPRM->data[$Mid]) or $MODULPRM->data[$Mid][$MODULPRM->mf_actctrl]) {
-			// синонимы для типов полей
+            // синонимы для типов полей
             $temp = self::_checkTable($MODUL);
             if ($temp and count($temp)) $rDATA = array_merge($rDATA, $temp);
         }
 
         if (count($rDATA)) $rDATA = array($Mid => $rDATA);
         if (count($MODUL->Achilds))
-        foreach ($MODUL->Achilds as $k => $r) {
-            $temp = self::_checkmodstruct($k, $MODUL);
-            if ($temp and count($temp)) $rDATA = array_merge($rDATA, $temp);
-        }
+            foreach ($MODUL->Achilds as $k => $r) {
+                $temp = self::_checkmodstruct($k, $MODUL);
+                if ($temp and count($temp)) $rDATA = array_merge($rDATA, $temp);
+            }
 
         if (!$OWN and isset($MODUL->_CFG['modulprm'][$MODUL->_cl]) and $MODUL->ver != $MODUL->_CFG['modulprm'][$MODUL->_cl]['ver']) {
             $file = $MODUL->_CFG['modulprm'][$Mid]['path'];
@@ -751,14 +754,14 @@ class static_tools
     }
 
     /**
-	 * Сбор переменных хранящихся в фаиле
-	 * @param <type> $file Фаил из которого будут браться данные о перменных
-	 * @param <type> $start Не обязательная, указывает строку после которой начинается сбор полезных строк
-	 * @param <type> $end не обязательная, указывает строку до которой будет сбор строк
-	 * @param <type> $mData не обязательно, дефолтное значение отслеживаемой переменной
-	 * @return <type> Возвращает массив полученных данных $_CFG
-	 */
-	    static function getFdata($file, $start = '', $end = '', $mData = false)
+     * Сбор переменных хранящихся в фаиле
+     * @param <type> $file Фаил из которого будут браться данные о перменных
+     * @param <type> $start Не обязательная, указывает строку после которой начинается сбор полезных строк
+     * @param <type> $end не обязательная, указывает строку до которой будет сбор строк
+     * @param <type> $mData не обязательно, дефолтное значение отслеживаемой переменной
+     * @return <type> Возвращает массив полученных данных $_CFG
+     */
+    static function getFdata($file, $start = '', $end = '', $mData = false)
     {
         $_CFG = array();
         if ($mData !== false) {
@@ -774,7 +777,7 @@ class static_tools
             foreach ($file as $k => $r) {
                 if ($fc === false and strpos($r, $start) !== false) $fc = '';
                 elseif (strpos($r, $end) !== false)
-                break;
+                    break;
                 if ($fc !== false) $fc .= $r . "\n";
             }
         }
@@ -789,8 +792,8 @@ class static_tools
 
     static function saveUserCFG($SetDataCFG)
     {
-		//$SetDataCFG = static_main::MergeArrays($USER_CFG,$SetDataCFG);
-		// объединяем конфиг записанный на пользователя и новые конфиги
+        //$SetDataCFG = static_main::MergeArrays($USER_CFG,$SetDataCFG);
+        // объединяем конфиг записанный на пользователя и новые конфиги
         global $_CFG, $_CFGFORM;
         $fl = false;
         $mess = array();
@@ -831,7 +834,7 @@ class static_tools
         $mess = array();
         $putFile = array();
         $USER_CFG = self::getFdata($file, '', '', $DEF_CFG); // конечный конфиг
-		// Редактируемые конфиги
+        // Редактируемые конфиги
         $fl = false;
         if (!count($DEF_CFG)) {
             $fl = true;
@@ -865,7 +868,7 @@ class static_tools
             }
         }
         $putFile = "<?php\n\t//create time " . date('Y-m-d H:i') . "\n\t" . implode("\n\t", $putFile) . "\n";
-		//Записать в конфиг все данные которые отличаются от данных по умолчанию
+        //Записать в конфиг все данные которые отличаются от данных по умолчанию
         if (!file_put_contents($file, $putFile)) {
             $mess[] = array('error', 'Ошибка записи настроек. Нет доступа к фаилу');
         } else {
@@ -877,10 +880,10 @@ class static_tools
     }
 
     /**
-	 * Запись дефолтных данных
-	 * @return <type>
-	 */
-	    static function _insertDefault(&$MODUL)
+     * Запись дефолтных данных
+     * @return <type>
+     */
+    static function _insertDefault(&$MODUL)
     {
         global $_CFG;
         $ReflectedClass = new ReflectionClass($MODUL->_cl . '_class');
@@ -897,22 +900,22 @@ class static_tools
         }
         foreach ($MODUL->def_records as $row) {
             if (!$MODUL->_add($row)) {
-				//return static_main::log('error','Error add default record into `'.$MODUL->tablename.'`',$MODUL->_cl);
+                //return static_main::log('error','Error add default record into `'.$MODUL->tablename.'`',$MODUL->_cl);
                 return false;
             }
         }
-		//return static_main::log('ok','Insert default records into table ' . $MODUL->tablename . '.',$MODUL->_cl);
+        //return static_main::log('ok','Insert default records into table ' . $MODUL->tablename . '.',$MODUL->_cl);
         return true;
     }
 
     /**
-	 * Проверка существования директории и прав записи в него, и создание
-	 *
-	 * @param object $MODUL Текщий объект класса
-	 * @param string $dir Проверяемая дирректория
-	 * @return bool Результат
-	 */
-	    static function _checkdir($dir)
+     * Проверка существования директории и прав записи в него, и создание
+     *
+     * @param object $MODUL Текщий объект класса
+     * @param string $dir Проверяемая дирректория
+     * @return bool Результат
+     */
+    static function _checkdir($dir)
     {
         global $_CFG;
         $dir = rtrim($dir, '/');
@@ -937,13 +940,13 @@ class static_tools
     }
 
     /**
-	 * Удаление дериктории с патрохами
-	 *
-	 * @param string $dir Удаляемая дирректория
-	 * @return bool Результат
-	 */
+     * Удаление дериктории с патрохами
+     *
+     * @param string $dir Удаляемая дирректория
+     * @return bool Результат
+     */
 
-	    static function _rmdir($dir)
+    static function _rmdir($dir)
     {
         if (!file_exists($dir)) return true;
         if (!is_dir($dir) || is_link($dir)) return unlink($dir);
@@ -996,7 +999,7 @@ deny from all
 
     /* STEP2 функция */
 
-	    static function _toolsCheckmodul(&$MODUL)
+    static function _toolsCheckmodul(&$MODUL)
     {
         $flag = 0;
         $form = $mess = array();
@@ -1009,7 +1012,7 @@ deny from all
                 $flag = self::_toolsCheckmodulFormPost($MODUL, $check_result, $mess);
             } else {
                 if (count($check_result)) {
-					// set form
+                    // set form
                     $form = self::_toolsCheckmodulForm($check_result);
                 } else $mess[] = static_main::am('ok', '_recheck_have_nothing', $MODUL);
             }
@@ -1023,9 +1026,9 @@ deny from all
     }
 
     /**
-	 * Вывод в форме заданий для выполнения
-	 */
-	    static private function _toolsCheckmodulForm($check_result)
+     * Вывод в форме заданий для выполнения
+     */
+    static private function _toolsCheckmodulForm($check_result)
     {
         global $_CFG;
         $form = array();
@@ -1094,7 +1097,7 @@ deny from all
                         'value' => 'Модуль ' . $_cl . ' : ' . transformPHP($message, 'messages'),
                         'style' => 'border-bottom:solid 1px gray;margin:3px 0;'
                     );
-					//$mess = array_merge($mess, $message);
+                    //$mess = array_merge($mess, $message);
                 }
             } else {
                 trigger_error('`_toolsCheckmodulForm` - in func Error data (' . $_cl . ' - ' . print_r($row, true) . ')', E_USER_WARNING);
@@ -1109,9 +1112,9 @@ deny from all
     }
 
     /**
-	 * Выполнение отмеченных заданий
-	 */
-	    static private function _toolsCheckmodulFormPost(&$MODUL, &$check_result, &$mess)
+     * Выполнение отмеченных заданий
+     */
+    static private function _toolsCheckmodulFormPost(&$MODUL, &$check_result, &$mess)
     {
         $flag = 1;
         foreach ($check_result as $_cl => $row) {
@@ -1153,24 +1156,24 @@ deny from all
                     }
                 }
             }
-			//end foreach
+            //end foreach
         }
 
         if (count($_POST) <= 1) $mess[] = static_main::am('alert', '_recheck_have_nothing', $MODUL);
         if ($flag) $mess[] = static_main::am('ok', '_recheck_ok', $MODUL);
-		//'  <a href="" onclick="window.location.reload();return false;">Обновите страницу.</a>'
+        //'  <a href="" onclick="window.location.reload();return false;">Обновите страницу.</a>'
         return $flag;
     }
 
     /*****     nestedSets      ****/
-	// $MODUL->ns_config['left']
-	// $MODUL->ns_config['right']
-	// $MODUL->ns_config['level']
+    // $MODUL->ns_config['left']
+    // $MODUL->ns_config['right']
+    // $MODUL->ns_config['level']
     /**
-	 * nestedSets Full update all keys
-	 *
-	 */
-	    static function _nestedSets_fullUpdate(&$MODUL, &$mess)
+     * nestedSets Full update all keys
+     *
+     */
+    static function _nestedSets_fullUpdate(&$MODUL, &$mess)
     {
         $rootKey = ($MODUL->mf_istree_root ? ',' . $MODUL->ns_config['root'] : '');
         if ($MODUL->mf_ordctrl) {
@@ -1240,9 +1243,9 @@ deny from all
 
     /********************/
 
-	    static function extractZip($zipFile = '', $zipDir = '', $dirFromZip = '')
+    static function extractZip($zipFile = '', $zipDir = '', $dirFromZip = '')
     {
-		// $zipDir Папка для распаковки.
+        // $zipDir Папка для распаковки.
         if (!$zipDir) {
             $zipDir = substr($zipFile, 0, -4) . '/';
         }
@@ -1250,7 +1253,7 @@ deny from all
 
         if ($zip) {
             while ($zip_entry = zip_read($zip)) {
-				// Перекодируем с CP866 в CP1251
+                // Перекодируем с CP866 в CP1251
                 $completePath = $zipDir . dirname(iconv('CP866', 'CP1251', zip_entry_name($zip_entry)));
                 $completeName = $zipDir . iconv('CP866', 'CP1251', zip_entry_name($zip_entry));
 
@@ -1310,7 +1313,7 @@ deny from all
     static function _http($link, $param = array())
     {
         global $_CFG;
-		//http://ru.php.net/curl_setopt
+        //http://ru.php.net/curl_setopt
         if (isset($param['body'])) {
             exit('ERROR - body не поддерживается');
         }
@@ -1319,11 +1322,11 @@ deny from all
         $default = array(
             'proxy' => false,
             'proxyList' => array(
-				//array('11.11.11.11:8080','user:pass'),
-				//'82.200.55.142:3128',
-				//'115.78.135.30:80',
-				//'122.248.194.9:80',
-            /**/),
+                //array('11.11.11.11:8080','user:pass'),
+                //'82.200.55.142:3128',
+                //'115.78.135.30:80',
+                //'122.248.194.9:80',
+                /**/),
             'HTTPHEADER' => array('Content-Type' => 'text/xml; encoding=utf-8'),
             'redirect' => false,
             'USERAGENT' => 'Mozilla/5.0 (Windows NT 6.' . rand(1, 3) . ') AppleWebKit/' . $tmp . ' (KHTML, like Gecko) Chrome/' . rand(9, 34) . '.0.' . rand(10, 99) . '00.' . rand(1, 200) . ' Safari/' . $tmp,
@@ -1349,15 +1352,15 @@ deny from all
         }
 
         if (isset($param['COOKIEFILE'])) // Считываем из фаила
-        curl_setopt($ch, CURLOPT_COOKIEFILE, $param['COOKIEFILE']);
+            curl_setopt($ch, CURLOPT_COOKIEFILE, $param['COOKIEFILE']);
 
         if (isset($param['COOKIEJAR'])) // Записываем куки в фаил
-        curl_setopt($ch, CURLOPT_COOKIEJAR, $param['COOKIEJAR']);
+            curl_setopt($ch, CURLOPT_COOKIEJAR, $param['COOKIEJAR']);
 
         curl_setopt($ch, CURLOPT_USERAGENT, $param['USERAGENT']); //подделываем юзер-агента
 
         if ($param['redirect']) {
-			//переходить по редиректам, инициируемым сервером, пока не будет достигнуто CURLOPT_MAXREDIRS (если есть)
+            //переходить по редиректам, инициируемым сервером, пока не будет достигнуто CURLOPT_MAXREDIRS (если есть)
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         }
 
@@ -1392,9 +1395,9 @@ deny from all
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $param['POST']);
         }
-		//не включать заголовки ответа сервера в вывод
+        //не включать заголовки ответа сервера в вывод
         curl_setopt($ch, CURLOPT_HEADER, false);
-		//вернуть ответ сервера в виде строки
+        //вернуть ответ сервера в виде строки
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         // timeout
         curl_setopt($ch, CURLOPT_TIMEOUT, $param['TIMEOUT']);
@@ -1403,11 +1406,11 @@ deny from all
             curl_setopt($ch, CURLOPT_VERBOSE, 1);
         }
 
-		// ПРОКСИ
+        // ПРОКСИ
         if ($param['proxy']) {
             $c = count($param['proxyList']) - 1;
             $prox = $param['proxyList'][rand(0, $c)];
-			// указываем адрес
+            // указываем адрес
 //            $CURLOPT_PROXY = '';
 //            $CURLOPT_PROXYUSERPWD = '';
             if (is_array($prox)) {
@@ -1424,12 +1427,12 @@ deny from all
             }
 //            curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, 1);
 //			if ($CURLOPT_PROXYUSERPWD) {
-				// если необходимо предоставить имя пользователя и пароль
-				//curl_setopt($ch, CURLOPT_PROXYUSERPWD,$CURLOPT_PROXYUSERPWD);
+            // если необходимо предоставить имя пользователя и пароль
+            //curl_setopt($ch, CURLOPT_PROXYUSERPWD,$CURLOPT_PROXYUSERPWD);
 //			}
         }
-		//Функции обратного вызова
-		//curl_setopt($ch, CURLOPT_WRITEFUNCTION,"progress_function");
+        //Функции обратного вызова
+        //curl_setopt($ch, CURLOPT_WRITEFUNCTION,"progress_function");
 
         $text = curl_exec($ch);
 
@@ -1542,25 +1545,25 @@ deny from all
                 foreach ($data[$k] as $row) {
                     $insertData = array();
                     /**
-					 * $r['field'] - список полей связи входных данных и БД
-					 * $key - исходный ключ в входнных данных
-					 * $value - ключ (поле) в БД
-					 * $row[$key] - значение которое сохраняем в БД
-					 */
+                     * $r['field'] - список полей связи входных данных и БД
+                     * $key - исходный ключ в входнных данных
+                     * $value - ключ (поле) в БД
+                     * $row[$key] - значение которое сохраняем в БД
+                     */
                     foreach ($r['field'] as $key => $value) {
-						// по умол
+                        // по умол
                         if (isset($r['default'][$value]) and (!isset($row[$key]) or $row[$key] === '')) {
                             $row[$key] = $r['default'][$value];
                         }
-						// Eval
+                        // Eval
                         if (isset($r['eval'][$value]) and isset($row[$key])) {
                             $eval = '$row[$key] = ' . str_replace('%%', $row[$key], $r['eval'][$value]) . ';';
                             eval($eval);
                         }
-						// import from BD
+                        // import from BD
                         if (isset($r['importId'][$value]) and isset($row[$key])) {
                             $q = str_replace('%%', $MODEL->SqlEsc($row[$key]), $r['importId'][$value]);
-							// получаем ID по спец запросу
+                            // получаем ID по спец запросу
                             $resultSQL = $MODEL->exec($q);
                             if ($resultSQL === false) {
                                 exit('Ошибка в запросе! ' . $q);
@@ -1568,7 +1571,7 @@ deny from all
                             $dataSQL = $resultSQL->fetch_row();
                             $row[$key] = $dataSQL[0];
                         }
-						//////////////////
+                        //////////////////
                         if (isset($row[$key])) {
                             $insertData[$value] = $row[$key];
                         }
@@ -1578,11 +1581,11 @@ deny from all
                     if (isset($r['setActive'])) $insertData['active'] = 1;
                     else {
                         $insertData['active'] = 1;
-						// available
-						// remainder
+                        // available
+                        // remainder
                     }
 
-					// проверяем, есть ли в базе такая же запись
+                    // проверяем, есть ли в базе такая же запись
                     if (isset($r['key'])) {
                         $q = 'WHERE ' . $r['key'] . '="' . $MODEL->SqlEsc($insertData[$r['key']]) . '"';
                         if (isset($r['key2'])) $q .= ' or ' . $r['key2'] . '="' . $MODEL->SqlEsc($insertData[$r['key2']]) . '"';
@@ -1622,9 +1625,9 @@ deny from all
     static function pingDomain($domain, $port = 80, $timeout = 10)
     {
         $starttime = getmicrotime();
-        $file      = fsockopen($domain, $port, $errno, $errstr, $timeout);
-        $stoptime  = getmicrotime();
-        if (!$file) $status = -1;  // Site is down
+        $file = fsockopen($domain, $port, $errno, $errstr, $timeout);
+        $stoptime = getmicrotime();
+        if (!$file) $status = -1; // Site is down
         else {
             fclose($file);
             $status = ($stoptime - $starttime) * 1000;
@@ -1638,7 +1641,7 @@ deny from all
         // echo exec('ping -n 1 -w 1 72.10.169.28');
         /* ICMP ping packet with a pre-calculated checksum */
         $package = "\x08\x00\x7d\x4b\x00\x00\x00\x00PingHost";
-        $socket  = socket_create(AF_INET, SOCK_RAW, 1);
+        $socket = socket_create(AF_INET, SOCK_RAW, 1);
         socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, array('sec' => $timeout, 'usec' => 0));
         socket_connect($socket, $host, null);
         $ts = microtime(true);

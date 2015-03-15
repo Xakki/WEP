@@ -18,17 +18,17 @@ class static_image
     }
 
     /**
-	 * Наложение водяного знака (маркера)
-	 *
-	 */
-	    static function _waterMark($InFile, $OutFile, $logoFile = '', $posX = 0, $posY = 0)
+     * Наложение водяного знака (маркера)
+     *
+     */
+    static function _waterMark($InFile, $OutFile, $logoFile = '', $posX = 0, $posY = 0)
     {
         global $_CFG;
         if (!$logoFile) $logoFile = $_CFG['_imgwater'];
         $logoFile = SITE . $logoFile;
 
         if (!$imtypeIn = self::_is_image($InFile)) // опред тип файла
-        return static_main::log('error', 'File ' . $InFile . ' is not image');
+            return static_main::log('error', 'File ' . $InFile . ' is not image');
         $res = true;
 
         _chmod($InFile);
@@ -44,8 +44,8 @@ class static_image
             $res = $thumb->writeImage($OutFile);
             $thumb->destroy();
         } else {
-			//southeast //center
-			//$cmd = 'composite -compose bumpmap -gravity south '.escapeshellarg($InFile).' '.escapeshellarg($logoFile).' '.escapeshellarg($OutFile);
+            //southeast //center
+            //$cmd = 'composite -compose bumpmap -gravity south '.escapeshellarg($InFile).' '.escapeshellarg($logoFile).' '.escapeshellarg($OutFile);
             $cmd = 'convert ' . escapeshellarg($InFile) . ' -gravity SouthWest -draw "image Over 0,0,0,0 ' . escapeshellarg($logoFile) . '" ' . escapeshellarg($OutFile);
             $out = array();
             $err = 0;
@@ -61,7 +61,7 @@ class static_image
         return $res;
     }
 
-	// обрезает
+    // обрезает
     static function _cropImage($InFile, $OutFile, $WidthX, $HeightY, $posX = 0, $posY = 0)
     {
         $res = true;
@@ -95,14 +95,14 @@ class static_image
     }
 
     /**
-	 * Меняет размер. пропорционально, до минимального соответсявия по стороне
-	 * @param $InFile
-	 * @param $OutFile
-	 * @param $WidthX
-	 * @param $HeightY
-	 * @return bool
-	 */
-	    static function _resizeImage($InFile, $OutFile, $WidthX, $HeightY)
+     * Меняет размер. пропорционально, до минимального соответсявия по стороне
+     * @param $InFile
+     * @param $OutFile
+     * @param $WidthX
+     * @param $HeightY
+     * @return bool
+     */
+    static function _resizeImage($InFile, $OutFile, $WidthX, $HeightY)
     {
         if (!$WidthX and !$HeightY) return true;
 
@@ -111,7 +111,7 @@ class static_image
         return self::convertImage($InFile, $OutFile, $WidthX, $HeightY);
     }
 
-	// Меняет размер обрезая
+    // Меняет размер обрезая
     static function _thumbnailImage($InFile, $OutFile, $WidthX, $HeightY)
     {
         if (!$WidthX and !$HeightY) return true;
@@ -156,13 +156,13 @@ class static_image
     }
 
     /**
-	 * ПОлучить пропорциональный размер даже если картинка меньше заданных размеров
-	 * @param $InFile
-	 * @param $Width X
-	 * @param $Height Y
-	 * @return array|bool
-	 */
-	    static function getActiualSize($InFile, $Width, $Height, $saveOrigin = false)
+     * ПОлучить пропорциональный размер даже если картинка меньше заданных размеров
+     * @param $InFile
+     * @param $Width X
+     * @param $Height Y
+     * @return array|bool
+     */
+    static function getActiualSize($InFile, $Width, $Height, $saveOrigin = false)
     {
         $Width = (int)$Width;
         $Height = (int)$Height;
@@ -190,15 +190,15 @@ class static_image
             }
         } elseif ($k1 !== 1 && $k2 !== 1) {
             if ($k1 <= 1 && $k2 <= 1) {
-				// Каринка меньше чем заданные размеры
-				// ТО пропорционально выбираем меньший размер
+                // Каринка меньше чем заданные размеры
+                // ТО пропорционально выбираем меньший размер
                 if ($k1 < $k2) {
                     $Width = $width_orig;
                 } else {
                     $Height = $height_orig;
                 }
             } else {
-				// картинка больше
+                // картинка больше
                 if ($k1 < $k2) {
                     $Height = $height_orig;
                 } else {
@@ -226,26 +226,26 @@ class static_image
         return image_type_to_extension($file, $include_dot);
     }
 
-	// get image color in RGB format function
+    // get image color in RGB format function
     static function getImageColor($imageFile_URL, $numColors = 10, $image_granularity = 5, $round = 0x33)
     {
         $image_granularity = max(1, abs((int)$image_granularity));
         $colors = array();
-		//find image size
+        //find image size
         $size = getimagesize($imageFile_URL);
         if ($size === false) {
             trigger_error("Unable to get image size data", E_USER_ERROR);
             return false;
         }
-		// open image
-		//$img = @imagecreatefromjpeg($imageFile_URL);
+        // open image
+        //$img = @imagecreatefromjpeg($imageFile_URL);
         $img = static_imageGD2::_imagecreatefrom($imageFile_URL);
         if (!$img) {
             trigger_error("Unable to open image file", E_USER_ERROR);
             return false;
         }
 
-		// fetch color in RGB format
+        // fetch color in RGB format
         for ($x = 0; $x < $size[0]; $x += $image_granularity) {
             for ($y = 0; $y < $size[1]; $y += $image_granularity) {
                 $thisColor = imagecolorat($img, $x, $y);
@@ -266,7 +266,7 @@ class static_image
             }
         }
         arsort($colors);
-		// returns maximum used color of image format like #C0C0C0.
+        // returns maximum used color of image format like #C0C0C0.
         if ($numColors < 1) // Используем процентную выборку, относительно максимального цвета
         {
             reset($colors);
@@ -283,10 +283,10 @@ class static_image
     }
 
     /**
-	 * RGB-Colorcodes(i.e: 255 0 255) to HEX-Colorcodes (i.e: FF00FF)
-	 * example - print_r(rgb2hex(array(10,255,255)));
-	 */
-	    static function rgb2hex($rgb)
+     * RGB-Colorcodes(i.e: 255 0 255) to HEX-Colorcodes (i.e: FF00FF)
+     * example - print_r(rgb2hex(array(10,255,255)));
+     */
+    static function rgb2hex($rgb)
     {
         if (strlen($hex = dechex($rgb)) == 1) {
             $hex = "0" . $hex;
@@ -295,9 +295,9 @@ class static_image
     }
 
     /**
-	 * html(HEX) color to convert in RGB format color like R(255) G(255) B(255)
-	 */
-	    static function hex2rgb($str_color)
+     * html(HEX) color to convert in RGB format color like R(255) G(255) B(255)
+     */
+    static function hex2rgb($str_color)
     {
         $str_color = (string)$str_color;
         if ($str_color[0] == '#') $str_color = substr($str_color, 1);
@@ -317,11 +317,11 @@ class static_image
     }
 
     /**
-	 * @param $rgb
-	 * @return array
-	 * http://www.javascripter.net/faq/rgb2hsv.htm
-	 */
-	    static function rgb2hsv($rgb)
+     * @param $rgb
+     * @return array
+     * http://www.javascripter.net/faq/rgb2hsv.htm
+     */
+    static function rgb2hsv($rgb)
     {
         $result = array('h' => 0, 's' => 0, 'v' => 0);
         list($r, $g, $b) = array_values($rgb);
@@ -343,7 +343,7 @@ class static_image
 
         if ($max != 0) $s = $delta / $max; // s
         else {
-			// r = g = b = 0		// s = 0, v is undefined
+            // r = g = b = 0		// s = 0, v is undefined
             $s = 0;
             $h = -1;
             return array('h' => $h, 's' => $s, 'v' => $v);
@@ -363,8 +363,8 @@ class static_image
         return self::rgb2hsv(self::hex2rgb($str_color));
     }
 
-	// Y'UV444 to RGB888 conversion
-	// NTSC standard
+    // Y'UV444 to RGB888 conversion
+    // NTSC standard
     static function RGBtoYUV($rgb)
     {
         $Y = 0.299 * $rgb['r'] + 0.587 * $rgb['g'] + 0.114 * $rgb['b'];
@@ -373,8 +373,8 @@ class static_image
         return array('y' => $Y, 'u' => $U, 'v' => $V);
     }
 
-	// Y'UV444 to RGB888 conversion
-	// The ITU-R version:
+    // Y'UV444 to RGB888 conversion
+    // The ITU-R version:
     static function RGBtoYUV2($rgb)
     {
         $Y = 0.299 * $rgb['r'] + 0.587 * $rgb['g'] + 0.114 * $rgb['b'];
@@ -426,7 +426,7 @@ class static_image
         return $trueColors;
     }
 
-	////////////////////////////////////
+    ////////////////////////////////////
 
     static function deferenceColorHEX2($hex1, $hex2)
     {
@@ -451,12 +451,12 @@ class static_image
     {
         $HSV1 = self::rgb2hsv($rgb1);
         $HSV2 = self::rgb2hsv($rgb2);
-		// if($HSV1['v']<22 && $HSV2['v']<22) {
-		// 	return 0;
-		// }
-		// if($HSV1['s']<17 || $HSV2['s']<17) {
-		// 	return 0;
-		// }
+        // if($HSV1['v']<22 && $HSV2['v']<22) {
+        // 	return 0;
+        // }
+        // if($HSV1['s']<17 || $HSV2['s']<17) {
+        // 	return 0;
+        // }
         return abs($HSV1['h'] - $HSV2['h']);
     }
 }

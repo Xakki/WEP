@@ -34,21 +34,20 @@ register_shutdown_function('shutdown_function'); // Запускается пе�
 /**
  * MAIN STATIC CLASS
  */
-
 class static_main
 {
     /**
-	 * Регистрация автозагрузки
-	 */
-	    public static function autoload_register()
+     * Регистрация автозагрузки
+     */
+    public static function autoload_register()
     {
         spl_autoload_register(array('static_main', 'autoload'));
     }
 
     /**
-	 * Отмена автозагрузки
-	 */
-	    public static function autoload_unregister()
+     * Отмена автозагрузки
+     */
+    public static function autoload_unregister()
     {
         spl_autoload_unregister(array('static_main', 'autoload'));
         spl_autoload_register(
@@ -62,29 +61,29 @@ class static_main
     /*
 	  Автозагрузка модулей
 	 */
-	    public static function autoload($class_name)
+    public static function autoload($class_name)
     {
         if ($file = _modulExists($class_name)) {
             require_once($file);
         }
         if (!class_exists($class_name, false)) {
             trigger_error('Can`t init `' . $class_name . '` modul ', E_USER_WARNING);
-			//throw new Exception('Can`t init `' . $class_name . '` modul ');
+            //throw new Exception('Can`t init `' . $class_name . '` modul ');
         }
     }
 
     /**
-	 * В формат выода сообщения
-	 */
-	    public static function am($type, $msg, $replace = array(), $obj = NULL)
+     * В формат выода сообщения
+     */
+    public static function am($type, $msg, $replace = array(), $obj = NULL)
     {
         return array($type, self::m($msg, $replace, $obj));
     }
 
     /**
-	 * Текст сообщения
-	 */
-	    public static function m($msg, $replace = array(), $obj = NULL)
+     * Текст сообщения
+     */
+    public static function m($msg, $replace = array(), $obj = NULL)
     {
         global $_CFG;
         if (is_object($replace)) {
@@ -94,15 +93,15 @@ class static_main
         if ($obj and isset($obj->lang[$msg])) $msg = $obj->lang[$msg];
         elseif (isset($_CFG['lang'][$msg])) $msg = $_CFG['lang'][$msg];
         if (is_array($replace) and count($replace))
-        foreach ($replace as $k => $r) $msg = str_replace('###' . ($k + 1) . '###', $r, $msg);
+            foreach ($replace as $k => $r) $msg = str_replace('###' . ($k + 1) . '###', $r, $msg);
         elseif (!is_array($replace) and $replace) $msg .= $replace;
         return $msg;
     }
 
     /**
-	 * Запись сообщения в лог вывода
-	 */
-	    static function log($type, $msg, $cl = '')
+     * Запись сообщения в лог вывода
+     */
+    static function log($type, $msg, $cl = '')
     {
         global $_CFG;
         $ar_type = array('error' => false, 'alert' => true, 'notice' => true, 'ok' => true);
@@ -114,22 +113,22 @@ class static_main
     }
 
     /**
-	 * вывод лога
-	 * $type = 0 - все
-	 * 1 - кроме 'ok'
-	 * 2 - кроме 'ok', 'modify'
-	 * 3 - только 'error'
-	 */
-	    static function showLog($type = 0)
+     * вывод лога
+     * $type = 0 - все
+     * 1 - кроме 'ok'
+     * 2 - кроме 'ok', 'modify'
+     * 3 - только 'error'
+     */
+    static function showLog($type = 0)
     {
         global $_CFG;
         $text = '';
         $flag = true;
         if (isset($_CFG['logs']['mess']) and count($_CFG['logs']['mess'])) {
             foreach ($_CFG['logs']['mess'] as $r) {
-				//$c = '';
+                //$c = '';
                 if ($r[0] == 'error') {
-					//$c = 'red';
+                    //$c = 'red';
                     $flag = false;
                 }
                 /* elseif ($r[1] == 'warning' and $type < 3)
@@ -141,7 +140,7 @@ class static_main
 								elseif ($type < 3)
 									$c = 'gray';
 								if ($c != '')*/
-				                $text .= '<div class="messelem ' . $r[0] . '">' . _e($r[1]) . '</div>';
+                $text .= '<div class="messelem ' . $r[0] . '">' . _e($r[1]) . '</div>';
             }
             $_CFG['logs']['mess'] = array();
         }
@@ -149,9 +148,9 @@ class static_main
     }
 
     /**
-	 *
-	 */
-	    static function showErr()
+     *
+     */
+    static function showErr()
     {
         global $_CFG, $SQL;
         $temp = static_main::showLog(); // сообщения ядра
@@ -167,12 +166,12 @@ class static_main
                     foreach ($err as $r) {
                         $var = $r['errtype'] . ' ' . $r['errstr'] . ' , in line ' . $r['errline'] . ' of file <i>' . $r['errfile'] . '</i>';
                         if ($r['debug']) //$r['errcontext']
-                        $var = self::spoilerWrap($var, $r['debug'], 'bug_' . $r['errno']);
+                            $var = self::spoilerWrap($var, $r['debug'], 'bug_' . $r['errno']);
                         else $var = '<div class="bug_' . $r['errno'] . '">' . $var . '</div>';
                         $var .= "\n";
                         if ($_CFG['_error'][$r['errno']]['prior'] <= 3) $htmlerr .= $var;
                         else //нотисы отдельно
-                        $notice .= $var;
+                            $notice .= $var;
                     }
                 }
             }
@@ -181,7 +180,7 @@ class static_main
         if ($_CFG['wep']['debugmode'] > 1 and ($htmlerr != '' or $notice != '' or $temp[0])) {
             if ($notice) $htmlerr .= self::spoilerWrap('NOTICE', $notice);
             if ($temp[0]) $htmlerr .= $temp[0];
-			//self::spoilerWrap('MESSAGES',$temp[0]);
+            //self::spoilerWrap('MESSAGES',$temp[0]);
         } elseif ($_CFG['wep']['debugmode'] == 1 and ($htmlerr != '' or !$temp[1])) {
             $htmlerr = 'На странице возникла ошибка! Приносим свои извинения за временные неудобства! Неполадки будут исправлены в ближайшее время.';
         } else {
@@ -198,9 +197,9 @@ class static_main
     }
 
     /**
-	 * Парсер настроек модулей
-	 */
-	    static function _fParseIni($filename, $form = array())
+     * Парсер настроек модулей
+     */
+    static function _fParseIni($filename, $form = array())
     {
         $dest = $group = "\$data";
         $data = array();
@@ -220,14 +219,14 @@ class static_main
             }
         }
         return $data;
-		//return parse_ini_file($filename,true);
+        //return parse_ini_file($filename,true);
     }
 
     /**
-	 * Шифрование и дешифрование данных
-	 *
-	 */
-	    static function EnDecryptString($str, $hashKey = null)
+     * Шифрование и дешифрование данных
+     *
+     */
+    static function EnDecryptString($str, $hashKey = null)
     {
         if (is_null($hashKey)) {
             $hashKey = self::getHashKey();
@@ -251,10 +250,10 @@ class static_main
     }
 
     /**
-	 * Вывод названия таблицы у класса , без его подключения,
-	 *  главное чтобу в модуле не было указано явно свое название табл
-	 */
-	    static function getTableNameOfClass($name)
+     * Вывод названия таблицы у класса , без его подключения,
+     *  главное чтобу в модуле не было указано явно свое название табл
+     */
+    static function getTableNameOfClass($name)
     {
         global $_CFG;
         if (!isset($_CFG['modulprm'])) self::_prmModulLoad();
@@ -267,7 +266,7 @@ class static_main
 	  Проверка доступа пол-ля к модулю
 	 */
 
-	    static function _prmModul($mn, $param = array())
+    static function _prmModul($mn, $param = array())
     {
         global $_CFG;
 
@@ -280,17 +279,17 @@ class static_main
             if (isset($_CFG['modulprm'][$mn]['access'][0])) return false;
             if (isset($_CFG['modulprm'][$mn]['access']['']) and count($_CFG['modulprm'][$mn]['access']) == 1) return true;
             if (count($param))
-            foreach ($param as $r)
-            if (isset($_CFG['modulprm'][$mn]['access'][$r])) return true;
+                foreach ($param as $r)
+                    if (isset($_CFG['modulprm'][$mn]['access'][$r])) return true;
         }
         return false;
     }
 
     /**
-	 * подгрука данных прав доступа и пути подключения модулей
-	 * @return bool
-	 */
-	    static function _prmModulLoad()
+     * подгрука данных прав доступа и пути подключения модулей
+     * @return bool
+     */
+    static function _prmModulLoad()
     {
         global $_CFG, $SQL;
         if (!isset($_CFG['modulprm'])) {
@@ -299,7 +298,7 @@ class static_main
             _new_class('modulprm', $MODULPRM, $temp, true);
             $_CFG['modulprm'] = $_CFG['modulprm_ext'] = array();
             $ugroup_id = (isset($_SESSION['user']['gid']) ? (int)$_SESSION['user']['gid'] : $_CFG['wep']['guestid']);
-			// Если есть таблица
+            // Если есть таблица
             if ($MODULPRM->SQL->_tableExists($MODULPRM->tablename)) {
                 if (isset($_SESSION['user']['parent_id']) and $_SESSION['user']['parent_id']) {
                     $ugroup_id = ' and t2.ugroup_id IN (' . $_SESSION['user']['parent_id'] . ',' . $ugroup_id . ')';
@@ -307,8 +306,8 @@ class static_main
                 $q = 'SELECT t1.*,t2.access, t2.mname FROM `' . $MODULPRM->tablename . '` t1 LEFT Join `' . $MODULPRM->childs['modulgrp']->tablename . '` t2 on t2.owner_id=t1.id' . $ugroup_id . ' ORDER BY t1.typemodul,t1.name';
                 $result = $MODULPRM->SQL->execSQL($q);
                 if ($result->err) {
-					//$_POST['sbmt'] = 1;
-					//static_tools::_checkmodstruct('modulprm');
+                    //$_POST['sbmt'] = 1;
+                    //static_tools::_checkmodstruct('modulprm');
                     return false;
                 }
                 $_CFG['modulprm'] = array();
@@ -330,7 +329,7 @@ class static_main
                     }
                 }
             } else {
-				// TODO
+                // TODO
             }
             /* if (_new_class('modulprm', $MODULs))
 			  $_CFG['modulprm'] = $MODULs->userPrm((isset($_SESSION['user']['owner_id']) ? (int) $_SESSION['user']['owner_id'] : 0)); */
@@ -339,11 +338,11 @@ class static_main
     }
 
     /**
-	 * Получаем реальный путь из поля path для PG
-	 * @param string $path
-	 * @return string
-	 */
-	    static function getPathModul($path)
+     * Получаем реальный путь из поля path для PG
+     * @param string $path
+     * @return string
+     */
+    static function getPathModul($path)
     {
         global $_CFG;
         if (!$path) return '';
@@ -352,14 +351,14 @@ class static_main
     }
 
     /**
-	 * Проверка доступа пол-ля по уровню привелегии
-	 * @param int $level - level пользователя
-	 * @return bool
-	 */
-	    static function _prmUserCheck($level = 5)
+     * Проверка доступа пол-ля по уровню привелегии
+     * @param int $level - level пользователя
+     * @return bool
+     */
+    static function _prmUserCheck($level = 5)
     {
         global $_CFG;
-		//session_go(); // TEST
+        //session_go(); // TEST
         if (isset($_SESSION['user']['id']) and $_SESSION['user']['id']) {
             if (isset($_SESSION['user']['level']) and $_SESSION['user']['level'] <= $level) return true;
         }
@@ -367,11 +366,11 @@ class static_main
     }
 
     /**
-	 * Проверка доступа пользователя по её группе
-	 * @param int $id - id группы
-	 * @return bool
-	 */
-	    static function _prmGroupCheck($id = 1)
+     * Проверка доступа пользователя по её группе
+     * @param int $id - id группы
+     * @return bool
+     */
+    static function _prmGroupCheck($id = 1)
     {
         global $_CFG;
         if (!is_array($id)) $id = array($id);
@@ -384,12 +383,12 @@ class static_main
     }
 
     /**
-	 * авторизации пользователя по входнным данным либо по кукам
-	 * @param string $login - логин или емал
-	 * @param string $pass - пароль
-	 * @return array 0=>текст сообщения , 1=> статус
-	 */
-	    static function userAuth($login = '', $pass = '')
+     * авторизации пользователя по входнным данным либо по кукам
+     * @param string $login - логин или емал
+     * @param string $pass - пароль
+     * @return array 0=>текст сообщения , 1=> статус
+     */
+    static function userAuth($login = '', $pass = '')
     {
         global $_CFG;
         session_go(); // запускаем сессию, чтоб проверить авторизован ли пользователь
@@ -407,7 +406,7 @@ class static_main
                     }
                 }
             } elseif ($_CFG['wep']['login'] and $_CFG['wep']['password']) {
-				// Авторизация без использования БД , логин и пароль берутся из конфига
+                // Авторизация без использования БД , логин и пароль берутся из конфига
                 $flag = 0;
 
                 if (isset($_COOKIE['remember']) and $_COOKIE['remember']) {
@@ -436,45 +435,45 @@ class static_main
                         $_CFG['remember_expire']
                     );
                     $result = array(static_main::m('authok'), 1);
-					//_setcookie($_CFG['wep']['_showerror'], 2);
-					//$_COOKIE['_showerror']=1;
+                    //_setcookie($_CFG['wep']['_showerror'], 2);
+                    //$_COOKIE['_showerror']=1;
                 }
             }
         } else {
-			//if (!$UGROUP)
-			//	_new_class('ugroup', $UGROUP);
+            //if (!$UGROUP)
+            //	_new_class('ugroup', $UGROUP);
             $result = array(static_main::m('authok'), 1);
         }
         /*if (!$result[1] and isset($_POST['login'])) //вероятно не нужно удалять авторизацию если была не удачная попытка
 			self::userExit();*/
-		        return $result;
+        return $result;
     }
 
     /**
-	 * Закрытие сессии пользователя
-	 * @return void
-	 */
-	    static function userExit()
+     * Закрытие сессии пользователя
+     * @return void
+     */
+    static function userExit()
     {
         global $_CFG;
         session_go();
         if (isset($_SESSION)) session_destroy();
-		//if(isset($_SESSION))
-		//	$_SESSION = array();
+        //if(isset($_SESSION))
+        //	$_SESSION = array();
         if (isset($_COOKIE['remember'])) _setcookie('remember', '', (time() - 5000));
         if (isset($_COOKIE[$_CFG['session']['name']])) _setcookie($_CFG['session']['name'], '', (time() - 5000));
     }
 
     /**
-	 * Получить ID пользователя или зарегить как анонима
-	 *
-	 */
-	    static function userId($force = false)
+     * Получить ID пользователя или зарегить как анонима
+     *
+     */
+    static function userId($force = false)
     {
         session_go();
         if (isset($_SESSION['user']['id'])) return $_SESSION['user']['id'];
         elseif ($force) {
-			//TODO : Создаем пользователя  гостя
+            //TODO : Создаем пользователя  гостя
         }
         return null;
     }
@@ -486,14 +485,14 @@ class static_main
     }
     /*Функции вспомогательные*/
 
-	    /**
-	 * Вставка массива , после указанного ключа
-	 * @param array $data - Массив в который будет вставляться $insert_data
-	 * @param value $afterkey - ключ массива $data, после которого будет вставлен массив $insert_data
-	 * @param array $insert_data - вставляемый массив
-	 * @return array
-	 */
-	    static function insertInArray(array $data, $afterkey, array $insert_data)
+    /**
+     * Вставка массива , после указанного ключа
+     * @param array $data - Массив в который будет вставляться $insert_data
+     * @param value $afterkey - ключ массива $data, после которого будет вставлен массив $insert_data
+     * @param array $insert_data - вставляемый массив
+     * @return array
+     */
+    static function insertInArray(array $data, $afterkey, array $insert_data)
     {
         $output = array();
         if (!is_array($insert_data)) {
@@ -506,7 +505,7 @@ class static_main
             foreach ($data as $k => $r) {
                 $output[$k] = $r;
                 if ($k == $afterkey) {
-					//$output = array_merge($output,$insert_data);
+                    //$output = array_merge($output,$insert_data);
                     $output = $output + $insert_data;
                 }
             }
@@ -516,12 +515,12 @@ class static_main
     }
 
     /**
-	 * Рекурсивное слияние 2х многомерных массивов
-	 * @param array $Arr1 - 1ый массив
-	 * @param array $Arr2 - 2ой массив
-	 * @return array
-	 */
-	    static function MergeArrays($Arr1, $Arr2)
+     * Рекурсивное слияние 2х многомерных массивов
+     * @param array $Arr1 - 1ый массив
+     * @param array $Arr2 - 2ой массив
+     * @return array
+     */
+    static function MergeArrays($Arr1, $Arr2)
     {
         foreach ($Arr2 as $key => $Value) {
             if (array_key_exists($key, $Arr1) && is_array($Value) && is_array($Arr1[$key])) {
@@ -532,11 +531,11 @@ class static_main
     }
 
     /**
-	 * ИЗ полного(абсолютного) пути к фаилу получаем относительный путь с корня сайта
-	 * @param string $file - абсолютный путь к фаилу
-	 * @return string относительный путь к фаилу
-	 */
-	    static function relativePath($file)
+     * ИЗ полного(абсолютного) пути к фаилу получаем относительный путь с корня сайта
+     * @param string $file - абсолютный путь к фаилу
+     * @return string относительный путь к фаилу
+     */
+    static function relativePath($file)
     {
         global $_CFG;
         $file = str_replace(array('\\\\', '\\'), '/', $file);
@@ -549,19 +548,19 @@ class static_main
     }
 
     /**
-	 * Обрезание текста по длине , оставляя максимум целых слов.
-	 * @param string $text - текст
-	 * @param int $col - максим длина строки
-	 * @param bool $clearFormat - чистка строки от тегов
-	 * @return string обрезанный текст
-	 */
-	    static function pre_text($text, $col, $clearFormat = true)
+     * Обрезание текста по длине , оставляя максимум целых слов.
+     * @param string $text - текст
+     * @param int $col - максим длина строки
+     * @param bool $clearFormat - чистка строки от тегов
+     * @return string обрезанный текст
+     */
+    static function pre_text($text, $col, $clearFormat = true)
     {
         if ($clearFormat) {
-			//temp
+            //temp
             $text = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
             if ($clearFormat === 2) // TODO  : для чего этот высер?
-            $text = str_replace(array('.<br />', ',<br />', '<br />'), array('. ', ', ', '. '), $text);
+                $text = str_replace(array('.<br />', ',<br />', '<br />'), array('. ', ', ', '. '), $text);
             else $text = str_replace(array('<br/>', '<br/>', '<hr>', '<br>', '><'), array(' ', ' ', ' ', ' ', '> <'), $text);
 
             $text = trim(strip_tags($text), "\s\t\r\n\0\x0B"); // \xA0 из за него кавычки и пробелы тупят
@@ -574,13 +573,13 @@ class static_main
     }
 
     /**
-	 * Замена в тексте ссылок на редирект
-	 * @param string $text - текст в котором будет производится поиск
-	 * @param int $name - подстановочное название ссылок, если $name==false - то название будет как самы ссылка только без http:// и www, если $name===true - то только домен в названии останется xakki.ru
-	 * @param int $dolink - 0 - замена всех http на редирект и превращение в ссылки; 1- замена всех http на редирект; 2- замена всех http на редирект в ссылках
-	 * @return string текст
-	 */
-	static function redirectLink($text, $name = 'Источник', $dolink = 0)
+     * Замена в тексте ссылок на редирект
+     * @param string $text - текст в котором будет производится поиск
+     * @param int $name - подстановочное название ссылок, если $name==false - то название будет как самы ссылка только без http:// и www, если $name===true - то только домен в названии останется xakki.ru
+     * @param int $dolink - 0 - замена всех http на редирект и превращение в ссылки; 1- замена всех http на редирект; 2- замена всех http на редирект в ссылках
+     * @return string текст
+     */
+    static function redirectLink($text, $name = 'Источник', $dolink = 0)
     {
         $cont = array();
         if ($dolink == 2) $match = '/(href=")(http:\/\/|https:\/\/|www\.)[0-9A-Za-zА-Яа-я\/\.\_\-\=\?\&\;]*/u';
@@ -625,14 +624,14 @@ class static_main
 //        }
 
         $cur = $_SERVER['HTTP_PROTO'] . $_SERVER['HTTP_HOST'] . '/' . $_SERVER['REQUEST_URI'];
-        $cookieName = '_r' . md5($link.$cur);
+        $cookieName = '_r' . md5($link . $cur);
 
-        $cnt = (isset($_COOKIE[$cookieName]) ? (int) $_COOKIE[$cookieName] : 0);
-		//301 - перемещение на посточнную основу
+        $cnt = (isset($_COOKIE[$cookieName]) ? (int)$_COOKIE[$cookieName] : 0);
+        //301 - перемещение на посточнную основу
         // header("HTTP/1.0 400 Bad Request");
         //301 Moved Permanently
-        if ($cnt>4) {
-            trigger_error('Warning!!! Repeat(5) redirect from ' . $cur. ', to '. $link, E_USER_WARNING);
+        if ($cnt > 4) {
+            trigger_error('Warning!!! Repeat(5) redirect from ' . $cur . ', to ' . $link, E_USER_WARNING);
             die('Нажмите на ссылку, для перехода на страницу <a href="' . $link . '">' . $link . '</a>');
         }
 
@@ -652,7 +651,7 @@ class static_main
                 header("Location: " . $link);
                 die($link);
             } else {
-                die('Redirect to <a href="' . $link . '">' . $link . '</a> ['.$NO.']');
+                die('Redirect to <a href="' . $link . '">' . $link . '</a> [' . $NO . ']');
             }
         }
     }
@@ -666,12 +665,12 @@ class static_main
     }
 
     /**
-	 * Преобразование массива данных в XML формат
-	 * @param array $DATA - путь
-	 * @param strin $f - название тега (по умолч item)
-	 * @return string XML
-	 */
-	    static function kData2xml($DATA, $f = 'item')
+     * Преобразование массива данных в XML формат
+     * @param array $DATA - путь
+     * @param strin $f - название тега (по умолч item)
+     * @return string XML
+     */
+    static function kData2xml($DATA, $f = 'item')
     {
         $XML = '';
         if ($f) {
@@ -693,7 +692,7 @@ class static_main
                         } else $value = $r;
                         $XML .= '<' . $f . $attr . '>' . $value . '</' . $f . ">\n";
                     }
-					//$XML = '<'.$f.$attr.'>'.$value.'</'.$f.'>';
+                    //$XML = '<'.$f.$attr.'>'.$value.'</'.$f.'>';
                 } else {
                     foreach ($DATA as $k => $r) {
                         if (is_array($r)) {
@@ -710,12 +709,12 @@ class static_main
     }
 
     /**
-	 * FrontEnd  - Форматирует дату в человеческий вид
-	 * @param int $time - время
-	 * @param string $format - форматирование
-	 * @return string - Дата
-	 */
-	    static function _usabilityDate($time, $format = 'Y-m-d H:i')
+     * FrontEnd  - Форматирует дату в человеческий вид
+     * @param int $time - время
+     * @param string $format - форматирование
+     * @return string - Дата
+     */
+    static function _usabilityDate($time, $format = 'Y-m-d H:i')
     {
         global $_CFG;
         $date = getdate($time);
@@ -775,20 +774,20 @@ class static_main
     }
 
     /**
-	 * Постраничная навигация
-	 */
-	    static public function fPageNav2($_this, $countfield, $param = array())
+     * Постраничная навигация
+     */
+    static public function fPageNav2($_this, $countfield, $param = array())
     {
-		//$countfield - бщее число элем-ов
-		//$$param - массив данных
-		//$_this->messages_on_page - число эл-ов на странице
-		//$_this->_pn - № текущей страницы
+        //$countfield - бщее число элем-ов
+        //$$param - массив данных
+        //$_this->messages_on_page - число эл-ов на странице
+        //$_this->_pn - № текущей страницы
         $numlist = $_this->numlist; // кличество числе по бокам максимум
         $DATA = array(
             'cnt' => $countfield, 'messages_on_page' => $_this->messages_on_page, 'cntpage' => 0, 'modul' => $_this->_cl, 'reverse' => $_this->reversePageN
         );
 
-		//pagenum
+        //pagenum
         if (isset($_GET[$_this->_cl . '_mop'])) {
             $_this->messages_on_page = (int)$_GET[$_this->_cl . '_mop'];
             if ($_COOKIE[$_this->_cl . '_mop'] != $_this->messages_on_page) _setcookie($_this->_cl . '_mop', $_this->messages_on_page, $_this->_CFG['remember_expire']);
@@ -806,7 +805,7 @@ class static_main
             $DATA['cntpage'] = ceil($countfield / $_this->messages_on_page);
         }
 
-		// Приводим к правильным числам
+        // Приводим к правильным числам
         if ($_this->_pn > $DATA['cntpage']) $_this->_pn = $DATA['cntpage'];
         if ($_this->_pn < 1) $_this->_pn = 1;
         $DATA['_pn'] = $_this->_pn;
@@ -821,9 +820,9 @@ class static_main
         }
 
         if ($flag) {
-			//$PP[0] - страница не выбрана
-			//$PP[1] - первая часть
-			//$PP[2] - вторая часть
+            //$PP[0] - страница не выбрана
+            //$PP[1] - первая часть
+            //$PP[2] - вторая часть
             if (!isset($param['firstpath']) or !$param['firstpath']) $param['firstpath'] = $_SERVER['REQUEST_URI'];
             $PP = array(0 => $param['firstpath'], 1 => $param['firstpath'], 2 => '');
             if (isset($param['_clp'])) {
@@ -851,7 +850,7 @@ class static_main
 
             if ($_this->reversePageN) { // обратная нумирация
                 /* Собираем массив ссылок */
-				                $DATA['link'][$DATA['cntpage']] = $PP[0];
+                $DATA['link'][$DATA['cntpage']] = $PP[0];
                 if (($_this->_pn + $numlist) < $DATA['cntpage'] - 1) {
                     $j = $_this->_pn + $numlist;
                 } else $j = $DATA['cntpage'] - 1;
@@ -884,14 +883,14 @@ class static_main
 				  $DATA['link'][$i] = $PP[1].$i.$PP[2];
 				  } */
             }
-			//////////////////
+            //////////////////
         }
 
         $DATA['start'] = 0;
         if ($_this->reversePageN) {
             if ($_this->_pn == floor($countfield / $_this->messages_on_page)) {
                 $_this->messages_on_page = $countfield - $_this->messages_on_page * ($_this->_pn - 1); // правдивый
-				//$_this->messages_on_page = $_this->messages_on_page*$_this->_pn-$countfield; // полная запись
+                //$_this->messages_on_page = $_this->messages_on_page*$_this->_pn-$countfield; // полная запись
             } else $DATA['start'] = $countfield - $_this->messages_on_page * $_this->_pn; // начало отсчета
         } else $DATA['start'] = $_this->messages_on_page * ($_this->_pn - 1); // начало отсчета
         if ($DATA['start'] < 0) $DATA['start'] = 0;
@@ -899,17 +898,17 @@ class static_main
     }
 
     /**
-	 * Формат для вывода сообщения в шаблон
-	 */
-	    static function tplMess($mess = 'errdata', $type = 'error')
+     * Формат для вывода сообщения в шаблон
+     */
+    static function tplMess($mess = 'errdata', $type = 'error')
     {
         return array('tpl' => '#pg#messages', 'messages' => array(static_main::am($type, $mess)));
     }
 
     /**
-	 * Проверка разрешенных ПХП для вендор
-	 */
-	    static public function phpAllowVendors($name)
+     * Проверка разрешенных ПХП для вендор
+     */
+    static public function phpAllowVendors($name)
     {
         global $_CFG;
         $name = substr($name, 9);
@@ -918,9 +917,9 @@ class static_main
     }
 
     /**
-	 * Проверка для вендор запуск сессии
-	 */
-	    static public function phpAllowVendorsSession($name)
+     * Проверка для вендор запуск сессии
+     */
+    static public function phpAllowVendorsSession($name)
     {
         global $_CFG;
         $name = substr($name, 9);
@@ -929,9 +928,9 @@ class static_main
     }
 
     /**
-	 * Проверка для вендор отключения автозагрузчика
-	 */
-	    static public function phpAllowVendorsUnregisterAutoload($name)
+     * Проверка для вендор отключения автозагрузчика
+     */
+    static public function phpAllowVendorsUnregisterAutoload($name)
     {
         global $_CFG;
         $name = substr($name, 9);
@@ -940,9 +939,9 @@ class static_main
     }
 
     /**
-	 * Публикация статичных фаилов
-	 */
-	    static public function publisher($file, $default = false)
+     * Публикация статичных фаилов
+     */
+    static public function publisher($file, $default = false)
     {
         global $_CFG;
 
@@ -1029,7 +1028,7 @@ function _new_class($name, &$MODUL, $OWNER = NULL, $_forceLoad = false)
         $MODUL = $_CFG['singleton'][$name];
         return true;
     } elseif (is_null($OWNER) and isset($_CFG['modulprm'][$name]) and $_CFG['modulprm'][$name]['pid']) {
-		// кастыль: при обращении к дочерним классам , находяться родители и от него дается ссылка на класс.
+        // кастыль: при обращении к дочерним классам , находяться родители и от него дается ссылка на класс.
         _new_class($_CFG['modulprm'][$name]['pid'], $MODUL2);
         $MODUL = $MODUL2->childs[$name];
         return true;
@@ -1048,7 +1047,7 @@ function _new_class($name, &$MODUL, $OWNER = NULL, $_forceLoad = false)
             $getparam = array_slice(func_get_args(), 2);
             try {
                 $ReflectedClass = new ReflectionClass($class_name);
-				//$pClass = $ReflectedClass->getParentClass();
+                //$pClass = $ReflectedClass->getParentClass();
                 $MODUL = $ReflectedClass->newInstanceArgs((array)$getparam);
                 /* extract($getparam,EXTR_PREFIX_ALL,'param');
 				  if(count($getparam)) {
@@ -1157,11 +1156,11 @@ function includeModulFile($Mid, &$OWN = NULL)
 
         if (is_file($ret['file'])) {
             $ret['path'] = $k . ':' . $ret['path'];
-			//include_once($ret['file']);
+            //include_once($ret['file']);
             return $ret;
         }
         if (!is_null($OWN)) {
-            $tempOWN = &$OWN;
+            $tempOWN = & $OWN;
             while (!is_null($tempOWN) and $tempOWN->_cl) {
                 $Pid = $tempOWN->_cl;
                 $ret['type'] = 5;
@@ -1170,7 +1169,7 @@ function includeModulFile($Mid, &$OWN = NULL)
                 $ret['file'] = $r['path'] . $ret['path'];
                 if (is_file($ret['file'])) {
                     $ret['path'] = $k . ':' . $ret['path'];
-					//include_once($ret['file']);
+                    //include_once($ret['file']);
                     return $ret;
                 }
 
@@ -1178,7 +1177,7 @@ function includeModulFile($Mid, &$OWN = NULL)
                 $ret['file'] = $r['path'] . $ret['path'];
                 if (is_file($ret['file'])) {
                     $ret['path'] = $k . ':' . $ret['path'];
-					//include_once($ret['file']);
+                    //include_once($ret['file']);
                     return $ret;
                 }
 
@@ -1186,10 +1185,10 @@ function includeModulFile($Mid, &$OWN = NULL)
                 $ret['file'] = $r['path'] . $ret['path'];
                 if (is_file($ret['file'])) {
                     $ret['path'] = $k . ':' . $ret['path'];
-					//include_once($ret['file']);
+                    //include_once($ret['file']);
                     return $ret;
                 }
-                $tempOWN = &$tempOWN->owner;
+                $tempOWN = & $tempOWN->owner;
             }
         }
     }
@@ -1274,7 +1273,7 @@ function SpiderDetect($USER_AGENT = '')
 function _fTestIE()
 {
     /* Доп функция проверки типа браузера клиента */
-	    $user_agent = $_SERVER['HTTP_USER_AGENT'];
+    $user_agent = $_SERVER['HTTP_USER_AGENT'];
     $browserIE = false;
     if (stristr($user_agent, 'MSIE')) $browserIE = true; // IE
     return $browserIE;
@@ -1311,7 +1310,7 @@ function getTheme()
 		$_design = $_CFG['wep']['design'];
 	$_design = 'default';*/
 
-	    global $_CFG;
+    global $_CFG;
     if (isBackend()) return $_CFG['wep']['design'];
     else return $_CFG['site']['theme'];
 }
@@ -1538,13 +1537,13 @@ function setCss($styles, $isAuto = true, $pos = POS_END)
 
     if (is_array($styles)) {
         foreach ($styles as $r)
-        if ($r) {
-            if ($pos == POS_BEGIN) {
-                $_tpl['styles'] = array(getUrlCss($r, $customTheme) => 1) + $_tpl['styles'];
-            } else {
-                $_tpl['styles'][getUrlCss($r, $customTheme)] = 1;
+            if ($r) {
+                if ($pos == POS_BEGIN) {
+                    $_tpl['styles'] = array(getUrlCss($r, $customTheme) => 1) + $_tpl['styles'];
+                } else {
+                    $_tpl['styles'][getUrlCss($r, $customTheme)] = 1;
+                }
             }
-        }
     }
 }
 
@@ -1586,9 +1585,9 @@ function setScript($script, $isAuto = true)
 
     if (is_array($script)) {
         foreach ($script as $r)
-        if ($r) {
-            $_tpl['script'][getUrlScript($r, $customTheme)] = 1;
-        }
+            if ($r) {
+                $_tpl['script'][getUrlScript($r, $customTheme)] = 1;
+            }
     }
 }
 
@@ -1710,8 +1709,8 @@ function plugJQueryUI_multiselect($init = true)
     $_tpl['script'][$ui][getUrlScript('script.jquery/jquery.localisation/ui-multiselect-ru')] = 1;
 
     if ($init) $_tpl['onloadArray']['multiselect'] = 'jQuery(\'select.multiple\').multiselect();';
-	//#
-	//$_tpl['onload'] .= '$.localise(\'ui-multiselect\', {language: \'ru\', path: \''.$_CFG['_HREF']['_script'].'script.localisation/\'});';
+    //#
+    //$_tpl['onload'] .= '$.localise(\'ui-multiselect\', {language: \'ru\', path: \''.$_CFG['_HREF']['_script'].'script.localisation/\'});';
 }
 
 function plugQRtip($init = true)

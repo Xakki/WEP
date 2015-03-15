@@ -4,7 +4,7 @@ function transformXSL(&$xml, $transform, $_PATHd = false)
 {
     if (!$_PATHd) $_PATHd = getPathTheme();
     /* XML шаблонизатор */
-	//$xml = preg_replace(array("/[\x1-\x8\x0b\x0c\x0e-\x1f]+/"),'',$xml);
+    //$xml = preg_replace(array("/[\x1-\x8\x0b\x0c\x0e-\x1f]+/"),'',$xml);
     $transform = $_PATHd . '/xsl/' . $transform . '.xsl';
     if (!file_exists($transform)) {
         trigger_error("Template $transform not exists", E_USER_WARNING);

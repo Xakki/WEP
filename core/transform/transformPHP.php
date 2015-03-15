@@ -25,11 +25,11 @@ function transformPHP($data, $transform = NULL, $marker = '', $theme = null)
     }
     if (!$marker) $marker = $transform;
 
-	//$MY_THEME = getUrlTheme();
-	//$_MY_THEME = getPathTheme();
+    //$MY_THEME = getUrlTheme();
+    //$_MY_THEME = getPathTheme();
 
     if (!isset($data[$marker])) {
-		//trigger_error('Внимание! В входных данных шаблона не найден маркер "$data[' . $marker . ']"', E_USER_NOTICE);
+        //trigger_error('Внимание! В входных данных шаблона не найден маркер "$data[' . $marker . ']"', E_USER_NOTICE);
         $marker = '$data';
     } else $marker = '$data["' . $marker . '"]';
 

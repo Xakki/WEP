@@ -1,13 +1,14 @@
 <?php
+
 class static_list
 {
     /**
-	 * проверка выбранных данных из списка
-	 * @param mixed $listname - название списока или массив данных для списка
-	 * @param mixed $value - значение
-	 * @return array Список
-	 */
-	    static function _checkList($_this, &$listname, $value = NULL)
+     * проверка выбранных данных из списка
+     * @param mixed $listname - название списока или массив данных для списка
+     * @param mixed $value - значение
+     * @return array Список
+     */
+    static function _checkList($_this, &$listname, $value = NULL)
     {
         $templistname = $listname;
         if (is_array($listname)) $templistname = implode(',', $listname);
@@ -15,21 +16,21 @@ class static_list
 
         if (!isset($_this->_CFG['enum_check'][$templistname])) {
             if (!isset($_this->_CFG['enum'][$templistname])) {
-                $data = &$_this->_getCashedList($listname, $value); // , $value
-				//$_this->_CFG['enum'][$templistname]
-            } else $data = &$_this->_CFG['enum'][$templistname];
+                $data = & $_this->_getCashedList($listname, $value); // , $value
+                //$_this->_CFG['enum'][$templistname]
+            } else $data = & $_this->_CFG['enum'][$templistname];
 
             if (!is_array($data) or !count($data)) return false;
 
-			// Скорее всего вскоре этот блок будет лишним ,
-			// по идее _checkList всегжа должен иметь $value
-			// и _getCashedList выдает готовый рез-тат
+            // Скорее всего вскоре этот блок будет лишним ,
+            // по идее _checkList всегжа должен иметь $value
+            // и _getCashedList выдает готовый рез-тат
             $temp = self::fix_checklist($data);
 
             if (is_null($value)) // не кешируем если не задано значение и  or !is_array($listname) $listname - выборка из БД(в массиве)
-            $_this->_CFG['enum_check'][$templistname] = $temp;
+                $_this->_CFG['enum_check'][$templistname] = $temp;
         } else {
-            $temp = &$_this->_CFG['enum_check'][$templistname];
+            $temp = & $_this->_CFG['enum_check'][$templistname];
         }
 
         if (is_array($value)) {
@@ -44,7 +45,7 @@ class static_list
         return false;
     }
 
-	// fix list data
+    // fix list data
     static function fix_checklist($data)
     {
         $temp2 = array();
@@ -65,9 +66,9 @@ class static_list
                 }
                 $temp2 += $row;
             }
-            $temp = &$temp2;
+            $temp = & $temp2;
         } else {
-            $temp = &$data;
+            $temp = & $data;
         }
         return $temp;
     }
@@ -76,7 +77,7 @@ class static_list
      * Получение списка из кеша если он там есть
      * @param $_this    kernel_extends
      * @param $listname array   название списока или массив данных для списка
-     * @param null $value  mixed  значение
+     * @param null $value mixed  значение
      * @return array Список
      */
     static function &_getCashedList($_this, $listname, $value = NULL)
@@ -95,11 +96,11 @@ class static_list
     }
 
     /**
-	 * Выводит массив из элеменов первой переменной, по совпавшим ключам из второй переменной
-	 */
-	    static function uarray_intersect_key(array $data, $value)
+     * Выводит массив из элеменов первой переменной, по совпавшим ключам из второй переменной
+     */
+    static function uarray_intersect_key(array $data, $value)
     {
-		// VALUE
+        // VALUE
         if (!is_array($value)) $tvalue = array($value => $value);
         else $tvalue = array_combine($value, $value);
 
@@ -125,8 +126,8 @@ class static_list
     static function &_getlist($_this, &$listname, $value = NULL) /*LIST SELECTOR*/
     {
         /*Выдает 1 уровневый массив, либо 2х уровневый для структуры типа дерева*/
-		        /*Конечный уровень может быть с елементами массива #name# итп, этот уровень в счет не входит*/
-		        $data = array();
+        /*Конечный уровень может быть с елементами массива #name# итп, этот уровень в счет не входит*/
+        $data = array();
         $templistname = $listname;
         if (is_array($listname)) {
             if (isset($listname[0])) $templistname = $listname[0];
@@ -160,10 +161,10 @@ class static_list
                 $odir->close();
             }
         } elseif ($templistname == 'phptemplates') {
-			// вызов только для PG
+            // вызов только для PG
             $data[''][''] = ' - ';
 
-			// Системные модули
+            // Системные модули
             $dir = dir($_this->_CFG['_PATH']['wep_ext']);
             while (false !== ($entry = $dir->read())) {
                 if (_strpos($entry, '.class') !== false) {
@@ -180,9 +181,9 @@ class static_list
 
                                 if (!isset($data[$docs['type']])) $data[''][$docs['type']] = array('#name#' => $docs['type'], '#checked#' => 0);
 
-								// Определяем совместимость шаблонов
+                                // Определяем совместимость шаблонов
                                 if (isset($listname['tags'])) {
-									// todo - suport multiple tag
+                                    // todo - suport multiple tag
                                     if (!$docs['tags']) $docs['#css#'] = 'notags';
                                     elseif ($docs['tags'] != $listname['tags']) $docs['#css#'] = 'nosupport';
                                     else $docs['#css#'] = 'support';
@@ -198,7 +199,7 @@ class static_list
             }
             $dir->close();
 
-			// Пользовательские модули
+            // Пользовательские модули
             $dir = dir($_this->_CFG['_PATH']['ext']);
             while (false !== ($entry = $dir->read())) {
                 if (strpos($entry, '.class') !== false) {
@@ -215,9 +216,9 @@ class static_list
 
                                 if (!isset($data[$docs['type']])) $data[''][$docs['type']] = array('#name#' => $docs['type'], '#checked#' => 0);
 
-								// Определяем совместимость шаблонов
+                                // Определяем совместимость шаблонов
                                 if (isset($listname['tags'])) {
-									// todo - suport multiple tag
+                                    // todo - suport multiple tag
                                     if (!$docs['tags']) $docs['#css#'] = 'notags';
                                     elseif ($docs['tags'] != $listname['tags']) $docs['#css#'] = 'nosupport';
                                     else $docs['#css#'] = 'support';
@@ -233,7 +234,7 @@ class static_list
             }
             $dir->close();
 
-			// Дизайн шаблоны
+            // Дизайн шаблоны
             _new_class('pg', $PGLIST);
             if (file_exists($PGLIST->_CFG['_PATH']['themes'] . 'default/php')) {
                 $dir = $PGLIST->_CFG['_PATH']['themes'] . 'default/php';
@@ -247,9 +248,9 @@ class static_list
 
                         if (!isset($data[$docs['type']])) $data[''][$docs['type']] = array('#name#' => $docs['type'], '#checked#' => 0);
 
-						// Определяем совместимость шаблонов
+                        // Определяем совместимость шаблонов
                         if (isset($listname['tags'])) {
-							// todo - suport multiple tag
+                            // todo - suport multiple tag
                             if (!$docs['tags']) $docs['#css#'] = 'notags';
                             elseif ($docs['tags'] != $listname['tags']) $docs['#css#'] = 'nosupport';
                             else $docs['#css#'] = 'support';
@@ -262,8 +263,8 @@ class static_list
                 $dirObj->close();
             }
 
-			// Совместимость со старой версией
-			// TODO - clear this code
+            // Совместимость со старой версией
+            // TODO - clear this code
             global $FUNCPARAM_FIX;
             $f = $value . '/templates';
             if ($FUNCPARAM_FIX and count($FUNCPARAM_FIX) and file_exists($f)) {
@@ -276,14 +277,15 @@ class static_list
                 unset($rff);
             }
         } elseif ($listname == 'themes') {
-			// вызов только для PG
+            // вызов только для PG
             $data[''] = ' - По умолчанию -';
             $dir = dir($_this->_CFG['_PATH']['themes']);
             if ($dir) {
                 while (false !== ($entry = $dir->read())) {
-                    if ($entry[0] != '.' && $entry[0] != '..' && $entry {
+                    if ($entry[0] != '.' && $entry[0] != '..' && $entry{
                         0
-                    } != '_') {
+                        } != '_'
+                    ) {
                         $data[$entry] = $entry;
                     }
                 }
@@ -301,7 +303,7 @@ class static_list
             }
             $dir->close();
         } elseif ($listname == 'style') {
-			// вызов только для PG
+            // вызов только для PG
             $dir = dir($_this->_CFG['_PATH']['themes'] . 'default/style');
             while (false !== ($entry = $dir->read())) {
                 if (strpos($entry, '.css')) {
@@ -332,7 +334,7 @@ class static_list
             $dir->close();
             if (count($afterSubDir)) $data[''] = $data[''] + $afterSubDir;
         } elseif ($templistname == "script") {
-			// вызов только для PG
+            // вызов только для PG
             $dir = dir($_this->_CFG['_PATH']['themes'] . 'default/script');
             while (false !== ($entry = $dir->read())) {
                 if (strpos($entry, '.js')) {
@@ -388,7 +390,7 @@ class static_list
             if ($_this->ordfield) $q_order = ' ORDER BY ' . $_this->ordfield;
 
             if (isset($_this->owner->id) and $_this->owner->id) // либо по owner id
-            $q_where[] = $_this->owner_name . ' IN (' . $_this->owner->_id_as_string() . ')';
+                $q_where[] = $_this->owner_name . ' IN (' . $_this->owner->_id_as_string() . ')';
 
             if (count($q_where)) $q_where = ' WHERE ' . implode(' and ', $q_where);
             else $q_where = ' ';
@@ -436,13 +438,13 @@ class static_list
             if ($_this->mf_ordctrl) $q .= ' ORDER BY ' . $_this->mf_ordctrl;
             $result = $_this->SQL->execSQL($q);
             if (!$result->err)
-            while (list($id, $name, $pid) = $result->fetch_row()) {
-                $data[$pid][$id] = $name;
-            }
+                while (list($id, $name, $pid) = $result->fetch_row()) {
+                    $data[$pid][$id] = $name;
+                }
         } elseif (is_array($listname) and isset($listname[0]) and isset($listname[1]) and 'owner' == $listname[0]) {
             $data = $_this->owner->_getlist($listname[1], $value);
         } elseif ('ownerlist' == $templistname) {
-			// TODO : это Кастыль совместимости
+            // TODO : это Кастыль совместимости
             if ($_this->owner) $data = $_this->owner->_getlist('list', $value);
             else $data = array(
                 'Ошибка - список ownerlist не может быть создан, так как родитель не доступен'
@@ -522,17 +524,17 @@ class static_list
     }
 
     /**
-	 * Преобразование списка в шаблонный список для формы
-	 * @param array $path - путь
-	 * @return string XML
-	 */
-	    static function _forlist(&$data, $id = 0, $select = '', $multiple = 0) /*LIST SELECTOR*/
+     * Преобразование списка в шаблонный список для формы
+     * @param array $path - путь
+     * @return string XML
+     */
+    static function _forlist(&$data, $id = 0, $select = '', $multiple = 0) /*LIST SELECTOR*/
     {
         $upsel = 0;
         /*
 		  array('name'=>'NAME','id'=>1 [, 'sel'=>0, 'checked'=>0])
 		 */
-		//$select - array(значение=>1)
+        //$select - array(значение=>1)
         $s = array();
         if (!is_array($data) or !count($data)) return $s;
 
@@ -550,8 +552,8 @@ class static_list
             $multiple = 'is temp key';
         }
 
-        if (isset($data[$id]) and is_array($data[$id]) and count($data[$id])) $temp = &$data[$id];
-        else $temp = &$data;
+        if (isset($data[$id]) and is_array($data[$id]) and count($data[$id])) $temp = & $data[$id];
+        else $temp = & $data;
 
         foreach ($temp as $key => $value) {
             $sel = 0;
@@ -592,8 +594,8 @@ class static_list
                 $upsel = $s[$key]['#sel#'];
             }
             /*Если это использовать то проверка данных сломается*/
-			//if (isset($value['#item#']) and is_array($value['#item#']) and count($value['#item#']))
-			//	$s[$key]['#item#'] = $value['#item#']+$s[$key]['#item#'];
+            //if (isset($value['#item#']) and is_array($value['#item#']) and count($value['#item#']))
+            //	$s[$key]['#item#'] = $value['#item#']+$s[$key]['#item#'];
         }
         return array($s, $upsel);
     }

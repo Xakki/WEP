@@ -141,10 +141,10 @@ function cuSelRefresh(params) {
                                 $this.jScrollPaneCusel(settings);
                             }
                         }).each(function (i, val) {
-                                if (this.complete || this.complete === undefined) {
-                                    this.src = this.src;
-                                }
-                            });
+                            if (this.complete || this.complete === undefined) {
+                                this.src = this.src;
+                            }
+                        });
                     });
                 }
                 ;

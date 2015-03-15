@@ -49,9 +49,9 @@ footer {
     width: 288px;
     height: 321px;
 
-       -moz-perspective: 800px;
+    -moz-perspective: 800px;
     -webkit-perspective: 800px;
-            perspective: 800px;
+    perspective: 800px;
 }
 
 #formContainer form {
@@ -62,21 +62,21 @@ footer {
     height: 100%;
     -webkit-transition: .8s;
     /* Enabling a smooth animated transition */
-       -moz-transition: .8s;
-            transition: .8s;
+    -moz-transition: .8s;
+    transition: .8s;
     /* Configure it for Chrome and Safari */
     -webkit-animation: pulse 2s infinite;
     /* Configure a keyframe animation for Firefox */
-       -moz-animation: pulse 2s infinite;
+    -moz-animation: pulse 2s infinite;
     /* Enabling 3d space for the transforms */
 
-       -moz-transform-style: preserve-3d;
+    -moz-transform-style: preserve-3d;
     -webkit-transform-style: preserve-3d;
-            transform-style: preserve-3d;
+    transform-style: preserve-3d;
     /* When the forms are flipped, they will be hidden */
-       -moz-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
+    backface-visibility: hidden;
 }
 
 /* Firefox Keyframe Animation */
@@ -116,8 +116,8 @@ footer {
     opacity: 0;
     -webkit-transform: rotateY(180deg);
     /* Rotating the recover password form by default */
-       -moz-transform: rotateY(180deg);
-            transform: rotateY(180deg);
+    -moz-transform: rotateY(180deg);
+    transform: rotateY(180deg);
 }
 
 #formContainer.flipped #login {
@@ -127,16 +127,16 @@ footer {
 	 * Rotating the login form when the
 	 * flipped class is added to the container
 	 */
-       -moz-transform: rotateY(-180deg);
-            transform: rotateY(-180deg);
+    -moz-transform: rotateY(-180deg);
+    transform: rotateY(-180deg);
 }
 
 #formContainer.flipped #recover {
     opacity: 1;
     -webkit-transform: rotateY(0deg);
     /* Rotating the recover div into view */
-       -moz-transform: rotateY(0deg);
-            transform: rotateY(0deg);
+    -moz-transform: rotateY(0deg);
+    transform: rotateY(0deg);
 }
 
 /*----------------------------
@@ -224,11 +224,11 @@ input[type=submit] {
     border: none;
     border-radius: 6px;
     /* CSS3 Gradients */
-    background-image:         linear-gradient(bottom, rgb(80, 102, 127) 50%, rgb(87, 109, 136) 50%, rgb(106, 129, 155) 100%);
-    background-image:      -o-linear-gradient(bottom, rgb(80, 102, 127) 50%, rgb(87, 109, 136) 50%, rgb(106, 129, 155) 100%);
-    background-image:    -moz-linear-gradient(bottom, rgb(80, 102, 127) 50%, rgb(87, 109, 136) 50%, rgb(106, 129, 155) 100%);
+    background-image: linear-gradient(bottom, rgb(80, 102, 127) 50%, rgb(87, 109, 136) 50%, rgb(106, 129, 155) 100%);
+    background-image: -o-linear-gradient(bottom, rgb(80, 102, 127) 50%, rgb(87, 109, 136) 50%, rgb(106, 129, 155) 100%);
+    background-image: -moz-linear-gradient(bottom, rgb(80, 102, 127) 50%, rgb(87, 109, 136) 50%, rgb(106, 129, 155) 100%);
     background-image: -webkit-linear-gradient(bottom, rgb(80, 102, 127) 50%, rgb(87, 109, 136) 50%, rgb(106, 129, 155) 100%);
-    background-image:     -ms-linear-gradient(bottom, rgb(80, 102, 127) 50%, rgb(87, 109, 136) 50%, rgb(106, 129, 155) 100%);
+    background-image: -ms-linear-gradient(bottom, rgb(80, 102, 127) 50%, rgb(87, 109, 136) 50%, rgb(106, 129, 155) 100%);
     background-image: -webkit-gradient(linear, left bottom, left top, color-stop(.5, rgb(80, 102, 127)), color-stop(.5, rgb(87, 109, 136)), color-stop(1, rgb(106, 129, 155)));
     box-shadow: 0 1px 1px #888;
     color: #fff;
@@ -277,8 +277,8 @@ input::-webkit-input-placeholder {
     border-radius: 6px;
     background: white;
     -webkit-box-shadow: 0 0 15px rgba(50, 50, 50, .77);
-       -moz-box-shadow: 0 0 15px rgba(50, 50, 50, .77);
-            box-shadow: 0 0 15px rgba(50, 50, 50, .77);
+    -moz-box-shadow: 0 0 15px rgba(50, 50, 50, .77);
+    box-shadow: 0 0 15px rgba(50, 50, 50, .77);
 }
 
 .messages .error {

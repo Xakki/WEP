@@ -426,27 +426,27 @@
                         marginLeft: (size / (-2 * hourGridSize)) + "%",
                         borderCollapse: 'collapse'
                     }).find("td").each(function (index) {
-                            $(this).click(function () {
-                                var h = $(this).html();
-                                if (o.ampm) {
-                                    var ap = h.substring(2).toLowerCase(),
-                                        aph = parseInt(h.substring(0, 2));
-                                    if (ap == 'a') {
-                                        if (aph == 12) h = 0;
-                                        else h = aph;
-                                    } else if (aph == 12) h = 12;
-                                    else h = aph + 12;
-                                }
-                                tp_inst.hour_slider.slider("option", "value", h);
-                                tp_inst._onTimeChange();
-                                tp_inst._onSelectHandler();
-                            }).css({
-                                    cursor: 'pointer',
-                                    width: (100 / hourGridSize) + '%',
-                                    textAlign: 'center',
-                                    overflow: 'hidden'
-                                });
+                        $(this).click(function () {
+                            var h = $(this).html();
+                            if (o.ampm) {
+                                var ap = h.substring(2).toLowerCase(),
+                                    aph = parseInt(h.substring(0, 2));
+                                if (ap == 'a') {
+                                    if (aph == 12) h = 0;
+                                    else h = aph;
+                                } else if (aph == 12) h = 12;
+                                else h = aph + 12;
+                            }
+                            tp_inst.hour_slider.slider("option", "value", h);
+                            tp_inst._onTimeChange();
+                            tp_inst._onSelectHandler();
+                        }).css({
+                            cursor: 'pointer',
+                            width: (100 / hourGridSize) + '%',
+                            textAlign: 'center',
+                            overflow: 'hidden'
                         });
+                    });
                 }
 
                 if (o.showMinute && o.minuteGrid > 0) {
@@ -456,17 +456,17 @@
                         marginLeft: (size / (-2 * minuteGridSize)) + "%",
                         borderCollapse: 'collapse'
                     }).find("td").each(function (index) {
-                            $(this).click(function () {
-                                tp_inst.minute_slider.slider("option", "value", $(this).html());
-                                tp_inst._onTimeChange();
-                                tp_inst._onSelectHandler();
-                            }).css({
-                                    cursor: 'pointer',
-                                    width: (100 / minuteGridSize) + '%',
-                                    textAlign: 'center',
-                                    overflow: 'hidden'
-                                });
+                        $(this).click(function () {
+                            tp_inst.minute_slider.slider("option", "value", $(this).html());
+                            tp_inst._onTimeChange();
+                            tp_inst._onSelectHandler();
+                        }).css({
+                            cursor: 'pointer',
+                            width: (100 / minuteGridSize) + '%',
+                            textAlign: 'center',
+                            overflow: 'hidden'
                         });
+                    });
                 }
 
                 if (o.showSecond && o.secondGrid > 0) {
@@ -475,17 +475,17 @@
                         marginLeft: (size / (-2 * secondGridSize)) + "%",
                         borderCollapse: 'collapse'
                     }).find("td").each(function (index) {
-                            $(this).click(function () {
-                                tp_inst.second_slider.slider("option", "value", $(this).html());
-                                tp_inst._onTimeChange();
-                                tp_inst._onSelectHandler();
-                            }).css({
-                                    cursor: 'pointer',
-                                    width: (100 / secondGridSize) + '%',
-                                    textAlign: 'center',
-                                    overflow: 'hidden'
-                                });
+                        $(this).click(function () {
+                            tp_inst.second_slider.slider("option", "value", $(this).html());
+                            tp_inst._onTimeChange();
+                            tp_inst._onSelectHandler();
+                        }).css({
+                            cursor: 'pointer',
+                            width: (100 / secondGridSize) + '%',
+                            textAlign: 'center',
+                            overflow: 'hidden'
                         });
+                    });
                 }
 
                 var $buttonPanel = $dp.find('.ui-datepicker-buttonpane');

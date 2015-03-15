@@ -61,8 +61,8 @@ wep.form = {
         jform.find('.div-tr').off('focusin').on('focusin',function () {
             $(this).addClass('active');
         }).off('focusout').on('focusout', function () {
-                $(this).removeClass('active');
-            });
+            $(this).removeClass('active');
+        });
 
         // SUBMIT
         jform.off('click', 'input[type=submit]').on('click', 'input[type=submit]', function () {
@@ -357,7 +357,7 @@ wep.form = {
      * @param ths
      * @param id
      */
-    editorToggle: function(ths, id) {
+    editorToggle: function (ths, id) {
         if (ths.checked) {
             globalEval('cke_' + id + '();');
         } else {

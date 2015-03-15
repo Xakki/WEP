@@ -1,4 +1,5 @@
 <?php
+
 /*SQL*/
 
 class sqlpostgre
@@ -10,10 +11,10 @@ class sqlpostgre
 
     /**Если тру - то проверка таблиц и папок*/
 
-	    function __construct(&$SQL_CFG)
+    function __construct(&$SQL_CFG)
     {
         global $_CFG;
-        $this->SQL_CFG = &$SQL_CFG;
+        $this->SQL_CFG = & $SQL_CFG;
         $this->_iFlag = false;
         $this->ready = false;
         $this->logFile = false;
@@ -30,7 +31,7 @@ class sqlpostgre
     function __destruct()
     {
         global $_CFG;
-		//$this->sql_close();
+        //$this->sql_close();
         if ($this->logFile !== false and count($this->logFile)) {
             file_put_contents($_CFG['_PATH']['log'] . '_' . date('Y-m-d_H-i-s') . '.log', implode("\n", $this->logFile));
         }
@@ -119,21 +120,22 @@ class sqlpostgre
     {
         if (!$this->ready) return array(false, static_main::m('SQL not ready'));
         if (!$this->sql_selectDB($CFG))
-        if (!$this->sql_createDB($CFG)) return array(false, static_main::m('SQL can`t create database'));
+            if (!$this->sql_createDB($CFG)) return array(false, static_main::m('SQL can`t create database'));
         if (!count($this->q('Select * from mysql.user where user=\'' . $CFG['login'] . '\' and Host=\'' . $CFG['host'] . '\'')))
-        if (!$this->sql_createUser($CFG)) return array(false, static_main::m('SQL can`t create users'));
+            if (!$this->sql_createUser($CFG)) return array(false, static_main::m('SQL can`t create users'));
         if (!count(
             $this->q(
                 'Select * from mysql.db where user=\'' . $CFG['login'] . '\' and Host=\'' . $CFG['host'] . '\' and Db=\'' . $CFG['database'] . '\''
             )
-        ))
-        if (!$this->sql_createGrant($CFG)) return array(false, static_main::m('SQL can`t set grant'));
+        )
+        )
+            if (!$this->sql_createGrant($CFG)) return array(false, static_main::m('SQL can`t set grant'));
         return array(true, 'OK');
     }
 
     /*****************************/
 
-	    public function query($sql)
+    public function query($sql)
     {
         if (!$this->ready) return false;
         return new pquery($this, $sql);
@@ -177,20 +179,20 @@ class sqlpostgre
     }
 
     /******************************/
-	    /******************************/
-	    /******************************/
+    /******************************/
+    /******************************/
 
-	    public function _tableCreate(&$MODUL)
+    public function _tableCreate(&$MODUL)
     {
         $fld = array();
         if (count($MODUL->fields))
-        foreach ($MODUL->fields as $key => $param) list($fld[], $mess) = $MODUL->SQL->_fldformer($key, $param);
+            foreach ($MODUL->fields as $key => $param) list($fld[], $mess) = $MODUL->SQL->_fldformer($key, $param);
         if (count($MODUL->attaches))
-        foreach ($MODUL->attaches as $key => $param) list($fld[], $mess) = $MODUL->SQL->_fldformer($key, $MODUL->attprm);
+            foreach ($MODUL->attaches as $key => $param) list($fld[], $mess) = $MODUL->SQL->_fldformer($key, $MODUL->attprm);
         /*foreach($MODUL->memos as $key => $param)
 		  $fld[]= $MODUL->SQL->_fldformer($key, $MODUL->mmoprm);
 		 */
-		        $fld[] = 'PRIMARY KEY(id)';
+        $fld[] = 'PRIMARY KEY(id)';
 
         if (isset($MODUL->unique_fields) and count($MODUL->unique_fields)) {
             foreach ($MODUL->unique_fields as $k => $r) {
@@ -207,7 +209,7 @@ class sqlpostgre
             }
         }
         $query = 'CREATE TABLE `' . $MODUL->tablename . '` (' . implode(',', $fld) . ') ENGINE=' . $MODUL->SQL_CFG['engine'] . ' DEFAULT CHARSET=' . $MODUL->SQL_CFG['setnames'] . ' COMMENT = "' . $MODUL->ver . '"';
-		// to execute query
+        // to execute query
         $result = $this->query($query);
         if ($result->err) {
             return false;
@@ -241,9 +243,9 @@ class sqlpostgre
         $result = $this->query('SHOW KEYS FROM `' . $MODUL->tablename . '`');
         while ($data = $result->fetch_row()) {
             if ($data[2] == 'PRIMARY') //только 1 примарикей
-            $primary = $data[4];
+                $primary = $data[4];
             elseif (!$data[1]) //!NON_unique
-            $uniqlist[$data[2]][$data[4]] = $data[4];
+                $uniqlist[$data[2]][$data[4]] = $data[4];
             else $indexlist[$data[2]][$data[4]] = $data[4];
         }
         return array($primary, $uniqlist, $indexlist);
@@ -251,7 +253,7 @@ class sqlpostgre
 
     /******************************/
 
-	    public function _info()
+    public function _info()
     {
         return $this->q('show variables', 0, MYSQLI_NUM);
     }
@@ -295,11 +297,11 @@ class sqlpostgre
 
     /*****************************/
 
-	    var $alias_types = array(
+    var $alias_types = array(
         'bool' => 'tinyint(1)',
     );
-	// типы полей, число - это значение, которое запишется в базу по умолчанию, если не указывать ширину явно
-	// false - означает, что для данного типа поля в mysql ширина не указывается
+    // типы полей, число - это значение, которое запишется в базу по умолчанию, если не указывать ширину явно
+    // false - означает, что для данного типа поля в mysql ширина не указывается
     var $types_width = array(
         'tinyblob' => false,
         'tinytext' => false,
@@ -321,7 +323,7 @@ class sqlpostgre
         'tinyint' => 4,
         'varchar' => 255,
     );
-	// типы полей, в которых нет атрибута default
+    // типы полей, в которых нет атрибута default
     var $types_without_default = array(
         'tinytext' => true,
         'text' => true,
@@ -387,7 +389,7 @@ class sqlpostgre
         if (!$_CFG['wep']['debugmode']) {
             die($mess);
         } else {
-			//static_main::log('error',$mess);
+            //static_main::log('error',$mess);
         }
         return false;
     }
@@ -419,14 +421,14 @@ class pquery
         global $_CFG;
         $ttt = getmicrotime();
         $this->handle = pg_query($db->hlink, $sql);
-        $this->db = &$db;
+        $this->db = & $db;
         $this->query = $db->query = $sql;
         $this->err = mysqli_error($db->hlink);
         if ($this->err != '') {
             if ($db->logFile !== false) $this->logFile[] = 'ERORR: ' . $this->err . ' (' . $sql . ')';
             trigger_error($this->err .= ' (' . $sql . ');', E_USER_WARNING);
             $this->errno = mysqli_errno($db->hlink);
-			//$db->fError($this->err);
+            //$db->fError($this->err);
         } else {
             $db->longLog((getmicrotime() - $ttt), $sql);
             if (stripos($sql, 'insert into') !== false) $db->lastId = $this->sql_id();
@@ -449,7 +451,7 @@ class pquery
     }
 
 
-	// type MYSQLI_ASSOC | MYSQLI_BOTH | MYSQLI_NUM
+    // type MYSQLI_ASSOC | MYSQLI_BOTH | MYSQLI_NUM
 
     function fetch($type = 0)
     { // Выдает асоциативный и нумеровнаый масив
@@ -489,7 +491,7 @@ class pquery
         return pg_result_seek($this->handle, $offset);
     }
 
-	// ТЕСТОВЫЕ
+    // ТЕСТОВЫЕ
 
     function sql_result($row)
     {

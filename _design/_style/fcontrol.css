@@ -13,8 +13,8 @@
     height: auto;
     border: solid gray 1px;
     -webkit-border-radius: 0 0 7px 7px;
-       -moz-border-radius: 0 0 7px 7px;
-            border-radius: 0 0 7px 7px;
+    -moz-border-radius: 0 0 7px 7px;
+    border-radius: 0 0 7px 7px;
     background-color: #e1e1e1;
     font-weight: bold;
     font-size: 1.2em;
@@ -73,7 +73,6 @@ div.superMenu .split {
 }
 
 /* SELECT BUTTONS*/
-
 
 div.superMenu .select .caption {
     display: block;

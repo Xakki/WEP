@@ -9,32 +9,30 @@
  */
 
 if (!isset($var_const))
-	$var_const = array(
-		'mess' => array(),
-		'sbmt' => 'Сохранить'
-	);
+    $var_const = array(
+        'mess' => array(),
+        'sbmt' => 'Сохранить'
+    );
 
 //includeModulFile('modulprm');
 //includeModulFile('ugroup');
 
 if (_new_class('modulprm', $MODULPRM)) {
-	//Форма установки модулей
-	list($res, $DATA) = $MODULPRM->instalModulForm();
-}
-else {
-	$res = 0;
-	$DATA['messages'][] = array('ok', 'Ошибка инициализации модуля `modulprm`');
+    //Форма установки модулей
+    list($res, $DATA) = $MODULPRM->instalModulForm();
+} else {
+    $res = 0;
+    $DATA['messages'][] = array('ok', 'Ошибка инициализации модуля `modulprm`');
 }
 
 
 if ($res == 1) {
-	$_SESSION['step'] = $_GET['step'] + 1;
-	$DATA['messages'][] = $var_const['mess'];
-	$html = transformPHP($DATA, 'messages');
-}
-else {
-	$DATA = array('formcreat' => $DATA);
-	$html = transformPHP($DATA, 'formcreat');
+    $_SESSION['step'] = $_GET['step'] + 1;
+    $DATA['messages'][] = $var_const['mess'];
+    $html = transformPHP($DATA, 'messages');
+} else {
+    $DATA = array('formcreat' => $DATA);
+    $html = transformPHP($DATA, 'formcreat');
 }
 
 return $html;

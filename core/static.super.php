@@ -7,23 +7,23 @@ class static_super
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-	 * Универсальный обработчик вывода данных
-	 * @param array $PARAM - параметры вывода данных и в нём формируется массив данных
-	 *      $Ajax=0 - не скриптовая
-	 *        $_this->_cl - name текущего класса без _class
-	 *        $_this->_clp - построенный путь
-	 *        $param['xsl'] - шаблонизатор
-	 * @param string $ftype
-	 * @return array Данные для шаблонизатора
-	 */
-	    static function super_inc(&$_this, $PARAM = array(), $ftype = '')
+     * Универсальный обработчик вывода данных
+     * @param array $PARAM - параметры вывода данных и в нём формируется массив данных
+     *      $Ajax=0 - не скриптовая
+     *        $_this->_cl - name текущего класса без _class
+     *        $_this->_clp - построенный путь
+     *        $param['xsl'] - шаблонизатор
+     * @param string $ftype
+     * @return array Данные для шаблонизатора
+     */
+    static function super_inc(&$_this, $PARAM = array(), $ftype = '')
     {
-		// Результат работы скрипта
-		// $statusFlag = 3; - вывод данных
+        // Результат работы скрипта
+        // $statusFlag = 3; - вывод данных
         $statusFlag = 0;
         if (!isset($PARAM['clause'])) $PARAM['clause'] = array();
 
-		// Задаем начальный массив данных
+        // Задаем начальный массив данных
         if (!isset($PARAM['messages'])) {
             $PARAM['messages'] = array();
             $PARAM['path'] = array();
@@ -37,7 +37,7 @@ class static_super
             }
         }
 
-		// ID элемента
+        // ID элемента
         if (isset($_GET[$_this->_cl . '_id']) and !is_array($_GET[$_this->_cl . '_id'])) {
             if (!$_this->mf_use_charid) $_this->id = (int)$_GET[$_this->_cl . '_id'];
             else {
@@ -52,7 +52,7 @@ class static_super
         );
 
         if ($_this->id) {
-			// Древо
+            // Древо
             if ($_this->mf_istree) {
                 $parent_id = $_this->id;
                 $_this->tree_data = $first_data = $path = array();
@@ -72,20 +72,20 @@ class static_super
                         if (!count($first_data)) $first_data = $_this->data;
                         $_this->tree_data += $_this->data;
 
-						//********* Path ************
+                        //********* Path ************
                         $path[$_this->_cl . $parent_id] = array(
                             'path' => $PARAM['_clp'] + array($_this->_cl . '_id' => $parent_id),
                             'name' => $name
                         );
                         if ($_this->data[$parent_id][$_this->_listname]) $name = preg_replace($_this->_CFG['_repl']['name'], '', $_this->data[$parent_id][$_this->_listname]);
                         else $name = '№' . $parent_id;
-						//BREAK
+                        //BREAK
                         if (!$_this->parent_id and $parent_id != $_this->id) $_this->parent_id = $parent_id;
                         if (isset($PARAM['first_id']) and $PARAM['first_id'] and $parent_id == $PARAM['first_id']) break;
 
                         $parent_id = $_this->data[$parent_id][$_this->mf_istree];
 
-						// Задаем данные о номере странице
+                        // Задаем данные о номере странице
                         $_this->_pa = $_this->_cl . $parent_id . '_pn';
                         if (isset($_REQUEST[$_this->_pa]) && (int)$_REQUEST[$_this->_pa]) {
                             $PARAM['_clp'][$_this->_pa] = (int)$_REQUEST[$_this->_pa];
@@ -96,7 +96,7 @@ class static_super
                         }
                     } else $parent_id = 0;
                 }
-				//$path[$_this->_cl . $parent_id]['name'] = $_this->caption.': '.$path[$_this->_cl . $parent_id]['name'];
+                //$path[$_this->_cl . $parent_id]['name'] = $_this->caption.': '.$path[$_this->_cl . $parent_id]['name'];
                 $_this->data = $first_data;
                 if (isset($PARAM['first_id']) and $PARAM['first_id'] and !$parent_id) $_this->id = '';
 
@@ -104,7 +104,7 @@ class static_super
                 $PARAM['path'][$_this->_cl]['name'] .= ' : ' . $name;
             } else {
                 $_this->data = $_this->_select();
-				//********* Path ************
+                //********* Path ************
                 if ($_this->data[$_this->id][$_this->_listname]) $name = preg_replace($_this->_CFG['_repl']['name'], '', $_this->data[$_this->id][$_this->_listname]);
                 else $name = '№' . $_this->id;
                 $PARAM['path'][$_this->_cl]['name'] .= ': ' . $name;
@@ -113,20 +113,20 @@ class static_super
             $_this->_pa = $_this->_cl . $_this->id . '_pn';
         }
 
-		// Задаем данные о номере странице
+        // Задаем данные о номере странице
         if (isset($_REQUEST[$_this->_pa]) && (int)$_REQUEST[$_this->_pa]) $_this->_pn = $PARAM['_clp'][$_this->_pa] = (int)$_REQUEST[$_this->_pa];
 
         if ($_this->id and isset($_GET[$_this->_cl . '_ch']) and isset($_this->childs[$_GET[$_this->_cl . '_ch']])) {
             if (count($_this->data)) {
                 if ($_this->mf_istree) array_pop($PARAM['path']);
                 /*				 * ************************************* */
-				                /*				 * **** CHILD ************************** */
-				                /*				 * ************************************* */
-				                $PARAM['_clp'][$_this->_cl . '_ch'] = $_GET[$_this->_cl . '_ch'];
+                /*				 * **** CHILD ************************** */
+                /*				 * ************************************* */
+                $PARAM['_clp'][$_this->_cl . '_ch'] = $_GET[$_this->_cl . '_ch'];
                 list($PARAM, $statusFlag) = $_this->childs[$_GET[$_this->_cl . '_ch']]->super_inc($PARAM, $ftype);
                 /*				 * ************************************* */
-				                /*				 * **** CHILD ************************** */
-				                /*				 * ************************************* */
+                /*				 * **** CHILD ************************** */
+                /*				 * ************************************* */
             }
         } else {
             global $_tpl;
@@ -149,14 +149,14 @@ class static_super
 
             if (is_null($_this->owner) and static_main::_prmModul($_this->_cl, array(14))) {
                 if ($_this->ver != $_this->_CFG['modulprm'][$_this->_cl]['ver']) {
-					//$_tpl['onload'] .= 'showHelp(\'.button-checktable\',\'Версия модуля '.$MODUL->caption.'['.$MODUL->_cl.'] ('.$MODUL->ver.') отличается от версии ('.$_this->_CFG['modulprm'][$MODUL->_cl]['ver'].') сконфигурированного для этого сайта. Обновите здесь поля таблицы.\',4000);$(\'.button-checktable\').addClass(\'weptools_sel\');';
+                    //$_tpl['onload'] .= 'showHelp(\'.button-checktable\',\'Версия модуля '.$MODUL->caption.'['.$MODUL->_cl.'] ('.$MODUL->ver.') отличается от версии ('.$_this->_CFG['modulprm'][$MODUL->_cl]['ver'].') сконфигурированного для этого сайта. Обновите здесь поля таблицы.\',4000);$(\'.button-checktable\').addClass(\'weptools_sel\');';
                     $PARAM['messages'][] = array(
                         'error', 'Версия модуля ' . $_this->caption . '[' . $_this->_cl . '] (' . $_this->ver . ') отличается от версии (' . $_this->_CFG['modulprm'][$_this->_cl]['ver'] . ') сконфигурированного для этого сайта. Обновите модуль.'
                     );
                 }
             }
 
-			// FIX - Удаление через форму
+            // FIX - Удаление через форму
             if (isset($_POST['sbmt_del']) and $_this->id and $ftype == 'update') {
                 $ftype = 'del';
             }
@@ -182,8 +182,8 @@ class static_super
                     break;
 
                 case 'update':
-					//if ($_this->mf_istree)
-					//	array_pop($PARAM['path']);
+                    //if ($_this->mf_istree)
+                    //	array_pop($PARAM['path']);
                     if (!$_this->id) $messages[] = static_main::am('error', 'Id is requare');
                     else {
                         list($PARAM['formcreat'], $statusFlag) = $_this->_UpdItemModul($PARAM);
@@ -197,8 +197,8 @@ class static_super
                     break;
 
                 case 'act':
-					// if ($_this->mf_istree)
-					// 	array_pop($PARAM['path']);
+                    // if ($_this->mf_istree)
+                    // 	array_pop($PARAM['path']);
                     if (!$_this->id) $messages[] = static_main::am('error', 'Id is requare');
                     else {
                         list($messages, $statusFlag) = $_this->_Act(1, $PARAM);
@@ -208,8 +208,8 @@ class static_super
                     break;
 
                 case 'dis':
-					// if ($_this->mf_istree)
-					// 	array_pop($PARAM['path']);
+                    // if ($_this->mf_istree)
+                    // 	array_pop($PARAM['path']);
                     if (!$_this->id) $messages[] = static_main::am('error', 'Id is requare');
                     else {
                         list($messages, $statusFlag) = $_this->_Act(0, $PARAM);
@@ -219,8 +219,8 @@ class static_super
                     break;
 
                 case 'ordup':
-					// if ($_this->mf_istree)
-					// 	array_pop($PARAM['path']);
+                    // if ($_this->mf_istree)
+                    // 	array_pop($PARAM['path']);
                     if (!$_this->id || !$_this->mf_ordctrl) $messages[] = static_main::am('error', 'Id & Order is requare');
                     else {
                         list($messages, $statusFlag) = $_this->_ORD(-1, $PARAM);
@@ -232,8 +232,8 @@ class static_super
                 case 'orddown':
                     if (!$_this->id || !$_this->mf_ordctrl) $messages[] = static_main::am('error', 'Id & Order is requare');
                     else {
-						// if ($_this->mf_istree)
-						// 	array_pop($PARAM['path']);
+                        // if ($_this->mf_istree)
+                        // 	array_pop($PARAM['path']);
                         list($messages, $statusFlag) = $_this->_ORD(1, $PARAM);
                         if ($_this->mf_istree) $_this->id = $_this->tree_data[$_this->id][$_this->mf_istree];
                         else $_this->id = NULL;
@@ -243,8 +243,8 @@ class static_super
                 case 'del':
                     if (!$_this->id) $messages[] = static_main::am('error', 'Id is requare');
                     else {
-						// if ($_this->mf_istree)
-						// 	array_pop($PARAM['path']);
+                        // if ($_this->mf_istree)
+                        // 	array_pop($PARAM['path']);
                         list($messages, $statusFlag) = $_this->_Del($PARAM);
                         if ($_this->mf_istree and isset($_this->tree_data[$_this->id])) $_this->id = $_this->tree_data[$_this->id][$_this->mf_istree];
                         else $_this->id = NULL;
@@ -314,7 +314,7 @@ class static_super
     }
 
     /**
-     * 	 * вывод данных
+     *     * вывод данных
      * @param $_this kernel_extends
      * @param $param array- параметры вывода данных
      * @return array
@@ -322,11 +322,11 @@ class static_super
     static function _displayXML(&$_this, $param)
     {
         /** КОСТЫЛИ **/
-		// Сделать механизм создания форм
+        // Сделать механизм создания форм
         $_this->getFieldsForm();
         /**END  костыли**/
 
-		        $DATA = array('cl' => $_this->_cl, 'caption' => $_this->caption, 'messages' => array());
+        $DATA = array('cl' => $_this->_cl, 'caption' => $_this->caption, 'messages' => array());
         $listfields = array('count(*) as cnt');
         $moder_clause = self::_moder_clause($_this, $param);
         $moder_clause_having = array();
@@ -334,7 +334,7 @@ class static_super
         else $clause = ' t1 WHERE t1.id';
         $_this->data = $_this->_query($listfields, $clause);
 
-		//print($_this->SQL->query);
+        //print($_this->SQL->query);
 
         $countfield = $_this->data[0]['cnt'];
 
@@ -343,28 +343,28 @@ class static_super
             return $DATA;
         }
 
-		// Функция постраничной навигации
+        // Функция постраничной навигации
         $DATA['pagenum'] = $_this->fPageNav2($countfield, $param);
 
-		// Начальный отчет элементов на странице
+        // Начальный отчет элементов на странице
         $DATA['pcnt'] = $DATA['pagenum']['start'];
 
         $climit = $DATA['pagenum']['start'] . ', ' . $_this->messages_on_page;
 
-		//Паратметры запроса
-		// 0 - запрашиваемые поля
-		// 1 - JOIN
-		// 2 - WHERE
+        //Паратметры запроса
+        // 0 - запрашиваемые поля
+        // 1 - JOIN
+        // 2 - WHERE
         $cls = array(
             0 => array('id' => 't1.id'),
             1 => '',
             2 => array()
         );
 
-		//Исключительные поля ()
+        //Исключительные поля ()
         $arrno = array();
 
-		// Родитель
+        // Родитель
         if ($_this->owner and $_this->owner->id) {
             $arrno[$_this->owner_name] = 1;
             $cls[0][$_this->owner_name] = 't1.' . $_this->owner_name;
@@ -375,36 +375,36 @@ class static_super
         if ($_this->mf_actctrl) $cls[0][$_this->mf_actctrl] = 't1.' . $_this->mf_actctrl;
         if ($_this->mf_timecr) $cls[0][$_this->mf_timecr] = 't1.' . $_this->mf_timecr;
 
-		// Дети
+        // Дети
         $t = 2;
         if (count($_this->childs))
-        foreach ($_this->childs as $ck => $cn) {
-            if ($cn->tablename and $cn->owner_name and $cn->showinowner) {
-                $arrno[$ck . '_cnt'] = 1;
-                $cls[0][] = '(SELECT count(*) FROM `' . $cn->tablename . '` t' . $t . ' WHERE t' . $t . '.' . $cn->owner_name . '=t1.id) as ' . $ck . '_cnt';
-                /*$temp = self::_moder_clause($cn, $param);// сырая и недоработана
-				if(count($temp)) $cls[1] .= ' and '.str_replace('t1.','t'.$t.'.',implode(' and ',$temp));
-				//if($cn->_join_check==TRUE)
-					foreach($cn->fields_form as $cnk=>$cnr){
-						if(is_array($cnr['listname']) and isset($cnr['listname']['join']) and $cnr['listname']['class']){
-							$t++;
-							//if (isset($cnr['listname']['include']))
-							//	require_once($_this->_CFG['_PATH']['ext'].$cnr['listname']['include'].'.class.php');
-							$cls[1] .=' AND t'.$t.'.id>0 RIGHT JOIN '.getTableNameOfClass($classname).' t'.$t.' ON t'.($t-1).'.'.$cnk.'=t'.$t.'.id ';
-							if(isset($cnr['listname']['join']) and $cnr['listname']['join']!='')
-								$cls[1] .= 'and '.str_replace('tx.','t'.$t.'.',$cnr['listname']['join']).' ';
-						}
-					}
-				//if(isset($cn->fields['region_id'])) $cls[1] .=' and t'.$t.'.region_id='.$_SESSION['city'];
-				*/
-				                $t++;
+            foreach ($_this->childs as $ck => $cn) {
+                if ($cn->tablename and $cn->owner_name and $cn->showinowner) {
+                    $arrno[$ck . '_cnt'] = 1;
+                    $cls[0][] = '(SELECT count(*) FROM `' . $cn->tablename . '` t' . $t . ' WHERE t' . $t . '.' . $cn->owner_name . '=t1.id) as ' . $ck . '_cnt';
+                    /*$temp = self::_moder_clause($cn, $param);// сырая и недоработана
+                    if(count($temp)) $cls[1] .= ' and '.str_replace('t1.','t'.$t.'.',implode(' and ',$temp));
+                    //if($cn->_join_check==TRUE)
+                        foreach($cn->fields_form as $cnk=>$cnr){
+                            if(is_array($cnr['listname']) and isset($cnr['listname']['join']) and $cnr['listname']['class']){
+                                $t++;
+                                //if (isset($cnr['listname']['include']))
+                                //	require_once($_this->_CFG['_PATH']['ext'].$cnr['listname']['include'].'.class.php');
+                                $cls[1] .=' AND t'.$t.'.id>0 RIGHT JOIN '.getTableNameOfClass($classname).' t'.$t.' ON t'.($t-1).'.'.$cnk.'=t'.$t.'.id ';
+                                if(isset($cnr['listname']['join']) and $cnr['listname']['join']!='')
+                                    $cls[1] .= 'and '.str_replace('tx.','t'.$t.'.',$cnr['listname']['join']).' ';
+                            }
+                        }
+                    //if(isset($cn->fields['region_id'])) $cls[1] .=' and t'.$t.'.region_id='.$_SESSION['city'];
+                    */
+                    $t++;
+                }
             }
-        }
-		// Древовидность
+        // Древовидность
         if ($_this->mf_istree) {
             $arrno[$_this->mf_istree] = 1;
             $arrno['istree_cnt'] = 1;
-			//SET listfields
+            //SET listfields
             $cls[0][$_this->mf_istree] = 't1.' . $_this->mf_istree;
             $cls[0][$_this->ns_config['right']] = 't1.' . $_this->ns_config['right'];
             $cls[0][$_this->ns_config['left']] = 't1.' . $_this->ns_config['left'];
@@ -415,20 +415,20 @@ class static_super
             $cls[0][] = '(SELECT count(*) FROM `' . $_this->tablename . '` t' . $t . ' WHERE t' . $t . '.' . $_this->mf_istree . '=t1.id) as istree_cnt';
             $t++;
         }
-		//SСортировка
+        //SСортировка
         if ($_this->mf_ordctrl) $cls[0][$_this->mf_ordctrl] = 't1.' . $_this->mf_ordctrl;
-		// Статуст активности
+        // Статуст активности
         if ($_this->mf_actctrl) {
             $arrno[$_this->mf_actctrl] = 1;
             $cls[0][$_this->mf_actctrl] = 't1.' . $_this->mf_actctrl;
         }
 
-		//DEFAULT SET SORT
+        //DEFAULT SET SORT
         if ($_this->ordfield != '') $order = 't1.' . $_this->ordfield;
         else $order = 't1.id';
 
         foreach ($_this->fields_form as $k => $r) {
-			//SET listfields
+            //SET listfields
             if (isset($_this->fields[$k]) or isset($_this->attaches[$k]) or isset($_this->memos[$k])) $cls[0][$k] = 't1.' . $k;
 
             if (isset($r['mask']['usercheck']) and !static_main::_prmGroupCheck($r['mask']['usercheck'])) {
@@ -440,9 +440,10 @@ class static_super
             if ((isset($r['mask']['fview']) and $r['mask']['fview'] == 1)
                 or (isset($r['mask']['disable']) and $r['mask']['disable'])
                 or ($r['type'] == 'hidden')
-                or ($r['type'] == 'info'))$arrno[$k] = 1;
+                or ($r['type'] == 'info')
+            ) $arrno[$k] = 1;
             elseif (!isset($arrno[$k])) {
-				//Списки
+                //Списки
                 if (isset($r['listname']) and is_array($r['listname']) and (isset($r['listname']['class']) or isset($r['listname']['tablename']))) {
                     $tmpsort = true;
                     $lsn = $r['listname'];
@@ -450,8 +451,8 @@ class static_super
                     else $lsn['nameField'] = str_replace('tx.', 't' . $t . '.', $lsn['nameField']);
 
 
-					//if (isset($lsn['include']))
-					//	require_once($_this->_CFG['_PATH']['ext'].$lsn['include'].'.class.php');
+                    //if (isset($lsn['include']))
+                    //	require_once($_this->_CFG['_PATH']['ext'].$lsn['include'].'.class.php');
 //					if (1) {
                     $subQuery = 'SELECT ';
                     if (isset($r['multiple']) and $r['multiple']) $subQuery .= 'group_concat(' . $lsn['nameField'] . ' SEPARATOR " | ")';
@@ -460,26 +461,26 @@ class static_super
                     $subQuery .= ' FROM `' . (isset($lsn['class']) ? static_main::getTableNameOfClass($lsn['class']) : $lsn['tablename']) . '` t' . $t;
 
                     $subQuery .= ' WHERE ';
-						// Поле  в связанной таблице для связи
+                    // Поле  в связанной таблице для связи
                     if (!isset($lsn['idField']) or !$lsn['idField']) $lsn['idField'] = 't' . $t . '.id';
                     else $lsn['idField'] = str_replace('tx.', 't' . $t . '.', $lsn['idField']);
-						// поля в текущей таблице для связи
+                    // поля в текущей таблице для связи
                     if (!isset($lsn['idThis'])) $lsn['idThis'] = $k;
                     $lsn['idThis'] = 't1.' . $lsn['idThis'];
-						// Условие для множественных списков
+                    // Условие для множественных списков
                     if (isset($r['multiple']) and $r['multiple']) {
                         $subQuery .= $lsn['idThis'] . ' LIKE concat("%|",' . $lsn['idField'] . ',"|%") ';
                     } else {
                         $subQuery .= ' ' . $lsn['idThis'] . ' = ' . $lsn['idField'];
                         if (isset($lsn['join']) or isset($lsn['leftJoin'])) // доп условия связи
-                        $subQuery .= ' ' . str_replace('tx.', 't' . $t . '.', ($lsn['leftJoin'] . $lsn['join']));
+                            $subQuery .= ' ' . str_replace('tx.', 't' . $t . '.', ($lsn['leftJoin'] . $lsn['join']));
                     }
 
-						//$arrno[$ck.'_cnt'] = 1;
-						//(SELECT count(*) FROM `'.$cn->tablename.'` t'.$t.' WHERE t'.$t.'.'.$cn->owner_name.'=t1.id)
-						// по умолчанию LEFT JOIN
+                    //$arrno[$ck.'_cnt'] = 1;
+                    //(SELECT count(*) FROM `'.$cn->tablename.'` t'.$t.' WHERE t'.$t.'.'.$cn->owner_name.'=t1.id)
+                    // по умолчанию LEFT JOIN
                     if (isset($lsn['join'])) {
-							// отметать результаты без совпадений
+                        // отметать результаты без совпадений
                         $moder_clause_having['t' . $t] = 'name_' . $k . ' IS NOT NULL';
                     }
 
@@ -525,7 +526,7 @@ class static_super
                 }
 
                 $act = 0;
-				//if($_this->_prmSortField($k)) {
+                //if($_this->_prmSortField($k)) {
                 if (isset($_GET['sort']) and $_GET['sort'] == $k) $act = 1;
                 elseif (isset($_GET['dsort']) and $_GET['dsort'] == $k) $act = 2;
                 elseif (strpos($order, 't1.' . $k) !== false) {
@@ -533,35 +534,36 @@ class static_super
                     else $act = 2;
                 }
                 $temphref = $k . (($_this->id) ? '&amp;' . $_this->_cl . '_id=' . $_this->id : '');
-				//}
-				//else $temphref = '';
+                //}
+                //else $temphref = '';
                 $DATA['thitem'][$k] = array('value' => $r['caption'], 'href' => $temphref, 'sel' => $act);
                 if (isset($r['mask']['onetd'])) $DATA['thitem'][$k]['onetd'] = $r['mask']['onetd'];
             }
 
-			//if($_this->_prmSortField($k)) {
+            //if($_this->_prmSortField($k)) {
             if ((isset($_GET['sort']) and $k == $_GET['sort']) or (isset($_GET['dsort']) and $k == $_GET['dsort'])) {
                 if ($tmpsort) $order = 'name_' . $k;
                 elseif (isset($r['mask']['sort']) and is_string($r['mask']['sort'])) $order = $r['mask']['sort'] . $k;
                 else $order = 't1.' . $k;
                 if (isset($_GET['dsort']) and $k == $_GET['dsort']) $order .= ' DESC';
             }
-			//}
+            //}
         }
 
         /** Сборка запроса на вывод*/
-		        $cls[2] = self::_moder_clause($_this, $param);
+        $cls[2] = self::_moder_clause($_this, $param);
         $cls[2] = array_merge($cls[2], $moder_clause);
         if (count($cls[2]) > 0) $cls[1] .= ' WHERE ' . implode(' AND ', $cls[2]);
 
         $listfields = $cls[0];
-        $clause = 't1 ' . $cls[1] /*. ' GROUP BY t1.id'*/;
+        $clause = 't1 ' . $cls[1] /*. ' GROUP BY t1.id'*/
+        ;
 
         if (count($moder_clause_having)) $clause .= ' HAVING ' . implode(' AND ', $moder_clause_having);
 
         if ($order != '') $clause .= ' ORDER BY ' . $order;
         $DATA['order'] = $order;
-		//if(!$_this->mf_istree)
+        //if(!$_this->mf_istree)
         $clause .= ' LIMIT ' . $climit;
         $_this->data = $_this->_query($listfields, $clause, 'id');
 ///print($_this->SQL->query);
@@ -574,7 +576,7 @@ class static_super
                 $DATA['item'][$key] = self::_tr_attribute($_this, $row, $param);
                 $DATA['item'][$key]['id'] = $row['id'];
                 $DATA['item'][$key]['row'] = $row;
-				//if($DATA['item'][$key]['act'])
+                //if($DATA['item'][$key]['act'])
                 if ($_this->mf_actctrl and isset($row[$_this->mf_actctrl])) $DATA['item'][$key]['active'] = $row[$_this->mf_actctrl];
                 foreach ($_this->fields_form as $k => $r) {
                     if (isset($arrno[$k])) {
@@ -599,7 +601,7 @@ class static_super
                         elseif ($r['type'] == 'date') {
                             $temp = '';
                             if (!isset($r['mask']['format'])) $r['mask']['format'] = 'Y-m-d H:i';
-							// Тип поля
+                            // Тип поля
                             if ($_this->fields[$k]['type'] == 'int' and $row[$k]) {
                                 $temp = date($r['mask']['format'], $row[$k]);
                             } elseif ($_this->fields[$k]['type'] == 'timestamp' and $row[$k]) {
@@ -637,7 +639,7 @@ class static_super
                             $tditem['value'] = implode(', ', $temp);
                         } elseif (isset($r['mask']['substr']) and $r['mask']['substr'] > 0) $tditem['value'] = _substr(strip_tags(htmlspecialchars_decode($row[$k])), 0, $r['mask']['substr']);
                         else //if($r['type']!='file')
-                        $tditem['value'] = $row[$k];
+                            $tditem['value'] = $row[$k];
 
                         if (isset($r['mask']['sformat'])) {
                             if (method_exists($_this, $r['mask']['sformat'])) eval('$tditem["value"] = $_this->' . $r['mask']['sformat'] . '($tditem["value"]);');
@@ -660,12 +662,12 @@ class static_super
     }
 
     /**
-	 * задает атрибуты для super_inc
-	 * @param array $row - данные
-	 * @param array $param - данные параметра
-	 * @return array
-	 */
-	    static function _tr_attribute(&$_this, &$row, &$param)
+     * задает атрибуты для super_inc
+     * @param array $row - данные
+     * @param array $param - данные параметра
+     * @return array
+     */
+    static function _tr_attribute(&$_this, &$row, &$param)
     {
         $DATA = array();
         if ($_this->_prmModulEdit(array($row), $param)) $DATA['update'] = true;
@@ -678,11 +680,11 @@ class static_super
     }
 
     /**
-	 * задает параметры запроса для super_inc
-	 * @param array $param - данные параметра
-	 * @return array
-	 */
-	    static function _moder_clause(&$_this, &$param)
+     * задает параметры запроса для super_inc
+     * @param array $param - данные параметра
+     * @return array
+     */
+    static function _moder_clause(&$_this, &$param)
     {
         if (!isset($param['clause']) or !is_array($param['clause'])) $param['clause'] = array();
 
@@ -699,9 +701,9 @@ class static_super
 
             if ($_this->owner and $_this->owner->id and ($_this->id or (isset($param['first_pid']) and $param['first_pid']))) unset($param['clause']['t1.' . $_this->owner_name]);
         } //if(isset($_this->fields['region_id']) and isset($_SESSION['city']))///////////////**********************
-		//	$param['clause']['t1.region_id'] ='t1.region_id='.$_SESSION['city'];
-		//if (isset($_GET['_type']) and $_GET['_type'] == 'deleted' and $_this->fields_form[$_this->mf_actctrl]['listname'] == $_this->mf_actctrl)
-		//	$param['clause']['t1.' . $_this->mf_actctrl] = 't1.' . $_this->mf_actctrl . '=4';
+        //	$param['clause']['t1.region_id'] ='t1.region_id='.$_SESSION['city'];
+        //if (isset($_GET['_type']) and $_GET['_type'] == 'deleted' and $_this->fields_form[$_this->mf_actctrl]['listname'] == $_this->mf_actctrl)
+        //	$param['clause']['t1.' . $_this->mf_actctrl] = 't1.' . $_this->mf_actctrl . '=4';
         elseif (isset($_this->fields_form[$_this->mf_actctrl]['listname']) and $_this->fields_form[$_this->mf_actctrl]['listname'] == $_this->mf_actctrl) $param['clause']['t1.' . $_this->mf_actctrl] = 't1.' . $_this->mf_actctrl . '!=4';
         return $param['clause'];
     }
@@ -727,14 +729,14 @@ class static_super
                 'sel' => 0,
                 'type' => 'button',
                 'css' => 'button-add',
-				//'is_popup' => true,
+                //'is_popup' => true,
             );
         }
 
         if ($_this->mf_istree) {
             $t = array($_this->_cl . '_id' => '');
-			//if (!$_this->mf_istree)
-			//	$t['_type'] = 'update';
+            //if (!$_this->mf_istree)
+            //	$t['_type'] = 'update';
             $list = $_this->_forlist($_this->_getCashedList('parentlist'), 0, $_this->id);
             $topmenu['select_' . $_this->_cl] = array(
                 'href' => $t,
@@ -744,14 +746,14 @@ class static_super
                 'css' => '',
                 'list' => $list[0],
             );
-			//$topmenu['select_'.$_this->_cl ]['caption'] .= ' ('.count($topmenu['select_'.$_this->_cl ]['list']).')';
+            //$topmenu['select_'.$_this->_cl ]['caption'] .= ' ('.count($topmenu['select_'.$_this->_cl ]['list']).')';
         }
 
         if ($_this->id) {
-			//if(isset($_this->data[$_this->id]))
+            //if(isset($_this->data[$_this->id]))
             $data = $_this->data;
-			//else
-			//	$data = $_this->_select();
+            //else
+            //	$data = $_this->_select();
 
             if ($_this->_prmModulEdit($data)) $topmenu['update'] = array(
                 'href' => array('_type' => 'update', $_this->_cl . '_id' => $_this->id),
@@ -759,7 +761,7 @@ class static_super
                 'sel' => 0,
                 'type' => 'button',
                 'css' => 'button-update',
-					//'is_popup' => true,
+                //'is_popup' => true,
             );
 
             if ($_this->mf_actctrl) {
@@ -835,7 +837,7 @@ class static_super
             );
         }
 
-		// Групповые операции
+        // Групповые операции
         $sg = 0;
         if (isset($_COOKIE['SuperGroup'][$_this->_cl])) {
             $sg += count($_COOKIE['SuperGroup'][$_this->_cl]);
@@ -853,18 +855,18 @@ class static_super
             'is_popup' => true,
         );
 
-		// TOOLS
+        // TOOLS
         if (count($_this->cf_tools)) {
             foreach ($_this->cf_tools as $k => $r) {
                 $topmenu['cf_tools' . $k] = array(
                     'href' => array('_type' => 'tools', '_func' => 'cf_tools' . $k),
                     'function' => $r['func'],
                     'caption' => $r['name'],
-					//'sel' => 0,
+                    //'sel' => 0,
                     'type' => 'button',
                     'css' => $r['func'],
                     'is_popup' => true,
-					//'style' => (!$sg ? 'display:none;' : '')
+                    //'style' => (!$sg ? 'display:none;' : '')
                 );
             }
         }
@@ -883,38 +885,38 @@ class static_super
 			}*/
 
         if (count($_this->childs) and $_this->id)
-        foreach ($_this->childs as $ck => &$cn)
-        if (count($cn->fields_form) and $ck != $_this->_cl and $cn->_prmModulShow($PARAM)) {
-            $topmenu[] = array('type' => 'split');
+            foreach ($_this->childs as $ck => &$cn)
+                if (count($cn->fields_form) and $ck != $_this->_cl and $cn->_prmModulShow($PARAM)) {
+                    $topmenu[] = array('type' => 'split');
 
-            $t = array(
-                $_this->_cl . '_ch' => $ck,
-                $_this->_cl . '_id' => $_this->id,
-            );
+                    $t = array(
+                        $_this->_cl . '_ch' => $ck,
+                        $_this->_cl . '_id' => $_this->id,
+                    );
 
-            if ($cn->_prmModulAdd()) {
-                $topmenu['add_' . $ck] = array(
-                    'href' => $t + array('_type' => 'add'),
-                    'caption' => 'Добавить ' . $cn->caption,
-                    'sel' => 0,
-                    'type' => 'button',
-                    'css' => 'button-add'
-                );
-            }
+                    if ($cn->_prmModulAdd()) {
+                        $topmenu['add_' . $ck] = array(
+                            'href' => $t + array('_type' => 'add'),
+                            'caption' => 'Добавить ' . $cn->caption,
+                            'sel' => 0,
+                            'type' => 'button',
+                            'css' => 'button-add'
+                        );
+                    }
 
-            $list = $cn->_forlist($cn->_getCashedList('list'), 0);
-            $cnt = count($list[0]);
+                    $list = $cn->_forlist($cn->_getCashedList('list'), 0);
+                    $cnt = count($list[0]);
 
-            if ($cnt < 500) {
-                $topmenu['child' . $ck] = array(
-                    'href' => $t + array('_type' => 'update', $ck . '_id' => ''),
-                    'caption' => $cn->caption . '(' . $cnt . ')',
-                    'sel' => $list[1],
-                    'list' => $list[0],
-                    'type' => 'select',
-                );
-            }
-        }
+                    if ($cnt < 500) {
+                        $topmenu['child' . $ck] = array(
+                            'href' => $t + array('_type' => 'update', $ck . '_id' => ''),
+                            'caption' => $cn->caption . '(' . $cnt . ')',
+                            'sel' => $list[1],
+                            'list' => $list[0],
+                            'type' => 'select',
+                        );
+                    }
+                }
 
         return $topmenu;
     }
@@ -935,9 +937,9 @@ class static_super
             'is_popup' => true,
         );
         if (count($_this->childs))
-        foreach ($_this->childs as &$cn) {
-            self::modulMenuConfig($cn, $topmenu);
-        }
+            foreach ($_this->childs as &$cn) {
+                self::modulMenuConfig($cn, $topmenu);
+            }
     }
 
     /**

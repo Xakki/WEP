@@ -10,14 +10,14 @@
 
 function tpl_paybankReceipt($data)
 {
-	$rub = (int)$data['#item#']['amount'];
-	$kop = ($data['#item#']['amount'] - $rub) / 100;
-	$kop = ceil($kop);
-	if ($kop < 10) $kop = '0' . $kop;
-	$kop = '<span class="decor">&nbsp;' . $kop . '&nbsp;</span>';
-	$rub = '<span class="decor">&nbsp;' . $rub . '&nbsp;</span>';
+    $rub = (int)$data['#item#']['amount'];
+    $kop = ($data['#item#']['amount'] - $rub) / 100;
+    $kop = ceil($kop);
+    if ($kop < 10) $kop = '0' . $kop;
+    $kop = '<span class="decor">&nbsp;' . $kop . '&nbsp;</span>';
+    $rub = '<span class="decor">&nbsp;' . $rub . '&nbsp;</span>';
 
-	$blankHtml = '
+    $blankHtml = '
 		<table border="0" cellspacing="0" cellpadding="0" style="width:122mm; margin-top:3pt;">
 			<tbody><tr>
 				<td align="right"><small><i>Форма № ПД-4</i></small></td>
@@ -117,10 +117,10 @@ function tpl_paybankReceipt($data)
 	</td>
 ';
 
-	if ($data['#config#']['bank_info'])
-		$infoText = $data['#config#']['bank_info'];
-	else
-		$infoText = '
+    if ($data['#config#']['bank_info'])
+        $infoText = $data['#config#']['bank_info'];
+    else
+        $infoText = '
 	<br>
 	<h1>Внимание! Ваш банк может взимать комиссию.</h1>
 
@@ -152,7 +152,7 @@ function tpl_paybankReceipt($data)
 ';
 
 
-	$html = '
+    $html = '
 <style>
 	table {
 		font-size:4mm;
@@ -204,5 +204,5 @@ function tpl_paybankReceipt($data)
 </div>
 	';
 
-	return $html;
+    return $html;
 }

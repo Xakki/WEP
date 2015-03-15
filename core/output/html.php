@@ -28,7 +28,7 @@ class wephtml
     /*
 	  Функция вывода на экран
 	 */
-	public function obHandler($buffer)
+    public function obHandler($buffer)
     {
         global $_tpl, $_CFG;
         $_tpl['THEME'] = getUrlTheme();
@@ -57,7 +57,7 @@ class wephtml
         $file = getPathTemplate();
         if (file_exists($file)) {
             $this->_html = file_get_contents($file);
-			//$this->_html = addcslashes($this->_html,'"\\');
+            //$this->_html = addcslashes($this->_html,'"\\');
             include_once($_CFG['_PATH']['core'] . '/includesrc.php');
             fileInclude();
             arraySrcToStr();
@@ -88,7 +88,7 @@ class wephtml
     /*
 	  Ф. вывода заголовков
 	 */
-	function headerssent()
+    function headerssent()
     {
         global $_CFG;
         if (!headers_sent()) {
@@ -143,6 +143,8 @@ class wephtml
     }
 
 }
-function mb_str_replace($needle, $replacement, $haystack) {
+
+function mb_str_replace($needle, $replacement, $haystack)
+{
     return implode($replacement, mb_split($needle, $haystack));
 }

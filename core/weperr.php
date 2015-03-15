@@ -24,8 +24,8 @@ function _myErrorHandler($errno, $errstr, $errfile, $errline)
             return;
         }
 
-		// Debuger
-		// для вывода отладчика для всех типов ошибок , можно отключить это условие
+        // Debuger
+        // для вывода отладчика для всех типов ошибок , можно отключить это условие
         $debug = '';
         if (isset($_CFG['wep']['bug_hunter'][$errno]) and $_CFG['_error'][$errno]['debug']) {
             $debug = debugPrint(2);
@@ -36,16 +36,16 @@ function _myErrorHandler($errno, $errstr, $errfile, $errline)
             'errstr' => $errstr,
             'errfile' => $errfile,
             'errline' => $errline,
-			//'errcontext'=>$errcontext, // Всякие переменные
+            //'errcontext'=>$errcontext, // Всякие переменные
             'debug' => $debug,
             'errtype' => $_CFG['_error'][$errno]['type'],
         );
 
-		// Инициальзация ловца-ошибок
+        // Инициальзация ловца-ошибок
         if (is_array($_CFG['wep']['bug_hunter']) and count($_CFG['wep']['bug_hunter']) and !$BUG and !$_CFG['shutdown_function_flag']) {
             _new_class('bug', $BUG);
         }
-		//остановка на фатальной ошибке
+        //остановка на фатальной ошибке
         if ($_CFG['_error'][$errno]['prior'] == 0 and !$_CFG['wep']['debugmode']) {
             die("\n Aborting...<br />\n");
         }
@@ -99,21 +99,21 @@ function debugPrint($slice = 1)
         if (isset($arr['line']) and $arr['file']) $s .= ' #line ' . $arr['line'] . ' in file: <a href="file:/' . $arr['file'] . '">' . $arr['file'] . '</a> : ';
         if (isset($arr['class'])) $s .= '#class <b>' . $arr['class'] . '-></b>';
         $s .= '</span>';
-		//$s .= '<br/>';
+        //$s .= '<br/>';
         $args = array();
         if (isset($arr['args']))
-        foreach ($arr['args'] as $v) {
-            if (is_null($v)) $args[] = '<b>NULL</b>';
-            else if (is_array($v)) $args[] = '<b>Array[' . sizeof($v) . ']</b>';
-            else if (is_object($v)) $args[] = '<b>Object:' . get_class($v) . '</b>';
-            else if (is_bool($v)) $args[] = '<b>' . ($v ? 'true' : 'false') . '</b>';
-            else {
-                $v = (string)@$v;
-                $str = _e(substr($v, 0, $MAXSTRLEN));
-                if (strlen($v) > $MAXSTRLEN) $str .= '...';
-                $args[] = $str;
+            foreach ($arr['args'] as $v) {
+                if (is_null($v)) $args[] = '<b>NULL</b>';
+                else if (is_array($v)) $args[] = '<b>Array[' . sizeof($v) . ']</b>';
+                else if (is_object($v)) $args[] = '<b>Object:' . get_class($v) . '</b>';
+                else if (is_bool($v)) $args[] = '<b>' . ($v ? 'true' : 'false') . '</b>';
+                else {
+                    $v = (string)@$v;
+                    $str = _e(substr($v, 0, $MAXSTRLEN));
+                    if (strlen($v) > $MAXSTRLEN) $str .= '...';
+                    $args[] = $str;
+                }
             }
-        }
         $s .= '<b>' . $arr['function'] . '</b>(' . implode(',', $args) . ')';
         $s .= '</div>';
         $i++;

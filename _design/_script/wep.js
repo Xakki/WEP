@@ -999,7 +999,7 @@ window.wep = {
                 if (typeof script[i] == 'string' && script[i].substr(0, 1) == '<')
                     alert('Error script include');
 
-                if (typeof script[i] == 'string' && script[i] && script[i]!='async') {
+                if (typeof script[i] == 'string' && script[i] && script[i] != 'async') {
                     if (wep.isUrl(script[i])) {
                         wep.includeHelper(i);
                     }
@@ -1188,7 +1188,7 @@ window.wep = {
                 tooltipLocation: 'n',
                 tooltipAxes: 'xy',
                 useAxesFormatters: true,
-                tooltipContentEditor: function(str, seriesIndex, pointIndex, plot){
+                tooltipContentEditor: function (str, seriesIndex, pointIndex, plot) {
                     return plot.series[seriesIndex].label + ': ' + str;
                 }
             }
@@ -2321,7 +2321,7 @@ function ajaxListControl(input, hidden, list) {
 
     if (value.length > 2) {
         if (listObj.attr('val') == value) {
-            console.log('#1 ', listObj.attr('val') , value);
+            console.log('#1 ', listObj.attr('val'), value);
             if (!listObj.size()) {
                 listObj.html(defaultListObj.html());
             }

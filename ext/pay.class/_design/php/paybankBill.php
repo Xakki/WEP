@@ -9,16 +9,16 @@
  */
 function costFormat($amount)
 {
-	$rub = (int)$amount;
-	$kop = ($amount - $rub) / 100;
-	$kop = ceil($kop);
-	if ($kop < 10) $kop = '0' . $kop;
-	return $rub . ' руб. ' . $kop . ' коп.';
+    $rub = (int)$amount;
+    $kop = ($amount - $rub) / 100;
+    $kop = ceil($kop);
+    if ($kop < 10) $kop = '0' . $kop;
+    return $rub . ' руб. ' . $kop . ' коп.';
 }
 
 function tpl_paybankBill($data)
 {
-	$html = '
+    $html = '
 	<style>
 	body {
 		max-width:800px;
@@ -82,23 +82,23 @@ function tpl_paybankBill($data)
 	    <td>Сумма
 	</tr>';
 
-	if ($data['#payData#']['json_data'])
-		$json = json_decode($data['#payData#']['json_data'], true);
-	else {
-		$json = array(array(
-			'product_id' => $data['#item#']['id'],
-			'product_name' => $data['#payData#']['name'],
-			'cost_item' => $data['#payData#']['cost'],
-			'count' => 1
-		));
-	}
-	$i = 1;
+    if ($data['#payData#']['json_data'])
+        $json = json_decode($data['#payData#']['json_data'], true);
+    else {
+        $json = array(array(
+            'product_id' => $data['#item#']['id'],
+            'product_name' => $data['#payData#']['name'],
+            'cost_item' => $data['#payData#']['cost'],
+            'count' => 1
+        ));
+    }
+    $i = 1;
 
-	$servis = array();
+    $servis = array();
 
-	foreach ($json as $v) {
-		if ($v['count']) {
-			$html .= '<tr>
+    foreach ($json as $v) {
+        if ($v['count']) {
+            $html .= '<tr>
 			    <td>' . $i . '
 			    <td>' . $v['product_id'] . '
 			    <td align="left">' . $v['product_name'] . '
@@ -107,28 +107,27 @@ function tpl_paybankBill($data)
 			    <td>шт.
 			    <td>' . ($v['count'] * $v['cost_item']) . '
 			</tr>';
-		}
-		else {
-			$servis[] = $v;
-		}
-		$i++;
-	}
+        } else {
+            $servis[] = $v;
+        }
+        $i++;
+    }
 
-	$html .= '</tbody></table>
+    $html .= '</tbody></table>
 	<div>
 	</div>
 	<table class="itogo" cellspacing="0" cellpadding="0"><tbody>
 	';
 
-	foreach ($servis as $value) {
-		$html .= '
+    foreach ($servis as $value) {
+        $html .= '
 		<tr>
 		    <td class="frst">' . $value['product_name'] . ':
 		    <td>' . costFormat($value['cost_item']) . '
 		</tr>';
-	}
+    }
 
-	$html .= '
+    $html .= '
 	<tr>
 	    <td class="frst">Итого:
 	    <td>' . costFormat($data['#item#']['amount']) . '
@@ -146,5 +145,5 @@ function tpl_paybankBill($data)
 <p>Бухгалтер: _____________/_______________</p>
 	';
 
-	return $html;
+    return $html;
 }

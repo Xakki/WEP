@@ -9,51 +9,49 @@
  */
 function tpl_productEvent(&$data)
 {
-	$html = '';
+    $html = '';
 
-	if (!isset($data['#item#']) or !count($data['#item#'])) {
-		$html = $data['#text#']; // Товаров дня нет
-	}
-	else {
-		global $_CFG, $_tpl;
-		setCss('/../_shop/style/shopEvents');
-		//setScript('/../_shop/script/shopEvents');
+    if (!isset($data['#item#']) or !count($data['#item#'])) {
+        $html = $data['#text#']; // Товаров дня нет
+    } else {
+        global $_CFG, $_tpl;
+        setCss('/../_shop/style/shopEvents');
+        //setScript('/../_shop/script/shopEvents');
 
-		$html = '<div class="productEvent">
+        $html = '<div class="productEvent">
 				<h3>' . $data['#title#'] . '</h3>';
 
-		$r = $data['#item#'];
+        $r = $data['#item#'];
 
-		$href = $data['#page#'] . '/' . $r['rpath'] . '/' . $r['path'] . '_' . $r['id'] . '.html';
-		$html .= '<div class="proditem">
+        $href = $data['#page#'] . '/' . $r['rpath'] . '/' . $r['path'] . '_' . $r['id'] . '.html';
+        $html .= '<div class="proditem">
 				<div class="prodimg-block">';
 
-		if (isset($r['image']) and count($r['image']) and $r['image'][0][0]) {
-			$fimg = array_shift($r['image']);
-			$html .= '<a href="/' . $fimg[0] . '" title="' . $r['name'] . '" class="prodimg-first fancyimg" rel="fancy"><img src="/' . $fimg[1] . '" alt="' . $r['name'] . '"/></a>';
-		}
-		else
-			$html .= '<img src="' . getUrlTheme() . '_shop/img/nofoto.gif" alt="' . $r['name'] . '" class="prodimg-first"/>';
+        if (isset($r['image']) and count($r['image']) and $r['image'][0][0]) {
+            $fimg = array_shift($r['image']);
+            $html .= '<a href="/' . $fimg[0] . '" title="' . $r['name'] . '" class="prodimg-first fancyimg" rel="fancy"><img src="/' . $fimg[1] . '" alt="' . $r['name'] . '"/></a>';
+        } else
+            $html .= '<img src="' . getUrlTheme() . '_shop/img/nofoto.gif" alt="' . $r['name'] . '" class="prodimg-first"/>';
 
-		/*$beginHour = 8;
-		$endhour = 20;
-		$temeLeft = mktime($endhour,0,0,date('m'),date('d'),date('Y')) - time();
-		$pp = floor(10*$temeLeft/( ($endhour-$beginHour)*3600 ) )*10;*/
-		$temeLeft = ($r['sale']['periode'] - time());
-		$pp = floor(10 * $temeLeft / ($r['sale']['periode'] - $r['sale']['periods'])) * 10;
+        /*$beginHour = 8;
+        $endhour = 20;
+        $temeLeft = mktime($endhour,0,0,date('m'),date('d'),date('Y')) - time();
+        $pp = floor(10*$temeLeft/( ($endhour-$beginHour)*3600 ) )*10;*/
+        $temeLeft = ($r['sale']['periode'] - time());
+        $pp = floor(10 * $temeLeft / ($r['sale']['periode'] - $r['sale']['periods'])) * 10;
 
-		$strTime = '';
-		if ($temeLeft > 3600) {
-			$temp = floor($temeLeft / 3600);
-			$temeLeft = ($temeLeft - $temp * 3600);
-			$strTime .= $temp . ' час. ';
-		}
-		$temp = floor($temeLeft / 60);
-		$temeLeft = ($temeLeft - $temp * 60);
-		$strTime .= $temp . ' мин. ';
-		$strTime .= $temeLeft . ' сек.';
+        $strTime = '';
+        if ($temeLeft > 3600) {
+            $temp = floor($temeLeft / 3600);
+            $temeLeft = ($temeLeft - $temp * 3600);
+            $strTime .= $temp . ' час. ';
+        }
+        $temp = floor($temeLeft / 60);
+        $temeLeft = ($temeLeft - $temp * 60);
+        $strTime .= $temp . ' мин. ';
+        $strTime .= $temeLeft . ' сек.';
 
-		$html .= '</div>
+        $html .= '</div>
 			<div class="prodinfo-block">
 				<a href="' . $href . '" class="prodname">' . $r['name'] . '</a>
 				<p class="proddescr">' . $r['descr'] . '</p>
@@ -66,20 +64,20 @@ function tpl_productEvent(&$data)
 			</div>
 			';
 
-		if (!$r['cost'])
-			$r['cost'] = 'не указана';
-		else {
-			$r['cost'] = round($r['cost'], 2) . ' <span class="cur">руб.</span>';
-			if (isset($r['sale'])) {
-				//if($r['sale']['name'])
-				//	$r['cost'] = '<div class="prodsale">'.$r['sale']['name'].'</div>';
-				$r['cost'] = '<span class="old">' . $r['old_cost'] . '</span> ' . $r['cost'];
-			}
-		}
+        if (!$r['cost'])
+            $r['cost'] = 'не указана';
+        else {
+            $r['cost'] = round($r['cost'], 2) . ' <span class="cur">руб.</span>';
+            if (isset($r['sale'])) {
+                //if($r['sale']['name'])
+                //	$r['cost'] = '<div class="prodsale">'.$r['sale']['name'].'</div>';
+                $r['cost'] = '<span class="old">' . $r['old_cost'] . '</span> ' . $r['cost'];
+            }
+        }
 
 
-		/*PRICE BLOCK*/
-		$html .= '
+        /*PRICE BLOCK*/
+        $html .= '
 				<div class="prodBlock">
 					<div class="prodBlock-price">
 						<p>Цена: <span class="cost">' . $r['cost'] . '</span></p>
@@ -90,9 +88,9 @@ function tpl_productEvent(&$data)
 				</div>
 			</div>';
 
-	}
-	$html .= '</div>';
+    }
+    $html .= '</div>';
 
-	return $html;
+    return $html;
 }
 

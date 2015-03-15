@@ -10,9 +10,9 @@ function fileInclude()
     $_tpl['script'] = array(getUrlScript('jquery') => 1) + $_tpl['script'];
 
     if (isset($_tpl['onloadArray']) and count($_tpl['onloadArray'])) // Для скриптов задающихся через массив, дабы не повторялись
-    $_tpl['onload'] .= implode(' ', $_tpl['onloadArray']);
+        $_tpl['onload'] .= implode(' ', $_tpl['onloadArray']);
     unset($_tpl['onloadArray']);
-	/////////////////////
+    /////////////////////
 
     return true;
 }
@@ -23,14 +23,14 @@ function arraySrcToStr()
     $temp = $solt = '';
     if (isDebugMode()) $solt = 't=' . time();
 
-	// include STYLE into HTML
+    // include STYLE into HTML
     if (isset($_tpl['styles']) and is_array($_tpl['styles'])) {
         $temp .= cssRecursive($_tpl['styles'], $solt);
     }
     $_tpl['styles'] = $temp;
 
 
-	// include SCRIPT into HTML
+    // include SCRIPT into HTML
     $temp = '';
     if (isset($_tpl['script']) and is_array($_tpl['script'])) {
         $temp .= scriptRecursive($_tpl['script'], $solt);
@@ -108,6 +108,7 @@ function isUrl($str)
 {
     if (strpos($str, '//') === 0
         or strpos($str, 'https://') === 0
-        or strpos($str, 'http://') === 0)return true;
+        or strpos($str, 'http://') === 0
+    ) return true;
     return false;
 }

@@ -13,8 +13,8 @@ class wepajax
 
         ob_start(array(&$this, "obHandler"));
 
-		//ini_set('display_errors', $this->_errn);
-		//$_REQUEST = utf2win_recursive($_REQUEST);
+        //ini_set('display_errors', $this->_errn);
+        //$_REQUEST = utf2win_recursive($_REQUEST);
     }
 
     function __destruct()
@@ -43,12 +43,12 @@ class wepajax
         self::sliceMarker($_tpl);
 
         if (version_compare(phpversion(), '5.3.0', '>')) {
-			//$GLOBALS['_RESULT'] = $this->allreplace($GLOBALS['_RESULT']);
-			//return var_export($GLOBALS['_RESULT'],true);
-			//$GLOBALS['_RESULT']['onload'] = str_replace(array('\\r','\\n','\\t'),'', $GLOBALS['_RESULT']['onload']);
+            //$GLOBALS['_RESULT'] = $this->allreplace($GLOBALS['_RESULT']);
+            //return var_export($GLOBALS['_RESULT'],true);
+            //$GLOBALS['_RESULT']['onload'] = str_replace(array('\\r','\\n','\\t'),'', $GLOBALS['_RESULT']['onload']);
 
             $result = json_encode($_tpl, JSON_HEX_QUOT | JSON_HEX_TAG);
-			//JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_FORCE_OBJECT | JSON_UNESCAPED_UNICODE
+            //JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_FORCE_OBJECT | JSON_UNESCAPED_UNICODE
             return $result;
         } else return $this->jsonencode($_tpl);
     }
@@ -71,7 +71,7 @@ class wepajax
     /*
 	  Ф. вывода заголовков
 	 */
-	    function headerssent()
+    function headerssent()
     {
         global $_CFG;
         if (!headers_sent()) {
@@ -82,7 +82,7 @@ class wepajax
                 header('Pragma: cache');
                 header('Cache-Control: public, post-check=0, pre-check=0');
             }
-			//header('Content-type: text/html; charset=utf-8');
+            //header('Content-type: text/html; charset=utf-8');
             header('Content-type: application/json; charset=utf-8');
             header("Last-Modified: " . gmdate("D, d M Y H:i:s", $_CFG['header']['modif']) . " GMT");
             header("Expires: " . gmdate("D, d M Y H:i:s", (time() + $_CFG['header']['expires'])) . " GMT");

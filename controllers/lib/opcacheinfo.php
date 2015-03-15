@@ -100,7 +100,7 @@ class OpCacheDataModel
 
         $basename = '';
         while (true) {
-            if (count($this->_d3Scripts) !=1) break;
+            if (count($this->_d3Scripts) != 1) break;
             $basename .= DIRECTORY_SEPARATOR . key($this->_d3Scripts);
             $this->_d3Scripts = reset($this->_d3Scripts);
         }
@@ -219,7 +219,7 @@ class OpCacheDataModel
             return $value;
         }
 
-        $array = array('name' => $name,'children' => array());
+        $array = array('name' => $name, 'children' => array());
 
         foreach ($value as $k => $v) {
             $array['children'][] = $this->_processPartition($v, $k);
@@ -248,7 +248,7 @@ class OpCacheDataModel
         $keys = explode(DIRECTORY_SEPARATOR, ltrim($key, DIRECTORY_SEPARATOR));
         while (count($keys) > 1) {
             $key = array_shift($keys);
-            if ( ! isset($array[$key]) || ! is_array($array[$key])) {
+            if (!isset($array[$key]) || !is_array($array[$key])) {
                 $array[$key] = array();
             }
             $array =& $array[$key];
@@ -257,11 +257,12 @@ class OpCacheDataModel
         return $array;
     }
 
-    public static function printStats() {
+    public static function printStats()
+    {
 
-    $dataModel = new self();
+        $dataModel = new self();
 
-    $html = <<<HERE
+        $html = <<<HERE
     <style>
         .op-cache-stats {
             min-height: 600px;
@@ -692,8 +693,8 @@ class OpCacheDataModel
 </div>
 HERE;
 
-    return $html;
-}
+        return $html;
+    }
 
 }
 

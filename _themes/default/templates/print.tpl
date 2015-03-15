@@ -2,32 +2,34 @@
 
 <html xml:lang="ru">
 
-	<head>
+<head>
 
-		<title>{#title#}</title>
+    <title>{#title#}</title>
 
-		<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 
-		<meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
 
-		<link rel="SHORTCUT ICON" href="favicon.ico"/>
+    <link rel="SHORTCUT ICON" href="favicon.ico"/>
 
-		{#styles#}
+    {#styles#}
 
-		<style type="text/css">
+    <style type="text/css">
 
-			html, body {text-align:left;vertical-align:middle;height:100%;}
+        html, body
 
-		</style>
+        {text-align:left;vertical-align:middle;height:100%;}
 
-	</head>
+    </style>
 
-	<body onload="setTimeout(function() {window.print()},3000);">
-		{#logs#}
-		{#text#}
-		{#html#}
+</head>
 
-	</body>
+<body onload="setTimeout(function() {window.print()},3000);">
+{#logs#}
+{#text#}
+{#html#}
+
+</body>
 
 </html>
 

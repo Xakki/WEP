@@ -28,12 +28,12 @@ if (jQuery) {
                     w.addClass("selectBox-active");
                     B.trigger("focus")
                 }).bind("blur.selectBox", function () {
-                        if (!w.hasClass("selectBox-active")) {
-                            return
-                        }
-                        w.removeClass("selectBox-active");
-                        B.trigger("blur")
-                    });
+                    if (!w.hasClass("selectBox-active")) {
+                        return
+                    }
+                    w.removeClass("selectBox-active");
+                    B.trigger("blur")
+                });
                 if (B.attr("disabled")) {
                     w.addClass("selectBox-disabled")
                 }
@@ -42,15 +42,15 @@ if (jQuery) {
                     w.append(E).data("selectBox-options", E).addClass("selectBox-inline").addClass("selectBox-menuShowing").bind("keydown.selectBox",function (F) {
                         k(B, F)
                     }).bind("keypress.selectBox",function (F) {
-                            c(B, F)
-                        }).bind("mousedown.selectBox",function (F) {
-                            if (a(F.target).is("A.selectBox-inline")) {
-                                F.preventDefault()
-                            }
-                            if (!w.hasClass("selectBox-focus")) {
-                                w.focus()
-                            }
-                        }).insertAfter(B);
+                        c(B, F)
+                    }).bind("mousedown.selectBox",function (F) {
+                        if (a(F.target).is("A.selectBox-inline")) {
+                            F.preventDefault()
+                        }
+                        if (!w.hasClass("selectBox-focus")) {
+                            w.focus()
+                        }
+                    }).insertAfter(B);
                     if (!B[0].style.height) {
                         var D = B.attr("size") ? parseInt(B.attr("size")) : 5;
                         var y = w.clone().removeAttr("id").css({position: "absolute", top: "-9999em"}).show().appendTo("body");
@@ -74,10 +74,10 @@ if (jQuery) {
                             m(B)
                         }
                     }).bind("keydown.selectBox",function (F) {
-                            k(B, F)
-                        }).bind("keypress.selectBox",function (F) {
-                            c(B, F)
-                        }).insertAfter(B);
+                        k(B, F)
+                    }).bind("keypress.selectBox",function (F) {
+                        c(B, F)
+                    }).insertAfter(B);
                     g(w)
                 }
                 B.addClass("selectBox").data("selectBox-control", w).data("selectBox-settings", v).hide()
@@ -124,16 +124,16 @@ if (jQuery) {
                         w.find("A").bind("mouseover.selectBox",function (y) {
                             q(v, a(this).parent())
                         }).bind("mouseout.selectBox",function (y) {
-                                t(v, a(this).parent())
-                            }).bind("mousedown.selectBox",function (y) {
-                                y.preventDefault();
-                                if (!v.selectBox("control").hasClass("selectBox-active")) {
-                                    v.selectBox("control").focus()
-                                }
-                            }).bind("mouseup.selectBox", function (y) {
-                                f();
-                                p(v, a(this).parent(), y)
-                            });
+                            t(v, a(this).parent())
+                        }).bind("mousedown.selectBox",function (y) {
+                            y.preventDefault();
+                            if (!v.selectBox("control").hasClass("selectBox-active")) {
+                                v.selectBox("control").focus()
+                            }
+                        }).bind("mouseup.selectBox", function (y) {
+                            f();
+                            p(v, a(this).parent(), y)
+                        });
                         g(w);
                         return w;
                     case"dropdown":
@@ -183,18 +183,18 @@ if (jQuery) {
                                 f()
                             }
                         }).bind("mouseup.selectBox",function (y) {
-                                if (y.screenX === w.data("selectBox-down-at-x") && y.screenY === w.data("selectBox-down-at-y")) {
-                                    return
-                                } else {
-                                    w.removeData("selectBox-down-at-x").removeData("selectBox-down-at-y")
-                                }
-                                p(v, a(this).parent());
-                                f()
-                            }).bind("mouseover.selectBox",function (y) {
-                                q(v, a(this).parent())
-                            }).bind("mouseout.selectBox", function (y) {
-                                t(v, a(this).parent())
-                            });
+                            if (y.screenX === w.data("selectBox-down-at-x") && y.screenY === w.data("selectBox-down-at-y")) {
+                                return
+                            } else {
+                                w.removeData("selectBox-down-at-x").removeData("selectBox-down-at-y")
+                            }
+                            p(v, a(this).parent());
+                            f()
+                        }).bind("mouseover.selectBox",function (y) {
+                            q(v, a(this).parent())
+                        }).bind("mouseout.selectBox", function (y) {
+                            t(v, a(this).parent())
+                        });
                         g(w);
                         return w
                 }

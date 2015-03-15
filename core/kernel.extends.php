@@ -5,16 +5,16 @@
  */
 abstract class kernel_extends
 {
-	//	public $mf_issimple = false;
-	//	public $mf_typectrl = false;
-	//	public $mf_struct_readonly = false;
-	// по умол. false - главный индекс хранится в бд как число, иначе как текст
+    //	public $mf_issimple = false;
+    //	public $mf_typectrl = false;
+    //	public $mf_struct_readonly = false;
+    // по умол. false - главный индекс хранится в бд как число, иначе как текст
     public $mf_use_charid = false; //if true - id varchar
-	// true - добавляется поле в бд , хранящий наименование записи, и это поле будет фигурировать в списках,  (можно вписать свое наименование) [bool,string]
+    // true - добавляется поле в бд , хранящий наименование записи, и это поле будет фигурировать в списках,  (можно вписать свое наименование) [bool,string]
     public $mf_namefields = true; //добавлять поле name
-	// создаст поле хранящий id пользователя создавший данную запись (можно вписать свое наименование) [bool,string]
+    // создаст поле хранящий id пользователя создавший данную запись (можно вписать свое наименование) [bool,string]
     public $mf_createrid = true; //польз владелец
-	// true - создаст поле parent_id и записи могут храниться в виде дерева, (можно вписать свое наименование) [bool,string]
+    // true - создаст поле parent_id и записи могут храниться в виде дерева, (можно вписать свое наименование) [bool,string]
     public $mf_istree = false; // древовидная структура?
     public $mf_istree_root = false; // несколько деревьев
     public $mf_treelevel = 0; // разрешенное число уровней в дереве , 0 - безлимита, 1 - разрешить 1 подуровень
@@ -30,11 +30,11 @@ abstract class kernel_extends
     public $prm_add = true; // добавить в модуле
     public $prm_del = true; // удалять в модуле
     public $prm_edit = true; // редактировать в модуле
-	// если это дочерний модуль,то false запретит доступ к этому модулю через админку
+    // если это дочерний модуль,то false запретит доступ к этому модулю через админку
     public $showinowner = true; // показывать под родителем
-	// для дочерних модулей, true разрешит создавать только одну запись для каждого элемента родителя
+    // для дочерних модулей, true разрешит создавать только одну запись для каждого элемента родителя
     public $owner_unique = false; // поле owner_id не уникально
-	// записи выводятся постранично
+    // записи выводятся постранично
     public $mf_mop = true; // выключить постраничное отображение
     public $reversePageN = false; // обратный отчет для постраничного отображения
     public $messages_on_page = 20; //число эл-ов на странице
@@ -45,14 +45,14 @@ abstract class kernel_extends
     public $cf_reinstall = false; // TOOLS
     public $cf_filter = true;
     public $cf_tools = array(); // TOOLS button, function
-	//	public $includeJStoWEP = false; // подключать ли скрипты для формы через настройки
-	//	public $includeCSStoWEP = false; // подключать ли стили для формы через настройки
+    //	public $includeJStoWEP = false; // подключать ли скрипты для формы через настройки
+    //	public $includeCSStoWEP = false; // подключать ли стили для формы через настройки
     public $singleton = true; // класс-одиночка
     public $ver = '0.1.1'; // версия модуля
 
     public $icon = 0;
     /* числа  означают отсуп для бэкграунда, а если будет задан текст то это сам рисунок */
-	    public $default_access = '|0|';
+    public $default_access = '|0|';
 
     public $text_ext = '.txt'; // расширение для memo фиаилов
     public $owner_name = 'owner_id'; // название поля для родительской связи в БД
@@ -60,19 +60,19 @@ abstract class kernel_extends
     public $_listfields = array('name'); //select по умолч
     public $_listname = false;
     public $unique_fields, $index_fields, $_enum, $update_records, $fld_data, $fields, $form, $formSort, $formDSort, $mess_form, $attaches, $att_data, $memos, $mmo_data, $services, $config, $config_form, $lang, $enum, $child_path, $Achilds, $HOOK, //перехватчик в реальном времени
-    $_AllowAjaxFn, // разрешённые функции для аякса, нужно прописывать в индекс
-    $cron, // Задания на кроне time,file,modul,function,active,
-    $_dependClass, $_clp, $allKeyData, $data = array();
+        $_AllowAjaxFn, // разрешённые функции для аякса, нужно прописывать в индекс
+        $cron, // Задания на кроне time,file,modul,function,active,
+        $_dependClass, $_clp, $allKeyData, $data = array();
 
     public $ordfield = '';
     public $grant_sql = false;
     public $childs, // Дочерние модули
-    $SQL_CFG, $_forceLoad, $_file_cfg, $parent_id, $null, $id = NULL;
+        $SQL_CFG, $_forceLoad, $_file_cfg, $parent_id, $null, $id = NULL;
 
     public $_CFG = true; // bug fix for link
     public $owner = true; // bug fix  for link
 
-	// конфиг для Дерево каталогов NESTED SETS
+    // конфиг для Дерево каталогов NESTED SETS
     public $ns_config = array(
         'left' => 'left_key',
         'right' => 'right_key',
@@ -88,11 +88,11 @@ abstract class kernel_extends
     function __construct($owner = NULL, $_forceLoad = false)
     {
         global $_CFG;
-		//FB::info($_CFG);
+        //FB::info($_CFG);
         $this->_CFG = $_CFG; //Config
         $this->SQL_CFG = $this->_CFG['sql'];
         $this->_forceLoad = $_forceLoad; // если true - Принудительная загрузка не подключенного класса
-        if (is_object($owner) and isset($owner->fields)) $this->owner = &$owner; //link to owner class
+        if (is_object($owner) and isset($owner->fields)) $this->owner = & $owner; //link to owner class
         else $this->owner = NULL;
 
         $this->verCore = $this->_CFG['info']['version'];
@@ -103,11 +103,11 @@ abstract class kernel_extends
 
         $this->init(); // настройки модуля
 
-        if ($this->singleton == true) $_CFG['singleton'][$this->_cl] = &$this;
+        if ($this->singleton == true) $_CFG['singleton'][$this->_cl] = & $this;
 
         $this->_create_conf(); // загрузки формы конфига
         if (isset($this->config_form) and count($this->config_form)) {
-			// загрузка конфига из файла для модуля
+            // загрузка конфига из файла для модуля
             $this->configParse();
         }
         $this->_create(); // предустановки модуля
@@ -119,19 +119,21 @@ abstract class kernel_extends
     }
 
     /**
-	 * инициалия основных настроек модуля для подключения к БД и связи
-	 * а также определение основных атрибутов
-	 * префикс mf_ - атрибуты создающие спец поля в бд
-	 * prm_ - атрибуты определяющие права доступа
-	 * cf_ - атрибуты настроики конфига для модуля
-	 *
-	 **/
-	    protected function init()
+     * инициалия основных настроек модуля для подключения к БД и связи
+     * а также определение основных атрибутов
+     * префикс mf_ - атрибуты создающие спец поля в бд
+     * prm_ - атрибуты определяющие права доступа
+     * cf_ - атрибуты настроики конфига для модуля
+     *
+     **/
+    protected function init()
     { // initalization of modul features
         return true;
     }
 
-    function __destruct() {}
+    function __destruct()
+    {
+    }
 
     function __get($name)
     {
@@ -142,19 +144,19 @@ abstract class kernel_extends
                     if (!isset($PSQL) or !$PSQL->ready) {
                         $PSQL = new $this->SQL_CFG['type']($this->SQL_CFG);
                     }
-                    $this->SQL = &$PSQL;
+                    $this->SQL = & $PSQL;
                     return $PSQL;
                 } elseif ($this->SQL_CFG['type'] == 'sphinx') {
                     if (!isset($SPHSQL) or !$SPHSQL->ready) {
                         $SPHSQL = new sqlmyi($this->SQL_CFG);
                     }
-                    $this->SQL = &$SPHSQL;
+                    $this->SQL = & $SPHSQL;
                     return $SPHSQL;
                 } else {
                     if (!isset($SQL) or !$SQL->ready) {
                         $SQL = new $this->SQL_CFG['type']($this->SQL_CFG);
                     }
-                    $this->SQL = &$SQL;
+                    $this->SQL = & $SQL;
                     return $SQL;
                 }
             } else {
@@ -178,11 +180,11 @@ abstract class kernel_extends
     /* function __set_hook($f) {
 	  } */
 
-	    function __do_hook($f, $arg = array())
+    function __do_hook($f, $arg = array())
     {
         if (!isset($this->_CFG['hook'][$f])) // проверка на всякий случай
-        return false;
-		///static_main::_prmModulLoad();
+            return false;
+        ///static_main::_prmModulLoad();
         $modul = array($this->_cl);
 
         if (isset($this->_CFG['modulprm'][$this->_cl]['extend'])) $modul[] = $this->_CFG['modulprm'][$this->_cl]['extend'];
@@ -229,7 +231,7 @@ abstract class kernel_extends
 	  -------------------------------------- */
 
 
-	    protected function _create_conf()
+    protected function _create_conf()
     { // Здесь можно установить стандартные настройки модулей
         if ($this->cf_childs) {
             $this->config['childs'] = '';
@@ -246,7 +248,7 @@ abstract class kernel_extends
         if ($this->cf_fields) {
             $this->config['cf_fields'] = array();
             $this->config_form['cf_fields'] = array('type' => 'cf_fields', 'caption' => 'Дополнительные поля формы');
-			// TODO form create
+            // TODO form create
         }
         return true;
     }
@@ -280,7 +282,7 @@ abstract class kernel_extends
 
         if (!$this->_listname) $this->_listname = ($this->mf_namefields ? $this->mf_namefields : 'id');
 
-		// construct fields
+        // construct fields
         if ($this->mf_use_charid) {
             if (is_bool($this->mf_use_charid)) $this->mf_use_charid = 63; // длина поля ID
             $this->fields['id'] = array('type' => 'varchar', 'width' => $this->mf_use_charid, 'attr' => 'NOT NULL');
@@ -368,7 +370,7 @@ abstract class kernel_extends
         $this->attprm = array('type' => 'varchar(4)', 'attr' => 'NOT NULL DEFAULT \'\'');
 
         $this->_pa = $this->_cl . '_pn'; // ключ страницы в ссылке
-		// номер текущей страницы
+        // номер текущей страницы
         if (isset($_REQUEST[$this->_pa]) && (int)$_REQUEST[$this->_pa]) $this->_pn = (int)$_REQUEST[$this->_pa];
         elseif (isset($_REQUEST['_pn']) && (int)$_REQUEST['_pn']) $this->_pn = (int)$_REQUEST['_pn'];
         elseif ($this->reversePageN) $this->_pn = 0;
@@ -379,9 +381,9 @@ abstract class kernel_extends
 
     public function _childs()
     {
-		//$dir = dir($this->_CFG['_PATH']['ext'].$this->_cl.'.class');
-		//while (false !== ($entry = $dir->read())) {
-		//}
+        //$dir = dir($this->_CFG['_PATH']['ext'].$this->_cl.'.class');
+        //while (false !== ($entry = $dir->read())) {
+        //}
         if ($this->cf_childs and $this->config['childs']) {
             foreach ($this->config['childs'] as $r) {
                 if (file_exists($this->_CFG['_PATH']['ext'] . $this->_cl . '.class/' . $r . '.childs.php')) $this->child_path[$r] = $this->_CFG['_PATH']['ext'] . $this->_cl . '.class/' . $r . '.childs.php';
@@ -397,24 +399,26 @@ abstract class kernel_extends
     {
         $this->childs[$class_name] = true;
         $this->Achilds[$class_name] = true;
-		//if ($this->_autoCheckMod)
-		//	$this->childs[$class_name]->tablename;
+        //if ($this->_autoCheckMod)
+        //	$this->childs[$class_name]->tablename;
         return true;
     }
 
-	// В этой функции устанавливается хук
+    // В этой функции устанавливается хук
     protected function _setHook()
     {
         $this->setHook = array(); //Перехватчик в предустановки модуля
     }
 
-	// Дефолтные значения
-    protected function _setDefaultRecords() {}
+    // Дефолтные значения
+    protected function _setDefaultRecords()
+    {
+    }
 
     /**
-	 * Экранирует специальные символы в строках для использования в выражениях SQL
-	 */
-	    public function SqlEsc($val)
+     * Экранирует специальные символы в строках для использования в выражениях SQL
+     */
+    public function SqlEsc($val)
     {
         assert('!is_array($val)');
         if (!$this->SQL) {
@@ -437,18 +441,18 @@ abstract class kernel_extends
             if ((int)$where > 0) $where = 'WHERE `id`=' . (int)$where;
             else $where = '';
         } else {
-			//TODO : экранировать запрос от инъекций
+            //TODO : экранировать запрос от инъекций
         }
         /*if(stripos($where, 'where')===false)
 				$where = 'WHERE '.$where;*/
-		        return $where;
+        return $where;
     }
 
-	// Простой запрос к БД
-	// В любом месчте можно вывести последний выполненный запрос [ $MODUL->SQL->query ]
+    // Простой запрос к БД
+    // В любом месчте можно вывести последний выполненный запрос [ $MODUL->SQL->query ]
     public function exec($query, $debug = false)
     {
-        if ($debug) echo (' * ' . htmlentities($query, ENT_QUOTES, CHARSET) . ' * <br>');
+        if ($debug) echo(' * ' . htmlentities($query, ENT_QUOTES, CHARSET) . ' * <br>');
         // todo cache
         $result = $this->SQL->execSQL($query);
         if ($result->err) return false; //todo exeption
@@ -456,15 +460,15 @@ abstract class kernel_extends
     }
 
     /**
-	 * принимает данные для запроса в виде параметров и возвращает рез-тат
-	 * Функция аналогична _select(), только он принемает и передает данные непосредственно
-	 * @param string $list - выборка
-	 * @param string $cls - строка запроса
-	 * @param string $ord - позволяет группировать выходные данные по этому полю (1 уровень)
-	 * @param string $ord2 - позволяет группировать выходные данные по этому полю (2 уровень)
-	 * @return array
-	 */
-	    public function _query($list = '', $cls = '', $ord = '', $ord2 = '', $debug = false)
+     * принимает данные для запроса в виде параметров и возвращает рез-тат
+     * Функция аналогична _select(), только он принемает и передает данные непосредственно
+     * @param string $list - выборка
+     * @param string $cls - строка запроса
+     * @param string $ord - позволяет группировать выходные данные по этому полю (1 уровень)
+     * @param string $ord2 - позволяет группировать выходные данные по этому полю (2 уровень)
+     * @return array
+     */
+    public function _query($list = '', $cls = '', $ord = '', $ord2 = '', $debug = false)
     { // this func. dont use $this->data
         $query = 'SELECT ';
         if (is_array($list)) $query .= implode(', ', $list);
@@ -510,9 +514,9 @@ abstract class kernel_extends
     }
 
     /**
-	 * Синоним _query
-	 */
-	    public function qs($list = '', $cls = '', $ord = '', $ord2 = '', $debug = false)
+     * Синоним _query
+     */
+    public function qs($list = '', $cls = '', $ord = '', $ord2 = '', $debug = false)
     {
         return $this->_query($list, $cls, $ord, $ord2, $debug);
     }
@@ -530,11 +534,11 @@ abstract class kernel_extends
     }
 
     /**
-	 * Проверка на существование записи в БД
-	 * в this->id записывает ID выбранных данных
-	 * @return bool - true если успех
-	 */
-	    public function _isset($where = NULL)
+     * Проверка на существование записи в БД
+     * в this->id записывает ID выбранных данных
+     * @return bool - true если успех
+     */
+    public function _isset($where = NULL)
     {
         if (!is_null($where) and $where !== false) {
             $where = $this->queryEscape($where);
@@ -557,14 +561,14 @@ abstract class kernel_extends
     }
 
     /**
-	 * Запрос к БД , использует $this->id если он есть в качестве выборки
-	 * возвращает в массив $this->data
-	 *
-	 * @return bool - true если успех
-	 */
-	    public function _select($sql = null, $simple = false)
+     * Запрос к БД , использует $this->id если он есть в качестве выборки
+     * возвращает в массив $this->data
+     *
+     * @return bool - true если успех
+     */
+    public function _select($sql = null, $simple = false)
     {
-		// TODO : избавиться от $cls либо заэкранировать
+        // TODO : избавиться от $cls либо заэкранировать
         $data = array();
         $data = $this->_select_fields($sql, $simple);
         if (count($data)) {
@@ -585,9 +589,9 @@ abstract class kernel_extends
         if ($this->ordfield) $q_order = $this->ordfield;
 
         if (isset($this->id) and $this->id) // либо по ID
-        $q_where[] = 'id IN (' . $this->_id_as_string() . ')';
+            $q_where[] = 'id IN (' . $this->_id_as_string() . ')';
         elseif (isset($this->owner->id) and $this->owner->id) // либо по owner id
-        $q_where[] = $this->owner_name . ' IN (' . $this->owner->_id_as_string() . ')';
+            $q_where[] = $this->owner_name . ' IN (' . $this->owner->_id_as_string() . ')';
 
         if (!is_null($sql)) {
             if (is_array($sql)) {
@@ -670,13 +674,13 @@ abstract class kernel_extends
                         foreach ($value['thumb'] as $kk => $rr) {
                             if (isset($rr['pref']) and $rr['pref']) {
                                 $row[$rr['pref'] . $key] = $this->getThumb($rr, $key, $row['id'], $row['_ext_' . $key]);
-								//$row['#' . $rr['pref'] . $key] = $rr; is depricated (избыточность данных)
+                                //$row['#' . $rr['pref'] . $key] = $rr; is depricated (избыточность данных)
                             }
                         }
                     }
                 }
             }
-			//end foreach
+            //end foreach
         }
         return true;
     }
@@ -716,11 +720,11 @@ abstract class kernel_extends
     }
 
     /**
-	 * Удаление данных
-	 *
-	 * @return bool
-	 */
-	    public function _delete()
+     * Удаление данных
+     *
+     * @return bool
+     */
+    public function _delete()
     {
         $result = static_form::_delete($this, $this->id);
         if ($result) {
@@ -731,12 +735,12 @@ abstract class kernel_extends
     }
 
     /**
-	 * Сохранение данных form , Функция добавления записей в бд
-	 * В случае успеха выполняет allChangeData('add')
-	 *
-	 * @return bool
-	 */
-	    public function _add($data = array(), $flag_select = true, $flag_update = false)
+     * Сохранение данных form , Функция добавления записей в бд
+     * В случае успеха выполняет allChangeData('add')
+     *
+     * @return bool
+     */
+    public function _add($data = array(), $flag_select = true, $flag_update = false)
     {
         if (is_bool($data)) {
             $flag_select = $data;
@@ -757,24 +761,24 @@ abstract class kernel_extends
     }
 
     /**
-	 * Сохранение данных formФункция добавления записей в бд
-	 * В случае успеха выполняет allChangeData('add')
-	 *
-	 * @return bool
-	 */
-	    public function _addUp($data, $flag_select = true)
+     * Сохранение данных formФункция добавления записей в бд
+     * В случае успеха выполняет allChangeData('add')
+     *
+     * @return bool
+     */
+    public function _addUp($data, $flag_select = true)
     {
         return $this->_add($data, $flag_select, true);
     }
 
     /**
-	 * Обновление данных по $this->id или $where
-	 * @param ARRAY $data
-	 * @param STRING $where
-	 * @param BOOL $flag_select - выборка данных после обновления ($this->data)
-	 * @return BOOL
-	 */
-	public function _update($data = array(), $where = NULL, $flag_select = true)
+     * Обновление данных по $this->id или $where
+     * @param ARRAY $data
+     * @param STRING $where
+     * @param BOOL $flag_select - выборка данных после обновления ($this->data)
+     * @return BOOL
+     */
+    public function _update($data = array(), $where = NULL, $flag_select = true)
     {
         if (!is_array($data) or !count($data)) {
             trigger_error('Устаревший метод вызова _save_item -> первый параметр $data', E_USER_WARNING);
@@ -788,7 +792,7 @@ abstract class kernel_extends
             elseif (isset($this->fields[$k])) $this->fld_data[$k] = $r;
         }
 
-		// Если задан $where - получаем список IDшников
+        // Если задан $where - получаем список IDшников
         if (!is_null($where) and $where !== false) {
             if (!$this->_isset($where)) return false; // в $this->id вносит выбранные ID
         }
@@ -799,12 +803,12 @@ abstract class kernel_extends
     }
 
     /**
-	 * Обновление данных выбранные по ID родителя
-	 * @param ARRAY $data
-	 * @param BOOL $flag_select - выборка данных после обновления ($this->data)
-	 * @return BOOL
-	 */
-	    protected function _updateByOwner($data = array(), $flag_select = true)
+     * Обновление данных выбранные по ID родителя
+     * @param ARRAY $data
+     * @param BOOL $flag_select - выборка данных после обновления ($this->data)
+     * @return BOOL
+     */
+    protected function _updateByOwner($data = array(), $flag_select = true)
     {
         if (!$this->owner) {
             trigger_error('Error update: CLASS don`t have OWNER', E_USER_WARNING);
@@ -871,14 +875,14 @@ abstract class kernel_extends
         if (isset($param['prm']) and count($param['prm'])) {
             foreach ($param['prm'] as $k => $r) {
                 foreach ($dataList as $row)
-                if (!isset($row[$k]) and $row[$k] != $r) return false;
+                    if (!isset($row[$k]) and $row[$k] != $r) return false;
             }
             return true;
         }
         if (static_main::_prmModul($this->_cl, array(3))) return true;
         if ($this->mf_createrid and static_main::_prmModul($this->_cl, array(4))) {
             foreach ($dataList as $k => $r)
-            if ($r[$this->mf_createrid] != $_SESSION['user']['id']) return false;
+                if ($r[$this->mf_createrid] != $_SESSION['user']['id']) return false;
             return true;
         }
         return false;
@@ -890,7 +894,7 @@ abstract class kernel_extends
         if (static_main::_prmModul($this->_cl, array(5))) return true;
         if ($this->mf_createrid and static_main::_prmModul($this->_cl, array(6))) {
             foreach ($dataList as $k => $r)
-            if ($r[$this->mf_createrid] != $_SESSION['user']['id']) return false;
+                if ($r[$this->mf_createrid] != $_SESSION['user']['id']) return false;
             return true;
         }
         return false;
@@ -902,7 +906,7 @@ abstract class kernel_extends
         if (static_main::_prmModul($this->_cl, array(7))) return true;
         if ($this->mf_createrid and static_main::_prmModul($this->_cl, array(8))) {
             foreach ($dataList as $k => $r)
-            if ($r[$this->mf_createrid] != $_SESSION['user']['id']) return false;
+                if ($r[$this->mf_createrid] != $_SESSION['user']['id']) return false;
             return true;
         }
         return false;
@@ -915,16 +919,16 @@ abstract class kernel_extends
         }
         if ($this->mf_createrid and static_main::_prmModul($this->_cl, array(2))) {
             foreach ($dataList as $k => $r)
-            if ($r[$this->mf_createrid] != $_SESSION['user']['id']) return false;
+                if ($r[$this->mf_createrid] != $_SESSION['user']['id']) return false;
             return true;
         }
         return false;
     }
 
     /**
-	 * Определяет необходимость создания запроса по создателю
-	 */
-	    public function _prmModulShowCriteria(array $param = array())
+     * Определяет необходимость создания запроса по создателю
+     */
+    public function _prmModulShowCriteria(array $param = array())
     {
         if (static_main::_prmModul($this->_cl, array(1))) {
             return false;
@@ -938,27 +942,27 @@ abstract class kernel_extends
 
     public function _prmSortField($key = '')
     {
-		//включаем сортировку для всех полей
+        //включаем сортировку для всех полей
         /* if (isset($this->fields_form[$key]['mask']['sort']))
 		  return true;
 		  elseif ($key == $this->mf_namefields or $key == 'ordfield' or $key == $this->mf_actctrl) */
-		        return true;
-		//return false;
+        return true;
+        //return false;
     }
 
 // --END PERMISSION -----//
 
     /**
-	 * Вывод и обработка данных
-	 * @param array $param параметры
-	 * $param
-	 * - formflag
-	 * - ajax
-	 * - errMess
-	 * - showform
-	 * @return array
-	 */
-	    public function _UpdItemModul($param = array(), &$argForm = null)
+     * Вывод и обработка данных
+     * @param array $param параметры
+     * $param
+     * - formflag
+     * - ajax
+     * - errMess
+     * - showform
+     * @return array
+     */
+    public function _UpdItemModul($param = array(), &$argForm = null)
     {
         if (is_null($argForm)) {
             $this->getFieldsForm(1);
@@ -968,16 +972,16 @@ abstract class kernel_extends
     }
 
     /**
-	 * Пре обработка формы
-	 * @param array $data данные
-	 * @param array $param параметры
-	 * @return array
-	 */
-	    public function kPreFields(&$f_data, &$f_param = array(), &$f_fieldsForm = null)
+     * Пре обработка формы
+     * @param array $data данные
+     * @param array $param параметры
+     * @return array
+     */
+    public function kPreFields(&$f_data, &$f_param = array(), &$f_fieldsForm = null)
     {
         if (is_null($f_fieldsForm)) {
             $this->getFieldsForm(1);
-            $f_fieldsForm = &$this->fields_form;
+            $f_fieldsForm = & $this->fields_form;
         }
 
         $my_fieldsForm = array();
@@ -985,7 +989,7 @@ abstract class kernel_extends
         foreach ($f_fieldsForm as $k => &$r) {
             if (!isset($r['type'])) continue;
             if (isset($r['readonly']) and $r['readonly'] and $this->id) // если поле "только чтение" и редактируется , то значение берем из БД,
-            $f_data[$k] = (isset($this->data[$this->id][$k]) ? $this->data[$this->id][$k] : '');
+                $f_data[$k] = (isset($this->data[$this->id][$k]) ? $this->data[$this->id][$k] : '');
 
             $eval = static_form::getEvalForm($this, $r);
 
@@ -1007,7 +1011,7 @@ abstract class kernel_extends
             if (isset($this->attaches[$k])) $r = $r + $this->attaches[$k];
             if (isset($this->memos[$k])) $r = $r + $this->memos[$k];
 
-			//на всякий
+            //на всякий
             if (!isset($r['mask']['width']) and isset($this->fields[$k]['width'])) $r['mask']['width'] = $this->fields[$k]['width'];
             if (!isset($r['default']) and isset($this->fields[$k]['default'])) $r['default'] = $this->fields[$k]['default'];
 
@@ -1038,42 +1042,42 @@ abstract class kernel_extends
                     $r['value'] = '';
                 }
 
-				// if(!$param['is_submit'])
-				// {
-				// 	$r['value'] = '';
-				// }
+                // if(!$param['is_submit'])
+                // {
+                // 	$r['value'] = '';
+                // }
             }
             /* elseif ($r['type'] == 'checkbox') {
 			  $f_data[$k] = $r['value'] = ((isset($f_data[$k]) and $f_data[$k])?1:0);
 			  } */
             if (isset($f_data[$k]) and !isset($r['value'])) //  and $f_data[$k]
-            $r['value'] = $f_data[$k];
+                $r['value'] = $f_data[$k];
 
             if (isset($this->id) and isset($this->data[$this->id]['_ext_' . $k])) $r['ext'] = $this->data[$this->id]['_ext_' . $k];
 
             if (!isset($r['comment'])) $r['comment'] = '';
 
-			//*****************
+            //*****************
             $my_fieldsForm[$k] = $r;
 
-			// Зависимые формы
+            // Зависимые формы
             if (isset($r['relationForm'])) {
-				//TODO - change script
+                //TODO - change script
                 if ($r['relationForm'] === true) // default function
-                $r['relationForm'] = 'relationForm';
+                    $r['relationForm'] = 'relationForm';
 
                 if (method_exists($this, $r['relationForm'])) {
                     call_user_func_array(
                         array($this, $r['relationForm']),
                         array($r['value'], &$my_fieldsForm)
                     );
-					//$r['relationForm']
-					//$f_fieldsForm = static_main::insertInArray($f_fieldsForm, $k, $my_fieldsForm);
+                    //$r['relationForm']
+                    //$f_fieldsForm = static_main::insertInArray($f_fieldsForm, $k, $my_fieldsForm);
                 } else {
                     trigger_error('Метод `' . $r['relationForm'] . '` не определен в модуле ' . $this->_cl, E_USER_WARNING);
                 }
             }
-			//end foreach
+            //end foreach
         }
         $f_fieldsForm = $my_fieldsForm;
 
@@ -1088,7 +1092,7 @@ abstract class kernel_extends
                 if (isset($f_param['captchaOn']['len'])) $LEN = $f_param['captchaOn']['len'];
                 if (isset($f_param['captchaOn']['difficult'])) $difficult = $f_param['captchaOn']['difficult'];
             }
-			//$LEN,$difficult
+            //$LEN,$difficult
             $f_fieldsForm['captcha'] = array(
                 'type' => 'captcha',
                 'caption' => static_main::m('_captcha', $this),
@@ -1112,11 +1116,11 @@ abstract class kernel_extends
     }
 
     /**
-	 * Создание данных для формы
-	 * @param mixed $form - 1 = форма
-	 * @return array
-	 */
-	    function getFieldsForm($form = 0)
+     * Создание данных для формы
+     * @param mixed $form - 1 = форма
+     * @return array
+     */
+    function getFieldsForm($form = 0)
     {
         $this->setFieldsForm($form);
         /* $temp = $this->fields_form;
@@ -1188,12 +1192,12 @@ abstract class kernel_extends
     }
 
     /**
-	 * Опции для формы
-	 *
-	 */
-	    public function getFormOptions($name = null, $method = null)
+     * Опции для формы
+     *
+     */
+    public function getFormOptions($name = null, $method = null)
     {
-		//'f'.$this->_cl
+        //'f'.$this->_cl
         if (!$name) $name = 'form_' . $this->_cl;
         if (!$method) $method = 'POST';
         $option = array(
@@ -1203,11 +1207,11 @@ abstract class kernel_extends
     }
 
     /**
-	 * Создание данных для формы
-	 * @param mixed $param - параметры
-	 * @return array
-	 */
-	    public function kFields2Form(&$param, &$fields_form = null)
+     * Создание данных для формы
+     * @param mixed $param - параметры
+     * @return array
+     */
+    public function kFields2Form(&$param, &$fields_form = null)
     {
         /*
 		  $fields_form['уник название'] = array(
@@ -1223,8 +1227,8 @@ abstract class kernel_extends
 		  );
 		 */
         if (is_null($fields_form)) {
-			//$this->getFieldsForm(1); //обнуляем форму
-            $fields_form = &$this->fields_form;
+            //$this->getFieldsForm(1); //обнуляем форму
+            $fields_form = & $this->fields_form;
         }
         if (!is_array($fields_form) or !count($fields_form)) return false;
 
@@ -1239,7 +1243,8 @@ abstract class kernel_extends
         if (!isset($fields_form['sbmt'])
             and (!$this->id
                 or (isset($this->data[$this->id])
-                    and $this->_prmModulEdit($this->data, $param)))) {
+                    and $this->_prmModulEdit($this->data, $param)))
+        ) {
             $sbmtList = array(
                 'sbmt' => static_main::m('Save and close', $this)
             );
@@ -1263,80 +1268,80 @@ abstract class kernel_extends
     }
 
     /**
-	 * Корректировака и обработка формы для вывода формы
-	 * @param mixed $fields - название списока или массив данных для списка
-	 * @return array
-	 */
-	    public function kFields2FormFields(&$fields)
+     * Корректировака и обработка формы для вывода формы
+     * @param mixed $fields - название списока или массив данных для списка
+     * @return array
+     */
+    public function kFields2FormFields(&$fields)
     {
         return static_form::kFields2FormFields($this, $fields);
     }
 
     /**
-	 * проверка формы
-	 * @param mixed $data - данные
-	 * @param mixed $param - параметры
-	 * @param mixed $FORMS - форма
-	 * @return array Данные
-	 */
-	    public function fFormCheck(&$data, &$param, &$FORMS)
+     * проверка формы
+     * @param mixed $data - данные
+     * @param mixed $param - параметры
+     * @param mixed $FORMS - форма
+     * @return array Данные
+     */
+    public function fFormCheck(&$data, &$param, &$FORMS)
     {
         return static_form::_fFormCheck($this, $data, $param, $FORMS);
     }
 
     /**
-	 * проверка выбранных данных из списка
-	 * @param mixed $listname - название списока или массив данных для списка
-	 * @param mixed $value - значение
-	 * @return array Список
-	 */
-	    public function _checkList(&$listname, $value = NULL)
+     * проверка выбранных данных из списка
+     * @param mixed $listname - название списока или массив данных для списка
+     * @param mixed $value - значение
+     * @return array Список
+     */
+    public function _checkList(&$listname, $value = NULL)
     {
         return static_list::_checkList($this, $listname, $value);
     }
 
     /**
-	 * ПОлучение списка
-	 */
-	    public function _getlist($listname, $value = NULL)
+     * ПОлучение списка
+     */
+    public function _getlist($listname, $value = NULL)
     {
         /* LIST SELECTOR */
-		        return static_list::_getlist($this, $listname, $value);
+        return static_list::_getlist($this, $listname, $value);
     }
 
     /**
-	 * HELPER - Получение списка из кеша если он там есть
-	 * @param mixed $listname - название списока или массив данных для списка
-	 * @param mixed $value - значение
-	 * @return array Список
-	 */
-	    public function &_getCashedList($listname, $value = NULL)
+     * HELPER - Получение списка из кеша если он там есть
+     * @param mixed $listname - название списока или массив данных для списка
+     * @param mixed $value - значение
+     * @return array Список
+     */
+    public function &_getCashedList($listname, $value = NULL)
     {
         return static_list::_getCashedList($this, $listname, $value);
     }
 
     /**
-	 * HELPER - Преобразование списка в шаблонный список для формы
-	 * @param array $path - путь
-	 * @return string XML
-	 */
-	    public function _forlist(&$data, $id = 0, $select = '', $multiple = 0)
+     * HELPER - Преобразование списка в шаблонный список для формы
+     * @param array $path - путь
+     * @return string XML
+     */
+    public function _forlist(&$data, $id = 0, $select = '', $multiple = 0)
     {
         return static_list::_forlist($data, $id, $select, $multiple);
     }
 
     /**
-	 * Универсальный обработчик вывода данных
-	 */
-	    public function super_inc($PARAM = array(), $ftype = '')
+     * Универсальный обработчик вывода данных
+     */
+    public function super_inc($PARAM = array(), $ftype = '')
     {
         return static_super::super_inc($this, $PARAM, $ftype);
     }
 
     /**
-	 * вывод данных
-	 */
-	    public function _displayXML(&$param)
+     * вывод данных
+     */
+    public function _displayXML(&$param)
     {
         return static_super::_displayXML($this, $param);
     }
@@ -1344,38 +1349,38 @@ abstract class kernel_extends
 // MODUL configuration
 
     /**
-	 * Переустановка БД модуля
-	 * @return array form
-	 */
-	    public function toolsReinstall()
+     * Переустановка БД модуля
+     * @return array form
+     */
+    public function toolsReinstall()
     {
         return static_tools::toolsReinstall($this);
     }
 
     /**
-	 *    КОнфиг модуля
-	 */
-	    public function toolsConfigmodul()
+     *    КОнфиг модуля
+     */
+    public function toolsConfigmodul()
     {
         return static_tools::toolsConfigmodul($this);
     }
 
     /**
-	 * Групповые операции
-	 * TODO : это контрол - нужно его вынести из модуля
-	 * @return array form
-	 */
-	    public function toolsSuperGroup()
+     * Групповые операции
+     * TODO : это контрол - нужно его вынести из модуля
+     * @return array form
+     */
+    public function toolsSuperGroup()
     {
         return static_tools::toolsSuperGroup($this);
     }
 
     /**
-	 * Статистика модуля
-	 * @param array $oid
-	 * @return array
-	 */
-	    public function toolsStatsmodul($oid = '')
+     * Статистика модуля
+     * @param array $oid
+     * @return array
+     */
+    public function toolsStatsmodul($oid = '')
     {
         return static_tools::toolsStatsmodul($this, $oid);
     }
@@ -1384,29 +1389,29 @@ abstract class kernel_extends
 		return static_tools::toolsReindex($this, $oid);
 	}*/
 
-	    /**
-	 * Tools для superinc - Проверка модуля (устарешая)
-	 * @return array
-	 */
-	    public function toolsCheckmodul()
+    /**
+     * Tools для superinc - Проверка модуля (устарешая)
+     * @return array
+     */
+    public function toolsCheckmodul()
     {
         return static_tools::_toolsCheckmodul($this);
     }
 
     /**
-	 * Проверка модуля
-	 * @return array
-	 */
-	    public function _checkmodstruct()
+     * Проверка модуля
+     * @return array
+     */
+    public function _checkmodstruct()
     {
         $DATA = static_tools::_checkmodstruct($this->_cl);
         return $DATA;
     }
 
     /**
-	 * Форма подтверждения
-	 */
-	    public function confirmForm($param = array())
+     * Форма подтверждения
+     */
+    public function confirmForm($param = array())
     {
         if (!isset($param['lang']['sbmt'])) $param['lang']['sbmt'] = 'Подтверждаю';
         if (!isset($param['lang']['_info'])) $param['lang']['_info'] = '';
@@ -1447,24 +1452,23 @@ abstract class kernel_extends
     }
 
     /**
-	 * инструмент Фильтра super_inc
-	 * @return array
-	 */
-	    public function toolsFormfilter()
+     * инструмент Фильтра super_inc
+     * @return array
+     */
+    public function toolsFormfilter()
     {
         global $_tpl;
         $resuslt = array();
         /**
-		 * очистка фильтра
-		 * */
+         * очистка фильтра
+         * */
 
         if (isset($_REQUEST['f_clear_sbmt'])) {
             unset($_SESSION['filter'][$this->_cl]);
             $_tpl['onload'] .= 'window.location.href = \'' . $_SERVER['HTTP_REFERER'] . '\';';
-        }
-        /**
-		 * задаются параметры фильтра
-		 * */
+        } /**
+         * задаются параметры фильтра
+         * */
         elseif (isset($_REQUEST['sbmt'])) {
             $this->setFilter();
             $_tpl['onload'] .= 'window.location.href = \'' . $_SERVER['HTTP_REFERER'] . '\';';
@@ -1474,10 +1478,10 @@ abstract class kernel_extends
     }
 
     /**
-	 * Создает форму данных для фильтра super_inc
-	 * @return array form
-	 */
-	    function Formfilter()
+     * Создает форму данных для фильтра super_inc
+     * @return array form
+     */
+    function Formfilter()
     {
         $_FILTR = array();
         if (isset($_SESSION['filter'][$this->_cl])) $_FILTR = $_SESSION['filter'][$this->_cl];
@@ -1486,7 +1490,7 @@ abstract class kernel_extends
         foreach ($this->fields_form as $k => &$r) {
             if (!isset($r['caption']) or !$r['caption']) continue;
             if ($r['type'] == 'hidden' or !isset($this->fields[$k])) continue;
-			//if (isset($r['mask']['filter']) and $r['mask']['filter'] == 1) {
+            //if (isset($r['mask']['filter']) and $r['mask']['filter'] == 1) {
             unset($r['default']);
             if ($r['type'] == 'list' && is_array($r['listname']) && !isset($r['listname']['idThis'])) $r['listname']['idThis'] = $k;
             $fields_form['f_' . $k] = $r;
@@ -1509,10 +1513,10 @@ abstract class kernel_extends
             } elseif ($r['type'] != 'radio' and $r['type'] != 'checkbox' and $r['type'] != 'list' and $r['type'] != 'int' and $r['type'] != 'file' and $r['type'] != 'ajaxlist' and $r['type'] != 'date') $fields_form['f_' . $k]['type'] = 'text';
             if (isset($_FILTR['exc_' . $k])) $fields_form['f_' . $k]['exc'] = 1;
 
-			//}
+            //}
         }
         $name = 'filter_' . $this->_cl;
-		//фильтр
+        //фильтр
         if (count($fields_form)) {
             $fields_form['sbmt'] = array(
                 'type' => 'submit',
@@ -1539,11 +1543,11 @@ abstract class kernel_extends
     }
 
     /**
-	 * задает параметры запроса для super_inc
-	 * @param bool $flag - true не ощищать данные
-	 * @return array
-	 */
-	    function setFilter($flag = 0)
+     * задает параметры запроса для super_inc
+     * @param bool $flag - true не ощищать данные
+     * @return array
+     */
+    function setFilter($flag = 0)
     {
         if (isset($_REQUEST['f_clear_sbmt'])) {
             unset($_SESSION['filter'][$this->_cl]);
@@ -1562,7 +1566,7 @@ abstract class kernel_extends
                     } else {
                         $_SESSION['filter'][$this->_cl][$k] = array();
                         if ($is_int)
-                        foreach ($_REQUEST['f_' . $k] as $row) $_SESSION['filter'][$this->_cl][$k][] = (int)$row;
+                            foreach ($_REQUEST['f_' . $k] as $row) $_SESSION['filter'][$this->_cl][$k][] = (int)$row;
                         else foreach ($_REQUEST['f_' . $k] as $row) $_SESSION['filter'][$this->_cl][$k][] = $this->SqlEsc($row);
                     }
                     if (isset($_REQUEST['exc_' . $k]) and $_REQUEST['exc_' . $k]) $_SESSION['filter'][$this->_cl]['exc_' . $k] = 1;
@@ -1573,10 +1577,10 @@ abstract class kernel_extends
     }
 
     /**
-	 * ФИЛЬТР в запросе для super_inc
-	 * @return array
-	 */
-	    function _filter_clause()
+     * ФИЛЬТР в запросе для super_inc
+     * @return array
+     */
+    function _filter_clause()
     {
         $cl = $_FILTR = array();
         if (!$this->cf_filter or !$this->_prmSortField()) return $cl;
@@ -1589,7 +1593,7 @@ abstract class kernel_extends
         if (count($_FILTR)) {
             $this->getFieldsForm(1);
             foreach ($this->fields_form as $k => &$r) {
-				//if (isset($r['mask']['filter']) and $r['mask']['filter'] == 1) {
+                //if (isset($r['mask']['filter']) and $r['mask']['filter'] == 1) {
                 if (isset($_FILTR[$k]) or isset($_FILTR[$k . '_2'])) {
                     $tempex = 0;
                     if (isset($_FILTR['exc_' . $k])) $tempex = 1;
@@ -1615,19 +1619,19 @@ abstract class kernel_extends
                         else $cl[$k] = 't1.' . $k . ' ' . ($tempex ? 'NOT ' : '') . 'LIKE "' . $this->SqlEsc($_FILTR[$k]) . '"';
                     }
                 }
-				//}
+                //}
             }
         }
         return $cl;
     }
 
     /**
-	 * Активация данных $this->id
-	 * @param array $act - 1 or 0
-	 * @param array $param - данные
-	 * @return array
-	 */
-	    public function _Act($act, &$param)
+     * Активация данных $this->id
+     * @param array $act - 1 or 0
+     * @param array $param - данные
+     * @return array
+     */
+    public function _Act($act, &$param)
     {
         $flag = -1;
         $DATA = array();
@@ -1658,11 +1662,11 @@ abstract class kernel_extends
     }
 
     /**
-	 * удаление данных $this->id
-	 * @param array $param - данные
-	 * @return array
-	 */
-	    public function _Del($param)
+     * удаление данных $this->id
+     * @param array $param - данные
+     * @return array
+     */
+    public function _Del($param)
     {
         $flag = -1;
         $DATA = array();
@@ -1686,12 +1690,12 @@ abstract class kernel_extends
     }
 
     /**
-	 * сортировка $this->id
-	 * @param int $ord - позиция
-	 * @param array $param - данные
-	 * @return array
-	 */
-	    public function _ORD($ord, &$param)
+     * сортировка $this->id
+     * @param int $ord - позиция
+     * @param array $param - данные
+     * @return array
+     */
+    public function _ORD($ord, &$param)
     {
         $flag = -1;
         $DATA = array();
@@ -1711,52 +1715,52 @@ abstract class kernel_extends
     }
 
     /**
-	 * Сортировка
-	 * @return array
-	 */
-	    public function _sorting()
+     * Сортировка
+     * @return array
+     */
+    public function _sorting()
     {
         return static_super::_sorting($this);
     }
 
     /**
-	 * при успешном изменении данных
-	 * @param string $type - add, save, delete
-	 * @param array $data - данные
-	 * @return bool
-	 */
-	    function allChangeData($type = '', $data = '')
+     * при успешном изменении данных
+     * @param string $type - add, save, delete
+     * @param array $data - данные
+     * @return bool
+     */
+    function allChangeData($type = '', $data = '')
     {
         return true;
     }
 
 
-	///////////////////////////
+    ///////////////////////////
     /******  Attaches ********/
-	///////////////////////////
+    ///////////////////////////
 
     /**
-	 * Возвращает путь с дополненным параметром size
-	 *
-	 * @param string $file - относительный путь
-	 * @return string - относительный путь
-	 */
-	    public function _getPathSize($file)
+     * Возвращает путь с дополненным параметром size
+     *
+     * @param string $file - относительный путь
+     * @return string - относительный путь
+     */
+    public function _getPathSize($file)
     {
         if ($file and file_exists(SITE . $file) and $size = @filesize(SITE . $file)) return $file . '?size=' . $size;
         return '';
     }
 
     /**
-	 * Формирует путь к фаилу
-	 * @deprecated Забыли про эту функцию , getAttaches
-	 * @param <type> $id
-	 * @param <type> $key
-	 * @param <type> $extValue
-	 * @param <type> $modkey
-	 * @return string
-	 */
-	    public function _get_file($id, $key, $extValue = '', $modkey = -1)
+     * Формирует путь к фаилу
+     * @deprecated Забыли про эту функцию , getAttaches
+     * @param <type> $id
+     * @param <type> $key
+     * @param <type> $extValue
+     * @param <type> $modkey
+     * @return string
+     */
+    public function _get_file($id, $key, $extValue = '', $modkey = -1)
     {
         if (!$id) $id = $this->id;
         if (!$extValue and isset($this->data[$id])) $extValue = $this->data[$id]['_ext_' . $key];
@@ -1781,9 +1785,9 @@ abstract class kernel_extends
     }
 
     /**
-	 *  относительный путь к фаилам
-	 */
-	    public function getPathForAtt($key)
+     *  относительный путь к фаилам
+     */
+    public function getPathForAtt($key)
     {
         if (isset($this->attaches[$key]['path']) and $this->attaches[$key]['path']) $pathimg = $this->attaches[$key]['path'] . '/';
         else $pathimg = $this->_CFG['PATH']['content'] . $key . '/';
@@ -1791,17 +1795,17 @@ abstract class kernel_extends
     }
 
     /**
-	 *  Полный путь к фаилу
-	 */
-	    public function getLocalAttaches($key, $id, $ext)
+     *  Полный путь к фаилу
+     */
+    public function getLocalAttaches($key, $id, $ext)
     {
         return SITE . $this->getAttaches($key, $id, $ext);
     }
 
     /**
-	 *  Относительный путь к фаилу
-	 */
-	    public function getAttaches($key, $id, $ext)
+     *  Относительный путь к фаилу
+     */
+    public function getAttaches($key, $id, $ext)
     {
         if (!$ext) return '';
         if (strlen($ext) > 5) {
@@ -1811,9 +1815,9 @@ abstract class kernel_extends
     }
 
     /**
-	 *  относительный Путь к миниатюрам
-	 */
-	    public function getPathForThumb($imod, $key)
+     *  относительный Путь к миниатюрам
+     */
+    public function getPathForThumb($imod, $key)
     {
         if (!isset($imod['pref']) or !$imod['pref']) $imod['pref'] = ''; // по умолчинию без префикса
         else $imod['pref'] .= 'thumb/';
@@ -1824,27 +1828,27 @@ abstract class kernel_extends
     }
 
     /**
-	 *  Полный путь к фаилу
-	 */
-	    public function getLocalThumb($imod, $key, $id, $ext)
+     *  Полный путь к фаилу
+     */
+    public function getLocalThumb($imod, $key, $id, $ext)
     {
         if (!$ext) return '';
         return SITE . $this->getThumb($imod, $key, $id, $ext);
     }
 
     /**
-	 *  Относительный путь к миниатюре
-	 */
-	    public function getThumb($imod, $key, $id, $ext)
+     *  Относительный путь к миниатюре
+     */
+    public function getThumb($imod, $key, $id, $ext)
     {
         if (!$ext) return '';
         return $this->getPathForThumb($imod, $key) . $this->getSubPath($id) . '/' . $id . '.' . $ext;
     }
 
     /**
-	 *  путь к фаилам MEMO данных
-	 */
-	    public function getPathForMemo($key)
+     *  путь к фаилам MEMO данных
+     */
+    public function getPathForMemo($key)
     {
         if (isset($this->memos[$key]['path']) and $this->memos[$key]['path']) $pathimg = $this->memos[$key]['path'];
         else $pathimg = $this->_CFG['PATH']['content'] . $key;
@@ -1856,31 +1860,31 @@ abstract class kernel_extends
         return ceil($id / $this->_CFG['wep']['filedivider']);
     }
 
-	/////////////////////////////////////////
-	/////////////////////////////////////////
-	//////////////////////////////////////////
+    /////////////////////////////////////////
+    /////////////////////////////////////////
+    //////////////////////////////////////////
 
     /**
-	 * Постраничная навигация
-	 * DEPRICATED
-	 */
-	    public function fPageNav($countfield, $thisPage = '')
+     * Постраничная навигация
+     * DEPRICATED
+     */
+    public function fPageNav($countfield, $thisPage = '')
     {
         return static_main::fPageNav2($this, $countfield, array('firstpath' => $thisPage));
     }
 
     /**
-	 * Постраничная навигация
-	 */
-	    public function fPageNav2($countfield, $param = array())
+     * Постраничная навигация
+     */
+    public function fPageNav2($countfield, $param = array())
     {
         return static_main::fPageNav2($this, $countfield, $param);
     }
 
     /**
-	 * Генератор сообщений на мыло
-	 */
-	    function sendNotif($email = '')
+     * Генератор сообщений на мыло
+     */
+    function sendNotif($email = '')
     {
         $param = array(
             'clause' => array('t1.' . $this->mf_notif => 't1.' . $this->mf_notif . '=0'),
@@ -1912,9 +1916,9 @@ abstract class kernel_extends
     }
 
     /**
-	 * @deprecated
-	 */
-	    public function AjaxAdd()
+     * @deprecated
+     */
+    public function AjaxAdd()
     {
         exit('AjaxAdd is DEPRICATED');
     }
@@ -1925,9 +1929,9 @@ abstract class kernel_extends
     }
 
     /**
-	 * Ключ для платежной системы
-	 */
-	    public function getPayKey()
+     * Ключ для платежной системы
+     */
+    public function getPayKey()
     {
         assert($this->id);
         return $this->_cl . ':' . $this->id;
@@ -1964,7 +1968,7 @@ class modul_child extends ArrayObject
 		  $clname = $_CFG['modulprm_ext'][$index][0];
 		  else
 		  $clname = $index; */
-		        $clname = _getExtMod($index);
+        $clname = _getExtMod($index);
         $value = parent::offsetGet($clname);
         if ($this->offsetExists($clname) && $value === true) {
             if (isset($this->modul_obj->child_path[$clname])) {
@@ -1975,12 +1979,12 @@ class modul_child extends ArrayObject
                 exit('Cant find child class ' . $clname);
                 return false;
             }
-			//
+            //
             $this->modul_obj->childs[$index] = $modul_child; // Исправил ошибку, когнда для несинглтона, каждый вызов подмодуля приводит к созданию объекта
-			//$this->childs_obj[$index] = $modul_child;
+            //$this->childs_obj[$index] = $modul_child;
             return $modul_child;
         } else {
-			//если один и тот же клас исползуется в как ребенок в других классах, то $this->singleton = false; вам в помощь, иначе сюда будут выдаваться ссылки на класс созданный в первы раз для другого модуля
+            //если один и тот же клас исползуется в как ребенок в других классах, то $this->singleton = false; вам в помощь, иначе сюда будут выдаваться ссылки на класс созданный в первы раз для другого модуля
         }
 
         return $value;

@@ -1,13 +1,13 @@
 code {
-	display: block;
-	margin: 5px;
-	padding: 5px;
-	border: 1px solid #DCE6F0;
-	background: url(/_design/_img/code.gif) #F8F8F8;
-	color: #444;
-	white-space: pre;
-	font-size: 14px;
-	line-height: 16px
+    display: block;
+    margin: 5px;
+    padding: 5px;
+    border: 1px solid #DCE6F0;
+    background: url(/_design/_img/code.gif) #F8F8F8;
+    color: #444;
+    white-space: pre;
+    font-size: 14px;
+    line-height: 16px
 }
 
 

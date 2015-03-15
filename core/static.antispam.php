@@ -3,9 +3,9 @@
 class static_antispam
 {
     /**
-	 * В формат выода сообщения
-	 */
-	    static public $word_censor = array(
+     * В формат выода сообщения
+     */
+    static public $word_censor = array(
         'хуй\b', 'нахуя', 'нихуя',
         'хреносос', 'хуесос',
         'пизда', 'пиздень', 'пиздец',
@@ -44,14 +44,14 @@ class static_antispam
 
     static function tabuHighlight(&$text)
     {
-		//\b
+        //\b
         $patern = '/(' . implode(')|(', self::$word_tabu) . ')/ui';
         preg_match_all($patern, $text, $result, PREG_OFFSET_CAPTURE);
-		// global $_tpl;
-		// $_tpl['xxxx'] = $text;
-		// $_tpl['zzzzz'] = $patern;
-		// $_tpl['yyyy'] = $result;
-		// exit();
+        // global $_tpl;
+        // $_tpl['xxxx'] = $text;
+        // $_tpl['zzzzz'] = $patern;
+        // $_tpl['yyyy'] = $result;
+        // exit();
         if (count($result[0])) {
             $wlist = array();
             foreach ($result[0] as $value) {
@@ -64,14 +64,14 @@ class static_antispam
 
     static function tabu($text)
     {
-		//$patern = '/(спайс.?\b)|(водк.?\b)/eui';
+        //$patern = '/(спайс.?\b)|(водк.?\b)/eui';
         $patern = '/(' . implode('\b)|(', self::$word_tabu) . '\b)/ui';
         preg_match_all($patern, $text, $result, PREG_OFFSET_CAPTURE);
-		// global $_tpl;
-		// $_tpl['xxxx'] = $text;
-		// $_tpl['zzzzz'] = $patern;
-		// $_tpl['yyyy'] = $result;
-		// exit();
+        // global $_tpl;
+        // $_tpl['xxxx'] = $text;
+        // $_tpl['zzzzz'] = $patern;
+        // $_tpl['yyyy'] = $result;
+        // exit();
         if (count($result[0])) {
             $wlist = array();
             foreach ($result[0] as $value) {

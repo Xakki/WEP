@@ -1,25 +1,26 @@
 <?php
+
 class static_control
 {
     /**
-	 * Вывод и обработка данных
-	 * @param array $param параметры
-	 * $param
-	 * - formflag
-	 * - ajax
-	 * - errMess
-	 * - showform
-	 * - setAutoSubmit Позволяет автоматический сохранять/добавлять записи, если нет ошибок
-	 * - savePost Сохряняет прочие POST данные
-	 * @return array
-	 */
+     * Вывод и обработка данных
+     * @param array $param параметры
+     * $param
+     * - formflag
+     * - ajax
+     * - errMess
+     * - showform
+     * - setAutoSubmit Позволяет автоматический сохранять/добавлять записи, если нет ошибок
+     * - savePost Сохряняет прочие POST данные
+     * @return array
+     */
 
-	    static function _UpdItemModul($_this, $param, $argForm)
+    static function _UpdItemModul($_this, $param, $argForm)
     {
         /* _UpdItemModul($param = array(),&$argForm = null) */
-		//update modul item
+        //update modul item
         $param['is_submit'] = false;
-		//$param
+        //$param
         if (isAjax()) {
             $param['ajax'] = 1;
             $param['errMess'] = 1;
@@ -29,7 +30,7 @@ class static_control
         $arr = array('mess' => array(), 'vars' => array());
         $mess = array();
 
-		// Флаг - запускает процесс сохранения или добавления записи
+        // Флаг - запускает процесс сохранения или добавления записи
         $submitFlag = static_form::isSubmited($param);
 
         if (!empty($_this->id) and $_this->id) { //EDIT
@@ -39,14 +40,14 @@ class static_control
                 $clause = ' WHERE id IN (' . $_this->_id_as_string() . ')';
                 $_this->data = $_this->_query($listfields, $clause, 'id');
             }
-			//print($_this->SQL->query);
+            //print($_this->SQL->query);
             if (count($_this->data) == 1) {
-				// Проверка привелегий доступа на просмотр
+                // Проверка привелегий доступа на просмотр
                 if (!$_this->_prmModulShow($_this->data, $param)) {
                     $arr['mess'][] = static_main::am('error', 'denied', $_this);
                     $formflag = 0;
                 } elseif ($submitFlag) {
-					// Проверка привелегий доступа на редактирование
+                    // Проверка привелегий доступа на редактирование
                     if (!$_this->_prmModulEdit($_this->data, $param)) {
                         $arr['mess'][] = static_main::am('error', 'denied_up', $_this);
                         $formflag = 0;
@@ -75,19 +76,19 @@ class static_control
                         }
                     }
                 } else {
-					// Вывод формы с данными из БД
+                    // Вывод формы с данными из БД
                     $flag = FORM_STATUS_DEFAULT;
                     $tempdata = $_this->data[$_this->id];
                     $mess = $_this->kPreFields($tempdata, $param, $argForm);
                 }
                 if (isset($argForm['captcha'])) static_form::setCaptcha($argForm['captcha']['mask']);
             } else {
-				// Ошибка. Нет данных
+                // Ошибка. Нет данных
                 $arr['mess'][] = static_main::am('error', 'nodata', $_this);
                 $flag = FORM_STATUS_ERROR;
             }
         } else {
-			// Проверка привелегий доступа на добавление
+            // Проверка привелегий доступа на добавление
             if (!$_this->_prmModulAdd()) {
                 $arr['mess'][] = static_main::am('error', 'denied_add', $_this);
                 $formflag = 0;
@@ -120,19 +121,19 @@ class static_control
         }
 
         if (isset($param['showform']) and $param['showform'] and $flag === FORM_STATUS_ERROR) // Если стоит флаг showform, то отображаем форму если ошибка
-        $formflag = 1;
+            $formflag = 1;
         elseif (isset($param['formflag'])) // если стоит флаг formflag, то всегда покажем форму
-        $formflag = $param['formflag'];
+            $formflag = $param['formflag'];
         elseif ($flag == FORM_STATUS_DEFAULT) // по умолчанию сразу показываем форму
-        $formflag = 1;
+            $formflag = 1;
         elseif (isset($_POST['sbmt']) and $flag === FORM_STATUS_OK) // если успешно выполненно и нажата кнопка "Сохранить"
-        $formflag = 0;
+            $formflag = 0;
         elseif (isset($_POST['sbmt_save'])) $formflag = 1;
         elseif (isset($param['ajax'])) // если флаг ajax , то не показывать форму
-        $formflag = 0;
+            $formflag = 0;
 
         if ($formflag) // показывать форму
-        $formflag = $_this->kFields2Form($param, $argForm);
+            $formflag = $_this->kFields2Form($param, $argForm);
 
         $options = $_this->getFormOptions();
 

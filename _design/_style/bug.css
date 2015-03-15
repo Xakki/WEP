@@ -1,247 +1,243 @@
 #bugmain {
-	position: relative;
-	z-index: 100;
-	overflow: auto;
-	padding: 0;
-	border: 1px solid yellow;
-	background: #D7E8FF;
-	color: #000;
-	font-size: 0.8em;
-	font-family: arial;
+    position: relative;
+    z-index: 100;
+    overflow: auto;
+    padding: 0;
+    border: 1px solid yellow;
+    background: #D7E8FF;
+    color: #000;
+    font-size: 0.8em;
+    font-family: arial;
 }
 
 #bugmain .bug_ {
-	background-color: #858585;
+    background-color: #858585;
 }
 
 #bugmain .bug_0 {
-	background-color: #858585;
+    background-color: #858585;
 }
 
 #bugmain .bug_1 {
-	background-color: red;
+    background-color: red;
 }
 
 #bugmain .bug_2 {
-	background-color: #F18890;
+    background-color: #F18890;
 }
 
 #bugmain .bug_4 {
-	background-color: red;
+    background-color: red;
 }
 
 #bugmain .bug_8 {
-	background-color: #858585;
+    background-color: #858585;
 }
 
 #bugmain .bug_16 {
-	background-color: red;
+    background-color: red;
 }
 
 #bugmain .bug_32 {
-	background-color: #F18890;
+    background-color: #F18890;
 }
 
 #bugmain .bug_64 {
-	background-color: red;
+    background-color: red;
 }
 
 #bugmain .bug_128 {
-	background-color: #F18890;
+    background-color: #F18890;
 }
 
 #bugmain .bug_256 {
-	background-color: red;
+    background-color: red;
 }
 
 #bugmain .bug_512 {
-	background-color: #F18890;
+    background-color: #F18890;
 }
 
 #bugmain .bug_1024 {
-	background-color: #858585;
+    background-color: #858585;
 }
 
 #bugmain .bug_2048 {
-	background-color: brown;
+    background-color: brown;
 }
 
 #bugmain .bug_4096 {
-	background-color: red;
+    background-color: red;
 }
 
-
-
 .bugspoiler-wrap > .spoiler-head {
-	display: block;
-	color: #797979;
-	font-size: 11px;
-	line-height: 15px;
-	cursor: pointer;
+    display: block;
+    color: #797979;
+    font-size: 11px;
+    line-height: 15px;
+    cursor: pointer;
 }
 
 .bugspoiler-wrap > .spoiler-head:hover {
-	color: black;
+    color: black;
 }
 
 .bugspoiler-wrap > .spoiler-head::before {
-	content: " + ";
+    content: " + ";
 }
 
 .bugspoiler-wrap.unfolded > .spoiler-head::before {
-	content: " - ";
+    content: " - ";
 }
 
 .bugspoiler-wrap > .spoiler-body {
-	display: none;
-	padding: 0;
-	padding: 0 0 0 1em;
-	border-bottom: 1px dashed #C3CBD1;
-	color: black;
-	font-size: 10px;
+    display: none;
+    padding: 0;
+    padding: 0 0 0 1em;
+    border-bottom: 1px dashed #C3CBD1;
+    color: black;
+    font-size: 10px;
 }
 
 .bugspoiler-wrap.unfolded > .spoiler-body {
-	display: block;
+    display: block;
 }
 
 /************/
 .bugmain {
-	background: none repeat scroll 0 0 #E1E1E1;
-	font-family: arial;
+    background: none repeat scroll 0 0 #E1E1E1;
+    font-family: arial;
 }
 
 .bugtext {
-	border: solid 1px gray;
-	background-color: #E1E1E1;
-	font-size: 11px;
-	font-family: arial;
+    border: solid 1px gray;
+    background-color: #E1E1E1;
+    font-size: 11px;
+    font-family: arial;
 }
 
 .bspoiler-wrap .messelem, .bugmain .messelem {
-	color: gray;
-	text-align: center;
-	font-weight: bold;
-	font-size: 12px;
+    color: gray;
+    text-align: center;
+    font-weight: bold;
+    font-size: 12px;
 }
 
 .bspoiler-wrap .messelem a, .bugmain .messelem a {
-	font-size: 12px;
+    font-size: 12px;
 }
 
 .bspoiler-wrap {
-	overflow: auto;
-	width: 99%;
-	border-width: 1px 1px 1px 2px;
-	border-style: solid;
-	border-color: #C3CBD1;
-	font-family: arial;
+    overflow: auto;
+    width: 99%;
+    border-width: 1px 1px 1px 2px;
+    border-style: solid;
+    border-color: #C3CBD1;
+    font-family: arial;
 }
 
 .bspoiler-wrap .spoiler-head {
-	color: black;
-	font-size: 11px;
-	line-height: 15px;
+    color: black;
+    font-size: 11px;
+    line-height: 15px;
 }
 
 .bspoiler-wrap .spoiler-body {
-	padding: 0;
-	border-bottom: 1px dashed #C3CBD1;
-	color: black;
-	font-size: 10px;
+    padding: 0;
+    border-bottom: 1px dashed #C3CBD1;
+    color: black;
+    font-size: 10px;
 }
 
 /*.bspoiler-wrap .spoiler-body div {*/
-	/*padding: 0 0 0 1em;*/
-	/*background-color: #858585;*/
-	/*color: white;*/
+/*padding: 0 0 0 1em;*/
+/*background-color: #858585;*/
+/*color: white;*/
 /*}*/
 
 #bugmain pre {
-	margin: 0;
-	border: medium none;
-	background: #F8F7F2 none repeat scroll 0 0;
-	color: black;
-	font-size: 12px;
-	font-family: tahoma;
+    margin: 0;
+    border: medium none;
+    background: #F8F7F2 none repeat scroll 0 0;
+    color: black;
+    font-size: 12px;
+    font-family: tahoma;
 }
 
 #bugmain pre code {
-	display: block;
-	overflow: auto;
-	padding: 5px 0;
-	white-space: pre;
+    display: block;
+    overflow: auto;
+    padding: 5px 0;
+    white-space: pre;
 }
 
 .bspoiler-wrap.folded > .spoiler-body {
-	display: none;
+    display: none;
 }
 
 .bspoiler-wrap.folded > .spoiler-head::before {
-	content: " + ";
+    content: " + ";
 }
 
 .bspoiler-wrap.unfolded > .spoiler-body {
-	display: block;
+    display: block;
 }
 
 .bspoiler-wrap.unfolded > .spoiler-head::before {
-	content: " - ";
+    content: " - ";
 }
 
 .bspoiler-wrap.clickable > .spoiler-head {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 /*Debug print*/
 
-
 .xdebug .xdebug-item {
-	margin: 0;
-	border-bottom: solid 1px #233;
-	border-left: solid 1px #333;
-	color: #000;
-	font-size: 10px;
+    margin: 0;
+    border-bottom: solid 1px #233;
+    border-left: solid 1px #333;
+    color: #000;
+    font-size: 10px;
 }
 
 .xdebug .xdebug-item span {
-	color: black;
-	font-size: 11px;
+    color: black;
+    font-size: 11px;
 }
 
 .xdebug .xdebug-item a {
-	color: blue;
+    color: blue;
 }
 
 /*TIMER*/
 
-
 /*MESSAGE*/
 #bugmain .messages {
-	margin: 3px 0 0;
-	padding: 5px 20px;
-	border: 1px solid #A6A6A6;
-	-webkit-border-radius: 4px;
-	-moz-border-radius: 4px;
-	border-radius: 4px;
-	background: #F6F6F6;
-	text-align: center;
-	white-space: normal;
-	font-size: 0.9em;
+    margin: 3px 0 0;
+    padding: 5px 20px;
+    border: 1px solid #A6A6A6;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    background: #F6F6F6;
+    text-align: center;
+    white-space: normal;
+    font-size: 0.9em;
 }
 
 #bugmain .error, #bugmain .err {
-	margin: 0 0 3px 0;
-	color: red;
-	font-weight: bold;
+    margin: 0 0 3px 0;
+    color: red;
+    font-weight: bold;
 }
 
 #bugmain .ok {
-	margin: 0 0 3px 0;
-	color: green;
+    margin: 0 0 3px 0;
+    color: green;
 }
 
 #bugmain .alert {
-	margin: 0 0 3px 0;
-	color: blue;
+    margin: 0 0 3px 0;
+    color: blue;
 }

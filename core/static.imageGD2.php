@@ -3,26 +3,26 @@
 class static_imageGD2
 {
     /************************* IMAGE *****************************/
-	    /*
-		Реализованно для GD2
-		TODO - imagemagic
-	*/
+    /*
+    Реализованно для GD2
+    TODO - imagemagic
+*/
 
-	    /**
-	 * Наложение водяного знака (маркера)
-	 *
-	 */
-	    static function _waterMark($InFile, $OutFile, $logoFile = '', $posX = 0, $posY = 0)
+    /**
+     * Наложение водяного знака (маркера)
+     *
+     */
+    static function _waterMark($InFile, $OutFile, $logoFile = '', $posX = 0, $posY = 0)
     {
         global $_CFG;
         if (!$logoFile) $logoFile = $_CFG['_imgwater'];
 
         if (!$imtypeIn = self::_get_type($InFile)) // опред тип файла
-        return static_main::log('error', 'File ' . $InFile . ' is not image');
+            return static_main::log('error', 'File ' . $InFile . ' is not image');
         if ($imtypeIn > 3) return false;
 
         if (!$imtypeLogo = self::_get_type($logoFile)) // опред тип файла
-        return static_main::log('error', 'File ' . $logoFile . ' is not image');
+            return static_main::log('error', 'File ' . $logoFile . ' is not image');
         if ($imtypeLogo > 3) return false;
 
         $znak_hw = getimagesize($logoFile);
@@ -61,7 +61,7 @@ class static_imageGD2
         return true;
     }
 
-	// Меняет размер. пропорционально, до минимального соответсявия по стороне
+    // Меняет размер. пропорционально, до минимального соответсявия по стороне
     static function _resizeImage($InFile, $OutFile, $WidthX, $HeightY)
     {
         global $_CFG;
@@ -93,7 +93,7 @@ class static_imageGD2
 
         $thumb = imagecreatetruecolor($WidthX, $HeightY); //созд пустой рисунок
         if (!$imtype = self::_get_type($InFile)) // опред тип файла
-        return static_main::log('error', 'File ' . $InFile . ' is not image');
+            return static_main::log('error', 'File ' . $InFile . ' is not image');
 
         if ($imtype > 3) {
             static_main::log(
@@ -115,7 +115,7 @@ class static_imageGD2
         return true;
     }
 
-	// обрезает
+    // обрезает
     static function _cropImage($InFile, $OutFile, $WidthX, $HeightY)
     {
         global $_CFG;
@@ -128,10 +128,10 @@ class static_imageGD2
             $HeightY = ($height_orig * $WidthX) / $width_orig;
         }
 
-		// Resample
+        // Resample
         $thumb = imagecreatetruecolor($WidthX, $HeightY); //созд пустой рисунок
         if (!$imtype = self::_get_type($InFile)) // опред тип файла
-        return static_main::log('error', 'File is not image');
+            return static_main::log('error', 'File is not image');
         if ($imtype > 3) {
             static_main::log(
                 'alert',
@@ -162,7 +162,7 @@ class static_imageGD2
         return true;
     }
 
-	// Меняет размер обрезая
+    // Меняет размер обрезая
     static function _thumbnailImage($InFile, $OutFile, $WidthX, $HeightY)
     {
         global $_CFG;
@@ -190,7 +190,7 @@ class static_imageGD2
 
         /*Определяем тип рисунка*/
         if (!$imtype = self::_get_type($InFile)) // опред тип файла
-        return static_main::log('error', 'File is not image');
+            return static_main::log('error', 'File is not image');
 
         /*Обработка только jpeg, gif, png*/
         if ($imtype > 3) {
@@ -206,7 +206,7 @@ class static_imageGD2
 
         /*Открываем исходный рисунок*/
         if (!$source = self::_imagecreatefrom($InFile, $imtype)) //открываем рисунок
-        return static_main::log('error', 'File ' . $InFile . ' is not image');
+            return static_main::log('error', 'File ' . $InFile . ' is not image');
 
         if (!imagecopyresampled($thumb, $source, 0, 0, $src_x, $src_y, $WidthX, $HeightY, $src_width, $src_height)) return static_main::log('error', 'Error imagecopyresampled');
 

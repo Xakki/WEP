@@ -1575,14 +1575,14 @@
             var e = x.prop(this, "elements");
             return e ? x.makeArray(e) : this
         }).filter(function () {
-                var e = this.type;
-                return this.name && !x(this).is(":disabled") && zt.test(this.nodeName) && !It.test(e) && (this.checked || !ot.test(e))
-            }).map(function (e, t) {
-                var n = x(this).val();
-                return null == n ? null : x.isArray(n) ? x.map(n, function (e) {
-                    return{name: t.name, value: e.replace(Bt, "\r\n")}
-                }) : {name: t.name, value: n.replace(Bt, "\r\n")}
-            }).get()
+            var e = this.type;
+            return this.name && !x(this).is(":disabled") && zt.test(this.nodeName) && !It.test(e) && (this.checked || !ot.test(e))
+        }).map(function (e, t) {
+            var n = x(this).val();
+            return null == n ? null : x.isArray(n) ? x.map(n, function (e) {
+                return{name: t.name, value: e.replace(Bt, "\r\n")}
+            }) : {name: t.name, value: n.replace(Bt, "\r\n")}
+        }).get()
     }}), x.param = function (e, t) {
         var n, r = [], i = function (e, t) {
             t = x.isFunction(t) ? t() : null == t ? "" : t, r[r.length] = encodeURIComponent(e) + "=" + encodeURIComponent(t)

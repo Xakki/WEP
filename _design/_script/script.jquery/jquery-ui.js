@@ -227,8 +227,8 @@
         this.element.bind("mousedown." + this.widgetName,function (t) {
             return e._mouseDown(t)
         }).bind("click." + this.widgetName, function (i) {
-                return!0 === t.data(i.target, e.widgetName + ".preventClickEvent") ? (t.removeData(i.target, e.widgetName + ".preventClickEvent"), i.stopImmediatePropagation(), !1) : undefined
-            }), this.started = !1
+            return!0 === t.data(i.target, e.widgetName + ".preventClickEvent") ? (t.removeData(i.target, e.widgetName + ".preventClickEvent"), i.stopImmediatePropagation(), !1) : undefined
+        }), this.started = !1
     }, _mouseDestroy: function () {
         this.element.unbind("." + this.widgetName), this._mouseMoveDelegate && t(document).unbind("mousemove." + this.widgetName, this._mouseMoveDelegate).unbind("mouseup." + this.widgetName, this._mouseUpDelegate)
     }, _mouseDown: function (i) {
@@ -489,8 +489,8 @@
         }), r.autoHide && (this._handles.hide(), t(this.element).addClass("ui-resizable-autohide").mouseenter(function () {
             r.disabled || (t(this).removeClass("ui-resizable-autohide"), a._handles.show())
         }).mouseleave(function () {
-                r.disabled || a.resizing || (t(this).addClass("ui-resizable-autohide"), a._handles.hide())
-            })), this._mouseInit()
+            r.disabled || a.resizing || (t(this).addClass("ui-resizable-autohide"), a._handles.hide())
+        })), this._mouseInit()
     }, _destroy: function () {
         this._mouseDestroy();
         var e, i = function (e) {
@@ -1484,20 +1484,20 @@
         null === r.label && (r.label = "input" === this.type ? this.buttonElement.val() : this.buttonElement.html()), this._hoverable(this.buttonElement), this.buttonElement.addClass(o).attr("role", "button").bind("mouseenter" + this.eventNamespace,function () {
             r.disabled || this === e && t(this).addClass("ui-state-active")
         }).bind("mouseleave" + this.eventNamespace,function () {
-                r.disabled || t(this).removeClass(u)
-            }).bind("click" + this.eventNamespace, function (t) {
-                r.disabled && (t.preventDefault(), t.stopImmediatePropagation())
-            }), this.element.bind("focus" + this.eventNamespace,function () {
+            r.disabled || t(this).removeClass(u)
+        }).bind("click" + this.eventNamespace, function (t) {
+            r.disabled && (t.preventDefault(), t.stopImmediatePropagation())
+        }), this.element.bind("focus" + this.eventNamespace,function () {
             a.buttonElement.addClass(d)
         }).bind("blur" + this.eventNamespace, function () {
-                a.buttonElement.removeClass(d)
-            }), c && (this.element.bind("change" + this.eventNamespace, function () {
+            a.buttonElement.removeClass(d)
+        }), c && (this.element.bind("change" + this.eventNamespace, function () {
             n || a.refresh()
         }), this.buttonElement.bind("mousedown" + this.eventNamespace,function (t) {
             r.disabled || (n = !1, i = t.pageX, s = t.pageY)
         }).bind("mouseup" + this.eventNamespace, function (t) {
-                r.disabled || (i !== t.pageX || s !== t.pageY) && (n = !0)
-            })), "checkbox" === this.type ? this.buttonElement.bind("click" + this.eventNamespace, function () {
+            r.disabled || (i !== t.pageX || s !== t.pageY) && (n = !0)
+        })), "checkbox" === this.type ? this.buttonElement.bind("click" + this.eventNamespace, function () {
             return r.disabled || n ? !1 : undefined
         }) : "radio" === this.type ? this.buttonElement.bind("click" + this.eventNamespace, function () {
             if (r.disabled || n)return!1;
@@ -1511,12 +1511,12 @@
                 e = null
             }), undefined)
         }).bind("mouseup" + this.eventNamespace,function () {
-                return r.disabled ? !1 : (t(this).removeClass("ui-state-active"), undefined)
-            }).bind("keydown" + this.eventNamespace,function (e) {
-                return r.disabled ? !1 : ((e.keyCode === t.ui.keyCode.SPACE || e.keyCode === t.ui.keyCode.ENTER) && t(this).addClass("ui-state-active"), undefined)
-            }).bind("keyup" + this.eventNamespace + " blur" + this.eventNamespace, function () {
-                t(this).removeClass("ui-state-active")
-            }), this.buttonElement.is("a") && this.buttonElement.keyup(function (e) {
+            return r.disabled ? !1 : (t(this).removeClass("ui-state-active"), undefined)
+        }).bind("keydown" + this.eventNamespace,function (e) {
+            return r.disabled ? !1 : ((e.keyCode === t.ui.keyCode.SPACE || e.keyCode === t.ui.keyCode.ENTER) && t(this).addClass("ui-state-active"), undefined)
+        }).bind("keyup" + this.eventNamespace + " blur" + this.eventNamespace, function () {
+            t(this).removeClass("ui-state-active")
+        }), this.buttonElement.is("a") && this.buttonElement.keyup(function (e) {
             e.keyCode === t.ui.keyCode.SPACE && t(this).click()
         })), this._setOption("disabled", r.disabled), this._resetButton()
     }, _determineButtonType: function () {
@@ -1563,8 +1563,8 @@
         return e.delegate(i, "mouseout",function () {
             t(this).removeClass("ui-state-hover"), -1 !== this.className.indexOf("ui-datepicker-prev") && t(this).removeClass("ui-datepicker-prev-hover"), -1 !== this.className.indexOf("ui-datepicker-next") && t(this).removeClass("ui-datepicker-next-hover")
         }).delegate(i, "mouseover", function () {
-                t.datepicker._isDisabledDatepicker(o.inline ? e.parent()[0] : o.input[0]) || (t(this).parents(".ui-datepicker-calendar").find("a").removeClass("ui-state-hover"), t(this).addClass("ui-state-hover"), -1 !== this.className.indexOf("ui-datepicker-prev") && t(this).addClass("ui-datepicker-prev-hover"), -1 !== this.className.indexOf("ui-datepicker-next") && t(this).addClass("ui-datepicker-next-hover"))
-            })
+            t.datepicker._isDisabledDatepicker(o.inline ? e.parent()[0] : o.input[0]) || (t(this).parents(".ui-datepicker-calendar").find("a").removeClass("ui-state-hover"), t(this).addClass("ui-state-hover"), -1 !== this.className.indexOf("ui-datepicker-prev") && t(this).addClass("ui-datepicker-prev-hover"), -1 !== this.className.indexOf("ui-datepicker-next") && t(this).addClass("ui-datepicker-next-hover"))
+        })
     }
 
     function n(e, i) {
@@ -1775,8 +1775,8 @@
                     [e, t]
                 ]
             }).sort(function (t, e) {
-                    return-(t[1].length - e[1].length)
-                });
+                return-(t[1].length - e[1].length)
+            });
             if (t.each(r, function (t, i) {
                 var n = i[1];
                 return s.substr(l, n.length).toLowerCase() === n.toLowerCase() ? (a = i[0], l += n.length, !1) : e
@@ -2825,8 +2825,8 @@
         this.running = !1, this.element.addClass("ui-tabs ui-widget ui-widget-content ui-corner-all").toggleClass("ui-tabs-collapsible", i.collapsible).delegate(".ui-tabs-nav > li", "mousedown" + this.eventNamespace,function (e) {
             t(this).is(".ui-state-disabled") && e.preventDefault()
         }).delegate(".ui-tabs-anchor", "focus" + this.eventNamespace, function () {
-                t(this).closest("li").is(".ui-state-disabled") && this.blur()
-            }), this._processTabs(), i.active = this._initialActive(), t.isArray(i.disabled) && (i.disabled = t.unique(i.disabled.concat(t.map(this.tabs.filter(".ui-state-disabled"), function (t) {
+            t(this).closest("li").is(".ui-state-disabled") && this.blur()
+        }), this._processTabs(), i.active = this._initialActive(), t.isArray(i.disabled) && (i.disabled = t.unique(i.disabled.concat(t.map(this.tabs.filter(".ui-state-disabled"), function (t) {
             return e.tabs.index(t)
         }))).sort()), this.active = this.options.active !== !1 && this.anchors.length ? this._findActive(i.active) : t(), this._refresh(), this.active.length && this.load(i.active)
     }, _initialActive: function () {
@@ -2982,10 +2982,10 @@
                 r.html(t), n._trigger("load", i, h)
             }, 1)
         }).complete(function (t, e) {
-                setTimeout(function () {
-                    "abort" === e && n.panels.stop(!1, !0), o.removeClass("ui-tabs-loading"), r.removeAttr("aria-busy"), t === n.xhr && delete n.xhr
-                }, 1)
-            })))
+            setTimeout(function () {
+                "abort" === e && n.panels.stop(!1, !0), o.removeClass("ui-tabs-loading"), r.removeAttr("aria-busy"), t === n.xhr && delete n.xhr
+            }, 1)
+        })))
     }, _ajaxSettings: function (e, i, s) {
         var n = this;
         return{url: e.attr("href"), beforeSend: function (e, o) {
