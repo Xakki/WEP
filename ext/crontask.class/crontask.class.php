@@ -85,7 +85,7 @@ class crontask_class extends kernel_extends
     {
         while (true) {
             //time break
-            $data = $this->_select(['where' => 'active=1', 'limit' => 1]); //
+            $data = $this->_select(['where' => 'active=1', 'limit' => 10]); //
             if (!count($data)) {
                 return;
             }
