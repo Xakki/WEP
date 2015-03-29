@@ -89,7 +89,7 @@ function getCatchError($param = 2)
  */
 function debugPrint($slice = 1)
 {
-    $MAXSTRLEN = 256;
+    $MAXSTRLEN = 2000;
     $s = '<div class="xdebug">';
     $traceArr = debug_backtrace();
     $traceArr = array_slice($traceArr, $slice);
