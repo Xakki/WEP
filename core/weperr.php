@@ -96,7 +96,8 @@ function debugPrint($slice = 1)
     $i = 0;
     foreach ($traceArr as $arr) {
         $s .= '<div class="xdebug-item" style="margin-left:' . (10 * $i) . 'px;"><span>';
-        if (isset($arr['line']) and $arr['file']) $s .= ' #line ' . $arr['line'] . ' in file: <a href="file:/' . $arr['file'] . '">' . $arr['file'] . '</a> : ';
+        // a href="file://localhost' . $arr['file'] . ':' . $arr['line'] . '"
+        if (isset($arr['line']) and $arr['file']) $s .= ' in file: <i>' . $arr['file'] .':' . $arr['line'] . '</i> : ';
         if (isset($arr['class'])) $s .= '#class <b>' . $arr['class'] . '-></b>';
         $s .= '</span>';
         //$s .= '<br/>';

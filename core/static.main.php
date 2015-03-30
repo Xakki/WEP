@@ -164,7 +164,8 @@ class static_main
             } else {
                 foreach ($GLOBALS['_ERR'] as $err) {
                     foreach ($err as $r) {
-                        $var = $r['errtype'] . ' ' . $r['errstr'] . ' , in line ' . $r['errline'] . ' of file <i>' . $r['errfile'] . '</i>';
+                        //a href="file://localhost' . $r['errfile'] . ':' . $r['errline'] . '"
+                        $var = $r['errtype'] . ' ' . $r['errstr'] . ' , file <i>' . $r['errfile'] . ':' . $r['errline'] . '</i>';
                         if ($r['debug']) //$r['errcontext']
                             $var = self::spoilerWrap($var, $r['debug'], 'bug_' . $r['errno']);
                         else $var = '<div class="bug_' . $r['errno'] . '">' . $var . '</div>';
