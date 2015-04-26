@@ -536,7 +536,7 @@ class static_super
                 $temphref = $k . (($_this->id) ? '&amp;' . $_this->_cl . '_id=' . $_this->id : '');
                 //}
                 //else $temphref = '';
-                $DATA['thitem'][$k] = array('value' => $r['caption'], 'href' => $temphref, 'sel' => $act);
+                $DATA['thitem'][$k] = array('value' => $r['caption'], 'href' => $temphref, 'sel' => $act, 'styles' => (isset($r['styles']) ? $r['styles'] : ''), 'css' => (isset($r['css']) ? $r['css'] : ''));
                 if (isset($r['mask']['onetd'])) $DATA['thitem'][$k]['onetd'] = $r['mask']['onetd'];
             }
 

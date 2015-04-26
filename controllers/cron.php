@@ -92,7 +92,7 @@ foreach ($_CFG['cron'] as $key_cron => $r_cron) {
             }
 
             $dataJson[$key_cron]['last_time'] = time();
-            $dataJson[$key_cron]['do_time'] = getmicrotime() - $tt;
+            $dataJson[$key_cron]['do_time'] = round((getmicrotime() - $tt), 7);
             $dataJson[$key_cron]['res'] = '* ' . str_replace(array("\n", "\r"), array('<br/>', ''), addslashes((string)$result)) . '';
 
             $res_cron .= $result;

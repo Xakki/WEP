@@ -14,7 +14,7 @@ function tpl_pgmap(&$data, $attr = '')
                 $r['name'] = '<span>' . $r['name'] . '</span>';
             if (isset($r['hidechild']) and isset($r['#item#']) and count($r['#item#']))
                 $html .= '<span class="foldedul clickable" onclick="ulToggle(this,\'unfoldedul\')"></span>';
-            $html .= '<a href="' . $r['href'] . '">' . $r['name'] . '</a>';
+            $html .= '<a href="' . $r['href'] . '" ' . ((isset($r['css']) && $r['css'])? 'class="'.$r['css'].'"' : '') . '>' . $r['name'] . '</a>';
             if (isset($r['#item#']) and count($r['#item#'])) {
                 $html .= tpl_pgmap($r, (isset($r['hidechild']) ? ' sdsd' : ''));
             }

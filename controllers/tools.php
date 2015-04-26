@@ -283,22 +283,23 @@ function tools_cron()
             'thitem' => array(
                 'title' => array('value' => 'Название'),
                 'time' => array('value' => 'Период'),
-                'file' => array('value' => 'Фаил'),
-                'modul' => array('value' => 'Модуль'),
-                'function' => array('value' => 'Функция'),
+                'script' => array('value' => 'Script'),
                 'lasttime' => array('value' => 'Время запуск'),
                 'do_time' => array('value' => 'Время выпол. (мс.)'),
                 'res' => array('value' => 'Сообщение')
             ),
         );
         if (isset($_CFG['cron']) and count($_CFG['cron'])) {
+            $sortByActive = $sortByFunction = array();
             foreach ($_CFG['cron'] as $k => $r) {
                 $DATA['data']['item'][$k]['tditem'] = array(
                     'title' => array('value' => $r['title']),
                     'time' => array('value' => $r['time']),
-                    'file' => array('value' => $r['file']),
-                    'modul' => array('value' => $r['modul']),
-                    'function' => array('value' => $r['function']),
+                    'script' => array('value' =>
+                        ($r['file'] ? $r['file'].' / ' : '').
+                        ($r['modul'] ? $r['modul'].' / ' : '').
+                        ($r['function'] ? $r['function'] : '')
+                    ),
                     'lasttime' => array('value' => (isset($ini_arr[$k]['last_time']) ? date('Y-m-d H:i:s', $ini_arr[$k]['last_time']) : '')),
                     'do_time' => array('value' => (isset($ini_arr[$k]['do_time']) ? $ini_arr[$k]['do_time'] : '')),
                     'res' => array('value' => (isset($ini_arr[$k]['res']) ? $ini_arr[$k]['res'] : '')),
@@ -308,7 +309,10 @@ function tools_cron()
                 $DATA['data']['item'][$k]['update'] = 1;
                 $DATA['data']['item'][$k]['del'] = 1;
                 $DATA['data']['item'][$k]['id'] = $k;
+                $sortByActive[$k]['active'] = $DATA['data']['item'][$k]['active'];
+                $sortByFunction[$k]['function'] = $r['modul'].$r['function'];
             }
+            array_multisort($sortByActive, SORT_DESC, $sortByFunction, SORT_ASC, $DATA['data']['item']);
         }
 
         if (isset($_SESSION['messtool'])) {
