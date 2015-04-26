@@ -428,6 +428,9 @@ class httpproxy_class extends kernel_extends
                 'negative' => 0,
                 'positive' => 0,
                 'capture' => 0,
+                'last_time' => 0,
+                'last_code' => 0,
+                'timeout' => 60,
             );
             $this->_update($upd, 'WHERE 1=1', false);
             $this->childs['httpproxycheck']->_tableClear();
