@@ -363,6 +363,12 @@ $_CFG['_error'] = array(
         'prior' => 5,
         'debug' => 0
     ),
+    E_EXCEPTION_ERROR => array( // 8192
+        'type' => '[Exception]',
+        'color' => 'red',
+        'prior' => 1,
+        'debug' => 1
+    ),
 );
 
 

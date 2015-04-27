@@ -7,6 +7,10 @@
  */
 class pg_class extends kernel_extends
 {
+    /**
+     * @var \Memcache
+     */
+    public $MEMCACHE = null;
 
     protected function _create_conf()
     {
@@ -85,7 +89,6 @@ class pg_class extends kernel_extends
         $this->dataCash = $this->dataCashTree = $this->dataCashTreeAlias = array();
         $this->pageParam = $this->pageParamId = array();
         $this->default_access = '|1|'; // По умолчанию ставим доступ на чтений всем пользователям
-        $this->MEMCACHE = null;
         $this->rootPage = null;
         $this->IfDontHavePage = null;
         $this->_AllowAjaxFn['AjaxForm'] = true;
@@ -752,9 +755,7 @@ class pg_class extends kernel_extends
                     }
 
                     $hashkeyPG .= '@' . $rowPG['id'] . '@' . $_SERVER['HTTP_HOST'] . '/' . implode('/', $_REQUEST['pageParam']);
-
-                    if (_strlen($hashkeyPG) > 255)
-                        $hashkeyPG = md5($hashkeyPG);
+                    $hashkeyPG = md5($hashkeyPG);
 
                     // Включаем 1 раз MEMCACHE
                     if (!$this->MEMCACHE) {
@@ -765,6 +766,7 @@ class pg_class extends kernel_extends
                         // Флаг о том что MEMCACHE успешно включен для этого контента
                         $MemFlag = true;
                         $temp = $this->MEMCACHE->get($hashkeyPG);
+
                         //Получаем массив с ключами шаблона
                         if ($temp and is_array($temp)) {
                             // ставим флаг о том что данные поступают из кеша
@@ -785,8 +787,11 @@ class pg_class extends kernel_extends
                         }
                     }
                 }
+
+
                 //Если дынне из кеша не поступили, то запускаем обработчик
                 if (!$flagMC) {
+
                     $time = microtime(true);
                     //Если флаг включен, то работаем с временными фаилами, чтобы потом их записать в кеш
                     if ($MemFlag) {
@@ -835,7 +840,11 @@ class pg_class extends kernel_extends
 
                     // Если включен кеш, то записываем полученные данные в кеш
                     if ($MemFlag) {
-                        $this->MEMCACHE->set($hashkeyPG, $_tpl, $this->config['memcachezip'], $rowPG['memcache']);
+                        $res = $this->MEMCACHE->set($hashkeyPG, array($rowPG['marker'] => $_tpl[$rowPG['marker']]), $this->config['memcachezip'], $rowPG['memcache']);
+                        if (!$res) {
+                            // TODO trigger_error()
+                        }
+
                         if (count($_tpl)) {
                             foreach ($_tpl as $tk => $tr) {
                                 if (is_array($tr)) {

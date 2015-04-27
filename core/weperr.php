@@ -2,12 +2,21 @@
 
 global $_CFG;
 
-set_error_handler('_myErrorHandler');
+define('E_EXCEPTION_ERROR', 8192);
 
+set_error_handler('_myErrorHandler');
+set_exception_handler('_myExceptionHandler');
+
+/**
+ * @param $e \Exception
+ */
+function _myExceptionHandler($e) {
+    _myErrorHandler(E_EXCEPTION_ERROR, $e->getMessage(), $e->getFile(), $e->getLine(), $e->getCode(), $e->getTrace());
+}
 /*
   Функция сбора и обработки ошибок
  */
-function _myErrorHandler($errno, $errstr, $errfile, $errline)
+function _myErrorHandler($errno, $errstr, $errfile, $errline, $code = null, $trace = null)
 { //, $errcontext,$cont
     global $_CFG, $BUG;
     if ($_CFG['wep']['catch_bug']) {
