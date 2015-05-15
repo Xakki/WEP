@@ -2,6 +2,12 @@
 
 class payyandex_class extends kernel_extends
 {
+    public $_Button = true,
+    $URI_YM_API = 'https://money.yandex.ru/api',
+    $URI_YM_AUTH = 'https://sp-money.yandex.ru/oauth/authorize',
+    $URI_YM_TOKEN = 'https://sp-money.yandex.ru/oauth/token',
+    $YM_USER_AGENT = 'wep-php',
+    $SCOPE = array('account-info', 'operation-history', 'operation-details');
 
     function init()
     {
@@ -48,19 +54,13 @@ class payyandex_class extends kernel_extends
 
         $this->cron[] = array('modul' => $this->_cl, 'function' => 'checkBill()', 'active' => 1, 'time' => 300);
         $this->_AllowAjaxFn = array(
-            'redirectFromYa' => true
+            'redirectFromYa' => true,
+            'incomeBill' => true
         );
-        $this->_Button = true;
-
         $this->REDIRECT_URI = 'http://' . $_SERVER['HTTP_HOST2'] . '/_js.php?_modul=' . $this->_cl . '&_func=redirectFromYa&noajax=1';
-        $this->URI_YM_API = 'https://money.yandex.ru/api';
-        $this->URI_YM_AUTH = 'https://sp-money.yandex.ru/oauth/authorize';
-        $this->URI_YM_TOKEN = 'https://sp-money.yandex.ru/oauth/token';
-        $this->YM_USER_AGENT = 'wep-php';
-        $this->SSL = dirname(__FILE__) . '/lib/ym.crt';
+        $this->CALLBACK_URI = 'http://' . $_SERVER['HTTP_HOST2'] . '/_js.php?_modul=' . $this->_cl . '&_func=incomeBill&noajax=1';
+        $this->SSL = $this->_CFG['_PATH']['weptemp'] . '/ym.crt';
         //$this->SCOPE = array('account-info','operation-history','operation-details','payment','payment-shop','payment-p2p','money-source("wallet","card")');
-        $this->SCOPE = array('account-info', 'operation-history', 'operation-details');
-
     }
 
     function _create_conf()
@@ -71,6 +71,7 @@ class payyandex_class extends kernel_extends
         $this->config['actionURL'] = 'https://money.yandex.ru/quickpay/confirm.xml';
         $this->config['yandex_cid'] = '';
         $this->config['yandex_token'] = '';
+        $this->config['yandex_secret'] = '';
         $this->config['yandex_id'] = '';
         /*$this->config['yandex_login'] = '';
         $this->config['yandex_pass'] = '';
@@ -83,7 +84,8 @@ class payyandex_class extends kernel_extends
         $this->config_form['actionURL'] = array('type' => 'text', 'caption' => 'Платежная ссылка');
         $this->config_form['yandex_id'] = array('type' => 'text', 'caption' => 'Номер счёта');
         $this->config_form['yandex_cid'] = array('type' => 'text', 'caption' => 'Идентификатор приложения', 'comment' => 'Получить его можно <a href="https://sp-money.yandex.ru/myservices/new.xml" target="_blank">тут</a> и <a href="https://sp-money.yandex.ru/myservices/admin.xml" target="_blank">настраивать</a><br>Redirect URI: <b>' . $this->REDIRECT_URI . '</b> ');
-        $this->config_form['yandex_token'] = array('type' => 'password', 'caption' => 'TOKEN', 'mask' => array('password' => 'change'));
+        $this->config_form['yandex_token'] = array('type' => 'text', 'caption' => 'TOKEN', 'mask' => array('password' => 'change'));
+        $this->config_form['yandex_secret'] = array('type' => 'text', 'caption' => 'Secret Callback <br/>'.$this->CALLBACK_URI, 'mask' => array('password' => 'change')); // password
         /*$this->config_form['yandex_token'] = array('type' => 'hidden');
         $this->config_form['yandex_newtoken'] = array('type' => 'checkbox','caption'=>'Установить новый токен', 'onchange'=>'if(this.checked) $(\'.yandex_newtoken\').show(); else $(\'.yandex_newtoken\').hide();', 'style'=>'background-color:#F60;');
         $this->config_form['yandex_login'] = array('type' => 'text', 'caption'=>'Логин авторизации', 'css'=>'yandex_newtoken','style'=>'background-color:#F65;');
@@ -93,7 +95,7 @@ class payyandex_class extends kernel_extends
         $this->config_form['maxpay'] = array('type' => 'int', 'caption' => 'Максим. сумма', 'comment' => 'при пополнении счёта', 'style' => 'background-color:#F60;');
         $this->config_form['lifetime'] = array('type' => 'text', 'caption' => 'Время жизни счёта по умолчанию. Задается в часах. Если 0 , то будет максимум (45 суток)', 'style' => 'background-color:#F60;');
 
-        if (isset($_GET['_func']) and $_GET['_func'] == 'Configmodul') {
+        if (isset($_GET['_func']) and $_GET['_func'] == 'Configmodulpayyandex') {
             global $_tpl;
             if (count($_POST) and isset($_POST['yandex_id']) and isset($_POST['yandex_cid']) and !$_POST['yandex_token']) {
                 $_tpl['onload'] .= 'window.open("' . $this->REDIRECT_URI . '","Получение TOKEN","width=800,height=750,resizable=yes,scrollbars=yes,status=yes");';
@@ -265,8 +267,11 @@ class payyandex_class extends kernel_extends
 
         $param = array();
         $param['HTTPHEADER'][] = 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8';
-        $param['SSL'] = $this->SSL;
+        $param['SSL'] = $this->getCrtFile();
         $html = static_tools::_http($URL, $param);
+        if ($html['info']['http_code'] == 401) {
+            $this->getCrtFile(true);
+        }
         if (!$html['info']['redirect_url']) {
             return false;
         }
@@ -287,15 +292,17 @@ class payyandex_class extends kernel_extends
         $param = array();
         $param['REFERER'] = $html['info']['url'];
         //$param['redirect'] = true;
-        $param['SSL'] = $this->SSL;
+        $param['SSL'] = $this->getCrtFile();
         $param['COOKIEFILE'] = $param['COOKIEJAR'] = $CF;
         $html = static_tools::_http($URL, $param);
-
+        if ($html['info']['http_code'] == 401) {
+            $this->getCrtFile(true);
+        }
         /********/
         $param = array();
         $param['REFERER'] = $html['info']['url'];
         //$param['redirect'] = true;
-        $param['SSL'] = $this->SSL;
+        $param['SSL'] = $this->getCrtFile();
         //Получаем код формы
         $pos1 = strpos($html['text'], '<form method="post" name="checkpay"');
         if (!$pos1) {
@@ -325,6 +332,9 @@ class payyandex_class extends kernel_extends
         $param['POST'] = $POST;
         $param['COOKIEFILE'] = $param['COOKIEJAR'] = $CF;
         $html = static_tools::_http($URL, $param);
+        if ($html['info']['http_code'] == 401) {
+            $this->getCrtFile(true);
+        }
 
         unlink($CF);
         //$html['text'] = htmlentities($html['text'],ENT_NOQUOTES,'windows-1251');//,'windows-1251' 'UTF-8'
@@ -360,11 +370,13 @@ class payyandex_class extends kernel_extends
         $param['POST']['client_id'] = $CLIENT_ID;
         $param['POST']['code'] = $CODE;
         $param['POST']['redirect_uri'] = $this->REDIRECT_URI;
-        $param['SSL'] = $this->SSL;
+        $param['SSL'] = $this->getCrtFile();
         $param['FORBID'] = true;
         $param['USERAGENT'] = $this->YM_USER_AGENT;
         $html = static_tools::_http($this->URI_YM_TOKEN, $param);
-
+        if ($html['info']['http_code'] == 401) {
+            $this->getCrtFile(true);
+        }
         $response = json_decode($html['text'], TRUE);
         if (!$response or isset($response['error']) or !$response['access_token']) {
             // err
@@ -386,11 +398,14 @@ class payyandex_class extends kernel_extends
         $param['HTTPHEADER'][] = 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8';
         $param['HTTPHEADER'][] = 'Expect:';
         $param['HTTPHEADER'][] = 'Authorization: Bearer ' . $accessToken;
-        $param['SSL'] = $this->SSL;
+        $param['SSL'] = $this->getCrtFile();
         $param['FORBID'] = true;
         $param['POST'] = true;
         $param['USERAGENT'] = $this->YM_USER_AGENT;
         $html = static_tools::_http($this->URI_YM_API . '/account-info', $param);
+        if ($html['info']['http_code'] == 401) {
+            $this->getCrtFile(true);
+        }
         $response = json_decode($html['text'], TRUE);
         return $response;
     }
@@ -421,7 +436,7 @@ class payyandex_class extends kernel_extends
         $param['HTTPHEADER'][] = 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8';
         $param['HTTPHEADER'][] = 'Expect:';
         $param['HTTPHEADER'][] = 'Authorization: Bearer ' . $accessToken;
-        $param['SSL'] = $this->SSL;
+        $param['SSL'] = $this->getCrtFile();
         $param['FORBID'] = true;
         $param['POST'] = array();
         if ($type != NULL)
@@ -431,9 +446,15 @@ class payyandex_class extends kernel_extends
         if ($records != NULL)
             $param['POST']['records'] = $records;
         $param['USERAGENT'] = $this->YM_USER_AGENT;
+
         $html = static_tools::_http($this->URI_YM_API . '/operation-history', $param);
-        if (!$html['text'] or $html['info']['http_code'] != 200)
+        if (!$html['text'] or $html['info']['http_code'] != 200) {
+            if ($html['info']['http_code'] == 401) {
+                $this->getCrtFile(true);
+            }
             trigger_error('Ошибка запроса к Яндекс API <pre>' . print_r($html, true) . '</pre>', E_USER_WARNING);
+        }
+
         $response = json_decode($html['text'], TRUE);
         return $response;
     }
@@ -455,11 +476,14 @@ class payyandex_class extends kernel_extends
         $param['HTTPHEADER'][] = 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8';
         $param['HTTPHEADER'][] = 'Expect:';
         $param['HTTPHEADER'][] = 'Authorization: Bearer ' . $accessToken;
-        $param['SSL'] = $this->SSL;
+        $param['SSL'] = $this->getCrtFile();
         $param['FORBID'] = true;
         $param['POST']['operation_id'] = $operationId;
         $param['USERAGENT'] = $this->YM_USER_AGENT;
         $html = static_tools::_http($this->URI_YM_API . '/operation-details', $param);
+        if ($html['info']['http_code'] == 401) {
+            $this->getCrtFile(true);
+        }
         $response = json_decode($html['text'], TRUE);
         return $response;
     }
@@ -555,6 +579,31 @@ class payyandex_class extends kernel_extends
         return (static_tools::pingDomain('ya.ru') > 0);
     }
 
+    /**
+     * SSL key
+     * @param bool $force
+     * @return array|null|sqlmyi
+     */
+    private function getCrtFile($force = false) {
+        if (file_exists($this->SSL) && !$force) return $this->SSL;
+        $html = static_tools::_http('https://raw.githubusercontent.com/yandex-money/yandex-money-sdk-php/master/lib/cacert.pem');
+
+        if ($html['text']) {
+            file_put_contents($this->SSL, $html['text']);
+        }
+
+        return $this->SSL;
+    }
+
+    /**
+     * Уведомления
+     * @help https://tech.yandex.ru/money/doc/dg/reference/notification-p2p-incoming-docpage/
+     */
+    public function incomeBill() {
+        //$this->config['yandex_secret']
+        echo 'OK';
+        trigger_error('INCOME Яндекс API <pre>' . print_r($_GET, true) .PHP_EOL . print_r($_POST, true) . '</pre>', E_USER_WARNING);
+    }
 }
 
 

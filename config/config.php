@@ -274,6 +274,8 @@ define('QUOTES', '"');
 
 
 define('SITE_MAP_LIMIT', 45000);
+
+define('E_EXCEPTION_ERROR', 16384);
 //ERRORS
 $_CFG['_error'] = array(
     0 => array(
@@ -363,7 +365,7 @@ $_CFG['_error'] = array(
         'prior' => 5,
         'debug' => 0
     ),
-    E_EXCEPTION_ERROR => array( // 8192
+    E_EXCEPTION_ERROR => array( // 16384
         'type' => '[Exception]',
         'color' => 'red',
         'prior' => 1,

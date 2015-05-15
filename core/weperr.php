@@ -2,8 +2,6 @@
 
 global $_CFG;
 
-define('E_EXCEPTION_ERROR', 8192);
-
 set_error_handler('_myErrorHandler');
 set_exception_handler('_myExceptionHandler');
 
