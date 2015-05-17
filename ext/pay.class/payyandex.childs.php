@@ -492,14 +492,7 @@ class payyandex_class extends kernel_extends
     /*CRON*/
     function checkBill()
     {
-
-        $temp = $this->qs('*', 'WHERE active=1 and status=""', 'name');
-        $DATA = array();
-        foreach ($temp as $r) {
-            //$key = preg_replace('/[^0-9A-zА-я\:\;\№]+/ui', '', 'Счёт№'.$r['id'].'; '.$r['name']);
-            //$key = trim($key,';:№,.\s');
-            $DATA[$r['owner_id']] = $r;
-        }
+        $DATA = $this->getOpenBills();
 
         $CNT = count($DATA);
         if (!$CNT) return '-нет выставленных счетов-';
@@ -515,37 +508,8 @@ class payyandex_class extends kernel_extends
         if (!count($INFO['operations'])) return '-нет платежей , ' . $CNT . ' не оплачено-';
         $i = 0;
         foreach ($INFO['operations'] as $r) {
-            $tempOP = $this->qs('id', 'WHERE operation_id="' . $r['operation_id'] . '"');
-            if (count($tempOP)) continue;
-
-            //date($r['datetime'])
-            $INFO2 = $this->operationDetail($this->config['yandex_token'], $r['operation_id']);
-            //$key = preg_replace('/[^0-9A-zА-я\:\;\№]+/ui','',$INFO2['message']);
-
-            if (!isset($INFO2['message']) or mb_strpos($INFO2['message'], 'Счёт№') === false) continue;
-
-            preg_match_all('|Счёт№([0-9]+)|', $INFO2['message'], $out, PREG_SET_ORDER);
-            $key = $out[0][1];
-
-            if (isset($DATA[$key])) {
-
-                $this->id = $DATA[$key]['id'];
-                $upd = array('cost' => $INFO2['amount'], 'tax' => ($DATA[$key]['cost'] - $INFO2['amount']), 'sender' => $INFO2['sender']);
-                if ($INFO2['amount'] >= ($DATA[$key]['cost'] * 0.95)) {
-                    $upd['status'] = 'success';
-                    $upd['operation_id'] = $r['operation_id'];
-                    //$upd['money_source'] = 'wallet';
-                    $this->_update($upd);
-                    $this->owner->payTransaction($this->data[$this->id]['owner_id'], PAY_PAID);
-                } else {
-                    $upd = array();
-                    $upd['status'] = '';
-                    $upd['error'] = 'small_money';
-                    //$upd['operation_id'] = $r['operation_id'];
-                    $this->_update($upd);
-                    trigger_error('Оплата услуг через яндекс - поступило мало денег [Поступило на счет ' . $INFO2['amount'] . ', Выписано ' . $DATA[$key]['cost'] . ', с учетом пошлины ' . ($DATA[$key]['cost'] * 0.95) . ', payYandex ID=' . $this->id . ']', E_USER_WARNING);
-                }
-
+            $result = $this->checkBillByOperationId($r['operation_id'], $DATA);
+            if ($result) {
                 $i++;
                 if ($i >= $CNT) {
                     return '-Всё счета проверены-';
@@ -553,7 +517,64 @@ class payyandex_class extends kernel_extends
             }
         }
         $this->clearOldData();
-        return '-OK-';
+        return '-Empty-';
+    }
+
+    /**
+     * Получить список активных счетов в нашей системе (не оплаченных)
+     * @return array
+     */
+    public function getOpenBills() {
+        $temp = $this->qs('*', 'WHERE active=1 and status=""', 'name');
+        $DATA = array();
+        foreach ($temp as $r) {
+            //$key = preg_replace('/[^0-9A-zА-я\:\;\№]+/ui', '', 'Счёт№'.$r['id'].'; '.$r['name']);
+            //$key = trim($key,';:№,.\s');
+            $DATA[$r['owner_id']] = $r;
+        }
+        return $DATA;
+    }
+
+    /**
+     * Проверяем счет от яндекса , имеет ли он к нам отношение!
+     * @param $operation_id
+     * @param $DATA
+     * @return bool
+     */
+    private function checkBillByOperationId($operation_id, $DATA) {
+        $tempOP = $this->qs('id', 'WHERE operation_id="' . $operation_id . '"');
+        if (count($tempOP)) return false;
+
+        //date($r['datetime'])
+        $INFO2 = $this->operationDetail($this->config['yandex_token'], $operation_id);
+        //$key = preg_replace('/[^0-9A-zА-я\:\;\№]+/ui','',$INFO2['message']);
+
+        if (!isset($INFO2['message']) or mb_strpos($INFO2['message'], 'Счёт№') === false) return false;
+
+        preg_match_all('|Счёт№([0-9]+)|', $INFO2['message'], $out, PREG_SET_ORDER);
+        $key = $out[0][1];
+
+        if (isset($DATA[$key])) {
+
+            $this->id = $DATA[$key]['id'];
+            $upd = array('cost' => $INFO2['amount'], 'tax' => ($DATA[$key]['cost'] - $INFO2['amount']), 'sender' => $INFO2['sender']);
+            if ($INFO2['amount'] >= ($DATA[$key]['cost'] * 0.95)) {
+                $upd['status'] = 'success';
+                $upd['operation_id'] = $operation_id;
+                //$upd['money_source'] = 'wallet';
+                $this->_update($upd);
+                $this->owner->payTransaction($this->data[$this->id]['owner_id'], PAY_PAID);
+            } else {
+                $upd = array();
+                $upd['status'] = '';
+                $upd['error'] = 'small_money';
+                //$upd['operation_id'] = $r['operation_id'];
+                $this->_update($upd);
+                trigger_error('Оплата услуг через яндекс - поступило мало денег [Поступило на счет ' . $INFO2['amount'] . ', Выписано ' . $DATA[$key]['cost'] . ', с учетом пошлины ' . ($DATA[$key]['cost'] * 0.95) . ', payYandex ID=' . $this->id . ']', E_USER_WARNING);
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -600,9 +621,36 @@ class payyandex_class extends kernel_extends
      * @help https://tech.yandex.ru/money/doc/dg/reference/notification-p2p-incoming-docpage/
      */
     public function incomeBill() {
-        //$this->config['yandex_secret']
-        echo 'OK';
-        trigger_error('INCOME Яндекс API <pre>' . print_r($_GET, true) .PHP_EOL . print_r($_POST, true) . '</pre>', E_USER_WARNING);
+        $sha1_hash = sha1($_POST['notification_type'].'&'.$_POST['operation_id'].'&'.$_POST['amount'].'&'.$_POST['currency'].'&'.$_POST['datetime'].'&'.$_POST['sender'].'&'.$_POST['codepro'].'&'.$this->config['yandex_secret'].'&'.$_POST['label']);
+        if ($_POST['sha1_hash']!==$sha1_hash) {
+            trigger_error('Wrong sha1_hash - ' . json_encode($_POST), E_USER_WARNING);
+            return false;
+        }
+        file_put_contents($this->_CFG['_PATH']['log'].'pay_yandex_income.log', date('Y-m-d H:i:s') . ' : '.json_encode($_POST) );
+        // save
+        $DATA = $this->getOpenBills();
+
+        $CNT = count($DATA);
+        if (!$CNT) return '-нет выставленных счетов-';
+
+        if (!$this->checkInternet()) {
+            trigger_error('Интернет отключен', E_USER_WARNING);
+            return '-Inet off-';
+        }
+
+        return $this->checkBillByOperationId($_POST['operation_id'], $DATA);
+        /*
+operation_id = 904035776918098009
+notification_type = p2p-incoming
+datetime = 2014-04-28T16:31:28Z
+sha1_hash = 8693ddf402fe5dcc4c4744d466cabada2628148c
+sender = 41003188981230
+codepro = false
+currency = 643
+amount = 0.99
+withdraw_amount = 1.00
+label = YM.label.12345
+         */
     }
 }
 
