@@ -626,7 +626,7 @@ class payyandex_class extends kernel_extends
             trigger_error('Wrong sha1_hash - ' . json_encode($_POST), E_USER_WARNING);
             return false;
         }
-        file_put_contents($this->_CFG['_PATH']['log'].'pay_yandex_income.log', date('Y-m-d H:i:s') . ' : '.json_encode($_POST) );
+        file_put_contents($this->_CFG['_PATH']['log'].'pay_yandex_income.log', date('Y-m-d H:i:s') . ' : '.json_encode($_POST).PHP_EOL, FILE_APPEND );
         // save
         $DATA = $this->getOpenBills();
 
