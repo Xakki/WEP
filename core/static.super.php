@@ -789,6 +789,20 @@ class static_super
                 'onConfirm' => true,
             );
         }
+
+        if ($_this->owner && $_this->owner->id) {
+
+            $data = $_this->owner->data;
+            if ($_this->owner->_prmModulEdit($data)) $topmenu['update_owner'] = array(
+                'href' => array('_type' => 'update', $_this->owner->_cl . '_id' => $_this->owner->id, $_this->owner->_cl . '_ch' => null),
+                'caption' => 'Редактировать - ' . $data[$_this->owner->id]['name'],
+                'sel' => 0,
+                'type' => 'button',
+                'css' => 'button-update',
+                //'is_popup' => true,
+            );
+        }
+
         $topmenu[] = array('type' => 'split');
 
         self::modulMenuConfig($_this, $topmenu);
@@ -884,7 +898,9 @@ class static_super
 				}
 			}*/
 
-        if (count($_this->childs) and $_this->id)
+        // На больших таблицах - жопа!
+        // TODO - count check for list
+        if (0 && count($_this->childs) and $_this->id)
             foreach ($_this->childs as $ck => &$cn)
                 if (count($cn->fields_form) and $ck != $_this->_cl and $cn->_prmModulShow($PARAM)) {
                     $topmenu[] = array('type' => 'split');

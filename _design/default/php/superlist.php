@@ -95,7 +95,7 @@ function tpl_topmenu(&$data, $firstpath, $httpQuery = array())
                 $temp_topmenu .= '>' . tpl_formSelect($r['list']) . '</select>';
                 $temp_topmenu .= '</div>';
             } else {
-                $temp_topmenu .= '<a class="' . $r['type'] . ($r['sel'] ? ' selected' : '') . '" style="' . $r['style'] . '" title="' . $r['title'] . '" ';
+                $temp_topmenu .= '<a class="' . $r['type'] . ( (isset($r['sel']) && $r['sel']) ? ' selected' : '') . '" style="' . $r['style'] . '" title="' . $r['title'] . '" ';
                 //$temp_topmenu .= ' onclick="return wep.load_href(\''.$firstpath.$href.'\')"';
 
                 if (isset($r['is_popup']) and $r['is_popup'])

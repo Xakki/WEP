@@ -83,11 +83,13 @@ class crontask_class extends kernel_extends
      */
     public function doCronTask()
     {
-        while (true) {
+        $result = '';
+        for ($i = 1; $i <= 10; $i++) {
             //time break
-            $data = $this->_select(['where' => 'active=1', 'limit' => 10]); //
+            $data = $this->_select(['where' => 'active=1', 'limit' => 1]); //
             if (!count($data)) {
-                return;
+                $result .= '- ';
+                return $result;
             }
             $data = current($data);
             $this->id = $id = $data['id'];
@@ -96,11 +98,14 @@ class crontask_class extends kernel_extends
             $this->id = $id;
             if ($res === true) {
                 $this->_delete();
-            } else {
-                $this->_update(['errors' => $res, 'active' => -2], NULL, false);
+                $result .= '+ ';
             }
-            return;
+            else {
+                $this->_update(['errors' => $res, 'active' => -2], NULL, false);
+                $result .= $res.' ';
+            }
         }
+        return $result;
     }
 
     /**
