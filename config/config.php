@@ -73,12 +73,12 @@ $_CFG['site'] = array( // для сайта
     'origin' => '',
     'usecdn' => true,
     'cdn' => array(
-        'jquery' => '//yandex.st/jquery/2.0.3/jquery.min.js',
-        'script.jquery/jquery-ui' => '//yandex.st/jquery-ui/1.10.3/jquery-ui.min.js',
+        'jquery' => '//yastatic.net/jquery/2.2.3/jquery.min.js',
+        'script.jquery/jquery-ui' => '//yastatic.net/jquery-ui/1.11.2/jquery-ui.min.js',
         'highlight' => '//yandex.st/highlightjs/7.4/highlight.min.js',
-        'bootstrap' => '//yandex.st/bootstrap/3.0.0/js/bootstrap.min.js',
-        'bootstrap.css' => '//yandex.st/bootstrap/3.0.0/css/bootstrap.min.css',
-        'style.jquery/smoothness/jquery-ui' => '//yandex.st/jquery-ui/1.10.3/themes/smoothness/jquery-ui.min.css',
+        'bootstrap' => '//yastatic.net/bootstrap/3.3.6/js/bootstrap.min.js',
+        'bootstrap.css' => '//yastatic.net/bootstrap/3.3.6/css/bootstrap.min.css',
+        'style.jquery/smoothness/jquery-ui' => '//yandex.st/jquery-ui/1.11.2/themes/smoothness/jquery-ui.min.css',
     ),
 );
 

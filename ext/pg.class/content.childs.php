@@ -116,25 +116,23 @@ class content_class extends kernel_extends
             2 => 'Показать только при дебаг режиме',
         );
     }
-
+    public static $_list_fix_flag = false;
     function _getlist($listname, $value = NULL)
     {
-        global $_CFG;
-        $data = array();
         if ($listname == 'pagetype') {
             return $this->getInc();
         } elseif ($listname == 'ugroup') {
             return $this->owner->_getlist($listname, $value);
         } elseif ($listname == 'marker') {
+            if (!self::$_list_fix_flag) {
+                self::$_list_fix_flag = true;
+               array_walk($this->owner->config['marker'], function(&$val, $key) {$val = $val.' : '.$key;});
+            }
             return $this->owner->config['marker'];
         } elseif ($listname == 'content') {
             return $this->getContentList();
         } else
             return parent::_getlist($listname, $value);
-        /* else {
-          return $this->owner->_getlist($listname,$value);
-          } */
-        return $data;
     }
 
     function getContentList()
