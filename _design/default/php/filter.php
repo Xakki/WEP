@@ -269,8 +269,13 @@ function tpl_filter(&$data)
         }
     }
     $html .= '<!--END_FILTER-->';
-    if (isset($attr))
-        $html .= '<div class="clear"></div></form>';
+    if (isset($attr)) {
+        $html .= '<div class="clear"></div>';
+    }
+
+    if (isset($data['options'])) {
+        $html .= '</form>';
+    }
     return $html;
 }
 

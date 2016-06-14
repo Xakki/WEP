@@ -1767,14 +1767,17 @@ function plugBootstrapMultiselect($init)
 
 function plugBootstrap()
 {
-    global $_CFG;
+    global $_CFG, $_tpl;
     if (isset($_CFG['fileIncludeOption']['Bootstrap'])) return false;
     $_CFG['fileIncludeOption']['Bootstrap'] = true;
 
-    setCss('bootstrap.css', true, POS_BEGIN);
-    setCss('prettify.css', true, POS_BEGIN);
-    setScript('bootstrap');
-    setScript('prettify');
+    $url = '//' . WEP_BH . $_CFG['PATH']['vendors'] . 'bootstrap/';
+
+    setCss($url.'css/bootstrap.css', true, POS_BEGIN);
+//    setCss('prettify.css', true, POS_BEGIN);
+    setScript($url.'js/bootstrap.js');
+//    setScript('prettify');
+    $_tpl['script'][] = 'bootstrapNoConflict();';
 }
 
 function isDebugMode()

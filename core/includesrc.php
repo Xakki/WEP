@@ -63,7 +63,10 @@ function scriptRecursive($script, $solt = '')
         if (is_string($rr) and $rr && $rr != 'async') {
             if (isUrl($rr)) $temp .= '<script src="' . soltAppend($solt, $rr) . '"></script>' . "\n";
             else $temp .= "<script>\n//<!--\n" . $rr . "\n//-->\n</script>\n";
-        } elseif (is_array($rr)) $temp .= scriptRecursive($rr, $solt);
+        }
+        elseif (is_array($rr)) {
+            $temp .= scriptRecursive($rr, $solt);
+        }
     }
     return $temp;
 }

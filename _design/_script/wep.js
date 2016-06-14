@@ -95,6 +95,12 @@ JSON.parse = JSON.parse || function (str) {
     return p;
 };
 
+function bootstrapNoConflict() {
+    bootstrapButton = $.fn.button.noConflict();
+    // return $.fn.button to previously assigned value
+    $.fn.btn = bootstrapButton;
+    // give $().bootstrapBtn the Bootstrap functionality
+}
 
 window.KEY = {
     UP: 38,
@@ -124,9 +130,27 @@ window.wep = {
     form: {}, /*Функции работы с формой*/
     popUp: {
         onclk: true,
-        fadeobj: '.PopUp',
-        insertobj: '.PopUp .PopUpContent',
-        template: '<div class="PopUp"><div class="PopUpBackgound CloseTarget"></div><div class="PopUpLoading">Загружаю...</div><div class="PopUpContent"></div></div>'
+        fadeobj: '#PopUp',
+        insertobj: '#PopUpModalBody',
+        labelObj: '#PopUpModalLabel',
+        modalSize: 'modal-lg',
+        //template: '<div class="PopUp"><div class="PopUpBackgound CloseTarget"></div><div class="PopUpLoading">Загружаю...</div><div class="PopUpContent"></div></div>',
+        template:
+        '<div class="modal fade" id="PopUp" tabindex="-1" role="dialog" aria-labelledby="PopUpModalLabel">'+
+            '<div class="modal-dialog" role="document">'+
+                '<div class="modal-content">'+
+                    '<div class="modal-header">'+
+                        '<button type="button" class="close" data-dismiss="modal" aria-label="Закрыть"><span aria-hidden="true">&times;</span></button>'+
+                        '<h4 class="modal-title" id="PopUpModalLabel">TITLE</h4>'+
+                    '</div>'+
+                    '<div class="modal-body" id="PopUpModalBody">CONTENT</div>'+
+                    //'<div class="modal-footer">' +
+                    //    '<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>'+
+                    //    '<button type="button" class="btn btn-primary">Save changes</button>'+
+                    //'</div>'+
+                '</div>'+
+            '</div>'+
+        '</div>'
     },
     isDef: function (v) {
         return typeof v !== 'undefined';
@@ -385,21 +409,9 @@ window.wep = {
         if (!param['data'])
             param['data'] = '';
 
-        // Это попап окно?
-        if (typeof(param['wrapTitle']) == 'undefined')
-            param['wrapTitle'] = 0;
-
         // Тип получаемых данных
         if (!param['datatype'])
             param['datatype'] = 'json';
-
-        // Если нужно отключить затемнение после завершения
-        if (typeof param['fadeoff'] == 'undefined') { // зНачение по умолчанию
-            if (!param['insertobj']) //Если обект для вставки не задан, то будет всплывающее окно и затемнение не убираем
-                param['fadeoff'] = false;
-            else // иначе после выполнения убираем затемнение
-                param['fadeoff'] = true;
-        }
 
         // маркер полученного содержимого из принятого массива
         if (!param['marker']) {
@@ -413,35 +425,36 @@ window.wep = {
         // Заголовок для Popup
         if (!param['markerTitle'])
             param['markerTitle'] = 'title';
-        // По умолчанию задаем обертку
-        /*if(typeof param['wraper'] == 'undefined')
-         {
-         param['wraper'] = 1;
-         param['set_content_position'] = 1;
-         }*/
 
-        if (typeof param['set_content_position'] == 'undefined')
-            param['set_content_position'] = 0;
+        param['timeBG'] = null; // таймер
 
-        //область затемнения [false,true,object]
-        if (typeof param['fadeobj'] == 'undefined' && param['insertobj'])
-            param['fadeobj'] = param['insertobj'];
+        if (typeof param['labelObj'] == 'undefined') param['labelObj'] = wep.popUp.labelObj;
+        if (typeof param['modalSize'] == 'undefined') param['modalSize']= wep.popUp.modalSize;
+        if (typeof param['onclk'] == 'undefined') param['onclk']= wep.popUp.onclk;
 
         // POPUP
         // объект в который(в зависимости от param['inserttype']) будут вставляться result.html
         if (!param['insertobj']) {
             param['insertobj'] = wep.popUp.insertobj;
             param['fadeobj'] = wep.popUp.fadeobj;
-            param['wraper'] = 1;
-            param['wrapTitle'] = 1;
             param['fadeoff'] = false;
-            param['onclk'] = 'close';
-            param['set_content_position'] = 1;
+            param['isPopUp'] = 1;
 
-            wep.createPopUp();
+        }
+        else {
+            if (!param['fadeobj']) param['fadeobj'] = wep.popUp.fadeobj;
+
+            // Если нужно отключить затемнение после завершения
+            if (!param['fadeoff']) param['fadeoff'] = true; // зНачение по умолчанию
+
+            param['isPopUp'] = 0;
         }
 
-        param['timeBG'] = 0; // таймер
+        wep.createPopUp();
+
+        jQuery(wep.popUp.insertobj).html('Загружаю...');
+        jQuery(wep.popUp.fadeobj + ' .modal-header').hide();
+
     },
 
     /**
@@ -468,7 +481,7 @@ window.wep = {
             wep.cssLoad(result.styles);
         }
 
-        // WTF?
+//        WTF?
 //        if (typeof(result.param) == 'object') {
 //            for (var i in result.param) {
 //                param[i] = result.param[i];
@@ -566,14 +579,11 @@ window.wep = {
 
         var htmlOut = result[param['marker']];
 
-        if (param['wrapTitle']) {
-            // Обертка для попапа
-            if (result[param['markerTitle']])
-                htmlOut = '<div class="blockhead">' + result[param['markerTitle']].substr(0, strpos(result[param['markerTitle']], ' -')) + '</div><hr/>' + htmlOut;
+        if (!param['title']) {
+            param['title'] = result[param['markerTitle']]; //  + substr(0, strpos(result[param['markerTitle']], ' -'))
         }
 
-        if (param['wraper'])
-            htmlOut = wep.wraperLayerBlock(htmlOut, param);
+        $(param['labelObj']).html(param['title']);
 
         if (param['insertobj']) {
             // if(typeof (htmlOut) != 'undefined' && htmlOut!='')
@@ -603,103 +613,108 @@ window.wep = {
     },
 
     loadAnimationOnAjax: function (param) {
-        if (param['fadeobj'])  // Вешаем затемнение
-        {
-            wep.openPopUp(param);
-
+        if (param['fadeobj']) { // Вешаем затемнение
             jQuery(param['fadeobj']).addClass('ajaxProccess');
-
             param['timeBG'] = setTimeout(function () {
-                jQuery(param['fadeobj']).addClass('loadAnimation').addClass('fadeBackgraund');
+                wep.openPopUp(param);
                 param['timeBG'] = null;
             }, 200);
         }
     },
 
     loadAnimationOffAjax: function (param) {
-        if (param['set_content_position']) {
-            wep.fMessPos(param['insertobj']);
-            setTimeout(function () {
-                wep.fMessPos(param['insertobj']);
-            }, 300);
-        }
-        ///////////////////////////////
 
         //Если включено затемнение
         if (param['fadeobj']) {
-            // Если  таймер затемения ещё не сработал, то откл таймер
-            if (param['timeBG'])
-                clearTimeout(param['timeBG']); // Чистим таймер и тем самым затеменение не отобразиться
-            else
-                jQuery(param['fadeobj']).removeClass('loadAnimation');
-
-            // Если нужно отключить затемнение после завершения
-            if (param['fadeoff'])
-                jQuery(param['fadeobj']).removeClass('fadeBackgraund popupActive');
-
-            wep.setEventClosePopUp(param);
 
             jQuery(param['fadeobj']).removeClass('ajaxProccess');
+            
+            // Если  таймер затемения ещё не сработал, то откл таймер
+            // Если нужно отключить затемнение после завершения
+            if (param['fadeoff']) {
+                if (param['timeBG']) {
+                    clearTimeout(param['timeBG']); // Чистим таймер и тем самым затеменение не отобразиться
+                }
+                else {
+                    $(param['fadeobj']).modal('hide');
+                }
+            }
+            else {
+                jQuery(wep.popUp.fadeobj + ' .modal-header').show();
+                jQuery(wep.popUp.fadeobj).modal('handleUpdate')
+            }
         }
+    },
+
+    /********************************************/
+    /********************************************/
+    /********************************************/
+    /********************************************/
+
+    staticPopUp: function (content) {
+        wep.createPopUp();
+        wep.staticOpenPopUp();
+    },
+
+    createPopUp: function () {
+        if (!jQuery(wep.popUp.insertobj).size()) {
+            jQuery('body').append(wep.popUp.template);
+        }
+    },
+
+    staticOpenPopUp: function () {
+        wep.openPopUp(wep.popUp);
+        wep.setEventClosePopUp(wep.popUp);
     },
 
     /* Показываем попап */
     openPopUp: function (param) {
-        if (param['fadeobj'])
-            jQuery(param['fadeobj']).addClass('popupActive');
+        if (param['fadeobj']) {
+            if (param['modalSize']) {
+                $(param['fadeobj'] + ' .modal-dialog').addClass(param['modalSize']);
+            }
+            $(param['fadeobj']).modal('show');
+
+            wep.setEventClosePopUp(param);
+        }
 
         if (_Browser.type == 'IE' && 8 > _Browser.version)
             jQuery('select').toggleClass('hideselectforie7', true);
     },
 
+    /* Событие на закрытие попап окна */
+    setEventClosePopUp: function (param) {
+        if (param['onclk']) {
+            $(param['fadeobj']).on('hide.bs.modal', function (e) {
+                console.log('closePopUp event', e);
+                return wep.closePopUp(param);
+            });
+        }
+    },
+
     /* Закрываем попап */
     closePopUp: function (param) {
+        if (jQuery(param['fadeobj']).hasClass('ajaxProccess')) {
+            return false;
+        }
         if (param['onclk'] === 'reload') {
             window.location.reload();
             return false;
         }
-
-        if (param['fadeobj'])
-            jQuery(param['fadeobj']).removeClass('popupActive loadAnimation fadeBackgraund ajaxProccess');
-
-        if (_Browser.type == 'IE' && 8 > _Browser.version)
-            jQuery('select').toggleClass('hideselectforie7', false);
+        console.log('closePopUp true');
+        //if (_Browser.type == 'IE' && 8 > _Browser.version)
+        //    jQuery('select').toggleClass('hideselectforie7', false);
+        return true;
     },
 
-    /* Событие на закрытие попап окна */
-    setEventClosePopUp: function (param) {
-        if (param['onclk']) {
-            jQuery(param['insertobj']).off('click.close').on('click.close', '.CloseTarget', function (e) {
-                wep.closePopUp(param);
-                return false;
-            });
-
-            // if(param['fadeobj']!==param['insertobj'])
-            jQuery(param['fadeobj']).off('click.close').on('click.close', '.CloseTarget', function (e) {
-                wep.closePopUp(param);
-                return false;
-            });
-        }
-
-    },
-
-    /* Обертка для с кнопкой закрытия */
-    wraperLayerBlock: function (txt, param) {
-        return '<div class="blockclose CloseTarget"></div><div class="layerblock">' + txt + '</div>';
-    },
-
-    createPopUp: function () {
-        if (!jQuery(wep.popUp.insertobj).size())
-            jQuery('body').append(wep.popUp.template);
-    },
     /**********************************/
 
-
-    fShowloadReload: function () {
-        $('.ajaxload .blockclose').click(function () {
-            window.location.reload();
-        });
-    },
+    //
+    //fShowloadReload: function () {
+    //    $('.ajaxload .blockclose').click(function () {
+    //        window.location.reload();
+    //    });
+    //},
 
     /**********************************/
 
@@ -727,43 +742,6 @@ window.wep = {
             wep.include('/_design/_script/bug.js');
         }
         if (flag == 1) wep.fShowHide('bugmain', 1);
-    },
-
-    hTopPos: 20,
-    // Позициоонирует блок по центру
-    fMessPos: function (obj) {
-        if (!obj) obj = '.ajaxload';
-        var FC = jQuery(obj);
-        if (!FC[0]) return false;
-
-        jQuery(obj).css({'width': 'auto', 'height': 'auto'});
-
-        var H = document.documentElement.clientHeight;
-        var Hblock = FC[0].scrollHeight;
-        if (typeof Hblock == 'undefined') return;
-        var hh = Math.round((H - Hblock) / 2);
-        if (hh < wep.hTopPos) hh = wep.hTopPos;
-
-        var W = document.documentElement.clientWidth;
-        var Wblock = FC[0].scrollWidth;
-        var ww = Math.round((W - Wblock) / 2);
-        if (ww < 10) ww = 10;
-
-        jQuery(obj).css({'top': hh + 'px', 'left': ww + 'px'});
-
-        if (Hblock > (H - hh)) {
-            Hblock = H - hh;
-            jQuery(obj).css({'height': (Hblock) + 'px'});
-        }
-
-        if (Wblock > (W - 20))
-            Wblock = W;
-        jQuery(obj).css({'width': (Wblock + 22) + 'px'});
-
-        wep.setResize('fMessPos#' + obj, function () {
-            if (jQuery(obj).size())
-                wep.fMessPos(obj);
-        });
     },
 
     // всплывающая подсказка
@@ -840,18 +818,10 @@ window.wep = {
             jQuery('#' + id).animate({ opacity: "show" }, "slow");
     },
 
-    /***/
-
-    staticPopUp: function (content) {
-        wep.createPopUp();
-        $(wep.popUp.insertobj).html(wep.wraperLayerBlock(content));
-        wep.staticOpenPopUp();
-    },
-    staticOpenPopUp: function () {
-        wep.openPopUp(wep.popUp);
-        wep.setEventClosePopUp(wep.popUp);
-        wep.fMessPos(wep.popUp['insertobj']);
-    },
+    /********************************************/
+    /********************************************/
+    /********************************************/
+    /********************************************/
 
     setCookie: function (name, value, expiredays, domain, path, secure) {
 
@@ -1829,10 +1799,6 @@ function OnJSWin(obj, param) {
 
 function fLog(txt, flag) {
     return wep.fLog(txt, flag);
-}
-
-function fMessPos(obj) {
-    return wep.fMessPos(obj);
 }
 
 /*Показ тултип*/
