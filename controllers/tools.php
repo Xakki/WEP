@@ -278,7 +278,7 @@ function tools_cron()
             $_SESSION['messtool'] = static_main::am('ok', 'Задание успешно ' . ($act ? 'включено' : 'отключено') . '.');
         static_main::redirect(key($DATA['path']));
     } else {
-        $DATA['messages'][] = static_main::am('info', 'Пропишите в cron <div>*/1 * * * *&#160;&#160;&#160;www-data&#160;&#160;&#160;php ' . $_CFG['_PATH']['controllers'] . 'cron.php</div>');
+        $DATA['messages'][] = static_main::am('info', 'Пропишите в cron <div>*/1 * * * *&#160;&#160;&#160;www-data&#160;&#160;&#160;php ' . SITE . 'index.php cron</div>');
         $DATA['data'] = array(
             'thitem' => array(
                 'title' => array('value' => 'Название'),

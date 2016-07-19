@@ -378,76 +378,79 @@ window.wep = {
      * Задаем параметры по умолчанию для АЯКС ЗАГРУЗКИ
      */
     setDefaultParam: function (param) {
-        if (typeof param['type'] == 'object') {
-            var OBJ = jQuery(param['type']);
-            if (OBJ.get(0).tagName == 'A') {
-                if (!param['href'])
-                    param['href'] = OBJ.attr('href');
-                param['type'] = 'GET'; // always GET
+        if (!param['initParam']) {
+            if (typeof param['type'] == 'object') {
+                var OBJ = jQuery(param['type']);
+                if (OBJ.get(0).tagName == 'A') {
+                    if (!param['href'])
+                        param['href'] = OBJ.attr('href');
+                    param['type'] = 'GET'; // always GET
+                }
+                else // FORM
+                {
+                    param['href'] = OBJ.attr('action');
+                    param['data'] = OBJ.serialize();
+
+                    if (!param['sbmt'])
+                        param['data'] += '&sbmt=1'
+                    else
+                        param['data'] += '&' + param['sbmt']
+                    param['type'] = OBJ.attr('method');
+                    if (!param['type']) param['type'] = 'POST'; // default
+                }
             }
-            else // FORM
-            {
-                param['href'] = OBJ.attr('action');
-                param['data'] = OBJ.serialize();
+            else if (!param['type'])
+                param['type'] = 'GET';
 
-                if (!param['sbmt'])
-                    param['data'] += '&sbmt=1'
-                else
-                    param['data'] += '&' + param['sbmt']
-                param['type'] = OBJ.attr('method');
-                if (!param['type']) param['type'] = 'POST'; // default
+            // Линк
+            if (!param['href'])
+                param['href'] = location.href;
+
+            // данные для передачи в зарпрос
+            if (!param['data'])
+                param['data'] = '';
+
+            // Тип получаемых данных
+            if (!param['datatype'])
+                param['datatype'] = 'json';
+
+            // маркер полученного содержимого из принятого массива
+            if (!param['marker']) {
+                if (typeof(param.data) == 'object' && param.data.PGMARKER) {
+                    param['marker'] = param.data.PGMARKER;
+                }
+                else {
+                    param['marker'] = 'text';
+                }
             }
-        }
-        else if (!param['type'])
-            param['type'] = 'GET';
+            // Заголовок для Popup
+            if (!param['markerTitle'])
+                param['markerTitle'] = 'title';
 
-        // Линк
-        if (!param['href'])
-            param['href'] = location.href;
+            param['timeBG'] = null; // таймер
 
-        // данные для передачи в зарпрос
-        if (!param['data'])
-            param['data'] = '';
+            if (typeof param['labelObj'] == 'undefined') param['labelObj'] = wep.popUp.labelObj;
+            if (typeof param['modalSize'] == 'undefined') param['modalSize'] = wep.popUp.modalSize;
+            if (typeof param['onclk'] == 'undefined') param['onclk'] = wep.popUp.onclk;
 
-        // Тип получаемых данных
-        if (!param['datatype'])
-            param['datatype'] = 'json';
+            // POPUP
+            // объект в который(в зависимости от param['inserttype']) будут вставляться result.html
+            if (!param['insertobj']) {
+                param['insertobj'] = wep.popUp.insertobj;
+                param['fadeobj'] = wep.popUp.fadeobj;
+                param['fadeoff'] = false;
+                param['isPopUp'] = 1;
 
-        // маркер полученного содержимого из принятого массива
-        if (!param['marker']) {
-            if (typeof(param.data) == 'object' && param.data.PGMARKER) {
-                param['marker'] = param.data.PGMARKER;
             }
             else {
-                param['marker'] = 'text';
+                if (!param['fadeobj']) param['fadeobj'] = wep.popUp.fadeobj;
+
+                // Если нужно отключить затемнение после завершения
+                if (!param['fadeoff']) param['fadeoff'] = true; // зНачение по умолчанию
+
+                param['isPopUp'] = 0;
             }
-        }
-        // Заголовок для Popup
-        if (!param['markerTitle'])
-            param['markerTitle'] = 'title';
-
-        param['timeBG'] = null; // таймер
-
-        if (typeof param['labelObj'] == 'undefined') param['labelObj'] = wep.popUp.labelObj;
-        if (typeof param['modalSize'] == 'undefined') param['modalSize']= wep.popUp.modalSize;
-        if (typeof param['onclk'] == 'undefined') param['onclk']= wep.popUp.onclk;
-
-        // POPUP
-        // объект в который(в зависимости от param['inserttype']) будут вставляться result.html
-        if (!param['insertobj']) {
-            param['insertobj'] = wep.popUp.insertobj;
-            param['fadeobj'] = wep.popUp.fadeobj;
-            param['fadeoff'] = false;
-            param['isPopUp'] = 1;
-
-        }
-        else {
-            if (!param['fadeobj']) param['fadeobj'] = wep.popUp.fadeobj;
-
-            // Если нужно отключить затемнение после завершения
-            if (!param['fadeoff']) param['fadeoff'] = true; // зНачение по умолчанию
-
-            param['isPopUp'] = 0;
+            param['initParam'] = true;
         }
 
         wep.createPopUp();
@@ -628,7 +631,7 @@ window.wep = {
         if (param['fadeobj']) {
 
             jQuery(param['fadeobj']).removeClass('ajaxProccess');
-            
+
             // Если  таймер затемения ещё не сработал, то откл таймер
             // Если нужно отключить затемнение после завершения
             if (param['fadeoff']) {

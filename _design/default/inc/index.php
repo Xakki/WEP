@@ -116,6 +116,7 @@ if (!isAjax()) {
 
     setScript('jquery|wep|script.jquery/form|/main');
     setCss('button|main|/main');
+    plugBootstrap();
 
     $DATA = array('adminmenu' => fAdminMenu($_GET['_modul']));
     $_tpl['adminmenu'] = transformPHP($DATA, 'adminmenu');

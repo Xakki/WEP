@@ -1,7 +1,12 @@
 <?php
 
+///**
+// * @var sqlmyi
+// */
+//public $SQL;
 /**
- * COMMENT = класс расширения для модулей
+ * Class kernel_extends класс расширения для модулей
+ * @property    sqlmyi $SQL
  */
 abstract class kernel_extends
 {
@@ -68,6 +73,7 @@ abstract class kernel_extends
     public $grant_sql = false;
     public $childs, // Дочерние модули
         $SQL_CFG, $_forceLoad, $_file_cfg, $parent_id, $null, $id = NULL;
+
 
     public $_CFG = true; // bug fix for link
     public $owner = true; // bug fix  for link

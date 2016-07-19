@@ -42,7 +42,29 @@ class wephtml
         if ($this->_html != '') {
             if ($buffer && $_CFG['wep']['debugmode']) {
                 $_tpl['logs'] .= '<link type="text/css" href="/_design/_style/bug.css" rel="stylesheet"/>
-					<div id="bugmain">' . $buffer . '</div>';
+<script>
+function bugSpoilers(obj) {
+    var obj=obj.parentNode;
+    if(obj.className.indexOf(\'unfolded\')>=0)
+        obj.className = obj.className.replace(\'unfolded\',\'\');
+    else
+        obj.className = obj.className+\' unfolded\';
+}
+function toogleBug() {
+    var obj = document.getElementById(\'bugmain\');
+    if(obj.className.indexOf(\'unfolded\')>=0)
+        obj.className = obj.className.replace(\'unfolded\',\'\');
+    else
+        obj.className = obj.className+\' unfolded\';
+}
+if (!jQuery) {
+    document.getElementById(\'bugmain\').className = \'unfolded\';
+}
+</script>
+<div id="bugmain">' . $buffer . '</div>
+<div id="bugbtn">{#debug#}<img src="/_design/default/img/debug_view.png" onclick="fShowHide(\'bugmain\');" alt="DEBUG"/></div>
+					';
+                // <button id="bugbtn" onclick="toogleBug()">DEBUG</button>
             }
             self::parseTemplate($this->_html, $_tpl); // PARSE
         } else {

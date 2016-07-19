@@ -32,10 +32,8 @@
     <div id="inftime">{#time#}</div>
     <div class="infc">{#contact#}</div>
 </div>
-<div id="debug_view" style="">{#logs#}</div>
 
-<div class="debug_view_img">{#debug#}<img src="/{#THEME#}img/debug_view.png" onclick="fShowHide('debug_view');"
-                                          alt="DEBUG"/></div>
+{#logs#}
 
 <div class="PopUp">
     <div class="PopUpBackgound CloseTarget"></div>

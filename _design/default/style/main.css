@@ -440,38 +440,6 @@ a.am_tools {
     background-color: rgb(144, 238, 144);
 }
 
-#debug_view {
-    position: absolute;
-    right: 5px;
-    top: 36px;
-    z-index: 6;
-    border: 1px solid yellow;
-    background: #D7E8FF;
-    padding: 0;
-    font-size: 0.8em;
-    font-family: arial;
-    overflow: auto;
-}
-
-/*white-space:pre;*/
-#debug_view h1 {
-    font-size: 1em;
-    text-align: center;
-    font-weight: bold;
-    margin: 0;
-    max-height: 300px;
-    min-height: 40px;
-    overflow: auto;
-}
-
-.debug_view_img {
-    position: absolute;
-    right: 5px;
-    top: 4px;
-    z-index: 7;
-    cursor: pointer;
-}
-
 /*SUPER PUPER*/
 .path {
     padding: 0 0 5px 0;

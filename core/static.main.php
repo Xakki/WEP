@@ -194,7 +194,7 @@ class static_main
     {
         global $_CFG;
         $hash = md5($head);
-        return '<div class="bugspoiler-wrap ' . $css . '"><div class="spoiler-head" onclick="var obj=this.parentNode;if(obj.className.indexOf(\'unfolded\')>=0) obj.className = obj.className.replace(\'unfolded\',\'\'); else obj.className = obj.className+\' unfolded\';">' . $head . '</div><div class="spoiler-body">' . html_entity_decode($text, ENT_QUOTES, CHARSET) . '</div></div>';
+        return '<div class="bugspoiler-wrap ' . $css . '"><div class="spoiler-head" onclick="bugSpoilers(this)">' . $head . '</div><div class="spoiler-body">' . html_entity_decode($text, ENT_QUOTES, CHARSET) . '</div></div>';
     }
 
     /**

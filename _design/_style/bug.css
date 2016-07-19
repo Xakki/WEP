@@ -1,15 +1,30 @@
+
+#bugbtn {
+    position: absolute;
+    top: 4px;
+    right: 5px;
+    z-index: 10001;
+    cursor: pointer;
+}
+
 #bugmain {
-    position: relative;
-    z-index: 100;
+    display: none;
+    position: absolute;
+    top: 36px;
+    right: 5px;
+    z-index: 10000;
     overflow: auto;
     padding: 0;
     border: 1px solid yellow;
     background: #D7E8FF;
     color: #000;
     font-size: 0.8em;
-    font-family: arial;
+    max-width: 450px;
 }
 
+#bugmain.unfolded {
+    display: block;
+}
 #bugmain .bug_ {
     background-color: #858585;
 }
